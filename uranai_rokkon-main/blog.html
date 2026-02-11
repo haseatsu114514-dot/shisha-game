@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T47H5DSFTR"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-T47H5DSFTR');
+    </script>
+    <title>ブログ | 占い処 六根清浄</title>
+    <meta name="description" content="占い師あつきのブログ。四柱推命や占いに関するコラム、開運情報をお届けします。">
+
+    <!-- OGP (SNSシェア設定) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="ブログ | 占い処 六根清浄">
+    <meta property="og:description" content="占い師あつきのブログ。四柱推命や占いに関するコラム、開運情報をお届けします。">
+    <meta property="og:url" content="https://uranai-rokkon.com/blog.html">
+    <meta property="og:image" content="https://uranai-rokkon.com/images/otya.png">
+
+    <!-- Favicon -->
+    <link rel="icon" href="images/favicon.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/blog.css">
+    <link rel="stylesheet" href="css/animations.css">
+
+
+</head>
+
+<body>
+
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="header-inner">
+            <a href="index.html" class="logo">
+                <span class="logo-main">六根清浄</span>
+                <span class="logo-sub">(Rokkon shojo)</span>
+            </a>
+            <div class="nav-wrapper">
+                <nav class="nav">
+                    <a href="index.html">ホーム</a>
+                    <a href="beginner.html">初めての方へ</a>
+                    <a href="about.html">占い師紹介</a>
+                    <a href="pricing.html">料金案内</a>
+                    <a href="testimonials.html">お客様の声</a>
+                    <a href="faq.html">よくある質問</a>
+                    <a href="blog.html">ブログ</a>
+                    <a href="https://uranairokkon.base.shop" target="_blank">SHOP</a>
+                </nav>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSdG_cRsdXN-z8HUmzwUdAv7exsxFM41qp-WLr6hGORGmQI28w/viewform?usp=header"
+                    class="contact-btn" target="_blank">お問い合わせ</a>
+            </div>
+            <div class="menu-toggle" onclick="toggleMenu();" aria-label="メニュー">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- スクロール進捗バー -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+
+    <!-- メインコンテンツ -->
+    <main class="main-content">
+
+        <!-- ブログヒーロー -->
+        <section class="page-header">
+            <h1 class="page-title">ブログ</h1>
+            <p class="page-subtitle">占い師あつきのコラム</p>
+        </section>
+
+        <!-- ブログ一覧 -->
+        <section class="blog-section">
+            <div class="blog-inner">
+                <!-- Loading Indicator -->
+                <div id="loading-indicator" class="loading-indicator">
+                    <div class="spinner"></div>
+                    <p>記事を読み込んでいます...</p>
+                </div>
+
+                <!-- Swiper -->
+                <!-- Blog Filters -->
+                <div class="blog-filters">
+                    <button class="filter-btn active" data-filter="all">すべて</button>
+                    <button class="filter-btn" data-filter="fortune">占い・運勢</button>
+                    <button class="filter-btn" data-filter="love">恋愛・結婚</button>
+                    <button class="filter-btn" data-filter="work">仕事・金運</button>
+                    <button class="filter-btn" data-filter="life">コラム・人生</button>
+                </div>
+
+                <!-- Blog Grid -->
+                <div id="blog-grid" class="blog-grid blog-grid-empty">
+                    <!-- JSで記事がここに挿入されます -->
+                </div>
+
+                <!-- Load More Button -->
+                <div id="pagination-container" class="pagination-container" style="display:none;">
+                    <button id="load-more-btn" class="load-more-btn">
+                        <span>もっと見る</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- noteへのリンク -->
+                <div class="blog-note-link">
+                    <p class="blog-note-link-text">すべての記事はnote.comでご覧いただけます</p>
+                    <a href="https://note.com/rokkon_uranai" class="blog-note-btn" target="_blank" rel="noopener">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z" />
+                        </svg>
+                        noteを見る
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ページ導線 -->
+        <section class="blog-page-links">
+            <div class="blog-page-links-inner">
+                <a href="index.html" class="blog-page-link-card">
+                    <span class="blog-page-link-title">ホーム</span>
+                    <span class="blog-page-link-desc">トップページ</span>
+                </a>
+                <a href="beginner.html" class="blog-page-link-card">
+                    <span class="blog-page-link-title">初めての方へ</span>
+                    <span class="blog-page-link-desc">ご案内</span>
+                </a>
+                <a href="about.html" class="blog-page-link-card">
+                    <span class="blog-page-link-title">占い師紹介</span>
+                    <span class="blog-page-link-desc">鑑定スタイル</span>
+                </a>
+                <a href="pricing.html" class="blog-page-link-card">
+                    <span class="blog-page-link-title">料金案内</span>
+                    <span class="blog-page-link-desc">コース・料金</span>
+                </a>
+                <a href="testimonials.html" class="blog-page-link-card">
+                    <span class="blog-page-link-title">お客様の声</span>
+                    <span class="blog-page-link-desc">実際のご感想</span>
+                </a>
+                <a href="faq.html" class="blog-page-link-card">
+                    <span class="blog-page-link-title">よくある質問</span>
+                    <span class="blog-page-link-desc">Q&A</span>
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- フッター -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-info">
+                <p class="footer-hours">鑑定営業時間：14:00〜22:00（最終受付 21:00）/ 予約は24H可</p>
+                <a href="https://lin.ee/SvZ69l0" class="footer-line-btn" target="_blank">LINE公式アカウント</a>
+            </div>
+            <div class="footer-copy">© 2026 六根清浄 All Rights Reserved.</div>
+        </div>
+    </footer>
+
+    <button type="button" id="back-to-top" class="back-to-top" aria-label="トップへ戻る">↑</button>
+
+    <!-- スマホ追従予約ボタン -->
+    <a href="https://lin.ee/SvZ69l0" class="sticky-reservation-btn" target="_blank">
+        <span class="sticky-text">LINEで予約・お問い合わせ</span>
+    </a>
+
+    <script src="js/main.js"></script>
+    <script src="js/blog-feed.js"></script>
+</body>
+
+</html>
