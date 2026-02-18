@@ -10,9 +10,11 @@ var _events: Array = []
 var _event_queue: Array = []
 var _current_event: Dictionary = {}
 var _shift_salary: int = 0
+var _shift_advance_steps: int = 1
 
 
 func _ready() -> void:
+	GameManager.play_bgm(GameManager.BGM_CHILLHOUSE_PATH, -10.0, true)
 	back_button.pressed.connect(_on_back_button_pressed)
 	_load_events()
 	_show_main_menu()
@@ -57,10 +59,12 @@ func _on_menu_selected(action: String) -> void:
 	match action:
 		"work_menu":
 			_show_shift_menu()
-		"work_normal":
-			_start_shift(false)
-		"work_busy":
-			_start_shift(true)
+		"work_half":
+			_start_shift("half")
+		"work_full":
+			_start_shift("full")
+		"work_night":
+			_start_shift("night")
 		"work_back":
 			_show_main_menu()
 		"practice":
@@ -74,22 +78,47 @@ func _on_menu_selected(action: String) -> void:
 func _show_shift_menu() -> void:
 	body_label.text = "シフトを選んでください"
 	_clear_buttons(menu_container)
-	_add_menu_button("通常シフト（+8000円 / イベント1-2）", "work_normal")
-	_add_menu_button("忙しい日（+12000円 / イベント3-4）", "work_busy")
+	if CalendarManager.current_time == "noon":
+		_add_menu_button("半日バイト（昼のみ / +8000円）", "work_half")
+		_add_menu_button("夜までバイト（昼+夜 / +18000円）", "work_full")
+	else:
+		_add_menu_button("夜バイト（+10000円）", "work_night")
 	_add_menu_button("戻る", "work_back")
 
 
-func _start_shift(is_busy: bool) -> void:
-	if not CalendarManager.use_action():
+func _start_shift(mode: String) -> void:
+	var action_cost = 1
+	var event_count = randi_range(1, 2)
+	_shift_salary = 8000
+	_shift_advance_steps = 1
+
+	match mode:
+		"full":
+			action_cost = 2
+			event_count = randi_range(3, 5)
+			_shift_salary = 18000
+			_shift_advance_steps = 2
+		"night":
+			action_cost = 1
+			event_count = randi_range(2, 3)
+			_shift_salary = 10000
+			_shift_advance_steps = 1
+		_:
+			action_cost = 1
+			event_count = randi_range(1, 2)
+			_shift_salary = 8000
+			_shift_advance_steps = 1
+
+	if CalendarManager.actions_remaining < action_cost:
 		body_label.text = "行動コマがありません。"
 		_show_main_menu()
 		return
+	for _i in range(action_cost):
+		CalendarManager.use_action()
 
-	_shift_salary = 12000 if is_busy else 8000
 	PlayerData.add_money(_shift_salary)
 	GameManager.log_money_change(_shift_salary)
 
-	var event_count = randi_range(3, 4) if is_busy else randi_range(1, 2)
 	_event_queue = _pick_events(event_count)
 	body_label.text = "シフト開始！"
 	_show_next_event()
@@ -178,7 +207,7 @@ func _finish_shift() -> void:
 	var done_button = Button.new()
 	done_button.text = "マップへ"
 	done_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	done_button.pressed.connect(_finish_action_flow)
+	done_button.pressed.connect(_finish_action_flow.bind(_shift_advance_steps))
 	choice_container.add_child(done_button)
 
 
@@ -229,8 +258,9 @@ func _do_sumi_talk() -> void:
 	_show_single_result_and_finish(text)
 
 
-func _finish_action_flow() -> void:
-	CalendarManager.advance_time()
+func _finish_action_flow(step_count: int = 1) -> void:
+	for _step in range(step_count):
+		CalendarManager.advance_time()
 	if CalendarManager.current_time == "midnight":
 		get_tree().change_scene_to_file("res://scenes/daily/night_end.tscn")
 		return

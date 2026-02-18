@@ -11,6 +11,7 @@ signal dialogue_finished(dialogue_id: String)
 @onready var choice_container: VBoxContainer = %ChoiceContainer
 @onready var advance_button: Button = %AdvanceButton
 @onready var typing_timer: Timer = %TypingTimer
+@onready var portrait_rect: TextureRect = %CharacterPortrait
 
 var _line_queue: Array = []
 var _branches: Dictionary = {}
@@ -110,6 +111,7 @@ func _show_next_line() -> void:
 	_clear_choices()
 	_current_speaker = str(line.get("speaker", ""))
 	speaker_label.text = SPEAKER_NAMES.get(_current_speaker, _current_speaker)
+	_update_portrait(line)
 	_start_typing(str(line.get("text", "")))
 
 
@@ -174,6 +176,32 @@ func _on_choice_selected(branch_key: String) -> void:
 func _clear_choices() -> void:
 	for child in choice_container.get_children():
 		child.queue_free()
+
+
+func _update_portrait(line: Dictionary) -> void:
+	var speaker = str(line.get("speaker", ""))
+	if speaker == "":
+		portrait_rect.visible = false
+		portrait_rect.texture = null
+		return
+
+	var face = str(line.get("face", "normal"))
+	var path = "res://assets/sprites/characters/chr_%s_%s.png" % [speaker, face]
+	if not ResourceLoader.exists(path):
+		path = "res://assets/sprites/characters/chr_%s_normal.png" % speaker
+	if not ResourceLoader.exists(path):
+		portrait_rect.visible = false
+		portrait_rect.texture = null
+		return
+
+	var texture = load(path)
+	if texture == null:
+		portrait_rect.visible = false
+		portrait_rect.texture = null
+		return
+
+	portrait_rect.texture = texture
+	portrait_rect.visible = true
 
 
 func _finish_dialogue() -> void:

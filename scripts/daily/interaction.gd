@@ -3,6 +3,7 @@ extends Control
 @onready var header_label: Label = %HeaderLabel
 @onready var body_label: RichTextLabel = %BodyLabel
 @onready var option_container: VBoxContainer = %OptionContainer
+@onready var character_portrait: TextureRect = %CharacterPortrait
 
 var _target: String = ""
 var _event_id: String = ""
@@ -26,12 +27,14 @@ func _ready() -> void:
 		"ryuji":
 			_show_ryuji_interaction()
 		_:
+			_set_portrait("")
 			header_label.text = "交流"
 			body_label.text = "誰もいない。"
 
 
 func _show_nishio_interaction() -> void:
 	header_label.text = "にしおの店"
+	_set_portrait("nishio")
 	var count = int(EventFlags.get_value("visit_nishio_count", 0))
 	EventFlags.set_value("visit_nishio_count", count + 1)
 
@@ -57,6 +60,7 @@ func _show_nishio_interaction() -> void:
 
 func _show_adam_interaction() -> void:
 	header_label.text = "アダムの店"
+	_set_portrait("adam")
 	var count = int(EventFlags.get_value("visit_adam_count", 0))
 	EventFlags.set_value("visit_adam_count", count + 1)
 
@@ -81,6 +85,7 @@ func _show_adam_interaction() -> void:
 
 func _show_ryuji_interaction() -> void:
 	header_label.text = "リュウジの店"
+	_set_portrait("ryuji")
 	var count = int(EventFlags.get_value("visit_ryuji_count", 0))
 	EventFlags.set_value("visit_ryuji_count", count + 1)
 
@@ -107,16 +112,19 @@ func _show_invitation_event(event_id: String) -> void:
 	header_label.text = "交流イベント"
 	match event_id:
 		"interaction_nishio_night_01":
+			_set_portrait("nishio")
 			body_label.text = "にしおの新作ミックスを一緒に試した。率直な感想を伝えた。"
 			AffinityManager.add_affinity("nishio", 4)
 			PlayerData.add_stat("insight", 2)
 			GameManager.log_stat_change("insight", 2)
 		"interaction_ryuji_noon_01":
+			_set_portrait("ryuji")
 			body_label.text = "リュウジとパッキング勝負をした。勢いで押し切られた。"
 			AffinityManager.add_affinity("ryuji", 4)
 			PlayerData.add_stat("technique", 2)
 			GameManager.log_stat_change("technique", 2)
 		_:
+			_set_portrait("")
 			body_label.text = "交流イベントを実行した。"
 
 
@@ -141,6 +149,18 @@ func _on_option_pressed(action: String, arg: String) -> void:
 func _clear_options() -> void:
 	for child in option_container.get_children():
 		child.queue_free()
+
+
+func _set_portrait(character_id: String) -> void:
+	if character_id == "":
+		character_portrait.texture = null
+		return
+	var path = "res://assets/sprites/characters/chr_%s_normal.png" % character_id
+	if not ResourceLoader.exists(path):
+		character_portrait.texture = null
+		return
+	var tex = load(path)
+	character_portrait.texture = tex
 
 
 func _on_back_button_pressed() -> void:

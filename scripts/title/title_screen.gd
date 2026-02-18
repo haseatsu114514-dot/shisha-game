@@ -13,6 +13,7 @@ func _ready() -> void:
 	settings_panel.visible = false
 	_load_settings()
 	info_label.text = "地方大会編 Day1-7 実装版"
+	GameManager.play_bgm(GameManager.BGM_TITLE_PATH, -8.0, true)
 
 
 func _on_new_game_pressed() -> void:

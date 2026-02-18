@@ -14,15 +14,22 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.121569, 0.121569, 0.14902, 1)
+color = Color(0.0196078, 0.0235294, 0.0666667, 1)
 
-[node name="CharacterPlaceholder" type="ColorRect" parent="."]
+[node name="PortraitFrame" type="PanelContainer" parent="."]
 layout_mode = 1
 offset_left = 70.0
 offset_top = 100.0
-offset_right = 420.0
+offset_right = 390.0
 offset_bottom = 620.0
-color = Color(0.278431, 0.333333, 0.458824, 1)
+
+[node name="CharacterPortrait" type="TextureRect" parent="PortraitFrame"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+expand_mode = 1
+stretch_mode = 5
 
 [node name="DialoguePanel" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -61,4 +68,3 @@ text = "次へ"
 unique_name_in_owner = true
 wait_time = 0.03
 one_shot = false
-
