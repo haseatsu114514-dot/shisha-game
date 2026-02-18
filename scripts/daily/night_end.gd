@@ -14,6 +14,7 @@ const ACCENT_COLOR: Color = Color(0.98, 0.93, 0.18, 1.0)
 
 
 func _ready() -> void:
+	GameManager.play_daily_bgm()
 	auto_timer.timeout.connect(_on_auto_timer_timeout)
 	_render_summary()
 

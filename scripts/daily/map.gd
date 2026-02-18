@@ -8,7 +8,7 @@ var _pending_spot: Dictionary = {}
 
 
 func _ready() -> void:
-	GameManager.stop_bgm()
+	GameManager.play_daily_bgm()
 	confirm_dialog.confirmed.connect(_on_confirmed)
 
 	if CalendarManager.current_time == "noon":

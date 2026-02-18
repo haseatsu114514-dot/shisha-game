@@ -10,7 +10,7 @@ var _today_post: Dictionary = {}
 
 
 func _ready() -> void:
-	GameManager.stop_bgm()
+	GameManager.play_daily_bgm()
 	post_panel.visible = false
 
 	if CalendarManager.is_tournament_day():

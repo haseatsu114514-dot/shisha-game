@@ -6,6 +6,7 @@ signal chapter_started(chapter_num: int)
 const SAVE_VERSION: int = 1
 const SAVE_PATH_TEMPLATE := "user://save_slot_%d.json"
 const BGM_TITLE_PATH = "res://assets/audio/bgm/bgm_title.ogg"
+const BGM_DAILY_PATH = "res://assets/audio/bgm/daily_part.mp3"
 const BGM_CHILLHOUSE_PATH = "res://assets/audio/bgm/chill_house.mp3"
 
 var current_chapter: int = 1
@@ -138,6 +139,10 @@ func stop_bgm() -> void:
 		return
 	_bgm_player.stop()
 	_current_bgm_path = ""
+
+
+func play_daily_bgm() -> void:
+	play_bgm(BGM_DAILY_PATH, -11.0, true)
 
 
 func start_new_game() -> void:

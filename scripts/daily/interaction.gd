@@ -11,6 +11,7 @@ var _advance_on_exit = false
 
 
 func _ready() -> void:
+	GameManager.play_daily_bgm()
 	_target = str(GameManager.pop_transient("interaction_target", ""))
 	_event_id = str(GameManager.pop_transient("interaction_event", ""))
 	_advance_on_exit = bool(GameManager.pop_transient("advance_time_after_scene", false))

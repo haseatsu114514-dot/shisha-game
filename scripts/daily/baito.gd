@@ -14,7 +14,7 @@ var _shift_advance_steps: int = 1
 
 
 func _ready() -> void:
-	GameManager.play_bgm(GameManager.BGM_CHILLHOUSE_PATH, -10.0, true)
+	GameManager.play_daily_bgm()
 	back_button.pressed.connect(_on_back_button_pressed)
 	_load_events()
 	_show_main_menu()

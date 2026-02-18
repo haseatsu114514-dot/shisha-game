@@ -7,6 +7,7 @@ var _advance_on_exit = false
 
 
 func _ready() -> void:
+	GameManager.play_daily_bgm()
 	_advance_on_exit = bool(GameManager.pop_transient("advance_time_after_scene", false))
 	if not _advance_on_exit:
 		if CalendarManager.use_action():
