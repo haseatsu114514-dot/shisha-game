@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/daily/map.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="2"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/bg_map_local_day.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/bg_map_local_night.png" id="4"]
 
 [node name="Map" type="Control"]
 layout_mode = 3
@@ -10,39 +12,64 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource("1")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="MapBackground" type="TextureRect" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.0235294, 0.0509804, 0.121569, 1)
+texture = ExtResource("3")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="MapNightBackground" type="TextureRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource("4")
+expand_mode = 1
+stretch_mode = 5
+visible = false
+
+[node name="NightOverlay" type="ColorRect" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.02, 0.04, 0.08, 0.0)
+
+[node name="SpotLayer" type="Control" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
 
 [node name="MapPanel" type="PanelContainer" parent="."]
 layout_mode = 1
-offset_left = 60.0
-offset_top = 90.0
-offset_right = 1220.0
-offset_bottom = 680.0
+offset_left = 34.0
+offset_top = 80.0
+offset_right = 516.0
+offset_bottom = 174.0
+self_modulate = Color(1, 1, 1, 0.86)
 
 [node name="MapVBox" type="VBoxContainer" parent="MapPanel"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 6
 
 [node name="TitleLabel" type="Label" parent="MapPanel/MapVBox"]
 layout_mode = 2
 text = "地方大会エリアマップ"
-horizontal_alignment = 1
+horizontal_alignment = 0
 
 [node name="MessageLabel" type="Label" parent="MapPanel/MapVBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "行き先を選択"
-
-[node name="SpotContainer" type="VBoxContainer" parent="MapPanel/MapVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_constants/separation = 8
+autowrap_mode = 3
 
 [node name="HUD" parent="." instance=ExtResource("2")]
 

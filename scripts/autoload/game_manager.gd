@@ -142,7 +142,11 @@ func stop_bgm() -> void:
 
 
 func play_daily_bgm() -> void:
-	play_bgm(BGM_DAILY_PATH, -11.0, true)
+	if ResourceLoader.exists(BGM_DAILY_PATH):
+		play_bgm(BGM_DAILY_PATH, -11.0, true)
+		return
+	if ResourceLoader.exists(BGM_CHILLHOUSE_PATH):
+		play_bgm(BGM_CHILLHOUSE_PATH, -10.0, true)
 
 
 func start_new_game() -> void:
