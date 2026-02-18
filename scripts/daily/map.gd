@@ -29,6 +29,9 @@ func _ready() -> void:
 				get_tree().change_scene_to_file("res://scenes/daily/interaction.tscn")
 				return
 
+	if _try_auto_return_home():
+		return
+
 	_refresh_spots()
 
 
@@ -111,3 +114,16 @@ func _go_next_phase() -> void:
 		get_tree().change_scene_to_file("res://scenes/daily/night_end.tscn")
 		return
 	get_tree().change_scene_to_file("res://scenes/daily/map.tscn")
+
+
+func _try_auto_return_home() -> bool:
+	if CalendarManager.actions_remaining > 0:
+		return false
+	if CalendarManager.current_time != "noon" and CalendarManager.current_time != "night":
+		return false
+
+	GameManager.set_transient("morning_notice", "行動コマが尽きたのでそのまま家に帰った。")
+	while CalendarManager.current_time == "noon" or CalendarManager.current_time == "night":
+		CalendarManager.advance_time()
+	_go_next_phase()
+	return true
