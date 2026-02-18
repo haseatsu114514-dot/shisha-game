@@ -3,14 +3,25 @@
     {
       "dialogue_id": "ch1_opening",
       "lines": [
+        {"speaker": "narration", "text": "夕方のチルハウス。オレンジ色の外灯が点き、水タバコのゴボゴボという音が店内に柔らかく響いている。"},
+        {"speaker": "narration", "text": "蒸野はじめは、今日も何となく炭を切り、何となくボウルを詰め、何となく客に出す。特別なことは何もない。それが彼の日常だった。"},
+        {"speaker": "inner", "text": "……今日も暇だな。炭切って、詰めて、出す。その繰り返し。"},
+        {"speaker": "narration", "text": "常連のおじいさんが帰り際に「今日の、良かったよ」と小さく言った。"},
+        {"speaker": "hajime", "face": "normal", "text": "ありがとうございます"},
+        {"speaker": "inner", "text": "……なんだろ。こういうの、ちょっとだけ嬉しい。でもそれが何なのかは、よく分かんない。"},
+        {"speaker": "narration", "text": "閉店作業。最後の客が帰り、店内に静けさが戻る。カウンターを拭いていたスミさんが、唐突に口を開いた。"},
         {"speaker": "sumi", "face": "normal", "text": "おう、はじめ。今日もバイトか"},
         {"speaker": "hajime", "face": "normal", "text": "っす。いらっしゃいませー…って誰もいないっすね"},
         {"speaker": "sumi", "face": "serious", "text": "暇な日だ。…なあ、一つ聞いていいか"},
         {"speaker": "hajime", "face": "normal", "text": "なんすか"},
         {"speaker": "sumi", "face": "serious", "text": "お前、大会出てみる気ねえか"},
         {"speaker": "hajime", "face": "surprise", "text": "大会？シーシャの？俺が？無理っすよ"},
+        {"speaker": "inner", "text": "大会って……あのガチのやつだよな。テレビとかでやってるシーシャバトル。俺がそんなとこ出たって何もできないだろ。"},
         {"speaker": "sumi", "face": "serious", "text": "無理かどうかは出てから決めろ。お前の煙、俺は好きだ"},
+        {"speaker": "inner", "text": "「好きだ」って……何がだよ。俺、別に何も考えないで作ってるだけなのに。"},
         {"speaker": "hajime", "face": "sad", "text": "……"},
+        {"speaker": "narration", "text": "スミさんの目は真剣だった。冗談で言っている空気じゃない。"},
+        {"speaker": "inner", "text": "……スミさんがここまで言うの、珍しいな。どうする……？"},
         {
           "type": "choice",
           "id": "opening_choice",
@@ -22,25 +33,44 @@
       ],
       "branches": {
         "accept": [
-          {"speaker": "sumi", "face": "smile", "text": "よし。1週間後だ。準備しろ"}
+          {"speaker": "sumi", "face": "smile", "text": "よし。1週間後だ。準備しろ"},
+          {"speaker": "inner", "text": "……なんで「やる」って言ったんだろ。自分でもよく分かんない。でもスミさんの「好きだ」が、なんか引っかかった。"},
+          {"speaker": "narration", "text": "スミさんはそれだけ言って、カウンターを拭き始めた。いつもと変わらない閉店後の風景。でも、何かが少しだけ変わった気がした。"}
         ],
         "hesitate": [
-          {"speaker": "sumi", "face": "serious", "text": "考えてる暇はねえ。1週間後だ"}
+          {"speaker": "sumi", "face": "serious", "text": "考えてる暇はねえ。1週間後だ"},
+          {"speaker": "inner", "text": "……結局、スミさんに押し切られた。いつもそうだ。でも嫌じゃないのは何でだろ。"},
+          {"speaker": "narration", "text": "優しいの意味が分からないまま、よく分からないまま出場が決まった。"}
         ]
       }
     },
     {
       "dialogue_id": "ch1_day5_sumi_story",
       "lines": [
+        {"speaker": "narration", "text": "大会まであと2日。夜のチルハウスは静かだった。客が引けた後、スミさんが珍しく自分用にシーシャを準備している。"},
+        {"speaker": "inner", "text": "スミさんが自分で吸うの、あんまり見ないな……。何か考えてる顔だ。"},
         {"speaker": "sumi", "face": "thinking", "text": "大会ってのは、勝つためだけに出るもんじゃねえ"},
+        {"speaker": "inner", "text": "……急にどうしたんだ。スミさんがこういう話し方するときは、大体何か深いことを言おうとしてる。"},
         {"speaker": "hajime", "face": "normal", "text": "…何かあったんすか、昔"},
-        {"speaker": "sumi", "face": "serious", "text": "その話は、また今度だ"}
+        {"speaker": "narration", "text": "スミさんの手が一瞬止まった。煙が細く天井に向かって消えていく。"},
+        {"speaker": "sumi", "face": "serious", "text": "その話は、また今度だ"},
+        {"speaker": "inner", "text": "……踏み込んじゃいけない顔だった。スミさんにも、何かあるんだ。俺の知らない、何か。"},
+        {"speaker": "narration", "text": "それ以上は聞けなかった。二人の間に、シーシャの煙だけが漂っている。"}
       ]
     },
     {
       "dialogue_id": "ch1_day7_last_night",
       "lines": [
-        {"speaker": "hajime", "face": "serious", "text": "明日はいよいよ大会だ…"}
+        {"speaker": "narration", "text": "大会前夜。チルハウスの閉店後、はじめは一人で店に残っていた。"},
+        {"speaker": "narration", "text": "カウンターの向こうに、使い慣れたボウルとトングが並んでいる。明日、これを持って会場に行く。"},
+        {"speaker": "inner", "text": "明日はいよいよ大会だ……。"},
+        {"speaker": "hajime", "face": "serious", "text": "明日はいよいよ大会だ…"},
+        {"speaker": "inner", "text": "この1週間、色んな人に会った。シーシャが好きだと言い切れるやつ。ダブルアップルだけで勝負するやつ。シーシャに人生を賭けてるやつ。"},
+        {"speaker": "inner", "text": "みんな「自分のシーシャ」を持ってる。俺にはそれがない。"},
+        {"speaker": "inner", "text": "……でも、スミさんは俺の煙が好きだって言った。あの言葉の意味、まだ分かんないけど。"},
+        {"speaker": "narration", "text": "窓の外、街灯がぼんやりと光っている。明日の準備は、とっくに終わっている。"},
+        {"speaker": "inner", "text": "今の俺にできることをやるしかない。それだけだ。"},
+        {"speaker": "narration", "text": "はじめは店の鍵をかけて、夜の街に歩き出した。少しだけ、足取りが軽い気がした。"}
       ]
     }
   ]

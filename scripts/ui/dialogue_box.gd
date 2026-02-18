@@ -30,7 +30,9 @@ const SPEAKER_NAMES := {
 	"adam": "アダム",
 	"ryuji": "リュウジ",
 	"tsumugi": "つむぎ",
-	"packii": "パッキー"
+	"packii": "パッキー",
+	"narration": "",
+	"inner": "心の声",
 }
 
 
@@ -197,7 +199,7 @@ func _clear_choices() -> void:
 
 func _update_portrait(line: Dictionary) -> void:
 	var speaker = str(line.get("speaker", ""))
-	if speaker == "":
+	if speaker == "" or speaker == "narration" or speaker == "inner":
 		portrait_rect.visible = false
 		portrait_rect.texture = null
 		return
