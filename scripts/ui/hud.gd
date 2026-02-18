@@ -1,8 +1,7 @@
 extends CanvasLayer
 
-@onready var date_label: Label = %DateLabel
-@onready var action_label: Label = %ActionLabel
-@onready var money_label: Label = %MoneyLabel
+@onready var date_time_label: Label = %DateTimeLabel
+@onready var remaining_days_label: Label = %RemainingDaysLabel
 
 
 func _ready() -> void:
@@ -14,10 +13,14 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
-	money_label.text = "💰 %d円" % PlayerData.money
+	_update_labels()
 
 
 func _update_labels(_value: Variant = null) -> void:
-	date_label.text = CalendarManager.get_display_date()
-	action_label.text = "行動: %d" % CalendarManager.actions_remaining
-	money_label.text = "💰 %d円" % PlayerData.money
+	date_time_label.text = CalendarManager.get_display_date()
+
+	var remaining_days = CalendarManager.get_remaining_days()
+	if remaining_days <= 0:
+		remaining_days_label.text = "大会当日"
+	else:
+		remaining_days_label.text = "大会まであと %d 日" % remaining_days

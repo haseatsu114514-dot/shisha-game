@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/daily/morning_phone.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="2"]
 
 [node name="MorningPhone" type="Control"]
 layout_mode = 3
@@ -81,6 +82,8 @@ size_flags_vertical = 3
 [node name="PostCloseButton" type="Button" parent="PostPanel/PostVBox"]
 layout_mode = 2
 text = "閉じる"
+
+[node name="HUD" parent="." instance=ExtResource("2")]
 
 [connection signal="pressed" from="PhoneFrame/VBox/LimeButton" to="." method="_on_lime_button_pressed"]
 [connection signal="pressed" from="PhoneFrame/VBox/SheeshaButton" to="." method="_on_sheesha_button_pressed"]

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/daily/interaction.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="2"]
 
 [node name="Interaction" type="Control"]
 layout_mode = 3
@@ -55,5 +56,7 @@ theme_override_constants/separation = 8
 [node name="BackButton" type="Button" parent="Panel/VBox"]
 layout_mode = 2
 text = "戻る"
+
+[node name="HUD" parent="." instance=ExtResource("2")]
 
 [connection signal="pressed" from="Panel/VBox/BackButton" to="." method="_on_back_button_pressed"]
