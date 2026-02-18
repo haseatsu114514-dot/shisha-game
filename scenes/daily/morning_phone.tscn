@@ -1,0 +1,88 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/daily/morning_phone.gd" id="1"]
+
+[node name="MorningPhone" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.113725, 0.2, 0.14902, 1)
+
+[node name="PhoneFrame" type="PanelContainer" parent="."]
+layout_mode = 1
+offset_left = 320.0
+offset_top = 40.0
+offset_right = 960.0
+offset_bottom = 680.0
+
+[node name="VBox" type="VBoxContainer" parent="PhoneFrame"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="PhoneFrame/VBox"]
+layout_mode = 2
+text = "朝のスマホ"
+horizontal_alignment = 1
+
+[node name="InfoLabel" type="Label" parent="PhoneFrame/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = ""
+autowrap_mode = 3
+
+[node name="NotificationLabel" type="Label" parent="PhoneFrame/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "通知なし"
+autowrap_mode = 3
+
+[node name="LimeButton" type="Button" parent="PhoneFrame/VBox"]
+layout_mode = 2
+text = "LIMEを確認"
+
+[node name="SheeshaButton" type="Button" parent="PhoneFrame/VBox"]
+layout_mode = 2
+text = "Sheeshaを確認"
+
+[node name="ClosePhoneButton" type="Button" parent="PhoneFrame/VBox"]
+layout_mode = 2
+text = "スマホを閉じる"
+
+[node name="PostPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+offset_left = 360.0
+offset_top = 140.0
+offset_right = 920.0
+offset_bottom = 560.0
+
+[node name="PostVBox" type="VBoxContainer" parent="PostPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="PostTitle" type="Label" parent="PostPanel/PostVBox"]
+layout_mode = 2
+text = "Sheeshaタイムライン"
+
+[node name="PostTextLabel" type="RichTextLabel" parent="PostPanel/PostVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PostCloseButton" type="Button" parent="PostPanel/PostVBox"]
+layout_mode = 2
+text = "閉じる"
+
+[connection signal="pressed" from="PhoneFrame/VBox/LimeButton" to="." method="_on_lime_button_pressed"]
+[connection signal="pressed" from="PhoneFrame/VBox/SheeshaButton" to="." method="_on_sheesha_button_pressed"]
+[connection signal="pressed" from="PhoneFrame/VBox/ClosePhoneButton" to="." method="_on_close_phone_button_pressed"]
+[connection signal="pressed" from="PostPanel/PostVBox/PostCloseButton" to="." method="_on_post_close_button_pressed"]

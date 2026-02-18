@@ -1,0 +1,25 @@
+{
+  "posts": [
+    {
+      "id": "sheesha_day1",
+      "day": 1,
+      "author": "packii_official",
+      "text": "地方大会まであと7日♪ 出場者のみなさん頑張ってね♪",
+      "insight_bonus_text": "パッキー公式が大会の空気を作ってる…これは演出戦略かも。"
+    },
+    {
+      "id": "sheesha_day4",
+      "day": 4,
+      "author": "nishio",
+      "text": "練習きつい。でも絶対勝つ",
+      "insight_bonus_text": "言葉は短いけど、追い込みの質が高いタイプだ。"
+    },
+    {
+      "id": "sheesha_day6",
+      "day": 6,
+      "author": "adam",
+      "text": "ダブルアップル",
+      "insight_bonus_text": "ここまで一本化してるなら、逆に崩しづらい。"
+    }
+  ]
+}

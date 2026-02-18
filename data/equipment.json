@@ -1,0 +1,18 @@
+{
+  "equipment": [
+    {
+      "id": "funnel_bowl",
+      "type": "bowl",
+      "name": "ファンネルボウル",
+      "price": 5000,
+      "value": "funnel"
+    },
+    {
+      "id": "kaloud_hms",
+      "type": "hms",
+      "name": "カロードHMS",
+      "price": 8000,
+      "value": "kaloud"
+    }
+  ]
+}

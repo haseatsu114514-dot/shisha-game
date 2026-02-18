@@ -1,0 +1,194 @@
+extends Control
+
+signal dialogue_finished(dialogue_id: String)
+
+@export var dialogue_file: String = "res://data/dialogue/ch1_main.json"
+@export var dialogue_id: String = ""
+@export var next_scene_path: String = ""
+
+@onready var speaker_label: Label = %SpeakerLabel
+@onready var text_label: RichTextLabel = %TextLabel
+@onready var choice_container: VBoxContainer = %ChoiceContainer
+@onready var advance_button: Button = %AdvanceButton
+@onready var typing_timer: Timer = %TypingTimer
+
+var _line_queue: Array = []
+var _branches: Dictionary = {}
+var _metadata: Dictionary = {}
+
+var _is_typing := false
+var _full_text := ""
+var _current_char := 0
+var _current_speaker := ""
+
+const SPEAKER_NAMES := {
+	"hajime": "はじめ",
+	"sumi": "スミさん",
+	"nishio": "にしお",
+	"adam": "アダム",
+	"ryuji": "リュウジ",
+	"tsumugi": "つむぎ",
+	"packii": "パッキー"
+}
+
+
+func _ready() -> void:
+	advance_button.pressed.connect(_on_advance_button_pressed)
+	typing_timer.timeout.connect(_on_typing_timer_timeout)
+	_load_dialogue_request_if_exists()
+	if not _load_dialogue_data():
+		text_label.text = "会話データを読み込めませんでした。"
+		advance_button.text = "戻る"
+		advance_button.disabled = false
+		return
+	_show_next_line()
+
+
+func _load_dialogue_request_if_exists() -> void:
+	var queued := GameManager.pop_queued_dialogue()
+	if queued.is_empty():
+		return
+	dialogue_file = str(queued.get("file", dialogue_file))
+	dialogue_id = str(queued.get("id", dialogue_id))
+	next_scene_path = str(queued.get("next_scene", next_scene_path))
+	_metadata = queued.get("metadata", {})
+
+
+func _load_dialogue_data() -> bool:
+	if dialogue_id == "":
+		return false
+	if not FileAccess.file_exists(dialogue_file):
+		return false
+
+	var file := FileAccess.open(dialogue_file, FileAccess.READ)
+	if file == null:
+		return false
+
+	var parsed := JSON.parse_string(file.get_as_text())
+	file.close()
+	if typeof(parsed) != TYPE_DICTIONARY:
+		return false
+
+	var target_dialogue := _find_dialogue(parsed, dialogue_id)
+	if target_dialogue.is_empty():
+		return false
+
+	_line_queue = target_dialogue.get("lines", []).duplicate(true)
+	_branches = target_dialogue.get("branches", {}).duplicate(true)
+	return true
+
+
+func _find_dialogue(root: Dictionary, target_id: String) -> Dictionary:
+	if root.has("dialogues"):
+		for item in root["dialogues"]:
+			if str(item.get("dialogue_id", "")) == target_id:
+				return item
+	if str(root.get("dialogue_id", "")) == target_id:
+		return root
+	return {}
+
+
+func _on_advance_button_pressed() -> void:
+	if _is_typing:
+		_show_full_text_immediately()
+		return
+	if choice_container.get_child_count() > 0:
+		return
+	_show_next_line()
+
+
+func _show_next_line() -> void:
+	if _line_queue.is_empty():
+		_finish_dialogue()
+		return
+
+	var line: Dictionary = _line_queue.pop_front()
+	if str(line.get("type", "")) == "choice":
+		_show_choices(line.get("choices", []))
+		return
+
+	_clear_choices()
+	_current_speaker = str(line.get("speaker", ""))
+	speaker_label.text = SPEAKER_NAMES.get(_current_speaker, _current_speaker)
+	_start_typing(str(line.get("text", "")))
+
+
+func _start_typing(text: String) -> void:
+	_full_text = text
+	_current_char = 0
+	text_label.text = ""
+	_is_typing = true
+	advance_button.disabled = false
+	advance_button.text = "早送り"
+
+	var cps := float(30.0)
+	if FileAccess.file_exists("user://settings.cfg"):
+		var cfg := ConfigFile.new()
+		if cfg.load("user://settings.cfg") == OK:
+			cps = float(cfg.get_value("text", "speed", 30.0))
+	cps = clampf(cps, 10.0, 120.0)
+	typing_timer.wait_time = 1.0 / cps
+	typing_timer.start()
+
+
+func _on_typing_timer_timeout() -> void:
+	if not _is_typing:
+		return
+	_current_char += 1
+	if _current_char >= _full_text.length():
+		_show_full_text_immediately()
+		return
+	text_label.text = _full_text.substr(0, _current_char)
+
+
+func _show_full_text_immediately() -> void:
+	_is_typing = false
+	typing_timer.stop()
+	text_label.text = _full_text
+	advance_button.text = "次へ"
+
+
+func _show_choices(choices: Array) -> void:
+	_clear_choices()
+	advance_button.disabled = true
+	advance_button.text = "選択"
+	for choice in choices:
+		var button := Button.new()
+		button.text = str(choice.get("text", "選択肢"))
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.pressed.connect(_on_choice_selected.bind(str(choice.get("next", ""))))
+		choice_container.add_child(button)
+
+
+func _on_choice_selected(branch_key: String) -> void:
+	_clear_choices()
+	advance_button.disabled = false
+	advance_button.text = "次へ"
+	if _branches.has(branch_key):
+		var branch_lines: Array = _branches[branch_key]
+		for i in range(branch_lines.size() - 1, -1, -1):
+			_line_queue.push_front(branch_lines[i])
+	_show_next_line()
+
+
+func _clear_choices() -> void:
+	for child in choice_container.get_children():
+		child.queue_free()
+
+
+func _finish_dialogue() -> void:
+	emit_signal("dialogue_finished", dialogue_id)
+
+	if _metadata.has("set_flag"):
+		EventFlags.set_flag(str(_metadata["set_flag"]))
+	if _metadata.has("morning_notice"):
+		GameManager.set_transient("morning_notice", _metadata["morning_notice"])
+
+	if dialogue_id == "ch1_opening":
+		EventFlags.set_flag("ch1_sumi_tournament_talk", true)
+
+	if next_scene_path != "":
+		get_tree().change_scene_to_file(next_scene_path)
+		return
+
+	get_tree().change_scene_to_file("res://scenes/daily/map.tscn")

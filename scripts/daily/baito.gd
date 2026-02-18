@@ -1,0 +1,256 @@
+extends Control
+
+@onready var header_label: Label = %HeaderLabel
+@onready var body_label: RichTextLabel = %BodyLabel
+@onready var menu_container: VBoxContainer = %MenuContainer
+@onready var choice_container: VBoxContainer = %ChoiceContainer
+@onready var back_button: Button = %BackButton
+
+var _events: Array = []
+var _event_queue: Array = []
+var _current_event: Dictionary = {}
+var _shift_salary: int = 0
+
+
+func _ready() -> void:
+	back_button.pressed.connect(_on_back_button_pressed)
+	_load_events()
+	_show_main_menu()
+
+
+func _load_events() -> void:
+	if not FileAccess.file_exists("res://data/baito_events.json"):
+		_events = []
+		return
+	var file := FileAccess.open("res://data/baito_events.json", FileAccess.READ)
+	if file == null:
+		_events = []
+		return
+	var parsed := JSON.parse_string(file.get_as_text())
+	file.close()
+	if typeof(parsed) != TYPE_DICTIONARY:
+		_events = []
+		return
+	_events = parsed.get("events", [])
+
+
+func _show_main_menu() -> void:
+	header_label.text = "チルハウス"
+	body_label.text = "何をする？"
+	_clear_buttons(menu_container)
+	_clear_buttons(choice_container)
+	_add_menu_button("バイトする", "work_menu")
+	_add_menu_button("練習する", "practice")
+	_add_menu_button("スミさんと話す", "talk_sumi")
+	_add_menu_button("戻る", "return")
+
+
+func _add_menu_button(text: String, action: String) -> void:
+	var button := Button.new()
+	button.text = text
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.pressed.connect(_on_menu_selected.bind(action))
+	menu_container.add_child(button)
+
+
+func _on_menu_selected(action: String) -> void:
+	match action:
+		"work_menu":
+			_show_shift_menu()
+		"work_normal":
+			_start_shift(false)
+		"work_busy":
+			_start_shift(true)
+		"work_back":
+			_show_main_menu()
+		"practice":
+			_do_practice()
+		"talk_sumi":
+			_do_sumi_talk()
+		"return":
+			get_tree().change_scene_to_file("res://scenes/daily/map.tscn")
+
+
+func _show_shift_menu() -> void:
+	body_label.text = "シフトを選んでください"
+	_clear_buttons(menu_container)
+	_add_menu_button("通常シフト（+8000円 / イベント1-2）", "work_normal")
+	_add_menu_button("忙しい日（+12000円 / イベント3-4）", "work_busy")
+	_add_menu_button("戻る", "work_back")
+
+
+func _start_shift(is_busy: bool) -> void:
+	if not CalendarManager.use_action():
+		body_label.text = "行動コマがありません。"
+		_show_main_menu()
+		return
+
+	_shift_salary = 12000 if is_busy else 8000
+	PlayerData.add_money(_shift_salary)
+	GameManager.log_money_change(_shift_salary)
+
+	var event_count := randi_range(3, 4) if is_busy else randi_range(1, 2)
+	_event_queue = _pick_events(event_count)
+	body_label.text = "シフト開始！"
+	_show_next_event()
+
+
+func _pick_events(count: int) -> Array:
+	var available: Array = []
+	for event in _events:
+		if _can_trigger_event(event):
+			available.append(event)
+
+	var selected: Array = []
+	if CalendarManager.current_day == 1 and not EventFlags.get_flag("ch1_tsumugi_regular"):
+		for event in available:
+			if str(event.get("id", "")) == "baito_tsumugi_01":
+				selected.append(event)
+				available.erase(event)
+				break
+
+	available.shuffle()
+	for event in available:
+		if selected.size() >= count:
+			break
+		selected.append(event)
+	return selected
+
+
+func _can_trigger_event(event: Dictionary) -> bool:
+	var trigger_flag := str(event.get("trigger_flag", ""))
+	if trigger_flag == "":
+		return true
+	if trigger_flag.begins_with("!"):
+		return not EventFlags.get_flag(trigger_flag.trim_prefix("!"))
+	return EventFlags.get_flag(trigger_flag)
+
+
+func _show_next_event() -> void:
+	_clear_buttons(choice_container)
+	if _event_queue.is_empty():
+		_finish_shift()
+		return
+
+	_current_event = _event_queue.pop_front()
+	body_label.text = str(_current_event.get("text", ""))
+	for choice in _current_event.get("choices", []):
+		var button := Button.new()
+		button.text = str(choice.get("text", "選択肢"))
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.pressed.connect(_on_event_choice_selected.bind(choice))
+		choice_container.add_child(button)
+
+
+func _on_event_choice_selected(choice: Dictionary) -> void:
+	_clear_buttons(choice_container)
+	_apply_choice_result(choice)
+	body_label.text = str(choice.get("result", ""))
+	var next_button := Button.new()
+	next_button.text = "次へ"
+	next_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	next_button.pressed.connect(_show_next_event)
+	choice_container.add_child(next_button)
+
+
+func _apply_choice_result(choice: Dictionary) -> void:
+	var stats: Dictionary = choice.get("stats", {})
+	for stat_name in stats.keys():
+		var amount := int(stats[stat_name])
+		PlayerData.add_stat(stat_name, amount)
+		GameManager.log_stat_change(stat_name, amount)
+
+	var money_bonus := int(choice.get("money_bonus", 0))
+	if money_bonus != 0:
+		PlayerData.add_money(money_bonus)
+		GameManager.log_money_change(money_bonus)
+
+	var set_flag := str(_current_event.get("set_flag", ""))
+	if set_flag != "":
+		EventFlags.set_flag(set_flag)
+
+
+func _finish_shift() -> void:
+	header_label.text = "シフト終了"
+	body_label.text = "本日のバイト終了。収入 +%d円" % _shift_salary
+	_clear_buttons(choice_container)
+
+	var done_button := Button.new()
+	done_button.text = "マップへ"
+	done_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	done_button.pressed.connect(_finish_action_flow)
+	choice_container.add_child(done_button)
+
+
+func _do_practice() -> void:
+	if not CalendarManager.use_action():
+		body_label.text = "行動コマがありません。"
+		return
+
+	var options := [
+		{"text": "パッキングの練習をした", "stat": "technique", "amount": 3},
+		{"text": "フレーバーの香りを覚えた", "stat": "sense", "amount": 3}
+	]
+	var selected: Dictionary = options[randi() % options.size()]
+	PlayerData.add_stat(str(selected["stat"]), int(selected["amount"]))
+	GameManager.log_stat_change(str(selected["stat"]), int(selected["amount"]))
+	_show_single_result_and_finish(str(selected["text"]))
+
+
+func _do_sumi_talk() -> void:
+	if not CalendarManager.use_action():
+		body_label.text = "行動コマがありません。"
+		return
+
+	if CalendarManager.current_day == 5 and not EventFlags.get_flag("ch1_day5_sumi_story"):
+		EventFlags.set_flag("ch1_day5_sumi_story")
+		CalendarManager.advance_time()
+		GameManager.queue_dialogue(
+			"res://data/dialogue/ch1_main.json",
+			"ch1_day5_sumi_story",
+			"res://scenes/daily/map.tscn"
+		)
+		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+		return
+
+	var text := "スミさんと話した。"
+	if CalendarManager.current_day == 1:
+		text = "スミさん「昼と夜で行動は2回だ。動き方を考えろ」"
+		EventFlags.set_flag("ch1_sumi_tournament_talk")
+		PlayerData.add_stat("insight", 2)
+		GameManager.log_stat_change("insight", 2)
+	elif CalendarManager.current_day >= 3:
+		text = "スミさんから温度管理のコツを教わった。"
+		PlayerData.add_stat("technique", 2)
+		PlayerData.add_stat("insight", 1)
+		GameManager.log_stat_change("technique", 2)
+		GameManager.log_stat_change("insight", 1)
+
+	_show_single_result_and_finish(text)
+
+
+func _finish_action_flow() -> void:
+	CalendarManager.advance_time()
+	if CalendarManager.current_time == "midnight":
+		get_tree().change_scene_to_file("res://scenes/daily/night_end.tscn")
+		return
+	get_tree().change_scene_to_file("res://scenes/daily/map.tscn")
+
+
+func _show_single_result_and_finish(text: String) -> void:
+	body_label.text = text
+	_clear_buttons(choice_container)
+	var button := Button.new()
+	button.text = "次へ"
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.pressed.connect(_finish_action_flow)
+	choice_container.add_child(button)
+
+
+func _on_back_button_pressed() -> void:
+	get_tree().change_scene_to_file("res://scenes/daily/map.tscn")
+
+
+func _clear_buttons(container: VBoxContainer) -> void:
+	for child in container.get_children():
+		child.queue_free()

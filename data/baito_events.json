@@ -1,0 +1,153 @@
+{
+  "events": [
+    {
+      "id": "baito_beginner_01",
+      "category": "beginner",
+      "text": "若い女性客「初めてなんですけど、何がおすすめですか？」",
+      "choices": [
+        {
+          "text": "「とりあえずダブルアップルで」",
+          "result": "無難な提案。お客さんは満足した。",
+          "stats": {"sense": 1, "insight": 1},
+          "money_bonus": 0
+        },
+        {
+          "text": "「普段どんな飲み物が好きですか？」",
+          "result": "会話からマンゴー系を提案。「美味しい！」と喜ばれた。",
+          "stats": {"sense": 3, "insight": 3},
+          "money_bonus": 500
+        },
+        {
+          "text": "「今日の気分はどんな感じですか？」",
+          "result": "気分に合わせた提案。「なんで分かるんですか！？」と驚かれた。",
+          "stats": {"sense": 2, "insight": 5},
+          "money_bonus": 500
+        }
+      ]
+    },
+    {
+      "id": "baito_trouble_01",
+      "category": "trouble",
+      "text": "サラリーマン客「すみません、全然煙出ないんですけど」",
+      "choices": [
+        {
+          "text": "炭の位置を確認する",
+          "result": "炭がズレていた。位置を直すと煙が復活。「ありがとう！」",
+          "stats": {"technique": 3, "guts": 1},
+          "money_bonus": 0
+        },
+        {
+          "text": "パッキングを確認する",
+          "result": "詰めすぎて空気が通ってなかった。作り直して解決。",
+          "stats": {"technique": 5},
+          "money_bonus": 0
+        },
+        {
+          "text": "スミさんに聞く",
+          "result": "スミさんが一瞬で解決。「自分で判断できるようになれ」と言われた。",
+          "stats": {"technique": 1},
+          "money_bonus": 0
+        }
+      ]
+    },
+    {
+      "id": "baito_rush_01",
+      "category": "rush",
+      "text": "3卓同時に「炭替えてください！」のコール！",
+      "choices": [
+        {
+          "text": "落ち着いて1卓ずつ対応",
+          "result": "時間はかかったが全卓ミスなし。「丁寧だね」と褒められた。",
+          "stats": {"technique": 3, "guts": 2},
+          "money_bonus": 0
+        },
+        {
+          "text": "全速力で3卓同時に回る",
+          "result": "ギリギリ間に合った！でも1卓の炭の置き方が雑に…",
+          "stats": {"technique": 2, "guts": 5},
+          "money_bonus": 0
+        }
+      ]
+    },
+    {
+      "id": "baito_mob_flavor_police",
+      "category": "mob",
+      "trigger_flag": "!ch1_flavor_police_event",
+      "set_flag": "ch1_flavor_police_event",
+      "text": "眼鏡のおじさん「このフレーバー、認可取れてる？成分表見せて」",
+      "choices": [
+        {
+          "text": "「はい、こちらです」（正規品の書類を見せる）",
+          "result": "おじさん「…ふん、ちゃんとしてるじゃないか」と帰った。",
+          "stats": {"insight": 3},
+          "money_bonus": 0
+        },
+        {
+          "text": "「スミさーん！！」（店長に丸投げ）",
+          "result": "スミさんが対応。「自分で対応できるようになれ」と言われた。",
+          "stats": {"insight": 1},
+          "money_bonus": 0
+        }
+      ]
+    },
+    {
+      "id": "baito_mob_insta",
+      "category": "mob",
+      "text": "派手な女性客がシーシャの写真を撮り続けている。一口も吸わない。",
+      "choices": [
+        {
+          "text": "「煙出しましょうか？映えますよ」",
+          "result": "「えっ、いいの！？ ありがとう！」写真を撮ってSNSに投稿してくれた。",
+          "stats": {"charm": 3},
+          "money_bonus": 0
+        },
+        {
+          "text": "そっとしておく",
+          "result": "しばらくして帰った。炭がもったいなかった。",
+          "stats": {},
+          "money_bonus": 0
+        }
+      ]
+    },
+    {
+      "id": "baito_regular_01",
+      "category": "regular",
+      "text": "常連のおっちゃん「おう、いつもの」",
+      "choices": [
+        {
+          "text": "ダブルアップルにミント少し、ですよね",
+          "result": "「覚えてくれてたか！嬉しいねえ」常連の信頼度UP。",
+          "stats": {"insight": 5, "charm": 2},
+          "money_bonus": 500
+        },
+        {
+          "text": "「えっと…いつものって何でしたっけ」",
+          "result": "「…お前新人か？」少し残念そうな顔をされた。",
+          "stats": {"insight": 1},
+          "money_bonus": 0
+        }
+      ]
+    },
+    {
+      "id": "baito_tsumugi_01",
+      "category": "story",
+      "trigger_flag": "!ch1_tsumugi_regular",
+      "set_flag": "ch1_tsumugi_regular",
+      "text": "いつもの席に眼鏡の女の子がいる。iPadで絵を描きながらシーシャを吸っている。",
+      "choices": [
+        {
+          "text": "「いらっしゃいませ。いつもありがとうございます」",
+          "result": "つむぎ「…どうも」（小さい声）。いつもの注文を作った。",
+          "stats": {"charm": 2, "insight": 2},
+          "money_bonus": 0
+        },
+        {
+          "text": "「何描いてるんですか？」",
+          "result": "つむぎ「…えっ…べ、別に…」照れて画面を隠した。少し仲良くなった。",
+          "stats": {"charm": 3, "insight": 3},
+          "money_bonus": 0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "ch1_adam_first",
+      "lines": [
+        {"speaker": "adam", "face": "silent", "text": "…何か用か"}
+      ]
+    }
+  ]
+}
