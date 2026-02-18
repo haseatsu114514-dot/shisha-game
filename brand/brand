@@ -55,21 +55,6 @@
 
 ## 第1章 スコープ
 
-### 登場キャラ
-
-| キャラ | 役割 | LIME交換 |
-|--------|------|----------|
-| 蒸野はじめ | 主人公 | - |
-| 炭場丈一郎（スミさん） | 師匠/店長 | - |
-| 甘田仁志（にしお） | ライバル① | ○ |
-| 林檎堂アダム | ライバル② | ○（2回目以降） |
-| 火龍寺仁（リュウジ） | ライバル③ | ○（初回から） |
-| 雲居つむぎ | ヒロイン/常連客 | ×（1章では未交換） |
-| パッキー | マスコット | - |
-| 焚口ショウ | MC | - |
-| 土岐鋼鉄 | 審査員（固定枠） | - |
-| モブ客数種 | バイトイベント | - |
-
 ### 1章のマップ
 
 ```
@@ -78,10 +63,10 @@
 
 スポット：
   📍 チルハウス（バイト先）─ バイト / 練習 / スミさん
-  📍 シーシャショップ「SMOKE SUPPLY」─ フレーバー・機材購入
-  📍 にしおの店「Sweet Haze」─ 偵察・交流
-  📍 アダムの店「Apple Core」─ 偵察・交流
-  📍 リュウジの店「龍煙」─ 偵察・交流
+  📍 シーシャショップ「Dr.SMOKE」─ フレーバー・機材購入
+  📍 鳴切の店「ケムリクサ」─ 偵察・交流
+  📍 アダムの店「Eden」─ 偵察・交流
+  📍 リュウジの店「龍龍水煙所」─ 偵察・交流
   📍 自宅 ─ 寝る（夜のみ）
 
 ※Day1はチルハウスとショップのみ。Day2以降にライバル店解放
@@ -181,13 +166,13 @@
 
 | 機材 | 価格 | 効果 |
 |------|------|------|
-| ファンネルボウル | 💰5,000 | パッキング精度+補正 |
-| カロードHMS | 💰8,000 | 温度管理+補正 |
+| ファンネルボウル | 💰4,000 | パッキング精度+補正 |
+| ターキッシュHMS | 💰2,000 | 温度管理+補正 |
 
 ### 偵察システム
 
 ```
-ライバルの店を訪問すると情報が得られる（💰2,000/回）
+ライバルの店を訪問すると情報が得られる（💰3,000/回）
 
 偵察1回目 → フレーバーの系統
 偵察2回目 → 具体的なフレーバー名
@@ -196,9 +181,9 @@
 洞察ステータスが高いと1回で多く分かる
 
 1章のライバル情報：
-  にしお → お菓子系 → チョコレート＋バニラ
+  鳴切 → お菓子系 → チョコレート＋バニラ
   アダム → ダブルアップル一本（初回で確定。偵察不要）
-  リュウジ → スパイス系 → ダブルアップル＋シナモン
+  リュウジ → スパイス系 → ドラゴンフルーツ＋ミント
 ```
 
 ### フレーバー被りシステム
@@ -212,7 +197,7 @@
 
 ---
 
-## SNS「Sheesha」
+## SNS「SNS(そのままの名前で)」
 
 ```
 Xのパロディ。投稿＝「パフ」、いいね＝💨、リポスト＝「リパフ」
@@ -247,8 +232,7 @@ Day6：
 ```
 LINEのパロディ。アイコンは緑のライム断面
 交流したキャラとLIME交換→トーク解放
-朝のスマホチェックでDM確認
-パッキーのスタンプがデフォルトで入ってる
+朝のスマホチェックでメッセージ確認
 ```
 
 ### 基本仕様
@@ -496,150 +480,6 @@ B. ツッコミ切り返し（3択・制限時間5秒）
 
 ---
 
-## キャラクター詳細（1章登場）
-
-### 蒸野 はじめ（むしの はじめ）【主人公】
-
-```
-年齢：21歳、大学3年生
-職業：シーシャ屋「チルハウス」バイト店員
-性格：温厚、流されやすい、「面白い」への集中力だけ異常
-特技：相手が何を求めてるか感じ取るカウンセリング力
-バイト歴：1年半
-きっかけ：「同じに作ったのに味が違う…なんで？」で沼に
-名前由来：蒸＝蒸らし。はじめ＝始まり
-
-見た目メモ（AI生成用）：
-  茶色のくしゃっとした髪、優しい目、カジュアルTシャツ＋エプロン
-```
-
-### 炭場 丈一郎（すみば じょういちろう）【師匠/店長】
-
-```
-年齢：38歳
-職業：「チルハウス」オーナー。通称「スミさん」
-性格：普段ゆるいがシーシャの話になると目つきが変わる
-背景：元・日本大会準優勝者。怪我で引退。はじめに夢を託す
-名言：「お前の煙は"優しい"んだよ。それが武器だ」
-名前由来：炭＝チャコール。丈＝情熱の丈
-1章の役割：大会を勧める、バイト後にスキル伝授、ストーリーの導き手
-
-見た目メモ：
-  がっしり体型、無精ひげ、バンダナ、ゆるいシャツ、目が鋭い
-```
-
-### 甘田 仁志（あまだ ひとし）/ 通称：にしお【ライバル①】
-
-```
-年齢：21歳
-職業：隣町のシーシャ屋「Sweet Haze」バイト
-性格：チャラいが根は真面目。主人公の一番の好敵手
-特技：お菓子系フレーバー特化。フルーツ系は壊滅
-名言：「シーシャって"不要不急の極み"じゃん？それを極めるのが最高にかっこいい」
-名前由来：甘田＝甘い。にしお＝「西荻窪のシーシャ屋のヤツ」が縮まった
-1章の役割：宣戦布告→ライバルとして成長→地方大会で激突
-ゲーム特徴：お菓子系。パッキング配合はチョコレート＋バニラ系
-
-見た目メモ：
-  明るい髪色、ピアス、カジュアルなパーカー、チャラめだけど目は真剣
-```
-
-### 林檎堂 アダム（りんごどう あだむ）【ライバル②】
-
-```
-年齢：27歳
-職業：シーシャ屋「Apple Core」店主
-性格：寡黙。ダブルアップル以外に興味なし。目がちょっとイッてる
-特技：ダブルアップルだけで全味を出し分ける
-名言：「また…ダブルアップルですか」→「ああ。でも昨日のダブルアップルとは違う」
-名前由来：林檎＝ダブルアップル。アダム＝禁断の果実。堂＝求道者
-1章の役割：狂気の一本勝負を見せつける存在
-ゲーム特徴：ダブルアップル12g全振り。炭配置とヒートマネジメントが異常
-
-見た目メモ：
-  髪が左半分青リンゴの緑、右半分赤リンゴの赤。目がちょっとイッてる。黒い服
-```
-
-### 火龍寺 仁（かりゅうじ じん）/ 通称：リュウジ【ライバル③】
-
-```
-年齢：32歳
-職業：シーシャ屋「龍煙」店主。元暴走族総長
-性格：熱血。見た目怖いが泣き虫で情に厚い
-特技：パッキングが繊細（バイク整備で培った器用さ）
-名言：「シーシャにも魂を込めるんだよ！！」
-名前由来：火龍＝炭の火＋龍の煙。寺＝一家感
-1章の役割：兄貴分的ライバル。初対面からフレンドリー
-ゲーム特徴：パッキングスコア全キャラ最高。スパイス系
-
-見た目メモ：
-  特攻服に「煙道一直線」の刺繍。スキンヘッドに近い短髪。体格よい。でも笑顔は優しい
-```
-
-### 雲居 つむぎ（くもい つむぎ）【ヒロイン/常連客】
-
-```
-年齢：21歳
-職業：フリーランスイラストレーター
-性格：人見知り。シーシャの話になると饒舌。感想が正直すぎる
-特技：味覚が鋭い。はじめの成長に最初に気づく
-名言：「今日のシーシャ、なんか迷ってる味がする」
-名前由来：雲居＝煙のいる場所。つむぎ＝紡ぐ
-1章の役割：バイトイベントで登場。まだ深い交流はない。伏線程度
-
-見た目メモ：
-  ゆるいパーカー、眼鏡、ショートボブ、iPadを常に持ってる。地味だがよく見るとかわいい
-```
-
-### パッキー【マスコット/モノクマ枠】
-
-```
-デザイン：
-  二頭身のまんまるい白いマスコット
-  頭のてっぺんからちょろっと煙が出てる
-  目はまんまるの黒い点2つ
-  口はないか、喋る時だけ小さく開く
-  お腹にシーシャボウルの小さいアイコン（ワンポイント）
-  白or淡い水色の体色
-  短い丸い手足、指なし
-  ぬいぐるみ的テクスチャ
-
-性格：
-  丁寧語だが煽りがえげつない
-  「はーい♪ さっきの人のシーシャ、もう冷めちゃいましたね♪ 残念♪」
-  正体不明（続編フラグ）
-  煙で感情表現：通常ゆらゆら、煽り時もくもく、超レアで虹色
-
-名前由来：パッキング
-```
-
-### 焚口 ショウ（たきぐち しょう）【MC】
-
-```
-年齢：33歳。元お笑い芸人→シーシャイベントMC
-性格：熱血実況。パッキーへのツッコミ担当
-名言：「蒸らし入りましたー！まだ待つ！ここだー！！吸い出しー！！」
-名前由来：焚口＝炭に火をつける場所。ショウ＝Show
-
-見た目メモ：
-  テンション高そうなイケメン。マイク持ってる。スーツ＋ゆるいネクタイ
-```
-
-### 土岐 鋼鉄（とき こうてつ）【審査員】
-
-```
-年齢：58歳。シーシャ黎明期からの重鎮。都内5店舗経営
-性格：一口でフレーバー配合比率を当てる。表情が一切変わらない
-名言：「悪くない」（最高評価）「論外」（最低）
-名前由来：土岐＝器。鋼鉄＝鉄の舌
-調整ミニゲームでの特性：ほぼポーカーフェイス。最難関
-
-見た目メモ：
-  白髪混じりの短髪。和装っぽい渋い服。無表情。威圧感
-```
-
----
-
 ## 1章ストーリー
 
 ### テーマ：「なんとなく始めた」→シーシャと出会い直す
@@ -683,7 +523,6 @@ B. ツッコミ切り返し（3択・制限時間5秒）
   A 最後の練習をする → 技術or感覚+微UP
   B スミさんと話す → 度胸UP＋ストーリー
   C 早く寝る → 翌日コンディションボーナス
-  D にしおに電話 → 「明日、全力でやろうぜ」度胸UP
 ```
 
 ### Day8 大会（1章のスコープとしてはTo be continued）
@@ -712,186 +551,11 @@ Day8到達時は「いよいよ大会当日！」→「To be continued...」表�
 ロードのたびにランダム表示
 
 1章に関連するTips例：
-・ダブルアップルの"ダブル"＝赤リンゴと青リンゴの2種
+・ダブルアップルはアニスとリコリスでりんごを再現したフレーバーで実はスパイス系
 ・パージ＝ホースから逆に息を吹いて古い煙を抜く操作
 ・ココナッツチャコール＝ヤシの殻から作られた炭
-・パッキングは詰めすぎても緩すぎてもダメ
 ・ヒートマネジメントの蓋を開けると温度が下がる
-・フレーバーは少量で強い味が出るものと、多めに入れるベース系がある
 ・パッキーの独り言（レア）：「ボクがなぜ大会を仕切ってるか？…内緒です♪」
-```
-
----
-
-## 画像アセット ファイル名一覧
-
-### キャラ立ち絵（384×768px）
-
-```
-# はじめ
-chr_hajime_normal.png
-chr_hajime_smile.png
-chr_hajime_serious.png
-chr_hajime_surprise.png
-chr_hajime_sad.png
-
-# スミさん
-chr_sumi_normal.png
-chr_sumi_smile.png
-chr_sumi_serious.png
-chr_sumi_thinking.png
-
-# にしお
-chr_nishio_normal.png
-chr_nishio_smile.png
-chr_nishio_fired_up.png
-chr_nishio_sad.png
-
-# アダム
-chr_adam_normal.png
-chr_adam_intense.png
-chr_adam_silent.png
-
-# リュウジ
-chr_ryuji_normal.png
-chr_ryuji_shout.png
-chr_ryuji_cry.png
-chr_ryuji_grin.png
-
-# つむぎ
-chr_tsumugi_normal.png
-chr_tsumugi_shy.png
-chr_tsumugi_focus.png
-
-# パッキー
-chr_packii_normal.png
-chr_packii_smoke.png
-chr_packii_angry.png
-
-# 焚口ショウ
-chr_takiguchi_normal.png
-chr_takiguchi_shout.png
-chr_takiguchi_smile.png
-
-# 土岐鋼鉄
-chr_toki_normal.png
-chr_toki_slight_nod.png
-```
-
-### 顔アイコン（64×64px）
-
-```
-face_hajime.png
-face_sumi.png
-face_nishio.png
-face_adam.png
-face_ryuji.png
-face_tsumugi.png
-face_packii.png
-face_takiguchi.png
-face_toki.png
-face_mob_customer.png
-face_mob_regular.png
-face_mob_flavor_police.png
-face_mob_insta.png
-```
-
-### 背景（1280×720px）
-
-```
-bg_title.png
-bg_chillhouse_inside.png
-bg_chillhouse_outside.png
-bg_shop.png
-bg_nishio_shop.png
-bg_adam_shop.png
-bg_ryuji_shop.png
-bg_home.png
-bg_street_day.png
-bg_street_night.png
-bg_map_local.png
-bg_tournament_stage.png
-```
-
-### UI素材
-
-```
-ui_phone_frame.png
-ui_lime_bg.png
-ui_lime_icon.png
-ui_lime_bubble_left.png
-ui_lime_bubble_right.png
-ui_sheesha_bg.png
-ui_sheesha_icon.png
-ui_dialogue_box.png
-ui_dialogue_namebox.png
-ui_status_bg.png
-ui_status_radar.png
-ui_hud_calendar.png
-ui_hud_money.png
-ui_hud_action.png
-ui_button_normal.png
-ui_button_hover.png
-ui_button_pressed.png
-ui_map_pin.png
-ui_map_pin_event.png
-ui_invitation_mark.png
-ui_stamp_packii_ok.png
-ui_stamp_packii_cry.png
-ui_stamp_packii_angry.png
-ui_stamp_packii_sleep.png
-ui_title_logo.png
-ui_title_packii.png
-```
-
----
-
-## セーブデータ構造
-
-```json
-{
-  "save_version": 1,
-  "chapter": 1,
-  "day": 3,
-  "time": "night",
-  "actions_remaining": 0,
-  "player_data": {
-    "stats": {
-      "technique": 13,
-      "sense": 16,
-      "guts": 12,
-      "charm": 17,
-      "insight": 28
-    },
-    "money": 9500,
-    "flavor_inventory": [
-      {"id": "double_apple", "name": "ダブルアップル", "amount": 2},
-      {"id": "mint", "name": "ミント", "amount": 1}
-    ],
-    "equipment_hms": "normal",
-    "equipment_bowl": "standard",
-    "recipe_note": [],
-    "unlocked_cards": []
-  },
-  "affinities": {
-    "nishio": {"level": 8, "lime_exchanged": true, "met": true},
-    "adam": {"level": 2, "lime_exchanged": false, "met": true},
-    "ryuji": {"level": 10, "lime_exchanged": true, "met": true},
-    "tsumugi": {"level": 3, "lime_exchanged": false, "met": true}
-  },
-  "rival_intel": {
-    "nishio": {"flavor_genre": "sweets", "flavor_detail": "", "presentation": ""},
-    "adam": {"flavor_genre": "double_apple", "flavor_detail": "double_apple_only", "presentation": ""},
-    "ryuji": {"flavor_genre": "", "flavor_detail": "", "presentation": ""}
-  },
-  "event_flags": {
-    "ch1_sumi_first_talk": true,
-    "ch1_nishio_met": true,
-    "ch1_adam_met": true,
-    "ch1_ryuji_met": true,
-    "ch1_tsumugi_regular": true
-  }
-}
 ```
 
 ---
@@ -917,7 +581,3 @@ ui_title_packii.png
 
 ④ 表情差分は「体共通＋顔だけ差し替え」方式で効率化
 ```
-
----
-
-以上。第1章のブランドファイルです。
