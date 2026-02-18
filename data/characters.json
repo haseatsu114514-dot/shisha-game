@@ -6,6 +6,8 @@
     {"id": "adam", "name": "アダム", "role": "rival"},
     {"id": "ryuji", "name": "リュウジ", "role": "rival"},
     {"id": "tsumugi", "name": "つむぎ", "role": "regular"},
-    {"id": "packii", "name": "パッキー", "role": "mascot"}
+    {"id": "packii", "name": "パッキー", "role": "mascot"},
+    {"id": "kirara", "name": "きらら", "role": "rival"},
+    {"id": "ageha", "name": "あげは", "role": "rival"}
   ]
 }
