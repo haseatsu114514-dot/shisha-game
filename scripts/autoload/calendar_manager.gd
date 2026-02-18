@@ -9,6 +9,25 @@ var max_days: int = 7
 var actions_remaining: int = 2
 var tournament_day: int = 8
 
+const WEATHER_LABELS: Dictionary = {
+	"sunny": "晴れ",
+	"cloudy": "くもり",
+	"rainy": "雨",
+}
+
+const WEATHER_SCHEDULE: Dictionary = {
+	1: "sunny",
+	2: "cloudy",
+	3: "rainy",
+	4: "cloudy",
+	5: "rainy",
+	6: "cloudy",
+	7: "sunny",
+	8: "sunny",
+}
+
+const WEEKDAY_LABELS: Array[String] = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]
+
 
 func reset_calendar(new_max_days: int = 7, tournament_day_num: int = 8) -> void:
 	current_day = 1
@@ -64,3 +83,19 @@ func get_display_date() -> String:
 		"midnight":
 			slot_name = "深夜"
 	return "Day %d / %d　%s" % [current_day, max_days, slot_name]
+
+
+func get_weather_id(day: int = -1) -> String:
+	var target_day = current_day if day <= 0 else day
+	return str(WEATHER_SCHEDULE.get(target_day, "sunny"))
+
+
+func get_weather_label(day: int = -1) -> String:
+	var weather_id = get_weather_id(day)
+	return str(WEATHER_LABELS.get(weather_id, "晴れ"))
+
+
+func get_weekday_label(day: int = -1) -> String:
+	var target_day = current_day if day <= 0 else day
+	var index = posmod(target_day - 1, WEEKDAY_LABELS.size())
+	return WEEKDAY_LABELS[index]

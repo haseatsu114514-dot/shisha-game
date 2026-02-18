@@ -24,6 +24,16 @@ text = "Day 1 / 7　朝"
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="WeatherLabel" type="Label" parent="TopBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "天気: 晴れ"
+horizontal_alignment = 1
+
+[node name="Spacer2" type="Control" parent="TopBar/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
 [node name="RemainingDaysLabel" type="Label" parent="TopBar/HBox"]
 unique_name_in_owner = true
 layout_mode = 2

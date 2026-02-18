@@ -1,6 +1,7 @@
 extends CanvasLayer
 
 @onready var date_time_label: Label = %DateTimeLabel
+@onready var weather_label: Label = %WeatherLabel
 @onready var remaining_days_label: Label = %RemainingDaysLabel
 
 
@@ -18,6 +19,7 @@ func _process(_delta: float) -> void:
 
 func _update_labels(_value: Variant = null) -> void:
 	date_time_label.text = CalendarManager.get_display_date()
+	weather_label.text = "天気: %s" % CalendarManager.get_weather_label()
 
 	var remaining_days = CalendarManager.get_remaining_days()
 	if remaining_days <= 0:
