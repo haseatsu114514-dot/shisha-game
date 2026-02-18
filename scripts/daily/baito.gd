@@ -22,11 +22,11 @@ func _load_events() -> void:
 	if not FileAccess.file_exists("res://data/baito_events.json"):
 		_events = []
 		return
-	var file := FileAccess.open("res://data/baito_events.json", FileAccess.READ)
+	var file = FileAccess.open("res://data/baito_events.json", FileAccess.READ)
 	if file == null:
 		_events = []
 		return
-	var parsed := JSON.parse_string(file.get_as_text())
+	var parsed = JSON.parse_string(file.get_as_text())
 	file.close()
 	if typeof(parsed) != TYPE_DICTIONARY:
 		_events = []
@@ -46,7 +46,7 @@ func _show_main_menu() -> void:
 
 
 func _add_menu_button(text: String, action: String) -> void:
-	var button := Button.new()
+	var button = Button.new()
 	button.text = text
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.pressed.connect(_on_menu_selected.bind(action))
@@ -89,7 +89,7 @@ func _start_shift(is_busy: bool) -> void:
 	PlayerData.add_money(_shift_salary)
 	GameManager.log_money_change(_shift_salary)
 
-	var event_count := randi_range(3, 4) if is_busy else randi_range(1, 2)
+	var event_count = randi_range(3, 4) if is_busy else randi_range(1, 2)
 	_event_queue = _pick_events(event_count)
 	body_label.text = "シフト開始！"
 	_show_next_event()
@@ -118,7 +118,7 @@ func _pick_events(count: int) -> Array:
 
 
 func _can_trigger_event(event: Dictionary) -> bool:
-	var trigger_flag := str(event.get("trigger_flag", ""))
+	var trigger_flag = str(event.get("trigger_flag", ""))
 	if trigger_flag == "":
 		return true
 	if trigger_flag.begins_with("!"):
@@ -135,7 +135,7 @@ func _show_next_event() -> void:
 	_current_event = _event_queue.pop_front()
 	body_label.text = str(_current_event.get("text", ""))
 	for choice in _current_event.get("choices", []):
-		var button := Button.new()
+		var button = Button.new()
 		button.text = str(choice.get("text", "選択肢"))
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.pressed.connect(_on_event_choice_selected.bind(choice))
@@ -146,7 +146,7 @@ func _on_event_choice_selected(choice: Dictionary) -> void:
 	_clear_buttons(choice_container)
 	_apply_choice_result(choice)
 	body_label.text = str(choice.get("result", ""))
-	var next_button := Button.new()
+	var next_button = Button.new()
 	next_button.text = "次へ"
 	next_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	next_button.pressed.connect(_show_next_event)
@@ -156,16 +156,16 @@ func _on_event_choice_selected(choice: Dictionary) -> void:
 func _apply_choice_result(choice: Dictionary) -> void:
 	var stats: Dictionary = choice.get("stats", {})
 	for stat_name in stats.keys():
-		var amount := int(stats[stat_name])
+		var amount = int(stats[stat_name])
 		PlayerData.add_stat(stat_name, amount)
 		GameManager.log_stat_change(stat_name, amount)
 
-	var money_bonus := int(choice.get("money_bonus", 0))
+	var money_bonus = int(choice.get("money_bonus", 0))
 	if money_bonus != 0:
 		PlayerData.add_money(money_bonus)
 		GameManager.log_money_change(money_bonus)
 
-	var set_flag := str(_current_event.get("set_flag", ""))
+	var set_flag = str(_current_event.get("set_flag", ""))
 	if set_flag != "":
 		EventFlags.set_flag(set_flag)
 
@@ -175,7 +175,7 @@ func _finish_shift() -> void:
 	body_label.text = "本日のバイト終了。収入 +%d円" % _shift_salary
 	_clear_buttons(choice_container)
 
-	var done_button := Button.new()
+	var done_button = Button.new()
 	done_button.text = "マップへ"
 	done_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	done_button.pressed.connect(_finish_action_flow)
@@ -187,7 +187,7 @@ func _do_practice() -> void:
 		body_label.text = "行動コマがありません。"
 		return
 
-	var options := [
+	var options = [
 		{"text": "パッキングの練習をした", "stat": "technique", "amount": 3},
 		{"text": "フレーバーの香りを覚えた", "stat": "sense", "amount": 3}
 	]
@@ -213,7 +213,7 @@ func _do_sumi_talk() -> void:
 		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		return
 
-	var text := "スミさんと話した。"
+	var text = "スミさんと話した。"
 	if CalendarManager.current_day == 1:
 		text = "スミさん「昼と夜で行動は2回だ。動き方を考えろ」"
 		EventFlags.set_flag("ch1_sumi_tournament_talk")
@@ -240,7 +240,7 @@ func _finish_action_flow() -> void:
 func _show_single_result_and_finish(text: String) -> void:
 	body_label.text = text
 	_clear_buttons(choice_container)
-	var button := Button.new()
+	var button = Button.new()
 	button.text = "次へ"
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.pressed.connect(_finish_action_flow)

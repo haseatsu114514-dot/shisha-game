@@ -55,7 +55,7 @@ func get_remaining_days() -> int:
 
 
 func get_display_date() -> String:
-	var slot_name := "朝"
+	var slot_name = "朝"
 	match current_time:
 		"noon":
 			slot_name = "昼"

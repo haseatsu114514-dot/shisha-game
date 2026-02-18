@@ -16,10 +16,10 @@ var _line_queue: Array = []
 var _branches: Dictionary = {}
 var _metadata: Dictionary = {}
 
-var _is_typing := false
-var _full_text := ""
-var _current_char := 0
-var _current_speaker := ""
+var _is_typing = false
+var _full_text = ""
+var _current_char = 0
+var _current_speaker = ""
 
 const SPEAKER_NAMES := {
 	"hajime": "はじめ",
@@ -45,7 +45,7 @@ func _ready() -> void:
 
 
 func _load_dialogue_request_if_exists() -> void:
-	var queued := GameManager.pop_queued_dialogue()
+	var queued = GameManager.pop_queued_dialogue()
 	if queued.is_empty():
 		return
 	dialogue_file = str(queued.get("file", dialogue_file))
@@ -60,16 +60,16 @@ func _load_dialogue_data() -> bool:
 	if not FileAccess.file_exists(dialogue_file):
 		return false
 
-	var file := FileAccess.open(dialogue_file, FileAccess.READ)
+	var file = FileAccess.open(dialogue_file, FileAccess.READ)
 	if file == null:
 		return false
 
-	var parsed := JSON.parse_string(file.get_as_text())
+	var parsed = JSON.parse_string(file.get_as_text())
 	file.close()
 	if typeof(parsed) != TYPE_DICTIONARY:
 		return false
 
-	var target_dialogue := _find_dialogue(parsed, dialogue_id)
+	var target_dialogue = _find_dialogue(parsed, dialogue_id)
 	if target_dialogue.is_empty():
 		return false
 
@@ -121,9 +121,9 @@ func _start_typing(text: String) -> void:
 	advance_button.disabled = false
 	advance_button.text = "早送り"
 
-	var cps := float(30.0)
+	var cps = float(30.0)
 	if FileAccess.file_exists("user://settings.cfg"):
-		var cfg := ConfigFile.new()
+		var cfg = ConfigFile.new()
 		if cfg.load("user://settings.cfg") == OK:
 			cps = float(cfg.get_value("text", "speed", 30.0))
 	cps = clampf(cps, 10.0, 120.0)
@@ -153,7 +153,7 @@ func _show_choices(choices: Array) -> void:
 	advance_button.disabled = true
 	advance_button.text = "選択"
 	for choice in choices:
-		var button := Button.new()
+		var button = Button.new()
 		button.text = str(choice.get("text", "選択肢"))
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.pressed.connect(_on_choice_selected.bind(str(choice.get("next", ""))))

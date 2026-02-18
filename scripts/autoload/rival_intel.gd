@@ -31,7 +31,7 @@ func get_intel_level(rival_id: String) -> int:
 	if not intel.has(rival_id):
 		return 0
 
-	var level := 0
+	var level = 0
 	for key in intel[rival_id].keys():
 		if str(intel[rival_id].get(key, "")) != "":
 			level += 1

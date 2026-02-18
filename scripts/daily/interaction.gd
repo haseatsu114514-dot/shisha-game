@@ -6,7 +6,7 @@ extends Control
 
 var _target: String = ""
 var _event_id: String = ""
-var _advance_on_exit := false
+var _advance_on_exit = false
 
 
 func _ready() -> void:
@@ -32,7 +32,7 @@ func _ready() -> void:
 
 func _show_nishio_interaction() -> void:
 	header_label.text = "にしおの店"
-	var count := int(EventFlags.get_value("visit_nishio_count", 0))
+	var count = int(EventFlags.get_value("visit_nishio_count", 0))
 	EventFlags.set_value("visit_nishio_count", count + 1)
 
 	if not EventFlags.get_flag("ch1_nishio_met"):
@@ -57,7 +57,7 @@ func _show_nishio_interaction() -> void:
 
 func _show_adam_interaction() -> void:
 	header_label.text = "アダムの店"
-	var count := int(EventFlags.get_value("visit_adam_count", 0))
+	var count = int(EventFlags.get_value("visit_adam_count", 0))
 	EventFlags.set_value("visit_adam_count", count + 1)
 
 	if not EventFlags.get_flag("ch1_adam_met"):
@@ -81,7 +81,7 @@ func _show_adam_interaction() -> void:
 
 func _show_ryuji_interaction() -> void:
 	header_label.text = "リュウジの店"
-	var count := int(EventFlags.get_value("visit_ryuji_count", 0))
+	var count = int(EventFlags.get_value("visit_ryuji_count", 0))
 	EventFlags.set_value("visit_ryuji_count", count + 1)
 
 	if not EventFlags.get_flag("ch1_ryuji_met"):
@@ -121,7 +121,7 @@ func _show_invitation_event(event_id: String) -> void:
 
 
 func _add_option(text: String, action: String, arg: String = "") -> void:
-	var button := Button.new()
+	var button = Button.new()
 	button.text = text
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.pressed.connect(_on_option_pressed.bind(action, arg))

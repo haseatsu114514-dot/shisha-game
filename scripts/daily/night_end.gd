@@ -17,7 +17,7 @@ func _ready() -> void:
 
 
 func _render_summary() -> void:
-	var summary := GameManager.consume_daily_summary()
+	var summary = GameManager.consume_daily_summary()
 	var lines: Array[String] = []
 	lines.append("Day %d 終了" % CalendarManager.current_day)
 	lines.append("")
@@ -44,12 +44,12 @@ func _render_summary() -> void:
 
 
 func _show_day7_choices() -> void:
-	var button1 := Button.new()
+	var button1 = Button.new()
 	button1.text = "深呼吸して寝る（度胸+3）"
 	button1.pressed.connect(_on_day7_choice.bind("guts"))
 	choice_container.add_child(button1)
 
-	var button2 := Button.new()
+	var button2 = Button.new()
 	button2.text = "ノートを見返す（洞察+3）"
 	button2.pressed.connect(_on_day7_choice.bind("insight"))
 	choice_container.add_child(button2)

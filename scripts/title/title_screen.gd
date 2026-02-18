@@ -42,8 +42,8 @@ func _on_close_settings_pressed() -> void:
 
 
 func _load_settings() -> void:
-	var cfg := ConfigFile.new()
-	var err := cfg.load(SETTINGS_PATH)
+	var cfg = ConfigFile.new()
+	var err = cfg.load(SETTINGS_PATH)
 	if err != OK:
 		bgm_slider.value = 0.8
 		se_slider.value = 0.8
@@ -56,7 +56,7 @@ func _load_settings() -> void:
 
 
 func _save_settings() -> void:
-	var cfg := ConfigFile.new()
+	var cfg = ConfigFile.new()
 	cfg.set_value("audio", "bgm", bgm_slider.value)
 	cfg.set_value("audio", "se", se_slider.value)
 	cfg.set_value("text", "speed", text_speed_slider.value)

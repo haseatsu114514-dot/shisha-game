@@ -3,7 +3,7 @@ extends Control
 @onready var info_label: Label = %InfoLabel
 @onready var item_container: VBoxContainer = %ItemContainer
 
-var _advance_on_exit := false
+var _advance_on_exit = false
 
 
 func _ready() -> void:
@@ -33,10 +33,10 @@ func _load_shop_items() -> void:
 func _load_data(path: String, key: String) -> Array:
 	if not FileAccess.file_exists(path):
 		return []
-	var file := FileAccess.open(path, FileAccess.READ)
+	var file = FileAccess.open(path, FileAccess.READ)
 	if file == null:
 		return []
-	var parsed := JSON.parse_string(file.get_as_text())
+	var parsed = JSON.parse_string(file.get_as_text())
 	file.close()
 	if typeof(parsed) != TYPE_DICTIONARY:
 		return []
@@ -44,13 +44,13 @@ func _load_data(path: String, key: String) -> Array:
 
 
 func _add_section_label(text: String) -> void:
-	var label := Label.new()
+	var label = Label.new()
 	label.text = text
 	item_container.add_child(label)
 
 
 func _add_item_button(item: Dictionary, item_type: String) -> void:
-	var button := Button.new()
+	var button = Button.new()
 	button.text = "%s  💰%d" % [str(item.get("name", "item")), int(item.get("price", 0))]
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.pressed.connect(_on_buy_pressed.bind(item, item_type))
@@ -58,7 +58,7 @@ func _add_item_button(item: Dictionary, item_type: String) -> void:
 
 
 func _on_buy_pressed(item: Dictionary, item_type: String) -> void:
-	var price := int(item.get("price", 0))
+	var price = int(item.get("price", 0))
 	if not PlayerData.spend_money(price):
 		info_label.text = "お金が足りません。"
 		return
@@ -66,14 +66,14 @@ func _on_buy_pressed(item: Dictionary, item_type: String) -> void:
 	GameManager.log_money_change(-price)
 
 	if item_type == "flavor":
-		var flavor_id := str(item.get("id", ""))
-		var flavor_name := str(item.get("name", flavor_id))
+		var flavor_id = str(item.get("id", ""))
+		var flavor_name = str(item.get("name", flavor_id))
 		PlayerData.add_flavor(flavor_id, 1)
 		GameManager.log_flavor_change(flavor_name, 1)
 		info_label.text = "%s を購入しました。" % flavor_name
 		return
 
-	var equipment_type := str(item.get("type", ""))
+	var equipment_type = str(item.get("type", ""))
 	if equipment_type == "bowl":
 		PlayerData.equipment_bowl = str(item.get("value", "standard"))
 	elif equipment_type == "hms":

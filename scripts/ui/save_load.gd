@@ -4,7 +4,7 @@ extends Control
 @onready var info_label: Label = %InfoLabel
 @onready var slot_container: VBoxContainer = %SlotContainer
 
-var _mode := "load"
+var _mode = "load"
 
 
 func _ready() -> void:
@@ -18,10 +18,10 @@ func _refresh_slots() -> void:
 		child.queue_free()
 
 	for slot in [1, 2, 3]:
-		var button := Button.new()
-		var path := "user://save_slot_%d.json" % slot
-		var exists := FileAccess.file_exists(path)
-		var state := "データあり" if exists else "空"
+		var button = Button.new()
+		var path = "user://save_slot_%d.json" % slot
+		var exists = FileAccess.file_exists(path)
+		var state = "データあり" if exists else "空"
 		button.text = "Slot %d (%s)" % [slot, state]
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.pressed.connect(_on_slot_pressed.bind(slot))
@@ -41,7 +41,7 @@ func _on_slot_pressed(slot: int) -> void:
 		info_label.text = "ロードに失敗しました。"
 		return
 
-	var next_scene := "res://scenes/daily/map.tscn"
+	var next_scene = "res://scenes/daily/map.tscn"
 	if CalendarManager.current_time == "morning":
 		next_scene = "res://scenes/daily/morning_phone.tscn"
 	elif CalendarManager.current_time == "midnight":
@@ -52,5 +52,5 @@ func _on_slot_pressed(slot: int) -> void:
 
 
 func _on_back_button_pressed() -> void:
-	var return_scene := str(GameManager.pop_transient("return_scene", "res://scenes/title/title_screen.tscn"))
+	var return_scene = str(GameManager.pop_transient("return_scene", "res://scenes/title/title_screen.tscn"))
 	get_tree().change_scene_to_file(return_scene)

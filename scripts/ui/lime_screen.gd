@@ -31,7 +31,7 @@ func _show_current_message() -> void:
 		text_lines.append("%s: %s" % [str(line.get("sender", "")), str(line.get("text", ""))])
 	message_label.text = "\n".join(text_lines)
 
-	var message_type := str(message.get("type", "chat"))
+	var message_type = str(message.get("type", "chat"))
 	if message_type == "invitation":
 		_add_option("行く", "invitation_accept")
 		_add_option("行かない", "invitation_decline")
@@ -51,7 +51,7 @@ func _show_current_message() -> void:
 
 
 func _add_option(text: String, action: String, index: int = -1) -> void:
-	var button := Button.new()
+	var button = Button.new()
 	button.text = text
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.pressed.connect(_on_option_pressed.bind(action, index))
@@ -62,8 +62,8 @@ func _on_option_pressed(action: String, index: int) -> void:
 	var message: Dictionary = _messages[_index]
 	match action:
 		"invitation_accept":
-			var time_slot := str(message.get("time_slot", "night"))
-			var event_id := str(message.get("accept_event", ""))
+			var time_slot = str(message.get("time_slot", "night"))
+			var event_id = str(message.get("accept_event", ""))
 			if time_slot == "noon":
 				GameManager.set_transient("forced_noon_action", event_id)
 			else:
@@ -85,7 +85,7 @@ func _mark_current_message_read() -> void:
 	if _index >= _messages.size():
 		return
 	var message: Dictionary = _messages[_index]
-	var msg_id := str(message.get("id", ""))
+	var msg_id = str(message.get("id", ""))
 	if msg_id != "":
 		EventFlags.set_flag("msg_read_%s" % msg_id)
 

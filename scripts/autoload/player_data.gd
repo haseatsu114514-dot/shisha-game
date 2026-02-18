@@ -72,7 +72,7 @@ func get_stat_value(stat_name: String) -> int:
 
 
 func get_stat_stars(stat_name: String) -> int:
-	var value := get_stat_value(stat_name)
+	var value = get_stat_value(stat_name)
 	return clampi(int(ceil(value / 20.0)), 1, 5)
 
 

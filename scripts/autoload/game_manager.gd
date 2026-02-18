@@ -23,13 +23,13 @@ func _ready() -> void:
 
 
 func _apply_default_font() -> void:
-	var font_path := "res://assets/fonts/DotGothic16-Regular.ttf"
+	var font_path = "res://assets/fonts/DotGothic16-Regular.ttf"
 	if not ResourceLoader.exists(font_path):
 		return
-	var font_resource := load(font_path)
+	var font_resource = load(font_path)
 	if font_resource == null:
 		return
-	var theme := Theme.new()
+	var theme = Theme.new()
 	theme.default_font = font_resource
 	theme.default_font_size = 24
 	get_tree().root.theme = theme
@@ -76,7 +76,7 @@ func get_transient(key: String, default_value: Variant = null) -> Variant:
 
 
 func pop_transient(key: String, default_value: Variant = null) -> Variant:
-	var value := transient.get(key, default_value)
+	var value = transient.get(key, default_value)
 	transient.erase(key)
 	return value
 
@@ -105,7 +105,7 @@ func reset_daily_summary() -> void:
 func log_stat_change(stat_name: String, amount: int) -> void:
 	if amount == 0:
 		return
-	var current := int(daily_summary["stats"].get(stat_name, 0))
+	var current = int(daily_summary["stats"].get(stat_name, 0))
 	daily_summary["stats"][stat_name] = current + amount
 
 
@@ -123,7 +123,7 @@ func log_flavor_change(flavor_name: String, amount: int) -> void:
 
 
 func consume_daily_summary() -> Dictionary:
-	var snapshot := daily_summary.duplicate(true)
+	var snapshot = daily_summary.duplicate(true)
 	reset_daily_summary()
 	return snapshot
 
@@ -141,8 +141,8 @@ func save_game(slot: int) -> bool:
 		"event_flags": EventFlags.to_save_data(),
 	}
 
-	var path := SAVE_PATH_TEMPLATE % slot
-	var file := FileAccess.open(path, FileAccess.WRITE)
+	var path = SAVE_PATH_TEMPLATE % slot
+	var file = FileAccess.open(path, FileAccess.WRITE)
 	if file == null:
 		push_error("save failed: %s" % path)
 		return false
@@ -153,18 +153,18 @@ func save_game(slot: int) -> bool:
 
 
 func load_game(slot: int) -> bool:
-	var path := SAVE_PATH_TEMPLATE % slot
+	var path = SAVE_PATH_TEMPLATE % slot
 	if not FileAccess.file_exists(path):
 		return false
 
-	var file := FileAccess.open(path, FileAccess.READ)
+	var file = FileAccess.open(path, FileAccess.READ)
 	if file == null:
 		return false
 
-	var raw_text := file.get_as_text()
+	var raw_text = file.get_as_text()
 	file.close()
 
-	var parsed := JSON.parse_string(raw_text)
+	var parsed = JSON.parse_string(raw_text)
 	if typeof(parsed) != TYPE_DICTIONARY:
 		return false
 

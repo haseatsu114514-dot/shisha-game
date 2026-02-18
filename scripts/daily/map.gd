@@ -11,7 +11,7 @@ func _ready() -> void:
 	confirm_dialog.confirmed.connect(_on_confirmed)
 
 	if CalendarManager.current_time == "noon":
-		var noon_event := str(GameManager.pop_transient("forced_noon_action", ""))
+		var noon_event = str(GameManager.pop_transient("forced_noon_action", ""))
 		if noon_event != "":
 			if CalendarManager.use_action():
 				GameManager.set_transient("interaction_event", noon_event)
@@ -20,7 +20,7 @@ func _ready() -> void:
 				return
 
 	if CalendarManager.current_time == "night":
-		var night_event := str(GameManager.pop_transient("night_action", ""))
+		var night_event = str(GameManager.pop_transient("night_action", ""))
 		if night_event != "":
 			if CalendarManager.use_action():
 				GameManager.set_transient("interaction_event", night_event)
@@ -38,7 +38,7 @@ func _refresh_spots() -> void:
 	message_label.text = "行き先を選択"
 
 	for spot in _build_spot_list():
-		var button := Button.new()
+		var button = Button.new()
 		button.text = spot["label"]
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.pressed.connect(_on_spot_pressed.bind(spot))
@@ -78,7 +78,7 @@ func _on_confirmed() -> void:
 
 
 func _enter_spot(spot: Dictionary) -> void:
-	var id := str(spot.get("id", ""))
+	var id = str(spot.get("id", ""))
 	match id:
 		"chillhouse":
 			get_tree().change_scene_to_file("res://scenes/daily/baito.tscn")

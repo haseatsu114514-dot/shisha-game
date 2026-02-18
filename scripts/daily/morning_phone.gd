@@ -20,7 +20,7 @@ func _ready() -> void:
 	if CalendarManager.current_day >= 2:
 		EventFlags.set_flag("ch1_rival_shops_open", true)
 
-	var notice := str(GameManager.pop_transient("morning_notice", ""))
+	var notice = str(GameManager.pop_transient("morning_notice", ""))
 	if notice != "":
 		info_label.text = notice
 	else:
@@ -34,10 +34,10 @@ func _ready() -> void:
 func _load_today_lime_messages() -> Array:
 	if not FileAccess.file_exists("res://data/lime_messages.json"):
 		return []
-	var file := FileAccess.open("res://data/lime_messages.json", FileAccess.READ)
+	var file = FileAccess.open("res://data/lime_messages.json", FileAccess.READ)
 	if file == null:
 		return []
-	var parsed := JSON.parse_string(file.get_as_text())
+	var parsed = JSON.parse_string(file.get_as_text())
 	file.close()
 	if typeof(parsed) != TYPE_DICTIONARY:
 		return []
@@ -56,7 +56,7 @@ func _load_today_lime_messages() -> Array:
 
 
 func _is_message_condition_met(message: Dictionary) -> bool:
-	var condition := str(message.get("trigger_condition", ""))
+	var condition = str(message.get("trigger_condition", ""))
 	if condition == "lime_exchanged":
 		return AffinityManager.has_lime(str(message.get("sender", "")))
 	return true
@@ -65,10 +65,10 @@ func _is_message_condition_met(message: Dictionary) -> bool:
 func _load_today_post() -> Dictionary:
 	if not FileAccess.file_exists("res://data/sheesha_posts.json"):
 		return {}
-	var file := FileAccess.open("res://data/sheesha_posts.json", FileAccess.READ)
+	var file = FileAccess.open("res://data/sheesha_posts.json", FileAccess.READ)
 	if file == null:
 		return {}
-	var parsed := JSON.parse_string(file.get_as_text())
+	var parsed = JSON.parse_string(file.get_as_text())
 	file.close()
 	if typeof(parsed) != TYPE_DICTIONARY:
 		return {}
@@ -108,7 +108,7 @@ func _on_sheesha_button_pressed() -> void:
 		info_label.text = "今日はタイムライン更新なし。"
 		return
 
-	var text := "[%s]\n%s" % [str(_today_post.get("author", "unknown")), str(_today_post.get("text", ""))]
+	var text = "[%s]\n%s" % [str(_today_post.get("author", "unknown")), str(_today_post.get("text", ""))]
 	if PlayerData.stat_insight >= 30:
 		text += "\n\n洞察メモ: %s" % str(_today_post.get("insight_bonus_text", ""))
 	post_text_label.text = text
