@@ -237,7 +237,8 @@ func _do_sumi_talk() -> void:
 		GameManager.queue_dialogue(
 			"res://data/dialogue/ch1_main.json",
 			"ch1_day5_sumi_story",
-			"res://scenes/daily/map.tscn"
+			"res://scenes/daily/map.tscn",
+			{"bg": "res://assets/backgrounds/bg_chillhouse_inside.png"}
 		)
 		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		return

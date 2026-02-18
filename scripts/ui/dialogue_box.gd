@@ -12,6 +12,7 @@ signal dialogue_finished(dialogue_id: String)
 @onready var advance_button: Button = %AdvanceButton
 @onready var typing_timer: Timer = %TypingTimer
 @onready var portrait_rect: TextureRect = %CharacterPortrait
+@onready var background_image: TextureRect = %BackgroundImage
 
 var _line_queue: Array = []
 var _branches: Dictionary = {}
@@ -37,6 +38,7 @@ func _ready() -> void:
 	advance_button.pressed.connect(_on_advance_button_pressed)
 	typing_timer.timeout.connect(_on_typing_timer_timeout)
 	_load_dialogue_request_if_exists()
+	_apply_background_from_metadata()
 	if not _load_dialogue_data():
 		text_label.text = "会話データを読み込めませんでした。"
 		advance_button.text = "戻る"
@@ -53,6 +55,21 @@ func _load_dialogue_request_if_exists() -> void:
 	dialogue_id = str(queued.get("id", dialogue_id))
 	next_scene_path = str(queued.get("next_scene", next_scene_path))
 	_metadata = queued.get("metadata", {})
+
+
+func _apply_background_from_metadata() -> void:
+	background_image.texture = null
+	if not _metadata.has("bg"):
+		return
+	var path = str(_metadata.get("bg", ""))
+	if path == "":
+		return
+	if not ResourceLoader.exists(path):
+		return
+	var tex = load(path)
+	if tex == null:
+		return
+	background_image.texture = tex
 
 
 func _load_dialogue_data() -> bool:
