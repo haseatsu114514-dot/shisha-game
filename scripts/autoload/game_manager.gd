@@ -5,7 +5,7 @@ signal chapter_started(chapter_num: int)
 
 const SAVE_VERSION: int = 2
 const SAVE_PATH_TEMPLATE := "user://save_slot_%d.json"
-const BGM_TITLE_PATH = "res://assets/audio/bgm/bgm_title.ogg"
+const BGM_TITLE_PATH = "res://assets/audio/bgm/daily_part.mp3"
 const BGM_DAILY_PATH = "res://assets/audio/bgm/daily_part.mp3"
 const BGM_CHILLHOUSE_PATH = "res://assets/audio/bgm/chill_house.mp3"
 

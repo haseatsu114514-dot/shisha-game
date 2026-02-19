@@ -24,6 +24,7 @@ var equipment_hms: String = "normal"
 var equipment_bowl: String = "standard"
 
 var recipe_note: Array = []
+var memo_seen_ids: Dictionary = {}
 var unlocked_cards: Array = []
 
 
@@ -38,6 +39,7 @@ func reset_data() -> void:
 	equipment_hms = "normal"
 	equipment_bowl = "standard"
 	recipe_note.clear()
+	memo_seen_ids.clear()
 	unlocked_cards.clear()
 
 
@@ -108,7 +110,117 @@ func has_flavor(flavor_id: String) -> bool:
 
 
 func add_recipe(recipe_data: Dictionary) -> void:
-	recipe_note.append(recipe_data)
+	var memo_id = str(recipe_data.get("id", ""))
+	var title = str(recipe_data.get("name", "攻略メモ"))
+	var source = str(recipe_data.get("source", "system"))
+	var body = "大会前に見返せるヒントを獲得した。"
+
+	var flavors: Array = recipe_data.get("flavors", [])
+	var amounts: Array = recipe_data.get("amounts", [])
+	if not flavors.is_empty() and not amounts.is_empty():
+		var parts: Array[String] = []
+		var count = mini(flavors.size(), amounts.size())
+		for i in range(count):
+			var flavor_id = str(flavors[i])
+			parts.append("%s %sg" % [FLAVOR_NAME_MAP.get(flavor_id, flavor_id), str(amounts[i])])
+		body = "配合メモ: " + " / ".join(parts)
+
+	add_tournament_memo(memo_id, title, body, source, 1)
+
+
+func add_tournament_memo(memo_id: String, title: String, body: String, source: String = "system", chapter: int = 1) -> void:
+	if memo_id == "":
+		return
+	if has_memo(memo_id):
+		return
+
+	recipe_note.append({
+		"id": memo_id,
+		"title": title,
+		"body": body,
+		"source": source,
+		"chapter": chapter,
+		"useful_for_tournament": true,
+	})
+	memo_seen_ids[memo_id] = false
+
+
+func has_memo(memo_id: String) -> bool:
+	if memo_id == "":
+		return false
+	for entry in recipe_note:
+		if str(entry.get("id", "")) == memo_id:
+			return true
+	return false
+
+
+func get_tournament_memos() -> Array:
+	var result: Array = []
+	for raw in recipe_note:
+		if typeof(raw) != TYPE_DICTIONARY:
+			continue
+		var entry = _normalize_memo_entry(raw)
+		if not bool(entry.get("useful_for_tournament", false)):
+			continue
+		result.append(entry)
+	return result
+
+
+func get_unread_tournament_memo_count() -> int:
+	var unread = 0
+	for entry in get_tournament_memos():
+		var memo_id = str(entry.get("id", ""))
+		if memo_id == "":
+			continue
+		if not bool(memo_seen_ids.get(memo_id, false)):
+			unread += 1
+	return unread
+
+
+func mark_all_tournament_memos_read() -> void:
+	for entry in get_tournament_memos():
+		var memo_id = str(entry.get("id", ""))
+		if memo_id == "":
+			continue
+		memo_seen_ids[memo_id] = true
+
+
+func _normalize_memo_entry(raw: Dictionary) -> Dictionary:
+	if raw.has("title") and raw.has("body"):
+		return raw
+
+	var memo_id = str(raw.get("id", "legacy_memo"))
+	var title = str(raw.get("name", "攻略メモ"))
+	var source = str(raw.get("source", "system"))
+	var chapter = int(raw.get("chapter", 1))
+
+	var body = str(raw.get("text", ""))
+	var flavors: Array = raw.get("flavors", [])
+	var amounts: Array = raw.get("amounts", [])
+	if body == "" and not flavors.is_empty() and not amounts.is_empty():
+		var parts: Array[String] = []
+		var count = mini(flavors.size(), amounts.size())
+		for i in range(count):
+			var flavor_id = str(flavors[i])
+			parts.append("%s %sg" % [FLAVOR_NAME_MAP.get(flavor_id, flavor_id), str(amounts[i])])
+		body = "配合メモ: " + " / ".join(parts)
+	if body == "":
+		body = "大会で使えるヒント。"
+
+	var useful = false
+	if raw.has("useful_for_tournament"):
+		useful = bool(raw.get("useful_for_tournament", false))
+	elif str(raw.get("status", "")) == "hint":
+		useful = true
+
+	return {
+		"id": memo_id,
+		"title": title,
+		"body": body,
+		"source": source,
+		"chapter": chapter,
+		"useful_for_tournament": useful,
+	}
 
 
 func to_save_data() -> Dictionary:
@@ -125,6 +237,7 @@ func to_save_data() -> Dictionary:
 		"equipment_hms": equipment_hms,
 		"equipment_bowl": equipment_bowl,
 		"recipe_note": recipe_note,
+		"memo_seen_ids": memo_seen_ids,
 		"unlocked_cards": unlocked_cards,
 	}
 
@@ -142,4 +255,13 @@ func from_save_data(data: Dictionary) -> void:
 	equipment_hms = str(data.get("equipment_hms", "normal"))
 	equipment_bowl = str(data.get("equipment_bowl", "standard"))
 	recipe_note = data.get("recipe_note", []).duplicate(true)
+	memo_seen_ids = data.get("memo_seen_ids", {}).duplicate(true)
+	for raw in recipe_note:
+		if typeof(raw) != TYPE_DICTIONARY:
+			continue
+		var memo_id = str(raw.get("id", ""))
+		if memo_id == "":
+			continue
+		if not memo_seen_ids.has(memo_id):
+			memo_seen_ids[memo_id] = false
 	unlocked_cards = data.get("unlocked_cards", []).duplicate(true)

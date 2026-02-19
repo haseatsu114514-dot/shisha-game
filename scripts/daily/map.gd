@@ -109,9 +109,7 @@ func _build_spot_list() -> Array:
 
 
 func _on_spot_pressed(spot: Dictionary) -> void:
-	_pending_spot = spot
-	confirm_dialog.dialog_text = "%s に行く？" % str(spot.get("label", "この場所"))
-	confirm_dialog.popup_centered()
+	_enter_spot(spot)
 
 
 func _on_confirmed() -> void:
@@ -216,6 +214,7 @@ func _add_spot_marker(spot: Dictionary) -> void:
 	label_panel.position = Vector2(16, 68)
 	label_panel.custom_minimum_size = Vector2(118, 36)
 	label_panel.self_modulate = Color(1, 1, 1, 0.9)
+	label_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	var style = StyleBoxFlat.new()
 	style.bg_color = Color(0.03, 0.05, 0.09, 0.86)
@@ -239,6 +238,17 @@ func _add_spot_marker(spot: Dictionary) -> void:
 	label.add_theme_font_size_override("font_size", 15)
 	label_panel.add_child(label)
 	marker.add_child(label_panel)
+
+	var label_button = Button.new()
+	label_button.text = ""
+	label_button.flat = true
+	label_button.focus_mode = Control.FOCUS_NONE
+	label_button.position = label_panel.position
+	label_button.custom_minimum_size = label_panel.custom_minimum_size
+	label_button.size_flags_horizontal = Control.SIZE_FILL
+	label_button.modulate = Color(1, 1, 1, 0.0)
+	label_button.pressed.connect(_on_spot_pressed.bind(spot))
+	marker.add_child(label_button)
 
 	spot_layer.add_child(marker)
 
