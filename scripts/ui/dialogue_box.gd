@@ -286,13 +286,18 @@ func _finish_dialogue() -> void:
 		AffinityManager.exchange_lime(str(_metadata["exchange_lime"]))
 
 	# Track affinity changes for notification
-	var affinity_char_name := ""
+	var affinity_char_id := ""
+	var affinity_delta := 0
 	if _metadata.has("add_affinity"):
 		var aff = _metadata["add_affinity"]
 		if typeof(aff) == TYPE_DICTIONARY:
 			for char_id in aff:
-				AffinityManager.add_affinity(str(char_id), int(aff[char_id]))
-				affinity_char_name = SPEAKER_NAMES.get(str(char_id), str(char_id))
+				var id = str(char_id)
+				var before = AffinityManager.get_affinity(id)
+				var after = AffinityManager.add_affinity(id, int(aff[char_id]))
+				if after >= 0:
+					affinity_char_id = id
+					affinity_delta = maxi(0, after - before)
 	if _metadata.has("add_intel"):
 		var intels = _metadata["add_intel"]
 		if typeof(intels) == TYPE_ARRAY:
@@ -304,8 +309,8 @@ func _finish_dialogue() -> void:
 		EventFlags.set_flag("ch1_forced_opening_done", true)
 
 	# Show affinity notification before transitioning
-	if affinity_char_name != "":
-		await _show_affinity_notification(affinity_char_name)
+	if affinity_char_id != "":
+		await _show_affinity_notification(affinity_char_id, affinity_delta)
 
 	if next_scene_path != "":
 		get_tree().change_scene_to_file(next_scene_path)
@@ -314,18 +319,24 @@ func _finish_dialogue() -> void:
 	get_tree().change_scene_to_file("res://scenes/daily/map.tscn")
 
 
-func _show_affinity_notification(char_name: String) -> void:
+func _show_affinity_notification(char_id: String, delta: int) -> void:
 	var layer = CanvasLayer.new()
 	layer.layer = 100
 	add_child(layer)
 
 	# Label
 	var label = Label.new()
-	label.text = "♡ %sとの絆が深まった" % char_name
+	var char_name = SPEAKER_NAMES.get(char_id, char_id)
+	var max_level = AffinityManager.get_max_level()
+	var star_text = AffinityManager.get_star_text(char_id)
+	if delta > 0:
+		label.text = "♡ %s 好感度 +%d / %d  %s" % [char_name, delta, max_level, star_text]
+	else:
+		label.text = "♡ %s 好感度 %d / %d  %s" % [char_name, AffinityManager.get_affinity(char_id), max_level, star_text]
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.position = Vector2(390, 320)
-	label.size = Vector2(500, 60)
+	label.position = Vector2(290, 320)
+	label.size = Vector2(700, 60)
 	label.add_theme_font_size_override("font_size", 26)
 	label.modulate = Color(1.0, 0.92, 0.75, 0)
 	layer.add_child(label)

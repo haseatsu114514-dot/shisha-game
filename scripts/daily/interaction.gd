@@ -48,6 +48,7 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 		AffinityManager.set_met(rival_id)
 		match rival_id:
 			"naru":
+				EventFlags.set_flag("ch1_rival_shops_open")
 				RivalIntel.add_intel("naru", "flavor_genre", "お菓子系")
 			"adam":
 				RivalIntel.add_intel("adam", "flavor_genre", "double_apple")
@@ -64,13 +65,13 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 		# Naru and Kirara exchange LIME on first visit
 		if rival_id in ["naru", "kirara"]:
 			metadata["exchange_lime"] = rival_id
-		metadata["add_affinity"] = {rival_id: 3}
+		metadata["add_affinity"] = {rival_id: 1}
 	else:
 		dialogue_id = "ch1_%s_second" % rival_id
 		# Adam exchanges LIME on second visit
 		if rival_id == "adam":
 			metadata["exchange_lime"] = rival_id
-		metadata["add_affinity"] = {rival_id: 5}
+		metadata["add_affinity"] = {rival_id: 1}
 		# Add intel on second visit
 		match rival_id:
 			"naru":
@@ -91,14 +92,14 @@ func _show_invitation_event(event_id: String) -> void:
 		"interaction_naru_night_01":
 			_set_portrait("naru")
 			body_label.text = "なるの新作ミックスを一緒に試した。率直な感想を伝えた。"
-			AffinityManager.add_affinity("naru", 4)
+			_apply_affinity_gain("naru")
 			PlayerData.add_stat("insight", 2)
 			GameManager.log_stat_change("insight", 2)
 			_apply_flavor_specialty_gain({"sweet": 2, "special": 1})
 		"interaction_kirara_noon_01":
 			_set_portrait("kirara")
 			body_label.text = "きららのお店でシーシャを作る姿を見た。映えだけじゃない丁寧さに驚いた。"
-			AffinityManager.add_affinity("kirara", 4)
+			_apply_affinity_gain("kirara")
 			PlayerData.add_stat("charm", 2)
 			GameManager.log_stat_change("charm", 2)
 			_apply_flavor_specialty_gain({"floral": 2, "fruit": 1})
@@ -122,6 +123,20 @@ func _apply_flavor_specialty_gain(gains: Dictionary) -> void:
 	if parts.is_empty():
 		return
 	body_label.text += "\n得意フレーバー: " + ", ".join(parts)
+
+
+func _apply_affinity_gain(character_id: String, amount: int = 1) -> void:
+	var before = AffinityManager.get_affinity(character_id)
+	var after = AffinityManager.add_affinity(character_id, amount)
+	if after < 0:
+		return
+	var delta = maxi(0, after - before)
+	var max_level = AffinityManager.get_max_level()
+	var star_text = AffinityManager.get_star_text(character_id)
+	if delta > 0:
+		body_label.text += "\n好感度 +%d / %d  %s" % [delta, max_level, star_text]
+	else:
+		body_label.text += "\n好感度 %d / %d  %s" % [after, max_level, star_text]
 
 
 func _append_character_flavor_hint(character_id: String) -> void:

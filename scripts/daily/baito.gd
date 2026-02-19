@@ -170,12 +170,8 @@ func _load_events() -> void:
 
 func _show_main_menu() -> void:
 	header_label.text = "チルハウス"
-	body_label.text = "何をする？"
-	_clear_buttons(menu_container)
 	_clear_buttons(choice_container)
-	_add_menu_button("バイトする", "work_menu")
-	_add_menu_button("スミさんと話す", "talk_sumi")
-	_add_menu_button("戻る", "return")
+	_show_shift_menu()
 
 
 func _add_menu_button(text: String, action: String) -> void:
@@ -189,18 +185,12 @@ func _add_menu_button(text: String, action: String) -> void:
 func _on_menu_selected(action: String) -> void:
 	GameManager.play_ui_se("cursor")
 	match action:
-		"work_menu":
-			_show_shift_menu()
 		"work_half":
 			_start_shift("half")
 		"work_full":
 			_start_shift("full")
 		"work_night":
 			_start_shift("night")
-		"work_back":
-			_show_main_menu()
-		"talk_sumi":
-			_do_sumi_talk()
 		"return":
 			get_tree().change_scene_to_file("res://scenes/daily/map.tscn")
 
@@ -213,7 +203,6 @@ func _show_shift_menu() -> void:
 		_add_menu_button("夜までバイト（昼+夜 / 基本給+18000円）", "work_full")
 	else:
 		_add_menu_button("夜バイト（基本給+10000円）", "work_night")
-	_add_menu_button("戻る", "work_back")
 
 
 func _start_shift(mode: String) -> void:
@@ -240,8 +229,7 @@ func _start_shift(mode: String) -> void:
 			_shift_advance_steps = 1
 
 	if CalendarManager.actions_remaining < action_cost:
-		body_label.text = "行動コマがありません。"
-		_show_main_menu()
+		get_tree().change_scene_to_file("res://scenes/daily/map.tscn")
 		return
 	for _i in range(action_cost):
 		CalendarManager.use_action()
@@ -481,7 +469,7 @@ func _finish_shift() -> void:
 
 func _do_practice() -> void:
 	if not CalendarManager.use_action():
-		body_label.text = "行動コマがありません。"
+		get_tree().change_scene_to_file("res://scenes/daily/map.tscn")
 		return
 
 	header_label.text = "練習"
@@ -598,30 +586,6 @@ func _format_flavor_specialty_changes(changes: Dictionary) -> String:
 	if parts.is_empty():
 		return "なし"
 	return ", ".join(parts)
-
-
-func _do_sumi_talk() -> void:
-	if not CalendarManager.use_action():
-		body_label.text = "行動コマがありません。"
-		return
-
-	var text = "スミさんと話した。"
-	if CalendarManager.current_day == 1:
-		text = "スミさん「昼と夜で行動は2回だ。動き方を考えろ」"
-		EventFlags.set_flag("ch1_sumi_tournament_talk")
-		PlayerData.add_stat("insight", 2)
-		PlayerData.add_flavor_specialty("special", 1)
-		GameManager.log_stat_change("insight", 2)
-	elif CalendarManager.current_day >= 3:
-		text = "スミさんから温度管理のコツを教わった。"
-		PlayerData.add_stat("technique", 2)
-		PlayerData.add_stat("insight", 1)
-		PlayerData.add_flavor_specialty("spice", 1)
-		PlayerData.add_flavor_specialty("cooling", 1)
-		GameManager.log_stat_change("technique", 2)
-		GameManager.log_stat_change("insight", 1)
-
-	_show_single_result_and_finish(text)
 
 
 func _finish_action_flow(step_count: int = 1) -> void:

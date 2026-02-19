@@ -99,12 +99,29 @@ func get_characters_with_lime() -> Array:
 	return result
 
 
-func add_affinity(char_id: String, amount: int) -> void:
-	spend_time_with(char_id)
+func add_affinity(char_id: String, amount: int) -> int:
+	var _requested_amount = amount
+	return spend_time_with(char_id)
 
 
 func get_affinity(char_id: String) -> int:
 	return get_level(char_id)
+
+
+func get_max_level() -> int:
+	return MAX_LEVEL
+
+
+func get_star_text(char_id: String) -> String:
+	return _build_star_text(get_level(char_id))
+
+
+func _build_star_text(level: int) -> String:
+	var clamped_level = mini(MAX_LEVEL, maxi(0, level))
+	var stars := ""
+	for i in range(MAX_LEVEL):
+		stars += "★" if i < clamped_level else "☆"
+	return stars
 
 
 func to_save_data() -> Dictionary:

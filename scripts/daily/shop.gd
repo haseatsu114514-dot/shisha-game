@@ -10,6 +10,8 @@ var _did_shop_transaction = false
 var _shop_visit_paid = false
 var _pending_purchase_kind: String = ""
 var _pending_purchase_item: Dictionary = {}
+var _sticky_info_text: String = ""
+var _hover_info_active: bool = false
 const SHOP_VISIT_COST := 3500
 
 
@@ -24,11 +26,12 @@ func _ready() -> void:
 			_advance_on_exit = true
 		else:
 			GameManager.play_ui_se("cancel")
-			info_label.text = "行動コマが足りません。"
+			get_tree().change_scene_to_file("res://scenes/daily/map.tscn")
 			return
 
 	_load_shop_items()
 	_refresh_header()
+	_set_sticky_info("商品にカーソルを合わせると説明が表示されます。")
 	_maybe_add_recipe_hint()
 
 
@@ -94,17 +97,15 @@ func _add_flavor_button(item: Dictionary) -> void:
 	button_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button_row.add_theme_constant_override("separation", 6)
 
-	var detail_button = Button.new()
-	detail_button.text = "説明"
-	detail_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	detail_button.pressed.connect(_on_flavor_select_pressed.bind(item))
-	button_row.add_child(detail_button)
-
 	var buy_button = Button.new()
 	buy_button.text = "購入する"
 	buy_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	buy_button.pressed.connect(_on_flavor_buy_pressed.bind(item))
 	button_row.add_child(buy_button)
+
+	var hover_text = _build_flavor_info(item)
+	_bind_hover_preview(title_label, hover_text)
+	_bind_hover_preview(buy_button, hover_text)
 
 	wrapper.add_child(button_row)
 
@@ -125,55 +126,21 @@ func _add_equipment_entry(item: Dictionary, equipment_items: Array) -> void:
 	var name = str(item.get("name", "機材"))
 	var buy_price = _get_buy_price(item)
 	var sell_price = _get_sell_price(item)
-	var description = str(item.get("description", ""))
 	var is_owned = PlayerData.has_owned_equipment(equipment_type, equipment_value)
 	var is_equipped = PlayerData.get_equipped_value(equipment_type) == equipment_value
+	var status_text = "使用中" if is_equipped else ("所持" if is_owned else "未所持")
+	var compatible_names: Array[String] = []
+	if equipment_type != "charcoal":
+		compatible_names = _get_compatible_counterpart_names(item, equipment_items)
 
 	var title_label = Label.new()
-	title_label.text = "%s  購入:%d円 / 売却:%d円" % [name, buy_price, sell_price]
+	title_label.text = "%s [%s]  購入:%d円 / 売却:%d円" % [name, status_text, buy_price, sell_price]
+	title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	wrapper.add_child(title_label)
-
-	if description != "":
-		var desc_label = Label.new()
-		desc_label.text = description
-		desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		wrapper.add_child(desc_label)
-
-	var compatible_names: Array[String] = []
-	if equipment_type == "charcoal":
-		var charcoal_label = Label.new()
-		charcoal_label.text = "対応: 全ハガル / 全ヒートマネジメント"
-		charcoal_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		wrapper.add_child(charcoal_label)
-	else:
-		compatible_names = _get_compatible_counterpart_names(item, equipment_items)
-		if not compatible_names.is_empty():
-			var compatibility_label = Label.new()
-			if equipment_type == "bowl":
-				compatibility_label.text = "対応HMS: " + " / ".join(compatible_names)
-			else:
-				compatibility_label.text = "対応ハガル: " + " / ".join(compatible_names)
-			compatibility_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-			wrapper.add_child(compatibility_label)
-
-	var status_label = Label.new()
-	if is_equipped:
-		status_label.text = "状態: 使用中"
-	elif is_owned:
-		status_label.text = "状態: 所持"
-	else:
-		status_label.text = "状態: 未所持"
-	wrapper.add_child(status_label)
 
 	var button_row = HBoxContainer.new()
 	button_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button_row.add_theme_constant_override("separation", 6)
-
-	var detail_button = Button.new()
-	detail_button.text = "説明"
-	detail_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	detail_button.pressed.connect(_on_equipment_select_pressed.bind(item, compatible_names))
-	button_row.add_child(detail_button)
 
 	var primary_button = Button.new()
 	primary_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -194,6 +161,11 @@ func _add_equipment_entry(item: Dictionary, equipment_items: Array) -> void:
 	sell_button.pressed.connect(_on_equipment_sell_pressed.bind(item))
 	button_row.add_child(sell_button)
 
+	var hover_text = _build_equipment_info(item, compatible_names)
+	_bind_hover_preview(title_label, hover_text)
+	_bind_hover_preview(primary_button, hover_text)
+	_bind_hover_preview(sell_button, hover_text)
+
 	wrapper.add_child(button_row)
 
 	var separator = HSeparator.new()
@@ -202,11 +174,10 @@ func _add_equipment_entry(item: Dictionary, equipment_items: Array) -> void:
 
 
 func _on_flavor_buy_pressed(item: Dictionary) -> void:
-	_on_flavor_select_pressed(item)
 	var price = _get_buy_price(item)
 	if PlayerData.money < price:
 		GameManager.play_ui_se("cancel")
-		info_label.text = "お金が足りません。"
+		_set_sticky_info("お金が足りません。")
 		return
 	_request_purchase("flavor", item, "このフレーバーを購入しますか？\n価格: %d円" % price)
 
@@ -215,7 +186,7 @@ func _buy_flavor_now(item: Dictionary) -> void:
 	var price = _get_buy_price(item)
 	if not PlayerData.spend_money(price):
 		GameManager.play_ui_se("cancel")
-		info_label.text = "お金が足りません。"
+		_set_sticky_info("お金が足りません。")
 		return
 	GameManager.log_money_change(-price)
 	var flavor_id = str(item.get("id", ""))
@@ -224,7 +195,7 @@ func _buy_flavor_now(item: Dictionary) -> void:
 	GameManager.log_flavor_change(flavor_name, 1)
 	_did_shop_transaction = true
 	GameManager.play_ui_se("purchase")
-	info_label.text = "%s を購入しました。" % flavor_name
+	_set_sticky_info("%s を購入しました。" % flavor_name)
 	_refresh_header()
 
 
@@ -235,15 +206,14 @@ func _on_equipment_primary_pressed(item: Dictionary) -> void:
 	if equipment_type == "" or equipment_value == "":
 		return
 
-	_on_equipment_select_pressed(item, [])
 	if PlayerData.has_owned_equipment(equipment_type, equipment_value):
 		if not PlayerData.can_equip(equipment_type, equipment_value):
 			GameManager.play_ui_se("cancel")
-			info_label.text = "現在のもう一方の装備と対応していません。対応表を確認してください。"
+			_set_sticky_info("現在のもう一方の装備と対応していません。対応表を確認してください。")
 			return
 		if PlayerData.equip_item(equipment_type, equipment_value):
 			GameManager.play_ui_se("confirm")
-			info_label.text = "%s を使用中にしました。" % name
+			_set_sticky_info("%s を使用中にしました。" % name)
 			_load_shop_items()
 			_refresh_header()
 		return
@@ -251,7 +221,7 @@ func _on_equipment_primary_pressed(item: Dictionary) -> void:
 	var buy_price = _get_buy_price(item)
 	if PlayerData.money < buy_price:
 		GameManager.play_ui_se("cancel")
-		info_label.text = "お金が足りません。"
+		_set_sticky_info("お金が足りません。")
 		return
 	_request_purchase("equipment", item, "%s を購入しますか？\n価格: %d円" % [name, buy_price])
 
@@ -266,26 +236,27 @@ func _buy_equipment_now(item: Dictionary) -> void:
 	var buy_price = _get_buy_price(item)
 	if not PlayerData.spend_money(buy_price):
 		GameManager.play_ui_se("cancel")
-		info_label.text = "お金が足りません。"
+		_set_sticky_info("お金が足りません。")
 		return
 
 	if not PlayerData.add_owned_equipment(equipment_type, equipment_value):
 		PlayerData.add_money(buy_price)
 		GameManager.play_ui_se("cancel")
-		info_label.text = "購入処理に失敗しました。"
+		_set_sticky_info("購入処理に失敗しました。")
 		return
 
 	GameManager.log_money_change(-buy_price)
 	_did_shop_transaction = true
 	GameManager.play_ui_se("purchase")
-	info_label.text = "%s を購入しました。" % name
+	var purchase_text = "%s を購入しました。" % name
 	if PlayerData.can_equip(equipment_type, equipment_value) and PlayerData.equip_item(equipment_type, equipment_value):
-		info_label.text = "%s を購入して使用中にしました。" % name
+		purchase_text = "%s を購入して使用中にしました。" % name
 	else:
-		info_label.text += "\n今の組み合わせでは使用できないため、所持のみになりました。"
+		purchase_text += "\n今の組み合わせでは使用できないため、所持のみになりました。"
 	var description = str(item.get("description", ""))
 	if description != "":
-		info_label.text += "\n" + description
+		purchase_text += "\n" + description
+	_set_sticky_info(purchase_text)
 
 	_load_shop_items()
 	_refresh_header()
@@ -300,17 +271,17 @@ func _on_equipment_sell_pressed(item: Dictionary) -> void:
 
 	if PlayerData.get_equipped_value(equipment_type) == equipment_value:
 		GameManager.play_ui_se("cancel")
-		info_label.text = "使用中の機材は売却できません。"
+		_set_sticky_info("使用中の機材は売却できません。")
 		return
 
 	if not PlayerData.has_owned_equipment(equipment_type, equipment_value):
 		GameManager.play_ui_se("cancel")
-		info_label.text = "未所持の機材は売却できません。"
+		_set_sticky_info("未所持の機材は売却できません。")
 		return
 
 	if not PlayerData.remove_owned_equipment(equipment_type, equipment_value):
 		GameManager.play_ui_se("cancel")
-		info_label.text = "売却処理に失敗しました。"
+		_set_sticky_info("売却処理に失敗しました。")
 		return
 
 	var sell_price = _get_sell_price(item)
@@ -318,7 +289,7 @@ func _on_equipment_sell_pressed(item: Dictionary) -> void:
 	GameManager.log_money_change(sell_price)
 	_did_shop_transaction = true
 	GameManager.play_ui_se("confirm")
-	info_label.text = "%s を売却しました。 +%d円" % [name, sell_price]
+	_set_sticky_info("%s を売却しました。 +%d円" % [name, sell_price])
 
 	_load_shop_items()
 	_refresh_header()
@@ -418,17 +389,30 @@ func _maybe_add_recipe_hint() -> void:
 		"amounts": [7, 3],
 		"source": "shop_owner"
 	})
-	info_label.text = "店主: 最近ダブルアップルとミントを一緒に買う人が多いよ"
+	_set_sticky_info("店主: 最近ダブルアップルとミントを一緒に買う人が多いよ")
 
 
-func _on_flavor_select_pressed(item: Dictionary) -> void:
-	GameManager.play_ui_se("cursor")
-	info_label.text = _build_flavor_info(item)
+func _bind_hover_preview(target: Control, text: String) -> void:
+	target.mouse_entered.connect(_on_hover_preview_entered.bind(text))
+	target.mouse_exited.connect(_on_hover_preview_exited)
+	target.focus_entered.connect(_on_hover_preview_entered.bind(text))
+	target.focus_exited.connect(_on_hover_preview_exited)
 
 
-func _on_equipment_select_pressed(item: Dictionary, compatible_names: Array) -> void:
-	GameManager.play_ui_se("cursor")
-	info_label.text = _build_equipment_info(item, compatible_names)
+func _on_hover_preview_entered(text: String) -> void:
+	_hover_info_active = true
+	info_label.text = text
+
+
+func _on_hover_preview_exited() -> void:
+	_hover_info_active = false
+	info_label.text = _sticky_info_text
+
+
+func _set_sticky_info(text: String) -> void:
+	_sticky_info_text = text
+	if not _hover_info_active:
+		info_label.text = _sticky_info_text
 
 
 func _build_flavor_info(item: Dictionary) -> String:

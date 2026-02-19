@@ -409,15 +409,10 @@ func _confirm_flavor_selection() -> void:
 
 
 func _show_packing_step() -> void:
-	_set_phase(3, "パッキング配合（12g）", "配分を1g単位で調整する。合計12gで確定。")
+	_set_phase(3, "パッキング配合（12g）", "選んだフレーバーを合計12gになるように1g単位で配分する。")
 	_clear_choices()
 	_ensure_manual_packing_grams()
 	_update_packing_info_text()
-
-	var patterns = _build_packing_patterns()
-	for pattern in patterns:
-		var text = "プリセット: %s  |  %s" % [str(pattern.get("label", "配合")), _format_pattern_grams(pattern)]
-		_add_choice_button(text, _apply_packing_preset.bind(pattern))
 
 	var title = Label.new()
 	title.text = "1g調整"
@@ -520,14 +515,6 @@ func _sum_manual_packing_grams() -> int:
 	return total
 
 
-func _apply_packing_preset(pattern: Dictionary) -> void:
-	var grams: Dictionary = pattern.get("grams", {})
-	for flavor_id in _selected_flavors:
-		_manual_packing_grams[flavor_id] = int(grams.get(flavor_id, 0))
-	GameManager.play_ui_se("confirm")
-	_show_packing_step()
-
-
 func _confirm_manual_packing() -> void:
 	var total = _sum_manual_packing_grams()
 	if total != TOTAL_PACKING_GRAMS:
@@ -541,35 +528,6 @@ func _confirm_manual_packing() -> void:
 	}
 	GameManager.play_ui_se("confirm")
 	_on_packing_selected(pattern)
-
-
-func _build_packing_patterns() -> Array:
-	var patterns: Array = []
-	if _selected_flavors.is_empty():
-		return patterns
-
-	if _selected_flavors.size() == 1:
-		var only_id = _selected_flavors[0]
-		patterns.append({"label": "高密度パック", "style": "tight", "grams": {only_id: 12}})
-		patterns.append({"label": "標準パック", "style": "balanced", "grams": {only_id: 12}})
-		patterns.append({"label": "軽めパック", "style": "airy", "grams": {only_id: 12}})
-		return patterns
-
-	if _selected_flavors.size() == 2:
-		var a = _selected_flavors[0]
-		var b = _selected_flavors[1]
-		patterns.append({"label": "均等配分", "style": "balanced", "grams": {a: 6, b: 6}})
-		patterns.append({"label": "%s重視" % _flavor_name(a), "style": "focus_a", "focus": a, "grams": {a: 8, b: 4}})
-		patterns.append({"label": "%s重視" % _flavor_name(b), "style": "focus_b", "focus": b, "grams": {a: 4, b: 8}})
-		return patterns
-
-	var f0 = _selected_flavors[0]
-	var f1 = _selected_flavors[1]
-	var f2 = _selected_flavors[2]
-	patterns.append({"label": "均等配分", "style": "balanced", "grams": {f0: 4, f1: 4, f2: 4}})
-	patterns.append({"label": "%s主軸" % _flavor_name(f0), "style": "focus_a", "focus": f0, "grams": {f0: 6, f1: 3, f2: 3}})
-	patterns.append({"label": "高火力寄せ", "style": "heat", "focus": f0, "grams": {f0: 5, f1: 5, f2: 2}})
-	return patterns
 
 
 func _format_pattern_grams(pattern: Dictionary) -> String:

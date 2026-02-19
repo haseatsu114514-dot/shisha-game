@@ -141,7 +141,6 @@ func _enter_spot(spot: Dictionary) -> void:
 				message_label.text = "Dr.Hookah 入店には %d円 必要です。" % SHOP_VISIT_COST
 				return
 			if not CalendarManager.use_action():
-				message_label.text = "行動コマが尽きたので家に帰る。"
 				_try_auto_return_home()
 				return
 			PlayerData.spend_money(SHOP_VISIT_COST)
@@ -150,7 +149,6 @@ func _enter_spot(spot: Dictionary) -> void:
 			get_tree().change_scene_to_file("res://scenes/daily/shop.tscn")
 		"home":
 			if not CalendarManager.use_action():
-				message_label.text = "行動コマが尽きたので家に帰る。"
 				_try_auto_return_home()
 				return
 			PlayerData.add_stat("guts", 1)
@@ -159,7 +157,6 @@ func _enter_spot(spot: Dictionary) -> void:
 			_go_next_phase()
 		"naru", "adam", "kirara":
 			if not CalendarManager.use_action():
-				message_label.text = "行動コマが尽きたので家に帰る。"
 				_try_auto_return_home()
 				return
 			GameManager.set_transient("interaction_target", id)
@@ -167,7 +164,7 @@ func _enter_spot(spot: Dictionary) -> void:
 			get_tree().change_scene_to_file("res://scenes/daily/interaction.tscn")
 		"choizap":
 			if not CalendarManager.use_action():
-				message_label.text = "行動コマが足りません。"
+				_try_auto_return_home()
 				return
 			if not EventFlags.get_flag("choizap_member"):
 				# First visit - show membership dialogue with choice
@@ -184,7 +181,7 @@ func _enter_spot(spot: Dictionary) -> void:
 				get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		"kannon":
 			if not CalendarManager.use_action():
-				message_label.text = "行動コマが足りません。"
+				_try_auto_return_home()
 				return
 			# Random stat +1.5, then forced save
 			var stats = ["technique", "sense", "guts", "charm", "insight"]
@@ -198,7 +195,7 @@ func _enter_spot(spot: Dictionary) -> void:
 			GameManager.force_save()
 		"cafe":
 			if not CalendarManager.use_action():
-				message_label.text = "行動コマが足りません。"
+				_try_auto_return_home()
 				return
 			PlayerData.add_stat("sense", 1.5)
 			GameManager.log_stat_change("sense", 1.5)
