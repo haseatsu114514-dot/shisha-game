@@ -266,6 +266,11 @@ func _do_sumi_talk() -> void:
 func _finish_action_flow(step_count: int = 1) -> void:
 	for _step in range(step_count):
 		CalendarManager.advance_time()
+		# Keep mandatory night events reachable even when consuming 2 actions at noon.
+		if CalendarManager.current_time == "night" and not CalendarManager.is_interval:
+			var forced_event = GameManager.get_forced_event_for_today("night")
+			if not forced_event.is_empty():
+				break
 	if CalendarManager.current_time == "midnight":
 		get_tree().change_scene_to_file("res://scenes/daily/night_end.tscn")
 		return

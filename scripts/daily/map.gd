@@ -164,6 +164,11 @@ func _try_auto_return_home() -> bool:
 
 	GameManager.set_transient("morning_notice", "行動コマが尽きたのでそのまま家に帰った。")
 	while CalendarManager.current_time == "noon" or CalendarManager.current_time == "night":
+		# Do not skip mandatory night events by auto-advancing directly to midnight.
+		if CalendarManager.current_time == "night" and not CalendarManager.is_interval:
+			var forced_event = GameManager.get_forced_event_for_today("night")
+			if not forced_event.is_empty():
+				break
 		CalendarManager.advance_time()
 	_go_next_phase()
 	return true
@@ -245,8 +250,6 @@ func _get_marker_position(spot_id: String) -> Vector2:
 
 
 func _is_event_spot(spot_id: String) -> bool:
-	if spot_id == "chillhouse" and CalendarManager.current_day >= 5 and not EventFlags.get_flag("ch1_forced_sumi_story_done"):
-		return true
 	if spot_id in ["naru", "adam", "kirara"] and not EventFlags.get_flag("ch1_%s_met" % spot_id):
 		return true
 	return false
