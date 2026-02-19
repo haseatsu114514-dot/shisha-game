@@ -1,18 +1,36 @@
 {
   "equipment": [
     {
-      "id": "funnel_bowl",
+      "id": "hagal_80beat",
       "type": "bowl",
-      "name": "ファンネルボウル",
-      "price": 5000,
-      "value": "funnel"
+      "name": "80beatハガル",
+      "price": 4000,
+      "value": "hagal_80beat",
+      "description": "癖があまりなく使いやすいハガル。"
     },
     {
-      "id": "kaloud_hms",
+      "id": "suyaki_hagal",
+      "type": "bowl",
+      "name": "素焼きハガル",
+      "price": 1000,
+      "value": "suyaki",
+      "description": "同じ味を使うほど育つ。最初は土の味が少しする。"
+    },
+    {
+      "id": "tanukish_lid",
       "type": "hms",
-      "name": "カロードHMS",
-      "price": 8000,
-      "value": "kaloud"
+      "name": "タヌキッシュリッド",
+      "price": 2000,
+      "value": "tanukish_lid",
+      "description": "使いやすく癖が少ない。素焼きサイズには使えない。"
+    },
+    {
+      "id": "winkwink_hagal",
+      "type": "hms",
+      "name": "winkwinkハガル",
+      "price": 3000,
+      "value": "winkwink_hagal",
+      "description": "素焼きなど大きいハガル向け。熱持ちは良いが熱が入りづらい。"
     }
   ]
 }

@@ -1,13 +1,13 @@
 extends Node
 
 const FLAVOR_NAME_MAP := {
-	"double_apple": "ダブルアップル",
-	"mint": "ミント",
-	"blueberry": "ブルーベリー",
+	"double_apple": "アルファーヘブン ダブルアップル",
+	"mint": "アルファーヘブン ミント",
+	"blueberry": "アルファーヘブン ブルーベリー",
 	"mango": "マンゴー",
-	"vanilla": "バニラ",
-	"pineapple": "パイナップル",
-	"coconut": "ココナッツ",
+	"vanilla": "アルファーヘブン バニラ",
+	"pineapple": "アルファーヘブン パイナップル",
+	"coconut": "アルファーヘブン ココナッツ",
 }
 
 var stat_technique: int = 10
@@ -92,6 +92,7 @@ func spend_money(amount: int) -> bool:
 func add_flavor(flavor_id: String, amount: int) -> void:
 	for item in flavor_inventory:
 		if item.get("id", "") == flavor_id:
+			item["name"] = FLAVOR_NAME_MAP.get(flavor_id, flavor_id)
 			item["amount"] = int(item.get("amount", 0)) + amount
 			return
 

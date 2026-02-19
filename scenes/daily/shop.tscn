@@ -44,7 +44,7 @@ layout_mode = 2
 [node name="Title" type="Label" parent="Panel/VBox/HeaderHBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
-text = "SMOKE SUPPLY"
+text = "Dr.Hookah"
 
 [node name="Spacer" type="Control" parent="Panel/VBox/HeaderHBox"]
 layout_mode = 2

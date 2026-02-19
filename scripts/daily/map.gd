@@ -93,7 +93,7 @@ func _build_spot_list() -> Array:
 	var spots: Array = []
 	if CalendarManager.current_time == "noon":
 		spots.append({"id": "chillhouse", "label": "チルハウス"})
-		spots.append({"id": "shop", "label": "シーシャショップ"})
+		spots.append({"id": "shop", "label": "Dr.Hookah"})
 		if CalendarManager.current_day >= 2:
 			spots.append({"id": "naru", "label": "なるの店"})
 			spots.append({"id": "adam", "label": "アダムの店"})

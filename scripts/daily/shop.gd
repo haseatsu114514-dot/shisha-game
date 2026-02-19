@@ -52,7 +52,12 @@ func _add_section_label(text: String) -> void:
 
 func _add_item_button(item: Dictionary, item_type: String) -> void:
 	var button = Button.new()
-	button.text = "%s  💰%d" % [str(item.get("name", "item")), int(item.get("price", 0))]
+	var name = str(item.get("name", "item"))
+	var price = int(item.get("price", 0))
+	var description = str(item.get("description", ""))
+	button.text = "%s  💰%d" % [name, price]
+	if description != "":
+		button.text += "\n%s" % description
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.pressed.connect(_on_buy_pressed.bind(item, item_type))
 	item_container.add_child(button)
@@ -60,6 +65,13 @@ func _add_item_button(item: Dictionary, item_type: String) -> void:
 
 func _on_buy_pressed(item: Dictionary, item_type: String) -> void:
 	var price = int(item.get("price", 0))
+	if item_type == "equipment":
+		var equipment_type = str(item.get("type", ""))
+		var equipment_value = str(item.get("value", ""))
+		if equipment_type == "hms" and equipment_value == "tanukish_lid" and PlayerData.equipment_bowl == "suyaki":
+			info_label.text = "タヌキッシュリッドは素焼きハガルには使えません。"
+			return
+
 	if not PlayerData.spend_money(price):
 		info_label.text = "お金が足りません。"
 		return
@@ -80,6 +92,9 @@ func _on_buy_pressed(item: Dictionary, item_type: String) -> void:
 	elif equipment_type == "hms":
 		PlayerData.equipment_hms = str(item.get("value", "normal"))
 	info_label.text = "%s を購入しました。" % str(item.get("name", "機材"))
+	var description = str(item.get("description", ""))
+	if description != "":
+		info_label.text += "\n%s" % description
 
 
 func _maybe_add_recipe_hint() -> void:
