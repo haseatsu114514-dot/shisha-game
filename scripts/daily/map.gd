@@ -42,6 +42,18 @@ func _ready() -> void:
 	confirm_dialog.confirmed.connect(_on_confirmed)
 	_load_marker_textures()
 
+	# Check for forced story events first (mandatory, cannot skip)
+	if not CalendarManager.is_interval:
+		var forced_event = GameManager.get_forced_event_for_today(CalendarManager.current_time)
+		if not forced_event.is_empty():
+			GameManager.complete_forced_event(forced_event)
+			var dialogue_file = str(forced_event.get("dialogue_file", ""))
+			var dialogue_id = str(forced_event.get("dialogue_id", ""))
+			if dialogue_file != "" and dialogue_id != "":
+				GameManager.queue_dialogue(dialogue_file, dialogue_id, "res://scenes/daily/map.tscn")
+				get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+				return
+
 	if CalendarManager.current_time == "noon":
 		var noon_event = str(GameManager.pop_transient("forced_noon_action", ""))
 		if noon_event != "":
@@ -233,7 +245,7 @@ func _get_marker_position(spot_id: String) -> Vector2:
 
 
 func _is_event_spot(spot_id: String) -> bool:
-	if spot_id == "chillhouse" and CalendarManager.current_day >= 5 and not EventFlags.get_flag("ch1_day5_sumi_story"):
+	if spot_id == "chillhouse" and CalendarManager.current_day >= 5 and not EventFlags.get_flag("ch1_forced_sumi_story_done"):
 		return true
 	if spot_id in ["nishio", "adam", "ryuji"] and not EventFlags.get_flag("ch1_%s_met" % spot_id):
 		return true

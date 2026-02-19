@@ -28,7 +28,12 @@ func _ready() -> void:
 func _render_summary() -> void:
 	var summary = GameManager.consume_daily_summary()
 	var lines: Array[String] = []
-	lines.append("Day %d 終了" % CalendarManager.current_day)
+
+	if CalendarManager.is_interval:
+		lines.append("インターバル Day %d 終了" % CalendarManager.interval_day)
+	else:
+		lines.append("Day %d 終了" % CalendarManager.current_day)
+
 	lines.append("")
 	lines.append("技術 ★%d" % PlayerData.get_stat_stars("technique"))
 	lines.append("感覚 ★%d" % PlayerData.get_stat_stars("sense"))
@@ -46,9 +51,17 @@ func _render_summary() -> void:
 		lines.append("📦 " + ", ".join(flavor_lines))
 
 	lines.append("明日の天気: %s" % CalendarManager.get_weather_label(CalendarManager.current_day + 1))
-	lines.append("大会まであと %d 日" % CalendarManager.get_remaining_days())
-	if CalendarManager.current_day == 7:
-		lines.append("明日はいよいよ大会だ…")
+
+	if CalendarManager.is_interval:
+		var remaining = CalendarManager.get_interval_remaining_days()
+		if remaining <= 1:
+			lines.append("次の大会の告知がそろそろ届きそうだ…")
+		else:
+			lines.append("自由行動 残り %d 日" % remaining)
+	else:
+		lines.append("大会まであと %d 日" % CalendarManager.get_remaining_days())
+		if CalendarManager.current_day == 7:
+			lines.append("明日はいよいよ大会だ…")
 
 	summary_label.text = "\n".join(lines)
 
@@ -75,12 +88,23 @@ func _on_day7_choice(stat_name: String) -> void:
 
 
 func _on_auto_timer_timeout() -> void:
-	var previous_day = CalendarManager.current_day
+	var previous_day = CalendarManager.interval_day if CalendarManager.is_interval else CalendarManager.current_day
 	CalendarManager.advance_time()
-	if CalendarManager.current_day != previous_day:
-		await _play_day_transition(previous_day, CalendarManager.current_day)
-	if CalendarManager.current_day >= CalendarManager.tournament_day:
+	var current = CalendarManager.interval_day if CalendarManager.is_interval else CalendarManager.current_day
+
+	if current != previous_day:
+		await _play_day_transition(previous_day, current)
+
+	# Handle interval phase ending
+	if CalendarManager.is_interval and CalendarManager.is_interval_over():
+		GameManager.end_interval_and_next_chapter()
+		get_tree().change_scene_to_file("res://scenes/daily/morning_phone.tscn")
+		return
+
+	# Handle tournament day
+	if not CalendarManager.is_interval and CalendarManager.current_day >= CalendarManager.tournament_day:
 		GameManager.transition_to_tournament()
+
 	get_tree().change_scene_to_file("res://scenes/daily/morning_phone.tscn")
 
 

@@ -1,13 +1,20 @@
 {
   "characters": [
-    {"id": "hajime", "name": "はじめ", "role": "protagonist"},
-    {"id": "sumi", "name": "スミさん", "role": "mentor"},
-    {"id": "nishio", "name": "にしお", "role": "rival"},
-    {"id": "adam", "name": "アダム", "role": "rival"},
-    {"id": "ryuji", "name": "リュウジ", "role": "rival"},
-    {"id": "tsumugi", "name": "つむぎ", "role": "regular"},
+    {"id": "hajime", "name": "はじめ", "full_name": "蒸野 はじめ", "role": "protagonist", "age": 21},
+    {"id": "sumi", "name": "スミさん", "full_name": "炭場 丈一郎", "role": "mentor", "age": 38},
+    {"id": "nishio", "name": "にしお", "full_name": "鳴切 亮太", "role": "rival", "age": 21},
+    {"id": "adam", "name": "アダム", "full_name": "林檎堂 アダム", "role": "rival", "age": 27},
+    {"id": "ryuji", "name": "リュウジ", "full_name": "火龍寺 仁", "role": "rival", "age": 32},
+    {"id": "tsumugi", "name": "つむぎ", "full_name": "雲居 つむぎ", "role": "regular", "age": 21},
     {"id": "packii", "name": "パッキー", "role": "mascot"},
-    {"id": "kirara", "name": "きらら", "role": "rival"},
-    {"id": "ageha", "name": "あげは", "role": "rival"}
+    {"id": "kirara", "name": "きらら", "role": "rival", "age": 24},
+    {"id": "ageha", "name": "あげは", "role": "rival", "age": 25},
+    {"id": "naru", "name": "なる", "full_name": "鳴切 亮太", "role": "rival", "age": 21},
+    {"id": "toki_kotetsu", "name": "土岐 鋼鉄", "role": "judge", "age": 48},
+    {"id": "shiramine", "name": "白峰 恒一郎", "role": "judge", "age": 40},
+    {"id": "kemuriya", "name": "煙谷 六郎", "role": "judge", "age": 50},
+    {"id": "kirishima", "name": "霧島 レン", "role": "judge", "age": 26},
+    {"id": "takiguchi", "name": "焚口 ショウ", "role": "mc", "age": 33},
+    {"id": "toki", "name": "香月 トキ", "role": "hidden_boss", "age": 45}
   ]
 }

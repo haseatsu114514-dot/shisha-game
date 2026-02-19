@@ -1,0 +1,40 @@
+{
+  "chapter_1": [
+    {
+      "id": "ch1_forced_opening",
+      "day": 1,
+      "time_slot": "noon",
+      "flag": "ch1_forced_opening_done",
+      "title": "スミさんの提案",
+      "description": "閉店後、スミさんが唐突に切り出す。「はじめ。大会出ろ」",
+      "dialogue_file": "ch1_main",
+      "dialogue_id": "ch1_opening",
+      "stat_changes": {},
+      "next_scene": "map"
+    },
+    {
+      "id": "ch1_forced_rival_encounter",
+      "day": 3,
+      "time_slot": "noon",
+      "flag": "ch1_forced_rival_encounter_done",
+      "title": "ライバルたちの実力",
+      "description": "練習会ではじめは初めて「自分以外のシーシャ作り」を目の当たりにする。",
+      "dialogue_file": "ch1_main",
+      "dialogue_id": "ch1_rival_encounter",
+      "stat_changes": {"insight": 3},
+      "next_scene": "map"
+    },
+    {
+      "id": "ch1_forced_sumi_story",
+      "day": 5,
+      "time_slot": "night",
+      "flag": "ch1_forced_sumi_story_done",
+      "title": "スミさんの過去",
+      "description": "閉店後、スミさんがはじめを残す。「ちょっと残れ。見せたいものがある」",
+      "dialogue_file": "ch1_sumi",
+      "dialogue_id": "ch1_sumi_secret",
+      "stat_changes": {"technique": 3, "sense": 2},
+      "next_scene": "map"
+    }
+  ]
+}

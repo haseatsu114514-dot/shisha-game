@@ -3,7 +3,7 @@ extends Node
 signal game_state_changed(new_state: String)
 signal chapter_started(chapter_num: int)
 
-const SAVE_VERSION: int = 1
+const SAVE_VERSION: int = 2
 const SAVE_PATH_TEMPLATE := "user://save_slot_%d.json"
 const BGM_TITLE_PATH = "res://assets/audio/bgm/bgm_title.ogg"
 const BGM_DAILY_PATH = "res://assets/audio/bgm/daily_part.mp3"
@@ -22,6 +22,9 @@ var daily_summary: Dictionary = {
 
 var _bgm_player: AudioStreamPlayer
 var _current_bgm_path: String = ""
+
+## Forced events loaded from data
+var _forced_events: Array = []
 
 
 func _ready() -> void:
@@ -154,13 +157,14 @@ func start_new_game() -> void:
 	current_phase = "daily"
 	game_state = "daily"
 	PlayerData.reset_data()
-	CalendarManager.reset_calendar(7, 8)
+	CalendarManager.setup_chapter(1)
 	AffinityManager.reset_data()
 	RivalIntel.reset_data()
 	EventFlags.reset_flags()
 	reset_daily_summary()
 	transient.clear()
 	PlayerData.add_flavor("double_apple", 2)
+	_load_forced_events()
 	emit_signal("chapter_started", current_chapter)
 	emit_signal("game_state_changed", game_state)
 
@@ -169,8 +173,8 @@ func start_chapter(chapter_num: int) -> void:
 	current_chapter = chapter_num
 	current_phase = "daily"
 	game_state = "daily"
-	if chapter_num == 1:
-		CalendarManager.reset_calendar(7, 8)
+	CalendarManager.setup_chapter(chapter_num)
+	_load_forced_events()
 	emit_signal("chapter_started", current_chapter)
 	emit_signal("game_state_changed", game_state)
 
@@ -179,6 +183,67 @@ func transition_to_tournament() -> void:
 	current_phase = "tournament"
 	game_state = "tournament"
 	emit_signal("game_state_changed", game_state)
+
+
+func transition_to_interval() -> void:
+	var config = CalendarManager.CHAPTER_CONFIG.get(current_chapter, {})
+	var interval_days = int(config.get("interval_days", 0))
+	if interval_days <= 0:
+		return
+	current_phase = "interval"
+	game_state = "interval"
+	CalendarManager.start_interval(interval_days)
+	emit_signal("game_state_changed", game_state)
+
+
+func end_interval_and_next_chapter() -> void:
+	CalendarManager.end_interval()
+	start_chapter(current_chapter + 1)
+
+
+## Forced events system
+func _load_forced_events() -> void:
+	_forced_events.clear()
+	if not FileAccess.file_exists("res://data/forced_events.json"):
+		return
+	var file = FileAccess.open("res://data/forced_events.json", FileAccess.READ)
+	if file == null:
+		return
+	var parsed = JSON.parse_string(file.get_as_text())
+	file.close()
+	if typeof(parsed) != TYPE_DICTIONARY:
+		return
+	var key = "chapter_%d" % current_chapter
+	var events = parsed.get(key, [])
+	for event in events:
+		_forced_events.append(event)
+
+
+func get_forced_event_for_today(time_slot: String) -> Dictionary:
+	var day = CalendarManager.current_day
+	for event in _forced_events:
+		if int(event.get("day", -1)) != day:
+			continue
+		if str(event.get("time_slot", "")) != time_slot:
+			continue
+		var flag = str(event.get("flag", ""))
+		if flag != "" and EventFlags.get_flag(flag):
+			continue
+		return event
+	return {}
+
+
+func complete_forced_event(event: Dictionary) -> void:
+	var flag = str(event.get("flag", ""))
+	if flag != "":
+		EventFlags.set_flag(flag)
+	var stat_changes = event.get("stat_changes", {})
+	if typeof(stat_changes) == TYPE_DICTIONARY:
+		for stat_name in stat_changes:
+			var amount = int(stat_changes[stat_name])
+			if amount != 0:
+				PlayerData.add_stat(stat_name, amount)
+				log_stat_change(stat_name, amount)
 
 
 func set_transient(key: String, value: Variant) -> void:
@@ -246,9 +311,15 @@ func save_game(slot: int) -> bool:
 	var save_data: Dictionary = {
 		"save_version": SAVE_VERSION,
 		"chapter": current_chapter,
+		"phase": current_phase,
 		"day": CalendarManager.current_day,
 		"time": CalendarManager.current_time,
 		"actions_remaining": CalendarManager.actions_remaining,
+		"is_interval": CalendarManager.is_interval,
+		"interval_day": CalendarManager.interval_day,
+		"interval_max_days": CalendarManager.interval_max_days,
+		"is_overseas": CalendarManager.is_overseas,
+		"overseas_location": CalendarManager.overseas_location,
 		"player_data": PlayerData.to_save_data(),
 		"affinities": AffinityManager.to_save_data(),
 		"rival_intel": RivalIntel.to_save_data(),
@@ -284,19 +355,26 @@ func load_game(slot: int) -> bool:
 
 	var data: Dictionary = parsed
 	current_chapter = int(data.get("chapter", 1))
-	current_phase = "daily"
-	game_state = "daily"
+	current_phase = str(data.get("phase", "daily"))
+	game_state = current_phase
 	transient.clear()
 	reset_daily_summary()
 
 	CalendarManager.current_day = int(data.get("day", 1))
 	CalendarManager.current_time = str(data.get("time", "morning"))
 	CalendarManager.actions_remaining = int(data.get("actions_remaining", 2))
+	CalendarManager.is_interval = bool(data.get("is_interval", false))
+	CalendarManager.interval_day = int(data.get("interval_day", 0))
+	CalendarManager.interval_max_days = int(data.get("interval_max_days", 0))
+	CalendarManager.is_overseas = bool(data.get("is_overseas", false))
+	CalendarManager.overseas_location = str(data.get("overseas_location", ""))
 
 	PlayerData.from_save_data(data.get("player_data", {}))
 	AffinityManager.from_save_data(data.get("affinities", {}))
 	RivalIntel.from_save_data(data.get("rival_intel", {}))
 	EventFlags.from_save_data(data.get("event_flags", {}))
+
+	_load_forced_events()
 
 	emit_signal("chapter_started", current_chapter)
 	emit_signal("game_state_changed", game_state)
