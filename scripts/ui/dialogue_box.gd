@@ -226,11 +226,17 @@ func _finish_dialogue() -> void:
 
 	if _metadata.has("set_flag"):
 		EventFlags.set_flag(str(_metadata["set_flag"]))
+	if _metadata.has("set_flags"):
+		var flags = _metadata["set_flags"]
+		if typeof(flags) == TYPE_ARRAY:
+			for flag in flags:
+				EventFlags.set_flag(str(flag))
 	if _metadata.has("morning_notice"):
 		GameManager.set_transient("morning_notice", _metadata["morning_notice"])
 
 	if dialogue_id == "ch1_opening":
 		EventFlags.set_flag("ch1_sumi_tournament_talk", true)
+		EventFlags.set_flag("ch1_forced_opening_done", true)
 
 	if next_scene_path != "":
 		get_tree().change_scene_to_file(next_scene_path)

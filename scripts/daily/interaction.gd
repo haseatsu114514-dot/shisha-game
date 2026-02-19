@@ -43,7 +43,7 @@ func _show_naru_interaction() -> void:
 		EventFlags.set_flag("ch1_naru_met")
 		AffinityManager.set_met("naru")
 		RivalIntel.add_intel("naru", "flavor_genre", "お菓子系")
-		body_label.text = "なる「お前、チルハウスの人間？ スミさんのとこの？」"
+		body_label.text = "なる「お前、チルハウスの人間？ スミさんのとこの？」\nなる「俺、ケムリクサでバイトしてる鳴切。大会で会うなら、今のうちに仲良くしとこうぜ」"
 		_clear_options()
 		_add_option("LIME交換する", "exchange_lime", "naru")
 		_add_option("また今度", "none")
@@ -70,7 +70,7 @@ func _show_adam_interaction() -> void:
 		AffinityManager.set_met("adam")
 		RivalIntel.add_intel("adam", "flavor_genre", "double_apple")
 		RivalIntel.add_intel("adam", "flavor_detail", "double_apple_only")
-		body_label.text = "棚にダブルアップルしかない。\nアダム「…何か用か」"
+		body_label.text = "棚にはダブルアップルしかない。\nアダム「……何か用か」\nアダム「他は要らない。これだけで十分だ」"
 		return
 
 	if count == 1 and not AffinityManager.has_lime("adam"):
@@ -94,7 +94,7 @@ func _show_kirara_interaction() -> void:
 		EventFlags.set_flag("ch1_kirara_met")
 		AffinityManager.set_met("kirara")
 		RivalIntel.add_intel("kirara", "flavor_genre", "映え系フルーツ")
-		body_label.text = "きらら「あら、チルハウスの子？ いらっしゃい♪」"
+		body_label.text = "きらら「あら、チルハウスの子？ いらっしゃい♪」\nきらら「可愛いだけで勝てるほど大会は甘くないの。だから見せ方も味も、両方本気で作ってる」"
 		_clear_options()
 		_add_option("LIME交換する", "exchange_lime", "kirara")
 		_add_option("また今度", "none")

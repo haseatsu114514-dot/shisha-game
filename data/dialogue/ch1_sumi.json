@@ -3,8 +3,29 @@
     {
       "dialogue_id": "ch1_sumi_tutorial",
       "lines": [
-        {"speaker": "sumi", "face": "normal", "text": "昼と夜で1回ずつ行動できる。無駄にするなよ"},
-        {"speaker": "sumi", "face": "smile", "text": "店での経験も、ライバルの情報も全部武器になる"}
+        {"speaker": "sumi", "face": "normal", "text": "昼と夜で1回ずつ動ける。行き先はよく考えろ"},
+        {"speaker": "sumi", "face": "smile", "text": "店の現場も、ライバルの店も、全部お前の武器になる"}
+      ]
+    },
+    {
+      "dialogue_id": "ch1_sumi_training",
+      "lines": [
+        {"speaker": "sumi", "face": "serious", "text": "閉店後、少し残れ。炭と熱の回し方だけ叩き込む"},
+        {"speaker": "hajime", "face": "surprise", "text": "え、今からですか？"},
+        {"speaker": "sumi", "face": "normal", "text": "大会は派手な技より、崩れない基礎だ"},
+        {"speaker": "sumi", "face": "thinking", "text": "焦って温度を上げるな。煙は逃げる。客の顔を見て、必要な熱だけ入れろ"},
+        {"speaker": "hajime", "face": "serious", "text": "……はい。もう一回お願いします"}
+      ]
+    },
+    {
+      "dialogue_id": "ch1_sumi_secret",
+      "lines": [
+        {"speaker": "sumi", "face": "thinking", "text": "大会ってのは、勝つためだけに出る場所じゃねえ"},
+        {"speaker": "hajime", "face": "normal", "text": "それ、前にも言ってましたよね"},
+        {"speaker": "sumi", "face": "serious", "text": "数字より先に、誰にどう届いたかを見る。そこを外すな"},
+        {"speaker": "hajime", "face": "sad", "text": "……スミさん、昔のことを知りたいです"},
+        {"speaker": "sumi", "face": "normal", "text": "今はまだ早い。だが、お前が最後まで作り切るなら、いずれ話す"},
+        {"speaker": "hajime", "face": "serious", "text": "分かりました。まずは明日に向けて、作り切ります"}
       ]
     }
   ]

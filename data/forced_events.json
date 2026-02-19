@@ -7,7 +7,7 @@
       "flag": "ch1_forced_opening_done",
       "title": "スミさんの提案",
       "description": "閉店後、スミさんが唐突に切り出す。「はじめ。大会出ろ」",
-      "dialogue_file": "ch1_main",
+      "dialogue_file": "res://data/dialogue/ch1_main.json",
       "dialogue_id": "ch1_opening",
       "stat_changes": {},
       "next_scene": "map"
@@ -19,7 +19,7 @@
       "flag": "ch1_forced_sumi_training_done",
       "title": "スミさんの閉店後特訓",
       "description": "閉店後、スミさんがはじめを残す。「しばらく俺が現場出るから、好きに準備してこい。…あと、たまに店終わったら修行つけてやる」",
-      "dialogue_file": "ch1_main",
+      "dialogue_file": "res://data/dialogue/ch1_sumi.json",
       "dialogue_id": "ch1_sumi_training",
       "stat_changes": {"technique": 2, "guts": 2},
       "next_scene": "map"
@@ -31,7 +31,7 @@
       "flag": "ch1_forced_sumi_story_done",
       "title": "スミさんの過去",
       "description": "閉店後、スミさんがはじめを残す。「ちょっと残れ。見せたいものがある」",
-      "dialogue_file": "ch1_sumi",
+      "dialogue_file": "res://data/dialogue/ch1_sumi.json",
       "dialogue_id": "ch1_sumi_secret",
       "stat_changes": {"technique": 3, "sense": 2},
       "next_scene": "map"

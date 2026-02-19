@@ -247,18 +247,6 @@ func _do_sumi_talk() -> void:
 		body_label.text = "行動コマがありません。"
 		return
 
-	if CalendarManager.current_day == 5 and not EventFlags.get_flag("ch1_day5_sumi_story"):
-		EventFlags.set_flag("ch1_day5_sumi_story")
-		CalendarManager.advance_time()
-		GameManager.queue_dialogue(
-			"res://data/dialogue/ch1_main.json",
-			"ch1_day5_sumi_story",
-			"res://scenes/daily/map.tscn",
-			{"bg": "res://assets/backgrounds/bg_chillhouse_inside.png"}
-		)
-		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
-		return
-
 	var text = "スミさんと話した。"
 	if CalendarManager.current_day == 1:
 		text = "スミさん「昼と夜で行動は2回だ。動き方を考えろ」"
