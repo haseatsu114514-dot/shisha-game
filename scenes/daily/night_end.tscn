@@ -15,7 +15,7 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.0156863, 0.0196078, 0.054902, 1)
+color = Color(0.008, 0.01, 0.035, 1)
 
 [node name="Panel" type="PanelContainer" parent="."]
 layout_mode = 1
@@ -26,7 +26,16 @@ offset_bottom = 650.0
 
 [node name="VBox" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "DAY REPORT"
+horizontal_alignment = 1
+
+[node name="Separator" type="HSeparator" parent="Panel/VBox"]
+layout_mode = 2
 
 [node name="SummaryLabel" type="RichTextLabel" parent="Panel/VBox"]
 unique_name_in_owner = true
@@ -40,7 +49,7 @@ theme_override_constants/separation = 8
 
 [node name="AutoTimer" type="Timer" parent="."]
 unique_name_in_owner = true
-wait_time = 2.0
+wait_time = 2.5
 one_shot = true
 
 [node name="HUD" parent="." instance=ExtResource("2")]

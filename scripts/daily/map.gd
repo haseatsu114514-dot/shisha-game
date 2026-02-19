@@ -71,7 +71,7 @@ func _refresh_spots() -> void:
 		child.queue_free()
 
 	_apply_map_visuals()
-	message_label.text = "行き先を選択"
+	message_label.text = "行き先を選択　（残り行動：%d）" % CalendarManager.actions_remaining
 
 	for spot in _build_spot_list():
 		_add_spot_marker(spot)

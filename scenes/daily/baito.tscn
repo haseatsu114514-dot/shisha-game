@@ -20,12 +20,19 @@ texture = ExtResource("2")
 expand_mode = 1
 stretch_mode = 5
 
+[node name="DarkOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.0, 0.0, 0.02, 0.45)
+
 [node name="Panel" type="PanelContainer" parent="."]
 layout_mode = 1
-offset_left = 80.0
-offset_top = 80.0
-offset_right = 1200.0
-offset_bottom = 680.0
+offset_left = 340.0
+offset_top = 70.0
+offset_right = 1240.0
+offset_bottom = 700.0
 
 [node name="VBox" type="VBoxContainer" parent="Panel"]
 layout_mode = 2
@@ -34,12 +41,17 @@ theme_override_constants/separation = 10
 [node name="HeaderLabel" type="Label" parent="Panel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "チルハウス"
+theme_override_font_sizes/font_size = 26
+text = "CHILL HOUSE"
+
+[node name="Separator" type="HSeparator" parent="Panel/VBox"]
+layout_mode = 2
 
 [node name="BodyLabel" type="RichTextLabel" parent="Panel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
+custom_minimum_size = Vector2(0, 140)
 text = "何をする？"
 
 [node name="MenuContainer" type="VBoxContainer" parent="Panel/VBox"]
@@ -55,6 +67,7 @@ theme_override_constants/separation = 8
 [node name="BackButton" type="Button" parent="Panel/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
+custom_minimum_size = Vector2(0, 38)
 text = "マップへ戻る"
 
 [node name="HUD" parent="." instance=ExtResource("3")]
