@@ -18,13 +18,16 @@ func _ready() -> void:
 		notification_label.text = ""
 		return
 
-	if CalendarManager.current_day >= 2:
+	if CalendarManager.is_interval:
+		var remaining = CalendarManager.get_interval_remaining_days()
+		info_label.text = "インターバル Day %d\n自由に行動できる（残り%d日）" % [CalendarManager.interval_day, remaining]
+	elif CalendarManager.current_day >= 2:
 		EventFlags.set_flag("ch1_rival_shops_open", true)
 
 	var notice = str(GameManager.pop_transient("morning_notice", ""))
 	if notice != "":
 		info_label.text = notice
-	else:
+	elif not CalendarManager.is_interval:
 		info_label.text = "朝のスマホチェック"
 
 	_today_messages = _load_today_lime_messages()
