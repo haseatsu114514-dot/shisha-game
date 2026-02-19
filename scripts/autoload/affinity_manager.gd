@@ -1,7 +1,7 @@
 extends Node
 
 const DEFAULT_AFFINITIES := {
-	"nishio": {"level": 0, "lime_exchanged": false, "met": false},
+	"naru": {"level": 0, "lime_exchanged": false, "met": false},
 	"adam": {"level": 0, "lime_exchanged": false, "met": false},
 	"ryuji": {"level": 0, "lime_exchanged": false, "met": false},
 	"tsumugi": {"level": 0, "lime_exchanged": false, "met": false},

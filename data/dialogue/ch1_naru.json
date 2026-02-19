@@ -1,0 +1,15 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "ch1_naru_first",
+      "lines": [
+        {"speaker": "naru", "face": "smile", "text": "いらっしゃいませー。……ん？ そのマウスピース"},
+        {"speaker": "naru", "face": "smile", "text": "お前、チルハウスの人間？ スミさんのとこの？"},
+        {"speaker": "hajime", "face": "normal", "text": "あ、はい。バイトの蒸野です"},
+        {"speaker": "naru", "face": "excited", "text": "へー！ 俺、鳴切。ここのバイト。……ってことはお前、来月の大会出るっしょ？"},
+        {"speaker": "naru", "face": "excited", "text": "俺さ、マジでシーシャ好きなんだわ。たぶん今のバイト先の中で一番好き。いや世界一好きかも"},
+        {"speaker": "hajime", "face": "sad", "text": "僕は……なんとなく、かな"}
+      ]
+    }
+  ]
+}

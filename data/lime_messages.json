@@ -1,20 +1,20 @@
 {
   "messages": [
     {
-      "id": "lime_nishio_day3",
-      "sender": "nishio",
+      "id": "lime_naru_day3",
+      "sender": "naru",
       "trigger_day": 3,
       "trigger_condition": "lime_exchanged",
       "type": "invitation",
       "time_slot": "night",
       "messages": [
-        {"sender": "nishio", "text": "よう"},
-        {"sender": "nishio", "text": "今日の夜暇？"},
-        {"sender": "nishio", "text": "新しいミックス試したいんだけど"},
-        {"sender": "nishio", "text": "お前の意見聞きたくて"}
+        {"sender": "naru", "text": "よう"},
+        {"sender": "naru", "text": "今日の夜暇？"},
+        {"sender": "naru", "text": "新しいミックス試したいんだけど"},
+        {"sender": "naru", "text": "お前の意見聞きたくて"}
       ],
-      "accept_event": "interaction_nishio_night_01",
-      "decline_response": {"sender": "nishio", "text": "おk。またな"}
+      "accept_event": "interaction_naru_night_01",
+      "decline_response": {"sender": "naru", "text": "おk。またな"}
     },
     {
       "id": "lime_ryuji_day4",
@@ -32,15 +32,15 @@
       "decline_response": {"sender": "ryuji", "text": "マジか！！残念！！またな！！"}
     },
     {
-      "id": "lime_nishio_day6",
-      "sender": "nishio",
+      "id": "lime_naru_day6",
+      "sender": "naru",
       "trigger_day": 6,
       "trigger_condition": "lime_exchanged",
       "type": "chat",
       "messages": [
-        {"sender": "nishio", "text": "なあ"},
-        {"sender": "nishio", "text": "正直ちょっと緊張してきた"},
-        {"sender": "nishio", "text": "お前は？"}
+        {"sender": "naru", "text": "なあ"},
+        {"sender": "naru", "text": "正直ちょっと緊張してきた"},
+        {"sender": "naru", "text": "お前は？"}
       ],
       "replies": [
         {"text": "俺も", "response": "だよな笑　まあやるしかねえか", "affinity": 3},
