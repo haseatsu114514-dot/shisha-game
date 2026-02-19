@@ -67,13 +67,39 @@ func _add_section_label(text: String) -> void:
 
 
 func _add_flavor_button(item: Dictionary) -> void:
-	var button = Button.new()
-	var name = str(item.get("name", "item"))
+	var wrapper = VBoxContainer.new()
+	wrapper.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	var flavor_id = str(item.get("id", ""))
+	var short_name = str(item.get("short_name", ""))
+	var full_name = str(item.get("name", flavor_id))
+	var display_name = short_name if short_name != "" else full_name
+	var category = str(item.get("category", ""))
+	if category == "":
+		category = PlayerData.get_flavor_category(flavor_id)
+	var category_label = PlayerData.get_flavor_specialty_label(category)
 	var price = _get_buy_price(item)
-	button.text = "%s  購入:%d円" % [name, price]
+	var title_label = Label.new()
+	title_label.text = "%s [%s]  購入:%d円" % [display_name, category_label, price]
+	title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	wrapper.add_child(title_label)
+
+	var description = str(item.get("description", ""))
+	if description != "":
+		var desc_label = Label.new()
+		desc_label.text = description
+		desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		wrapper.add_child(desc_label)
+
+	var button = Button.new()
+	button.text = "購入する"
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.pressed.connect(_on_flavor_buy_pressed.bind(item))
-	item_container.add_child(button)
+	wrapper.add_child(button)
+
+	var separator = HSeparator.new()
+	wrapper.add_child(separator)
+	item_container.add_child(wrapper)
 
 
 func _add_equipment_entry(item: Dictionary, equipment_items: Array) -> void:

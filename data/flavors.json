@@ -1,10 +1,52 @@
 {
   "flavors": [
-    {"id": "mint", "name": "アルファーヘブン ミント", "price": 1550},
-    {"id": "double_apple", "name": "アルファーヘブン ダブルアップル", "price": 1550},
-    {"id": "blueberry", "name": "アルファーヘブン ブルーベリー", "price": 1550},
-    {"id": "vanilla", "name": "アルファーヘブン バニラ", "price": 1550},
-    {"id": "pineapple", "name": "アルファーヘブン パイナップル", "price": 1550},
-    {"id": "coconut", "name": "アルファーヘブン ココナッツ", "price": 1550}
+    {
+      "id": "mint",
+      "name": "アルファーヘブン ミント",
+      "short_name": "AF ミント",
+      "category": "cooling",
+      "price": 1550,
+      "description": "アルファーヘブンのミント。キレのある清涼感で、熱を上げる戦略とも噛み合う。"
+    },
+    {
+      "id": "double_apple",
+      "name": "アルファーヘブン ダブルアップル",
+      "short_name": "AF ダブルアップル",
+      "category": "spice",
+      "price": 1550,
+      "description": "アルファーヘブンのダブルアップル。甘さの中にスパイス感があり、重めの煙を作りやすい。"
+    },
+    {
+      "id": "blueberry",
+      "name": "アルファーヘブン ブルーベリー",
+      "short_name": "AF ブルーベリー",
+      "category": "fruit",
+      "price": 1550,
+      "description": "アルファーヘブンのブルーベリー。果実感の輪郭が出しやすく、ミックスの軸にも使える。"
+    },
+    {
+      "id": "vanilla",
+      "name": "アルファーヘブン バニラ",
+      "short_name": "AF バニラ",
+      "category": "sweet",
+      "price": 1550,
+      "description": "アルファーヘブンのバニラ。甘みの厚みを乗せやすく、全体を丸くまとめる。"
+    },
+    {
+      "id": "pineapple",
+      "name": "アルファーヘブン パイナップル",
+      "short_name": "AF パイナップル",
+      "category": "fruit",
+      "price": 1550,
+      "description": "アルファーヘブンのパイナップル。立ち上がりが明るく、攻めた温度帯でも輪郭が残る。"
+    },
+    {
+      "id": "coconut",
+      "name": "アルファーヘブン ココナッツ",
+      "short_name": "AF ココナッツ",
+      "category": "sweet",
+      "price": 1550,
+      "description": "アルファーヘブンのココナッツ。甘い余韻が長く、重心を下げたい配合で強い。"
+    }
   ]
 }
