@@ -113,6 +113,7 @@ func _find_dialogue(root: Dictionary, target_id: String) -> Dictionary:
 
 
 func _on_advance_button_pressed() -> void:
+	GameManager.play_ui_se("cursor")
 	if _is_typing:
 		_show_full_text_immediately()
 		return
@@ -186,6 +187,7 @@ func _show_choices(choices: Array) -> void:
 
 
 func _on_choice_selected(branch_key: String) -> void:
+	GameManager.play_ui_se("confirm")
 	_clear_choices()
 	advance_button.disabled = false
 	advance_button.text = "次へ"

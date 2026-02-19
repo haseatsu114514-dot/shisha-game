@@ -53,6 +53,7 @@ const REBUTTAL_PROMPTS := [
 
 const REWARD_BY_RANK := {1: 30000, 2: 15000, 3: 5000, 4: 0}
 const PULL_DIFFICULTY := [0.86, 1.0, 1.22, 1.06]
+const TOTAL_PACKING_GRAMS := 12
 
 
 @onready var header_label: Label = %HeaderLabel
@@ -70,6 +71,7 @@ var _selected_hms: String = ""
 var _selected_flavors: Array[String] = []
 var _flavor_checks: Array[CheckBox] = []
 var _packing_choice: Dictionary = {}
+var _manual_packing_grams: Dictionary = {}
 var _special_mix_name: String = ""
 var _selected_charcoal_count: int = 3
 var _steam_minutes: int = 6
@@ -85,11 +87,24 @@ var _easy_mode: bool = false
 var _pending_reward: int = 0
 var _player_rank: int = 4
 var _rebuttal_prompt: Dictionary = {}
+var _pull_hit_count: int = 0
+var _pull_quality_total: float = 0.0
+var _pull_gauge_value: float = 0.5
+var _pull_gauge_direction: float = 1.0
+var _pull_gauge_speed: float = 1.0
+var _pull_target_center: float = 0.5
+var _pull_target_width: float = 0.16
+var _pull_timer: Timer
 
 
 func _ready() -> void:
 	randomize()
 	GameManager.play_bgm(GameManager.BGM_CHILLHOUSE_PATH, -8.0, true)
+	_pull_timer = Timer.new()
+	_pull_timer.wait_time = 0.03
+	_pull_timer.one_shot = false
+	_pull_timer.timeout.connect(_on_pull_gauge_tick)
+	add_child(_pull_timer)
 	if GameManager.game_state != "tournament":
 		GameManager.transition_to_tournament()
 	_prepare_run()
@@ -103,6 +118,7 @@ func _prepare_run() -> void:
 	_selected_flavors.clear()
 	_flavor_checks.clear()
 	_packing_choice.clear()
+	_manual_packing_grams.clear()
 	_special_mix_name = ""
 	_selected_charcoal_count = 3
 	_steam_minutes = 6
@@ -115,6 +131,9 @@ func _prepare_run() -> void:
 	_used_memo_count = 0
 	_memo_bonus = 0.0
 	_rebuttal_prompt = {}
+	_pull_hit_count = 0
+	_pull_quality_total = 0.0
+	_pull_timer.stop()
 	_easy_mode = bool(EventFlags.get_value("ch1_tournament_easy_mode", false))
 
 	_technical_points = PlayerData.stat_technique * 0.9 + PlayerData.stat_sense * 0.7 + PlayerData.stat_guts * 0.5
@@ -153,7 +172,10 @@ func _add_choice_button(text: String, callback: Callable) -> Button:
 	button.text = text
 	button.custom_minimum_size = Vector2(0, 40)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	button.pressed.connect(callback)
+	button.pressed.connect(func() -> void:
+		GameManager.play_ui_se("cursor")
+		callback.call()
+	)
 	choice_container.add_child(button)
 	return button
 
@@ -387,15 +409,138 @@ func _confirm_flavor_selection() -> void:
 
 
 func _show_packing_step() -> void:
-	_set_phase(3, "パッキング配合（12g）", "配分を決める。配合の狙いが審査に直結。")
+	_set_phase(3, "パッキング配合（12g）", "配分を1g単位で調整する。合計12gで確定。")
 	_clear_choices()
+	_ensure_manual_packing_grams()
+	_update_packing_info_text()
 
 	var patterns = _build_packing_patterns()
 	for pattern in patterns:
-		var text = "%s  |  %s" % [str(pattern.get("label", "配合")), _format_pattern_grams(pattern)]
-		_add_choice_button(text, _on_packing_selected.bind(pattern))
+		var text = "プリセット: %s  |  %s" % [str(pattern.get("label", "配合")), _format_pattern_grams(pattern)]
+		_add_choice_button(text, _apply_packing_preset.bind(pattern))
+
+	var title = Label.new()
+	title.text = "1g調整"
+	title.add_theme_font_size_override("font_size", 20)
+	choice_container.add_child(title)
+
+	for flavor_id in _selected_flavors:
+		choice_container.add_child(_build_packing_row(flavor_id))
+
+	var remaining = TOTAL_PACKING_GRAMS - _sum_manual_packing_grams()
+	var remaining_label = Label.new()
+	remaining_label.text = "残り: %dg" % remaining
+	choice_container.add_child(remaining_label)
+
+	var confirm_button = _add_choice_button("この配合で確定", _confirm_manual_packing)
+	confirm_button.disabled = remaining != 0
 
 	_refresh_side_panel()
+
+
+func _update_packing_info_text() -> void:
+	var total = _sum_manual_packing_grams()
+	var remaining = TOTAL_PACKING_GRAMS - total
+	var lines: Array[String] = []
+	lines.append("現在配合: %s" % _format_pattern_grams({"grams": _manual_packing_grams}))
+	lines.append("合計: %dg / %dg" % [total, TOTAL_PACKING_GRAMS])
+	if remaining == 0:
+		lines.append("確定可能")
+	else:
+		lines.append("残り %dg を配分して。" % remaining)
+	info_label.text = "\n".join(lines)
+
+
+func _ensure_manual_packing_grams() -> void:
+	var needs_reset = _manual_packing_grams.is_empty() or _manual_packing_grams.size() != _selected_flavors.size()
+	if not needs_reset:
+		for flavor_id in _selected_flavors:
+			if not _manual_packing_grams.has(flavor_id):
+				needs_reset = true
+				break
+	if not needs_reset:
+		return
+
+	_manual_packing_grams.clear()
+	var count = maxi(1, _selected_flavors.size())
+	var base_grams = int(TOTAL_PACKING_GRAMS / count)
+	var remainder = TOTAL_PACKING_GRAMS % count
+	for i in range(_selected_flavors.size()):
+		var flavor_id = _selected_flavors[i]
+		var grams = base_grams
+		if i < remainder:
+			grams += 1
+		_manual_packing_grams[flavor_id] = grams
+
+
+func _build_packing_row(flavor_id: String) -> Control:
+	var row = HBoxContainer.new()
+	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_theme_constant_override("separation", 6)
+
+	var minus_button = Button.new()
+	minus_button.text = "-1g"
+	minus_button.custom_minimum_size = Vector2(90, 36)
+	minus_button.disabled = int(_manual_packing_grams.get(flavor_id, 0)) <= 0
+	minus_button.pressed.connect(_adjust_manual_grams.bind(flavor_id, -1))
+	row.add_child(minus_button)
+
+	var flavor_label = Label.new()
+	flavor_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	flavor_label.text = "%s  %dg" % [_flavor_name(flavor_id), int(_manual_packing_grams.get(flavor_id, 0))]
+	row.add_child(flavor_label)
+
+	var plus_button = Button.new()
+	plus_button.text = "+1g"
+	plus_button.custom_minimum_size = Vector2(90, 36)
+	plus_button.disabled = _sum_manual_packing_grams() >= TOTAL_PACKING_GRAMS
+	plus_button.pressed.connect(_adjust_manual_grams.bind(flavor_id, 1))
+	row.add_child(plus_button)
+	return row
+
+
+func _adjust_manual_grams(flavor_id: String, delta: int) -> void:
+	var current = int(_manual_packing_grams.get(flavor_id, 0))
+	var total = _sum_manual_packing_grams()
+	if delta > 0 and total >= TOTAL_PACKING_GRAMS:
+		GameManager.play_ui_se("cancel")
+		return
+	if delta < 0 and current <= 0:
+		GameManager.play_ui_se("cancel")
+		return
+	_manual_packing_grams[flavor_id] = maxi(0, current + delta)
+	GameManager.play_ui_se("cursor")
+	_show_packing_step()
+
+
+func _sum_manual_packing_grams() -> int:
+	var total = 0
+	for flavor_id in _selected_flavors:
+		total += int(_manual_packing_grams.get(flavor_id, 0))
+	return total
+
+
+func _apply_packing_preset(pattern: Dictionary) -> void:
+	var grams: Dictionary = pattern.get("grams", {})
+	for flavor_id in _selected_flavors:
+		_manual_packing_grams[flavor_id] = int(grams.get(flavor_id, 0))
+	GameManager.play_ui_se("confirm")
+	_show_packing_step()
+
+
+func _confirm_manual_packing() -> void:
+	var total = _sum_manual_packing_grams()
+	if total != TOTAL_PACKING_GRAMS:
+		GameManager.play_ui_se("cancel")
+		_append_info("合計12gにしてから確定して。")
+		return
+	var pattern = {
+		"label": "手動配合",
+		"style": "custom",
+		"grams": _manual_packing_grams.duplicate(true),
+	}
+	GameManager.play_ui_se("confirm")
+	_on_packing_selected(pattern)
 
 
 func _build_packing_patterns() -> Array:
@@ -461,6 +606,28 @@ func _on_packing_selected(pattern: Dictionary) -> void:
 			delta_spec += 5.0 + PlayerData.stat_guts * 0.05
 			delta_aud += 3.0
 			lines.append("攻めた高火力寄せ。")
+		"custom":
+			var values: Array[int] = []
+			for flavor_id in _selected_flavors:
+				var gram = int(grams.get(flavor_id, 0))
+				if gram > 0:
+					values.append(gram)
+			if values.size() <= 1:
+				delta_spec += 4.0 + PlayerData.stat_technique * 0.03
+				lines.append("単体寄りの手動配合。")
+			else:
+				values.sort()
+				var spread = int(values[values.size() - 1]) - int(values[0])
+				if spread <= 1:
+					delta_spec += 6.0 + PlayerData.stat_sense * 0.04
+					lines.append("手動配合のバランスが良い。")
+				elif int(values[values.size() - 1]) >= 7:
+					delta_spec += 5.0 + PlayerData.stat_guts * 0.04
+					delta_aud += 2.0
+					lines.append("主軸を立てた手動配合。")
+				else:
+					delta_spec += 4.0 + PlayerData.stat_insight * 0.04
+					lines.append("狙いを持った手動配合。")
 		_:
 			delta_spec += 4.0 + PlayerData.stat_insight * 0.05
 			lines.append("主軸フレーバーを明確化。")
@@ -706,97 +873,144 @@ func _get_steam_optimal_range(charcoal_count: int) -> Vector2i:
 
 func _show_pull_step() -> void:
 	var round_number = _pull_round + 1
-	var step_no = 8 + _pull_round * 2
-	_set_phase(step_no, "吸い出し %d回目" % round_number, "ゲージを止める。熱状態: %s" % _heat_label())
-
-	if _pull_round == 2:
-		_append_info("3回目は最難関。")
-	if PlayerData.equipment_charcoal == "cube_charcoal":
-		_append_info("キューブ炭: 有効範囲が狭い代わりに成功時リターンが大きい。")
-
+	_set_phase(8, "吸い出し %d / 4" % round_number, "ゲージをタイミング良く止める。熱状態: %s" % _heat_label())
 	_clear_choices()
-	_add_choice_button("安全域で止める", _on_pull_choice.bind("safe"))
-	_add_choice_button("有効域を狙う", _on_pull_choice.bind("normal"))
-	_add_choice_button("完璧域を狙う", _on_pull_choice.bind("perfect"))
+
+	var difficulty = float(PULL_DIFFICULTY[_pull_round])
+	_pull_target_width = clampf(0.22 - difficulty * 0.08 - float(abs(_heat_state)) * 0.01, 0.06, 0.22)
+	if PlayerData.equipment_charcoal == "cube_charcoal":
+		_pull_target_width = maxi(0.05, _pull_target_width - 0.02)
+	if _easy_mode:
+		_pull_target_width = mini(0.26, _pull_target_width + 0.04)
+
+	_pull_target_center = clampf(0.5 + float(_heat_state) * 0.07 + randf_range(-0.12, 0.12), 0.15, 0.85)
+	_pull_gauge_speed = 0.85 + float(_pull_round) * 0.2 + float(abs(_heat_state)) * 0.06
+	if _easy_mode:
+		_pull_gauge_speed = maxi(0.6, _pull_gauge_speed - 0.15)
+	_pull_gauge_value = clampf(_pull_target_center + randf_range(-0.18, 0.18), 0.0, 1.0)
+	_pull_gauge_direction = 1.0
+	_pull_timer.start()
+
+	_add_choice_button("止める", _on_pull_stop_pressed)
+	if PlayerData.equipment_charcoal == "cube_charcoal":
+		_append_info("キューブ炭: 当てれば高得点、外すと失点が重い。")
+	_refresh_side_panel()
+	_update_pull_gauge_text()
+
+
+func _on_pull_gauge_tick() -> void:
+	var delta = _pull_timer.wait_time
+	_pull_gauge_value += _pull_gauge_direction * _pull_gauge_speed * delta
+	if _pull_gauge_value >= 1.0:
+		_pull_gauge_value = 1.0
+		_pull_gauge_direction = -1.0
+	elif _pull_gauge_value <= 0.0:
+		_pull_gauge_value = 0.0
+		_pull_gauge_direction = 1.0
+	_update_pull_gauge_text()
+
+
+func _update_pull_gauge_text() -> void:
+	var bar_len = 24
+	var pointer_index = int(round(_pull_gauge_value * float(bar_len - 1)))
+	var target_start = int(round(clampf(_pull_target_center - _pull_target_width, 0.0, 1.0) * float(bar_len - 1)))
+	var target_end = int(round(clampf(_pull_target_center + _pull_target_width, 0.0, 1.0) * float(bar_len - 1)))
+
+	var bar_chars: Array[String] = []
+	for i in range(bar_len):
+		var char = "─"
+		if i >= target_start and i <= target_end:
+			char = "■"
+		if i == pointer_index:
+			char = "◆"
+		bar_chars.append(char)
+
+	info_label.text = "タイミングで止める\n%s\n目標帯 ■ / ポインタ ◆" % "".join(bar_chars)
+
+
+func _on_pull_stop_pressed() -> void:
+	if _pull_timer.is_stopped():
+		return
+	_pull_timer.stop()
+	var distance = abs(_pull_gauge_value - _pull_target_center)
+	var quality = "miss"
+	if distance <= _pull_target_width * 0.35:
+		quality = "perfect"
+	elif distance <= _pull_target_width:
+		quality = "good"
+	elif distance <= _pull_target_width * 1.7:
+		quality = "near"
+
+	var delta_spec = 0.0
+	var delta_aud = 0.0
+	var result_text = ""
+	match quality:
+		"perfect":
+			delta_spec = 24.0
+			delta_aud = 6.0
+			_pull_quality_total += 3.0
+			_pull_hit_count += 1
+			_heat_state += 1
+			result_text = "完璧停止"
+		"good":
+			delta_spec = 14.0
+			delta_aud = 3.0
+			_pull_quality_total += 2.0
+			_pull_hit_count += 1
+			_heat_state += 1
+			result_text = "有効停止"
+		"near":
+			delta_spec = 4.0
+			delta_aud = 1.0
+			_pull_quality_total += 1.0
+			result_text = "ニア停止"
+		_:
+			delta_spec = -10.0
+			delta_aud = -1.0
+			_heat_state += 2
+			result_text = "ミス停止"
+
+	if PlayerData.equipment_charcoal == "cube_charcoal":
+		if quality == "perfect":
+			delta_spec += 8.0
+			delta_aud += 4.0
+		elif quality == "miss":
+			delta_spec -= 4.0
+
+	_technical_points += delta_spec
+	_audience_points += delta_aud
+	_heat_state = clampi(_heat_state, -3, 3)
+	_pull_round += 1
+	GameManager.play_ui_se("confirm" if quality != "miss" else "cancel")
+
+	var next_callable = _show_pull_step if _pull_round < 4 else _show_serving_step
+	_show_step_result_and_next("%s: 専門 %+d / 一般 %+d" % [result_text, int(round(delta_spec)), int(round(delta_aud))], next_callable)
+
+
+func _show_serving_step() -> void:
+	_set_phase(9, "提供", "吸い出しを終えた。提供してお客さんの反応を見る。")
+	_clear_choices()
+	var lines: Array[String] = []
+	lines.append("吸い出しヒット: %d / 4" % _pull_hit_count)
+	lines.append("吸い出し品質: %.1f" % _pull_quality_total)
+	info_label.text = "\n".join(lines)
+	_add_choice_button("提供する", _on_serving_confirmed)
 	_refresh_side_panel()
 
 
-func _on_pull_choice(mode: String) -> void:
-	var difficulty = float(PULL_DIFFICULTY[_pull_round])
-	var heat_penalty = float(abs(_heat_state)) * 8.0
-	var control = 45.0 + PlayerData.stat_technique * 0.45 + _zone_bonus * 22.0 - heat_penalty
-	var brave = 18.0 + PlayerData.stat_guts * 0.55 + PlayerData.stat_technique * 0.2 + _zone_bonus * 12.0 - heat_penalty * 1.2
-
-	if _has_alpha_heaven_flavor_selected():
-		control += 2.0
-		brave += 5.0
-	if _selected_hms == "amaburst":
-		control -= 2.0
-		brave -= 4.0
-
-	var success_rate = 0.0
-	var success_spec = 0.0
-	var success_aud = 0.0
-	var fail_spec = 0.0
-	var mode_label = ""
-
-	match mode:
-		"safe":
-			success_rate = control + 24.0 - difficulty * 6.0
-			success_spec = 8.0
-			fail_spec = 2.0
-			mode_label = "安全域"
-		"normal":
-			success_rate = control + 8.0 - difficulty * 8.0
-			success_spec = 14.0
-			success_aud = 4.0
-			fail_spec = -6.0
-			mode_label = "有効域"
-		"perfect":
-			success_rate = brave - difficulty * 10.0
-			success_spec = 24.0
-			success_aud = 6.0
-			fail_spec = -12.0
-			mode_label = "完璧域"
-			if PlayerData.equipment_charcoal == "cube_charcoal":
-				success_rate -= 6.0
-				success_spec += 8.0
-				success_aud += 5.0
-				fail_spec -= 6.0
-
-	if _easy_mode:
-		success_rate += 10.0
-
-	var rolled_success = _roll(success_rate)
-	var result_text = "%s: " % mode_label
-	if rolled_success:
-		_technical_points += success_spec
-		_audience_points += success_aud
-		if mode == "perfect" and _pull_round == 2:
-			_technical_points += 6.0
-		result_text += "成功（成功率 %.0f%%）" % clampf(success_rate, 5.0, 95.0)
-		_heat_state += 1
-	else:
-		_technical_points += fail_spec
-		result_text += "失敗（成功率 %.0f%%）" % clampf(success_rate, 5.0, 95.0)
-		if mode == "safe":
-			_heat_state -= 1
-		else:
-			_heat_state += 2
-		if mode == "perfect" and _selected_hms == "amaburst":
-			_technical_points -= 2.0
-
-	_heat_state = clampi(_heat_state, -3, 3)
-	if _pull_round >= 3:
-		_show_step_result_and_next(result_text, _show_presentation_intro)
-	else:
-		_show_step_result_and_next(result_text, _show_adjustment_step.bind(_pull_round))
+func _on_serving_confirmed() -> void:
+	var spec_gain = 4.0 + _pull_quality_total * 1.8 + PlayerData.stat_technique * 0.03
+	var aud_gain = 3.0 + float(_pull_hit_count) * 2.0 + PlayerData.stat_charm * 0.02
+	_technical_points += spec_gain
+	_audience_points += aud_gain
+	GameManager.play_ui_se("confirm")
+	_show_step_result_and_next("提供評価: 専門 %+d / 一般 %+d" % [int(round(spec_gain)), int(round(aud_gain))], _show_adjustment_step.bind(0))
 
 
 func _show_adjustment_step(round_index: int) -> void:
-	var step_no = 9 + round_index * 2
+	var step_no = 10 + round_index
 	var target_action = _target_adjust_action()
-	_set_phase(step_no, "調整 %d回目" % (round_index + 1), _build_adjustment_cue(target_action, round_index))
+	_set_phase(step_no, "提供後の調整 %d回目" % (round_index + 1), _build_adjustment_cue(target_action, round_index))
 	_clear_choices()
 	_add_choice_button("温度を上げる（蓋を閉める）", _on_adjustment_choice.bind("up", target_action, round_index))
 	_add_choice_button("現状維持", _on_adjustment_choice.bind("stay", target_action, round_index))
@@ -885,12 +1099,12 @@ func _on_adjustment_choice(chosen_action: String, target_action: String, round_i
 		result_line += "（3連続成功ボーナス）"
 
 	_heat_state = clampi(_heat_state, -3, 3)
-	_pull_round += 1
-	_show_step_result_and_next(result_line, _show_pull_step)
+	var next_callable: Callable = _show_adjustment_step.bind(round_index + 1) if round_index < 2 else _show_presentation_intro
+	_show_step_result_and_next(result_line, next_callable)
 
 
 func _show_presentation_intro() -> void:
-	_set_phase(15, "プレゼン", "3ターンで審査員に意図を伝える。")
+	_set_phase(13, "プレゼン", "3ターンで審査員に意図を伝える。")
 	_rebuttal_prompt = REBUTTAL_PROMPTS[randi() % REBUTTAL_PROMPTS.size()]
 	_clear_choices()
 	_add_choice_button("姿勢アピールへ", _show_presentation_stance)
@@ -898,7 +1112,7 @@ func _show_presentation_intro() -> void:
 
 
 func _show_presentation_stance() -> void:
-	_set_phase(15, "プレゼン: 姿勢", "どの姿勢で語る？")
+	_set_phase(14, "プレゼン: 姿勢", "どの姿勢で語る？")
 	_clear_choices()
 	_add_choice_button("技術で語る", _on_stance_selected.bind("tech"))
 	_add_choice_button("想いで語る", _on_stance_selected.bind("heart"))
@@ -930,7 +1144,7 @@ func _on_stance_selected(stance_id: String) -> void:
 
 
 func _show_presentation_rebuttal() -> void:
-	_set_phase(15, "プレゼン: 切り返し", str(_rebuttal_prompt.get("question", "質問が飛んできた。")))
+	_set_phase(14, "プレゼン: 切り返し", str(_rebuttal_prompt.get("question", "質問が飛んできた。")))
 	_clear_choices()
 	_add_choice_button("正面から返す", _on_rebuttal_selected.bind("front"))
 	_add_choice_button("素直に認める", _on_rebuttal_selected.bind("admit"))
@@ -1201,6 +1415,8 @@ func _flavor_name(flavor_id: String) -> String:
 
 
 func _selected_flavor_summary() -> String:
+	if not _packing_choice.is_empty():
+		return _format_pattern_grams(_packing_choice)
 	var names: Array[String] = []
 	for flavor_id in _selected_flavors:
 		names.append(_flavor_name(flavor_id))
@@ -1225,6 +1441,7 @@ func _refresh_side_panel() -> void:
 	lines.append("専門暫定: %.1f" % maxi(_technical_points, 0.0))
 	lines.append("一般暫定: %.1f" % maxi(_audience_points, 0.0))
 	lines.append("調整成功: %d / 3" % _adjustment_hits)
+	lines.append("吸い出しヒット: %d / 4" % _pull_hit_count)
 	lines.append("熱状態: %s" % _heat_label())
 	lines.append("設定: %s + %s" % [
 		PlayerData.get_equipment_name_by_value(_selected_bowl),

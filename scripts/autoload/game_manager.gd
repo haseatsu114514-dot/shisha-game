@@ -5,9 +5,13 @@ signal chapter_started(chapter_num: int)
 
 const SAVE_VERSION: int = 2
 const SAVE_PATH_TEMPLATE := "user://save_slot_%d.json"
+const SETTINGS_PATH := "user://settings.cfg"
 const BGM_TITLE_PATH = "res://assets/audio/bgm/daily_part.mp3"
 const BGM_DAILY_PATH = "res://assets/audio/bgm/daily_part.mp3"
 const BGM_CHILLHOUSE_PATH = "res://assets/audio/bgm/chill_house.mp3"
+const DEFAULT_BGM_LEVEL := 0.8
+const DEFAULT_SE_LEVEL := 0.8
+const SILENT_DB := -80.0
 
 var current_chapter: int = 1
 var current_phase: String = "daily"
@@ -21,7 +25,10 @@ var daily_summary: Dictionary = {
 }
 
 var _bgm_player: AudioStreamPlayer
+var _bgm_base_volume_db: float = -8.0
 var _current_bgm_path: String = ""
+var _se_player: AudioStreamPlayer
+var _se_stream_cache: Dictionary = {}
 
 ## Forced events loaded from data
 var _forced_events: Array = []
@@ -29,8 +36,10 @@ var _forced_events: Array = []
 
 func _ready() -> void:
 	_setup_audio_player()
+	_setup_se_player()
 	_apply_default_font()
 	_apply_default_theme()
+	apply_audio_settings()
 
 
 func _apply_default_font() -> void:
@@ -110,11 +119,22 @@ func _setup_audio_player() -> void:
 	add_child(_bgm_player)
 
 
+func _setup_se_player() -> void:
+	if is_instance_valid(_se_player):
+		return
+	_se_player = AudioStreamPlayer.new()
+	_se_player.name = "SEPlayer"
+	_se_player.bus = "Master"
+	add_child(_se_player)
+
+
 func play_bgm(path: String, volume_db: float = -8.0, loop: bool = true) -> void:
 	_setup_audio_player()
 	if path == "":
 		return
 	if _current_bgm_path == path and _bgm_player.playing:
+		_bgm_base_volume_db = volume_db
+		_apply_bgm_volume_from_settings()
 		return
 	if not ResourceLoader.exists(path):
 		return
@@ -132,7 +152,8 @@ func play_bgm(path: String, volume_db: float = -8.0, loop: bool = true) -> void:
 		stream.loop_mode = AudioStreamWAV.LOOP_FORWARD if loop else AudioStreamWAV.LOOP_DISABLED
 
 	_bgm_player.stream = stream
-	_bgm_player.volume_db = volume_db
+	_bgm_base_volume_db = volume_db
+	_apply_bgm_volume_from_settings()
 	_bgm_player.play()
 	_current_bgm_path = path
 
@@ -150,6 +171,108 @@ func play_daily_bgm() -> void:
 		return
 	if ResourceLoader.exists(BGM_CHILLHOUSE_PATH):
 		play_bgm(BGM_CHILLHOUSE_PATH, -10.0, true)
+
+
+func apply_audio_settings() -> void:
+	_apply_bgm_volume_from_settings()
+
+
+func play_ui_se(kind: String = "cursor") -> void:
+	_setup_se_player()
+	var se_level = _get_audio_level("se", DEFAULT_SE_LEVEL)
+	if se_level <= 0.001:
+		return
+	var stream = _get_ui_se_stream(kind)
+	if stream == null:
+		return
+	_se_player.stop()
+	_se_player.stream = stream
+	_se_player.volume_db = _linear_level_to_db(se_level)
+	_se_player.play()
+
+
+func _apply_bgm_volume_from_settings() -> void:
+	if not is_instance_valid(_bgm_player):
+		return
+	var bgm_level = _get_audio_level("bgm", DEFAULT_BGM_LEVEL)
+	_bgm_player.volume_db = _bgm_base_volume_db + _linear_level_to_db(bgm_level)
+
+
+func _get_audio_level(key: String, fallback: float) -> float:
+	var cfg = ConfigFile.new()
+	if cfg.load(SETTINGS_PATH) != OK:
+		return fallback
+	return clampf(float(cfg.get_value("audio", key, fallback)), 0.0, 1.0)
+
+
+func _linear_level_to_db(level: float) -> float:
+	if level <= 0.001:
+		return SILENT_DB
+	return linear_to_db(level)
+
+
+func _get_ui_se_stream(kind: String) -> AudioStreamWAV:
+	if _se_stream_cache.has(kind):
+		return _se_stream_cache[kind]
+	var profile = _get_ui_se_profile(kind)
+	var stream = _build_ui_se_stream(profile)
+	_se_stream_cache[kind] = stream
+	return stream
+
+
+func _get_ui_se_profile(kind: String) -> Dictionary:
+	match kind:
+		"confirm":
+			return {"freq": 960.0, "duration": 0.07, "wave": "square"}
+		"purchase":
+			return {"freq": 740.0, "duration": 0.09, "wave": "sine"}
+		"cancel":
+			return {"freq": 520.0, "duration": 0.08, "wave": "triangle"}
+		_:
+			return {"freq": 820.0, "duration": 0.05, "wave": "square"}
+
+
+func _build_ui_se_stream(profile: Dictionary) -> AudioStreamWAV:
+	var freq = float(profile.get("freq", 820.0))
+	var duration = clampf(float(profile.get("duration", 0.05)), 0.02, 0.2)
+	var wave = str(profile.get("wave", "sine"))
+	var sample_rate = 22050
+	var frame_count = maxi(1, int(sample_rate * duration))
+	var attack = maxi(1, int(sample_rate * 0.004))
+	var release = maxi(1, int(sample_rate * 0.03))
+	var amplitude = 0.35
+
+	var data = PackedByteArray()
+	data.resize(frame_count * 2)
+	for i in range(frame_count):
+		var phase = TAU * freq * float(i) / float(sample_rate)
+		var oscillator = sin(phase)
+		match wave:
+			"square":
+				oscillator = 1.0 if oscillator >= 0.0 else -1.0
+			"triangle":
+				oscillator = (2.0 / PI) * asin(sin(phase))
+			_:
+				oscillator = sin(phase)
+
+		var env_attack = mini(1.0, float(i) / float(attack))
+		var release_start = frame_count - release
+		var env_release = 1.0
+		if i > release_start:
+			env_release = maxi(0.0, float(frame_count - i) / float(release))
+		var env = env_attack * env_release
+		var sample_value = int(clampi(int(oscillator * env * amplitude * 32767.0), -32768, 32767))
+		var byte_index = i * 2
+		data[byte_index] = sample_value & 0xFF
+		data[byte_index + 1] = (sample_value >> 8) & 0xFF
+
+	var stream = AudioStreamWAV.new()
+	stream.format = AudioStreamWAV.FORMAT_16_BITS
+	stream.mix_rate = sample_rate
+	stream.stereo = false
+	stream.loop_mode = AudioStreamWAV.LOOP_DISABLED
+	stream.data = data
+	return stream
 
 
 func start_new_game() -> void:

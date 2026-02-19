@@ -187,6 +187,7 @@ func _add_menu_button(text: String, action: String) -> void:
 
 
 func _on_menu_selected(action: String) -> void:
+	GameManager.play_ui_se("cursor")
 	match action:
 		"work_menu":
 			_show_shift_menu()
@@ -284,6 +285,7 @@ func _show_shift_process_step() -> void:
 
 
 func _on_shift_process_option_selected(step: Dictionary, option: Dictionary) -> void:
+	GameManager.play_ui_se("confirm")
 	_clear_buttons(choice_container)
 	var lines: Array[String] = [str(option.get("result", "仕込みを進めた。"))]
 	var option_stats: Dictionary = option.get("stats", {})
@@ -300,11 +302,6 @@ func _on_shift_process_option_selected(step: Dictionary, option: Dictionary) -> 
 	var bonus_lines = _apply_shift_process_bonus(practice_tag)
 	for bonus_line in bonus_lines:
 		lines.append(bonus_line)
-
-	var tip_bonus = int(option.get("money_bonus", 0))
-	if tip_bonus != 0:
-		_shift_process_money_bonus += tip_bonus
-		lines.append("接客チップ %+d円" % tip_bonus)
 
 	_shift_process_quality += int(option.get("score", 0))
 	body_label.text = "\n".join(lines)
@@ -407,6 +404,7 @@ func _show_next_event() -> void:
 
 
 func _on_event_choice_selected(choice: Dictionary) -> void:
+	GameManager.play_ui_se("confirm")
 	_clear_buttons(choice_container)
 	_apply_choice_result(choice)
 	body_label.text = str(choice.get("result", ""))
@@ -619,6 +617,7 @@ func _show_single_result_and_finish(text: String) -> void:
 
 
 func _on_back_button_pressed() -> void:
+	GameManager.play_ui_se("cancel")
 	get_tree().change_scene_to_file("res://scenes/daily/map.tscn")
 
 

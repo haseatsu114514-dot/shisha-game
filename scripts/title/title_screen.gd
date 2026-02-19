@@ -11,12 +11,16 @@ const SETTINGS_PATH := "user://settings.cfg"
 
 func _ready() -> void:
 	settings_panel.visible = false
+	bgm_slider.value_changed.connect(_on_audio_slider_changed)
+	se_slider.value_changed.connect(_on_audio_slider_changed)
 	_load_settings()
+	GameManager.apply_audio_settings()
 	info_label.text = "第1章：地方大会編「なんとなく始めた」"
 	GameManager.play_bgm(GameManager.BGM_TITLE_PATH, -8.0, true)
 
 
 func _on_new_game_pressed() -> void:
+	GameManager.play_ui_se("confirm")
 	GameManager.start_new_game()
 	GameManager.queue_dialogue(
 		"res://data/dialogue/ch1_main.json",
@@ -32,17 +36,21 @@ func _on_new_game_pressed() -> void:
 
 
 func _on_continue_pressed() -> void:
+	GameManager.play_ui_se("confirm")
 	GameManager.set_transient("save_load_mode", "load")
 	GameManager.set_transient("return_scene", "res://scenes/title/title_screen.tscn")
 	get_tree().change_scene_to_file("res://scenes/ui/save_load.tscn")
 
 
 func _on_settings_pressed() -> void:
+	GameManager.play_ui_se("cursor")
 	settings_panel.visible = true
 
 
 func _on_close_settings_pressed() -> void:
+	GameManager.play_ui_se("confirm")
 	_save_settings()
+	GameManager.apply_audio_settings()
 	settings_panel.visible = false
 
 
@@ -68,5 +76,11 @@ func _save_settings() -> void:
 	cfg.save(SETTINGS_PATH)
 
 
+func _on_audio_slider_changed(_value: float) -> void:
+	_save_settings()
+	GameManager.apply_audio_settings()
+
+
 func _on_quit_pressed() -> void:
+	GameManager.play_ui_se("cancel")
 	get_tree().quit()

@@ -120,6 +120,7 @@ func _build_spot_list() -> Array:
 
 
 func _on_spot_pressed(spot: Dictionary) -> void:
+	GameManager.play_ui_se("cursor")
 	_enter_spot(spot)
 
 

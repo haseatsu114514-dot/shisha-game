@@ -3,21 +3,27 @@ extends Control
 @onready var info_label: Label = %InfoLabel
 @onready var item_container: VBoxContainer = %ItemContainer
 @onready var money_label: Label = $Panel/VBox/HeaderHBox/MoneyLabel
+@onready var purchase_confirm_dialog: ConfirmationDialog = %PurchaseConfirmDialog
 
 var _advance_on_exit = false
 var _did_shop_transaction = false
 var _shop_visit_paid = false
+var _pending_purchase_kind: String = ""
+var _pending_purchase_item: Dictionary = {}
 const SHOP_VISIT_COST := 3500
 
 
 func _ready() -> void:
 	GameManager.play_daily_bgm()
+	purchase_confirm_dialog.confirmed.connect(_on_purchase_confirmed)
+	purchase_confirm_dialog.canceled.connect(_on_purchase_canceled)
 	_advance_on_exit = bool(GameManager.pop_transient("advance_time_after_scene", false))
 	_shop_visit_paid = _advance_on_exit
 	if not _advance_on_exit:
 		if CalendarManager.use_action():
 			_advance_on_exit = true
 		else:
+			GameManager.play_ui_se("cancel")
 			info_label.text = "行動コマが足りません。"
 			return
 
@@ -84,18 +90,23 @@ func _add_flavor_button(item: Dictionary) -> void:
 	title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	wrapper.add_child(title_label)
 
-	var description = str(item.get("description", ""))
-	if description != "":
-		var desc_label = Label.new()
-		desc_label.text = description
-		desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		wrapper.add_child(desc_label)
+	var button_row = HBoxContainer.new()
+	button_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button_row.add_theme_constant_override("separation", 6)
 
-	var button = Button.new()
-	button.text = "購入する"
-	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	button.pressed.connect(_on_flavor_buy_pressed.bind(item))
-	wrapper.add_child(button)
+	var detail_button = Button.new()
+	detail_button.text = "説明"
+	detail_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	detail_button.pressed.connect(_on_flavor_select_pressed.bind(item))
+	button_row.add_child(detail_button)
+
+	var buy_button = Button.new()
+	buy_button.text = "購入する"
+	buy_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	buy_button.pressed.connect(_on_flavor_buy_pressed.bind(item))
+	button_row.add_child(buy_button)
+
+	wrapper.add_child(button_row)
 
 	var separator = HSeparator.new()
 	wrapper.add_child(separator)
@@ -128,13 +139,14 @@ func _add_equipment_entry(item: Dictionary, equipment_items: Array) -> void:
 		desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		wrapper.add_child(desc_label)
 
+	var compatible_names: Array[String] = []
 	if equipment_type == "charcoal":
 		var charcoal_label = Label.new()
 		charcoal_label.text = "対応: 全ハガル / 全ヒートマネジメント"
 		charcoal_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		wrapper.add_child(charcoal_label)
 	else:
-		var compatible_names = _get_compatible_counterpart_names(item, equipment_items)
+		compatible_names = _get_compatible_counterpart_names(item, equipment_items)
 		if not compatible_names.is_empty():
 			var compatibility_label = Label.new()
 			if equipment_type == "bowl":
@@ -146,7 +158,7 @@ func _add_equipment_entry(item: Dictionary, equipment_items: Array) -> void:
 
 	var status_label = Label.new()
 	if is_equipped:
-		status_label.text = "状態: 装備中"
+		status_label.text = "状態: 使用中"
 	elif is_owned:
 		status_label.text = "状態: 所持"
 	else:
@@ -157,13 +169,19 @@ func _add_equipment_entry(item: Dictionary, equipment_items: Array) -> void:
 	button_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button_row.add_theme_constant_override("separation", 6)
 
+	var detail_button = Button.new()
+	detail_button.text = "説明"
+	detail_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	detail_button.pressed.connect(_on_equipment_select_pressed.bind(item, compatible_names))
+	button_row.add_child(detail_button)
+
 	var primary_button = Button.new()
 	primary_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	if is_equipped:
-		primary_button.text = "装備中"
+		primary_button.text = "使用中"
 		primary_button.disabled = true
 	elif is_owned:
-		primary_button.text = "装備する"
+		primary_button.text = "使用する"
 	else:
 		primary_button.text = "購入する"
 	primary_button.pressed.connect(_on_equipment_primary_pressed.bind(item))
@@ -184,17 +202,28 @@ func _add_equipment_entry(item: Dictionary, equipment_items: Array) -> void:
 
 
 func _on_flavor_buy_pressed(item: Dictionary) -> void:
+	_on_flavor_select_pressed(item)
 	var price = _get_buy_price(item)
-	if not PlayerData.spend_money(price):
+	if PlayerData.money < price:
+		GameManager.play_ui_se("cancel")
 		info_label.text = "お金が足りません。"
 		return
+	_request_purchase("flavor", item, "このフレーバーを購入しますか？\n価格: %d円" % price)
 
+
+func _buy_flavor_now(item: Dictionary) -> void:
+	var price = _get_buy_price(item)
+	if not PlayerData.spend_money(price):
+		GameManager.play_ui_se("cancel")
+		info_label.text = "お金が足りません。"
+		return
 	GameManager.log_money_change(-price)
 	var flavor_id = str(item.get("id", ""))
 	var flavor_name = str(item.get("name", flavor_id))
 	PlayerData.add_flavor(flavor_id, 1)
 	GameManager.log_flavor_change(flavor_name, 1)
 	_did_shop_transaction = true
+	GameManager.play_ui_se("purchase")
 	info_label.text = "%s を購入しました。" % flavor_name
 	_refresh_header()
 
@@ -206,33 +235,54 @@ func _on_equipment_primary_pressed(item: Dictionary) -> void:
 	if equipment_type == "" or equipment_value == "":
 		return
 
+	_on_equipment_select_pressed(item, [])
 	if PlayerData.has_owned_equipment(equipment_type, equipment_value):
 		if not PlayerData.can_equip(equipment_type, equipment_value):
+			GameManager.play_ui_se("cancel")
 			info_label.text = "現在のもう一方の装備と対応していません。対応表を確認してください。"
 			return
 		if PlayerData.equip_item(equipment_type, equipment_value):
-			info_label.text = "%s を装備しました。" % name
+			GameManager.play_ui_se("confirm")
+			info_label.text = "%s を使用中にしました。" % name
 			_load_shop_items()
 			_refresh_header()
 		return
 
 	var buy_price = _get_buy_price(item)
+	if PlayerData.money < buy_price:
+		GameManager.play_ui_se("cancel")
+		info_label.text = "お金が足りません。"
+		return
+	_request_purchase("equipment", item, "%s を購入しますか？\n価格: %d円" % [name, buy_price])
+
+
+func _buy_equipment_now(item: Dictionary) -> void:
+	var equipment_type = str(item.get("type", ""))
+	var equipment_value = str(item.get("value", ""))
+	var name = str(item.get("name", "機材"))
+	if equipment_type == "" or equipment_value == "":
+		return
+
+	var buy_price = _get_buy_price(item)
 	if not PlayerData.spend_money(buy_price):
+		GameManager.play_ui_se("cancel")
 		info_label.text = "お金が足りません。"
 		return
 
 	if not PlayerData.add_owned_equipment(equipment_type, equipment_value):
 		PlayerData.add_money(buy_price)
+		GameManager.play_ui_se("cancel")
 		info_label.text = "購入処理に失敗しました。"
 		return
 
 	GameManager.log_money_change(-buy_price)
 	_did_shop_transaction = true
+	GameManager.play_ui_se("purchase")
 	info_label.text = "%s を購入しました。" % name
 	if PlayerData.can_equip(equipment_type, equipment_value) and PlayerData.equip_item(equipment_type, equipment_value):
-		info_label.text = "%s を購入して装備しました。" % name
+		info_label.text = "%s を購入して使用中にしました。" % name
 	else:
-		info_label.text += "\n今の組み合わせでは装備できないため、所持のみになりました。"
+		info_label.text += "\n今の組み合わせでは使用できないため、所持のみになりました。"
 	var description = str(item.get("description", ""))
 	if description != "":
 		info_label.text += "\n" + description
@@ -249,14 +299,17 @@ func _on_equipment_sell_pressed(item: Dictionary) -> void:
 		return
 
 	if PlayerData.get_equipped_value(equipment_type) == equipment_value:
-		info_label.text = "装備中の機材は売却できません。"
+		GameManager.play_ui_se("cancel")
+		info_label.text = "使用中の機材は売却できません。"
 		return
 
 	if not PlayerData.has_owned_equipment(equipment_type, equipment_value):
+		GameManager.play_ui_se("cancel")
 		info_label.text = "未所持の機材は売却できません。"
 		return
 
 	if not PlayerData.remove_owned_equipment(equipment_type, equipment_value):
+		GameManager.play_ui_se("cancel")
 		info_label.text = "売却処理に失敗しました。"
 		return
 
@@ -264,6 +317,7 @@ func _on_equipment_sell_pressed(item: Dictionary) -> void:
 	PlayerData.add_money(sell_price)
 	GameManager.log_money_change(sell_price)
 	_did_shop_transaction = true
+	GameManager.play_ui_se("confirm")
 	info_label.text = "%s を売却しました。 +%d円" % [name, sell_price]
 
 	_load_shop_items()
@@ -367,7 +421,89 @@ func _maybe_add_recipe_hint() -> void:
 	info_label.text = "店主: 最近ダブルアップルとミントを一緒に買う人が多いよ"
 
 
+func _on_flavor_select_pressed(item: Dictionary) -> void:
+	GameManager.play_ui_se("cursor")
+	info_label.text = _build_flavor_info(item)
+
+
+func _on_equipment_select_pressed(item: Dictionary, compatible_names: Array) -> void:
+	GameManager.play_ui_se("cursor")
+	info_label.text = _build_equipment_info(item, compatible_names)
+
+
+func _build_flavor_info(item: Dictionary) -> String:
+	var flavor_id = str(item.get("id", ""))
+	var full_name = str(item.get("name", flavor_id))
+	var category = str(item.get("category", ""))
+	if category == "":
+		category = PlayerData.get_flavor_category(flavor_id)
+	var category_label = PlayerData.get_flavor_specialty_label(category)
+	var price = _get_buy_price(item)
+	var lines: Array[String] = []
+	lines.append(full_name)
+	lines.append("属性: %s / 価格: %d円" % [category_label, price])
+	var description = str(item.get("description", ""))
+	if description != "":
+		lines.append(description)
+	return "\n".join(lines)
+
+
+func _build_equipment_info(item: Dictionary, compatible_names: Array) -> String:
+	var name = str(item.get("name", "機材"))
+	var equipment_type = str(item.get("type", ""))
+	var equipment_value = str(item.get("value", ""))
+	var buy_price = _get_buy_price(item)
+	var sell_price = _get_sell_price(item)
+	var lines: Array[String] = []
+	lines.append("%s" % name)
+	lines.append("購入: %d円 / 売却: %d円" % [buy_price, sell_price])
+	var description = str(item.get("description", ""))
+	if description != "":
+		lines.append(description)
+	if equipment_type == "charcoal":
+		lines.append("対応: 全ハガル / 全ヒートマネジメント")
+	elif not compatible_names.is_empty():
+		if equipment_type == "bowl":
+			lines.append("対応HMS: " + " / ".join(compatible_names))
+		else:
+			lines.append("対応ハガル: " + " / ".join(compatible_names))
+	var is_owned = PlayerData.has_owned_equipment(equipment_type, equipment_value)
+	var is_equipped = PlayerData.get_equipped_value(equipment_type) == equipment_value
+	if is_equipped:
+		lines.append("状態: 使用中")
+	elif is_owned:
+		lines.append("状態: 所持")
+	else:
+		lines.append("状態: 未所持")
+	return "\n".join(lines)
+
+
+func _request_purchase(kind: String, item: Dictionary, message: String) -> void:
+	_pending_purchase_kind = kind
+	_pending_purchase_item = item.duplicate(true)
+	purchase_confirm_dialog.dialog_text = message
+	purchase_confirm_dialog.popup_centered()
+	GameManager.play_ui_se("confirm")
+
+
+func _on_purchase_confirmed() -> void:
+	match _pending_purchase_kind:
+		"flavor":
+			_buy_flavor_now(_pending_purchase_item)
+		"equipment":
+			_buy_equipment_now(_pending_purchase_item)
+	_pending_purchase_kind = ""
+	_pending_purchase_item = {}
+
+
+func _on_purchase_canceled() -> void:
+	GameManager.play_ui_se("cancel")
+	_pending_purchase_kind = ""
+	_pending_purchase_item = {}
+
+
 func _on_back_button_pressed() -> void:
+	GameManager.play_ui_se("cancel")
 	if _advance_on_exit:
 		if _did_shop_transaction:
 			CalendarManager.advance_time()

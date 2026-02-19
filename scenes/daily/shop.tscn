@@ -81,4 +81,10 @@ text = "マップへ戻る"
 
 [node name="HUD" parent="." instance=ExtResource("2")]
 
+[node name="PurchaseConfirmDialog" type="ConfirmationDialog" parent="."]
+unique_name_in_owner = true
+title = "購入確認"
+ok_button_text = "購入する"
+dialog_text = "購入しますか？"
+
 [connection signal="pressed" from="Panel/VBox/BackButton" to="." method="_on_back_button_pressed"]
