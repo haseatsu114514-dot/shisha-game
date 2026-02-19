@@ -12,9 +12,8 @@
     {"id": "naru", "name": "なる", "full_name": "鳴切 亮太", "role": "rival", "age": 21},
     {"id": "toki_kotetsu", "name": "土岐 鋼鉄", "role": "judge", "age": 48},
     {"id": "shiramine", "name": "白峰 恒一郎", "role": "judge", "age": 40},
-    {"id": "kemuriya", "name": "煙谷 六郎", "role": "judge", "age": 50},
+    {"id": "maezono", "name": "前園 壮一郎", "role": "judge", "age": 50, "description": "帽子をかぶってヒゲを生やしたシーシャ好きのおじさん"},
     {"id": "kirishima", "name": "霧島 レン", "role": "judge", "age": 26},
-    {"id": "takiguchi", "name": "焚口 ショウ", "role": "mc", "age": 33},
-    {"id": "toki", "name": "香月 トキ", "role": "hidden_boss", "age": 45}
+    {"id": "takiguchi", "name": "焚口 ショウ", "role": "mc", "age": 33}
   ]
 }
