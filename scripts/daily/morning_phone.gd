@@ -2,16 +2,11 @@ extends Control
 
 @onready var info_label: Label = %InfoLabel
 @onready var notification_label: Label = %NotificationLabel
-@onready var post_panel: PanelContainer = %PostPanel
-@onready var post_text_label: RichTextLabel = %PostTextLabel
-
 var _today_messages: Array = []
-var _today_post: Dictionary = {}
 
 
 func _ready() -> void:
 	GameManager.play_daily_bgm()
-	post_panel.visible = false
 
 	if CalendarManager.is_tournament_day():
 		info_label.text = "Day %d 大会当日！\nTo be continued..." % CalendarManager.current_day
@@ -31,7 +26,6 @@ func _ready() -> void:
 		info_label.text = "朝のスマホチェック"
 
 	_today_messages = _load_today_lime_messages()
-	_today_post = _load_today_post()
 	_update_notifications()
 
 
@@ -66,33 +60,11 @@ func _is_message_condition_met(message: Dictionary) -> bool:
 	return true
 
 
-func _load_today_post() -> Dictionary:
-	if not FileAccess.file_exists("res://data/sheesha_posts.json"):
-		return {}
-	var file = FileAccess.open("res://data/sheesha_posts.json", FileAccess.READ)
-	if file == null:
-		return {}
-	var parsed = JSON.parse_string(file.get_as_text())
-	file.close()
-	if typeof(parsed) != TYPE_DICTIONARY:
-		return {}
-
-	for post in parsed.get("posts", []):
-		if int(post.get("day", -1)) == CalendarManager.current_day:
-			return post
-	return {}
-
-
 func _update_notifications() -> void:
-	var lines: Array[String] = []
 	if _today_messages.size() > 0:
-		lines.append("LIME 未読 %d件" % _today_messages.size())
-	if not _today_post.is_empty():
-		lines.append("Sheesha タイムライン更新")
-	if lines.is_empty():
+		notification_label.text = "LIME 未読 %d件" % _today_messages.size()
+	else:
 		notification_label.text = "通知なし"
-		return
-	notification_label.text = "\n".join(lines)
 
 
 func _on_lime_button_pressed() -> void:
@@ -104,23 +76,6 @@ func _on_lime_button_pressed() -> void:
 	GameManager.set_transient("lime_today_messages", _today_messages)
 	get_tree().change_scene_to_file("res://scenes/ui/lime_screen.tscn")
 
-
-func _on_sheesha_button_pressed() -> void:
-	if CalendarManager.is_tournament_day():
-		return
-	if _today_post.is_empty():
-		info_label.text = "今日はタイムライン更新なし。"
-		return
-
-	var text = "[%s]\n%s" % [str(_today_post.get("author", "unknown")), str(_today_post.get("text", ""))]
-	if PlayerData.stat_insight >= 30:
-		text += "\n\n洞察メモ: %s" % str(_today_post.get("insight_bonus_text", ""))
-	post_text_label.text = text
-	post_panel.visible = true
-
-
-func _on_post_close_button_pressed() -> void:
-	post_panel.visible = false
 
 
 func _on_close_phone_button_pressed() -> void:

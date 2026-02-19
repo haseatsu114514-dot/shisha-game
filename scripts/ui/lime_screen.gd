@@ -20,18 +20,18 @@ const SELF_ID = "hajime"
 const DISPLAY_NAME = {
 	"hajime": "はじめ",
 	"sumi": "スミさん",
-	"nishio": "にしお",
+	"naru": "なる",
 	"adam": "アダム",
-	"ryuji": "リュウジ",
+	"kirara": "きらら",
 	"tsumugi": "つむぎ",
 	"packii": "パッキー"
 }
 const AVATAR_TEXTURES = {
 	"hajime": "res://assets/sprites/faces/face_hajime.png",
 	"sumi": "res://assets/sprites/faces/face_sumi.png",
-	"nishio": "res://assets/sprites/faces/face_nishio.png",
+	"naru": "res://assets/sprites/faces/face_naru.png",
 	"adam": "res://assets/sprites/faces/face_adam.png",
-	"ryuji": "res://assets/sprites/faces/face_ryuji.png",
+	"kirara": "res://assets/sprites/faces/face_kirara.png",
 	"tsumugi": "res://assets/sprites/faces/face_tsumugi.png",
 	"packii": "res://assets/sprites/faces/face_packii.png"
 }

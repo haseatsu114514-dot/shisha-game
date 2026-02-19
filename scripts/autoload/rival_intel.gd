@@ -1,9 +1,9 @@
 extends Node
 
 const DEFAULT_INTEL := {
-	"nishio": {"flavor_genre": "", "flavor_detail": "", "presentation": ""},
+	"naru": {"flavor_genre": "", "flavor_detail": "", "presentation": ""},
 	"adam": {"flavor_genre": "", "flavor_detail": "", "presentation": ""},
-	"ryuji": {"flavor_genre": "", "flavor_detail": "", "presentation": ""},
+	"kirara": {"flavor_genre": "", "flavor_detail": "", "presentation": ""},
 }
 
 var intel: Dictionary = DEFAULT_INTEL.duplicate(true)

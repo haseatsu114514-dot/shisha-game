@@ -26,9 +26,9 @@ var _current_speaker = ""
 const SPEAKER_NAMES := {
 	"hajime": "はじめ",
 	"sumi": "スミさん",
-	"nishio": "にしお",
+	"naru": "なる",
 	"adam": "アダム",
-	"ryuji": "リュウジ",
+	"kirara": "きらら",
 	"tsumugi": "つむぎ",
 	"packii": "パッキー"
 }

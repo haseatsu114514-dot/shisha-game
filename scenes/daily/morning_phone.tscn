@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/daily/morning_phone.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="2"]
+[ext_resource type="Texture2D" path="res://assets/ui/ui_phone_frame.png" id="3"]
 
 [node name="MorningPhone" type="Control"]
 layout_mode = 3
@@ -15,22 +16,32 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.0235294, 0.0705882, 0.113725, 1)
+color = Color(0.012, 0.02, 0.05, 1)
+
+[node name="PhoneTexture" type="TextureRect" parent="."]
+layout_mode = 1
+offset_left = 440.0
+offset_top = 20.0
+offset_right = 840.0
+offset_bottom = 700.0
+texture = ExtResource("3")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="PhoneFrame" type="PanelContainer" parent="."]
 layout_mode = 1
-offset_left = 320.0
-offset_top = 40.0
-offset_right = 960.0
-offset_bottom = 680.0
+offset_left = 460.0
+offset_top = 60.0
+offset_right = 820.0
+offset_bottom = 660.0
 
 [node name="VBox" type="VBoxContainer" parent="PhoneFrame"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 16
 
-[node name="Title" type="Label" parent="PhoneFrame/VBox"]
+[node name="TimeLabel" type="Label" parent="PhoneFrame/VBox"]
 layout_mode = 2
-text = "朝のスマホ"
+text = "AM 7:00"
 horizontal_alignment = 1
 
 [node name="InfoLabel" type="Label" parent="PhoneFrame/VBox"]
@@ -38,54 +49,31 @@ unique_name_in_owner = true
 layout_mode = 2
 text = ""
 autowrap_mode = 3
+horizontal_alignment = 1
+
+[node name="Separator" type="HSeparator" parent="PhoneFrame/VBox"]
+layout_mode = 2
 
 [node name="NotificationLabel" type="Label" parent="PhoneFrame/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "通知なし"
 autowrap_mode = 3
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="PhoneFrame/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
 
 [node name="LimeButton" type="Button" parent="PhoneFrame/VBox"]
 layout_mode = 2
-text = "LIMEを確認"
-
-[node name="SheeshaButton" type="Button" parent="PhoneFrame/VBox"]
-layout_mode = 2
-text = "Sheeshaを確認"
+text = "LIME を確認"
 
 [node name="ClosePhoneButton" type="Button" parent="PhoneFrame/VBox"]
 layout_mode = 2
 text = "スマホを閉じる"
 
-[node name="PostPanel" type="PanelContainer" parent="."]
-unique_name_in_owner = true
-visible = false
-layout_mode = 1
-offset_left = 360.0
-offset_top = 140.0
-offset_right = 920.0
-offset_bottom = 560.0
-
-[node name="PostVBox" type="VBoxContainer" parent="PostPanel"]
-layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="PostTitle" type="Label" parent="PostPanel/PostVBox"]
-layout_mode = 2
-text = "Sheeshaタイムライン"
-
-[node name="PostTextLabel" type="RichTextLabel" parent="PostPanel/PostVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="PostCloseButton" type="Button" parent="PostPanel/PostVBox"]
-layout_mode = 2
-text = "閉じる"
-
 [node name="HUD" parent="." instance=ExtResource("2")]
 
 [connection signal="pressed" from="PhoneFrame/VBox/LimeButton" to="." method="_on_lime_button_pressed"]
-[connection signal="pressed" from="PhoneFrame/VBox/SheeshaButton" to="." method="_on_sheesha_button_pressed"]
 [connection signal="pressed" from="PhoneFrame/VBox/ClosePhoneButton" to="." method="_on_close_phone_button_pressed"]
-[connection signal="pressed" from="PostPanel/PostVBox/PostCloseButton" to="." method="_on_post_close_button_pressed"]

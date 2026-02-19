@@ -1,0 +1,12 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "ch1_kirara_first",
+      "lines": [
+        {"speaker": "kirara", "face": "smile", "text": "あら、チルハウスの子？ いらっしゃい♪"},
+        {"speaker": "kirara", "face": "wink", "text": "ねえ、大会出るんでしょ？ 私も出るの"},
+        {"speaker": "kirara", "face": "serious", "text": "可愛いだけじゃ勝てないって思ってる？ ──見てなさい"}
+      ]
+    }
+  ]
+}

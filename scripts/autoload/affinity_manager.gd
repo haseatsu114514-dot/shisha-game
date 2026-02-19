@@ -1,11 +1,15 @@
 extends Node
 
+const MAX_LEVEL := 5
+
 const DEFAULT_AFFINITIES := {
-	"nishio": {"level": 0, "lime_exchanged": false, "met": false},
-	"adam": {"level": 0, "lime_exchanged": false, "met": false},
-	"ryuji": {"level": 0, "lime_exchanged": false, "met": false},
-	"tsumugi": {"level": 0, "lime_exchanged": false, "met": false},
+	"naru": {"level": 0, "lime_exchanged": false, "met": false, "romance": false},
+	"adam": {"level": 0, "lime_exchanged": false, "met": false, "romance": false},
+	"kirara": {"level": 0, "lime_exchanged": false, "met": false, "romance": false},
+	"tsumugi": {"level": 0, "lime_exchanged": false, "met": false, "romance": false},
 }
+
+const ROMANCE_CANDIDATES := ["kirara", "tsumugi", "ageha"]
 
 var affinities: Dictionary = DEFAULT_AFFINITIES.duplicate(true)
 
@@ -14,16 +18,52 @@ func reset_data() -> void:
 	affinities = DEFAULT_AFFINITIES.duplicate(true)
 
 
-func add_affinity(char_id: String, amount: int) -> void:
+func spend_time_with(char_id: String) -> int:
 	if not affinities.has(char_id):
-		return
-	affinities[char_id]["level"] = maxi(0, int(affinities[char_id].get("level", 0)) + amount)
+		return -1
+	var current = int(affinities[char_id].get("level", 0))
+	if current >= MAX_LEVEL:
+		return current
+	affinities[char_id]["level"] = current + 1
+	return current + 1
 
 
-func get_affinity(char_id: String) -> int:
+func get_level(char_id: String) -> int:
 	if not affinities.has(char_id):
 		return 0
 	return int(affinities[char_id].get("level", 0))
+
+
+func is_max_level(char_id: String) -> bool:
+	return get_level(char_id) >= MAX_LEVEL
+
+
+func is_romance_candidate(char_id: String) -> bool:
+	return char_id in ROMANCE_CANDIDATES
+
+
+func set_romance(char_id: String, value: bool = true) -> void:
+	if not affinities.has(char_id):
+		return
+	affinities[char_id]["romance"] = value
+
+
+func is_in_romance(char_id: String) -> bool:
+	if not affinities.has(char_id):
+		return false
+	return bool(affinities[char_id].get("romance", false))
+
+
+func get_romance_count() -> int:
+	var count = 0
+	for char_id in affinities.keys():
+		if bool(affinities[char_id].get("romance", false)):
+			count += 1
+	return count
+
+
+func is_two_timing() -> bool:
+	return get_romance_count() >= 2
 
 
 func exchange_lime(char_id: String) -> void:
@@ -57,6 +97,14 @@ func get_characters_with_lime() -> Array:
 		if bool(affinities[char_id].get("lime_exchanged", false)):
 			result.append(char_id)
 	return result
+
+
+func add_affinity(char_id: String, amount: int) -> void:
+	spend_time_with(char_id)
+
+
+func get_affinity(char_id: String) -> int:
+	return get_level(char_id)
 
 
 func to_save_data() -> Dictionary:

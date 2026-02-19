@@ -48,31 +48,36 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 
-[node name="MapPanel" type="PanelContainer" parent="."]
+[node name="InfoPanel" type="PanelContainer" parent="."]
 layout_mode = 1
-offset_left = 34.0
-offset_top = 80.0
-offset_right = 516.0
-offset_bottom = 174.0
-self_modulate = Color(1, 1, 1, 0.86)
+offset_left = 30.0
+offset_top = 580.0
+offset_right = 500.0
+offset_bottom = 700.0
 
-[node name="MapVBox" type="VBoxContainer" parent="MapPanel"]
+[node name="InfoVBox" type="VBoxContainer" parent="InfoPanel"]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 4
 
-[node name="TitleLabel" type="Label" parent="MapPanel/MapVBox"]
+[node name="AreaLabel" type="Label" parent="InfoPanel/InfoVBox"]
 layout_mode = 2
-text = "地方大会エリアマップ"
-horizontal_alignment = 0
+theme_override_font_sizes/font_size = 18
+text = "地方大会エリア"
 
-[node name="MessageLabel" type="Label" parent="MapPanel/MapVBox"]
+[node name="MessageLabel" type="Label" parent="InfoPanel/InfoVBox"]
 unique_name_in_owner = true
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
 text = "行き先を選択"
 autowrap_mode = 3
+
+[node name="ActionLabel" type="Label" parent="InfoPanel/InfoVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = ""
 
 [node name="HUD" parent="." instance=ExtResource("2")]
 
 [node name="ConfirmDialog" type="ConfirmationDialog" parent="."]
 unique_name_in_owner = true
-size = Vector2i(320, 120)
+size = Vector2i(340, 130)

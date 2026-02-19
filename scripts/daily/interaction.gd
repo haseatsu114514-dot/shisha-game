@@ -21,42 +21,42 @@ func _ready() -> void:
 		return
 
 	match _target:
-		"nishio":
-			_show_nishio_interaction()
+		"naru":
+			_show_naru_interaction()
 		"adam":
 			_show_adam_interaction()
-		"ryuji":
-			_show_ryuji_interaction()
+		"kirara":
+			_show_kirara_interaction()
 		_:
 			_set_portrait("")
 			header_label.text = "交流"
 			body_label.text = "誰もいない。"
 
 
-func _show_nishio_interaction() -> void:
-	header_label.text = "にしおの店"
-	_set_portrait("nishio")
-	var count = int(EventFlags.get_value("visit_nishio_count", 0))
-	EventFlags.set_value("visit_nishio_count", count + 1)
+func _show_naru_interaction() -> void:
+	header_label.text = "なるの店"
+	_set_portrait("naru")
+	var count = int(EventFlags.get_value("visit_naru_count", 0))
+	EventFlags.set_value("visit_naru_count", count + 1)
 
-	if not EventFlags.get_flag("ch1_nishio_met"):
-		EventFlags.set_flag("ch1_nishio_met")
-		AffinityManager.set_met("nishio")
-		RivalIntel.add_intel("nishio", "flavor_genre", "お菓子系")
-		body_label.text = "にしお「チルハウスのやつじゃん。偵察かよ笑」"
+	if not EventFlags.get_flag("ch1_naru_met"):
+		EventFlags.set_flag("ch1_naru_met")
+		AffinityManager.set_met("naru")
+		RivalIntel.add_intel("naru", "flavor_genre", "お菓子系")
+		body_label.text = "なる「お前、チルハウスの人間？ スミさんのとこの？」"
 		_clear_options()
-		_add_option("LIME交換する", "exchange_lime", "nishio")
+		_add_option("LIME交換する", "exchange_lime", "naru")
 		_add_option("また今度", "none")
 		return
 
 	if count == 1:
-		body_label.text = "にしお「最近チョコ系ばっか練習してるわ」"
-		RivalIntel.add_intel("nishio", "flavor_detail", "チョコレート＋バニラ")
-		AffinityManager.add_affinity("nishio", 5)
+		body_label.text = "なる「最近チョコ系ばっか練習してるわ」"
+		RivalIntel.add_intel("naru", "flavor_detail", "チョコレート＋バニラ")
+		AffinityManager.add_affinity("naru", 5)
 		return
 
-	body_label.text = "にしお「本番まであと少しだな」"
-	AffinityManager.add_affinity("nishio", 1)
+	body_label.text = "なる「本番まであと少しだな」"
+	AffinityManager.add_affinity("naru", 1)
 
 
 func _show_adam_interaction() -> void:
@@ -84,46 +84,47 @@ func _show_adam_interaction() -> void:
 	AffinityManager.add_affinity("adam", 1)
 
 
-func _show_ryuji_interaction() -> void:
-	header_label.text = "リュウジの店"
-	_set_portrait("ryuji")
-	var count = int(EventFlags.get_value("visit_ryuji_count", 0))
-	EventFlags.set_value("visit_ryuji_count", count + 1)
+func _show_kirara_interaction() -> void:
+	header_label.text = "きららのお店"
+	_set_portrait("kirara")
+	var count = int(EventFlags.get_value("visit_kirara_count", 0))
+	EventFlags.set_value("visit_kirara_count", count + 1)
 
-	if not EventFlags.get_flag("ch1_ryuji_met"):
-		EventFlags.set_flag("ch1_ryuji_met")
-		AffinityManager.set_met("ryuji")
-		AffinityManager.exchange_lime("ryuji")
-		AffinityManager.add_affinity("ryuji", 10)
-		RivalIntel.add_intel("ryuji", "flavor_genre", "パッキング重視")
-		body_label.text = "リュウジ「仲間じゃねえか！！ 連絡先交換しようぜ！！」"
+	if not EventFlags.get_flag("ch1_kirara_met"):
+		EventFlags.set_flag("ch1_kirara_met")
+		AffinityManager.set_met("kirara")
+		RivalIntel.add_intel("kirara", "flavor_genre", "映え系フルーツ")
+		body_label.text = "きらら「あら、チルハウスの子？ いらっしゃい♪」"
+		_clear_options()
+		_add_option("LIME交換する", "exchange_lime", "kirara")
+		_add_option("また今度", "none")
 		return
 
 	if count == 1:
-		body_label.text = "リュウジ「炭の置き方で味が変わるんだ！！」"
-		RivalIntel.add_intel("ryuji", "presentation", "熱量プレゼン")
-		AffinityManager.add_affinity("ryuji", 3)
+		body_label.text = "きらら「SNSのフォロワー？ 努力で増やしたに決まってるでしょ」"
+		RivalIntel.add_intel("kirara", "presentation", "一般投票特化")
+		AffinityManager.add_affinity("kirara", 3)
 		return
 
-	body_label.text = "リュウジ「大会で会おうぜ！！」"
-	AffinityManager.add_affinity("ryuji", 1)
+	body_label.text = "きらら「大会、楽しみね」"
+	AffinityManager.add_affinity("kirara", 1)
 
 
 func _show_invitation_event(event_id: String) -> void:
 	header_label.text = "交流イベント"
 	match event_id:
-		"interaction_nishio_night_01":
-			_set_portrait("nishio")
-			body_label.text = "にしおの新作ミックスを一緒に試した。率直な感想を伝えた。"
-			AffinityManager.add_affinity("nishio", 4)
+		"interaction_naru_night_01":
+			_set_portrait("naru")
+			body_label.text = "なるの新作ミックスを一緒に試した。率直な感想を伝えた。"
+			AffinityManager.add_affinity("naru", 4)
 			PlayerData.add_stat("insight", 2)
 			GameManager.log_stat_change("insight", 2)
-		"interaction_ryuji_noon_01":
-			_set_portrait("ryuji")
-			body_label.text = "リュウジとパッキング勝負をした。勢いで押し切られた。"
-			AffinityManager.add_affinity("ryuji", 4)
-			PlayerData.add_stat("technique", 2)
-			GameManager.log_stat_change("technique", 2)
+		"interaction_kirara_noon_01":
+			_set_portrait("kirara")
+			body_label.text = "きららのお店でシーシャを作る姿を見た。映えだけじゃない丁寧さに驚いた。"
+			AffinityManager.add_affinity("kirara", 4)
+			PlayerData.add_stat("charm", 2)
+			GameManager.log_stat_change("charm", 2)
 		_:
 			_set_portrait("")
 			body_label.text = "交流イベントを実行した。"
