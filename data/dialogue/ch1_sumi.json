@@ -3,29 +3,311 @@
     {
       "dialogue_id": "ch1_sumi_tutorial",
       "lines": [
-        {"speaker": "sumi", "face": "normal", "text": "昼と夜で1回ずつ動ける。行き先はよく考えろ"},
-        {"speaker": "sumi", "face": "smile", "text": "店の現場も、ライバルの店も、全部お前の武器になる"}
+        {
+          "speaker": "",
+          "face": "",
+          "text": "朝のチルハウス。開店前の静かな時間。スミさんがコーヒーを淹れながら、はじめに話しかけた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "昼と夜で1回ずつ動ける。行き先はよく考えろ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "金がないならバイトしろ。フレーバーも機材もタダじゃねえ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "店の現場も、ライバルの店も、全部お前の武器になる"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "偵察は客として行け。シーシャ代は勉強代だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "コーヒーの匂いと、昨夜のフレーバーの残り香が混ざった、チルハウスの朝の空気。"
+        }
       ]
     },
     {
       "dialogue_id": "ch1_sumi_training",
       "lines": [
-        {"speaker": "sumi", "face": "serious", "text": "閉店後、少し残れ。炭と熱の回し方だけ叩き込む"},
-        {"speaker": "hajime", "face": "surprise", "text": "え、今からですか？"},
-        {"speaker": "sumi", "face": "normal", "text": "大会は派手な技より、崩れない基礎だ"},
-        {"speaker": "sumi", "face": "thinking", "text": "焦って温度を上げるな。煙は逃げる。客の顔を見て、必要な熱だけ入れろ"},
-        {"speaker": "hajime", "face": "serious", "text": "……はい。もう一回お願いします"}
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後。最後の客を見送って、鍵は閉めない。今夜はここが教室になる。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "閉店後、少し残れ。炭と熱の回し方だけ叩き込む"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、今からですか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "大会は派手な技より、崩れない基礎だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんがボウルと炭とトングを並べた。閉店後の薄暗い照明の中、ステンレスの道具が光を反射している。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "コンロに火を入れる。炭が少しずつ赤くなっていくのを、二人で無言で見つめる。しゅう、と微かな音を立てて、炭の表面が白く変わっていく。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "焦って温度を上げるな。煙は逃げる"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "客の顔を見て、必要な熱だけ入れろ。それが全てだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "客の顔を見て……"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "お前はそれが得意だろう。バイトで毎日やってることだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われてみれば。確かに、炭替えのタイミングはいつも客の表情を見て決めていた。吸う速度が落ちたら、少し間を置く。眉間にシワが寄ったら、炭を引く。自然にやっていたことだけど。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（そう言われると……確かに、お客さんの顔色は見てるかもしれない）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "……はい。もう一回お願いします"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが頷いて、新しい炭をコンロに置いた。また赤くなるのを二人で待つ。閉店後の静かな店内に、コンロの微かな音だけが響いている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "技術が少し上がった。"
+        }
       ]
     },
     {
       "dialogue_id": "ch1_sumi_secret",
       "lines": [
-        {"speaker": "sumi", "face": "thinking", "text": "大会ってのは、勝つためだけに出る場所じゃねえ"},
-        {"speaker": "hajime", "face": "normal", "text": "それ、前にも言ってましたよね"},
-        {"speaker": "sumi", "face": "serious", "text": "数字より先に、誰にどう届いたかを見る。そこを外すな"},
-        {"speaker": "hajime", "face": "sad", "text": "……スミさん、昔のことを知りたいです"},
-        {"speaker": "sumi", "face": "normal", "text": "今はまだ早い。だが、お前が最後まで作り切るなら、いずれ話す"},
-        {"speaker": "hajime", "face": "serious", "text": "分かりました。まずは明日に向けて、作り切ります"}
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが自分用のシーシャを作り始めた。閉店後のルーティン。この人はいつも、最後のお客を見送ってから、一人で1杯だけ吸う。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ゴボゴボ、と水面が揺れる。スミさんが煙を吐くと、オレンジ色の照明の中をゆっくり漂っていく。その煙の表情が、バイト中に出すものとは全然違うことに、はじめは気づいていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙を吸いながら、ぽつりと。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "大会ってのは、勝つためだけに出る場所じゃねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それ、前にも言ってましたよね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ああ。大事なことだから2回言った"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "数字より先に、誰にどう届いたかを見る。そこを外すな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "誰にどう届いたか……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "沈黙が続いた。店内にはBGMすら流れていない。エアコンのハム音と、二つのシーシャのゴボゴボという音だけ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "この静けさが、不思議と心地いい。閉店後のチルハウスだけが持っている、特別な時間。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……スミさん、聞いてもいいですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "スミさんは昔、大会とかに出たこと……あるんですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんの手が一瞬止まった。ホースを持つ指先に、微かな力がこもる。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "今はまだ早い。だが、お前が最後まで作り切るなら、いずれ話す"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "分かりました。まずは明日に向けて、作り切ります"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは小さく頷いて、また煙を吸い始めた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人の間に言葉はない。ゴボゴボ、という穏やかな音と、天井に昇っていく二筋の煙だけが、この時間を満たしている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（スミさんにも、聞けない過去があるんだ……）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_sumi_closing",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の客が帰って、ドアの鍵を閉めた。外から聞こえていた車のエンジン音や話し声が遮断されて、店内が急に広くなる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが自分用のシーシャを作っている。はじめも片付けを終えて、カウンターの端に座った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "BGMのボリュームが少し下がっている。閉店後はいつもこうだ。スミさんが手動で調整している。「夜は静かな方がいい」と、前に一度だけ言っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさんのシーシャ、いつもいい香りしますよね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "閉店後のが一番美味いからな。静かだし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……確かに。この時間、僕も好きです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ゴボゴボ、と水面が揺れる音。外からは虫の声が微かに聞こえる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙がゆっくり立ち上り、天井のファンに巻き込まれて渦を描く。フレーバーの甘い香りが、閉め切った店内をゆっくり満たしていく。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "シーシャってのはな。急いで吸うもんじゃねえ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ゆっくり吸って、ゆっくり吐く。それだけでいい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それだけの会話。でも、この静かな時間をスミさんと共有できることが、何だか特別に感じた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シーシャ屋の閉店後って、こういう時間なんだ。お客さんが帰った後、残り香の中で、もう一杯だけ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "この時間があるから、チルハウスのバイトを続けている気がする。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "洞察が少し上がった。"
+        }
       ]
     }
   ]

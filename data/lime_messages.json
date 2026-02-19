@@ -8,13 +8,32 @@
       "type": "invitation",
       "time_slot": "night",
       "messages": [
-        {"sender": "naru", "text": "よう"},
-        {"sender": "naru", "text": "今日の夜暇？"},
-        {"sender": "naru", "text": "新しいミックス試したいんだけど"},
-        {"sender": "naru", "text": "お前の意見聞きたくて"}
+        {
+          "sender": "naru",
+          "text": "よう"
+        },
+        {
+          "sender": "naru",
+          "text": "今日の夜暇？"
+        },
+        {
+          "sender": "naru",
+          "text": "新しいミックス試したいんだけど"
+        },
+        {
+          "sender": "naru",
+          "text": "ブルーベリーとダブルアップルでいい感じの比率見つけたかも"
+        },
+        {
+          "sender": "naru",
+          "text": "お前の意見聞きたくてさ"
+        }
       ],
       "accept_event": "interaction_naru_night_01",
-      "decline_response": {"sender": "naru", "text": "おk。またな"}
+      "decline_response": {
+        "sender": "naru",
+        "text": "おk。またな"
+      }
     },
     {
       "id": "lime_kirara_day4",
@@ -24,12 +43,28 @@
       "type": "invitation",
       "time_slot": "noon",
       "messages": [
-        {"sender": "kirara", "text": "ねえ"},
-        {"sender": "kirara", "text": "今日ヒマ？ うちの店来ない？"},
-        {"sender": "kirara", "text": "新しいミックス作ったんだけど感想聞きたくて"}
+        {
+          "sender": "kirara",
+          "text": "ねえ"
+        },
+        {
+          "sender": "kirara",
+          "text": "今日ヒマ？ うちの店来ない？"
+        },
+        {
+          "sender": "kirara",
+          "text": "新しいミックス作ったんだけど感想聞きたくて"
+        },
+        {
+          "sender": "kirara",
+          "text": "前回「すごい」って言ってくれたじゃん？ あれの進化版"
+        }
       ],
       "accept_event": "interaction_kirara_noon_01",
-      "decline_response": {"sender": "kirara", "text": "そっか。また今度ね"}
+      "decline_response": {
+        "sender": "kirara",
+        "text": "そっか。また今度ね"
+      }
     },
     {
       "id": "lime_naru_day6",
@@ -38,14 +73,77 @@
       "trigger_condition": "lime_exchanged",
       "type": "chat",
       "messages": [
-        {"sender": "naru", "text": "なあ"},
-        {"sender": "naru", "text": "正直ちょっと緊張してきた"},
-        {"sender": "naru", "text": "お前は？"}
+        {
+          "sender": "naru",
+          "text": "なあ"
+        },
+        {
+          "sender": "naru",
+          "text": "正直ちょっと緊張してきた"
+        },
+        {
+          "sender": "naru",
+          "text": "でも楽しみの方がでかいわ"
+        },
+        {
+          "sender": "naru",
+          "text": "お前は？"
+        }
       ],
       "replies": [
-        {"text": "俺も", "response": "だよな笑　まあやるしかねえか", "affinity": 3},
-        {"text": "全然", "response": "嘘つけ笑", "affinity": 1},
-        {"text": "勝つぞ", "response": "…おう。でも俺もな", "affinity": 5}
+        {
+          "text": "僕も緊張してる",
+          "response": "だよな笑　まあやるしかねえか",
+          "affinity": 3
+        },
+        {
+          "text": "全然",
+          "response": "嘘つけ笑",
+          "affinity": 1
+        },
+        {
+          "text": "楽しみにしてる",
+          "response": "お、いいじゃん。俺もだよ",
+          "affinity": 5
+        }
+      ]
+    },
+    {
+      "id": "lime_kirara_day5",
+      "sender": "kirara",
+      "trigger_day": 5,
+      "trigger_condition": "lime_exchanged",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "kirara",
+          "text": "あと3日だね"
+        },
+        {
+          "sender": "kirara",
+          "text": "準備できてる？"
+        },
+        {
+          "sender": "kirara",
+          "text": "私はバッチリだけどね♪"
+        }
+      ],
+      "replies": [
+        {
+          "text": "まだ不安もあります",
+          "response": "不安があるのは真剣な証拠だよ。大丈夫",
+          "affinity": 3
+        },
+        {
+          "text": "頑張ります",
+          "response": "うん、お互いにね",
+          "affinity": 2
+        },
+        {
+          "text": "きららさんに勝ちたいです",
+          "response": "あら。いいね、その意気。でも負けないよ？",
+          "affinity": 5
+        }
       ]
     }
   ]

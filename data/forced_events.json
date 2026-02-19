@@ -18,10 +18,13 @@
       "time_slot": "night",
       "flag": "ch1_forced_sumi_training_done",
       "title": "スミさんの閉店後特訓",
-      "description": "閉店後、スミさんがはじめを残す。「しばらく俺が現場出るから、好きに準備してこい。…あと、たまに店終わったら修行つけてやる」",
+      "description": "閉店後、スミさんがはじめを残す。炭と熱の回し方を叩き込む。",
       "dialogue_file": "res://data/dialogue/ch1_sumi.json",
       "dialogue_id": "ch1_sumi_training",
-      "stat_changes": {"technique": 2, "guts": 2},
+      "stat_changes": {
+        "technique": 2,
+        "guts": 2
+      },
       "next_scene": "map"
     },
     {
@@ -30,11 +33,56 @@
       "time_slot": "night",
       "flag": "ch1_forced_sumi_story_done",
       "title": "スミさんの過去",
-      "description": "閉店後、スミさんがはじめを残す。「ちょっと残れ。見せたいものがある」",
+      "description": "閉店後、スミさんが秘蔵フレーバーで一緒にシーシャを作る。",
       "dialogue_file": "res://data/dialogue/ch1_sumi.json",
       "dialogue_id": "ch1_sumi_secret",
-      "stat_changes": {"technique": 3, "sense": 2},
+      "stat_changes": {
+        "technique": 3,
+        "sense": 2
+      },
       "next_scene": "map"
+    },
+    {
+      "id": "ch1_forced_day7_night",
+      "day": 7,
+      "time_slot": "night",
+      "flag": "ch1_forced_day7_done",
+      "title": "大会前夜",
+      "description": "明日はいよいよ大会。今夜どう過ごすかで、明日のコンディションが変わる。",
+      "dialogue_file": "res://data/dialogue/ch1_main.json",
+      "dialogue_id": "ch1_day7_last_night",
+      "stat_changes": {},
+      "next_scene": "map"
+    },
+    {
+      "id": "ch1_forced_tournament",
+      "day": 8,
+      "time_slot": "noon",
+      "flag": "ch1_forced_tournament_done",
+      "title": "大会当日",
+      "description": "第12回地方シーシャバトル。いよいよ本番。",
+      "dialogue_file": "res://data/dialogue/ch1_tournament.json",
+      "dialogue_id": "ch1_tournament_arrival",
+      "stat_changes": {},
+      "next_scene": "tournament_opening",
+      "chain": [
+        {
+          "dialogue_id": "ch1_tournament_opening",
+          "next_scene": "tournament_match"
+        },
+        {
+          "dialogue_id": "ch1_tournament_match",
+          "next_scene": "tournament_result"
+        },
+        {
+          "dialogue_id": "ch1_tournament_result",
+          "next_scene": "tournament_after"
+        },
+        {
+          "dialogue_id": "ch1_tournament_after",
+          "next_scene": "chapter_end"
+        }
+      ]
     }
   ]
 }

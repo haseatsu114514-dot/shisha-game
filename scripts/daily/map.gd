@@ -19,6 +19,9 @@ const SPOT_POSITIONS_DAY: Dictionary = {
 	"adam": Vector2(720, 224),
 	"kirara": Vector2(498, 286),
 	"home": Vector2(214, 544),
+	"choizap": Vector2(160, 300),
+	"kannon": Vector2(600, 540),
+	"cafe": Vector2(840, 340),
 }
 
 const SPOT_POSITIONS_NIGHT: Dictionary = {
@@ -98,6 +101,12 @@ func _build_spot_list() -> Array:
 			spots.append({"id": "naru", "label": "なるの店"})
 			spots.append({"id": "adam", "label": "アダムの店"})
 			spots.append({"id": "kirara", "label": "きららの店"})
+		if EventFlags.get_flag("spot_choizap_unlocked"):
+			spots.append({"id": "choizap", "label": "チョイザップ"})
+		if EventFlags.get_flag("spot_kannon_unlocked"):
+			spots.append({"id": "kannon", "label": "観音"})
+		if EventFlags.get_flag("spot_cafe_unlocked"):
+			spots.append({"id": "cafe", "label": "カフェ"})
 	elif CalendarManager.current_time == "night":
 		spots.append({"id": "chillhouse", "label": "チルハウス（夜）"})
 		spots.append({"id": "home", "label": "自宅で休む"})
@@ -145,6 +154,46 @@ func _enter_spot(spot: Dictionary) -> void:
 			GameManager.set_transient("interaction_target", id)
 			GameManager.set_transient("advance_time_after_scene", true)
 			get_tree().change_scene_to_file("res://scenes/daily/interaction.tscn")
+		"choizap":
+			if not CalendarManager.use_action():
+				message_label.text = "行動コマが足りません。"
+				return
+			if not EventFlags.get_flag("choizap_member"):
+				# First visit - show membership dialogue with choice
+				GameManager.set_transient("interaction_target", "choizap")
+				GameManager.set_transient("advance_time_after_scene", true)
+				GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_choizap_first", "res://scenes/daily/map.tscn")
+				get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+			else:
+				# Member - free visit, charm UP
+				PlayerData.add_stat("charm", 1)
+				GameManager.log_stat_change("charm", 1)
+				GameManager.set_transient("advance_time_after_scene", true)
+				GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_choizap_visit", "res://scenes/daily/map.tscn")
+				get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+		"kannon":
+			if not CalendarManager.use_action():
+				message_label.text = "行動コマが足りません。"
+				return
+			# Random stat +1.5, then forced save
+			var stats = ["technique", "sense", "guts", "charm", "insight"]
+			var chosen_stat = stats[randi() % stats.size()]
+			PlayerData.add_stat(chosen_stat, 1.5)
+			GameManager.log_stat_change(chosen_stat, 1.5)
+			GameManager.set_transient("advance_time_after_scene", true)
+			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_kannon_visit", "res://scenes/daily/map.tscn")
+			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+			# Force save after prayer
+			GameManager.force_save()
+		"cafe":
+			if not CalendarManager.use_action():
+				message_label.text = "行動コマが足りません。"
+				return
+			PlayerData.add_stat("sense", 1.5)
+			GameManager.log_stat_change("sense", 1.5)
+			GameManager.set_transient("advance_time_after_scene", true)
+			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_cafe_visit", "res://scenes/daily/map.tscn")
+			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 
 
 func _go_next_phase() -> void:

@@ -30,7 +30,13 @@ const SPEAKER_NAMES := {
 	"adam": "アダム",
 	"kirara": "きらら",
 	"tsumugi": "つむぎ",
-	"packii": "パッキー"
+	"packii": "パッキー",
+	"salaryman": "サラリーマン",
+	"toki_kotetsu": "土岐鋼鉄",
+	"maezono": "前園壮一郎",
+	"kirishima": "霧島レン",
+	"takiguchi": "焚口ショウ",
+	"staff_choizap": "チョイザップスタッフ"
 }
 
 

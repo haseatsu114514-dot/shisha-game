@@ -3,7 +3,306 @@
     {
       "dialogue_id": "ch1_adam_first",
       "lines": [
-        {"speaker": "adam", "face": "silent", "text": "…何か用か"}
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「Apple Core（アップルコア）」。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "看板は小さい。注意しないと通り過ぎてしまうような、路地裏の一角。入口にリンゴのロゴが一つだけ、ほのかに光っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ドアを押すと、重い木の軋む音がした。中に入った瞬間──濃厚な、甘くてスパイシーな香りが鼻を突く。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ダブルアップルだ。それしかない。この店全体が、一つのフレーバーで満たされている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店内は意外と質素だ。席は5つほど。照明は暖色を通り越して暗い。壁に飾りはなく、棚にはダブルアップルのパッケージだけが整然と並んでいる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "異質だった。シーシャバーというより、何かの修行場のような空気。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すみません……お客として来たんですけど"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの奥に、大柄な男が座っていた。目の前にシーシャが1台。白い煙をゆっくり吐き出しては、ただ天井を見つめている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめに気づいているのかいないのか、しばらく沈黙が続いた。"
+        },
+        {
+          "speaker": "adam",
+          "face": "silent",
+          "text": "…何か用か"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "シーシャ、吸いたいんですけど……メニューとか……"
+        },
+        {
+          "speaker": "adam",
+          "face": "silent",
+          "text": "メニューはない。ダブルアップルだけだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え……ダブルアップルだけ？"
+        },
+        {
+          "speaker": "adam",
+          "face": "silent",
+          "text": "ああ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ミックスとかも……"
+        },
+        {
+          "speaker": "adam",
+          "face": "silent",
+          "text": "ない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "会話はそこで途切れた。店内にはダブルアップルの香りと、アダムのシーシャのゴボゴボという音だけが満ちている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、ダブルアップルで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは無言で立ち上がった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "作り始める。その手つきは──荒いのか丁寧なのか分からない。でも迷いがない。フレーバーの袋を開ける動きも、ボウルに詰める指先も、一切の余分な力がない。まるで身体にプログラムされた動作のように。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一つのフレーバーに全神経を注ぐ男の背中を、はじめはただ見ていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "完成したシーシャがテーブルに置かれた。見た目は普通のダブルアップル。だが──"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ホースを口に当てる。ゆっくり吸い込む。煙が口腔に広がった瞬間──"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……っ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "何だこれは。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ダブルアップルという同じ名前なのに、チルハウスで作るそれとは全く別の飲み物を口にしているような衝撃。甘いのに奥行きがある。スパイスの層が何段もあって、吸うたびに表情が変わる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吐き出した煙が、暗い店内の照明の中でゆっくり消えていく。その余韻すら、味がする。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……すごい。ダブルアップルだけで、ここまで……"
+        },
+        {
+          "speaker": "adam",
+          "face": "silent",
+          "text": "……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは何も答えず、自分のシーシャに戻った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめはそのまま、静かに1杯を味わった。二人の間に会話はない。ゴボゴボ、という音だけが二つ、重なって響いている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店を出ると、路地裏の冷たい空気がダブルアップルの残り香を洗い流した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（あの人……何なんだろう。怖かったけど、シーシャは本当にすごかった）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（たった一つの味だけで、あそこまで突き詰められるのか）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_adam_second",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "2回目のApple Core。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "路地裏を曲がると、あのリンゴのロゴが光っている。ドアを開けると、前回と同じ──ダブルアップルの濃厚な香りが全身を包んだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "同じ席。同じ照明。同じ沈黙。この店には時間が流れていないみたいだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "また来ました"
+        },
+        {
+          "speaker": "adam",
+          "face": "silent",
+          "text": "……また来たのか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "前回のが、忘れられなくて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムが少しだけ間を置いた。はじめの顔を見ている──ような気がした。暗くてよく分からない。"
+        },
+        {
+          "speaker": "adam",
+          "face": "silent",
+          "text": "大会に出るのか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。……アダムさんも出るんですよね"
+        },
+        {
+          "speaker": "adam",
+          "face": "silent",
+          "text": "おう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "大会でも、ダブルアップルだけで……？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムが煙を吐いた。白い煙が暗い天井に昇っていく。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "ダブルアップルは宇宙だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……宇宙"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "他に何が要る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "狂気だ。でも、この店の空気の中にいると、その言葉に不思議な説得力がある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（この人にとってダブルアップルは、僕が思ってるより遥かに広いものなんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムがぶっきらぼうにスマホを差し出した。"
+        },
+        {
+          "speaker": "adam",
+          "face": "silent",
+          "text": "LIME。交換しておく"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、いいんですか"
+        },
+        {
+          "speaker": "adam",
+          "face": "silent",
+          "text": "2回来た。それだけの理由はある"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムとLIME交換した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店を出る。路地裏の空気が、一瞬だけダブルアップルの匂いをまとって揺れた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（この人と大会で戦うのか……）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（『自分のシーシャ』を持っている人の凄み。僕にはまだ、それがない）"
+        }
       ]
     }
   ]

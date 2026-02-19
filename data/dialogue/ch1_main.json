@@ -3,53 +3,888 @@
     {
       "dialogue_id": "ch1_opening",
       "lines": [
-        {"speaker": "sumi", "face": "normal", "text": "おう、はじめ。今日も店番ご苦労さん"},
-        {"speaker": "hajime", "face": "normal", "text": "はい。今日もいつも通り、炭切って、詰めて、出して…ですね"},
-        {"speaker": "hajime", "face": "normal", "text": "特別なことは何もない日でしたけど"},
-        {"speaker": "hajime", "face": "surprise", "text": "……あ、さっきの常連さん、帰り際に「今日の、良かったよ」って"},
-        {"speaker": "sumi", "face": "smile", "text": "そうか"},
-        {"speaker": "hajime", "face": "sad", "text": "でも「優しい」って言われても、正直よく分からなくて"},
-        {"speaker": "sumi", "face": "serious", "text": "はじめ。大会出ろ"},
-        {"speaker": "hajime", "face": "surprise", "text": "え。僕が、シーシャバトルにですか？"},
-        {"speaker": "sumi", "face": "serious", "text": "無理かどうかは出てから決めろ。お前の煙は、ちゃんと届く"},
-        {"speaker": "hajime", "face": "sad", "text": "僕には、武器になるようなものなんて……"},
-        {"speaker": "sumi", "face": "normal", "text": "それでいい。今あるもので勝負しろ"},
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夕方のチルハウス。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "オレンジ色の外灯が窓に差し込み、カウンターの木目を柔らかく照らしている。天井のファンがゆっくり回り、煙が渦を巻きながら上昇していく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ゴボゴボ、ゴボボ……。水タバコの呼吸音が、店内のチルなBGMに溶け込む。この音がある限り、チルハウスは生きている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "フレーバーの甘い香り。炭の乾いた匂い。それから、コーヒーの残り香。全部が混ざって「チルハウスの空気」になっている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "蒸野はじめは、今日も何となく炭を切り、何となくボウルを詰め、何となく客に出す。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭切りバサミの、パチン、という小さな音。ボウルにフレーバーを詰めるときの、指先のしっとりした感触。蒸らしの間に漂う、甘く温かい蒸気。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "特別なことは何もない。それが彼の日常だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……今日も静かだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの向こうの奥まった席に、いつもの常連がいる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スーツ姿のサラリーマン。仕事帰りに必ず寄る。いつも同じ席。いつも同じ注文。話しかけてくることはほとんどない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ホースを口に当て、ゆっくりと煙を吸い込む。吐き出された白い煙が、オレンジ色の光の中でゆらゆらと漂う。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "表情は読めない。仕事の疲れなのか、それともシーシャに集中しているのか。はじめにはいつも分からない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "やがて、サラリーマンが静かに立ち上がる。会計を済ませ、ドアに向かう。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、振り向かずにポツリと。"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "……今日の、良かったよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "声にも表情にも、抑揚がない。お世辞なのか本心なのかも、分からない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ……ありがとうございます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ドアが閉まる。外の空気が一瞬だけ入り込んで、店内のフレーバーの香りをかき混ぜた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（「良かった」か。何がどう良かったんだろう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──閉店時間。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の客が帰ると、店は急に広くなる。BGMだけが取り残されたように鳴り続けている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが黙々とカウンターを拭いている。その横で、はじめが灰皿を片付ける。閉店後のルーティン。二人の間に会話はほとんどない。でも、それが心地いい。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "おう、はじめ。今日も店番ご苦労さん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。今日もいつも通り、炭切って、詰めて、出して……ですね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "特別なことは何もない日でしたけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……あ、さっきの常連さん、帰り際に「今日の、良かったよ」って"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "そうか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "でも「優しい」って言われても、正直よく分からなくて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんがカウンターを拭く手を止めた。こういう時、この人は真剣な顔をする。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "はじめ。大会出ろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え。僕が、シーシャバトルにですか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "地方大会。来週だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "いや……僕、別にそういうガチな人間じゃないですよ。バイトで作ってるだけで……"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "無理かどうかは出てから決めろ。お前の煙は、ちゃんと届く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "僕には、武器になるようなものなんて……"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "それでいい。今あるもので勝負しろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんはそれだけ言って、カウンターを拭く作業に戻った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後の店内に、BGMのベースラインだけがぼんやり響いている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（武器がないのに、勝負って……）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（『優しい』とか『届く』とか……美味いとかすごいじゃなくて）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（僕には、人を圧倒するような強さがないって、言われてるような気がする）"
+        },
         {
           "type": "choice",
           "id": "opening_choice",
           "choices": [
-            {"text": "やってみます", "next": "accept"},
-            {"text": "ちょっと考えます", "next": "hesitate"}
+            {
+              "text": "やってみます",
+              "next": "accept"
+            },
+            {
+              "text": "ちょっと考えます",
+              "next": "hesitate"
+            }
           ]
         }
       ],
       "branches": {
         "accept": [
-          {"speaker": "sumi", "face": "smile", "text": "よし。地方大会まで1週間だ。準備しろ"},
-          {"speaker": "hajime", "face": "serious", "text": "……はい。やってみます"}
+          {
+            "speaker": "sumi",
+            "face": "smile",
+            "text": "よし。地方大会まで1週間だ。準備しろ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "……はい。やってみます"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スミさんがカウンターの下に手を伸ばし、ダブルアップルのパッケージを2つ取り出した。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "深い紅色のパッケージ。甘くてスパイシーな、この店で一番よく出るフレーバー。"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "これ使え。練習用だ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "え、いいんですか？"
+          },
+          {
+            "speaker": "sumi",
+            "face": "smile",
+            "text": "バイト代から引く"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……それ普通に買ってるのと同じですよね"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "閉店作業の続き。モップで床を拭きながら、ふと店内を見回す。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "カウンター奥の棚。シーシャの専門書や古い雑誌に挟まれて、くたびれたスケッチブックが一冊。背表紙の色が褪せていて、ずっと前からそこにある。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（あのスケッチブック、前から気になってたけど……）"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "鍵閉めとけ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "照明を落とす。店が暗くなる。フレーバーの残り香だけが、まだそこにいる。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "帰り道。夜風が頬を撫でる。さっき決めたことの重さが、まだよく分かっていない。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（大会か……）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "──大会まであと7日。"
+          }
         ],
         "hesitate": [
-          {"speaker": "sumi", "face": "serious", "text": "考えるのは帰ってからでいい。地方大会まで1週間だ"},
-          {"speaker": "hajime", "face": "sad", "text": "……分かりました。僕、出ます"}
+          {
+            "speaker": "sumi",
+            "face": "serious",
+            "text": "考えるのは帰ってからでいい。地方大会まで1週間だ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スミさんがカウンターの下に手を伸ばし、ダブルアップルのパッケージを2つ取り出した。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "深い紅色のパッケージ。甘くてスパイシーな、この店で一番よく出るフレーバー。"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "練習用だ。出るか出ないかは、お前が決めればいい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（もう出ること前提じゃないか、これ……）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "閉店作業の続き。モップで床を拭きながら、ふと店内を見回す。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "カウンター奥の棚。シーシャの専門書や古い雑誌に挟まれて、くたびれたスケッチブックが一冊。背表紙の色が褪せていて、ずっと前からそこにある。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（あのスケッチブック、前から気になってたけど……）"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "鍵閉めとけ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "照明を落とす。フレーバーの残り香だけが、暗い店内にまだ漂っている。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "帰り道。手の中のフレーバーのパッケージが、妙に重い。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……分かりました。僕、出ます"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "──大会まであと7日。"
+          }
         ]
       }
     },
     {
-      "dialogue_id": "ch1_day5_sumi_story_legacy",
+      "dialogue_id": "ch1_salaryman_regular",
       "lines": [
-        {"speaker": "sumi", "face": "thinking", "text": "大会ってのは、勝つためだけに出るもんじゃねえ"},
-        {"speaker": "hajime", "face": "normal", "text": "……何かあったんですか、昔"},
-        {"speaker": "sumi", "face": "serious", "text": "その話は、また今度だ"}
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつもの時間。いつもの足音。ドアが開くと、外の空気と一緒にコンビニコーヒーの匂いが入ってきた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつものサラリーマンが、いつもの席に座る。ネクタイを少しだけ緩めて、無言でメニューを指差した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ダブルアップルにミント少し、ですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サラリーマンは小さく頷くだけ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめは丁寧にボウルを詰める。フレーバーを計って、ほぐして、一粒ずつ空気の通り道を作るように詰めていく。炭をコンロに並べて、赤くなるのを待つ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "蒸らしの間、店内には炭が静かに弾ける音と、BGMのピアノだけが鳴っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「お待たせしました」。テーブルにシーシャを置く。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サラリーマンは無言でホースを手に取り、ゆっくりと吸い始めた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ゴボゴボ、と水面が揺れる。白い煙が口から吐き出されて、オレンジ色の照明の中で静かに崩れていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その瞬間、ほんの少しだけ──肩の力が抜けたように見えた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（この人、いつも何も言わないけど……）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ここに来ると、ちょっとだけ楽になるのかな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それだけの、いつも通りの光景。でも今日は少しだけ、気になった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_day5_sumi_story",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のチルハウス。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "外は完全に暗い。間接照明のオレンジだけが、カウンターの木目や棚のボトルをぼんやり照らしている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "エアコンの微かなハム音。それ以外は何も聞こえない。昼間の喧騒が嘘のように、この店は夜になると別の顔を見せる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の客を見送ったあと、スミさんが言った。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "はじめ。ちょっと残れ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何ですか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "見せたいものがある"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんがカウンターの奥──普段は絶対に触らせてもらえない棚の方に手を伸ばした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "取り出したのは、見たことのないフレーバーの瓶。ラベルが外国語で書かれていて、中身は深い琥珀色をしている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "これ……うちの在庫にないやつですよね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "俺の私物だ。一緒に作る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんがボウルを二つ、並べて置いた。磨かれたステンレスの表面に、天井の照明が映り込む。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "俺が作るのを見ろ。それから、お前も同じようにやれ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんの手つきは、バイト中とは別人のようだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "フレーバーの瓶を開ける。ふわっと、今まで嗅いだことのない複雑な香りが広がった。甘いのにどこかスモーキーで、奥に柑橘のような酸味がある。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "フレーバーを量る指先。一つまみずつ、葉の状態を確認するようにほぐしていく。ボウルに詰める力加減は、強すぎず弱すぎず、空気の通り道を作りながら均一に。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭を置く角度。蓋を被せるタイミング。すべてが淀みなく、でも急いでいない。ゆっくりと、でも確実に。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……すごい。バイト中はもっとラフなのに、今のは全然違う）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "10分後。二つのシーシャが完成した。蒸らしの蒸気が、二つのボウルからゆっくり立ち上っている。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "吸ってみろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめがスミさんのシーシャのホースを口に当てる。ゆっくり吸い込む。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙が口腔に広がった瞬間、目を見開いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……これ、すごい。同じフレーバーなのに、全然違う……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "味の層が何段もある。最初に甘さが来て、次にスパイスが通り抜けて、最後に柑橘のような余韻が残る。しかも吐き出した煙が、店内の空気と混じって、もう一度香る。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "フレーバーは同じだ。違うのは詰め方と熱の回し方だけだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "沈黙。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙が二筋、並んで天井に向かってゆっくり昇っていく。閉店後の店内に、ゴボゴボという音だけが穏やかに響いている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "この時間だけは、師弟でもなく、店長とバイトでもない。ただシーシャを吸っている二人、という感じがした。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "……昔な。俺もこうやって、誰かに教わったんだよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさんにも、そういう人がいたんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……まあ、そんなとこだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それ以上は語らなかった。でも一瞬だけ、スミさんの目が遠くを見ていた。手元のシーシャではなく、もっとずっと先の、ここではないどこかを。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "数字より先に、誰にどう届いたかを見る。そこを外すな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "誰にどう届いたか……"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "大会まであと3日だ。明日からもっと意識して作れ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "はい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片付けを終えて、店の鍵を閉める。外に出ると、夜の冷たい空気がフレーバーの残り香を洗い流していく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り道、さっき吸ったスミさんの煙の味がまだ口の中に残っていた。あの余韻の長さは、何なんだろう。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（あの人、ただのシーシャ好きな店長……だよな？）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……たぶん）"
+        }
       ]
     },
     {
       "dialogue_id": "ch1_day7_last_night",
       "lines": [
-        {"speaker": "hajime", "face": "serious", "text": "明日はいよいよ地方大会だ"},
-        {"speaker": "hajime", "face": "sad", "text": "なるみたいに「好き」を言い切れるわけでもない"},
-        {"speaker": "hajime", "face": "thinking", "text": "アダムみたいに一本化した哲学があるわけでもない"},
-        {"speaker": "hajime", "face": "serious", "text": "それでも、今の僕にできる一杯を作るしかない"}
-      ]
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会前夜。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "自室の窓から、街灯のぼんやりした光が差し込んでいる。机の上にはダブルアップルのパッケージと、この1週間で書き留めたメモが散らばっている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "明日はいよいよ地方大会だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "なるみたいに「好き」を言い切れるわけでもない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "アダムみたいに一本化した哲学があるわけでもない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "きららみたいな、一目で引き込む華があるわけでもない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（僕に何ができるんだろう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今夜、どう過ごす？"
+        },
+        {
+          "type": "choice",
+          "id": "night_before_choice",
+          "choices": [
+            {
+              "text": "最後の練習をする",
+              "next": "practice"
+            },
+            {
+              "text": "スミさんと話す",
+              "next": "talk_sumi"
+            },
+            {
+              "text": "早く寝る",
+              "next": "sleep_early"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "practice": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "閉店後のチルハウス。照明を半分だけ残して、はじめは一人で練習を始めた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "誰もいない店内に、炭切りバサミの音だけが響く。パチン。パチン。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "パッキング。炭の準備。蒸らしのタイミング。この1週間で何度も繰り返した動きを、もう一度。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "完成したシーシャを、自分で吸ってみる。ゴボゴボ、という音が暗い店内に反響する。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……悪くない。でも、足りない何かがある）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "（もう1回。もう1回だけ）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "作っては吸い、作っては吸い。気がつけば深夜になっていた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "テーブルの上に、使い終わったボウルが3つ並んでいる。少しずつ、詰め方が変わっているのが自分でも分かった。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……よし。これ以上やっても変わらない）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "それでも、今の僕にできる一杯を作るしかない"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "技術と感覚が少しだけ研ぎ澄まされた気がする。"
+          }
+        ],
+        "talk_sumi": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "閉店後。片付けをしながら、スミさんの背中に話しかけた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スミさんはいつものように、閉店後の自分用シーシャを作っている。煙が立ち上るのを待つ、静かな時間。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "スミさん"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "ん"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "明日、勝てますかね"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "知らん。俺が決めることじゃねえ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……ですよね"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "沈黙。スミさんが煙を吸い込み、ゆっくり吐き出す。白い煙がオレンジの照明に浮かんで、ゆらりと消えた。"
+          },
+          {
+            "speaker": "sumi",
+            "face": "serious",
+            "text": "ただな。勝ち負けは審査員が決めることだ"
+          },
+          {
+            "speaker": "sumi",
+            "face": "serious",
+            "text": "お前が決められるのは、どういう煙を出すかだけだ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "どういう煙……"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "お前の煙でいい。それ以上でもそれ以下でもねえ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……はい"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ゴボゴボ、という音だけが響く。少し気持ちが軽くなった。不安は消えないけど、やることは分かった気がする。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "度胸が少し上がった。"
+          }
+        ],
+        "sleep_early": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（考えてもしょうがない。今日は早く寝よう）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "カーテンを閉める。街灯の光が遮断されて、部屋が暗くなる。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "布団に入ると、指先にまだ微かにフレーバーの匂いが残っていた。この1週間で染み付いた、ダブルアップルの甘い香り。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "案外すぐに眠りに落ちた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "しっかり休んだ。コンディションは万全だ。"
+          }
+        ]
+      }
     }
   ]
 }

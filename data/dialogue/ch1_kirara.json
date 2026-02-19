@@ -3,9 +3,226 @@
     {
       "dialogue_id": "ch1_kirara_first",
       "lines": [
-        {"speaker": "kirara", "face": "smile", "text": "あら、チルハウスの子？ いらっしゃい♪"},
-        {"speaker": "kirara", "face": "wink", "text": "ねえ、大会出るんでしょ？ 私も出るの"},
-        {"speaker": "kirara", "face": "serious", "text": "可愛いだけじゃ勝てないって思ってる？ ──見てなさい"}
+        {
+          "speaker": "",
+          "face": "",
+          "text": "きららの店。名前は聞いていなかったが、外観を見ればすぐに分かった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "白を基調にした洗練された内装。ガラスのテーブルに、色とりどりのシーシャボトルが並んでいる。壁にはドライフラワーが飾られ、カウンターにはアロマキャンドルが灯っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "BGMはジャズ。チルハウスともAmber Noteとも、Apple Coreとも違う。ここは「映える」空間として完成されていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "フレーバーの香りに加えて、どこかフローラルな匂いがする。空間そのものが一つの作品みたいだ。"
+        },
+        {
+          "speaker": "kirara",
+          "face": "smile",
+          "text": "あら、チルハウスの子？ いらっしゃい♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ……はい。どうして分かったんですか"
+        },
+        {
+          "speaker": "kirara",
+          "face": "wink",
+          "text": "マウスピース見えてるよ。スミさんのとこのスタッフ用でしょ？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ、そうですね……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "きららは笑いながら、すでにシーシャの準備を始めていた。その手さばきは速いのに雑じゃない。効率的で、しかも動作の一つ一つが絵になる。"
+        },
+        {
+          "speaker": "kirara",
+          "face": "smile",
+          "text": "ねえ、大会出るんでしょ？ 私も出るの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そうなんですか"
+        },
+        {
+          "speaker": "kirara",
+          "face": "smile",
+          "text": "私のシーシャ、吸ってく？ 感想聞きたいなって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "え、いいんですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出てきたシーシャは、見た目からして違った。ボウルの上に彩りのいいフルーツが添えられ、煙にほのかにバラの香りが混じっている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吸ってみる。口の中に華やかな甘さが広がる。でもそれだけじゃない。甘さの奥に、しっかりとしたフレーバーの骨格がある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……これ、すごく華やかで……でも、ちゃんと味が深い"
+        },
+        {
+          "speaker": "kirara",
+          "face": "smile",
+          "text": "でしょ？ 見た目だけじゃないよ"
+        },
+        {
+          "speaker": "kirara",
+          "face": "serious",
+          "text": "可愛いだけじゃ勝てないって思ってる？ ──見てなさい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いや、そんなこと……"
+        },
+        {
+          "speaker": "kirara",
+          "face": "smile",
+          "text": "冗談。でもね、私は「華がある」って言われるのを武器にしてるの。ちゃんと磨いた武器だから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吐き出した煙が、アロマキャンドルの火を揺らした。バラとフルーツの余韻が、鼻の奥にゆっくり残る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（『華がある』って、才能じゃなくて、磨いた結果なのか）"
+        },
+        {
+          "speaker": "kirara",
+          "face": "smile",
+          "text": "LIME交換しよっか。大会までよろしくね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "きららとLIME交換した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店を出ると、フローラルな香りが服に染みついていた。外の空気が質素に感じる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（なる、アダム、きらら。みんな『自分のシーシャ』を持ってる）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（僕には……何があるんだろう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_kirara_second",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "また来た、きららの店。白い空間にジャズが響いている。前回と変わらない、華やかで完成された空気。"
+        },
+        {
+          "speaker": "kirara",
+          "face": "smile",
+          "text": "また来てくれたの？ 嬉しい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "前回のが気になって、もう少し話を聞きたくて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "きららが紅茶を出してくれた。シーシャと一緒に出す紅茶。この店のおもてなしの一つらしい。"
+        },
+        {
+          "speaker": "kirara",
+          "face": "normal",
+          "text": "ふーん。……ねえ、正直に聞いていい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい"
+        },
+        {
+          "speaker": "kirara",
+          "face": "serious",
+          "text": "あなた、大会で何がしたいの？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紅茶のカップを握ったまま、一瞬固まった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……分からない、です。スミさんに出ろって言われて、出ることにしただけで"
+        },
+        {
+          "speaker": "kirara",
+          "face": "normal",
+          "text": "ふうん。……素直だね"
+        },
+        {
+          "speaker": "kirara",
+          "face": "smile",
+          "text": "でも大会って、そういう人が意外と面白いの出すんだよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……そうなんですか"
+        },
+        {
+          "speaker": "kirara",
+          "face": "smile",
+          "text": "私はね、自分のシーシャを見てもらいたくて出るの。「可愛い」も「華がある」も、私が積み上げてきたものだから"
+        },
+        {
+          "speaker": "kirara",
+          "face": "wink",
+          "text": "大会、楽しもうね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紅茶を飲み干して、店を出る。バラの残り香が、まだ鼻の奥にある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（「何がしたいの」か……。正直、まだ答えられない）"
+        }
       ]
     }
   ]
