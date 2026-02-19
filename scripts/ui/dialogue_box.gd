@@ -10,7 +10,9 @@ signal dialogue_finished(dialogue_id: String)
 @onready var text_label: RichTextLabel = %TextLabel
 @onready var choice_container: VBoxContainer = %ChoiceContainer
 @onready var advance_button: Button = %AdvanceButton
+@onready var auto_button: Button = %AutoButton
 @onready var typing_timer: Timer = %TypingTimer
+@onready var auto_timer: Timer = %AutoTimer
 @onready var portrait_rect: TextureRect = %CharacterPortrait
 @onready var background_image: TextureRect = %BackgroundImage
 @onready var smoke_particles: GPUParticles2D = $SmokeParticles
@@ -21,8 +23,10 @@ var _metadata: Dictionary = {}
 
 var _is_typing = false
 var _full_text = ""
+var _full_text_bbcode = ""
 var _current_char = 0
 var _current_speaker = ""
+var _auto_enabled = false
 
 const SPEAKER_NAMES := {
 	"hajime": "はじめ",
@@ -39,11 +43,29 @@ const SPEAKER_NAMES := {
 	"takiguchi": "焚口ショウ",
 	"staff_choizap": "チョイザップスタッフ"
 }
+const HIGHLIGHT_TAGS := [
+	"[imp]", "[/imp]",
+	"[warn]", "[/warn]",
+	"[hint]", "[/hint]"
+]
+const HIGHLIGHT_OPEN_REPLACEMENTS := {
+	"[imp]": "[color=#ffd878][b]",
+	"[warn]": "[color=#ff8b8b][b]",
+	"[hint]": "[color=#8bdcff][b]",
+}
+const HIGHLIGHT_CLOSE_REPLACEMENTS := {
+	"[/imp]": "[/b][/color]",
+	"[/warn]": "[/b][/color]",
+	"[/hint]": "[/b][/color]",
+}
 
 
 func _ready() -> void:
 	advance_button.pressed.connect(_on_advance_button_pressed)
+	auto_button.pressed.connect(_on_auto_button_pressed)
 	typing_timer.timeout.connect(_on_typing_timer_timeout)
+	auto_timer.timeout.connect(_on_auto_timer_timeout)
+	_set_auto_enabled(false)
 	
 	# Default smoke off
 	if smoke_particles:
@@ -136,10 +158,12 @@ func _on_advance_button_pressed() -> void:
 		return
 	if choice_container.get_child_count() > 0:
 		return
+	_cancel_auto_advance()
 	_show_next_line()
 
 
 func _show_next_line() -> void:
+	_cancel_auto_advance()
 	if _line_queue.is_empty():
 		_finish_dialogue()
 		return
@@ -181,12 +205,16 @@ func _show_next_line() -> void:
 
 
 func _start_typing(text: String) -> void:
-	_full_text = text
+	_full_text = _strip_highlight_tags(text)
+	_full_text_bbcode = _build_highlighted_text(text)
 	_current_char = 0
 	text_label.text = ""
 	_is_typing = true
 	advance_button.disabled = false
 	advance_button.text = "早送り"
+	if _full_text.is_empty():
+		_show_full_text_immediately()
+		return
 
 	var cps = float(30.0)
 	if FileAccess.file_exists("user://settings.cfg"):
@@ -211,18 +239,22 @@ func _on_typing_timer_timeout() -> void:
 func _show_full_text_immediately() -> void:
 	_is_typing = false
 	typing_timer.stop()
-	text_label.text = _full_text
+	text_label.text = _full_text_bbcode
 	advance_button.text = "次へ"
+	_queue_auto_advance()
 
 
 func _show_choices(choices: Array) -> void:
 	_clear_choices()
+	_cancel_auto_advance()
 	advance_button.disabled = true
 	advance_button.text = "選択"
 	for choice in choices:
 		var button = Button.new()
 		button.text = str(choice.get("text", "選択肢"))
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.custom_minimum_size = Vector2(0, 48)
+		button.add_theme_font_size_override("font_size", 24)
 		button.pressed.connect(_on_choice_selected.bind(str(choice.get("next", ""))))
 		choice_container.add_child(button)
 
@@ -242,6 +274,82 @@ func _on_choice_selected(branch_key: String) -> void:
 func _clear_choices() -> void:
 	for child in choice_container.get_children():
 		child.queue_free()
+
+
+func _on_auto_button_pressed() -> void:
+	GameManager.play_ui_se("cursor")
+	_set_auto_enabled(not _auto_enabled)
+	if _auto_enabled:
+		_queue_auto_advance()
+	else:
+		_cancel_auto_advance()
+
+
+func _on_auto_timer_timeout() -> void:
+	if not _auto_enabled:
+		return
+	if _is_typing:
+		return
+	if choice_container.get_child_count() > 0:
+		return
+	_show_next_line()
+
+
+func _set_auto_enabled(enabled: bool) -> void:
+	_auto_enabled = enabled
+	if auto_button == null:
+		return
+	auto_button.text = "オート: ON" if _auto_enabled else "オート: OFF"
+
+
+func _queue_auto_advance() -> void:
+	if not _auto_enabled:
+		return
+	if _is_typing:
+		return
+	if choice_container.get_child_count() > 0:
+		return
+	if _line_queue.is_empty():
+		return
+	var wait_time = clampf(0.9 + float(_full_text.length()) * 0.035, 1.0, 3.2)
+	auto_timer.wait_time = wait_time
+	auto_timer.start()
+
+
+func _cancel_auto_advance() -> void:
+	if auto_timer == null:
+		return
+	if auto_timer.is_stopped():
+		return
+	auto_timer.stop()
+
+
+func _strip_highlight_tags(text: String) -> String:
+	var output = text
+	for tag in HIGHLIGHT_TAGS:
+		output = output.replace(tag, "")
+	return output
+
+
+func _build_highlighted_text(text: String) -> String:
+	var output = text
+	var placeholders: Dictionary = {}
+	var token_index = 0
+	for open_tag in HIGHLIGHT_OPEN_REPLACEMENTS.keys():
+		var open_token = "__HIGHLIGHT_OPEN_%d__" % token_index
+		token_index += 1
+		placeholders[open_token] = str(HIGHLIGHT_OPEN_REPLACEMENTS[open_tag])
+		output = output.replace(open_tag, open_token)
+	for close_tag in HIGHLIGHT_CLOSE_REPLACEMENTS.keys():
+		var close_token = "__HIGHLIGHT_CLOSE_%d__" % token_index
+		token_index += 1
+		placeholders[close_token] = str(HIGHLIGHT_CLOSE_REPLACEMENTS[close_tag])
+		output = output.replace(close_tag, close_token)
+	output = output.replace("[", "[lb]")
+	output = output.replace("]", "[rb]")
+	for token in placeholders.keys():
+		output = output.replace(str(token), str(placeholders[token]))
+	return output
 
 
 func _update_portrait(line: Dictionary) -> void:
@@ -271,6 +379,7 @@ func _update_portrait(line: Dictionary) -> void:
 
 
 func _finish_dialogue() -> void:
+	_cancel_auto_advance()
 	emit_signal("dialogue_finished", dialogue_id)
 
 	if _metadata.has("set_flag"):

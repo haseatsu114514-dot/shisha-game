@@ -151,7 +151,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "はじめ。大会出ろ"
+          "text": "はじめ。[imp]大会[/imp]出ろ"
         },
         {
           "speaker": "hajime",
@@ -161,7 +161,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "地方大会。来週だ"
+          "text": "[imp]地方大会[/imp]。来週だ"
         },
         {
           "speaker": "hajime",
@@ -171,7 +171,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "無理かどうかは出てから決めろ。お前の煙は、ちゃんと届く"
+          "text": "無理かどうかは出てから決めろ。お前の煙は、ちゃんと[imp]届く[/imp]"
         },
         {
           "speaker": "hajime",
@@ -228,7 +228,7 @@
           {
             "speaker": "sumi",
             "face": "smile",
-            "text": "よし。地方大会まで1週間だ。準備しろ"
+            "text": "よし。[imp]地方大会まで1週間[/imp]だ。準備しろ"
           },
           {
             "speaker": "hajime",
@@ -315,7 +315,7 @@
           {
             "speaker": "sumi",
             "face": "serious",
-            "text": "考えるのは帰ってからでいい。地方大会まで1週間だ"
+            "text": "考えるのは帰ってからでいい。[imp]地方大会まで1週間[/imp]だ"
           },
           {
             "speaker": "hajime",

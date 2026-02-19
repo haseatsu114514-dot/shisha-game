@@ -48,34 +48,36 @@ stretch_mode = 5
 
 [node name="DialoguePanel" type="PanelContainer" parent="."]
 layout_mode = 1
-offset_left = 30.0
-offset_top = 470.0
-offset_right = 1250.0
-offset_bottom = 700.0
+anchor_left = 0.03
+anchor_top = 0.62
+anchor_right = 0.97
+anchor_bottom = 0.965
 
 [node name="Margin" type="MarginContainer" parent="DialoguePanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_bottom = 18
 
 [node name="VBox" type="VBoxContainer" parent="DialoguePanel/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 10
 
 [node name="SpeakerLabel" type="Label" parent="DialoguePanel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 30
 text = ""
 
 [node name="TextLabel" type="RichTextLabel" parent="DialoguePanel/Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-custom_minimum_size = Vector2(0, 100)
-bbcode_enabled = false
+custom_minimum_size = Vector2(0, 170)
+theme_override_font_sizes/normal_font_size = 34
+autowrap_mode = 3
+bbcode_enabled = true
 text = ""
 
 [node name="ChoiceContainer" type="VBoxContainer" parent="DialoguePanel/Margin/VBox"]
@@ -83,15 +85,31 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="AdvanceButton" type="Button" parent="DialoguePanel/Margin/VBox"]
+[node name="ControlButtons" type="HBoxContainer" parent="DialoguePanel/Margin/VBox"]
+layout_mode = 2
+alignment = 2
+theme_override_constants/separation = 10
+
+[node name="AutoButton" type="Button" parent="DialoguePanel/Margin/VBox/ControlButtons"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_horizontal = 8
-custom_minimum_size = Vector2(120, 36)
-theme_override_font_sizes/font_size = 16
+custom_minimum_size = Vector2(180, 50)
+theme_override_font_sizes/font_size = 20
+text = "オート: OFF"
+
+[node name="AdvanceButton" type="Button" parent="DialoguePanel/Margin/VBox/ControlButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(180, 50)
+theme_override_font_sizes/font_size = 22
 text = "▶"
 
 [node name="TypingTimer" type="Timer" parent="."]
 unique_name_in_owner = true
 wait_time = 0.03
 one_shot = false
+
+[node name="AutoTimer" type="Timer" parent="."]
+unique_name_in_owner = true
+wait_time = 1.2
+one_shot = true
