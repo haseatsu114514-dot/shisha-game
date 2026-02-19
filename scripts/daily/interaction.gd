@@ -21,8 +21,8 @@ func _ready() -> void:
 		return
 
 	match _target:
-		"nishio":
-			_show_nishio_interaction()
+		"naru":
+			_show_naru_interaction()
 		"adam":
 			_show_adam_interaction()
 		"ryuji":
@@ -33,30 +33,30 @@ func _ready() -> void:
 			body_label.text = "誰もいない。"
 
 
-func _show_nishio_interaction() -> void:
-	header_label.text = "にしおの店"
-	_set_portrait("nishio")
-	var count = int(EventFlags.get_value("visit_nishio_count", 0))
-	EventFlags.set_value("visit_nishio_count", count + 1)
+func _show_naru_interaction() -> void:
+	header_label.text = "なるの店"
+	_set_portrait("naru")
+	var count = int(EventFlags.get_value("visit_naru_count", 0))
+	EventFlags.set_value("visit_naru_count", count + 1)
 
-	if not EventFlags.get_flag("ch1_nishio_met"):
-		EventFlags.set_flag("ch1_nishio_met")
-		AffinityManager.set_met("nishio")
-		RivalIntel.add_intel("nishio", "flavor_genre", "お菓子系")
-		body_label.text = "にしお「チルハウスのやつじゃん。偵察かよ笑」"
+	if not EventFlags.get_flag("ch1_naru_met"):
+		EventFlags.set_flag("ch1_naru_met")
+		AffinityManager.set_met("naru")
+		RivalIntel.add_intel("naru", "flavor_genre", "お菓子系")
+		body_label.text = "なる「チルハウスのやつじゃん。偵察かよ笑」"
 		_clear_options()
-		_add_option("LIME交換する", "exchange_lime", "nishio")
+		_add_option("LIME交換する", "exchange_lime", "naru")
 		_add_option("また今度", "none")
 		return
 
 	if count == 1:
-		body_label.text = "にしお「最近チョコ系ばっか練習してるわ」"
-		RivalIntel.add_intel("nishio", "flavor_detail", "チョコレート＋バニラ")
-		AffinityManager.add_affinity("nishio", 5)
+		body_label.text = "なる「最近チョコ系ばっか練習してるわ」"
+		RivalIntel.add_intel("naru", "flavor_detail", "チョコレート＋バニラ")
+		AffinityManager.add_affinity("naru", 5)
 		return
 
-	body_label.text = "にしお「本番まであと少しだな」"
-	AffinityManager.add_affinity("nishio", 1)
+	body_label.text = "なる「本番まであと少しだな」"
+	AffinityManager.add_affinity("naru", 1)
 
 
 func _show_adam_interaction() -> void:
@@ -112,10 +112,10 @@ func _show_ryuji_interaction() -> void:
 func _show_invitation_event(event_id: String) -> void:
 	header_label.text = "交流イベント"
 	match event_id:
-		"interaction_nishio_night_01":
-			_set_portrait("nishio")
-			body_label.text = "にしおの新作ミックスを一緒に試した。率直な感想を伝えた。"
-			AffinityManager.add_affinity("nishio", 4)
+		"interaction_naru_night_01":
+			_set_portrait("naru")
+			body_label.text = "なるの新作ミックスを一緒に試した。率直な感想を伝えた。"
+			AffinityManager.add_affinity("naru", 4)
 			PlayerData.add_stat("insight", 2)
 			GameManager.log_stat_change("insight", 2)
 		"interaction_ryuji_noon_01":
