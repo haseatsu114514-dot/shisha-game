@@ -216,14 +216,30 @@ func _do_practice() -> void:
 		body_label.text = "行動コマがありません。"
 		return
 
+	header_label.text = "練習"
+	body_label.text = "何を練習する？"
+	_clear_buttons(menu_container)
+	_clear_buttons(choice_container)
+
 	var options = [
-		{"text": "パッキングの練習をした", "stat": "technique", "amount": 3},
-		{"text": "フレーバーの香りを覚えた", "stat": "sense", "amount": 3}
+		{"text": "パッキングの練習", "stat": "technique", "amount": 3, "result": "パッキングの練習をした。手つきが少し良くなった気がする。"},
+		{"text": "フレーバーの香りを覚える", "stat": "sense", "amount": 3, "result": "フレーバーの香りを覚えた。微妙な違いが分かるようになってきた。"},
+		{"text": "煙のプレゼン練習", "stat": "charm", "amount": 3, "result": "鏡の前で煙の出し方を練習した。見せ方が様になってきた。"},
+		{"text": "忙しい時間帯を想定した練習", "stat": "guts", "amount": 3, "result": "タイマーをかけて全力で回した。プレッシャーに少し慣れた。"},
 	]
-	var selected: Dictionary = options[randi() % options.size()]
-	PlayerData.add_stat(str(selected["stat"]), int(selected["amount"]))
-	GameManager.log_stat_change(str(selected["stat"]), int(selected["amount"]))
-	_show_single_result_and_finish(str(selected["text"]))
+	for option in options:
+		var button = Button.new()
+		button.text = str(option["text"])
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.pressed.connect(_on_practice_selected.bind(option))
+		choice_container.add_child(button)
+
+
+func _on_practice_selected(option: Dictionary) -> void:
+	_clear_buttons(choice_container)
+	PlayerData.add_stat(str(option["stat"]), int(option["amount"]))
+	GameManager.log_stat_change(str(option["stat"]), int(option["amount"]))
+	_show_single_result_and_finish(str(option["result"]))
 
 
 func _do_sumi_talk() -> void:

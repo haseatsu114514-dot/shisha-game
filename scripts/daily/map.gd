@@ -136,8 +136,8 @@ func _enter_spot(spot: Dictionary) -> void:
 			if not CalendarManager.use_action():
 				message_label.text = "行動コマが足りません。"
 				return
-			PlayerData.add_stat("guts", 2)
-			GameManager.log_stat_change("guts", 2)
+			PlayerData.add_stat("guts", 1)
+			GameManager.log_stat_change("guts", 1)
 			CalendarManager.advance_time()
 			_go_next_phase()
 		"nishio", "adam", "ryuji":
