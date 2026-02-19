@@ -42,7 +42,9 @@ func _on_slot_pressed(slot: int) -> void:
 		return
 
 	var next_scene = "res://scenes/daily/map.tscn"
-	if CalendarManager.current_time == "morning":
+	if GameManager.current_phase == "tournament" or GameManager.game_state == "tournament" or (CalendarManager.is_tournament_day() and not CalendarManager.is_interval):
+		next_scene = "res://scenes/tournament/ch1_tournament.tscn"
+	elif CalendarManager.current_time == "morning":
 		next_scene = "res://scenes/daily/morning_phone.tscn"
 	elif CalendarManager.current_time == "midnight":
 		next_scene = "res://scenes/daily/night_end.tscn"

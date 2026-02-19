@@ -1,9 +1,23 @@
 {
   "equipment": [
     {
+      "id": "silicone_bowl",
+      "type": "bowl",
+      "name": "シリコンボウル",
+      "chapter_min": 1,
+      "buy_price": 1000,
+      "sell_price": 500,
+      "price": 1000,
+      "value": "silicone_bowl",
+      "description": "初期装備。扱いやすく、熱管理の基礎を覚えやすい。"
+    },
+    {
       "id": "hagal_80beat",
       "type": "bowl",
       "name": "80beatハガル",
+      "chapter_min": 1,
+      "buy_price": 4000,
+      "sell_price": 2000,
       "price": 4000,
       "value": "hagal_80beat",
       "description": "癖があまりなく使いやすいハガル。"
@@ -12,22 +26,75 @@
       "id": "suyaki_hagal",
       "type": "bowl",
       "name": "素焼きハガル",
+      "chapter_min": 1,
+      "buy_price": 1000,
+      "sell_price": 500,
       "price": 1000,
       "value": "suyaki",
       "description": "同じ味を使うほど育つ。最初は土の味が少しする。"
     },
     {
+      "id": "lotos_hagal",
+      "type": "hms",
+      "name": "ロートスハガル",
+      "chapter_min": 1,
+      "buy_price": 1500,
+      "sell_price": 750,
+      "price": 1500,
+      "value": "lotos_hagal",
+      "description": "初期装備。立ち上がりが早く、練習時の再現性が高い。"
+    },
+    {
       "id": "tanukish_lid",
       "type": "hms",
       "name": "タヌキッシュリッド",
+      "chapter_min": 1,
+      "buy_price": 2000,
+      "sell_price": 1000,
       "price": 2000,
       "value": "tanukish_lid",
       "description": "使いやすく癖が少ない。素焼きサイズには使えない。"
     },
     {
+      "id": "amaburst_hms",
+      "type": "hms",
+      "name": "アマバースト",
+      "chapter_min": 1,
+      "buy_price": 1500,
+      "sell_price": 750,
+      "price": 1500,
+      "value": "amaburst",
+      "description": "素焼きハガルにも装着可能。温度が上がりやすく、直炭に近い高火力を出しやすい。"
+    },
+    {
+      "id": "flat_charcoal",
+      "type": "charcoal",
+      "name": "フラット炭",
+      "chapter_min": 1,
+      "buy_price": 600,
+      "sell_price": 300,
+      "price": 600,
+      "value": "flat_charcoal",
+      "description": "安定して熱を入れやすい。有効範囲が広く扱いやすい。"
+    },
+    {
+      "id": "cube_charcoal",
+      "type": "charcoal",
+      "name": "キューブ炭",
+      "chapter_min": 1,
+      "buy_price": 1000,
+      "sell_price": 500,
+      "price": 1000,
+      "value": "cube_charcoal",
+      "description": "火力を上げる時に有効。重たい煙が好きな層に刺さるが有効範囲は狭い。"
+    },
+    {
       "id": "winkwink_hagal",
       "type": "hms",
       "name": "winkwinkハガル",
+      "chapter_min": 2,
+      "buy_price": 3000,
+      "sell_price": 1500,
       "price": 3000,
       "value": "winkwink_hagal",
       "description": "素焼きなど大きいハガル向け。熱持ちは良いが熱が入りづらい。"

@@ -2,6 +2,8 @@ extends Control
 
 @onready var info_label: Label = %InfoLabel
 @onready var notification_label: Label = %NotificationLabel
+@onready var lime_button: Button = %LimeButton
+@onready var close_phone_button: Button = %ClosePhoneButton
 var _today_messages: Array = []
 
 
@@ -9,17 +11,24 @@ func _ready() -> void:
 	GameManager.play_daily_bgm()
 
 	if CalendarManager.is_tournament_day():
-		info_label.text = "Day %d 大会当日！\nTo be continued..." % CalendarManager.current_day
-		notification_label.text = ""
+		GameManager.transition_to_tournament()
+		var unread_memo_count = PlayerData.get_unread_tournament_memo_count()
+		info_label.text = "Day %d 大会当日！\n会場へ向かおう。" % CalendarManager.current_day
+		if unread_memo_count > 0:
+			notification_label.text = "大会メモ 未読 %d件" % unread_memo_count
+		else:
+			notification_label.text = "大会メモを確認済み"
+		lime_button.disabled = true
+		close_phone_button.text = "大会会場へ"
 		return
 
 	if CalendarManager.is_interval:
 		var remaining = CalendarManager.get_interval_remaining_days()
 		info_label.text = "インターバル Day %d\n自由に行動できる（残り%d日）" % [CalendarManager.interval_day, remaining]
-	elif CalendarManager.current_day >= 2:
-		EventFlags.set_flag("ch1_rival_shops_open", true)
 
 	var notice = str(GameManager.pop_transient("morning_notice", ""))
+	if notice == "":
+		notice = _build_sumi_morning_invite_text()
 	if notice != "":
 		info_label.text = notice
 	elif not CalendarManager.is_interval:
@@ -67,6 +76,18 @@ func _update_notifications() -> void:
 		notification_label.text = "通知なし"
 
 
+func _build_sumi_morning_invite_text() -> String:
+	if CalendarManager.is_interval:
+		return ""
+	var tonight_event = GameManager.get_forced_event_for_today("night")
+	if tonight_event.is_empty():
+		return ""
+	var event_id = str(tonight_event.get("id", ""))
+	if event_id.find("sumi") == -1:
+		return ""
+	return "スミさん: 今日の夜、閉店後に店に来い。"
+
+
 func _on_lime_button_pressed() -> void:
 	if CalendarManager.is_tournament_day():
 		return
@@ -80,7 +101,7 @@ func _on_lime_button_pressed() -> void:
 
 func _on_close_phone_button_pressed() -> void:
 	if CalendarManager.is_tournament_day():
-		get_tree().change_scene_to_file("res://scenes/title/title_screen.tscn")
+		get_tree().change_scene_to_file("res://scenes/tournament/ch1_tournament.tscn")
 		return
 
 	CalendarManager.advance_time()

@@ -11,6 +11,7 @@ var _pending_spot: Dictionary = {}
 var _pin_texture: Texture2D
 var _pin_event_texture: Texture2D
 var _face_cache: Dictionary = {}
+const SHOP_VISIT_COST := 3500
 
 const SPOT_POSITIONS_DAY: Dictionary = {
 	"chillhouse": Vector2(300, 420),
@@ -96,11 +97,11 @@ func _build_spot_list() -> Array:
 	var spots: Array = []
 	if CalendarManager.current_time == "noon":
 		spots.append({"id": "chillhouse", "label": "チルハウス"})
-		spots.append({"id": "shop", "label": "Dr.Hookah"})
-		if CalendarManager.current_day >= 2:
-			spots.append({"id": "naru", "label": "なるの店"})
-			spots.append({"id": "adam", "label": "アダムの店"})
-			spots.append({"id": "kirara", "label": "きららの店"})
+		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
+		spots.append({"id": "naru", "label": "ケムリクサ"})
+		if _are_rival_shops_unlocked():
+			spots.append({"id": "adam", "label": "林檎堂"})
+			spots.append({"id": "kirara", "label": "KIRARA LOUNGE"})
 		if EventFlags.get_flag("spot_choizap_unlocked"):
 			spots.append({"id": "choizap", "label": "チョイザップ"})
 		if EventFlags.get_flag("spot_kannon_unlocked"):
@@ -109,11 +110,12 @@ func _build_spot_list() -> Array:
 			spots.append({"id": "cafe", "label": "カフェ"})
 	elif CalendarManager.current_time == "night":
 		spots.append({"id": "chillhouse", "label": "チルハウス（夜）"})
+		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]（夜）"})
 		spots.append({"id": "home", "label": "自宅で休む"})
-		if CalendarManager.current_day >= 2:
-			spots.append({"id": "naru", "label": "なるの店（夜）"})
-			spots.append({"id": "adam", "label": "アダムの店（夜）"})
-			spots.append({"id": "kirara", "label": "きららの店（夜）"})
+		spots.append({"id": "naru", "label": "ケムリクサ（夜）"})
+		if _are_rival_shops_unlocked():
+			spots.append({"id": "adam", "label": "林檎堂（夜）"})
+			spots.append({"id": "kirara", "label": "KIRARA LOUNGE（夜）"})
 	return spots
 
 
@@ -134,14 +136,21 @@ func _enter_spot(spot: Dictionary) -> void:
 		"chillhouse":
 			get_tree().change_scene_to_file("res://scenes/daily/baito.tscn")
 		"shop":
-			if not CalendarManager.use_action():
-				message_label.text = "行動コマが足りません。"
+			if PlayerData.money < SHOP_VISIT_COST:
+				message_label.text = "Dr.Hookah 入店には %d円 必要です。" % SHOP_VISIT_COST
 				return
+			if not CalendarManager.use_action():
+				message_label.text = "行動コマが尽きたので家に帰る。"
+				_try_auto_return_home()
+				return
+			PlayerData.spend_money(SHOP_VISIT_COST)
+			GameManager.log_money_change(-SHOP_VISIT_COST)
 			GameManager.set_transient("advance_time_after_scene", true)
 			get_tree().change_scene_to_file("res://scenes/daily/shop.tscn")
 		"home":
 			if not CalendarManager.use_action():
-				message_label.text = "行動コマが足りません。"
+				message_label.text = "行動コマが尽きたので家に帰る。"
+				_try_auto_return_home()
 				return
 			PlayerData.add_stat("guts", 1)
 			GameManager.log_stat_change("guts", 1)
@@ -149,7 +158,8 @@ func _enter_spot(spot: Dictionary) -> void:
 			_go_next_phase()
 		"naru", "adam", "kirara":
 			if not CalendarManager.use_action():
-				message_label.text = "行動コマが足りません。"
+				message_label.text = "行動コマが尽きたので家に帰る。"
+				_try_auto_return_home()
 				return
 			GameManager.set_transient("interaction_target", id)
 			GameManager.set_transient("advance_time_after_scene", true)
@@ -194,6 +204,12 @@ func _enter_spot(spot: Dictionary) -> void:
 			GameManager.set_transient("advance_time_after_scene", true)
 			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_cafe_visit", "res://scenes/daily/map.tscn")
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+
+
+func _are_rival_shops_unlocked() -> bool:
+	if GameManager.current_chapter != 1:
+		return true
+	return EventFlags.get_flag("ch1_rival_shops_open")
 
 
 func _go_next_phase() -> void:

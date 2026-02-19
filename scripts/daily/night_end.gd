@@ -36,7 +36,7 @@ func _render_summary() -> void:
 
 	lines.append("")
 	lines.append("技術 ★%d" % PlayerData.get_stat_stars("technique"))
-	lines.append("感覚 ★%d" % PlayerData.get_stat_stars("sense"))
+	lines.append("味覚 ★%d" % PlayerData.get_stat_stars("sense"))
 	lines.append("度胸 ★%d" % PlayerData.get_stat_stars("guts"))
 	lines.append("魅力 ★%d" % PlayerData.get_stat_stars("charm"))
 	lines.append("洞察 ★%d" % PlayerData.get_stat_stars("insight"))

@@ -121,9 +121,13 @@ func _show_current_message() -> void:
 	title_label.text = _to_display_name(sender_id)
 	status_label.text = "未読 %d件" % (_messages.size() - _index)
 
-	for line in message.get("messages", []):
-		var line_sender = str(line.get("sender", sender_id))
-		_add_chat_bubble(line_sender, str(line.get("text", "")))
+	var chat_lines = _extract_message_lines(message, sender_id)
+	if chat_lines.is_empty():
+		_add_system_message("受信メッセージを表示できませんでした。")
+	else:
+		for line in chat_lines:
+			var line_sender = str(line.get("sender", sender_id))
+			_add_chat_bubble(line_sender, str(line.get("text", "")))
 
 	var message_type = str(message.get("type", "chat"))
 	if message_type == "invitation":
@@ -165,6 +169,10 @@ func _on_option_pressed(action: String, index: int) -> void:
 			_add_chat_bubble(SELF_ID, "行ける。後で行くわ")
 			if time_slot == "noon":
 				GameManager.set_transient("forced_noon_action", event_id)
+				_mark_current_message_read()
+				_index += 1
+				_jump_to_noon_invitation_event()
+				return
 			else:
 				GameManager.set_transient("night_action", event_id)
 		"invitation_decline":
@@ -291,6 +299,62 @@ func _to_display_name(sender: String) -> String:
 	return DISPLAY_NAME.get(sender, sender)
 
 
+func _extract_message_lines(message: Dictionary, fallback_sender: String) -> Array:
+	var result: Array = []
+	var raw_lines: Variant = null
+
+	if message.has("messages"):
+		raw_lines = message.get("messages", [])
+	else:
+		for alt_key in ["message_lines", "lines", "conversation"]:
+			if message.has(alt_key):
+				raw_lines = message.get(alt_key, [])
+				break
+
+	if typeof(raw_lines) == TYPE_ARRAY:
+		for raw_line in raw_lines:
+			var normalized = _normalize_message_line(raw_line, fallback_sender)
+			if normalized.is_empty():
+				continue
+			result.append(normalized)
+
+	if result.is_empty():
+		var fallback_text = ""
+		if message.has("text"):
+			fallback_text = str(message.get("text", ""))
+		elif message.has("message"):
+			fallback_text = str(message.get("message", ""))
+		elif message.has("body"):
+			fallback_text = str(message.get("body", ""))
+		if fallback_text.strip_edges() != "":
+			for chunk in fallback_text.split("\n", false):
+				if chunk.strip_edges() == "":
+					continue
+				result.append({"sender": fallback_sender, "text": chunk.strip_edges()})
+
+	return result
+
+
+func _normalize_message_line(raw_line: Variant, fallback_sender: String) -> Dictionary:
+	if typeof(raw_line) == TYPE_DICTIONARY:
+		var line_dict = raw_line as Dictionary
+		var sender = str(line_dict.get("sender", fallback_sender))
+		var text = str(line_dict.get("text", ""))
+		if text.strip_edges() == "":
+			text = str(line_dict.get("message", ""))
+		if text.strip_edges() == "":
+			text = str(line_dict.get("body", ""))
+		text = text.strip_edges()
+		if text == "":
+			return {}
+		return {"sender": sender, "text": text}
+
+	var plain_text = str(raw_line).strip_edges()
+	if plain_text == "":
+		return {}
+	return {"sender": fallback_sender, "text": plain_text}
+
+
 func _mark_current_message_read() -> void:
 	if _index >= _messages.size():
 		return
@@ -319,6 +383,12 @@ func _scroll_to_bottom() -> void:
 	if scroll_bar == null:
 		return
 	chat_scroll.scroll_vertical = int(scroll_bar.max_value)
+
+
+func _jump_to_noon_invitation_event() -> void:
+	if CalendarManager.current_time == "morning":
+		CalendarManager.advance_time()
+	get_tree().change_scene_to_file("res://scenes/daily/map.tscn")
 
 
 func _set_button_theme(button: Button, is_primary: bool) -> void:
