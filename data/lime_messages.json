@@ -17,19 +17,19 @@
       "decline_response": {"sender": "naru", "text": "おk。またな"}
     },
     {
-      "id": "lime_ryuji_day4",
-      "sender": "ryuji",
+      "id": "lime_kirara_day4",
+      "sender": "kirara",
       "trigger_day": 4,
       "trigger_condition": "lime_exchanged",
       "type": "invitation",
       "time_slot": "noon",
       "messages": [
-        {"sender": "ryuji", "text": "おう！！元気か！！"},
-        {"sender": "ryuji", "text": "今日パッキング勝負しようぜ！！"},
-        {"sender": "ryuji", "text": "昼に俺の店来いよ！！"}
+        {"sender": "kirara", "text": "ねえ"},
+        {"sender": "kirara", "text": "今日ヒマ？ うちの店来ない？"},
+        {"sender": "kirara", "text": "新しいミックス作ったんだけど感想聞きたくて"}
       ],
-      "accept_event": "interaction_ryuji_noon_01",
-      "decline_response": {"sender": "ryuji", "text": "マジか！！残念！！またな！！"}
+      "accept_event": "interaction_kirara_noon_01",
+      "decline_response": {"sender": "kirara", "text": "そっか。また今度ね"}
     },
     {
       "id": "lime_naru_day6",

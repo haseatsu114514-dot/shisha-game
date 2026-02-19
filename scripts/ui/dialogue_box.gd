@@ -28,7 +28,7 @@ const SPEAKER_NAMES := {
 	"sumi": "スミさん",
 	"naru": "なる",
 	"adam": "アダム",
-	"ryuji": "リュウジ",
+	"kirara": "きらら",
 	"tsumugi": "つむぎ",
 	"packii": "パッキー"
 }

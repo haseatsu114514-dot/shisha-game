@@ -64,10 +64,10 @@ def main() -> None:
         "chr_adam_normal.png",
         "chr_adam_intense.png",
         "chr_adam_silent.png",
-        "chr_ryuji_normal.png",
-        "chr_ryuji_shout.png",
-        "chr_ryuji_cry.png",
-        "chr_ryuji_grin.png",
+        "chr_kirara_normal.png",
+        "chr_kirara_smile.png",
+        "chr_kirara_wink.png",
+        "chr_kirara_serious.png",
         "chr_tsumugi_normal.png",
         "chr_tsumugi_shy.png",
         "chr_tsumugi_focus.png",
@@ -84,7 +84,7 @@ def main() -> None:
         "face_sumi.png",
         "face_naru.png",
         "face_adam.png",
-        "face_ryuji.png",
+        "face_kirara.png",
         "face_tsumugi.png",
     ]
 
