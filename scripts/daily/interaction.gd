@@ -27,106 +27,62 @@ func _ready() -> void:
 		_show_invitation_event(_event_id)
 		return
 
-	match _target:
-		"naru":
-			_show_naru_interaction()
-		"adam":
-			_show_adam_interaction()
-		"kirara":
-			_show_kirara_interaction()
-		_:
-			_set_portrait("")
-			header_label.text = "交流"
-			body_label.text = "誰もいない。"
-
-
-func _show_naru_interaction() -> void:
-	header_label.text = "ケムリクサ"
-	_set_portrait("naru")
-	var count = int(EventFlags.get_value("visit_naru_count", 0))
-	EventFlags.set_value("visit_naru_count", count + 1)
-
-	if not EventFlags.get_flag("ch1_naru_met"):
-		EventFlags.set_flag("ch1_naru_met")
-		EventFlags.set_flag("ch1_rival_shops_open")
-		AffinityManager.set_met("naru")
-		RivalIntel.add_intel("naru", "flavor_genre", "お菓子系")
-		body_label.text = "なる「お前、チルハウスの人間？ スミさんのとこの？」\nなる「俺、ケムリクサでバイトしてる鳴切。大会で会うなら、今のうちに仲良くしとこうぜ」\nなる「アダムときららの店も開いてる。情報欲しいなら回っとけ」"
-		_append_character_flavor_hint("naru")
-		_apply_flavor_specialty_gain({"sweet": 1, "fruit": 1})
-		_clear_options()
-		_add_option("LIME交換する", "exchange_lime", "naru")
-		_add_option("また今度", "none")
+	# Rival shop visits now auto-launch dialogue events
+	if _target in ["naru", "adam", "kirara"]:
+		_launch_rival_dialogue(_target)
 		return
 
-	if count == 1:
-		body_label.text = "なる「最近チョコ系ばっか練習してるわ」"
-		RivalIntel.add_intel("naru", "flavor_detail", "チョコレート＋バニラ")
-		AffinityManager.add_affinity("naru", 5)
-		_apply_flavor_specialty_gain({"sweet": 2, "fruit": 1})
-		return
-
-	body_label.text = "なる「本番まであと少しだな」"
-	AffinityManager.add_affinity("naru", 1)
-	_apply_flavor_specialty_gain({"sweet": 1})
+	if _target != "":
+		_set_portrait("")
+		header_label.text = "交流"
+		body_label.text = "誰もいない。"
 
 
-func _show_adam_interaction() -> void:
-	header_label.text = "林檎堂"
-	_set_portrait("adam")
-	var count = int(EventFlags.get_value("visit_adam_count", 0))
-	EventFlags.set_value("visit_adam_count", count + 1)
+func _launch_rival_dialogue(rival_id: String) -> void:
+	var count = int(EventFlags.get_value("visit_%s_count" % rival_id, 0))
+	EventFlags.set_value("visit_%s_count" % rival_id, count + 1)
 
-	if not EventFlags.get_flag("ch1_adam_met"):
-		EventFlags.set_flag("ch1_adam_met")
-		AffinityManager.set_met("adam")
-		RivalIntel.add_intel("adam", "flavor_genre", "double_apple")
-		RivalIntel.add_intel("adam", "flavor_detail", "double_apple_only")
-		body_label.text = "棚にはダブルアップルしかない。\nアダム「……何か用か」\nアダム「他は要らない。これだけで十分だ」"
-		_append_character_flavor_hint("adam")
-		_apply_flavor_specialty_gain({"spice": 2, "special": 1})
-		return
+	# Set met flag and intel on first visit
+	if not EventFlags.get_flag("ch1_%s_met" % rival_id):
+		EventFlags.set_flag("ch1_%s_met" % rival_id)
+		AffinityManager.set_met(rival_id)
+		match rival_id:
+			"naru":
+				RivalIntel.add_intel("naru", "flavor_genre", "お菓子系")
+			"adam":
+				RivalIntel.add_intel("adam", "flavor_genre", "double_apple")
+				RivalIntel.add_intel("adam", "flavor_detail", "double_apple_only")
+			"kirara":
+				RivalIntel.add_intel("kirara", "flavor_genre", "映え系フルーツ")
 
-	if count == 1 and not AffinityManager.has_lime("adam"):
-		body_label.text = "アダム「……LIME、交換するか」"
-		_clear_options()
-		_add_option("交換する", "exchange_lime", "adam")
-		_add_option("遠慮する", "none")
-		return
+	# Pick dialogue and metadata based on visit count
+	var dialogue_file = "res://data/dialogue/ch1_%s.json" % rival_id
+	var dialogue_id = ""
+	var metadata: Dictionary = {}
+	if count == 0:
+		dialogue_id = "ch1_%s_first" % rival_id
+		# Naru and Kirara exchange LIME on first visit
+		if rival_id in ["naru", "kirara"]:
+			metadata["exchange_lime"] = rival_id
+		metadata["add_affinity"] = {rival_id: 3}
+	else:
+		dialogue_id = "ch1_%s_second" % rival_id
+		# Adam exchanges LIME on second visit
+		if rival_id == "adam":
+			metadata["exchange_lime"] = rival_id
+		metadata["add_affinity"] = {rival_id: 5}
+		# Add intel on second visit
+		match rival_id:
+			"naru":
+				metadata["add_intel"] = [{"id": "naru", "key": "flavor_detail", "value": "チョコレート＋バニラ"}]
+			"kirara":
+				metadata["add_intel"] = [{"id": "kirara", "key": "presentation", "value": "一般投票特化"}]
 
-	body_label.text = "アダム「ダブルアップル」"
-	AffinityManager.add_affinity("adam", 1)
-	_apply_flavor_specialty_gain({"spice": 1, "special": 1})
-
-
-func _show_kirara_interaction() -> void:
-	header_label.text = "KIRARA LOUNGE"
-	_set_portrait("kirara")
-	var count = int(EventFlags.get_value("visit_kirara_count", 0))
-	EventFlags.set_value("visit_kirara_count", count + 1)
-
-	if not EventFlags.get_flag("ch1_kirara_met"):
-		EventFlags.set_flag("ch1_kirara_met")
-		AffinityManager.set_met("kirara")
-		RivalIntel.add_intel("kirara", "flavor_genre", "映え系フルーツ")
-		body_label.text = "きらら「あら、チルハウスの子？ いらっしゃい♪」\nきらら「可愛いだけで勝てるほど大会は甘くないの。だから見せ方も味も、両方本気で作ってる」"
-		_append_character_flavor_hint("kirara")
-		_apply_flavor_specialty_gain({"fruit": 1, "floral": 2})
-		_clear_options()
-		_add_option("LIME交換する", "exchange_lime", "kirara")
-		_add_option("また今度", "none")
-		return
-
-	if count == 1:
-		body_label.text = "きらら「SNSのフォロワー？ 努力で増やしたに決まってるでしょ」"
-		RivalIntel.add_intel("kirara", "presentation", "一般投票特化")
-		AffinityManager.add_affinity("kirara", 3)
-		_apply_flavor_specialty_gain({"floral": 2, "fruit": 1})
-		return
-
-	body_label.text = "きらら「大会、楽しみね」"
-	AffinityManager.add_affinity("kirara", 1)
-	_apply_flavor_specialty_gain({"fruit": 1})
+	# Queue dialogue and go to dialogue scene
+	var return_scene = "res://scenes/daily/map.tscn"
+	GameManager.queue_dialogue(dialogue_file, dialogue_id, return_scene, metadata)
+	GameManager.set_transient("advance_time_after_scene", true)
+	get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 
 
 func _show_invitation_event(event_id: String) -> void:
@@ -183,11 +139,8 @@ func _add_option(text: String, action: String, arg: String = "") -> void:
 	option_container.add_child(button)
 
 
-func _on_option_pressed(action: String, arg: String) -> void:
+func _on_option_pressed(action: String, _arg: String) -> void:
 	match action:
-		"exchange_lime":
-			AffinityManager.exchange_lime(arg)
-			body_label.text += "\nLIMEを交換した。"
 		"none":
 			body_label.text += "\n少し話して店を出た。"
 	_clear_options()

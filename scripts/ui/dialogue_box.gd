@@ -13,6 +13,7 @@ signal dialogue_finished(dialogue_id: String)
 @onready var typing_timer: Timer = %TypingTimer
 @onready var portrait_rect: TextureRect = %CharacterPortrait
 @onready var background_image: TextureRect = %BackgroundImage
+@onready var smoke_particles: GPUParticles2D = $SmokeParticles
 
 var _line_queue: Array = []
 var _branches: Dictionary = {}
@@ -43,8 +44,15 @@ const SPEAKER_NAMES := {
 func _ready() -> void:
 	advance_button.pressed.connect(_on_advance_button_pressed)
 	typing_timer.timeout.connect(_on_typing_timer_timeout)
+	
+	# Default smoke off
+	if smoke_particles:
+		smoke_particles.emitting = false
+	
 	_load_dialogue_request_if_exists()
 	_apply_background_from_metadata()
+	_apply_effects_from_metadata()
+	
 	if not _load_dialogue_data():
 		text_label.text = "会話データを読み込めませんでした。"
 		advance_button.text = "戻る"
@@ -61,6 +69,15 @@ func _load_dialogue_request_if_exists() -> void:
 	dialogue_id = str(queued.get("id", dialogue_id))
 	next_scene_path = str(queued.get("next_scene", next_scene_path))
 	_metadata = queued.get("metadata", {})
+
+
+func _apply_effects_from_metadata() -> void:
+	if not smoke_particles:
+		return
+	if _metadata.get("effect", "") == "smoke":
+		smoke_particles.emitting = true
+	else:
+		smoke_particles.emitting = false
 
 
 func _apply_background_from_metadata() -> void:
@@ -128,6 +145,30 @@ func _show_next_line() -> void:
 		return
 
 	var line: Dictionary = _line_queue.pop_front()
+	
+	# Condition check
+	if str(line.get("type", "")) == "condition":
+		var stat = str(line.get("stat", ""))
+		var threshold = int(line.get("threshold", 0))
+		var val = 0
+		if stat != "":
+			val = PlayerData.get_stat(stat)
+		
+		var branch_key = ""
+		if val >= threshold:
+			branch_key = str(line.get("next_true", ""))
+		else:
+			branch_key = str(line.get("next_false", ""))
+			
+		if branch_key != "" and _branches.has(branch_key):
+			var branch_lines: Array = _branches[branch_key]
+			for i in range(branch_lines.size() - 1, -1, -1):
+				_line_queue.push_front(branch_lines[i])
+		
+		# Immediately show next line after branching
+		_show_next_line()
+		return
+
 	if str(line.get("type", "")) == "choice":
 		_show_choices(line.get("choices", []))
 		return
@@ -241,13 +282,114 @@ func _finish_dialogue() -> void:
 				EventFlags.set_flag(str(flag))
 	if _metadata.has("morning_notice"):
 		GameManager.set_transient("morning_notice", _metadata["morning_notice"])
+	if _metadata.has("exchange_lime"):
+		AffinityManager.exchange_lime(str(_metadata["exchange_lime"]))
+
+	# Track affinity changes for notification
+	var affinity_char_name := ""
+	if _metadata.has("add_affinity"):
+		var aff = _metadata["add_affinity"]
+		if typeof(aff) == TYPE_DICTIONARY:
+			for char_id in aff:
+				AffinityManager.add_affinity(str(char_id), int(aff[char_id]))
+				affinity_char_name = SPEAKER_NAMES.get(str(char_id), str(char_id))
+	if _metadata.has("add_intel"):
+		var intels = _metadata["add_intel"]
+		if typeof(intels) == TYPE_ARRAY:
+			for entry in intels:
+				RivalIntel.add_intel(str(entry.get("id", "")), str(entry.get("key", "")), str(entry.get("value", "")))
 
 	if dialogue_id == "ch1_opening":
 		EventFlags.set_flag("ch1_sumi_tournament_talk", true)
 		EventFlags.set_flag("ch1_forced_opening_done", true)
+
+	# Show affinity notification before transitioning
+	if affinity_char_name != "":
+		await _show_affinity_notification(affinity_char_name)
 
 	if next_scene_path != "":
 		get_tree().change_scene_to_file(next_scene_path)
 		return
 
 	get_tree().change_scene_to_file("res://scenes/daily/map.tscn")
+
+
+func _show_affinity_notification(char_name: String) -> void:
+	var layer = CanvasLayer.new()
+	layer.layer = 100
+	add_child(layer)
+
+	# Label
+	var label = Label.new()
+	label.text = "♡ %sとの絆が深まった" % char_name
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.position = Vector2(390, 320)
+	label.size = Vector2(500, 60)
+	label.add_theme_font_size_override("font_size", 26)
+	label.modulate = Color(1.0, 0.92, 0.75, 0)
+	layer.add_child(label)
+
+	# Sparkle particles
+	var particles = GPUParticles2D.new()
+	var mat = ParticleProcessMaterial.new()
+	mat.direction = Vector3(0, -1, 0)
+	mat.spread = 180.0
+	mat.initial_velocity_min = 15.0
+	mat.initial_velocity_max = 50.0
+	mat.gravity = Vector3(0, 15, 0)
+	mat.lifetime_randomness = 0.3
+
+	var scale_curve = CurveTexture.new()
+	var sc = Curve.new()
+	sc.add_point(Vector2(0, 0.6))
+	sc.add_point(Vector2(0.4, 1.0))
+	sc.add_point(Vector2(1, 0))
+	scale_curve.curve = sc
+	mat.scale_curve = scale_curve
+
+	var alpha_curve = CurveTexture.new()
+	var ac = Curve.new()
+	ac.add_point(Vector2(0, 0))
+	ac.add_point(Vector2(0.15, 1))
+	ac.add_point(Vector2(0.6, 0.7))
+	ac.add_point(Vector2(1, 0))
+	alpha_curve.curve = ac
+	mat.alpha_curve = alpha_curve
+
+	mat.color = Color(1.0, 0.85, 0.3, 0.9)
+	particles.process_material = mat
+	particles.amount = 14
+	particles.lifetime = 1.0
+	particles.one_shot = true
+	particles.position = Vector2(640, 340)
+
+	# Procedural circle texture for sparkles
+	var img = Image.create(8, 8, false, Image.FORMAT_RGBA8)
+	var center = Vector2(4, 4)
+	for x in range(8):
+		for y in range(8):
+			var dist = Vector2(x, y).distance_to(center)
+			if dist < 4.0:
+				var alpha = clampf(1.0 - (dist / 4.0), 0, 1)
+				img.set_pixel(x, y, Color(1, 1, 1, alpha))
+			else:
+				img.set_pixel(x, y, Color(0, 0, 0, 0))
+	particles.texture = ImageTexture.create_from_image(img)
+	layer.add_child(particles)
+	particles.emitting = true
+
+	# Animate label: fade in, float up, hold, fade out
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(label, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(label, "position:y", 290, 0.4).from(320.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	await tween.finished
+
+	await get_tree().create_timer(1.2).timeout
+
+	var fade_tween = create_tween()
+	fade_tween.tween_property(label, "modulate:a", 0.0, 0.4)
+	await fade_tween.finished
+
+	layer.queue_free()

@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/daily/baito.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/bg_chillhouse_inside.png" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/effects/smoke_particles.tscn" id="4"]
 
 [node name="Baito" type="Control"]
 layout_mode = 3
@@ -71,3 +72,5 @@ custom_minimum_size = Vector2(0, 38)
 text = "マップへ戻る"
 
 [node name="HUD" parent="." instance=ExtResource("3")]
+
+[node name="SmokeParticles" parent="." instance=ExtResource("4")]

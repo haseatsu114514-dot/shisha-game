@@ -225,17 +225,17 @@ func _start_shift(mode: String) -> void:
 	match mode:
 		"full":
 			action_cost = 2
-			event_count = randi_range(3, 5)
+			event_count = randi_range(4, 6)
 			_shift_salary = 18000
 			_shift_advance_steps = 2
 		"night":
 			action_cost = 1
-			event_count = randi_range(2, 3)
+			event_count = randi_range(2, 4)
 			_shift_salary = 10000
 			_shift_advance_steps = 1
 		_:
 			action_cost = 1
-			event_count = randi_range(1, 2)
+			event_count = randi_range(2, 3)
 			_shift_salary = 8000
 			_shift_advance_steps = 1
 
@@ -251,6 +251,11 @@ func _start_shift(mode: String) -> void:
 	_shift_process_index = 0
 	_shift_process_quality = 0
 	_shift_process_money_bonus = 0
+	
+	# Show atmosphere text first, then process
+	var atmos = _get_shift_atmosphere(mode)
+	body_label.text = atmos
+	
 	_show_shift_process_step()
 
 
@@ -267,6 +272,11 @@ func _build_shift_process_steps(mode: String) -> Array:
 func _show_shift_process_step() -> void:
 	_clear_buttons(menu_container)
 	_clear_buttons(choice_container)
+	
+	# If this is the start (index 0) and we showed atmosphere, maybe wait for user? 
+	# Actually, let's just show the first step immediately or after a button?
+	# Implementation choice: proceed directly to process for smoother flow.
+	
 	if _shift_process_index >= _shift_process_steps.size():
 		_complete_shift_process()
 		return
@@ -353,7 +363,14 @@ func _complete_shift_process() -> void:
 
 	_shift_process_money_bonus += quality_bonus
 	_event_queue = _pick_events(_shift_pending_event_count)
-	_show_next_event()
+	
+	# Transition button to events
+	_clear_buttons(choice_container)
+	var start_button = Button.new()
+	start_button.text = "営業開始"
+	start_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	start_button.pressed.connect(_show_next_event)
+	choice_container.add_child(start_button)
 
 
 func _pick_events(count: int) -> Array:
@@ -375,10 +392,20 @@ func _pick_events(count: int) -> Array:
 		if selected.size() >= count:
 			break
 		selected.append(event)
+
+	# Mark selected events as seen so they don't repeat
+	for event in selected:
+		var event_id = str(event.get("id", ""))
+		if event_id != "":
+			EventFlags.set_flag("seen_" + event_id)
 	return selected
 
 
 func _can_trigger_event(event: Dictionary) -> bool:
+	# Check if already seen
+	var event_id = str(event.get("id", ""))
+	if event_id != "" and EventFlags.get_flag("seen_" + event_id):
+		return false
 	var trigger_flag = str(event.get("trigger_flag", ""))
 	if trigger_flag == "":
 		return true
@@ -437,7 +464,12 @@ func _finish_shift() -> void:
 	var total_salary = _shift_salary + _shift_process_money_bonus
 	PlayerData.add_money(total_salary)
 	GameManager.log_money_change(total_salary)
-	body_label.text = "本日のバイト終了。収入 +%d円（基本 %d円 / 仕込み評価 %+d円）" % [total_salary, _shift_salary, _shift_process_money_bonus]
+	
+	var closing_text = "本日のバイト終了。収入 +%d円（基本 %d円 / 仕込み評価 %+d円）\n\n" % [total_salary, _shift_salary, _shift_process_money_bonus]
+	closing_text += "片付けの手を止めて、ふと店内を見渡す。\n"
+	closing_text += "フレーバーの残り香が、まだ空気の中に漂っている。今日も色んな人が来て、色んな煙を吸って帰っていった。"
+	
+	body_label.text = closing_text
 	_clear_buttons(choice_container)
 
 	var done_button = Button.new()
@@ -624,3 +656,13 @@ func _on_back_button_pressed() -> void:
 func _clear_buttons(container: VBoxContainer) -> void:
 	for child in container.get_children():
 		child.queue_free()
+
+
+func _get_shift_atmosphere(mode: String) -> String:
+	match mode:
+		"full":
+			return "チルハウス。シフト開始。\n\n昼下がりの陽光が窓から差し込んで、カウンターの木目を暖かく照らしている。\n\nフレーバーの甘い香り、炭の乾いた匂い、そしてコーヒーの残り香。全部が混ざって「チルハウスの空気」になる。\n\nエプロンを締め直す。今日は長丁場だ。"
+		"night":
+			return "チルハウス。夜のシフト。\n\n間接照明のオレンジが、店内をゆっくり包んでいく。窓の外は暗い。\n\nゴボゴボ──どこかのテーブルから、水面が揺れる音。煙が天井のファンに巻かれて、ゆるやかな渦を描いている。\n\n夜のチルハウスは、昼とは違う顔をしている。"
+		_:
+			return "チルハウス。シフト開始。\n\n店に入ると、フレーバーの甘い残り香がふわっと鼻をくすぐる。\n\nコンロに火を入れて、炭の準備を始める。赤く焼けた炭の熱が、手のひらに近づくとじわっと伝わってくる。\n\nさあ、今日も始めよう。"

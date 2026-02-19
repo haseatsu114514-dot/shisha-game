@@ -226,7 +226,13 @@ func _try_auto_return_home() -> bool:
 	if CalendarManager.current_time != "noon" and CalendarManager.current_time != "night":
 		return false
 
-	GameManager.set_transient("morning_notice", "行動コマが尽きたのでそのまま家に帰った。")
+	# Show "let's go home" notice
+	var notice = ""
+	if CalendarManager.current_time == "noon":
+		notice = "今日はもう動けない。……帰るか。"
+	else:
+		notice = "夜も遅い。もう帰ろう。"
+	GameManager.set_transient("morning_notice", notice)
 	while CalendarManager.current_time == "noon" or CalendarManager.current_time == "night":
 		# Do not skip mandatory night events by auto-advancing directly to midnight.
 		if CalendarManager.current_time == "night" and not CalendarManager.is_interval:
