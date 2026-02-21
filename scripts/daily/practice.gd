@@ -1,6 +1,6 @@
 extends Control
 
-const TOTAL_STEPS := 5
+const TOTAL_STEPS := 6
 const DEFAULT_NEXT_SCENE := "res://scenes/daily/map.tscn"
 const GAUGE_TIMER_WAIT := 0.03
 const ADJUST_TOTAL_ROUNDS := 3
@@ -97,22 +97,50 @@ func _show_intro_step() -> void:
 		1,
 		"スミさんの特訓",
 		"\n".join([
-			"スミ「さっき渡したダブルアップル2つ、練習に使え」",
-			"スミ「早速特訓するか。大会は基礎で勝つ」",
+			"スミ「さっき渡したダブルアップルとミント、練習に使え」",
+			"スミ「大会は基礎で勝つ。まずは王道のミックスだ」",
 			"",
 			"ここではシーシャ作りの流れを短く実演する。",
-			"1. 詰め方を決める",
-			"2. 炭と蒸らしを決める",
-			"3. 吸い出しで温度帯へ入れる",
-			"4. 温度帯を維持する調整を3回やる",
+			"1. 配分を決める",
+			"2. 詰め方を決める",
+			"3. 炭と蒸らしを決める",
+			"4. 吸い出しで温度帯へ入れる",
+			"5. 温度維持の調整をやる",
 		])
 	)
 	_clear_choices()
-	_add_choice_button("特訓を始める", _show_pack_step)
+	_add_choice_button("特訓を始める", _show_mix_step)
+
+func _show_mix_step() -> void:
+	_set_phase(2, "フレーバーの配分", "ダブルアップルとミントの配合を決める。\n使うのは中東産のクラシックなダブルアップルと、それに負けない強めのミントだ。")
+	_clear_choices()
+	_add_choice_button("ダブルアップル6g / ミント6g（推奨）", _on_mix_selected.bind("half"))
+	_add_choice_button("ダブルアップル8g / ミント4g", _on_mix_selected.bind("apple_heavy"))
+	_add_choice_button("ダブルアップル4g / ミント8g", _on_mix_selected.bind("mint_heavy"))
+
+func _on_mix_selected(mix_type: String) -> void:
+	var feedback = ""
+	match mix_type:
+		"half":
+			feedback = "甘さと清涼感のバランスが良い王道の配合。\nスミ「ダブルの甘さをミントが引き締める。これが基本の形だ」"
+		"apple_heavy":
+			feedback = "アップルの主張が強い重厚な味。ミントは後味程度。\nスミ「重たい煙で満足感を出したい時にはこれだ」"
+		"mint_heavy":
+			feedback = "清涼感が先行する。味が少し軽く飛ぶリスクがある。\nスミ「爽快感は出るが、熱を入れすぎると味が消えるぞ」"
+		_:
+			feedback = "配合を決めた。"
+
+	_set_phase(
+		2,
+		"フレーバーの配分: 決定",
+		"選んだ配合: %s\n%s\n\nスミ「ミックスは自由だが、芯がないとただ味が濁るだけだ。次は詰め方だ」" % [mix_type.to_upper(), feedback]
+	)
+	_clear_choices()
+	_add_choice_button("次へ（詰め方）", _show_pack_step)
 
 
 func _show_pack_step() -> void:
-	_set_phase(2, "詰め方", "ダブルアップルの詰め方を選ぶ。空気の通り道が最優先。")
+	_set_phase(3, "詰め方", "フレーバーをボウル（陶器）に盛る方法を選ぶ。\nスミ「空気の通り道をどう作るかで、煙の重さも味の出方も変わる」")
 	_clear_choices()
 	_add_choice_button("ふんわり詰める（推奨）", _on_pack_style_selected.bind("light"))
 	_add_choice_button("標準で詰める", _on_pack_style_selected.bind("standard"))
@@ -124,18 +152,18 @@ func _on_pack_style_selected(style_id: String) -> void:
 	var feedback = ""
 	match style_id:
 		"light":
-			feedback = "煙道が確保されて立ち上がりが安定。"
+			feedback = "煙道が確保されて立ち上がりが安定。\nスミ「空気が通るから焦げにくい。最初のうちはこれで感覚を掴め」"
 		"standard":
-			feedback = "再現性はある。ここから熱管理で差が出る。"
+			feedback = "煙量は出るが、熱管理で差が出る。\nスミ「これでもいいが、火の入れ方を間違えれば台無しになるぞ」"
 		"tight":
-			feedback = "熱が籠もりやすく、焦げやすい。吸い出しはシビアになる。"
+			feedback = "熱が籠もりやすく、焦げやすい。\nスミ「味が重くなる分、吸い出しはシビアだ。玄人向けだな」"
 		_:
 			feedback = "詰め方を決めた。"
 
 	_set_phase(
-		2,
+		3,
 		"詰め方: 決定",
-		"スミ「詰めで半分決まる。あとは熱の入れ方だ」\n%s" % feedback
+		"選んだ詰め方: %s\n%s\n\nスミ「詰めで半分決まる。ここからが本当の勝負、熱の入れ方だ」" % [style_id.to_upper(), feedback]
 	)
 	_clear_choices()
 	_add_choice_button("次へ（炭と蒸らし）", _show_heat_step)
@@ -143,9 +171,9 @@ func _on_pack_style_selected(style_id: String) -> void:
 
 func _show_heat_step() -> void:
 	_set_phase(
-		3,
+		4,
 		"熱を作る",
-		"炭の数と蒸らし時間をセットで決める。吸いやすさに直結する。"
+		"炭の数と蒸らし時間をセットで決める。\nスミ「高温で一気に味を出すか、じっくり温めるか。お前の意図が問われる」"
 	)
 	_clear_choices()
 	_add_choice_button("炭3個 / 蒸らし6分（安定）", _on_heat_selected.bind(3, 6))
@@ -163,9 +191,9 @@ func _on_heat_selected(charcoal_count: int, steam_minutes: int) -> void:
 		risk = "高火力寄り"
 
 	_set_phase(
-		3,
+		4,
 		"熱を作る: 決定",
-		"設定: 炭%d個 / 蒸らし%d分\n判定: %s\nスミ「最後は吸い出しで合わせろ」" % [
+		"設定: 炭%d個 / 蒸らし%d分\n判定: %s\n\nスミ「いいだろう。仕上げに自分で吸って、煙の温度を狙った場所に落とし込め」" % [
 			_selected_charcoal_count,
 			_selected_steam_minutes,
 			risk,
@@ -178,7 +206,7 @@ func _on_heat_selected(charcoal_count: int, steam_minutes: int) -> void:
 func _show_pull_step() -> void:
 	_temp_level = _compute_pull_start_temp_level()
 	_set_phase(
-		4,
+		5,
 		"吸い出し練習",
 		"吸い出し前は温度が合格ライン未達。吸い出しで温度帯に置く。\n※吸い出しゲージはタイミング用、温度状態は別管理。"
 	)
@@ -304,16 +332,16 @@ func _resolve_pull_quality() -> void:
 	var feedback = ""
 	match quality:
 		"perfect":
-			feedback = "完璧。温度の芯を捉えた。"
+			feedback = "完璧な温度帯にピタッと入った。\nスミ「いい腕だ。煙が一番旨い瞬間を捉えている」"
 		"good":
-			feedback = "合格。実戦でも通る吸い出し。"
+			feedback = "実戦でも十分通る合格ライン。\nスミ「悪くない。客に出せるレベルには乗っている」"
 		"near":
-			feedback = "惜しい。もう少しだけ熱の山を意識。"
+			feedback = "合格ラインギリギリ。\nスミ「惜しい。熱が少し暴れているな。意識を集中しろ」"
 		_:
-			feedback = "外した。焦って熱を入れすぎた。"
+			feedback = "温度帯を完全に外した。\nスミ「焦りすぎだ。煙の味を殺しているぞ」"
 
 	GameManager.play_ui_se("confirm" if quality != "miss" else "cancel")
-	_update_pull_text("判定: %s\n%s\n現在状態: %s" % [quality.to_upper(), feedback, _temperature_zone_label(_temp_level)])
+	_update_pull_text("吸い出し判定: %s\n%s\n\n現在の温度状態: %s" % [quality.to_upper(), feedback, _temperature_zone_label(_temp_level)])
 	_clear_choices()
 	_add_choice_button("次へ（温度調整の特訓）", _start_adjustment_tutorial)
 
@@ -353,7 +381,7 @@ func _show_adjustment_round() -> void:
 	lines.append("まず方向を選択してから、ゲージでタイミング調整する。")
 	lines.append("成功条件: 方向が正解 + タイミングGOOD以上 + 温度帯へ近づく。")
 	_set_phase(
-		5,
+		6,
 		"温度調整 %d / %d" % [round_num, ADJUST_TOTAL_ROUNDS],
 		"\n".join(lines)
 	)
@@ -430,7 +458,7 @@ func _on_adjust_action_selected(action_id: String) -> void:
 func _show_adjustment_gauge_step() -> void:
 	var round_num = _adjust_round + 1
 	_set_phase(
-		5,
+		6,
 		"調整ゲージ %d / %d" % [round_num, ADJUST_TOTAL_ROUNDS],
 		"選択した方向: %s\n押している間だけ調整、離した瞬間で判定。\n判定は PERFECT / GOOD / NEAR / MISS。" % _adjust_action_label(_adjust_selected_action)
 	)
@@ -592,13 +620,13 @@ func _show_adjustment_summary() -> void:
 	var summary = ""
 	var final_ok = _temperature_distance_to_band(_temp_level) <= 0.001
 	if _adjust_success_count >= 3 and final_ok:
-		summary = "スミ「いい。温度帯を維持できてる」"
+		summary = "スミ「完璧だ。客のどんなペースにも合わせて、最後まで旨い煙を出せるな」"
 	elif _adjust_success_count >= 2:
-		summary = "スミ「悪くない。実戦でも使える」"
+		summary = "スミ「悪くない。ある程度の変化には対応できる。あとは実戦で感覚を磨け」"
 	elif _adjust_success_count >= 1:
-		summary = "スミ「方向は見えてる。精度を上げろ」"
+		summary = "スミ「方向は見えてるが精度が足りない。このままじゃ客に飽きられるぞ」"
 	else:
-		summary = "スミ「焦りが先に出てる。もう一度基礎からだ」"
+		summary = "スミ「熱の動きがまるで見えてない。……もう一度基礎からやり直しだ」"
 
 	var lines: Array[String] = []
 	lines.append("調整成功 %d / %d" % [_adjust_success_count, ADJUST_TOTAL_ROUNDS])
@@ -607,7 +635,7 @@ func _show_adjustment_summary() -> void:
 	lines.append(summary)
 	lines.append("特訓報酬: technique +1（調整成功2回以上で insight +1）")
 	_set_phase(
-		5,
+		6,
 		"温度調整: 終了",
 		"\n".join(lines)
 	)
@@ -642,10 +670,10 @@ func _build_temperature_band_lines(value: float, drift: float = 0.0) -> Array[St
 
 func _build_temperature_zone_cells(value: float) -> String:
 	var low = "●" if value < TEMP_PASS_LINE else " "
-	var pass = "●" if value >= TEMP_PASS_LINE and value < _temperature_center() else " "
+	var p = "●" if value >= TEMP_PASS_LINE and value < _temperature_center() else " "
 	var top = "●" if value >= _temperature_center() and value <= TEMP_TOP_LINE else " "
 	var high = "●" if value > TEMP_TOP_LINE else " "
-	return "[低温 %s] [合格 %s] [最高 %s] [過熱 %s]" % [low, pass, top, high]
+	return "[低温 %s] [合格 %s] [最高 %s] [過熱 %s]" % [low, p, top, high]
 
 
 func _temperature_to_celsius(value: float) -> int:
@@ -700,12 +728,12 @@ func _build_gauge_bar(value: float, target_center: float, target_width: float) -
 	var target_end = int(round(clampf(target_center + target_width, 0.0, 1.0) * float(bar_len - 1)))
 	var chars: Array[String] = []
 	for i in range(bar_len):
-		var char = "─"
+		var c = "─"
 		if i >= target_start and i <= target_end:
-			char = "■"
+			c = "■"
 		if i == pointer_index:
-			char = "◆"
-		chars.append(char)
+			c = "◆"
+		chars.append(c)
 	return "".join(chars)
 
 

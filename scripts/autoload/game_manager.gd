@@ -9,6 +9,12 @@ const SETTINGS_PATH := "user://settings.cfg"
 const BGM_TITLE_PATH = "res://assets/audio/bgm/daily_part.mp3"
 const BGM_DAILY_PATH = "res://assets/audio/bgm/daily_part.mp3"
 const BGM_TONARI_PATH = "res://assets/audio/bgm/tonari.mp3"
+const BGM_MAP_PATH = "res://assets/audio/bgm/bgm_map.mp3"
+const BGM_RIVAL_SHOP_PATH = "res://assets/audio/bgm/bgm_rival_shop.mp3"
+const BGM_TOURNAMENT_WAIT_PATH = "res://assets/audio/bgm/bgm_tournament_wait.mp3"
+const BGM_TOURNAMENT_EDM_PATH = "res://assets/audio/bgm/bgm_tournament_edm.mp3"
+const BGM_RESULT_EMOTIONAL_PATH = "res://assets/audio/bgm/bgm_result_emotional.mp3"
+
 const DEFAULT_BGM_LEVEL := 0.8
 const DEFAULT_SE_LEVEL := 0.8
 const SILENT_DB := -80.0

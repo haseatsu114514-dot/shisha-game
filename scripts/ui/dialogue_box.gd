@@ -56,12 +56,15 @@ const HIGHLIGHT_TAGS := [
 	"[hint]", "[/hint]"
 ]
 const HIGHLIGHT_OPEN_REPLACEMENTS := {
-	"[imp]": "[color=#ffd878][b]",
+	"[imp]": "[font_size=42][color=#ffd878][b]",
+	"[red]": "[color=#ff5252][b]",
+	"[blue]": "[color=#52a2ff][b]",
+	"[sub]": "[font_size=18][color=#999999]",
 	"[warn]": "[color=#ff8b8b][b]",
 	"[hint]": "[color=#8bdcff][b]",
 }
 const HIGHLIGHT_CLOSE_REPLACEMENTS := {
-	"[/imp]": "[/b][/color]",
+	"[/imp]": "[/b][/color][/font_size]",
 	"[/warn]": "[/b][/color]",
 	"[/hint]": "[/b][/color]",
 }
@@ -149,6 +152,11 @@ func _load_dialogue_data() -> bool:
 
 	_line_queue = target_dialogue.get("lines", []).duplicate(true)
 	_branches = target_dialogue.get("branches", {}).duplicate(true)
+	
+	var metadata = target_dialogue.get("metadata", {})
+	if metadata.has("bgm"):
+		GameManager.play_bgm(str(metadata["bgm"]), -8.0, true)
+	
 	return true
 
 
