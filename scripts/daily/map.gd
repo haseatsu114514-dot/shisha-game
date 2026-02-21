@@ -18,7 +18,7 @@ const SPOT_POSITIONS_DAY: Dictionary = {
 	"shop": Vector2(1020, 486),
 	"naru": Vector2(1030, 254),
 	"adam": Vector2(720, 224),
-	"kirara": Vector2(498, 286),
+	"minto": Vector2(498, 286),
 	"home": Vector2(214, 544),
 	"choizap": Vector2(160, 300),
 	"kannon": Vector2(600, 540),
@@ -30,14 +30,14 @@ const SPOT_POSITIONS_NIGHT: Dictionary = {
 	"shop": Vector2(1020, 486),
 	"naru": Vector2(1030, 254),
 	"adam": Vector2(720, 224),
-	"kirara": Vector2(498, 286),
+	"minto": Vector2(498, 286),
 	"home": Vector2(214, 544),
 }
 
 const FACE_BY_SPOT_ID: Dictionary = {
 	"naru": "naru",
 	"adam": "adam",
-	"kirara": "kirara",
+	"minto": "minto",
 }
 
 
@@ -107,7 +107,7 @@ func _build_spot_list() -> Array:
 		spots.append({"id": "naru", "label": "ケムリクサ"})
 		if _are_rival_shops_unlocked():
 			spots.append({"id": "adam", "label": "林檎堂"})
-			spots.append({"id": "kirara", "label": "KIRARA LOUNGE"})
+			spots.append({"id": "minto", "label": "KIRARA LOUNGE"})
 		if EventFlags.get_flag("spot_choizap_unlocked"):
 			spots.append({"id": "choizap", "label": "チョイザップ"})
 		if EventFlags.get_flag("spot_kannon_unlocked"):
@@ -121,7 +121,7 @@ func _build_spot_list() -> Array:
 		spots.append({"id": "naru", "label": "ケムリクサ（夜）"})
 		if _are_rival_shops_unlocked():
 			spots.append({"id": "adam", "label": "林檎堂（夜）"})
-			spots.append({"id": "kirara", "label": "KIRARA LOUNGE（夜）"})
+			spots.append({"id": "minto", "label": "KIRARA LOUNGE（夜）"})
 	return spots
 
 
@@ -196,7 +196,7 @@ func _enter_spot(spot: Dictionary) -> void:
 			GameManager.log_stat_change("guts", 1)
 			CalendarManager.advance_time()
 			_go_next_phase()
-		"naru", "adam", "kirara":
+		"naru", "adam", "minto":
 			if not CalendarManager.use_action():
 				_try_auto_return_home()
 				return
@@ -370,7 +370,7 @@ func _get_marker_position(spot_id: String) -> Vector2:
 
 
 func _is_event_spot(spot_id: String) -> bool:
-	if spot_id in ["naru", "adam", "kirara"] and not EventFlags.get_flag("ch1_%s_met" % spot_id):
+	if spot_id in ["naru", "adam", "minto"] and not EventFlags.get_flag("ch1_%s_met" % spot_id):
 		return true
 	return false
 

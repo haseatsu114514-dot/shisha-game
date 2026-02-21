@@ -2426,7 +2426,7 @@ func _build_player_score_breakdown_lines() -> Array[String]:
 
 func _prepare_rival_score_tables() -> void:
 	var rivals = [
-		{"id": "nishio", "name": "にしお", "specialist": 66.0, "audience": 55.0, "variance": 8.0},
+		{"id": "naru", "name": "なる", "specialist": 66.0, "audience": 55.0, "variance": 8.0},
 		{"id": "adam", "name": "アダム", "specialist": 73.0, "audience": 48.0, "variance": 9.0},
 		{"id": "ryuji", "name": "リュウジ", "specialist": 60.0, "audience": 67.0, "variance": 9.0},
 	]
@@ -2478,7 +2478,7 @@ func _build_rival_scores() -> Array:
 
 
 func _get_rival_theme_bonus(rival_id: String, theme_id: String) -> float:
-	if rival_id == "nishio" and (theme_id == "relax" or theme_id == "aftertaste"):
+	if rival_id == "naru" and (theme_id == "relax" or theme_id == "aftertaste"):
 		return 4.0
 	if rival_id == "adam" and theme_id == "high_heat":
 		return 6.0

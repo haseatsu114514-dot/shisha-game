@@ -37,32 +37,32 @@
     },
     {
       "id": "lime_kirara_day4",
-      "sender": "kirara",
+      "sender": "minto",
       "trigger_day": 4,
       "trigger_condition": "lime_exchanged",
       "type": "invitation",
       "time_slot": "noon",
       "messages": [
         {
-          "sender": "kirara",
+          "sender": "minto",
           "text": "ねえ"
         },
         {
-          "sender": "kirara",
+          "sender": "minto",
           "text": "今日ヒマ？ うちの店来ない？"
         },
         {
-          "sender": "kirara",
+          "sender": "minto",
           "text": "新しいミックス作ったんだけど感想聞きたくて"
         },
         {
-          "sender": "kirara",
+          "sender": "minto",
           "text": "前回「すごい」って言ってくれたじゃん？ あれの進化版"
         }
       ],
       "accept_event": "interaction_kirara_noon_01",
       "decline_response": {
-        "sender": "kirara",
+        "sender": "minto",
         "text": "そっか。また今度ね"
       }
     },
@@ -110,21 +110,21 @@
     },
     {
       "id": "lime_kirara_day5",
-      "sender": "kirara",
+      "sender": "minto",
       "trigger_day": 5,
       "trigger_condition": "lime_exchanged",
       "type": "chat",
       "messages": [
         {
-          "sender": "kirara",
+          "sender": "minto",
           "text": "あと3日だね"
         },
         {
-          "sender": "kirara",
+          "sender": "minto",
           "text": "準備できてる？"
         },
         {
-          "sender": "kirara",
+          "sender": "minto",
           "text": "私はバッチリだけどね♪"
         }
       ],
@@ -140,7 +140,7 @@
           "affinity": 2
         },
         {
-          "text": "きららさんに勝ちたいです",
+          "text": "眠都さんに勝ちたいです",
           "response": "あら。いいね、その意気。でも負けないよ？",
           "affinity": 5
         }

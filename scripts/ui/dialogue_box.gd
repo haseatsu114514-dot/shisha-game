@@ -33,7 +33,7 @@ const SPEAKER_NAMES := {
 	"sumi": "スミさん",
 	"naru": "なる",
 	"adam": "アダム",
-	"kirara": "きらら",
+	"minto": "眠都",
 	"tsumugi": "つむぎ",
 	"tumugi": "つむぎ",
 	"hazime": "はじめ",

@@ -22,7 +22,7 @@ const DISPLAY_NAME = {
 	"sumi": "スミさん",
 	"naru": "なる",
 	"adam": "アダム",
-	"kirara": "きらら",
+	"minto": "眠都",
 	"tsumugi": "つむぎ",
 	"packii": "パッキー"
 }
@@ -31,7 +31,7 @@ const AVATAR_TEXTURES = {
 	"sumi": "res://assets/sprites/faces/face_sumi.png",
 	"naru": "res://assets/sprites/faces/face_naru.png",
 	"adam": "res://assets/sprites/faces/face_adam.png",
-	"kirara": "res://assets/sprites/faces/face_kirara.png",
+	"minto": "res://assets/sprites/faces/face_kirara.png",
 	"tsumugi": "res://assets/sprites/faces/face_tsumugi.png",
 	"packii": "res://assets/sprites/faces/face_packii.png"
 }

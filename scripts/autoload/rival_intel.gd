@@ -3,7 +3,7 @@ extends Node
 const DEFAULT_INTEL := {
 	"naru": {"flavor_genre": "", "flavor_detail": "", "presentation": ""},
 	"adam": {"flavor_genre": "", "flavor_detail": "", "presentation": ""},
-	"kirara": {"flavor_genre": "", "flavor_detail": "", "presentation": ""},
+	"minto": {"flavor_genre": "", "flavor_detail": "", "presentation": ""},
 }
 
 var intel: Dictionary = DEFAULT_INTEL.duplicate(true)

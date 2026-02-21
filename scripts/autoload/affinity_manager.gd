@@ -5,11 +5,11 @@ const MAX_LEVEL := 5
 const DEFAULT_AFFINITIES := {
 	"naru": {"level": 0, "lime_exchanged": false, "met": false, "romance": false},
 	"adam": {"level": 0, "lime_exchanged": false, "met": false, "romance": false},
-	"kirara": {"level": 0, "lime_exchanged": false, "met": false, "romance": false},
+	"minto": {"level": 0, "lime_exchanged": false, "met": false, "romance": false},
 	"tsumugi": {"level": 0, "lime_exchanged": false, "met": false, "romance": false},
 }
 
-const ROMANCE_CANDIDATES := ["kirara", "tsumugi", "ageha"]
+const ROMANCE_CANDIDATES := ["minto", "tsumugi", "ageha"]
 
 var affinities: Dictionary = DEFAULT_AFFINITIES.duplicate(true)
 

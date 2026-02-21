@@ -12,7 +12,7 @@ var _advance_on_exit = false
 const CHARACTER_NAME_MAP := {
 	"naru": "なる",
 	"adam": "アダム",
-	"kirara": "きらら",
+	"minto": "眠都",
 	"sumi": "スミさん",
 }
 
@@ -28,7 +28,7 @@ func _ready() -> void:
 		return
 
 	# Rival shop visits now auto-launch dialogue events
-	if _target in ["naru", "adam", "kirara"]:
+	if _target in ["naru", "adam", "minto"]:
 		_launch_rival_dialogue(_target)
 		return
 
@@ -53,8 +53,8 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 			"adam":
 				RivalIntel.add_intel("adam", "flavor_genre", "double_apple")
 				RivalIntel.add_intel("adam", "flavor_detail", "double_apple_only")
-			"kirara":
-				RivalIntel.add_intel("kirara", "flavor_genre", "映え系フルーツ")
+			"minto":
+				RivalIntel.add_intel("minto", "flavor_genre", "映え系フルーツ")
 
 	# Pick dialogue and metadata based on visit count
 	var dialogue_file = "res://data/dialogue/ch1_%s.json" % rival_id
@@ -63,7 +63,7 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 	if count == 0:
 		dialogue_id = "ch1_%s_first" % rival_id
 		# Naru and Kirara exchange LIME on first visit
-		if rival_id in ["naru", "kirara"]:
+		if rival_id in ["naru", "minto"]:
 			metadata["exchange_lime"] = rival_id
 		metadata["add_affinity"] = {rival_id: 1}
 	else:
@@ -76,8 +76,8 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 		match rival_id:
 			"naru":
 				metadata["add_intel"] = [{"id": "naru", "key": "flavor_detail", "value": "チョコレート＋バニラ"}]
-			"kirara":
-				metadata["add_intel"] = [{"id": "kirara", "key": "presentation", "value": "一般投票特化"}]
+			"minto":
+				metadata["add_intel"] = [{"id": "minto", "key": "presentation", "value": "一般投票特化"}]
 
 	# Queue dialogue and go to dialogue scene
 	var return_scene = "res://scenes/daily/map.tscn"
@@ -97,9 +97,9 @@ func _show_invitation_event(event_id: String) -> void:
 			GameManager.log_stat_change("insight", 2)
 			_apply_flavor_specialty_gain({"sweet": 2, "special": 1})
 		"interaction_kirara_noon_01":
-			_set_portrait("kirara")
-			body_label.text = "きららのお店でシーシャを作る姿を見た。映えだけじゃない丁寧さに驚いた。"
-			_apply_affinity_gain("kirara")
+			_set_portrait("minto")
+			body_label.text = "眠都のお店でシーシャを作る姿を見た。映えだけじゃない丁寧さに驚いた。"
+			_apply_affinity_gain("minto")
 			PlayerData.add_stat("charm", 2)
 			GameManager.log_stat_change("charm", 2)
 			_apply_flavor_specialty_gain({"floral": 2, "fruit": 1})
