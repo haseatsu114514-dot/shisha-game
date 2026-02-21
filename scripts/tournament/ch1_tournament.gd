@@ -159,6 +159,7 @@ var _mind_move_left: bool = false
 var _mind_move_right: bool = false
 var _mind_move_up: bool = false
 var _mind_move_down: bool = false
+var _mind_invincible_timer: float = 0.0
 var _aluminum_timer: Timer
 var _aluminum_active: bool = false
 var _aluminum_slot_count: int = 12
@@ -1100,10 +1101,20 @@ func _on_charcoal_prep_choice(choice: String) -> void:
 
 
 func _show_charcoal_place_step() -> void:
-	_set_phase(6, "炭の配置", "3個か4個を選んで配置する。")
+	_set_phase(6, "炭の配置", "3個か4個を選んで配置する。機材と好みに合わせる。")
 	_clear_choices()
-	_add_choice_button("3個（安定）", _on_charcoal_place_selected.bind(3))
-	_add_choice_button("4個（標準）", _on_charcoal_place_selected.bind(4))
+	
+	# Add hint dynamically based on equipment
+	var hint = "通常は4個が基本。"
+	if _selected_hms == "tanukish_lid" or PlayerData.equipment_bowl == "suyaki":
+		hint = "この機材なら3個のほうが熱が安定しやすい。"
+	elif _selected_hms == "amaburst":
+		hint = "この機材は4個で熱量を叩き込むのが正解。"
+		
+	info_label.text = "【ヒント】\n" + hint
+	
+	_add_choice_button("3個（熱を抑える/安定）", _on_charcoal_place_selected.bind(3))
+	_add_choice_button("4個（熱を押し込む/基本）", _on_charcoal_place_selected.bind(4))
 	_refresh_side_panel()
 
 
@@ -1266,6 +1277,7 @@ func _start_mind_barrage_step() -> void:
 	_mind_move_right = false
 	_mind_move_up = false
 	_mind_move_down = false
+	_mind_invincible_timer = 0.0
 
 	var guide = Label.new()
 	guide.text = "操作: 矢印キー / WASD（下のボタン長押しでも移動）"
@@ -1378,6 +1390,15 @@ func _on_mind_barrage_tick() -> void:
 	_mind_spawn_cooldown -= dt
 	if _mind_hit_se_cooldown > 0.0:
 		_mind_hit_se_cooldown = max(0.0, _mind_hit_se_cooldown - dt)
+
+	if _mind_invincible_timer > 0.0:
+		_mind_invincible_timer -= dt
+		if _mind_player_node != null and is_instance_valid(_mind_player_node):
+			# Blink effect: alternating alpha every 0.1 seconds
+			var time_ms = Time.get_ticks_msec()
+			_mind_player_node.color.a = 0.3 if (time_ms % 200) < 100 else 0.8
+	elif _mind_player_node != null and is_instance_valid(_mind_player_node):
+		_mind_player_node.color.a = 1.0
 
 	_update_mind_player(dt)
 
@@ -1501,12 +1522,13 @@ func _update_mind_bullets(dt: float) -> void:
 		var size = bullet.get("size", node.get_combined_minimum_size())
 		bullet["pos"] = pos
 		node.position = pos - size * 0.5
-		if _is_mind_barrage_collision(pos, size):
+		if _mind_invincible_timer <= 0.0 and _is_mind_barrage_collision(pos, size):
 			_mind_hits += 1
 			_mind_lives_remaining = maxi(0, _mind_lives_remaining - 1)
 			if _mind_hit_se_cooldown <= 0.0:
 				GameManager.play_ui_se("cancel")
 				_mind_hit_se_cooldown = 0.08
+			_mind_invincible_timer = 1.0 # 1 second of i-frames
 			node.queue_free()
 			_mind_bullets.remove_at(i)
 			continue
@@ -1968,10 +1990,22 @@ func _show_serving_step() -> void:
 func _on_serving_confirmed() -> void:
 	var spec_gain = 4.0 + _pull_quality_total * 1.8 + PlayerData.stat_technique * 0.03
 	var aud_gain = 3.0 + float(_pull_hit_count) * 2.0 + PlayerData.stat_charm * 0.02
+	
+	# Apply pull round bonus: Fewer pulls = greater bonus
+	var bonus_text = ""
+	if _pull_round == 2:
+		spec_gain += 12.0
+		aud_gain += 8.0
+		bonus_text = " (最速吸い出しボーナス!)"
+	elif _pull_round == 3:
+		spec_gain += 5.0
+		aud_gain += 3.0
+		bonus_text = " (早め吸い出しボーナス)"
+	
 	_technical_points += spec_gain
 	_audience_points += aud_gain
 	GameManager.play_ui_se("confirm")
-	_show_step_result_and_next("提供評価: 専門 %+d / 一般 %+d" % [int(round(spec_gain)), int(round(aud_gain))], _show_adjustment_step.bind(0))
+	_show_step_result_and_next("提供評価: 専門 %+d / 一般 %+d%s" % [int(round(spec_gain)), int(round(aud_gain)), bonus_text], _show_adjustment_step.bind(0))
 
 
 func _show_adjustment_step(round_index: int) -> void:
