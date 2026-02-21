@@ -13,7 +13,6 @@ func _ready() -> void:
 	_rule_hint_appended = false
 
 	if CalendarManager.is_tournament_day():
-		GameManager.transition_to_tournament()
 		var unread_memo_count = PlayerData.get_unread_tournament_memo_count()
 		var lines: Array[String] = []
 		lines.append("Day %d 大会当日！" % CalendarManager.current_day)
@@ -26,7 +25,7 @@ func _ready() -> void:
 		else:
 			notification_label.text = "大会メモを確認済み"
 		lime_button.disabled = true
-		close_phone_button.text = "大会会場へ"
+		close_phone_button.text = "マップへ" # Changed from jump to tournament
 		_append_daily_rule_hint_if_needed()
 		return
 
@@ -111,15 +110,6 @@ func _on_lime_button_pressed() -> void:
 
 
 func _on_close_phone_button_pressed() -> void:
-	if CalendarManager.is_tournament_day():
-		var chapter = GameManager.current_chapter
-		var path = "res://scenes/tournament/ch%d_tournament.tscn" % chapter
-		if ResourceLoader.exists(path):
-			get_tree().change_scene_to_file(path)
-		else:
-			get_tree().change_scene_to_file("res://scenes/tournament/ch1_tournament.tscn")
-		return
-
 	CalendarManager.advance_time()
 	get_tree().change_scene_to_file("res://scenes/daily/map.tscn")
 

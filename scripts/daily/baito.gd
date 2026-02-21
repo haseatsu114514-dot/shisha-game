@@ -171,7 +171,27 @@ func _load_events() -> void:
 func _show_main_menu() -> void:
 	header_label.text = "チルハウス"
 	_clear_buttons(choice_container)
-	_show_shift_menu()
+	if CalendarManager.is_tournament_day():
+		_show_tournament_menu()
+	else:
+		_show_shift_menu()
+
+func _show_tournament_menu() -> void:
+	body_label.text = "本日は大会当日です。準備はよろしいですか？\nここから先は大会が終了するまで引き返せません。"
+	_clear_buttons(menu_container)
+	var button = Button.new()
+	button.text = "大会会場へ向かう"
+	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	button.pressed.connect(func():
+		GameManager.transition_to_tournament()
+		var chapter = GameManager.current_chapter
+		var path = "res://scenes/tournament/ch%d_tournament.tscn" % chapter
+		if ResourceLoader.exists(path):
+			get_tree().change_scene_to_file(path)
+		else:
+			get_tree().change_scene_to_file("res://scenes/tournament/ch1_tournament.tscn")
+	)
+	menu_container.add_child(button)
 
 
 func _add_menu_button(text: String, action: String) -> void:
@@ -489,8 +509,19 @@ func _do_practice() -> void:
 		{"text": "忙しい時間帯を想定した練習", "stat": "guts", "amount": 3, "practice_tag": "rush", "result": "タイマーをかけて全力で回した。プレッシャーに少し慣れた。"},
 	]
 	for option in options:
+		var btn_text = str(option["text"])
+		var tag = str(option["practice_tag"])
+		var has_bonus = false
+		for line in preview_lines:
+			if tag == "packing" and "パッキング" in line: has_bonus = true
+			if tag == "aroma" and "蒸らし" in line: has_bonus = true
+			if tag == "presentation" and "説明" in line: has_bonus = true
+			if tag == "rush" and "温度管理" in line: has_bonus = true
+		if has_bonus:
+			btn_text += " ★ボーナス対象"
+
 		var button = Button.new()
-		button.text = str(option["text"])
+		button.text = btn_text
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.pressed.connect(_on_practice_selected.bind(option))
 		choice_container.add_child(button)

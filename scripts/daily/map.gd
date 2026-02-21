@@ -91,8 +91,11 @@ func _refresh_spots() -> void:
 
 	_apply_map_visuals()
 	var lines: Array[String] = []
-	lines.append("行き先を選択　（残り行動：%d）" % CalendarManager.actions_remaining)
-	lines.append_array(_build_map_rule_lines())
+	if CalendarManager.is_tournament_day():
+		lines.append("本日は大会当日です！ [チルハウス] へ向かってください。")
+	else:
+		lines.append("行き先を選択　（残り行動：%d）" % CalendarManager.actions_remaining)
+		lines.append_array(_build_map_rule_lines())
 	message_label.text = "\n".join(lines)
 
 	for spot in _build_spot_list():
@@ -101,6 +104,10 @@ func _refresh_spots() -> void:
 
 func _build_spot_list() -> Array:
 	var spots: Array = []
+	if CalendarManager.is_tournament_day():
+		spots.append({"id": "chillhouse", "label": "チルハウス（大会会場）"})
+		return spots
+
 	if CalendarManager.current_time == "noon":
 		spots.append({"id": "chillhouse", "label": "チルハウス"})
 		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
