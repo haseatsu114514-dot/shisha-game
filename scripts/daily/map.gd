@@ -107,7 +107,7 @@ func _build_spot_list() -> Array:
 		spots.append({"id": "naru", "label": "ケムリクサ"})
 		if _are_rival_shops_unlocked():
 			spots.append({"id": "adam", "label": "林檎堂"})
-			spots.append({"id": "minto", "label": "KIRARA LOUNGE"})
+			spots.append({"id": "minto", "label": "ぺぱーみんと"})
 		if EventFlags.get_flag("spot_choizap_unlocked"):
 			spots.append({"id": "choizap", "label": "チョイザップ"})
 		if EventFlags.get_flag("spot_kannon_unlocked"):
@@ -121,7 +121,7 @@ func _build_spot_list() -> Array:
 		spots.append({"id": "naru", "label": "ケムリクサ（夜）"})
 		if _are_rival_shops_unlocked():
 			spots.append({"id": "adam", "label": "林檎堂（夜）"})
-			spots.append({"id": "minto", "label": "KIRARA LOUNGE（夜）"})
+			spots.append({"id": "minto", "label": "ぺぱーみんと（夜）"})
 	return spots
 
 
