@@ -218,7 +218,7 @@ func _show_next_line() -> void:
 
 	_clear_choices()
 	
-	_handle_cg_command(line)
+	await _handle_cg_command(line)
 	
 	_current_speaker = str(line.get("speaker", ""))
 	speaker_label.text = SPEAKER_NAMES.get(_current_speaker, _current_speaker)
@@ -424,6 +424,7 @@ func _handle_cg_command(line: Dictionary) -> void:
 					_cancel_auto_advance()
 					advance_button.disabled = true
 					await tween.finished
+					advance_button.disabled = false
 					_start_typing(str(line.get("text", "")))
 					return
 	elif type == "hide_cg":
@@ -437,6 +438,7 @@ func _handle_cg_command(line: Dictionary) -> void:
 			await tween.finished
 			cg_rect.visible = false
 			cg_rect.texture = null
+			advance_button.disabled = false
 			_start_typing(str(line.get("text", "")))
 			return
 

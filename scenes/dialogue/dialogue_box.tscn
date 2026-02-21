@@ -59,7 +59,7 @@ stretch_mode = 5
 [node name="DialoguePanel" type="PanelContainer" parent="."]
 layout_mode = 1
 anchor_left = 0.03
-anchor_top = 0.62
+anchor_top = 0.56
 anchor_right = 0.97
 anchor_bottom = 0.965
 
@@ -85,7 +85,7 @@ text = ""
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-custom_minimum_size = Vector2(0, 170)
+custom_minimum_size = Vector2(0, 80)
 theme_override_font_sizes/normal_font_size = 34
 autowrap_mode = 3
 bbcode_enabled = true

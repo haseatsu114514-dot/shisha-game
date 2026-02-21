@@ -71,27 +71,27 @@ theme_override_constants/separation = 12
 [node name="NewGameButton" type="Button" parent="MenuPanel/Menu"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 44)
-text = "NEW GAME"
+text = "はじめから"
 
 [node name="ContinueButton" type="Button" parent="MenuPanel/Menu"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 44)
-text = "CONTINUE"
+text = "つづきから"
 
 [node name="GalleryButton" type="Button" parent="MenuPanel/Menu"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 44)
-text = "GALLERY"
+text = "ギャラリー"
 
 [node name="SettingsButton" type="Button" parent="MenuPanel/Menu"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 44)
-text = "SETTINGS"
+text = "設定"
 
 [node name="QuitButton" type="Button" parent="MenuPanel/Menu"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 44)
-text = "QUIT"
+text = "おわる"
 
 [node name="InfoLabel" type="Label" parent="."]
 unique_name_in_owner = true
@@ -129,12 +129,12 @@ theme_override_constants/separation = 14
 [node name="SettingsTitle" type="Label" parent="SettingsPanel/SettingsContent"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 28
-text = "SETTINGS"
+text = "設定"
 horizontal_alignment = 1
 
 [node name="BGMLabel" type="Label" parent="SettingsPanel/SettingsContent"]
 layout_mode = 2
-text = "BGM Volume"
+text = "BGM音量"
 
 [node name="BGMSlider" type="HSlider" parent="SettingsPanel/SettingsContent"]
 unique_name_in_owner = true
@@ -145,7 +145,7 @@ value = 0.8
 
 [node name="SELabel" type="Label" parent="SettingsPanel/SettingsContent"]
 layout_mode = 2
-text = "SE Volume"
+text = "SE音量"
 
 [node name="SESlider" type="HSlider" parent="SettingsPanel/SettingsContent"]
 unique_name_in_owner = true
@@ -156,7 +156,7 @@ value = 0.8
 
 [node name="TextSpeedLabel" type="Label" parent="SettingsPanel/SettingsContent"]
 layout_mode = 2
-text = "Text Speed"
+text = "テキスト速度"
 
 [node name="TextSpeedSlider" type="HSlider" parent="SettingsPanel/SettingsContent"]
 unique_name_in_owner = true
@@ -169,7 +169,7 @@ value = 30.0
 [node name="CloseSettingsButton" type="Button" parent="SettingsPanel/SettingsContent"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 40)
-text = "CLOSE"
+text = "閉じる"
 
 [connection signal="pressed" from="MenuPanel/Menu/NewGameButton" to="." method="_on_new_game_pressed"]
 [connection signal="pressed" from="MenuPanel/Menu/ContinueButton" to="." method="_on_continue_pressed"]
