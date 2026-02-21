@@ -10,29 +10,25 @@
       "messages": [
         {
           "sender": "naru",
-          "text": "よう"
+          "text": "おい"
         },
         {
           "sender": "naru",
-          "text": "今日の夜暇？"
+          "text": "今日の夜暇か"
         },
         {
           "sender": "naru",
-          "text": "新しいミックス試したいんだけど"
+          "text": "新しいミックスのテストランするから"
         },
         {
           "sender": "naru",
-          "text": "ブルーベリーとダブルアップルでいい感じの比率見つけたかも"
-        },
-        {
-          "sender": "naru",
-          "text": "お前の意見聞きたくてさ"
+          "text": "意見でも聞いてやろうかと思って"
         }
       ],
       "accept_event": "interaction_naru_night_01",
       "decline_response": {
         "sender": "naru",
-        "text": "おk。またな"
+        "text": "あっそ"
       }
     },
     {
@@ -53,17 +49,17 @@
         },
         {
           "sender": "minto",
-          "text": "新しいミックス作ったんだけど感想聞きたくて"
+          "text": "新しいミックス作ったんだけど感想聞きたくて♡"
         },
         {
           "sender": "minto",
-          "text": "前回「すごい」って言ってくれたじゃん？ あれの進化版"
+          "text": "前回「すごい」って言ってくれたじゃん？ あれの進化版♪"
         }
       ],
       "accept_event": "interaction_kirara_noon_01",
       "decline_response": {
         "sender": "minto",
-        "text": "そっか。また今度ね"
+        "text": "そっか。また今度ね♡"
       }
     },
     {
@@ -75,36 +71,32 @@
       "messages": [
         {
           "sender": "naru",
-          "text": "なあ"
+          "text": "大会近いな"
         },
         {
           "sender": "naru",
-          "text": "正直ちょっと緊張してきた"
+          "text": "まあ俺は別に緊張とかしねーけど"
         },
         {
           "sender": "naru",
-          "text": "でも楽しみの方がでかいわ"
-        },
-        {
-          "sender": "naru",
-          "text": "お前は？"
+          "text": "お前は？ ビビってんの？"
         }
       ],
       "replies": [
         {
-          "text": "僕も緊張してる",
-          "response": "だよな笑　まあやるしかねえか",
-          "affinity": 3
+          "text": "少し緊張してる",
+          "response": "だろうな。まあ場数踏むしかねーよ",
+          "affinity": 1
         },
         {
           "text": "全然",
-          "response": "嘘つけ笑",
+          "response": "ふーん。度胸だけはあるじゃん",
           "affinity": 1
         },
         {
           "text": "楽しみにしてる",
-          "response": "お、いいじゃん。俺もだよ",
-          "affinity": 5
+          "response": "へえ。まあ楽しめるうちに楽しんどけ",
+          "affinity": 1
         }
       ]
     },
@@ -132,17 +124,17 @@
         {
           "text": "まだ不安もあります",
           "response": "不安があるのは真剣な証拠だよ。大丈夫",
-          "affinity": 3
+          "affinity": 1
         },
         {
           "text": "頑張ります",
           "response": "うん、お互いにね",
-          "affinity": 2
+          "affinity": 1
         },
         {
           "text": "眠都さんに勝ちたいです",
           "response": "あら。いいね、その意気。でも負けないよ？",
-          "affinity": 5
+          "affinity": 1
         }
       ]
     }

@@ -765,6 +765,7 @@ func _finish_tutorial() -> void:
 		_adjust_timer.stop()
 
 	EventFlags.set_flag("ch1_opening_tutorial_done")
+	EventFlags.set_flag("ch1_rival_shops_open")
 	PlayerData.add_stat("technique", 1)
 	GameManager.log_stat_change("technique", 1)
 	if _adjust_success_count >= 2:

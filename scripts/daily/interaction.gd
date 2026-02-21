@@ -48,7 +48,6 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 		AffinityManager.set_met(rival_id)
 		match rival_id:
 			"naru":
-				EventFlags.set_flag("ch1_rival_shops_open")
 				RivalIntel.add_intel("naru", "flavor_genre", "お菓子系")
 			"adam":
 				RivalIntel.add_intel("adam", "flavor_genre", "double_apple")
@@ -99,14 +98,14 @@ func _show_invitation_event(event_id: String) -> void:
 	match event_id:
 		"interaction_naru_night_01":
 			_set_portrait("naru")
-			body_label.text = "なるの新作ミックスを一緒に試した。率直な感想を伝えた。"
+			body_label.text = "なるのテストランに付き合った。新しいミックスを吸わせてもらった。"
 			_apply_affinity_gain("naru")
 			PlayerData.add_stat("insight", 2)
 			GameManager.log_stat_change("insight", 2)
 			_apply_flavor_specialty_gain({"sweet": 2, "special": 1})
 		"interaction_kirara_noon_01":
 			_set_portrait("minto")
-			body_label.text = "眠都のお店でシーシャを作る姿を見た。映えだけじゃない丁寧さに驚いた。"
+			body_label.text = "眠都(みんと)のお店でシーシャを吸った。可愛いだけじゃない丁寧さに驚いた。"
 			_apply_affinity_gain("minto")
 			PlayerData.add_stat("charm", 2)
 			GameManager.log_stat_change("charm", 2)

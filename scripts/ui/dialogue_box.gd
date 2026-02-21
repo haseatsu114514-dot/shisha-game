@@ -34,16 +34,16 @@ const SPEAKER_NAMES := {
 	"sumi": "スミさん",
 	"naru": "なる",
 	"adam": "アダム",
-	"minto": "眠都",
+	"minto": "眠都(みんと)",
 	"tsumugi": "つむぎ",
 	"tumugi": "つむぎ",
 	"hazime": "はじめ",
 	"packii": "パッキー",
 	"salaryman": "サラリーマン",
-	"toki_kotetsu": "土岐鋼鉄",
-	"maezono": "前園壮一郎",
-	"kirishima": "霧島レン",
-	"takiguchi": "焚口ショウ",
+	"toki_kotetsu": "土岐鋼鉄(ときこうてつ)",
+	"maezono": "前園壮一郎(まえぞのそういちろう)",
+	"kirishima": "霧島レン(きりしまれん)",
+	"takiguchi": "焚口ショウ(たきぐちしょう)",
 	"staff_choizap": "チョイザップスタッフ"
 }
 const SPEAKER_ID_ALIASES := {
