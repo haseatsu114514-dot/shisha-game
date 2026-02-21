@@ -1,0 +1,144 @@
+{
+    "dialogues": [
+        {
+            "dialogue_id": "ch1_tsumugi_encounter",
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "買い物帰り、商店街のベンチに見覚えのある背中が見えた。メガネの女の子が、スケッチブックを膝に置いて何かを描いている。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "（あれ……つむぎちゃん？ tonariの常連の……）"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "近づいてみると、コーヒーの紙カップが横に置いてあった。もう冷めているのか、湯気は出ていない。ずっとここにいるんだろう。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "つむぎちゃん？"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "surprise",
+                    "text": "ひゃっ……！？"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "スケッチブックを胸に抱えて飛び上がった。コーヒーの紙カップが倒れそうになるのを慌てて押さえる。"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "は、はじめさん……びっくりした……"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "ごめん。何描いてたの？"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……べ、別に……商店街の、風景を……"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "スケッチブックを隠すように背中に回す。でも一瞬見えた──夕暮れの商店街を描いているようだった。看板の灯り、歩く人の影、軒先の植木。柔らかい線で丁寧に描かれている。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "smile",
+                    "text": "一瞬見えたけど、すごく綺麗だったよ"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "surprise",
+                    "text": "み、見ないでください……まだ途中だし、全然ダメだし……"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "そっか。……今日はtonariには来ないの？"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……今日は、外の空気を描きたくて。tonariの中ばっかりだと、絵が偏るから……"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "でも……描いてると、やっぱりtonariのこと考えちゃうんですよね。あの煙の感じとか、フレーバーの匂いとか……"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "つむぎちゃんにとって、tonariってどんな場所？"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……私、人と話すの、あんまり得意じゃなくて"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "でもtonariにいると、誰とも話さなくても居心地がいいんです。シーシャの煙と、ゴボゴボっていう音と……あの空気が、私を受け入れてくれてる感じがして"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "だから……その空気を、絵にして残したいんです。私なりの『ありがとう』っていうか……"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "……そっか。それ、スミさんが聞いたら喜ぶと思うよ"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "surprise",
+                    "text": "え、えっ……！ そ、それは……恥ずかしいから言わないでください……！"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "顔を真っ赤にして小さくなるつむぎ。でも、少しだけ嬉しそうだった。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "（面白い子だな……。絵を通して、この街を見てるんだ）"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……あの、はじめさん"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "大会、頑張ってください。私……応援してます。tonariの人だから"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "smile",
+                    "text": "ありがとう。頑張るよ"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "手を小さく振るつむぎに別れを告げて、帰路についた。\n夕暮れの商店街。さっき彼女が描いていた景色の中を歩いている。\n不思議と、いつもより街が綺麗に見えた。"
+                }
+            ]
+        }
+    ]
+}

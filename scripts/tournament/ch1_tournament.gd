@@ -2551,7 +2551,27 @@ func _build_post_tournament_notice() -> String:
 	var rank_text = "%d位" % _player_rank
 	if _player_rank == 1:
 		rank_text = "優勝"
-	return "地方大会 %s。賞金 %d円 を獲得した。" % [rank_text, _pending_reward]
+	var notice = "地方大会 %s。賞金 %d円 を獲得した。\n\n" % [rank_text, _pending_reward]
+	notice += _build_sumi_feedback()
+	return notice
+
+
+func _build_sumi_feedback() -> String:
+	var lines: Array[String] = ["──閉店後。スミさんがカウンターの向こうで腕を組んでいる。"]
+	if _player_rank == 1:
+		lines.append("スミさん「……ふん。まぐれじゃないことを、次で証明しろ」")
+		lines.append("珍しく、ほんの少しだけ口元が緩んでいた気がする。")
+		lines.append("スミさん「浮かれるのは今日だけだ。明日からは次の準備をしろ」")
+	elif _player_rank <= 3:
+		lines.append("スミさん「悪くはなかった。だが、詰めが甘い」")
+		lines.append("スミさん「お前の弱点は分かっているはずだ。次までに潰せ」")
+		lines.append("厳しい言葉。でも、目は真剣にこちらを見ていた。期待されているのだと思う。")
+	else:
+		lines.append("スミさん「……」")
+		lines.append("何も言わない。それが一番堪える。")
+		lines.append("スミさん「言いたいことは、お前自身が一番分かっているだろう」")
+		lines.append("スミさん「悔しいなら、練習しろ。それだけだ」")
+	return "\n".join(lines)
 
 
 func _retry_tournament() -> void:
