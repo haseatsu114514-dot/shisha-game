@@ -82,6 +82,8 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 		metadata["add_affinity"] = {rival_id: 1}
 		if rival_id == "minto" and count >= 2:
 			dialogue_id = "ch1_minto_third"
+		elif rival_id == "adam" and count >= 2:
+			dialogue_id = "ch1_adam_third"
 		else:
 			dialogue_id = "ch1_%s_second" % rival_id
 
