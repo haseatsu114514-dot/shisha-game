@@ -56,6 +56,21 @@ const PULL_DIFFICULTY := [0.86, 1.0, 1.22, 1.06]
 const TOTAL_PACKING_GRAMS := 12
 const PULL_MIN_ROUNDS := 2
 const PULL_MAX_ROUNDS := 6
+const MIND_BARRAGE_BASE_LIVES := 3
+const MIND_BARRAGE_WORST_PULL_SPEED := 2.35
+const MIND_BARRAGE_MIN_SECONDS := 8.0
+const MIND_BARRAGE_MAX_SECONDS := 16.0
+const MIND_BARRAGE_WORDS := [
+	"もっと甘くすべきだった？",
+	"あいつの方が評価高そう",
+	"審査員、これ嫌いじゃないか？",
+	"前のラウンド、負けてるぞ",
+	"「無難」に逃げた方がよかったか？",
+	"前に失敗した時と同じ流れだ",
+	"この配合、攻めすぎじゃないか？",
+	"安全策に寄せた方がよくないか？",
+	"その個性、ただの自己満足では？",
+]
 const TEMP_MIN := 140.0
 const TEMP_MAX := 260.0
 const PRESENTATION_FOCUS_OPTIONS := [
@@ -121,6 +136,29 @@ var _pull_is_holding: bool = false
 var _pull_step_resolved: bool = false
 var _pull_hold_button: Button
 var _pull_setting_hint: String = ""
+var _mind_timer: Timer
+var _mind_active: bool = false
+var _mind_arena_layer: ColorRect
+var _mind_player_node: ColorRect
+var _mind_bullets: Array[Dictionary] = []
+var _mind_player_pos: Vector2 = Vector2.ZERO
+var _mind_player_size: Vector2 = Vector2(14, 14)
+var _mind_duration_total: float = 0.0
+var _mind_elapsed: float = 0.0
+var _mind_spawn_cooldown: float = 0.0
+var _mind_spawn_interval: float = 0.45
+var _mind_hits: int = 0
+var _mind_spawned: int = 0
+var _mind_hit_se_cooldown: float = 0.0
+var _mind_barrage_done: bool = false
+var _mind_lives_max: int = MIND_BARRAGE_BASE_LIVES
+var _mind_lives_remaining: int = MIND_BARRAGE_BASE_LIVES
+var _mind_pull_speed_adjust: float = 0.0
+var _mind_force_worst_pull_speed: bool = false
+var _mind_move_left: bool = false
+var _mind_move_right: bool = false
+var _mind_move_up: bool = false
+var _mind_move_down: bool = false
 var _aluminum_timer: Timer
 var _aluminum_active: bool = false
 var _aluminum_slot_count: int = 12
@@ -161,6 +199,11 @@ func _ready() -> void:
 	_aluminum_timer.one_shot = false
 	_aluminum_timer.timeout.connect(_on_aluminum_tick)
 	add_child(_aluminum_timer)
+	_mind_timer = Timer.new()
+	_mind_timer.wait_time = 0.016
+	_mind_timer.one_shot = false
+	_mind_timer.timeout.connect(_on_mind_barrage_tick)
+	add_child(_mind_timer)
 	if GameManager.game_state != "tournament":
 		GameManager.transition_to_tournament()
 	_prepare_run()
@@ -194,6 +237,19 @@ func _prepare_run() -> void:
 	_pull_step_resolved = false
 	_pull_hold_button = null
 	_pull_setting_hint = ""
+	_stop_mind_barrage()
+	_mind_duration_total = 0.0
+	_mind_elapsed = 0.0
+	_mind_spawn_cooldown = 0.0
+	_mind_spawn_interval = 0.45
+	_mind_hits = 0
+	_mind_spawned = 0
+	_mind_hit_se_cooldown = 0.0
+	_mind_barrage_done = false
+	_mind_lives_max = MIND_BARRAGE_BASE_LIVES
+	_mind_lives_remaining = MIND_BARRAGE_BASE_LIVES
+	_mind_pull_speed_adjust = 0.0
+	_mind_force_worst_pull_speed = false
 	_aluminum_active = false
 	_aluminum_notes.clear()
 	_aluminum_notes_spawned = 0
@@ -245,8 +301,11 @@ func _append_info(text: String) -> void:
 
 
 func _clear_choices() -> void:
+	_stop_mind_barrage()
 	for child in choice_container.get_children():
 		child.queue_free()
+	_pull_timer.stop()
+	_pull_is_holding = false
 	_pull_hold_button = null
 	_aluminum_active = false
 	_aluminum_timer.stop()
@@ -1116,7 +1175,7 @@ func _on_steam_selected(minutes: int) -> void:
 	_technical_points += delta_spec
 	_zone_bonus = clampf(_zone_bonus, -0.4, 1.2)
 	_heat_state = clampi(_heat_state, -3, 3)
-	_show_step_result_and_next("蒸らし結果: 専門 %+d（適正 %d〜%d分）" % [int(round(delta_spec)), min_minute, max_minute], _show_pull_step)
+	_show_mind_barrage_intro("蒸らし結果: 専門 %+d（適正 %d〜%d分）" % [int(round(delta_spec)), min_minute, max_minute])
 
 
 func _get_steam_optimal_range(charcoal_count: int) -> Vector2i:
@@ -1129,12 +1188,544 @@ func _get_steam_optimal_range(charcoal_count: int) -> Vector2i:
 			return Vector2i(5, 7)
 
 
+func _show_mind_barrage_intro(summary_text: String = "") -> void:
+	if _mind_barrage_done:
+		_show_pull_step()
+		return
+	var duration_sec = _compute_mind_barrage_duration()
+	var lives = MIND_BARRAGE_BASE_LIVES + (1 if _easy_mode else 0)
+	_set_phase(8, "吸い出し前: 思考の暴走", "吸い出し直前、頭の中で不安と記憶が弾幕になる。")
+	_clear_choices()
+	var lines: Array[String] = []
+	if summary_text != "":
+		lines.append(summary_text)
+		lines.append("")
+	lines.append("ここが大会の精神戦。")
+	lines.append("弾を避ける = 他人の価値観をかわす")
+	lines.append("当たる = 心がブレる（評価デバフ）")
+	lines.append("耐えきる = 自分のレシピを信じ切る")
+	lines.append("成績が良いほど、この後の吸い出しゲージは遅くなる。")
+	lines.append("蒸らし %d分 -> 耐久 %.1f秒" % [_steam_minutes, duration_sec])
+	lines.append("残機: %d（0になると吸い出しゲージは最悪速度）" % lives)
+	lines.append("この精神戦は必須。終えるまで吸い出しへは進めない。")
+	info_label.text = "\n".join(lines)
+	_add_choice_button("弾幕開始", _start_mind_barrage_step)
+	_refresh_side_panel()
+
+
+func _compute_mind_barrage_duration() -> float:
+	var ratio = clampf(float(_steam_minutes - 5) / 5.0, 0.0, 1.0)
+	var duration_sec = lerpf(MIND_BARRAGE_MIN_SECONDS, MIND_BARRAGE_MAX_SECONDS, ratio)
+	duration_sec += float(maxi(_heat_state, 0)) * 0.4
+	match _selected_hms:
+		"amaburst":
+			duration_sec += 0.5
+		"tanukish_lid":
+			duration_sec -= 0.4
+		_:
+			pass
+	if _easy_mode:
+		duration_sec -= 1.0
+	return clampf(duration_sec, 6.5, 18.0)
+
+
+func _compute_mind_barrage_spawn_interval() -> float:
+	var ratio = clampf(float(_steam_minutes - 5) / 5.0, 0.0, 1.0)
+	var interval = lerpf(0.56, 0.34, ratio)
+	interval -= float(abs(_heat_state)) * 0.02
+	if _selected_hms == "amaburst":
+		interval -= 0.02
+	elif _selected_hms == "tanukish_lid":
+		interval += 0.03
+	if _easy_mode:
+		interval += 0.06
+	return clampf(interval, 0.22, 0.72)
+
+
+func _start_mind_barrage_step() -> void:
+	if _mind_barrage_done:
+		_show_pull_step()
+		return
+	_set_phase(8, "思考弾幕", "弾をかわして時間まで耐える。")
+	_clear_choices()
+	_mind_active = true
+	_mind_duration_total = _compute_mind_barrage_duration()
+	_mind_elapsed = 0.0
+	_mind_spawn_cooldown = 0.0
+	_mind_spawn_interval = _compute_mind_barrage_spawn_interval()
+	_mind_hits = 0
+	_mind_spawned = 0
+	_mind_hit_se_cooldown = 0.0
+	_mind_lives_max = MIND_BARRAGE_BASE_LIVES + (1 if _easy_mode else 0)
+	_mind_lives_remaining = _mind_lives_max
+	_mind_pull_speed_adjust = 0.0
+	_mind_force_worst_pull_speed = false
+	_mind_bullets.clear()
+	_mind_player_pos = Vector2.ZERO
+	_mind_move_left = false
+	_mind_move_right = false
+	_mind_move_up = false
+	_mind_move_down = false
+
+	var guide = Label.new()
+	guide.text = "操作: 矢印キー / WASD（下のボタン長押しでも移動）"
+	choice_container.add_child(guide)
+
+	var arena_frame = PanelContainer.new()
+	arena_frame.custom_minimum_size = Vector2(0, 260)
+	arena_frame.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	choice_container.add_child(arena_frame)
+
+	var arena = ColorRect.new()
+	arena.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	arena.color = Color(0.05, 0.06, 0.1, 0.95)
+	arena.clip_contents = true
+	arena.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	arena_frame.add_child(arena)
+	_mind_arena_layer = arena
+
+	var player = ColorRect.new()
+	player.color = Color(0.96, 0.22, 0.24, 1.0)
+	player.size = _mind_player_size
+	player.custom_minimum_size = _mind_player_size
+	player.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	arena.add_child(player)
+	_mind_player_node = player
+
+	var dpad = GridContainer.new()
+	dpad.columns = 3
+	dpad.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	dpad.add_theme_constant_override("h_separation", 8)
+	dpad.add_theme_constant_override("v_separation", 8)
+	choice_container.add_child(dpad)
+	_add_mind_pad_spacer(dpad)
+	_add_mind_direction_button(dpad, "↑", "up")
+	_add_mind_pad_spacer(dpad)
+	_add_mind_direction_button(dpad, "←", "left")
+	var center = Label.new()
+	center.text = "SOUL"
+	center.custom_minimum_size = Vector2(56, 40)
+	center.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	center.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	dpad.add_child(center)
+	_add_mind_direction_button(dpad, "→", "right")
+	_add_mind_pad_spacer(dpad)
+	_add_mind_direction_button(dpad, "↓", "down")
+	_add_mind_pad_spacer(dpad)
+
+	_update_mind_barrage_info_text()
+	_refresh_side_panel()
+	call_deferred("_begin_mind_barrage_loop")
+
+
+func _add_mind_pad_spacer(parent: GridContainer) -> void:
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(56, 40)
+	parent.add_child(spacer)
+
+
+func _add_mind_direction_button(parent: GridContainer, button_text: String, dir_id: String) -> void:
+	var button = Button.new()
+	button.text = button_text
+	button.custom_minimum_size = Vector2(56, 40)
+	button.button_down.connect(func() -> void:
+		_set_mind_direction(dir_id, true)
+	)
+	button.button_up.connect(func() -> void:
+		_set_mind_direction(dir_id, false)
+	)
+	button.mouse_exited.connect(func() -> void:
+		_set_mind_direction(dir_id, false)
+	)
+	parent.add_child(button)
+
+
+func _set_mind_direction(dir_id: String, pressed: bool) -> void:
+	match dir_id:
+		"left":
+			_mind_move_left = pressed
+		"right":
+			_mind_move_right = pressed
+		"up":
+			_mind_move_up = pressed
+		"down":
+			_mind_move_down = pressed
+
+
+func _begin_mind_barrage_loop() -> void:
+	if not _mind_active:
+		return
+	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
+		return
+	var arena_size = _mind_arena_layer.size
+	if arena_size.x < 80.0 or arena_size.y < 80.0:
+		call_deferred("_begin_mind_barrage_loop")
+		return
+	_mind_player_pos = arena_size * 0.5
+	_sync_mind_player_node()
+	_spawn_mind_barrage_word()
+	_mind_timer.start()
+	_update_mind_barrage_info_text()
+
+
+func _on_mind_barrage_tick() -> void:
+	if not _mind_active:
+		return
+	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
+		return
+	var dt = _mind_timer.wait_time
+	_mind_elapsed += dt
+	_mind_spawn_cooldown -= dt
+	if _mind_hit_se_cooldown > 0.0:
+		_mind_hit_se_cooldown = max(0.0, _mind_hit_se_cooldown - dt)
+
+	_update_mind_player(dt)
+
+	if _mind_spawn_cooldown <= 0.0:
+		_spawn_mind_barrage_word()
+		_mind_spawn_cooldown = _mind_spawn_interval * randf_range(0.72, 1.25)
+
+	_update_mind_bullets(dt)
+	if _mind_lives_remaining <= 0:
+		_mind_elapsed = _mind_duration_total
+		_update_mind_barrage_info_text()
+		_finish_mind_barrage_step()
+		return
+	_update_mind_barrage_info_text()
+
+	if _mind_elapsed >= _mind_duration_total:
+		_finish_mind_barrage_step()
+
+
+func _update_mind_player(dt: float) -> void:
+	if _mind_arena_layer == null:
+		return
+	var axis = Vector2.ZERO
+	if _mind_move_left or Input.is_action_pressed("ui_left") or Input.is_key_pressed(KEY_A):
+		axis.x -= 1.0
+	if _mind_move_right or Input.is_action_pressed("ui_right") or Input.is_key_pressed(KEY_D):
+		axis.x += 1.0
+	if _mind_move_up or Input.is_action_pressed("ui_up") or Input.is_key_pressed(KEY_W):
+		axis.y -= 1.0
+	if _mind_move_down or Input.is_action_pressed("ui_down") or Input.is_key_pressed(KEY_S):
+		axis.y += 1.0
+
+	if axis.length_squared() > 0.0:
+		axis = axis.normalized()
+
+	var speed = 214.0 + float(maxi(_steam_minutes - 5, 0)) * 4.0
+	if _easy_mode:
+		speed += 20.0
+	_mind_player_pos += axis * speed * dt
+
+	var arena_size = _mind_arena_layer.size
+	var margin_x = _mind_player_size.x * 0.5 + 6.0
+	var margin_y = _mind_player_size.y * 0.5 + 6.0
+	_mind_player_pos.x = clampf(_mind_player_pos.x, margin_x, arena_size.x - margin_x)
+	_mind_player_pos.y = clampf(_mind_player_pos.y, margin_y, arena_size.y - margin_y)
+	_sync_mind_player_node()
+
+
+func _spawn_mind_barrage_word() -> void:
+	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
+		return
+	if MIND_BARRAGE_WORDS.is_empty():
+		return
+	var arena_size = _mind_arena_layer.size
+	if arena_size.x < 80.0 or arena_size.y < 80.0:
+		return
+
+	var phrase = str(MIND_BARRAGE_WORDS[randi() % MIND_BARRAGE_WORDS.size()])
+	var bullet = Label.new()
+	bullet.text = phrase
+	bullet.add_theme_font_size_override("font_size", 20)
+	bullet.modulate = Color(1.0, 0.82, 0.85, 1.0)
+	bullet.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_mind_arena_layer.add_child(bullet)
+
+	var size = bullet.get_combined_minimum_size()
+	if size.x < 40.0:
+		size = Vector2(maxi(40, phrase.length() * 20), 28)
+
+	var side = randi() % 4
+	var spawn = Vector2.ZERO
+	match side:
+		0:
+			spawn = Vector2(randf_range(0.0, arena_size.x), -size.y * 0.5 - 4.0)
+		1:
+			spawn = Vector2(arena_size.x + size.x * 0.5 + 4.0, randf_range(0.0, arena_size.y))
+		2:
+			spawn = Vector2(randf_range(0.0, arena_size.x), arena_size.y + size.y * 0.5 + 4.0)
+		_:
+			spawn = Vector2(-size.x * 0.5 - 4.0, randf_range(0.0, arena_size.y))
+
+	var target = _mind_player_pos + Vector2(randf_range(-64.0, 64.0), randf_range(-42.0, 42.0))
+	target.x = clampf(target.x, 20.0, arena_size.x - 20.0)
+	target.y = clampf(target.y, 20.0, arena_size.y - 20.0)
+	var to_target = target - spawn
+	if to_target.length_squared() <= 0.0001:
+		to_target = Vector2.DOWN
+	var direction = to_target.normalized()
+
+	var speed = 112.0 + float(_steam_minutes - 5) * 14.0 + float(abs(_heat_state)) * 9.0 + randf_range(0.0, 54.0)
+	if _selected_hms == "amaburst":
+		speed += 12.0
+	elif _selected_hms == "tanukish_lid":
+		speed -= 8.0
+	if _easy_mode:
+		speed -= 20.0
+	speed = clampf(speed, 90.0, 260.0)
+
+	var data := {
+		"node": bullet,
+		"pos": spawn,
+		"vel": direction * speed,
+		"size": size,
+	}
+	_mind_bullets.append(data)
+	_mind_spawned += 1
+	bullet.position = spawn - size * 0.5
+
+
+func _update_mind_bullets(dt: float) -> void:
+	if _mind_arena_layer == null:
+		return
+	var arena_size = _mind_arena_layer.size
+	for i in range(_mind_bullets.size() - 1, -1, -1):
+		var bullet = _mind_bullets[i]
+		var node = bullet.get("node") as Label
+		if node == null or not is_instance_valid(node):
+			_mind_bullets.remove_at(i)
+			continue
+		var pos = bullet.get("pos", Vector2.ZERO) + bullet.get("vel", Vector2.ZERO) * dt
+		var size = bullet.get("size", node.get_combined_minimum_size())
+		bullet["pos"] = pos
+		node.position = pos - size * 0.5
+		if _is_mind_barrage_collision(pos, size):
+			_mind_hits += 1
+			_mind_lives_remaining = maxi(0, _mind_lives_remaining - 1)
+			if _mind_hit_se_cooldown <= 0.0:
+				GameManager.play_ui_se("cancel")
+				_mind_hit_se_cooldown = 0.08
+			node.queue_free()
+			_mind_bullets.remove_at(i)
+			continue
+		if pos.x < -size.x - 24.0 or pos.x > arena_size.x + size.x + 24.0 or pos.y < -size.y - 24.0 or pos.y > arena_size.y + size.y + 24.0:
+			node.queue_free()
+			_mind_bullets.remove_at(i)
+			continue
+		_mind_bullets[i] = bullet
+
+
+func _is_mind_barrage_collision(bullet_pos: Vector2, bullet_size: Vector2) -> bool:
+	var player_rect = Rect2(_mind_player_pos - _mind_player_size * 0.5, _mind_player_size)
+	var bullet_rect = Rect2(bullet_pos - bullet_size * 0.45, bullet_size * 0.9)
+	return player_rect.intersects(bullet_rect)
+
+
+func _sync_mind_player_node() -> void:
+	if _mind_player_node == null or not is_instance_valid(_mind_player_node):
+		return
+	_mind_player_node.position = _mind_player_pos - _mind_player_size * 0.5
+
+
+func _update_mind_barrage_info_text() -> void:
+	if not _mind_active:
+		return
+	var remain = max(0.0, _mind_duration_total - _mind_elapsed)
+	var focus = clampi(100 - _mind_hits * 12, 0, 100)
+	var ratio = 0.0
+	if _mind_duration_total > 0.0:
+		ratio = _mind_elapsed / _mind_duration_total
+	var lines: Array[String] = []
+	lines.append("残り %.1f秒 / %.1f秒" % [remain, _mind_duration_total])
+	lines.append("残機 %d / %d  %s" % [_mind_lives_remaining, _mind_lives_max, _build_mind_life_text()])
+	lines.append("被弾 %d / 出現 %d" % [_mind_hits, maxi(_mind_spawned, 1)])
+	lines.append("集中度 %d%%" % focus)
+	lines.append(_build_mind_barrage_progress_bar(ratio))
+	info_label.text = "\n".join(lines)
+
+
+func _build_mind_life_text() -> String:
+	var chars: Array[String] = []
+	for i in range(_mind_lives_max):
+		chars.append("●" if i < _mind_lives_remaining else "○")
+	return "".join(chars)
+
+
+func _build_mind_barrage_progress_bar(ratio: float) -> String:
+	var length = 24
+	var fill = int(round(clampf(ratio, 0.0, 1.0) * float(length)))
+	var chars: Array[String] = []
+	for i in range(length):
+		chars.append("■" if i < fill else "─")
+	return "".join(chars)
+
+
+func _finish_mind_barrage_step() -> void:
+	if not _mind_active:
+		return
+	var result = _evaluate_mind_barrage_result()
+	var result_text = str(result.get("text", "精神戦を抜けた。"))
+	var delta_spec = float(result.get("spec", 0.0))
+	var delta_aud = float(result.get("aud", 0.0))
+	var delta_zone = float(result.get("zone", 0.0))
+	var heat_shift = int(result.get("heat_shift", 0))
+	var hit_count = _mind_hits
+	var spawn_count = _mind_spawned
+	var lives_remaining = _mind_lives_remaining
+	var lives_max = _mind_lives_max
+	_mind_active = false
+	_mind_barrage_done = true
+	_mind_timer.stop()
+	_mind_pull_speed_adjust = float(result.get("pull_speed_adjust", 0.0))
+	_mind_force_worst_pull_speed = bool(result.get("force_worst_pull_speed", false))
+
+	_technical_points += delta_spec
+	_audience_points += delta_aud
+	_zone_bonus += delta_zone
+	_zone_bonus = clampf(_zone_bonus, -0.4, 1.2)
+	_heat_state = clampi(_heat_state + heat_shift, -3, 3)
+	_refresh_side_panel()
+	GameManager.play_ui_se("confirm" if delta_spec >= 0.0 else "cancel")
+	_show_step_result_and_next(
+		"%s\n被弾 %d / 出現 %d\n専門 %+d / 一般 %+d\n吸い出し速度補正: %s" % [
+			result_text,
+			hit_count,
+			maxi(spawn_count, 1),
+			int(round(delta_spec)),
+			int(round(delta_aud)),
+			_mind_pull_adjust_text(),
+		],
+		_show_pull_step
+	)
+	_append_info("残機 %d / %d / 吸い出し速度補正: %s" % [lives_remaining, lives_max, _mind_pull_adjust_text()])
+
+
+func _evaluate_mind_barrage_result() -> Dictionary:
+	if _mind_lives_remaining <= 0:
+		return {
+			"text": "心が折れた。雑音に飲まれたまま吸い出しへ入る。",
+			"spec": -14.0,
+			"aud": -5.0,
+			"zone": -0.05,
+			"heat_shift": 2,
+			"pull_speed_adjust": 0.45,
+			"force_worst_pull_speed": true,
+		}
+
+	var pressure = float(_mind_hits) / float(maxi(_mind_spawned, 1))
+	var life_ratio = float(_mind_lives_remaining) / float(maxi(_mind_lives_max, 1))
+	var resilience = clampf(1.0 - pressure * 1.9 + life_ratio * 0.35, 0.0, 1.0)
+	if _easy_mode:
+		resilience = min(1.0, resilience + 0.08)
+
+	if resilience >= 0.86:
+		return {
+			"text": "表情が落ち着いた。冷静さを取り戻した。",
+			"spec": 15.0,
+			"aud": 6.0,
+			"zone": 0.10,
+			"heat_shift": -1,
+			"pull_speed_adjust": -0.18,
+			"force_worst_pull_speed": false,
+		}
+	if resilience >= 0.68:
+		return {
+			"text": "揺れを抑えて、レシピに意識を戻した。",
+			"spec": 8.0,
+			"aud": 3.0,
+			"zone": 0.05,
+			"heat_shift": 0,
+			"pull_speed_adjust": -0.10,
+			"force_worst_pull_speed": false,
+		}
+	if resilience >= 0.45:
+		return {
+			"text": "迷いは残るが、ギリギリ持ちこたえた。",
+			"spec": 1.0,
+			"aud": 0.0,
+			"zone": 0.0,
+			"heat_shift": 0,
+			"pull_speed_adjust": 0.06,
+			"force_worst_pull_speed": false,
+		}
+
+	var panic_penalty = 0.0
+	if _mind_hits >= int(round(_mind_duration_total * 0.7)):
+		panic_penalty = 3.0
+	return {
+		"text": "他人の価値観に呑まれ、心がブレた。",
+		"spec": -9.0 - panic_penalty,
+		"aud": -3.0,
+		"zone": -0.03,
+		"heat_shift": 1,
+		"pull_speed_adjust": 0.14,
+		"force_worst_pull_speed": false,
+	}
+
+
+func _mind_pull_hint() -> String:
+	if _mind_force_worst_pull_speed:
+		return "最悪速度"
+	if _mind_pull_speed_adjust <= -0.14:
+		return "かなり遅い"
+	if _mind_pull_speed_adjust <= -0.06:
+		return "やや遅い"
+	if _mind_pull_speed_adjust >= 0.10:
+		return "速い"
+	if _mind_pull_speed_adjust >= 0.04:
+		return "やや速い"
+	return "標準"
+
+
+func _mind_pull_adjust_text() -> String:
+	if _mind_force_worst_pull_speed:
+		return "最悪速度固定（%.2f以上）" % MIND_BARRAGE_WORST_PULL_SPEED
+	var trend = "遅くなる"
+	if _mind_pull_speed_adjust > 0.0:
+		trend = "速くなる"
+	elif abs(_mind_pull_speed_adjust) < 0.001:
+		trend = "変化なし"
+	return "%+.2f（%s）" % [_mind_pull_speed_adjust, trend]
+
+
+func _stop_mind_barrage() -> void:
+	_mind_active = false
+	if _mind_timer != null:
+		_mind_timer.stop()
+	for raw in _mind_bullets:
+		if typeof(raw) != TYPE_DICTIONARY:
+			continue
+		var node = (raw as Dictionary).get("node") as Label
+		if node != null and is_instance_valid(node):
+			node.queue_free()
+	_mind_bullets.clear()
+	if _mind_player_node != null and is_instance_valid(_mind_player_node):
+		_mind_player_node.queue_free()
+	_mind_player_node = null
+	_mind_arena_layer = null
+	_mind_move_left = false
+	_mind_move_right = false
+	_mind_move_up = false
+	_mind_move_down = false
+	_mind_hit_se_cooldown = 0.0
+
+
 func _show_pull_step() -> void:
+	if not _mind_barrage_done:
+		_show_mind_barrage_intro("吸い出し前に精神戦を完了する。")
+		return
 	var round_number = _pull_round + 1
 	_set_phase(
 		8,
 		"吸い出し %d / %d" % [round_number, PULL_MAX_ROUNDS],
-		"押している間だけ吸い出し、離した瞬間で判定。最低%d回、最大%d回。熱状態: %s" % [PULL_MIN_ROUNDS, PULL_MAX_ROUNDS, _heat_label()]
+		"押している間だけ吸い出し、離した瞬間で判定。最低%d回、最大%d回。熱状態: %s\n精神戦補正: %s" % [
+			PULL_MIN_ROUNDS,
+			PULL_MAX_ROUNDS,
+			_heat_label(),
+			_mind_pull_adjust_text(),
+		]
 	)
 	_clear_choices()
 	_pull_timer.stop()
@@ -1155,18 +1746,25 @@ func _show_pull_step() -> void:
 		_pull_target_width = mini(0.26, _pull_target_width + 0.04)
 
 	_pull_target_center = clampf(0.5 + float(_heat_state) * 0.07 + randf_range(-0.12, 0.12), 0.15, 0.85)
-	_pull_gauge_speed = 0.85 + float(_pull_round) * 0.2 + float(abs(_heat_state)) * 0.06 + setting_speed_adjust
-	if _easy_mode:
+	var base_speed = 0.85 + float(_pull_round) * 0.2 + float(abs(_heat_state)) * 0.06 + setting_speed_adjust
+	if _mind_force_worst_pull_speed:
+		_pull_gauge_speed = MIND_BARRAGE_WORST_PULL_SPEED + float(_pull_round) * 0.22 + float(abs(_heat_state)) * 0.08
+	else:
+		_pull_gauge_speed = base_speed + _mind_pull_speed_adjust
+	if _easy_mode and not _mind_force_worst_pull_speed:
 		_pull_gauge_speed = maxi(0.6, _pull_gauge_speed - 0.15)
+	_pull_gauge_speed = clampf(_pull_gauge_speed, 0.55, 3.25)
 	_pull_gauge_value = clampf(_pull_target_center + randf_range(-0.18, 0.18), 0.0, 1.0)
 	_pull_gauge_direction = 1.0
 
+	var setting_hint = ""
 	if setting_window_adjust <= -0.02:
-		_pull_setting_hint = "装備補正: シビア（判定が狭い）"
+		setting_hint = "装備補正: シビア（判定が狭い）"
 	elif setting_window_adjust >= 0.02:
-		_pull_setting_hint = "装備補正: 安定（判定が広い）"
+		setting_hint = "装備補正: 安定（判定が広い）"
 	else:
-		_pull_setting_hint = "装備補正: 標準"
+		setting_hint = "装備補正: 標準"
+	_pull_setting_hint = "%s / 精神戦: %s（%s）" % [setting_hint, _mind_pull_hint(), _mind_pull_adjust_text()]
 
 	var hold_button = Button.new()
 	hold_button.text = "押して吸う（離して止める）"
@@ -1215,7 +1813,11 @@ func _update_pull_gauge_text() -> void:
 		bar_chars.append(char)
 
 	var status_text = "吸い出し中...離すと判定" if _pull_is_holding else "ボタンを押して吸い出し開始"
-	info_label.text = "%s\n%s\n%s\n目標帯 ■ / ポインタ ◆" % [status_text, _pull_setting_hint, "".join(bar_chars)]
+	info_label.text = "%s\n%s\n%s\n目標帯 ■ / ポインタ ◆\n※このゲージはタイミング用。温度は右パネルの縦表示で確認。" % [
+		status_text,
+		_pull_setting_hint,
+		"".join(bar_chars),
+	]
 
 
 func _on_pull_hold_started() -> void:
@@ -1375,7 +1977,12 @@ func _on_serving_confirmed() -> void:
 func _show_adjustment_step(round_index: int) -> void:
 	var step_no = 10 + round_index
 	var target_action = _target_adjust_action()
-	_set_phase(step_no, "提供後の調整 %d回目" % (round_index + 1), _build_adjustment_cue(target_action, round_index))
+	var cue_lines: Array[String] = []
+	cue_lines.append(_build_adjustment_cue(target_action, round_index))
+	cue_lines.append("")
+	cue_lines.append("成功条件: 温度状態に合った方向を選ぶ。")
+	cue_lines.append("成功で温度は中央に戻り、失敗で熱状態が悪化する。")
+	_set_phase(step_no, "提供後の調整 %d回目" % (round_index + 1), "\n".join(cue_lines))
 	_clear_choices()
 	_add_choice_button("温度を上げる（蓋を閉める）", _on_adjustment_choice.bind("up", target_action, round_index))
 	_add_choice_button("現状維持", _on_adjustment_choice.bind("stay", target_action, round_index))
@@ -1714,6 +2321,10 @@ func _finalize_and_show_result() -> void:
 		EventFlags.set_value("ch1_tournament_loss_count", losses)
 
 	var lines: Array[String] = []
+	lines.append("【あなたの得点内訳】")
+	lines.append_array(_build_player_score_breakdown_lines())
+	lines.append("")
+	lines.append("【最終順位】")
 	for i in range(ranking.size()):
 		var row: Dictionary = ranking[i]
 		var row_id = str(row.get("id", ""))
@@ -1751,23 +2362,66 @@ func _finalize_and_show_result() -> void:
 
 
 func _build_player_score() -> Dictionary:
-	var specialist = maxi(0.0, _technical_points + _zone_bonus * 8.0 + float(_adjustment_hits) * 2.5)
-	var audience = maxi(0.0, _audience_points + float(_count_theme_hits(_selected_flavors)) * 4.0)
-	if _special_mix_name == "地獄のメンソール":
-		audience += 8.0
-	if _special_mix_name == "ピニャコラーダ":
-		specialist += 4.0
-		audience += 5.0
-	var total = specialist * 0.6 + audience * 0.4
-	if _easy_mode:
-		total += 3.0
+	var score = _compute_player_score_components()
 	return {
 		"id": "player",
 		"name": "はじめ",
+		"specialist": float(score.get("specialist", 0.0)),
+		"audience": float(score.get("audience", 0.0)),
+		"total": float(score.get("total", 0.0)),
+	}
+
+
+func _compute_player_score_components() -> Dictionary:
+	var specialist_base = _technical_points + _zone_bonus * 8.0 + float(_adjustment_hits) * 2.5
+	var specialist = maxi(0.0, specialist_base)
+	var audience_base = _audience_points + float(_count_theme_hits(_selected_flavors)) * 4.0
+	var audience = maxi(0.0, audience_base)
+	var specialist_mix_bonus = 0.0
+	var audience_mix_bonus = 0.0
+
+	if _special_mix_name == "地獄のメンソール":
+		audience_mix_bonus += 8.0
+	if _special_mix_name == "ピニャコラーダ":
+		specialist_mix_bonus += 4.0
+		audience_mix_bonus += 5.0
+
+	specialist += specialist_mix_bonus
+	audience += audience_mix_bonus
+	var weighted = specialist * 0.6 + audience * 0.4
+	var easy_bonus = 3.0 if _easy_mode else 0.0
+	return {
 		"specialist": specialist,
 		"audience": audience,
-		"total": total,
+		"weighted": weighted,
+		"easy_bonus": easy_bonus,
+		"total": weighted + easy_bonus,
+		"specialist_mix_bonus": specialist_mix_bonus,
+		"audience_mix_bonus": audience_mix_bonus,
 	}
+
+
+func _build_player_score_breakdown_lines() -> Array[String]:
+	var comp = _compute_player_score_components()
+	var lines: Array[String] = []
+	lines.append("専門 %.1f = max(0, 技術 %.1f + ゾーン %.1f + 調整 %.1f) + ミックス %.1f" % [
+		float(comp.get("specialist", 0.0)),
+		_technical_points,
+		_zone_bonus * 8.0,
+		float(_adjustment_hits) * 2.5,
+		float(comp.get("specialist_mix_bonus", 0.0)),
+	])
+	lines.append("一般 %.1f = max(0, 一般基礎 %.1f + テーマ %.1f) + ミックス %.1f" % [
+		float(comp.get("audience", 0.0)),
+		_audience_points,
+		float(_count_theme_hits(_selected_flavors)) * 4.0,
+		float(comp.get("audience_mix_bonus", 0.0)),
+	])
+	lines.append("総合 %.1f = 専門×0.6 + 一般×0.4%s" % [
+		float(comp.get("total", 0.0)),
+		(" + EASY %+d" % int(round(float(comp.get("easy_bonus", 0.0))))) if _easy_mode else "",
+	])
+	return lines
 
 
 func _prepare_rival_score_tables() -> void:
@@ -2014,6 +2668,7 @@ func _refresh_side_panel() -> void:
 		int(round(target_temp.x)),
 		int(round(target_temp.y)),
 	])
+	lines.append("温度表示: ◆=現在 / ■=合格帯")
 	lines.append(_build_temperature_gauge_text(current_temp, target_temp))
 	lines.append("設定: %s + %s" % [
 		PlayerData.get_equipment_name_by_value(_selected_bowl),

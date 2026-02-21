@@ -31,7 +31,7 @@ func _ready() -> void:
 
 	_load_shop_items()
 	_refresh_header()
-	_set_sticky_info("商品にカーソルを合わせると説明が表示されます。")
+	_set_sticky_info(_build_shop_intro_text())
 	_maybe_add_recipe_hint()
 
 
@@ -506,3 +506,17 @@ func _on_back_button_pressed() -> void:
 func _clear_items() -> void:
 	for child in item_container.get_children():
 		child.queue_free()
+
+
+func _build_shop_intro_text() -> String:
+	var lines: Array[String] = []
+	lines.append("入店料: %d円（行動1消費）" % SHOP_VISIT_COST)
+	lines.append("商品にカーソルを合わせると詳細表示。")
+	lines.append("機材在庫は章進行で拡張される。")
+	if GameManager.current_chapter == 1:
+		lines.append("第1章は基礎機材が中心。")
+	elif GameManager.current_chapter == 2:
+		lines.append("第2章は中級機材が追加。")
+	elif GameManager.current_chapter >= 3:
+		lines.append("第3章以降は高火力機材が増える。")
+	return "\n".join(lines)

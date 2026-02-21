@@ -35,6 +35,8 @@ const SPEAKER_NAMES := {
 	"adam": "アダム",
 	"kirara": "きらら",
 	"tsumugi": "つむぎ",
+	"tumugi": "つむぎ",
+	"hazime": "はじめ",
 	"packii": "パッキー",
 	"salaryman": "サラリーマン",
 	"toki_kotetsu": "土岐鋼鉄",
@@ -42,6 +44,10 @@ const SPEAKER_NAMES := {
 	"kirishima": "霧島レン",
 	"takiguchi": "焚口ショウ",
 	"staff_choizap": "チョイザップスタッフ"
+}
+const SPEAKER_ID_ALIASES := {
+	"tumugi": "tsumugi",
+	"hazime": "hajime",
 }
 const HIGHLIGHT_TAGS := [
 	"[imp]", "[/imp]",
@@ -358,6 +364,7 @@ func _update_portrait(line: Dictionary) -> void:
 		portrait_rect.visible = false
 		portrait_rect.texture = null
 		return
+	speaker = str(SPEAKER_ID_ALIASES.get(speaker, speaker))
 
 	var face = str(line.get("face", "normal"))
 	var path = "res://assets/sprites/characters/chr_%s_%s.png" % [speaker, face]
@@ -420,6 +427,12 @@ func _finish_dialogue() -> void:
 	# Show affinity notification before transitioning
 	if affinity_char_id != "":
 		await _show_affinity_notification(affinity_char_id, affinity_delta)
+
+	if dialogue_id == "ch1_opening" and not EventFlags.get_flag("ch1_opening_tutorial_done"):
+		var resume_scene = next_scene_path if next_scene_path != "" else "res://scenes/daily/map.tscn"
+		GameManager.set_transient("post_tutorial_next_scene", resume_scene)
+		get_tree().change_scene_to_file("res://scenes/daily/practice.tscn")
+		return
 
 	if next_scene_path != "":
 		get_tree().change_scene_to_file(next_scene_path)

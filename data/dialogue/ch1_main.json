@@ -251,6 +251,11 @@
             "text": "これ使え。練習用だ"
           },
           {
+            "speaker": "sumi",
+            "face": "serious",
+            "text": "早速特訓するか。ダブルアップルで基礎を叩き込むぞ"
+          },
+          {
             "speaker": "hajime",
             "face": "surprise",
             "text": "え、いいんですか？"
@@ -336,6 +341,11 @@
             "speaker": "sumi",
             "face": "normal",
             "text": "練習用だ。出るか出ないかは、お前が決めればいい"
+          },
+          {
+            "speaker": "sumi",
+            "face": "serious",
+            "text": "……で、練習は今やる。早速特訓だ"
           },
           {
             "speaker": "hajime",

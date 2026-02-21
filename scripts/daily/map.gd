@@ -44,6 +44,9 @@ const FACE_BY_SPOT_ID: Dictionary = {
 func _ready() -> void:
 	GameManager.play_daily_bgm()
 	confirm_dialog.confirmed.connect(_on_confirmed)
+	confirm_dialog.canceled.connect(func() -> void:
+		_pending_spot = {}
+	)
 	_load_marker_textures()
 
 	# Check for forced story events first (mandatory, cannot skip)
@@ -87,7 +90,10 @@ func _refresh_spots() -> void:
 		child.queue_free()
 
 	_apply_map_visuals()
-	message_label.text = "行き先を選択　（残り行動：%d）" % CalendarManager.actions_remaining
+	var lines: Array[String] = []
+	lines.append("行き先を選択　（残り行動：%d）" % CalendarManager.actions_remaining)
+	lines.append_array(_build_map_rule_lines())
+	message_label.text = "\n".join(lines)
 
 	for spot in _build_spot_list():
 		_add_spot_marker(spot)
@@ -121,6 +127,9 @@ func _build_spot_list() -> Array:
 
 func _on_spot_pressed(spot: Dictionary) -> void:
 	GameManager.play_ui_se("cursor")
+	if str(spot.get("id", "")) == "shop":
+		_open_shop_confirm(spot)
+		return
 	_enter_spot(spot)
 
 
@@ -129,6 +138,38 @@ func _on_confirmed() -> void:
 		return
 	_enter_spot(_pending_spot)
 	_pending_spot = {}
+
+
+func _open_shop_confirm(spot: Dictionary) -> void:
+	_pending_spot = spot.duplicate(true)
+	confirm_dialog.title = "Dr.Hookah 入店確認"
+	confirm_dialog.dialog_text = _build_shop_preview_text()
+	confirm_dialog.ok_button_text = "入店する"
+	confirm_dialog.popup_centered()
+
+
+func _build_shop_preview_text() -> String:
+	var lines: Array[String] = []
+	lines.append("入店コスト: %d円 / 行動消費: 1" % SHOP_VISIT_COST)
+	lines.append("現在の所持金: %d円" % PlayerData.money)
+	lines.append("在庫は章が進むと増える。")
+	lines.append("購入しないで戻った場合は入店料を返金。")
+	return "\n".join(lines)
+
+
+func _build_map_rule_lines() -> Array[String]:
+	var lines: Array[String] = []
+	lines.append("ルール: 移動1回で行動を1消費")
+	if not _are_rival_shops_unlocked():
+		lines.append("解放条件: なる初回訪問で林檎堂/KIRARA解放")
+	else:
+		lines.append("ライバル店: 解放済み")
+
+	if GameManager.current_chapter == 1 and not EventFlags.get_flag("ch1_tournament_completed"):
+		lines.append("章進行条件: 地方大会で1位")
+	elif GameManager.current_chapter >= 2:
+		lines.append("章進行条件: 各章大会で1位")
+	return lines
 
 
 func _enter_spot(spot: Dictionary) -> void:

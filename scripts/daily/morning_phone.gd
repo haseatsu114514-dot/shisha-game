@@ -5,21 +5,29 @@ extends Control
 @onready var lime_button: Button = %LimeButton
 @onready var close_phone_button: Button = %ClosePhoneButton
 var _today_messages: Array = []
+var _rule_hint_appended: bool = false
 
 
 func _ready() -> void:
 	GameManager.play_daily_bgm()
+	_rule_hint_appended = false
 
 	if CalendarManager.is_tournament_day():
 		GameManager.transition_to_tournament()
 		var unread_memo_count = PlayerData.get_unread_tournament_memo_count()
-		info_label.text = "Day %d 大会当日！\n会場へ向かおう。" % CalendarManager.current_day
+		var lines: Array[String] = []
+		lines.append("Day %d 大会当日！" % CalendarManager.current_day)
+		lines.append("会場へ向かおう。")
+		lines.append("目的: この章の大会で1位を取る。")
+		lines.append("敗北時: 本編は進まず、同大会を再挑戦。")
+		info_label.text = "\n".join(lines)
 		if unread_memo_count > 0:
 			notification_label.text = "大会メモ 未読 %d件" % unread_memo_count
 		else:
 			notification_label.text = "大会メモを確認済み"
 		lime_button.disabled = true
 		close_phone_button.text = "大会会場へ"
+		_append_daily_rule_hint_if_needed()
 		return
 
 	if CalendarManager.is_interval:
@@ -33,6 +41,9 @@ func _ready() -> void:
 		info_label.text = notice
 	elif not CalendarManager.is_interval:
 		info_label.text = "朝のスマホチェック"
+
+	_append_chapter_brief_if_needed()
+	_append_daily_rule_hint_if_needed()
 
 	_today_messages = _load_today_lime_messages()
 	_update_notifications()
@@ -106,3 +117,70 @@ func _on_close_phone_button_pressed() -> void:
 
 	CalendarManager.advance_time()
 	get_tree().change_scene_to_file("res://scenes/daily/map.tscn")
+
+
+func _append_daily_rule_hint_if_needed() -> void:
+	if _rule_hint_appended:
+		return
+	if EventFlags.get_flag("core_daily_rule_hint_seen"):
+		return
+	var lines: Array[String] = []
+	lines.append("")
+	lines.append("【行動ルール】")
+	lines.append("・朝→昼→夜→深夜で時間が進む")
+	lines.append("・マップ行動1回ごとに行動回数を1消費")
+	lines.append("・行動が0になるとその時間帯は終了")
+	_append_info_lines(lines)
+	EventFlags.set_flag("core_daily_rule_hint_seen")
+	_rule_hint_appended = true
+
+
+func _append_chapter_brief_if_needed() -> void:
+	if CalendarManager.is_interval:
+		return
+	if CalendarManager.current_time != "morning":
+		return
+	if CalendarManager.current_day != 1:
+		return
+	var flag_key = "chapter_%d_brief_seen" % GameManager.current_chapter
+	if EventFlags.get_flag(flag_key):
+		return
+
+	var lines = _build_chapter_brief_lines(GameManager.current_chapter)
+	if not lines.is_empty():
+		_append_info_lines(lines)
+	EventFlags.set_flag(flag_key)
+
+
+func _build_chapter_brief_lines(chapter: int) -> Array[String]:
+	var lines: Array[String] = []
+	lines.append("")
+	lines.append("【章の目標】")
+	match chapter:
+		1:
+			lines.append("地方大会で1位を取る。")
+			lines.append("新要素: 蒸らし前の思考弾幕、吸い出し、提供後調整。")
+			lines.append("解放条件: なる初回訪問でライバル店が開く。")
+		2:
+			lines.append("日本大会で1位を取る。")
+			lines.append("新要素: 中間順位差を使った追い上げ判断が重要。")
+			lines.append("解放条件: 交流スポットとショップ在庫が章進行で拡張。")
+		3:
+			lines.append("アジア大会で1位を取る。")
+			lines.append("新要素: 海外滞在（イスタンブール）で相棒同行イベント。")
+			lines.append("解放条件: 現地交流を重ねると補助イベントが増える。")
+		_:
+			lines.append("この章の大会で1位を取る。")
+			lines.append("新要素は進行に応じて追加される。")
+	lines.append("敗北時: 本編は進まず、同章大会を再挑戦。")
+	return lines
+
+
+func _append_info_lines(lines: Array[String]) -> void:
+	var extra = "\n".join(lines).strip_edges()
+	if extra == "":
+		return
+	if info_label.text.strip_edges() == "":
+		info_label.text = extra
+	else:
+		info_label.text += "\n" + extra
