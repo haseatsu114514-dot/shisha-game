@@ -112,7 +112,12 @@ func _on_lime_button_pressed() -> void:
 
 func _on_close_phone_button_pressed() -> void:
 	if CalendarManager.is_tournament_day():
-		get_tree().change_scene_to_file("res://scenes/tournament/ch1_tournament.tscn")
+		var chapter = GameManager.current_chapter
+		var path = "res://scenes/tournament/ch%d_tournament.tscn" % chapter
+		if ResourceLoader.exists(path):
+			get_tree().change_scene_to_file(path)
+		else:
+			get_tree().change_scene_to_file("res://scenes/tournament/ch1_tournament.tscn")
 		return
 
 	CalendarManager.advance_time()

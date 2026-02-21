@@ -474,6 +474,11 @@ func _do_practice() -> void:
 
 	header_label.text = "練習"
 	body_label.text = "何を練習する？"
+	
+	var preview_lines = PlayerData.get_practice_bonus_preview_lines()
+	if not preview_lines.is_empty():
+		body_label.text += "\n\n[color=#8bdcff]【現在の装備ボーナス】[/color]\n" + "\n".join(preview_lines)
+
 	_clear_buttons(menu_container)
 	_clear_buttons(choice_container)
 
