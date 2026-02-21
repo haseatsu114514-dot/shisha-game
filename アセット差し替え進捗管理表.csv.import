@@ -1,0 +1,19 @@
+[remap]
+
+importer="csv_translation"
+type="Translation"
+uid="uid://dpcdpm3supfg1"
+
+[deps]
+
+files=["res://アセット差し替え進捗管理表.カテゴリ.translation", "res://アセット差し替え進捗管理表.ディレクトリ.translation", "res://アセット差し替え進捗管理表.ファイル名.translation", "res://アセット差し替え進捗管理表.用途.translation", "res://アセット差し替え進捗管理表.ステータス.translation", "res://アセット差し替え進捗管理表.en.translation", "res://アセット差し替え進捗管理表.備考.translation"]
+
+source_file="res://アセット差し替え進捗管理表.csv"
+dest_files=["res://アセット差し替え進捗管理表.カテゴリ.translation", "res://アセット差し替え進捗管理表.ディレクトリ.translation", "res://アセット差し替え進捗管理表.ファイル名.translation", "res://アセット差し替え進捗管理表.用途.translation", "res://アセット差し替え進捗管理表.ステータス.translation", "res://アセット差し替え進捗管理表.en.translation", "res://アセット差し替え進捗管理表.備考.translation"]
+
+[params]
+
+compress=1
+delimiter=0
+unescape_keys=false
+unescape_translations=true
