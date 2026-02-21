@@ -13,19 +13,28 @@ func _ready() -> void:
 	_rule_hint_appended = false
 
 	if CalendarManager.is_tournament_day():
+		var has_flavor = _player_has_any_flavor()
 		var unread_memo_count = PlayerData.get_unread_tournament_memo_count()
 		var lines: Array[String] = []
 		lines.append("Day %d 大会当日！" % CalendarManager.current_day)
-		lines.append("会場へ向かおう。")
-		lines.append("目的: この章の大会で1位を取る。")
-		lines.append("敗北時: 本編は進まず、同大会を再挑戦。")
-		info_label.text = "\n".join(lines)
-		if unread_memo_count > 0:
-			notification_label.text = "大会メモ 未読 %d件" % unread_memo_count
+		if not has_flavor:
+			lines.append("フレーバーが足りない！ 先にショップで買い物をしよう。")
+			info_label.text = "\n".join(lines)
+			notification_label.text = "⚠ フレーバー不足"
+			lime_button.disabled = true
+			close_phone_button.text = "ショップへ"
+			GameManager.set_transient("force_shop_before_tournament", true)
 		else:
-			notification_label.text = "大会メモを確認済み"
-		lime_button.disabled = true
-		close_phone_button.text = "マップへ" # Changed from jump to tournament
+			lines.append("会場へ向かおう。")
+			lines.append("目的: この章の大会で1位を取る。")
+			lines.append("敗北時: 本編は進まず、同大会を再挑戦。")
+			info_label.text = "\n".join(lines)
+			if unread_memo_count > 0:
+				notification_label.text = "大会メモ 未読 %d件" % unread_memo_count
+			else:
+				notification_label.text = "大会メモを確認済み"
+			lime_button.disabled = true
+			close_phone_button.text = "マップへ"
 		_append_daily_rule_hint_if_needed()
 		return
 
@@ -110,8 +119,19 @@ func _on_lime_button_pressed() -> void:
 
 
 func _on_close_phone_button_pressed() -> void:
+	if GameManager.get_transient("force_shop_before_tournament", false):
+		GameManager.pop_transient("force_shop_before_tournament", false)
+		get_tree().change_scene_to_file("res://scenes/daily/shop.tscn")
+		return
 	CalendarManager.advance_time()
 	get_tree().change_scene_to_file("res://scenes/daily/map.tscn")
+
+
+func _player_has_any_flavor() -> bool:
+	for item in PlayerData.flavor_inventory:
+		if typeof(item) == TYPE_DICTIONARY and int(item.get("amount", 0)) > 0:
+			return true
+	return false
 
 
 func _append_daily_rule_hint_if_needed() -> void:

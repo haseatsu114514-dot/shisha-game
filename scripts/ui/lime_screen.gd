@@ -107,13 +107,15 @@ func _apply_line_theme() -> void:
 func _show_current_message() -> void:
 	_clear_options()
 	_clear_chat()
+	await get_tree().process_frame
 
 	if _index >= _messages.size():
 		title_label.text = "LIME"
 		status_label.text = "未読はありません"
 		_add_system_message("未読メッセージはありません。")
 		back_button.disabled = false
-		_scroll_to_bottom_deferred()
+		await get_tree().process_frame
+		_scroll_to_bottom()
 		return
 
 	var message: Dictionary = _messages[_index]
@@ -134,7 +136,8 @@ func _show_current_message() -> void:
 		_add_reply_option("行く", "invitation_accept", -1, true)
 		_add_reply_option("行かない", "invitation_decline", -1, false)
 		back_button.disabled = true
-		_scroll_to_bottom_deferred()
+		await get_tree().process_frame
+		_scroll_to_bottom()
 		return
 
 	if message_type == "chat" and message.has("replies"):
@@ -142,7 +145,8 @@ func _show_current_message() -> void:
 			var reply: Dictionary = message["replies"][i]
 			_add_reply_option(str(reply.get("text", "返信")), "chat_reply", i, false)
 		back_button.disabled = true
-		_scroll_to_bottom_deferred()
+		await get_tree().process_frame
+		_scroll_to_bottom()
 		return
 
 	_mark_current_message_read()
