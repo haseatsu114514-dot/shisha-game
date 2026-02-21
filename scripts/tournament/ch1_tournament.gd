@@ -189,7 +189,7 @@ var _presentation_secondary_focus: String = ""
 
 func _ready() -> void:
 	randomize()
-	GameManager.play_bgm(GameManager.BGM_CHILLHOUSE_PATH, -8.0, true)
+	GameManager.play_bgm(GameManager.BGM_TONARI_PATH, -8.0, true)
 	_pull_timer = Timer.new()
 	_pull_timer.wait_time = 0.03
 	_pull_timer.one_shot = false

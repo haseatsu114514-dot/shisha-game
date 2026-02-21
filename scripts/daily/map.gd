@@ -14,7 +14,7 @@ var _face_cache: Dictionary = {}
 const SHOP_VISIT_COST := 3500
 
 const SPOT_POSITIONS_DAY: Dictionary = {
-	"chillhouse": Vector2(300, 420),
+	"tonari": Vector2(300, 420),
 	"shop": Vector2(1020, 486),
 	"naru": Vector2(1030, 254),
 	"adam": Vector2(720, 224),
@@ -26,7 +26,7 @@ const SPOT_POSITIONS_DAY: Dictionary = {
 }
 
 const SPOT_POSITIONS_NIGHT: Dictionary = {
-	"chillhouse": Vector2(300, 420),
+	"tonari": Vector2(300, 420),
 	"shop": Vector2(1020, 486),
 	"naru": Vector2(1030, 254),
 	"adam": Vector2(720, 224),
@@ -92,7 +92,7 @@ func _refresh_spots() -> void:
 	_apply_map_visuals()
 	var lines: Array[String] = []
 	if CalendarManager.is_tournament_day():
-		lines.append("本日は大会当日です！ [チルハウス] へ向かってください。")
+		lines.append("本日は大会当日です！ [tonari] へ向かってください。")
 	else:
 		lines.append("行き先を選択　（残り行動：%d）" % CalendarManager.actions_remaining)
 		lines.append_array(_build_map_rule_lines())
@@ -105,11 +105,11 @@ func _refresh_spots() -> void:
 func _build_spot_list() -> Array:
 	var spots: Array = []
 	if CalendarManager.is_tournament_day():
-		spots.append({"id": "chillhouse", "label": "チルハウス（大会会場）"})
+		spots.append({"id": "tonari", "label": "tonari（大会会場）"})
 		return spots
 
 	if CalendarManager.current_time == "noon":
-		spots.append({"id": "chillhouse", "label": "チルハウス"})
+		spots.append({"id": "tonari", "label": "tonari"})
 		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
 		spots.append({"id": "naru", "label": "ケムリクサ"})
 		if _are_rival_shops_unlocked():
@@ -122,7 +122,7 @@ func _build_spot_list() -> Array:
 		if EventFlags.get_flag("spot_cafe_unlocked"):
 			spots.append({"id": "cafe", "label": "カフェ"})
 	elif CalendarManager.current_time == "night":
-		spots.append({"id": "chillhouse", "label": "チルハウス（夜）"})
+		spots.append({"id": "tonari", "label": "tonari（夜）"})
 		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]（夜）"})
 		spots.append({"id": "home", "label": "自宅で休む"})
 		spots.append({"id": "naru", "label": "ケムリクサ（夜）"})
@@ -182,7 +182,7 @@ func _build_map_rule_lines() -> Array[String]:
 func _enter_spot(spot: Dictionary) -> void:
 	var id = str(spot.get("id", ""))
 	match id:
-		"chillhouse":
+		"tonari":
 			get_tree().change_scene_to_file("res://scenes/daily/baito.tscn")
 		"shop":
 			if PlayerData.money < SHOP_VISIT_COST:

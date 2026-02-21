@@ -3,7 +3,7 @@
     {
       "dialogue_id": "ch1_tournament_arrival",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_chillhouse_full.png",
+        "bg": "res://assets/backgrounds/bg_tonari_full.png",
         "effect": "smoke"
       },
       "lines": [
@@ -20,7 +20,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "入口をくぐると、フレーバーの混ざった濃い香りが一気に押し寄せてきた。チルハウスとも、どの店とも違う。何十種類もの香りが重なり合った、大会だけの空気。"
+          "text": "入口をくぐると、フレーバーの混ざった濃い香りが一気に押し寄せてきた。tonariとも、どの店とも違う。何十種類もの香りが重なり合った、大会だけの空気。"
         },
         {
           "speaker": "",
@@ -35,7 +35,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "観客の視線。スタッフの無線。会場の熱気。全部が、チルハウスの閉店後とは別世界だった。"
+          "text": "観客の視線。スタッフの無線。会場の熱気。全部が、tonariの閉店後とは別世界だった。"
         },
         {
           "speaker": "hajime",
@@ -272,7 +272,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "──ここだけは、チルハウスと同じ香りがした。"
+          "text": "──ここだけは、tonariと同じ香りがした。"
         },
         {
           "speaker": "",
@@ -540,7 +540,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "──その夜。閉店後のチルハウス。"
+          "text": "──その夜。閉店後のtonari。"
         },
         {
           "speaker": "sumi",

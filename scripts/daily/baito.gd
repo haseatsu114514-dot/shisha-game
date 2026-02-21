@@ -169,7 +169,7 @@ func _load_events() -> void:
 
 
 func _show_main_menu() -> void:
-	header_label.text = "チルハウス"
+	header_label.text = "tonari"
 	_clear_buttons(choice_container)
 	if CalendarManager.is_tournament_day():
 		_show_tournament_menu()
@@ -661,8 +661,8 @@ func _clear_buttons(container: VBoxContainer) -> void:
 func _get_shift_atmosphere(mode: String) -> String:
 	match mode:
 		"full":
-			return "チルハウス。シフト開始。\n\n昼下がりの陽光が窓から差し込んで、カウンターの木目を暖かく照らしている。\n\nフレーバーの甘い香り、炭の乾いた匂い、そしてコーヒーの残り香。全部が混ざって「チルハウスの空気」になる。\n\nエプロンを締め直す。今日は長丁場だ。"
+			return "tonari。シフト開始。\n\n昼下がりの陽光が窓から差し込んで、カウンターの木目を暖かく照らしている。\n\nフレーバーの甘い香り、炭の乾いた匂い、そしてコーヒーの残り香。全部が混ざって「tonariの空気」になる。\n\nエプロンを締め直す。今日は長丁場だ。"
 		"night":
-			return "チルハウス。夜のシフト。\n\n間接照明のオレンジが、店内をゆっくり包んでいく。窓の外は暗い。\n\nゴボゴボ──どこかのテーブルから、水面が揺れる音。煙が天井のファンに巻かれて、ゆるやかな渦を描いている。\n\n夜のチルハウスは、昼とは違う顔をしている。"
+			return "tonari。夜のシフト。\n\n間接照明のオレンジが、店内をゆっくり包んでいく。窓の外は暗い。\n\nゴボゴボ──どこかのテーブルから、水面が揺れる音。煙が天井のファンに巻かれて、ゆるやかな渦を描いている。\n\n夜のtonariは、昼とは違う顔をしている。"
 		_:
-			return "チルハウス。シフト開始。\n\n店に入ると、フレーバーの甘い残り香がふわっと鼻をくすぐる。\n\nコンロに火を入れて、炭の準備を始める。赤く焼けた炭の熱が、手のひらに近づくとじわっと伝わってくる。\n\nさあ、今日も始めよう。"
+			return "tonari。シフト開始。\n\n店に入ると、フレーバーの甘い残り香がふわっと鼻をくすぐる。\n\nコンロに火を入れて、炭の準備を始める。赤く焼けた炭の熱が、手のひらに近づくとじわっと伝わってくる。\n\nさあ、今日も始めよう。"

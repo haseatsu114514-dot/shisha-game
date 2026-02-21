@@ -29,7 +29,7 @@ func _on_new_game_pressed() -> void:
 		{
 			"set_flag": "ch1_sumi_first_talk",
 			"morning_notice": "大会まであと7日",
-			"bg": "res://assets/backgrounds/bg_chillhouse_inside.png"
+			"bg": "res://assets/backgrounds/bg_tonari_inside.png"
 		}
 	)
 	get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")

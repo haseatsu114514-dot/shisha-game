@@ -46,7 +46,7 @@ var _adjust_round_drift: float = 0.0
 
 
 func _ready() -> void:
-	GameManager.play_bgm(GameManager.BGM_CHILLHOUSE_PATH, -10.0, true)
+	GameManager.play_bgm(GameManager.BGM_TONARI_PATH, -10.0, true)
 	_pull_timer = Timer.new()
 	_pull_timer.wait_time = GAUGE_TIMER_WAIT
 	_pull_timer.one_shot = false

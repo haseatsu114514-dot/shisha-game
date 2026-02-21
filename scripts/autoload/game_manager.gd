@@ -8,7 +8,7 @@ const SAVE_PATH_TEMPLATE := "user://save_slot_%d.json"
 const SETTINGS_PATH := "user://settings.cfg"
 const BGM_TITLE_PATH = "res://assets/audio/bgm/daily_part.mp3"
 const BGM_DAILY_PATH = "res://assets/audio/bgm/daily_part.mp3"
-const BGM_CHILLHOUSE_PATH = "res://assets/audio/bgm/chill_house.mp3"
+const BGM_TONARI_PATH = "res://assets/audio/bgm/tonari.mp3"
 const DEFAULT_BGM_LEVEL := 0.8
 const DEFAULT_SE_LEVEL := 0.8
 const SILENT_DB := -80.0
@@ -169,8 +169,8 @@ func play_daily_bgm() -> void:
 	if ResourceLoader.exists(BGM_DAILY_PATH):
 		play_bgm(BGM_DAILY_PATH, -11.0, true)
 		return
-	if ResourceLoader.exists(BGM_CHILLHOUSE_PATH):
-		play_bgm(BGM_CHILLHOUSE_PATH, -10.0, true)
+	if ResourceLoader.exists(BGM_TONARI_PATH):
+		play_bgm(BGM_TONARI_PATH, -10.0, true)
 
 
 func apply_audio_settings() -> void:
