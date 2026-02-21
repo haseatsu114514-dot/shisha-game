@@ -56,7 +56,7 @@ const HIGHLIGHT_TAGS := [
 	"[hint]", "[/hint]"
 ]
 const HIGHLIGHT_OPEN_REPLACEMENTS := {
-	"[imp]": "[font_size=42][color=#ffd878][b]",
+	"[imp]": "[font_size=30][color=#ffd878][b]",
 	"[red]": "[color=#ff5252][b]",
 	"[blue]": "[color=#52a2ff][b]",
 	"[sub]": "[font_size=18][color=#999999]",
@@ -230,7 +230,8 @@ func _start_typing(text: String) -> void:
 	_full_text = _strip_highlight_tags(text)
 	_full_text_bbcode = _build_highlighted_text(text)
 	_current_char = 0
-	text_label.text = ""
+	text_label.text = _full_text_bbcode
+	text_label.visible_characters = 0
 	_is_typing = true
 	advance_button.disabled = false
 	advance_button.text = "早送り"
@@ -255,13 +256,14 @@ func _on_typing_timer_timeout() -> void:
 	if _current_char >= _full_text.length():
 		_show_full_text_immediately()
 		return
-	text_label.text = _full_text.substr(0, _current_char)
+	text_label.visible_characters = _current_char
 
 
 func _show_full_text_immediately() -> void:
 	_is_typing = false
 	typing_timer.stop()
 	text_label.text = _full_text_bbcode
+	text_label.visible_characters = -1
 	advance_button.text = "次へ"
 	_queue_auto_advance()
 
