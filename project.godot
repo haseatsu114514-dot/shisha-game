@@ -27,6 +27,7 @@ PlayerData="*res://scripts/autoload/player_data.gd"
 AffinityManager="*res://scripts/autoload/affinity_manager.gd"
 RivalIntel="*res://scripts/autoload/rival_intel.gd"
 EventFlags="*res://scripts/autoload/event_flags.gd"
+SystemData="*res://scripts/autoload/system_data.gd"
 
 [display]
 

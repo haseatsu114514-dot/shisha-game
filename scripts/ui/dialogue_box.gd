@@ -15,6 +15,7 @@ signal dialogue_finished(dialogue_id: String)
 @onready var auto_timer: Timer = %AutoTimer
 @onready var portrait_rect: TextureRect = %CharacterPortrait
 @onready var background_image: TextureRect = %BackgroundImage
+@onready var cg_rect: TextureRect = %CGRect
 @onready var smoke_particles: GPUParticles2D = $SmokeParticles
 
 var _line_queue: Array = []
@@ -72,6 +73,10 @@ func _ready() -> void:
 	typing_timer.timeout.connect(_on_typing_timer_timeout)
 	auto_timer.timeout.connect(_on_auto_timer_timeout)
 	_set_auto_enabled(false)
+	
+	if cg_rect:
+		cg_rect.visible = false
+		cg_rect.modulate = Color(1, 1, 1, 0)
 	
 	# Default smoke off
 	if smoke_particles:
@@ -204,6 +209,9 @@ func _show_next_line() -> void:
 		return
 
 	_clear_choices()
+	
+	_handle_cg_command(line)
+	
 	_current_speaker = str(line.get("speaker", ""))
 	speaker_label.text = SPEAKER_NAMES.get(_current_speaker, _current_speaker)
 	_update_portrait(line)
@@ -383,6 +391,46 @@ func _update_portrait(line: Dictionary) -> void:
 
 	portrait_rect.texture = texture
 	portrait_rect.visible = true
+
+
+func _handle_cg_command(line: Dictionary) -> void:
+	if not cg_rect:
+		return
+	var type = str(line.get("type", ""))
+	if type == "show_cg":
+		var cg_id = str(line.get("cg_id", ""))
+		if cg_id != "":
+			var path = "res://assets/cgs/%s.png" % cg_id
+			if ResourceLoader.exists(path):
+				var tex = load(path)
+				if tex:
+					cg_rect.texture = tex
+					cg_rect.visible = true
+					SystemData.unlock_cg(cg_id)
+					
+					var tween = create_tween()
+					tween.tween_property(cg_rect, "modulate:a", 1.0, 1.0)
+					
+					# Pause dialogue while fading
+					typing_timer.stop()
+					_cancel_auto_advance()
+					advance_button.disabled = true
+					await tween.finished
+					_start_typing(str(line.get("text", "")))
+					return
+	elif type == "hide_cg":
+		if cg_rect.visible:
+			var tween = create_tween()
+			tween.tween_property(cg_rect, "modulate:a", 0.0, 1.0)
+			
+			typing_timer.stop()
+			_cancel_auto_advance()
+			advance_button.disabled = true
+			await tween.finished
+			cg_rect.visible = false
+			cg_rect.texture = null
+			_start_typing(str(line.get("text", "")))
+			return
 
 
 func _finish_dialogue() -> void:

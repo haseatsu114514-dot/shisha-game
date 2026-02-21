@@ -42,6 +42,11 @@ func _on_continue_pressed() -> void:
 	get_tree().change_scene_to_file("res://scenes/ui/save_load.tscn")
 
 
+func _on_gallery_pressed() -> void:
+	GameManager.play_ui_se("confirm")
+	get_tree().change_scene_to_file("res://scenes/ui/cg_gallery.tscn")
+
+
 func _on_settings_pressed() -> void:
 	GameManager.play_ui_se("cursor")
 	settings_panel.visible = true

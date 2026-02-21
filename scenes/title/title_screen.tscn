@@ -78,6 +78,11 @@ layout_mode = 2
 custom_minimum_size = Vector2(0, 44)
 text = "CONTINUE"
 
+[node name="GalleryButton" type="Button" parent="MenuPanel/Menu"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 44)
+text = "GALLERY"
+
 [node name="SettingsButton" type="Button" parent="MenuPanel/Menu"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 44)
@@ -168,6 +173,7 @@ text = "CLOSE"
 
 [connection signal="pressed" from="MenuPanel/Menu/NewGameButton" to="." method="_on_new_game_pressed"]
 [connection signal="pressed" from="MenuPanel/Menu/ContinueButton" to="." method="_on_continue_pressed"]
+[connection signal="pressed" from="MenuPanel/Menu/GalleryButton" to="." method="_on_gallery_pressed"]
 [connection signal="pressed" from="MenuPanel/Menu/SettingsButton" to="." method="_on_settings_pressed"]
 [connection signal="pressed" from="MenuPanel/Menu/QuitButton" to="." method="_on_quit_pressed"]
 [connection signal="pressed" from="SettingsPanel/SettingsContent/CloseSettingsButton" to="." method="_on_close_settings_pressed"]
