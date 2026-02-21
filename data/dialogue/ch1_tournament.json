@@ -1,546 +1,591 @@
 {
-    "dialogues": [
+  "dialogues": [
+    {
+      "dialogue_id": "ch1_tournament_arrival",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_chillhouse_full.png",
+        "effect": "smoke"
+      },
+      "lines": [
         {
-            "dialogue_id": "ch1_tournament_arrival",
-            "metadata": {
-                "bg": "res://assets/backgrounds/bg_chillhouse_full.png",
-                "effect": "smoke"
-            },
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "大会当日。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "会場は、駅から徒歩10分のイベントホール。ガラス張りのエントランスに「第12回 地方シーシャバトル」の横断幕がかかっている。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "入口をくぐると、フレーバーの混ざった濃い香りが一気に押し寄せてきた。チルハウスとも、どの店とも違う。何十種類もの香りが重なり合った、大会だけの空気。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "ホールの中央にステージがあり、4台のシーシャ台が整然と並んでいる。上からスポットライト。観客席は前方に100席ほど。すでに半分以上が埋まっている。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "（……広い。こんなところで作るのか）"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "観客の視線。スタッフの無線。会場の熱気。全部が、チルハウスの閉店後とは別世界だった。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "sad",
-                    "text": "（場違いだ。僕みたいなバイトが来るところじゃない）"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "出場者控室に入る。すでにライバルたちが準備を進めていた。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "なるが、タブレットで何かのデータを睨んでいる。昨日の陽気な雰囲気はない。"
-                },
-                {
-                    "speaker": "naru",
-                    "face": "serious",
-                    "text": "……室温24度、湿度45%か……炭の温度高めにキープしないと香りが飛びそうだな"
-                },
-                {
-                    "speaker": "naru",
-                    "face": "smile",
-                    "text": "お、はじめ。来たな"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "うん。……なる、顔がマジだね"
-                },
-                {
-                    "speaker": "naru",
-                    "face": "smile",
-                    "text": "そりゃな。再現性100%出すには環境変数の補正が必須だから"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "アダムは隅の椅子に座り、黙々と自分のボウルを磨いている。指先で表面を撫でるように拭く。職人の儀式だ。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "一度目が合った。アダムは無言で小さく頷いた。それだけで、少し落ち着いた気がした。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "眠都は鏡の前でリップを塗っている。余裕の表情……に見えるが、鏡を持つ手が少し震えている。"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "wink",
-                    "text": "はじめ君、緊張してる？ みんちゃんは全然だよっ♡"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（……眠都さんも、本当は緊張してるんだろうな）"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "みんな「自分のシーシャ」を持っている。準備の仕方も、向き合い方も、それぞれ違う。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "serious",
-                    "text": "（……今の僕にできることを、やるしかない）"
-                }
-            ]
+          "speaker": "",
+          "face": "",
+          "text": "大会当日。"
         },
         {
-            "dialogue_id": "ch1_tournament_opening",
-            "metadata": {
-                "effect": "smoke"
-            },
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "ステージのライトが一斉に点いた。観客席がざわめく。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "スピーカーから、テンションの高い声が響いた。"
-                },
-                {
-                    "speaker": "takiguchi",
-                    "face": "excited",
-                    "text": "みなさん、おまたせしましたーーーッ！！"
-                },
-                {
-                    "speaker": "takiguchi",
-                    "face": "excited",
-                    "text": "第12回地方シーシャバトル、[imp]開幕[/imp]ですッ！！ 実況は焚口ショウが務めさせていただきますッ！"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "MC焚口ショウ。マイクを握ると人が変わるタイプらしい。声が会場全体を震わせる。"
-                },
-                {
-                    "speaker": "takiguchi",
-                    "face": "excited",
-                    "text": "今日の出場者は4名！ それぞれの「自分だけの一杯」をかけてぶつかり合いますッ！"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "ステージの端から、見慣れた二頭身のマスコットがひょこっと現れた。"
-                },
-                {
-                    "speaker": "packii",
-                    "face": "smile",
-                    "text": "はーい、パッキーですよ〜♪ 今日も素敵な煙が見られるかなぁ〜？"
-                },
-                {
-                    "speaker": "takiguchi",
-                    "face": "excited",
-                    "text": "それでは審査員の紹介ですッ！"
-                },
-                {
-                    "speaker": "takiguchi",
-                    "face": "excited",
-                    "text": "まずは──業界の鉄壁、土岐鋼鉄さんッ！"
-                },
-                {
-                    "speaker": "toki_kotetsu",
-                    "face": "serious",
-                    "text": "……"
-                },
-                {
-                    "speaker": "takiguchi",
-                    "face": "excited",
-                    "text": "続きまして──シーシャはおいしいね、でおなじみ！ 前園壮一郎さんッ！"
-                },
-                {
-                    "speaker": "maezono",
-                    "face": "smile",
-                    "text": "どうも。シーシャはおいしいね"
-                },
-                {
-                    "speaker": "takiguchi",
-                    "face": "excited",
-                    "text": "さあッ！ それでは！！"
-                },
-                {
-                    "speaker": "takiguchi",
-                    "face": "excited",
-                    "text": "第12回地方シーシャバトル──[warn]開始ィィィッ！！[/warn]"
-                }
-            ]
+          "speaker": "",
+          "face": "",
+          "text": "会場は、駅から徒歩10分のイベントホール。ガラス張りのエントランスに「第12回 地方シーシャバトル」の横断幕がかかっている。"
         },
         {
-            "dialogue_id": "ch1_tournament_match",
-            "metadata": {
-                "effect": "smoke"
-            },
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "[warn]制限時間60分[/warn]。4人が同時にシーシャを作り、審査員に提出する。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "フレーバーの袋を開ける。甘い香りが手元から立ち上る。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "serious",
-                    "text": "（落ち着け。いつもと同じだ。炭を切って、詰めて、出す。それだけだ）"
-                },
-                {
-                    "speaker": "takiguchi",
-                    "face": "excited",
-                    "text": "おーっと！ 各選手、フレーバー選択完了！ パッキングに入りますッ！"
-                },
-                {
-                    "type": "condition",
-                    "stat": "technique",
-                    "threshold": 30,
-                    "next_true": "tech_high",
-                    "next_false": "tech_low"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "スミさんの言葉が頭をよぎる。「焦って温度を上げるな」「客の顔を見て、必要な熱だけ入れろ」。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（客の顔を見る……。今日の客は、審査員だ）"
-                },
-                {
-                    "type": "condition",
-                    "stat": "insight",
-                    "threshold": 30,
-                    "next_true": "insight_high",
-                    "next_false": "insight_low"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "炭をコンロに乗せる。赤くなるのを待つ。"
-                },
-                {
-                    "speaker": "packii",
-                    "face": "smile",
-                    "text": "あれあれ〜？ はじめ選手、ちょっと手が止まってますよ？ 大丈夫ですか〜♪"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "でも、パッキーの声で少しだけ力が抜けた。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "炭を置く。蒸らす。蒸気がゆっくり立ち上る。甘い香りが自分のステーションを包む。"
-                },
-                {
-                    "type": "condition",
-                    "stat": "sense",
-                    "threshold": 30,
-                    "next_true": "sense_high",
-                    "next_false": "sense_low"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "──ここだけは、チルハウスと同じ香りがした。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "吸い出しの瞬間。ホースを口に当てて、ゆっくり吸い込む。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "──味は、悪くない。華やかさはない。個性も薄い。でも、崩れていない。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（……これが、今の僕の全力だ）"
-                },
-                {
-                    "speaker": "takiguchi",
-                    "face": "excited",
-                    "text": "各選手、完成！ いよいよ審査員への提出ですッ！！"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "4台のシーシャが、審査員の前に並んだ。ゴボゴボ、ゴボゴボ、ゴボゴボ、ゴボゴボ。4つの水音が会場に静かに響く。"
-                }
-            ],
-            "branches": {
-                "tech_high": [
-                    {
-                        "text": "指先が勝手に動く。練習した通りだ。フレーバーをふんわりと解して、ボウルに空気の通り道を作る。"
-                    },
-                    {
-                        "text": "（よし……完璧なパッキングだ）"
-                    }
-                ],
-                "tech_low": [
-                    {
-                        "text": "指先が少し震える。フレーバーをこぼしそうになる。"
-                    },
-                    {
-                        "text": "（落ち着け……一度深呼吸だ。焦るな、丁寧にやるんだ）"
-                    }
-                ],
-                "insight_high": [
-                    {
-                        "text": "土岐鋼鉄は腕を組んで目を閉じている。味に集中したいタイプか。前園さんは笑顔でキョロキョロしている。楽しみたいタイプだ。"
-                    },
-                    {
-                        "text": "（審査員の好みはバラバラだ。でも、全員に美味しいと思わせる『芯』が必要だ）"
-                    }
-                ],
-                "insight_low": [
-                    {
-                        "text": "土岐鋼鉄は無表情で、何を考えているか分からない。前園さんは……ただ笑ってるだけ？"
-                    },
-                    {
-                        "text": "（どこを見ればいいんだ……？ とにかく、自分のベストを出すしかない）"
-                    }
-                ],
-                "sense_high": [
-                    {
-                        "text": "炭の熱が伝わってくる。今だ。このタイミングで配置を変える。"
-                    },
-                    {
-                        "text": "（フレーバーが一番香り立つ温度帯。そこをキープする）"
-                    }
-                ],
-                "sense_low": [
-                    {
-                        "text": "炭の熱が少し読みづらい。会場の空調のせいか？"
-                    },
-                    {
-                        "text": "（焦げないように、少し弱めでいこう。安全策だ）"
-                    }
-                ]
-            }
+          "speaker": "",
+          "face": "",
+          "text": "入口をくぐると、フレーバーの混ざった濃い香りが一気に押し寄せてきた。チルハウスとも、どの店とも違う。何十種類もの香りが重なり合った、大会だけの空気。"
         },
         {
-            "dialogue_id": "ch1_tournament_result",
-            "metadata": {
-                "effect": "smoke"
-            },
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "審査が始まった。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "土岐鋼鉄が、はじめのシーシャを吸い込んだ。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "吸い込んで、吐いて、少し間を置いて──また吸い込んだ。2回目。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（2回吸った……。他の人は1回だった。……何か引っかかったのか？）"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "前園さんは、全員のシーシャをにこにこしながら吸っている。"
-                },
-                {
-                    "speaker": "takiguchi",
-                    "face": "excited",
-                    "text": "さあ、審査員の協議に入りました！ 今日の4杯、どれも実力者揃いッ！"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "控室で待つ。時計の針が、やけにゆっくり進む。"
-                },
-                {
-                    "speaker": "naru",
-                    "face": "normal",
-                    "text": "……お前のシーシャ、見てたよ。地味だったけど、熱管理が正確だった。あれ、結構やばいと思う"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "……ありがとう"
-                },
-                {
-                    "speaker": "takiguchi",
-                    "face": "excited",
-                    "text": "それでは！ 第12回地方シーシャバトル、結果発表ですッ！"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "審査用紙が開示された。スクリーンに4人のスコアが映る。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "技術点。個性点。どちらもはじめは下位。やっぱりな、と思いかけた。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "だが──「総合印象点」の欄で、会場がどよめいた。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "土岐鋼鉄が、はじめのシーシャにだけ満点をつけていた。"
-                },
-                {
-                    "speaker": "takiguchi",
-                    "face": "excited",
-                    "text": "第12回地方シーシャバトル……優勝はッ！！"
-                },
-                {
-                    "speaker": "takiguchi",
-                    "face": "excited",
-                    "text": "蒸野はじめ選手ッ！！！ 僅差での逆転優勝ですッ！！"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "会場が拍手に包まれた。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "（え……？）"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "（なぜ……？）"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "なぜ勝てたのか、分からなかった。でも、土岐鋼鉄と目が合ったとき、彼がわずかに口角を上げた気がした。"
-                }
-            ]
+          "speaker": "",
+          "face": "",
+          "text": "ホールの中央にステージがあり、4台のシーシャ台が整然と並んでいる。上からスポットライト。観客席は前方に100席ほど。すでに半分以上が埋まっている。"
         },
         {
-            "dialogue_id": "ch1_tournament_after",
-            "metadata": {
-                "effect": "smoke"
-            },
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "大会後。会場のロビー。"
-                },
-                {
-                    "speaker": "naru",
-                    "face": "smile",
-                    "text": "くっそー、負けた！ あの安定感はずるいわー。理論値出されちゃ勝てねーもん"
-                },
-                {
-                    "speaker": "naru",
-                    "face": "serious",
-                    "text": "次は負けねーからな、蒸野"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "……望むところだよ"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "smile",
-                    "text": "はじめ君、おめでとっ♡ でも、可愛さはみんちゃんの方が上だったでしょ？"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "smile",
-                    "text": "うん、間違いなく世界一だったよ"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "アダムは何も言わずに帰っていった。でも、すれ違いざまに一度だけ振り返り、親指を立てて見せた。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "──その夜。閉店後のチルハウス。"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "normal",
-                    "text": "どうだった"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "……楽しかったです。なんか、初めてちゃんとシーシャ作った気がしました"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "normal",
-                    "text": "そうか"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "スミさんはそれだけ言って、シーシャを吸い始めた。ゴボゴボ、という音が響く。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（『自分のシーシャ』が何かは、まだ分からない。でも──）"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "serious",
-                    "text": "（見つけたいと思った。それだけで、十分だ）"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "──第1章「なんとなく始めた」 了。"
-                }
-            ]
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……広い。こんなところで作るのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "観客の視線。スタッフの無線。会場の熱気。全部が、チルハウスの閉店後とは別世界だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（場違いだ。僕みたいなバイトが来るところじゃない）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出場者控室に入る。すでにライバルたちが準備を進めていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるが、タブレットで何かのデータを睨んでいる。昨日の陽気な雰囲気はない。テーブルの下で、ペンを持つ右手の指が微かにリズムを刻んでいる──いつもの癖だろうが、今日はそれが少し速い。"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "……室温24度、湿度45%か……炭の温度高めにキープしないと香りが飛びそうだな"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "お、はじめ。来たな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。……なる、顔がマジだね"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "そりゃな。再現性100%出すには環境変数の補正が必須だから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは隅の椅子に座り、黙々とボウルを磨いている。ステンレスの表面は既に鏡のように光っているのに、まだ磨いている。止められないのだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一度目が合った。アダムは無言で小さく頷いた。それだけで、少し落ち着いた気がした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "眠都は鏡の前でリップを塗っている。もう十分な仕上がりなのに、何度も塗り直す。──余裕に見せようとしているその仕草こそが、彼女の緊張を物語っていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "はじめ君、緊張してる？ みんちゃんは全然だよっ♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……眠都さんも、本当は緊張してるんだろうな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんな「自分のシーシャ」を持っている。準備の仕方も、向き合い方も、それぞれ違う。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（……今の僕にできることを、やるしかない）"
         }
-    ]
+      ]
+    },
+    {
+      "dialogue_id": "ch1_tournament_opening",
+      "metadata": {
+        "effect": "smoke"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ステージのライトが一斉に点いた。観客席がざわめく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スピーカーから、テンションの高い声が響いた。"
+        },
+        {
+          "speaker": "takiguchi",
+          "face": "excited",
+          "text": "みなさん、おまたせしましたーーーッ！！"
+        },
+        {
+          "speaker": "takiguchi",
+          "face": "excited",
+          "text": "第12回地方シーシャバトル、[imp]開幕[/imp]ですッ！！ 実況は焚口ショウが務めさせていただきますッ！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "MC焚口ショウ。マイクを握ると人が変わるタイプらしい。声が会場全体を震わせる。"
+        },
+        {
+          "speaker": "takiguchi",
+          "face": "excited",
+          "text": "今日の出場者は4名！ それぞれの「自分だけの一杯」をかけてぶつかり合いますッ！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ステージの端から、見慣れた二頭身のマスコットがひょこっと現れた。"
+        },
+        {
+          "speaker": "packii",
+          "face": "smile",
+          "text": "はーい、パッキーですよ〜♪ 今日も素敵な煙が見られるかなぁ〜？"
+        },
+        {
+          "speaker": "takiguchi",
+          "face": "excited",
+          "text": "それでは審査員の紹介ですッ！"
+        },
+        {
+          "speaker": "takiguchi",
+          "face": "excited",
+          "text": "まずは──業界の鉄壁、土岐鋼鉄さんッ！"
+        },
+        {
+          "speaker": "toki_kotetsu",
+          "face": "serious",
+          "text": "……"
+        },
+        {
+          "speaker": "takiguchi",
+          "face": "excited",
+          "text": "続きまして──シーシャはおいしいね、でおなじみ！ 前園壮一郎さんッ！"
+        },
+        {
+          "speaker": "maezono",
+          "face": "smile",
+          "text": "どうも。シーシャはおいしいね"
+        },
+        {
+          "speaker": "takiguchi",
+          "face": "excited",
+          "text": "さあッ！ それでは！！"
+        },
+        {
+          "speaker": "takiguchi",
+          "face": "excited",
+          "text": "第12回地方シーシャバトル──[warn]開始ィィィッ！！[/warn]"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_tournament_match",
+      "metadata": {
+        "effect": "smoke"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "[warn]制限時間60分[/warn]。4人が同時にシーシャを作り、審査員に提出する。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "フレーバーの袋を開ける。甘い香りが手元から立ち上る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（落ち着け。いつもと同じだ。炭を切って、詰めて、出す。それだけだ）"
+        },
+        {
+          "speaker": "takiguchi",
+          "face": "excited",
+          "text": "おーっと！ 各選手、フレーバー選択完了！ パッキングに入りますッ！"
+        },
+        {
+          "type": "condition",
+          "stat": "technique",
+          "threshold": 30,
+          "next_true": "tech_high",
+          "next_false": "tech_low"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんの言葉が頭をよぎる。「焦って温度を上げるな」「客の顔を見て、必要な熱だけ入れろ」。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（客の顔を見る……。今日の客は、審査員だ）"
+        },
+        {
+          "type": "condition",
+          "stat": "insight",
+          "threshold": 30,
+          "next_true": "insight_high",
+          "next_false": "insight_low"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭をコンロに乗せる。赤くなるのを待つ。"
+        },
+        {
+          "speaker": "packii",
+          "face": "smile",
+          "text": "あれあれ〜？ はじめ選手、ちょっと手が止まってますよ？ 大丈夫ですか〜♪"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "でも、パッキーの声で少しだけ力が抜けた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭を置く。蒸らす。蒸気がゆっくり立ち上る。甘い香りが自分のステーションを包む。"
+        },
+        {
+          "type": "condition",
+          "stat": "sense",
+          "threshold": 30,
+          "next_true": "sense_high",
+          "next_false": "sense_low"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──ここだけは、チルハウスと同じ香りがした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吸い出しの瞬間。ホースを口に当てて、ゆっくり吸い込む。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──味は、悪くない。華やかさはない。個性も薄い。でも、崩れていない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……これが、今の僕の全力だ）"
+        },
+        {
+          "speaker": "takiguchi",
+          "face": "excited",
+          "text": "各選手、完成！ いよいよ審査員への提出ですッ！！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "4台のシーシャが、審査員の前に並んだ。ゴボゴボ、ゴボゴボ、ゴボゴボ、ゴボゴボ。4つの水音が会場に静かに響く。"
+        }
+      ],
+      "branches": {
+        "tech_high": [
+          {
+            "text": "指先が勝手に動く。練習した通りだ。フレーバーをふんわりと解して、ボウルに空気の通り道を作る。"
+          },
+          {
+            "text": "（よし……完璧なパッキングだ）"
+          }
+        ],
+        "tech_low": [
+          {
+            "text": "指先が少し震える。フレーバーをこぼしそうになる。"
+          },
+          {
+            "text": "（落ち着け……一度深呼吸だ。焦るな、丁寧にやるんだ）"
+          }
+        ],
+        "insight_high": [
+          {
+            "text": "土岐鋼鉄は腕を組んで目を閉じている。味に集中したいタイプか。前園さんは笑顔でキョロキョロしている。楽しみたいタイプだ。"
+          },
+          {
+            "text": "（審査員の好みはバラバラだ。でも、全員に美味しいと思わせる『芯』が必要だ）"
+          }
+        ],
+        "insight_low": [
+          {
+            "text": "土岐鋼鉄は無表情で、何を考えているか分からない。前園さんは……ただ笑ってるだけ？"
+          },
+          {
+            "text": "（どこを見ればいいんだ……？ とにかく、自分のベストを出すしかない）"
+          }
+        ],
+        "sense_high": [
+          {
+            "text": "炭の熱が伝わってくる。今だ。このタイミングで配置を変える。"
+          },
+          {
+            "text": "（フレーバーが一番香り立つ温度帯。そこをキープする）"
+          }
+        ],
+        "sense_low": [
+          {
+            "text": "炭の熱が少し読みづらい。会場の空調のせいか？"
+          },
+          {
+            "text": "（焦げないように、少し弱めでいこう。安全策だ）"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch1_tournament_result",
+      "metadata": {
+        "effect": "smoke"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "審査が始まった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "土岐鋼鉄が、はじめのシーシャを吸い込んだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吸い込んで、吐いて、少し間を置いて──また吸い込んだ。2回目。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（2回吸った……。他の人は1回だった。……何か引っかかったのか？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前園さんは、全員のシーシャをにこにこしながら吸っている。"
+        },
+        {
+          "speaker": "takiguchi",
+          "face": "excited",
+          "text": "さあ、審査員の協議に入りました！ 今日の4杯、どれも実力者揃いッ！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "控室で待つ。時計の針が、やけにゆっくり進む。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……お前のシーシャ、見てたよ。地味だったけど、熱管理が正確だった。あれ、結構やばいと思う"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ありがとう"
+        },
+        {
+          "speaker": "takiguchi",
+          "face": "excited",
+          "text": "それでは！ 第12回地方シーシャバトル、結果発表ですッ！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "審査用紙が開示された。スクリーンに4人のスコアが映る。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "技術点。個性点。どちらもはじめは下位。やっぱりな、と思いかけた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "だが──「総合印象点」の欄で、会場がどよめいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "土岐鋼鉄が、はじめのシーシャにだけ満点をつけていた。"
+        },
+        {
+          "speaker": "takiguchi",
+          "face": "excited",
+          "text": "第12回地方シーシャバトル……優勝はッ！！"
+        },
+        {
+          "speaker": "takiguchi",
+          "face": "excited",
+          "text": "蒸野はじめ選手ッ！！！ 僅差での逆転優勝ですッ！！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "会場が拍手に包まれた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（え……？）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（なぜ……？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なぜ勝てたのか、分からなかった。技術でも個性でもないなら、一体何が──？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ふと、土岐鋼鉄と目が合った。あの鉄面皮が、わずかに口角を上げた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そしてそれは──はじめが今まで見た中で、最も小さくて、最も確かな賞賛だった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_tournament_after",
+      "metadata": {
+        "effect": "smoke"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会後。会場のロビー。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "くっそー、負けた！ あの安定感はずるいわー。理論値出されちゃ勝てねーもん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "笑っている。だが、ポケットに突っ込んだ右手──さっきまでペンを回していた手が、拳になっている。"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "次は負けねーからな、蒸野"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……望むところだよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめ君、おめでとっ♡ でも、可愛さはみんちゃんの方が上だったでしょ？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "うん、間違いなく世界一だったよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは何も言わずに帰っていった。でも、すれ違いざまに一度だけ振り返り、親指を立てて見せた。その親指が、微かに震えていた。あの男にとっても、今日は本気だったのだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──その夜。閉店後のチルハウス。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "どうだった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……楽しかったです。なんか、初めてちゃんとシーシャ作った気がしました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "そうか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんはそれだけ言って、シーシャを吸い始めた。ゴボゴボ、という音が響く。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "しばらく吸ってから、ぽつりと。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "あの審査員──土岐は、技術に満点はやらねえよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え？ じゃあ、なんで……"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "『もう一口吸いたい』と思わせたかどうか。あいつの基準はそれだけだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "もう一口吸いたい。──はじめの煙には、それがあったということだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（僕の煙に……そんな力が）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（『自分のシーシャ』が何かは、まだ分からない。でも──）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（見つけたいと思った。それだけで、十分だ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──第1章「なんとなく始めた」 了。"
+        }
+      ]
+    }
+  ]
 }
