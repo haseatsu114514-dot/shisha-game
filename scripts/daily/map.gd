@@ -113,7 +113,7 @@ func _build_spot_list() -> Array:
 		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
 		spots.append({"id": "naru", "label": "ケムリクサ"})
 		if _are_rival_shops_unlocked():
-			spots.append({"id": "adam", "label": "林檎堂"})
+			spots.append({"id": "adam", "label": "Eden"})
 			spots.append({"id": "minto", "label": "ぺぱーみんと"})
 		if EventFlags.get_flag("spot_choizap_unlocked"):
 			spots.append({"id": "choizap", "label": "チョイザップ"})
@@ -127,7 +127,7 @@ func _build_spot_list() -> Array:
 		spots.append({"id": "home", "label": "自宅で休む"})
 		spots.append({"id": "naru", "label": "ケムリクサ（夜）"})
 		if _are_rival_shops_unlocked():
-			spots.append({"id": "adam", "label": "林檎堂（夜）"})
+			spots.append({"id": "adam", "label": "Eden（夜）"})
 			spots.append({"id": "minto", "label": "ぺぱーみんと（夜）"})
 	return spots
 
@@ -168,7 +168,7 @@ func _build_map_rule_lines() -> Array[String]:
 	var lines: Array[String] = []
 	lines.append("ルール: 移動1回で行動を1消費")
 	if not _are_rival_shops_unlocked():
-		lines.append("解放条件: なる初回訪問で林檎堂/KIRARA解放")
+		lines.append("解放条件: チュートリアル完了後Eden/ぺぱーみんと解放")
 	else:
 		lines.append("ライバル店: 解放済み")
 
