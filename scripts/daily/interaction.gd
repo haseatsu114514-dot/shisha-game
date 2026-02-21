@@ -66,7 +66,7 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 		if rival_id in ["naru", "minto"]:
 			metadata["exchange_lime"] = rival_id
 		metadata["add_affinity"] = {rival_id: 1}
-	else:
+	elif count == 1:
 		dialogue_id = "ch1_%s_second" % rival_id
 		# Adam exchanges LIME on second visit
 		if rival_id == "adam":
@@ -78,6 +78,12 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 				metadata["add_intel"] = [{"id": "naru", "key": "flavor_detail", "value": "チョコレート＋バニラ"}]
 			"minto":
 				metadata["add_intel"] = [{"id": "minto", "key": "presentation", "value": "一般投票特化"}]
+	else:
+		metadata["add_affinity"] = {rival_id: 1}
+		if rival_id == "minto" and count >= 2:
+			dialogue_id = "ch1_minto_third"
+		else:
+			dialogue_id = "ch1_%s_second" % rival_id
 
 	# Queue dialogue and go to dialogue scene
 	var return_scene = "res://scenes/daily/map.tscn"
