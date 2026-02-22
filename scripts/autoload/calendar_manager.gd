@@ -53,7 +53,7 @@ const CHAPTER_CONFIG: Dictionary = {
 	2: {
 		"max_days": 7,
 		"tournament_day": 8,
-		"location": "日本",
+		"location": "全国大会 - 東京",
 		"overseas": false,
 		"interval_days": 5,
 	},

@@ -50,14 +50,13 @@ func _ready() -> void:
 	_load_marker_textures()
 
 	# Check for forced story events first (mandatory, cannot skip)
-	if not CalendarManager.is_interval:
-		var forced_event = GameManager.get_forced_event_for_today(CalendarManager.current_time)
-		if not forced_event.is_empty():
-			GameManager.complete_forced_event(forced_event)
-			var dialogue_file = str(forced_event.get("dialogue_file", ""))
-			var dialogue_id = str(forced_event.get("dialogue_id", ""))
-			var event_metadata: Dictionary = forced_event.get("metadata", {})
-			if dialogue_file != "" and dialogue_id != "":
+	var forced_event = GameManager.get_forced_event_for_today(CalendarManager.current_time)
+	if not forced_event.is_empty():
+		GameManager.complete_forced_event(forced_event)
+		var dialogue_file = str(forced_event.get("dialogue_file", ""))
+		var dialogue_id = str(forced_event.get("dialogue_id", ""))
+		var event_metadata: Dictionary = forced_event.get("metadata", {})
+		if dialogue_file != "" and dialogue_id != "":
 				GameManager.queue_dialogue(dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", event_metadata)
 				get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 				return
@@ -281,7 +280,7 @@ func _try_auto_return_home() -> bool:
 	GameManager.set_transient("morning_notice", notice)
 	while CalendarManager.current_time == "noon" or CalendarManager.current_time == "night":
 		# Do not skip mandatory night events by auto-advancing directly to midnight.
-		if CalendarManager.current_time == "night" and not CalendarManager.is_interval:
+		if CalendarManager.current_time == "night":
 			var forced_event = GameManager.get_forced_event_for_today("night")
 			if not forced_event.is_empty():
 				break

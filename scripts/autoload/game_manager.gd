@@ -292,7 +292,7 @@ func start_new_game() -> void:
 	EventFlags.reset_flags()
 	reset_daily_summary()
 	transient.clear()
-	PlayerData.add_flavor("double_apple", 2)
+	PlayerData.add_flavor("double_apple", 50)
 	_load_forced_events()
 	emit_signal("chapter_started", current_chapter)
 	emit_signal("game_state_changed", game_state)
@@ -322,6 +322,7 @@ func transition_to_interval() -> void:
 	current_phase = "interval"
 	game_state = "interval"
 	CalendarManager.start_interval(interval_days)
+	_load_interval_events()
 	emit_signal("game_state_changed", game_state)
 
 
@@ -348,8 +349,25 @@ func _load_forced_events() -> void:
 		_forced_events.append(event)
 
 
+func _load_interval_events() -> void:
+	_forced_events.clear()
+	if not FileAccess.file_exists("res://data/forced_events.json"):
+		return
+	var file = FileAccess.open("res://data/forced_events.json", FileAccess.READ)
+	if file == null:
+		return
+	var parsed = JSON.parse_string(file.get_as_text())
+	file.close()
+	if typeof(parsed) != TYPE_DICTIONARY:
+		return
+	var key = "interval_%d" % current_chapter
+	var events = parsed.get(key, [])
+	for event in events:
+		_forced_events.append(event)
+
+
 func get_forced_event_for_today(time_slot: String) -> Dictionary:
-	var day = CalendarManager.current_day
+	var day = CalendarManager.interval_day if CalendarManager.is_interval else CalendarManager.current_day
 	for event in _forced_events:
 		if int(event.get("day", -1)) != day:
 			continue
@@ -358,6 +376,15 @@ func get_forced_event_for_today(time_slot: String) -> Dictionary:
 		var flag = str(event.get("flag", ""))
 		if flag != "" and EventFlags.get_flag(flag):
 			continue
+		# condition_value check: {"key": "flag_name", "equals": value}
+		var condition = event.get("condition_value", {})
+		if typeof(condition) == TYPE_DICTIONARY and not condition.is_empty():
+			var cond_key = str(condition.get("key", ""))
+			if cond_key != "":
+				var actual = EventFlags.get_value(cond_key, null)
+				var expected = condition.get("equals", null)
+				if actual != expected and int(actual) != int(expected):
+					continue
 		return event
 	return {}
 

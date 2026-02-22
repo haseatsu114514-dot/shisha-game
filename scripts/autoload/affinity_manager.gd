@@ -3,6 +3,7 @@ extends Node
 const MAX_LEVEL := 5
 
 const DEFAULT_AFFINITIES := {
+	"sumi": {"level": 0, "lime_exchanged": false, "met": true, "romance": false},
 	"naru": {"level": 0, "lime_exchanged": false, "met": false, "romance": false},
 	"adam": {"level": 0, "lime_exchanged": false, "met": false, "romance": false},
 	"minto": {"level": 0, "lime_exchanged": false, "met": false, "romance": false},

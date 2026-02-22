@@ -331,147 +331,232 @@
         {
           "speaker": "",
           "face": "",
-          "text": "閉店後。いつもの時間。"
+          "text": "閉店後。片付けをしていると、スミさんがカウンターの向こうで何か古い写真を眺めていた。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "だが今夜は、少しだけ空気が違う。明日がどんな日か──二人とも、分かっている。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "スミさんがいつもの席で、いつものようにシーシャを吸っている。はじめもカウンターの端に腰を下ろした。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "しばらく、言葉のない時間が続いた。ゴボゴボ、という音だけが店内を満たしている。"
+          "text": "声をかけようとした瞬間、スミさんが写真をポケットにしまった。"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "……明日か"
+          "text": "……何だ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい"
+          "text": "いえ、何でもないです。……今日も遅くまでありがとうございます"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "緊張してるか"
+          "text": "……はじめ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "してます。……正直、めちゃくちゃしてます"
+          "text": "はい？"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "そうか"
+          "text": "あの子──いつも隅で絵を描いてる、つむぎ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。最近、少しだけ話してくれるようになりました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……そうか"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんが煙を吐き出した。いつもより、ゆっくりと。天井に向かって白い煙が伸びていく。"
+          "text": "スミさんが少し間を置いた。珍しい。いつも言葉に間を取らない人なのに。"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "はじめ"
+          "text": "……あの子、iPadに傷があるだろう"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい"
+          "text": "はい。大きな傷ですよね。買い替えないんだなって思ってました"
         },
         {
           "speaker": "sumi",
+          "face": "normal",
+          "text": "……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんの表情が、ほんの一瞬だけ──曇った。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……俺にも、娘がいた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "えっ……"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "昔の話だ。もう何年も会ってない"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……絵が好きな子だった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それだけ言って、スミさんは黙った。いつもの沈黙とは違う、何かを飲み込んだような沈黙だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（スミさんに、娘がいたなんて……）"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……あの子を、頼むぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "え？ つむぎちゃんのことですか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……ああ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんがそれ以上何も言わなかった。でも、いつもより少しだけ、声が柔らかかった気がした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_sumi_eve",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会前夜。最後の客が帰り、鍵を閉めた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんがカウンターに座り、フレーバーの棚を見ている。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "はじめ。1杯作れ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……え？ 僕がですか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "俺に吸わせろ。お前のシーシャを"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが──客として、カウンターに座っている。今まで一度も、はじめのシーシャを「吸わせろ」と言ったことはなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。分かりました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "棚からフレーバーを選ぶ。スミさんの好みは──分かっている。毎日この店で、毎晩この人のシーシャを見てきた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "丁寧にボウルを詰める。いつもよりずっと真剣に、一つまみずつ。炭を置いて、蒸らしを待つ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ゴボゴボ──水面が穏やかに揺れた。煙がふわりと立ち上る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……どうぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんがホースを手に取り、ゆっくりと煙を吸い込んだ。吐き出した白い煙が、閉店後の薄暗い店内を漂っていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "長い沈黙。スミさんはもう一口吸い、天井を見上げた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……悪くない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんの「悪くない」を聞いたことがない。この人の口から出る形容詞は「ダメだ」か「まあいい」が限界だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……それ、スミさんの最大級の褒め言葉じゃないですか）"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "明日。勝っても負けても、ここに帰って来い"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "帰る場所があるやつは強い"
+        },
+        {
+          "speaker": "hajime",
           "face": "serious",
-          "text": "よく聞け。一回しか言わない"
+          "text": "……はい。行ってきます"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんがホースを置いて、はじめの方を向いた。いつもの仏頂面。でも、目だけは──真剣だった。"
-        },
-        {
-          "speaker": "sumi",
-          "face": "serious",
-          "text": "お前はバイトを始めた時、炭の持ち方も知らなかった。フレーバーの違いも分からなかった"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "だが、お前には一つだけ、最初から持っていたものがある"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……何ですか？"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "客の顔を見る目だ"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "いつ炭を替えるか、いつ声をかけるか、いつ黙っているか──お前はそれを、教わる前からやっていた"
-        },
-        {
-          "speaker": "sumi",
-          "face": "serious",
-          "text": "シーシャは嗜好品だ。味だけで勝負するやつもいる。見た目で勝負するやつもいる。それぞれの道がある"
-        },
-        {
-          "speaker": "sumi",
-          "face": "serious",
-          "text": "だが、お前の武器は「人を見る力」だ。吸う人の心に寄り添えるシーシャ。それは、技術だけじゃ作れない"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……スミさん"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "結果がどうであれ、お前が作ったシーシャには価値がある。俺がそう言ってんだから間違いない"
+          "text": "スミさんがまた煙を吸った。はじめの作ったシーシャの煙が、天井に向かってゆっくりと昇っていく。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんが何かを言い切ったあと、少しだけ視線を逸らした。言い慣れないことを言ったような、照れくさそうな横顔。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "serious",
-          "text": "……はい。全力で、やってきます"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "ああ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "スミさんがまたホースを手に取り、煙を吸い始めた。はじめも、自分のシーシャを吸う。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "閉店後のtonari。いつもの静かな時間。でも今夜は──この煙の向こうに、明日が見えた気がした。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "師匠からの、たった一言の激励。それだけで、十分だった。"
+          "text": "師匠が、弟子のシーシャを吸っている。\nその光景だけで──もう、十分だった。"
         }
       ]
     }

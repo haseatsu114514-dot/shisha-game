@@ -37,13 +37,6 @@ func _ready() -> void:
 		header_label.text = "交流"
 		body_label.text = "誰もいない。"
 
-	# Random encounter: Tsumugi in town after meeting her at baito
-	if EventFlags.get_flag("ch1_tsumugi_regular"):
-		var tsumugi_count = int(EventFlags.get_value("visit_tsumugi_count", 0))
-		if tsumugi_count < 5 and CalendarManager.current_day >= 4 and randi() % 3 == 0:
-			_launch_tsumugi_encounter()
-			return
-
 
 func _launch_rival_dialogue(rival_id: String) -> void:
 	var count = int(EventFlags.get_value("visit_%s_count" % rival_id, 0))
@@ -95,31 +88,6 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 		metadata["add_affinity"] = {rival_id: 1}
 
 	# Queue dialogue and go to dialogue scene
-	var return_scene = "res://scenes/daily/map.tscn"
-	GameManager.queue_dialogue(dialogue_file, dialogue_id, return_scene, metadata)
-	GameManager.set_transient("advance_time_after_scene", true)
-	get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
-
-
-func _launch_tsumugi_encounter() -> void:
-	var count = int(EventFlags.get_value("visit_tsumugi_count", 0))
-	EventFlags.set_value("visit_tsumugi_count", count + 1)
-
-	var dialogue_file = "res://data/dialogue/ch1_tsumugi.json"
-	var dialogue_id = ""
-	match count:
-		0:
-			dialogue_id = "ch1_tsumugi_encounter"
-		1:
-			dialogue_id = "ch1_tsumugi_second"
-		2:
-			dialogue_id = "ch1_tsumugi_third"
-		3:
-			dialogue_id = "ch1_tsumugi_fourth"
-		_:
-			dialogue_id = "ch1_tsumugi_fifth"
-
-	var metadata: Dictionary = {"add_affinity": {"tsumugi": 1}}
 	var return_scene = "res://scenes/daily/map.tscn"
 	GameManager.queue_dialogue(dialogue_file, dialogue_id, return_scene, metadata)
 	GameManager.set_transient("advance_time_after_scene", true)

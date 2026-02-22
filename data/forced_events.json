@@ -13,6 +13,23 @@
       "next_scene": "map"
     },
     {
+      "id": "ch1_forced_tsumugi_first",
+      "day": 2,
+      "time_slot": "noon",
+      "flag": "ch1_forced_tsumugi_first_done",
+      "title": "傷のあるiPadの子",
+      "description": "バイト中、隅の席でiPadに何かを描いている女の子がいた。",
+      "dialogue_file": "res://data/dialogue/ch1_tsumugi.json",
+      "dialogue_id": "ch1_tsumugi_first",
+      "stat_changes": {},
+      "metadata": {
+        "add_affinity": {
+          "tsumugi": 1
+        }
+      },
+      "next_scene": "map"
+    },
+    {
       "id": "ch1_forced_sumi_training",
       "day": 3,
       "time_slot": "night",
@@ -24,11 +41,6 @@
       "stat_changes": {
         "technique": 2,
         "guts": 2
-      },
-      "metadata": {
-        "add_affinity": {
-          "sumi": 1
-        }
       },
       "next_scene": "map"
     },
@@ -45,11 +57,6 @@
         "technique": 3,
         "sense": 2
       },
-      "metadata": {
-        "add_affinity": {
-          "sumi": 1
-        }
-      },
       "next_scene": "map"
     },
     {
@@ -57,29 +64,24 @@
       "day": 6,
       "time_slot": "night",
       "flag": "ch1_forced_sumi_final_done",
-      "title": "スミさんの激励",
-      "description": "閉店後、スミさんがはじめに一言だけ言葉を贈る。",
+      "title": "スミさんの過去",
+      "description": "閉店後、スミさんが娘の存在を少しだけ漏らした。",
       "dialogue_file": "res://data/dialogue/ch1_sumi.json",
       "dialogue_id": "ch1_sumi_final",
       "stat_changes": {
         "guts": 3
       },
-      "metadata": {
-        "add_affinity": {
-          "sumi": 1
-        }
-      },
       "next_scene": "map"
     },
     {
-      "id": "ch1_forced_day7_night",
+      "id": "ch1_forced_sumi_eve",
       "day": 7,
       "time_slot": "night",
-      "flag": "ch1_forced_day7_done",
+      "flag": "ch1_forced_sumi_eve_done",
       "title": "大会前夜",
-      "description": "明日はいよいよ大会。今夜どう過ごすかで、明日のコンディションが変わる。",
-      "dialogue_file": "res://data/dialogue/ch1_main.json",
-      "dialogue_id": "ch1_day7_last_night",
+      "description": "大会前夜。スミさんが「俺に吸わせろ」と言った。",
+      "dialogue_file": "res://data/dialogue/ch1_sumi.json",
+      "dialogue_id": "ch1_sumi_eve",
       "stat_changes": {},
       "next_scene": "map"
     },
@@ -112,6 +114,89 @@
           "next_scene": "chapter_end"
         }
       ]
+    }
+  ],
+  "interval_1": [
+    {
+      "id": "interval_day1_morning",
+      "day": 1,
+      "time_slot": "morning",
+      "flag": "interval_day1_morning_done",
+      "title": "大会の余韻",
+      "description": "大会が終わった翌朝。静かな朝が戻ってきた。",
+      "dialogue_file": "res://data/dialogue/ch1_interval.json",
+      "dialogue_id": "interval_day1_morning",
+      "condition_flag": "ch1_tournament_rank_not_1",
+      "stat_changes": {},
+      "next_scene": "map"
+    },
+    {
+      "id": "interval_day1_morning_win",
+      "day": 1,
+      "time_slot": "morning",
+      "flag": "interval_day1_morning_done",
+      "title": "優勝の朝",
+      "description": "優勝した翌朝。トロフィーが部屋の隅に。",
+      "dialogue_file": "res://data/dialogue/ch1_interval.json",
+      "dialogue_id": "interval_day1_morning_win",
+      "condition_value": {
+        "key": "ch1_tournament_rank",
+        "equals": 1
+      },
+      "stat_changes": {},
+      "next_scene": "map"
+    },
+    {
+      "id": "interval_day1_naru_lime",
+      "day": 1,
+      "time_slot": "night",
+      "flag": "interval_day1_naru_lime_done",
+      "title": "なるからのLIME",
+      "description": "なるから「大会お疲れ！」と連絡が来た。",
+      "dialogue_file": "res://data/dialogue/ch1_interval.json",
+      "dialogue_id": "interval_day1_naru_lime",
+      "stat_changes": {},
+      "next_scene": "night_end"
+    },
+    {
+      "id": "interval_day2_adam_lime",
+      "day": 2,
+      "time_slot": "night",
+      "flag": "interval_day2_adam_lime_done",
+      "title": "アダムからのLIME",
+      "description": "アダムから意味深なメッセージが届いた。",
+      "dialogue_file": "res://data/dialogue/ch1_interval.json",
+      "dialogue_id": "interval_day2_adam_lime",
+      "stat_changes": {},
+      "next_scene": "night_end"
+    },
+    {
+      "id": "interval_day3_sumi_call",
+      "day": 3,
+      "time_slot": "night",
+      "flag": "interval_day3_sumi_call_done",
+      "title": "スミさんからの電話",
+      "description": "閉店後、スミさんが次の大会の情報を教えてくれた。",
+      "dialogue_file": "res://data/dialogue/ch1_interval.json",
+      "dialogue_id": "interval_day3_sumi_call",
+      "stat_changes": {
+        "insight": 2
+      },
+      "next_scene": "night_end"
+    },
+    {
+      "id": "interval_day5_eve",
+      "day": 5,
+      "time_slot": "night",
+      "flag": "interval_day5_eve_done",
+      "title": "決意の夜",
+      "description": "インターバル最終日の夜。新しい戦いへの覚悟。",
+      "dialogue_file": "res://data/dialogue/ch1_interval.json",
+      "dialogue_id": "interval_day5_eve",
+      "stat_changes": {
+        "guts": 2
+      },
+      "next_scene": "night_end"
     }
   ]
 }

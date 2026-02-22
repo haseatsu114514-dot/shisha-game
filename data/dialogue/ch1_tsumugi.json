@@ -1,142 +1,77 @@
 {
     "dialogues": [
         {
-            "dialogue_id": "ch1_tsumugi_encounter",
+            "dialogue_id": "ch1_tsumugi_first",
             "lines": [
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "買い物帰り、商店街のベンチに見覚えのある背中が見えた。メガネの女の子が、スケッチブックを膝に置いて何かを描いている。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（あれ……つむぎちゃん？ tonariの常連の……）"
+                    "text": "バイトの合間、ふと店内を見渡す。"
                 },
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "近づいてみると、コーヒーの紙カップが横に置いてあった。もう冷めているのか、湯気は出ていない。ずっとここにいるんだろう。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "つむぎちゃん？"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "surprise",
-                    "text": "ひゃっ……！？"
+                    "text": "奥の席に、見慣れない女の子が座っていた。大きなヘッドフォンを首にかけて、iPadに何かを描いている。"
                 },
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "スケッチブックを胸に抱えて飛び上がった。コーヒーの紙カップが倒れそうになるのを慌てて押さえる。"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "は、はじめさん……びっくりした……"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "ごめん。何描いてたの？"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "……べ、別に……商店街の、風景を……"
+                    "text": "──iPadの画面に、大きな傷が走っているのが目に入った。画面を斜めに横切る、深い亀裂。"
                 },
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "スケッチブックを隠すように背中に回す。でも一瞬見えた──夕暮れの商店街を描いているようだった。看板の灯り、歩く人の影、軒先の植木。柔らかい線で丁寧に描かれている。"
+                    "text": "それでも構わず、傷の上からApple Pencilを走らせている。集中している横顔は、周りの音が聞こえていないようだった。"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "シーシャのホースが横に置いてあるが、煙はほとんど出ていない。吸うことより、描くことに夢中らしい。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "（あの子、常連さんだっけ。スミさんに聞いてみよう）"
+                },
+                {
+                    "speaker": "sumi",
+                    "face": "normal",
+                    "text": "ああ、つむぎか。たまに来る。いつも隅で絵を描いてる"
+                },
+                {
+                    "speaker": "sumi",
+                    "face": "normal",
+                    "text": "静かな子だ。注文以外ほとんど喋らん。ラベンダーしか頼まない"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "ラベンダーですね。作ってきます"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "丁寧にラベンダーのボウルを詰めて、テーブルに運ぶ。"
                 },
                 {
                     "speaker": "hajime",
                     "face": "smile",
-                    "text": "一瞬見えたけど、すごく綺麗だったよ"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "surprise",
-                    "text": "み、見ないでください……まだ途中だし、全然ダメだし……"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "そっか。……今日はtonariには来ないの？"
+                    "text": "お待たせしました。ラベンダーです"
                 },
                 {
                     "speaker": "tsumugi",
                     "face": "normal",
-                    "text": "……今日は、外の空気を描きたくて。tonariの中ばっかりだと、絵が偏るから……"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "でも……描いてると、やっぱりtonariのこと考えちゃうんですよね。あの煙の感じとか、フレーバーの匂いとか……"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "つむぎちゃんにとって、tonariってどんな場所？"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "……私、人と話すの、あんまり得意じゃなくて"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "でもtonariにいると、誰とも話さなくても居心地がいいんです。シーシャの煙と、ゴボゴボっていう音と……あの空気が、私を受け入れてくれてる感じがして"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "だから……その空気を、絵にして残したいんです。私なりの『ありがとう』っていうか……"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "……そっか。それ、スミさんが聞いたら喜ぶと思うよ"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "surprise",
-                    "text": "え、えっ……！ そ、それは……恥ずかしいから言わないでください……！"
+                    "text": "……どうも"
                 },
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "顔を真っ赤にして小さくなるつむぎ。でも、少しだけ嬉しそうだった。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（面白い子だな……。絵を通して、この街を見てるんだ）"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "……あの、はじめさん"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "大会、頑張ってください。私……応援してます。tonariの人だから"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "smile",
-                    "text": "ありがとう。頑張るよ"
+                    "text": "小さな声。目を合わせず、iPadを胸の前に抱えるようにした。──まるで、画面を見られたくないように。"
                 },
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "手を小さく振るつむぎに別れを告げて、帰路についた。\n夕暮れの商店街。さっき彼女が描いていた景色の中を歩いている。\n不思議と、いつもより街が綺麗に見えた。"
+                    "text": "傷のあるiPadを抱える、寡黙な常連客。\nそれが、つむぎとの出会いだった。"
                 }
             ]
         },
@@ -146,92 +81,92 @@
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "tonariの閉店間際。最後のお客さんが帰った後、隅っこの席でスケッチブックを広げている子がいた。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "つむぎちゃん、まだいたんだ"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "surprise",
-                    "text": "ひっ……！ あ、はじめさん……。すみません、閉店ですよね"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "smile",
-                    "text": "いいよ、片付けながら待ってるから。何描いてるの？"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "……煙を……描こうとしてるんですけど……"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "sad",
-                    "text": "シーシャの煙って、すごく難しいんです。形がずっと変わるから……描いてる間に消えちゃう"
+                    "text": "今日も、つむぎがいつもの席にいる。iPadに向かって、黙々とペンを走らせている。"
                 },
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "スケッチブックを見せてもらった。何枚も何枚も、煙のデッサンが描かれている。いびつなもの、途中で止まっているもの、消しゴムの跡が多いもの。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "すごい枚数……全部、tonariで描いたの？"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "はい……。でも、まだ全然ダメで。煙の「柔らかさ」が出せなくて……"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "でも、この1枚……これ、すごくいいと思う。煙が生きてるみたいだ"
+                    "text": "炭を替えに行くついでに、少しだけ覗いてみた。──煙。画面いっぱいに、シーシャの煙が描かれている。"
                 },
                 {
                     "speaker": "tsumugi",
                     "face": "surprise",
-                    "text": "えっ……その、一番最近描いたやつ……"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "……それ、はじめさんがお客さんにシーシャを出した時の煙なんです。あの時の煙が、一番柔らかくて綺麗だったから……"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "僕が出した時の……？"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "はじめさんのシーシャの煙は、なんていうか……「安心する形」をしてるんです。ふわっと広がって、ゆっくり消えていく"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（煙の形まで見てるんだ……つむぎちゃんの目って、本当に特別だな）"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "……変ですよね、煙の形にこだわるなんて"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "smile",
-                    "text": "変じゃないよ。むしろ、そういう風に見てもらえると嬉しい"
+                    "text": "……っ"
                 },
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "つむぎが少しだけ微笑んだ。スケッチブックを大事そうに閉じて、胸に抱える。"
+                    "text": "気配に気づいたつむぎが、さっとiPadを伏せた。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "あ、ごめん。覗くつもりじゃなくて"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "…………"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "沈黙。ゴボゴボ、とシーシャの水面が揺れる音だけが聞こえる。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "……煙を描いてたの？"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……煙って"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……形がないから"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "ぽつり、と。それだけ。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "形がない……？"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……同じ形は、二度と現れない。一瞬で消える。だから……描きたくなる"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "言葉は少ない。でも、煙について話す時だけ、つむぎの声には小さな熱がこもっていた。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "（同じ形は二度と現れない、か……。そんなふうに煙を見たことなかったな）"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "smile",
+                    "text": "なんか、いいな。煙をそんなふうに見てくれる人がいるって"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "…………"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "つむぎは何も答えなかった。でも、iPadを伏せていた手が、ほんの少しだけ緩んだように見えた。"
                 }
             ]
         },
@@ -241,102 +176,127 @@
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "商店街の入り口で、つむぎがしゃがみ込んでいるのが見えた。スケッチブックを膝に乗せているが、鉛筆は止まっている。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "つむぎちゃん？ どうしたの、こんなところで"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "sad",
-                    "text": "あ……はじめさん……"
+                    "text": "シフト中、つむぎの炭を替えに行った。いつもの席、いつものラベンダー、いつものiPad。"
                 },
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "目が少し赤い。泣いていたわけではなさそうだが、どこか元気がない。"
+                    "text": "──iPadの傷が、照明の光を反射して光った。画面を斜めに横切る、深い亀裂。普通なら買い替えるレベルの傷だ。"
                 },
                 {
                     "speaker": "hajime",
                     "face": "normal",
-                    "text": "何か、あった？"
+                    "text": "つむぎちゃん、そのiPad……結構大きな傷だよね。描きにくくない？"
                 },
                 {
                     "speaker": "tsumugi",
-                    "face": "sad",
-                    "text": "……絵のコンテストに、落ちたんです"
+                    "face": "normal",
+                    "text": "…………"
                 },
                 {
                     "speaker": "tsumugi",
-                    "face": "sad",
-                    "text": "地元のイラストコンテスト。初めて応募したんですけど……一次審査で落ちました"
+                    "face": "normal",
+                    "text": "……慣れました"
                 },
                 {
                     "speaker": "hajime",
                     "face": "normal",
-                    "text": "そうだったんだ……"
+                    "text": "でも、線を引く時に引っかかったりしない？"
                 },
                 {
                     "speaker": "tsumugi",
-                    "face": "sad",
-                    "text": "分かってたんです。私の絵なんて、まだまだ全然で。……でも、やっぱりちょっと……"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "sad",
-                    "text": "……悔しくて"
+                    "face": "normal",
+                    "text": "……します。でも……変えたくない"
                 },
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "いつもは控えめなつむぎが「悔しい」と言った。その一言に、意外なほどの感情がこもっていた。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "……僕も、同じだよ"
+                    "text": "少し間があった。つむぎがiPadの傷を指でなぞる。まるで、古い傷跡を確かめるように。"
                 },
                 {
                     "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "え？"
+                    "face": "sad",
+                    "text": "……この傷、自分でつけたんじゃないんです"
                 },
                 {
                     "speaker": "hajime",
-                    "face": "normal",
-                    "text": "シーシャの大会、正直全然自信がない。ライバルはみんなすごいし、僕はまだ何も持ってない気がする"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "でも、諦めたくない。……つむぎちゃんも、また描くでしょ？"
-                },
-                {
-                    "speaker": "tsumugi",
                     "face": "normal",
                     "text": "……"
                 },
                 {
                     "speaker": "tsumugi",
+                    "face": "sad",
+                    "text": "前に、絵のサークルにいて。……尊敬してた先輩がいました"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "sad",
+                    "text": "ある日、描きかけの絵を見せたら……「心がない」って言われて"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "sad",
+                    "text": "「ただ見たものをそのまま描いてるだけだ」って。それで……その人がテーブルを叩いた時に、iPadが落ちて"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "つむぎの声は淡々としていた。でも、iPadを抱える手に力が入っているのが分かった。"
+                },
+                {
+                    "speaker": "hajime",
                     "face": "normal",
-                    "text": "……はい。描きます。もっと上手くなって……次は絶対に"
+                    "text": "……ひどいな、それ"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……でも、言ってることは……当たってたと思います"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "上手に描ける。でも、それだけ。私の絵には……何か、足りない"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "だから、買い替えないんです。……「心のある絵」が描けるまでは、この傷を忘れたくないから"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "つむぎが今まで聞いた中で、一番長い言葉だった。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "……僕も、似てるかも"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……え？"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "シーシャ、始めたばかりで。技術もセンスも全然足りない。でも……何か「自分にしかできないシーシャ」を見つけたくて"
                 },
                 {
                     "speaker": "hajime",
                     "face": "smile",
-                    "text": "うん。お互い頑張ろう"
+                    "text": "つむぎちゃんが「心のある絵」を探してるみたいに、僕も「心のあるシーシャ」を探してるのかもしれない"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "…………"
                 },
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "つむぎがスケッチブックを開いた。さっきまで止まっていた鉛筆が、ゆっくりと動き始める。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "商店街の夕暮れの中、隣り合って座る二人。片方は絵を描き、片方は大会のことを考えている。\n同じ「悔しさ」を知っている者同士の──静かな連帯だった。"
+                    "text": "つむぎが、少しだけ──ほんの少しだけ──顔を上げた。\nその瞬間、iPadを抱える腕の力が、わずかに緩んだのが見えた。"
                 }
             ]
         },
@@ -346,87 +306,152 @@
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "tonariでバイトをしていると、つむぎがいつもの席に座っていた。だが今日は、スケッチブックではなくキャンバスを持っている。"
+                    "text": "今日のつむぎは、いつもと少し様子が違った。iPadを机に伏せたまま、シーシャを吸っている。描いていない。"
                 },
                 {
                     "speaker": "hajime",
                     "face": "normal",
-                    "text": "つむぎちゃん、今日はキャンバス？ 大きいね"
+                    "text": "つむぎちゃん、今日は描いてないんだ"
                 },
                 {
                     "speaker": "tsumugi",
                     "face": "normal",
-                    "text": "……あ、はじめさん。えっと、その……"
+                    "text": "…………"
                 },
                 {
                     "speaker": "tsumugi",
-                    "face": "surprise",
-                    "text": "見ないでください！ まだ途中だから……！"
+                    "face": "normal",
+                    "text": "……はじめさん"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "ん？"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……見せたいものが、あります"
                 },
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "慌ててキャンバスを裏返すつむぎ。だが、一瞬だけ見えた──tonariの店内を描いているようだった。カウンター、シーシャのボトル、煙が漂う空間。"
+                    "text": "つむぎがiPadを裏返した。傷のある画面にロックを解除して、アプリを開く。"
                 },
                 {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "tonariの絵？"
+                    "speaker": "",
+                    "face": "",
+                    "text": "画面に並んでいたのは──膨大な量のメモとスケッチだった。"
                 },
                 {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "……はい。その……はじめさんに、プレゼントしようと思って……"
+                    "speaker": "",
+                    "face": "",
+                    "text": "「DA7:ミント3 → 清涼感◎、余韻が短い」\n「パッキング密度：高め → 立ち上がり遅いが安定」\n「炭の位置：中心寄り。3分後に端へ移動。この判断が早い」"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "フレーバーの配合比率。炭の温度管理パターン。客の反応。──全て、はじめのシーシャの観察記録だった。"
                 },
                 {
                     "speaker": "hajime",
                     "face": "surprise",
-                    "text": "えっ、僕に？"
+                    "text": "……えっ。これ……全部、僕の……？"
                 },
                 {
                     "speaker": "tsumugi",
                     "face": "normal",
-                    "text": "大会が近いから……何かお守りみたいなものがあった方がいいかなって。……絵くらいしか、私にはできないから"
+                    "text": "……はい"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "surprise",
+                    "text": "いつから……？"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……最初に来た日から"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "surprise",
+                    "text": "最初から……！？"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……ごめんなさい。気持ち悪いですよね"
                 },
                 {
                     "speaker": "hajime",
                     "face": "normal",
-                    "text": "つむぎちゃん……"
+                    "text": "いや、そうじゃなくて……でも、なんで僕の……？"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……私は、iPadを触っている時、ずっと描いてるように見えてたと思います"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "でも、半分以上は……はじめさんのことを見てました"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "はじめさんがフレーバーを選ぶ時、お客さんの顔を見てから棚に向かうでしょう。あれ、他のスタッフはやらないんです"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "炭を替える時も、音を立てないようにそっと置く。お客さんの時間を邪魔しないように"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……そういうの、全部メモしてました。描くことより……はじめさんのシーシャを記録することの方が、大事になってて"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "つむぎの声は相変わらず小さい。でも、今日は──止まらなかった。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "……つむぎちゃん。ずっと、見ててくれたんだ"
                 },
                 {
                     "speaker": "tsumugi",
                     "face": "sad",
-                    "text": "でも、全然上手く描けなくて。もう3回描き直してて……"
+                    "text": "……私は、応援とか……上手く言えないから。声をかけることもできないから"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……だから、記録することで。見ていることで。……それが、私にできる精一杯で"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "「心がない」と言われた子が、誰かの「心」を記録し続けていた。"
                 },
                 {
                     "speaker": "hajime",
                     "face": "smile",
-                    "text": "3回も描き直してくれてるんだ。それだけで十分嬉しいよ"
+                    "text": "……ありがとう。僕、知らなかった。こんなに見ててくれてたなんて"
                 },
                 {
                     "speaker": "tsumugi",
                     "face": "surprise",
-                    "text": "……っ！ そ、そんなこと言わないでください……！ もっと頑張りたくなるから……"
+                    "text": "……っ"
                 },
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "顔を真っ赤にして下を向くつむぎ。でも、その手は鉛筆をしっかりと握っている。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "楽しみにしてるよ。完成したら見せて"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "……はい。必ず"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "つむぎがまたキャンバスに向かった。鉛筆の音が、tonariのBGMに静かに溶け込んでいく。"
+                    "text": "つむぎが慌ててiPadを胸に抱えた。いつもの防御姿勢。でも──その目が、ほんの少しだけ潤んでいた。"
                 }
             ]
         },
@@ -436,97 +461,187 @@
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "閉店後のtonari。片付けをしていると、つむぎが何かを抱えて立っていた。平たくて大きな、布に包まれた何か。"
+                    "text": "大会の前日。閉店作業をしていると、つむぎが立っていた。"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "いつもの席ではない。カウンターの前。iPadを両手で持って、はじめの方を向いている。"
                 },
                 {
                     "speaker": "tsumugi",
                     "face": "normal",
-                    "text": "は、はじめさん……。あの……これ……"
+                    "text": "……はじめさん"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "つむぎちゃん？ 今日はもう閉店だけど……"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……見て、ほしいものがあります"
                 },
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "つむぎが震える手で布を外した。中から現れたのは──tonariの風景を描いた絵だった。"
+                    "text": "つむぎがiPadの画面をこちらに向けた。傷のある画面。その傷の上に──1枚の絵が描かれていた。"
                 },
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "カウンターの温かい照明。シーシャのボトルが並ぶ棚。そして、煙が天井に向かってゆっくりと昇っていく──あの、tonariだけの光景。"
+                    "text": "tonariの店内。カウンターの温かい照明。シーシャのボトルが並ぶ棚。そして──煙。"
                 },
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "煙の描写が、驚くほど繊細だった。ふわりと広がり、光を透かし、やがて溶けるように消えていく。あの「柔らかさ」が、確かにそこにあった。"
+                    "text": "白い煙が、ゆっくりと天井に向かって昇っていく。ふわりと広がり、光を透かし、やがて溶けるように消えていく。"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "その煙の中に、人影がある。カウンターに立って、お客さんにシーシャを出している──はじめの後ろ姿だった。"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "画面の亀裂が、絵の中を斜めに横切っている。でも──不思議なことに、その傷が絵の一部になっていた。まるで、煙が傷に沿って流れているように見える。"
                 },
                 {
                     "speaker": "hajime",
                     "face": "surprise",
-                    "text": "……すごい。すごいよ、つむぎちゃん"
+                    "text": "……すごい"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "surprise",
+                    "text": "……これ、tonariだ。僕が……シーシャを出してる"
                 },
                 {
                     "speaker": "tsumugi",
                     "face": "normal",
-                    "text": "……まだ全然ダメなんです。煙の色をもっと透明にしたかったし、光の加減ももう少し……"
+                    "text": "……はい"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……この傷の上に描いたのは、これが初めてです"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……ずっと避けてました。傷のある場所には描けない、って思ってた"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "でも……はじめさんのシーシャの煙を描いてたら、気づいたら傷の上まで線を引いてて"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "傷があるのに──いや、傷があるからこそ、煙が自然に流れてるように見えた"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "つむぎの声が、少しだけ震えていた。"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "sad",
+                    "text": "「心がない」って言われました。私の絵には心がないって"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "でも……この絵を描いた時、初めて思ったんです"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……これは、「心がある」絵かもしれないって"
                 },
                 {
                     "speaker": "hajime",
                     "face": "normal",
-                    "text": "いや、これは本当にすごい。tonariの空気がそのまま閉じ込められてる"
+                    "text": "……"
                 },
                 {
                     "speaker": "tsumugi",
                     "face": "normal",
-                    "text": "……実は、この煙……はじめさんがお客さんにシーシャを出した時の煙なんです"
+                    "text": "はじめさんが、お客さんの顔を見て、フレーバーを選んで、丁寧に作って、そっと出す"
                 },
                 {
                     "speaker": "tsumugi",
                     "face": "normal",
-                    "text": "何回も何回も見て、描いて……。はじめさんのシーシャを吸ってる時が、一番描きやすかったです"
+                    "text": "あの一連の動きが……全部、心がこもってて"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "それを見てたら、私も……心を込めて描けた気がします"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "つむぎが、iPadを差し出した。傷のある画面。その上に描かれた、はじめのtonari。"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……これ、はじめさんに。大会の……お守りに"
                 },
                 {
                     "speaker": "hajime",
                     "face": "normal",
-                    "text": "僕のシーシャの時が……？"
+                    "text": "えっ、でも、これつむぎちゃんのiPad……"
                 },
                 {
                     "speaker": "tsumugi",
                     "face": "normal",
-                    "text": "他の人の煙は、形がバラバラで捉えにくいんです。でも、はじめさんの煙は……なんていうか、「迷いがない」んです"
+                    "text": "……データです。送ります。……iPadは、まだ使います"
                 },
                 {
                     "speaker": "tsumugi",
                     "face": "normal",
-                    "text": "まっすぐ昇って、ふわっと広がって、ゆっくり消える。……見てると、安心するんです"
+                    "text": "……だって、この傷の上に、もっと描きたいから"
                 },
                 {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（……つむぎちゃんの目には、僕のシーシャがそう見えてるんだ）"
+                    "speaker": "",
+                    "face": "",
+                    "text": "つむぎが──笑った。"
                 },
                 {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "だから……その……大会、頑張ってください。この絵が……少しでもお守りになれたら"
+                    "speaker": "",
+                    "face": "",
+                    "text": "今まで見たことのない、小さくて、でも確かな笑顔だった。"
                 },
                 {
                     "speaker": "hajime",
                     "face": "smile",
-                    "text": "ありがとう、つむぎちゃん。大事にするよ。これ──僕の一番のお守りだ"
+                    "text": "……ありがとう、つむぎちゃん。大事にする"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "serious",
+                    "text": "明日……つむぎちゃんが見ててくれたシーシャ、ちゃんと大会でも出してくるよ"
                 },
                 {
                     "speaker": "tsumugi",
-                    "face": "surprise",
-                    "text": "っ……！ そ、そんな……大げさですよ……！"
+                    "face": "normal",
+                    "text": "……はい"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……見てます。……いつも通り"
                 },
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "顔を真っ赤にしながら、でもどこか誇らしそうなつむぎ。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "絵の中のtonariは、煙がゆっくりと天井に昇っていく瞬間を捉えている。\nまるで──はじめのシーシャの、一番いい瞬間を、永遠に閉じ込めたかのようだった。"
+                    "text": "傷の上に描かれた「心のある絵」。\n壊れたものでも、美しいものを生み出せる──。\nつむぎが教えてくれたのは、きっとそういうことだ。"
                 }
             ]
         }

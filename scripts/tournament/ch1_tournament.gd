@@ -433,15 +433,15 @@ func _show_flavor_selection_step() -> void:
 
 	var available = _get_available_flavors()
 	if available.is_empty():
-		PlayerData.add_flavor("double_apple", 1)
-		PlayerData.add_flavor("mint", 1)
+		PlayerData.add_flavor("double_apple", 50)
+		PlayerData.add_flavor("mint", 50)
 		available = _get_available_flavors()
-		_append_info("在庫不足のため運営配布フレーバーを受け取った。")
+		_append_info("在庫不足のため運営配布フレーバー(50g×2)を受け取った。")
 
 	for entry in available:
 		var check = CheckBox.new()
 		var flavor_id = str(entry.get("id", ""))
-		check.text = "%s（在庫 %d）" % [_flavor_name(flavor_id), int(entry.get("amount", 0))]
+		check.text = "%s（残り %dg）" % [_flavor_name(flavor_id), int(entry.get("amount", 0))]
 		check.set_meta("flavor_id", flavor_id)
 		check.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		choice_container.add_child(check)
@@ -694,6 +694,23 @@ func _confirm_manual_packing() -> void:
 		"grams": _manual_packing_grams.duplicate(true),
 	}
 	GameManager.play_ui_se("confirm")
+
+	# パッキング確定時にフレーバーを消費
+	var consume_lines: Array[String] = []
+	for flavor_id in _selected_flavors:
+		var grams = int(_manual_packing_grams.get(flavor_id, 0))
+		if grams > 0:
+			if PlayerData.can_use_flavor(flavor_id, grams):
+				PlayerData.use_flavor(flavor_id, grams)
+				consume_lines.append("%s %dg 使用" % [_flavor_name(flavor_id), grams])
+			else:
+				var remaining = PlayerData.get_flavor_amount(flavor_id)
+				_append_info("%sの残量が%dgしかありません。配分を見直してください。" % [_flavor_name(flavor_id), remaining])
+				GameManager.play_ui_se("cancel")
+				return
+	if not consume_lines.is_empty():
+		_append_info("\n".join(consume_lines))
+
 	_on_packing_selected(pattern)
 
 

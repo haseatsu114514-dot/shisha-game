@@ -89,7 +89,9 @@ func _add_flavor_button(item: Dictionary) -> void:
 	var category_label = PlayerData.get_flavor_specialty_label(category)
 	var price = _get_buy_price(item)
 	var title_label = Label.new()
-	title_label.text = "%s [%s]  購入:%d円" % [display_name, category_label, price]
+	var stock = PlayerData.get_flavor_amount(flavor_id)
+	var stock_text = "所持: %dg" % stock if stock > 0 else "未所持"
+	title_label.text = "%s [%s]  %d円/50g  (%s)" % [display_name, category_label, price, stock_text]
 	title_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	wrapper.add_child(title_label)
 
@@ -191,11 +193,12 @@ func _buy_flavor_now(item: Dictionary) -> void:
 	GameManager.log_money_change(-price)
 	var flavor_id = str(item.get("id", ""))
 	var flavor_name = str(item.get("name", flavor_id))
-	PlayerData.add_flavor(flavor_id, 1)
-	GameManager.log_flavor_change(flavor_name, 1)
+	PlayerData.add_flavor(flavor_id, 50)
+	GameManager.log_flavor_change(flavor_name, 50)
 	_did_shop_transaction = true
 	GameManager.play_ui_se("purchase")
-	_set_sticky_info("%s を購入しました。" % flavor_name)
+	_set_sticky_info("%s 50g を購入しました。" % flavor_name)
+	_load_shop_items()
 	_refresh_header()
 
 

@@ -55,7 +55,9 @@ func _render_summary() -> void:
 	if CalendarManager.is_interval:
 		var remaining = CalendarManager.get_interval_remaining_days()
 		if remaining <= 1:
-			lines.append("次の大会の告知がそろそろ届きそうだ…")
+			lines.append("明日から全国大会に向けて新たな戦いが始まる…")
+		elif CalendarManager.interval_day >= 3:
+			lines.append("全国大会まであと %d 日。できることを全部やろう。" % remaining)
 		else:
 			lines.append("自由行動 残り %d 日" % remaining)
 	else:

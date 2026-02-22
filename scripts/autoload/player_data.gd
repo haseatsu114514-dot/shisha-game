@@ -690,7 +690,7 @@ func _ensure_equipment_state() -> void:
 			owned_hms.append(equipment_hms)
 
 
-func add_flavor(flavor_id: String, amount: int) -> void:
+func add_flavor(flavor_id: String, amount: int = 50) -> void:
 	for item in flavor_inventory:
 		if item.get("id", "") == flavor_id:
 			item["name"] = FLAVOR_NAME_MAP.get(flavor_id, flavor_id)
@@ -708,6 +708,33 @@ func has_flavor(flavor_id: String) -> bool:
 	for item in flavor_inventory:
 		if item.get("id", "") == flavor_id and int(item.get("amount", 0)) > 0:
 			return true
+	return false
+
+
+func get_flavor_amount(flavor_id: String) -> int:
+	for item in flavor_inventory:
+		if item.get("id", "") == flavor_id:
+			return int(item.get("amount", 0))
+	return 0
+
+
+func can_use_flavor(flavor_id: String, grams: int) -> bool:
+	return get_flavor_amount(flavor_id) >= grams
+
+
+func use_flavor(flavor_id: String, grams: int) -> bool:
+	if grams <= 0:
+		return false
+	for item in flavor_inventory:
+		if item.get("id", "") != flavor_id:
+			continue
+		var current = int(item.get("amount", 0))
+		if current < grams:
+			return false
+		item["amount"] = current - grams
+		if int(item.get("amount", 0)) <= 0:
+			flavor_inventory.erase(item)
+		return true
 	return false
 
 
