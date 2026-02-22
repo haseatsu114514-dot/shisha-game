@@ -372,6 +372,7 @@ func get_equipment_name_by_value(value: String) -> String:
 	return str(EQUIPMENT_NAME_MAP.get(value, value))
 
 
+
 func get_equipped_value(slot_type: String) -> String:
 	if slot_type == "bowl":
 		return equipment_bowl
@@ -380,11 +381,6 @@ func get_equipped_value(slot_type: String) -> String:
 	if slot_type == "charcoal":
 		return equipment_charcoal
 	return ""
-
-
-func get_equipment_name_by_value(value: String) -> String:
-	return str(EQUIPMENT_NAME_MAP.get(value, value))
-
 
 func get_equipped_item_name(slot_type: String) -> String:
 	return get_equipment_name_by_value(get_equipped_value(slot_type))
