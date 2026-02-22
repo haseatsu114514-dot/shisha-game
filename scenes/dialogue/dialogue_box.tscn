@@ -62,13 +62,14 @@ anchor_left = 0.03
 anchor_top = 0.66
 anchor_right = 0.97
 anchor_bottom = 0.96
+modulate = Color(1, 1, 1, 0.92)
 
 [node name="Margin" type="MarginContainer" parent="DialoguePanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_right = 20
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_bottom = 8
 
 [node name="VBox" type="VBoxContainer" parent="DialoguePanel/Margin"]
 layout_mode = 2
@@ -104,15 +105,15 @@ theme_override_constants/separation = 10
 [node name="AutoButton" type="Button" parent="DialoguePanel/Margin/VBox/ControlButtons"]
 unique_name_in_owner = true
 layout_mode = 2
-custom_minimum_size = Vector2(140, 38)
-theme_override_font_sizes/font_size = 18
+custom_minimum_size = Vector2(100, 28)
+theme_override_font_sizes/font_size = 14
 text = "オート: OFF"
 
 [node name="AdvanceButton" type="Button" parent="DialoguePanel/Margin/VBox/ControlButtons"]
 unique_name_in_owner = true
 layout_mode = 2
-custom_minimum_size = Vector2(140, 38)
-theme_override_font_sizes/font_size = 18
+custom_minimum_size = Vector2(100, 28)
+theme_override_font_sizes/font_size = 14
 text = "▶"
 
 [node name="TypingTimer" type="Timer" parent="."]

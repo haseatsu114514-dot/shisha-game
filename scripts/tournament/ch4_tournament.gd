@@ -1122,7 +1122,7 @@ func _show_charcoal_place_step() -> void:
 	_clear_choices()
 	
 	# Add hint dynamically based on equipment
-	var hint = "通常は4個が基本。"
+	var hint = "通常は3個が基本。"
 	if _selected_hms == "tanukish_lid" or PlayerData.equipment_bowl == "suyaki":
 		hint = "この機材なら3個のほうが熱が安定しやすい。"
 	elif _selected_hms == "amaburst":
@@ -1130,8 +1130,8 @@ func _show_charcoal_place_step() -> void:
 		
 	info_label.text = "【ヒント】\n" + hint
 	
-	_add_choice_button("3個（熱を抑える/安定）", _on_charcoal_place_selected.bind(3))
-	_add_choice_button("4個（熱を押し込む/基本）", _on_charcoal_place_selected.bind(4))
+	_add_choice_button("3個（基本／安定）", _on_charcoal_place_selected.bind(3))
+	_add_choice_button("4個（攻め／狙いがある時）", _on_charcoal_place_selected.bind(4))
 	_refresh_side_panel()
 
 

@@ -18,6 +18,14 @@ var _selected_pack_style: String = ""
 var _selected_charcoal_count: int = 3
 var _selected_steam_minutes: int = 6
 
+const TUTORIAL_TOTAL_GRAMS := 12
+const TUTORIAL_FLAVORS := ["double_apple", "mint"]
+var _tutorial_packing_grams: Dictionary = {"double_apple": 6, "mint": 6}
+var _tutorial_sliders: Dictionary = {}
+var _tutorial_value_labels: Dictionary = {}
+var _tutorial_remaining_label: Label = null
+var _tutorial_confirm_button: Button = null
+
 var _pull_quality: String = "未判定"
 var _pull_step_finished: bool = false
 var _pull_timer: Timer
@@ -112,28 +120,114 @@ func _show_intro_step() -> void:
 	_add_choice_button("特訓を始める", _show_mix_step)
 
 func _show_mix_step() -> void:
-	_set_phase(2, "フレーバーの配分", "ダブルアップルとミントの配合を決める。\n使うのは中東産のクラシックなダブルアップルと、それに負けない強めのミントだ。")
+	_set_phase(2, "フレーバーの配分", "ダブルアップルとミントの配合を決める。\n合計12gになるようスライダーで調整する。")
 	_clear_choices()
-	_add_choice_button("ダブルアップル6g / ミント6g（推奨）", _on_mix_selected.bind("half"))
-	_add_choice_button("ダブルアップル8g / ミント4g", _on_mix_selected.bind("apple_heavy"))
-	_add_choice_button("ダブルアップル4g / ミント8g", _on_mix_selected.bind("mint_heavy"))
+	_tutorial_sliders.clear()
+	_tutorial_value_labels.clear()
 
-func _on_mix_selected(mix_type: String) -> void:
-	var feedback = ""
-	match mix_type:
-		"half":
-			feedback = "甘さと清涼感のバランスが良い王道の配合。\nスミ「ダブルの甘さをミントが引き締める。これが基本の形だ」"
-		"apple_heavy":
-			feedback = "アップルの主張が強い重厚な味。ミントは後味程度。\nスミ「重たい煙で満足感を出したい時にはこれだ」"
-		"mint_heavy":
-			feedback = "清涼感が先行する。味が少し軽く飛ぶリスクがある。\nスミ「爽快感は出るが、熱を入れすぎると味が消えるぞ」"
+	var title = Label.new()
+	title.text = "配分ゲージ（1g刻み / 合計12g）"
+	title.add_theme_font_size_override("font_size", 20)
+	choice_container.add_child(title)
+
+	for flavor_id in TUTORIAL_FLAVORS:
+		choice_container.add_child(_build_tutorial_slider_row(flavor_id))
+
+	_tutorial_remaining_label = Label.new()
+	choice_container.add_child(_tutorial_remaining_label)
+
+	_tutorial_confirm_button = _add_choice_button("この配合で確定", _on_tutorial_mix_confirmed)
+	_refresh_tutorial_packing()
+
+
+func _build_tutorial_slider_row(flavor_id: String) -> Control:
+	var wrapper = VBoxContainer.new()
+	wrapper.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	wrapper.add_theme_constant_override("separation", 4)
+
+	var label = Label.new()
+	var display_name = _tutorial_flavor_name(flavor_id)
+	label.text = "%s  %dg" % [display_name, int(_tutorial_packing_grams.get(flavor_id, 0))]
+	wrapper.add_child(label)
+	_tutorial_value_labels[flavor_id] = label
+
+	var slider = HSlider.new()
+	slider.min_value = 0
+	slider.max_value = TUTORIAL_TOTAL_GRAMS
+	slider.step = 1
+	slider.value = int(_tutorial_packing_grams.get(flavor_id, 0))
+	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	slider.value_changed.connect(_on_tutorial_slider_changed.bind(flavor_id))
+	wrapper.add_child(slider)
+	_tutorial_sliders[flavor_id] = slider
+
+	return wrapper
+
+
+func _tutorial_flavor_name(flavor_id: String) -> String:
+	match flavor_id:
+		"double_apple":
+			return "ダブルアップル"
+		"mint":
+			return "ミント"
 		_:
-			feedback = "配合を決めた。"
+			return flavor_id
+
+
+func _on_tutorial_slider_changed(value: float, flavor_id: String) -> void:
+	_tutorial_packing_grams[flavor_id] = int(round(value))
+	_refresh_tutorial_packing()
+
+
+func _refresh_tutorial_packing() -> void:
+	var total = 0
+	for fid in TUTORIAL_FLAVORS:
+		var grams = int(_tutorial_packing_grams.get(fid, 0))
+		total += grams
+		if _tutorial_value_labels.has(fid):
+			var label = _tutorial_value_labels[fid] as Label
+			if label != null:
+				label.text = "%s  %dg" % [_tutorial_flavor_name(fid), grams]
+		if _tutorial_sliders.has(fid):
+			var slider = _tutorial_sliders[fid] as HSlider
+			if slider != null and int(round(slider.value)) != grams:
+				slider.value = grams
+
+	var remaining = TUTORIAL_TOTAL_GRAMS - total
+	if _tutorial_remaining_label != null:
+		if remaining == 0:
+			_tutorial_remaining_label.text = "残り: 0g（確定可能）"
+		elif remaining > 0:
+			_tutorial_remaining_label.text = "残り: %dg" % remaining
+		else:
+			_tutorial_remaining_label.text = "超過: %dg（12gに戻して）" % abs(remaining)
+	if _tutorial_confirm_button != null:
+		_tutorial_confirm_button.disabled = remaining != 0
+
+
+func _on_tutorial_mix_confirmed() -> void:
+	var total = 0
+	for fid in TUTORIAL_FLAVORS:
+		total += int(_tutorial_packing_grams.get(fid, 0))
+	if total != TUTORIAL_TOTAL_GRAMS:
+		GameManager.play_ui_se("cancel")
+		return
+
+	GameManager.play_ui_se("confirm")
+	var apple_g = int(_tutorial_packing_grams.get("double_apple", 0))
+	var mint_g = int(_tutorial_packing_grams.get("mint", 0))
+	var feedback = ""
+	if abs(apple_g - mint_g) <= 2:
+		feedback = "甘さと清涼感のバランスが良い王道の配合。\nスミ「ダブルの甘さをミントが引き締める。これが基本の形だ」"
+	elif apple_g > mint_g:
+		feedback = "アップルの主張が強い重厚な味。ミントは後味程度。\nスミ「重たい煙で満足感を出したい時にはこれだ」"
+	else:
+		feedback = "清涼感が先行する。味が少し軽く飛ぶリスクがある。\nスミ「爽快感は出るが、熱を入れすぎると味が消えるぞ」"
 
 	_set_phase(
 		2,
 		"フレーバーの配分: 決定",
-		"選んだ配合: %s\n%s\n\nスミ「ミックスは自由だが、芯がないとただ味が濁るだけだ。次は詰め方だ」" % [mix_type.to_upper(), feedback]
+		"配合: DA %dg / ミント %dg\n%s\n\nスミ「ミックスは自由だが、芯がないとただ味が濁るだけだ。次は詰め方だ」" % [apple_g, mint_g, feedback]
 	)
 	_clear_choices()
 	_add_choice_button("次へ（詰め方）", _show_pack_step)
@@ -176,9 +270,9 @@ func _show_heat_step() -> void:
 		"炭の数と蒸らし時間をセットで決める。\nスミ「高温で一気に味を出すか、じっくり温めるか。お前の意図が問われる」"
 	)
 	_clear_choices()
-	_add_choice_button("炭3個 / 蒸らし6分（安定）", _on_heat_selected.bind(3, 6))
-	_add_choice_button("炭4個 / 蒸らし5分（立ち上がり重視）", _on_heat_selected.bind(4, 5))
-	_add_choice_button("炭4個 / 蒸らし8分（過熱リスク）", _on_heat_selected.bind(4, 8))
+	_add_choice_button("炭3個 / 蒸らし6分（基本）", _on_heat_selected.bind(3, 6))
+	_add_choice_button("炭4個 / 蒸らし5分（攻め・狙いあり）", _on_heat_selected.bind(4, 5))
+	_add_choice_button("炭4個 / 蒸らし8分（過熱リスク高）", _on_heat_selected.bind(4, 8))
 
 
 func _on_heat_selected(charcoal_count: int, steam_minutes: int) -> void:
@@ -759,6 +853,11 @@ func _adjust_action_label(action_id: String) -> String:
 
 
 func _finish_tutorial() -> void:
+	# Disable all buttons immediately to prevent double-press
+	for child in choice_container.get_children():
+		if child is Button:
+			child.disabled = true
+
 	if _pull_timer != null:
 		_pull_timer.stop()
 	if _adjust_timer != null:

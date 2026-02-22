@@ -28,6 +28,7 @@ var _full_text_bbcode = ""
 var _current_char = 0
 var _current_speaker = ""
 var _auto_enabled = false
+var _dialogue_ending := false
 
 const SPEAKER_NAMES := {
 	"hajime": "はじめ",
@@ -56,7 +57,7 @@ const HIGHLIGHT_TAGS := [
 	"[hint]", "[/hint]"
 ]
 const HIGHLIGHT_OPEN_REPLACEMENTS := {
-	"[imp]": "[font_size=30][color=#ffd878][b]",
+	"[imp]": "[color=#ffd878][b]",
 	"[red]": "[color=#ff5252][b]",
 	"[blue]": "[color=#52a2ff][b]",
 	"[sub]": "[font_size=18][color=#999999]",
@@ -64,7 +65,7 @@ const HIGHLIGHT_OPEN_REPLACEMENTS := {
 	"[hint]": "[color=#8bdcff][b]",
 }
 const HIGHLIGHT_CLOSE_REPLACEMENTS := {
-	"[/imp]": "[/b][/color][/font_size]",
+	"[/imp]": "[/b][/color]",
 	"[/warn]": "[/b][/color]",
 	"[/hint]": "[/b][/color]",
 }
@@ -175,6 +176,8 @@ func _find_dialogue(root: Dictionary, target_id: String) -> Dictionary:
 
 
 func _on_advance_button_pressed() -> void:
+	if _dialogue_ending:
+		return
 	GameManager.play_ui_se("cursor")
 	if _is_typing:
 		_show_full_text_immediately()
@@ -490,6 +493,10 @@ func _handle_cg_command(line: Dictionary) -> void:
 
 
 func _finish_dialogue() -> void:
+	if _dialogue_ending:
+		return
+	_dialogue_ending = true
+	advance_button.disabled = true
 	_cancel_auto_advance()
 	emit_signal("dialogue_finished", dialogue_id)
 
