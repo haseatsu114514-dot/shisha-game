@@ -111,6 +111,7 @@ func _build_spot_list() -> Array:
 	if CalendarManager.current_time == "noon":
 		spots.append({"id": "tonari", "label": "tonari"})
 		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
+		spots.append({"id": "setting", "label": "自宅 [機材変更]"})
 		spots.append({"id": "naru", "label": "ケムリクサ"})
 		if _are_rival_shops_unlocked():
 			spots.append({"id": "adam", "label": "Eden"})
@@ -124,6 +125,7 @@ func _build_spot_list() -> Array:
 	elif CalendarManager.current_time == "night":
 		spots.append({"id": "tonari", "label": "tonari（夜）"})
 		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]（夜）"})
+		spots.append({"id": "setting", "label": "自宅 [機材変更]"})
 		spots.append({"id": "home", "label": "自宅で休む"})
 		spots.append({"id": "naru", "label": "ケムリクサ（夜）"})
 		if _are_rival_shops_unlocked():
@@ -157,10 +159,9 @@ func _open_shop_confirm(spot: Dictionary) -> void:
 
 func _build_shop_preview_text() -> String:
 	var lines: Array[String] = []
-	lines.append("入店コスト: %d円 / 行動消費: 1" % SHOP_VISIT_COST)
 	lines.append("現在の所持金: %d円" % PlayerData.money)
-	lines.append("在庫は章が進むと増える。")
-	lines.append("購入しないで戻った場合は入店料を返金。")
+	lines.append("※ショップへの移動では時間は経過しません。")
+	lines.append("※在庫は章が進むと増えます。")
 	return "\n".join(lines)
 
 
@@ -185,16 +186,11 @@ func _enter_spot(spot: Dictionary) -> void:
 		"tonari":
 			get_tree().change_scene_to_file("res://scenes/daily/baito.tscn")
 		"shop":
-			if PlayerData.money < SHOP_VISIT_COST:
-				message_label.text = "Dr.Hookah 入店には %d円 必要です。" % SHOP_VISIT_COST
-				return
-			if not CalendarManager.use_action():
-				_try_auto_return_home()
-				return
-			PlayerData.spend_money(SHOP_VISIT_COST)
-			GameManager.log_money_change(-SHOP_VISIT_COST)
-			GameManager.set_transient("advance_time_after_scene", true)
-			get_tree().change_scene_to_file("res://scenes/daily/shop.tscn")
+			# No time progression for shop
+			get_tree().change_scene_to_file("res://scenes/ui/shop_menu.tscn")
+		"setting":
+			# No time progression for setting
+			get_tree().change_scene_to_file("res://scenes/ui/setting_menu.tscn")
 		"home":
 			if not CalendarManager.use_action():
 				_try_auto_return_home()

@@ -169,7 +169,13 @@ func _load_events() -> void:
 
 
 func _show_main_menu() -> void:
-	header_label.text = "tonari"
+	match GameManager.current_chapter:
+		3:
+			header_label.text = "tonari 東京店"
+		4:
+			header_label.text = "現地のシーシャ屋"
+		_:
+			header_label.text = "tonari"
 	_clear_buttons(choice_container)
 	if CalendarManager.is_tournament_day():
 		_show_tournament_menu()
@@ -217,12 +223,32 @@ func _on_menu_selected(action: String) -> void:
 
 func _show_shift_menu() -> void:
 	body_label.text = "シフトを選んでください"
+	var half_text = "半日バイト（昼のみ / 基本給+8000円）"
+	var full_text = "夜までバイト（昼+夜 / 基本給+18000円）"
+	var night_text = "夜バイト（基本給+10000円）"
+	
+	match GameManager.current_chapter:
+		3:
+			body_label.text = "東京店でヘルプに入りますか？"
+			half_text = "半日ヘルプ（昼のみ / 給与+8000円）"
+			full_text = "夜までヘルプ（昼+夜 / 給与+18000円）"
+			night_text = "夜ヘルプ（夜のみ / 給与+10000円）"
+		4:
+			body_label.text = "現地の店でゲスト出勤しますか？\n（気に入られたので飛び入り参加）"
+			half_text = "ゲスト出勤・昼（昼のみ / 給与+8000円）"
+			full_text = "ゲスト出勤・通し（昼+夜 / 給与+18000円）"
+			night_text = "ゲスト出勤・夜（夜のみ / 給与+10000円）"
+
 	_clear_buttons(menu_container)
 	if CalendarManager.current_time == "noon":
-		_add_menu_button("半日バイト（昼のみ / 基本給+8000円）", "work_half")
-		_add_menu_button("夜までバイト（昼+夜 / 基本給+18000円）", "work_full")
+		_add_menu_button(half_text, "work_half")
+		_add_menu_button(full_text, "work_full")
 	else:
-		_add_menu_button("夜バイト（基本給+10000円）", "work_night")
+		_add_menu_button(night_text, "work_night")
+		
+func _is_overseas() -> bool:
+	var cfg = CalendarManager.CHAPTER_CONFIG.get(GameManager.current_chapter, {})
+	return bool(cfg.get("overseas", false))
 
 
 func _start_shift(mode: String) -> void:

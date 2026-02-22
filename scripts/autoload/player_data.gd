@@ -10,9 +10,10 @@ const FLAVOR_NAME_MAP := {
 	"coconut": "アルファーヘブン ココナッツ",
 }
 
-const DEFAULT_BOWL := "silicone_bowl"
+const DEFAULT_BOWL: String = "silicone_bowl"
 const DEFAULT_HMS := "lotos_hagal"
-const DEFAULT_CHARCOAL := "flat_charcoal"
+const DEFAULT_CHARCOAL: String = "flat"
+const DEFAULT_PIPE: String = "pipe_cheap"
 
 const LEGACY_BOWL_MAP := {
 	"standard": DEFAULT_BOWL,
@@ -244,9 +245,11 @@ var character_flavor_profiles: Dictionary = {}
 var equipment_hms: String = DEFAULT_HMS
 var equipment_bowl: String = DEFAULT_BOWL
 var equipment_charcoal: String = DEFAULT_CHARCOAL
+var equipment_pipe: String = DEFAULT_PIPE
 var owned_bowls: Array[String] = [DEFAULT_BOWL]
 var owned_hms: Array[String] = [DEFAULT_HMS]
 var owned_charcoals: Array[String] = [DEFAULT_CHARCOAL]
+var owned_pipes: Array[String] = [DEFAULT_PIPE]
 
 var recipe_note: Array = []
 var memo_seen_ids: Dictionary = {}
@@ -325,11 +328,33 @@ func add_money(amount: int) -> void:
 	money = maxi(0, money + amount)
 
 
-func spend_money(amount: int) -> bool:
-	if money < amount:
-		return false
-	money -= amount
-	return true
+func has_item(type: String, item_id: String) -> bool:
+	match type:
+		"bowl":
+			return owned_bowls.has(item_id)
+		"hms":
+			return owned_hms.has(item_id)
+		"charcoal":
+			return owned_charcoals.has(item_id)
+		"pipe":
+			return owned_pipes.has(item_id)
+	return false
+
+func get_equipped_item_name(type: String) -> String:
+	match type:
+		"bowl":
+			return get_equipment_name_by_value(equipment_bowl)
+		"hms":
+			return get_equipment_name_by_value(equipment_hms)
+		"charcoal":
+			return get_equipment_name_by_value(equipment_charcoal)
+		"pipe":
+			return get_equipment_name_by_value(equipment_pipe)
+	return "UNKNOWN"
+
+
+func get_equipment_name_by_value(value: String) -> String:
+	return str(EQUIPMENT_NAME_MAP.get(value, value))
 
 
 func get_equipped_value(slot_type: String) -> String:
@@ -664,12 +689,15 @@ func _ensure_equipment_state() -> void:
 	equipment_bowl = _normalize_equipment_value("bowl", equipment_bowl)
 	equipment_hms = _normalize_equipment_value("hms", equipment_hms)
 	equipment_charcoal = _normalize_equipment_value("charcoal", equipment_charcoal)
+	equipment_pipe = _normalize_equipment_value("pipe", equipment_pipe) # Added for pipe
 	if equipment_bowl == "":
 		equipment_bowl = DEFAULT_BOWL
 	if equipment_hms == "":
 		equipment_hms = DEFAULT_HMS
 	if equipment_charcoal == "":
 		equipment_charcoal = DEFAULT_CHARCOAL
+	if equipment_pipe == "": # Added for pipe
+		equipment_pipe = DEFAULT_PIPE # Added for pipe
 
 	if owned_bowls.is_empty():
 		owned_bowls.append(DEFAULT_BOWL)
@@ -677,12 +705,17 @@ func _ensure_equipment_state() -> void:
 		owned_hms.append(DEFAULT_HMS)
 	if owned_charcoals.is_empty():
 		owned_charcoals.append(DEFAULT_CHARCOAL)
+	if owned_pipes.is_empty(): # Added for pipe
+		owned_pipes.append(DEFAULT_PIPE) # Added for pipe
+
 	if not owned_bowls.has(equipment_bowl):
 		owned_bowls.append(equipment_bowl)
 	if not owned_hms.has(equipment_hms):
 		owned_hms.append(equipment_hms)
 	if not owned_charcoals.has(equipment_charcoal):
 		owned_charcoals.append(equipment_charcoal)
+	if not owned_pipes.has(equipment_pipe): # Added for pipe
+		owned_pipes.append(equipment_pipe) # Added for pipe
 
 	if not is_equipment_pair_compatible(equipment_bowl, equipment_hms):
 		equipment_hms = DEFAULT_HMS
@@ -983,9 +1016,11 @@ func to_save_data() -> Dictionary:
 		"equipment_hms": equipment_hms,
 		"equipment_bowl": equipment_bowl,
 		"equipment_charcoal": equipment_charcoal,
+		"equipment_pipe": equipment_pipe,
 		"owned_bowls": owned_bowls,
 		"owned_hms": owned_hms,
 		"owned_charcoals": owned_charcoals,
+		"owned_pipes": owned_pipes,
 		"recipe_note": recipe_note,
 		"memo_seen_ids": memo_seen_ids,
 		"unlocked_cards": unlocked_cards,

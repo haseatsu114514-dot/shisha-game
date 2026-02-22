@@ -2437,8 +2437,16 @@ func _compute_player_score_components() -> Dictionary:
 		specialist_mix_bonus += 4.0
 		audience_mix_bonus += 5.0
 
-	specialist += specialist_mix_bonus
-	audience += audience_mix_bonus
+	var pipe_spec_bonus = 0.0
+	var pipe_aud_bonus = 0.0
+	if PlayerData.PIPE_DATA.has(PlayerData.equipment_pipe):
+		var pd = PlayerData.PIPE_DATA[PlayerData.equipment_pipe]
+		# 専門: 味 + 煙 / 一般: 味 + 見栄え
+		pipe_spec_bonus = float(pd.get("taste_bonus", 0) + pd.get("smoke_bonus", 0))
+		pipe_aud_bonus = float(pd.get("taste_bonus", 0) + pd.get("presentation_bonus", 0))
+
+	specialist += specialist_mix_bonus + pipe_spec_bonus
+	audience += audience_mix_bonus + pipe_aud_bonus
 	var weighted = specialist * 0.6 + audience * 0.4
 	var easy_bonus = 3.0 if _easy_mode else 0.0
 	return {
@@ -2449,6 +2457,8 @@ func _compute_player_score_components() -> Dictionary:
 		"total": weighted + easy_bonus,
 		"specialist_mix_bonus": specialist_mix_bonus,
 		"audience_mix_bonus": audience_mix_bonus,
+		"pipe_spec_bonus": pipe_spec_bonus,
+		"pipe_aud_bonus": pipe_aud_bonus,
 	}
 
 

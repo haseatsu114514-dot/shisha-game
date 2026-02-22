@@ -53,14 +53,14 @@ const CHAPTER_CONFIG: Dictionary = {
 	2: {
 		"max_days": 7,
 		"tournament_day": 8,
-		"location": "全国大会 - 東京",
+		"location": "県大会",
 		"overseas": false,
 		"interval_days": 5,
 	},
 	3: {
 		"max_days": 7,
 		"tournament_day": 8,
-		"location": "イスタンブール",
+		"location": "全国大会 - 東京",
 		"overseas": true,
 		"overseas_stay_days": 7,
 		"interval_days": 5,
@@ -69,9 +69,9 @@ const CHAPTER_CONFIG: Dictionary = {
 	4: {
 		"max_days": 14,
 		"tournament_day": 15,
-		"location": "ドバイ",
+		"location": "世界大会 - ドバイ",
 		"overseas": true,
-		"overseas_stay_days": 14,
+		"overseas_stay_days": 3,
 		"interval_days": 0,
 		"companions": ["tsumugi", "naru"],
 	},
