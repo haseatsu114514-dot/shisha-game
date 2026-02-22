@@ -176,7 +176,7 @@ func _show_intro_step() -> void:
 	_set_phase(
 		1,
 		"スミさんの特訓",
-		"\n".join([
+		"\n".join(PackedStringArray([
 			"スミ「さっき渡したダブルアップルとミント、練習に使え」",
 			"スミ「大会は基礎で勝つ。まずは王道のミックスだ」",
 			"",
@@ -186,7 +186,7 @@ func _show_intro_step() -> void:
 			"3. 炭と蒸らしを決める",
 			"4. 吸い出しで温度帯へ入れる",
 			"5. 温度維持の調整をやる",
-		])
+		]))
 	)
 	_clear_choices()
 	_add_choice_button("特訓を始める", _show_mix_step)
@@ -484,7 +484,7 @@ func _update_aluminum_rhythm_text() -> void:
 	lines.append("凡例: ★判定点 / ●ノーツ / ◎ノーツ重なり / ◆判定点上ノーツ")
 	lines.append("")
 	lines.append(ring)
-	info_label.text = "\n".join(lines)
+	info_label.text = "\n".join(PackedStringArray(lines))
 
 func _build_aluminum_ring_text() -> String:
 	var slot_note_count: Dictionary = {}
@@ -510,7 +510,7 @@ func _build_aluminum_ring_text() -> String:
 	lines.append("   %s             %s" % [sym.call(8), sym.call(4)])
 	lines.append("      %s       %s" % [sym.call(7), sym.call(5)])
 	lines.append("          %s" % sym.call(6))
-	return "\n".join(lines)
+	return "\n".join(PackedStringArray(lines))
 
 func _get_aluminum_note_slot(note: Dictionary) -> int:
 	var distance = int(round(float(note.get("distance", 0.0))))
@@ -611,7 +611,7 @@ func _show_mind_barrage_intro() -> void:
 	lines.append("ここでの成績が良いほど、この後の吸い出し操作が安定する。")
 	lines.append("蒸らし %d分 -> 耐久 %.1f秒" % [_selected_steam_minutes, duration_sec])
 	lines.append("残機: %d（0になると吸い出し難易度MAX）" % lives)
-	info_label.text = "\n".join(lines)
+	info_label.text = "\n".join(PackedStringArray(lines))
 	_add_choice_button("弾幕開始", _start_mind_barrage_step)
 
 func _compute_mind_barrage_duration() -> float:
@@ -903,13 +903,13 @@ func _update_mind_barrage_info_text() -> void:
 	lines.append("被弾 %d / 出現 %d" % [_mind_hits, maxi(_mind_spawned, 1)])
 	lines.append("集中度 %d%%" % focus)
 	lines.append(_build_mind_barrage_progress_bar(ratio))
-	info_label.text = "\n".join(lines)
+	info_label.text = "\n".join(PackedStringArray(lines))
 
 func _build_mind_life_text() -> String:
 	var chars: Array[String] = []
 	for i in range(_mind_lives_max):
 		chars.append("●" if i < _mind_lives_remaining else "○")
-	return "".join(chars)
+	return "".join(PackedStringArray(chars))
 
 func _build_mind_barrage_progress_bar(ratio: float) -> String:
 	var length = 24
@@ -917,7 +917,7 @@ func _build_mind_barrage_progress_bar(ratio: float) -> String:
 	var chars: Array[String] = []
 	for i in range(length):
 		chars.append("■" if i < fill else "─")
-	return "".join(chars)
+	return "".join(PackedStringArray(chars))
 
 func _finish_mind_barrage_step() -> void:
 	if not _mind_active:
@@ -1166,7 +1166,7 @@ func _update_pull_text(status_text: String) -> void:
 	lines.append_array(_build_temperature_band_lines(preview_temp))
 	lines.append("タイミング目標帯 ■ / ポインタ ◆")
 	lines.append(bar)
-	info_label.text = "\n".join(lines)
+	info_label.text = "\n".join(PackedStringArray(lines))
 
 
 func _start_adjustment_tutorial() -> void:
@@ -1189,7 +1189,7 @@ func _show_adjustment_round() -> void:
 	_set_phase(
 		6,
 		"温度調整 %d / %d" % [round_num, ADJUST_TOTAL_ROUNDS],
-		"\n".join(lines)
+		"\n".join(PackedStringArray(lines))
 	)
 	_clear_choices()
 	_add_choice_button("温度を上げる", _on_adjust_action_selected.bind("up"))
@@ -1443,7 +1443,7 @@ func _show_adjustment_summary() -> void:
 	_set_phase(
 		6,
 		"温度調整: 終了",
-		"\n".join(lines)
+		"\n".join(PackedStringArray(lines))
 	)
 	_clear_choices()
 	_add_choice_button("特訓を終える", _finish_tutorial)
@@ -1458,7 +1458,7 @@ func _update_adjust_text(status_text: String) -> void:
 	lines.append_array(_build_temperature_band_lines(_temp_level))
 	lines.append("調整タイミング目標帯 ■ / ポインタ ◆")
 	lines.append(bar)
-	info_label.text = "\n".join(lines)
+	info_label.text = "\n".join(PackedStringArray(lines))
 
 
 func _build_temperature_band_lines(value: float, drift: float = 0.0) -> Array[String]:
@@ -1540,7 +1540,7 @@ func _build_gauge_bar(value: float, target_center: float, target_width: float) -
 		if i == pointer_index:
 			c = "◆"
 		chars.append(c)
-	return "".join(chars)
+	return "".join(PackedStringArray(chars))
 
 
 func _evaluate_gauge_quality(value: float, target_center: float, target_width: float) -> String:

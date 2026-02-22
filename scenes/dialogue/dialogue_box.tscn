@@ -1,8 +1,10 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=4 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/dialogue_box.gd" id="1"]
 
 [ext_resource type="PackedScene" path="res://scenes/effects/smoke_particles.tscn" id="5"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_text"]
 
 [node name="DialogueBox" type="Control"]
 layout_mode = 3
@@ -87,15 +89,11 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 custom_minimum_size = Vector2(0, 90)
+theme_override_styles/normal = SubResource("StyleBoxEmpty_text")
 theme_override_font_sizes/normal_font_size = 24
 autowrap_mode = 3
 bbcode_enabled = true
 text = ""
-
-[node name="ChoiceContainer" type="VBoxContainer" parent="DialoguePanel/Margin/VBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_constants/separation = 6
 
 [node name="ControlButtons" type="HBoxContainer" parent="DialoguePanel/Margin/VBox"]
 layout_mode = 2
@@ -115,6 +113,23 @@ layout_mode = 2
 custom_minimum_size = Vector2(100, 28)
 theme_override_font_sizes/font_size = 14
 text = "▶"
+
+[node name="ChoiceContainer" type="VBoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -250.0
+offset_right = 300.0
+offset_bottom = 50.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+alignment = 1
 
 [node name="TypingTimer" type="Timer" parent="."]
 unique_name_in_owner = true
