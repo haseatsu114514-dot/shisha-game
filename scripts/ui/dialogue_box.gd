@@ -146,6 +146,7 @@ func _load_dialogue_data() -> bool:
 	if typeof(parsed) != TYPE_DICTIONARY:
 		return false
 
+	_loaded_dialogue_root = parsed
 	var target_dialogue = _find_dialogue(parsed, dialogue_id)
 	if target_dialogue.is_empty():
 		return false
@@ -157,7 +158,10 @@ func _load_dialogue_data() -> bool:
 	if metadata.has("bgm"):
 		GameManager.play_bgm(str(metadata["bgm"]), -8.0, true)
 	
+	_loaded_dialogue_root = null
 	return true
+
+var _loaded_dialogue_root: Variant = null
 
 
 func _find_dialogue(root: Dictionary, target_id: String) -> Dictionary:
@@ -218,6 +222,15 @@ func _show_next_line() -> void:
 		
 		# Immediately show next line after branching
 		_show_next_line()
+		return
+	elif str(line.get("type", "")) == "jump":
+		var next_id = str(line.get("next_id", ""))
+		if typeof(_loaded_dialogue_root) == TYPE_DICTIONARY:
+			var target_dialogue = _find_dialogue(_loaded_dialogue_root, next_id)
+			if not target_dialogue.is_empty():
+				_line_queue = target_dialogue.get("lines", []).duplicate(true)
+				_branches = target_dialogue.get("branches", {}).duplicate(true)
+				_show_next_line()
 		return
 
 	if str(line.get("type", "")) == "choice":

@@ -71,12 +71,21 @@ func _load_today_lime_messages() -> Array:
 	var messages: Array = parsed.get("messages", [])
 	var result: Array = []
 	for message in messages:
-		if int(message.get("trigger_day", -1)) != CalendarManager.current_day:
-			continue
+		if message.has("trigger_day"):
+			if int(message.get("trigger_day", -1)) != CalendarManager.current_day:
+				continue
+		
+		# If it's chapter specific
+		if message.has("trigger_chapter"):
+			if int(message.get("trigger_chapter", 1)) != GameManager.current_chapter:
+				continue
+
 		if EventFlags.get_flag("msg_read_%s" % str(message.get("id", ""))):
 			continue
+			
 		if not _is_message_condition_met(message):
 			continue
+			
 		result.append(message)
 	return result
 
@@ -85,6 +94,12 @@ func _is_message_condition_met(message: Dictionary) -> bool:
 	var condition = str(message.get("trigger_condition", ""))
 	if condition == "lime_exchanged":
 		return AffinityManager.has_lime(str(message.get("sender", "")))
+	elif condition == "affinity_max":
+		var sender = str(message.get("sender", ""))
+		return AffinityManager.is_max_level(sender) and not AffinityManager.is_in_romance(sender)
+	elif condition == "tournament_day":
+		var sender = str(message.get("sender", ""))
+		return CalendarManager.is_tournament_day() and AffinityManager.is_in_romance(sender)
 	return true
 
 
@@ -108,8 +123,6 @@ func _build_sumi_morning_invite_text() -> String:
 
 
 func _on_lime_button_pressed() -> void:
-	if CalendarManager.is_tournament_day():
-		return
 	if _today_messages.is_empty():
 		info_label.text = "未読メッセージはありません。"
 		return
