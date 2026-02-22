@@ -10,25 +10,25 @@
       "messages": [
         {
           "sender": "naru",
-          "text": "おい"
+          "text": "あー、暇？"
         },
         {
           "sender": "naru",
-          "text": "今日の夜暇か"
+          "text": "今日の夜、俺の至高のミックスのテストランするんだけど"
         },
         {
           "sender": "naru",
-          "text": "新しいミックスのテストランするから"
+          "text": "特別に、最先端の煙の立ち上がりってやつを見せてやってもいいわ。こいよ"
         },
         {
           "sender": "naru",
-          "text": "意見でも聞いてやろうかと思って"
+          "text": "あ、素人は口出し無用な"
         }
       ],
       "accept_event": "interaction_naru_night_01",
       "decline_response": {
         "sender": "naru",
-        "text": "あっそ"
+        "text": "は？ なにそれ、俺の胸を借りるチャンスなのに。ウケる"
       }
     },
     {
@@ -71,31 +71,31 @@
       "messages": [
         {
           "sender": "naru",
-          "text": "大会近いな"
+          "text": "もうすぐ大会だね"
         },
         {
           "sender": "naru",
-          "text": "まあ俺は別に緊張とかしねーけど"
+          "text": "まあ俺は優勝確定してるからノーダメだけどｗｗ"
         },
         {
           "sender": "naru",
-          "text": "お前は？ ビビってんの？"
+          "text": "お前は？ 腹痛めてんの？"
         }
       ],
       "replies": [
         {
           "text": "少し緊張してる",
-          "response": "だろうな。まあ場数踏むしかねーよ",
+          "response": "だろうな。まあ精々俺の引き立て役として頑張れば？",
           "affinity": 1
         },
         {
           "text": "全然",
-          "response": "ふーん。度胸だけはあるじゃん",
+          "response": "ふーん。イキってんじゃん。大会で泣かされても知らないよ",
           "affinity": 1
         },
         {
           "text": "楽しみにしてる",
-          "response": "へえ。まあ楽しめるうちに楽しんどけ",
+          "response": "へえ。エンジョイ勢乙って感じ",
           "affinity": 1
         }
       ]
