@@ -1223,6 +1223,11 @@ func _apply_charcoal_change(diff: int, is_new: bool) -> void:
 	GameManager.play_ui_se("confirm")
 	_show_step_result_and_next(msg, _show_adjustment_menu)
 
+func _show_step_result_and_next(msg: String, next_func: Callable) -> void:
+	_set_phase(6, "調整結果", msg)
+	_clear_choices()
+	_add_choice_button("次へ", next_func)
+
 
 func _show_pull_adjust_step() -> void:
 	_prepare_adjustment_target(_adjust_round)
@@ -1640,5 +1645,3 @@ func _finish_tutorial() -> void:
 	# wait a frame then defer call to change scene to ensure clean UI state
 	await get_tree().process_frame
 	get_tree().change_scene_to_file.call_deferred(next_scene)
-
-
