@@ -22,6 +22,12 @@ const SPOT_POSITIONS_DAY: Dictionary = {
 	"choizap": Vector2(160, 300),
 	"kannon": Vector2(600, 540),
 	"cafe": Vector2(840, 340),
+	"mukai": Vector2(800, 150),
+	"tokyo_shisha": Vector2(400, 100),
+	"tokyo_sightseeing": Vector2(200, 150),
+	"dubai_shisha": Vector2(600, 300),
+	"dubai_souq": Vector2(300, 400),
+	"dubai_cafe": Vector2(900, 400),
 }
 
 const SPOT_POSITIONS_NIGHT: Dictionary = {
@@ -30,6 +36,10 @@ const SPOT_POSITIONS_NIGHT: Dictionary = {
 	"naru": Vector2(1030, 254),
 	"adam": Vector2(720, 224),
 	"minto": Vector2(498, 286),
+	"mukai": Vector2(800, 150),
+	"tokyo_shisha": Vector2(400, 100),
+	"dubai_shisha": Vector2(600, 300),
+	"dubai_souq": Vector2(300, 400),
 }
 
 const FACE_BY_SPOT_ID: Dictionary = {
@@ -103,6 +113,9 @@ func _refresh_spots() -> void:
 func _build_spot_list() -> Array:
 	var spots: Array = []
 	
+	if CalendarManager.is_interval and GameManager.current_chapter == 3:
+		return _build_all_japan_spots()
+	
 	if GameManager.current_chapter == 3:
 		return _build_ch3_spots()
 	elif GameManager.current_chapter == 4:
@@ -133,6 +146,36 @@ func _build_spot_list() -> Array:
 		if _are_rival_shops_unlocked():
 			spots.append({"id": "adam", "label": "Eden（夜）"})
 			spots.append({"id": "minto", "label": "ぺぱーみんと（夜）"})
+	return spots
+
+func _build_all_japan_spots() -> Array:
+	var spots: Array = []
+	# 昼夜共通の拠点
+	spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
+	
+	if CalendarManager.current_time == "noon":
+		spots.append({"id": "tonari", "label": "tonari（地元）"})
+		spots.append({"id": "mukai", "label": "mukai（東京）"})
+		spots.append({"id": "naru", "label": "ケムリクサ"})
+		if _are_rival_shops_unlocked():
+			spots.append({"id": "adam", "label": "Eden"})
+			spots.append({"id": "minto", "label": "ぺぱーみんと"})
+		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り"})
+		spots.append({"id": "tokyo_sightseeing", "label": "東京観光"})
+		if EventFlags.get_flag("spot_choizap_unlocked"):
+			spots.append({"id": "choizap", "label": "チョイザップ"})
+		if EventFlags.get_flag("spot_kannon_unlocked"):
+			spots.append({"id": "kannon", "label": "観音"})
+		if EventFlags.get_flag("spot_cafe_unlocked"):
+			spots.append({"id": "cafe", "label": "カフェ"})
+	elif CalendarManager.current_time == "night":
+		spots.append({"id": "tonari", "label": "tonari（夜）"})
+		spots.append({"id": "mukai", "label": "mukai（夜）"})
+		spots.append({"id": "naru", "label": "ケムリクサ（夜）"})
+		if _are_rival_shops_unlocked():
+			spots.append({"id": "adam", "label": "Eden（夜）"})
+			spots.append({"id": "minto", "label": "ぺぱーみんと（夜）"})
+		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り（夜）"})
 	return spots
 
 func _build_ch3_spots() -> Array:

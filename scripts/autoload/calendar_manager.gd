@@ -63,7 +63,7 @@ const CHAPTER_CONFIG: Dictionary = {
 		"location": "全国大会 - 東京",
 		"overseas": true,
 		"overseas_stay_days": 7,
-		"interval_days": 5,
+		"interval_days": 14,
 		"companions": ["tsumugi"],
 	},
 	4: {
