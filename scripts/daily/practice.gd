@@ -352,6 +352,7 @@ func _on_pack_style_selected(style_id: String) -> void:
 		3,
 		"詰め方: 決定",
 		"選んだ詰め方: %s\n%s\n\nスミ「詰めで半分決まる。ここからが本当の勝負、熱の入れ方だ」" % [style_id.to_upper(), feedback]
+	)
 	_add_choice_button("次へ（アルミ張り）", _show_aluminum_step)
 
 func _show_aluminum_step() -> void:
