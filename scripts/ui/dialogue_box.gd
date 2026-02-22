@@ -191,11 +191,19 @@ func _show_next_line() -> void:
 	
 	# Condition check
 	if str(line.get("type", "")) == "condition":
-		var stat = str(line.get("stat", ""))
+		var cond_type = str(line.get("condition_type", "stat"))
 		var threshold = int(line.get("threshold", 0))
 		var val = 0
-		if stat != "":
-			val = PlayerData.get_stat(stat)
+		if cond_type == "stat":
+			var stat = str(line.get("stat", ""))
+			if stat != "":
+				val = PlayerData.get_stat(stat)
+		elif cond_type == "romance_count":
+			val = AffinityManager.get_romance_count()
+		elif cond_type == "has_romance":
+			var char_id = str(line.get("char_id", ""))
+			val = 1 if AffinityManager.is_in_romance(char_id) else 0
+			threshold = 1
 		
 		var branch_key = ""
 		if val >= threshold:
@@ -274,6 +282,11 @@ func _show_choices(choices: Array) -> void:
 	advance_button.disabled = true
 	advance_button.text = "選択"
 	for choice in choices:
+		var c_type = str(choice.get("condition_type", ""))
+		if c_type == "has_romance":
+			if not AffinityManager.is_in_romance(str(choice.get("char_id", ""))):
+				continue
+				
 		var button = Button.new()
 		button.text = str(choice.get("text", "選択肢"))
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL

@@ -2539,17 +2539,23 @@ func _get_rival_theme_bonus(rival_id: String, theme_id: String) -> float:
 
 
 func _apply_result_and_continue() -> void:
-	if _pending_reward > 0:
-		PlayerData.add_money(_pending_reward)
-		GameManager.log_money_change(_pending_reward)
+	if _player_rank == 1: # Assuming _player_rank is the correct variable for current rank
+		PlayerData.add_money(REWARD_BY_RANK[1])
+		PlayerData.add_stat("fame", 100)
+		GameManager.log_history("第4章大会", "優勝")
+		GameManager.queue_dialogue("res://data/dialogue/ending.json", "ending_start", "res://scenes/ui/staff_roll.tscn")
+		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+		return
+	else:
+		if _pending_reward > 0:
+			PlayerData.add_money(_pending_reward)
+			GameManager.log_money_change(_pending_reward)
 
-	if _player_rank == 1:
 		PlayerData.add_stat("charm", 2)
 		PlayerData.add_stat("guts", 1)
 		GameManager.log_stat_change("charm", 2)
 		GameManager.log_stat_change("guts", 1)
 		EventFlags.set_value("ch1_tournament_easy_mode", false)
-	else:
 		PlayerData.add_stat("insight", 1)
 		GameManager.log_stat_change("insight", 1)
 
