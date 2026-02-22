@@ -41,6 +41,23 @@ func _ready() -> void:
 
 func _launch_rival_dialogue(rival_id: String) -> void:
 	var count = int(EventFlags.get_value("visit_%s_count" % rival_id, 0))
+	
+	# Block naru visits in Chapter 1 after 3 visits (Affinity 3) or in Chapter 2/3 (training journey)
+	if rival_id == "naru":
+		if (GameManager.current_chapter == 1 and count >= 3) or (GameManager.current_chapter in [2, 3]):
+			_set_portrait("")
+			header_label.text = "ケムリクサ"
+			if GameManager.current_chapter == 1:
+				body_label.text = "店員「あー、今日なるさんは出勤してないっすね」\n\n（今日はいないようだ。他を回ろう）"
+			else:
+				body_label.text = "店員「あー、店長なら『自分のシーシャを見つめ直す』とか言って、いま遠くに修行の旅に出てるっすよ」\n\n（しばらく店には戻らないらしい。他を回ろう）"
+			_add_option("戻る", "none")
+			# Undo action cost
+			CalendarManager.undo_action()
+			_advance_on_exit = false
+			return
+
+	# Increment visit count
 	EventFlags.set_value("visit_%s_count" % rival_id, count + 1)
 
 	# Set met flag and intel on first visit
