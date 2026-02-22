@@ -382,9 +382,6 @@ func get_equipped_value(slot_type: String) -> String:
 		return equipment_charcoal
 	return ""
 
-func get_equipped_item_name(slot_type: String) -> String:
-	return get_equipment_name_by_value(get_equipped_value(slot_type))
-
 
 func get_equipment_combo_key() -> String:
 	return "%s:%s" % [equipment_bowl, equipment_hms]
