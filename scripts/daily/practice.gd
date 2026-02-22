@@ -11,6 +11,8 @@ const TEMP_LEVEL_MAX := 1.0
 
 @onready var header_label: Label = %HeaderLabel
 @onready var phase_label: Label = %PhaseLabel
+@onready var info_label: RichTextLabel = %InfoLabel
+@onready var choice_container: VBoxContainer = %ChoiceContainer
 @onready var status_panel = $StatusPanel
 
 var _selected_pack_style: String = "standard"
