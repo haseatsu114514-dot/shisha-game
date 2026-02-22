@@ -143,12 +143,12 @@ func _build_spot_list() -> Array:
 func _build_ch3_spots() -> Array:
 	var spots: Array = []
 	if CalendarManager.current_time == "noon":
-		spots.append({"id": "tonari_tokyo", "label": "tonari 東京店"})
+		spots.append({"id": "mukai", "label": "mukai"})
 		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
 		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り"})
 		spots.append({"id": "tokyo_sightseeing", "label": "東京観光"})
 	elif CalendarManager.current_time == "night":
-		spots.append({"id": "tonari_tokyo", "label": "tonari 東京店（夜）"})
+		spots.append({"id": "mukai", "label": "mukai（夜）"})
 		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]（夜）"})
 		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り（夜）"})
 		spots.append({"id": "home", "label": "ホテルで休む"})
@@ -283,7 +283,7 @@ func _enter_spot(spot: Dictionary) -> void:
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 
 		# --- Chapter 3 (Tokyo) Spots ---
-		"tonari_tokyo":
+		"mukai":
 			get_tree().change_scene_to_file("res://scenes/daily/baito.tscn")
 		"tokyo_shisha":
 			if not CalendarManager.use_action():

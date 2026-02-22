@@ -171,7 +171,7 @@ func _load_events() -> void:
 func _show_main_menu() -> void:
 	match GameManager.current_chapter:
 		3:
-			header_label.text = "tonari 東京店"
+			header_label.text = "mukai"
 		4:
 			header_label.text = "現地のシーシャ屋"
 		_:
@@ -229,7 +229,7 @@ func _show_shift_menu() -> void:
 	
 	match GameManager.current_chapter:
 		3:
-			body_label.text = "東京店でヘルプに入りますか？"
+			body_label.text = "スミさんの元同僚が営む系列店「mukai」でヘルプに入りますか？\n（新しい技術を学べるかもしれません）"
 			half_text = "半日ヘルプ（昼のみ / 給与+8000円）"
 			full_text = "夜までヘルプ（昼+夜 / 給与+18000円）"
 			night_text = "夜ヘルプ（夜のみ / 給与+10000円）"
