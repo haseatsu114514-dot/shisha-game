@@ -157,6 +157,21 @@ const BOWL_PRACTICE_BONUS := {
 		"aroma": {"sense": 1},
 		"presentation": {"charm": 1},
 	},
+	"suyaki_naru": {
+		"aroma": {"sense": 2},
+		"presentation": {"charm": 1},
+		"packing": {"technique": 1},
+	},
+	"suyaki_adam": {
+		"packing": {"technique": 2},
+		"aroma": {"sense": 1},
+		"rush": {"guts": 1},
+	},
+	"suyaki_minto": {
+		"presentation": {"charm": 2},
+		"aroma": {"sense": 1},
+		"packing": {"technique": 1},
+	},
 }
 
 const HMS_PRACTICE_BONUS := {
@@ -485,6 +500,26 @@ func can_equip(slot_type: String, value: String) -> bool:
 		return false
 
 	return is_equipment_pair_compatible(next_bowl, next_hms)
+
+
+func get_equipment_flavor_bonus(flavors: Array[String]) -> Dictionary:
+	var spec = 0.0
+	var aud = 0.0
+	var has_mint = "mint" in flavors
+	var has_double_apple = "double_apple" in flavors
+	var has_vanilla = "vanilla" in flavors
+	
+	if equipment_bowl == "suyaki_minto" and has_mint:
+		aud += 5.0
+		spec += 2.0
+	elif equipment_bowl == "suyaki_adam" and has_double_apple:
+		spec += 6.0
+		aud += 1.0
+	elif equipment_bowl == "suyaki_naru" and has_vanilla:
+		spec += 3.0
+		aud += 4.0
+		
+	return {"specialist": spec, "audience": aud}
 
 
 func equip_item(slot_type: String, value: String) -> bool:

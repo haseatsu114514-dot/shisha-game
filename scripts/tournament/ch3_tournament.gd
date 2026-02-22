@@ -2437,6 +2437,12 @@ func _compute_player_score_components() -> Dictionary:
 		specialist_mix_bonus += 4.0
 		audience_mix_bonus += 5.0
 
+	
+	var eq_flavor_bonus = PlayerData.get_equipment_flavor_bonus(_selected_flavors)
+	specialist_mix_bonus += float(eq_flavor_bonus.get("specialist", 0.0))
+	audience_mix_bonus += float(eq_flavor_bonus.get("audience", 0.0))
+
+
 	var pipe_spec_bonus = 0.0
 	var pipe_aud_bonus = 0.0
 	if PlayerData.PIPE_DATA.has(PlayerData.equipment_pipe):

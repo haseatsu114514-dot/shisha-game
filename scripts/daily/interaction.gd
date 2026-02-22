@@ -104,6 +104,13 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 	else:
 		dialogue_id = "ch1_%s_fifth" % rival_id
 		metadata["add_affinity"] = {rival_id: 1}
+		match rival_id:
+			"minto":
+				metadata["add_equipment"] = [{"slot_type": "bowl", "value": "suyaki_minto"}]
+			"adam":
+				metadata["add_equipment"] = [{"slot_type": "bowl", "value": "suyaki_adam"}]
+			"naru":
+				metadata["add_equipment"] = [{"slot_type": "bowl", "value": "suyaki_naru"}]
 
 	# Queue dialogue and go to dialogue scene
 	var return_scene = "res://scenes/daily/map.tscn"

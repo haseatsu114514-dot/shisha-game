@@ -98,6 +98,39 @@
       "price": 3000,
       "value": "winkwink_hagal",
       "description": "素焼きなど大きいハガル向け。熱持ちは良いが熱が入りづらい。"
+    },
+    {
+      "id": "suyaki_minto",
+      "type": "bowl",
+      "name": "育った素焼き（ミント）",
+      "chapter_min": 99,
+      "buy_price": 5000,
+      "sell_price": 2500,
+      "price": 5000,
+      "value": "suyaki_minto",
+      "description": "みんちゃんが使い込んだ素焼きハガル。ミントの清涼感が染み付いている。"
+    },
+    {
+      "id": "suyaki_adam",
+      "type": "bowl",
+      "name": "育った素焼き（Wアップル）",
+      "chapter_min": 99,
+      "buy_price": 5000,
+      "sell_price": 2500,
+      "price": 5000,
+      "value": "suyaki_adam",
+      "description": "アダムの執念が宿る素焼きハガル。ダブルアップルの重層的な香りを極限まで引き出す。"
+    },
+    {
+      "id": "suyaki_naru",
+      "type": "bowl",
+      "name": "育った素焼き（バニラ）",
+      "chapter_min": 99,
+      "buy_price": 5000,
+      "sell_price": 2500,
+      "price": 5000,
+      "value": "suyaki_naru",
+      "description": "なるが愛用した素焼きハガル。バニラの甘い香味が深く根付いている。"
     }
   ]
 }
