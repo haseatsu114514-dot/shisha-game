@@ -1,0 +1,76 @@
+{
+    "dialogues": [
+        {
+            "dialogue_id": "ch4_dubai_souq",
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "ドバイの旧市街、スパイス・スーク（市場）へと足を運んだ。"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "無数のスパイスが山積みにされ、異国情緒あふれる香りが鼻をくすぐる。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "smile",
+                    "text": "（すごい活気だ……この香辛料、新しいフレーバーミックスのヒントになるかもしれないぞ）"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "本場の香りに触れ、ステータスが大きくアップした！"
+                },
+                {
+                    "type": "choice",
+                    "choices": [
+                        {
+                            "text": "ホテルに戻る",
+                            "next_id": "ch4_return"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "dialogue_id": "ch4_dubai_cafe",
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "ドバイの中心地にある超高級カフェに入った。"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "見渡す限りのVIPたち。飛び交う言語も様々だが、誰もが優雅な時間を楽しんでいる。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "nervous",
+                    "text": "（コーヒー一杯でこの値段か……でも、これも一流を知るための勉強代だ）"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "最高級のサービスを体感し、【センス】と【魅力】が大きくアップした！"
+                },
+                {
+                    "type": "choice",
+                    "choices": [
+                        {
+                            "text": "ホテルに戻る",
+                            "next_id": "ch4_return"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "dialogue_id": "ch4_return",
+            "lines": []
+        }
+    ]
+}

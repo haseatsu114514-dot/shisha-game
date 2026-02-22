@@ -104,6 +104,13 @@ func _refresh_spots() -> void:
 
 func _build_spot_list() -> Array:
 	var spots: Array = []
+	
+	if GameManager.current_chapter == 3:
+		return _build_ch3_spots()
+	elif GameManager.current_chapter == 4:
+		return _build_ch4_spots()
+		
+	# Chapter 1 or 2 (Local)
 	if CalendarManager.is_tournament_day():
 		spots.append({"id": "tonari", "label": "tonari（大会会場）"})
 		return spots
@@ -126,11 +133,39 @@ func _build_spot_list() -> Array:
 		spots.append({"id": "tonari", "label": "tonari（夜）"})
 		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]（夜）"})
 		spots.append({"id": "setting", "label": "自宅 [機材変更]"})
-		spots.append({"id": "home", "label": "自宅で休む"})
+		spots.append({"id": "home", "label": "ホテルで休む"})
 		spots.append({"id": "naru", "label": "ケムリクサ（夜）"})
 		if _are_rival_shops_unlocked():
 			spots.append({"id": "adam", "label": "Eden（夜）"})
 			spots.append({"id": "minto", "label": "ぺぱーみんと（夜）"})
+	return spots
+
+func _build_ch3_spots() -> Array:
+	var spots: Array = []
+	if CalendarManager.current_time == "noon":
+		spots.append({"id": "tonari_tokyo", "label": "tonari 東京店"})
+		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
+		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り"})
+		spots.append({"id": "tokyo_sightseeing", "label": "東京観光"})
+	elif CalendarManager.current_time == "night":
+		spots.append({"id": "tonari_tokyo", "label": "tonari 東京店（夜）"})
+		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]（夜）"})
+		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り（夜）"})
+		spots.append({"id": "home", "label": "ホテルで休む"})
+	return spots
+
+func _build_ch4_spots() -> Array:
+	var spots: Array = []
+	if CalendarManager.current_time == "noon":
+		spots.append({"id": "dubai_shisha", "label": "現地のシーシャ屋"})
+		spots.append({"id": "shop", "label": "Dr.Hookah Dubai [SHOP]"})
+		spots.append({"id": "dubai_souq", "label": "スパイス・スーク（市場）"})
+		spots.append({"id": "dubai_cafe", "label": "ドバイの高級カフェ"})
+	elif CalendarManager.current_time == "night":
+		spots.append({"id": "dubai_shisha", "label": "現地のシーシャ屋（夜）"})
+		spots.append({"id": "shop", "label": "Dr.Hookah Dubai [SHOP]（夜）"})
+		spots.append({"id": "dubai_souq", "label": "スパイス・スーク（夜）"})
+		spots.append({"id": "home", "label": "ホテルで休む"})
 	return spots
 
 
@@ -245,6 +280,69 @@ func _enter_spot(spot: Dictionary) -> void:
 			GameManager.log_stat_change("sense", 1.5)
 			GameManager.set_transient("advance_time_after_scene", true)
 			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_cafe_visit", "res://scenes/daily/map.tscn")
+			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+
+		# --- Chapter 3 (Tokyo) Spots ---
+		"tonari_tokyo":
+			get_tree().change_scene_to_file("res://scenes/daily/baito.tscn")
+		"tokyo_shisha":
+			if not CalendarManager.use_action():
+				_try_auto_return_home()
+				return
+			# Gain Technique & Sense
+			PlayerData.add_stat("technique", 1.0)
+			PlayerData.add_stat("sense", 1.0)
+			GameManager.log_stat_change("technique", 1.0)
+			GameManager.log_stat_change("sense", 1.0)
+			GameManager.set_transient("advance_time_after_scene", true)
+			GameManager.queue_dialogue("res://data/dialogue/ch3_spots.json", "ch3_tokyo_shisha", "res://scenes/daily/map.tscn")
+			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+		"tokyo_sightseeing":
+			if not CalendarManager.use_action():
+				_try_auto_return_home()
+				return
+			# Gain Guts & Insight
+			PlayerData.add_stat("guts", 1.0)
+			PlayerData.add_stat("insight", 1.0)
+			GameManager.log_stat_change("guts", 1.0)
+			GameManager.log_stat_change("insight", 1.0)
+			GameManager.set_transient("advance_time_after_scene", true)
+			GameManager.queue_dialogue("res://data/dialogue/ch3_spots.json", "ch3_tokyo_sightseeing", "res://scenes/daily/map.tscn")
+			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+			
+		# --- Chapter 4 (Dubai) Spots ---
+		"dubai_shisha":
+			get_tree().change_scene_to_file("res://scenes/daily/baito.tscn")
+		"dubai_souq":
+			if not CalendarManager.use_action():
+				_try_auto_return_home()
+				return
+			# Gain random stats massively
+			var stats = ["technique", "sense", "guts", "charm", "insight"]
+			var chosen_stat = stats[randi() % stats.size()]
+			PlayerData.add_stat(chosen_stat, 2.0)
+			GameManager.log_stat_change(chosen_stat, 2.0)
+			GameManager.set_transient("advance_time_after_scene", true)
+			GameManager.queue_dialogue("res://data/dialogue/ch4_spots.json", "ch4_dubai_souq", "res://scenes/daily/map.tscn")
+			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+		"dubai_cafe":
+			if not CalendarManager.use_action():
+				_try_auto_return_home()
+				return
+			# High sense & charm gain, but costs money
+			var cost = 3000
+			if PlayerData.money < cost:
+				message_label.text = "高級カフェに入るには %d円 必要です。" % cost
+				CalendarManager.undo_action() # refund action point
+				return
+			PlayerData.spend_money(cost)
+			GameManager.log_money_change(-cost)
+			PlayerData.add_stat("sense", 1.5)
+			PlayerData.add_stat("charm", 1.5)
+			GameManager.log_stat_change("sense", 1.5)
+			GameManager.log_stat_change("charm", 1.5)
+			GameManager.set_transient("advance_time_after_scene", true)
+			GameManager.queue_dialogue("res://data/dialogue/ch4_spots.json", "ch4_dubai_cafe", "res://scenes/daily/map.tscn")
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 
 

@@ -1,0 +1,76 @@
+{
+    "dialogues": [
+        {
+            "dialogue_id": "ch3_tokyo_shisha",
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "東京の知名度が高いシーシャ屋に足を運んだ。"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "洗練された内装、確かな技術で作られた煙……学ぶべきポイントは多い。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "smile",
+                    "text": "（なるほど、こういうセッティングの仕方もあるのか……）"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "他店の技を吸収し、【技術】と【センス】がアップした！"
+                },
+                {
+                    "type": "choice",
+                    "choices": [
+                        {
+                            "text": "ホテルに戻る",
+                            "next_id": "ch3_return"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "dialogue_id": "ch3_tokyo_sightseeing",
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "せっかく東京に来たのだからと、少し足を伸ばして観光名所を回ることにした。"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "人の多さに圧倒されつつも、色々な刺激を受けることができた。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "smile",
+                    "text": "（たまにはこういう気分転換も大事だよな）"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "東京の空気を吸い、【根性】と【洞察力】がアップした！"
+                },
+                {
+                    "type": "choice",
+                    "choices": [
+                        {
+                            "text": "ホテルに戻る",
+                            "next_id": "ch3_return"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "dialogue_id": "ch3_return",
+            "lines": []
+        }
+    ]
+}

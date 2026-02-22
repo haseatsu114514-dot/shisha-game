@@ -1,0 +1,187 @@
+{
+    "dialogues": [
+        {
+            "dialogue_id": "confession_minto",
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "店を出ようとしたとき、みんちゃんが後を追ってきた。"
+                },
+                {
+                    "speaker": "minto",
+                    "face": "smile",
+                    "text": "ねえ、はじめくん！"
+                },
+                {
+                    "speaker": "minto",
+                    "face": "normal",
+                    "text": "最近ずっとお店に来てくれてるじゃん？ 最初はただのライバル店の子って思ってたけど……"
+                },
+                {
+                    "speaker": "minto",
+                    "face": "smile",
+                    "text": "私、キミのこと本気で好きになっちゃったかも。付き合ってくれない？"
+                },
+                {
+                    "type": "choice",
+                    "choices": [
+                        {
+                            "text": "俺も好きです。よろしくお願いします",
+                            "next_id": "confession_minto_accept"
+                        },
+                        {
+                            "text": "ごめんなさい、ライバルとして見ています",
+                            "next_id": "confession_minto_reject"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "dialogue_id": "confession_minto_accept",
+            "metadata": {
+                "set_romance": "minto"
+            },
+            "lines": [
+                {
+                    "speaker": "minto",
+                    "face": "smile",
+                    "text": "えっ、ほんと！？ はわわ……すっごい嬉しい！ じゃ、今日から恋人だね♡"
+                }
+            ]
+        },
+        {
+            "dialogue_id": "confession_minto_reject",
+            "lines": [
+                {
+                    "speaker": "minto",
+                    "face": "normal",
+                    "text": "そっか……ううん、変なこと言ってごめん！ これからもライバルとしてよろしくね！"
+                }
+            ]
+        },
+        {
+            "dialogue_id": "confession_tsumugi",
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "帰り道、ふと振り返ると、紡がとてとてと少し後ろをついてきていた。"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……あのね"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "お店に行くといつも優しくしてくれて、私のシーシャも美味しいって言ってくれて……"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "smile",
+                    "text": "その、わたし、あなたのこと……特別に想ってます。……彼女になりたい、です。"
+                },
+                {
+                    "type": "choice",
+                    "choices": [
+                        {
+                            "text": "もちろん。俺でよければ",
+                            "next_id": "confession_tsumugi_accept"
+                        },
+                        {
+                            "text": "ごめん、かわいい妹みたいな存在かな",
+                            "next_id": "confession_tsumugi_reject"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "dialogue_id": "confession_tsumugi_accept",
+            "metadata": {
+                "set_romance": "tsumugi"
+            },
+            "lines": [
+                {
+                    "speaker": "tsumugi",
+                    "face": "smile",
+                    "text": "……！ ほんとに！？ えへへ……大切にするね。大好きだよ。"
+                }
+            ]
+        },
+        {
+            "dialogue_id": "confession_tsumugi_reject",
+            "lines": [
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……そっか。うん、わかった。ごめんなさい、忘れて……！"
+                }
+            ]
+        },
+        {
+            "dialogue_id": "confession_ageha",
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "帰り際、呼び止められた。"
+                },
+                {
+                    "speaker": "ageha",
+                    "face": "normal",
+                    "text": "ねえキミ"
+                },
+                {
+                    "speaker": "ageha",
+                    "face": "normal",
+                    "text": "アタシがこんなに足しげく通うなんて、自分でも驚いてるんだけどさ"
+                },
+                {
+                    "speaker": "ageha",
+                    "face": "smile",
+                    "text": "アタシのモノにならない？ キミのこと、独占したくなったわ"
+                },
+                {
+                    "type": "choice",
+                    "choices": [
+                        {
+                            "text": "はい、アゲハさんのものです",
+                            "next_id": "confession_ageha_accept"
+                        },
+                        {
+                            "text": "俺は誰のモノでもないです",
+                            "next_id": "confession_ageha_reject"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "dialogue_id": "confession_ageha_accept",
+            "metadata": {
+                "set_romance": "ageha"
+            },
+            "lines": [
+                {
+                    "speaker": "ageha",
+                    "face": "smile",
+                    "text": "ふふっ、いい返事。じゃあ決定ね。アタシの特等席、空けといてよ？"
+                }
+            ]
+        },
+        {
+            "dialogue_id": "confession_ageha_reject",
+            "lines": [
+                {
+                    "speaker": "ageha",
+                    "face": "normal",
+                    "text": "……チッ、生意気。まあいいわ、そういう気高いところも嫌いじゃないから。"
+                }
+            ]
+        }
+    ]
+}

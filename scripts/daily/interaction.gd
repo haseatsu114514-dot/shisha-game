@@ -6,8 +6,9 @@ extends Control
 @onready var character_portrait: TextureRect = %CharacterPortrait
 
 var _target: String = ""
-var _event_id: String = ""
-var _advance_on_exit = false
+var _is_working: bool = false
+var _advance_on_exit: bool = false
+var _pending_confession: String = ""
 
 const CHARACTER_NAME_MAP := {
 	"naru": "なる",
@@ -146,6 +147,12 @@ func _apply_affinity_gain(character_id: String, amount: int = 1) -> void:
 	else:
 		body_label.text += "\n好感度 %d / %d  %s" % [after, max_level, star_text]
 
+	# Check if affinity reached max level and not in romance yet
+	if after >= max_level and before < max_level and not AffinityManager.is_in_romance(character_id):
+		# Only certain characters have confession events (minto, tsumugi, ageha)
+		if character_id in ["minto", "tsumugi", "ageha"]:
+			_pending_confession = character_id
+
 
 func _append_character_flavor_hint(character_id: String) -> void:
 	var labels: Array[String] = PlayerData.get_character_flavor_top_labels(character_id, 2)
@@ -187,6 +194,25 @@ func _set_portrait(character_id: String) -> void:
 
 
 func _on_back_button_pressed() -> void:
+	if _pending_confession != "":
+		# Queue the confession dialogue and go there instead of returning
+		var event_file = "res://data/dialogue/confession.json"
+		var event_id = "confession_%s" % _pending_confession
+		# Set return scene based on what time it will be after advancing time
+		var return_scene = "res://scenes/daily/map.tscn"
+		if _advance_on_exit and CalendarManager.current_time == "midnight":
+			return_scene = "res://scenes/daily/night_end.tscn"
+		elif not _advance_on_exit and CalendarManager.current_time == "midnight":
+			return_scene = "res://scenes/daily/night_end.tscn"
+		
+		# Important: We advance time before leaving interaction if needed
+		if _advance_on_exit:
+			CalendarManager.advance_time()
+			
+		GameManager.queue_dialogue(event_file, event_id, return_scene)
+		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+		return
+
 	if _advance_on_exit:
 		CalendarManager.advance_time()
 	if CalendarManager.current_time == "midnight":
