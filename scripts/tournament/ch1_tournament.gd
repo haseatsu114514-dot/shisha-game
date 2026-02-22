@@ -1167,12 +1167,62 @@ func _on_charcoal_place_selected(count: int) -> void:
 	_show_step_result_and_next("炭配置結果: 専門 %+d / 一般 %+d" % [int(round(delta_spec)), int(round(delta_aud))], _show_steam_step)
 
 
+var _steam_timer_label: Label
+
 func _show_steam_step() -> void:
 	_set_phase(7, "蒸らしタイマー", "5〜10分から蒸らし時間を設定。")
 	_clear_choices()
-	for minute in [5, 6, 7, 8, 9, 10]:
-		_add_choice_button("%d分" % minute, _on_steam_selected.bind(minute))
+	_steam_minutes = 6
+	
+	var ui_container = VBoxContainer.new()
+	ui_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	ui_container.add_theme_constant_override("separation", 16)
+	choice_container.add_child(ui_container)
+	
+	_steam_timer_label = Label.new()
+	_steam_timer_label.add_theme_font_size_override("font_size", 48)
+	_steam_timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	ui_container.add_child(_steam_timer_label)
+	
+	var control_row = HBoxContainer.new()
+	control_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	control_row.add_theme_constant_override("separation", 24)
+	ui_container.add_child(control_row)
+	
+	var minus_btn = Button.new()
+	minus_btn.text = "－1分"
+	minus_btn.custom_minimum_size = Vector2(80, 48)
+	minus_btn.pressed.connect(_on_steam_adjust.bind(-1))
+	control_row.add_child(minus_btn)
+	
+	var plus_btn = Button.new()
+	plus_btn.text = "＋1分"
+	plus_btn.custom_minimum_size = Vector2(80, 48)
+	plus_btn.pressed.connect(_on_steam_adjust.bind(1))
+	control_row.add_child(plus_btn)
+	
+	var start_btn = Button.new()
+	start_btn.text = "START (決定)"
+	start_btn.custom_minimum_size = Vector2(200, 56)
+	start_btn.add_theme_color_override("font_color", Color(1, 0.9, 0.4))
+	start_btn.pressed.connect(func(): _on_steam_selected(_steam_minutes))
+	ui_container.add_child(start_btn)
+	
+	_update_steam_timer_display()
 	_refresh_side_panel()
+
+func _on_steam_adjust(diff: int) -> void:
+	_steam_minutes += diff
+	if _steam_minutes < 5:
+		_steam_minutes = 5
+	elif _steam_minutes > 10:
+		_steam_minutes = 10
+	GameManager.play_ui_se("cursor")
+	_update_steam_timer_display()
+
+func _update_steam_timer_display() -> void:
+	if _steam_timer_label:
+		_steam_timer_label.text = "%02d : 00" % _steam_minutes
 
 
 func _on_steam_selected(minutes: int) -> void:
