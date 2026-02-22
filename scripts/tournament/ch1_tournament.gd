@@ -101,6 +101,8 @@ const PRESENTATION_FOCUS_LABEL := {
 @onready var score_label: RichTextLabel = %ScoreLabel
 @onready var memo_label: RichTextLabel = %MemoLabel
 
+@onready var status_panel = $SidePanel/SideMargin/SideVBox/StatusPanel
+
 var _theme: Dictionary = {}
 var _random_judge: Dictionary = {}
 var _selected_bowl: String = ""
@@ -136,6 +138,20 @@ var _pull_is_holding: bool = false
 var _pull_step_resolved: bool = false
 var _pull_hold_button: Button
 var _pull_setting_hint: String = ""
+
+var _adjust_target_action: String = ""
+var _adjust_selected_action: String = ""
+var _adjustment_action_count: int = 0
+var _adjust_gauge_value: float = 0.5
+var _adjust_gauge_direction: float = 1.0
+var _adjust_gauge_speed: float = 1.0
+var _adjust_target_center: float = 0.5
+var _adjust_target_width: float = 0.18
+var _adjust_timer: Timer
+var _adjust_is_holding: bool = false
+var _adjust_step_finished: bool = false
+var _adjust_success_count: int = 0
+
 var _mind_timer: Timer
 var _mind_active: bool = false
 var _mind_arena_layer: ColorRect
@@ -187,6 +203,18 @@ var _presentation_primary_focus: String = ""
 var _presentation_secondary_focus: String = ""
 
 
+func _process(_delta: float) -> void:
+	if status_panel and status_panel.has_method("update_status"):
+		var mapped_temp = clampf(0.5 + float(_heat_state) * 0.1, 0.0, 1.0)
+		var pass_line = 0.5 - 0.1
+		var top_line = 0.5 + 0.1
+		var zone_text = "適温"
+		if _heat_state >= 2:
+			zone_text = "熱い"
+		elif _heat_state <= -2:
+			zone_text = "弱い"
+		status_panel.update_status(mapped_temp, zone_text, _selected_charcoal_count, pass_line, top_line)
+
 func _ready() -> void:
 	randomize()
 	GameManager.play_bgm(GameManager.BGM_TONARI_PATH, -8.0, true)
@@ -195,6 +223,13 @@ func _ready() -> void:
 	_pull_timer.one_shot = false
 	_pull_timer.timeout.connect(_on_pull_gauge_tick)
 	add_child(_pull_timer)
+	
+	_adjust_timer = Timer.new()
+	_adjust_timer.wait_time = 0.03
+	_adjust_timer.one_shot = false
+	_adjust_timer.timeout.connect(_on_adjust_timer_tick)
+	add_child(_adjust_timer)
+
 	_aluminum_timer = Timer.new()
 	_aluminum_timer.wait_time = 0.16
 	_aluminum_timer.one_shot = false
@@ -1607,8 +1642,8 @@ func _update_mind_bullets(dt: float) -> void:
 
 
 func _is_mind_barrage_collision(bullet_pos: Vector2, bullet_size: Vector2) -> bool:
-	var player_rect = Rect2(_mind_player_pos - _mind_player_size * 0.5, _mind_player_size)
-	var bullet_rect = Rect2(bullet_pos - bullet_size * 0.45, bullet_size * 0.9)
+	var player_rect = Rect2(_mind_player_pos - _mind_player_size * 0.25, _mind_player_size * 0.5)
+	var bullet_rect = Rect2(bullet_pos - bullet_size * 0.2, bullet_size * 0.4)
 	return player_rect.intersects(bullet_rect)
 
 
@@ -2072,23 +2107,64 @@ func _on_serving_confirmed() -> void:
 	_technical_points += spec_gain
 	_audience_points += aud_gain
 	GameManager.play_ui_se("confirm")
-	_show_step_result_and_next("提供評価: 専門 %+d / 一般 %+d%s" % [int(round(spec_gain)), int(round(aud_gain)), bonus_text], _show_adjustment_step.bind(0))
+	_show_step_result_and_next("提供評価: 専門 %+d / 一般 %+d%s" % [int(round(spec_gain)), int(round(aud_gain)), bonus_text], _show_adjustment_menu.bind(0))
 
 
-func _show_adjustment_step(round_index: int) -> void:
+func _show_adjustment_menu(round_index: int) -> void:
 	var step_no = 10 + round_index
-	var target_action = _target_adjust_action()
-	var cue_lines: Array[String] = []
-	cue_lines.append(_build_adjustment_cue(target_action, round_index))
-	cue_lines.append("")
-	cue_lines.append("成功条件: 温度状態に合った方向を選ぶ。")
-	cue_lines.append("成功で温度は中央に戻り、失敗で熱状態が悪化する。")
-	_set_phase(step_no, "提供後の調整 %d回目" % (round_index + 1), "\n".join(cue_lines))
+	_set_phase(step_no, "提供後の調整 %d回目" % (round_index + 1), "現在の炭: %d個 / 熱状態: %d\nどう調整する？" % [_selected_charcoal_count, _heat_state])
 	_clear_choices()
-	_add_choice_button("温度を上げる（蓋を閉める）", _on_adjustment_choice.bind("up", target_action, round_index))
-	_add_choice_button("現状維持", _on_adjustment_choice.bind("stay", target_action, round_index))
-	_add_choice_button("温度を下げる（蓋を開ける）", _on_adjustment_choice.bind("down", target_action, round_index))
-	_refresh_side_panel()
+
+	_add_choice_button("炭の調整を行う", _show_charcoal_adjust_step.bind(round_index))
+	_add_choice_button("吸い出しで微調整する", _show_pull_adjust_step.bind(round_index))
+	
+	if _adjustment_action_count >= 2:
+		_add_choice_button("調整を終える（次に進む）", _finish_adjustment_phase.bind(round_index))
+	else:
+		var btn = _add_choice_button("調整を終える（あと%d回アクションが必要）" % (2 - _adjustment_action_count), _finish_adjustment_phase.bind(round_index))
+		btn.disabled = true
+
+
+func _show_charcoal_adjust_step(round_index: int) -> void:
+	_set_phase(10 + round_index, "炭の調整", "現在の炭は%d個だ。どうする？\n※炭の増減は熱状態に直結する。" % _selected_charcoal_count)
+	_clear_choices()
+	
+	if _selected_charcoal_count > 2:
+		_add_choice_button("炭を1個減らす（現在%d -> %d）" % [_selected_charcoal_count, _selected_charcoal_count - 1], _apply_charcoal_change.bind(-1, false, round_index))
+	if _selected_charcoal_count < 4:
+		_add_choice_button("炭を1個増やす（現在%d -> %d）" % [_selected_charcoal_count, _selected_charcoal_count + 1], _apply_charcoal_change.bind(1, false, round_index))
+	_add_choice_button("新しい炭に交換する", _apply_charcoal_change.bind(0, true, round_index))
+	_add_choice_button("戻る", _show_adjustment_menu.bind(round_index))
+
+
+func _apply_charcoal_change(diff: int, is_new: bool, round_index: int) -> void:
+	_selected_charcoal_count += diff
+	var heat_change = diff
+	if is_new:
+		heat_change += 1
+	
+	_heat_state = clampi(_heat_state + heat_change, -3, 3)
+	_adjustment_action_count += 1
+	
+	var msg = "炭の数を調整した。" if diff != 0 else "新しい炭に交換した。温度が少し上がる。"
+	GameManager.play_ui_se("confirm")
+	_show_step_result_and_next(msg, _show_adjustment_menu.bind(round_index))
+
+
+func _show_pull_adjust_step(round_index: int) -> void:
+	var target_action = _target_adjust_action()
+	_adjust_target_action = target_action
+	var cue = _build_adjustment_cue(target_action, round_index)
+	_set_phase(
+		10 + round_index,
+		"吸い出し微調整",
+		cue + "\n方向を選択してから、ゲージでタイミング調整する。"
+	)
+	_clear_choices()
+	_add_choice_button("温度を上げる（蓋を閉める・強めに吸う）", _on_adjust_action_selected.bind("up", round_index))
+	_add_choice_button("現状維持", _on_adjust_action_selected.bind("stay", round_index))
+	_add_choice_button("温度を下げる（蓋を開ける・弱めに吸う）", _on_adjust_action_selected.bind("down", round_index))
+	_add_choice_button("戻る", _show_adjustment_menu.bind(round_index))
 
 
 func _target_adjust_action() -> String:
@@ -2141,20 +2217,100 @@ func _adjust_action_label(action: String) -> String:
 			return "現状維持"
 
 
-func _on_adjustment_choice(chosen_action: String, target_action: String, round_index: int) -> void:
-	var success = chosen_action == target_action
+func _on_adjust_action_selected(action_id: String, round_index: int) -> void:
+	_adjust_selected_action = action_id
+	_show_adjustment_gauge_step(round_index)
+
+
+func _show_adjustment_gauge_step(round_index: int) -> void:
+	_set_phase(
+		10 + round_index,
+		"微調整ゲージ",
+		"選択した方向: %s\n押している間だけ調整、離した瞬間で判定。\n判定は PERFECT / GOOD / NEAR / MISS。" % _adjust_action_label(_adjust_selected_action)
+	)
+	_clear_choices()
+	_adjust_step_finished = false
+	_adjust_is_holding = false
+	
+	var speed = 1.02 + float(abs(_heat_state)) * 0.16
+	_adjust_gauge_speed = clampf(speed, 0.8, 2.4)
+	_adjust_target_width = clampf(0.18 - float(abs(_heat_state)) * 0.015, 0.08, 0.22)
+	_adjust_target_center = clampf(0.5 + randf_range(-0.08, 0.08), 0.2, 0.8)
+	_adjust_gauge_value = clampf(_adjust_target_center + randf_range(-0.2, 0.2), 0.0, 1.0)
+	_adjust_gauge_direction = 1.0
+
+	var hold_button = Button.new()
+	hold_button.text = "押して調整（離して決定）"
+	hold_button.custom_minimum_size = Vector2(0, 48)
+	hold_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hold_button.button_down.connect(_on_adjust_hold_started)
+	hold_button.button_up.connect(func(): _on_adjust_hold_released(round_index))
+	choice_container.add_child(hold_button)
+
+	_update_adjust_text("調整待機中")
+
+
+func _on_adjust_hold_started() -> void:
+	if _adjust_step_finished or _adjust_is_holding:
+		return
+	_adjust_is_holding = true
+	if _adjust_timer.is_stopped():
+		_adjust_timer.start()
+	GameManager.play_ui_se("cursor")
+	_update_adjust_text("調整中...離すと判定")
+
+
+func _on_adjust_hold_released(round_index: int) -> void:
+	if _adjust_step_finished or not _adjust_is_holding:
+		return
+	_adjust_is_holding = false
+	if not _adjust_timer.is_stopped():
+		_adjust_timer.stop()
+	_resolve_adjustment_round(round_index)
+
+
+func _on_adjust_timer_tick() -> void:
+	if not _adjust_is_holding:
+		return
+	var delta = _adjust_timer.wait_time
+	_adjust_gauge_value += _adjust_gauge_direction * _adjust_gauge_speed * delta
+	if _adjust_gauge_value >= 1.0:
+		_adjust_gauge_value = 1.0
+		_adjust_gauge_direction = -1.0
+	elif _adjust_gauge_value <= 0.0:
+		_adjust_gauge_value = 0.0
+		_adjust_gauge_direction = 1.0
+	_update_adjust_text("調整中...離すと判定")
+
+
+func _update_adjust_text(status_text: String) -> void:
+	var bar = _build_gauge_bar(_adjust_gauge_value, _adjust_target_center, _adjust_target_width)
+	var lines: Array[String] = []
+	lines.append(status_text)
+	lines.append("タイミング目標帯 ■ / ポインタ ◆")
+	lines.append(bar)
+	info_label.text = "\n".join(lines)
+
+
+func _resolve_adjustment_round(round_index: int) -> void:
+	_adjust_step_finished = true
+	var quality = _evaluate_gauge_quality(_adjust_gauge_value, _adjust_target_center, _adjust_target_width)
+	var action_correct = _adjust_selected_action == _adjust_target_action
+	var timing_good = quality == "perfect" or quality == "good"
+	var success = action_correct and timing_good
+
 	var result_line = ""
 	if success:
 		_adjustment_hits += 1
-		_technical_points += 8.0
+		_technical_points += 4.0
 		if _heat_state > 0:
 			_heat_state -= 1
 		elif _heat_state < 0:
 			_heat_state += 1
-		result_line = "調整成功"
+		result_line = "方向もタイミングも正解。見事に熱を抑え込んだ！（調整成功）"
 	else:
-		_technical_points -= 6.0
-		match chosen_action:
+		_technical_points -= 4.0
+		match _adjust_selected_action:
 			"up":
 				_heat_state += 1
 			"down":
@@ -2164,16 +2320,33 @@ func _on_adjustment_choice(chosen_action: String, target_action: String, round_i
 					_heat_state += 1
 				elif _heat_state < 0:
 					_heat_state -= 1
-		result_line = "調整失敗"
+		result_line = "調整ミス。熱状態が悪化した。"
 
+	_heat_state = clampi(_heat_state, -3, 3)
+	
+	GameManager.play_ui_se("confirm" if success else "cancel")
+	_update_adjust_text(
+		"判定: %s\n%s\n現在熱状態: %d" % [
+			quality.to_upper(),
+			result_line,
+			_heat_state,
+		]
+	)
+	_clear_choices()
+	_adjustment_action_count += 1
+	_add_choice_button("調整メニューに戻る", _show_adjustment_menu.bind(round_index))
+
+
+func _finish_adjustment_phase(round_index: int) -> void:
+	_adjustment_action_count = 0
+	
 	if round_index == 2 and _adjustment_hits >= 3:
 		_technical_points += 10.0
 		_audience_points += 4.0
-		result_line += "（3連続成功ボーナス）"
-
-	_heat_state = clampi(_heat_state, -3, 3)
-	var next_callable: Callable = _show_adjustment_step.bind(round_index + 1) if round_index < 2 else _show_mid_announcement
-	_show_step_result_and_next(result_line, next_callable)
+		_show_step_result_and_next("3連続成功ボーナス獲得！", _show_mid_announcement if round_index >= 2 else _show_adjustment_menu.bind(round_index + 1))
+	else:
+		var next_callable: Callable = _show_adjustment_menu.bind(round_index + 1) if round_index < 2 else _show_mid_announcement
+		_show_step_result_and_next("調整時間を終え、次の時間へ進む。", next_callable)
 
 
 func _show_mid_announcement() -> void:

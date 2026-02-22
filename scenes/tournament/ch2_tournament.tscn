@@ -3,8 +3,9 @@
 [ext_resource type="Script" path="res://scripts/tournament/ch2_tournament.gd" id="1"]
 [ext_resource type="Texture2D" path="res://assets/backgrounds/bg_tournament_stage.png" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/status_panel.tscn" id="4"]
 
-[node name="Ch1Tournament" type="Control"]
+[node name="Ch2Tournament" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -93,6 +94,9 @@ theme_override_constants/margin_bottom = 12
 [node name="SideVBox" type="VBoxContainer" parent="SidePanel/SideMargin"]
 layout_mode = 2
 theme_override_constants/separation = 10
+
+[node name="StatusPanel" parent="SidePanel/SideMargin/SideVBox" instance=ExtResource("4")]
+layout_mode = 2
 
 [node name="JudgeLabel" type="Label" parent="SidePanel/SideMargin/SideVBox"]
 unique_name_in_owner = true

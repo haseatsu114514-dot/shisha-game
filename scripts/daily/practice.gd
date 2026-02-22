@@ -11,10 +11,9 @@ const TEMP_LEVEL_MAX := 1.0
 
 @onready var header_label: Label = %HeaderLabel
 @onready var phase_label: Label = %PhaseLabel
-@onready var info_label: RichTextLabel = %InfoLabel
-@onready var choice_container: VBoxContainer = %ChoiceContainer
+@onready var status_panel = $StatusPanel
 
-var _selected_pack_style: String = ""
+var _selected_pack_style: String = "standard"
 var _selected_charcoal_count: int = 3
 var _selected_steam_minutes: int = 6
 
@@ -43,6 +42,7 @@ var _adjust_round: int = 0
 var _adjust_success_count: int = 0
 var _adjust_target_action: String = ""
 var _adjust_selected_action: String = ""
+var _adjustment_action_count: int = 0
 var _adjust_gauge_value: float = 0.5
 var _adjust_gauge_direction: float = 1.0
 var _adjust_gauge_speed: float = 1.0
@@ -111,6 +111,10 @@ var _mind_move_down: bool = false
 var _mind_invincible_timer: float = 0.0
 
 var _heat_state: int = 0
+
+func _process(_delta: float) -> void:
+	if status_panel and status_panel.has_method("update_status"):
+		status_panel.update_status(_temp_level, _temperature_zone_label(_temp_level), _selected_charcoal_count, TEMP_PASS_LINE, TEMP_TOP_LINE)
 
 func _ready() -> void:
 	print("[DEBUG] Practice _ready called")
@@ -321,38 +325,9 @@ func _on_tutorial_mix_confirmed() -> void:
 	_set_phase(
 		2,
 		"フレーバーの配分: 決定",
-		"配合: ダブルアップル %dg / ミント %dg\n%s\n\nスミ「ミックスは自由だが、芯がないとただ味が濁るだけだ。次は詰め方だ」" % [apple_g, mint_g, feedback]
+		"配合: ダブルアップル %dg / ミント %dg\n%s\n\nスミ「ミックスは自由だが、芯がないとただ味が濁るだけだ。次はアルミ張りだ」" % [apple_g, mint_g, feedback]
 	)
 	_clear_choices()
-	_add_choice_button("次へ（詰め方）", _show_pack_step)
-
-
-func _show_pack_step() -> void:
-	_set_phase(3, "詰め方", "フレーバーをボウル（陶器）に盛る方法を選ぶ。\nスミ「空気の通り道をどう作るかで、煙の重さも味の出方も変わる」")
-	_clear_choices()
-	_add_choice_button("ふんわり詰める（推奨）", _on_pack_style_selected.bind("light"))
-	_add_choice_button("標準で詰める", _on_pack_style_selected.bind("standard"))
-	_add_choice_button("ぎゅうぎゅうに詰める", _on_pack_style_selected.bind("tight"))
-
-
-func _on_pack_style_selected(style_id: String) -> void:
-	_selected_pack_style = style_id
-	var feedback = ""
-	match style_id:
-		"light":
-			feedback = "煙道が確保されて立ち上がりが安定。\nスミ「空気が通るから焦げにくい。最初のうちはこれで感覚を掴め」"
-		"standard":
-			feedback = "煙量は出るが、熱管理で差が出る。\nスミ「これでもいいが、火の入れ方を間違えれば台無しになるぞ」"
-		"tight":
-			feedback = "熱が籠もりやすく、焦げやすい。\nスミ「味が重くなる分、吸い出しはシビアだ。玄人向けだな」"
-		_:
-			feedback = "詰め方を決めた。"
-
-	_set_phase(
-		3,
-		"詰め方: 決定",
-		"選んだ詰め方: %s\n%s\n\nスミ「詰めで半分決まる。ここからが本当の勝負、熱の入れ方だ」" % [style_id.to_upper(), feedback]
-	)
 	_add_choice_button("次へ（アルミ張り）", _show_aluminum_step)
 
 func _show_aluminum_step() -> void:
@@ -637,9 +612,9 @@ func _show_mind_barrage_intro() -> void:
 
 func _compute_mind_barrage_duration() -> float:
 	var ratio = clampf(float(_selected_steam_minutes - 5) / 5.0, 0.0, 1.0)
-	var duration_sec = lerpf(MIND_BARRAGE_MIN_SECONDS, MIND_BARRAGE_MAX_SECONDS, ratio)
+	var duration_sec = lerpf(MIND_BARRAGE_MIN_SECONDS * 1.5, MIND_BARRAGE_MAX_SECONDS * 1.5, ratio)
 	duration_sec += float(maxi(_heat_state, 0)) * 0.4
-	return clampf(duration_sec, 6.5, 18.0)
+	return clampf(duration_sec, 12.0, 30.0)
 
 func _compute_mind_barrage_spawn_interval() -> float:
 	var ratio = clampf(float(_selected_steam_minutes - 5) / 5.0, 0.0, 1.0)
@@ -901,8 +876,8 @@ func _update_mind_bullets(dt: float) -> void:
 		_mind_bullets[i] = bullet
 
 func _is_mind_barrage_collision(bullet_pos: Vector2, bullet_size: Vector2) -> bool:
-	var player_rect = Rect2(_mind_player_pos - _mind_player_size * 0.5, _mind_player_size)
-	var bullet_rect = Rect2(bullet_pos - bullet_size * 0.45, bullet_size * 0.9)
+	var player_rect = Rect2(_mind_player_pos - _mind_player_size * 0.25, _mind_player_size * 0.5)
+	var bullet_rect = Rect2(bullet_pos - bullet_size * 0.2, bullet_size * 0.4)
 	return player_rect.intersects(bullet_rect)
 
 func _sync_mind_player_node() -> void:
@@ -1193,13 +1168,62 @@ func _update_pull_text(status_text: String) -> void:
 func _start_adjustment_tutorial() -> void:
 	_adjust_round = 0
 	_adjust_success_count = 0
+	_adjustment_action_count = 0
 	_adjust_round_drift = 0.0
-	_show_adjustment_round()
+	_show_adjustment_menu()
 
 
-func _show_adjustment_round() -> void:
+func _show_adjustment_menu() -> void:
+	var cue = "スミ「どう調整する？」"
+	_set_phase(
+		6,
+		"調整フェーズ",
+		cue + "\n現在の炭: %d個\n現在の温度状態: %s" % [_selected_charcoal_count, _temperature_zone_label(_temp_level)]
+	)
+	_clear_choices()
+	
+	_add_choice_button("炭の調整を行う", _show_charcoal_adjust_step)
+	_add_choice_button("吸い出しで微調整する", _show_pull_adjust_step)
+	
+	if _adjustment_action_count >= 2:
+		_add_choice_button("何もしない（審査へ）", _show_adjustment_summary)
+	else:
+		var btn = _add_choice_button("何もしない（あと%d回アクションが必要）" % (2 - _adjustment_action_count), _show_adjustment_summary)
+		btn.disabled = true
+
+
+func _show_charcoal_adjust_step() -> void:
+	_set_phase(
+		6,
+		"炭の調整",
+		"現在の炭は%d個だ。どうする？\n※炭を増やすとベース温度が上がり、減らすと下がる。\n※「新しい炭に交換」は個数を維持しつつ少し温度を上げる。" % _selected_charcoal_count
+	)
+	_clear_choices()
+	
+	if _selected_charcoal_count > 2:
+		_add_choice_button("炭を1個減らす（現在%d -> %d）" % [_selected_charcoal_count, _selected_charcoal_count - 1], _apply_charcoal_change.bind(-1, false))
+	if _selected_charcoal_count < 4:
+		_add_choice_button("炭を1個増やす（現在%d -> %d）" % [_selected_charcoal_count, _selected_charcoal_count + 1], _apply_charcoal_change.bind(1, false))
+	_add_choice_button("新しい炭に交換する", _apply_charcoal_change.bind(0, true))
+	_add_choice_button("戻る", _show_adjustment_menu)
+
+
+func _apply_charcoal_change(diff: int, is_new: bool) -> void:
+	_selected_charcoal_count += diff
+	var temp_change = float(diff) * 0.15
+	if is_new:
+		temp_change += 0.08
+	
+	_temp_level = clampf(_temp_level + temp_change, TEMP_LEVEL_MIN, TEMP_LEVEL_MAX)
+	_adjustment_action_count += 1
+	
+	var msg = "炭の数を調整した。" if diff != 0 else "新しい炭に交換した。温度が少し上がる。"
+	GameManager.play_ui_se("confirm")
+	_show_step_result_and_next(msg, _show_adjustment_menu)
+
+
+func _show_pull_adjust_step() -> void:
 	_prepare_adjustment_target(_adjust_round)
-	var round_num = _adjust_round + 1
 	var cue = _build_adjustment_cue()
 	var lines: Array[String] = []
 	lines.append("吸っていると温度はぶれてくる。合格ラインと最高ラインを維持する。")
@@ -1209,13 +1233,14 @@ func _show_adjustment_round() -> void:
 	lines.append("成功条件: 方向が正解 + タイミングGOOD以上 + 温度帯へ近づく。")
 	_set_phase(
 		6,
-		"温度調整 %d / %d" % [round_num, ADJUST_TOTAL_ROUNDS],
+		"吸い出し微調整",
 		_join_lines(lines)
 	)
 	_clear_choices()
-	_add_choice_button("温度を上げる", _on_adjust_action_selected.bind("up"))
-	_add_choice_button("現状維持", _on_adjust_action_selected.bind("stay"))
-	_add_choice_button("温度を下げる", _on_adjust_action_selected.bind("down"))
+	_add_choice_button("温度を上げる（強めに吸う）", _on_adjust_action_selected.bind("up"))
+	_add_choice_button("現状維持（普通に吸う）", _on_adjust_action_selected.bind("stay"))
+	_add_choice_button("温度を下げる（弱めに吹く）", _on_adjust_action_selected.bind("down"))
+	_add_choice_button("戻る", _show_adjustment_menu)
 
 
 func _prepare_adjustment_target(round_index: int) -> void:
@@ -1402,10 +1427,9 @@ func _resolve_adjustment_round() -> void:
 		]
 	)
 	_clear_choices()
-	if _adjust_round < ADJUST_TOTAL_ROUNDS - 1:
-		_add_choice_button("次の調整へ", _advance_adjustment_round)
-	else:
-		_add_choice_button("調整特訓の結果を見る", _show_adjustment_summary)
+	_adjustment_action_count += 1
+	_adjust_round += 1
+	_add_choice_button("調整メニューに戻る", _show_adjustment_menu)
 
 
 func _apply_adjustment_with_quality(quality: String) -> void:
@@ -1439,8 +1463,7 @@ func _adjust_strength_from_quality(quality: String) -> float:
 
 
 func _advance_adjustment_round() -> void:
-	_adjust_round += 1
-	_show_adjustment_round()
+	pass
 
 
 func _show_adjustment_summary() -> void:

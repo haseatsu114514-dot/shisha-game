@@ -19,7 +19,6 @@ const SPOT_POSITIONS_DAY: Dictionary = {
 	"naru": Vector2(1030, 254),
 	"adam": Vector2(720, 224),
 	"minto": Vector2(498, 286),
-	"home": Vector2(214, 544),
 	"choizap": Vector2(160, 300),
 	"kannon": Vector2(600, 540),
 	"cafe": Vector2(840, 340),
@@ -31,7 +30,6 @@ const SPOT_POSITIONS_NIGHT: Dictionary = {
 	"naru": Vector2(1030, 254),
 	"adam": Vector2(720, 224),
 	"minto": Vector2(498, 286),
-	"home": Vector2(214, 544),
 }
 
 const FACE_BY_SPOT_ID: Dictionary = {
@@ -118,7 +116,6 @@ func _build_spot_list() -> Array:
 	if CalendarManager.current_time == "noon":
 		spots.append({"id": "tonari", "label": "tonari"})
 		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
-		spots.append({"id": "setting", "label": "自宅 [機材変更]"})
 		spots.append({"id": "naru", "label": "ケムリクサ"})
 		if _are_rival_shops_unlocked():
 			spots.append({"id": "adam", "label": "Eden"})
@@ -132,8 +129,6 @@ func _build_spot_list() -> Array:
 	elif CalendarManager.current_time == "night":
 		spots.append({"id": "tonari", "label": "tonari（夜）"})
 		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]（夜）"})
-		spots.append({"id": "setting", "label": "自宅 [機材変更]"})
-		spots.append({"id": "home", "label": "ホテルで休む"})
 		spots.append({"id": "naru", "label": "ケムリクサ（夜）"})
 		if _are_rival_shops_unlocked():
 			spots.append({"id": "adam", "label": "Eden（夜）"})
@@ -151,7 +146,6 @@ func _build_ch3_spots() -> Array:
 		spots.append({"id": "mukai", "label": "mukai（夜）"})
 		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]（夜）"})
 		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り（夜）"})
-		spots.append({"id": "home", "label": "ホテルで休む"})
 	return spots
 
 func _build_ch4_spots() -> Array:
@@ -165,7 +159,6 @@ func _build_ch4_spots() -> Array:
 		spots.append({"id": "dubai_shisha", "label": "現地のシーシャ屋（夜）"})
 		spots.append({"id": "shop", "label": "Dr.Hookah Dubai [SHOP]（夜）"})
 		spots.append({"id": "dubai_souq", "label": "スパイス・スーク（夜）"})
-		spots.append({"id": "home", "label": "ホテルで休む"})
 	return spots
 
 
@@ -223,17 +216,6 @@ func _enter_spot(spot: Dictionary) -> void:
 		"shop":
 			# No time progression for shop
 			get_tree().change_scene_to_file("res://scenes/ui/shop_menu.tscn")
-		"setting":
-			# No time progression for setting
-			get_tree().change_scene_to_file("res://scenes/ui/setting_menu.tscn")
-		"home":
-			if not CalendarManager.use_action():
-				_try_auto_return_home()
-				return
-			PlayerData.add_stat("guts", 1)
-			GameManager.log_stat_change("guts", 1)
-			CalendarManager.advance_time()
-			_go_next_phase()
 		"naru", "adam", "minto":
 			if not CalendarManager.use_action():
 				_try_auto_return_home()

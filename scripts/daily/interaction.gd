@@ -9,6 +9,7 @@ var _target: String = ""
 var _is_working: bool = false
 var _advance_on_exit: bool = false
 var _pending_confession: String = ""
+var _event_id: String = ""
 
 const CHARACTER_NAME_MAP := {
 	"naru": "なる",
@@ -77,6 +78,15 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 	var dialogue_file = "res://data/dialogue/ch1_%s.json" % rival_id
 	var dialogue_id = ""
 	var metadata: Dictionary = {}
+	
+	match rival_id:
+		"naru":
+			metadata["bg"] = "res://assets/backgrounds/kemurikusa.png"
+		"adam":
+			metadata["bg"] = "res://assets/backgrounds/eden.png"
+		"minto":
+			metadata["bg"] = "res://assets/backgrounds/pepermint.png"
+
 	if count == 0:
 		dialogue_id = "ch1_%s_first" % rival_id
 		# Naru and Kirara exchange LIME on first visit
