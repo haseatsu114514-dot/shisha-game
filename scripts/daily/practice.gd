@@ -52,6 +52,65 @@ var _adjust_target_width: float = 0.18
 var _temp_level: float = 0.34
 var _adjust_round_drift: float = 0.0
 
+# Aluminum
+var _aluminum_timer: Timer
+var _aluminum_active: bool = false
+var _aluminum_slot_count: int = 12
+var _aluminum_hit_slot: int = 9
+var _aluminum_notes: Array[Dictionary] = []
+var _aluminum_notes_spawned: int = 0
+var _aluminum_spawn_cooldown: int = 0
+var _aluminum_hit_perfect: int = 0
+var _aluminum_hit_good: int = 0
+var _aluminum_hit_near: int = 0
+var _aluminum_hit_miss: int = 0
+var _aluminum_bad_press: int = 0
+var _aluminum_required_hits: int = 6
+var _aluminum_total_notes: int = 8
+var _aluminum_spawn_interval_ticks: int = 2
+
+# Mind Barrage
+const MIND_BARRAGE_BASE_LIVES := 3
+const MIND_BARRAGE_WORST_PULL_SPEED := 2.35
+const MIND_BARRAGE_MIN_SECONDS := 8.0
+const MIND_BARRAGE_MAX_SECONDS := 16.0
+const MIND_BARRAGE_WORDS := [
+	"もっと上手くできるはず…",
+	"炭が熱すぎる？",
+	"フレーバー足りなかったかも",
+	"詰め方が甘かったか？",
+	"お客さん待たせてる",
+	"これで美味しいのか？",
+	"スミさんに怒られる…",
+	"煙が薄い気がする",
+	"焦げたらどうしよう",
+]
+var _mind_timer: Timer
+var _mind_active: bool = false
+var _mind_arena_layer: ColorRect
+var _mind_player_node: ColorRect
+var _mind_bullets: Array[Dictionary] = []
+var _mind_player_pos: Vector2 = Vector2.ZERO
+var _mind_player_size: Vector2 = Vector2(14, 14)
+var _mind_duration_total: float = 0.0
+var _mind_elapsed: float = 0.0
+var _mind_spawn_cooldown: float = 0.0
+var _mind_spawn_interval: float = 0.45
+var _mind_hits: int = 0
+var _mind_spawned: int = 0
+var _mind_hit_se_cooldown: float = 0.0
+var _mind_barrage_done: bool = false
+var _mind_lives_max: int = MIND_BARRAGE_BASE_LIVES
+var _mind_lives_remaining: int = MIND_BARRAGE_BASE_LIVES
+var _mind_pull_speed_adjust: float = 0.0
+var _mind_force_worst_pull_speed: bool = false
+var _mind_move_left: bool = false
+var _mind_move_right: bool = false
+var _mind_move_up: bool = false
+var _mind_move_down: bool = false
+var _mind_invincible_timer: float = 0.0
+
+var _heat_state: int = 0
 
 func _ready() -> void:
 	GameManager.play_bgm(GameManager.BGM_TONARI_PATH, -10.0, true)
@@ -64,9 +123,22 @@ func _ready() -> void:
 	_adjust_timer = Timer.new()
 	_adjust_timer.wait_time = GAUGE_TIMER_WAIT
 	_adjust_timer.one_shot = false
-	_adjust_timer.timeout.connect(_on_adjust_timer_tick)
+	_adjust_timer.timeout.connect(_on_adjust_gauge_tick)
 	add_child(_adjust_timer)
 
+	_aluminum_timer = Timer.new()
+	_aluminum_timer.wait_time = 0.16
+	_aluminum_timer.one_shot = false
+	_aluminum_timer.timeout.connect(_on_aluminum_tick)
+	add_child(_aluminum_timer)
+
+	_mind_timer = Timer.new()
+	_mind_timer.wait_time = 0.033
+	_mind_timer.one_shot = false
+	_mind_timer.timeout.connect(_on_mind_barrage_tick)
+	add_child(_mind_timer)
+
+	_change_bg()
 	_show_intro_step()
 
 
@@ -146,8 +218,9 @@ func _build_tutorial_slider_row(flavor_id: String) -> Control:
 	wrapper.add_theme_constant_override("separation", 4)
 
 	var label = Label.new()
-	var display_name = _tutorial_flavor_name(flavor_id)
-	label.text = "%s  %dg" % [display_name, int(_tutorial_packing_grams.get(flavor_id, 0))]
+	var holding_amount = PlayerData.get_flavor_amount(flavor_id)
+	label.text = "%s  %dg (所持: %dg)" % [_tutorial_flavor_name(flavor_id), int(_tutorial_packing_grams.get(flavor_id, 0)), holding_amount]
+	label.custom_minimum_size = Vector2(160, 0)
 	wrapper.add_child(label)
 	_tutorial_value_labels[flavor_id] = label
 
@@ -187,7 +260,8 @@ func _refresh_tutorial_packing() -> void:
 		if _tutorial_value_labels.has(fid):
 			var label = _tutorial_value_labels[fid] as Label
 			if label != null:
-				label.text = "%s  %dg" % [_tutorial_flavor_name(fid), grams]
+				var holding_amount = PlayerData.get_flavor_amount(fid)
+				label.text = "%s  %dg (所持: %dg)" % [_tutorial_flavor_name(fid), grams, holding_amount]
 		if _tutorial_sliders.has(fid):
 			var slider = _tutorial_sliders[fid] as HSlider
 			if slider != null and int(round(slider.value)) != grams:
@@ -227,7 +301,7 @@ func _on_tutorial_mix_confirmed() -> void:
 	_set_phase(
 		2,
 		"フレーバーの配分: 決定",
-		"配合: DA %dg / ミント %dg\n%s\n\nスミ「ミックスは自由だが、芯がないとただ味が濁るだけだ。次は詰め方だ」" % [apple_g, mint_g, feedback]
+		"配合: ダブルアップル %dg / ミント %dg\n%s\n\nスミ「ミックスは自由だが、芯がないとただ味が濁るだけだ。次は詰め方だ」" % [apple_g, mint_g, feedback]
 	)
 	_clear_choices()
 	_add_choice_button("次へ（詰め方）", _show_pack_step)
@@ -258,43 +332,676 @@ func _on_pack_style_selected(style_id: String) -> void:
 		3,
 		"詰め方: 決定",
 		"選んだ詰め方: %s\n%s\n\nスミ「詰めで半分決まる。ここからが本当の勝負、熱の入れ方だ」" % [style_id.to_upper(), feedback]
-	)
+	_add_choice_button("次へ（アルミ張り）", _show_aluminum_step)
+
+func _show_aluminum_step() -> void:
+	_set_phase(4, "アルミ穴あけ", "円形レーンの判定点にノーツが来たら叩く。Taiko風のタイミング勝負。\nスミ「ここでお前のリズム感が熱を左右する。ズレれば味も濁るぞ」")
 	_clear_choices()
-	_add_choice_button("次へ（炭と蒸らし）", _show_heat_step)
+	_aluminum_active = true
+	_aluminum_notes.clear()
+	_aluminum_notes_spawned = 0
+	_aluminum_spawn_cooldown = 0
+	_aluminum_hit_slot = 0
+	_aluminum_hit_perfect = 0
+	_aluminum_hit_good = 0
+	_aluminum_hit_near = 0
+	_aluminum_hit_miss = 0
+	_aluminum_bad_press = 0
+	_aluminum_required_hits = 6
+	_aluminum_total_notes = 8
 
+	var beat_wait = 0.16
+	_aluminum_spawn_interval_ticks = 2
+	_aluminum_timer.wait_time = beat_wait
+	_aluminum_timer.start()
+	_spawn_aluminum_note()
 
-func _show_heat_step() -> void:
+	var press_button = Button.new()
+	press_button.text = "ドン（穴を開ける）"
+	press_button.custom_minimum_size = Vector2(0, 44)
+	press_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	press_button.pressed.connect(_on_aluminum_press_hole)
+	choice_container.add_child(press_button)
+	_update_aluminum_rhythm_text()
+
+func _on_aluminum_tick() -> void:
+	if not _aluminum_active:
+		return
+	for i in range(_aluminum_notes.size() - 1, -1, -1):
+		var note = _aluminum_notes[i]
+		note["distance"] = float(note.get("distance", 0.0)) - 1.0
+		if float(note.get("distance", 0.0)) < -1.8:
+			_aluminum_hit_miss += 1
+			_aluminum_notes.remove_at(i)
+		else:
+			_aluminum_notes[i] = note
+
+	if _aluminum_notes_spawned < _aluminum_total_notes:
+		if _aluminum_spawn_cooldown <= 0:
+			_spawn_aluminum_note()
+		else:
+			_aluminum_spawn_cooldown -= 1
+
+	if _aluminum_notes_spawned >= _aluminum_total_notes and _aluminum_notes.is_empty():
+		_finish_aluminum_rhythm()
+		return
+	_update_aluminum_rhythm_text()
+
+func _spawn_aluminum_note() -> void:
+	if _aluminum_notes_spawned >= _aluminum_total_notes:
+		return
+	_aluminum_notes.append({"distance": float(_aluminum_slot_count - 2)})
+	_aluminum_notes_spawned += 1
+	_aluminum_spawn_cooldown = _aluminum_spawn_interval_ticks
+
+func _on_aluminum_press_hole() -> void:
+	if not _aluminum_active:
+		return
+	var nearest_index = -1
+	var nearest_distance = 999.0
+	for i in range(_aluminum_notes.size()):
+		var note = _aluminum_notes[i]
+		var distance = abs(float(note.get("distance", 999.0)))
+		if distance < nearest_distance:
+			nearest_distance = distance
+			nearest_index = i
+
+	if nearest_index == -1 or nearest_distance > 1.55:
+		_aluminum_bad_press += 1
+		GameManager.play_ui_se("cancel")
+		_update_aluminum_rhythm_text()
+		return
+
+	if nearest_distance <= 0.35:
+		_aluminum_hit_perfect += 1
+		GameManager.play_ui_se("confirm")
+	elif nearest_distance <= 0.9:
+		_aluminum_hit_good += 1
+		GameManager.play_ui_se("confirm")
+	else:
+		_aluminum_hit_near += 1
+		GameManager.play_ui_se("cursor")
+
+	_aluminum_notes.remove_at(nearest_index)
+	if _aluminum_notes_spawned >= _aluminum_total_notes and _aluminum_notes.is_empty():
+		_finish_aluminum_rhythm()
+		return
+	_update_aluminum_rhythm_text()
+
+func _finish_aluminum_rhythm() -> void:
+	if not _aluminum_active:
+		return
+	_aluminum_active = false
+	_aluminum_timer.stop()
+
+	var hits = _count_aluminum_hits()
+	var result_text = ""
+	if hits < _aluminum_required_hits:
+		result_text = "穴あけ不足（必要数未達）"
+		_heat_state -= 1
+	else:
+		var weighted = float(_aluminum_hit_perfect) + float(_aluminum_hit_good) * 0.72 + float(_aluminum_hit_near) * 0.42
+		var penalty = float(_aluminum_hit_miss) * 0.25 + float(_aluminum_bad_press) * 0.18
+		var score = (weighted - penalty) / float(maxi(_aluminum_total_notes, 1))
+		if score >= 0.78:
+			result_text = "穴あけリズム（良好）"
+		elif score >= 0.5:
+			result_text = "穴あけリズム（可）"
+		else:
+			result_text = "穴あけが荒れた"
+			_heat_state -= 1
+
+	GameManager.play_ui_se("confirm")
 	_set_phase(
 		4,
-		"熱を作る",
-		"炭の数と蒸らし時間をセットで決める。\nスミ「高温で一気に味を出すか、じっくり温めるか。お前の意図が問われる」"
-	)
-	_clear_choices()
-	_add_choice_button("炭3個 / 蒸らし6分（基本）", _on_heat_selected.bind(3, 6))
-	_add_choice_button("炭4個 / 蒸らし5分（攻め・狙いあり）", _on_heat_selected.bind(4, 5))
-	_add_choice_button("炭4個 / 蒸らし8分（過熱リスク高）", _on_heat_selected.bind(4, 8))
-
-
-func _on_heat_selected(charcoal_count: int, steam_minutes: int) -> void:
-	_selected_charcoal_count = charcoal_count
-	_selected_steam_minutes = steam_minutes
-	var risk = "安定寄り"
-	if charcoal_count >= 4 and steam_minutes >= 8:
-		risk = "過熱リスク高"
-	elif charcoal_count >= 4:
-		risk = "高火力寄り"
-
-	_set_phase(
-		4,
-		"熱を作る: 決定",
-		"設定: 炭%d個 / 蒸らし%d分\n判定: %s\n\nスミ「いいだろう。仕上げに自分で吸って、煙の温度を狙った場所に落とし込め」" % [
-			_selected_charcoal_count,
-			_selected_steam_minutes,
-			risk,
+		"アルミ穴あけ: 結果",
+		"%s\n判定 P%d / G%d / N%d / M%d / 空振り%d\n\nスミ「次へ進むぞ」" % [
+			result_text,
+			_aluminum_hit_perfect,
+			_aluminum_hit_good,
+			_aluminum_hit_near,
+			_aluminum_hit_miss,
+			_aluminum_bad_press,
 		]
 	)
 	_clear_choices()
-	_add_choice_button("次へ（吸い出し練習）", _show_pull_step)
+	_add_choice_button("次へ（炭の配置）", _show_charcoal_place_step)
+
+func _update_aluminum_rhythm_text() -> void:
+	var ring = _build_aluminum_ring_text()
+	var hit_count = _count_aluminum_hits()
+	var remain = maxi(0, _aluminum_required_hits - hit_count)
+	var lines: Array[String] = []
+	lines.append("円形Taiko穴あけ: 判定点で叩く")
+	lines.append("成功: %d / %d（最低 %d 必要、残り %d）" % [hit_count, _aluminum_total_notes, _aluminum_required_hits, remain])
+	lines.append("判定: Perfect %d / Good %d / Near %d / Miss %d / 空振り %d" % [
+		_aluminum_hit_perfect,
+		_aluminum_hit_good,
+		_aluminum_hit_near,
+		_aluminum_hit_miss,
+		_aluminum_bad_press,
+	])
+	lines.append("凡例: ★判定点 / ●ノーツ / ◎ノーツ重なり / ◆判定点上ノーツ")
+	lines.append("")
+	lines.append(ring)
+	info_label.text = "\n".join(lines)
+
+func _build_aluminum_ring_text() -> String:
+	var slot_note_count: Dictionary = {}
+	for note in _aluminum_notes:
+		var slot_idx = _get_aluminum_note_slot(note)
+		slot_note_count[slot_idx] = int(slot_note_count.get(slot_idx, 0)) + 1
+
+	var sym = func(slot_idx: int) -> String:
+		var note_count = int(slot_note_count.get(slot_idx, 0))
+		if slot_idx == _aluminum_hit_slot:
+			if note_count <= 0: return "★"
+			if note_count == 1: return "◆"
+			return "✦"
+		if note_count <= 0: return "○"
+		if note_count == 1: return "●"
+		return "◎"
+
+	var lines: Array[String] = []
+	lines.append("          %s" % sym.call(0))
+	lines.append("      %s       %s" % [sym.call(11), sym.call(1)])
+	lines.append("   %s             %s" % [sym.call(10), sym.call(2)])
+	lines.append(" %s                 %s" % [sym.call(9), sym.call(3)])
+	lines.append("   %s             %s" % [sym.call(8), sym.call(4)])
+	lines.append("      %s       %s" % [sym.call(7), sym.call(5)])
+	lines.append("          %s" % sym.call(6))
+	return "\n".join(lines)
+
+func _get_aluminum_note_slot(note: Dictionary) -> int:
+	var distance = int(round(float(note.get("distance", 0.0))))
+	var slot = (_aluminum_hit_slot + distance) % _aluminum_slot_count
+	if slot < 0: slot += _aluminum_slot_count
+	return slot
+
+func _count_aluminum_hits() -> int:
+	return _aluminum_hit_perfect + _aluminum_hit_good + _aluminum_hit_near
+
+func _show_charcoal_place_step() -> void:
+	_set_phase(4, "炭の配置", "3個か4個を選んで配置する。機材と好みに合わせる。")
+	_clear_choices()
+	var hint = "通常は3個が基本。"
+	info_label.text = "【ヒント】\n" + hint
+	_add_choice_button("3個（基本／安定）", _on_charcoal_place_selected.bind(3))
+	_add_choice_button("4個（攻め／狙いがある時）", _on_charcoal_place_selected.bind(4))
+
+func _on_charcoal_place_selected(count: int) -> void:
+	_selected_charcoal_count = count
+	_set_phase(4, "炭の配置: 決定", "選んだ炭の個数: %d個\n\nスミ「よし。次は蒸らし時間だ」" % count)
+	_clear_choices()
+	_add_choice_button("次へ（蒸らし時間）", _show_steam_step)
+
+var _tutorial_steam_minutes_setting: int = 6
+var _tutorial_timer_label: Label
+
+func _show_steam_step() -> void:
+	_set_phase(5, "蒸らしタイマー", "5〜10分から蒸らし時間を設定。\nスミ「じっくり温めるか、高温で一足飛びに行くか。意図を持て」")
+	_clear_choices()
+	_tutorial_steam_minutes_setting = 6
+	
+	var ui_container = VBoxContainer.new()
+	ui_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	ui_container.add_theme_constant_override("separation", 16)
+	choice_container.add_child(ui_container)
+	
+	_tutorial_timer_label = Label.new()
+	_tutorial_timer_label.add_theme_font_size_override("font_size", 48)
+	_tutorial_timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	ui_container.add_child(_tutorial_timer_label)
+	
+	var control_row = HBoxContainer.new()
+	control_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	control_row.add_theme_constant_override("separation", 24)
+	ui_container.add_child(control_row)
+	
+	var minus_btn = Button.new()
+	minus_btn.text = "－1分"
+	minus_btn.custom_minimum_size = Vector2(80, 48)
+	minus_btn.pressed.connect(_on_tutorial_steam_adjust.bind(-1))
+	control_row.add_child(minus_btn)
+	
+	var plus_btn = Button.new()
+	plus_btn.text = "＋1分"
+	plus_btn.custom_minimum_size = Vector2(80, 48)
+	plus_btn.pressed.connect(_on_tutorial_steam_adjust.bind(1))
+	control_row.add_child(plus_btn)
+	
+	var start_btn = Button.new()
+	start_btn.text = "START (決定)"
+	start_btn.custom_minimum_size = Vector2(200, 56)
+	start_btn.add_theme_color_override("font_color", Color(1, 0.9, 0.4))
+	start_btn.pressed.connect(_on_tutorial_steam_confirmed)
+	ui_container.add_child(start_btn)
+	
+	_update_tutorial_steam_timer_display()
+
+func _on_tutorial_steam_adjust(diff: int) -> void:
+	_tutorial_steam_minutes_setting += diff
+	if _tutorial_steam_minutes_setting < 5:
+		_tutorial_steam_minutes_setting = 5
+	elif _tutorial_steam_minutes_setting > 10:
+		_tutorial_steam_minutes_setting = 10
+	GameManager.play_ui_se("cursor")
+	_update_tutorial_steam_timer_display()
+
+func _update_tutorial_steam_timer_display() -> void:
+	if _tutorial_timer_label:
+		_tutorial_timer_label.text = "%02d : 00" % _tutorial_steam_minutes_setting
+
+func _on_tutorial_steam_confirmed() -> void:
+	GameManager.play_ui_se("confirm")
+	_selected_steam_minutes = _tutorial_steam_minutes_setting
+	_show_mind_barrage_intro()
+
+func _show_mind_barrage_intro() -> void:
+	if _mind_barrage_done:
+		_show_pull_step()
+		return
+	var duration_sec = _compute_mind_barrage_duration()
+	var lives = MIND_BARRAGE_BASE_LIVES
+	_set_phase(6, "吸い出し前: 思考の暴走", "吸い出し直前、頭の中で不安と記憶が弾幕になる。\n\nスミ「客に提供する前、ブレるな。自分のレシピを信じ切れ」")
+	_clear_choices()
+	var lines: Array[String] = []
+	lines.append("弾を避ける = 雑念をかわす")
+	lines.append("当たる = 心がブレる")
+	lines.append("ここでの成績が良いほど、この後の吸い出し操作が安定する。")
+	lines.append("蒸らし %d分 -> 耐久 %.1f秒" % [_selected_steam_minutes, duration_sec])
+	lines.append("残機: %d（0になると吸い出し難易度MAX）" % lives)
+	info_label.text = "\n".join(lines)
+	_add_choice_button("弾幕開始", _start_mind_barrage_step)
+
+func _compute_mind_barrage_duration() -> float:
+	var ratio = clampf(float(_selected_steam_minutes - 5) / 5.0, 0.0, 1.0)
+	var duration_sec = lerpf(MIND_BARRAGE_MIN_SECONDS, MIND_BARRAGE_MAX_SECONDS, ratio)
+	duration_sec += float(maxi(_heat_state, 0)) * 0.4
+	return clampf(duration_sec, 6.5, 18.0)
+
+func _compute_mind_barrage_spawn_interval() -> float:
+	var ratio = clampf(float(_selected_steam_minutes - 5) / 5.0, 0.0, 1.0)
+	var interval = lerpf(0.56, 0.34, ratio)
+	interval -= float(abs(_heat_state)) * 0.02
+	return clampf(interval, 0.22, 0.72)
+
+func _start_mind_barrage_step() -> void:
+	if _mind_barrage_done:
+		_show_pull_step()
+		return
+	_set_phase(6, "思考弾幕", "弾をかわして時間まで耐える。")
+	_clear_choices()
+	_mind_active = true
+	_mind_duration_total = _compute_mind_barrage_duration()
+	_mind_elapsed = 0.0
+	_mind_spawn_cooldown = 0.0
+	_mind_spawn_interval = _compute_mind_barrage_spawn_interval()
+	_mind_hits = 0
+	_mind_spawned = 0
+	_mind_hit_se_cooldown = 0.0
+	_mind_lives_max = MIND_BARRAGE_BASE_LIVES
+	_mind_lives_remaining = _mind_lives_max
+	_mind_pull_speed_adjust = 0.0
+	_mind_force_worst_pull_speed = false
+	_mind_bullets.clear()
+	_mind_player_pos = Vector2.ZERO
+	_mind_move_left = false
+	_mind_move_right = false
+	_mind_move_up = false
+	_mind_move_down = false
+	_mind_invincible_timer = 0.0
+
+	var guide = Label.new()
+	guide.text = "操作: 矢印キー / WASD（下のボタン長押しでも移動）"
+	choice_container.add_child(guide)
+
+	var arena_frame = PanelContainer.new()
+	arena_frame.custom_minimum_size = Vector2(0, 260)
+	arena_frame.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	choice_container.add_child(arena_frame)
+
+	var arena = ColorRect.new()
+	arena.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	arena.color = Color(0.05, 0.06, 0.1, 0.95)
+	arena.clip_contents = true
+	arena.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	arena_frame.add_child(arena)
+	_mind_arena_layer = arena
+
+	var player = ColorRect.new()
+	player.color = Color(0.96, 0.22, 0.24, 1.0)
+	player.size = _mind_player_size
+	player.custom_minimum_size = _mind_player_size
+	player.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	arena.add_child(player)
+	_mind_player_node = player
+
+	var dpad = GridContainer.new()
+	dpad.columns = 3
+	dpad.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	dpad.add_theme_constant_override("h_separation", 8)
+	dpad.add_theme_constant_override("v_separation", 8)
+	choice_container.add_child(dpad)
+	_add_mind_pad_spacer(dpad)
+	_add_mind_direction_button(dpad, "↑", "up")
+	_add_mind_pad_spacer(dpad)
+	_add_mind_direction_button(dpad, "←", "left")
+	var center = Label.new()
+	center.text = "SOUL"
+	center.custom_minimum_size = Vector2(56, 40)
+	center.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	center.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	dpad.add_child(center)
+	_add_mind_direction_button(dpad, "→", "right")
+	_add_mind_pad_spacer(dpad)
+	_add_mind_direction_button(dpad, "↓", "down")
+	_add_mind_pad_spacer(dpad)
+
+	_update_mind_barrage_info_text()
+	call_deferred("_begin_mind_barrage_loop")
+
+func _add_mind_pad_spacer(parent: GridContainer) -> void:
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(56, 40)
+	parent.add_child(spacer)
+
+func _add_mind_direction_button(parent: GridContainer, button_text: String, dir_id: String) -> void:
+	var button = Button.new()
+	button.text = button_text
+	button.custom_minimum_size = Vector2(56, 40)
+	button.button_down.connect(func() -> void: _set_mind_direction(dir_id, true))
+	button.button_up.connect(func() -> void: _set_mind_direction(dir_id, false))
+	button.mouse_exited.connect(func() -> void: _set_mind_direction(dir_id, false))
+	parent.add_child(button)
+
+func _set_mind_direction(dir_id: String, pressed: bool) -> void:
+	match dir_id:
+		"left": _mind_move_left = pressed
+		"right": _mind_move_right = pressed
+		"up": _mind_move_up = pressed
+		"down": _mind_move_down = pressed
+
+func _begin_mind_barrage_loop() -> void:
+	if not _mind_active:
+		return
+	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
+		return
+	var arena_size = _mind_arena_layer.size
+	if arena_size.x < 80.0 or arena_size.y < 80.0:
+		call_deferred("_begin_mind_barrage_loop")
+		return
+	_mind_player_pos = arena_size * 0.5
+	_sync_mind_player_node()
+	_spawn_mind_barrage_word()
+	_mind_timer.start()
+	_update_mind_barrage_info_text()
+
+func _on_mind_barrage_tick() -> void:
+	if not _mind_active:
+		return
+	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
+		return
+	var dt = _mind_timer.wait_time
+	_mind_elapsed += dt
+	_mind_spawn_cooldown -= dt
+	if _mind_hit_se_cooldown > 0.0:
+		_mind_hit_se_cooldown = max(0.0, _mind_hit_se_cooldown - dt)
+
+	if _mind_invincible_timer > 0.0:
+		_mind_invincible_timer -= dt
+		if _mind_player_node != null and is_instance_valid(_mind_player_node):
+			var time_ms = Time.get_ticks_msec()
+			_mind_player_node.color.a = 0.3 if (time_ms % 200) < 100 else 0.8
+	elif _mind_player_node != null and is_instance_valid(_mind_player_node):
+		_mind_player_node.color.a = 1.0
+
+	_update_mind_player(dt)
+
+	if _mind_spawn_cooldown <= 0.0:
+		_spawn_mind_barrage_word()
+		_mind_spawn_cooldown = _mind_spawn_interval * randf_range(0.72, 1.25)
+
+	_update_mind_bullets(dt)
+	if _mind_lives_remaining <= 0:
+		_mind_elapsed = _mind_duration_total
+		_update_mind_barrage_info_text()
+		_finish_mind_barrage_step()
+		return
+	_update_mind_barrage_info_text()
+
+	if _mind_elapsed >= _mind_duration_total:
+		_finish_mind_barrage_step()
+
+func _update_mind_player(dt: float) -> void:
+	if _mind_arena_layer == null:
+		return
+	var axis = Vector2.ZERO
+	if _mind_move_left or Input.is_action_pressed("ui_left") or Input.is_key_pressed(KEY_A):
+		axis.x -= 1.0
+	if _mind_move_right or Input.is_action_pressed("ui_right") or Input.is_key_pressed(KEY_D):
+		axis.x += 1.0
+	if _mind_move_up or Input.is_action_pressed("ui_up") or Input.is_key_pressed(KEY_W):
+		axis.y -= 1.0
+	if _mind_move_down or Input.is_action_pressed("ui_down") or Input.is_key_pressed(KEY_S):
+		axis.y += 1.0
+
+	if axis.length_squared() > 0.0:
+		axis = axis.normalized()
+
+	var speed = 214.0 + float(maxi(_selected_steam_minutes - 5, 0)) * 4.0
+	_mind_player_pos += axis * speed * dt
+
+	var arena_size = _mind_arena_layer.size
+	var margin_x = _mind_player_size.x * 0.5 + 6.0
+	var margin_y = _mind_player_size.y * 0.5 + 6.0
+	_mind_player_pos.x = clampf(_mind_player_pos.x, margin_x, arena_size.x - margin_x)
+	_mind_player_pos.y = clampf(_mind_player_pos.y, margin_y, arena_size.y - margin_y)
+	_sync_mind_player_node()
+
+func _spawn_mind_barrage_word() -> void:
+	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
+		return
+	if MIND_BARRAGE_WORDS.is_empty():
+		return
+	var arena_size = _mind_arena_layer.size
+	if arena_size.x < 80.0 or arena_size.y < 80.0:
+		return
+
+	var phrase = str(MIND_BARRAGE_WORDS[randi() % MIND_BARRAGE_WORDS.size()])
+	var bullet = Label.new()
+	bullet.text = phrase
+	bullet.add_theme_font_size_override("font_size", 20)
+	bullet.modulate = Color(1.0, 0.82, 0.85, 1.0)
+	bullet.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_mind_arena_layer.add_child(bullet)
+
+	var size = bullet.get_combined_minimum_size()
+	if size.x < 40.0:
+		size = Vector2(maxi(40, phrase.length() * 20), 28)
+
+	var side = randi() % 4
+	var spawn = Vector2.ZERO
+	match side:
+		0: spawn = Vector2(randf_range(0.0, arena_size.x), -size.y * 0.5 - 4.0)
+		1: spawn = Vector2(arena_size.x + size.x * 0.5 + 4.0, randf_range(0.0, arena_size.y))
+		2: spawn = Vector2(randf_range(0.0, arena_size.x), arena_size.y + size.y * 0.5 + 4.0)
+		_: spawn = Vector2(-size.x * 0.5 - 4.0, randf_range(0.0, arena_size.y))
+
+	var target = _mind_player_pos + Vector2(randf_range(-64.0, 64.0), randf_range(-42.0, 42.0))
+	target.x = clampf(target.x, 20.0, arena_size.x - 20.0)
+	target.y = clampf(target.y, 20.0, arena_size.y - 20.0)
+	var to_target = target - spawn
+	if to_target.length_squared() <= 0.0001:
+		to_target = Vector2.DOWN
+	var direction = to_target.normalized()
+
+	var speed = 112.0 + float(_selected_steam_minutes - 5) * 14.0 + float(abs(_heat_state)) * 9.0 + randf_range(0.0, 54.0)
+	speed = clampf(speed, 90.0, 260.0)
+
+	var data := {
+		"node": bullet,
+		"pos": spawn,
+		"vel": direction * speed,
+		"size": size,
+	}
+	_mind_bullets.append(data)
+	_mind_spawned += 1
+	bullet.position = spawn - size * 0.5
+
+func _update_mind_bullets(dt: float) -> void:
+	if _mind_arena_layer == null:
+		return
+	var arena_size = _mind_arena_layer.size
+	for i in range(_mind_bullets.size() - 1, -1, -1):
+		var bullet = _mind_bullets[i]
+		var node = bullet.get("node") as Label
+		if node == null or not is_instance_valid(node):
+			_mind_bullets.remove_at(i)
+			continue
+		var pos = bullet.get("pos", Vector2.ZERO) + bullet.get("vel", Vector2.ZERO) * dt
+		var size = bullet.get("size", node.get_combined_minimum_size())
+		bullet["pos"] = pos
+		node.position = pos - size * 0.5
+		if _mind_invincible_timer <= 0.0 and _is_mind_barrage_collision(pos, size):
+			_mind_hits += 1
+			_mind_lives_remaining = maxi(0, _mind_lives_remaining - 1)
+			if _mind_hit_se_cooldown <= 0.0:
+				GameManager.play_ui_se("cancel")
+				_mind_hit_se_cooldown = 0.08
+			_mind_invincible_timer = 1.0
+			node.queue_free()
+			_mind_bullets.remove_at(i)
+			continue
+		if pos.x < -size.x - 24.0 or pos.x > arena_size.x + size.x + 24.0 or pos.y < -size.y - 24.0 or pos.y > arena_size.y + size.y + 24.0:
+			node.queue_free()
+			_mind_bullets.remove_at(i)
+			continue
+		_mind_bullets[i] = bullet
+
+func _is_mind_barrage_collision(bullet_pos: Vector2, bullet_size: Vector2) -> bool:
+	var player_rect = Rect2(_mind_player_pos - _mind_player_size * 0.5, _mind_player_size)
+	var bullet_rect = Rect2(bullet_pos - bullet_size * 0.45, bullet_size * 0.9)
+	return player_rect.intersects(bullet_rect)
+
+func _sync_mind_player_node() -> void:
+	if _mind_player_node == null or not is_instance_valid(_mind_player_node):
+		return
+	_mind_player_node.position = _mind_player_pos - _mind_player_size * 0.5
+
+func _update_mind_barrage_info_text() -> void:
+	if not _mind_active:
+		return
+	var remain = max(0.0, _mind_duration_total - _mind_elapsed)
+	var focus = clampi(100 - _mind_hits * 12, 0, 100)
+	var ratio = 0.0
+	if _mind_duration_total > 0.0:
+		ratio = _mind_elapsed / _mind_duration_total
+	var lines: Array[String] = []
+	lines.append("残り %.1f秒 / %.1f秒" % [remain, _mind_duration_total])
+	lines.append("残機 %d / %d  %s" % [_mind_lives_remaining, _mind_lives_max, _build_mind_life_text()])
+	lines.append("被弾 %d / 出現 %d" % [_mind_hits, maxi(_mind_spawned, 1)])
+	lines.append("集中度 %d%%" % focus)
+	lines.append(_build_mind_barrage_progress_bar(ratio))
+	info_label.text = "\n".join(lines)
+
+func _build_mind_life_text() -> String:
+	var chars: Array[String] = []
+	for i in range(_mind_lives_max):
+		chars.append("●" if i < _mind_lives_remaining else "○")
+	return "".join(chars)
+
+func _build_mind_barrage_progress_bar(ratio: float) -> String:
+	var length = 24
+	var fill = int(round(clampf(ratio, 0.0, 1.0) * float(length)))
+	var chars: Array[String] = []
+	for i in range(length):
+		chars.append("■" if i < fill else "─")
+	return "".join(chars)
+
+func _finish_mind_barrage_step() -> void:
+	if not _mind_active:
+		return
+	var result = _evaluate_mind_barrage_result()
+	var result_text = str(result.get("text", "精神戦を抜けた。"))
+	var heat_shift = int(result.get("heat_shift", 0))
+	var hit_count = _mind_hits
+	var spawn_count = _mind_spawned
+	var lives_remaining = _mind_lives_remaining
+	var lives_max = _mind_lives_max
+	_mind_active = false
+	_mind_barrage_done = true
+	_mind_timer.stop()
+	_mind_pull_speed_adjust = float(result.get("pull_speed_adjust", 0.0))
+	_mind_force_worst_pull_speed = bool(result.get("force_worst_pull_speed", false))
+
+	_heat_state = clampi(_heat_state + heat_shift, -3, 3)
+	GameManager.play_ui_se("confirm")
+
+	_set_phase(
+		6,
+		"思考弾幕: 結果",
+		"%s\n被弾 %d / 出現 %d\n吸い出し速度補正: %s\n\nスミ「ここから吸い出しだ。心を落ち着けろ」" % [
+			result_text,
+			hit_count,
+			maxi(spawn_count, 1),
+			_mind_pull_adjust_text(),
+		]
+	)
+	_clear_choices()
+	_add_choice_button("次へ（吸い出し）", _show_pull_step)
+
+func _evaluate_mind_barrage_result() -> Dictionary:
+	if _mind_lives_remaining <= 0:
+		return {
+			"text": "心が折れた。雑音に飲まれたまま吸い出しへ入る。",
+			"heat_shift": 2,
+			"pull_speed_adjust": 0.45,
+			"force_worst_pull_speed": true,
+		}
+
+	var pressure = float(_mind_hits) / float(maxi(_mind_spawned, 1))
+	var life_ratio = float(_mind_lives_remaining) / float(maxi(_mind_lives_max, 1))
+	var resilience = clampf(1.0 - pressure * 1.9 + life_ratio * 0.35, 0.0, 1.0)
+
+	if resilience >= 0.86:
+		return {
+			"text": "表情が落ち着いた。冷静さを取り戻した。",
+			"heat_shift": -1,
+			"pull_speed_adjust": -0.18,
+			"force_worst_pull_speed": false,
+		}
+	if resilience >= 0.68:
+		return {
+			"text": "揺れを抑えて、レシピに意識を戻した。",
+			"heat_shift": 0,
+			"pull_speed_adjust": -0.10,
+			"force_worst_pull_speed": false,
+		}
+	if resilience >= 0.45:
+		return {
+			"text": "迷いは残るが、ギリギリ持ちこたえた。",
+			"heat_shift": 0,
+			"pull_speed_adjust": 0.06,
+			"force_worst_pull_speed": false,
+		}
+
+	return {
+		"text": "雑念に呑まれ、心がブレた。",
+		"heat_shift": 1,
+		"pull_speed_adjust": 0.14,
+		"force_worst_pull_speed": false,
+	}
+
+func _mind_pull_adjust_text() -> String:
+	if _mind_force_worst_pull_speed:
+		return "最悪速度固定（%.2f以上）" % MIND_BARRAGE_WORST_PULL_SPEED
+	var trend = "遅くなる"
+	if _mind_pull_speed_adjust > 0.0:
+		trend = "速くなる"
+	elif abs(_mind_pull_speed_adjust) < 0.001:
+		trend = "変化なし"
+	return "%+.2f（%s）" % [_mind_pull_speed_adjust, trend]
 
 
 func _show_pull_step() -> void:
@@ -317,7 +1024,7 @@ func _show_pull_step() -> void:
 	hold_button.button_up.connect(_on_pull_hold_released)
 	choice_container.add_child(hold_button)
 
-	_update_pull_text("スミ「焦るな。合格ラインと最高ラインの間に置け」")
+	_update_pull_text("スミ「ここでの吸い出しが仕上がりを決める。精神戦の結果でゲージ速度が変わるぞ」\n現在の速度補正: %s" % _mind_pull_adjust_text())
 
 
 func _compute_pull_start_temp_level() -> float:
@@ -358,7 +1065,12 @@ func _configure_pull_by_setup() -> void:
 		speed -= 0.05
 		center -= 0.02
 
-	_pull_gauge_speed = clampf(speed, 0.65, 2.2)
+	if _mind_force_worst_pull_speed:
+		speed = MIND_BARRAGE_WORST_PULL_SPEED
+	else:
+		speed += _mind_pull_speed_adjust
+
+	_pull_gauge_speed = clampf(speed, 0.65, 3.25)
 	_pull_target_width = clampf(width, 0.08, 0.25)
 	_pull_target_center = clampf(center + randf_range(-0.03, 0.03), TEMP_PASS_LINE + 0.03, TEMP_TOP_LINE - 0.03)
 	_pull_gauge_value = clampf(_temp_level + randf_range(-0.04, 0.08), TEMP_LEVEL_MIN, TEMP_LEVEL_MAX)
@@ -872,6 +1584,15 @@ func _finish_tutorial() -> void:
 		GameManager.log_stat_change("insight", 1)
 
 	var next_scene = str(GameManager.pop_transient("post_tutorial_next_scene", DEFAULT_NEXT_SCENE))
+	print("[Tutorial] post_tutorial_next_scene derived as: ", next_scene)
 	if next_scene == "":
 		next_scene = DEFAULT_NEXT_SCENE
-	get_tree().change_scene_to_file(next_scene)
+		print("[Tutorial] fallback to DEFAULT_NEXT_SCENE: ", next_scene)
+	
+	print("[Tutorial] Changing scene to: ", next_scene)
+	
+	# wait a frame then defer call to change scene to ensure clean UI state
+	await get_tree().process_frame
+	get_tree().change_scene_to_file.call_deferred(next_scene)
+
+
