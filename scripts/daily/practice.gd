@@ -113,6 +113,7 @@ var _mind_invincible_timer: float = 0.0
 var _heat_state: int = 0
 
 func _ready() -> void:
+	print("[DEBUG] Practice _ready called")
 	GameManager.play_bgm(GameManager.BGM_TONARI_PATH, -10.0, true)
 	_pull_timer = Timer.new()
 	_pull_timer.wait_time = GAUGE_TIMER_WAIT
@@ -138,8 +139,8 @@ func _ready() -> void:
 	_mind_timer.timeout.connect(_on_mind_barrage_tick)
 	add_child(_mind_timer)
 
-	_change_bg()
 	_show_intro_step()
+	print("[DEBUG] _show_intro_step invoked")
 
 
 func _set_phase(step_num: int, title: String, body: String) -> void:
@@ -184,10 +185,12 @@ func _add_choice_button(text: String, callback: Callable) -> Button:
 		callback.call()
 	)
 	choice_container.add_child(button)
+	print("[DEBUG] Choice button added: %s" % text)
 	return button
 
 
 func _show_intro_step() -> void:
+	print("[DEBUG] _show_intro_step start")
 	_set_phase(
 		1,
 		"スミさんの特訓",
@@ -203,10 +206,12 @@ func _show_intro_step() -> void:
 			"5. 温度維持の調整をやる"
 		])
 	)
+	print("[DEBUG] _show_intro_step phase set")
 	_clear_choices()
 	_add_choice_button("特訓を始める", _show_mix_step)
 
 func _show_mix_step() -> void:
+	print("[DEBUG] _show_mix_step start")
 	_set_phase(2, "フレーバーの配分", "ダブルアップルとミントの配合を決める。\n合計12gになるようスライダーで調整する。")
 	_clear_choices()
 	_tutorial_sliders.clear()

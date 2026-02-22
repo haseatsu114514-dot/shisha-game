@@ -61,7 +61,7 @@ stretch_mode = 5
 [node name="DialoguePanel" type="PanelContainer" parent="."]
 layout_mode = 1
 anchor_left = 0.03
-anchor_top = 0.74
+anchor_top = 0.68
 anchor_right = 0.97
 anchor_bottom = 0.96
 modulate = Color(1, 1, 1, 0.92)
@@ -70,8 +70,8 @@ modulate = Color(1, 1, 1, 0.92)
 layout_mode = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_right = 20
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_bottom = 10
 
 [node name="VBox" type="VBoxContainer" parent="DialoguePanel/Margin"]
 layout_mode = 2
@@ -88,7 +88,7 @@ text = ""
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
-custom_minimum_size = Vector2(0, 90)
+custom_minimum_size = Vector2(0, 70)
 theme_override_styles/normal = SubResource("StyleBoxEmpty_text")
 theme_override_font_sizes/normal_font_size = 24
 autowrap_mode = 3
