@@ -56,8 +56,9 @@ func _ready() -> void:
 			GameManager.complete_forced_event(forced_event)
 			var dialogue_file = str(forced_event.get("dialogue_file", ""))
 			var dialogue_id = str(forced_event.get("dialogue_id", ""))
+			var event_metadata: Dictionary = forced_event.get("metadata", {})
 			if dialogue_file != "" and dialogue_id != "":
-				GameManager.queue_dialogue(dialogue_file, dialogue_id, "res://scenes/daily/map.tscn")
+				GameManager.queue_dialogue(dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", event_metadata)
 				get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 				return
 

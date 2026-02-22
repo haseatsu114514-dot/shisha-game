@@ -25,6 +25,11 @@
         "technique": 2,
         "guts": 2
       },
+      "metadata": {
+        "add_affinity": {
+          "sumi": 1
+        }
+      },
       "next_scene": "map"
     },
     {
@@ -39,6 +44,30 @@
       "stat_changes": {
         "technique": 3,
         "sense": 2
+      },
+      "metadata": {
+        "add_affinity": {
+          "sumi": 1
+        }
+      },
+      "next_scene": "map"
+    },
+    {
+      "id": "ch1_forced_sumi_final",
+      "day": 6,
+      "time_slot": "night",
+      "flag": "ch1_forced_sumi_final_done",
+      "title": "スミさんの激励",
+      "description": "閉店後、スミさんがはじめに一言だけ言葉を贈る。",
+      "dialogue_file": "res://data/dialogue/ch1_sumi.json",
+      "dialogue_id": "ch1_sumi_final",
+      "stat_changes": {
+        "guts": 3
+      },
+      "metadata": {
+        "add_affinity": {
+          "sumi": 1
+        }
       },
       "next_scene": "map"
     },

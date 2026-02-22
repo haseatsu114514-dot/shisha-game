@@ -274,6 +274,361 @@
           "text": "（「見届けてやる」か……。完全に上から目線だな）"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch1_naru_third",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ケムリクサに来ると、珍しく店内は空っぽだった。カウンターの上に「本日のおすすめ」の手書きPOPが置いてあるが、インクが滲んで読みづらい。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "あー、蒸野か。悪い、今日ちょっと新しいミックス試してたとこ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるの手元を見ると、フレーバーの瓶が5つほど開いたまま並んでいた。いつもの自信満々な様子とは少し違う。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "新しいミックス？ いつものじゃなくて？"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……いや、別に。常連がちょっと最近来なくなってさ。まあ、俺のシーシャのレベルが高すぎるってのもあるけど"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "ただ、一応……その……客の好みに寄せたメニューも必要かなって。ビジネス的な判断として"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言い訳がましいけど、テーブルの上に散らばったレシピメモの量を見れば、本気で悩んでいるのは明らかだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なるって、お客さんに合わせてシーシャ作ることってあるの？"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "……はあ？ 合わせる？ 俺が最高の味を出してんだから、客がそれに合わせるべきだろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "…………"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……いや、分かってる。分かってんだよ、そんなこと"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "俺の舌が正しいからって、客が喜ぶかは別の話だってことくらい。でもさ……"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "自分の味覚に嘘はつきたくねえんだよ。「これが一番美味い」って心から思えるものしか、出したくない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……初めて見た。なるが自分の弱さを認めるような顔）"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……まあいいけど。今日も吸ってくか。新作のブルーベリーラベンダー、お前に味見させてやるよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出されたシーシャは、いつものなるらしい繊細で鮮烈な味だった。でも今日のは、どこか角が取れて、優しい後味が残る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "美味しい。……前より、少し柔らかくなった気がする"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……ふん。偶然だろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そっぽを向いたなるの耳が、ほんの少し赤かった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_naru_fourth",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ケムリクサに来ると、なるが一人でフレーバーの瓶を並べて、何かを嗅ぎ比べていた。目を閉じて、ゆっくり息を吸い込んでいる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なる、何してるの？"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "ん？ ああ、トレーニング。嗅覚って筋肉と一緒でサボると鈍る。毎日やんなきゃダメなんだわ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "フレーバーの嗅ぎ分けトレーニング……プロのソムリエみたいだな"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "ソムリエなんかと一緒にすんな。俺の方が上だし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（出た、いつもの……）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……なるってさ、その鼻の才能、いつから？"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……ガキの頃から。っていうか、気付いたらそうだった"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "小学校の給食で、今日の牛乳は昨日より0.2度温度高いとか分かっちゃうの。マジで。完全にキモいだろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "0.2度……？"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "周りからは「お前の鼻どうなってんだ」って。褒めてるんじゃなくて、引いてんだよ、あれ"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "中学の部活の部室とか地獄だったわ。汗と制汗剤と弁当の残り香が全部分離して入ってくるから、頭がバグる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……それ、辛くなかったの？"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "辛いとか思わなかった。ていうか、匂いでいちいち不快になるのが嫌で、自分から「良い匂い」を探すようになった"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "で、高校でシーシャに出会った。煙って面白いんだよ。加熱の仕方で香りが全く変わる。意図的にコントロールできる匂いの世界"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "初めて、自分の鼻が「武器」になるって思った。それからは……もう、これしかなかった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるが「これしかなかった」と言った時の表情は、いつもの天狗なそれとは全然違っていた。静かで、どこか切実な顔。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "だから……あんなに自信を持って言えるんだな。「俺が一番」って"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "当たり前だろ。キモいって笑われた鼻で、全員ぶっ倒す。それが俺のシーシャだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……かっこいいな、素直に。こいつ、根っこの部分は本当にまっすぐだ）"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……つーかお前さ、なんでそういうこと聞くわけ。変なやつ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "気になったから。なるのこと、もっと知りたいと思って"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……キモ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そう言いながら、なるは何故か嫌そうな顔はしなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_naru_fifth",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会が近い。ケムリクサを訪れると、なるが珍しく店の外のベンチに座っていた。右手に缶コーヒー、左手にスマホ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なる、休憩中？"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "ん。今日はもう閉めた。大会前だし、鼻を休ませとかないと"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "珍しいな。なるが店閉めるなんて"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……お前も大会だろ。緊張してんの？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "正直、めちゃくちゃ緊張してる"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "ふーん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "沈黙。なるが缶コーヒーを一口飲む。自販機の光が二人の顔をぼんやりと照らしている。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……蒸野"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ん？"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "お前のシーシャ、最初は正直まったく眼中になかった"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "味の精度も低いし、ミックスのセンスも荒い。俺の半分もできてない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……うん、知ってる"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "でもさ、この前お前がうちで吸った新作……あの感想。「前より、少し柔らかくなった」って言ったろ"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "あれ、俺ずっと考えてんだよ。なんでお前にそんなこと言われて、嬉しかったのか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "嬉しかった……？"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "俺の味を「正しく分かる」やつは何人かいる。でも、俺の味の「変化に気づく」やつは……お前が初めてだった"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "技術じゃなくて、変化を感じ取る力。それ、たぶんお前の武器だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるがまっすぐこちらを見ている。いつもの見下した目じゃない。対等な目だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……なるに、認められた。そう思っていいのか、これ）"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "だからさ、大会。手ぇ抜くなよ。お前が本気で作ったシーシャを、俺のこの鼻で嗅いでやるから"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……まあ、勝つのは俺だけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ああ。全力で行くよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "缶コーヒーで乾杯するように、軽くカチンと当てた。\n自販機の明かりと夜風。初めて、なるとの距離が少しだけ縮まった気がした。"
+        }
+      ]
     }
   ]
 }

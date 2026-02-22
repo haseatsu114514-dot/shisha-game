@@ -324,6 +324,156 @@
           "text": "洞察が少し上がった。"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch1_sumi_final",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後。いつもの時間。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "だが今夜は、少しだけ空気が違う。明日がどんな日か──二人とも、分かっている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんがいつもの席で、いつものようにシーシャを吸っている。はじめもカウンターの端に腰を下ろした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "しばらく、言葉のない時間が続いた。ゴボゴボ、という音だけが店内を満たしている。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……明日か"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "緊張してるか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "してます。……正直、めちゃくちゃしてます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "そうか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが煙を吐き出した。いつもより、ゆっくりと。天井に向かって白い煙が伸びていく。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "はじめ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "よく聞け。一回しか言わない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんがホースを置いて、はじめの方を向いた。いつもの仏頂面。でも、目だけは──真剣だった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "お前はバイトを始めた時、炭の持ち方も知らなかった。フレーバーの違いも分からなかった"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "だが、お前には一つだけ、最初から持っていたものがある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……何ですか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "客の顔を見る目だ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "いつ炭を替えるか、いつ声をかけるか、いつ黙っているか──お前はそれを、教わる前からやっていた"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "シーシャは嗜好品だ。味だけで勝負するやつもいる。見た目で勝負するやつもいる。それぞれの道がある"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "だが、お前の武器は「人を見る力」だ。吸う人の心に寄り添えるシーシャ。それは、技術だけじゃ作れない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……スミさん"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "結果がどうであれ、お前が作ったシーシャには価値がある。俺がそう言ってんだから間違いない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが何かを言い切ったあと、少しだけ視線を逸らした。言い慣れないことを言ったような、照れくさそうな横顔。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "……はい。全力で、やってきます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ああ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんがまたホースを手に取り、煙を吸い始めた。はじめも、自分のシーシャを吸う。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のtonari。いつもの静かな時間。でも今夜は──この煙の向こうに、明日が見えた気がした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "師匠からの、たった一言の激励。それだけで、十分だった。"
+        }
+      ]
     }
   ]
 }

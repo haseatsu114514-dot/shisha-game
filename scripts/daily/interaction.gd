@@ -38,8 +38,9 @@ func _ready() -> void:
 		body_label.text = "誰もいない。"
 
 	# Random encounter: Tsumugi in town after meeting her at baito
-	if EventFlags.get_flag("ch1_tsumugi_regular") and not EventFlags.get_flag("ch1_tsumugi_encounter_done"):
-		if CalendarManager.current_day >= 4 and randi() % 3 == 0:
+	if EventFlags.get_flag("ch1_tsumugi_regular"):
+		var tsumugi_count = int(EventFlags.get_value("visit_tsumugi_count", 0))
+		if tsumugi_count < 5 and CalendarManager.current_day >= 4 and randi() % 3 == 0:
 			_launch_tsumugi_encounter()
 			return
 
@@ -83,14 +84,15 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 				metadata["add_intel"] = [{"id": "naru", "key": "flavor_detail", "value": "チョコレート＋バニラ"}]
 			"minto":
 				metadata["add_intel"] = [{"id": "minto", "key": "presentation", "value": "一般投票特化"}]
-	else:
+	elif count == 2:
+		dialogue_id = "ch1_%s_third" % rival_id
 		metadata["add_affinity"] = {rival_id: 1}
-		if rival_id == "minto" and count >= 2:
-			dialogue_id = "ch1_minto_third"
-		elif rival_id == "adam" and count >= 2:
-			dialogue_id = "ch1_adam_third"
-		else:
-			dialogue_id = "ch1_%s_second" % rival_id
+	elif count == 3:
+		dialogue_id = "ch1_%s_fourth" % rival_id
+		metadata["add_affinity"] = {rival_id: 1}
+	else:
+		dialogue_id = "ch1_%s_fifth" % rival_id
+		metadata["add_affinity"] = {rival_id: 1}
 
 	# Queue dialogue and go to dialogue scene
 	var return_scene = "res://scenes/daily/map.tscn"
@@ -100,9 +102,23 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 
 
 func _launch_tsumugi_encounter() -> void:
-	EventFlags.set_flag("ch1_tsumugi_encounter_done")
+	var count = int(EventFlags.get_value("visit_tsumugi_count", 0))
+	EventFlags.set_value("visit_tsumugi_count", count + 1)
+
 	var dialogue_file = "res://data/dialogue/ch1_tsumugi.json"
-	var dialogue_id = "ch1_tsumugi_encounter"
+	var dialogue_id = ""
+	match count:
+		0:
+			dialogue_id = "ch1_tsumugi_encounter"
+		1:
+			dialogue_id = "ch1_tsumugi_second"
+		2:
+			dialogue_id = "ch1_tsumugi_third"
+		3:
+			dialogue_id = "ch1_tsumugi_fourth"
+		_:
+			dialogue_id = "ch1_tsumugi_fifth"
+
 	var metadata: Dictionary = {"add_affinity": {"tsumugi": 1}}
 	var return_scene = "res://scenes/daily/map.tscn"
 	GameManager.queue_dialogue(dialogue_file, dialogue_id, return_scene, metadata)
