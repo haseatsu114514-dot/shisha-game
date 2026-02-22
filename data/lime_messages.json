@@ -41,25 +41,25 @@
       "messages": [
         {
           "sender": "minto",
-          "text": "ねえ"
+          "text": "はじめくんっ♡"
         },
         {
           "sender": "minto",
-          "text": "今日ヒマ？ うちの店来ない？"
+          "text": "今日お店来ないのー？ みんちゃん待ってるのに！"
         },
         {
           "sender": "minto",
-          "text": "新しいミックス作ったんだけど感想聞きたくて♡"
+          "text": "新しいの作ったから、感想聞かせてほしいなっ♪"
         },
         {
           "sender": "minto",
-          "text": "前回「すごい」って言ってくれたじゃん？ あれの進化版♪"
+          "text": "美味しかったらツーショットチェキ撮ろ♡（笑）"
         }
       ],
       "accept_event": "interaction_kirara_noon_01",
       "decline_response": {
         "sender": "minto",
-        "text": "そっか。また今度ね♡"
+        "text": "えーっ！ わかった、じゃあまた今度ね！ 待ってるからねーっ♡"
       }
     },
     {
@@ -146,11 +146,11 @@
       "messages": [
         {
           "sender": "minto",
-          "text": "今日はいよいよ大会だね！"
+          "text": "はじめくん、いよいよ大会だね！"
         },
         {
           "sender": "minto",
-          "text": "私の彼氏なんだから、絶対優勝してよね？ 終わったらお祝いしてあげる♡"
+          "text": "優勝して、みんちゃんとこにお祝いのアフターしに来てねっ♡ 応援してるよ！"
         }
       ]
     },
@@ -183,6 +183,40 @@
         {
           "sender": "ageha",
           "text": "アタシの見込んだ男なんだから、無様な真似は許さないわよ。勝ってきなさい。"
+        }
+      ]
+    },
+    {
+      "id": "lime_adam_day5",
+      "sender": "adam",
+      "trigger_day": 5,
+      "trigger_condition": "lime_exchanged",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "adam",
+          "text": "オオ、マイ・ブラザー。"
+        },
+        {
+          "sender": "adam",
+          "text": "もうすぐ大会ダネ。リンゴの祝福は受ケテイルカ？"
+        }
+      ],
+      "replies": [
+        {
+          "text": "バッチリです",
+          "response": "グッド。ユーの魂の果実を見せてヤルガイイ。",
+          "affinity": 1
+        },
+        {
+          "text": "少し緊張してます",
+          "response": "恐レルナ。リンゴは常に我らと共ニアル……。",
+          "affinity": 1
+        },
+        {
+          "text": "アダムさんには負けません",
+          "response": "フフ……原点の力、見セツケテヤロウ。",
+          "affinity": 1
         }
       ]
     }

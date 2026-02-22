@@ -1,473 +1,473 @@
 {
-    "dialogues": [
+  "dialogues": [
+    {
+      "dialogue_id": "ending_start",
+      "lines": [
         {
-            "dialogue_id": "ending_start",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "世界大会を終え、俺たちは地元のtonariに凱旋した。"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "smile",
-                    "text": "よくやったね、はじめ。カンパイ！"
-                },
-                {
-                    "speaker": "everyone",
-                    "face": "",
-                    "text": "カンパーイ！！"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "なる、アダム、みんちゃん、紡……。\n今まで戦ってきた仲間たちと一緒に、最高のシーシャを燻らせる。"
-                },
-                {
-                    "type": "condition",
-                    "condition_type": "romance_count",
-                    "threshold": 2,
-                    "next_true": "ending_shuraba",
-                    "next_false": "ending_check_single"
-                }
-            ]
+          "speaker": "",
+          "face": "",
+          "text": "世界大会を終え、俺たちは地元のtonariに凱旋した。"
         },
         {
-            "dialogue_id": "ending_check_single",
-            "lines": [
-                {
-                    "type": "condition",
-                    "condition_type": "romance_count",
-                    "threshold": 1,
-                    "next_true": "ending_single_lover",
-                    "next_false": "ending_normal"
-                }
-            ]
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "よくやったね、はじめ。カンパイ！"
         },
         {
-            "dialogue_id": "ending_single_lover",
-            "lines": [
-                {
-                    "type": "condition",
-                    "condition_type": "has_romance",
-                    "char_id": "minto",
-                    "next_true": "sit_with_minto",
-                    "next_false": "check_tsumugi"
-                }
-            ],
-            "branches": {
-                "check_tsumugi": [
-                    {
-                        "type": "condition",
-                        "condition_type": "has_romance",
-                        "char_id": "tsumugi",
-                        "next_true": "sit_with_tsumugi",
-                        "next_false": "sit_with_ageha"
-                    }
-                ]
-            }
+          "speaker": "everyone",
+          "face": "",
+          "text": "カンパーイ！！"
         },
         {
-            "dialogue_id": "ending_shuraba",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "（……さて。誰の隣に座ろうか）"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "ふと視線を感じる。俺と特別な関係になった彼女たちが、無言で『空いた隣の席』をアピールしていた。"
-                },
-                {
-                    "speaker": "naru",
-                    "face": "nervous",
-                    "text": "（おい、はじめ……なんか空気ヤバくねえか？）"
-                },
-                {
-                    "speaker": "adam",
-                    "face": "normal",
-                    "text": "（……自業自得だ。勝手にしろ）"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "この中から、一人を選ばなければならない。覚悟を決めよう。"
-                },
-                {
-                    "type": "choice",
-                    "choices": [
-                        {
-                            "text": "みんちゃんの隣に行く",
-                            "condition_type": "has_romance",
-                            "char_id": "minto",
-                            "next_id": "shuraba_minto"
-                        },
-                        {
-                            "text": "紡の隣に行く",
-                            "condition_type": "has_romance",
-                            "char_id": "tsumugi",
-                            "next_id": "shuraba_tsumugi"
-                        },
-                        {
-                            "text": "アゲハの隣に行く",
-                            "condition_type": "has_romance",
-                            "char_id": "ageha",
-                            "next_id": "shuraba_ageha"
-                        }
-                    ]
-                }
-            ]
+          "speaker": "",
+          "face": "",
+          "text": "{attendees}、最高のシーシャを燻らせる。"
         },
         {
-            "dialogue_id": "ending_normal",
-            "lines": [
-                {
-                    "speaker": "hajime",
-                    "face": "smile",
-                    "text": "みんな、今日は本当にありがとう！"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "誰かと特別な関係になることはなかったが、俺たちにはシーシャという絆がある。\n夜が更けるまで、煙と笑い声は絶えなかった。"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "sit_with_minto",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "俺は、みんちゃんの隣の席に腰を下ろした。"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "smile",
-                    "text": "ふふっ、はじめくん。本当にお疲れ様"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "甘いシーシャの煙の奥で、みんちゃんが優しく微笑んだ。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "smile",
-                    "text": "ありがとう、みんちゃんのおかげだよ"
-                },
-                {
-                    "type": "jump",
-                    "next_id": "epilogue_minto"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "shuraba_minto",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "俺は、みんちゃんの隣の席に腰を下ろした。"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "smile",
-                    "text": "ふふっ、ここに来てくれて嬉しいな。はじめくん"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "──背後から、凍りつくような鋭い視線が突き刺さるのを感じた。気のせいだと思いたい。"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "angry",
-                    "text": "……おい、はじめ。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "スミさんの低く響く声が場を制圧した。全員が一斉に静まり返る。"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "normal",
-                    "text": "どっちつかずの態度はシーシャの味もブレさせる。……これ以上みんなを振り回すような真似はするなよ。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "nervous",
-                    "text": "はい……すみません、以後気をつけます……。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "最終的にスミさんのお説教によってその場の空気は収まり、命だけは助かった形になった。"
-                },
-                {
-                    "type": "jump",
-                    "next_id": "epilogue_minto"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "sit_with_tsumugi",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "俺は、紡の隣の席に腰を下ろした。"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "smile",
-                    "text": "あ、はじめ。……えへへ"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "紡は嬉しそうに俺の袖を軽く引っ張る。\n心地よい煙と一緒に、穏やかな時間が流れていった。"
-                },
-                {
-                    "type": "jump",
-                    "next_id": "epilogue_tsumugi"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "shuraba_tsumugi",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "俺は、紡の隣の席に腰を下ろした。"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "smile",
-                    "text": "あ、はじめ！ ……来てくれた"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "紡が嬉しそうに微笑んだ瞬間、別の席からグラスが「ガンッ！」と置かれる音が響いた。"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "angry",
-                    "text": "……おい、はじめ。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "スミさんの低く響く声が場を制圧した。全員が一斉に静まり返る。"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "normal",
-                    "text": "どっちつかずの態度はシーシャの味もブレさせる。……これ以上みんなを振り回すような真似はするなよ。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "nervous",
-                    "text": "はい……すみません、以後気をつけます……。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "最終的にスミさんのお説教によってその場の空気は収まり、命だけは助かった形になった。"
-                },
-                {
-                    "type": "jump",
-                    "next_id": "epilogue_tsumugi"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "sit_with_ageha",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "俺は、アゲハの隣の席に腰を下ろした。"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "smile",
-                    "text": "ちょっと、主役なんだからもっと堂々としてなさいよ。お疲れ様、はじめ"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "アゲハは少しからかうように笑いながらも、その瞳は優しかった。"
-                },
-                {
-                    "type": "jump",
-                    "next_id": "epilogue_ageha"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "shuraba_ageha",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "俺は、アゲハの隣の席に腰を下ろした。"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "smile",
-                    "text": "……ふふん。ま、当然の選択よね。よくやったわ、はじめ"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "アゲハが満足げに笑う一方で、周囲のエアーが急激に冷え込んでいるのが分かった。"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "angry",
-                    "text": "……おい、はじめ。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "スミさんの低く響く声が場を制圧した。全員が一斉に静まり返る。"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "normal",
-                    "text": "どっちつかずの態度はシーシャの味もブレさせる。……これ以上みんなを振り回すような真似はするなよ。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "nervous",
-                    "text": "はい……すみません、以後気をつけます……。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "最終的にスミさんのお説教によってその場の空気は収まり、命だけは助かった形になった。"
-                },
-                {
-                    "type": "jump",
-                    "next_id": "epilogue_ageha"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "epilogue_minto",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "……数日後。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "smile",
-                    "text": "みんちゃん、お待たせ"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "smile",
-                    "text": "あっ、はじめくん。こっちこっち♡"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "休日の昼下がり、俺たちはデートの待ち合わせをしていた。\nすっかり「恋人」としての距離感になった彼女の笑顔が弾ける。"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "smile",
-                    "text": "今日は私の特製シーシャをご馳走するからね。覚悟しといてよ？"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "互いに切磋琢磨するライバルであり、かけがえのないパートナーでもある。\nみんちゃんとの甘い日常は、少し刺激的で、とびきり美味しかった。"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "epilogue_tsumugi",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "……数日後。"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "smile",
-                    "text": "はじめ、……あのね。これ"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "いつもの指定席で、紡が照れくさそうにスケッチブックを見せてきた。\nそこには、大会でシーシャを作る俺の姿が描かれている。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "smile",
-                    "text": "ありがとう。……すごく上手だ"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "smile",
-                    "text": "えへへ……。私にとって、はじめは……一番かっこいいから"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "口数は少なくても、彼女の絵と表情がすべてを物語っている。\n紡との穏やかで温かい時間は、これからもずっと続いていく。"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "epilogue_ageha",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "……数日後。"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "smile",
-                    "text": "遅いわよ。アタシを待たせるなんていい度胸してるじゃない"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "nervous",
-                    "text": "すみません、道が混んでて……"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "smile",
-                    "text": "ふふっ、冗談。焦った顔も可愛いわね"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "高級ホテルのラウンジ。アゲハさんにエスコートされながら、恋人という特等席に座る。\n完全に彼女のペースだが、不思議と居心地は悪くない。"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "smile",
-                    "text": "さあ、今日はとことん付き合ってもらうわよ。……アタシだけのモノなんだからね"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "カリスマギャル社長との少し危険で魅力的な日々は、まだ始まったばかりだ。"
-                }
-            ]
+          "type": "condition",
+          "condition_type": "romance_count",
+          "threshold": 2,
+          "next_true": "ending_shuraba",
+          "next_false": "ending_check_single"
         }
-    ]
+      ]
+    },
+    {
+      "dialogue_id": "ending_check_single",
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "romance_count",
+          "threshold": 1,
+          "next_true": "ending_single_lover",
+          "next_false": "ending_normal"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ending_single_lover",
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "has_romance",
+          "char_id": "minto",
+          "next_true": "sit_with_minto",
+          "next_false": "check_tsumugi"
+        }
+      ],
+      "branches": {
+        "check_tsumugi": [
+          {
+            "type": "condition",
+            "condition_type": "has_romance",
+            "char_id": "tsumugi",
+            "next_true": "sit_with_tsumugi",
+            "next_false": "sit_with_ageha"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ending_shuraba",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（……さて。誰の隣に座ろうか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ふと視線を感じる。俺と特別な関係になった彼女たちが、無言で『空いた隣の席』をアピールしていた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "nervous",
+          "text": "（おい、はじめ……なんか空気ヤバくねえか？）"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "（……自業自得だ。勝手にしろ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "この中から、一人を選ばなければならない。覚悟を決めよう。"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "みんちゃんの隣に行く",
+              "condition_type": "has_romance",
+              "char_id": "minto",
+              "next_id": "shuraba_minto"
+            },
+            {
+              "text": "紡の隣に行く",
+              "condition_type": "has_romance",
+              "char_id": "tsumugi",
+              "next_id": "shuraba_tsumugi"
+            },
+            {
+              "text": "アゲハの隣に行く",
+              "condition_type": "has_romance",
+              "char_id": "ageha",
+              "next_id": "shuraba_ageha"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ending_normal",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "みんな、今日は本当にありがとう！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "誰かと特別な関係になることはなかったが、俺たちにはシーシャという絆がある。\n夜が更けるまで、煙と笑い声は絶えなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "sit_with_minto",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は、みんちゃんの隣の席に腰を下ろした。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "ふふっ、はじめくん。本当にお疲れ様"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "甘いシーシャの煙の奥で、みんちゃんが優しく微笑んだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとう、みんちゃんのおかげだよ"
+        },
+        {
+          "type": "jump",
+          "next_id": "epilogue_minto"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_minto",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は、みんちゃんの隣の席に腰を下ろした。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "ふふっ、ここに来てくれて嬉しいな。はじめくん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──背後から、凍りつくような鋭い視線が突き刺さるのを感じた。気のせいだと思いたい。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "angry",
+          "text": "……おい、はじめ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんの低く響く声が場を制圧した。全員が一斉に静まり返る。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "どっちつかずの態度はシーシャの味もブレさせる。……これ以上みんなを振り回すような真似はするなよ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "nervous",
+          "text": "はい……すみません、以後気をつけます……。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最終的にスミさんのお説教によってその場の空気は収まり、命だけは助かった形になった。"
+        },
+        {
+          "type": "jump",
+          "next_id": "epilogue_minto"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "sit_with_tsumugi",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は、紡の隣の席に腰を下ろした。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "あ、はじめ。……えへへ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紡は嬉しそうに俺の袖を軽く引っ張る。\n心地よい煙と一緒に、穏やかな時間が流れていった。"
+        },
+        {
+          "type": "jump",
+          "next_id": "epilogue_tsumugi"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_tsumugi",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は、紡の隣の席に腰を下ろした。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "あ、はじめ！ ……来てくれた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紡が嬉しそうに微笑んだ瞬間、別の席からグラスが「ガンッ！」と置かれる音が響いた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "angry",
+          "text": "……おい、はじめ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんの低く響く声が場を制圧した。全員が一斉に静まり返る。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "どっちつかずの態度はシーシャの味もブレさせる。……これ以上みんなを振り回すような真似はするなよ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "nervous",
+          "text": "はい……すみません、以後気をつけます……。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最終的にスミさんのお説教によってその場の空気は収まり、命だけは助かった形になった。"
+        },
+        {
+          "type": "jump",
+          "next_id": "epilogue_tsumugi"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "sit_with_ageha",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は、アゲハの隣の席に腰を下ろした。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ちょっと、主役なんだからもっと堂々としてなさいよ。お疲れ様、はじめ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アゲハは少しからかうように笑いながらも、その瞳は優しかった。"
+        },
+        {
+          "type": "jump",
+          "next_id": "epilogue_ageha"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_ageha",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は、アゲハの隣の席に腰を下ろした。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……ふふん。ま、当然の選択よね。よくやったわ、はじめ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アゲハが満足げに笑う一方で、周囲のエアーが急激に冷え込んでいるのが分かった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "angry",
+          "text": "……おい、はじめ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんの低く響く声が場を制圧した。全員が一斉に静まり返る。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "どっちつかずの態度はシーシャの味もブレさせる。……これ以上みんなを振り回すような真似はするなよ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "nervous",
+          "text": "はい……すみません、以後気をつけます……。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最終的にスミさんのお説教によってその場の空気は収まり、命だけは助かった形になった。"
+        },
+        {
+          "type": "jump",
+          "next_id": "epilogue_ageha"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "epilogue_minto",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……数日後。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "みんちゃん、お待たせ"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "あっ、はじめくん。こっちこっち♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "休日の昼下がり、俺たちはデートの待ち合わせをしていた。\nすっかり「恋人」としての距離感になった彼女の笑顔が弾ける。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "今日は私の特製シーシャをご馳走するからね。覚悟しといてよ？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "互いに切磋琢磨するライバルであり、かけがえのないパートナーでもある。\nみんちゃんとの甘い日常は、少し刺激的で、とびきり美味しかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "epilogue_tsumugi",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……数日後。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "はじめ、……あのね。これ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつもの指定席で、紡が照れくさそうにスケッチブックを見せてきた。\nそこには、大会でシーシャを作る俺の姿が描かれている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとう。……すごく上手だ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "えへへ……。私にとって、はじめは……一番かっこいいから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "口数は少なくても、彼女の絵と表情がすべてを物語っている。\n紡との穏やかで温かい時間は、これからもずっと続いていく。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "epilogue_ageha",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……数日後。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "遅いわよ。アタシを待たせるなんていい度胸してるじゃない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "nervous",
+          "text": "すみません、道が混んでて……"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ふふっ、冗談。焦った顔も可愛いわね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "高級ホテルのラウンジ。アゲハさんにエスコートされながら、恋人という特等席に座る。\n完全に彼女のペースだが、不思議と居心地は悪くない。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "さあ、今日はとことん付き合ってもらうわよ。……アタシだけのモノなんだからね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カリスマギャル社長との少し危険で魅力的な日々は、まだ始まったばかりだ。"
+        }
+      ]
+    }
+  ]
 }

@@ -244,8 +244,26 @@ func _show_next_line() -> void:
 	_current_speaker = str(line.get("speaker", ""))
 	speaker_label.text = SPEAKER_NAMES.get(_current_speaker, _current_speaker)
 	_update_portrait(line)
-	_start_typing(str(line.get("text", "")))
+	
+	var raw_text = str(line.get("text", ""))
+	_start_typing(_process_text(raw_text))
 
+
+func _process_text(text: String) -> String:
+	if "{attendees}" in text:
+		var attendees = []
+		for char_id in ["naru", "adam", "minto", "tsumugi", "ageha"]:
+			if AffinityManager.is_max_level(char_id):
+				attendees.append(SPEAKER_NAMES.get(char_id, char_id))
+		
+		var attendees_str = ""
+		if attendees.size() > 0:
+			attendees_str = "、".join(attendees) + "……。\n今まで戦ってきた仲間たちと一緒に"
+		else:
+			attendees_str = "今まで戦ってきた日々を思い出しながら"
+			
+		text = text.replace("{attendees}", attendees_str)
+	return text
 
 func _start_typing(text: String) -> void:
 	_full_text = _strip_highlight_tags(text)
