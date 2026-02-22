@@ -124,7 +124,7 @@ func _ready() -> void:
 	_adjust_timer = Timer.new()
 	_adjust_timer.wait_time = GAUGE_TIMER_WAIT
 	_adjust_timer.one_shot = false
-	_adjust_timer.timeout.connect(_on_adjust_gauge_tick)
+	_adjust_timer.timeout.connect(_on_adjust_timer_tick)
 	add_child(_adjust_timer)
 
 	_aluminum_timer = Timer.new()
