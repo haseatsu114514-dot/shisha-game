@@ -1,0 +1,24 @@
+{
+    "dialogues": [
+        {
+            "dialogue_id": "ch4_opening",
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "【第4章: 世界大会（ドバイ編）】"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "ついにここまで来た。世界大会の舞台、ドバイ。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "……泣いても笑ってもこれが最後だ。全部出し切ろう。"
+                }
+            ]
+        }
+    ]
+}

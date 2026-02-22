@@ -198,5 +198,75 @@
       },
       "next_scene": "night_end"
     }
+  ],
+  "chapter_2": [
+    {
+      "id": "ch2_forced_opening",
+      "day": 1,
+      "time_slot": "morning",
+      "flag": "ch2_forced_opening_done",
+      "title": "東京到着",
+      "description": "第2章: 全国大会（東京編）の始まり。",
+      "dialogue_file": "res://data/dialogue/ch2_main.json",
+      "dialogue_id": "ch2_opening",
+      "stat_changes": {},
+      "next_scene": "map"
+    }
+  ],
+  "interval_2": [
+    {
+      "id": "interval_2_day1",
+      "day": 1,
+      "time_slot": "morning",
+      "flag": "interval_2_day1_done",
+      "title": "全国大会後の朝",
+      "description": "全国大会が終わった。次の舞台はアジアだ。",
+      "dialogue_file": "",
+      "dialogue_id": "",
+      "stat_changes": {},
+      "next_scene": "map"
+    }
+  ],
+  "chapter_3": [
+    {
+      "id": "ch3_forced_opening",
+      "day": 1,
+      "time_slot": "morning",
+      "flag": "ch3_forced_opening_done",
+      "title": "イスタンブール到着",
+      "description": "第3章: アジア大会（イスタンブール編）の始まり。",
+      "dialogue_file": "res://data/dialogue/ch3_main.json",
+      "dialogue_id": "ch3_opening",
+      "stat_changes": {},
+      "next_scene": "map"
+    }
+  ],
+  "interval_3": [
+    {
+      "id": "interval_3_day1",
+      "day": 1,
+      "time_slot": "morning",
+      "flag": "interval_3_day1_done",
+      "title": "アジア大会後の朝",
+      "description": "ついに世界大会の切符を手に入れた。",
+      "dialogue_file": "",
+      "dialogue_id": "",
+      "stat_changes": {},
+      "next_scene": "map"
+    }
+  ],
+  "chapter_4": [
+    {
+      "id": "ch4_forced_opening",
+      "day": 1,
+      "time_slot": "morning",
+      "flag": "ch4_forced_opening_done",
+      "title": "ドバイ到着",
+      "description": "第4章: 世界大会（ドバイ編）の始まり。",
+      "dialogue_file": "res://data/dialogue/ch4_main.json",
+      "dialogue_id": "ch4_opening",
+      "stat_changes": {},
+      "next_scene": "map"
+    }
   ]
 }

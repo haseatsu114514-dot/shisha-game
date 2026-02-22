@@ -1,0 +1,24 @@
+{
+    "dialogues": [
+        {
+            "dialogue_id": "ch2_opening",
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "【第2章: 全国大会（東京編）】"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "ついに東京に着いた……。ここからが全国大会へ向けた本当の戦いだ。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "（とりあえず、この町で新しいシーシャ屋を回りながら大会の情報を集めよう）"
+                }
+            ]
+        }
+    ]
+}

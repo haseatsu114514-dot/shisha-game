@@ -1,0 +1,24 @@
+{
+    "dialogues": [
+        {
+            "dialogue_id": "ch3_opening",
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "【第3章: アジア大会（イスタンブール編）】"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "イスタンブール……。本当に海外まで来てしまった。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "（シーシャの本場。ここでアジア大会が始まるんだな……）"
+                }
+            ]
+        }
+    ]
+}
