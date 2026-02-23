@@ -22,6 +22,8 @@ const SPOT_POSITIONS_DAY: Dictionary = {
 	"choizap": Vector2(160, 300),
 	"kannon": Vector2(600, 540),
 	"cafe": Vector2(840, 340),
+	"shotengai": Vector2(480, 460),
+	"tv_tower_park": Vector2(180, 200),
 	"mukai": Vector2(800, 150),
 	"tokyo_shisha": Vector2(400, 100),
 	"tokyo_sightseeing": Vector2(200, 150),
@@ -133,12 +135,15 @@ func _build_spot_list() -> Array:
 		if _are_rival_shops_unlocked():
 			spots.append({"id": "adam", "label": "Eden"})
 			spots.append({"id": "minto", "label": "ぺぱーみんと"})
+		spots.append({"id": "shotengai", "label": "商店街"})
 		if EventFlags.get_flag("spot_choizap_unlocked"):
 			spots.append({"id": "choizap", "label": "チョイザップ"})
 		if EventFlags.get_flag("spot_kannon_unlocked"):
 			spots.append({"id": "kannon", "label": "観音"})
 		if EventFlags.get_flag("spot_cafe_unlocked"):
 			spots.append({"id": "cafe", "label": "カフェ"})
+		if GameManager.current_chapter >= 2:
+			spots.append({"id": "tv_tower_park", "label": "テレビ塔公園"})
 	elif CalendarManager.current_time == "night":
 		spots.append({"id": "tonari", "label": "tonari（夜）"})
 		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]（夜）"})
@@ -207,9 +212,16 @@ func _build_ch4_spots() -> Array:
 
 func _on_spot_pressed(spot: Dictionary) -> void:
 	GameManager.play_ui_se("cursor")
-	if str(spot.get("id", "")) == "shop":
+	var id = str(spot.get("id", ""))
+	if id == "shop":
 		_open_shop_confirm(spot)
 		return
+	# Roaming spots: check if character event is available
+	if id in ["shotengai", "kannon", "choizap", "tv_tower_park"]:
+		if not _has_roaming_event(id):
+			message_label.text = "特に用事はなさそうだ。"
+			GameManager.play_ui_se("cancel")
+			return
 	_enter_spot(spot)
 
 
@@ -305,6 +317,22 @@ func _enter_spot(spot: Dictionary) -> void:
 			GameManager.log_stat_change("sense", 1.5)
 			GameManager.set_transient("advance_time_after_scene", true)
 			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_cafe_visit", "res://scenes/daily/map.tscn")
+			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+		"shotengai":
+			if not CalendarManager.use_action():
+				_try_auto_return_home()
+				return
+			var event_id = _get_roaming_event_id("shotengai")
+			GameManager.set_transient("advance_time_after_scene", true)
+			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", event_id, "res://scenes/daily/map.tscn")
+			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+		"tv_tower_park":
+			if not CalendarManager.use_action():
+				_try_auto_return_home()
+				return
+			var event_id = _get_roaming_event_id("tv_tower_park")
+			GameManager.set_transient("advance_time_after_scene", true)
+			GameManager.queue_dialogue("res://data/dialogue/ch2_spots.json", event_id, "res://scenes/daily/map.tscn")
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 
 		# --- Chapter 3 (Tokyo) Spots ---
@@ -498,6 +526,8 @@ func _get_marker_position(spot_id: String) -> Vector2:
 func _is_event_spot(spot_id: String) -> bool:
 	if spot_id in ["naru", "adam", "minto"] and not EventFlags.get_flag("ch1_%s_met" % spot_id):
 		return true
+	if spot_id in ["shotengai", "kannon", "choizap", "tv_tower_park"]:
+		return _has_roaming_event(spot_id)
 	return false
 
 
@@ -522,3 +552,56 @@ func _safe_load_texture(path: String) -> Texture2D:
 		return null
 	var loaded = load(path)
 	return loaded as Texture2D
+
+
+# ======== Roaming Event System ========
+# Spots like 商店街 / 観音 / チョイザップ / テレビ塔公園 have character encounters
+# that appear randomly based on day seed. When no character is present,
+# the spot shows "特に用事はなさそうだ" and cannot be entered.
+
+const ROAMING_EVENTS := {
+	"shotengai": [
+		{"id": "ch1_shotengai_naru", "chance": 0.35},
+		{"id": "ch1_shotengai_tsumugi", "chance": 0.30},
+	],
+	"kannon": [
+		{"id": "ch1_kannon_adam", "chance": 0.40},
+	],
+	"choizap": [
+		{"id": "ch1_choizap_minto", "chance": 0.30},
+	],
+	"tv_tower_park": [
+		{"id": "ch2_tvtower_sumi", "chance": 0.35},
+	],
+}
+
+var _roaming_event_cache: Dictionary = {}
+
+
+func _has_roaming_event(spot_id: String) -> bool:
+	return _get_roaming_event_id(spot_id) != ""
+
+
+func _get_roaming_event_id(spot_id: String) -> String:
+	if _roaming_event_cache.has(spot_id):
+		return str(_roaming_event_cache[spot_id])
+
+	var events = ROAMING_EVENTS.get(spot_id, [])
+	if events.is_empty():
+		_roaming_event_cache[spot_id] = ""
+		return ""
+
+	# Use day number as seed for deterministic daily randomness
+	var day_seed = CalendarManager.current_day * 7 + spot_id.hash()
+	var rng = RandomNumberGenerator.new()
+	rng.seed = day_seed
+
+	for event in events:
+		var roll = rng.randf()
+		if roll < float(event.get("chance", 0.3)):
+			var eid = str(event.get("id", ""))
+			_roaming_event_cache[spot_id] = eid
+			return eid
+
+	_roaming_event_cache[spot_id] = ""
+	return ""
