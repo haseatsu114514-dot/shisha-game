@@ -198,11 +198,11 @@ func _build_chapter_brief_lines(chapter: int) -> Array[String]:
 	lines.append("【章の目標】")
 	match chapter:
 		1:
-			lines.append("地方大会で1位を取る。")
+			lines.append("SMOKE CROWN CUPで1位を取る。")
 			lines.append("新要素: 蒸らし前の思考弾幕、吸い出し、提供後調整。")
 			lines.append("解放条件: チュートリアル完了後にライバル店が開く。")
 		2:
-			lines.append("日本大会で1位を取る。")
+			lines.append("HAZE: OPEN CLOUDで1位を取る。")
 			lines.append("新要素: 中間順位差を使った追い上げ判断が重要。")
 			lines.append("解放条件: 交流スポットとショップ在庫が章進行で拡張。")
 		3:

@@ -3026,7 +3026,7 @@ func _finalize_and_show_result() -> void:
 		lines.append("特別ミックス: %s" % _special_mix_name)
 	if _player_rank == 1:
 		lines.append("賞金: %d円" % _pending_reward)
-		lines.append("地方大会優勝！")
+		lines.append("SMOKE CROWN CUP優勝！")
 	else:
 		lines.append("今回は %d位。1位になるまで本編進行不可。" % _player_rank)
 		lines.append("賞金は再挑戦中は支給されない。")
@@ -3085,12 +3085,24 @@ func _dramatic_result_reveal(ranking: Array) -> void:
 		info_label.text += "\n特別ミックス: %s" % _special_mix_name
 	if _player_rank == 1:
 		info_label.text += "\n\n賞金: %d円" % _pending_reward
-		info_label.text += "\n地方大会優勝！"
+		info_label.text += "\nSMOKE CROWN CUP優勝！"
 		_dramatic_impact("優勝！")
 	else:
 		info_label.text += "\n\n今回は %d位。1位になるまで本編進行不可。" % _player_rank
 		info_label.text += "\n賞金は再挑戦中は支給されない。"
 		_screen_shake(6.0, 0.25)
+
+	# シーシャランク表示
+	await get_tree().create_timer(1.0).timeout
+	var player_score_data = _build_player_score()
+	var rank_info = ShishaRank.calculate_rank(float(player_score_data.get("total", 0.0)), 1)
+	var rank_text = ShishaRank.get_rank_display_text(float(player_score_data.get("total", 0.0)), 1)
+	info_label.text += "\n\n━━━━━━━━━━━━━━━━━━━━"
+	info_label.text += "\n\n　　シーシャランク"
+	info_label.text += "\n\n　　　%s" % rank_text
+	info_label.text += "\n\n━━━━━━━━━━━━━━━━━━━━"
+	GameManager.play_ui_se("confirm")
+	EventFlags.set_value("ch1_tournament_shisha_rank", rank_info["rank"])
 
 
 func _build_player_score() -> Dictionary:
@@ -3265,7 +3277,7 @@ func _build_post_tournament_notice() -> String:
 	var rank_text = "%d位" % _player_rank
 	if _player_rank == 1:
 		rank_text = "優勝"
-	var notice = "地方大会 %s。賞金 %d円 を獲得した。\n\n" % [rank_text, _pending_reward]
+	var notice = "SMOKE CROWN CUP %s。賞金 %d円 を獲得した。\n\n" % [rank_text, _pending_reward]
 	notice += _build_sumi_feedback()
 	return notice
 

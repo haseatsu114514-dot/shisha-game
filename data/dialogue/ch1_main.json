@@ -175,8 +175,18 @@
         },
         {
           "speaker": "sumi",
+          "face": "normal",
+          "text": "今度、近くの大型店で[imp]SMOKE CROWN CUP[/imp]ってのをやる。シーシャの腕を競うバトルイベントだ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "各地のシーシャ屋で開催されてる。プロもアマも関係ない。作ったシーシャを審査員がブラインドで評価して、一番うまいやつが勝つ"
+        },
+        {
+          "speaker": "sumi",
           "face": "serious",
-          "text": "[imp]地方大会[/imp]。来週だ"
+          "text": "来週だ"
         },
         {
           "speaker": "hajime",
@@ -248,7 +258,7 @@
           {
             "speaker": "sumi",
             "face": "smile",
-            "text": "よし。[imp]地方大会まで1週間[/imp]だ。準備しろ"
+            "text": "よし。[imp]SMOKE CROWN CUPまで1週間[/imp]だ。準備しろ"
           },
           {
             "speaker": "hajime",
@@ -330,7 +340,7 @@
           {
             "speaker": "sumi",
             "face": "serious",
-            "text": "考えるのは帰ってからでいい。[imp]地方大会まで1週間[/imp]だ"
+            "text": "考えるのは帰ってからでいい。[imp]SMOKE CROWN CUPまで1週間[/imp]だ"
           },
           {
             "speaker": "hajime",
@@ -698,7 +708,7 @@
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "明日はいよいよ地方大会だ"
+          "text": "明日はいよいよSMOKE CROWN CUPだ"
         },
         {
           "speaker": "hajime",
@@ -713,7 +723,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "眠都のミント。甘くて完璧で──でもどこか、必死だった。あの喫茶店のカウンターで見た表情を思い出す"
+          "text": "みんとのミント。甘くて完璧で──でもどこか、必死だった。あの喫茶店のカウンターで見た表情を思い出す"
         },
         {
           "speaker": "hajime",

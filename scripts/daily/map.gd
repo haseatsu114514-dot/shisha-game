@@ -338,7 +338,7 @@ func _build_map_rule_lines() -> Array[String]:
 		lines.append("ライバル店: 解放済み")
 
 	if GameManager.current_chapter == 1 and not EventFlags.get_flag("ch1_tournament_completed"):
-		lines.append("章進行条件: 地方大会で1位")
+		lines.append("章進行条件: SMOKE CROWN CUPで1位")
 	elif GameManager.current_chapter >= 2:
 		lines.append("章進行条件: 各章大会で1位")
 	return lines
