@@ -14,16 +14,16 @@
     "id": "sumi",
     "name": "スミさん",
     "role": "mentor",
-    "age": 42,
+    "age": 46,
     "nationality": "Japan",
     "affiliation": "tonari（地元店）",
     "play_style": "「基本に忠実、かつ自由」",
-    "description": "主人公の師匠であり、良き理解者。\nかつては名の知れたシーシャプレイヤーだったらしいが、現在は飄々とした態度で地元の小さな店を営む。",
+    "description": "主人公の師匠であり、良き理解者。\nかつては名の知れたシーシャプレイヤーだったが、現在は飄々とした態度で地元の小さな店を営む。",
     "background_secret": ""
   },
   {
     "id": "naru",
-    "name": "鳴海（なる）",
+    "name": "鳴切（なる）",
     "role": "rival_ch1",
     "age": 23,
     "nationality": "Japan",
@@ -124,11 +124,11 @@
     "id": "ageha",
     "name": "アゲハ",
     "role": "rival_ch2",
-    "age": 27,
+    "age": 22,
     "nationality": "Japan",
-    "affiliation": "tonari常連 / 第2章ライバル",
+    "affiliation": "第2章ライバル",
     "play_style": "「ヴァイブスと直感」",
-    "description": "tonariの常連であるヒロイン候補の一人であり、第2章で立ちはだかるライバル。\n理論ではなく「ヴァイブス」だけで最高の一杯を作り上げてしまう天才肌だが、内心ではいつか通用しなくなる不安と戦っている。",
+    "description": "第2章で立ちはだかるライバルでありヒロイン候補の一人。\n理論ではなく「ヴァイブス」だけで最高の一杯を作り上げてしまう天才肌だが、内心ではいつか通用しなくなる不安と戦っている。",
     "background_secret": ""
   },
   {
@@ -187,14 +187,14 @@
     "background_secret": ""
   },
   {
-    "id": "toki",
-    "name": "土岐宗一郎",
+    "id": "nagumo",
+    "name": "南雲 修二（なぐも しゅうじ）",
     "role": "judge",
-    "age": 62,
+    "age": 45,
     "nationality": "Japan",
-    "affiliation": "大会審査員長",
+    "affiliation": "大会審査員長 / 大手シーシャチェーン「シーステーション」会長",
     "play_style": "N/A",
-    "description": "シーシャ界の重鎮であり、伝説的な大会審査員長。技術に対して極めて厳しいが、本物の「心」が入った煙には『悪くない』という彼にとっての最高評価を出す。\n隠しボスである「トキ」との関係性が噂されている。",
+    "description": "大手シーシャチェーン「シーステーション」の会長であり、大会審査員長。業界を牽引するビジネスマン的な一面を持つ一方、シーシャへの本質的な審美眼は本物。\n技術や効率だけでなく「店の哲学が煙に出ているか」を最重要基準にしている。",
     "background_secret": ""
   },
   {
@@ -223,7 +223,7 @@
     "id": "sheikh",
     "name": "シェイク・アル=ナルギーレ",
     "role": "rival_ch4",
-    "age": 44,
+    "age": 52,
     "nationality": "UAE",
     "affiliation": "ドバイ王族",
     "play_style": "「純金機材と至上の煙」",
@@ -258,9 +258,9 @@
     "role": "sub_character",
     "age": 26,
     "nationality": "Japan",
-    "affiliation": "tonari常連（デザイナー勤務）",
+    "affiliation": "tonari常連（フリーランスデザイナー）",
     "play_style": "N/A",
-    "description": "「推しシーシャ」を求めて店を渡り歩くオタク気質なデザイナー女性。\n姫カット黒髪ロングで日本人形のような見た目だが、モード系の服を好む。\n言葉は少ないが、好みのフレーバーに出会うと珍しくテンションが上がる。",
+    "description": "フリーランスのデザイナー。シーシャをただ「吸う」だけでなく「作ること」が好きで、自分なりの一杯を探求しているオタク気質の女性。\n好みのフレーバーはBombshell（ボムシェル）とWhite Musk（ホワイトムスク）。\nVTuberやネットミームが好きな「オタク」で、言葉は少ないが話しかけると話が長くなる。\n姫カット黒髪ロングで日本人形のような顔立ち、モード系の服装。",
     "background_secret": ""
   }
 ]
