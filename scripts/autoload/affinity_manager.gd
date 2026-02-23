@@ -1,6 +1,7 @@
 extends Node
 
 const MAX_LEVEL := 5
+const CHAPTER_AFFINITY_CAP := {1: 3, 2: 4, 3: 5, 4: 5}
 
 const DEFAULT_AFFINITIES := {
 	"sumi": {"level": 0, "lime_exchanged": false, "met": true, "romance": false},
@@ -23,10 +24,18 @@ func spend_time_with(char_id: String) -> int:
 	if not affinities.has(char_id):
 		return -1
 	var current = int(affinities[char_id].get("level", 0))
-	if current >= MAX_LEVEL:
+	var cap = _get_current_cap()
+	if current >= cap:
 		return current
 	affinities[char_id]["level"] = current + 1
 	return current + 1
+
+
+func _get_current_cap() -> int:
+	var ch = 1
+	if GameManager:
+		ch = GameManager.current_chapter
+	return int(CHAPTER_AFFINITY_CAP.get(ch, MAX_LEVEL))
 
 
 func get_level(char_id: String) -> int:
@@ -110,7 +119,7 @@ func get_affinity(char_id: String) -> int:
 
 
 func get_max_level() -> int:
-	return MAX_LEVEL
+	return _get_current_cap()
 
 
 func get_star_text(char_id: String) -> String:

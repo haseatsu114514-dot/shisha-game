@@ -44,3 +44,14 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 16
 text = "大会まであと 7 日"
 horizontal_alignment = 2
+
+[node name="Spacer3" type="Control" parent="TopBar/HBox"]
+custom_minimum_size = Vector2(8, 0)
+layout_mode = 2
+
+[node name="MenuButton" type="Button" parent="TopBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = " メニュー "
+focus_mode = 0

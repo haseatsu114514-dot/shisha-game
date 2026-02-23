@@ -1,0 +1,133 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/system_menu.gd" id="1"]
+
+[node name="SystemMenu" type="CanvasLayer"]
+layer = 50
+process_mode = 3
+script = ExtResource("1")
+
+[node name="Overlay" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.7)
+
+[node name="Margin" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 64
+theme_override_constants/margin_top = 64
+theme_override_constants/margin_right = 64
+theme_override_constants/margin_bottom = 64
+
+[node name="Panel" type="Panel" parent="Margin"]
+layout_mode = 2
+
+[node name="VBox" type="VBoxContainer" parent="Margin/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+theme_override_constants/separation = 16
+
+[node name="HeaderHBox" type="HBoxContainer" parent="Margin/Panel/VBox"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Margin/Panel/VBox/HeaderHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 24
+text = "System Menu"
+
+[node name="CloseButton" type="Button" parent="Margin/Panel/VBox/HeaderHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 40)
+layout_mode = 2
+text = "閉じる"
+
+[node name="TabContainer" type="TabContainer" parent="Margin/Panel/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="好感度" type="MarginContainer" parent="Margin/Panel/VBox/TabContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="AffinityVBox" type="VBoxContainer" parent="Margin/Panel/VBox/TabContainer/好感度"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="ステータス" type="MarginContainer" parent="Margin/Panel/VBox/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="StatusGrid" type="GridContainer" parent="Margin/Panel/VBox/TabContainer/ステータス"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/h_separation = 32
+theme_override_constants/v_separation = 12
+columns = 2
+
+[node name="アイテム" type="MarginContainer" parent="Margin/Panel/VBox/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="ItemScroll" type="ScrollContainer" parent="Margin/Panel/VBox/TabContainer/アイテム"]
+layout_mode = 2
+
+[node name="ItemVBox" type="VBoxContainer" parent="Margin/Panel/VBox/TabContainer/アイテム/ItemScroll"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="システム" type="MarginContainer" parent="Margin/Panel/VBox/TabContainer"]
+visible = false
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="SystemVBox" type="VBoxContainer" parent="Margin/Panel/VBox/TabContainer/システム"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="SaveButton" type="Button" parent="Margin/Panel/VBox/TabContainer/システム/SystemVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 48)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "セーブ (Save)"
+
+[node name="LoadButton" type="Button" parent="Margin/Panel/VBox/TabContainer/システム/SystemVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 48)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "ロード (Load)"
+
+[node name="TitleButton" type="Button" parent="Margin/Panel/VBox/TabContainer/システム/SystemVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(200, 48)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "タイトルへ戻る"

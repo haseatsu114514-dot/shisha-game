@@ -136,14 +136,12 @@ func _build_spot_list() -> Array:
 			spots.append({"id": "adam", "label": "Eden"})
 			spots.append({"id": "minto", "label": "ぺぱーみんと"})
 		spots.append({"id": "shotengai", "label": "商店街"})
-		if EventFlags.get_flag("spot_choizap_unlocked"):
-			spots.append({"id": "choizap", "label": "チョイザップ"})
-		if EventFlags.get_flag("spot_kannon_unlocked"):
-			spots.append({"id": "kannon", "label": "観音"})
-		if EventFlags.get_flag("spot_cafe_unlocked"):
-			spots.append({"id": "cafe", "label": "カフェ"})
+		spots.append({"id": "kannon", "label": "観音"})
+		spots.append({"id": "choizap", "label": "チョイザップ"})
 		if GameManager.current_chapter >= 2:
 			spots.append({"id": "tv_tower_park", "label": "テレビ塔公園"})
+			if EventFlags.get_flag("spot_cafe_unlocked"):
+				spots.append({"id": "cafe", "label": "カフェ"})
 	elif CalendarManager.current_time == "night":
 		spots.append({"id": "tonari", "label": "tonari（夜）"})
 		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]（夜）"})
@@ -226,7 +224,7 @@ func _on_spot_pressed(spot: Dictionary) -> void:
 	# Roaming spots: check if character event is available
 	if id in ["shotengai", "kannon", "choizap", "tv_tower_park"]:
 		if not _has_roaming_event(id):
-			message_label.text = "今は何もなさそうだ。"
+			message_label.text = "特に用事がないから、いいや。"
 			GameManager.play_ui_se("cancel")
 			return
 	_enter_spot(spot)
@@ -620,18 +618,30 @@ func _get_roaming_event_id(spot_id: String) -> String:
 	return ""
 
 
-var _rival_presence_cache: Dictionary = {}
+var _rival_absence_days_cache: Dictionary = {}
 
 func _is_rival_present(rival_id: String) -> bool:
-	if _rival_presence_cache.has(rival_id):
-		return bool(_rival_presence_cache[rival_id])
-
-	# Use day number + rival id as seed for deterministic daily check
-	var day_seed = CalendarManager.current_day * 13 + rival_id.hash()
-	var rng = RandomNumberGenerator.new()
-	rng.seed = day_seed
-	# ~75% chance of being present
-	var present = rng.randf() < 0.75
-	_rival_presence_cache[rival_id] = present
-	return present
+	var chapter = 1
+	if GameManager:
+		chapter = GameManager.current_chapter
+		
+	var cache_key = "%s_ch%d" % [rival_id, chapter]
+	
+	# Cache the specific days the rival is absent for the current chapter
+	if not _rival_absence_days_cache.has(cache_key):
+		var rng = RandomNumberGenerator.new()
+		rng.seed = cache_key.hash()
+		
+		# Each rival is absent for exactly 2 days out of the typical 14-day chapter
+		var absent_days = []
+		while absent_days.size() < 2:
+			var d = rng.randi_range(2, 13) # Avoid day 1 and 14
+			if not absent_days.has(d):
+				absent_days.append(d)
+		_rival_absence_days_cache[cache_key] = absent_days
+	
+	var today = CalendarManager.current_day
+	var is_absent = _rival_absence_days_cache[cache_key].has(today)
+	
+	return not is_absent
 

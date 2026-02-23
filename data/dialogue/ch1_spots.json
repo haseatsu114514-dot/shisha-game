@@ -108,7 +108,8 @@
                         "text": "会員登録しないと利用できないようだ。また今度考えよう。"
                     }
                 ]
-            }
+            },
+            "metadata": {}
         },
         {
             "dialogue_id": "ch1_choizap_visit",
@@ -143,7 +144,8 @@
                     "face": "",
                     "text": "魅力が少し上がった。"
                 }
-            ]
+            ],
+            "metadata": {}
         },
         {
             "dialogue_id": "ch1_kannon_visit",
