@@ -216,10 +216,17 @@ func _on_spot_pressed(spot: Dictionary) -> void:
 	if id == "shop":
 		_open_shop_confirm(spot)
 		return
+	# Rival shops: check if the rival is present today
+	if id in ["naru", "adam", "minto"]:
+		if not _is_rival_present(id):
+			var rival_name = {"naru": "なる", "adam": "アダム", "minto": "眠都"}.get(id, id)
+			message_label.text = "今日は%sは出勤していないようだ。" % rival_name
+			GameManager.play_ui_se("cancel")
+			return
 	# Roaming spots: check if character event is available
 	if id in ["shotengai", "kannon", "choizap", "tv_tower_park"]:
 		if not _has_roaming_event(id):
-			message_label.text = "特に用事はなさそうだ。"
+			message_label.text = "今は何もなさそうだ。"
 			GameManager.play_ui_se("cancel")
 			return
 	_enter_spot(spot)
@@ -524,11 +531,17 @@ func _get_marker_position(spot_id: String) -> Vector2:
 
 
 func _is_event_spot(spot_id: String) -> bool:
-	if spot_id in ["naru", "adam", "minto"] and not EventFlags.get_flag("ch1_%s_met" % spot_id):
-		return true
+	# tonari and shop are always accessible (no event mark needed)
+	if spot_id in ["tonari", "shop"]:
+		return false
+	# Rival shops: show event mark only when rival is present
+	if spot_id in ["naru", "adam", "minto"]:
+		return _is_rival_present(spot_id)
+	# Roaming spots: show event mark only when a character event exists
 	if spot_id in ["shotengai", "kannon", "choizap", "tv_tower_park"]:
 		return _has_roaming_event(spot_id)
-	return false
+	# Other spots (mukai, tokyo_shisha etc) are always active
+	return true
 
 
 func _get_face_texture(spot_id: String) -> Texture2D:
@@ -605,3 +618,20 @@ func _get_roaming_event_id(spot_id: String) -> String:
 
 	_roaming_event_cache[spot_id] = ""
 	return ""
+
+
+var _rival_presence_cache: Dictionary = {}
+
+func _is_rival_present(rival_id: String) -> bool:
+	if _rival_presence_cache.has(rival_id):
+		return bool(_rival_presence_cache[rival_id])
+
+	# Use day number + rival id as seed for deterministic daily check
+	var day_seed = CalendarManager.current_day * 13 + rival_id.hash()
+	var rng = RandomNumberGenerator.new()
+	rng.seed = day_seed
+	# ~75% chance of being present
+	var present = rng.randf() < 0.75
+	_rival_presence_cache[rival_id] = present
+	return present
+
