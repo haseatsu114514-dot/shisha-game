@@ -1,0 +1,67 @@
+{
+    "ch1_ageha_encounter": {
+        "background": "res://assets/backgrounds/default.png",
+        "pages": [
+            {
+                "speaker": "",
+                "face": "",
+                "text": "買い出しの帰り道。荷物が多すぎて、うっかりスマホを道端に落としてしまった。"
+            },
+            {
+                "speaker": "hajime",
+                "face": "surprise",
+                "text": "あ、やばっ……"
+            },
+            {
+                "speaker": "",
+                "face": "",
+                "text": "両手が塞がっていて拾えずにいると、ヒールの足音が近づいてきた。"
+            },
+            {
+                "speaker": "ageha",
+                "face": "smile",
+                "text": "はい、落としましたよー"
+            },
+            {
+                "speaker": "hajime",
+                "face": "normal",
+                "text": "あ、どうも……えっ？"
+            },
+            {
+                "speaker": "",
+                "face": "",
+                "text": "顔を上げると、金髪で派手なメイクのギャルが、屈託のない笑顔でスマホを差し出していた。"
+            },
+            {
+                "speaker": "ageha",
+                "face": "smile",
+                "text": "荷物多いね。気をつけて帰りなよー"
+            },
+            {
+                "speaker": "hajime",
+                "face": "surprise",
+                "text": "あ、ありがとうございます……！"
+            },
+            {
+                "speaker": "",
+                "face": "",
+                "text": "受け取ったスマホから、微かに甘いパイナップルのような香りがした。……シーシャのフレーバーで言うなら『ホワイトグミベア』みたいな匂いだ。"
+            },
+            {
+                "speaker": "",
+                "face": "",
+                "text": "彼女はひらひらと手を振って、去っていった。"
+            },
+            {
+                "speaker": "hajime",
+                "face": "normal",
+                "text": "（今時の派手な見た目で、俺みたいな陰気な男とは絶対に縁がなさそうだけど……すごく親切で、可愛かったな）"
+            },
+            {
+                "speaker": "hajime",
+                "face": "normal",
+                "text": "（あんな甘い良い匂いがしたけど、あの子自身はシーシャなんて煙たいもの、絶対に吸わないんだろうな）"
+            }
+        ]
+    }
+}

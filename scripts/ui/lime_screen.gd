@@ -149,9 +149,12 @@ func _show_current_message() -> void:
 		_scroll_to_bottom()
 		return
 
-	_mark_current_message_read()
-	_index += 1
-	_show_current_message()
+	# If there are no replies, just show a confirmation button
+	_add_reply_option("確認", "next_message", -1, true)
+	back_button.disabled = true
+	await get_tree().process_frame
+	_scroll_to_bottom()
+	return
 
 
 func _add_reply_option(text: String, action: String, index: int = -1, is_primary: bool = false) -> void:
@@ -183,6 +186,12 @@ func _on_option_pressed(action: String, index: int) -> void:
 				_add_chat_bubble(SELF_ID, str(reply.get("text", "")))
 				_add_chat_bubble(str(message.get("sender", "")), str(reply.get("response", "")))
 				AffinityManager.add_affinity(str(message.get("sender", "")), int(reply.get("affinity", 0)))
+				
+				# If the reply triggers an event, set it
+				if reply.has("event"):
+					GameManager.set_transient("pending_outing_event", str(reply.get("event", "")))
+		"next_message":
+			pass # simply marks as read and moves on
 
 	_clear_options()
 	back_button.disabled = false

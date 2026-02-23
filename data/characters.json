@@ -548,5 +548,71 @@
       "28s japanese female, cute baby face with black bob hair and brown eyes, wearing a tough leather riders jacket over a simple white inner shirt, sitting at a counter smoking shisha, looking slightly annoyed venting about boyfriend",
       "attractive young woman complaining while smoking hookah, tomboyish yet girly, dark bob haircut, biker jacket fashion, expressive face"
     ]
+  },
+  {
+    "id": "mashiro",
+    "name": "ましろ / 真白（ましろ）",
+    "role": "sub_character",
+    "age": 20,
+    "nationality": "Japan",
+    "affiliation": "mukai（東京のバイト先）",
+    "play_style": "N/A",
+    "description": "第3章（東京編）のヒロイン候補。\n東京遠征時のバイト先である「向かい（mukai）」の同僚。色素の薄いふんわりとした髪をゆるい三つ編みにしており、フリルのブラウスやリネン素材のロングスカートといった、森の妖精や絵本のようなナチュラル・メルヘン系の服装を好む。（イケメン女子感やボーイッシュ感は一切ない）非常に喋り方が遅くおっとりした女の子。\nバイト後に時間を見つけて一緒に東京の街を遊び歩いたり、機材屋を巡ったりすることで仲を深めていくことができる「初めての東京の友達」。",
+    "background_secret": "常連客から「あの恐ろしい重さの煙を作るヤツ＝シガーマン」という都市伝説のようなあだ名で恐れられている人物の正体。「mukai」の店長がダンディな風貌であるため主人公はそちらが正体だと思い込んでいた。「まさかこのおっとりした可愛い子がシガーマン！？」と驚かせるためのキャラクター。\n吸うのも作るのも超絶重いシガーリーフ（葉巻系の強烈なニコチン）しか愛せないマニアで、煙を吸う時だけは歴戦の愛煙家のように極太の煙を力強く吸い込むという強烈なギャップを持つ。",
+    "favorite_flavor": "シガー（葉巻系）など",
+    "specialty_flavor": "シガーリーフ全般",
+    "growth_stats": {
+      "primary": "魅力",
+      "secondary": "根性",
+      "notes": "最初は自分の好きな「重くて強いシーシャ」しか作れなかったが、主人公と一緒に遊んだり、客に寄り添う姿を見たりするうちに、重さの中に少しだけ甘さや優しさをブレンドする柔らかい煙を作れるようになっていく。"
+    },
+    "visual_concepts": [
+      "20s japanese female, natural fairy-tale fashion, extremely relaxed and slow very soft vibe, fluffy light brown hair styled in a loose side braid, wearing a soft pastel blouse with ruffles and a long linen skirt, blowing a massive thick cloud of cigar leaf smoke strongly like a veteran without coughing",
+      "soft-spoken lazy cute innocent girl, completely feminine and not tomboyish, pale skin, natural earthy cute clothes, NOT wearing thick knitwear, surrounded by thick heavy cigar smoke, unexpected hardcore shisha master, fairy tale aura but holding a heavy hookah hose"
+    ]
+  },
+  {
+    "id": "tetsuko",
+    "internal_name": "tetsuko",
+    "display_name": "テツコ",
+    "age": "不明",
+    "gender": "Female (Cat)",
+    "nationality": "Japan",
+    "affiliation": "mukai（裏口の主）",
+    "play_style": "N/A",
+    "description": "東京の溜まり場「mukai（向かい）」の裏口で飼われている茶色のハチワレ猫（スコティッシュフォールド）。",
+    "background_secret": "常連客からは「ヤニねこ」の愛称で呼ばれている。店内には入らず、基本は裏で大人しく「スコ座り」をしている。メインストーリーには関わらないが、東京編の憩いのマスコット役として主人公やましろ、常連客たちとささやかな交流を行う。",
+    "favorite_flavor": "N/A",
+    "specialty_flavor": "N/A",
+    "growth_stats": {
+      "primary": "N/A",
+      "secondary": "N/A",
+      "notes": "餌をあげたり撫でたりするとプレイヤーのメンタルが少し回復する癒やし枠。"
+    },
+    "visual_concepts": [
+      "brown and white scottish fold cat, sitting with back against the wall (scottish fold sit / suko-zuwari), very relaxed and lazy aura, resting near the back door of a shisha cafe"
+    ]
+  },
+  {
+    "id": "mukai_master",
+    "name": "ムカイさん / 向井（むかい）",
+    "role": "sub_character",
+    "age": 48,
+    "nationality": "Japan",
+    "affiliation": "mukai（店長）",
+    "play_style": "N/A",
+    "description": "第3章（東京編）での溜まり場となるシーシャ店「向かい（mukai）」の店長。ハットを深く被り、髭を蓄えた次元大輔のようなルックスの超絶渋いダンディなおじ様。常に落ち着いた低音ボイスで喋る。",
+    "background_secret": "ルックスがハードボイルドすぎるため、主人公から「常連が恐れるシガーマンの正体」だと誤解されるが、実は極端に強いニコチンは苦手であり、ブラックコーヒーや優しい味の煙を好む。「tonari」のスミさんとは古くからの知り合い。",
+    "favorite_flavor": "ブラックコーヒーなど",
+    "specialty_flavor": "お茶・コーヒー系のビターミックス",
+    "growth_stats": {
+      "primary": "洞察",
+      "secondary": "魅力",
+      "notes": "東京という激戦区で疲弊する若者たちの『止まり木』として寄り添う。彼自身が成長するというより、主人公とましろの相互作用を優しく見守る役割を果たす。"
+    },
+    "visual_concepts": [
+      "48s japanese male, extreme dandy and hard-boiled style, similar to Daisuke Jigen, wearing a deep fedora hat covering his eyes, well-trimmed beard, dark tailored suit, holding a classic hookah hose elegantly",
+      "mature cool middle-aged cafe master, smoking quietly in the shadows, deep voice aura, wearing a hat and vintage attire, actually very gentle despite his intimidatingly cool appearance"
+    ]
   }
 ]

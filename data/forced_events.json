@@ -45,6 +45,20 @@
       "next_scene": "map"
     },
     {
+      "id": "ch1_forced_ageha_encounter",
+      "day": 4,
+      "time_slot": "noon",
+      "flag": "ch1_forced_ageha_encounter_done",
+      "title": "落とし物とギャル",
+      "description": "買い出しの途中、落とし物をしたところを派手なギャルに拾ってもらった。",
+      "dialogue_file": "res://data/dialogue/ch1_ageha.json",
+      "dialogue_id": "ch1_ageha_encounter",
+      "stat_changes": {
+        "charm": 1
+      },
+      "next_scene": "map"
+    },
+    {
       "id": "ch1_forced_sumi_story",
       "day": 5,
       "time_slot": "night",

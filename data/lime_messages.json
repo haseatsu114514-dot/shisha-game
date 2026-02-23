@@ -439,6 +439,135 @@
           "text": "深呼吸しろよ。tonariの、いや『お前の』シーシャを見せてやれ。"
         }
       ]
+    },
+    {
+      "id": "lime_sumi_interval1_day1",
+      "sender": "sumi",
+      "trigger_chapter": 1,
+      "trigger_interval_day": 1,
+      "trigger_condition": "none",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "sumi",
+          "text": "昨日の大会、見事だったぞ。さすがだな。"
+        },
+        {
+          "sender": "sumi",
+          "text": "だが、勝って兜の緒を締めよと言うだろう。これからも精進を忘れないことだ。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "ありがとうございます！",
+          "response": "ああ。また夜、店でな",
+          "affinity": 1
+        },
+        {
+          "text": "次も勝ちます",
+          "response": "その意気だ。楽しみにしているぞ",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_naru_interval1_day1",
+      "sender": "naru",
+      "trigger_chapter": 1,
+      "trigger_interval_day": 1,
+      "trigger_condition": "lime_exchanged",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "naru",
+          "text": "まあ、大会最初にしては悪くなかったな"
+        },
+        {
+          "sender": "naru",
+          "text": "今回はお前に花持たせてやっただけだからな！ 俺のライバルならこれからも精進しろよ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "お互い切磋琢磨しよう",
+          "response": "は？ ライバル気分？ まあせいぜい足掻けよ",
+          "affinity": 1
+        },
+        {
+          "text": "次も負けないからな",
+          "response": "言うじゃん。泣かしてやるから楽しみに待ってろ",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "romance_minto_interval1_day1",
+      "sender": "minto",
+      "trigger_chapter": 1,
+      "trigger_interval_day": 1,
+      "trigger_condition": "romance",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "はじめくんっ♡ 彼女のみんちゃんだよー！"
+        },
+        {
+          "sender": "minto",
+          "text": "昨日の大会、本当に凄かったね！ 私も負けちゃいられないなって思っちゃった！"
+        },
+        {
+          "sender": "minto",
+          "text": "……でも、彼氏が一番カッコ良かったから、なんだか誇らしかったな♡"
+        }
+      ],
+      "replies": [
+        {
+          "text": "ありがとう、みんちゃん",
+          "response": "えへへっ♡ これからも私の前ではずっとカッコよくいてね！",
+          "affinity": 1
+        },
+        {
+          "text": "みんちゃんこそ輝いてたよ",
+          "response": "ほんとに！？ じゃあ今度会った時、ご褒美の頭なでなでちょーだいねっ♡",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "romance_minto_interval1_day3",
+      "sender": "minto",
+      "trigger_chapter": 1,
+      "trigger_interval_day": 3,
+      "trigger_condition": "romance",
+      "type": "chat",
+      "time_slot": "noon",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "あのね、はじめくん……今度いつ休める？"
+        },
+        {
+          "sender": "minto",
+          "text": "お店の準備もあるからなかなか自分から会いに行けないけどさ……"
+        },
+        {
+          "sender": "minto",
+          "text": "また二人きりで……その、お家デートとか、したいな……なんてね♡"
+        }
+      ],
+      "replies": [
+        {
+          "text": "予定合わせるよ",
+          "response": "やったー！ はじめくんとのお家デート、楽しみにしてるっ！",
+          "affinity": 2
+        },
+        {
+          "text": "みんちゃんも無理しないでね",
+          "response": "うん……ちょっと弱気になってたから、はじめくんの優しい言葉に救われたよ。ありがと……♡",
+          "affinity": 2
+        }
+      ]
     }
   ]
 }

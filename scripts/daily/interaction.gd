@@ -30,7 +30,10 @@ func _ready() -> void:
 		return
 
 	# Rival shop visits now auto-launch dialogue events
-	if _target in ["naru", "adam", "minto"]:
+	if _target in ["naru", "adam", "minto", "ageha", "tsumugi"]:
+		if AffinityManager.is_in_romance(_target):
+			_show_romance_date(_target)
+			return
 		_launch_rival_dialogue(_target)
 		return
 
@@ -38,6 +41,50 @@ func _ready() -> void:
 		_set_portrait("")
 		header_label.text = "交流"
 		body_label.text = "誰もいない。"
+
+
+func _show_romance_date(char_id: String) -> void:
+	_set_portrait(char_id)
+	header_label.text = "デート"
+	
+	var affection = AffinityManager.get_affection(char_id)
+	var next_affection = AffinityManager.add_affection(char_id, 1)
+	
+	var lines: Array[String] = []
+	if char_id == "minto":
+		if affection == 0:
+			lines.append("みんちゃんをお茶に誘った。")
+			lines.append("「あ、えと……はじめくん。今日は、その……よろしくね」")
+			lines.append("お店のキャピキャピした態度とは打って変わって、私服のみんちゃんはとても内気でもじもじしている。\n「あ、ええっと、私、普通にしてるとこんな感じで……がっかり、した……？」\n「いや、新鮮で可愛いなって」\n「か、かかかわいいって……！ もー、からかわないでよぉ……」")
+		elif affection <= 2:
+			lines.append("みんちゃんとショッピングに出かけた。")
+			lines.append("「はじめくん、あの、これ……どうかな？ この服……変じゃ、ない？」")
+			lines.append("自信なさげに聞いてくる彼女に「すごく綺麗なお姉さんみたいだよ」とわざと年齢を意識させるようにいじってみる。\n「お、お姉さん……っ！？ 違うもん、みんちゃんは永遠のハタチなんだもん……！ はじめくんのいじわる……でも、似合ってるなら、これにする……」\n耳を真っ赤にして俯く姿が愛らしい。")
+		elif affection <= 4:
+			lines.append("みんちゃんと夜の公園を歩いた。")
+			lines.append("「……はじめくんの手、あったかい。お店を守るためにずっと気を張ってたけど……私、ほんとはすごく臆病だから……」")
+			lines.append("「こうしてはじめくんと一緒にいると、やっと息ができる気がするの。……ねえ、もうちょっとだけ、手……繋いでて、いい……？」\nもじもじと上目遣いで聞いてくる彼女の手を、しっかりと握り返した。")
+		else:
+			lines.append("みんちゃんの休日。二人きりでゆっくり過ごしている。")
+			lines.append("「……はじめくん、えへへ……。私、あなたといる時が、一番素の私でいられるよ。もう強がらなくていいんだって……思えるの」")
+			lines.append("「外では完璧な『みんちゃん』を演じてるけど……はじめくんの前では、ただの『しおり』でいさせて。……だめ、かな？」\n不安そうに、でも期待を込めてもじもじと擦り寄ってくる彼女を、優しく抱きしめた。")
+	elif char_id == "ageha":
+		if affection == 0:
+			lines.append("アゲハをお茶に誘った。\n「おっ、キミから誘ってくるなんて珍しいじゃん。いいよ、うちの特等席の彼氏くんの顔、じっくり見せてもらうからねっ」")
+		elif affection <= 2:
+			lines.append("アゲハとデートしている。\n「ねー、手繋いでもいい？ ……って、聞かないけど。ほら、ちゃんとエスコートしてよねっ♡」")
+		else:
+			lines.append("アゲハと二人きり。\n「……マジで、うちどうしちゃったんだろう。キミの顔見てるだけで、なんか胸の奥がぎゅってなる……。責任取って、ずっとうちのそばにいてよ……？」")
+	else:
+		lines.append("二人で楽しい時間を過ごした。愛情が少し深まった気がする。")
+
+	body_label.text = "\n".join(lines)
+	if next_affection > affection:
+		body_label.text += "\n\n愛情度上昇！ (Lv. %d)" % next_affection
+	else:
+		body_label.text += "\n\n愛情度 (MAX_Lv. 5)"
+
+	_add_option("ゆっくり過ごす", "none")
 
 
 func _launch_rival_dialogue(rival_id: String) -> void:
@@ -139,13 +186,15 @@ func _show_invitation_event(event_id: String) -> void:
 			PlayerData.add_stat("insight", 2)
 			GameManager.log_stat_change("insight", 2)
 			_apply_flavor_specialty_gain({"sweet": 2, "special": 1})
-		"interaction_kirara_noon_01":
-			_set_portrait("minto")
-			body_label.text = "みんと(みんと)のお店でシーシャを吸った。可愛いだけじゃない丁寧さに驚いた。"
-			_apply_affinity_gain("minto")
-			PlayerData.add_stat("charm", 2)
-			GameManager.log_stat_change("charm", 2)
-			_apply_flavor_specialty_gain({"floral": 2, "fruit": 1})
+			_add_option("戻る", "none")
+		"interaction_minto_noon_01":
+			var return_scene = "res://scenes/daily/map.tscn"
+			if _advance_on_exit and CalendarManager.current_time == "midnight":
+				return_scene = "res://scenes/daily/night_end.tscn"
+			var metadata = {"add_affinity": {"minto": 1}, "bg": "res://assets/backgrounds/cafe.png"}
+			GameManager.queue_dialogue("res://data/dialogue/ch1_minto.json", "ch1_minto_private_1", return_scene, metadata)
+			GameManager.set_transient("advance_time_after_scene", _advance_on_exit)
+			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		_:
 			_set_portrait("")
 			body_label.text = "交流イベントを実行した。"
@@ -206,7 +255,7 @@ func _add_option(text: String, action: String, arg: String = "") -> void:
 func _on_option_pressed(action: String, _arg: String) -> void:
 	match action:
 		"none":
-			body_label.text += "\n少し話して店を出た。"
+			body_label.text += "\n少し話してその場を後にした。"
 	_clear_options()
 
 

@@ -71,8 +71,11 @@ func _load_today_lime_messages() -> Array:
 	var messages: Array = parsed.get("messages", [])
 	var result: Array = []
 	for message in messages:
-		if message.has("trigger_day"):
-			if int(message.get("trigger_day", -1)) != CalendarManager.current_day:
+		if message.has("trigger_interval_day"):
+			if not CalendarManager.is_interval or int(message.get("trigger_interval_day", -1)) != CalendarManager.interval_day:
+				continue
+		elif message.has("trigger_day"):
+			if CalendarManager.is_interval or int(message.get("trigger_day", -1)) != CalendarManager.current_day:
 				continue
 		
 		# If it's chapter specific
@@ -104,6 +107,9 @@ func _is_message_condition_met(message: Dictionary) -> bool:
 	elif condition == "tournament_day":
 		var sender = str(message.get("sender", ""))
 		return CalendarManager.is_tournament_day() and AffinityManager.is_in_romance(sender)
+	elif condition == "romance":
+		var sender = str(message.get("sender", ""))
+		return AffinityManager.is_in_romance(sender)
 	return true
 
 
@@ -143,9 +149,9 @@ func _on_close_phone_button_pressed() -> void:
 		
 	var pending_outing = str(GameManager.pop_transient("pending_outing_event", ""))
 	if pending_outing != "":
-		CalendarManager.advance_time()
-		GameManager.queue_dialogue("res://data/dialogue/ch1_events.json", pending_outing, "res://scenes/daily/map.tscn")
-		get_tree().change_scene_to_file("res://scenes/daily/dialogue_box.tscn")
+		GameManager.set_transient("interaction_event", pending_outing)
+		GameManager.set_transient("advance_time_after_scene", true)
+		get_tree().change_scene_to_file("res://scenes/daily/interaction.tscn")
 		return
 		
 	CalendarManager.advance_time()
