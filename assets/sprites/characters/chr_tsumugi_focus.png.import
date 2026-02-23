@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://bjgvlirh8dp0t"
+=======
+uid="uid://vfwbqcleg1rk"
+>>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/chr_tsumugi_focus.png-7765c7ac79df69c43ce66f453c6f5415.ctex"
 metadata={
 "vram_texture": false

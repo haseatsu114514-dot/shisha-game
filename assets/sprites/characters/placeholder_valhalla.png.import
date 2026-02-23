@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://beju2qqk4jnjv"
+=======
+uid="uid://c8g1dc2vp4hku"
+>>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/placeholder_valhalla.png-502f73095d973e0904ecb7f6115fdbea.ctex"
 metadata={
 "vram_texture": false

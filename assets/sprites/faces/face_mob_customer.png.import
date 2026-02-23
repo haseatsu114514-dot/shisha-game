@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://8l806x448n46"
+=======
+uid="uid://dvnlun66rl6y8"
+>>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/face_mob_customer.png-3726ba9cbac791cffea4b2bf33057474.ctex"
 metadata={
 "vram_texture": false

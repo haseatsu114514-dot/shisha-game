@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://cd7nb6tp3yacd"
+=======
+uid="uid://dj4w1hhkrnbbs"
+>>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/chr_hajime_serious.png-24c69ddd0972990e5e24440f7971dcce.ctex"
 metadata={
 "vram_texture": false

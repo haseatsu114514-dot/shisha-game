@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://cea6a1iduq47a"
+=======
+uid="uid://ci5cjrw12av0h"
+>>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/face_tsumugi.png-95ed06aa8973fec541f600891590a523.ctex"
 metadata={
 "vram_texture": false

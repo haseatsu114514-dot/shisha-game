@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://r0b1nmt67ie7"
+=======
+uid="uid://dkskxtvi2tnlh"
+>>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/chr_ryuji_cry.png-719f75fd3e9e92772613e96952a343cc.ctex"
 metadata={
 "vram_texture": false

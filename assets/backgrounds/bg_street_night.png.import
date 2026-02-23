@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://cdkaec7ykguvd"
+=======
+uid="uid://cmyep61nc517t"
+>>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/bg_street_night.png-8776122c869533bc170fe88b8224c3c9.ctex"
 metadata={
 "vram_texture": false

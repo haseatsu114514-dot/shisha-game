@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://brfpnkw0b8giu"
+=======
+uid="uid://b5xdppywdru7n"
+>>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/chr_adam_normal.png-b719e2533ed5d09cd3739e3b0edc2343.ctex"
 metadata={
 "vram_texture": false

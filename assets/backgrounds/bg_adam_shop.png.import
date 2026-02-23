@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://ca3h17ha1peca"
+=======
+uid="uid://dv266cvga2hm1"
+>>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/bg_adam_shop.png-1cbbf18544525d8a68cca487929afb2d.ctex"
 metadata={
 "vram_texture": false

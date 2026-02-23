@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://01ohvnbk045g"
+=======
+uid="uid://bekqpho5bhucm"
+>>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/chillhouse_inside_source.png-2aeffa99667bf85e2c1e5a6768e5a1ec.ctex"
 metadata={
 "vram_texture": false

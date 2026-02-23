@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://4ceewdcm54cl"
+=======
+uid="uid://s0wwoeg0s4md"
+>>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/placeholder_packii.png-30c1ae3efac0a5fe7de5b10782715b09.ctex"
 metadata={
 "vram_texture": false

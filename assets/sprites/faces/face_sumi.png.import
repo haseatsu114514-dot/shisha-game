@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://c7xymjy073l6u"
+=======
+uid="uid://co5qrbc0nxvva"
+>>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/face_sumi.png-bfe1e4eff56abe9fe4eb5e7336d6cfe1.ctex"
 metadata={
 "vram_texture": false

@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://da0g52u7c4vwr"
+=======
+uid="uid://0e8ft7oxprjc"
+>>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/face_mob_flavor_police.png-01c585939d6fe1db1eb77e9d566ebd8a.ctex"
 metadata={
 "vram_texture": false

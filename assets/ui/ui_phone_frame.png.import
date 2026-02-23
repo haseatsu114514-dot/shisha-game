@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://si23w8y0rrol"
+=======
+uid="uid://dc3s5dcbi36s6"
+>>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/ui_phone_frame.png-762355b5433886508e82884bec4548e2.ctex"
 metadata={
 "vram_texture": false

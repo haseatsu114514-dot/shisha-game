@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://7soxxdyno5t7"
+=======
+uid="uid://kgekbc614mpo"
+>>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/ui_hud_money.png-32e37933a5b2b3c18c103474491090f6.ctex"
 metadata={
 "vram_texture": false

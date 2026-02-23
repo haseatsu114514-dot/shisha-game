@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://b1ism33njl3d6"
+=======
+uid="uid://37ybegjqxgy"
+>>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/chr_packii_angry.png-971ee23894eb3fde3f0af5465eabbc55.ctex"
 metadata={
 "vram_texture": false

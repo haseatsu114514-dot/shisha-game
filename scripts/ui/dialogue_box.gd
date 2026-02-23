@@ -54,7 +54,10 @@ const SPEAKER_ID_ALIASES := {
 const HIGHLIGHT_TAGS := [
 	"[imp]", "[/imp]",
 	"[warn]", "[/warn]",
-	"[hint]", "[/hint]"
+	"[hint]", "[/hint]",
+	"[red]", "[/red]",
+	"[blue]", "[/blue]",
+	"[sub]", "[/sub]"
 ]
 const HIGHLIGHT_OPEN_REPLACEMENTS := {
 	"[imp]": "[color=#ffd878]",
@@ -66,6 +69,9 @@ const HIGHLIGHT_OPEN_REPLACEMENTS := {
 }
 const HIGHLIGHT_CLOSE_REPLACEMENTS := {
 	"[/imp]": "[/color]",
+	"[/red]": "[/color]",
+	"[/blue]": "[/color]",
+	"[/sub]": "[/color][/font_size]",
 	"[/warn]": "[/color]",
 	"[/hint]": "[/color]",
 }
@@ -260,6 +266,11 @@ func _show_next_line() -> void:
 	else:
 		speaker_label.text = SPEAKER_NAMES.get(_current_speaker, _current_speaker)
 		
+	# キャラ別テーマカラーを名前ラベルに反映
+	var resolved_id = str(SPEAKER_ID_ALIASES.get(_current_speaker, _current_speaker))
+	var speaker_color = GameManager.get_speaker_color(resolved_id)
+	speaker_label.add_theme_color_override("font_color", speaker_color)
+
 	_update_portrait(line)
 	
 	var raw_text = str(line.get("text", ""))
@@ -329,6 +340,7 @@ func _show_choices(choices: Array) -> void:
 	_cancel_auto_advance()
 	advance_button.disabled = true
 	advance_button.text = "選択"
+
 	for choice in choices:
 		var c_type = str(choice.get("condition_type", ""))
 		if c_type == "has_romance":
@@ -338,8 +350,36 @@ func _show_choices(choices: Array) -> void:
 		var button = Button.new()
 		button.text = str(choice.get("text", "選択肢"))
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		button.custom_minimum_size = Vector2(0, 48)
+		button.custom_minimum_size = Vector2(0, 52)
 		button.add_theme_font_size_override("font_size", 24)
+		# ペルソナ風スタイリング: アンバーゴールドアクセント
+		var normal_style = StyleBoxFlat.new()
+		normal_style.bg_color = Color("3a4466", 0.92)
+		normal_style.border_color = Color("feae34", 0.4)
+		normal_style.border_width_left = 3
+		normal_style.border_width_bottom = 1
+		normal_style.border_width_right = 1
+		normal_style.border_width_top = 1
+		normal_style.corner_radius_bottom_left = 2
+		normal_style.corner_radius_bottom_right = 6
+		normal_style.corner_radius_top_left = 6
+		normal_style.corner_radius_top_right = 2
+		normal_style.content_margin_left = 20
+		normal_style.content_margin_right = 16
+		normal_style.content_margin_top = 10
+		normal_style.content_margin_bottom = 10
+		button.add_theme_stylebox_override("normal", normal_style)
+		var hover_style = normal_style.duplicate()
+		hover_style.bg_color = Color("3a4466").lightened(0.15)
+		hover_style.border_color = Color("feae34", 0.85)
+		hover_style.border_width_left = 4
+		button.add_theme_stylebox_override("hover", hover_style)
+		button.add_theme_color_override("font_hover_color", Color("feae34"))
+		var pressed_style = normal_style.duplicate()
+		pressed_style.bg_color = Color("feae34").darkened(0.4)
+		pressed_style.border_color = Color("feae34")
+		pressed_style.border_width_left = 4
+		button.add_theme_stylebox_override("pressed", pressed_style)
 		button.pressed.connect(_on_choice_selected.bind(str(choice.get("next", ""))))
 		choice_container.add_child(button)
 
@@ -583,18 +623,17 @@ func _show_affinity_notification(char_id: String, delta: int) -> void:
 	# Label
 	var label = Label.new()
 	var char_name = SPEAKER_NAMES.get(char_id, char_id)
-	var max_level = AffinityManager.get_max_level()
 	var star_text = AffinityManager.get_star_text(char_id)
-	if delta > 0:
-		label.text = "♡ %s 好感度 +%d / %d  %s" % [char_name, delta, max_level, star_text]
-	else:
-		label.text = "♡ %s 好感度 %d / %d  %s" % [char_name, AffinityManager.get_affinity(char_id), max_level, star_text]
+	label.text = "♡ %sとの絆が深まった  %s" % [char_name, star_text]
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.position = Vector2(290, 320)
 	label.size = Vector2(700, 60)
 	label.add_theme_font_size_override("font_size", 26)
-	label.modulate = Color(1.0, 0.92, 0.75, 0)
+	# テーマカラー: アンバーゴールド系
+	var notif_color = GameManager.get_speaker_color(char_id)
+	label.add_theme_color_override("font_color", notif_color)
+	label.modulate = Color(1.0, 1.0, 1.0, 0)
 	layer.add_child(label)
 
 	# Sparkle particles

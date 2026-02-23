@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://ou4cw128htq7"
+=======
+uid="uid://f056uw5i04as"
+>>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/map_city_night_source.png-36f2cdbdf66ae2c71393ac67e25622f7.ctex"
 metadata={
 "vram_texture": false

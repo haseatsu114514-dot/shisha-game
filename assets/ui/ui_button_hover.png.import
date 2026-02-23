@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://d2v7bkppsv0ry"
+=======
+uid="uid://5u4wirwmoml6"
+>>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/ui_button_hover.png-736e082ad74a862a71e4f1912af3d867.ctex"
 metadata={
 "vram_texture": false

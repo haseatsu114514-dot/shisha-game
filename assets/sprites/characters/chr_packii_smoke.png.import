@@ -2,7 +2,11 @@
 
 importer="texture"
 type="CompressedTexture2D"
+<<<<<<< HEAD
 uid="uid://dv00bhjit0gb3"
+=======
+uid="uid://cw1i28adwvxkf"
+>>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/chr_packii_smoke.png-bc0fe7c96573bf018e26bcf4a7c1a03b.ctex"
 metadata={
 "vram_texture": false
