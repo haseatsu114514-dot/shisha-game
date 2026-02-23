@@ -2,11 +2,7 @@
 
 importer="mp3"
 type="AudioStreamMP3"
-<<<<<<< HEAD
 uid="uid://cg1bb3vwegh7l"
-=======
-uid="uid://bqs81lme1185v"
->>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/daily_part.mp3-c5f1fd712979f90c45bd8036b54928a0.mp3str"
 
 [deps]

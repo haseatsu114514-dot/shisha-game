@@ -237,7 +237,7 @@ func _create_calendar_flip_card(day: int) -> Dictionary:
 	vbox.anchor_right = 1.0
 	vbox.anchor_bottom = 1.0
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	vbox.add_theme_constant_override("separation", 6)
+	vbox.theme_override_constants.separation = 6
 	margin.add_child(vbox)
 
 	var weekday_label = Label.new()
@@ -271,7 +271,7 @@ func _create_calendar_flip_card(day: int) -> Dictionary:
 
 func _create_day_strip(active_day: int) -> HBoxContainer:
 	var strip = HBoxContainer.new()
-	strip.add_theme_constant_override("separation", int(CARD_GAP))
+	strip.theme_override_constants.separation = int(CARD_GAP)
 	strip.modulate = Color(1, 1, 1, 1)
 	var start_day = _get_strip_start_day(active_day)
 
@@ -307,7 +307,7 @@ func _create_day_card(day: int, is_active: bool) -> Control:
 	panel.add_child(margin)
 
 	var vbox = VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 10)
+	vbox.theme_override_constants.separation = 10
 	margin.add_child(vbox)
 
 	var weekday_label = Label.new()

@@ -2,11 +2,7 @@
 
 importer="texture"
 type="CompressedTexture2D"
-<<<<<<< HEAD
 uid="uid://bq4mxtucmtegy"
-=======
-uid="uid://culuu4el8umfi"
->>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/bg_tournament_stage.png-0b45281a7d0db5da11292d5b9f8ef235.ctex"
 metadata={
 "vram_texture": false

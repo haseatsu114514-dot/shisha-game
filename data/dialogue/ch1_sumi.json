@@ -359,94 +359,59 @@
           "text": "はい？"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが珍しく自分用のシーシャを作り始めた。閉店後のルーティンとは違う、何か考え事をしている手つきだった。"
+        },
+        {
           "speaker": "sumi",
           "face": "normal",
-          "text": "あの子──いつも隅で絵を描いてる、つむぎ"
+          "text": "……俺がこの店を開いたのは、理由があるんだ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。最近、少しだけ話してくれるようになりました"
+          "text": "理由？"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "……そうか"
+          "text": "……昔、シーシャに救われたことがある。それだけだ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんが少し間を置いた。珍しい。いつも言葉に間を取らない人なのに。"
+          "text": "それ以上は語らなかった。でも、いつもより少しだけ遠い目をしていた。"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "……あの子、iPadに傷があるだろう"
+          "text": "お前の煙は正直だからな。客にもそれは伝わってる"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……あの子、つむぎもそうだ。お前のシーシャの時だけ、少し顔が緩む"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。大きな傷ですよね。買い替えないんだなって思ってました"
+          "text": "そう……ですか？ 自分では全然分からないです"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "……"
+          "text": "分からないからいいんだ。それがお前の強みだ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんの表情が、ほんの一瞬だけ──曇った。"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "……俺にも、娘がいた"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "えっ……"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "昔の話だ。もう何年も会ってない"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "……絵が好きな子だった"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "それだけ言って、スミさんは黙った。いつもの沈黙とは違う、何かを飲み込んだような沈黙だった。"
+          "text": "スミさんが煙を吐いた。天井に向かってゆっくり昇っていく白い煙を、二人で黙って見つめていた。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（スミさんに、娘がいたなんて……）"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "……あの子を、頼むぞ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "え？ つむぎちゃんのことですか？"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "……ああ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "スミさんがそれ以上何も言わなかった。でも、いつもより少しだけ、声が柔らかかった気がした。"
+          "text": "（スミさんにも、まだ聞けない過去があるんだ……）"
         }
       ]
     },

@@ -2,11 +2,7 @@
 
 importer="mp3"
 type="AudioStreamMP3"
-<<<<<<< HEAD
 uid="uid://be5htgtkb6rwo"
-=======
-uid="uid://cv880kbmly1i5"
->>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/daily_bgm_source.mp3-37fb560f159071b5f4cc23fead7bf661.mp3str"
 
 [deps]

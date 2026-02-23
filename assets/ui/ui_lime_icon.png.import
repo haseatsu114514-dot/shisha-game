@@ -2,11 +2,7 @@
 
 importer="texture"
 type="CompressedTexture2D"
-<<<<<<< HEAD
 uid="uid://c1ht2cwiq4ji5"
-=======
-uid="uid://i5si4due7r62"
->>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/ui_lime_icon.png-6d0f61804947e2bafe1753aa7437064a.ctex"
 metadata={
 "vram_texture": false

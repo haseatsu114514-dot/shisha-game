@@ -2,11 +2,7 @@
 
 importer="texture"
 type="CompressedTexture2D"
-<<<<<<< HEAD
 uid="uid://bgivisa5r3o3h"
-=======
-uid="uid://d1ejjldt8jrna"
->>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/ui_lime_bubble_right.png-5605c067c0f2c80750df15a8eb29e6c4.ctex"
 metadata={
 "vram_texture": false

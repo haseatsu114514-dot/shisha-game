@@ -14,7 +14,7 @@ var _event_id: String = ""
 const CHARACTER_NAME_MAP := {
 	"naru": "なる",
 	"adam": "アダム",
-	"minto": "眠都",
+	"minto": "みんと",
 	"sumi": "スミさん",
 }
 
@@ -141,7 +141,7 @@ func _show_invitation_event(event_id: String) -> void:
 			_apply_flavor_specialty_gain({"sweet": 2, "special": 1})
 		"interaction_kirara_noon_01":
 			_set_portrait("minto")
-			body_label.text = "眠都(みんと)のお店でシーシャを吸った。可愛いだけじゃない丁寧さに驚いた。"
+			body_label.text = "みんと(みんと)のお店でシーシャを吸った。可愛いだけじゃない丁寧さに驚いた。"
 			_apply_affinity_gain("minto")
 			PlayerData.add_stat("charm", 2)
 			GameManager.log_stat_change("charm", 2)
@@ -173,8 +173,13 @@ func _apply_affinity_gain(character_id: String, amount: int = 1) -> void:
 	var after = AffinityManager.add_affinity(character_id, amount)
 	if after < 0:
 		return
+	var delta = maxi(0, after - before)
+	var max_level = AffinityManager.get_max_level()
 	var star_text = AffinityManager.get_star_text(character_id)
-	body_label.text += "\n好感度  %s" % star_text
+	if delta > 0:
+		body_label.text += "\n好感度 +%d / %d  %s" % [delta, max_level, star_text]
+	else:
+		body_label.text += "\n好感度 %d / %d  %s" % [after, max_level, star_text]
 
 	# Check if affinity reached max level and not in romance yet
 	if after >= max_level and before < max_level and not AffinityManager.is_in_romance(character_id):

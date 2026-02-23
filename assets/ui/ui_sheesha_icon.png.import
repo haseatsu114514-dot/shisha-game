@@ -2,11 +2,7 @@
 
 importer="texture"
 type="CompressedTexture2D"
-<<<<<<< HEAD
 uid="uid://c8i2hqgjewihf"
-=======
-uid="uid://3i1wylnc8bh0"
->>>>>>> 11ed5f8 (fix: フリーズ修正、背景改善、好感度表示、訪問制限・コスト追加)
 path="res://.godot/imported/ui_sheesha_icon.png-875c397180f4fff489eacd89749f345a.ctex"
 metadata={
 "vram_texture": false

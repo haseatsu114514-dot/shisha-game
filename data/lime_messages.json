@@ -1,4 +1,4 @@
-{
+このデータを push したいです。{
   "messages": [
     {
       "id": "lime_naru_day3",
@@ -32,7 +32,7 @@
       }
     },
     {
-      "id": "lime_kirara_day4",
+      "id": "lime_minto_day4",
       "sender": "minto",
       "trigger_day": 4,
       "trigger_condition": "lime_exchanged",
@@ -56,7 +56,7 @@
           "text": "美味しかったらツーショットチェキ撮ろ♡（笑）"
         }
       ],
-      "accept_event": "interaction_kirara_noon_01",
+      "accept_event": "interaction_minto_noon_01",
       "decline_response": {
         "sender": "minto",
         "text": "えーっ！ わかった、じゃあまた今度ね！ 待ってるからねーっ♡"
@@ -170,7 +170,7 @@
       ]
     },
     {
-      "id": "lime_kirara_day5",
+      "id": "lime_minto_day5",
       "sender": "minto",
       "trigger_day": 5,
       "trigger_condition": "lime_exchanged",
@@ -247,11 +247,11 @@
       "messages": [
         {
           "sender": "ageha",
-          "text": "大会当日ね"
+          "text": "大会当日じゃん"
         },
         {
           "sender": "ageha",
-          "text": "アタシの見込んだ男なんだから、無様な真似は許さないわよ。勝ってきなさい。"
+          "text": "うちの見込んだ男なんだから、無様な真似はマジ許さないし。とりま勝ってきなさい"
         }
       ]
     },
