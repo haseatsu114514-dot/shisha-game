@@ -168,17 +168,9 @@ func _on_option_pressed(action: String, index: int) -> void:
 	var message: Dictionary = _messages[_index]
 	match action:
 		"invitation_accept":
-			var time_slot = str(message.get("time_slot", "night"))
 			var event_id = str(message.get("accept_event", ""))
-			_add_chat_bubble(SELF_ID, "行ける。後で行くわ")
-			if time_slot == "noon":
-				GameManager.set_transient("forced_noon_action", event_id)
-				_mark_current_message_read()
-				_index += 1
-				_jump_to_noon_invitation_event()
-				return
-			else:
-				GameManager.set_transient("night_action", event_id)
+			_add_chat_bubble(SELF_ID, "いいよ、一緒に行こう。")
+			GameManager.set_transient("pending_outing_event", event_id)
 		"invitation_decline":
 			_add_chat_bubble(SELF_ID, "今日は厳しい、ごめん")
 			var decline = message.get("decline_response", {})

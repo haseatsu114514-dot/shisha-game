@@ -63,6 +63,75 @@
       }
     },
     {
+      "id": "lime_outing_naru_1",
+      "sender": "naru",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "noon",
+      "messages": [
+        {
+          "sender": "naru",
+          "text": "新しい機材見に行きたいんだけど"
+        },
+        {
+          "sender": "naru",
+          "text": "お前も来る？ 荷物持ちくらいにはなるっしょ"
+        }
+      ],
+      "accept_event": "outing_naru_1",
+      "decline_response": {
+        "sender": "naru",
+        "text": "あっそ。勝手にすれば"
+      }
+    },
+    {
+      "id": "lime_outing_adam_1",
+      "sender": "adam",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "night",
+      "messages": [
+        {
+          "sender": "adam",
+          "text": "オオ、マイ・ブラザー。"
+        },
+        {
+          "sender": "adam",
+          "text": "今夜、観音で新たな『導き』を見つけに行クガ……同行スルカ？"
+        }
+      ],
+      "accept_event": "outing_adam_1",
+      "decline_response": {
+        "sender": "adam",
+        "text": "ソウカ……ならば一人で歩モウ。"
+      }
+    },
+    {
+      "id": "lime_outing_minto_1",
+      "sender": "minto",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "noon",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "はじめくんっ♡ 今日の昼間、ちょっとお買い物付き合ってくれない？"
+        },
+        {
+          "sender": "minto",
+          "text": "みんちゃん、一人じゃ選べないからさっ♪"
+        }
+      ],
+      "accept_event": "outing_minto_1",
+      "decline_response": {
+        "sender": "minto",
+        "text": "ちぇーっ、わかった！ またねーっ♡"
+      }
+    },
+    {
       "id": "lime_naru_day6",
       "sender": "naru",
       "trigger_day": 6,

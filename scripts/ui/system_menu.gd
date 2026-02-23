@@ -50,8 +50,13 @@ func _populate_affinity() -> void:
 		var level = AffinityManager.get_affinity(char_id)
 		var star_text = AffinityManager.get_star_text(char_id)
 		
+		# Name masking for unintroduced characters
+		var display_name = char_data["name"]
+		if char_id in ["naru", "adam", "minto", "tsumugi", "ageha"] and not EventFlags.get_flag("known_name_" + char_id):
+			display_name = "？？？"
+		
 		# For maximum chapters limits formatting
-		var display_text = "♡ %s  :  Lv.%d / %d  %s" % [char_data["name"], level, max_level, star_text]
+		var display_text = "♡ %s  :  Lv.%d / %d  %s" % [display_name, level, max_level, star_text]
 		
 		var label = Label.new()
 		label.text = display_text

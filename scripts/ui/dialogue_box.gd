@@ -231,9 +231,19 @@ func _show_next_line() -> void:
 		if typeof(_loaded_dialogue_root) == TYPE_DICTIONARY:
 			var target_dialogue = _find_dialogue(_loaded_dialogue_root, next_id)
 			if not target_dialogue.is_empty():
-				_line_queue = target_dialogue.get("lines", []).duplicate(true)
-				_branches = target_dialogue.get("branches", {}).duplicate(true)
+				_line_queue.clear()
+				for item in target_dialogue.get("lines", []):
+					_line_queue.push_back(item)
 				_show_next_line()
+				return
+	
+	elif str(line.get("type", "")) == "set_flag":
+		var flag = str(line.get("flag", ""))
+		if flag != "":
+			EventFlags.set_flag(flag)
+		
+		# Immediately show next line after setting flag
+		_show_next_line()
 		return
 
 	if str(line.get("type", "")) == "choice":
@@ -245,7 +255,11 @@ func _show_next_line() -> void:
 	await _handle_cg_command(line)
 	
 	_current_speaker = str(line.get("speaker", ""))
-	speaker_label.text = SPEAKER_NAMES.get(_current_speaker, _current_speaker)
+	if _current_speaker in ["naru", "adam", "minto", "tsumugi", "ageha", "packii"] and not EventFlags.get_flag("known_name_" + _current_speaker):
+		speaker_label.text = "？？？"
+	else:
+		speaker_label.text = SPEAKER_NAMES.get(_current_speaker, _current_speaker)
+		
 	_update_portrait(line)
 	
 	var raw_text = str(line.get("text", ""))
@@ -511,6 +525,15 @@ func _finish_dialogue() -> void:
 		GameManager.set_transient("morning_notice", _metadata["morning_notice"])
 	if _metadata.has("exchange_lime"):
 		AffinityManager.exchange_lime(str(_metadata["exchange_lime"]))
+
+	if _metadata.has("add_stat"):
+		var stats = _metadata["add_stat"]
+		if typeof(stats) == TYPE_DICTIONARY:
+			for stat_name in stats:
+				var amount = int(stats[stat_name])
+				if amount != 0:
+					PlayerData.add_stat(str(stat_name), amount)
+					GameManager.log_stat_change(str(stat_name), amount)
 
 	# Track affinity changes for notification
 	var affinity_char_id := ""

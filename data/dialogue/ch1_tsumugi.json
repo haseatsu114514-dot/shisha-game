@@ -39,6 +39,10 @@
                     "text": "ああ、つむぎか。たまに来る。いつも隅で絵を描いてる"
                 },
                 {
+                    "type": "set_flag",
+                    "flag": "known_name_tsumugi"
+                },
+                {
                     "speaker": "sumi",
                     "face": "normal",
                     "text": "静かな子だ。注文以外ほとんど喋らん。ラベンダーしか頼まない"

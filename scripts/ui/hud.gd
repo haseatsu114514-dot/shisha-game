@@ -9,6 +9,7 @@ const SYSTEM_MENU_SCENE = preload("res://scenes/ui/system_menu.tscn")
 
 
 func _ready() -> void:
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	if not CalendarManager.time_changed.is_connected(_update_labels):
 		CalendarManager.time_changed.connect(_update_labels)
 	if not CalendarManager.day_changed.is_connected(_update_labels):

@@ -1,106 +1,242 @@
-{
-  "characters": [
-    {
-      "id": "hajime",
-      "name": "はじめ",
-      "full_name": "蒸野 はじめ",
-      "role": "protagonist",
-      "age": 21
-    },
-    {
-      "id": "sumi",
-      "name": "スミさん",
-      "full_name": "炭場 丈一郎",
-      "role": "mentor",
-      "age": 38
-    },
-    {
-      "id": "naru",
-      "name": "なる",
-      "full_name": "鳴切 亮太",
-      "role": "rival",
-      "age": 21
-    },
-    {
-      "id": "adam",
-      "name": "アダム",
-      "full_name": "林檎堂 アダム",
-      "role": "rival",
-      "age": 27
-    },
-    {
-      "id": "minto",
-      "name": "眠都",
-      "role": "rival",
-      "age": 24
-    },
-    {
-      "id": "ryuji",
-      "name": "リュウジ",
-      "full_name": "火龍寺 仁",
-      "role": "rival_ch2",
-      "age": 32
-    },
-    {
-      "id": "ageha",
-      "name": "あげは",
-      "role": "rival",
-      "age": 25
-    },
-    {
-      "id": "tsumugi",
-      "name": "つむぎ",
-      "full_name": "雲居 つむぎ",
-      "role": "regular",
-      "age": 21
-    },
-    {
-      "id": "packii",
-      "name": "パッキー",
-      "role": "mascot"
-    },
-    {
-      "id": "toki_kotetsu",
-      "name": "土岐 鋼鉄",
-      "role": "judge",
-      "age": 48
-    },
-    {
-      "id": "shiramine",
-      "name": "白峰 恒一郎",
-      "role": "judge",
-      "age": 40
-    },
-    {
-      "id": "maezono",
-      "name": "前園 壮一郎",
-      "role": "judge",
-      "age": 50,
-      "description": "帽子をかぶってヒゲを生やしたシーシャ好きのおじさん"
-    },
-    {
-      "id": "kirishima",
-      "name": "霧島 レン",
-      "role": "judge",
-      "age": 26
-    },
-    {
-      "id": "takiguchi",
-      "name": "焚口 ショウ",
-      "role": "mc",
-      "age": 33
-    },
-    {
-      "id": "salaryman",
-      "name": "サラリーマン",
-      "role": "regular",
-      "description": "いつも無口な常連客。表情が読めない。"
-    },
-    {
-      "id": "staff_choizap",
-      "name": "チョイザップスタッフ",
-      "role": "npc",
-      "description": "チョイザップの受付スタッフ。明るい。"
-    }
-  ]
-}
+[
+  {
+    "id": "hajime",
+    "name": "はじめ",
+    "role": "protagonist",
+    "nationality": "Japan",
+    "affiliation": "tonari（地元店）",
+    "play_style": "「目の前の客を見る」",
+    "description": "特別な才能はないが、日々の真面目な努力と炭替えの観察眼で客の好みに合わせたシーシャを作る。\n全てのプレイスタイルを否定しない「フラットさ」が最大の武器。",
+    "background_secret": ""
+  },
+  {
+    "id": "sumi",
+    "name": "スミさん",
+    "role": "mentor",
+    "nationality": "Japan",
+    "affiliation": "tonari（地元店）",
+    "play_style": "「基本に忠実、かつ自由」",
+    "description": "主人公の師匠であり、良き理解者。\nかつては名の知れたシーシャプレイヤーだったが、現在は飄々とした態度で地元の小さな店を営む。",
+    "background_secret": ""
+  },
+  {
+    "id": "naru",
+    "name": "鳴海（なる）",
+    "role": "rival_ch1",
+    "nationality": "Japan",
+    "affiliation": "ケムリクサ",
+    "play_style": "「甘さ（お菓子系）の追求」と「俺様ロジック」",
+    "description": "徹底したデータ管理と機材へのこだわりを持つ理系プレイヤー。\n口は悪いがシーシャへの情熱は誰よりも本物。主人公とは反発しつつも良きライバルとなる。",
+    "background_secret": ""
+  },
+  {
+    "id": "adam",
+    "name": "アダム",
+    "role": "rival_ch1",
+    "nationality": "Japan",
+    "affiliation": "Eden",
+    "play_style": "「ダブルアップル特化」",
+    "description": "純日本人であり、愚直なまでにダブルアップルの味の精度と完璧なイガりのコントロールを追求するストイックな職人気質のプレイヤー。\n一芸に特化した強固な強さを持つ。",
+    "background_secret": ""
+  },
+  {
+    "id": "minto",
+    "name": "眠都（みんと）",
+    "role": "rival_ch1",
+    "nationality": "Japan",
+    "affiliation": "ぺぱーみんと",
+    "play_style": "「客商売（魅せ方）の極意」",
+    "description": "コンセプトカフェ風の店で働く、可愛らしい容姿のプレイヤー。実年齢は26歳で、元喫茶店・精肉店跡地という裏設定がある。\n一見すると「ばえ（映え）」重視に見えるが、実は客の心理と視覚効果を計算し尽くしたしたたかな戦略家。",
+    "background_secret": ""
+  },
+  {
+    "id": "shisha_9000",
+    "name": "SHISHA-9000",
+    "role": "rival_ch3",
+    "nationality": "Japan",
+    "affiliation": "Cloud Terminal（AI導入試験店舗）",
+    "play_style": "「最適化されたアルゴリズム」",
+    "description": "過去数百万の配合データと環境センサーを用い、人間を排除した完全自動シーシャを提供するAI。\n主人公の「客を見る力」とは正反対の存在であり、東京の最新鋭テクノロジーを象徴する。",
+    "background_secret": ""
+  },
+  {
+    "id": "nandi",
+    "name": "ナンディ",
+    "role": "rival_ch3",
+    "nationality": "India",
+    "affiliation": "Prana Dhūm（プラーナ・ドゥーム）",
+    "play_style": "「伝統的なスパイスと生命の煙」",
+    "description": "東京に出店しているインド流シーシャ伝統店の代表。\n本場の中東・南アジアのクラシックスタイルを重んじ、スパイスやハーブを巧みに操る。",
+    "background_secret": ""
+  },
+  {
+    "id": "steve",
+    "name": "スティーブ",
+    "role": "rival_ch3",
+    "nationality": "USA",
+    "affiliation": "Smoke & Glory（スモーク・アンド・グローリー）",
+    "play_style": "「繊細な超低温管理とダークリーフの妙技」",
+    "description": "ピザやジャンクフードを愛食する巨漢（ピザデブ体型）だが、その見た目に反してシーシャの作り方は異常なまでに繊細。\nTrifectaやTangiersなど、火の扱いやクセが強いアメリカ産フレーバーを極めて低い温度帯でじっくり育て上げ、芳醇な味わいを引き出す達人。",
+    "background_secret": ""
+  },
+  {
+    "id": "volk",
+    "name": "ヴォルク",
+    "role": "rival_ch4",
+    "nationality": "Russia",
+    "affiliation": "Железный Дым（ジェレーズヌイ・ドゥイム）",
+    "play_style": "「完璧な熱管理と精度（Точность）」",
+    "description": "データと徹底した温度管理システムによる「ブレない完璧な提供」を行う。機械のように精密なシーシャを作るロシア代表。",
+    "background_secret": ""
+  },
+  {
+    "id": "master_hookah",
+    "name": "マスター・フーカ",
+    "role": "rival_ch4",
+    "nationality": "Asia",
+    "affiliation": "アジア圏のシーシャ協会",
+    "play_style": "「陰陽五行の理」",
+    "description": "「お前の煙には『命』がある」と語る、58歳の仙人のようなシーシャ職人。\n感覚と精神論を交えた究極のシーシャを作る世界大会のボス的存在。",
+    "background_secret": ""
+  },
+  {
+    "id": "tsumugi",
+    "name": "つむぎ",
+    "role": "sub_character",
+    "nationality": "Japan",
+    "affiliation": "tonari常連",
+    "play_style": "N/A",
+    "description": "tonariの常連客でありヒロイン候補。\n画面にひびの入ったiPadでいつも絵を描いている寡黙な少女。\nラベンダーのフレーバーしか頼まない。主人公の作るシーシャにだけ心を開いていく。",
+    "background_secret": ""
+  },
+  {
+    "id": "ageha",
+    "name": "アゲハ",
+    "role": "rival_ch2",
+    "nationality": "Japan",
+    "affiliation": "tonari常連 / 第2章ライバル",
+    "play_style": "「ヴァイブスと直感」",
+    "description": "tonariの常連であるヒロイン候補の一人であり、第2章で立ちはだかるライバル。\n理論ではなく「ヴァイブス」だけで最高の一杯を作り上げてしまう天才肌だが、内心ではいつか通用しなくなる不安と戦っている。",
+    "background_secret": ""
+  },
+  {
+    "id": "salaryman",
+    "name": "サラリーマン",
+    "role": "sub_character",
+    "nationality": "Japan",
+    "affiliation": "tonari常連",
+    "play_style": "N/A",
+    "description": "地元大会やエンディングでの象徴的な客。\n感情を顔に出さない手強い客だが、本当に上手いシーシャを出すと心が動き、主人公の成長を測る指標となる。",
+    "background_secret": ""
+  },
+  {
+    "id": "kumicho",
+    "name": "シーシャ組長",
+    "role": "rival_ch2",
+    "nationality": "Japan",
+    "affiliation": "ヤクザ（シノギでシーシャ屋経営）",
+    "play_style": "「スジを通す極道の煙」",
+    "description": "第2章大会に登場するヤクザの組長。カタギではないが、シノギとして本気でシーシャ屋を営んでおり、中途半端な姿勢を許さない。",
+    "background_secret": ""
+  },
+  {
+    "id": "ryuji",
+    "name": "リュウジ",
+    "role": "rival_ch2",
+    "nationality": "Japan",
+    "affiliation": "元暴走族（組長関連）",
+    "play_style": "「覚悟の煙」",
+    "description": "腕に刺青が入った元暴走族であり、シーシャ組長とも関連が深いキャラクター。シーシャを作るときの手つきは誰より丁寧で、「人生で一番大事なものをやっと見つけた」と言い切る覚悟の男。",
+    "background_secret": ""
+  },
+  {
+    "id": "dj_smoke",
+    "name": "DJ SMOKE",
+    "role": "rival_ch2",
+    "nationality": "Japan",
+    "affiliation": "クラブVJ兼任",
+    "play_style": "「音楽とシーシャの融合」",
+    "description": "第2章大会の1回戦の相手。音楽のグルーヴとシーシャのセッティングを融合させた派手な演出を好む。",
+    "background_secret": ""
+  },
+  {
+    "id": "dr_kemuri",
+    "name": "ドクター・ケムリ",
+    "role": "rival_ch2",
+    "nationality": "Japan",
+    "affiliation": "研究寄り",
+    "play_style": "「全てをデータで最適化する科学者」",
+    "description": "第2章大会の相手。感覚ではなく、徹底的な数値とグラム単位の計量で論理的に最適なシーシャと煙の発生を最適化する。のちのSHISHA-9000の先駆け的なアプローチ。",
+    "background_secret": ""
+  },
+  {
+    "id": "rei",
+    "name": "レイ",
+    "role": "rival_ch2",
+    "nationality": "Japan",
+    "affiliation": "V系コンセプト",
+    "play_style": "「カリスマ」",
+    "description": "V系のカリスマ的シーシャ職人で、第2章大会に登場する強敵。",
+    "background_secret": ""
+  },
+  {
+    "id": "pakki",
+    "name": "パッキー",
+    "role": "mc",
+    "nationality": "Japan",
+    "affiliation": "大会MC（マスコット）",
+    "play_style": "N/A",
+    "description": "シーシャ大会の名物MC（着ぐるみマスコットのような存在）。常にハイテンションで喋り倒すが、本当に美味いシーシャが出た時だけ沈黙し、煙が虹色になるという伝説を持つ。",
+    "background_secret": ""
+  },
+  {
+    "id": "toki",
+    "name": "土岐宗一郎",
+    "role": "judge",
+    "nationality": "Japan",
+    "affiliation": "大会審査員長",
+    "play_style": "N/A",
+    "description": "シーシャ界の重鎮であり、伝説的な大会審査員長。技術に対して極めて厳しいが、本物の「心」が入った煙には『悪くない』という彼にとっての最高評価を出す。\n隠しボスである「トキ」との関係性が噂されている。",
+    "background_secret": ""
+  },
+  {
+    "id": "emil",
+    "name": "エミル",
+    "role": "rival_ch3",
+    "nationality": "Turkey",
+    "affiliation": "トプハーネ地区のナルギレ職人",
+    "play_style": "「伝統のナルギレ」",
+    "description": "イスタンブールで出会う、伝統を背負う40代の男。\n「新しいだけでは深みは出ない」と語り、かつて出会った放浪の日本人の煙を15年経った今も忘れられずにいる。\n第3章から第4章・スミさんの過去へと繋ぐ重要な橋渡しキャラ。",
+    "background_secret": ""
+  },
+  {
+    "id": "sheikh",
+    "name": "シェイク・アル=ナルギーレ",
+    "role": "rival_ch4",
+    "nationality": "UAE",
+    "affiliation": "ドバイ王族",
+    "play_style": "「純金機材と至上の煙」",
+    "description": "世界大会の決勝相手。王族という立場と純金の特別機材を持つが、15年前に路地裏のカフェで吸った「ある日本人（若きスミさん）」のシーシャが原体験。\nあの「本物の煙」をもう一度超えるためだけに戦い続けている。",
+    "background_secret": ""
+  },
+  {
+    "id": "chad",
+    "name": "チャド",
+    "role": "rival_ch4",
+    "nationality": "USA?",
+    "affiliation": "世界戦プレイヤー",
+    "play_style": "「ショーマンシップ」",
+    "description": "第4章の世界大会に関わるキャラクター。「味はいいけどショーマンシップが足りねえ」と、主人公に意外な教えを提供する師匠の一人。",
+    "background_secret": ""
+  },
+  {
+    "id": "da_silva",
+    "name": "ダ・シルヴァ太陽",
+    "role": "rival_ch4",
+    "nationality": "Brazil?",
+    "affiliation": "世界戦プレイヤー",
+    "play_style": "「フェスタ（祝祭）」",
+    "description": "第4章に関わるキャラクター。「シーシャはフェスタ！楽しくなけりゃ意味がねぇ！」と主人公に純粋な楽しさを思い出させてくれる。",
+    "background_secret": ""
+  }
+]

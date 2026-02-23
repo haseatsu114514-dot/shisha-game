@@ -64,6 +64,10 @@
           "text": "ふーん。仕事中に触ってるだけか。俺、鳴海(なるみ)。お前、tonariの新人だろ。服の匂いで分かるわ"
         },
         {
+          "type": "set_flag",
+          "flag": "known_name_naru"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "あ、はい。蒸野です。……えっと、大会に出る人が何人かいるって聞いて、挨拶をと思って"

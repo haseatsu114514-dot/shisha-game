@@ -218,6 +218,8 @@ func _on_spot_pressed(spot: Dictionary) -> void:
 	if id in ["naru", "adam", "minto"]:
 		if not _is_rival_present(id):
 			var rival_name = {"naru": "なる", "adam": "アダム", "minto": "眠都"}.get(id, id)
+			if not EventFlags.get_flag("known_name_" + id):
+				rival_name = "店長"
 			message_label.text = "今日は%sは出勤していないようだ。" % rival_name
 			GameManager.play_ui_se("cancel")
 			return
@@ -572,14 +574,7 @@ func _safe_load_texture(path: String) -> Texture2D:
 
 const ROAMING_EVENTS := {
 	"shotengai": [
-		{"id": "ch1_shotengai_naru", "chance": 0.35},
 		{"id": "ch1_shotengai_tsumugi", "chance": 0.30},
-	],
-	"kannon": [
-		{"id": "ch1_kannon_adam", "chance": 0.40},
-	],
-	"choizap": [
-		{"id": "ch1_choizap_minto", "chance": 0.30},
 	],
 	"tv_tower_park": [
 		{"id": "ch2_tvtower_sumi", "chance": 0.35},

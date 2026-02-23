@@ -97,6 +97,10 @@ func _is_message_condition_met(message: Dictionary) -> bool:
 	elif condition == "affinity_max":
 		var sender = str(message.get("sender", ""))
 		return AffinityManager.is_max_level(sender) and not AffinityManager.is_in_romance(sender)
+	elif condition == "affinity_level":
+		var sender = str(message.get("sender", ""))
+		var trigger_value = int(message.get("trigger_value", 3))
+		return AffinityManager.get_level(sender) >= trigger_value and not AffinityManager.is_in_romance(sender)
 	elif condition == "tournament_day":
 		var sender = str(message.get("sender", ""))
 		return CalendarManager.is_tournament_day() and AffinityManager.is_in_romance(sender)
@@ -136,6 +140,14 @@ func _on_close_phone_button_pressed() -> void:
 		GameManager.pop_transient("force_shop_before_tournament", false)
 		get_tree().change_scene_to_file("res://scenes/daily/shop.tscn")
 		return
+		
+	var pending_outing = str(GameManager.pop_transient("pending_outing_event", ""))
+	if pending_outing != "":
+		CalendarManager.advance_time()
+		GameManager.queue_dialogue("res://data/dialogue/ch1_events.json", pending_outing, "res://scenes/daily/map.tscn")
+		get_tree().change_scene_to_file("res://scenes/daily/dialogue_box.tscn")
+		return
+		
 	CalendarManager.advance_time()
 	get_tree().change_scene_to_file("res://scenes/daily/map.tscn")
 

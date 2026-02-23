@@ -1,0 +1,139 @@
+{
+    "dialogues": [
+        {
+            "dialogue_id": "outing_naru_1",
+            "metadata": {
+                "bg": "res://assets/backgrounds/bg_shop.png",
+                "add_affinity": {
+                    "naru": 1
+                },
+                "add_stat": {
+                    "technique": 2
+                },
+                "topic": "機材探し"
+            },
+            "lines": [
+                {
+                    "speaker": "naru",
+                    "face": "normal",
+                    "text": "遅えよ。待たせんな"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "ごめん、少し手間取って。で、今日はどんな機材を探すの？"
+                },
+                {
+                    "speaker": "naru",
+                    "face": "smile",
+                    "text": "新作のヒートマネジメントだ。炭の持ちが20％も違うらしい。最強の俺様理論に絶対必要なピースってわけ"
+                },
+                {
+                    "speaker": "naru",
+                    "face": "normal",
+                    "text": "ほら、とっとと行くぞ。荷物は全部お前持ちだからな"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "なるに振り回されたが、シーシャ機材への強いこだわりに触れることができた。\n技術が少し上がった気がする。"
+                }
+            ]
+        },
+        {
+            "dialogue_id": "outing_adam_1",
+            "metadata": {
+                "bg": "res://assets/backgrounds/bg_kannon.png",
+                "add_affinity": {
+                    "adam": 1
+                },
+                "add_stat": {
+                    "focus": 2
+                },
+                "topic": "夜の散歩"
+            },
+            "lines": [
+                {
+                    "speaker": "adam",
+                    "face": "smile",
+                    "text": "ヨク来タ、マイ・ブラザー。月明かりは心を静めル……。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "こんばんは。アダムさんはよく夜の観音様に登るんですか？"
+                },
+                {
+                    "speaker": "adam",
+                    "face": "normal",
+                    "text": "イエス。静寂の中で己の呼吸に集中スルことで、煙のインスピレーションが降りてくル……。"
+                },
+                {
+                    "speaker": "adam",
+                    "face": "smile",
+                    "text": "今日ハ、君という友がいる。より深く、原点の声が聞こえる気がスルー。"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "静かな夜風に吹かれながら、アダムの哲学的な語りを聞いた。\n集中力が少し上がった気がする。"
+                }
+            ]
+        },
+        {
+            "dialogue_id": "outing_minto_1",
+            "metadata": {
+                "bg": "res://assets/backgrounds/bg_shop.png",
+                "add_affinity": {
+                    "minto": 1
+                },
+                "add_stat": {
+                    "charm": 2
+                },
+                "topic": "買い物同行"
+            },
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "待ち合わせ場所に着くと、フリルのついたブラウスに落ち着いた色のロングスカート姿の女性が立っていた。"
+                },
+                {
+                    "speaker": "minto",
+                    "face": "smile",
+                    "text": "あっ、はじめくんっ！ 来てくれてありがとーっ♡"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "surprise",
+                    "text": "あ、眠都さん……！ ごめん、私服だから一瞬誰か分からなくて。お店の雰囲気と全然違うね"
+                },
+                {
+                    "speaker": "minto",
+                    "face": "sad",
+                    "text": "えっ、本当？ ……もしかして、あんまり似合ってない、かな……？"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "smile",
+                    "text": "そんなことないよ。普段とのギャップがあって……その、すごく可愛いと思う。"
+                },
+                {
+                    "speaker": "minto",
+                    "face": "smile",
+                    "text": "あははっ、やったぁ！ はじめくんにそう言ってもらえると自信つくかもっ♪"
+                },
+                {
+                    "speaker": "minto",
+                    "face": "normal",
+                    "text": "実はね、今日は新しいお店の制服の参考に、ちょっとお洋服を見たいなーって思ってて。付き合ってくれる？"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "いつもより少し大人びた私服姿の眠都にドキドキしながら、一緒に買い物を楽しんだ。\n魅力が少し上がった気がする。"
+                }
+            ]
+        }
+    ]
+}
