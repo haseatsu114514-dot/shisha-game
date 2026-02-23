@@ -568,6 +568,75 @@
           "affinity": 2
         }
       ]
+    },
+    {
+      "id": "romance_ageha_interval2_day1",
+      "sender": "ageha",
+      "trigger_chapter": 2,
+      "trigger_interval_day": 1,
+      "trigger_condition": "romance",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "よっ、ハジメっち！ 今日も一日おつかれーしょん！ ウチの特等席の彼氏くん、ちゃんとご飯食べてる？"
+        },
+        {
+          "sender": "ageha",
+          "text": "なんか最近、ハジメっちの淹れてくれた重いシーシャないとマジでアガんない身体になっちゃったわ。ウケるｗ"
+        },
+        {
+          "sender": "ageha",
+          "text": "責任取って、一生うちの隣で特別扱いしてよねっ♡ とりま、明日も押し掛けるからヨロ！"
+        }
+      ],
+      "replies": [
+        {
+          "text": "いつでも待ってるよ",
+          "response": "さすがっ！ これだからハジメっちの沼から抜けらんないんだよねぇ",
+          "affinity": 2
+        },
+        {
+          "text": "責任重大だね（笑）",
+          "response": "あはは、ビビってんの？ もう逃がさないからねっ♡",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "romance_ageha_interval2_day3",
+      "sender": "ageha",
+      "trigger_chapter": 2,
+      "trigger_interval_day": 3,
+      "trigger_condition": "romance",
+      "type": "chat",
+      "time_slot": "noon",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "ねー、ハジメっち。次いつ休める？"
+        },
+        {
+          "sender": "ageha",
+          "text": "せっかくウチら付き合ってんだからさ、もっとガッツリ二人でデートしたいんだけど！"
+        },
+        {
+          "sender": "ageha",
+          "text": "なんなら、うちでお泊まりデートとかでもいいし……？ 返事待ってたげるから、マジで早めに決めなよっ♡"
+        }
+      ],
+      "replies": [
+        {
+          "text": "お泊りデート！？",
+          "response": "ウケる、わかりやすくテンパってるしｗｗ そういう初心（うぶ）なとこも推せるわ〜♡",
+          "affinity": 2
+        },
+        {
+          "text": "今度予定合わせるね",
+          "response": "りょ！ うち、ハジメっちのためならいつでも空けとくから、絶対だよー！",
+          "affinity": 1
+        }
+      ]
     }
   ]
 }

@@ -70,11 +70,17 @@ func _show_romance_date(char_id: String) -> void:
 			lines.append("「外では完璧な『みんちゃん』を演じてるけど……はじめくんの前では、ただの『しおり』でいさせて。……だめ、かな？」\n不安そうに、でも期待を込めてもじもじと擦り寄ってくる彼女を、優しく抱きしめた。")
 	elif char_id == "ageha":
 		if affection == 0:
-			lines.append("アゲハをお茶に誘った。\n「おっ、キミから誘ってくるなんて珍しいじゃん。いいよ、うちの特等席の彼氏くんの顔、じっくり見せてもらうからねっ」")
+			lines.append("アゲハをカフェに誘った。")
+			lines.append("「おっ、ハジメっちから誘ってくるなんてワンチャン雪降るんじゃない？ ウソウソｗ」")
+			lines.append("「せっかくウチら彼氏彼女になったんだし、もっと特等席の彼氏くんのこと、タピるレベルで甘やかしてあげるから覚悟しなっ♡」")
 		elif affection <= 2:
-			lines.append("アゲハとデートしている。\n「ねー、手繋いでもいい？ ……って、聞かないけど。ほら、ちゃんとエスコートしてよねっ♡」")
+			lines.append("アゲハとショッピングデートをしている。")
+			lines.append("「ねーハジメっち、手繋いで歩こ？ ……って、ガチで照れてるしウケるー！」")
+			lines.append("「でもそういう初心（うぶ）なところもマジ推せるわ〜。ほら、手出して？ これからウチがエスコートしてあげるから♡」")
 		else:
-			lines.append("アゲハと二人きり。\n「……マジで、うちどうしちゃったんだろう。キミの顔見てるだけで、なんか胸の奥がぎゅってなる……。責任取って、ずっとうちのそばにいてよ……？」")
+			lines.append("アゲハと二人きりで夜景を見ている。")
+			lines.append("「……なんかさ、マジでウチどうしちゃったんだろう。ハジメっちの顔見てるだけで、バイブス上がりすぎて胸の奥がぎゅってなる……」")
+			lines.append("「……ねえ、もう帰んないでよ。ウチの特等席、一生キミだけのものにしてあげるからさ……責任、取ってよね？」\n普段のギャルっぽい飄々とした態度はどこへやら、彼女の甘えたような声が夜風に溶けた。")
 	else:
 		lines.append("二人で楽しい時間を過ごした。愛情が少し深まった気がする。")
 
@@ -122,7 +128,12 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 				RivalIntel.add_intel("minto", "flavor_genre", "映え系フルーツ")
 
 	# Pick dialogue and metadata based on visit count
+	var prefix = "ch1_"
 	var dialogue_file = "res://data/dialogue/ch1_%s.json" % rival_id
+	if rival_id == "ageha":
+		prefix = "ch2_"
+		dialogue_file = "res://data/dialogue/ch2_ageha.json"
+		
 	var dialogue_id = ""
 	var metadata: Dictionary = {}
 	
@@ -133,15 +144,17 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 			metadata["bg"] = "res://assets/backgrounds/eden.png"
 		"minto":
 			metadata["bg"] = "res://assets/backgrounds/pepermint.png"
+		"ageha":
+			metadata["bg"] = "res://assets/backgrounds/pepermint.png" # アゲハの居場所に合わせて背景を設定
 
 	if count == 0:
-		dialogue_id = "ch1_%s_first" % rival_id
-		# Naru and Kirara exchange LIME on first visit
-		if rival_id in ["naru", "minto"]:
+		dialogue_id = "%s%s_first" % [prefix, rival_id]
+		# Naru, Minto, Ageha exchange LIME on first visit
+		if rival_id in ["naru", "minto", "ageha"]:
 			metadata["exchange_lime"] = rival_id
 		metadata["add_affinity"] = {rival_id: 1}
 	elif count == 1:
-		dialogue_id = "ch1_%s_second" % rival_id
+		dialogue_id = "%s%s_second" % [prefix, rival_id]
 		# Adam exchanges LIME on second visit
 		if rival_id == "adam":
 			metadata["exchange_lime"] = rival_id
@@ -153,13 +166,13 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 			"minto":
 				metadata["add_intel"] = [{"id": "minto", "key": "presentation", "value": "一般投票特化"}]
 	elif count == 2:
-		dialogue_id = "ch1_%s_third" % rival_id
+		dialogue_id = "%s%s_third" % [prefix, rival_id]
 		metadata["add_affinity"] = {rival_id: 1}
 	elif count == 3:
-		dialogue_id = "ch1_%s_fourth" % rival_id
+		dialogue_id = "%s%s_fourth" % [prefix, rival_id]
 		metadata["add_affinity"] = {rival_id: 1}
 	else:
-		dialogue_id = "ch1_%s_fifth" % rival_id
+		dialogue_id = "%s%s_fifth" % [prefix, rival_id]
 		metadata["add_affinity"] = {rival_id: 1}
 		match rival_id:
 			"minto":

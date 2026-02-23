@@ -74,6 +74,111 @@
                     "text": "「ま、これも何かの縁っしょ！ これからよろしくね、ハジメっちっ♡ お手並み、拝見させてもらうし！」"
                 }
             ]
+        },
+        {
+            "dialogue_id": "ch2_ageha_second",
+            "lines": [
+                {
+                    "speaker": "ageha",
+                    "face": "smile",
+                    "text": "「よっ、ハジメっち！ 今日もうちの特注頼むし♡」"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "「いつもの甘くて重いやつだね。任せてよ」"
+                },
+                {
+                    "speaker": "ageha",
+                    "face": "smile",
+                    "text": "「さすが〜！ もうすっかりうちの好みに染まっちゃって、マジでウケるんですけど。……ねぇ、このままうちの専属になっちゃえば？ とりま毎日通うからさっ」"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "（冗談っぽく笑っているが、相変わらず距離が近い……）"
+                }
+            ]
+        },
+        {
+            "dialogue_id": "ch2_ageha_third",
+            "lines": [
+                {
+                    "speaker": "ageha",
+                    "face": "normal",
+                    "text": "「ねーハジメっち。うち、最近キミの煙じゃないと全然アガんないんだけど。マジで責任取ってほしいわ」"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "surprise",
+                    "text": "「責任って言われても……」"
+                },
+                {
+                    "speaker": "ageha",
+                    "face": "smile",
+                    "text": "「ほーんとに鈍感！ ほんっとそういうとこムカつくし……でも嫌いじゃない。ほら、もっとこっち来て、近くで煙の様子見てよ……♡ 手、触れてもいいし？」"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "surprise",
+                    "text": "（完全にからかわれている……でも、これって脈あり、なのか……？）"
+                }
+            ]
+        },
+        {
+            "dialogue_id": "ch2_ageha_fourth",
+            "lines": [
+                {
+                    "speaker": "ageha",
+                    "face": "normal",
+                    "text": "「ハジメっちはさー、やっぱウチみたいなギャルはお手上げなの？」"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "「そんなことないよ。話していて楽しいし、シーシャの好みもハッキリしてるから作りがいがある」"
+                },
+                {
+                    "speaker": "ageha",
+                    "face": "surprise",
+                    "text": "「……っ！！」"
+                },
+                {
+                    "speaker": "ageha",
+                    "face": "smile",
+                    "text": "「……ふーん？ ならワンチャン、本気で落としにいってもいいってこと？ 覚悟しときなよ、ウチが本気出したらマジでヤバいからっ♡」"
+                }
+            ]
+        },
+        {
+            "dialogue_id": "ch2_ageha_fifth",
+            "lines": [
+                {
+                    "speaker": "ageha",
+                    "face": "normal",
+                    "text": "「……あーあ。なんかもう、限界かも。キミ見てるとバイブス上がりすぎて、逆になんも手につかないし」"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "surprise",
+                    "text": "「どうかしたの？ 煙、強すぎた？」"
+                },
+                {
+                    "speaker": "ageha",
+                    "face": "surprise",
+                    "text": "「ちーがーう！ 煙じゃなくて、キミのこと！！」"
+                },
+                {
+                    "speaker": "ageha",
+                    "face": "smile",
+                    "text": "「あのさあ、そろそろウチのこと……どう思ってるか教えてよ？ このままじらされ続けたら、さすがにウチもキレるよ？ ……なんてねっ♡」"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "（彼女の目は、いつになく真剣だった。……何か答えないといけない気がする）"
+                }
+            ]
         }
     ]
 }
