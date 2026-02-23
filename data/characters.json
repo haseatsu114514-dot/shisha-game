@@ -156,12 +156,12 @@
   {
     "id": "rei",
     "name": "レイ",
-    "role": "rival_ch2",
+    "role": "rival_ch3",
     "age": 25,
     "nationality": "Japan",
-    "affiliation": "V系コンセプト",
+    "affiliation": "VOID（ボイド）",
     "play_style": "「カリスマ」",
-    "description": "V系のカリスマ的シーシャ職人で、第2章大会に登場する強敵。",
+    "description": "V系のカリスマ的シーシャ職人で、第3章大会に初登場する強敵。日本人枠としてはじめやなるとトップ4を争う。",
     "background_secret": ""
   },
   {
@@ -227,29 +227,29 @@
     "nationality": "UAE",
     "affiliation": "ドバイ王族",
     "play_style": "「純金機材と至上の煙」",
-    "description": "HAZE: GRAND SMOKEの決勝相手。王族という立場と純金の特別機材を持つが、15年前に路地裏のカフェで吸った「ある日本人（若きスミさん）」のシーシャが原体験。\nあの「本物の煙」をもう一度超えるためだけに戦い続けている。",
+    "description": "HAZE: GRAND SMOKEの決勝相手。王族という立場と純金の特別機材を持つ。普段はただのシーシャ好きのおじさんとして路地裏のカフェに現れる。",
     "background_secret": ""
   },
   {
     "id": "chad",
     "name": "チャド",
-    "role": "rival_ch4",
+    "role": "judge",
     "age": 29,
     "nationality": "USA",
-    "affiliation": "世界戦プレイヤー",
+    "affiliation": "SHOWTIME（ショータイム）",
     "play_style": "「ショーマンシップ」",
-    "description": "第4章のHAZE: GRAND SMOKEに関わるキャラクター。「味はいいけどショーマンシップが足りねえ」と、主人公に意外な教えを提供する師匠の一人。",
+    "description": "HAZE: GRAND SMOKEの審査員の一人。元世界王者で、ドバイでド派手なラウンジを経営。「味はいいけどショーマンシップが足りねえ」と、主人公に「魅せ方」の意外な教えを提供する。",
     "background_secret": ""
   },
   {
     "id": "da_silva",
     "name": "ダ・シルヴァ太陽",
-    "role": "rival_ch4",
+    "role": "judge",
     "age": 28,
     "nationality": "Brazil",
-    "affiliation": "世界戦プレイヤー",
+    "affiliation": "FESTA（フェスタ）",
     "play_style": "「フェスタ（祝祭）」",
-    "description": "第4章に関わるキャラクター。「シーシャはフェスタ！楽しくなけりゃ意味がねぇ！」と主人公に純粋な楽しさを思い出させてくれる。",
+    "description": "HAZE: GRAND SMOKEの審査員の一人。ドバイでカラフルなシーシャバーを経営。「シーシャはフェスタ！楽しくなけりゃ意味がねぇ！」と主人公に純粋な楽しさを思い出させてくれる。",
     "background_secret": ""
   },
   {
