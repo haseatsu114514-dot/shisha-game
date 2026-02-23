@@ -383,7 +383,7 @@ func get_forced_event_for_today(time_slot: String) -> Dictionary:
 			if cond_key != "":
 				var actual = EventFlags.get_value(cond_key, null)
 				var expected = condition.get("equals", null)
-				if actual != expected and int(actual) != int(expected):
+				if str(actual) != str(expected):
 					continue
 		return event
 	return {}

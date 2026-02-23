@@ -58,9 +58,30 @@ const SHOP_ITEMS := [
 	}
 ]
 
+var dialogue_scene = preload("res://scenes/dialogue/dialogue_box.tscn")
+
 func _ready() -> void:
 	back_button.pressed.connect(_on_back_button_pressed)
 	_refresh_ui()
+	
+	if not PlayerData.has_visited_shop:
+		_play_first_visit_event()
+
+func _play_first_visit_event() -> void:
+	PlayerData.has_visited_shop = true
+	var d = dialogue_scene.instantiate()
+	add_child(d)
+	
+	# Disable UI while talking
+	back_button.disabled = true
+	item_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
+	d.start_dialogue("res://data/dialogue/shop_event.json", "first_visit")
+	d.dialogue_finished.connect(func():
+		back_button.disabled = false
+		item_container.mouse_filter = Control.MOUSE_FILTER_STOP
+		d.queue_free()
+	)
 
 func _refresh_ui() -> void:
 	money_label.text = "所持金: %d円" % PlayerData.money
@@ -114,8 +135,7 @@ func _is_item_owned(item: Dictionary) -> bool:
 	var t = item.get("type", "")
 	var id = item.get("id", "")
 	if t == "flavor":
-		# Let's say special flavors can only be bought once for a permanent bonus
-		return PlayerData.flavor_inventory.has(id)
+		return PlayerData.has_flavor(id)
 	return PlayerData.has_item(t, id)
 
 func _try_buy_item(item: Dictionary) -> void:
@@ -133,8 +153,9 @@ func _try_buy_item(item: Dictionary) -> void:
 	
 	# Give item
 	if t == "flavor":
-		if not PlayerData.flavor_inventory.has(id):
-			PlayerData.flavor_inventory.append(id)
+		if not PlayerData.has_flavor(id):
+			# Added amount depends on flavor (e.g. 50g)
+			PlayerData.add_flavor(id, 50)
 			PlayerData.flavor_specialties[id] = 20 # Auto mastery start
 	elif t == "pipe" or t == "bowl" or t == "hms":
 		match t:

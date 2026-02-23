@@ -2716,9 +2716,9 @@ func _build_player_score_breakdown_lines() -> Array[String]:
 
 func _prepare_rival_score_tables() -> void:
 	var rivals = [
-		{"id": "naru", "name": "なる", "specialist": 66.0, "audience": 55.0, "variance": 8.0},
-		{"id": "adam", "name": "アダム", "specialist": 73.0, "audience": 48.0, "variance": 9.0},
-		{"id": "ryuji", "name": "リュウジ", "specialist": 60.0, "audience": 67.0, "variance": 9.0},
+		{"id": "naru", "name": "なる", "specialist": 78.0, "audience": 62.0, "variance": 6.0},
+		{"id": "adam", "name": "アダム", "specialist": 85.0, "audience": 52.0, "variance": 5.0},
+		{"id": "ryuji", "name": "リュウジ", "specialist": 65.0, "audience": 75.0, "variance": 8.0},
 	]
 	_rival_mid_scores.clear()
 	_rival_final_scores.clear()

@@ -1,6 +1,7 @@
 [gd_scene load_steps=2 format=3 uid="uid://d3u7k2n1"]
 
 [ext_resource type="Script" path="res://scripts/ui/shop_menu.gd" id="1_shop"]
+[ext_resource type="Texture2D" uid="uid://c5vq1l2k8j3p" path="res://assets/backgrounds/dr.hookah.png" id="2_bg"]
 
 [node name="ShopMenu" type="Control"]
 layout_mode = 3
@@ -11,14 +12,25 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_shop")
 
-[node name="ColorRect" type="ColorRect" parent="."]
+[node name="Background" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.1, 0.1, 0.1, 1)
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="DimOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.45)
 
 [node name="HeaderLabel" type="Label" parent="."]
 layout_mode = 1

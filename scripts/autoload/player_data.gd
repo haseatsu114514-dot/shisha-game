@@ -270,6 +270,8 @@ var recipe_note: Array = []
 var memo_seen_ids: Dictionary = {}
 var unlocked_cards: Array = []
 
+var has_visited_shop: bool = false
+
 
 func _ready() -> void:
 	_load_character_flavor_profiles()
@@ -294,6 +296,7 @@ func reset_data() -> void:
 	recipe_note.clear()
 	memo_seen_ids.clear()
 	unlocked_cards.clear()
+	has_visited_shop = false
 
 
 func add_stat(stat_name: String, amount: int) -> void:
