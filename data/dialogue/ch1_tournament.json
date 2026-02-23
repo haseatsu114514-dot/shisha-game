@@ -638,6 +638,71 @@
           "text": "──第1章「なんとなく始めた」 了。"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch1_tournament_r1_end",
+      "lines": [
+        {
+          "speaker": "takiguchi",
+          "face": "normal",
+          "text": "さあ、ラウンド1の『提供』が完了！ 各テーブル、まずは出だしの煙の立ち上がりを審査員がチェックしていくぞ！"
+        },
+        {
+          "speaker": "naru",
+          "face": "smug",
+          "text": "ふん、初期の熱入れだけなら誰でもできるさ。温度をブレさせないこれからが本番だよ"
+        },
+        {
+          "speaker": "adam",
+          "face": "angry",
+          "text": "Yeah! 俺の爆煙、初速から飛ばしていくぜ！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_tournament_r2_end",
+      "lines": [
+        {
+          "speaker": "takiguchi",
+          "face": "normal",
+          "text": "ラウンド2『炭替え・調整』が終了！ 中盤戦、味のピークをどう維持するかが明暗を分ける！"
+        },
+        {
+          "speaker": "toki_kotetsu",
+          "face": "normal",
+          "text": "……ほう。このタイミングで、そのアプローチか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（審査員の目線が鋭くなってきた……焦らず、自分のペースを守らないと）"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "僕の理論は完璧だ。データ通りの挙動……よし、このままいける"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_tournament_r3_end",
+      "lines": [
+        {
+          "speaker": "takiguchi",
+          "face": "normal",
+          "text": "いよいよラウンド3、最後の調整が完了！ 残すは最終プレゼンのみ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（泣いても笑っても、これで最後だ。やれることは、全部やった……！）"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "Hahaha! 最後まで俺のFlavorは最高潮だぜ！"
+        }
+      ]
     }
   ]
 }

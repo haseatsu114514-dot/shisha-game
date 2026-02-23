@@ -101,6 +101,11 @@ const PRESENTATION_FOCUS_LABEL := {
 @onready var score_label: RichTextLabel = %ScoreLabel
 @onready var memo_label: RichTextLabel = %MemoLabel
 
+@onready var mini_dialogue_panel: PanelContainer = %MiniDialoguePanel
+@onready var mini_speaker_label: Label = %MiniSpeakerLabel
+@onready var mini_text_label: RichTextLabel = %MiniTextLabel
+@onready var mini_portrait: TextureRect = %MiniPortrait
+
 @onready var status_panel = $SidePanel/SideMargin/SideVBox/StatusPanel
 
 var _theme: Dictionary = {}
@@ -202,6 +207,23 @@ var _mid_rival_totals: Dictionary = {}
 var _presentation_primary_focus: String = ""
 var _presentation_secondary_focus: String = ""
 
+var _mini_dialogue_queue: Array[Dictionary] = []
+var _mini_dialogue_on_finish: Callable
+var _mini_dialogue_is_typing: bool = false
+var _mini_dialogue_full_text: String = ""
+var _mini_dialogue_char_index: int = 0
+var _mini_dialogue_timer: Timer
+
+const SPEAKER_NAMES := {
+	"hajime": "はじめ",
+	"sumi": "スミさん",
+	"naru": "なる",
+	"adam": "アダム",
+	"minto": "眠都(みんと)",
+	"takiguchi": "MC 焚口",
+	"toki_kotetsu": "土岐鋼鉄",
+	"maezono": "前園壮一郎"
+}
 
 func _process(_delta: float) -> void:
 	if status_panel and status_panel.has_method("update_status"):
@@ -240,6 +262,13 @@ func _ready() -> void:
 	_mind_timer.one_shot = false
 	_mind_timer.timeout.connect(_on_mind_barrage_tick)
 	add_child(_mind_timer)
+	
+	_mini_dialogue_timer = Timer.new()
+	_mini_dialogue_timer.wait_time = 0.03
+	_mini_dialogue_timer.one_shot = false
+	_mini_dialogue_timer.timeout.connect(_on_mini_dialogue_tick)
+	add_child(_mini_dialogue_timer)
+	
 	if GameManager.game_state != "tournament":
 		GameManager.transition_to_tournament()
 	_prepare_run()
@@ -2107,12 +2136,67 @@ func _on_serving_confirmed() -> void:
 	_technical_points += spec_gain
 	_audience_points += aud_gain
 	GameManager.play_ui_se("confirm")
-	_show_step_result_and_next("提供評価: 専門 %+d / 一般 %+d%s" % [int(round(spec_gain)), int(round(aud_gain)), bonus_text], _show_adjustment_menu.bind(0))
+	_show_step_result_and_next("提供評価: 専門 %+d / 一般 %+d%s" % [int(round(spec_gain)), int(round(aud_gain)), bonus_text], _show_round_result.bind(1))
+
+
+func _show_round_result(round_num: int) -> void:
+	_set_phase(12, "ラウンド%d 終了" % round_num, "現在の暫定スコアと順位。")
+	_clear_choices()
+
+	var player_score = _build_player_score()
+	var player_total = float(player_score.get("total", 0.0))
+	_mid_player_total = player_total
+	_mid_rival_totals.clear()
+
+	var ranking: Array = []
+	ranking.append(player_score)
+	var rivals = _build_rival_mid_scores()
+	for rival in rivals:
+		var row = rival as Dictionary
+		_mid_rival_totals[str(row.get("id", ""))] = float(row.get("total", 0.0))
+	ranking.append_array(rivals)
+	ranking.sort_custom(func(a, b):
+		return float(a.get("total", 0.0)) > float(b.get("total", 0.0))
+	)
+
+	var lines: Array[String] = ["【ラウンド%d 暫定順位】" % round_num]
+	for i in range(ranking.size()):
+		var row: Dictionary = ranking[i]
+		var row_id = str(row.get("id", ""))
+		var row_total = float(row.get("total", 0.0))
+		if row_id == "player":
+			lines.append("%d位 %s %.1f点（あなた）" % [i + 1, str(row.get("name", "-")), row_total])
+		else:
+			lines.append("%d位 %s %.1f点（差 %+.1f）" % [
+				i + 1,
+				str(row.get("name", "-")),
+				row_total,
+				player_total - row_total,
+			])
+
+	info_label.text = "\n".join(lines)
+	
+	# ラウンド終了ごとのシナリオ再生と次のフェーズへの遷移セット
+	var dialogue_id = ""
+	var next_callable: Callable
+	if round_num == 1:
+		dialogue_id = "ch1_tournament_r1_end"
+		next_callable = _show_adjustment_menu.bind(0)
+	elif round_num == 2:
+		dialogue_id = "ch1_tournament_r2_end"
+		next_callable = _show_adjustment_menu.bind(1)
+	else:
+		dialogue_id = "ch1_tournament_r3_end"
+		next_callable = _show_presentation_intro
+		
+	_add_choice_button("次へ進む", _play_mini_dialogue.bind(dialogue_id, next_callable))
+	_refresh_side_panel()
 
 
 func _show_adjustment_menu(round_index: int) -> void:
+	var round_num = round_index + 2 # _show_adjustment_menu(0) means Round 2
 	var step_no = 10 + round_index
-	_set_phase(step_no, "提供後の調整 %d回目" % (round_index + 1), "現在の炭: %d個 / 熱状態: %d\nどう調整する？" % [_selected_charcoal_count, _heat_state])
+	_set_phase(step_no, "ラウンド%d: 調整" % round_num, "現在の炭: %d個 / 熱状態: %d\nどう調整する？" % [_selected_charcoal_count, _heat_state])
 	_clear_choices()
 
 	_add_choice_button("炭の調整を行う", _show_charcoal_adjust_step.bind(round_index))
@@ -2340,59 +2424,13 @@ func _resolve_adjustment_round(round_index: int) -> void:
 func _finish_adjustment_phase(round_index: int) -> void:
 	_adjustment_action_count = 0
 	
-	if round_index == 2 and _adjustment_hits >= 3:
-		_technical_points += 10.0
-		_audience_points += 4.0
-		_show_step_result_and_next("3連続成功ボーナス獲得！", _show_mid_announcement if round_index >= 2 else _show_adjustment_menu.bind(round_index + 1))
+	if round_index == 1 and _adjustment_hits >= 2:
+		_technical_points += 5.0
+		_audience_points += 2.0
+		_show_step_result_and_next("連続調整成功ボーナス獲得！", _show_round_result.bind(round_index + 1))
 	else:
-		var next_callable: Callable = _show_adjustment_menu.bind(round_index + 1) if round_index < 2 else _show_mid_announcement
+		var next_callable: Callable = _show_round_result.bind(round_index + 1)
 		_show_step_result_and_next("調整時間を終え、次の時間へ進む。", next_callable)
-
-
-func _show_mid_announcement() -> void:
-	_set_phase(13, "中間発表", "ここまでの暫定順位と、あなたとの差を表示。")
-	_clear_choices()
-
-	var player_score = _build_player_score()
-	var player_total = float(player_score.get("total", 0.0))
-	_mid_player_total = player_total
-	_mid_rival_totals.clear()
-
-	var ranking: Array = []
-	ranking.append(player_score)
-	var rivals = _build_rival_mid_scores()
-	for rival in rivals:
-		var row = rival as Dictionary
-		_mid_rival_totals[str(row.get("id", ""))] = float(row.get("total", 0.0))
-	ranking.append_array(rivals)
-	ranking.sort_custom(func(a, b):
-		return float(a.get("total", 0.0)) > float(b.get("total", 0.0))
-	)
-
-	var lines: Array[String] = ["【暫定順位】"]
-	for i in range(ranking.size()):
-		var row: Dictionary = ranking[i]
-		var row_id = str(row.get("id", ""))
-		var row_total = float(row.get("total", 0.0))
-		if row_id == "player":
-			lines.append("%d位 %s %.1f点（あなた）" % [i + 1, str(row.get("name", "-")), row_total])
-		else:
-			lines.append("%d位 %s %.1f点（あなたとの差 %+.1f）" % [
-				i + 1,
-				str(row.get("name", "-")),
-				row_total,
-				player_total - row_total,
-			])
-
-	var leader = ranking[0] as Dictionary
-	if str(leader.get("id", "")) == "player":
-		lines.append("暫定トップ。最終プレゼンで失点しなければ押し切れる。")
-	else:
-		lines.append("首位まで %.1f 点差。プレゼンで逆転可能。" % (float(leader.get("total", 0.0)) - player_total))
-
-	info_label.text = "\n".join(lines)
-	_add_choice_button("最終プレゼンへ", _show_presentation_intro)
-	_refresh_side_panel()
 
 
 func _show_presentation_intro() -> void:
@@ -2846,6 +2884,84 @@ func _return_to_title() -> void:
 func _roll(success_rate: float) -> bool:
 	var chance = clampf(success_rate, 5.0, 95.0)
 	return randf() * 100.0 < chance
+
+# ======== Mini Dialogue System ========
+
+func _play_mini_dialogue(dialogue_id: String, on_finish: Callable) -> void:
+	var path = "res://data/dialogue/ch1_tournament.json"
+	if not FileAccess.file_exists(path):
+		on_finish.call()
+		return
+	var file = FileAccess.open(path, FileAccess.READ)
+	var parsed = JSON.parse_string(file.get_as_text())
+	file.close()
+
+	_mini_dialogue_queue.clear()
+	if typeof(parsed) == TYPE_DICTIONARY and parsed.has("dialogues"):
+		for d in parsed["dialogues"]:
+			if str(d.get("dialogue_id", "")) == dialogue_id:
+				_mini_dialogue_queue = d.get("lines", []).duplicate(true)
+				break
+
+	if _mini_dialogue_queue.is_empty():
+		on_finish.call()
+		return
+
+	_mini_dialogue_on_finish = on_finish
+	mini_dialogue_panel.show()
+	_clear_choices()
+	_advance_mini_dialogue()
+
+
+func _advance_mini_dialogue() -> void:
+	if _mini_dialogue_is_typing:
+		_mini_dialogue_is_typing = false
+		_mini_dialogue_timer.stop()
+		mini_text_label.visible_characters = -1
+		GameManager.play_ui_se("cursor")
+		return
+
+	if _mini_dialogue_queue.is_empty():
+		mini_dialogue_panel.hide()
+		GameManager.play_ui_se("confirm")
+		if _mini_dialogue_on_finish.is_valid():
+			_mini_dialogue_on_finish.call()
+		return
+
+	var line = _mini_dialogue_queue.pop_front()
+	var raw_speaker = str(line.get("speaker", ""))
+	var face = str(line.get("face", "normal"))
+	_mini_dialogue_full_text = str(line.get("text", ""))
+
+	if raw_speaker == "":
+		mini_speaker_label.text = ""
+		mini_portrait.texture = null
+	else:
+		mini_speaker_label.text = SPEAKER_NAMES.get(raw_speaker, raw_speaker)
+		var t_path = "res://assets/portraits/%s/%s_%s.png" % [raw_speaker, raw_speaker, face]
+		if ResourceLoader.exists(t_path):
+			mini_portrait.texture = load(t_path)
+		else:
+			mini_portrait.texture = null
+
+	mini_text_label.text = _mini_dialogue_full_text
+	mini_text_label.visible_characters = 0
+	_mini_dialogue_char_index = 0
+	_mini_dialogue_is_typing = true
+	_mini_dialogue_timer.start()
+
+
+func _on_mini_dialogue_tick() -> void:
+	_mini_dialogue_char_index += 1
+	mini_text_label.visible_characters = _mini_dialogue_char_index
+	if _mini_dialogue_char_index >= _mini_dialogue_full_text.length():
+		_mini_dialogue_is_typing = false
+		_mini_dialogue_timer.stop()
+
+
+func _gui_input(event: InputEvent) -> void:
+	if mini_dialogue_panel.visible and event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		_advance_mini_dialogue()
 
 
 func _show_step_result_and_next(result_text: String, next_callable: Callable) -> void:
