@@ -332,12 +332,12 @@
   {
     "id": "dr_kemuri",
     "name": "ドクター・ケムリ / 藤波 創（ふじなみ そう）",
-    "role": "rival_ch2",
+    "role": "judge_and_creator",
     "age": 33,
     "nationality": "Japan",
-    "affiliation": "研究寄り",
+    "affiliation": "審査員兼AI開発者 / SMOKE LAB",
     "play_style": "「全てをデータで最適化する科学者」",
-    "description": "感覚ではなく、徹底的な数値とグラム単位の計量で論理的に最適なシーシャと煙の発生を最適化する。のちのSHISHA-9000の先駆け的なアプローチ。",
+    "description": "感覚ではなく、徹底的な数値とグラム単位の計量で論理的に最適なシーシャと煙の発生を最適化する。のちのSHISHA-9000の生みの親。各大会で審査員や観客として現れ、プレイヤーのデータを収集し続けている。",
     "background_secret": "かつて自分の感覚で作ったシーシャを『不味い』と全否定された過去があり、二度と傷つかないために「否定不可能なデータ」という絶対の盾に依存している。",
     "favorite_flavor": "コーラ",
     "specialty_flavor": "酸味・シトラス系の変わり種",
@@ -614,5 +614,62 @@
       "48s japanese male, extreme dandy and hard-boiled style, similar to Daisuke Jigen, wearing a deep fedora hat covering his eyes, well-trimmed beard, dark tailored suit, holding a classic hookah hose elegantly",
       "mature cool middle-aged cafe master, smoking quietly in the shadows, deep voice aura, wearing a hat and vintage attire, actually very gentle despite his intimidatingly cool appearance"
     ]
+  },
+  {
+    "id": "shiramine",
+    "name": "白峰 恒一郎",
+    "role": "judge",
+    "age": 52,
+    "nationality": "Japan",
+    "affiliation": "大会審査員",
+    "play_style": "N/A",
+    "description": "伝統を重んじる厳格な審査員。「吸いやすさ」と「味」のバランスを高く評価する。",
+    "background_secret": "かつては荒削りな煙を好んでいたが、年齢と共に調和を求めるようになった。",
+    "favorite_flavor": "バニラ、ココナッツ、パイナップル",
+    "specialty_flavor": "N/A",
+    "growth_stats": {
+      "primary": "洞察",
+      "secondary": "技術",
+      "notes": ""
+    },
+    "visual_concepts": []
+  },
+  {
+    "id": "maezono",
+    "name": "前園 壮一郎",
+    "role": "judge",
+    "age": 39,
+    "nationality": "Japan",
+    "affiliation": "大会審査員",
+    "play_style": "N/A",
+    "description": "アグレッシブな煙を好む審査員。「煙の量」と「個性」を重視する傾向がある。",
+    "background_secret": "新しい物好きで、常に刺激的なシーシャ体験を求めている。",
+    "favorite_flavor": "ミント、ダブルアップル",
+    "specialty_flavor": "N/A",
+    "growth_stats": {
+      "primary": "洞察",
+      "secondary": "魅力",
+      "notes": ""
+    },
+    "visual_concepts": []
+  },
+  {
+    "id": "kirishima",
+    "name": "霧島 レン",
+    "role": "judge",
+    "age": 28,
+    "nationality": "Japan",
+    "affiliation": "大会審査員",
+    "play_style": "N/A",
+    "description": "若くして審査員を務める実力派。「個性」と「吸いやすさ」をバランスよく評価する。",
+    "background_secret": "実はスイーツ好きで、フルーティーな甘い香りに目がない。",
+    "favorite_flavor": "ブルーベリー、パイナップル",
+    "specialty_flavor": "N/A",
+    "growth_stats": {
+      "primary": "洞察",
+      "secondary": "センス",
+      "notes": ""
+    },
+    "visual_concepts": []
   }
 ]
