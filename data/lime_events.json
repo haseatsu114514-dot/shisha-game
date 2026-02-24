@@ -1,0 +1,44 @@
+{
+  "events": [
+    {
+      "id": "lime_post_minto",
+      "sender": "minto",
+      "trigger_condition": "romance_minto_date_after",
+      "messages": [
+        "昨日は楽しかったねっ♡",
+        "まだちょっと……体がぽかぽかしてるかも……えへへ",
+        "またおうちで映画見ようねっ！ 次はもっと……くっつくから覚悟しててね♡"
+      ]
+    },
+    {
+      "id": "lime_post_ageha",
+      "sender": "ageha",
+      "trigger_condition": "romance_ageha_date_after",
+      "messages": [
+        "ハジメっち、昨日はお疲れー！",
+        "アタシもちょっと寝不足だわ……ヤバ谷園ｗ",
+        "また誘ってよね。次はアタシの部屋にしよっか♡"
+      ]
+    },
+    {
+      "id": "lime_post_tsumugi",
+      "sender": "tsumugi",
+      "trigger_condition": "romance_tsumugi_date_after",
+      "messages": [
+        "おはよう。",
+        "……昨日は、ありがとう。",
+        "……服に、はじめくんの匂い、ついてて……うれしい、です。"
+      ]
+    },
+    {
+      "id": "lime_post_mashiro",
+      "sender": "mashiro",
+      "trigger_condition": "romance_mashiro_date_after",
+      "messages": [
+        "ふぁぁ……はじめく〜ん、おはよぉ……",
+        "ベッド、ひろくてちょっとさみしいなぁ……",
+        "はやくてかえってきてねぇ……一緒にダメ人間しよぉ……♡"
+      ]
+    }
+  ]
+}

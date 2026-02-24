@@ -1,679 +1,699 @@
 {
-    "dialogues": [
+  "dialogues": [
+    {
+      "dialogue_id": "ch3_opening",
+      "lines": [
         {
-            "dialogue_id": "ch3_opening",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "【第3章: アジア・環太平洋予選（東京編）】"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "東京……。全国から強豪が集まるシーシャの激戦区。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（ここでアジア大会への切符を賭けて戦うんだな……）"
-                }
-            ]
+          "speaker": "",
+          "face": "",
+          "text": "【第3章: アジア・環太平洋予選（東京編）】"
         },
         {
-            "dialogue_id": "ch3_tournament_eve",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "東京・西麻布のホテル。いよいよ明日がアジア・環太平洋予選だ。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（明日に備えて、そろそろ寝ようかな……）"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "ピロン♪"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "ん？ LIMEだ……"
-                }
-            ]
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "東京……。全国から強豪が集まるシーシャの激戦区。"
         },
         {
-            "dialogue_id": "ch3_tournament_eve_minto",
-            "lines": [
-                {
-                    "speaker": "minto",
-                    "face": "smile",
-                    "text": "『はじめくんっ！ 明日の応援のために、みんちゃん東京に来ちゃったよー！♡』"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "smile",
-                    "text": "『今夜、ちょっとだけ会えないかな？ 一緒に東京観光しよっ♪』"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "smile",
-                    "text": "（わざわざ来てくれたんだ……。息抜きに行ってみようかな）"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "ch3_tournament_eve_ageha",
-            "lines": [
-                {
-                    "speaker": "ageha",
-                    "face": "smile",
-                    "text": "『ハジメっちヤッホー！ うちらの彼氏の応援のために東京に上陸したっしょ！』"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "smile",
-                    "text": "『ホテルどこ？ 近くまで行くから、前夜祭で遊び行こーぜ！』"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "smile",
-                    "text": "（わざわざ来てくれたんだ……。息抜きに行ってみようかな）"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "ch3_tournament_eve_both",
-            "lines": [
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "……待って。みんとと、アゲハの二人から同時に『東京来てるよ！会おう！』ってメッセージが……？"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "（もしここで鉢合わせでもしたら……僕の命が明日の大会前に終わるぞ……！？）"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "serious",
-                    "text": "（ここは一か八か、片方とは夜の東京観光をして、もう片方には『明日のためにシーシャの練習に集中したいんだ』と誠実に（嘘をついて）断るしかない……！）"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "ch3_minto_date",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "みんとと合流し、夜の東京タワーへやってきた。"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "smile",
-                    "text": "「わあっ！ 綺麗だねはじめくんっ♡ ほら、手つなごっ？」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "smile",
-                    "text": "「ああ……わざわざ応援に来てくれてありがとう」"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "normal",
-                    "text": "「ううん、私の方こそ。大好きな彼氏の晴れ舞台だもん。絶対見たいよ」"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "みんとの応援のおかげで、明日の大会への【メンタル】と【モチベーション】が最高潮になった！"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "ch3_ageha_date",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "アゲハと合流し、渋谷のスクランブル交差点を一緒に歩く。"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "smile",
-                    "text": "「東京も案外イケてんじゃーん！ でもうちらの街の方が最高っしょ！」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "smile",
-                    "text": "「はは、そうだね。わざわざ応援に来てくれてありがとう」"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "normal",
-                    "text": "「当たり前っしょ！ うちらの彼氏が世界に行くの、見届けてやっからねっ♡」"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "アゲハの応援のおかげで、明日の大会への【メンタル】と【モチベーション】が最高潮になった！"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "ch3_reject_minto",
-            "lines": [
-                {
-                    "speaker": "hajime",
-                    "face": "serious",
-                    "text": "（みんとには……『気持ちは嬉しいけど、明日のコンディションのためにシーシャの調整に集中させてほしいんだ。ごめん！』よし、送信）"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "『え〜っ！ 残念だけど……はじめくんが真剣に戦おうとしてるなら応援する！ 明日会場で見てるね♡』"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（ふぅ……なんとか怪しまれずに回避できた……！ 罪悪感がすごいけど……！）"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "ch3_reject_ageha",
-            "lines": [
-                {
-                    "speaker": "hajime",
-                    "face": "serious",
-                    "text": "（アゲハには……『気持ちは嬉しいけど、明日のコンディションのためにシーシャの調整に集中させてほしいんだ。ごめん！』よし、送信）"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "『マジか〜！ でもハジメっちらしいね！ じゃあ明日の本番でバイブスぶち上げで応援してやっから、しっかり寝な！♡』"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（ふぅ……なんとか怪しまれずに回避できた……！ 罪悪感がすごいけど……！）"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "ch3_tournament_day",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "【大会当日・東京会場】"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "serious",
-                    "text": "（いよいよだ……。全国の猛者たちがここに集まっている。僕のシーシャがどこまで通用するか……）"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "ch3_tournament_day_shuraba_minto_ageha",
-            "lines": [
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "（いよいよだ……！って、待て。客席の最前列……なんでみんととアゲハが並んで座ってるんだ！？）"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "昨日の夜はうまく回避したはずが、よりによって本番の客席で「はじめの彼女」二人がなぜか隣同士になっている。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "serious",
-                    "text": "（まずい、まずいまずい！ 大会の成績より命の危機だこれ！）"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "――そして、波乱の大会で見事勝利を収めた後。"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "smile",
-                    "text": "「ハジメっちおつかれーっっ！ 優勝マジでおめでとう！ 最っ高にエモかったよ！」"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "smile",
-                    "text": "「はじめくーんっ！ 優勝おめでとう！ すっごくカッコよかった！ みんちゃんの彼氏ナンバーワンっ♡」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "（あ、終わった…………）"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "surprise",
-                    "text": "「ん？ えっ、彼氏？ どういうこと？」"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "surprise",
-                    "text": "「え？ あなた誰？ なんで馴れ馴れしく私の彼氏に……」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "「あ、ああああのっ！ 実はですね！！」"
-                },
-                {
-                    "speaker": "steve",
-                    "face": "smile",
-                    "text": "「HAHAHA！ HAJIMEーーーッ！！」"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "surprise",
-                    "text": "「えっ！？」"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "surprise",
-                    "text": "「ビクッ！？ な、なんだこのデカい外人！？」"
-                },
-                {
-                    "speaker": "steve",
-                    "face": "smile",
-                    "text": "「Wow!! 今日のオマエの煙、最高にCoolだったぜ！ オレの超低温アメリカンフレーバーも負けちまったよ！ Hahaha!!」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "「スティーブ……！ （ナイスタイミングなのかこれ！？）」"
-                },
-                {
-                    "speaker": "steve",
-                    "face": "smile",
-                    "text": "「Hmm? なんだなんだ、応援席にはこんなCUTEなガールズがいっぱいじゃないか！ HAJIME、オマエ熱狂的なファンがいっぱいいてモテモテだなぁ〜！ HAHAHA!!」"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "surprise",
-                    "text": "「あっ……え？（熱狂的なファン……？ まさか、この子もそういう追っかけ……？）」"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "surprise",
-                    "text": "「……っ！（熱狂的なファン……？ じゃあ、彼女も同業のファンの人……？）」"
-                },
-                {
-                    "speaker": "steve",
-                    "face": "smile",
-                    "text": "「Hey Girls! こいつの煙はマジで最高だからな！ 次はドバイの世界大会だ！ オマエらも絶対応援に来てやってくれよな！！ HAHAHA!!」"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "smile",
-                    "text": "「ドドド、ドバイ！？……でもそっか、ハジメっち次は世界大会だもんね！ うちらも絶対応援行かなきゃじゃん！」"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "smile",
-                    "text": "「そ、そうそう！ 世界大会なんだから、ファンとして全力で応援しないとね……！（すごい勢いで流されちゃったけど、そういうことにしておこ……）」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "「…………ふぅ、命拾いした……（色んな意味で寿命が縮んだけど、ありがとうスティーブ……！）」"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "ch3_tournament_day_shuraba_minto_mashiro",
-            "lines": [
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "（いよいよだ……！って、待て。客席の最前列……なんでみんととましろさんが並んで座ってるんだ！？）"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "客席で「はじめの彼女」二人がなぜか隣同士になっている。まずい、大会どころじゃない。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "――そして、波乱の大会で見事勝利を収めた後。"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "smile",
-                    "text": "「はじめくーんっ！ 優勝おめでとう！ すっごくカッコよかった！ みんちゃんの彼氏ナンバーワンっ♡」"
-                },
-                {
-                    "speaker": "mashiro",
-                    "face": "smile",
-                    "text": "「はじめく〜ん……おめでとうぉ……彼氏さんが優勝して……わたしもすごく嬉しかったよぉ……」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "（あ、終わった…………）"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "surprise",
-                    "text": "「え？ あなた誰？ なんで馴れ馴れしく私の彼氏に……」"
-                },
-                {
-                    "speaker": "mashiro",
-                    "face": "normal",
-                    "text": "「ええ……？ だって、はじめくんは、わたしの彼氏さんだよぉ……？」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "「あ、ああああのっ！ 実はですね！！」"
-                },
-                {
-                    "speaker": "steve",
-                    "face": "smile",
-                    "text": "「HAHAHA！ HAJIMEーーーッ！！」"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "surprise",
-                    "text": "「えっ！？」"
-                },
-                {
-                    "speaker": "mashiro",
-                    "face": "surprise",
-                    "text": "「わあっ……？」"
-                },
-                {
-                    "speaker": "steve",
-                    "face": "smile",
-                    "text": "「Wow!! 今日のオマエの煙、最高にCoolだったぜ！ オレの超低温アメリカンフレーバーも負けちまったよ！ Hahaha!!」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "「スティーブ……！ （ナイスタイミングなのかこれ！？）」"
-                },
-                {
-                    "speaker": "steve",
-                    "face": "smile",
-                    "text": "「Hmm? なんだなんだ、応援席にはこんなCUTEなガールズがいっぱいじゃないか！ HAJIME、オマエ熱狂的なファンがいっぱいいてモテモテだなぁ〜！ HAHAHA!!」"
-                },
-                {
-                    "speaker": "mashiro",
-                    "face": "surprise",
-                    "text": "「あ、わかったぁ……キミ、はじめくんのファンクラブの人だねぇ……？」"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "surprise",
-                    "text": "「ファンクラブ！？」"
-                },
-                {
-                    "speaker": "steve",
-                    "face": "smile",
-                    "text": "「Hey Girls! こいつの煙はマジで最高だからな！ 次はドバイの世界大会だ！ オマエらも絶対応援に来てやってくれよな！！ HAHAHA!!」"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "smile",
-                    "text": "「ドドド、ドバイ！？ そう、そうだよ！ 世界大会なんだから、ファンとして全力で応援しないとね……！（すごい勢いで流されちゃったけど、そういうことにしておこ……）」"
-                },
-                {
-                    "speaker": "mashiro",
-                    "face": "normal",
-                    "text": "「そうなんだぁ……はじめくん、世界にいくんだねぇ……一緒に応援しようねぇ……」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "「…………ふぅ、命拾いした……（色んな意味で寿命が縮んだけど、ありがとうスティーブ……！）」"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "ch3_tournament_day_shuraba_ageha_mashiro",
-            "lines": [
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "（いよいよだ……！って、待て。客席の最前列……なんでアゲハとましろさんが並んで座ってるんだ！？）"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "客席で「はじめの彼女」二人がなぜか隣同士になっている。まずい、大会どころじゃない。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "――そして、波乱の大会で見事勝利を収めた後。"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "smile",
-                    "text": "「ハジメっちおつかれーっっ！ 優勝マジでおめでとう！ もう、最っ高にエモかったよ！」"
-                },
-                {
-                    "speaker": "mashiro",
-                    "face": "smile",
-                    "text": "「はじめく〜ん……おめでとうぉ……彼氏さんが優勝して……わたしもすごく嬉しかったよぉ……」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "（あ、終わった…………）"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "surprise",
-                    "text": "「ん？ えっ、彼女？ どういうこと？」"
-                },
-                {
-                    "speaker": "mashiro",
-                    "face": "normal",
-                    "text": "「ええ……？ はじめくんは、わたしの彼氏さんだよぉ……？」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "「あ、ああああのっ！ 実はですね！！」"
-                },
-                {
-                    "speaker": "steve",
-                    "face": "smile",
-                    "text": "「HAHAHA！ HAJIMEーーーッ！！」"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "surprise",
-                    "text": "「ビクッ！？ な、なんだこのデカい外人！？」"
-                },
-                {
-                    "speaker": "mashiro",
-                    "face": "surprise",
-                    "text": "「わあっ……？」"
-                },
-                {
-                    "speaker": "steve",
-                    "face": "smile",
-                    "text": "「Wow!! 今日のオマエの煙、最高にCoolだったぜ！ オレの超低温アメリカンフレーバーも負けちまったよ！ Hahaha!!」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "「スティーブ……！ （ナイスタイミングなのかこれ！？）」"
-                },
-                {
-                    "speaker": "steve",
-                    "face": "smile",
-                    "text": "「Hmm? なんだなんだ、応援席にはこんなCUTEなガールズがいっぱいじゃないか！ HAJIME、オマエ熱狂的なファンがいっぱいいてモテモテだなぁ〜！ HAHAHA!!」"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "surprise",
-                    "text": "「あっ……え？（熱狂的なファン……？ まさか、この子もそういう追っかけ……？）」"
-                },
-                {
-                    "speaker": "steve",
-                    "face": "smile",
-                    "text": "「Hey Girls! こいつの煙はマジで最高だからな！ 次はドバイの世界大会だ！ オマエらも絶対応援に来てやってくれよな！！ HAHAHA!!」"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "smile",
-                    "text": "「ドドド、ドバイ！？……でもそっか、ハジメっち次は世界大会だもんね！ うちらも一緒に絶対応援行かなきゃじゃん！」"
-                },
-                {
-                    "speaker": "mashiro",
-                    "face": "smile",
-                    "text": "「そうなんだぁ……はじめくん、世界にいくんだねぇ……一緒に応援しようねぇ……」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "「…………ふぅ、命拾いした……（色んな意味で寿命が縮んだけど、ありがとうスティーブ……！）」"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "ch3_tournament_day_shuraba_all",
-            "lines": [
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "（いよいよだ……！って、待て。客席の最前列……なんでみんととアゲハに加えて、ましろさんまで揃って並んで座ってるんだ！？）"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "昨日の夜はうまく回避したはずが、よりによって本番の客席で「はじめの彼女」三人がなぜか隣同士になっている。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "serious",
-                    "text": "（まずい、まずいまずい！ 大会の成績より命の危機だこれ！）"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "――そして、波乱の大会で見事勝利を収めた後。"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "smile",
-                    "text": "「ハジメっちおつかれーっっ！ 優勝マジでおめでとう！ 最っ高にエモかったよ！」"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "smile",
-                    "text": "「はじめくーんっ！ 優勝おめでとう！ すっごくカッコよかった！ みんちゃんの彼氏ナンバーワンっ♡」"
-                },
-                {
-                    "speaker": "mashiro",
-                    "face": "smile",
-                    "text": "「はじめく〜ん……おめでとうぉ……すごく強かったねぇ……」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "（あ、完全に終わった…………）"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "surprise",
-                    "text": "「ん？ えっ、彼女？ どういうこと？」"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "surprise",
-                    "text": "「え？ あなた達誰？ なんで馴れ馴れしく私の彼氏に……」"
-                },
-                {
-                    "speaker": "mashiro",
-                    "face": "normal",
-                    "text": "「ええ……？ はじめくんは、わたしの彼氏さんだよぉ……？」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "「あ、ああああのっ！ 実はですね！！（土下座の構え）」"
-                },
-                {
-                    "speaker": "steve",
-                    "face": "smile",
-                    "text": "「HAHAHA！ HAJIMEーーーッ！！」"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "surprise",
-                    "text": "「ビクッ！？ な、なんだこのデカい外人！？」"
-                },
-                {
-                    "speaker": "steve",
-                    "face": "smile",
-                    "text": "「Wow!! 今日のオマエの煙、最高にCoolだったぜ！ オレの超低温アメリカンフレーバーも負けちまったよ！ Hahaha!!」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "「スティーブ……！ （超絶ナイスなタイミングなのかこれ！？）」"
-                },
-                {
-                    "speaker": "steve",
-                    "face": "smile",
-                    "text": "「Hmm? なんだなんだ、応援席にはこんなCUTEなガールズがいっぱいじゃないか！ HAJIME、オマエ熱狂的なファンがいっぱいいてモテモテだなぁ〜！ HAHAHA!!」"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "surprise",
-                    "text": "「あっ……え？（熱狂的なファン……？ まさか、この子達もそういう追っかけ……？）」"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "surprise",
-                    "text": "「……っ！（熱狂的なファン……？ じゃあ、彼女達も同業のファンの人……？）」"
-                },
-                {
-                    "speaker": "steve",
-                    "face": "smile",
-                    "text": "「Hey Girls! こいつの煙はマジで最高だからな！ 次はドバイの世界大会だ！ オマエらも絶対応援に来てやってくれよな！！ HAHAHA!!」"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "smile",
-                    "text": "「ドドド、ドバイ！？……でもそっか、ハジメっち次は世界大会だもんね！ うちらも一緒に絶対応援行かなきゃじゃん！」"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "smile",
-                    "text": "「そ、そうそう！ 世界大会なんだから、ファンとして全力で応援しないとね……！（すごい勢いで流されちゃったけど、そういうことにしておこ……）」"
-                },
-                {
-                    "speaker": "mashiro",
-                    "face": "smile",
-                    "text": "「そうなんだぁ……はじめくん、世界にいくんだねぇ……一緒に応援しようねぇ……」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "「…………ふぅ、命拾いした……（色んな意味で寿命が縮んだけど、ありがとうスティーブ……！）」"
-                }
-            ]
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ここでアジア大会への切符を賭けて戦うんだな……）"
         }
-    ]
+      ]
+    },
+    {
+      "dialogue_id": "ch3_tournament_eve",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "東京・西麻布のホテル。いよいよ明日がアジア・環太平洋予選だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（明日に備えて、そろそろ寝ようかな……）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ピロン♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ん？ LIMEだ……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_tournament_eve_minto",
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "『はじめくんっ！ 明日の応援のために、みんちゃん東京に来ちゃったよー！♡』"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "『今夜、ちょっとだけ会えないかな？ 一緒に東京観光しよっ♪』"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（わざわざ来てくれたんだ……。息抜きに行ってみようかな）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_tournament_eve_ageha",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "『ハジメっちヤッホー！ うちらの彼氏の応援のために東京に上陸したっしょ！』"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "『ホテルどこ？ 近くまで行くから、前夜祭で遊び行こーぜ！』"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（わざわざ来てくれたんだ……。息抜きに行ってみようかな）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_tournament_eve_both",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……待って。みんとと、アゲハの二人から同時に『東京来てるよ！会おう！』ってメッセージが……？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（もしここで鉢合わせでもしたら……僕の命が明日の大会前に終わるぞ……！？）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（ここは一か八か、片方とは夜の東京観光をして、もう片方には『明日のためにシーシャの練習に集中したいんだ』と誠実に（嘘をついて）断るしかない……！）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_minto_date",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとと合流し、夜の東京タワーへやってきた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "「わあっ！ 綺麗だねはじめくんっ♡ ほら、手つなごっ？」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "「ああ……わざわざ応援に来てくれてありがとう」"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "「ううん、私の方こそ。大好きなだんな様の晴れ舞台だもん。絶対見たいよ」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は繋いだ手にギュッと力を込めると、背伸びをして僕の頬に軽く口づけをした。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "「明日はこれで頑張れるでしょ？ えへへ、大会終わったら……またチャージしてあげるね♡」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとの応援のおかげで、明日の大会への【メンタル】と【モチベーション】が最高潮になった！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_ageha_date",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アゲハと合流し、渋谷のスクランブル交差点を一緒に歩く。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「東京も案外イケてんじゃーん！ でもうちらの街の方が最高っしょ！」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "「はは、そうだね。わざわざ応援に来てくれてありがとう」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "「当たり前っしょ！ うちの男が世界に行くの、見届けてやっからねっ♡」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "周囲の目も気にせず、彼女は歩きながら僕の腕に強く抱き着いてきた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「明日勝てたら……最高の『ご褒美』、用意しといてあげるから。絶対勝ちなよ？」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アゲハの熱い応援（？）のおかげで、明日の大会への【メンタル】と【モチベーション】が最高潮になった！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_reject_minto",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（みんとには……『気持ちは嬉しいけど、明日のコンディションのためにシーシャの調整に集中させてほしいんだ。ごめん！』よし、送信）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "『え〜っ！ 残念だけど……はじめくんが真剣に戦おうとしてるなら応援する！ 明日会場で見てるね♡』"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ふぅ……なんとか怪しまれずに回避できた……！ 罪悪感がすごいけど……！）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_reject_ageha",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（アゲハには……『気持ちは嬉しいけど、明日のコンディションのためにシーシャの調整に集中させてほしいんだ。ごめん！』よし、送信）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "『マジか〜！ でもハジメっちらしいね！ じゃあ明日の本番でバイブスぶち上げで応援してやっから、しっかり寝な！♡』"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ふぅ……なんとか怪しまれずに回避できた……！ 罪悪感がすごいけど……！）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_tournament_day",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "【大会当日・東京会場】"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（いよいよだ……。全国の猛者たちがここに集まっている。僕のシーシャがどこまで通用するか……）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_tournament_day_shuraba_minto_ageha",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（いよいよだ……！って、待て。客席の最前列……なんでみんととアゲハが並んで座ってるんだ！？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昨日の夜はうまく回避したはずが、よりによって本番の客席で「はじめの彼女」二人がなぜか隣同士になっている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（まずい、まずいまずい！ 大会の成績より命の危機だこれ！）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "――そして、波乱の大会で見事勝利を収めた後。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「ハジメっちおつかれーっっ！ 優勝マジでおめでとう！ 最っ高にエモかったよ！」"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "「はじめくーんっ！ 優勝おめでとう！ すっごくカッコよかった！ みんちゃんの彼氏ナンバーワンっ♡」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（あ、終わった…………）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "「ん？ えっ、彼氏？ どういうこと？」"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "「え？ あなた誰？ なんで馴れ馴れしく私の彼氏に……」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "「あ、ああああのっ！ 実はですね！！」"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "「HAHAHA！ HAJIMEーーーッ！！」"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "「えっ！？」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "「ビクッ！？ な、なんだこのデカい外人！？」"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "「Wow!! 今日のオマエの煙、最高にCoolだったぜ！ オレの超低温アメリカンフレーバーも負けちまったよ！ Hahaha!!」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「スティーブ……！ （ナイスタイミングなのかこれ！？）」"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "「Hmm? なんだなんだ、応援席にはこんなCUTEなガールズがいっぱいじゃないか！ HAJIME、オマエ熱狂的なファンがいっぱいいてモテモテだなぁ〜！ HAHAHA!!」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "「あっ……え？（熱狂的なファン……？ まさか、この子もそういう追っかけ……？）」"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "「……っ！（熱狂的なファン……？ じゃあ、彼女も同業のファンの人……？）」"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "「Hey Girls! こいつの煙はマジで最高だからな！ 次はドバイの世界大会だ！ オマエらも絶対応援に来てやってくれよな！！ HAHAHA!!」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「ドドド、ドバイ！？……でもそっか、ハジメっち次は世界大会だもんね！ うちらも絶対応援行かなきゃじゃん！」"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "「そ、そうそう！ 世界大会なんだから、ファンとして全力で応援しないとね……！（すごい勢いで流されちゃったけど、そういうことにしておこ……）」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「…………ふぅ、命拾いした……（色んな意味で寿命が縮んだけど、ありがとうスティーブ……！）」"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_tournament_day_shuraba_minto_mashiro",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（いよいよだ……！って、待て。客席の最前列……なんでみんととましろさんが並んで座ってるんだ！？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席で「はじめの彼女」二人がなぜか隣同士になっている。まずい、大会どころじゃない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "――そして、波乱の大会で見事勝利を収めた後。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "「はじめくーんっ！ 優勝おめでとう！ すっごくカッコよかった！ みんちゃんの彼氏ナンバーワンっ♡」"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "「はじめく〜ん……おめでとうぉ……彼氏さんが優勝して……わたしもすごく嬉しかったよぉ……」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（あ、終わった…………）"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "「え？ あなた誰？ なんで馴れ馴れしく私の彼氏に……」"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "「ええ……？ だって、はじめくんは、わたしの彼氏さんだよぉ……？」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "「あ、ああああのっ！ 実はですね！！」"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "「HAHAHA！ HAJIMEーーーッ！！」"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "「えっ！？」"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "「わあっ……？」"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "「Wow!! 今日のオマエの煙、最高にCoolだったぜ！ オレの超低温アメリカンフレーバーも負けちまったよ！ Hahaha!!」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「スティーブ……！ （ナイスタイミングなのかこれ！？）」"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "「Hmm? なんだなんだ、応援席にはこんなCUTEなガールズがいっぱいじゃないか！ HAJIME、オマエ熱狂的なファンがいっぱいいてモテモテだなぁ〜！ HAHAHA!!」"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "「あ、わかったぁ……キミ、はじめくんのファンクラブの人だねぇ……？」"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "「ファンクラブ！？」"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "「Hey Girls! こいつの煙はマジで最高だからな！ 次はドバイの世界大会だ！ オマエらも絶対応援に来てやってくれよな！！ HAHAHA!!」"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "「ドドド、ドバイ！？ そう、そうだよ！ 世界大会なんだから、ファンとして全力で応援しないとね……！（すごい勢いで流されちゃったけど、そういうことにしておこ……）」"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "「そうなんだぁ……はじめくん、世界にいくんだねぇ……一緒に応援しようねぇ……」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「…………ふぅ、命拾いした……（色んな意味で寿命が縮んだけど、ありがとうスティーブ……！）」"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_tournament_day_shuraba_ageha_mashiro",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（いよいよだ……！って、待て。客席の最前列……なんでアゲハとましろさんが並んで座ってるんだ！？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席で「はじめの彼女」二人がなぜか隣同士になっている。まずい、大会どころじゃない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "――そして、波乱の大会で見事勝利を収めた後。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「ハジメっちおつかれーっっ！ 優勝マジでおめでとう！ もう、最っ高にエモかったよ！」"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "「はじめく〜ん……おめでとうぉ……彼氏さんが優勝して……わたしもすごく嬉しかったよぉ……」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（あ、終わった…………）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "「ん？ えっ、彼女？ どういうこと？」"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "「ええ……？ はじめくんは、わたしの彼氏さんだよぉ……？」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "「あ、ああああのっ！ 実はですね！！」"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "「HAHAHA！ HAJIMEーーーッ！！」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "「ビクッ！？ な、なんだこのデカい外人！？」"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "「わあっ……？」"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "「Wow!! 今日のオマエの煙、最高にCoolだったぜ！ オレの超低温アメリカンフレーバーも負けちまったよ！ Hahaha!!」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「スティーブ……！ （ナイスタイミングなのかこれ！？）」"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "「Hmm? なんだなんだ、応援席にはこんなCUTEなガールズがいっぱいじゃないか！ HAJIME、オマエ熱狂的なファンがいっぱいいてモテモテだなぁ〜！ HAHAHA!!」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "「あっ……え？（熱狂的なファン……？ まさか、この子もそういう追っかけ……？）」"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "「Hey Girls! こいつの煙はマジで最高だからな！ 次はドバイの世界大会だ！ オマエらも絶対応援に来てやってくれよな！！ HAHAHA!!」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「ドドド、ドバイ！？……でもそっか、ハジメっち次は世界大会だもんね！ うちらも一緒に絶対応援行かなきゃじゃん！」"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "「そうなんだぁ……はじめくん、世界にいくんだねぇ……一緒に応援しようねぇ……」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「…………ふぅ、命拾いした……（色んな意味で寿命が縮んだけど、ありがとうスティーブ……！）」"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_tournament_day_shuraba_all",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（いよいよだ……！って、待て。客席の最前列……なんでみんととアゲハに加えて、ましろさんまで揃って並んで座ってるんだ！？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昨日の夜はうまく回避したはずが、よりによって本番の客席で「はじめの彼女」三人がなぜか隣同士になっている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（まずい、まずいまずい！ 大会の成績より命の危機だこれ！）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "――そして、波乱の大会で見事勝利を収めた後。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「ハジメっちおつかれーっっ！ 優勝マジでおめでとう！ 最っ高にエモかったよ！」"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "「はじめくーんっ！ 優勝おめでとう！ すっごくカッコよかった！ みんちゃんの彼氏ナンバーワンっ♡」"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "「はじめく〜ん……おめでとうぉ……すごく強かったねぇ……」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（あ、完全に終わった…………）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "「ん？ えっ、彼女？ どういうこと？」"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "「え？ あなた達誰？ なんで馴れ馴れしく私の彼氏に……」"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "「ええ……？ はじめくんは、わたしの彼氏さんだよぉ……？」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "「あ、ああああのっ！ 実はですね！！（土下座の構え）」"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "「HAHAHA！ HAJIMEーーーッ！！」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "「ビクッ！？ な、なんだこのデカい外人！？」"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "「Wow!! 今日のオマエの煙、最高にCoolだったぜ！ オレの超低温アメリカンフレーバーも負けちまったよ！ Hahaha!!」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「スティーブ……！ （超絶ナイスなタイミングなのかこれ！？）」"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "「Hmm? なんだなんだ、応援席にはこんなCUTEなガールズがいっぱいじゃないか！ HAJIME、オマエ熱狂的なファンがいっぱいいてモテモテだなぁ〜！ HAHAHA!!」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "「あっ……え？（熱狂的なファン……？ まさか、この子達もそういう追っかけ……？）」"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "「……っ！（熱狂的なファン……？ じゃあ、彼女達も同業のファンの人……？）」"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "「Hey Girls! こいつの煙はマジで最高だからな！ 次はドバイの世界大会だ！ オマエらも絶対応援に来てやってくれよな！！ HAHAHA!!」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「ドドド、ドバイ！？……でもそっか、ハジメっち次は世界大会だもんね！ うちらも一緒に絶対応援行かなきゃじゃん！」"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "「そ、そうそう！ 世界大会なんだから、ファンとして全力で応援しないとね……！（すごい勢いで流されちゃったけど、そういうことにしておこ……）」"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "「そうなんだぁ……はじめくん、世界にいくんだねぇ……一緒に応援しようねぇ……」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「…………ふぅ、命拾いした……（色んな意味で寿命が縮んだけど、ありがとうスティーブ……！）」"
+        }
+      ]
+    }
+  ]
 }

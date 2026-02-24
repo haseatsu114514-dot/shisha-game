@@ -1,217 +1,513 @@
 {
-    "dialogues": [
+  "dialogues": [
+    {
+      "dialogue_id": "confession_minto",
+      "lines": [
         {
-            "dialogue_id": "confession_minto",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "お店が閉店した後。みんちゃんが、いつもの『コンカフェ嬢』のトーンとは違う、落ち着いた声で話しかけてきた。"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "normal",
-                    "text": "ねえ、はじめくん。今日は……本当にありがとう。あのさ、ちょっとだけ、いいかな。"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "normal",
-                    "text": "私ね、ずっと隠してたことがあるの。……はじめくんには、ちゃんと話しておきたいなって。"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "smile",
-                    "text": "私……『20歳』って言ってるけど……本当はね、今年で29歳なの……。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "（彼女は耳まで真っ赤にして、顔を両手で覆いながら恥ずかしそうに下を向いた）"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "normal",
-                    "text": "だ、騙すみたいになっててごめんなさい！ お店の手前もあるし、引かれちゃうかなって……ずっと怖くて言えなくて……っ"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "smile",
-                    "text": "でも、はじめくんの優しいシーシャに触れてたら……ちゃんと、素の『みどりかわ しおり』として、はじめくんの隣にいたいって……そう思っちゃった。"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "normal",
-                    "text": "……ねえ、引いた？ こんな年上の……お姉さんだけど……私のこと、彼女にして……くれませんか……？"
-                },
-                {
-                    "type": "choice",
-                    "choices": [
-                        {
-                            "text": "年齢なんて関係ない。喜んで",
-                            "next_id": "confession_minto_accept"
-                        },
-                        {
-                            "text": "ごめんなさい、ライバルのままがいい",
-                            "next_id": "confession_minto_reject"
-                        }
-                    ]
-                }
-            ]
+          "speaker": "",
+          "face": "",
+          "text": "お店が閉店した後。みんちゃんが、いつもの『コンカフェ嬢』のトーンとは違う、落ち着いた声で話しかけてきた。"
         },
         {
-            "dialogue_id": "confession_minto_accept",
-            "metadata": {
-                "set_romance": "minto"
+          "speaker": "minto",
+          "face": "normal",
+          "text": "ねえ、はじめくん。今日は……本当にありがとう。あのさ、ちょっとだけ、いいかな。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "私ね、ずっと隠してたことがあるの。……はじめくんには、ちゃんと話しておきたいなって。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "私……『20歳』って言ってるけど……本当はね、今年で29歳なの……。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（彼女は耳まで真っ赤にして、顔を両手で覆いながら恥ずかしそうに下を向いた）"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "だ、騙すみたいになっててごめんなさい！ お店の手前もあるし、引かれちゃうかなって……ずっと怖くて言えなくて……っ"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "でも、はじめくんの優しいシーシャに触れてたら……ちゃんと、素の『みどりかわ しおり』として、はじめくんの隣にいたいって……そう思っちゃった。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……ねえ、引いた？ こんな年上の……お姉さんだけど……私のこと、彼女にして……くれませんか……？"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "年齢なんて関係ない。喜んで",
+              "next_id": "confession_minto_accept"
             },
-            "lines": [
-                {
-                    "speaker": "minto",
-                    "face": "smile",
-                    "text": "……っ！ よかったぁ……！ えへへ、年下のだんな様みたい……頼りにしてるからね、はじめくんっ♡"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "confession_minto_reject",
-            "lines": [
-                {
-                    "speaker": "minto",
-                    "face": "normal",
-                    "text": "……そっか。ううん、ごめんね！ 困らせちゃって。変なこと言っちゃった……"
-                },
-                {
-                    "speaker": "minto",
-                    "face": "smile",
-                    "text": "じゃあ、これからも『一番のライバルお姉さん』ってことで！ 絶対負けないからねっ！"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "（無理に作った明るい笑顔が、少しだけ痛ましかった）"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "confession_tsumugi",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "帰り道、ふと振り返ると、紡がとてとてと少し後ろをついてきていた。"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "……あのね"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "お店に行くといつも優しくしてくれて、私のシーシャも美味しいって言ってくれて……"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "smile",
-                    "text": "その、わたし、あなたのこと……特別に想ってます。……彼女になりたい、です。"
-                },
-                {
-                    "type": "choice",
-                    "choices": [
-                        {
-                            "text": "もちろん。俺でよければ",
-                            "next_id": "confession_tsumugi_accept"
-                        },
-                        {
-                            "text": "ごめん、かわいい妹みたいな存在かな",
-                            "next_id": "confession_tsumugi_reject"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "dialogue_id": "confession_tsumugi_accept",
-            "metadata": {
-                "set_romance": "tsumugi"
-            },
-            "lines": [
-                {
-                    "speaker": "tsumugi",
-                    "face": "smile",
-                    "text": "……！ ほんとに！？ えへへ……大切にするね。大好きだよ。"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "confession_tsumugi_reject",
-            "lines": [
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "……そっか。うん、わかった。ごめんなさい、忘れて……！"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "confession_ageha",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "帰り際、呼び止められた。"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "normal",
-                    "text": "てかさー、キミ"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "normal",
-                    "text": "うちがこんなに足しげく通うなんて、自分でもワンチャン驚いてるんだけどさｗ"
-                },
-                {
-                    "speaker": "ageha",
-                    "face": "smile",
-                    "text": "うちのモノにならない？ キミのこと、とりま独占したくなったわ"
-                },
-                {
-                    "type": "choice",
-                    "choices": [
-                        {
-                            "text": "はい、アゲハさんのものです",
-                            "next_id": "confession_ageha_accept"
-                        },
-                        {
-                            "text": "俺は誰のモノでもないです",
-                            "next_id": "confession_ageha_reject"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "dialogue_id": "confession_ageha_accept",
-            "metadata": {
-                "set_romance": "ageha"
-            },
-            "lines": [
-                {
-                    "speaker": "ageha",
-                    "face": "smile",
-                    "text": "ふふっ、いい返事。じゃあ決定ね。うちの特等席、マジで空けといてよ？"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "confession_ageha_reject",
-            "lines": [
-                {
-                    "speaker": "ageha",
-                    "face": "normal",
-                    "text": "……チッ、生意気。まあいいわ、そういう気高いところもマジ嫌いじゃないし。"
-                }
-            ]
+            {
+              "text": "ごめんなさい、ライバルのままがいい",
+              "next_id": "confession_minto_reject"
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "dialogue_id": "confession_minto_accept",
+      "metadata": {
+        "set_romance": "minto"
+      },
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "……っ！ よかったぁ……！ えへへ、年下のだんな様みたい……頼りにしてるからね、はじめくんっ♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "後日。はじめての『おうちデート』。僕たちはソファに並んで座り、一緒に映画を見ていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "すると不意に、みんとが僕の肩にコテンと頭を乗せ、腕にギュッとしがみついてきた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "ねえ、はじめくん……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "「ん？ 映画、面白くない……んっ！？」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "振り返った瞬間、甘い香りのする柔らかな唇が、優しく重なった。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "んっ……ふふっ、はじめくんのエキス、これで補充完了ーっ♡"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "……映画より、ずっと私のこと見ててほしいなっ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "上目遣いで甘えるように見つめられ、僕はそのまま彼女をそっと抱きしめ返した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "翌朝――"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "「……んっ、はじめくん。今日は……もうお昼まで、いっぱいくっついてていい……？」"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_minto_reject",
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……そっか。ううん、ごめんね！ 困らせちゃって。変なこと言っちゃった……"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "じゃあ、これからも『一番のライバルお姉さん』ってことで！ 絶対負けないからねっ！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（無理に作った明るい笑顔が、少しだけ痛ましかった）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_tsumugi",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り道、ふと振り返ると、紡がとてとてと少し後ろをついてきていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……あのね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "お店に行くといつも優しくしてくれて、私のシーシャも美味しいって言ってくれて……"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "その、わたし、あなたのこと……特別に想ってます。……彼女になりたい、です。"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "もちろん。俺でよければ",
+              "next_id": "confession_tsumugi_accept"
+            },
+            {
+              "text": "ごめん、かわいい妹みたいな存在かな",
+              "next_id": "confession_tsumugi_reject"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_tsumugi_accept",
+      "metadata": {
+        "set_romance": "tsumugi"
+      },
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……！ ほんとに！？ えへへ……大切にするね。大好きだよ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夕暮れ時、帰り道の公園。オレンジ色に染まるベンチで、つむぎは僕の袖をギュッと引っ張った。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……あ、あのね。わたし……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "「つむぎ……？」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は背伸びをすると、恐る恐る、触れるだけの小さなキスをした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "離れた直後、彼女の顔は夕焼けよりも赤く染まっていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "surprise",
+          "text": "……えへへ……はずかしいね。でも……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女はもう一度、僕の胸元に顔を埋めるように寄り添ってきた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "「……はじめくん、もう一回……おねがい……？」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "耳元で囁くような恥ずかしげな声。僕は彼女のかすかに震える背中を、優しく抱きしめた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "後日――"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "「……はじめくんの熱、もっと……教えて……？」"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_tsumugi_reject",
+      "lines": [
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……そっか。うん、わかった。ごめんなさい、忘れて……！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_ageha",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、呼び止められた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "てかさー、キミ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "うちがこんなに足しげく通うなんて、自分でもワンチャン驚いてるんだけどさｗ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "うちのモノにならない？ キミのこと、とりま独占したくなったわ"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "はい、アゲハさんのものです",
+              "next_id": "confession_ageha_accept"
+            },
+            {
+              "text": "俺は誰のモノでもないです",
+              "next_id": "confession_ageha_reject"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_ageha_accept",
+      "metadata": {
+        "set_romance": "ageha"
+      },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ふふっ、いい返事。じゃあ決定ね。うちの特等席、マジで空けといてよ？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そう言うと、アゲハは夜の街角で唐突に僕の腕を引き、そのまま壁際へと追いやった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "「ちょ、ちょっとアゲハ……！ 人目があるから……っ」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "いいじゃーん！ うちらのバイブス見せつけたろーぜ！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女の手が頬に添えられ、ほんの一瞬、触れるだけの軽いキスが落ちた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "――なんてね♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "「えっ……」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "驚く僕の隙を突くように、今度は深く、情熱的なキスが重なる。大人びた香水が鼻をくすぐった。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "んっ……ふふっ、顔真っ赤じゃーん。……今の、ちょっと本気になったっしょ？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ねぇハジメっち。うち、今日はまだ帰りたくないかも。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女の挑発的な瞳と、強気な笑顔。その魅力に、僕は視線を逸らすことができなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その夜――"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「……今日のハジメっち、うちが全部ひとりじめしてあげよっか♡」"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_ageha_reject",
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……チッ、生意気。まあいいわ、そういう気高いところもマジ嫌いじゃないし。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_mashiro",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "休日の昼下がり。ましろさんに誘われて、彼女の部屋に遊びに来ていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "はじめく〜ん……ぽふっ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "部屋に入るなり、彼女は僕の胸元に全体重を預けるように寄りかかってきた。甘いお香のような匂いがする。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ねぇ、はじめくん……わたしね、はじめくんといると、すごく……安心するんだぁ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "毎日、一緒にダメ人間になりたいぐらい……はじめくんのことが、好きなのぉ……"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "わたしで……いいかなぁ……？ 彼女に、してくれない……？"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "一緒にダメ人間になりましょう",
+              "next_id": "confession_mashiro_accept"
+            },
+            {
+              "text": "ごめんなさい、お姉さんとしか……",
+              "next_id": "confession_mashiro_reject"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_mashiro_accept",
+      "metadata": {
+        "set_romance": "mashiro"
+      },
+      "lines": [
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "わぁい……えへへ、うれしいなぁ……ずっと、くっついてていい……？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は僕の手に自分の指を絡ませる『恋人繋ぎ』を交わしたまま、ソファにごろんと横になった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そして、そのまま僕の胸の温もりに包まれるように、すうすうと小さな寝息を立て始めた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "「……寝ちゃった。ふふ」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "僕もつられてうとうとしていると――"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "「んん……はじめくん、甘い味がするぅ……ちゅっ……♡」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夢現のまどろみの中、彼女の柔らかな唇が不意に僕の口に重なった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "「っ……ま、ましろさん……それ、わざと……？」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "返事はない。ただ、彼女の口元には悪戯っぽい笑みが浮かんでいるような気がした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "翌朝――"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "「……ふわぁ、はじめくん、おはようぉ……えへへ、体がまだぽかぽかしてるぅ……」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "朝の光の中、彼女はシーツ一枚にくるまりながら、世界で一番幸せそうな顔で微笑みかけてきた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_mashiro_reject",
+      "lines": [
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……そっかぁ。だめ、だったかぁ……ふらいんぐ、しすぎちゃったねぇ……"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ごめんねぇ、困らせちゃって……今まで通り、常連のお姉さんとしてよろしくねぇ……"
+        }
+      ]
+    }
+  ]
 }
