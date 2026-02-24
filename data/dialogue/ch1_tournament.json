@@ -489,7 +489,7 @@
         },
         {
           "type": "show_cg",
-          "cg_id": "cg_ch1_toki_smile"
+          "cg_id": "cg_ch1_nagumo_smile"
         },
         {
           "speaker": "",
@@ -654,8 +654,8 @@
         },
         {
           "speaker": "adam",
-          "face": "angry",
-          "text": "Yeah! 俺の爆煙、初速から飛ばしていくぜ！"
+          "face": "serious",
+          "text": "……ミーのDouble Apple。ファースト・ドローから完璧に仕上がっている"
         }
       ]
     },
@@ -680,7 +680,7 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "僕の理論は完璧だ。データ通りの挙動……よし、このままいける"
+          "text": "俺の理論は完璧だ。データ通りの挙動……よし、このままいける"
         }
       ]
     },
@@ -699,8 +699,8 @@
         },
         {
           "speaker": "adam",
-          "face": "normal",
-          "text": "Hahaha! 最後まで俺のFlavorは最高潮だぜ！"
+          "face": "serious",
+          "text": "……ユーも最後まで、丁寧に作り続けた。ミーはそれを見ていた"
         }
       ]
     }

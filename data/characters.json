@@ -1,7 +1,7 @@
 [
   {
     "id": "hajime",
-    "name": "はじめ / 陽村 始（ひむら はじめ）",
+    "name": "はじめ / 蒸野 始（むしの はじめ）",
     "role": "protagonist",
     "age": 22,
     "nationality": "Japan",
@@ -352,7 +352,7 @@
     ]
   },
   {
-    "id": "pakki",
+    "id": "packii",
     "name": "パッキー",
     "role": "mc",
     "age": "年齢不詳",
@@ -372,6 +372,44 @@
       "mysterious mascot character, wearing a cute but slightly weird fluffy colorful animal costume holding a microphone, very upbeat and energetic body language, festival stage lighting",
       "eccentric tournament MC, wearing an oversized flashy plush head mascot suit (perhaps a surreal tapir or cloud creature), holding a golden mic, standing in front of a cheering crowd, comic pop-art style"
     ]
+  },
+  {
+    "id": "takiguchi",
+    "name": "焚口 ショウ（たきぐち ショウ）",
+    "role": "mc",
+    "age": "不詳",
+    "nationality": "Japan",
+    "affiliation": "大会実況MC",
+    "play_style": "N/A",
+    "description": "地方シーシャバトルの人間実況MCを務める。マイクを握ると人が変わったように声量が上がり、会場全体を盛り上げる。パッキーとともに大会を進行する。",
+    "background_secret": "N/A",
+    "favorite_flavor": "N/A",
+    "specialty_flavor": "N/A",
+    "growth_stats": {
+      "primary": "N/A",
+      "secondary": "N/A",
+      "notes": "N/A"
+    },
+    "visual_concepts": []
+  },
+  {
+    "id": "maezono",
+    "name": "前園 壮一郎（まえぞの そういちろう）",
+    "role": "judge",
+    "age": "不詳",
+    "nationality": "Japan",
+    "affiliation": "大会審査員",
+    "play_style": "N/A",
+    "description": "地方シーシャバトルの審査員。「シーシャはおいしいねえ」が口癖の、温かみのある人物。審査員ながら場を和ませる空気を持つ。",
+    "background_secret": "N/A",
+    "favorite_flavor": "N/A",
+    "specialty_flavor": "N/A",
+    "growth_stats": {
+      "primary": "N/A",
+      "secondary": "N/A",
+      "notes": "N/A"
+    },
+    "visual_concepts": []
   },
   {
     "id": "nagumo",
