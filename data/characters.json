@@ -19,7 +19,8 @@
     "visual_concepts": [
       "22s japanese young man, ordinary and friendly face, short messy black hair, wearing a simple white t-shirt and a tonari logo apron, relaxed posture, casual cafe staff aesthetic",
       "young japanese male cafe worker, plain looking but empathetic eyes, dark hair, wearing a casual apron with a shisha mouthpiece hanging from his neck, warm and welcoming atmosphere"
-    ]
+    ],
+    "height": 172
   },
   {
     "id": "sumi",
@@ -41,7 +42,8 @@
     "visual_concepts": [
       "46s japanese man, shop owner, slightly long unkempt hair tied back, stubble beard, wearing a relaxed linen shirt and apron, holding tongs for charcoal, seasoned and calm aura, mature chill vibe",
       "middle-aged japanese cafe master, silver-streaked black hair, round glasses, wearing a comfortable cardigan and an apron, holding a shisha hose with a nostalgic expression, vintage cafe background"
-    ]
+    ],
+    "height": 182
   },
   {
     "id": "naru",
@@ -51,8 +53,8 @@
     "nationality": "Japan",
     "affiliation": "ケムリクサ",
     "play_style": "「甘さ（お菓子系）の追求」と「俺様ロジック」",
-    "description": "隣町のシーシャ屋『ケムリクサ』で働く、熱量が高く少しイキッている青年。「データと分析こそが正義」と信じており、他人の感覚的なシーシャや、自分の向かいにある『C.STATION』のようなチェーン店を下に見る傾向があるが、根底には本物のシーシャ愛がある。",
-    "background_secret": "情熱の裏には「天才には勝てない」という凡人としての焦りがある。だからこそデータと機材に頼り、努力で完璧なお菓子系シーシャを構築した。",
+    "description": "隣町のシーシャ屋『ケムリクサ』で働く、熱量が高く少しイキッている青年。「データと分析こそが正義」と信じており、第1章大会の舞台となる『C.STATION』のようなチェーン店を下に見る傾向があるが、根底には本物のシーシャ愛がある。\n大会後に南雲会長との対話を経て改心し、主人公への最大のライバルとして熱く覚醒する。",
+    "background_secret": "情熱の裏には「天才には勝てない」という凡人としての焦りがある。だからこそデータと機材に頼り、努力で完璧なお菓子系シーシャを構築した。C.STATIONでの大会を通じ、単なる味覚を超えた「煙の哲学」を学び、真の強さを手に入れていく。",
     "favorite_flavor": "バニラ",
     "specialty_flavor": "激甘お菓子系（パン・バニラ系）",
     "growth_stats": {
@@ -70,7 +72,8 @@
       "シーシャ愛が強すぎる",
       "独善的",
       "探究心"
-    ]
+    ],
+    "height": 176
   },
   {
     "id": "adam",
@@ -92,7 +95,8 @@
     "visual_concepts": [
       "24s japanese male, stoic and serious face, closely cropped black hair, wearing a traditional samue or dark minimalist chef coat, meticulously preparing a shisha bowl, traditional artisan atmosphere",
       "young japanese craftsman, piercing focused eyes, short dark hair, wearing a black high-neck long sleeve, surrounded by red apples and anise props, dark and moody workshop setting"
-    ]
+    ],
+    "height": 178
   },
   {
     "id": "minto",
@@ -102,8 +106,8 @@
     "nationality": "Japan",
     "affiliation": "ぺぱーみんと",
     "play_style": "「客商売（魅せ方）の極意」",
-    "description": "コンセプトカフェ風の店で働く、可愛らしい容姿のプレイヤー。\n一見すると「ばえ（映え）」重視に見えるが、実は客の心理と視覚効果を計算し尽くしたしたたかな戦略家。閉店後やふとした瞬間に、アラサーとしての等身大の疲労感を見せることがある。",
-    "background_secret": "【公式隠し設定】自称20歳だが実年齢は29歳のアラサー。本人は完全に隠しており、外見の若さを最大の武器にしている。実は実家の喫茶店時代の古いコースターや年季の入った傷だらけのトングを今でもこっそり大切に使っており、したたかさの裏に一途な一面を持つ。",
+    "description": "20代のほとんどを費やして実家の喫茶店を取り戻した苦労人。閉店後には「等身大の29歳」の疲労感と達観を見せる。\n7歳下の主人公に対して「自分は釣り合わない」という引け目を感じつつも、年齢を気にせずフラットに受け入れて包み込んでくれる主人公に強く救われる。\n「自称20歳」を弄られたり甘えたりする掛け合いが魅力であり、仮に恋人ルートに入らなくても「少し甘い距離感の気の置けない女友達」として良い関係を築く。",
+    "background_secret": "実家の喫茶店時代の古いコースターや年季の入った傷だらけのトングを今でもこっそり大切に使っており、したたかさの裏に一途な一面を持つ。\n全ヒロイン共通の設計として、恋愛ルートに進まなくてもそれぞれの可愛らしさや、主人公との特別な信頼関係（相棒や親友としての絆）が失われないようになっている。",
     "favorite_flavor": "ミント",
     "specialty_flavor": "清涼感特化のミントミックス",
     "growth_stats": {
@@ -114,7 +118,8 @@
     "visual_concepts": [
       "ageless but youthful looking japanese female, cute idol-like appearance, mint green twin-tails, wearing a frilly maid-like concept cafe uniform with pastel mint aesthetics, winking playfully, holding a bright shisha pipe",
       "cute concept cafe staff female, pale skin, light green hair with ribbons, wearing a kawaii fashion outfit with lace, secretly calculating eyes behind a sweet smile, pastel neon lighting"
-    ]
+    ],
+    "height": 156
   },
   {
     "id": "shisha_9000",
@@ -136,7 +141,8 @@
     "visual_concepts": [
       "futuristic AI shisha machine terminal, sleek white and metallic silver exterior, glowing blue LED sensors, robotic arms precisely handling glowing charcoal, clean cyber-tech environment",
       "sci-fi high-tech cafe interior, central glowing AI server core shaped like a modern shisha, holographic interface displaying heat levels and flavor combinations, cybernetic and sterile mood"
-    ]
+    ],
+    "height": "180"
   },
   {
     "id": "nandi",
@@ -158,7 +164,8 @@
     "visual_concepts": [
       "31s indian man, deep spiritual calm expression, long dark beard, wearing a beautifully patterned traditional kurta, manipulating smoke with graceful hand gestures, surrounding by ethnic spices and brass hookahs",
       "charismatic indian shisha master, mystical aura, wearing rich gold and deep red ethnic clothing, blowing vibrant thick smoke that seems alive, background filled with antique rugs and warm light"
-    ]
+    ],
+    "height": 174
   },
   {
     "id": "steve",
@@ -180,7 +187,8 @@
     "visual_concepts": [
       "30s overweight american man, friendly but very focused, wearing a casual snapback cap and oversized graphic t-shirt, large hands delicately adjusting small charcoals with tweezers, eating a slice of pizza on the side",
       "large american guy with a beard, gentle giant vibe, wearing a zip-up hoodie, sitting in a laid-back western style lounge, expertly handling American flavor tobacco with surgical precision"
-    ]
+    ],
+    "height": 188
   },
   {
     "id": "volk",
@@ -225,13 +233,14 @@
       "58s asian elderly man, wise hermit appearance, long white beard tied at the end, wearing traditional linen martial arts style clothing, holding a very old brass and wood engraved hookah pipe",
       "ancient asian shisha master, serene expression and closed eyes, long white hair, wearing a simple earthy-toned robe, mystical smoke forming Yin-Yang patterns around him, temple-like background"
     ],
-    "shop_name": "龍龍水煙所"
+    "shop_name": "龍龍水煙所",
+    "height": 165
   },
   {
     "id": "tsumugi",
     "name": "つむぎ",
     "role": "sub_character",
-    "age": 20,
+    "age": 21,
     "nationality": "Japan",
     "affiliation": "tonari常連",
     "play_style": "N/A",
@@ -247,7 +256,8 @@
     "visual_concepts": [
       "20s japanese girl, introverted and quiet, bob cut black hair slightly covering her eyes, wearing oversized comfy sweater and headphones, staring intently at a cracked iPad screen with an apple pencil",
       "melancholy young female artist, pale complexion, dark hair, wearing a loose cardigan over a simple dress, sitting alone in a dim cafe corner, accompanied by purple lavender-scented smoke"
-    ]
+    ],
+    "height": 152
   },
   {
     "id": "ageha",
@@ -269,7 +279,8 @@
     "visual_concepts": [
       "22s japanese female, trendy and flashy club fashion, blonde hair with pink highlights, bright makeup, energetic and slightly chaotic vibe, holding a colorful hookah hose with neon acrylic nails",
       "vibrant young gyaru-style shisha player, charismatic smile, dyed hair, wearing an off-shoulder fashionable top and choker, sparkling party aura, lively nightclub lounge background"
-    ]
+    ],
+    "height": 160
   },
   {
     "id": "salaryman",
@@ -291,7 +302,8 @@
     "visual_concepts": [
       "41s japanese salaryman, tired and expressionless face, wearing a slightly loosened necktie and a wrinkled grey suit, sitting alone looking at his smartphone, office worker relaxing after hours",
       "middle-aged corporate worker, short neat but exhausted hair, wearing a business suit without the jacket, blowing a slow cloud of smoke with a heavy sigh, realistic dim moody cafe lighting"
-    ]
+    ],
+    "height": 172
   },
   {
     "id": "kumicho",
@@ -357,7 +369,8 @@
     "visual_concepts": [
       "33s japanese male, mad scientist aesthetic, messy hair, wearing a white lab coat over a neat dress shirt, adjusting glasses pushed up on his nose, surrounded by beakers, scales and clipboards",
       "analytical researcher character, sharp intelligent eyes behind silver framed glasses, wearing a pristine white lab coat, meticulously using an eyedropper on shisha flavor, cold fluorescent lighting lab setting"
-    ]
+    ],
+    "height": 175
   },
   {
     "id": "packii",
@@ -439,7 +452,8 @@
     "visual_concepts": [
       "45s japanese business man, sharp and authoritative, short cleanly cut hair, wearing a very expensive tailored three-piece navy suit, examining a shisha with a critical and intimidating eye",
       "corporate executive judge, mature alpha male, silver tie and luxury watch, sitting imposingly at a judge's table, looking analytical but with a hidden passionate glint in his eyes, upscale lounge aesthetic"
-    ]
+    ],
+    "height": 178
   },
   {
     "id": "emil",
@@ -461,7 +475,8 @@
     "visual_concepts": [
       "48s turkish man, rugged and distinguished, thick mustache and short dark hair with greying temples, wearing a smart casual vest and rolled-up shirtsleeves, deep intense eyes evaluating smoke",
       "experienced turkish nargile craftsman, weathered face with lines of wisdom, wearing a simple collared shirt and suspenders, observing shisha smoke with profound concentration, traditional coffeehouse background hints"
-    ]
+    ],
+    "height": 170
   },
   {
     "id": "dj_smoke",
@@ -483,7 +498,8 @@
     "visual_concepts": [
       "35s japanese male DJ, cool street style, wearing a bucket hat, oversized stylish hoodie, and thick headphones slung around his neck, bobbing his head slightly to an imaginary beat, neon club lighting",
       "trendy club DJ and judge, wearing large tinted sunglasses and complex layered streetwear, observing the competition from a DJ booth setup, lasers and smoke machine atmosphere"
-    ]
+    ],
+    "height": 178
   },
   {
     "id": "sheikh",
@@ -505,7 +521,8 @@
     "visual_concepts": [
       "52s middle eastern royalty, regal and commanding presence, wearing an immaculate white kandura and a golden-trimmed ghutra, smoking from an extravagant pure gold hookah, luxurious palace surroundings",
       "wealthy arab sheikh, neatly trimmed beard, majestic and wealthy aura, adorned with subtle but incredibly expensive jewelry, standing confidently next to a jeweled masterpiece shisha pipe"
-    ]
+    ],
+    "height": 192
   },
   {
     "id": "chad",
@@ -527,7 +544,8 @@
     "visual_concepts": [
       "29s american male, incredibly fit and handsome, confident blinding smile, short blonde hair, wearing a tight black t-shirt showing off muscular arms, doing flashy tricks with bright smoke rings, energetic vibe",
       "charismatic western showman, bright blue eyes, wearing flashy sunglasses indoors, performing acrobatic smoke tricks like a bartender juggling bottles, vibrant and fun lighting"
-    ]
+    ],
+    "height": 185
   },
   {
     "id": "da_silva",
@@ -549,7 +567,8 @@
     "visual_concepts": [
       "28s brazilian male, tanned skin, athletic build, sunny and overwhelmingly cheerful expression, wearing a vibrant tropical shirt open at the chest, surrounded by lively festival energy and colorful smoke",
       "passionate brazilian shisha player, dark curly hair, wide joyful smile, wearing colorful street carnival-inspired clothing, partying and dancing while managing the hookah, festive warm sunshine lighting"
-    ]
+    ],
+    "height": 180
   },
   {
     "id": "kako",
@@ -571,7 +590,8 @@
     "visual_concepts": [
       "26s japanese female, pale skin like a japanese doll, hime-cut long black hair, wearing stylish black monochrome mode fashion, typing rapidly on a customized keyboard, slightly slouching, socially awkward but intense vibe",
       "introverted female designer, dark elegant hime-cut hair, wearing oversized dark avant-garde clothing, surrounded by personal shisha equipment, mixing flavors very methodically like a nerd, computer screens glowing in the background"
-    ]
+    ],
+    "height": 160
   },
   {
     "id": "rira",
@@ -599,7 +619,7 @@
     "id": "mashiro",
     "name": "ましろ / 真白（ましろ）",
     "role": "sub_character",
-    "age": 20,
+    "age": 22,
     "nationality": "Japan",
     "affiliation": "mukai（東京のバイト先）",
     "play_style": "N/A",
@@ -615,7 +635,8 @@
     "visual_concepts": [
       "20s japanese female, natural fairy-tale fashion, extremely relaxed and slow very soft vibe, fluffy light brown hair styled in a loose side braid, wearing a soft pastel blouse with ruffles and a long linen skirt, blowing a massive thick cloud of cigar leaf smoke strongly like a veteran without coughing",
       "soft-spoken lazy cute innocent girl, completely feminine and not tomboyish, pale skin, natural earthy cute clothes, NOT wearing thick knitwear, surrounded by thick heavy cigar smoke, unexpected hardcore shisha master, fairy tale aura but holding a heavy hookah hose"
-    ]
+    ],
+    "height": 155
   },
   {
     "id": "tetsuko",
@@ -637,7 +658,8 @@
     },
     "visual_concepts": [
       "brown and white scottish fold cat, sitting with back against the wall (scottish fold sit / suko-zuwari), very relaxed and lazy aura, resting near the back door of a shisha cafe"
-    ]
+    ],
+    "height": 40
   },
   {
     "id": "mukai_master",
