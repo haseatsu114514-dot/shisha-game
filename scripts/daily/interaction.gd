@@ -14,7 +14,7 @@ var _event_id: String = ""
 const CHARACTER_NAME_MAP := {
 	"naru": "なる",
 	"adam": "アダム",
-	"minto": "みんと",
+	"minto": "眠都",
 	"sumi": "スミさん",
 }
 
@@ -235,13 +235,8 @@ func _apply_affinity_gain(character_id: String, amount: int = 1) -> void:
 	var after = AffinityManager.add_affinity(character_id, amount)
 	if after < 0:
 		return
-	var delta = maxi(0, after - before)
-	var max_level = AffinityManager.get_max_level()
 	var star_text = AffinityManager.get_star_text(character_id)
-	if delta > 0:
-		body_label.text += "\n好感度 +%d / %d  %s" % [delta, max_level, star_text]
-	else:
-		body_label.text += "\n好感度 %d / %d  %s" % [after, max_level, star_text]
+	body_label.text += "\n好感度  %s" % star_text
 
 	# Check if affinity reached max level and not in romance yet
 	if after >= max_level and before < max_level and not AffinityManager.is_in_romance(character_id):

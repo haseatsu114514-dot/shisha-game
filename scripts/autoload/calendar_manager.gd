@@ -69,7 +69,7 @@ const CHAPTER_CONFIG: Dictionary = {
 	4: {
 		"max_days": 14,
 		"tournament_day": 15,
-		"location": "世界大会 - ドバイ",
+		"location": "HAZE: GRAND SMOKE - ドバイ",
 		"overseas": true,
 		"overseas_stay_days": 3,
 		"interval_days": 0,

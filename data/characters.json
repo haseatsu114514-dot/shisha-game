@@ -51,7 +51,7 @@
     "nationality": "Japan",
     "affiliation": "ケムリクサ",
     "play_style": "「甘さ（お菓子系）の追求」と「俺様ロジック」",
-    "description": "徹底したデータ管理と機材へのこだわりを持つ理系プレイヤー。\n口は悪いがシーシャへの情熱は誰よりも本物。主人公とは反発しつつも良きライバルとなる。",
+    "description": "隣町のシーシャ屋『C.STATION』で働く、熱量が高く少しイキッている青年。「データと分析こそが正義」と信じており、他人の感覚的なシーシャを下に見る傾向があるが、根底には本物のシーシャ愛がある。",
     "background_secret": "情熱の裏には「天才には勝てない」という凡人としての焦りがある。だからこそデータと機材に頼り、努力で完璧なお菓子系シーシャを構築した。",
     "favorite_flavor": "バニラ",
     "specialty_flavor": "激甘お菓子系（パン・バニラ系）",
@@ -63,6 +63,13 @@
     "visual_concepts": [
       "23s japanese male, confident and slightly cocky expression, short dyed silver hair, wearing a stylish streetwear jacket and multiple silver rings, holding a digital thermometer, cyberpunk-lite cafe vibe",
       "young japanese competitive shisha player, sharp eyes, silver-ash hair, wearing an oversized graphic tee and dark necklace, working precisely with scales and foil, neon lit modern cafe setting"
+    ],
+    "character_type": "熱狂的 / イキリ / 分析家",
+    "personality": [
+      "自信過剰",
+      "シーシャ愛が強すぎる",
+      "独善的",
+      "探究心"
     ]
   },
   {
@@ -205,7 +212,7 @@
     "nationality": "Asia",
     "affiliation": "アジア圏のシーシャ協会",
     "play_style": "「陰陽五行の理」",
-    "description": "「お前の煙には『命』がある」と語る、仙人のようなシーシャ職人。\n感覚と精神論を交えた究極のシーシャを作る世界大会のボス的存在。",
+    "description": "歴史ある名店『龍龍水煙所』の主であり、「お前の煙には『命』がある」と語る仙人のようなシーシャ職人。感覚と精神論を交えた究極のシーシャを作る第4章（世界大会）のボス的存在。",
     "background_secret": "実はスミさんが世界放浪中に一時期教えを乞うたこともある人物。スミさんの『基本に忠実、かつ自由』というスタイルの源流の一部となっている。",
     "favorite_flavor": "ライチ",
     "specialty_flavor": "ウッディ・和モダン系",
@@ -217,7 +224,8 @@
     "visual_concepts": [
       "58s asian elderly man, wise hermit appearance, long white beard tied at the end, wearing traditional linen martial arts style clothing, holding a very old brass and wood engraved hookah pipe",
       "ancient asian shisha master, serene expression and closed eyes, long white hair, wearing a simple earthy-toned robe, mystical smoke forming Yin-Yang patterns around him, temple-like background"
-    ]
+    ],
+    "shop_name": "龍龍水煙所"
   },
   {
     "id": "tsumugi",

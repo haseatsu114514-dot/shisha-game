@@ -1,279 +1,279 @@
 {
-    "dialogues": [
+  "dialogues": [
+    {
+      "dialogue_id": "interval_day1_morning",
+      "lines": [
         {
-            "dialogue_id": "interval_day1_morning",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "大会が終わった翌朝。目覚ましをかけていないのに、いつもと同じ時間に目が覚めた。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "……静かだな"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "大会に向けて走り続けた日々が、嘘みたいに遠い。\nスマホを見ると、スミさんから「今日も店開いてるよ」とだけ届いていた。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（昨日の大会……あいつらも全員、本気だった。なる、アダム、みんちゃん。それぞれの理由があって、それぞれの全力だった）"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（でも、終わったんだ。今はとりあえず……普通の一日を過ごそう）"
-                }
-            ]
+          "speaker": "",
+          "face": "",
+          "text": "大会が終わった翌朝。目覚ましをかけていないのに、いつもと同じ時間に目が覚めた。"
         },
         {
-            "dialogue_id": "interval_day1_morning_win",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "大会で優勝した翌朝。トロフィーが部屋の隅に置いてある。\n現実感がまだ追いついていない。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "……勝った、んだよな。俺が"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "スマホを見ると、スミさんから「おめでとう。でも浮かれるのは今日までよ」と届いていた。\n……スミさんらしい。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（嬉しいけど……あいつらの顔が浮かぶ。なるの悔しそうな顔。アダムの静かな拍手。みんちゃんの……笑顔）"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（次があるなら、もっと上を目指さないと。あいつらは絶対に、もっと強くなって戻ってくる）"
-                }
-            ]
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……静かだな"
         },
         {
-            "dialogue_id": "interval_day1_naru_lime",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "夜、LIMEの通知音が鳴った。なるからだ。"
-                },
-                {
-                    "speaker": "naru",
-                    "face": "smile",
-                    "text": "よっ！ 大会お疲れ！ 見てたぜ！"
-                },
-                {
-                    "speaker": "naru",
-                    "face": "excited",
-                    "text": "いやー、熱かったなー！ 俺もまだまだだって思い知らされたわ！"
-                },
-                {
-                    "speaker": "naru",
-                    "face": "smile",
-                    "text": "でもさ、楽しかったろ？ シーシャで戦うってのはさ"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "……ああ。楽しかった"
-                },
-                {
-                    "speaker": "naru",
-                    "face": "excited",
-                    "text": "だろ！ じゃ、お互い次も頑張ろうぜ！ 次はもっとやべえもん作ってやるからさ！"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "なるの明るさに、少しだけ気持ちが軽くなった。\nこいつは本当に、シーシャが好きなんだな。"
-                }
-            ]
+          "speaker": "",
+          "face": "",
+          "text": "大会に向けて走り続けた日々が、嘘みたいに遠い。\nスマホを見ると、スミさんから「今日も店開いてるよ」とだけ届いていた。"
         },
         {
-            "dialogue_id": "interval_day2_adam_lime",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "夜、LIMEの通知。今度はアダムからだった。\n珍しい。アダムから連絡が来ることはほとんどないのに。"
-                },
-                {
-                    "speaker": "adam",
-                    "face": "normal",
-                    "text": "はじめ。次の大会、どこで開催されるか知ってるか？"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "いや、まだ聞いてないけど……何か知ってるの？"
-                },
-                {
-                    "speaker": "adam",
-                    "face": "normal",
-                    "text": "……まだ正式発表前だから、詳しくは言えないが"
-                },
-                {
-                    "speaker": "adam",
-                    "face": "normal",
-                    "text": "規模が、変わる。覚悟しておいた方がいい"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "規模が変わる……？"
-                },
-                {
-                    "speaker": "adam",
-                    "face": "normal",
-                    "text": "……じきに分かる。それだけだ"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "アダムはそれだけ言って、既読にもならなかった。\n……何か、大きなことが動いている気がする。"
-                }
-            ]
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（昨日の大会……あいつらも全員、本気だった。なる、アダム、みんちゃん。それぞれの理由があって、それぞれの全力だった）"
         },
         {
-            "dialogue_id": "interval_day3_sumi_call",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "夜、閉店後のtonariでシーシャを片付けていると、スミさんが真剣な顔で近づいてきた。"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "normal",
-                    "text": "はじめ、ちょっといい？ 話がある"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "はい、なんですか？"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "normal",
-                    "text": "次の大会の情報が入った。正式発表は明日だけど、先に教えとく"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "normal",
-                    "text": "次は──全国大会。場所は東京"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "全国……！？ 一気にスケールが……"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "normal",
-                    "text": "ああ。地方大会とは比べものにならない。参加者のレベルも、審査も、観客の数も。全部が段違いになる"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "normal",
-                    "text": "レギュレーションも変わる。使えるフレーバーの種類が増えるし、大会の形式も一対一のトーナメントになる可能性がある"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "……"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "normal",
-                    "text": "で、だ。はじめ、選択肢が二つある"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "normal",
-                    "text": "一つは、このまま地元で修行を続けること。tonariで実戦経験を積むのは悪くない。私も教えられることはまだある"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "normal",
-                    "text": "もう一つは、東京に先乗りすること。向こうのシーシャ屋で武者修行しながら、大会の空気を先に掴む"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "normal",
-                    "text": "……まあ、東京の話は今すぐ決めなくていい。まだ準備期間はある"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "全国大会──。\nこの町のシーシャ屋で始まった物語が、一気に大きなステージへ向かおうとしている。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（全国か……。なるもアダムもみんちゃんも、当然出てくるだろう。そして、まだ見ぬ強敵も）"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "スミさん。俺、出ます。全国大会"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "smile",
-                    "text": "……ふっ。聞くまでもなかったか"
-                },
-                {
-                    "speaker": "sumi",
-                    "face": "normal",
-                    "text": "よし。じゃあ残りの日数、無駄にするなよ。ここでできることを全部やれ"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "スミさんの目が、少しだけ柔らかくなった気がした。\n\n──全国大会。東京。\n次の戦いが、もう始まっている。"
-                }
-            ]
-        },
-        {
-            "dialogue_id": "interval_day5_eve",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "インターバル最終日の夜。tonariの閉店後、一人でカウンターに座っている。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（明日からまた、新しい章が始まる。全国大会に向けて──）"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "この町で学んだこと。スミさんに教わったこと。ライバルたちと競い合ったこと。\nバイトで磨いた接客。練習で染み込ませた技術。全部が、次のステージへの糧になる。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "……よし。行くか"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "店の電気を消して、夜の街に出た。\n遠くの空に、東京の方角の灯りがぼんやりと見えた気がした。"
-                }
-            ]
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（でも、終わったんだ。今はとりあえず……普通の一日を過ごそう）"
         }
-    ]
+      ]
+    },
+    {
+      "dialogue_id": "interval_day1_morning_win",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会で優勝した翌朝。トロフィーが部屋の隅に置いてある。\n現実感がまだ追いついていない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……勝った、んだよな。僕が"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホを見ると、スミさんから「おめでとう。でも浮かれるのは今日までよ」と届いていた。\n……スミさんらしい。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（嬉しいけど……あいつらの顔が浮かぶ。なるの悔しそうな顔。アダムの静かな拍手。みんちゃんの……笑顔）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（次があるなら、もっと上を目指さないと。あいつらは絶対に、もっと強くなって戻ってくる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "interval_day1_naru_lime",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜、LIMEの通知音が鳴った。なるからだ。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "よっ！ 大会お疲れ！ 見てたぜ！"
+        },
+        {
+          "speaker": "naru",
+          "face": "excited",
+          "text": "いやー、熱かったなー！ 俺もまだまだだって思い知らされたわ！"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "でもさ、楽しかったろ？ シーシャで戦うってのはさ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ああ。楽しかった"
+        },
+        {
+          "speaker": "naru",
+          "face": "excited",
+          "text": "だろ！ じゃ、お互い次も頑張ろうぜ！ 次はもっとやべえもん作ってやるからさ！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるの明るさに、少しだけ気持ちが軽くなった。\nこいつは本当に、シーシャが好きなんだな。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "interval_day2_adam_lime",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜、LIMEの通知。今度はアダムからだった。\n珍しい。アダムから連絡が来ることはほとんどないのに。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "はじめ。次の大会、どこで開催されるか知ってるか？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いや、まだ聞いてないけど……何か知ってるの？"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "……まだ正式発表前だから、詳しくは言えないが"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "規模が、変わる。覚悟しておいた方がいい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "規模が変わる……？"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "……じきに分かる。それだけだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムはそれだけ言って、既読にもならなかった。\n……何か、大きなことが動いている気がする。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "interval_day3_sumi_call",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜、閉店後のtonariでシーシャを片付けていると、スミさんが真剣な顔で近づいてきた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "はじめ、ちょっといい？ 話がある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい、なんですか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "次の大会の情報が入った。正式発表は明日だけど、先に教えとく"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "次は──全国大会。場所は東京"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "全国……！？ 一気にスケールが……"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ああ。地方大会とは比べものにならない。参加者のレベルも、審査も、観客の数も。全部が段違いになる"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "レギュレーションも変わる。使えるフレーバーの種類が増えるし、大会の形式も一対一のトーナメントになる可能性がある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "で、だ。はじめ、選択肢が二つある"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "一つは、このまま地元で修行を続けること。tonariで実戦経験を積むのは悪くない。私も教えられることはまだある"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "もう一つは、東京に先乗りすること。向こうのシーシャ屋で武者修行しながら、大会の空気を先に掴む"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……まあ、東京の話は今すぐ決めなくていい。まだ準備期間はある"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "全国大会──。\nこの町のシーシャ屋で始まった物語が、一気に大きなステージへ向かおうとしている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（全国か……。なるもアダムもみんちゃんも、当然出てくるだろう。そして、まだ見ぬ強敵も）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさん。僕、出ます。全国大会"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "……ふっ。聞くまでもなかったか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "よし。じゃあ残りの日数、無駄にするなよ。ここでできることを全部やれ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんの目が、少しだけ柔らかくなった気がした。\n\n──全国大会。東京。\n次の戦いが、もう始まっている。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "interval_day5_eve",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "インターバル最終日の夜。tonariの閉店後、一人でカウンターに座っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（明日からまた、新しい章が始まる。全国大会に向けて──）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "この町で学んだこと。スミさんに教わったこと。ライバルたちと競い合ったこと。\nバイトで磨いた接客。練習で染み込ませた技術。全部が、次のステージへの糧になる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……よし。行くか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の電気を消して、夜の街に出た。\n遠くの空に、東京の方角の灯りがぼんやりと見えた気がした。"
+        }
+      ]
+    }
+  ]
 }

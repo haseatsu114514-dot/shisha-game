@@ -22,7 +22,7 @@ const DISPLAY_NAME = {
 	"sumi": "スミさん",
 	"naru": "なる",
 	"adam": "アダム",
-	"minto": "みんと",
+	"minto": "眠都",
 	"tsumugi": "つむぎ",
 	"packii": "パッキー"
 }
@@ -60,9 +60,9 @@ func _apply_line_theme() -> void:
 	phone_body.add_theme_stylebox_override(
 		"panel",
 		_make_style(
-			Color(0.07, 0.07, 0.1, 0.98),
+			Color("181425", 0.98),
 			42,
-			Color(0.27, 0.29, 0.33, 1.0),
+			Color("3a4466"),
 			2,
 			0
 		)
@@ -70,19 +70,19 @@ func _apply_line_theme() -> void:
 	screen_panel.add_theme_stylebox_override(
 		"panel",
 		_make_style(
-			Color(0.95, 0.98, 0.93, 1.0),
+			Color("262b44", 0.95),
 			24,
-			Color(0.73, 0.84, 0.76, 1.0),
-			2,
+			Color("3a4466", 0.6),
+			1,
 			0
 		)
 	)
 	header_bar.add_theme_stylebox_override(
 		"panel",
 		_make_style(
-			Color(0.01, 0.76, 0.33, 1.0),
+			Color("265c42"),
 			16,
-			Color(0.0, 0.62, 0.25, 1.0),
+			Color("3e8948"),
 			1,
 			0
 		)
@@ -90,9 +90,9 @@ func _apply_line_theme() -> void:
 	option_bar.add_theme_stylebox_override(
 		"panel",
 		_make_style(
-			Color(0.97, 0.99, 0.96, 1.0),
+			Color("262b44", 0.95),
 			14,
-			Color(0.8, 0.88, 0.82, 1.0),
+			Color("3a4466", 0.6),
 			1,
 			0
 		)
@@ -220,7 +220,7 @@ func _add_chat_bubble(sender: String, text: String) -> void:
 		return
 
 	var row = HBoxContainer.new()
-	row.theme_override_constants.separation = 6
+	row.add_theme_constant_override("separation", 6)
 	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	var is_self = sender == SELF_ID
@@ -249,35 +249,35 @@ func _add_chat_bubble(sender: String, text: String) -> void:
 	style.corner_radius_bottom_right = 14
 
 	if is_self:
-		style.bg_color = Color(0.71, 0.97, 0.53, 0.98)
+		style.bg_color = Color("3e8948", 0.90)
 		style.border_width_left = 1
 		style.border_width_right = 1
 		style.border_width_top = 1
 		style.border_width_bottom = 1
-		style.border_color = Color(0.5, 0.82, 0.34, 1.0)
+		style.border_color = Color("265c42")
 	else:
-		style.bg_color = Color(1.0, 1.0, 1.0, 0.98)
+		style.bg_color = Color("3a4466", 0.90)
 		style.border_width_left = 1
 		style.border_width_right = 1
 		style.border_width_top = 1
 		style.border_width_bottom = 1
-		style.border_color = Color(0.83, 0.89, 0.85, 1.0)
+		style.border_color = Color("5a6988", 0.6)
 	bubble.add_theme_stylebox_override("panel", style)
 
 	var vbox = VBoxContainer.new()
-	vbox.theme_override_constants.separation = 2
+	vbox.add_theme_constant_override("separation", 2)
 
 	var sender_label = Label.new()
 	sender_label.text = _to_display_name(sender)
 	sender_label.add_theme_font_size_override("font_size", 12)
-	sender_label.modulate = Color(0.2, 0.25, 0.22, 0.8)
+	sender_label.add_theme_color_override("font_color", GameManager.get_speaker_color(sender))
 	if is_self:
 		sender_label.visible = false
 
 	var text_label = Label.new()
 	text_label.text = text
 	text_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	text_label.add_theme_color_override("font_color", Color(0.08, 0.11, 0.1, 1.0))
+	text_label.add_theme_color_override("font_color", Color("ead4aa"))
 	text_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	vbox.add_child(sender_label)
@@ -397,18 +397,18 @@ func _jump_to_noon_invitation_event() -> void:
 
 
 func _set_button_theme(button: Button, is_primary: bool) -> void:
-	var normal_bg = Color(0.01, 0.72, 0.31, 1.0) if is_primary else Color(0.96, 0.98, 0.95, 1.0)
-	var hover_bg = normal_bg.lightened(0.08)
-	var pressed_bg = normal_bg.darkened(0.08)
-	var border_color = Color(0.0, 0.56, 0.24, 1.0) if is_primary else Color(0.77, 0.85, 0.8, 1.0)
-	var text_color = Color(1, 1, 1, 1) if is_primary else Color(0.1, 0.14, 0.12, 1.0)
+	var normal_bg = Color("265c42") if is_primary else Color("3a4466", 0.92)
+	var hover_bg = normal_bg.lightened(0.12)
+	var pressed_bg = normal_bg.darkened(0.1)
+	var border_color = Color("3e8948") if is_primary else Color("5a6988", 0.6)
+	var text_color = Color("ead4aa")
 
 	button.add_theme_stylebox_override("normal", _make_style(normal_bg, 10, border_color, 1, 6))
 	button.add_theme_stylebox_override("hover", _make_style(hover_bg, 10, border_color, 1, 6))
 	button.add_theme_stylebox_override("pressed", _make_style(pressed_bg, 10, border_color, 1, 6))
 	button.add_theme_stylebox_override("disabled", _make_style(normal_bg.darkened(0.2), 10, border_color.darkened(0.2), 1, 6))
 	button.add_theme_color_override("font_color", text_color)
-	button.add_theme_color_override("font_hover_color", text_color)
+	button.add_theme_color_override("font_hover_color", Color("feae34"))
 	button.add_theme_color_override("font_pressed_color", text_color)
 	button.add_theme_color_override("font_disabled_color", text_color.darkened(0.4))
 
