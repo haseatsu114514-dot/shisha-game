@@ -1,0 +1,10 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "ch1_nishio_first",
+      "lines": [
+        {"speaker": "nishio", "face": "smile", "text": "あれ、お前…チルハウスのやつじゃん。偵察かよ笑"}
+      ]
+    }
+  ]
+}
