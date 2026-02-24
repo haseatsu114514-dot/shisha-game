@@ -1,87 +1,87 @@
 {
-    "dialogues": [
+  "dialogues": [
+    {
+      "dialogue_id": "ch3_tsumugi_slump",
+      "metadata": {
+        "set_romance_progress": "tsumugi"
+      },
+      "lines": [
         {
-            "dialogue_id": "ch3_tsumugi_slump",
-            "metadata": {
-                "set_romance_progress": "tsumugi"
-            },
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "東京・mukaiの裏口。大会を数日後に控え、俺は一人でシーシャの試作を繰り返していた。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "serious",
-                    "text": "（ダメだ……どれを作っても『正解』の形が見えない。東京のレベルが高すぎて、自分の煙の輪郭を見失いそうになる……）"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "「……焦げてる」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "えっ……つ、つむぎさん！？ どうして東京に！？"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "「……こっちの美術館で展示があって。……ついでに、様子を見に来たの」"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "「一口、吸ってもいい？」"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "つむぎは俺の作った失敗作のホースを受け取り、ゆっくりと煙を吸い込んだ。そして、持っていたスケッチブックを開く。"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "「……いまのあなたの煙、こんな『色』になってる」"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "彼女が見せてくれたスケッチには、黒ずんだ灰色の中に、小さなあたたかいオレンジ色が、息苦しそうに埋もれているような……そんな絵が描かれていた。"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "normal",
-                    "text": "「……迷ってる色。無理に周りの強豪に合わせようとして、あなたの本当の『オレンジ』が隠れちゃってる」"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "smile",
-                    "text": "「私は、あなたのあのあたたかい煙の『色』が、好きだから……。誰の真似もしないで、そのままを作ってほしい」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "（僕の、本当の色……。そうか……東京の強豪たちに勝たなきゃって焦って、自分の良さを殺して、無理に重い煙を作ろうとしていたんだ）"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "smile",
-                    "text": "「……ありがとう、つむぎさん。おかげで目が覚めたよ」"
-                },
-                {
-                    "speaker": "tsumugi",
-                    "face": "smile",
-                    "text": "「……うん。大会、がんばって。……私、あなたの煙の『一番のファン』だから」"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "つむぎの言葉とスケッチのおかげで、スランプから完全に脱出した！\n【メンタル】と【センス】が大きく上昇した！"
-                }
-            ]
+          "speaker": "",
+          "face": "",
+          "text": "東京・mukaiの裏口。大会を数日後に控え、僕は一人でシーシャの試作を繰り返していた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（ダメだ……どれを作っても『正解』の形が見えない。東京のレベルが高すぎて、自分の煙の輪郭を見失いそうになる……）"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "「……焦げてる」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "えっ……つ、つむぎさん！？ どうして東京に！？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "「……こっちの美術館で展示があって。……ついでに、様子を見に来たの」"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "「一口、吸ってもいい？」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは僕の作った失敗作のホースを受け取り、ゆっくりと煙を吸い込んだ。そして、持っていたスケッチブックを開く。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "「……いまのあなたの煙、こんな『色』になってる」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女が見せてくれたスケッチには、黒ずんだ灰色の中に、小さなあたたかいオレンジ色が、息苦しそうに埋もれているような……そんな絵が描かれていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "「……迷ってる色。無理に周りの強豪に合わせようとして、あなたの本当の『オレンジ』が隠れちゃってる」"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "「私は、あなたのあのあたたかい煙の『色』が、好きだから……。誰の真似もしないで、そのままを作ってほしい」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（僕の、本当の色……。そうか……東京の強豪たちに勝たなきゃって焦って、自分の良さを殺して、無理に重い煙を作ろうとしていたんだ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "「……ありがとう、つむぎさん。おかげで目が覚めたよ」"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "「……うん。大会、がんばって。……私、あなたの煙の『一番のファン』だから」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎの言葉とスケッチのおかげで、スランプから完全に脱出した！\n【メンタル】と【センス】が大きく上昇した！"
         }
-    ]
+      ]
+    }
+  ]
 }
