@@ -15,7 +15,7 @@ func _ready() -> void:
 	se_slider.value_changed.connect(_on_audio_slider_changed)
 	_load_settings()
 	GameManager.apply_audio_settings()
-	info_label.text = "第1章：地方大会編「なんとなく始めた」"
+	info_label.text = "第1章：一吸目（ファーストパフ）"
 	GameManager.play_bgm(GameManager.BGM_TITLE_PATH, -8.0, true)
 
 
