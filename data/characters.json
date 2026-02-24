@@ -1,7 +1,7 @@
 [
   {
     "id": "hajime",
-    "name": "はじめ / 蒸野 始（むしの はじめ）",
+    "name": "はじめ / 陽村 始（ひむら はじめ）",
     "role": "protagonist",
     "age": 22,
     "nationality": "Japan",
@@ -19,8 +19,7 @@
     "visual_concepts": [
       "22s japanese young man, ordinary and friendly face, short messy black hair, wearing a simple white t-shirt and a tonari logo apron, relaxed posture, casual cafe staff aesthetic",
       "young japanese male cafe worker, plain looking but empathetic eyes, dark hair, wearing a casual apron with a shisha mouthpiece hanging from his neck, warm and welcoming atmosphere"
-    ],
-    "height": 172
+    ]
   },
   {
     "id": "sumi",
@@ -31,7 +30,7 @@
     "affiliation": "tonari（地元店）",
     "play_style": "「基本に忠実、かつ自由」",
     "description": "主人公の師匠であり、良き理解者。\nかつては名の知れたシーシャプレイヤーだったが、現在は飄々とした態度で地元の小さな店を営む。",
-    "background_secret": "15年前の日本大会準優勝者。大会で折れて世界を放浪し、イスタンブール（エミル）やドバイ（シェイク）で伝説的な煙を残した「名もなき日本人」。はじめに自らの夢の続きを託す。",
+    "background_secret": "15年前の日本大会準優勝者。決勝で折れて世界を放浪し、イスタンブール（エミル）やドバイ（シェイク）で伝説的な煙を残した「名もなき日本人」。はじめに自らの夢の続きを託す。",
     "favorite_flavor": "カルダモン",
     "specialty_flavor": "クラシックスパイス系",
     "growth_stats": {
@@ -42,8 +41,7 @@
     "visual_concepts": [
       "46s japanese man, shop owner, slightly long unkempt hair tied back, stubble beard, wearing a relaxed linen shirt and apron, holding tongs for charcoal, seasoned and calm aura, mature chill vibe",
       "middle-aged japanese cafe master, silver-streaked black hair, round glasses, wearing a comfortable cardigan and an apron, holding a shisha hose with a nostalgic expression, vintage cafe background"
-    ],
-    "height": 182
+    ]
   },
   {
     "id": "naru",
@@ -53,8 +51,8 @@
     "nationality": "Japan",
     "affiliation": "ケムリクサ",
     "play_style": "「甘さ（お菓子系）の追求」と「俺様ロジック」",
-    "description": "隣町のシーシャ屋『ケムリクサ』で働く、熱量が高く少しイキッている青年。「データと分析こそが正義」と信じており、第1章大会の舞台となる『C.STATION』のようなチェーン店を下に見る傾向があるが、根底には本物のシーシャ愛がある。\n大会後に南雲会長との対話を経て改心し、主人公への最大のライバルとして熱く覚醒する。",
-    "background_secret": "情熱の裏には「天才には勝てない」という凡人としての焦りがある。だからこそデータと機材に頼り、努力で完璧なお菓子系シーシャを構築した。C.STATIONでの大会を通じ、単なる味覚を超えた「煙の哲学」を学び、真の強さを手に入れていく。",
+    "description": "徹底したデータ管理と機材へのこだわりを持つ理系プレイヤー。\n口は悪いがシーシャへの情熱は誰よりも本物。主人公とは反発しつつも良きライバルとなる。",
+    "background_secret": "情熱の裏には「天才には勝てない」という凡人としての焦りがある。だからこそデータと機材に頼り、努力で完璧なお菓子系シーシャを構築した。",
     "favorite_flavor": "バニラ",
     "specialty_flavor": "激甘お菓子系（パン・バニラ系）",
     "growth_stats": {
@@ -65,15 +63,7 @@
     "visual_concepts": [
       "23s japanese male, confident and slightly cocky expression, short dyed silver hair, wearing a stylish streetwear jacket and multiple silver rings, holding a digital thermometer, cyberpunk-lite cafe vibe",
       "young japanese competitive shisha player, sharp eyes, silver-ash hair, wearing an oversized graphic tee and dark necklace, working precisely with scales and foil, neon lit modern cafe setting"
-    ],
-    "character_type": "熱狂的 / イキリ / 分析家",
-    "personality": [
-      "自信過剰",
-      "シーシャ愛が強すぎる",
-      "独善的",
-      "探究心"
-    ],
-    "height": 176
+    ]
   },
   {
     "id": "adam",
@@ -95,8 +85,7 @@
     "visual_concepts": [
       "24s japanese male, stoic and serious face, closely cropped black hair, wearing a traditional samue or dark minimalist chef coat, meticulously preparing a shisha bowl, traditional artisan atmosphere",
       "young japanese craftsman, piercing focused eyes, short dark hair, wearing a black high-neck long sleeve, surrounded by red apples and anise props, dark and moody workshop setting"
-    ],
-    "height": 178
+    ]
   },
   {
     "id": "minto",
@@ -106,8 +95,8 @@
     "nationality": "Japan",
     "affiliation": "ぺぱーみんと",
     "play_style": "「客商売（魅せ方）の極意」",
-    "description": "20代のほとんどを費やして実家の喫茶店を取り戻した苦労人。閉店後には「等身大の29歳」の疲労感と達観を見せる。\n7歳下の主人公に対して「自分は釣り合わない」という引け目を感じつつも、年齢を気にせずフラットに受け入れて包み込んでくれる主人公に強く救われる。\n「自称20歳」を弄られたり甘えたりする掛け合いが魅力であり、仮に恋人ルートに入らなくても「少し甘い距離感の気の置けない女友達」として良い関係を築く。",
-    "background_secret": "実家の喫茶店時代の古いコースターや年季の入った傷だらけのトングを今でもこっそり大切に使っており、したたかさの裏に一途な一面を持つ。\n全ヒロイン共通の設計として、恋愛ルートに進まなくてもそれぞれの可愛らしさや、主人公との特別な信頼関係（相棒や親友としての絆）が失われないようになっている。",
+    "description": "コンセプトカフェ風の店で働く、可愛らしい容姿のプレイヤー。一見すると「ばえ（映え）」重視に見えるが、実は客の心理と視覚効果を計算し尽くした戦略家。等身大の20代後半の悩みと、主人公の前で見せる素の感情が魅力。",
+    "background_secret": "【公式隠し設定】自称20歳だが実年齢は29歳のアラサー。本人は完全に隠しており、外見の若さを最大の武器にしている。",
     "favorite_flavor": "ミント",
     "specialty_flavor": "清涼感特化のミントミックス",
     "growth_stats": {
@@ -118,8 +107,7 @@
     "visual_concepts": [
       "ageless but youthful looking japanese female, cute idol-like appearance, mint green twin-tails, wearing a frilly maid-like concept cafe uniform with pastel mint aesthetics, winking playfully, holding a bright shisha pipe",
       "cute concept cafe staff female, pale skin, light green hair with ribbons, wearing a kawaii fashion outfit with lace, secretly calculating eyes behind a sweet smile, pastel neon lighting"
-    ],
-    "height": 156
+    ]
   },
   {
     "id": "shisha_9000",
@@ -141,13 +129,12 @@
     "visual_concepts": [
       "futuristic AI shisha machine terminal, sleek white and metallic silver exterior, glowing blue LED sensors, robotic arms precisely handling glowing charcoal, clean cyber-tech environment",
       "sci-fi high-tech cafe interior, central glowing AI server core shaped like a modern shisha, holographic interface displaying heat levels and flavor combinations, cybernetic and sterile mood"
-    ],
-    "height": "180"
+    ]
   },
   {
     "id": "nandi",
     "name": "ナンディ / ナンディ・カルダモン",
-    "role": "rival_ch3_tokyo",
+    "role": "rival_ch3",
     "age": 31,
     "nationality": "India",
     "affiliation": "Prana Dhūm（プラーナ・ドゥーム）",
@@ -164,13 +151,12 @@
     "visual_concepts": [
       "31s indian man, deep spiritual calm expression, long dark beard, wearing a beautifully patterned traditional kurta, manipulating smoke with graceful hand gestures, surrounding by ethnic spices and brass hookahs",
       "charismatic indian shisha master, mystical aura, wearing rich gold and deep red ethnic clothing, blowing vibrant thick smoke that seems alive, background filled with antique rugs and warm light"
-    ],
-    "height": 174
+    ]
   },
   {
     "id": "steve",
     "name": "スティーブ / スティーブ・デイビス",
-    "role": "rival_ch3_tokyo",
+    "role": "rival_ch3",
     "age": 30,
     "nationality": "USA",
     "affiliation": "Smoke & Glory（スモーク・アンド・グローリー）",
@@ -187,13 +173,12 @@
     "visual_concepts": [
       "30s overweight american man, friendly but very focused, wearing a casual snapback cap and oversized graphic t-shirt, large hands delicately adjusting small charcoals with tweezers, eating a slice of pizza on the side",
       "large american guy with a beard, gentle giant vibe, wearing a zip-up hoodie, sitting in a laid-back western style lounge, expertly handling American flavor tobacco with surgical precision"
-    ],
-    "height": 188
+    ]
   },
   {
     "id": "volk",
     "name": "ヴォルク / ヴォルク・イヴァノフ",
-    "role": "rival_ch3_tokyo",
+    "role": "rival_ch4",
     "age": 37,
     "nationality": "Russia",
     "affiliation": "Железный Дым（ジェレーズヌイ・ドゥイム）",
@@ -220,7 +205,7 @@
     "nationality": "Asia",
     "affiliation": "アジア圏のシーシャ協会",
     "play_style": "「陰陽五行の理」",
-    "description": "歴史ある名店『龍龍水煙所』の主であり、「お前の煙には『命』がある」と語る仙人のようなシーシャ職人。感覚と精神論を交えた究極のシーシャを作る第4章（世界大会）のボス的存在。",
+    "description": "「お前の煙には『命』がある」と語る、仙人のようなシーシャ職人。\n感覚と精神論を交えた究極のシーシャを作る世界大会のボス的存在。",
     "background_secret": "実はスミさんが世界放浪中に一時期教えを乞うたこともある人物。スミさんの『基本に忠実、かつ自由』というスタイルの源流の一部となっている。",
     "favorite_flavor": "ライチ",
     "specialty_flavor": "ウッディ・和モダン系",
@@ -232,32 +217,29 @@
     "visual_concepts": [
       "58s asian elderly man, wise hermit appearance, long white beard tied at the end, wearing traditional linen martial arts style clothing, holding a very old brass and wood engraved hookah pipe",
       "ancient asian shisha master, serene expression and closed eyes, long white hair, wearing a simple earthy-toned robe, mystical smoke forming Yin-Yang patterns around him, temple-like background"
-    ],
-    "shop_name": "龍龍水煙所",
-    "height": 165
+    ]
   },
   {
     "id": "tsumugi",
     "name": "つむぎ",
     "role": "sub_character",
-    "age": 21,
+    "age": 20,
     "nationality": "Japan",
     "affiliation": "tonari常連",
     "play_style": "N/A",
-    "description": "tonariの常連客でありヒロイン候補。\n画面にひびの入ったiPadでいつも絵を描いている寡黙な少女。\n主人公の作るシーシャの煙にだけ「特別な色」を感じる共感覚を持つ。主人公の匂いを嗅いで安心するヤンデレ的依存傾向もある。",
-    "background_secret": "過去の人間関係のトラウマがあり、自分の殻（ラベンダーの香りの中）に閉じこもることで平静を保っている。主人公の使ったトングやエプロンの匂いをこっそり嗅ぐほど強く依存しているが、本当は違う香りに踏み出す勇気を欲している。",
+    "description": "tonariの常連客でありヒロイン候補。\n画面にひびの入ったiPadでいつも絵を描いている寡黙な少女。\nラベンダーのフレーバーしか頼まない。主人公の作るシーシャにだけ心を開いていく。",
+    "background_secret": "過去の人間関係のトラウマがあり、自分の殻（ラベンダーの香りの中）に閉じこもることで平静を保っている。本当は違う香りに踏み出す勇気を欲している。",
     "favorite_flavor": "ラベンダー",
     "specialty_flavor": "フローラル・お茶系",
     "growth_stats": {
       "primary": "魅力",
       "secondary": "根性",
-      "notes": "永遠にラベンダーしか頼まなかった彼女が、はじめとの対話を通して、いつの間にか自ら『今日は少しだけ、甘い香りを混ぜてみて』と新しい世界に踏み出す勇気を持てるようになっていた。"
+      "notes": "ラベンダーしか吸えなかった彼女が、はじめとの対話を通して、いつの間にか自ら『今日は少しだけ、甘い香りを混ぜてみて』と新しい世界に踏み出す勇気を持てるようになっていた。"
     },
     "visual_concepts": [
       "20s japanese girl, introverted and quiet, bob cut black hair slightly covering her eyes, wearing oversized comfy sweater and headphones, staring intently at a cracked iPad screen with an apple pencil",
       "melancholy young female artist, pale complexion, dark hair, wearing a loose cardigan over a simple dress, sitting alone in a dim cafe corner, accompanied by purple lavender-scented smoke"
-    ],
-    "height": 152
+    ]
   },
   {
     "id": "ageha",
@@ -267,25 +249,24 @@
     "nationality": "Japan",
     "affiliation": "第2章ライバル",
     "play_style": "「ヴァイブスと直感」",
-    "description": "第2章で立ちはだかるライバルでありヒロイン候補の一人。\n理論や勉強は一切せず、「ヴァイブス」だけで最高の一杯を作り上げてしまう純粋な天才肌。独特なギャル語彙も、実は初心者向けの最適解を直感で言語化したもの。",
-    "background_secret": "誰よりも周りの空気を読むことに長けている。努力型ではなく完全な感覚派ゆえに、いつか自分の直感が通用しなくなるのではという漠然とした不安を抱いているが、決して泥臭い勉強はしない。",
+    "description": "第2章で立ちはだかるライバルでありヒロイン候補の一人。\n理論ではなく「ヴァイブス」だけで最高の一杯を作り上げてしまう天才肌だが、内心ではいつか通用しなくなる不安と戦っている。",
+    "background_secret": "誰よりも周りの空気を読むことに長けているため、逆に「自分自身」が分からなくなっている。他人に合わせる『ヴァイブス』を自分の才能だと自己暗示をかけている。",
     "favorite_flavor": "ホワイトグミベアとレッドグミベア",
     "specialty_flavor": "トロピカルフルーツ系",
     "growth_stats": {
       "primary": "センス",
       "secondary": "根性",
-      "notes": "直感頼りだったが、はじめとの対戦後、いつの間にか『この客にはもう少し温かい煙の方がヴァイブスが合う』と、直感の中に他者への深い思いやりを混ぜるようになっていた。"
+      "notes": "直感頼りだったが、はじめが真摯にフレーバーの相性をメモする姿を見て、いつの間にか彼女も隠れて温度変化の時間をスマホに記録するような地道な『理論化』を試みるようになっていた。"
     },
     "visual_concepts": [
       "22s japanese female, trendy and flashy club fashion, blonde hair with pink highlights, bright makeup, energetic and slightly chaotic vibe, holding a colorful hookah hose with neon acrylic nails",
       "vibrant young gyaru-style shisha player, charismatic smile, dyed hair, wearing an off-shoulder fashionable top and choker, sparkling party aura, lively nightclub lounge background"
-    ],
-    "height": 160
+    ]
   },
   {
     "id": "salaryman",
     "name": "サラリーマン",
-    "role": "sub_character",
+    "role": "story_character",
     "age": 41,
     "nationality": "Japan",
     "affiliation": "tonari常連",
@@ -302,8 +283,7 @@
     "visual_concepts": [
       "41s japanese salaryman, tired and expressionless face, wearing a slightly loosened necktie and a wrinkled grey suit, sitting alone looking at his smartphone, office worker relaxing after hours",
       "middle-aged corporate worker, short neat but exhausted hair, wearing a business suit without the jacket, blowing a slow cloud of smoke with a heavy sigh, realistic dim moody cafe lighting"
-    ],
-    "height": 172
+    ]
   },
   {
     "id": "kumicho",
@@ -330,7 +310,7 @@
   {
     "id": "rei",
     "name": "零-REI- / 田中 健太（たなか けんた）",
-    "role": "rival_ch3",
+    "role": "rival_ch2",
     "age": 25,
     "nationality": "Japan",
     "affiliation": "V系コンセプト",
@@ -369,18 +349,17 @@
     "visual_concepts": [
       "33s japanese male, mad scientist aesthetic, messy hair, wearing a white lab coat over a neat dress shirt, adjusting glasses pushed up on his nose, surrounded by beakers, scales and clipboards",
       "analytical researcher character, sharp intelligent eyes behind silver framed glasses, wearing a pristine white lab coat, meticulously using an eyedropper on shisha flavor, cold fluorescent lighting lab setting"
-    ],
-    "height": 175
+    ]
   },
   {
-    "id": "packii",
+    "id": "pakki",
     "name": "パッキー",
     "role": "mc",
     "age": "年齢不詳",
     "nationality": "Japan",
     "affiliation": "大会MC（マスコット）",
     "play_style": "N/A",
-    "description": "シーシャ大会の名物マスコットMC。常にハイテンションで笑い飛ばしながら喋り倒すが、その裏では出場者全員を内心見下している「残酷な盛り上げ役」。ブラックユーモアとデスゲーム的な煽りで場を沸かせ、敗者の絶望を心から楽しむ。特徴的な笑い声「ぷぷぷっ！」「くふふ！」を持ち、悲劇と歓喜を混同したような言動が特徴。本当に美味いシーシャが出た時だけ沈黙し、煙が虹色になるという伝説を持つ。",
+    "description": "シーシャ大会の名物MC（着ぐるみマスコットのような存在）。常にハイテンションで喋り倒すが、本当に美味いシーシャが出た時だけ沈黙し、煙が虹色になるという伝説を持つ。",
     "background_secret": "実は初期の世界大会を立ち上げた創設メンバーの一人。声帯を痛めて本来の声が出なくなったため、着ぐるみとハイテンションな合成音声でMCとしてシーンを支え続けている。",
     "favorite_flavor": "ガムシナモン（仮）",
     "specialty_flavor": "N/A",
@@ -395,44 +374,6 @@
     ]
   },
   {
-    "id": "takiguchi",
-    "name": "焚口 ショウ（たきぐち ショウ）",
-    "role": "mc",
-    "age": "不詳",
-    "nationality": "Japan",
-    "affiliation": "大会実況MC",
-    "play_style": "N/A",
-    "description": "地方シーシャバトルの人間実況MCを務める。マイクを握ると人が変わったように声量が上がり、会場全体を盛り上げる。パッキーとともに大会を進行する。",
-    "background_secret": "N/A",
-    "favorite_flavor": "N/A",
-    "specialty_flavor": "N/A",
-    "growth_stats": {
-      "primary": "N/A",
-      "secondary": "N/A",
-      "notes": "N/A"
-    },
-    "visual_concepts": []
-  },
-  {
-    "id": "maezono",
-    "name": "前園 壮一郎（まえぞの そういちろう）",
-    "role": "judge",
-    "age": "不詳",
-    "nationality": "Japan",
-    "affiliation": "大会審査員",
-    "play_style": "N/A",
-    "description": "地方シーシャバトルの審査員。「シーシャはおいしいねえ」が口癖の、温かみのある人物。審査員ながら場を和ませる空気を持つ。",
-    "background_secret": "N/A",
-    "favorite_flavor": "N/A",
-    "specialty_flavor": "N/A",
-    "growth_stats": {
-      "primary": "N/A",
-      "secondary": "N/A",
-      "notes": "N/A"
-    },
-    "visual_concepts": []
-  },
-  {
     "id": "nagumo",
     "name": "南雲 修二（なぐも しゅうじ）",
     "role": "judge",
@@ -440,8 +381,8 @@
     "nationality": "Japan",
     "affiliation": "大会審査員長 / 大手シーシャチェーン「シーステーション」会長",
     "play_style": "N/A",
-    "description": "大手シーシャチェーン「シーステーション」（誰でも入りやすいファミレス的な大衆向け店舗）の会長であり、大会審査員長。業界を牽引するビジネスマン的な一面を持つ。\n自社の店舗は「ファミレスのような手軽さ」を売りにして割り切っているが、プロの大会審査においては単なる技術だけでなく「店の哲学が煙に出ているか」を最重要基準にするという恐ろしいほどの二面性を持つ。",
-    "background_secret": "根底には『かつて自分が救われた小さなシーシャ屋のような空間の入り口を、全国どこでも味わえるようにしたい』という熱い理念がある。「自社の煙はあくまで入り口であり、若者たちがチェーン店を踏み台にして本物の煙へ至ることを望んでいる」。だからこそ、プロの大会では容赦のない厳しい採点を行う。\ntonariの「スミさん」とは旧知の仲であり、チェーン展開でシーシャ文化を広める南雲と、個人店で究極の味を追求するスミさんという、真逆の道を歩んだライバル関係。",
+    "description": "大手シーシャチェーン「シーステーション」の会長であり、大会審査員長。業界を牽引するビジネスマン的な一面を持つ。\n技術や効率だけでなく「店の哲学が煙に出ているか」を最重要基準にしている。",
+    "background_secret": "ビジネスマンとして無慈悲に店舗を拡大してきたが、根底にあるのは『かつて自分が救われたあの小さな古びたシーシャ屋のような空間を、全国どこでも味わえるようにしたい』という泥臭い理想。",
     "favorite_flavor": "シーガ（葉巻系）",
     "specialty_flavor": "N/A（審査のため作らない）",
     "growth_stats": {
@@ -452,8 +393,7 @@
     "visual_concepts": [
       "45s japanese business man, sharp and authoritative, short cleanly cut hair, wearing a very expensive tailored three-piece navy suit, examining a shisha with a critical and intimidating eye",
       "corporate executive judge, mature alpha male, silver tie and luxury watch, sitting imposingly at a judge's table, looking analytical but with a hidden passionate glint in his eyes, upscale lounge aesthetic"
-    ],
-    "height": 178
+    ]
   },
   {
     "id": "emil",
@@ -475,8 +415,7 @@
     "visual_concepts": [
       "48s turkish man, rugged and distinguished, thick mustache and short dark hair with greying temples, wearing a smart casual vest and rolled-up shirtsleeves, deep intense eyes evaluating smoke",
       "experienced turkish nargile craftsman, weathered face with lines of wisdom, wearing a simple collared shirt and suspenders, observing shisha smoke with profound concentration, traditional coffeehouse background hints"
-    ],
-    "height": 170
+    ]
   },
   {
     "id": "dj_smoke",
@@ -498,8 +437,7 @@
     "visual_concepts": [
       "35s japanese male DJ, cool street style, wearing a bucket hat, oversized stylish hoodie, and thick headphones slung around his neck, bobbing his head slightly to an imaginary beat, neon club lighting",
       "trendy club DJ and judge, wearing large tinted sunglasses and complex layered streetwear, observing the competition from a DJ booth setup, lasers and smoke machine atmosphere"
-    ],
-    "height": 178
+    ]
   },
   {
     "id": "sheikh",
@@ -509,7 +447,7 @@
     "nationality": "UAE",
     "affiliation": "ドバイ王族",
     "play_style": "「純金機材と至上の煙」",
-    "description": "世界大会の本戦相手。王族という立場と純金の特別機材を持つが、15年前に路地裏のカフェで吸った「ある日本人（若きスミさん）」のシーシャが原体験。\nあの「本物の煙」をもう一度超えるためだけに戦い続けている。",
+    "description": "世界大会の決勝相手。王族という立場と純金の特別機材を持つが、15年前に路地裏のカフェで吸った「ある日本人（若きスミさん）」のシーシャが原体験。\nあの「本物の煙」をもう一度超えるためだけに戦い続けている。",
     "background_secret": "莫大な富と権力ゆえに、誰も自分に本音で接してくれないという絶望的な孤独を抱えている。15年前のスミさんだけが、王族としてではなく『ただの疲れた一人の客』として彼を扱い、極上の煙を出してくれた。",
     "favorite_flavor": "グレープ",
     "specialty_flavor": "究極に洗練された単一フレーバー",
@@ -521,13 +459,12 @@
     "visual_concepts": [
       "52s middle eastern royalty, regal and commanding presence, wearing an immaculate white kandura and a golden-trimmed ghutra, smoking from an extravagant pure gold hookah, luxurious palace surroundings",
       "wealthy arab sheikh, neatly trimmed beard, majestic and wealthy aura, adorned with subtle but incredibly expensive jewelry, standing confidently next to a jeweled masterpiece shisha pipe"
-    ],
-    "height": 192
+    ]
   },
   {
     "id": "chad",
     "name": "チャド / チャド・ウィンズロウ",
-    "role": "judge",
+    "role": "rival_ch4",
     "age": 29,
     "nationality": "USA",
     "affiliation": "世界戦プレイヤー",
@@ -544,13 +481,12 @@
     "visual_concepts": [
       "29s american male, incredibly fit and handsome, confident blinding smile, short blonde hair, wearing a tight black t-shirt showing off muscular arms, doing flashy tricks with bright smoke rings, energetic vibe",
       "charismatic western showman, bright blue eyes, wearing flashy sunglasses indoors, performing acrobatic smoke tricks like a bartender juggling bottles, vibrant and fun lighting"
-    ],
-    "height": 185
+    ]
   },
   {
     "id": "da_silva",
     "name": "ダ・シルヴァ太陽 / エンリケ・ダ・シルヴァ・太陽",
-    "role": "judge",
+    "role": "rival_ch4",
     "age": 28,
     "nationality": "Brazil",
     "affiliation": "世界戦プレイヤー",
@@ -567,8 +503,29 @@
     "visual_concepts": [
       "28s brazilian male, tanned skin, athletic build, sunny and overwhelmingly cheerful expression, wearing a vibrant tropical shirt open at the chest, surrounded by lively festival energy and colorful smoke",
       "passionate brazilian shisha player, dark curly hair, wide joyful smile, wearing colorful street carnival-inspired clothing, partying and dancing while managing the hookah, festive warm sunshine lighting"
-    ],
-    "height": 180
+    ]
+  },
+  {
+    "id": "mashiro",
+    "name": "ましろ / 水瀬 ましろ",
+    "role": "sub_character",
+    "age": 22,
+    "nationality": "Japan",
+    "affiliation": "tonari（主人公の同僚）",
+    "play_style": "N/A",
+    "description": "主人公のバイト先『tonari』の同僚。いつも眠たげで、どこか浮世離れした雰囲気を持つ。味覚が少しバグっており、彼女の作る実験的なフレーバーは時に奇跡を起こす。巷で噂の凄腕職人『シガーマン』の正体だといかつい男だと勘違いされているが、実は彼女のことである。本人はシガーマンを「怖いいかつい男」だと思い込んで怯えている（アンジャッシュ状態）。",
+    "background_secret": "【公式隠し設定】巷で噂される凄腕「シガーマン」の正体。性別すら知られておらず「確実にいかつい男」だと勘違いされているが、実はこのゆるふわな女の子。極太の煙を平然と燻らせる味覚のバグを持つ。本人は自分がシガーマンだとは夢にも思わず、その噂に怯えている。",
+    "favorite_flavor": "葉巻（シガー）系ミックス",
+    "specialty_flavor": "重厚なシガーリーフミックス",
+    "growth_stats": {
+      "primary": "技術",
+      "secondary": "魅力",
+      "notes": "はじめの影響を受け、重すぎるシガーリーフの煙の中に「吸いやすさ」を同居させる神業を身につける。"
+    },
+    "visual_concepts": [
+      "22s japanese female, relaxed and sleepy expression, messy light brown hair, wearing a loose oversized knit cardigan over an apron, puffing a massive cloud of heavy cigar-scented smoke effortlessly, cozy and slightly chaotic cafe atmosphere",
+      "young chill cafe worker female, droopy eyes, holding a large shisha hose, surrounded by dark heavy smoke but looking completely unbothered and sweet, contrasting gap moe"
+    ]
   },
   {
     "id": "kako",
@@ -590,8 +547,7 @@
     "visual_concepts": [
       "26s japanese female, pale skin like a japanese doll, hime-cut long black hair, wearing stylish black monochrome mode fashion, typing rapidly on a customized keyboard, slightly slouching, socially awkward but intense vibe",
       "introverted female designer, dark elegant hime-cut hair, wearing oversized dark avant-garde clothing, surrounded by personal shisha equipment, mixing flavors very methodically like a nerd, computer screens glowing in the background"
-    ],
-    "height": 160
+    ]
   },
   {
     "id": "rira",
@@ -616,29 +572,6 @@
     ]
   },
   {
-    "id": "mashiro",
-    "name": "ましろ / 真白（ましろ）",
-    "role": "sub_character",
-    "age": 22,
-    "nationality": "Japan",
-    "affiliation": "mukai（東京のバイト先）",
-    "play_style": "N/A",
-    "description": "第3章（東京編）のヒロイン候補。\n東京遠征時のバイト先である「向かい（mukai）」の同僚。色素の薄いふんわりとした髪をゆるい三つ編みにしており、フリルのブラウスやリネン素材のロングスカートといった、森の妖精や絵本のようなナチュラル・メルヘン系の服装を好む。（イケメン女子感やボーイッシュ感は一切ない）非常に喋り方が遅くおっとりした女の子。\nニコチン耐性が完全にバグっており、一般的な甘いシーシャは「お水ですか？」と感じてしまうほどの極重シガー愛好家。\nバイト後に時間を見つけて一緒に東京の街を遊び歩いたり、機材屋を巡ったりすることで仲を深めていくことができる「初めての東京の友達」。",
-    "background_secret": "常連客から「あの恐ろしい重さの煙を作るヤツ＝シガーマン」という都市伝説のようなあだ名で恐れられている人物の正体。\n直接性別については語られないが、『ヤクザも逃げ出すような顔色一つ変えずに極重のシガーリーフを一気に吸い込む化け物』『直火で炙った煙を肺の底まで叩き込んでいるらしい』といった、聞く者が勝手に「絶対にいかついおっさんだ…」と想像してしまうような武勇伝が界隈に広まっている。\nそのため、主人公も含めて『mukaiにいるダンディな店長こそがシガーマンだ』と完全に勘違いする仕掛けになっている。\nしかし本人は自分がそのシガーマンだとは全く気づいておらず、店内でその恐ろしい噂を聞いて「シガーマンこわいですねぇ」と本気で震えているアンジャッシュ的なギャップを持つ。",
-    "favorite_flavor": "シガー（葉巻系）など",
-    "specialty_flavor": "シガーリーフ全般",
-    "growth_stats": {
-      "primary": "魅力",
-      "secondary": "根性",
-      "notes": "最初は自分の好きな「重くて強いシーシャ」しか作れなかったが、主人公と一緒に遊んだり、客に寄り添う姿を見たりするうちに、重さの中に少しだけ甘さや優しさをブレンドする柔らかい煙を作れるようになっていく。"
-    },
-    "visual_concepts": [
-      "20s japanese female, natural fairy-tale fashion, extremely relaxed and slow very soft vibe, fluffy light brown hair styled in a loose side braid, wearing a soft pastel blouse with ruffles and a long linen skirt, blowing a massive thick cloud of cigar leaf smoke strongly like a veteran without coughing",
-      "soft-spoken lazy cute innocent girl, completely feminine and not tomboyish, pale skin, natural earthy cute clothes, NOT wearing thick knitwear, surrounded by thick heavy cigar smoke, unexpected hardcore shisha master, fairy tale aura but holding a heavy hookah hose"
-    ],
-    "height": 155
-  },
-  {
     "id": "tetsuko",
     "internal_name": "tetsuko",
     "display_name": "テツコ",
@@ -658,8 +591,7 @@
     },
     "visual_concepts": [
       "brown and white scottish fold cat, sitting with back against the wall (scottish fold sit / suko-zuwari), very relaxed and lazy aura, resting near the back door of a shisha cafe"
-    ],
-    "height": 40
+    ]
   },
   {
     "id": "mukai_master",
@@ -669,7 +601,7 @@
     "nationality": "Japan",
     "affiliation": "mukai（店長）",
     "play_style": "N/A",
-    "description": "第3章（東京編）での溜まり場となるシーシャ店「向かい（mukai）」の店長。ハットを深く被り、髭を蓄えた次元大介のようなルックスの超絶渋いダンディなおじ様。常に落ち着いた低音ボイスで喋る。",
+    "description": "第3章（東京編）での溜まり場となるシーシャ店「向かい（mukai）」の店長。ハットを深く被り、髭を蓄えた次元大輔のようなルックスの超絶渋いダンディなおじ様。常に落ち着いた低音ボイスで喋る。",
     "background_secret": "ルックスがハードボイルドすぎるため、主人公から「常連が恐れるシガーマンの正体」だと誤解されるが、実は極端に強いニコチンは苦手であり、ブラックコーヒーや優しい味の煙を好む。「tonari」のスミさんとは古くからの知り合い。",
     "favorite_flavor": "ブラックコーヒーなど",
     "specialty_flavor": "お茶・コーヒー系のビターミックス",
