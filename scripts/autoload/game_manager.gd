@@ -77,7 +77,7 @@ const SPEAKER_COLORS := {
 	"sumi": Color("a22633"),      # ディープレッド
 	"naru": Color("feae34"),      # ゴールド
 	"adam": Color("265c42"),      # ダークグリーン
-	"ryuji": Color("f77622"),     # バーニングオレンジ
+	"kumicho": Color("f77622"),     # バーニングオレンジ
 	"tsumugi": Color("68386c"),   # パープル
 	"minto": Color("b55088"),     # ローズピンク
 	"packii": Color("2ce8f5"),    # シアン

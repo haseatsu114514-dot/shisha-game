@@ -96,12 +96,12 @@ const MIND_WORDS_ANXIETY := [
 ## 弾幕ワード: 観客の声（主人公を不安にさせるもの）
 const MIND_WORDS_AUDIENCE := [
 	"この大会はアダムの優勝で決まりだな",
-	"リュウジのシーシャ、すげー煙だったな",
+	"組長のシーシャ、すげー煙だったな",
 	"にしおさんの配合、さすがだった",
 	"あの新人、大丈夫かな…",
 	"初出場でこの面子は厳しいでしょ",
 	"アダムって海外で修行してたんだって",
-	"リュウジの人気投票、断トツらしいよ",
+	"組長の人気投票、断トツらしいよ",
 	"にしおさん、去年も上位だったよね",
 	"やっぱ経験の差が出るよな",
 	"あの子の配合、ちょっと地味じゃない？",
@@ -115,7 +115,7 @@ const MIND_WORDS_RIVAL := [
 	"前のラウンド、負けてるぞ",
 	"その個性、ただの自己満足では？",
 	"アダムの技術には敵わない",
-	"リュウジのセンスが羨ましい",
+	"組長のセンスが羨ましい",
 	"にしおさんの安定感、真似できない",
 	"ライバルたちは本気だ",
 	"みんな自分より上手い",
@@ -3189,7 +3189,7 @@ func _prepare_rival_score_tables() -> void:
 	var rivals = [
 		{"id": "naru", "name": "なる", "specialist": 78.0, "audience": 62.0, "variance": 6.0},
 		{"id": "adam", "name": "アダム", "specialist": 85.0, "audience": 52.0, "variance": 5.0},
-		{"id": "ryuji", "name": "リュウジ", "specialist": 65.0, "audience": 75.0, "variance": 8.0},
+		{"id": "kumicho", "name": "組長", "specialist": 65.0, "audience": 75.0, "variance": 8.0},
 	]
 	_rival_mid_scores.clear()
 	_rival_final_scores.clear()
@@ -3243,7 +3243,7 @@ func _get_rival_theme_bonus(rival_id: String, theme_id: String) -> float:
 		return 4.0
 	if rival_id == "adam" and theme_id == "high_heat":
 		return 6.0
-	if rival_id == "ryuji" and (theme_id == "high_heat" or theme_id == "fruity"):
+	if rival_id == "kumicho" and (theme_id == "high_heat" or theme_id == "fruity"):
 		return 5.0
 	return 0.0
 

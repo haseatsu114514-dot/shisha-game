@@ -2733,7 +2733,7 @@ func _prepare_rival_score_tables() -> void:
 	var rivals = [
 		{"id": "naru", "name": "なる", "specialist": 66.0, "audience": 55.0, "variance": 8.0},
 		{"id": "adam", "name": "アダム", "specialist": 73.0, "audience": 48.0, "variance": 9.0},
-		{"id": "ryuji", "name": "リュウジ", "specialist": 60.0, "audience": 67.0, "variance": 9.0},
+		{"id": "kumicho", "name": "組長", "specialist": 60.0, "audience": 67.0, "variance": 9.0},
 	]
 	_rival_mid_scores.clear()
 	_rival_final_scores.clear()
@@ -2787,7 +2787,7 @@ func _get_rival_theme_bonus(rival_id: String, theme_id: String) -> float:
 		return 4.0
 	if rival_id == "adam" and theme_id == "high_heat":
 		return 6.0
-	if rival_id == "ryuji" and (theme_id == "high_heat" or theme_id == "fruity"):
+	if rival_id == "kumicho" and (theme_id == "high_heat" or theme_id == "fruity"):
 		return 5.0
 	return 0.0
 
