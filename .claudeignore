@@ -1,0 +1,31 @@
+# .claudeignore
+# Claude Code がインデックス・自動参照しないファイルを指定
+
+# Godot エンジン内部ファイル（大量のバイナリキャッシュ）
+.godot/
+*.import
+*.uid
+
+# アセット系（画像・音声は Claude が処理不要）
+assets/
+asset_sources/
+
+# 翻訳バイナリ
+*.translation
+
+# スプレッドシート系（CSV は必要時のみ手動で参照）
+アセット差し替え進捗管理表.*
+
+# 過去のフィードバック記録（作業中に毎回読む必要なし）
+brand/comprehensive_feedback.md
+brand/gameplay_feedback.md
+brand/editorial_notes.md
+
+# 旧プロンプトテンプレート（CLAUDE.md に集約済み）
+brand/claude_code_prompt.md
+brand/claude_prompt_comprehensive.md
+brand/claude_prompt_template.md
+
+# テスト用スクリプト（一時ファイル）
+test_join.gd
+stash_output.txt

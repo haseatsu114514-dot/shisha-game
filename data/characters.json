@@ -1,7 +1,7 @@
 [
   {
     "id": "hajime",
-    "name": "はじめ / 陽村 始（ひむら はじめ）",
+    "name": "はじめ / 蒸野 始（むしの はじめ）",
     "role": "protagonist",
     "age": 22,
     "nationality": "Japan",
@@ -360,14 +360,14 @@
     ]
   },
   {
-    "id": "pakki",
+    "id": "packii",
     "name": "パッキー",
     "role": "mc",
     "age": "年齢不詳",
     "nationality": "Japan",
     "affiliation": "大会MC（マスコット）",
     "play_style": "N/A",
-    "description": "シーシャ大会の名物MC（着ぐるみマスコットのような存在）。常にハイテンションで喋り倒すが、本当に美味いシーシャが出た時だけ沈黙し、煙が虹色になるという伝説を持つ。",
+    "description": "シーシャ大会の名物マスコットMC。常にハイテンションで笑い飛ばしながら喋り倒すが、その裏では出場者全員を内心見下している「残酷な盛り上げ役」。ブラックユーモアとデスゲーム的な煽りで場を沸かせ、敗者の絶望を心から楽しむ。特徴的な笑い声「ぷぷぷっ！」「くふふ！」を持ち、悲劇と歓喜を混同したような言動が特徴。本当に美味いシーシャが出た時だけ沈黙し、煙が虹色になるという伝説を持つ。",
     "background_secret": "実は初期の世界大会を立ち上げた創設メンバーの一人。声帯を痛めて本来の声が出なくなったため、着ぐるみとハイテンションな合成音声でMCとしてシーンを支え続けている。",
     "favorite_flavor": "ガムシナモン（仮）",
     "specialty_flavor": "N/A",
@@ -380,6 +380,44 @@
       "mysterious mascot character, wearing a cute but slightly weird fluffy colorful animal costume holding a microphone, very upbeat and energetic body language, festival stage lighting",
       "eccentric tournament MC, wearing an oversized flashy plush head mascot suit (perhaps a surreal tapir or cloud creature), holding a golden mic, standing in front of a cheering crowd, comic pop-art style"
     ]
+  },
+  {
+    "id": "takiguchi",
+    "name": "焚口 ショウ（たきぐち ショウ）",
+    "role": "mc",
+    "age": "不詳",
+    "nationality": "Japan",
+    "affiliation": "大会実況MC",
+    "play_style": "N/A",
+    "description": "地方シーシャバトルの人間実況MCを務める。マイクを握ると人が変わったように声量が上がり、会場全体を盛り上げる。パッキーとともに大会を進行する。",
+    "background_secret": "N/A",
+    "favorite_flavor": "N/A",
+    "specialty_flavor": "N/A",
+    "growth_stats": {
+      "primary": "N/A",
+      "secondary": "N/A",
+      "notes": "N/A"
+    },
+    "visual_concepts": []
+  },
+  {
+    "id": "maezono",
+    "name": "前園 壮一郎（まえぞの そういちろう）",
+    "role": "judge",
+    "age": "不詳",
+    "nationality": "Japan",
+    "affiliation": "大会審査員",
+    "play_style": "N/A",
+    "description": "地方シーシャバトルの審査員。「シーシャはおいしいねえ」が口癖の、温かみのある人物。審査員ながら場を和ませる空気を持つ。",
+    "background_secret": "N/A",
+    "favorite_flavor": "N/A",
+    "specialty_flavor": "N/A",
+    "growth_stats": {
+      "primary": "N/A",
+      "secondary": "N/A",
+      "notes": "N/A"
+    },
+    "visual_concepts": []
   },
   {
     "id": "nagumo",
@@ -609,7 +647,7 @@
     "nationality": "Japan",
     "affiliation": "mukai（店長）",
     "play_style": "N/A",
-    "description": "第3章（東京編）での溜まり場となるシーシャ店「向かい（mukai）」の店長。ハットを深く被り、髭を蓄えた次元大輔のようなルックスの超絶渋いダンディなおじ様。常に落ち着いた低音ボイスで喋る。",
+    "description": "第3章（東京編）での溜まり場となるシーシャ店「向かい（mukai）」の店長。ハットを深く被り、髭を蓄えた次元大介のようなルックスの超絶渋いダンディなおじ様。常に落ち着いた低音ボイスで喋る。",
     "background_secret": "ルックスがハードボイルドすぎるため、主人公から「常連が恐れるシガーマンの正体」だと誤解されるが、実は極端に強いニコチンは苦手であり、ブラックコーヒーや優しい味の煙を好む。「tonari」のスミさんとは古くからの知り合い。",
     "favorite_flavor": "ブラックコーヒーなど",
     "specialty_flavor": "お茶・コーヒー系のビターミックス",
