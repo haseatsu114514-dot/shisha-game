@@ -1,0 +1,853 @@
+diff --git a/brand/character_profiles.md b/brand/character_profiles.md
+index 64af20a..7b53524 100755
+--- a/brand/character_profiles.md
++++ b/brand/character_profiles.md
+@@ -42,7 +42,7 @@
+ - **スタイル**: 「客商売（魅せ方）の極意」
+   - コンセプトカフェ風の店で働く、可愛らしい容姿のプレイヤー。一見すると「ばえ（映え）」重視に見えるが、実は客の心理と視覚効果を計算し尽くしたしたたかな戦略家。
+ - **推し（得意）フレーバー**: ミント
+-  - **【隠し設定】** 自称20歳だが実年齢は29歳。本人は完全に隠しており、外見の若さを最大の武器にしている。
++  - **【隠し設定】** 自称20歳だが実年齢は29歳。本人は完全に隠しており、外見の若さを最大の武器にしているが、主人公と恋人関係になった後に真実を打ち明ける（カミングアウト）展開がある。
+ 
+ ---
+ 
+@@ -167,22 +167,22 @@
+ 
+ ※サブキャラクターについて
+ - **つむぎ**: 第1章からのヒロイン候補。
+-- **ましろ（シガーマン）**: 第3章（東京編）からのヒロイン候補。「向かい（mukai）」のバイト仲間。
+-- **ムカイさん**: 第3章（東京編）の溜まり場「向かい（mukai）」のダンディな店長。
++- **ましろ（シガーマン）**: 第3章（東京編）からのヒロイン候補。「mukai」のバイト仲間。
++- **シバさん**: 第3章（東京編）の溜まり場「mukai」のダンディな店長。
+ - **かこ / りら などの「ちょい役」常連客**:
+   1. システム上の好感度は存在しないが、隠しステータスとして「裏好感度」を持つ。
+   2. 裏好感度の最大値は「3」。
+   3. 3回遭遇して好感度がMAXになると主人公に好意的になり打ち解け、第5章（SHISHA-9000戦）や世界大会の際にギャラリー（応援）として駆けつけてくれる。
+ - **サラリーマン**: ストーリー上重要な役割を持つため、通常のランダム接客（日常営業）には登場せず、ストーリー・エンディング限定で出現する。
+ 
+-### ましろ / 真白（ましろ） [通称：シガーマン]
++### ましろ / 水瀬 ましろ [通称：シガーマン]
+ - **役割**: 東京編（第3章）のヒロイン候補 / 溜まり場店「mukai（向かい）」のバイト仲間
+ - **年齢**: 20歳
+ - **特徴**: 東京に遠征してきた主人公が働くことになる店「mukai」の同僚。色素の薄い柔らかな髪をゆるい三つ編みにし、フリルのついたブラウスやゆったりしたロングスカート、リネン素材のワンピースなど「森の妖精」や「絵本に出てくるような女の子」を思わせる、とことんおっとり＆ふわふわした服装を好む。（※ボーイッシュ・イケメン女子・綺麗系な要素は一切なく、あくまで幼さの残る可愛い系）（※つむぎが着るようなダボっとしたニット・パーカー系とも被らないナチュラル・メルヘン系）。
+ - **プレイスタイル / ギャップ**: その外見と非常にゆっくりした喋り方から想像もつかないほど、吸うのも作るのも「超絶重いシガーリーフ（葉巻系の強烈なニコチン）」しか愛せないゴリゴリのハードコアマニア。おっとりした見た目に反して、煙を吸うときだけは歴戦の愛煙家のように極太の煙を肺の底まで力強く吸い込む（むせる気配は一切ない）。常連から「あの恐ろしい重さの煙を作るヤツ＝シガーマン」と噂されており、主人公は「mukai」のダンディな店長がその正体だと完全に思い込んでいた。まさかこの「ふわふわでおっとりした女の子」がシガーマンだとは思わず、その激しいギャップに驚かされる。
+ - **推し（得意）フレーバー**: シガー（葉巻系）など
+ 
+-### ムカイさん / 向井（むかい） [店長]
++### シバさん / 柴崎 薫（しばさき かおる） [店長]
+ - **役割**: 東京編（第3章）の溜まり場「mukai（向かい）」の店長。東京の先輩/保護者枠兼レッドヘリング
+ - **年齢**: 48歳
+ - **特徴**: 次元大輔のような黒いハットを被り、髭を蓄えた超渋いダンディなおじさん。低音の響くバリトンボイス。いかにも「夜の凄腕マスター」といった佇まいで「シガーマン」の正体だと誰もが勘違いする強烈なオーラを放っている。
+@@ -197,7 +197,7 @@
+ 
+ ### 白木 つむぎ（しらき つむぎ）
+ - **役割**: tonariの常連客（ヒロイン候補）
+-- **特徴**: 画面にひびの入ったiPadでいつも絵を描いている寡黙な少女。主人公の作るシーシャにだけ心を開いていく。
++- **特徴**: 画面にひびの入ったiPadでいつも絵を描いている寡黙な少女。主人公の作るシーシャの煙にだけ「特別な色」が見える共感覚を持つ。主人公への依存度が高く、彼の服の匂いを嗅いで安心するようなヤンデレ気味な一面も併せ持つ。
+ - **推し（得意）フレーバー**: ラベンダー
+ 
+ ### サラリーマン（常連客）
+diff --git a/brand/story_and_structure.md b/brand/story_and_structure.md
+index 7c56165..96cbf62 100755
+--- a/brand/story_and_structure.md
++++ b/brand/story_and_structure.md
+@@ -35,12 +35,13 @@ tonariのオーナー。シーシャが好きで、閉店後はいつも自分
+ 
+ 閉店後、スミさんが唐突に切り出す。
+ 
+->- **主な登場人物（第1章）**:
+-  - **スミさん（炭場丈一郎）**: 師匠。アドバイスをくれるが、まだ本当の実力は見せない。
+-  - **鳴切亮太（なる）**: 自称天才のライバル（ケムリクサ）。主人公を見下している。
+-  - **アダム・リンゴスキー**: りんご系フレーバーを愛するスピリチュアルな外国人。
+-  - **翠川栞（みんと）**: コンカフェ「ぺぱーみんと」の店長。ぶりっ子だが、素は内気で真面目。
+-  - **宵野葉子（アゲハ）**: （※顔見せのみ）道端で主人公の落とし物を拾ってくれる「オタクに優しいギャル」。本格的な登場は第2章から。
++> - **主な登場人物（第1章）**:
++>   - **スミさん（炭場丈一郎）**: 師匠。アドバイスをくれるが、まだ本当の実力は見せない。
++>   - **鳴切亮太（なる）**: 自称天才のライバル（ケムリクサ）。主人公を見下している。
++>   - **アダム・リンゴスキー**: りんご系フレーバーを愛するスピリチュアルな外国人。
++>   - **翠川栞（みんと）**: コンカフェ「ぺぱーみんと」の店長。ぶりっ子だが、素は内気で真面目。実は29歳で、後手カミングアウトする。
++>   - **白木つむぎ（つむぎ）**: tonariの常連客。主人公の煙に「色」を見る共感覚を持ち、静かながらヤンデレ的な依存を見せる。
++>   - **宵野葉子（アゲハ）**: （※顔見せのみ）道端で主人公の落とし物を拾ってくれる「オタクに優しいギャル」。本格的な登場は第2章から。
+ > **スミ**「はじめ。大会出ろ」
+ 
+ > **はじめ**「……は？」
+@@ -465,122 +466,102 @@ tonariに新しいバイトが入る。はじめが教える側になる。
+ 
+ ---
+ 
+-## 【承】世界のライバルたち
++## 【転】世界大会の審査──チャドとダ・シルヴァ太陽
+ 
+-### シェイク・アル=ガリヤーン
+-
+-変装して路地裏のカフェで一人シーシャを吸っているのを目撃。
+-
+-> **シェイク**「ここのシーシャが一番落ち着く。王宮より」
+-
+-王族にも人間味がある。
+-
+-### チャド
++世界大会は従来の「1vs1のトーナメント」ではなく、最高峰の審査員たちによる「評価形式」の祭典だった。
++審査員として立ちはだかるのは、世界のシーシャシーンを牽引するカリスマたち。
+ 
++### チャド（SHOWTIME）
+ > **チャド**「味はいいけどショーマンシップが足りねえ」
++エンターテインメント性を重んじるチャド。煙の見せ方、客を楽しませる空間作りを審査する。
+ 
+-プレゼン力を教えてくれる意外な師匠。
+-
+-### ダ・シルヴァ太陽
+-
++### ダ・シルヴァ太陽（FESTA）
+ > **ダ・シルヴァ太陽**「シーシャはフェスタだ！楽しくなけりゃ意味がねぇ！」
++純粋な喜びとパッションを審査する男。
+ 
+-純粋な楽しさを思い出させてくれる。
+-
+----
++はじめは、彼らの前で「自分なりの最高の一杯」を披露することになる。
++なるもまた、アジアでの敗北から死ぬほど努力して磨き上げた最高のお菓子系フレーバーを提示する。
+ 
+-## 【転−１】SHISHA-9000戦──AIにシーシャプレイヤーは代替されるのか
++> **なる**「お前のこと、誰より見てきたからな。お前の癖、全部知ってる。俺の煙を見せてやる」
+ 
+-**SHISHA-9000。最新のAIシーシャマシン。過去の全大会データを学習済み。そして──はじめの全試合データも学習済み。**
++はじめが出したのは、「tonariでいつも作ってるシーシャ」のアレンジ。特別な機材でも特別なフレーバーでもない。スミさんの教え、なるとの約束、世界中のライバルの哲学、そして「交わらないから面白い」という静かな確信。どんな審査員であっても、その瞬間の相手に向き合い、フラットにリスペクトを込めた煙。
+ 
+-対戦が始まる。SHISHA-9000が作るシーシャは完璧だった。技術点はほぼ満点。そして何より恐ろしかったのは、その煙が「優しい」ことだった。
++> **チャド**「……おいおい、地味かと思えば、これは……」
++> **ダ・シルヴァ太陽**「ハハッ！ なんだこれ、すげぇピースフルじゃねえか！」
+ 
+-はじめの「優しさ」を完璧に再現している。
++### シェイク・アル=ガリヤーンの正体
+ 
+-> **審査員**「これ……人間が作ったみたいだ」
++審査の最終決定を前に、路地裏のカフェで出会った「純金機材の男」が姿を現す。
++彼こそが大会の特別審査員であり、中東の王族、シェイク・アル=ガリヤーンだった。
+ 
+-はじめが崩れかける。「やっぱり、そうだったんだ」
+-ずっと疑っていたことが確信に変わる。「優しさ」なんて曖昧なものは、結局計算式で再現できる程度のものだった。それは僕だけの武器なんかじゃなかった。
+-
+-だが、対戦中に審査員の一人が咳き込む。体調が悪そうだ。
+-
+-SHISHA-9000はデータ通りの最適解を出し続ける。
+-
+-はじめはその場で煙の重さを変えた。審査員の体調を見て、軽めに調整した。データにない判断。「今ここにいるこの人」への応答。
+-
+-僅差ではじめが勝つ。
+-
+-開発者が近づいてくる。
+-
+-> **開発者**「やはり心が必要なのか」
+-
+-> **はじめ**「心っていうか……『今ここにいるあなた』に作ってるかどうか、じゃないですか。データにあるのは過去の誰かであって、今のあなたじゃない」
++> **シェイク**「ここのシーシャが一番落ち着く……そう言っただろう」
+ 
+-> **はじめ**「シーシャ屋は、目の前の人との関係性の中で煙を作る。それはたぶん、データじゃ代替できない」
++シェイクがはじめの煙を吸い、静かに目を閉じる。
+ 
+-*──「自分のシーシャ」の答えに、また一歩近づいた。*
++**はじめ、世界大会で最高の評価（グランプリ）を獲得。**
+ 
+ ---
+ 
+-## 【転−２】準決勝：はじめ vs なる ★ゲーム最大の感動パート
+-
+-地方大会で出会い、共に成長し、アジアでは別ブロックですれ違い、ついに世界の舞台で激突する二人の決着。
++## 【結】世界大会後──スミさんの過去
+ 
+-なるはアジアでの敗北から死ぬほど努力して戻ってきた。はじめの全試合データを分析し、弱点を完璧に突いてくる。
++シェイクの屋敷に招かれるはじめ達。
+ 
+-> **なる**「お前のこと、誰より見てきたからな。お前の癖、全部知ってる」
++> **シェイク**「実はな…私がシーシャを始めたきっかけは日本人だ。15年前、ドバイの路地裏のカフェで出会った名もない店員。あの男のシーシャだけは忘れられない」
++> **シェイク**「彼の名は……炭場丈一郎」
+ 
+-なるのシーシャは最高傑作だった。お菓子系フレーバーの繊細な重ね方。そこにアジアでの敗北と再起の全てが込められている。
++> **はじめ**「…………スミさん……？」
+ 
+-でもはじめが「なるの分析にないこと」をやる。旅で出会った全ライバルの技を自分なりに融合した即興の一杯。「空っぽだからこそ何でも入る」という戦略が、ここで形になる。
++*──あの「ただのシーシャ好きな店長」が、シェイクの原体験だった。*
+ 
+-Ch2で学んだ「感情が煙に出る」ということ。後輩に教えることで言語化した方法論。そしてCh2で失いかけ、取り戻した「みんな違って面白い」というフラットさ。
++> **シェイク**「彼は当時、日本大会の準優勝者だった。大会で折れて世界を放浪し、ドバイの小さなカフェで働いていた。でも彼の煙は折れた人間のものじゃなかった。私が吸った中で、今でも最も心に残る一杯だ」
+ 
+-なるのお菓子系を「ずるい」と思った頃の自分はもういない。なるのシーシャを「最高だ」と思いながら、それとは違う自分の煙を出す。交わらない。でもどっちも最高。
++はじめの頭の中で、全てが繋がる。スミさんがあの特訓で見せた、ただの店長とは思えない精度。エミルがイスタンブールで言った「ある男」。全てが、スミさんへの系譜だった。
+ 
+-全部が、この一杯に入っている。
++---
+ 
+-僅差で勝利。
++# 第５章：Deus Ex Machina（デウス・エクス・マキナ）
+ 
+-> **なる**「…………」
++**テーマ：「AIは『関係性』を代替できるか」**
+ 
+-> **なる**「…最高のシーシャだったよ。決勝、絶対勝てよ」
++**シーシャプレイヤーへの共感：** AIが進化して、効率的で完璧なレシピが作れる時代。それでも「人が作る意味」は何か。答えは、目の前の人との関係性と、その瞬間の「揺らぎ」にある。
+ 
+ ---
+ 
+-## 【転−３】決勝：はじめ vs シェイク
++## 【起】SHISHA-9000の挑戦
+ 
+-純金装備 vs 普通の装備。
++世界大会の余韻も冷めやらぬ中、人類の実力を測る最終テストとして、最新のAIシーシャマシン「SHISHA-9000」が立ちはだかる。（※事実上の裏ボス・エンドコンテンツ）
+ 
+-シェイクが完璧なシーシャを作る。審査員全員が高得点。
++SHISHA-9000は過去の全大会データを学習済み。そして──はじめの全試合データも学習済みだった。
+ 
+-はじめが出したのは、「tonariでいつも作ってるシーシャ」のアレンジ。特別な機材じゃない。特別なフレーバーでもない。でも今までの全てが込められている。
++## 【転】完璧な「優しさ」のコピー
+ 
+-スミさんの教え。なるとの約束。世界中のライバルの哲学。Ch2で学んだ「感情が煙に出る」ということ。そして何より──シェイクのシーシャも最高、でも僕の煙は僕の煙だ、という静かな確信。
++対戦が始まる。SHISHA-9000が作るシーシャは技術点においてほぼ満点の絶対的な正解。そして何より恐ろしかったのは、その煙の性質が、はじめの武器である「優しい煙」を完璧にシミュレートしていたことだった。
+ 
+-> **土岐**「……………悪くない」
++> **審査員（SHISHA-9000の煙を吸って）**「これ……人間が作ったみたいだ」
+ 
+-*──最高評価。会場がどよめく。*
++はじめが崩れかける。「やっぱり、そうだったんだ」
++ずっと疑っていたことが確信に変わる。「優しさ」なんて曖昧なものは、結局計算式で再現できる程度のものだった。それは僕だけの武器なんかじゃなかった。
+ 
+-パッキーが一瞬沈黙。煙が虹色になる。
++## 【結】データにない一杯
+ 
+-**はじめ、優勝。**
++しかし、審査をする側の人間たち（チャド、ダ・シルヴァ、シェイクなど）もまた、その日の体調、気温、直前に吸った煙の重さなどによって「完璧な正解」が微妙に変化する生き物だった。
+ 
+----
++SHISHA-9000は「過去のデータ」に基づく最適解を出し続ける。
++対してはじめは、審査員の僅かな淀みや咳払いを見て、その場で煙の重さを僅かに変えた。データには存在しない、「今ここにいるこの人」への瞬時の応答。
+ 
+-## 【結】世界大会後
++僅差ではじめがSHISHA-9000を上回る。
+ 
+-シェイクに屋敷に招かれる。最高のシーシャを振る舞われる。
++> **開発者**「やはり心が必要なのか」
+ 
+-> **シェイク**「実はな…私がシーシャを始めたきっかけは日本人だ。15年前、ドバイの路地裏のカフェで出会った名もない店員。あの男のシーシャだけは忘れられない」
++> **はじめ**「心っていうか……『今ここにいるあなた』に作ってるかどうか、じゃないですか。データにあるのは過去の誰かであって、今のあなたじゃない」
+ 
+-> **シェイク**「彼の名は……炭場丈一郎」
++> **はじめ**「シーシャ屋は、目の前の人との関係性の中で煙を作る。それはたぶん、データじゃ代替できない」
+ 
+-> **はじめ**「…………スミさん……？」
++*──「自分のシーシャ」の答え、そして「人がシーシャを作る意味」がここで完成する。*
+ 
+-*──あの「ただのシーシャ好きな店長」が、シェイクの原体験だった。*
++---
+ 
+-> **シェイク**「彼は当時、日本大会の準優勝者だった。大会で折れて世界を放浪し、ドバイの小さなカフェで働いていた。でも彼のシーシャは折れた人間の煙じゃなかった。私が吸った中で、今でも最も心に残る一杯だ」
++# エピローグへの帰還
+ 
+ はじめの頭の中で、全てが繋がる。スミさんがあの特訓で見せた、ただの店長とは思えない精度。「長くやってりゃ、な」とだけ答えた横顔。大会に出ないかと聞いたときの「俺はいいよ」という言葉と、一瞬の遠い目。全部、過去を隠していたからだった。
+ 
+diff --git a/data/baito_events.json b/data/baito_events.json
+index d5807e1..b30db84 100755
+--- a/data/baito_events.json
++++ b/data/baito_events.json
+@@ -137,6 +137,40 @@
+         }
+       ]
+     },
++    {
++      "id": "baito_mob_kako_incognito",
++      "category": "mob",
++      "requires_any_max_affinity": true,
++      "text": "店にカコがやってきた。常連たちの顔なじみらしい。\n「はじめにゃん、お疲れー！ 今日も特製のやつお願いね」\nただのお客さんとして、ふらりと寄ってくれたようだ。",
++      "choices": [
++        {
++          "text": "「いつもありがとうございます。すぐ作りますね」",
++          "result": "丁寧にシーシャを作り、提供する。\nカコは満足そうに煙を吐き出し、「ん、これこれ！ これがいいのよ」と笑った。\n常連との絆が少し深まった気がする。",
++          "stats": {
++            "charm": 1,
++            "sense": 1
++          },
++          "money_bonus": 500
++        }
++      ]
++    },
++    {
++      "id": "baito_mob_rira_incognito",
++      "category": "mob",
++      "requires_any_max_affinity": true,
++      "text": "店にリラがやってきた。静かにカウンター席に座る。\n「……ちょっと休憩させて。シーシャ、いつもの」\n仕事終わりだろうか。少し疲れた様子だが、リラックスしに来てくれたようだ。",
++      "choices": [
++        {
++          "text": "「お疲れ様です。軽めに作っておきますね」",
++          "result": "吸いやすい軽めのセッティングでシーシャを提供する。\nリラは静かに煙を吸い込み、ふうっと吐き出して少し肩の力を抜いた。\n「……うん、助かる。ありがとう」\n常連客との穏やかな時間が流れた。",
++          "stats": {
++            "insight": 1,
++            "technique": 1
++          },
++          "money_bonus": 500
++        }
++      ]
++    },
+     {
+       "id": "baito_regular_01",
+       "category": "regular",
+@@ -182,7 +216,8 @@
+           "result": "つむぎ「…えっ…べ、別に……」\n照れてiPadの画面を胸に隠した。でも一瞬見えた──シーシャのボトルのスケッチ。煙が流れる様子が、柔らかい線で描かれていた。\n「……tonariの空気が、好きで……描いてるだけです」\n耳まで赤い。でも、その絵は本当に綺麗だった。煙の質感とか、光の反射とか。\nはじめ「（この子、tonariが好きなんだな……）」\n少し仲良くなった気がする。",
+           "stats": {
+             "charm": 3,
+-            "insight": 3
++            "insight": 3,
++            "tsumugi_affinity": 1
+           },
+           "money_bonus": 0
+         }
+@@ -329,7 +364,8 @@
+           "result": "注文を聞く前に、いつものラベンダーフレーバーでボウルを詰める。\nテーブルに置くと、つむぎが顔を上げた。「……覚えてくれてるんですね」\n小さな声だけど、少し嬉しそうだった。\n煙が立ち上る。ラベンダーの優しい香りの中で、また鉛筆が走り始めた。\nスケッチブックの端っこに、小さな「ありがとう」の文字が書き足されていた。",
+           "stats": {
+             "insight": 3,
+-            "charm": 2
++            "charm": 2,
++            "tsumugi_affinity": 1
+           },
+           "money_bonus": 0
+         },
+@@ -338,7 +374,36 @@
+           "result": "つむぎ「……デジタルだと、この煙の質感が出なくて」\n珍しくちゃんと答えてくれた。\n「煙って、一瞬ごとに形が変わるでしょ。それを捕まえたいんです」\nスケッチブックを少しだけ見せてくれた。シーシャのボトルから立ち上る煙が、何層にも重なって描かれている。\n「（……すごい。煙をこんなふうに見てる人がいるんだ）」\n同じ空間にいても、見えている世界が違う。それが面白い。",
+           "stats": {
+             "sense": 3,
+-            "insight": 2
++            "insight": 2,
++            "tsumugi_affinity": 1
++          },
++          "money_bonus": 0
++        }
++      ]
++    },
++    {
++      "id": "baito_tsumugi_synesthesia",
++      "category": "story",
++      "trigger_flag": "ch1_tsumugi_regular",
++      "text": "つむぎが珍しく、提供したシーシャの煙をじっと見つめている。\nそして、ふいに立ち上がってカウンター越しに身を乗り出し、こちらの袖口から漂う匂いを小さく嗅いだ。\n「……うん。やっぱり」と、何かに納得したようにつぶやく。",
++      "choices": [
++        {
++          "text": "「どうかした？」と尋ねる",
++          "result": "「……あなたの作る煙だけ、特別な『色』に見えるみたい。少しオレンジがかった、あたたかい色……」\nつむぎはそう言って、再びゆっくりと煙を吐き出した。\n「それに、服からする昨日のラベンダーの匂い……すごく、安心する」\n彼女の視線が、静かに、けれど熱を帯びてこちらを射抜いていた。\n（煙の『色』が見える？ 彼女の感性は、どうやら俺たちの想像よりもずっと深いところにあるらしい）",
++          "stats": {
++            "charm": 3,
++            "insight": 2,
++            "tsumugi_affinity": 1
++          },
++          "money_bonus": 0
++        },
++        {
++          "text": "「もしかして、変な匂いするかな？」と焦る",
++          "result": "「……ううん。昨日の、炭とフレーバーの混ざった匂い。……すごく、好き」\nつむぎは少しだけ頬を赤くして首を振り、スケッチブックに視線を落とした。\n「……あなたの煙がないと、最近、うまく絵が描けないの……」\nぽつりとこぼされた言葉には、少し危ういほどの依存と熱情がこもっていた。\n（これはもう、ただの常連客との関係じゃないかもしれない）",
++          "stats": {
++            "insight": 3,
++            "charm": 2,
++            "tsumugi_affinity": 1
+           },
+           "money_bonus": 0
+         }
+@@ -355,7 +420,8 @@
+           "result": "注文を聞く前に、いつものラベンダーでボウルを詰めた。\nテーブルに置くと、つむぎが一瞬だけ顔を上げた。「……覚えててくれてるんですね」\n小さな声。でも、少し嫁しそうだった。\n雨の音と、ゴボゴボという水面の音。二つの水の音が、静かな店内を包んでいる。",
+           "stats": {
+             "charm": 2,
+-            "insight": 1
++            "insight": 1,
++            "tsumugi_affinity": 1
+           },
+           "money_bonus": 0
+         },
+@@ -369,6 +435,32 @@
+         }
+       ]
+     },
++    {
++      "id": "baito_tsumugi_jealousy",
++      "category": "story",
++      "trigger_flag": "ch1_tsumugi_regular",
++      "text": "今日は少し店が混んでいて、他のお客さんの対応に手間取ってしまった。\nふと視線を感じて振り返ると、いつもの席でつむぎがアイスティーの氷をストローで『カラ、カラ……』と鳴らしている。\n無言だが、明らかに不満げにこちらをじっと見つめていた。",
++      "choices": [
++        {
++          "text": "急いで彼女のシーシャの炭替えに行く",
++          "result": "急いで彼女のテーブルに向かい、炭の調整を始める。\n「お待たせしてごめん。火加減、どうかな？」と声をかけると、つむぎはぷいっと顔をそらした後、小さく頷いた。\n「……別に、急かしてない。でも……」\n「でも？」\n「……次から、私のもちょっとだけ、早く見に来て」\nぽつりとこぼされた言葉に、思わずドキッとしてしまった。",
++          "stats": {
++            "insight": 3,
++            "charm": 2,
++            "tsumugi_affinity": 1
++          },
++          "money_bonus": 0
++        },
++        {
++          "text": "「どうしたの？」と声をかける",
++          "result": "「どうしたの？ 煙、出にくくなった？」\nそう尋ねると、つむぎはぶんぶんと首を横に振り、氷を混ぜるのをやめた。\n「……ちがう。……ただ、忙しそうだなって……。それだけ」\n言い訳のように視線を落とすが、少しだけ頬が赤くなっているように見えた。\n（もしかして……少しだけ、拗ねてたのか？）",
++          "stats": {
++            "charm": 3
++          },
++          "money_bonus": 0
++        }
++      ]
++    },
+     {
+       "id": "baito_tsumugi_closing",
+       "category": "atmosphere",
+@@ -379,7 +471,8 @@
+           "text": "「閉店だけど、急がなくていいよ」",
+           "result": "つむぎ「……あ、すみません」\n慈てて片付けを始めた。iPadを胸に抱えるいつもの仕草。\n帰り際、小さく「……ありがとうございます」と言ってくれた。\nいつもより、ほんの少しだけ、声が大きかった気がする。",
+           "stats": {
+-            "charm": 2
++            "charm": 2,
++            "tsumugi_affinity": 1
+           },
+           "money_bonus": 0
+         },
+@@ -541,6 +634,33 @@
+           "money_bonus": 0
+         }
+       ]
++    },
++    {
++      "id": "baito_ageha_bento",
++      "category": "romance",
++      "trigger_condition": "romance",
++      "character": "ageha",
++      "text": "夜、アゲハがお店にやってきた。\nいつもなら「よっ！」と元気よく入ってくる彼女が、今日はなぜかモジモジしながら小さな紙袋を抱えている。\n「……あのさ、ハジメっち。今日、ちょっと残業あるって言ってたじゃん？」",
++      "choices": [
++        {
++          "text": "「うん。少し遅くなる予定だよ」",
++          "result": "「だ、だからさ！ ……これ、持ってきた」\nアゲハが顔を真っ赤にして差し出してきたのは、手作りのお弁当箱だった。\n「……ちょっと料理動画見て作ってみたんだけど……卵焼き焦がしちゃったし、タコさんウインナーなんて形崩れて宇宙人みたいになってるしっ……！」\n「だから、無理して食べなくていいから！ やっぱ返す！」と焦る彼女を宥めて、一口食べてみる。\n「……美味しいよ。アゲハが俺のために作ってくれたのが、なにより嬉しい」\nそう伝えると、彼女は目尻に涙を浮かべて「……マジで？ ハジメっち……大好き……」と照れくさそうに笑った。",
++          "stats": {
++            "charm": 3,
++            "sense": 2
++          },
++          "money_bonus": 0
++        },
++        {
++          "text": "「もしかして、手作り弁当？」",
++          "result": "ズバリ言い当てると、アゲハは「ひゃぅっ！？」と変な声を上げて固まった。\n「な、なんでわかんの！？ ウチがそんな家庭的なことするタマじゃないの知ってんでしょ！？」\n「でも、その袋……」\n「あーもうっ！ はいこれ！ 不格好だけど、味はワンチャンいけるはずだから！」\n真っ赤になった顔を両手で覆いながらお弁当を押し付けられた。\n「……次からは、もっと上手く作ってくるから……残さず食べてよねっ♡」\n彼女のいじらしい努力に、胸がキュンとした。",
++          "stats": {
++            "insight": 3,
++            "charm": 2
++          },
++          "money_bonus": 0
++        }
++      ]
+     }
+   ]
+ }
+\ No newline at end of file
+diff --git a/data/characters.json b/data/characters.json
+index ecbe26c..98d9f8c 100755
+--- a/data/characters.json
++++ b/data/characters.json
+@@ -96,7 +96,7 @@
+     "affiliation": "ぺぱーみんと",
+     "play_style": "「客商売（魅せ方）の極意」",
+     "description": "コンセプトカフェ風の店で働く、可愛らしい容姿のプレイヤー。\n一見すると「ばえ（映え）」重視に見えるが、実は客の心理と視覚効果を計算し尽くしたしたたかな戦略家。",
+-    "background_secret": "【公式隠し設定】自称20歳だが実年齢は29歳のアラサー。本人は完全に隠しており、外見の若さを最大の武器にしている。",
++    "background_secret": "【公式隠し設定】自称20歳だが実年齢は29歳のアラサー。本人は完全に隠しているが、主人公と恋人関係になった後、私服デートを経て自身の年齢をカミングアウトする展開がある。",
+     "favorite_flavor": "ミント",
+     "specialty_flavor": "清涼感特化のミントミックス",
+     "growth_stats": {
+@@ -227,8 +227,8 @@
+     "nationality": "Japan",
+     "affiliation": "tonari常連",
+     "play_style": "N/A",
+-    "description": "tonariの常連客でありヒロイン候補。\n画面にひびの入ったiPadでいつも絵を描いている寡黙な少女。\nラベンダーのフレーバーしか頼まない。主人公の作るシーシャにだけ心を開いていく。",
+-    "background_secret": "過去の人間関係のトラウマがあり、自分の殻（ラベンダーの香りの中）に閉じこもることで平静を保っている。本当は違う香りに踏み出す勇気を欲している。",
++    "description": "tonariの常連客でありヒロイン候補。\n画面にひびの入ったiPadでいつも絵を描いている寡黙な少女。\n主人公の作るシーシャの煙にだけ「特別な色」が見える共感覚を持つ。主人公の匂いを嗅いで安心するヤンデレ的依存傾向もある。",
++    "background_secret": "過去の人間関係のトラウマから心を閉ざしている。はじめへの依存度が高まり、恋人関係後は手作りのお弁当を持参するなど、正妻的な振る舞いと重い愛情を見せるようになる。",
+     "favorite_flavor": "ラベンダー",
+     "specialty_flavor": "フローラル・お茶系",
+     "growth_stats": {
+@@ -551,7 +551,7 @@
+   },
+   {
+     "id": "mashiro",
+-    "name": "ましろ / 真白（ましろ）",
++    "name": "ましろ / 水瀬 ましろ",
+     "role": "sub_character",
+     "age": 20,
+     "nationality": "Japan",
+@@ -595,7 +595,7 @@
+   },
+   {
+     "id": "mukai_master",
+-    "name": "ムカイさん / 向井（むかい）",
++    "name": "シバさん / 柴崎 薫（しばさき かおる）",
+     "role": "sub_character",
+     "age": 48,
+     "nationality": "Japan",
+diff --git a/data/dialogue/ch1_interval.json b/data/dialogue/ch1_interval.json
+index 7420e8d..7796e25 100755
+--- a/data/dialogue/ch1_interval.json
++++ b/data/dialogue/ch1_interval.json
+@@ -208,6 +208,26 @@
+                     "face": "normal",
+                     "text": "もう一つは、東京に先乗りすること。向こうのシーシャ屋で武者修行しながら、大会の空気を先に掴む"
+                 },
++                {
++                    "speaker": "sumi",
++                    "face": "smile",
++                    "text": "向こうには、私が懇意にしてる『向かい（mukai）』って姉妹店があってね。そこに『シガーマン』っていう、とっておきの職人がいる"
++                },
++                {
++                    "speaker": "sumi",
++                    "face": "normal",
++                    "text": "とんでもなく重いシーシャを平然と燻らせるヤバい奴だが……腕は確かだ。そいつから直接教わってくるといい"
++                },
++                {
++                    "speaker": "hajime",
++                    "face": "surprise",
++                    "text": "シガーマン……！？ なんだかマフィアの殺し屋みたいな名前ですね……。絶対怖くてヤバい人じゃないですか……"
++                },
++                {
++                    "speaker": "sumi",
++                    "face": "smile",
++                    "text": "ふふっ、会えば分かるさ。まあ、殺されはしないから安心しろ"
++                },
+                 {
+                     "speaker": "sumi",
+                     "face": "normal",
+diff --git a/data/dialogue/ch3_mukai.json b/data/dialogue/ch3_mukai.json
+index fc3f4cc..e1478d3 100644
+--- a/data/dialogue/ch3_mukai.json
++++ b/data/dialogue/ch3_mukai.json
+@@ -204,9 +204,35 @@
+                     "text": "はじめくんもぉ……吸ってみるぅ……？ いい感じに重くできたよぉ……"
+                 },
+                 {
++                    "speaker": "hajime",
+                     "face": "surprise",
+                     "text": "あ、いや……僕は遠慮しときます……（この子、東京の誰よりもヤバい人かもしれない……！）"
+                 },
++                {
++                    "speaker": "hajime",
++                    "face": "normal",
++                    "text": "（でも……煙の上がり方があんなにエグいのに、香りの輪郭が少しも壊れてない。炭の管理もミリ単位で調整されてる……圧倒的な技術と情熱だ）"
++                },
++                {
++                    "speaker": "mashiro",
++                    "face": "smile",
++                    "text": "あのねぇ……はじめくんの作るシーシャも、今度わたしに見せてねぇ……？ スミさんのとこから来たなら、きっと優しい味がするんだろうなぁ……"
++                },
++                {
++                    "speaker": "mashiro",
++                    "face": "normal",
++                    "text": "店長さんは忙しいからぁ……わたしでよければ、なんでも教えてあげるねぇ。一緒に、いっぱい特訓しよぉ……？"
++                },
++                {
++                    "speaker": "hajime",
++                    "face": "smile",
++                    "text": "（シガーマン……どんなスレた強面かと思いきや。これは、とんでもなく心強い味方ができたかもしれないな）"
++                },
++                {
++                    "speaker": "hajime",
++                    "face": "normal",
++                    "text": "はい、色々と教えてください。ましろさん"
++                },
+                 {
+                     "speaker": "",
+                     "face": "",
+diff --git a/data/dialogue/confession.json b/data/dialogue/confession.json
+index 572e7e3..063dbef 100755
+--- a/data/dialogue/confession.json
++++ b/data/dialogue/confession.json
+@@ -158,22 +158,37 @@
+                 {
+                     "speaker": "",
+                     "face": "",
+-                    "text": "帰り際、呼び止められた。"
++                    "text": "帰り際、呼び止められた。いつもより少しだけ真剣な表情のアゲハだ。"
+                 },
+                 {
+                     "speaker": "ageha",
+                     "face": "normal",
+-                    "text": "てかさー、キミ"
++                    "text": "てかさー。うち、こんなに同じ店に足しげく通うとか、自分でもワンチャン驚いてるんだけどさ……。"
++                },
++                {
++                    "speaker": "ageha",
++                    "face": "smile",
++                    "text": "……ね、そろそろいい加減、うちの専属にならない？ いつでもキミの煙、一番近くで吸いたいし。"
++                },
++                {
++                    "speaker": "hajime",
++                    "face": "surprise",
++                    "text": "専属……？ ああ、出張シーシャとかそういうサブスクプランの話？"
++                },
++                {
++                    "speaker": "ageha",
++                    "face": "surprise",
++                    "text": "は？ サブスク……！？"
+                 },
+                 {
+                     "speaker": "ageha",
+                     "face": "normal",
+-                    "text": "うちがこんなに足しげく通うなんて、自分でもワンチャン驚いてるんだけどさｗ"
++                    "text": "……っ！ もう、ほんっとそういうとこ鈍感っていうか、察し悪すぎてマジ無理！ いい加減気づきなよばか！"
+                 },
+                 {
+                     "speaker": "ageha",
+                     "face": "smile",
+-                    "text": "うちのモノにならない？ キミのこと、とりま独占したくなったわ"
++                    "text": "……うち、ハジメっちのことが『好き』なの。だから、うちだけの彼氏になりなよ。とりま独占させてよ。"
+                 },
+                 {
+                     "type": "choice",
+@@ -183,7 +198,7 @@
+                             "next_id": "confession_ageha_accept"
+                         },
+                         {
+-                            "text": "俺は誰のモノでもないです",
++                            "text": "ごめん、俺は誰のモノでもないです",
+                             "next_id": "confession_ageha_reject"
+                         }
+                     ]
+@@ -200,6 +215,36 @@
+                     "speaker": "ageha",
+                     "face": "smile",
+                     "text": "ふふっ、いい返事。じゃあ決定ね。うちの特等席、マジで空けといてよ？"
++                },
++                {
++                    "speaker": "ageha",
++                    "face": "normal",
++                    "text": "……あ、そういえばさ。うちの本名、前にチラッと聞かれちゃったの覚えてる……？"
++                },
++                {
++                    "speaker": "hajime",
++                    "face": "normal",
++                    "text": "本名……うん。『ようこ（葉子）』だろ？ 別に忘れてないよ。"
++                },
++                {
++                    "speaker": "ageha",
++                    "face": "smile",
++                    "text": "あははっ！ 改めて彼女になってから本名言うの、なんかウケるよね。こんなギャルなのに名前がマジ古風でさーｗ"
++                },
++                {
++                    "speaker": "hajime",
++                    "face": "smile",
++                    "text": "ギャップがあっていいと思うけどね。でもまぁ、俺は『アゲハ』のままでもいいよ。君が一番君らしくいられる名前なら。"
++                },
++                {
++                    "speaker": "ageha",
++                    "face": "surprise",
++                    "text": "えっ……。"
++                },
++                {
++                    "speaker": "ageha",
++                    "face": "smile",
++                    "text": "……なんか、そういうことサラッと言えるのガチでズルいんだけど。ま、彼氏になっても呼び方は『アゲハ』で許したげるっ♡ これからガンガン甘やかしてよね、ハジメっち！"
+                 }
+             ]
+         },
+@@ -209,7 +254,7 @@
+                 {
+                     "speaker": "ageha",
+                     "face": "normal",
+-                    "text": "……チッ、生意気。まあいいわ、そういう気高いところもマジ嫌いじゃないし。"
++                    "text": "……チッ、生意気。でもまあいいわ、そういう気高いところもマジで嫌いじゃないし。"
+                 }
+             ]
+         }
+diff --git a/data/forced_events.json b/data/forced_events.json
+index e54f85f..a75831a 100755
+--- a/data/forced_events.json
++++ b/data/forced_events.json
+@@ -253,6 +253,26 @@
+       "dialogue_id": "ch3_opening",
+       "stat_changes": {},
+       "next_scene": "map"
++    },
++    {
++      "id": "ch3_forced_tsumugi_slump",
++      "day": 4,
++      "time_slot": "night",
++      "flag": "ch3_forced_tsumugi_slump_done",
++      "title": "迷いの色と救済",
++      "description": "大会を控え、スランプに陥った主人公の元に、思いがけない人物が現れる。",
++      "dialogue_file": "res://data/dialogue/ch3_tsumugi.json",
++      "dialogue_id": "ch3_tsumugi_slump",
++      "stat_changes": {
++        "mental": 3,
++        "sense": 5
++      },
++      "metadata": {
++        "add_affinity": {
++          "tsumugi": 2
++        }
++      },
++      "next_scene": "map"
+     }
+   ],
+   "interval_3": [
+diff --git a/scripts/daily/baito.gd b/scripts/daily/baito.gd
+index d94a22d..775593f 100755
+--- a/scripts/daily/baito.gd
++++ b/scripts/daily/baito.gd
+@@ -420,6 +420,17 @@ func _pick_events(count: int) -> Array:
+ 				selected.append(event)
+ 				available.erase(event)
+ 				break
++	else:
++		# Randomly pick Tsumugi with 30% chance each shift, max 1 event
++		if EventFlags.get_flag("ch1_tsumugi_regular") and randf() < 0.30:
++			var tsumugi_events = available.filter(func(e): return str(e.get("id", "")).begins_with("baito_tsumugi_"))
++			if tsumugi_events.size() > 0:
++				tsumugi_events.shuffle()
++				selected.append(tsumugi_events[0])
++				available = available.filter(func(e): return not str(e.get("id", "")).begins_with("baito_tsumugi_"))
++		else:
++			# Remove all Tsumugi events if she doesn't appear
++			available = available.filter(func(e): return not str(e.get("id", "")).begins_with("baito_tsumugi_"))
+ 
+ 	available.shuffle()
+ 	for event in available:
+@@ -431,7 +442,11 @@ func _pick_events(count: int) -> Array:
+ 	for event in selected:
+ 		var event_id = str(event.get("id", ""))
+ 		if event_id != "":
+-			EventFlags.set_flag("seen_" + event_id)
++			if not event_id.begins_with("baito_tsumugi_"): # Allow Tsumugi events to replay? Maybe not, the user logic in baito_events.json dictates uniqueness. Let's keep marking seen.
++				EventFlags.set_flag("seen_" + event_id)
++			else:
++				# Tsumugi events might be repeatable or not, standard log marks all as seen
++				EventFlags.set_flag("seen_" + event_id)
+ 	return selected
+ 
+ 
+@@ -440,6 +455,17 @@ func _can_trigger_event(event: Dictionary) -> bool:
+ 	var event_id = str(event.get("id", ""))
+ 	if event_id != "" and EventFlags.get_flag("seen_" + event_id):
+ 		return false
++		
++	# Check for max affinity requirement (e.g., mob incognito events)
++	if event.get("requires_any_max_affinity", false):
++		var has_max = false
++		for char_id in AffinityManager.DEFAULT_AFFINITIES.keys():
++			if AffinityManager.is_max_level(char_id):
++				has_max = true
++				break
++		if not has_max:
++			return false
++			
+ 	var trigger_flag = str(event.get("trigger_flag", ""))
+ 	if trigger_flag == "":
+ 		return true
+@@ -479,6 +505,14 @@ func _on_event_choice_selected(choice: Dictionary) -> void:
+ func _apply_choice_result(choice: Dictionary) -> void:
+ 	var stats: Dictionary = choice.get("stats", {})
+ 	for stat_name in stats.keys():
++		if stat_name == "tsumugi_affinity":
++			var current_gain = int(GameManager.get_transient("daily_tsumugi_affinity_gain", 0))
++			if current_gain < 1:
++				AffinityManager.add_affinity("tsumugi", 1)
++				GameManager.set_transient("daily_tsumugi_affinity_gain", current_gain + 1)
++				body_label.text += "\nつむぎの好感度が上がった。"
++			continue
++
+ 		var amount = int(stats[stat_name])
+ 		PlayerData.add_stat(stat_name, amount)
+ 		GameManager.log_stat_change(stat_name, amount)
+diff --git a/scripts/daily/interaction.gd b/scripts/daily/interaction.gd
+index fdd261b..20952ed 100755
+--- a/scripts/daily/interaction.gd
++++ b/scripts/daily/interaction.gd
+@@ -15,6 +15,7 @@ const CHARACTER_NAME_MAP := {
+ 	"naru": "なる",
+ 	"adam": "アダム",
+ 	"minto": "みんと",
++	"tsumugi": "つむぎ",
+ 	"sumi": "スミさん",
+ }
+ 
+@@ -81,6 +82,19 @@ func _show_romance_date(char_id: String) -> void:
+ 			lines.append("アゲハと二人きりで夜景を見ている。")
+ 			lines.append("「……なんかさ、マジでウチどうしちゃったんだろう。ハジメっちの顔見てるだけで、バイブス上がりすぎて胸の奥がぎゅってなる……」")
+ 			lines.append("「……ねえ、もう帰んないでよ。ウチの特等席、一生キミだけのものにしてあげるからさ……責任、取ってよね？」\n普段のギャルっぽい飄々とした態度はどこへやら、彼女の甘えたような声が夜風に溶けた。")
++	elif char_id == "tsumugi":
++		if affection == 0:
++			lines.append("つむぎを水族館に誘った。")
++			lines.append("「……クラゲ、きれいです。ゆっくり動いて、煙みたい……」")
++			lines.append("「……はじめさんの煙の色に、似てますね。ふふっ」")
++		elif affection <= 2:
++			lines.append("つむぎと画材屋にやってきた。")
++			lines.append("「……この色、はじめさんの煙と同じですね」")
++			lines.append("「……私、あなた以外を描けなくなっちゃいました。……責任、取ってくれますか？」\n静かに、でも熱っぽく見つめられ、ドキッとした。")
++		else:
++			lines.append("つむぎの家で一緒に時間を過ごしている。")
++			lines.append("「……はじめさん。私、あなたといる時が、一番安心するんです」")
++			lines.append("「でも……なんだろう。もっと、もっとほしくなって……胸が痛いです。……ずっと、私だけの煙でいてくれますか？」\n彼女はそう言って、深く抱きついてきた。")
+ 	else:
+ 		lines.append("二人で楽しい時間を過ごした。愛情が少し深まった気がする。")
+ 
+@@ -146,11 +160,13 @@ func _launch_rival_dialogue(rival_id: String) -> void:
+ 			metadata["bg"] = "res://assets/backgrounds/pepermint.png"
+ 		"ageha":
+ 			metadata["bg"] = "res://assets/backgrounds/pepermint.png" # アゲハの居場所に合わせて背景を設定
++		"tsumugi":
++			metadata["bg"] = "res://assets/backgrounds/tonari.png" # つむぎの居場所に合わせて背景を設定
+ 
+ 	if count == 0:
+ 		dialogue_id = "%s%s_first" % [prefix, rival_id]
+-		# Naru, Minto, Ageha exchange LIME on first visit
+-		if rival_id in ["naru", "minto", "ageha"]:
++		# Naru, Minto, Ageha, Tsumugi exchange LIME on first visit
++		if rival_id in ["naru", "minto", "ageha", "tsumugi"]:
+ 			metadata["exchange_lime"] = rival_id
+ 		metadata["add_affinity"] = {rival_id: 1}
+ 	elif count == 1:
+diff --git a/scripts/daily/map.gd b/scripts/daily/map.gd
+index 237a09e..8fd0d48 100755
+--- a/scripts/daily/map.gd
++++ b/scripts/daily/map.gd
+@@ -186,6 +186,7 @@ func _build_ch3_spots() -> Array:
+ 	if CalendarManager.current_time == "noon":
+ 		spots.append({"id": "mukai", "label": "mukai"})
+ 		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
++		spots.append({"id": "mashiro_play", "label": "ましろに特訓してもらう"})
+ 		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り"})
+ 		spots.append({"id": "tokyo_sightseeing", "label": "東京観光"})
+ 	elif CalendarManager.current_time == "night":
+@@ -345,6 +346,21 @@ func _enter_spot(spot: Dictionary) -> void:
+ 		# --- Chapter 3 (Tokyo) Spots ---
+ 		"mukai":
+ 			get_tree().change_scene_to_file("res://scenes/daily/baito.tscn")
++		"mashiro_play":
++			if not CalendarManager.use_action():
++				_try_auto_return_home()
++				return
++			PlayerData.add_stat("technique", 1.0)
++			PlayerData.add_stat("sense", 1.0)
++			GameManager.log_stat_change("technique", 1.0)
++			GameManager.log_stat_change("sense", 1.0)
++			# ましろの遊びイベントをランダムに選ぶ（1〜3）
++			var rng = RandomNumberGenerator.new()
++			rng.randomize()
++			var eid = "ch3_mashiro_play_" + str(rng.randi_range(1, 3))
++			GameManager.set_transient("advance_time_after_scene", true)
++			GameManager.queue_dialogue("res://data/dialogue/ch3_mashiro.json", eid, "res://scenes/daily/map.tscn")
++			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+ 		"tokyo_shisha":
+ 			if not CalendarManager.use_action():
+ 				_try_auto_return_home()
+diff --git a/scripts/daily/night_end.gd b/scripts/daily/night_end.gd
+index 3cca06b..4c75a79 100755
+--- a/scripts/daily/night_end.gd
++++ b/scripts/daily/night_end.gd
+@@ -103,6 +103,16 @@ func _on_auto_timer_timeout() -> void:
+ 		get_tree().change_scene_to_file("res://scenes/daily/morning_phone.tscn")
+ 		return
+ 
++	# Handle tournament eve dream
++	if not CalendarManager.is_interval and CalendarManager.current_day == CalendarManager.tournament_day:
++		var dream_flag = "dream_seen_ch%d" % GameManager.current_chapter
++		if not EventFlags.get_flag(dream_flag):
++			EventFlags.set_flag(dream_flag)
++			GameManager.queue_dialogue("res://data/dialogue/dreams.json", "ch%d_dream" % GameManager.current_chapter, "res://scenes/daily/morning_phone.tscn", {"bg": "res://assets/sprites/bg/bg_tonari_night.png"})
++			GameManager.transition_to_tournament()
++			get_tree().change_scene_to_file("res://scenes/ui/dialogue_box.tscn")
++			return
++
+ 	# Handle tournament day
+ 	if not CalendarManager.is_interval and CalendarManager.current_day >= CalendarManager.tournament_day:
+ 		GameManager.transition_to_tournament()

@@ -1,0 +1,128 @@
+{
+    "dialogues": [
+        {
+            "dialogue_id": "ch3_mashiro_play_1",
+            "metadata": {
+                "set_romance_progress": "mashiro"
+            },
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "バイトが休みの日。ましろに誘われて、彼女の『特訓』に付き合うことになった。"
+                },
+                {
+                    "speaker": "mashiro",
+                    "face": "smile",
+                    "text": "はじめくん、来てくれてありがとぉ……今日はねぇ、シガーリーフの火の通し方を教えちゃうよぉ"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "よろしくお願いします。ましろさん、すごく扱いが上手くて……いつも見て勉強させてもらってます"
+                },
+                {
+                    "speaker": "mashiro",
+                    "face": "surprise",
+                    "text": "えっ……はじめくん、わたしのこと、そんなに見てくれてたのぉ……？"
+                },
+                {
+                    "speaker": "mashiro",
+                    "face": "smile",
+                    "text": "えへへ……なんか、照れちゃうなぁ。……じゃあ、今日は特別に、一番重くて美味しい煙の作り方、伝授するねぇ"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "ましろとの特訓で、【技術力】と【センス】が大きく上がった……！"
+                }
+            ]
+        },
+        {
+            "dialogue_id": "ch3_mashiro_play_2",
+            "metadata": {
+                "set_romance_progress": "mashiro"
+            },
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "今日はましろと一緒に、浅草橋にあるマニアックな喫茶具の問屋へ来ている。"
+                },
+                {
+                    "speaker": "mashiro",
+                    "face": "normal",
+                    "text": "このボウルねぇ……熱の入り方がじんわりしてて、シガーリーフにぴったりなんだよぉ……"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "smile",
+                    "text": "（普通、こういう可愛い女の子ならカフェとか服屋に行きたがるんだろうけど……ましろさんは本当にシーシャが好きなんだな）"
+                },
+                {
+                    "speaker": "mashiro",
+                    "face": "smile",
+                    "text": "あ、はじめくん。これ……お揃いで買ってみない？ ふたりで同じボウル使ったら、もっと仲良しって感じがして、いいなぁって……"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "surprise",
+                    "text": "お揃い……いいですね。ぜひ買いましょう"
+                },
+                {
+                    "speaker": "mashiro",
+                    "face": "smile",
+                    "text": "ほんとぉ！？ やったぁ……今日、誘ってよかったなぁ……えへへっ"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "ましろと一緒に問屋を巡り、【洞察力】と【魅力】が上がった……！"
+                }
+            ]
+        },
+        {
+            "dialogue_id": "ch3_mashiro_play_3",
+            "metadata": {
+                "set_romance_progress": "mashiro"
+            },
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "mukaiの裏のベンチで、ましろと一緒に休憩している。"
+                },
+                {
+                    "speaker": "mashiro",
+                    "face": "normal",
+                    "text": "ねえ、はじめくん……。はじめくんってさぁ、どんな女の子が好きなのぉ……？"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "surprise",
+                    "text": "えっ、急にどうしたんですか？"
+                },
+                {
+                    "speaker": "mashiro",
+                    "face": "smile",
+                    "text": "うふふっ……ナイショ。ただねぇ、知っておきたいなぁって思ったの。わたし、もっとはじめくんのこと、知りたいから……"
+                },
+                {
+                    "speaker": "mashiro",
+                    "face": "smile",
+                    "text": "だからねぇ、はじめくんも……わたしのこと、これからもっと知ってほしいな。……なんてねぇ"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "（ましろさんの瞳が、まっすぐに俺を見つめている。ゆっくりとした口調なのに、なんだか心臓が跳ねた）"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "ましろとの距離が縮まり、【魅力】と【メンタル】が大きく回復した……！"
+                }
+            ]
+        }
+    ]
+}

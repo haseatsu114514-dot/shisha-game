@@ -30,7 +30,7 @@
     "affiliation": "tonari（地元店）",
     "play_style": "「基本に忠実、かつ自由」",
     "description": "主人公の師匠であり、良き理解者。\nかつては名の知れたシーシャプレイヤーだったが、現在は飄々とした態度で地元の小さな店を営む。",
-    "background_secret": "15年前の日本大会準優勝者。決勝で折れて世界を放浪し、イスタンブール（エミル）やドバイ（シェイク）で伝説的な煙を残した「名もなき日本人」。はじめに自らの夢の続きを託す。",
+    "background_secret": "15年前の日本大会準優勝者。大会で折れて世界を放浪し、イスタンブール（エミル）やドバイ（シェイク）で伝説的な煙を残した「名もなき日本人」。はじめに自らの夢の続きを託す。",
     "favorite_flavor": "カルダモン",
     "specialty_flavor": "クラシックスパイス系",
     "growth_stats": {
@@ -134,7 +134,7 @@
   {
     "id": "nandi",
     "name": "ナンディ / ナンディ・カルダモン",
-    "role": "rival_ch3",
+    "role": "rival_ch3_tokyo",
     "age": 31,
     "nationality": "India",
     "affiliation": "Prana Dhūm（プラーナ・ドゥーム）",
@@ -156,7 +156,7 @@
   {
     "id": "steve",
     "name": "スティーブ / スティーブ・デイビス",
-    "role": "rival_ch3",
+    "role": "rival_ch3_tokyo",
     "age": 30,
     "nationality": "USA",
     "affiliation": "Smoke & Glory（スモーク・アンド・グローリー）",
@@ -178,7 +178,7 @@
   {
     "id": "volk",
     "name": "ヴォルク / ヴォルク・イヴァノフ",
-    "role": "rival_ch4",
+    "role": "rival_ch3_tokyo",
     "age": 37,
     "nationality": "Russia",
     "affiliation": "Железный Дым（ジェレーズヌイ・ドゥイム）",
@@ -266,7 +266,7 @@
   {
     "id": "salaryman",
     "name": "サラリーマン",
-    "role": "story_character",
+    "role": "sub_character",
     "age": 41,
     "nationality": "Japan",
     "affiliation": "tonari常連",
@@ -310,7 +310,7 @@
   {
     "id": "rei",
     "name": "零-REI- / 田中 健太（たなか けんた）",
-    "role": "rival_ch2",
+    "role": "rival_ch3",
     "age": 25,
     "nationality": "Japan",
     "affiliation": "V系コンセプト",
@@ -447,7 +447,7 @@
     "nationality": "UAE",
     "affiliation": "ドバイ王族",
     "play_style": "「純金機材と至上の煙」",
-    "description": "世界大会の決勝相手。王族という立場と純金の特別機材を持つが、15年前に路地裏のカフェで吸った「ある日本人（若きスミさん）」のシーシャが原体験。\nあの「本物の煙」をもう一度超えるためだけに戦い続けている。",
+    "description": "世界大会の本戦相手。王族という立場と純金の特別機材を持つが、15年前に路地裏のカフェで吸った「ある日本人（若きスミさん）」のシーシャが原体験。\nあの「本物の煙」をもう一度超えるためだけに戦い続けている。",
     "background_secret": "莫大な富と権力ゆえに、誰も自分に本音で接してくれないという絶望的な孤独を抱えている。15年前のスミさんだけが、王族としてではなく『ただの疲れた一人の客』として彼を扱い、極上の煙を出してくれた。",
     "favorite_flavor": "グレープ",
     "specialty_flavor": "究極に洗練された単一フレーバー",
@@ -464,7 +464,7 @@
   {
     "id": "chad",
     "name": "チャド / チャド・ウィンズロウ",
-    "role": "rival_ch4",
+    "role": "judge",
     "age": 29,
     "nationality": "USA",
     "affiliation": "世界戦プレイヤー",
@@ -486,7 +486,7 @@
   {
     "id": "da_silva",
     "name": "ダ・シルヴァ太陽 / エンリケ・ダ・シルヴァ・太陽",
-    "role": "rival_ch4",
+    "role": "judge",
     "age": 28,
     "nationality": "Brazil",
     "affiliation": "世界戦プレイヤー",
