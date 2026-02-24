@@ -464,7 +464,7 @@
   {
     "id": "chad",
     "name": "チャド / チャド・ウィンズロウ",
-    "role": "rival_ch4",
+    "role": "judge",
     "age": 29,
     "nationality": "USA",
     "affiliation": "世界戦プレイヤー",
@@ -486,7 +486,7 @@
   {
     "id": "da_silva",
     "name": "ダ・シルヴァ太陽 / エンリケ・ダ・シルヴァ・太陽",
-    "role": "rival_ch4",
+    "role": "judge",
     "age": 28,
     "nationality": "Brazil",
     "affiliation": "世界戦プレイヤー",
