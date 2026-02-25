@@ -356,9 +356,9 @@
     "role": "judge_and_creator",
     "age": 38,
     "nationality": "Japan",
-    "affiliation": "審査員兼AI開発者 / SMOKE LAB",
-    "play_style": "「全てをデータで最適化する科学者」",
-    "description": "多種のヒートマネジメントシステムなど数々の画期的な機材を開発したエンジニアで「そいつの開発者俺だもん」が決め台詞。「シーシャ業界のさらなる発展」を目指し、南雲会長（旧知の仲）と協力して審査員を務める。現在は機材の限界を超え、AI（SHISHA-9000）の研究に行き着いている。",
+    "affiliation": "審査員兼研究者 / SMOKE LAB",
+    "play_style": "「全てをデータで最適化する研究者」",
+    "description": "多種のヒートマネジメントシステムなど数々の画期的な機材を開発した研究者で「そいつの開発者俺だもん」が決め台詞。「シーシャ業界のさらなる発展」を本気で信じている人格者であり、南雲会長（旧知の仲）と協力して審査員を務める。業界の発展につながるなら人体実験まがいのことも厭わないという噂が業界内で囁かれているが、本人は温和で紳士的な態度を崩さない。",
     "background_secret": "かつて自分の感覚で作ったシーシャを『不味い』と全否定された過去があり、二度と傷つかないために「否定不可能なデータ」という絶対の盾に依存している。",
     "favorite_flavor": "コーラ",
     "specialty_flavor": "酸味・シトラス系の変わり種",
@@ -367,9 +367,10 @@
       "secondary": "洞察",
       "notes": "データを絶対視し、逸脱を許さなかった彼だが、はじめの『その場の感情でブレる煙の美しさ』に触れ、いつの間にか彼もまた、マニュアルにない0.1グラムの隠し味を直感で足すようになっていた。"
     },
+    "appearance": "七三分けにメガネ。水色のシャツに青いチェックのネクタイ、チノパン、白衣。顎に少々無精髭があり、素足にサンダルというラフな一面も。物腰は柔らかく、どこか少し抜けた印象がある。",
     "visual_concepts": [
-      "33s japanese male, mad scientist aesthetic, messy hair, wearing a white lab coat over a neat dress shirt, adjusting glasses pushed up on his nose, surrounded by beakers, scales and clipboards",
-      "analytical researcher character, sharp intelligent eyes behind silver framed glasses, wearing a pristine white lab coat, meticulously using an eyedropper on shisha flavor, cold fluorescent lighting lab setting"
+      "38 year old japanese male researcher, neat side-parted hair, silver-framed glasses, light blue dress shirt with blue plaid tie, chino pants and white lab coat, slight stubble, wearing sandals without socks, gentle and slightly disheveled appearance, surrounded by shisha data equipment and clipboards",
+      "analytical researcher character, warm intelligent eyes behind silver framed glasses, wearing a white lab coat over a light blue shirt and plaid tie, calm and approachable demeanor, shisha lab setting"
     ]
   },
   {

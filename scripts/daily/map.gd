@@ -28,6 +28,7 @@ const SPOT_POSITIONS_DAY: Dictionary = {
 	"cafe": Vector2(840, 340),
 	"shotengai": Vector2(480, 460),
 	"tv_tower_park": Vector2(180, 200),
+	"c_station": Vector2(700, 400),
 	"mukai": Vector2(800, 150),
 	"tokyo_shisha": Vector2(400, 100),
 	"tokyo_sightseeing": Vector2(200, 150),
@@ -155,6 +156,8 @@ func _build_spot_list() -> Array:
 			spots.append({"id": "kannon", "label": "観音"})
 		if not _is_visited_today("choizap"):
 			spots.append({"id": "choizap", "label": "チョイザップ"})
+		if GameManager.current_chapter == 1 and not EventFlags.get_flag("ch1_c_station_visited"):
+			spots.append({"id": "c_station", "label": "シーシャステーション（C.STATION）"})
 		if GameManager.current_chapter >= 2:
 			spots.append({"id": "tv_tower_park", "label": "テレビ塔公園"})
 			if EventFlags.get_flag("spot_cafe_unlocked"):
@@ -451,6 +454,18 @@ func _enter_spot(spot: Dictionary) -> void:
 			var event_id = _get_roaming_event_id("tv_tower_park")
 			GameManager.set_transient("advance_time_after_scene", true)
 			GameManager.queue_dialogue("res://data/dialogue/ch2_spots.json", event_id, "res://scenes/daily/map.tscn")
+			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+		"c_station":
+			if not CalendarManager.use_action():
+				_try_auto_return_home()
+				return
+			EventFlags.set_flag("ch1_c_station_visited")
+			PlayerData.add_stat("insight", 2)
+			GameManager.log_stat_change("insight", 2)
+			_mark_visited("c_station")
+			_save_visited()
+			GameManager.set_transient("advance_time_after_scene", true)
+			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_c_station_visit", "res://scenes/daily/map.tscn")
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		"tokyo_shisha":
 			if not CalendarManager.use_action():
