@@ -735,7 +735,8 @@ func _confirm_manual_packing() -> void:
 		var grams = int(_manual_packing_grams.get(flavor_id, 0))
 		if grams > 0:
 			if PlayerData.can_use_flavor(flavor_id, grams):
-				PlayerData.use_flavor(flavor_id, grams)
+				if not GameManager.get_transient("is_shop_practice", false):
+					PlayerData.use_flavor(flavor_id, grams)
 				consume_lines.append("%s %dg 使用" % [_flavor_name(flavor_id), grams])
 			else:
 				var remaining = PlayerData.get_flavor_amount(flavor_id)
@@ -2616,12 +2617,28 @@ func _finalize_and_show_result() -> void:
 		lines.append("特別ミックス: %s" % _special_mix_name)
 	if _player_rank == 1:
 		lines.append("賞金: %d円" % _pending_reward)
-		lines.append("地方大会優勝！")
+		lines.append("HAZE: GRAND SMOKE優勝！")
 	else:
 		lines.append("今回は %d位。1位になるまで本編進行不可。" % _player_rank)
 		lines.append("賞金は再挑戦中は支給されない。")
 
 	info_label.text = "\n".join(lines)
+
+	# シーシャランク表示
+	var player_score_data = _build_player_score()
+	var rank_info = ShishaRank.calculate_rank(float(player_score_data.get("total", 0.0)), 4)
+	var rank_text = ShishaRank.get_rank_display_text(float(player_score_data.get("total", 0.0)), 4)
+	info_label.text += "\n\n━━━━━━━━━━━━━━━━━━━━"
+	info_label.text += "\n　シーシャランク: %s" % rank_text
+	info_label.text += "\n━━━━━━━━━━━━━━━━━━━━"
+	EventFlags.set_value("ch4_tournament_shisha_rank", rank_info["rank"])
+
+	# Ch5解禁判定（S/SS/SSSで真エンディングルート解禁）
+	if _player_rank == 1 and ShishaRank.is_ch5_unlock_rank(float(player_score_data.get("total", 0.0)), 4):
+		EventFlags.set_flag("ch5_unlocked", true)
+		info_label.text += "\n\n……何かが目覚める気配がする。"
+	elif _player_rank == 1:
+		info_label.text += "\n\nまだ先がある気がする。もっと高みを目指せば……"
 
 	if _player_rank == 1:
 		_add_choice_button("優勝結果で進む", _apply_result_and_continue)
@@ -2714,9 +2731,9 @@ func _build_player_score_breakdown_lines() -> Array[String]:
 
 func _prepare_rival_score_tables() -> void:
 	var rivals = [
-		{"id": "naru", "name": "なる", "specialist": 66.0, "audience": 55.0, "variance": 8.0},
-		{"id": "adam", "name": "アダム", "specialist": 73.0, "audience": 48.0, "variance": 9.0},
-		{"id": "ryuji", "name": "リュウジ", "specialist": 60.0, "audience": 67.0, "variance": 9.0},
+		{"id": "naru", "name": "なる", "specialist": 95.0, "audience": 92.0, "variance": 4.0},
+		{"id": "master_hookah", "name": "マスター・フーカ", "specialist": 98.0, "audience": 90.0, "variance": 3.0},
+		{"id": "sheikh", "name": "シェイク", "specialist": 100.0, "audience": 100.0, "variance": 1.0},
 	]
 	_rival_mid_scores.clear()
 	_rival_final_scores.clear()
@@ -2767,11 +2784,11 @@ func _build_rival_scores() -> Array:
 
 func _get_rival_theme_bonus(rival_id: String, theme_id: String) -> float:
 	if rival_id == "naru" and (theme_id == "relax" or theme_id == "aftertaste"):
-		return 4.0
-	if rival_id == "adam" and theme_id == "high_heat":
 		return 6.0
-	if rival_id == "ryuji" and (theme_id == "high_heat" or theme_id == "fruity"):
-		return 5.0
+	if rival_id == "master_hookah" and (theme_id == "relax" or theme_id == "fruity"):
+		return 6.0
+	if rival_id == "sheikh" and (theme_id == "high_heat" or theme_id == "aftertaste"):
+		return 6.0
 	return 0.0
 
 
@@ -2811,7 +2828,7 @@ func _build_post_tournament_notice() -> String:
 	var rank_text = "%d位" % _player_rank
 	if _player_rank == 1:
 		rank_text = "優勝"
-	var notice = "地方大会 %s。賞金 %d円 を獲得した。\n\n" % [rank_text, _pending_reward]
+	var notice = "HAZE: GRAND SMOKE %s。賞金 %d円 を獲得した。\n\n" % [rank_text, _pending_reward]
 	notice += _build_sumi_feedback()
 	return notice
 

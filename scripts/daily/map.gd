@@ -11,7 +11,11 @@ var _pending_spot: Dictionary = {}
 var _pin_texture: Texture2D
 var _pin_event_texture: Texture2D
 var _face_cache: Dictionary = {}
+var _visited_today: Array = []
+
 const SHOP_VISIT_COST := 3500
+const RIVAL_VISIT_COST := 3000
+const CHOIZAP_MEMBERSHIP_COST := 4000
 
 const SPOT_POSITIONS_DAY: Dictionary = {
 	"tonari": Vector2(300, 420),
@@ -59,14 +63,19 @@ func _ready() -> void:
 	)
 	_load_marker_textures()
 
+	# Restore today's visited spots
+	_visited_today = GameManager.pop_transient("visited_spots_today", [])
+
 	# Check for forced story events first (mandatory, cannot skip)
-	var forced_event = GameManager.get_forced_event_for_today(CalendarManager.current_time)
-	if not forced_event.is_empty():
-		GameManager.complete_forced_event(forced_event)
-		var dialogue_file = str(forced_event.get("dialogue_file", ""))
-		var dialogue_id = str(forced_event.get("dialogue_id", ""))
-		var event_metadata: Dictionary = forced_event.get("metadata", {})
-		if dialogue_file != "" and dialogue_id != "":
+	if not CalendarManager.is_interval:
+		var forced_event = GameManager.get_forced_event_for_today(CalendarManager.current_time)
+		if not forced_event.is_empty():
+			_save_visited()
+			GameManager.complete_forced_event(forced_event)
+			var dialogue_file = str(forced_event.get("dialogue_file", ""))
+			var dialogue_id = str(forced_event.get("dialogue_id", ""))
+			var event_metadata: Dictionary = forced_event.get("metadata", {})
+			if dialogue_file != "" and dialogue_id != "":
 				GameManager.queue_dialogue(dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", event_metadata)
 				get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 				return
@@ -75,6 +84,7 @@ func _ready() -> void:
 		var noon_event = str(GameManager.pop_transient("forced_noon_action", ""))
 		if noon_event != "":
 			if CalendarManager.use_action():
+				_save_visited()
 				GameManager.set_transient("interaction_event", noon_event)
 				GameManager.set_transient("advance_time_after_scene", true)
 				get_tree().change_scene_to_file("res://scenes/daily/interaction.tscn")
@@ -84,6 +94,7 @@ func _ready() -> void:
 		var night_event = str(GameManager.pop_transient("night_action", ""))
 		if night_event != "":
 			if CalendarManager.use_action():
+				_save_visited()
 				GameManager.set_transient("interaction_event", night_event)
 				GameManager.set_transient("advance_time_after_scene", true)
 				get_tree().change_scene_to_file("res://scenes/daily/interaction.tscn")
@@ -122,8 +133,6 @@ func _build_spot_list() -> Array:
 		return _build_ch3_spots()
 	elif GameManager.current_chapter == 4:
 		return _build_ch4_spots()
-	elif GameManager.current_chapter == 5:
-		return _build_ch5_spots()
 		
 	# Chapter 1 or 2 (Local)
 	if CalendarManager.is_tournament_day():
@@ -132,54 +141,67 @@ func _build_spot_list() -> Array:
 
 	if CalendarManager.current_time == "noon":
 		spots.append({"id": "tonari", "label": "tonari"})
-		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
-		spots.append({"id": "naru", "label": "ケムリクサ"})
+		if not _is_visited_today("shop"):
+			spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
+		if not _is_visited_today("naru"):
+			spots.append({"id": "naru", "label": "ケムリクサ"})
 		if _are_rival_shops_unlocked():
-			spots.append({"id": "adam", "label": "Eden"})
-			spots.append({"id": "minto", "label": "ぺぱーみんと"})
+			if not _is_visited_today("adam"):
+				spots.append({"id": "adam", "label": "Eden"})
+			if not _is_visited_today("minto"):
+				spots.append({"id": "minto", "label": "ぺぱーみんと"})
 		spots.append({"id": "shotengai", "label": "商店街"})
-		spots.append({"id": "kannon", "label": "観音"})
-		spots.append({"id": "choizap", "label": "チョイザップ"})
+		if not _is_visited_today("kannon"):
+			spots.append({"id": "kannon", "label": "観音"})
+		if not _is_visited_today("choizap"):
+			spots.append({"id": "choizap", "label": "チョイザップ"})
 		if GameManager.current_chapter >= 2:
 			spots.append({"id": "tv_tower_park", "label": "テレビ塔公園"})
 			if EventFlags.get_flag("spot_cafe_unlocked"):
-				spots.append({"id": "cafe", "label": "カフェ"})
+				if not _is_visited_today("cafe"):
+					spots.append({"id": "cafe", "label": "カフェ"})
 	elif CalendarManager.current_time == "night":
 		spots.append({"id": "tonari", "label": "tonari（夜）"})
-		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]（夜）"})
-		spots.append({"id": "naru", "label": "ケムリクサ（夜）"})
+		if not _is_visited_today("shop"):
+			spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]（夜）"})
+		spots.append({"id": "home", "label": "自宅で休む"})
+		if not _is_visited_today("naru"):
+			spots.append({"id": "naru", "label": "ケムリクサ（夜）"})
 		if _are_rival_shops_unlocked():
-			spots.append({"id": "adam", "label": "Eden（夜）"})
-			spots.append({"id": "minto", "label": "ぺぱーみんと（夜）"})
+			if not _is_visited_today("adam"):
+				spots.append({"id": "adam", "label": "Eden（夜）"})
+			if not _is_visited_today("minto"):
+				spots.append({"id": "minto", "label": "ぺぱーみんと（夜）"})
 	return spots
 
 func _build_all_japan_spots() -> Array:
 	var spots: Array = []
 	# 昼夜共通の拠点
-	spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
+	if not _is_visited_today("shop"):
+		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
 	
 	if CalendarManager.current_time == "noon":
 		spots.append({"id": "tonari", "label": "tonari（地元）"})
 		spots.append({"id": "mukai", "label": "mukai（東京）"})
-		spots.append({"id": "naru", "label": "ケムリクサ"})
+		if not _is_visited_today("naru"):
+			spots.append({"id": "naru", "label": "ケムリクサ"})
 		if _are_rival_shops_unlocked():
-			spots.append({"id": "adam", "label": "Eden"})
-			spots.append({"id": "minto", "label": "ぺぱーみんと"})
+			if not _is_visited_today("adam"):
+				spots.append({"id": "adam", "label": "Eden"})
+			if not _is_visited_today("minto"):
+				spots.append({"id": "minto", "label": "ぺぱーみんと"})
 		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り"})
 		spots.append({"id": "tokyo_sightseeing", "label": "東京観光"})
-		if EventFlags.get_flag("spot_choizap_unlocked"):
-			spots.append({"id": "choizap", "label": "チョイザップ"})
-		if EventFlags.get_flag("spot_kannon_unlocked"):
-			spots.append({"id": "kannon", "label": "観音"})
-		if EventFlags.get_flag("spot_cafe_unlocked"):
-			spots.append({"id": "cafe", "label": "カフェ"})
 	elif CalendarManager.current_time == "night":
 		spots.append({"id": "tonari", "label": "tonari（夜）"})
 		spots.append({"id": "mukai", "label": "mukai（夜）"})
-		spots.append({"id": "naru", "label": "ケムリクサ（夜）"})
+		if not _is_visited_today("naru"):
+			spots.append({"id": "naru", "label": "ケムリクサ（夜）"})
 		if _are_rival_shops_unlocked():
-			spots.append({"id": "adam", "label": "Eden（夜）"})
-			spots.append({"id": "minto", "label": "ぺぱーみんと（夜）"})
+			if not _is_visited_today("adam"):
+				spots.append({"id": "adam", "label": "Eden（夜）"})
+			if not _is_visited_today("minto"):
+				spots.append({"id": "minto", "label": "ぺぱーみんと（夜）"})
 		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り（夜）"})
 	return spots
 
@@ -187,12 +209,14 @@ func _build_ch3_spots() -> Array:
 	var spots: Array = []
 	if CalendarManager.current_time == "noon":
 		spots.append({"id": "mukai", "label": "mukai"})
-		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
+		if not _is_visited_today("shop"):
+			spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
 		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り"})
 		spots.append({"id": "tokyo_sightseeing", "label": "東京観光"})
 	elif CalendarManager.current_time == "night":
 		spots.append({"id": "mukai", "label": "mukai（夜）"})
-		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]（夜）"})
+		if not _is_visited_today("shop"):
+			spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]（夜）"})
 		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り（夜）"})
 	return spots
 
@@ -200,64 +224,63 @@ func _build_ch4_spots() -> Array:
 	var spots: Array = []
 	if CalendarManager.current_time == "noon":
 		spots.append({"id": "dubai_shisha", "label": "現地のシーシャ屋"})
-		spots.append({"id": "shop", "label": "Dr.Hookah Dubai [SHOP]"})
+		if not _is_visited_today("shop"):
+			spots.append({"id": "shop", "label": "Dr.Hookah Dubai [SHOP]"})
 		spots.append({"id": "dubai_souq", "label": "スパイス・スーク（市場）"})
 		spots.append({"id": "dubai_cafe", "label": "ドバイの高級カフェ"})
 	elif CalendarManager.current_time == "night":
 		spots.append({"id": "dubai_shisha", "label": "現地のシーシャ屋（夜）"})
-		spots.append({"id": "shop", "label": "Dr.Hookah Dubai [SHOP]（夜）"})
+		if not _is_visited_today("shop"):
+			spots.append({"id": "shop", "label": "Dr.Hookah Dubai [SHOP]（夜）"})
 		spots.append({"id": "dubai_souq", "label": "スパイス・スーク（夜）"})
 	return spots
 
 
-func _build_ch5_spots() -> Array:
-	var spots: Array = []
-	spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
-	
-	if CalendarManager.current_time == "noon":
-		spots.append({"id": "tonari", "label": "tonari"})
-		spots.append({"id": "mukai", "label": "mukai（東京）"})
-		spots.append({"id": "dubai_souq", "label": "ドバイ観光"})
-		spots.append({"id": "naru", "label": "ケムリクサ"})
-		spots.append({"id": "adam", "label": "Eden"})
-		spots.append({"id": "minto", "label": "ぺぱーみんと"})
-		if EventFlags.get_flag("spot_choizap_unlocked"):
-			spots.append({"id": "choizap", "label": "チョイザップ"})
-		if EventFlags.get_flag("spot_kannon_unlocked"):
-			spots.append({"id": "kannon", "label": "観音"})
-		if EventFlags.get_flag("spot_cafe_unlocked"):
-			spots.append({"id": "cafe", "label": "カフェ"})
-	elif CalendarManager.current_time == "night":
-		spots.append({"id": "tonari", "label": "tonari（夜）"})
-		spots.append({"id": "mukai", "label": "mukai（夜）"})
-		spots.append({"id": "dubai_souq", "label": "ドバイ観光（夜）"})
-		spots.append({"id": "naru", "label": "ケムリクサ（夜）"})
-		spots.append({"id": "adam", "label": "Eden（夜）"})
-		spots.append({"id": "minto", "label": "ぺぱーみんと（夜）"})
-	return spots
+func _is_visited_today(spot_id: String) -> bool:
+	return spot_id in _visited_today
+
+
+func _mark_visited(spot_id: String) -> void:
+	if spot_id != "home" and spot_id != "tonari" and spot_id != "mukai" and spot_id != "dubai_shisha" and not _is_visited_today(spot_id):
+		_visited_today.append(spot_id)
+
+
+func _save_visited() -> void:
+	GameManager.set_transient("visited_spots_today", _visited_today.duplicate())
 
 
 func _on_spot_pressed(spot: Dictionary) -> void:
 	GameManager.play_ui_se("cursor")
 	var id = str(spot.get("id", ""))
+
+	# Spots that require cost confirmation
 	if id == "shop":
-		_open_shop_confirm(spot)
+		_open_cost_confirm(spot, SHOP_VISIT_COST, "Dr.Hookah 入店確認", _build_shop_preview_text())
 		return
-	# Rival shops: check if the rival is present today
 	if id in ["naru", "adam", "minto"]:
 		if not _is_rival_present(id):
-			var rival_name = {"naru": "なる", "adam": "アダム", "minto": "みんと"}.get(id, id)
+			var rival_name = {"naru": "なる", "adam": "アダム", "minto": "眠都"}.get(id, id)
 			if not EventFlags.get_flag("known_name_" + id):
 				rival_name = "店長"
 			message_label.text = "今日は%sは出勤していないようだ。" % rival_name
 			GameManager.play_ui_se("cancel")
 			return
+		_open_cost_confirm(spot, RIVAL_VISIT_COST, "%s 訪問確認" % str(spot.get("label", "")), _build_rival_preview_text(id))
+		return
+	if id == "choizap":
+		if not EventFlags.get_flag("choizap_member"):
+			_open_cost_confirm(spot, CHOIZAP_MEMBERSHIP_COST, "チョイザップ 入会確認", _build_choizap_first_text())
+		else:
+			_enter_spot(spot)
+		return
+	
 	# Roaming spots: check if character event is available
 	if id in ["shotengai", "kannon", "choizap", "tv_tower_park"]:
 		if not _has_roaming_event(id):
 			message_label.text = "特に用事がないから、いいや。"
 			GameManager.play_ui_se("cancel")
 			return
+
 	_enter_spot(spot)
 
 
@@ -268,11 +291,15 @@ func _on_confirmed() -> void:
 	_pending_spot = {}
 
 
-func _open_shop_confirm(spot: Dictionary) -> void:
+func _open_cost_confirm(spot: Dictionary, cost: int, title: String, text: String) -> void:
+	if PlayerData.money < cost:
+		message_label.text = "%s には %d円 が必要です。（所持金: %d円）" % [str(spot.get("label", "")), cost, PlayerData.money]
+		return
 	_pending_spot = spot.duplicate(true)
-	confirm_dialog.title = "Dr.Hookah 入店確認"
-	confirm_dialog.dialog_text = _build_shop_preview_text()
-	confirm_dialog.ok_button_text = "入店する"
+	confirm_dialog.title = title
+	confirm_dialog.dialog_text = text
+	confirm_dialog.ok_button_text = "はい"
+	confirm_dialog.cancel_button_text = "いいえ"
 	confirm_dialog.popup_centered()
 
 
@@ -281,6 +308,24 @@ func _build_shop_preview_text() -> String:
 	lines.append("現在の所持金: %d円" % PlayerData.money)
 	lines.append("※ショップへの移動では時間は経過しません。")
 	lines.append("※在庫は章が進むと増えます。")
+	return "\n".join(lines)
+
+
+func _build_rival_preview_text(_rival_id: String) -> String:
+	var lines: Array[String] = []
+	lines.append("訪問コスト: %d円 / 行動消費: 1" % RIVAL_VISIT_COST)
+	lines.append("現在の所持金: %d円" % PlayerData.money)
+	lines.append("ライバルとの交流で好感度や情報が得られる。")
+	lines.append("※ 同じ店には1日1回まで")
+	return "\n".join(lines)
+
+
+func _build_choizap_first_text() -> String:
+	var lines: Array[String] = []
+	lines.append("入会金: %d円（初回のみ）" % CHOIZAP_MEMBERSHIP_COST)
+	lines.append("現在の所持金: %d円" % PlayerData.money)
+	lines.append("入会後はいつでも無料でトレーニングできる。")
+	lines.append("トレーニングで魅力が上がる。")
 	return "\n".join(lines)
 
 
@@ -293,7 +338,7 @@ func _build_map_rule_lines() -> Array[String]:
 		lines.append("ライバル店: 解放済み")
 
 	if GameManager.current_chapter == 1 and not EventFlags.get_flag("ch1_tournament_completed"):
-		lines.append("章進行条件: 地方大会で1位")
+		lines.append("章進行条件: SMOKE CROWN CUPで1位")
 	elif GameManager.current_chapter >= 2:
 		lines.append("章進行条件: 各章大会で1位")
 	return lines
@@ -302,15 +347,37 @@ func _build_map_rule_lines() -> Array[String]:
 func _enter_spot(spot: Dictionary) -> void:
 	var id = str(spot.get("id", ""))
 	match id:
-		"tonari":
+		"tonari", "mukai", "dubai_shisha":
+			_save_visited()
 			get_tree().change_scene_to_file("res://scenes/daily/baito.tscn")
 		"shop":
+			if PlayerData.money < SHOP_VISIT_COST:
+				message_label.text = "Dr.Hookah 入店には %d円 必要です。" % SHOP_VISIT_COST
+				return
 			# No time progression for shop
+			_mark_visited(id)
+			_save_visited()
 			get_tree().change_scene_to_file("res://scenes/ui/shop_menu.tscn")
-		"naru", "adam", "minto":
+		"home":
 			if not CalendarManager.use_action():
 				_try_auto_return_home()
 				return
+			PlayerData.add_stat("guts", 1)
+			GameManager.log_stat_change("guts", 1)
+			CalendarManager.advance_time()
+			_save_visited()
+			_go_next_phase()
+		"naru", "adam", "minto":
+			if PlayerData.money < RIVAL_VISIT_COST:
+				message_label.text = "訪問には %d円 必要です。（所持金: %d円）" % [RIVAL_VISIT_COST, PlayerData.money]
+				return
+			if not CalendarManager.use_action():
+				_try_auto_return_home()
+				return
+			PlayerData.spend_money(RIVAL_VISIT_COST)
+			GameManager.log_money_change(-RIVAL_VISIT_COST)
+			_mark_visited(id)
+			_save_visited()
 			GameManager.set_transient("interaction_target", id)
 			GameManager.set_transient("advance_time_after_scene", true)
 			get_tree().change_scene_to_file("res://scenes/daily/interaction.tscn")
@@ -319,7 +386,16 @@ func _enter_spot(spot: Dictionary) -> void:
 				_try_auto_return_home()
 				return
 			if not EventFlags.get_flag("choizap_member"):
-				# First visit - show membership dialogue with choice
+				# First visit - pay membership fee
+				if PlayerData.money < CHOIZAP_MEMBERSHIP_COST:
+					message_label.text = "チョイザップ入会には %d円 必要です。" % CHOIZAP_MEMBERSHIP_COST
+					return
+				PlayerData.spend_money(CHOIZAP_MEMBERSHIP_COST)
+				GameManager.log_money_change(-CHOIZAP_MEMBERSHIP_COST)
+				EventFlags.set_flag("choizap_member")
+				# First visit dialogue
+				_mark_visited(id)
+				_save_visited()
 				GameManager.set_transient("interaction_target", "choizap")
 				GameManager.set_transient("advance_time_after_scene", true)
 				GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_choizap_first", "res://scenes/daily/map.tscn")
@@ -328,6 +404,8 @@ func _enter_spot(spot: Dictionary) -> void:
 				# Member - free visit, charm UP
 				PlayerData.add_stat("charm", 1)
 				GameManager.log_stat_change("charm", 1)
+				_mark_visited(id)
+				_save_visited()
 				GameManager.set_transient("advance_time_after_scene", true)
 				GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_choizap_visit", "res://scenes/daily/map.tscn")
 				get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
@@ -335,11 +413,13 @@ func _enter_spot(spot: Dictionary) -> void:
 			if not CalendarManager.use_action():
 				_try_auto_return_home()
 				return
-			# Random stat +1.5, then forced save
+			# Offering prayer - random stat +1.5
 			var stats = ["technique", "sense", "guts", "charm", "insight"]
 			var chosen_stat = stats[randi() % stats.size()]
 			PlayerData.add_stat(chosen_stat, 1.5)
 			GameManager.log_stat_change(chosen_stat, 1.5)
+			_mark_visited(id)
+			_save_visited()
 			GameManager.set_transient("advance_time_after_scene", true)
 			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_kannon_visit", "res://scenes/daily/map.tscn")
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
@@ -351,6 +431,8 @@ func _enter_spot(spot: Dictionary) -> void:
 				return
 			PlayerData.add_stat("sense", 1.5)
 			GameManager.log_stat_change("sense", 1.5)
+			_mark_visited(id)
+			_save_visited()
 			GameManager.set_transient("advance_time_after_scene", true)
 			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_cafe_visit", "res://scenes/daily/map.tscn")
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
@@ -370,10 +452,6 @@ func _enter_spot(spot: Dictionary) -> void:
 			GameManager.set_transient("advance_time_after_scene", true)
 			GameManager.queue_dialogue("res://data/dialogue/ch2_spots.json", event_id, "res://scenes/daily/map.tscn")
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
-
-		# --- Chapter 3 (Tokyo) Spots ---
-		"mukai":
-			get_tree().change_scene_to_file("res://scenes/daily/baito.tscn")
 		"tokyo_shisha":
 			if not CalendarManager.use_action():
 				_try_auto_return_home()
@@ -398,10 +476,6 @@ func _enter_spot(spot: Dictionary) -> void:
 			GameManager.set_transient("advance_time_after_scene", true)
 			GameManager.queue_dialogue("res://data/dialogue/ch3_spots.json", "ch3_tokyo_sightseeing", "res://scenes/daily/map.tscn")
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
-			
-		# --- Chapter 4 (Dubai) Spots ---
-		"dubai_shisha":
-			get_tree().change_scene_to_file("res://scenes/daily/baito.tscn")
 		"dubai_souq":
 			if not CalendarManager.use_action():
 				_try_auto_return_home()
@@ -468,6 +542,7 @@ func _try_auto_return_home() -> bool:
 			if not forced_event.is_empty():
 				break
 		CalendarManager.advance_time()
+	_save_visited()
 	_go_next_phase()
 	return true
 
@@ -668,4 +743,3 @@ func _is_rival_present(rival_id: String) -> bool:
 	var is_absent = _rival_absence_days_cache[cache_key].has(today)
 	
 	return not is_absent
-

@@ -45,6 +45,20 @@
       "next_scene": "map"
     },
     {
+      "id": "ch1_forced_ageha_encounter",
+      "day": 4,
+      "time_slot": "noon",
+      "flag": "ch1_forced_ageha_encounter_done",
+      "title": "落とし物とギャル",
+      "description": "買い出しの途中、落とし物をしたところを派手なギャルに拾ってもらった。",
+      "dialogue_file": "res://data/dialogue/ch1_ageha.json",
+      "dialogue_id": "ch1_ageha_encounter",
+      "stat_changes": {
+        "charm": 1
+      },
+      "next_scene": "map"
+    },
+    {
       "id": "ch1_forced_sumi_story",
       "day": 5,
       "time_slot": "night",
@@ -185,10 +199,10 @@
       "next_scene": "night_end"
     },
     {
-      "id": "interval_day3_eve",
-      "day": 3,
+      "id": "interval_day5_eve",
+      "day": 5,
       "time_slot": "night",
-      "flag": "interval_day3_eve_done",
+      "flag": "interval_day5_eve_done",
       "title": "決意の夜",
       "description": "インターバル最終日の夜。新しい戦いへの覚悟。",
       "dialogue_file": "res://data/dialogue/ch1_interval.json",
@@ -265,20 +279,6 @@
       "description": "第4章: 世界大会（ドバイ編）の始まり。",
       "dialogue_file": "res://data/dialogue/ch4_main.json",
       "dialogue_id": "ch4_opening",
-      "stat_changes": {},
-      "next_scene": "map"
-    }
-  ],
-  "chapter_5": [
-    {
-      "id": "ch5_forced_opening",
-      "day": 1,
-      "time_slot": "morning",
-      "flag": "ch5_forced_opening_done",
-      "title": "春の挑戦状",
-      "description": "第5章: 春の挑戦状（SHISHA-9000戦）の始まり。",
-      "dialogue_file": "res://data/dialogue/ch5_main.json",
-      "dialogue_id": "ch5_opening",
       "stat_changes": {},
       "next_scene": "map"
     }
