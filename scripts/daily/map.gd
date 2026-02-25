@@ -47,6 +47,7 @@ const SPOT_POSITIONS_NIGHT: Dictionary = {
 	"tokyo_shisha": Vector2(400, 100),
 	"dubai_shisha": Vector2(600, 300),
 	"dubai_souq": Vector2(300, 400),
+	"c_station": Vector2(700, 400),
 }
 
 const FACE_BY_SPOT_ID: Dictionary = {
@@ -175,6 +176,8 @@ func _build_spot_list() -> Array:
 				spots.append({"id": "adam", "label": "Eden（夜）"})
 			if not _is_visited_today("minto"):
 				spots.append({"id": "minto", "label": "ぺぱーみんと（夜）"})
+		if GameManager.current_chapter == 1 and not EventFlags.get_flag("ch1_c_station_visited"):
+			spots.append({"id": "c_station", "label": "シーシャステーション（C.STATION・夜）"})
 	return spots
 
 func _build_all_japan_spots() -> Array:
