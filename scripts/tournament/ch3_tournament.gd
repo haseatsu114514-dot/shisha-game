@@ -2724,9 +2724,9 @@ func _build_player_score_breakdown_lines() -> Array[String]:
 
 func _prepare_rival_score_tables() -> void:
 	var rivals = [
-		{"id": "naru", "name": "なる", "specialist": 66.0, "audience": 55.0, "variance": 8.0},
-		{"id": "adam", "name": "アダム", "specialist": 73.0, "audience": 48.0, "variance": 9.0},
-		{"id": "kumicho", "name": "組長", "specialist": 60.0, "audience": 67.0, "variance": 9.0},
+		{"id": "nandi", "name": "ナンディ", "specialist": 85.0, "audience": 80.0, "variance": 5.0},
+		{"id": "rei", "name": "零-REI-", "specialist": 88.0, "audience": 85.0, "variance": 6.0},
+		{"id": "steve", "name": "スティーブ", "specialist": 92.0, "audience": 78.0, "variance": 4.0},
 	]
 	_rival_mid_scores.clear()
 	_rival_final_scores.clear()
@@ -2776,12 +2776,12 @@ func _build_rival_scores() -> Array:
 
 
 func _get_rival_theme_bonus(rival_id: String, theme_id: String) -> float:
-	if rival_id == "naru" and (theme_id == "relax" or theme_id == "aftertaste"):
-		return 4.0
-	if rival_id == "adam" and theme_id == "high_heat":
+	if rival_id == "nandi" and (theme_id == "relax" or theme_id == "aftertaste"):
 		return 6.0
-	if rival_id == "kumicho" and (theme_id == "high_heat" or theme_id == "fruity"):
+	if rival_id == "rei" and theme_id == "relax":
 		return 5.0
+	if rival_id == "steve" and (theme_id == "fruity" or theme_id == "high_heat"):
+		return 6.0
 	return 0.0
 
 
