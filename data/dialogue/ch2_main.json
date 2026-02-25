@@ -1,74 +1,74 @@
 {
-    "dialogues": [
+  "dialogues": [
+    {
+      "dialogue_id": "ch2_opening",
+      "lines": [
         {
-            "dialogue_id": "ch2_opening",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "【第2章: 全国大会（東京編）】"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "ついに東京に着いた……。ここからが全国大会へ向けた本当の戦いだ。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（とりあえず、この町で新しいシーシャ屋を回りながら大会の情報を集めよう）"
-                },
-                {
-                    "speaker": "kemuri",
-                    "face": "normal",
-                    "text": "——おや、おや？"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "えっ？"
-                },
-                {
-                    "speaker": "kemuri",
-                    "face": "normal",
-                    "text": "君……実に興味深い『揺らぎ』を持っていますね。服に染み付いたカルダモンと……この、計算外の甘い香り。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "あなたは……？"
-                },
-                {
-                    "speaker": "kemuri",
-                    "face": "normal",
-                    "text": "私はドクター・ケムリ。誰も悲しまない、完璧なるシーシャの『最適解』を創る者です。"
-                },
-                {
-                    "speaker": "kemuri",
-                    "face": "normal",
-                    "text": "フフ……東京の大会、期待していますよ。君のその不完全なデータ、私の研究の糧にさせてくださいね。ヒッハハ！"
-                },
-                {
-                    "speaker": "kemuri",
-                    "face": "normal",
-                    "text": "……あ、そうそう。君が今持ってるその熱管理デバイスのプロトタイプ。"
-                },
-                {
-                    "speaker": "kemuri",
-                    "face": "normal",
-                    "text": "それ、作ったの俺だもん。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "surprise",
-                    "text": "えっ！？"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "normal",
-                    "text": "（……嵐のように去っていった。な、なんだあの人……白衣着てたし、すごい目の色してたな……）"
-                }
-            ]
+          "speaker": "",
+          "face": "",
+          "text": "【第2章: 全国大会（東京編）】"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ついに東京に着いた……。新幹線のドアが開いた瞬間、むせ返るようなアスファルトの熱気と行き交う人々の香水の匂い、微かな排気ガスが混ざり合った、地元とは全く違う匂いが鼻を抜けた。ここからが全国大会へ向けた本当の戦いだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（とりあえず、この町で新しいシーシャ屋を回りながら大会の情報を集めよう）"
+        },
+        {
+          "speaker": "kemuri",
+          "face": "normal",
+          "text": "——おや、おや？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "えっ？"
+        },
+        {
+          "speaker": "kemuri",
+          "face": "normal",
+          "text": "君……実に興味深い『揺らぎ』を持っていますね。服に染み付いたカルダモンと……この、計算外の甘い香り。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あなたは……？"
+        },
+        {
+          "speaker": "kemuri",
+          "face": "normal",
+          "text": "私はドクター・ケムリ。誰も悲しまない、完璧なるシーシャの『最適解』を創る者です。"
+        },
+        {
+          "speaker": "kemuri",
+          "face": "normal",
+          "text": "フフ……東京の大会、期待していますよ。君のその不完全なデータ、私の研究の糧にさせてくださいね。ヒッハハ！"
+        },
+        {
+          "speaker": "kemuri",
+          "face": "normal",
+          "text": "……あ、そうそう。君が今持ってるその熱管理デバイスのプロトタイプ。"
+        },
+        {
+          "speaker": "kemuri",
+          "face": "normal",
+          "text": "それ、作ったの俺だもん。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "えっ！？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……嵐のように去っていった。な、なんだあの人……白衣着てたし、すごい目の色してたな……）"
         }
-    ]
+      ]
+    }
+  ]
 }

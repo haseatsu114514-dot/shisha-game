@@ -4,11 +4,12 @@ const MAX_LEVEL := 5
 const CHAPTER_AFFINITY_CAP := {1: 3, 2: 4, 3: 5, 4: 5}
 
 const DEFAULT_AFFINITIES := {
-	"sumi": {"level": 0, "lime_exchanged": false, "met": true, "romance": false},
-	"naru": {"level": 0, "lime_exchanged": false, "met": false, "romance": false},
-	"adam": {"level": 0, "lime_exchanged": false, "met": false, "romance": false},
-	"minto": {"level": 0, "lime_exchanged": false, "met": false, "romance": false},
-	"tsumugi": {"level": 0, "lime_exchanged": false, "met": false, "romance": false},
+	"sumi": {"level": 0, "lime_exchanged": false, "met": true, "romance": false, "affection": 0},
+	"naru": {"level": 0, "lime_exchanged": false, "met": false, "romance": false, "affection": 0},
+	"adam": {"level": 0, "lime_exchanged": false, "met": false, "romance": false, "affection": 0},
+	"minto": {"level": 0, "lime_exchanged": false, "met": false, "romance": false, "affection": 0},
+	"tsumugi": {"level": 0, "lime_exchanged": false, "met": false, "romance": false, "affection": 0},
+	"ageha": {"level": 0, "lime_exchanged": false, "met": false, "romance": false, "affection": 0},
 }
 
 const ROMANCE_CANDIDATES := ["minto", "tsumugi", "ageha"]
@@ -56,6 +57,8 @@ func set_romance(char_id: String, value: bool = true) -> void:
 	if not affinities.has(char_id):
 		return
 	affinities[char_id]["romance"] = value
+	if value and EventFlags:
+		EventFlags.set_flag("romance_" + char_id)
 
 
 func is_in_romance(char_id: String) -> bool:
@@ -120,6 +123,25 @@ func get_affinity(char_id: String) -> int:
 
 func get_max_level() -> int:
 	return _get_current_cap()
+
+
+func get_affection(char_id: String) -> int:
+	if not affinities.has(char_id):
+		return 0
+	return int(affinities[char_id].get("affection", 0))
+
+
+func add_affection(char_id: String, amount: int) -> int:
+	if not affinities.has(char_id):
+		return -1
+	var current = int(affinities[char_id].get("affection", 0))
+	var new_val = mini(5, maxi(0, current + amount))
+	affinities[char_id]["affection"] = new_val
+	return new_val
+
+
+func is_max_affection(char_id: String) -> bool:
+	return get_affection(char_id) >= 5
 
 
 func get_star_text(char_id: String) -> String:

@@ -61,40 +61,71 @@ func _apply_default_font() -> void:
 	get_tree().root.theme = theme
 
 
+## ---------- 「煙とスタイル」テーマカラー ----------
+## ベース: ダークネイビー / アクセント: アンバーゴールド / テキスト: クリーム
+const THEME_CREAM_TEXT := Color("ead4aa")
+const THEME_DIM_TEXT := Color("8b9bb4")
+const THEME_DARK_NAVY := Color("181425")
+const THEME_SLATE := Color("3a4466")
+const THEME_AMBER_GOLD := Color("feae34")
+const THEME_VERMILION := Color("e43b44")
+const THEME_SMOKE_GRAY := Color("c0cbdc")
+
+## キャラクター別テーマカラー
+const SPEAKER_COLORS := {
+	"hajime": Color("0099db"),    # ソフトブルー
+	"sumi": Color("a22633"),      # ディープレッド
+	"naru": Color("feae34"),      # ゴールド
+	"adam": Color("265c42"),      # ダークグリーン
+	"kumicho": Color("f77622"),     # バーニングオレンジ
+	"tsumugi": Color("68386c"),   # パープル
+	"minto": Color("b55088"),     # ローズピンク
+	"packii": Color("2ce8f5"),    # シアン
+	"toki_kotetsu": Color("8b9bb4"),
+	"maezono": Color("e4a672"),
+	"kirishima": Color("68386c"),
+	"takiguchi": Color("e43b44"),
+	"salaryman": Color("5a6988"),
+}
+
+func get_speaker_color(speaker_id: String) -> Color:
+	return SPEAKER_COLORS.get(speaker_id, THEME_CREAM_TEXT)
+
 func _apply_default_theme() -> void:
 	var root_theme = get_tree().root.theme
 	if root_theme == null:
 		root_theme = Theme.new()
 		get_tree().root.theme = root_theme
 
-	var neon_text = Color("f7e8ff")
-	var dim_text = Color("a8b2d9")
-	var panel_bg = Color(0.03, 0.04, 0.11, 0.95)
-	var panel_border = Color(0.12, 0.85, 1.0, 0.95)
-	var button_bg = Color(0.09, 0.05, 0.15, 0.95)
-	var button_hover = Color(0.14, 0.08, 0.22, 0.98)
-	var button_pressed = Color(0.22, 0.08, 0.20, 1.0)
-	var button_border = Color(1.0, 0.35, 0.78, 0.95)
+	# 「煙とスタイル」カラーパレット
+	var main_text = THEME_CREAM_TEXT
+	var dim_text = THEME_DIM_TEXT
+	var panel_bg = Color(THEME_DARK_NAVY, 0.92)
+	var panel_border = Color(THEME_SLATE, 0.50)
+	var button_bg = Color(THEME_SLATE, 0.90)
+	var button_hover = Color(THEME_SLATE.lightened(0.15), 0.95)
+	var button_pressed = Color(THEME_SLATE.darkened(0.1), 0.95)
+	var button_border = Color(THEME_SLATE, 0.55)
 
-	root_theme.set_color("font_color", "Label", neon_text)
-	root_theme.set_color("font_color", "Button", neon_text)
-	root_theme.set_color("font_hover_color", "Button", Color("fef4ff"))
-	root_theme.set_color("font_pressed_color", "Button", Color("ffe6f7"))
+	root_theme.set_color("font_color", "Label", main_text)
+	root_theme.set_color("font_color", "Button", main_text)
+	root_theme.set_color("font_hover_color", "Button", Color("fff4e0"))
+	root_theme.set_color("font_pressed_color", "Button", Color("fff4e0"))
 	root_theme.set_color("font_disabled_color", "Button", dim_text)
-	root_theme.set_color("default_color", "RichTextLabel", neon_text)
-	root_theme.set_color("font_color", "LineEdit", neon_text)
+	root_theme.set_color("default_color", "RichTextLabel", main_text)
+	root_theme.set_color("font_color", "LineEdit", main_text)
 
-	root_theme.set_stylebox("panel", "Panel", _make_stylebox(panel_bg, panel_border, 2, 10))
-	root_theme.set_stylebox("panel", "PanelContainer", _make_stylebox(panel_bg, panel_border, 2, 10))
-	root_theme.set_stylebox("normal", "Button", _make_stylebox(button_bg, button_border, 2, 8))
-	root_theme.set_stylebox("hover", "Button", _make_stylebox(button_hover, panel_border, 2, 8))
-	root_theme.set_stylebox("pressed", "Button", _make_stylebox(button_pressed, button_border, 2, 8))
-	root_theme.set_stylebox("disabled", "Button", _make_stylebox(Color(0.08, 0.08, 0.1, 0.9), Color(0.24, 0.26, 0.35, 0.9), 1, 8))
-	root_theme.set_stylebox("focus", "Button", _make_stylebox(button_hover, panel_border, 2, 8))
+	root_theme.set_stylebox("panel", "Panel", _make_stylebox(panel_bg, panel_border, 1, 4))
+	root_theme.set_stylebox("panel", "PanelContainer", _make_stylebox(panel_bg, panel_border, 1, 4))
+	root_theme.set_stylebox("normal", "Button", _make_stylebox(button_bg, button_border, 1, 4))
+	root_theme.set_stylebox("hover", "Button", _make_stylebox(button_hover, THEME_SLATE, 1, 4))
+	root_theme.set_stylebox("pressed", "Button", _make_stylebox(button_pressed, THEME_SLATE, 2, 4))
+	root_theme.set_stylebox("disabled", "Button", _make_stylebox(Color(0.08, 0.08, 0.12, 0.85), Color(THEME_DIM_TEXT, 0.3), 1, 4))
+	root_theme.set_stylebox("focus", "Button", _make_stylebox(button_hover, THEME_SLATE, 1, 4))
 
-	root_theme.set_stylebox("normal", "RichTextLabel", _make_stylebox(Color(0.02, 0.03, 0.09, 0.85), Color(0.08, 0.44, 0.78, 0.6), 1, 6))
-	root_theme.set_stylebox("normal", "LineEdit", _make_stylebox(Color(0.04, 0.04, 0.1, 1.0), panel_border, 2, 6))
-	root_theme.set_stylebox("read_only", "LineEdit", _make_stylebox(Color(0.04, 0.04, 0.08, 0.9), Color(0.28, 0.30, 0.4, 0.9), 1, 6))
+	root_theme.set_stylebox("normal", "RichTextLabel", _make_stylebox(Color(THEME_DARK_NAVY, 0.80), Color(THEME_SLATE, 0.4), 1, 4))
+	root_theme.set_stylebox("normal", "LineEdit", _make_stylebox(Color(THEME_DARK_NAVY, 0.95), Color(THEME_SLATE, 0.4), 1, 4))
+	root_theme.set_stylebox("read_only", "LineEdit", _make_stylebox(Color(THEME_DARK_NAVY, 0.85), Color(THEME_DIM_TEXT, 0.3), 1, 4))
 
 
 func _make_stylebox(bg: Color, border: Color, border_width: int, radius: int) -> StyleBoxFlat:
