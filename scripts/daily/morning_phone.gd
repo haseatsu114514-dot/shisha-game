@@ -71,11 +71,8 @@ func _load_today_lime_messages() -> Array:
 	var messages: Array = parsed.get("messages", [])
 	var result: Array = []
 	for message in messages:
-		if message.has("trigger_interval_day"):
-			if not CalendarManager.is_interval or int(message.get("trigger_interval_day", -1)) != CalendarManager.interval_day:
-				continue
-		elif message.has("trigger_day"):
-			if CalendarManager.is_interval or int(message.get("trigger_day", -1)) != CalendarManager.current_day:
+		if message.has("trigger_day"):
+			if int(message.get("trigger_day", -1)) != CalendarManager.current_day:
 				continue
 		
 		# If it's chapter specific
@@ -107,9 +104,6 @@ func _is_message_condition_met(message: Dictionary) -> bool:
 	elif condition == "tournament_day":
 		var sender = str(message.get("sender", ""))
 		return CalendarManager.is_tournament_day() and AffinityManager.is_in_romance(sender)
-	elif condition == "romance":
-		var sender = str(message.get("sender", ""))
-		return AffinityManager.is_in_romance(sender)
 	return true
 
 
@@ -149,9 +143,9 @@ func _on_close_phone_button_pressed() -> void:
 		
 	var pending_outing = str(GameManager.pop_transient("pending_outing_event", ""))
 	if pending_outing != "":
-		GameManager.set_transient("interaction_event", pending_outing)
-		GameManager.set_transient("advance_time_after_scene", true)
-		get_tree().change_scene_to_file("res://scenes/daily/interaction.tscn")
+		CalendarManager.advance_time()
+		GameManager.queue_dialogue("res://data/dialogue/ch1_events.json", pending_outing, "res://scenes/daily/map.tscn")
+		get_tree().change_scene_to_file("res://scenes/daily/dialogue_box.tscn")
 		return
 		
 	CalendarManager.advance_time()
@@ -204,11 +198,11 @@ func _build_chapter_brief_lines(chapter: int) -> Array[String]:
 	lines.append("【章の目標】")
 	match chapter:
 		1:
-			lines.append("SMOKE CROWN CUPで1位を取る。")
+			lines.append("地方大会で1位を取る。")
 			lines.append("新要素: 蒸らし前の思考弾幕、吸い出し、提供後調整。")
 			lines.append("解放条件: チュートリアル完了後にライバル店が開く。")
 		2:
-			lines.append("HAZE: OPEN CLOUDで1位を取る。")
+			lines.append("日本大会で1位を取る。")
 			lines.append("新要素: 中間順位差を使った追い上げ判断が重要。")
 			lines.append("解放条件: 交流スポットとショップ在庫が章進行で拡張。")
 		3:

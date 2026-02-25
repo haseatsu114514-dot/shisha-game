@@ -1,183 +1,5 @@
-{
+このデータを push したいです。{
   "messages": [
-    {
-      "id": "lime_admin_day1",
-      "sender": "admin",
-      "trigger_day": 1,
-      "trigger_condition": "none",
-      "type": "chat",
-      "time_slot": "morning",
-      "messages": [
-        {
-          "sender": "admin",
-          "text": "【日本シーシャ協会 大会運営局】"
-        },
-        {
-          "sender": "admin",
-          "text": "エントリーありがとうございます。第1回地区予選のエントリーが完了いたしました。"
-        },
-        {
-          "sender": "admin",
-          "text": "大会はDAY7に行われます。本LIMEアカウントを通じ、随時お知らせを配信いたします。"
-        }
-      ]
-    },
-    {
-      "id": "lime_sumi_day1",
-      "sender": "sumi",
-      "trigger_day": 1,
-      "trigger_condition": "none",
-      "type": "chat",
-      "time_slot": "morning",
-      "messages": [
-        {
-          "sender": "sumi",
-          "text": "おはよう、はじめ。"
-        },
-        {
-          "sender": "sumi",
-          "text": "いよいよ今日から一人で店（tonari）に立つ日だな。"
-        },
-        {
-          "sender": "sumi",
-          "text": "お前の作る『誰のことも否定しない』優しい煙……あれなら絶対大丈夫だ。焦らず、いつも通りやってこい。"
-        }
-      ],
-      "replies": [
-        {
-          "text": "はい、師匠！",
-          "response": "ああ。また夜にな。",
-          "affinity": 2
-        },
-        {
-          "text": "緊張してます",
-          "response": "だろうな。だが炭を置いたら忘れろ。煙とお客さんだけに集中するんだ。",
-          "affinity": 1
-        },
-        {
-          "text": "余裕ですよ",
-          "response": "ふっ。その意気だ。舐めてかかると痛い目を見るがな。",
-          "affinity": 0
-        }
-      ]
-    },
-    {
-      "id": "lime_minto_day1",
-      "sender": "minto",
-      "trigger_day": 1,
-      "trigger_condition": "lime_exchanged",
-      "type": "chat",
-      "time_slot": "night",
-      "messages": [
-        {
-          "sender": "minto",
-          "text": "はじめくんっ♡ 今日はお疲れ様！"
-        },
-        {
-          "sender": "minto",
-          "text": "これからよろしくねっ♪"
-        },
-        {
-          "sender": "minto",
-          "text": "みんちゃんのお店（ぺぱーみんと）にもいつか遊びに来てねー！ 清涼感バリバリのヤツ、作ったげる♡"
-        }
-      ],
-      "replies": [
-        {
-          "text": "お疲れ様でした！",
-          "response": "うんっ！ またね♡",
-          "affinity": 1
-        },
-        {
-          "text": "行きます！",
-          "response": "やったー！ 待ってるよっ♪",
-          "affinity": 2
-        },
-        {
-          "text": "（あれ、実年齢…？）",
-          "response": "ん？ はじめくん、今なんか失礼なこと考えなかった？（笑）",
-          "affinity": 0
-        }
-      ]
-    },
-    {
-      "id": "lime_naru_day2",
-      "sender": "naru",
-      "trigger_day": 2,
-      "trigger_condition": "lime_exchanged",
-      "type": "chat",
-      "time_slot": "noon",
-      "messages": [
-        {
-          "sender": "naru",
-          "text": "おい、昨日のセッティング"
-        },
-        {
-          "sender": "naru",
-          "text": "炭の置き方甘くなかったか？ 俺みたく温度計で1度単位で測れとは言わねーけどさ"
-        },
-        {
-          "sender": "naru",
-          "text": "基礎は死ぬ気で叩き込めよ。俺のライバルになるかもしれないんだからな"
-        }
-      ],
-      "replies": [
-        {
-          "text": "気をつけるよ",
-          "response": "当たり前だろ。見てっからな",
-          "affinity": 1
-        },
-        {
-          "text": "なるほど？",
-          "response": "は？ わかってんのかよ。次は容赦しないから",
-          "affinity": 0
-        },
-        {
-          "text": "うるさいな",
-          "response": "ふん。まあいいや、その態度がいつまで続くか見物だね",
-          "affinity": 2
-        }
-      ]
-    },
-    {
-      "id": "lime_adam_day3",
-      "sender": "adam",
-      "trigger_day": 3,
-      "trigger_condition": "lime_exchanged",
-      "type": "chat",
-      "time_slot": "noon",
-      "messages": [
-        {
-          "sender": "adam",
-          "text": "オオ、ブラザー。"
-        },
-        {
-          "sender": "adam",
-          "text": "今日の風はダブルアップルの香りを運んできタ……"
-        },
-        {
-          "sender": "adam",
-          "text": "僕はこれ以外吸えないが、君の店はどうダイ？"
-        }
-      ],
-      "replies": [
-        {
-          "text": "こっちはミントですね",
-          "response": "フフ……爽やかな風も、また一興。",
-          "affinity": 1
-        },
-        {
-          "text": "リンゴの啓示ですか？",
-          "response": "イエス。すべては原点（ダブルアップル）に帰り、そしてまた始まるノダ。",
-          "affinity": 2
-        },
-        {
-          "text": "何言ってるかわからない",
-          "response": "……ブラザー？ まだ君には早かったヨウダ。",
-          "affinity": 0
-        }
-      ]
-    },
     {
       "id": "lime_naru_day3",
       "sender": "naru",
@@ -192,15 +14,15 @@
         },
         {
           "sender": "naru",
-          "text": "今日の夜、至高のパン・バニラミックスのテストランするんだけど"
+          "text": "今日の夜、俺の至高のミックスのテストランするんだけど"
         },
         {
           "sender": "naru",
-          "text": "特別に、最先端の激甘の立ち上がりってやつを見せてやってもいいわ。ケムリクサまでこいよ"
+          "text": "特別に、最先端の煙の立ち上がりってやつを見せてやってもいいわ。こいよ"
         },
         {
           "sender": "naru",
-          "text": "あ、文句は口出し無用な"
+          "text": "あ、素人は口出し無用な"
         }
       ],
       "accept_event": "interaction_naru_night_01",
@@ -208,45 +30,6 @@
         "sender": "naru",
         "text": "は？ なにそれ、俺の胸を借りるチャンスなのに。ウケる"
       }
-    },
-    {
-      "id": "lime_sumi_day4",
-      "sender": "sumi",
-      "trigger_day": 4,
-      "trigger_condition": "none",
-      "type": "chat",
-      "time_slot": "morning",
-      "messages": [
-        {
-          "sender": "sumi",
-          "text": "大会が近づいてきたな。少し焦っているように見えるが、大丈夫か？"
-        },
-        {
-          "sender": "sumi",
-          "text": "焦る必要はない。お客さんの呼吸をよく見るんだ。煙は嘘をつかないからね。"
-        },
-        {
-          "sender": "sumi",
-          "text": "昔、海外（イスタンブール）を回ってた時に俺も学んだことだ。"
-        }
-      ],
-      "replies": [
-        {
-          "text": "やっぱり師匠はすごいですね",
-          "response": "よせ。俺はただの、枯れたロートルさ。",
-          "affinity": 2
-        },
-        {
-          "text": "深いですね",
-          "response": "初心の積み重ねだ。大事なことだよ。",
-          "affinity": 1
-        },
-        {
-          "text": "呼吸…ですか？",
-          "response": "そう。吸う長さ、吐く強さ。そこにお客さんの状態が表れるんだ。",
-          "affinity": 1
-        }
-      ]
     },
     {
       "id": "lime_minto_day4",
@@ -262,7 +45,7 @@
         },
         {
           "sender": "minto",
-          "text": "今日うちのお店来ないのー？ みんちゃん待ってるのに！"
+          "text": "今日お店来ないのー？ みんちゃん待ってるのに！"
         },
         {
           "sender": "minto",
@@ -280,60 +63,73 @@
       }
     },
     {
-      "id": "lime_minto_day5",
-      "sender": "minto",
-      "trigger_day": 5,
-      "trigger_condition": "lime_exchanged",
-      "type": "chat",
-      "messages": [
-        {
-          "sender": "minto",
-          "text": "あと3日だね。準備できてる？"
-        },
-        {
-          "sender": "minto",
-          "text": "私はバッチリだけどね♪ 映えだけじゃない、ホンモノの煙だって証明するんだから。"
-        }
-      ],
-      "replies": [
-        {
-          "text": "まだ不安もあります",
-          "response": "不安があるのは真剣な証拠だよ。大丈夫。はじめくんの煙、優しいもん",
-          "affinity": 1
-        },
-        {
-          "text": "みんとさんには負けません",
-          "response": "あら、嬉しいこと言ってくれるね。でも負けないよ？",
-          "affinity": 2
-        },
-        {
-          "text": "余裕です",
-          "response": "ふふっ、強気だね。本番で泣かないようにね？",
-          "affinity": 0
-        }
-      ]
-    },
-    {
-      "id": "lime_admin_day6",
-      "sender": "admin",
-      "trigger_day": 6,
-      "trigger_condition": "none",
-      "type": "chat",
+      "id": "lime_outing_naru_1",
+      "sender": "naru",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
       "time_slot": "noon",
       "messages": [
         {
-          "sender": "admin",
-          "text": "【日本シーシャ協会 大会運営局】"
+          "sender": "naru",
+          "text": "新しい機材見に行きたいんだけど"
         },
         {
-          "sender": "admin",
-          "text": "いよいよ明日は第1回地区予選です。"
-        },
-        {
-          "sender": "admin",
-          "text": "会場は10:00よりオープンいたします。皆様の『至高の煙』を楽しみにしております。"
+          "sender": "naru",
+          "text": "お前も来る？ 荷物持ちくらいにはなるっしょ"
         }
-      ]
+      ],
+      "accept_event": "outing_naru_1",
+      "decline_response": {
+        "sender": "naru",
+        "text": "あっそ。勝手にすれば"
+      }
+    },
+    {
+      "id": "lime_outing_adam_1",
+      "sender": "adam",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "night",
+      "messages": [
+        {
+          "sender": "adam",
+          "text": "オオ、マイ・ブラザー。"
+        },
+        {
+          "sender": "adam",
+          "text": "今夜、観音で新たな『導き』を見つけに行クガ……同行スルカ？"
+        }
+      ],
+      "accept_event": "outing_adam_1",
+      "decline_response": {
+        "sender": "adam",
+        "text": "ソウカ……ならば一人で歩モウ。"
+      }
+    },
+    {
+      "id": "lime_outing_minto_1",
+      "sender": "minto",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "noon",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "はじめくんっ♡ 今日の昼間、ちょっとお買い物付き合ってくれない？"
+        },
+        {
+          "sender": "minto",
+          "text": "みんちゃん、一人じゃ選べないからさっ♪"
+        }
+      ],
+      "accept_event": "outing_minto_1",
+      "decline_response": {
+        "sender": "minto",
+        "text": "ちぇーっ、わかった！ またねーっ♡"
+      }
     },
     {
       "id": "lime_naru_day6",
@@ -358,7 +154,7 @@
       "replies": [
         {
           "text": "少し緊張してる",
-          "response": "だろうな。まあ精々俺の引き立て役として頑張れよ。期待してっからな",
+          "response": "だろうな。まあ精々俺の引き立て役として頑張れば？",
           "affinity": 1
         },
         {
@@ -367,19 +163,104 @@
           "affinity": 1
         },
         {
-          "text": "お互い頑張ろうぜ",
-          "response": "は？ 別になれ合いたくないから",
-          "affinity": 2
+          "text": "楽しみにしてる",
+          "response": "へえ。エンジョイ勢乙って感じ",
+          "affinity": 1
         }
       ]
     },
     {
-      "id": "lime_adam_day6",
-      "sender": "adam",
-      "trigger_day": 6,
+      "id": "lime_minto_day5",
+      "sender": "minto",
+      "trigger_day": 5,
       "trigger_condition": "lime_exchanged",
       "type": "chat",
-      "time_slot": "night",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "あと3日だね"
+        },
+        {
+          "sender": "minto",
+          "text": "準備できてる？"
+        },
+        {
+          "sender": "minto",
+          "text": "私はバッチリだけどね♪"
+        }
+      ],
+      "replies": [
+        {
+          "text": "まだ不安もあります",
+          "response": "不安があるのは真剣な証拠だよ。大丈夫",
+          "affinity": 1
+        },
+        {
+          "text": "頑張ります",
+          "response": "うん、お互いにね",
+          "affinity": 1
+        },
+        {
+          "text": "みんとさんに勝ちたいです",
+          "response": "あら。いいね、その意気。でも負けないよ？",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "encourage_minto",
+      "sender": "minto",
+      "trigger_condition": "tournament_day",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "はじめくん、いよいよ大会だね！"
+        },
+        {
+          "sender": "minto",
+          "text": "優勝して、みんちゃんとこにお祝いのアフターしに来てねっ♡ 応援してるよ！"
+        }
+      ]
+    },
+    {
+      "id": "encourage_tsumugi",
+      "sender": "tsumugi",
+      "trigger_condition": "tournament_day",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "おはよう……今日、大会だよね"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "あなたのシーシャが一番だって、みんなに証明してきてね。ずっと応援してるから……！"
+        }
+      ]
+    },
+    {
+      "id": "encourage_ageha",
+      "sender": "ageha",
+      "trigger_condition": "tournament_day",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "大会当日じゃん"
+        },
+        {
+          "sender": "ageha",
+          "text": "うちの見込んだ男なんだから、無様な真似はマジ許さないし。とりま勝ってきなさい"
+        }
+      ]
+    },
+    {
+      "id": "lime_adam_day5",
+      "sender": "adam",
+      "trigger_day": 5,
+      "trigger_condition": "lime_exchanged",
+      "type": "chat",
       "messages": [
         {
           "sender": "adam",
@@ -403,237 +284,7 @@
         },
         {
           "text": "アダムさんには負けません",
-          "response": "フフ……原点（ダブルアップル）の強さ、見セツケテヤロウ。",
-          "affinity": 2
-        }
-      ]
-    },
-    {
-      "id": "encourage_minto",
-      "sender": "minto",
-      "trigger_condition": "tournament_day",
-      "type": "chat",
-      "messages": [
-        {
-          "sender": "minto",
-          "text": "はじめくん、いよいよ大会だね！"
-        },
-        {
-          "sender": "minto",
-          "text": "優勝して、みんちゃんとこにお祝いのアフターしに来てねっ♡ 応援してるよ！"
-        }
-      ]
-    },
-    {
-      "id": "encourage_sumi",
-      "sender": "sumi",
-      "trigger_condition": "tournament_day",
-      "type": "chat",
-      "messages": [
-        {
-          "sender": "sumi",
-          "text": "起きてるか。"
-        },
-        {
-          "sender": "sumi",
-          "text": "深呼吸しろよ。tonariの、いや『お前の』シーシャを見せてやれ。"
-        }
-      ]
-    },
-    {
-      "id": "lime_sumi_interval1_day1",
-      "sender": "sumi",
-      "trigger_chapter": 1,
-      "trigger_interval_day": 1,
-      "trigger_condition": "none",
-      "type": "chat",
-      "messages": [
-        {
-          "sender": "sumi",
-          "text": "昨日の大会、見事だったぞ。さすがだな。"
-        },
-        {
-          "sender": "sumi",
-          "text": "だが、勝って兜の緒を締めよと言うだろう。これからも精進を忘れないことだ。"
-        }
-      ],
-      "replies": [
-        {
-          "text": "ありがとうございます！",
-          "response": "ああ。また夜、店でな",
-          "affinity": 1
-        },
-        {
-          "text": "次も勝ちます",
-          "response": "その意気だ。楽しみにしているぞ",
-          "affinity": 2
-        }
-      ]
-    },
-    {
-      "id": "lime_naru_interval1_day1",
-      "sender": "naru",
-      "trigger_chapter": 1,
-      "trigger_interval_day": 1,
-      "trigger_condition": "lime_exchanged",
-      "type": "chat",
-      "messages": [
-        {
-          "sender": "naru",
-          "text": "まあ、大会最初にしては悪くなかったな"
-        },
-        {
-          "sender": "naru",
-          "text": "今回はお前に花持たせてやっただけだからな！ 俺のライバルならこれからも精進しろよ"
-        }
-      ],
-      "replies": [
-        {
-          "text": "お互い切磋琢磨しよう",
-          "response": "は？ ライバル気分？ まあせいぜい足掻けよ",
-          "affinity": 1
-        },
-        {
-          "text": "次も負けないからな",
-          "response": "言うじゃん。泣かしてやるから楽しみに待ってろ",
-          "affinity": 2
-        }
-      ]
-    },
-    {
-      "id": "romance_minto_interval1_day1",
-      "sender": "minto",
-      "trigger_chapter": 1,
-      "trigger_interval_day": 1,
-      "trigger_condition": "romance",
-      "type": "chat",
-      "messages": [
-        {
-          "sender": "minto",
-          "text": "はじめくんっ♡ 彼女のみんちゃんだよー！"
-        },
-        {
-          "sender": "minto",
-          "text": "昨日の大会、本当に凄かったね！ 私も負けちゃいられないなって思っちゃった！"
-        },
-        {
-          "sender": "minto",
-          "text": "……でも、彼氏が一番カッコ良かったから、なんだか誇らしかったな♡"
-        }
-      ],
-      "replies": [
-        {
-          "text": "ありがとう、みんちゃん",
-          "response": "えへへっ♡ これからも私の前ではずっとカッコよくいてね！",
-          "affinity": 1
-        },
-        {
-          "text": "みんちゃんこそ輝いてたよ",
-          "response": "ほんとに！？ じゃあ今度会った時、ご褒美の頭なでなでちょーだいねっ♡",
-          "affinity": 2
-        }
-      ]
-    },
-    {
-      "id": "romance_minto_interval1_day3",
-      "sender": "minto",
-      "trigger_chapter": 1,
-      "trigger_interval_day": 3,
-      "trigger_condition": "romance",
-      "type": "chat",
-      "time_slot": "noon",
-      "messages": [
-        {
-          "sender": "minto",
-          "text": "あのね、はじめくん……今度いつ休める？"
-        },
-        {
-          "sender": "minto",
-          "text": "お店の準備もあるからなかなか自分から会いに行けないけどさ……"
-        },
-        {
-          "sender": "minto",
-          "text": "また二人きりで……その、お家デートとか、したいな……なんてね♡"
-        }
-      ],
-      "replies": [
-        {
-          "text": "予定合わせるよ",
-          "response": "やったー！ はじめくんとのお家デート、楽しみにしてるっ！",
-          "affinity": 2
-        },
-        {
-          "text": "みんちゃんも無理しないでね",
-          "response": "うん……ちょっと弱気になってたから、はじめくんの優しい言葉に救われたよ。ありがと……♡",
-          "affinity": 2
-        }
-      ]
-    },
-    {
-      "id": "romance_ageha_interval2_day1",
-      "sender": "ageha",
-      "trigger_chapter": 2,
-      "trigger_interval_day": 1,
-      "trigger_condition": "romance",
-      "type": "chat",
-      "messages": [
-        {
-          "sender": "ageha",
-          "text": "よっ、ハジメっち！ 今日も一日おつかれーしょん！ ウチの特等席の彼氏くん、ちゃんとご飯食べてる？"
-        },
-        {
-          "sender": "ageha",
-          "text": "なんか最近、ハジメっちの淹れてくれた重いシーシャないとマジでアガんない身体になっちゃったわ。ウケるｗ"
-        },
-        {
-          "sender": "ageha",
-          "text": "責任取って、一生うちの隣で特別扱いしてよねっ♡ とりま、明日も押し掛けるからヨロ！"
-        }
-      ],
-      "replies": [
-        {
-          "text": "いつでも待ってるよ",
-          "response": "さすがっ！ これだからハジメっちの沼から抜けらんないんだよねぇ",
-          "affinity": 2
-        },
-        {
-          "text": "責任重大だね（笑）",
-          "response": "あはは、ビビってんの？ もう逃がさないからねっ♡",
-          "affinity": 1
-        }
-      ]
-    },
-    {
-      "id": "romance_ageha_interval2_day3",
-      "sender": "ageha",
-      "trigger_chapter": 2,
-      "trigger_interval_day": 3,
-      "trigger_condition": "romance",
-      "type": "chat",
-      "time_slot": "noon",
-      "messages": [
-        {
-          "sender": "ageha",
-          "text": "ねー、ハジメっち。次いつ休める？"
-        },
-        {
-          "sender": "ageha",
-          "text": "せっかくウチら付き合ってんだからさ、もっとガッツリ二人でデートしたいんだけど！"
-        },
-        {
-          "sender": "ageha",
-          "text": "なんなら、うちでお泊まりデートとかでもいいし……？ 返事待ってたげるから、マジで早めに決めなよっ♡"
-        }
-      ],
-      "replies": [
-        {
-          "text": "お泊りデート！？",
-          "response": "ウケる、わかりやすくテンパってるしｗｗ そういう初心（うぶ）なとこも推せるわ〜♡",
-          "affinity": 2
-        },
-        {
-          "text": "今度予定合わせるね",
-          "response": "りょ！ うち、ハジメっちのためならいつでも空けとくから、絶対だよー！",
+          "response": "フフ……原点の力、見セツケテヤロウ。",
           "affinity": 1
         }
       ]

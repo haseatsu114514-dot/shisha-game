@@ -35,50 +35,6 @@
             ]
         },
         {
-            "dialogue_id": "ch3_mukai_visit",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "スミさんに紹介された遠征時の溜まり場、「向かい（mukai）」にやってきた。"
-                },
-                {
-                    "speaker": "mukai_master",
-                    "face": "normal",
-                    "text": "やあ、はじめ君。今日もゆっくりしていきなさい"
-                },
-                {
-                    "speaker": "mashiro",
-                    "face": "normal",
-                    "text": "はじめく〜ん……また来てくれたんだねぇ……"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "ダンディな店長と、シガーリーフを極太の煙で吸うおっとりしたましろ。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "東京の激戦区にあって、ここだけはtonariと同じように時間がゆっくり流れている気がする。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "mukaiでくつろぎ、【メンタル】が大きく回復し、【魅力】がアップした！"
-                },
-                {
-                    "type": "choice",
-                    "choices": [
-                        {
-                            "text": "ホテルに戻る",
-                            "next_id": "ch3_return"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
             "dialogue_id": "ch3_tokyo_sightseeing",
             "lines": [
                 {
@@ -100,80 +56,6 @@
                     "speaker": "",
                     "face": "",
                     "text": "東京の空気を吸い、【根性】と【洞察力】がアップした！"
-                },
-                {
-                    "type": "choice",
-                    "choices": [
-                        {
-                            "text": "ホテルに戻る",
-                            "next_id": "ch3_return"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "dialogue_id": "ch3_mukai_tetsuko",
-            "lines": [
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "バイトが終わり、mukaiの裏口から帰ろうとした時のこと。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "「ミャアン……」"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "足元を見ると、綺麗な茶色のハチワレ猫が、おじさんのような座り方（スコ座り）でこちらを見上げていた。"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "smile",
-                    "text": "「お、可愛いな。君は……確か、常連客が『ヤニねこ』って呼んでた……テツコちゃん、だっけ」"
-                },
-                {
-                    "speaker": "mashiro",
-                    "face": "normal",
-                    "text": "「そうそう……テツコちゃんだよぉ……」"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "いつの間にか、ましろが隣に来てテツコの頭をしゃがんで撫でていた。"
-                },
-                {
-                    "speaker": "mashiro",
-                    "face": "normal",
-                    "text": "「この子、店の中までは入ってこないんだけど……いつも裏でこうやって待ってるのぉ。えらいでしょ……？」"
-                },
-                {
-                    "speaker": "hajime",
-                    "face": "smile",
-                    "text": "「本当ですね。すごくおとなしい……。ほら、ちょっとだけだよ」"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "はじめは、まかない用のささみの残りを少しだけ分けてあげた。テツコは嬉しそうに食べている。"
-                },
-                {
-                    "speaker": "mashiro",
-                    "face": "normal",
-                    "text": "「ふふ……はじめくん、テツコちゃんに好かれてるねぇ……」"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "過酷な東京の激戦区にあって、mukaiの裏口でのこの時間は、一番の癒やしになっている。"
-                },
-                {
-                    "speaker": "",
-                    "face": "",
-                    "text": "テツコと触れ合い、【メンタル】が完全に回復し、ましろの【好感度】が少し上がった！"
                 },
                 {
                     "type": "choice",

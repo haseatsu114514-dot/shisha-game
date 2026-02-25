@@ -13,7 +13,7 @@ const CHARACTERS = [
 	{"id": "sumi", "name": "スミ"},
 	{"id": "naru", "name": "なる", "condition": "ch1_naru_met"},
 	{"id": "adam", "name": "アダム", "condition": "ch1_adam_met"},
-	{"id": "minto", "name": "眠都", "condition": "ch1_minto_met"},
+	{"id": "minto", "name": "みんと", "condition": "ch1_minto_met"},
 	{"id": "tsumugi", "name": "つむぎ", "condition": "ch1_tsumugi_met"},
 ]
 

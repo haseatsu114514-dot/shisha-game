@@ -58,78 +58,6 @@ offset_bottom = 440.0
 expand_mode = 1
 stretch_mode = 5
 
-[node name="TopLeftUI" type="MarginContainer" parent="."]
-layout_mode = 1
-anchors_preset = 0
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 20
-
-[node name="AutoButton" type="Button" parent="TopLeftUI"]
-unique_name_in_owner = true
-layout_mode = 2
-custom_minimum_size = Vector2(80, 40)
-theme_override_font_sizes/font_size = 20
-text = "オート OFF"
-toggle_mode = true
-
-[node name="TopRightUI" type="MarginContainer" parent="."]
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-grow_horizontal = 0
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_top = 20
-
-[node name="LogButton" type="Button" parent="TopRightUI"]
-unique_name_in_owner = true
-layout_mode = 2
-custom_minimum_size = Vector2(80, 40)
-theme_override_font_sizes/font_size = 20
-text = "履歴"
-
-[node name="HistoryPanel" type="PanelContainer" parent="."]
-unique_name_in_owner = true
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-
-[node name="ColorRect" type="ColorRect" parent="HistoryPanel"]
-layout_mode = 2
-color = Color(0, 0, 0, 0.85)
-
-[node name="Margin" type="MarginContainer" parent="HistoryPanel"]
-layout_mode = 2
-theme_override_constants/margin_left = 40
-theme_override_constants/margin_top = 80
-theme_override_constants/margin_right = 40
-theme_override_constants/margin_bottom = 40
-
-[node name="Scroll" type="ScrollContainer" parent="HistoryPanel/Margin"]
-layout_mode = 2
-horizontal_scroll_mode = 0
-
-[node name="HistoryVBox" type="VBoxContainer" parent="HistoryPanel/Margin/Scroll"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 20
-
-[node name="CloseHistoryButton" type="Button" parent="HistoryPanel"]
-unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -120.0
-offset_top = 20.0
-offset_right = -20.0
-offset_bottom = 60.0
-theme_override_font_sizes/font_size = 20
-text = "閉じる"
-
 [node name="DialoguePanel" type="PanelContainer" parent="."]
 layout_mode = 1
 anchor_left = 0.03
@@ -171,6 +99,13 @@ text = ""
 layout_mode = 2
 alignment = 2
 theme_override_constants/separation = 10
+
+[node name="AutoButton" type="Button" parent="DialoguePanel/Margin/VBox/ControlButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(100, 28)
+theme_override_font_sizes/font_size = 14
+text = "オート: OFF"
 
 [node name="AdvanceButton" type="Button" parent="DialoguePanel/Margin/VBox/ControlButtons"]
 unique_name_in_owner = true

@@ -195,7 +195,7 @@ func _show_tournament_menu() -> void:
 		if ResourceLoader.exists(path):
 			get_tree().change_scene_to_file(path)
 		else:
-			get_tree().change_scene_to_file("res://scenes/tournament/ch5_tournament.tscn")
+			get_tree().change_scene_to_file("res://scenes/tournament/ch1_tournament.tscn")
 	)
 	menu_container.add_child(button)
 
@@ -506,42 +506,11 @@ func _finish_shift() -> void:
 	body_label.text = closing_text
 	_clear_buttons(choice_container)
 
-var done_button = Button.new()
-	done_button.text = "お疲れ様でした（帰る）"
+	var done_button = Button.new()
+	done_button.text = "マップへ"
 	done_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	done_button.pressed.connect(_finish_action_flow.bind(_shift_advance_steps))
 	choice_container.add_child(done_button)
-
-	var practice_button = Button.new()
-	practice_button.text = "お店のフレーバーで練習していく（消費なし）"
-	practice_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	practice_button.pressed.connect(_start_shop_practice)
-	choice_container.add_child(practice_button)
-
-func _start_shop_practice() -> void:
-	header_label.text = "自主練"
-	body_label.text = "お店のフレーバーを使って、自分のセッティングを試してみよう。
-（所持しているフレーバーのみ選択可能・フレーバーは消費されません）"
-	_clear_buttons(choice_container)
-	
-	var start_button = Button.new()
-	start_button.text = "練習を始める"
-	start_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	start_button.pressed.connect(func():
-		GameManager.set_transient("is_shop_practice", true)
-		GameManager.set_transient("practice_advance_steps", _shift_advance_steps)
-		# 大会画面と同じUIを使い、後で「練習用」か「本番用」かを判定させる
-		# 今回は簡略化のため、1章の大会画面を練習UIとして常に流用するか、専用シーンを呼ぶ
-		# 既存の ch1_tournament は難易度固定のため、練習用に専用パラメータを渡す
-		get_tree().change_scene_to_file("res://scenes/tournament/ch1_tournament.tscn")
-	)
-	choice_container.add_child(start_button)
-	
-	var cancel_button = Button.new()
-	cancel_button.text = "やっぱり帰る"
-	cancel_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	cancel_button.pressed.connect(_finish_action_flow.bind(_shift_advance_steps))
-	choice_container.add_child(cancel_button)
 
 
 func _do_practice() -> void:

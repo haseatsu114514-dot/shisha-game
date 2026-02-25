@@ -106,43 +106,15 @@ func _on_auto_timer_timeout() -> void:
 	# Handle tournament day
 	if not CalendarManager.is_interval and CalendarManager.current_day >= CalendarManager.tournament_day:
 		GameManager.transition_to_tournament()
-		return
 
-	if await _check_and_play_dream():
+	# Handle Chapter 5 timeout
+	if GameManager.current_chapter == 5 and CalendarManager.current_day > 30:
+		GameManager.set_transient("advance_time_after_scene", false)
+		GameManager.queue_dialogue("res://data/dialogue/ch5_main.json", "ch5_timeout", "res://scenes/title_screen.tscn")
+		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		return
 
 	get_tree().change_scene_to_file("res://scenes/daily/morning_phone.tscn")
-
-
-func _check_and_play_dream() -> bool:
-	if CalendarManager.is_interval:
-		return false
-		
-	var dream_id = "ch%d_dream" % GameManager.current_chapter
-	var flag_key = "dream_seen_%s" % dream_id
-	
-	if EventFlags.get_flag(flag_key):
-		return false
-		
-	# Check if the dream exists in dreams.json
-	if not FileAccess.file_exists("res://data/dialogue/dreams.json"):
-		return false
-		
-	var file = FileAccess.open("res://data/dialogue/dreams.json", FileAccess.READ)
-	if file == null:
-		return false
-		
-	var content = file.get_as_text()
-	file.close()
-	
-	var parsed = JSON.parse_string(content)
-	if typeof(parsed) != TYPE_DICTIONARY or not parsed.has(dream_id):
-		return false
-		
-	EventFlags.set_flag(flag_key, true)
-	GameManager.queue_dialogue("res://data/dialogue/dreams.json", dream_id, "res://scenes/daily/morning_phone.tscn")
-	get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
-	return true
 
 
 func _play_day_transition(from_day: int, to_day: int) -> void:
@@ -272,7 +244,7 @@ func _create_calendar_flip_card(day: int) -> Dictionary:
 	vbox.anchor_right = 1.0
 	vbox.anchor_bottom = 1.0
 	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	vbox.add_theme_constant_override("separation", 6)
+	vbox.theme_override_constants.separation = 6
 	margin.add_child(vbox)
 
 	var weekday_label = Label.new()
@@ -306,7 +278,7 @@ func _create_calendar_flip_card(day: int) -> Dictionary:
 
 func _create_day_strip(active_day: int) -> HBoxContainer:
 	var strip = HBoxContainer.new()
-	strip.add_theme_constant_override("separation", int(CARD_GAP))
+	strip.theme_override_constants.separation = int(CARD_GAP)
 	strip.modulate = Color(1, 1, 1, 1)
 	var start_day = _get_strip_start_day(active_day)
 
@@ -342,7 +314,7 @@ func _create_day_card(day: int, is_active: bool) -> Control:
 	panel.add_child(margin)
 
 	var vbox = VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 10)
+	vbox.theme_override_constants.separation = 10
 	margin.add_child(vbox)
 
 	var weekday_label = Label.new()

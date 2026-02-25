@@ -39,7 +39,7 @@ const WEATHER_SCHEDULE: Dictionary = {
 	8: "sunny",
 }
 
-const WEEKDAY_LABELS: Array[String] = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"]
+const WEEKDAY_LABELS: Array[String] = ["SAT", "SUN", "MON", "TUE", "WED", "THU", "FRI"]
 
 ## Chapter-specific settings for overseas stays and intervals
 const CHAPTER_CONFIG: Dictionary = {
@@ -48,14 +48,14 @@ const CHAPTER_CONFIG: Dictionary = {
 		"tournament_day": 8,
 		"location": "地方",
 		"overseas": false,
-		"interval_days": 5,
+		"interval_days": 3,
 	},
 	2: {
 		"max_days": 7,
 		"tournament_day": 8,
 		"location": "県大会",
 		"overseas": false,
-		"interval_days": 5,
+		"interval_days": 3,
 	},
 	3: {
 		"max_days": 7,
@@ -63,17 +63,24 @@ const CHAPTER_CONFIG: Dictionary = {
 		"location": "全国大会 - 東京",
 		"overseas": true,
 		"overseas_stay_days": 7,
-		"interval_days": 14,
+		"interval_days": 0,
 		"companions": ["tsumugi"],
 	},
 	4: {
-		"max_days": 14,
-		"tournament_day": 15,
-		"location": "HAZE: GRAND SMOKE - ドバイ",
+		"max_days": 7,
+		"tournament_day": 8,
+		"location": "世界大会 - ドバイ",
 		"overseas": true,
 		"overseas_stay_days": 3,
 		"interval_days": 0,
 		"companions": ["tsumugi", "naru"],
+	},
+	5: {
+		"max_days": 30,
+		"tournament_day": 9999,
+		"location": "tonari",
+		"overseas": false,
+		"interval_days": 0,
 	},
 }
 
@@ -200,9 +207,11 @@ func get_weather_label(day: int = -1) -> String:
 
 func get_weekday_label(day: int = -1) -> String:
 	var target_day = current_day if day <= 0 else day
+	var offset = 0
 	if is_interval:
 		target_day = interval_day if day <= 0 else day
-	var index = posmod(target_day - 1, WEEKDAY_LABELS.size())
+		offset = 1 # インターバルはDay1が日曜日（WEEKDAY_LABELSのインデックス1）
+	var index = posmod(target_day - 1 + offset, WEEKDAY_LABELS.size())
 	return WEEKDAY_LABELS[index]
 
 
