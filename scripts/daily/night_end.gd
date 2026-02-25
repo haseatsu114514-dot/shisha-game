@@ -106,8 +106,43 @@ func _on_auto_timer_timeout() -> void:
 	# Handle tournament day
 	if not CalendarManager.is_interval and CalendarManager.current_day >= CalendarManager.tournament_day:
 		GameManager.transition_to_tournament()
+		return
+
+	if await _check_and_play_dream():
+		return
 
 	get_tree().change_scene_to_file("res://scenes/daily/morning_phone.tscn")
+
+
+func _check_and_play_dream() -> bool:
+	if CalendarManager.is_interval:
+		return false
+		
+	var dream_id = "ch%d_dream" % GameManager.current_chapter
+	var flag_key = "dream_seen_%s" % dream_id
+	
+	if EventFlags.get_flag(flag_key):
+		return false
+		
+	# Check if the dream exists in dreams.json
+	if not FileAccess.file_exists("res://data/dialogue/dreams.json"):
+		return false
+		
+	var file = FileAccess.open("res://data/dialogue/dreams.json", FileAccess.READ)
+	if file == null:
+		return false
+		
+	var content = file.get_as_text()
+	file.close()
+	
+	var parsed = JSON.parse_string(content)
+	if typeof(parsed) != TYPE_DICTIONARY or not parsed.has(dream_id):
+		return false
+		
+	EventFlags.set_flag(flag_key, true)
+	GameManager.queue_dialogue("res://data/dialogue/dreams.json", dream_id, "res://scenes/daily/morning_phone.tscn")
+	get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+	return true
 
 
 func _play_day_transition(from_day: int, to_day: int) -> void:

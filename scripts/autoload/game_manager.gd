@@ -101,16 +101,16 @@ func _apply_default_theme() -> void:
 	var main_text = THEME_CREAM_TEXT
 	var dim_text = THEME_DIM_TEXT
 	var panel_bg = Color(THEME_DARK_NAVY, 0.92)
-	var panel_border = Color(THEME_AMBER_GOLD, 0.35)
+	var panel_border = Color(THEME_SLATE, 0.50)
 	var button_bg = Color(THEME_SLATE, 0.90)
 	var button_hover = Color(THEME_SLATE.lightened(0.15), 0.95)
-	var button_pressed = Color(THEME_AMBER_GOLD.darkened(0.3), 0.95)
-	var button_border = Color(THEME_AMBER_GOLD, 0.55)
+	var button_pressed = Color(THEME_SLATE.darkened(0.1), 0.95)
+	var button_border = Color(THEME_SLATE, 0.55)
 
 	root_theme.set_color("font_color", "Label", main_text)
 	root_theme.set_color("font_color", "Button", main_text)
 	root_theme.set_color("font_hover_color", "Button", Color("fff4e0"))
-	root_theme.set_color("font_pressed_color", "Button", THEME_AMBER_GOLD)
+	root_theme.set_color("font_pressed_color", "Button", Color("fff4e0"))
 	root_theme.set_color("font_disabled_color", "Button", dim_text)
 	root_theme.set_color("default_color", "RichTextLabel", main_text)
 	root_theme.set_color("font_color", "LineEdit", main_text)
@@ -118,13 +118,13 @@ func _apply_default_theme() -> void:
 	root_theme.set_stylebox("panel", "Panel", _make_stylebox(panel_bg, panel_border, 1, 4))
 	root_theme.set_stylebox("panel", "PanelContainer", _make_stylebox(panel_bg, panel_border, 1, 4))
 	root_theme.set_stylebox("normal", "Button", _make_stylebox(button_bg, button_border, 1, 4))
-	root_theme.set_stylebox("hover", "Button", _make_stylebox(button_hover, Color(THEME_AMBER_GOLD, 0.75), 1, 4))
-	root_theme.set_stylebox("pressed", "Button", _make_stylebox(button_pressed, THEME_AMBER_GOLD, 2, 4))
+	root_theme.set_stylebox("hover", "Button", _make_stylebox(button_hover, THEME_SLATE, 1, 4))
+	root_theme.set_stylebox("pressed", "Button", _make_stylebox(button_pressed, THEME_SLATE, 2, 4))
 	root_theme.set_stylebox("disabled", "Button", _make_stylebox(Color(0.08, 0.08, 0.12, 0.85), Color(THEME_DIM_TEXT, 0.3), 1, 4))
-	root_theme.set_stylebox("focus", "Button", _make_stylebox(button_hover, Color(THEME_AMBER_GOLD, 0.75), 1, 4))
+	root_theme.set_stylebox("focus", "Button", _make_stylebox(button_hover, THEME_SLATE, 1, 4))
 
 	root_theme.set_stylebox("normal", "RichTextLabel", _make_stylebox(Color(THEME_DARK_NAVY, 0.80), Color(THEME_SLATE, 0.4), 1, 4))
-	root_theme.set_stylebox("normal", "LineEdit", _make_stylebox(Color(THEME_DARK_NAVY, 0.95), Color(THEME_AMBER_GOLD, 0.4), 1, 4))
+	root_theme.set_stylebox("normal", "LineEdit", _make_stylebox(Color(THEME_DARK_NAVY, 0.95), Color(THEME_SLATE, 0.4), 1, 4))
 	root_theme.set_stylebox("read_only", "LineEdit", _make_stylebox(Color(THEME_DARK_NAVY, 0.85), Color(THEME_DIM_TEXT, 0.3), 1, 4))
 
 

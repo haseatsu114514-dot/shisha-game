@@ -195,7 +195,7 @@ func _show_tournament_menu() -> void:
 		if ResourceLoader.exists(path):
 			get_tree().change_scene_to_file(path)
 		else:
-			get_tree().change_scene_to_file("res://scenes/tournament/ch1_tournament.tscn")
+			get_tree().change_scene_to_file("res://scenes/tournament/ch5_tournament.tscn")
 	)
 	menu_container.add_child(button)
 

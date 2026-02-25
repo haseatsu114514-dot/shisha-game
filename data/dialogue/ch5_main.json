@@ -1,0 +1,74 @@
+{
+    "dialogues": [
+        {
+            "dialogue_id": "ch5_opening",
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "【第5章: クラウドターミナル】"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "世界大会を終えたばかりだが、まだ一つの謎が残っていた。Dr.ケムリが残したという、究極のAI『SHISHA-9000』だ。"
+                },
+                {
+                    "speaker": "sumi",
+                    "face": "normal",
+                    "text": "はじめ。準備はいいか。ここから先は人間の領域を超える戦いになるかもしれない。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "serious",
+                    "text": "はい。僕たちのシーシャがAIの計算に勝てるのか……確かめてきます。"
+                }
+            ]
+        },
+        {
+            "dialogue_id": "ch5_tournament_day",
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "クラウド・ターミナル。無機質な空間に、巨大なサーバーとシーシャパイプが融合したような異形の存在が鎮座している。"
+                },
+                {
+                    "speaker": "shisha_9000",
+                    "face": "",
+                    "text": "【ピー……ガガッ……対象を確認。プロトコル『PERFECT SMOKE』を起動します】"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "serious",
+                    "text": "（これが……SHISHA-9000。圧倒的な威圧感だ。どんな煙を作るっていうんだ……？）"
+                }
+            ]
+        },
+        {
+            "dialogue_id": "ch5_ending",
+            "lines": [
+                {
+                    "speaker": "shisha_9000",
+                    "face": "",
+                    "text": "【エラー……予測不能な成分を検出。これが、『心』……？ 計算不能、計算不能……！】"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "AIが作り出す緻密で無機質な煙を、僕の泥臭くも温かい煙が上回った瞬間だった。"
+                },
+                {
+                    "speaker": "sumi",
+                    "face": "smile",
+                    "text": "よくやった、はじめ。Dr.ケムリもこれで報われるだろう。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "smile",
+                    "text": "（技術だけじゃない。人を想う気持ちがシーシャを美味しくする。それを証明できたんだ……！）"
+                }
+            ]
+        }
+    ]
+}

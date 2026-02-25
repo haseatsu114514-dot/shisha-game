@@ -30,7 +30,21 @@
           "next_true": "ending_shuraba",
           "next_false": "ending_check_single"
         }
-      ]
+      ],
+      "branches": {
+        "ending_shuraba": [
+          {
+            "type": "jump",
+            "next_id": "ending_shuraba"
+          }
+        ],
+        "ending_check_single": [
+          {
+            "type": "jump",
+            "next_id": "ending_check_single"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ending_check_single",
@@ -42,24 +56,44 @@
           "next_true": "ending_single_lover",
           "next_false": "ending_normal"
         }
-      ]
+      ],
+      "branches": {
+        "ending_single_lover": [
+          {
+            "type": "jump",
+            "next_id": "ending_single_lover"
+          }
+        ],
+        "ending_normal": [
+          {
+            "type": "jump",
+            "next_id": "ending_normal"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ending_single_lover",
       "lines": [
         {
           "type": "condition",
-          "condition_type": "has_romance",
+          "condition_type": "has_romance_and_max_affection",
           "char_id": "minto",
           "next_true": "sit_with_minto",
           "next_false": "check_tsumugi"
         }
       ],
       "branches": {
+        "sit_with_minto": [
+          {
+            "type": "jump",
+            "next_id": "sit_with_minto"
+          }
+        ],
         "check_tsumugi": [
           {
             "type": "condition",
-            "condition_type": "has_romance",
+            "condition_type": "has_romance_and_max_affection",
             "char_id": "tsumugi",
             "next_true": "sit_with_tsumugi",
             "next_false": "check_ageha"
@@ -68,7 +102,7 @@
         "check_ageha": [
           {
             "type": "condition",
-            "condition_type": "has_romance",
+            "condition_type": "has_romance_and_max_affection",
             "char_id": "ageha",
             "next_true": "sit_with_ageha",
             "next_false": "check_mashiro"
@@ -77,7 +111,7 @@
         "check_mashiro": [
           {
             "type": "condition",
-            "condition_type": "has_romance",
+            "condition_type": "has_romance_and_max_affection",
             "char_id": "mashiro",
             "next_true": "sit_with_mashiro",
             "next_false": "ending_normal"

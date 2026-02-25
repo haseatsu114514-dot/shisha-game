@@ -1,8 +1,8 @@
 extends Control
 
 const TOTAL_STEPS := 15
-const TOURNAMENT_SCENE_PATH := "res://scenes/tournament/ch1_tournament.tscn"
-const MORNING_PHONE_SCENE_PATH := "res://scenes/daily/morning_phone.tscn"
+const TOURNAMENT_SCENE_PATH := "res://scenes/tournament/ch5_tournament.tscn"
+const MORNING_PHONE_SCENE_PATH := "res://scenes/daily/ending_scene.tscn"
 const TITLE_SCENE_PATH := "res://scenes/title/title_screen.tscn"
 
 const FLAVOR_NAME_MAP := {
@@ -51,7 +51,7 @@ const REBUTTAL_PROMPTS := [
 	},
 ]
 
-const REWARD_BY_RANK := {1: 30000, 2: 15000, 3: 5000, 4: 0}
+const REWARD_BY_RANK := {1: 300000, 2: 150000, 3: 50000, 4: 0}
 const PULL_DIFFICULTY := [0.86, 1.0, 1.22, 1.06]
 const TOTAL_PACKING_GRAMS := 12
 const PULL_MIN_ROUNDS := 2
@@ -71,113 +71,6 @@ const MIND_BARRAGE_WORDS := [
 	"安全策に寄せた方がよくないか？",
 	"その個性、ただの自己満足では？",
 ]
-
-## 弾幕ワード: 主人公の内なる不安
-const MIND_WORDS_ANXIETY := [
-	"失敗したらどうしよう",
-	"手が震えてる…",
-	"この配合で本当に良かったのか？",
-	"もっと練習すべきだった",
-	"自分なんかがここにいていいのか",
-	"スミさんに合わせる顔がない",
-	"才能がないのかもしれない",
-	"ここまで来たの、なんとなくじゃないか？",
-	"もっと甘くすべきだった？",
-	"安全策に寄せた方がよくないか？",
-	"この配合、攻めすぎじゃないか？",
-	"前に失敗した時と同じ流れだ",
-	"「無難」に逃げた方がよかったか？",
-	"全部中途半端なんじゃないか",
-	"本気でやってるつもりなだけ？",
-	"結局バイトの延長でしょ",
-	"うまくいくわけがない",
-	"なんで出場なんてしたんだろう",
-]
-## 弾幕ワード: 観客の声（主人公を不安にさせるもの）
-const MIND_WORDS_AUDIENCE := [
-	"この大会はアダムの優勝で決まりだな",
-	"組長のシーシャ、すげー煙だったな",
-	"にしおさんの配合、さすがだった",
-	"あの新人、大丈夫かな…",
-	"初出場でこの面子は厳しいでしょ",
-	"アダムって海外で修行してたんだって",
-	"組長の人気投票、断トツらしいよ",
-	"にしおさん、去年も上位だったよね",
-	"やっぱ経験の差が出るよな",
-	"あの子の配合、ちょっと地味じゃない？",
-	"土岐さんの好みとは違うタイプだよな",
-	"前園審査員、甘い評価はしないぞ",
-]
-## 弾幕ワード: 対戦相手への畏怖
-const MIND_WORDS_RIVAL := [
-	"あいつの方が評価高そう",
-	"審査員、これ嫌いじゃないか？",
-	"前のラウンド、負けてるぞ",
-	"その個性、ただの自己満足では？",
-	"アダムの技術には敵わない",
-	"組長のセンスが羨ましい",
-	"にしおさんの安定感、真似できない",
-	"ライバルたちは本気だ",
-	"みんな自分より上手い",
-]
-
-## MCパッキーの実況コメント（ステップ番号をキーにランダム選択）
-const MC_COMMENTS := {
-	1: [
-		"MCパッキー「さあ、まずはセッティングから！ ハガルとHMSの組み合わせ、ここが大事ですよ❤」",
-		"MCパッキー「選手たちが機材を確認中。1種類で勝負する派、組み合わせで攻める派…」",
-	],
-	2: [
-		"MCパッキー「フレーバー選択！ テーマに合わせるか、自分の得意で勝負するか」",
-		"土岐「テーマの解釈に個性が出る。配合にはその人の哲学が見える」",
-	],
-	3: [
-		"MCパッキー「パッキングの時間です！ 12gをどう配分するか」",
-		"土岐「パッキングの密度、配置…全てが結果に出る」",
-	],
-	4: [
-		"MCパッキー「アルミ穴あけ！ 等間隔で穴を開けられるかが勝負の分かれ目！」",
-		"土岐「穴の開け方一つで吸い心地が変わる。丁寧に、だがリズムよく」",
-	],
-	5: [
-		"MCパッキー「炭の準備！ フリップのタイミングが鍵です」",
-	],
-	6: [
-		"MCパッキー「炭配置！ 何個置くかも戦略のうち」",
-		"土岐「火力のコントロール…これがシーシャの脇だ」",
-	],
-	7: [
-		"MCパッキー「蒸らしの時間です… ここは我慢比べ！」",
-		"土岐「蒸らしの分数で勝負は大きく変わる」",
-	],
-	8: [
-		"MCパッキー「吸い出し前の精神戦…！ 選手たちの心の中はどうなってるかな」",
-	],
-	9: [
-		"MCパッキー「吸い出し！ ここで煙の質が決まります！」",
-		"土岐「一口目の吸い出しがすべてを物語る」",
-	],
-	10: [
-		"MCパッキー「提供の時間！ 審査員が吸います！」",
-	],
-	11: [
-		"MCパッキー「調整タイム！ 吸いながら微調整できるか」",
-	],
-	12: [
-		"MCパッキー「プレゼンテーション！ 自分のシーシャをどうアピールするか」",
-		"土岐「味だけではない。見せ方にも志が要る」",
-	],
-	13: [
-		"MCパッキー「反論タイム！ 審査員の疑問にどう答えるか！」",
-	],
-	14: [
-		"MCパッキー「中間結果発表…！ ここまでの順位は？」",
-	],
-	15: [
-		"MCパッキー「さあ、運命の最終発表です！」",
-		"土岐「どの選手もよく戦った。だが順位はつく」",
-	],
-}
 const TEMP_MIN := 140.0
 const TEMP_MAX := 260.0
 const PRESENTATION_FOCUS_OPTIONS := [
@@ -207,11 +100,6 @@ const PRESENTATION_FOCUS_LABEL := {
 @onready var judge_label: Label = %JudgeLabel
 @onready var score_label: RichTextLabel = %ScoreLabel
 @onready var memo_label: RichTextLabel = %MemoLabel
-
-@onready var mini_dialogue_panel: PanelContainer = %MiniDialoguePanel
-@onready var mini_speaker_label: Label = %MiniSpeakerLabel
-@onready var mini_text_label: RichTextLabel = %MiniTextLabel
-@onready var mini_portrait: TextureRect = %MiniPortrait
 
 @onready var status_panel = $SidePanel/SideMargin/SideVBox/StatusPanel
 
@@ -314,24 +202,6 @@ var _mid_rival_totals: Dictionary = {}
 var _presentation_primary_focus: String = ""
 var _presentation_secondary_focus: String = ""
 
-var _mini_dialogue_queue: Array[Dictionary] = []
-var _mini_dialogue_on_finish: Callable
-var _mini_dialogue_is_typing: bool = false
-var _mini_dialogue_full_text: String = ""
-var _mini_dialogue_char_index: int = 0
-var _mini_dialogue_timer: Timer
-
-const SPEAKER_NAMES := {
-	"hajime": "はじめ",
-	"sumi": "スミさん",
-	"naru": "なる",
-	"adam": "アダム",
-	"minto": "眠都(みんと)",
-	"takiguchi": "MC 焚口",
-	"toki_kotetsu": "土岐鋼鉄",
-	"maezono": "前園壮一郎"
-}
-
 func _process(_delta: float) -> void:
 	if status_panel and status_panel.has_method("update_status"):
 		var mapped_temp = clampf(0.5 + float(_heat_state) * 0.1, 0.0, 1.0)
@@ -369,17 +239,9 @@ func _ready() -> void:
 	_mind_timer.one_shot = false
 	_mind_timer.timeout.connect(_on_mind_barrage_tick)
 	add_child(_mind_timer)
-	
-	_mini_dialogue_timer = Timer.new()
-	_mini_dialogue_timer.wait_time = 0.03
-	_mini_dialogue_timer.one_shot = false
-	_mini_dialogue_timer.timeout.connect(_on_mini_dialogue_tick)
-	add_child(_mini_dialogue_timer)
-	
 	if GameManager.game_state != "tournament":
 		GameManager.transition_to_tournament()
 	_prepare_run()
-	_init_cyber_effects()
 
 
 func _prepare_run() -> void:
@@ -460,11 +322,8 @@ func _prepare_run() -> void:
 
 func _set_phase(step_num: int, title: String, body: String) -> void:
 	header_label.text = title
-	header_label.add_theme_color_override("font_color", GameManager.THEME_VERMILION)
 	phase_label.text = "STEP %d / %d" % [step_num, TOTAL_STEPS]
 	info_label.text = body
-	_show_round_announce(step_num, title)
-	_show_mc_comment(step_num)
 
 
 func _append_info(text: String) -> void:
@@ -494,36 +353,8 @@ func _clear_choices() -> void:
 func _add_choice_button(text: String, callback: Callable) -> Button:
 	var button = Button.new()
 	button.text = text
-	button.custom_minimum_size = Vector2(0, 44)
+	button.custom_minimum_size = Vector2(0, 40)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	# ダンガンロンパ風: バーミリオン×黒の大会専用スタイル
-	var normal_style = StyleBoxFlat.new()
-	normal_style.bg_color = Color("181425", 0.95)
-	normal_style.border_color = Color("e43b44", 0.5)
-	normal_style.border_width_bottom = 2
-	normal_style.border_width_left = 1
-	normal_style.border_width_right = 1
-	normal_style.border_width_top = 1
-	normal_style.corner_radius_bottom_left = 2
-	normal_style.corner_radius_bottom_right = 2
-	normal_style.corner_radius_top_left = 2
-	normal_style.corner_radius_top_right = 2
-	normal_style.content_margin_left = 16
-	normal_style.content_margin_right = 16
-	normal_style.content_margin_top = 8
-	normal_style.content_margin_bottom = 8
-	button.add_theme_stylebox_override("normal", normal_style)
-	var hover_style = normal_style.duplicate()
-	hover_style.bg_color = Color("e43b44", 0.25)
-	hover_style.border_color = Color("e43b44", 0.9)
-	hover_style.border_width_bottom = 3
-	button.add_theme_stylebox_override("hover", hover_style)
-	button.add_theme_color_override("font_color", GameManager.THEME_CREAM_TEXT)
-	button.add_theme_color_override("font_hover_color", Color("ffffff"))
-	var pressed_style = normal_style.duplicate()
-	pressed_style.bg_color = Color("e43b44", 0.4)
-	pressed_style.border_color = Color("e43b44")
-	button.add_theme_stylebox_override("pressed", pressed_style)
 	button.pressed.connect(func() -> void:
 		GameManager.play_ui_se("cursor")
 		callback.call()
@@ -780,7 +611,6 @@ func _show_packing_step() -> void:
 
 	_packing_confirm_button = _add_choice_button("この配合で確定", _confirm_manual_packing)
 	_refresh_packing_controls()
-	_show_bowl_visual()
 
 	_refresh_side_panel()
 
@@ -849,7 +679,6 @@ func _on_packing_slider_changed(value: float, flavor_id: String) -> void:
 	var grams = int(round(value))
 	_manual_packing_grams[flavor_id] = grams
 	_refresh_packing_controls()
-	_update_bowl_visual()
 
 
 func _refresh_packing_controls() -> void:
@@ -1031,7 +860,7 @@ func _detect_special_mix(pattern: Dictionary) -> Dictionary:
 
 
 func _show_aluminum_step() -> void:
-	_set_phase(4, "アルミ穴あけ", "リズムに合わせて穴を開ける。タイミングが大事！")
+	_set_phase(4, "アルミ穴あけ", "円形レーンの判定点にノーツが来たら叩く。Taiko風のタイミング勝負。")
 	_clear_choices()
 	_aluminum_active = true
 	_aluminum_notes.clear()
@@ -1075,43 +904,10 @@ func _show_aluminum_step() -> void:
 	_aluminum_timer.start()
 	_spawn_aluminum_note()
 
-	# ビジュアルリング表示
-	var ring_visual = _AluminumRingVisual.new()
-	ring_visual.name = "AluminumRing"
-	ring_visual.custom_minimum_size = Vector2(280, 260)
-	ring_visual.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	ring_visual.slot_count = _aluminum_slot_count
-	ring_visual.hit_slot = _aluminum_hit_slot
-	choice_container.add_child(ring_visual)
-
-	# 穴あけボタン（大きく目立つ）
 	var press_button = Button.new()
-	press_button.text = "🔨 穴を開ける！"
-	press_button.custom_minimum_size = Vector2(0, 60)
+	press_button.text = "ドン（穴を開ける）"
+	press_button.custom_minimum_size = Vector2(0, 44)
 	press_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	press_button.add_theme_font_size_override("font_size", 28)
-	var btn_style = StyleBoxFlat.new()
-	btn_style.bg_color = Color("e43b44", 0.85)
-	btn_style.border_color = Color("feae34", 0.7)
-	btn_style.border_width_bottom = 4
-	btn_style.border_width_left = 2
-	btn_style.border_width_right = 2
-	btn_style.border_width_top = 1
-	btn_style.corner_radius_bottom_left = 8
-	btn_style.corner_radius_bottom_right = 8
-	btn_style.corner_radius_top_left = 8
-	btn_style.corner_radius_top_right = 8
-	btn_style.content_margin_top = 12
-	btn_style.content_margin_bottom = 12
-	press_button.add_theme_stylebox_override("normal", btn_style)
-	var btn_hover = btn_style.duplicate()
-	btn_hover.bg_color = Color("e43b44")
-	btn_hover.border_color = Color("feae34")
-	press_button.add_theme_stylebox_override("hover", btn_hover)
-	var btn_pressed = btn_style.duplicate()
-	btn_pressed.bg_color = Color("feae34", 0.7)
-	press_button.add_theme_stylebox_override("pressed", btn_pressed)
-	press_button.add_theme_color_override("font_color", Color("ffffff"))
 	press_button.pressed.connect(_on_aluminum_press_hole)
 	choice_container.add_child(press_button)
 	_refresh_side_panel()
@@ -1176,22 +972,18 @@ func _on_aluminum_press_hole() -> void:
 	if nearest_index == -1 or nearest_distance > 1.55:
 		_aluminum_bad_press += 1
 		GameManager.play_ui_se("cancel")
-		_aluminum_show_hit_feedback("MISS", Color("e43b44"))
 		_update_aluminum_rhythm_text()
 		return
 
 	if nearest_distance <= 0.35:
 		_aluminum_hit_perfect += 1
 		GameManager.play_ui_se("confirm")
-		_aluminum_show_hit_feedback("PERFECT!", Color("feae34"))
 	elif nearest_distance <= 0.9:
 		_aluminum_hit_good += 1
 		GameManager.play_ui_se("confirm")
-		_aluminum_show_hit_feedback("GOOD", Color("3e8948"))
 	else:
 		_aluminum_hit_near += 1
 		GameManager.play_ui_se("cursor")
-		_aluminum_show_hit_feedback("NEAR", Color("8b9bb4"))
 
 	_aluminum_notes.remove_at(nearest_index)
 	if _aluminum_notes_spawned >= _aluminum_total_notes and _aluminum_notes.is_empty():
@@ -1216,7 +1008,6 @@ func _finish_aluminum_rhythm() -> void:
 	_zone_bonus += zone_gain
 	_zone_bonus = clampf(_zone_bonus, -0.4, 1.2)
 	GameManager.play_ui_se("confirm" if delta_spec >= 0.0 else "cancel")
-	_show_mid_score_ticker()  # アルミ後の中間速報
 	_show_step_result_and_next(
 		"%s: 専門 %+d / 一般 %+d / ゾーン %+d%%\n判定 P%d / G%d / N%d / M%d / 空振り%d" % [
 			result_text,
@@ -1259,30 +1050,23 @@ func _evaluate_aluminum_rhythm() -> Dictionary:
 
 
 func _update_aluminum_rhythm_text() -> void:
+	var ring = _build_aluminum_ring_text()
 	var hit_count = _count_aluminum_hits()
 	var remain = maxi(0, _aluminum_required_hits - hit_count)
-	var progress_bar = ""
-	for i in range(_aluminum_total_notes):
-		if i < _aluminum_hit_perfect:
-			progress_bar += "★"
-		elif i < hit_count:
-			progress_bar += "●"
-		else:
-			progress_bar += "○"
 	var lines: Array[String] = []
-	lines.append("穴あけ進捗: %s" % progress_bar)
-	lines.append("成功 %d / %d（あと %d）" % [hit_count, _aluminum_total_notes, remain])
-	lines.append("P:%d  G:%d  N:%d  M:%d" % [_aluminum_hit_perfect, _aluminum_hit_good, _aluminum_hit_near, _aluminum_hit_miss])
-	lines.append("ノーツが判定ラインに来たらボタンを押せ！")
+	lines.append("円形Taiko穴あけ: 判定点で叩く")
+	lines.append("成功: %d / %d（最低 %d 必要、残り %d）" % [hit_count, _aluminum_total_notes, _aluminum_required_hits, remain])
+	lines.append("判定: Perfect %d / Good %d / Near %d / Miss %d / 空振り %d" % [
+		_aluminum_hit_perfect,
+		_aluminum_hit_good,
+		_aluminum_hit_near,
+		_aluminum_hit_miss,
+		_aluminum_bad_press,
+	])
+	lines.append("凡例: ★判定点 / ●ノーツ / ◎ノーツ重なり / ◆判定点上ノーツ")
+	lines.append("")
+	lines.append(ring)
 	info_label.text = "\n".join(lines)
-
-	# ビジュアルリングの更新
-	var ring_node = choice_container.find_child("AluminumRing", true, false) as _AluminumRingVisual
-	if ring_node != null:
-		ring_node.notes = _aluminum_notes.duplicate(true)
-		ring_node.hit_slot = _aluminum_hit_slot
-		ring_node.hits_done = hit_count
-		ring_node.queue_redraw()
 
 
 func _build_aluminum_ring_text() -> String:
@@ -1544,7 +1328,7 @@ func _show_mind_barrage_intro(summary_text: String = "") -> void:
 
 func _compute_mind_barrage_duration() -> float:
 	var ratio = clampf(float(_steam_minutes - 5) / 5.0, 0.0, 1.0)
-	var duration_sec = lerpf(MIND_BARRAGE_MIN_SECONDS, MIND_BARRAGE_MAX_SECONDS, ratio)
+	var duration_sec = lerpf(MIND_BARRAGE_MIN_SECONDS * 1.5, MIND_BARRAGE_MAX_SECONDS * 1.5, ratio)
 	duration_sec += float(maxi(_heat_state, 0)) * 0.4
 	match _selected_hms:
 		"amaburst":
@@ -1601,78 +1385,26 @@ func _start_mind_barrage_step() -> void:
 	guide.text = "操作: 矢印キー / WASD（下のボタン長押しでも移動）"
 	choice_container.add_child(guide)
 
-	# 横並びレイアウト: 左にはじめの顔 + 右にアリーナ
-	var mind_hbox = HBoxContainer.new()
-	mind_hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	mind_hbox.add_theme_constant_override("separation", 10)
-	choice_container.add_child(mind_hbox)
-
-	# はじめの顔パネル
-	var face_panel = VBoxContainer.new()
-	face_panel.custom_minimum_size = Vector2(100, 260)
-	face_panel.add_theme_constant_override("separation", 6)
-	mind_hbox.add_child(face_panel)
-
-	var face_rect = TextureRect.new()
-	face_rect.name = "MindFaceRect"
-	face_rect.custom_minimum_size = Vector2(96, 96)
-	face_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
-	face_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	# 初期表情: normal
-	var face_path = "res://assets/sprites/characters/chr_hajime_normal.png"
-	if ResourceLoader.exists(face_path):
-		face_rect.texture = load(face_path)
-	face_panel.add_child(face_rect)
-
-	var face_label = Label.new()
-	face_label.name = "MindFaceLabel"
-	face_label.text = "集中してる…"
-	face_label.add_theme_font_size_override("font_size", 13)
-	face_label.add_theme_color_override("font_color", Color("ead4aa", 0.8))
-	face_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	face_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	face_label.custom_minimum_size = Vector2(96, 0)
-	face_panel.add_child(face_label)
-
 	var arena_frame = PanelContainer.new()
 	arena_frame.custom_minimum_size = Vector2(0, 260)
 	arena_frame.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	mind_hbox.add_child(arena_frame)
+	choice_container.add_child(arena_frame)
 
 	var arena = ColorRect.new()
 	arena.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	arena.color = Color("181425", 0.95)
+	arena.color = Color(0.05, 0.06, 0.1, 0.95)
 	arena.clip_contents = true
 	arena.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	arena_frame.add_child(arena)
 	_mind_arena_layer = arena
 
-	# アリーナ枠線（バーミリオン）
-	var arena_border = ReferenceRect.new()
-	arena_border.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	arena_border.border_color = Color("e43b44", 0.5)
-	arena_border.border_width = 2.0
-	arena_border.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	arena.add_child(arena_border)
-
 	var player = ColorRect.new()
-	player.color = Color("e43b44")
+	player.color = Color(0.96, 0.22, 0.24, 1.0)
 	player.size = _mind_player_size
 	player.custom_minimum_size = _mind_player_size
 	player.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	arena.add_child(player)
 	_mind_player_node = player
-
-	# フェーズ名表示ラベル
-	var phase_hint = Label.new()
-	phase_hint.name = "PhaseHint"
-	phase_hint.text = "― 不安が湧き上がる ―"
-	phase_hint.add_theme_font_size_override("font_size", 14)
-	phase_hint.add_theme_color_override("font_color", Color("8b9bb4", 0.7))
-	phase_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	phase_hint.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
-	phase_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	arena.add_child(phase_hint)
 
 	var dpad = GridContainer.new()
 	dpad.columns = 3
@@ -1774,15 +1506,7 @@ func _on_mind_barrage_tick() -> void:
 
 	if _mind_spawn_cooldown <= 0.0:
 		_spawn_mind_barrage_word()
-		# 難易度スケーリング: 後半ほどスポーン間隔が短くなる
-		var progress = clampf(_mind_elapsed / maxf(_mind_duration_total, 1.0), 0.0, 1.0)
-		var phase_interval_mult = lerpf(1.0, 0.6, progress)  # 後半は40%短く
-		_mind_spawn_cooldown = _mind_spawn_interval * randf_range(0.72, 1.25) * phase_interval_mult
-
-		# アリーナの色を時間経過で変化
-		if _mind_arena_layer != null and is_instance_valid(_mind_arena_layer):
-			var dark_color = Color("181425", 0.95).lerp(Color("2a1520", 0.95), progress)
-			_mind_arena_layer.color = dark_color
+		_mind_spawn_cooldown = _mind_spawn_interval * randf_range(0.72, 1.25)
 
 	_update_mind_bullets(dt)
 	if _mind_lives_remaining <= 0:
@@ -1828,34 +1552,19 @@ func _update_mind_player(dt: float) -> void:
 func _spawn_mind_barrage_word() -> void:
 	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
 		return
+	if MIND_BARRAGE_WORDS.is_empty():
+		return
 	var arena_size = _mind_arena_layer.size
 	if arena_size.x < 80.0 or arena_size.y < 80.0:
 		return
 
-	# フェーズに応じてワードカテゴリを重み付き抽選
-	var progress = clampf(_mind_elapsed / maxf(_mind_duration_total, 1.0), 0.0, 1.0)
-	var category_data = _pick_barrage_category(progress)
-	var word_pool: Array = category_data.get("pool", MIND_BARRAGE_WORDS)
-	var word_color: Color = category_data.get("color", Color("e43b44", 0.85))
-	var phase_name: String = category_data.get("phase", "")
-
-	if word_pool.is_empty():
-		word_pool = MIND_BARRAGE_WORDS
-
-	var phrase = str(word_pool[randi() % word_pool.size()])
+	var phrase = str(MIND_BARRAGE_WORDS[randi() % MIND_BARRAGE_WORDS.size()])
 	var bullet = Label.new()
 	bullet.text = phrase
-	var font_size = 20 + (4 if progress > 0.7 else 0)
-	bullet.add_theme_font_size_override("font_size", font_size)
-	bullet.modulate = word_color
+	bullet.add_theme_font_size_override("font_size", 20)
+	bullet.modulate = Color(1.0, 0.82, 0.85, 1.0)
 	bullet.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_mind_arena_layer.add_child(bullet)
-
-	# フェーズ名の更新
-	if phase_name != "":
-		var hint_node = _mind_arena_layer.get_node_or_null("PhaseHint")
-		if hint_node != null and hint_node is Label:
-			hint_node.text = phase_name
 
 	var size = bullet.get_combined_minimum_size()
 	if size.x < 40.0:
@@ -1881,73 +1590,24 @@ func _spawn_mind_barrage_word() -> void:
 		to_target = Vector2.DOWN
 	var direction = to_target.normalized()
 
-	# 難易度スケーリング: 時間経過でスピードが上がる
-	var base_speed = 112.0 + float(_steam_minutes - 5) * 14.0 + float(abs(_heat_state)) * 9.0 + randf_range(0.0, 54.0)
-	var phase_speed_bonus = progress * 80.0  # 後半ほど速く
-	base_speed += phase_speed_bonus
+	var speed = 112.0 + float(_steam_minutes - 5) * 14.0 + float(abs(_heat_state)) * 9.0 + randf_range(0.0, 54.0)
 	if _selected_hms == "amaburst":
-		base_speed += 12.0
+		speed += 12.0
 	elif _selected_hms == "tanukish_lid":
-		base_speed -= 8.0
+		speed -= 8.0
 	if _easy_mode:
-		base_speed -= 20.0
-	base_speed = clampf(base_speed, 90.0, 320.0)
+		speed -= 20.0
+	speed = clampf(speed, 90.0, 260.0)
 
 	var data := {
 		"node": bullet,
 		"pos": spawn,
-		"vel": direction * base_speed,
+		"vel": direction * speed,
 		"size": size,
 	}
 	_mind_bullets.append(data)
 	_mind_spawned += 1
 	bullet.position = spawn - size * 0.5
-
-
-## 弾幕カテゴリ選択（時間経過でフェーズ遷移）
-func _pick_barrage_category(progress: float) -> Dictionary:
-	if progress < 0.35:
-		# Phase 1: 内なる不安（静かな立ち上がり）
-		return {
-			"pool": MIND_WORDS_ANXIETY,
-			"color": Color("8b9bb4", 0.9),
-			"phase": "― 不安が湧き上がる ―",
-		}
-	elif progress < 0.7:
-		# Phase 2: 観客の声（外からのプレッシャー）
-		if randf() < 0.6:
-			return {
-				"pool": MIND_WORDS_AUDIENCE,
-				"color": Color("feae34", 0.85),
-				"phase": "― 会場の声が聞こえる ―",
-			}
-		else:
-			return {
-				"pool": MIND_WORDS_ANXIETY,
-				"color": Color("8b9bb4", 0.9),
-				"phase": "― 会場の声が聞こえる ―",
-			}
-	else:
-		# Phase 3: ライバルへの畏怖 + 不安の最高潮
-		var roll = randf()
-		if roll < 0.4:
-			return {
-				"pool": MIND_WORDS_RIVAL,
-				"color": Color("e43b44", 0.9),
-				"phase": "― 心が折れそうだ ―",
-			}
-		elif roll < 0.7:
-			return {
-				"pool": MIND_WORDS_AUDIENCE,
-				"color": Color("feae34", 0.85),
-				"phase": "― 心が折れそうだ ―",
-			}
-		else:
-			return {
-				"pool": MIND_WORDS_ANXIETY,
-				"color": Color("e43b44", 0.9),
-				"phase": "― 心が折れそうだ ―",
-			}
 
 
 func _update_mind_bullets(dt: float) -> void:
@@ -1971,8 +1631,6 @@ func _update_mind_bullets(dt: float) -> void:
 				GameManager.play_ui_se("cancel")
 				_mind_hit_se_cooldown = 0.08
 			_mind_invincible_timer = 1.0 # 1 second of i-frames
-			_mind_hit_flash()
-			_mind_update_face()
 			node.queue_free()
 			_mind_bullets.remove_at(i)
 			continue
@@ -2178,62 +1836,6 @@ func _stop_mind_barrage() -> void:
 	_mind_hit_se_cooldown = 0.0
 
 
-func _mind_hit_flash() -> void:
-	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
-		return
-	var flash = ColorRect.new()
-	flash.color = Color("e43b44", 0.35)
-	flash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_mind_arena_layer.add_child(flash)
-	var tween = create_tween()
-	tween.tween_property(flash, "color:a", 0.0, 0.2)
-	tween.tween_callback(flash.queue_free)
-	# プレイヤーノードも一瞬白く
-	if _mind_player_node != null and is_instance_valid(_mind_player_node):
-		_mind_player_node.modulate = Color(1.0, 1.0, 1.0, 1.0)
-		var ptween = create_tween()
-		ptween.tween_property(_mind_player_node, "modulate", Color.WHITE, 0.15)
-
-
-func _mind_update_face() -> void:
-	# 被弾数に応じて表情を変える
-	var face_expressions := [
-		{"max_hits": 0, "face": "normal", "text": "集中してる…"},
-		{"max_hits": 1, "face": "worry", "text": "ちょっと不安だ…"},
-		{"max_hits": 2, "face": "sad", "text": "心がブレてきた…"},
-		{"max_hits": 99, "face": "shock", "text": "もうダメかも…"},
-	]
-	var chosen_face = "normal"
-	var chosen_text = ""
-	for expr in face_expressions:
-		if _mind_hits <= int(expr.get("max_hits", 0)):
-			chosen_face = str(expr.get("face", "normal"))
-			chosen_text = str(expr.get("text", ""))
-			break
-	if chosen_face == "":
-		chosen_face = "shock"
-		chosen_text = "もうダメかも…"
-
-	var face_path = "res://assets/sprites/characters/chr_hajime_%s.png" % chosen_face
-	if not ResourceLoader.exists(face_path):
-		face_path = "res://assets/sprites/characters/chr_hajime_normal.png"
-
-	# 顔テクスチャの更新
-	var face_node = choice_container.find_child("MindFaceRect", true, false) as TextureRect
-	if face_node != null and ResourceLoader.exists(face_path):
-		face_node.texture = load(face_path)
-		# 揺れアニメーション
-		var tween = create_tween()
-		face_node.position.x += 4
-		tween.tween_property(face_node, "position:x", face_node.position.x - 4, 0.15).set_trans(Tween.TRANS_ELASTIC)
-
-	# セリフの更新
-	var label_node = choice_container.find_child("MindFaceLabel", true, false) as Label
-	if label_node != null:
-		label_node.text = chosen_text
-
-
 func _show_pull_step() -> void:
 	if not _mind_barrage_done:
 		_show_mind_barrage_intro("吸い出し前に精神戦を完了する。")
@@ -2426,8 +2028,6 @@ func _resolve_pull_result() -> void:
 	GameManager.play_ui_se("confirm" if quality != "miss" else "cancel")
 
 	var next_callable = _show_pull_step if _pull_round < PULL_MAX_ROUNDS else _show_serving_step
-	if _pull_round >= PULL_MAX_ROUNDS:
-		_show_mid_score_reveal()  # 吸い出し完了 → ドラマチック中間発表
 	_show_step_result_and_next("%s: 専門 %+d / 一般 %+d" % [result_text, int(round(delta_spec)), int(round(delta_aud))], next_callable)
 
 
@@ -2507,67 +2107,12 @@ func _on_serving_confirmed() -> void:
 	_technical_points += spec_gain
 	_audience_points += aud_gain
 	GameManager.play_ui_se("confirm")
-	_show_step_result_and_next("提供評価: 専門 %+d / 一般 %+d%s" % [int(round(spec_gain)), int(round(aud_gain)), bonus_text], _show_round_result.bind(1))
-
-
-func _show_round_result(round_num: int) -> void:
-	_set_phase(12, "ラウンド%d 終了" % round_num, "現在の暫定スコアと順位。")
-	_clear_choices()
-
-	var player_score = _build_player_score()
-	var player_total = float(player_score.get("total", 0.0))
-	_mid_player_total = player_total
-	_mid_rival_totals.clear()
-
-	var ranking: Array = []
-	ranking.append(player_score)
-	var rivals = _build_rival_mid_scores()
-	for rival in rivals:
-		var row = rival as Dictionary
-		_mid_rival_totals[str(row.get("id", ""))] = float(row.get("total", 0.0))
-	ranking.append_array(rivals)
-	ranking.sort_custom(func(a, b):
-		return float(a.get("total", 0.0)) > float(b.get("total", 0.0))
-	)
-
-	var lines: Array[String] = ["【ラウンド%d 暫定順位】" % round_num]
-	for i in range(ranking.size()):
-		var row: Dictionary = ranking[i]
-		var row_id = str(row.get("id", ""))
-		var row_total = float(row.get("total", 0.0))
-		if row_id == "player":
-			lines.append("%d位 %s %.1f点（あなた）" % [i + 1, str(row.get("name", "-")), row_total])
-		else:
-			lines.append("%d位 %s %.1f点（差 %+.1f）" % [
-				i + 1,
-				str(row.get("name", "-")),
-				row_total,
-				player_total - row_total,
-			])
-
-	info_label.text = "\n".join(lines)
-	
-	# ラウンド終了ごとのシナリオ再生と次のフェーズへの遷移セット
-	var dialogue_id = ""
-	var next_callable: Callable
-	if round_num == 1:
-		dialogue_id = "ch1_tournament_r1_end"
-		next_callable = _show_adjustment_menu.bind(0)
-	elif round_num == 2:
-		dialogue_id = "ch1_tournament_r2_end"
-		next_callable = _show_adjustment_menu.bind(1)
-	else:
-		dialogue_id = "ch1_tournament_r3_end"
-		next_callable = _show_presentation_intro
-		
-	_add_choice_button("次へ進む", _play_mini_dialogue.bind(dialogue_id, next_callable))
-	_refresh_side_panel()
+	_show_step_result_and_next("提供評価: 専門 %+d / 一般 %+d%s" % [int(round(spec_gain)), int(round(aud_gain)), bonus_text], _show_adjustment_menu.bind(0))
 
 
 func _show_adjustment_menu(round_index: int) -> void:
-	var round_num = round_index + 2 # _show_adjustment_menu(0) means Round 2
 	var step_no = 10 + round_index
-	_set_phase(step_no, "ラウンド%d: 調整" % round_num, "現在の炭: %d個 / 熱状態: %d\nどう調整する？" % [_selected_charcoal_count, _heat_state])
+	_set_phase(step_no, "提供後の調整 %d回目" % (round_index + 1), "現在の炭: %d個 / 熱状態: %d\nどう調整する？" % [_selected_charcoal_count, _heat_state])
 	_clear_choices()
 
 	_add_choice_button("炭の調整を行う", _show_charcoal_adjust_step.bind(round_index))
@@ -2795,13 +2340,59 @@ func _resolve_adjustment_round(round_index: int) -> void:
 func _finish_adjustment_phase(round_index: int) -> void:
 	_adjustment_action_count = 0
 	
-	if round_index == 1 and _adjustment_hits >= 2:
-		_technical_points += 5.0
-		_audience_points += 2.0
-		_show_step_result_and_next("連続調整成功ボーナス獲得！", _show_round_result.bind(round_index + 1))
+	if round_index == 2 and _adjustment_hits >= 3:
+		_technical_points += 10.0
+		_audience_points += 4.0
+		_show_step_result_and_next("3連続成功ボーナス獲得！", _show_mid_announcement if round_index >= 2 else _show_adjustment_menu.bind(round_index + 1))
 	else:
-		var next_callable: Callable = _show_round_result.bind(round_index + 1)
+		var next_callable: Callable = _show_adjustment_menu.bind(round_index + 1) if round_index < 2 else _show_mid_announcement
 		_show_step_result_and_next("調整時間を終え、次の時間へ進む。", next_callable)
+
+
+func _show_mid_announcement() -> void:
+	_set_phase(13, "中間発表", "ここまでの暫定順位と、あなたとの差を表示。")
+	_clear_choices()
+
+	var player_score = _build_player_score()
+	var player_total = float(player_score.get("total", 0.0))
+	_mid_player_total = player_total
+	_mid_rival_totals.clear()
+
+	var ranking: Array = []
+	ranking.append(player_score)
+	var rivals = _build_rival_mid_scores()
+	for rival in rivals:
+		var row = rival as Dictionary
+		_mid_rival_totals[str(row.get("id", ""))] = float(row.get("total", 0.0))
+	ranking.append_array(rivals)
+	ranking.sort_custom(func(a, b):
+		return float(a.get("total", 0.0)) > float(b.get("total", 0.0))
+	)
+
+	var lines: Array[String] = ["【暫定順位】"]
+	for i in range(ranking.size()):
+		var row: Dictionary = ranking[i]
+		var row_id = str(row.get("id", ""))
+		var row_total = float(row.get("total", 0.0))
+		if row_id == "player":
+			lines.append("%d位 %s %.1f点（あなた）" % [i + 1, str(row.get("name", "-")), row_total])
+		else:
+			lines.append("%d位 %s %.1f点（あなたとの差 %+.1f）" % [
+				i + 1,
+				str(row.get("name", "-")),
+				row_total,
+				player_total - row_total,
+			])
+
+	var leader = ranking[0] as Dictionary
+	if str(leader.get("id", "")) == "player":
+		lines.append("暫定トップ。最終プレゼンで失点しなければ押し切れる。")
+	else:
+		lines.append("首位まで %.1f 点差。プレゼンで逆転可能。" % (float(leader.get("total", 0.0)) - player_total))
+
+	info_label.text = "\n".join(lines)
+	_add_choice_button("最終プレゼンへ", _show_presentation_intro)
+	_refresh_side_panel()
 
 
 func _show_presentation_intro() -> void:
@@ -3026,14 +2617,28 @@ func _finalize_and_show_result() -> void:
 		lines.append("特別ミックス: %s" % _special_mix_name)
 	if _player_rank == 1:
 		lines.append("賞金: %d円" % _pending_reward)
-		lines.append("SMOKE CROWN CUP優勝！")
+		lines.append("クラウド・ターミナル優勝！")
 	else:
 		lines.append("今回は %d位。1位になるまで本編進行不可。" % _player_rank)
 		lines.append("賞金は再挑戦中は支給されない。")
 
-	info_label.text = ""
-	# ダンガンロンパ風: 段階的に結果を表示する演出
-	await _dramatic_result_reveal(ranking)
+	info_label.text = "\n".join(lines)
+
+	# シーシャランク表示
+	var player_score_data = _build_player_score()
+	var rank_info = ShishaRank.calculate_rank(float(player_score_data.get("total", 0.0)), 4)
+	var rank_text = ShishaRank.get_rank_display_text(float(player_score_data.get("total", 0.0)), 4)
+	info_label.text += "\n\n━━━━━━━━━━━━━━━━━━━━"
+	info_label.text += "\n　シーシャランク: %s" % rank_text
+	info_label.text += "\n━━━━━━━━━━━━━━━━━━━━"
+	EventFlags.set_value("ch5_tournament_shisha_rank", rank_info["rank"])
+
+	# Ch5解禁判定（S/SS/SSSで真エンディングルート解禁）
+	if _player_rank == 1 and ShishaRank.is_ch5_unlock_rank(float(player_score_data.get("total", 0.0)), 4):
+		EventFlags.set_flag("ch5_unlocked", true)
+		info_label.text += "\n\n……何かが目覚める気配がする。"
+	elif _player_rank == 1:
+		info_label.text += "\n\nまだ先がある気がする。もっと高みを目指せば……"
 
 	if _player_rank == 1:
 		_add_choice_button("優勝結果で進む", _apply_result_and_continue)
@@ -3044,65 +2649,6 @@ func _finalize_and_show_result() -> void:
 			_add_choice_button("難易度を下げて再挑戦", _enable_easy_mode_and_retry)
 	_add_choice_button("タイトルに戻る", _return_to_title)
 	_refresh_side_panel()
-
-
-func _dramatic_result_reveal(ranking: Array) -> void:
-	# 得点内訳をまず表示
-	var breakdown_lines: Array[String] = []
-	breakdown_lines.append("【あなたの得点内訳】")
-	breakdown_lines.append_array(_build_player_score_breakdown_lines())
-	info_label.text = "\n".join(breakdown_lines)
-	await get_tree().create_timer(1.0).timeout
-
-	# 「最終順位発表」のテキストをバーンと表示
-	info_label.text += "\n\n【 最 終 順 位 発 表 】"
-	GameManager.play_ui_se("confirm")
-	await get_tree().create_timer(0.8).timeout
-
-	# 下位から段階的に表示（ダンガンロンパの投票結果風）
-	for i in range(ranking.size() - 1, -1, -1):
-		var row: Dictionary = ranking[i]
-		var row_id = str(row.get("id", ""))
-		var mid_total = _mid_player_total if row_id == "player" else float(_mid_rival_totals.get(row_id, float(row.get("total", 0.0))))
-		var is_player = row_id == "player"
-		var rank_marker = "★" if is_player else "─"
-		var name_text = str(row.get("name", "-"))
-
-		info_label.text += "\n%s %d位  %s  %.1f点（専門 %.1f / 一般 %.1f）" % [
-			rank_marker,
-			i + 1,
-			name_text,
-			float(row.get("total", 0.0)),
-			float(row.get("specialist", 0.0)),
-			float(row.get("audience", 0.0)),
-		]
-		GameManager.play_ui_se("cursor")
-		await get_tree().create_timer(0.7).timeout
-
-	# 結果メッセージ
-	await get_tree().create_timer(0.3).timeout
-	if _special_mix_name != "":
-		info_label.text += "\n特別ミックス: %s" % _special_mix_name
-	if _player_rank == 1:
-		info_label.text += "\n\n賞金: %d円" % _pending_reward
-		info_label.text += "\nSMOKE CROWN CUP優勝！"
-		_dramatic_impact("優勝！")
-	else:
-		info_label.text += "\n\n今回は %d位。1位になるまで本編進行不可。" % _player_rank
-		info_label.text += "\n賞金は再挑戦中は支給されない。"
-		_screen_shake(6.0, 0.25)
-
-	# シーシャランク表示
-	await get_tree().create_timer(1.0).timeout
-	var player_score_data = _build_player_score()
-	var rank_info = ShishaRank.calculate_rank(float(player_score_data.get("total", 0.0)), 1)
-	var rank_text = ShishaRank.get_rank_display_text(float(player_score_data.get("total", 0.0)), 1)
-	info_label.text += "\n\n━━━━━━━━━━━━━━━━━━━━"
-	info_label.text += "\n\n　　シーシャランク"
-	info_label.text += "\n\n　　　%s" % rank_text
-	info_label.text += "\n\n━━━━━━━━━━━━━━━━━━━━"
-	GameManager.play_ui_se("confirm")
-	EventFlags.set_value("ch1_tournament_shisha_rank", rank_info["rank"])
 
 
 func _build_player_score() -> Dictionary:
@@ -3140,7 +2686,6 @@ func _compute_player_score_components() -> Dictionary:
 	var pipe_aud_bonus = 0.0
 	if PlayerData.PIPE_DATA.has(PlayerData.equipment_pipe):
 		var pd = PlayerData.PIPE_DATA[PlayerData.equipment_pipe]
-		# 専門: 味 + 煙 / 一般: 味 + 見栄え
 		pipe_spec_bonus = float(pd.get("taste_bonus", 0) + pd.get("smoke_bonus", 0))
 		pipe_aud_bonus = float(pd.get("taste_bonus", 0) + pd.get("presentation_bonus", 0))
 
@@ -3186,9 +2731,9 @@ func _build_player_score_breakdown_lines() -> Array[String]:
 
 func _prepare_rival_score_tables() -> void:
 	var rivals = [
-		{"id": "naru", "name": "なる", "specialist": 66.0, "audience": 55.0, "variance": 6.0},
-		{"id": "adam", "name": "アダム", "specialist": 70.0, "audience": 45.0, "variance": 5.0},
-		{"id": "minto", "name": "みんと", "specialist": 55.0, "audience": 68.0, "variance": 7.0},
+		{"id": "naru", "name": "なる", "specialist": 66.0, "audience": 55.0, "variance": 8.0},
+		{"id": "adam", "name": "アダム", "specialist": 73.0, "audience": 48.0, "variance": 9.0},
+		{"id": "ryuji", "name": "リュウジ", "specialist": 60.0, "audience": 67.0, "variance": 9.0},
 	]
 	_rival_mid_scores.clear()
 	_rival_final_scores.clear()
@@ -3242,30 +2787,36 @@ func _get_rival_theme_bonus(rival_id: String, theme_id: String) -> float:
 		return 4.0
 	if rival_id == "adam" and theme_id == "high_heat":
 		return 6.0
-	if rival_id == "minto" and (theme_id == "relax" or theme_id == "fruity"):
+	if rival_id == "ryuji" and (theme_id == "high_heat" or theme_id == "fruity"):
 		return 5.0
 	return 0.0
 
 
 func _apply_result_and_continue() -> void:
-	if _pending_reward > 0:
-		PlayerData.add_money(_pending_reward)
-		GameManager.log_money_change(_pending_reward)
+	if _player_rank == 1: # Assuming _player_rank is the correct variable for current rank
+		PlayerData.add_money(REWARD_BY_RANK[1])
+		PlayerData.add_stat("fame", 100)
+		GameManager.log_history("第5章大会", "優勝")
+		GameManager.queue_dialogue("res://data/dialogue/ending.json", "ending_start", "res://scenes/ui/staff_roll.tscn")
+		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+		return
+	else:
+		if _pending_reward > 0:
+			PlayerData.add_money(_pending_reward)
+			GameManager.log_money_change(_pending_reward)
 
-	if _player_rank == 1:
 		PlayerData.add_stat("charm", 2)
 		PlayerData.add_stat("guts", 1)
 		GameManager.log_stat_change("charm", 2)
 		GameManager.log_stat_change("guts", 1)
 		EventFlags.set_value("ch1_tournament_easy_mode", false)
-	else:
 		PlayerData.add_stat("insight", 1)
 		GameManager.log_stat_change("insight", 1)
 
 	EventFlags.set_flag("ch1_tournament_completed", true)
 	EventFlags.set_value("ch1_tournament_rank", _player_rank)
 	GameManager.set_transient("morning_notice", _build_post_tournament_notice())
-	GameManager.transition_to_interval()
+	get_tree().change_scene_to_file("res://scenes/title/title_screen.tscn")
 
 	if GameManager.current_phase == "interval":
 		get_tree().change_scene_to_file(MORNING_PHONE_SCENE_PATH)
@@ -3277,7 +2828,7 @@ func _build_post_tournament_notice() -> String:
 	var rank_text = "%d位" % _player_rank
 	if _player_rank == 1:
 		rank_text = "優勝"
-	var notice = "SMOKE CROWN CUP %s。賞金 %d円 を獲得した。\n\n" % [rank_text, _pending_reward]
+	var notice = "クラウド・ターミナル %s。賞金 %d円 を獲得した。\n\n" % [rank_text, _pending_reward]
 	notice += _build_sumi_feedback()
 	return notice
 
@@ -3317,87 +2868,8 @@ func _roll(success_rate: float) -> bool:
 	var chance = clampf(success_rate, 5.0, 95.0)
 	return randf() * 100.0 < chance
 
-# ======== Mini Dialogue System ========
-
-func _play_mini_dialogue(dialogue_id: String, on_finish: Callable) -> void:
-	var path = "res://data/dialogue/ch1_tournament.json"
-	if not FileAccess.file_exists(path):
-		on_finish.call()
-		return
-	var file = FileAccess.open(path, FileAccess.READ)
-	var parsed = JSON.parse_string(file.get_as_text())
-	file.close()
-
-	_mini_dialogue_queue.clear()
-	if typeof(parsed) == TYPE_DICTIONARY and parsed.has("dialogues"):
-		for d in parsed["dialogues"]:
-			if str(d.get("dialogue_id", "")) == dialogue_id:
-				_mini_dialogue_queue = d.get("lines", []).duplicate(true)
-				break
-
-	if _mini_dialogue_queue.is_empty():
-		on_finish.call()
-		return
-
-	_mini_dialogue_on_finish = on_finish
-	mini_dialogue_panel.show()
-	_clear_choices()
-	_advance_mini_dialogue()
-
-
-func _advance_mini_dialogue() -> void:
-	if _mini_dialogue_is_typing:
-		_mini_dialogue_is_typing = false
-		_mini_dialogue_timer.stop()
-		mini_text_label.visible_characters = -1
-		GameManager.play_ui_se("cursor")
-		return
-
-	if _mini_dialogue_queue.is_empty():
-		mini_dialogue_panel.hide()
-		GameManager.play_ui_se("confirm")
-		if _mini_dialogue_on_finish.is_valid():
-			_mini_dialogue_on_finish.call()
-		return
-
-	var line = _mini_dialogue_queue.pop_front()
-	var raw_speaker = str(line.get("speaker", ""))
-	var face = str(line.get("face", "normal"))
-	_mini_dialogue_full_text = str(line.get("text", ""))
-
-	if raw_speaker == "":
-		mini_speaker_label.text = ""
-		mini_portrait.texture = null
-	else:
-		mini_speaker_label.text = SPEAKER_NAMES.get(raw_speaker, raw_speaker)
-		var t_path = "res://assets/portraits/%s/%s_%s.png" % [raw_speaker, raw_speaker, face]
-		if ResourceLoader.exists(t_path):
-			mini_portrait.texture = load(t_path)
-		else:
-			mini_portrait.texture = null
-
-	mini_text_label.text = _mini_dialogue_full_text
-	mini_text_label.visible_characters = 0
-	_mini_dialogue_char_index = 0
-	_mini_dialogue_is_typing = true
-	_mini_dialogue_timer.start()
-
-
-func _on_mini_dialogue_tick() -> void:
-	_mini_dialogue_char_index += 1
-	mini_text_label.visible_characters = _mini_dialogue_char_index
-	if _mini_dialogue_char_index >= _mini_dialogue_full_text.length():
-		_mini_dialogue_is_typing = false
-		_mini_dialogue_timer.stop()
-
-
-func _gui_input(event: InputEvent) -> void:
-	if mini_dialogue_panel.visible and event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_advance_mini_dialogue()
-
 
 func _show_step_result_and_next(result_text: String, next_callable: Callable) -> void:
-	_step_transition()
 	_append_info(result_text)
 	_clear_choices()
 	_add_choice_button("次へ", next_callable)
@@ -3527,7 +2999,6 @@ func _refresh_side_panel() -> void:
 		int(round(target_temp.x)),
 		int(round(target_temp.y)),
 	])
-	_update_temp_gauge()
 	lines.append("温度表示: ◆=現在 / ■=合格帯")
 	lines.append(_build_temperature_gauge_text(current_temp, target_temp))
 	lines.append("設定: %s + %s" % [
@@ -3556,706 +3027,3 @@ func _refresh_side_panel() -> void:
 	if memos.size() > max_rows:
 		memo_lines.append("…他 %d件" % (memos.size() - max_rows))
 	memo_label.text = "\n".join(memo_lines)
-
-
-# ──────────────────────────────────────────────
-# ビジュアルヘルパー（バイブコーディング）
-# ──────────────────────────────────────────────
-
-## フレーバーカラーマップ
-const FLAVOR_COLORS := {
-	"double_apple": Color("a22633"),   # 深紅（ダブルアップル）
-	"mint": Color("63c74d"),           # グリーン（ミント）
-	"blueberry": Color("124e89"),      # ディープブルー（ブルーベリー）
-	"vanilla": Color("ead4aa"),        # クリーム（バニラ）
-	"pineapple": Color("feae34"),      # ゴールド（パイナップル）
-	"coconut": Color("e4a672"),        # サンド（ココナッツ）
-}
-
-
-## ─── 1. パッキングのボウル断面可視化 ───
-
-var _bowl_visual_node: Control = null
-
-func _show_bowl_visual() -> void:
-	_remove_bowl_visual()
-	var bowl = _BowlVisual.new()
-	bowl.name = "BowlVisual"
-	bowl.custom_minimum_size = Vector2(280, 180)
-	bowl.size = Vector2(280, 180)
-	bowl.flavors = _selected_flavors.duplicate()
-	bowl.grams = _manual_packing_grams.duplicate()
-	bowl.total_grams = TOTAL_PACKING_GRAMS
-	bowl.flavor_colors = FLAVOR_COLORS
-	_bowl_visual_node = bowl
-	choice_container.add_child(bowl)
-	choice_container.move_child(bowl, 0)
-
-
-func _update_bowl_visual() -> void:
-	if _bowl_visual_node != null and is_instance_valid(_bowl_visual_node):
-		var bowl = _bowl_visual_node as _BowlVisual
-		if bowl != null:
-			bowl.grams = _manual_packing_grams.duplicate()
-			bowl.queue_redraw()
-
-
-func _remove_bowl_visual() -> void:
-	if _bowl_visual_node != null and is_instance_valid(_bowl_visual_node):
-		_bowl_visual_node.queue_free()
-		_bowl_visual_node = null
-
-
-class _BowlVisual extends Control:
-	var flavors: Array = []
-	var grams: Dictionary = {}
-	var total_grams: int = 12
-	var flavor_colors: Dictionary = {}
-
-	func _draw() -> void:
-		var w = size.x
-		var h = size.y
-		var bowl_margin = 30.0
-		var bowl_top = 40.0
-		var bowl_bottom = h - 20.0
-		var bowl_left = bowl_margin
-		var bowl_right = w - bowl_margin
-		var bowl_width = bowl_right - bowl_left
-		var bowl_height = bowl_bottom - bowl_top
-
-		# ボウルの外枠（台形）
-		var outline_points = PackedVector2Array([
-			Vector2(bowl_left + 20, bowl_top),
-			Vector2(bowl_right - 20, bowl_top),
-			Vector2(bowl_right, bowl_bottom),
-			Vector2(bowl_left, bowl_bottom),
-		])
-		draw_colored_polygon(outline_points, Color("3a4466", 0.7))
-		# ボウル枠線
-		for i in range(outline_points.size()):
-			var next_i = (i + 1) % outline_points.size()
-			draw_line(outline_points[i], outline_points[next_i], Color("feae34", 0.6), 2.0)
-
-		# フレーバー層を下から積む
-		var total = 0
-		for flavor_id in flavors:
-			total += int(grams.get(flavor_id, 0))
-		if total <= 0:
-			# 空のボウル表示
-			draw_string(ThemeDB.fallback_font, Vector2(w * 0.5 - 40, h * 0.5), "空のボウル", HORIZONTAL_ALIGNMENT_CENTER, -1, 16, Color("8b9bb4"))
-			return
-
-		var y_cursor = bowl_bottom
-		for flavor_id in flavors:
-			var gram = int(grams.get(flavor_id, 0))
-			if gram <= 0:
-				continue
-			var layer_ratio = float(gram) / float(maxi(total, 1))
-			var layer_height = bowl_height * layer_ratio
-			var y_top = y_cursor - layer_height
-
-			# 台形の幅を高さに応じて補間
-			var ratio_bottom = (y_cursor - bowl_top) / bowl_height
-			var ratio_top = (y_top - bowl_top) / bowl_height
-			var left_bottom = lerpf(bowl_left + 20, bowl_left, ratio_bottom)
-			var right_bottom = lerpf(bowl_right - 20, bowl_right, ratio_bottom)
-			var left_top = lerpf(bowl_left + 20, bowl_left, ratio_top)
-			var right_top = lerpf(bowl_right - 20, bowl_right, ratio_top)
-
-			var color = flavor_colors.get(flavor_id, Color("5a6988"))
-			var layer_points = PackedVector2Array([
-				Vector2(left_top, y_top),
-				Vector2(right_top, y_top),
-				Vector2(right_bottom, y_cursor),
-				Vector2(left_bottom, y_cursor),
-			])
-			draw_colored_polygon(layer_points, color)
-
-			# フレーバー名ラベル
-			if layer_height > 18:
-				var label_y = y_top + layer_height * 0.5 + 5
-				var short_name = flavor_id.substr(0, 8)
-				draw_string(ThemeDB.fallback_font, Vector2(left_top + 8, label_y), "%s %dg" % [short_name, gram], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("181425"))
-
-			y_cursor = y_top
-
-		# ボウルラベル
-		draw_string(ThemeDB.fallback_font, Vector2(bowl_left, bowl_top - 8), "BOWL", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("feae34"))
-
-
-## ─── 2. 温度ゲージのビジュアルバー ───
-
-var _temp_gauge_node: Control = null
-
-func _show_temp_gauge() -> void:
-	_remove_temp_gauge()
-	var gauge = _TempGaugeVisual.new()
-	gauge.name = "TempGauge"
-	gauge.custom_minimum_size = Vector2(280, 36)
-	gauge.size = Vector2(280, 36)
-	_temp_gauge_node = gauge
-	_update_temp_gauge()
-	choice_container.add_child(gauge)
-	choice_container.move_child(gauge, 0)
-
-
-func _update_temp_gauge() -> void:
-	if _temp_gauge_node == null or not is_instance_valid(_temp_gauge_node):
-		return
-	var gauge = _temp_gauge_node as _TempGaugeVisual
-	if gauge == null:
-		return
-	gauge.current_temp = _get_current_temp_value()
-	gauge.target_range = _get_target_temp_range()
-	gauge.temp_min = TEMP_MIN
-	gauge.temp_max = TEMP_MAX
-	gauge.queue_redraw()
-
-
-func _remove_temp_gauge() -> void:
-	if _temp_gauge_node != null and is_instance_valid(_temp_gauge_node):
-		_temp_gauge_node.queue_free()
-		_temp_gauge_node = null
-
-
-class _TempGaugeVisual extends Control:
-	var current_temp: float = 180.0
-	var target_range: Vector2 = Vector2(178, 204)
-	var temp_min: float = 140.0
-	var temp_max: float = 260.0
-
-	func _draw() -> void:
-		var w = size.x
-		var h = size.y
-		var bar_y = 16.0
-		var bar_h = 14.0
-		var margin = 10.0
-
-		# 背景バー
-		draw_rect(Rect2(margin, bar_y, w - margin * 2, bar_h), Color("262b44"), true)
-
-		# 合格帯（ターゲット範囲）
-		var range_span = temp_max - temp_min
-		var target_left = margin + (target_range.x - temp_min) / range_span * (w - margin * 2)
-		var target_right = margin + (target_range.y - temp_min) / range_span * (w - margin * 2)
-		draw_rect(Rect2(target_left, bar_y, target_right - target_left, bar_h), Color("3e8948", 0.7), true)
-
-		# 現在温度マーカー
-		var current_x = margin + (current_temp - temp_min) / range_span * (w - margin * 2)
-		current_x = clampf(current_x, margin, w - margin)
-		var in_target = current_temp >= target_range.x and current_temp <= target_range.y
-		var marker_color = Color("feae34") if in_target else Color("e43b44")
-
-		# 三角マーカー
-		var tri = PackedVector2Array([
-			Vector2(current_x, bar_y - 2),
-			Vector2(current_x - 6, bar_y - 10),
-			Vector2(current_x + 6, bar_y - 10),
-		])
-		draw_colored_polygon(tri, marker_color)
-		draw_line(Vector2(current_x, bar_y), Vector2(current_x, bar_y + bar_h), marker_color, 2.0)
-
-		# ラベル
-		draw_string(ThemeDB.fallback_font, Vector2(margin, h - 2), "%d℃" % int(temp_min), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("8b9bb4"))
-		draw_string(ThemeDB.fallback_font, Vector2(w - margin - 30, h - 2), "%d℃" % int(temp_max), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("8b9bb4"))
-		draw_string(ThemeDB.fallback_font, Vector2(current_x - 15, h - 2), "%d℃" % int(current_temp), HORIZONTAL_ALIGNMENT_LEFT, -1, 11, marker_color)
-
-
-## ─── 3. スコア変動ポップアップ ───
-
-func _show_score_popup(text: String, color: Color = Color("feae34")) -> void:
-	var layer = CanvasLayer.new()
-	layer.layer = 90
-	add_child(layer)
-
-	var label = Label.new()
-	label.text = text
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.add_theme_font_size_override("font_size", 32)
-	label.add_theme_color_override("font_color", color)
-	label.position = Vector2(500, 300)
-	label.modulate.a = 0.0
-	layer.add_child(label)
-
-	var tween = create_tween()
-	tween.set_parallel(true)
-	tween.tween_property(label, "modulate:a", 1.0, 0.15)
-	tween.tween_property(label, "position:y", 240, 0.6).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tween.tween_property(label, "modulate:a", 0.0, 0.3).set_delay(0.5)
-	tween.chain().tween_callback(layer.queue_free)
-
-
-func _show_stat_popup(spec_delta: float, aud_delta: float) -> void:
-	var parts: Array[String] = []
-	if spec_delta != 0:
-		parts.append("専門 %+d" % int(round(spec_delta)))
-	if aud_delta != 0:
-		parts.append("一般 %+d" % int(round(aud_delta)))
-	if parts.is_empty():
-		return
-	var total = spec_delta + aud_delta
-	var color = Color("feae34") if total >= 0 else Color("e43b44")
-	_show_score_popup(" / ".join(parts), color)
-
-
-## ─── 4. 画面揺れ＋フラッシュ ───
-
-func _screen_shake(intensity: float = 8.0, duration: float = 0.3) -> void:
-	var original_pos = position
-	var tween = create_tween()
-	var steps = int(duration / 0.03)
-	for i in range(steps):
-		var offset = Vector2(randf_range(-intensity, intensity), randf_range(-intensity, intensity))
-		tween.tween_property(self, "position", original_pos + offset, 0.03)
-	tween.tween_property(self, "position", original_pos, 0.05)
-
-
-func _screen_flash(color: Color = Color("e43b44", 0.35), duration: float = 0.15) -> void:
-	var flash = ColorRect.new()
-	flash.color = color
-	flash.anchor_right = 1.0
-	flash.anchor_bottom = 1.0
-	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(flash)
-
-	var tween = create_tween()
-	tween.tween_property(flash, "color:a", 0.0, duration)
-	tween.tween_callback(flash.queue_free)
-
-
-func _dramatic_impact(text: String = "") -> void:
-	_screen_shake(10.0, 0.35)
-	_screen_flash(Color("e43b44", 0.3), 0.2)
-	GameManager.play_ui_se("confirm")
-	if text != "":
-		_show_score_popup(text, Color("e43b44"))
-
-
-## ─── 6. アルミ穴あけビジュアル ───
-
-func _aluminum_show_hit_feedback(text: String, color: Color) -> void:
-	var ring_node = choice_container.find_child("AluminumRing", true, false)
-	if ring_node == null:
-		_show_score_popup(text, color)
-		return
-	var label = Label.new()
-	label.text = text
-	label.add_theme_font_size_override("font_size", 28)
-	label.add_theme_color_override("font_color", color)
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.position = Vector2(ring_node.size.x * 0.5 - 40, ring_node.size.y * 0.5 - 14)
-	label.modulate.a = 1.0
-	ring_node.add_child(label)
-	var tween = create_tween()
-	tween.set_parallel(true)
-	tween.tween_property(label, "position:y", label.position.y - 40, 0.5).set_trans(Tween.TRANS_CUBIC)
-	tween.tween_property(label, "modulate:a", 0.0, 0.3).set_delay(0.3)
-	tween.chain().tween_callback(label.queue_free)
-
-
-class _AluminumRingVisual extends Control:
-	var slot_count: int = 12
-	var hit_slot: int = 0
-	var notes: Array = []
-	var hits_done: int = 0
-
-	func _draw() -> void:
-		var w = size.x
-		var h = size.y
-		var cx = w * 0.5
-		var cy = h * 0.5
-		var radius = minf(cx, cy) - 20.0
-
-		# 背景円
-		draw_arc(Vector2(cx, cy), radius, 0, TAU, 64, Color("3a4466", 0.4), 2.0)
-
-		# スロットの点を描画
-		for i in range(slot_count):
-			var angle = TAU * float(i) / float(slot_count) - PI * 0.5
-			var pos = Vector2(cx + cos(angle) * radius, cy + sin(angle) * radius)
-
-			if i == hit_slot:
-				# 判定点: 大きなゴールドの★
-				draw_circle(pos, 14, Color("feae34", 0.3))
-				draw_circle(pos, 10, Color("feae34", 0.8))
-				draw_arc(pos, 16, 0, TAU, 32, Color("feae34"), 2.0)
-			elif i < hits_done:
-				# 成功済みの穴: グリーン●
-				draw_circle(pos, 6, Color("3e8948", 0.7))
-			else:
-				# 未使用スロット: 薄い○
-				draw_circle(pos, 4, Color("5a6988", 0.4))
-
-		# ノーツを描画（赤い円）
-		for note in notes:
-			var distance = float(note.get("distance", 0.0))
-			var slot_idx = (hit_slot + int(round(distance))) % slot_count
-			if slot_idx < 0:
-				slot_idx += slot_count
-			var angle = TAU * float(slot_idx) / float(slot_count) - PI * 0.5
-
-			# 距離に応じて半径方向にもオフセット（近いほど内側に）
-			var frac = fmod(distance, 1.0)
-			var next_slot = (slot_idx + 1) % slot_count
-			var curr_angle = TAU * float(slot_idx) / float(slot_count) - PI * 0.5
-			var note_radius = radius
-
-			var pos = Vector2(cx + cos(curr_angle) * note_radius, cy + sin(curr_angle) * note_radius)
-
-			# 近いほど大きく＋明るく
-			var closeness = clampf(1.0 - abs(distance) / 6.0, 0.2, 1.0)
-			var note_size = lerpf(5.0, 10.0, closeness)
-			var note_alpha = lerpf(0.4, 1.0, closeness)
-
-			draw_circle(pos, note_size, Color("e43b44", note_alpha))
-
-			# 判定圏内なら光るリング
-			if abs(distance) <= 1.0:
-				draw_arc(pos, note_size + 3, 0, TAU, 16, Color("feae34", 0.6 * closeness), 1.5)
-
-		# 中央テキスト
-		draw_string(ThemeDB.fallback_font, Vector2(cx - 24, cy + 5), "穴あけ", HORIZONTAL_ALIGNMENT_CENTER, -1, 14, Color("feae34", 0.5))
-
-
-## ─── 7. ラウンド告知 ───
-
-func _show_round_announce(step_num: int, title: String) -> void:
-	var layer = CanvasLayer.new()
-	layer.layer = 95
-	add_child(layer)
-
-	# 背景オーバーレイ（暗転）
-	var overlay = ColorRect.new()
-	overlay.color = Color("181425", 0.6)
-	overlay.anchor_right = 1.0
-	overlay.anchor_bottom = 1.0
-	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layer.add_child(overlay)
-
-	# ステップ番号
-	var step_label = Label.new()
-	step_label.text = "STEP %d" % step_num
-	step_label.add_theme_font_size_override("font_size", 18)
-	step_label.add_theme_color_override("font_color", Color("feae34"))
-	step_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	step_label.anchor_left = 0.0
-	step_label.anchor_right = 1.0
-	step_label.anchor_top = 0.38
-	step_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	step_label.modulate.a = 0.0
-	layer.add_child(step_label)
-
-	# タイトル
-	var title_label = Label.new()
-	title_label.text = title
-	title_label.add_theme_font_size_override("font_size", 40)
-	title_label.add_theme_color_override("font_color", Color("e43b44"))
-	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title_label.anchor_left = 0.0
-	title_label.anchor_right = 1.0
-	title_label.anchor_top = 0.43
-	title_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	title_label.modulate.a = 0.0
-	title_label.scale = Vector2(0.5, 0.5)
-	title_label.pivot_offset = Vector2(600, 24)
-	layer.add_child(title_label)
-
-	# 横線（バーミリオン）
-	var line = ColorRect.new()
-	line.color = Color("e43b44", 0.8)
-	line.anchor_left = 0.2
-	line.anchor_right = 0.8
-	line.anchor_top = 0.56
-	line.custom_minimum_size = Vector2(0, 3)
-	line.size = Vector2(0, 3)
-	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	line.modulate.a = 0.0
-	layer.add_child(line)
-
-	# アニメーション
-	var tween = create_tween()
-	tween.set_parallel(true)
-	tween.tween_property(step_label, "modulate:a", 1.0, 0.15)
-	tween.tween_property(title_label, "modulate:a", 1.0, 0.2)
-	tween.tween_property(title_label, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.tween_property(line, "modulate:a", 1.0, 0.2).set_delay(0.1)
-	# 消えるアニメーション
-	tween.tween_property(overlay, "color:a", 0.0, 0.2).set_delay(0.9)
-	tween.tween_property(step_label, "modulate:a", 0.0, 0.15).set_delay(0.85)
-	tween.tween_property(title_label, "modulate:a", 0.0, 0.15).set_delay(0.85)
-	tween.tween_property(line, "modulate:a", 0.0, 0.15).set_delay(0.85)
-	tween.chain().tween_callback(layer.queue_free)
-
-
-## ─── 8. MCコメント ───
-
-func _show_mc_comment(step_num: int) -> void:
-	var comments: Array = MC_COMMENTS.get(step_num, [])
-	if comments.is_empty():
-		return
-	var comment = str(comments[randi() % comments.size()])
-	_show_tv_ticker(comment)
-
-
-## ─── 9. TV風テロップ ───
-
-func _show_tv_ticker(text: String, duration: float = 3.5) -> void:
-	var layer = CanvasLayer.new()
-	layer.layer = 80
-	add_child(layer)
-
-	# テロップバー背景
-	var bar = ColorRect.new()
-	bar.color = Color("181425", 0.85)
-	bar.anchor_left = 0.0
-	bar.anchor_right = 1.0
-	bar.anchor_bottom = 1.0
-	bar.anchor_top = 1.0
-	bar.offset_top = -52
-	bar.custom_minimum_size = Vector2(0, 52)
-	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layer.add_child(bar)
-
-	# アクセントライン
-	var accent_line = ColorRect.new()
-	accent_line.color = Color("e43b44")
-	accent_line.anchor_left = 0.0
-	accent_line.anchor_right = 1.0
-	accent_line.custom_minimum_size = Vector2(0, 3)
-	accent_line.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.add_child(accent_line)
-
-	# テロップテキスト
-	var label = Label.new()
-	label.text = text
-	label.add_theme_font_size_override("font_size", 18)
-	label.add_theme_color_override("font_color", Color("ead4aa"))
-	label.position = Vector2(24, 12)
-	label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.add_child(label)
-
-	# スライドインアニメーション
-	bar.modulate.a = 0.0
-	bar.position.y += 60
-	var tween = create_tween()
-	tween.set_parallel(true)
-	tween.tween_property(bar, "modulate:a", 1.0, 0.2)
-	tween.tween_property(bar, "position:y", bar.position.y - 60, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	# 消える
-	tween.tween_property(bar, "modulate:a", 0.0, 0.25).set_delay(duration)
-	tween.tween_property(bar, "position:y", bar.position.y, 0.25).set_delay(duration)
-	tween.chain().tween_callback(layer.queue_free)
-
-
-## ─── 10. 中間スコア発表 ───
-
-func _show_mid_score_ticker() -> void:
-	var spec_text = "専門 %.1f" % _technical_points
-	var aud_text = "一般 %.1f" % _audience_points
-	var total = _technical_points + _audience_points
-	_show_tv_ticker("【中間速報】 %s / %s ＝ 合計 %.1f点" % [spec_text, aud_text, total], 4.0)
-
-
-func _show_mid_score_reveal() -> void:
-	# 中間発表をドラマチックに表示
-	var layer = CanvasLayer.new()
-	layer.layer = 85
-	add_child(layer)
-
-	var overlay = ColorRect.new()
-	overlay.color = Color("181425", 0.7)
-	overlay.anchor_right = 1.0
-	overlay.anchor_bottom = 1.0
-	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layer.add_child(overlay)
-
-	var title = Label.new()
-	title.text = "── 中 間 発 表 ──"
-	title.add_theme_font_size_override("font_size", 28)
-	title.add_theme_color_override("font_color", Color("feae34"))
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.anchor_left = 0.0
-	title.anchor_right = 1.0
-	title.anchor_top = 0.25
-	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layer.add_child(title)
-
-	# スコアバー表示（プレイヤーのスコアをバーで視覚化）
-	var total = _technical_points + _audience_points
-	var max_possible = 100.0  # 概算の最大値
-
-	var bar_container = VBoxContainer.new()
-	bar_container.anchor_left = 0.15
-	bar_container.anchor_right = 0.85
-	bar_container.anchor_top = 0.38
-	bar_container.add_theme_constant_override("separation", 8)
-	bar_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	layer.add_child(bar_container)
-
-	# 専門点バー
-	var spec_row = _create_score_bar("専門", _technical_points, max_possible * 0.5, Color("e43b44"))
-	bar_container.add_child(spec_row)
-
-	# 一般点バー
-	var aud_row = _create_score_bar("一般", _audience_points, max_possible * 0.5, Color("feae34"))
-	bar_container.add_child(aud_row)
-
-	# 合計
-	var total_label = Label.new()
-	total_label.text = "合計: %.1f 点" % total
-	total_label.add_theme_font_size_override("font_size", 24)
-	total_label.add_theme_color_override("font_color", Color("ead4aa"))
-	total_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	total_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar_container.add_child(total_label)
-
-	# コメント
-	var comment = Label.new()
-	if total >= 40:
-		comment.text = "土岐「悪くない。だが上はまだいる」"
-	elif total >= 25:
-		comment.text = "土岐「まだ伸びる余地がある」"
-	else:
-		comment.text = "土岐「…ここからどう巻き返すか」"
-	comment.add_theme_font_size_override("font_size", 16)
-	comment.add_theme_color_override("font_color", Color("8b9bb4"))
-	comment.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	comment.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar_container.add_child(comment)
-
-	# アニメーション
-	layer.modulate.a = 0.0
-	var tween = create_tween()
-	tween.tween_property(layer, "modulate:a", 1.0, 0.3)
-	tween.tween_interval(3.5)
-	tween.tween_property(layer, "modulate:a", 0.0, 0.3)
-	tween.tween_callback(layer.queue_free)
-
-
-func _create_score_bar(label_text: String, value: float, max_val: float, color: Color) -> HBoxContainer:
-	var row = HBoxContainer.new()
-	row.add_theme_constant_override("separation", 10)
-	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
-	var lbl = Label.new()
-	lbl.text = label_text
-	lbl.custom_minimum_size = Vector2(60, 0)
-	lbl.add_theme_font_size_override("font_size", 16)
-	lbl.add_theme_color_override("font_color", Color("ead4aa"))
-	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(lbl)
-
-	var bar_bg = ColorRect.new()
-	bar_bg.color = Color("262b44")
-	bar_bg.custom_minimum_size = Vector2(300, 22)
-	bar_bg.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	bar_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(bar_bg)
-
-	var bar_fill = ColorRect.new()
-	var ratio = clampf(value / maxf(max_val, 1.0), 0.0, 1.0)
-	bar_fill.color = color
-	bar_fill.custom_minimum_size = Vector2(300 * ratio, 22)
-	bar_fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar_bg.add_child(bar_fill)
-
-	var val_lbl = Label.new()
-	val_lbl.text = "%.1f" % value
-	val_lbl.custom_minimum_size = Vector2(50, 0)
-	val_lbl.add_theme_font_size_override("font_size", 16)
-	val_lbl.add_theme_color_override("font_color", color)
-	val_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	row.add_child(val_lbl)
-
-	return row
-
-
-## ─── 5. ステップ間トランジション ───
-
-func _step_transition() -> void:
-	_glitch_transition()
-
-
-## ─── 11. サイバーEDM演出 ───
-
-var _scanline_layer: CanvasLayer = null
-var _beat_tween: Tween = null
-
-func _init_cyber_effects() -> void:
-	# スキャンラインレイヤー
-	_scanline_layer = CanvasLayer.new()
-	_scanline_layer.layer = 50
-	add_child(_scanline_layer)
-
-	var scanline = _ScanlineEffect.new()
-	scanline.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	scanline.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_scanline_layer.add_child(scanline)
-
-	# ビート脈動（ヘッダーラベルが周期的に光る）
-	_start_beat_pulse()
-
-
-func _start_beat_pulse() -> void:
-	if _beat_tween != null and _beat_tween.is_valid():
-		_beat_tween.kill()
-	_beat_tween = create_tween().set_loops()
-	_beat_tween.tween_property(header_label, "modulate", Color(1.3, 1.0, 1.0, 1.0), 0.08)
-	_beat_tween.tween_property(header_label, "modulate", Color.WHITE, 0.4)
-	_beat_tween.tween_interval(0.52)
-
-
-func _glitch_transition() -> void:
-	var layer = CanvasLayer.new()
-	layer.layer = 92
-	add_child(layer)
-
-	# グリッチブロック（ランダムなカラーバーが横に走る）
-	var glitch_colors = [
-		Color("e43b44", 0.3),  # バーミリオン
-		Color("00e5ff", 0.25),  # サイバーシアン
-		Color("feae34", 0.2),   # アンバーゴールド
-		Color("181425", 0.8),   # ダーク
-	]
-	for i in range(6):
-		var bar = ColorRect.new()
-		bar.color = glitch_colors[randi() % glitch_colors.size()]
-		bar.anchor_left = 0.0
-		bar.anchor_right = 1.0
-		var y = randf_range(0.0, 0.85)
-		var h = randf_range(0.02, 0.08)
-		bar.anchor_top = y
-		bar.anchor_bottom = y + h
-		bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		# 横方向にズレ
-		bar.position.x = randf_range(-30, 30)
-		layer.add_child(bar)
-
-	var tween = create_tween()
-	tween.tween_property(layer, "modulate:a", 0.0, 0.2).set_delay(0.08)
-	tween.tween_callback(layer.queue_free)
-
-
-class _ScanlineEffect extends Control:
-	var _time: float = 0.0
-
-	func _process(delta: float) -> void:
-		_time += delta
-		queue_redraw()
-
-	func _draw() -> void:
-		var h = size.y
-		var line_spacing = 4.0
-		var alpha = 0.04
-
-		# CRT風スキャンライン
-		var y = 0.0
-		while y < h:
-			draw_line(Vector2(0, y), Vector2(size.x, y), Color("00e5ff", alpha), 1.0)
-			y += line_spacing
-
-		# 移動するスキャンバー（上から下に流れる）
-		var scan_y = fmod(_time * 120.0, h + 40.0) - 20.0
-		draw_rect(Rect2(0, scan_y, size.x, 2), Color("00e5ff", 0.08))
-		draw_rect(Rect2(0, scan_y - 8, size.x, 20), Color("00e5ff", 0.015))
-

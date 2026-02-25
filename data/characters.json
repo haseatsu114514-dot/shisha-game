@@ -1,7 +1,7 @@
 [
   {
     "id": "hajime",
-    "name": "はじめ / 陽村 始（ひむら はじめ）",
+    "name": "はじめ / 蒸野 始（むぎの はじめ）",
     "role": "protagonist",
     "age": 22,
     "nationality": "Japan",
@@ -195,6 +195,27 @@
     "visual_concepts": [
       "37s russian man, cold and sharp facial features, short blonde hair, wearing a sleek black turtleneck sweater, robotic precision in his posture, using an advanced high-tech metal hookah pipe",
       "steely-eyed russian shisha expert, pale skin, wearing a dark tailored overcoat, operating a modern minimalist shisha setup with digital thermal sensors, icy cool lighting"
+    ]
+  },
+  {
+    "id": "rei",
+    "name": "零-REI- / 田中 健太",
+    "role": "rival_ch3",
+    "age": 28,
+    "nationality": "Japan",
+    "affiliation": "V系コンセプトカフェ店長",
+    "play_style": "「カリスマ」",
+    "description": "V系コンセプトの店長であり、カリスマ的シーシャ職人。",
+    "background_secret": "実は本名は田中健太。見た目の派手さに反して、技術は超が一流で泥臭い努力家。",
+    "favorite_flavor": "ローズ",
+    "specialty_flavor": "フローラル系全般",
+    "growth_stats": {
+      "primary": "魅力",
+      "secondary": "センス",
+      "notes": "はじめの煙と出会い、更なる表現力を手に入れた。"
+    },
+    "visual_concepts": [
+      "28s elegant man, sleek silver hair, visual-kei makeup, handling hookah tools with graceful, flowing movements, surrounded by gentle floral smoke"
     ]
   },
   {
