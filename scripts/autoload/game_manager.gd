@@ -81,7 +81,7 @@ const SPEAKER_COLORS := {
 	"tsumugi": Color("68386c"),   # パープル
 	"minto": Color("b55088"),     # ローズピンク
 	"packii": Color("2ce8f5"),    # シアン
-	"toki_kotetsu": Color("8b9bb4"),
+	"nagumo": Color("8b9bb4"),
 	"maezono": Color("e4a672"),
 	"kirishima": Color("68386c"),
 	"takiguchi": Color("e43b44"),

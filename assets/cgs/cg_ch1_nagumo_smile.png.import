@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cmf20kf1v1kk7"
-path="res://.godot/imported/chr_nishio_normal.png-6ac02182c3d1249d4038c6809f114ab7.ctex"
+uid="uid://dht36k82cvxk"
+path="res://.godot/imported/cg_ch1_nagumo_smile.png-c8c8cc64b283ef50f998700c396c5fb1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/sprites/characters/chr_nishio_normal.png"
-dest_files=["res://.godot/imported/chr_nishio_normal.png-6ac02182c3d1249d4038c6809f114ab7.ctex"]
+source_file="res://assets/cgs/cg_ch1_nagumo_smile.png"
+dest_files=["res://.godot/imported/cg_ch1_nagumo_smile.png-c8c8cc64b283ef50f998700c396c5fb1.ctex"]
 
 [params]
 

@@ -30,7 +30,7 @@ const RANDOM_JUDGES := [
 ]
 
 const STANCE_PREFERENCE := {
-	"toki_kotetsu": "tech",
+	"nagumo": "tech",
 	"shiramine": "honest",
 	"maezono": "aggressive",
 	"kirishima": "heart",
@@ -38,7 +38,7 @@ const STANCE_PREFERENCE := {
 
 const REBUTTAL_PROMPTS := [
 	{
-		"question": "土岐: 火力が強すぎるんじゃないか？",
+		"question": "南雲:火力が強すぎるんじゃないか？",
 		"best": "reframe",
 	},
 	{
@@ -155,33 +155,33 @@ const MC_COMMENTS := {
 	],
 	2: [
 		"MCパッキー「フレーバー選択！ テーマに合わせるか、自分の得意で勝負するか」",
-		"土岐「テーマの解釈に個性が出る。配合にはその人の哲学が見える」",
+		"南雲「テーマの解釈に個性が出る。配合にはその人の哲学が見える」",
 	],
 	3: [
 		"MCパッキー「パッキングの時間です！ 12gをどう配分するか」",
-		"土岐「パッキングの密度、配置…全てが結果に出る」",
+		"南雲「パッキングの密度、配置…全てが結果に出る」",
 	],
 	4: [
 		"MCパッキー「アルミ穴あけ！ 等間隔で穴を開けられるかが勝負の分かれ目！」",
-		"土岐「穴の開け方一つで吸い心地が変わる。丁寧に、だがリズムよく」",
+		"南雲「穴の開け方一つで吸い心地が変わる。丁寧に、だがリズムよく」",
 	],
 	5: [
 		"MCパッキー「炭の準備！ フリップのタイミングが鍵です」",
 	],
 	6: [
 		"MCパッキー「炭配置！ 何個置くかも戦略のうち」",
-		"土岐「火力のコントロール…これがシーシャの脇だ」",
+		"南雲「火力のコントロール…これがシーシャの脇だ」",
 	],
 	7: [
 		"MCパッキー「蒸らしの時間です… ここは我慢比べ！」",
-		"土岐「蒸らしの分数で勝負は大きく変わる」",
+		"南雲「蒸らしの分数で勝負は大きく変わる」",
 	],
 	8: [
 		"MCパッキー「吸い出し前の精神戦…！ 選手たちの心の中はどうなってるかな」",
 	],
 	9: [
 		"MCパッキー「吸い出し！ ここで煙の質が決まります！」",
-		"土岐「一口目の吸い出しがすべてを物語る」",
+		"南雲「一口目の吸い出しがすべてを物語る」",
 	],
 	10: [
 		"MCパッキー「提供の時間！ 審査員が吸います！」",
@@ -191,7 +191,7 @@ const MC_COMMENTS := {
 	],
 	12: [
 		"MCパッキー「プレゼンテーション！ 自分のシーシャをどうアピールするか」",
-		"土岐「味だけではない。見せ方にも志が要る」",
+		"南雲「味だけではない。見せ方にも志が要る」",
 	],
 	13: [
 		"MCパッキー「反論タイム！ 審査員の疑問にどう答えるか！」",
@@ -201,7 +201,7 @@ const MC_COMMENTS := {
 	],
 	15: [
 		"MCパッキー「さあ、運命の最終発表です！」",
-		"土岐「どの選手もよく戦った。だが順位はつく」",
+		"南雲「どの選手もよく戦った。だが順位はつく」",
 	],
 }
 const TEMP_MIN := 140.0
@@ -213,7 +213,7 @@ const PRESENTATION_FOCUS_OPTIONS := [
 	{"id": "unique", "name": "個性"},
 ]
 const JUDGE_FOCUS_PREFERENCES := {
-	"toki_kotetsu": ["taste", "smoke"],
+	"nagumo": ["taste", "smoke"],
 	"shiramine": ["ease", "taste"],
 	"maezono": ["smoke", "unique"],
 	"kirishima": ["unique", "ease"],
@@ -372,7 +372,7 @@ const SPEAKER_NAMES := {
 	"adam": "アダム",
 	"minto": "眠都(みんと)",
 	"takiguchi": "MC 焚口",
-	"toki_kotetsu": "土岐鋼鉄",
+	"nagumo": "南雲修二",
 	"maezono": "前園壮一郎"
 }
 
@@ -3206,7 +3206,7 @@ func _target_adjust_action() -> String:
 
 
 func _build_adjustment_cue(target_action: String, round_index: int) -> String:
-	var judge_name = "土岐 鋼鉄"
+	var judge_name = "南雲 修二"
 	if round_index == 1:
 		judge_name = str(_random_judge.get("name", "審査員"))
 
@@ -3537,7 +3537,7 @@ func _build_focus_scores() -> Dictionary:
 
 func _get_active_judge_focuses() -> Array[String]:
 	var focus_ids: Array[String] = []
-	var judge_ids = ["toki_kotetsu", str(_random_judge.get("id", ""))]
+	var judge_ids = ["nagumo", str(_random_judge.get("id", ""))]
 	for judge_id in judge_ids:
 		var raw = JUDGE_FOCUS_PREFERENCES.get(judge_id, [])
 		if typeof(raw) != TYPE_ARRAY:
@@ -4084,7 +4084,7 @@ func _build_temperature_gauge_text(current_temp: float, target: Vector2) -> Stri
 
 
 func _refresh_side_panel() -> void:
-	judge_label.text = "MC: パッキー / 焚口ショウ\n審査員: 土岐 鋼鉄 + %s\nテーマ: %s" % [
+	judge_label.text = "MC: パッキー / 焚口ショウ\n審査員: 南雲 修二 + %s\nテーマ: %s" % [
 		str(_random_judge.get("name", "審査員")),
 		str(_theme.get("name", "-")),
 	]
@@ -4687,11 +4687,11 @@ func _show_mid_score_reveal() -> void:
 	# コメント
 	var comment = Label.new()
 	if total >= 40:
-		comment.text = "土岐「悪くない。だが上はまだいる」"
+		comment.text = "南雲「悪くない。だが上はまだいる」"
 	elif total >= 25:
-		comment.text = "土岐「まだ伸びる余地がある」"
+		comment.text = "南雲「まだ伸びる余地がある」"
 	else:
-		comment.text = "土岐「…ここからどう巻き返すか」"
+		comment.text = "南雲「…ここからどう巻き返すか」"
 	comment.add_theme_font_size_override("font_size", 16)
 	comment.add_theme_color_override("font_color", Color("8b9bb4"))
 	comment.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER

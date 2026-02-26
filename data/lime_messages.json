@@ -1,4 +1,4 @@
-このデータを push したいです。{
+{
   "messages": [
     {
       "id": "lime_naru_day3",
@@ -286,6 +286,160 @@
           "text": "アダムさんには負けません",
           "response": "フフ……原点の力、見セツケテヤロウ。",
           "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "rumor_kumicho_cigarman",
+      "sender": "kumicho",
+      "trigger_condition": "ch2_started",
+      "type": "rumor",
+      "rumor_about": "mashiro",
+      "messages": [
+        {
+          "sender": "kumicho",
+          "text": "……おい、小僧"
+        },
+        {
+          "sender": "kumicho",
+          "text": "お前、「シガーマン」って知っとるか"
+        },
+        {
+          "sender": "kumicho",
+          "text": "ウチの若衆がmukai行ったらしいんだが、そこで見たこともない煙にやられたって震えてやがる"
+        },
+        {
+          "sender": "kumicho",
+          "text": "「あれは人間が作る煙じゃない」とか泣きながら電話してきよったわ"
+        },
+        {
+          "sender": "kumicho",
+          "text": "……冗談だと思いたいがな。ワシも少し気になる"
+        }
+      ]
+    },
+    {
+      "id": "rumor_nagumo_cigarman",
+      "sender": "nagumo",
+      "trigger_condition": "ch3_started",
+      "type": "rumor",
+      "rumor_about": "mashiro",
+      "messages": [
+        {
+          "sender": "nagumo",
+          "text": "蒸野くん。君はmukaiという店に行ったことがあるかね"
+        },
+        {
+          "sender": "nagumo",
+          "text": "……妙な噂がある。シガーリーフで、常識外れの煙を出す人間がいると"
+        },
+        {
+          "sender": "nagumo",
+          "text": "業界では「シガーマン」と呼ばれているらしい。ムカイさんがその人だと思っていたのだが……どうも違うようだ"
+        },
+        {
+          "sender": "nagumo",
+          "text": "正体はまだ分からん。だが、あの煙を見た者は皆、声を失うらしい"
+        },
+        {
+          "sender": "nagumo",
+          "text": "……私も、少し怖いと思っているよ。正直に言えば"
+        }
+      ]
+    },
+    {
+      "id": "rumor_kemuri_experiments",
+      "sender": "naru",
+      "trigger_condition": "ch2_started",
+      "type": "rumor",
+      "rumor_about": "dr_kemuri",
+      "messages": [
+        {
+          "sender": "naru",
+          "text": "なぁ、ドクター・ケムリの話、知ってる？"
+        },
+        {
+          "sender": "naru",
+          "text": "SMOKE LABって審査員やりながら裏で研究してんだろ？ あの人"
+        },
+        {
+          "sender": "naru",
+          "text": "業界の噂だと、選手のデータ全部取って何か作ってるとか"
+        },
+        {
+          "sender": "naru",
+          "text": "「人体実験」って冗談交じりに言う奴もいるけど……あの笑顔見てると冗談に聞こえないんだよな"
+        },
+        {
+          "sender": "naru",
+          "text": "まあ南雲会長の旧知だから問題ないんだろうけどさ。たぶん"
+        }
+      ]
+    },
+    {
+      "id": "rumor_minto_late_night",
+      "sender": "minto",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 4,
+      "type": "rumor",
+      "rumor_about": "minto",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "……はじめくん、まだ起きてる？"
+        },
+        {
+          "sender": "minto",
+          "text": "ごめんね、こんな時間に"
+        },
+        {
+          "sender": "minto",
+          "text": "今日、実家の前通ったの。もう精肉店も閉まったはずなのに"
+        },
+        {
+          "sender": "minto",
+          "text": "あの匂いがした。生肉の、あの匂い"
+        },
+        {
+          "sender": "minto",
+          "text": "もう何年も前にクリーニングされて、匂いなんか残ってるわけないのに"
+        },
+        {
+          "sender": "minto",
+          "text": "……鼻の奥にこびりついてるの。頭では分かってるのに、体が覚えてるの"
+        },
+        {
+          "sender": "minto",
+          "text": "だから私、ミントの煙でいっぱいにするの。この空間ごと全部、上書きするために"
+        },
+        {
+          "sender": "minto",
+          "text": "……ごめん、こんな重い話。忘れて♡ おやすみっ"
+        }
+      ]
+    },
+    {
+      "id": "rumor_ageha_mashiro",
+      "sender": "ageha",
+      "trigger_condition": "ch3_started",
+      "type": "rumor",
+      "rumor_about": "mashiro",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "ねえ聞いた？ 裏渋にヤバい人いるって"
+        },
+        {
+          "sender": "ageha",
+          "text": "シガーリーフで煙出す女の子。見た目フツーなのに、煙だけバグってるって"
+        },
+        {
+          "sender": "ageha",
+          "text": "ムカイさんとこに出没するらしいんだけど。うちのヴァイブスで感じるのは"
+        },
+        {
+          "sender": "ageha",
+          "text": "あの子、ガチの天才枠。うちらとは次元が違うかもしんない"
         }
       ]
     }

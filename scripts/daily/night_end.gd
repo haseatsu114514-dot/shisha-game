@@ -128,32 +128,50 @@ func _on_auto_timer_timeout() -> void:
 func _check_and_play_dream() -> bool:
 	if CalendarManager.is_interval:
 		return false
-		
-	var dream_id = "ch%d_dream" % GameManager.current_chapter
-	var flag_key = "dream_seen_%s" % dream_id
-	
-	if EventFlags.get_flag(flag_key):
-		return false
-		
-	# Check if the dream exists in dreams.json
+
 	if not FileAccess.file_exists("res://data/dialogue/dreams.json"):
 		return false
-		
+
 	var file = FileAccess.open("res://data/dialogue/dreams.json", FileAccess.READ)
 	if file == null:
 		return false
-		
+
 	var content = file.get_as_text()
 	file.close()
-	
+
 	var parsed = JSON.parse_string(content)
-	if typeof(parsed) != TYPE_DICTIONARY or not parsed.has(dream_id):
+	if typeof(parsed) != TYPE_DICTIONARY or not parsed.has("dialogues"):
 		return false
-		
-	EventFlags.set_flag(flag_key, true)
-	GameManager.queue_dialogue("res://data/dialogue/dreams.json", dream_id, "res://scenes/daily/morning_phone.tscn")
-	get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
-	return true
+
+	# Each chapter has up to 2 dreams: early (day 2-3) and main (day 5-6)
+	var ch = GameManager.current_chapter
+	var day = CalendarManager.current_day
+	var dream_candidates: Array[String] = []
+
+	if day >= 2 and day <= 3:
+		dream_candidates.append("ch%d_dream_early" % ch)
+	if day >= 5 and day <= 6:
+		dream_candidates.append("ch%d_dream" % ch)
+
+	for dream_id in dream_candidates:
+		var flag_key = "dream_seen_%s" % dream_id
+		if EventFlags.get_flag(flag_key):
+			continue
+
+		var found = false
+		for dlg in parsed["dialogues"]:
+			if typeof(dlg) == TYPE_DICTIONARY and dlg.get("dialogue_id", "") == dream_id:
+				found = true
+				break
+		if not found:
+			continue
+
+		EventFlags.set_flag(flag_key, true)
+		GameManager.queue_dialogue("res://data/dialogue/dreams.json", dream_id, "res://scenes/daily/morning_phone.tscn")
+		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+		return true
+
+	return false
 
 
 func _play_day_transition(from_day: int, to_day: int) -> void:

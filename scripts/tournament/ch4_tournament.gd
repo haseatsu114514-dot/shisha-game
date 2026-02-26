@@ -30,7 +30,7 @@ const RANDOM_JUDGES := [
 ]
 
 const STANCE_PREFERENCE := {
-	"toki_kotetsu": "tech",
+	"nagumo": "tech",
 	"shiramine": "honest",
 	"maezono": "aggressive",
 	"kirishima": "heart",
@@ -38,7 +38,7 @@ const STANCE_PREFERENCE := {
 
 const REBUTTAL_PROMPTS := [
 	{
-		"question": "土岐: 火力が強すぎるんじゃないか？",
+		"question": "南雲:火力が強すぎるんじゃないか？",
 		"best": "reframe",
 	},
 	{
@@ -151,7 +151,7 @@ const PRESENTATION_FOCUS_OPTIONS := [
 	{"id": "unique", "name": "個性"},
 ]
 const JUDGE_FOCUS_PREFERENCES := {
-	"toki_kotetsu": ["taste", "smoke"],
+	"nagumo": ["taste", "smoke"],
 	"shiramine": ["ease", "taste"],
 	"maezono": ["smoke", "unique"],
 	"kirishima": ["unique", "ease"],
@@ -2908,7 +2908,7 @@ func _target_adjust_action() -> String:
 
 
 func _build_adjustment_cue(target_action: String, round_index: int) -> String:
-	var judge_name = "土岐 鋼鉄"
+	var judge_name = "南雲 修二"
 	if round_index == 1:
 		judge_name = str(_random_judge.get("name", "審査員"))
 
@@ -3285,7 +3285,7 @@ func _build_focus_scores() -> Dictionary:
 
 func _get_active_judge_focuses() -> Array[String]:
 	var focus_ids: Array[String] = []
-	var judge_ids = ["toki_kotetsu", str(_random_judge.get("id", ""))]
+	var judge_ids = ["nagumo", str(_random_judge.get("id", ""))]
 	for judge_id in judge_ids:
 		var raw = JUDGE_FOCUS_PREFERENCES.get(judge_id, [])
 		if typeof(raw) != TYPE_ARRAY:
@@ -3713,7 +3713,7 @@ func _build_temperature_gauge_text(current_temp: float, target: Vector2) -> Stri
 
 
 func _refresh_side_panel() -> void:
-	judge_label.text = "MC: パッキー / 焚口ショウ\n審査員: 土岐 鋼鉄 + %s\nテーマ: %s" % [
+	judge_label.text = "MC: パッキー / 焚口ショウ\n審査員: 南雲 修二 + %s\nテーマ: %s" % [
 		str(_random_judge.get("name", "審査員")),
 		str(_theme.get("name", "-")),
 	]
