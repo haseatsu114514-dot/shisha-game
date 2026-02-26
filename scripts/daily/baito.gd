@@ -195,7 +195,7 @@ func _show_tournament_menu() -> void:
 		if ResourceLoader.exists(path):
 			get_tree().change_scene_to_file(path)
 		else:
-			get_tree().change_scene_to_file("res://scenes/tournament/ch1_tournament.tscn")
+			get_tree().change_scene_to_file("res://scenes/tournament/ch5_tournament.tscn")
 	)
 	menu_container.add_child(button)
 
@@ -632,14 +632,6 @@ func _apply_practice_bonus_stats(bonus_stats: Dictionary) -> void:
 
 func _format_stat_changes(changes: Dictionary) -> String:
 	var stat_order = ["technique", "sense", "guts", "charm", "insight"]
-	var stat_labels = {
-		"technique": "技術",
-		"sense": "味覚",
-		"taste": "味覚",
-		"guts": "度胸",
-		"charm": "魅力",
-		"insight": "洞察",
-	}
 	var parts: Array[String] = []
 	for stat_name in stat_order:
 		if not changes.has(stat_name):
@@ -647,7 +639,9 @@ func _format_stat_changes(changes: Dictionary) -> String:
 		var amount = int(changes.get(stat_name, 0))
 		if amount == 0:
 			continue
-		parts.append("%s %+d" % [str(stat_labels.get(stat_name, stat_name)), amount])
+		var label = PlayerData.STAT_LABEL_MAP.get(stat_name, stat_name)
+		var change_label = PlayerData.get_stat_change_label(amount)
+		parts.append("【%s】が%s" % [label, change_label])
 	if parts.is_empty():
 		return "なし"
 	return ", ".join(parts)

@@ -17,8 +17,14 @@ signal dialogue_finished(dialogue_id: String)
 @onready var background_image: TextureRect = %BackgroundImage
 @onready var cg_rect: TextureRect = %CGRect
 @onready var smoke_particles: GPUParticles2D = $SmokeParticles
+@onready var log_button: Button = %LogButton
+@onready var history_panel: Control = %HistoryPanel
+@onready var history_vbox: VBoxContainer = %HistoryVBox
+@onready var close_history_button: Button = %CloseHistoryButton
+@onready var dialogue_panel: PanelContainer = $DialoguePanel
 
-var _line_queue: Array = []
+var _line_queue: Array[Dictionary] = []
+var _history: Array[Dictionary] = []
 var _branches: Dictionary = {}
 var _metadata: Dictionary = {}
 
@@ -78,10 +84,39 @@ const HIGHLIGHT_CLOSE_REPLACEMENTS := {
 
 
 func _ready() -> void:
-	advance_button.pressed.connect(_on_advance_button_pressed)
-	auto_button.pressed.connect(_on_auto_button_pressed)
-	typing_timer.timeout.connect(_on_typing_timer_timeout)
-	auto_timer.timeout.connect(_on_auto_timer_timeout)
+	if not GameManager:
+		pass
+		
+	# Setup font and transparency
+	var pixel_font = load("res://assets/fonts/DotGothic16-Regular.ttf")
+	if pixel_font:
+		speaker_label.add_theme_font_override("font", pixel_font)
+		text_label.add_theme_font_override("normal_font", pixel_font)
+		auto_button.add_theme_font_override("font", pixel_font)
+		advance_button.add_theme_font_override("font", pixel_font)
+		log_button.add_theme_font_override("font", pixel_font)
+		close_history_button.add_theme_font_override("font", pixel_font)
+	
+	var panel_style = StyleBoxFlat.new()
+	panel_style.bg_color = Color(0, 0, 0, 0.70)
+	panel_style.corner_radius_top_left = 8
+	panel_style.corner_radius_top_right = 8
+	panel_style.corner_radius_bottom_right = 8
+	panel_style.corner_radius_bottom_left = 8
+	dialogue_panel.add_theme_stylebox_override("panel", panel_style)
+	
+	if advance_button:
+		advance_button.pressed.connect(_on_advance_button_pressed)
+	if auto_button:
+		auto_button.pressed.connect(_on_auto_button_pressed)
+	if typing_timer:
+		typing_timer.timeout.connect(_on_typing_timer_timeout)
+	if auto_timer:
+		auto_timer.timeout.connect(_on_auto_timer_timeout)
+	if log_button:
+		log_button.pressed.connect(_on_log_button_pressed)
+	if close_history_button:
+		close_history_button.pressed.connect(_on_close_history_pressed)
 	_set_auto_enabled(false)
 	
 	if cg_rect:
@@ -217,6 +252,10 @@ func _show_next_line() -> void:
 			var char_id = str(line.get("char_id", ""))
 			val = 1 if AffinityManager.is_in_romance(char_id) else 0
 			threshold = 1
+		elif cond_type == "has_romance_and_max_affection":
+			var char_id = str(line.get("char_id", ""))
+			val = 1 if (AffinityManager.is_in_romance(char_id) and AffinityManager.is_max_affection(char_id)) else 0
+			threshold = 1
 		
 		var branch_key = ""
 		if val >= threshold:
@@ -274,6 +313,10 @@ func _show_next_line() -> void:
 	_update_portrait(line)
 	
 	var raw_text = str(line.get("text", ""))
+	
+	if raw_text != "":
+		_history.append({"speaker": _current_speaker, "text": _process_text(raw_text)})
+	
 	_start_typing(_process_text(raw_text))
 
 
@@ -424,7 +467,41 @@ func _set_auto_enabled(enabled: bool) -> void:
 	_auto_enabled = enabled
 	if auto_button == null:
 		return
-	auto_button.text = "オート: ON" if _auto_enabled else "オート: OFF"
+	auto_button.text = "オート ON" if _auto_enabled else "オート OFF"
+
+func _on_log_button_pressed() -> void:
+	GameManager.play_ui_se("select")
+	_cancel_auto_advance()
+	for child in history_vbox.get_children():
+		child.queue_free()
+	
+	var pixel_font = load("res://assets/fonts/DotGothic16-Regular.ttf")
+	for entry in _history:
+		var name_label = Label.new()
+		var resolved_id = str(SPEAKER_ID_ALIASES.get(entry["speaker"], entry["speaker"]))
+		name_label.text = SPEAKER_NAMES.get(entry["speaker"], entry["speaker"]) if str(entry["speaker"]) != "" else ""
+		if name_label.text == "": name_label.text = "――"
+		name_label.add_theme_color_override("font_color", GameManager.get_speaker_color(resolved_id))
+		name_label.add_theme_font_size_override("font_size", 20)
+		if pixel_font: name_label.add_theme_font_override("font", pixel_font)
+		
+		var txt_label = Label.new()
+		txt_label.text = entry["text"]
+		txt_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		txt_label.add_theme_font_size_override("font_size", 20)
+		if pixel_font: txt_label.add_theme_font_override("font", pixel_font)
+		
+		var entry_box = VBoxContainer.new()
+		entry_box.add_theme_constant_override("separation", 2)
+		entry_box.add_child(name_label)
+		entry_box.add_child(txt_label)
+		history_vbox.add_child(entry_box)
+		
+	history_panel.visible = true
+
+func _on_close_history_pressed() -> void:
+	GameManager.play_ui_se("cancel")
+	history_panel.visible = false
 
 
 func _queue_auto_advance() -> void:
@@ -566,6 +643,7 @@ func _finish_dialogue() -> void:
 	if _metadata.has("exchange_lime"):
 		AffinityManager.exchange_lime(str(_metadata["exchange_lime"]))
 
+	var stat_changes: Array[Dictionary] = []
 	if _metadata.has("add_stat"):
 		var stats = _metadata["add_stat"]
 		if typeof(stats) == TYPE_DICTIONARY:
@@ -574,6 +652,12 @@ func _finish_dialogue() -> void:
 				if amount != 0:
 					PlayerData.add_stat(str(stat_name), amount)
 					GameManager.log_stat_change(str(stat_name), amount)
+					var label = PlayerData.STAT_LABEL_MAP.get(str(stat_name), str(stat_name))
+					stat_changes.append({"label": label, "amount": amount})
+
+	# Show stat change notification (abstract expression, no numbers)
+	if not stat_changes.is_empty():
+		await _show_stat_notification(stat_changes)
 
 	# Track affinity changes for notification
 	var affinity_char_id := ""
@@ -693,6 +777,47 @@ func _show_affinity_notification(char_id: String, delta: int) -> void:
 	await tween.finished
 
 	await get_tree().create_timer(1.2).timeout
+
+	var fade_tween = create_tween()
+	fade_tween.tween_property(label, "modulate:a", 0.0, 0.4)
+	await fade_tween.finished
+
+	layer.queue_free()
+
+
+func _show_stat_notification(stat_changes: Array[Dictionary]) -> void:
+	# Build notification text using abstract expressions (no raw numbers)
+	var parts: Array[String] = []
+	for change in stat_changes:
+		var change_label = PlayerData.get_stat_change_label(change["amount"])
+		if change_label != "":
+			parts.append("【%s】が%s" % [change["label"], change_label])
+	if parts.is_empty():
+		return
+	var text = "……" + "、".join(parts) + "。"
+
+	var layer = CanvasLayer.new()
+	layer.layer = 100
+	add_child(layer)
+
+	var label = Label.new()
+	label.text = text
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.position = Vector2(190, 320)
+	label.size = Vector2(900, 60)
+	label.add_theme_font_size_override("font_size", 24)
+	label.add_theme_color_override("font_color", Color(0.4, 0.85, 1.0, 1.0))
+	label.modulate = Color(1.0, 1.0, 1.0, 0)
+	layer.add_child(label)
+
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(label, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(label, "position:y", 290, 0.4).from(320.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	await tween.finished
+
+	await get_tree().create_timer(1.5).timeout
 
 	var fade_tween = create_tween()
 	fade_tween.tween_property(label, "modulate:a", 0.0, 0.4)

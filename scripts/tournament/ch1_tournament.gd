@@ -506,7 +506,6 @@ func _set_phase(step_num: int, title: String, body: String) -> void:
 	header_label.text = title
 	header_label.add_theme_color_override("font_color", GameManager.THEME_VERMILION)
 	phase_label.text = "STEP %d / %d" % [step_num, TOTAL_STEPS]
-	phase_label.add_theme_color_override("font_color", GameManager.THEME_AMBER_GOLD)
 	info_label.text = body
 	_show_round_announce(step_num, title)
 	_show_mc_comment(step_num)

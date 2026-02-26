@@ -35,11 +35,22 @@ func _render_summary() -> void:
 		lines.append("Day %d 終了" % CalendarManager.current_day)
 
 	lines.append("")
-	lines.append("技術 ★%d" % PlayerData.get_stat_stars("technique"))
-	lines.append("味覚 ★%d" % PlayerData.get_stat_stars("sense"))
-	lines.append("度胸 ★%d" % PlayerData.get_stat_stars("guts"))
-	lines.append("魅力 ★%d" % PlayerData.get_stat_stars("charm"))
-	lines.append("洞察 ★%d" % PlayerData.get_stat_stars("insight"))
+	var stat_entries = [
+		{"key": "technique", "name": "技術"},
+		{"key": "sense", "name": "センス"},
+		{"key": "guts", "name": "根性"},
+		{"key": "charm", "name": "魅力"},
+		{"key": "insight", "name": "洞察"},
+	]
+	var day_stats: Dictionary = summary.get("stats", {})
+	for entry in stat_entries:
+		var stars = PlayerData.get_stat_stars(entry["key"])
+		var star_str = "★".repeat(stars) + "☆".repeat(5 - stars)
+		var change_amount = int(day_stats.get(entry["key"], 0))
+		var change_text = ""
+		if change_amount > 0:
+			change_text = " (%s)" % PlayerData.get_stat_change_label(change_amount)
+		lines.append("%s %s%s" % [entry["name"], star_str, change_text])
 	lines.append("")
 	lines.append("💰 所持金: %d円 (%+d)" % [PlayerData.money, int(summary.get("money", 0))])
 
@@ -70,12 +81,12 @@ func _render_summary() -> void:
 
 func _show_day7_choices() -> void:
 	var button1 = Button.new()
-	button1.text = "深呼吸して寝る（度胸+3）"
+	button1.text = "深呼吸して寝る（根性が少し上がる）"
 	button1.pressed.connect(_on_day7_choice.bind("guts"))
 	choice_container.add_child(button1)
 
 	var button2 = Button.new()
-	button2.text = "ノートを見返す（洞察+3）"
+	button2.text = "ノートを見返す（洞察が少し上がる）"
 	button2.pressed.connect(_on_day7_choice.bind("insight"))
 	choice_container.add_child(button2)
 
@@ -106,8 +117,43 @@ func _on_auto_timer_timeout() -> void:
 	# Handle tournament day
 	if not CalendarManager.is_interval and CalendarManager.current_day >= CalendarManager.tournament_day:
 		GameManager.transition_to_tournament()
+		return
+
+	if await _check_and_play_dream():
+		return
 
 	get_tree().change_scene_to_file("res://scenes/daily/morning_phone.tscn")
+
+
+func _check_and_play_dream() -> bool:
+	if CalendarManager.is_interval:
+		return false
+		
+	var dream_id = "ch%d_dream" % GameManager.current_chapter
+	var flag_key = "dream_seen_%s" % dream_id
+	
+	if EventFlags.get_flag(flag_key):
+		return false
+		
+	# Check if the dream exists in dreams.json
+	if not FileAccess.file_exists("res://data/dialogue/dreams.json"):
+		return false
+		
+	var file = FileAccess.open("res://data/dialogue/dreams.json", FileAccess.READ)
+	if file == null:
+		return false
+		
+	var content = file.get_as_text()
+	file.close()
+	
+	var parsed = JSON.parse_string(content)
+	if typeof(parsed) != TYPE_DICTIONARY or not parsed.has(dream_id):
+		return false
+		
+	EventFlags.set_flag(flag_key, true)
+	GameManager.queue_dialogue("res://data/dialogue/dreams.json", dream_id, "res://scenes/daily/morning_phone.tscn")
+	get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+	return true
 
 
 func _play_day_transition(from_day: int, to_day: int) -> void:

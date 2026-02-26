@@ -393,7 +393,7 @@ func _prepare_run() -> void:
 	_mid_rival_totals.clear()
 	_presentation_primary_focus = ""
 	_presentation_secondary_focus = ""
-	_easy_mode = bool(EventFlags.get_value("ch1_tournament_easy_mode", false))
+	_easy_mode = bool(EventFlags.get_value("ch3_tournament_easy_mode", false))
 	_prepare_rival_score_tables()
 
 	_technical_points = PlayerData.stat_technique * 0.9 + PlayerData.stat_sense * 0.7 + PlayerData.stat_guts * 0.5
@@ -3356,11 +3356,11 @@ func _finalize_and_show_result() -> void:
 
 	_pending_reward = int(REWARD_BY_RANK.get(_player_rank, 0))
 	if _player_rank == 1:
-		EventFlags.set_value("ch1_tournament_loss_count", 0)
+		EventFlags.set_value("ch3_tournament_loss_count", 0)
 	else:
 		_pending_reward = 0
-		var losses = int(EventFlags.get_value("ch1_tournament_loss_count", 0)) + 1
-		EventFlags.set_value("ch1_tournament_loss_count", losses)
+		var losses = int(EventFlags.get_value("ch3_tournament_loss_count", 0)) + 1
+		EventFlags.set_value("ch3_tournament_loss_count", losses)
 
 	var lines: Array[String] = []
 	lines.append("【あなたの得点内訳】")
@@ -3405,7 +3405,7 @@ func _finalize_and_show_result() -> void:
 		_add_choice_button("優勝結果で進む", _apply_result_and_continue)
 	else:
 		_add_choice_button("もう一度挑戦する", _retry_tournament)
-		var losses = int(EventFlags.get_value("ch1_tournament_loss_count", 0))
+		var losses = int(EventFlags.get_value("ch3_tournament_loss_count", 0))
 		if not _easy_mode and losses >= 2:
 			_add_choice_button("難易度を下げて再挑戦", _enable_easy_mode_and_retry)
 	_add_choice_button("タイトルに戻る", _return_to_title)
@@ -3563,13 +3563,13 @@ func _apply_result_and_continue() -> void:
 		PlayerData.add_stat("guts", 1)
 		GameManager.log_stat_change("charm", 2)
 		GameManager.log_stat_change("guts", 1)
-		EventFlags.set_value("ch1_tournament_easy_mode", false)
+		EventFlags.set_value("ch3_tournament_easy_mode", false)
 	else:
 		PlayerData.add_stat("insight", 1)
 		GameManager.log_stat_change("insight", 1)
 
-	EventFlags.set_flag("ch1_tournament_completed", true)
-	EventFlags.set_value("ch1_tournament_rank", _player_rank)
+	EventFlags.set_flag("ch3_tournament_completed", true)
+	EventFlags.set_value("ch3_tournament_rank", _player_rank)
 	GameManager.set_transient("morning_notice", _build_post_tournament_notice())
 	GameManager.transition_to_interval()
 
@@ -3611,7 +3611,7 @@ func _retry_tournament() -> void:
 
 
 func _enable_easy_mode_and_retry() -> void:
-	EventFlags.set_value("ch1_tournament_easy_mode", true)
+	EventFlags.set_value("ch3_tournament_easy_mode", true)
 	get_tree().change_scene_to_file(TOURNAMENT_SCENE_PATH)
 
 

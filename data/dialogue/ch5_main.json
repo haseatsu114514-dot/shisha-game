@@ -1,0 +1,109 @@
+{
+    "dialogues": [
+        {
+            "dialogue_id": "ch5_opening",
+            "lines": [
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "今日もいい天気だ。春になってから、お客さんも増えてきた気がする。"
+                },
+                {
+                    "speaker": "kemuri",
+                    "face": "normal",
+                    "text": "——素晴らしい。"
+                },
+                {
+                    "speaker": "kemuri",
+                    "face": "normal",
+                    "text": "やあ、はじめ君。世界王者の祝杯には、少々早いお越しですね。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "surprise",
+                    "text": "うわっ！？……誰かと思ったら、Dr.ケムリ。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "（相変わらずしわくちゃの白衣を着て、目の下には深いクマができてる。それに、どこか……焦点が合ってないような）"
+                },
+                {
+                    "speaker": "kemuri",
+                    "face": "normal",
+                    "text": "世界大会の君のシーシャ、審査員席の裏から存分に『解剖』させていただきましたよ。"
+                },
+                {
+                    "speaker": "kemuri",
+                    "face": "normal",
+                    "text": "フフ……ヒッハハ！実に、実に愛おしい！君のその『気まぐれな優しさ』！『相手に合わせる揺らぎ』！"
+                },
+                {
+                    "speaker": "kemuri",
+                    "face": "normal",
+                    "text": "計算を狂わせる致命的なバグ……それこそが、究極の最適解への扉を開く鍵だったとは！！"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "……バグってなんですか。僕はお客さんの好みに合わせただけですよ。"
+                },
+                {
+                    "speaker": "kemuri",
+                    "face": "normal",
+                    "text": "ええ、ええ！その通りだ！ですが、人間の手によるゆらぎは所詮『不完全』。その日に体調が悪ければ味は落ちる。気分で炭の置き場が変わる！"
+                },
+                {
+                    "speaker": "kemuri",
+                    "face": "normal",
+                    "text": "そんな悲劇は、シーシャの未来において許されない。私はシーシャを愛しているからこそ、誰も失敗しない……誰も哀しまない世界を創る義務がある！"
+                },
+                {
+                    "speaker": "kemuri",
+                    "face": "normal",
+                    "text": "だからこそ……君のデータという『最後の生贄』を組み込んで、ついに私の最高傑作『SHISHA-9000』が産声を上げたのですよ！！"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "（この人、言ってることが完全にヤバいマッドサイエンティストだけど……本気で、誰よりもシーシャの未来を信じてるんだな）"
+                },
+                {
+                    "speaker": "kemuri",
+                    "face": "normal",
+                    "text": "さあ……どうでしょう？私の、いや『彼』の完璧な慈愛のアルゴリズムと、勝負していただけませんか？"
+                },
+                {
+                    "speaker": "kemuri",
+                    "face": "normal",
+                    "text": "猶予は30日差し上げましょう。君のその不完全で愛おしい指先で、究極の命を超えられるか……どうか、私に見せてください。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "（……ドクターの最高傑作か。30日以内に、あの人に……いや機械に、答えを出しに行かないと）"
+                }
+            ]
+        },
+        {
+            "dialogue_id": "ch5_timeout",
+            "lines": [
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "えーと、今日でたしか……Dr.ケムリが指定してた期限が切れたな。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "まあいっか。どうせろくでもないものだろうし。"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "僕には、AIと戦うより、今目の前にいるお客さんに美味しいシーシャを作ることの方がずっと大事だ。"
+                }
+            ]
+        }
+    ]
+}
