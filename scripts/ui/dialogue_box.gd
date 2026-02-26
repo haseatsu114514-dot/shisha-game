@@ -643,6 +643,7 @@ func _finish_dialogue() -> void:
 	if _metadata.has("exchange_lime"):
 		AffinityManager.exchange_lime(str(_metadata["exchange_lime"]))
 
+	var stat_changes: Array[Dictionary] = []
 	if _metadata.has("add_stat"):
 		var stats = _metadata["add_stat"]
 		if typeof(stats) == TYPE_DICTIONARY:
@@ -651,6 +652,12 @@ func _finish_dialogue() -> void:
 				if amount != 0:
 					PlayerData.add_stat(str(stat_name), amount)
 					GameManager.log_stat_change(str(stat_name), amount)
+					var label = PlayerData.STAT_LABEL_MAP.get(str(stat_name), str(stat_name))
+					stat_changes.append({"label": label, "amount": amount})
+
+	# Show stat change notification (abstract expression, no numbers)
+	if not stat_changes.is_empty():
+		await _show_stat_notification(stat_changes)
 
 	# Track affinity changes for notification
 	var affinity_char_id := ""
@@ -770,6 +777,47 @@ func _show_affinity_notification(char_id: String, delta: int) -> void:
 	await tween.finished
 
 	await get_tree().create_timer(1.2).timeout
+
+	var fade_tween = create_tween()
+	fade_tween.tween_property(label, "modulate:a", 0.0, 0.4)
+	await fade_tween.finished
+
+	layer.queue_free()
+
+
+func _show_stat_notification(stat_changes: Array[Dictionary]) -> void:
+	# Build notification text using abstract expressions (no raw numbers)
+	var parts: Array[String] = []
+	for change in stat_changes:
+		var change_label = PlayerData.get_stat_change_label(change["amount"])
+		if change_label != "":
+			parts.append("【%s】が%s" % [change["label"], change_label])
+	if parts.is_empty():
+		return
+	var text = "……" + "、".join(parts) + "。"
+
+	var layer = CanvasLayer.new()
+	layer.layer = 100
+	add_child(layer)
+
+	var label = Label.new()
+	label.text = text
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.position = Vector2(190, 320)
+	label.size = Vector2(900, 60)
+	label.add_theme_font_size_override("font_size", 24)
+	label.add_theme_color_override("font_color", Color(0.4, 0.85, 1.0, 1.0))
+	label.modulate = Color(1.0, 1.0, 1.0, 0)
+	layer.add_child(label)
+
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(label, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(label, "position:y", 290, 0.4).from(320.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	await tween.finished
+
+	await get_tree().create_timer(1.5).timeout
 
 	var fade_tween = create_tween()
 	fade_tween.tween_property(label, "modulate:a", 0.0, 0.4)

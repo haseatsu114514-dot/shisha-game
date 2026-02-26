@@ -35,11 +35,22 @@ func _render_summary() -> void:
 		lines.append("Day %d 終了" % CalendarManager.current_day)
 
 	lines.append("")
-	lines.append("技術 ★%d" % PlayerData.get_stat_stars("technique"))
-	lines.append("味覚 ★%d" % PlayerData.get_stat_stars("sense"))
-	lines.append("度胸 ★%d" % PlayerData.get_stat_stars("guts"))
-	lines.append("魅力 ★%d" % PlayerData.get_stat_stars("charm"))
-	lines.append("洞察 ★%d" % PlayerData.get_stat_stars("insight"))
+	var stat_entries = [
+		{"key": "technique", "name": "技術"},
+		{"key": "sense", "name": "センス"},
+		{"key": "guts", "name": "根性"},
+		{"key": "charm", "name": "魅力"},
+		{"key": "insight", "name": "洞察"},
+	]
+	var day_stats: Dictionary = summary.get("stats", {})
+	for entry in stat_entries:
+		var stars = PlayerData.get_stat_stars(entry["key"])
+		var star_str = "★".repeat(stars) + "☆".repeat(5 - stars)
+		var change_amount = int(day_stats.get(entry["key"], 0))
+		var change_text = ""
+		if change_amount > 0:
+			change_text = " (%s)" % PlayerData.get_stat_change_label(change_amount)
+		lines.append("%s %s%s" % [entry["name"], star_str, change_text])
 	lines.append("")
 	lines.append("💰 所持金: %d円 (%+d)" % [PlayerData.money, int(summary.get("money", 0))])
 
@@ -70,12 +81,12 @@ func _render_summary() -> void:
 
 func _show_day7_choices() -> void:
 	var button1 = Button.new()
-	button1.text = "深呼吸して寝る（度胸+3）"
+	button1.text = "深呼吸して寝る（根性が少し上がる）"
 	button1.pressed.connect(_on_day7_choice.bind("guts"))
 	choice_container.add_child(button1)
 
 	var button2 = Button.new()
-	button2.text = "ノートを見返す（洞察+3）"
+	button2.text = "ノートを見返す（洞察が少し上がる）"
 	button2.pressed.connect(_on_day7_choice.bind("insight"))
 	choice_container.add_child(button2)
 
