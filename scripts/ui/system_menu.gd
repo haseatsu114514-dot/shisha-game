@@ -72,23 +72,24 @@ func _populate_status() -> void:
 		
 	var stats = [
 		{"key": "technique", "name": "技術"},
-		{"key": "sense", "name": "味覚(センス)"},
+		{"key": "sense", "name": "センス"},
 		{"key": "guts", "name": "根性"},
 		{"key": "charm", "name": "魅力"},
 		{"key": "insight", "name": "洞察"},
 	]
-	
+
 	for stat in stats:
 		var label_name = Label.new()
 		label_name.text = stat["name"]
 		label_name.add_theme_font_size_override("font_size", 16)
 		status_grid.add_child(label_name)
-		
-		var val = PlayerData.get("stat_" + stat["key"])
+
+		var stars = PlayerData.get_stat_stars(stat["key"])
 		var label_val = Label.new()
-		label_val.text = str(val) if val != null else "0"
+		label_val.text = "★".repeat(stars) + "☆".repeat(5 - stars)
 		label_val.add_theme_font_size_override("font_size", 16)
 		label_val.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		label_val.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3))
 		status_grid.add_child(label_val)
 		
 	# Separator
@@ -118,11 +119,13 @@ func _populate_status() -> void:
 		var label_name = Label.new()
 		label_name.text = spec["name"]
 		status_grid.add_child(label_name)
-		
+
 		var val = PlayerData.flavor_specialties.get(spec["key"], 10)
+		var spec_stars = clampi(int(ceil(val / 20.0)), 1, 5)
 		var label_val = Label.new()
-		label_val.text = str(val)
+		label_val.text = "★".repeat(spec_stars) + "☆".repeat(5 - spec_stars)
 		label_val.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		label_val.add_theme_color_override("font_color", Color(0.6, 0.9, 0.6))
 		status_grid.add_child(label_val)
 
 func _populate_items() -> void:

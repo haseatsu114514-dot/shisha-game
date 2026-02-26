@@ -67,12 +67,25 @@ const CHARCOAL_EQUIPMENT_IDS := [
 
 const STAT_LABEL_MAP := {
 	"technique": "技術",
-	"sense": "味覚",
-	"taste": "味覚",
-	"guts": "度胸",
+	"sense": "センス",
+	"taste": "センス",
+	"guts": "根性",
 	"charm": "魅力",
 	"insight": "洞察",
 }
+
+## ステータス上昇量の抽象表現マッピング
+## ゲーム内では具体的な数値を見せず、抽象的な表現で統一する
+static func get_stat_change_label(amount: int) -> String:
+	var abs_amount = absi(amount)
+	if abs_amount <= 0:
+		return ""
+	elif abs_amount <= 2:
+		return "少し上がった"
+	elif abs_amount <= 4:
+		return "上がった"
+	else:
+		return "大きく上がった"
 
 const PRACTICE_LABEL_MAP := {
 	"packing": "パッキング",
@@ -248,8 +261,8 @@ const COMBO_NAME_MAP := {
 var stat_technique: int = 10
 var stat_sense: int = 10
 var stat_guts: int = 10
-var stat_charm: int = 15
-var stat_insight: int = 20
+var stat_charm: int = 10
+var stat_insight: int = 10
 
 var money: int = 30000
 
@@ -282,8 +295,8 @@ func reset_data() -> void:
 	stat_technique = 10
 	stat_sense = 10
 	stat_guts = 10
-	stat_charm = 15
-	stat_insight = 20
+	stat_charm = 10
+	stat_insight = 10
 	money = 30000
 	flavor_inventory.clear()
 	flavor_specialties = DEFAULT_FLAVOR_SPECIALTIES.duplicate(true)
