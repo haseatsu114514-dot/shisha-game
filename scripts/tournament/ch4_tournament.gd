@@ -241,6 +241,7 @@ var _mind_phase_flash: float = 0.0
 var _mind_last_phase: int = 0
 var _mind_particle_layer: Control = null
 var _mind_arena_grid: Control = null
+var _mind_nearest_bullet_dist: float = 9999.0
 var _aluminum_timer: Timer
 var _aluminum_active: bool = false
 var _aluminum_slot_count: int = 12
@@ -1525,7 +1526,7 @@ func _start_mind_barrage_step() -> void:
 
 	var arena = ColorRect.new()
 	arena.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	arena.color = Color("181425", 0.95)
+	arena.color = Color("0a0a14", 0.97)  # ネオンが映えるよう深い暗黒
 	arena.clip_contents = true
 	arena.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	arena_frame.add_child(arena)
@@ -1737,6 +1738,10 @@ func _on_mind_barrage_tick() -> void:
 			_mind_phase_transition_effect()
 
 	_update_mind_bullets(dt)
+	# Soul ノード: グレイズ近接度更新（graze_flash_t は _MindSoulNode._process で減衰）
+	if _mind_player_draw_node != null and is_instance_valid(_mind_player_draw_node):
+		var soul = _mind_player_draw_node as _MindSoulNode
+		soul.graze_near_t = clampf(1.0 - _mind_nearest_bullet_dist / (MIND_GRAZE_DISTANCE * 1.5), 0.0, 1.0)
 	if _mind_lives_remaining <= 0:
 		_mind_elapsed = _mind_duration_total
 		_update_mind_barrage_info_text()
@@ -1875,6 +1880,8 @@ func _create_bullet_label(phrase: String, color: Color, progress: float) -> Labe
 	var font_size = 18 + (4 if progress > 0.7 else (2 if progress > 0.35 else 0))
 	bullet.add_theme_font_size_override("font_size", font_size)
 	bullet.modulate = color
+	bullet.add_theme_color_override("font_outline_color", Color(color.r, color.g, color.b, 0.45))
+	bullet.add_theme_constant_override("outline_size", 3)
 	bullet.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_mind_arena_layer.add_child(bullet)
 	return bullet
@@ -1910,11 +1917,8 @@ func _calc_bullet_speed(progress: float) -> float:
 
 func _register_bullet(bullet: Label, spawn: Vector2, vel: Vector2, size: Vector2) -> void:
 	var data := {
-		"node": bullet,
-		"pos": spawn,
-		"vel": vel,
-		"size": size,
-		"grazed": false,
+		"node": bullet, "pos": spawn, "vel": vel, "size": size, "grazed": false,
+		"base_modulate": bullet.modulate, "graze_glow": 0.0,
 	}
 	_mind_bullets.append(data)
 	_mind_spawned += 1
@@ -1997,6 +2001,7 @@ func _pick_barrage_category(progress: float) -> Dictionary:
 func _update_mind_bullets(dt: float) -> void:
 	if _mind_arena_layer == null:
 		return
+	_mind_nearest_bullet_dist = 9999.0  # 毎フレームリセット
 	var arena_size = _mind_arena_layer.size
 	for i in range(_mind_bullets.size() - 1, -1, -1):
 		var bullet = _mind_bullets[i]
@@ -2008,6 +2013,11 @@ func _update_mind_bullets(dt: float) -> void:
 		var size = bullet.get("size", node.get_combined_minimum_size())
 		bullet["pos"] = pos
 		node.position = pos - size * 0.5
+
+		# 距離を先に計算（near-glow・graze・nearest追跡に使う）
+		var dist := pos.distance_to(_mind_player_pos)
+		if dist < _mind_nearest_bullet_dist:
+			_mind_nearest_bullet_dist = dist
 
 		if _mind_invincible_timer <= 0.0 and _is_mind_barrage_collision(pos, size):
 			_mind_hits += 1
@@ -2025,9 +2035,9 @@ func _update_mind_bullets(dt: float) -> void:
 			continue
 
 		if not bullet.get("grazed", false) and _mind_invincible_timer <= 0.0:
-			var dist = pos.distance_to(_mind_player_pos)
 			if dist < MIND_GRAZE_DISTANCE and not _is_mind_barrage_collision(pos, size):
 				bullet["grazed"] = true
+				bullet["graze_glow"] = 1.0
 				_mind_graze_count += 1
 				_mind_combo += 1
 				_mind_combo_timer = MIND_COMBO_DECAY_TIME
@@ -2037,10 +2047,15 @@ func _update_mind_bullets(dt: float) -> void:
 				if _mind_combo >= 10:
 					time_cut *= 1.5
 				_mind_elapsed = minf(_mind_elapsed + time_cut, _mind_duration_total - 0.3)
-				var graze_tween = create_tween()
-				graze_tween.tween_property(node, "modulate", Color(1.5, 1.5, 2.0, 1.0), 0.05)
-				graze_tween.tween_property(node, "modulate", node.modulate, 0.1)
-				_spawn_graze_particles(pos, 3, Color("00e5ff"))
+				# ネオングレイズエフェクト
+				_spawn_graze_ring(pos, _mind_combo)
+				_spawn_graze_popup(_mind_player_pos, _mind_combo)
+				_spawn_graze_particles(pos, 8, Color("00e5ff"))
+				if _mind_player_draw_node != null and is_instance_valid(_mind_player_draw_node):
+					(_mind_player_draw_node as _MindSoulNode).graze_flash_t = 1.0
+
+		# ワード発光更新（近接グロー + グレイズグロー）
+		_update_bullet_glow(bullet, node, dist, dt)
 
 		if pos.x < -size.x - 24.0 or pos.x > arena_size.x + size.x + 24.0 or pos.y < -size.y - 24.0 or pos.y > arena_size.y + size.y + 24.0:
 			_mind_dodged_count += 1
@@ -2434,6 +2449,63 @@ func _spawn_graze_particles(center: Vector2, count: int, color: Color) -> void:
 			"life": life,
 			"max_life": life,
 		})
+
+
+## ワード発光更新（近接グロー + グレイズグロー）
+func _update_bullet_glow(bullet: Dictionary, node: Label, dist: float, dt: float) -> void:
+	if not is_instance_valid(node):
+		return
+	var base_col: Color = bullet.get("base_modulate", Color.WHITE)
+	var graze_glow: float = bullet.get("graze_glow", 0.0)
+	if graze_glow > 0.0:
+		graze_glow = maxf(0.0, graze_glow - dt * 2.5)
+		bullet["graze_glow"] = graze_glow
+		node.modulate = base_col.lerp(Color("00e5ff"), graze_glow)
+		return
+	var near_zone := MIND_GRAZE_DISTANCE * 1.8
+	if dist < near_zone:
+		var t := clampf(1.0 - dist / near_zone, 0.0, 1.0)
+		node.modulate = base_col.lerp(Color("00e5ff"), t * 0.7)
+	else:
+		node.modulate = base_col
+
+
+## ネオングレイズリング（拡散リング演出）
+func _spawn_graze_ring(center: Vector2, combo: int) -> void:
+	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
+		return
+	var ring := _GrazeRingEffect.new()
+	ring.position = center
+	ring.size = Vector2.ZERO
+	ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ring.combo = combo
+	_mind_arena_layer.add_child(ring)
+
+
+## グレイズポップアップ文字
+func _spawn_graze_popup(center: Vector2, combo: int) -> void:
+	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
+		return
+	var lbl := Label.new()
+	if combo >= 10:
+		lbl.text = "GRAZE!! x%d" % combo
+		lbl.add_theme_color_override("font_color", Color("feae34"))
+	elif combo >= 5:
+		lbl.text = "GRAZE! x%d" % combo
+		lbl.add_theme_color_override("font_color", Color("00e5ff"))
+	else:
+		lbl.text = "GRAZE"
+		lbl.add_theme_color_override("font_color", Color("00e5ff"))
+	lbl.add_theme_font_size_override("font_size", 14)
+	lbl.add_theme_color_override("font_outline_color", Color(0, 0.04, 0.08, 0.9))
+	lbl.add_theme_constant_override("outline_size", 4)
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_mind_arena_layer.add_child(lbl)
+	lbl.position = center + Vector2(-30.0, -20.0)
+	var tween := create_tween()
+	tween.tween_property(lbl, "position:y", center.y - 55.0, 0.5)
+	tween.parallel().tween_property(lbl, "modulate:a", 0.0, 0.5)
+	tween.tween_callback(lbl.queue_free)
 
 
 func _update_mind_combo_display() -> void:
@@ -3672,12 +3744,16 @@ class _MindSoulNode extends Control:
 	var focus_mode_active: bool = false
 	var invincible: bool = false
 	var hit_flash: float = 0.0
+	var graze_near_t: float = 0.0
+	var graze_flash_t: float = 0.0
 	var _time: float = 0.0
 
 	func _process(delta: float) -> void:
 		_time += delta
 		if hit_flash > 0.0:
 			hit_flash = maxf(0.0, hit_flash - delta * 4.0)
+		if graze_flash_t > 0.0:
+			graze_flash_t = maxf(0.0, graze_flash_t - delta * 2.5)
 		queue_redraw()
 
 	func _draw() -> void:
@@ -3693,18 +3769,26 @@ class _MindSoulNode extends Control:
 			])
 			draw_polyline(faint_pts, Color(soul_color, 0.3), 1.5)
 			return
+		if graze_near_t > 0.01 or graze_flash_t > 0.01:
+			var ring_alpha := maxf(graze_near_t * 0.55, graze_flash_t * 0.9)
+			var ring_r := soul_size * (2.2 + graze_flash_t * 1.5)
+			draw_arc(center, ring_r, 0.0, TAU, 28, Color("00e5ff", ring_alpha), 2.0)
+			if graze_flash_t > 0.0:
+				draw_arc(center, ring_r * 1.45, 0.0, TAU, 16, Color("00e5ff", graze_flash_t * 0.35), 1.5)
+		var glow_col := soul_color.lerp(Color("00e5ff"), graze_near_t * 0.45)
 		for r in range(3, 0, -1):
 			var glow_r = soul_size * (1.0 + float(r) * 0.65) + sin(_time * 2.5) * 1.5
-			draw_circle(center, glow_r, Color(soul_color, 0.05 + sin(_time * 3.5) * 0.02))
+			draw_circle(center, glow_r, Color(glow_col, 0.05 + sin(_time * 3.5) * 0.02))
 		if hit_flash > 0.0:
 			draw_circle(center, soul_size * 2.5 * hit_flash, Color(1, 1, 1, hit_flash * 0.4))
+		var diamond_col := soul_color.lerp(Color("00e5ff"), graze_flash_t * 0.6)
 		var pts = PackedVector2Array([
 			center + Vector2(0, -soul_size),
 			center + Vector2(soul_size, 0),
 			center + Vector2(0, soul_size),
 			center + Vector2(-soul_size, 0),
 		])
-		draw_colored_polygon(pts, soul_color)
+		draw_colored_polygon(pts, diamond_col)
 		var inner = soul_size * 0.42
 		var inner_pts = PackedVector2Array([
 			center + Vector2(0, -inner),
@@ -3712,7 +3796,7 @@ class _MindSoulNode extends Control:
 			center + Vector2(0, inner),
 			center + Vector2(-inner, 0),
 		])
-		draw_colored_polygon(inner_pts, Color.WHITE.lerp(soul_color, 0.15))
+		draw_colored_polygon(inner_pts, Color.WHITE.lerp(diamond_col, 0.15))
 		if focus_mode_active:
 			var hb = soul_size * 0.35
 			draw_arc(center, hb, 0, TAU, 16, Color("00e5ff", 0.85), 1.5)
@@ -3751,3 +3835,29 @@ class _MindArenaGrid extends Control:
 				for corner_y in [0.0, h - corner_size]:
 					draw_rect(Rect2(corner_x, corner_y, corner_size, corner_size),
 						Color("e43b44", intensity * 0.3))
+
+
+## グレイズリングエフェクト: 拡散するネオンリング
+class _GrazeRingEffect extends Control:
+	var combo: int = 0
+	var _t: float = 0.0
+	var _life: float = 0.45
+
+	func _process(delta: float) -> void:
+		_t += delta
+		if _t >= _life:
+			queue_free()
+			return
+		queue_redraw()
+
+	func _draw() -> void:
+		var prog := _t / _life
+		var alpha := (1.0 - prog) * 0.85
+		var max_r := 38.0 + float(combo) * 2.0
+		var radius := lerp(6.0, max_r, prog)
+		var col := Color("00e5ff", alpha)
+		if combo >= 10:
+			col = Color("feae34", alpha)
+		var thickness := 2.5 - prog * 1.5
+		draw_arc(Vector2.ZERO, radius, 0.0, TAU, 32, col, thickness)
+		draw_arc(Vector2.ZERO, radius * 0.6, 0.0, TAU, 20, Color(col.r, col.g, col.b, alpha * 0.35), 1.0)
