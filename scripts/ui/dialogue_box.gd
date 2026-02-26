@@ -47,7 +47,7 @@ const SPEAKER_NAMES := {
 	"hazime": "はじめ",
 	"packii": "パッキー",
 	"salaryman": "サラリーマン",
-	"toki_kotetsu": "土岐鋼鉄(ときこうてつ)",
+	"nagumo": "南雲修二(なぐもしゅうじ)",
 	"maezono": "前園壮一郎(まえぞのそういちろう)",
 	"kirishima": "霧島レン(きりしまれん)",
 	"takiguchi": "焚口ショウ(たきぐちしょう)",

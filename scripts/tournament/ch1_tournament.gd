@@ -30,7 +30,7 @@ const RANDOM_JUDGES := [
 ]
 
 const STANCE_PREFERENCE := {
-	"toki_kotetsu": "tech",
+	"nagumo": "tech",
 	"shiramine": "honest",
 	"maezono": "aggressive",
 	"kirishima": "heart",
@@ -38,7 +38,7 @@ const STANCE_PREFERENCE := {
 
 const REBUTTAL_PROMPTS := [
 	{
-		"question": "土岐: 火力が強すぎるんじゃないか？",
+		"question": "南雲:火力が強すぎるんじゃないか？",
 		"best": "reframe",
 	},
 	{
@@ -72,53 +72,79 @@ const MIND_BARRAGE_WORDS := [
 	"その個性、ただの自己満足では？",
 ]
 
+## 弾幕演出強化定数（ch1: 地方大会 — 基本難易度）
+const MIND_GRAZE_DISTANCE := 38.0
+const MIND_GRAZE_FOCUS_BONUS := 3
+const MIND_GRAZE_TIME_REDUCTION := 0.18  ## グレイズ1回あたり耐久時間を短縮する秒数
+const MIND_FOCUS_SPEED_MULT := 0.42
+const MIND_FOCUS_HITBOX_MULT := 0.4
+const MIND_COMBO_DECAY_TIME := 2.5
+const MIND_TRAIL_LENGTH := 6
+const MIND_PATTERN_SPREAD_COUNT := 5
+const MIND_PATTERN_BURST_COUNT := 8
+const MIND_BASE_BULLET_SPEED_BONUS := 0.0  ## 章補正: 弾速加算
+const MIND_SPAWN_INTERVAL_MULT := 1.0  ## 章補正: スポーン間隔倍率（低い=難しい）
+const MIND_PHASE_SPEED_SCALING := 80.0  ## 後半ほど速くなる係数
+
 ## 弾幕ワード: 主人公の内なる不安
 const MIND_WORDS_ANXIETY := [
 	"失敗したらどうしよう",
 	"手が震えてる…",
-	"この配合で本当に良かったのか？",
-	"もっと練習すべきだった",
-	"自分なんかがここにいていいのか",
+	"この配合で良かったのか",
+	"練習が足りなかった",
+	"自分がここにいていいのか",
 	"スミさんに合わせる顔がない",
-	"才能がないのかもしれない",
-	"ここまで来たの、なんとなくじゃないか？",
-	"もっと甘くすべきだった？",
-	"安全策に寄せた方がよくないか？",
-	"この配合、攻めすぎじゃないか？",
-	"前に失敗した時と同じ流れだ",
-	"「無難」に逃げた方がよかったか？",
-	"全部中途半端なんじゃないか",
-	"本気でやってるつもりなだけ？",
-	"結局バイトの延長でしょ",
-	"うまくいくわけがない",
-	"なんで出場なんてしたんだろう",
+	"才能がないのかも",
+	"なんとなくで来ただけだ",
+	"甘くすべきだった？",
+	"安全策に逃げたい",
+	"攻めすぎたかも",
+	"前と同じ失敗をする",
+	"無難に逃げればよかった",
+	"全部中途半端だ",
+	"本気のつもりなだけだ",
+	"バイトの延長でしょ",
+	"うまくいくわけない",
+	"なんで出場したんだろう",
+	"場違いだ",
+	"周りが全員上に見える",
+	"指先が冷たい",
+	"息が浅くなってる",
+	"頭が真っ白になりそう",
+	"逃げ出したい",
+	"誰にも期待されてない",
 ]
 ## 弾幕ワード: 観客の声（主人公を不安にさせるもの）
 const MIND_WORDS_AUDIENCE := [
-	"この大会はアダムの優勝で決まりだな",
-	"組長のシーシャ、すげー煙だったな",
-	"なるさんの配合、さすがだった",
+	"アダムの優勝で決まりだな",
+	"組長の煙、すげーよな",
 	"あの新人、大丈夫かな…",
-	"初出場でこの面子は厳しいでしょ",
-	"アダムって海外で修行してたんだって",
-	"組長の人気投票、断トツらしいよ",
-	"なるさん、去年も上位だったよね",
-	"やっぱ経験の差が出るよな",
-	"あの子の配合、ちょっと地味じゃない？",
-	"土岐さんの好みとは違うタイプだよな",
-	"前園審査員、甘い評価はしないぞ",
+	"初出場であの面子は厳しい",
+	"アダムって海外修行してたんだって",
+	"組長の人気投票、断トツらしい",
+	"やっぱ経験の差出るよな",
+	"あの配合、地味じゃない？",
+	"前園審査員、甘くないぞ",
+	"なるの煙、勢いあったな",
+	"みんとの配合、完成度高い",
+	"あの子、手震えてない？",
+	"新人枠って感じだよな",
+	"南雲審査員長、厳しいよ",
 ]
 ## 弾幕ワード: 対戦相手への畏怖
 const MIND_WORDS_RIVAL := [
-	"あいつの方が評価高そう",
-	"審査員、これ嫌いじゃないか？",
-	"前のラウンド、負けてるぞ",
-	"その個性、ただの自己満足では？",
-	"アダムの技術には敵わない",
+	"あいつの方が評価高い",
+	"審査員に嫌われてない？",
+	"前のラウンド、負けてる",
+	"ただの自己満足では？",
+	"アダムの技術に敵わない",
 	"組長のセンスが羨ましい",
-	"なるさんの安定感、真似できない",
-	"ライバルたちは本気だ",
+	"なるの勢いに勝てない",
+	"みんとの余裕が眩しい",
+	"ライバルは本気だ",
 	"みんな自分より上手い",
+	"お前の煙、薄くない？",
+	"所詮バイトの素人でしょ",
 ]
 
 ## MCパッキーの実況コメント（ステップ番号をキーにランダム選択）
@@ -129,33 +155,33 @@ const MC_COMMENTS := {
 	],
 	2: [
 		"MCパッキー「フレーバー選択！ テーマに合わせるか、自分の得意で勝負するか」",
-		"土岐「テーマの解釈に個性が出る。配合にはその人の哲学が見える」",
+		"南雲「テーマの解釈に個性が出る。配合にはその人の哲学が見える」",
 	],
 	3: [
 		"MCパッキー「パッキングの時間です！ 12gをどう配分するか」",
-		"土岐「パッキングの密度、配置…全てが結果に出る」",
+		"南雲「パッキングの密度、配置…全てが結果に出る」",
 	],
 	4: [
 		"MCパッキー「アルミ穴あけ！ 等間隔で穴を開けられるかが勝負の分かれ目！」",
-		"土岐「穴の開け方一つで吸い心地が変わる。丁寧に、だがリズムよく」",
+		"南雲「穴の開け方一つで吸い心地が変わる。丁寧に、だがリズムよく」",
 	],
 	5: [
 		"MCパッキー「炭の準備！ フリップのタイミングが鍵です」",
 	],
 	6: [
 		"MCパッキー「炭配置！ 何個置くかも戦略のうち」",
-		"土岐「火力のコントロール…これがシーシャの脇だ」",
+		"南雲「火力のコントロール…これがシーシャの脇だ」",
 	],
 	7: [
 		"MCパッキー「蒸らしの時間です… ここは我慢比べ！」",
-		"土岐「蒸らしの分数で勝負は大きく変わる」",
+		"南雲「蒸らしの分数で勝負は大きく変わる」",
 	],
 	8: [
 		"MCパッキー「吸い出し前の精神戦…！ 選手たちの心の中はどうなってるかな」",
 	],
 	9: [
 		"MCパッキー「吸い出し！ ここで煙の質が決まります！」",
-		"土岐「一口目の吸い出しがすべてを物語る」",
+		"南雲「一口目の吸い出しがすべてを物語る」",
 	],
 	10: [
 		"MCパッキー「提供の時間！ 審査員が吸います！」",
@@ -165,7 +191,7 @@ const MC_COMMENTS := {
 	],
 	12: [
 		"MCパッキー「プレゼンテーション！ 自分のシーシャをどうアピールするか」",
-		"土岐「味だけではない。見せ方にも志が要る」",
+		"南雲「味だけではない。見せ方にも志が要る」",
 	],
 	13: [
 		"MCパッキー「反論タイム！ 審査員の疑問にどう答えるか！」",
@@ -175,7 +201,7 @@ const MC_COMMENTS := {
 	],
 	15: [
 		"MCパッキー「さあ、運命の最終発表です！」",
-		"土岐「どの選手もよく戦った。だが順位はつく」",
+		"南雲「どの選手もよく戦った。だが順位はつく」",
 	],
 }
 const TEMP_MIN := 140.0
@@ -187,7 +213,7 @@ const PRESENTATION_FOCUS_OPTIONS := [
 	{"id": "unique", "name": "個性"},
 ]
 const JUDGE_FOCUS_PREFERENCES := {
-	"toki_kotetsu": ["taste", "smoke"],
+	"nagumo": ["taste", "smoke"],
 	"shiramine": ["ease", "taste"],
 	"maezono": ["smoke", "unique"],
 	"kirishima": ["unique", "ease"],
@@ -288,6 +314,24 @@ var _mind_move_right: bool = false
 var _mind_move_up: bool = false
 var _mind_move_down: bool = false
 var _mind_invincible_timer: float = 0.0
+var _mind_graze_count: int = 0
+var _mind_focus_mode: bool = false
+var _mind_combo: int = 0
+var _mind_max_combo: int = 0
+var _mind_combo_timer: float = 0.0
+var _mind_dodged_count: int = 0
+var _mind_trail_nodes: Array = []
+var _mind_particles: Array[Dictionary] = []
+var _mind_screen_shake: float = 0.0
+var _mind_player_draw_node: Control = null
+var _mind_hitbox_indicator: Control = null
+var _mind_combo_label: Label = null
+var _mind_graze_label: Label = null
+var _mind_phase_flash: float = 0.0
+var _mind_last_phase: int = 0
+var _mind_particle_layer: Control = null
+var _mind_arena_grid: Control = null
+var _mind_nearest_bullet_dist: float = 9999.0
 var _aluminum_timer: Timer
 var _aluminum_active: bool = false
 var _aluminum_slot_count: int = 12
@@ -328,7 +372,7 @@ const SPEAKER_NAMES := {
 	"adam": "アダム",
 	"minto": "眠都(みんと)",
 	"takiguchi": "MC 焚口",
-	"toki_kotetsu": "土岐鋼鉄",
+	"nagumo": "南雲修二",
 	"maezono": "前園壮一郎"
 }
 
@@ -1533,10 +1577,13 @@ func _show_mind_barrage_intro(summary_text: String = "") -> void:
 	lines.append("弾を避ける = 他人の価値観をかわす")
 	lines.append("当たる = 心がブレる（評価デバフ）")
 	lines.append("耐えきる = 自分のレシピを信じ切る")
-	lines.append("成績が良いほど、この後の吸い出しゲージは遅くなる。")
+	lines.append("")
+	lines.append("[集中モード] Shift / Z 長押し: 低速移動＋判定縮小")
+	lines.append("[グレイズ] 弾をギリギリで避けると集中度UP＋残り時間が短縮")
+	lines.append("[コンボ] 連続回避でコンボが溜まり、評価に加算")
+	lines.append("")
 	lines.append("蒸らし %d分 -> 耐久 %.1f秒" % [_steam_minutes, duration_sec])
 	lines.append("残機: %d（0になると吸い出しゲージは最悪速度）" % lives)
-	lines.append("この精神戦は必須。終えるまで吸い出しへは進めない。")
 	info_label.text = "\n".join(lines)
 	_add_choice_button("弾幕開始", _start_mind_barrage_step)
 	_refresh_side_panel()
@@ -1596,9 +1643,23 @@ func _start_mind_barrage_step() -> void:
 	_mind_move_up = false
 	_mind_move_down = false
 	_mind_invincible_timer = 0.0
+	# 新システム初期化
+	_mind_graze_count = 0
+	_mind_focus_mode = false
+	_mind_combo = 0
+	_mind_max_combo = 0
+	_mind_combo_timer = 0.0
+	_mind_dodged_count = 0
+	_mind_trail_nodes.clear()
+	_mind_particles.clear()
+	_mind_screen_shake = 0.0
+	_mind_phase_flash = 0.0
+	_mind_last_phase = 0
 
 	var guide = Label.new()
-	guide.text = "操作: 矢印キー / WASD（下のボタン長押しでも移動）"
+	guide.text = "移動: 矢印キー / WASD    集中: Shift / Z（低速+判定縮小）"
+	guide.add_theme_font_size_override("font_size", 13)
+	guide.add_theme_color_override("font_color", Color("ead4aa", 0.7))
 	choice_container.add_child(guide)
 
 	# 横並びレイアウト: 左にはじめの顔 + 右にアリーナ
@@ -1609,7 +1670,7 @@ func _start_mind_barrage_step() -> void:
 
 	# はじめの顔パネル
 	var face_panel = VBoxContainer.new()
-	face_panel.custom_minimum_size = Vector2(100, 260)
+	face_panel.custom_minimum_size = Vector2(100, 290)
 	face_panel.add_theme_constant_override("separation", 6)
 	mind_hbox.add_child(face_panel)
 
@@ -1618,7 +1679,6 @@ func _start_mind_barrage_step() -> void:
 	face_rect.custom_minimum_size = Vector2(96, 96)
 	face_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 	face_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	# 初期表情: normal
 	var face_path = "res://assets/sprites/characters/chr_hajime_normal.png"
 	if ResourceLoader.exists(face_path):
 		face_rect.texture = load(face_path)
@@ -1634,34 +1694,75 @@ func _start_mind_barrage_step() -> void:
 	face_label.custom_minimum_size = Vector2(96, 0)
 	face_panel.add_child(face_label)
 
+	# コンボ表示ラベル
+	_mind_combo_label = Label.new()
+	_mind_combo_label.name = "MindComboLabel"
+	_mind_combo_label.text = ""
+	_mind_combo_label.add_theme_font_size_override("font_size", 16)
+	_mind_combo_label.add_theme_color_override("font_color", Color("feae34"))
+	_mind_combo_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_mind_combo_label.custom_minimum_size = Vector2(96, 0)
+	face_panel.add_child(_mind_combo_label)
+
+	# グレイズ表示ラベル
+	_mind_graze_label = Label.new()
+	_mind_graze_label.name = "MindGrazeLabel"
+	_mind_graze_label.text = ""
+	_mind_graze_label.add_theme_font_size_override("font_size", 12)
+	_mind_graze_label.add_theme_color_override("font_color", Color("00e5ff", 0.8))
+	_mind_graze_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_mind_graze_label.custom_minimum_size = Vector2(96, 0)
+	face_panel.add_child(_mind_graze_label)
+
 	var arena_frame = PanelContainer.new()
-	arena_frame.custom_minimum_size = Vector2(0, 260)
+	arena_frame.custom_minimum_size = Vector2(0, 290)
 	arena_frame.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	mind_hbox.add_child(arena_frame)
 
 	var arena = ColorRect.new()
 	arena.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	arena.color = Color("181425", 0.95)
+	arena.color = Color("0a0a14", 0.97)  # ネオンが映えるよう深い暗黒
 	arena.clip_contents = true
 	arena.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	arena_frame.add_child(arena)
 	_mind_arena_layer = arena
 
-	# アリーナ枠線（バーミリオン）
+	# アリーナ背景グリッド
+	var grid = _MindArenaGrid.new()
+	grid.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	grid.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	arena.add_child(grid)
+	_mind_arena_grid = grid
+
+	# アリーナ枠線（バーミリオン + グロー）
 	var arena_border = ReferenceRect.new()
 	arena_border.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	arena_border.border_color = Color("e43b44", 0.5)
+	arena_border.border_color = Color("e43b44", 0.6)
 	arena_border.border_width = 2.0
 	arena_border.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	arena.add_child(arena_border)
 
-	var player = ColorRect.new()
-	player.color = Color("e43b44")
-	player.size = _mind_player_size
-	player.custom_minimum_size = _mind_player_size
-	player.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	arena.add_child(player)
-	_mind_player_node = player
+	# パーティクルレイヤー（弾の下に配置）
+	_mind_particle_layer = Control.new()
+	_mind_particle_layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_mind_particle_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	arena.add_child(_mind_particle_layer)
+
+	# プレイヤー: ダイヤモンド型魂ノード
+	var soul = _MindSoulNode.new()
+	soul.size = _mind_player_size * 3.0
+	soul.custom_minimum_size = _mind_player_size * 3.0
+	soul.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	arena.add_child(soul)
+	_mind_player_draw_node = soul
+	# 旧互換用（_sync_mind_player_nodeで使う）
+	_mind_player_node = ColorRect.new()
+	_mind_player_node.color = Color("e43b44", 0.0)
+	_mind_player_node.size = _mind_player_size
+	_mind_player_node.custom_minimum_size = _mind_player_size
+	_mind_player_node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_mind_player_node.visible = false
+	arena.add_child(_mind_player_node)
 
 	# フェーズ名表示ラベル
 	var phase_hint = Label.new()
@@ -1674,6 +1775,7 @@ func _start_mind_barrage_step() -> void:
 	phase_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	arena.add_child(phase_hint)
 
+	# D-Pad操作ボタン
 	var dpad = GridContainer.new()
 	dpad.columns = 3
 	dpad.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
@@ -1686,6 +1788,8 @@ func _start_mind_barrage_step() -> void:
 	_add_mind_direction_button(dpad, "←", "left")
 	var center = Label.new()
 	center.text = "SOUL"
+	center.add_theme_font_size_override("font_size", 12)
+	center.add_theme_color_override("font_color", Color("e43b44", 0.8))
 	center.custom_minimum_size = Vector2(56, 40)
 	center.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	center.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -1761,30 +1865,83 @@ func _on_mind_barrage_tick() -> void:
 	if _mind_hit_se_cooldown > 0.0:
 		_mind_hit_se_cooldown = max(0.0, _mind_hit_se_cooldown - dt)
 
+	# フォーカスモード判定（Shift / Z）
+	_mind_focus_mode = Input.is_key_pressed(KEY_SHIFT) or Input.is_key_pressed(KEY_Z)
+	if _mind_player_draw_node != null and is_instance_valid(_mind_player_draw_node):
+		(_mind_player_draw_node as _MindSoulNode).focus_mode_active = _mind_focus_mode
+
+	# 無敵時間処理
 	if _mind_invincible_timer > 0.0:
 		_mind_invincible_timer -= dt
-		if _mind_player_node != null and is_instance_valid(_mind_player_node):
-			# Blink effect: alternating alpha every 0.1 seconds
-			var time_ms = Time.get_ticks_msec()
-			_mind_player_node.color.a = 0.3 if (time_ms % 200) < 100 else 0.8
-	elif _mind_player_node != null and is_instance_valid(_mind_player_node):
-		_mind_player_node.color.a = 1.0
+		if _mind_player_draw_node != null and is_instance_valid(_mind_player_draw_node):
+			(_mind_player_draw_node as _MindSoulNode).invincible = true
+	else:
+		if _mind_player_draw_node != null and is_instance_valid(_mind_player_draw_node):
+			(_mind_player_draw_node as _MindSoulNode).invincible = false
+
+	# コンボタイマー減衰
+	if _mind_combo_timer > 0.0:
+		_mind_combo_timer -= dt
+		if _mind_combo_timer <= 0.0:
+			_mind_combo = 0
+
+	# 画面シェイク減衰
+	if _mind_screen_shake > 0.0:
+		_mind_screen_shake = maxf(0.0, _mind_screen_shake - dt * 8.0)
+		if _mind_arena_layer != null and is_instance_valid(_mind_arena_layer):
+			var shake_offset = Vector2(
+				randf_range(-_mind_screen_shake, _mind_screen_shake) * 3.0,
+				randf_range(-_mind_screen_shake, _mind_screen_shake) * 3.0
+			)
+			_mind_arena_layer.position = shake_offset
+	elif _mind_arena_layer != null and is_instance_valid(_mind_arena_layer):
+		_mind_arena_layer.position = Vector2.ZERO
+
+	# フェーズフラッシュ減衰
+	if _mind_phase_flash > 0.0:
+		_mind_phase_flash = maxf(0.0, _mind_phase_flash - dt * 3.0)
 
 	_update_mind_player(dt)
+	_update_mind_trail()
+	_update_mind_particles(dt)
+
+	# コンボ・グレイズ表示更新
+	_update_mind_combo_display()
 
 	if _mind_spawn_cooldown <= 0.0:
 		_spawn_mind_barrage_word()
 		# 難易度スケーリング: 後半ほどスポーン間隔が短くなる
 		var progress = clampf(_mind_elapsed / maxf(_mind_duration_total, 1.0), 0.0, 1.0)
-		var phase_interval_mult = lerpf(1.0, 0.6, progress)  # 後半は40%短く
-		_mind_spawn_cooldown = _mind_spawn_interval * randf_range(0.72, 1.25) * phase_interval_mult
+		var phase_interval_mult = lerpf(1.0, 0.55, progress)
+		_mind_spawn_cooldown = _mind_spawn_interval * randf_range(0.72, 1.25) * phase_interval_mult * MIND_SPAWN_INTERVAL_MULT
 
 		# アリーナの色を時間経過で変化
 		if _mind_arena_layer != null and is_instance_valid(_mind_arena_layer):
 			var dark_color = Color("181425", 0.95).lerp(Color("2a1520", 0.95), progress)
 			_mind_arena_layer.color = dark_color
 
+		# グリッドのフェーズ進行更新
+		if _mind_arena_grid != null and is_instance_valid(_mind_arena_grid):
+			(_mind_arena_grid as _MindArenaGrid).phase_progress = progress
+
+		# フェーズ遷移エフェクト
+		var current_phase = 0
+		if progress >= 0.7:
+			current_phase = 2
+		elif progress >= 0.35:
+			current_phase = 1
+		if current_phase != _mind_last_phase:
+			_mind_last_phase = current_phase
+			_mind_phase_flash = 1.0
+			_mind_phase_transition_effect()
+
 	_update_mind_bullets(dt)
+
+	# Soul ノード: グレイズ近接度更新（graze_flash_t は _MindSoulNode._process で減衰）
+	if _mind_player_draw_node != null and is_instance_valid(_mind_player_draw_node):
+		var soul = _mind_player_draw_node as _MindSoulNode
+		soul.graze_near_t = clampf(1.0 - _mind_nearest_bullet_dist / (MIND_GRAZE_DISTANCE * 1.5), 0.0, 1.0)
+
 	if _mind_lives_remaining <= 0:
 		_mind_elapsed = _mind_duration_total
 		_update_mind_barrage_info_text()
@@ -1815,6 +1972,9 @@ func _update_mind_player(dt: float) -> void:
 	var speed = 214.0 + float(maxi(_steam_minutes - 5, 0)) * 4.0
 	if _easy_mode:
 		speed += 20.0
+	# フォーカスモード: 低速移動
+	if _mind_focus_mode:
+		speed *= MIND_FOCUS_SPEED_MULT
 	_mind_player_pos += axis * speed * dt
 
 	var arena_size = _mind_arena_layer.size
@@ -1832,24 +1992,15 @@ func _spawn_mind_barrage_word() -> void:
 	if arena_size.x < 80.0 or arena_size.y < 80.0:
 		return
 
-	# フェーズに応じてワードカテゴリを重み付き抽選
 	var progress = clampf(_mind_elapsed / maxf(_mind_duration_total, 1.0), 0.0, 1.0)
 	var category_data = _pick_barrage_category(progress)
 	var word_pool: Array = category_data.get("pool", MIND_BARRAGE_WORDS)
 	var word_color: Color = category_data.get("color", Color("e43b44", 0.85))
 	var phase_name: String = category_data.get("phase", "")
+	var pattern_type: String = category_data.get("pattern", "aimed")
 
 	if word_pool.is_empty():
 		word_pool = MIND_BARRAGE_WORDS
-
-	var phrase = str(word_pool[randi() % word_pool.size()])
-	var bullet = Label.new()
-	bullet.text = phrase
-	var font_size = 20 + (4 if progress > 0.7 else 0)
-	bullet.add_theme_font_size_override("font_size", font_size)
-	bullet.modulate = word_color
-	bullet.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_mind_arena_layer.add_child(bullet)
 
 	# フェーズ名の更新
 	if phase_name != "":
@@ -1857,102 +2008,237 @@ func _spawn_mind_barrage_word() -> void:
 		if hint_node != null and hint_node is Label:
 			hint_node.text = phase_name
 
-	var size = bullet.get_combined_minimum_size()
-	if size.x < 40.0:
-		size = Vector2(maxi(40, phrase.length() * 20), 28)
+	# パターンに応じた弾の生成
+	match pattern_type:
+		"spread":
+			_spawn_pattern_spread(word_pool, word_color, progress, arena_size)
+		"burst":
+			_spawn_pattern_burst(word_pool, word_color, progress, arena_size)
+		"cross":
+			_spawn_pattern_cross(word_pool, word_color, progress, arena_size)
+		_:
+			_spawn_pattern_aimed(word_pool, word_color, progress, arena_size)
+
+
+## 狙撃パターン（基本）: プレイヤーを狙う1発
+func _spawn_pattern_aimed(word_pool: Array, word_color: Color, progress: float, arena_size: Vector2) -> void:
+	var phrase = str(word_pool[randi() % word_pool.size()])
+	var bullet = _create_bullet_label(phrase, word_color, progress)
+	var size = _get_bullet_size(bullet, phrase)
 
 	var side = randi() % 4
-	var spawn = Vector2.ZERO
-	match side:
-		0:
-			spawn = Vector2(randf_range(0.0, arena_size.x), -size.y * 0.5 - 4.0)
-		1:
-			spawn = Vector2(arena_size.x + size.x * 0.5 + 4.0, randf_range(0.0, arena_size.y))
-		2:
-			spawn = Vector2(randf_range(0.0, arena_size.x), arena_size.y + size.y * 0.5 + 4.0)
-		_:
-			spawn = Vector2(-size.x * 0.5 - 4.0, randf_range(0.0, arena_size.y))
+	var spawn = _get_edge_spawn(side, arena_size, size)
 
 	var target = _mind_player_pos + Vector2(randf_range(-64.0, 64.0), randf_range(-42.0, 42.0))
 	target.x = clampf(target.x, 20.0, arena_size.x - 20.0)
 	target.y = clampf(target.y, 20.0, arena_size.y - 20.0)
-	var to_target = target - spawn
-	if to_target.length_squared() <= 0.0001:
-		to_target = Vector2.DOWN
-	var direction = to_target.normalized()
+	var direction = (target - spawn).normalized()
+	if direction.length_squared() < 0.001:
+		direction = Vector2.DOWN
 
-	# 難易度スケーリング: 時間経過でスピードが上がる
+	var base_speed = _calc_bullet_speed(progress)
+	_register_bullet(bullet, spawn, direction * base_speed, size)
+
+
+## 扇形パターン: 1辺から扇状に複数弾
+func _spawn_pattern_spread(word_pool: Array, word_color: Color, progress: float, arena_size: Vector2) -> void:
+	var side = randi() % 4
+	var count = MIND_PATTERN_SPREAD_COUNT
+	var spread_angle = deg_to_rad(60.0)
+	var center_target = _mind_player_pos
+	for i in range(count):
+		var phrase = str(word_pool[randi() % word_pool.size()])
+		var bullet = _create_bullet_label(phrase, word_color, progress)
+		var size = _get_bullet_size(bullet, phrase)
+		var spawn = _get_edge_spawn(side, arena_size, size)
+		var base_dir = (center_target - spawn).normalized()
+		if base_dir.length_squared() < 0.001:
+			base_dir = Vector2.DOWN
+		var angle_offset = lerpf(-spread_angle * 0.5, spread_angle * 0.5, float(i) / float(maxi(count - 1, 1)))
+		var dir = base_dir.rotated(angle_offset)
+		var base_speed = _calc_bullet_speed(progress) * randf_range(0.85, 1.1)
+		_register_bullet(bullet, spawn, dir * base_speed, size)
+
+
+## 放射パターン: アリーナ内の点から全方位に弾を放出
+func _spawn_pattern_burst(word_pool: Array, word_color: Color, progress: float, arena_size: Vector2) -> void:
+	var count = MIND_PATTERN_BURST_COUNT
+	var center = Vector2(randf_range(arena_size.x * 0.2, arena_size.x * 0.8), randf_range(arena_size.y * 0.2, arena_size.y * 0.8))
+	# 放射の起点にフラッシュエフェクト
+	_spawn_burst_flash(center)
+	for i in range(count):
+		var phrase = str(word_pool[randi() % word_pool.size()])
+		var bullet = _create_bullet_label(phrase, word_color, progress)
+		var size = _get_bullet_size(bullet, phrase)
+		var angle = TAU * float(i) / float(count) + randf_range(-0.1, 0.1)
+		var dir = Vector2(cos(angle), sin(angle))
+		var base_speed = _calc_bullet_speed(progress) * randf_range(0.7, 1.0)
+		_register_bullet(bullet, center, dir * base_speed, size)
+
+
+## 十字パターン: 四方から同時に弾が来る
+func _spawn_pattern_cross(word_pool: Array, word_color: Color, progress: float, arena_size: Vector2) -> void:
+	for side in range(4):
+		var phrase = str(word_pool[randi() % word_pool.size()])
+		var bullet = _create_bullet_label(phrase, word_color, progress)
+		var size = _get_bullet_size(bullet, phrase)
+		var spawn = _get_edge_spawn(side, arena_size, size)
+		var target = _mind_player_pos + Vector2(randf_range(-30.0, 30.0), randf_range(-20.0, 20.0))
+		var dir = (target - spawn).normalized()
+		if dir.length_squared() < 0.001:
+			dir = Vector2.DOWN
+		var base_speed = _calc_bullet_speed(progress) * 0.9
+		_register_bullet(bullet, spawn, dir * base_speed, size)
+
+
+## 弾ラベル生成ヘルパー
+func _create_bullet_label(phrase: String, color: Color, progress: float) -> Label:
+	var bullet = Label.new()
+	bullet.text = phrase
+	var font_size = 18 + (4 if progress > 0.7 else (2 if progress > 0.35 else 0))
+	bullet.add_theme_font_size_override("font_size", font_size)
+	bullet.modulate = color
+	# ネオンアウトライン: 言葉がネオン管のように光る
+	bullet.add_theme_color_override("font_outline_color", Color(color.r, color.g, color.b, 0.45))
+	bullet.add_theme_constant_override("outline_size", 3)
+	bullet.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_mind_arena_layer.add_child(bullet)
+	return bullet
+
+
+## 弾サイズ取得ヘルパー
+func _get_bullet_size(bullet: Label, phrase: String) -> Vector2:
+	var size = bullet.get_combined_minimum_size()
+	if size.x < 40.0:
+		size = Vector2(maxi(40, phrase.length() * 20), 28)
+	return size
+
+
+## 辺からのスポーン位置ヘルパー
+func _get_edge_spawn(side: int, arena_size: Vector2, bullet_size: Vector2) -> Vector2:
+	match side:
+		0:
+			return Vector2(randf_range(0.0, arena_size.x), -bullet_size.y * 0.5 - 4.0)
+		1:
+			return Vector2(arena_size.x + bullet_size.x * 0.5 + 4.0, randf_range(0.0, arena_size.y))
+		2:
+			return Vector2(randf_range(0.0, arena_size.x), arena_size.y + bullet_size.y * 0.5 + 4.0)
+		_:
+			return Vector2(-bullet_size.x * 0.5 - 4.0, randf_range(0.0, arena_size.y))
+
+
+## 弾速計算ヘルパー
+func _calc_bullet_speed(progress: float) -> float:
 	var base_speed = 112.0 + float(_steam_minutes - 5) * 14.0 + float(abs(_heat_state)) * 9.0 + randf_range(0.0, 54.0)
-	var phase_speed_bonus = progress * 80.0  # 後半ほど速く
-	base_speed += phase_speed_bonus
+	base_speed += progress * MIND_PHASE_SPEED_SCALING
+	base_speed += MIND_BASE_BULLET_SPEED_BONUS
 	if _selected_hms == "amaburst":
 		base_speed += 12.0
 	elif _selected_hms == "tanukish_lid":
 		base_speed -= 8.0
 	if _easy_mode:
 		base_speed -= 20.0
-	base_speed = clampf(base_speed, 90.0, 320.0)
+	return clampf(base_speed, 90.0, 380.0)
 
+
+## 弾登録ヘルパー
+func _register_bullet(bullet: Label, spawn: Vector2, vel: Vector2, size: Vector2) -> void:
 	var data := {
 		"node": bullet,
 		"pos": spawn,
-		"vel": direction * base_speed,
+		"vel": vel,
 		"size": size,
+		"grazed": false,
+		"base_modulate": bullet.modulate,  # グレイズグロー復元用
+		"graze_glow": 0.0,
 	}
 	_mind_bullets.append(data)
 	_mind_spawned += 1
 	bullet.position = spawn - size * 0.5
 
 
-## 弾幕カテゴリ選択（時間経過でフェーズ遷移）
+## 放射パターンの中心フラッシュ
+func _spawn_burst_flash(center: Vector2) -> void:
+	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
+		return
+	var flash = ColorRect.new()
+	flash.color = Color("feae34", 0.4)
+	flash.size = Vector2(24, 24)
+	flash.position = center - Vector2(12, 12)
+	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_mind_arena_layer.add_child(flash)
+	var tween = create_tween()
+	tween.tween_property(flash, "modulate:a", 0.0, 0.3)
+	tween.parallel().tween_property(flash, "scale", Vector2(3.0, 3.0), 0.3)
+	tween.parallel().tween_property(flash, "position", center - Vector2(36, 36), 0.3)
+	tween.tween_callback(flash.queue_free)
+
+
+## 弾幕カテゴリ選択（時間経過でフェーズ遷移 + パターン抽選）
 func _pick_barrage_category(progress: float) -> Dictionary:
 	if progress < 0.35:
-		# Phase 1: 内なる不安（静かな立ち上がり）
+		# Phase 1: 内なる不安（静かな立ち上がり）- 基本の狙撃パターン
 		return {
 			"pool": MIND_WORDS_ANXIETY,
 			"color": Color("8b9bb4", 0.9),
 			"phase": "― 不安が湧き上がる ―",
+			"pattern": "aimed",
 		}
 	elif progress < 0.7:
-		# Phase 2: 観客の声（外からのプレッシャー）
+		# Phase 2: 観客の声（外からのプレッシャー）- 扇形が混じる
+		var pattern = "aimed" if randf() < 0.6 else "spread"
 		if randf() < 0.6:
 			return {
 				"pool": MIND_WORDS_AUDIENCE,
 				"color": Color("feae34", 0.85),
 				"phase": "― 会場の声が聞こえる ―",
+				"pattern": pattern,
 			}
 		else:
 			return {
 				"pool": MIND_WORDS_ANXIETY,
 				"color": Color("8b9bb4", 0.9),
 				"phase": "― 会場の声が聞こえる ―",
+				"pattern": pattern,
 			}
 	else:
-		# Phase 3: ライバルへの畏怖 + 不安の最高潮
+		# Phase 3: ライバルへの畏怖 + 不安の最高潮 - 放射・十字が混じる
+		var pattern_roll = randf()
+		var pattern = "aimed"
+		if pattern_roll < 0.3:
+			pattern = "burst"
+		elif pattern_roll < 0.5:
+			pattern = "cross"
+		elif pattern_roll < 0.7:
+			pattern = "spread"
 		var roll = randf()
 		if roll < 0.4:
 			return {
 				"pool": MIND_WORDS_RIVAL,
 				"color": Color("e43b44", 0.9),
 				"phase": "― 心が折れそうだ ―",
+				"pattern": pattern,
 			}
 		elif roll < 0.7:
 			return {
 				"pool": MIND_WORDS_AUDIENCE,
 				"color": Color("feae34", 0.85),
 				"phase": "― 心が折れそうだ ―",
+				"pattern": pattern,
 			}
 		else:
 			return {
 				"pool": MIND_WORDS_ANXIETY,
 				"color": Color("e43b44", 0.9),
 				"phase": "― 心が折れそうだ ―",
+				"pattern": pattern,
 			}
 
 
 func _update_mind_bullets(dt: float) -> void:
 	if _mind_arena_layer == null:
 		return
+	_mind_nearest_bullet_dist = 9999.0  # 毎フレームリセット
 	var arena_size = _mind_arena_layer.size
 	for i in range(_mind_bullets.size() - 1, -1, -1):
 		var bullet = _mind_bullets[i]
@@ -1964,19 +2250,61 @@ func _update_mind_bullets(dt: float) -> void:
 		var size = bullet.get("size", node.get_combined_minimum_size())
 		bullet["pos"] = pos
 		node.position = pos - size * 0.5
+
+		# 距離を先に計算（near-glow・graze・nearest追跡に使う）
+		var dist = pos.distance_to(_mind_player_pos)
+		if dist < _mind_nearest_bullet_dist:
+			_mind_nearest_bullet_dist = dist
+
+		# 被弾判定
 		if _mind_invincible_timer <= 0.0 and _is_mind_barrage_collision(pos, size):
 			_mind_hits += 1
 			_mind_lives_remaining = maxi(0, _mind_lives_remaining - 1)
+			_mind_combo = 0
 			if _mind_hit_se_cooldown <= 0.0:
 				GameManager.play_ui_se("cancel")
 				_mind_hit_se_cooldown = 0.08
-			_mind_invincible_timer = 1.0 # 1 second of i-frames
+			_mind_invincible_timer = 1.0
 			_mind_hit_flash()
 			_mind_update_face()
+			_spawn_hit_particles(pos, 8, Color("e43b44"))
 			node.queue_free()
 			_mind_bullets.remove_at(i)
 			continue
+
+		# グレイズ判定（かすり）
+		if not bullet.get("grazed", false) and _mind_invincible_timer <= 0.0:
+			if dist < MIND_GRAZE_DISTANCE and not _is_mind_barrage_collision(pos, size):
+				bullet["grazed"] = true
+				bullet["graze_glow"] = 1.0
+				_mind_graze_count += 1
+				_mind_combo += 1
+				_mind_combo_timer = MIND_COMBO_DECAY_TIME
+				if _mind_combo > _mind_max_combo:
+					_mind_max_combo = _mind_combo
+				# グレイズ時間短縮
+				var time_cut = MIND_GRAZE_TIME_REDUCTION
+				if _mind_combo >= 10:
+					time_cut *= 1.5
+				_mind_elapsed = minf(_mind_elapsed + time_cut, _mind_duration_total - 0.3)
+				# ネオングレイズエフェクト
+				_spawn_graze_ring(pos, _mind_combo)
+				_spawn_graze_popup(_mind_player_pos, _mind_combo)
+				_spawn_graze_particles(pos, 8, Color("00e5ff"))
+				if _mind_player_draw_node != null and is_instance_valid(_mind_player_draw_node):
+					(_mind_player_draw_node as _MindSoulNode).graze_flash_t = 1.0
+
+		# ワード発光更新（近接グロー + グレイズグロー）
+		_update_bullet_glow(bullet, node, dist, dt)
+
+		# 画面外除去 + コンボ加算（回避成功）
 		if pos.x < -size.x - 24.0 or pos.x > arena_size.x + size.x + 24.0 or pos.y < -size.y - 24.0 or pos.y > arena_size.y + size.y + 24.0:
+			_mind_dodged_count += 1
+			if not bullet.get("grazed", false):
+				_mind_combo += 1
+				_mind_combo_timer = MIND_COMBO_DECAY_TIME
+				if _mind_combo > _mind_max_combo:
+					_mind_max_combo = _mind_combo
 			node.queue_free()
 			_mind_bullets.remove_at(i)
 			continue
@@ -1984,7 +2312,9 @@ func _update_mind_bullets(dt: float) -> void:
 
 
 func _is_mind_barrage_collision(bullet_pos: Vector2, bullet_size: Vector2) -> bool:
-	var player_rect = Rect2(_mind_player_pos - _mind_player_size * 0.25, _mind_player_size * 0.5)
+	var hitbox_mult = MIND_FOCUS_HITBOX_MULT if _mind_focus_mode else 1.0
+	var player_half = _mind_player_size * 0.25 * hitbox_mult
+	var player_rect = Rect2(_mind_player_pos - player_half, player_half * 2.0)
 	var bullet_rect = Rect2(bullet_pos - bullet_size * 0.2, bullet_size * 0.4)
 	return player_rect.intersects(bullet_rect)
 
@@ -1993,22 +2323,25 @@ func _sync_mind_player_node() -> void:
 	if _mind_player_node == null or not is_instance_valid(_mind_player_node):
 		return
 	_mind_player_node.position = _mind_player_pos - _mind_player_size * 0.5
+	# ダイヤモンドSoulノードの位置更新
+	if _mind_player_draw_node != null and is_instance_valid(_mind_player_draw_node):
+		_mind_player_draw_node.position = _mind_player_pos - _mind_player_draw_node.size * 0.5
 
 
 func _update_mind_barrage_info_text() -> void:
 	if not _mind_active:
 		return
 	var remain = max(0.0, _mind_duration_total - _mind_elapsed)
-	var focus = clampi(100 - _mind_hits * 12, 0, 100)
+	var graze_bonus = _mind_graze_count * MIND_GRAZE_FOCUS_BONUS
+	var focus = clampi(100 - _mind_hits * 12 + graze_bonus, 0, 150)
 	var ratio = 0.0
 	if _mind_duration_total > 0.0:
 		ratio = _mind_elapsed / _mind_duration_total
 	var lines: Array[String] = []
-	lines.append("残り %.1f秒 / %.1f秒" % [remain, _mind_duration_total])
-	lines.append("残機 %d / %d  %s" % [_mind_lives_remaining, _mind_lives_max, _build_mind_life_text()])
-	lines.append("被弾 %d / 出現 %d" % [_mind_hits, maxi(_mind_spawned, 1)])
-	lines.append("集中度 %d%%" % focus)
-	lines.append(_build_mind_barrage_progress_bar(ratio))
+	lines.append("残り %.1f秒  %s" % [remain, _build_mind_barrage_progress_bar(ratio)])
+	lines.append("残機 %s  集中度 %d%%" % [_build_mind_life_text(), focus])
+	var mode_text = "[集中]" if _mind_focus_mode else ""
+	lines.append("被弾 %d  回避 %d  GRAZE %d  %s" % [_mind_hits, _mind_dodged_count, _mind_graze_count, mode_text])
 	info_label.text = "\n".join(lines)
 
 
@@ -2020,11 +2353,20 @@ func _build_mind_life_text() -> String:
 
 
 func _build_mind_barrage_progress_bar(ratio: float) -> String:
-	var length = 24
+	var length = 20
 	var fill = int(round(clampf(ratio, 0.0, 1.0) * float(length)))
 	var chars: Array[String] = []
 	for i in range(length):
-		chars.append("■" if i < fill else "─")
+		if i < fill:
+			# フェーズに応じた色分け記号
+			if float(i) / float(length) < 0.35:
+				chars.append("▰")
+			elif float(i) / float(length) < 0.7:
+				chars.append("▰")
+			else:
+				chars.append("▰")
+		else:
+			chars.append("▱")
 	return "".join(chars)
 
 
@@ -2054,18 +2396,23 @@ func _finish_mind_barrage_step() -> void:
 	_heat_state = clampi(_heat_state + heat_shift, -3, 3)
 	_refresh_side_panel()
 	GameManager.play_ui_se("confirm" if delta_spec >= 0.0 else "cancel")
+	var graze_count = _mind_graze_count
+	var max_combo = _mind_max_combo
+	var dodged = _mind_dodged_count
 	_show_step_result_and_next(
-		"%s\n被弾 %d / 出現 %d\n専門 %+d / 一般 %+d\n吸い出し速度補正: %s" % [
+		"%s\n被弾 %d / 回避 %d / GRAZE %d / MAX COMBO %d\n専門 %+d / 一般 %+d\n吸い出し速度補正: %s" % [
 			result_text,
 			hit_count,
-			maxi(spawn_count, 1),
+			dodged,
+			graze_count,
+			max_combo,
 			int(round(delta_spec)),
 			int(round(delta_aud)),
 			_mind_pull_adjust_text(),
 		],
 		_show_pull_step
 	)
-	_append_info("残機 %d / %d / 吸い出し速度補正: %s" % [lives_remaining, lives_max, _mind_pull_adjust_text()])
+	_append_info("残機 %d/%d GRAZE %d COMBO %d 速度補正: %s" % [lives_remaining, lives_max, graze_count, max_combo, _mind_pull_adjust_text()])
 
 
 func _evaluate_mind_barrage_result() -> Dictionary:
@@ -2082,7 +2429,10 @@ func _evaluate_mind_barrage_result() -> Dictionary:
 
 	var pressure = float(_mind_hits) / float(maxi(_mind_spawned, 1))
 	var life_ratio = float(_mind_lives_remaining) / float(maxi(_mind_lives_max, 1))
-	var resilience = clampf(1.0 - pressure * 1.9 + life_ratio * 0.35, 0.0, 1.0)
+	# グレイズ・コンボボーナス: スキルプレイを評価に反映
+	var graze_bonus = clampf(float(_mind_graze_count) * 0.01, 0.0, 0.15)
+	var combo_bonus = clampf(float(_mind_max_combo) * 0.005, 0.0, 0.1)
+	var resilience = clampf(1.0 - pressure * 1.9 + life_ratio * 0.35 + graze_bonus + combo_bonus, 0.0, 1.0)
 	if _easy_mode:
 		resilience = min(1.0, resilience + 0.08)
 
@@ -2167,33 +2517,62 @@ func _stop_mind_barrage() -> void:
 		if node != null and is_instance_valid(node):
 			node.queue_free()
 	_mind_bullets.clear()
+	# トレイルノードのクリーンアップ
+	for trail_node in _mind_trail_nodes:
+		if trail_node != null and is_instance_valid(trail_node):
+			trail_node.queue_free()
+	_mind_trail_nodes.clear()
+	# パーティクルのクリーンアップ
+	for particle in _mind_particles:
+		var pnode = particle.get("node")
+		if pnode != null and is_instance_valid(pnode):
+			pnode.queue_free()
+	_mind_particles.clear()
 	if _mind_player_node != null and is_instance_valid(_mind_player_node):
 		_mind_player_node.queue_free()
 	_mind_player_node = null
+	if _mind_player_draw_node != null and is_instance_valid(_mind_player_draw_node):
+		_mind_player_draw_node.queue_free()
+	_mind_player_draw_node = null
 	_mind_arena_layer = null
+	_mind_arena_grid = null
+	_mind_particle_layer = null
+	_mind_combo_label = null
+	_mind_graze_label = null
 	_mind_move_left = false
 	_mind_move_right = false
 	_mind_move_up = false
 	_mind_move_down = false
 	_mind_hit_se_cooldown = 0.0
+	_mind_screen_shake = 0.0
 
 
 func _mind_hit_flash() -> void:
 	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
 		return
+	# 画面シェイク
+	_mind_screen_shake = 1.0
+	# 赤フラッシュ
 	var flash = ColorRect.new()
-	flash.color = Color("e43b44", 0.35)
+	flash.color = Color("e43b44", 0.45)
 	flash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_mind_arena_layer.add_child(flash)
 	var tween = create_tween()
-	tween.tween_property(flash, "color:a", 0.0, 0.2)
+	tween.tween_property(flash, "color:a", 0.0, 0.25)
 	tween.tween_callback(flash.queue_free)
-	# プレイヤーノードも一瞬白く
-	if _mind_player_node != null and is_instance_valid(_mind_player_node):
-		_mind_player_node.modulate = Color(1.0, 1.0, 1.0, 1.0)
-		var ptween = create_tween()
-		ptween.tween_property(_mind_player_node, "modulate", Color.WHITE, 0.15)
+	# 白フラッシュ（重ねる）
+	var white_flash = ColorRect.new()
+	white_flash.color = Color(1, 1, 1, 0.2)
+	white_flash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	white_flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_mind_arena_layer.add_child(white_flash)
+	var wt = create_tween()
+	wt.tween_property(white_flash, "color:a", 0.0, 0.1)
+	wt.tween_callback(white_flash.queue_free)
+	# Soulノードの被弾フラッシュ
+	if _mind_player_draw_node != null and is_instance_valid(_mind_player_draw_node):
+		(_mind_player_draw_node as _MindSoulNode).hit_flash = 1.0
 
 
 func _mind_update_face() -> void:
@@ -2232,6 +2611,202 @@ func _mind_update_face() -> void:
 	var label_node = choice_container.find_child("MindFaceLabel", true, false) as Label
 	if label_node != null:
 		label_node.text = chosen_text
+
+
+## 移動トレイル更新
+func _update_mind_trail() -> void:
+	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
+		return
+	# 新しいトレイルドットを追加
+	var trail_dot = ColorRect.new()
+	trail_dot.size = Vector2(4, 4) if not _mind_focus_mode else Vector2(3, 3)
+	trail_dot.color = Color("e43b44", 0.4) if not _mind_focus_mode else Color("00e5ff", 0.5)
+	trail_dot.position = _mind_player_pos - trail_dot.size * 0.5
+	trail_dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_mind_arena_layer.add_child(trail_dot)
+	_mind_trail_nodes.append(trail_dot)
+	# フェードアウトして消える
+	var tween = create_tween()
+	tween.tween_property(trail_dot, "modulate:a", 0.0, 0.25)
+	tween.tween_callback(func() -> void:
+		_mind_trail_nodes.erase(trail_dot)
+		trail_dot.queue_free()
+	)
+	# トレイルノード数の制限
+	while _mind_trail_nodes.size() > MIND_TRAIL_LENGTH * 3:
+		var old_node = _mind_trail_nodes.pop_front()
+		if old_node != null and is_instance_valid(old_node):
+			old_node.queue_free()
+
+
+## パーティクル更新
+func _update_mind_particles(dt: float) -> void:
+	for i in range(_mind_particles.size() - 1, -1, -1):
+		var p = _mind_particles[i]
+		var node = p.get("node")
+		if node == null or not is_instance_valid(node):
+			_mind_particles.remove_at(i)
+			continue
+		var life = p.get("life", 0.0) - dt
+		if life <= 0.0:
+			node.queue_free()
+			_mind_particles.remove_at(i)
+			continue
+		p["life"] = life
+		var pos = p.get("pos", Vector2.ZERO) + p.get("vel", Vector2.ZERO) * dt
+		p["pos"] = pos
+		node.position = pos
+		node.modulate.a = clampf(life / p.get("max_life", 1.0), 0.0, 1.0)
+		_mind_particles[i] = p
+
+
+## 被弾パーティクル生成
+func _spawn_hit_particles(center: Vector2, count: int, color: Color) -> void:
+	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
+		return
+	for i in range(count):
+		var dot = ColorRect.new()
+		dot.size = Vector2(3, 3)
+		dot.color = color
+		dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_mind_arena_layer.add_child(dot)
+		var angle = randf() * TAU
+		var speed = randf_range(60.0, 180.0)
+		var vel = Vector2(cos(angle), sin(angle)) * speed
+		var life = randf_range(0.2, 0.5)
+		_mind_particles.append({
+			"node": dot,
+			"pos": center,
+			"vel": vel,
+			"life": life,
+			"max_life": life,
+		})
+
+
+## グレイズパーティクル生成
+func _spawn_graze_particles(center: Vector2, count: int, color: Color) -> void:
+	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
+		return
+	for i in range(count):
+		var dot = ColorRect.new()
+		dot.size = Vector2(2, 2)
+		dot.color = color
+		dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_mind_arena_layer.add_child(dot)
+		var angle = randf() * TAU
+		var speed = randf_range(30.0, 90.0)
+		var vel = Vector2(cos(angle), sin(angle)) * speed
+		var life = randf_range(0.15, 0.35)
+		_mind_particles.append({
+			"node": dot,
+			"pos": center,
+			"vel": vel,
+			"life": life,
+			"max_life": life,
+		})
+
+
+## ワード発光更新（近接グロー + グレイズグロー）
+func _update_bullet_glow(bullet: Dictionary, node: Label, dist: float, dt: float) -> void:
+	if not is_instance_valid(node):
+		return
+	var base_col: Color = bullet.get("base_modulate", Color.WHITE)
+	var graze_glow: float = bullet.get("graze_glow", 0.0)
+
+	# グレイズグロー: 時間とともにフェードアウト（優先）
+	if graze_glow > 0.0:
+		graze_glow = maxf(0.0, graze_glow - dt * 2.5)
+		bullet["graze_glow"] = graze_glow
+		node.modulate = base_col.lerp(Color("00e5ff"), graze_glow)
+		return
+
+	# 近接グロー: GRAZE_DISTANCE * 1.8 以内でシアンへ
+	var near_zone := MIND_GRAZE_DISTANCE * 1.8
+	if dist < near_zone:
+		var t := clampf(1.0 - dist / near_zone, 0.0, 1.0)
+		node.modulate = base_col.lerp(Color("00e5ff"), t * 0.7)
+	else:
+		node.modulate = base_col
+
+
+## ネオングレイズリング（拡散リング演出）
+func _spawn_graze_ring(center: Vector2, combo: int) -> void:
+	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
+		return
+	var ring := _GrazeRingEffect.new()
+	ring.position = center
+	ring.size = Vector2.ZERO
+	ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ring.combo = combo
+	_mind_arena_layer.add_child(ring)
+
+
+## グレイズポップアップ文字
+func _spawn_graze_popup(center: Vector2, combo: int) -> void:
+	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
+		return
+	var lbl := Label.new()
+	if combo >= 10:
+		lbl.text = "GRAZE!! x%d" % combo
+		lbl.add_theme_color_override("font_color", Color("feae34"))
+	elif combo >= 5:
+		lbl.text = "GRAZE! x%d" % combo
+		lbl.add_theme_color_override("font_color", Color("00e5ff"))
+	else:
+		lbl.text = "GRAZE"
+		lbl.add_theme_color_override("font_color", Color("00e5ff"))
+	lbl.add_theme_font_size_override("font_size", 14)
+	lbl.add_theme_color_override("font_outline_color", Color(0, 0.04, 0.08, 0.9))
+	lbl.add_theme_constant_override("outline_size", 4)
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_mind_arena_layer.add_child(lbl)
+	lbl.position = center + Vector2(-30.0, -20.0)
+	var tween := create_tween()
+	tween.tween_property(lbl, "position:y", center.y - 55.0, 0.5)
+	tween.parallel().tween_property(lbl, "modulate:a", 0.0, 0.5)
+	tween.tween_callback(lbl.queue_free)
+
+
+## コンボ・グレイズ表示更新
+func _update_mind_combo_display() -> void:
+	if _mind_combo_label != null and is_instance_valid(_mind_combo_label):
+		if _mind_combo >= 3:
+			_mind_combo_label.text = "%d COMBO" % _mind_combo
+			# コンボ数に応じて色を変える
+			if _mind_combo >= 15:
+				_mind_combo_label.add_theme_color_override("font_color", Color("e43b44"))
+			elif _mind_combo >= 8:
+				_mind_combo_label.add_theme_color_override("font_color", Color("feae34"))
+			else:
+				_mind_combo_label.add_theme_color_override("font_color", Color("00e5ff"))
+		else:
+			_mind_combo_label.text = ""
+	if _mind_graze_label != null and is_instance_valid(_mind_graze_label):
+		if _mind_graze_count > 0:
+			_mind_graze_label.text = "GRAZE %d" % _mind_graze_count
+		else:
+			_mind_graze_label.text = ""
+
+
+## フェーズ遷移エフェクト
+func _mind_phase_transition_effect() -> void:
+	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
+		return
+	# フラッシュオーバーレイ
+	var flash = ColorRect.new()
+	var progress = clampf(_mind_elapsed / maxf(_mind_duration_total, 1.0), 0.0, 1.0)
+	if progress < 0.5:
+		flash.color = Color("feae34", 0.3)
+	else:
+		flash.color = Color("e43b44", 0.35)
+	flash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_mind_arena_layer.add_child(flash)
+	var tween = create_tween()
+	tween.tween_property(flash, "color:a", 0.0, 0.5)
+	tween.tween_callback(flash.queue_free)
+	# アリーナ枠線の色変化
+	GameManager.play_ui_se("confirm")
 
 
 func _show_pull_step() -> void:
@@ -2631,7 +3206,7 @@ func _target_adjust_action() -> String:
 
 
 func _build_adjustment_cue(target_action: String, round_index: int) -> String:
-	var judge_name = "土岐 鋼鉄"
+	var judge_name = "南雲 修二"
 	if round_index == 1:
 		judge_name = str(_random_judge.get("name", "審査員"))
 
@@ -2962,7 +3537,7 @@ func _build_focus_scores() -> Dictionary:
 
 func _get_active_judge_focuses() -> Array[String]:
 	var focus_ids: Array[String] = []
-	var judge_ids = ["toki_kotetsu", str(_random_judge.get("id", ""))]
+	var judge_ids = ["nagumo", str(_random_judge.get("id", ""))]
 	for judge_id in judge_ids:
 		var raw = JUDGE_FOCUS_PREFERENCES.get(judge_id, [])
 		if typeof(raw) != TYPE_ARRAY:
@@ -3509,7 +4084,7 @@ func _build_temperature_gauge_text(current_temp: float, target: Vector2) -> Stri
 
 
 func _refresh_side_panel() -> void:
-	judge_label.text = "MC: パッキー / 焚口ショウ\n審査員: 土岐 鋼鉄 + %s\nテーマ: %s" % [
+	judge_label.text = "MC: パッキー / 焚口ショウ\n審査員: 南雲 修二 + %s\nテーマ: %s" % [
 		str(_random_judge.get("name", "審査員")),
 		str(_theme.get("name", "-")),
 	]
@@ -4112,11 +4687,11 @@ func _show_mid_score_reveal() -> void:
 	# コメント
 	var comment = Label.new()
 	if total >= 40:
-		comment.text = "土岐「悪くない。だが上はまだいる」"
+		comment.text = "南雲「悪くない。だが上はまだいる」"
 	elif total >= 25:
-		comment.text = "土岐「まだ伸びる余地がある」"
+		comment.text = "南雲「まだ伸びる余地がある」"
 	else:
-		comment.text = "土岐「…ここからどう巻き返すか」"
+		comment.text = "南雲「…ここからどう巻き返すか」"
 	comment.add_theme_font_size_override("font_size", 16)
 	comment.add_theme_color_override("font_color", Color("8b9bb4"))
 	comment.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -4258,4 +4833,149 @@ class _ScanlineEffect extends Control:
 		var scan_y = fmod(_time * 120.0, h + 40.0) - 20.0
 		draw_rect(Rect2(0, scan_y, size.x, 2), Color("00e5ff", 0.08))
 		draw_rect(Rect2(0, scan_y - 8, size.x, 20), Color("00e5ff", 0.015))
+
+
+## 弾幕プレイヤー: ダイヤモンド型の魂ノード
+class _MindSoulNode extends Control:
+	var soul_color: Color = Color("e43b44")
+	var focus_mode_active: bool = false
+	var invincible: bool = false
+	var hit_flash: float = 0.0
+	var graze_near_t: float = 0.0   # 0〜1: 弾が近いほど1に近づく
+	var graze_flash_t: float = 0.0  # 0〜1: グレイズ直後フラッシュ
+	var _time: float = 0.0
+
+	func _process(delta: float) -> void:
+		_time += delta
+		if hit_flash > 0.0:
+			hit_flash = maxf(0.0, hit_flash - delta * 4.0)
+		if graze_flash_t > 0.0:
+			graze_flash_t = maxf(0.0, graze_flash_t - delta * 2.5)
+		queue_redraw()
+
+	func _draw() -> void:
+		var center = size * 0.5
+		var soul_size = 7.0
+
+		# 無敵時ブリンク
+		if invincible and (Time.get_ticks_msec() % 200) < 100:
+			var faint_pts = PackedVector2Array([
+				center + Vector2(0, -soul_size),
+				center + Vector2(soul_size, 0),
+				center + Vector2(0, soul_size),
+				center + Vector2(-soul_size, 0),
+				center + Vector2(0, -soul_size),
+			])
+			draw_polyline(faint_pts, Color(soul_color, 0.3), 1.5)
+			return
+
+		# グレイズ近接リング（シアン）: 弾が近いほど明るく光る
+		if graze_near_t > 0.01 or graze_flash_t > 0.01:
+			var ring_alpha := maxf(graze_near_t * 0.55, graze_flash_t * 0.9)
+			var ring_r := soul_size * (2.2 + graze_flash_t * 1.5)
+			draw_arc(center, ring_r, 0.0, TAU, 28, Color("00e5ff", ring_alpha), 2.0)
+			if graze_flash_t > 0.0:
+				draw_arc(center, ring_r * 1.45, 0.0, TAU, 16, Color("00e5ff", graze_flash_t * 0.35), 1.5)
+
+		# 外側グロー（脈動）
+		var glow_pulse = sin(_time * 3.5) * 0.02
+		var glow_col := soul_color.lerp(Color("00e5ff"), graze_near_t * 0.45)
+		for r in range(3, 0, -1):
+			var glow_r = soul_size * (1.0 + float(r) * 0.65) + sin(_time * 2.5) * 1.5
+			draw_circle(center, glow_r, Color(glow_col, 0.05 + glow_pulse))
+
+		# 被弾フラッシュ
+		if hit_flash > 0.0:
+			draw_circle(center, soul_size * 2.5 * hit_flash, Color(1, 1, 1, hit_flash * 0.4))
+
+		# メインダイヤモンド（グレイズ時シアンにシフト）
+		var diamond_col := soul_color.lerp(Color("00e5ff"), graze_flash_t * 0.6)
+		var pts = PackedVector2Array([
+			center + Vector2(0, -soul_size),
+			center + Vector2(soul_size, 0),
+			center + Vector2(0, soul_size),
+			center + Vector2(-soul_size, 0),
+		])
+		draw_colored_polygon(pts, diamond_col)
+
+		# 内側コア（白い輝き）
+		var inner = soul_size * 0.42
+		var inner_pts = PackedVector2Array([
+			center + Vector2(0, -inner),
+			center + Vector2(inner, 0),
+			center + Vector2(0, inner),
+			center + Vector2(-inner, 0),
+		])
+		draw_colored_polygon(inner_pts, Color.WHITE.lerp(diamond_col, 0.15))
+
+		# フォーカスモード: 判定範囲表示
+		if focus_mode_active:
+			var hb = soul_size * 0.35
+			draw_arc(center, hb, 0, TAU, 16, Color("00e5ff", 0.85), 1.5)
+			var ring_r = soul_size * 1.8 + sin(_time * 6.0) * 1.0
+			draw_arc(center, ring_r, _time * 2.0, _time * 2.0 + TAU * 0.7, 12, Color("00e5ff", 0.2), 1.0)
+
+
+## 弾幕アリーナ背景: グリッド + ビネット
+class _MindArenaGrid extends Control:
+	var grid_color: Color = Color("8b9bb4", 0.05)
+	var grid_spacing: float = 40.0
+	var phase_progress: float = 0.0
+	var _time: float = 0.0
+
+	func _process(delta: float) -> void:
+		_time += delta
+		queue_redraw()
+
+	func _draw() -> void:
+		var w = size.x
+		var h = size.y
+		# スクロールするグリッド
+		var offset_y = fmod(_time * 8.0, grid_spacing)
+		var y = offset_y
+		while y < h:
+			var line_alpha = grid_color.a * (1.0 + sin(_time * 0.5 + y * 0.01) * 0.3)
+			draw_line(Vector2(0, y), Vector2(w, y), Color(grid_color, line_alpha), 1.0)
+			y += grid_spacing
+		var x = 0.0
+		while x < w:
+			draw_line(Vector2(x, 0), Vector2(x, h), grid_color, 1.0)
+			x += grid_spacing
+
+		# フェーズに応じた色変化: 赤いビネット
+		if phase_progress > 0.6:
+			var intensity = (phase_progress - 0.6) * 0.15
+			# 四隅を赤く
+			var corner_size = min(w, h) * 0.35
+			for corner_x in [0.0, w - corner_size]:
+				for corner_y in [0.0, h - corner_size]:
+					draw_rect(Rect2(corner_x, corner_y, corner_size, corner_size),
+						Color("e43b44", intensity * 0.3))
+
+
+## グレイズリングエフェクト: 拡散するネオンリング
+class _GrazeRingEffect extends Control:
+	var combo: int = 0
+	var _t: float = 0.0
+	var _life: float = 0.45
+
+	func _process(delta: float) -> void:
+		_t += delta
+		if _t >= _life:
+			queue_free()
+			return
+		queue_redraw()
+
+	func _draw() -> void:
+		var prog := _t / _life
+		var alpha := (1.0 - prog) * 0.85
+		var max_r := 38.0 + float(combo) * 2.0
+		var radius := lerp(6.0, max_r, prog)
+		var col := Color("00e5ff", alpha)
+		if combo >= 10:
+			col = Color("feae34", alpha)
+		var thickness := 2.5 - prog * 1.5
+		draw_arc(Vector2.ZERO, radius, 0.0, TAU, 32, col, thickness)
+		# 内側の薄いリング
+		draw_arc(Vector2.ZERO, radius * 0.6, 0.0, TAU, 20, Color(col.r, col.g, col.b, alpha * 0.35), 1.0)
 

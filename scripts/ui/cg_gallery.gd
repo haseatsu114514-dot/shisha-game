@@ -10,7 +10,7 @@ extends Control
 const CG_LIST = [
 	"cg_ch1_sumi_secret",
 	"cg_ch1_tournament_tension",
-	"cg_ch1_toki_smile"
+	"cg_ch1_nagumo_smile"
 ]
 
 func _ready() -> void:

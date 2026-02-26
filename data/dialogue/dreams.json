@@ -1,98 +1,108 @@
 {
   "dialogues": [
     {
-      "dialogue_id": "ch1_dream",
+      "dialogue_id": "ch1_dream_early",
+      "metadata": { "bg": "res://assets/backgrounds/bg_dream_smoke.png", "effect": "dream_fog" },
       "lines": [
-        {
-          "speaker": "mysterious_man",
-          "face": "",
-          "text": "「……お前の煙は優しいな」"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "深い霧のような煙の中。誰かがそう言った気がした。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "心地よいような、少し寂しいような……不思議な夢だった。"
-        }
+        { "speaker": "", "face": "", "text": "……煙の中に、誰かが立っている。" },
+        { "speaker": "", "face": "", "text": "白衣の男。穏やかな笑みを浮かべて、何かを測定している。" },
+        { "speaker": "dr_kemuri", "face": "smile", "text": "「すべての煙には最適解がある。感情なんて──ノイズだよ」" },
+        { "speaker": "", "face": "", "text": "その声はどこか優しくて、どこか恐ろしかった。" },
+        { "speaker": "", "face": "", "text": "目が覚める。額にうっすら汗が滲んでいた。\n……なんの夢だっけ。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_dream",
+      "metadata": { "bg": "res://assets/backgrounds/bg_dream_smoke.png", "effect": "dream_fog" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "深い深い霧の中。足元が見えない。" },
+        { "speaker": "", "face": "", "text": "どこかで炭が爆ぜる音がした。\ntonariのカウンターの、あの匂いがする。" },
+        { "speaker": "sumi", "face": "normal", "text": "「……お前の煙は、まだ何も語っていない」" },
+        { "speaker": "", "face": "", "text": "振り向くと、誰もいない。\nでも、煙だけがゆらゆらと天井に昇っていく。" },
+        { "speaker": "", "face": "", "text": "遠くで誰かが笑っている。パッキーの声？\n……いや、もっと静かな、別の誰かだ。" },
+        { "speaker": "", "face": "", "text": "心地よいような、少し寂しいような……不思議な夢だった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_dream_early",
+      "metadata": { "bg": "res://assets/backgrounds/bg_dream_smoke.png", "effect": "dream_distortion" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "暗い路地裏。煙が充満している。" },
+        { "speaker": "", "face": "", "text": "遠くで、重たい煙が壁を這うように広がっていく。\n普通のシーシャじゃない。何か……禍々しい。" },
+        { "speaker": "", "face": "", "text": "「……シガーマン」" },
+        { "speaker": "", "face": "", "text": "誰かがそう囁いた。\nその名前を聞いた瞬間、全身の毛が逆立つのを感じた。" },
+        { "speaker": "", "face": "", "text": "振り返ると、ミントの香りが鼻を突く。\n強烈な清涼感。まるで何かを必死に消そうとしているような──" },
+        { "speaker": "", "face": "", "text": "……目が覚めた。窓の外が白みはじめていた。" }
       ]
     },
     {
       "dialogue_id": "ch2_dream",
+      "metadata": { "bg": "res://assets/backgrounds/bg_dream_smoke.png", "effect": "dream_distortion" },
       "lines": [
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "「お前は……お前の答え、見つけに行けよ」"
-        },
-        {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "「私のこと、実力じゃないって思ってるでしょ」"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "「ワンチャンいつか当たらなくなるんじゃないかってマジ病むんだよね」"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "色とりどりの煙が混ざり合い、渦を巻いて消えていく。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "自分の中にある焦りや、羨望や、誰かへの想いが、全部煙に溶けていくような夢だった。"
-        }
+        { "speaker": "", "face": "", "text": "ステージの上に立っている。客席は真っ暗だ。" },
+        { "speaker": "naru", "face": "serious", "text": "「お前は……お前の答え、見つけに行けよ」" },
+        { "speaker": "", "face": "", "text": "なるが背を向けて歩いていく。追いかけようとするけど、足が動かない。" },
+        { "speaker": "minto", "face": "sad", "text": "「私のこと、実力じゃないって思ってるでしょ」" },
+        { "speaker": "", "face": "", "text": "みんとの目が、一瞬だけ、29歳の目をしていた。" },
+        { "speaker": "ageha", "face": "normal", "text": "「ワンチャンいつか当たらなくなるんじゃないかってマジ病むんだよね」" },
+        { "speaker": "", "face": "", "text": "色とりどりの煙が混ざり合い、渦を巻いて消えていく。" },
+        { "speaker": "", "face": "", "text": "自分の中にある焦りや、羨望や、誰かへの想いが、全部煙に溶けていくような夢だった。" },
+        { "speaker": "", "face": "", "text": "……何も持っていない。\n本当に、何もないんじゃないか。" },
+        { "speaker": "", "face": "", "text": "目が覚めても、その言葉だけがずっと胸の底に沈んでいた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_dream_early",
+      "metadata": { "bg": "res://assets/backgrounds/bg_dream_smoke.png", "effect": "dream_foreign" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "薄暗い研究室。白衣の男が何台ものモニターに向かっている。" },
+        { "speaker": "", "face": "", "text": "画面には無数のグラフ。温度、湿度、フレーバー配合比……" },
+        { "speaker": "", "face": "", "text": "その中に、一つだけ見覚えのあるデータがあった。" },
+        { "speaker": "", "face": "", "text": "──僕の、大会の全試合データ。" },
+        { "speaker": "dr_kemuri", "face": "smile", "text": "「ああ、君のデータは実に面白い。揺らぎが美しいんだ」" },
+        { "speaker": "", "face": "", "text": "白衣の男が振り返る。穏やかに笑っている。\nその笑顔が、なぜかひどく怖かった。" },
+        { "speaker": "", "face": "", "text": "……汗びっしょりで目が覚めた。" }
       ]
     },
     {
       "dialogue_id": "ch3_dream",
+      "metadata": { "bg": "res://assets/backgrounds/bg_dream_smoke.png", "effect": "dream_foreign" },
       "lines": [
-        {
-          "speaker": "",
-          "face": "",
-          "text": "どこか異国の市場。強い日差しとスパイスの香り。"
-        },
-        {
-          "speaker": "old_man",
-          "face": "",
-          "text": "「お前の煙には……あの男と同じものが流れている」"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "誰のことだろう。\nでも、その言葉は不思議なほど心の奥底に響いて、目が覚めるまでずっと響いていた。"
-        }
+        { "speaker": "", "face": "", "text": "どこか異国の市場。強い日差しとスパイスの香り。" },
+        { "speaker": "", "face": "", "text": "石畳の路地を歩いている。\n空気が乾いていて、でもどこからかシーシャの煙が漂ってくる。" },
+        { "speaker": "old_man", "face": "", "text": "「お前の煙には……あの男と同じものが流れている」" },
+        { "speaker": "", "face": "", "text": "痩せた老人が、古びたナルギレを磨いている。" },
+        { "speaker": "", "face": "", "text": "『あの男』って、誰のことだ？\nスミさん？ それとも──" },
+        { "speaker": "", "face": "", "text": "老人は答えない。ただ煙を吐いた。\nその煙が、見たこともないほど美しかった。" },
+        { "speaker": "", "face": "", "text": "目が覚めるまでずっと、その煙の残像が瞼の裏に焼きついていた。" }
       ]
     },
     {
       "dialogue_id": "ch4_dream",
+      "metadata": { "bg": "res://assets/backgrounds/bg_dream_smoke.png", "effect": "dream_clarity" },
       "lines": [
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "「これは理論じゃない。体で覚えろ」"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "tonariのカウンター。誰もいない夜明け前。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "静かに立ち上がる一本の煙。自分の中に蓄えられた全ての時間が、今、一つの形になろうとしている。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "いよいよだ。世界大会が始まる。"
-        }
+        { "speaker": "", "face": "", "text": "tonariのカウンター。誰もいない夜明け前。" },
+        { "speaker": "sumi", "face": "normal", "text": "「これは理論じゃない。体で覚えろ」" },
+        { "speaker": "", "face": "", "text": "スミさんの声が、いつもより近い。\nまるで、隣にいるみたいだ。" },
+        { "speaker": "", "face": "", "text": "不思議と怖くない。\nむしろ、今まで積み上げたもの全部が、手のひらの中にある気がする。" },
+        { "speaker": "", "face": "", "text": "なるの背中。アダムの沈黙。みんとの策略。組長の涙。\nアゲハのヴァイブス。ましろの煙。ナンディの祈り。スティーブの繊細さ。ヴォルクの凍てつく完璧。" },
+        { "speaker": "", "face": "", "text": "全部が、煙になって、静かに立ち上がる。" },
+        { "speaker": "", "face": "", "text": "一本の、まっすぐな煙。" },
+        { "speaker": "", "face": "", "text": "目が覚めた時、不思議なほど穏やかだった。\nいよいよだ。世界大会が始まる。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dream",
+      "metadata": { "bg": "res://assets/backgrounds/bg_dream_smoke.png", "effect": "dream_digital" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "真っ白な空間。どこまでも続く、無機質な白。" },
+        { "speaker": "", "face": "", "text": "目の前に何かが立っている。人の形をしているが、顔がない。" },
+        { "speaker": "shisha_9000", "face": "", "text": "「あなたのデータは、すべて記録済みです」" },
+        { "speaker": "", "face": "", "text": "声は優しい。完璧に優しい。\nだからこそ、ぞっとした。" },
+        { "speaker": "", "face": "", "text": "──煙が立ち上がる。\n完璧な煙。一切のブレがない。人間には不可能な精度。" },
+        { "speaker": "dr_kemuri", "face": "smile", "text": "「ほら、見たかい？ これが僕の最高傑作だ。\n感情も、揺らぎも、全部データで再現できるんだよ」" },
+        { "speaker": "", "face": "", "text": "……本当に？\n本当に、そうなのか？" },
+        { "speaker": "", "face": "", "text": "答えが出ないまま、目が覚めた。\n枕が冷たかった。" }
       ]
     }
   ]

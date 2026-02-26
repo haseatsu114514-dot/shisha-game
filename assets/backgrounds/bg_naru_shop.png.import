@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dht36k82cvxk"
-path="res://.godot/imported/cg_ch1_toki_smile.png-c8c8cc64b283ef50f998700c396c5fb1.ctex"
+uid="uid://ciqcu3jy1wdoh"
+path="res://.godot/imported/bg_naru_shop.png-9f5dcfa34a91557fd3d619bf21b05ca8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/cgs/cg_ch1_toki_smile.png"
-dest_files=["res://.godot/imported/cg_ch1_toki_smile.png-c8c8cc64b283ef50f998700c396c5fb1.ctex"]
+source_file="res://assets/backgrounds/bg_naru_shop.png"
+dest_files=["res://.godot/imported/bg_naru_shop.png-9f5dcfa34a91557fd3d619bf21b05ca8.ctex"]
 
 [params]
 
