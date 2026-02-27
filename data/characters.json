@@ -107,7 +107,12 @@
     "visual_concepts": [
       "ageless but youthful looking japanese female, cute idol-like appearance, mint green twin-tails, wearing a frilly maid-like concept cafe uniform with pastel mint aesthetics, winking playfully, holding a bright shisha pipe",
       "cute concept cafe staff female, pale skin, light green hair with ribbons, wearing a kawaii fashion outfit with lace, secretly calculating eyes behind a sweet smile, pastel neon lighting"
-    ]
+    ],
+    "private_visual_concepts": [
+      "quiet beautiful japanese woman in her late 20s, hair down in natural dark brown (no mint green dye visible), wearing a beige cable knit sweater and long skirt, minimal makeup, shoulder bag, subdued and elegant, sitting alone at a counter reading a menu, ephemeral beauty",
+      "same woman but walking through a shopping district, calm and reserved demeanor, completely different aura from a flashy concept cafe hostess, natural beauty without any costume or persona"
+    ],
+    "private_notes": "プライベートの栞は、お店のみんちゃんとは別人レベルで雰囲気が異なる。髪はミントグリーンのツインテールではなく地毛のダークブラウンを下ろしている。ベージュのケーブルニットにロングスカート、薄化粧。派手さは一切なく、静かで儚げで綺麗な大人の女性。Ch1序盤のバイトイベントでtonariに客として来店するが、はじめは好感度5イベントまで同一人物だと気づかない。"
   },
   {
     "id": "shisha_9000",
