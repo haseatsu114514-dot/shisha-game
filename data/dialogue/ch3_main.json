@@ -21,6 +21,56 @@
       ]
     },
     {
+      "dialogue_id": "ch3_individuality_doubt",
+      "metadata": { "bg": "res://assets/backgrounds/bg_tokyo_venue.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "────大会会場の下見帰り。東京の夜道。" },
+        { "speaker": "", "face": "", "text": "今日、出場者たちの練習を見学した。ナンディのスパイスが織りなす音楽的な煙。レイの圧倒的なカリスマ。スティーブの見た目に反した繊細さ。" },
+        { "speaker": "hajime", "face": "sad", "text": "（みんな「自分のシーシャ」を持ってる。スタイルがある。個性がある。方向性がある）" },
+        { "speaker": "hajime", "face": "sad", "text": "（僕は……ここまで勝ち抜いてきたけど、やっぱり「これ」がない。得意な方向性も、まだ見つかってない）" },
+        { "speaker": "", "face": "", "text": "あげはの言葉がよぎる。" },
+        { "speaker": "", "face": "", "text": "──「理論がないから、いつか当たらなくなるんじゃないかって怖い」" },
+        { "speaker": "hajime", "face": "sad", "text": "（あの時のあげはさんと同じだ。今作れてるクオリティが、いつ崩れるか分からない。Ch2のスランプみたいに、また味が分からなくなるかもしれない）" },
+        { "speaker": "hajime", "face": "sad", "text": "（みんなには戻る場所がある。「自分のスタイル」がある。僕にはそれがない。崩れたら……何を頼りに立て直せばいいんだ？）" },
+        { "speaker": "", "face": "", "text": "東京の夜景がきらめいている。綺麗だ。でも、その光の中に自分の居場所が見つからなかった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_tokyo_shop_gap",
+      "metadata": { "bg": "res://assets/backgrounds/bg_tokyo_shisha_shop.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "────東京のシーシャ店。" },
+        { "speaker": "", "face": "", "text": "大会の準備の合間に、気になっていた店に入ってみた。" },
+        { "speaker": "", "face": "", "text": "一口目で──衝撃が走った。" },
+        { "speaker": "", "face": "", "text": "味持ちの良さが、次元が違う。一杯吸い終えても、口の中にフレーバーの余韻がずっと残っている。煙の厚みも、立ち上がりの早さも、何もかもが洗練されていた。" },
+        { "speaker": "hajime", "face": "sad", "text": "（……すごい。うちのシーシャは、こんなに余韻が残らない）" },
+        { "speaker": "", "face": "", "text": "店を出た後も、口の中にまだ煙の記憶が残っている。" },
+        { "speaker": "hajime", "face": "sad", "text": "（技術の差。環境の差。フレーバーの質の差。……tonariでの「いつもの丁寧な仕事」が、どこまで通用するんだろう）" },
+        { "speaker": "", "face": "", "text": "東京のレベルを肌で感じた。「自分はまだまだだ」という事実が、重くのしかかった。\n……【洞察】が少し上がった。" }
+      ],
+      "growth_stats": { "insight": 1 }
+    },
+    {
+      "dialogue_id": "ch3_abyss_recovery",
+      "metadata": { "bg": "res://assets/backgrounds/bg_mukai.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "────mukai。夜。" },
+        { "speaker": "", "face": "", "text": "ましろとの練習を重ねて、数日が経った。" },
+        { "speaker": "", "face": "", "text": "今日もmukaiのカウンターで、二人で黙々とシーシャを作っている。" },
+        { "speaker": "mashiro", "face": "normal", "text": "……はじめくん、最初に来た時と煙が違うよぉ" },
+        { "speaker": "hajime", "face": "normal", "text": "え？" },
+        { "speaker": "mashiro", "face": "smile", "text": "最初は「どうにかしなきゃ」って感じの煙だったけどぉ……今は、なんていうか……はじめくんの煙に戻ってる" },
+        { "speaker": "hajime", "face": "normal", "text": "……僕の煙？" },
+        { "speaker": "mashiro", "face": "smile", "text": "うん。丁寧で、優しくて……なんか安心する煙。わたし、好きだよぉ" },
+        { "speaker": "", "face": "", "text": "「正解」を追いかけるのではなく、目の前の一台を丁寧に作ること。それは、tonariでバイトしていた頃と同じ。" },
+        { "speaker": "hajime", "face": "normal", "text": "（僕には何もない。だからこそ、全部吸収できる……のかな）" },
+        { "speaker": "", "face": "", "text": "まだ仮説だ。確信には程遠い。でも──深淵から、抜け出していた。" },
+        { "speaker": "hajime", "face": "serious", "text": "（明日の大会。自分のシーシャが何なのか、まだ分からない。でも──今の僕にできる、一番丁寧な一台を出そう）" },
+        { "speaker": "", "face": "", "text": "深淵から完全に抜け出した。大会に挑む準備ができた。\n……【根性】が大きく上がった！" }
+      ],
+      "growth_stats": { "guts": 3 }
+    },
+    {
       "dialogue_id": "ch3_tournament_eve",
       "lines": [
         {

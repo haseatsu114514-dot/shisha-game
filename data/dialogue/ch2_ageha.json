@@ -359,6 +359,30 @@
           "text": "（彼女の目は、いつになく真剣だった。……何か答えないといけない気がする）"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch2_ageha_slump_visit",
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_night.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "────tonari。閉店間際。" },
+        { "speaker": "", "face": "", "text": "スランプの最中、あげはがtonariに顔を出した。" },
+        { "speaker": "ageha", "face": "normal", "text": "よっ、ハジメっち。……あんた最近元気ないね。煙に出てるよ" },
+        { "speaker": "hajime", "face": "sad", "text": "……分かるんですか" },
+        { "speaker": "ageha", "face": "normal", "text": "ヴァイブスだから" },
+        { "speaker": "", "face": "", "text": "あげはは自分のシーシャを頼まず、はじめが作ったシーシャを吸った。" },
+        { "speaker": "ageha", "face": "smile", "text": "──うん。ちゃんと美味しいじゃん" },
+        { "speaker": "hajime", "face": "sad", "text": "でも僕が吸うと……" },
+        { "speaker": "ageha", "face": "normal", "text": "あのさ。あたしも言うけど、理論がないから、いつか当たらなくなるんじゃないかって怖いんだよね" },
+        { "speaker": "hajime", "face": "surprise", "text": "……あげはさんでも、そうなんですか" },
+        { "speaker": "ageha", "face": "normal", "text": "当たり前じゃん。調子いい時って自分のやってることが全部正解に感じるじゃん？\nでもそれがいつ崩れるか分かんないの。理論がないから、崩れたとき直し方も分かんない" },
+        { "speaker": "", "face": "", "text": "天才だと思っていたあげはが、実は不安を抱えていた。" },
+        { "speaker": "ageha", "face": "smile", "text": "でもさ──あんたの煙吸ってると、なんか安心するんだよね。理由は知らんけど" },
+        { "speaker": "hajime", "face": "normal", "text": "……" },
+        { "speaker": "ageha", "face": "smile", "text": "だから休め。味覚なんてそのうち戻るって。\nで、戻ったらまた美味い煙作りなよ。あたしが吸いに来るから" },
+        { "speaker": "", "face": "", "text": "あげはも怖がっている。天才に見える人も、不安の中で戦っている。\n──それを知った瞬間、比較の感情が少し薄れた。" },
+        { "speaker": "", "face": "", "text": "……【洞察】と【根性】が上がった。" }
+      ],
+      "growth_stats": { "insight": 2, "guts": 2 }
     }
   ]
 }

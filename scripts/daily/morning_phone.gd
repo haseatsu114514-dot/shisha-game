@@ -77,7 +77,7 @@ func _load_today_lime_messages() -> Array:
 		elif message.has("trigger_day"):
 			if CalendarManager.is_interval or int(message.get("trigger_day", -1)) != CalendarManager.current_day:
 				continue
-		
+
 		# If it's chapter specific
 		if message.has("trigger_chapter"):
 			if int(message.get("trigger_chapter", 1)) != GameManager.current_chapter:
@@ -85,11 +85,27 @@ func _load_today_lime_messages() -> Array:
 
 		if EventFlags.get_flag("msg_read_%s" % str(message.get("id", ""))):
 			continue
-			
+
 		if not _is_message_condition_met(message):
 			continue
-			
+
 		result.append(message)
+
+	# Load post-romance event messages from lime_events.json
+	if FileAccess.file_exists("res://data/lime_events.json"):
+		var events_file = FileAccess.open("res://data/lime_events.json", FileAccess.READ)
+		if events_file != null:
+			var events_parsed = JSON.parse_string(events_file.get_as_text())
+			events_file.close()
+			if typeof(events_parsed) == TYPE_DICTIONARY:
+				var events: Array = events_parsed.get("events", [])
+				for ev in events:
+					if EventFlags.get_flag("msg_read_%s" % str(ev.get("id", ""))):
+						continue
+					if not _is_message_condition_met(ev):
+						continue
+					result.append(ev)
+
 	return result
 
 
@@ -106,10 +122,16 @@ func _is_message_condition_met(message: Dictionary) -> bool:
 		return AffinityManager.get_level(sender) >= trigger_value and not AffinityManager.is_in_romance(sender)
 	elif condition == "tournament_day":
 		var sender = str(message.get("sender", ""))
-		return CalendarManager.is_tournament_day() and AffinityManager.is_in_romance(sender)
+		return CalendarManager.is_tournament_day() and AffinityManager.has_lime(sender)
 	elif condition == "romance":
 		var sender = str(message.get("sender", ""))
 		return AffinityManager.is_in_romance(sender)
+	elif condition == "ch2_started":
+		return GameManager.current_chapter >= 2
+	elif condition == "ch3_started":
+		return GameManager.current_chapter >= 3
+	elif condition.begins_with("romance_"):
+		return EventFlags.get_flag(condition)
 	return true
 
 

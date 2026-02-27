@@ -16,6 +16,7 @@ var _visited_today: Array = []
 const SHOP_VISIT_COST := 3500
 const RIVAL_VISIT_COST := 3000
 const CHOIZAP_MEMBERSHIP_COST := 4000
+const C_STATION_VISIT_COST := 2000
 
 const SPOT_POSITIONS_DAY: Dictionary = {
 	"tonari": Vector2(300, 420),
@@ -459,9 +460,14 @@ func _enter_spot(spot: Dictionary) -> void:
 			GameManager.queue_dialogue("res://data/dialogue/ch2_spots.json", event_id, "res://scenes/daily/map.tscn")
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		"c_station":
+			if PlayerData.money < C_STATION_VISIT_COST:
+				message_label.text = "入店には %d円 必要です。（所持金: %d円）" % [C_STATION_VISIT_COST, PlayerData.money]
+				return
 			if not CalendarManager.use_action():
 				_try_auto_return_home()
 				return
+			PlayerData.spend_money(C_STATION_VISIT_COST)
+			GameManager.log_money_change(-C_STATION_VISIT_COST)
 			EventFlags.set_flag("ch1_c_station_visited")
 			PlayerData.add_stat("insight", 2)
 			GameManager.log_stat_change("insight", 2)

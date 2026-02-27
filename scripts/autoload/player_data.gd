@@ -359,6 +359,13 @@ func add_money(amount: int) -> void:
 	money = maxi(0, money + amount)
 
 
+func spend_money(amount: int) -> bool:
+	if money < amount:
+		return false
+	money -= amount
+	return true
+
+
 func has_item(type: String, item_id: String) -> bool:
 	match type:
 		"bowl":
