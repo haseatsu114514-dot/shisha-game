@@ -25,6 +25,7 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 2
 color = Color(0.02, 0.02, 0.06, 0.55)
 
 [node name="LogoRect" type="TextureRect" parent="."]
@@ -43,6 +44,7 @@ offset_left = 80.0
 offset_top = 210.0
 offset_right = 1200.0
 offset_bottom = 290.0
+theme_override_colors/font_color = Color(0.917647, 0.831373, 0.666667, 1)
 theme_override_font_sizes/font_size = 52
 text = "煙の向こう側"
 horizontal_alignment = 1
@@ -53,6 +55,7 @@ offset_left = 80.0
 offset_top = 290.0
 offset_right = 1200.0
 offset_bottom = 330.0
+theme_override_colors/font_color = Color(0.917647, 0.831373, 0.666667, 1)
 theme_override_font_sizes/font_size = 18
 text = "Beyond the Smoke"
 horizontal_alignment = 1

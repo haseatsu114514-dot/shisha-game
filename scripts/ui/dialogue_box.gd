@@ -643,7 +643,7 @@ func _finish_dialogue() -> void:
 	if _metadata.has("exchange_lime"):
 		AffinityManager.exchange_lime(str(_metadata["exchange_lime"]))
 
-	var stat_changes: Array[Dictionary] = []
+	var stat_changes: Array[Dictionary] = Array[Dictionary]()
 	if _metadata.has("add_stat"):
 		var stats = _metadata["add_stat"]
 		if typeof(stats) == TYPE_DICTIONARY:
@@ -787,7 +787,7 @@ func _show_affinity_notification(char_id: String, delta: int) -> void:
 
 func _show_stat_notification(stat_changes: Array[Dictionary]) -> void:
 	# Build notification text using abstract expressions (no raw numbers)
-	var parts: Array[String] = []
+	var parts: Array[String] = Array[String]()
 	for change in stat_changes:
 		var change_label = PlayerData.get_stat_change_label(change["amount"])
 		if change_label != "":
