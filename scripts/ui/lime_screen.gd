@@ -24,16 +24,20 @@ const DISPLAY_NAME = {
 	"adam": "アダム",
 	"minto": "眠都",
 	"tsumugi": "つむぎ",
-	"packii": "パッキー"
+	"packii": "パッキー",
+	"ageha": "あげは",
+	"kumicho": "組長",
+	"nagumo": "南雲会長",
+	"mashiro": "ましろ"
 }
 const AVATAR_TEXTURES = {
 	"hajime": "res://assets/sprites/faces/face_hajime.png",
 	"sumi": "res://assets/sprites/faces/face_sumi.png",
 	"naru": "res://assets/sprites/faces/face_naru.png",
 	"adam": "res://assets/sprites/faces/face_adam.png",
-	"minto": "res://assets/sprites/faces/face_kirara.png",
 	"tsumugi": "res://assets/sprites/faces/face_tsumugi.png",
-	"packii": "res://assets/sprites/faces/face_packii.png"
+	"packii": "res://assets/sprites/faces/face_packii.png",
+	"kumicho": "res://assets/sprites/faces/face_ryuji.png"
 }
 
 
@@ -236,7 +240,10 @@ func _add_chat_bubble(sender: String, text: String) -> void:
 
 	var bubble = PanelContainer.new()
 	bubble.custom_minimum_size = Vector2(230, 0)
-	bubble.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	if is_self:
+		bubble.size_flags_horizontal = Control.SIZE_SHRINK_END
+	else:
+		bubble.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 
 	var style = StyleBoxFlat.new()
 	style.content_margin_left = 10
@@ -279,6 +286,7 @@ func _add_chat_bubble(sender: String, text: String) -> void:
 	text_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	text_label.add_theme_color_override("font_color", Color("ead4aa"))
 	text_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text_label.custom_minimum_size.x = int(bubble.custom_minimum_size.x) - int(style.content_margin_left) - int(style.content_margin_right)
 
 	vbox.add_child(sender_label)
 	vbox.add_child(text_label)
@@ -295,7 +303,8 @@ func _add_system_message(text: String) -> void:
 
 	var label = Label.new()
 	label.text = text
-	label.modulate = Color(0.22, 0.28, 0.24, 0.72)
+	label.add_theme_color_override("font_color", Color("5a6988"))
+	label.add_theme_font_size_override("font_size", 13)
 	row.add_child(label)
 	chat_container.add_child(row)
 
