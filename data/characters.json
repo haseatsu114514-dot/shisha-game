@@ -1,7 +1,7 @@
 [
   {
     "id": "hajime",
-    "name": "はじめ / 蒸野 始（むぎの はじめ）",
+    "name": "はじめ / 蒸野 始（むしの はじめ）",
     "role": "protagonist",
     "age": 22,
     "nationality": "Japan",
@@ -611,7 +611,7 @@
     "growth_stats": {
       "primary": "N/A",
       "secondary": "N/A",
-      "notes": "餌をあげたり撫でたりするとプレイヤーのメンタルが少し回復する癒やし枠。猫なので成長しない。"
+      "notes": "餌をあげたり撫でたりするとプレイヤーの気持ちが少し回復する癒やし枠。猫なので成長しない。"
     },
     "visual_concepts": [
       "brown and white scottish fold cat, sitting with back against the wall (scottish fold sit / suko-zuwari), very relaxed and lazy aura, resting near the back door of a shisha cafe"
