@@ -506,7 +506,7 @@ func _finish_shift() -> void:
 	body_label.text = closing_text
 	_clear_buttons(choice_container)
 
-var done_button = Button.new()
+	var done_button = Button.new()
 	done_button.text = "お疲れ様でした（帰る）"
 	done_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	done_button.pressed.connect(_finish_action_flow.bind(_shift_advance_steps))

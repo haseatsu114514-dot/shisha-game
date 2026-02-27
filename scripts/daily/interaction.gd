@@ -239,7 +239,7 @@ func _apply_affinity_gain(character_id: String, amount: int = 1) -> void:
 	body_label.text += "\n好感度  %s" % star_text
 
 	# Check if affinity reached max level and not in romance yet
-	if after >= max_level and before < max_level and not AffinityManager.is_in_romance(character_id):
+	if after >= AffinityManager.MAX_LEVEL and before < AffinityManager.MAX_LEVEL and not AffinityManager.is_in_romance(character_id):
 		# Only certain characters have confession events (minto, tsumugi, ageha)
 		if character_id in ["minto", "tsumugi", "ageha"]:
 			_pending_confession = character_id
