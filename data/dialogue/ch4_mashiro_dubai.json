@@ -1,0 +1,117 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_mashiro_dubai_friend",
+      "metadata": {
+        "condition": "mashiro_affinity_min_2",
+        "bg": "res://assets/bg/dubai_hotel_lobby.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会前夜。ホテルのロビーで明日の段取りを頭の中で整理していたとき、見覚えのある後ろ姿が目に入った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "「……ましろさん？」"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "あっ、はじめくん……！ えへへ、バレちゃったぁ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「なんで……ドバイに？」"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ムカイさんに、行ってこいって言われてねぇ……。シーシャの本場を一回は見ておけって。それで来たんだけどぉ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……あと、東京でのはじめくんを見てたら、最後どうなるか見届けたくなっちゃったんだよねぇ。なんとなく"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「なんとなく、でドバイまで来るんですか」"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "えへへ……なんとなく、かなぁ。……明日、頑張ってねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ましろさんがここにいる。それだけで、なぜか少しだけ、楽になった気がした）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_mashiro_dubai_girlfriend",
+      "metadata": {
+        "condition": "mashiro_is_girlfriend",
+        "bg": "res://assets/bg/dubai_hotel_lobby.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会前夜。ホテルのロビーで明日の段取りを頭の中で整理していたとき、見覚えのある後ろ姿が目に入った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "「……ましろさん？」"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "あっ、はじめくん……！ えへへ、バレちゃったぁ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「なんで……ドバイに？」"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ムカイさんに、行ってこいって言われてねぇ……。シーシャの本場を一回は見ておけって。それで来たんだけどぉ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……あと、東京でのはじめくんを見てたら、最後どうなるか見届けたくなっちゃったんだよねぇ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……それだけじゃなくて。はじめくんが、大事だから。……それだけかなぁ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「……ましろさん」"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ふふ……変なこと言っちゃったぁ。でも本当のことだから、いっかなって。……明日、はじめくんの煙、ちゃんと感じてるよぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ましろさんがここにいる。それだけで、なぜか少しだけ、楽になった気がした。──いや、それだけじゃない。彼女の「あったかい」を、もう一度聞きたいと思った）"
+        }
+      ]
+    }
+  ]
+}
