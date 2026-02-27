@@ -59,6 +59,25 @@
       "next_scene": "map"
     },
     {
+      "id": "ch1_forced_tsumugi_smoke_color",
+      "day": 4,
+      "time_slot": "night",
+      "flag": "ch1_forced_tsumugi_smoke_color_done",
+      "title": "煙の色が違う",
+      "description": "バイト中、つむぎがはじめのシーシャを吸いながらぽつりと呟いた。「今日の煙、いつもと色が違う」",
+      "dialogue_file": "res://data/dialogue/ch1_tsumugi.json",
+      "dialogue_id": "ch1_tsumugi_smoke_color",
+      "stat_changes": {
+        "sense": 1
+      },
+      "metadata": {
+        "add_affinity": {
+          "tsumugi": 1
+        }
+      },
+      "next_scene": "map"
+    },
+    {
       "id": "ch1_forced_sumi_story",
       "day": 5,
       "time_slot": "night",
@@ -88,6 +107,25 @@
       "next_scene": "map"
     },
     {
+      "id": "ch1_forced_tsumugi_eve",
+      "day": 7,
+      "time_slot": "noon",
+      "flag": "ch1_forced_tsumugi_eve_done",
+      "title": "つむぎの「頑張って」",
+      "description": "閉店間際、つむぎが帰り際に初めて自分から声をかけてきた。",
+      "dialogue_file": "res://data/dialogue/ch1_tsumugi.json",
+      "dialogue_id": "ch1_tsumugi_eve",
+      "stat_changes": {
+        "guts": 1
+      },
+      "metadata": {
+        "add_affinity": {
+          "tsumugi": 1
+        }
+      },
+      "next_scene": "map"
+    },
+    {
       "id": "ch1_forced_sumi_eve",
       "day": 7,
       "time_slot": "night",
@@ -105,7 +143,7 @@
       "time_slot": "noon",
       "flag": "ch1_forced_tournament_done",
       "title": "大会当日",
-      "description": "第12回地方シーシャバトル。いよいよ本番。",
+      "description": "SMOKE CROWN CUP。いよいよ本番。",
       "dialogue_file": "res://data/dialogue/ch1_tournament.json",
       "dialogue_id": "ch1_tournament_arrival",
       "stat_changes": {},
@@ -219,11 +257,65 @@
       "day": 1,
       "time_slot": "morning",
       "flag": "ch2_forced_opening_done",
-      "title": "県大会開幕",
-      "description": "第2章: 県大会編の始まり。",
+      "title": "HAZE: OPEN CLOUDへ",
+      "description": "第2章: 全国大会編の始まり。レベルの違うプレイヤーたちを前に、焦りが芽生える。",
       "dialogue_file": "res://data/dialogue/ch2_main.json",
       "dialogue_id": "ch2_opening",
       "stat_changes": {},
+      "next_scene": "map"
+    },
+    {
+      "id": "ch2_forced_slump_taste",
+      "day": 3,
+      "time_slot": "night",
+      "flag": "ch2_forced_slump_taste_done",
+      "title": "味が、薄い",
+      "description": "大会の疲れか、自分で作ったシーシャの味が薄く感じる。スミさんに吸ってもらうと「いつものお前と変わらない」と言われた。",
+      "dialogue_file": "res://data/dialogue/ch2_main.json",
+      "dialogue_id": "ch2_slump_taste",
+      "stat_changes": {},
+      "next_scene": "map"
+    },
+    {
+      "id": "ch2_forced_sofa_burn",
+      "day": 4,
+      "time_slot": "noon",
+      "flag": "ch2_forced_sofa_burn_done",
+      "title": "炭を落とした夜",
+      "description": "バイト中、炭をソファに落としてしまった。シーシャ屋あるあるだが、はじめにとっては初めてだった。",
+      "dialogue_file": "res://data/dialogue/ch2_main.json",
+      "dialogue_id": "ch2_sofa_burn",
+      "stat_changes": {},
+      "next_scene": "map"
+    },
+    {
+      "id": "ch2_forced_ageha_visit",
+      "day": 5,
+      "time_slot": "night",
+      "flag": "ch2_forced_ageha_visit_done",
+      "title": "あげはの来店",
+      "description": "スランプの最中、あげはがtonariに顔を出した。「あんた最近元気ないね。煙に出てるよ」",
+      "dialogue_file": "res://data/dialogue/ch2_ageha.json",
+      "dialogue_id": "ch2_ageha_slump_visit",
+      "stat_changes": {
+        "insight": 2,
+        "guts": 2
+      },
+      "next_scene": "map"
+    },
+    {
+      "id": "ch2_forced_recovery",
+      "day": 6,
+      "time_slot": "noon",
+      "flag": "ch2_forced_recovery_done",
+      "title": "味覚が戻った朝",
+      "description": "亜鉛と睡眠を経て、ふと作ったシーシャの味が──戻っていた。",
+      "dialogue_file": "res://data/dialogue/ch2_main.json",
+      "dialogue_id": "ch2_taste_recovery",
+      "stat_changes": {
+        "sense": 2,
+        "technique": 1
+      },
       "next_scene": "map"
     }
   ],
@@ -248,10 +340,89 @@
       "time_slot": "morning",
       "flag": "ch3_forced_opening_done",
       "title": "東京到着",
-      "description": "第3章: 全国大会（東京編）の始まり。",
+      "description": "第3章: アジア大会（東京編）の始まり。世界レベルのプレイヤーたちが集結する。",
       "dialogue_file": "res://data/dialogue/ch3_main.json",
       "dialogue_id": "ch3_opening",
       "stat_changes": {},
+      "next_scene": "map"
+    },
+    {
+      "id": "ch3_forced_individuality_doubt",
+      "day": 2,
+      "time_slot": "night",
+      "flag": "ch3_forced_individuality_doubt_done",
+      "title": "個性のない勝者",
+      "description": "ナンディ、レイ、スティーブ。全員が「自分のシーシャ」を持っている。はじめには──まだない。",
+      "dialogue_file": "res://data/dialogue/ch3_main.json",
+      "dialogue_id": "ch3_individuality_doubt",
+      "stat_changes": {},
+      "next_scene": "map"
+    },
+    {
+      "id": "ch3_forced_tokyo_shop",
+      "day": 3,
+      "time_slot": "noon",
+      "flag": "ch3_forced_tokyo_shop_done",
+      "title": "東京のシーシャ",
+      "description": "東京のシーシャ店を訪れた。味持ちの良さ、煙の厚み、余韻の深さ──レベルの差を痛感する。",
+      "dialogue_file": "res://data/dialogue/ch3_main.json",
+      "dialogue_id": "ch3_tokyo_shop_gap",
+      "stat_changes": {
+        "insight": 1
+      },
+      "next_scene": "map"
+    },
+    {
+      "id": "ch3_forced_mashiro_encounter",
+      "day": 4,
+      "time_slot": "noon",
+      "flag": "ch3_forced_mashiro_encounter_done",
+      "title": "mukaiとましろ",
+      "description": "tonariの姉妹店「mukai」を訪れる。そこでバイトの子──ましろと出会う。",
+      "dialogue_file": "res://data/dialogue/ch3_mashiro.json",
+      "dialogue_id": "ch3_mashiro_encounter",
+      "stat_changes": {
+        "sense": 1
+      },
+      "metadata": {
+        "add_affinity": {
+          "mashiro": 1
+        }
+      },
+      "next_scene": "map"
+    },
+    {
+      "id": "ch3_forced_mashiro_practice",
+      "day": 5,
+      "time_slot": "night",
+      "flag": "ch3_forced_mashiro_practice_done",
+      "title": "mukaiでの練習",
+      "description": "ましろと一緒にmukaiで練習する。「力入りすぎてるよ」──彼女の手つきを見ていると、不思議と肩の力が抜けていく。",
+      "dialogue_file": "res://data/dialogue/ch3_mashiro.json",
+      "dialogue_id": "ch3_mashiro_practice",
+      "stat_changes": {
+        "technique": 2,
+        "sense": 2
+      },
+      "metadata": {
+        "add_affinity": {
+          "mashiro": 1
+        }
+      },
+      "next_scene": "map"
+    },
+    {
+      "id": "ch3_forced_abyss_recovery",
+      "day": 6,
+      "time_slot": "night",
+      "flag": "ch3_forced_abyss_recovery_done",
+      "title": "深淵からの帰還",
+      "description": "mukaiでの練習を重ね、はじめは原点を取り戻す。「正解」を探すのではなく、目の前の一台を丁寧に作ること。",
+      "dialogue_file": "res://data/dialogue/ch3_main.json",
+      "dialogue_id": "ch3_abyss_recovery",
+      "stat_changes": {
+        "guts": 3
+      },
       "next_scene": "map"
     }
   ],

@@ -128,6 +128,46 @@
           "text": "ましろとの距離が縮まり、【魅力】と【根性】が大きく回復した……！"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch3_mashiro_encounter",
+      "metadata": { "bg": "res://assets/backgrounds/bg_mukai.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "────「mukai」。tonariの姉妹店。" },
+        { "speaker": "", "face": "", "text": "スミさんに「東京来たなら顔出しとけ」と言われて、mukaiを訪れた。" },
+        { "speaker": "mukai_master", "face": "smile", "text": "おお、はじめくんか。スミから聞いてるよ。大会、頑張ってるんだって？" },
+        { "speaker": "hajime", "face": "normal", "text": "はい、なんとか。ムカイさん、お元気ですか" },
+        { "speaker": "mukai_master", "face": "smile", "text": "元気元気。……そうだ、紹介するよ。うちのバイトの子" },
+        { "speaker": "", "face": "", "text": "カウンターの奥から、おっとりした雰囲気の女の子が出てきた。" },
+        { "speaker": "mashiro", "face": "normal", "text": "……はじめまして。ましろです……よろしくねぇ" },
+        { "speaker": "hajime", "face": "normal", "text": "蒸野はじめです。よろしくお願いします" },
+        { "speaker": "", "face": "", "text": "ましろがシーシャを作り始めた。──手つきだけは、異様に確かだった。おっとりした雰囲気とのギャップに目を見張る。" },
+        { "speaker": "hajime", "face": "surprise", "text": "（……すごい。あの手つき、ただのバイトじゃない。シガーリーフを扱う手つきが、見たことないくらい丁寧だ）" },
+        { "speaker": "mashiro", "face": "smile", "text": "はい、どうぞぉ……。わたしの煙、吸ってみてぇ" },
+        { "speaker": "", "face": "", "text": "ましろのシーシャを一口吸った。──重厚で、温かくて、どこか懐かしい煙だった。" },
+        { "speaker": "", "face": "", "text": "ましろとの出会い。mukaiという場所が、はじめの新しい居場所になるかもしれない。\n……【センス】が少し上がった。" }
+      ],
+      "growth_stats": { "sense": 1 }
+    },
+    {
+      "dialogue_id": "ch3_mashiro_practice",
+      "metadata": { "bg": "res://assets/backgrounds/bg_mukai.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "────mukai。閉店後。" },
+        { "speaker": "", "face": "", "text": "ムカイさんの計らいで、ましろと一緒に練習する機会をもらった。" },
+        { "speaker": "mukai_master", "face": "smile", "text": "好きに使っていいよ。鍵はましろに預けてあるから" },
+        { "speaker": "", "face": "", "text": "二人きりのmukai。カウンターに並んで、それぞれシーシャを作る。" },
+        { "speaker": "", "face": "", "text": "はじめは力が入っていた。「もっと上手く」「もっと正確に」──東京のシーシャ店で感じた差を埋めようと、必死だった。" },
+        { "speaker": "mashiro", "face": "normal", "text": "……はじめくん、力入りすぎてるよぉ" },
+        { "speaker": "hajime", "face": "surprise", "text": "え？" },
+        { "speaker": "mashiro", "face": "normal", "text": "煙って、力入れると逃げちゃうから。……ほら、こう" },
+        { "speaker": "", "face": "", "text": "ましろの手つきを見ていると、不思議と肩の力が抜けていく。彼女のシーシャには「勝つため」の気負いが一切ない。ただ目の前の一台に集中している。" },
+        { "speaker": "mashiro", "face": "smile", "text": "……ねぇ、はじめくん。はじめくんの煙、わたし好きだよぉ。力抜いた時の方が、ずっと良い煙出てる" },
+        { "speaker": "hajime", "face": "normal", "text": "……ありがとう、ましろさん" },
+        { "speaker": "", "face": "", "text": "「正解」を追いかけるのをやめて、ただ目の前の一台を丁寧に作る。それは、tonariでバイトしていた頃の自分と同じだった。" },
+        { "speaker": "", "face": "", "text": "mukaiでの練習が、少しずつ何かを修復していく。\n……【技術】と【センス】が上がった。" }
+      ],
+      "growth_stats": { "technique": 2, "sense": 2 }
     }
   ]
 }

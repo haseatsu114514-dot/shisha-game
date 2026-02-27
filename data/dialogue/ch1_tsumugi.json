@@ -648,6 +648,40 @@
           "text": "傷の上に描かれた「心のある絵」。\n壊れたものでも、美しいものを生み出せる──。\nつむぎが教えてくれたのは、きっとそういうことだ。"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch1_tsumugi_smoke_color",
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_night.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "バイト中、つむぎのテーブルにシーシャを運んだ。いつものラベンダー。" },
+        { "speaker": "", "face": "", "text": "つむぎが一口吸って、ふとペンの手を止めた。" },
+        { "speaker": "tsumugi", "face": "normal", "text": "……今日の煙、いつもと色が違う" },
+        { "speaker": "hajime", "face": "surprise", "text": "え？ 色？" },
+        { "speaker": "tsumugi", "face": "normal", "text": "……ううん。なんでもない" },
+        { "speaker": "", "face": "", "text": "つむぎはそれだけ言って、またiPadに視線を戻した。" },
+        { "speaker": "hajime", "face": "normal", "text": "（色が違う……？ 同じレシピで作ったのに。不思議なことを言う子だな）" },
+        { "speaker": "", "face": "", "text": "つむぎの言葉の意味は分からなかった。でも、自分の煙を「見てくれている」人がいることに、少しだけ温かい気持ちになった。" },
+        { "speaker": "", "face": "", "text": "……【センス】が少し上がった。" }
+      ],
+      "growth_stats": { "sense": 1 }
+    },
+    {
+      "dialogue_id": "ch1_tsumugi_eve",
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_night.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "大会前日。閉店間際。最後の客が帰っていく。" },
+        { "speaker": "", "face": "", "text": "つむぎがいつもの席で会計を済ませ、ドアに向かった。" },
+        { "speaker": "", "face": "", "text": "──と、ドアの前で立ち止まった。" },
+        { "speaker": "tsumugi", "face": "normal", "text": "……はじめさん" },
+        { "speaker": "hajime", "face": "normal", "text": "ん？" },
+        { "speaker": "", "face": "", "text": "つむぎがこちらを向いた。iPadを胸に抱えたまま。いつもの距離より、少しだけ近い。" },
+        { "speaker": "tsumugi", "face": "normal", "text": "……頑張って" },
+        { "speaker": "", "face": "", "text": "それだけ言って、ドアの向こうに消えた。" },
+        { "speaker": "", "face": "", "text": "つむぎが自分から声をかけてきたのは、初めてだった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（……ありがとう。頑張るよ）" },
+        { "speaker": "", "face": "", "text": "たった一言。でも、それだけで胸の奥が静かに熱くなった。\n……【根性】が少し上がった。" }
+      ],
+      "growth_stats": { "guts": 1 }
     }
   ]
 }

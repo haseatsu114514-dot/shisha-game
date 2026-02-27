@@ -305,6 +305,38 @@
       ]
     },
     {
+      "dialogue_id": "ch1_minto_phantom_smell",
+      "metadata": { "bg": "res://assets/backgrounds/bg_peparmint.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "────ぺぱーみんと。閉店間際。" },
+        { "speaker": "", "face": "", "text": "客が全員帰った後の店内。ミントの残り香が充満している。" },
+        { "speaker": "minto", "face": "normal", "text": "はじめくん、ちょっと手伝ってくれない？ フレーバーの在庫整理" },
+        { "speaker": "hajime", "face": "normal", "text": "はい、いいですよ" },
+        { "speaker": "", "face": "", "text": "みんとがフレーバーの箱を開ける。ミントの清涼感が一気に広がる。" },
+        { "speaker": "", "face": "", "text": "その瞬間、みんとの手がほんの一瞬、震えた。" },
+        { "speaker": "hajime", "face": "normal", "text": "みんとさん……？" },
+        { "speaker": "minto", "face": "sad", "text": "……ごめん。なんでもない" },
+        { "speaker": "minto", "face": "normal", "text": "ねえ、はじめくん。ミントの匂いって、何かを思い出す？" },
+        { "speaker": "hajime", "face": "normal", "text": "うーん……歯磨き粉？ ガム？" },
+        { "speaker": "minto", "face": "smile", "text": "あはは、普通はそうだよね" },
+        { "speaker": "minto", "face": "sad", "text": "……私にとってはね、上書きなの" },
+        { "speaker": "hajime", "face": "surprise", "text": "上書き……？" },
+        { "speaker": "minto", "face": "sad", "text": "前に話したでしょ、実家の喫茶店のこと。潰れて精肉店になったって" },
+        { "speaker": "minto", "face": "sad", "text": "もうとっくにクリーニングされてるの。匂いなんか残ってるわけない。\nでもね……" },
+        { "speaker": "minto", "face": "sad", "text": "鼻の奥に、まだあるの。あの匂い。血と、肉の匂い。\n頭では分かってるのに、体が忘れてくれない" },
+        { "speaker": "minto", "face": "serious", "text": "だから私、ミントで埋め尽くすの。\nこの空間ごと、全部。あの幻の匂いが消えるまで" },
+        { "speaker": "", "face": "", "text": "みんとの目が、一瞬だけ──いつもの小悪魔じゃない、29歳の目をしていた。" },
+        { "speaker": "minto", "face": "smile", "text": "……なーんてね♡ 重い女でしょ？ 忘れてっ♪" },
+        { "speaker": "hajime", "face": "normal", "text": "……忘れません" },
+        { "speaker": "minto", "face": "surprise", "text": "え" },
+        { "speaker": "hajime", "face": "normal", "text": "みんとさんのシーシャが強いのは、そういうことだったんですね" },
+        { "speaker": "minto", "face": "sad", "text": "………………" },
+        { "speaker": "minto", "face": "smile", "text": "……ばか。帰りなさい" },
+        { "speaker": "", "face": "", "text": "……【洞察】と【魅力】が上がった。" }
+      ],
+      "growth_stats": { "insight": 3, "charm": 2 }
+    },
+    {
       "dialogue_id": "ch1_minto_fifth",
       "lines": [
         {
