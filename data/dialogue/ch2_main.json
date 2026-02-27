@@ -76,7 +76,7 @@
       "lines": [
         { "speaker": "", "face": "", "text": "────夜。tonariのバイト中。" },
         { "speaker": "", "face": "", "text": "3卓の炭替え。いつもの作業。でも今日は、手が動かない。" },
-        { "speaker": "hajime", "face": "serious", "text": "（ケムリさんのデータ理論……あげはさんのヴァイブス……なるの安定感……）" },
+        { "speaker": "hajime", "face": "serious", "text": "（ケムリさんのデータ理論……あげはさんのバイブス……なるの安定感……）" },
         { "speaker": "hajime", "face": "serious", "text": "（みんな「自分の武器」がある。僕には……何がある？）" },
         { "speaker": "sumi", "face": "serious", "text": "「……最近のお前の煙、迷ってるな」" },
         { "speaker": "hajime", "face": "sad", "text": "「え？」" },
@@ -106,7 +106,7 @@
         { "speaker": "hajime", "face": "sad", "text": "でも、大会が……" },
         { "speaker": "sumi", "face": "serious", "text": "休むのも仕事だ" },
         { "speaker": "", "face": "", "text": "スミさんの言葉は正しかった。でも、はじめは休めなかった。" },
-        { "speaker": "hajime", "face": "sad", "text": "（あげはさんは今頃、ヴァイブスで新しい一杯を生み出してるんだろうな……。ケムリさんはデータで完璧な再現性を磨いてる。なるは配合ノートを更新してる）" },
+        { "speaker": "hajime", "face": "sad", "text": "（あげはさんは今頃、バイブスで新しい一杯を生み出してるんだろうな……。ケムリさんはデータで完璧な再現性を磨いてる。なるは配合ノートを更新してる）" },
         { "speaker": "hajime", "face": "sad", "text": "（みんな『自分の正解』を持ってる。僕は自分の煙の味すら分からなくなってるのに）" }
       ]
     },
