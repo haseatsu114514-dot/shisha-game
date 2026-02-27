@@ -240,6 +240,151 @@
       ]
     },
     {
+      "id": "lime_ageha_day3",
+      "sender": "ageha",
+      "trigger_day": 3,
+      "trigger_condition": "lime_exchanged",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "ハジメっちー！ LIMEしてみたっ"
+        },
+        {
+          "sender": "ageha",
+          "text": "ギャル友に「シーシャ男子と連絡先交換した」って言ったらめっちゃ受けてたｗ"
+        },
+        {
+          "sender": "ageha",
+          "text": "うちのお店、いろんな人が来てくれてさ〜 なんか人脈だけは広いんだよね笑"
+        }
+      ],
+      "replies": [
+        {
+          "text": "どんな人が来るの？",
+          "response": "雑誌見て来てくれる子とか、シーシャ好きの人とか、ギャル友とか。みんな最初は緊張してんのかわいいんだよね笑",
+          "affinity": 1
+        },
+        {
+          "text": "仲いいんだね",
+          "response": "うちが誰にでもフレンドリーなだけかも〜 まあ人見知りするより楽しいじゃん",
+          "affinity": 1
+        },
+        {
+          "text": "みんなに優しいから人が集まるんじゃない",
+          "response": "……えっそんな。普通にしてるだけだけど、そう見えてる？ ……なんか、ちょっと嬉しいかも♡",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_ageha_model_reveal",
+      "sender": "ageha",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 2,
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "あ、ハジメっちって雑誌とか読む？"
+        },
+        {
+          "sender": "ageha",
+          "text": "今月号の『GALA STREET』にうち載ってんだけど笑"
+        },
+        {
+          "sender": "ageha",
+          "text": "友達に頼まれてノリで応募したら受かっちゃってさ。読者モデルってやつ"
+        },
+        {
+          "sender": "ageha",
+          "text": "正直めっちゃ恥ずいんだけど……シーシャ職人として見てほしいから店では言いたくないんだよね"
+        }
+      ],
+      "replies": [
+        {
+          "text": "読んでみる",
+          "response": "えっ本当に！？ やめてよ恥ずかしいしっ！！……ちょっとだけ嬉しいけどっ",
+          "affinity": 2
+        },
+        {
+          "text": "シーシャ職人として見てるよ",
+          "response": "……それ聞いて安心した。ありがと、ハジメっち。バイブス的に信頼できると思ってたし",
+          "affinity": 3
+        },
+        {
+          "text": "どんな雑誌？",
+          "response": "ギャル系のストリート系ファッション誌！ 読者モデルだからプロのモデルとは違うけどね。まあ来てくれる人が増えたから結果オーライかな",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_outing_ageha_1",
+      "sender": "ageha",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "noon",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "ハジメっち、今日のお昼あいてる？"
+        },
+        {
+          "sender": "ageha",
+          "text": "ギャル友と集まるんだけど、一緒にシーシャ吸いに行かない？"
+        },
+        {
+          "sender": "ageha",
+          "text": "みんなハジメっちに会いたがってるから笑　心配しなくて大丈夫、優しいから♡"
+        }
+      ],
+      "accept_event": "outing_ageha_1",
+      "decline_response": {
+        "sender": "ageha",
+        "text": "えー残念！ また今度ね。うちの友達には次会わせるから覚悟しといて笑"
+      }
+    },
+    {
+      "id": "lime_ageha_day5",
+      "sender": "ageha",
+      "trigger_day": 5,
+      "trigger_condition": "lime_exchanged",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "あと少しで大会じゃん"
+        },
+        {
+          "sender": "ageha",
+          "text": "うちはバイブス的にはOKなんだけど……なんか今日ちょっと手が重い"
+        },
+        {
+          "sender": "ageha",
+          "text": "まあ関係ないし！ ハジメっちは準備できてんの？"
+        }
+      ],
+      "replies": [
+        {
+          "text": "大丈夫？",
+          "response": "あ……聞かなくていいから笑　たまにあるだけだし。うちよりハジメっちの心配してよ",
+          "affinity": 2
+        },
+        {
+          "text": "自分もまだ不安",
+          "response": "同じじゃんっ笑　まあお互い本番で出し切ろ。いつも通りにやればいいんでしょ",
+          "affinity": 1
+        },
+        {
+          "text": "練習のことなら話せるよ",
+          "response": "……ハジメっちってなんか変なとこで優しいよね。……少しだけ、話してもいい？",
+          "affinity": 3
+        }
+      ]
+    },
+    {
       "id": "encourage_ageha",
       "sender": "ageha",
       "trigger_condition": "tournament_day",
@@ -252,6 +397,10 @@
         {
           "sender": "ageha",
           "text": "うちの見込んだ男なんだから、無様な真似はマジ許さないし。とりま勝ってきなさい"
+        },
+        {
+          "sender": "ageha",
+          "text": "あとギャル友たちも応援してるって伝言頼まれたし♡"
         }
       ]
     },

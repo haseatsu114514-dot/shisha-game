@@ -73,7 +73,7 @@
     "nationality": "Japan",
     "affiliation": "Eden",
     "play_style": "「ダブルアップル特化」",
-    "description": "純日本人であり、愚直なまでにダブルアップルの味の精度と完璧なイガりのコントロールを追求するストイックな職人気質のプレイヤー。\n一芸に特化した強固な強さを持つ。",
+    "description": "純日本人であり、愚直なまでにダブルアップルの味の精度と完璧なイガりのコントロールを追求するストイックな職人気質のプレイヤー。\n一芸に特化した強固な強さを持つ。\nダブルアップルの知識量と扱いでは右に出る者がいないとして、常連客や業界内から「総督（そうとく）」のあだ名で呼ばれている。本人はこのあだ名を別に嫌いではない。",
     "background_secret": "他のフレーバーを全く吸えない（味が分からない）という極端な味覚の偏りを持つ。それを弱点にせず、ダブルアップルのみをひたすら昇華させた職人。",
     "favorite_flavor": "ダブルアップル",
     "specialty_flavor": "ダブルアップル（アニス強め）",
@@ -204,23 +204,42 @@
   },
   {
     "id": "rei",
-    "name": "零-REI- / 田中 健太",
-    "role": "rival_ch3",
-    "age": 28,
+    "name": "零-REI- / 田中 健太（たなか けんた）",
+    "role": "rival_ch2",
+    "age": 25,
     "nationality": "Japan",
-    "affiliation": "V系コンセプトカフェ店長",
+    "affiliation": "V系コンセプトカフェ「零-ZERO-」店長",
     "play_style": "「カリスマ」",
-    "description": "V系コンセプトの店長であり、カリスマ的シーシャ職人。",
-    "background_secret": "実は本名は田中健太。見た目の派手さに反して、技術は超が一流で泥臭い努力家。",
+    "description": "V系コンセプトカフェ「零-ZERO-」の店長兼シーシャ職人。第2章大会に初登場し、第3章でも因縁が続く強敵。\n首・腕・肩甲骨にまで及ぶ全身の刺青（和柄と西洋ゴシックを組み合わせた複雑なデザイン）、血のように深い赤と漆黒の非対称カラーリング。ステージに立てばそれだけで空気が変わる。\n使うミックス名はすべてV系バンドへのオマージュ。代表作は「嘘の薔薇（うそのばら）」「CASSIS MEMORIAL」「DOLLS REQUIEM」「FILTH IN AMBER」。\nフローラル系フレーバーを極限まで重ね、煙そのものをパフォーマンスに変える。演奏が始まったかのように静まり返る大会会場は、REIが始めるだけで「ライブ」になる。",
+    "background_secret": "極度の人見知りであり、派手なメイクと芝居がかった「カリスマ」のペルソナは、素の自分を守るための鎧。本名「田中健太」という極めて平凡な名前をコンプレックスに思っており、本当は誰より真面目で神経質な努力家。かつては地方の小さなシーシャ店でアルバイトをしながら独学で技術を磨き、技術は超一流と評される。タトゥーはすべてが「誰かに影響を受けた瞬間の記念碑」。その中に、スミさん（炭場丈一郎）の煙への出会いを記した一本が隠れている。",
     "favorite_flavor": "ローズ",
-    "specialty_flavor": "フローラル系全般",
+    "specialty_flavor": "フローラル系全般（薔薇・ジャスミン・ラベンダーの重ね掛け）",
+    "signature_mixes": [
+      {
+        "name": "嘘の薔薇",
+        "desc": "ローズ×ダークベリー×かすかなメントール。美しいのに後味が複雑で、甘さの中に苦みが潜む。"
+      },
+      {
+        "name": "CASSIS MEMORIAL",
+        "desc": "カシス×ブラックカラント×スモーキーダークリーフ。深い喪失感をコンセプトに作られた、重くて甘い追悼の煙。"
+      },
+      {
+        "name": "DOLLS REQUIEM",
+        "desc": "ラベンダー×ホワイトティー×ハニー。人形のように静かで美しく、けれど冷たい。"
+      },
+      {
+        "name": "FILTH IN AMBER",
+        "desc": "ダークリーフ×アンバー（琥珀）×チェリー。腐敗と甘美が交差するREI最大の問題作。"
+      }
+    ],
     "growth_stats": {
       "primary": "魅力",
       "secondary": "センス",
-      "notes": "はじめの煙と出会い、更なる表現力を手に入れた。"
+      "notes": "完璧なカリスマを演じることで客を圧倒していたが、はじめの等身大の接客を見て、いつの間にか素の自分のミスに対してファンに少しだけ照れ笑いを見せるようになっていた。"
     },
     "visual_concepts": [
-      "28s elegant man, sleek silver hair, visual-kei makeup, handling hookah tools with graceful, flowing movements, surrounded by gentle floral smoke"
+      "25s japanese visual-kei male, charismatic and mysterious, deep red and black asymmetrical styled hair with dramatic volume, visible tattoos on neck and hands mixing japanese traditional and gothic western motifs, heavy dramatic eyeliner and pale foundation, wearing a dark velvet embroidered coat with silver accents, holding an ornate hookah hose like a microphone on stage, moody spotlight behind",
+      "visual kei cafe master, striking androgynous features, full body tattoo hints visible under rolled-up sleeves showing intricate floral and gothic patterns, wearing a form-fitting black high-neck top with chain decorations, intense gaze, performing shisha preparation as if conducting an orchestra, dark gothic lounge atmosphere with dim candlelight and rose petals"
     ]
   },
   {
@@ -271,12 +290,12 @@
     "id": "ageha",
     "name": "アゲハ / 宵野 葉子（よいの ようこ）",
     "role": "rival_ch2",
-    "age": 22,
+    "age": 24,
     "nationality": "Japan",
     "affiliation": "第2章ライバル",
     "play_style": "「バイブスと直感」",
-    "description": "第2章で立ちはだかるライバルでありヒロイン候補の一人。\n理論ではなく「バイブス」だけで最高の一杯を作り上げてしまう天才肌だが、内心ではいつか通用しなくなる不安と戦っている。\nもともと体が丈夫でなく、手が震える日や味覚が鈍る日がある。朝起きるたびに「今日、感覚あるかな…」と確かめるのが習慣になっており、このことは主人公だけが知る秘密になる。",
-    "background_secret": "誰よりも周りの空気を読むことに長けているため、逆に「自分自身」が分からなくなっている。他人に合わせる『バイブス』を自分の才能だと自己暗示をかけている。\n教えられない本当の理由は「言語化した瞬間に魔法が消える気がする」という恐怖心。理屈にした瞬間に自分が凡人になる気がして、『理論に負けたくない』という意地が根底にある。主人公がその感覚を少しずつ言語化していく構図が彼女の成長軸になる。\nホワイトグミベアは子供の頃の安心の象徴。病院帰りに母親がよく買ってくれたため、甘い匂いに今でも救われる。だから「ただかわいいから好き」以上の意味がある。",
+    "description": "第2章で立ちはだかるライバルでありヒロイン候補の一人。はじめより2歳年上の24歳。\nベースは平成ギャルマインド──「カワイイは最強」「バイブスで全部OK」「人に優しく、自分にもゆるく」が信条。ギャル友のグループとよく連む。\n雑誌の読者モデルとして活動しており、雑誌掲載をきっかけにファンになったオタクたちが通うようになった（見た目に反して誰にでも分け隔てなく接してくれるため）。シーシャ好き・ギャル仲間・オタクと、客層の幅がとびきり広い。\n理論ではなく「バイブス」だけで最高の一杯を作り上げてしまう天才肌だが、内心ではいつか通用しなくなる不安と戦っている。\nもともと体が丈夫でなく、手が震える日や味覚が鈍る日がある。朝起きるたびに「今日、感覚あるかな…」と確かめるのが習慣になっており、このことは主人公だけが知る秘密になる。",
+    "background_secret": "誰よりも周りの空気を読むことに長けているため、逆に「自分自身」が分からなくなっている。他人に合わせる『バイブス』を自分の才能だと自己暗示をかけている。\n教えられない本当の理由は「言語化した瞬間に魔法が消える気がする」という恐怖心。理屈にした瞬間に自分が凡人になる気がして、『理論に負けたくない』という意地が根底にある。主人公がその感覚を少しずつ言語化していく構図が彼女の成長軸になる。\nホワイトグミベアは子供の頃の安心の象徴。病院帰りに母親がよく買ってくれたため、甘い匂いに今でも救われる。だから「ただかわいいから好き」以上の意味がある。\n雑誌の読者モデルは「友達に頼まれてノリで応募したら受かった」がきっかけ。本人はシーシャ職人として見られたいので、雑誌モデルの話を店では積極的にしない。",
     "favorite_flavor": "ホワイトグミベアとレッドグミベア",
     "specialty_flavor": "トロピカルフルーツ系",
     "growth_stats": {
@@ -285,8 +304,8 @@
       "notes": "直感頼りだったが、はじめが真摯にフレーバーの相性をメモする姿を見て、いつの間にか彼女も隠れて温度変化の時間をスマホに記録するような地道な『理論化』を試みるようになっていた。"
     },
     "visual_concepts": [
-      "22s japanese female, trendy and flashy club fashion, blonde hair with pink highlights, bright makeup, energetic and slightly chaotic vibe, holding a colorful hookah hose with neon acrylic nails",
-      "vibrant young gyaru-style shisha player, charismatic smile, dyed hair, wearing an off-shoulder fashionable top and choker, sparkling party aura, lively nightclub lounge background"
+      "24s japanese gyaru female, classic heisei-era gyaru style mixed with modern fashion sense, honey-blonde hair with pink highlights and voluminous styling, dramatic makeup with long lashes and glossy lips, energetic and slightly chaotic vibe, wearing trendy off-shoulder top with platform shoes, holding a colorful hookah hose with blinged-out acrylic nails",
+      "vibrant young gyaru-style shisha player turned magazine reader model, charismatic wide smile, dyed layered hair, wearing fashionable club-style outfit with choker and ankle bracelet, surrounded by regulars from all walks of life (otaku fans, gyaru friends, shisha enthusiasts), lively night lounge background with neon glints"
     ]
   },
   {
@@ -331,28 +350,6 @@
     "visual_concepts": [
       "39s japanese yakuza boss, intimidating sharp face with a small scar, slicked back hair, wearing a tailored dark suit without a tie showing traditional irezumi tattoos on his chest, very delicate and precise hands handling hot charcoal",
       "former bōsōzoku turned yakuza, stern expression, wearing a dark luxurious patterned silk shirt, intricate japanese tattoos visible on forearms, holding silver tongs with extreme care, cinematic lighting in a VIP room"
-    ]
-  },
-  {
-    "id": "rei",
-    "name": "零-REI- / 田中 健太（たなか けんた）",
-    "role": "rival_ch2",
-    "age": 25,
-    "nationality": "Japan",
-    "affiliation": "V系コンセプト",
-    "play_style": "「カリスマ」",
-    "description": "V系のカリスマ的シーシャ職人で、第2章大会に登場する強敵。",
-    "background_secret": "極度の人見知りであり、派手なメイクと芝居がかった「カリスマ」のペルソナは、素の自分を守るための鎧。本名が「田中健太」という極めて一般的な名前であることをコンプレックスに思っており、本当は誰より真面目で神経質。",
-    "favorite_flavor": "ローズ（仮）",
-    "specialty_flavor": "フローラル系の華やかなミックス",
-    "growth_stats": {
-      "primary": "魅力",
-      "secondary": "センス",
-      "notes": "完璧なカリスマを演じることで客を圧倒していたが、はじめの等身大の接客を見て、いつの間にか素の自分のミスに対してファンに少しだけ照れ笑いを見せるようになっていた。"
-    },
-    "visual_concepts": [
-      "25s japanese male, visual kei style, pale makeup with dark dramatic eyeliner, long stylized asymmetrical black and red hair, wearing gothic punk fashion with silver chains, charismatic dramatic pose",
-      "visual kei rock band vocalist style, striking handsome features with heavy makeup, wearing a dark velvet jacket and spiked choker, holding an ornate dark hookah hose like a microphone, stage lighting"
     ]
   },
   {
@@ -408,7 +405,7 @@
     "nationality": "Japan",
     "affiliation": "大会審査員長 / 大手シーシャチェーン「シーステーション」会長",
     "play_style": "N/A",
-    "description": "大手シーシャチェーン「シーステーション」（誰でも入りやすい大衆向け店舗）の会長であり大会審査員長。\n自社の店舗は「ファミレスのような手軽さ」を売りにして割り切っているが、プロの大会審査においては単なる技術だけでなく「店の哲学が煙に出ているか」を最重要基準にするという恐ろしいほどの二面性を持つ。\n自社の煙はあくまで入り口であり、若者たちが自社チェーンを踏み台にして本物の煙へ至ることを望んでいる。だからこそ、プロの大会では容赦のない採点を行う。",
+    "description": "大手シーシャチェーン「シーステーション」（誰でも入りやすい大衆向け店舗）の会長であり大会審査員長。\n自社の店舗は「ファミレスのような手軽さ」を売りにして割り切っているが、プロの大会審査においては単なる技術だけでなく「店の哲学が煙に出ているか」を最重要基準にするという恐ろしいほどの二面性を持つ。\n自社の煙はあくまで入り口であり、若者たちが自社チェーンを踏み台にして本物の煙へ至ることを望んでいる。だからこそ、プロの大会では容赦のない採点を行う。\nスミさんとは旧知の仲で、「真逆の道を選んだ」ライバルでもある。酒の席でだけ、若い頃の話をする。",
     "background_secret": "根底にあるのは『かつて自分が救われたあの小さな古びたシーシャ屋のような空間を、全国どこでも味わえるようにしたい』という泥臭く熱い理念。スミさんとは旧知の仲で、真逆の道を歩んだライバル関係でもある。お忍びで自社チェーンの若手の煙を吸いに行きひっそり評価する「不器用だが泥臭い親父」の側面を持つ。",
     "favorite_flavor": "シーガ（葉巻系）",
     "specialty_flavor": "N/A（審査のため作らない）",
@@ -430,7 +427,7 @@
     "nationality": "Turkey",
     "affiliation": "大会審査員（元トプハーネ地区ナルギレ職人）",
     "play_style": "N/A",
-    "description": "シーシャ大会の審査員の一人。トルコのトプハーネ地区出身の元ナルギレ職人。伝統と歴史に根ざしたシーシャの深みを誰よりも理解しており、「新しいだけでは本物ではない」という信念で技術の奥にある人の煙を見極める。かつて出会った放浪の日本人（スミさん）の煙が審査員を目指したきっかけとも噂される。",
+    "description": "シーシャ大会の審査員の一人。トルコのトプハーネ地区出身の元ナルギレ職人。\n伝統と歴史に根ざしたシーシャの深みを誰よりも理解しており、「新しいだけでは本物ではない」という信念で技術の奥にある人の煙を見極める。\nかつて出会った放浪の日本人（スミさん）の煙が審査員を目指したきっかけとも噂される。\n普段は無口だが、本当に感動したシーシャに出会うと母国語（トルコ語）でぽつりとつぶやく。その言葉を理解できた者には、特別な視線で見られるという。",
     "background_secret": "トプハーネの再開発で自分の店を失った過去を持つ。失われた『あの頃の街の煙』をもう一度体験したくて、審査員として世界中を彷徨っている。",
     "favorite_flavor": "ピスタチオ（仮）",
     "specialty_flavor": "N/A",
@@ -452,7 +449,7 @@
     "nationality": "Japan",
     "affiliation": "大会審査員（クラブVJ兼任）",
     "play_style": "N/A",
-    "description": "シーシャ大会の審査員の一人。DJとして長年「空間の空気感」を作ってきた経験から、シーシャの煙が場の雰囲気とどう調和しているかを重点的に評価する。\n「技術の前に、場を支配できているか」が彼の審査基準。",
+    "description": "シーシャ大会の審査員の一人。DJとして長年「空間の空気感」を作ってきた経験から、シーシャの煙が場の雰囲気とどう調和しているかを重点的に評価する。\n「技術の前に、場を支配できているか」が彼の審査基準。\n普段は飄々としたクールキャラだが、心を動かされた煙の前では反射的にヘッドホンを外して目を閉じる癖がある。これが「DJ SMOKEがヘッドホンを外した」という大会の隠れた見どころになっている。",
     "background_secret": "実は重度の嗅覚障害を患いかけており、味や香りの繊細な判別が困難になりつつある。だからこそ、『場の空気』や『空間との調和』という自分の得意領域に審査の比重を全振りしている。",
     "favorite_flavor": "エナジードリンク（仮）",
     "specialty_flavor": "N/A",
@@ -608,13 +605,13 @@
     "affiliation": "mukai（裏口の主）",
     "play_style": "N/A",
     "description": "東京の溜まり場「mukai」の裏口で飼われている茶色のハチワレ猫（スコティッシュフォールド）。",
-    "background_secret": "常連客からは「ヤニねこ」の愛称で呼ばれている。店内には入らず、基本は裏で大人しく「スコ座り」をしている。メインストーリーには関わらないが、東京編の憩いのマスコット役として主人公やましろ、常連客たちとささやかな交流を行う。",
+    "background_secret": "常連客からは「ヤニねこ」の愛称で呼ばれている。店内には入らず、基本は裏で大人しく「スコ座り」をしている。猫らしくマイペースで気まぐれだが、なぜかましろにだけはよく懐いている。メインストーリーには関わらないが、東京編の憩いのマスコット役として主人公やましろ、常連客たちとささやかな交流を行う。",
     "favorite_flavor": "N/A",
     "specialty_flavor": "N/A",
     "growth_stats": {
       "primary": "N/A",
       "secondary": "N/A",
-      "notes": "餌をあげたり撫でたりするとプレイヤーのメンタルが少し回復する癒やし枠。"
+      "notes": "餌をあげたり撫でたりするとプレイヤーのメンタルが少し回復する癒やし枠。猫なので成長しない。"
     },
     "visual_concepts": [
       "brown and white scottish fold cat, sitting with back against the wall (scottish fold sit / suko-zuwari), very relaxed and lazy aura, resting near the back door of a shisha cafe"
@@ -669,16 +666,19 @@
     "nationality": "Japan",
     "affiliation": "大会審査員",
     "play_style": "N/A",
-    "description": "アグレッシブな煙を好む審査員。「煙の量」と「個性」を重視する傾向がある。",
-    "background_secret": "新しい物好きで、常に刺激的なシーシャ体験を求めている。",
+    "description": "大会審査員の一人。口癖は「シーシャはおいしいねえ」。どんな一杯も本当に美味しそうに吸うため、出場者全員が彼に吸ってもらいたがる。\n煙の量・個性・インパクトを重視するスタイルで、見ていて「楽しい」「美味しそう」を感じさせる煙に対して特に高い評価を与える。\nシーシャ業界の有名ライター兼コラムニストで、日本最大のシーシャ情報サイト「HOOKAH PRESS」の編集長を務める。彼の記事やレビューはシーシャファンへの影響力が絶大。大会後の総評コラムはシーシャ界隈で毎回話題になる。",
+    "background_secret": "新しい物好きで、常に刺激的なシーシャ体験を求めている。\n実は超がつく平和主義者で、誰かが負けるシーンが見ていられないため、大会後は必ず全出場者を「それぞれに良さがあった」とフォローするコラムを書く。\nシーシャ以外にも「美味しいもの全般」が大好きで、大会の隙間に地元グルメを開拓するのが趣味。出張大会のたびにご当地グルメレポートをSNSにあげており、料理系フォロワーの方が多いのが悩み。",
     "favorite_flavor": "ミント、ダブルアップル",
     "specialty_flavor": "N/A",
     "growth_stats": {
       "primary": "洞察",
       "secondary": "魅力",
-      "notes": ""
+      "notes": "「美味しい」の語彙がシーシャ以外でも増えていた。はじめの煙を吸ってから、なぜかコラムに食事の描写が入るようになった。"
     },
-    "visual_concepts": []
+    "visual_concepts": [
+      "39s friendly japanese male journalist, round cheerful face with a warm welcoming smile, slightly pudgy build, wearing smart casual (shirt with blazer, no tie), always holding a notepad and a shisha hose, genuinely excited expression while tasting",
+      "enthusiastic shisha media person, expressive happy face, wearing glasses and a press lanyard, leaning forward eagerly over the judge table, looking like he's about to declare something delicious at any moment"
+    ]
   },
   {
     "id": "kirishima",

@@ -293,6 +293,128 @@
           "text": "（アダムさんとの奇妙な交流を経て、シーシャの奥深さを改めて学んだ気がする。あの人なりのエールだと思っておこう）"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch1_adam_group_soutoку",
+      "metadata": { "bg": "res://assets/backgrounds/bg_eden.png" },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "エデンに来ると、珍しく常連客らしい男たちが2人いた。どちらもカウンターに腰掛け、アダムのシーシャをゆっくり吸っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「……さすが総督、今日も完璧ですね」"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "当然。リンゴの真理は変わらない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──総督（そうとく）。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（え……今、総督って言った？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「ダブルアップルのことなら総督に聞けば全部分かりますから。知識量が半端じゃないんですよ、この人」\n「そう。右に出る者はいない」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（あだ名か……「総督」……確かに、ダブルアップルについてはアダムさん以上の人間はいない気がする）"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "……はじめよ。その顔はなんだ？ リンゴの知識で民を統べるのは、至極当然の道理だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いや、あだ名が「総督」って何者なんですか……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "常連の二人が声を合わせて笑った。アダムは澄ました顔で炭の位置を微調整した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【センス】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_adam_outing_dagurikura",
+      "metadata": { "bg": "res://assets/backgrounds/bg_arcade.png" },
+      "lines": [
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "はじめよ。今夜、俺と共に行くべき場所がある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、どこですか？"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "観音商店街のゲームセンター。あそこのクレーンゲームに、限定のリンゴのマスコット人形が入っている。今夜中に確保せねばならない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（クレーンゲームかっ！！ ……しかも理由がマスコット？）"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "迷える子羊よ。リンゴの探求に聖地も俗地も関係ない。来るか、来ないか。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……行きます。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ゲームセンターに着いた。アダムはクレーンゲームの前に立ち、無言で100円を投入した。\nアームが下りる。──見事、一発で掴んだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（えっ、上手すぎる……）"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "リンゴのために、いかなる技術も磨く。それが総督の流儀。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（何その台詞……でも、少し格好良かった）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り道、アダムは赤くて丸いリンゴのマスコットを大事そうに鞄に入れながら歩いた。夜の商店街に、ちょっとだけ普通の光景が広がっていた。"
+        }
+      ]
     }
   ]
 }
