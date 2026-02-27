@@ -486,47 +486,25 @@
     ]
   },
   {
-    "id": "chad",
-    "name": "チャド / チャド・ウィンズロウ",
-    "role": "judge",
-    "age": 29,
-    "nationality": "USA",
-    "affiliation": "世界戦プレイヤー",
-    "play_style": "「ショーマンシップ」",
-    "description": "第4章の世界大会に関わるキャラクター。「味はいいけどショーマンシップが足りねえ」と、主人公に意外な教えを提供する師匠の一人。",
-    "background_secret": "過去にエンターテイナーとしての夢に破れた俳優崩れ。言葉も通じない異国で、シーシャを通じた『言葉不要のパフォーマンス』に自分の居場所と救いを見出した。",
-    "favorite_flavor": "バブルガム",
-    "specialty_flavor": "バブルガム",
-    "growth_stats": {
-      "primary": "魅力",
-      "secondary": "センス",
-      "notes": "派手なパフォーマンスで客の目を引くことばかり考えていたが、はじめの静かで地味な手元に見とれる客の姿を見て、いつの間にか『静寂のショーマンシップ』という引き算の演出を身に付けていた。"
-    },
-    "visual_concepts": [
-      "29s american male, incredibly fit and handsome, confident blinding smile, short blonde hair, wearing a tight black t-shirt showing off muscular arms, doing flashy tricks with bright smoke rings, energetic vibe",
-      "charismatic western showman, bright blue eyes, wearing flashy sunglasses indoors, performing acrobatic smoke tricks like a bartender juggling bottles, vibrant and fun lighting"
-    ]
-  },
-  {
     "id": "da_silva",
     "name": "ダ・シルヴァ太陽 / エンリケ・ダ・シルヴァ・太陽",
     "role": "judge",
     "age": 28,
     "nationality": "Brazil",
     "affiliation": "世界戦プレイヤー",
-    "play_style": "「フェスタ（祝祭）」",
-    "description": "第4章に関わるキャラクター。「シーシャはフェスタ！楽しくなけりゃ意味がねぇ！」と主人公に純粋な楽しさを思い出させてくれる。",
-    "background_secret": "スラム（ファヴェーラ）の出身で、貧困と暴力の中で育った。悲惨な現実から一瞬でも仲間を解き放つため、『煙のある場所だけは最高の祝祭（フェスタ）にする』という悲痛なまでの明るさを持つ。",
-    "favorite_flavor": "アサイー（仮）",
+    "play_style": "「フェスタ（祝祭）＆ショーマンシップ」",
+    "description": "第4章の世界大会に関わるキャラクター兼ゲスト審査員。「シーシャはフェスタ！楽しくなけりゃ意味がねぇ！」と主人公に純粋な楽しさを思い出させてくれる。ショーマンシップにも長け、派手なパフォーマンスで場を盛り上げる。「大会で会おう」と約束し、審査員席から再会する。",
+    "background_secret": "スラム（ファヴェーラ）の出身で、貧困と暴力の中で育った。悲惨な現実から一瞬でも仲間を解き放つため、『煙のある場所だけは最高の祝祭（フェスタ）にする』という悲痛なまでの明るさを持つ。かつてエンターテイナーとしての夢に挫折した時期もあるが、シーシャを通じた『言葉不要のパフォーマンス』に自分の居場所と救いを見出した。",
+    "favorite_flavor": "南国フルーツミックス",
     "specialty_flavor": "南国フルーツ・お祭りミックス",
     "growth_stats": {
       "primary": "魅力",
       "secondary": "根性",
-      "notes": "『とにかく明るく楽しく』という一点張りだったが、はじめの『相手の沈黙さえも受け入れる』シーシャ作りを知り、いつの間にか落ち込んだ客には静かに寄り添うチルな煙も出せるようになっていた。"
+      "notes": "『とにかく明るく楽しく、派手に盛り上げる』という信念だったが、はじめの『相手の沈黙さえも受け入れる』シーシャ作りを知り、いつの間にか落ち込んだ客には静かに寄り添うチルな煙も出せるようになっていた。"
     },
     "visual_concepts": [
       "28s brazilian male, tanned skin, athletic build, sunny and overwhelmingly cheerful expression, wearing a vibrant tropical shirt open at the chest, surrounded by lively festival energy and colorful smoke",
-      "passionate brazilian shisha player, dark curly hair, wide joyful smile, wearing colorful street carnival-inspired clothing, partying and dancing while managing the hookah, festive warm sunshine lighting"
+      "passionate brazilian shisha player, dark curly hair, wide joyful smile, wearing colorful street carnival-inspired clothing, performing flashy smoke tricks while dancing, festive warm sunshine lighting"
     ]
   },
   {
