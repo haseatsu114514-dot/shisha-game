@@ -32,7 +32,13 @@
           },
           "money_bonus": 500
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      },
+      "customer_chat_snippet": "作ったシーシャを渡した後、お客さんが「また来ます！」と笑顔で帰っていった。"
     },
     {
       "id": "baito_trouble_01",
@@ -64,7 +70,13 @@
           },
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      },
+      "customer_chat_snippet": "直し終わったらサラリーマンが「気が利くね」とポチ袋を差し出してくれた。"
     },
     {
       "id": "baito_rush_01",
@@ -89,7 +101,13 @@
           },
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      },
+      "customer_chat_snippet": "炭替えが一通り終わると、常連のおじさんが「お疲れ！」とグータッチしてくれた。"
     },
     {
       "id": "baito_mob_flavor_police",
@@ -114,7 +132,13 @@
           },
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      },
+      "customer_chat_snippet": "その後、眼鏡のおじさんはちゃんとシーシャを注文して帰っていった。"
     },
     {
       "id": "baito_mob_insta",
@@ -135,7 +159,12 @@
           "stats": {},
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      }
     },
     {
       "id": "baito_regular_01",
@@ -159,7 +188,12 @@
           },
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      }
     },
     {
       "id": "baito_tsumugi_01",
@@ -186,7 +220,12 @@
           },
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      }
     },
     {
       "id": "baito_drunk_01",
@@ -219,7 +258,12 @@
           },
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      }
     },
     {
       "id": "baito_body_bad_01",
@@ -244,7 +288,12 @@
           },
           "money_bonus": 500
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      }
     },
     {
       "id": "baito_closing_smoke",
@@ -268,7 +317,12 @@
           },
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      }
     },
     {
       "id": "baito_smoke_ring",
@@ -292,7 +346,12 @@
           },
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      }
     },
     {
       "id": "baito_couple_time",
@@ -316,7 +375,12 @@
           },
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      }
     },
     {
       "id": "baito_tsumugi_art",
@@ -342,7 +406,12 @@
           },
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      }
     },
     {
       "id": "baito_tsumugi_rain",
@@ -367,7 +436,12 @@
           },
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      }
     },
     {
       "id": "baito_tsumugi_closing",
@@ -391,7 +465,12 @@
           },
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      }
     },
     {
       "id": "baito_foreign_tourist",
@@ -415,7 +494,12 @@
           },
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      }
     },
     {
       "id": "baito_regulars_chat",
@@ -440,7 +524,13 @@
           },
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      },
+      "customer_chat_snippet": "常連たちがそれぞれ帰り際に「ありがとね」と声をかけてくれた。"
     },
     {
       "id": "baito_rainy_day",
@@ -466,7 +556,13 @@
           },
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      },
+      "customer_chat_snippet": "帰りがけに窓際の常連さんが「雨の日のシーシャって格別だよね」と言って帰った。"
     },
     {
       "id": "baito_closing_late",
@@ -490,7 +586,13 @@
           },
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      },
+      "customer_chat_snippet": "扉が閉まった後、静かな店内が一段と落ち着いた空気になった。"
     },
     {
       "id": "baito_mysterious_customer",
@@ -515,7 +617,12 @@
           },
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      }
     },
     {
       "id": "baito_minto_romance",
@@ -540,7 +647,12 @@
           },
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      }
     },
     {
       "id": "baito_ageha_romance",
@@ -565,7 +677,27 @@
           },
           "money_bonus": 0
         }
-      ]
+      ],
+      "base_pay": 2500,
+      "post_work": {
+        "offers_practice": true,
+        "practice_consumes_flavor": false
+      }
     }
-  ]
+  ],
+  "baito_settings": {
+    "base_pay": 2500,
+    "description": "バイトの基本給（シフト1回あたり）。選択肢の出来によってmoney_bonusが追加される。",
+    "post_work_practice": {
+      "enabled": true,
+      "prompt": "バイト終わり。\nスミさんが「もう上がっていいぞ」と言った。\n「……練習、していきますか？」",
+      "accept_result": "残って練習する。フレーバーは消費しない──使い古しで十分だ。\n炭の置き方、蒸らしのタイミング、温度のコントロール。繰り返し、繰り返し。",
+      "decline_result": "今日は早めに帰ることにした。",
+      "accept_stats": {
+        "technique": 1,
+        "sense": 1
+      },
+      "decline_stats": {}
+    }
+  }
 }

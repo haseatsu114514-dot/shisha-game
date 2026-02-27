@@ -21,7 +21,7 @@
         {
           "speaker": "ageha",
           "face": "surprise",
-          "text": "「やっぱり！ 前に道で荷物落としてた、ちょっと暗そうなお兄さんじゃん！ なんでこんなとこいんの？」"
+          "text": "「やっぱり！ 前に道で荷物落としてた人じゃん！ なんでこんなとこいんの？」"
         },
         {
           "speaker": "hajime",
@@ -31,7 +31,7 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "「へーっ！ うちはアゲハ！ じゃあキミのことはハジメっちって呼ぶし！ オタクっぽいからシーシャなんて縁ないと思ってたわウケる〜！」"
+          "text": "「へーっ！ うちはアゲハ！ じゃあキミのことはハジメっちって呼ぶし！ シーシャ屋さんやってんだ、なんかすごいね！ ウケる〜！」"
         },
         {
           "speaker": "",
@@ -383,6 +383,174 @@
         { "speaker": "", "face": "", "text": "……【洞察】と【根性】が上がった。" }
       ],
       "growth_stats": { "insight": 2, "guts": 2 }
+    },
+    {
+      "dialogue_id": "ch2_ageha_group_gyarufriend",
+      "metadata": { "bg": "res://assets/backgrounds/bg_ageha_shop.png" },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アゲハの店を訪ねると、ギャル友らしい女の子が2人、ソファ席でシーシャを楽しんでいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「アゲハ〜！ このピーチのやつめっちゃ好みかも！」\n「あーそれ新しいフレーバーの試作〜！ 感想くれてマジ助かる」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "あ、ハジメっち来た〜！ ちょうどよかった。ねぇこの子たちも感想聞かせてあげてよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「えっ、この人がハジメっちか！？ アゲハからよく聞いてたし！」\n「いつも話に出てくるから気になってたんだよね〜！」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あ、どうも……。そういう話してたんですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "ちょっ、余計なこと言わないでよっ！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アゲハが少し慌てていた。普段の余裕がちょっとだけ崩れていた。\nギャル友2人は面白そうに笑って、シーシャの煙を漂わせた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（アゲハさんにこういう顔もあるんだ。なんか……すごくいつもと違う）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【魅力】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_ageha_group_new_customer",
+      "metadata": { "bg": "res://assets/backgrounds/bg_ageha_shop.png" },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店に入ると、カウンターに若い男の子が一人。緊張した様子でメニューを眺めている。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "いらっしゃい！ 初めてかな？ 全然緊張しなくていいからね、何でも聞いてよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「あ……はい。雑誌見て来たんですけど、シーシャって初めてで」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ありがとー！ じゃあ丁寧に説明するね。まず吸い方から──"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……アゲハさんの声のトーンが全然違う。いつもの小悪魔っぽさが消えて、ただ純粋にお客さんに向き合っていた）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アゲハは時間をかけて丁寧に説明しながら、初心者用のシーシャを完璧に仕上げていった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "完成した煙を一口吸ったお客さんが「……美味しいです」と小声で言った。アゲハは「でしょ！」と目を輝かせた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（見た目に関係なく、誰が来てもあの笑顔で迎えるんだな。だからいろんな人が通うわけだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【洞察】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_ageha_outing_shisha",
+      "metadata": { "bg": "res://assets/backgrounds/bg_shisha_bar_night.png" },
+      "lines": [
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち、今夜暇？ 気になってるお店あってさ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "シーシャ屋ですか？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "そ！ 最近オープンしたとこ。バイブスよさげで気になってんだよね。一緒に行かない？ 同業者の目線で感想欲しいし"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──二人で、夜の街のシーシャ屋へ向かった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（いいお店だな。照明が落ち着いてて、煙の香りが上品……）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ここ、空間の作り方が上手いんだよね。煙の重さと香りのバランスが、うちのとは全然違う。参考になる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "アゲハさんって、こういう時いつもと全然印象違いますね。真剣な顔してる"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……そう？ うち、シーシャのことになると本気になっちゃうんだよね。笑えるじゃん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "笑えないですよ。格好いいと思います"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "……っ！！　ハジメっちってさ、なんか変なとこでまっすぐなんだよ。それちょっとズルくない？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アゲハは少し目を逸らして、シーシャのホースを口に運んだ。\n煙が夜の空間に漂って、二人の間に静かに広がっていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【センス】と【魅力】が上がった。"
+        }
+      ]
     }
   ]
 }
