@@ -45,17 +45,17 @@ const SPEAKER_NAMES := {
 	"tsumugi": "つむぎ",
 	"tumugi": "つむぎ",
 	"hazime": "はじめ",
-	"packii": "パッキー",
+	"pakki": "パッキー",
 	"salaryman": "サラリーマン",
 	"nagumo": "南雲修二(なぐもしゅうじ)",
 	"maezono": "前園壮一郎(まえぞのそういちろう)",
 	"kirishima": "霧島レン(きりしまれん)",
-	"takiguchi": "焚口ショウ(たきぐちしょう)",
 	"staff_choizap": "チョイザップスタッフ"
 }
 const SPEAKER_ID_ALIASES := {
 	"tumugi": "tsumugi",
 	"hazime": "hajime",
+	"takiguchi": "pakki",
 }
 const HIGHLIGHT_TAGS := [
 	"[imp]", "[/imp]",
@@ -300,7 +300,7 @@ func _show_next_line() -> void:
 	await _handle_cg_command(line)
 	
 	_current_speaker = str(line.get("speaker", ""))
-	if _current_speaker in ["naru", "adam", "minto", "tsumugi", "ageha", "packii"] and not EventFlags.get_flag("known_name_" + _current_speaker):
+	if _current_speaker in ["naru", "adam", "minto", "tsumugi", "ageha", "pakki"] and not EventFlags.get_flag("known_name_" + _current_speaker):
 		speaker_label.text = "？？？"
 	else:
 		speaker_label.text = SPEAKER_NAMES.get(_current_speaker, _current_speaker)
