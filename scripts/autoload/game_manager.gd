@@ -358,6 +358,12 @@ func transition_to_interval() -> void:
 
 
 func end_interval_and_next_chapter() -> void:
+	# 1位必須ガード: 大会で1位を取っていない場合は次章に進めない
+	var flag_key = "ch%d_tournament_rank" % current_chapter
+	var rank = EventFlags.get_value(flag_key, 0)
+	if rank != 1:
+		push_warning("end_interval_and_next_chapter blocked: ch%d rank=%d (1st required)" % [current_chapter, rank])
+		return
 	CalendarManager.end_interval()
 	start_chapter(current_chapter + 1)
 

@@ -121,12 +121,12 @@
           "text": "スピーカーから、テンションの高い声が響いた。"
         },
         {
-          "speaker": "takiguchi",
+          "speaker": "pakki",
           "face": "excited",
           "text": "みなさん、おまたせしましたーーーッ！！"
         },
         {
-          "speaker": "takiguchi",
+          "speaker": "pakki",
           "face": "excited",
           "text": "SMOKE CROWN CUP、[imp]開幕[/imp]ですッ！！ 実況は焚口ショウが務めさせていただきますッ！"
         },
@@ -136,7 +136,7 @@
           "text": "MC焚口ショウ。マイクを握ると人が変わるタイプらしい。声が会場全体を震わせる。"
         },
         {
-          "speaker": "takiguchi",
+          "speaker": "pakki",
           "face": "excited",
           "text": "今日の出場者は4名！ それぞれの「自分だけの一杯」をかけてぶつかり合いますッ！"
         },
@@ -146,22 +146,22 @@
           "text": "ステージの端から、見慣れた二頭身のマスコットがひょこっと現れた。"
         },
         {
-          "speaker": "packii",
+          "speaker": "pakki",
           "face": "smile",
           "text": "さあさあさあっ！！ パッキーですよ〜♪ みなさん、今日は特別な日ですよ〜！ 誰かの夢が終わる日！ 誰かの夢だけが始まる日！ このわかりやすい残酷さ……たまりませんよね〜！？ ぷぷぷっ！"
         },
         {
-          "speaker": "packii",
+          "speaker": "pakki",
           "face": "evil",
           "text": "出場者は4人で、優勝するのはたった1人！ つまり残りの3人の夢は今日ここで終わるわけですね〜♪ ふ〜ん、4人中3人が脱落か〜！ そう考えるとすごい確率ですよね〜！ ぷぷぷっ、楽しみ楽しみ！！"
         },
         {
-          "speaker": "takiguchi",
+          "speaker": "pakki",
           "face": "excited",
           "text": "それでは審査員の紹介ですッ！"
         },
         {
-          "speaker": "takiguchi",
+          "speaker": "pakki",
           "face": "excited",
           "text": "まずは──業界の鉄壁、南雲修二（なぐも しゅうじ）さんッ！"
         },
@@ -171,9 +171,19 @@
           "text": "……お手並み拝見といこう。私は『店の哲学』が乗っていない煙は評価しない"
         },
         {
-          "speaker": "takiguchi",
+          "speaker": "pakki",
           "face": "excited",
-          "text": "相変わらず厳しィィィ！ さあ続きまして──！\nシーシャはおいしいね、でおなじみ！ 前園壮一郎さんッ！"
+          "text": "相変わらず厳しィィィ！ さあ続きまして──！\nデータの鬼、ドクター・ケムリこと藤波創さんッ！"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "……データは嘘をつきません。今日も粛々と記録させていただきます"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "そしてゲスト審査員──！\nシーシャはおいしいね、でおなじみ！ 前園壮一郎さんッ！"
         },
         {
           "speaker": "maezono",
@@ -181,17 +191,17 @@
           "text": "どうも。いや〜、若い子たちの熱気がビシビシ伝わってくるねえ！ シーシャはおいしいねえ"
         },
         {
-          "speaker": "packii",
+          "speaker": "pakki",
           "face": "evil",
           "text": "審査員の皆さんは今日、誰かのシーシャ人生に終止符を打つ大切なお仕事をされるんですね〜♪ 責任重大〜！ でも正直に言いますとね〜、パッキーはその瞬間が一番好きなんですよ〜！ 絶望する顔って、どうしてこんなに美しいんでしょうね〜♪ ぷぷぷっ！！"
         },
         {
-          "speaker": "takiguchi",
+          "speaker": "pakki",
           "face": "excited",
           "text": "さあッ！ それでは！！"
         },
         {
-          "speaker": "takiguchi",
+          "speaker": "pakki",
           "face": "excited",
           "text": "SMOKE CROWN CUP──[warn]開始ィィィッ！！[/warn]"
         }
@@ -219,7 +229,7 @@
           "text": "（落ち着け。いつもと同じだ。炭を切って、詰めて、出す。それだけだ）"
         },
         {
-          "speaker": "takiguchi",
+          "speaker": "pakki",
           "face": "excited",
           "text": "おーっと！ 各選手、フレーバー選択完了！ パッキングに入りますッ！"
         },
@@ -253,12 +263,12 @@
           "text": "炭をコンロに乗せる。赤くなるのを待つ。"
         },
         {
-          "speaker": "packii",
+          "speaker": "pakki",
           "face": "smile",
           "text": "あれあれ〜？ はじめ選手、ちょっと手が止まってますよ？ 大丈夫ですか〜♪"
         },
         {
-          "speaker": "packii",
+          "speaker": "pakki",
           "face": "evil",
           "text": "大丈夫大丈夫〜！ 止まっても時計は動いてますから！ ぷぷぷっ！"
         },
@@ -280,7 +290,7 @@
           "next_false": "sense_low"
         },
         {
-          "speaker": "packii",
+          "speaker": "pakki",
           "face": "smile",
           "text": "いい香りが漂ってきましたね〜♪ どの選手の煙かは分かりませんが、残念ながら全員が正解にはなれません！ くふふ！"
         },
@@ -305,7 +315,7 @@
           "text": "（……これが、今の僕の全力だ）"
         },
         {
-          "speaker": "takiguchi",
+          "speaker": "pakki",
           "face": "excited",
           "text": "各選手、完成！ いよいよ審査員への提出ですッ！！"
         },
@@ -423,7 +433,7 @@
           "text": "南雲が、わずかに眉を動かした。ほんの一瞬の出来事だったが、隣で見ていた前園が目を見張る。"
         },
         {
-          "speaker": "packii",
+          "speaker": "pakki",
           "face": "surprise",
           "text": "あっ！ あっあっ！ 南雲会長が二口！！ パッキーも初めて見ましたよコレ！ これ凄いことですよ〜！！ ……いや待って、パッキー今鳥肌立ってます。ガチです♪"
         },
@@ -433,7 +443,7 @@
           "text": "おや。南雲会長が二口いくなんて珍しいねえ"
         },
         {
-          "speaker": "takiguchi",
+          "speaker": "pakki",
           "face": "excited",
           "text": "さあ、審査員の協議に入りました！ 今日の4杯、どれも実力者揃いッ！\n果たして、結果やいかにィィ！？"
         },
@@ -443,7 +453,7 @@
           "text": "控室で待つ。時計の針が、やけにゆっくり進む。"
         },
         {
-          "speaker": "packii",
+          "speaker": "pakki",
           "face": "evil",
           "text": "さあ、審査協議に入りましたよ〜♪ どなたかの夢がもうすぐ終わります！ 今この瞬間を噛み締めながら待ちましょうね〜！ ぷぷぷっ！"
         },
@@ -458,17 +468,17 @@
           "text": "……ありがとう"
         },
         {
-          "speaker": "packii",
+          "speaker": "pakki",
           "face": "evil",
           "text": "さあさあさあっ！！！ パッキーから特別アナウンスですよ〜！！！"
         },
         {
-          "speaker": "packii",
+          "speaker": "pakki",
           "face": "evil",
           "text": "ワクワクの！ ドキドキの！ 結果発表タイム〜〜〜！！！ ぷぷぷっ！！！ 今日一番の瞬間ですよ〜！ 誰かの人生が変わる！ 誰かの夢が終わる！ この二つが同時に起きるんですよ〜！？ ね！？ た・ま・ら・な・い！！！"
         },
         {
-          "speaker": "takiguchi",
+          "speaker": "pakki",
           "face": "excited",
           "text": "それでは！ SMOKE CROWN CUP、結果発表ですッ！"
         },
@@ -493,12 +503,12 @@
           "text": "南雲修二が、はじめのシーシャにだけ満点をつけていた。"
         },
         {
-          "speaker": "takiguchi",
+          "speaker": "pakki",
           "face": "excited",
           "text": "SMOKE CROWN CUP……優勝はッ！！"
         },
         {
-          "speaker": "takiguchi",
+          "speaker": "pakki",
           "face": "excited",
           "text": "蒸野はじめ選手ッ！！！ 僅差での逆転優勝ですッ！！"
         },
@@ -683,12 +693,12 @@
       "dialogue_id": "ch1_tournament_r1_end",
       "lines": [
         {
-          "speaker": "takiguchi",
+          "speaker": "pakki",
           "face": "normal",
           "text": "さあ、ラウンド1の『提供』が完了！ 各テーブル、まずは出だしの煙の立ち上がりを審査員がチェックしていくぞ！"
         },
         {
-          "speaker": "packii",
+          "speaker": "pakki",
           "face": "evil",
           "text": "どの選手の煙も今は立ち上ってますね〜！ でもこの先、誰かの煙は消えちゃうんですよね〜♪ シーシャと一緒に夢も消える！ いやぁロマンチックですね〜！ くふふ！"
         },
@@ -708,12 +718,12 @@
       "dialogue_id": "ch1_tournament_r2_end",
       "lines": [
         {
-          "speaker": "takiguchi",
+          "speaker": "pakki",
           "face": "normal",
           "text": "ラウンド2『炭替え・調整』が終了！ 中盤戦、味のピークをどう維持するかが明暗を分ける！"
         },
         {
-          "speaker": "packii",
+          "speaker": "pakki",
           "face": "evil",
           "text": "中盤ですよ〜！ 焦りが顔に出始める頃ですね〜♪ 隣の選手の煙が気になって、自分の炭から目が離れた瞬間に詰みますよ〜！ ぷぷぷっ！ 全員頑張ってね！"
         },
@@ -738,12 +748,12 @@
       "dialogue_id": "ch1_tournament_r3_end",
       "lines": [
         {
-          "speaker": "takiguchi",
+          "speaker": "pakki",
           "face": "normal",
           "text": "いよいよラウンド3、最後の調整が完了！ 残すは最終プレゼンのみ！"
         },
         {
-          "speaker": "packii",
+          "speaker": "pakki",
           "face": "evil",
           "text": "最終局面ですよ〜！ ここまで来たら全員本当に頑張ったと思います！ ……でも3人は報われないんですよね〜♪ それが大会！ 諦めたら終わりですが、諦めなくても終わる人がいます！ ぷぷぷっ！ さあ最後まで全力で！！"
         },
@@ -781,7 +791,7 @@
           "text": "（……あ）"
         },
         {
-          "speaker": "takiguchi",
+          "speaker": "pakki",
           "face": "normal",
           "text": "SMOKE CROWN CUP……優勝は──！"
         },
@@ -796,17 +806,17 @@
           "text": "（……そうか。届かなかった）"
         },
         {
-          "speaker": "packii",
+          "speaker": "pakki",
           "face": "evil",
           "text": "あら〜〜！ 残念でしたね〜〜〜！！ ぷぷぷっ！！！"
         },
         {
-          "speaker": "packii",
+          "speaker": "pakki",
           "face": "evil",
           "text": "パッキーね、最初からうすうす気付いてたんですよ〜？ 蒸野選手、今日の状態じゃちょっと厳しいかな〜って！ でも黙ってたんですよ！ 驚かせたかったので♪ ぷぷぷっ！"
         },
         {
-          "speaker": "packii",
+          "speaker": "pakki",
           "face": "evil",
           "text": "技術も！ 個性も！ 印象も！ 全部が惜しかった！ どれか一つが突出してれば違ったかもですけど〜、全部が「まあまあ」って……くふふ！ これが一番悔しいやつですよね〜！？ パッキー大好きな負け方ですよこれ！"
         },
@@ -816,12 +826,12 @@
           "text": "（……もっと、できたはずだ）"
         },
         {
-          "speaker": "packii",
+          "speaker": "pakki",
           "face": "smile",
           "text": "まあまあ、落ち込まないでください！ 今日の経験は絶対に糧になりますよ！ ……なりますよ？ なるといいですね？ ぷぷぷっ！"
         },
         {
-          "speaker": "packii",
+          "speaker": "pakki",
           "face": "evil",
           "text": "せっかくなので一個だけアドバイスしましょうか！ 次に来る時は、もっとちゃんと準備してきてくださいね〜！ それだけです！ 簡単でしょ！？ ぷぷぷっ！！ あ〜今日も楽しかった〜！！"
         },
