@@ -234,7 +234,7 @@ func _build_ch4_spots() -> Array:
 		if not _is_visited_today("shop"):
 			spots.append({"id": "shop", "label": "Dr.Hookah Dubai [SHOP]"})
 		spots.append({"id": "dubai_souq", "label": "スパイス・スーク（市場）"})
-		spots.append({"id": "dubai_cafe", "label": "ドバイの高級カフェ"})
+		spots.append({"id": "dubai_cafe", "label": "ドバイの高級カフェ（6,000円）"})
 	elif CalendarManager.current_time == "night":
 		spots.append({"id": "dubai_shisha", "label": "現地のシーシャ屋（夜）"})
 		if not _is_visited_today("shop"):
@@ -517,9 +517,9 @@ func _enter_spot(spot: Dictionary) -> void:
 				_try_auto_return_home()
 				return
 			# High sense & charm gain, but costs money
-			var cost = 3000
+			var cost = 6000  # 海外価格
 			if PlayerData.money < cost:
-				message_label.text = "高級カフェに入るには %d円 必要です。" % cost
+				message_label.text = "高級カフェに入るには %d円 必要です。（海外価格）" % cost
 				CalendarManager.undo_action() # refund action point
 				return
 			PlayerData.spend_money(cost)
