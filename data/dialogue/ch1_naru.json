@@ -429,6 +429,41 @@
           "text": "……【洞察】が少し上がった。"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch1_naru_after_return",
+      "metadata": { "bg": "res://assets/backgrounds/kemurikusa.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "久しぶりにケムリクサに立ち寄ってみた。" },
+        { "speaker": "naru", "face": "normal", "text": "……なんだ、来たのか" },
+        { "speaker": "hajime", "face": "normal", "text": "帰ってきたって聞いたから" },
+        { "speaker": "naru", "face": "normal", "text": "修行な。終わってない。ただ、区切りをつけた" },
+        { "speaker": "", "face": "", "text": "なるはカウンターで丁寧にフレーバーをほぐしていた。以前と同じ動作だが、無駄が削ぎ落とされた静けさがある。" },
+        { "speaker": "naru", "face": "normal", "text": "地方大会のこと、ずっと考えてた。お前の煙" },
+        { "speaker": "hajime", "face": "normal", "text": "……あれで勝ったのが、今でも自分では正直よくわかってない" },
+        { "speaker": "naru", "face": "normal", "text": "俺の理論は完璧だった。でも──お前の煙は、違うとこから来てた。その『違うとこ』が何なのか、ずっと考えてた" },
+        { "speaker": "naru", "face": "serious", "text": "答えはまだ出てない。でも考え続けてる間は負けじゃないから" },
+        { "speaker": "naru", "face": "normal", "text": "ドバイまで来るんだろ。また舞台で会うかもな。そん時は本気でやる" },
+        { "speaker": "", "face": "", "text": "……【技術】が上がった。" },
+        { "type": "set_flag", "flag": "ch1_naru_after_return_done" }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_naru_after_return_firstshop",
+      "metadata": { "bg": "res://assets/backgrounds/kemurikusa.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "初めてケムリクサに足を踏み入れた。商店街の外れ。エナジードリンクとシナモンが混ざったような、独特な匂いの店だ。" },
+        { "speaker": "naru", "face": "normal", "text": "……来たのか。大会以来か" },
+        { "speaker": "hajime", "face": "normal", "text": "店は初めてで。帰ってきたって聞いたから、一回来てみようと思って" },
+        { "speaker": "naru", "face": "normal", "text": "珍しいな。負かした相手の店に来るやつ、あんまりいない" },
+        { "speaker": "", "face": "", "text": "なるが静かにシーシャのセットを組み始めた。大会の時と同じ、無駄のない動作。でも店の中だと少し落ち着いて見える。" },
+        { "speaker": "naru", "face": "normal", "text": "大会でのお前の煙。理論じゃ説明できないとこがあった。それが負けた理由だと思ってる" },
+        { "speaker": "hajime", "face": "normal", "text": "向こうも、それを考えながら作ってたと思う" },
+        { "speaker": "naru", "face": "normal", "text": "……そういうやつだったか。ドバイに出るんだろ。ここの空気、一回知っといて損はない。座れ" },
+        { "speaker": "", "face": "", "text": "出てきたシーシャは、分析的なのにどこか人間らしい煙だった。" },
+        { "speaker": "", "face": "", "text": "……【技術】が上がった。" },
+        { "type": "set_flag", "flag": "ch1_naru_after_return_done" }
+      ]
     }
   ]
 }

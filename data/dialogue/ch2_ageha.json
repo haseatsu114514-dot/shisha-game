@@ -554,6 +554,43 @@
           "text": "……【センス】と【魅力】が上がった。"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch2_ageha_after_ch2",
+      "metadata": { "bg": "res://assets/backgrounds/pepermint.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "大会が終わって、アゲハの店に立ち寄った。" },
+        { "speaker": "ageha", "face": "smile", "text": "あー、ハジメっち来たじゃん。ちょうどよかった♡" },
+        { "speaker": "hajime", "face": "normal", "text": "大会、お疲れ様でした" },
+        { "speaker": "ageha", "face": "normal", "text": "……うん。お疲れ" },
+        { "speaker": "", "face": "", "text": "いつものギャルっぽい口調が、今日は少しだけ落ち着いていた。" },
+        { "speaker": "ageha", "face": "normal", "text": "正直に言うと、悔しかったよ。ちゃんと準備したつもりだったし、アガってたから。でも──" },
+        { "speaker": "ageha", "face": "smile", "text": "ハジメっちのあの煙、ちゃんと残ってるから。悔しいだけで終わってないの。もっとやりたい、ってなってる" },
+        { "speaker": "hajime", "face": "normal", "text": "それ……すごいと思う" },
+        { "speaker": "ageha", "face": "surprise", "text": "え？ なんで？" },
+        { "speaker": "hajime", "face": "normal", "text": "負けた後でそういう気持ちになれるって、簡単じゃないから" },
+        { "speaker": "ageha", "face": "normal", "text": "……ウチ、そんなカッコいいこと言える人間じゃないと思ってたけど。ハジメっちに言われると、なんか本当のことみたいに聞こえる" },
+        { "speaker": "", "face": "", "text": "……【根性】が上がった。" },
+        { "type": "set_flag", "flag": "ch2_ageha_after_ch2_done" }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_ageha_after_ch2_firstshop",
+      "metadata": { "bg": "res://assets/backgrounds/pepermint.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "大会が終わり、初めてアゲハの店に来てみた。" },
+        { "speaker": "ageha", "face": "smile", "text": "あ、ハジメっち！ ウチの店来てくれたじゃーん♡" },
+        { "speaker": "hajime", "face": "normal", "text": "大会ぶりです。一度来てみたくて" },
+        { "speaker": "ageha", "face": "smile", "text": "大会でしか会ったことなかったもんね〜。でもホント来るとは思ってなかった。ちょっと嬉しいかも" },
+        { "speaker": "", "face": "", "text": "アゲハがてきぱきとシーシャのセットを組み始める。大会の時と同じ、迷いのない動作だ。" },
+        { "speaker": "ageha", "face": "normal", "text": "ウチ、あの大会は悔しかったんだよね。でも正直に言うと、ハジメっちの煙ちゃんと見てたから" },
+        { "speaker": "hajime", "face": "normal", "text": "どんな風に？" },
+        { "speaker": "ageha", "face": "normal", "text": "真面目で、嘘がない感じ。対戦相手だから悔しいんだけど、同時になんか、ちゃんと認めたくなる煙だった" },
+        { "speaker": "hajime", "face": "normal", "text": "……ありがとう" },
+        { "speaker": "ageha", "face": "smile", "text": "大会の話はここまでね♡ まずは一杯飲みながら話しなよ。ハジメっちのこと、大会以外でも知りたいから" },
+        { "speaker": "", "face": "", "text": "……【根性】が上がった。" },
+        { "type": "set_flag", "flag": "ch2_ageha_after_ch2_done" }
+      ]
     }
   ]
 }

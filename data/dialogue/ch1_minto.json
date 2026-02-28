@@ -458,6 +458,25 @@
       ]
     },
     {
+      "dialogue_id": "ch1_minto_after_ch1_firstshop",
+      "metadata": { "bg": "res://assets/backgrounds/pepermint.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "大会が終わってから、初めてぺぱーみんとに来てみた。" },
+        { "speaker": "minto", "face": "smile", "text": "あ、いらっしゃいませーっ！ ……あれ、はじめくん！？ 来てくれたんだ！" },
+        { "speaker": "hajime", "face": "normal", "text": "大会ぶりです。一度来てみたくて" },
+        { "speaker": "minto", "face": "smile", "text": "えへへっ、嬉しいなー♡ ちゃんと来てくれると思ってなかったから" },
+        { "speaker": "", "face": "", "text": "店内はパステルカラーの内装で、大会会場とは別世界のような可愛らしさだ。これがみんとの本拠地か。" },
+        { "speaker": "minto", "face": "normal", "text": "……大会、おめでとう。本当に" },
+        { "speaker": "hajime", "face": "normal", "text": "みんちゃんのシーシャも、すごかったよ。そこはちゃんと思ってた" },
+        { "speaker": "minto", "face": "normal", "text": "えへ……まあ、負けは負けだから。でも悔しい気持ちより、なんか……続けたい、ってなってる" },
+        { "speaker": "hajime", "face": "normal", "text": "（……この人、キャピキャピした見た目の裏に、ちゃんと熱いものを持ってる）" },
+        { "speaker": "minto", "face": "smile", "text": "ねえ、せっかく来てくれたんだから、うちのオススメ作るね。みんちゃんのシーシャ、ちゃんと味わってって♡" },
+        { "speaker": "", "face": "", "text": "出されたシーシャには、エディブルフラワーが浮いていた。甘くて、でも確かな技術の煙だった。" },
+        { "speaker": "", "face": "", "text": "……【魅力】が上がった。" },
+        { "type": "set_flag", "flag": "ch1_minto_after_ch1_done" }
+      ]
+    },
+    {
       "dialogue_id": "ch1_minto_group_regulars",
       "metadata": { "bg": "res://assets/backgrounds/pepermint.png" },
       "lines": [
