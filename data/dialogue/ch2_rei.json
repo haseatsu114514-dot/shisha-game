@@ -158,7 +158,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "全部は知らないんですけど。友達がよく歌ってたんで、なんとなく"
+          "text": "全部は知らないんですけど。その友達がV系好きで——"
         },
         {
           "speaker": "",
@@ -173,7 +173,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "その友達が好きで。一緒にいたらそのへんの曲は覚えて"
+          "text": "あ、自分はそんなに詳しくなくて。その友達が好きだっただけで——"
         },
         {
           "speaker": "rei",
@@ -183,7 +183,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……なんか値踏みされてる？）"
+          "text": "（……聞いてない？）"
         },
         {
           "speaker": "rei",
@@ -193,17 +193,27 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "え？"
+          "text": "え？ あの、聞いてましたか今の"
         },
         {
           "speaker": "rei",
           "face": "serious",
-          "text": "……いや。なんでもない"
+          "text": "……聞いてた。V系、好きなんだな"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……V系にスカウトされかかった気がした）"
+          "text": "だから友達が、という話で——自分はそんなに——"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……（hajimeの肩を軽く叩く）\n仲間だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（仲間になった。否定が追いつかなかった）"
         },
         {
           "speaker": "rei",
@@ -658,6 +668,66 @@
           "speaker": "",
           "face": "",
           "text": "……【洞察】が少し上がった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "しばらくして、ファンたちが帰っていった。店内が静かになると、REIがカウンター越しに口を開いた。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……来週。あのバンドのライブがある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "さっきみんなが話してたやつですか"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……チケットが1枚、余ってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……もしかして）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "REIさんは行かないんですか"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……俺は行く。ただ、隣が空いてる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIはそう言って、チケットをカウンターに置いた。目は逸らしたまま。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（なんで1枚余ってるんだろ、とは思った。でもそれを聞くのは野暮な気がした）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "行きます"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……そうか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIは顔を逸らしたまま、仕込みに戻った。\n……仲間だと認定されたのが、こういう形でくるとは思っていなかった。"
         }
       ]
     }
