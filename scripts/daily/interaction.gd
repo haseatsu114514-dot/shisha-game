@@ -147,6 +147,16 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 		"ageha":
 			metadata["bg"] = "res://assets/backgrounds/pepermint.png" # アゲハの居場所に合わせて背景を設定
 
+	# 第1章大会終了後・最初のぺぱーみんと訪問
+	if rival_id == "minto" and GameManager.current_chapter >= 2 and not EventFlags.get_flag("ch1_minto_after_ch1_done"):
+		dialogue_id = "ch1_minto_after_ch1"
+		metadata["add_affinity"] = {"minto": 1}
+		var return_scene = "res://scenes/daily/map.tscn"
+		GameManager.queue_dialogue(dialogue_file, dialogue_id, return_scene, metadata)
+		GameManager.set_transient("advance_time_after_scene", true)
+		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+		return
+
 	if count == 0:
 		dialogue_id = "%s%s_first" % [prefix, rival_id]
 		# みんとは初回訪問でLIME交換（フレンドリーなので即交換）
