@@ -1,0 +1,138 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "ch2_volk_first",
+      "metadata": { "bg": "res://assets/backgrounds/zheleznyi_dym.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "「Железный Дым」。読めない。店名の下に小さく「鉄の煙」と書いてあった。" },
+        { "speaker": "", "face": "", "text": "扉を開けると、温度計と数字が並んだパネルが壁を埋めている。シーシャの器具は最小限で、代わりに精密な金属製の装置がいくつも並んでいた。" },
+        { "speaker": "volk", "face": "normal", "text": "……Входите（ヴホジーチェ）" },
+        { "speaker": "hajime", "face": "surprise", "text": "え、ロシア語……？" },
+        { "speaker": "volk", "face": "normal", "text": "（振り返らずに）入れ、という意味だ。座れ" },
+        { "speaker": "hajime", "face": "normal", "text": "（……無愛想。というか、まず顔を向けてくれない）" },
+        { "speaker": "volk", "face": "normal", "text": "（向き直り、淡々と）大会の参加者か。初めて見る顔だ" },
+        { "speaker": "hajime", "face": "normal", "text": "はい。地方から来て、この辺のシーシャ屋を回っていて" },
+        { "speaker": "volk", "face": "normal", "text": "ふむ。手を出せ" },
+        { "speaker": "hajime", "face": "surprise", "text": "え？" },
+        { "speaker": "volk", "face": "normal", "text": "体温を測る。気温と体温から、最適な炭量と熱量を算出する。それが俺のやり方だ" },
+        { "speaker": "hajime", "face": "surprise", "text": "（……本気だ、この人）" },
+        { "speaker": "", "face": "", "text": "小型の体温計が手の甲に当てられた。ヴォルクがモニターに数字を打ち込む。" },
+        { "speaker": "volk", "face": "normal", "text": "36.7度。外気温22度。……ダークミントで作る。座って待て" },
+        { "speaker": "", "face": "", "text": "出てきたシーシャは、驚異的だった。最初の一口から最後まで、温度と密度が一切ブレない。完璧に均一な煙だ。" },
+        { "speaker": "hajime", "face": "surprise", "text": "（……どこまで吸っても同じ感覚。これは人間が作れるものなのか）" },
+        { "speaker": "volk", "face": "normal", "text": "Точность（トーチナスチ）。精度。それが全て" },
+        { "speaker": "", "face": "", "text": "……【技術】が少し上がった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_volk_second",
+      "metadata": { "bg": "res://assets/backgrounds/zheleznyi_dym.png" },
+      "lines": [
+        { "speaker": "volk", "face": "normal", "text": "また来た。データが正確だったか確認する" },
+        { "speaker": "hajime", "face": "normal", "text": "確認、ですか" },
+        { "speaker": "volk", "face": "normal", "text": "前回、お前の体温は36.7度。今日は" },
+        { "speaker": "hajime", "face": "normal", "text": "（ポケットから体温計が出てきた）あ、36.5です" },
+        { "speaker": "volk", "face": "normal", "text": "0.2度低い。今日は外が暑い。炭量を少し下げる" },
+        { "speaker": "hajime", "face": "normal", "text": "（本当に僕の体温で炭を変えるんだ……）" },
+        { "speaker": "volk", "face": "normal", "text": "温度は嘘をつかない。体温も、炭も、フレーバーも。数字は必ず正直だ" },
+        { "speaker": "hajime", "face": "normal", "text": "……その精度、どこで身につけたんですか" },
+        { "speaker": "volk", "face": "normal", "text": "（少し間が空いた）……軍にいた。昔" },
+        { "speaker": "hajime", "face": "surprise", "text": "軍……！？" },
+        { "speaker": "volk", "face": "normal", "text": "狙撃手は、呼吸と体温と風速を計算する。ブレたら、終わりだ。……シーシャも同じだ" },
+        { "speaker": "hajime", "face": "normal", "text": "（……狙撃手。この人、本当に元軍人なのか）" },
+        { "speaker": "volk", "face": "normal", "text": "ロシアは寒い。-30度の外から来た客に、ぬるいシーシャは出せない。精度を上げたのは、そのためだ" },
+        { "speaker": "hajime", "face": "normal", "text": "……寒さから守るために、精度を上げた" },
+        { "speaker": "volk", "face": "normal", "text": "Точность（精度）は、愛情だ。客が寒くない時間を、一秒も切らせない。それが俺の仕事だ" },
+        { "speaker": "hajime", "face": "normal", "text": "（……思ってたのと全然違う人だ）" },
+        { "speaker": "", "face": "", "text": "……【技術】と【センス】が少し上がった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_volk_third",
+      "metadata": { "bg": "res://assets/backgrounds/zheleznyi_dym.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "今日はヴォルクが一人で、モニターに数字を記録していた。" },
+        { "speaker": "hajime", "face": "normal", "text": "今日もデータ記録ですか" },
+        { "speaker": "volk", "face": "normal", "text": "毎日記録する。今年で7年分になる" },
+        { "speaker": "hajime", "face": "surprise", "text": "7年分……同じフレーバーのデータを？" },
+        { "speaker": "volk", "face": "normal", "text": "同じフレーバーでも、季節と気温と湿度で最適値が変わる。だから毎日記録する" },
+        { "speaker": "hajime", "face": "normal", "text": "（シーシャ一杯のために、7年分のデータ……）" },
+        { "speaker": "volk", "face": "normal", "text": "軍にいたとき、上官に言われた。『記録しないことは、忘れることと同じだ』と" },
+        { "speaker": "hajime", "face": "normal", "text": "……それ、シーシャにも適用してるんですね" },
+        { "speaker": "volk", "face": "normal", "text": "全てに適用する。お前のことも、記録している" },
+        { "speaker": "hajime", "face": "surprise", "text": "え！？ 俺のことを！？" },
+        { "speaker": "volk", "face": "normal", "text": "体温の変化。シーシャを吸った後の顔の変化。2回分のデータがある" },
+        { "speaker": "hajime", "face": "normal", "text": "（何かの被験体みたいだ）" },
+        { "speaker": "volk", "face": "normal", "text": "お前の煙は、計算式で説明できない。だが──お前の煙を吸った客の顔が変わる。そのデータが、俺の記録にある" },
+        { "speaker": "hajime", "face": "surprise", "text": "え……感情の変化まで記録してるんですか" },
+        { "speaker": "volk", "face": "normal", "text": "それが最も重要なデータだ。数字で測れないものを、俺はまだ理解していない。……だから記録する" },
+        { "speaker": "", "face": "", "text": "……【センス】が上がった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_volk_fourth",
+      "metadata": { "bg": "res://assets/backgrounds/zheleznyi_dym.png" },
+      "lines": [
+        { "speaker": "volk", "face": "normal", "text": "一つ、聞いていいか" },
+        { "speaker": "hajime", "face": "normal", "text": "どうぞ" },
+        { "speaker": "volk", "face": "normal", "text": "お前は、なぜ煙をフラットに作るのか。誰に対しても、同じように作る。計算では非効率だ" },
+        { "speaker": "hajime", "face": "normal", "text": "フラット……そういう言葉で捉えてたんですね、俺のことを" },
+        { "speaker": "volk", "face": "normal", "text": "俺はデータで見る。お前のスタイルには一貫性がある。だが理由がわからない" },
+        { "speaker": "hajime", "face": "normal", "text": "（……ずっと観察されてたのか）誰のシーシャも、正しいと思ってるから、かな。否定したくなくて" },
+        { "speaker": "volk", "face": "normal", "text": "……" },
+        { "speaker": "hajime", "face": "normal", "text": "答えになってないですか" },
+        { "speaker": "volk", "face": "normal", "text": "いや。（モニターに打ち込む）……データに入れた" },
+        { "speaker": "hajime", "face": "normal", "text": "（「フラット」「否定しない」という文字が見えた気がした）" },
+        { "speaker": "volk", "face": "normal", "text": "軍では、精度が全てだった。ブレることは、失敗だった。だが──" },
+        { "speaker": "volk", "face": "normal", "text": "お前の煙は、ブレているようで、ブレていない。それが計算式に入らない" },
+        { "speaker": "hajime", "face": "normal", "text": "……それ、どういう意味ですか" },
+        { "speaker": "volk", "face": "normal", "text": "わからない。だから、もっとデータが必要だ。また来い" },
+        { "speaker": "hajime", "face": "smile", "text": "（……この人なりの、また来てくれということだと思う）" },
+        { "speaker": "", "face": "", "text": "……【洞察】が上がった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_volk_after_ch2",
+      "metadata": { "bg": "res://assets/backgrounds/zheleznyi_dym.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "大会が終わって、鉄の煙に立ち寄った。" },
+        { "speaker": "volk", "face": "normal", "text": "来たか。座れ" },
+        { "speaker": "hajime", "face": "normal", "text": "大会、お疲れ様でした" },
+        { "speaker": "volk", "face": "normal", "text": "分析が終わった。なぜ俺が届かなかったか" },
+        { "speaker": "hajime", "face": "normal", "text": "もう分析してたんですか" },
+        { "speaker": "volk", "face": "normal", "text": "精度は完璧だった。だが──俺の煙は、お前の煙に対して『反応』しなかった" },
+        { "speaker": "hajime", "face": "normal", "text": "反応……？" },
+        { "speaker": "volk", "face": "normal", "text": "お前は、相手を見ながら煙を作る。俺は、データを見ながら煙を作る。大会では、その差が出た" },
+        { "speaker": "hajime", "face": "normal", "text": "（……そんなに深く分析してたのか）" },
+        { "speaker": "volk", "face": "normal", "text": "俺は負けた。だが、このデータは貴重だ。……今日の体温は" },
+        { "speaker": "hajime", "face": "smile", "text": "36.6です" },
+        { "speaker": "volk", "face": "normal", "text": "（モニターに打ち込む）ふむ。作る。待て" },
+        { "speaker": "hajime", "face": "normal", "text": "（……大会の結果を一瞬で次のデータに変えてしまった。この人らしいな）" },
+        { "speaker": "", "face": "", "text": "……【技術】が上がった。" },
+        { "type": "set_flag", "flag": "ch2_volk_after_ch2_done" }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_volk_after_ch2_firstshop",
+      "metadata": { "bg": "res://assets/backgrounds/zheleznyi_dym.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "大会が終わってから、初めて鉄の煙に入った。温度計とモニターが並ぶ、機械的な内装。" },
+        { "speaker": "volk", "face": "normal", "text": "……大会で見た顔だ" },
+        { "speaker": "hajime", "face": "normal", "text": "はい。大会で戦って、一度来てみたくて" },
+        { "speaker": "volk", "face": "normal", "text": "負かした相手の店に来るか。……珍しい行動パターンだ。記録しておく" },
+        { "speaker": "hajime", "face": "normal", "text": "え、もう記録するんですか" },
+        { "speaker": "volk", "face": "normal", "text": "全て記録する。それが俺のやり方だ。……手を出せ" },
+        { "speaker": "hajime", "face": "surprise", "text": "え？" },
+        { "speaker": "volk", "face": "normal", "text": "体温を測る。初回データが必要だ" },
+        { "speaker": "", "face": "", "text": "体温計が手の甲に当てられた。大会とは全然違う、この人の本領だ。" },
+        { "speaker": "volk", "face": "normal", "text": "大会でのお前の煙。計算式で説明できなかった。データが足りなかった" },
+        { "speaker": "hajime", "face": "normal", "text": "それは……ヴォルクさんに言うのも変ですけど、対戦できてよかったです" },
+        { "speaker": "volk", "face": "normal", "text": "……俺も、そう思う。では、作る" },
+        { "speaker": "", "face": "", "text": "完璧な精度の煙が出てきた。温度も密度も、一切ブレない。" },
+        { "speaker": "hajime", "face": "normal", "text": "（……この人の煙は怖いくらい正確だ。でもなんか、すごく丁寧に作ってくれてる気がする）" },
+        { "speaker": "", "face": "", "text": "……【技術】が上がった。" },
+        { "type": "set_flag", "flag": "ch2_volk_after_ch2_done" }
+      ]
+    }
+  ]
+}
