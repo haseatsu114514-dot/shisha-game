@@ -197,6 +197,10 @@ func _build_all_japan_spots() -> Array:
 				spots.append({"id": "adam", "label": "Eden"})
 			if not _is_visited_today("minto"):
 				spots.append({"id": "minto", "label": "ぺぱーみんと"})
+			if not _is_visited_today("kumicho"):
+				spots.append({"id": "kumicho", "label": "神崎煙草店"})
+			if not _is_visited_today("volk"):
+				spots.append({"id": "volk", "label": "鉄の煙"})
 		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り"})
 		spots.append({"id": "tokyo_sightseeing", "label": "東京観光"})
 	elif CalendarManager.current_time == "night":
@@ -209,6 +213,10 @@ func _build_all_japan_spots() -> Array:
 				spots.append({"id": "adam", "label": "Eden（夜）"})
 			if not _is_visited_today("minto"):
 				spots.append({"id": "minto", "label": "ぺぱーみんと（夜）"})
+			if not _is_visited_today("kumicho"):
+				spots.append({"id": "kumicho", "label": "神崎煙草店（夜）"})
+			if not _is_visited_today("volk"):
+				spots.append({"id": "volk", "label": "鉄の煙（夜）"})
 		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り（夜）"})
 	return spots
 

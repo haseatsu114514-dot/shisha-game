@@ -667,6 +667,7 @@ func _finish_dialogue() -> void:
 		if typeof(aff) == TYPE_DICTIONARY:
 			for char_id in aff:
 				var id = str(char_id)
+				AffinityManager.set_met(id)
 				var before = AffinityManager.get_affinity(id)
 				var after = AffinityManager.add_affinity(id, int(aff[char_id]))
 				if after >= 0:

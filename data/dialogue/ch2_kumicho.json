@@ -1,0 +1,138 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "ch2_kumicho_first",
+      "metadata": { "bg": "res://assets/backgrounds/kanzaki_tobacco.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "「神崎煙草店」。店名だけ見れば、ただの老舗タバコ屋だ。暖簾をくぐると、古い木と葉巻の香りが迎えた。" },
+        { "speaker": "", "face": "", "text": "奥に、シーシャのセットが見える。客は誰もいない。静かすぎるくらい静かだ。" },
+        { "speaker": "kumicho", "face": "normal", "text": "ようこそ、いらっしゃいませ。遠いところを、わざわざ" },
+        { "speaker": "hajime", "face": "surprise", "text": "（……丁寧すぎる。それに──腕。見えてる。インクが）" },
+        { "speaker": "kumicho", "face": "normal", "text": "お初にお目にかかります。神崎、と申します。大会のご参加者でございますか" },
+        { "speaker": "hajime", "face": "normal", "text": "はい。全日本大会に出ていて、この辺りのシーシャ屋を回っていたら、ここが気になって" },
+        { "speaker": "kumicho", "face": "normal", "text": "……ほう。大会、でございますか" },
+        { "speaker": "", "face": "", "text": "目が、一瞬だけ細くなった。値踏みするような、でも品のある目だ。すぐに柔らかくなる。" },
+        { "speaker": "kumicho", "face": "normal", "text": "よろしければ、一服いかがでしょう。ドラゴンフルーツを、ぜひ" },
+        { "speaker": "", "face": "", "text": "大きな手。でも動作は繊細で、トングを扱う精度が異常に高い。炭が一ミリもズレない。" },
+        { "speaker": "hajime", "face": "surprise", "text": "（……この人、何者だ）" },
+        { "speaker": "", "face": "", "text": "出てきたシーシャは、見たことのない質感だった。ドラゴンフルーツの甘みに、重みと余韻がある。最初の一口から、別次元だ。" },
+        { "speaker": "hajime", "face": "smile", "text": "美味しい……。ドラゴンフルーツ、こんな深みが出るんですね" },
+        { "speaker": "kumicho", "face": "normal", "text": "スジを通すと、そうなります" },
+        { "speaker": "hajime", "face": "surprise", "text": "スジ……？" },
+        { "speaker": "kumicho", "face": "normal", "text": "フレーバーにも、仁義がある。持って生まれた声を、殺さず引き出す。それだけのことでございます" },
+        { "speaker": "hajime", "face": "normal", "text": "（……仁義。この人、本当に何者なんだ）" },
+        { "speaker": "", "face": "", "text": "……【技術】が少し上がった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_kumicho_second",
+      "metadata": { "bg": "res://assets/backgrounds/kanzaki_tobacco.png" },
+      "lines": [
+        { "speaker": "kumicho", "face": "normal", "text": "……またいらっしゃいましたか。ありがたいことです" },
+        { "speaker": "hajime", "face": "normal", "text": "昨日のドラゴンフルーツ、ずっと頭に残ってて" },
+        { "speaker": "kumicho", "face": "normal", "text": "（口角が、わずかに上がった）そうでございますか" },
+        { "speaker": "hajime", "face": "normal", "text": "『スジを通す』って言ってましたよね。シーシャに仁義、っていうのをもう少し聞かせてもらえますか" },
+        { "speaker": "kumicho", "face": "normal", "text": "……盃の話をご存知ですか" },
+        { "speaker": "hajime", "face": "normal", "text": "え、盃……ヤクザの、義兄弟の？" },
+        { "speaker": "kumicho", "face": "normal", "text": "盃を交わすというのは。同じ酒を、同じ時間に、共に飲む。それだけで、縁が生まれる" },
+        { "speaker": "kumicho", "face": "normal", "text": "シーシャも、同じだと俺は思っています。同じ煙を、同じ場所で、黙って吸う。それだけで、言葉のいらない縁ができる" },
+        { "speaker": "hajime", "face": "normal", "text": "（……そういう話として言ってたのか）" },
+        { "speaker": "kumicho", "face": "normal", "text": "俺の煙を吸ってくれた人は、全員、俺の客でございます。それ以上でも以下でもない。ただ──その縁は、一生、大事にする" },
+        { "speaker": "hajime", "face": "normal", "text": "一生……" },
+        { "speaker": "kumicho", "face": "normal", "text": "今日は何をご所望で。重いのがよろしいですか、軽いのがよろしいですか" },
+        { "speaker": "hajime", "face": "normal", "text": "……重い方で、お願いします" },
+        { "speaker": "", "face": "", "text": "組長が静かに炭の準備を始めた。その背中は広くて、威圧感がある。なのになぜか、ここにいると落ち着く。" },
+        { "speaker": "", "face": "", "text": "……【根性】が少し上がった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_kumicho_third",
+      "metadata": { "bg": "res://assets/backgrounds/kanzaki_tobacco.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "店に入ると、スーツ姿の男が二人、隅に立っていた。" },
+        { "speaker": "hajime", "face": "surprise", "text": "（……なんだ、あの人たち。ものすごく静かに立ってる）" },
+        { "speaker": "kumicho", "face": "normal", "text": "ようこそ。今日は少し手狭で、申し訳ない" },
+        { "speaker": "", "face": "", "text": "二人の男が、無言で深く頭を下げた。" },
+        { "speaker": "hajime", "face": "surprise", "text": "（……え、俺に対して？）" },
+        { "speaker": "kumicho", "face": "normal", "text": "あの者たちは、気にしないでください。ただの店番です" },
+        { "speaker": "hajime", "face": "normal", "text": "（……店番が二人、直立不動で立ってるのが普通の店ってある？）" },
+        { "speaker": "kumicho", "face": "normal", "text": "本日は何を" },
+        { "speaker": "hajime", "face": "normal", "text": "あの……いつものドラゴンフルーツで" },
+        { "speaker": "kumicho", "face": "normal", "text": "（少し嬉しそうに）ありがとうございます" },
+        { "speaker": "", "face": "", "text": "組長がフレーバーを丁寧に用意する。隅の男たちは微動だにしない。でも、組長だけが柔らかく動いている。" },
+        { "speaker": "", "face": "", "text": "不思議な空間だ。怖いのに、シーシャを吸っていると全部忘れてしまう。" },
+        { "speaker": "kumicho", "face": "normal", "text": "……昔ね。若い衆を何人か、失ったことがある" },
+        { "speaker": "hajime", "face": "surprise", "text": "え……" },
+        { "speaker": "kumicho", "face": "normal", "text": "俺のせいで。俺の判断が間違っていたから。……それ以来、人に穏やかな時間を作ることだけが、俺の仕事だと決めた" },
+        { "speaker": "hajime", "face": "normal", "text": "（若い衆。組の人間なのか、それとも……）" },
+        { "speaker": "kumicho", "face": "normal", "text": "こうして煙を出しているうちは、誰も傷つかない。それだけのことです" },
+        { "speaker": "kumicho", "face": "normal", "text": "……お前みたいに、最初から素直な気持ちだけで来られる奴が。たまに、うらやましいと思うことがある" },
+        { "speaker": "hajime", "face": "normal", "text": "（……）" },
+        { "speaker": "kumicho", "face": "normal", "text": "余計なことを言った。煙でも吸え" },
+        { "speaker": "", "face": "", "text": "隅の二人が、静かに頭を下げた。組長は気づいていないようだった。" },
+        { "speaker": "", "face": "", "text": "……【洞察】が上がった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_kumicho_fourth",
+      "metadata": { "bg": "res://assets/backgrounds/kanzaki_tobacco.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "今日は二人きりだった。組長が自分のシーシャを作っている。" },
+        { "speaker": "hajime", "face": "normal", "text": "神崎さん、自分用も作るんですね" },
+        { "speaker": "kumicho", "face": "normal", "text": "閉店後だけ。……いつもこれです" },
+        { "speaker": "hajime", "face": "normal", "text": "ドラゴンフルーツ" },
+        { "speaker": "kumicho", "face": "normal", "text": "強さの中に、繊細さがある。俺には、このフレーバーしか吸えない気がして" },
+        { "speaker": "", "face": "", "text": "しばらく、二人で黙ってシーシャを吸った。煙が二筋、天井に向かって静かに昇っていく。" },
+        { "speaker": "hajime", "face": "normal", "text": "……聞いていいですか。神崎さんは、本当にヤクザなんですか" },
+        { "speaker": "", "face": "", "text": "一瞬、静寂が落ちた。" },
+        { "speaker": "kumicho", "face": "normal", "text": "……（煙をゆっくり吐いて）こうして煙を吸っている間は" },
+        { "speaker": "kumicho", "face": "normal", "text": "そういう話は、野暮というものです" },
+        { "speaker": "hajime", "face": "normal", "text": "（……答えなかった。でもその答え方が、答えのような気もした）" },
+        { "speaker": "kumicho", "face": "normal", "text": "あなたと俺は、今こうして同じ煙を吸っている。それで十分じゃないですか" },
+        { "speaker": "kumicho", "face": "normal", "text": "俺は、あなたに穏やかな時間を作ることができた。あなたは、俺の煙を吸ってくれた。……それだけが、俺には大事なんです" },
+        { "speaker": "hajime", "face": "normal", "text": "（……本当に怖い人なのか、それとも怖そうなシーシャ屋なのか。どっちでもいい気がしてきた）" },
+        { "speaker": "", "face": "", "text": "二筋の煙が、暗い天井で混ざって、消えた。" },
+        { "speaker": "", "face": "", "text": "……【根性】と【洞察】が上がった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_kumicho_after_ch2",
+      "metadata": { "bg": "res://assets/backgrounds/kanzaki_tobacco.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "大会が終わって、神崎煙草店に立ち寄った。" },
+        { "speaker": "kumicho", "face": "normal", "text": "……おめでとうございます" },
+        { "speaker": "hajime", "face": "normal", "text": "ありがとうございます" },
+        { "speaker": "kumicho", "face": "normal", "text": "大会でのあなたの煙。拝見しました。スジが通っていた" },
+        { "speaker": "hajime", "face": "normal", "text": "神崎さんに、そう言ってもらえると……" },
+        { "speaker": "kumicho", "face": "normal", "text": "負けた側がこう言うのも、おかしな話ですが" },
+        { "speaker": "", "face": "", "text": "組長が、静かにドラゴンフルーツのセットを組み始めた。" },
+        { "speaker": "kumicho", "face": "normal", "text": "俺はね、かつて『勝つことがスジだ』と思っていた時期がある。だが……あなたの煙を見て、違うと思いました" },
+        { "speaker": "hajime", "face": "normal", "text": "どういうことですか" },
+        { "speaker": "kumicho", "face": "normal", "text": "スジを通すというのは、勝ち負けではなく、相手に対する誠実さのことだった。あなたは、ちゃんとそれを出していた" },
+        { "speaker": "hajime", "face": "normal", "text": "（……この人から、そういう言葉をもらえるとは思っていなかった）" },
+        { "speaker": "kumicho", "face": "normal", "text": "また来てください。縁は、大事にしますので" },
+        { "speaker": "", "face": "", "text": "……【根性】が上がった。" },
+        { "type": "set_flag", "flag": "ch2_kumicho_after_ch2_done" }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_kumicho_after_ch2_firstshop",
+      "metadata": { "bg": "res://assets/backgrounds/kanzaki_tobacco.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "大会が終わってから、神崎煙草店に初めて足を踏み入れた。古い木の香り。奥に見えるシーシャのセット。" },
+        { "speaker": "kumicho", "face": "normal", "text": "ようこそ、いらっしゃいませ。……大会でお見かけした方でございますね" },
+        { "speaker": "hajime", "face": "normal", "text": "はい。大会で戦って、それでここのことが気になって" },
+        { "speaker": "kumicho", "face": "normal", "text": "……ほう。負かした相手の店に来る。なかなか肝の据わったお方だ" },
+        { "speaker": "hajime", "face": "normal", "text": "（……笑ってる。怖いけど笑ってる）" },
+        { "speaker": "kumicho", "face": "normal", "text": "おめでとうございます。大会の結果は、あなたの実力です" },
+        { "speaker": "hajime", "face": "normal", "text": "神崎さんのシーシャも、圧倒されました。本当に" },
+        { "speaker": "kumicho", "face": "normal", "text": "（少し間を置いて）……ありがとうございます。では、一服いかがでしょう。うちのドラゴンフルーツを" },
+        { "speaker": "", "face": "", "text": "出てきたシーシャは、大会の舞台で見たどれとも違う、静かな一杯だった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（……この人の本職がヤクザなのかシーシャ屋なのか、来てみてもやっぱりわからない。でも、この煙は本物だ）" },
+        { "speaker": "kumicho", "face": "normal", "text": "縁があれば、またどうぞ" },
+        { "speaker": "", "face": "", "text": "……【根性】が上がった。" },
+        { "type": "set_flag", "flag": "ch2_kumicho_after_ch2_done" }
+      ]
+    }
+  ]
+}

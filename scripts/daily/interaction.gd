@@ -30,7 +30,7 @@ func _ready() -> void:
 		return
 
 	# Rival shop visits now auto-launch dialogue events
-	if _target in ["naru", "adam", "minto", "ageha", "tsumugi"]:
+	if _target in ["naru", "adam", "minto", "ageha", "tsumugi", "kumicho", "volk"]:
 		if AffinityManager.is_in_romance(_target):
 			_show_romance_date(_target)
 			return
@@ -133,6 +133,12 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 	if rival_id == "ageha":
 		prefix = "ch2_"
 		dialogue_file = "res://data/dialogue/ch2_ageha.json"
+	elif rival_id == "kumicho":
+		prefix = "ch2_"
+		dialogue_file = "res://data/dialogue/ch2_kumicho.json"
+	elif rival_id == "volk":
+		prefix = "ch2_"
+		dialogue_file = "res://data/dialogue/ch2_volk.json"
 		
 	var dialogue_id = ""
 	var metadata: Dictionary = {}
@@ -146,6 +152,10 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 			metadata["bg"] = "res://assets/backgrounds/pepermint.png"
 		"ageha":
 			metadata["bg"] = "res://assets/backgrounds/pepermint.png" # アゲハの居場所に合わせて背景を設定
+		"kumicho":
+			metadata["bg"] = "res://assets/backgrounds/kanzaki_tobacco.png"
+		"volk":
+			metadata["bg"] = "res://assets/backgrounds/zheleznyi_dym.png"
 
 	# === 大会後・初訪問ルーティング（共通）===
 	# 大会で顔は合わせているので驚かない。ch1訪問済みかどうかで関係深度を分岐する。
@@ -190,6 +200,26 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		return
 
+	# 組長: ch3以降（ch2大会後）・大会後初訪問
+	if rival_id == "kumicho" and GameManager.current_chapter >= 3 and not EventFlags.get_flag("ch2_kumicho_after_ch2_done"):
+		var visited_before = count > 0
+		dialogue_id = "ch2_kumicho_after_ch2" if visited_before else "ch2_kumicho_after_ch2_firstshop"
+		metadata["add_affinity"] = {"kumicho": 1}
+		GameManager.queue_dialogue(dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", metadata)
+		GameManager.set_transient("advance_time_after_scene", true)
+		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+		return
+
+	# ヴォルク: ch3以降（ch2大会後）・大会後初訪問
+	if rival_id == "volk" and GameManager.current_chapter >= 3 and not EventFlags.get_flag("ch2_volk_after_ch2_done"):
+		var visited_before = count > 0
+		dialogue_id = "ch2_volk_after_ch2" if visited_before else "ch2_volk_after_ch2_firstshop"
+		metadata["add_affinity"] = {"volk": 1}
+		GameManager.queue_dialogue(dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", metadata)
+		GameManager.set_transient("advance_time_after_scene", true)
+		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+		return
+
 	if count == 0:
 		dialogue_id = "%s%s_first" % [prefix, rival_id]
 		# みんとは初回訪問でLIME交換（フレンドリーなので即交換）
@@ -199,7 +229,8 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 	elif count == 1:
 		dialogue_id = "%s%s_second" % [prefix, rival_id]
 		# なる・アゲハは2回目の訪問でLIME交換（2回目で「まあ仕方ない」感じで教える）
-		if rival_id in ["naru", "ageha"]:
+		# ヴォルクは2回目でLIME交換（体温データの続きで連絡先を教える）
+		if rival_id in ["naru", "ageha", "volk"]:
 			metadata["exchange_lime"] = rival_id
 		metadata["add_affinity"] = {rival_id: 1}
 		# Add intel on second visit
@@ -211,7 +242,8 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 	elif count == 2:
 		dialogue_id = "%s%s_third" % [prefix, rival_id]
 		# アダムは3回目でようやくLIME交換（ガードが固いので時間がかかる）
-		if rival_id == "adam":
+		# 組長は3回目でLIME交換（縁ができたと判断してから）
+		if rival_id in ["adam", "kumicho"]:
 			metadata["exchange_lime"] = rival_id
 		metadata["add_affinity"] = {rival_id: 1}
 	elif count == 3:
