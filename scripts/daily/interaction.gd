@@ -149,14 +149,14 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 
 	if count == 0:
 		dialogue_id = "%s%s_first" % [prefix, rival_id]
-		# Naru, Minto, Ageha exchange LIME on first visit
-		if rival_id in ["naru", "minto", "ageha"]:
+		# みんとは初回訪問でLIME交換（フレンドリーなので即交換）
+		if rival_id == "minto":
 			metadata["exchange_lime"] = rival_id
 		metadata["add_affinity"] = {rival_id: 1}
 	elif count == 1:
 		dialogue_id = "%s%s_second" % [prefix, rival_id]
-		# Adam exchanges LIME on second visit
-		if rival_id == "adam":
+		# なる・アゲハは2回目の訪問でLIME交換（2回目で「まあ仕方ない」感じで教える）
+		if rival_id in ["naru", "ageha"]:
 			metadata["exchange_lime"] = rival_id
 		metadata["add_affinity"] = {rival_id: 1}
 		# Add intel on second visit
@@ -167,6 +167,9 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 				metadata["add_intel"] = [{"id": "minto", "key": "presentation", "value": "一般投票特化"}]
 	elif count == 2:
 		dialogue_id = "%s%s_third" % [prefix, rival_id]
+		# アダムは3回目でようやくLIME交換（ガードが固いので時間がかかる）
+		if rival_id == "adam":
+			metadata["exchange_lime"] = rival_id
 		metadata["add_affinity"] = {rival_id: 1}
 	elif count == 3:
 		dialogue_id = "%s%s_fourth" % [prefix, rival_id]

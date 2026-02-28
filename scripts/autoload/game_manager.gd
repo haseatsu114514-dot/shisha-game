@@ -80,11 +80,10 @@ const SPEAKER_COLORS := {
 	"kumicho": Color("f77622"),     # バーニングオレンジ
 	"tsumugi": Color("68386c"),   # パープル
 	"minto": Color("b55088"),     # ローズピンク
-	"packii": Color("2ce8f5"),    # シアン
+	"pakki": Color("2ce8f5"),    # シアン（旧:packii/takiguchi を統合）
 	"nagumo": Color("8b9bb4"),
 	"maezono": Color("e4a672"),
 	"kirishima": Color("68386c"),
-	"takiguchi": Color("e43b44"),
 	"salaryman": Color("5a6988"),
 }
 

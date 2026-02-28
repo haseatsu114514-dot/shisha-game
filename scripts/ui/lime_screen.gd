@@ -24,7 +24,7 @@ const DISPLAY_NAME = {
 	"adam": "アダム",
 	"minto": "眠都",
 	"tsumugi": "つむぎ",
-	"packii": "パッキー",
+	"pakki": "パッキー",
 	"ageha": "あげは",
 	"kumicho": "組長",
 	"nagumo": "南雲会長",
@@ -36,7 +36,7 @@ const AVATAR_TEXTURES = {
 	"naru": "res://assets/sprites/faces/face_naru.png",
 	"adam": "res://assets/sprites/faces/face_adam.png",
 	"tsumugi": "res://assets/sprites/faces/face_tsumugi.png",
-	"packii": "res://assets/sprites/faces/face_packii.png",
+	"pakki": "res://assets/sprites/faces/face_packii.png",
 	"kumicho": "res://assets/sprites/faces/face_ryuji.png"
 }
 

@@ -3545,7 +3545,7 @@ func _build_temperature_gauge_text(current_temp: float, target: Vector2) -> Stri
 
 
 func _refresh_side_panel() -> void:
-	judge_label.text = "MC: パッキー / 焚口ショウ\n審査員: 南雲 修二 + %s\nテーマ: %s" % [
+	judge_label.text = "MC: パッキー\n審査員: 南雲 修二 + %s\nテーマ: %s" % [
 		str(_random_judge.get("name", "審査員")),
 		str(_theme.get("name", "-")),
 	]

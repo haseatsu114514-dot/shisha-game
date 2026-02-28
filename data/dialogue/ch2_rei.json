@@ -1,0 +1,540 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "ch2_rei_first",
+      "metadata": { "bg": "res://assets/backgrounds/bg_zero_cafe.png" },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「零-ZERO-」。店の外からでも、重厚なロック音楽が漏れてくる。\nドアを開けた瞬間、視界が暗転した。店内は薄暗く、ロウソクのような照明だけが赤と黒の壁を照らしている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの中に、人がいた。血のように赤と黒に染められた非対称の髪。首元から手の甲まで続くタトゥーが、薄暗い光の中でも視線を引き付ける。\nその目が、こちらを向いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（──息が止まりそうになった。怖い。これは普通に怖い）"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ、えっと……tonariというシーシャ屋から来た、蒸野と申します。大会前に他のお店を勉強させてもらおうかと……"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（何も返ってこない。怖い。視線だけが刺さってくる）"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "……座れ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "短く、低い声。何かを間違えたら消されそうな気がして、急いで一番近い席に腰を下ろした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIは何も言わず、シーシャの準備を始めた。一切の無駄がない。ローズの香りが漂い始める。\n完成したシーシャが静かにテーブルに置かれる。それだけ。説明も案内もない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……怖い。でも、このシーシャ……すごい。薔薇の香りがこんなに複雑になるのか）"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（何か言った方がいいのか……「美味しいです」とか……でも、怒らせたら怖い）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "終始無言のまま時間が過ぎた。帰り際、REIが顔を上げた。"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "……また、来てもいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（……え？ 怖い人だと思ったら、来てもいいって言われた？）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_rei_second",
+      "metadata": { "bg": "res://assets/backgrounds/bg_zero_cafe.png" },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "2回目の「零-ZERO-」。前回の怖さが染みついていたが、あの薔薇の煙が忘れられなくて来てしまった。"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "……また来た"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。あのシーシャが気になって"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "また沈黙。でも今日は、少しだけ違う気がした。前回より視線が柔らかい……気がする。気のせいかもしれない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの、少し聞いてもいいですか。ミックス名に「嘘の薔薇」ってありますよね。どんな意味があるんですか"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "……っ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIの手が、一瞬止まった。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……聞かれたことは、ない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "え？"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "今まで誰も……ミックス名の意味を、聞いてきたことは……なかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……REIさんの声のトーンが変わった。怖さじゃなくて、少し戸惑ってる感じ？）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……薔薇は美しいが、棘がある。甘さの中に毒がある。\n誰もが最初はその美しさに引き寄せられて、近づいて初めて傷つく。\n……そういう煙だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……すごく詩的だ。それを無表情で言えるのか、この人は）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……そのコンセプト、シーシャにちゃんと出てると思います。確かに後味が複雑で"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……そうか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIはまた前を向いて、炭の調整を続けた。でも、その沈黙は最初より少しだけ温かい気がした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_rei_third",
+      "metadata": { "bg": "res://assets/backgrounds/bg_zero_cafe.png" },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "3回目。REIが炭をいじる手が、こちらに気づいた瞬間わずかに止まった。\nいつもの無言と視線。でも今日ははじめも少し慣れてきた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日もお邪魔します"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……ん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（今日の返事は「ん」だった。進歩かもしれない）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店内には他にも客が2〜3人いた。REIは彼らへの対応も最小限の言葉でこなしているが、全員が満足した顔をしている。コミュニケーションが少ないのに、なぜか居心地がいい。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……不思議だ。REIさん、ほとんど喋らないのにお客さんが快適そうにしてる。シーシャが全部語ってるのかな）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……今日は何を聞きに来た"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え？ 別に聞きに来たわけじゃ……"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "前回も前々回も……質問してきた。だから今日も、何か聞くんだと思った"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……覚えてたんだ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ聞きます。REIさんはどうして、そのスタイルにしたんですか。V系のコンセプト、タトゥー……全部"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "……っ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "また手が止まった。今度はさっきより長く。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……鎧だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "鎧？"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "怖いんだ……人が。話しかけられると、何を言えばいいか分からなくなる。\nこのスタイルにすると……みんな、自分から距離を置いてくれる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……え？ 怖い人だと思ってたのに。REIさんが一番怖がってた？）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……でもシーシャは、作れる。言葉の代わりに、煙で伝えられる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……そういうことか。この人のシーシャがあんなに饒舌なのは、言葉の代わりだからなんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【洞察】が上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_rei_fourth",
+      "metadata": { "bg": "res://assets/backgrounds/bg_zero_cafe.png" },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "4回目。店に入ったとき、REIが珍しくこちらを見た。少し違う顔だった。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……あの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（えっ。REIさんの方から話しかけてきた）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……前の客が、『怖い』と言って帰った。\nまた、失敗した"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "怖い……って"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "笑いかけようとしたんだが……なぜか泣かれた。よく分からない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……笑いかけた？ あの顔で？）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……もしかして、笑顔の練習してますか"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "……っ！！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIの顔が、微妙に赤くなった気がした。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……そんなことは、していない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "してますよね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……してるかもしれない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（この人、まじで純粋だ……。人怖がりなのに、それでもお客さんに笑いかけようとしてる）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "怖くはないですよ。ちゃんと伝わってると思います。……シーシャ、めちゃくちゃ美味しいし"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "長い沈黙の後、REIがほんの少しだけ、口の端を上げた。\nそれはたぶん、笑顔の練習の成果だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【魅力】が上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_rei_fifth",
+      "metadata": { "bg": "res://assets/backgrounds/bg_zero_cafe.png" },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会前、最後の訪問。REIはいつも通りカウンターにいた。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……来るかと思ってた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "大会前なのに、いつも通りですね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……変わらない方がいい。緊張すると、煙が乱れる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……それは確かに）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "お前に聞きたいことがある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え？"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……お前は、なぜ何度もここに来た。最初に『怖い』と思ったはずだ。自分で言っていた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……そう言ったっけ。REIさんはそれを覚えてたんだ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "煙が美味しかったから。……あと、怖い人だと思ってたのに、来るたびに少しずつ違う顔が見えて、気になって"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……違う顔"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "笑顔の練習してたり、客のことちゃんと気にしてたり。……強がってるのに、繊細なんだなって"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "……っ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIは顔を下に向けた。耳が少し赤かった。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……大会で戦うことになるが"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……負けない。本気で煙を出す。\nだが……お前には、ちゃんと届けたい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……それは、REIさんが言える最大級の言葉だと思った）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【センス】と【根性】が上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_rei_group_concert_prep",
+      "metadata": { "bg": "res://assets/backgrounds/bg_zero_cafe.png" },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店に入ると、いつもより少し騒がしかった。ファン風の若者たちが数人、コーナー席でわいわいしながらシーシャを吸っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「REIさん！ 今日の嘘の薔薇、最高でした！ やっぱこのミックスだよ！」\n「ほんと！ あのフィルイン感、REIさんにしか出せないよ！」\n「次のライブ絶対行くし！！」"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "（あれ……REIさん、固まってる？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「あっ、REIさん照れてる！ 可愛い〜！！」\n「え、泣いてない！？」\n「違うよ笑、目開けすぎてるだけだよ」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……REIさん、ファンに一気に話しかけられてパニックになってる。これが人見知りの素の反応だ）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……あ……その、ありがとう……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "蚊の鳴くような声だった。ファンたちがまたわっと盛り上がった。\nREIは顔を少し赤くしながら、黙々と次のシーシャの準備に戻った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……この人、あの「嘘の薔薇」を作る職人が、ファンに「ありがとう」を絞り出すのにこんなに力がいるんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【洞察】が少し上がった。"
+        }
+      ]
+    }
+  ]
+}
