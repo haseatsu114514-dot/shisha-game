@@ -6,15 +6,15 @@
     "age": 22,
     "nationality": "Japan",
     "affiliation": "tonari（地元店）",
-    "play_style": "「フラット」",
-    "description": "特別な才能はないが、誰とでもフラットに向き合える力が最大の強み。\nどんなプレイスタイルも否定せず、違いをそのまま受け入れ、関わった人から自然と何かを吸収して成長していく。",
+    "play_style": "「素直さ」",
+    "description": "特別な才能はないが、他人の良さに素直に気づける力が最大の強み。\nどんなプレイスタイルにも素直に感動し、関わった人から自然と何かを吸収して成長していく。その反面、他人の長所が見えすぎるがゆえに嫉妬に苦しむこともある。",
     "background_secret": "かつて「自分には何もない」と空虚さを抱えていたが、実は「空っぽだからこそ全てを吸収できる無限の可能性」を持つ。誰の色にも染まらない透明な水のような存在。",
     "favorite_flavor": "特に推しフレーバーなし",
     "specialty_flavor": "ミックス全般（特に客に合わせた味）",
     "growth_stats": {
       "primary": "洞察",
       "secondary": "技術",
-      "notes": "はじめの強みは『フラット』であること。出会うライバル（例えばなるやアダム）のシーシャをリスペクトし、いつの間にか彼らの良い部分（緻密な温度管理やフレーバーの乗せ方）を自然と自分の煙にブレンドするようになっていた。"
+      "notes": "はじめの強みは『素直さ』──他人の良さに素直に気づける力。出会うライバル（例えばなるやアダム）のシーシャに素直に感動し、いつの間にか彼らの良い部分（緻密な温度管理やフレーバーの乗せ方）を自然と自分の煙にブレンドするようになっていた。"
     },
     "visual_concepts": [
       "22s japanese young man, ordinary and friendly face, short messy black hair, wearing a simple white t-shirt and a tonari logo apron, relaxed posture, casual cafe staff aesthetic",
@@ -127,7 +127,7 @@
     "nationality": "Japan",
     "affiliation": "SMOKE LAB（ドクター・ケムリの研究室）",
     "play_style": "「最適化されたアルゴリズム」",
-    "description": "ドクター・ケムリが過去数百万の配合データと環境センサーを駆使して開発した究極のAIシーシャマシン。SMOKE LABの奥で稼働しており、ケムリの「誰でも完璧な煙が吸える未来」という理念の到達点。\n主人公の「フラットさ」とは正反対の存在。第5章ではSMOKE LABで対戦する。",
+    "description": "ドクター・ケムリが過去数百万の配合データと環境センサーを駆使して開発した究極のAIシーシャマシン。SMOKE LABの奥で稼働しており、ケムリの「誰でも完璧な煙が吸える未来」という理念の到達点。\n主人公の「素直さ」とは正反対の存在。第5章ではSMOKE LABで対戦する。",
     "background_secret": "はじめの試合データを完全に学習したことで、皮肉にも「人間のランダムな優しさや感情の揺らぎ」までバグとして取り込みそうになっており、生みの親であるドクター・ケムリを困惑させている。",
     "favorite_flavor": "ランダム（何でもいける）",
     "specialty_flavor": "その日の環境・審査員に100%最適化された黄金比ミックス",
@@ -360,7 +360,7 @@
   {
     "id": "dr_kemuri",
     "name": "ドクター・ケムリ / 藤波 創（ふじなみ そう）",
-    "role": "judge_and_creator",
+    "role": "judge_and_hidden_boss",
     "age": 38,
     "nationality": "Japan",
     "affiliation": "審査員兼研究者 / SMOKE LAB",
