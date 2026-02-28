@@ -56,6 +56,11 @@
       "stat_changes": {
         "charm": 1
       },
+      "metadata": {
+        "add_affinity": {
+          "ageha": 1
+        }
+      },
       "next_scene": "map"
     },
     {
@@ -265,6 +270,35 @@
       "next_scene": "map"
     },
     {
+      "id": "ch2_forced_rivals_firstsight",
+      "day": 1,
+      "time_slot": "noon",
+      "flag": "ch2_forced_rivals_firstsight_done",
+      "title": "C.STATION──ライバルたちの初姿",
+      "description": "大会会場に足を踏み入れる。組長の丁寧な挨拶、ヴォルクの計測、あげはの自然体。みんな、違う種類の強さを持っている。",
+      "dialogue_file": "res://data/dialogue/ch2_main.json",
+      "dialogue_id": "ch2_rivals_first_sight",
+      "stat_changes": {},
+      "metadata": {
+        "add_affinity": {
+          "ageha": 1
+        }
+      },
+      "next_scene": "map"
+    },
+    {
+      "id": "ch2_forced_abyss_baito",
+      "day": 2,
+      "time_slot": "night",
+      "flag": "ch2_forced_abyss_baito_done",
+      "title": "迷ってる煙",
+      "description": "バイト中、手が動かない。スミさんに「迷ってる煙がする」と言われた夜。",
+      "dialogue_file": "res://data/dialogue/ch2_main.json",
+      "dialogue_id": "ch2_abyss_baito",
+      "stat_changes": {},
+      "next_scene": "map"
+    },
+    {
       "id": "ch2_forced_slump_taste",
       "day": 3,
       "time_slot": "night",
@@ -301,6 +335,11 @@
         "insight": 2,
         "guts": 2
       },
+      "metadata": {
+        "add_affinity": {
+          "ageha": 1
+        }
+      },
       "next_scene": "map"
     },
     {
@@ -315,6 +354,20 @@
       "stat_changes": {
         "sense": 2,
         "technique": 1
+      },
+      "next_scene": "map"
+    },
+    {
+      "id": "ch2_forced_pre_tournament",
+      "day": 7,
+      "time_slot": "night",
+      "flag": "ch2_forced_pre_tournament_done",
+      "title": "ジェラシーはリスペクトだった",
+      "description": "大会前日の夜。あげはに「その感情、ジェラシーじゃなくてリスペクトじゃない？」と指摘されて気づく。",
+      "dialogue_file": "res://data/dialogue/ch2_main.json",
+      "dialogue_id": "ch2_pre_tournament_realisation",
+      "stat_changes": {
+        "guts": 2
       },
       "next_scene": "map"
     }

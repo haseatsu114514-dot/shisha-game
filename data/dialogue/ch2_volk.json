@@ -87,6 +87,10 @@
         { "speaker": "volk", "face": "normal", "text": "お前の煙は、ブレているようで、ブレていない。それが計算式に入らない" },
         { "speaker": "hajime", "face": "normal", "text": "……それ、どういう意味ですか" },
         { "speaker": "volk", "face": "normal", "text": "わからない。だから、もっとデータが必要だ。また来い" },
+        { "speaker": "", "face": "", "text": "少し間が空いた後、ヴォルクが独り言のように言った。" },
+        { "speaker": "volk", "face": "normal", "text": "……測らなくても信じられる人間を見ると、奇妙な感覚になる。羨ましい、という感覚かもしれない" },
+        { "speaker": "hajime", "face": "normal", "text": "ヴォルクさんでも、そういうこと……" },
+        { "speaker": "volk", "face": "normal", "text": "軍では、信じることを学べなかった。確認することしか、学べなかった。……ただの独り言だ。気にするな" },
         { "speaker": "hajime", "face": "smile", "text": "（……この人なりの、また来てくれということだと思う）" },
         { "speaker": "", "face": "", "text": "……【洞察】が上がった。" }
       ]

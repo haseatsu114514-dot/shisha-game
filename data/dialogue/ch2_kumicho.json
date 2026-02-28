@@ -66,6 +66,9 @@
         { "speaker": "kumicho", "face": "normal", "text": "俺のせいで。俺の判断が間違っていたから。……それ以来、人に穏やかな時間を作ることだけが、俺の仕事だと決めた" },
         { "speaker": "hajime", "face": "normal", "text": "（若い衆。組の人間なのか、それとも……）" },
         { "speaker": "kumicho", "face": "normal", "text": "こうして煙を出しているうちは、誰も傷つかない。それだけのことです" },
+        { "speaker": "kumicho", "face": "normal", "text": "……お前みたいに、最初から素直な気持ちだけで来られる奴が。たまに、うらやましいと思うことがある" },
+        { "speaker": "hajime", "face": "normal", "text": "（……）" },
+        { "speaker": "kumicho", "face": "normal", "text": "余計なことを言った。煙でも吸え" },
         { "speaker": "", "face": "", "text": "隅の二人が、静かに頭を下げた。組長は気づいていないようだった。" },
         { "speaker": "", "face": "", "text": "……【洞察】が上がった。" }
       ]
