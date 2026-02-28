@@ -23,17 +23,15 @@ const THEMES := [
 	{"id": "aftertaste", "name": "余韻", "flavors": ["vanilla", "blueberry", "coconut"]},
 ]
 
-const RANDOM_JUDGES := [
-	{"id": "shiramine", "name": "白峰 恒一郎", "flavors": ["vanilla", "coconut", "pineapple"]},
-	{"id": "maezono", "name": "前園 壮一郎", "flavors": ["mint", "double_apple"]},
-	{"id": "kirishima", "name": "霧島 レン", "flavors": ["blueberry", "pineapple"]},
+## ゲスト審査員プール（南雲＋ケムリは固定。ch2ゲスト = DJ SMOKE）
+const GUEST_JUDGES := [
+	{"id": "dj_smoke", "name": "DJ SMOKE", "flavors": ["energy_drink", "mint", "blueberry"]},
 ]
 
 const STANCE_PREFERENCE := {
 	"nagumo": "tech",
-	"shiramine": "honest",
-	"maezono": "aggressive",
-	"kirishima": "heart",
+	"dr_kemuri": "tech",
+	"dj_smoke": "heart",
 }
 
 const REBUTTAL_PROMPTS := [
@@ -150,9 +148,8 @@ const PRESENTATION_FOCUS_OPTIONS := [
 ]
 const JUDGE_FOCUS_PREFERENCES := {
 	"nagumo": ["taste", "smoke"],
-	"shiramine": ["ease", "taste"],
-	"maezono": ["smoke", "unique"],
-	"kirishima": ["unique", "ease"],
+	"dr_kemuri": ["taste", "unique"],
+	"dj_smoke": ["unique", "ease"],
 }
 const PRESENTATION_FOCUS_LABEL := {
 	"taste": "味",
@@ -333,7 +330,8 @@ func _ready() -> void:
 
 func _prepare_run() -> void:
 	_theme = THEMES[randi() % THEMES.size()]
-	_random_judge = RANDOM_JUDGES[randi() % RANDOM_JUDGES.size()]
+	# ゲスト審査員は章ごとに固定（ch2 = DJ SMOKE）
+	_random_judge = GUEST_JUDGES[0]
 	_selected_bowl = PlayerData.equipment_bowl
 	_selected_hms = PlayerData.equipment_hms
 	_selected_flavors.clear()
@@ -3127,7 +3125,7 @@ func _build_focus_scores() -> Dictionary:
 
 func _get_active_judge_focuses() -> Array[String]:
 	var focus_ids: Array[String] = []
-	var judge_ids = ["nagumo", str(_random_judge.get("id", ""))]
+	var judge_ids = ["nagumo", "dr_kemuri", str(_random_judge.get("id", ""))]
 	for judge_id in judge_ids:
 		var raw = JUDGE_FOCUS_PREFERENCES.get(judge_id, [])
 		if typeof(raw) != TYPE_ARRAY:
@@ -3545,7 +3543,7 @@ func _build_temperature_gauge_text(current_temp: float, target: Vector2) -> Stri
 
 
 func _refresh_side_panel() -> void:
-	judge_label.text = "MC: パッキー\n審査員: 南雲 修二 + %s\nテーマ: %s" % [
+	judge_label.text = "MC: パッキー\n審査員: 南雲 修二 + ドクター・ケムリ + %s\nテーマ: %s" % [
 		str(_random_judge.get("name", "審査員")),
 		str(_theme.get("name", "-")),
 	]

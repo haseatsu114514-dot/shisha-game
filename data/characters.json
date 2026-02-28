@@ -112,7 +112,12 @@
       "quiet beautiful japanese woman in her late 20s, hair down in natural dark brown (no mint green dye visible), wearing a beige cable knit sweater and long skirt, minimal makeup, shoulder bag, subdued and elegant, sitting alone at a counter reading a menu, ephemeral beauty",
       "same woman but walking through a shopping district, calm and reserved demeanor, completely different aura from a flashy concept cafe hostess, natural beauty without any costume or persona"
     ],
-    "private_notes": "プライベートの栞は、お店のみんちゃんとは別人レベルで雰囲気が異なる。髪はミントグリーンのツインテールではなく地毛のダークブラウンを下ろしている。ベージュのケーブルニットにロングスカート、薄化粧。派手さは一切なく、静かで儚げで綺麗な大人の女性。Ch1序盤のバイトイベントでtonariに客として来店するが、はじめは好感度5イベントまで同一人物だと気づかない。"
+    "private_notes": "プライベートの栞は、お店のみんちゃんとは別人レベルで雰囲気が異なる。髪はミントグリーンのツインテールではなく地毛のダークブラウンを下ろしている。ベージュのケーブルニットにロングスカート、薄化粧。派手さは一切なく、静かで儚げで綺麗な大人の女性。Ch1序盤のバイトイベントでtonariに客として来店するが、はじめは好感度5イベントまで同一人物だと気づかない。",
+    "appearance_rules": {
+      "shisha_world": "シーシャの世界（大会、応援、店舗など）では常にコンカフェ嬢の姿（ミントグリーンのツインテール、コンカフェ衣装）で登場する。これが業界内で有名な『ぺぱーみんとのみんと』の姿。",
+      "private_date": "恋人ルート確定後のデートシーンでのみ、私服姿（ダークブラウンの地毛、ベージュのケーブルニット、ロングスカート、薄化粧）で登場する。コンカフェの仮面を脱いだ『緑川栞』としての素顔。",
+      "first_visit": "Ch1序盤の強制バイトイベントでtonariに『綺麗なお客さん』として私服姿で来店。名前も正体も明かさず『お任せで』と注文する。はじめはペパーミントのミントだとは知らない状態。"
+    }
   },
   {
     "id": "shisha_9000",
@@ -405,7 +410,7 @@
     "nationality": "Japan",
     "affiliation": "大会審査員長 / 大手シーシャチェーン「シーステーション」会長",
     "play_style": "N/A",
-    "description": "大手シーシャチェーン「シーステーション」（誰でも入りやすい大衆向け店舗）の会長であり大会審査員長。\n自社の店舗は「ファミレスのような手軽さ」を売りにして割り切っているが、プロの大会審査においては単なる技術だけでなく「店の哲学が煙に出ているか」を最重要基準にするという恐ろしいほどの二面性を持つ。\n自社の煙はあくまで入り口であり、若者たちが自社チェーンを踏み台にして本物の煙へ至ることを望んでいる。だからこそ、プロの大会では容赦のない採点を行う。\nスミさんとは旧知の仲で、「真逆の道を選んだ」ライバルでもある。酒の席でだけ、若い頃の話をする。",
+    "description": "大手シーシャチェーン「シーステーション」（誰でも入りやすい大衆向け店舗）の会長であり大会審査員長。SMOKE CROWN CUPの会場であるシーステーション旗艦店の生みの親でもある。\n自社の店舗は「ファミレスのような手軽さ」を売りにして割り切っているが、プロの大会審査においては味や技術の正確さではなく「作り手の生き様が煙ににじみ出ているか」──つまりその人間がどんな人生を歩み、何を背負い、誰のために煙を作っているのかを最重要基準にするという恐ろしいほどの二面性を持つ。\n自社の煙はあくまで入り口であり、若者たちが自社チェーンを踏み台にして本物の煙へ至ることを望んでいる。だからこそ、プロの大会では容赦のない採点を行う。\nスミさんとは旧知の仲で、「真逆の道を選んだ」ライバルでもある。酒の席でだけ、若い頃の話をする。",
     "background_secret": "根底にあるのは『かつて自分が救われたあの小さな古びたシーシャ屋のような空間を、全国どこでも味わえるようにしたい』という泥臭く熱い理念。スミさんとは旧知の仲で、真逆の道を歩んだライバル関係でもある。お忍びで自社チェーンの若手の煙を吸いに行きひっそり評価する「不器用だが泥臭い親父」の側面を持つ。",
     "favorite_flavor": "シーガ（葉巻系）",
     "specialty_flavor": "N/A（審査のため作らない）",
@@ -486,47 +491,25 @@
     ]
   },
   {
-    "id": "chad",
-    "name": "チャド / チャド・ウィンズロウ",
-    "role": "judge",
-    "age": 29,
-    "nationality": "USA",
-    "affiliation": "世界戦プレイヤー",
-    "play_style": "「ショーマンシップ」",
-    "description": "第4章の世界大会に関わるキャラクター。「味はいいけどショーマンシップが足りねえ」と、主人公に意外な教えを提供する師匠の一人。",
-    "background_secret": "過去にエンターテイナーとしての夢に破れた俳優崩れ。言葉も通じない異国で、シーシャを通じた『言葉不要のパフォーマンス』に自分の居場所と救いを見出した。",
-    "favorite_flavor": "バブルガム",
-    "specialty_flavor": "バブルガム",
-    "growth_stats": {
-      "primary": "魅力",
-      "secondary": "センス",
-      "notes": "派手なパフォーマンスで客の目を引くことばかり考えていたが、はじめの静かで地味な手元に見とれる客の姿を見て、いつの間にか『静寂のショーマンシップ』という引き算の演出を身に付けていた。"
-    },
-    "visual_concepts": [
-      "29s american male, incredibly fit and handsome, confident blinding smile, short blonde hair, wearing a tight black t-shirt showing off muscular arms, doing flashy tricks with bright smoke rings, energetic vibe",
-      "charismatic western showman, bright blue eyes, wearing flashy sunglasses indoors, performing acrobatic smoke tricks like a bartender juggling bottles, vibrant and fun lighting"
-    ]
-  },
-  {
     "id": "da_silva",
     "name": "ダ・シルヴァ太陽 / エンリケ・ダ・シルヴァ・太陽",
     "role": "judge",
     "age": 28,
     "nationality": "Brazil",
     "affiliation": "世界戦プレイヤー",
-    "play_style": "「フェスタ（祝祭）」",
-    "description": "第4章に関わるキャラクター。「シーシャはフェスタ！楽しくなけりゃ意味がねぇ！」と主人公に純粋な楽しさを思い出させてくれる。",
-    "background_secret": "スラム（ファヴェーラ）の出身で、貧困と暴力の中で育った。悲惨な現実から一瞬でも仲間を解き放つため、『煙のある場所だけは最高の祝祭（フェスタ）にする』という悲痛なまでの明るさを持つ。",
-    "favorite_flavor": "アサイー（仮）",
+    "play_style": "「フェスタ（祝祭）＆ショーマンシップ」",
+    "description": "第4章の世界大会に関わるキャラクター兼ゲスト審査員。「シーシャはフェスタ！楽しくなけりゃ意味がねぇ！」と主人公に純粋な楽しさを思い出させてくれる。ショーマンシップにも長け、派手なパフォーマンスで場を盛り上げる。「大会で会おう」と約束し、審査員席から再会する。",
+    "background_secret": "スラム（ファヴェーラ）の出身で、貧困と暴力の中で育った。悲惨な現実から一瞬でも仲間を解き放つため、『煙のある場所だけは最高の祝祭（フェスタ）にする』という悲痛なまでの明るさを持つ。かつてエンターテイナーとしての夢に挫折した時期もあるが、シーシャを通じた『言葉不要のパフォーマンス』に自分の居場所と救いを見出した。",
+    "favorite_flavor": "南国フルーツミックス",
     "specialty_flavor": "南国フルーツ・お祭りミックス",
     "growth_stats": {
       "primary": "魅力",
       "secondary": "根性",
-      "notes": "『とにかく明るく楽しく』という一点張りだったが、はじめの『相手の沈黙さえも受け入れる』シーシャ作りを知り、いつの間にか落ち込んだ客には静かに寄り添うチルな煙も出せるようになっていた。"
+      "notes": "『とにかく明るく楽しく、派手に盛り上げる』という信念だったが、はじめの『相手の沈黙さえも受け入れる』シーシャ作りを知り、いつの間にか落ち込んだ客には静かに寄り添うチルな煙も出せるようになっていた。"
     },
     "visual_concepts": [
       "28s brazilian male, tanned skin, athletic build, sunny and overwhelmingly cheerful expression, wearing a vibrant tropical shirt open at the chest, surrounded by lively festival energy and colorful smoke",
-      "passionate brazilian shisha player, dark curly hair, wide joyful smile, wearing colorful street carnival-inspired clothing, partying and dancing while managing the hookah, festive warm sunshine lighting"
+      "passionate brazilian shisha player, dark curly hair, wide joyful smile, wearing colorful street carnival-inspired clothing, performing flashy smoke tricks while dancing, festive warm sunshine lighting"
     ]
   },
   {

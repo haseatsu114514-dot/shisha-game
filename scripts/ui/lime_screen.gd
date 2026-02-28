@@ -189,8 +189,7 @@ func _on_option_pressed(action: String, index: int) -> void:
 				var reply: Dictionary = replies[index]
 				_add_chat_bubble(SELF_ID, str(reply.get("text", "")))
 				_add_chat_bubble(str(message.get("sender", "")), str(reply.get("response", "")))
-				AffinityManager.add_affinity(str(message.get("sender", "")), int(reply.get("affinity", 0)))
-				
+				# LIMEでは好感度を変えない（イベント側で処理する）
 				# If the reply triggers an event, set it
 				if reply.has("event"):
 					GameManager.set_transient("pending_outing_event", str(reply.get("event", "")))
