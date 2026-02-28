@@ -430,6 +430,40 @@
           "text": "帰り道、アダムは赤くて丸いリンゴのマスコットを大事そうに鞄に入れながら歩いた。夜の商店街に、ちょっとだけ普通の光景が広がっていた。"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch1_adam_after_ch1",
+      "metadata": { "bg": "res://assets/backgrounds/eden.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "大会から数日後。エデンを訪ねた。" },
+        { "speaker": "adam", "face": "normal", "text": "……来たか。果実の使徒よ" },
+        { "speaker": "hajime", "face": "normal", "text": "お疲れ様でした、アダムさん" },
+        { "speaker": "adam", "face": "normal", "text": "疲れはない。ただ、己の果実が最善を尽くせたかどうか──それだけを考えていた" },
+        { "speaker": "", "face": "", "text": "アダムが静かにダブルアップルの瓶を開けた。いつも通りの動作。でも今日は、手が少しだけ丁寧に見える。" },
+        { "speaker": "adam", "face": "normal", "text": "お前の煙は、正直だった。嘘がなかった。……俺の果実と、そこだけは同じだ" },
+        { "speaker": "hajime", "face": "normal", "text": "アダムさんのダブルアップル、大会でも圧倒的だったと思います" },
+        { "speaker": "adam", "face": "serious", "text": "だが届かなかった。それが全てだ。……もっと上を目指せ。お前の煙には、まだ伸びる余地がある" },
+        { "speaker": "", "face": "", "text": "甘くて重いダブルアップルの香りが店内に満ちている。この匂いの中で、何時間でも話せる気がした。" },
+        { "speaker": "", "face": "", "text": "……【センス】が上がった。" },
+        { "type": "set_flag", "flag": "ch1_adam_after_ch1_done" }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_adam_after_ch1_firstshop",
+      "metadata": { "bg": "res://assets/backgrounds/eden.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "大会が終わってから、初めてエデンに足を踏み入れた。重厚な木のドア。押し寄せるダブルアップルの甘い香り。大会会場とは違う、この人の本拠地だ。" },
+        { "speaker": "adam", "face": "normal", "text": "……初めて来たな、お前がここに来るのは" },
+        { "speaker": "hajime", "face": "normal", "text": "大会で戦ったのに、店には来ていなかったので" },
+        { "speaker": "adam", "face": "normal", "text": "大会の会場でお前の煙を見ていた。嘘がなかった。……どこで身につけた？" },
+        { "speaker": "hajime", "face": "normal", "text": "tonariのバイトで。見様見真似で" },
+        { "speaker": "adam", "face": "normal", "text": "ふむ。環境の匂いを吸い込んで育ったか。それは本物の習得だ" },
+        { "speaker": "", "face": "", "text": "アダムがフレーバーをボウルに詰め始めた。緻密で、迷いがない。" },
+        { "speaker": "adam", "face": "normal", "text": "エデンへようこそ。一度はここの果実を知っておけ。お前の煙が、どこに向かうべきか──少し見えてくるかもしれない" },
+        { "speaker": "", "face": "", "text": "出てきたシーシャは、暴力的なほど甘くて、それなのにどこか誠実な味がした。" },
+        { "speaker": "", "face": "", "text": "……【センス】が上がった。" },
+        { "type": "set_flag", "flag": "ch1_adam_after_ch1_done" }
+      ]
     }
   ]
 }

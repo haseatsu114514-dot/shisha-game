@@ -147,6 +147,49 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 		"ageha":
 			metadata["bg"] = "res://assets/backgrounds/pepermint.png" # アゲハの居場所に合わせて背景を設定
 
+	# === 大会後・初訪問ルーティング（共通）===
+	# 大会で顔は合わせているので驚かない。ch1訪問済みかどうかで関係深度を分岐する。
+
+	# みんと: ch2以降・大会後初訪問（visited=ch1週に1回以上訪問）
+	if rival_id == "minto" and GameManager.current_chapter >= 2 and not EventFlags.get_flag("ch1_minto_after_ch1_done"):
+		var visited_before = count > 0
+		dialogue_id = "ch1_minto_after_ch1" if visited_before else "ch1_minto_after_ch1_firstshop"
+		metadata["add_affinity"] = {"minto": 1}
+		GameManager.queue_dialogue(dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", metadata)
+		GameManager.set_transient("advance_time_after_scene", true)
+		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+		return
+
+	# アダム: ch2以降・大会後初訪問
+	if rival_id == "adam" and GameManager.current_chapter >= 2 and not EventFlags.get_flag("ch1_adam_after_ch1_done"):
+		var visited_before = count > 0
+		dialogue_id = "ch1_adam_after_ch1" if visited_before else "ch1_adam_after_ch1_firstshop"
+		metadata["add_affinity"] = {"adam": 1}
+		GameManager.queue_dialogue(dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", metadata)
+		GameManager.set_transient("advance_time_after_scene", true)
+		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+		return
+
+	# なる: ch4以降（ch2-3は武者修行中で不在）・帰還後初訪問
+	if rival_id == "naru" and GameManager.current_chapter >= 4 and not EventFlags.get_flag("ch1_naru_after_return_done"):
+		var visited_before = count > 0
+		dialogue_id = "ch1_naru_after_return" if visited_before else "ch1_naru_after_return_firstshop"
+		metadata["add_affinity"] = {"naru": 1}
+		GameManager.queue_dialogue(dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", metadata)
+		GameManager.set_transient("advance_time_after_scene", true)
+		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+		return
+
+	# アゲハ: ch3以降（ch2大会後）・大会後初訪問
+	if rival_id == "ageha" and GameManager.current_chapter >= 3 and not EventFlags.get_flag("ch2_ageha_after_ch2_done"):
+		var visited_before = count > 0
+		dialogue_id = "ch2_ageha_after_ch2" if visited_before else "ch2_ageha_after_ch2_firstshop"
+		metadata["add_affinity"] = {"ageha": 1}
+		GameManager.queue_dialogue(dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", metadata)
+		GameManager.set_transient("advance_time_after_scene", true)
+		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+		return
+
 	if count == 0:
 		dialogue_id = "%s%s_first" % [prefix, rival_id]
 		# みんとは初回訪問でLIME交換（フレンドリーなので即交換）

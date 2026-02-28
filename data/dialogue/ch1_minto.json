@@ -16,12 +16,37 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "あははっ、みんなありがとーっ♡ ……あっ！ いらっしゃいませーっ！ あれ、もしかして……tonariの新人さん？ はじめくん、だっけ？"
+          "text": "あははっ、みんなありがとーっ♡ ……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "振り向いた瞬間、彼女の表情が──ほんの一瞬、固まった。"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "っ……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──次の瞬間には、もう完全な笑顔に戻っていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "いらっしゃいませーっ！ あれ、もしかして……tonariの新人さん？ はじめくん、だっけ？"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
           "text": "えっ、なんで名前知ってるの……？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……今、一瞬だけ変な顔をしたような……？ 気のせいかな）"
         },
         {
           "speaker": "minto",
@@ -404,6 +429,51 @@
         { "speaker": "minto", "face": "normal", "text": "もーっ……。じゃ、じゃあ今日は、はじめくんの『ちょっと生意気な妹分』として、甘えちゃおー……っと" },
         { "speaker": "", "face": "", "text": "言い慣れないセリフに自分で照れて、さらに俯いて小さくなる彼女。" },
         { "speaker": "", "face": "", "text": "お店の『みんちゃん』と、素の『栞さん』。そのどちらも彼女なのだと、今はもうちゃんと分かっている。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_minto_after_ch1",
+      "metadata": { "bg": "res://assets/backgrounds/pepermint.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "大会から数日後。ぺぱーみんとに立ち寄ってみた。" },
+        { "speaker": "minto", "face": "smile", "text": "あ、はじめくん！ いらっしゃいっ♡" },
+        { "speaker": "", "face": "", "text": "いつもと同じ満開の笑顔。でも、カウンターの中から目が合った瞬間、なんとなくいつもと違う気がした。" },
+        { "speaker": "minto", "face": "normal", "text": "……あのさ。大会のこと、ちゃんと言えてなかったから" },
+        { "speaker": "minto", "face": "smile", "text": "おめでとう、はじめくん。本当に" },
+        { "speaker": "hajime", "face": "normal", "text": "みんちゃん……" },
+        { "speaker": "minto", "face": "normal", "text": "あそこで勝ったのは、みんちゃんじゃなかった。悔しいけど──それは認める" },
+        { "speaker": "minto", "face": "smile", "text": "でも『可愛さ』でいえば断然みんちゃんの勝ちだし、チェキの枚数でも一位だったから、実質総合優勝なんだけどね♡" },
+        { "speaker": "hajime", "face": "smile", "text": "……それはちょっと違う気が" },
+        { "speaker": "minto", "face": "normal", "text": "じゃあさ、一個だけ聞いていい。はじめくんは、シーシャ続けるの？ 次の大会も出るの？" },
+        { "speaker": "hajime", "face": "normal", "text": "うん、たぶん" },
+        { "speaker": "minto", "face": "normal", "text": "そっか" },
+        { "speaker": "", "face": "", "text": "みんとがシーシャのセットを静かに作り始めた。いつもより丁寧に、フレーバーをほぐすように。" },
+        { "speaker": "minto", "face": "normal", "text": "みんちゃんも出るから。もっと上の大会に。だから……また同じ舞台に立つかもしれないね" },
+        { "speaker": "hajime", "face": "normal", "text": "それ、楽しみにしてるよ" },
+        { "speaker": "minto", "face": "surprise", "text": "っ……！" },
+        { "speaker": "minto", "face": "smile", "text": "……ばか。もう少しびびりなさいよ" },
+        { "speaker": "", "face": "", "text": "出してくれたシーシャは、いつもと変わらず強くて甘かった。でも今日は、どこかほっとする味がした。" },
+        { "speaker": "", "face": "", "text": "……【魅力】が上がった。" },
+        { "type": "set_flag", "flag": "ch1_minto_after_ch1_done" }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_minto_after_ch1_firstshop",
+      "metadata": { "bg": "res://assets/backgrounds/pepermint.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "大会が終わってから、初めてぺぱーみんとに来てみた。" },
+        { "speaker": "minto", "face": "smile", "text": "あ、いらっしゃいませーっ！ ……あれ、はじめくん！？ 来てくれたんだ！" },
+        { "speaker": "hajime", "face": "normal", "text": "大会ぶりです。一度来てみたくて" },
+        { "speaker": "minto", "face": "smile", "text": "えへへっ、嬉しいなー♡ ちゃんと来てくれると思ってなかったから" },
+        { "speaker": "", "face": "", "text": "店内はパステルカラーの内装で、大会会場とは別世界のような可愛らしさだ。これがみんとの本拠地か。" },
+        { "speaker": "minto", "face": "normal", "text": "……大会、おめでとう。本当に" },
+        { "speaker": "hajime", "face": "normal", "text": "みんちゃんのシーシャも、すごかったよ。そこはちゃんと思ってた" },
+        { "speaker": "minto", "face": "normal", "text": "えへ……まあ、負けは負けだから。でも悔しい気持ちより、なんか……続けたい、ってなってる" },
+        { "speaker": "hajime", "face": "normal", "text": "（……この人、キャピキャピした見た目の裏に、ちゃんと熱いものを持ってる）" },
+        { "speaker": "minto", "face": "smile", "text": "ねえ、せっかく来てくれたんだから、うちのオススメ作るね。みんちゃんのシーシャ、ちゃんと味わってって♡" },
+        { "speaker": "", "face": "", "text": "出されたシーシャには、エディブルフラワーが浮いていた。甘くて、でも確かな技術の煙だった。" },
+        { "speaker": "", "face": "", "text": "……【魅力】が上がった。" },
+        { "type": "set_flag", "flag": "ch1_minto_after_ch1_done" }
       ]
     },
     {
