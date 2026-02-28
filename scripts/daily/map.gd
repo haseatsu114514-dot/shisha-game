@@ -159,7 +159,7 @@ func _build_spot_list() -> Array:
 		if not _is_visited_today("choizap"):
 			spots.append({"id": "choizap", "label": "チョイザップ"})
 		if GameManager.current_chapter == 1 and not EventFlags.get_flag("ch1_c_station_visited"):
-			spots.append({"id": "c_station", "label": "シーシャステーション（C.STATION）"})
+			spots.append({"id": "c_station", "label": "C.STATION"})
 		if GameManager.current_chapter >= 2:
 			spots.append({"id": "tv_tower_park", "label": "テレビ塔公園"})
 			if EventFlags.get_flag("spot_cafe_unlocked"):
@@ -178,7 +178,7 @@ func _build_spot_list() -> Array:
 			if not _is_visited_today("minto"):
 				spots.append({"id": "minto", "label": "ぺぱーみんと（夜）"})
 		if GameManager.current_chapter == 1 and not EventFlags.get_flag("ch1_c_station_visited"):
-			spots.append({"id": "c_station", "label": "シーシャステーション（C.STATION・夜）"})
+			spots.append({"id": "c_station", "label": "C.STATION（夜）"})
 	return spots
 
 func _build_all_japan_spots() -> Array:
