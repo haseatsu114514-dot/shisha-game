@@ -57,7 +57,7 @@
         {
           "speaker": "rei",
           "face": "serious",
-          "text": "……夜に咲いて……散っていく……"
+          "text": "……月光花 咲かせて……散っていく……"
         },
         {
           "speaker": "hajime",
@@ -153,12 +153,12 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……その曲、知ってるのか"
+          "text": "……気づいてくれたのか"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "全部は知らないんですけど。なんか耳に残ってて"
+          "text": "全部は知らないんですけど。友達がよく歌ってたんで、なんとなく"
         },
         {
           "speaker": "",
@@ -168,7 +168,42 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……聴いたことがある人が来たのは、初めてだ"
+          "text": "……V系、聴くのか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "その友達が好きで。一緒にいたらそのへんの曲は覚えて"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……（じっとこちらを見る）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……なんか値踏みされてる？）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……よく見たら。メイク、映えそうだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え？"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "……いや。なんでもない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……V系にスカウトされかかった気がした）"
         },
         {
           "speaker": "rei",
@@ -214,7 +249,7 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……届かなくても……それでも……ちがうな……"
+          "text": "……嘘でいいから……それでも……ちがうな……"
         },
         {
           "speaker": "hajime",
@@ -426,7 +461,7 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……朽ちていく花は……嘘をついた……ちがう……"
+          "text": "……イエス……それでも愛してる……ちがう……"
         },
         {
           "speaker": "hajime",
