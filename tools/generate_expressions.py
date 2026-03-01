@@ -48,16 +48,17 @@ REFERENCE_IMAGES: dict[str, Path] = {
 EXPRESSIONS = ["smile", "surprise", "sad", "serious"]
 
 # ─── プロンプト ───────────────────────────────────────────────
-# スタイル固定の共通指示
+# スタイル固定の共通指示（全キャラ共通ベース）
 _STYLE = (
     "This is a retro pixel-art anime visual novel character sprite. "
-    "The character stands in a relaxed full-body pose against a solid bright green chroma-key background. "
+    "The character stands against a solid bright green chroma-key background. "
     "The art style uses chunky outlines and a limited color palette typical of retro Japanese RPG sprites. "
     "IMPORTANT: Do NOT change the character's hair style, hair color, eye color, outfit, shoes, pose, "
     "body proportions, background color, or art style in any way. "
     "Only change the facial expression as described below."
 )
 
+# ── 共通表情プロンプト（キャラ別上書きがない場合のフォールバック）──
 EXPRESSION_PROMPTS: dict[str, str] = {
     # smile ── 嬉しい・好意的
     "smile": (
@@ -68,7 +69,6 @@ EXPRESSION_PROMPTS: dict[str, str] = {
         "Eyebrows should be relaxed and slightly raised. "
         "Target emotion: 嬉しい (happy, pleased, friendly)."
     ),
-
     # surprise ── 驚き・リアクション
     "surprise": (
         f"{_STYLE} "
@@ -78,7 +78,6 @@ EXPRESSION_PROMPTS: dict[str, str] = {
         "as if reacting to something unexpected. "
         "Target emotion: 驚き (surprised, startled, caught off guard)."
     ),
-
     # sad ── 悲しみ・落ち込み
     "sad": (
         f"{_STYLE} "
@@ -89,7 +88,6 @@ EXPRESSION_PROMPTS: dict[str, str] = {
         "No tears are needed — just quiet sadness. "
         "Target emotion: 悲しみ (sad, downcast, dispirited)."
     ),
-
     # serious ── 真剣・考え事
     "serious": (
         f"{_STYLE} "
@@ -100,6 +98,71 @@ EXPRESSION_PROMPTS: dict[str, str] = {
         "Target emotion: 真剣 (serious, focused, deep in thought)."
     ),
 }
+
+# ── つむぎ専用プロンプト ──────────────────────────────────────────
+# 通常表情の特徴:
+#   茶色のボブヘア・前髪 / 濃紺フーディー / 腕を組んでタブレットを抱えたポーズ
+#   黒のひざ上ソックス / 暗い色のプリーツスカート / 控えめ・内向きな気質
+_TSUMUGI_BASE = (
+    "This is a retro pixel-art anime visual novel character sprite on a solid bright green chroma-key background. "
+    "FACE-ONLY EDIT: Do NOT change any of the following — "
+    "her brown bob hair with blunt bangs, her dark navy hoodie, "
+    "her crossed arms and the tablet/device she is holding against her chest, "
+    "her dark pleated skirt, her black knee-high socks, her dark shoes, "
+    "the background color, the pixel art style, or any part of the image outside the face. "
+    "Modify ONLY the face area: eyes, eyebrows, and mouth. "
+    "She is a reserved, introverted girl — her expressions are subtle and inward, never exaggerated."
+)
+
+_TSUMUGI_PROMPTS: dict[str, str] = {
+    # smile ── 控えめな嬉しさ
+    "smile": (
+        f"{_TSUMUGI_BASE} "
+        "Change only the face to a quiet, reserved smile — the kind a shy girl shows when genuinely pleased. "
+        "The corners of the mouth should be gently upturned in a soft, closed-mouth smile. "
+        "The eyes should soften slightly, lids lowering just a little as if relaxed and warm. "
+        "The expression is understated: not a beaming grin, just a small, sincere smile. "
+        "Target emotion: 嬉しい (quietly happy, warmly pleased)."
+    ),
+    # surprise ── 控えめな驚き
+    "surprise": (
+        f"{_TSUMUGI_BASE} "
+        "Change only the face to a mildly surprised expression — not dramatic, but visibly caught off guard. "
+        "The eyes should open wider than normal, irises fully visible. "
+        "The eyebrows should raise slightly. "
+        "The mouth should part just a little — a small gap, as if she forgot to keep it closed. "
+        "Target emotion: 驚き (quietly startled, momentarily surprised)."
+    ),
+    # sad ── 内向きの悲しみ
+    "sad": (
+        f"{_TSUMUGI_BASE} "
+        "Change only the face to a quietly sad, inwardly pained expression. "
+        "The inner corners of the eyebrows should lift very slightly inward (a subtle worried arch). "
+        "The eyes should lower their gaze downward, lids drooping with a heavy, tired quality. "
+        "The mouth should be flat and still — she internalizes her feelings and doesn't show much. "
+        "No tears. Just quiet, suppressed sadness. "
+        "Target emotion: 悲しみ (sad, emotionally withdrawn, quietly hurt)."
+    ),
+    # serious ── 考え込む・集中
+    "serious": (
+        f"{_TSUMUGI_BASE} "
+        "Change only the face to a focused, pensive expression — as if she is thinking through something carefully. "
+        "The eyebrows should be level and very slightly drawn together, showing concentration without anger. "
+        "The eyes should look forward with a calm, analytical gaze — sharp but not cold. "
+        "The mouth should be closed, lips pressed lightly together in a neutral, composed line. "
+        "Target emotion: 真剣 (serious, focused, deep in thought)."
+    ),
+}
+
+# ── キャラ別プロンプト辞書（char_id → expression → prompt）──────────
+CHAR_PROMPTS: dict[str, dict[str, str]] = {
+    "tsumugi": _TSUMUGI_PROMPTS,
+}
+
+
+def get_prompt(char_id: str, expression: str) -> str:
+    """キャラ別プロンプトを返す。未定義の場合は共通プロンプトにフォールバック。"""
+    return CHAR_PROMPTS.get(char_id, {}).get(expression) or EXPRESSION_PROMPTS[expression]
 
 
 # ─── 生成処理 ────────────────────────────────────────────────
@@ -127,7 +190,7 @@ def generate_expression(
         model=MODEL,
         contents=[
             types.Part.from_bytes(data=image_bytes, mime_type="image/png"),
-            EXPRESSION_PROMPTS[expression],
+            get_prompt(char_id, expression),
         ],
         config=types.GenerateContentConfig(
             response_modalities=["IMAGE", "TEXT"],
