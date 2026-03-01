@@ -163,6 +163,12 @@ def generate_image(
 
     except Exception as e:
         print(f"エラー ({char_id}): {e}")
+        # 課金上限エラーの場合は即座に中断
+        if "billing_hard_limit_reached" in str(e):
+            print("\n⚠ OpenAI の課金上限に達しています。")
+            print("  https://platform.openai.com/settings/organization/billing/overview")
+            print("  で Usage limits の Hard limit を引き上げてください。")
+            sys.exit(1)
         return None
 
 
@@ -182,8 +188,8 @@ def main():
     )
     parser.add_argument(
         "--output",
-        default="assets/generated",
-        help="出力ディレクトリ (デフォルト: assets/generated/)",
+        default=str(Path.home() / "Desktop" / "shisha_sprites"),
+        help="出力ディレクトリ (デフォルト: ~/Desktop/shisha_sprites/)",
     )
     parser.add_argument(
         "--size",
