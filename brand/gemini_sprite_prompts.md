@@ -15,14 +15,39 @@
 anime illustration, full body standing pose, white background, clean line art,
 soft cel shading, 6 head height proportions, character sprite sheet style,
 semi-realistic anime style, no props, no objects held, arms relaxed,
-high quality, detailed clothing
+high quality, detailed clothing, visible feet and shoes
 ```
+
+※ `visible feet and shoes` を追加。全身立ち絵で足元が切れる問題を防止。
+
+---
+
+## キャラクター カラーパレット早見表
+
+並べた時の差別化を確認するためのカラーマップ。
+
+| キャラ | メインカラー | サブカラー | 髪色 | アイカラー | シルエット特徴 |
+|---|---|---|---|---|---|
+| はじめ | 黒 | オリーブグリーン | 黒（キャップ） | オリーブグリーン | キャップ＋パーカー、平均体型 |
+| スミさん | ネイビー＋ブラウン | チャコール | 黒（白髪混じり） | 落ち着いた茶 | フラットキャップ＋エプロン、長身 |
+| なる | シルバー＋ブラック | アンバー | 銀白 | アンバー | エッジの効いた髪、ストリート系 |
+| アダム | ダークグリーン＋レッド | 黒 | 緑→赤グラデーション | 深い茶 | オンブレ髪＋職人コート、剛直 |
+| みんと（コンカフェ） | 黒＋ネオングリーン | ゴールド | 黒ロング | 明るい緑 | ツノ＋羽＋小悪魔ドレス |
+| みんと（素） | ベージュ＋ダーク | ブラウン | 黒ロング | 柔らかい緑 | シンプル＋ロング髪 |
+| つむぎ | ダークパープル＋黒 | ブラウン | ダークブラウン | 赤みがかった茶 | ボブ＋パーカー、小柄 |
+| アゲハ | ゴールド＋ピンク | レオパード柄 | 金髪ツインテール | アンバー | ツインテール＋褐色肌、派手 |
+| ドクターケムリ | 白（白衣）＋水色 | ベージュ | ダークブラウン | 茶（眼鏡越し） | 白衣＋サンダル、七三分け |
+| 南雲 | チャコール（スーツ） | 白 | 黒（銀混じり） | 鋭い黒 | がっしり＋スーツ、威圧感 |
+| 前園 | ネイビー（ブレザー） | ベージュ | ダークブラウン | 茶 | 丸顔＋柔らかい体型 |
+| サラリーマン | チャコール（スーツ） | 白＋ダーク | 黒 | 無機質な黒 | 直立不動、表情ゼロ |
+| かこ | 全身黒 | — | 黒（姫カット） | ダーク | 姫カット＋モード系、人形的 |
+| りら | 黒（ライダース） | 白 | 黒ボブ | ブラウン | ボブ＋童顔＋ライダース |
 
 ---
 
 ## 既存キャラ（全身版・ブラッシュアップ）
 
-### はじめ（蒸野 始）- 主人公 22歳
+### はじめ（蒸野 始）- 主人公 22歳 172cm
 
 **参考画像:**
 - `assets/90227f9e-b583-4eea-beb6-125aa851621c.png` — 最新デザイン（黒キャップ+黒パーカー+ドッグタグ、上半身）
@@ -35,18 +60,20 @@ anime illustration, full body standing pose, white background, clean line art,
 soft cel shading, 6 head height proportions, character sprite sheet style,
 semi-realistic anime style, no props, no objects held,
 
-young Japanese male, 22 years old, black short hair with loose strands
-falling over forehead, black baseball cap worn forward (slight angle),
-olive-green eyes, small silver stud earring (left ear), silver dog tag necklace,
-black zip-up hoodie worn open with hood down, black t-shirt underneath,
-dark slim-fit jogger pants, dark sneakers,
-relaxed casual posture with slight gentle smile, hands loosely in pockets,
-warm approachable vibe despite dark clothing
+young Japanese male, 22 years old, 172cm, average slim build,
+black short messy hair with loose strands falling over forehead,
+black baseball cap worn forward at a slight angle,
+olive-green eyes with gentle warm gaze, soft natural eyebrows,
+small silver stud earring on left ear, silver dog tag necklace,
+black zip-up hoodie worn open with hood down, black crew-neck t-shirt underneath,
+dark slim-fit jogger pants, dark low-top sneakers,
+relaxed casual posture, slight gentle smile, both hands loosely in hoodie pockets,
+overall dark outfit but warm non-threatening expression
 ```
 
 ---
 
-### スミさん（炭場 丈一郎）- 師匠 46歳
+### スミさん（炭場 丈一郎）- 師匠 46歳 182cm
 
 **参考画像:**
 - `assets/sumi.png` — 現デザイン（beret+眼鏡+エプロン、全身、緑背景）
@@ -59,45 +86,50 @@ anime illustration, full body standing pose, white background, clean line art,
 soft cel shading, 6 head height proportions, character sprite sheet style,
 semi-realistic anime style, no props, no objects held,
 
-mature Japanese male, 46 years old, 182cm tall, black hair with slight silver
-at temples worn under a dark flat cap (Gatsby cap / newsboy cap), round
-wire-frame glasses, short well-groomed beard, calm sharp eyes,
-dark navy button-up long-sleeve shirt with sleeves slightly rolled,
-brown leather bar apron tied at waist, dark charcoal trousers, black boots,
-small tools (pen, notepad edge) visible in apron front pocket,
-relaxed confident posture, arms loosely crossed or one hand in pocket,
-quiet veteran craftsman energy, slight knowing half-smile
+mature Japanese male, 46 years old, 182cm tall, lean tall build,
+black hair with slight silver at temples, worn under a dark grey flat cap
+(Gatsby cap style), round wire-frame glasses, short well-groomed beard,
+calm sharp eyes with slight crow's feet,
+dark navy button-up long-sleeve shirt with sleeves rolled to forearms,
+brown leather bar apron tied at waist, pen clipped to apron front pocket,
+dark charcoal trousers, black leather boots,
+relaxed confident posture, one hand in trouser pocket, slight knowing half-smile,
+veteran craftsman aura
 ```
 
 ---
 
-### つむぎ（白木 つむぎ）- ヒロイン ch1 22歳
+### つむぎ（白木 つむぎ）- ヒロイン ch1 21歳 152cm
 
 **参考画像:**
 - `assets/tumugi.png` — 現デザイン（茶ボブ+紫フード+タブレット、全身、緑背景）
 - `assets/c208857b-0247-4281-ab49-94958aac63e0.png` — 顔アップ（アニメ塗り、白背景）
 - `assets/01d26177-aef7-4ba7-a883-361a388a5cb4.png` — ピクセルアート版バスト
 
-**設定反映ポイント:** tonari常連。内向的だが芯がある。タブレット（デザインやメモに使っている・傷だらけ）をよく持ち歩く。シャイだけど自分の好みははっきりしている。
+**設定反映ポイント:** tonari常連。内向的だが芯がある。画面のひびが入ったiPadでいつも絵を描いている寡黙な少女。ラベンダーのフレーバーしか頼まない。シャイだけど自分の好みははっきりしている。
+
+※ 年齢: character_profiles.md 準拠で21歳（旧プロンプトの22歳から修正）。身長152cm。
 
 ```
 anime illustration, full body standing pose, white background, clean line art,
 soft cel shading, 6 head height proportions, character sprite sheet style,
 semi-realistic anime style, no props, no objects held,
 
-young Japanese female, 22 years old, medium-length brown hair with blunt
-straight bangs, bob-style cut that falls just past the jaw, warm reddish-brown
-eyes, small stud earrings, dark purple oversized zip-up hoodie with subtle
-floral embroidery detail on chest/sleeves, black pleated mini skirt,
-black opaque knee-high socks, dark sneakers,
-holding a scratched and well-used tablet close to chest with both arms,
-slightly reserved posture but calm gentle expression with small soft smile,
-quiet bookish warmth, slightly shy
+young Japanese female, 21 years old, 152cm, petite slim build,
+dark brown bob-cut hair falling just past the jaw with blunt straight bangs
+slightly covering eyebrows, warm reddish-brown eyes, pale complexion,
+small silver stud earrings,
+dark purple oversized zip-up hoodie with subtle floral embroidery on chest,
+black pleated mini skirt, black opaque knee-high socks, dark canvas sneakers,
+hugging a scratched tablet (iPad with cracked screen) close to chest
+with both arms, slightly hunched reserved posture,
+calm gentle expression with small soft closed-lip smile,
+quiet introverted bookish girl
 ```
 
 ---
 
-### みんと（緑川 栞）- ライバル ch1 ／ヒロイン　コンカフェ姿
+### みんと（緑川 栞）- ライバル ch1 ／ヒロイン　コンカフェ姿（自称20歳・実年齢29歳）156cm
 
 **参考画像:**
 - `assets/144b923d-93d3-45bd-81c2-169dc34c591f.png` — コンカフェ衣装（全身、青背景）
@@ -110,15 +142,18 @@ anime illustration, full body standing pose, white background, clean line art,
 soft cel shading, 6 head height proportions, character sprite sheet style,
 semi-realistic anime style, no props, no objects held,
 
-young Japanese female, black long straight hair (hip length),
-bright green eyes with slight mischievous gleam, small cute fangs (yaeba),
-black demon horns hair accessory, small black bat wing accessories on sides,
-black off-shoulder mini dress with neon green trim, green ribbon bow at chest
-(large), corset-style lacing detail, black and neon green frilled skirt hem,
-black thigh-high stockings, platform shoes with green accents,
-black choker necklace, gold chain hip belt with green heart charm,
-confident seductive pose with one hand on hip and slight wink or smirk,
-small evil-cute smile showing one fang, total performer energy
+young Japanese female, 156cm, petite build,
+long straight black hair reaching hips, bright green eyes with mischievous gleam,
+small cute fang visible (yaeba), precise doll-like makeup,
+black demon horn hair accessories on head, small black bat wing hair clips,
+black off-shoulder mini dress with neon green piping and trim,
+large neon green ribbon bow at chest, corset-style lacing at waist,
+black and neon green frilled layered skirt hem,
+black thigh-high stockings, black platform shoes with green sole accents,
+black choker necklace with small green gem, gold chain hip belt with green
+heart charm,
+confident pose with one hand on hip, slight wink with left eye,
+small smirk showing one fang, calculated cute-evil performer aura
 ```
 
 ---
@@ -128,145 +163,163 @@ small evil-cute smile showing one fang, total performer energy
 **参考画像:**
 - `assets/eadf86f9-a6b5-4b2a-96ef-9a38e99253d4.png` — 二面性比較（コンカフェ姿 vs 素の姿、ピクセルアート）
 
-**設定反映ポイント:** 20代を実家の喫茶店のために費やしてきた苦労人。29歳（自称20歳）。少し疲れた達観した笑み。7歳年下の主人公に引け目を感じつつ包容力もある。
+**設定反映ポイント:** 20代を実家の喫茶店のために費やしてきた苦労人。29歳（自称20歳）。少し疲れた達観した笑み。7歳年下の主人公に引け目を感じつつ包容力もある。素の姿は黒髪ロングストレート。
+
+※ 重要: 素の髪色は「黒」。グレーや薄い色ではない。コンカフェ姿と同じ黒髪ロング。
 
 ```
 anime illustration, full body standing pose, white background, clean line art,
 soft cel shading, 6 head height proportions, character sprite sheet style,
 semi-realistic anime style, no props, no objects held,
 
-young Japanese female, 29 years old (looks mid-20s), long straight black hair
-(hip length, worn down naturally), soft green eyes (calm, less intense than
-costume version), small natural smile with slight tiredness behind the eyes,
-beige chunky knit oversized sweater, dark fitted midi skirt, simple leather
-shoulder bag, low-heeled ankle boots,
-relaxed standing posture, one hand holding bag strap lightly,
-quiet adult warmth, slightly weary but composed, elegantly understated
+young Japanese female, 29 years old (looks mid-20s), 156cm, slender build,
+long straight black hair reaching hips (same length as costume version,
+worn down naturally with no accessories), soft green eyes with calm gentle gaze,
+minimal natural makeup, no fangs visible (relaxed closed-lip expression),
+slight shadows under eyes suggesting fatigue,
+beige chunky knit oversized sweater hanging past wrists,
+dark navy fitted midi skirt, simple brown leather shoulder bag,
+low-heeled dark brown ankle boots,
+relaxed standing posture, one hand resting on bag strap,
+small composed smile with hint of weariness, understated adult elegance
 ```
 
 ---
 
-### アゲハ（宵野 葉子）- ライバル ch2 ／ヒロイン　22歳
+### アゲハ（宵野 葉子）- ライバル ch2 ／ヒロイン　22歳 160cm
 
 **参考画像:**
 - `assets/ChatGPT Image 2026年2月21日 04_17_28.png` — 現デザイン（金ツインテ+豹柄、全身、緑背景）
 - `assets/aebe5675-99d8-44ef-80eb-1e761da18c14.png` — アゲハ＋つむぎ VA-11 Hall-A風
 
-**設定反映ポイント:** 沖縄出身の天才肌ギャル。理論ゼロ・バイブスだけで最高の一台を作る。超明るいが体が丈夫でなく、感覚が消える日がある秘密を抱える。感情は全部表に出す。
+**設定反映ポイント:** 沖縄出身の天才肌ギャル。理論ゼロ・バイブスだけで最高の一台を作る。超明るいが体が丈夫でなく、感覚が消える日がある秘密を抱える。感情は全部表に出す。読者モデル経験あり。
+
+※ 肌色はユーザー指定で `fair skin`。日焼け要素なし。
 
 ```
 anime illustration, full body standing pose, white background, clean line art,
 soft cel shading, 6 head height proportions, character sprite sheet style,
 semi-realistic anime style, no props, no objects held,
 
-young Japanese female, 22 years old, fair skin, golden-blonde long twintails
-with waves and volume, yellow/amber eyes with flashy long lashes,
-gold hoop earrings and layered gold necklaces, leopard-print bomber jacket
-(orange-brown tones), pink cropped tank top showing midriff, black pleated
-mini skirt, black thigh-high stockings, chunky platform sneakers with pink
-heart detail,
-bear-shaped hair clips and skull-shaped hair clips in twintails,
-confident wide stance with one hand on hip, huge bright smile showing teeth,
-gyaru energy, loud cheerful presence
+young Japanese female, 22 years old, 160cm, slim toned build,
+golden-blonde long wavy twintails with volume and bounce,
+bear-shaped hair clips and skull-shaped hair clips decorating twintails,
+yellow-amber eyes with dramatic long false lashes, fair skin,
+glossy pink lips, bright energetic expression,
+gold hoop earrings, layered gold chain necklaces, gold anklet on right ankle,
+leopard-print bomber jacket in orange-brown tones worn open,
+pink cropped tank top showing midriff, black pleated mini skirt,
+black thigh-high stockings, chunky white platform sneakers with pink heart detail,
+blinged-out acrylic nails (pink and gold),
+confident wide stance, one hand on hip, huge open-mouth smile showing teeth,
+overflowing gyaru energy and charisma
 ```
 
 ---
 
-### ドクターケムリ（藤波 創）- 審査員 38歳
+### ドクターケムリ（藤波 創）- 審査員 38歳 175cm
 
 **参考画像:**
 - `assets/39f7b2a8-ef53-4a7c-8a38-58ee443debc7.png` — 現デザイン（白衣+眼鏡+サンダル、全身、白背景）
 
-**設定反映ポイント:** 研究者兼審査員。穏やかで紳士的だが人体実験の噂がある危うい二面性。機材の話になると子供のように目を輝かせる無邪気さ。白衣でシーシャを作る変人。
+**設定反映ポイント:** 研究者兼審査員。穏やかで紳士的だが人体実験の噂がある危うい二面性。機材の話になると子供のように目を輝かせる無邪気さ。白衣でシーシャを作る変人。七三分けにメガネ。
+
+※ 髪型を character_profiles.md 準拠で「七三分け」（7:3 side part）に修正。旧プロンプトの「slightly messy hair with natural volume」は設定と不一致だった。
 
 ```
 anime illustration, full body standing pose, white background, clean line art,
 soft cel shading, 6 head height proportions, character sprite sheet style,
 semi-realistic anime style, no props, no objects held,
 
-Japanese male, 38 years old, 175cm, dark brown slightly messy hair with
-natural volume, slim rectangular glasses, short stubble chin beard (light),
-light blue button-up shirt with navy blue plaid tie slightly loosened,
-beige chino trousers, long white lab coat worn open (slightly rumpled/lived-in),
-wristwatch (black), necklace with small vial/test tube charms,
-bare feet in casual sandals (surprising contrast to formal upper half),
-standing with slight forward lean, soft polite smile that doesn't quite reach
-the eyes, hands in lab coat pockets,
-gentle academic vibe with barely-perceptible unsettling undertone
+Japanese male, 38 years old, 175cm, lean average build,
+dark brown hair in neat 7:3 side part (slightly disheveled at ends),
+slim rectangular glasses, light stubble on chin (thin, unkempt),
+light blue button-up dress shirt, navy blue plaid necktie slightly loosened,
+beige chino trousers, long white lab coat worn open and slightly wrinkled,
+black wristwatch, thin necklace with small glass vial charm,
+bare feet in brown leather sandals (deliberate casual contrast),
+standing with slight forward lean, hands in lab coat pockets,
+soft polite smile that does not fully reach the eyes,
+intellectual and gentle surface with subtle unsettling ambiguity beneath
 ```
 
 ---
 
 ## 未作成キャラ（新規デザイン）
 
-### アダム（吾妻 大夢）- ライバル ch1　28歳
+### アダム（吾妻 大夢）- ライバル ch1　28歳 178cm
 
-**設定反映ポイント:** 人生のすべてをダブルアップルに捧げた職人。ミリ単位の熱管理をする異常な完璧主義者。「世の中のシーシャはダブルアップルか、それ以外か」と真顔で言うローランド的変人。シーシャ以外の私生活は完全に破綻（服の裏表が逆、カップ麺作れない）だが、仕事場では身なりを整えている。髪色がダブルアップルそのもの。
+**設定反映ポイント:** ダブルアップル一筋の完璧主義職人。「世の中のシーシャはダブルアップルか、それ以外か」と真顔で言う愛すべき変人。シーシャの調整には異常なほど精密だが、私生活は完全に破綻（服の裏表が逆、カップ麺の作り方がわからない等）。通称「総督」。所属店: Eden。推しFL: ダブルアップル。
+
+※ 髪色: プレイヤー視点で左=緑・右=赤のダブルアップルカラー（ユーザー確定）。服の裏表逆はプライベートのギャグ要素のため、仕事場の立ち絵では正しく着用。
 
 ```
 anime illustration, full body standing pose, white background, clean line art,
 soft cel shading, 6 head height proportions, character sprite sheet style,
 semi-realistic anime style, no props, no objects held,
 
-young Japanese male, 28 years old, 178cm, striking split-dyed hair:
-viewer's left side is green, viewer's right side is red (double apple colors),
-medium-length hair with natural texture slightly swept back,
-intense dark eyes with unwavering focused gaze, sharp features,
-well-groomed and neatly dressed (professional setting):
-fitted black long-sleeve henley shirt or dark turtleneck, clean dark apron
-tied at waist (barista-style), dark fitted trousers, clean black shoes,
-sleeves pushed up slightly revealing forearms,
-standing perfectly straight with arms at sides or loosely crossed,
-dead-serious expression — not angry, just completely focused,
-the silent intensity of someone who treats every detail as life or death,
-stoic craftsman energy, quiet but overwhelming presence
+young Japanese male, 28 years old, 178cm, lean taut build,
+mid-length hair with vivid green-to-red ombre gradient (green at roots
+transitioning to deep red at tips), parted slightly to one side,
+deep brown eyes with intense unwavering focused gaze, thin sharp eyebrows,
+clean-shaven face with sharp angular features, no smile,
+black high-neck long-sleeve shirt (properly worn, neat),
+dark charcoal straight-leg trousers, plain black leather shoes,
+standing with perfectly straight rigid posture, arms at sides,
+completely serious deadpan expression,
+stoic craftsman who lives only for his craft,
+meticulous artisan presence but with subtle signs of personal dishevelment
 ```
 
 ---
 
-### なる（鳴切 亮太）- ライバル ch1 　23歳
+### なる（鳴切 亮太）- ライバル ch1 　23歳 176cm
 
-**設定反映ポイント:** シーシャのイキリオタク（内面）だが見た目はオタクっぽさゼロの垢抜けストリート系。自分を天才と信じてノートも取らずに感覚でやってきたチャラ男。銀髪＋アクセで少しヤンチャ。
+**設定反映ポイント:** シーシャのイキリオタク（内面）だが見た目はオタクっぽさゼロの垢抜けストリート系。自分を天才と信じてノートも取らずに感覚でやってきたチャラ男。銀髪＋アクセで少しヤンチャ。推しFL: バニラ。
+
+※ 服装の `or` 選択肢を排除し、1パターンに確定。Gemini での生成安定性を向上。
 
 ```
 anime illustration, full body standing pose, white background, clean line art,
 soft cel shading, 6 head height proportions, character sprite sheet style,
 semi-realistic anime style, no props, no objects held,
 
-young Japanese male, 23 years old, 176cm, silver-white short hair with slight
-textured styling (not flat, slight edgy cut), sharp amber/brown eyes with a
-confident almost arrogant glint, small silver hoop earrings (both ears),
-layered chain necklaces (silver), street fashion: oversized graphic hoodie or
-colour-blocked zip jacket, dark wide-fit trousers or cargo pants, chunky
-designer-ish sneakers,
-one or two rings on fingers, bracelet on wrist,
-standing with slight cocky lean — one shoulder dropped, chin slightly up,
-arms loosely crossed or one hand in pocket with relaxed swagger,
-fashionable delinquent vibe but clean — looks cool not rough,
-slight smirk showing overconfidence but not villain
+young Japanese male, 23 years old, 176cm, lean athletic build,
+silver-white short hair with textured layered styling and undercut sides,
+sharp amber eyes with confident almost arrogant glint,
+small silver hoop earrings in both ears, layered thin silver chain necklaces,
+one silver ring on right middle finger, black cord bracelet on left wrist,
+black and white colour-blocked zip jacket with bold graphic print on back,
+dark wide-fit cargo pants with side pockets, chunky off-white designer sneakers,
+standing with cocky lean, one shoulder dropped, chin slightly raised,
+one hand in pocket, weight shifted to one leg,
+slight smirk showing self-assured attitude,
+street-fashion cool with clean polished look
 ```
 
 ---
 
-### 南雲 修二 - 審査員長 45歳
+### 南雲 修二 - 審査員長 45歳 178cm
 
-**設定反映ポイント:** 大手シーシャチェーン「C.STATION」会長。大会では容赦ない採点をする審査員長。スミさんとは旧友でライバル。「不器用だが泥臭い親父」の顔を持つ。推しFL:シガー系。
+**設定反映ポイント:** 大手シーシャチェーン「C.STATION」会長。大会では容赦ない採点をする審査員長。スミさんとは旧友でライバル。「不器用だが泥臭い親父」の顔を持つ。推しFL: シガー系。
+
+※ ポーズの `or` 選択肢を排除。末尾の長文の性格描写を視覚的に描画可能な表情指示に変換。
 
 ```
 anime illustration, full body standing pose, white background, clean line art,
 soft cel shading, 6 head height proportions, character sprite sheet style,
 semi-realistic anime style, no props, no objects held,
 
-Japanese male, 45 years old, 178cm, short black hair with obvious silver-grey
-at temples and sides, sharp intelligent eyes with slightly heavy eyelids
-(authoritative and tired), clean-shaven with slight permanent frown lines,
-well-fitted dark charcoal suit (quality but not flashy), white dress shirt,
-dark tie with subtle texture, no pocket square (practical man),
-quality leather dress shoes, slight heavyset broad-shouldered build,
-standing straight with authority, arms at sides or one hand loosely in pocket,
-expression: measured and stern with a buried warmth — not cruel, just
-demanding. The face of a man who has seen everything in the industry and
-still cares enough to keep judging
+Japanese male, 45 years old, 178cm, broad-shouldered stocky build,
+short black hair with prominent silver-grey at temples and sides,
+sharp narrow eyes with heavy eyelids, permanent frown lines between brows,
+clean-shaven with strong jawline,
+well-fitted dark charcoal two-piece suit (quality fabric, no flashy details),
+crisp white dress shirt, dark textured tie, no pocket square,
+quality black leather oxford shoes,
+standing perfectly straight with authority, arms folded across chest,
+stern measured expression with tightly closed lips,
+powerful intimidating executive presence
 ```
 
 ---
@@ -275,18 +328,22 @@ still cares enough to keep judging
 
 **設定反映ポイント:** 口癖「シーシャはおいしいねえ」。シーシャ関連メディア/ライター系。穏やかで親しみやすい雰囲気。いつも嬉しそう。
 
+※ 末尾の長文性格描写を、視覚的に描画可能な表情・ジェスチャー指示に変換。
+
 ```
 anime illustration, full body standing pose, white background, clean line art,
 soft cel shading, 6 head height proportions, character sprite sheet style,
 semi-realistic anime style, no props, no objects held,
 
-Japanese male, 39 years old, slightly soft round face with kind eyes,
-short neat dark brown hair, warm smile (always looks mildly delighted),
-smart-casual clothing: navy blazer over light-coloured open-collar shirt,
-chino trousers, loafers, small notepad visible in breast pocket,
-comfortable approachable build — not athletic, everyday person energy,
-relaxed open posture, hands loosely at sides or one raised in gentle greeting,
-the face of a man who genuinely loves food/drink and will tell you about it
+Japanese male, 39 years old, soft round face with small kind eyes,
+short neat dark brown hair parted to one side, light natural tan,
+warm genuine smile with slightly squinted happy eyes,
+navy blue blazer over light cream open-collar button shirt,
+beige chino trousers, dark brown leather loafers,
+small notepad edge visible in blazer breast pocket, simple wristwatch,
+comfortable soft build (not athletic, approachable everyday physique),
+relaxed open posture, one hand raised in a small friendly wave,
+perpetually delighted expression
 ```
 
 ---
@@ -295,20 +352,22 @@ the face of a man who genuinely loves food/drink and will tell you about it
 
 **設定反映ポイント:** 感情を全く顔に出さない手強い客。主人公の成長を測る指標。どんな表情もしないが、tonariに毎日来る。存在感が異質。
 
+※ ポーズの `or` 選択肢を排除（手を前で組む1パターンに確定）。末尾の長文描写を簡潔化。
+
 ```
 anime illustration, full body standing pose, white background, clean line art,
 soft cel shading, 6 head height proportions, character sprite sheet style,
 semi-realistic anime style, no props, no objects held,
 
-Japanese male, 41 years old, generic salaryman appearance — intentionally
-unremarkable, short standard black hair (slightly dishevelled from long day),
-completely flat expressionless face (not sad, not happy — just blank),
-dark charcoal business suit (slightly worn at elbows), white dress shirt,
-loosened dark tie, black shoes (scuffed),
-standing with perfectly straight posture — unnervingly still,
-hands at sides or loosely clasped in front, no lean, no slouch,
-the unsettling blankness of someone who has switched off all outward emotion.
-Subtle dark circles under eyes. A face that has seen too many spreadsheets.
+Japanese male, 41 years old, average height and build (intentionally generic),
+short standard-cut black hair slightly disheveled from a long work day,
+completely flat expressionless face (not sad, not happy, perfectly blank),
+subtle dark circles under both eyes, thin compressed lips,
+dark charcoal business suit slightly worn at elbows, white dress shirt,
+loosened dark grey tie pulled slightly down, black scuffed dress shoes,
+standing with perfectly rigid straight posture, unnervingly still,
+hands clasped together in front at waist, no lean, no slouch,
+deliberately unremarkable and forgettable in every visual detail
 ```
 
 ---
@@ -317,22 +376,24 @@ Subtle dark circles under eyes. A face that has seen too many spreadsheets.
 
 **設定反映ポイント:** FLデザイナー。姫カット黒髪。日本人形のような顔立ち。モード系服装。シーシャを「作る」ために店を巡るほどのシーシャ制作オタク。ネットミーム・VTuber好きのホワイトオタク。
 
+※ 服装の `or` 選択肢を排除し、1パターンに確定。バッグも1種類に絞る。
+
 ```
 anime illustration, full body standing pose, white background, clean line art,
 soft cel shading, 6 head height proportions, character sprite sheet style,
 semi-realistic anime style, no props, no objects held,
 
-young Japanese female, 26 years old, 160cm, hime-cut long straight black hair
-(straight fringe, long side pieces framing face, back length near waist),
-Japanese doll-like delicate pale face, large calm dark eyes with precision
-eyeliner, subtle make-up,
-avant-garde mode fashion: structured black minimalist coat or oversized
-architectural black blazer, cropped black turtleneck underneath, straight
-wide-leg black trousers, angular black leather shoes or boots,
-one small elegant accessory (architectural earring or geometric ring),
-slim laptop bag or structured tote bag on shoulder,
-standing with composed slightly stiff posture, neutral elegant expression,
-slightly otherworldly precision — like a character from a fashion editorial
+young Japanese female, 26 years old, 160cm, slim straight build,
+hime-cut long straight black hair (blunt straight fringe, long side locks
+framing face to chin level, back hair reaching waist),
+large calm dark eyes with precise thin eyeliner, very pale complexion,
+Japanese doll-like delicate features, minimal subtle makeup,
+oversized structured black architectural blazer with sharp shoulders,
+cropped black turtleneck underneath, straight wide-leg black trousers,
+angular black leather ankle boots, one geometric silver earring (left ear only),
+slim black structured tote bag on shoulder,
+composed slightly stiff upright posture, neutral elegant closed-lip expression,
+high-fashion editorial precision
 ```
 
 ---
@@ -341,21 +402,24 @@ slightly otherworldly precision — like a character from a fashion editorial
 
 **設定反映ポイント:** 黒髪ボブ、童顔、ライダース系。少し男勝りだが女の子らしさもある。4歳年下の彼氏の愚痴をこぼしていく姉御肌。
 
+※ 服装の `or` 選択肢を排除。末尾の長文性格描写を表情指示に簡潔化。
+
 ```
 anime illustration, full body standing pose, white background, clean line art,
 soft cel shading, 6 head height proportions, character sprite sheet style,
 semi-realistic anime style, no props, no objects held,
 
-young Japanese female, 28 years old, short straight black bob hair
-(chin-length, blunt cut), warm brown eyes, cute round youthful face
-(looks younger than 28), small natural lips with slight pout,
-black or dark grey leather rider jacket (fitted, slightly worn), white
-fitted inner t-shirt or tank, dark skinny jeans, chunky black ankle boots,
-small silver earrings, simple thin bracelet,
-casual relaxed posture — slight hip tilt, arms loosely at sides or one
-hand pushed into jacket pocket,
-expression: lightly exasperated but fundamentally cheerful, the look of
-someone about to sigh and then laugh about it — tomboyish older-sister energy
+young Japanese female, 28 years old, petite build,
+short straight black bob hair (chin-length, blunt cut),
+warm brown eyes, cute round youthful face (looks younger than actual age),
+small natural lips,
+fitted black leather rider jacket (slightly worn-in), white fitted crew-neck
+t-shirt underneath, dark indigo skinny jeans, chunky black ankle boots,
+small silver hoop earrings, simple thin silver bracelet on left wrist,
+casual relaxed posture with slight hip tilt to one side,
+one hand pushed into jacket pocket,
+slightly raised eyebrow with a wry half-smile,
+tomboyish older-sister energy
 ```
 
 ---
@@ -387,3 +451,13 @@ someone about to sigh and then laugh about it — tomboyish older-sister energy
 - 最終的な統一先の目標スタイル
 
 → **立ち絵はまずアニメイラスト版で作成し、後でピクセルアート化する方針を推奨**
+
+---
+
+## Gemini 生成時の注意事項
+
+- プロンプトの先頭にベーススタイルプロンプトを必ず付ける（コピペ忘れ防止）
+- キャラごとのプロンプトはベースの直後に改行1つで繋げる
+- `or` で複数選択肢を並べると Gemini が混乱しやすいため、1つに絞る（本プロンプト集では修正済み）
+- 抽象的な性格描写（"warm energy", "the face of a man who..."）は Gemini が解釈しにくいため、視覚的に描画可能な要素（表情、ポーズ、服の状態）で表現する
+- 身長差を反映させたい場合はキャラ同士の比較画像として別途生成する
