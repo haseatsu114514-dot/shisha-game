@@ -41,7 +41,7 @@ MODEL = "gemini-2.0-flash-preview-image-generation"
 REFERENCE_IMAGES: dict[str, Path] = {
     "hajime":  ASSETS / "hazime.png",
     "sumi":    ASSETS / "sumi.png",
-    "tsumugi": ASSETS / "tumugi.png",
+    "tsumugi": SPRITES / "tumugi.png",
     "naru":    SPRITES / "chr_naru_normal.png",
     "adam":    SPRITES / "chr_adam_normal.png",
     "pakki":   SPRITES / "chr_packii_normal.png",
@@ -534,7 +534,11 @@ def generate_expression_from_image(
 
     out_path = output_dir / f"chr_{char_id}_{expression}.png"
     if out_path.exists() and not force:
-        print(f"  skip  {out_path.relative_to(ROOT)}  (already exists, use --force to overwrite)")
+        try:
+            display = str(out_path.relative_to(ROOT))
+        except ValueError:
+            display = str(out_path)
+        print(f"  skip  {display}  (already exists, use --force to overwrite)")
         return None
 
     prompt = get_expr_prompt(char_id, expression)
@@ -568,7 +572,11 @@ def generate_from_text(
 
     out_path = output_dir / f"chr_{char_id}_{expression}.png"
     if out_path.exists() and not force:
-        print(f"  skip  {out_path.relative_to(ROOT)}  (already exists, use --force to overwrite)")
+        try:
+            display = str(out_path.relative_to(ROOT))
+        except ValueError:
+            display = str(out_path)
+        print(f"  skip  {display}  (already exists, use --force to overwrite)")
         return None
 
     prompt = TEXT_CHAR_PROMPTS.get(char_id, {}).get(expression)
@@ -637,13 +645,17 @@ def main() -> None:
 
         for char_id in targets:
             ref_path = REFERENCE_IMAGES[char_id]
+            try:
+                ref_display = str(ref_path.relative_to(ROOT))
+            except ValueError:
+                ref_display = str(ref_path)
             if not ref_path.exists():
-                print(f"\n[{char_id}] 参照画像が見つかりません: {ref_path.relative_to(ROOT)}")
+                print(f"\n[{char_id}] 参照画像が見つかりません: {ref_display}")
                 fail += 1
                 continue
 
             exprs = args.expressions or CHAR_DEFAULT_EXPRESSIONS.get(char_id, _DEFAULT_EXPRS)
-            print(f"\n[{char_id}]  ref: {ref_path.relative_to(ROOT)}")
+            print(f"\n[{char_id}]  ref: {ref_display}")
 
             for expr in exprs:
                 result = generate_expression_from_image(
