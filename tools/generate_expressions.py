@@ -72,10 +72,11 @@ _DEFAULT_EXPRS = ["smile", "surprise", "sad", "serious"]
 #   "Edit this image: change only X" という2文構造が最も忠実に動く。
 #
 # ─ 共通フレーム（全キャラ共通・2文） ──────────────────────────────────────────
+# 顔切り抜き方式用フレーム（顔クロップ画像を送る前提のプロンプト）
 _EDIT_FRAME = (
-    "Edit this image: keep everything identical — "
-    "hair, outfit, pose, background, art style — "
-    "and change only the facial expression as described below.\n"
+    "This is an anime character's face in pixel art style. "
+    "Change only the facial expression as described below. "
+    "Keep the hair, skin tone, eye color, face shape, and pixel art style exactly the same.\n"
 )
 
 # ─ 共通表情記述（キャラ個別指定がない場合のフォールバック）─────────────────
@@ -327,23 +328,32 @@ NEW_CHAR_DEFAULT_EXPRESSIONS: dict[str, list[str]] = {
 
 
 # ──────────────────────────────────────────────────────────────────────────────
+# 顔切り抜き領域（画像全体に対する比率 0.0〜1.0）
+# ──────────────────────────────────────────────────────────────────────────────
+# full-body VN スプライト（立ち絵）の場合、頭部は画像上部 ~30% 以内。
+# キャラごとに微調整可。--face-region で実行時上書きも可能。
+CHAR_FACE_REGIONS: dict[str, dict[str, float]] = {
+    "tsumugi": {"top": 0.02, "bottom": 0.32, "left": 0.18, "right": 0.82},
+    "hajime":  {"top": 0.02, "bottom": 0.30, "left": 0.18, "right": 0.82},
+    "sumi":    {"top": 0.02, "bottom": 0.30, "left": 0.18, "right": 0.82},
+    "naru":    {"top": 0.02, "bottom": 0.30, "left": 0.18, "right": 0.82},
+    "adam":    {"top": 0.02, "bottom": 0.30, "left": 0.18, "right": 0.82},
+    "pakki":   {"top": 0.02, "bottom": 0.32, "left": 0.15, "right": 0.85},
+}
+_DEFAULT_FACE_REGION: dict[str, float] = {
+    "top": 0.02, "bottom": 0.30, "left": 0.18, "right": 0.82,
+}
+
+
+# ──────────────────────────────────────────────────────────────────────────────
 # 生成処理
 # ──────────────────────────────────────────────────────────────────────────────
 
-def _save_image(response, out_path: Path, char_id: str, expression: str) -> bool:
-    """レスポンスから画像を保存。成功したら True を返す。"""
-    for part in response.candidates[0].content.parts:
-        if part.inline_data is not None:
-            out_path.parent.mkdir(parents=True, exist_ok=True)
-            out_path.write_bytes(part.inline_data.data)
-            try:
-                display = str(out_path.relative_to(ROOT))
-            except ValueError:
-                display = str(out_path)
-            print(f"    saved → {display}")
-            return True
-    print(f"    WARN: no image in response for {char_id}/{expression}", file=sys.stderr)
-    return False
+def _out_display(path: Path) -> str:
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
 
 
 def generate_expression_from_image(
@@ -353,17 +363,20 @@ def generate_expression_from_image(
     ref_path: Path,
     force: bool = False,
     output_dir: Path = SPRITES,
+    no_crop: bool = False,
+    face_region: dict[str, float] | None = None,
 ) -> bool | None:
-    """参照画像から表情差分を生成。None = スキップ, True = 成功, False = 失敗。"""
+    """参照画像から表情差分を生成。None = スキップ, True = 成功, False = 失敗。
+
+    デフォルト（no_crop=False）では「顔切り抜き→編集→元画像に貼り戻し」を行う。
+    Pillow 未インストールまたは --no-crop 時はフルサイズ画像をそのまま送信。
+    """
     from google.genai import types
+    import io
 
     out_path = output_dir / f"chr_{char_id}_{expression}.png"
     if out_path.exists() and not force:
-        try:
-            display = str(out_path.relative_to(ROOT))
-        except ValueError:
-            display = str(out_path)
-        print(f"  skip  {display}  (already exists, use --force to overwrite)")
+        print(f"  skip  {_out_display(out_path)}  (already exists, use --force to overwrite)")
         return None
 
     prompt = get_expr_prompt(char_id, expression)
@@ -371,18 +384,84 @@ def generate_expression_from_image(
         print(f"  skip  {char_id}/{expression}  (no prompt defined)")
         return None
 
-    print(f"  generating  {char_id} / {expression} ...", flush=True)
+    # Pillow が使えるかチェック
+    use_crop = False
+    if not no_crop:
+        try:
+            from PIL import Image as _PILImage  # noqa: F401
+            use_crop = True
+        except ImportError:
+            print("    INFO: Pillow 未インストール → フルサイズ送信にフォールバック")
+            print("          pip install Pillow で顔切り抜き方式が有効になります")
 
-    image_bytes = ref_path.read_bytes()
+    print(
+        f"  generating  {char_id} / {expression}"
+        f"  [{'face-crop' if use_crop else 'full-image'}] ...",
+        flush=True,
+    )
+
+    if use_crop:
+        from PIL import Image as PILImage
+
+        ref_img = PILImage.open(ref_path).convert("RGBA")
+        w, h = ref_img.size
+
+        reg = face_region or CHAR_FACE_REGIONS.get(char_id, _DEFAULT_FACE_REGION)
+        box = (
+            int(w * reg["left"]),
+            int(h * reg["top"]),
+            int(w * reg["right"]),
+            int(h * reg["bottom"]),
+        )
+
+        face_crop = ref_img.crop(box)
+        buf = io.BytesIO()
+        face_crop.save(buf, format="PNG")
+        send_bytes = buf.getvalue()
+    else:
+        ref_img = None
+        box = None
+        send_bytes = ref_path.read_bytes()
+
     response = client.models.generate_content(
         model=MODEL,
         contents=[
-            types.Part.from_bytes(data=image_bytes, mime_type="image/png"),
+            types.Part.from_bytes(data=send_bytes, mime_type="image/png"),
             prompt,
         ],
         config=types.GenerateContentConfig(response_modalities=["IMAGE", "TEXT"]),
     )
-    return _save_image(response, out_path, char_id, expression)
+
+    # 編集済み画像を取得
+    edited_bytes: bytes | None = None
+    for part in response.candidates[0].content.parts:
+        if part.inline_data is not None:
+            edited_bytes = part.inline_data.data
+            break
+
+    if not edited_bytes:
+        print(f"    WARN: no image in response for {char_id}/{expression}", file=sys.stderr)
+        return False
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if use_crop and ref_img is not None and box is not None:
+        from PIL import Image as PILImage
+
+        # 編集顔を元のサイズにリサイズして貼り戻す
+        edited_face = PILImage.open(io.BytesIO(edited_bytes)).convert("RGBA")
+        crop_w = box[2] - box[0]
+        crop_h = box[3] - box[1]
+        edited_face = edited_face.resize((crop_w, crop_h), PILImage.LANCZOS)
+
+        result = ref_img.copy()
+        result.paste(edited_face, (box[0], box[1]))
+        result.convert("RGB").save(out_path)
+    else:
+        out_path.write_bytes(edited_bytes)
+
+    print(f"    saved → {_out_display(out_path)}")
+    return True
 
 
 def generate_from_text(
@@ -397,11 +476,7 @@ def generate_from_text(
 
     out_path = output_dir / f"chr_{char_id}_{expression}.png"
     if out_path.exists() and not force:
-        try:
-            display = str(out_path.relative_to(ROOT))
-        except ValueError:
-            display = str(out_path)
-        print(f"  skip  {display}  (already exists, use --force to overwrite)")
+        print(f"  skip  {_out_display(out_path)}  (already exists, use --force to overwrite)")
         return None
 
     prompt = TEXT_CHAR_PROMPTS.get(char_id, {}).get(expression)
@@ -416,7 +491,16 @@ def generate_from_text(
         contents=[prompt],
         config=types.GenerateContentConfig(response_modalities=["IMAGE", "TEXT"]),
     )
-    return _save_image(response, out_path, char_id, expression)
+
+    for part in response.candidates[0].content.parts:
+        if part.inline_data is not None:
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            out_path.write_bytes(part.inline_data.data)
+            print(f"    saved → {_out_display(out_path)}")
+            return True
+
+    print(f"    WARN: no image in response for {char_id}/{expression}", file=sys.stderr)
+    return False
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -445,6 +529,14 @@ def main() -> None:
         "--output-dir", metavar="DIR",
         help="出力先ディレクトリを変更 (例: ~/Desktop/tumugi)。省略時は assets/sprites/characters/",
     )
+    parser.add_argument(
+        "--no-crop", action="store_true",
+        help="顔切り抜き方式を無効化してフルサイズ画像を送信（デバッグ比較用）",
+    )
+    parser.add_argument(
+        "--face-region", metavar="TOP,BOTTOM,LEFT,RIGHT",
+        help="顔領域を比率で手動指定 (例: 0.02,0.32,0.18,0.82)。--char 単体指定時のみ有効",
+    )
     args = parser.parse_args()
 
     api_key = os.environ.get("GEMINI_API_KEY")
@@ -462,6 +554,15 @@ def main() -> None:
     output_dir = Path(args.output_dir).expanduser() if args.output_dir else SPRITES
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    # --face-region パース
+    custom_face_region: dict[str, float] | None = None
+    if args.face_region:
+        try:
+            t, b, l, r = (float(x) for x in args.face_region.split(","))
+            custom_face_region = {"top": t, "bottom": b, "left": l, "right": r}
+        except ValueError:
+            sys.exit("ERROR: --face-region の形式が正しくありません。例: 0.02,0.32,0.18,0.82")
+
     ok = skip = fail = 0
 
     # ── 既存参照画像から差分生成 ──────────────────────────────────────────────
@@ -470,21 +571,19 @@ def main() -> None:
 
         for char_id in targets:
             ref_path = REFERENCE_IMAGES[char_id]
-            try:
-                ref_display = str(ref_path.relative_to(ROOT))
-            except ValueError:
-                ref_display = str(ref_path)
             if not ref_path.exists():
-                print(f"\n[{char_id}] 参照画像が見つかりません: {ref_display}")
+                print(f"\n[{char_id}] 参照画像が見つかりません: {_out_display(ref_path)}")
                 fail += 1
                 continue
 
             exprs = args.expressions or CHAR_DEFAULT_EXPRESSIONS.get(char_id, _DEFAULT_EXPRS)
-            print(f"\n[{char_id}]  ref: {ref_display}")
+            print(f"\n[{char_id}]  ref: {_out_display(ref_path)}")
 
             for expr in exprs:
                 result = generate_expression_from_image(
-                    client, char_id, expr, ref_path, args.force, output_dir
+                    client, char_id, expr, ref_path, args.force, output_dir,
+                    no_crop=args.no_crop,
+                    face_region=custom_face_region,
                 )
                 if result is True:
                     ok += 1
