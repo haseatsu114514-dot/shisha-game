@@ -66,248 +66,73 @@ _DEFAULT_EXPRS = ["smile", "surprise", "sad", "serious"]
 # ──────────────────────────────────────────────────────────────────────────────
 # 参照画像ありの表情プロンプト
 # ──────────────────────────────────────────────────────────────────────────────
-
-# ── 重要: 見た目保持のための共通制約 ──────────────────────────────────────────
-# 「参照画像に準拠しない」問題を防ぐため、変更禁止の指示を最大限強化している。
-_PRESERVE_CONSTRAINT = (
-    "CRITICAL CONSTRAINT — FACE EXPRESSION EDIT ONLY: "
-    "You MUST preserve every part of the reference image EXACTLY as-is — "
-    "hair color, hair style, outfit, accessories, pose, body shape, background color, "
-    "pixel art style, line thickness, and color palette must all remain 100% identical. "
-    "ABSOLUTELY DO NOT alter the character's clothing, hairstyle, body proportions, "
-    "background, or art style in any way. "
-    "The ONLY permitted change is the facial expression: "
-    "modify ONLY the eyes (shape and gaze direction), eyebrows (angle and height), "
-    "and mouth (shape and openness). "
-    "Do NOT redraw or reinterpret the image — treat this as a surgical face edit."
+#
+# ★ 設計方針: プロンプトは短く・ポジティブに。
+#   長い「DO NOT CHANGE」リストは逆効果（モデルが迷走して再生成してしまう）。
+#   "Edit this image: change only X" という2文構造が最も忠実に動く。
+#
+# ─ 共通フレーム（全キャラ共通・2文） ──────────────────────────────────────────
+_EDIT_FRAME = (
+    "Edit this image: keep everything identical — "
+    "hair, outfit, pose, background, art style — "
+    "and change only the facial expression as described below.\n"
 )
 
-# ── 共通表情プロンプト（キャラ個別定義がない場合のフォールバック）────────────
+# ─ 共通表情記述（キャラ個別指定がない場合のフォールバック）─────────────────
+_EXPR_DESCS: dict[str, str] = {
+    "smile":    "Facial expression: soft anime smile. Mouth corners gently upturned, eyes slightly warmer and relaxed.",
+    "surprise": "Facial expression: surprised. Eyes wide open, eyebrows raised high, mouth slightly open.",
+    "sad":      "Facial expression: quietly sad. Eyes downcast, inner brows slightly raised, mouth flat or barely downturned.",
+    "serious":  "Facial expression: serious and focused. Eyebrows level, eyes sharp and direct, mouth closed.",
+    "smug":     "Facial expression: smug. One eyebrow raised, lopsided half-smirk, eyes half-lidded with confidence.",
+    "excited":  "Facial expression: excited. Eyes wide and bright, eyebrows raised, mouth open in a big enthusiastic smile.",
+}
+
 EXPRESSION_PROMPTS: dict[str, str] = {
-    "smile": (
-        f"{_PRESERVE_CONSTRAINT} "
-        "Change ONLY the facial expression to a warm, genuine anime smile. "
-        "Corners of the mouth gently upturned in a soft, closed or slightly open friendly smile. "
-        "Eyes slightly narrowed or brightened with warmth. Eyebrows relaxed and slightly raised. "
-        "Target emotion: 嬉しい (happy, pleased)."
-    ),
-    "surprise": (
-        f"{_PRESERVE_CONSTRAINT} "
-        "Change ONLY the facial expression to a surprised anime expression. "
-        "Eyes wide open, irises fully visible, eyebrows raised high. "
-        "Mouth slightly open — a small 'O' shape or parted lips. "
-        "Target emotion: 驚き (surprised, caught off guard)."
-    ),
-    "sad": (
-        f"{_PRESERVE_CONSTRAINT} "
-        "Change ONLY the facial expression to a sad, dejected anime expression. "
-        "Inner eyebrow corners slightly raised (worried arch). "
-        "Eyes drooping downward with heavy lids. Mouth flat or slightly downturned. "
-        "No tears needed — just quiet, subdued sadness. "
-        "Target emotion: 悲しみ (sad, downcast)."
-    ),
-    "serious": (
-        f"{_PRESERVE_CONSTRAINT} "
-        "Change ONLY the facial expression to a serious, focused anime expression. "
-        "Eyebrows level or very slightly furrowed — concentration, not anger. "
-        "Eyes looking forward with calm, sharp intensity. Mouth closed, lips pressed together. "
-        "Target emotion: 真剣 (serious, focused, determined)."
-    ),
-    "smug": (
-        f"{_PRESERVE_CONSTRAINT} "
-        "Change ONLY the facial expression to a smug, self-satisfied anime expression. "
-        "One eyebrow slightly raised. A lopsided half-smile, corners pulled up on one side. "
-        "Eyes half-lidded with a confident, slightly condescending look. "
-        "Target emotion: ドヤ顔 (smug, self-confident, showing off)."
-    ),
-    "excited": (
-        f"{_PRESERVE_CONSTRAINT} "
-        "Change ONLY the facial expression to an excited, energetic anime expression. "
-        "Eyes wide and sparkling. Eyebrows raised high. Mouth open in a big enthusiastic smile "
-        "or open-mouthed shout of excitement. "
-        "Target emotion: 興奮 (excited, hyped, overjoyed)."
-    ),
+    expr: _EDIT_FRAME + desc for expr, desc in _EXPR_DESCS.items()
 }
 
-# ── つむぎ専用プロンプト ──────────────────────────────────────────────────────
-# 見た目: 茶色のボブヘア・前髪 / 濃紺フーディー / 腕を組んでタブレットを抱えたポーズ
-#          黒のひざ上ソックス / 暗い色のプリーツスカート / 控えめで内向きな気質
-_TSUMUGI_PRESERVE = (
-    "CRITICAL CONSTRAINT — FACE EXPRESSION EDIT ONLY: "
-    "This is a retro pixel-art anime visual novel sprite. "
-    "You MUST preserve ALL of the following EXACTLY as shown in the reference image: "
-    "her brown bob haircut with blunt straight-cut bangs, "
-    "her dark navy blue hoodie/sweatshirt, "
-    "her crossed arms with the tablet or device held against her chest, "
-    "her dark pleated skirt, her black knee-high socks, her dark shoes, "
-    "the solid bright green chroma-key background, "
-    "the chunky pixel art outlines, and the limited color palette. "
-    "ABSOLUTELY DO NOT redraw or change ANY of these elements. "
-    "Modify ONLY the face: eyes, eyebrows, and mouth. Nothing else."
-)
+# ─ キャラ別・表情記述（キャラの性格に合った細かいニュアンス）─────────────────
+# _EDIT_FRAME は共通なので、ここでは表情の1文だけ書く。
 
-_TSUMUGI_PROMPTS: dict[str, str] = {
-    "smile": (
-        f"{_TSUMUGI_PRESERVE} "
-        "Change ONLY the face to a quiet, reserved smile — a shy girl genuinely pleased. "
-        "Corners of the mouth gently upturned, soft closed-mouth smile. "
-        "Eyes soften slightly, lids lowering just a little — relaxed and warm. "
-        "Understated, not a beaming grin. Target emotion: 嬉しい (quietly happy, warmly pleased)."
-    ),
-    "surprise": (
-        f"{_TSUMUGI_PRESERVE} "
-        "Change ONLY the face to a mildly surprised expression — not dramatic, but visibly caught off guard. "
-        "Eyes open wider than normal, irises fully visible. Eyebrows raised slightly. "
-        "Mouth parts just a little — a small gap. "
-        "Target emotion: 驚き (quietly startled, momentarily surprised)."
-    ),
-    "sad": (
-        f"{_TSUMUGI_PRESERVE} "
-        "Change ONLY the face to a quietly sad, inwardly pained expression. "
-        "Inner eyebrow corners lift very slightly inward (subtle worried arch). "
-        "Eyes lower, lids drooping with a heavy, tired quality. "
-        "Mouth flat and still — she internalizes feelings, doesn't show much. No tears. "
-        "Target emotion: 悲しみ (sad, emotionally withdrawn, quietly hurt)."
-    ),
-    "serious": (
-        f"{_TSUMUGI_PRESERVE} "
-        "Change ONLY the face to a focused, pensive expression — thinking carefully. "
-        "Eyebrows level and very slightly drawn together — concentration without anger. "
-        "Eyes look forward with calm, analytical gaze — sharp but not cold. "
-        "Mouth closed, lips pressed lightly together in a neutral, composed line. "
-        "Target emotion: 真剣 (serious, focused, deep in thought)."
-    ),
+_TSUMUGI_EXPR_DESCS: dict[str, str] = {
+    # 控えめで内向きな性格 → 表情は全体的に抑えめ・繊細
+    "smile":    "Facial expression: quiet, shy smile. Mouth corners very gently upturned, closed mouth. Eyes soften slightly. Understated — not a big grin.",
+    "surprise": "Facial expression: mild surprise. Eyes open just a bit wider, eyebrows barely raised, mouth parts slightly.",
+    "sad":      "Facial expression: inward sadness. Eyes downcast with heavy lids, inner brows slightly raised. Mouth still and flat. She hides her feelings.",
+    "serious":  "Facial expression: focused and pensive. Slight brow furrow, calm analytical gaze, lips pressed lightly together.",
 }
+_TSUMUGI_PROMPTS = {expr: _EDIT_FRAME + desc for expr, desc in _TSUMUGI_EXPR_DESCS.items()}
 
-# ── スミさん専用プロンプト ────────────────────────────────────────────────────
-# キャラ: 46歳, 182cm, tonari 店長・師匠。飄々とした物腰、元名プレイヤー。
-_SUMI_PRESERVE = (
-    "CRITICAL CONSTRAINT — FACE EXPRESSION EDIT ONLY: "
-    "This is a retro pixel-art anime visual novel sprite of a middle-aged Japanese man "
-    "(the shisha shop master, Sumi-san, aged 46). "
-    "You MUST preserve ALL of the following EXACTLY: "
-    "his hair style and color, his outfit and accessories, his pose, "
-    "the solid bright green chroma-key background, and the pixel art style. "
-    "ABSOLUTELY DO NOT change any of these. "
-    "Modify ONLY the face: eyes, eyebrows, and mouth. Nothing else."
-)
-
-_SUMI_PROMPTS: dict[str, str] = {
-    "sad": (
-        f"{_SUMI_PRESERVE} "
-        "Change ONLY the face to a quietly sorrowful, heavy-hearted expression. "
-        "The sadness of a seasoned man who has seen much — subdued, not dramatic. "
-        "Eyebrows slightly furrowed inward at the center. Eyes half-closed, gaze downward. "
-        "Mouth closed, corners barely dropping. "
-        "Target emotion: 悲しみ (quiet grief, weary sadness, a veteran's sorrow)."
-    ),
-    "surprise": (
-        f"{_SUMI_PRESERVE} "
-        "Change ONLY the face to a mildly surprised expression — a composed man briefly caught off guard. "
-        "Eyes open slightly wider than usual, eyebrows raised just a bit. "
-        "Mouth barely parts — he rarely shows surprise openly. "
-        "Target emotion: 驚き (mild surprise, momentarily caught off guard)."
-    ),
+_SUMI_EXPR_DESCS: dict[str, str] = {
+    # 46歳の師匠 → 感情の振れ幅は小さく、落ち着いた表情
+    "sad":      "Facial expression: quiet, heavy-hearted sadness. A veteran's sorrow — subdued, not dramatic. Brows slightly furrowed inward, eyes half-closed and downward, mouth corners barely drop.",
+    "surprise": "Facial expression: mild surprise on a composed face. Eyes open slightly wider, eyebrows raise just a bit, mouth barely parts.",
 }
+_SUMI_PROMPTS = {expr: _EDIT_FRAME + desc for expr, desc in _SUMI_EXPR_DESCS.items()}
 
-# ── なる専用プロンプト ────────────────────────────────────────────────────────
-# キャラ: 鳴切亮太 23歳, 176cm, シルバーヘア, ストリート系, 当初は天才気取りのイキリ。
-_NARU_PRESERVE = (
-    "CRITICAL CONSTRAINT — FACE EXPRESSION EDIT ONLY: "
-    "This is a retro pixel-art anime visual novel sprite of a young Japanese man "
-    "(Naru, aged 23, silver/white stylized hair, street fashion with accessories). "
-    "You MUST preserve ALL of the following EXACTLY: "
-    "his silver or white hair style, his street-style outfit and accessories (earrings etc.), "
-    "his pose, the solid bright green chroma-key background, and the pixel art style. "
-    "ABSOLUTELY DO NOT change any of these. "
-    "Modify ONLY the face: eyes, eyebrows, and mouth. Nothing else."
-)
-
-_NARU_PROMPTS: dict[str, str] = {
-    "serious": (
-        f"{_NARU_PRESERVE} "
-        "Change ONLY the face to a serious, steely expression — a young rival who has matured. "
-        "Eyebrows level, slightly furrowed with intensity. Eyes sharp and direct, unwavering gaze. "
-        "Mouth closed and firm. "
-        "Target emotion: 真剣 (focused, serious, rival-level determination)."
-    ),
-    "surprise": (
-        f"{_NARU_PRESERVE} "
-        "Change ONLY the face to a surprised, shaken expression. "
-        "Eyes wide and stunned, eyebrows raised high. Mouth open in shock. "
-        "Target emotion: 驚き (genuine shock, thrown off completely)."
-    ),
-    "smug": (
-        f"{_NARU_PRESERVE} "
-        "Change ONLY the face to a smug, arrogant, self-satisfied expression — "
-        "the face of someone who believes he's the best. "
-        "One eyebrow raised. Lopsided half-smirk. Eyes half-lidded with contempt and confidence. "
-        "Target emotion: ドヤ顔 (smug, condescending, showing off)."
-    ),
+_NARU_EXPR_DESCS: dict[str, str] = {
+    # 23歳・ライバル → 表情豊か、感情が顔に出やすい
+    "serious":  "Facial expression: serious and steely. Level brows with slight intensity, sharp direct gaze, mouth closed and firm.",
+    "surprise": "Facial expression: genuine shock. Eyes wide and stunned, eyebrows raised high, mouth open.",
+    "smug":     "Facial expression: smug and arrogant — someone who thinks he's the best. One eyebrow raised, lopsided smirk, eyes half-lidded.",
 }
+_NARU_PROMPTS = {expr: _EDIT_FRAME + desc for expr, desc in _NARU_EXPR_DESCS.items()}
 
-# ── アダム専用プロンプト ──────────────────────────────────────────────────────
-# キャラ: 吾妻大夢 28歳, 178cm, ダブルアップル職人。完璧主義者だが私生活ポンコツ。
-_ADAM_PRESERVE = (
-    "CRITICAL CONSTRAINT — FACE EXPRESSION EDIT ONLY: "
-    "This is a retro pixel-art anime visual novel sprite of a young Japanese man "
-    "(Adam, aged 28, a craftsman dedicated to double-apple shisha). "
-    "You MUST preserve ALL of the following EXACTLY: "
-    "his hair style and color, his outfit, his pose, "
-    "the solid bright green chroma-key background, and the pixel art style. "
-    "ABSOLUTELY DO NOT change any of these. "
-    "Modify ONLY the face: eyes, eyebrows, and mouth. Nothing else."
-)
-
-_ADAM_PROMPTS: dict[str, str] = {
-    "smile": (
-        f"{_ADAM_PRESERVE} "
-        "Change ONLY the face to a rare, genuine smile — the smile of a stoic perfectionist "
-        "who rarely shows warmth, but does so sincerely. "
-        "Soft closed or slightly open smile. Eyes warmed, tension released from the brow. "
-        "Target emotion: 嬉しい (rare, genuine, quietly pleased)."
-    ),
-    "surprise": (
-        f"{_ADAM_PRESERVE} "
-        "Change ONLY the face to a surprised expression on a usually stoic face. "
-        "Eyes wide, eyebrows raised. Mouth slightly open. "
-        "Target emotion: 驚き (genuinely caught off guard)."
-    ),
-    "sad": (
-        f"{_ADAM_PRESERVE} "
-        "Change ONLY the face to a dejected, self-critical expression — a perfectionist who failed. "
-        "Eyebrows pulled slightly inward and downward. Eyes downcast, heavy-lidded. "
-        "Mouth closed, corners dropping. "
-        "Target emotion: 悲しみ (self-critical sadness, disappointment in himself)."
-    ),
+_ADAM_EXPR_DESCS: dict[str, str] = {
+    # 28歳・職人・完璧主義 → 普段は無表情気味、感情が出ると少し大げさ
+    "smile":    "Facial expression: rare, genuine smile on a usually stoic face. Soft closed-mouth smile, eyes slightly warmed.",
+    "surprise": "Facial expression: surprised expression on a stoic face. Eyes wide, eyebrows raised, mouth slightly open.",
+    "sad":      "Facial expression: dejected, self-critical sadness. Brows pulled slightly inward and down, eyes downcast, mouth corners drop.",
 }
+_ADAM_PROMPTS = {expr: _EDIT_FRAME + desc for expr, desc in _ADAM_EXPR_DESCS.items()}
 
-# ── パッキー専用プロンプト ────────────────────────────────────────────────────
-# キャラ: 大会MC・マスコット。常にハイテンション。笑い声「ぷぷぷっ！」
-_PAKKI_PRESERVE = (
-    "CRITICAL CONSTRAINT — FACE EXPRESSION EDIT ONLY: "
-    "This is a retro pixel-art anime visual novel sprite of a mascot-like MC character (Pakki). "
-    "You MUST preserve ALL of the following EXACTLY: "
-    "his hair/head style and color, his outfit and any accessories, his pose, "
-    "the solid bright green chroma-key background, and the pixel art style. "
-    "ABSOLUTELY DO NOT change any of these. "
-    "Modify ONLY the face: eyes, eyebrows, and mouth. Nothing else."
-)
-
-_PAKKI_PROMPTS: dict[str, str] = {
-    "smile": (
-        f"{_PAKKI_PRESERVE} "
-        "Change ONLY the face to a big friendly MC smile — warm, welcoming, crowd-pleasing. "
-        "Wide open grin, eyes curved up happily. "
-        "Target emotion: 笑顔 (big friendly smile, entertainer energy)."
-    ),
-    "excited": (
-        f"{_PAKKI_PRESERVE} "
-        "Change ONLY the face to an over-the-top excited expression — peak hype MC energy. "
-        "Eyes wide and sparkling. Eyebrows sky-high. Mouth wide open in a shout of excitement. "
-        "Target emotion: 興奮 (maximum hype, excited shout, 「ぷぷぷっ！」energy)."
-    ),
+_PAKKI_EXPR_DESCS: dict[str, str] = {
+    # 大会MC・マスコット → 常にオーバーリアクション
+    "smile":    "Facial expression: big friendly MC smile. Wide grin, eyes curved up happily.",
+    "excited":  "Facial expression: maximum excitement. Eyes wide and sparkling, eyebrows sky-high, mouth wide open in a shout of joy.",
 }
+_PAKKI_PROMPTS = {expr: _EDIT_FRAME + desc for expr, desc in _PAKKI_EXPR_DESCS.items()}
 
 # ── キャラ別プロンプト辞書 ────────────────────────────────────────────────────
 CHAR_PROMPTS: dict[str, dict[str, str]] = {
