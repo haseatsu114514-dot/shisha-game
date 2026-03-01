@@ -77,7 +77,7 @@ straight bangs, bob-style cut that falls just past the jaw, warm reddish-brown
 eyes, small stud earrings, dark purple oversized zip-up hoodie with subtle
 floral embroidery detail on chest/sleeves, black pleated mini skirt,
 black opaque knee-high socks, dark sneakers,
-arms loosely crossed at chest or hands together in front,
+holding a scratched and well-used tablet close to chest with both arms,
 slightly reserved posture but calm gentle expression with small soft smile,
 quiet bookish warmth, slightly shy
 ```
@@ -135,8 +135,8 @@ anime illustration, full body standing pose, white background, clean line art,
 soft cel shading, 6 head height proportions, character sprite sheet style,
 semi-realistic anime style, no props, no objects held,
 
-young Japanese female, 22 years old, golden-blonde long twintails with waves
-and volume, yellow/amber eyes with flashy long lashes, tanned skin (Okinawa),
+young Japanese female, 22 years old, fair skin, golden-blonde long twintails
+with waves and volume, yellow/amber eyes with flashy long lashes,
 gold hoop earrings and layered gold necklaces, leopard-print bomber jacket
 (orange-brown tones), pink cropped tank top showing midriff, black pleated
 mini skirt, black thigh-high stockings, chunky platform sneakers with pink
@@ -171,6 +171,31 @@ gentle academic vibe with barely-perceptible unsettling undertone
 ---
 
 ## 未作成キャラ（新規デザイン）
+
+### アダム（吾妻 大夢）- ライバル ch1　28歳
+
+**設定反映ポイント:** 人生のすべてをダブルアップルに捧げた職人。ミリ単位の熱管理をする異常な完璧主義者。「世の中のシーシャはダブルアップルか、それ以外か」と真顔で言うローランド的変人。シーシャ以外の私生活は完全に破綻（服の裏表が逆、カップ麺作れない）だが、仕事場では身なりを整えている。髪色がダブルアップルそのもの。
+
+```
+anime illustration, full body standing pose, white background, clean line art,
+soft cel shading, 6 head height proportions, character sprite sheet style,
+semi-realistic anime style, no props, no objects held,
+
+young Japanese male, 28 years old, 178cm, striking split-dyed hair:
+viewer's left side is green, viewer's right side is red (double apple colors),
+medium-length hair with natural texture slightly swept back,
+intense dark eyes with unwavering focused gaze, sharp features,
+well-groomed and neatly dressed (professional setting):
+fitted black long-sleeve henley shirt or dark turtleneck, clean dark apron
+tied at waist (barista-style), dark fitted trousers, clean black shoes,
+sleeves pushed up slightly revealing forearms,
+standing perfectly straight with arms at sides or loosely crossed,
+dead-serious expression — not angry, just completely focused,
+the silent intensity of someone who treats every detail as life or death,
+stoic craftsman energy, quiet but overwhelming presence
+```
+
+---
 
 ### なる（鳴切 亮太）- ライバル ch1 　23歳
 
