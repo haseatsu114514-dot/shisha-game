@@ -2076,7 +2076,8 @@ func _update_mind_bullets(dt: float) -> void:
 			_mind_invincible_timer = 1.0
 			_mind_hit_flash()
 			_mind_update_face()
-			_spawn_hit_particles(pos, 8, Color("e43b44"))
+			_spawn_hit_particles(pos, 16, Color("e43b44"))
+			_spawn_mind_hit_popup(pos)
 			node.queue_free()
 			_mind_bullets.remove_at(i)
 			continue
@@ -2368,6 +2369,29 @@ func _mind_hit_flash() -> void:
 	wt.tween_callback(white_flash.queue_free)
 	if _mind_player_draw_node != null and is_instance_valid(_mind_player_draw_node):
 		(_mind_player_draw_node as _MindSoulNode).hit_flash = 1.0
+
+
+func _spawn_mind_hit_popup(pos: Vector2) -> void:
+	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
+		return
+	var hit_label = Label.new()
+	hit_label.text = "HIT!  残機 %s" % _build_mind_life_text()
+	hit_label.add_theme_font_size_override("font_size", 36)
+	hit_label.add_theme_color_override("font_color", Color("e43b44"))
+	hit_label.add_theme_color_override("font_outline_color", Color.BLACK)
+	hit_label.add_theme_constant_override("outline_size", 4)
+	hit_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hit_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_mind_arena_layer.add_child(hit_label)
+	var arena_size = _mind_arena_layer.size
+	hit_label.position = Vector2(arena_size.x * 0.5 - 120, arena_size.y * 0.15)
+	hit_label.pivot_offset = hit_label.size * 0.5
+	hit_label.scale = Vector2(1.6, 1.6)
+	var tween = create_tween()
+	tween.tween_property(hit_label, "scale", Vector2(1.0, 1.0), 0.15).set_ease(Tween.EASE_OUT)
+	tween.tween_interval(0.6)
+	tween.tween_property(hit_label, "modulate:a", 0.0, 0.3)
+	tween.tween_callback(hit_label.queue_free)
 
 
 func _mind_update_face() -> void:
