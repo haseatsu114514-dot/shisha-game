@@ -17,6 +17,22 @@ func _ready() -> void:
 	GameManager.apply_audio_settings()
 	info_label.text = "第1章：一吸目（ファーストパフ）"
 	GameManager.play_bgm(GameManager.BGM_TITLE_PATH, -8.0, true)
+	_apply_font()
+
+
+func _apply_font() -> void:
+	# GameManager が root theme にフォントを設定済みのため、
+	# ここでは追加の override は不要（override すると fallback が失われる）
+	pass
+
+
+func _collect_text_nodes(root: Node) -> Array:
+	var result: Array = []
+	for child in root.get_children():
+		if child is Label or child is Button or child is RichTextLabel:
+			result.append(child)
+		result.append_array(_collect_text_nodes(child))
+	return result
 
 
 func _on_new_game_pressed() -> void:
