@@ -88,14 +88,8 @@ func _ready() -> void:
 		pass
 		
 	# Setup font and transparency
-	var pixel_font = load("res://assets/fonts/DotGothic16-Regular.ttf")
-	if pixel_font:
-		speaker_label.add_theme_font_override("font", pixel_font)
-		text_label.add_theme_font_override("normal_font", pixel_font)
-		auto_button.add_theme_font_override("font", pixel_font)
-		advance_button.add_theme_font_override("font", pixel_font)
-		log_button.add_theme_font_override("font", pixel_font)
-		close_history_button.add_theme_font_override("font", pixel_font)
+	# GameManager が root theme にフォントを設定済みのため override 不要
+	# （override すると SystemFont fallback が失われてデバッグ実行で文字が消える）
 	
 	var panel_style = StyleBoxFlat.new()
 	panel_style.bg_color = Color(0, 0, 0, 0.70)
@@ -478,7 +472,6 @@ func _on_log_button_pressed() -> void:
 	for child in history_vbox.get_children():
 		child.queue_free()
 	
-	var pixel_font = load("res://assets/fonts/DotGothic16-Regular.ttf")
 	for entry in _history:
 		var name_label = Label.new()
 		var resolved_id = str(SPEAKER_ID_ALIASES.get(entry["speaker"], entry["speaker"]))
@@ -486,13 +479,11 @@ func _on_log_button_pressed() -> void:
 		if name_label.text == "": name_label.text = "――"
 		name_label.add_theme_color_override("font_color", GameManager.get_speaker_color(resolved_id))
 		name_label.add_theme_font_size_override("font_size", 20)
-		if pixel_font: name_label.add_theme_font_override("font", pixel_font)
-		
+
 		var txt_label = Label.new()
 		txt_label.text = entry["text"]
 		txt_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		txt_label.add_theme_font_size_override("font_size", 20)
-		if pixel_font: txt_label.add_theme_font_override("font", pixel_font)
 		
 		var entry_box = VBoxContainer.new()
 		entry_box.add_theme_constant_override("separation", 2)

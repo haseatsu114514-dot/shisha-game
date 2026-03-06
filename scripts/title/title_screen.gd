@@ -21,16 +21,9 @@ func _ready() -> void:
 
 
 func _apply_font() -> void:
-	var font = load("res://assets/fonts/DotGothic16-Regular.ttf")
-	if font == null:
-		return
-	for node in _collect_text_nodes(self):
-		if node is Label:
-			node.add_theme_font_override("font", font)
-		elif node is Button:
-			node.add_theme_font_override("font", font)
-		elif node is RichTextLabel:
-			node.add_theme_font_override("normal_font", font)
+	# GameManager が root theme にフォントを設定済みのため、
+	# ここでは追加の override は不要（override すると fallback が失われる）
+	pass
 
 
 func _collect_text_nodes(root: Node) -> Array:

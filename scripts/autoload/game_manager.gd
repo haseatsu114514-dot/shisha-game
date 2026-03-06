@@ -49,16 +49,29 @@ func _ready() -> void:
 
 
 func _apply_default_font() -> void:
+	# macOS/Linux でのデバッグ実行時は .ttf がインポートキャッシュ未生成で
+	# FreeType エラーになる場合がある。SystemFont を fallback として必ず用意する。
+	var sys_font := SystemFont.new()
+	sys_font.font_names = PackedStringArray([
+		"Hiragino Kaku Gothic Pro", "Hiragino Sans",  # macOS
+		"Yu Gothic UI", "Meiryo",                     # Windows
+		"Noto Sans CJK JP", "Noto Sans JP",           # Linux / Android
+		"Arial Unicode MS",                            # 汎用 fallback
+	])
+
+	var font_resource: Font = sys_font  # デフォルトはシステムフォント
+
 	var font_path = "res://assets/fonts/DotGothic16-Regular.ttf"
-	if not ResourceLoader.exists(font_path):
-		return
-	var font_resource = load(font_path)
-	if font_resource == null:
-		return
+	if ResourceLoader.exists(font_path):
+		var ttf = load(font_path)
+		if ttf != null and ttf is FontFile:
+			# DotGothic16 が読めた場合はそちらを優先し、日本語 fallback を追加
+			ttf.set_fallbacks([sys_font])
+			font_resource = ttf
+
 	var theme = Theme.new()
 	theme.default_font = font_resource
 	theme.default_font_size = 22
-	# Godot 4 では default_font だけでは継承されないケースがあるため個別にも設定
 	for type in ["Label", "Button", "RichTextLabel", "LineEdit", "OptionButton", "CheckBox", "PopupMenu", "Tree"]:
 		theme.set_font("font", type, font_resource)
 		theme.set_font_size("font_size", type, 22)
