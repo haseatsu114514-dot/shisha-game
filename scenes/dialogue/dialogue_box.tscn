@@ -153,7 +153,7 @@ theme_override_constants/separation = 6
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 26
-theme_override_colors/font_color = Color(1, 0.811765, 0.45098, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = ""
 
 [node name="TextLabel" type="RichTextLabel" parent="DialoguePanel/Margin/VBox"]

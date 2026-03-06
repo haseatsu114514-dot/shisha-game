@@ -106,8 +106,8 @@ const SPEAKER_COLORS := {
 	"salaryman": Color("5a6988"),
 }
 
-func get_speaker_color(speaker_id: String) -> Color:
-	return SPEAKER_COLORS.get(speaker_id, THEME_CREAM_TEXT)
+func get_speaker_color(_speaker_id: String) -> Color:
+	return Color.WHITE
 
 func _apply_default_theme() -> void:
 	var root_theme = get_tree().root.theme
