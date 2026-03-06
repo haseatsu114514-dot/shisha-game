@@ -58,6 +58,12 @@ func _apply_default_font() -> void:
 	var theme = Theme.new()
 	theme.default_font = font_resource
 	theme.default_font_size = 22
+	# Godot 4 では default_font だけでは継承されないケースがあるため個別にも設定
+	for type in ["Label", "Button", "RichTextLabel", "LineEdit", "OptionButton", "CheckBox", "PopupMenu", "Tree"]:
+		theme.set_font("font", type, font_resource)
+		theme.set_font_size("font_size", type, 22)
+	theme.set_font("normal_font", "RichTextLabel", font_resource)
+	theme.set_font_size("normal_font_size", "RichTextLabel", 22)
 	get_tree().root.theme = theme
 
 
