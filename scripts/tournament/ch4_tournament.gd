@@ -1506,7 +1506,7 @@ func _start_mind_barrage_step() -> void:
 	face_rect.custom_minimum_size = Vector2(96, 96)
 	face_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 	face_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	var face_path = "res://assets/sprites/characters/chr_hajime_normal.png"
+	var face_path = "res://assets/sprites/characters/hajime/chr_hajime_normal.png"
 	if ResourceLoader.exists(face_path):
 		face_rect.texture = load(face_path)
 	face_panel.add_child(face_rect)
@@ -2379,7 +2379,7 @@ func _mind_update_face() -> void:
 		else:
 			chosen_face = "normal"
 			chosen_text = ""
-	var face_path = "res://assets/sprites/characters/chr_hajime_%s.png" % chosen_face
+	var face_path = "res://assets/sprites/characters/hajime/chr_hajime_%s.png" % chosen_face
 	if ResourceLoader.exists(face_path):
 		face_node.texture = load(face_path)
 	if label_node != null:

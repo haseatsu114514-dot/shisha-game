@@ -563,9 +563,9 @@ func _update_portrait(line: Dictionary) -> void:
 	speaker = str(SPEAKER_ID_ALIASES.get(speaker, speaker))
 
 	var face = str(line.get("face", "normal"))
-	var path = "res://assets/sprites/characters/chr_%s_%s.png" % [speaker, face]
+	var path = "res://assets/sprites/characters/%s/chr_%s_%s.png" % [speaker, speaker, face]
 	if not ResourceLoader.exists(path):
-		path = "res://assets/sprites/characters/chr_%s_normal.png" % speaker
+		path = "res://assets/sprites/characters/%s/chr_%s_normal.png" % [speaker, speaker]
 	if not ResourceLoader.exists(path):
 		portrait_rect.visible = false
 		portrait_rect.texture = null
