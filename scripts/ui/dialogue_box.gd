@@ -643,7 +643,7 @@ func _finish_dialogue() -> void:
 	if _metadata.has("exchange_lime"):
 		AffinityManager.exchange_lime(str(_metadata["exchange_lime"]))
 
-	var stat_changes: Array[Dictionary] = Array[Dictionary]()
+	var stat_changes: Array[Dictionary] = []
 	if _metadata.has("add_stat"):
 		var stats = _metadata["add_stat"]
 		if typeof(stats) == TYPE_DICTIONARY:
