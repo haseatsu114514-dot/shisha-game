@@ -171,7 +171,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "え。僕が、シーシャバトルにですか？"
+          "text": "え。僕が、大会にですか？"
         },
         {
           "speaker": "sumi",
@@ -186,7 +186,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "無理かどうかは出てから決めろ。お前の煙は、ちゃんと[imp]優しい[/imp]"
+          "text": "出てから決めろ。……お前の煙は、[imp]優しい[/imp]"
         },
         {
           "speaker": "hajime",
@@ -273,7 +273,7 @@
           {
             "speaker": "sumi",
             "face": "serious",
-            "text": "早速特訓するか。ダブルアップルとミントで基礎を叩き込むぞ"
+            "text": "ダブルアップルとミントで基礎を叩き込む。来い"
           },
           {
             "speaker": "hajime",
