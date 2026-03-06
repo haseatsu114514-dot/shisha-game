@@ -193,7 +193,7 @@ func _load_dialogue_data() -> bool:
 	if target_dialogue.is_empty():
 		return false
 
-	_line_queue = target_dialogue.get("lines", []).duplicate(true)
+	_line_queue.assign(target_dialogue.get("lines", []).duplicate(true))
 	_branches = target_dialogue.get("branches", {}).duplicate(true)
 	
 	var metadata = target_dialogue.get("metadata", {})
