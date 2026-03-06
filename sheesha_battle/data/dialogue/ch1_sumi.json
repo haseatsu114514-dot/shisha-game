@@ -1,0 +1,11 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "ch1_sumi_tutorial",
+      "lines": [
+        {"speaker": "sumi", "face": "normal", "text": "昼と夜で1回ずつ行動できる。無駄にするなよ"},
+        {"speaker": "sumi", "face": "smile", "text": "店での経験も、ライバルの情報も全部武器になる"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "characters": [
+    {"id": "hajime", "name": "はじめ", "role": "protagonist"},
+    {"id": "sumi", "name": "スミさん", "role": "mentor"},
+    {"id": "nishio", "name": "にしお", "role": "rival"},
+    {"id": "adam", "name": "アダム", "role": "rival"},
+    {"id": "ryuji", "name": "リュウジ", "role": "rival"},
+    {"id": "tsumugi", "name": "つむぎ", "role": "regular"},
+    {"id": "packii", "name": "パッキー", "role": "mascot"}
+  ]
+}

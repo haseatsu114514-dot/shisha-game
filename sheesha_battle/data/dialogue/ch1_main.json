@@ -1,0 +1,47 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "ch1_opening",
+      "lines": [
+        {"speaker": "sumi", "face": "normal", "text": "おう、はじめ。今日もバイトか"},
+        {"speaker": "hajime", "face": "normal", "text": "っす。いらっしゃいませー…って誰もいないっすね"},
+        {"speaker": "sumi", "face": "serious", "text": "暇な日だ。…なあ、一つ聞いていいか"},
+        {"speaker": "hajime", "face": "normal", "text": "なんすか"},
+        {"speaker": "sumi", "face": "serious", "text": "お前、大会出てみる気ねえか"},
+        {"speaker": "hajime", "face": "surprise", "text": "大会？シーシャの？俺が？無理っすよ"},
+        {"speaker": "sumi", "face": "serious", "text": "無理かどうかは出てから決めろ。お前の煙、俺は好きだ"},
+        {"speaker": "hajime", "face": "sad", "text": "……"},
+        {
+          "type": "choice",
+          "id": "opening_choice",
+          "choices": [
+            {"text": "やってみます", "next": "accept"},
+            {"text": "ちょっと考えます", "next": "hesitate"}
+          ]
+        }
+      ],
+      "branches": {
+        "accept": [
+          {"speaker": "sumi", "face": "smile", "text": "よし。1週間後だ。準備しろ"}
+        ],
+        "hesitate": [
+          {"speaker": "sumi", "face": "serious", "text": "考えてる暇はねえ。1週間後だ"}
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch1_day5_sumi_story",
+      "lines": [
+        {"speaker": "sumi", "face": "thinking", "text": "大会ってのは、勝つためだけに出るもんじゃねえ"},
+        {"speaker": "hajime", "face": "normal", "text": "…何かあったんすか、昔"},
+        {"speaker": "sumi", "face": "serious", "text": "その話は、また今度だ"}
+      ]
+    },
+    {
+      "dialogue_id": "ch1_day7_last_night",
+      "lines": [
+        {"speaker": "hajime", "face": "serious", "text": "明日はいよいよ大会だ…"}
+      ]
+    }
+  ]
+}

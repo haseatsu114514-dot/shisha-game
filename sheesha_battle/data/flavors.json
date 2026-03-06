@@ -1,0 +1,11 @@
+{
+  "flavors": [
+    {"id": "double_apple", "name": "ダブルアップル", "price": 1500},
+    {"id": "mint", "name": "ミント", "price": 1500},
+    {"id": "blueberry", "name": "ブルーベリー", "price": 2000},
+    {"id": "mango", "name": "マンゴー", "price": 2000},
+    {"id": "vanilla", "name": "バニラ", "price": 2500},
+    {"id": "pineapple", "name": "パイナップル", "price": 2500},
+    {"id": "coconut", "name": "ココナッツ", "price": 3000}
+  ]
+}
