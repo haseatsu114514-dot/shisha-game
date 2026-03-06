@@ -788,7 +788,7 @@ func _show_affinity_notification(char_id: String, delta: int) -> void:
 
 func _show_stat_notification(stat_changes: Array[Dictionary]) -> void:
 	# Build notification text using abstract expressions (no raw numbers)
-	var parts: Array[String] = Array[String]()
+	var parts: Array[String] = []
 	for change in stat_changes:
 		var change_label = PlayerData.get_stat_change_label(change["amount"])
 		if change_label != "":
