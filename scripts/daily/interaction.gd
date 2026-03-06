@@ -354,7 +354,7 @@ func _set_portrait(character_id: String) -> void:
 	if character_id == "":
 		character_portrait.texture = null
 		return
-	var path = "res://assets/sprites/characters/chr_%s_normal.png" % character_id
+	var path = "res://assets/sprites/characters/%s/chr_%s_normal.png" % [character_id, character_id]
 	if not ResourceLoader.exists(path):
 		character_portrait.texture = null
 		return
