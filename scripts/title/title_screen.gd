@@ -17,6 +17,29 @@ func _ready() -> void:
 	GameManager.apply_audio_settings()
 	info_label.text = "第1章：一吸目（ファーストパフ）"
 	GameManager.play_bgm(GameManager.BGM_TITLE_PATH, -8.0, true)
+	_apply_font()
+
+
+func _apply_font() -> void:
+	var font = load("res://assets/fonts/DotGothic16-Regular.ttf")
+	if font == null:
+		return
+	for node in _collect_text_nodes(self):
+		if node is Label:
+			node.add_theme_font_override("font", font)
+		elif node is Button:
+			node.add_theme_font_override("font", font)
+		elif node is RichTextLabel:
+			node.add_theme_font_override("normal_font", font)
+
+
+func _collect_text_nodes(root: Node) -> Array:
+	var result: Array = []
+	for child in root.get_children():
+		if child is Label or child is Button or child is RichTextLabel:
+			result.append(child)
+		result.append_array(_collect_text_nodes(child))
+	return result
 
 
 func _on_new_game_pressed() -> void:

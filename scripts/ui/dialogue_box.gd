@@ -171,6 +171,9 @@ func _apply_background_from_metadata() -> void:
 	if tex == null:
 		return
 	background_image.texture = tex
+	background_image.modulate = Color(1.35, 1.35, 1.35, 1.0)
+	background_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	background_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 
 
 func _load_dialogue_data() -> bool:
