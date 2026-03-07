@@ -19,6 +19,14 @@ fi
 
 cd "$repo_root"
 
+canonical_root="$(git config --local --get shisha.canonicalRoot 2>/dev/null || true)"
+actual_root="$(pwd -P)"
+
+if [ -n "$canonical_root" ] && [ "$actual_root" != "$canonical_root" ]; then
+  fail \
+    "wrong local checkout. Expected '$canonical_root' but got '$actual_root'"
+fi
+
 [ -f "project.godot" ] || fail \
   "git root must be the Godot project root. Current git root: $repo_root"
 [ -d "scenes" ] || fail "git root is missing scenes/"
@@ -48,6 +56,15 @@ else
 fi
 
 branch_name="$(git rev-parse --abbrev-ref HEAD)"
+hooks_path="$(git config --get core.hooksPath 2>/dev/null || true)"
+
+if [ "$hooks_path" != ".githooks" ]; then
+  warn "core.hooksPath is '${hooks_path:-<unset>}'. Run './tools/enable_git_hooks.sh'."
+fi
+
+if [ -z "$canonical_root" ]; then
+  warn "shisha.canonicalRoot is unset. Run 'git config --local shisha.canonicalRoot \"$(pwd -P)\"' if this is the approved checkout."
+fi
 
 printf 'OK: git safety checks passed\n'
 printf 'repo root: %s\n' "$repo_root"

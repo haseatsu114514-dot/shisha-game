@@ -5,6 +5,43 @@ Godot 4 製シーシャ屋アドベンチャー＆シミュレーションゲー
 
 ---
 
+## Git Safety
+
+If this machine uses a canonical checkout path, store it in local Git
+config with:
+`git config --local shisha.canonicalRoot "$(pwd -P)"`
+
+Do not work from `sheesha_battle`, `シーシャバトル-(4.2)`,
+`.codex_tmp/...`, or any other duplicate checkout. Treat those copies as
+stale unless the user explicitly says they replaced the canonical one
+and updates the local config.
+
+Before any code edit or Git operation:
+
+- run `git rev-parse --show-toplevel`
+- confirm that the same directory contains `project.godot`
+- run `./tools/check_git_safety.sh`
+- if `git config --get core.hooksPath` is not `.githooks`, run
+  `./tools/enable_git_hooks.sh`
+- if `git config --local --get shisha.canonicalRoot` is set, confirm
+  that it matches the repo root
+
+If any check fails, stop immediately. Do not commit, merge, or push from
+the wrong checkout.
+
+### Hard rules
+
+- branch from `origin/main`
+- use pull requests instead of direct pushes to `main`
+- do not use `git push --force` on shared branches
+- do not use `--allow-unrelated-histories`
+- do not change the default branch to a feature branch as a workaround
+
+If `git merge-base HEAD origin/main` fails, the branch is not safe for a
+normal PR. Stop and fix the Git layout first.
+
+---
+
 ## ディレクトリ構成
 
 | パス | 内容 |

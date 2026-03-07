@@ -7,15 +7,27 @@ Godot 4 製シーシャ屋アドベンチャー＆シミュレーションゲー
 
 ## Git Safety
 
-Before any Git operation:
+If this machine uses a canonical checkout path, store it in local Git
+config with:
+`git config --local shisha.canonicalRoot "$(pwd -P)"`
+
+Do not work from `sheesha_battle`, `シーシャバトル-(4.2)`,
+`.codex_tmp/...`, or any other duplicate checkout. Those paths must be
+treated as stale until the user explicitly replaces the canonical path
+and updates the local config.
+
+Before any code edit or Git operation:
 
 - verify the repo root with `git rev-parse --show-toplevel`
 - confirm that the same directory contains `project.godot`
 - run `./tools/check_git_safety.sh`
+- if `git config --get core.hooksPath` is not `.githooks`, run
+  `./tools/enable_git_hooks.sh`
+- if `git config --local --get shisha.canonicalRoot` is set, confirm
+  that it matches the repo root
 
-If the reported Git root does not contain `project.godot`, stop. Do not
-create branches, do not push, and do not try to merge unrelated
-histories.
+If any check fails, stop. Do not create branches, do not commit, do not
+push, and do not try to merge unrelated histories.
 
 ### Hard rules
 
