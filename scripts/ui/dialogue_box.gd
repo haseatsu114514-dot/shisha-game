@@ -331,7 +331,7 @@ func _process_text(text: String) -> String:
 			attendees_str = "今まで戦ってきた日々を思い出しながら"
 			
 		text = text.replace("{attendees}", attendees_str)
-	return text
+	return GameManager.format_story_text(text, 24)
 
 func _start_typing(text: String) -> void:
 	_full_text = _strip_highlight_tags(text)

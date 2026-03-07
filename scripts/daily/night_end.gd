@@ -4,6 +4,8 @@ extends Control
 @onready var choice_container: VBoxContainer = %ChoiceContainer
 @onready var auto_timer: Timer = %AutoTimer
 
+var _summary: Dictionary = {}
+
 const TRANSITION_WIDTH: float = 1280.0
 const TRANSITION_HEIGHT: float = 720.0
 const CARD_WIDTH: float = 156.0
@@ -16,6 +18,7 @@ const ACCENT_COLOR: Color = Color(0.98, 0.93, 0.18, 1.0)
 func _ready() -> void:
 	GameManager.play_daily_bgm()
 	auto_timer.timeout.connect(_on_auto_timer_timeout)
+	_summary = GameManager.consume_daily_summary()
 	_render_summary()
 
 	if CalendarManager.current_day == 7 and not EventFlags.get_flag("ch1_day7_choice_done"):
@@ -26,7 +29,6 @@ func _ready() -> void:
 
 
 func _render_summary() -> void:
-	var summary = GameManager.consume_daily_summary()
 	var lines: Array[String] = []
 
 	if CalendarManager.is_interval:
@@ -42,7 +44,7 @@ func _render_summary() -> void:
 		{"key": "charm", "name": "魅力"},
 		{"key": "insight", "name": "洞察"},
 	]
-	var day_stats: Dictionary = summary.get("stats", {})
+	var day_stats: Dictionary = _summary.get("stats", {})
 	for entry in stat_entries:
 		var stars = PlayerData.get_stat_stars(entry["key"])
 		var star_str = "★".repeat(stars) + "☆".repeat(5 - stars)
@@ -52,9 +54,9 @@ func _render_summary() -> void:
 			change_text = " (%s)" % PlayerData.get_stat_change_label(change_amount)
 		lines.append("%s %s%s" % [entry["name"], star_str, change_text])
 	lines.append("")
-	lines.append("💰 所持金: %d円 (%+d)" % [PlayerData.money, int(summary.get("money", 0))])
+	lines.append("💰 所持金: %d円 (%+d)" % [PlayerData.money, int(_summary.get("money", 0))])
 
-	var flavors: Array = summary.get("flavors", [])
+	var flavors: Array = _summary.get("flavors", [])
 	if flavors.size() > 0:
 		var flavor_lines: Array[String] = []
 		for flavor in flavors:
@@ -96,7 +98,12 @@ func _on_day7_choice(stat_name: String) -> void:
 		child.queue_free()
 	PlayerData.add_stat(stat_name, 3)
 	GameManager.log_stat_change(stat_name, 3)
+	if not _summary.has("stats"):
+		_summary["stats"] = {}
+	var current = int(_summary["stats"].get(stat_name, 0))
+	_summary["stats"][stat_name] = current + 3
 	EventFlags.set_flag("ch1_day7_choice_done")
+	_render_summary()
 	auto_timer.start()
 
 
