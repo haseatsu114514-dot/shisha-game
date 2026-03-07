@@ -10,13 +10,11 @@ if [ -z "$repo_root" ]; then
 fi
 
 cd "$repo_root"
-[ -f "project.godot" ] || {
-  printf 'ERROR: git root must contain project.godot before enabling hooks\n' >&2
-  printf 'ERROR: current git root is %s\n' "$repo_root" >&2
-  exit 1
-}
+"$repo_root/tools/check_git_safety.sh" >/dev/null
 
 git config core.hooksPath .githooks
+git config --local shisha.canonicalRoot "$(pwd -P)"
 
 printf 'Enabled repo hooks: %s/.githooks\n' "$repo_root"
+printf 'Canonical checkout: %s\n' "$(pwd -P)"
 printf "Next step: ./tools/check_git_safety.sh\n"
