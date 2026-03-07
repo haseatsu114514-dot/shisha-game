@@ -23,6 +23,10 @@ const SHIFT_PROCESS_ORDER := {
 	"full": ["packing", "steam", "heat_control", "presentation"],
 }
 
+
+func _set_body_text(text: String) -> void:
+	body_label.text = GameManager.format_story_text(text, 26)
+
 const SHIFT_PROCESS_DEFINITIONS := {
 	"packing": {
 		"title": "仕込み: パッキング",
@@ -183,7 +187,7 @@ func _show_main_menu() -> void:
 		_show_shift_menu()
 
 func _show_tournament_menu() -> void:
-	body_label.text = "本日は大会当日です。準備はよろしいですか？\nここから先は大会が終了するまで引き返せません。"
+	_set_body_text("本日は大会当日です。準備はよろしいですか？\nここから先は大会が終了するまで引き返せません。")
 	_clear_buttons(menu_container)
 	var button = Button.new()
 	button.text = "大会会場へ向かう"
@@ -222,19 +226,19 @@ func _on_menu_selected(action: String) -> void:
 
 
 func _show_shift_menu() -> void:
-	body_label.text = "シフトを選んでください"
+	_set_body_text("シフトを選んでください")
 	var half_text = "半日バイト（昼のみ / 基本給+8000円）"
 	var full_text = "夜までバイト（昼+夜 / 基本給+18000円）"
 	var night_text = "夜バイト（基本給+10000円）"
 	
 	match GameManager.current_chapter:
 		3:
-			body_label.text = "スミさんの元同僚が営む系列店「mukai」でヘルプに入りますか？\n（新しい技術を学べるかもしれません）"
+			_set_body_text("スミさんの元同僚が営む系列店「mukai」でヘルプに入りますか？\n（新しい技術を学べるかもしれません）")
 			half_text = "半日ヘルプ（昼のみ / 給与+8000円）"
 			full_text = "夜までヘルプ（昼+夜 / 給与+18000円）"
 			night_text = "夜ヘルプ（夜のみ / 給与+10000円）"
 		4:
-			body_label.text = "現地の店でゲスト出勤しますか？\n（気に入られたので飛び入り参加）"
+			_set_body_text("現地の店でゲスト出勤しますか？\n（気に入られたので飛び入り参加）")
 			half_text = "ゲスト出勤・昼（昼のみ / 給与+8000円）"
 			full_text = "ゲスト出勤・通し（昼+夜 / 給与+18000円）"
 			night_text = "ゲスト出勤・夜（夜のみ / 給与+10000円）"
@@ -288,7 +292,7 @@ func _start_shift(mode: String) -> void:
 	
 	# Show atmosphere text first, then process
 	var atmos = _get_shift_atmosphere(mode)
-	body_label.text = atmos
+	_set_body_text(atmos)
 	
 	_show_shift_process_step()
 
@@ -318,7 +322,7 @@ func _show_shift_process_step() -> void:
 	var step = _shift_process_steps[_shift_process_index]
 	var title = str(step.get("title", "仕込み"))
 	header_label.text = "%s (%d/%d)" % [title, _shift_process_index + 1, _shift_process_steps.size()]
-	body_label.text = str(step.get("text", ""))
+	_set_body_text(str(step.get("text", "")))
 
 	for option in step.get("options", []):
 		var button = Button.new()
@@ -348,7 +352,7 @@ func _on_shift_process_option_selected(step: Dictionary, option: Dictionary) -> 
 		lines.append(bonus_line)
 
 	_shift_process_quality += int(option.get("score", 0))
-	body_label.text = "\n".join(lines)
+	_set_body_text("\n".join(lines))
 
 	var next_button = Button.new()
 	next_button.text = "次の工程へ"
@@ -388,12 +392,12 @@ func _complete_shift_process() -> void:
 	var quality_bonus = 0
 	if _shift_process_quality >= 10:
 		quality_bonus = 2500
-		body_label.text = "仕込みがハマった。営業が回りやすくなり売上ボーナス +2500円。"
+		_set_body_text("仕込みがハマった。営業が回りやすくなり売上ボーナス +2500円。")
 	elif _shift_process_quality >= 6:
 		quality_bonus = 1200
-		body_label.text = "仕込みが安定し、売上ボーナス +1200円。"
+		_set_body_text("仕込みが安定し、売上ボーナス +1200円。")
 	else:
-		body_label.text = "最低限の仕込みで営業開始。"
+		_set_body_text("最低限の仕込みで営業開始。")
 
 	_shift_process_money_bonus += quality_bonus
 	_event_queue = _pick_events(_shift_pending_event_count)
@@ -455,7 +459,7 @@ func _show_next_event() -> void:
 		return
 
 	_current_event = _event_queue.pop_front()
-	body_label.text = str(_current_event.get("text", ""))
+	_set_body_text(str(_current_event.get("text", "")))
 	for choice in _current_event.get("choices", []):
 		var button = Button.new()
 		button.text = str(choice.get("text", "選択肢"))
@@ -468,7 +472,7 @@ func _on_event_choice_selected(choice: Dictionary) -> void:
 	GameManager.play_ui_se("confirm")
 	_clear_buttons(choice_container)
 	_apply_choice_result(choice)
-	body_label.text = str(choice.get("result", ""))
+	_set_body_text(str(choice.get("result", "")))
 	var next_button = Button.new()
 	next_button.text = "次へ"
 	next_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -503,7 +507,7 @@ func _finish_shift() -> void:
 	closing_text += "片付けの手を止めて、ふと店内を見渡す。\n"
 	closing_text += "フレーバーの残り香が、まだ空気の中に漂っている。今日も色んな人が来て、色んな煙を吸って帰っていった。"
 	
-	body_label.text = closing_text
+	_set_body_text(closing_text)
 	_clear_buttons(choice_container)
 
 	var done_button = Button.new()
@@ -520,8 +524,7 @@ func _finish_shift() -> void:
 
 func _start_shop_practice() -> void:
 	header_label.text = "自主練"
-	body_label.text = "お店のフレーバーを使って、自分のセッティングを試してみよう。
-（所持しているフレーバーのみ選択可能・フレーバーは消費されません）"
+	_set_body_text("お店のフレーバーを使って、自分のセッティングを試してみよう。\n（所持しているフレーバーのみ選択可能・フレーバーは消費されません）")
 	_clear_buttons(choice_container)
 	
 	var start_button = Button.new()
@@ -550,11 +553,11 @@ func _do_practice() -> void:
 		return
 
 	header_label.text = "練習"
-	body_label.text = "何を練習する？"
+	_set_body_text("何を練習する？")
 	
 	var preview_lines = PlayerData.get_practice_bonus_preview_lines()
 	if not preview_lines.is_empty():
-		body_label.text += "\n\n[color=#8bdcff]【現在の装備ボーナス】[/color]\n" + "\n".join(preview_lines)
+		body_label.text += "\n\n[color=#8bdcff]【現在の装備ボーナス】[/color]\n" + GameManager.format_story_text("\n".join(preview_lines), 26)
 
 	_clear_buttons(menu_container)
 	_clear_buttons(choice_container)
@@ -690,7 +693,7 @@ func _finish_action_flow(step_count: int = 1) -> void:
 
 
 func _show_single_result_and_finish(text: String) -> void:
-	body_label.text = text
+	_set_body_text(text)
 	_clear_buttons(choice_container)
 	var button = Button.new()
 	button.text = "次へ"

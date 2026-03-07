@@ -72,10 +72,10 @@ func _load_today_lime_messages() -> Array:
 	var result: Array = []
 	for message in messages:
 		if message.has("trigger_interval_day"):
-			if not CalendarManager.is_interval or int(message.get("trigger_interval_day", -1)) != CalendarManager.interval_day:
+			if not CalendarManager.is_interval or int(message.get("trigger_interval_day", -1)) > CalendarManager.interval_day:
 				continue
 		elif message.has("trigger_day"):
-			if CalendarManager.is_interval or int(message.get("trigger_day", -1)) != CalendarManager.current_day:
+			if CalendarManager.is_interval or int(message.get("trigger_day", -1)) > CalendarManager.current_day:
 				continue
 
 		# If it's chapter specific

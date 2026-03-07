@@ -461,6 +461,68 @@ func set_transient(key: String, value: Variant) -> void:
 	transient[key] = value
 
 
+func format_story_text(text: String, max_chars: int = 24) -> String:
+	if text == "" or max_chars <= 0:
+		return text
+	if text.contains("[") and text.contains("]"):
+		return text
+
+	var wrapped_lines: Array[String] = []
+	for line in text.split("\n", true):
+		if line == "":
+			wrapped_lines.append("")
+			continue
+		wrapped_lines.append(_wrap_story_line(line, max_chars))
+	return "\n".join(wrapped_lines)
+
+
+func _wrap_story_line(line: String, max_chars: int) -> String:
+	if line.length() <= max_chars:
+		return line
+
+	var remaining := line
+	var wrapped: Array[String] = []
+	while remaining.length() > max_chars:
+		var split_index := _find_story_wrap_index(remaining, max_chars)
+		if split_index <= 0 or split_index >= remaining.length():
+			split_index = max_chars
+		wrapped.append(remaining.substr(0, split_index))
+		remaining = _trim_leading_wrap_whitespace(remaining.substr(split_index))
+
+	wrapped.append(remaining)
+	return "\n".join(wrapped)
+
+
+func _find_story_wrap_index(text: String, max_chars: int) -> int:
+	var preferred := min(max_chars, text.length() - 1)
+	var backward_limit := max(1, int(max_chars / 2))
+	for i in range(preferred, backward_limit - 1, -1):
+		if _is_story_wrap_break(text.substr(i - 1, 1)):
+			return i
+
+	var forward_limit := min(text.length() - 1, max_chars + 6)
+	for i in range(max_chars, forward_limit + 1):
+		if _is_story_wrap_break(text.substr(i, 1)):
+			return i + 1
+
+	return min(max_chars, text.length())
+
+
+func _trim_leading_wrap_whitespace(text: String) -> String:
+	var trimmed := text
+	while trimmed.begins_with(" ") or trimmed.begins_with("　"):
+		trimmed = trimmed.substr(1)
+	return trimmed
+
+
+func _is_story_wrap_break(char: String) -> bool:
+	match char:
+		"。", "、", "！", "？", "!", "?", "」", "』", "）", "】", " ", "　":
+			return true
+		_:
+			return false
+
+
 func get_transient(key: String, default_value: Variant = null) -> Variant:
 	return transient.get(key, default_value)
 

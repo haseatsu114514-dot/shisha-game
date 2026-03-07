@@ -40,7 +40,7 @@ func _ready() -> void:
 	if _target != "":
 		_set_portrait("")
 		header_label.text = "交流"
-		body_label.text = "誰もいない。"
+		body_label.text = GameManager.format_story_text("誰もいない。", 26)
 
 
 func _show_romance_date(char_id: String) -> void:
@@ -84,7 +84,7 @@ func _show_romance_date(char_id: String) -> void:
 	else:
 		lines.append("二人で楽しい時間を過ごした。愛情が少し深まった気がする。")
 
-	body_label.text = "\n".join(lines)
+	body_label.text = GameManager.format_story_text("\n".join(lines), 26)
 	if next_affection > affection:
 		body_label.text += "\n\n愛情度上昇！ (Lv. %d)" % next_affection
 	else:
@@ -102,9 +102,9 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 			_set_portrait("")
 			header_label.text = "ケムリクサ"
 			if GameManager.current_chapter == 1:
-				body_label.text = "店員「あー、今日なるさんは出勤してないっすね」\n\n（今日はいないようだ。他を回ろう）"
+				body_label.text = GameManager.format_story_text("店員「あー、今日なるさんは出勤してないっすね」\n\n（今日はいないようだ。他を回ろう）", 26)
 			else:
-				body_label.text = "店員「あー、店長なら『自分のシーシャを見つめ直す』とか言って、いま遠くに修行の旅に出てるっすよ」\n\n（しばらく店には戻らないらしい。他を回ろう）"
+				body_label.text = GameManager.format_story_text("店員「あー、店長なら『自分のシーシャを見つめ直す』とか言って、いま遠くに修行の旅に出てるっすよ」\n\n（しばらく店には戻らないらしい。他を回ろう）", 26)
 			_add_option("戻る", "none")
 			# Undo action cost
 			CalendarManager.undo_action()
@@ -272,7 +272,7 @@ func _show_invitation_event(event_id: String) -> void:
 	match event_id:
 		"interaction_naru_night_01":
 			_set_portrait("naru")
-			body_label.text = "なるのテストランに付き合った。新しいミックスを吸わせてもらった。"
+			body_label.text = GameManager.format_story_text("なるのテストランに付き合った。新しいミックスを吸わせてもらった。", 26)
 			_apply_affinity_gain("naru")
 			PlayerData.add_stat("insight", 2)
 			GameManager.log_stat_change("insight", 2)
@@ -288,7 +288,7 @@ func _show_invitation_event(event_id: String) -> void:
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		_:
 			_set_portrait("")
-			body_label.text = "交流イベントを実行した。"
+			body_label.text = GameManager.format_story_text("交流イベントを実行した。", 26)
 
 
 func _apply_flavor_specialty_gain(gains: Dictionary) -> void:

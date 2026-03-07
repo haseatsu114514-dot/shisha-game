@@ -221,6 +221,7 @@ func _on_option_pressed(action: String, index: int) -> void:
 func _add_chat_bubble(sender: String, text: String) -> void:
 	if text.strip_edges() == "":
 		return
+	text = GameManager.format_story_text(text, 18)
 
 	var row = HBoxContainer.new()
 	row.add_theme_constant_override("separation", 6)
@@ -296,6 +297,7 @@ func _add_chat_bubble(sender: String, text: String) -> void:
 
 
 func _add_system_message(text: String) -> void:
+	text = GameManager.format_story_text(text, 18)
 	var row = HBoxContainer.new()
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
