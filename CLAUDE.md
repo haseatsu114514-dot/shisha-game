@@ -5,6 +5,31 @@ Godot 4 製シーシャ屋アドベンチャー＆シミュレーションゲー
 
 ---
 
+## Git Safety
+
+Before any Git operation:
+
+- verify the repo root with `git rev-parse --show-toplevel`
+- confirm that the same directory contains `project.godot`
+- run `./tools/check_git_safety.sh`
+
+If the reported Git root does not contain `project.godot`, stop. Do not
+create branches, do not push, and do not try to merge unrelated
+histories.
+
+### Hard rules
+
+- branch from `origin/main`
+- use pull requests instead of direct pushes to `main`
+- do not use `git push --force` on shared branches
+- do not use `--allow-unrelated-histories`
+- do not change the default branch to a feature branch as a workaround
+
+If `git merge-base HEAD origin/main` fails, the branch is not safe for a
+normal PR. Stop and fix the Git layout first.
+
+---
+
 ## ディレクトリ構成
 
 | パス | 内容 |

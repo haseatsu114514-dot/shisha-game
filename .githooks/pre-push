@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+repo_root="$(git rev-parse --show-toplevel)"
+
+"$repo_root/tools/check_git_safety.sh" >/dev/null
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [ "$remote_ref" = "refs/heads/main" ]; then
+    printf 'ERROR: direct push to main is blocked. Use a feature branch and PR.\n' >&2
+    exit 1
+  fi
+done
+
+if git show-ref --verify --quiet "refs/remotes/origin/main"; then
+  if ! git merge-base HEAD "refs/remotes/origin/main" >/dev/null; then
+    printf 'ERROR: branch has no common ancestor with origin/main.\n' >&2
+    printf 'ERROR: refusing push to avoid unrelated-history accidents.\n' >&2
+    exit 1
+  fi
+fi
