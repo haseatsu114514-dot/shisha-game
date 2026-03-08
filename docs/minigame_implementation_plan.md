@@ -760,15 +760,415 @@ TOTAL_STEPS を 16 に変更し、盛り方選択を Step 4、アルミ穴あけ
 
 ---
 
+## 7. フレーバー特性システム（新規追加）
+
+### コンセプト
+
+フレーバーの `category`（cooling / spice / fruit / sweet / floral / tea）をゲームプレイに反映させる。
+シーシャ未経験者でも「フレーバーによって作り方が変わるんだ」と自然に理解できる設計にする。
+
+### カテゴリ別の特性パラメータ
+
+`data/flavors.json` の各フレーバーに以下のプロパティを追加する:
+
+```json
+{
+  "id": "mint",
+  "name": "アルファーヘブン ミント",
+  "category": "cooling",
+  "heat_tolerance": 1.2,
+  "smoke_weight": 0.7,
+  "steam_bias": -1,
+  "price": 1550,
+  "description": "..."
+}
+```
+
+| カテゴリ | 代表例 | heat_tolerance | smoke_weight | steam_bias | 理由 |
+|---|---|---|---|---|---|
+| cooling | ミント | 1.2（高い） | 0.7（軽い） | -1（短め寄り） | ミントは熱に強く、高温でもキレが出る |
+| spice | ダブルアップル | 1.1（高い） | 1.3（重い） | +1（長め寄り） | アニス系は熱でじわじわ開く |
+| fruit | ブルーベリー, パイナップル | 0.7（低い） | 0.8（軽い） | -1（短め寄り） | フルーツ系は繊細で焦げやすい |
+| sweet | バニラ, ココナッツ | 1.0（中間） | 1.0（中間） | +1（長め寄り） | じっくり蒸らすと甘みの厚みが出る |
+| floral | ローズ, ラベンダー | 0.8（やや低い） | 0.9（やや軽い） | 0（標準） | 繊細だが極端に弱くはない |
+| tea | アールグレイ | 0.9（やや低い） | 1.0（中間） | 0（標準） | 渋みが出やすく温度管理に注意 |
+
+### ミックスの特性値計算
+
+複数フレーバーを選んだ場合、**グラム数による加重平均**で全体のパラメータを算出する:
+
+```gdscript
+func _calc_mix_properties(flavors: Array[String], grams: Dictionary) -> Dictionary:
+    var total_grams := 0.0
+    var heat_tol := 0.0
+    var smoke_w := 0.0
+    var steam_b := 0.0
+    for fid in flavors:
+        var g = float(grams.get(fid, 0))
+        var fdata = _get_flavor_data(fid)
+        heat_tol += fdata.heat_tolerance * g
+        smoke_w  += fdata.smoke_weight * g
+        steam_b  += fdata.steam_bias * g
+        total_grams += g
+    if total_grams > 0:
+        heat_tol /= total_grams
+        smoke_w  /= total_grams
+        steam_b  /= total_grams
+    return {"heat_tolerance": heat_tol, "smoke_weight": smoke_w, "steam_bias": steam_b}
+```
+
+### 後続工程への影響
+
+**1. 蒸らし最適レンジがフレーバーで変わる**
+
+```
+基本最適レンジ: 6-8分
+steam_bias の影響:
+  -1（cooling/fruit主体） → 5-7分が最適
+  +1（spice/sweet主体）  → 7-9分が最適
+  盛り方との複合: ふわふわ + fruit → 最適が4-6分まで短縮される場合も
+```
+
+**2. 温度管理（heat_state）の許容幅が変わる**
+
+```
+heat_tolerance の影響:
+  1.2（ミント主体） → heat_state ±3 まで減点なし（余裕がある）
+  0.7（フルーツ主体）→ heat_state ±1 で減点開始（シビア）
+  具体的には _heat_penalty_threshold を heat_tolerance で補正
+```
+
+**3. 吸い出しゲージ速度がフレーバーで変わる**
+
+```
+smoke_weight の影響:
+  0.7（軽い煙）→ ゲージ速度 +10%（ドローが軽い）
+  1.3（重い煙）→ ゲージ速度 -10%（ドローが重い）
+  盛り方しっかり + ダブルアップル → かなり重いドローになる
+```
+
+**4. プレゼン手札の内容が変わる**
+
+フレーバーカテゴリに応じて、プレゼン手札の名前と属性値が変わる:
+
+| カテゴリ | 手札名の例 | 味 | 煙 | 吸いやすさ | 個性 |
+|---|---|---|---|---|---|
+| cooling | [ミントの清涼感] | +3 | +2 | +5 | +3 |
+| spice | [ダブルアップルの深み] | +5 | +5 | -1 | +4 |
+| fruit | [ブルーベリーの果実感] | +7 | +1 | +3 | +2 |
+| sweet | [バニラの甘い余韻] | +5 | +3 | +4 | +1 |
+| floral | [ローズの芳醇な香り] | +4 | +2 | +3 | +6 |
+| tea | [アールグレイの気品] | +4 | +2 | +2 | +5 |
+
+### カテゴリ相性テーブル（ミックスシナジー/クラッシュ）
+
+2種以上のフレーバーをミックスした際、カテゴリの組み合わせで味スコアに補正がかかる:
+
+```gdscript
+const CATEGORY_SYNERGY := {
+    # シナジー（味スコア加点）
+    ["cooling", "fruit"]:  {"bonus": 5.0, "text": "ミントが果実の輪郭を引き立てた。"},
+    ["sweet", "fruit"]:    {"bonus": 5.0, "text": "甘みがフルーツのジューシーさを底上げした。"},
+    ["floral", "tea"]:     {"bonus": 4.0, "text": "花の香りとティーの渋みが溶け合った。"},
+    ["spice", "sweet"]:    {"bonus": 4.0, "text": "スパイスの深みに甘さが絡んで、奥行きが出た。"},
+    ["cooling", "tea"]:    {"bonus": 3.0, "text": "ミントの爽快感がティーを上品にまとめた。"},
+    # クラッシュ（味スコア減点）
+    ["sweet", "sweet"]:    {"bonus": -3.0, "text": "甘みが重なって味がぼやけた。"},
+    ["cooling", "cooling"]:{"bonus": -3.0, "text": "清涼感が強すぎて味の深みが出にくい。"},
+    ["spice", "floral"]:   {"bonus": -2.0, "text": "スパイスの主張が花の繊細さを押し潰した。"},
+}
+```
+
+- 同カテゴリ2種以上のクラッシュは、味が単調になるリスクを表現
+- シナジーは実際のシーシャミックスのセオリーに基づく
+
+### フレーバー選択UIへのヒント表示
+
+シーシャ未経験者がフレーバーの特性を理解できるよう、選択画面で簡潔なヒントを表示する:
+
+```
+AF ミント（残り 50g）
+   清涼系 │ 熱に強い │ 軽い煙
+
+AF ブルーベリー（残り 50g）
+   フルーツ系 │ 繊細（温度管理がカギ）│ 軽い煙
+
+AF ダブルアップル（残り 50g）
+   スパイス系 │ 熱に強い │ 重い煙
+```
+
+ただし数値は見せない。あくまで定性的な表現にとどめる。
+
+### ch1 で使用可能なフレーバーについて
+
+**ch1 のフレーバーラインナップは検討中**。
+現在のデータ（6種: ミント, ダブルアップル, ブルーベリー, バニラ, パイナップル, ココナッツ）をベースに、
+ユーザー側で最終的な選定を行う。
+
+検討ポイント:
+- 初心者にも扱いやすいフレーバーを中心にするか
+- 各カテゴリから最低1種は入れて、カテゴリ相性システムを体験させたいか
+- ch2 以降で解禁するフレーバーとの差別化（例: フローラル系はch2から解禁 等）
+- `docs/planned_flavors_list.md` に約55種のフレーバーリストがあるため、そこから選定可能
+
+---
+
+## 8. 特別レシピ発見システム（新規追加）
+
+### コンセプト
+
+日常パートのキャラクター交流で「特別なフレーバーミックスのレシピ」を入手し、
+大会で使うと加点ボーナスが入る仕組み。
+現在の `_detect_special_mix()` を拡張して、発見型のレシピシステムにする。
+
+### レシピの分類
+
+| 種類 | 入手方法 | 大会での効果 |
+|---|---|---|
+| **基本レシピ** | 最初から知っている | 特別加点なし（通常のカテゴリ相性のみ） |
+| **教えてもらったレシピ** | 日常パートのキャラ交流で入手 | 技術+3〜5、観客+3〜5 |
+| **隠しレシピ** | 特定条件を満たすと入手（探索・特殊会話） | 技術+5〜8、観客+5〜10 |
+
+### レシピデータの構造
+
+`data/recipes.json`（新規ファイル）:
+
+```json
+{
+  "recipes": [
+    {
+      "id": "pina_colada",
+      "name": "ピニャコラーダ",
+      "flavors": ["pineapple", "coconut", "vanilla"],
+      "ratio": [5, 4, 3],
+      "ratio_tolerance": 1,
+      "category": "hidden",
+      "source": "sumi_affinity_3",
+      "source_hint": "炭場さんとの会話（好感度3以上）",
+      "spec_bonus": 8.0,
+      "aud_bonus": 8.0,
+      "discovery_dialogue": "sumi_recipe_pina_colada",
+      "presentation_card": {
+        "name": "南国の風・ピニャコラーダ",
+        "taste": 6, "smoke": 3, "ease": 4, "unique": 10
+      },
+      "description": "パイナップル・ココナッツ・バニラのトロピカルブレンド。甘い南国の風が吹く。"
+    },
+    {
+      "id": "hells_menthol",
+      "name": "地獄のメンソール",
+      "flavors": ["mint"],
+      "ratio": [12],
+      "ratio_tolerance": 0,
+      "category": "hidden",
+      "source": "naru_affinity_2",
+      "source_hint": "鳴切との会話（好感度2以上）",
+      "spec_bonus": 2.0,
+      "aud_bonus": 10.0,
+      "discovery_dialogue": "naru_recipe_menthol",
+      "presentation_card": {
+        "name": "地獄のメンソール",
+        "taste": -2, "smoke": 2, "ease": -3, "unique": 15
+      },
+      "description": "ミント12g全振り。一部の人にはたまらない、喉が震える一杯。"
+    },
+    {
+      "id": "midnight_chai",
+      "name": "ミッドナイトチャイ",
+      "flavors": ["double_apple", "vanilla"],
+      "ratio": [7, 5],
+      "ratio_tolerance": 1,
+      "category": "taught",
+      "source": "tsumugi_daily_event",
+      "source_hint": "つむぎとのバイト中の会話",
+      "spec_bonus": 5.0,
+      "aud_bonus": 4.0,
+      "discovery_dialogue": "tsumugi_recipe_chai",
+      "presentation_card": {
+        "name": "深夜のチャイ・ミッドナイトチャイ",
+        "taste": 7, "smoke": 4, "ease": 3, "unique": 6
+      },
+      "description": "ダブルアップルのスパイシーさにバニラの甘みを乗せた、深夜カフェの一杯。"
+    },
+    {
+      "id": "tropical_sunset",
+      "name": "トロピカルサンセット",
+      "flavors": ["pineapple", "blueberry"],
+      "ratio": [7, 5],
+      "ratio_tolerance": 2,
+      "category": "taught",
+      "source": "adam_daily_event",
+      "source_hint": "吾妻との練習後の会話",
+      "spec_bonus": 4.0,
+      "aud_bonus": 5.0,
+      "discovery_dialogue": "adam_recipe_tropical",
+      "presentation_card": {
+        "name": "南の夕焼け・トロピカルサンセット",
+        "taste": 6, "smoke": 2, "ease": 5, "unique": 5
+      },
+      "description": "パイナップルの明るさにブルーベリーの酸味が絡む、色鮮やかなミックス。"
+    }
+  ]
+}
+```
+
+### ratio_tolerance（比率の許容幅）
+
+特別ミックスの判定を厳密な比率ではなく、ある程度の幅を持たせる:
+
+```gdscript
+func _detect_recipe_match(selected_flavors: Array, grams: Dictionary) -> Dictionary:
+    for recipe in _known_recipes:
+        var recipe_flavors = recipe.get("flavors", [])
+        # フレーバーの種類が一致するか
+        if not _arrays_match_unordered(selected_flavors, recipe_flavors):
+            continue
+        # 比率の判定（tolerance 分のずれを許容）
+        var target_ratio = recipe.get("ratio", [])
+        var tolerance = recipe.get("ratio_tolerance", 1)
+        var actual = []
+        for fid in recipe_flavors:
+            actual.append(int(grams.get(fid, 0)))
+        if _ratio_matches(actual, target_ratio, tolerance):
+            return recipe
+    return {}
+```
+
+- `ratio_tolerance: 1` → 各フレーバーが ±1g の範囲ならOK
+- `ratio_tolerance: 2` → ±2g まで許容（比率にこだわらなくても成立しやすい）
+- 完全一致を求めず、「なんとなくこの組み合わせで作ったら成立した」感を出す
+
+### 日常パートでのレシピ入手フロー
+
+```
+[日常パート: バイト中]
+  ↓
+炭場さん「おい始。パイナップルとココナッツとバニラで
+         面白いのが作れるんだよ。比率はまあ……感覚だ」
+  ↓
+【レシピ『ピニャコラーダ』を覚えた！】
+  ↓
+PlayerData.learned_recipes に "pina_colada" が追加される
+  ↓
+[大会パート: フレーバー選択]
+  ↓
+パイナップル + ココナッツ + バニラを選ぶ
+  ↓
+配合時にヒント: 「覚えたレシピに近い組み合わせだ……」
+  ↓
+比率が tolerance 内に収まっていれば特別ミックス成立
+  ↓
+技術 +8、観客 +8、プレゼン手札にも専用カードが追加される
+```
+
+### レシピとキャラクター交流の紐付け
+
+| レシピ | 教えてくれるキャラ | 入手条件 | 世界観の理由 |
+|---|---|---|---|
+| ピニャコラーダ | 炭場さん | 好感度3以上 + バイトイベント特定回 | 師匠が昔よく作っていた思い出の一杯 |
+| 地獄のメンソール | 鳴切 亮太 | 好感度2以上 + 練習後会話 | 鳴切が「俺の必殺技だ」と自慢してくる |
+| ミッドナイトチャイ | 白木 つむぎ | バイト中の特定日常イベント | つむぎが常連時代に好きだったフレーバー |
+| トロピカルサンセット | 吾妻 大夢 | 練習後の会話 | 吾妻がダブルアップル以外も試していた意外な一面 |
+
+- **レシピの入手 = キャラクターの深掘り**にもなる
+- 特に好感度と紐付けることで、日常パートの交流に報酬を持たせる
+- CLAUDE.md の「全てのイベント・行動に何かしらの報酬を必ず付ける」ルールにも合致
+
+### レシピ未入手でも成立させるか
+
+**レシピを知らなくても偶然同じ配合にしたら成立する**か、**レシピを覚えていないと成立しない**か:
+
+→ **「レシピを覚えていないと成立しない」を採用**
+
+理由:
+- 偶然成立すると、プレイヤーが「なぜボーナスが入ったかわからない」状態になる
+- レシピを知っている → 意図的に作る → 成功する、の流れが体験として気持ちいい
+- 日常パートの交流に明確な意味が生まれる
+
+ただし、レシピ未入手で偶然近い配合をした場合のフォロー:
+```
+「……なんとなく、この組み合わせには可能性を感じる。
+  誰かに聞いてみたらヒントが得られるかもしれない」
+```
+→ 次の日常パートで関連キャラに話しかけるとレシピが解禁される伏線に
+
+### 大会時の検出ロジック変更
+
+現在の `_detect_special_mix()` をレシピシステムに統合する:
+
+```gdscript
+# 旧: ハードコードされた条件分岐
+func _detect_special_mix(pattern: Dictionary) -> Dictionary:
+    var grams = pattern.get("grams", {})
+    if grams.has("pineapple") and grams.has("coconut") ...
+    ...
+
+# 新: recipes.json からデータ駆動で判定
+func _detect_special_mix(selected_flavors: Array, grams: Dictionary) -> Dictionary:
+    var known = PlayerData.learned_recipes  # Array[String] of recipe IDs
+    for recipe_id in known:
+        var recipe = RecipeData.get_recipe(recipe_id)
+        if _recipe_matches(recipe, selected_flavors, grams):
+            return recipe
+    # 未入手レシピに近い場合のヒント
+    if _near_miss_recipe(selected_flavors, grams) != "":
+        _append_info("……この組み合わせ、どこかで聞いたことがあるような。")
+    return {}
+```
+
+### PlayerData への追加
+
+```gdscript
+# scripts/autoload/player_data.gd に追加
+var learned_recipes: Array[String] = []
+
+func learn_recipe(recipe_id: String) -> void:
+    if not learned_recipes.has(recipe_id):
+        learned_recipes.append(recipe_id)
+
+func has_recipe(recipe_id: String) -> bool:
+    return learned_recipes.has(recipe_id)
+```
+
+### ch2 以降での展開
+
+| 章 | 新レシピ例 | 教えてくれるキャラ |
+|---|---|---|
+| ch2 | ローズラテ（ローズ+バニラ+コーヒー） | 宵野 葉子 |
+| ch2 | ドラゴンスパイス（ドラゴンフルーツ+ジンジャー） | 神崎 竜二 |
+| ch3 | シガーマンブレンド（秘伝のレシピ） | ましろ |
+| ch3 | チャイの記憶（カルダモン+シナモン+ブラックティー） | ナンディ |
+| ch4 | 砂漠の夜風（ローズ+カルダモン+ミント） | シェイク |
+
+- 章が進むにつれてフレーバーの種類が増えるため、レシピも複雑になる
+- 各章の新キャラクターとレシピを紐付けることで、キャラの個性も深まる
+
+### プレゼンシステムとの連動
+
+特別レシピを使った場合、プレゼンに専用手札が追加される:
+
+```
+通常手札: [ブルーベリーの果実感] [パイナップルの明るさ] ...
+      +
+レシピ手札: [南の夕焼け・トロピカルサンセット]（個性が非常に高い）
+```
+
+レシピ手札はプレゼンで「個性（unique）」の軸に特に強いため、
+審査員の「なぜこの作り方を？」系の質問に出すと大きく加点される。
+
+---
+
 ## 実装優先順
 
 | 優先度 | 項目 | 理由 |
 |---|---|---|
 | 1 | アルミ穴あけ作り直し | 現状が破綻しているため最優先 |
 | 2 | 盛り方選択 | 実装が最も軽く、すぐ入れられる |
-| 3 | 調整フェーズ改修 | 数値表示の違反修正 + ゲーム性向上。既存構造の改修なので新規より楽 |
-| 4 | プレゼン改修 | 体験価値が最も高い変更だが、手札生成の設計がやや複雑 |
-| 5 | 炭焼き判定 | バックグラウンドタイマー等やや複雑だが体験価値が高い |
+| 3 | フレーバー特性システム | flavors.json への属性追加 + 後続工程への反映。データ変更が中心で比較的軽い |
+| 4 | 特別レシピ発見システム | recipes.json 新規作成 + PlayerData 拡張 + 検出ロジック。日常パートとの連携が必要 |
+| 5 | 調整フェーズ改修 | 数値表示の違反修正 + ゲーム性向上。既存構造の改修なので新規より楽 |
+| 6 | プレゼン改修 | 体験価値が最も高い変更だが、手札生成の設計がやや複雑。レシピ手札の連動もここで実装 |
+| 7 | 炭焼き判定 | バックグラウンドタイマー等やや複雑だが体験価値が高い |
 
 ---
 
@@ -778,6 +1178,7 @@ ch1 で実装・安定させた後、ch2〜ch4 に同じ構造を展開する。
 （CLAUDE.md 記載の通り、ch2〜ch4 は ch1 とほぼ同じ構造のため移植は容易）
 
 章が進むにつれての変化:
-- **ch2**: 穴あけのテンポが少し速くなる。炭の焼け進行が速い。審査員の質問がやや鋭くなる
-- **ch3**: 穴あけで同時に光る穴が2つになる場面が増える。プレゼンで矛盾を指摘されやすくなる
-- **ch4**: 全ミニゲームの難易度が最高。炭焼きのベスト段階の滞在時間が短い。プレゼンの質問が3→4ターンに増える可能性あり
+- **ch1**: フレーバー6種程度（ラインナップは検討中）。基本レシピ + 隠しレシピ2〜3種。カテゴリ相性の基本を体験させる
+- **ch2**: フローラル系・ティー系が解禁。フレーバー総数15〜20種に。穴あけのテンポが少し速くなる。炭の焼け進行が速い。審査員の質問がやや鋭くなる。新レシピ3〜4種追加
+- **ch3**: スパイス系の上位フレーバー（カルダモン、アニス等）が追加。穴あけで同時に光る穴が2つになる場面が増える。プレゼンで矛盾を指摘されやすくなる。シガーマンブレンド等の高難度レシピ追加
+- **ch4**: 全フレーバー解禁（約55種）。全ミニゲームの難易度が最高。炭焼きのベスト段階の滞在時間が短い。プレゼンの質問が3→4ターンに増える可能性あり。世界各地のレシピが登場
