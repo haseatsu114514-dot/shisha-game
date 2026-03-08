@@ -1,3 +1,5 @@
 .godot/
 .DS_Store
 **/.DS_Store
+.codex/mcp-servers/
+.codex/artifacts/

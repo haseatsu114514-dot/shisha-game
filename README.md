@@ -36,3 +36,25 @@ The check fails if:
 - Do not push directly to `main`.
 - Do not use `git push --force` on shared branches.
 - If `./tools/check_git_safety.sh` fails, stop and fix the Git layout first.
+
+## Asset Index
+
+This repo keeps a machine-readable asset index at `assets_index.json`.
+
+Regenerate it after adding, removing, or renaming runtime assets:
+
+```bash
+python3 tools/update_assets_index.py
+```
+
+The generator cross-references:
+
+- `assets/` runtime directories
+- `アセット差し替え進捗管理表.csv`
+
+It reports:
+
+- indexed runtime assets
+- assets tracked by AI or human review
+- CSV rows with missing files
+- runtime files not yet tracked in the progress sheet

@@ -35,8 +35,11 @@ const AVATAR_TEXTURES = {
 	"sumi": "res://assets/sprites/faces/face_sumi.png",
 	"naru": "res://assets/sprites/faces/face_naru.png",
 	"adam": "res://assets/sprites/faces/face_adam.png",
+	"minto": "res://assets/sprites/faces/face_minto.png",
+	"mashiro": "res://assets/sprites/faces/face_mashiro.png",
 	"tsumugi": "res://assets/sprites/faces/face_tsumugi.png",
 	"pakki": "res://assets/sprites/faces/face_packii.png",
+	"ageha": "res://assets/sprites/faces/face_ageha.png",
 	"kumicho": "res://assets/sprites/faces/face_ryuji.png"
 }
 

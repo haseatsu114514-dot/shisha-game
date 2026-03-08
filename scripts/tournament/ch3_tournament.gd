@@ -2061,7 +2061,7 @@ func _update_mind_bullets(dt: float) -> void:
 		node.position = pos - size * 0.5
 
 		# 距離を先に計算（near-glow・graze・nearest追跡に使う）
-		var dist := pos.distance_to(_mind_player_pos)
+		var dist: float = pos.distance_to(_mind_player_pos)
 		if dist < _mind_nearest_bullet_dist:
 			_mind_nearest_bullet_dist = dist
 
@@ -2701,13 +2701,9 @@ func _on_pull_gauge_tick() -> void:
 	if not _pull_is_holding:
 		return
 	var delta = _pull_timer.wait_time
-	_pull_gauge_value += _pull_gauge_direction * _pull_gauge_speed * delta
+	_pull_gauge_value += _pull_gauge_speed * delta
 	if _pull_gauge_value >= 1.0:
-		_pull_gauge_value = 1.0
-		_pull_gauge_direction = -1.0
-	elif _pull_gauge_value <= 0.0:
-		_pull_gauge_value = 0.0
-		_pull_gauge_direction = 1.0
+		_pull_gauge_value = fposmod(_pull_gauge_value, 1.0)
 	_update_pull_gauge_text()
 
 
@@ -3063,14 +3059,37 @@ func _on_adjust_timer_tick() -> void:
 	if not _adjust_is_holding:
 		return
 	var delta = _adjust_timer.wait_time
-	_adjust_gauge_value += _adjust_gauge_direction * _adjust_gauge_speed * delta
+	_adjust_gauge_value += _adjust_gauge_speed * delta
 	if _adjust_gauge_value >= 1.0:
-		_adjust_gauge_value = 1.0
-		_adjust_gauge_direction = -1.0
-	elif _adjust_gauge_value <= 0.0:
-		_adjust_gauge_value = 0.0
-		_adjust_gauge_direction = 1.0
+		_adjust_gauge_value = fposmod(_adjust_gauge_value, 1.0)
 	_update_adjust_text("調整中...離すと判定")
+
+
+func _build_gauge_bar(value: float, target_center: float, target_width: float) -> String:
+	var bar_len: int = 24
+	var pointer_index: int = int(round(value * float(bar_len - 1)))
+	var target_start: int = int(round(clampf(target_center - target_width, 0.0, 1.0) * float(bar_len - 1)))
+	var target_end: int = int(round(clampf(target_center + target_width, 0.0, 1.0) * float(bar_len - 1)))
+	var bar := ""
+	for i in range(bar_len):
+		var c := "─"
+		if i >= target_start and i <= target_end:
+			c = "■"
+		if i == pointer_index:
+			c = "◆"
+		bar += c
+	return bar
+
+
+func _evaluate_gauge_quality(value: float, target_center: float, target_width: float) -> String:
+	var distance = abs(value - target_center)
+	if distance <= target_width * 0.35:
+		return "perfect"
+	if distance <= target_width:
+		return "good"
+	if distance <= target_width * 1.7:
+		return "near"
+	return "miss"
 
 
 func _update_adjust_text(status_text: String) -> void:
@@ -3839,7 +3858,7 @@ class _MindSoulNode extends Control:
 			return
 		if graze_near_t > 0.01 or graze_flash_t > 0.01:
 			var ring_alpha := maxf(graze_near_t * 0.55, graze_flash_t * 0.9)
-			var ring_r := soul_size * (2.2 + graze_flash_t * 1.5)
+			var ring_r: float = soul_size * (2.2 + graze_flash_t * 1.5)
 			draw_arc(center, ring_r, 0.0, TAU, 28, Color("00e5ff", ring_alpha), 2.0)
 			if graze_flash_t > 0.0:
 				draw_arc(center, ring_r * 1.45, 0.0, TAU, 16, Color("00e5ff", graze_flash_t * 0.35), 1.5)
@@ -3922,7 +3941,7 @@ class _GrazeRingEffect extends Control:
 		var prog := _t / _life
 		var alpha := (1.0 - prog) * 0.85
 		var max_r := 38.0 + float(combo) * 2.0
-		var radius := lerp(6.0, max_r, prog)
+		var radius: float = lerpf(6.0, max_r, prog)
 		var col := Color("00e5ff", alpha)
 		if combo >= 10:
 			col = Color("feae34", alpha)

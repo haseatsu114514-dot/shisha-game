@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://d0mdi3dhpfuhh"
-path="res://.godot/imported/chr_naru_sad.png-8924f9c4b695cd4e9bd66bf4af6fc512.ctex"
+path="res://.godot/imported/chr_naru_sad.png-fa5fc4e760600c5d1412c2ac9c6556a5.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/sprites/characters/naru/chr_naru_sad.png"
-dest_files=["res://.godot/imported/chr_naru_sad.png-8924f9c4b695cd4e9bd66bf4af6fc512.ctex"]
+dest_files=["res://.godot/imported/chr_naru_sad.png-fa5fc4e760600c5d1412c2ac9c6556a5.ctex"]
 
 [params]
 

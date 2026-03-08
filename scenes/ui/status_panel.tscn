@@ -26,6 +26,13 @@ theme_override_font_sizes/font_size = 18
 text = "温度"
 horizontal_alignment = 1
 
+[node name="TopHintLabel" type="Label" parent="Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "高温\n下げる"
+horizontal_alignment = 1
+
 [node name="TempGauge" type="ProgressBar" parent="Margin/VBox"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -41,6 +48,13 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 text = "適温"
+horizontal_alignment = 1
+
+[node name="BottomHintLabel" type="Label" parent="Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "低温\n上げる"
 horizontal_alignment = 1
 
 [node name="CharcoalLabel" type="Label" parent="Margin/VBox"]

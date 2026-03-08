@@ -35,6 +35,15 @@ var _current_char = 0
 var _current_speaker = ""
 var _auto_enabled = false
 var _dialogue_ending := false
+var _advance_hold_timer: Timer
+var _advance_repeat_timer: Timer
+var _advance_hold_active := false
+var _ignore_advance_press_once := false
+
+const DIALOGUE_WRAP_CHARS := 20
+const DIALOGUE_MAX_LINES := 2
+const ADVANCE_HOLD_DELAY := 0.28
+const ADVANCE_REPEAT_INTERVAL := 0.05
 
 const SPEAKER_NAMES := {
 	"hajime": "はじめ",
@@ -42,6 +51,7 @@ const SPEAKER_NAMES := {
 	"naru": "なる",
 	"adam": "アダム",
 	"minto": "眠都(みんと)",
+	"mashiro": "ましろ",
 	"tsumugi": "つむぎ",
 	"tumugi": "つむぎ",
 	"hazime": "はじめ",
@@ -66,7 +76,7 @@ const HIGHLIGHT_TAGS := [
 	"[sub]", "[/sub]"
 ]
 const HIGHLIGHT_OPEN_REPLACEMENTS := {
-	"[imp]": "[color=#ffd878]",
+	"[imp]": "[b][color=#ffd878]",
 	"[red]": "[color=#ff5252]",
 	"[blue]": "[color=#52a2ff]",
 	"[sub]": "[font_size=18][color=#999999]",
@@ -74,7 +84,7 @@ const HIGHLIGHT_OPEN_REPLACEMENTS := {
 	"[hint]": "[color=#8bdcff]",
 }
 const HIGHLIGHT_CLOSE_REPLACEMENTS := {
-	"[/imp]": "[/color]",
+	"[/imp]": "[/color][/b]",
 	"[/red]": "[/color]",
 	"[/blue]": "[/color]",
 	"[/sub]": "[/color][/font_size]",
@@ -101,6 +111,8 @@ func _ready() -> void:
 	
 	if advance_button:
 		advance_button.pressed.connect(_on_advance_button_pressed)
+		advance_button.button_down.connect(_on_advance_button_down)
+		advance_button.button_up.connect(_on_advance_button_up)
 	if auto_button:
 		auto_button.pressed.connect(_on_auto_button_pressed)
 	if typing_timer:
@@ -112,6 +124,18 @@ func _ready() -> void:
 	if close_history_button:
 		close_history_button.pressed.connect(_on_close_history_pressed)
 	_set_auto_enabled(false)
+
+	_advance_hold_timer = Timer.new()
+	_advance_hold_timer.one_shot = true
+	_advance_hold_timer.wait_time = ADVANCE_HOLD_DELAY
+	_advance_hold_timer.timeout.connect(_on_advance_hold_timeout)
+	add_child(_advance_hold_timer)
+
+	_advance_repeat_timer = Timer.new()
+	_advance_repeat_timer.one_shot = false
+	_advance_repeat_timer.wait_time = ADVANCE_REPEAT_INTERVAL
+	_advance_repeat_timer.timeout.connect(_on_advance_repeat_timeout)
+	add_child(_advance_repeat_timer)
 	
 	if cg_rect:
 		cg_rect.visible = false
@@ -213,8 +237,62 @@ func _find_dialogue(root: Dictionary, target_id: String) -> Dictionary:
 	return {}
 
 
+func _on_advance_button_down() -> void:
+	_ignore_advance_press_once = false
+	if _advance_hold_timer != null:
+		_advance_hold_timer.start()
+
+
+func _on_advance_button_up() -> void:
+	if _advance_hold_timer != null and not _advance_hold_timer.is_stopped():
+		_advance_hold_timer.stop()
+	if _advance_hold_active:
+		_ignore_advance_press_once = true
+	_stop_fast_advance()
+
+
+func _on_advance_hold_timeout() -> void:
+	if advance_button == null or advance_button.disabled:
+		return
+	_advance_hold_active = true
+	_fast_advance_step()
+	if _advance_repeat_timer != null and _advance_repeat_timer.is_stopped():
+		_advance_repeat_timer.start()
+
+
+func _on_advance_repeat_timeout() -> void:
+	if not _advance_hold_active:
+		return
+	_fast_advance_step()
+
+
+func _fast_advance_step() -> void:
+	if _dialogue_ending or choice_container.get_child_count() > 0:
+		_stop_fast_advance()
+		return
+	if _is_typing:
+		_show_full_text_immediately()
+		return
+	_cancel_auto_advance()
+	if _line_queue.is_empty():
+		_stop_fast_advance()
+		return
+	_show_next_line()
+
+
+func _stop_fast_advance() -> void:
+	_advance_hold_active = false
+	if _advance_hold_timer != null and not _advance_hold_timer.is_stopped():
+		_advance_hold_timer.stop()
+	if _advance_repeat_timer != null and not _advance_repeat_timer.is_stopped():
+		_advance_repeat_timer.stop()
+
+
 func _on_advance_button_pressed() -> void:
 	if _dialogue_ending:
+		return
+	if _ignore_advance_press_once:
+		_ignore_advance_press_once = false
 		return
 	GameManager.play_ui_se("cursor")
 	if _is_typing:
@@ -310,11 +388,22 @@ func _show_next_line() -> void:
 	_update_portrait(line)
 	
 	var raw_text = str(line.get("text", ""))
+	var processed_text = _process_text(raw_text)
+	var pages = _paginate_dialogue_text(processed_text)
+	var display_text = pages[0] if not pages.is_empty() else ""
+	if pages.size() > 1:
+		var continuation_base = line.duplicate(true)
+		continuation_base["skip_history"] = true
+		for i in range(pages.size() - 1, 0, -1):
+			var continuation_line = continuation_base.duplicate(true)
+			continuation_line["text"] = pages[i]
+			_line_queue.push_front(continuation_line)
 	
-	if raw_text != "":
-		_history.append({"speaker": _current_speaker, "text": _process_text(raw_text)})
+	if raw_text != "" and not bool(line.get("skip_history", false)):
+		var history_text = display_text if pages.size() <= 1 else "\n".join(pages)
+		_history.append({"speaker": _current_speaker, "text": _strip_highlight_tags(history_text)})
 	
-	_start_typing(_process_text(raw_text))
+	_start_typing(display_text)
 
 
 func _process_text(text: String) -> String:
@@ -331,7 +420,67 @@ func _process_text(text: String) -> String:
 			attendees_str = "今まで戦ってきた日々を思い出しながら"
 			
 		text = text.replace("{attendees}", attendees_str)
-	return GameManager.format_story_text(text, 24)
+	return text
+
+
+func _paginate_dialogue_text(text: String) -> Array[String]:
+	if text == "":
+		return [""]
+	var wrapped_text = _wrap_dialogue_text(text)
+	var lines = wrapped_text.split("\n", true)
+	if lines.size() <= DIALOGUE_MAX_LINES:
+		return [wrapped_text]
+	var pages: Array[String] = []
+	var current_lines: Array[String] = []
+	for line in lines:
+		current_lines.append(line)
+		if current_lines.size() == DIALOGUE_MAX_LINES:
+			pages.append("\n".join(current_lines))
+			current_lines.clear()
+	if not current_lines.is_empty():
+		pages.append("\n".join(current_lines))
+	return pages
+
+
+func _wrap_dialogue_text(text: String) -> String:
+	var plain_text = _strip_highlight_tags(text)
+	var wrapped_plain_text = GameManager.format_story_text(plain_text, DIALOGUE_WRAP_CHARS)
+	if wrapped_plain_text == plain_text:
+		return text
+	return _apply_wrap_to_tagged_text(text, wrapped_plain_text)
+
+
+func _apply_wrap_to_tagged_text(source_text: String, wrapped_plain_text: String) -> String:
+	var line_lengths: Array[int] = []
+	for line in wrapped_plain_text.split("\n", true):
+		line_lengths.append(line.length())
+	if line_lengths.size() <= 1:
+		return source_text
+
+	var output = ""
+	var source_index = 0
+	var visible_count = 0
+	var line_index = 0
+	while source_index < source_text.length():
+		while line_index < line_lengths.size() - 1 and visible_count >= line_lengths[line_index]:
+			output += "\n"
+			line_index += 1
+			visible_count = 0
+		if source_text.substr(source_index, 1) == "[":
+			var close_index = source_text.find("]", source_index)
+			if close_index != -1:
+				output += source_text.substr(source_index, close_index - source_index + 1)
+				source_index = close_index + 1
+				continue
+		var current_char = source_text.substr(source_index, 1)
+		output += current_char
+		source_index += 1
+		if current_char == "\n":
+			line_index += 1
+			visible_count = 0
+		else:
+			visible_count += 1
+	return output
 
 func _start_typing(text: String) -> void:
 	_full_text = _strip_highlight_tags(text)
@@ -376,6 +525,7 @@ func _show_full_text_immediately() -> void:
 
 
 func _show_choices(choices: Array) -> void:
+	_stop_fast_advance()
 	_clear_choices()
 	_cancel_auto_advance()
 	advance_button.disabled = true
@@ -468,6 +618,7 @@ func _set_auto_enabled(enabled: bool) -> void:
 
 func _on_log_button_pressed() -> void:
 	GameManager.play_ui_se("select")
+	_stop_fast_advance()
 	_cancel_auto_advance()
 	for child in history_vbox.get_children():
 		child.queue_free()
@@ -622,6 +773,7 @@ func _finish_dialogue() -> void:
 		return
 	_dialogue_ending = true
 	advance_button.disabled = true
+	_stop_fast_advance()
 	_cancel_auto_advance()
 	emit_signal("dialogue_finished", dialogue_id)
 
