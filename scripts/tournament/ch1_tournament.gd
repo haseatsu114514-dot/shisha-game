@@ -1,6 +1,6 @@
 extends Control
 
-const TOTAL_STEPS := 15
+const TOTAL_STEPS := 16
 const TOURNAMENT_SCENE_PATH := "res://scenes/tournament/ch1_tournament.tscn"
 const MORNING_PHONE_SCENE_PATH := "res://scenes/daily/morning_phone.tscn"
 const TITLE_SCENE_PATH := "res://scenes/title/title_screen.tscn"
@@ -164,44 +164,48 @@ const MC_COMMENTS := {
 		"南雲「パッキングの密度、配置…全てが結果に出る」",
 	],
 	4: [
+		"MCパッキー「詰め方を選ぶ！ ふわふわか、しっかりか…個性が出ますね」",
+		"南雲「パッキングスタイルで煙の立ち方が変わる」",
+	],
+	5: [
 		"MCパッキー「アルミ穴あけ！ 等間隔で穴を開けられるかが勝負の分かれ目！」",
 		"南雲「穴の開け方一つで吸い心地が変わる。丁寧に、だがリズムよく」",
 	],
-	5: [
+	6: [
 		"MCパッキー「炭の準備！ フリップのタイミングが鍵です」",
 	],
-	6: [
+	7: [
 		"MCパッキー「炭配置！ 何個置くかも戦略のうち」",
 		"南雲「火力のコントロール…これがシーシャの脇だ」",
 	],
-	7: [
+	8: [
 		"MCパッキー「蒸らしの時間です… ここは我慢比べ！」",
 		"南雲「蒸らしの分数で勝負は大きく変わる」",
 	],
-	8: [
+	9: [
 		"MCパッキー「吸い出し前の精神戦…！ 選手たちの心の中はどうなってるかな」",
 	],
-	9: [
+	10: [
 		"MCパッキー「吸い出し！ ここで煙の質が決まります！」",
 		"南雲「一口目の吸い出しがすべてを物語る」",
 	],
-	10: [
+	11: [
 		"MCパッキー「提供の時間！ 審査員が吸います！」",
 	],
-	11: [
-		"MCパッキー「調整タイム！ 吸いながら微調整できるか」",
-	],
 	12: [
+		"MCパッキー「調整タイム！ 灰を落とすか、炭を回すか、フタを調整するか」",
+	],
+	13: [
 		"MCパッキー「プレゼンテーション！ 自分のシーシャをどうアピールするか」",
 		"南雲「味だけではない。見せ方にも志が要る」",
 	],
-	13: [
+	14: [
 		"MCパッキー「反論タイム！ 審査員の疑問にどう答えるか！」",
 	],
-	14: [
+	15: [
 		"MCパッキー「中間結果発表…！ ここまでの順位は？」",
 	],
-	15: [
+	16: [
 		"MCパッキー「さあ、運命の最終発表です！」",
 		"南雲「どの選手もよく戦った。だが順位はつく」",
 	],
@@ -360,6 +364,22 @@ var _mid_player_total: float = 0.0
 var _mid_rival_totals: Dictionary = {}
 var _presentation_primary_focus: String = ""
 var _presentation_secondary_focus: String = ""
+var _packing_style: String = "normal"  # "fluffy" / "normal" / "firm"
+
+## フレーバー特性キャッシュ（flavors.json から読み込み）
+var _flavor_traits: Dictionary = {}
+## レシピDB（recipes.json から読み込み）
+var _recipe_db: Array = []
+## NGミックスDB（ng_mixes.json から読み込み）
+var _ng_mix_db: Array = []
+
+## アルミ穴あけ新方式用
+var _aluminum_grid_holes: Array[Dictionary] = []
+var _aluminum_current_hole: int = 0
+var _aluminum_glow_timer: Timer
+var _aluminum_glow_active: bool = false
+var _aluminum_glow_elapsed: float = 0.0
+var _aluminum_glow_window: float = 1.2  # タップ受付時間（秒）
 
 var _mini_dialogue_queue: Array[Dictionary] = []
 var _mini_dialogue_on_finish: Callable
@@ -411,6 +431,11 @@ func _ready() -> void:
 	_aluminum_timer.one_shot = false
 	_aluminum_timer.timeout.connect(_on_aluminum_tick)
 	add_child(_aluminum_timer)
+	_aluminum_glow_timer = Timer.new()
+	_aluminum_glow_timer.wait_time = 0.016
+	_aluminum_glow_timer.one_shot = false
+	_aluminum_glow_timer.timeout.connect(_on_aluminum_glow_tick)
+	add_child(_aluminum_glow_timer)
 	_mind_timer = Timer.new()
 	_mind_timer.wait_time = 0.016
 	_mind_timer.one_shot = false
@@ -440,6 +465,7 @@ func _prepare_run() -> void:
 	_packing_choice.clear()
 	_manual_packing_grams.clear()
 	_special_mix_name = ""
+	_packing_style = "normal"
 	_selected_charcoal_count = 3
 	_steam_minutes = 6
 	_heat_state = 0
@@ -492,7 +518,14 @@ func _prepare_run() -> void:
 	_mid_rival_totals.clear()
 	_presentation_primary_focus = ""
 	_presentation_secondary_focus = ""
+	_aluminum_grid_holes.clear()
+	_aluminum_current_hole = 0
+	_aluminum_glow_active = false
+	_aluminum_glow_elapsed = 0.0
 	_easy_mode = bool(EventFlags.get_value("ch1_tournament_easy_mode", false))
+	_load_flavor_traits()
+	_load_recipe_db()
+	_load_ng_mix_db()
 	_prepare_rival_score_tables()
 
 	_technical_points = PlayerData.stat_technique * 0.9 + PlayerData.stat_sense * 0.7 + PlayerData.stat_guts * 0.5
@@ -504,6 +537,71 @@ func _prepare_run() -> void:
 	PlayerData.mark_all_tournament_memos_read()
 	_show_setting_step()
 	_refresh_side_panel()
+
+
+func _load_flavor_traits() -> void:
+	_flavor_traits.clear()
+	var file = FileAccess.open("res://data/flavors.json", FileAccess.READ)
+	if file == null:
+		return
+	var json = JSON.new()
+	if json.parse(file.get_as_text()) != OK:
+		return
+	var data = json.data
+	if data is Dictionary and data.has("flavors"):
+		for entry in data["flavors"]:
+			var fid = str(entry.get("id", ""))
+			if fid != "":
+				_flavor_traits[fid] = {
+					"heat_tolerance": float(entry.get("heat_tolerance", 1.0)),
+					"smoke_weight": float(entry.get("smoke_weight", 1.0)),
+					"steam_bias": float(entry.get("steam_bias", 0.0)),
+				}
+
+
+func _load_recipe_db() -> void:
+	_recipe_db.clear()
+	var file = FileAccess.open("res://data/recipes.json", FileAccess.READ)
+	if file == null:
+		return
+	var json = JSON.new()
+	if json.parse(file.get_as_text()) != OK:
+		return
+	var data = json.data
+	if data is Dictionary and data.has("recipes"):
+		for entry in data["recipes"]:
+			_recipe_db.append(entry)
+
+
+func _load_ng_mix_db() -> void:
+	_ng_mix_db.clear()
+	var file = FileAccess.open("res://data/ng_mixes.json", FileAccess.READ)
+	if file == null:
+		return
+	var json = JSON.new()
+	if json.parse(file.get_as_text()) != OK:
+		return
+	var data = json.data
+	if data is Dictionary and data.has("ng_mixes"):
+		for entry in data["ng_mixes"]:
+			_ng_mix_db.append(entry)
+
+
+## 選択フレーバーの加重平均特性を算出
+func _get_mix_trait(trait_name: String) -> float:
+	var total_grams := 0
+	var weighted_sum := 0.0
+	var grams: Dictionary = _packing_choice.get("grams", _manual_packing_grams)
+	for flavor_id in _selected_flavors:
+		var g = int(grams.get(flavor_id, 0))
+		if g <= 0:
+			continue
+		var traits = _flavor_traits.get(flavor_id, {})
+		weighted_sum += float(traits.get(trait_name, 1.0 if trait_name != "steam_bias" else 0.0)) * float(g)
+		total_grams += g
+	if total_grams <= 0:
+		return 1.0 if trait_name != "steam_bias" else 0.0
+	return weighted_sum / float(total_grams)
 
 
 func _set_phase(step_num: int, title: String, body: String) -> void:
@@ -532,7 +630,9 @@ func _clear_choices() -> void:
 	_pull_is_holding = false
 	_pull_hold_button = null
 	_aluminum_active = false
+	_aluminum_glow_active = false
 	_aluminum_timer.stop()
+	_aluminum_glow_timer.stop()
 	_packing_sliders.clear()
 	_packing_value_labels.clear()
 	_packing_remaining_label = null
@@ -1051,90 +1151,214 @@ func _on_packing_selected(pattern: Dictionary) -> void:
 	_heat_state = clampi(_heat_state, -3, 3)
 
 	lines.append("専門 %+d / 一般 %+d" % [int(round(delta_spec)), int(round(delta_aud))])
-	_show_step_result_and_next("\n".join(lines), _show_aluminum_step)
+	_show_step_result_and_next("\n".join(lines), _show_packing_style_step)
+
+
+## ─── パッキングスタイル選択（STEP 4 新設） ───
+
+func _show_packing_style_step() -> void:
+	_set_phase(4, "パッキングスタイル", "葉の詰め方を選ぶ。仕上がりに影響する。")
+	_clear_choices()
+
+	var lines: Array[String] = []
+	lines.append("パッキングの密度で火力と吸い心地が変わる。")
+	lines.append("")
+
+	var steam_bias = _get_mix_trait("steam_bias")
+	if steam_bias < -0.3:
+		lines.append("ヒント: このフレーバーは立ち上がりが軽い。ふわふわ寄りが合うかも。")
+	elif steam_bias > 0.3:
+		lines.append("ヒント: このフレーバーは重心が低い。しっかり詰めると煙に厚みが出る。")
+	else:
+		lines.append("ヒント: どのスタイルでも安定する組み合わせ。")
+
+	info_label.text = "\n".join(lines)
+
+	_add_choice_button("ふわふわ（軽い立ち上がり・吸いやすい）", _on_packing_style_selected.bind("fluffy"))
+	_add_choice_button("ふつう（バランス重視）", _on_packing_style_selected.bind("normal"))
+	_add_choice_button("しっかり（重厚な煙・火力が要る）", _on_packing_style_selected.bind("firm"))
+	_refresh_side_panel()
+
+
+func _on_packing_style_selected(style: String) -> void:
+	_packing_style = style
+	var delta_spec := 0.0
+	var msg := ""
+
+	match style:
+		"fluffy":
+			_heat_state -= 1
+			delta_spec += 3.0 + PlayerData.stat_sense * 0.03
+			msg = "ふわっと詰めた。吸い出しが軽くなりそう。"
+		"normal":
+			delta_spec += 5.0 + PlayerData.stat_technique * 0.03
+			msg = "標準的な密度で詰めた。安定した仕上がり。"
+		"firm":
+			_heat_state += 1
+			delta_spec += 4.0 + PlayerData.stat_guts * 0.03
+			msg = "しっかり詰めた。煙に厚みが出る。火力管理が鍵。"
+
+	_heat_state = clampi(_heat_state, -3, 3)
+	_technical_points += delta_spec
+	GameManager.play_ui_se("confirm")
+	_show_step_result_and_next(msg, _show_aluminum_step)
 
 
 func _detect_special_mix(pattern: Dictionary) -> Dictionary:
 	var grams: Dictionary = pattern.get("grams", {})
-	if grams.has("pineapple") and grams.has("coconut") and grams.has("vanilla"):
-		var values = [int(grams.get("pineapple", 0)), int(grams.get("coconut", 0)), int(grams.get("vanilla", 0))]
-		values.sort()
-		if values == [3, 4, 5]:
+
+	# レシピDBからデータ駆動でマッチング
+	for recipe in _recipe_db:
+		var comp: Dictionary = recipe.get("composition", {})
+		var tolerance: int = int(recipe.get("tolerance", 1))
+		var matched := true
+
+		# レシピに含まれるフレーバーが全てgramに存在し、許容範囲内か
+		for flavor_id in comp:
+			var required = int(comp[flavor_id])
+			var actual = int(grams.get(flavor_id, 0))
+			if abs(actual - required) > tolerance:
+				matched = false
+				break
+
+		# grams にあるがレシピにないフレーバー（許容: 0gのみ）
+		if matched:
+			for flavor_id in grams:
+				if not comp.has(flavor_id) and int(grams[flavor_id]) > 0:
+					matched = false
+					break
+
+		if matched:
 			return {
-				"name": "ピニャコラーダ",
-				"spec": 8.0,
-				"aud": 8.0,
-				"text": "特別ミックス『ピニャコラーダ』成立。",
+				"name": str(recipe.get("name", "")),
+				"spec": float(recipe.get("bonus_spec", 0.0)),
+				"aud": float(recipe.get("bonus_aud", 0.0)),
+				"text": str(recipe.get("text", "特別レシピ成立。")),
 			}
 
-	if grams.size() == 1 and grams.has("mint"):
-		return {
-			"name": "地獄のメンソール",
-			"spec": 2.0,
-			"aud": 10.0,
-			"text": "特別ミックス『地獄のメンソール』。観客が沸く。",
-		}
+	# NGミックス判定
+	var ng_result = _detect_ng_mix(grams)
+	if not ng_result.is_empty():
+		return ng_result
+
+	return {}
+
+
+func _detect_ng_mix(grams: Dictionary) -> Dictionary:
+	for ng in _ng_mix_db:
+		var ng_flavors: Array = ng.get("flavors", [])
+		var condition: String = str(ng.get("condition", ""))
+
+		# 対象フレーバーが全て使われているか確認
+		var all_present := true
+		for fid in ng_flavors:
+			if int(grams.get(fid, 0)) <= 0:
+				all_present = false
+				break
+		if not all_present:
+			continue
+
+		var triggered := false
+		match condition:
+			"both_over_5g":
+				triggered = true
+				for fid in ng_flavors:
+					if int(grams.get(fid, 0)) < 5:
+						triggered = false
+						break
+			"both_over_4g":
+				triggered = true
+				for fid in ng_flavors:
+					if int(grams.get(fid, 0)) < 4:
+						triggered = false
+						break
+			"ratio_close":
+				if ng_flavors.size() >= 2:
+					var a = int(grams.get(ng_flavors[0], 0))
+					var b = int(grams.get(ng_flavors[1], 0))
+					triggered = abs(a - b) <= 1 and a >= 4
+			"combined_over_10g":
+				var total = 0
+				for fid in ng_flavors:
+					total += int(grams.get(fid, 0))
+				triggered = total >= 10
+			_:
+				triggered = true
+
+		if triggered:
+			return {
+				"name": "",
+				"spec": float(ng.get("penalty", -3.0)),
+				"aud": float(ng.get("penalty", -3.0)) * 0.5,
+				"text": str(ng.get("text", "この組み合わせは相性が悪い。")),
+			}
 
 	return {}
 
 
 func _show_aluminum_step() -> void:
-	_set_phase(4, "アルミ穴あけ", "リズムに合わせて穴を開ける。タイミングが大事！")
+	_set_phase(5, "アルミ穴あけ", "光る位置をタイミングよくタップして穴を開けろ！")
 	_clear_choices()
 	_aluminum_active = true
-	_aluminum_notes.clear()
-	_aluminum_notes_spawned = 0
-	_aluminum_spawn_cooldown = 0
-	_aluminum_hit_slot = 0
 	_aluminum_hit_perfect = 0
 	_aluminum_hit_good = 0
 	_aluminum_hit_near = 0
 	_aluminum_hit_miss = 0
 	_aluminum_bad_press = 0
-	_aluminum_required_hits = 6
-	_aluminum_total_notes = 8
 
-	var beat_wait = 0.16
+	# 穴の数を決定（24〜30）
+	var hole_count := 24
+	if _selected_hms == "amaburst":
+		hole_count = 28
+	elif _selected_hms == "tanukish_lid":
+		hole_count = 26
+	if _packing_style == "firm":
+		hole_count += 2
+
+	# グロウウィンドウ（タップ受付時間）
+	_aluminum_glow_window = 1.2
 	match _selected_hms:
-		"tanukish_lid":
-			beat_wait += 0.02
 		"amaburst":
-			beat_wait -= 0.02
-		"winkwink_hagal":
-			beat_wait += 0.01
-	match _selected_bowl:
-		"silicone_bowl":
-			beat_wait += 0.01
-		"suyaki":
-			beat_wait -= 0.01
+			_aluminum_glow_window = 0.9
+		"tanukish_lid":
+			_aluminum_glow_window = 1.4
 	if _easy_mode:
-		beat_wait += 0.03
-	_aluminum_spawn_interval_ticks = 2
-	if _selected_hms == "tanukish_lid":
-		_aluminum_spawn_interval_ticks += 1
-	elif _selected_hms == "amaburst":
-		_aluminum_spawn_interval_ticks -= 1
-	if _selected_bowl == "suyaki":
-		_aluminum_spawn_interval_ticks -= 1
-	if _easy_mode:
-		_aluminum_spawn_interval_ticks += 1
-	_aluminum_spawn_interval_ticks = clampi(_aluminum_spawn_interval_ticks, 1, 4)
-	_aluminum_timer.wait_time = clampf(beat_wait, 0.09, 0.28)
-	_aluminum_timer.start()
-	_spawn_aluminum_note()
+		_aluminum_glow_window += 0.3
 
-	# ビジュアルリング表示
-	var ring_visual = _AluminumRingVisual.new()
-	ring_visual.name = "AluminumRing"
-	ring_visual.custom_minimum_size = Vector2(280, 260)
-	ring_visual.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	ring_visual.slot_count = _aluminum_slot_count
-	ring_visual.hit_slot = _aluminum_hit_slot
-	choice_container.add_child(ring_visual)
+	# グリッド上にランダム順で穴の位置を生成
+	_aluminum_grid_holes.clear()
+	var cols := 6
+	var rows := ceili(hole_count / cols)
+	for i in range(hole_count):
+		var row = i / cols
+		var col = i % cols
+		_aluminum_grid_holes.append({
+			"row": row, "col": col,
+			"result": "",  # "", "perfect", "good", "near", "miss"
+		})
+	# 順番をシャッフル（光る順序をランダムに）
+	_aluminum_grid_holes.shuffle()
 
-	# 穴あけボタン（大きく目立つ）
+	_aluminum_current_hole = 0
+	_aluminum_total_notes = hole_count
+	_aluminum_required_hits = int(hole_count * 0.75)
+	_aluminum_glow_active = false
+	_aluminum_glow_elapsed = 0.0
+
+	# ビジュアルグリッド表示
+	var grid_visual = _AluminumGridVisual.new()
+	grid_visual.name = "AluminumGrid"
+	grid_visual.custom_minimum_size = Vector2(300, 240)
+	grid_visual.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	grid_visual.holes = _aluminum_grid_holes
+	grid_visual.current_hole = _aluminum_current_hole
+	grid_visual.cols = cols
+	grid_visual.total_rows = rows
+	choice_container.add_child(grid_visual)
+
+	# 穴あけボタン
 	var press_button = Button.new()
-	press_button.text = "🔨 穴を開ける！"
+	press_button.text = "穴を開ける！"
 	press_button.custom_minimum_size = Vector2(0, 60)
 	press_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	press_button.add_theme_font_size_override("font_size", 28)
@@ -1162,90 +1386,82 @@ func _show_aluminum_step() -> void:
 	press_button.add_theme_color_override("font_color", Color("ffffff"))
 	press_button.pressed.connect(_on_aluminum_press_hole)
 	choice_container.add_child(press_button)
+
 	_refresh_side_panel()
+	# 最初の穴を光らせる
+	_start_next_aluminum_glow()
 	_update_aluminum_rhythm_text()
+
+
+func _start_next_aluminum_glow() -> void:
+	if _aluminum_current_hole >= _aluminum_grid_holes.size():
+		_finish_aluminum_rhythm()
+		return
+	_aluminum_glow_active = true
+	_aluminum_glow_elapsed = 0.0
+	_aluminum_glow_timer.start()
+	_update_aluminum_grid_visual()
+
+
+func _on_aluminum_glow_tick() -> void:
+	if not _aluminum_glow_active:
+		_aluminum_glow_timer.stop()
+		return
+	_aluminum_glow_elapsed += _aluminum_glow_timer.wait_time
+	if _aluminum_glow_elapsed >= _aluminum_glow_window:
+		# 時間切れ → MISS
+		_aluminum_glow_active = false
+		_aluminum_glow_timer.stop()
+		_aluminum_hit_miss += 1
+		_aluminum_grid_holes[_aluminum_current_hole]["result"] = "miss"
+		_aluminum_show_hit_feedback("MISS", Color("e43b44"))
+		_aluminum_current_hole += 1
+		_update_aluminum_rhythm_text()
+		# 少し間を置いてから次
+		get_tree().create_timer(0.3).timeout.connect(_start_next_aluminum_glow)
+	else:
+		_update_aluminum_grid_visual()
 
 
 func _on_aluminum_tick() -> void:
-	if not _aluminum_active:
-		return
-	for i in range(_aluminum_notes.size() - 1, -1, -1):
-		var note = _aluminum_notes[i]
-		note["distance"] = float(note.get("distance", 0.0)) - 1.0
-		if float(note.get("distance", 0.0)) < -1.8:
-			_aluminum_hit_miss += 1
-			_aluminum_notes.remove_at(i)
-		else:
-			_aluminum_notes[i] = note
-
-	if _aluminum_notes_spawned < _aluminum_total_notes:
-		if _aluminum_spawn_cooldown <= 0:
-			_spawn_aluminum_note()
-		else:
-			_aluminum_spawn_cooldown -= 1
-
-	if _aluminum_notes_spawned >= _aluminum_total_notes and _aluminum_notes.is_empty():
-		_finish_aluminum_rhythm()
-		return
-	_update_aluminum_rhythm_text()
-
-
-func _spawn_aluminum_note() -> void:
-	if _aluminum_notes_spawned >= _aluminum_total_notes:
-		return
-	_aluminum_notes.append({"distance": _get_aluminum_start_distance()})
-	_aluminum_notes_spawned += 1
-	_aluminum_spawn_cooldown = _aluminum_spawn_interval_ticks
-
-
-func _get_aluminum_start_distance() -> float:
-	var distance = float(_aluminum_slot_count - 2)
-	if _selected_hms == "amaburst":
-		distance -= 1.0
-	elif _selected_hms == "tanukish_lid":
-		distance += 1.0
-	if _easy_mode:
-		distance += 1.0
-	return clampf(distance, 6.0, float(_aluminum_slot_count + 2))
+	# 旧リズム方式の互換用（新方式では_on_aluminum_glow_tickを使う）
+	pass
 
 
 func _on_aluminum_press_hole() -> void:
-	if not _aluminum_active:
-		return
-	var nearest_index = -1
-	var nearest_distance = 999.0
-	for i in range(_aluminum_notes.size()):
-		var note = _aluminum_notes[i]
-		var distance = abs(float(note.get("distance", 999.0)))
-		if distance < nearest_distance:
-			nearest_distance = distance
-			nearest_index = i
-
-	if nearest_index == -1 or nearest_distance > 1.55:
-		_aluminum_bad_press += 1
-		GameManager.play_ui_se("cancel")
-		_aluminum_show_hit_feedback("MISS", Color("e43b44"))
-		_update_aluminum_rhythm_text()
+	if not _aluminum_active or not _aluminum_glow_active:
+		if _aluminum_active:
+			_aluminum_bad_press += 1
+			GameManager.play_ui_se("cancel")
+			_aluminum_show_hit_feedback("MISS", Color("e43b44"))
 		return
 
-	if nearest_distance <= 0.35:
+	_aluminum_glow_active = false
+	_aluminum_glow_timer.stop()
+	var elapsed = _aluminum_glow_elapsed
+	var ratio = elapsed / _aluminum_glow_window
+
+	# タイミング判定: 光ってすぐ（0.1〜0.35） = PERFECT, 中間 = GOOD, 遅い = NEAR
+	if ratio <= 0.35:
 		_aluminum_hit_perfect += 1
 		GameManager.play_ui_se("confirm")
 		_aluminum_show_hit_feedback("PERFECT!", Color("feae34"))
-	elif nearest_distance <= 0.9:
+		_aluminum_grid_holes[_aluminum_current_hole]["result"] = "perfect"
+	elif ratio <= 0.65:
 		_aluminum_hit_good += 1
 		GameManager.play_ui_se("confirm")
 		_aluminum_show_hit_feedback("GOOD", Color("3e8948"))
+		_aluminum_grid_holes[_aluminum_current_hole]["result"] = "good"
 	else:
 		_aluminum_hit_near += 1
 		GameManager.play_ui_se("cursor")
 		_aluminum_show_hit_feedback("NEAR", Color("8b9bb4"))
+		_aluminum_grid_holes[_aluminum_current_hole]["result"] = "near"
 
-	_aluminum_notes.remove_at(nearest_index)
-	if _aluminum_notes_spawned >= _aluminum_total_notes and _aluminum_notes.is_empty():
-		_finish_aluminum_rhythm()
-		return
+	_aluminum_current_hole += 1
 	_update_aluminum_rhythm_text()
+	# 次の穴へ
+	get_tree().create_timer(0.2).timeout.connect(_start_next_aluminum_glow)
 
 
 func _finish_aluminum_rhythm() -> void:
@@ -1253,6 +1469,7 @@ func _finish_aluminum_rhythm() -> void:
 		return
 	_aluminum_active = false
 	_aluminum_timer.stop()
+	_aluminum_glow_timer.stop()
 
 	var score = _evaluate_aluminum_rhythm()
 	var result_text = str(score.get("text", "穴あけ完了"))
@@ -1266,16 +1483,12 @@ func _finish_aluminum_rhythm() -> void:
 	GameManager.play_ui_se("confirm" if delta_spec >= 0.0 else "cancel")
 	_show_mid_score_ticker()  # アルミ後の中間速報
 	_show_step_result_and_next(
-		"%s: 専門 %+d / 一般 %+d / ゾーン %+d%%\n判定 P%d / G%d / N%d / M%d / 空振り%d" % [
+		"%s\n判定 P%d / G%d / N%d / M%d" % [
 			result_text,
-			int(round(delta_spec)),
-			int(round(delta_aud)),
-			int(round(zone_gain * 100.0)),
 			_aluminum_hit_perfect,
 			_aluminum_hit_good,
 			_aluminum_hit_near,
 			_aluminum_hit_miss,
-			_aluminum_bad_press,
 		],
 		_show_charcoal_prep_step
 	)
@@ -1284,7 +1497,7 @@ func _finish_aluminum_rhythm() -> void:
 func _evaluate_aluminum_rhythm() -> Dictionary:
 	var hits = _count_aluminum_hits()
 	if hits < _aluminum_required_hits:
-		return {"text": "穴あけ不足（必要数未達）", "spec": -10.0, "aud": -2.0, "zone": 0.04}
+		return {"text": "穴あけ不足…均等に開けられなかった。", "spec": -10.0, "aud": -2.0, "zone": 0.04}
 
 	var weighted = float(_aluminum_hit_perfect) + float(_aluminum_hit_good) * 0.72 + float(_aluminum_hit_near) * 0.42
 	var penalty = float(_aluminum_hit_miss) * 0.25 + float(_aluminum_bad_press) * 0.18
@@ -1298,78 +1511,51 @@ func _evaluate_aluminum_rhythm() -> Dictionary:
 	score = clampf(score, 0.0, 1.2)
 
 	if score >= 0.92:
-		return {"text": "穴あけリズム（完璧）", "spec": 16.0, "aud": 4.0, "zone": 0.28}
+		return {"text": "穴あけ完璧！ 均等で美しい仕上がり。", "spec": 16.0, "aud": 4.0, "zone": 0.28}
 	if score >= 0.78:
-		return {"text": "穴あけリズム（良好）", "spec": 10.0, "aud": 2.0, "zone": 0.20}
+		return {"text": "穴あけ良好。安定した仕上がり。", "spec": 10.0, "aud": 2.0, "zone": 0.20}
 	if score >= 0.62:
-		return {"text": "穴あけリズム（可）", "spec": 4.0, "aud": 1.0, "zone": 0.12}
-	return {"text": "穴あけが荒れた", "spec": -8.0, "aud": -1.0, "zone": 0.04}
+		return {"text": "穴あけはまずまず。少しムラがある。", "spec": 4.0, "aud": 1.0, "zone": 0.12}
+	return {"text": "穴あけが荒れた。吸い心地に影響しそう。", "spec": -8.0, "aud": -1.0, "zone": 0.04}
 
 
 func _update_aluminum_rhythm_text() -> void:
 	var hit_count = _count_aluminum_hits()
-	var remain = maxi(0, _aluminum_required_hits - hit_count)
+	var total = _aluminum_grid_holes.size()
+	var done = _aluminum_current_hole
 	var progress_bar = ""
-	for i in range(_aluminum_total_notes):
-		if i < _aluminum_hit_perfect:
-			progress_bar += "★"
-		elif i < hit_count:
-			progress_bar += "●"
+	for i in range(mini(total, 30)):
+		if i < done:
+			var result = str(_aluminum_grid_holes[i].get("result", ""))
+			match result:
+				"perfect":
+					progress_bar += "★"
+				"good":
+					progress_bar += "●"
+				"near":
+					progress_bar += "◆"
+				"miss":
+					progress_bar += "×"
+				_:
+					progress_bar += "○"
+		elif i == done:
+			progress_bar += "◎"
 		else:
 			progress_bar += "○"
 	var lines: Array[String] = []
 	lines.append("穴あけ進捗: %s" % progress_bar)
-	lines.append("成功 %d / %d（あと %d）" % [hit_count, _aluminum_total_notes, remain])
-	lines.append("P:%d  G:%d  N:%d  M:%d" % [_aluminum_hit_perfect, _aluminum_hit_good, _aluminum_hit_near, _aluminum_hit_miss])
-	lines.append("ノーツが判定ラインに来たらボタンを押せ！")
+	lines.append("成功 %d / %d" % [hit_count, total])
+	lines.append("光ったらタップ！ 早いほど高精度。")
 	info_label.text = "\n".join(lines)
 
-	# ビジュアルリングの更新
-	var ring_node = choice_container.find_child("AluminumRing", true, false) as _AluminumRingVisual
-	if ring_node != null:
-		ring_node.notes = _aluminum_notes.duplicate(true)
-		ring_node.hit_slot = _aluminum_hit_slot
-		ring_node.hits_done = hit_count
-		ring_node.queue_redraw()
 
-
-func _build_aluminum_ring_text() -> String:
-	var slot_note_count: Dictionary = {}
-	for note in _aluminum_notes:
-		var slot_idx = _get_aluminum_note_slot(note)
-		slot_note_count[slot_idx] = int(slot_note_count.get(slot_idx, 0)) + 1
-
-	var sym = func(slot_idx: int) -> String:
-		var note_count = int(slot_note_count.get(slot_idx, 0))
-		if slot_idx == _aluminum_hit_slot:
-			if note_count <= 0:
-				return "★"
-			if note_count == 1:
-				return "◆"
-			return "✦"
-		if note_count <= 0:
-			return "○"
-		if note_count == 1:
-			return "●"
-		return "◎"
-
-	var lines: Array[String] = []
-	lines.append("          %s" % sym.call(0))
-	lines.append("      %s       %s" % [sym.call(11), sym.call(1)])
-	lines.append("   %s             %s" % [sym.call(10), sym.call(2)])
-	lines.append(" %s                 %s" % [sym.call(9), sym.call(3)])
-	lines.append("   %s             %s" % [sym.call(8), sym.call(4)])
-	lines.append("      %s       %s" % [sym.call(7), sym.call(5)])
-	lines.append("          %s" % sym.call(6))
-	return "\n".join(lines)
-
-
-func _get_aluminum_note_slot(note: Dictionary) -> int:
-	var distance = int(round(float(note.get("distance", 0.0))))
-	var slot = (_aluminum_hit_slot + distance) % _aluminum_slot_count
-	if slot < 0:
-		slot += _aluminum_slot_count
-	return slot
+func _update_aluminum_grid_visual() -> void:
+	var grid_node = choice_container.find_child("AluminumGrid", true, false) as _AluminumGridVisual
+	if grid_node != null:
+		grid_node.holes = _aluminum_grid_holes
+		grid_node.current_hole = _aluminum_current_hole
+		grid_node.glow_ratio = _aluminum_glow_elapsed / maxf(_aluminum_glow_window, 0.01)
+		grid_node.queue_redraw()
 
 
 func _count_aluminum_hits() -> int:
@@ -1377,7 +1563,7 @@ func _count_aluminum_hits() -> int:
 
 
 func _show_charcoal_prep_step() -> void:
-	_set_phase(5, "炭の準備", "フリップのタイミングを決める。")
+	_set_phase(6, "炭の準備", "フリップのタイミングを決める。")
 	_clear_choices()
 	_add_choice_button("早めにフリップ", _on_charcoal_prep_choice.bind("early"))
 	_add_choice_button("ちょうどでフリップ", _on_charcoal_prep_choice.bind("perfect"))
@@ -1417,7 +1603,7 @@ func _on_charcoal_prep_choice(choice: String) -> void:
 
 
 func _show_charcoal_place_step() -> void:
-	_set_phase(6, "炭の配置", "3個か4個を選んで配置する。機材と好みに合わせる。")
+	_set_phase(7, "炭の配置", "3個か4個を選んで配置する。機材と好みに合わせる。")
 	_clear_choices()
 	
 	# Add hint dynamically based on equipment
@@ -1469,7 +1655,7 @@ func _on_charcoal_place_selected(count: int) -> void:
 var _steam_timer_label: Label
 
 func _show_steam_step() -> void:
-	_set_phase(7, "蒸らしタイマー", "5〜10分から蒸らし時間を設定。")
+	_set_phase(8, "蒸らしタイマー", "5〜10分から蒸らし時間を設定。")
 	_clear_choices()
 	_steam_minutes = 6
 	
@@ -1556,13 +1742,28 @@ func _on_steam_selected(minutes: int) -> void:
 
 
 func _get_steam_optimal_range(charcoal_count: int) -> Vector2i:
+	var base_min := 5
+	var base_max := 7
 	match charcoal_count:
-		3:
-			return Vector2i(5, 7)
 		4:
-			return Vector2i(4, 6)
-		_:
-			return Vector2i(5, 7)
+			base_min = 4
+			base_max = 6
+	# フレーバー特性: steam_bias がマイナス（ミント系）なら短め蒸らしが最適
+	# steam_bias がプラス（ダブルアップル/ココナッツ）なら長め蒸らしが最適
+	var sb = _get_mix_trait("steam_bias")
+	if sb <= -0.5:
+		base_min = maxi(base_min - 1, 4)
+		base_max = maxi(base_max - 1, 5)
+	elif sb >= 0.5:
+		base_min = mini(base_min + 1, 7)
+		base_max = mini(base_max + 1, 10)
+	# パッキングスタイル補正
+	match _packing_style:
+		"fluffy":
+			base_min = maxi(base_min - 1, 4)
+		"firm":
+			base_max = mini(base_max + 1, 10)
+	return Vector2i(base_min, base_max)
 
 
 func _show_mind_barrage_intro(summary_text: String = "") -> void:
@@ -1571,7 +1772,7 @@ func _show_mind_barrage_intro(summary_text: String = "") -> void:
 		return
 	var duration_sec = _compute_mind_barrage_duration()
 	var lives = MIND_BARRAGE_BASE_LIVES + (1 if _easy_mode else 0)
-	_set_phase(8, "吸い出し前: 思考の暴走", "吸い出し直前、頭の中で不安と記憶が弾幕になる。")
+	_set_phase(9, "吸い出し前: 思考の暴走", "吸い出し直前、頭の中で不安と記憶が弾幕になる。")
 	_clear_choices()
 	var lines: Array[String] = []
 	if summary_text != "":
@@ -1626,7 +1827,7 @@ func _start_mind_barrage_step() -> void:
 	if _mind_barrage_done:
 		_show_pull_step()
 		return
-	_set_phase(8, "思考弾幕", "弾をかわして時間まで耐える。")
+	_set_phase(9, "思考弾幕", "弾をかわして時間まで耐える。")
 	_clear_choices()
 	_mind_active = true
 	_mind_duration_total = _compute_mind_barrage_duration()
@@ -2846,7 +3047,7 @@ func _show_pull_step() -> void:
 		return
 	var round_number = _pull_round + 1
 	_set_phase(
-		8,
+		10,
 		"吸い出し %d / %d" % [round_number, PULL_MAX_ROUNDS],
 		"押している間だけ吸い出し、離した瞬間で判定。最低%d回、最大%d回。熱状態: %s\n精神戦補正: %s" % [
 			PULL_MIN_ROUNDS,
@@ -2881,6 +3082,15 @@ func _show_pull_step() -> void:
 		_pull_gauge_speed = base_speed + _mind_pull_speed_adjust
 	if _easy_mode and not _mind_force_worst_pull_speed:
 		_pull_gauge_speed = maxi(0.6, _pull_gauge_speed - 0.15)
+	# フレーバー特性: smoke_weight が重いほどゲージが遅い（太い煙=ゆっくり吸う）
+	var sw = _get_mix_trait("smoke_weight")
+	_pull_gauge_speed *= clampf(2.0 - sw, 0.7, 1.3)
+	# パッキングスタイル補正
+	match _packing_style:
+		"fluffy":
+			_pull_gauge_speed *= 0.92  # 軽い = 少し遅い
+		"firm":
+			_pull_gauge_speed *= 1.08  # 重い = 少し速い
 	_pull_gauge_speed = clampf(_pull_gauge_speed, 0.55, 3.25)
 	_pull_gauge_value = clampf(_pull_target_center + randf_range(-0.18, 0.18), 0.0, 1.0)
 	_pull_gauge_direction = 1.0
@@ -3085,7 +3295,7 @@ func _get_pull_speed_adjust_by_setting() -> float:
 
 
 func _show_serving_step() -> void:
-	_set_phase(9, "提供", "吸い出しを終えた。提供してお客さんの反応を見る。")
+	_set_phase(10, "提供", "吸い出しを終えた。提供してお客さんの反応を見る。")
 	_clear_choices()
 	var lines: Array[String] = []
 	lines.append("吸い出しヒット: %d / %d" % [_pull_hit_count, maxi(_pull_round, 1)])
@@ -3117,7 +3327,7 @@ func _on_serving_confirmed() -> void:
 
 
 func _show_round_result(round_num: int) -> void:
-	_set_phase(12, "ラウンド%d 終了" % round_num, "現在の暫定スコアと順位。")
+	_set_phase(13, "ラウンド%d 終了" % round_num, "現在の暫定スコアと順位。")
 	_clear_choices()
 
 	var player_score = _build_player_score()
@@ -3170,31 +3380,102 @@ func _show_round_result(round_num: int) -> void:
 	_refresh_side_panel()
 
 
+func _heat_state_text() -> String:
+	if _heat_state >= 2:
+		return "かなり熱い"
+	elif _heat_state == 1:
+		return "やや熱め"
+	elif _heat_state == 0:
+		return "ちょうどいい"
+	elif _heat_state == -1:
+		return "やや弱い"
+	else:
+		return "煙が薄い"
+
+
 func _show_adjustment_menu(round_index: int) -> void:
-	var round_num = round_index + 2 # _show_adjustment_menu(0) means Round 2
-	var step_no = 10 + round_index
-	_set_phase(step_no, "ラウンド%d: 調整" % round_num, "現在の炭: %d個 / 熱状態: %d\nどう調整する？" % [_selected_charcoal_count, _heat_state])
+	var round_num = round_index + 2
+	var step_no = 11 + round_index
+	var heat_text = _heat_state_text()
+	_set_phase(step_no, "ラウンド%d: 調整" % round_num, "炭の状態: %s\nどう調整する？" % heat_text)
 	_clear_choices()
 
-	_add_choice_button("炭の調整を行う", _show_charcoal_adjust_step.bind(round_index))
-	_add_choice_button("吸い出しで微調整する", _show_pull_adjust_step.bind(round_index))
-	
-	if _adjustment_action_count >= 2:
-		_add_choice_button("調整を終える（次に進む）", _finish_adjustment_phase.bind(round_index))
+	_add_choice_button("灰を落とす", _on_adjust_ash_drop.bind(round_index))
+	_add_choice_button("炭の位置を回す", _on_adjust_rotate_charcoal.bind(round_index))
+	_add_choice_button("炭を交換する", _show_charcoal_adjust_step.bind(round_index))
+	_add_choice_button("HMSのフタを調整する", _on_adjust_hms_lid.bind(round_index))
+	_add_choice_button("調整を終える", _finish_adjustment_phase.bind(round_index))
+
+
+func _on_adjust_ash_drop(round_index: int) -> void:
+	_adjustment_action_count += 1
+	var delta_spec := 3.0
+	if _heat_state >= 1:
+		_heat_state -= 1
+		delta_spec += 2.0
+	_technical_points += delta_spec
+	_heat_state = clampi(_heat_state, -3, 3)
+	GameManager.play_ui_se("confirm")
+	_show_step_result_and_next("灰を落とした。空気の通りが良くなった。", _show_adjustment_menu.bind(round_index))
+
+
+func _on_adjust_rotate_charcoal(round_index: int) -> void:
+	_adjustment_action_count += 1
+	var delta_spec := 2.0
+	# 熱ムラを均す: 極端な熱状態を中央に寄せる
+	if _heat_state >= 2:
+		_heat_state -= 1
+		delta_spec += 3.0
+	elif _heat_state <= -2:
+		_heat_state += 1
+		delta_spec += 3.0
 	else:
-		var btn = _add_choice_button("調整を終える（あと%d回アクションが必要）" % (2 - _adjustment_action_count), _finish_adjustment_phase.bind(round_index))
-		btn.disabled = true
+		delta_spec += 1.0
+	_technical_points += delta_spec
+	_heat_state = clampi(_heat_state, -3, 3)
+	GameManager.play_ui_se("confirm")
+	_show_step_result_and_next("炭の位置を回した。熱の偏りが少しマシになった。", _show_adjustment_menu.bind(round_index))
+
+
+func _on_adjust_hms_lid(round_index: int) -> void:
+	_adjustment_action_count += 1
+	var heat_text = _heat_state_text()
+	_set_phase(11 + round_index, "HMSのフタ調整", "フタの開き具合で火力を調整する。\n現在の感触: %s" % heat_text)
+	_clear_choices()
+	_add_choice_button("フタを開ける（火力を下げる）", _apply_hms_lid.bind("open", round_index))
+	_add_choice_button("フタを少しだけ開ける（微調整）", _apply_hms_lid.bind("half", round_index))
+	_add_choice_button("フタを閉める（火力を上げる）", _apply_hms_lid.bind("close", round_index))
+	_add_choice_button("戻る", _show_adjustment_menu.bind(round_index))
+
+
+func _apply_hms_lid(lid_action: String, round_index: int) -> void:
+	var delta_spec := 2.0
+	var msg := ""
+	match lid_action:
+		"open":
+			_heat_state -= 1
+			msg = "フタを開けた。煙が軽くなるが、温度が下がる。"
+		"half":
+			delta_spec += 2.0
+			msg = "フタを少し開けた。微妙な火力の調整。"
+		"close":
+			_heat_state += 1
+			msg = "フタを閉めた。火力が上がり、煙が重くなる。"
+	_heat_state = clampi(_heat_state, -3, 3)
+	_technical_points += delta_spec
+	GameManager.play_ui_se("confirm")
+	_show_step_result_and_next(msg, _show_adjustment_menu.bind(round_index))
 
 
 func _show_charcoal_adjust_step(round_index: int) -> void:
-	_set_phase(10 + round_index, "炭の調整", "現在の炭は%d個だ。どうする？\n※炭の増減は熱状態に直結する。" % _selected_charcoal_count)
+	_set_phase(11 + round_index, "炭の交換", "炭を交換する。新しい炭で温度が少し上がる。")
 	_clear_choices()
-	
+
 	if _selected_charcoal_count > 2:
-		_add_choice_button("炭を1個減らす（現在%d -> %d）" % [_selected_charcoal_count, _selected_charcoal_count - 1], _apply_charcoal_change.bind(-1, false, round_index))
+		_add_choice_button("炭を1個減らして交換", _apply_charcoal_change.bind(-1, true, round_index))
+	_add_choice_button("同じ数で新しい炭に交換", _apply_charcoal_change.bind(0, true, round_index))
 	if _selected_charcoal_count < 4:
-		_add_choice_button("炭を1個増やす（現在%d -> %d）" % [_selected_charcoal_count, _selected_charcoal_count + 1], _apply_charcoal_change.bind(1, false, round_index))
-	_add_choice_button("新しい炭に交換する", _apply_charcoal_change.bind(0, true, round_index))
+		_add_choice_button("炭を1個増やして交換", _apply_charcoal_change.bind(1, true, round_index))
 	_add_choice_button("戻る", _show_adjustment_menu.bind(round_index))
 
 
@@ -3203,11 +3484,17 @@ func _apply_charcoal_change(diff: int, is_new: bool, round_index: int) -> void:
 	var heat_change = diff
 	if is_new:
 		heat_change += 1
-	
+
 	_heat_state = clampi(_heat_state + heat_change, -3, 3)
 	_adjustment_action_count += 1
-	
-	var msg = "炭の数を調整した。" if diff != 0 else "新しい炭に交換した。温度が少し上がる。"
+
+	var msg := ""
+	if diff > 0:
+		msg = "炭を増やして交換した。火力が上がる。"
+	elif diff < 0:
+		msg = "炭を減らして交換した。少し落ち着く。"
+	else:
+		msg = "新しい炭に交換した。温度が少し上がる。"
 	GameManager.play_ui_se("confirm")
 	_show_step_result_and_next(msg, _show_adjustment_menu.bind(round_index))
 
@@ -3217,7 +3504,7 @@ func _show_pull_adjust_step(round_index: int) -> void:
 	_adjust_target_action = target_action
 	var cue = _build_adjustment_cue(target_action, round_index)
 	_set_phase(
-		10 + round_index,
+		11 + round_index,
 		"吸い出し微調整",
 		cue + "\n方向を選択してから、ゲージでタイミング調整する。"
 	)
@@ -3285,7 +3572,7 @@ func _on_adjust_action_selected(action_id: String, round_index: int) -> void:
 
 func _show_adjustment_gauge_step(round_index: int) -> void:
 	_set_phase(
-		10 + round_index,
+		11 + round_index,
 		"微調整ゲージ",
 		"選択した方向: %s\n押している間だけ調整、離した瞬間で判定。\n判定は PERFECT / GOOD / NEAR / MISS。" % _adjust_action_label(_adjust_selected_action)
 	)
@@ -3387,10 +3674,10 @@ func _resolve_adjustment_round(round_index: int) -> void:
 	
 	GameManager.play_ui_se("confirm" if success else "cancel")
 	_update_adjust_text(
-		"判定: %s\n%s\n現在熱状態: %d" % [
+		"判定: %s\n%s\n現在の感触: %s" % [
 			quality.to_upper(),
 			result_line,
-			_heat_state,
+			_heat_state_text(),
 		]
 	)
 	_clear_choices()
@@ -3416,7 +3703,7 @@ func _show_presentation_intro() -> void:
 	for focus_id in judge_focuses:
 		judge_labels.append(str(PRESENTATION_FOCUS_LABEL.get(focus_id, focus_id)))
 	_set_phase(
-		14,
+		15,
 		"プレゼン: 強調ポイント",
 		"売りを1〜2個だけ選んで押し出す。\n審査員が刺さる軸: %s" % " / ".join(judge_labels)
 	)
@@ -3428,7 +3715,7 @@ func _show_presentation_intro() -> void:
 
 
 func _show_presentation_primary_choice() -> void:
-	_set_phase(14, "プレゼン: 1つ目", "まず最優先で押し出す売りを1つ選ぶ。")
+	_set_phase(15, "プレゼン: 1つ目", "まず最優先で押し出す売りを1つ選ぶ。")
 	_clear_choices()
 	for focus in PRESENTATION_FOCUS_OPTIONS:
 		var focus_id = str(focus.get("id", ""))
@@ -3444,7 +3731,7 @@ func _on_presentation_primary_selected(focus_id: String) -> void:
 
 func _show_presentation_secondary_choice() -> void:
 	var primary_label = str(PRESENTATION_FOCUS_LABEL.get(_presentation_primary_focus, _presentation_primary_focus))
-	_set_phase(14, "プレゼン: 2つ目", "1つ目は「%s」。2つ目を足すか、1点突破でいくか選ぶ。" % primary_label)
+	_set_phase(15, "プレゼン: 2つ目", "1つ目は「%s」。2つ目を足すか、1点突破でいくか選ぶ。" % primary_label)
 	_clear_choices()
 	_add_choice_button("1点突破でいく", _on_presentation_secondary_selected.bind(""))
 	for focus in PRESENTATION_FOCUS_OPTIONS:
@@ -3583,7 +3870,7 @@ func _get_active_judge_focuses() -> Array[String]:
 
 
 func _finalize_and_show_result() -> void:
-	_set_phase(15, "最終発表", "専門審査60% + 一般投票40%")
+	_set_phase(16, "最終発表", "専門審査60% + 一般投票40%")
 	_clear_choices()
 
 	var ranking: Array = []
@@ -4083,6 +4370,11 @@ func _get_target_temp_range() -> Vector2:
 		"winkwink_hagal":
 			min_temp -= 4.0
 			max_temp -= 2.0
+	# フレーバー特性: heat_tolerance が高いほど許容温度幅が広がる
+	var ht = _get_mix_trait("heat_tolerance")
+	var ht_bonus = (ht - 1.0) * 12.0  # 1.0基準。1.2なら+2.4, 0.8なら-2.4
+	min_temp -= ht_bonus
+	max_temp += ht_bonus
 	return Vector2(min_temp, max_temp)
 
 
@@ -4440,7 +4732,7 @@ func _dramatic_impact(text: String = "") -> void:
 ## ─── 6. アルミ穴あけビジュアル ───
 
 func _aluminum_show_hit_feedback(text: String, color: Color) -> void:
-	var ring_node = choice_container.find_child("AluminumRing", true, false)
+	var ring_node = choice_container.find_child("AluminumGrid", true, false)
 	if ring_node == null:
 		_show_score_popup(text, color)
 		return
@@ -4459,68 +4751,64 @@ func _aluminum_show_hit_feedback(text: String, color: Color) -> void:
 	tween.chain().tween_callback(label.queue_free)
 
 
-class _AluminumRingVisual extends Control:
-	var slot_count: int = 12
-	var hit_slot: int = 0
-	var notes: Array = []
-	var hits_done: int = 0
+class _AluminumGridVisual extends Control:
+	## 上から見たアルミホイルのグリッド。穴が順番に光り、タップで穴を開ける。
+	var holes: Array = []
+	var current_hole: int = 0
+	var cols: int = 6
+	var total_rows: int = 5
+	var glow_ratio: float = 0.0  # 0.0〜1.0: 光り始めからの経過割合
 
 	func _draw() -> void:
 		var w = size.x
 		var h = size.y
-		var cx = w * 0.5
-		var cy = h * 0.5
-		var radius = minf(cx, cy) - 20.0
+		var margin = 16.0
+		var cell_w = (w - margin * 2) / float(cols)
+		var cell_h = (h - margin * 2) / float(maxi(total_rows, 1))
+		var radius = minf(cell_w, cell_h) * 0.32
 
-		# 背景円
-		draw_arc(Vector2(cx, cy), radius, 0, TAU, 64, Color("3a4466", 0.4), 2.0)
+		# 背景（アルミホイルっぽい銀色）
+		draw_rect(Rect2(margin - 4, margin - 4, w - margin * 2 + 8, h - margin * 2 + 8), Color("8b9bb4", 0.15), true)
+		draw_rect(Rect2(margin - 4, margin - 4, w - margin * 2 + 8, h - margin * 2 + 8), Color("8b9bb4", 0.3), false, 1.0)
 
-		# スロットの点を描画
-		for i in range(slot_count):
-			var angle = TAU * float(i) / float(slot_count) - PI * 0.5
-			var pos = Vector2(cx + cos(angle) * radius, cy + sin(angle) * radius)
+		for i in range(holes.size()):
+			var hole = holes[i]
+			var row = int(hole.get("row", 0))
+			var col = int(hole.get("col", 0))
+			var result = str(hole.get("result", ""))
+			var cx = margin + cell_w * (float(col) + 0.5)
+			var cy = margin + cell_h * (float(row) + 0.5)
+			var pos = Vector2(cx, cy)
 
-			if i == hit_slot:
-				# 判定点: 大きなゴールドの★
-				draw_circle(pos, 14, Color("feae34", 0.3))
-				draw_circle(pos, 10, Color("feae34", 0.8))
-				draw_arc(pos, 16, 0, TAU, 32, Color("feae34"), 2.0)
-			elif i < hits_done:
-				# 成功済みの穴: グリーン●
-				draw_circle(pos, 6, Color("3e8948", 0.7))
+			if i < current_hole:
+				# 完了済みの穴
+				var color = Color("5a6988", 0.5)
+				match result:
+					"perfect":
+						color = Color("feae34", 0.9)
+					"good":
+						color = Color("3e8948", 0.8)
+					"near":
+						color = Color("8b9bb4", 0.7)
+					"miss":
+						color = Color("e43b44", 0.5)
+				draw_circle(pos, radius, color)
+				if result == "perfect":
+					draw_arc(pos, radius + 2, 0, TAU, 16, Color("feae34", 0.4), 1.5)
+			elif i == current_hole:
+				# 現在光っている穴
+				var pulse = 1.0 - glow_ratio  # 時間が経つほど暗くなる
+				var glow_alpha = clampf(pulse * 0.8 + 0.2, 0.3, 1.0)
+				var glow_size = radius + lerpf(6.0, 2.0, glow_ratio)
+				draw_circle(pos, glow_size, Color("feae34", glow_alpha * 0.3))
+				draw_circle(pos, radius, Color("feae34", glow_alpha))
+				draw_arc(pos, glow_size, 0, TAU, 24, Color("feae34", glow_alpha * 0.6), 2.0)
 			else:
-				# 未使用スロット: 薄い○
-				draw_circle(pos, 4, Color("5a6988", 0.4))
+				# 未到達の穴
+				draw_circle(pos, radius * 0.6, Color("3a4466", 0.25))
 
-		# ノーツを描画（赤い円）
-		for note in notes:
-			var distance = float(note.get("distance", 0.0))
-			var slot_idx = (hit_slot + int(round(distance))) % slot_count
-			if slot_idx < 0:
-				slot_idx += slot_count
-			var angle = TAU * float(slot_idx) / float(slot_count) - PI * 0.5
-
-			# 距離に応じて半径方向にもオフセット（近いほど内側に）
-			var frac = fmod(distance, 1.0)
-			var next_slot = (slot_idx + 1) % slot_count
-			var curr_angle = TAU * float(slot_idx) / float(slot_count) - PI * 0.5
-			var note_radius = radius
-
-			var pos = Vector2(cx + cos(curr_angle) * note_radius, cy + sin(curr_angle) * note_radius)
-
-			# 近いほど大きく＋明るく
-			var closeness = clampf(1.0 - abs(distance) / 6.0, 0.2, 1.0)
-			var note_size = lerpf(5.0, 10.0, closeness)
-			var note_alpha = lerpf(0.4, 1.0, closeness)
-
-			draw_circle(pos, note_size, Color("e43b44", note_alpha))
-
-			# 判定圏内なら光るリング
-			if abs(distance) <= 1.0:
-				draw_arc(pos, note_size + 3, 0, TAU, 16, Color("feae34", 0.6 * closeness), 1.5)
-
-		# 中央テキスト
-		draw_string(ThemeDB.fallback_font, Vector2(cx - 24, cy + 5), "穴あけ", HORIZONTAL_ALIGNMENT_CENTER, -1, 14, Color("feae34", 0.5))
+		# ラベル
+		draw_string(ThemeDB.fallback_font, Vector2(margin, h - 2), "FOIL", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("feae34", 0.4))
 
 
 ## ─── 7. ラウンド告知 ───

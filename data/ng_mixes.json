@@ -1,0 +1,46 @@
+{
+  "ng_mixes": [
+    {
+      "id": "ng_mint_vanilla_heavy",
+      "flavors": ["mint", "vanilla"],
+      "condition": "both_over_5g",
+      "penalty": -4.0,
+      "text": "ミントの清涼感がバニラの甘みを完全に消してしまった。どちらも中途半端な印象。"
+    },
+    {
+      "id": "ng_double_apple_coconut_equal",
+      "flavors": ["double_apple", "coconut"],
+      "condition": "ratio_close",
+      "penalty": -3.5,
+      "text": "ダブルアップルのアニスとココナッツの甘さが混ざり合い、不思議な風味に。意図が見えにくい。"
+    },
+    {
+      "id": "ng_all_sweet_overload",
+      "flavors": ["vanilla", "coconut"],
+      "condition": "both_over_5g",
+      "penalty": -3.0,
+      "text": "甘さが重なりすぎて味がぼやけた。どこかにエッジが欲しかった。"
+    },
+    {
+      "id": "ng_mint_coconut_clash",
+      "flavors": ["mint", "coconut"],
+      "condition": "both_over_4g",
+      "penalty": -3.0,
+      "text": "ミントの鋭さとココナッツのまったり感が噛み合わない。方向性が散っている。"
+    },
+    {
+      "id": "ng_triple_fruit_no_base",
+      "flavors": ["blueberry", "pineapple"],
+      "condition": "combined_over_10g",
+      "penalty": -2.5,
+      "text": "フルーツだけで構成したが、ベースの厚みが足りない。果実感は華やかだが底が浅い。"
+    },
+    {
+      "id": "ng_pineapple_double_apple_heavy",
+      "flavors": ["pineapple", "double_apple"],
+      "condition": "both_over_5g",
+      "penalty": -3.0,
+      "text": "パイナップルの酸味とダブルアップルのアニスが喧嘩してしまった。主張が強すぎる。"
+    }
+  ]
+}

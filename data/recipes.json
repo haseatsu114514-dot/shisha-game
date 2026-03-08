@@ -1,0 +1,132 @@
+{
+  "recipes": [
+    {
+      "id": "pina_colada",
+      "name": "ピニャコラーダ",
+      "chapter": 1,
+      "source": "sumi",
+      "unlock_condition": "affinity_3",
+      "composition": {"pineapple": 5, "coconut": 4, "vanilla": 3},
+      "tolerance": 1,
+      "bonus_spec": 8.0,
+      "bonus_aud": 8.0,
+      "text": "特別ミックス『ピニャコラーダ』成立。南国の余韻が審査員を包む。",
+      "presentation_card": {
+        "name": "南国の風",
+        "taste": 9, "smoke": 5, "ease": 7, "unique": 8
+      }
+    },
+    {
+      "id": "hell_menthol",
+      "name": "地獄のメンソール",
+      "chapter": 1,
+      "source": "hajime",
+      "unlock_condition": "always",
+      "composition": {"mint": 12},
+      "tolerance": 0,
+      "bonus_spec": 2.0,
+      "bonus_aud": 10.0,
+      "text": "特別ミックス『地獄のメンソール』。観客が沸く。",
+      "presentation_card": {
+        "name": "極限の清涼",
+        "taste": 3, "smoke": 6, "ease": 2, "unique": 10
+      }
+    },
+    {
+      "id": "naru_sweet_time",
+      "name": "禁断のスイートタイム",
+      "chapter": 1,
+      "source": "naru",
+      "unlock_condition": "affinity_5",
+      "composition": {"vanilla": 4, "blueberry": 3, "mint": 2},
+      "tolerance": 1,
+      "bonus_spec": 6.0,
+      "bonus_aud": 5.0,
+      "text": "なるの秘伝ミックス『禁断のスイートタイム』。甘さの重ね方が絶妙。",
+      "presentation_card": {
+        "name": "甘さの重奏",
+        "taste": 8, "smoke": 5, "ease": 7, "unique": 6
+      }
+    },
+    {
+      "id": "adam_eden_special",
+      "name": "楽園の一服（エデン・スペシャル）",
+      "chapter": 1,
+      "source": "adam",
+      "unlock_condition": "affinity_5",
+      "composition": {"double_apple": 12},
+      "tolerance": 0,
+      "bonus_spec": 10.0,
+      "bonus_aud": 3.0,
+      "text": "アダムの真髄『楽園の一服』。ダブルアップル一本で奥行きを作り上げた。",
+      "presentation_card": {
+        "name": "一途の深み",
+        "taste": 7, "smoke": 9, "ease": 5, "unique": 9
+      }
+    },
+    {
+      "id": "minto_aurora_dream",
+      "name": "オーロラ・ドリーム",
+      "chapter": 1,
+      "source": "minto",
+      "unlock_condition": "affinity_5",
+      "composition": {"pineapple": 3, "coconut": 3, "vanilla": 2},
+      "tolerance": 1,
+      "bonus_spec": 5.0,
+      "bonus_aud": 7.0,
+      "text": "みんとの勝負ミックス『オーロラ・ドリーム』。トロピカルで華やか。",
+      "presentation_card": {
+        "name": "映えと実力",
+        "taste": 7, "smoke": 5, "ease": 8, "unique": 7
+      }
+    },
+    {
+      "id": "tsumugi_night_sketch",
+      "name": "夜のスケッチ",
+      "chapter": 1,
+      "source": "tsumugi",
+      "unlock_condition": "affinity_5",
+      "composition": {"blueberry": 5, "vanilla": 4, "mint": 3},
+      "tolerance": 1,
+      "bonus_spec": 6.0,
+      "bonus_aud": 6.0,
+      "text": "つむぎの好きな組み合わせ『夜のスケッチ』。静かで心地良い。",
+      "presentation_card": {
+        "name": "あなたの味",
+        "taste": 8, "smoke": 6, "ease": 8, "unique": 5
+      }
+    },
+    {
+      "id": "kumicho_phoenix",
+      "name": "不死鳥（フェニックス）",
+      "chapter": 2,
+      "source": "kumicho",
+      "unlock_condition": "affinity_5",
+      "composition": {"double_apple": 4, "mint": 4, "pineapple": 4},
+      "tolerance": 1,
+      "bonus_spec": 7.0,
+      "bonus_aud": 7.0,
+      "text": "組長の真髄『不死鳥』。強い素材がぶつかり合い、新しい味が生まれた。",
+      "presentation_card": {
+        "name": "衝突の先",
+        "taste": 7, "smoke": 8, "ease": 4, "unique": 9
+      }
+    },
+    {
+      "id": "ageha_vibes_cocktail",
+      "name": "バイブス・カクテル",
+      "chapter": 2,
+      "source": "ageha",
+      "unlock_condition": "affinity_5",
+      "composition": {"blueberry": 3, "coconut": 3, "mint": 3},
+      "tolerance": 1,
+      "bonus_spec": 4.0,
+      "bonus_aud": 8.0,
+      "text": "アゲハの感覚ミックス『バイブス・カクテル』。理屈じゃなく、ただ美味しい。",
+      "presentation_card": {
+        "name": "感覚の正解",
+        "taste": 6, "smoke": 6, "ease": 7, "unique": 8
+      }
+    }
+  ]
+}
