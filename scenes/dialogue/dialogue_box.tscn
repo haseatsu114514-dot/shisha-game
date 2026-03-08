@@ -51,10 +51,10 @@ stretch_mode = 6
 [node name="CharacterPortrait" type="TextureRect" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
-offset_left = 40.0
-offset_top = 40.0
-offset_right = 360.0
-offset_bottom = 440.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 460.0
+offset_bottom = 620.0
 expand_mode = 1
 stretch_mode = 5
 

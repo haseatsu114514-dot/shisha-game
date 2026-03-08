@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dv00bhjit0gb3"
-path="res://.godot/imported/chr_packii_smoke.png-bc0fe7c96573bf018e26bcf4a7c1a03b.ctex"
+path="res://.godot/imported/chr_packii_smoke.png-3acab25fa71551d05e4dd123fcc5957d.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/sprites/characters/packii/chr_packii_smoke.png"
-dest_files=["res://.godot/imported/chr_packii_smoke.png-bc0fe7c96573bf018e26bcf4a7c1a03b.ctex"]
+dest_files=["res://.godot/imported/chr_packii_smoke.png-3acab25fa71551d05e4dd123fcc5957d.ctex"]
 
 [params]
 

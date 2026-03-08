@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://ccwd10utmjrlc"
-path="res://.godot/imported/chr_ryuji_grin.png-a78a314a2d14230c8f0b77e02a11da53.ctex"
+path="res://.godot/imported/chr_ryuji_grin.png-d744986c6ea186c6fabdf5630b1a3d42.ctex"
 metadata={
 "vram_texture": false
 }
@@ -11,7 +11,7 @@ metadata={
 [deps]
 
 source_file="res://assets/sprites/characters/ryuji/chr_ryuji_grin.png"
-dest_files=["res://.godot/imported/chr_ryuji_grin.png-a78a314a2d14230c8f0b77e02a11da53.ctex"]
+dest_files=["res://.godot/imported/chr_ryuji_grin.png-d744986c6ea186c6fabdf5630b1a3d42.ctex"]
 
 [params]
 

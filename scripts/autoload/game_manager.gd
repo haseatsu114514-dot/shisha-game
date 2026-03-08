@@ -342,6 +342,7 @@ func start_new_game() -> void:
 	reset_daily_summary()
 	transient.clear()
 	PlayerData.add_flavor("double_apple", 50)
+	PlayerData.add_flavor("mint", 50)
 	_load_forced_events()
 	emit_signal("chapter_started", current_chapter)
 	emit_signal("game_state_changed", game_state)
@@ -494,13 +495,13 @@ func _wrap_story_line(line: String, max_chars: int) -> String:
 
 
 func _find_story_wrap_index(text: String, max_chars: int) -> int:
-	var preferred := min(max_chars, text.length() - 1)
-	var backward_limit := max(1, int(max_chars / 2))
+	var preferred := mini(max_chars, text.length() - 1)
+	var backward_limit := maxi(1, int(max_chars / 2))
 	for i in range(preferred, backward_limit - 1, -1):
 		if _is_story_wrap_break(text.substr(i - 1, 1)):
 			return i
 
-	var forward_limit := min(text.length() - 1, max_chars + 6)
+	var forward_limit := mini(text.length() - 1, max_chars + 6)
 	for i in range(max_chars, forward_limit + 1):
 		if _is_story_wrap_break(text.substr(i, 1)):
 			return i + 1

@@ -15,11 +15,12 @@ const TEMP_LEVEL_MAX := 1.0
 @onready var choice_container: VBoxContainer = %ChoiceContainer
 @onready var status_panel = $StatusPanel
 
-var _selected_pack_style: String = "standard"
+var _selected_pack_style: String = "normal"
 var _selected_charcoal_count: int = 3
 var _selected_steam_minutes: int = 6
 
 const TUTORIAL_TOTAL_GRAMS := 12
+const TUTORIAL_FLAVOR_STOCK := 50
 const TUTORIAL_FLAVORS := ["double_apple", "mint"]
 var _tutorial_packing_grams: Dictionary = {"double_apple": 6, "mint": 6}
 var _tutorial_sliders: Dictionary = {}
@@ -113,13 +114,14 @@ var _mind_move_down: bool = false
 var _mind_invincible_timer: float = 0.0
 
 var _heat_state: int = 0
+var _pull_step_active: bool = false
+var _adjust_gauge_active: bool = false
 
 func _process(_delta: float) -> void:
 	if status_panel and status_panel.has_method("update_status"):
 		status_panel.update_status(_temp_level, _temperature_zone_label(_temp_level), _selected_charcoal_count, TEMP_PASS_LINE, TEMP_TOP_LINE)
 
 func _ready() -> void:
-	print("[DEBUG] Practice _ready called")
 	GameManager.play_bgm(GameManager.BGM_TONARI_PATH, -10.0, true)
 	_pull_timer = Timer.new()
 	_pull_timer.wait_time = GAUGE_TIMER_WAIT
@@ -146,13 +148,90 @@ func _ready() -> void:
 	add_child(_mind_timer)
 
 	_show_intro_step()
-	print("[DEBUG] _show_intro_step invoked")
+
+
+func _input(event: InputEvent) -> void:
+	if _mind_active and _handle_mind_key_input(event):
+		accept_event()
+		return
+	if not (event is InputEventKey):
+		return
+	var key_event = event as InputEventKey
+	if key_event == null or key_event.echo:
+		return
+	if not _is_confirm_key_event(key_event):
+		return
+
+	if _aluminum_active and key_event.pressed:
+		_on_aluminum_press_hole()
+		accept_event()
+		return
+	if _pull_step_active:
+		if key_event.pressed:
+			_on_pull_hold_started()
+		else:
+			_on_pull_hold_released()
+		accept_event()
+		return
+	if _adjust_gauge_active:
+		if key_event.pressed:
+			_on_adjust_hold_started()
+		else:
+			_on_adjust_hold_released()
+		accept_event()
+		return
+	if key_event.pressed and _try_press_single_choice():
+		accept_event()
+
+
+func _try_press_single_choice() -> bool:
+	var buttons: Array[Button] = []
+	for child in choice_container.get_children():
+		if child is Button:
+			var button := child as Button
+			if button.visible and not button.disabled:
+				buttons.append(button)
+	if buttons.size() != 1:
+		return false
+	buttons[0].emit_signal("pressed")
+	return true
+
+
+func _handle_mind_key_input(event: InputEvent) -> bool:
+	if not (event is InputEventKey):
+		return false
+	var key_event = event as InputEventKey
+	if key_event == null or key_event.echo:
+		return false
+	var key = key_event.physical_keycode if key_event.physical_keycode != 0 else key_event.keycode
+	var pressed = key_event.pressed
+	match key:
+		KEY_LEFT, KEY_A:
+			_set_mind_direction("left", pressed)
+			return true
+		KEY_RIGHT, KEY_D:
+			_set_mind_direction("right", pressed)
+			return true
+		KEY_UP, KEY_W:
+			_set_mind_direction("up", pressed)
+			return true
+		KEY_DOWN, KEY_S:
+			_set_mind_direction("down", pressed)
+			return true
+		_:
+			return false
+
+
+func _is_confirm_key_event(event: InputEventKey) -> bool:
+	var key = event.physical_keycode if event.physical_keycode != 0 else event.keycode
+	return key == KEY_SPACE or key == KEY_ENTER or key == KEY_KP_ENTER
 
 
 func _set_phase(step_num: int, title: String, body: String) -> void:
 	header_label.text = title
 	phase_label.text = "TUTORIAL STEP %d / %d" % [step_num, TOTAL_STEPS]
 	info_label.text = body
+	info_label.scroll_to_line(0)
 
 func _join_lines(lines: Array) -> String:
 	var result = ""
@@ -176,9 +255,11 @@ func _clear_choices() -> void:
 	if _pull_timer != null:
 		_pull_timer.stop()
 	_pull_is_holding = false
+	_pull_step_active = false
 	if _adjust_timer != null:
 		_adjust_timer.stop()
 	_adjust_is_holding = false
+	_adjust_gauge_active = false
 
 
 func _add_choice_button(text: String, callback: Callable) -> Button:
@@ -191,12 +272,54 @@ func _add_choice_button(text: String, callback: Callable) -> Button:
 		callback.call()
 	)
 	choice_container.add_child(button)
-	print("[DEBUG] Choice button added: %s" % text)
 	return button
+
+
+func _ensure_tutorial_flavors() -> void:
+	for flavor_id in TUTORIAL_FLAVORS:
+		var current = PlayerData.get_flavor_amount(flavor_id)
+		if current < TUTORIAL_FLAVOR_STOCK:
+			PlayerData.add_flavor(flavor_id, TUTORIAL_FLAVOR_STOCK - current)
+
+
+func _show_center_countdown(final_text: String = "START") -> void:
+	var layer = CanvasLayer.new()
+	layer.layer = 100
+	add_child(layer)
+
+	var center = CenterContainer.new()
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	layer.add_child(center)
+
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(220, 120)
+	center.add_child(panel)
+
+	var label = Label.new()
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.custom_minimum_size = Vector2(180, 84)
+	label.add_theme_font_size_override("font_size", 54)
+	panel.add_child(label)
+
+	for step_text in ["3", "2", "1", final_text]:
+		label.text = step_text
+		label.scale = Vector2(1.16, 1.16)
+		label.modulate = Color(1, 1, 1, 0)
+		var tween = create_tween()
+		tween.set_parallel(true)
+		tween.tween_property(label, "modulate:a", 1.0, 0.1)
+		tween.tween_property(label, "scale", Vector2.ONE, 0.16)
+		await tween.finished
+		await get_tree().create_timer(0.34 if step_text == final_text else 0.42).timeout
+
+	layer.queue_free()
 
 
 func _show_intro_step() -> void:
 	print("[DEBUG] _show_intro_step start")
+	_ensure_tutorial_flavors()
 	_set_phase(
 		1,
 		"スミさんの特訓",
@@ -218,6 +341,7 @@ func _show_intro_step() -> void:
 
 func _show_mix_step() -> void:
 	print("[DEBUG] _show_mix_step start")
+	_ensure_tutorial_flavors()
 	_set_phase(2, "フレーバーの配分", "ダブルアップルとミントの配合を決める。\n合計12gになるようスライダーで調整する。")
 	_clear_choices()
 	_tutorial_sliders.clear()
@@ -327,15 +451,43 @@ func _on_tutorial_mix_confirmed() -> void:
 	_set_phase(
 		2,
 		"フレーバーの配分: 決定",
-		"配合: ダブルアップル %dg / ミント %dg\n%s\n\nスミ「ミックスは自由だが、芯がないとただ味が濁るだけだ。次はアルミ張りだ」" % [apple_g, mint_g, feedback]
+		"配合: ダブルアップル %dg / ミント %dg\n%s\n\nスミ「ミックスは自由だが、芯がないとただ味が濁るだけだ。次は詰め方を決める」" % [apple_g, mint_g, feedback]
 	)
+	_clear_choices()
+	_add_choice_button("次へ（パッキングスタイル）", _show_packing_style_step)
+
+
+func _show_packing_style_step() -> void:
+	_set_phase(3, "パッキングスタイル", "大会と同じ基準で、葉の詰め方を選ぶ。吸い心地と火力に影響する。")
+	_clear_choices()
+	var lines: Array[String] = []
+	lines.append("ふわふわ: 軽い立ち上がり。吸いやすいが熱量はやや弱い。")
+	lines.append("ふつう: バランス重視。大会でも基準にしやすい。")
+	lines.append("しっかり: 厚い煙が出るが、火力管理を外すと暴れやすい。")
+	info_label.text = _join_lines(lines)
+	_add_choice_button("ふわふわ（軽い立ち上がり）", _on_packing_style_selected.bind("fluffy"))
+	_add_choice_button("ふつう（大会基準 / 安定）", _on_packing_style_selected.bind("normal"))
+	_add_choice_button("しっかり（厚い煙 / 高火力寄り）", _on_packing_style_selected.bind("firm"))
+
+
+func _on_packing_style_selected(style: String) -> void:
+	_selected_pack_style = style
+	var message = ""
+	match style:
+		"fluffy":
+			message = "ふわっと詰める。温度は入りやすいが、煙の厚みは控えめ。"
+		"firm":
+			message = "しっかり詰める。煙は重くなるが、火力管理を丁寧にやる必要がある。"
+		_:
+			message = "標準的な密度で詰める。大会でも基準にしやすい安定型。"
+	GameManager.play_ui_se("confirm")
+	_set_phase(3, "パッキングスタイル: 決定", "%s\n\nスミ「詰め方は後の温度管理まで響く。次はアルミ張りだ」" % message)
 	_clear_choices()
 	_add_choice_button("次へ（アルミ張り）", _show_aluminum_step)
 
 func _show_aluminum_step() -> void:
 	_set_phase(4, "アルミ穴あけ", "円形レーンの判定点にノーツが来たら叩く。Taiko風のタイミング勝負。\nスミ「ここでお前のリズム感が熱を左右する。ズレれば味も濁るぞ」")
 	_clear_choices()
-	_aluminum_active = true
 	_aluminum_notes.clear()
 	_aluminum_notes_spawned = 0
 	_aluminum_spawn_cooldown = 0
@@ -348,18 +500,20 @@ func _show_aluminum_step() -> void:
 	_aluminum_required_hits = 6
 	_aluminum_total_notes = 8
 
+	var press_button = Button.new()
+	press_button.text = "ドン（穴を開ける / Space / Enter）"
+	press_button.custom_minimum_size = Vector2(0, 44)
+	press_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	press_button.pressed.connect(_on_aluminum_press_hole)
+	choice_container.add_child(press_button)
+	_update_aluminum_rhythm_text()
+	await _show_center_countdown("START")
+	_aluminum_active = true
 	var beat_wait = 0.16
 	_aluminum_spawn_interval_ticks = 2
 	_aluminum_timer.wait_time = beat_wait
 	_aluminum_timer.start()
 	_spawn_aluminum_note()
-
-	var press_button = Button.new()
-	press_button.text = "ドン（穴を開ける）"
-	press_button.custom_minimum_size = Vector2(0, 44)
-	press_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	press_button.pressed.connect(_on_aluminum_press_hole)
-	choice_container.add_child(press_button)
 	_update_aluminum_rhythm_text()
 
 func _on_aluminum_tick() -> void:
@@ -697,6 +851,7 @@ func _start_mind_barrage_step() -> void:
 	_add_mind_pad_spacer(dpad)
 
 	_update_mind_barrage_info_text()
+	await _show_center_countdown("START")
 	call_deferred("_begin_mind_barrage_loop")
 
 func _add_mind_pad_spacer(parent: GridContainer) -> void:
@@ -1007,19 +1162,21 @@ func _show_pull_step() -> void:
 	_set_phase(
 		5,
 		"吸い出し練習",
-		"吸い出し前は温度が合格ライン未達。吸い出しで温度帯に置く。\n※吸い出しゲージはタイミング用、温度状態は別管理。"
+		"吸い出し前は温度が合格ライン未達。吸い出しで温度帯に置く。\n操作: ボタンまたは Space / Enter 長押し。離した瞬間で判定。"
 	)
 	_clear_choices()
 	_pull_step_finished = false
 	_pull_is_holding = false
+	_pull_step_active = true
 	_configure_pull_by_setup()
 
 	var hold_button = Button.new()
-	hold_button.text = "押して吸う（離して止める）"
+	hold_button.text = "押して吸う（離して止める / Space / Enter）"
 	hold_button.custom_minimum_size = Vector2(0, 48)
 	hold_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hold_button.button_down.connect(_on_pull_hold_started)
 	hold_button.button_up.connect(_on_pull_hold_released)
+	hold_button.mouse_exited.connect(_on_pull_hold_released)
 	choice_container.add_child(hold_button)
 
 	_update_pull_text("スミ「ここでの吸い出しが仕上がりを決める。精神戦の結果でゲージ速度が変わるぞ」\n現在の速度補正: %s" % _mind_pull_adjust_text())
@@ -1027,9 +1184,9 @@ func _show_pull_step() -> void:
 
 func _compute_pull_start_temp_level() -> float:
 	var level = TEMP_PASS_LINE - 0.22
-	if _selected_pack_style == "light":
+	if _selected_pack_style == "fluffy":
 		level += 0.03
-	elif _selected_pack_style == "tight":
+	elif _selected_pack_style == "firm":
 		level -= 0.04
 	if _selected_charcoal_count >= 4:
 		level += 0.02
@@ -1044,11 +1201,11 @@ func _configure_pull_by_setup() -> void:
 	var speed = 0.95
 	var width = 0.18
 	var center = _temperature_center()
-	if _selected_pack_style == "light":
+	if _selected_pack_style == "fluffy":
 		speed -= 0.08
 		width += 0.02
 		center -= 0.01
-	elif _selected_pack_style == "tight":
+	elif _selected_pack_style == "firm":
 		speed += 0.16
 		width -= 0.03
 		center += 0.02
@@ -1102,18 +1259,15 @@ func _on_pull_timer_tick() -> void:
 	if not _pull_is_holding:
 		return
 	var delta = _pull_timer.wait_time
-	_pull_gauge_value += _pull_gauge_direction * _pull_gauge_speed * delta
+	_pull_gauge_value += _pull_gauge_speed * delta
 	if _pull_gauge_value >= 1.0:
-		_pull_gauge_value = 1.0
-		_pull_gauge_direction = -1.0
-	elif _pull_gauge_value <= 0.0:
-		_pull_gauge_value = 0.0
-		_pull_gauge_direction = 1.0
+		_pull_gauge_value = fposmod(_pull_gauge_value, 1.0)
 	_update_pull_text("吸い出し中...離すと判定")
 
 
 func _resolve_pull_quality() -> void:
 	_pull_step_finished = true
+	_pull_step_active = false
 	var quality = _evaluate_gauge_quality(_pull_gauge_value, _pull_target_center, _pull_target_width)
 	_pull_quality = quality
 
@@ -1159,12 +1313,13 @@ func _update_pull_text(status_text: String) -> void:
 	var bar = _build_gauge_bar(_pull_gauge_value, _pull_target_center, _pull_target_width)
 	var lines: Array[String] = []
 	lines.append(status_text)
-	lines.append("吸い出しで◆を合格ライン〜最高ラインの間に置く。")
-	lines.append("ゲージ◆=手元のタイミング / 温度状態=右下の帯表示")
+	lines.append("操作: 長押しして離す。ゲージは左→右へ流れて端で左に戻る。")
+	lines.append("左ほど低温、右ほど高温。未達なら右寄せ、過熱なら左寄せ。")
 	lines.append_array(_build_temperature_band_lines(preview_temp))
 	lines.append("タイミング目標帯 ■ / ポインタ ◆")
 	lines.append(bar)
 	info_label.text = _join_lines(lines)
+	info_label.scroll_to_line(0)
 
 
 func _start_adjustment_tutorial() -> void:
@@ -1265,12 +1420,12 @@ func _apply_adjustment_drift(round_index: int) -> void:
 		_:
 			drift = randf_range(-0.12, 0.12)
 
-	if _selected_pack_style == "tight":
+	if _selected_pack_style == "firm":
 		if drift > 0.0:
 			drift += 0.02
 		else:
 			drift -= 0.02
-	elif _selected_pack_style == "light":
+	elif _selected_pack_style == "fluffy":
 		drift *= 0.9
 
 	if _selected_steam_minutes >= 7 and drift > 0.0:
@@ -1319,19 +1474,21 @@ func _show_adjustment_gauge_step() -> void:
 	_set_phase(
 		6,
 		"調整ゲージ %d / %d" % [round_num, ADJUST_TOTAL_ROUNDS],
-		"選択した方向: %s\n押している間だけ調整、離した瞬間で判定。\n判定は PERFECT / GOOD / NEAR / MISS。" % _adjust_action_label(_adjust_selected_action)
+		"選択した方向: %s\n押している間だけ調整、離した瞬間で判定。\nボタンでも Space / Enter でも操作できる。" % _adjust_action_label(_adjust_selected_action)
 	)
 	_clear_choices()
 	_adjust_step_finished = false
 	_adjust_is_holding = false
+	_adjust_gauge_active = true
 	_configure_adjust_gauge()
 
 	var hold_button = Button.new()
-	hold_button.text = "押して調整（離して決定）"
+	hold_button.text = "押して調整（離して決定 / Space / Enter）"
 	hold_button.custom_minimum_size = Vector2(0, 48)
 	hold_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	hold_button.button_down.connect(_on_adjust_hold_started)
 	hold_button.button_up.connect(_on_adjust_hold_released)
+	hold_button.mouse_exited.connect(_on_adjust_hold_released)
 	choice_container.add_child(hold_button)
 
 	_update_adjust_text("調整待機中")
@@ -1340,7 +1497,7 @@ func _show_adjustment_gauge_step() -> void:
 func _configure_adjust_gauge() -> void:
 	var speed = 1.02 + float(_adjust_round) * 0.16
 	var width = 0.18 - float(_adjust_round) * 0.015
-	if _selected_pack_style == "tight":
+	if _selected_pack_style == "firm":
 		speed += 0.1
 		width -= 0.01
 	if _selected_charcoal_count >= 4:
@@ -1381,18 +1538,15 @@ func _on_adjust_timer_tick() -> void:
 	if not _adjust_is_holding:
 		return
 	var delta = _adjust_timer.wait_time
-	_adjust_gauge_value += _adjust_gauge_direction * _adjust_gauge_speed * delta
+	_adjust_gauge_value += _adjust_gauge_speed * delta
 	if _adjust_gauge_value >= 1.0:
-		_adjust_gauge_value = 1.0
-		_adjust_gauge_direction = -1.0
-	elif _adjust_gauge_value <= 0.0:
-		_adjust_gauge_value = 0.0
-		_adjust_gauge_direction = 1.0
+		_adjust_gauge_value = fposmod(_adjust_gauge_value, 1.0)
 	_update_adjust_text("調整中...離すと判定")
 
 
 func _resolve_adjustment_round() -> void:
 	_adjust_step_finished = true
+	_adjust_gauge_active = false
 	var quality = _evaluate_gauge_quality(_adjust_gauge_value, _adjust_target_center, _adjust_target_width)
 	var action_correct = _adjust_selected_action == _adjust_target_action
 	var timing_good = quality == "perfect" or quality == "good"
@@ -1462,7 +1616,7 @@ func _adjust_strength_from_quality(quality: String) -> float:
 			base = 0.10
 		_:
 			base = 0.06
-	if _selected_pack_style == "tight":
+	if _selected_pack_style == "firm":
 		base += 0.01
 	if _selected_charcoal_count >= 4:
 		base += 0.01
@@ -1505,23 +1659,23 @@ func _update_adjust_text(status_text: String) -> void:
 	var lines: Array[String] = []
 	lines.append("選択した方向: %s" % _adjust_action_label(_adjust_selected_action))
 	lines.append(status_text)
-	lines.append("成功基準: 方向正解 + GOOD以上 + 温度帯へ接近")
+	lines.append("操作: 長押しして離す。ゲージは左→右へ流れて端で左に戻る。")
+	lines.append("左ほど弱く、右ほど強い。成功: 方向正解 + GOOD以上。")
 	lines.append_array(_build_temperature_band_lines(_temp_level))
 	lines.append("調整タイミング目標帯 ■ / ポインタ ◆")
 	lines.append(bar)
 	info_label.text = _join_lines(lines)
+	info_label.scroll_to_line(0)
 
 
 func _build_temperature_band_lines(value: float, drift: float = 0.0) -> Array[String]:
 	var lines: Array[String] = []
-	lines.append("温度状態（吸い出しゲージとは別）")
-	lines.append("目標: 合格ライン〜最高ラインを維持")
 	lines.append("現在: %s / %d℃" % [_temperature_zone_label(value), _temperature_to_celsius(value)])
-	lines.append("読み方: [低温][合格][最高][過熱] の ● が現在位置")
+	lines.append("目標: 合格帯〜最高帯を維持")
+	lines.append("低温=上げる / 過熱=下げる")
 	lines.append(_build_temperature_zone_cells(value))
 	if abs(drift) >= 0.03:
 		lines.append("傾向: %s" % _temperature_trend_text(drift))
-	lines.append("状態: %s" % _temperature_zone_label(value))
 	return lines
 
 
@@ -1530,7 +1684,7 @@ func _build_temperature_zone_cells(value: float) -> String:
 	var p = "●" if value >= TEMP_PASS_LINE and value < _temperature_center() else " "
 	var top = "●" if value >= _temperature_center() and value <= TEMP_TOP_LINE else " "
 	var high = "●" if value > TEMP_TOP_LINE else " "
-	return "[低温 %s] [合格 %s] [最高 %s] [過熱 %s]" % [low, p, top, high]
+	return "[低温 %s|上げる] [合格 %s] [最高 %s] [過熱 %s|下げる]" % [low, p, top, high]
 
 
 func _temperature_to_celsius(value: float) -> int:
