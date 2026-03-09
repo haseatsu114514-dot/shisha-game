@@ -4,6 +4,21 @@ const TOTAL_STEPS := 16
 const TOURNAMENT_SCENE_PATH := "res://scenes/tournament/ch1_tournament.tscn"
 const MORNING_PHONE_SCENE_PATH := "res://scenes/daily/morning_phone.tscn"
 const TITLE_SCENE_PATH := "res://scenes/title/title_screen.tscn"
+const STEP_STAGE_META := {
+	1: {"tag": "SETUP", "summary": "機材と会場の初期条件を固める", "hint": "会場カット、選手入場、機材差分を差し込める。", "preview": "入場演出 / 会場紹介予定", "color": Color("e43b44")},
+	2: {"tag": "FLAVOR", "summary": "テーマに沿ったフレーバーを選ぶ", "hint": "候補比較やフレーバー画像の差し込み向き。", "preview": "候補カード / テーマ演出予定", "color": Color("f77622")},
+	3: {"tag": "MIX", "summary": "12gの配分で主軸を作る", "hint": "断面図、素材アイコン、配合図を足せる。", "preview": "配合図 / ボウル断面予定", "color": Color("feae34")},
+	4: {"tag": "PACK", "summary": "詰め方で立ち上がりを調整する", "hint": "密度差の比較アニメを追加しやすい。", "preview": "パッキング差分演出予定", "color": Color("e4a672")},
+	5: {"tag": "FOIL", "summary": "アルミ穴あけの精度を競う", "hint": "ヒットエフェクトや光演出を盛りやすい。", "preview": "リズム演出 / 判定演出予定", "color": Color("8bd5ff")},
+	6: {"tag": "FLIP", "summary": "炭準備で火力の初速を決める", "hint": "炭の火花や手元アニメの差し込み枠。", "preview": "炭準備カット / 火花予定", "color": Color("ff7a59")},
+	7: {"tag": "HEAT", "summary": "炭配置でベース温度を作る", "hint": "配置図と温度差分の見せ場にできる。", "preview": "炭配置図 / 熱量比較予定", "color": Color("ff9466")},
+	8: {"tag": "STEAM", "summary": "蒸らし時間で煙の芯を整える", "hint": "タイマーと湯気アニメを足せる。", "preview": "蒸らしタイマー演出予定", "color": Color("cfe7ff")},
+	9: {"tag": "FOCUS", "summary": "精神戦を抜けて手元を安定させる", "hint": "観客カットや不安演出の差し込み先。", "preview": "思考弾幕 / 観客演出予定", "color": Color("b55088")},
+	10: {"tag": "PULL", "summary": "吸い出しと提供でラウンドを作る", "hint": "煙量変化、提供リアクション、SE連動向き。", "preview": "吸い出し / 提供演出予定", "color": Color("2ce8f5")},
+	13: {"tag": "ROUND", "summary": "ラウンドごとの勝敗を見せる", "hint": "順位発表、テロップ、カメラ演出の差し込み先。", "preview": "順位演出 / テロップ予定", "color": Color("8b9bb4")},
+	15: {"tag": "PRESENT", "summary": "売りを言語化して押し切る", "hint": "審査員反応カットや字幕演出向き。", "preview": "プレゼン演出 / 反応差分予定", "color": Color("68386c")},
+	16: {"tag": "RESULT", "summary": "最終発表で着地させる", "hint": "結果画面、歓声、敗北演出を重ねやすい。", "preview": "最終結果演出予定", "color": Color("feae34")},
+}
 
 const FLAVOR_NAME_MAP := {
 	"double_apple": "アルファーヘブン ダブルアップル",
@@ -56,6 +71,8 @@ const REBUTTAL_PROMPTS := [
 const REWARD_BY_RANK := {1: 30000, 2: 15000, 3: 5000, 4: 0}
 const PULL_DIFFICULTY := [0.86, 1.0, 1.22, 1.06]
 const TOTAL_PACKING_GRAMS := 12
+const INFO_WRAP_CHARS := 28
+const INFO_PAGE_MAX_LINES := 7
 const PULL_MIN_ROUNDS := 2
 const PULL_MAX_ROUNDS := 6
 const MIND_BARRAGE_BASE_LIVES := 3
@@ -235,7 +252,17 @@ const PRESENTATION_FOCUS_LABEL := {
 
 @onready var header_label: Label = %HeaderLabel
 @onready var phase_label: Label = %PhaseLabel
+@onready var step_tag_label: Label = %StepTagLabel
+@onready var step_summary_label: Label = %StepSummaryLabel
+@onready var step_hint_label: Label = %StepHintLabel
+@onready var preview_label: Label = %PreviewLabel
+@onready var preview_subtitle_label: Label = %PreviewSubtitleLabel
+@onready var preview_accent: ColorRect = %PreviewAccent
 @onready var info_label: RichTextLabel = %InfoLabel
+@onready var info_footer: HBoxContainer = %InfoFooter
+@onready var info_page_label: Label = %InfoPageLabel
+@onready var info_prev_button: Button = %InfoPrevButton
+@onready var info_next_button: Button = %InfoNextButton
 @onready var choice_container: VBoxContainer = %ChoiceContainer
 @onready var judge_label: Label = %JudgeLabel
 @onready var score_label: RichTextLabel = %ScoreLabel
@@ -283,6 +310,9 @@ var _pull_is_holding: bool = false
 var _pull_step_resolved: bool = false
 var _pull_hold_button: Button
 var _pull_setting_hint: String = ""
+var _info_raw_text: String = ""
+var _info_pages: Array[String] = []
+var _info_page_index: int = 0
 
 var _adjust_target_action: String = ""
 var _adjust_selected_action: String = ""
@@ -447,6 +477,10 @@ func _ready() -> void:
 	_mini_dialogue_timer.one_shot = false
 	_mini_dialogue_timer.timeout.connect(_on_mini_dialogue_tick)
 	add_child(_mini_dialogue_timer)
+	if info_prev_button != null:
+		info_prev_button.pressed.connect(_on_info_prev_pressed)
+	if info_next_button != null:
+		info_next_button.pressed.connect(_on_info_next_pressed)
 	
 	if GameManager.game_state != "tournament":
 		GameManager.transition_to_tournament()
@@ -608,18 +642,128 @@ func _set_phase(step_num: int, title: String, body: String) -> void:
 	header_label.text = title
 	header_label.add_theme_color_override("font_color", GameManager.THEME_VERMILION)
 	phase_label.text = "STEP %d / %d" % [step_num, TOTAL_STEPS]
-	info_label.text = body
+	_set_info_text(body)
+	_update_step_stage(step_num, title)
 	_show_round_announce(step_num, title)
 	_show_mc_comment(step_num)
 
 
-func _append_info(text: String) -> void:
+func _update_step_stage(step_num: int, title: String) -> void:
+	var meta: Dictionary = STEP_STAGE_META.get(step_num, {
+		"tag": "STEP",
+		"summary": title,
+		"hint": "ここに画像・小アニメ・審査員リアクションを追加できる。",
+		"preview": "演出プレビュー待ち",
+		"color": Color("e43b44"),
+	})
+	if step_tag_label != null:
+		step_tag_label.text = str(meta.get("tag", "STEP"))
+	if step_summary_label != null:
+		step_summary_label.text = str(meta.get("summary", title))
+	if step_hint_label != null:
+		step_hint_label.text = str(meta.get("hint", "ここに画像・小アニメ・審査員リアクションを追加できる。"))
+	if preview_label != null:
+		preview_label.text = title
+	if preview_subtitle_label != null:
+		preview_subtitle_label.text = str(meta.get("preview", "演出プレビュー待ち"))
+	if preview_accent != null:
+		preview_accent.color = meta.get("color", Color("e43b44"))
+		preview_accent.scale = Vector2(1.05, 1.05)
+		preview_accent.modulate.a = 0.9
+		var tween = create_tween()
+		tween.set_parallel(true)
+		tween.tween_property(preview_accent, "scale", Vector2.ONE, 0.22)
+		tween.tween_property(preview_accent, "modulate:a", 0.42, 0.28)
+
+
+func _set_info_text(text: String, jump_to_last: bool = false) -> void:
+	_info_raw_text = _compact_info_text(text)
+	_info_pages = _paginate_info_text(_info_raw_text)
+	_info_page_index = maxi(_info_pages.size() - 1, 0) if jump_to_last else 0
+	_refresh_info_page()
+
+
+func _compact_info_text(text: String) -> String:
+	if text.strip_edges() == "":
+		return ""
+	var lines = text.split("\n", false)
+	var compacted: Array[String] = []
+	var blank_streak := 0
+	for raw_line in lines:
+		var line = str(raw_line).strip_edges()
+		if line == "":
+			if blank_streak == 0 and not compacted.is_empty():
+				compacted.append("")
+			blank_streak += 1
+			continue
+		blank_streak = 0
+		compacted.append(line)
+	return "\n".join(compacted).strip_edges()
+
+
+func _paginate_info_text(text: String) -> Array[String]:
+	var pages: Array[String] = []
+	if text == "":
+		pages.append("")
+		return pages
+	var wrapped = GameManager.format_story_text(text, INFO_WRAP_CHARS)
+	var lines = wrapped.split("\n", false)
+	var current_lines: Array[String] = []
+	for raw_line in lines:
+		var line = str(raw_line)
+		if line == "" and current_lines.is_empty():
+			continue
+		current_lines.append(line)
+		if current_lines.size() >= INFO_PAGE_MAX_LINES:
+			pages.append("\n".join(current_lines).strip_edges())
+			current_lines.clear()
+	if not current_lines.is_empty():
+		pages.append("\n".join(current_lines).strip_edges())
+	if pages.is_empty():
+		pages.append("")
+	return pages
+
+
+func _refresh_info_page() -> void:
+	if info_label == null:
+		return
+	if _info_pages.is_empty():
+		_info_pages = [""]
+	_info_page_index = clampi(_info_page_index, 0, _info_pages.size() - 1)
+	info_label.text = _info_pages[_info_page_index]
+	if info_footer == null:
+		return
+	var multi_page = _info_pages.size() > 1
+	info_footer.visible = multi_page
+	if info_page_label != null:
+		info_page_label.text = "説明 %d / %d" % [_info_page_index + 1, _info_pages.size()]
+	if info_prev_button != null:
+		info_prev_button.disabled = not multi_page or _info_page_index <= 0
+	if info_next_button != null:
+		info_next_button.disabled = not multi_page or _info_page_index >= _info_pages.size() - 1
+
+
+func _on_info_prev_pressed() -> void:
+	if _info_page_index <= 0:
+		return
+	_info_page_index -= 1
+	_refresh_info_page()
+
+
+func _on_info_next_pressed() -> void:
+	if _info_page_index >= _info_pages.size() - 1:
+		return
+	_info_page_index += 1
+	_refresh_info_page()
+
+
+func _append_info(text: String, separator: String = "\n\n") -> void:
 	if text.strip_edges() == "":
 		return
-	if info_label.text.strip_edges() == "":
-		info_label.text = text
+	if _info_raw_text.strip_edges() == "":
+		_set_info_text(text, true)
 	else:
-		info_label.text += "\n\n" + text
+		_set_info_text(_info_raw_text + separator + text, true)
 
 
 func _clear_choices() -> void:
@@ -945,7 +1089,7 @@ func _update_packing_info_text() -> void:
 		lines.append("%dg 超過。12gに戻して。" % abs(remaining))
 	else:
 		lines.append("残り %dg を配分して。" % remaining)
-	info_label.text = "\n".join(lines)
+	_set_info_text("\n".join(lines))
 
 
 func _ensure_manual_packing_grams() -> void:
@@ -1172,7 +1316,7 @@ func _show_packing_style_step() -> void:
 	else:
 		lines.append("ヒント: どのスタイルでも安定する組み合わせ。")
 
-	info_label.text = "\n".join(lines)
+	_set_info_text("\n".join(lines))
 
 	_add_choice_button("ふわふわ（軽い立ち上がり・吸いやすい）", _on_packing_style_selected.bind("fluffy"))
 	_add_choice_button("ふつう（バランス重視）", _on_packing_style_selected.bind("normal"))
@@ -1546,7 +1690,7 @@ func _update_aluminum_rhythm_text() -> void:
 	lines.append("穴あけ進捗: %s" % progress_bar)
 	lines.append("成功 %d / %d" % [hit_count, total])
 	lines.append("光ったらタップ！ 早いほど高精度。")
-	info_label.text = "\n".join(lines)
+	_set_info_text("\n".join(lines))
 
 
 func _update_aluminum_grid_visual() -> void:
@@ -1613,7 +1757,7 @@ func _show_charcoal_place_step() -> void:
 	elif _selected_hms == "amaburst":
 		hint = "この機材は4個で熱量を叩き込むのが正解。"
 		
-	info_label.text = "【ヒント】\n" + hint
+	_set_info_text("【ヒント】\n" + hint)
 	
 	_add_choice_button("3個（基本／安定）", _on_charcoal_place_selected.bind(3))
 	_add_choice_button("4個（攻め／狙いがある時）", _on_charcoal_place_selected.bind(4))
@@ -1789,7 +1933,7 @@ func _show_mind_barrage_intro(summary_text: String = "") -> void:
 	lines.append("")
 	lines.append("蒸らし %d分 -> 耐久 %.1f秒" % [_steam_minutes, duration_sec])
 	lines.append("残機: %d（0になると吸い出しゲージは最悪速度）" % lives)
-	info_label.text = "\n".join(lines)
+	_set_info_text("\n".join(lines))
 	_add_choice_button("弾幕開始", _start_mind_barrage_step)
 	_refresh_side_panel()
 
@@ -2548,7 +2692,7 @@ func _update_mind_barrage_info_text() -> void:
 	lines.append("残機 %s  集中度 %d%%" % [_build_mind_life_text(), focus])
 	var mode_text = "[集中]" if _mind_focus_mode else ""
 	lines.append("被弾 %d  回避 %d  GRAZE %d  %s" % [_mind_hits, _mind_dodged_count, _mind_graze_count, mode_text])
-	info_label.text = "\n".join(lines)
+	_set_info_text("\n".join(lines))
 
 
 func _build_mind_life_text() -> String:
@@ -3147,11 +3291,11 @@ func _update_pull_gauge_text() -> void:
 		bar_chars.append(char)
 
 	var status_text = "吸い出し中...離すと判定" if _pull_is_holding else "ボタンを押して吸い出し開始"
-	info_label.text = "%s\n%s\n%s\n目標帯 ■ / ポインタ ◆\n※このゲージはタイミング用。温度は右パネルの縦表示で確認。" % [
+	_set_info_text("%s\n%s\n%s\n目標帯 ■ / ポインタ ◆\n※このゲージはタイミング用。温度は右パネルの縦表示で確認。" % [
 		status_text,
 		_pull_setting_hint,
 		"".join(bar_chars),
-	]
+	])
 
 
 func _on_pull_hold_started() -> void:
@@ -3296,7 +3440,7 @@ func _show_serving_step() -> void:
 	var lines: Array[String] = []
 	lines.append("吸い出しヒット: %d / %d" % [_pull_hit_count, maxi(_pull_round, 1)])
 	lines.append("吸い出し品質: %.1f" % _pull_quality_total)
-	info_label.text = "\n".join(lines)
+	_set_info_text("\n".join(lines))
 	_add_choice_button("提供する", _on_serving_confirmed)
 	_refresh_side_panel()
 
@@ -3357,7 +3501,7 @@ func _show_round_result(round_num: int) -> void:
 				player_total - row_total,
 			])
 
-	info_label.text = "\n".join(lines)
+	_set_info_text("\n".join(lines))
 	
 	# ラウンド終了ごとのシナリオ再生と次のフェーズへの遷移セット
 	var dialogue_id = ""
@@ -3656,7 +3800,7 @@ func _update_adjust_text(status_text: String) -> void:
 	lines.append(status_text)
 	lines.append("タイミング目標帯 ■ / ポインタ ◆")
 	lines.append(bar)
-	info_label.text = "\n".join(lines)
+	_set_info_text("\n".join(lines))
 
 
 func _resolve_adjustment_round(round_index: int) -> void:
@@ -3943,7 +4087,7 @@ func _finalize_and_show_result() -> void:
 		lines.append("今回は %d位。1位になるまで本編進行不可。" % _player_rank)
 		lines.append("賞金は再挑戦中は支給されない。")
 
-	info_label.text = ""
+	_set_info_text("")
 	# ダンガンロンパ風: 段階的に結果を表示する演出
 	await _dramatic_result_reveal(ranking)
 
@@ -3963,11 +4107,11 @@ func _dramatic_result_reveal(ranking: Array) -> void:
 	var breakdown_lines: Array[String] = []
 	breakdown_lines.append("【あなたの得点内訳】")
 	breakdown_lines.append_array(_build_player_score_breakdown_lines())
-	info_label.text = "\n".join(breakdown_lines)
+	_set_info_text("\n".join(breakdown_lines))
 	await get_tree().create_timer(1.0).timeout
 
 	# 「最終順位発表」のテキストをバーンと表示
-	info_label.text += "\n\n【 最 終 順 位 発 表 】"
+	_append_info("【 最 終 順 位 発 表 】")
 	GameManager.play_ui_se("confirm")
 	await get_tree().create_timer(0.8).timeout
 
@@ -3980,28 +4124,26 @@ func _dramatic_result_reveal(ranking: Array) -> void:
 		var rank_marker = "★" if is_player else "─"
 		var name_text = str(row.get("name", "-"))
 
-		info_label.text += "\n%s %d位  %s  %.1f点（専門 %.1f / 一般 %.1f）" % [
+		_append_info("%s %d位  %s  %.1f点（専門 %.1f / 一般 %.1f）" % [
 			rank_marker,
 			i + 1,
 			name_text,
 			float(row.get("total", 0.0)),
 			float(row.get("specialist", 0.0)),
 			float(row.get("audience", 0.0)),
-		]
+		], "\n")
 		GameManager.play_ui_se("cursor")
 		await get_tree().create_timer(0.7).timeout
 
 	# 結果メッセージ
 	await get_tree().create_timer(0.3).timeout
 	if _special_mix_name != "":
-		info_label.text += "\n特別ミックス: %s" % _special_mix_name
+		_append_info("特別ミックス: %s" % _special_mix_name, "\n")
 	if _player_rank == 1:
-		info_label.text += "\n\n賞金: %d円" % _pending_reward
-		info_label.text += "\nSMOKE CROWN CUP優勝！"
+		_append_info("賞金: %d円\nSMOKE CROWN CUP優勝！" % _pending_reward)
 		_dramatic_impact("優勝！")
 	else:
-		info_label.text += "\n\n今回は %d位。1位になるまで本編進行不可。" % _player_rank
-		info_label.text += "\n賞金は再挑戦中は支給されない。"
+		_append_info("今回は %d位。1位になるまで本編進行不可。\n賞金は再挑戦中は支給されない。" % _player_rank)
 		_screen_shake(6.0, 0.25)
 
 	# シーシャランク表示
@@ -4009,10 +4151,7 @@ func _dramatic_result_reveal(ranking: Array) -> void:
 	var player_score_data = _build_player_score()
 	var rank_info = ShishaRank.calculate_rank(float(player_score_data.get("total", 0.0)), 1)
 	var rank_text = ShishaRank.get_rank_display_text(float(player_score_data.get("total", 0.0)), 1)
-	info_label.text += "\n\n━━━━━━━━━━━━━━━━━━━━"
-	info_label.text += "\n\n　　シーシャランク"
-	info_label.text += "\n\n　　　%s" % rank_text
-	info_label.text += "\n\n━━━━━━━━━━━━━━━━━━━━"
+	_append_info("━━━━━━━━━━━━━━━━━━━━\n\n　　シーシャランク\n\n　　　%s\n\n━━━━━━━━━━━━━━━━━━━━" % rank_text)
 	GameManager.play_ui_se("confirm")
 	EventFlags.set_value("ch1_tournament_shisha_rank", rank_info["rank"])
 
@@ -4176,6 +4315,7 @@ func _apply_result_and_continue() -> void:
 
 	EventFlags.set_flag("ch1_tournament_completed", true)
 	EventFlags.set_value("ch1_tournament_rank", _player_rank)
+	EventFlags.set_flag("ch1_tournament_rank_not_1", _player_rank != 1)
 	GameManager.set_transient("morning_notice", _build_post_tournament_notice())
 	GameManager.transition_to_interval()
 
@@ -4879,8 +5019,8 @@ func _show_round_announce(step_num: int, title: String) -> void:
 	line.anchor_left = 0.2
 	line.anchor_right = 0.8
 	line.anchor_top = 0.56
-	line.custom_minimum_size = Vector2(0, 3)
-	line.size = Vector2(0, 3)
+	line.anchor_bottom = 0.56
+	line.offset_bottom = 3.0
 	line.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	line.modulate.a = 0.0
 	layer.add_child(line)
@@ -5145,8 +5285,11 @@ func _glitch_transition() -> void:
 		layer.add_child(bar)
 
 	var tween = create_tween()
-	tween.tween_property(layer, "modulate:a", 0.0, 0.2).set_delay(0.08)
-	tween.tween_callback(layer.queue_free)
+	tween.set_parallel(true)
+	for child in layer.get_children():
+		if child is CanvasItem:
+			tween.tween_property(child, "modulate:a", 0.0, 0.2).set_delay(0.08)
+	tween.chain().tween_callback(layer.queue_free)
 
 
 class _ScanlineEffect extends Control:
