@@ -18,6 +18,12 @@ const BGM_RESULT_EMOTIONAL_PATH = "res://assets/audio/bgm/bgm_result_emotional.m
 const DEFAULT_BGM_LEVEL := 0.8
 const DEFAULT_SE_LEVEL := 0.8
 const SILENT_DB := -80.0
+const QUICK_SAVE_SLOT := 1
+const MAP_SCENE_PATH := "res://scenes/daily/map.tscn"
+const MORNING_PHONE_SCENE_PATH := "res://scenes/daily/morning_phone.tscn"
+const NIGHT_END_SCENE_PATH := "res://scenes/daily/night_end.tscn"
+const SAVE_LOAD_SCENE_PATH := "res://scenes/ui/save_load.tscn"
+const TITLE_SCENE_PATH := "res://scenes/title/title_screen.tscn"
 
 var current_chapter: int = 1
 var current_phase: String = "daily"
@@ -106,8 +112,25 @@ const SPEAKER_COLORS := {
 	"salaryman": Color("5a6988"),
 }
 
+func _resolve_speaker_theme_id(_speaker_id: String) -> String:
+	var speaker_id = _speaker_id
+	match speaker_id:
+		"tumugi":
+			speaker_id = "tsumugi"
+		"hazime":
+			speaker_id = "hajime"
+		"takiguchi", "packii":
+			speaker_id = "pakki"
+	return speaker_id
+
+
 func get_speaker_color(_speaker_id: String) -> Color:
 	return Color.WHITE
+
+
+func get_speaker_accent_color(_speaker_id: String) -> Color:
+	var speaker_id = _resolve_speaker_theme_id(_speaker_id)
+	return SPEAKER_COLORS.get(speaker_id, THEME_CREAM_TEXT)
 
 func _apply_default_theme() -> void:
 	var root_theme = get_tree().root.theme
@@ -432,6 +455,9 @@ func get_forced_event_for_today(time_slot: String) -> Dictionary:
 		var flag = str(event.get("flag", ""))
 		if flag != "" and EventFlags.get_flag(flag):
 			continue
+		var required_flag = str(event.get("condition_flag", ""))
+		if required_flag != "" and not EventFlags.get_flag(required_flag):
+			continue
 		# condition_value check: {"key": "flag_name", "equals": value}
 		var condition = event.get("condition_value", {})
 		if typeof(condition) == TYPE_DICTIONARY and not condition.is_empty():
@@ -439,10 +465,20 @@ func get_forced_event_for_today(time_slot: String) -> Dictionary:
 			if cond_key != "":
 				var actual = EventFlags.get_value(cond_key, null)
 				var expected = condition.get("equals", null)
-				if str(actual) != str(expected):
+				if not _condition_values_match(actual, expected):
 					continue
 		return event
 	return {}
+
+
+func _condition_values_match(actual: Variant, expected: Variant) -> bool:
+	var actual_type = typeof(actual)
+	var expected_type = typeof(expected)
+	if (actual_type == TYPE_INT or actual_type == TYPE_FLOAT) and (expected_type == TYPE_INT or expected_type == TYPE_FLOAT):
+		return is_equal_approx(float(actual), float(expected))
+	if actual_type == TYPE_BOOL or expected_type == TYPE_BOOL:
+		return bool(actual) == bool(expected)
+	return str(actual) == str(expected)
 
 
 func complete_forced_event(event: Dictionary) -> void:
@@ -581,6 +617,55 @@ func consume_daily_summary() -> Dictionary:
 	return snapshot
 
 
+func resolve_next_scene_path(next_scene: String) -> String:
+	if next_scene.begins_with("res://"):
+		return next_scene
+	match next_scene:
+		"", "map":
+			return MAP_SCENE_PATH
+		"night_end":
+			return NIGHT_END_SCENE_PATH
+		"tournament_opening", "tournament_match", "tournament_result", "tournament_after", "chapter_end":
+			var tournament_scene = "res://scenes/tournament/ch%d_tournament.tscn" % current_chapter
+			if ResourceLoader.exists(tournament_scene):
+				return tournament_scene
+			return MAP_SCENE_PATH
+		_:
+			return MAP_SCENE_PATH
+
+
+func get_resume_scene_path() -> String:
+	if current_phase == "tournament" or game_state == "tournament" or (CalendarManager.is_tournament_day() and not CalendarManager.is_interval):
+		return resolve_next_scene_path("tournament_opening")
+	if CalendarManager.current_time == "morning":
+		return MORNING_PHONE_SCENE_PATH
+	if CalendarManager.current_time == "midnight":
+		return NIGHT_END_SCENE_PATH
+	return MAP_SCENE_PATH
+
+
+func force_save(slot: int = QUICK_SAVE_SLOT) -> bool:
+	return save_game(slot)
+
+
+func do_load(return_scene: String = "") -> void:
+	set_transient("save_load_mode", "load")
+	set_transient("return_scene", return_scene if return_scene != "" else get_resume_scene_path())
+	get_tree().change_scene_to_file(SAVE_LOAD_SCENE_PATH)
+
+
+func log_history(title: String, detail: String) -> void:
+	var history = transient.get("history_log", [])
+	if typeof(history) != TYPE_ARRAY:
+		history = []
+	history.append({
+		"title": title,
+		"detail": detail,
+		"chapter": current_chapter,
+	})
+	transient["history_log"] = history
+
+
 func save_game(slot: int) -> bool:
 	var save_data: Dictionary = {
 		"save_version": SAVE_VERSION,
@@ -648,7 +733,10 @@ func load_game(slot: int) -> bool:
 	RivalIntel.from_save_data(data.get("rival_intel", {}))
 	EventFlags.from_save_data(data.get("event_flags", {}))
 
-	_load_forced_events()
+	if CalendarManager.is_interval:
+		_load_interval_events()
+	else:
+		_load_forced_events()
 
 	emit_signal("chapter_started", current_chapter)
 	emit_signal("game_state_changed", game_state)

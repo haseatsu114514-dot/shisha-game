@@ -1,17 +1,101 @@
 extends Control
 
-const TOTAL_STEPS := 6
+const TOTAL_STEPS := 10
 const DEFAULT_NEXT_SCENE := "res://scenes/daily/map.tscn"
 const GAUGE_TIMER_WAIT := 0.03
 const ADJUST_TOTAL_ROUNDS := 3
+const INFO_WRAP_CHARS := 27
+const INFO_PAGE_MAX_LINES := 7
 const TEMP_PASS_LINE := 0.56
 const TEMP_TOP_LINE := 0.78
 const TEMP_LEVEL_MIN := 0.0
 const TEMP_LEVEL_MAX := 1.0
+const STEP_STAGE_META := {
+	1: {
+		"tag": "FLOW",
+		"summary": "大会導線の短縮版を確認する",
+		"hint": "ここに導入カットインや立ち絵演出を差し込める。",
+		"preview": "導入演出 / 会話差し込み予定",
+		"color": Color("feae34"),
+	},
+	2: {
+		"tag": "MIX",
+		"summary": "配合バランスを決める",
+		"hint": "後でボウル断面図やレシピ画像を置ける。",
+		"preview": "レシピ図 / 断面図 / 素材アイコン",
+		"color": Color("f77622"),
+	},
+	3: {
+		"tag": "PACK",
+		"summary": "詰め方で立ち上がりを決める",
+		"hint": "葉の密度差をアニメで見せやすい工程。",
+		"preview": "パッキング比較アニメ予定",
+		"color": Color("e4a672"),
+	},
+	4: {
+		"tag": "FOIL",
+		"summary": "アルミ穴あけの精度を整える",
+		"hint": "譜面・光エフェクト追加向きの工程。",
+		"preview": "リズム演出 / ヒット演出予定",
+		"color": Color("8bd5ff"),
+	},
+	5: {
+		"tag": "FLIP",
+		"summary": "炭の準備で火力の初速を決める",
+		"hint": "炭フリップや火花の演出を入れやすい。",
+		"preview": "炭準備カット / 火花演出予定",
+		"color": Color("ff7a59"),
+	},
+	6: {
+		"tag": "HEAT",
+		"summary": "炭配置で温度の土台を作る",
+		"hint": "配置図や比較画像を後で追加できる。",
+		"preview": "炭配置図 / 熱量比較予定",
+		"color": Color("ff9466"),
+	},
+	7: {
+		"tag": "STEAM",
+		"summary": "蒸らし時間で煙の芯を作る",
+		"hint": "湯気やタイマー演出を乗せやすい。",
+		"preview": "蒸らしタイマー演出予定",
+		"color": Color("cfe7ff"),
+	},
+	8: {
+		"tag": "FOCUS",
+		"summary": "思考を整えてブレを抑える",
+		"hint": "不安ワードや小アニメの差し込み用。",
+		"preview": "思考弾幕 / 心理演出予定",
+		"color": Color("b55088"),
+	},
+	9: {
+		"tag": "PULL",
+		"summary": "吸い出しで適温帯へ入れる",
+		"hint": "煙量の変化や温度演出を重ねやすい。",
+		"preview": "吸い出し演出 / 温度変化予定",
+		"color": Color("2ce8f5"),
+	},
+	10: {
+		"tag": "ADJUST",
+		"summary": "提供後の温度維持を練習する",
+		"hint": "提供中の差分演出やリアクションを追加できる。",
+		"preview": "提供後の調整演出予定",
+		"color": Color("3e8948"),
+	},
+}
 
 @onready var header_label: Label = %HeaderLabel
 @onready var phase_label: Label = %PhaseLabel
+@onready var step_tag_label: Label = %StepTagLabel
+@onready var step_summary_label: Label = %StepSummaryLabel
+@onready var step_hint_label: Label = %StepHintLabel
+@onready var preview_label: Label = %PreviewLabel
+@onready var preview_subtitle_label: Label = %PreviewSubtitleLabel
+@onready var preview_accent: ColorRect = %PreviewAccent
 @onready var info_label: RichTextLabel = %InfoLabel
+@onready var info_footer: HBoxContainer = %InfoFooter
+@onready var info_page_label: Label = %InfoPageLabel
+@onready var info_prev_button: Button = %InfoPrevButton
+@onready var info_next_button: Button = %InfoNextButton
 @onready var choice_container: VBoxContainer = %ChoiceContainer
 @onready var status_panel = $StatusPanel
 
@@ -112,6 +196,9 @@ var _mind_move_right: bool = false
 var _mind_move_up: bool = false
 var _mind_move_down: bool = false
 var _mind_invincible_timer: float = 0.0
+var _info_raw_text: String = ""
+var _info_pages: Array[String] = []
+var _info_page_index: int = 0
 
 var _heat_state: int = 0
 var _pull_step_active: bool = false
@@ -146,6 +233,10 @@ func _ready() -> void:
 	_mind_timer.one_shot = false
 	_mind_timer.timeout.connect(_on_mind_barrage_tick)
 	add_child(_mind_timer)
+	if info_prev_button != null:
+		info_prev_button.pressed.connect(_on_info_prev_pressed)
+	if info_next_button != null:
+		info_next_button.pressed.connect(_on_info_next_pressed)
 
 	_show_intro_step()
 
@@ -230,8 +321,8 @@ func _is_confirm_key_event(event: InputEventKey) -> bool:
 func _set_phase(step_num: int, title: String, body: String) -> void:
 	header_label.text = title
 	phase_label.text = "TUTORIAL STEP %d / %d" % [step_num, TOTAL_STEPS]
-	info_label.text = body
-	info_label.scroll_to_line(0)
+	_set_info_text(body)
+	_update_step_stage(step_num, title)
 
 func _join_lines(lines: Array) -> String:
 	var result = ""
@@ -246,6 +337,109 @@ func _join_chars(chars: Array) -> String:
 	for c in chars:
 		result += str(c)
 	return result
+
+
+func _set_info_text(text: String, jump_to_last: bool = false) -> void:
+	_info_raw_text = _compact_info_text(text)
+	_info_pages = _paginate_info_text(_info_raw_text)
+	_info_page_index = maxi(_info_pages.size() - 1, 0) if jump_to_last else 0
+	_refresh_info_page()
+
+
+func _compact_info_text(text: String) -> String:
+	if text.strip_edges() == "":
+		return ""
+	var lines = text.split("\n", false)
+	var compacted: Array[String] = []
+	var blank_streak := 0
+	for raw_line in lines:
+		var line = str(raw_line).strip_edges()
+		if line == "":
+			if blank_streak == 0 and not compacted.is_empty():
+				compacted.append("")
+			blank_streak += 1
+			continue
+		blank_streak = 0
+		compacted.append(line)
+	return "\n".join(compacted).strip_edges()
+
+
+func _paginate_info_text(text: String) -> Array[String]:
+	var pages: Array[String] = []
+	if text == "":
+		pages.append("")
+		return pages
+	var wrapped = GameManager.format_story_text(text, INFO_WRAP_CHARS)
+	var lines = wrapped.split("\n", false)
+	var current_lines: Array[String] = []
+	for raw_line in lines:
+		var line = str(raw_line)
+		if line == "" and current_lines.is_empty():
+			continue
+		current_lines.append(line)
+		if current_lines.size() >= INFO_PAGE_MAX_LINES:
+			pages.append("\n".join(current_lines).strip_edges())
+			current_lines.clear()
+	if not current_lines.is_empty():
+		pages.append("\n".join(current_lines).strip_edges())
+	if pages.is_empty():
+		pages.append("")
+	return pages
+
+
+func _refresh_info_page() -> void:
+	if info_label == null:
+		return
+	if _info_pages.is_empty():
+		_info_pages = [""]
+	_info_page_index = clampi(_info_page_index, 0, _info_pages.size() - 1)
+	info_label.text = _info_pages[_info_page_index]
+	if info_footer == null:
+		return
+	var multi_page = _info_pages.size() > 1
+	info_footer.visible = multi_page
+	if info_page_label != null:
+		info_page_label.text = "説明 %d / %d" % [_info_page_index + 1, _info_pages.size()]
+	if info_prev_button != null:
+		info_prev_button.disabled = not multi_page or _info_page_index <= 0
+	if info_next_button != null:
+		info_next_button.disabled = not multi_page or _info_page_index >= _info_pages.size() - 1
+
+
+func _on_info_prev_pressed() -> void:
+	if _info_page_index <= 0:
+		return
+	_info_page_index -= 1
+	_refresh_info_page()
+
+
+func _on_info_next_pressed() -> void:
+	if _info_page_index >= _info_pages.size() - 1:
+		return
+	_info_page_index += 1
+	_refresh_info_page()
+
+
+func _update_step_stage(step_num: int, title: String) -> void:
+	var meta: Dictionary = STEP_STAGE_META.get(step_num, {})
+	if step_tag_label != null:
+		step_tag_label.text = str(meta.get("tag", "STEP"))
+	if step_summary_label != null:
+		step_summary_label.text = str(meta.get("summary", title))
+	if step_hint_label != null:
+		step_hint_label.text = str(meta.get("hint", "後から画像や小アニメを差し込める。"))
+	if preview_label != null:
+		preview_label.text = title
+	if preview_subtitle_label != null:
+		preview_subtitle_label.text = str(meta.get("preview", "演出プレビュー待ち"))
+	if preview_accent != null:
+		preview_accent.color = meta.get("color", Color("feae34"))
+		preview_accent.scale = Vector2(1.05, 1.05)
+		preview_accent.modulate.a = 0.88
+		var tween = create_tween()
+		tween.set_parallel(true)
+		tween.tween_property(preview_accent, "scale", Vector2.ONE, 0.22)
+		tween.tween_property(preview_accent, "modulate:a", 0.42, 0.28)
 
 
 
@@ -318,7 +512,6 @@ func _show_center_countdown(final_text: String = "START") -> void:
 
 
 func _show_intro_step() -> void:
-	print("[DEBUG] _show_intro_step start")
 	_ensure_tutorial_flavors()
 	_set_phase(
 		1,
@@ -327,20 +520,16 @@ func _show_intro_step() -> void:
 			"スミ「さっき渡したダブルアップルとミント、練習に使え」",
 			"スミ「大会は基礎で勝つ。まずは王道のミックスだ」",
 			"",
-			"ここではシーシャ作りの流れを短く実演する。",
-			"1. 配分を決める",
-			"2. 詰め方を決める",
-			"3. 炭と蒸らしを決める",
-			"4. 吸い出しで温度帯へ入れる",
-			"5. 温度維持の調整をやる"
+			"大会導線を短縮して一通りなぞる。",
+			"1. 配分  2. 詰め方  3. 穴あけ",
+			"4. 炭準備  5. 炭配置  6. 蒸らし",
+			"7. 思考整理  8. 吸い出し  9. 温度維持"
 		])
 	)
-	print("[DEBUG] _show_intro_step phase set")
 	_clear_choices()
 	_add_choice_button("特訓を始める", _show_mix_step)
 
 func _show_mix_step() -> void:
-	print("[DEBUG] _show_mix_step start")
 	_ensure_tutorial_flavors()
 	_set_phase(2, "フレーバーの配分", "ダブルアップルとミントの配合を決める。\n合計12gになるようスライダーで調整する。")
 	_clear_choices()
@@ -464,7 +653,7 @@ func _show_packing_style_step() -> void:
 	lines.append("ふわふわ: 軽い立ち上がり。吸いやすいが熱量はやや弱い。")
 	lines.append("ふつう: バランス重視。大会でも基準にしやすい。")
 	lines.append("しっかり: 厚い煙が出るが、火力管理を外すと暴れやすい。")
-	info_label.text = _join_lines(lines)
+	_set_info_text(_join_lines(lines))
 	_add_choice_button("ふわふわ（軽い立ち上がり）", _on_packing_style_selected.bind("fluffy"))
 	_add_choice_button("ふつう（大会基準 / 安定）", _on_packing_style_selected.bind("normal"))
 	_add_choice_button("しっかり（厚い煙 / 高火力寄り）", _on_packing_style_selected.bind("firm"))
@@ -617,7 +806,7 @@ func _finish_aluminum_rhythm() -> void:
 		]
 	)
 	_clear_choices()
-	_add_choice_button("次へ（炭の配置）", _show_charcoal_place_step)
+	_add_choice_button("次へ（炭の準備）", _show_charcoal_prep_step)
 
 func _update_aluminum_rhythm_text() -> void:
 	var ring = _build_aluminum_ring_text()
@@ -636,7 +825,7 @@ func _update_aluminum_rhythm_text() -> void:
 	lines.append("凡例: ★判定点 / ●ノーツ / ◎ノーツ重なり / ◆判定点上ノーツ")
 	lines.append("")
 	lines.append(ring)
-	info_label.text = _join_lines(lines)
+	_set_info_text(_join_lines(lines))
 
 func _build_aluminum_ring_text() -> String:
 	var slot_note_count: Dictionary = {}
@@ -673,17 +862,47 @@ func _get_aluminum_note_slot(note: Dictionary) -> int:
 func _count_aluminum_hits() -> int:
 	return _aluminum_hit_perfect + _aluminum_hit_good + _aluminum_hit_near
 
+func _show_charcoal_prep_step() -> void:
+	_set_phase(5, "炭の準備", "大会と同じように、炭フリップのタイミングを決める。")
+	_clear_choices()
+	_set_info_text(_join_lines([
+		"早め: 立ち上がりを抑えやすい。",
+		"ちょうど: 一番安定しやすい。",
+		"遅め: 火力は強いが暴れやすい。",
+	]))
+	_add_choice_button("早めにフリップ", _on_charcoal_prep_choice.bind("early"))
+	_add_choice_button("ちょうどでフリップ", _on_charcoal_prep_choice.bind("perfect"))
+	_add_choice_button("遅めにフリップ", _on_charcoal_prep_choice.bind("late"))
+
+
+func _on_charcoal_prep_choice(choice: String) -> void:
+	var delta_spec = 0
+	match choice:
+		"early":
+			delta_spec = 1
+			_heat_state -= 1
+		"late":
+			delta_spec = -1
+			_heat_state += 1
+		_:
+			delta_spec = 2
+	_heat_state = clampi(_heat_state, -3, 3)
+	_set_phase(5, "炭の準備: 決定", "炭の初速を整えた。専門 %+d\n\nスミ「次は炭をどこまで乗せるかだ」" % delta_spec)
+	_clear_choices()
+	_add_choice_button("次へ（炭の配置）", _show_charcoal_place_step)
+
+
 func _show_charcoal_place_step() -> void:
-	_set_phase(4, "炭の配置", "3個か4個を選んで配置する。機材と好みに合わせる。")
+	_set_phase(6, "炭の配置", "3個か4個を選んで配置する。機材と好みに合わせる。")
 	_clear_choices()
 	var hint = "通常は3個が基本。"
-	info_label.text = "【ヒント】\n" + hint
+	_set_info_text("【ヒント】\n" + hint)
 	_add_choice_button("3個（基本／安定）", _on_charcoal_place_selected.bind(3))
 	_add_choice_button("4個（攻め／狙いがある時）", _on_charcoal_place_selected.bind(4))
 
 func _on_charcoal_place_selected(count: int) -> void:
 	_selected_charcoal_count = count
-	_set_phase(4, "炭の配置: 決定", "選んだ炭の個数: %d個\n\nスミ「よし。次は蒸らし時間だ」" % count)
+	_set_phase(6, "炭の配置: 決定", "選んだ炭の個数: %d個\n\nスミ「よし。次は蒸らし時間だ」" % count)
 	_clear_choices()
 	_add_choice_button("次へ（蒸らし時間）", _show_steam_step)
 
@@ -691,7 +910,7 @@ var _tutorial_steam_minutes_setting: int = 6
 var _tutorial_timer_label: Label
 
 func _show_steam_step() -> void:
-	_set_phase(5, "蒸らしタイマー", "5〜10分から蒸らし時間を設定。\nスミ「じっくり温めるか、高温で一足飛びに行くか。意図を持て」")
+	_set_phase(7, "蒸らしタイマー", "5〜10分から蒸らし時間を設定。\nスミ「じっくり温めるか、高温で一足飛びに行くか。意図を持て」")
 	_clear_choices()
 	_tutorial_steam_minutes_setting = 6
 	
@@ -755,7 +974,7 @@ func _show_mind_barrage_intro() -> void:
 		return
 	var duration_sec = _compute_mind_barrage_duration()
 	var lives = MIND_BARRAGE_BASE_LIVES
-	_set_phase(6, "吸い出し前: 思考の暴走", "吸い出し直前、頭の中で不安と記憶が弾幕になる。\n\nスミ「客に提供する前、ブレるな。自分のレシピを信じ切れ」")
+	_set_phase(8, "吸い出し前: 思考の暴走", "吸い出し直前、頭の中で不安と記憶が弾幕になる。\n\nスミ「客に提供する前、ブレるな。自分のレシピを信じ切れ」")
 	_clear_choices()
 	var lines: Array[String] = []
 	lines.append("弾を避ける = 雑念をかわす")
@@ -763,7 +982,7 @@ func _show_mind_barrage_intro() -> void:
 	lines.append("ここでの成績が良いほど、この後の吸い出し操作が安定する。")
 	lines.append("蒸らし %d分 -> 耐久 %.1f秒" % [_selected_steam_minutes, duration_sec])
 	lines.append("残機: %d（0になると吸い出し難易度MAX）" % lives)
-	info_label.text = _join_lines(lines)
+	_set_info_text(_join_lines(lines))
 	_add_choice_button("弾幕開始", _start_mind_barrage_step)
 
 func _compute_mind_barrage_duration() -> float:
@@ -782,7 +1001,7 @@ func _start_mind_barrage_step() -> void:
 	if _mind_barrage_done:
 		_show_pull_step()
 		return
-	_set_phase(6, "思考弾幕", "弾をかわして時間まで耐える。")
+	_set_phase(8, "思考弾幕", "弾をかわして時間まで耐える。")
 	_clear_choices()
 	_mind_active = true
 	_mind_duration_total = _compute_mind_barrage_duration()
@@ -1056,7 +1275,7 @@ func _update_mind_barrage_info_text() -> void:
 	lines.append("被弾 %d / 出現 %d" % [_mind_hits, maxi(_mind_spawned, 1)])
 	lines.append("集中度 %d%%" % focus)
 	lines.append(_build_mind_barrage_progress_bar(ratio))
-	info_label.text = _join_lines(lines)
+	_set_info_text(_join_lines(lines))
 
 func _build_mind_life_text() -> String:
 	var chars: Array[String] = []
@@ -1092,7 +1311,7 @@ func _finish_mind_barrage_step() -> void:
 	GameManager.play_ui_se("confirm")
 
 	_set_phase(
-		6,
+		8,
 		"思考弾幕: 結果",
 		"%s\n被弾 %d / 出現 %d\n吸い出し速度補正: %s\n\nスミ「ここから吸い出しだ。心を落ち着けろ」" % [
 			result_text,
@@ -1160,7 +1379,7 @@ func _mind_pull_adjust_text() -> String:
 func _show_pull_step() -> void:
 	_temp_level = _compute_pull_start_temp_level()
 	_set_phase(
-		5,
+		9,
 		"吸い出し練習",
 		"吸い出し前は温度が合格ライン未達。吸い出しで温度帯に置く。\n操作: ボタンまたは Space / Enter 長押し。離した瞬間で判定。"
 	)
@@ -1318,8 +1537,7 @@ func _update_pull_text(status_text: String) -> void:
 	lines.append_array(_build_temperature_band_lines(preview_temp))
 	lines.append("タイミング目標帯 ■ / ポインタ ◆")
 	lines.append(bar)
-	info_label.text = _join_lines(lines)
-	info_label.scroll_to_line(0)
+	_set_info_text(_join_lines(lines))
 
 
 func _start_adjustment_tutorial() -> void:
@@ -1333,7 +1551,7 @@ func _start_adjustment_tutorial() -> void:
 func _show_adjustment_menu() -> void:
 	var cue = "スミ「どう調整する？」"
 	_set_phase(
-		6,
+		10,
 		"調整フェーズ",
 		cue + "\n現在の炭: %d個\n現在の温度状態: %s" % [_selected_charcoal_count, _temperature_zone_label(_temp_level)]
 	)
@@ -1351,7 +1569,7 @@ func _show_adjustment_menu() -> void:
 
 func _show_charcoal_adjust_step() -> void:
 	_set_phase(
-		6,
+		10,
 		"炭の調整",
 		"現在の炭は%d個だ。どうする？\n※炭を増やすとベース温度が上がり、減らすと下がる。\n※「新しい炭に交換」は個数を維持しつつ少し温度を上げる。" % _selected_charcoal_count
 	)
@@ -1379,7 +1597,7 @@ func _apply_charcoal_change(diff: int, is_new: bool) -> void:
 	_show_step_result_and_next(msg, _show_adjustment_menu)
 
 func _show_step_result_and_next(msg: String, next_func: Callable) -> void:
-	_set_phase(6, "調整結果", msg)
+	_set_phase(10, "調整結果", msg)
 	_clear_choices()
 	_add_choice_button("次へ", next_func)
 
@@ -1394,7 +1612,7 @@ func _show_pull_adjust_step() -> void:
 	lines.append("まず方向を選択してから、ゲージでタイミング調整する。")
 	lines.append("成功条件: 方向が正解 + タイミングGOOD以上 + 温度帯へ近づく。")
 	_set_phase(
-		6,
+		10,
 		"吸い出し微調整",
 		_join_lines(lines)
 	)
@@ -1472,7 +1690,7 @@ func _on_adjust_action_selected(action_id: String) -> void:
 func _show_adjustment_gauge_step() -> void:
 	var round_num = _adjust_round + 1
 	_set_phase(
-		6,
+		10,
 		"調整ゲージ %d / %d" % [round_num, ADJUST_TOTAL_ROUNDS],
 		"選択した方向: %s\n押している間だけ調整、離した瞬間で判定。\nボタンでも Space / Enter でも操作できる。" % _adjust_action_label(_adjust_selected_action)
 	)
@@ -1646,7 +1864,7 @@ func _show_adjustment_summary() -> void:
 	lines.append(summary)
 	lines.append("特訓報酬: technique +1（調整成功2回以上で insight +1）")
 	_set_phase(
-		6,
+		10,
 		"温度調整: 終了",
 		_join_lines(lines)
 	)
@@ -1664,8 +1882,7 @@ func _update_adjust_text(status_text: String) -> void:
 	lines.append_array(_build_temperature_band_lines(_temp_level))
 	lines.append("調整タイミング目標帯 ■ / ポインタ ◆")
 	lines.append(bar)
-	info_label.text = _join_lines(lines)
-	info_label.scroll_to_line(0)
+	_set_info_text(_join_lines(lines))
 
 
 func _build_temperature_band_lines(value: float, drift: float = 0.0) -> Array[String]:
@@ -1789,13 +2006,9 @@ func _finish_tutorial() -> void:
 		GameManager.log_stat_change("insight", 1)
 
 	var next_scene = str(GameManager.pop_transient("post_tutorial_next_scene", DEFAULT_NEXT_SCENE))
-	print("[Tutorial] post_tutorial_next_scene derived as: ", next_scene)
 	if next_scene == "":
 		next_scene = DEFAULT_NEXT_SCENE
-		print("[Tutorial] fallback to DEFAULT_NEXT_SCENE: ", next_scene)
-	
-	print("[Tutorial] Changing scene to: ", next_scene)
-	
+
 	# wait a frame then defer call to change scene to ensure clean UI state
 	await get_tree().process_frame
 	get_tree().change_scene_to_file.call_deferred(next_scene)

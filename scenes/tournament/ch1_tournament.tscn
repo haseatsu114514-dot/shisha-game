@@ -31,9 +31,9 @@ color = Color(0.01, 0.02, 0.06, 0.78)
 [node name="MainPanel" type="PanelContainer" parent="."]
 layout_mode = 1
 offset_left = 24.0
-offset_top = 90.0
-offset_right = 872.0
-offset_bottom = 704.0
+offset_top = 82.0
+offset_right = 916.0
+offset_bottom = 712.0
 
 [node name="MainMargin" type="MarginContainer" parent="MainPanel"]
 layout_mode = 2
@@ -58,20 +58,128 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "STEP 1 / 16"
 
+[node name="DeckHBox" type="HBoxContainer" parent="MainPanel/MainMargin/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="StepCard" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/DeckHBox"]
+custom_minimum_size = Vector2(0, 140)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StepCardMargin" type="MarginContainer" parent="MainPanel/MainMargin/MainVBox/DeckHBox/StepCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="StepCardVBox" type="VBoxContainer" parent="MainPanel/MainMargin/MainVBox/DeckHBox/StepCard/StepCardMargin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="StepTagLabel" type="Label" parent="MainPanel/MainMargin/MainVBox/DeckHBox/StepCard/StepCardMargin/StepCardVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.894118, 0.231373, 0.266667, 1)
+theme_override_font_sizes/font_size = 16
+text = "SETUP"
+
+[node name="StepSummaryLabel" type="Label" parent="MainPanel/MainMargin/MainVBox/DeckHBox/StepCard/StepCardMargin/StepCardVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 22
+text = "大会の工程と見せ場を切り分ける"
+
+[node name="StepHintLabel" type="Label" parent="MainPanel/MainMargin/MainVBox/DeckHBox/StepCard/StepCardMargin/StepCardVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+theme_override_colors/font_color = Color(0.752941, 0.796078, 0.862745, 1)
+theme_override_font_sizes/font_size = 16
+text = "ここに立ち絵、会場カット、結果演出を差し込める。"
+
+[node name="PreviewPanel" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/DeckHBox"]
+custom_minimum_size = Vector2(300, 140)
+layout_mode = 2
+
+[node name="PreviewMargin" type="MarginContainer" parent="MainPanel/MainMargin/MainVBox/DeckHBox/PreviewPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="PreviewVBox" type="VBoxContainer" parent="MainPanel/MainMargin/MainVBox/DeckHBox/PreviewPanel/PreviewMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PreviewLabel" type="Label" parent="MainPanel/MainMargin/MainVBox/DeckHBox/PreviewPanel/PreviewMargin/PreviewVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "大会"
+
+[node name="PreviewSubtitleLabel" type="Label" parent="MainPanel/MainMargin/MainVBox/DeckHBox/PreviewPanel/PreviewMargin/PreviewVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+theme_override_colors/font_color = Color(1, 0.921569, 0.819608, 1)
+theme_override_font_sizes/font_size = 16
+text = "会場演出 / キャラカットイン / 小アニメ予定"
+
+[node name="PreviewAccent" type="ColorRect" parent="MainPanel/MainMargin/MainVBox/DeckHBox/PreviewPanel/PreviewMargin/PreviewVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+color = Color(0.894118, 0.231373, 0.266667, 0.4)
+
 [node name="InfoLabel" type="RichTextLabel" parent="MainPanel/MainMargin/MainVBox"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 164)
 layout_mode = 2
 size_flags_vertical = 3
 bbcode_enabled = false
-fit_content = true
-scroll_active = true
+fit_content = false
+scroll_active = false
+
+[node name="InfoFooter" type="HBoxContainer" parent="MainPanel/MainMargin/MainVBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="InfoPageLabel" type="Label" parent="MainPanel/MainMargin/MainVBox/InfoFooter"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.752941, 0.796078, 0.862745, 1)
+theme_override_font_sizes/font_size = 16
+text = "説明 1 / 1"
+
+[node name="InfoSpacer" type="Control" parent="MainPanel/MainMargin/MainVBox/InfoFooter"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="InfoPrevButton" type="Button" parent="MainPanel/MainMargin/MainVBox/InfoFooter"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(64, 30)
+theme_override_font_sizes/font_size = 16
+text = "前"
+
+[node name="InfoNextButton" type="Button" parent="MainPanel/MainMargin/MainVBox/InfoFooter"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(64, 30)
+theme_override_font_sizes/font_size = 16
+text = "次"
 
 [node name="ChoiceContainer" type="VBoxContainer" parent="MainPanel/MainMargin/MainVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-size_flags_vertical = 3
 size_flags_horizontal = 3
-clip_contents = true
+clip_contents = false
 theme_override_constants/separation = 8
 
 [node name="MiniDialoguePanel" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox"]
@@ -120,10 +228,10 @@ text = "Dialogue Text Here..."
 
 [node name="SidePanel" type="PanelContainer" parent="."]
 layout_mode = 1
-offset_left = 892.0
-offset_top = 90.0
+offset_left = 936.0
+offset_top = 82.0
 offset_right = 1256.0
-offset_bottom = 704.0
+offset_bottom = 712.0
 
 [node name="SideMargin" type="MarginContainer" parent="SidePanel"]
 layout_mode = 2
