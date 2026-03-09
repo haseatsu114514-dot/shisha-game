@@ -39,11 +39,18 @@ var _advance_hold_timer: Timer
 var _advance_repeat_timer: Timer
 var _advance_hold_active := false
 var _ignore_advance_press_once := false
+var _portrait_texture_cache: Dictionary = {}
 
 const DIALOGUE_WRAP_CHARS := 20
 const DIALOGUE_MAX_LINES := 2
-const ADVANCE_HOLD_DELAY := 0.28
-const ADVANCE_REPEAT_INTERVAL := 0.05
+const ADVANCE_HOLD_DELAY := 0.34
+const ADVANCE_REPEAT_INTERVAL := 0.09
+const PORTRAIT_CROP_PADDING := 20
+const PORTRAIT_BOTTOM_TRIM_RATIO := 0.18
+const PORTRAIT_BOTTOM_TRIM_MAX := 180
+const PORTRAIT_MIN_VISIBLE_RATIO := 0.64
+const NOTIFICATION_CARD_SIZE := Vector2(860, 108)
+const NOTIFICATION_BASE_POSITION := Vector2(210, 304)
 
 const SPEAKER_NAMES := {
 	"hajime": "はじめ",
@@ -255,6 +262,7 @@ func _on_advance_hold_timeout() -> void:
 	if advance_button == null or advance_button.disabled:
 		return
 	_advance_hold_active = true
+	_refresh_advance_button_label()
 	_fast_advance_step()
 	if _advance_repeat_timer != null and _advance_repeat_timer.is_stopped():
 		_advance_repeat_timer.start()
@@ -286,6 +294,25 @@ func _stop_fast_advance() -> void:
 		_advance_hold_timer.stop()
 	if _advance_repeat_timer != null and not _advance_repeat_timer.is_stopped():
 		_advance_repeat_timer.stop()
+	_refresh_advance_button_label()
+
+
+func _refresh_advance_button_label() -> void:
+	if advance_button == null:
+		return
+	if _dialogue_ending:
+		advance_button.text = "終了"
+		return
+	if _advance_hold_active:
+		advance_button.text = "早送り中"
+		return
+	if choice_container != null and choice_container.get_child_count() > 0:
+		advance_button.text = "選択"
+		return
+	if _is_typing:
+		advance_button.text = "早送り"
+		return
+	advance_button.text = "次へ"
 
 
 func _on_advance_button_pressed() -> void:
@@ -490,7 +517,7 @@ func _start_typing(text: String) -> void:
 	text_label.visible_characters = 0
 	_is_typing = true
 	advance_button.disabled = false
-	advance_button.text = "早送り"
+	_refresh_advance_button_label()
 	if _full_text.is_empty():
 		_show_full_text_immediately()
 		return
@@ -520,7 +547,7 @@ func _show_full_text_immediately() -> void:
 	typing_timer.stop()
 	text_label.text = _full_text_bbcode
 	text_label.visible_characters = -1
-	advance_button.text = "次へ"
+	_refresh_advance_button_label()
 	_queue_auto_advance()
 
 
@@ -529,7 +556,7 @@ func _show_choices(choices: Array) -> void:
 	_clear_choices()
 	_cancel_auto_advance()
 	advance_button.disabled = true
-	advance_button.text = "選択"
+	_refresh_advance_button_label()
 
 	for choice in choices:
 		var c_type = str(choice.get("condition_type", ""))
@@ -578,7 +605,7 @@ func _on_choice_selected(branch_key: String) -> void:
 	GameManager.play_ui_se("confirm")
 	_clear_choices()
 	advance_button.disabled = false
-	advance_button.text = "次へ"
+	_refresh_advance_button_label()
 	if _branches.has(branch_key):
 		var branch_lines: Array = _branches[branch_key]
 		for i in range(branch_lines.size() - 1, -1, -1):
@@ -716,7 +743,7 @@ func _update_portrait(line: Dictionary) -> void:
 		portrait_rect.texture = null
 		return
 
-	var texture = load(path)
+	var texture = _get_portrait_texture(path)
 	if texture == null:
 		portrait_rect.visible = false
 		portrait_rect.texture = null
@@ -724,6 +751,44 @@ func _update_portrait(line: Dictionary) -> void:
 
 	portrait_rect.texture = texture
 	portrait_rect.visible = true
+
+
+func _get_portrait_texture(path: String) -> Texture2D:
+	if _portrait_texture_cache.has(path):
+		return _portrait_texture_cache[path]
+
+	var source = load(path)
+	if source == null or not source is Texture2D:
+		return null
+
+	var texture: Texture2D = source
+	var image: Image = texture.get_image()
+	if image == null or image.is_empty():
+		_portrait_texture_cache[path] = texture
+		return texture
+
+	var used_rect: Rect2i = image.get_used_rect()
+	if used_rect.size.x <= 0 or used_rect.size.y <= 0:
+		_portrait_texture_cache[path] = texture
+		return texture
+
+	var crop_left: int = maxi(used_rect.position.x - PORTRAIT_CROP_PADDING, 0)
+	var crop_top: int = maxi(used_rect.position.y - PORTRAIT_CROP_PADDING, 0)
+	var crop_right: int = mini(used_rect.end.x + PORTRAIT_CROP_PADDING, image.get_width())
+	var bottom_trim = mini(int(float(used_rect.size.y) * PORTRAIT_BOTTOM_TRIM_RATIO), PORTRAIT_BOTTOM_TRIM_MAX)
+	var min_visible_height = int(float(used_rect.size.y) * PORTRAIT_MIN_VISIBLE_RATIO)
+	var trimmed_bottom = used_rect.end.y - bottom_trim
+	var visible_bottom = maxi(trimmed_bottom, used_rect.position.y + min_visible_height)
+	var crop_bottom: int = mini(visible_bottom + PORTRAIT_CROP_PADDING, image.get_height())
+	var crop_rect := Rect2i(crop_left, crop_top, crop_right - crop_left, crop_bottom - crop_top)
+	if crop_rect.position == Vector2i.ZERO and crop_rect.size == image.get_size():
+		_portrait_texture_cache[path] = texture
+		return texture
+
+	var cropped_image: Image = image.get_region(crop_rect)
+	var cropped_texture := ImageTexture.create_from_image(cropped_image)
+	_portrait_texture_cache[path] = cropped_texture
+	return cropped_texture
 
 
 func _handle_cg_command(line: Dictionary) -> void:
@@ -846,26 +911,95 @@ func _finish_dialogue() -> void:
 	get_tree().change_scene_to_file("res://scenes/daily/map.tscn")
 
 
-func _show_affinity_notification(char_id: String, delta: int) -> void:
+func _create_notification_card(layer: CanvasLayer, title: String, message: String, accent_color: Color, message_color: Color) -> Control:
+	var card_root = Control.new()
+	card_root.position = NOTIFICATION_BASE_POSITION
+	card_root.size = NOTIFICATION_CARD_SIZE
+	card_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	card_root.modulate = Color(1, 1, 1, 0)
+	layer.add_child(card_root)
+
+	var shadow = Panel.new()
+	shadow.position = Vector2(8, 10)
+	shadow.size = NOTIFICATION_CARD_SIZE
+	shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var shadow_style = StyleBoxFlat.new()
+	shadow_style.bg_color = Color(0, 0, 0, 0.30)
+	shadow_style.corner_radius_top_left = 16
+	shadow_style.corner_radius_top_right = 16
+	shadow_style.corner_radius_bottom_left = 16
+	shadow_style.corner_radius_bottom_right = 16
+	shadow.add_theme_stylebox_override("panel", shadow_style)
+	card_root.add_child(shadow)
+
+	var panel = PanelContainer.new()
+	panel.size = NOTIFICATION_CARD_SIZE
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var panel_style = StyleBoxFlat.new()
+	panel_style.bg_color = Color(0.05, 0.06, 0.11, 0.92)
+	panel_style.border_color = accent_color.lightened(0.12)
+	panel_style.border_width_left = 9
+	panel_style.border_width_top = 2
+	panel_style.border_width_right = 2
+	panel_style.border_width_bottom = 2
+	panel_style.corner_radius_top_left = 16
+	panel_style.corner_radius_top_right = 16
+	panel_style.corner_radius_bottom_left = 16
+	panel_style.corner_radius_bottom_right = 16
+	panel_style.content_margin_left = 24
+	panel_style.content_margin_right = 22
+	panel_style.content_margin_top = 14
+	panel_style.content_margin_bottom = 14
+	panel.add_theme_stylebox_override("panel", panel_style)
+	card_root.add_child(panel)
+
+	var content = VBoxContainer.new()
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	content.alignment = BoxContainer.ALIGNMENT_CENTER
+	content.add_theme_constant_override("separation", 2)
+	panel.add_child(content)
+
+	var title_label = Label.new()
+	title_label.text = title
+	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	title_label.add_theme_font_size_override("font_size", 18)
+	title_label.add_theme_color_override("font_color", accent_color.lightened(0.18))
+	title_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.92))
+	title_label.add_theme_constant_override("outline_size", 4)
+	content.add_child(title_label)
+
+	var message_label = Label.new()
+	message_label.text = message
+	message_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	message_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	message_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	message_label.custom_minimum_size = Vector2(0, 54)
+	message_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	message_label.add_theme_font_size_override("font_size", 28)
+	message_label.add_theme_color_override("font_color", message_color)
+	message_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.95))
+	message_label.add_theme_constant_override("outline_size", 8)
+	content.add_child(message_label)
+
+	return card_root
+
+
+func _show_affinity_notification(char_id: String, _delta: int) -> void:
 	var layer = CanvasLayer.new()
 	layer.layer = 100
 	add_child(layer)
 
-	# Label
-	var label = Label.new()
 	var char_name = SPEAKER_NAMES.get(char_id, char_id)
 	var star_text = AffinityManager.get_star_text(char_id)
-	label.text = "♡ %sとの絆が深まった  %s" % [char_name, star_text]
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.position = Vector2(290, 320)
-	label.size = Vector2(700, 60)
-	label.add_theme_font_size_override("font_size", 26)
-	# テーマカラー: アンバーゴールド系
-	var notif_color = GameManager.get_speaker_color(char_id)
-	label.add_theme_color_override("font_color", notif_color)
-	label.modulate = Color(1.0, 1.0, 1.0, 0)
-	layer.add_child(label)
+	var notif_color = GameManager.get_speaker_accent_color(char_id)
+	var card = _create_notification_card(
+		layer,
+		"絆の変化",
+		"♡ %sとの絆が深まった  %s" % [char_name, star_text],
+		notif_color,
+		Color("fff1db")
+	)
 
 	# Sparkle particles
 	var particles = GPUParticles2D.new()
@@ -899,7 +1033,7 @@ func _show_affinity_notification(char_id: String, delta: int) -> void:
 	particles.amount = 14
 	particles.lifetime = 1.0
 	particles.one_shot = true
-	particles.position = Vector2(640, 340)
+	particles.position = NOTIFICATION_BASE_POSITION + Vector2(NOTIFICATION_CARD_SIZE.x * 0.5, 64)
 
 	# Procedural circle texture for sparkles
 	var img = Image.create(8, 8, false, Image.FORMAT_RGBA8)
@@ -916,17 +1050,18 @@ func _show_affinity_notification(char_id: String, delta: int) -> void:
 	layer.add_child(particles)
 	particles.emitting = true
 
-	# Animate label: fade in, float up, hold, fade out
 	var tween = create_tween()
 	tween.set_parallel(true)
-	tween.tween_property(label, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tween.tween_property(label, "position:y", 290, 0.4).from(320.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(card, "modulate:a", 1.0, 0.26).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(card, "position:y", NOTIFICATION_BASE_POSITION.y - 18.0, 0.34).from(NOTIFICATION_BASE_POSITION.y + 12.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	await tween.finished
 
 	await get_tree().create_timer(1.2).timeout
 
 	var fade_tween = create_tween()
-	fade_tween.tween_property(label, "modulate:a", 0.0, 0.4)
+	fade_tween.set_parallel(true)
+	fade_tween.tween_property(card, "modulate:a", 0.0, 0.38)
+	fade_tween.tween_property(card, "position:y", NOTIFICATION_BASE_POSITION.y - 30.0, 0.38)
 	await fade_tween.finished
 
 	layer.queue_free()
@@ -947,27 +1082,26 @@ func _show_stat_notification(stat_changes: Array[Dictionary]) -> void:
 	layer.layer = 100
 	add_child(layer)
 
-	var label = Label.new()
-	label.text = text
-	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	label.position = Vector2(190, 320)
-	label.size = Vector2(900, 60)
-	label.add_theme_font_size_override("font_size", 24)
-	label.add_theme_color_override("font_color", Color(0.4, 0.85, 1.0, 1.0))
-	label.modulate = Color(1.0, 1.0, 1.0, 0)
-	layer.add_child(label)
+	var card = _create_notification_card(
+		layer,
+		"腕前の変化",
+		text,
+		Color("55d4ff"),
+		Color("eaf8ff")
+	)
 
 	var tween = create_tween()
 	tween.set_parallel(true)
-	tween.tween_property(label, "modulate:a", 1.0, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tween.tween_property(label, "position:y", 290, 0.4).from(320.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(card, "modulate:a", 1.0, 0.26).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(card, "position:y", NOTIFICATION_BASE_POSITION.y - 18.0, 0.34).from(NOTIFICATION_BASE_POSITION.y + 12.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	await tween.finished
 
 	await get_tree().create_timer(1.5).timeout
 
 	var fade_tween = create_tween()
-	fade_tween.tween_property(label, "modulate:a", 0.0, 0.4)
+	fade_tween.set_parallel(true)
+	fade_tween.tween_property(card, "modulate:a", 0.0, 0.38)
+	fade_tween.tween_property(card, "position:y", NOTIFICATION_BASE_POSITION.y - 30.0, 0.38)
 	await fade_tween.finished
 
 	layer.queue_free()
