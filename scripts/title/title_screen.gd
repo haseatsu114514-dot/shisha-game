@@ -25,6 +25,7 @@ func _ready() -> void:
 	GameManager.apply_audio_settings()
 	info_label.text = "第1章 一吸目\nSMOKE CROWN CUP 地方大会\nスミの店で基礎を仕上げ、7日後の本番へ。"
 	_apply_visual_theme()
+	_build_title_card_content()
 	_build_title_context()
 	GameManager.play_bgm(GameManager.BGM_TITLE_PATH, -8.0, true)
 	_play_intro_animation()
@@ -57,7 +58,12 @@ func _apply_visual_theme() -> void:
 	copyright_label.add_theme_constant_override("outline_size", 3)
 
 	logo_rect.visible = false
+	logo_rect.texture = null
 	packii_rect.visible = false
+	packii_rect.texture = null
+	title_label.visible = false
+	subtitle_label.visible = false
+	info_label.visible = false
 
 	for button in _get_menu_buttons():
 		_style_menu_button(button)
@@ -72,7 +78,8 @@ func _build_title_context() -> void:
 		return
 	var margin = MarginContainer.new()
 	margin.name = "HeroContext"
-	margin.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	margin.add_theme_constant_override("margin_left", 24)
 	margin.add_theme_constant_override("margin_top", 22)
 	margin.add_theme_constant_override("margin_right", 24)
@@ -80,6 +87,8 @@ func _build_title_context() -> void:
 	hero_frame.add_child(margin)
 
 	var vbox = VBoxContainer.new()
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	vbox.add_theme_constant_override("separation", 12)
 	margin.add_child(vbox)
 
@@ -101,9 +110,65 @@ func _build_title_context() -> void:
 	var body = Label.new()
 	body.text = "配合、詰め方、穴あけ、炭、蒸らし、吸い出し。\n王道を一つずつ詰めて、地方大会を勝ち切る。"
 	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	body.add_theme_font_size_override("font_size", 20)
 	body.add_theme_color_override("font_color", Color("ead4aa"))
 	vbox.add_child(body)
+
+
+func _build_title_card_content() -> void:
+	var existing = title_card.get_node_or_null("TitleContent")
+	if existing != null:
+		return
+	var margin = MarginContainer.new()
+	margin.name = "TitleContent"
+	margin.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	margin.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	margin.add_theme_constant_override("margin_left", 28)
+	margin.add_theme_constant_override("margin_top", 24)
+	margin.add_theme_constant_override("margin_right", 28)
+	margin.add_theme_constant_override("margin_bottom", 22)
+	title_card.add_child(margin)
+
+	var vbox = VBoxContainer.new()
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	vbox.add_theme_constant_override("separation", 8)
+	margin.add_child(vbox)
+
+	var eyebrow = Label.new()
+	eyebrow.text = "SHISHA STORY RPG"
+	eyebrow.add_theme_font_size_override("font_size", 18)
+	eyebrow.add_theme_color_override("font_color", Color("f4c87b"))
+	vbox.add_child(eyebrow)
+
+	var title = Label.new()
+	title.text = "煙の向こう側"
+	title.add_theme_font_size_override("font_size", 54)
+	title.add_theme_color_override("font_color", Color("fff0cf"))
+	title.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.92))
+	title.add_theme_constant_override("outline_size", 8)
+	vbox.add_child(title)
+
+	var subtitle = Label.new()
+	subtitle.text = "Beyond the Smoke"
+	subtitle.add_theme_font_size_override("font_size", 22)
+	subtitle.add_theme_color_override("font_color", Color("f4c87b"))
+	vbox.add_child(subtitle)
+
+	var chapter = Label.new()
+	chapter.text = "第1章 一吸目"
+	chapter.add_theme_font_size_override("font_size", 26)
+	chapter.add_theme_color_override("font_color", Color("ead4aa"))
+	vbox.add_child(chapter)
+
+	var summary = Label.new()
+	summary.text = "SMOKE CROWN CUP 地方大会\nスミの店で基礎を仕上げ、7日後の本番へ。"
+	summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	summary.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	summary.add_theme_font_size_override("font_size", 20)
+	summary.add_theme_color_override("font_color", Color("ead4aa"))
+	vbox.add_child(summary)
 
 
 func _make_panel_style(bg: Color, border: Color, accent_left_width: int) -> StyleBoxFlat:
@@ -209,10 +274,6 @@ func _play_intro_animation() -> void:
 	tween.tween_property(hero_frame, "position", hero_frame_target, 0.62).set_delay(0.08).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tween.tween_property(menu_panel, "modulate:a", 1.0, 0.5).set_delay(0.12).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tween.tween_property(menu_panel, "position", menu_panel_target, 0.5).set_delay(0.12).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tween.tween_property(logo_rect, "modulate:a", 1.0, 0.36).set_delay(0.16)
-	tween.tween_property(title_label, "modulate:a", 1.0, 0.34).set_delay(0.20)
-	tween.tween_property(subtitle_label, "modulate:a", 1.0, 0.32).set_delay(0.24)
-	tween.tween_property(info_label, "modulate:a", 1.0, 0.32).set_delay(0.28)
 
 
 func _collect_text_nodes(root: Node) -> Array:

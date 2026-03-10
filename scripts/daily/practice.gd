@@ -5,7 +5,15 @@ const DEFAULT_NEXT_SCENE := "res://scenes/daily/map.tscn"
 const GAUGE_TIMER_WAIT := 0.03
 const ADJUST_TOTAL_ROUNDS := 3
 const INFO_WRAP_CHARS := 27
-const INFO_PAGE_MAX_LINES := 7
+const INFO_PAGE_MAX_LINES := 6
+const MAIN_PANEL_TOP_DEFAULT := 34.0
+const MAIN_PANEL_TOP_COMPACT := 22.0
+const MAIN_PANEL_BOTTOM := 718.0
+const STEP_CARD_HEIGHT_DEFAULT := 110.0
+const STEP_CARD_HEIGHT_COMPACT := 92.0
+const PREVIEW_PANEL_WIDTH := 260.0
+const INFO_HEIGHT_DEFAULT := 116.0
+const INFO_HEIGHT_COMPACT := 88.0
 const TEMP_PASS_LINE := 0.56
 const TEMP_TOP_LINE := 0.78
 const TEMP_LEVEL_MIN := 0.0
@@ -22,7 +30,7 @@ const STEP_STAGE_META := {
 		"tag": "MIX",
 		"summary": "配合バランスを決める",
 		"hint": "後でボウル断面図やレシピ画像を置ける。",
-		"preview": "レシピ図 / 断面図 / 素材アイコン",
+		"preview": "レシピ図 / 断面図 / 素材",
 		"color": Color("f77622"),
 	},
 	3: {
@@ -40,9 +48,9 @@ const STEP_STAGE_META := {
 		"color": Color("8bd5ff"),
 	},
 	5: {
-		"tag": "FLIP",
-		"summary": "炭の準備で火力の初速を決める",
-		"hint": "炭フリップや火花の演出を入れやすい。",
+		"tag": "COAL",
+		"summary": "炭を返すタイミングで火力の初速を決める",
+		"hint": "炭の返しや火花の演出を入れやすい。",
 		"preview": "炭準備カット / 火花演出予定",
 		"color": Color("ff7a59"),
 	},
@@ -85,6 +93,9 @@ const STEP_STAGE_META := {
 
 @onready var header_label: Label = %HeaderLabel
 @onready var phase_label: Label = %PhaseLabel
+@onready var main_panel: PanelContainer = $MainPanel
+@onready var step_card: PanelContainer = $MainPanel/MainMargin/MainVBox/DeckHBox/StepCard
+@onready var preview_panel: PanelContainer = $MainPanel/MainMargin/MainVBox/DeckHBox/PreviewPanel
 @onready var step_tag_label: Label = %StepTagLabel
 @onready var step_summary_label: Label = %StepSummaryLabel
 @onready var step_hint_label: Label = %StepHintLabel
@@ -155,6 +166,11 @@ var _aluminum_bad_press: int = 0
 var _aluminum_required_hits: int = 6
 var _aluminum_total_notes: int = 8
 var _aluminum_spawn_interval_ticks: int = 2
+var _aluminum_grid_holes: Array[Dictionary] = []
+var _aluminum_current_hole: int = 0
+var _aluminum_glow_active: bool = false
+var _aluminum_glow_elapsed: float = 0.0
+var _aluminum_glow_window: float = 1.15
 
 # Mind Barrage
 const MIND_BARRAGE_BASE_LIVES := 3
@@ -223,7 +239,7 @@ func _ready() -> void:
 	add_child(_adjust_timer)
 
 	_aluminum_timer = Timer.new()
-	_aluminum_timer.wait_time = 0.16
+	_aluminum_timer.wait_time = 0.03
 	_aluminum_timer.one_shot = false
 	_aluminum_timer.timeout.connect(_on_aluminum_tick)
 	add_child(_aluminum_timer)
@@ -321,8 +337,29 @@ func _is_confirm_key_event(event: InputEventKey) -> bool:
 func _set_phase(step_num: int, title: String, body: String) -> void:
 	header_label.text = title
 	phase_label.text = "TUTORIAL STEP %d / %d" % [step_num, TOTAL_STEPS]
+	_apply_step_layout(step_num)
 	_set_info_text(body)
 	_update_step_stage(step_num, title)
+
+
+func _apply_step_layout(step_num: int) -> void:
+	var compact = _is_compact_layout_step(step_num)
+	if main_panel != null:
+		main_panel.offset_top = MAIN_PANEL_TOP_COMPACT if compact else MAIN_PANEL_TOP_DEFAULT
+		main_panel.offset_bottom = MAIN_PANEL_BOTTOM
+	if step_card != null:
+		step_card.custom_minimum_size.y = STEP_CARD_HEIGHT_COMPACT if compact else STEP_CARD_HEIGHT_DEFAULT
+	if preview_panel != null:
+		preview_panel.custom_minimum_size = Vector2(
+			PREVIEW_PANEL_WIDTH,
+			STEP_CARD_HEIGHT_COMPACT if compact else STEP_CARD_HEIGHT_DEFAULT
+		)
+	if info_label != null:
+		info_label.custom_minimum_size.y = INFO_HEIGHT_COMPACT if compact else INFO_HEIGHT_DEFAULT
+
+
+func _is_compact_layout_step(step_num: int) -> bool:
+	return step_num == 2 or step_num == 4 or step_num >= 7
 
 func _join_lines(lines: Array) -> String:
 	var result = ""
@@ -459,7 +496,7 @@ func _clear_choices() -> void:
 func _add_choice_button(text: String, callback: Callable) -> Button:
 	var button = Button.new()
 	button.text = text
-	button.custom_minimum_size = Vector2(0, 40)
+	button.custom_minimum_size = Vector2(0, 34)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.pressed.connect(func() -> void:
 		GameManager.play_ui_se("cursor")
@@ -537,29 +574,32 @@ func _show_mix_step() -> void:
 	_tutorial_value_labels.clear()
 
 	var title = Label.new()
-	title.text = "配分ゲージ（1g刻み / 合計12g）"
-	title.add_theme_font_size_override("font_size", 20)
+	title.text = "12g / 1g刻み"
+	title.add_theme_font_size_override("font_size", 16)
+	title.add_theme_color_override("font_color", GameManager.THEME_DIM_TEXT)
 	choice_container.add_child(title)
 
 	for flavor_id in TUTORIAL_FLAVORS:
 		choice_container.add_child(_build_tutorial_slider_row(flavor_id))
 
 	_tutorial_remaining_label = Label.new()
+	_tutorial_remaining_label.add_theme_font_size_override("font_size", 16)
 	choice_container.add_child(_tutorial_remaining_label)
 
 	_tutorial_confirm_button = _add_choice_button("この配合で確定", _on_tutorial_mix_confirmed)
+	_tutorial_confirm_button.custom_minimum_size = Vector2(0, 34)
 	_refresh_tutorial_packing()
 
 
 func _build_tutorial_slider_row(flavor_id: String) -> Control:
 	var wrapper = VBoxContainer.new()
 	wrapper.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	wrapper.add_theme_constant_override("separation", 4)
+	wrapper.add_theme_constant_override("separation", 2)
 
 	var label = Label.new()
 	var holding_amount = PlayerData.get_flavor_amount(flavor_id)
-	label.text = "%s  %dg (所持: %dg)" % [_tutorial_flavor_name(flavor_id), int(_tutorial_packing_grams.get(flavor_id, 0)), holding_amount]
-	label.custom_minimum_size = Vector2(160, 0)
+	label.text = "%s %dg / 在庫%d" % [_tutorial_flavor_name(flavor_id), int(_tutorial_packing_grams.get(flavor_id, 0)), holding_amount]
+	label.add_theme_font_size_override("font_size", 16)
 	wrapper.add_child(label)
 	_tutorial_value_labels[flavor_id] = label
 
@@ -568,6 +608,7 @@ func _build_tutorial_slider_row(flavor_id: String) -> Control:
 	slider.max_value = TUTORIAL_TOTAL_GRAMS
 	slider.step = 1
 	slider.value = int(_tutorial_packing_grams.get(flavor_id, 0))
+	slider.custom_minimum_size = Vector2(0, 20)
 	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	slider.value_changed.connect(_on_tutorial_slider_changed.bind(flavor_id))
 	wrapper.add_child(slider)
@@ -600,7 +641,7 @@ func _refresh_tutorial_packing() -> void:
 			var label = _tutorial_value_labels[fid] as Label
 			if label != null:
 				var holding_amount = PlayerData.get_flavor_amount(fid)
-				label.text = "%s  %dg (所持: %dg)" % [_tutorial_flavor_name(fid), grams, holding_amount]
+				label.text = "%s %dg / 在庫%d" % [_tutorial_flavor_name(fid), grams, holding_amount]
 		if _tutorial_sliders.has(fid):
 			var slider = _tutorial_sliders[fid] as HSlider
 			if slider != null and int(round(slider.value)) != grams:
@@ -609,11 +650,11 @@ func _refresh_tutorial_packing() -> void:
 	var remaining = TUTORIAL_TOTAL_GRAMS - total
 	if _tutorial_remaining_label != null:
 		if remaining == 0:
-			_tutorial_remaining_label.text = "残り: 0g（確定可能）"
+			_tutorial_remaining_label.text = "残り0g / OK"
 		elif remaining > 0:
-			_tutorial_remaining_label.text = "残り: %dg" % remaining
+			_tutorial_remaining_label.text = "残り%dg" % remaining
 		else:
-			_tutorial_remaining_label.text = "超過: %dg（12gに戻して）" % abs(remaining)
+			_tutorial_remaining_label.text = "超過%dg / 12gへ戻す" % abs(remaining)
 	if _tutorial_confirm_button != null:
 		_tutorial_confirm_button.disabled = remaining != 0
 
@@ -863,16 +904,16 @@ func _count_aluminum_hits() -> int:
 	return _aluminum_hit_perfect + _aluminum_hit_good + _aluminum_hit_near
 
 func _show_charcoal_prep_step() -> void:
-	_set_phase(5, "炭の準備", "大会と同じように、炭フリップのタイミングを決める。")
+	_set_phase(5, "炭の準備", "大会と同じように、炭を返すタイミングを決める。")
 	_clear_choices()
 	_set_info_text(_join_lines([
 		"早め: 立ち上がりを抑えやすい。",
 		"ちょうど: 一番安定しやすい。",
 		"遅め: 火力は強いが暴れやすい。",
 	]))
-	_add_choice_button("早めにフリップ", _on_charcoal_prep_choice.bind("early"))
-	_add_choice_button("ちょうどでフリップ", _on_charcoal_prep_choice.bind("perfect"))
-	_add_choice_button("遅めにフリップ", _on_charcoal_prep_choice.bind("late"))
+	_add_choice_button("早めに炭を返す", _on_charcoal_prep_choice.bind("early"))
+	_add_choice_button("ちょうどで炭を返す", _on_charcoal_prep_choice.bind("perfect"))
+	_add_choice_button("遅めに炭を返す", _on_charcoal_prep_choice.bind("late"))
 
 
 func _on_charcoal_prep_choice(choice: String) -> void:
