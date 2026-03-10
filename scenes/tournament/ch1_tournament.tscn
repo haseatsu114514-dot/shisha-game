@@ -274,4 +274,155 @@ size_flags_vertical = 3
 fit_content = true
 scroll_active = true
 
+[node name="FullscreenStage" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Backdrop" type="ColorRect" parent="FullscreenStage"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.01, 0.02, 0.06, 0.82)
+
+[node name="StageMargin" type="MarginContainer" parent="FullscreenStage"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 36.0
+offset_top = 28.0
+offset_right = -36.0
+offset_bottom = -28.0
+mouse_filter = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
+
+[node name="StageVBox" type="VBoxContainer" parent="FullscreenStage/StageMargin"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 18
+
+[node name="StageHeader" type="HBoxContainer" parent="FullscreenStage/StageMargin/StageVBox"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="StageTitlePanel" type="PanelContainer" parent="FullscreenStage/StageMargin/StageVBox/StageHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StageTitleMargin" type="MarginContainer" parent="FullscreenStage/StageMargin/StageVBox/StageHeader/StageTitlePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 18
+
+[node name="StageTitleVBox" type="VBoxContainer" parent="FullscreenStage/StageMargin/StageVBox/StageHeader/StageTitlePanel/StageTitleMargin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="FullscreenPhaseLabel" type="Label" parent="FullscreenStage/StageMargin/StageVBox/StageHeader/StageTitlePanel/StageTitleMargin/StageTitleVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.921569, 0.819608, 1)
+theme_override_font_sizes/font_size = 20
+text = "STEP 1 / 16"
+
+[node name="FullscreenTitleLabel" type="Label" parent="FullscreenStage/StageMargin/StageVBox/StageHeader/StageTitlePanel/StageTitleMargin/StageTitleVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "大会"
+
+[node name="FullscreenStatusPanel" type="PanelContainer" parent="FullscreenStage/StageMargin/StageVBox/StageHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(332, 0)
+layout_mode = 2
+
+[node name="FullscreenStatusMargin" type="MarginContainer" parent="FullscreenStage/StageMargin/StageVBox/StageHeader/FullscreenStatusPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
+
+[node name="FullscreenStatusVBox" type="VBoxContainer" parent="FullscreenStage/StageMargin/StageVBox/StageHeader/FullscreenStatusPanel/FullscreenStatusMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="FullscreenJudgeLabel" type="Label" parent="FullscreenStage/StageMargin/StageVBox/StageHeader/FullscreenStatusPanel/FullscreenStatusMargin/FullscreenStatusVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 18
+text = "MC / Judges"
+
+[node name="FullscreenStatusLabel" type="RichTextLabel" parent="FullscreenStage/StageMargin/StageVBox/StageHeader/FullscreenStatusPanel/FullscreenStatusMargin/FullscreenStatusVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 92)
+layout_mode = 2
+fit_content = true
+scroll_active = false
+
+[node name="FullscreenTempGaugeHost" type="Control" parent="FullscreenStage/StageMargin/StageVBox/StageHeader/FullscreenStatusPanel/FullscreenStatusMargin/FullscreenStatusVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FullscreenBodyPanel" type="PanelContainer" parent="FullscreenStage/StageMargin/StageVBox"]
+layout_mode = 2
+
+[node name="FullscreenBodyMargin" type="MarginContainer" parent="FullscreenStage/StageMargin/StageVBox/FullscreenBodyPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 18
+
+[node name="FullscreenBodyLabel" type="RichTextLabel" parent="FullscreenStage/StageMargin/StageVBox/FullscreenBodyPanel/FullscreenBodyMargin"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+bbcode_enabled = false
+fit_content = true
+scroll_active = false
+theme_override_font_sizes/normal_font_size = 20
+
+[node name="FullscreenContentPanel" type="PanelContainer" parent="FullscreenStage/StageMargin/StageVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="FullscreenContentMargin" type="MarginContainer" parent="FullscreenStage/StageMargin/StageVBox/FullscreenContentPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="FullscreenContentHost" type="VBoxContainer" parent="FullscreenStage/StageMargin/StageVBox/FullscreenContentPanel/FullscreenContentMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="FullscreenTransition" type="ColorRect" parent="FullscreenStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+
 [node name="HUD" parent="." instance=ExtResource("3")]
