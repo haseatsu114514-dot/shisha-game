@@ -4,7 +4,7 @@ const TOTAL_STEPS := 10
 const DEFAULT_NEXT_SCENE := "res://scenes/daily/map.tscn"
 const GAUGE_TIMER_WAIT := 0.03
 const ADJUST_TOTAL_ROUNDS := 3
-const INFO_WRAP_CHARS := 27
+const INFO_WRAP_CHARS := 24
 const INFO_PAGE_MAX_LINES := 6
 const MAIN_PANEL_TOP_DEFAULT := 34.0
 const MAIN_PANEL_TOP_COMPACT := 22.0
@@ -94,6 +94,7 @@ const STEP_STAGE_META := {
 @onready var header_label: Label = %HeaderLabel
 @onready var phase_label: Label = %PhaseLabel
 @onready var main_panel: PanelContainer = $MainPanel
+@onready var deck_hbox: HBoxContainer = $MainPanel/MainMargin/MainVBox/DeckHBox
 @onready var step_card: PanelContainer = $MainPanel/MainMargin/MainVBox/DeckHBox/StepCard
 @onready var preview_panel: PanelContainer = $MainPanel/MainMargin/MainVBox/DeckHBox/PreviewPanel
 @onready var step_tag_label: Label = %StepTagLabel
@@ -122,6 +123,10 @@ var _tutorial_sliders: Dictionary = {}
 var _tutorial_value_labels: Dictionary = {}
 var _tutorial_remaining_label: Label = null
 var _tutorial_confirm_button: Button = null
+var _current_step_num: int = 1
+var _focus_mode_active: bool = false
+var _focus_status_panel: PanelContainer = null
+var _focus_status_label: RichTextLabel = null
 
 var _pull_quality: String = "未判定"
 var _pull_step_finished: bool = false
@@ -152,6 +157,7 @@ var _adjust_round_drift: float = 0.0
 
 # Aluminum
 var _aluminum_timer: Timer
+var _aluminum_glow_timer: Timer
 var _aluminum_active: bool = false
 var _aluminum_slot_count: int = 12
 var _aluminum_hit_slot: int = 9
@@ -244,6 +250,12 @@ func _ready() -> void:
 	_aluminum_timer.timeout.connect(_on_aluminum_tick)
 	add_child(_aluminum_timer)
 
+	_aluminum_glow_timer = Timer.new()
+	_aluminum_glow_timer.wait_time = 0.03
+	_aluminum_glow_timer.one_shot = false
+	_aluminum_glow_timer.timeout.connect(_on_aluminum_glow_tick)
+	add_child(_aluminum_glow_timer)
+
 	_mind_timer = Timer.new()
 	_mind_timer.wait_time = 0.033
 	_mind_timer.one_shot = false
@@ -335,9 +347,11 @@ func _is_confirm_key_event(event: InputEventKey) -> bool:
 
 
 func _set_phase(step_num: int, title: String, body: String) -> void:
+	_current_step_num = step_num
 	header_label.text = title
 	phase_label.text = "TUTORIAL STEP %d / %d" % [step_num, TOTAL_STEPS]
 	_apply_step_layout(step_num)
+	_set_focus_mode(false)
 	_set_info_text(body)
 	_update_step_stage(step_num, title)
 
@@ -356,6 +370,22 @@ func _apply_step_layout(step_num: int) -> void:
 		)
 	if info_label != null:
 		info_label.custom_minimum_size.y = INFO_HEIGHT_COMPACT if compact else INFO_HEIGHT_DEFAULT
+
+
+func _set_focus_mode(active: bool) -> void:
+	_focus_mode_active = active
+	var compact = _is_compact_layout_step(_current_step_num)
+	if deck_hbox != null:
+		deck_hbox.visible = not active
+	if main_panel != null:
+		main_panel.offset_top = 16.0 if active else (MAIN_PANEL_TOP_COMPACT if compact else MAIN_PANEL_TOP_DEFAULT)
+	if info_label != null:
+		info_label.visible = not active
+		info_label.custom_minimum_size.y = 74.0 if active else (INFO_HEIGHT_COMPACT if compact else INFO_HEIGHT_DEFAULT)
+	if info_footer != null:
+		info_footer.visible = (not active) and _info_pages.size() > 1
+	if choice_container != null:
+		choice_container.size_flags_vertical = Control.SIZE_EXPAND_FILL if active else 0
 
 
 func _is_compact_layout_step(step_num: int) -> bool:
@@ -431,10 +461,11 @@ func _refresh_info_page() -> void:
 		_info_pages = [""]
 	_info_page_index = clampi(_info_page_index, 0, _info_pages.size() - 1)
 	info_label.text = _info_pages[_info_page_index]
+	info_label.visible = not _focus_mode_active
 	if info_footer == null:
 		return
 	var multi_page = _info_pages.size() > 1
-	info_footer.visible = multi_page
+	info_footer.visible = multi_page and not _focus_mode_active
 	if info_page_label != null:
 		info_page_label.text = "説明 %d / %d" % [_info_page_index + 1, _info_pages.size()]
 	if info_prev_button != null:
@@ -483,6 +514,8 @@ func _update_step_stage(step_num: int, title: String) -> void:
 func _clear_choices() -> void:
 	for child in choice_container.get_children():
 		child.queue_free()
+	_focus_status_panel = null
+	_focus_status_label = null
 	if _pull_timer != null:
 		_pull_timer.stop()
 	_pull_is_holding = false
@@ -491,6 +524,52 @@ func _clear_choices() -> void:
 		_adjust_timer.stop()
 	_adjust_is_holding = false
 	_adjust_gauge_active = false
+	if _aluminum_glow_timer != null:
+		_aluminum_glow_timer.stop()
+	_aluminum_glow_active = false
+
+
+func _set_runtime_status(text: String) -> void:
+	if not _focus_mode_active:
+		_set_info_text(text)
+		return
+	_ensure_focus_status_panel()
+	if _focus_status_label != null and is_instance_valid(_focus_status_label):
+		_focus_status_label.text = text
+
+
+func _ensure_focus_status_panel() -> void:
+	if choice_container == null:
+		return
+	if _focus_status_panel != null and is_instance_valid(_focus_status_panel):
+		choice_container.move_child(_focus_status_panel, 0)
+		return
+	var panel = PanelContainer.new()
+	panel.name = "FocusStatusPanel"
+	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	panel.custom_minimum_size = Vector2(0, 68)
+
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 14)
+	margin.add_theme_constant_override("margin_top", 10)
+	margin.add_theme_constant_override("margin_right", 14)
+	margin.add_theme_constant_override("margin_bottom", 10)
+	panel.add_child(margin)
+
+	var label = RichTextLabel.new()
+	label.bbcode_enabled = false
+	label.fit_content = true
+	label.scroll_active = false
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.custom_minimum_size = Vector2(0, 48)
+	label.add_theme_font_size_override("normal_font_size", 18)
+	margin.add_child(label)
+
+	choice_container.add_child(panel)
+	choice_container.move_child(panel, 0)
+	_focus_status_panel = panel
+	_focus_status_label = label
 
 
 func _add_choice_button(text: String, callback: Callable) -> Button:
@@ -694,7 +773,7 @@ func _show_packing_style_step() -> void:
 	lines.append("ふわふわ: 軽い立ち上がり。吸いやすいが熱量はやや弱い。")
 	lines.append("ふつう: バランス重視。大会でも基準にしやすい。")
 	lines.append("しっかり: 厚い煙が出るが、火力管理を外すと暴れやすい。")
-	_set_info_text(_join_lines(lines))
+	_set_runtime_status(_join_lines(lines))
 	_add_choice_button("ふわふわ（軽い立ち上がり）", _on_packing_style_selected.bind("fluffy"))
 	_add_choice_button("ふつう（大会基準 / 安定）", _on_packing_style_selected.bind("normal"))
 	_add_choice_button("しっかり（厚い煙 / 高火力寄り）", _on_packing_style_selected.bind("firm"))
@@ -716,7 +795,20 @@ func _on_packing_style_selected(style: String) -> void:
 	_add_choice_button("次へ（アルミ張り）", _show_aluminum_step)
 
 func _show_aluminum_step() -> void:
-	_set_phase(4, "アルミ穴あけ", "円形レーンの判定点にノーツが来たら叩く。Taiko風のタイミング勝負。\nスミ「ここでお前のリズム感が熱を左右する。ズレれば味も濁るぞ」")
+	_set_phase(4, "アルミ穴あけ", "説明を読んだら開始。プレイ中は光っている穴だけ押す。金色のうちに押すほど高評価。")
+	_clear_choices()
+	var lines: Array[String] = []
+	lines.append("1. 銀パネルの穴が1つずつ光る")
+	lines.append("2. 今 光っている穴だけ押す")
+	lines.append("3. 金のうち=PERFECT / 少し遅い=GOOD / 遅い=NEAR")
+	lines.append("4. 消えた後や別タイミングで押すとMISS")
+	_set_runtime_status(_join_lines(lines))
+	_add_choice_button("穴あけ開始", _start_aluminum_step)
+
+
+func _start_aluminum_step() -> void:
+	_set_phase(4, "アルミ穴あけ", "光っている穴を順番に押す。")
+	_set_focus_mode(true)
 	_clear_choices()
 	_aluminum_notes.clear()
 	_aluminum_notes_spawned = 0
@@ -727,94 +819,125 @@ func _show_aluminum_step() -> void:
 	_aluminum_hit_near = 0
 	_aluminum_hit_miss = 0
 	_aluminum_bad_press = 0
-	_aluminum_required_hits = 6
-	_aluminum_total_notes = 8
+	_aluminum_total_notes = 18
+	_aluminum_required_hits = 12
+	_aluminum_current_hole = 0
+	_aluminum_glow_active = false
+	_aluminum_glow_elapsed = 0.0
+	_aluminum_glow_window = 1.25
+	_aluminum_grid_holes.clear()
+
+	var cols := 6
+	var rows := 3
+	for i in range(_aluminum_total_notes):
+		var row = i / cols
+		var col = i % cols
+		_aluminum_grid_holes.append({
+			"row": row,
+			"col": col,
+			"result": "",
+		})
+	_aluminum_grid_holes.shuffle()
+
+	var guide = Label.new()
+	guide.text = "金のうちに押す。Space / Enter でもOK"
+	guide.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	guide.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	guide.add_theme_font_size_override("font_size", 16)
+	choice_container.add_child(guide)
+
+	var grid_visual = _AluminumGridVisual.new()
+	grid_visual.name = "AluminumGrid"
+	grid_visual.custom_minimum_size = Vector2(0, 220)
+	grid_visual.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	grid_visual.holes = _aluminum_grid_holes
+	grid_visual.current_hole = _aluminum_current_hole
+	grid_visual.cols = cols
+	grid_visual.total_rows = rows
+	choice_container.add_child(grid_visual)
 
 	var press_button = Button.new()
-	press_button.text = "ドン（穴を開ける / Space / Enter）"
-	press_button.custom_minimum_size = Vector2(0, 44)
+	press_button.text = "今 光っている穴を押す"
+	press_button.custom_minimum_size = Vector2(0, 52)
 	press_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	press_button.pressed.connect(_on_aluminum_press_hole)
 	choice_container.add_child(press_button)
+
 	_update_aluminum_rhythm_text()
 	await _show_center_countdown("START")
 	_aluminum_active = true
-	var beat_wait = 0.16
-	_aluminum_spawn_interval_ticks = 2
-	_aluminum_timer.wait_time = beat_wait
-	_aluminum_timer.start()
-	_spawn_aluminum_note()
+	_start_next_aluminum_glow()
 	_update_aluminum_rhythm_text()
 
 func _on_aluminum_tick() -> void:
-	if not _aluminum_active:
-		return
-	for i in range(_aluminum_notes.size() - 1, -1, -1):
-		var note = _aluminum_notes[i]
-		note["distance"] = float(note.get("distance", 0.0)) - 1.0
-		if float(note.get("distance", 0.0)) < -1.8:
-			_aluminum_hit_miss += 1
-			_aluminum_notes.remove_at(i)
-		else:
-			_aluminum_notes[i] = note
+	pass
 
-	if _aluminum_notes_spawned < _aluminum_total_notes:
-		if _aluminum_spawn_cooldown <= 0:
-			_spawn_aluminum_note()
-		else:
-			_aluminum_spawn_cooldown -= 1
 
-	if _aluminum_notes_spawned >= _aluminum_total_notes and _aluminum_notes.is_empty():
+func _start_next_aluminum_glow() -> void:
+	if _aluminum_current_hole >= _aluminum_grid_holes.size():
 		_finish_aluminum_rhythm()
 		return
-	_update_aluminum_rhythm_text()
+	_aluminum_glow_active = true
+	_aluminum_glow_elapsed = 0.0
+	_aluminum_glow_timer.start()
+	_update_aluminum_grid_visual()
 
-func _spawn_aluminum_note() -> void:
-	if _aluminum_notes_spawned >= _aluminum_total_notes:
+
+func _on_aluminum_glow_tick() -> void:
+	if not _aluminum_glow_active:
+		_aluminum_glow_timer.stop()
 		return
-	_aluminum_notes.append({"distance": float(_aluminum_slot_count - 2)})
-	_aluminum_notes_spawned += 1
-	_aluminum_spawn_cooldown = _aluminum_spawn_interval_ticks
+	_aluminum_glow_elapsed += _aluminum_glow_timer.wait_time
+	if _aluminum_glow_elapsed >= _aluminum_glow_window:
+		_aluminum_glow_active = false
+		_aluminum_glow_timer.stop()
+		_aluminum_hit_miss += 1
+		_aluminum_grid_holes[_aluminum_current_hole]["result"] = "miss"
+		_aluminum_show_hit_feedback("MISS", Color("e43b44"))
+		_aluminum_current_hole += 1
+		_update_aluminum_rhythm_text()
+		get_tree().create_timer(0.24).timeout.connect(_start_next_aluminum_glow)
+	else:
+		_update_aluminum_grid_visual()
 
 func _on_aluminum_press_hole() -> void:
-	if not _aluminum_active:
-		return
-	var nearest_index = -1
-	var nearest_distance = 999.0
-	for i in range(_aluminum_notes.size()):
-		var note = _aluminum_notes[i]
-		var distance = abs(float(note.get("distance", 999.0)))
-		if distance < nearest_distance:
-			nearest_distance = distance
-			nearest_index = i
-
-	if nearest_index == -1 or nearest_distance > 1.55:
-		_aluminum_bad_press += 1
-		GameManager.play_ui_se("cancel")
-		_update_aluminum_rhythm_text()
+	if not _aluminum_active or not _aluminum_glow_active:
+		if _aluminum_active:
+			_aluminum_bad_press += 1
+			GameManager.play_ui_se("cancel")
+			_aluminum_show_hit_feedback("MISS", Color("e43b44"))
+			_update_aluminum_rhythm_text()
 		return
 
-	if nearest_distance <= 0.35:
+	_aluminum_glow_active = false
+	_aluminum_glow_timer.stop()
+	var ratio = _aluminum_glow_elapsed / maxf(_aluminum_glow_window, 0.01)
+	if ratio <= 0.35:
 		_aluminum_hit_perfect += 1
 		GameManager.play_ui_se("confirm")
-	elif nearest_distance <= 0.9:
+		_aluminum_grid_holes[_aluminum_current_hole]["result"] = "perfect"
+		_aluminum_show_hit_feedback("PERFECT!", Color("feae34"))
+	elif ratio <= 0.68:
 		_aluminum_hit_good += 1
 		GameManager.play_ui_se("confirm")
+		_aluminum_grid_holes[_aluminum_current_hole]["result"] = "good"
+		_aluminum_show_hit_feedback("GOOD", Color("3e8948"))
 	else:
 		_aluminum_hit_near += 1
 		GameManager.play_ui_se("cursor")
+		_aluminum_grid_holes[_aluminum_current_hole]["result"] = "near"
+		_aluminum_show_hit_feedback("NEAR", Color("8b9bb4"))
 
-	_aluminum_notes.remove_at(nearest_index)
-	if _aluminum_notes_spawned >= _aluminum_total_notes and _aluminum_notes.is_empty():
-		_finish_aluminum_rhythm()
-		return
+	_aluminum_current_hole += 1
 	_update_aluminum_rhythm_text()
+	get_tree().create_timer(0.18).timeout.connect(_start_next_aluminum_glow)
 
 func _finish_aluminum_rhythm() -> void:
 	if not _aluminum_active:
 		return
 	_aluminum_active = false
 	_aluminum_timer.stop()
+	_aluminum_glow_timer.stop()
 
 	var hits = _count_aluminum_hits()
 	var result_text = ""
@@ -850,55 +973,48 @@ func _finish_aluminum_rhythm() -> void:
 	_add_choice_button("次へ（炭の準備）", _show_charcoal_prep_step)
 
 func _update_aluminum_rhythm_text() -> void:
-	var ring = _build_aluminum_ring_text()
 	var hit_count = _count_aluminum_hits()
 	var remain = maxi(0, _aluminum_required_hits - hit_count)
 	var lines: Array[String] = []
-	lines.append("円形Taiko穴あけ: 判定点で叩く")
-	lines.append("成功: %d / %d（最低 %d 必要、残り %d）" % [hit_count, _aluminum_total_notes, _aluminum_required_hits, remain])
-	lines.append("判定: Perfect %d / Good %d / Near %d / Miss %d / 空振り %d" % [
+	lines.append("今 光っている穴だけ押す。消えたらMISS。")
+	lines.append("進捗 %d / %d　必要成功 %d（残り %d）" % [_aluminum_current_hole, _aluminum_total_notes, _aluminum_required_hits, remain])
+	lines.append("判定 P%d / G%d / N%d / M%d / 空振り%d" % [
 		_aluminum_hit_perfect,
 		_aluminum_hit_good,
 		_aluminum_hit_near,
 		_aluminum_hit_miss,
 		_aluminum_bad_press,
 	])
-	lines.append("凡例: ★判定点 / ●ノーツ / ◎ノーツ重なり / ◆判定点上ノーツ")
-	lines.append("")
-	lines.append(ring)
-	_set_info_text(_join_lines(lines))
+	lines.append("金=PERFECT / 緑=GOOD / 灰=NEAR / 赤=MISS")
+	_set_runtime_status(_join_lines(lines))
 
-func _build_aluminum_ring_text() -> String:
-	var slot_note_count: Dictionary = {}
-	for note in _aluminum_notes:
-		var slot_idx = _get_aluminum_note_slot(note)
-		slot_note_count[slot_idx] = int(slot_note_count.get(slot_idx, 0)) + 1
 
-	var sym = func(slot_idx: int) -> String:
-		var note_count = int(slot_note_count.get(slot_idx, 0))
-		if slot_idx == _aluminum_hit_slot:
-			if note_count <= 0: return "★"
-			if note_count == 1: return "◆"
-			return "✦"
-		if note_count <= 0: return "○"
-		if note_count == 1: return "●"
-		return "◎"
+func _update_aluminum_grid_visual() -> void:
+	var grid_node = choice_container.find_child("AluminumGrid", true, false) as _AluminumGridVisual
+	if grid_node != null:
+		grid_node.holes = _aluminum_grid_holes
+		grid_node.current_hole = _aluminum_current_hole
+		grid_node.glow_ratio = _aluminum_glow_elapsed / maxf(_aluminum_glow_window, 0.01)
+		grid_node.queue_redraw()
 
-	var lines: Array[String] = []
-	lines.append("          %s" % sym.call(0))
-	lines.append("      %s       %s" % [sym.call(11), sym.call(1)])
-	lines.append("   %s             %s" % [sym.call(10), sym.call(2)])
-	lines.append(" %s                 %s" % [sym.call(9), sym.call(3)])
-	lines.append("   %s             %s" % [sym.call(8), sym.call(4)])
-	lines.append("      %s       %s" % [sym.call(7), sym.call(5)])
-	lines.append("          %s" % sym.call(6))
-	return _join_lines(lines)
 
-func _get_aluminum_note_slot(note: Dictionary) -> int:
-	var distance = int(round(float(note.get("distance", 0.0))))
-	var slot = (_aluminum_hit_slot + distance) % _aluminum_slot_count
-	if slot < 0: slot += _aluminum_slot_count
-	return slot
+func _aluminum_show_hit_feedback(text: String, color: Color) -> void:
+	var grid_node = choice_container.find_child("AluminumGrid", true, false)
+	if grid_node == null:
+		return
+	var label = Label.new()
+	label.text = text
+	label.add_theme_font_size_override("font_size", 24)
+	label.add_theme_color_override("font_color", color)
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.position = Vector2(grid_node.size.x * 0.5 - 64, grid_node.size.y * 0.5 - 14)
+	label.modulate.a = 1.0
+	grid_node.add_child(label)
+	var tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(label, "position:y", label.position.y - 34, 0.4).set_trans(Tween.TRANS_CUBIC)
+	tween.tween_property(label, "modulate:a", 0.0, 0.26).set_delay(0.22)
+	tween.chain().tween_callback(label.queue_free)
 
 func _count_aluminum_hits() -> int:
 	return _aluminum_hit_perfect + _aluminum_hit_good + _aluminum_hit_near
@@ -1015,15 +1131,14 @@ func _show_mind_barrage_intro() -> void:
 		return
 	var duration_sec = _compute_mind_barrage_duration()
 	var lives = MIND_BARRAGE_BASE_LIVES
-	_set_phase(8, "吸い出し前: 思考の暴走", "吸い出し直前、頭の中で不安と記憶が弾幕になる。\n\nスミ「客に提供する前、ブレるな。自分のレシピを信じ切れ」")
+	_set_phase(8, "吸い出し前: 思考の暴走", "説明を読んだら開始。プレイ中は中央の自機で雑念を避けて耐える。")
 	_clear_choices()
 	var lines: Array[String] = []
-	lines.append("弾を避ける = 雑念をかわす")
-	lines.append("当たる = 心がブレる")
-	lines.append("ここでの成績が良いほど、この後の吸い出し操作が安定する。")
-	lines.append("蒸らし %d分 -> 耐久 %.1f秒" % [_selected_steam_minutes, duration_sec])
-	lines.append("残機: %d（0になると吸い出し難易度MAX）" % lives)
-	_set_info_text(_join_lines(lines))
+	lines.append("中央スタート。時間まで弾を避ける。")
+	lines.append("操作: 矢印キー / WASD　集中: Shift / Z")
+	lines.append("被弾が多いほど、この後の吸い出し速度が悪化。")
+	lines.append("耐久 %.1f秒 / 残機 %d" % [duration_sec, lives])
+	_set_runtime_status(_join_lines(lines))
 	_add_choice_button("弾幕開始", _start_mind_barrage_step)
 
 func _compute_mind_barrage_duration() -> float:
@@ -1042,7 +1157,8 @@ func _start_mind_barrage_step() -> void:
 	if _mind_barrage_done:
 		_show_pull_step()
 		return
-	_set_phase(8, "思考弾幕", "弾をかわして時間まで耐える。")
+	_set_phase(8, "思考弾幕", "中央スタート。時間まで耐える。")
+	_set_focus_mode(true)
 	_clear_choices()
 	_mind_active = true
 	_mind_duration_total = _compute_mind_barrage_duration()
@@ -1065,11 +1181,14 @@ func _start_mind_barrage_step() -> void:
 	_mind_invincible_timer = 0.0
 
 	var guide = Label.new()
-	guide.text = "操作: 矢印キー / WASD（下のボタン長押しでも移動）"
+	guide.text = "操作: 矢印キー / WASD　集中: Shift / Z"
+	guide.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	guide.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	guide.add_theme_font_size_override("font_size", 15)
 	choice_container.add_child(guide)
 
 	var arena_frame = PanelContainer.new()
-	arena_frame.custom_minimum_size = Vector2(0, 260)
+	arena_frame.custom_minimum_size = Vector2(0, 232)
 	arena_frame.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	choice_container.add_child(arena_frame)
 
@@ -1089,26 +1208,13 @@ func _start_mind_barrage_step() -> void:
 	arena.add_child(player)
 	_mind_player_node = player
 
-	var dpad = GridContainer.new()
-	dpad.columns = 3
-	dpad.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	dpad.add_theme_constant_override("h_separation", 8)
-	dpad.add_theme_constant_override("v_separation", 8)
-	choice_container.add_child(dpad)
-	_add_mind_pad_spacer(dpad)
-	_add_mind_direction_button(dpad, "↑", "up")
-	_add_mind_pad_spacer(dpad)
-	_add_mind_direction_button(dpad, "←", "left")
-	var center = Label.new()
-	center.text = "SOUL"
-	center.custom_minimum_size = Vector2(56, 40)
-	center.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	center.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	dpad.add_child(center)
-	_add_mind_direction_button(dpad, "→", "right")
-	_add_mind_pad_spacer(dpad)
-	_add_mind_direction_button(dpad, "↓", "down")
-	_add_mind_pad_spacer(dpad)
+	await get_tree().process_frame
+	await get_tree().process_frame
+	if _mind_arena_layer != null and is_instance_valid(_mind_arena_layer):
+		var arena_size = _mind_arena_layer.size
+		if arena_size.x > 40.0 and arena_size.y > 40.0:
+			_mind_player_pos = arena_size * 0.5
+			_sync_mind_player_node()
 
 	_update_mind_barrage_info_text()
 	await _show_center_countdown("START")
@@ -1311,12 +1417,11 @@ func _update_mind_barrage_info_text() -> void:
 	if _mind_duration_total > 0.0:
 		ratio = _mind_elapsed / _mind_duration_total
 	var lines: Array[String] = []
-	lines.append("残り %.1f秒 / %.1f秒" % [remain, _mind_duration_total])
-	lines.append("残機 %d / %d  %s" % [_mind_lives_remaining, _mind_lives_max, _build_mind_life_text()])
-	lines.append("被弾 %d / 出現 %d" % [_mind_hits, maxi(_mind_spawned, 1)])
+	lines.append("残り %.1f秒  %s" % [remain, _build_mind_barrage_progress_bar(ratio)])
+	lines.append("残機 %s  被弾 %d" % [_build_mind_life_text(), _mind_hits])
 	lines.append("集中度 %d%%" % focus)
-	lines.append(_build_mind_barrage_progress_bar(ratio))
-	_set_info_text(_join_lines(lines))
+	lines.append("操作: 矢印 / WASD　集中: Shift / Z")
+	_set_runtime_status(_join_lines(lines))
 
 func _build_mind_life_text() -> String:
 	var chars: Array[String] = []
@@ -1422,8 +1527,9 @@ func _show_pull_step() -> void:
 	_set_phase(
 		9,
 		"吸い出し練習",
-		"吸い出し前は温度が合格ライン未達。吸い出しで温度帯に置く。\n操作: ボタンまたは Space / Enter 長押し。離した瞬間で判定。"
+		"ゲージを止めて適温帯へ入れる。長押しして、狙った位置で離す。"
 	)
+	_set_focus_mode(true)
 	_clear_choices()
 	_pull_step_finished = false
 	_pull_is_holding = false
@@ -1439,7 +1545,7 @@ func _show_pull_step() -> void:
 	hold_button.mouse_exited.connect(_on_pull_hold_released)
 	choice_container.add_child(hold_button)
 
-	_update_pull_text("スミ「ここでの吸い出しが仕上がりを決める。精神戦の結果でゲージ速度が変わるぞ」\n現在の速度補正: %s" % _mind_pull_adjust_text())
+	_update_pull_text("開始前: 速度補正 %s" % _mind_pull_adjust_text())
 
 
 func _compute_pull_start_temp_level() -> float:
@@ -1550,16 +1656,16 @@ func _resolve_pull_quality() -> void:
 	var feedback = ""
 	match quality:
 		"perfect":
-			feedback = "完璧な温度帯にピタッと入った。\nスミ「いい腕だ。煙が一番旨い瞬間を捉えている」"
+			feedback = "適温の芯に入った。"
 		"good":
-			feedback = "実戦でも十分通る合格ライン。\nスミ「悪くない。客に出せるレベルには乗っている」"
+			feedback = "実戦でも通る温度帯。"
 		"near":
-			feedback = "合格ラインギリギリ。\nスミ「惜しい。熱が少し暴れているな。意識を集中しろ」"
+			feedback = "ギリギリで残した。"
 		_:
-			feedback = "温度帯を完全に外した。\nスミ「焦りすぎだ。煙の味を殺しているぞ」"
+			feedback = "温度帯を外した。"
 
 	GameManager.play_ui_se("confirm" if quality != "miss" else "cancel")
-	_update_pull_text("吸い出し判定: %s\n%s\n\n現在の温度状態: %s" % [quality.to_upper(), feedback, _temperature_zone_label(_temp_level)])
+	_update_pull_text("判定 %s / %s" % [quality.to_upper(), feedback])
 	_clear_choices()
 	_add_choice_button("次へ（温度調整の特訓）", _start_adjustment_tutorial)
 
@@ -1573,12 +1679,12 @@ func _update_pull_text(status_text: String) -> void:
 	var bar = _build_gauge_bar(_pull_gauge_value, _pull_target_center, _pull_target_width)
 	var lines: Array[String] = []
 	lines.append(status_text)
-	lines.append("操作: 長押しして離す。ゲージは左→右へ流れて端で左に戻る。")
-	lines.append("左ほど低温、右ほど高温。未達なら右寄せ、過熱なら左寄せ。")
-	lines.append_array(_build_temperature_band_lines(preview_temp))
-	lines.append("タイミング目標帯 ■ / ポインタ ◆")
+	lines.append("左=低温　中央=適温　右=高温")
+	lines.append("目標帯 ■ / 今 ◆")
 	lines.append(bar)
-	_set_info_text(_join_lines(lines))
+	lines.append("現在: %s / %d℃" % [_temperature_zone_label(preview_temp), _temperature_to_celsius(preview_temp)])
+	lines.append("未達なら右、過熱なら左へ寄せる。")
+	_set_runtime_status(_join_lines(lines))
 
 
 func _start_adjustment_tutorial() -> void:
@@ -1923,7 +2029,7 @@ func _update_adjust_text(status_text: String) -> void:
 	lines.append_array(_build_temperature_band_lines(_temp_level))
 	lines.append("調整タイミング目標帯 ■ / ポインタ ◆")
 	lines.append(bar)
-	_set_info_text(_join_lines(lines))
+	_set_runtime_status(_join_lines(lines))
 
 
 func _build_temperature_band_lines(value: float, drift: float = 0.0) -> Array[String]:
@@ -2053,3 +2159,53 @@ func _finish_tutorial() -> void:
 	# wait a frame then defer call to change scene to ensure clean UI state
 	await get_tree().process_frame
 	get_tree().change_scene_to_file.call_deferred(next_scene)
+
+
+class _AluminumGridVisual extends Control:
+	var holes: Array = []
+	var current_hole: int = 0
+	var cols: int = 6
+	var total_rows: int = 3
+	var glow_ratio: float = 0.0
+
+	func _draw() -> void:
+		var w = size.x
+		var h = size.y
+		var margin = 16.0
+		var cell_w = (w - margin * 2.0) / float(maxi(cols, 1))
+		var cell_h = (h - margin * 2.0) / float(maxi(total_rows, 1))
+		var radius = minf(cell_w, cell_h) * 0.28
+
+		draw_rect(Rect2(margin - 4.0, margin - 4.0, w - margin * 2.0 + 8.0, h - margin * 2.0 + 8.0), Color("8b9bb4", 0.14), true)
+		draw_rect(Rect2(margin - 4.0, margin - 4.0, w - margin * 2.0 + 8.0, h - margin * 2.0 + 8.0), Color("8b9bb4", 0.32), false, 1.0)
+
+		for i in range(holes.size()):
+			var hole = holes[i]
+			var row = int(hole.get("row", 0))
+			var col = int(hole.get("col", 0))
+			var result = str(hole.get("result", ""))
+			var pos = Vector2(
+				margin + cell_w * (float(col) + 0.5),
+				margin + cell_h * (float(row) + 0.5)
+			)
+
+			if i < current_hole:
+				var color = Color("5a6988", 0.52)
+				match result:
+					"perfect":
+						color = Color("feae34", 0.92)
+					"good":
+						color = Color("3e8948", 0.86)
+					"near":
+						color = Color("8b9bb4", 0.76)
+					"miss":
+						color = Color("e43b44", 0.54)
+				draw_circle(pos, radius, color)
+			elif i == current_hole:
+				var glow_alpha = clampf((1.0 - glow_ratio) * 0.75 + 0.25, 0.28, 1.0)
+				var glow_size = radius + lerpf(6.0, 2.0, glow_ratio)
+				draw_circle(pos, glow_size, Color("feae34", glow_alpha * 0.3))
+				draw_circle(pos, radius, Color("feae34", glow_alpha))
+				draw_arc(pos, glow_size, 0.0, TAU, 24, Color("feae34", glow_alpha * 0.55), 2.0)
+			else:
+				draw_circle(pos, radius * 0.58, Color("3a4466", 0.24))

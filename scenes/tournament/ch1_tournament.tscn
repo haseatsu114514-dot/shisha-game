@@ -31,9 +31,9 @@ color = Color(0.01, 0.02, 0.06, 0.78)
 [node name="MainPanel" type="PanelContainer" parent="."]
 layout_mode = 1
 offset_left = 24.0
-offset_top = 82.0
+offset_top = 60.0
 offset_right = 916.0
-offset_bottom = 712.0
+offset_bottom = 716.0
 
 [node name="MainMargin" type="MarginContainer" parent="MainPanel"]
 layout_mode = 2
@@ -44,6 +44,7 @@ theme_override_constants/margin_bottom = 14
 
 [node name="MainVBox" type="VBoxContainer" parent="MainPanel/MainMargin"]
 layout_mode = 2
+size_flags_vertical = 3
 theme_override_constants/separation = 12
 
 [node name="HeaderLabel" type="Label" parent="MainPanel/MainMargin/MainVBox"]
@@ -63,7 +64,7 @@ layout_mode = 2
 theme_override_constants/separation = 12
 
 [node name="StepCard" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/DeckHBox"]
-custom_minimum_size = Vector2(0, 140)
+custom_minimum_size = Vector2(0, 132)
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -101,7 +102,7 @@ theme_override_font_sizes/font_size = 16
 text = "ここに立ち絵、会場カット、結果演出を差し込める。"
 
 [node name="PreviewPanel" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/DeckHBox"]
-custom_minimum_size = Vector2(300, 140)
+custom_minimum_size = Vector2(312, 132)
 layout_mode = 2
 
 [node name="PreviewMargin" type="MarginContainer" parent="MainPanel/MainMargin/MainVBox/DeckHBox/PreviewPanel"]
@@ -137,7 +138,7 @@ color = Color(0.894118, 0.231373, 0.266667, 0.4)
 
 [node name="InfoLabel" type="RichTextLabel" parent="MainPanel/MainMargin/MainVBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 164)
+custom_minimum_size = Vector2(0, 140)
 layout_mode = 2
 size_flags_vertical = 3
 bbcode_enabled = false
