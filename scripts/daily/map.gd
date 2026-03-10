@@ -78,8 +78,9 @@ func _ready() -> void:
 			var dialogue_file = str(forced_event.get("dialogue_file", ""))
 			var dialogue_id = str(forced_event.get("dialogue_id", ""))
 			var event_metadata: Dictionary = forced_event.get("metadata", {})
+			var next_scene = GameManager.resolve_next_scene_path(str(forced_event.get("next_scene", "map")))
 			if dialogue_file != "" and dialogue_id != "":
-				GameManager.queue_dialogue(dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", event_metadata)
+				GameManager.queue_dialogue(dialogue_file, dialogue_id, next_scene, event_metadata)
 				get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 				return
 
@@ -431,8 +432,8 @@ func _enter_spot(spot: Dictionary) -> void:
 			# Offering prayer - random stat +1.5
 			var stats = ["technique", "sense", "guts", "charm", "insight"]
 			var chosen_stat = stats[randi() % stats.size()]
-			PlayerData.add_stat(chosen_stat, 1.5)
-			GameManager.log_stat_change(chosen_stat, 1.5)
+				PlayerData.add_stat(chosen_stat, 2)
+				GameManager.log_stat_change(chosen_stat, 2)
 			_mark_visited(id)
 			_save_visited()
 			GameManager.set_transient("advance_time_after_scene", true)
@@ -444,8 +445,8 @@ func _enter_spot(spot: Dictionary) -> void:
 			if not CalendarManager.use_action():
 				_try_auto_return_home()
 				return
-			PlayerData.add_stat("sense", 1.5)
-			GameManager.log_stat_change("sense", 1.5)
+				PlayerData.add_stat("sense", 2)
+				GameManager.log_stat_change("sense", 2)
 			_mark_visited(id)
 			_save_visited()
 			GameManager.set_transient("advance_time_after_scene", true)
@@ -532,10 +533,10 @@ func _enter_spot(spot: Dictionary) -> void:
 				return
 			PlayerData.spend_money(cost)
 			GameManager.log_money_change(-cost)
-			PlayerData.add_stat("sense", 1.5)
-			PlayerData.add_stat("charm", 1.5)
-			GameManager.log_stat_change("sense", 1.5)
-			GameManager.log_stat_change("charm", 1.5)
+				PlayerData.add_stat("sense", 2)
+				PlayerData.add_stat("charm", 2)
+				GameManager.log_stat_change("sense", 2)
+				GameManager.log_stat_change("charm", 2)
 			GameManager.set_transient("advance_time_after_scene", true)
 			GameManager.queue_dialogue("res://data/dialogue/ch4_spots.json", "ch4_dubai_cafe", "res://scenes/daily/map.tscn")
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
@@ -594,12 +595,14 @@ func _load_marker_textures() -> void:
 func _add_spot_marker(spot: Dictionary) -> void:
 	var id = str(spot.get("id", ""))
 	var marker = Control.new()
+	marker.size = Vector2(150, 120)
 	marker.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	marker.custom_minimum_size = Vector2(150, 120)
 	marker.position = _get_marker_position(id)
 
 	var pin = TextureButton.new()
 	pin.custom_minimum_size = Vector2(64, 64)
+	pin.size = Vector2(64, 64)
 	pin.position = Vector2(44, 8)
 	pin.texture_normal = _pin_event_texture if _is_event_spot(id) else _pin_texture
 	pin.ignore_texture_size = false
@@ -611,6 +614,7 @@ func _add_spot_marker(spot: Dictionary) -> void:
 	if face_tex != null:
 		var face = TextureRect.new()
 		face.custom_minimum_size = Vector2(46, 46)
+		face.size = Vector2(46, 46)
 		face.position = Vector2(53, -26)
 		face.texture = face_tex
 		face.expand_mode = 1
@@ -620,6 +624,7 @@ func _add_spot_marker(spot: Dictionary) -> void:
 	var label_panel = PanelContainer.new()
 	label_panel.position = Vector2(16, 68)
 	label_panel.custom_minimum_size = Vector2(118, 36)
+	label_panel.size = Vector2(118, 36)
 	label_panel.self_modulate = Color(1, 1, 1, 0.9)
 	label_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
@@ -652,6 +657,7 @@ func _add_spot_marker(spot: Dictionary) -> void:
 	label_button.focus_mode = Control.FOCUS_NONE
 	label_button.position = label_panel.position
 	label_button.custom_minimum_size = label_panel.custom_minimum_size
+	label_button.size = label_panel.size
 	label_button.size_flags_horizontal = Control.SIZE_FILL
 	label_button.modulate = Color(1, 1, 1, 0.0)
 	label_button.pressed.connect(_on_spot_pressed.bind(spot))

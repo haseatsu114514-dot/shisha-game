@@ -1,8 +1,7 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/title/title_screen.gd" id="1"]
-[ext_resource type="Texture2D" path="res://assets/backgrounds/bg_title.png" id="2"]
-[ext_resource type="Texture2D" path="res://assets/ui/ui_title_logo.png" id="3"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/tonari_day.png" id="2"]
 
 [node name="TitleScreen" type="Control"]
 layout_mode = 3
@@ -26,46 +25,79 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-color = Color(0.02, 0.02, 0.06, 0.55)
+color = Color(0.03, 0.04, 0.08, 0.62)
+
+[node name="Vignette" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0.26)
+
+[node name="TitleCard" type="PanelContainer" parent="."]
+layout_mode = 1
+offset_left = 56.0
+offset_top = 44.0
+offset_right = 598.0
+offset_bottom = 320.0
 
 [node name="LogoRect" type="TextureRect" parent="."]
 layout_mode = 1
-offset_left = 340.0
-offset_top = 40.0
-offset_right = 940.0
-offset_bottom = 200.0
-texture = ExtResource("3")
+offset_left = 86.0
+offset_top = 64.0
+offset_right = 566.0
+offset_bottom = 184.0
 expand_mode = 1
 stretch_mode = 5
 
 [node name="TitleLabel" type="Label" parent="."]
 layout_mode = 1
-offset_left = 80.0
-offset_top = 210.0
-offset_right = 1200.0
-offset_bottom = 290.0
+offset_left = 86.0
+offset_top = 182.0
+offset_right = 560.0
+offset_bottom = 246.0
 theme_override_colors/font_color = Color(0.917647, 0.831373, 0.666667, 1)
-theme_override_font_sizes/font_size = 52
+theme_override_font_sizes/font_size = 56
 text = "煙の向こう側"
-horizontal_alignment = 1
+horizontal_alignment = 0
 
 [node name="SubtitleLabel" type="Label" parent="."]
 layout_mode = 1
-offset_left = 80.0
-offset_top = 290.0
-offset_right = 1200.0
-offset_bottom = 330.0
+offset_left = 90.0
+offset_top = 248.0
+offset_right = 420.0
+offset_bottom = 280.0
 theme_override_colors/font_color = Color(0.917647, 0.831373, 0.666667, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 22
 text = "Beyond the Smoke"
-horizontal_alignment = 1
+horizontal_alignment = 0
+
+[node name="HeroFrame" type="PanelContainer" parent="."]
+layout_mode = 1
+offset_left = 820.0
+offset_top = 102.0
+offset_right = 1216.0
+offset_bottom = 548.0
+
+[node name="PackiiRect" type="TextureRect" parent="HeroFrame"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -8.0
+expand_mode = 1
+stretch_mode = 5
 
 [node name="MenuPanel" type="PanelContainer" parent="."]
 layout_mode = 1
-offset_left = 440.0
-offset_top = 380.0
-offset_right = 840.0
-offset_bottom = 620.0
+offset_left = 86.0
+offset_top = 402.0
+offset_right = 430.0
+offset_bottom = 666.0
 
 [node name="Menu" type="VBoxContainer" parent="MenuPanel"]
 layout_mode = 2
@@ -99,19 +131,20 @@ text = "おわる"
 [node name="InfoLabel" type="Label" parent="."]
 unique_name_in_owner = true
 layout_mode = 1
-offset_left = 40.0
-offset_top = 650.0
-offset_right = 700.0
-offset_bottom = 710.0
-theme_override_font_sizes/font_size = 16
+offset_left = 90.0
+offset_top = 278.0
+offset_right = 560.0
+offset_bottom = 336.0
+theme_override_font_sizes/font_size = 20
 text = "第1章：地方大会編「なんとなく始めた」"
+autowrap_mode = 2
 
 [node name="CopyrightLabel" type="Label" parent="."]
 layout_mode = 1
 offset_left = 1000.0
-offset_top = 690.0
+offset_top = 684.0
 offset_right = 1260.0
-offset_bottom = 715.0
+offset_bottom = 710.0
 theme_override_font_sizes/font_size = 14
 text = "(c) 2026"
 horizontal_alignment = 2
@@ -120,10 +153,10 @@ horizontal_alignment = 2
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
-offset_left = 340.0
-offset_top = 150.0
-offset_right = 940.0
-offset_bottom = 570.0
+offset_left = 344.0
+offset_top = 126.0
+offset_right = 936.0
+offset_bottom = 594.0
 
 [node name="SettingsContent" type="VBoxContainer" parent="SettingsPanel"]
 layout_mode = 2
