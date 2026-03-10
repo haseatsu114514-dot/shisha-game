@@ -20,10 +20,10 @@ color = Color(0.1, 0.08, 0.06, 1)
 
 [node name="MainPanel" type="PanelContainer" parent="."]
 layout_mode = 1
-offset_left = 136.0
-offset_top = 72.0
-offset_right = 1144.0
-offset_bottom = 708.0
+offset_left = 172.0
+offset_top = 44.0
+offset_right = 1172.0
+offset_bottom = 718.0
 
 [node name="MainMargin" type="MarginContainer" parent="MainPanel"]
 layout_mode = 2
@@ -34,18 +34,19 @@ theme_override_constants/margin_bottom = 14
 
 [node name="MainVBox" type="VBoxContainer" parent="MainPanel/MainMargin"]
 layout_mode = 2
+size_flags_vertical = 3
 theme_override_constants/separation = 12
 
 [node name="HeaderLabel" type="Label" parent="MainPanel/MainMargin/MainVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 34
+theme_override_font_sizes/font_size = 32
 text = "スミさんの特訓"
 
 [node name="PhaseLabel" type="Label" parent="MainPanel/MainMargin/MainVBox"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 17
 text = "TUTORIAL STEP 1 / 10"
 
 [node name="DeckHBox" type="HBoxContainer" parent="MainPanel/MainMargin/MainVBox"]
@@ -53,7 +54,7 @@ layout_mode = 2
 theme_override_constants/separation = 12
 
 [node name="StepCard" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/DeckHBox"]
-custom_minimum_size = Vector2(0, 144)
+custom_minimum_size = Vector2(0, 112)
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -91,7 +92,7 @@ theme_override_font_sizes/font_size = 16
 text = "ここに導入カットインや立ち絵演出を差し込める。"
 
 [node name="PreviewPanel" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/DeckHBox"]
-custom_minimum_size = Vector2(296, 144)
+custom_minimum_size = Vector2(280, 112)
 layout_mode = 2
 
 [node name="PreviewMargin" type="MarginContainer" parent="MainPanel/MainMargin/MainVBox/DeckHBox/PreviewPanel"]
@@ -127,8 +128,9 @@ color = Color(0.996078, 0.682353, 0.203922, 0.42)
 
 [node name="InfoLabel" type="RichTextLabel" parent="MainPanel/MainMargin/MainVBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 176)
+custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
+size_flags_vertical = 3
 bbcode_enabled = false
 fit_content = false
 scroll_active = false
@@ -153,14 +155,14 @@ size_flags_horizontal = 3
 [node name="InfoPrevButton" type="Button" parent="MainPanel/MainMargin/MainVBox/InfoFooter"]
 unique_name_in_owner = true
 layout_mode = 2
-custom_minimum_size = Vector2(64, 30)
+custom_minimum_size = Vector2(56, 28)
 theme_override_font_sizes/font_size = 16
 text = "前"
 
 [node name="InfoNextButton" type="Button" parent="MainPanel/MainMargin/MainVBox/InfoFooter"]
 unique_name_in_owner = true
 layout_mode = 2
-custom_minimum_size = Vector2(64, 30)
+custom_minimum_size = Vector2(56, 28)
 theme_override_font_sizes/font_size = 16
 text = "次"
 
@@ -169,7 +171,7 @@ unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 clip_contents = false
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 
 [node name="StatusPanel" parent="." instance=ExtResource("3")]
 

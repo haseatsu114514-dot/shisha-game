@@ -10,7 +10,7 @@ const STEP_STAGE_META := {
 	3: {"tag": "MIX", "summary": "12gの配分で主軸を作る", "hint": "断面図、素材アイコン、配合図を足せる。", "preview": "配合図 / ボウル断面予定", "color": Color("feae34")},
 	4: {"tag": "PACK", "summary": "詰め方で立ち上がりを調整する", "hint": "密度差の比較アニメを追加しやすい。", "preview": "パッキング差分演出予定", "color": Color("e4a672")},
 	5: {"tag": "FOIL", "summary": "アルミ穴あけの精度を競う", "hint": "ヒットエフェクトや光演出を盛りやすい。", "preview": "リズム演出 / 判定演出予定", "color": Color("8bd5ff")},
-	6: {"tag": "FLIP", "summary": "炭準備で火力の初速を決める", "hint": "炭の火花や手元アニメの差し込み枠。", "preview": "炭準備カット / 火花予定", "color": Color("ff7a59")},
+	6: {"tag": "COAL", "summary": "炭を返すタイミングで火力の初速を決める", "hint": "炭の火花や手元アニメの差し込み枠。", "preview": "炭準備カット / 火花予定", "color": Color("ff7a59")},
 	7: {"tag": "HEAT", "summary": "炭配置でベース温度を作る", "hint": "配置図と温度差分の見せ場にできる。", "preview": "炭配置図 / 熱量比較予定", "color": Color("ff9466")},
 	8: {"tag": "STEAM", "summary": "蒸らし時間で煙の芯を整える", "hint": "タイマーと湯気アニメを足せる。", "preview": "蒸らしタイマー演出予定", "color": Color("cfe7ff")},
 	9: {"tag": "FOCUS", "summary": "精神戦を抜けて手元を安定させる", "hint": "観客カットや不安演出の差し込み先。", "preview": "思考弾幕 / 観客演出予定", "color": Color("b55088")},
@@ -72,7 +72,15 @@ const REWARD_BY_RANK := {1: 30000, 2: 15000, 3: 5000, 4: 0}
 const PULL_DIFFICULTY := [0.86, 1.0, 1.22, 1.06]
 const TOTAL_PACKING_GRAMS := 12
 const INFO_WRAP_CHARS := 28
-const INFO_PAGE_MAX_LINES := 7
+const INFO_PAGE_MAX_LINES := 6
+const MAIN_PANEL_TOP_DEFAULT := 36.0
+const MAIN_PANEL_TOP_COMPACT := 24.0
+const MAIN_PANEL_BOTTOM := 718.0
+const STEP_CARD_HEIGHT_DEFAULT := 110.0
+const STEP_CARD_HEIGHT_COMPACT := 92.0
+const PREVIEW_PANEL_WIDTH := 260.0
+const INFO_HEIGHT_DEFAULT := 114.0
+const INFO_HEIGHT_COMPACT := 88.0
 const PULL_MIN_ROUNDS := 2
 const PULL_MAX_ROUNDS := 6
 const MIND_BARRAGE_BASE_LIVES := 3
@@ -189,7 +197,7 @@ const MC_COMMENTS := {
 		"南雲「穴の開け方一つで吸い心地が変わる。丁寧に、だがリズムよく」",
 	],
 	6: [
-		"MCパッキー「炭の準備！ フリップのタイミングが鍵です」",
+		"MCパッキー「炭の準備！ 炭を返すタイミングが鍵です」",
 	],
 	7: [
 		"MCパッキー「炭配置！ 何個置くかも戦略のうち」",
@@ -252,6 +260,10 @@ const PRESENTATION_FOCUS_LABEL := {
 
 @onready var header_label: Label = %HeaderLabel
 @onready var phase_label: Label = %PhaseLabel
+@onready var main_panel: PanelContainer = $MainPanel
+@onready var deck_hbox: HBoxContainer = $MainPanel/MainMargin/MainVBox/DeckHBox
+@onready var step_card: PanelContainer = $MainPanel/MainMargin/MainVBox/DeckHBox/StepCard
+@onready var preview_panel: PanelContainer = $MainPanel/MainMargin/MainVBox/DeckHBox/PreviewPanel
 @onready var step_tag_label: Label = %StepTagLabel
 @onready var step_summary_label: Label = %StepSummaryLabel
 @onready var step_hint_label: Label = %StepHintLabel
@@ -313,6 +325,10 @@ var _pull_setting_hint: String = ""
 var _info_raw_text: String = ""
 var _info_pages: Array[String] = []
 var _info_page_index: int = 0
+var _current_step_num: int = 1
+var _focus_mode_active: bool = false
+var _focus_status_panel: PanelContainer = null
+var _focus_status_label: RichTextLabel = null
 
 var _adjust_target_action: String = ""
 var _adjust_selected_action: String = ""
@@ -420,7 +436,7 @@ var _mini_dialogue_timer: Timer
 
 const SPEAKER_NAMES := {
 	"hajime": "はじめ",
-	"sumi": "スミさん",
+	"sumi": "炭場",
 	"naru": "なる",
 	"adam": "アダム",
 	"minto": "眠都(みんと)",
@@ -639,13 +655,52 @@ func _get_mix_trait(trait_name: String) -> float:
 
 
 func _set_phase(step_num: int, title: String, body: String) -> void:
+	_current_step_num = step_num
 	header_label.text = title
 	header_label.add_theme_color_override("font_color", GameManager.THEME_VERMILION)
 	phase_label.text = "STEP %d / %d" % [step_num, TOTAL_STEPS]
+	_apply_step_layout(step_num)
+	_set_focus_mode(false)
 	_set_info_text(body)
 	_update_step_stage(step_num, title)
 	_show_round_announce(step_num, title)
 	_show_mc_comment(step_num)
+
+
+func _apply_step_layout(step_num: int) -> void:
+	var compact = _is_compact_layout_step(step_num)
+	if main_panel != null:
+		main_panel.offset_top = MAIN_PANEL_TOP_COMPACT if compact else MAIN_PANEL_TOP_DEFAULT
+		main_panel.offset_bottom = MAIN_PANEL_BOTTOM
+	if step_card != null:
+		step_card.custom_minimum_size.y = STEP_CARD_HEIGHT_COMPACT if compact else STEP_CARD_HEIGHT_DEFAULT
+	if preview_panel != null:
+		preview_panel.custom_minimum_size = Vector2(
+			PREVIEW_PANEL_WIDTH,
+			STEP_CARD_HEIGHT_COMPACT if compact else STEP_CARD_HEIGHT_DEFAULT
+		)
+	if info_label != null:
+		info_label.custom_minimum_size.y = INFO_HEIGHT_COMPACT if compact else INFO_HEIGHT_DEFAULT
+
+
+func _set_focus_mode(active: bool) -> void:
+	_focus_mode_active = active
+	var compact = _is_compact_layout_step(_current_step_num)
+	if deck_hbox != null:
+		deck_hbox.visible = not active
+	if main_panel != null:
+		main_panel.offset_top = 18.0 if active else (MAIN_PANEL_TOP_COMPACT if compact else MAIN_PANEL_TOP_DEFAULT)
+	if info_label != null:
+		info_label.visible = not active
+		info_label.custom_minimum_size.y = 72.0 if active else (INFO_HEIGHT_COMPACT if compact else INFO_HEIGHT_DEFAULT)
+	if info_footer != null:
+		info_footer.visible = (not active) and _info_pages.size() > 1
+	if choice_container != null:
+		choice_container.size_flags_vertical = Control.SIZE_EXPAND_FILL if active else 0
+
+
+func _is_compact_layout_step(step_num: int) -> bool:
+	return step_num <= 3 or step_num == 5 or step_num >= 8
 
 
 func _update_step_stage(step_num: int, title: String) -> void:
@@ -731,10 +786,11 @@ func _refresh_info_page() -> void:
 		_info_pages = [""]
 	_info_page_index = clampi(_info_page_index, 0, _info_pages.size() - 1)
 	info_label.text = _info_pages[_info_page_index]
+	info_label.visible = not _focus_mode_active
 	if info_footer == null:
 		return
 	var multi_page = _info_pages.size() > 1
-	info_footer.visible = multi_page
+	info_footer.visible = multi_page and not _focus_mode_active
 	if info_page_label != null:
 		info_page_label.text = "説明 %d / %d" % [_info_page_index + 1, _info_pages.size()]
 	if info_prev_button != null:
@@ -770,6 +826,8 @@ func _clear_choices() -> void:
 	_stop_mind_barrage()
 	for child in choice_container.get_children():
 		child.queue_free()
+	_focus_status_panel = null
+	_focus_status_label = null
 	_pull_timer.stop()
 	_pull_is_holding = false
 	_pull_hold_button = null
@@ -783,10 +841,53 @@ func _clear_choices() -> void:
 	_packing_confirm_button = null
 
 
+func _set_runtime_status(text: String) -> void:
+	if not _focus_mode_active:
+		_set_info_text(text)
+		return
+	_ensure_focus_status_panel()
+	if _focus_status_label != null and is_instance_valid(_focus_status_label):
+		_focus_status_label.text = text
+
+
+func _ensure_focus_status_panel() -> void:
+	if choice_container == null:
+		return
+	if _focus_status_panel != null and is_instance_valid(_focus_status_panel):
+		choice_container.move_child(_focus_status_panel, 0)
+		return
+	var panel = PanelContainer.new()
+	panel.name = "FocusStatusPanel"
+	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	panel.custom_minimum_size = Vector2(0, 68)
+
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 14)
+	margin.add_theme_constant_override("margin_top", 10)
+	margin.add_theme_constant_override("margin_right", 14)
+	margin.add_theme_constant_override("margin_bottom", 10)
+	panel.add_child(margin)
+
+	var label = RichTextLabel.new()
+	label.bbcode_enabled = false
+	label.fit_content = true
+	label.scroll_active = false
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.custom_minimum_size = Vector2(0, 48)
+	label.add_theme_font_size_override("normal_font_size", 18)
+	margin.add_child(label)
+
+	choice_container.add_child(panel)
+	choice_container.move_child(panel, 0)
+	_focus_status_panel = panel
+	_focus_status_label = label
+
+
 func _add_choice_button(text: String, callback: Callable) -> Button:
 	var button = Button.new()
 	button.text = text
-	button.custom_minimum_size = Vector2(0, 44)
+	button.custom_minimum_size = Vector2(0, 36)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	# ダンガンロンパ風: バーミリオン×黒の大会専用スタイル
 	var normal_style = StyleBoxFlat.new()
@@ -1441,7 +1542,8 @@ func _detect_ng_mix(grams: Dictionary) -> Dictionary:
 
 
 func _show_aluminum_step() -> void:
-	_set_phase(5, "アルミ穴あけ", "光る位置をタイミングよくタップして穴を開けろ！")
+	_set_phase(5, "アルミ穴あけ", "光っている穴だけ押す。明るいうちほど高得点。")
+	_set_focus_mode(true)
 	_clear_choices()
 	_aluminum_active = true
 	_aluminum_hit_perfect = 0
@@ -1500,9 +1602,16 @@ func _show_aluminum_step() -> void:
 	grid_visual.total_rows = rows
 	choice_container.add_child(grid_visual)
 
+	var guide = Label.new()
+	guide.text = "今 光っている穴だけ押す。Space / Enter でもOK"
+	guide.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	guide.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	guide.add_theme_font_size_override("font_size", 16)
+	choice_container.add_child(guide)
+
 	# 穴あけボタン
 	var press_button = Button.new()
-	press_button.text = "穴を開ける！"
+	press_button.text = "光った穴を押す"
 	press_button.custom_minimum_size = Vector2(0, 60)
 	press_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	press_button.add_theme_font_size_override("font_size", 28)
@@ -1667,30 +1776,17 @@ func _update_aluminum_rhythm_text() -> void:
 	var hit_count = _count_aluminum_hits()
 	var total = _aluminum_grid_holes.size()
 	var done = _aluminum_current_hole
-	var progress_bar = ""
-	for i in range(mini(total, 30)):
-		if i < done:
-			var result = str(_aluminum_grid_holes[i].get("result", ""))
-			match result:
-				"perfect":
-					progress_bar += "★"
-				"good":
-					progress_bar += "●"
-				"near":
-					progress_bar += "◆"
-				"miss":
-					progress_bar += "×"
-				_:
-					progress_bar += "○"
-		elif i == done:
-			progress_bar += "◎"
-		else:
-			progress_bar += "○"
 	var lines: Array[String] = []
-	lines.append("穴あけ進捗: %s" % progress_bar)
-	lines.append("成功 %d / %d" % [hit_count, total])
-	lines.append("光ったらタップ！ 早いほど高精度。")
-	_set_info_text("\n".join(lines))
+	lines.append("光っている穴だけ押す。金色のうちほど高精度。")
+	lines.append("進捗 %d / %d　成功 %d" % [done, total, hit_count])
+	lines.append("P%d / G%d / N%d / M%d / 空振り%d" % [
+		_aluminum_hit_perfect,
+		_aluminum_hit_good,
+		_aluminum_hit_near,
+		_aluminum_hit_miss,
+		_aluminum_bad_press,
+	])
+	_set_runtime_status("\n".join(lines))
 
 
 func _update_aluminum_grid_visual() -> void:
@@ -1707,11 +1803,11 @@ func _count_aluminum_hits() -> int:
 
 
 func _show_charcoal_prep_step() -> void:
-	_set_phase(6, "炭の準備", "フリップのタイミングを決める。")
+	_set_phase(6, "炭の準備", "炭を返すタイミングを決める。")
 	_clear_choices()
-	_add_choice_button("早めにフリップ", _on_charcoal_prep_choice.bind("early"))
-	_add_choice_button("ちょうどでフリップ", _on_charcoal_prep_choice.bind("perfect"))
-	_add_choice_button("遅めにフリップ", _on_charcoal_prep_choice.bind("late"))
+	_add_choice_button("早めに炭を返す", _on_charcoal_prep_choice.bind("early"))
+	_add_choice_button("ちょうどで炭を返す", _on_charcoal_prep_choice.bind("perfect"))
+	_add_choice_button("遅めに炭を返す", _on_charcoal_prep_choice.bind("late"))
 	_refresh_side_panel()
 
 
@@ -1928,7 +2024,7 @@ func _show_mind_barrage_intro(summary_text: String = "") -> void:
 	lines.append("耐えきる = 自分のレシピを信じ切る")
 	lines.append("")
 	lines.append("[集中モード] Shift / Z 長押し: 低速移動＋判定縮小")
-	lines.append("[グレイズ] 弾をギリギリで避けると集中度UP＋残り時間が短縮")
+	lines.append("[ニア回避] 弾のすぐ横を抜けると集中度UP＋残り時間が短縮")
 	lines.append("[コンボ] 連続回避でコンボが溜まり、評価に加算")
 	lines.append("")
 	lines.append("蒸らし %d分 -> 耐久 %.1f秒" % [_steam_minutes, duration_sec])
@@ -1972,6 +2068,7 @@ func _start_mind_barrage_step() -> void:
 		_show_pull_step()
 		return
 	_set_phase(9, "思考弾幕", "弾をかわして時間まで耐える。")
+	_set_focus_mode(true)
 	_clear_choices()
 	_mind_active = true
 	_mind_duration_total = _compute_mind_barrage_duration()
@@ -2006,7 +2103,7 @@ func _start_mind_barrage_step() -> void:
 	_mind_last_phase = 0
 
 	var guide = Label.new()
-	guide.text = "移動: 矢印キー / WASD    集中: Shift / Z（低速+判定縮小）"
+	guide.text = "移動: 矢印キー / WASD    集中: Shift / Z    ニア回避: 弾のすぐ横"
 	guide.add_theme_font_size_override("font_size", 13)
 	guide.add_theme_color_override("font_color", Color("ead4aa", 0.7))
 	choice_container.add_child(guide)
@@ -2691,8 +2788,8 @@ func _update_mind_barrage_info_text() -> void:
 	lines.append("残り %.1f秒  %s" % [remain, _build_mind_barrage_progress_bar(ratio)])
 	lines.append("残機 %s  集中度 %d%%" % [_build_mind_life_text(), focus])
 	var mode_text = "[集中]" if _mind_focus_mode else ""
-	lines.append("被弾 %d  回避 %d  GRAZE %d  %s" % [_mind_hits, _mind_dodged_count, _mind_graze_count, mode_text])
-	_set_info_text("\n".join(lines))
+	lines.append("被弾 %d  回避 %d  ニア回避 %d  %s" % [_mind_hits, _mind_dodged_count, _mind_graze_count, mode_text])
+	_set_runtime_status("\n".join(lines))
 
 
 func _build_mind_life_text() -> String:
@@ -2750,7 +2847,7 @@ func _finish_mind_barrage_step() -> void:
 	var max_combo = _mind_max_combo
 	var dodged = _mind_dodged_count
 	_show_step_result_and_next(
-		"%s\n被弾 %d / 回避 %d / GRAZE %d / MAX COMBO %d\n専門 %+d / 一般 %+d\n吸い出し速度補正: %s" % [
+		"%s\n被弾 %d / 回避 %d / ニア回避 %d / MAX COMBO %d\n専門 %+d / 一般 %+d\n吸い出し速度補正: %s" % [
 			result_text,
 			hit_count,
 			dodged,
@@ -2762,7 +2859,7 @@ func _finish_mind_barrage_step() -> void:
 		],
 		_show_pull_step
 	)
-	_append_info("残機 %d/%d GRAZE %d COMBO %d 速度補正: %s" % [lives_remaining, lives_max, graze_count, max_combo, _mind_pull_adjust_text()])
+	_append_info("残機 %d/%d ニア回避 %d COMBO %d 速度補正: %s" % [lives_remaining, lives_max, graze_count, max_combo, _mind_pull_adjust_text()])
 
 
 func _evaluate_mind_barrage_result() -> Dictionary:
@@ -3123,13 +3220,13 @@ func _spawn_graze_popup(center: Vector2, combo: int) -> void:
 		return
 	var lbl := Label.new()
 	if combo >= 10:
-		lbl.text = "GRAZE!! x%d" % combo
+		lbl.text = "ニア!! x%d" % combo
 		lbl.add_theme_color_override("font_color", Color("feae34"))
 	elif combo >= 5:
-		lbl.text = "GRAZE! x%d" % combo
+		lbl.text = "ニア! x%d" % combo
 		lbl.add_theme_color_override("font_color", Color("00e5ff"))
 	else:
-		lbl.text = "GRAZE"
+		lbl.text = "ニア"
 		lbl.add_theme_color_override("font_color", Color("00e5ff"))
 	lbl.add_theme_font_size_override("font_size", 14)
 	lbl.add_theme_color_override("font_outline_color", Color(0, 0.04, 0.08, 0.9))
@@ -3159,7 +3256,7 @@ func _update_mind_combo_display() -> void:
 			_mind_combo_label.text = ""
 	if _mind_graze_label != null and is_instance_valid(_mind_graze_label):
 		if _mind_graze_count > 0:
-			_mind_graze_label.text = "GRAZE %d" % _mind_graze_count
+			_mind_graze_label.text = "ニア回避 %d" % _mind_graze_count
 		else:
 			_mind_graze_label.text = ""
 
@@ -3200,6 +3297,7 @@ func _show_pull_step() -> void:
 			_mind_pull_adjust_text(),
 		]
 	)
+	_set_focus_mode(true)
 	_clear_choices()
 	_pull_timer.stop()
 	_pull_is_holding = false
@@ -3291,7 +3389,7 @@ func _update_pull_gauge_text() -> void:
 		bar_chars.append(char)
 
 	var status_text = "吸い出し中...離すと判定" if _pull_is_holding else "ボタンを押して吸い出し開始"
-	_set_info_text("%s\n%s\n%s\n目標帯 ■ / ポインタ ◆\n※このゲージはタイミング用。温度は右パネルの縦表示で確認。" % [
+	_set_runtime_status("%s\n%s\n%s\n目標帯 ■ / ポインタ ◆" % [
 		status_text,
 		_pull_setting_hint,
 		"".join(bar_chars),
@@ -3716,6 +3814,7 @@ func _show_adjustment_gauge_step(round_index: int) -> void:
 		"微調整ゲージ",
 		"選択した方向: %s\n押している間だけ調整、離した瞬間で判定。\n判定は PERFECT / GOOD / NEAR / MISS。" % _adjust_action_label(_adjust_selected_action)
 	)
+	_set_focus_mode(true)
 	_clear_choices()
 	_adjust_step_finished = false
 	_adjust_is_holding = false
@@ -3800,7 +3899,7 @@ func _update_adjust_text(status_text: String) -> void:
 	lines.append(status_text)
 	lines.append("タイミング目標帯 ■ / ポインタ ◆")
 	lines.append(bar)
-	_set_info_text("\n".join(lines))
+	_set_runtime_status("\n".join(lines))
 
 
 func _resolve_adjustment_round(round_index: int) -> void:

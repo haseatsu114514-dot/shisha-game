@@ -20,60 +20,144 @@ color = Color(0.012, 0.02, 0.05, 1)
 
 [node name="PhoneTexture" type="TextureRect" parent="."]
 layout_mode = 1
-offset_left = 440.0
-offset_top = 20.0
-offset_right = 840.0
-offset_bottom = 700.0
+offset_left = 410.0
+offset_top = 12.0
+offset_right = 870.0
+offset_bottom = 716.0
 texture = ExtResource("3")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="PhoneFrame" type="PanelContainer" parent="."]
 layout_mode = 1
-offset_left = 460.0
-offset_top = 60.0
-offset_right = 820.0
-offset_bottom = 660.0
+offset_left = 448.0
+offset_top = 40.0
+offset_right = 832.0
+offset_bottom = 688.0
 
 [node name="VBox" type="VBoxContainer" parent="PhoneFrame"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 8
 
-[node name="TimeLabel" type="Label" parent="PhoneFrame/VBox"]
+[node name="StatusBar" type="HBoxContainer" parent="PhoneFrame/VBox"]
 layout_mode = 2
-text = "AM 7:00"
-horizontal_alignment = 1
+theme_override_constants/separation = 8
 
-[node name="InfoLabel" type="Label" parent="PhoneFrame/VBox"]
+[node name="TimeLabel" type="Label" parent="PhoneFrame/VBox/StatusBar"]
 unique_name_in_owner = true
 layout_mode = 2
-text = ""
+text = "AM 7:00"
+
+[node name="StatusSpacer" type="Control" parent="PhoneFrame/VBox/StatusBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CarrierLabel" type="Label" parent="PhoneFrame/VBox/StatusBar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "LIME 5G"
+
+[node name="BatteryLabel" type="Label" parent="PhoneFrame/VBox/StatusBar"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "87%"
+
+[node name="AppHeaderPanel" type="PanelContainer" parent="PhoneFrame/VBox"]
+layout_mode = 2
+
+[node name="AppHeaderMargin" type="MarginContainer" parent="PhoneFrame/VBox/AppHeaderPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="AppHeaderVBox" type="VBoxContainer" parent="PhoneFrame/VBox/AppHeaderPanel/AppHeaderMargin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="HeaderTitleLabel" type="Label" parent="PhoneFrame/VBox/AppHeaderPanel/AppHeaderMargin/AppHeaderVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "MORNING CHECK"
+
+[node name="StateBadgeLabel" type="Button" parent="PhoneFrame/VBox/AppHeaderPanel/AppHeaderMargin/AppHeaderVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+disabled = true
+text = "通常"
+
+[node name="StateDetailLabel" type="Label" parent="PhoneFrame/VBox/AppHeaderPanel/AppHeaderMargin/AppHeaderVBox"]
+unique_name_in_owner = true
+layout_mode = 2
 autowrap_mode = 3
-horizontal_alignment = 1
+text = "今日の導線をここで確認する。"
+
+[node name="InfoSections" type="VBoxContainer" parent="PhoneFrame/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="SummaryPanel" type="PanelContainer" parent="PhoneFrame/VBox/InfoSections"]
+unique_name_in_owner = true
+layout_mode = 2
+visible = false
+
+[node name="SummaryLabel" type="Label" parent="PhoneFrame/VBox/InfoSections/SummaryPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="DetailPanel" type="PanelContainer" parent="PhoneFrame/VBox/InfoSections"]
+unique_name_in_owner = true
+layout_mode = 2
+visible = false
+
+[node name="DetailLabel" type="Label" parent="PhoneFrame/VBox/InfoSections/DetailPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+
+[node name="RulePanel" type="PanelContainer" parent="PhoneFrame/VBox/InfoSections"]
+unique_name_in_owner = true
+layout_mode = 2
+visible = false
+
+[node name="RuleLabel" type="Label" parent="PhoneFrame/VBox/InfoSections/RulePanel"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
 
 [node name="Separator" type="HSeparator" parent="PhoneFrame/VBox"]
 layout_mode = 2
 
-[node name="NotificationLabel" type="Label" parent="PhoneFrame/VBox"]
+[node name="NotificationPanel" type="PanelContainer" parent="PhoneFrame/VBox"]
+layout_mode = 2
+
+[node name="NotificationLabel" type="Label" parent="PhoneFrame/VBox/NotificationPanel"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "通知なし"
 autowrap_mode = 3
 horizontal_alignment = 1
 
-[node name="Spacer" type="Control" parent="PhoneFrame/VBox"]
+[node name="ActionRow" type="HBoxContainer" parent="PhoneFrame/VBox"]
 layout_mode = 2
-size_flags_vertical = 3
+theme_override_constants/separation = 10
 
-[node name="LimeButton" type="Button" parent="PhoneFrame/VBox"]
+[node name="LimeButton" type="Button" parent="PhoneFrame/VBox/ActionRow"]
+unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 text = "LIME を確認"
 
-[node name="ClosePhoneButton" type="Button" parent="PhoneFrame/VBox"]
+[node name="ClosePhoneButton" type="Button" parent="PhoneFrame/VBox/ActionRow"]
+unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 text = "スマホを閉じる"
 
 [node name="HUD" parent="." instance=ExtResource("2")]
 
-[connection signal="pressed" from="PhoneFrame/VBox/LimeButton" to="." method="_on_lime_button_pressed"]
-[connection signal="pressed" from="PhoneFrame/VBox/ClosePhoneButton" to="." method="_on_close_phone_button_pressed"]
+[connection signal="pressed" from="PhoneFrame/VBox/ActionRow/LimeButton" to="." method="_on_lime_button_pressed"]
+[connection signal="pressed" from="PhoneFrame/VBox/ActionRow/ClosePhoneButton" to="." method="_on_close_phone_button_pressed"]

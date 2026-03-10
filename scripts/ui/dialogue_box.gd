@@ -13,7 +13,10 @@ signal dialogue_finished(dialogue_id: String)
 @onready var auto_button: Button = %AutoButton
 @onready var typing_timer: Timer = %TypingTimer
 @onready var auto_timer: Timer = %AutoTimer
-@onready var portrait_rect: TextureRect = %CharacterPortrait
+@onready var portrait_layer: Control = %PortraitLayer
+@onready var portrait_left_rect: TextureRect = %PortraitLeft
+@onready var portrait_center_rect: TextureRect = %PortraitCenter
+@onready var portrait_right_rect: TextureRect = %PortraitRight
 @onready var background_image: TextureRect = %BackgroundImage
 @onready var cg_rect: TextureRect = %CGRect
 @onready var smoke_particles: GPUParticles2D = $SmokeParticles
@@ -40,16 +43,103 @@ var _advance_repeat_timer: Timer
 var _advance_hold_active := false
 var _ignore_advance_press_once := false
 var _portrait_texture_cache: Dictionary = {}
-var _portrait_union_rect_cache: Dictionary = {}  # speaker_id -> Rect2i
+var _portrait_union_rect_cache: Dictionary = {}
+var _portrait_rects: Array[TextureRect] = []
+var _portrait_cast: Array[Dictionary] = []
 
 const DIALOGUE_WRAP_CHARS := 20
 const DIALOGUE_MAX_LINES := 2
 const ADVANCE_HOLD_DELAY := 0.34
 const ADVANCE_REPEAT_INTERVAL := 0.09
-const PORTRAIT_CROP_PADDING := 20
-const PORTRAIT_BOTTOM_TRIM_RATIO := 0.18
-const PORTRAIT_BOTTOM_TRIM_MAX := 180
-const PORTRAIT_MIN_VISIBLE_RATIO := 0.64
+const MAX_VISIBLE_PORTRAITS := 3
+const PORTRAIT_FACE_CANDIDATES := [
+	"normal", "smile", "serious", "sad", "surprise", "shy", "focus",
+	"smug", "wink", "evil", "excited", "thinking", "fired_up", "intense",
+	"silent", "angry", "smoke", "cry", "grin", "shout",
+	"ura_normal", "ura_smile", "ura_serious", "ura_sad", "ura_surprise",
+]
+const PORTRAIT_PROFILE_DEFAULT := {
+	"side_padding": 10,
+	"top_padding": 10,
+	"bottom_padding": 8,
+	"bottom_trim_ratio": 0.38,
+	"bottom_trim_max": 260,
+	"min_visible_ratio": 0.48,
+	"focus_scale": 1.08,
+	"support_scale": 0.98,
+	"y_shift_ratio": 0.00,
+	"x_shift_ratio": 0.00,
+}
+const PORTRAIT_PROFILE_BY_CLASS := {
+	"standard": {
+		"bottom_trim_ratio": 0.40,
+		"bottom_trim_max": 320,
+		"min_visible_ratio": 0.46,
+		"focus_scale": 1.12,
+		"support_scale": 1.00,
+	},
+	"tall": {
+		"bottom_trim_ratio": 0.42,
+		"bottom_trim_max": 340,
+		"min_visible_ratio": 0.44,
+		"focus_scale": 1.18,
+		"support_scale": 1.04,
+		"y_shift_ratio": -0.02,
+	},
+	"short": {
+		"bottom_trim_ratio": 0.24,
+		"bottom_trim_max": 220,
+		"min_visible_ratio": 0.58,
+		"focus_scale": 1.02,
+		"support_scale": 0.92,
+		"y_shift_ratio": 0.02,
+	},
+	"mascot": {
+		"side_padding": 4,
+		"top_padding": 4,
+		"bottom_padding": 4,
+		"bottom_trim_ratio": 0.08,
+		"bottom_trim_max": 60,
+		"min_visible_ratio": 0.78,
+		"focus_scale": 0.90,
+		"support_scale": 0.82,
+		"y_shift_ratio": 0.05,
+	},
+}
+const PORTRAIT_SLOT_LAYOUTS := {
+	1: [
+		{"anchor_x": 0.50, "width_ratio": 0.56, "height_ratio": 1.12, "bottom_overscan_ratio": 0.14, "brightness": 1.0, "alpha": 1.0, "z": 3},
+	],
+	2: [
+		{"anchor_x": 0.24, "width_ratio": 0.38, "height_ratio": 0.86, "bottom_overscan_ratio": 0.06, "brightness": 0.72, "alpha": 0.88, "z": 1},
+		{"anchor_x": 0.61, "width_ratio": 0.50, "height_ratio": 1.05, "bottom_overscan_ratio": 0.12, "brightness": 1.0, "alpha": 1.0, "z": 3},
+	],
+	3: [
+		{"anchor_x": 0.17, "width_ratio": 0.34, "height_ratio": 0.82, "bottom_overscan_ratio": 0.05, "brightness": 0.68, "alpha": 0.86, "z": 1},
+		{"anchor_x": 0.50, "width_ratio": 0.46, "height_ratio": 1.00, "bottom_overscan_ratio": 0.10, "brightness": 1.0, "alpha": 1.0, "z": 3},
+		{"anchor_x": 0.83, "width_ratio": 0.34, "height_ratio": 0.82, "bottom_overscan_ratio": 0.05, "brightness": 0.76, "alpha": 0.90, "z": 2},
+	],
+}
+const PORTRAIT_CLASS_BY_SPEAKER := {
+	"hajime": "standard",
+	"sumi": "tall",
+	"naru": "tall",
+	"adam": "tall",
+	"ryuji": "tall",
+	"kumicho": "tall",
+	"nagumo": "tall",
+	"maezono": "tall",
+	"minto": "standard",
+	"ageha": "standard",
+	"kirishima": "standard",
+	"mashiro": "short",
+	"tsumugi": "short",
+	"tumugi": "short",
+	"pakki": "mascot",
+}
+const PORTRAIT_HIDE_BY_DEFAULT := {
+	"hajime": true,
+}
 const NOTIFICATION_CARD_SIZE := Vector2(860, 108)
 const NOTIFICATION_BASE_POSITION := Vector2(210, 304)
 
@@ -104,6 +194,14 @@ const HIGHLIGHT_CLOSE_REPLACEMENTS := {
 func _ready() -> void:
 	if not GameManager:
 		pass
+
+	_portrait_rects = [
+		portrait_left_rect,
+		portrait_center_rect,
+		portrait_right_rect,
+	]
+	portrait_layer.z_index = -10
+	dialogue_panel.z_index = 20
 		
 	# Setup font and transparency
 	# GameManager が root theme にフォントを設定済みのため override 不要
@@ -152,6 +250,9 @@ func _ready() -> void:
 	# Default smoke off
 	if smoke_particles:
 		smoke_particles.emitting = false
+
+	_sync_portrait_layer_bounds()
+	_clear_portrait_rects()
 	
 	_load_dialogue_request_if_exists()
 	_apply_background_from_metadata()
@@ -163,6 +264,25 @@ func _ready() -> void:
 		advance_button.disabled = false
 		return
 	_show_next_line()
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_RESIZED:
+		_sync_portrait_layer_bounds()
+		_refresh_portrait_display("")
+
+
+func _sync_portrait_layer_bounds() -> void:
+	if portrait_layer == null or dialogue_panel == null:
+		return
+	portrait_layer.anchor_left = 0.0
+	portrait_layer.anchor_top = 0.0
+	portrait_layer.anchor_right = 1.0
+	portrait_layer.anchor_bottom = dialogue_panel.anchor_top
+	portrait_layer.offset_left = 0.0
+	portrait_layer.offset_top = 0.0
+	portrait_layer.offset_right = 0.0
+	portrait_layer.offset_bottom = dialogue_panel.offset_top - 2.0
 
 
 func _load_dialogue_request_if_exists() -> void:
@@ -728,69 +848,193 @@ func _build_highlighted_text(text: String) -> String:
 
 
 func _update_portrait(line: Dictionary) -> void:
-	var speaker = str(line.get("speaker", ""))
+	var speaker = _resolve_speaker_id(str(line.get("speaker", "")))
+	var active_speaker := ""
 	if speaker == "":
-		portrait_rect.visible = false
-		portrait_rect.texture = null
-		return
-	speaker = str(SPEAKER_ID_ALIASES.get(speaker, speaker))
+		if bool(line.get("clear_portraits", false)) or _should_clear_portraits_for_text(str(line.get("text", ""))):
+			_portrait_cast.clear()
+	else:
+		var face = str(line.get("face", "normal"))
+		if _should_show_portrait(speaker, line):
+			_upsert_portrait_cast(speaker, face)
+			active_speaker = speaker
+	_refresh_portrait_display(active_speaker)
 
-	var face = str(line.get("face", "normal"))
+
+func _resolve_speaker_id(speaker: String) -> String:
+	return str(SPEAKER_ID_ALIASES.get(speaker, speaker))
+
+
+func _should_show_portrait(speaker: String, line: Dictionary) -> bool:
+	if speaker == "" or speaker == "everyone":
+		return false
+	if bool(line.get("hide_portrait", false)):
+		return false
+	if bool(line.get("show_portrait", false)):
+		return true
+	return not PORTRAIT_HIDE_BY_DEFAULT.has(speaker)
+
+
+func _should_clear_portraits_for_text(text: String) -> bool:
+	var trimmed = text.strip_edges()
+	return trimmed.begins_with("────") or trimmed.begins_with("──")
+
+
+func _upsert_portrait_cast(speaker: String, face: String) -> void:
+	var entry := {
+		"speaker": speaker,
+		"face": face,
+	}
+	for i in range(_portrait_cast.size() - 1, -1, -1):
+		if str(_portrait_cast[i].get("speaker", "")) == speaker:
+			_portrait_cast.remove_at(i)
+			break
+	_portrait_cast.append(entry)
+	while _portrait_cast.size() > MAX_VISIBLE_PORTRAITS:
+		_portrait_cast.remove_at(0)
+
+
+func _build_portrait_entries(active_speaker: String) -> Array[Dictionary]:
+	if _portrait_cast.is_empty():
+		return []
+
+	var entries: Array[Dictionary] = []
+	for item in _portrait_cast:
+		entries.append(item.duplicate(true))
+
+	if entries.size() == 3 and active_speaker != "":
+		var active_index := -1
+		for i in range(entries.size()):
+			if str(entries[i].get("speaker", "")) == active_speaker:
+				active_index = i
+				break
+		if active_index >= 0:
+			var active_entry = entries[active_index]
+			entries.remove_at(active_index)
+			entries = [entries[0], active_entry, entries[1]]
+
+	return entries
+
+
+func _refresh_portrait_display(active_speaker: String) -> void:
+	if _portrait_rects.is_empty():
+		return
+	var entries = _build_portrait_entries(active_speaker)
+	if entries.is_empty():
+		_clear_portrait_rects()
+		return
+
+	var slot_layout: Array = PORTRAIT_SLOT_LAYOUTS.get(entries.size(), PORTRAIT_SLOT_LAYOUTS[1])
+	for i in range(_portrait_rects.size()):
+		var rect = _portrait_rects[i]
+		if i >= entries.size():
+			rect.visible = false
+			rect.texture = null
+			continue
+		var entry: Dictionary = entries[i]
+		var speaker = str(entry.get("speaker", ""))
+		var face = str(entry.get("face", "normal"))
+		var path = _find_portrait_path(speaker, face)
+		if path == "":
+			rect.visible = false
+			rect.texture = null
+			continue
+		var texture = _get_portrait_texture(speaker, path)
+		if texture == null:
+			rect.visible = false
+			rect.texture = null
+			continue
+		rect.texture = texture
+		rect.visible = true
+		var slot: Dictionary = slot_layout[i]
+		var is_active = speaker == active_speaker
+		_apply_portrait_slot(rect, speaker, slot, is_active)
+
+
+func _apply_portrait_slot(rect: TextureRect, speaker: String, slot: Dictionary, is_active: bool) -> void:
+	var viewport_size = portrait_layer.size
+	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
+		viewport_size = size
+	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
+		viewport_size = get_viewport_rect().size
+	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
+		return
+
+	var profile = _get_portrait_profile(speaker)
+	var scale_key = "focus_scale" if is_active else "support_scale"
+	var scale_ratio = float(profile.get(scale_key, PORTRAIT_PROFILE_DEFAULT[scale_key]))
+	var width = viewport_size.x * float(slot.get("width_ratio", 0.42)) * scale_ratio
+	var height = viewport_size.y * float(slot.get("height_ratio", 0.90)) * scale_ratio
+	var center_x = viewport_size.x * float(slot.get("anchor_x", 0.5)) + viewport_size.x * float(profile.get("x_shift_ratio", 0.0))
+	var bottom = viewport_size.y * (1.0 + float(slot.get("bottom_overscan_ratio", 0.04))) + viewport_size.y * float(profile.get("y_shift_ratio", 0.0))
+	rect.offset_left = center_x - (width * 0.5)
+	rect.offset_top = bottom - height
+	rect.offset_right = center_x + (width * 0.5)
+	rect.offset_bottom = bottom
+	var brightness = float(slot.get("brightness", 1.0))
+	var alpha = float(slot.get("alpha", 1.0))
+	rect.modulate = Color(brightness, brightness, brightness, alpha)
+	rect.z_index = int(slot.get("z", 0))
+
+
+func _clear_portrait_rects() -> void:
+	for rect in _portrait_rects:
+		rect.visible = false
+		rect.texture = null
+
+
+func _find_portrait_path(speaker: String, face: String) -> String:
 	var path = "res://assets/sprites/characters/%s/chr_%s_%s.png" % [speaker, speaker, face]
 	if not ResourceLoader.exists(path):
 		path = "res://assets/sprites/characters/%s/chr_%s_normal.png" % [speaker, speaker]
 	if not ResourceLoader.exists(path):
-		portrait_rect.visible = false
-		portrait_rect.texture = null
-		return
+		return ""
+	return path
 
-	var texture = _get_portrait_texture(path)
-	if texture == null:
-		portrait_rect.visible = false
-		portrait_rect.texture = null
-		return
 
-	portrait_rect.texture = texture
-	portrait_rect.visible = true
+func _get_portrait_profile(speaker: String) -> Dictionary:
+	var profile: Dictionary = PORTRAIT_PROFILE_DEFAULT.duplicate(true)
+	var speaker_class = str(PORTRAIT_CLASS_BY_SPEAKER.get(speaker, ""))
+	if speaker_class != "" and PORTRAIT_PROFILE_BY_CLASS.has(speaker_class):
+		var class_profile: Dictionary = PORTRAIT_PROFILE_BY_CLASS[speaker_class]
+		for key in class_profile.keys():
+			profile[key] = class_profile[key]
+	return profile
 
 
 func _get_portrait_union_rect(speaker: String) -> Rect2i:
 	if _portrait_union_rect_cache.has(speaker):
 		return _portrait_union_rect_cache[speaker]
 
-	# 全表情の used_rect の和集合を計算して、表情切替時のサイズ変動を防ぐ
-	var faces := ["normal", "smile", "serious", "sad", "surprise", "shy", "focus",
-		"smug", "wink", "evil", "excited", "thinking", "fired_up", "intense",
-		"silent", "angry", "smoke", "cry", "grin", "shout",
-		"ura_normal", "ura_smile", "ura_serious", "ura_sad", "ura_surprise"]
 	var union := Rect2i()
 	var found := false
-	for face in faces:
-		var p := "res://assets/sprites/characters/%s/chr_%s_%s.png" % [speaker, speaker, face]
-		if not ResourceLoader.exists(p):
+	for face in PORTRAIT_FACE_CANDIDATES:
+		var candidate_path = "res://assets/sprites/characters/%s/chr_%s_%s.png" % [speaker, speaker, face]
+		if not ResourceLoader.exists(candidate_path):
 			continue
-		var tex = load(p)
-		if tex == null or not tex is Texture2D:
+		var candidate = load(candidate_path)
+		if candidate == null or not candidate is Texture2D:
 			continue
-		var img: Image = tex.get_image()
-		if img == null or img.is_empty():
+		var candidate_image: Image = candidate.get_image()
+		if candidate_image == null or candidate_image.is_empty():
 			continue
-		var r: Rect2i = img.get_used_rect()
-		if r.size.x <= 0 or r.size.y <= 0:
+		var used_rect := candidate_image.get_used_rect()
+		if used_rect.size.x <= 0 or used_rect.size.y <= 0:
 			continue
 		if not found:
-			union = r
+			union = used_rect
 			found = true
 		else:
-			union = union.merge(r)
+			union = union.merge(used_rect)
 
 	_portrait_union_rect_cache[speaker] = union
 	return union
 
 
-func _get_portrait_texture(path: String) -> Texture2D:
-	if _portrait_texture_cache.has(path):
-		return _portrait_texture_cache[path]
+func _get_portrait_texture(speaker: String, path: String) -> Texture2D:
+	var cache_key = "%s::%s" % [speaker, path]
+	if _portrait_texture_cache.has(cache_key):
+		return _portrait_texture_cache[cache_key]
 
 	var source = load(path)
 	if source == null or not source is Texture2D:
@@ -799,40 +1043,40 @@ func _get_portrait_texture(path: String) -> Texture2D:
 	var texture: Texture2D = source
 	var image: Image = texture.get_image()
 	if image == null or image.is_empty():
-		_portrait_texture_cache[path] = texture
+		_portrait_texture_cache[cache_key] = texture
 		return texture
 
-	# パスから speaker を抽出して union rect を取得
-	var parts := path.get_file().trim_suffix(".png").split("_")
-	var speaker := parts[1] if parts.size() >= 3 else ""
-	var union_rect := _get_portrait_union_rect(speaker)
-
-	var used_rect: Rect2i
-	if union_rect.size.x > 0 and union_rect.size.y > 0:
-		used_rect = union_rect
-	else:
-		used_rect = image.get_used_rect()
-
+	var used_rect := _get_portrait_union_rect(speaker)
 	if used_rect.size.x <= 0 or used_rect.size.y <= 0:
-		_portrait_texture_cache[path] = texture
+		used_rect = image.get_used_rect()
+	if used_rect.size.x <= 0 or used_rect.size.y <= 0:
+		_portrait_texture_cache[cache_key] = texture
 		return texture
 
-	var crop_left: int = maxi(used_rect.position.x - PORTRAIT_CROP_PADDING, 0)
-	var crop_top: int = maxi(used_rect.position.y - PORTRAIT_CROP_PADDING, 0)
-	var crop_right: int = mini(used_rect.end.x + PORTRAIT_CROP_PADDING, image.get_width())
-	var bottom_trim = mini(int(float(used_rect.size.y) * PORTRAIT_BOTTOM_TRIM_RATIO), PORTRAIT_BOTTOM_TRIM_MAX)
-	var min_visible_height = int(float(used_rect.size.y) * PORTRAIT_MIN_VISIBLE_RATIO)
+	var profile = _get_portrait_profile(speaker)
+	var side_padding = int(profile.get("side_padding", PORTRAIT_PROFILE_DEFAULT["side_padding"]))
+	var top_padding = int(profile.get("top_padding", PORTRAIT_PROFILE_DEFAULT["top_padding"]))
+	var bottom_padding = int(profile.get("bottom_padding", PORTRAIT_PROFILE_DEFAULT["bottom_padding"]))
+	var bottom_trim_ratio = float(profile.get("bottom_trim_ratio", PORTRAIT_PROFILE_DEFAULT["bottom_trim_ratio"]))
+	var bottom_trim_max = int(profile.get("bottom_trim_max", PORTRAIT_PROFILE_DEFAULT["bottom_trim_max"]))
+	var min_visible_ratio = float(profile.get("min_visible_ratio", PORTRAIT_PROFILE_DEFAULT["min_visible_ratio"]))
+
+	var crop_left: int = maxi(used_rect.position.x - side_padding, 0)
+	var crop_top: int = maxi(used_rect.position.y - top_padding, 0)
+	var crop_right: int = mini(used_rect.end.x + side_padding, image.get_width())
+	var bottom_trim = mini(int(float(used_rect.size.y) * bottom_trim_ratio), bottom_trim_max)
+	var min_visible_height = int(float(used_rect.size.y) * min_visible_ratio)
 	var trimmed_bottom = used_rect.end.y - bottom_trim
 	var visible_bottom = maxi(trimmed_bottom, used_rect.position.y + min_visible_height)
-	var crop_bottom: int = mini(visible_bottom + PORTRAIT_CROP_PADDING, image.get_height())
+	var crop_bottom: int = mini(visible_bottom + bottom_padding, image.get_height())
 	var crop_rect := Rect2i(crop_left, crop_top, crop_right - crop_left, crop_bottom - crop_top)
 	if crop_rect.position == Vector2i.ZERO and crop_rect.size == image.get_size():
-		_portrait_texture_cache[path] = texture
+		_portrait_texture_cache[cache_key] = texture
 		return texture
 
 	var cropped_image: Image = image.get_region(crop_rect)
 	var cropped_texture := ImageTexture.create_from_image(cropped_image)
-	_portrait_texture_cache[path] = cropped_texture
+	_portrait_texture_cache[cache_key] = cropped_texture
 	return cropped_texture
 
 
