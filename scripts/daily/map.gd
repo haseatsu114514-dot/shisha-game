@@ -5,6 +5,8 @@ extends Control
 @onready var night_overlay: ColorRect = %NightOverlay
 @onready var spot_layer: Control = %SpotLayer
 @onready var message_label: Label = %MessageLabel
+@onready var action_label: Label = %ActionLabel
+@onready var spot_button_wrap: HFlowContainer = %SpotButtonWrap
 @onready var confirm_dialog: ConfirmationDialog = %ConfirmDialog
 
 var _pending_spot: Dictionary = {}
@@ -115,6 +117,7 @@ func _refresh_spots() -> void:
 		child.queue_free()
 
 	_apply_map_visuals()
+	var spots = _build_spot_list()
 	var lines: Array[String] = []
 	if CalendarManager.is_tournament_day():
 		lines.append("本日は大会当日です！ [tonari] へ向かってください。")
@@ -122,9 +125,26 @@ func _refresh_spots() -> void:
 		lines.append("行き先を選択　（残り行動：%d）" % CalendarManager.actions_remaining)
 		lines.append_array(_build_map_rule_lines())
 	message_label.text = "\n".join(lines)
+	if action_label != null:
+		action_label.text = "地図ピンが見えなくても、下の行き先ボタンから移動できます。"
+	_refresh_spot_buttons(spots)
 
-	for spot in _build_spot_list():
+	for spot in spots:
 		_add_spot_marker(spot)
+
+
+func _refresh_spot_buttons(spots: Array) -> void:
+	if spot_button_wrap == null:
+		return
+	for child in spot_button_wrap.get_children():
+		child.queue_free()
+	for spot in spots:
+		var button = Button.new()
+		button.text = str(spot.get("label", "スポット"))
+		button.custom_minimum_size = Vector2(142, 34)
+		button.size_flags_horizontal = Control.SIZE_FILL
+		button.pressed.connect(_on_spot_pressed.bind(spot))
+		spot_button_wrap.add_child(button)
 
 
 func _build_spot_list() -> Array:
@@ -432,8 +452,8 @@ func _enter_spot(spot: Dictionary) -> void:
 			# Offering prayer - random stat +1.5
 			var stats = ["technique", "sense", "guts", "charm", "insight"]
 			var chosen_stat = stats[randi() % stats.size()]
-				PlayerData.add_stat(chosen_stat, 2)
-				GameManager.log_stat_change(chosen_stat, 2)
+			PlayerData.add_stat(chosen_stat, 2)
+			GameManager.log_stat_change(chosen_stat, 2)
 			_mark_visited(id)
 			_save_visited()
 			GameManager.set_transient("advance_time_after_scene", true)
@@ -445,8 +465,8 @@ func _enter_spot(spot: Dictionary) -> void:
 			if not CalendarManager.use_action():
 				_try_auto_return_home()
 				return
-				PlayerData.add_stat("sense", 2)
-				GameManager.log_stat_change("sense", 2)
+			PlayerData.add_stat("sense", 2)
+			GameManager.log_stat_change("sense", 2)
 			_mark_visited(id)
 			_save_visited()
 			GameManager.set_transient("advance_time_after_scene", true)
@@ -533,10 +553,10 @@ func _enter_spot(spot: Dictionary) -> void:
 				return
 			PlayerData.spend_money(cost)
 			GameManager.log_money_change(-cost)
-				PlayerData.add_stat("sense", 2)
-				PlayerData.add_stat("charm", 2)
-				GameManager.log_stat_change("sense", 2)
-				GameManager.log_stat_change("charm", 2)
+			PlayerData.add_stat("sense", 2)
+			PlayerData.add_stat("charm", 2)
+			GameManager.log_stat_change("sense", 2)
+			GameManager.log_stat_change("charm", 2)
 			GameManager.set_transient("advance_time_after_scene", true)
 			GameManager.queue_dialogue("res://data/dialogue/ch4_spots.json", "ch4_dubai_cafe", "res://scenes/daily/map.tscn")
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")

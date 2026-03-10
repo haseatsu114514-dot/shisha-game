@@ -261,6 +261,7 @@ const PRESENTATION_FOCUS_LABEL := {
 @onready var header_label: Label = %HeaderLabel
 @onready var phase_label: Label = %PhaseLabel
 @onready var main_panel: PanelContainer = $MainPanel
+@onready var deck_hbox: HBoxContainer = $MainPanel/MainMargin/MainVBox/DeckHBox
 @onready var step_card: PanelContainer = $MainPanel/MainMargin/MainVBox/DeckHBox/StepCard
 @onready var preview_panel: PanelContainer = $MainPanel/MainMargin/MainVBox/DeckHBox/PreviewPanel
 @onready var step_tag_label: Label = %StepTagLabel
@@ -324,6 +325,10 @@ var _pull_setting_hint: String = ""
 var _info_raw_text: String = ""
 var _info_pages: Array[String] = []
 var _info_page_index: int = 0
+var _current_step_num: int = 1
+var _focus_mode_active: bool = false
+var _focus_status_panel: PanelContainer = null
+var _focus_status_label: RichTextLabel = null
 
 var _adjust_target_action: String = ""
 var _adjust_selected_action: String = ""
@@ -431,7 +436,7 @@ var _mini_dialogue_timer: Timer
 
 const SPEAKER_NAMES := {
 	"hajime": "はじめ",
-	"sumi": "スミさん",
+	"sumi": "炭場",
 	"naru": "なる",
 	"adam": "アダム",
 	"minto": "眠都(みんと)",
@@ -650,10 +655,12 @@ func _get_mix_trait(trait_name: String) -> float:
 
 
 func _set_phase(step_num: int, title: String, body: String) -> void:
+	_current_step_num = step_num
 	header_label.text = title
 	header_label.add_theme_color_override("font_color", GameManager.THEME_VERMILION)
 	phase_label.text = "STEP %d / %d" % [step_num, TOTAL_STEPS]
 	_apply_step_layout(step_num)
+	_set_focus_mode(false)
 	_set_info_text(body)
 	_update_step_stage(step_num, title)
 	_show_round_announce(step_num, title)
@@ -674,6 +681,22 @@ func _apply_step_layout(step_num: int) -> void:
 		)
 	if info_label != null:
 		info_label.custom_minimum_size.y = INFO_HEIGHT_COMPACT if compact else INFO_HEIGHT_DEFAULT
+
+
+func _set_focus_mode(active: bool) -> void:
+	_focus_mode_active = active
+	var compact = _is_compact_layout_step(_current_step_num)
+	if deck_hbox != null:
+		deck_hbox.visible = not active
+	if main_panel != null:
+		main_panel.offset_top = 18.0 if active else (MAIN_PANEL_TOP_COMPACT if compact else MAIN_PANEL_TOP_DEFAULT)
+	if info_label != null:
+		info_label.visible = not active
+		info_label.custom_minimum_size.y = 72.0 if active else (INFO_HEIGHT_COMPACT if compact else INFO_HEIGHT_DEFAULT)
+	if info_footer != null:
+		info_footer.visible = (not active) and _info_pages.size() > 1
+	if choice_container != null:
+		choice_container.size_flags_vertical = Control.SIZE_EXPAND_FILL if active else 0
 
 
 func _is_compact_layout_step(step_num: int) -> bool:
@@ -763,10 +786,11 @@ func _refresh_info_page() -> void:
 		_info_pages = [""]
 	_info_page_index = clampi(_info_page_index, 0, _info_pages.size() - 1)
 	info_label.text = _info_pages[_info_page_index]
+	info_label.visible = not _focus_mode_active
 	if info_footer == null:
 		return
 	var multi_page = _info_pages.size() > 1
-	info_footer.visible = multi_page
+	info_footer.visible = multi_page and not _focus_mode_active
 	if info_page_label != null:
 		info_page_label.text = "説明 %d / %d" % [_info_page_index + 1, _info_pages.size()]
 	if info_prev_button != null:
@@ -802,6 +826,8 @@ func _clear_choices() -> void:
 	_stop_mind_barrage()
 	for child in choice_container.get_children():
 		child.queue_free()
+	_focus_status_panel = null
+	_focus_status_label = null
 	_pull_timer.stop()
 	_pull_is_holding = false
 	_pull_hold_button = null
@@ -813,6 +839,49 @@ func _clear_choices() -> void:
 	_packing_value_labels.clear()
 	_packing_remaining_label = null
 	_packing_confirm_button = null
+
+
+func _set_runtime_status(text: String) -> void:
+	if not _focus_mode_active:
+		_set_info_text(text)
+		return
+	_ensure_focus_status_panel()
+	if _focus_status_label != null and is_instance_valid(_focus_status_label):
+		_focus_status_label.text = text
+
+
+func _ensure_focus_status_panel() -> void:
+	if choice_container == null:
+		return
+	if _focus_status_panel != null and is_instance_valid(_focus_status_panel):
+		choice_container.move_child(_focus_status_panel, 0)
+		return
+	var panel = PanelContainer.new()
+	panel.name = "FocusStatusPanel"
+	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	panel.custom_minimum_size = Vector2(0, 68)
+
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 14)
+	margin.add_theme_constant_override("margin_top", 10)
+	margin.add_theme_constant_override("margin_right", 14)
+	margin.add_theme_constant_override("margin_bottom", 10)
+	panel.add_child(margin)
+
+	var label = RichTextLabel.new()
+	label.bbcode_enabled = false
+	label.fit_content = true
+	label.scroll_active = false
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	label.custom_minimum_size = Vector2(0, 48)
+	label.add_theme_font_size_override("normal_font_size", 18)
+	margin.add_child(label)
+
+	choice_container.add_child(panel)
+	choice_container.move_child(panel, 0)
+	_focus_status_panel = panel
+	_focus_status_label = label
 
 
 func _add_choice_button(text: String, callback: Callable) -> Button:
@@ -1474,6 +1543,7 @@ func _detect_ng_mix(grams: Dictionary) -> Dictionary:
 
 func _show_aluminum_step() -> void:
 	_set_phase(5, "アルミ穴あけ", "光っている穴だけ押す。明るいうちほど高得点。")
+	_set_focus_mode(true)
 	_clear_choices()
 	_aluminum_active = true
 	_aluminum_hit_perfect = 0
@@ -1531,6 +1601,13 @@ func _show_aluminum_step() -> void:
 	grid_visual.cols = cols
 	grid_visual.total_rows = rows
 	choice_container.add_child(grid_visual)
+
+	var guide = Label.new()
+	guide.text = "今 光っている穴だけ押す。Space / Enter でもOK"
+	guide.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	guide.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	guide.add_theme_font_size_override("font_size", 16)
+	choice_container.add_child(guide)
 
 	# 穴あけボタン
 	var press_button = Button.new()
@@ -1699,30 +1776,17 @@ func _update_aluminum_rhythm_text() -> void:
 	var hit_count = _count_aluminum_hits()
 	var total = _aluminum_grid_holes.size()
 	var done = _aluminum_current_hole
-	var progress_bar = ""
-	for i in range(mini(total, 30)):
-		if i < done:
-			var result = str(_aluminum_grid_holes[i].get("result", ""))
-			match result:
-				"perfect":
-					progress_bar += "★"
-				"good":
-					progress_bar += "●"
-				"near":
-					progress_bar += "◆"
-				"miss":
-					progress_bar += "×"
-				_:
-					progress_bar += "○"
-		elif i == done:
-			progress_bar += "◎"
-		else:
-			progress_bar += "○"
 	var lines: Array[String] = []
-	lines.append("穴あけ進捗: %s" % progress_bar)
-	lines.append("成功 %d / %d" % [hit_count, total])
-	lines.append("今光っている穴だけ押す。明るい金色ほど高精度。")
-	_set_info_text("\n".join(lines))
+	lines.append("光っている穴だけ押す。金色のうちほど高精度。")
+	lines.append("進捗 %d / %d　成功 %d" % [done, total, hit_count])
+	lines.append("P%d / G%d / N%d / M%d / 空振り%d" % [
+		_aluminum_hit_perfect,
+		_aluminum_hit_good,
+		_aluminum_hit_near,
+		_aluminum_hit_miss,
+		_aluminum_bad_press,
+	])
+	_set_runtime_status("\n".join(lines))
 
 
 func _update_aluminum_grid_visual() -> void:
@@ -2004,6 +2068,7 @@ func _start_mind_barrage_step() -> void:
 		_show_pull_step()
 		return
 	_set_phase(9, "思考弾幕", "弾をかわして時間まで耐える。")
+	_set_focus_mode(true)
 	_clear_choices()
 	_mind_active = true
 	_mind_duration_total = _compute_mind_barrage_duration()
@@ -2724,7 +2789,7 @@ func _update_mind_barrage_info_text() -> void:
 	lines.append("残機 %s  集中度 %d%%" % [_build_mind_life_text(), focus])
 	var mode_text = "[集中]" if _mind_focus_mode else ""
 	lines.append("被弾 %d  回避 %d  ニア回避 %d  %s" % [_mind_hits, _mind_dodged_count, _mind_graze_count, mode_text])
-	_set_info_text("\n".join(lines))
+	_set_runtime_status("\n".join(lines))
 
 
 func _build_mind_life_text() -> String:
@@ -3232,6 +3297,7 @@ func _show_pull_step() -> void:
 			_mind_pull_adjust_text(),
 		]
 	)
+	_set_focus_mode(true)
 	_clear_choices()
 	_pull_timer.stop()
 	_pull_is_holding = false
@@ -3323,7 +3389,7 @@ func _update_pull_gauge_text() -> void:
 		bar_chars.append(char)
 
 	var status_text = "吸い出し中...離すと判定" if _pull_is_holding else "ボタンを押して吸い出し開始"
-	_set_info_text("%s\n%s\n%s\n目標帯 ■ / ポインタ ◆\n※このゲージはタイミング用。温度は右パネルの縦表示で確認。" % [
+	_set_runtime_status("%s\n%s\n%s\n目標帯 ■ / ポインタ ◆" % [
 		status_text,
 		_pull_setting_hint,
 		"".join(bar_chars),
@@ -3748,6 +3814,7 @@ func _show_adjustment_gauge_step(round_index: int) -> void:
 		"微調整ゲージ",
 		"選択した方向: %s\n押している間だけ調整、離した瞬間で判定。\n判定は PERFECT / GOOD / NEAR / MISS。" % _adjust_action_label(_adjust_selected_action)
 	)
+	_set_focus_mode(true)
 	_clear_choices()
 	_adjust_step_finished = false
 	_adjust_is_holding = false
@@ -3832,7 +3899,7 @@ func _update_adjust_text(status_text: String) -> void:
 	lines.append(status_text)
 	lines.append("タイミング目標帯 ■ / ポインタ ◆")
 	lines.append(bar)
-	_set_info_text("\n".join(lines))
+	_set_runtime_status("\n".join(lines))
 
 
 func _resolve_adjustment_round(round_index: int) -> void:

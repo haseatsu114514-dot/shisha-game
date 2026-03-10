@@ -20,9 +20,9 @@ color = Color(0.1, 0.08, 0.06, 1)
 
 [node name="MainPanel" type="PanelContainer" parent="."]
 layout_mode = 1
-offset_left = 124.0
+offset_left = 172.0
 offset_top = 44.0
-offset_right = 1158.0
+offset_right = 1172.0
 offset_bottom = 718.0
 
 [node name="MainMargin" type="MarginContainer" parent="MainPanel"]
