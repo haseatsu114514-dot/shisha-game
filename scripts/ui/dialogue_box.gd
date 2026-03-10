@@ -40,6 +40,7 @@ var _advance_repeat_timer: Timer
 var _advance_hold_active := false
 var _ignore_advance_press_once := false
 var _portrait_texture_cache: Dictionary = {}
+var _portrait_union_rect_cache: Dictionary = {}  # speaker_id -> Rect2i
 
 const DIALOGUE_WRAP_CHARS := 20
 const DIALOGUE_MAX_LINES := 2
@@ -753,6 +754,40 @@ func _update_portrait(line: Dictionary) -> void:
 	portrait_rect.visible = true
 
 
+func _get_portrait_union_rect(speaker: String) -> Rect2i:
+	if _portrait_union_rect_cache.has(speaker):
+		return _portrait_union_rect_cache[speaker]
+
+	# 全表情の used_rect の和集合を計算して、表情切替時のサイズ変動を防ぐ
+	var faces := ["normal", "smile", "serious", "sad", "surprise", "shy", "focus",
+		"smug", "wink", "evil", "excited", "thinking", "fired_up", "intense",
+		"silent", "angry", "smoke", "cry", "grin", "shout",
+		"ura_normal", "ura_smile", "ura_serious", "ura_sad", "ura_surprise"]
+	var union := Rect2i()
+	var found := false
+	for face in faces:
+		var p := "res://assets/sprites/characters/%s/chr_%s_%s.png" % [speaker, speaker, face]
+		if not ResourceLoader.exists(p):
+			continue
+		var tex = load(p)
+		if tex == null or not tex is Texture2D:
+			continue
+		var img: Image = tex.get_image()
+		if img == null or img.is_empty():
+			continue
+		var r: Rect2i = img.get_used_rect()
+		if r.size.x <= 0 or r.size.y <= 0:
+			continue
+		if not found:
+			union = r
+			found = true
+		else:
+			union = union.merge(r)
+
+	_portrait_union_rect_cache[speaker] = union
+	return union
+
+
 func _get_portrait_texture(path: String) -> Texture2D:
 	if _portrait_texture_cache.has(path):
 		return _portrait_texture_cache[path]
@@ -767,7 +802,17 @@ func _get_portrait_texture(path: String) -> Texture2D:
 		_portrait_texture_cache[path] = texture
 		return texture
 
-	var used_rect: Rect2i = image.get_used_rect()
+	# パスから speaker を抽出して union rect を取得
+	var parts := path.get_file().trim_suffix(".png").split("_")
+	var speaker := parts[1] if parts.size() >= 3 else ""
+	var union_rect := _get_portrait_union_rect(speaker)
+
+	var used_rect: Rect2i
+	if union_rect.size.x > 0 and union_rect.size.y > 0:
+		used_rect = union_rect
+	else:
+		used_rect = image.get_used_rect()
+
 	if used_rect.size.x <= 0 or used_rect.size.y <= 0:
 		_portrait_texture_cache[path] = texture
 		return texture
