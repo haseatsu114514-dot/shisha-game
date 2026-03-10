@@ -4,6 +4,7 @@ const TOTAL_STEPS := 16
 const TOURNAMENT_SCENE_PATH := "res://scenes/tournament/ch1_tournament.tscn"
 const MORNING_PHONE_SCENE_PATH := "res://scenes/daily/morning_phone.tscn"
 const TITLE_SCENE_PATH := "res://scenes/title/title_screen.tscn"
+const ShishaRank = preload("res://scripts/tournament/shisha_rank.gd")
 const STEP_STAGE_META := {
 	1: {"tag": "SETUP", "summary": "機材と会場の初期条件を固める", "hint": "会場カット、選手入場、機材差分を差し込める。", "preview": "入場演出 / 会場紹介予定", "color": Color("e43b44")},
 	2: {"tag": "FLAVOR", "summary": "テーマに沿ったフレーバーを選ぶ", "hint": "候補比較やフレーバー画像の差し込み向き。", "preview": "候補カード / テーマ演出予定", "color": Color("f77622")},
@@ -81,6 +82,8 @@ const STEP_CARD_HEIGHT_COMPACT := 92.0
 const PREVIEW_PANEL_WIDTH := 260.0
 const INFO_HEIGHT_DEFAULT := 114.0
 const INFO_HEIGHT_COMPACT := 88.0
+const STAGE_LAYOUT_PANEL := "panel"
+const STAGE_LAYOUT_IMMERSIVE := "immersive"
 const PULL_MIN_ROUNDS := 2
 const PULL_MAX_ROUNDS := 6
 const MIND_BARRAGE_BASE_LIVES := 3
@@ -261,6 +264,7 @@ const PRESENTATION_FOCUS_LABEL := {
 @onready var header_label: Label = %HeaderLabel
 @onready var phase_label: Label = %PhaseLabel
 @onready var main_panel: PanelContainer = $MainPanel
+@onready var side_panel: PanelContainer = $SidePanel
 @onready var deck_hbox: HBoxContainer = $MainPanel/MainMargin/MainVBox/DeckHBox
 @onready var step_card: PanelContainer = $MainPanel/MainMargin/MainVBox/DeckHBox/StepCard
 @onready var preview_panel: PanelContainer = $MainPanel/MainMargin/MainVBox/DeckHBox/PreviewPanel
@@ -284,6 +288,16 @@ const PRESENTATION_FOCUS_LABEL := {
 @onready var mini_speaker_label: Label = %MiniSpeakerLabel
 @onready var mini_text_label: RichTextLabel = %MiniTextLabel
 @onready var mini_portrait: TextureRect = %MiniPortrait
+@onready var fullscreen_stage: Control = %FullscreenStage
+@onready var fullscreen_phase_label: Label = %FullscreenPhaseLabel
+@onready var fullscreen_title_label: Label = %FullscreenTitleLabel
+@onready var fullscreen_body_panel: PanelContainer = $FullscreenStage/StageMargin/StageVBox/FullscreenBodyPanel
+@onready var fullscreen_body_label: RichTextLabel = %FullscreenBodyLabel
+@onready var fullscreen_content_host: VBoxContainer = %FullscreenContentHost
+@onready var fullscreen_judge_label: Label = %FullscreenJudgeLabel
+@onready var fullscreen_status_label: RichTextLabel = %FullscreenStatusLabel
+@onready var fullscreen_temp_gauge_host: Control = %FullscreenTempGaugeHost
+@onready var fullscreen_transition: ColorRect = %FullscreenTransition
 
 @onready var status_panel = $SidePanel/SideMargin/SideVBox/StatusPanel
 
@@ -329,6 +343,10 @@ var _current_step_num: int = 1
 var _focus_mode_active: bool = false
 var _focus_status_panel: PanelContainer = null
 var _focus_status_label: RichTextLabel = null
+var _stage_layout_mode: String = STAGE_LAYOUT_PANEL
+var _choice_default_parent: Node = null
+var _choice_default_index: int = -1
+var _show_tutorial: bool = true
 
 var _adjust_target_action: String = ""
 var _adjust_selected_action: String = ""
@@ -411,6 +429,9 @@ var _mid_rival_totals: Dictionary = {}
 var _presentation_primary_focus: String = ""
 var _presentation_secondary_focus: String = ""
 var _packing_style: String = "normal"  # "fluffy" / "normal" / "firm"
+var _packing_intro_seen: bool = false
+var _aluminum_intro_seen: bool = false
+var _pull_intro_seen: bool = false
 
 ## フレーバー特性キャッシュ（flavors.json から読み込み）
 var _flavor_traits: Dictionary = {}
@@ -433,6 +454,9 @@ var _mini_dialogue_is_typing: bool = false
 var _mini_dialogue_full_text: String = ""
 var _mini_dialogue_char_index: int = 0
 var _mini_dialogue_timer: Timer
+var _bowl_visual_parent: Control = null
+var _fullscreen_temp_gauge_node: Control = null
+var _pull_gauge_visual_node: Control = null
 
 const SPEAKER_NAMES := {
 	"hajime": "はじめ",
@@ -442,7 +466,8 @@ const SPEAKER_NAMES := {
 	"minto": "眠都(みんと)",
 	"pakki": "パッキー",
 	"nagumo": "南雲修二",
-	"maezono": "前園壮一郎"
+	"maezono": "前園壮一郎",
+	"dr_kemuri": "ドクター・ケムリ",
 }
 
 func _process(_delta: float) -> void:
@@ -456,10 +481,13 @@ func _process(_delta: float) -> void:
 		elif _heat_state <= -2:
 			zone_text = "弱い"
 		status_panel.update_status(mapped_temp, zone_text, _selected_charcoal_count, pass_line, top_line)
+	_update_fullscreen_temp_gauge()
 
 func _ready() -> void:
 	randomize()
 	GameManager.play_bgm(GameManager.BGM_TONARI_PATH, -8.0, true)
+	_choice_default_parent = choice_container.get_parent()
+	_choice_default_index = choice_container.get_index()
 	_pull_timer = Timer.new()
 	_pull_timer.wait_time = 0.03
 	_pull_timer.one_shot = false
@@ -497,6 +525,10 @@ func _ready() -> void:
 		info_prev_button.pressed.connect(_on_info_prev_pressed)
 	if info_next_button != null:
 		info_next_button.pressed.connect(_on_info_next_pressed)
+	if fullscreen_stage != null:
+		fullscreen_stage.hide()
+	if fullscreen_transition != null:
+		fullscreen_transition.color = Color(0, 0, 0, 0)
 	
 	if GameManager.game_state != "tournament":
 		GameManager.transition_to_tournament()
@@ -568,10 +600,18 @@ func _prepare_run() -> void:
 	_mid_rival_totals.clear()
 	_presentation_primary_focus = ""
 	_presentation_secondary_focus = ""
+	_show_tutorial = true
+	_packing_intro_seen = false
+	_aluminum_intro_seen = false
+	_pull_intro_seen = false
 	_aluminum_grid_holes.clear()
 	_aluminum_current_hole = 0
 	_aluminum_glow_active = false
 	_aluminum_glow_elapsed = 0.0
+	_remove_bowl_visual()
+	_remove_fullscreen_temp_gauge()
+	_remove_pull_gauge_visual()
+	_exit_immersive_stage(false)
 	_easy_mode = bool(EventFlags.get_value("ch1_tournament_easy_mode", false))
 	_load_flavor_traits()
 	_load_recipe_db()
@@ -681,6 +721,101 @@ func _apply_step_layout(step_num: int) -> void:
 		)
 	if info_label != null:
 		info_label.custom_minimum_size.y = INFO_HEIGHT_COMPACT if compact else INFO_HEIGHT_DEFAULT
+	_update_fullscreen_stage_labels()
+
+
+func _enter_immersive_stage() -> void:
+	if fullscreen_stage == null or fullscreen_content_host == null or choice_container == null:
+		return
+	_stage_layout_mode = STAGE_LAYOUT_IMMERSIVE
+	if choice_container.get_parent() != fullscreen_content_host:
+		choice_container.reparent(fullscreen_content_host)
+	main_panel.hide()
+	side_panel.hide()
+	mini_dialogue_panel.hide()
+	fullscreen_stage.show()
+	choice_container.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	choice_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_update_fullscreen_stage_labels()
+	_ensure_fullscreen_temp_gauge()
+	_update_fullscreen_temp_gauge()
+	_sync_fullscreen_body_visibility()
+	_animate_fullscreen_transition()
+
+
+func _exit_immersive_stage(hide_stage: bool = true) -> void:
+	_stage_layout_mode = STAGE_LAYOUT_PANEL
+	if choice_container != null and _choice_default_parent != null and choice_container.get_parent() != _choice_default_parent:
+		choice_container.reparent(_choice_default_parent)
+		if _choice_default_parent is Node:
+			(_choice_default_parent as Node).move_child(choice_container, _choice_default_index)
+	main_panel.show()
+	side_panel.show()
+	choice_container.size_flags_vertical = 0
+	_sync_fullscreen_body_visibility()
+	if hide_stage and fullscreen_stage != null:
+		fullscreen_stage.hide()
+
+
+func _animate_fullscreen_transition() -> void:
+	if fullscreen_transition == null:
+		return
+	fullscreen_transition.color = Color(0.02, 0.03, 0.06, 0.75)
+	var tween = create_tween()
+	tween.tween_property(fullscreen_transition, "color:a", 0.0, 0.24).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
+
+func _update_fullscreen_stage_labels() -> void:
+	if fullscreen_phase_label != null:
+		fullscreen_phase_label.text = phase_label.text
+	if fullscreen_title_label != null:
+		fullscreen_title_label.text = header_label.text
+	if fullscreen_body_label != null:
+		var page_text := ""
+		if not _info_pages.is_empty():
+			var page_index = clampi(_info_page_index, 0, _info_pages.size() - 1)
+			page_text = _info_pages[page_index]
+		else:
+			page_text = _info_raw_text
+		fullscreen_body_label.text = page_text
+	_sync_fullscreen_body_visibility()
+
+
+func _sync_fullscreen_body_visibility() -> void:
+	if fullscreen_body_panel == null:
+		return
+	fullscreen_body_panel.visible = _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE and not _focus_mode_active and fullscreen_body_label != null and fullscreen_body_label.text.strip_edges() != ""
+
+
+func _ensure_fullscreen_temp_gauge() -> void:
+	if fullscreen_temp_gauge_host == null:
+		return
+	if _fullscreen_temp_gauge_node != null and is_instance_valid(_fullscreen_temp_gauge_node):
+		return
+	var gauge = _TempGaugeVisual.new()
+	gauge.custom_minimum_size = Vector2(0, 38)
+	gauge.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	fullscreen_temp_gauge_host.add_child(gauge)
+	_fullscreen_temp_gauge_node = gauge
+
+
+func _update_fullscreen_temp_gauge() -> void:
+	if _fullscreen_temp_gauge_node == null or not is_instance_valid(_fullscreen_temp_gauge_node):
+		return
+	var gauge = _fullscreen_temp_gauge_node as _TempGaugeVisual
+	if gauge == null:
+		return
+	gauge.current_temp = _get_current_temp_value()
+	gauge.target_range = _get_target_temp_range()
+	gauge.temp_min = TEMP_MIN
+	gauge.temp_max = TEMP_MAX
+	gauge.queue_redraw()
+
+
+func _remove_fullscreen_temp_gauge() -> void:
+	if _fullscreen_temp_gauge_node != null and is_instance_valid(_fullscreen_temp_gauge_node):
+		_fullscreen_temp_gauge_node.queue_free()
+		_fullscreen_temp_gauge_node = null
 
 
 func _set_focus_mode(active: bool) -> void:
@@ -697,6 +832,7 @@ func _set_focus_mode(active: bool) -> void:
 		info_footer.visible = (not active) and _info_pages.size() > 1
 	if choice_container != null:
 		choice_container.size_flags_vertical = Control.SIZE_EXPAND_FILL if active else 0
+	_sync_fullscreen_body_visibility()
 
 
 func _is_compact_layout_step(step_num: int) -> bool:
@@ -797,6 +933,7 @@ func _refresh_info_page() -> void:
 		info_prev_button.disabled = not multi_page or _info_page_index <= 0
 	if info_next_button != null:
 		info_next_button.disabled = not multi_page or _info_page_index >= _info_pages.size() - 1
+	_update_fullscreen_stage_labels()
 
 
 func _on_info_prev_pressed() -> void:
@@ -828,6 +965,8 @@ func _clear_choices() -> void:
 		child.queue_free()
 	_focus_status_panel = null
 	_focus_status_label = null
+	_remove_bowl_visual()
+	_remove_pull_gauge_visual()
 	_pull_timer.stop()
 	_pull_is_holding = false
 	_pull_hold_button = null
@@ -884,31 +1023,32 @@ func _ensure_focus_status_panel() -> void:
 	_focus_status_label = label
 
 
-func _add_choice_button(text: String, callback: Callable) -> Button:
+func _create_action_button(text: String, callback: Callable, selected: bool = false) -> Button:
 	var button = Button.new()
 	button.text = text
-	button.custom_minimum_size = Vector2(0, 36)
+	button.custom_minimum_size = Vector2(0, 64 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 36)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	# ダンガンロンパ風: バーミリオン×黒の大会専用スタイル
+	button.add_theme_font_size_override("font_size", 22 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 18)
+	button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	var normal_style = StyleBoxFlat.new()
-	normal_style.bg_color = Color("181425", 0.95)
-	normal_style.border_color = Color("e43b44", 0.5)
-	normal_style.border_width_bottom = 2
+	normal_style.bg_color = Color("251833", 0.96) if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else Color("181425", 0.95)
+	normal_style.border_color = Color("feae34", 0.7) if selected else Color("e43b44", 0.5)
+	normal_style.border_width_bottom = 3 if selected else 2
 	normal_style.border_width_left = 1
 	normal_style.border_width_right = 1
 	normal_style.border_width_top = 1
-	normal_style.corner_radius_bottom_left = 2
-	normal_style.corner_radius_bottom_right = 2
-	normal_style.corner_radius_top_left = 2
-	normal_style.corner_radius_top_right = 2
-	normal_style.content_margin_left = 16
-	normal_style.content_margin_right = 16
-	normal_style.content_margin_top = 8
-	normal_style.content_margin_bottom = 8
+	normal_style.corner_radius_bottom_left = 10 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 2
+	normal_style.corner_radius_bottom_right = 10 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 2
+	normal_style.corner_radius_top_left = 10 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 2
+	normal_style.corner_radius_top_right = 10 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 2
+	normal_style.content_margin_left = 20 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 16
+	normal_style.content_margin_right = 20 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 16
+	normal_style.content_margin_top = 14 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 8
+	normal_style.content_margin_bottom = 14 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 8
 	button.add_theme_stylebox_override("normal", normal_style)
 	var hover_style = normal_style.duplicate()
-	hover_style.bg_color = Color("e43b44", 0.25)
-	hover_style.border_color = Color("e43b44", 0.9)
+	hover_style.bg_color = Color("e43b44", 0.25 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 0.25)
+	hover_style.border_color = Color("feae34") if selected else Color("e43b44", 0.9)
 	hover_style.border_width_bottom = 3
 	button.add_theme_stylebox_override("hover", hover_style)
 	button.add_theme_color_override("font_color", GameManager.THEME_CREAM_TEXT)
@@ -917,51 +1057,190 @@ func _add_choice_button(text: String, callback: Callable) -> Button:
 	pressed_style.bg_color = Color("e43b44", 0.4)
 	pressed_style.border_color = Color("e43b44")
 	button.add_theme_stylebox_override("pressed", pressed_style)
-	button.pressed.connect(func() -> void:
-		GameManager.play_ui_se("cursor")
-		callback.call()
-	)
+	if callback.is_valid():
+		button.pressed.connect(func() -> void:
+			GameManager.play_ui_se("cursor")
+			callback.call()
+		)
+	return button
+
+
+func _add_choice_button_to(parent: Node, text: String, callback: Callable, selected: bool = false) -> Button:
+	var button = _create_action_button(text, callback, selected)
+	parent.add_child(button)
+	return button
+
+
+func _add_choice_button(text: String, callback: Callable) -> Button:
+	var button = _create_action_button(text, callback)
 	choice_container.add_child(button)
 	return button
 
 
-func _show_setting_step() -> void:
-	_set_phase(1, "大会セッティング", "会場入り。先にハガルとHMSを決める。\nテーマ: %s" % str(_theme.get("name", "-")))
+func _create_stage_card(title_text: String, subtitle_text: String = "", min_height: float = 0.0) -> Dictionary:
+	var panel = PanelContainer.new()
+	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	panel.size_flags_vertical = Control.SIZE_EXPAND_FILL if min_height > 0.0 else 0
+	if min_height > 0.0:
+		panel.custom_minimum_size = Vector2(0, min_height)
+
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 20)
+	margin.add_theme_constant_override("margin_top", 18)
+	margin.add_theme_constant_override("margin_right", 20)
+	margin.add_theme_constant_override("margin_bottom", 18)
+	panel.add_child(margin)
+
+	var body = VBoxContainer.new()
+	body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	body.add_theme_constant_override("separation", 12)
+	margin.add_child(body)
+
+	var title = Label.new()
+	title.text = title_text
+	title.add_theme_font_size_override("font_size", 24 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 20)
+	title.add_theme_color_override("font_color", Color("feae34"))
+	body.add_child(title)
+
+	if subtitle_text != "":
+		var subtitle = Label.new()
+		subtitle.text = subtitle_text
+		subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		subtitle.add_theme_font_size_override("font_size", 16 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 14)
+		subtitle.add_theme_color_override("font_color", Color("cfe7ff"))
+		body.add_child(subtitle)
+
+	return {"panel": panel, "body": body}
+
+
+func _load_stage_portrait(speaker_id: String, face: String = "normal") -> Texture2D:
+	var alias_map := {"pakki": "packii"}
+	var asset_id = str(alias_map.get(speaker_id, speaker_id))
+	var candidates = [
+		"res://assets/sprites/characters/%s/chr_%s_%s.png" % [asset_id, asset_id, face],
+		"res://assets/sprites/characters/%s/chr_%s_normal.png" % [asset_id, asset_id],
+	]
+	for path in candidates:
+		if ResourceLoader.exists(path):
+			return load(path)
+	return null
+
+
+func _add_stage_dialogue_block(parent: Node, line: Dictionary) -> void:
+	var row = HBoxContainer.new()
+	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	row.add_theme_constant_override("separation", 16)
+	parent.add_child(row)
+
+	var portrait = TextureRect.new()
+	portrait.custom_minimum_size = Vector2(136, 136)
+	portrait.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait.texture = _load_stage_portrait(str(line.get("speaker", "")), str(line.get("face", "normal")))
+	portrait.visible = portrait.texture != null
+	row.add_child(portrait)
+
+	var content = VBoxContainer.new()
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content.add_theme_constant_override("separation", 8)
+	row.add_child(content)
+
+	var speaker = str(line.get("speaker", ""))
+	var fallback_name = str(line.get("name", "")).strip_edges()
+	var speaker_label = Label.new()
+	speaker_label.text = SPEAKER_NAMES.get(speaker, fallback_name if fallback_name != "" else speaker)
+	speaker_label.add_theme_font_size_override("font_size", 20)
+	speaker_label.add_theme_color_override("font_color", Color("feae34"))
+	speaker_label.visible = speaker_label.text.strip_edges() != ""
+	content.add_child(speaker_label)
+
+	var text_label = Label.new()
+	text_label.text = str(line.get("text", ""))
+	text_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	text_label.add_theme_font_size_override("font_size", 20 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 18)
+	text_label.add_theme_color_override("font_color", GameManager.THEME_CREAM_TEXT)
+	content.add_child(text_label)
+
+
+func _show_stage_briefing(step_num: int, title: String, body: String, lines: Array, tutorial_lines: Array[String], start_label: String, start_callback: Callable) -> void:
+	_set_phase(step_num, title, body)
+	_enter_immersive_stage()
 	_clear_choices()
 
-	_add_selector_group("ハガル", PlayerData.owned_bowls, _selected_bowl, _on_bowl_selected)
-	_add_selector_group("ヒートマネジメント", PlayerData.owned_hms, _selected_hms, _on_hms_selected)
+	var briefing_card = _create_stage_card("MC / Judges", "大会の空気が変わる。")
+	choice_container.add_child(briefing_card["panel"])
+	for raw_line in lines:
+		if typeof(raw_line) != TYPE_DICTIONARY:
+			continue
+		_add_stage_dialogue_block(briefing_card["body"], raw_line)
+
+	if _show_tutorial and not tutorial_lines.is_empty():
+		var tutorial_card = _create_stage_card("操作 / ルール", "第1章のみ、操作説明を表示。")
+		choice_container.add_child(tutorial_card["panel"])
+		for tutorial_line in tutorial_lines:
+			var row = Label.new()
+			row.text = "・%s" % tutorial_line
+			row.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			row.add_theme_font_size_override("font_size", 18)
+			row.add_theme_color_override("font_color", Color("cfe7ff"))
+			tutorial_card["body"].add_child(row)
+
+	_add_choice_button(start_label, start_callback)
+	_refresh_side_panel()
+
+
+func _show_setting_step() -> void:
+	_set_phase(1, "大会セッティング", "会場入り。先にハガルとHMSを決める。\nテーマ: %s" % str(_theme.get("name", "-")))
+	_enter_immersive_stage()
+	_clear_choices()
+	var split = HBoxContainer.new()
+	split.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	split.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	split.add_theme_constant_override("separation", 18)
+	choice_container.add_child(split)
+
+	split.add_child(_build_selector_panel(
+		"ハガル",
+		"立ち上がりと熱の乗り方を決める。",
+		PlayerData.owned_bowls,
+		_selected_bowl,
+		_on_bowl_selected
+	))
+	split.add_child(_build_selector_panel(
+		"ヒートマネジメント",
+		"火力のピークと安定感を決める。",
+		PlayerData.owned_hms,
+		_selected_hms,
+		_on_hms_selected
+	))
 
 	var pairing_ok = PlayerData.is_equipment_pair_compatible(_selected_bowl, _selected_hms)
+	var info_lines: Array[String] = []
 	if pairing_ok:
-		_append_info("現在の組み合わせ: %s + %s" % [
+		info_lines.append("現在の組み合わせ: %s + %s" % [
 			PlayerData.get_equipment_name_by_value(_selected_bowl),
 			PlayerData.get_equipment_name_by_value(_selected_hms),
 		])
 	else:
-		_append_info("現在の組み合わせは非対応。選び直して。")
+		info_lines.append("現在の組み合わせは非対応。選び直して。")
 
 	if _easy_mode:
-		_append_info("難易度緩和モード: 吸い出し判定が少し広い。")
+		info_lines.append("難易度緩和モード: 吸い出し判定が少し広い。")
+	_set_info_text("\n".join(info_lines))
 
 	_add_choice_button("このセッティングで開始", _on_setting_confirmed)
 	_refresh_side_panel()
 
 
-func _add_selector_group(title_text: String, ids: Array, selected_id: String, on_select: Callable) -> void:
-	var title = Label.new()
-	title.text = title_text
-	title.add_theme_font_size_override("font_size", 20)
-	choice_container.add_child(title)
-
+func _build_selector_panel(title_text: String, subtitle_text: String, ids: Array, selected_id: String, on_select: Callable) -> PanelContainer:
+	var card = _create_stage_card(title_text, subtitle_text, 360.0)
+	var panel = card["panel"] as PanelContainer
+	var body = card["body"] as VBoxContainer
 	for raw_id in ids:
 		var item_id = str(raw_id)
-		var button = Button.new()
-		var prefix = "●" if item_id == selected_id else "○"
-		button.text = "%s %s" % [prefix, PlayerData.get_equipment_name_by_value(item_id)]
-		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		button.pressed.connect(on_select.bind(item_id))
-		choice_container.add_child(button)
+		var prefix = "● " if item_id == selected_id else "○ "
+		_add_choice_button_to(body, "%s%s" % [prefix, PlayerData.get_equipment_name_by_value(item_id)], on_select.bind(item_id), item_id == selected_id)
+	return panel
 
 
 func _on_bowl_selected(bowl_id: String) -> void:
@@ -1024,34 +1303,53 @@ func _apply_setting_bonus() -> void:
 
 func _show_flavor_selection_step() -> void:
 	_set_phase(2, "フレーバー選択", "在庫から1〜3種を選ぶ。テーマ一致でボーナス。")
+	_enter_immersive_stage()
 	_clear_choices()
 	_flavor_checks.clear()
+	var info_lines: Array[String] = []
 
 	var available = _get_available_flavors()
 	if available.is_empty():
 		PlayerData.add_flavor("double_apple", 50)
 		PlayerData.add_flavor("mint", 50)
 		available = _get_available_flavors()
-		_append_info("在庫不足のため運営配布フレーバー(50g×2)を受け取った。")
+		info_lines.append("在庫不足のため運営配布フレーバー(50g×2)を受け取った。")
+
+	var card = _create_stage_card("候補フレーバー", "1〜3種。テーマに近いほど評価が伸びる。", 380.0)
+	choice_container.add_child(card["panel"])
+	var grid = GridContainer.new()
+	grid.columns = 2 if available.size() >= 4 else 1
+	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	grid.add_theme_constant_override("h_separation", 14)
+	grid.add_theme_constant_override("v_separation", 14)
+	card["body"].add_child(grid)
 
 	for entry in available:
 		var check = CheckBox.new()
 		var flavor_id = str(entry.get("id", ""))
 		check.text = "%s（残り %dg）" % [_flavor_name(flavor_id), int(entry.get("amount", 0))]
 		check.set_meta("flavor_id", flavor_id)
+		check.custom_minimum_size = Vector2(0, 58)
 		check.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		choice_container.add_child(check)
+		check.add_theme_font_size_override("font_size", 20)
+		grid.add_child(check)
 		_flavor_checks.append(check)
 
 	if _flavor_checks.size() == 1:
 		_flavor_checks[0].button_pressed = true
 
-	_add_choice_button("おすすめを自動選択", _apply_recommended_flavors)
-	_add_choice_button("この配合候補で進む", _confirm_flavor_selection)
+	var action_row = HBoxContainer.new()
+	action_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	action_row.add_theme_constant_override("separation", 14)
+	choice_container.add_child(action_row)
+	_add_choice_button_to(action_row, "おすすめを自動選択", _apply_recommended_flavors)
+	_add_choice_button_to(action_row, "この配合候補で進む", _confirm_flavor_selection)
 
 	var memo_count = PlayerData.get_tournament_memos().size()
 	if memo_count > 0:
-		_append_info("攻略メモ %d件を参照可能。" % memo_count)
+		info_lines.append("攻略メモ %d件を参照可能。" % memo_count)
+	info_lines.append("テーマ: %s" % str(_theme.get("name", "-")))
+	_set_info_text("\n".join(info_lines))
 
 	_refresh_side_panel()
 
@@ -1154,26 +1452,54 @@ func _confirm_flavor_selection() -> void:
 
 
 func _show_packing_step() -> void:
+	if not _packing_intro_seen:
+		_packing_intro_seen = true
+		_show_stage_briefing(
+			3,
+			"パッキング配合（12g）",
+			"ボウル断面を見ながら、12g の配分を組み立てる。",
+			[
+				{"speaker": "pakki", "face": "smoke", "text": "ここは味の骨格を決める時間です！ 配合の比率がそのまま個性になりますよ。"},
+				{"speaker": "hajime", "face": "serious", "text": "断面で重なり方を見ながら、主役と支えをはっきりさせる。"},
+			],
+			[
+				"各スライダーを動かして、合計を 12g ちょうどに合わせる。",
+				"左の断面図は、現在の配分比率をそのまま表示する。",
+				"合計が 12g になったら『この配合で確定』で次へ進む。",
+			],
+			"配合を組む",
+			_show_packing_step
+		)
+		return
 	_set_phase(3, "パッキング配合（12g）", "各フレーバーのゲージを動かして配分を決める。合計12gで確定。")
+	_enter_immersive_stage()
 	_clear_choices()
 	_ensure_manual_packing_grams()
 	_packing_sliders.clear()
 	_packing_value_labels.clear()
 
-	var title = Label.new()
-	title.text = "配分ゲージ（1g刻み）"
-	title.add_theme_font_size_override("font_size", 20)
-	choice_container.add_child(title)
+	var workspace = HBoxContainer.new()
+	workspace.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	workspace.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	workspace.add_theme_constant_override("separation", 18)
+	choice_container.add_child(workspace)
 
+	var bowl_card = _create_stage_card("ボウル断面", "配分比率がリアルタイムで積層表示される。", 420.0)
+	workspace.add_child(bowl_card["panel"])
+	_bowl_visual_parent = bowl_card["body"]
+	_show_bowl_visual()
+
+	var controls_card = _create_stage_card("配分ゲージ", "1g 刻み。主役を立てるか、均すか。", 420.0)
+	workspace.add_child(controls_card["panel"])
 	for flavor_id in _selected_flavors:
-		choice_container.add_child(_build_packing_slider_row(flavor_id))
+		(controls_card["body"] as VBoxContainer).add_child(_build_packing_slider_row(flavor_id))
 
 	_packing_remaining_label = Label.new()
-	choice_container.add_child(_packing_remaining_label)
+	_packing_remaining_label.add_theme_font_size_override("font_size", 18)
+	(controls_card["body"] as VBoxContainer).add_child(_packing_remaining_label)
 
-	_packing_confirm_button = _add_choice_button("この配合で確定", _confirm_manual_packing)
+	_packing_confirm_button = _add_choice_button_to(controls_card["body"], "この配合で確定", _confirm_manual_packing)
 	_refresh_packing_controls()
-	_show_bowl_visual()
 
 	_refresh_side_panel()
 
@@ -1218,10 +1544,11 @@ func _ensure_manual_packing_grams() -> void:
 func _build_packing_slider_row(flavor_id: String) -> Control:
 	var wrapper = VBoxContainer.new()
 	wrapper.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	wrapper.add_theme_constant_override("separation", 4)
+	wrapper.add_theme_constant_override("separation", 6)
 
 	var label = Label.new()
 	label.text = "%s  %dg" % [_flavor_name(flavor_id), int(_manual_packing_grams.get(flavor_id, 0))]
+	label.add_theme_font_size_override("font_size", 18 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 16)
 	wrapper.add_child(label)
 	_packing_value_labels[flavor_id] = label
 
@@ -1230,6 +1557,7 @@ func _build_packing_slider_row(flavor_id: String) -> Control:
 	slider.max_value = TOTAL_PACKING_GRAMS
 	slider.step = 1
 	slider.value = int(_manual_packing_grams.get(flavor_id, 0))
+	slider.custom_minimum_size = Vector2(0, 30 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 0)
 	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	slider.value_changed.connect(_on_packing_slider_changed.bind(flavor_id))
 	wrapper.add_child(slider)
@@ -1542,9 +1870,29 @@ func _detect_ng_mix(grams: Dictionary) -> Dictionary:
 
 
 func _show_aluminum_step() -> void:
+	if not _aluminum_intro_seen:
+		_aluminum_intro_seen = true
+		_show_stage_briefing(
+			5,
+			"アルミ穴あけ",
+			"大会ステージの中央で、光った穴だけを正確に抜く。",
+			[
+				{"speaker": "pakki", "face": "smoke", "text": "次はアルミ穴あけ！ 等間隔とリズム感、どっちも見られますよ。"},
+				{"speaker": "hajime", "face": "serious", "text": "焦らず、光った順に。穴の並びを崩さない。"},
+			],
+			[
+				"金色に光った穴だけを押す。早いほど PERFECT に近づく。",
+				"MISS や空振りが増えると、穴のムラとして減点される。",
+				"Space / Enter でも押せる。画面下の大きいボタンでも操作可能。",
+			],
+			"穴あけ開始",
+			_show_aluminum_step
+		)
+		return
 	_set_phase(5, "アルミ穴あけ", "光っている穴だけ押す。明るいうちほど高得点。")
-	_set_focus_mode(true)
+	_enter_immersive_stage()
 	_clear_choices()
+	_set_focus_mode(true)
 	_aluminum_active = true
 	_aluminum_hit_perfect = 0
 	_aluminum_hit_good = 0
@@ -1591,54 +1939,33 @@ func _show_aluminum_step() -> void:
 	_aluminum_glow_active = false
 	_aluminum_glow_elapsed = 0.0
 
+	var guide = Label.new()
+	guide.text = "金色のうちに抜く。Space / Enter でもOK"
+	guide.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	guide.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	guide.add_theme_font_size_override("font_size", 20)
+	guide.add_theme_color_override("font_color", Color("ead4aa", 0.9))
+	choice_container.add_child(guide)
+
 	# ビジュアルグリッド表示
+	var grid_host = CenterContainer.new()
+	grid_host.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	grid_host.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	choice_container.add_child(grid_host)
 	var grid_visual = _AluminumGridVisual.new()
 	grid_visual.name = "AluminumGrid"
-	grid_visual.custom_minimum_size = Vector2(300, 240)
+	grid_visual.custom_minimum_size = Vector2(840, 460)
 	grid_visual.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	grid_visual.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	grid_visual.holes = _aluminum_grid_holes
 	grid_visual.current_hole = _aluminum_current_hole
 	grid_visual.cols = cols
 	grid_visual.total_rows = rows
-	choice_container.add_child(grid_visual)
-
-	var guide = Label.new()
-	guide.text = "今 光っている穴だけ押す。Space / Enter でもOK"
-	guide.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	guide.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	guide.add_theme_font_size_override("font_size", 16)
-	choice_container.add_child(guide)
+	grid_host.add_child(grid_visual)
 
 	# 穴あけボタン
-	var press_button = Button.new()
-	press_button.text = "光った穴を押す"
-	press_button.custom_minimum_size = Vector2(0, 60)
-	press_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	press_button.add_theme_font_size_override("font_size", 28)
-	var btn_style = StyleBoxFlat.new()
-	btn_style.bg_color = Color("e43b44", 0.85)
-	btn_style.border_color = Color("feae34", 0.7)
-	btn_style.border_width_bottom = 4
-	btn_style.border_width_left = 2
-	btn_style.border_width_right = 2
-	btn_style.border_width_top = 1
-	btn_style.corner_radius_bottom_left = 8
-	btn_style.corner_radius_bottom_right = 8
-	btn_style.corner_radius_top_left = 8
-	btn_style.corner_radius_top_right = 8
-	btn_style.content_margin_top = 12
-	btn_style.content_margin_bottom = 12
-	press_button.add_theme_stylebox_override("normal", btn_style)
-	var btn_hover = btn_style.duplicate()
-	btn_hover.bg_color = Color("e43b44")
-	btn_hover.border_color = Color("feae34")
-	press_button.add_theme_stylebox_override("hover", btn_hover)
-	var btn_pressed = btn_style.duplicate()
-	btn_pressed.bg_color = Color("feae34", 0.7)
-	press_button.add_theme_stylebox_override("pressed", btn_pressed)
-	press_button.add_theme_color_override("font_color", Color("ffffff"))
-	press_button.pressed.connect(_on_aluminum_press_hole)
-	choice_container.add_child(press_button)
+	var press_button = _add_choice_button("光った穴を押す", _on_aluminum_press_hole)
+	press_button.add_theme_font_size_override("font_size", 30)
 
 	_refresh_side_panel()
 	# 最初の穴を光らせる
@@ -2012,26 +2339,26 @@ func _show_mind_barrage_intro(summary_text: String = "") -> void:
 		return
 	var duration_sec = _compute_mind_barrage_duration()
 	var lives = MIND_BARRAGE_BASE_LIVES + (1 if _easy_mode else 0)
-	_set_phase(9, "吸い出し前: 思考の暴走", "吸い出し直前、頭の中で不安と記憶が弾幕になる。")
-	_clear_choices()
-	var lines: Array[String] = []
+	var body = "吸い出し直前、頭の中で不安と記憶が弾幕になる。"
 	if summary_text != "":
-		lines.append(summary_text)
-		lines.append("")
-	lines.append("ここが大会の精神戦。")
-	lines.append("弾を避ける = 他人の価値観をかわす")
-	lines.append("当たる = 心がブレる（評価デバフ）")
-	lines.append("耐えきる = 自分のレシピを信じ切る")
-	lines.append("")
-	lines.append("[集中モード] Shift / Z 長押し: 低速移動＋判定縮小")
-	lines.append("[ニア回避] 弾のすぐ横を抜けると集中度UP＋残り時間が短縮")
-	lines.append("[コンボ] 連続回避でコンボが溜まり、評価に加算")
-	lines.append("")
-	lines.append("蒸らし %d分 -> 耐久 %.1f秒" % [_steam_minutes, duration_sec])
-	lines.append("残機: %d（0になると吸い出しゲージは最悪速度）" % lives)
-	_set_info_text("\n".join(lines))
-	_add_choice_button("弾幕開始", _start_mind_barrage_step)
-	_refresh_side_panel()
+		body = "%s\n%s" % [summary_text, body]
+	_show_stage_briefing(
+		9,
+		"吸い出し前: 思考の暴走",
+		body,
+		[
+			{"speaker": "pakki", "face": "smoke", "text": "吸い出し前の精神戦です！ 会場の声も、自分の不安も、全部ここで押し寄せる！"},
+			{"speaker": "hajime", "face": "serious", "text": "周りの声をかわして、自分のレシピだけを信じる。"},
+		],
+		[
+			"矢印キー / WASD で移動。Shift / Z で低速の集中モード。",
+			"弾に当たると残機が減り、吸い出しゲージにデバフが乗る。",
+			"弾のすぐ横を抜けるとニア回避。残り時間短縮と評価ボーナスになる。",
+			"蒸らし %d 分 -> 耐久 %.1f 秒 / 残機 %d" % [_steam_minutes, duration_sec, lives],
+		],
+		"精神戦を始める",
+		_start_mind_barrage_step
+	)
 
 
 func _compute_mind_barrage_duration() -> float:
@@ -2068,8 +2395,9 @@ func _start_mind_barrage_step() -> void:
 		_show_pull_step()
 		return
 	_set_phase(9, "思考弾幕", "弾をかわして時間まで耐える。")
-	_set_focus_mode(true)
+	_enter_immersive_stage()
 	_clear_choices()
+	_set_focus_mode(true)
 	_mind_active = true
 	_mind_duration_total = _compute_mind_barrage_duration()
 	_mind_elapsed = 0.0
@@ -2104,25 +2432,26 @@ func _start_mind_barrage_step() -> void:
 
 	var guide = Label.new()
 	guide.text = "移動: 矢印キー / WASD    集中: Shift / Z    ニア回避: 弾のすぐ横"
-	guide.add_theme_font_size_override("font_size", 13)
+	guide.add_theme_font_size_override("font_size", 18)
 	guide.add_theme_color_override("font_color", Color("ead4aa", 0.7))
 	choice_container.add_child(guide)
 
 	# 横並びレイアウト: 左にはじめの顔 + 右にアリーナ
 	var mind_hbox = HBoxContainer.new()
 	mind_hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	mind_hbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	mind_hbox.add_theme_constant_override("separation", 10)
 	choice_container.add_child(mind_hbox)
 
 	# はじめの顔パネル
 	var face_panel = VBoxContainer.new()
-	face_panel.custom_minimum_size = Vector2(100, 290)
+	face_panel.custom_minimum_size = Vector2(180, 520)
 	face_panel.add_theme_constant_override("separation", 6)
 	mind_hbox.add_child(face_panel)
 
 	var face_rect = TextureRect.new()
 	face_rect.name = "MindFaceRect"
-	face_rect.custom_minimum_size = Vector2(96, 96)
+	face_rect.custom_minimum_size = Vector2(160, 160)
 	face_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 	face_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	var face_path = "res://assets/sprites/characters/hajime/chr_hajime_normal.png"
@@ -2133,18 +2462,18 @@ func _start_mind_barrage_step() -> void:
 	var face_label = Label.new()
 	face_label.name = "MindFaceLabel"
 	face_label.text = "集中してる…"
-	face_label.add_theme_font_size_override("font_size", 13)
+	face_label.add_theme_font_size_override("font_size", 18)
 	face_label.add_theme_color_override("font_color", Color("ead4aa", 0.8))
 	face_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	face_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	face_label.custom_minimum_size = Vector2(96, 0)
+	face_label.custom_minimum_size = Vector2(160, 0)
 	face_panel.add_child(face_label)
 
 	# コンボ表示ラベル
 	_mind_combo_label = Label.new()
 	_mind_combo_label.name = "MindComboLabel"
 	_mind_combo_label.text = ""
-	_mind_combo_label.add_theme_font_size_override("font_size", 16)
+	_mind_combo_label.add_theme_font_size_override("font_size", 22)
 	_mind_combo_label.add_theme_color_override("font_color", Color("feae34"))
 	_mind_combo_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_mind_combo_label.custom_minimum_size = Vector2(96, 0)
@@ -2154,15 +2483,16 @@ func _start_mind_barrage_step() -> void:
 	_mind_graze_label = Label.new()
 	_mind_graze_label.name = "MindGrazeLabel"
 	_mind_graze_label.text = ""
-	_mind_graze_label.add_theme_font_size_override("font_size", 12)
+	_mind_graze_label.add_theme_font_size_override("font_size", 16)
 	_mind_graze_label.add_theme_color_override("font_color", Color("00e5ff", 0.8))
 	_mind_graze_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_mind_graze_label.custom_minimum_size = Vector2(96, 0)
 	face_panel.add_child(_mind_graze_label)
 
 	var arena_frame = PanelContainer.new()
-	arena_frame.custom_minimum_size = Vector2(0, 290)
+	arena_frame.custom_minimum_size = Vector2(0, 520)
 	arena_frame.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	arena_frame.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	mind_hbox.add_child(arena_frame)
 
 	var arena = ColorRect.new()
@@ -2234,9 +2564,9 @@ func _start_mind_barrage_step() -> void:
 	_add_mind_direction_button(dpad, "←", "left")
 	var center = Label.new()
 	center.text = "SOUL"
-	center.add_theme_font_size_override("font_size", 12)
+	center.add_theme_font_size_override("font_size", 18)
 	center.add_theme_color_override("font_color", Color("e43b44", 0.8))
-	center.custom_minimum_size = Vector2(56, 40)
+	center.custom_minimum_size = Vector2(88, 66)
 	center.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	center.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	dpad.add_child(center)
@@ -2252,14 +2582,15 @@ func _start_mind_barrage_step() -> void:
 
 func _add_mind_pad_spacer(parent: GridContainer) -> void:
 	var spacer = Control.new()
-	spacer.custom_minimum_size = Vector2(56, 40)
+	spacer.custom_minimum_size = Vector2(88, 66)
 	parent.add_child(spacer)
 
 
 func _add_mind_direction_button(parent: GridContainer, button_text: String, dir_id: String) -> void:
 	var button = Button.new()
 	button.text = button_text
-	button.custom_minimum_size = Vector2(56, 40)
+	button.custom_minimum_size = Vector2(88, 66)
+	button.add_theme_font_size_override("font_size", 28)
 	button.button_down.connect(func() -> void:
 		_set_mind_direction(dir_id, true)
 	)
@@ -3286,6 +3617,25 @@ func _show_pull_step() -> void:
 	if not _mind_barrage_done:
 		_show_mind_barrage_intro("吸い出し前に精神戦を完了する。")
 		return
+	if not _pull_intro_seen:
+		_pull_intro_seen = true
+		_show_stage_briefing(
+			10,
+			"吸い出し",
+			"立ち上げた煙を、狙いの濃さで止める。",
+			[
+				{"speaker": "pakki", "face": "smoke", "text": "吸い出しです！ 一口目の止めどころで、煙の説得力が決まります。"},
+				{"speaker": "hajime", "face": "serious", "text": "重すぎても軽すぎても駄目。狙いの帯で止める。"},
+			],
+			[
+				"押している間だけゲージが進む。離した瞬間の位置で判定。",
+				"帯の中心に近いほど PERFECT。MISS は熱が暴れて次も難しくなる。",
+				"最低 %d 回、最大 %d 回。十分だと思ったら途中で提供へ進める。" % [PULL_MIN_ROUNDS, PULL_MAX_ROUNDS],
+			],
+			"吸い出し開始",
+			_show_pull_step
+		)
+		return
 	var round_number = _pull_round + 1
 	_set_phase(
 		10,
@@ -3297,8 +3647,9 @@ func _show_pull_step() -> void:
 			_mind_pull_adjust_text(),
 		]
 	)
-	_set_focus_mode(true)
+	_enter_immersive_stage()
 	_clear_choices()
+	_set_focus_mode(true)
 	_pull_timer.stop()
 	_pull_is_holding = false
 	_pull_step_resolved = false
@@ -3346,16 +3697,23 @@ func _show_pull_step() -> void:
 		setting_hint = "装備補正: 標準"
 	_pull_setting_hint = "%s / 精神戦: %s（%s）" % [setting_hint, _mind_pull_hint(), _mind_pull_adjust_text()]
 
-	var hold_button = Button.new()
-	hold_button.text = "押して吸う（離して止める）"
-	hold_button.custom_minimum_size = Vector2(0, 48)
-	hold_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var gauge_card = _create_stage_card("煙量ゲージ", "狙いの帯で止める。ラウンド %d / %d" % [round_number, PULL_MAX_ROUNDS], 300.0)
+	choice_container.add_child(gauge_card["panel"])
+	_show_pull_gauge_visual(gauge_card["body"])
+
+	var control_row = HBoxContainer.new()
+	control_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	control_row.add_theme_constant_override("separation", 14)
+	choice_container.add_child(control_row)
+
+	var hold_button = _create_action_button("押して吸う（離して止める）", Callable(), false)
+	hold_button.disabled = false
 	hold_button.button_down.connect(_on_pull_hold_started)
 	hold_button.button_up.connect(_on_pull_hold_released)
-	choice_container.add_child(hold_button)
+	control_row.add_child(hold_button)
 	_pull_hold_button = hold_button
 	if _pull_round >= PULL_MIN_ROUNDS:
-		_add_choice_button("ここで提供に進む", _on_pull_skip_to_serving)
+		_add_choice_button_to(control_row, "ここで提供に進む", _on_pull_skip_to_serving)
 
 	if PlayerData.equipment_charcoal == "cube_charcoal":
 		_append_info("キューブ炭: 当てれば高得点、外すと失点が重い。")
@@ -3374,25 +3732,14 @@ func _on_pull_gauge_tick() -> void:
 
 
 func _update_pull_gauge_text() -> void:
-	var bar_len = 24
-	var pointer_index = int(round(_pull_gauge_value * float(bar_len - 1)))
-	var target_start = int(round(clampf(_pull_target_center - _pull_target_width, 0.0, 1.0) * float(bar_len - 1)))
-	var target_end = int(round(clampf(_pull_target_center + _pull_target_width, 0.0, 1.0) * float(bar_len - 1)))
-
-	var bar_chars: Array[String] = []
-	for i in range(bar_len):
-		var char = "─"
-		if i >= target_start and i <= target_end:
-			char = "■"
-		if i == pointer_index:
-			char = "◆"
-		bar_chars.append(char)
-
+	_update_pull_gauge_visual()
 	var status_text = "吸い出し中...離すと判定" if _pull_is_holding else "ボタンを押して吸い出し開始"
-	_set_runtime_status("%s\n%s\n%s\n目標帯 ■ / ポインタ ◆" % [
+	_set_runtime_status("%s\n%s\n現在位置 %.0f%% / 目標帯 %.0f%%±%.0f%%" % [
 		status_text,
 		_pull_setting_hint,
-		"".join(bar_chars),
+		_pull_gauge_value * 100.0,
+		_pull_target_center * 100.0,
+		_pull_target_width * 100.0,
 	])
 
 
@@ -4543,12 +4890,19 @@ func _on_mini_dialogue_tick() -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
+	if _aluminum_active and event is InputEventKey and event.pressed and not event.echo:
+		var key_event = event as InputEventKey
+		if key_event.keycode == KEY_SPACE or key_event.keycode == KEY_ENTER or key_event.keycode == KEY_KP_ENTER:
+			_on_aluminum_press_hole()
+			accept_event()
+			return
 	if mini_dialogue_panel.visible and event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		_advance_mini_dialogue()
 
 
 func _show_step_result_and_next(result_text: String, next_callable: Callable) -> void:
 	_step_transition()
+	_exit_immersive_stage()
 	_append_info(result_text)
 	_clear_choices()
 	_add_choice_button("次へ", next_callable)
@@ -4665,10 +5019,13 @@ func _build_temperature_gauge_text(current_temp: float, target: Vector2) -> Stri
 
 
 func _refresh_side_panel() -> void:
-	judge_label.text = "MC: パッキー\n審査員: 南雲 修二 + ドクター・ケムリ + %s\nテーマ: %s" % [
+	var judge_text = "MC: パッキー\n審査員: 南雲 修二 + ドクター・ケムリ + %s\nテーマ: %s" % [
 		str(_random_judge.get("name", "審査員")),
 		str(_theme.get("name", "-")),
 	]
+	judge_label.text = judge_text
+	if fullscreen_judge_label != null:
+		fullscreen_judge_label.text = judge_text
 
 	var target_temp = _get_target_temp_range()
 	var current_temp = _get_current_temp_value()
@@ -4696,6 +5053,15 @@ func _refresh_side_panel() -> void:
 	if _special_mix_name != "":
 		lines.append("特別: %s" % _special_mix_name)
 	score_label.text = "\n".join(lines)
+	if fullscreen_status_label != null:
+		var fullscreen_lines: Array[String] = []
+		fullscreen_lines.append("専門 %.1f / 一般 %.1f" % [maxi(_technical_points, 0.0), maxi(_audience_points, 0.0)])
+		fullscreen_lines.append("熱状態: %s  温度: %d℃" % [_heat_label(), int(round(current_temp))])
+		fullscreen_lines.append("吸い出し %d / %d  炭 %d個" % [_pull_hit_count, maxi(_pull_round, 1), _selected_charcoal_count])
+		if not _selected_flavors.is_empty():
+			fullscreen_lines.append("配合: %s" % _selected_flavor_summary())
+		fullscreen_status_label.text = "\n".join(fullscreen_lines)
+	_update_fullscreen_temp_gauge()
 
 	var memos = PlayerData.get_tournament_memos()
 	if memos.is_empty():
@@ -4737,15 +5103,18 @@ func _show_bowl_visual() -> void:
 	_remove_bowl_visual()
 	var bowl = _BowlVisual.new()
 	bowl.name = "BowlVisual"
-	bowl.custom_minimum_size = Vector2(280, 180)
-	bowl.size = Vector2(280, 180)
+	var bowl_size = Vector2(420, 300) if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else Vector2(280, 180)
+	bowl.custom_minimum_size = bowl_size
+	bowl.size = bowl_size
 	bowl.flavors = _selected_flavors.duplicate()
 	bowl.grams = _manual_packing_grams.duplicate()
 	bowl.total_grams = TOTAL_PACKING_GRAMS
 	bowl.flavor_colors = FLAVOR_COLORS
 	_bowl_visual_node = bowl
-	choice_container.add_child(bowl)
-	choice_container.move_child(bowl, 0)
+	var parent: Node = _bowl_visual_parent if _bowl_visual_parent != null else choice_container
+	parent.add_child(bowl)
+	if parent == choice_container:
+		choice_container.move_child(bowl, 0)
 
 
 func _update_bowl_visual() -> void:
@@ -4760,6 +5129,7 @@ func _remove_bowl_visual() -> void:
 	if _bowl_visual_node != null and is_instance_valid(_bowl_visual_node):
 		_bowl_visual_node.queue_free()
 		_bowl_visual_node = null
+	_bowl_visual_parent = null
 
 
 class _BowlVisual extends Control:
@@ -4915,6 +5285,81 @@ class _TempGaugeVisual extends Control:
 		draw_string(ThemeDB.fallback_font, Vector2(margin, h - 2), "%d℃" % int(temp_min), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("8b9bb4"))
 		draw_string(ThemeDB.fallback_font, Vector2(w - margin - 30, h - 2), "%d℃" % int(temp_max), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("8b9bb4"))
 		draw_string(ThemeDB.fallback_font, Vector2(current_x - 15, h - 2), "%d℃" % int(current_temp), HORIZONTAL_ALIGNMENT_LEFT, -1, 11, marker_color)
+
+
+## ─── 3. 吸い出しタイミングゲージ ───
+
+func _show_pull_gauge_visual(parent: Node) -> void:
+	_remove_pull_gauge_visual()
+	var gauge = _PullGaugeVisual.new()
+	gauge.custom_minimum_size = Vector2(0, 220)
+	gauge.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	gauge.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	parent.add_child(gauge)
+	_pull_gauge_visual_node = gauge
+	_update_pull_gauge_visual()
+
+
+func _update_pull_gauge_visual() -> void:
+	if _pull_gauge_visual_node == null or not is_instance_valid(_pull_gauge_visual_node):
+		return
+	var gauge = _pull_gauge_visual_node as _PullGaugeVisual
+	if gauge == null:
+		return
+	gauge.gauge_value = _pull_gauge_value
+	gauge.target_center = _pull_target_center
+	gauge.target_width = _pull_target_width
+	gauge.is_holding = _pull_is_holding
+	gauge.round_text = "ROUND %d / %d" % [_pull_round + 1, PULL_MAX_ROUNDS]
+	gauge.queue_redraw()
+
+
+func _remove_pull_gauge_visual() -> void:
+	if _pull_gauge_visual_node != null and is_instance_valid(_pull_gauge_visual_node):
+		_pull_gauge_visual_node.queue_free()
+		_pull_gauge_visual_node = null
+
+
+class _PullGaugeVisual extends Control:
+	var gauge_value: float = 0.5
+	var target_center: float = 0.5
+	var target_width: float = 0.16
+	var is_holding: bool = false
+	var round_text: String = ""
+
+	func _draw() -> void:
+		var w = size.x
+		var h = size.y
+		var margin = 28.0
+		var center_y = h * 0.58
+		var bar_h = 52.0
+		var bar_rect = Rect2(margin, center_y - bar_h * 0.5, w - margin * 2.0, bar_h)
+		draw_rect(bar_rect, Color("1b1f33", 0.96), true)
+		draw_rect(bar_rect, Color("8b9bb4", 0.22), false, 2.0)
+
+		var target_left = bar_rect.position.x + bar_rect.size.x * clampf(target_center - target_width, 0.0, 1.0)
+		var target_right = bar_rect.position.x + bar_rect.size.x * clampf(target_center + target_width, 0.0, 1.0)
+		draw_rect(Rect2(target_left, bar_rect.position.y + 6.0, target_right - target_left, bar_rect.size.y - 12.0), Color("3e8948", 0.75), true)
+
+		var perfect_width = (target_right - target_left) * 0.35
+		var perfect_rect = Rect2(target_center * bar_rect.size.x + bar_rect.position.x - perfect_width * 0.5, bar_rect.position.y + 10.0, perfect_width, bar_rect.size.y - 20.0)
+		draw_rect(perfect_rect, Color("feae34", 0.8), true)
+
+		var pointer_x = bar_rect.position.x + bar_rect.size.x * clampf(gauge_value, 0.0, 1.0)
+		var pointer_col = Color("feae34") if is_holding else Color("e43b44")
+		draw_line(Vector2(pointer_x, bar_rect.position.y - 18.0), Vector2(pointer_x, bar_rect.position.y + bar_rect.size.y + 18.0), pointer_col, 5.0)
+		var tri = PackedVector2Array([
+			Vector2(pointer_x, bar_rect.position.y - 26.0),
+			Vector2(pointer_x - 10.0, bar_rect.position.y - 8.0),
+			Vector2(pointer_x + 10.0, bar_rect.position.y - 8.0),
+		])
+		draw_colored_polygon(tri, pointer_col)
+
+		draw_string(ThemeDB.fallback_font, Vector2(margin, 38.0), "PULL TIMING", HORIZONTAL_ALIGNMENT_LEFT, -1, 28, Color("ead4aa"))
+		draw_string(ThemeDB.fallback_font, Vector2(margin, 66.0), round_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("8bd5ff"))
+		draw_string(ThemeDB.fallback_font, Vector2(margin, h - 18.0), "PERFECT", HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color("feae34"))
+		draw_string(ThemeDB.fallback_font, Vector2(target_left, h - 18.0), "GOOD", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("3e8948"))
+		draw_string(ThemeDB.fallback_font, Vector2(pointer_x + 14.0, center_y - 20.0), "SMOKE", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, pointer_col)
 
 
 ## ─── 3. スコア変動ポップアップ ───
