@@ -591,11 +591,12 @@ func reset_daily_summary() -> void:
 	}
 
 
-func log_stat_change(stat_name: String, amount: int) -> void:
-	if amount == 0:
+func log_stat_change(stat_name: String, amount: float) -> void:
+	var int_amount: int = roundi(amount)
+	if int_amount == 0:
 		return
 	var current = int(daily_summary["stats"].get(stat_name, 0))
-	daily_summary["stats"][stat_name] = current + amount
+	daily_summary["stats"][stat_name] = current + int_amount
 
 
 func log_money_change(amount: int) -> void:

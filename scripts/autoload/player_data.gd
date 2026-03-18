@@ -312,19 +312,20 @@ func reset_data() -> void:
 	has_visited_shop = false
 
 
-func add_stat(stat_name: String, amount: int) -> void:
+func add_stat(stat_name: String, amount: float) -> void:
+	var int_amount: int = roundi(amount)
 	var normalized = _normalize_stat_name(stat_name)
 	match normalized:
 		"technique":
-			stat_technique = clampi(stat_technique + amount, 0, 100)
+			stat_technique = clampi(stat_technique + int_amount, 0, 100)
 		"sense":
-			stat_sense = clampi(stat_sense + amount, 0, 100)
+			stat_sense = clampi(stat_sense + int_amount, 0, 100)
 		"guts":
-			stat_guts = clampi(stat_guts + amount, 0, 100)
+			stat_guts = clampi(stat_guts + int_amount, 0, 100)
 		"charm":
-			stat_charm = clampi(stat_charm + amount, 0, 100)
+			stat_charm = clampi(stat_charm + int_amount, 0, 100)
 		"insight":
-			stat_insight = clampi(stat_insight + amount, 0, 100)
+			stat_insight = clampi(stat_insight + int_amount, 0, 100)
 
 
 func get_stat_value(stat_name: String) -> int:
