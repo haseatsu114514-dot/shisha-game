@@ -468,7 +468,7 @@ func _show_next_line() -> void:
 		if cond_type == "stat":
 			var stat = str(line.get("stat", ""))
 			if stat != "":
-				val = PlayerData.get_stat(stat)
+				val = PlayerData.get_stat_value(stat)
 		elif cond_type == "romance_count":
 			val = AffinityManager.get_romance_count()
 		elif cond_type == "has_romance":

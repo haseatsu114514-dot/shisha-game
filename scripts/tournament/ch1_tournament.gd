@@ -3663,9 +3663,9 @@ func _show_pull_step() -> void:
 	var setting_speed_adjust = _get_pull_speed_adjust_by_setting()
 	_pull_target_width = clampf(0.22 - difficulty * 0.08 - float(abs(_heat_state)) * 0.01 + setting_window_adjust, 0.05, 0.24)
 	if PlayerData.equipment_charcoal == "cube_charcoal":
-		_pull_target_width = maxi(0.05, _pull_target_width - 0.02)
+		_pull_target_width = maxf(0.05, _pull_target_width - 0.02)
 	if _easy_mode:
-		_pull_target_width = mini(0.26, _pull_target_width + 0.04)
+		_pull_target_width = minf(0.26, _pull_target_width + 0.04)
 
 	_pull_target_center = clampf(0.5 + float(_heat_state) * 0.07 + randf_range(-0.12, 0.12), 0.15, 0.85)
 	var base_speed = 0.85 + float(_pull_round) * 0.2 + float(abs(_heat_state)) * 0.06 + setting_speed_adjust
@@ -3674,7 +3674,7 @@ func _show_pull_step() -> void:
 	else:
 		_pull_gauge_speed = base_speed + _mind_pull_speed_adjust
 	if _easy_mode and not _mind_force_worst_pull_speed:
-		_pull_gauge_speed = maxi(0.6, _pull_gauge_speed - 0.15)
+		_pull_gauge_speed = maxf(0.6, _pull_gauge_speed - 0.15)
 	# フレーバー特性: smoke_weight が重いほどゲージが遅い（太い煙=ゆっくり吸う）
 	var sw = _get_mix_trait("smoke_weight")
 	_pull_gauge_speed *= clampf(2.0 - sw, 0.7, 1.3)
@@ -4615,9 +4615,9 @@ func _build_player_score() -> Dictionary:
 
 func _compute_player_score_components() -> Dictionary:
 	var specialist_base = _technical_points + _zone_bonus * 8.0 + float(_adjustment_hits) * 2.5
-	var specialist = maxi(0.0, specialist_base)
+	var specialist = maxf(0.0, specialist_base)
 	var audience_base = _audience_points + float(_count_theme_hits(_selected_flavors)) * 4.0
-	var audience = maxi(0.0, audience_base)
+	var audience = maxf(0.0, audience_base)
 	var specialist_mix_bonus = 0.0
 	var audience_mix_bonus = 0.0
 
@@ -4701,10 +4701,10 @@ func _prepare_rival_score_tables() -> void:
 			base_spec -= 3.0
 			base_aud -= 2.0
 
-		var mid_spec = maxi(0.0, base_spec + randf_range(-4.0, 4.0))
-		var mid_aud = maxi(0.0, base_aud + randf_range(-4.0, 4.0))
-		var final_spec = maxi(0.0, mid_spec + randf_range(-6.0, 6.0))
-		var final_aud = maxi(0.0, mid_aud + randf_range(-6.0, 6.0))
+		var mid_spec = maxf(0.0, base_spec + randf_range(-4.0, 4.0))
+		var mid_aud = maxf(0.0, base_aud + randf_range(-4.0, 4.0))
+		var final_spec = maxf(0.0, mid_spec + randf_range(-6.0, 6.0))
+		var final_aud = maxf(0.0, mid_aud + randf_range(-6.0, 6.0))
 
 		_rival_mid_scores.append({
 			"id": rival_id,
@@ -5030,8 +5030,8 @@ func _refresh_side_panel() -> void:
 	var target_temp = _get_target_temp_range()
 	var current_temp = _get_current_temp_value()
 	var lines: Array[String] = []
-	lines.append("専門暫定: %.1f" % maxi(_technical_points, 0.0))
-	lines.append("一般暫定: %.1f" % maxi(_audience_points, 0.0))
+	lines.append("専門暫定: %.1f" % maxf(_technical_points, 0.0))
+	lines.append("一般暫定: %.1f" % maxf(_audience_points, 0.0))
 	lines.append("調整成功: %d / 3" % _adjustment_hits)
 	lines.append("吸い出しヒット: %d / %d" % [_pull_hit_count, maxi(_pull_round, 1)])
 	lines.append("熱状態: %s" % _heat_label())
@@ -5055,7 +5055,7 @@ func _refresh_side_panel() -> void:
 	score_label.text = "\n".join(lines)
 	if fullscreen_status_label != null:
 		var fullscreen_lines: Array[String] = []
-		fullscreen_lines.append("専門 %.1f / 一般 %.1f" % [maxi(_technical_points, 0.0), maxi(_audience_points, 0.0)])
+		fullscreen_lines.append("専門 %.1f / 一般 %.1f" % [maxf(_technical_points, 0.0), maxf(_audience_points, 0.0)])
 		fullscreen_lines.append("熱状態: %s  温度: %d℃" % [_heat_label(), int(round(current_temp))])
 		fullscreen_lines.append("吸い出し %d / %d  炭 %d個" % [_pull_hit_count, maxi(_pull_round, 1), _selected_charcoal_count])
 		if not _selected_flavors.is_empty():
