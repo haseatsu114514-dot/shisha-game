@@ -200,7 +200,8 @@ func _ready() -> void:
 		portrait_center_rect,
 		portrait_right_rect,
 	]
-	portrait_layer.z_index = -10
+	portrait_layer.z_index = 5   # キャラが背景より前、CGより後ろ
+	cg_rect.z_index = 10        # CG はキャラより前
 	dialogue_panel.z_index = 20
 		
 	# Setup font and transparency

@@ -5374,14 +5374,16 @@ func _show_score_popup(text: String, color: Color = Color("feae34")) -> void:
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.add_theme_font_size_override("font_size", 32)
 	label.add_theme_color_override("font_color", color)
-	label.position = Vector2(500, 300)
+	label.custom_minimum_size = Vector2(400, 0)
+	var vp = get_viewport_rect().size
+	label.position = Vector2((vp.x - 400.0) * 0.5, vp.y * 0.42)
 	label.modulate.a = 0.0
 	layer.add_child(label)
 
 	var tween = create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(label, "modulate:a", 1.0, 0.15)
-	tween.tween_property(label, "position:y", 240, 0.6).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(label, "position:y", vp.y * 0.33, 0.6).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tween.tween_property(label, "modulate:a", 0.0, 0.3).set_delay(0.5)
 	tween.chain().tween_callback(layer.queue_free)
 
