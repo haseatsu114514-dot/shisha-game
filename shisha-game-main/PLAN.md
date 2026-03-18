@@ -8,7 +8,7 @@
 
 ## 1. 背景アセット生成（店舗・室内）
 
-- **Status:** pending
+- **Status:** done
 - **Depends on:** (none)
 - **Goal:** tonari外観・主人公の部屋・各キャラの店舗背景を16-bitピクセルアートで生成し、プレースホルダーを差し替える
 - **Targets:**
@@ -29,7 +29,7 @@
 
 ## 2. 背景アセット生成（屋外・タイトル・大会）
 
-- **Status:** pending
+- **Status:** done
 - **Depends on:** (none)
 - **Goal:** タイトル画面・大会ステージ・日中夜間の街並みを生成し、プレースホルダーを差し替える
 - **Targets:**
@@ -46,7 +46,7 @@
 
 ## 3. UIアセット生成
 
-- **Status:** pending
+- **Status:** done
 - **Depends on:** (none)
 - **Goal:** ダイアログボックス・名前タグ・タイトルロゴ・ボタン類を16-bitピクセルアートで生成し差し替える
 - **Targets:**
