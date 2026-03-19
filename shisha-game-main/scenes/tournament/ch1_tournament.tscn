@@ -1,0 +1,546 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/tournament/ch1_tournament.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/backgrounds/bg_tournament_stage.png" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/ui/status_panel.tscn" id="4"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_main"]
+bg_color = Color(0.055, 0.04, 0.085, 0.96)
+border_color = Color(0.996, 0.682, 0.204, 0.35)
+border_width_bottom = 1
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+content_margin_left = 16
+content_margin_top = 14
+content_margin_right = 16
+content_margin_bottom = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_side"]
+bg_color = Color(0.04, 0.03, 0.07, 0.96)
+border_color = Color(0.996, 0.682, 0.204, 0.3)
+border_width_bottom = 1
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+content_margin_left = 12
+content_margin_top = 12
+content_margin_right = 12
+content_margin_bottom = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_stage_title"]
+bg_color = Color(0.082, 0.055, 0.125, 0.97)
+border_color = Color(0.996, 0.682, 0.204, 0.6)
+border_width_bottom = 2
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+corner_radius_bottom_left = 10
+corner_radius_bottom_right = 10
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+content_margin_left = 22
+content_margin_top = 18
+content_margin_right = 22
+content_margin_bottom = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_stage_body"]
+bg_color = Color(0.04, 0.03, 0.065, 0.94)
+border_color = Color(0.996, 0.682, 0.204, 0.2)
+border_width_bottom = 1
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+content_margin_left = 22
+content_margin_top = 18
+content_margin_right = 22
+content_margin_bottom = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_stage_content"]
+bg_color = Color(0.05, 0.035, 0.075, 0.95)
+border_color = Color(0.996, 0.682, 0.204, 0.25)
+border_width_bottom = 1
+border_width_left = 1
+border_width_right = 1
+border_width_top = 1
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+content_margin_left = 24
+content_margin_top = 24
+content_margin_right = 24
+content_margin_bottom = 24
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_stage_status"]
+bg_color = Color(0.04, 0.03, 0.075, 0.96)
+border_color = Color(0.996, 0.682, 0.204, 0.4)
+border_width_bottom = 1
+border_width_left = 1
+border_width_right = 1
+border_width_top = 2
+corner_radius_bottom_left = 10
+corner_radius_bottom_right = 10
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+content_margin_left = 18
+content_margin_top = 16
+content_margin_right = 18
+content_margin_bottom = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mini_dialogue"]
+bg_color = Color(0.055, 0.035, 0.09, 0.97)
+border_color = Color(0.996, 0.682, 0.204, 0.45)
+border_width_bottom = 1
+border_width_left = 1
+border_width_right = 1
+border_width_top = 2
+corner_radius_bottom_left = 6
+corner_radius_bottom_right = 6
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+content_margin_left = 16
+content_margin_top = 16
+content_margin_right = 16
+content_margin_bottom = 16
+
+[node name="Ch1Tournament" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+texture = ExtResource("2")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Overlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.01, 0.02, 0.06, 0.78)
+
+[node name="MainPanel" type="PanelContainer" parent="."]
+layout_mode = 1
+offset_left = 24.0
+offset_top = 60.0
+offset_right = 916.0
+offset_bottom = 716.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_main")
+
+[node name="MainMargin" type="MarginContainer" parent="MainPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
+
+[node name="MainVBox" type="VBoxContainer" parent="MainPanel/MainMargin"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="HeaderLabel" type="Label" parent="MainPanel/MainMargin/MainVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+text = "大会"
+
+[node name="PhaseLabel" type="Label" parent="MainPanel/MainMargin/MainVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "STEP 1 / 16"
+
+[node name="DeckHBox" type="HBoxContainer" parent="MainPanel/MainMargin/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="StepCard" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/DeckHBox"]
+custom_minimum_size = Vector2(0, 132)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StepCardMargin" type="MarginContainer" parent="MainPanel/MainMargin/MainVBox/DeckHBox/StepCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="StepCardVBox" type="VBoxContainer" parent="MainPanel/MainMargin/MainVBox/DeckHBox/StepCard/StepCardMargin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="StepTagLabel" type="Label" parent="MainPanel/MainMargin/MainVBox/DeckHBox/StepCard/StepCardMargin/StepCardVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.894118, 0.231373, 0.266667, 1)
+theme_override_font_sizes/font_size = 16
+text = "SETUP"
+
+[node name="StepSummaryLabel" type="Label" parent="MainPanel/MainMargin/MainVBox/DeckHBox/StepCard/StepCardMargin/StepCardVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 22
+text = "大会の工程と見せ場を切り分ける"
+
+[node name="StepHintLabel" type="Label" parent="MainPanel/MainMargin/MainVBox/DeckHBox/StepCard/StepCardMargin/StepCardVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+theme_override_colors/font_color = Color(0.752941, 0.796078, 0.862745, 1)
+theme_override_font_sizes/font_size = 16
+text = "ここに立ち絵、会場カット、結果演出を差し込める。"
+
+[node name="PreviewPanel" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox/DeckHBox"]
+custom_minimum_size = Vector2(312, 132)
+layout_mode = 2
+
+[node name="PreviewMargin" type="MarginContainer" parent="MainPanel/MainMargin/MainVBox/DeckHBox/PreviewPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
+
+[node name="PreviewVBox" type="VBoxContainer" parent="MainPanel/MainMargin/MainVBox/DeckHBox/PreviewPanel/PreviewMargin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PreviewLabel" type="Label" parent="MainPanel/MainMargin/MainVBox/DeckHBox/PreviewPanel/PreviewMargin/PreviewVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "大会"
+
+[node name="PreviewSubtitleLabel" type="Label" parent="MainPanel/MainMargin/MainVBox/DeckHBox/PreviewPanel/PreviewMargin/PreviewVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+theme_override_colors/font_color = Color(1, 0.921569, 0.819608, 1)
+theme_override_font_sizes/font_size = 16
+text = "会場演出 / キャラカットイン / 小アニメ予定"
+
+[node name="PreviewAccent" type="ColorRect" parent="MainPanel/MainMargin/MainVBox/DeckHBox/PreviewPanel/PreviewMargin/PreviewVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+color = Color(0.894118, 0.231373, 0.266667, 0.4)
+
+[node name="InfoLabel" type="RichTextLabel" parent="MainPanel/MainMargin/MainVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 140)
+layout_mode = 2
+size_flags_vertical = 3
+bbcode_enabled = false
+fit_content = false
+scroll_active = false
+
+[node name="InfoFooter" type="HBoxContainer" parent="MainPanel/MainMargin/MainVBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="InfoPageLabel" type="Label" parent="MainPanel/MainMargin/MainVBox/InfoFooter"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.752941, 0.796078, 0.862745, 1)
+theme_override_font_sizes/font_size = 16
+text = "説明 1 / 1"
+
+[node name="InfoSpacer" type="Control" parent="MainPanel/MainMargin/MainVBox/InfoFooter"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="InfoPrevButton" type="Button" parent="MainPanel/MainMargin/MainVBox/InfoFooter"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(64, 30)
+theme_override_font_sizes/font_size = 16
+text = "前"
+
+[node name="InfoNextButton" type="Button" parent="MainPanel/MainMargin/MainVBox/InfoFooter"]
+unique_name_in_owner = true
+layout_mode = 2
+custom_minimum_size = Vector2(64, 30)
+theme_override_font_sizes/font_size = 16
+text = "次"
+
+[node name="ChoiceContainer" type="VBoxContainer" parent="MainPanel/MainMargin/MainVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+clip_contents = false
+theme_override_constants/separation = 8
+
+[node name="MiniDialoguePanel" type="PanelContainer" parent="MainPanel/MainMargin/MainVBox"]
+unique_name_in_owner = true
+visible = false
+custom_minimum_size = Vector2(0, 160)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_mini_dialogue")
+
+[node name="Margin" type="MarginContainer" parent="MainPanel/MainMargin/MainVBox/MiniDialoguePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="HBox" type="HBoxContainer" parent="MainPanel/MainMargin/MainVBox/MiniDialoguePanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="MiniPortrait" type="TextureRect" parent="MainPanel/MainMargin/MainVBox/MiniDialoguePanel/Margin/HBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="VBox" type="VBoxContainer" parent="MainPanel/MainMargin/MainVBox/MiniDialoguePanel/Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MiniSpeakerLabel" type="Label" parent="MainPanel/MainMargin/MainVBox/MiniDialoguePanel/Margin/HBox/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "Speaker"
+
+[node name="MiniTextLabel" type="RichTextLabel" parent="MainPanel/MainMargin/MainVBox/MiniDialoguePanel/Margin/HBox/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/normal_font_size = 22
+bbcode_enabled = true
+text = "Dialogue Text Here..."
+
+[node name="SidePanel" type="PanelContainer" parent="."]
+layout_mode = 1
+offset_left = 936.0
+offset_top = 82.0
+offset_right = 1256.0
+offset_bottom = 712.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_side")
+
+[node name="SideMargin" type="MarginContainer" parent="SidePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="SideVBox" type="VBoxContainer" parent="SidePanel/SideMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="StatusPanel" parent="SidePanel/SideMargin/SideVBox" instance=ExtResource("4")]
+layout_mode = 2
+
+[node name="JudgeLabel" type="Label" parent="SidePanel/SideMargin/SideVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+text = "審査員"
+
+[node name="SeparatorA" type="HSeparator" parent="SidePanel/SideMargin/SideVBox"]
+layout_mode = 2
+
+[node name="ScoreLabel" type="RichTextLabel" parent="SidePanel/SideMargin/SideVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+fit_content = true
+scroll_active = true
+
+[node name="SeparatorB" type="HSeparator" parent="SidePanel/SideMargin/SideVBox"]
+layout_mode = 2
+
+[node name="MemoLabel" type="RichTextLabel" parent="SidePanel/SideMargin/SideVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+fit_content = true
+scroll_active = true
+
+[node name="FullscreenStage" type="Control" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Backdrop" type="ColorRect" parent="FullscreenStage"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.01, 0.02, 0.06, 0.82)
+
+[node name="StageMargin" type="MarginContainer" parent="FullscreenStage"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 36.0
+offset_top = 28.0
+offset_right = -36.0
+offset_bottom = -28.0
+mouse_filter = 2
+theme_override_constants/margin_left = 0
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 0
+theme_override_constants/margin_bottom = 0
+
+[node name="StageVBox" type="VBoxContainer" parent="FullscreenStage/StageMargin"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 18
+
+[node name="StageHeader" type="HBoxContainer" parent="FullscreenStage/StageMargin/StageVBox"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="StageTitlePanel" type="PanelContainer" parent="FullscreenStage/StageMargin/StageVBox/StageHeader"]
+theme_override_styles/panel = SubResource("StyleBoxFlat_stage_title")
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="StageTitleMargin" type="MarginContainer" parent="FullscreenStage/StageMargin/StageVBox/StageHeader/StageTitlePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 18
+
+[node name="StageTitleVBox" type="VBoxContainer" parent="FullscreenStage/StageMargin/StageVBox/StageHeader/StageTitlePanel/StageTitleMargin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="FullscreenPhaseLabel" type="Label" parent="FullscreenStage/StageMargin/StageVBox/StageHeader/StageTitlePanel/StageTitleMargin/StageTitleVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.921569, 0.819608, 1)
+theme_override_font_sizes/font_size = 20
+text = "STEP 1 / 16"
+
+[node name="FullscreenTitleLabel" type="Label" parent="FullscreenStage/StageMargin/StageVBox/StageHeader/StageTitlePanel/StageTitleMargin/StageTitleVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "大会"
+
+[node name="FullscreenStatusPanel" type="PanelContainer" parent="FullscreenStage/StageMargin/StageVBox/StageHeader"]
+theme_override_styles/panel = SubResource("StyleBoxFlat_stage_status")
+unique_name_in_owner = true
+custom_minimum_size = Vector2(332, 0)
+layout_mode = 2
+
+[node name="FullscreenStatusMargin" type="MarginContainer" parent="FullscreenStage/StageMargin/StageVBox/StageHeader/FullscreenStatusPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 16
+
+[node name="FullscreenStatusVBox" type="VBoxContainer" parent="FullscreenStage/StageMargin/StageVBox/StageHeader/FullscreenStatusPanel/FullscreenStatusMargin"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="FullscreenJudgeLabel" type="Label" parent="FullscreenStage/StageMargin/StageVBox/StageHeader/FullscreenStatusPanel/FullscreenStatusMargin/FullscreenStatusVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 18
+text = "MC / Judges"
+
+[node name="FullscreenStatusLabel" type="RichTextLabel" parent="FullscreenStage/StageMargin/StageVBox/StageHeader/FullscreenStatusPanel/FullscreenStatusMargin/FullscreenStatusVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 92)
+layout_mode = 2
+fit_content = true
+scroll_active = false
+
+[node name="FullscreenTempGaugeHost" type="Control" parent="FullscreenStage/StageMargin/StageVBox/StageHeader/FullscreenStatusPanel/FullscreenStatusMargin/FullscreenStatusVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="FullscreenBodyPanel" type="PanelContainer" parent="FullscreenStage/StageMargin/StageVBox"]
+theme_override_styles/panel = SubResource("StyleBoxFlat_stage_body")
+layout_mode = 2
+
+[node name="FullscreenBodyMargin" type="MarginContainer" parent="FullscreenStage/StageMargin/StageVBox/FullscreenBodyPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 18
+
+[node name="FullscreenBodyLabel" type="RichTextLabel" parent="FullscreenStage/StageMargin/StageVBox/FullscreenBodyPanel/FullscreenBodyMargin"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 84)
+layout_mode = 2
+bbcode_enabled = false
+fit_content = true
+scroll_active = false
+theme_override_font_sizes/normal_font_size = 20
+
+[node name="FullscreenContentPanel" type="PanelContainer" parent="FullscreenStage/StageMargin/StageVBox"]
+theme_override_styles/panel = SubResource("StyleBoxFlat_stage_content")
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="FullscreenContentMargin" type="MarginContainer" parent="FullscreenStage/StageMargin/StageVBox/FullscreenContentPanel"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="FullscreenContentHost" type="VBoxContainer" parent="FullscreenStage/StageMargin/StageVBox/FullscreenContentPanel/FullscreenContentMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="FullscreenTransition" type="ColorRect" parent="FullscreenStage"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+
+[node name="HUD" parent="." instance=ExtResource("3")]

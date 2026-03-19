@@ -107,17 +107,18 @@ const PORTRAIT_PROFILE_BY_CLASS := {
 	},
 }
 const PORTRAIT_SLOT_LAYOUTS := {
+	# height_ratio / bottom_overscan_ratio は全画面サイズ基準（_apply_portrait_slot が get_viewport_rect().size を使う）
 	1: [
-		{"anchor_x": 0.50, "width_ratio": 0.56, "height_ratio": 1.12, "bottom_overscan_ratio": 0.14, "brightness": 1.0, "alpha": 1.0, "z": 3},
+		{"anchor_x": 0.50, "width_ratio": 0.52, "height_ratio": 0.80, "bottom_overscan_ratio": 0.10, "brightness": 1.0, "alpha": 1.0, "z": 3},
 	],
 	2: [
-		{"anchor_x": 0.24, "width_ratio": 0.38, "height_ratio": 0.86, "bottom_overscan_ratio": 0.06, "brightness": 0.72, "alpha": 0.88, "z": 1},
-		{"anchor_x": 0.61, "width_ratio": 0.50, "height_ratio": 1.05, "bottom_overscan_ratio": 0.12, "brightness": 1.0, "alpha": 1.0, "z": 3},
+		{"anchor_x": 0.24, "width_ratio": 0.38, "height_ratio": 0.62, "bottom_overscan_ratio": 0.06, "brightness": 0.72, "alpha": 0.88, "z": 1},
+		{"anchor_x": 0.62, "width_ratio": 0.48, "height_ratio": 0.76, "bottom_overscan_ratio": 0.09, "brightness": 1.0, "alpha": 1.0, "z": 3},
 	],
 	3: [
-		{"anchor_x": 0.17, "width_ratio": 0.34, "height_ratio": 0.82, "bottom_overscan_ratio": 0.05, "brightness": 0.68, "alpha": 0.86, "z": 1},
-		{"anchor_x": 0.50, "width_ratio": 0.46, "height_ratio": 1.00, "bottom_overscan_ratio": 0.10, "brightness": 1.0, "alpha": 1.0, "z": 3},
-		{"anchor_x": 0.83, "width_ratio": 0.34, "height_ratio": 0.82, "bottom_overscan_ratio": 0.05, "brightness": 0.76, "alpha": 0.90, "z": 2},
+		{"anchor_x": 0.17, "width_ratio": 0.34, "height_ratio": 0.56, "bottom_overscan_ratio": 0.05, "brightness": 0.68, "alpha": 0.86, "z": 1},
+		{"anchor_x": 0.50, "width_ratio": 0.44, "height_ratio": 0.72, "bottom_overscan_ratio": 0.08, "brightness": 1.0, "alpha": 1.0, "z": 3},
+		{"anchor_x": 0.83, "width_ratio": 0.34, "height_ratio": 0.56, "bottom_overscan_ratio": 0.05, "brightness": 0.76, "alpha": 0.90, "z": 2},
 	],
 }
 const PORTRAIT_CLASS_BY_SPEAKER := {
@@ -203,6 +204,7 @@ func _ready() -> void:
 	portrait_layer.z_index = 5   # キャラが背景より前、CGより後ろ
 	cg_rect.z_index = 10        # CG はキャラより前
 	dialogue_panel.z_index = 20
+	choice_container.z_index = 30  # 選択肢はキャラ・ダイアログパネルより前
 		
 	# Setup font and transparency
 	# GameManager が root theme にフォントを設定済みのため override 不要
@@ -274,16 +276,18 @@ func _notification(what: int) -> void:
 
 
 func _sync_portrait_layer_bounds() -> void:
-	if portrait_layer == null or dialogue_panel == null:
+	if portrait_layer == null:
 		return
+	# ポートレートレイヤーをフルスクリーンに拡張する
+	# ダイアログパネル領域はキャラ足元を自然に隠す（z_index で前面に出る）
 	portrait_layer.anchor_left = 0.0
 	portrait_layer.anchor_top = 0.0
 	portrait_layer.anchor_right = 1.0
-	portrait_layer.anchor_bottom = dialogue_panel.anchor_top
+	portrait_layer.anchor_bottom = 1.0
 	portrait_layer.offset_left = 0.0
 	portrait_layer.offset_top = 0.0
 	portrait_layer.offset_right = 0.0
-	portrait_layer.offset_bottom = dialogue_panel.offset_top - 2.0
+	portrait_layer.offset_bottom = 0.0
 
 
 func _load_dialogue_request_if_exists() -> void:
@@ -953,11 +957,10 @@ func _refresh_portrait_display(active_speaker: String) -> void:
 
 
 func _apply_portrait_slot(rect: TextureRect, speaker: String, slot: Dictionary, is_active: bool) -> void:
-	var viewport_size = portrait_layer.size
+	# 全画面サイズを基準にすることで頭が切れない正しいVNレイアウトを実現
+	var viewport_size = get_viewport_rect().size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
 		viewport_size = size
-	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
-		viewport_size = get_viewport_rect().size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
 		return
 
