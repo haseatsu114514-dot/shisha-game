@@ -2103,8 +2103,14 @@ func _show_aluminum_step() -> void:
 			"row": row, "col": col,
 			"result": "",  # "", "perfect", "good", "near", "miss"
 		})
-	# 順番をシャッフル（光る順序をランダムに）
-	_aluminum_grid_holes.shuffle()
+	# 外側から内側の順に並べる（ring = 0が最外周）
+	_aluminum_grid_holes.sort_custom(func(a, b):
+		var ra = mini(a["row"], rows - 1 - a["row"])
+		var ca = mini(a["col"], cols - 1 - a["col"])
+		var rb = mini(b["row"], rows - 1 - b["row"])
+		var cb = mini(b["col"], cols - 1 - b["col"])
+		return mini(ra, ca) < mini(rb, cb)
+	)
 
 	_aluminum_current_hole = 0
 	_aluminum_total_notes = hole_count
@@ -2161,19 +2167,8 @@ func _on_aluminum_glow_tick() -> void:
 		_aluminum_glow_timer.stop()
 		return
 	_aluminum_glow_elapsed += _aluminum_glow_timer.wait_time
-	if _aluminum_glow_elapsed >= _aluminum_glow_window:
-		# 時間切れ → MISS
-		_aluminum_glow_active = false
-		_aluminum_glow_timer.stop()
-		_aluminum_hit_miss += 1
-		_aluminum_grid_holes[_aluminum_current_hole]["result"] = "miss"
-		_aluminum_show_hit_feedback("MISS", Color("e43b44"))
-		_aluminum_current_hole += 1
-		_update_aluminum_rhythm_text()
-		# 少し間を置いてから次
-		get_tree().create_timer(0.3).timeout.connect(_start_next_aluminum_glow)
-	else:
-		_update_aluminum_grid_visual()
+	# タイムアウトなし — 穴は押されるまで光り続ける
+	_update_aluminum_grid_visual()
 
 
 func _on_aluminum_tick() -> void:
