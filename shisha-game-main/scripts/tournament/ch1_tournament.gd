@@ -74,8 +74,8 @@ const PULL_DIFFICULTY := [0.86, 1.0, 1.22, 1.06]
 const TOTAL_PACKING_GRAMS := 12
 const INFO_WRAP_CHARS := 28
 const INFO_PAGE_MAX_LINES := 6
-const MAIN_PANEL_TOP_DEFAULT := 36.0
-const MAIN_PANEL_TOP_COMPACT := 24.0
+const MAIN_PANEL_TOP_DEFAULT := 52.0
+const MAIN_PANEL_TOP_COMPACT := 52.0
 const MAIN_PANEL_BOTTOM := 718.0
 const STEP_CARD_HEIGHT_DEFAULT := 110.0
 const STEP_CARD_HEIGHT_COMPACT := 92.0
@@ -347,6 +347,10 @@ var _stage_layout_mode: String = STAGE_LAYOUT_PANEL
 var _choice_default_parent: Node = null
 var _choice_default_index: int = -1
 var _show_tutorial: bool = true
+var _tutorial_active: bool = false
+
+const TUTORIAL_TOTAL_STEPS := 9
+const TUTORIAL_STEP_MAP := {1: 1, 3: 2, 4: 3, 5: 4, 6: 5, 7: 6, 8: 7, 9: 8, 10: 9}
 
 var _adjust_target_action: String = ""
 var _adjust_selected_action: String = ""
@@ -398,6 +402,10 @@ var _mind_player_draw_node: Control = null
 var _mind_hitbox_indicator: Control = null
 var _mind_combo_label: Label = null
 var _mind_graze_label: Label = null
+var _mind_timer_label: Label = null
+var _mind_timer_bar: ProgressBar = null
+var _mind_life_label: Label = null
+var _mind_right_stats_label: Label = null
 var _mind_phase_flash: float = 0.0
 var _mind_last_phase: int = 0
 var _mind_particle_layer: Control = null
@@ -457,6 +465,8 @@ var _mini_dialogue_timer: Timer
 var _bowl_visual_parent: Control = null
 var _fullscreen_temp_gauge_node: Control = null
 var _pull_gauge_visual_node: Control = null
+var _pull_status_label: Label = null
+var _pull_quality_display_label: Label = null
 
 const SPEAKER_NAMES := {
 	"hajime": "はじめ",
@@ -625,7 +635,21 @@ func _prepare_run() -> void:
 		_audience_points += 2.0
 
 	PlayerData.mark_all_tournament_memos_read()
-	_show_setting_step()
+
+	if not EventFlags.get_flag("ch1_opening_tutorial_done"):
+		_tutorial_active = true
+		var da_stock = PlayerData.get_flavor_amount("double_apple")
+		if da_stock < 12:
+			PlayerData.add_flavor("double_apple", 12 - da_stock)
+		var mint_stock = PlayerData.get_flavor_amount("mint")
+		if mint_stock < 12:
+			PlayerData.add_flavor("mint", 12 - mint_stock)
+		_selected_flavors = ["double_apple", "mint"]
+		_manual_packing_grams = {"double_apple": 6, "mint": 6}
+		_show_tutorial_intro()
+	else:
+		_tutorial_active = false
+		_show_setting_step()
 	_refresh_side_panel()
 
 
@@ -698,7 +722,11 @@ func _set_phase(step_num: int, title: String, body: String) -> void:
 	_current_step_num = step_num
 	header_label.text = title
 	header_label.add_theme_color_override("font_color", GameManager.THEME_VERMILION)
-	phase_label.text = "STEP %d / %d" % [step_num, TOTAL_STEPS]
+	if _tutorial_active:
+		var tut_step = TUTORIAL_STEP_MAP.get(step_num, step_num)
+		phase_label.text = "チュートリアル %d / %d" % [tut_step, TUTORIAL_TOTAL_STEPS]
+	else:
+		phase_label.text = "STEP %d / %d" % [step_num, TOTAL_STEPS]
 	_apply_step_layout(step_num)
 	_set_focus_mode(false)
 	_set_info_text(body)
@@ -824,7 +852,7 @@ func _set_focus_mode(active: bool) -> void:
 	if deck_hbox != null:
 		deck_hbox.visible = not active
 	if main_panel != null:
-		main_panel.offset_top = 18.0 if active else (MAIN_PANEL_TOP_COMPACT if compact else MAIN_PANEL_TOP_DEFAULT)
+		main_panel.offset_top = MAIN_PANEL_TOP_COMPACT if compact else MAIN_PANEL_TOP_DEFAULT
 	if info_label != null:
 		info_label.visible = not active
 		info_label.custom_minimum_size.y = 72.0 if active else (INFO_HEIGHT_COMPACT if compact else INFO_HEIGHT_DEFAULT)
@@ -1234,6 +1262,105 @@ func _show_stage_briefing(step_num: int, title: String, body: String, lines: Arr
 	_add_choice_button(start_label, start_callback)
 	_refresh_side_panel()
 
+
+## ─── チュートリアルフェーズ ────────────────────────────────────────
+
+func _show_tutorial_intro() -> void:
+	_set_phase(1, "大会前の練習", "\n".join([
+		"スミ「大会本番の前に、一通り流れを練習しておこう」",
+		"スミ「ダブルアップルとミント。王道の組み合わせだ」",
+		"",
+		"基本工程を一通りなぞる。",
+		"配分 → 詰め方 → 穴あけ → 炭準備",
+		"炭配置 → 蒸らし → 思考整理 → 吸い出し"
+	]))
+	_clear_choices()
+	_add_choice_button("練習を始める", _show_tutorial_mix_step)
+
+
+func _show_tutorial_mix_step() -> void:
+	_show_packing_step()
+
+
+func _finish_tutorial_phase() -> void:
+	EventFlags.set_flag("ch1_opening_tutorial_done")
+	EventFlags.set_flag("ch1_rival_shops_open")
+	PlayerData.add_stat("technique", 1)
+	GameManager.log_stat_change("technique", 1)
+	if _adjust_success_count >= 2:
+		PlayerData.add_stat("insight", 1)
+		GameManager.log_stat_change("insight", 1)
+
+	_tutorial_active = false
+	_set_phase(1, "練習完了！", "\n".join([
+		"スミ「よし。流れは掴めたな」",
+		"スミ「あとは本番で活かすだけだ」",
+		"",
+		"大会本番を開始する。",
+		"今度は審査員・ライバルの前での勝負だ。"
+	]))
+	_clear_choices()
+	_prepare_run_competition()
+
+
+func _prepare_run_competition() -> void:
+	_selected_flavors.clear()
+	_manual_packing_grams.clear()
+	_packing_style = "normal"
+	_selected_charcoal_count = 3
+	_steam_minutes = 6
+	_heat_state = 0
+	_zone_bonus = 0.0
+	_adjustment_hits = 0
+	_adjust_success_count = 0
+	_adjustment_action_count = 0
+	_pull_round = 0
+	_pull_hit_count = 0
+	_pull_quality_total = 0.0
+	_pull_timer.stop()
+	_pull_is_holding = false
+	_pull_step_resolved = false
+	_pull_hold_button = null
+	_stop_mind_barrage()
+	_mind_barrage_done = false
+	_mind_lives_max = MIND_BARRAGE_BASE_LIVES
+	_mind_lives_remaining = MIND_BARRAGE_BASE_LIVES
+	_mind_pull_speed_adjust = 0.0
+	_aluminum_active = false
+	_aluminum_notes.clear()
+	_aluminum_notes_spawned = 0
+	_aluminum_hit_perfect = 0
+	_aluminum_hit_good = 0
+	_aluminum_hit_near = 0
+	_aluminum_hit_miss = 0
+	_aluminum_bad_press = 0
+	_aluminum_timer.stop()
+	_aluminum_grid_holes.clear()
+	_aluminum_current_hole = 0
+	_aluminum_glow_active = false
+	_aluminum_glow_elapsed = 0.0
+	_rival_mid_scores.clear()
+	_rival_final_scores.clear()
+	_mid_player_total = 0.0
+	_mid_rival_totals.clear()
+	_packing_intro_seen = false
+	_aluminum_intro_seen = false
+	_pull_intro_seen = false
+	_remove_bowl_visual()
+	_remove_fullscreen_temp_gauge()
+	_remove_pull_gauge_visual()
+	_exit_immersive_stage(false)
+	_prepare_rival_score_tables()
+	_technical_points = PlayerData.stat_technique * 0.9 + PlayerData.stat_sense * 0.7 + PlayerData.stat_guts * 0.5
+	_audience_points = PlayerData.stat_charm * 0.9 + PlayerData.stat_insight * 0.25
+	if _easy_mode:
+		_technical_points += 4.0
+		_audience_points += 2.0
+	_add_choice_button("本番大会を始める", _show_setting_step)
+	_refresh_side_panel()
+
+
+## ────────────────────────────────────────────────────────────────────
 
 func _show_setting_step() -> void:
 	_set_phase(1, "大会セッティング", "会場入り。先にハガルとHMSを決める。\nテーマ: %s" % str(_theme.get("name", "-")))
@@ -2476,44 +2603,54 @@ func _start_mind_barrage_step() -> void:
 	_mind_phase_flash = 0.0
 	_mind_last_phase = 0
 
-	var guide = Label.new()
-	guide.text = "移動: 矢印キー / WASD    集中: Shift / Z    ニア回避: 弾のすぐ横"
-	guide.add_theme_font_size_override("font_size", 18)
-	guide.add_theme_color_override("font_color", Color("ead4aa", 0.7))
-	choice_container.add_child(guide)
-
-	# 横並びレイアウト: 左にはじめの顔 + 右にアリーナ
+	# ═══ 東方スタイル 3カラムレイアウト ═══
+	# 左: キャラ/残機/コンボ  中央: 縦長アリーナ  右: タイマー/ステータス
 	var mind_hbox = HBoxContainer.new()
 	mind_hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	mind_hbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	mind_hbox.add_theme_constant_override("separation", 10)
+	mind_hbox.add_theme_constant_override("separation", 8)
 	choice_container.add_child(mind_hbox)
 
-	# はじめの顔パネル
-	var face_panel = VBoxContainer.new()
-	face_panel.custom_minimum_size = Vector2(180, 520)
-	face_panel.add_theme_constant_override("separation", 6)
-	mind_hbox.add_child(face_panel)
+	# 左右スペーサーで全体を画面中央に配置（東方風）
+	var spacer_l = Control.new()
+	spacer_l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	spacer_l.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	mind_hbox.add_child(spacer_l)
+
+	# ─── 左パネル: キャラ / 残機 / コンボ ───
+	var left_panel = VBoxContainer.new()
+	left_panel.custom_minimum_size = Vector2(160, 0)
+	left_panel.add_theme_constant_override("separation", 6)
+	mind_hbox.add_child(left_panel)
 
 	var face_rect = TextureRect.new()
 	face_rect.name = "MindFaceRect"
-	face_rect.custom_minimum_size = Vector2(160, 160)
+	face_rect.custom_minimum_size = Vector2(150, 150)
 	face_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 	face_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	var face_path = "res://assets/sprites/characters/hajime/chr_hajime_normal.png"
 	if ResourceLoader.exists(face_path):
 		face_rect.texture = load(face_path)
-	face_panel.add_child(face_rect)
+	left_panel.add_child(face_rect)
 
 	var face_label = Label.new()
 	face_label.name = "MindFaceLabel"
 	face_label.text = "集中してる…"
-	face_label.add_theme_font_size_override("font_size", 18)
+	face_label.add_theme_font_size_override("font_size", 15)
 	face_label.add_theme_color_override("font_color", Color("ead4aa", 0.8))
 	face_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	face_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	face_label.custom_minimum_size = Vector2(160, 0)
-	face_panel.add_child(face_label)
+	face_label.custom_minimum_size = Vector2(150, 0)
+	left_panel.add_child(face_label)
+
+	# 残機表示
+	_mind_life_label = Label.new()
+	_mind_life_label.name = "MindLifeLabel"
+	_mind_life_label.text = _build_mind_life_text()
+	_mind_life_label.add_theme_font_size_override("font_size", 28)
+	_mind_life_label.add_theme_color_override("font_color", Color("e43b44", 0.9))
+	_mind_life_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	left_panel.add_child(_mind_life_label)
 
 	# コンボ表示ラベル
 	_mind_combo_label = Label.new()
@@ -2522,8 +2659,8 @@ func _start_mind_barrage_step() -> void:
 	_mind_combo_label.add_theme_font_size_override("font_size", 22)
 	_mind_combo_label.add_theme_color_override("font_color", Color("feae34"))
 	_mind_combo_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_mind_combo_label.custom_minimum_size = Vector2(96, 0)
-	face_panel.add_child(_mind_combo_label)
+	_mind_combo_label.custom_minimum_size = Vector2(150, 0)
+	left_panel.add_child(_mind_combo_label)
 
 	# グレイズ表示ラベル
 	_mind_graze_label = Label.new()
@@ -2532,13 +2669,27 @@ func _start_mind_barrage_step() -> void:
 	_mind_graze_label.add_theme_font_size_override("font_size", 16)
 	_mind_graze_label.add_theme_color_override("font_color", Color("00e5ff", 0.8))
 	_mind_graze_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	_mind_graze_label.custom_minimum_size = Vector2(96, 0)
-	face_panel.add_child(_mind_graze_label)
+	_mind_graze_label.custom_minimum_size = Vector2(150, 0)
+	left_panel.add_child(_mind_graze_label)
 
+	var left_spacer = Control.new()
+	left_spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	left_panel.add_child(left_spacer)
+
+	var guide = Label.new()
+	guide.text = "↑↓←→ / WASD\nShift / Z: 集中（低速）"
+	guide.add_theme_font_size_override("font_size", 13)
+	guide.add_theme_color_override("font_color", Color("ead4aa", 0.55))
+	guide.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	guide.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	left_panel.add_child(guide)
+
+	# ─── 中央アリーナ（縦長・東方風ポートレート比）───
 	var arena_frame = PanelContainer.new()
-	arena_frame.custom_minimum_size = Vector2(0, 520)
-	arena_frame.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	arena_frame.custom_minimum_size = Vector2(500, 600)
 	arena_frame.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	# 横方向は固定（縦長感を保つため拡張しない）
+	arena_frame.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	mind_hbox.add_child(arena_frame)
 
 	var arena = ColorRect.new()
@@ -2586,7 +2737,7 @@ func _start_mind_barrage_step() -> void:
 	_mind_player_node.visible = false
 	arena.add_child(_mind_player_node)
 
-	# フェーズ名表示ラベル
+	# フェーズ名表示ラベル（アリーナ上部オーバーレイ）
 	var phase_hint = Label.new()
 	phase_hint.name = "PhaseHint"
 	phase_hint.text = "― 不安が湧き上がる ―"
@@ -2597,7 +2748,73 @@ func _start_mind_barrage_step() -> void:
 	phase_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	arena.add_child(phase_hint)
 
-	# D-Pad操作ボタン
+	# ─── 右パネル: タイマー / ステータス ───
+	var right_panel = PanelContainer.new()
+	right_panel.custom_minimum_size = Vector2(190, 0)
+	right_panel.size_flags_horizontal = Control.SIZE_FILL
+	right_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	mind_hbox.add_child(right_panel)
+
+	var right_margin = MarginContainer.new()
+	right_margin.add_theme_constant_override("margin_left", 12)
+	right_margin.add_theme_constant_override("margin_right", 12)
+	right_margin.add_theme_constant_override("margin_top", 14)
+	right_margin.add_theme_constant_override("margin_bottom", 14)
+	right_panel.add_child(right_margin)
+
+	var right_vbox = VBoxContainer.new()
+	right_vbox.add_theme_constant_override("separation", 10)
+	right_margin.add_child(right_vbox)
+
+	var spell_title = Label.new()
+	spell_title.text = "MIND BARRAGE"
+	spell_title.add_theme_font_size_override("font_size", 20)
+	spell_title.add_theme_color_override("font_color", Color("feae34", 0.9))
+	spell_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	right_vbox.add_child(spell_title)
+
+	_mind_timer_label = Label.new()
+	_mind_timer_label.name = "MindTimerLabel"
+	_mind_timer_label.text = "残り --.- 秒"
+	_mind_timer_label.add_theme_font_size_override("font_size", 34)
+	_mind_timer_label.add_theme_color_override("font_color", Color("ead4aa"))
+	_mind_timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	right_vbox.add_child(_mind_timer_label)
+
+	_mind_timer_bar = ProgressBar.new()
+	_mind_timer_bar.name = "MindTimerBar"
+	_mind_timer_bar.max_value = 1.0
+	_mind_timer_bar.value = 0.0
+	_mind_timer_bar.step = 0.001
+	_mind_timer_bar.show_percentage = false
+	_mind_timer_bar.custom_minimum_size = Vector2(0, 18)
+	right_vbox.add_child(_mind_timer_bar)
+
+	var stats_sep = HSeparator.new()
+	stats_sep.add_theme_color_override("color", Color("8b9bb4", 0.3))
+	right_vbox.add_child(stats_sep)
+
+	_mind_right_stats_label = Label.new()
+	_mind_right_stats_label.name = "MindRightStatsLabel"
+	_mind_right_stats_label.text = ""
+	_mind_right_stats_label.add_theme_font_size_override("font_size", 18)
+	_mind_right_stats_label.add_theme_color_override("font_color", Color("ead4aa", 0.85))
+	_mind_right_stats_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	right_vbox.add_child(_mind_right_stats_label)
+
+	var right_spacer = Control.new()
+	right_spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	right_vbox.add_child(right_spacer)
+
+	var focus_hint = Label.new()
+	focus_hint.text = "Shift / Z: 集中モード\n（低速・判定縮小）\nニア回避で時間短縮"
+	focus_hint.add_theme_font_size_override("font_size", 13)
+	focus_hint.add_theme_color_override("font_color", Color("00e5ff", 0.5))
+	focus_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	focus_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	right_vbox.add_child(focus_hint)
+
+	# ─── D-Pad操作ボタン（タッチ用）───
 	var dpad = GridContainer.new()
 	dpad.columns = 3
 	dpad.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
@@ -2620,6 +2837,12 @@ func _start_mind_barrage_step() -> void:
 	_add_mind_pad_spacer(dpad)
 	_add_mind_direction_button(dpad, "↓", "down")
 	_add_mind_pad_spacer(dpad)
+
+	# 右スペーサー（右パネルの外、左と対称）
+	var spacer_r = Control.new()
+	spacer_r.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	spacer_r.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	mind_hbox.add_child(spacer_r)
 
 	_update_mind_barrage_info_text()
 	_refresh_side_panel()
@@ -2670,7 +2893,7 @@ func _begin_mind_barrage_loop() -> void:
 	if arena_size.x < 80.0 or arena_size.y < 80.0:
 		call_deferred("_begin_mind_barrage_loop")
 		return
-	_mind_player_pos = arena_size * 0.5
+	_mind_player_pos = Vector2(arena_size.x * 0.5, arena_size.y * 0.82)
 	_sync_mind_player_node()
 	_spawn_mind_barrage_word()
 	_mind_timer.start()
@@ -2843,13 +3066,13 @@ func _spawn_mind_barrage_word() -> void:
 			_spawn_pattern_aimed(word_pool, word_color, progress, arena_size)
 
 
-## 狙撃パターン（基本）: プレイヤーを狙う1発
+## 狙撃パターン（基本）: プレイヤーを狙う1発（東方スタイル: 上から優先）
 func _spawn_pattern_aimed(word_pool: Array, word_color: Color, progress: float, arena_size: Vector2) -> void:
 	var phrase = str(word_pool[randi() % word_pool.size()])
 	var bullet = _create_bullet_label(phrase, word_color, progress)
 	var size = _get_bullet_size(bullet, phrase)
 
-	var side = randi() % 4
+	var side = _get_touhou_spawn_side()
 	var spawn = _get_edge_spawn(side, arena_size, size)
 
 	var target = _mind_player_pos + Vector2(randf_range(-64.0, 64.0), randf_range(-42.0, 42.0))
@@ -2863,9 +3086,9 @@ func _spawn_pattern_aimed(word_pool: Array, word_color: Color, progress: float, 
 	_register_bullet(bullet, spawn, direction * base_speed, size)
 
 
-## 扇形パターン: 1辺から扇状に複数弾
+## 扇形パターン: 1辺から扇状に複数弾（東方スタイル: 上から優先）
 func _spawn_pattern_spread(word_pool: Array, word_color: Color, progress: float, arena_size: Vector2) -> void:
-	var side = randi() % 4
+	var side = _get_touhou_spawn_side()
 	var count = MIND_PATTERN_SPREAD_COUNT
 	var spread_angle = deg_to_rad(60.0)
 	var center_target = _mind_player_pos
@@ -2962,6 +3185,17 @@ func _calc_bullet_speed(progress: float) -> float:
 	if _easy_mode:
 		base_speed -= 20.0
 	return clampf(base_speed, 90.0, 380.0)
+
+
+## 東方スタイルのスポーン面選択: 上70% / 左15% / 右15% / 下0%
+func _get_touhou_spawn_side() -> int:
+	var r = randf()
+	if r < 0.70:
+		return 0  # 上
+	elif r < 0.85:
+		return 3  # 左
+	else:
+		return 1  # 右
 
 
 ## 弾登録ヘルパー
@@ -3161,12 +3395,26 @@ func _update_mind_barrage_info_text() -> void:
 	var ratio = 0.0
 	if _mind_duration_total > 0.0:
 		ratio = _mind_elapsed / _mind_duration_total
-	var lines: Array[String] = []
-	lines.append("残り %.1f秒  %s" % [remain, _build_mind_barrage_progress_bar(ratio)])
-	lines.append("残機 %s  集中度 %d%%" % [_build_mind_life_text(), focus])
-	var mode_text = "[集中]" if _mind_focus_mode else ""
-	lines.append("被弾 %d  回避 %d  ニア回避 %d  %s" % [_mind_hits, _mind_dodged_count, _mind_graze_count, mode_text])
-	_set_runtime_status("\n".join(lines))
+
+	# 右パネルのタイマー更新
+	if _mind_timer_label != null and is_instance_valid(_mind_timer_label):
+		_mind_timer_label.text = "残り %.1f 秒" % remain
+	if _mind_timer_bar != null and is_instance_valid(_mind_timer_bar):
+		_mind_timer_bar.value = ratio
+
+	# 左パネルの残機更新
+	if _mind_life_label != null and is_instance_valid(_mind_life_label):
+		_mind_life_label.text = _build_mind_life_text()
+
+	# 右パネルのステータス更新
+	if _mind_right_stats_label != null and is_instance_valid(_mind_right_stats_label):
+		var mode_text = "【集中モード】\n" if _mind_focus_mode else ""
+		_mind_right_stats_label.text = "%s被弾: %d\n回避: %d\nニア回避: %d\nMAX COMBO: %d\n集中度: %d%%" % [
+			mode_text, _mind_hits, _mind_dodged_count, _mind_graze_count, _mind_max_combo, focus
+		]
+
+	# サイドパネル用（簡略表示）
+	_set_runtime_status("残り %.1f秒\n残機 %s" % [remain, _build_mind_life_text()])
 
 
 func _build_mind_life_text() -> String:
@@ -3363,6 +3611,10 @@ func _stop_mind_barrage() -> void:
 	_mind_particle_layer = null
 	_mind_combo_label = null
 	_mind_graze_label = null
+	_mind_timer_label = null
+	_mind_timer_bar = null
+	_mind_life_label = null
+	_mind_right_stats_label = null
 	_mind_move_left = false
 	_mind_move_right = false
 	_mind_move_up = false
@@ -3700,6 +3952,8 @@ func _show_pull_step() -> void:
 	_pull_is_holding = false
 	_pull_step_resolved = false
 	_pull_hold_button = null
+	_pull_status_label = null
+	_pull_quality_display_label = null
 
 	var difficulty = 1.0
 	if not PULL_DIFFICULTY.is_empty():
@@ -3713,7 +3967,25 @@ func _show_pull_step() -> void:
 	if _easy_mode:
 		_pull_target_width = minf(0.26, _pull_target_width + 0.04)
 
-	_pull_target_center = clampf(0.5 + float(_heat_state) * 0.07 + randf_range(-0.12, 0.12), 0.15, 0.85)
+	# 熱状態に応じてターゲットゾーンを配置
+	# SHORT zone (0–0.33): 短く吸う → 温度上昇
+	# NORMAL zone (0.33–0.67): 普通 → 温度維持
+	# LONG zone (0.67–1.0): 長く吸う → 温度下降
+	if _heat_state >= 2:
+		# 高温 → 長く吸って冷ます (LONG zone)
+		_pull_target_center = clampf(0.82 + randf_range(-0.08, 0.08), 0.68, 0.95)
+	elif _heat_state == 1:
+		# 少し熱い → LONG寄り
+		_pull_target_center = clampf(0.60 + randf_range(-0.06, 0.06), 0.42, 0.66)
+	elif _heat_state == 0:
+		# 適正 → NORMALゾーン中央
+		_pull_target_center = clampf(0.50 + randf_range(-0.08, 0.08), 0.34, 0.66)
+	elif _heat_state == -1:
+		# 少し冷たい → SHORT寄り
+		_pull_target_center = clampf(0.40 + randf_range(-0.06, 0.06), 0.34, 0.58)
+	else:
+		# 低温 → 短く吸って温める (SHORT zone)
+		_pull_target_center = clampf(0.18 + randf_range(-0.08, 0.08), 0.05, 0.32)
 	var base_speed = 0.85 + float(_pull_round) * 0.2 + float(abs(_heat_state)) * 0.06 + setting_speed_adjust
 	if _mind_force_worst_pull_speed:
 		_pull_gauge_speed = MIND_BARRAGE_WORST_PULL_SPEED + float(_pull_round) * 0.22 + float(abs(_heat_state)) * 0.08
@@ -3743,23 +4015,200 @@ func _show_pull_step() -> void:
 		setting_hint = "装備補正: 標準"
 	_pull_setting_hint = "%s / 精神戦: %s（%s）" % [setting_hint, _mind_pull_hint(), _mind_pull_adjust_text()]
 
-	var gauge_card = _create_stage_card("煙量ゲージ", "狙いの帯で止める。ラウンド %d / %d" % [round_number, PULL_MAX_ROUNDS], 300.0)
-	choice_container.add_child(gauge_card["panel"])
-	_show_pull_gauge_visual(gauge_card["body"])
+	# ═══ 吸い出しゲージ 3パネルレイアウト ═══
+	var pull_hbox = HBoxContainer.new()
+	pull_hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	pull_hbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	pull_hbox.add_theme_constant_override("separation", 12)
+	choice_container.add_child(pull_hbox)
 
-	var control_row = HBoxContainer.new()
-	control_row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	control_row.add_theme_constant_override("separation", 14)
-	choice_container.add_child(control_row)
+	# ─── 左パネル: キャラ / 状態情報 ───
+	var left_panel = VBoxContainer.new()
+	left_panel.custom_minimum_size = Vector2(200, 0)
+	left_panel.add_theme_constant_override("separation", 8)
+	pull_hbox.add_child(left_panel)
 
-	var hold_button = _create_action_button("押して吸う（離して止める）", Callable(), false)
-	hold_button.disabled = false
+	var face_path = "res://assets/sprites/characters/hajime/chr_hajime_serious.png"
+	if not ResourceLoader.exists(face_path):
+		face_path = "res://assets/sprites/characters/hajime/chr_hajime_normal.png"
+	var face_rect = TextureRect.new()
+	face_rect.name = "PullFaceRect"
+	face_rect.custom_minimum_size = Vector2(190, 190)
+	face_rect.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	face_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	if ResourceLoader.exists(face_path):
+		face_rect.texture = load(face_path)
+	left_panel.add_child(face_rect)
+
+	var face_label = Label.new()
+	face_label.name = "PullFaceLabel"
+	face_label.text = "狙いの帯で止める。"
+	face_label.add_theme_font_size_override("font_size", 15)
+	face_label.add_theme_color_override("font_color", Color("ead4aa", 0.8))
+	face_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	face_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	face_label.custom_minimum_size = Vector2(190, 0)
+	left_panel.add_child(face_label)
+
+	# 熱状態インジケーター
+	var heat_label = Label.new()
+	heat_label.name = "PullHeatLabel"
+	heat_label.text = "熱: %s" % _heat_label()
+	heat_label.add_theme_font_size_override("font_size", 17)
+	var heat_col = Color("e43b44") if _heat_state > 0 else (Color("8bd5ff") if _heat_state < 0 else Color("ead4aa"))
+	heat_label.add_theme_color_override("font_color", heat_col)
+	heat_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	left_panel.add_child(heat_label)
+
+	# 温度アドバイスラベル（吸い方のガイド）
+	var temp_advice = Label.new()
+	var advice_text: String
+	var advice_col: Color
+	if _heat_state >= 2:
+		advice_text = "長く吸って冷ます"
+		advice_col = Color("8bd5ff")
+	elif _heat_state == 1:
+		advice_text = "少し長めに"
+		advice_col = Color("8bd5ff", 0.8)
+	elif _heat_state == 0:
+		advice_text = "普通の吸いでOK"
+		advice_col = Color("ead4aa", 0.7)
+	elif _heat_state == -1:
+		advice_text = "少し短めに"
+		advice_col = Color("e43b44", 0.8)
+	else:
+		advice_text = "短く吸って温める"
+		advice_col = Color("e43b44")
+	temp_advice.text = advice_text
+	temp_advice.add_theme_font_size_override("font_size", 14)
+	temp_advice.add_theme_color_override("font_color", advice_col)
+	temp_advice.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	temp_advice.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	left_panel.add_child(temp_advice)
+
+	var left_spacer = Control.new()
+	left_spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	left_panel.add_child(left_spacer)
+
+	# 装備・精神戦補正ヒント
+	var equip_hint = Label.new()
+	equip_hint.text = _pull_setting_hint
+	equip_hint.add_theme_font_size_override("font_size", 12)
+	equip_hint.add_theme_color_override("font_color", Color("8b9bb4", 0.7))
+	equip_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	equip_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	left_panel.add_child(equip_hint)
+	if PlayerData.equipment_charcoal == "cube_charcoal":
+		var cube_hint = Label.new()
+		cube_hint.text = "キューブ炭: 当てれば高得点"
+		cube_hint.add_theme_font_size_override("font_size", 12)
+		cube_hint.add_theme_color_override("font_color", Color("feae34", 0.8))
+		cube_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		cube_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		left_panel.add_child(cube_hint)
+
+	# ─── 中央: 縦型ゲージ ───
+	var gauge_wrap = VBoxContainer.new()
+	gauge_wrap.custom_minimum_size = Vector2(220, 0)
+	gauge_wrap.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	gauge_wrap.add_theme_constant_override("separation", 6)
+	pull_hbox.add_child(gauge_wrap)
+
+	var gauge_title = Label.new()
+	gauge_title.text = "PULL TIMING"
+	gauge_title.add_theme_font_size_override("font_size", 22)
+	gauge_title.add_theme_color_override("font_color", Color("ead4aa", 0.9))
+	gauge_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	gauge_wrap.add_child(gauge_title)
+
+	var round_lbl = Label.new()
+	round_lbl.text = "ROUND %d / %d" % [round_number, PULL_MAX_ROUNDS]
+	round_lbl.add_theme_font_size_override("font_size", 16)
+	round_lbl.add_theme_color_override("font_color", Color("8bd5ff", 0.9))
+	round_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	gauge_wrap.add_child(round_lbl)
+
+	var gauge_frame = PanelContainer.new()
+	gauge_frame.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	gauge_wrap.add_child(gauge_frame)
+	_show_pull_gauge_visual(gauge_frame)
+
+	_pull_quality_display_label = Label.new()
+	_pull_quality_display_label.name = "PullQualityLabel"
+	_pull_quality_display_label.text = ""
+	_pull_quality_display_label.add_theme_font_size_override("font_size", 26)
+	_pull_quality_display_label.add_theme_color_override("font_color", Color("feae34"))
+	_pull_quality_display_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	gauge_wrap.add_child(_pull_quality_display_label)
+
+	# ─── 右パネル: 操作 / ターゲット情報 ───
+	var right_panel = VBoxContainer.new()
+	right_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	right_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	right_panel.add_theme_constant_override("separation", 12)
+	pull_hbox.add_child(right_panel)
+
+	var target_header = Label.new()
+	target_header.text = "目標ゾーン"
+	target_header.add_theme_font_size_override("font_size", 18)
+	target_header.add_theme_color_override("font_color", Color("ead4aa", 0.75))
+	right_panel.add_child(target_header)
+
+	var perf_lo = int((_pull_target_center - _pull_target_width * 0.35) * 100.0)
+	var perf_hi = int((_pull_target_center + _pull_target_width * 0.35) * 100.0)
+	var good_lo = int((_pull_target_center - _pull_target_width) * 100.0)
+	var good_hi = int((_pull_target_center + _pull_target_width) * 100.0)
+	var zone_info = Label.new()
+	zone_info.text = "PERFECT:  %d 〜 %d %%\nGOOD:     %d 〜 %d %%\nNEAR:     惜しい範囲" % [perf_lo, perf_hi, good_lo, good_hi]
+	zone_info.add_theme_font_size_override("font_size", 16)
+	zone_info.add_theme_color_override("font_color", Color("ead4aa", 0.85))
+	right_panel.add_child(zone_info)
+
+	var sep = HSeparator.new()
+	sep.add_theme_color_override("color", Color("8b9bb4", 0.3))
+	right_panel.add_child(sep)
+
+	var op_hint = Label.new()
+	op_hint.text = "ボタンを押している間\nゲージが進む\n\n離した瞬間に判定"
+	op_hint.add_theme_font_size_override("font_size", 15)
+	op_hint.add_theme_color_override("font_color", Color("8b9bb4", 0.7))
+	op_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	op_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	right_panel.add_child(op_hint)
+
+	var right_spacer = Control.new()
+	right_spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	right_panel.add_child(right_spacer)
+
+	# 状態ラベル
+	_pull_status_label = Label.new()
+	_pull_status_label.name = "PullStatusLabel"
+	_pull_status_label.text = "ボタンを押して\n吸い出し開始"
+	_pull_status_label.add_theme_font_size_override("font_size", 18)
+	_pull_status_label.add_theme_color_override("font_color", Color("ead4aa", 0.7))
+	_pull_status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_pull_status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	right_panel.add_child(_pull_status_label)
+
+	# ホールドボタン（大）
+	var hold_button = Button.new()
+	hold_button.text = "押して吸う"
+	hold_button.custom_minimum_size = Vector2(0, 80)
+	hold_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hold_button.add_theme_font_size_override("font_size", 28)
 	hold_button.button_down.connect(_on_pull_hold_started)
 	hold_button.button_up.connect(_on_pull_hold_released)
-	control_row.add_child(hold_button)
+	right_panel.add_child(hold_button)
 	_pull_hold_button = hold_button
+
 	if _pull_round >= PULL_MIN_ROUNDS:
-		_add_choice_button_to(control_row, "ここで提供に進む", _on_pull_skip_to_serving)
+		var skip_button = Button.new()
+		skip_button.text = "ここで提供に進む"
+		skip_button.custom_minimum_size = Vector2(0, 48)
+		skip_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		skip_button.add_theme_font_size_override("font_size", 17)
+		skip_button.pressed.connect(_on_pull_skip_to_serving)
+		right_panel.add_child(skip_button)
 
 	if PlayerData.equipment_charcoal == "cube_charcoal":
 		_append_info("キューブ炭: 当てれば高得点、外すと失点が重い。")
@@ -3779,13 +4228,17 @@ func _on_pull_gauge_tick() -> void:
 
 func _update_pull_gauge_text() -> void:
 	_update_pull_gauge_visual()
+	if _pull_status_label != null and is_instance_valid(_pull_status_label):
+		if _pull_is_holding:
+			_pull_status_label.text = "吸い出し中…\n離すと判定！"
+			_pull_status_label.add_theme_color_override("font_color", Color("feae34"))
+		else:
+			_pull_status_label.text = "ボタンを押して\n吸い出し開始"
+			_pull_status_label.add_theme_color_override("font_color", Color("ead4aa", 0.7))
 	var status_text = "吸い出し中...離すと判定" if _pull_is_holding else "ボタンを押して吸い出し開始"
-	_set_runtime_status("%s\n%s\n現在位置 %.0f%% / 目標帯 %.0f%%±%.0f%%" % [
-		status_text,
-		_pull_setting_hint,
-		_pull_gauge_value * 100.0,
-		_pull_target_center * 100.0,
-		_pull_target_width * 100.0,
+	_set_runtime_status("%s\n%s\n現在 %.0f%% / 目標 %.0f%%±%.0f%%" % [
+		status_text, _pull_setting_hint,
+		_pull_gauge_value * 100.0, _pull_target_center * 100.0, _pull_target_width * 100.0,
 	])
 
 
@@ -3795,8 +4248,9 @@ func _on_pull_hold_started() -> void:
 	if _pull_is_holding:
 		return
 	_pull_is_holding = true
-	if _pull_hold_button != null:
-		_pull_hold_button.text = "吸い出し中...（離して止める）"
+	if _pull_hold_button != null and is_instance_valid(_pull_hold_button):
+		_pull_hold_button.text = "吸い出し中…（離して止める）"
+		_pull_hold_button.add_theme_color_override("font_color", Color("feae34"))
 	if _pull_timer.is_stopped():
 		_pull_timer.start()
 	GameManager.play_ui_se("cursor")
@@ -3838,26 +4292,54 @@ func _resolve_pull_result() -> void:
 			delta_aud = 6.0
 			_pull_quality_total += 3.0
 			_pull_hit_count += 1
-			_heat_state += 1
 			result_text = "完璧停止"
 		"good":
 			delta_spec = 14.0
 			delta_aud = 3.0
 			_pull_quality_total += 2.0
 			_pull_hit_count += 1
-			_heat_state += 1
 			result_text = "有効停止"
 		"near":
 			delta_spec = 4.0
 			delta_aud = 1.0
 			_pull_quality_total += 1.0
-			_heat_state += 1
 			result_text = "ニア停止"
 		_:
 			delta_spec = -10.0
 			delta_aud = -1.0
-			_heat_state += 2
 			result_text = "ミス停止"
+
+	# 吸い出しゾーンによる温度変化
+	# SHORT (val < 0.33): 短く吸う → 温度上昇
+	# NORMAL (0.33–0.67): 普通 → 維持
+	# LONG (val > 0.67): 長く吸う → 温度下降
+	var zone_heat_delta := 0
+	if _pull_gauge_value < 0.33:
+		zone_heat_delta = 2    # 短い吸い = 温度UP
+	elif _pull_gauge_value > 0.67:
+		zone_heat_delta = -2   # 長い吸い = 温度DOWN
+	else:
+		zone_heat_delta = 0    # 普通 = 維持
+	# NEAR/MISSは効果が半減し、制御が甘い分だけ余計な変動
+	match quality:
+		"near":
+			zone_heat_delta = zone_heat_delta / 2
+		"miss":
+			# ミスは意図しないオーバーヒート（ゾーン効果に+1追加）
+			if zone_heat_delta >= 0:
+				zone_heat_delta += 1
+			else:
+				zone_heat_delta -= 1
+
+	# クオリティ表示（ゲージ画面に即時反映）
+	if _pull_quality_display_label != null and is_instance_valid(_pull_quality_display_label):
+		var q_col := Color("feae34")
+		match quality:
+			"good": q_col = Color("3e8948")
+			"near": q_col = Color("c96c00")
+			"miss": q_col = Color("e43b44")
+		_pull_quality_display_label.add_theme_color_override("font_color", q_col)
+		_pull_quality_display_label.text = result_text
 
 	if PlayerData.equipment_charcoal == "cube_charcoal":
 		if quality == "perfect":
@@ -3868,7 +4350,7 @@ func _resolve_pull_result() -> void:
 
 	_technical_points += delta_spec
 	_audience_points += delta_aud
-	_heat_state = clampi(_heat_state, -3, 3)
+	_heat_state = clampi(_heat_state + zone_heat_delta, -3, 3)
 	_pull_round += 1
 	GameManager.play_ui_se("confirm" if quality != "miss" else "cancel")
 
@@ -3954,6 +4436,9 @@ func _on_serving_confirmed() -> void:
 	_technical_points += spec_gain
 	_audience_points += aud_gain
 	GameManager.play_ui_se("confirm")
+	if _tutorial_active:
+		_show_step_result_and_next("練習の吸い出し完了！流れを覚えた。%s" % bonus_text, _finish_tutorial_phase)
+		return
 	_show_step_result_and_next("提供評価: 専門 %+d / 一般 %+d%s" % [int(round(spec_gain)), int(round(aud_gain)), bonus_text], _show_round_result.bind(1))
 
 
@@ -5338,7 +5823,7 @@ class _TempGaugeVisual extends Control:
 func _show_pull_gauge_visual(parent: Node) -> void:
 	_remove_pull_gauge_visual()
 	var gauge = _PullGaugeVisual.new()
-	gauge.custom_minimum_size = Vector2(0, 220)
+	gauge.custom_minimum_size = Vector2(0, 300)
 	gauge.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	gauge.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	parent.add_child(gauge)
@@ -5356,7 +5841,7 @@ func _update_pull_gauge_visual() -> void:
 	gauge.target_center = _pull_target_center
 	gauge.target_width = _pull_target_width
 	gauge.is_holding = _pull_is_holding
-	gauge.round_text = "ROUND %d / %d" % [_pull_round + 1, PULL_MAX_ROUNDS]
+	gauge.heat_state = _heat_state
 	gauge.queue_redraw()
 
 
@@ -5366,46 +5851,132 @@ func _remove_pull_gauge_visual() -> void:
 		_pull_gauge_visual_node = null
 
 
+## 縦型吸い出しゲージビジュアル（東方風デザイン）
 class _PullGaugeVisual extends Control:
 	var gauge_value: float = 0.5
 	var target_center: float = 0.5
 	var target_width: float = 0.16
 	var is_holding: bool = false
-	var round_text: String = ""
+	var heat_state: int = 0
+	var _time: float = 0.0
+
+	func _process(delta: float) -> void:
+		_time += delta
+		queue_redraw()
 
 	func _draw() -> void:
-		var w = size.x
-		var h = size.y
-		var margin = 28.0
-		var center_y = h * 0.58
-		var bar_h = 52.0
-		var bar_rect = Rect2(margin, center_y - bar_h * 0.5, w - margin * 2.0, bar_h)
-		draw_rect(bar_rect, Color("1b1f33", 0.96), true)
-		draw_rect(bar_rect, Color("8b9bb4", 0.22), false, 2.0)
+		var w: float = size.x
+		var h: float = size.y
+		# バー領域: 左に三角インジケーター用マージン、右にラベル用マージン
+		var lm := 26.0
+		var rm := 56.0
+		var tm := 10.0
+		var bm := 10.0
+		var bx := lm
+		var bw := w - lm - rm
+		var by_val := tm
+		var bh := h - tm - bm
+		var br := Rect2(bx, by_val, bw, bh)
 
-		var target_left = bar_rect.position.x + bar_rect.size.x * clampf(target_center - target_width, 0.0, 1.0)
-		var target_right = bar_rect.position.x + bar_rect.size.x * clampf(target_center + target_width, 0.0, 1.0)
-		draw_rect(Rect2(target_left, bar_rect.position.y + 6.0, target_right - target_left, bar_rect.size.y - 12.0), Color("3e8948", 0.75), true)
+		# 背景
+		draw_rect(br, Color("0d1020", 0.97), true)
+		draw_rect(br, Color("3a4066", 0.45), false, 1.5)
 
-		var perfect_width = (target_right - target_left) * 0.35
-		var perfect_rect = Rect2(target_center * bar_rect.size.x + bar_rect.position.x - perfect_width * 0.5, bar_rect.position.y + 10.0, perfect_width, bar_rect.size.y - 20.0)
-		draw_rect(perfect_rect, Color("feae34", 0.8), true)
+		# 温度ゾーン背景（SHORT=赤、NORMAL=グレー、LONG=青）
+		var font := ThemeDB.fallback_font
+		# SHORT zone: val 0–0.33 (底から33%) → 短く吸う → 温度UP
+		var short_y := by_val + bh * (1.0 - 0.33)
+		var short_h := bh * 0.33 + bm
+		draw_rect(Rect2(bx, short_y, bw, short_h), Color("5a1a1a", 0.40), true)
+		# LONG zone: val 0.67–1.0 (上から33%) → 長く吸う → 温度DOWN
+		var long_h := bh * 0.33
+		draw_rect(Rect2(bx, by_val, bw, long_h), Color("1a2a5a", 0.40), true)
+		# NORMAL zone (中央部) は背景のまま
+		# ゾーン境界線
+		var div_cool_y := by_val + bh * (1.0 - 0.67)
+		var div_heat_y := by_val + bh * (1.0 - 0.33)
+		draw_line(Vector2(bx, div_cool_y), Vector2(bx + bw, div_cool_y), Color("8bd5ff", 0.30), 1.5)
+		draw_line(Vector2(bx, div_heat_y), Vector2(bx + bw, div_heat_y), Color("e43b44", 0.30), 1.5)
+		# ゾーンラベル（バー内・小文字）
+		var mid_short_y := by_val + bh * (1.0 - 0.165) - 6.0
+		var mid_normal_y := by_val + bh * (1.0 - 0.50) - 6.0
+		var mid_long_y := by_val + bh * (1.0 - 0.835) - 6.0
+		draw_string(font, Vector2(bx + bw * 0.5, mid_short_y), "短↑熱", HORIZONTAL_ALIGNMENT_CENTER, bw, 10, Color("e43b44", 0.50))
+		draw_string(font, Vector2(bx + bw * 0.5, mid_normal_y), "維持", HORIZONTAL_ALIGNMENT_CENTER, bw, 10, Color("ead4aa", 0.35))
+		draw_string(font, Vector2(bx + bw * 0.5, mid_long_y), "長↓冷", HORIZONTAL_ALIGNMENT_CENTER, bw, 10, Color("8bd5ff", 0.50))
 
-		var pointer_x = bar_rect.position.x + bar_rect.size.x * clampf(gauge_value, 0.0, 1.0)
-		var pointer_col = Color("feae34") if is_holding else Color("e43b44")
-		draw_line(Vector2(pointer_x, bar_rect.position.y - 18.0), Vector2(pointer_x, bar_rect.position.y + bar_rect.size.y + 18.0), pointer_col, 5.0)
-		var tri = PackedVector2Array([
-			Vector2(pointer_x, bar_rect.position.y - 26.0),
-			Vector2(pointer_x - 10.0, bar_rect.position.y - 8.0),
-			Vector2(pointer_x + 10.0, bar_rect.position.y - 8.0),
-		])
-		draw_colored_polygon(tri, pointer_col)
+		# val → Y 変換: 0=下, 1=上  →  y = by + bh*(1-val)
+		# NEAR ゾーン（アンバー）
+		var near_hw := target_width * 1.7
+		var near_lo := clampf(target_center - near_hw, 0.0, 1.0)
+		var near_hi := clampf(target_center + near_hw, 0.0, 1.0)
+		var ny := by_val + bh * (1.0 - near_hi)
+		var nh := bh * (near_hi - near_lo)
+		draw_rect(Rect2(bx, ny, bw, nh), Color("8b5e00", 0.32), true)
 
-		draw_string(ThemeDB.fallback_font, Vector2(margin, 38.0), "PULL TIMING", HORIZONTAL_ALIGNMENT_LEFT, -1, 28, Color("ead4aa"))
-		draw_string(ThemeDB.fallback_font, Vector2(margin, 66.0), round_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("8bd5ff"))
-		draw_string(ThemeDB.fallback_font, Vector2(margin, h - 18.0), "PERFECT", HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color("feae34"))
-		draw_string(ThemeDB.fallback_font, Vector2(target_left, h - 18.0), "GOOD", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("3e8948"))
-		draw_string(ThemeDB.fallback_font, Vector2(pointer_x + 14.0, center_y - 20.0), "SMOKE", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, pointer_col)
+		# GOOD ゾーン（グリーン）
+		var good_lo := clampf(target_center - target_width, 0.0, 1.0)
+		var good_hi := clampf(target_center + target_width, 0.0, 1.0)
+		var gy := by_val + bh * (1.0 - good_hi)
+		var gh := bh * (good_hi - good_lo)
+		draw_rect(Rect2(bx + 4.0, gy, bw - 8.0, gh), Color("2c6b30", 0.72), true)
+
+		# PERFECT ゾーン（ゴールド・パルス）
+		var perf_hw := target_width * 0.35
+		var perf_lo := clampf(target_center - perf_hw, 0.0, 1.0)
+		var perf_hi := clampf(target_center + perf_hw, 0.0, 1.0)
+		var py := by_val + bh * (1.0 - perf_hi)
+		var ph := bh * (perf_hi - perf_lo)
+		var glow_a := 0.72 + sin(_time * 4.0) * 0.14
+		draw_rect(Rect2(bx + 8.0, py, bw - 16.0, ph), Color("feae34", glow_a), true)
+		# ゴールドグロー（外側に滲む）
+		draw_rect(Rect2(bx + 4.0, py - 3.0, bw - 8.0, ph + 6.0), Color("feae34", 0.08 + sin(_time * 4.0) * 0.05), true)
+
+		# ターゲット中心ライン
+		var tc_y := by_val + bh * (1.0 - target_center)
+		draw_line(Vector2(bx, tc_y), Vector2(bx + bw, tc_y), Color("feae34", 0.55), 2.0)
+
+		# アクティブフィル（ホールド中）
+		if is_holding:
+			var fill_y := by_val + bh * (1.0 - gauge_value)
+			var fill_h := (by_val + bh) - fill_y
+			var pulse := 0.22 + sin(_time * 7.0) * 0.07
+			draw_rect(Rect2(bx, fill_y, bw, fill_h), Color("1e5a80", pulse), true)
+
+		# ポインター（水平ライン + 左側三角）
+		var ptr_y := by_val + bh * (1.0 - gauge_value)
+		var ptr_col := Color("feae34") if is_holding else Color("c8cce0")
+		if is_holding:
+			var gl := 0.18 + sin(_time * 9.0) * 0.08
+			draw_rect(Rect2(bx, ptr_y - 5.0, bw, 10.0), Color("feae34", gl), true)
+		draw_line(Vector2(bx - 2.0, ptr_y), Vector2(bx + bw + 2.0, ptr_y), ptr_col, 3.5)
+		# 左三角（→ 方向）
+		var tx := bx - 4.0
+		draw_colored_polygon(PackedVector2Array([
+			Vector2(tx - 18.0, ptr_y),
+			Vector2(tx, ptr_y - 9.0),
+			Vector2(tx, ptr_y + 9.0),
+		]), ptr_col)
+
+		# 現在値 % ラベル（ポインター横）
+		var val_str := "%.0f%%" % (gauge_value * 100.0)
+		var vl_y := ptr_y - 14.0 if ptr_y > by_val + 18.0 else ptr_y + 20.0
+		draw_string(font, Vector2(bx + bw * 0.5, vl_y), val_str, HORIZONTAL_ALIGNMENT_CENTER, bw, 14, ptr_col)
+
+		# ゾーンラベル（右マージン）
+		var lx := bx + bw + 6.0
+		if nh > 14.0:
+			draw_string(font, Vector2(lx, ny + 13.0), "NEAR", HORIZONTAL_ALIGNMENT_LEFT, rm - 4.0, 11, Color("c08030", 0.85))
+		if gh > 16.0:
+			draw_string(font, Vector2(lx, gy + 13.0), "GOOD", HORIZONTAL_ALIGNMENT_LEFT, rm - 4.0, 11, Color("5fd86a", 0.85))
+		if ph > 14.0:
+			draw_string(font, Vector2(lx, py + ph * 0.5 + 5.0), "BEST", HORIZONTAL_ALIGNMENT_LEFT, rm - 4.0, 11, Color("feae34", 0.95))
+		# MISS ラベル（ゾーン外の上下）
+		if ny > by_val + 20.0:
+			draw_string(font, Vector2(lx, by_val + 13.0), "MISS", HORIZONTAL_ALIGNMENT_LEFT, rm - 4.0, 10, Color("7a3a3a", 0.7))
+		var near_bot := ny + nh
+		if near_bot < by_val + bh - 20.0:
+			draw_string(font, Vector2(lx, near_bot + 13.0), "MISS", HORIZONTAL_ALIGNMENT_LEFT, rm - 4.0, 10, Color("7a3a3a", 0.7))
 
 
 ## ─── 3. スコア変動ポップアップ ───

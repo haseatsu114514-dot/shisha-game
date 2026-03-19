@@ -8,6 +8,10 @@ extends Control
 @onready var action_label: Label = %ActionLabel
 @onready var spot_button_wrap: HFlowContainer = %SpotButtonWrap
 @onready var confirm_dialog: ConfirmationDialog = %ConfirmDialog
+@onready var noon_tab: PanelContainer = %NoonTab
+@onready var night_tab: PanelContainer = %NightTab
+@onready var noon_tab_label: Label = %NoonTabLabel
+@onready var night_tab_label: Label = %NightTabLabel
 
 var _pending_spot: Dictionary = {}
 var _pin_texture: Texture2D
@@ -68,8 +72,15 @@ func _ready() -> void:
 	)
 	_load_marker_textures()
 
-	# Restore today's visited spots
-	_visited_today = GameManager.pop_transient("visited_spots_today", [])
+	# Restore today's visited spots（日付キーが一致しない場合はリセット）
+	var saved_visit = GameManager.pop_transient("visited_spots_today", {"day": "", "spots": []})
+	if typeof(saved_visit) == TYPE_DICTIONARY:
+		if str(saved_visit.get("day", "")) == _get_today_key():
+			_visited_today = saved_visit.get("spots", [])
+		else:
+			_visited_today = []  # 翌日以降 → 前日データを破棄
+	else:
+		_visited_today = []  # 旧フォーマット互換
 
 	# Check for forced story events first (mandatory, cannot skip)
 	if not CalendarManager.is_interval:
@@ -117,6 +128,7 @@ func _refresh_spots() -> void:
 		child.queue_free()
 
 	_apply_map_visuals()
+	_update_phase_tabs()
 	var spots = _build_spot_list()
 	var lines: Array[String] = []
 	if CalendarManager.is_tournament_day():
@@ -139,17 +151,23 @@ func _refresh_spot_buttons(spots: Array) -> void:
 	for child in spot_button_wrap.get_children():
 		child.queue_free()
 	for spot in spots:
+		var is_disabled: bool = spot.get("disabled", false)
 		var button = Button.new()
 		button.text = str(spot.get("label", "スポット"))
 		button.custom_minimum_size = Vector2(148, 38)
 		button.size_flags_horizontal = Control.SIZE_FILL
 		button.add_theme_font_size_override("font_size", 16)
-		button.add_theme_color_override("font_color", Color("fff0cf"))
-		button.add_theme_color_override("font_hover_color", Color("ffffff"))
 		# Normal style
 		var normal_style = StyleBoxFlat.new()
-		normal_style.bg_color = Color("110929", 0.95)
-		normal_style.border_color = Color("feae34", 0.38)
+		if is_disabled:
+			normal_style.bg_color = Color("080810", 0.55)
+			normal_style.border_color = Color("feae34", 0.12)
+			button.add_theme_color_override("font_color", Color(0.4, 0.4, 0.45, 0.55))
+		else:
+			normal_style.bg_color = Color("110929", 0.95)
+			normal_style.border_color = Color("feae34", 0.38)
+			button.add_theme_color_override("font_color", Color("fff0cf"))
+			button.add_theme_color_override("font_hover_color", Color("ffffff"))
 		normal_style.border_width_bottom = 1
 		normal_style.border_width_left = 3
 		normal_style.border_width_right = 1
@@ -163,16 +181,17 @@ func _refresh_spot_buttons(spots: Array) -> void:
 		normal_style.content_margin_top = 6
 		normal_style.content_margin_bottom = 6
 		button.add_theme_stylebox_override("normal", normal_style)
-		# Hover style
-		var hover_style = normal_style.duplicate()
-		hover_style.bg_color = Color("e43b44", 0.22)
-		hover_style.border_color = Color("feae34", 0.85)
-		button.add_theme_stylebox_override("hover", hover_style)
-		# Pressed style
-		var pressed_style = normal_style.duplicate()
-		pressed_style.bg_color = Color("e43b44", 0.35)
-		pressed_style.border_color = Color("feae34")
-		button.add_theme_stylebox_override("pressed", pressed_style)
+		if not is_disabled:
+			# Hover style
+			var hover_style = normal_style.duplicate()
+			hover_style.bg_color = Color("e43b44", 0.22)
+			hover_style.border_color = Color("feae34", 0.85)
+			button.add_theme_stylebox_override("hover", hover_style)
+			# Pressed style
+			var pressed_style = normal_style.duplicate()
+			pressed_style.bg_color = Color("e43b44", 0.35)
+			pressed_style.border_color = Color("feae34")
+			button.add_theme_stylebox_override("pressed", pressed_style)
 		button.pressed.connect(_on_spot_pressed.bind(spot))
 		spot_button_wrap.add_child(button)
 
@@ -195,39 +214,29 @@ func _build_spot_list() -> Array:
 
 	if CalendarManager.current_time == "noon":
 		spots.append({"id": "tonari", "label": "tonari"})
-		if not _is_visited_today("shop"):
-			spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
-		if not _is_visited_today("naru"):
-			spots.append({"id": "naru", "label": "ケムリクサ"})
+		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
+		spots.append({"id": "naru", "label": "ケムリクサ", "disabled": _is_visited_today("naru")})
 		if _are_rival_shops_unlocked():
-			if not _is_visited_today("adam"):
-				spots.append({"id": "adam", "label": "Eden"})
-			if not _is_visited_today("minto"):
-				spots.append({"id": "minto", "label": "ぺぱーみんと"})
+			spots.append({"id": "adam", "label": "Eden", "disabled": _is_visited_today("adam")})
+			spots.append({"id": "minto", "label": "ぺぱーみんと", "disabled": _is_visited_today("minto")})
 		spots.append({"id": "shotengai", "label": "商店街"})
-		if not _is_visited_today("kannon"):
-			spots.append({"id": "kannon", "label": "観音"})
-		if not _is_visited_today("choizap"):
-			spots.append({"id": "choizap", "label": "チョイザップ"})
+		spots.append({"id": "kannon", "label": "観音", "disabled": _is_visited_today("kannon")})
+		if EventFlags.get_flag("ch1_minto_met"):
+			spots.append({"id": "choizap", "label": "チョイザップ", "disabled": _is_visited_today("choizap")})
 		if GameManager.current_chapter == 1 and not EventFlags.get_flag("ch1_c_station_visited"):
 			spots.append({"id": "c_station", "label": "C.STATION"})
 		if GameManager.current_chapter >= 2:
 			spots.append({"id": "tv_tower_park", "label": "テレビ塔公園"})
 			if EventFlags.get_flag("spot_cafe_unlocked"):
-				if not _is_visited_today("cafe"):
-					spots.append({"id": "cafe", "label": "カフェ"})
+				spots.append({"id": "cafe", "label": "カフェ", "disabled": _is_visited_today("cafe")})
 	elif CalendarManager.current_time == "night":
 		spots.append({"id": "tonari", "label": "tonari（夜）"})
-		if not _is_visited_today("shop"):
-			spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]（夜）"})
+		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]（夜）"})
 		spots.append({"id": "home", "label": "自宅で休む"})
-		if not _is_visited_today("naru"):
-			spots.append({"id": "naru", "label": "ケムリクサ（夜）"})
+		spots.append({"id": "naru", "label": "ケムリクサ（夜）", "disabled": _is_visited_today("naru")})
 		if _are_rival_shops_unlocked():
-			if not _is_visited_today("adam"):
-				spots.append({"id": "adam", "label": "Eden（夜）"})
-			if not _is_visited_today("minto"):
-				spots.append({"id": "minto", "label": "ぺぱーみんと（夜）"})
+			spots.append({"id": "adam", "label": "Eden（夜）", "disabled": _is_visited_today("adam")})
+			spots.append({"id": "minto", "label": "ぺぱーみんと（夜）", "disabled": _is_visited_today("minto")})
 		if GameManager.current_chapter == 1 and not EventFlags.get_flag("ch1_c_station_visited"):
 			spots.append({"id": "c_station", "label": "C.STATION（夜）"})
 	return spots
@@ -235,39 +244,28 @@ func _build_spot_list() -> Array:
 func _build_all_japan_spots() -> Array:
 	var spots: Array = []
 	# 昼夜共通の拠点
-	if not _is_visited_today("shop"):
-		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
+	spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
 	
 	if CalendarManager.current_time == "noon":
 		spots.append({"id": "tonari", "label": "tonari（地元）"})
 		spots.append({"id": "mukai", "label": "mukai（東京）"})
-		if not _is_visited_today("naru"):
-			spots.append({"id": "naru", "label": "ケムリクサ"})
+		spots.append({"id": "naru", "label": "ケムリクサ", "disabled": _is_visited_today("naru")})
 		if _are_rival_shops_unlocked():
-			if not _is_visited_today("adam"):
-				spots.append({"id": "adam", "label": "Eden"})
-			if not _is_visited_today("minto"):
-				spots.append({"id": "minto", "label": "ぺぱーみんと"})
-			if not _is_visited_today("kumicho"):
-				spots.append({"id": "kumicho", "label": "神崎煙草店"})
-			if not _is_visited_today("volk"):
-				spots.append({"id": "volk", "label": "鉄の煙"})
+			spots.append({"id": "adam", "label": "Eden", "disabled": _is_visited_today("adam")})
+			spots.append({"id": "minto", "label": "ぺぱーみんと", "disabled": _is_visited_today("minto")})
+			spots.append({"id": "kumicho", "label": "神崎煙草店", "disabled": _is_visited_today("kumicho")})
+			spots.append({"id": "volk", "label": "鉄の煙", "disabled": _is_visited_today("volk")})
 		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り"})
 		spots.append({"id": "tokyo_sightseeing", "label": "東京観光"})
 	elif CalendarManager.current_time == "night":
 		spots.append({"id": "tonari", "label": "tonari（夜）"})
 		spots.append({"id": "mukai", "label": "mukai（夜）"})
-		if not _is_visited_today("naru"):
-			spots.append({"id": "naru", "label": "ケムリクサ（夜）"})
+		spots.append({"id": "naru", "label": "ケムリクサ（夜）", "disabled": _is_visited_today("naru")})
 		if _are_rival_shops_unlocked():
-			if not _is_visited_today("adam"):
-				spots.append({"id": "adam", "label": "Eden（夜）"})
-			if not _is_visited_today("minto"):
-				spots.append({"id": "minto", "label": "ぺぱーみんと（夜）"})
-			if not _is_visited_today("kumicho"):
-				spots.append({"id": "kumicho", "label": "神崎煙草店（夜）"})
-			if not _is_visited_today("volk"):
-				spots.append({"id": "volk", "label": "鉄の煙（夜）"})
+			spots.append({"id": "adam", "label": "Eden（夜）", "disabled": _is_visited_today("adam")})
+			spots.append({"id": "minto", "label": "ぺぱーみんと（夜）", "disabled": _is_visited_today("minto")})
+			spots.append({"id": "kumicho", "label": "神崎煙草店（夜）", "disabled": _is_visited_today("kumicho")})
+			spots.append({"id": "volk", "label": "鉄の煙（夜）", "disabled": _is_visited_today("volk")})
 		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り（夜）"})
 	return spots
 
@@ -275,14 +273,12 @@ func _build_ch3_spots() -> Array:
 	var spots: Array = []
 	if CalendarManager.current_time == "noon":
 		spots.append({"id": "mukai", "label": "mukai"})
-		if not _is_visited_today("shop"):
-			spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
+		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
 		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り"})
 		spots.append({"id": "tokyo_sightseeing", "label": "東京観光"})
 	elif CalendarManager.current_time == "night":
 		spots.append({"id": "mukai", "label": "mukai（夜）"})
-		if not _is_visited_today("shop"):
-			spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]（夜）"})
+		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]（夜）"})
 		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り（夜）"})
 	return spots
 
@@ -290,14 +286,12 @@ func _build_ch4_spots() -> Array:
 	var spots: Array = []
 	if CalendarManager.current_time == "noon":
 		spots.append({"id": "dubai_shisha", "label": "現地のシーシャ屋"})
-		if not _is_visited_today("shop"):
-			spots.append({"id": "shop", "label": "Dr.Hookah Dubai [SHOP]"})
+		spots.append({"id": "shop", "label": "Dr.Hookah Dubai [SHOP]"})
 		spots.append({"id": "dubai_souq", "label": "スパイス・スーク（市場）"})
 		spots.append({"id": "dubai_cafe", "label": "ドバイの高級カフェ（6,000円）"})
 	elif CalendarManager.current_time == "night":
 		spots.append({"id": "dubai_shisha", "label": "現地のシーシャ屋（夜）"})
-		if not _is_visited_today("shop"):
-			spots.append({"id": "shop", "label": "Dr.Hookah Dubai [SHOP]（夜）"})
+		spots.append({"id": "shop", "label": "Dr.Hookah Dubai [SHOP]（夜）"})
 		spots.append({"id": "dubai_souq", "label": "スパイス・スーク（夜）"})
 	return spots
 
@@ -307,21 +301,42 @@ func _is_visited_today(spot_id: String) -> bool:
 
 
 func _mark_visited(spot_id: String) -> void:
-	if spot_id != "home" and spot_id != "tonari" and spot_id != "mukai" and spot_id != "dubai_shisha" and not _is_visited_today(spot_id):
+	# shop は何度でも訪問可能なため記録しない
+	if spot_id not in ["home", "tonari", "mukai", "dubai_shisha", "shop"] and not _is_visited_today(spot_id):
 		_visited_today.append(spot_id)
 
 
+func _get_today_key() -> String:
+	if CalendarManager.is_interval:
+		return "interval_%d" % CalendarManager.interval_day
+	return "ch%d_d%d" % [GameManager.current_chapter, CalendarManager.current_day]
+
+
 func _save_visited() -> void:
-	GameManager.set_transient("visited_spots_today", _visited_today.duplicate())
+	GameManager.set_transient("visited_spots_today", {"day": _get_today_key(), "spots": _visited_today.duplicate()})
 
 
 func _on_spot_pressed(spot: Dictionary) -> void:
 	GameManager.play_ui_se("cursor")
 	var id = str(spot.get("id", ""))
 
+	# Already visited today — show message but don't enter
+	if spot.get("disabled", false):
+		message_label.text = "今日はもう行った場所だ。"
+		GameManager.play_ui_se("cancel")
+		return
+
 	# Spots that require cost confirmation
 	if id == "shop":
-		_open_cost_confirm(spot, SHOP_VISIT_COST, "Dr.Hookah 入店確認", _build_shop_preview_text())
+		_enter_spot(spot)
+		return
+	if id in ["kumicho", "volk"]:
+		if not _is_rival_present(id):
+			var rival_name = {"kumicho": "神崎組長", "volk": "ヴォルク"}.get(id, id)
+			message_label.text = "今日は%sは出勤していないようだ。" % rival_name
+			GameManager.play_ui_se("cancel")
+			return
+		_open_cost_confirm(spot, RIVAL_VISIT_COST, "%s 訪問確認" % str(spot.get("label", "")), _build_rival_preview_text(id))
 		return
 	if id in ["naru", "adam", "minto"]:
 		if not _is_rival_present(id):
@@ -417,11 +432,7 @@ func _enter_spot(spot: Dictionary) -> void:
 			_save_visited()
 			get_tree().change_scene_to_file("res://scenes/daily/baito.tscn")
 		"shop":
-			if PlayerData.money < SHOP_VISIT_COST:
-				message_label.text = "Dr.Hookah 入店には %d円 必要です。" % SHOP_VISIT_COST
-				return
-			# No time progression for shop
-			_mark_visited(id)
+			# 時間消費なし・所持金不問でいつでも入店可
 			_save_visited()
 			get_tree().change_scene_to_file("res://scenes/ui/shop_menu.tscn")
 		"home":
@@ -433,7 +444,7 @@ func _enter_spot(spot: Dictionary) -> void:
 			CalendarManager.advance_time()
 			_save_visited()
 			_go_next_phase()
-		"naru", "adam", "minto":
+		"naru", "adam", "minto", "kumicho", "volk":
 			if PlayerData.money < RIVAL_VISIT_COST:
 				message_label.text = "訪問には %d円 必要です。（所持金: %d円）" % [RIVAL_VISIT_COST, PlayerData.money]
 				return
@@ -442,6 +453,8 @@ func _enter_spot(spot: Dictionary) -> void:
 				return
 			PlayerData.spend_money(RIVAL_VISIT_COST)
 			GameManager.log_money_change(-RIVAL_VISIT_COST)
+			if id in ["naru", "adam", "minto"]:
+				EventFlags.set_flag("ch1_%s_met" % id)
 			_mark_visited(id)
 			_save_visited()
 			GameManager.set_transient("interaction_target", id)
@@ -464,7 +477,7 @@ func _enter_spot(spot: Dictionary) -> void:
 				_save_visited()
 				GameManager.set_transient("interaction_target", "choizap")
 				GameManager.set_transient("advance_time_after_scene", true)
-				GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_choizap_first", "res://scenes/daily/map.tscn")
+				GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_choizap_first", "res://scenes/daily/map.tscn", {"bg": "res://assets/backgrounds/bg_choizap.png"})
 				get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 			else:
 				# Member - free visit, charm UP
@@ -473,7 +486,7 @@ func _enter_spot(spot: Dictionary) -> void:
 				_mark_visited(id)
 				_save_visited()
 				GameManager.set_transient("advance_time_after_scene", true)
-				GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_choizap_visit", "res://scenes/daily/map.tscn")
+				GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_choizap_visit", "res://scenes/daily/map.tscn", {"bg": "res://assets/backgrounds/bg_choizap.png"})
 				get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		"kannon":
 			if not CalendarManager.use_action():
@@ -487,7 +500,7 @@ func _enter_spot(spot: Dictionary) -> void:
 			_mark_visited(id)
 			_save_visited()
 			GameManager.set_transient("advance_time_after_scene", true)
-			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_kannon_visit", "res://scenes/daily/map.tscn")
+			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_kannon_visit", "res://scenes/daily/map.tscn", {"bg": "res://assets/backgrounds/bg_kannon.png"})
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 			# Force save after prayer
 			GameManager.force_save()
@@ -500,7 +513,7 @@ func _enter_spot(spot: Dictionary) -> void:
 			_mark_visited(id)
 			_save_visited()
 			GameManager.set_transient("advance_time_after_scene", true)
-			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_cafe_visit", "res://scenes/daily/map.tscn")
+			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_cafe_visit", "res://scenes/daily/map.tscn", {"bg": "res://assets/backgrounds/bg_cafe.png"})
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		"shotengai":
 			if not CalendarManager.use_action():
@@ -508,15 +521,21 @@ func _enter_spot(spot: Dictionary) -> void:
 				return
 			var event_id = _get_roaming_event_id("shotengai")
 			GameManager.set_transient("advance_time_after_scene", true)
-			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", event_id, "res://scenes/daily/map.tscn")
+			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", event_id, "res://scenes/daily/map.tscn", {"bg": "res://assets/backgrounds/bg_shotengai.png"})
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		"tv_tower_park":
 			if not CalendarManager.use_action():
 				_try_auto_return_home()
 				return
 			var event_id = _get_roaming_event_id("tv_tower_park")
+			PlayerData.add_stat("technique", 1)
+			PlayerData.add_stat("guts", 1)
+			GameManager.log_stat_change("technique", 1)
+			GameManager.log_stat_change("guts", 1)
+			_mark_visited(id)
+			_save_visited()
 			GameManager.set_transient("advance_time_after_scene", true)
-			GameManager.queue_dialogue("res://data/dialogue/ch2_spots.json", event_id, "res://scenes/daily/map.tscn")
+			GameManager.queue_dialogue("res://data/dialogue/ch2_spots.json", event_id, "res://scenes/daily/map.tscn", {"bg": "res://assets/backgrounds/bg_street_day.png"})
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		"c_station":
 			if PlayerData.money < C_STATION_VISIT_COST:
@@ -533,7 +552,7 @@ func _enter_spot(spot: Dictionary) -> void:
 			_mark_visited("c_station")
 			_save_visited()
 			GameManager.set_transient("advance_time_after_scene", true)
-			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_c_station_visit", "res://scenes/daily/map.tscn")
+			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_c_station_visit", "res://scenes/daily/map.tscn", {"bg": "res://assets/backgrounds/bg_c_station.png"})
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		"tokyo_shisha":
 			if not CalendarManager.use_action():
@@ -630,6 +649,55 @@ func _try_auto_return_home() -> bool:
 	return true
 
 
+func _update_phase_tabs() -> void:
+	if noon_tab == null or night_tab == null:
+		return
+	var is_noon = CalendarManager.current_time == "noon"
+
+	var active_style := StyleBoxFlat.new()
+	active_style.bg_color = Color(0.18, 0.08, 0.02, 0.95)
+	active_style.border_color = Color(0.996, 0.682, 0.204, 0.92)
+	active_style.border_width_top = 2
+	active_style.border_width_left = 2
+	active_style.border_width_right = 2
+	active_style.border_width_bottom = 0
+	active_style.corner_radius_top_left = 6
+	active_style.corner_radius_top_right = 6
+	active_style.content_margin_left = 14
+	active_style.content_margin_right = 14
+	active_style.content_margin_top = 6
+	active_style.content_margin_bottom = 6
+
+	var inactive_style := StyleBoxFlat.new()
+	inactive_style.bg_color = Color(0.05, 0.04, 0.09, 0.72)
+	inactive_style.border_color = Color(0.996, 0.682, 0.204, 0.22)
+	inactive_style.border_width_top = 1
+	inactive_style.border_width_left = 1
+	inactive_style.border_width_right = 1
+	inactive_style.border_width_bottom = 1
+	inactive_style.corner_radius_top_left = 6
+	inactive_style.corner_radius_top_right = 6
+	inactive_style.content_margin_left = 14
+	inactive_style.content_margin_right = 14
+	inactive_style.content_margin_top = 6
+	inactive_style.content_margin_bottom = 6
+
+	if is_noon:
+		noon_tab.add_theme_stylebox_override("panel", active_style)
+		noon_tab_label.add_theme_color_override("font_color", Color("feae34"))
+		noon_tab_label.add_theme_font_size_override("font_size", 17)
+		night_tab.add_theme_stylebox_override("panel", inactive_style)
+		night_tab_label.add_theme_color_override("font_color", Color(0.50, 0.55, 0.65, 1.0))
+		night_tab_label.add_theme_font_size_override("font_size", 15)
+	else:
+		noon_tab.add_theme_stylebox_override("panel", inactive_style)
+		noon_tab_label.add_theme_color_override("font_color", Color(0.50, 0.55, 0.65, 1.0))
+		noon_tab_label.add_theme_font_size_override("font_size", 15)
+		night_tab.add_theme_stylebox_override("panel", active_style)
+		night_tab_label.add_theme_color_override("font_color", Color("aad4ff"))
+		night_tab_label.add_theme_font_size_override("font_size", 17)
+
+
 func _apply_map_visuals() -> void:
 	var is_night = CalendarManager.current_time == "night"
 	map_background.visible = not is_night
@@ -644,16 +712,20 @@ func _load_marker_textures() -> void:
 
 func _add_spot_marker(spot: Dictionary) -> void:
 	var id = str(spot.get("id", ""))
+	var is_disabled: bool = spot.get("disabled", false)
+	# マーカー全体: 120×78（ラベル文字サイズ15に対応）
 	var marker = Control.new()
-	marker.size = Vector2(150, 120)
+	marker.size = Vector2(120, 78)
 	marker.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
-	marker.custom_minimum_size = Vector2(150, 120)
+	marker.custom_minimum_size = Vector2(120, 78)
 	marker.position = _get_marker_position(id)
+	if is_disabled:
+		marker.modulate = Color(1.0, 1.0, 1.0, 0.38)
 
 	var pin = TextureButton.new()
-	pin.custom_minimum_size = Vector2(64, 64)
-	pin.size = Vector2(64, 64)
-	pin.position = Vector2(44, 8)
+	pin.custom_minimum_size = Vector2(28, 28)
+	pin.size = Vector2(28, 28)
+	pin.position = Vector2(46, 2)  # centered in 120-wide marker
 	pin.texture_normal = _pin_event_texture if _is_event_spot(id) else _pin_texture
 	pin.ignore_texture_size = false
 	pin.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
@@ -663,32 +735,32 @@ func _add_spot_marker(spot: Dictionary) -> void:
 	var face_tex = _get_face_texture(id)
 	if face_tex != null:
 		var face = TextureRect.new()
-		face.custom_minimum_size = Vector2(46, 46)
-		face.size = Vector2(46, 46)
-		face.position = Vector2(53, -26)
+		face.custom_minimum_size = Vector2(26, 26)
+		face.size = Vector2(26, 26)
+		face.position = Vector2(26, -12)
 		face.texture = face_tex
 		face.expand_mode = 1
 		face.stretch_mode = 5
 		pin.add_child(face)
 
 	var label_panel = PanelContainer.new()
-	label_panel.position = Vector2(16, 68)
-	label_panel.custom_minimum_size = Vector2(118, 36)
-	label_panel.size = Vector2(118, 36)
+	label_panel.position = Vector2(5, 34)
+	label_panel.custom_minimum_size = Vector2(110, 36)
+	label_panel.size = Vector2(110, 36)
 	label_panel.self_modulate = Color(1, 1, 1, 0.9)
 	label_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	var style = StyleBoxFlat.new()
-	style.bg_color = Color(0.03, 0.05, 0.09, 0.86)
-	style.border_color = Color(0.44, 0.76, 1.0, 0.96)
+	style.bg_color = Color(0.03, 0.05, 0.09, 0.86) if not is_disabled else Color(0.03, 0.03, 0.05, 0.60)
+	style.border_color = Color(0.44, 0.76, 1.0, 0.96) if not is_disabled else Color(0.3, 0.3, 0.4, 0.5)
 	style.border_width_top = 1
 	style.border_width_bottom = 1
 	style.border_width_left = 1
 	style.border_width_right = 1
-	style.corner_radius_top_left = 8
-	style.corner_radius_top_right = 8
-	style.corner_radius_bottom_left = 8
-	style.corner_radius_bottom_right = 8
+	style.corner_radius_top_left = 5
+	style.corner_radius_top_right = 5
+	style.corner_radius_bottom_left = 5
+	style.corner_radius_bottom_right = 5
 	label_panel.add_theme_stylebox_override("panel", style)
 
 	var label = Label.new()
@@ -698,6 +770,8 @@ func _add_spot_marker(spot: Dictionary) -> void:
 	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	label.text = str(spot.get("label", "スポット"))
 	label.add_theme_font_size_override("font_size", 15)
+	if is_disabled:
+		label.add_theme_color_override("font_color", Color(0.45, 0.45, 0.50, 0.7))
 	label_panel.add_child(label)
 	marker.add_child(label_panel)
 
@@ -706,8 +780,8 @@ func _add_spot_marker(spot: Dictionary) -> void:
 	label_button.flat = true
 	label_button.focus_mode = Control.FOCUS_NONE
 	label_button.position = label_panel.position
-	label_button.custom_minimum_size = label_panel.custom_minimum_size
-	label_button.size = label_panel.size
+	label_button.custom_minimum_size = Vector2(110, 36)
+	label_button.size = Vector2(110, 36)
 	label_button.size_flags_horizontal = Control.SIZE_FILL
 	label_button.modulate = Color(1, 1, 1, 0.0)
 	label_button.pressed.connect(_on_spot_pressed.bind(spot))
@@ -719,7 +793,8 @@ func _add_spot_marker(spot: Dictionary) -> void:
 func _get_marker_position(spot_id: String) -> Vector2:
 	var table = SPOT_POSITIONS_NIGHT if CalendarManager.current_time == "night" else SPOT_POSITIONS_DAY
 	var base = table.get(spot_id, Vector2(640, 360))
-	return base - Vector2(75, 58)
+	# マーカーサイズ 120×78 の中心がスポット座標に来るよう調整
+	return base - Vector2(60, 39)
 
 
 func _is_event_spot(spot_id: String) -> bool:
