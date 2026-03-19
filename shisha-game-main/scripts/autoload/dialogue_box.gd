@@ -108,16 +108,16 @@ const PORTRAIT_PROFILE_BY_CLASS := {
 }
 const PORTRAIT_SLOT_LAYOUTS := {
 	1: [
-		{"anchor_x": 0.50, "width_ratio": 0.56, "height_ratio": 1.12, "bottom_overscan_ratio": 0.14, "brightness": 1.0, "alpha": 1.0, "z": 3},
+		{"anchor_x": 0.50, "width_ratio": 0.60, "height_ratio": 1.16, "bottom_overscan_ratio": 0.10, "brightness": 1.0, "alpha": 1.0, "z": 3},
 	],
 	2: [
-		{"anchor_x": 0.24, "width_ratio": 0.38, "height_ratio": 0.86, "bottom_overscan_ratio": 0.06, "brightness": 0.72, "alpha": 0.88, "z": 1},
-		{"anchor_x": 0.61, "width_ratio": 0.50, "height_ratio": 1.05, "bottom_overscan_ratio": 0.12, "brightness": 1.0, "alpha": 1.0, "z": 3},
+		{"anchor_x": 0.24, "width_ratio": 0.42, "height_ratio": 0.90, "bottom_overscan_ratio": 0.02, "brightness": 0.72, "alpha": 0.88, "z": 1},
+		{"anchor_x": 0.61, "width_ratio": 0.54, "height_ratio": 1.09, "bottom_overscan_ratio": 0.08, "brightness": 1.0, "alpha": 1.0, "z": 3},
 	],
 	3: [
-		{"anchor_x": 0.17, "width_ratio": 0.34, "height_ratio": 0.82, "bottom_overscan_ratio": 0.05, "brightness": 0.68, "alpha": 0.86, "z": 1},
-		{"anchor_x": 0.50, "width_ratio": 0.46, "height_ratio": 1.00, "bottom_overscan_ratio": 0.10, "brightness": 1.0, "alpha": 1.0, "z": 3},
-		{"anchor_x": 0.83, "width_ratio": 0.34, "height_ratio": 0.82, "bottom_overscan_ratio": 0.05, "brightness": 0.76, "alpha": 0.90, "z": 2},
+		{"anchor_x": 0.17, "width_ratio": 0.38, "height_ratio": 0.86, "bottom_overscan_ratio": 0.01, "brightness": 0.68, "alpha": 0.86, "z": 1},
+		{"anchor_x": 0.50, "width_ratio": 0.50, "height_ratio": 1.04, "bottom_overscan_ratio": 0.06, "brightness": 1.0, "alpha": 1.0, "z": 3},
+		{"anchor_x": 0.83, "width_ratio": 0.38, "height_ratio": 0.86, "bottom_overscan_ratio": 0.01, "brightness": 0.76, "alpha": 0.90, "z": 2},
 	],
 }
 const PORTRAIT_CLASS_BY_SPEAKER := {
@@ -692,8 +692,8 @@ func _show_choices(choices: Array) -> void:
 		button.add_theme_font_size_override("font_size", 24)
 		# ペルソナ風スタイリング: アンバーゴールドアクセント
 		var normal_style = StyleBoxFlat.new()
-		normal_style.bg_color = Color("3a4466", 0.92)
-		normal_style.border_color = Color("feae34", 0.4)
+		normal_style.bg_color = Color("1a2040", 0.68)
+		normal_style.border_color = Color("feae34", 0.55)
 		normal_style.border_width_left = 3
 		normal_style.border_width_bottom = 1
 		normal_style.border_width_right = 1
@@ -1153,7 +1153,7 @@ func _finish_dialogue() -> void:
 					PlayerData.add_stat(str(stat_name), amount)
 					GameManager.log_stat_change(str(stat_name), amount)
 					var label = PlayerData.STAT_LABEL_MAP.get(str(stat_name), str(stat_name))
-					stat_changes.append({"label": label, "amount": amount})
+					stat_changes.append({"label": label, "key": str(stat_name), "amount": amount})
 
 	# Show stat change notification (abstract expression, no numbers)
 	if not stat_changes.is_empty():
@@ -1187,12 +1187,6 @@ func _finish_dialogue() -> void:
 	if affinity_char_id != "":
 		await _show_affinity_notification(affinity_char_id, affinity_delta)
 
-	if dialogue_id == "ch1_opening" and not EventFlags.get_flag("ch1_opening_tutorial_done"):
-		var resume_scene = next_scene_path if next_scene_path != "" else "res://scenes/daily/map.tscn"
-		GameManager.set_transient("post_tutorial_next_scene", resume_scene)
-		get_tree().change_scene_to_file("res://scenes/daily/practice.tscn")
-		return
-
 	if next_scene_path != "":
 		get_tree().change_scene_to_file(next_scene_path)
 		return
@@ -1200,7 +1194,7 @@ func _finish_dialogue() -> void:
 	get_tree().change_scene_to_file("res://scenes/daily/map.tscn")
 
 
-func _create_notification_card(layer: CanvasLayer, title: String, message: String, accent_color: Color, message_color: Color) -> Control:
+func _create_notification_card(layer: CanvasLayer, title: String, message: String, accent_color: Color, message_color: Color, right_padding: int = 22) -> Control:
 	var card_root = Control.new()
 	card_root.position = NOTIFICATION_BASE_POSITION
 	card_root.size = NOTIFICATION_CARD_SIZE
@@ -1236,7 +1230,7 @@ func _create_notification_card(layer: CanvasLayer, title: String, message: Strin
 	panel_style.corner_radius_bottom_left = 16
 	panel_style.corner_radius_bottom_right = 16
 	panel_style.content_margin_left = 24
-	panel_style.content_margin_right = 22
+	panel_style.content_margin_right = float(right_padding)
 	panel_style.content_margin_top = 14
 	panel_style.content_margin_bottom = 14
 	panel.add_theme_stylebox_override("panel", panel_style)
@@ -1287,35 +1281,53 @@ func _show_affinity_notification(char_id: String, _delta: int) -> void:
 		"♡  絆の変化  ♡",
 		"%sとの絆が深まった！  %s" % [char_name, star_text],
 		notif_color,
-		Color("fff1db")
+		Color("fff1db"),
+		108
 	)
 
 	# Character face icon (right side of card)
+	const ICON_SIZE := 88
+	const ICON_MARGIN := 10
 	var face_path = "res://assets/sprites/faces/face_%s.png" % char_id
 	if ResourceLoader.exists(face_path):
 		var face_tex = load(face_path) as Texture2D
 		if face_tex:
-			# Circle border behind icon
+			# Circular background that clips face content
 			var icon_bg = Panel.new()
-			icon_bg.size = Vector2(84, 84)
-			icon_bg.position = Vector2(NOTIFICATION_CARD_SIZE.x - 96, (NOTIFICATION_CARD_SIZE.y - 84) * 0.5)
+			icon_bg.size = Vector2(ICON_SIZE, ICON_SIZE)
+			icon_bg.position = Vector2(
+				NOTIFICATION_CARD_SIZE.x - ICON_SIZE - ICON_MARGIN,
+				(NOTIFICATION_CARD_SIZE.y - ICON_SIZE) * 0.5
+			)
 			icon_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			icon_bg.clip_children = CanvasItem.CLIP_CHILDREN_ONLY
 			var ibg_style = StyleBoxFlat.new()
 			ibg_style.bg_color = notif_color.darkened(0.55)
-			ibg_style.border_color = notif_color.lightened(0.3)
-			ibg_style.set_border_width_all(3)
-			ibg_style.set_corner_radius_all(42)
+			ibg_style.set_corner_radius_all(ICON_SIZE / 2)
 			icon_bg.add_theme_stylebox_override("panel", ibg_style)
 			card.add_child(icon_bg)
 
+			# Face fills the circle (clipped by icon_bg)
 			var face_rect = TextureRect.new()
 			face_rect.texture = face_tex
-			face_rect.size = Vector2(76, 76)
-			face_rect.position = Vector2(NOTIFICATION_CARD_SIZE.x - 92, (NOTIFICATION_CARD_SIZE.y - 76) * 0.5)
+			face_rect.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 			face_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			face_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			face_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 			face_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
-			card.add_child(face_rect)
+			icon_bg.add_child(face_rect)
+
+			# Ring border overlay drawn on top of face
+			var icon_ring = Panel.new()
+			icon_ring.size = Vector2(ICON_SIZE, ICON_SIZE)
+			icon_ring.position = icon_bg.position
+			icon_ring.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			var ring_style = StyleBoxFlat.new()
+			ring_style.bg_color = Color(0, 0, 0, 0)
+			ring_style.border_color = notif_color.lightened(0.35)
+			ring_style.set_border_width_all(4)
+			ring_style.set_corner_radius_all(ICON_SIZE / 2)
+			icon_ring.add_theme_stylebox_override("panel", ring_style)
+			card.add_child(icon_ring)
 
 	# Heart particles (pink/red)
 	var particles = GPUParticles2D.new()
@@ -1390,40 +1402,148 @@ func _show_affinity_notification(char_id: String, _delta: int) -> void:
 
 
 func _show_stat_notification(stat_changes: Array[Dictionary]) -> void:
-	# Build notification text using abstract expressions (no raw numbers)
+	# Build abstract change text and track which stats changed
 	var parts: Array[String] = []
+	var changed_keys: Dictionary = {}
 	for change in stat_changes:
 		var change_label = PlayerData.get_stat_change_label(change["amount"])
 		if change_label != "":
 			parts.append("【%s】が%s" % [change["label"], change_label])
+		changed_keys[change.get("key", "")] = true
 	if parts.is_empty():
 		return
-	var text = "……" + "、".join(parts) + "。"
 
 	var layer = CanvasLayer.new()
 	layer.layer = 100
 	add_child(layer)
 
-	var card = _create_notification_card(
-		layer,
-		"腕前の変化",
-		text,
-		Color("55d4ff"),
-		Color("eaf8ff")
-	)
+	const CARD_W := 300.0
+	const CARD_H := 230.0
+	const CARD_X := 960.0
+	const CARD_Y := 72.0
 
-	var tween = create_tween()
-	tween.set_parallel(true)
-	tween.tween_property(card, "modulate:a", 1.0, 0.26).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tween.tween_property(card, "position:y", NOTIFICATION_BASE_POSITION.y - 18.0, 0.34).from(NOTIFICATION_BASE_POSITION.y + 12.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	await tween.finished
+	var card = Control.new()
+	card.position = Vector2(CARD_X + CARD_W, CARD_Y)
+	card.size = Vector2(CARD_W, CARD_H)
+	card.modulate = Color(1, 1, 1, 0)
+	layer.add_child(card)
 
-	await get_tree().create_timer(1.5).timeout
+	# Shadow
+	var shadow = ColorRect.new()
+	shadow.position = Vector2(6, 8)
+	shadow.size = Vector2(CARD_W, CARD_H)
+	shadow.color = Color(0, 0, 0, 0.28)
+	card.add_child(shadow)
 
-	var fade_tween = create_tween()
-	fade_tween.set_parallel(true)
-	fade_tween.tween_property(card, "modulate:a", 0.0, 0.38)
-	fade_tween.tween_property(card, "position:y", NOTIFICATION_BASE_POSITION.y - 30.0, 0.38)
-	await fade_tween.finished
+	# Panel background
+	var panel = Panel.new()
+	panel.size = Vector2(CARD_W, CARD_H)
+	var ps = StyleBoxFlat.new()
+	ps.bg_color = Color(0.04, 0.05, 0.10, 0.94)
+	ps.border_color = Color(0.996, 0.682, 0.204, 0.88)
+	ps.border_width_left = 5
+	ps.border_width_top = 2
+	ps.border_width_right = 2
+	ps.border_width_bottom = 2
+	ps.corner_radius_top_left = 12
+	ps.corner_radius_top_right = 12
+	ps.corner_radius_bottom_left = 12
+	ps.corner_radius_bottom_right = 12
+	panel.add_theme_stylebox_override("panel", ps)
+	card.add_child(panel)
+
+	# Content VBox
+	var vbox = VBoxContainer.new()
+	vbox.position = Vector2(14, 10)
+	vbox.size = Vector2(CARD_W - 28.0, CARD_H - 20.0)
+	vbox.add_theme_constant_override("separation", 3)
+	card.add_child(vbox)
+
+	# Title
+	var title_lbl = Label.new()
+	title_lbl.text = "腕前の変化"
+	title_lbl.add_theme_font_size_override("font_size", 17)
+	title_lbl.add_theme_color_override("font_color", Color("feae34"))
+	vbox.add_child(title_lbl)
+
+	# Divider
+	var div1 = ColorRect.new()
+	div1.custom_minimum_size = Vector2(0, 1)
+	div1.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	div1.color = Color("feae34", 0.32)
+	vbox.add_child(div1)
+
+	# Stat rows
+	const STAT_ORDER := ["technique", "sense", "guts", "charm", "insight"]
+	var stat_row_map: Dictionary = {}
+	for sk in STAT_ORDER:
+		var is_changed: bool = changed_keys.has(sk)
+		var stars := PlayerData.get_stat_stars(sk)
+		var row_name := str(PlayerData.STAT_LABEL_MAP.get(sk, sk))
+
+		var row = HBoxContainer.new()
+		row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_theme_constant_override("separation", 4)
+		if is_changed:
+			stat_row_map[sk] = row
+		vbox.add_child(row)
+
+		# Stat name
+		var nl = Label.new()
+		nl.text = row_name
+		nl.custom_minimum_size = Vector2(52, 0)
+		nl.add_theme_font_size_override("font_size", 14)
+		nl.add_theme_color_override("font_color", Color("feae34") if is_changed else Color("9ab0c8"))
+		row.add_child(nl)
+
+		# Star indicators
+		for i in range(5):
+			var star = Label.new()
+			star.text = "★" if i < stars else "☆"
+			star.add_theme_font_size_override("font_size", 14)
+			var star_col := Color("feae34", 0.95) if i < stars else Color("2e3e50", 0.9)
+			if is_changed and i < stars:
+				star_col = Color("ffe58a", 1.0)
+			star.add_theme_color_override("font_color", star_col)
+			row.add_child(star)
+
+	# Divider 2
+	var div2 = ColorRect.new()
+	div2.custom_minimum_size = Vector2(0, 1)
+	div2.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	div2.color = Color("feae34", 0.16)
+	vbox.add_child(div2)
+
+	# Abstract change text
+	var change_lbl = Label.new()
+	change_lbl.text = "……" + "、".join(parts) + "。"
+	change_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	change_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	change_lbl.add_theme_font_size_override("font_size", 13)
+	change_lbl.add_theme_color_override("font_color", Color("d8f0ff"))
+	vbox.add_child(change_lbl)
+
+	# --- Animate in (slide from right) ---
+	var in_tween = create_tween()
+	in_tween.set_parallel(true)
+	in_tween.tween_property(card, "modulate:a", 1.0, 0.25).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	in_tween.tween_property(card, "position:x", CARD_X, 0.30).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	await in_tween.finished
+
+	# --- Pulse changed stat rows ---
+	for sk in stat_row_map:
+		var row_ctrl: Control = stat_row_map[sk]
+		var pulse = create_tween()
+		pulse.tween_property(row_ctrl, "modulate", Color(1.5, 1.3, 0.6, 1.0), 0.20).set_trans(Tween.TRANS_SINE)
+		pulse.tween_property(row_ctrl, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.30).set_trans(Tween.TRANS_SINE)
+
+	await get_tree().create_timer(2.4).timeout
+
+	# --- Animate out (slide to right) ---
+	var out_tween = create_tween()
+	out_tween.set_parallel(true)
+	out_tween.tween_property(card, "modulate:a", 0.0, 0.28)
+	out_tween.tween_property(card, "position:x", CARD_X + CARD_W * 0.6, 0.30).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+	await out_tween.finished
 
 	layer.queue_free()
