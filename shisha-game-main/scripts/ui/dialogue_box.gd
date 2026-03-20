@@ -47,8 +47,8 @@ var _portrait_union_rect_cache: Dictionary = {}
 var _portrait_rects: Array[TextureRect] = []
 var _portrait_cast: Array[Dictionary] = []
 
-const DIALOGUE_WRAP_CHARS := 20
-const DIALOGUE_MAX_LINES := 2
+const DIALOGUE_WRAP_CHARS := 34
+const DIALOGUE_MAX_LINES := 3
 const ADVANCE_HOLD_DELAY := 0.34
 const ADVANCE_REPEAT_INTERVAL := 0.09
 const MAX_VISIBLE_PORTRAITS := 3
@@ -62,9 +62,9 @@ const PORTRAIT_PROFILE_DEFAULT := {
 	"side_padding": 10,
 	"top_padding": 10,
 	"bottom_padding": 8,
-	"bottom_trim_ratio": 0.38,
-	"bottom_trim_max": 260,
-	"min_visible_ratio": 0.48,
+	"bottom_trim_ratio": 0.52,
+	"bottom_trim_max": 420,
+	"min_visible_ratio": 0.38,
 	"focus_scale": 1.08,
 	"support_scale": 0.98,
 	"y_shift_ratio": 0.00,
@@ -72,24 +72,24 @@ const PORTRAIT_PROFILE_DEFAULT := {
 }
 const PORTRAIT_PROFILE_BY_CLASS := {
 	"standard": {
-		"bottom_trim_ratio": 0.40,
-		"bottom_trim_max": 320,
-		"min_visible_ratio": 0.46,
+		"bottom_trim_ratio": 0.54,
+		"bottom_trim_max": 440,
+		"min_visible_ratio": 0.36,
 		"focus_scale": 1.12,
 		"support_scale": 1.00,
 	},
 	"tall": {
-		"bottom_trim_ratio": 0.42,
-		"bottom_trim_max": 340,
-		"min_visible_ratio": 0.44,
+		"bottom_trim_ratio": 0.56,
+		"bottom_trim_max": 460,
+		"min_visible_ratio": 0.34,
 		"focus_scale": 1.18,
 		"support_scale": 1.04,
 		"y_shift_ratio": -0.02,
 	},
 	"short": {
-		"bottom_trim_ratio": 0.24,
-		"bottom_trim_max": 220,
-		"min_visible_ratio": 0.58,
+		"bottom_trim_ratio": 0.40,
+		"bottom_trim_max": 340,
+		"min_visible_ratio": 0.46,
 		"focus_scale": 1.02,
 		"support_scale": 0.92,
 		"y_shift_ratio": 0.02,
@@ -110,16 +110,16 @@ const PORTRAIT_SLOT_LAYOUTS := {
 	# height_ratio / bottom_overscan_ratio は全画面サイズ基準（_apply_portrait_slot が get_viewport_rect().size を使う）
 	# ノベルゲー標準の大きめ立ち絵サイズ（画面高の80〜90%を占める）
 	1: [
-		{"anchor_x": 0.50, "width_ratio": 0.64, "height_ratio": 0.99, "bottom_overscan_ratio": 0.10, "brightness": 1.0, "alpha": 1.0, "z": 3},
+		{"anchor_x": 0.50, "width_ratio": 0.70, "height_ratio": 1.08, "bottom_overscan_ratio": 0.12, "brightness": 1.0, "alpha": 1.0, "z": 3},
 	],
 	2: [
-		{"anchor_x": 0.24, "width_ratio": 0.50, "height_ratio": 0.88, "bottom_overscan_ratio": 0.08, "brightness": 0.72, "alpha": 0.88, "z": 1},
-		{"anchor_x": 0.64, "width_ratio": 0.60, "height_ratio": 0.98, "bottom_overscan_ratio": 0.10, "brightness": 1.0, "alpha": 1.0, "z": 3},
+		{"anchor_x": 0.24, "width_ratio": 0.55, "height_ratio": 0.96, "bottom_overscan_ratio": 0.10, "brightness": 0.72, "alpha": 0.88, "z": 1},
+		{"anchor_x": 0.64, "width_ratio": 0.65, "height_ratio": 1.06, "bottom_overscan_ratio": 0.12, "brightness": 1.0, "alpha": 1.0, "z": 3},
 	],
 	3: [
-		{"anchor_x": 0.16, "width_ratio": 0.44, "height_ratio": 0.84, "bottom_overscan_ratio": 0.08, "brightness": 0.68, "alpha": 0.86, "z": 1},
-		{"anchor_x": 0.50, "width_ratio": 0.56, "height_ratio": 0.96, "bottom_overscan_ratio": 0.10, "brightness": 1.0, "alpha": 1.0, "z": 3},
-		{"anchor_x": 0.84, "width_ratio": 0.44, "height_ratio": 0.84, "bottom_overscan_ratio": 0.08, "brightness": 0.76, "alpha": 0.90, "z": 2},
+		{"anchor_x": 0.16, "width_ratio": 0.48, "height_ratio": 0.92, "bottom_overscan_ratio": 0.10, "brightness": 0.68, "alpha": 0.86, "z": 1},
+		{"anchor_x": 0.50, "width_ratio": 0.60, "height_ratio": 1.04, "bottom_overscan_ratio": 0.12, "brightness": 1.0, "alpha": 1.0, "z": 3},
+		{"anchor_x": 0.84, "width_ratio": 0.48, "height_ratio": 0.92, "bottom_overscan_ratio": 0.10, "brightness": 0.76, "alpha": 0.90, "z": 2},
 	],
 }
 const PORTRAIT_CLASS_BY_SPEAKER := {

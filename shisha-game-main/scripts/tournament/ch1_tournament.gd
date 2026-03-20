@@ -851,7 +851,7 @@ func _ensure_fullscreen_temp_gauge() -> void:
 	if _fullscreen_temp_gauge_node != null and is_instance_valid(_fullscreen_temp_gauge_node):
 		return
 	var gauge = _TempGaugeVisual.new()
-	gauge.custom_minimum_size = Vector2(0, 38)
+	gauge.custom_minimum_size = Vector2(0, 28)
 	gauge.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	fullscreen_temp_gauge_host.add_child(gauge)
 	_fullscreen_temp_gauge_node = gauge
@@ -5835,8 +5835,8 @@ func _show_temp_gauge() -> void:
 	_remove_temp_gauge()
 	var gauge = _TempGaugeVisual.new()
 	gauge.name = "TempGauge"
-	gauge.custom_minimum_size = Vector2(280, 36)
-	gauge.size = Vector2(280, 36)
+	gauge.custom_minimum_size = Vector2(280, 26)
+	gauge.size = Vector2(280, 26)
 	_temp_gauge_node = gauge
 	_update_temp_gauge()
 	choice_container.add_child(gauge)
@@ -5871,8 +5871,8 @@ class _TempGaugeVisual extends Control:
 	func _draw() -> void:
 		var w = size.x
 		var h = size.y
-		var bar_y = 16.0
-		var bar_h = 14.0
+		var bar_y = 4.0
+		var bar_h = 12.0
 		var margin = 10.0
 
 		# 背景バー（暗い紫）

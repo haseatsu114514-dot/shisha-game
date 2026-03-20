@@ -172,7 +172,8 @@ func _populate_items() -> void:
 		empty.text = "（フレーバーは持っていません）"
 		item_vbox.add_child(empty)
 	else:
-		for f_id in PlayerData.flavor_inventory:
+		for item in PlayerData.flavor_inventory:
+			var f_id: String = item.get("id", "") if item is Dictionary else str(item)
 			var label = Label.new()
 			label.text = "・" + PlayerData.get_flavor_name(f_id)
 			item_vbox.add_child(label)
