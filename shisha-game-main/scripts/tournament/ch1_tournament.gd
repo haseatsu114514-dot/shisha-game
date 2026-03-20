@@ -72,7 +72,7 @@ const REBUTTAL_PROMPTS := [
 const REWARD_BY_RANK := {1: 30000, 2: 15000, 3: 5000, 4: 0}
 const PULL_DIFFICULTY := [0.86, 1.0, 1.22, 1.06]
 const TOTAL_PACKING_GRAMS := 12
-const INFO_WRAP_CHARS := 28
+const INFO_WRAP_CHARS := 36
 const INFO_PAGE_MAX_LINES := 6
 const MAIN_PANEL_TOP_DEFAULT := 52.0
 const MAIN_PANEL_TOP_COMPACT := 52.0
@@ -468,16 +468,46 @@ var _pull_gauge_visual_node: Control = null
 var _pull_status_label: Label = null
 var _pull_quality_display_label: Label = null
 
+## ─── 煙パーティクルエフェクト ───
+var _smoke_particles_ambient: CPUParticles2D = null
+var _smoke_particles_burst: CPUParticles2D = null
+const SMOKE_AMBIENT_AMOUNT_NORMAL := 25
+const SMOKE_AMBIENT_AMOUNT_FULLSCREEN := 50
+
 const SPEAKER_NAMES := {
 	"hajime": "はじめ",
-	"sumi": "炭場",
+	"sumi": "スミさん",
 	"naru": "なる",
 	"adam": "アダム",
-	"minto": "眠都(みんと)",
+	"minto": "みんと",
+	"tsumugi": "つむぎ",
+	"tumugi": "つむぎ",
+	"mashiro": "ましろ",
+	"ageha": "アゲハ",
+	"salaryman": "サラリーマン",
+	"kako": "かこ",
+	"rira": "りら",
 	"pakki": "パッキー",
 	"nagumo": "南雲修二",
 	"maezono": "前園壮一郎",
 	"dr_kemuri": "ドクター・ケムリ",
+	"kumicho": "シーシャ組長",
+	"rei": "零-REI-",
+	"emil": "エミル",
+	"dj_smoke": "DJ SMOKE",
+	"kirishima": "霧島レン",
+	"mukai_master": "ムカイさん",
+	"nandi": "ナンディ",
+	"steve": "スティーブ",
+	"volk": "ヴォルク",
+	"master_hookah": "マスター・フーカ",
+	"sheikh": "シェイク",
+	"da_silva": "ダ・シルヴァ太陽",
+	"shisha_9000": "SHISHA-9000",
+	"tetsuko": "てつこ",
+	"shiramine": "白峰恒一郎",
+	"hazime": "はじめ",
+	"staff_choizap": "チョイザップスタッフ",
 }
 
 func _process(_delta: float) -> void:
@@ -544,6 +574,7 @@ func _ready() -> void:
 		GameManager.transition_to_tournament()
 	_prepare_run()
 	_init_cyber_effects()
+	_init_smoke_particles()
 
 
 func _prepare_run() -> void:
@@ -737,9 +768,6 @@ func _set_phase(step_num: int, title: String, body: String) -> void:
 
 func _apply_step_layout(step_num: int) -> void:
 	var compact = _is_compact_layout_step(step_num)
-	if main_panel != null:
-		main_panel.offset_top = MAIN_PANEL_TOP_COMPACT if compact else MAIN_PANEL_TOP_DEFAULT
-		main_panel.offset_bottom = MAIN_PANEL_BOTTOM
 	if step_card != null:
 		step_card.custom_minimum_size.y = STEP_CARD_HEIGHT_COMPACT if compact else STEP_CARD_HEIGHT_DEFAULT
 	if preview_panel != null:
@@ -769,6 +797,7 @@ func _enter_immersive_stage() -> void:
 	_update_fullscreen_temp_gauge()
 	_sync_fullscreen_body_visibility()
 	_animate_fullscreen_transition()
+	_set_smoke_density(SMOKE_AMBIENT_AMOUNT_FULLSCREEN)
 
 
 func _exit_immersive_stage(hide_stage: bool = true) -> void:
@@ -781,6 +810,7 @@ func _exit_immersive_stage(hide_stage: bool = true) -> void:
 	side_panel.show()
 	choice_container.size_flags_vertical = 0
 	_sync_fullscreen_body_visibility()
+	_set_smoke_density(SMOKE_AMBIENT_AMOUNT_NORMAL)
 	if hide_stage and fullscreen_stage != null:
 		fullscreen_stage.hide()
 
@@ -788,7 +818,7 @@ func _exit_immersive_stage(hide_stage: bool = true) -> void:
 func _animate_fullscreen_transition() -> void:
 	if fullscreen_transition == null:
 		return
-	fullscreen_transition.color = Color(0.02, 0.03, 0.06, 0.75)
+	fullscreen_transition.color = Color(0.05, 0.02, 0.10, 0.75)
 	var tween = create_tween()
 	tween.tween_property(fullscreen_transition, "color:a", 0.0, 0.24).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 
@@ -821,7 +851,7 @@ func _ensure_fullscreen_temp_gauge() -> void:
 	if _fullscreen_temp_gauge_node != null and is_instance_valid(_fullscreen_temp_gauge_node):
 		return
 	var gauge = _TempGaugeVisual.new()
-	gauge.custom_minimum_size = Vector2(0, 38)
+	gauge.custom_minimum_size = Vector2(0, 28)
 	gauge.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	fullscreen_temp_gauge_host.add_child(gauge)
 	_fullscreen_temp_gauge_node = gauge
@@ -851,8 +881,6 @@ func _set_focus_mode(active: bool) -> void:
 	var compact = _is_compact_layout_step(_current_step_num)
 	if deck_hbox != null:
 		deck_hbox.visible = not active
-	if main_panel != null:
-		main_panel.offset_top = MAIN_PANEL_TOP_COMPACT if compact else MAIN_PANEL_TOP_DEFAULT
 	if info_label != null:
 		info_label.visible = not active
 		info_label.custom_minimum_size.y = 72.0 if active else (INFO_HEIGHT_COMPACT if compact else INFO_HEIGHT_DEFAULT)
@@ -1058,33 +1086,77 @@ func _create_action_button(text: String, callback: Callable, selected: bool = fa
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	button.add_theme_font_size_override("font_size", 22 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 18)
 	button.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	var normal_style = StyleBoxFlat.new()
-	normal_style.bg_color = Color("251833", 0.96) if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else Color("181425", 0.95)
-	normal_style.border_color = Color("feae34", 0.7) if selected else Color("e43b44", 0.5)
-	normal_style.border_width_bottom = 3 if selected else 2
-	normal_style.border_width_left = 1
-	normal_style.border_width_right = 1
-	normal_style.border_width_top = 1
-	normal_style.corner_radius_bottom_left = 10 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 2
-	normal_style.corner_radius_bottom_right = 10 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 2
-	normal_style.corner_radius_top_left = 10 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 2
-	normal_style.corner_radius_top_right = 10 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 2
-	normal_style.content_margin_left = 20 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 16
-	normal_style.content_margin_right = 20 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 16
-	normal_style.content_margin_top = 14 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 8
-	normal_style.content_margin_bottom = 14 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 8
-	button.add_theme_stylebox_override("normal", normal_style)
-	var hover_style = normal_style.duplicate()
-	hover_style.bg_color = Color("e43b44", 0.25 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 0.25)
-	hover_style.border_color = Color("feae34") if selected else Color("e43b44", 0.9)
-	hover_style.border_width_bottom = 3
-	button.add_theme_stylebox_override("hover", hover_style)
+	# 紫×黒テーマ: StyleBoxTexture で大会用ボタンアセットを適用
+	var normal_tex = load("res://assets/ui/ui_tournament_button_normal.png")
+	var hover_tex = load("res://assets/ui/ui_tournament_button_hover.png")
+	var pressed_tex = load("res://assets/ui/ui_tournament_button_pressed.png")
+	if normal_tex != null and hover_tex != null and pressed_tex != null:
+		var normal_style = StyleBoxTexture.new()
+		normal_style.texture = normal_tex
+		normal_style.texture_margin_left = 16.0
+		normal_style.texture_margin_right = 16.0
+		normal_style.texture_margin_top = 12.0
+		normal_style.texture_margin_bottom = 12.0
+		normal_style.content_margin_left = 20.0 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 16.0
+		normal_style.content_margin_right = 20.0 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 16.0
+		normal_style.content_margin_top = 14.0 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 8.0
+		normal_style.content_margin_bottom = 14.0 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 8.0
+		if selected:
+			normal_style.modulate_color = Color("feae34")
+		button.add_theme_stylebox_override("normal", normal_style)
+		var hover_style = StyleBoxTexture.new()
+		hover_style.texture = hover_tex
+		hover_style.texture_margin_left = 16.0
+		hover_style.texture_margin_right = 16.0
+		hover_style.texture_margin_top = 12.0
+		hover_style.texture_margin_bottom = 12.0
+		hover_style.content_margin_left = 20.0 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 16.0
+		hover_style.content_margin_right = 20.0 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 16.0
+		hover_style.content_margin_top = 14.0 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 8.0
+		hover_style.content_margin_bottom = 14.0 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 8.0
+		if selected:
+			hover_style.modulate_color = Color("feae34")
+		button.add_theme_stylebox_override("hover", hover_style)
+		var pressed_style = StyleBoxTexture.new()
+		pressed_style.texture = pressed_tex
+		pressed_style.texture_margin_left = 16.0
+		pressed_style.texture_margin_right = 16.0
+		pressed_style.texture_margin_top = 12.0
+		pressed_style.texture_margin_bottom = 12.0
+		pressed_style.content_margin_left = 20.0 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 16.0
+		pressed_style.content_margin_right = 20.0 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 16.0
+		pressed_style.content_margin_top = 14.0 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 8.0
+		pressed_style.content_margin_bottom = 14.0 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 8.0
+		button.add_theme_stylebox_override("pressed", pressed_style)
+	else:
+		# フォールバック: テクスチャ読み込み失敗時は紫系StyleBoxFlat
+		var normal_style = StyleBoxFlat.new()
+		normal_style.bg_color = Color("251833", 0.96) if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else Color("181425", 0.95)
+		normal_style.border_color = Color("7b2fbe", 0.7) if selected else Color("6a1eb0", 0.5)
+		normal_style.border_width_bottom = 3 if selected else 2
+		normal_style.border_width_left = 1
+		normal_style.border_width_right = 1
+		normal_style.border_width_top = 1
+		normal_style.corner_radius_bottom_left = 10 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 2
+		normal_style.corner_radius_bottom_right = 10 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 2
+		normal_style.corner_radius_top_left = 10 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 2
+		normal_style.corner_radius_top_right = 10 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 2
+		normal_style.content_margin_left = 20 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 16
+		normal_style.content_margin_right = 20 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 16
+		normal_style.content_margin_top = 14 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 8
+		normal_style.content_margin_bottom = 14 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 8
+		button.add_theme_stylebox_override("normal", normal_style)
+		var hover_style = normal_style.duplicate()
+		hover_style.bg_color = Color("7b2fbe", 0.35)
+		hover_style.border_color = Color("b55088") if selected else Color("7b2fbe", 0.9)
+		hover_style.border_width_bottom = 3
+		button.add_theme_stylebox_override("hover", hover_style)
+		var pressed_style = normal_style.duplicate()
+		pressed_style.bg_color = Color("6a1eb0", 0.4)
+		pressed_style.border_color = Color("7b2fbe")
+		button.add_theme_stylebox_override("pressed", pressed_style)
 	button.add_theme_color_override("font_color", GameManager.THEME_CREAM_TEXT)
 	button.add_theme_color_override("font_hover_color", Color("ffffff"))
-	var pressed_style = normal_style.duplicate()
-	pressed_style.bg_color = Color("e43b44", 0.4)
-	pressed_style.border_color = Color("e43b44")
-	button.add_theme_stylebox_override("pressed", pressed_style)
 	if callback.is_valid():
 		button.pressed.connect(func() -> void:
 			GameManager.play_ui_se("cursor")
@@ -1101,6 +1173,26 @@ func _add_choice_button_to(parent: Node, text: String, callback: Callable, selec
 
 func _add_choice_button(text: String, callback: Callable) -> Button:
 	var button = _create_action_button(text, callback)
+	# 選択肢ボタンに Persona 風チョイスボックステクスチャを適用
+	var choice_tex = load("res://assets/ui/ui_tournament_choice_box.png")
+	if choice_tex != null:
+		var choice_style = StyleBoxTexture.new()
+		choice_style.texture = choice_tex
+		choice_style.texture_margin_left = 24.0
+		choice_style.texture_margin_right = 24.0
+		choice_style.texture_margin_top = 10.0
+		choice_style.texture_margin_bottom = 10.0
+		choice_style.content_margin_left = 28.0
+		choice_style.content_margin_right = 28.0
+		choice_style.content_margin_top = 14.0
+		choice_style.content_margin_bottom = 14.0
+		button.add_theme_stylebox_override("normal", choice_style)
+		var hover_choice = choice_style.duplicate()
+		hover_choice.modulate_color = Color("c9a0ff")
+		button.add_theme_stylebox_override("hover", hover_choice)
+		var pressed_choice = choice_style.duplicate()
+		pressed_choice.modulate_color = Color("6a1eb0")
+		button.add_theme_stylebox_override("pressed", pressed_choice)
 	choice_container.add_child(button)
 	return button
 
@@ -1112,10 +1204,10 @@ func _create_stage_card(title_text: String, subtitle_text: String = "", min_heig
 	if min_height > 0.0:
 		panel.custom_minimum_size = Vector2(0, min_height)
 
-	# スモーク・ダークテーマのStyleBox
+	# 紫×黒テーマのStyleBox
 	var panel_style = StyleBoxFlat.new()
 	panel_style.bg_color = Color("140d1f", 0.96)
-	panel_style.border_color = Color("feae34", 0.45)
+	panel_style.border_color = Color("7b2fbe", 0.50)
 	panel_style.border_width_bottom = 1
 	panel_style.border_width_left = 1
 	panel_style.border_width_right = 1
@@ -1233,10 +1325,10 @@ func _show_stage_briefing(step_num: int, title: String, body: String, lines: Arr
 
 	if _show_tutorial and not tutorial_lines.is_empty():
 		var tutorial_card = _create_stage_card("📋 操作 / ルール", "初回のみ表示。")
-		# チュートリアルカードは青系ボーダーで差別化
+		# チュートリアルカードはラベンダー系ボーダーで差別化
 		var tutorial_style = StyleBoxFlat.new()
-		tutorial_style.bg_color = Color("0d1a2e", 0.96)
-		tutorial_style.border_color = Color("52a2ff", 0.55)
+		tutorial_style.bg_color = Color("120d22", 0.96)
+		tutorial_style.border_color = Color("9b6ddb", 0.55)
 		tutorial_style.border_width_bottom = 1
 		tutorial_style.border_width_left = 1
 		tutorial_style.border_width_right = 1
@@ -2643,7 +2735,7 @@ func _start_mind_barrage_step() -> void:
 	_mind_life_label.name = "MindLifeLabel"
 	_mind_life_label.text = _build_mind_life_text()
 	_mind_life_label.add_theme_font_size_override("font_size", 28)
-	_mind_life_label.add_theme_color_override("font_color", Color("e43b44", 0.9))
+	_mind_life_label.add_theme_color_override("font_color", Color("b55088", 0.9))
 	_mind_life_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	left_panel.add_child(_mind_life_label)
 
@@ -2662,7 +2754,7 @@ func _start_mind_barrage_step() -> void:
 	_mind_graze_label.name = "MindGrazeLabel"
 	_mind_graze_label.text = ""
 	_mind_graze_label.add_theme_font_size_override("font_size", 16)
-	_mind_graze_label.add_theme_color_override("font_color", Color("00e5ff", 0.8))
+	_mind_graze_label.add_theme_color_override("font_color", Color("c9a0ff", 0.8))
 	_mind_graze_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_mind_graze_label.custom_minimum_size = Vector2(150, 0)
 	left_panel.add_child(_mind_graze_label)
@@ -2702,10 +2794,10 @@ func _start_mind_barrage_step() -> void:
 	arena.add_child(grid)
 	_mind_arena_grid = grid
 
-	# アリーナ枠線（バーミリオン + グロー）
+	# アリーナ枠線（紫テーマ）
 	var arena_border = ReferenceRect.new()
 	arena_border.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	arena_border.border_color = Color("e43b44", 0.6)
+	arena_border.border_color = Color("7b2fbe", 0.6)
 	arena_border.border_width = 2.0
 	arena_border.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	arena.add_child(arena_border)
@@ -2725,7 +2817,7 @@ func _start_mind_barrage_step() -> void:
 	_mind_player_draw_node = soul
 	# 旧互換用（_sync_mind_player_nodeで使う）
 	_mind_player_node = ColorRect.new()
-	_mind_player_node.color = Color("e43b44", 0.0)
+	_mind_player_node.color = Color("b55088", 0.0)
 	_mind_player_node.size = _mind_player_size
 	_mind_player_node.custom_minimum_size = _mind_player_size
 	_mind_player_node.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -2804,7 +2896,7 @@ func _start_mind_barrage_step() -> void:
 	var focus_hint = Label.new()
 	focus_hint.text = "Shift / Z: 集中モード\n（低速・判定縮小）\nニア回避で時間短縮"
 	focus_hint.add_theme_font_size_override("font_size", 13)
-	focus_hint.add_theme_color_override("font_color", Color("00e5ff", 0.5))
+	focus_hint.add_theme_color_override("font_color", Color("c9a0ff", 0.5))
 	focus_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	focus_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	right_vbox.add_child(focus_hint)
@@ -2823,7 +2915,7 @@ func _start_mind_barrage_step() -> void:
 	var center = Label.new()
 	center.text = "SOUL"
 	center.add_theme_font_size_override("font_size", 18)
-	center.add_theme_color_override("font_color", Color("e43b44", 0.8))
+	center.add_theme_color_override("font_color", Color("b55088", 0.8))
 	center.custom_minimum_size = Vector2(88, 66)
 	center.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	center.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
@@ -3036,7 +3128,7 @@ func _spawn_mind_barrage_word() -> void:
 	var progress = clampf(_mind_elapsed / maxf(_mind_duration_total, 1.0), 0.0, 1.0)
 	var category_data = _pick_barrage_category(progress)
 	var word_pool: Array = category_data.get("pool", MIND_BARRAGE_WORDS)
-	var word_color: Color = category_data.get("color", Color("e43b44", 0.85))
+	var word_color: Color = category_data.get("color", Color("9b6ddb", 0.85))
 	var phase_name: String = category_data.get("phase", "")
 	var pattern_type: String = category_data.get("pattern", "aimed")
 
@@ -3214,7 +3306,7 @@ func _spawn_burst_flash(center: Vector2) -> void:
 	if _mind_arena_layer == null or not is_instance_valid(_mind_arena_layer):
 		return
 	var flash = ColorRect.new()
-	flash.color = Color("feae34", 0.4)
+	flash.color = Color("c9a0ff", 0.4)
 	flash.size = Vector2(24, 24)
 	flash.position = center - Vector2(12, 12)
 	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -3229,32 +3321,32 @@ func _spawn_burst_flash(center: Vector2) -> void:
 ## 弾幕カテゴリ選択（時間経過でフェーズ遷移 + パターン抽選）
 func _pick_barrage_category(progress: float) -> Dictionary:
 	if progress < 0.35:
-		# Phase 1: 内なる不安（静かな立ち上がり）- 基本の狙撃パターン
+		# Phase 1: 内なる不安（静かな立ち上がり）- 基本の狙撃パターン（淡い紫）
 		return {
 			"pool": MIND_WORDS_ANXIETY,
-			"color": Color("8b9bb4", 0.9),
+			"color": Color("9b6ddb", 0.9),
 			"phase": "― 不安が湧き上がる ―",
 			"pattern": "aimed",
 		}
 	elif progress < 0.7:
-		# Phase 2: 観客の声（外からのプレッシャー）- 扇形が混じる
+		# Phase 2: 観客の声（外からのプレッシャー）- 扇形が混じる（マゼンタ/ラベンダー）
 		var pattern = "aimed" if randf() < 0.6 else "spread"
 		if randf() < 0.6:
 			return {
 				"pool": MIND_WORDS_AUDIENCE,
-				"color": Color("feae34", 0.85),
+				"color": Color("c9a0ff", 0.85),
 				"phase": "― 会場の声が聞こえる ―",
 				"pattern": pattern,
 			}
 		else:
 			return {
 				"pool": MIND_WORDS_ANXIETY,
-				"color": Color("8b9bb4", 0.9),
+				"color": Color("9b6ddb", 0.9),
 				"phase": "― 会場の声が聞こえる ―",
 				"pattern": pattern,
 			}
 	else:
-		# Phase 3: ライバルへの畏怖 + 不安の最高潮 - 放射・十字が混じる
+		# Phase 3: ライバルへの畏怖 + 不安の最高潮 - 放射・十字が混じる（深紫/マゼンタ）
 		var pattern_roll = randf()
 		var pattern = "aimed"
 		if pattern_roll < 0.3:
@@ -3267,21 +3359,21 @@ func _pick_barrage_category(progress: float) -> Dictionary:
 		if roll < 0.4:
 			return {
 				"pool": MIND_WORDS_RIVAL,
-				"color": Color("e43b44", 0.9),
+				"color": Color("b55088", 0.9),
 				"phase": "― 心が折れそうだ ―",
 				"pattern": pattern,
 			}
 		elif roll < 0.7:
 			return {
 				"pool": MIND_WORDS_AUDIENCE,
-				"color": Color("feae34", 0.85),
+				"color": Color("c9a0ff", 0.85),
 				"phase": "― 心が折れそうだ ―",
 				"pattern": pattern,
 			}
 		else:
 			return {
 				"pool": MIND_WORDS_ANXIETY,
-				"color": Color("e43b44", 0.9),
+				"color": Color("b55088", 0.9),
 				"phase": "― 心が折れそうだ ―",
 				"pattern": pattern,
 			}
@@ -3319,7 +3411,7 @@ func _update_mind_bullets(dt: float) -> void:
 			_mind_invincible_timer = 1.0
 			_mind_hit_flash()
 			_mind_update_face()
-			_spawn_hit_particles(pos, 16, Color("e43b44"))
+			_spawn_hit_particles(pos, 16, Color("b55088"))
 			_spawn_mind_hit_popup(pos)
 			node.queue_free()
 			_mind_bullets.remove_at(i)
@@ -3343,7 +3435,7 @@ func _update_mind_bullets(dt: float) -> void:
 				# ネオングレイズエフェクト
 				_spawn_graze_ring(pos, _mind_combo)
 				_spawn_graze_popup(_mind_player_pos, _mind_combo)
-				_spawn_graze_particles(pos, 8, Color("00e5ff"))
+				_spawn_graze_particles(pos, 8, Color("c9a0ff"))
 				if _mind_player_draw_node != null and is_instance_valid(_mind_player_draw_node):
 					(_mind_player_draw_node as _MindSoulNode).graze_flash_t = 1.0
 
@@ -3623,9 +3715,9 @@ func _mind_hit_flash() -> void:
 		return
 	# 画面シェイク
 	_mind_screen_shake = 1.0
-	# 赤フラッシュ
+	# マゼンタフラッシュ（紫テーマ）
 	var flash = ColorRect.new()
-	flash.color = Color("e43b44", 0.45)
+	flash.color = Color("b55088", 0.45)
 	flash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_mind_arena_layer.add_child(flash)
@@ -3653,7 +3745,7 @@ func _spawn_mind_hit_popup(pos: Vector2) -> void:
 	var hit_label = Label.new()
 	hit_label.text = "HIT!  残機 %s" % _build_mind_life_text()
 	hit_label.add_theme_font_size_override("font_size", 36)
-	hit_label.add_theme_color_override("font_color", Color("e43b44"))
+	hit_label.add_theme_color_override("font_color", Color("b55088"))
 	hit_label.add_theme_color_override("font_outline_color", Color.BLACK)
 	hit_label.add_theme_constant_override("outline_size", 4)
 	hit_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -3717,7 +3809,7 @@ func _update_mind_trail() -> void:
 	# 新しいトレイルドットを追加
 	var trail_dot = ColorRect.new()
 	trail_dot.size = Vector2(4, 4) if not _mind_focus_mode else Vector2(3, 3)
-	trail_dot.color = Color("e43b44", 0.4) if not _mind_focus_mode else Color("00e5ff", 0.5)
+	trail_dot.color = Color("b55088", 0.4) if not _mind_focus_mode else Color("c9a0ff", 0.5)
 	trail_dot.position = _mind_player_pos - trail_dot.size * 0.5
 	trail_dot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_mind_arena_layer.add_child(trail_dot)
@@ -3814,14 +3906,14 @@ func _update_bullet_glow(bullet: Dictionary, node: Label, dist: float, dt: float
 	if graze_glow > 0.0:
 		graze_glow = maxf(0.0, graze_glow - dt * 2.5)
 		bullet["graze_glow"] = graze_glow
-		node.modulate = base_col.lerp(Color("00e5ff"), graze_glow)
+		node.modulate = base_col.lerp(Color("c9a0ff"), graze_glow)
 		return
 
 	# 近接グロー: GRAZE_DISTANCE * 1.8 以内でシアンへ
 	var near_zone := MIND_GRAZE_DISTANCE * 1.8
 	if dist < near_zone:
 		var t := clampf(1.0 - dist / near_zone, 0.0, 1.0)
-		node.modulate = base_col.lerp(Color("00e5ff"), t * 0.7)
+		node.modulate = base_col.lerp(Color("c9a0ff"), t * 0.7)
 	else:
 		node.modulate = base_col
 
@@ -3848,12 +3940,12 @@ func _spawn_graze_popup(center: Vector2, combo: int) -> void:
 		lbl.add_theme_color_override("font_color", Color("feae34"))
 	elif combo >= 5:
 		lbl.text = "ニア! x%d" % combo
-		lbl.add_theme_color_override("font_color", Color("00e5ff"))
+		lbl.add_theme_color_override("font_color", Color("c9a0ff"))
 	else:
 		lbl.text = "ニア"
-		lbl.add_theme_color_override("font_color", Color("00e5ff"))
+		lbl.add_theme_color_override("font_color", Color("c9a0ff"))
 	lbl.add_theme_font_size_override("font_size", 14)
-	lbl.add_theme_color_override("font_outline_color", Color(0, 0.04, 0.08, 0.9))
+	lbl.add_theme_color_override("font_outline_color", Color(0.05, 0.02, 0.10, 0.9))
 	lbl.add_theme_constant_override("outline_size", 4)
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_mind_arena_layer.add_child(lbl)
@@ -3871,11 +3963,11 @@ func _update_mind_combo_display() -> void:
 			_mind_combo_label.text = "%d COMBO" % _mind_combo
 			# コンボ数に応じて色を変える
 			if _mind_combo >= 15:
-				_mind_combo_label.add_theme_color_override("font_color", Color("e43b44"))
+				_mind_combo_label.add_theme_color_override("font_color", Color("b55088"))
 			elif _mind_combo >= 8:
 				_mind_combo_label.add_theme_color_override("font_color", Color("feae34"))
 			else:
-				_mind_combo_label.add_theme_color_override("font_color", Color("00e5ff"))
+				_mind_combo_label.add_theme_color_override("font_color", Color("c9a0ff"))
 		else:
 			_mind_combo_label.text = ""
 	if _mind_graze_label != null and is_instance_valid(_mind_graze_label):
@@ -3893,9 +3985,9 @@ func _mind_phase_transition_effect() -> void:
 	var flash = ColorRect.new()
 	var progress = clampf(_mind_elapsed / maxf(_mind_duration_total, 1.0), 0.0, 1.0)
 	if progress < 0.5:
-		flash.color = Color("feae34", 0.3)
+		flash.color = Color("7b2fbe", 0.3)
 	else:
-		flash.color = Color("e43b44", 0.35)
+		flash.color = Color("b55088", 0.35)
 	flash.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	flash.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_mind_arena_layer.add_child(flash)
@@ -4050,7 +4142,7 @@ func _show_pull_step() -> void:
 	heat_label.name = "PullHeatLabel"
 	heat_label.text = "熱: %s" % _heat_label()
 	heat_label.add_theme_font_size_override("font_size", 17)
-	var heat_col = Color("e43b44") if _heat_state > 0 else (Color("8bd5ff") if _heat_state < 0 else Color("ead4aa"))
+	var heat_col = Color("b55088") if _heat_state > 0 else (Color("9b6ddb") if _heat_state < 0 else Color("ead4aa"))
 	heat_label.add_theme_color_override("font_color", heat_col)
 	heat_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	left_panel.add_child(heat_label)
@@ -4061,19 +4153,19 @@ func _show_pull_step() -> void:
 	var advice_col: Color
 	if _heat_state >= 2:
 		advice_text = "長く吸って冷ます"
-		advice_col = Color("8bd5ff")
+		advice_col = Color("9b6ddb")
 	elif _heat_state == 1:
 		advice_text = "少し長めに"
-		advice_col = Color("8bd5ff", 0.8)
+		advice_col = Color("9b6ddb", 0.8)
 	elif _heat_state == 0:
 		advice_text = "普通の吸いでOK"
 		advice_col = Color("ead4aa", 0.7)
 	elif _heat_state == -1:
 		advice_text = "少し短めに"
-		advice_col = Color("e43b44", 0.8)
+		advice_col = Color("b55088", 0.8)
 	else:
 		advice_text = "短く吸って温める"
-		advice_col = Color("e43b44")
+		advice_col = Color("b55088")
 	temp_advice.text = advice_text
 	temp_advice.add_theme_font_size_override("font_size", 14)
 	temp_advice.add_theme_color_override("font_color", advice_col)
@@ -5743,8 +5835,8 @@ func _show_temp_gauge() -> void:
 	_remove_temp_gauge()
 	var gauge = _TempGaugeVisual.new()
 	gauge.name = "TempGauge"
-	gauge.custom_minimum_size = Vector2(280, 36)
-	gauge.size = Vector2(280, 36)
+	gauge.custom_minimum_size = Vector2(280, 26)
+	gauge.size = Vector2(280, 26)
 	_temp_gauge_node = gauge
 	_update_temp_gauge()
 	choice_container.add_child(gauge)
@@ -5779,12 +5871,29 @@ class _TempGaugeVisual extends Control:
 	func _draw() -> void:
 		var w = size.x
 		var h = size.y
-		var bar_y = 16.0
-		var bar_h = 14.0
+		var bar_y = 4.0
+		var bar_h = 12.0
 		var margin = 10.0
 
-		# 背景バー
-		draw_rect(Rect2(margin, bar_y, w - margin * 2, bar_h), Color("262b44"), true)
+		# 背景バー（暗い紫）
+		draw_rect(Rect2(margin, bar_y, w - margin * 2, bar_h), Color("1a0e2e"), true)
+		# 枠線（暗い紫）
+		draw_rect(Rect2(margin, bar_y, w - margin * 2, bar_h), Color("3d1f6d", 0.6), false, 1.0)
+
+		# 温度グラデーション背景（紫→ピンク→赤）
+		var bar_w: float = w - margin * 2
+		var grad_steps := 20
+		for i in range(grad_steps):
+			var t: float = float(i) / float(grad_steps)
+			var grad_col: Color
+			if t < 0.5:
+				grad_col = Color("6a1eb0").lerp(Color("b55088"), t * 2.0)
+			else:
+				grad_col = Color("b55088").lerp(Color("e43b44"), (t - 0.5) * 2.0)
+			grad_col.a = 0.15
+			var gx: float = margin + bar_w * t
+			var gw: float = bar_w / float(grad_steps) + 1.0
+			draw_rect(Rect2(gx, bar_y, gw, bar_h), grad_col, true)
 
 		# 合格帯（ターゲット範囲）
 		var range_span = temp_max - temp_min
@@ -5792,11 +5901,11 @@ class _TempGaugeVisual extends Control:
 		var target_right = margin + (target_range.y - temp_min) / range_span * (w - margin * 2)
 		draw_rect(Rect2(target_left, bar_y, target_right - target_left, bar_h), Color("3e8948", 0.7), true)
 
-		# 現在温度マーカー
+		# 現在温度マーカー（紫テーマ: 合格=ゴールド、不合格=マゼンタ）
 		var current_x = margin + (current_temp - temp_min) / range_span * (w - margin * 2)
 		current_x = clampf(current_x, margin, w - margin)
 		var in_target = current_temp >= target_range.x and current_temp <= target_range.y
-		var marker_color = Color("feae34") if in_target else Color("e43b44")
+		var marker_color = Color("feae34") if in_target else Color("b55088")
 
 		# 三角マーカー
 		var tri = PackedVector2Array([
@@ -5807,9 +5916,9 @@ class _TempGaugeVisual extends Control:
 		draw_colored_polygon(tri, marker_color)
 		draw_line(Vector2(current_x, bar_y), Vector2(current_x, bar_y + bar_h), marker_color, 2.0)
 
-		# ラベル
-		draw_string(ThemeDB.fallback_font, Vector2(margin, h - 2), "%d℃" % int(temp_min), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("8b9bb4"))
-		draw_string(ThemeDB.fallback_font, Vector2(w - margin - 30, h - 2), "%d℃" % int(temp_max), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("8b9bb4"))
+		# ラベル（ラベンダー）
+		draw_string(ThemeDB.fallback_font, Vector2(margin, h - 2), "%d℃" % int(temp_min), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("9b6ddb", 0.8))
+		draw_string(ThemeDB.fallback_font, Vector2(w - margin - 30, h - 2), "%d℃" % int(temp_max), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("9b6ddb", 0.8))
 		draw_string(ThemeDB.fallback_font, Vector2(current_x - 15, h - 2), "%d℃" % int(current_temp), HORIZONTAL_ALIGNMENT_LEFT, -1, 11, marker_color)
 
 
@@ -5873,32 +5982,32 @@ class _PullGaugeVisual extends Control:
 		var bh := h - tm - bm
 		var br := Rect2(bx, by_val, bw, bh)
 
-		# 背景
-		draw_rect(br, Color("0d1020", 0.97), true)
-		draw_rect(br, Color("3a4066", 0.45), false, 1.5)
+		# 背景（暗い紫）
+		draw_rect(br, Color("0d0818", 0.97), true)
+		draw_rect(br, Color("3d1f6d", 0.50), false, 1.5)
 
-		# 温度ゾーン背景（SHORT=赤、NORMAL=グレー、LONG=青）
+		# 温度ゾーン背景（SHORT=マゼンタ、NORMAL=ダーク紫、LONG=インディゴ）
 		var font := ThemeDB.fallback_font
 		# SHORT zone: val 0–0.33 (底から33%) → 短く吸う → 温度UP
 		var short_y := by_val + bh * (1.0 - 0.33)
 		var short_h := bh * 0.33 + bm
-		draw_rect(Rect2(bx, short_y, bw, short_h), Color("5a1a1a", 0.40), true)
+		draw_rect(Rect2(bx, short_y, bw, short_h), Color("5a1a3a", 0.40), true)
 		# LONG zone: val 0.67–1.0 (上から33%) → 長く吸う → 温度DOWN
 		var long_h := bh * 0.33
-		draw_rect(Rect2(bx, by_val, bw, long_h), Color("1a2a5a", 0.40), true)
+		draw_rect(Rect2(bx, by_val, bw, long_h), Color("1a1a4a", 0.40), true)
 		# NORMAL zone (中央部) は背景のまま
-		# ゾーン境界線
+		# ゾーン境界線（紫テーマ）
 		var div_cool_y := by_val + bh * (1.0 - 0.67)
 		var div_heat_y := by_val + bh * (1.0 - 0.33)
-		draw_line(Vector2(bx, div_cool_y), Vector2(bx + bw, div_cool_y), Color("8bd5ff", 0.30), 1.5)
-		draw_line(Vector2(bx, div_heat_y), Vector2(bx + bw, div_heat_y), Color("e43b44", 0.30), 1.5)
+		draw_line(Vector2(bx, div_cool_y), Vector2(bx + bw, div_cool_y), Color("9b6ddb", 0.30), 1.5)
+		draw_line(Vector2(bx, div_heat_y), Vector2(bx + bw, div_heat_y), Color("b55088", 0.30), 1.5)
 		# ゾーンラベル（バー内・小文字）
 		var mid_short_y := by_val + bh * (1.0 - 0.165) - 6.0
 		var mid_normal_y := by_val + bh * (1.0 - 0.50) - 6.0
 		var mid_long_y := by_val + bh * (1.0 - 0.835) - 6.0
-		draw_string(font, Vector2(bx + bw * 0.5, mid_short_y), "短↑熱", HORIZONTAL_ALIGNMENT_CENTER, bw, 10, Color("e43b44", 0.50))
+		draw_string(font, Vector2(bx + bw * 0.5, mid_short_y), "短↑熱", HORIZONTAL_ALIGNMENT_CENTER, bw, 10, Color("b55088", 0.50))
 		draw_string(font, Vector2(bx + bw * 0.5, mid_normal_y), "維持", HORIZONTAL_ALIGNMENT_CENTER, bw, 10, Color("ead4aa", 0.35))
-		draw_string(font, Vector2(bx + bw * 0.5, mid_long_y), "長↓冷", HORIZONTAL_ALIGNMENT_CENTER, bw, 10, Color("8bd5ff", 0.50))
+		draw_string(font, Vector2(bx + bw * 0.5, mid_long_y), "長↓冷", HORIZONTAL_ALIGNMENT_CENTER, bw, 10, Color("9b6ddb", 0.50))
 
 		# val → Y 変換: 0=下, 1=上  →  y = by + bh*(1-val)
 		# NEAR ゾーン（アンバー）
@@ -5931,12 +6040,12 @@ class _PullGaugeVisual extends Control:
 		var tc_y := by_val + bh * (1.0 - target_center)
 		draw_line(Vector2(bx, tc_y), Vector2(bx + bw, tc_y), Color("feae34", 0.55), 2.0)
 
-		# アクティブフィル（ホールド中）
+		# アクティブフィル（ホールド中・紫テーマ）
 		if is_holding:
 			var fill_y := by_val + bh * (1.0 - gauge_value)
 			var fill_h := (by_val + bh) - fill_y
 			var pulse := 0.22 + sin(_time * 7.0) * 0.07
-			draw_rect(Rect2(bx, fill_y, bw, fill_h), Color("1e5a80", pulse), true)
+			draw_rect(Rect2(bx, fill_y, bw, fill_h), Color("3d1f6d", pulse), true)
 
 		# ポインター（水平ライン + 左側三角）
 		var ptr_y := by_val + bh * (1.0 - gauge_value)
@@ -5976,7 +6085,7 @@ class _PullGaugeVisual extends Control:
 
 ## ─── 3. スコア変動ポップアップ ───
 
-func _show_score_popup(text: String, color: Color = Color("feae34")) -> void:
+func _show_score_popup(text: String, color: Color = Color("c9a0ff")) -> void:
 	var layer = CanvasLayer.new()
 	layer.layer = 90
 	add_child(layer)
@@ -6009,7 +6118,7 @@ func _show_stat_popup(spec_delta: float, aud_delta: float) -> void:
 	if parts.is_empty():
 		return
 	var total = spec_delta + aud_delta
-	var color = Color("feae34") if total >= 0 else Color("e43b44")
+	var color = Color("c9a0ff") if total >= 0 else Color("b55088")
 	_show_score_popup(" / ".join(parts), color)
 
 
@@ -6025,7 +6134,7 @@ func _screen_shake(intensity: float = 8.0, duration: float = 0.3) -> void:
 	tween.tween_property(self, "position", original_pos, 0.05)
 
 
-func _screen_flash(color: Color = Color("e43b44", 0.35), duration: float = 0.15) -> void:
+func _screen_flash(color: Color = Color("7b2fbe", 0.35), duration: float = 0.15) -> void:
 	var flash = ColorRect.new()
 	flash.color = color
 	flash.anchor_right = 1.0
@@ -6040,10 +6149,10 @@ func _screen_flash(color: Color = Color("e43b44", 0.35), duration: float = 0.15)
 
 func _dramatic_impact(text: String = "") -> void:
 	_screen_shake(10.0, 0.35)
-	_screen_flash(Color("e43b44", 0.3), 0.2)
+	_screen_flash(Color("7b2fbe", 0.3), 0.2)
 	GameManager.play_ui_se("confirm")
 	if text != "":
-		_show_score_popup(text, Color("e43b44"))
+		_show_score_popup(text, Color("b55088"))
 
 
 ## ─── 6. アルミ穴あけビジュアル ───
@@ -6160,7 +6269,7 @@ func _show_round_announce(step_num: int, title: String) -> void:
 	var title_label = Label.new()
 	title_label.text = title
 	title_label.add_theme_font_size_override("font_size", 40)
-	title_label.add_theme_color_override("font_color", Color("e43b44"))
+	title_label.add_theme_color_override("font_color", Color("c9a0ff"))
 	title_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title_label.anchor_left = 0.0
 	title_label.anchor_right = 1.0
@@ -6171,9 +6280,9 @@ func _show_round_announce(step_num: int, title: String) -> void:
 	title_label.pivot_offset = Vector2(600, 24)
 	layer.add_child(title_label)
 
-	# 横線（バーミリオン）
+	# 横線（紫テーマ）
 	var line = ColorRect.new()
-	line.color = Color("e43b44", 0.8)
+	line.color = Color("7b2fbe", 0.8)
 	line.anchor_left = 0.2
 	line.anchor_right = 0.8
 	line.anchor_top = 0.56
@@ -6215,9 +6324,9 @@ func _show_tv_ticker(text: String, duration: float = 3.5) -> void:
 	layer.layer = 80
 	add_child(layer)
 
-	# テロップバー背景
+	# テロップバー背景（紫テーマ）
 	var bar = ColorRect.new()
-	bar.color = Color("181425", 0.85)
+	bar.color = Color("0d0818", 0.88)
 	bar.anchor_left = 0.0
 	bar.anchor_right = 1.0
 	bar.anchor_bottom = 1.0
@@ -6227,9 +6336,9 @@ func _show_tv_ticker(text: String, duration: float = 3.5) -> void:
 	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(bar)
 
-	# アクセントライン
+	# アクセントライン（紫テーマ）
 	var accent_line = ColorRect.new()
-	accent_line.color = Color("e43b44")
+	accent_line.color = Color("7b2fbe")
 	accent_line.anchor_left = 0.0
 	accent_line.anchor_right = 1.0
 	accent_line.custom_minimum_size = Vector2(0, 3)
@@ -6274,7 +6383,7 @@ func _show_mid_score_reveal() -> void:
 	add_child(layer)
 
 	var overlay = ColorRect.new()
-	overlay.color = Color("181425", 0.7)
+	overlay.color = Color("0d0818", 0.7)
 	overlay.anchor_right = 1.0
 	overlay.anchor_bottom = 1.0
 	overlay.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -6304,7 +6413,7 @@ func _show_mid_score_reveal() -> void:
 	layer.add_child(bar_container)
 
 	# 専門点バー
-	var spec_row = _create_score_bar("専門", _technical_points, max_possible * 0.5, Color("e43b44"))
+	var spec_row = _create_score_bar("専門", _technical_points, max_possible * 0.5, Color("b55088"))
 	bar_container.add_child(spec_row)
 
 	# 一般点バー
@@ -6385,6 +6494,7 @@ func _create_score_bar(label_text: String, value: float, max_val: float, color: 
 
 func _step_transition() -> void:
 	_glitch_transition()
+	_fire_smoke_burst()
 
 
 ## ─── 11. サイバーEDM演出 ───
@@ -6411,7 +6521,7 @@ func _start_beat_pulse() -> void:
 	if _beat_tween != null and _beat_tween.is_valid():
 		_beat_tween.kill()
 	_beat_tween = create_tween().set_loops()
-	_beat_tween.tween_property(header_label, "modulate", Color(1.3, 1.0, 1.0, 1.0), 0.08)
+	_beat_tween.tween_property(header_label, "modulate", Color(1.15, 0.9, 1.3, 1.0), 0.08)
 	_beat_tween.tween_property(header_label, "modulate", Color.WHITE, 0.4)
 	_beat_tween.tween_interval(0.52)
 
@@ -6421,12 +6531,12 @@ func _glitch_transition() -> void:
 	layer.layer = 92
 	add_child(layer)
 
-	# グリッチブロック（ランダムなカラーバーが横に走る）
+	# グリッチブロック（ランダムなカラーバーが横に走る・紫テーマ）
 	var glitch_colors = [
-		Color("e43b44", 0.3),  # バーミリオン
-		Color("00e5ff", 0.25),  # サイバーシアン
-		Color("feae34", 0.2),   # アンバーゴールド
-		Color("181425", 0.8),   # ダーク
+		Color("b55088", 0.3),   # マゼンタピンク
+		Color("7b2fbe", 0.30),  # パープル
+		Color("c9a0ff", 0.2),   # ラベンダー
+		Color("0d0818", 0.8),   # ダークパープル
 	]
 	for i in range(6):
 		var bar = ColorRect.new()
@@ -6462,21 +6572,21 @@ class _ScanlineEffect extends Control:
 		var line_spacing = 4.0
 		var alpha = 0.04
 
-		# CRT風スキャンライン
+		# CRT風スキャンライン（紫テーマ）
 		var y = 0.0
 		while y < h:
-			draw_line(Vector2(0, y), Vector2(size.x, y), Color("00e5ff", alpha), 1.0)
+			draw_line(Vector2(0, y), Vector2(size.x, y), Color("7b2fbe", alpha), 1.0)
 			y += line_spacing
 
-		# 移動するスキャンバー（上から下に流れる）
+		# 移動するスキャンバー（上から下に流れる・紫テーマ）
 		var scan_y = fmod(_time * 120.0, h + 40.0) - 20.0
-		draw_rect(Rect2(0, scan_y, size.x, 2), Color("00e5ff", 0.08))
-		draw_rect(Rect2(0, scan_y - 8, size.x, 20), Color("00e5ff", 0.015))
+		draw_rect(Rect2(0, scan_y, size.x, 2), Color("7b2fbe", 0.08))
+		draw_rect(Rect2(0, scan_y - 8, size.x, 20), Color("7b2fbe", 0.015))
 
 
 ## 弾幕プレイヤー: ダイヤモンド型の魂ノード
 class _MindSoulNode extends Control:
-	var soul_color: Color = Color("e43b44")
+	var soul_color: Color = Color("b55088")
 	var focus_mode_active: bool = false
 	var invincible: bool = false
 	var hit_flash: float = 0.0
@@ -6508,17 +6618,17 @@ class _MindSoulNode extends Control:
 			draw_polyline(faint_pts, Color(soul_color, 0.3), 1.5)
 			return
 
-		# グレイズ近接リング（シアン）: 弾が近いほど明るく光る
+		# グレイズ近接リング（ラベンダー）: 弾が近いほど明るく光る
 		if graze_near_t > 0.01 or graze_flash_t > 0.01:
 			var ring_alpha := maxf(graze_near_t * 0.55, graze_flash_t * 0.9)
 			var ring_r: float = soul_size * (2.2 + graze_flash_t * 1.5)
-			draw_arc(center, ring_r, 0.0, TAU, 28, Color("00e5ff", ring_alpha), 2.0)
+			draw_arc(center, ring_r, 0.0, TAU, 28, Color("c9a0ff", ring_alpha), 2.0)
 			if graze_flash_t > 0.0:
-				draw_arc(center, ring_r * 1.45, 0.0, TAU, 16, Color("00e5ff", graze_flash_t * 0.35), 1.5)
+				draw_arc(center, ring_r * 1.45, 0.0, TAU, 16, Color("c9a0ff", graze_flash_t * 0.35), 1.5)
 
 		# 外側グロー（脈動）
 		var glow_pulse = sin(_time * 3.5) * 0.02
-		var glow_col := soul_color.lerp(Color("00e5ff"), graze_near_t * 0.45)
+		var glow_col := soul_color.lerp(Color("c9a0ff"), graze_near_t * 0.45)
 		for r in range(3, 0, -1):
 			var glow_r = soul_size * (1.0 + float(r) * 0.65) + sin(_time * 2.5) * 1.5
 			draw_circle(center, glow_r, Color(glow_col, 0.05 + glow_pulse))
@@ -6527,8 +6637,8 @@ class _MindSoulNode extends Control:
 		if hit_flash > 0.0:
 			draw_circle(center, soul_size * 2.5 * hit_flash, Color(1, 1, 1, hit_flash * 0.4))
 
-		# メインダイヤモンド（グレイズ時シアンにシフト）
-		var diamond_col := soul_color.lerp(Color("00e5ff"), graze_flash_t * 0.6)
+		# メインダイヤモンド（グレイズ時ラベンダーにシフト）
+		var diamond_col := soul_color.lerp(Color("c9a0ff"), graze_flash_t * 0.6)
 		var pts = PackedVector2Array([
 			center + Vector2(0, -soul_size),
 			center + Vector2(soul_size, 0),
@@ -6547,17 +6657,17 @@ class _MindSoulNode extends Control:
 		])
 		draw_colored_polygon(inner_pts, Color.WHITE.lerp(diamond_col, 0.15))
 
-		# フォーカスモード: 判定範囲表示
+		# フォーカスモード: 判定範囲表示（紫テーマ）
 		if focus_mode_active:
 			var hb = soul_size * 0.35
-			draw_arc(center, hb, 0, TAU, 16, Color("00e5ff", 0.85), 1.5)
+			draw_arc(center, hb, 0, TAU, 16, Color("c9a0ff", 0.85), 1.5)
 			var ring_r = soul_size * 1.8 + sin(_time * 6.0) * 1.0
-			draw_arc(center, ring_r, _time * 2.0, _time * 2.0 + TAU * 0.7, 12, Color("00e5ff", 0.2), 1.0)
+			draw_arc(center, ring_r, _time * 2.0, _time * 2.0 + TAU * 0.7, 12, Color("c9a0ff", 0.2), 1.0)
 
 
 ## 弾幕アリーナ背景: グリッド + ビネット
 class _MindArenaGrid extends Control:
-	var grid_color: Color = Color("8b9bb4", 0.05)
+	var grid_color: Color = Color("7b2fbe", 0.06)
 	var grid_spacing: float = 40.0
 	var phase_progress: float = 0.0
 	var _time: float = 0.0
@@ -6581,15 +6691,15 @@ class _MindArenaGrid extends Control:
 			draw_line(Vector2(x, 0), Vector2(x, h), grid_color, 1.0)
 			x += grid_spacing
 
-		# フェーズに応じた色変化: 赤いビネット
+		# フェーズに応じた色変化: 紫のビネット
 		if phase_progress > 0.6:
 			var intensity = (phase_progress - 0.6) * 0.15
-			# 四隅を赤く
+			# 四隅を深紫に
 			var corner_size = min(w, h) * 0.35
 			for corner_x in [0.0, w - corner_size]:
 				for corner_y in [0.0, h - corner_size]:
 					draw_rect(Rect2(corner_x, corner_y, corner_size, corner_size),
-						Color("e43b44", intensity * 0.3))
+						Color("6a1eb0", intensity * 0.35))
 
 
 ## グレイズリングエフェクト: 拡散するネオンリング
@@ -6610,10 +6720,121 @@ class _GrazeRingEffect extends Control:
 		var alpha := (1.0 - prog) * 0.85
 		var max_r := 38.0 + float(combo) * 2.0
 		var radius: float = lerpf(6.0, max_r, prog)
-		var col := Color("00e5ff", alpha)
+		var col := Color("c9a0ff", alpha)
 		if combo >= 10:
 			col = Color("feae34", alpha)
 		var thickness := 2.5 - prog * 1.5
 		draw_arc(Vector2.ZERO, radius, 0.0, TAU, 32, col, thickness)
 		# 内側の薄いリング
 		draw_arc(Vector2.ZERO, radius * 0.6, 0.0, TAU, 20, Color(col.r, col.g, col.b, alpha * 0.35), 1.0)
+
+
+## ─── 12. 煙パーティクルエフェクト ───
+
+func _init_smoke_particles() -> void:
+	var smoke_tex = load("res://assets/ui/ui_smoke_particle.png")
+	if smoke_tex == null:
+		return
+
+	# --- アンビエント煙（常時漂う） ---
+	_smoke_particles_ambient = CPUParticles2D.new()
+	_smoke_particles_ambient.name = "SmokeAmbient"
+	_smoke_particles_ambient.z_index = -1
+	_smoke_particles_ambient.texture = smoke_tex
+	_smoke_particles_ambient.emitting = true
+	_smoke_particles_ambient.amount = SMOKE_AMBIENT_AMOUNT_NORMAL
+	_smoke_particles_ambient.lifetime = 6.0
+	_smoke_particles_ambient.preprocess = 4.0
+	_smoke_particles_ambient.speed_scale = 0.8
+	_smoke_particles_ambient.randomness = 0.4
+	_smoke_particles_ambient.fixed_fps = 30
+	# 発生範囲: 画面幅全体、下端から発生
+	_smoke_particles_ambient.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	_smoke_particles_ambient.emission_rect_extents = Vector2(700, 40)
+	_smoke_particles_ambient.position = Vector2(640, 760)
+	# 上方向にゆっくり上昇
+	_smoke_particles_ambient.direction = Vector2(0, -1)
+	_smoke_particles_ambient.spread = 35.0
+	_smoke_particles_ambient.gravity = Vector2(0, -8)
+	_smoke_particles_ambient.initial_velocity_min = 15.0
+	_smoke_particles_ambient.initial_velocity_max = 35.0
+	# 左右の揺れ
+	_smoke_particles_ambient.angular_velocity_min = -15.0
+	_smoke_particles_ambient.angular_velocity_max = 15.0
+	# サイズ変化: 小→大→消滅
+	_smoke_particles_ambient.scale_amount_min = 0.3
+	_smoke_particles_ambient.scale_amount_max = 0.7
+	_smoke_particles_ambient.scale_amount_curve = _create_smoke_scale_curve()
+	# 透明度: フェードイン→フェードアウト
+	_smoke_particles_ambient.color = Color(0.6, 0.3, 0.8, 0.3)
+	var grad = Gradient.new()
+	grad.set_offset(0, 0.0)
+	grad.set_color(0, Color(0.6, 0.3, 0.8, 0.0))
+	grad.add_point(0.15, Color(0.6, 0.3, 0.8, 0.25))
+	grad.add_point(0.5, Color(0.8, 0.5, 1.0, 0.2))
+	grad.set_offset(grad.get_point_count() - 1, 1.0)
+	grad.set_color(grad.get_point_count() - 1, Color(1.0, 1.0, 1.0, 0.0))
+	_smoke_particles_ambient.color_ramp = grad
+	add_child(_smoke_particles_ambient)
+	# MainPanel/SidePanelの背後に移動（Background, Overlayの後）
+	move_child(_smoke_particles_ambient, 2)
+
+	# --- バースト煙（ステップ遷移時に一瞬濃くなる） ---
+	_smoke_particles_burst = CPUParticles2D.new()
+	_smoke_particles_burst.name = "SmokeBurst"
+	_smoke_particles_burst.z_index = -1
+	_smoke_particles_burst.texture = smoke_tex
+	_smoke_particles_burst.emitting = false
+	_smoke_particles_burst.one_shot = true
+	_smoke_particles_burst.amount = 15
+	_smoke_particles_burst.lifetime = 2.5
+	_smoke_particles_burst.speed_scale = 1.2
+	_smoke_particles_burst.randomness = 0.6
+	_smoke_particles_burst.fixed_fps = 30
+	_smoke_particles_burst.explosiveness = 0.9
+	# 画面中央付近からバースト
+	_smoke_particles_burst.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	_smoke_particles_burst.emission_rect_extents = Vector2(500, 200)
+	_smoke_particles_burst.position = Vector2(640, 400)
+	_smoke_particles_burst.direction = Vector2(0, -1)
+	_smoke_particles_burst.spread = 60.0
+	_smoke_particles_burst.gravity = Vector2(0, -5)
+	_smoke_particles_burst.initial_velocity_min = 20.0
+	_smoke_particles_burst.initial_velocity_max = 60.0
+	_smoke_particles_burst.angular_velocity_min = -25.0
+	_smoke_particles_burst.angular_velocity_max = 25.0
+	_smoke_particles_burst.scale_amount_min = 0.5
+	_smoke_particles_burst.scale_amount_max = 1.0
+	_smoke_particles_burst.scale_amount_curve = _create_smoke_scale_curve()
+	# バーストはやや明るめの紫
+	_smoke_particles_burst.color = Color(0.7, 0.4, 0.9, 0.35)
+	var burst_grad = Gradient.new()
+	burst_grad.set_offset(0, 0.0)
+	burst_grad.set_color(0, Color(0.7, 0.4, 0.9, 0.0))
+	burst_grad.add_point(0.1, Color(0.7, 0.4, 0.9, 0.35))
+	burst_grad.add_point(0.4, Color(0.8, 0.5, 1.0, 0.25))
+	burst_grad.set_offset(burst_grad.get_point_count() - 1, 1.0)
+	burst_grad.set_color(burst_grad.get_point_count() - 1, Color(1.0, 1.0, 1.0, 0.0))
+	_smoke_particles_burst.color_ramp = burst_grad
+	add_child(_smoke_particles_burst)
+	move_child(_smoke_particles_burst, 3)
+
+
+func _create_smoke_scale_curve() -> Curve:
+	var curve = Curve.new()
+	curve.add_point(Vector2(0.0, 0.3))
+	curve.add_point(Vector2(0.3, 0.8))
+	curve.add_point(Vector2(0.7, 1.0))
+	curve.add_point(Vector2(1.0, 0.6))
+	return curve
+
+
+func _set_smoke_density(amount: int) -> void:
+	if _smoke_particles_ambient != null:
+		_smoke_particles_ambient.amount = amount
+
+
+func _fire_smoke_burst() -> void:
+	if _smoke_particles_burst != null:
+		_smoke_particles_burst.restart()
+		_smoke_particles_burst.emitting = true
