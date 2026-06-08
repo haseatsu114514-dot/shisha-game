@@ -25,7 +25,7 @@ Antigravity
 スミさん (師匠)
 なる (常連客・ライバル)
 アダム (クールな常連客)
-みんちゃん (ライバル店店長)
+みんと (ライバル店店長)
 紡 (iPad少女)
 アゲハ (ギャル社長)
 パッキー (MC)
@@ -45,11 +45,12 @@ Antigravity
 Thank you for playing!
 """
 
+
 func _ready() -> void:
 	credits_label.text = STAFF_TEXT.strip_edges()
 	skip_button.pressed.connect(_on_skip_button_pressed)
 	GameManager.play_daily_bgm()
-	
+
 	scroll_container.get_v_scroll_bar().modulate.a = 0.0
 	_current_scroll = 0.0
 
@@ -57,9 +58,9 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if not _is_scrolling:
 		return
-		
+
 	var max_scroll = scroll_container.get_v_scroll_bar().max_value - scroll_container.size.y
-	
+
 	if _current_scroll < max_scroll:
 		_current_scroll += _scroll_speed * delta
 		scroll_container.scroll_vertical = int(_current_scroll)

@@ -3,7 +3,7 @@
     {
       "dialogue_id": "ch1_tournament_arrival",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_full.png",
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png",
         "effect": "smoke"
       },
       "lines": [
@@ -85,7 +85,7 @@
         {
           "speaker": "minto",
           "face": "wink",
-          "text": "はじめ君、緊張してる？ みんちゃんは全然だよっ♡"
+          "text": "はじめ君、緊張してる？ みんとは全然だよっ♡"
         },
         {
           "speaker": "hajime",
@@ -605,7 +605,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "はじめ君、おめでとっ♡ でも、可愛さはみんちゃんの方が上だったでしょ？"
+          "text": "はじめ君、おめでとっ♡ でも、可愛さはみんとの方が上だったでしょ？"
         },
         {
           "speaker": "hajime",

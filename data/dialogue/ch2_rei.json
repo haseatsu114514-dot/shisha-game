@@ -2,7 +2,7 @@
   "dialogues": [
     {
       "dialogue_id": "ch2_rei_first",
-      "metadata": { "bg": "res://assets/backgrounds/bg_zero_cafe.png" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
       "lines": [
         {
           "speaker": "",
@@ -153,7 +153,7 @@
     },
     {
       "dialogue_id": "ch2_rei_second",
-      "metadata": { "bg": "res://assets/backgrounds/bg_zero_cafe.png" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
       "lines": [
         {
           "speaker": "",
@@ -319,7 +319,7 @@
     },
     {
       "dialogue_id": "ch2_rei_third",
-      "metadata": { "bg": "res://assets/backgrounds/bg_zero_cafe.png" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
       "lines": [
         {
           "speaker": "",
@@ -430,7 +430,7 @@
     },
     {
       "dialogue_id": "ch2_rei_fourth",
-      "metadata": { "bg": "res://assets/backgrounds/bg_zero_cafe.png" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
       "lines": [
         {
           "speaker": "",
@@ -531,7 +531,7 @@
     },
     {
       "dialogue_id": "ch2_rei_fifth",
-      "metadata": { "bg": "res://assets/backgrounds/bg_zero_cafe.png" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
       "lines": [
         {
           "speaker": "",
@@ -687,7 +687,7 @@
     },
     {
       "dialogue_id": "ch2_rei_group_concert_prep",
-      "metadata": { "bg": "res://assets/backgrounds/bg_zero_cafe.png" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
       "lines": [
         {
           "speaker": "",

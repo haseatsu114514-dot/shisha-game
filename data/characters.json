@@ -73,8 +73,8 @@
     "nationality": "Japan",
     "affiliation": "Eden",
     "play_style": "「ダブルアップル特化」",
-    "description": "純日本人であり、愚直なまでにダブルアップルの味の精度と完璧なイガりのコントロールを追求するストイックな職人気質のプレイヤー。\n一芸に特化した強固な強さを持つ。\nダブルアップルの知識量と扱いでは右に出る者がいないとして、常連客や業界内から「総督（そうとく）」のあだ名で呼ばれている。本人はこのあだ名を別に嫌いではない。",
-    "background_secret": "他のフレーバーを全く吸えない（味が分からない）という極端な味覚の偏りを持つ。それを弱点にせず、ダブルアップルのみをひたすら昇華させた職人。",
+    "description": "純日本人であり、Edenに所属するダブルアップル特化のプレイヤー。本人は頑なに「アダム」と名乗り、ダブルアップルを宇宙の原点のように語る愛すべき変人。\nローランド風の名言と過剰な自己演出で周囲を振り回すが、一つの味を徹底的に掘り下げる技術は本物。",
+    "background_secret": "私生活は少しポンコツだが、ダブルアップルだけは誰よりも真剣。原点の味を極めることで、自分の弱さや不器用さも含めて肯定しようとしている。",
     "favorite_flavor": "ダブルアップル",
     "specialty_flavor": "ダブルアップル（アニス強め）",
     "growth_stats": {
@@ -83,8 +83,8 @@
       "notes": "はじめの『誰にでも合わせる』シーシャに触れたことで、頑固な彼もいつの間にか、客のコンディションに合わせてダブルアップルの強さを微調整する柔軟さを覚えていた。"
     },
     "visual_concepts": [
-      "24s japanese male, stoic and serious face, mid-length hair in vivid green and red ombre gradient, wearing a traditional samue or dark minimalist chef coat, meticulously preparing a shisha bowl, traditional artisan atmosphere",
-      "young japanese craftsman, piercing focused eyes, two-tone green and red hair, wearing a black high-neck long sleeve, surrounded by red apples and anise props, dark and moody workshop setting"
+      "28s japanese male, eccentric but lovable expression, stylish Eden shop outfit, surrounded by red apples and anise props, performing grandly while preparing a shisha bowl",
+      "japanese double apple specialist, dramatic self-styled Adam persona, playful confidence, slightly messy private-life vibe, modern shisha lounge Eden background"
     ]
   },
   {
@@ -112,7 +112,7 @@
       "quiet beautiful japanese woman in her late 20s, hair down in natural dark brown (no mint green dye visible), wearing a beige cable knit sweater and long skirt, minimal makeup, shoulder bag, subdued and elegant, sitting alone at a counter reading a menu, ephemeral beauty",
       "same woman but walking through a shopping district, calm and reserved demeanor, completely different aura from a flashy concept cafe hostess, natural beauty without any costume or persona"
     ],
-    "private_notes": "プライベートの栞は、お店のみんちゃんとは別人レベルで雰囲気が異なる。髪はミントグリーンのツインテールではなく地毛のダークブラウンを下ろしている。ベージュのケーブルニットにロングスカート、薄化粧。派手さは一切なく、静かで儚げで綺麗な大人の女性。Ch1序盤のバイトイベントでtonariに客として来店するが、はじめは好感度5イベントまで同一人物だと気づかない。",
+    "private_notes": "プライベートの栞は、お店のみんととは別人レベルで雰囲気が異なる。髪はミントグリーンのツインテールではなく地毛のダークブラウンを下ろしている。ベージュのケーブルニットにロングスカート、薄化粧。派手さは一切なく、静かで儚げで綺麗な大人の女性。Ch1序盤のバイトイベントでtonariに客として来店するが、はじめは好感度5イベントまで同一人物だと気づかない。",
     "appearance_rules": {
       "shisha_world": "シーシャの世界（大会、応援、店舗など）では常にコンカフェ嬢の姿（ミントグリーンのツインテール、コンカフェ衣装）で登場する。これが業界内で有名な『ぺぱーみんとのみんと』の姿。",
       "private_date": "恋人ルート確定後のデートシーンでのみ、私服姿（ダークブラウンの地毛、ベージュのケーブルニット、ロングスカート、薄化粧）で登場する。コンカフェの仮面を脱いだ『緑川栞』としての素顔。",
@@ -609,7 +609,7 @@
     "affiliation": "mukai（店長）",
     "play_style": "N/A",
     "description": "第3章（東京編）での溜まり場となるtonari姉妹店「mukai」の店長。ハットを深く被り、髭を蓄えた次元大輔のようなルックスの超絶渋いダンディなおじ様。常に落ち着いた低音ボイスで喋る。コーヒーが好きで、タバコに特別な執着はなくシーシャが好きなくらい。実はシガー（葉巻）が得意ではない。",
-    "background_secret": "ルックスがハードボイルドすぎるため、周囲から「伝説のシガーマンの正体」だと勘違いされているが、本当のシガーマンは真白 ましろである。本人は適当に話を合わせているだけ。実際には可愛い飲み物（甘めのラテやフルーツティーなど）を好み、可愛い趣味を持ち、重くないものを嗜むのが本来の性格。見た目とのギャップが大きい。「tonari」のスミさんとは古くからの知り合い。",
+    "background_secret": "ルックスがハードボイルドすぎるため、周囲から「伝説のシガーマンの正体」だと勘違いされているが、本当のシガーマンは水瀬 ましろである。本人は適当に話を合わせているだけ。実際には可愛い飲み物（甘めのラテやフルーツティーなど）を好み、可愛い趣味を持ち、重くないものを嗜むのが本来の性格。見た目とのギャップが大きい。「tonari」のスミさんとは古くからの知り合い。",
     "favorite_flavor": "ブラックコーヒーなど",
     "specialty_flavor": "お茶・コーヒー系のビターミックス",
     "growth_stats": {

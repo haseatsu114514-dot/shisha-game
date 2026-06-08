@@ -2,7 +2,7 @@
   "dialogues": [
     {
       "dialogue_id": "ch2_volk_first",
-      "metadata": { "bg": "res://assets/backgrounds/zheleznyi_dym.png" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
       "lines": [
         { "speaker": "", "face": "", "text": "「Железный Дым」。読めない。店名の下に小さく「鉄の煙」と書いてあった。" },
         { "speaker": "", "face": "", "text": "扉を開けると、温度計と数字が並んだパネルが壁を埋めている。シーシャの器具は最小限で、代わりに精密な金属製の装置がいくつも並んでいた。" },
@@ -26,7 +26,7 @@
     },
     {
       "dialogue_id": "ch2_volk_second",
-      "metadata": { "bg": "res://assets/backgrounds/zheleznyi_dym.png" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
       "lines": [
         { "speaker": "volk", "face": "normal", "text": "また来た。データが正確だったか確認する" },
         { "speaker": "hajime", "face": "normal", "text": "確認、ですか" },
@@ -49,7 +49,7 @@
     },
     {
       "dialogue_id": "ch2_volk_third",
-      "metadata": { "bg": "res://assets/backgrounds/zheleznyi_dym.png" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
       "lines": [
         { "speaker": "", "face": "", "text": "今日はヴォルクが一人で、モニターに数字を記録していた。" },
         { "speaker": "hajime", "face": "normal", "text": "今日もデータ記録ですか" },
@@ -71,7 +71,7 @@
     },
     {
       "dialogue_id": "ch2_volk_fourth",
-      "metadata": { "bg": "res://assets/backgrounds/zheleznyi_dym.png" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
       "lines": [
         { "speaker": "volk", "face": "normal", "text": "一つ、聞いていいか" },
         { "speaker": "hajime", "face": "normal", "text": "どうぞ" },
@@ -97,7 +97,7 @@
     },
     {
       "dialogue_id": "ch2_volk_after_ch2",
-      "metadata": { "bg": "res://assets/backgrounds/zheleznyi_dym.png" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
       "lines": [
         { "speaker": "", "face": "", "text": "大会が終わって、鉄の煙に立ち寄った。" },
         { "speaker": "volk", "face": "normal", "text": "来たか。座れ" },
@@ -118,7 +118,7 @@
     },
     {
       "dialogue_id": "ch2_volk_after_ch2_firstshop",
-      "metadata": { "bg": "res://assets/backgrounds/zheleznyi_dym.png" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
       "lines": [
         { "speaker": "", "face": "", "text": "大会が終わってから、初めて鉄の煙に入った。温度計とモニターが並ぶ、機械的な内装。" },
         { "speaker": "volk", "face": "normal", "text": "……大会で見た顔だ" },

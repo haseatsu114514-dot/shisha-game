@@ -2,17 +2,23 @@ extends Node
 
 const MAX_LEVEL := 5
 const CHAPTER_AFFINITY_CAP := {1: 3, 2: 4, 3: 5, 4: 5}
+const CHARACTER_CHAPTER_AFFINITY_CAP := {
+	"mashiro": {1: 0, 2: 0, 3: 5, 4: 5},
+}
 
 const DEFAULT_AFFINITIES := {
 	"sumi": {"level": 0, "lime_exchanged": false, "met": true, "romance": false, "affection": 0},
 	"naru": {"level": 0, "lime_exchanged": false, "met": false, "romance": false, "affection": 0},
 	"adam": {"level": 0, "lime_exchanged": false, "met": false, "romance": false, "affection": 0},
 	"minto": {"level": 0, "lime_exchanged": false, "met": false, "romance": false, "affection": 0},
-	"tsumugi": {"level": 0, "lime_exchanged": false, "met": false, "romance": false, "affection": 0},
+	"tsumugi":
+	{"level": 0, "lime_exchanged": false, "met": false, "romance": false, "affection": 0},
 	"ageha": {"level": 0, "lime_exchanged": false, "met": false, "romance": false, "affection": 0},
+	"mashiro":
+	{"level": 0, "lime_exchanged": false, "met": false, "romance": false, "affection": 0},
 }
 
-const ROMANCE_CANDIDATES := ["minto", "tsumugi", "ageha"]
+const ROMANCE_CANDIDATES := ["minto", "tsumugi", "ageha", "mashiro"]
 
 var affinities: Dictionary = DEFAULT_AFFINITIES.duplicate(true)
 
@@ -25,17 +31,20 @@ func spend_time_with(char_id: String) -> int:
 	if not affinities.has(char_id):
 		return -1
 	var current = int(affinities[char_id].get("level", 0))
-	var cap = _get_current_cap()
+	var cap = _get_current_cap(char_id)
 	if current >= cap:
 		return current
 	affinities[char_id]["level"] = current + 1
 	return current + 1
 
 
-func _get_current_cap() -> int:
+func _get_current_cap(char_id: String = "") -> int:
 	var ch = 1
 	if GameManager:
 		ch = GameManager.current_chapter
+	if char_id != "" and CHARACTER_CHAPTER_AFFINITY_CAP.has(char_id):
+		var caps: Dictionary = CHARACTER_CHAPTER_AFFINITY_CAP[char_id]
+		return int(caps.get(ch, CHAPTER_AFFINITY_CAP.get(ch, MAX_LEVEL)))
 	return int(CHAPTER_AFFINITY_CAP.get(ch, MAX_LEVEL))
 
 
@@ -121,8 +130,8 @@ func get_affinity(char_id: String) -> int:
 	return get_level(char_id)
 
 
-func get_max_level() -> int:
-	return _get_current_cap()
+func get_max_level(char_id: String = "") -> int:
+	return _get_current_cap(char_id)
 
 
 func get_affection(char_id: String) -> int:

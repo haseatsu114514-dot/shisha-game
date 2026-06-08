@@ -131,7 +131,10 @@
     },
     {
       "dialogue_id": "ch3_mashiro_encounter",
-      "metadata": { "bg": "res://assets/backgrounds/bg_mukai.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png",
+        "set_flags": ["known_name_mashiro"]
+      },
       "lines": [
         { "speaker": "", "face": "", "text": "────「mukai」。tonariの姉妹店。" },
         { "speaker": "", "face": "", "text": "スミさんに「東京来たなら顔出しとけ」と言われて、mukaiを訪れた。" },
@@ -151,7 +154,7 @@
     },
     {
       "dialogue_id": "ch3_mashiro_practice",
-      "metadata": { "bg": "res://assets/backgrounds/bg_mukai.png" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
       "lines": [
         { "speaker": "", "face": "", "text": "────mukai。閉店後。" },
         { "speaker": "", "face": "", "text": "ムカイさんの計らいで、ましろと一緒に練習する機会をもらった。" },

@@ -2,7 +2,7 @@
   "dialogues": [
     {
       "dialogue_id": "ch1_dream_early",
-      "metadata": { "bg": "res://assets/backgrounds/bg_dream_smoke.png", "effect": "dream_fog" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png", "effect": "dream_fog" },
       "lines": [
         { "speaker": "", "face": "", "text": "……煙の中に、誰かが立っている。" },
         { "speaker": "", "face": "", "text": "白衣の男。穏やかな笑みを浮かべて、何かを測定している。" },
@@ -13,7 +13,7 @@
     },
     {
       "dialogue_id": "ch1_dream",
-      "metadata": { "bg": "res://assets/backgrounds/bg_dream_smoke.png", "effect": "dream_fog" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png", "effect": "dream_fog" },
       "lines": [
         { "speaker": "", "face": "", "text": "深い深い霧の中。足元が見えない。" },
         { "speaker": "", "face": "", "text": "どこかで炭が爆ぜる音がした。\ntonariのカウンターの、あの匂いがする。" },
@@ -25,7 +25,7 @@
     },
     {
       "dialogue_id": "ch2_dream_early",
-      "metadata": { "bg": "res://assets/backgrounds/bg_dream_smoke.png", "effect": "dream_distortion" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png", "effect": "dream_distortion" },
       "lines": [
         { "speaker": "", "face": "", "text": "暗い路地裏。煙が充満している。" },
         { "speaker": "", "face": "", "text": "遠くで、重たい煙が壁を這うように広がっていく。\n普通のシーシャじゃない。何か……禍々しい。" },
@@ -37,7 +37,7 @@
     },
     {
       "dialogue_id": "ch2_dream",
-      "metadata": { "bg": "res://assets/backgrounds/bg_dream_smoke.png", "effect": "dream_distortion" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png", "effect": "dream_distortion" },
       "lines": [
         { "speaker": "", "face": "", "text": "ステージの上に立っている。客席は真っ暗だ。" },
         { "speaker": "naru", "face": "serious", "text": "「お前は……お前の答え、見つけに行けよ」" },
@@ -53,7 +53,7 @@
     },
     {
       "dialogue_id": "ch3_dream_early",
-      "metadata": { "bg": "res://assets/backgrounds/bg_dream_smoke.png", "effect": "dream_foreign" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png", "effect": "dream_foreign" },
       "lines": [
         { "speaker": "", "face": "", "text": "薄暗い研究室。白衣の男が何台ものモニターに向かっている。" },
         { "speaker": "", "face": "", "text": "画面には無数のグラフ。温度、湿度、フレーバー配合比……" },
@@ -66,7 +66,7 @@
     },
     {
       "dialogue_id": "ch3_dream",
-      "metadata": { "bg": "res://assets/backgrounds/bg_dream_smoke.png", "effect": "dream_foreign" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png", "effect": "dream_foreign" },
       "lines": [
         { "speaker": "", "face": "", "text": "どこか異国の市場。強い日差しとスパイスの香り。" },
         { "speaker": "", "face": "", "text": "石畳の路地を歩いている。\n空気が乾いていて、でもどこからかシーシャの煙が漂ってくる。" },
@@ -79,7 +79,7 @@
     },
     {
       "dialogue_id": "ch4_dream",
-      "metadata": { "bg": "res://assets/backgrounds/bg_dream_smoke.png", "effect": "dream_clarity" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png", "effect": "dream_clarity" },
       "lines": [
         { "speaker": "", "face": "", "text": "tonariのカウンター。誰もいない夜明け前。" },
         { "speaker": "sumi", "face": "normal", "text": "「これは理論じゃない。体で覚えろ」" },
@@ -93,7 +93,7 @@
     },
     {
       "dialogue_id": "ch5_dream",
-      "metadata": { "bg": "res://assets/backgrounds/bg_dream_smoke.png", "effect": "dream_digital" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png", "effect": "dream_digital" },
       "lines": [
         { "speaker": "", "face": "", "text": "真っ白な空間。どこまでも続く、無機質な白。" },
         { "speaker": "", "face": "", "text": "目の前に何かが立っている。人の形をしているが、顔がない。" },

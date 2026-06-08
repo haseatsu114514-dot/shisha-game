@@ -30,11 +30,7 @@ var current_phase: String = "daily"
 var game_state: String = "title"
 
 var transient: Dictionary = {}
-var daily_summary: Dictionary = {
-	"stats": {},
-	"money": 0,
-	"flavors": []
-}
+var daily_summary: Dictionary = {"stats": {}, "money": 0, "flavors": []}
 
 var _bgm_player: AudioStreamPlayer
 var _bgm_base_volume_db: float = -8.0
@@ -58,12 +54,17 @@ func _apply_default_font() -> void:
 	# macOS/Linux でのデバッグ実行時は .ttf がインポートキャッシュ未生成で
 	# FreeType エラーになる場合がある。SystemFont を fallback として必ず用意する。
 	var sys_font := SystemFont.new()
-	sys_font.font_names = PackedStringArray([
-		"Hiragino Kaku Gothic Pro", "Hiragino Sans",  # macOS
-		"Yu Gothic UI", "Meiryo",                     # Windows
-		"Noto Sans CJK JP", "Noto Sans JP",           # Linux / Android
-		"Arial Unicode MS",                            # 汎用 fallback
-	])
+	sys_font.font_names = PackedStringArray(
+		[
+			"Hiragino Kaku Gothic Pro",
+			"Hiragino Sans",  # macOS
+			"Yu Gothic UI",
+			"Meiryo",  # Windows
+			"Noto Sans CJK JP",
+			"Noto Sans JP",  # Linux / Android
+			"Arial Unicode MS",  # 汎用 fallback
+		]
+	)
 
 	var font_resource: Font = sys_font  # デフォルトはシステムフォント
 
@@ -78,7 +79,16 @@ func _apply_default_font() -> void:
 	var theme = Theme.new()
 	theme.default_font = font_resource
 	theme.default_font_size = 22
-	for type in ["Label", "Button", "RichTextLabel", "LineEdit", "OptionButton", "CheckBox", "PopupMenu", "Tree"]:
+	for type in [
+		"Label",
+		"Button",
+		"RichTextLabel",
+		"LineEdit",
+		"OptionButton",
+		"CheckBox",
+		"PopupMenu",
+		"Tree"
+	]:
 		theme.set_font("font", type, font_resource)
 		theme.set_font_size("font_size", type, 22)
 	theme.set_font("normal_font", "RichTextLabel", font_resource)
@@ -98,19 +108,21 @@ const THEME_SMOKE_GRAY := Color("c0cbdc")
 
 ## キャラクター別テーマカラー
 const SPEAKER_COLORS := {
-	"hajime": Color("0099db"),    # ソフトブルー
-	"sumi": Color("a22633"),      # ディープレッド
-	"naru": Color("feae34"),      # ゴールド
-	"adam": Color("265c42"),      # ダークグリーン
-	"kumicho": Color("f77622"),     # バーニングオレンジ
-	"tsumugi": Color("68386c"),   # パープル
-	"minto": Color("b55088"),     # ローズピンク
-	"pakki": Color("2ce8f5"),    # シアン（旧:packii/takiguchi を統合）
+	"hajime": Color("0099db"),  # ソフトブルー
+	"sumi": Color("a22633"),  # ディープレッド
+	"naru": Color("feae34"),  # ゴールド
+	"adam": Color("265c42"),  # ダークグリーン
+	"kumicho": Color("f77622"),  # バーニングオレンジ
+	"tsumugi": Color("68386c"),  # パープル
+	"minto": Color("b55088"),  # ローズピンク
+	"mashiro": Color("ead4aa"),  # クリーム
+	"pakki": Color("2ce8f5"),  # シアン（旧:packii/takiguchi を統合）
 	"nagumo": Color("8b9bb4"),
 	"maezono": Color("e4a672"),
 	"kirishima": Color("68386c"),
 	"salaryman": Color("5a6988"),
 }
+
 
 func _resolve_speaker_theme_id(_speaker_id: String) -> String:
 	var speaker_id = _speaker_id
@@ -131,6 +143,7 @@ func get_speaker_color(_speaker_id: String) -> Color:
 func get_speaker_accent_color(_speaker_id: String) -> Color:
 	var speaker_id = _resolve_speaker_theme_id(_speaker_id)
 	return SPEAKER_COLORS.get(speaker_id, THEME_CREAM_TEXT)
+
 
 func _apply_default_theme() -> void:
 	var root_theme = get_tree().root.theme
@@ -161,12 +174,28 @@ func _apply_default_theme() -> void:
 	root_theme.set_stylebox("normal", "Button", _make_stylebox(button_bg, button_border, 1, 4))
 	root_theme.set_stylebox("hover", "Button", _make_stylebox(button_hover, THEME_SLATE, 1, 4))
 	root_theme.set_stylebox("pressed", "Button", _make_stylebox(button_pressed, THEME_SLATE, 2, 4))
-	root_theme.set_stylebox("disabled", "Button", _make_stylebox(Color(0.08, 0.08, 0.12, 0.85), Color(THEME_DIM_TEXT, 0.3), 1, 4))
+	root_theme.set_stylebox(
+		"disabled",
+		"Button",
+		_make_stylebox(Color(0.08, 0.08, 0.12, 0.85), Color(THEME_DIM_TEXT, 0.3), 1, 4)
+	)
 	root_theme.set_stylebox("focus", "Button", _make_stylebox(button_hover, THEME_SLATE, 1, 4))
 
-	root_theme.set_stylebox("normal", "RichTextLabel", _make_stylebox(Color(THEME_DARK_NAVY, 0.80), Color(THEME_SLATE, 0.4), 1, 4))
-	root_theme.set_stylebox("normal", "LineEdit", _make_stylebox(Color(THEME_DARK_NAVY, 0.95), Color(THEME_SLATE, 0.4), 1, 4))
-	root_theme.set_stylebox("read_only", "LineEdit", _make_stylebox(Color(THEME_DARK_NAVY, 0.85), Color(THEME_DIM_TEXT, 0.3), 1, 4))
+	root_theme.set_stylebox(
+		"normal",
+		"RichTextLabel",
+		_make_stylebox(Color(THEME_DARK_NAVY, 0.80), Color(THEME_SLATE, 0.4), 1, 4)
+	)
+	root_theme.set_stylebox(
+		"normal",
+		"LineEdit",
+		_make_stylebox(Color(THEME_DARK_NAVY, 0.95), Color(THEME_SLATE, 0.4), 1, 4)
+	)
+	root_theme.set_stylebox(
+		"read_only",
+		"LineEdit",
+		_make_stylebox(Color(THEME_DARK_NAVY, 0.85), Color(THEME_DIM_TEXT, 0.3), 1, 4)
+	)
 
 
 func _make_stylebox(bg: Color, border: Color, border_width: int, radius: int) -> StyleBoxFlat:
@@ -404,7 +433,12 @@ func end_interval_and_next_chapter() -> void:
 	var flag_key = "ch%d_tournament_rank" % current_chapter
 	var rank = EventFlags.get_value(flag_key, 0)
 	if rank != 1:
-		push_warning("end_interval_and_next_chapter blocked: ch%d rank=%d (1st required)" % [current_chapter, rank])
+		push_warning(
+			(
+				"end_interval_and_next_chapter blocked: ch%d rank=%d (1st required)"
+				% [current_chapter, rank]
+			)
+		)
 		return
 	CalendarManager.end_interval()
 	start_chapter(current_chapter + 1)
@@ -446,7 +480,9 @@ func _load_interval_events() -> void:
 
 
 func get_forced_event_for_today(time_slot: String) -> Dictionary:
-	var day = CalendarManager.interval_day if CalendarManager.is_interval else CalendarManager.current_day
+	var day = (
+		CalendarManager.interval_day if CalendarManager.is_interval else CalendarManager.current_day
+	)
 	for event in _forced_events:
 		if int(event.get("day", -1)) != day:
 			continue
@@ -474,7 +510,10 @@ func get_forced_event_for_today(time_slot: String) -> Dictionary:
 func _condition_values_match(actual: Variant, expected: Variant) -> bool:
 	var actual_type = typeof(actual)
 	var expected_type = typeof(expected)
-	if (actual_type == TYPE_INT or actual_type == TYPE_FLOAT) and (expected_type == TYPE_INT or expected_type == TYPE_FLOAT):
+	if (
+		(actual_type == TYPE_INT or actual_type == TYPE_FLOAT)
+		and (expected_type == TYPE_INT or expected_type == TYPE_FLOAT)
+	):
 		return is_equal_approx(float(actual), float(expected))
 	if actual_type == TYPE_BOOL or expected_type == TYPE_BOOL:
 		return bool(actual) == bool(expected)
@@ -570,13 +609,18 @@ func pop_transient(key: String, default_value: Variant = null) -> Variant:
 	return value
 
 
-func queue_dialogue(dialogue_file: String, dialogue_id: String, next_scene: String, metadata: Dictionary = {}) -> void:
-	set_transient("queued_dialogue", {
-		"file": dialogue_file,
-		"id": dialogue_id,
-		"next_scene": next_scene,
-		"metadata": metadata,
-	})
+func queue_dialogue(
+	dialogue_file: String, dialogue_id: String, next_scene: String, metadata: Dictionary = {}
+) -> void:
+	set_transient(
+		"queued_dialogue",
+		{
+			"file": dialogue_file,
+			"id": dialogue_id,
+			"next_scene": next_scene,
+			"metadata": metadata,
+		}
+	)
 
 
 func pop_queued_dialogue() -> Dictionary:
@@ -584,11 +628,7 @@ func pop_queued_dialogue() -> Dictionary:
 
 
 func reset_daily_summary() -> void:
-	daily_summary = {
-		"stats": {},
-		"money": 0,
-		"flavors": []
-	}
+	daily_summary = {"stats": {}, "money": 0, "flavors": []}
 
 
 func log_stat_change(stat_name: String, amount: float) -> void:
@@ -606,10 +646,15 @@ func log_money_change(amount: int) -> void:
 func log_flavor_change(flavor_name: String, amount: int) -> void:
 	if amount == 0:
 		return
-	daily_summary["flavors"].append({
-		"name": flavor_name,
-		"amount": amount,
-	})
+	(
+		daily_summary["flavors"]
+		. append(
+			{
+				"name": flavor_name,
+				"amount": amount,
+			}
+		)
+	)
 
 
 func consume_daily_summary() -> Dictionary:
@@ -636,7 +681,11 @@ func resolve_next_scene_path(next_scene: String) -> String:
 
 
 func get_resume_scene_path() -> String:
-	if current_phase == "tournament" or game_state == "tournament" or (CalendarManager.is_tournament_day() and not CalendarManager.is_interval):
+	if (
+		current_phase == "tournament"
+		or game_state == "tournament"
+		or (CalendarManager.is_tournament_day() and not CalendarManager.is_interval)
+	):
 		return resolve_next_scene_path("tournament_opening")
 	if CalendarManager.current_time == "morning":
 		return MORNING_PHONE_SCENE_PATH
@@ -659,11 +708,16 @@ func log_history(title: String, detail: String) -> void:
 	var history = transient.get("history_log", [])
 	if typeof(history) != TYPE_ARRAY:
 		history = []
-	history.append({
-		"title": title,
-		"detail": detail,
-		"chapter": current_chapter,
-	})
+	(
+		history
+		. append(
+			{
+				"title": title,
+				"detail": detail,
+				"chapter": current_chapter,
+			}
+		)
+	)
 	transient["history_log"] = history
 
 

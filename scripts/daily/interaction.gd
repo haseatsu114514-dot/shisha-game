@@ -14,8 +14,9 @@ var _event_id: String = ""
 const CHARACTER_NAME_MAP := {
 	"naru": "なる",
 	"adam": "アダム",
-	"minto": "眠都",
+	"minto": "みんと",
 	"sumi": "スミさん",
+	"mashiro": "ましろ",
 }
 
 
@@ -46,28 +47,48 @@ func _ready() -> void:
 func _show_romance_date(char_id: String) -> void:
 	_set_portrait(char_id)
 	header_label.text = "デート"
-	
+
 	var affection = AffinityManager.get_affection(char_id)
 	var next_affection = AffinityManager.add_affection(char_id, 1)
-	
+
 	var lines: Array[String] = []
 	if char_id == "minto":
 		if affection == 0:
-			lines.append("みんちゃんをお茶に誘った。")
+			lines.append("みんとをお茶に誘った。")
 			lines.append("「あ、えと……はじめくん。今日は、その……よろしくね」")
-			lines.append("お店のキャピキャピした態度とは打って変わって、私服のみんちゃんはとても内気でもじもじしている。\n「あ、ええっと、私、普通にしてるとこんな感じで……がっかり、した……？」\n「いや、新鮮で可愛いなって」\n「か、かかかわいいって……！ もー、からかわないでよぉ……」")
+			(
+				lines
+				. append(
+					"お店のキャピキャピした態度とは打って変わって、私服のみんとはとても内気でもじもじしている。\n「あ、ええっと、私、普通にしてるとこんな感じで……がっかり、した……？」\n「いや、新鮮で可愛いなって」\n「か、かかかわいいって……！ もー、からかわないでよぉ……」"
+				)
+			)
 		elif affection <= 2:
-			lines.append("みんちゃんとショッピングに出かけた。")
+			lines.append("みんととショッピングに出かけた。")
 			lines.append("「はじめくん、あの、これ……どうかな？ この服……変じゃ、ない？」")
-			lines.append("自信なさげに聞いてくる彼女に「すごく綺麗なお姉さんみたいだよ」とわざと年齢を意識させるようにいじってみる。\n「お、お姉さん……っ！？ 違うもん、みんちゃんは永遠のハタチなんだもん……！ はじめくんのいじわる……でも、似合ってるなら、これにする……」\n耳を真っ赤にして俯く姿が愛らしい。")
+			(
+				lines
+				. append(
+					"自信なさげに聞いてくる彼女に「すごく綺麗なお姉さんみたいだよ」とわざと年齢を意識させるようにいじってみる。\n「お、お姉さん……っ！？ 違うもん、みんとは永遠のハタチなんだもん……！ はじめくんのいじわる……でも、似合ってるなら、これにする……」\n耳を真っ赤にして俯く姿が愛らしい。"
+				)
+			)
 		elif affection <= 4:
-			lines.append("みんちゃんと夜の公園を歩いた。")
+			lines.append("みんとと夜の公園を歩いた。")
 			lines.append("「……はじめくんの手、あったかい。お店を守るためにずっと気を張ってたけど……私、ほんとはすごく臆病だから……」")
-			lines.append("「こうしてはじめくんと一緒にいると、やっと息ができる気がするの。……ねえ、もうちょっとだけ、手……繋いでて、いい……？」\nもじもじと上目遣いで聞いてくる彼女の手を、しっかりと握り返した。")
+			(
+				lines
+				. append(
+					"「こうしてはじめくんと一緒にいると、やっと息ができる気がするの。……ねえ、もうちょっとだけ、手……繋いでて、いい……？」\nもじもじと上目遣いで聞いてくる彼女の手を、しっかりと握り返した。"
+				)
+			)
 		else:
-			lines.append("みんちゃんの休日。二人きりでゆっくり過ごしている。")
+			lines.append("みんとの休日。二人きりでゆっくり過ごしている。")
 			lines.append("「……はじめくん、えへへ……。私、あなたといる時が、一番素の私でいられるよ。もう強がらなくていいんだって……思えるの」")
-			lines.append("「外では完璧な『みんちゃん』を演じてるけど……はじめくんの前では、ただの『しおり』でいさせて。……だめ、かな？」\n不安そうに、でも期待を込めてもじもじと擦り寄ってくる彼女を、優しく抱きしめた。")
+			(
+				lines
+				. append(
+					"「外では完璧な『みんと』を演じてるけど……はじめくんの前では、ただの『しおり』でいさせて。……だめ、かな？」\n不安そうに、でも期待を込めてもじもじと擦り寄ってくる彼女を、優しく抱きしめた。"
+				)
+			)
 	elif char_id == "ageha":
 		if affection == 0:
 			lines.append("アゲハをカフェに誘った。")
@@ -80,7 +101,12 @@ func _show_romance_date(char_id: String) -> void:
 		else:
 			lines.append("アゲハと二人きりで夜景を見ている。")
 			lines.append("「……なんかさ、マジでウチどうしちゃったんだろう。ハジメっちの顔見てるだけで、気持ち上がりすぎて胸の奥がぎゅってなる……」")
-			lines.append("「……ねえ、もう帰んないでよ。ウチの特等席、一生キミだけのものにしてあげるからさ……責任、取ってよね？」\n普段のギャルっぽい飄々とした態度はどこへやら、彼女の甘えたような声が夜風に溶けた。")
+			(
+				lines
+				. append(
+					"「……ねえ、もう帰んないでよ。ウチの特等席、一生キミだけのものにしてあげるからさ……責任、取ってよね？」\n普段のギャルっぽい飄々とした態度はどこへやら、彼女の甘えたような声が夜風に溶けた。"
+				)
+			)
 	else:
 		lines.append("二人で楽しい時間を過ごした。愛情が少し深まった気がする。")
 
@@ -95,16 +121,23 @@ func _show_romance_date(char_id: String) -> void:
 
 func _launch_rival_dialogue(rival_id: String) -> void:
 	var count = int(EventFlags.get_value("visit_%s_count" % rival_id, 0))
-	
+
 	# Block naru visits in Chapter 1 after 3 visits (Affinity 3) or in Chapter 2/3 (training journey)
 	if rival_id == "naru":
-		if (GameManager.current_chapter == 1 and count >= 3) or (GameManager.current_chapter in [2, 3]):
+		if (
+			(GameManager.current_chapter == 1 and count >= 3)
+			or (GameManager.current_chapter in [2, 3])
+		):
 			_set_portrait("")
 			header_label.text = "ケムリクサ"
 			if GameManager.current_chapter == 1:
-				body_label.text = GameManager.format_story_text("店員「あー、今日なるさんは出勤してないっすね」\n\n（今日はいないようだ。他を回ろう）", 26)
+				body_label.text = GameManager.format_story_text(
+					"店員「あー、今日なるさんは出勤してないっすね」\n\n（今日はいないようだ。他を回ろう）", 26
+				)
 			else:
-				body_label.text = GameManager.format_story_text("店員「あー、店長なら『自分のシーシャを見つめ直す』とか言って、いま遠くに修行の旅に出てるっすよ」\n\n（しばらく店には戻らないらしい。他を回ろう）", 26)
+				body_label.text = GameManager.format_story_text(
+					"店員「あー、店長なら『自分のシーシャを見つめ直す』とか言って、いま遠くに修行の旅に出てるっすよ」\n\n（しばらく店には戻らないらしい。他を回ろう）", 26
+				)
 			_add_option("戻る", "none")
 			# Undo action cost
 			CalendarManager.undo_action()
@@ -139,10 +172,10 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 	elif rival_id == "volk":
 		prefix = "ch2_"
 		dialogue_file = "res://data/dialogue/ch2_volk.json"
-		
+
 	var dialogue_id = ""
 	var metadata: Dictionary = {}
-	
+
 	match rival_id:
 		"naru":
 			metadata["bg"] = "res://assets/backgrounds/kemurikusa.png"
@@ -151,71 +184,111 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 		"minto":
 			metadata["bg"] = "res://assets/backgrounds/pepermint.png"
 		"ageha":
-			metadata["bg"] = "res://assets/backgrounds/pepermint.png" # アゲハの居場所に合わせて背景を設定
+			metadata["bg"] = "res://assets/backgrounds/pepermint.png"  # アゲハの居場所に合わせて背景を設定
 		"kumicho":
-			metadata["bg"] = "res://assets/backgrounds/kanzaki_tobacco.png"
+			metadata["bg"] = "res://assets/backgrounds/bg_ryuji_shop.png"
 		"volk":
-			metadata["bg"] = "res://assets/backgrounds/zheleznyi_dym.png"
+			metadata["bg"] = "res://assets/backgrounds/bg_tournament_stage.png"
 
 	# === 大会後・初訪問ルーティング（共通）===
 	# 大会で顔は合わせているので驚かない。ch1訪問済みかどうかで関係深度を分岐する。
 
 	# みんと: ch2以降・大会後初訪問（visited=ch1週に1回以上訪問）
-	if rival_id == "minto" and GameManager.current_chapter >= 2 and not EventFlags.get_flag("ch1_minto_after_ch1_done"):
+	if (
+		rival_id == "minto"
+		and GameManager.current_chapter >= 2
+		and not EventFlags.get_flag("ch1_minto_after_ch1_done")
+	):
 		var visited_before = count > 0
 		dialogue_id = "ch1_minto_after_ch1" if visited_before else "ch1_minto_after_ch1_firstshop"
 		metadata["add_affinity"] = {"minto": 1}
-		GameManager.queue_dialogue(dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", metadata)
+		GameManager.queue_dialogue(
+			dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", metadata
+		)
 		GameManager.set_transient("advance_time_after_scene", true)
 		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		return
 
 	# アダム: ch2以降・大会後初訪問
-	if rival_id == "adam" and GameManager.current_chapter >= 2 and not EventFlags.get_flag("ch1_adam_after_ch1_done"):
+	if (
+		rival_id == "adam"
+		and GameManager.current_chapter >= 2
+		and not EventFlags.get_flag("ch1_adam_after_ch1_done")
+	):
 		var visited_before = count > 0
 		dialogue_id = "ch1_adam_after_ch1" if visited_before else "ch1_adam_after_ch1_firstshop"
 		metadata["add_affinity"] = {"adam": 1}
-		GameManager.queue_dialogue(dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", metadata)
+		GameManager.queue_dialogue(
+			dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", metadata
+		)
 		GameManager.set_transient("advance_time_after_scene", true)
 		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		return
 
 	# なる: ch4以降（ch2-3は武者修行中で不在）・帰還後初訪問
-	if rival_id == "naru" and GameManager.current_chapter >= 4 and not EventFlags.get_flag("ch1_naru_after_return_done"):
+	if (
+		rival_id == "naru"
+		and GameManager.current_chapter >= 4
+		and not EventFlags.get_flag("ch1_naru_after_return_done")
+	):
 		var visited_before = count > 0
-		dialogue_id = "ch1_naru_after_return" if visited_before else "ch1_naru_after_return_firstshop"
+		dialogue_id = (
+			"ch1_naru_after_return" if visited_before else "ch1_naru_after_return_firstshop"
+		)
 		metadata["add_affinity"] = {"naru": 1}
-		GameManager.queue_dialogue(dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", metadata)
+		GameManager.queue_dialogue(
+			dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", metadata
+		)
 		GameManager.set_transient("advance_time_after_scene", true)
 		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		return
 
 	# アゲハ: ch3以降（ch2大会後）・大会後初訪問
-	if rival_id == "ageha" and GameManager.current_chapter >= 3 and not EventFlags.get_flag("ch2_ageha_after_ch2_done"):
+	if (
+		rival_id == "ageha"
+		and GameManager.current_chapter >= 3
+		and not EventFlags.get_flag("ch2_ageha_after_ch2_done")
+	):
 		var visited_before = count > 0
 		dialogue_id = "ch2_ageha_after_ch2" if visited_before else "ch2_ageha_after_ch2_firstshop"
 		metadata["add_affinity"] = {"ageha": 1}
-		GameManager.queue_dialogue(dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", metadata)
+		GameManager.queue_dialogue(
+			dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", metadata
+		)
 		GameManager.set_transient("advance_time_after_scene", true)
 		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		return
 
 	# 組長: ch3以降（ch2大会後）・大会後初訪問
-	if rival_id == "kumicho" and GameManager.current_chapter >= 3 and not EventFlags.get_flag("ch2_kumicho_after_ch2_done"):
+	if (
+		rival_id == "kumicho"
+		and GameManager.current_chapter >= 3
+		and not EventFlags.get_flag("ch2_kumicho_after_ch2_done")
+	):
 		var visited_before = count > 0
-		dialogue_id = "ch2_kumicho_after_ch2" if visited_before else "ch2_kumicho_after_ch2_firstshop"
+		dialogue_id = (
+			"ch2_kumicho_after_ch2" if visited_before else "ch2_kumicho_after_ch2_firstshop"
+		)
 		metadata["add_affinity"] = {"kumicho": 1}
-		GameManager.queue_dialogue(dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", metadata)
+		GameManager.queue_dialogue(
+			dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", metadata
+		)
 		GameManager.set_transient("advance_time_after_scene", true)
 		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		return
 
 	# ヴォルク: ch3以降（ch2大会後）・大会後初訪問
-	if rival_id == "volk" and GameManager.current_chapter >= 3 and not EventFlags.get_flag("ch2_volk_after_ch2_done"):
+	if (
+		rival_id == "volk"
+		and GameManager.current_chapter >= 3
+		and not EventFlags.get_flag("ch2_volk_after_ch2_done")
+	):
 		var visited_before = count > 0
 		dialogue_id = "ch2_volk_after_ch2" if visited_before else "ch2_volk_after_ch2_firstshop"
 		metadata["add_affinity"] = {"volk": 1}
-		GameManager.queue_dialogue(dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", metadata)
+		GameManager.queue_dialogue(
+			dialogue_file, dialogue_id, "res://scenes/daily/map.tscn", metadata
+		)
 		GameManager.set_transient("advance_time_after_scene", true)
 		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		return
@@ -236,7 +309,9 @@ func _launch_rival_dialogue(rival_id: String) -> void:
 		# Add intel on second visit
 		match rival_id:
 			"naru":
-				metadata["add_intel"] = [{"id": "naru", "key": "flavor_detail", "value": "チョコレート＋バニラ"}]
+				metadata["add_intel"] = [
+					{"id": "naru", "key": "flavor_detail", "value": "チョコレート＋バニラ"}
+				]
 			"minto":
 				metadata["add_intel"] = [{"id": "minto", "key": "presentation", "value": "一般投票特化"}]
 	elif count == 2:
@@ -282,8 +357,12 @@ func _show_invitation_event(event_id: String) -> void:
 			var return_scene = "res://scenes/daily/map.tscn"
 			if _advance_on_exit and CalendarManager.current_time == "midnight":
 				return_scene = "res://scenes/daily/night_end.tscn"
-			var metadata = {"add_affinity": {"minto": 1}, "bg": "res://assets/backgrounds/cafe.png"}
-			GameManager.queue_dialogue("res://data/dialogue/ch1_minto.json", "ch1_minto_private_1", return_scene, metadata)
+			var metadata = {
+				"add_affinity": {"minto": 1}, "bg": "res://assets/backgrounds/bg_street_day.png"
+			}
+			GameManager.queue_dialogue(
+				"res://data/dialogue/ch1_minto.json", "ch1_minto_private_1", return_scene, metadata
+			)
 			GameManager.set_transient("advance_time_after_scene", _advance_on_exit)
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		_:
@@ -317,9 +396,12 @@ func _apply_affinity_gain(character_id: String, amount: int = 1) -> void:
 	body_label.text += "\n好感度  %s" % star_text
 
 	# Check if affinity reached max level and not in romance yet
-	if after >= AffinityManager.MAX_LEVEL and before < AffinityManager.MAX_LEVEL and not AffinityManager.is_in_romance(character_id):
-		# Only certain characters have confession events (minto, tsumugi, ageha)
-		if character_id in ["minto", "tsumugi", "ageha"]:
+	if (
+		after >= AffinityManager.MAX_LEVEL
+		and before < AffinityManager.MAX_LEVEL
+		and not AffinityManager.is_in_romance(character_id)
+	):
+		if AffinityManager.is_romance_candidate(character_id):
 			_pending_confession = character_id
 
 
@@ -327,7 +409,10 @@ func _append_character_flavor_hint(character_id: String) -> void:
 	var labels: Array[String] = PlayerData.get_character_flavor_top_labels(character_id, 2)
 	if labels.is_empty():
 		return
-	body_label.text += "\n%sの得意: %s" % [str(CHARACTER_NAME_MAP.get(character_id, character_id)), " / ".join(labels)]
+	body_label.text += (
+		"\n%sの得意: %s"
+		% [str(CHARACTER_NAME_MAP.get(character_id, character_id)), " / ".join(labels)]
+	)
 
 
 func _add_option(text: String, action: String, arg: String = "") -> void:
@@ -373,11 +458,11 @@ func _on_back_button_pressed() -> void:
 			return_scene = "res://scenes/daily/night_end.tscn"
 		elif not _advance_on_exit and CalendarManager.current_time == "midnight":
 			return_scene = "res://scenes/daily/night_end.tscn"
-		
+
 		# Important: We advance time before leaving interaction if needed
 		if _advance_on_exit:
 			CalendarManager.advance_time()
-			
+
 		GameManager.queue_dialogue(event_file, event_id, return_scene)
 		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		return

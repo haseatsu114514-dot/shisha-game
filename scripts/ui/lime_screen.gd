@@ -22,7 +22,7 @@ const DISPLAY_NAME = {
 	"sumi": "スミさん",
 	"naru": "なる",
 	"adam": "アダム",
-	"minto": "眠都",
+	"minto": "みんと",
 	"tsumugi": "つむぎ",
 	"pakki": "パッキー",
 	"ageha": "あげは",
@@ -59,50 +59,32 @@ func _play_open_animation() -> void:
 	var tween = create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(phone_rig, "modulate:a", 1.0, 0.2)
-	tween.tween_property(phone_rig, "scale", Vector2.ONE, 0.24).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tween.tween_property(phone_rig, "rotation_degrees", -6.0, 0.24).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	(
+		tween
+		. tween_property(phone_rig, "scale", Vector2.ONE, 0.24)
+		. set_trans(Tween.TRANS_BACK)
+		. set_ease(Tween.EASE_OUT)
+	)
+	(
+		tween
+		. tween_property(phone_rig, "rotation_degrees", -6.0, 0.24)
+		. set_trans(Tween.TRANS_CUBIC)
+		. set_ease(Tween.EASE_OUT)
+	)
 
 
 func _apply_line_theme() -> void:
 	phone_body.add_theme_stylebox_override(
-		"panel",
-		_make_style(
-			Color("181425", 0.98),
-			42,
-			Color("3a4466"),
-			2,
-			0
-		)
+		"panel", _make_style(Color("181425", 0.98), 42, Color("3a4466"), 2, 0)
 	)
 	screen_panel.add_theme_stylebox_override(
-		"panel",
-		_make_style(
-			Color("262b44", 0.95),
-			24,
-			Color("3a4466", 0.6),
-			1,
-			0
-		)
+		"panel", _make_style(Color("262b44", 0.95), 24, Color("3a4466", 0.6), 1, 0)
 	)
 	header_bar.add_theme_stylebox_override(
-		"panel",
-		_make_style(
-			Color("265c42"),
-			16,
-			Color("3e8948"),
-			1,
-			0
-		)
+		"panel", _make_style(Color("265c42"), 16, Color("3e8948"), 1, 0)
 	)
 	option_bar.add_theme_stylebox_override(
-		"panel",
-		_make_style(
-			Color("262b44", 0.95),
-			14,
-			Color("3a4466", 0.6),
-			1,
-			0
-		)
+		"panel", _make_style(Color("262b44", 0.95), 14, Color("3a4466", 0.6), 1, 0)
 	)
 
 	title_label.add_theme_color_override("font_color", Color(1, 1, 1, 1))
@@ -164,7 +146,9 @@ func _show_current_message() -> void:
 	return
 
 
-func _add_reply_option(text: String, action: String, index: int = -1, is_primary: bool = false) -> void:
+func _add_reply_option(
+	text: String, action: String, index: int = -1, is_primary: bool = false
+) -> void:
 	var button = Button.new()
 	button.text = text
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -185,7 +169,10 @@ func _on_option_pressed(action: String, index: int) -> void:
 			_add_chat_bubble(SELF_ID, "今日は厳しい、ごめん")
 			var decline = message.get("decline_response", {})
 			if typeof(decline) == TYPE_DICTIONARY:
-				_add_chat_bubble(str(decline.get("sender", message.get("sender", ""))), str(decline.get("text", "了解")))
+				_add_chat_bubble(
+					str(decline.get("sender", message.get("sender", ""))),
+					str(decline.get("text", "了解"))
+				)
 		"chat_reply":
 			var replies: Array = message.get("replies", [])
 			if index >= 0 and index < replies.size():
@@ -197,7 +184,7 @@ func _on_option_pressed(action: String, index: int) -> void:
 				if reply.has("event"):
 					GameManager.set_transient("pending_outing_event", str(reply.get("event", "")))
 		"next_message":
-			pass # simply marks as read and moves on
+			pass  # simply marks as read and moves on
 
 	_clear_options()
 	back_button.disabled = false
@@ -289,7 +276,11 @@ func _add_chat_bubble(sender: String, text: String) -> void:
 	text_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	text_label.add_theme_color_override("font_color", Color("ead4aa"))
 	text_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	text_label.custom_minimum_size.x = int(bubble.custom_minimum_size.x) - int(style.content_margin_left) - int(style.content_margin_right)
+	text_label.custom_minimum_size.x = (
+		int(bubble.custom_minimum_size.x)
+		- int(style.content_margin_left)
+		- int(style.content_margin_right)
+	)
 
 	vbox.add_child(sender_label)
 	vbox.add_child(text_label)
@@ -419,7 +410,9 @@ func _set_button_theme(button: Button, is_primary: bool) -> void:
 	button.add_theme_stylebox_override("normal", _make_style(normal_bg, 10, border_color, 1, 6))
 	button.add_theme_stylebox_override("hover", _make_style(hover_bg, 10, border_color, 1, 6))
 	button.add_theme_stylebox_override("pressed", _make_style(pressed_bg, 10, border_color, 1, 6))
-	button.add_theme_stylebox_override("disabled", _make_style(normal_bg.darkened(0.2), 10, border_color.darkened(0.2), 1, 6))
+	button.add_theme_stylebox_override(
+		"disabled", _make_style(normal_bg.darkened(0.2), 10, border_color.darkened(0.2), 1, 6)
+	)
 	button.add_theme_color_override("font_color", text_color)
 	button.add_theme_color_override("font_hover_color", Color("feae34"))
 	button.add_theme_color_override("font_pressed_color", text_color)

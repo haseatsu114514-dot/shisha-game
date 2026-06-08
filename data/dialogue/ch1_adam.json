@@ -245,7 +245,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "（行動は奇抜だけど、シーシャに対しては誰よりも真面目で、ストイックな人なんだ）"
+          "text": "（行動は奇抜だけど、シーシャに対しては誰よりも真面目で、妙にまっすぐな人なんだ）"
         },
         {
           "speaker": "",
@@ -311,7 +311,7 @@
     },
     {
       "dialogue_id": "ch1_adam_group_soutoку",
-      "metadata": { "bg": "res://assets/backgrounds/bg_eden.png" },
+      "metadata": { "bg": "res://assets/backgrounds/eden.png" },
       "lines": [
         {
           "speaker": "",
@@ -372,7 +372,7 @@
     },
     {
       "dialogue_id": "ch1_adam_outing_dagurikura",
-      "metadata": { "bg": "res://assets/backgrounds/bg_arcade.png" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_street_day.png" },
       "lines": [
         {
           "speaker": "adam",

@@ -78,7 +78,7 @@
         {
             "dialogue_id": "outing_adam_1",
             "metadata": {
-                "bg": "res://assets/backgrounds/bg_kannon.png",
+                "bg": "res://assets/backgrounds/bg_street_day.png",
                 "add_affinity": {
                     "adam": 1
                 },
