@@ -87,7 +87,7 @@
     },
     {
       "dialogue_id": "ch2_rivals_first_sight",
-      "metadata": { "bg": "res://assets/backgrounds/cstation.png" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
       "lines": [
         { "speaker": "", "face": "", "text": "────HAZE: OPEN CLOUD 会場。受付前日。" },
         { "speaker": "", "face": "", "text": "C.STATIONのエントランスに入った瞬間、空気が変わった。天井が高い。音の広がり方が違う。立っているスタッフの数が違う。" },
@@ -113,7 +113,7 @@
     },
     {
       "dialogue_id": "ch2_abyss_baito",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_night.png", "effect": "dark" },
+      "metadata": { "bg": "res://assets/backgrounds/tonari_night.png", "effect": "dark" },
       "lines": [
         { "speaker": "", "face": "", "text": "────夜。tonariのバイト中。" },
         { "speaker": "", "face": "", "text": "3卓の炭替え。いつもの作業。でも今日は、手が動かない。" },
@@ -132,7 +132,7 @@
     },
     {
       "dialogue_id": "ch2_slump_taste",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_night.png" },
+      "metadata": { "bg": "res://assets/backgrounds/tonari_night.png" },
       "lines": [
         { "speaker": "", "face": "", "text": "────tonari。閉店後。" },
         { "speaker": "", "face": "", "text": "自分用にシーシャを作ってみた。いつものレシピ。いつもの手順。" },
@@ -153,7 +153,7 @@
     },
     {
       "dialogue_id": "ch2_sofa_burn",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_night.png" },
+      "metadata": { "bg": "res://assets/backgrounds/tonari_night.png" },
       "lines": [
         { "speaker": "", "face": "", "text": "────tonari。バイト中。" },
         { "speaker": "", "face": "", "text": "3卓の炭替え。頭の中はぐちゃぐちゃだった。組長の覚悟。ヴォルクの精度。あげはの直感。なるの情熱。全部が回って──" },
@@ -169,7 +169,7 @@
     },
     {
       "dialogue_id": "ch2_pre_tournament_realisation",
-      "metadata": { "bg": "res://assets/backgrounds/cstation_night.png" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
       "lines": [
         { "speaker": "", "face": "", "text": "────大会前日の夜。会場の外のベンチに、一人でいた。" },
         { "speaker": "hajime", "face": "serious", "text": "（……僕、ずっと嫉妬してたんだよな。いろんなお店に行って、いいなって思う店員さんや、すごいなって思う店員さんに会うたびに、羨ましくて）" },
@@ -222,7 +222,7 @@
     },
     {
       "dialogue_id": "ch2_taste_recovery",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_morning.png" },
+      "metadata": { "bg": "res://assets/backgrounds/tonari_day.png" },
       "lines": [
         { "speaker": "", "face": "", "text": "────数日後の朝。" },
         { "speaker": "", "face": "", "text": "亜鉛のサプリと、十分な睡眠。スミさんとあげはの言葉を胸に、はじめは少しずつ体を休めていた。" },

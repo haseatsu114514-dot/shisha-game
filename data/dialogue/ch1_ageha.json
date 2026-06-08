@@ -3,7 +3,7 @@
     {
       "dialogue_id": "ch1_ageha_encounter",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_evening.png",
+        "bg": "res://assets/backgrounds/bg_street_night.png",
         "effect": "sunset"
       },
       "lines": [

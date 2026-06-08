@@ -661,7 +661,7 @@
     },
     {
       "dialogue_id": "ch1_tsumugi_smoke_color",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_night.png" },
+      "metadata": { "bg": "res://assets/backgrounds/tonari_night.png" },
       "lines": [
         { "speaker": "", "face": "", "text": "バイト中、つむぎのテーブルにシーシャを運んだ。いつものラベンダー。" },
         { "speaker": "", "face": "", "text": "つむぎが一口吸って、ふとペンの手を止めた。" },
@@ -677,7 +677,7 @@
     },
     {
       "dialogue_id": "ch1_tsumugi_eve",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_night.png" },
+      "metadata": { "bg": "res://assets/backgrounds/tonari_night.png" },
       "lines": [
         { "speaker": "", "face": "", "text": "大会前日。閉店間際。最後の客が帰っていく。" },
         { "speaker": "", "face": "", "text": "つむぎがいつもの席で会計を済ませ、ドアに向かった。" },

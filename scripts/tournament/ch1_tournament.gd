@@ -6,19 +6,110 @@ const MORNING_PHONE_SCENE_PATH := "res://scenes/daily/morning_phone.tscn"
 const TITLE_SCENE_PATH := "res://scenes/title/title_screen.tscn"
 const ShishaRank = preload("res://scripts/tournament/shisha_rank.gd")
 const STEP_STAGE_META := {
-	1: {"tag": "SETUP", "summary": "機材と会場の初期条件を固める", "hint": "会場カット、選手入場、機材差分を差し込める。", "preview": "入場演出 / 会場紹介予定", "color": Color("e43b44")},
-	2: {"tag": "FLAVOR", "summary": "テーマに沿ったフレーバーを選ぶ", "hint": "候補比較やフレーバー画像の差し込み向き。", "preview": "候補カード / テーマ演出予定", "color": Color("f77622")},
-	3: {"tag": "MIX", "summary": "12gの配分で主軸を作る", "hint": "断面図、素材アイコン、配合図を足せる。", "preview": "配合図 / ボウル断面予定", "color": Color("feae34")},
-	4: {"tag": "PACK", "summary": "詰め方で立ち上がりを調整する", "hint": "密度差の比較アニメを追加しやすい。", "preview": "パッキング差分演出予定", "color": Color("e4a672")},
-	5: {"tag": "FOIL", "summary": "アルミ穴あけの精度を競う", "hint": "ヒットエフェクトや光演出を盛りやすい。", "preview": "リズム演出 / 判定演出予定", "color": Color("8bd5ff")},
-	6: {"tag": "COAL", "summary": "炭を返すタイミングで火力の初速を決める", "hint": "炭の火花や手元アニメの差し込み枠。", "preview": "炭準備カット / 火花予定", "color": Color("ff7a59")},
-	7: {"tag": "HEAT", "summary": "炭配置でベース温度を作る", "hint": "配置図と温度差分の見せ場にできる。", "preview": "炭配置図 / 熱量比較予定", "color": Color("ff9466")},
-	8: {"tag": "STEAM", "summary": "蒸らし時間で煙の芯を整える", "hint": "タイマーと湯気アニメを足せる。", "preview": "蒸らしタイマー演出予定", "color": Color("cfe7ff")},
-	9: {"tag": "FOCUS", "summary": "精神戦を抜けて手元を安定させる", "hint": "観客カットや不安演出の差し込み先。", "preview": "思考弾幕 / 観客演出予定", "color": Color("b55088")},
-	10: {"tag": "PULL", "summary": "吸い出しと提供でラウンドを作る", "hint": "煙量変化、提供リアクション、SE連動向き。", "preview": "吸い出し / 提供演出予定", "color": Color("2ce8f5")},
-	13: {"tag": "ROUND", "summary": "ラウンドごとの勝敗を見せる", "hint": "順位発表、テロップ、カメラ演出の差し込み先。", "preview": "順位演出 / テロップ予定", "color": Color("8b9bb4")},
-	15: {"tag": "PRESENT", "summary": "売りを言語化して押し切る", "hint": "審査員反応カットや字幕演出向き。", "preview": "プレゼン演出 / 反応差分予定", "color": Color("68386c")},
-	16: {"tag": "RESULT", "summary": "最終発表で着地させる", "hint": "結果画面、歓声、敗北演出を重ねやすい。", "preview": "最終結果演出予定", "color": Color("feae34")},
+	1:
+	{
+		"tag": "SETUP",
+		"summary": "機材と会場の初期条件を固める",
+		"hint": "会場カット、選手入場、機材差分を差し込める。",
+		"preview": "入場演出 / 会場紹介予定",
+		"color": Color("e43b44")
+	},
+	2:
+	{
+		"tag": "FLAVOR",
+		"summary": "テーマに沿ったフレーバーを選ぶ",
+		"hint": "候補比較やフレーバー画像の差し込み向き。",
+		"preview": "候補カード / テーマ演出予定",
+		"color": Color("f77622")
+	},
+	3:
+	{
+		"tag": "MIX",
+		"summary": "12gの配分で主軸を作る",
+		"hint": "断面図、素材アイコン、配合図を足せる。",
+		"preview": "配合図 / ボウル断面予定",
+		"color": Color("feae34")
+	},
+	4:
+	{
+		"tag": "PACK",
+		"summary": "詰め方で立ち上がりを調整する",
+		"hint": "密度差の比較アニメを追加しやすい。",
+		"preview": "パッキング差分演出予定",
+		"color": Color("e4a672")
+	},
+	5:
+	{
+		"tag": "FOIL",
+		"summary": "アルミ穴あけの精度を競う",
+		"hint": "ヒットエフェクトや光演出を盛りやすい。",
+		"preview": "リズム演出 / 判定演出予定",
+		"color": Color("8bd5ff")
+	},
+	6:
+	{
+		"tag": "COAL",
+		"summary": "炭を返すタイミングで火力の初速を決める",
+		"hint": "炭の火花や手元アニメの差し込み枠。",
+		"preview": "炭準備カット / 火花予定",
+		"color": Color("ff7a59")
+	},
+	7:
+	{
+		"tag": "HEAT",
+		"summary": "炭配置でベース温度を作る",
+		"hint": "配置図と温度差分の見せ場にできる。",
+		"preview": "炭配置図 / 熱量比較予定",
+		"color": Color("ff9466")
+	},
+	8:
+	{
+		"tag": "STEAM",
+		"summary": "蒸らし時間で煙の芯を整える",
+		"hint": "タイマーと湯気アニメを足せる。",
+		"preview": "蒸らしタイマー演出予定",
+		"color": Color("cfe7ff")
+	},
+	9:
+	{
+		"tag": "FOCUS",
+		"summary": "精神戦を抜けて手元を安定させる",
+		"hint": "観客カットや不安演出の差し込み先。",
+		"preview": "思考弾幕 / 観客演出予定",
+		"color": Color("b55088")
+	},
+	10:
+	{
+		"tag": "PULL",
+		"summary": "吸い出しと提供でラウンドを作る",
+		"hint": "煙量変化、提供リアクション、SE連動向き。",
+		"preview": "吸い出し / 提供演出予定",
+		"color": Color("2ce8f5")
+	},
+	13:
+	{
+		"tag": "ROUND",
+		"summary": "ラウンドごとの勝敗を見せる",
+		"hint": "順位発表、テロップ、カメラ演出の差し込み先。",
+		"preview": "順位演出 / テロップ予定",
+		"color": Color("8b9bb4")
+	},
+	15:
+	{
+		"tag": "PRESENT",
+		"summary": "売りを言語化して押し切る",
+		"hint": "審査員反応カットや字幕演出向き。",
+		"preview": "プレゼン演出 / 反応差分予定",
+		"color": Color("68386c")
+	},
+	16:
+	{
+		"tag": "RESULT",
+		"summary": "最終発表で着地させる",
+		"hint": "結果画面、歓声、敗北演出を重ねやすい。",
+		"preview": "最終結果演出予定",
+		"color": Color("feae34")
+	},
 }
 
 const FLAVOR_NAME_MAP := {
@@ -30,7 +121,9 @@ const FLAVOR_NAME_MAP := {
 	"coconut": "アルファーヘブン ココナッツ",
 }
 
-const ALPHA_HEAVEN_FLAVORS := ["double_apple", "mint", "blueberry", "vanilla", "pineapple", "coconut"]
+const ALPHA_HEAVEN_FLAVORS := [
+	"double_apple", "mint", "blueberry", "vanilla", "pineapple", "coconut"
+]
 
 const THEMES := [
 	{"id": "relax", "name": "リラックス", "flavors": ["vanilla", "coconut", "pineapple"]},
@@ -179,61 +272,77 @@ const MIND_WORDS_RIVAL := [
 
 ## MCパッキーの実況コメント（ステップ番号をキーにランダム選択）
 const MC_COMMENTS := {
-	1: [
+	1:
+	[
 		"MCパッキー「さあ、まずはセッティングから！ ハガルとHMSの組み合わせ、ここが大事ですよ❤」",
 		"MCパッキー「選手たちが機材を確認中。1種類で勝負する派、組み合わせで攻める派…」",
 	],
-	2: [
+	2:
+	[
 		"MCパッキー「フレーバー選択！ テーマに合わせるか、自分の得意で勝負するか」",
 		"南雲「テーマの解釈に個性が出る。配合にはその人の哲学が見える」",
 	],
-	3: [
+	3:
+	[
 		"MCパッキー「パッキングの時間です！ 12gをどう配分するか」",
 		"南雲「パッキングの密度、配置…全てが結果に出る」",
 	],
-	4: [
+	4:
+	[
 		"MCパッキー「詰め方を選ぶ！ ふわふわか、しっかりか…個性が出ますね」",
 		"南雲「パッキングスタイルで煙の立ち方が変わる」",
 	],
-	5: [
+	5:
+	[
 		"MCパッキー「アルミ穴あけ！ 等間隔で穴を開けられるかが勝負の分かれ目！」",
 		"南雲「穴の開け方一つで吸い心地が変わる。丁寧に、だがリズムよく」",
 	],
-	6: [
+	6:
+	[
 		"MCパッキー「炭の準備！ 炭を返すタイミングが鍵です」",
 	],
-	7: [
+	7:
+	[
 		"MCパッキー「炭配置！ 何個置くかも戦略のうち」",
 		"南雲「火力のコントロール…これがシーシャの脇だ」",
 	],
-	8: [
+	8:
+	[
 		"MCパッキー「蒸らしの時間です… ここは我慢比べ！」",
 		"南雲「蒸らしの分数で勝負は大きく変わる」",
 	],
-	9: [
+	9:
+	[
 		"MCパッキー「吸い出し前の精神戦…！ 選手たちの心の中はどうなってるかな」",
 	],
-	10: [
+	10:
+	[
 		"MCパッキー「吸い出し！ ここで煙の質が決まります！」",
 		"南雲「一口目の吸い出しがすべてを物語る」",
 	],
-	11: [
+	11:
+	[
 		"MCパッキー「提供の時間！ 審査員が吸います！」",
 	],
-	12: [
+	12:
+	[
 		"MCパッキー「調整タイム！ 灰を落とすか、炭を回すか、フタを調整するか」",
 	],
-	13: [
+	13:
+	[
 		"MCパッキー「プレゼンテーション！ 自分のシーシャをどうアピールするか」",
 		"南雲「味だけではない。見せ方にも志が要る」",
 	],
-	14: [
+	14:
+	[
 		"MCパッキー「反論タイム！ 審査員の疑問にどう答えるか！」",
 	],
-	15: [
+	15:
+	[
 		"MCパッキー「中間結果発表…！ ここまでの順位は？」",
 	],
-	16: [
+	16:
+	[
 		"MCパッキー「さあ、運命の最終発表です！」",
 		"南雲「どの選手もよく戦った。だが順位はつく」",
 	],
@@ -259,7 +368,6 @@ const PRESENTATION_FOCUS_LABEL := {
 	"ease": "吸いやすさ",
 	"unique": "個性",
 }
-
 
 @onready var header_label: Label = %HeaderLabel
 @onready var phase_label: Label = %PhaseLabel
@@ -291,7 +399,8 @@ const PRESENTATION_FOCUS_LABEL := {
 @onready var fullscreen_stage: Control = %FullscreenStage
 @onready var fullscreen_phase_label: Label = %FullscreenPhaseLabel
 @onready var fullscreen_title_label: Label = %FullscreenTitleLabel
-@onready var fullscreen_body_panel: PanelContainer = $FullscreenStage/StageMargin/StageVBox/FullscreenBodyPanel
+@onready
+var fullscreen_body_panel: PanelContainer = $FullscreenStage/StageMargin/StageVBox/FullscreenBodyPanel
 @onready var fullscreen_body_label: RichTextLabel = %FullscreenBodyLabel
 @onready var fullscreen_content_host: VBoxContainer = %FullscreenContentHost
 @onready var fullscreen_judge_label: Label = %FullscreenJudgeLabel
@@ -463,12 +572,13 @@ const SPEAKER_NAMES := {
 	"sumi": "炭場",
 	"naru": "なる",
 	"adam": "アダム",
-	"minto": "眠都(みんと)",
+	"minto": "緑川 栞（みんと）",
 	"pakki": "パッキー",
 	"nagumo": "南雲修二",
 	"maezono": "前園壮一郎",
 	"dr_kemuri": "ドクター・ケムリ",
 }
+
 
 func _process(_delta: float) -> void:
 	if status_panel and status_panel.has_method("update_status"):
@@ -480,8 +590,11 @@ func _process(_delta: float) -> void:
 			zone_text = "熱い"
 		elif _heat_state <= -2:
 			zone_text = "弱い"
-		status_panel.update_status(mapped_temp, zone_text, _selected_charcoal_count, pass_line, top_line)
+		status_panel.update_status(
+			mapped_temp, zone_text, _selected_charcoal_count, pass_line, top_line
+		)
 	_update_fullscreen_temp_gauge()
+
 
 func _ready() -> void:
 	randomize()
@@ -493,7 +606,7 @@ func _ready() -> void:
 	_pull_timer.one_shot = false
 	_pull_timer.timeout.connect(_on_pull_gauge_tick)
 	add_child(_pull_timer)
-	
+
 	_adjust_timer = Timer.new()
 	_adjust_timer.wait_time = 0.03
 	_adjust_timer.one_shot = false
@@ -515,7 +628,7 @@ func _ready() -> void:
 	_mind_timer.one_shot = false
 	_mind_timer.timeout.connect(_on_mind_barrage_tick)
 	add_child(_mind_timer)
-	
+
 	_mini_dialogue_timer = Timer.new()
 	_mini_dialogue_timer.wait_time = 0.03
 	_mini_dialogue_timer.one_shot = false
@@ -529,7 +642,7 @@ func _ready() -> void:
 		fullscreen_stage.hide()
 	if fullscreen_transition != null:
 		fullscreen_transition.color = Color(0, 0, 0, 0)
-	
+
 	if GameManager.game_state != "tournament":
 		GameManager.transition_to_tournament()
 	_prepare_run()
@@ -618,7 +731,9 @@ func _prepare_run() -> void:
 	_load_ng_mix_db()
 	_prepare_rival_score_tables()
 
-	_technical_points = PlayerData.stat_technique * 0.9 + PlayerData.stat_sense * 0.7 + PlayerData.stat_guts * 0.5
+	_technical_points = (
+		PlayerData.stat_technique * 0.9 + PlayerData.stat_sense * 0.7 + PlayerData.stat_guts * 0.5
+	)
 	_audience_points = PlayerData.stat_charm * 0.9 + PlayerData.stat_insight * 0.25
 	if _easy_mode:
 		_technical_points += 4.0
@@ -687,7 +802,9 @@ func _get_mix_trait(trait_name: String) -> float:
 		if g <= 0:
 			continue
 		var traits = _flavor_traits.get(flavor_id, {})
-		weighted_sum += float(traits.get(trait_name, 1.0 if trait_name != "steam_bias" else 0.0)) * float(g)
+		weighted_sum += (
+			float(traits.get(trait_name, 1.0 if trait_name != "steam_bias" else 0.0)) * float(g)
+		)
 		total_grams += g
 	if total_grams <= 0:
 		return 1.0 if trait_name != "steam_bias" else 0.0
@@ -713,11 +830,12 @@ func _apply_step_layout(step_num: int) -> void:
 		main_panel.offset_top = MAIN_PANEL_TOP_COMPACT if compact else MAIN_PANEL_TOP_DEFAULT
 		main_panel.offset_bottom = MAIN_PANEL_BOTTOM
 	if step_card != null:
-		step_card.custom_minimum_size.y = STEP_CARD_HEIGHT_COMPACT if compact else STEP_CARD_HEIGHT_DEFAULT
+		step_card.custom_minimum_size.y = (
+			STEP_CARD_HEIGHT_COMPACT if compact else STEP_CARD_HEIGHT_DEFAULT
+		)
 	if preview_panel != null:
 		preview_panel.custom_minimum_size = Vector2(
-			PREVIEW_PANEL_WIDTH,
-			STEP_CARD_HEIGHT_COMPACT if compact else STEP_CARD_HEIGHT_DEFAULT
+			PREVIEW_PANEL_WIDTH, STEP_CARD_HEIGHT_COMPACT if compact else STEP_CARD_HEIGHT_DEFAULT
 		)
 	if info_label != null:
 		info_label.custom_minimum_size.y = INFO_HEIGHT_COMPACT if compact else INFO_HEIGHT_DEFAULT
@@ -745,7 +863,11 @@ func _enter_immersive_stage() -> void:
 
 func _exit_immersive_stage(hide_stage: bool = true) -> void:
 	_stage_layout_mode = STAGE_LAYOUT_PANEL
-	if choice_container != null and _choice_default_parent != null and choice_container.get_parent() != _choice_default_parent:
+	if (
+		choice_container != null
+		and _choice_default_parent != null
+		and choice_container.get_parent() != _choice_default_parent
+	):
 		choice_container.reparent(_choice_default_parent)
 		if _choice_default_parent is Node:
 			(_choice_default_parent as Node).move_child(choice_container, _choice_default_index)
@@ -762,7 +884,12 @@ func _animate_fullscreen_transition() -> void:
 		return
 	fullscreen_transition.color = Color(0.02, 0.03, 0.06, 0.75)
 	var tween = create_tween()
-	tween.tween_property(fullscreen_transition, "color:a", 0.0, 0.24).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	(
+		tween
+		. tween_property(fullscreen_transition, "color:a", 0.0, 0.24)
+		. set_trans(Tween.TRANS_CUBIC)
+		. set_ease(Tween.EASE_OUT)
+	)
 
 
 func _update_fullscreen_stage_labels() -> void:
@@ -784,7 +911,12 @@ func _update_fullscreen_stage_labels() -> void:
 func _sync_fullscreen_body_visibility() -> void:
 	if fullscreen_body_panel == null:
 		return
-	fullscreen_body_panel.visible = _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE and not _focus_mode_active and fullscreen_body_label != null and fullscreen_body_label.text.strip_edges() != ""
+	fullscreen_body_panel.visible = (
+		_stage_layout_mode == STAGE_LAYOUT_IMMERSIVE
+		and not _focus_mode_active
+		and fullscreen_body_label != null
+		and fullscreen_body_label.text.strip_edges() != ""
+	)
 
 
 func _ensure_fullscreen_temp_gauge() -> void:
@@ -824,10 +956,14 @@ func _set_focus_mode(active: bool) -> void:
 	if deck_hbox != null:
 		deck_hbox.visible = not active
 	if main_panel != null:
-		main_panel.offset_top = 18.0 if active else (MAIN_PANEL_TOP_COMPACT if compact else MAIN_PANEL_TOP_DEFAULT)
+		main_panel.offset_top = (
+			18.0 if active else (MAIN_PANEL_TOP_COMPACT if compact else MAIN_PANEL_TOP_DEFAULT)
+		)
 	if info_label != null:
 		info_label.visible = not active
-		info_label.custom_minimum_size.y = 72.0 if active else (INFO_HEIGHT_COMPACT if compact else INFO_HEIGHT_DEFAULT)
+		info_label.custom_minimum_size.y = (
+			72.0 if active else (INFO_HEIGHT_COMPACT if compact else INFO_HEIGHT_DEFAULT)
+		)
 	if info_footer != null:
 		info_footer.visible = (not active) and _info_pages.size() > 1
 	if choice_container != null:
@@ -840,13 +976,19 @@ func _is_compact_layout_step(step_num: int) -> bool:
 
 
 func _update_step_stage(step_num: int, title: String) -> void:
-	var meta: Dictionary = STEP_STAGE_META.get(step_num, {
-		"tag": "STEP",
-		"summary": title,
-		"hint": "ここに画像・小アニメ・審査員リアクションを追加できる。",
-		"preview": "演出プレビュー待ち",
-		"color": Color("e43b44"),
-	})
+	var meta: Dictionary = (
+		STEP_STAGE_META
+		. get(
+			step_num,
+			{
+				"tag": "STEP",
+				"summary": title,
+				"hint": "ここに画像・小アニメ・審査員リアクションを追加できる。",
+				"preview": "演出プレビュー待ち",
+				"color": Color("e43b44"),
+			}
+		)
+	)
 	if step_tag_label != null:
 		step_tag_label.text = str(meta.get("tag", "STEP"))
 	if step_summary_label != null:
@@ -1026,19 +1168,31 @@ func _ensure_focus_status_panel() -> void:
 func _create_action_button(text: String, callback: Callable, selected: bool = false) -> Button:
 	var button = Button.new()
 	button.text = text
-	button.custom_minimum_size = Vector2(0, 64 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 36)
+	button.custom_minimum_size = Vector2(
+		0, 64 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 36
+	)
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	button.add_theme_font_size_override("font_size", 22 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 18)
+	button.add_theme_font_size_override(
+		"font_size", 22 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 18
+	)
 	button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	var normal_style = StyleBoxFlat.new()
-	normal_style.bg_color = Color("251833", 0.96) if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else Color("181425", 0.95)
+	normal_style.bg_color = (
+		Color("251833", 0.96)
+		if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE
+		else Color("181425", 0.95)
+	)
 	normal_style.border_color = Color("feae34", 0.7) if selected else Color("e43b44", 0.5)
 	normal_style.border_width_bottom = 3 if selected else 2
 	normal_style.border_width_left = 1
 	normal_style.border_width_right = 1
 	normal_style.border_width_top = 1
-	normal_style.corner_radius_bottom_left = 10 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 2
-	normal_style.corner_radius_bottom_right = 10 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 2
+	normal_style.corner_radius_bottom_left = (
+		10 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 2
+	)
+	normal_style.corner_radius_bottom_right = (
+		10 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 2
+	)
 	normal_style.corner_radius_top_left = 10 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 2
 	normal_style.corner_radius_top_right = 10 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 2
 	normal_style.content_margin_left = 20 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 16
@@ -1047,7 +1201,9 @@ func _create_action_button(text: String, callback: Callable, selected: bool = fa
 	normal_style.content_margin_bottom = 14 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 8
 	button.add_theme_stylebox_override("normal", normal_style)
 	var hover_style = normal_style.duplicate()
-	hover_style.bg_color = Color("e43b44", 0.25 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 0.25)
+	hover_style.bg_color = Color(
+		"e43b44", 0.25 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 0.25
+	)
 	hover_style.border_color = Color("feae34") if selected else Color("e43b44", 0.9)
 	hover_style.border_width_bottom = 3
 	button.add_theme_stylebox_override("hover", hover_style)
@@ -1058,14 +1214,17 @@ func _create_action_button(text: String, callback: Callable, selected: bool = fa
 	pressed_style.border_color = Color("e43b44")
 	button.add_theme_stylebox_override("pressed", pressed_style)
 	if callback.is_valid():
-		button.pressed.connect(func() -> void:
-			GameManager.play_ui_se("cursor")
-			callback.call()
+		button.pressed.connect(
+			func() -> void:
+				GameManager.play_ui_se("cursor")
+				callback.call()
 		)
 	return button
 
 
-func _add_choice_button_to(parent: Node, text: String, callback: Callable, selected: bool = false) -> Button:
+func _add_choice_button_to(
+	parent: Node, text: String, callback: Callable, selected: bool = false
+) -> Button:
 	var button = _create_action_button(text, callback, selected)
 	parent.add_child(button)
 	return button
@@ -1077,7 +1236,9 @@ func _add_choice_button(text: String, callback: Callable) -> Button:
 	return button
 
 
-func _create_stage_card(title_text: String, subtitle_text: String = "", min_height: float = 0.0) -> Dictionary:
+func _create_stage_card(
+	title_text: String, subtitle_text: String = "", min_height: float = 0.0
+) -> Dictionary:
 	var panel = PanelContainer.new()
 	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	panel.size_flags_vertical = Control.SIZE_EXPAND_FILL if min_height > 0.0 else 0
@@ -1098,7 +1259,9 @@ func _create_stage_card(title_text: String, subtitle_text: String = "", min_heig
 
 	var title = Label.new()
 	title.text = title_text
-	title.add_theme_font_size_override("font_size", 24 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 20)
+	title.add_theme_font_size_override(
+		"font_size", 24 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 20
+	)
 	title.add_theme_color_override("font_color", Color("feae34"))
 	body.add_child(title)
 
@@ -1106,7 +1269,9 @@ func _create_stage_card(title_text: String, subtitle_text: String = "", min_heig
 		var subtitle = Label.new()
 		subtitle.text = subtitle_text
 		subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		subtitle.add_theme_font_size_override("font_size", 16 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 14)
+		subtitle.add_theme_font_size_override(
+			"font_size", 16 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 14
+		)
 		subtitle.add_theme_color_override("font_color", Color("cfe7ff"))
 		body.add_child(subtitle)
 
@@ -1136,7 +1301,9 @@ func _add_stage_dialogue_block(parent: Node, line: Dictionary) -> void:
 	portrait.custom_minimum_size = Vector2(136, 136)
 	portrait.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	portrait.texture = _load_stage_portrait(str(line.get("speaker", "")), str(line.get("face", "normal")))
+	portrait.texture = _load_stage_portrait(
+		str(line.get("speaker", "")), str(line.get("face", "normal"))
+	)
 	portrait.visible = portrait.texture != null
 	row.add_child(portrait)
 
@@ -1148,7 +1315,9 @@ func _add_stage_dialogue_block(parent: Node, line: Dictionary) -> void:
 	var speaker = str(line.get("speaker", ""))
 	var fallback_name = str(line.get("name", "")).strip_edges()
 	var speaker_label = Label.new()
-	speaker_label.text = SPEAKER_NAMES.get(speaker, fallback_name if fallback_name != "" else speaker)
+	speaker_label.text = SPEAKER_NAMES.get(
+		speaker, fallback_name if fallback_name != "" else speaker
+	)
 	speaker_label.add_theme_font_size_override("font_size", 20)
 	speaker_label.add_theme_color_override("font_color", Color("feae34"))
 	speaker_label.visible = speaker_label.text.strip_edges() != ""
@@ -1157,12 +1326,22 @@ func _add_stage_dialogue_block(parent: Node, line: Dictionary) -> void:
 	var text_label = Label.new()
 	text_label.text = str(line.get("text", ""))
 	text_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	text_label.add_theme_font_size_override("font_size", 20 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 18)
+	text_label.add_theme_font_size_override(
+		"font_size", 20 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 18
+	)
 	text_label.add_theme_color_override("font_color", GameManager.THEME_CREAM_TEXT)
 	content.add_child(text_label)
 
 
-func _show_stage_briefing(step_num: int, title: String, body: String, lines: Array, tutorial_lines: Array[String], start_label: String, start_callback: Callable) -> void:
+func _show_stage_briefing(
+	step_num: int,
+	title: String,
+	body: String,
+	lines: Array,
+	tutorial_lines: Array[String],
+	start_label: String,
+	start_callback: Callable
+) -> void:
 	_set_phase(step_num, title, body)
 	_enter_immersive_stage()
 	_clear_choices()
@@ -1199,28 +1378,32 @@ func _show_setting_step() -> void:
 	split.add_theme_constant_override("separation", 18)
 	choice_container.add_child(split)
 
-	split.add_child(_build_selector_panel(
-		"ハガル",
-		"立ち上がりと熱の乗り方を決める。",
-		PlayerData.owned_bowls,
-		_selected_bowl,
-		_on_bowl_selected
-	))
-	split.add_child(_build_selector_panel(
-		"ヒートマネジメント",
-		"火力のピークと安定感を決める。",
-		PlayerData.owned_hms,
-		_selected_hms,
-		_on_hms_selected
-	))
+	split.add_child(
+		_build_selector_panel(
+			"ハガル", "立ち上がりと熱の乗り方を決める。", PlayerData.owned_bowls, _selected_bowl, _on_bowl_selected
+		)
+	)
+	split.add_child(
+		_build_selector_panel(
+			"ヒートマネジメント", "火力のピークと安定感を決める。", PlayerData.owned_hms, _selected_hms, _on_hms_selected
+		)
+	)
 
 	var pairing_ok = PlayerData.is_equipment_pair_compatible(_selected_bowl, _selected_hms)
 	var info_lines: Array[String] = []
 	if pairing_ok:
-		info_lines.append("現在の組み合わせ: %s + %s" % [
-			PlayerData.get_equipment_name_by_value(_selected_bowl),
-			PlayerData.get_equipment_name_by_value(_selected_hms),
-		])
+		(
+			info_lines
+			. append(
+				(
+					"現在の組み合わせ: %s + %s"
+					% [
+						PlayerData.get_equipment_name_by_value(_selected_bowl),
+						PlayerData.get_equipment_name_by_value(_selected_hms),
+					]
+				)
+			)
+		)
 	else:
 		info_lines.append("現在の組み合わせは非対応。選び直して。")
 
@@ -1232,14 +1415,21 @@ func _show_setting_step() -> void:
 	_refresh_side_panel()
 
 
-func _build_selector_panel(title_text: String, subtitle_text: String, ids: Array, selected_id: String, on_select: Callable) -> PanelContainer:
+func _build_selector_panel(
+	title_text: String, subtitle_text: String, ids: Array, selected_id: String, on_select: Callable
+) -> PanelContainer:
 	var card = _create_stage_card(title_text, subtitle_text, 360.0)
 	var panel = card["panel"] as PanelContainer
 	var body = card["body"] as VBoxContainer
 	for raw_id in ids:
 		var item_id = str(raw_id)
 		var prefix = "● " if item_id == selected_id else "○ "
-		_add_choice_button_to(body, "%s%s" % [prefix, PlayerData.get_equipment_name_by_value(item_id)], on_select.bind(item_id), item_id == selected_id)
+		_add_choice_button_to(
+			body,
+			"%s%s" % [prefix, PlayerData.get_equipment_name_by_value(item_id)],
+			on_select.bind(item_id),
+			item_id == selected_id
+		)
 	return panel
 
 
@@ -1362,10 +1552,15 @@ func _get_available_flavors() -> Array:
 		var amount = int(raw.get("amount", 0))
 		if amount <= 0:
 			continue
-		result.append({
-			"id": str(raw.get("id", "")),
-			"amount": amount,
-		})
+		(
+			result
+			. append(
+				{
+					"id": str(raw.get("id", "")),
+					"amount": amount,
+				}
+			)
+		)
 	return result
 
 
@@ -1435,7 +1630,10 @@ func _confirm_flavor_selection() -> void:
 		_audience_points -= 3.0
 		lines.append("単体配合のため審査が厳しくなる。")
 
-	if (_selected_hms == "amaburst" or PlayerData.equipment_charcoal == "cube_charcoal") and _has_alpha_heaven_flavor_selected():
+	if (
+		(_selected_hms == "amaburst" or PlayerData.equipment_charcoal == "cube_charcoal")
+		and _has_alpha_heaven_flavor_selected()
+	):
 		_technical_points += 4.0
 		_audience_points += 4.0
 		lines.append("高火力×アルファーヘブン戦略が刺さった。")
@@ -1459,7 +1657,11 @@ func _show_packing_step() -> void:
 			"パッキング配合（12g）",
 			"ボウル断面を見ながら、12g の配分を組み立てる。",
 			[
-				{"speaker": "pakki", "face": "smoke", "text": "ここは味の骨格を決める時間です！ 配合の比率がそのまま個性になりますよ。"},
+				{
+					"speaker": "pakki",
+					"face": "smoke",
+					"text": "ここは味の骨格を決める時間です！ 配合の比率がそのまま個性になりますよ。"
+				},
 				{"speaker": "hajime", "face": "serious", "text": "断面で重なり方を見ながら、主役と支えをはっきりさせる。"},
 			],
 			[
@@ -1498,7 +1700,9 @@ func _show_packing_step() -> void:
 	_packing_remaining_label.add_theme_font_size_override("font_size", 18)
 	(controls_card["body"] as VBoxContainer).add_child(_packing_remaining_label)
 
-	_packing_confirm_button = _add_choice_button_to(controls_card["body"], "この配合で確定", _confirm_manual_packing)
+	_packing_confirm_button = _add_choice_button_to(
+		controls_card["body"], "この配合で確定", _confirm_manual_packing
+	)
 	_refresh_packing_controls()
 
 	_refresh_side_panel()
@@ -1520,7 +1724,9 @@ func _update_packing_info_text() -> void:
 
 
 func _ensure_manual_packing_grams() -> void:
-	var needs_reset = _manual_packing_grams.is_empty() or _manual_packing_grams.size() != _selected_flavors.size()
+	var needs_reset = (
+		_manual_packing_grams.is_empty() or _manual_packing_grams.size() != _selected_flavors.size()
+	)
 	if not needs_reset:
 		for flavor_id in _selected_flavors:
 			if not _manual_packing_grams.has(flavor_id):
@@ -1548,7 +1754,9 @@ func _build_packing_slider_row(flavor_id: String) -> Control:
 
 	var label = Label.new()
 	label.text = "%s  %dg" % [_flavor_name(flavor_id), int(_manual_packing_grams.get(flavor_id, 0))]
-	label.add_theme_font_size_override("font_size", 18 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 16)
+	label.add_theme_font_size_override(
+		"font_size", 18 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 16
+	)
 	wrapper.add_child(label)
 	_packing_value_labels[flavor_id] = label
 
@@ -1557,7 +1765,9 @@ func _build_packing_slider_row(flavor_id: String) -> Control:
 	slider.max_value = TOTAL_PACKING_GRAMS
 	slider.step = 1
 	slider.value = int(_manual_packing_grams.get(flavor_id, 0))
-	slider.custom_minimum_size = Vector2(0, 30 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 0)
+	slider.custom_minimum_size = Vector2(
+		0, 30 if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else 0
+	)
 	slider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	slider.value_changed.connect(_on_packing_slider_changed.bind(flavor_id))
 	wrapper.add_child(slider)
@@ -1728,6 +1938,7 @@ func _on_packing_selected(pattern: Dictionary) -> void:
 
 
 ## ─── パッキングスタイル選択（STEP 4 新設） ───
+
 
 func _show_packing_style_step() -> void:
 	_set_phase(4, "パッキングスタイル", "葉の詰め方を選ぶ。仕上がりに影響する。")
@@ -1926,10 +2137,16 @@ func _show_aluminum_step() -> void:
 	for i in range(hole_count):
 		var row = i / cols
 		var col = i % cols
-		_aluminum_grid_holes.append({
-			"row": row, "col": col,
-			"result": "",  # "", "perfect", "good", "near", "miss"
-		})
+		(
+			_aluminum_grid_holes
+			. append(
+				{
+					"row": row,
+					"col": col,
+					"result": "",  # "", "perfect", "good", "near", "miss"
+				}
+			)
+		)
 	# 順番をシャッフル（光る順序をランダムに）
 	_aluminum_grid_holes.shuffle()
 
@@ -2063,13 +2280,16 @@ func _finish_aluminum_rhythm() -> void:
 	GameManager.play_ui_se("confirm" if delta_spec >= 0.0 else "cancel")
 	_show_mid_score_ticker()  # アルミ後の中間速報
 	_show_step_result_and_next(
-		"%s\n判定 P%d / G%d / N%d / M%d" % [
-			result_text,
-			_aluminum_hit_perfect,
-			_aluminum_hit_good,
-			_aluminum_hit_near,
-			_aluminum_hit_miss,
-		],
+		(
+			"%s\n判定 P%d / G%d / N%d / M%d"
+			% [
+				result_text,
+				_aluminum_hit_perfect,
+				_aluminum_hit_good,
+				_aluminum_hit_near,
+				_aluminum_hit_miss,
+			]
+		),
 		_show_charcoal_prep_step
 	)
 
@@ -2079,7 +2299,11 @@ func _evaluate_aluminum_rhythm() -> Dictionary:
 	if hits < _aluminum_required_hits:
 		return {"text": "穴あけ不足…均等に開けられなかった。", "spec": -10.0, "aud": -2.0, "zone": 0.04}
 
-	var weighted = float(_aluminum_hit_perfect) + float(_aluminum_hit_good) * 0.72 + float(_aluminum_hit_near) * 0.42
+	var weighted = (
+		float(_aluminum_hit_perfect)
+		+ float(_aluminum_hit_good) * 0.72
+		+ float(_aluminum_hit_near) * 0.42
+	)
 	var penalty = float(_aluminum_hit_miss) * 0.25 + float(_aluminum_bad_press) * 0.18
 	var score = (weighted - penalty) / float(maxi(_aluminum_total_notes, 1))
 	score += PlayerData.stat_technique * 0.0015
@@ -2106,13 +2330,21 @@ func _update_aluminum_rhythm_text() -> void:
 	var lines: Array[String] = []
 	lines.append("光っている穴だけ押す。金色のうちほど高精度。")
 	lines.append("進捗 %d / %d　成功 %d" % [done, total, hit_count])
-	lines.append("P%d / G%d / N%d / M%d / 空振り%d" % [
-		_aluminum_hit_perfect,
-		_aluminum_hit_good,
-		_aluminum_hit_near,
-		_aluminum_hit_miss,
-		_aluminum_bad_press,
-	])
+	(
+		lines
+		. append(
+			(
+				"P%d / G%d / N%d / M%d / 空振り%d"
+				% [
+					_aluminum_hit_perfect,
+					_aluminum_hit_good,
+					_aluminum_hit_near,
+					_aluminum_hit_miss,
+					_aluminum_bad_press,
+				]
+			)
+		)
+	)
 	_set_runtime_status("\n".join(lines))
 
 
@@ -2172,16 +2404,16 @@ func _on_charcoal_prep_choice(choice: String) -> void:
 func _show_charcoal_place_step() -> void:
 	_set_phase(7, "炭の配置", "3個か4個を選んで配置する。機材と好みに合わせる。")
 	_clear_choices()
-	
+
 	# Add hint dynamically based on equipment
 	var hint = "通常は3個が基本。"
 	if _selected_hms == "tanukish_lid" or PlayerData.equipment_bowl == "suyaki":
 		hint = "この機材なら3個のほうが熱が安定しやすい。"
 	elif _selected_hms == "amaburst":
 		hint = "この機材は4個で熱量を叩き込むのが正解。"
-		
+
 	_set_info_text("【ヒント】\n" + hint)
-	
+
 	_add_choice_button("3個（基本／安定）", _on_charcoal_place_selected.bind(3))
 	_add_choice_button("4個（攻め／狙いがある時）", _on_charcoal_place_selected.bind(4))
 	_refresh_side_panel()
@@ -2216,52 +2448,56 @@ func _on_charcoal_place_selected(count: int) -> void:
 	_audience_points += delta_aud
 	_zone_bonus = clampf(_zone_bonus, -0.4, 1.2)
 	_heat_state = clampi(_heat_state, -3, 3)
-	_show_step_result_and_next("炭配置結果: 専門 %+d / 一般 %+d" % [int(round(delta_spec)), int(round(delta_aud))], _show_steam_step)
+	_show_step_result_and_next(
+		"炭配置結果: 専門 %+d / 一般 %+d" % [int(round(delta_spec)), int(round(delta_aud))], _show_steam_step
+	)
 
 
 var _steam_timer_label: Label
+
 
 func _show_steam_step() -> void:
 	_set_phase(8, "蒸らしタイマー", "5〜10分から蒸らし時間を設定。")
 	_clear_choices()
 	_steam_minutes = 6
-	
+
 	var ui_container = VBoxContainer.new()
 	ui_container.alignment = BoxContainer.ALIGNMENT_CENTER
 	ui_container.add_theme_constant_override("separation", 16)
 	choice_container.add_child(ui_container)
-	
+
 	_steam_timer_label = Label.new()
 	_steam_timer_label.add_theme_font_size_override("font_size", 48)
 	_steam_timer_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	ui_container.add_child(_steam_timer_label)
-	
+
 	var control_row = HBoxContainer.new()
 	control_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	control_row.add_theme_constant_override("separation", 24)
 	ui_container.add_child(control_row)
-	
+
 	var minus_btn = Button.new()
 	minus_btn.text = "－1分"
 	minus_btn.custom_minimum_size = Vector2(80, 48)
 	minus_btn.pressed.connect(_on_steam_adjust.bind(-1))
 	control_row.add_child(minus_btn)
-	
+
 	var plus_btn = Button.new()
 	plus_btn.text = "＋1分"
 	plus_btn.custom_minimum_size = Vector2(80, 48)
 	plus_btn.pressed.connect(_on_steam_adjust.bind(1))
 	control_row.add_child(plus_btn)
-	
+
 	var start_btn = Button.new()
 	start_btn.text = "START (決定)"
 	start_btn.custom_minimum_size = Vector2(200, 56)
 	start_btn.add_theme_color_override("font_color", Color(1, 0.9, 0.4))
 	start_btn.pressed.connect(func(): _on_steam_selected(_steam_minutes))
 	ui_container.add_child(start_btn)
-	
+
 	_update_steam_timer_display()
 	_refresh_side_panel()
+
 
 func _on_steam_adjust(diff: int) -> void:
 	_steam_minutes += diff
@@ -2271,6 +2507,7 @@ func _on_steam_adjust(diff: int) -> void:
 		_steam_minutes = 10
 	GameManager.play_ui_se("cursor")
 	_update_steam_timer_display()
+
 
 func _update_steam_timer_display() -> void:
 	if _steam_timer_label:
@@ -2305,7 +2542,9 @@ func _on_steam_selected(minutes: int) -> void:
 	_technical_points += delta_spec
 	_zone_bonus = clampf(_zone_bonus, -0.4, 1.2)
 	_heat_state = clampi(_heat_state, -3, 3)
-	_show_mind_barrage_intro("蒸らし結果: 専門 %+d（適正 %d〜%d分）" % [int(round(delta_spec)), min_minute, max_minute])
+	_show_mind_barrage_intro(
+		"蒸らし結果: 専門 %+d（適正 %d〜%d分）" % [int(round(delta_spec)), min_minute, max_minute]
+	)
 
 
 func _get_steam_optimal_range(charcoal_count: int) -> Vector2i:
@@ -2591,15 +2830,9 @@ func _add_mind_direction_button(parent: GridContainer, button_text: String, dir_
 	button.text = button_text
 	button.custom_minimum_size = Vector2(88, 66)
 	button.add_theme_font_size_override("font_size", 28)
-	button.button_down.connect(func() -> void:
-		_set_mind_direction(dir_id, true)
-	)
-	button.button_up.connect(func() -> void:
-		_set_mind_direction(dir_id, false)
-	)
-	button.mouse_exited.connect(func() -> void:
-		_set_mind_direction(dir_id, false)
-	)
+	button.button_down.connect(func() -> void: _set_mind_direction(dir_id, true))
+	button.button_up.connect(func() -> void: _set_mind_direction(dir_id, false))
+	button.mouse_exited.connect(func() -> void: _set_mind_direction(dir_id, false))
 	parent.add_child(button)
 
 
@@ -2690,7 +2923,12 @@ func _on_mind_barrage_tick() -> void:
 		# 難易度スケーリング: 後半ほどスポーン間隔が短くなる
 		var progress = clampf(_mind_elapsed / maxf(_mind_duration_total, 1.0), 0.0, 1.0)
 		var phase_interval_mult = lerpf(1.0, 0.55, progress)
-		_mind_spawn_cooldown = _mind_spawn_interval * randf_range(0.72, 1.25) * phase_interval_mult * MIND_SPAWN_INTERVAL_MULT
+		_mind_spawn_cooldown = (
+			_mind_spawn_interval
+			* randf_range(0.72, 1.25)
+			* phase_interval_mult
+			* MIND_SPAWN_INTERVAL_MULT
+		)
 
 		# アリーナの色を時間経過で変化
 		if _mind_arena_layer != null and is_instance_valid(_mind_arena_layer):
@@ -2717,7 +2955,9 @@ func _on_mind_barrage_tick() -> void:
 	# Soul ノード: グレイズ近接度更新（graze_flash_t は _MindSoulNode._process で減衰）
 	if _mind_player_draw_node != null and is_instance_valid(_mind_player_draw_node):
 		var soul = _mind_player_draw_node as _MindSoulNode
-		soul.graze_near_t = clampf(1.0 - _mind_nearest_bullet_dist / (MIND_GRAZE_DISTANCE * 1.5), 0.0, 1.0)
+		soul.graze_near_t = clampf(
+			1.0 - _mind_nearest_bullet_dist / (MIND_GRAZE_DISTANCE * 1.5), 0.0, 1.0
+		)
 
 	if _mind_lives_remaining <= 0:
 		_mind_elapsed = _mind_duration_total
@@ -2798,7 +3038,9 @@ func _spawn_mind_barrage_word() -> void:
 
 
 ## 狙撃パターン（基本）: プレイヤーを狙う1発
-func _spawn_pattern_aimed(word_pool: Array, word_color: Color, progress: float, arena_size: Vector2) -> void:
+func _spawn_pattern_aimed(
+	word_pool: Array, word_color: Color, progress: float, arena_size: Vector2
+) -> void:
 	var phrase = str(word_pool[randi() % word_pool.size()])
 	var bullet = _create_bullet_label(phrase, word_color, progress)
 	var size = _get_bullet_size(bullet, phrase)
@@ -2818,7 +3060,9 @@ func _spawn_pattern_aimed(word_pool: Array, word_color: Color, progress: float, 
 
 
 ## 扇形パターン: 1辺から扇状に複数弾
-func _spawn_pattern_spread(word_pool: Array, word_color: Color, progress: float, arena_size: Vector2) -> void:
+func _spawn_pattern_spread(
+	word_pool: Array, word_color: Color, progress: float, arena_size: Vector2
+) -> void:
 	var side = randi() % 4
 	var count = MIND_PATTERN_SPREAD_COUNT
 	var spread_angle = deg_to_rad(60.0)
@@ -2831,16 +3075,23 @@ func _spawn_pattern_spread(word_pool: Array, word_color: Color, progress: float,
 		var base_dir = (center_target - spawn).normalized()
 		if base_dir.length_squared() < 0.001:
 			base_dir = Vector2.DOWN
-		var angle_offset = lerpf(-spread_angle * 0.5, spread_angle * 0.5, float(i) / float(maxi(count - 1, 1)))
+		var angle_offset = lerpf(
+			-spread_angle * 0.5, spread_angle * 0.5, float(i) / float(maxi(count - 1, 1))
+		)
 		var dir = base_dir.rotated(angle_offset)
 		var base_speed = _calc_bullet_speed(progress) * randf_range(0.85, 1.1)
 		_register_bullet(bullet, spawn, dir * base_speed, size)
 
 
 ## 放射パターン: アリーナ内の点から全方位に弾を放出
-func _spawn_pattern_burst(word_pool: Array, word_color: Color, progress: float, arena_size: Vector2) -> void:
+func _spawn_pattern_burst(
+	word_pool: Array, word_color: Color, progress: float, arena_size: Vector2
+) -> void:
 	var count = MIND_PATTERN_BURST_COUNT
-	var center = Vector2(randf_range(arena_size.x * 0.2, arena_size.x * 0.8), randf_range(arena_size.y * 0.2, arena_size.y * 0.8))
+	var center = Vector2(
+		randf_range(arena_size.x * 0.2, arena_size.x * 0.8),
+		randf_range(arena_size.y * 0.2, arena_size.y * 0.8)
+	)
 	# 放射の起点にフラッシュエフェクト
 	_spawn_burst_flash(center)
 	for i in range(count):
@@ -2854,7 +3105,9 @@ func _spawn_pattern_burst(word_pool: Array, word_color: Color, progress: float, 
 
 
 ## 十字パターン: 四方から同時に弾が来る
-func _spawn_pattern_cross(word_pool: Array, word_color: Color, progress: float, arena_size: Vector2) -> void:
+func _spawn_pattern_cross(
+	word_pool: Array, word_color: Color, progress: float, arena_size: Vector2
+) -> void:
 	for side in range(4):
 		var phrase = str(word_pool[randi() % word_pool.size()])
 		var bullet = _create_bullet_label(phrase, word_color, progress)
@@ -2906,7 +3159,12 @@ func _get_edge_spawn(side: int, arena_size: Vector2, bullet_size: Vector2) -> Ve
 
 ## 弾速計算ヘルパー
 func _calc_bullet_speed(progress: float) -> float:
-	var base_speed = 112.0 + float(_steam_minutes - 5) * 14.0 + float(abs(_heat_state)) * 9.0 + randf_range(0.0, 54.0)
+	var base_speed = (
+		112.0
+		+ float(_steam_minutes - 5) * 14.0
+		+ float(abs(_heat_state)) * 9.0
+		+ randf_range(0.0, 54.0)
+	)
 	base_speed += progress * MIND_PHASE_SPEED_SCALING
 	base_speed += MIND_BASE_BULLET_SPEED_BONUS
 	if _selected_hms == "amaburst":
@@ -3076,7 +3334,12 @@ func _update_mind_bullets(dt: float) -> void:
 		_update_bullet_glow(bullet, node, dist, dt)
 
 		# 画面外除去 + コンボ加算（回避成功）
-		if pos.x < -size.x - 24.0 or pos.x > arena_size.x + size.x + 24.0 or pos.y < -size.y - 24.0 or pos.y > arena_size.y + size.y + 24.0:
+		if (
+			pos.x < -size.x - 24.0
+			or pos.x > arena_size.x + size.x + 24.0
+			or pos.y < -size.y - 24.0
+			or pos.y > arena_size.y + size.y + 24.0
+		):
 			_mind_dodged_count += 1
 			if not bullet.get("grazed", false):
 				_mind_combo += 1
@@ -3119,7 +3382,9 @@ func _update_mind_barrage_info_text() -> void:
 	lines.append("残り %.1f秒  %s" % [remain, _build_mind_barrage_progress_bar(ratio)])
 	lines.append("残機 %s  集中度 %d%%" % [_build_mind_life_text(), focus])
 	var mode_text = "[集中]" if _mind_focus_mode else ""
-	lines.append("被弾 %d  回避 %d  ニア回避 %d  %s" % [_mind_hits, _mind_dodged_count, _mind_graze_count, mode_text])
+	lines.append(
+		"被弾 %d  回避 %d  ニア回避 %d  %s" % [_mind_hits, _mind_dodged_count, _mind_graze_count, mode_text]
+	)
 	_set_runtime_status("\n".join(lines))
 
 
@@ -3178,19 +3443,27 @@ func _finish_mind_barrage_step() -> void:
 	var max_combo = _mind_max_combo
 	var dodged = _mind_dodged_count
 	_show_step_result_and_next(
-		"%s\n被弾 %d / 回避 %d / ニア回避 %d / MAX COMBO %d\n専門 %+d / 一般 %+d\n吸い出し速度補正: %s" % [
-			result_text,
-			hit_count,
-			dodged,
-			graze_count,
-			max_combo,
-			int(round(delta_spec)),
-			int(round(delta_aud)),
-			_mind_pull_adjust_text(),
-		],
+		(
+			"%s\n被弾 %d / 回避 %d / ニア回避 %d / MAX COMBO %d\n専門 %+d / 一般 %+d\n吸い出し速度補正: %s"
+			% [
+				result_text,
+				hit_count,
+				dodged,
+				graze_count,
+				max_combo,
+				int(round(delta_spec)),
+				int(round(delta_aud)),
+				_mind_pull_adjust_text(),
+			]
+		),
 		_show_pull_step
 	)
-	_append_info("残機 %d/%d ニア回避 %d COMBO %d 速度補正: %s" % [lives_remaining, lives_max, graze_count, max_combo, _mind_pull_adjust_text()])
+	_append_info(
+		(
+			"残機 %d/%d ニア回避 %d COMBO %d 速度補正: %s"
+			% [lives_remaining, lives_max, graze_count, max_combo, _mind_pull_adjust_text()]
+		)
+	)
 
 
 func _evaluate_mind_barrage_result() -> Dictionary:
@@ -3210,7 +3483,9 @@ func _evaluate_mind_barrage_result() -> Dictionary:
 	# グレイズ・コンボボーナス: スキルプレイを評価に反映
 	var graze_bonus = clampf(float(_mind_graze_count) * 0.01, 0.0, 0.15)
 	var combo_bonus = clampf(float(_mind_max_combo) * 0.005, 0.0, 0.1)
-	var resilience = clampf(1.0 - pressure * 1.9 + life_ratio * 0.35 + graze_bonus + combo_bonus, 0.0, 1.0)
+	var resilience = clampf(
+		1.0 - pressure * 1.9 + life_ratio * 0.35 + graze_bonus + combo_bonus, 0.0, 1.0
+	)
 	if _easy_mode:
 		resilience = min(1.0, resilience + 0.08)
 
@@ -3409,7 +3684,9 @@ func _mind_update_face() -> void:
 		# 揺れアニメーション
 		var tween = create_tween()
 		face_node.position.x += 4
-		tween.tween_property(face_node, "position:x", face_node.position.x - 4, 0.15).set_trans(Tween.TRANS_ELASTIC)
+		tween.tween_property(face_node, "position:x", face_node.position.x - 4, 0.15).set_trans(
+			Tween.TRANS_ELASTIC
+		)
 
 	# セリフの更新
 	var label_node = choice_container.find_child("MindFaceLabel", true, false) as Label
@@ -3432,9 +3709,10 @@ func _update_mind_trail() -> void:
 	# フェードアウトして消える
 	var tween = create_tween()
 	tween.tween_property(trail_dot, "modulate:a", 0.0, 0.25)
-	tween.tween_callback(func() -> void:
-		_mind_trail_nodes.erase(trail_dot)
-		trail_dot.queue_free()
+	tween.tween_callback(
+		func() -> void:
+			_mind_trail_nodes.erase(trail_dot)
+			trail_dot.queue_free()
 	)
 	# トレイルノード数の制限
 	while _mind_trail_nodes.size() > MIND_TRAIL_LENGTH * 3:
@@ -3478,13 +3756,18 @@ func _spawn_hit_particles(center: Vector2, count: int, color: Color) -> void:
 		var speed = randf_range(60.0, 180.0)
 		var vel = Vector2(cos(angle), sin(angle)) * speed
 		var life = randf_range(0.2, 0.5)
-		_mind_particles.append({
-			"node": dot,
-			"pos": center,
-			"vel": vel,
-			"life": life,
-			"max_life": life,
-		})
+		(
+			_mind_particles
+			. append(
+				{
+					"node": dot,
+					"pos": center,
+					"vel": vel,
+					"life": life,
+					"max_life": life,
+				}
+			)
+		)
 
 
 ## グレイズパーティクル生成
@@ -3501,13 +3784,18 @@ func _spawn_graze_particles(center: Vector2, count: int, color: Color) -> void:
 		var speed = randf_range(30.0, 90.0)
 		var vel = Vector2(cos(angle), sin(angle)) * speed
 		var life = randf_range(0.15, 0.35)
-		_mind_particles.append({
-			"node": dot,
-			"pos": center,
-			"vel": vel,
-			"life": life,
-			"max_life": life,
-		})
+		(
+			_mind_particles
+			. append(
+				{
+					"node": dot,
+					"pos": center,
+					"vel": vel,
+					"life": life,
+					"max_life": life,
+				}
+			)
+		)
 
 
 ## ワード発光更新（近接グロー + グレイズグロー）
@@ -3640,12 +3928,15 @@ func _show_pull_step() -> void:
 	_set_phase(
 		10,
 		"吸い出し %d / %d" % [round_number, PULL_MAX_ROUNDS],
-		"押している間だけ吸い出し、離した瞬間で判定。最低%d回、最大%d回。熱状態: %s\n精神戦補正: %s" % [
-			PULL_MIN_ROUNDS,
-			PULL_MAX_ROUNDS,
-			_heat_label(),
-			_mind_pull_adjust_text(),
-		]
+		(
+			"押している間だけ吸い出し、離した瞬間で判定。最低%d回、最大%d回。熱状態: %s\n精神戦補正: %s"
+			% [
+				PULL_MIN_ROUNDS,
+				PULL_MAX_ROUNDS,
+				_heat_label(),
+				_mind_pull_adjust_text(),
+			]
+		)
 	)
 	_enter_immersive_stage()
 	_clear_choices()
@@ -3661,16 +3952,28 @@ func _show_pull_step() -> void:
 		difficulty = float(PULL_DIFFICULTY[difficulty_index])
 	var setting_window_adjust = _get_pull_window_adjust_by_setting()
 	var setting_speed_adjust = _get_pull_speed_adjust_by_setting()
-	_pull_target_width = clampf(0.22 - difficulty * 0.08 - float(abs(_heat_state)) * 0.01 + setting_window_adjust, 0.05, 0.24)
+	_pull_target_width = clampf(
+		0.22 - difficulty * 0.08 - float(abs(_heat_state)) * 0.01 + setting_window_adjust,
+		0.05,
+		0.24
+	)
 	if PlayerData.equipment_charcoal == "cube_charcoal":
 		_pull_target_width = maxf(0.05, _pull_target_width - 0.02)
 	if _easy_mode:
 		_pull_target_width = minf(0.26, _pull_target_width + 0.04)
 
-	_pull_target_center = clampf(0.5 + float(_heat_state) * 0.07 + randf_range(-0.12, 0.12), 0.15, 0.85)
-	var base_speed = 0.85 + float(_pull_round) * 0.2 + float(abs(_heat_state)) * 0.06 + setting_speed_adjust
+	_pull_target_center = clampf(
+		0.5 + float(_heat_state) * 0.07 + randf_range(-0.12, 0.12), 0.15, 0.85
+	)
+	var base_speed = (
+		0.85 + float(_pull_round) * 0.2 + float(abs(_heat_state)) * 0.06 + setting_speed_adjust
+	)
 	if _mind_force_worst_pull_speed:
-		_pull_gauge_speed = MIND_BARRAGE_WORST_PULL_SPEED + float(_pull_round) * 0.22 + float(abs(_heat_state)) * 0.08
+		_pull_gauge_speed = (
+			MIND_BARRAGE_WORST_PULL_SPEED
+			+ float(_pull_round) * 0.22
+			+ float(abs(_heat_state)) * 0.08
+		)
 	else:
 		_pull_gauge_speed = base_speed + _mind_pull_speed_adjust
 	if _easy_mode and not _mind_force_worst_pull_speed:
@@ -3695,9 +3998,13 @@ func _show_pull_step() -> void:
 		setting_hint = "装備補正: 安定（判定が広い）"
 	else:
 		setting_hint = "装備補正: 標準"
-	_pull_setting_hint = "%s / 精神戦: %s（%s）" % [setting_hint, _mind_pull_hint(), _mind_pull_adjust_text()]
+	_pull_setting_hint = (
+		"%s / 精神戦: %s（%s）" % [setting_hint, _mind_pull_hint(), _mind_pull_adjust_text()]
+	)
 
-	var gauge_card = _create_stage_card("煙量ゲージ", "狙いの帯で止める。ラウンド %d / %d" % [round_number, PULL_MAX_ROUNDS], 300.0)
+	var gauge_card = _create_stage_card(
+		"煙量ゲージ", "狙いの帯で止める。ラウンド %d / %d" % [round_number, PULL_MAX_ROUNDS], 300.0
+	)
 	choice_container.add_child(gauge_card["panel"])
 	_show_pull_gauge_visual(gauge_card["body"])
 
@@ -3734,13 +4041,18 @@ func _on_pull_gauge_tick() -> void:
 func _update_pull_gauge_text() -> void:
 	_update_pull_gauge_visual()
 	var status_text = "吸い出し中...離すと判定" if _pull_is_holding else "ボタンを押して吸い出し開始"
-	_set_runtime_status("%s\n%s\n現在位置 %.0f%% / 目標帯 %.0f%%±%.0f%%" % [
-		status_text,
-		_pull_setting_hint,
-		_pull_gauge_value * 100.0,
-		_pull_target_center * 100.0,
-		_pull_target_width * 100.0,
-	])
+	_set_runtime_status(
+		(
+			"%s\n%s\n現在位置 %.0f%% / 目標帯 %.0f%%±%.0f%%"
+			% [
+				status_text,
+				_pull_setting_hint,
+				_pull_gauge_value * 100.0,
+				_pull_target_center * 100.0,
+				_pull_target_width * 100.0,
+			]
+		)
+	)
 
 
 func _on_pull_hold_started() -> void:
@@ -3829,7 +4141,10 @@ func _resolve_pull_result() -> void:
 	var next_callable = _show_pull_step if _pull_round < PULL_MAX_ROUNDS else _show_serving_step
 	if _pull_round >= PULL_MAX_ROUNDS:
 		_show_mid_score_reveal()  # 吸い出し完了 → ドラマチック中間発表
-	_show_step_result_and_next("%s: 専門 %+d / 一般 %+d" % [result_text, int(round(delta_spec)), int(round(delta_aud))], next_callable)
+	_show_step_result_and_next(
+		"%s: 専門 %+d / 一般 %+d" % [result_text, int(round(delta_spec)), int(round(delta_aud))],
+		next_callable
+	)
 
 
 func _on_pull_skip_to_serving() -> void:
@@ -3893,7 +4208,7 @@ func _show_serving_step() -> void:
 func _on_serving_confirmed() -> void:
 	var spec_gain = 4.0 + _pull_quality_total * 1.8 + PlayerData.stat_technique * 0.03
 	var aud_gain = 3.0 + float(_pull_hit_count) * 2.0 + PlayerData.stat_charm * 0.02
-	
+
 	# Apply pull round bonus: Fewer pulls = greater bonus
 	var bonus_text = ""
 	if _pull_round == 2:
@@ -3904,11 +4219,14 @@ func _on_serving_confirmed() -> void:
 		spec_gain += 5.0
 		aud_gain += 3.0
 		bonus_text = " (早め吸い出しボーナス)"
-	
+
 	_technical_points += spec_gain
 	_audience_points += aud_gain
 	GameManager.play_ui_se("confirm")
-	_show_step_result_and_next("提供評価: 専門 %+d / 一般 %+d%s" % [int(round(spec_gain)), int(round(aud_gain)), bonus_text], _show_round_result.bind(1))
+	_show_step_result_and_next(
+		"提供評価: 専門 %+d / 一般 %+d%s" % [int(round(spec_gain)), int(round(aud_gain)), bonus_text],
+		_show_round_result.bind(1)
+	)
 
 
 func _show_round_result(round_num: int) -> void:
@@ -3927,9 +4245,7 @@ func _show_round_result(round_num: int) -> void:
 		var row = rival as Dictionary
 		_mid_rival_totals[str(row.get("id", ""))] = float(row.get("total", 0.0))
 	ranking.append_array(rivals)
-	ranking.sort_custom(func(a, b):
-		return float(a.get("total", 0.0)) > float(b.get("total", 0.0))
-	)
+	ranking.sort_custom(func(a, b): return float(a.get("total", 0.0)) > float(b.get("total", 0.0)))
 
 	var lines: Array[String] = ["【ラウンド%d 暫定順位】" % round_num]
 	for i in range(ranking.size()):
@@ -3939,15 +4255,23 @@ func _show_round_result(round_num: int) -> void:
 		if row_id == "player":
 			lines.append("%d位 %s %.1f点（あなた）" % [i + 1, str(row.get("name", "-")), row_total])
 		else:
-			lines.append("%d位 %s %.1f点（差 %+.1f）" % [
-				i + 1,
-				str(row.get("name", "-")),
-				row_total,
-				player_total - row_total,
-			])
+			(
+				lines
+				. append(
+					(
+						"%d位 %s %.1f点（差 %+.1f）"
+						% [
+							i + 1,
+							str(row.get("name", "-")),
+							row_total,
+							player_total - row_total,
+						]
+					)
+				)
+			)
 
 	_set_info_text("\n".join(lines))
-	
+
 	# ラウンド終了ごとのシナリオ再生と次のフェーズへの遷移セット
 	var dialogue_id = ""
 	var next_callable: Callable
@@ -3960,7 +4284,7 @@ func _show_round_result(round_num: int) -> void:
 	else:
 		dialogue_id = "ch1_tournament_r3_end"
 		next_callable = _show_presentation_intro
-		
+
 	_add_choice_button("次へ進む", _play_mini_dialogue.bind(dialogue_id, next_callable))
 	_refresh_side_panel()
 
@@ -4088,11 +4412,7 @@ func _show_pull_adjust_step(round_index: int) -> void:
 	var target_action = _target_adjust_action()
 	_adjust_target_action = target_action
 	var cue = _build_adjustment_cue(target_action, round_index)
-	_set_phase(
-		11 + round_index,
-		"吸い出し微調整",
-		cue + "\n方向を選択してから、ゲージでタイミング調整する。"
-	)
+	_set_phase(11 + round_index, "吸い出し微調整", cue + "\n方向を選択してから、ゲージでタイミング調整する。")
 	_clear_choices()
 	_add_choice_button("温度を上げる（蓋を閉める・強めに吸う）", _on_adjust_action_selected.bind("up", round_index))
 	_add_choice_button("現状維持", _on_adjust_action_selected.bind("stay", round_index))
@@ -4159,13 +4479,16 @@ func _show_adjustment_gauge_step(round_index: int) -> void:
 	_set_phase(
 		11 + round_index,
 		"微調整ゲージ",
-		"選択した方向: %s\n押している間だけ調整、離した瞬間で判定。\n判定は PERFECT / GOOD / NEAR / MISS。" % _adjust_action_label(_adjust_selected_action)
+		(
+			"選択した方向: %s\n押している間だけ調整、離した瞬間で判定。\n判定は PERFECT / GOOD / NEAR / MISS。"
+			% _adjust_action_label(_adjust_selected_action)
+		)
 	)
 	_set_focus_mode(true)
 	_clear_choices()
 	_adjust_step_finished = false
 	_adjust_is_holding = false
-	
+
 	var speed = 1.02 + float(abs(_heat_state)) * 0.16
 	_adjust_gauge_speed = clampf(speed, 0.8, 2.4)
 	_adjust_target_width = clampf(0.18 - float(abs(_heat_state)) * 0.015, 0.08, 0.22)
@@ -4216,8 +4539,12 @@ func _on_adjust_timer_tick() -> void:
 func _build_gauge_bar(value: float, target_center: float, target_width: float) -> String:
 	var bar_len: int = 24
 	var pointer_index: int = int(round(value * float(bar_len - 1)))
-	var target_start: int = int(round(clampf(target_center - target_width, 0.0, 1.0) * float(bar_len - 1)))
-	var target_end: int = int(round(clampf(target_center + target_width, 0.0, 1.0) * float(bar_len - 1)))
+	var target_start: int = int(
+		round(clampf(target_center - target_width, 0.0, 1.0) * float(bar_len - 1))
+	)
+	var target_end: int = int(
+		round(clampf(target_center + target_width, 0.0, 1.0) * float(bar_len - 1))
+	)
 	var bar := ""
 	for i in range(bar_len):
 		var c := "─"
@@ -4251,7 +4578,9 @@ func _update_adjust_text(status_text: String) -> void:
 
 func _resolve_adjustment_round(round_index: int) -> void:
 	_adjust_step_finished = true
-	var quality = _evaluate_gauge_quality(_adjust_gauge_value, _adjust_target_center, _adjust_target_width)
+	var quality = _evaluate_gauge_quality(
+		_adjust_gauge_value, _adjust_target_center, _adjust_target_width
+	)
 	var action_correct = _adjust_selected_action == _adjust_target_action
 	var timing_good = quality == "perfect" or quality == "good"
 	var success = action_correct and timing_good
@@ -4280,14 +4609,17 @@ func _resolve_adjustment_round(round_index: int) -> void:
 		result_line = "調整ミス。熱状態が悪化した。"
 
 	_heat_state = clampi(_heat_state, -3, 3)
-	
+
 	GameManager.play_ui_se("confirm" if success else "cancel")
 	_update_adjust_text(
-		"判定: %s\n%s\n現在の感触: %s" % [
-			quality.to_upper(),
-			result_line,
-			_heat_state_text(),
-		]
+		(
+			"判定: %s\n%s\n現在の感触: %s"
+			% [
+				quality.to_upper(),
+				result_line,
+				_heat_state_text(),
+			]
+		)
 	)
 	_clear_choices()
 	_adjustment_action_count += 1
@@ -4296,7 +4628,7 @@ func _resolve_adjustment_round(round_index: int) -> void:
 
 func _finish_adjustment_phase(round_index: int) -> void:
 	_adjustment_action_count = 0
-	
+
 	if round_index == 1 and _adjustment_hits >= 2:
 		_technical_points += 5.0
 		_audience_points += 2.0
@@ -4311,11 +4643,7 @@ func _show_presentation_intro() -> void:
 	var judge_labels: Array[String] = []
 	for focus_id in judge_focuses:
 		judge_labels.append(str(PRESENTATION_FOCUS_LABEL.get(focus_id, focus_id)))
-	_set_phase(
-		15,
-		"プレゼン: 強調ポイント",
-		"売りを1〜2個だけ選んで押し出す。\n審査員が刺さる軸: %s" % " / ".join(judge_labels)
-	)
+	_set_phase(15, "プレゼン: 強調ポイント", "売りを1〜2個だけ選んで押し出す。\n審査員が刺さる軸: %s" % " / ".join(judge_labels))
 	_clear_choices()
 	_presentation_primary_focus = ""
 	_presentation_secondary_focus = ""
@@ -4339,7 +4667,9 @@ func _on_presentation_primary_selected(focus_id: String) -> void:
 
 
 func _show_presentation_secondary_choice() -> void:
-	var primary_label = str(PRESENTATION_FOCUS_LABEL.get(_presentation_primary_focus, _presentation_primary_focus))
+	var primary_label = str(
+		PRESENTATION_FOCUS_LABEL.get(_presentation_primary_focus, _presentation_primary_focus)
+	)
 	_set_phase(15, "プレゼン: 2つ目", "1つ目は「%s」。2つ目を足すか、1点突破でいくか選ぶ。" % primary_label)
 	_clear_choices()
 	_add_choice_button("1点突破でいく", _on_presentation_secondary_selected.bind(""))
@@ -4389,7 +4719,9 @@ func _resolve_presentation_focus() -> void:
 			lines.append("未強調の弱点露出: %s（-%d）" % [focus_label, int(round(expose))])
 
 	if selected.size() == 2:
-		var pair_diff = abs(float(focus_scores.get(selected[0], 50.0)) - float(focus_scores.get(selected[1], 50.0)))
+		var pair_diff = abs(
+			float(focus_scores.get(selected[0], 50.0)) - float(focus_scores.get(selected[1], 50.0))
+		)
 		if pair_diff <= 10.0:
 			spec_gain += 3.0
 			aud_gain += 3.0
@@ -4436,10 +4768,26 @@ func _build_focus_scores() -> Dictionary:
 	var stability = clampf(1.0 - float(abs(_heat_state)) / 3.0, 0.0, 1.0)
 	var charcoal_bonus = 4.0 if _selected_charcoal_count == 4 else 0.0
 
-	var taste = 46.0 + float(theme_hit) * 8.0 + PlayerData.stat_sense * 0.55 + _technical_points * 0.04 + temp_quality * 14.0
-	var smoke = 44.0 + _zone_bonus * 20.0 + pull_rate * 24.0 + PlayerData.stat_guts * 0.35 + charcoal_bonus
-	var ease = 45.0 + stability * 16.0 + temp_quality * 14.0 + float(_adjustment_hits) * 6.0 + PlayerData.stat_insight * 0.4
-	var unique = 42.0 + PlayerData.stat_charm * 0.6 + _audience_points * 0.04 + float(_used_memo_count) * 2.0
+	var taste = (
+		46.0
+		+ float(theme_hit) * 8.0
+		+ PlayerData.stat_sense * 0.55
+		+ _technical_points * 0.04
+		+ temp_quality * 14.0
+	)
+	var smoke = (
+		44.0 + _zone_bonus * 20.0 + pull_rate * 24.0 + PlayerData.stat_guts * 0.35 + charcoal_bonus
+	)
+	var ease = (
+		45.0
+		+ stability * 16.0
+		+ temp_quality * 14.0
+		+ float(_adjustment_hits) * 6.0
+		+ PlayerData.stat_insight * 0.4
+	)
+	var unique = (
+		42.0 + PlayerData.stat_charm * 0.6 + _audience_points * 0.04 + float(_used_memo_count) * 2.0
+	)
 
 	if _special_mix_name != "":
 		unique += 16.0
@@ -4487,9 +4835,7 @@ func _finalize_and_show_result() -> void:
 	ranking.append(player_score)
 	ranking.append_array(_build_rival_scores())
 
-	ranking.sort_custom(func(a, b):
-		return float(a.get("total", 0.0)) > float(b.get("total", 0.0))
-	)
+	ranking.sort_custom(func(a, b): return float(a.get("total", 0.0)) > float(b.get("total", 0.0)))
 
 	_player_rank = 4
 	for i in range(ranking.size()):
@@ -4513,15 +4859,27 @@ func _finalize_and_show_result() -> void:
 	for i in range(ranking.size()):
 		var row: Dictionary = ranking[i]
 		var row_id = str(row.get("id", ""))
-		var mid_total = _mid_player_total if row_id == "player" else float(_mid_rival_totals.get(row_id, float(row.get("total", 0.0))))
+		var mid_total = (
+			_mid_player_total
+			if row_id == "player"
+			else float(_mid_rival_totals.get(row_id, float(row.get("total", 0.0))))
+		)
 		var diff_from_mid = float(row.get("total", 0.0)) - mid_total
-		lines.append("%d位 %s  %.1f点（専門 %.1f / 一般 %.1f）" % [
-			i + 1,
-			str(row.get("name", "-")),
-			float(row.get("total", 0.0)),
-			float(row.get("specialist", 0.0)),
-			float(row.get("audience", 0.0)),
-		])
+		(
+			lines
+			. append(
+				(
+					"%d位 %s  %.1f点（専門 %.1f / 一般 %.1f）"
+					% [
+						i + 1,
+						str(row.get("name", "-")),
+						float(row.get("total", 0.0)),
+						float(row.get("specialist", 0.0)),
+						float(row.get("audience", 0.0)),
+					]
+				)
+			)
+		)
 		lines.append("   中間比 %+.1f" % diff_from_mid)
 
 	if _special_mix_name != "":
@@ -4565,19 +4923,29 @@ func _dramatic_result_reveal(ranking: Array) -> void:
 	for i in range(ranking.size() - 1, -1, -1):
 		var row: Dictionary = ranking[i]
 		var row_id = str(row.get("id", ""))
-		var mid_total = _mid_player_total if row_id == "player" else float(_mid_rival_totals.get(row_id, float(row.get("total", 0.0))))
+		var mid_total = (
+			_mid_player_total
+			if row_id == "player"
+			else float(_mid_rival_totals.get(row_id, float(row.get("total", 0.0))))
+		)
 		var is_player = row_id == "player"
 		var rank_marker = "★" if is_player else "─"
 		var name_text = str(row.get("name", "-"))
 
-		_append_info("%s %d位  %s  %.1f点（専門 %.1f / 一般 %.1f）" % [
-			rank_marker,
-			i + 1,
-			name_text,
-			float(row.get("total", 0.0)),
-			float(row.get("specialist", 0.0)),
-			float(row.get("audience", 0.0)),
-		], "\n")
+		_append_info(
+			(
+				"%s %d位  %s  %.1f点（専門 %.1f / 一般 %.1f）"
+				% [
+					rank_marker,
+					i + 1,
+					name_text,
+					float(row.get("total", 0.0)),
+					float(row.get("specialist", 0.0)),
+					float(row.get("audience", 0.0)),
+				]
+			),
+			"\n"
+		)
 		GameManager.play_ui_se("cursor")
 		await get_tree().create_timer(0.7).timeout
 
@@ -4627,11 +4995,9 @@ func _compute_player_score_components() -> Dictionary:
 		specialist_mix_bonus += 4.0
 		audience_mix_bonus += 5.0
 
-	
 	var eq_flavor_bonus = PlayerData.get_equipment_flavor_bonus(_selected_flavors)
 	specialist_mix_bonus += float(eq_flavor_bonus.get("specialist", 0.0))
 	audience_mix_bonus += float(eq_flavor_bonus.get("audience", 0.0))
-
 
 	var pipe_spec_bonus = 0.0
 	var pipe_aud_bonus = 0.0
@@ -4661,23 +5027,51 @@ func _compute_player_score_components() -> Dictionary:
 func _build_player_score_breakdown_lines() -> Array[String]:
 	var comp = _compute_player_score_components()
 	var lines: Array[String] = []
-	lines.append("専門 %.1f = max(0, 技術 %.1f + ゾーン %.1f + 調整 %.1f) + ミックス %.1f" % [
-		float(comp.get("specialist", 0.0)),
-		_technical_points,
-		_zone_bonus * 8.0,
-		float(_adjustment_hits) * 2.5,
-		float(comp.get("specialist_mix_bonus", 0.0)),
-	])
-	lines.append("一般 %.1f = max(0, 一般基礎 %.1f + テーマ %.1f) + ミックス %.1f" % [
-		float(comp.get("audience", 0.0)),
-		_audience_points,
-		float(_count_theme_hits(_selected_flavors)) * 4.0,
-		float(comp.get("audience_mix_bonus", 0.0)),
-	])
-	lines.append("総合 %.1f = 専門×0.6 + 一般×0.4%s" % [
-		float(comp.get("total", 0.0)),
-		(" + EASY %+d" % int(round(float(comp.get("easy_bonus", 0.0))))) if _easy_mode else "",
-	])
+	(
+		lines
+		. append(
+			(
+				"専門 %.1f = max(0, 技術 %.1f + ゾーン %.1f + 調整 %.1f) + ミックス %.1f"
+				% [
+					float(comp.get("specialist", 0.0)),
+					_technical_points,
+					_zone_bonus * 8.0,
+					float(_adjustment_hits) * 2.5,
+					float(comp.get("specialist_mix_bonus", 0.0)),
+				]
+			)
+		)
+	)
+	(
+		lines
+		. append(
+			(
+				"一般 %.1f = max(0, 一般基礎 %.1f + テーマ %.1f) + ミックス %.1f"
+				% [
+					float(comp.get("audience", 0.0)),
+					_audience_points,
+					float(_count_theme_hits(_selected_flavors)) * 4.0,
+					float(comp.get("audience_mix_bonus", 0.0)),
+				]
+			)
+		)
+	)
+	(
+		lines
+		. append(
+			(
+				"総合 %.1f = 専門×0.6 + 一般×0.4%s"
+				% [
+					float(comp.get("total", 0.0)),
+					(
+						(" + EASY %+d" % int(round(float(comp.get("easy_bonus", 0.0)))))
+						if _easy_mode
+						else ""
+					),
+				]
+			)
+		)
+	)
 	return lines
 
 
@@ -4706,20 +5100,30 @@ func _prepare_rival_score_tables() -> void:
 		var final_spec = maxf(0.0, mid_spec + randf_range(-6.0, 6.0))
 		var final_aud = maxf(0.0, mid_aud + randf_range(-6.0, 6.0))
 
-		_rival_mid_scores.append({
-			"id": rival_id,
-			"name": rival_name,
-			"specialist": mid_spec,
-			"audience": mid_aud,
-			"total": mid_spec * 0.6 + mid_aud * 0.4,
-		})
-		_rival_final_scores.append({
-			"id": rival_id,
-			"name": rival_name,
-			"specialist": final_spec,
-			"audience": final_aud,
-			"total": final_spec * 0.6 + final_aud * 0.4,
-		})
+		(
+			_rival_mid_scores
+			. append(
+				{
+					"id": rival_id,
+					"name": rival_name,
+					"specialist": mid_spec,
+					"audience": mid_aud,
+					"total": mid_spec * 0.6 + mid_aud * 0.4,
+				}
+			)
+		)
+		(
+			_rival_final_scores
+			. append(
+				{
+					"id": rival_id,
+					"name": rival_name,
+					"specialist": final_spec,
+					"audience": final_aud,
+					"total": final_spec * 0.6 + final_aud * 0.4,
+				}
+			)
+		)
 
 
 func _build_rival_mid_scores() -> Array:
@@ -4815,7 +5219,9 @@ func _roll(success_rate: float) -> bool:
 	var chance = clampf(success_rate, 5.0, 95.0)
 	return randf() * 100.0 < chance
 
+
 # ======== Mini Dialogue System ========
+
 
 func _play_mini_dialogue(dialogue_id: String, on_finish: Callable) -> void:
 	var path = "res://data/dialogue/ch1_tournament.json"
@@ -4892,11 +5298,20 @@ func _on_mini_dialogue_tick() -> void:
 func _gui_input(event: InputEvent) -> void:
 	if _aluminum_active and event is InputEventKey and event.pressed and not event.echo:
 		var key_event = event as InputEventKey
-		if key_event.keycode == KEY_SPACE or key_event.keycode == KEY_ENTER or key_event.keycode == KEY_KP_ENTER:
+		if (
+			key_event.keycode == KEY_SPACE
+			or key_event.keycode == KEY_ENTER
+			or key_event.keycode == KEY_KP_ENTER
+		):
 			_on_aluminum_press_hole()
 			accept_event()
 			return
-	if mini_dialogue_panel.visible and event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+	if (
+		mini_dialogue_panel.visible
+		and event is InputEventMouseButton
+		and event.pressed
+		and event.button_index == MOUSE_BUTTON_LEFT
+	):
 		_advance_mini_dialogue()
 
 
@@ -4935,7 +5350,9 @@ func _count_matching_memos(flavor_ids: Array[String]) -> int:
 		if typeof(raw) != TYPE_DICTIONARY:
 			continue
 		var memo = raw as Dictionary
-		var source_text = (str(memo.get("title", "")) + " " + str(memo.get("body", ""))).strip_edges()
+		var source_text = (
+			(str(memo.get("title", "")) + " " + str(memo.get("body", ""))).strip_edges()
+		)
 		if source_text == "":
 			continue
 
@@ -5019,10 +5436,13 @@ func _build_temperature_gauge_text(current_temp: float, target: Vector2) -> Stri
 
 
 func _refresh_side_panel() -> void:
-	var judge_text = "MC: パッキー\n審査員: 南雲 修二 + ドクター・ケムリ + %s\nテーマ: %s" % [
-		str(_random_judge.get("name", "審査員")),
-		str(_theme.get("name", "-")),
-	]
+	var judge_text = (
+		"MC: パッキー\n審査員: 南雲 修二 + ドクター・ケムリ + %s\nテーマ: %s"
+		% [
+			str(_random_judge.get("name", "審査員")),
+			str(_theme.get("name", "-")),
+		]
+	)
 	judge_label.text = judge_text
 	if fullscreen_judge_label != null:
 		fullscreen_judge_label.text = judge_text
@@ -5035,18 +5455,34 @@ func _refresh_side_panel() -> void:
 	lines.append("調整成功: %d / 3" % _adjustment_hits)
 	lines.append("吸い出しヒット: %d / %d" % [_pull_hit_count, maxi(_pull_round, 1)])
 	lines.append("熱状態: %s" % _heat_label())
-	lines.append("温度: %d℃（目標 %d〜%d℃）" % [
-		int(round(current_temp)),
-		int(round(target_temp.x)),
-		int(round(target_temp.y)),
-	])
+	(
+		lines
+		. append(
+			(
+				"温度: %d℃（目標 %d〜%d℃）"
+				% [
+					int(round(current_temp)),
+					int(round(target_temp.x)),
+					int(round(target_temp.y)),
+				]
+			)
+		)
+	)
 	_update_temp_gauge()
 	lines.append("温度表示: ◆=現在 / ■=合格帯")
 	lines.append(_build_temperature_gauge_text(current_temp, target_temp))
-	lines.append("設定: %s + %s" % [
-		PlayerData.get_equipment_name_by_value(_selected_bowl),
-		PlayerData.get_equipment_name_by_value(_selected_hms),
-	])
+	(
+		lines
+		. append(
+			(
+				"設定: %s + %s"
+				% [
+					PlayerData.get_equipment_name_by_value(_selected_bowl),
+					PlayerData.get_equipment_name_by_value(_selected_hms),
+				]
+			)
+		)
+	)
 	lines.append("炭: %s" % PlayerData.get_equipped_item_name("charcoal"))
 	if not _selected_flavors.is_empty():
 		lines.append("配合: %s" % _selected_flavor_summary())
@@ -5055,9 +5491,16 @@ func _refresh_side_panel() -> void:
 	score_label.text = "\n".join(lines)
 	if fullscreen_status_label != null:
 		var fullscreen_lines: Array[String] = []
-		fullscreen_lines.append("専門 %.1f / 一般 %.1f" % [maxf(_technical_points, 0.0), maxf(_audience_points, 0.0)])
+		fullscreen_lines.append(
+			"専門 %.1f / 一般 %.1f" % [maxf(_technical_points, 0.0), maxf(_audience_points, 0.0)]
+		)
 		fullscreen_lines.append("熱状態: %s  温度: %d℃" % [_heat_label(), int(round(current_temp))])
-		fullscreen_lines.append("吸い出し %d / %d  炭 %d個" % [_pull_hit_count, maxi(_pull_round, 1), _selected_charcoal_count])
+		fullscreen_lines.append(
+			(
+				"吸い出し %d / %d  炭 %d個"
+				% [_pull_hit_count, maxi(_pull_round, 1), _selected_charcoal_count]
+			)
+		)
 		if not _selected_flavors.is_empty():
 			fullscreen_lines.append("配合: %s" % _selected_flavor_summary())
 		fullscreen_status_label.text = "\n".join(fullscreen_lines)
@@ -5086,24 +5529,26 @@ func _refresh_side_panel() -> void:
 
 ## フレーバーカラーマップ
 const FLAVOR_COLORS := {
-	"double_apple": Color("a22633"),   # 深紅（ダブルアップル）
-	"mint": Color("63c74d"),           # グリーン（ミント）
-	"blueberry": Color("124e89"),      # ディープブルー（ブルーベリー）
-	"vanilla": Color("ead4aa"),        # クリーム（バニラ）
-	"pineapple": Color("feae34"),      # ゴールド（パイナップル）
-	"coconut": Color("e4a672"),        # サンド（ココナッツ）
+	"double_apple": Color("a22633"),  # 深紅（ダブルアップル）
+	"mint": Color("63c74d"),  # グリーン（ミント）
+	"blueberry": Color("124e89"),  # ディープブルー（ブルーベリー）
+	"vanilla": Color("ead4aa"),  # クリーム（バニラ）
+	"pineapple": Color("feae34"),  # ゴールド（パイナップル）
+	"coconut": Color("e4a672"),  # サンド（ココナッツ）
 }
-
 
 ## ─── 1. パッキングのボウル断面可視化 ───
 
 var _bowl_visual_node: Control = null
 
+
 func _show_bowl_visual() -> void:
 	_remove_bowl_visual()
 	var bowl = _BowlVisual.new()
 	bowl.name = "BowlVisual"
-	var bowl_size = Vector2(420, 300) if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else Vector2(280, 180)
+	var bowl_size = (
+		Vector2(420, 300) if _stage_layout_mode == STAGE_LAYOUT_IMMERSIVE else Vector2(280, 180)
+	)
 	bowl.custom_minimum_size = bowl_size
 	bowl.size = bowl_size
 	bowl.flavors = _selected_flavors.duplicate()
@@ -5132,7 +5577,8 @@ func _remove_bowl_visual() -> void:
 	_bowl_visual_parent = null
 
 
-class _BowlVisual extends Control:
+class _BowlVisual:
+	extends Control
 	var flavors: Array = []
 	var grams: Dictionary = {}
 	var total_grams: int = 12
@@ -5150,12 +5596,14 @@ class _BowlVisual extends Control:
 		var bowl_height = bowl_bottom - bowl_top
 
 		# ボウルの外枠（台形）
-		var outline_points = PackedVector2Array([
-			Vector2(bowl_left + 20, bowl_top),
-			Vector2(bowl_right - 20, bowl_top),
-			Vector2(bowl_right, bowl_bottom),
-			Vector2(bowl_left, bowl_bottom),
-		])
+		var outline_points = PackedVector2Array(
+			[
+				Vector2(bowl_left + 20, bowl_top),
+				Vector2(bowl_right - 20, bowl_top),
+				Vector2(bowl_right, bowl_bottom),
+				Vector2(bowl_left, bowl_bottom),
+			]
+		)
 		draw_colored_polygon(outline_points, Color("3a4466", 0.7))
 		# ボウル枠線
 		for i in range(outline_points.size()):
@@ -5168,7 +5616,15 @@ class _BowlVisual extends Control:
 			total += int(grams.get(flavor_id, 0))
 		if total <= 0:
 			# 空のボウル表示
-			draw_string(ThemeDB.fallback_font, Vector2(w * 0.5 - 40, h * 0.5), "空のボウル", HORIZONTAL_ALIGNMENT_CENTER, -1, 16, Color("8b9bb4"))
+			draw_string(
+				ThemeDB.fallback_font,
+				Vector2(w * 0.5 - 40, h * 0.5),
+				"空のボウル",
+				HORIZONTAL_ALIGNMENT_CENTER,
+				-1,
+				16,
+				Color("8b9bb4")
+			)
 			return
 
 		var y_cursor = bowl_bottom
@@ -5189,29 +5645,48 @@ class _BowlVisual extends Control:
 			var right_top = lerpf(bowl_right - 20, bowl_right, ratio_top)
 
 			var color = flavor_colors.get(flavor_id, Color("5a6988"))
-			var layer_points = PackedVector2Array([
-				Vector2(left_top, y_top),
-				Vector2(right_top, y_top),
-				Vector2(right_bottom, y_cursor),
-				Vector2(left_bottom, y_cursor),
-			])
+			var layer_points = PackedVector2Array(
+				[
+					Vector2(left_top, y_top),
+					Vector2(right_top, y_top),
+					Vector2(right_bottom, y_cursor),
+					Vector2(left_bottom, y_cursor),
+				]
+			)
 			draw_colored_polygon(layer_points, color)
 
 			# フレーバー名ラベル
 			if layer_height > 18:
 				var label_y = y_top + layer_height * 0.5 + 5
 				var short_name = flavor_id.substr(0, 8)
-				draw_string(ThemeDB.fallback_font, Vector2(left_top + 8, label_y), "%s %dg" % [short_name, gram], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color("181425"))
+				draw_string(
+					ThemeDB.fallback_font,
+					Vector2(left_top + 8, label_y),
+					"%s %dg" % [short_name, gram],
+					HORIZONTAL_ALIGNMENT_LEFT,
+					-1,
+					14,
+					Color("181425")
+				)
 
 			y_cursor = y_top
 
 		# ボウルラベル
-		draw_string(ThemeDB.fallback_font, Vector2(bowl_left, bowl_top - 8), "BOWL", HORIZONTAL_ALIGNMENT_LEFT, -1, 12, Color("feae34"))
+		draw_string(
+			ThemeDB.fallback_font,
+			Vector2(bowl_left, bowl_top - 8),
+			"BOWL",
+			HORIZONTAL_ALIGNMENT_LEFT,
+			-1,
+			12,
+			Color("feae34")
+		)
 
 
 ## ─── 2. 温度ゲージのビジュアルバー ───
 
 var _temp_gauge_node: Control = null
+
 
 func _show_temp_gauge() -> void:
 	_remove_temp_gauge()
@@ -5244,7 +5719,8 @@ func _remove_temp_gauge() -> void:
 		_temp_gauge_node = null
 
 
-class _TempGaugeVisual extends Control:
+class _TempGaugeVisual:
+	extends Control
 	var current_temp: float = 180.0
 	var target_range: Vector2 = Vector2(178, 204)
 	var temp_min: float = 140.0
@@ -5264,7 +5740,9 @@ class _TempGaugeVisual extends Control:
 		var range_span = temp_max - temp_min
 		var target_left = margin + (target_range.x - temp_min) / range_span * (w - margin * 2)
 		var target_right = margin + (target_range.y - temp_min) / range_span * (w - margin * 2)
-		draw_rect(Rect2(target_left, bar_y, target_right - target_left, bar_h), Color("3e8948", 0.7), true)
+		draw_rect(
+			Rect2(target_left, bar_y, target_right - target_left, bar_h), Color("3e8948", 0.7), true
+		)
 
 		# 現在温度マーカー
 		var current_x = margin + (current_temp - temp_min) / range_span * (w - margin * 2)
@@ -5273,21 +5751,48 @@ class _TempGaugeVisual extends Control:
 		var marker_color = Color("feae34") if in_target else Color("e43b44")
 
 		# 三角マーカー
-		var tri = PackedVector2Array([
-			Vector2(current_x, bar_y - 2),
-			Vector2(current_x - 6, bar_y - 10),
-			Vector2(current_x + 6, bar_y - 10),
-		])
+		var tri = PackedVector2Array(
+			[
+				Vector2(current_x, bar_y - 2),
+				Vector2(current_x - 6, bar_y - 10),
+				Vector2(current_x + 6, bar_y - 10),
+			]
+		)
 		draw_colored_polygon(tri, marker_color)
 		draw_line(Vector2(current_x, bar_y), Vector2(current_x, bar_y + bar_h), marker_color, 2.0)
 
 		# ラベル
-		draw_string(ThemeDB.fallback_font, Vector2(margin, h - 2), "%d℃" % int(temp_min), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("8b9bb4"))
-		draw_string(ThemeDB.fallback_font, Vector2(w - margin - 30, h - 2), "%d℃" % int(temp_max), HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("8b9bb4"))
-		draw_string(ThemeDB.fallback_font, Vector2(current_x - 15, h - 2), "%d℃" % int(current_temp), HORIZONTAL_ALIGNMENT_LEFT, -1, 11, marker_color)
+		draw_string(
+			ThemeDB.fallback_font,
+			Vector2(margin, h - 2),
+			"%d℃" % int(temp_min),
+			HORIZONTAL_ALIGNMENT_LEFT,
+			-1,
+			10,
+			Color("8b9bb4")
+		)
+		draw_string(
+			ThemeDB.fallback_font,
+			Vector2(w - margin - 30, h - 2),
+			"%d℃" % int(temp_max),
+			HORIZONTAL_ALIGNMENT_LEFT,
+			-1,
+			10,
+			Color("8b9bb4")
+		)
+		draw_string(
+			ThemeDB.fallback_font,
+			Vector2(current_x - 15, h - 2),
+			"%d℃" % int(current_temp),
+			HORIZONTAL_ALIGNMENT_LEFT,
+			-1,
+			11,
+			marker_color
+		)
 
 
 ## ─── 3. 吸い出しタイミングゲージ ───
+
 
 func _show_pull_gauge_visual(parent: Node) -> void:
 	_remove_pull_gauge_visual()
@@ -5320,7 +5825,8 @@ func _remove_pull_gauge_visual() -> void:
 		_pull_gauge_visual_node = null
 
 
-class _PullGaugeVisual extends Control:
+class _PullGaugeVisual:
+	extends Control
 	var gauge_value: float = 0.5
 	var target_center: float = 0.5
 	var target_width: float = 0.16
@@ -5337,32 +5843,98 @@ class _PullGaugeVisual extends Control:
 		draw_rect(bar_rect, Color("1b1f33", 0.96), true)
 		draw_rect(bar_rect, Color("8b9bb4", 0.22), false, 2.0)
 
-		var target_left = bar_rect.position.x + bar_rect.size.x * clampf(target_center - target_width, 0.0, 1.0)
-		var target_right = bar_rect.position.x + bar_rect.size.x * clampf(target_center + target_width, 0.0, 1.0)
-		draw_rect(Rect2(target_left, bar_rect.position.y + 6.0, target_right - target_left, bar_rect.size.y - 12.0), Color("3e8948", 0.75), true)
+		var target_left = (
+			bar_rect.position.x + bar_rect.size.x * clampf(target_center - target_width, 0.0, 1.0)
+		)
+		var target_right = (
+			bar_rect.position.x + bar_rect.size.x * clampf(target_center + target_width, 0.0, 1.0)
+		)
+		draw_rect(
+			Rect2(
+				target_left,
+				bar_rect.position.y + 6.0,
+				target_right - target_left,
+				bar_rect.size.y - 12.0
+			),
+			Color("3e8948", 0.75),
+			true
+		)
 
 		var perfect_width = (target_right - target_left) * 0.35
-		var perfect_rect = Rect2(target_center * bar_rect.size.x + bar_rect.position.x - perfect_width * 0.5, bar_rect.position.y + 10.0, perfect_width, bar_rect.size.y - 20.0)
+		var perfect_rect = Rect2(
+			target_center * bar_rect.size.x + bar_rect.position.x - perfect_width * 0.5,
+			bar_rect.position.y + 10.0,
+			perfect_width,
+			bar_rect.size.y - 20.0
+		)
 		draw_rect(perfect_rect, Color("feae34", 0.8), true)
 
 		var pointer_x = bar_rect.position.x + bar_rect.size.x * clampf(gauge_value, 0.0, 1.0)
 		var pointer_col = Color("feae34") if is_holding else Color("e43b44")
-		draw_line(Vector2(pointer_x, bar_rect.position.y - 18.0), Vector2(pointer_x, bar_rect.position.y + bar_rect.size.y + 18.0), pointer_col, 5.0)
-		var tri = PackedVector2Array([
-			Vector2(pointer_x, bar_rect.position.y - 26.0),
-			Vector2(pointer_x - 10.0, bar_rect.position.y - 8.0),
-			Vector2(pointer_x + 10.0, bar_rect.position.y - 8.0),
-		])
+		draw_line(
+			Vector2(pointer_x, bar_rect.position.y - 18.0),
+			Vector2(pointer_x, bar_rect.position.y + bar_rect.size.y + 18.0),
+			pointer_col,
+			5.0
+		)
+		var tri = PackedVector2Array(
+			[
+				Vector2(pointer_x, bar_rect.position.y - 26.0),
+				Vector2(pointer_x - 10.0, bar_rect.position.y - 8.0),
+				Vector2(pointer_x + 10.0, bar_rect.position.y - 8.0),
+			]
+		)
 		draw_colored_polygon(tri, pointer_col)
 
-		draw_string(ThemeDB.fallback_font, Vector2(margin, 38.0), "PULL TIMING", HORIZONTAL_ALIGNMENT_LEFT, -1, 28, Color("ead4aa"))
-		draw_string(ThemeDB.fallback_font, Vector2(margin, 66.0), round_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("8bd5ff"))
-		draw_string(ThemeDB.fallback_font, Vector2(margin, h - 18.0), "PERFECT", HORIZONTAL_ALIGNMENT_LEFT, -1, 18, Color("feae34"))
-		draw_string(ThemeDB.fallback_font, Vector2(target_left, h - 18.0), "GOOD", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, Color("3e8948"))
-		draw_string(ThemeDB.fallback_font, Vector2(pointer_x + 14.0, center_y - 20.0), "SMOKE", HORIZONTAL_ALIGNMENT_LEFT, -1, 16, pointer_col)
+		draw_string(
+			ThemeDB.fallback_font,
+			Vector2(margin, 38.0),
+			"PULL TIMING",
+			HORIZONTAL_ALIGNMENT_LEFT,
+			-1,
+			28,
+			Color("ead4aa")
+		)
+		draw_string(
+			ThemeDB.fallback_font,
+			Vector2(margin, 66.0),
+			round_text,
+			HORIZONTAL_ALIGNMENT_LEFT,
+			-1,
+			16,
+			Color("8bd5ff")
+		)
+		draw_string(
+			ThemeDB.fallback_font,
+			Vector2(margin, h - 18.0),
+			"PERFECT",
+			HORIZONTAL_ALIGNMENT_LEFT,
+			-1,
+			18,
+			Color("feae34")
+		)
+		draw_string(
+			ThemeDB.fallback_font,
+			Vector2(target_left, h - 18.0),
+			"GOOD",
+			HORIZONTAL_ALIGNMENT_LEFT,
+			-1,
+			16,
+			Color("3e8948")
+		)
+		draw_string(
+			ThemeDB.fallback_font,
+			Vector2(pointer_x + 14.0, center_y - 20.0),
+			"SMOKE",
+			HORIZONTAL_ALIGNMENT_LEFT,
+			-1,
+			16,
+			pointer_col
+		)
 
 
 ## ─── 3. スコア変動ポップアップ ───
+
 
 func _show_score_popup(text: String, color: Color = Color("feae34")) -> void:
 	var layer = CanvasLayer.new()
@@ -5383,7 +5955,12 @@ func _show_score_popup(text: String, color: Color = Color("feae34")) -> void:
 	var tween = create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(label, "modulate:a", 1.0, 0.15)
-	tween.tween_property(label, "position:y", vp.y * 0.33, 0.6).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	(
+		tween
+		. tween_property(label, "position:y", vp.y * 0.33, 0.6)
+		. set_trans(Tween.TRANS_CUBIC)
+		. set_ease(Tween.EASE_OUT)
+	)
 	tween.tween_property(label, "modulate:a", 0.0, 0.3).set_delay(0.5)
 	tween.chain().tween_callback(layer.queue_free)
 
@@ -5402,6 +5979,7 @@ func _show_stat_popup(spec_delta: float, aud_delta: float) -> void:
 
 
 ## ─── 4. 画面揺れ＋フラッシュ ───
+
 
 func _screen_shake(intensity: float = 8.0, duration: float = 0.3) -> void:
 	var original_pos = position
@@ -5436,6 +6014,7 @@ func _dramatic_impact(text: String = "") -> void:
 
 ## ─── 6. アルミ穴あけビジュアル ───
 
+
 func _aluminum_show_hit_feedback(text: String, color: Color) -> void:
 	var ring_node = choice_container.find_child("AluminumGrid", true, false)
 	if ring_node == null:
@@ -5451,12 +6030,15 @@ func _aluminum_show_hit_feedback(text: String, color: Color) -> void:
 	ring_node.add_child(label)
 	var tween = create_tween()
 	tween.set_parallel(true)
-	tween.tween_property(label, "position:y", label.position.y - 40, 0.5).set_trans(Tween.TRANS_CUBIC)
+	tween.tween_property(label, "position:y", label.position.y - 40, 0.5).set_trans(
+		Tween.TRANS_CUBIC
+	)
 	tween.tween_property(label, "modulate:a", 0.0, 0.3).set_delay(0.3)
 	tween.chain().tween_callback(label.queue_free)
 
 
-class _AluminumGridVisual extends Control:
+class _AluminumGridVisual:
+	extends Control
 	## 上から見たアルミホイルのグリッド。穴が順番に光り、タップで穴を開ける。
 	var holes: Array = []
 	var current_hole: int = 0
@@ -5473,8 +6055,17 @@ class _AluminumGridVisual extends Control:
 		var radius = minf(cell_w, cell_h) * 0.32
 
 		# 背景（アルミホイルっぽい銀色）
-		draw_rect(Rect2(margin - 4, margin - 4, w - margin * 2 + 8, h - margin * 2 + 8), Color("8b9bb4", 0.15), true)
-		draw_rect(Rect2(margin - 4, margin - 4, w - margin * 2 + 8, h - margin * 2 + 8), Color("8b9bb4", 0.3), false, 1.0)
+		draw_rect(
+			Rect2(margin - 4, margin - 4, w - margin * 2 + 8, h - margin * 2 + 8),
+			Color("8b9bb4", 0.15),
+			true
+		)
+		draw_rect(
+			Rect2(margin - 4, margin - 4, w - margin * 2 + 8, h - margin * 2 + 8),
+			Color("8b9bb4", 0.3),
+			false,
+			1.0
+		)
 
 		for i in range(holes.size()):
 			var hole = holes[i]
@@ -5513,10 +6104,19 @@ class _AluminumGridVisual extends Control:
 				draw_circle(pos, radius * 0.6, Color("3a4466", 0.25))
 
 		# ラベル
-		draw_string(ThemeDB.fallback_font, Vector2(margin, h - 2), "FOIL", HORIZONTAL_ALIGNMENT_LEFT, -1, 10, Color("feae34", 0.4))
+		draw_string(
+			ThemeDB.fallback_font,
+			Vector2(margin, h - 2),
+			"FOIL",
+			HORIZONTAL_ALIGNMENT_LEFT,
+			-1,
+			10,
+			Color("feae34", 0.4)
+		)
 
 
 ## ─── 7. ラウンド告知 ───
+
 
 func _show_round_announce(step_num: int, title: String) -> void:
 	var layer = CanvasLayer.new()
@@ -5576,7 +6176,12 @@ func _show_round_announce(step_num: int, title: String) -> void:
 	tween.set_parallel(true)
 	tween.tween_property(step_label, "modulate:a", 1.0, 0.15)
 	tween.tween_property(title_label, "modulate:a", 1.0, 0.2)
-	tween.tween_property(title_label, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	(
+		tween
+		. tween_property(title_label, "scale", Vector2.ONE, 0.25)
+		. set_trans(Tween.TRANS_BACK)
+		. set_ease(Tween.EASE_OUT)
+	)
 	tween.tween_property(line, "modulate:a", 1.0, 0.2).set_delay(0.1)
 	# 消えるアニメーション
 	tween.tween_property(overlay, "color:a", 0.0, 0.2).set_delay(0.9)
@@ -5588,6 +6193,7 @@ func _show_round_announce(step_num: int, title: String) -> void:
 
 ## ─── 8. MCコメント ───
 
+
 func _show_mc_comment(step_num: int) -> void:
 	var comments: Array = MC_COMMENTS.get(step_num, [])
 	if comments.is_empty():
@@ -5597,6 +6203,7 @@ func _show_mc_comment(step_num: int) -> void:
 
 
 ## ─── 9. TV風テロップ ───
+
 
 func _show_tv_ticker(text: String, duration: float = 3.5) -> void:
 	var layer = CanvasLayer.new()
@@ -5639,7 +6246,12 @@ func _show_tv_ticker(text: String, duration: float = 3.5) -> void:
 	var tween = create_tween()
 	tween.set_parallel(true)
 	tween.tween_property(bar, "modulate:a", 1.0, 0.2)
-	tween.tween_property(bar, "position:y", bar.position.y - 60, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	(
+		tween
+		. tween_property(bar, "position:y", bar.position.y - 60, 0.3)
+		. set_trans(Tween.TRANS_CUBIC)
+		. set_ease(Tween.EASE_OUT)
+	)
 	# 消える
 	tween.tween_property(bar, "modulate:a", 0.0, 0.25).set_delay(duration)
 	tween.tween_property(bar, "position:y", bar.position.y, 0.25).set_delay(duration)
@@ -5647,6 +6259,7 @@ func _show_tv_ticker(text: String, duration: float = 3.5) -> void:
 
 
 ## ─── 10. 中間スコア発表 ───
+
 
 func _show_mid_score_ticker() -> void:
 	var spec_text = "専門 %.1f" % _technical_points
@@ -5731,7 +6344,9 @@ func _show_mid_score_reveal() -> void:
 	tween.tween_callback(layer.queue_free)
 
 
-func _create_score_bar(label_text: String, value: float, max_val: float, color: Color) -> HBoxContainer:
+func _create_score_bar(
+	label_text: String, value: float, max_val: float, color: Color
+) -> HBoxContainer:
 	var row = HBoxContainer.new()
 	row.add_theme_constant_override("separation", 10)
 	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -5771,6 +6386,7 @@ func _create_score_bar(label_text: String, value: float, max_val: float, color: 
 
 ## ─── 5. ステップ間トランジション ───
 
+
 func _step_transition() -> void:
 	_glitch_transition()
 
@@ -5779,6 +6395,7 @@ func _step_transition() -> void:
 
 var _scanline_layer: CanvasLayer = null
 var _beat_tween: Tween = null
+
 
 func _init_cyber_effects() -> void:
 	# スキャンラインレイヤー
@@ -5813,8 +6430,8 @@ func _glitch_transition() -> void:
 	var glitch_colors = [
 		Color("e43b44", 0.3),  # バーミリオン
 		Color("00e5ff", 0.25),  # サイバーシアン
-		Color("feae34", 0.2),   # アンバーゴールド
-		Color("181425", 0.8),   # ダーク
+		Color("feae34", 0.2),  # アンバーゴールド
+		Color("181425", 0.8),  # ダーク
 	]
 	for i in range(6):
 		var bar = ColorRect.new()
@@ -5838,7 +6455,8 @@ func _glitch_transition() -> void:
 	tween.chain().tween_callback(layer.queue_free)
 
 
-class _ScanlineEffect extends Control:
+class _ScanlineEffect:
+	extends Control
 	var _time: float = 0.0
 
 	func _process(delta: float) -> void:
@@ -5863,12 +6481,13 @@ class _ScanlineEffect extends Control:
 
 
 ## 弾幕プレイヤー: ダイヤモンド型の魂ノード
-class _MindSoulNode extends Control:
+class _MindSoulNode:
+	extends Control
 	var soul_color: Color = Color("e43b44")
 	var focus_mode_active: bool = false
 	var invincible: bool = false
 	var hit_flash: float = 0.0
-	var graze_near_t: float = 0.0   # 0〜1: 弾が近いほど1に近づく
+	var graze_near_t: float = 0.0  # 0〜1: 弾が近いほど1に近づく
 	var graze_flash_t: float = 0.0  # 0〜1: グレイズ直後フラッシュ
 	var _time: float = 0.0
 
@@ -5886,13 +6505,15 @@ class _MindSoulNode extends Control:
 
 		# 無敵時ブリンク
 		if invincible and (Time.get_ticks_msec() % 200) < 100:
-			var faint_pts = PackedVector2Array([
-				center + Vector2(0, -soul_size),
-				center + Vector2(soul_size, 0),
-				center + Vector2(0, soul_size),
-				center + Vector2(-soul_size, 0),
-				center + Vector2(0, -soul_size),
-			])
+			var faint_pts = PackedVector2Array(
+				[
+					center + Vector2(0, -soul_size),
+					center + Vector2(soul_size, 0),
+					center + Vector2(0, soul_size),
+					center + Vector2(-soul_size, 0),
+					center + Vector2(0, -soul_size),
+				]
+			)
 			draw_polyline(faint_pts, Color(soul_color, 0.3), 1.5)
 			return
 
@@ -5902,7 +6523,9 @@ class _MindSoulNode extends Control:
 			var ring_r: float = soul_size * (2.2 + graze_flash_t * 1.5)
 			draw_arc(center, ring_r, 0.0, TAU, 28, Color("00e5ff", ring_alpha), 2.0)
 			if graze_flash_t > 0.0:
-				draw_arc(center, ring_r * 1.45, 0.0, TAU, 16, Color("00e5ff", graze_flash_t * 0.35), 1.5)
+				draw_arc(
+					center, ring_r * 1.45, 0.0, TAU, 16, Color("00e5ff", graze_flash_t * 0.35), 1.5
+				)
 
 		# 外側グロー（脈動）
 		var glow_pulse = sin(_time * 3.5) * 0.02
@@ -5917,22 +6540,26 @@ class _MindSoulNode extends Control:
 
 		# メインダイヤモンド（グレイズ時シアンにシフト）
 		var diamond_col := soul_color.lerp(Color("00e5ff"), graze_flash_t * 0.6)
-		var pts = PackedVector2Array([
-			center + Vector2(0, -soul_size),
-			center + Vector2(soul_size, 0),
-			center + Vector2(0, soul_size),
-			center + Vector2(-soul_size, 0),
-		])
+		var pts = PackedVector2Array(
+			[
+				center + Vector2(0, -soul_size),
+				center + Vector2(soul_size, 0),
+				center + Vector2(0, soul_size),
+				center + Vector2(-soul_size, 0),
+			]
+		)
 		draw_colored_polygon(pts, diamond_col)
 
 		# 内側コア（白い輝き）
 		var inner = soul_size * 0.42
-		var inner_pts = PackedVector2Array([
-			center + Vector2(0, -inner),
-			center + Vector2(inner, 0),
-			center + Vector2(0, inner),
-			center + Vector2(-inner, 0),
-		])
+		var inner_pts = PackedVector2Array(
+			[
+				center + Vector2(0, -inner),
+				center + Vector2(inner, 0),
+				center + Vector2(0, inner),
+				center + Vector2(-inner, 0),
+			]
+		)
 		draw_colored_polygon(inner_pts, Color.WHITE.lerp(diamond_col, 0.15))
 
 		# フォーカスモード: 判定範囲表示
@@ -5940,11 +6567,14 @@ class _MindSoulNode extends Control:
 			var hb = soul_size * 0.35
 			draw_arc(center, hb, 0, TAU, 16, Color("00e5ff", 0.85), 1.5)
 			var ring_r = soul_size * 1.8 + sin(_time * 6.0) * 1.0
-			draw_arc(center, ring_r, _time * 2.0, _time * 2.0 + TAU * 0.7, 12, Color("00e5ff", 0.2), 1.0)
+			draw_arc(
+				center, ring_r, _time * 2.0, _time * 2.0 + TAU * 0.7, 12, Color("00e5ff", 0.2), 1.0
+			)
 
 
 ## 弾幕アリーナ背景: グリッド + ビネット
-class _MindArenaGrid extends Control:
+class _MindArenaGrid:
+	extends Control
 	var grid_color: Color = Color("8b9bb4", 0.05)
 	var grid_spacing: float = 40.0
 	var phase_progress: float = 0.0
@@ -5976,12 +6606,15 @@ class _MindArenaGrid extends Control:
 			var corner_size = min(w, h) * 0.35
 			for corner_x in [0.0, w - corner_size]:
 				for corner_y in [0.0, h - corner_size]:
-					draw_rect(Rect2(corner_x, corner_y, corner_size, corner_size),
-						Color("e43b44", intensity * 0.3))
+					draw_rect(
+						Rect2(corner_x, corner_y, corner_size, corner_size),
+						Color("e43b44", intensity * 0.3)
+					)
 
 
 ## グレイズリングエフェクト: 拡散するネオンリング
-class _GrazeRingEffect extends Control:
+class _GrazeRingEffect:
+	extends Control
 	var combo: int = 0
 	var _t: float = 0.0
 	var _life: float = 0.45
@@ -6004,4 +6637,6 @@ class _GrazeRingEffect extends Control:
 		var thickness := 2.5 - prog * 1.5
 		draw_arc(Vector2.ZERO, radius, 0.0, TAU, 32, col, thickness)
 		# 内側の薄いリング
-		draw_arc(Vector2.ZERO, radius * 0.6, 0.0, TAU, 20, Color(col.r, col.g, col.b, alpha * 0.35), 1.0)
+		draw_arc(
+			Vector2.ZERO, radius * 0.6, 0.0, TAU, 20, Color(col.r, col.g, col.b, alpha * 0.35), 1.0
+		)

@@ -30,6 +30,7 @@ var _line_queue: Array[Dictionary] = []
 var _history: Array[Dictionary] = []
 var _branches: Dictionary = {}
 var _metadata: Dictionary = {}
+var _pending_confession := ""
 
 var _is_typing = false
 var _full_text = ""
@@ -46,17 +47,48 @@ var _portrait_texture_cache: Dictionary = {}
 var _portrait_union_rect_cache: Dictionary = {}
 var _portrait_rects: Array[TextureRect] = []
 var _portrait_cast: Array[Dictionary] = []
+var _v2_bottom_bar: HBoxContainer
+var _v2_menu_button: Button
+var _v2_location_label: Label
+var _v2_time_label: Label
+var _v2_level_label: Label
+var _v2_level_fill: ColorRect
+var _v2_name_plate: PanelContainer
 
-const DIALOGUE_WRAP_CHARS := 20
+const SYSTEM_MENU_SCENE = preload("res://scenes/ui/system_menu.tscn")
+const DECO_ICON_SCRIPT = preload("res://scripts/ui/dialogue_deco_icon.gd")
+
+const DIALOGUE_WRAP_CHARS := 34
 const DIALOGUE_MAX_LINES := 2
 const ADVANCE_HOLD_DELAY := 0.34
 const ADVANCE_REPEAT_INTERVAL := 0.09
 const MAX_VISIBLE_PORTRAITS := 3
 const PORTRAIT_FACE_CANDIDATES := [
-	"normal", "smile", "serious", "sad", "surprise", "shy", "focus",
-	"smug", "wink", "evil", "excited", "thinking", "fired_up", "intense",
-	"silent", "angry", "smoke", "cry", "grin", "shout",
-	"ura_normal", "ura_smile", "ura_serious", "ura_sad", "ura_surprise",
+	"normal",
+	"smile",
+	"serious",
+	"sad",
+	"surprise",
+	"shy",
+	"focus",
+	"smug",
+	"wink",
+	"evil",
+	"excited",
+	"thinking",
+	"fired_up",
+	"intense",
+	"silent",
+	"angry",
+	"smoke",
+	"cry",
+	"grin",
+	"shout",
+	"ura_normal",
+	"ura_smile",
+	"ura_serious",
+	"ura_sad",
+	"ura_surprise",
 ]
 const PORTRAIT_PROFILE_DEFAULT := {
 	"side_padding": 10,
@@ -71,14 +103,16 @@ const PORTRAIT_PROFILE_DEFAULT := {
 	"x_shift_ratio": 0.00,
 }
 const PORTRAIT_PROFILE_BY_CLASS := {
-	"standard": {
+	"standard":
+	{
 		"bottom_trim_ratio": 0.40,
 		"bottom_trim_max": 320,
 		"min_visible_ratio": 0.46,
 		"focus_scale": 1.12,
 		"support_scale": 1.00,
 	},
-	"tall": {
+	"tall":
+	{
 		"bottom_trim_ratio": 0.42,
 		"bottom_trim_max": 340,
 		"min_visible_ratio": 0.44,
@@ -86,7 +120,8 @@ const PORTRAIT_PROFILE_BY_CLASS := {
 		"support_scale": 1.04,
 		"y_shift_ratio": -0.02,
 	},
-	"short": {
+	"short":
+	{
 		"bottom_trim_ratio": 0.24,
 		"bottom_trim_max": 220,
 		"min_visible_ratio": 0.58,
@@ -94,7 +129,8 @@ const PORTRAIT_PROFILE_BY_CLASS := {
 		"support_scale": 0.92,
 		"y_shift_ratio": 0.02,
 	},
-	"mascot": {
+	"mascot":
+	{
 		"side_padding": 4,
 		"top_padding": 4,
 		"bottom_padding": 4,
@@ -107,17 +143,68 @@ const PORTRAIT_PROFILE_BY_CLASS := {
 	},
 }
 const PORTRAIT_SLOT_LAYOUTS := {
-	1: [
-		{"anchor_x": 0.50, "width_ratio": 0.56, "height_ratio": 1.12, "bottom_overscan_ratio": 0.14, "brightness": 1.0, "alpha": 1.0, "z": 3},
+	1:
+	[
+		{
+			"anchor_x": 0.50,
+			"width_ratio": 0.56,
+			"height_ratio": 1.12,
+			"bottom_overscan_ratio": 0.14,
+			"brightness": 1.0,
+			"alpha": 1.0,
+			"z": 3
+		},
 	],
-	2: [
-		{"anchor_x": 0.24, "width_ratio": 0.38, "height_ratio": 0.86, "bottom_overscan_ratio": 0.06, "brightness": 0.72, "alpha": 0.88, "z": 1},
-		{"anchor_x": 0.61, "width_ratio": 0.50, "height_ratio": 1.05, "bottom_overscan_ratio": 0.12, "brightness": 1.0, "alpha": 1.0, "z": 3},
+	2:
+	[
+		{
+			"anchor_x": 0.24,
+			"width_ratio": 0.38,
+			"height_ratio": 0.86,
+			"bottom_overscan_ratio": 0.06,
+			"brightness": 0.72,
+			"alpha": 0.88,
+			"z": 1
+		},
+		{
+			"anchor_x": 0.61,
+			"width_ratio": 0.50,
+			"height_ratio": 1.05,
+			"bottom_overscan_ratio": 0.12,
+			"brightness": 1.0,
+			"alpha": 1.0,
+			"z": 3
+		},
 	],
-	3: [
-		{"anchor_x": 0.17, "width_ratio": 0.34, "height_ratio": 0.82, "bottom_overscan_ratio": 0.05, "brightness": 0.68, "alpha": 0.86, "z": 1},
-		{"anchor_x": 0.50, "width_ratio": 0.46, "height_ratio": 1.00, "bottom_overscan_ratio": 0.10, "brightness": 1.0, "alpha": 1.0, "z": 3},
-		{"anchor_x": 0.83, "width_ratio": 0.34, "height_ratio": 0.82, "bottom_overscan_ratio": 0.05, "brightness": 0.76, "alpha": 0.90, "z": 2},
+	3:
+	[
+		{
+			"anchor_x": 0.17,
+			"width_ratio": 0.34,
+			"height_ratio": 0.82,
+			"bottom_overscan_ratio": 0.05,
+			"brightness": 0.68,
+			"alpha": 0.86,
+			"z": 1
+		},
+		{
+			"anchor_x": 0.50,
+			"width_ratio": 0.46,
+			"height_ratio": 1.00,
+			"bottom_overscan_ratio": 0.10,
+			"brightness": 1.0,
+			"alpha": 1.0,
+			"z": 3
+		},
+		{
+			"anchor_x": 0.83,
+			"width_ratio": 0.34,
+			"height_ratio": 0.82,
+			"bottom_overscan_ratio": 0.05,
+			"brightness": 0.76,
+			"alpha": 0.90,
+			"z": 2
+		},
 	],
 }
 const PORTRAIT_CLASS_BY_SPEAKER := {
@@ -148,7 +235,7 @@ const SPEAKER_NAMES := {
 	"sumi": "スミさん",
 	"naru": "なる",
 	"adam": "アダム",
-	"minto": "眠都(みんと)",
+	"minto": "緑川 栞（みんと）",
 	"mashiro": "ましろ",
 	"tsumugi": "つむぎ",
 	"tumugi": "つむぎ",
@@ -166,12 +253,18 @@ const SPEAKER_ID_ALIASES := {
 	"takiguchi": "pakki",
 }
 const HIGHLIGHT_TAGS := [
-	"[imp]", "[/imp]",
-	"[warn]", "[/warn]",
-	"[hint]", "[/hint]",
-	"[red]", "[/red]",
-	"[blue]", "[/blue]",
-	"[sub]", "[/sub]"
+	"[imp]",
+	"[/imp]",
+	"[warn]",
+	"[/warn]",
+	"[hint]",
+	"[/hint]",
+	"[red]",
+	"[/red]",
+	"[blue]",
+	"[/blue]",
+	"[sub]",
+	"[/sub]"
 ]
 const HIGHLIGHT_OPEN_REPLACEMENTS := {
 	"[imp]": "[b][color=#ffd878]",
@@ -190,6 +283,14 @@ const HIGHLIGHT_CLOSE_REPLACEMENTS := {
 	"[/hint]": "[/color]",
 }
 
+const UI_GOLD := Color("d8a538")
+const UI_GOLD_LIGHT := Color("fff0c6")
+const UI_BLACK := Color("050505")
+const UI_PANEL_BLACK := Color(0.01, 0.011, 0.012, 0.90)
+const UI_PURPLE := Color("27132f")
+const UI_TEXT := Color("fff6df")
+const UI_MUTED := Color("c8b995")
+
 
 func _ready() -> void:
 	if not GameManager:
@@ -200,14 +301,14 @@ func _ready() -> void:
 		portrait_center_rect,
 		portrait_right_rect,
 	]
-	portrait_layer.z_index = 5   # キャラが背景より前、CGより後ろ
-	cg_rect.z_index = 10        # CG はキャラより前
+	portrait_layer.z_index = 5  # キャラが背景より前、CGより後ろ
+	cg_rect.z_index = 10  # CG はキャラより前
 	dialogue_panel.z_index = 20
-		
+
 	# Setup font and transparency
 	# GameManager が root theme にフォントを設定済みのため override 不要
 	# （override すると SystemFont fallback が失われてデバッグ実行で文字が消える）
-	
+
 	var panel_style = StyleBoxFlat.new()
 	panel_style.bg_color = Color(0, 0, 0, 0.70)
 	panel_style.corner_radius_top_left = 8
@@ -215,7 +316,8 @@ func _ready() -> void:
 	panel_style.corner_radius_bottom_right = 8
 	panel_style.corner_radius_bottom_left = 8
 	dialogue_panel.add_theme_stylebox_override("panel", panel_style)
-	
+	_apply_v2_dialogue_skin()
+
 	if advance_button:
 		advance_button.pressed.connect(_on_advance_button_pressed)
 		advance_button.button_down.connect(_on_advance_button_down)
@@ -243,28 +345,437 @@ func _ready() -> void:
 	_advance_repeat_timer.wait_time = ADVANCE_REPEAT_INTERVAL
 	_advance_repeat_timer.timeout.connect(_on_advance_repeat_timeout)
 	add_child(_advance_repeat_timer)
-	
+
 	if cg_rect:
 		cg_rect.visible = false
 		cg_rect.modulate = Color(1, 1, 1, 0)
-	
+
 	# Default smoke off
 	if smoke_particles:
 		smoke_particles.emitting = false
 
 	_sync_portrait_layer_bounds()
 	_clear_portrait_rects()
-	
+
 	_load_dialogue_request_if_exists()
-	_apply_background_from_metadata()
-	_apply_effects_from_metadata()
-	
 	if not _load_dialogue_data():
 		text_label.text = "会話データを読み込めませんでした。"
 		advance_button.text = "戻る"
 		advance_button.disabled = false
 		return
+	_apply_background_from_metadata()
+	_apply_effects_from_metadata()
+	_update_v2_scene_info()
 	_show_next_line()
+
+
+func _apply_v2_dialogue_skin() -> void:
+	# Runtime skin for the supplied black/gold dialogue mockup.  The nodes are
+	# generated here so the existing dialogue scene stays data-compatible.
+	var old_top_left = get_node_or_null("TopLeftUI")
+	if old_top_left != null:
+		old_top_left.visible = false
+	var old_top_right = get_node_or_null("TopRightUI")
+	if old_top_right != null:
+		old_top_right.visible = false
+
+	dialogue_panel.anchor_left = 0.07
+	dialogue_panel.anchor_top = 0.665
+	dialogue_panel.anchor_right = 0.935
+	dialogue_panel.anchor_bottom = 0.965
+	dialogue_panel.offset_left = 0.0
+	dialogue_panel.offset_top = 0.0
+	dialogue_panel.offset_right = 0.0
+	dialogue_panel.offset_bottom = 0.0
+	dialogue_panel.modulate = Color(1, 1, 1, 1)
+	dialogue_panel.add_theme_stylebox_override(
+		"panel", _make_v2_panel_style(UI_PANEL_BLACK, UI_GOLD, 2, 18, true)
+	)
+	dialogue_panel.z_index = 24
+	dialogue_panel.mouse_filter = Control.MOUSE_FILTER_PASS
+	if not dialogue_panel.gui_input.is_connected(_on_dialogue_panel_gui_input):
+		dialogue_panel.gui_input.connect(_on_dialogue_panel_gui_input)
+
+	var dialogue_margin = dialogue_panel.get_node_or_null("Margin")
+	if dialogue_margin != null:
+		dialogue_margin.add_theme_constant_override("margin_left", 62)
+		dialogue_margin.add_theme_constant_override("margin_top", 54)
+		dialogue_margin.add_theme_constant_override("margin_right", 330)
+		dialogue_margin.add_theme_constant_override("margin_bottom", 24)
+
+	var control_buttons = dialogue_panel.get_node_or_null("Margin/VBox/ControlButtons")
+	if control_buttons != null:
+		control_buttons.visible = false
+
+	speaker_label.add_theme_font_size_override("font_size", 31)
+	speaker_label.add_theme_color_override("font_color", UI_TEXT)
+	speaker_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	text_label.add_theme_font_size_override("normal_font_size", 30)
+	text_label.add_theme_color_override("default_color", UI_TEXT)
+	text_label.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
+	text_label.custom_minimum_size = Vector2(0, 94)
+	text_label.scroll_active = false
+
+	_create_v2_top_location_panel()
+	_create_v2_level_panel()
+	_create_v2_name_plate()
+	_create_v2_bottom_buttons()
+	_style_v2_choice_container()
+
+
+func _make_v2_panel_style(
+	bg: Color, border: Color, border_width: int, radius: int, has_shadow: bool = false
+) -> StyleBoxFlat:
+	var style = StyleBoxFlat.new()
+	style.bg_color = bg
+	style.border_color = border
+	style.border_width_left = border_width
+	style.border_width_top = border_width
+	style.border_width_right = border_width
+	style.border_width_bottom = border_width
+	style.corner_radius_top_left = radius
+	style.corner_radius_top_right = radius
+	style.corner_radius_bottom_left = radius
+	style.corner_radius_bottom_right = radius
+	style.content_margin_left = 18
+	style.content_margin_right = 18
+	style.content_margin_top = 12
+	style.content_margin_bottom = 12
+	if has_shadow:
+		style.shadow_color = Color(0, 0, 0, 0.58)
+		style.shadow_size = 10
+		style.shadow_offset = Vector2(0, 6)
+	return style
+
+
+func _make_v2_button_style(bg: Color, border: Color, border_width: int = 2) -> StyleBoxFlat:
+	var style = _make_v2_panel_style(bg, border, border_width, 12, true)
+	style.content_margin_left = 10
+	style.content_margin_right = 10
+	style.content_margin_top = 8
+	style.content_margin_bottom = 8
+	return style
+
+
+func _create_v2_top_location_panel() -> void:
+	if get_node_or_null("V2LocationPanel") != null:
+		return
+	var panel = PanelContainer.new()
+	panel.name = "V2LocationPanel"
+	panel.anchor_left = 0.0
+	panel.anchor_top = 0.02
+	panel.anchor_right = 0.34
+	panel.anchor_bottom = 0.135
+	panel.offset_left = -8
+	panel.offset_top = 0
+	panel.offset_right = 0
+	panel.offset_bottom = 0
+	panel.z_index = 32
+	panel.add_theme_stylebox_override(
+		"panel", _make_v2_panel_style(Color(0, 0, 0, 0.84), UI_GOLD, 2, 18, true)
+	)
+	add_child(panel)
+
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 24)
+	margin.add_theme_constant_override("margin_top", 10)
+	margin.add_theme_constant_override("margin_right", 18)
+	margin.add_theme_constant_override("margin_bottom", 10)
+	panel.add_child(margin)
+
+	var row = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 14)
+	margin.add_child(row)
+
+	var icon = Control.new()
+	icon.custom_minimum_size = Vector2(56, 64)
+	icon.set_script(DECO_ICON_SCRIPT)
+	icon.set("icon_kind", "hookah")
+	icon.set("icon_color", UI_GOLD)
+	icon.set("glow_color", UI_GOLD_LIGHT)
+	row.add_child(icon)
+
+	var text_box = VBoxContainer.new()
+	text_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	text_box.add_theme_constant_override("separation", 0)
+	row.add_child(text_box)
+
+	_v2_location_label = Label.new()
+	_v2_location_label.text = "シーシャラウンジ『tonari』"
+	_v2_location_label.add_theme_font_size_override("font_size", 21)
+	_v2_location_label.add_theme_color_override("font_color", UI_TEXT)
+	_v2_location_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+	_v2_location_label.add_theme_constant_override("outline_size", 4)
+	_v2_location_label.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	text_box.add_child(_v2_location_label)
+
+	_v2_time_label = Label.new()
+	_v2_time_label.text = "夜"
+	_v2_time_label.add_theme_font_size_override("font_size", 26)
+	_v2_time_label.add_theme_color_override("font_color", UI_GOLD_LIGHT)
+	_v2_time_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+	_v2_time_label.add_theme_constant_override("outline_size", 5)
+	text_box.add_child(_v2_time_label)
+
+
+func _create_v2_level_panel() -> void:
+	if get_node_or_null("V2LevelPanel") != null:
+		return
+	var panel = PanelContainer.new()
+	panel.name = "V2LevelPanel"
+	panel.anchor_left = 0.73
+	panel.anchor_top = 0.025
+	panel.anchor_right = 1.0
+	panel.anchor_bottom = 0.125
+	panel.offset_left = 0
+	panel.offset_top = 0
+	panel.offset_right = 8
+	panel.offset_bottom = 0
+	panel.z_index = 32
+	panel.add_theme_stylebox_override(
+		"panel", _make_v2_panel_style(Color(0, 0, 0, 0.84), UI_GOLD, 2, 18, true)
+	)
+	add_child(panel)
+
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 22)
+	margin.add_theme_constant_override("margin_top", 12)
+	margin.add_theme_constant_override("margin_right", 24)
+	margin.add_theme_constant_override("margin_bottom", 12)
+	panel.add_child(margin)
+
+	var row = HBoxContainer.new()
+	row.add_theme_constant_override("separation", 12)
+	row.alignment = BoxContainer.ALIGNMENT_CENTER
+	margin.add_child(row)
+
+	var flame = Control.new()
+	flame.custom_minimum_size = Vector2(44, 50)
+	flame.set_script(DECO_ICON_SCRIPT)
+	flame.set("icon_kind", "flame")
+	flame.set("icon_color", Color("f1c96d"))
+	flame.set("glow_color", Color("fff3dc"))
+	row.add_child(flame)
+
+	_v2_level_label = Label.new()
+	_v2_level_label.text = "Lv.1"
+	_v2_level_label.add_theme_font_size_override("font_size", 28)
+	_v2_level_label.add_theme_color_override("font_color", UI_GOLD_LIGHT)
+	_v2_level_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+	_v2_level_label.add_theme_constant_override("outline_size", 5)
+	row.add_child(_v2_level_label)
+
+	var gauge = PanelContainer.new()
+	gauge.custom_minimum_size = Vector2(142, 24)
+	gauge.add_theme_stylebox_override(
+		"panel", _make_v2_panel_style(Color(0, 0, 0, 0.25), UI_GOLD, 1, 12, false)
+	)
+	row.add_child(gauge)
+
+	var gauge_host = Control.new()
+	gauge_host.clip_contents = true
+	gauge.add_child(gauge_host)
+
+	_v2_level_fill = ColorRect.new()
+	_v2_level_fill.anchor_left = 0.04
+	_v2_level_fill.anchor_top = 0.22
+	_v2_level_fill.anchor_right = 0.45
+	_v2_level_fill.anchor_bottom = 0.78
+	_v2_level_fill.color = Color("f5b45d")
+	gauge_host.add_child(_v2_level_fill)
+
+
+func _create_v2_name_plate() -> void:
+	if _v2_name_plate != null:
+		return
+	_v2_name_plate = PanelContainer.new()
+	_v2_name_plate.name = "V2NamePlate"
+	_v2_name_plate.anchor_left = 0.135
+	_v2_name_plate.anchor_top = 0.585
+	_v2_name_plate.anchor_right = 0.455
+	_v2_name_plate.anchor_bottom = 0.665
+	_v2_name_plate.z_index = 34
+	_v2_name_plate.visible = false
+	_v2_name_plate.add_theme_stylebox_override(
+		"panel", _make_v2_panel_style(Color(UI_PURPLE, 0.92), UI_GOLD, 2, 12, true)
+	)
+	add_child(_v2_name_plate)
+
+	var name_margin = MarginContainer.new()
+	name_margin.add_theme_constant_override("margin_left", 24)
+	name_margin.add_theme_constant_override("margin_top", 6)
+	name_margin.add_theme_constant_override("margin_right", 24)
+	name_margin.add_theme_constant_override("margin_bottom", 6)
+	_v2_name_plate.add_child(name_margin)
+
+	if speaker_label.get_parent() != null:
+		speaker_label.get_parent().remove_child(speaker_label)
+	name_margin.add_child(speaker_label)
+	speaker_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	speaker_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	speaker_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+
+
+func _create_v2_bottom_buttons() -> void:
+	if _v2_bottom_bar != null:
+		return
+	_v2_bottom_bar = HBoxContainer.new()
+	_v2_bottom_bar.name = "V2ControlButtons"
+	_v2_bottom_bar.anchor_left = 0.705
+	_v2_bottom_bar.anchor_top = 0.805
+	_v2_bottom_bar.anchor_right = 0.985
+	_v2_bottom_bar.anchor_bottom = 0.985
+	_v2_bottom_bar.z_index = 40
+	_v2_bottom_bar.alignment = BoxContainer.ALIGNMENT_END
+	_v2_bottom_bar.add_theme_constant_override("separation", 12)
+	add_child(_v2_bottom_bar)
+
+	_prepare_v2_button(auto_button, "AUTO")
+	_reparent_to_v2_bottom_bar(auto_button)
+
+	advance_button.set_meta("v2_skip_button", true)
+	_prepare_v2_button(advance_button, "SKIP")
+	_reparent_to_v2_bottom_bar(advance_button)
+
+	_prepare_v2_button(log_button, "LOG")
+	_reparent_to_v2_bottom_bar(log_button)
+
+	_v2_menu_button = Button.new()
+	_v2_menu_button.name = "V2MenuButton"
+	_v2_menu_button.text = "MENU"
+	_prepare_v2_button(_v2_menu_button, "MENU")
+	_v2_menu_button.pressed.connect(_on_menu_button_pressed)
+	_v2_bottom_bar.add_child(_v2_menu_button)
+
+
+func _prepare_v2_button(button: Button, label_text: String) -> void:
+	if button == null:
+		return
+	button.custom_minimum_size = Vector2(84, 82)
+	button.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	button.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	button.text = label_text
+	button.clip_text = true
+	button.focus_mode = Control.FOCUS_NONE
+	button.add_theme_font_size_override("font_size", 18)
+	button.add_theme_color_override("font_color", UI_GOLD_LIGHT)
+	button.add_theme_color_override("font_hover_color", Color("ffffff"))
+	button.add_theme_color_override("font_pressed_color", UI_GOLD_LIGHT)
+	button.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+	button.add_theme_constant_override("outline_size", 4)
+	button.add_theme_stylebox_override(
+		"normal", _make_v2_button_style(Color(0, 0, 0, 0.86), UI_GOLD, 2)
+	)
+	button.add_theme_stylebox_override(
+		"hover", _make_v2_button_style(Color("17110b", 0.92), UI_GOLD_LIGHT, 2)
+	)
+	button.add_theme_stylebox_override(
+		"pressed", _make_v2_button_style(Color("2a1605", 0.94), UI_GOLD, 3)
+	)
+	button.add_theme_stylebox_override(
+		"disabled", _make_v2_button_style(Color(0, 0, 0, 0.45), Color(UI_GOLD, 0.45), 1)
+	)
+
+
+func _reparent_to_v2_bottom_bar(button: Button) -> void:
+	if button == null:
+		return
+	var parent = button.get_parent()
+	if parent == _v2_bottom_bar:
+		return
+	if parent != null:
+		parent.remove_child(button)
+	_v2_bottom_bar.add_child(button)
+
+
+func _style_v2_choice_container() -> void:
+	choice_container.anchor_left = 0.28
+	choice_container.anchor_top = 0.36
+	choice_container.anchor_right = 0.72
+	choice_container.anchor_bottom = 0.66
+	choice_container.offset_left = 0.0
+	choice_container.offset_top = 0.0
+	choice_container.offset_right = 0.0
+	choice_container.offset_bottom = 0.0
+	choice_container.z_index = 50
+
+
+func _update_v2_scene_info() -> void:
+	if _v2_location_label == null:
+		return
+	_v2_location_label.text = _get_v2_location_label()
+	_v2_time_label.text = _get_v2_time_label()
+	var level = _get_v2_player_level()
+	_v2_level_label.text = "Lv.%d" % level
+	if _v2_level_fill != null:
+		_v2_level_fill.anchor_right = clampf(float(level) / 10.0, 0.08, 1.0)
+
+
+func _get_v2_location_label() -> String:
+	var bg_path = str(_metadata.get("bg", ""))
+	if bg_path.find("naru") != -1 or bg_path.find("kemurikusa") != -1:
+		return "シーシャバー『煙草』"
+	if bg_path.find("adam") != -1 or bg_path.find("eden") != -1:
+		return "シーシャバー『Eden』"
+	if bg_path.find("minto") != -1 or bg_path.find("pepermint") != -1:
+		return "コンカフェ『ぺぱーみんと』"
+	if bg_path.find("shop") != -1 or bg_path.find("hookah") != -1:
+		return "Dr.Hookah"
+	if dialogue_file.find("tournament") != -1:
+		return "C.STATION 特設会場"
+	return "シーシャラウンジ『tonari』"
+
+
+func _get_v2_time_label() -> String:
+	match CalendarManager.current_time:
+		"morning":
+			return "朝"
+		"noon":
+			return "昼"
+		"night":
+			return "夜"
+		"midnight":
+			return "深夜"
+		_:
+			return "夜"
+
+
+func _get_v2_player_level() -> int:
+	var total = 0
+	for stat_name in ["technique", "sense", "guts", "charm", "insight"]:
+		total += PlayerData.get_stat_value(stat_name)
+	var average = float(total) / 5.0
+	return clampi(int(floor(average / 10.0)), 1, 10)
+
+
+func _update_v2_name_plate() -> void:
+	if _v2_name_plate == null:
+		return
+	var has_name = speaker_label.text.strip_edges() != ""
+	_v2_name_plate.visible = has_name
+	speaker_label.visible = has_name
+
+
+func _on_dialogue_panel_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		var mouse_event := event as InputEventMouseButton
+		if mouse_event.button_index == MOUSE_BUTTON_LEFT and mouse_event.pressed:
+			_on_advance_button_pressed()
+			get_viewport().set_input_as_handled()
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_accept"):
+		_on_advance_button_pressed()
+		get_viewport().set_input_as_handled()
+
+
+func _on_menu_button_pressed() -> void:
+	GameManager.play_ui_se("confirm")
+	if get_tree().root.has_node("SystemMenu"):
+		return
+	var menu = SYSTEM_MENU_SCENE.instantiate()
+	get_tree().root.add_child(menu)
 
 
 func _notification(what: int) -> void:
@@ -307,9 +818,9 @@ func _apply_effects_from_metadata() -> void:
 
 func _apply_background_from_metadata() -> void:
 	background_image.texture = null
-	if not _metadata.has("bg"):
-		return
 	var path = str(_metadata.get("bg", ""))
+	if path == "":
+		path = _resolve_default_dialogue_background()
 	if path == "":
 		return
 	if not ResourceLoader.exists(path):
@@ -321,6 +832,14 @@ func _apply_background_from_metadata() -> void:
 	background_image.modulate = Color(1.35, 1.35, 1.35, 1.0)
 	background_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	background_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+
+
+func _resolve_default_dialogue_background() -> String:
+	if dialogue_file.find("ch1_tournament") != -1:
+		return "res://assets/backgrounds/bg_tournament_stage.png"
+	if dialogue_file.find("ch1_") != -1 or dialogue_file.find("dialogue") != -1:
+		return "res://assets/backgrounds/bg_tonari_inside.png"
+	return ""
 
 
 func _load_dialogue_data() -> bool:
@@ -343,17 +862,48 @@ func _load_dialogue_data() -> bool:
 	if target_dialogue.is_empty():
 		return false
 
-	_line_queue.assign(target_dialogue.get("lines", []).duplicate(true))
-	_branches = target_dialogue.get("branches", {}).duplicate(true)
-	
-	var metadata = target_dialogue.get("metadata", {})
-	if metadata.has("bgm"):
-		GameManager.play_bgm(str(metadata["bgm"]), -8.0, true)
-	
-	_loaded_dialogue_root = null
+	var request_metadata = _metadata.duplicate(true)
+	_metadata = {}
+	_activate_dialogue(target_dialogue, false)
+	_merge_dialogue_metadata(request_metadata)
 	return true
 
+
 var _loaded_dialogue_root: Variant = null
+
+
+func _activate_dialogue(target_dialogue: Dictionary, refresh_visuals: bool = true) -> void:
+	_line_queue.clear()
+	_line_queue.assign(target_dialogue.get("lines", []).duplicate(true))
+	_branches = target_dialogue.get("branches", {}).duplicate(true)
+
+	var metadata = target_dialogue.get("metadata", {})
+	_merge_dialogue_metadata(metadata)
+	if typeof(metadata) == TYPE_DICTIONARY and metadata.has("bgm"):
+		GameManager.play_bgm(str(metadata["bgm"]), -8.0, true)
+
+	if refresh_visuals:
+		_apply_background_from_metadata()
+		_apply_effects_from_metadata()
+		_update_v2_scene_info()
+
+
+func _merge_dialogue_metadata(metadata: Variant) -> void:
+	if typeof(metadata) != TYPE_DICTIONARY:
+		return
+	for key in metadata.keys():
+		if key == "add_affinity" and typeof(metadata[key]) == TYPE_DICTIONARY:
+			var merged = _metadata.get("add_affinity", {}).duplicate(true)
+			for char_id in metadata[key].keys():
+				merged[char_id] = int(merged.get(char_id, 0)) + int(metadata[key][char_id])
+			_metadata[key] = merged
+		elif key == "set_flags" and typeof(metadata[key]) == TYPE_ARRAY:
+			var merged_flags: Array = _metadata.get("set_flags", []).duplicate(true)
+			for flag in metadata[key]:
+				merged_flags.append(flag)
+			_metadata[key] = merged_flags
+		else:
+			_metadata[key] = metadata[key]
 
 
 func _find_dialogue(root: Dictionary, target_id: String) -> Dictionary:
@@ -422,6 +972,9 @@ func _stop_fast_advance() -> void:
 func _refresh_advance_button_label() -> void:
 	if advance_button == null:
 		return
+	if bool(advance_button.get_meta("v2_skip_button", false)):
+		advance_button.text = "SKIP"
+		return
 	if _dialogue_ending:
 		advance_button.text = "終了"
 		return
@@ -460,7 +1013,7 @@ func _show_next_line() -> void:
 		return
 
 	var line: Dictionary = _line_queue.pop_front()
-	
+
 	# Condition check
 	if str(line.get("type", "")) == "condition":
 		var cond_type = str(line.get("condition_type", "stat"))
@@ -478,20 +1031,27 @@ func _show_next_line() -> void:
 			threshold = 1
 		elif cond_type == "has_romance_and_max_affection":
 			var char_id = str(line.get("char_id", ""))
-			val = 1 if (AffinityManager.is_in_romance(char_id) and AffinityManager.is_max_affection(char_id)) else 0
+			val = (
+				1
+				if (
+					AffinityManager.is_in_romance(char_id)
+					and AffinityManager.is_max_affection(char_id)
+				)
+				else 0
+			)
 			threshold = 1
-		
+
 		var branch_key = ""
 		if val >= threshold:
 			branch_key = str(line.get("next_true", ""))
 		else:
 			branch_key = str(line.get("next_false", ""))
-			
+
 		if branch_key != "" and _branches.has(branch_key):
 			var branch_lines: Array = _branches[branch_key]
 			for i in range(branch_lines.size() - 1, -1, -1):
 				_line_queue.push_front(branch_lines[i])
-		
+
 		# Immediately show next line after branching
 		_show_next_line()
 		return
@@ -500,17 +1060,15 @@ func _show_next_line() -> void:
 		if typeof(_loaded_dialogue_root) == TYPE_DICTIONARY:
 			var target_dialogue = _find_dialogue(_loaded_dialogue_root, next_id)
 			if not target_dialogue.is_empty():
-				_line_queue.clear()
-				for item in target_dialogue.get("lines", []):
-					_line_queue.push_back(item)
+				_activate_dialogue(target_dialogue)
 				_show_next_line()
 				return
-	
+
 	elif str(line.get("type", "")) == "set_flag":
 		var flag = str(line.get("flag", ""))
 		if flag != "":
 			EventFlags.set_flag(flag)
-		
+
 		# Immediately show next line after setting flag
 		_show_next_line()
 		return
@@ -520,22 +1078,30 @@ func _show_next_line() -> void:
 		return
 
 	_clear_choices()
-	
+
 	await _handle_cg_command(line)
-	
+
 	_current_speaker = str(line.get("speaker", ""))
-	if _current_speaker in ["naru", "adam", "minto", "tsumugi", "ageha", "pakki"] and not EventFlags.get_flag("known_name_" + _current_speaker):
+	if (
+		_current_speaker in ["naru", "adam", "minto", "tsumugi", "ageha", "pakki"]
+		and not EventFlags.get_flag("known_name_" + _current_speaker)
+	):
 		speaker_label.text = "？？？"
 	else:
 		speaker_label.text = SPEAKER_NAMES.get(_current_speaker, _current_speaker)
-		
+
 	# キャラ別テーマカラーを名前ラベルに反映
 	var resolved_id = str(SPEAKER_ID_ALIASES.get(_current_speaker, _current_speaker))
-	var speaker_color = GameManager.get_speaker_color(resolved_id)
+	var speaker_color = (
+		UI_TEXT
+		if _current_speaker == ""
+		else GameManager.get_speaker_accent_color(resolved_id).lightened(0.35)
+	)
 	speaker_label.add_theme_color_override("font_color", speaker_color)
+	_update_v2_name_plate()
 
 	_update_portrait(line)
-	
+
 	var raw_text = str(line.get("text", ""))
 	var processed_text = _process_text(raw_text)
 	var pages = _paginate_dialogue_text(processed_text)
@@ -547,11 +1113,11 @@ func _show_next_line() -> void:
 			var continuation_line = continuation_base.duplicate(true)
 			continuation_line["text"] = pages[i]
 			_line_queue.push_front(continuation_line)
-	
+
 	if raw_text != "" and not bool(line.get("skip_history", false)):
 		var history_text = display_text if pages.size() <= 1 else "\n".join(pages)
 		_history.append({"speaker": _current_speaker, "text": _strip_highlight_tags(history_text)})
-	
+
 	_start_typing(display_text)
 
 
@@ -561,13 +1127,13 @@ func _process_text(text: String) -> String:
 		for char_id in ["naru", "adam", "minto", "tsumugi", "ageha"]:
 			if AffinityManager.is_max_level(char_id):
 				attendees.append(SPEAKER_NAMES.get(char_id, char_id))
-		
+
 		var attendees_str = ""
 		if attendees.size() > 0:
 			attendees_str = "、".join(attendees) + "……。\n今まで戦ってきた仲間たちと一緒に"
 		else:
 			attendees_str = "今まで戦ってきた日々を思い出しながら"
-			
+
 		text = text.replace("{attendees}", attendees_str)
 	return text
 
@@ -631,6 +1197,7 @@ func _apply_wrap_to_tagged_text(source_text: String, wrapped_plain_text: String)
 			visible_count += 1
 	return output
 
+
 func _start_typing(text: String) -> void:
 	_full_text = _strip_highlight_tags(text)
 	_full_text_bbcode = _build_highlighted_text(text)
@@ -685,45 +1252,30 @@ func _show_choices(choices: Array) -> void:
 		if c_type == "has_romance":
 			if not AffinityManager.is_in_romance(str(choice.get("char_id", ""))):
 				continue
-				
+
 		var button = Button.new()
 		button.text = str(choice.get("text", "選択肢"))
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.custom_minimum_size = Vector2(0, 52)
 		button.add_theme_font_size_override("font_size", 24)
-		# ペルソナ風スタイリング: アンバーゴールドアクセント
-		var normal_style = StyleBoxFlat.new()
-		normal_style.bg_color = Color("3a4466", 0.92)
-		normal_style.border_color = Color("feae34", 0.4)
-		normal_style.border_width_left = 3
-		normal_style.border_width_bottom = 1
-		normal_style.border_width_right = 1
-		normal_style.border_width_top = 1
-		normal_style.corner_radius_bottom_left = 2
-		normal_style.corner_radius_bottom_right = 6
-		normal_style.corner_radius_top_left = 6
-		normal_style.corner_radius_top_right = 2
-		normal_style.content_margin_left = 20
-		normal_style.content_margin_right = 16
-		normal_style.content_margin_top = 10
-		normal_style.content_margin_bottom = 10
-		button.add_theme_stylebox_override("normal", normal_style)
-		var hover_style = normal_style.duplicate()
-		hover_style.bg_color = Color("3a4466").lightened(0.15)
-		hover_style.border_color = Color("feae34", 0.85)
-		hover_style.border_width_left = 4
-		button.add_theme_stylebox_override("hover", hover_style)
-		button.add_theme_color_override("font_hover_color", Color("feae34"))
-		var pressed_style = normal_style.duplicate()
-		pressed_style.bg_color = Color("feae34").darkened(0.4)
-		pressed_style.border_color = Color("feae34")
-		pressed_style.border_width_left = 4
-		button.add_theme_stylebox_override("pressed", pressed_style)
-		button.pressed.connect(_on_choice_selected.bind(str(choice.get("next", ""))))
+		button.add_theme_color_override("font_color", UI_TEXT)
+		button.add_theme_color_override("font_hover_color", UI_GOLD_LIGHT)
+		button.add_theme_stylebox_override(
+			"normal", _make_v2_panel_style(Color(0, 0, 0, 0.90), UI_GOLD, 2, 14, true)
+		)
+		button.add_theme_stylebox_override(
+			"hover", _make_v2_panel_style(Color("150f08", 0.94), UI_GOLD_LIGHT, 2, 14, true)
+		)
+		button.add_theme_stylebox_override(
+			"pressed", _make_v2_panel_style(Color("281505", 0.96), UI_GOLD, 3, 14, true)
+		)
+		button.pressed.connect(
+			_on_choice_selected.bind(str(choice.get("next", "")), str(choice.get("next_id", "")))
+		)
 		choice_container.add_child(button)
 
 
-func _on_choice_selected(branch_key: String) -> void:
+func _on_choice_selected(branch_key: String, next_id: String = "") -> void:
 	GameManager.play_ui_se("confirm")
 	_clear_choices()
 	advance_button.disabled = false
@@ -732,6 +1284,10 @@ func _on_choice_selected(branch_key: String) -> void:
 		var branch_lines: Array = _branches[branch_key]
 		for i in range(branch_lines.size() - 1, -1, -1):
 			_line_queue.push_front(branch_lines[i])
+	elif next_id != "" and typeof(_loaded_dialogue_root) == TYPE_DICTIONARY:
+		var target_dialogue = _find_dialogue(_loaded_dialogue_root, next_id)
+		if not target_dialogue.is_empty():
+			_activate_dialogue(target_dialogue)
 	_show_next_line()
 
 
@@ -763,7 +1319,8 @@ func _set_auto_enabled(enabled: bool) -> void:
 	_auto_enabled = enabled
 	if auto_button == null:
 		return
-	auto_button.text = "オート ON" if _auto_enabled else "オート OFF"
+	auto_button.text = "AUTO\nON" if _auto_enabled else "AUTO"
+
 
 func _on_log_button_pressed() -> void:
 	GameManager.play_ui_se("select")
@@ -771,27 +1328,35 @@ func _on_log_button_pressed() -> void:
 	_cancel_auto_advance()
 	for child in history_vbox.get_children():
 		child.queue_free()
-	
+
 	for entry in _history:
 		var name_label = Label.new()
 		var resolved_id = str(SPEAKER_ID_ALIASES.get(entry["speaker"], entry["speaker"]))
-		name_label.text = SPEAKER_NAMES.get(entry["speaker"], entry["speaker"]) if str(entry["speaker"]) != "" else ""
-		if name_label.text == "": name_label.text = "――"
-		name_label.add_theme_color_override("font_color", GameManager.get_speaker_color(resolved_id))
+		name_label.text = (
+			SPEAKER_NAMES.get(entry["speaker"], entry["speaker"])
+			if str(entry["speaker"]) != ""
+			else ""
+		)
+		if name_label.text == "":
+			name_label.text = "――"
+		name_label.add_theme_color_override(
+			"font_color", GameManager.get_speaker_color(resolved_id)
+		)
 		name_label.add_theme_font_size_override("font_size", 20)
 
 		var txt_label = Label.new()
 		txt_label.text = entry["text"]
 		txt_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		txt_label.add_theme_font_size_override("font_size", 20)
-		
+
 		var entry_box = VBoxContainer.new()
 		entry_box.add_theme_constant_override("separation", 2)
 		entry_box.add_child(name_label)
 		entry_box.add_child(txt_label)
 		history_vbox.add_child(entry_box)
-		
+
 	history_panel.visible = true
+
 
 func _on_close_history_pressed() -> void:
 	GameManager.play_ui_se("cancel")
@@ -852,7 +1417,10 @@ func _update_portrait(line: Dictionary) -> void:
 	var speaker = _resolve_speaker_id(str(line.get("speaker", "")))
 	var active_speaker := ""
 	if speaker == "":
-		if bool(line.get("clear_portraits", false)) or _should_clear_portraits_for_text(str(line.get("text", ""))):
+		if (
+			bool(line.get("clear_portraits", false))
+			or _should_clear_portraits_for_text(str(line.get("text", "")))
+		):
 			_portrait_cast.clear()
 	else:
 		var face = str(line.get("face", "normal"))
@@ -952,7 +1520,9 @@ func _refresh_portrait_display(active_speaker: String) -> void:
 		_apply_portrait_slot(rect, speaker, slot, is_active)
 
 
-func _apply_portrait_slot(rect: TextureRect, speaker: String, slot: Dictionary, is_active: bool) -> void:
+func _apply_portrait_slot(
+	rect: TextureRect, speaker: String, slot: Dictionary, is_active: bool
+) -> void:
 	var viewport_size = portrait_layer.size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
 		viewport_size = size
@@ -966,8 +1536,14 @@ func _apply_portrait_slot(rect: TextureRect, speaker: String, slot: Dictionary, 
 	var scale_ratio = float(profile.get(scale_key, PORTRAIT_PROFILE_DEFAULT[scale_key]))
 	var width = viewport_size.x * float(slot.get("width_ratio", 0.42)) * scale_ratio
 	var height = viewport_size.y * float(slot.get("height_ratio", 0.90)) * scale_ratio
-	var center_x = viewport_size.x * float(slot.get("anchor_x", 0.5)) + viewport_size.x * float(profile.get("x_shift_ratio", 0.0))
-	var bottom = viewport_size.y * (1.0 + float(slot.get("bottom_overscan_ratio", 0.04))) + viewport_size.y * float(profile.get("y_shift_ratio", 0.0))
+	var center_x = (
+		viewport_size.x * float(slot.get("anchor_x", 0.5))
+		+ viewport_size.x * float(profile.get("x_shift_ratio", 0.0))
+	)
+	var bottom = (
+		viewport_size.y * (1.0 + float(slot.get("bottom_overscan_ratio", 0.04)))
+		+ viewport_size.y * float(profile.get("y_shift_ratio", 0.0))
+	)
 	rect.offset_left = center_x - (width * 0.5)
 	rect.offset_top = bottom - height
 	rect.offset_right = center_x + (width * 0.5)
@@ -1010,7 +1586,9 @@ func _get_portrait_union_rect(speaker: String) -> Rect2i:
 	var union := Rect2i()
 	var found := false
 	for face in PORTRAIT_FACE_CANDIDATES:
-		var candidate_path = "res://assets/sprites/characters/%s/chr_%s_%s.png" % [speaker, speaker, face]
+		var candidate_path = (
+			"res://assets/sprites/characters/%s/chr_%s_%s.png" % [speaker, speaker, face]
+		)
 		if not ResourceLoader.exists(candidate_path):
 			continue
 		var candidate = load(candidate_path)
@@ -1057,10 +1635,18 @@ func _get_portrait_texture(speaker: String, path: String) -> Texture2D:
 	var profile = _get_portrait_profile(speaker)
 	var side_padding = int(profile.get("side_padding", PORTRAIT_PROFILE_DEFAULT["side_padding"]))
 	var top_padding = int(profile.get("top_padding", PORTRAIT_PROFILE_DEFAULT["top_padding"]))
-	var bottom_padding = int(profile.get("bottom_padding", PORTRAIT_PROFILE_DEFAULT["bottom_padding"]))
-	var bottom_trim_ratio = float(profile.get("bottom_trim_ratio", PORTRAIT_PROFILE_DEFAULT["bottom_trim_ratio"]))
-	var bottom_trim_max = int(profile.get("bottom_trim_max", PORTRAIT_PROFILE_DEFAULT["bottom_trim_max"]))
-	var min_visible_ratio = float(profile.get("min_visible_ratio", PORTRAIT_PROFILE_DEFAULT["min_visible_ratio"]))
+	var bottom_padding = int(
+		profile.get("bottom_padding", PORTRAIT_PROFILE_DEFAULT["bottom_padding"])
+	)
+	var bottom_trim_ratio = float(
+		profile.get("bottom_trim_ratio", PORTRAIT_PROFILE_DEFAULT["bottom_trim_ratio"])
+	)
+	var bottom_trim_max = int(
+		profile.get("bottom_trim_max", PORTRAIT_PROFILE_DEFAULT["bottom_trim_max"])
+	)
+	var min_visible_ratio = float(
+		profile.get("min_visible_ratio", PORTRAIT_PROFILE_DEFAULT["min_visible_ratio"])
+	)
 
 	var crop_left: int = maxi(used_rect.position.x - side_padding, 0)
 	var crop_top: int = maxi(used_rect.position.y - top_padding, 0)
@@ -1095,10 +1681,10 @@ func _handle_cg_command(line: Dictionary) -> void:
 					cg_rect.texture = tex
 					cg_rect.visible = true
 					SystemData.unlock_cg(cg_id)
-					
+
 					var tween = create_tween()
 					tween.tween_property(cg_rect, "modulate:a", 1.0, 1.0)
-					
+
 					# Pause dialogue while fading
 					typing_timer.stop()
 					_cancel_auto_advance()
@@ -1111,7 +1697,7 @@ func _handle_cg_command(line: Dictionary) -> void:
 		if cg_rect.visible:
 			var tween = create_tween()
 			tween.tween_property(cg_rect, "modulate:a", 0.0, 1.0)
-			
+
 			typing_timer.stop()
 			_cancel_auto_advance()
 			advance_button.disabled = true
@@ -1143,6 +1729,8 @@ func _finish_dialogue() -> void:
 		GameManager.set_transient("morning_notice", _metadata["morning_notice"])
 	if _metadata.has("exchange_lime"):
 		AffinityManager.exchange_lime(str(_metadata["exchange_lime"]))
+	if _metadata.has("set_romance"):
+		AffinityManager.set_romance(str(_metadata["set_romance"]))
 
 	var stat_changes: Array[Dictionary] = []
 	if _metadata.has("add_stat"):
@@ -1174,11 +1762,23 @@ func _finish_dialogue() -> void:
 				if after >= 0:
 					affinity_char_id = id
 					affinity_delta = maxi(0, after - before)
+					_track_pending_confession(id, before, after)
+	if _metadata.has("set_romance_progress"):
+		var id = str(_metadata["set_romance_progress"])
+		AffinityManager.set_met(id)
+		var before = AffinityManager.get_affinity(id)
+		var after = AffinityManager.add_affinity(id, 1)
+		if after >= 0:
+			affinity_char_id = id
+			affinity_delta = maxi(0, after - before)
+			_track_pending_confession(id, before, after)
 	if _metadata.has("add_intel"):
 		var intels = _metadata["add_intel"]
 		if typeof(intels) == TYPE_ARRAY:
 			for entry in intels:
-				RivalIntel.add_intel(str(entry.get("id", "")), str(entry.get("key", "")), str(entry.get("value", "")))
+				RivalIntel.add_intel(
+					str(entry.get("id", "")), str(entry.get("key", "")), str(entry.get("value", ""))
+				)
 
 	if dialogue_id == "ch1_opening":
 		EventFlags.set_flag("ch1_sumi_tournament_talk", true)
@@ -1188,8 +1788,22 @@ func _finish_dialogue() -> void:
 	if affinity_char_id != "":
 		await _show_affinity_notification(affinity_char_id, affinity_delta)
 
+	if _pending_confession != "":
+		var return_scene = (
+			next_scene_path if next_scene_path != "" else "res://scenes/daily/map.tscn"
+		)
+		GameManager.queue_dialogue(
+			"res://data/dialogue/confession.json",
+			"confession_%s" % _pending_confession,
+			return_scene
+		)
+		get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
+		return
+
 	if dialogue_id == "ch1_opening" and not EventFlags.get_flag("ch1_opening_tutorial_done"):
-		var resume_scene = next_scene_path if next_scene_path != "" else "res://scenes/daily/map.tscn"
+		var resume_scene = (
+			next_scene_path if next_scene_path != "" else "res://scenes/daily/map.tscn"
+		)
 		GameManager.set_transient("post_tutorial_next_scene", resume_scene)
 		get_tree().change_scene_to_file("res://scenes/daily/practice.tscn")
 		return
@@ -1201,7 +1815,21 @@ func _finish_dialogue() -> void:
 	get_tree().change_scene_to_file("res://scenes/daily/map.tscn")
 
 
-func _create_notification_card(layer: CanvasLayer, title: String, message: String, accent_color: Color, message_color: Color) -> Control:
+func _track_pending_confession(char_id: String, before: int, after: int) -> void:
+	if after < AffinityManager.MAX_LEVEL:
+		return
+	if before >= AffinityManager.MAX_LEVEL:
+		return
+	if AffinityManager.is_in_romance(char_id):
+		return
+	if not AffinityManager.is_romance_candidate(char_id):
+		return
+	_pending_confession = char_id
+
+
+func _create_notification_card(
+	layer: CanvasLayer, title: String, message: String, accent_color: Color, message_color: Color
+) -> Control:
 	var card_root = Control.new()
 	card_root.position = NOTIFICATION_BASE_POSITION
 	card_root.size = NOTIFICATION_CARD_SIZE
@@ -1284,11 +1912,7 @@ func _show_affinity_notification(char_id: String, _delta: int) -> void:
 	var star_text = AffinityManager.get_star_text(char_id)
 	var notif_color = GameManager.get_speaker_accent_color(char_id)
 	var card = _create_notification_card(
-		layer,
-		"絆の変化",
-		"♡ %sとの絆が深まった  %s" % [char_name, star_text],
-		notif_color,
-		Color("fff1db")
+		layer, "絆の変化", "♡ %sとの絆が深まった  %s" % [char_name, star_text], notif_color, Color("fff1db")
 	)
 
 	# Sparkle particles
@@ -1342,8 +1966,16 @@ func _show_affinity_notification(char_id: String, _delta: int) -> void:
 
 	var tween = create_tween()
 	tween.set_parallel(true)
-	tween.tween_property(card, "modulate:a", 1.0, 0.26).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tween.tween_property(card, "position:y", NOTIFICATION_BASE_POSITION.y - 18.0, 0.34).from(NOTIFICATION_BASE_POSITION.y + 12.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(card, "modulate:a", 1.0, 0.26).set_trans(Tween.TRANS_CUBIC).set_ease(
+		Tween.EASE_OUT
+	)
+	(
+		tween
+		. tween_property(card, "position:y", NOTIFICATION_BASE_POSITION.y - 18.0, 0.34)
+		. from(NOTIFICATION_BASE_POSITION.y + 12.0)
+		. set_trans(Tween.TRANS_CUBIC)
+		. set_ease(Tween.EASE_OUT)
+	)
 	await tween.finished
 
 	await get_tree().create_timer(1.2).timeout
@@ -1372,18 +2004,20 @@ func _show_stat_notification(stat_changes: Array[Dictionary]) -> void:
 	layer.layer = 100
 	add_child(layer)
 
-	var card = _create_notification_card(
-		layer,
-		"腕前の変化",
-		text,
-		Color("55d4ff"),
-		Color("eaf8ff")
-	)
+	var card = _create_notification_card(layer, "腕前の変化", text, Color("55d4ff"), Color("eaf8ff"))
 
 	var tween = create_tween()
 	tween.set_parallel(true)
-	tween.tween_property(card, "modulate:a", 1.0, 0.26).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tween.tween_property(card, "position:y", NOTIFICATION_BASE_POSITION.y - 18.0, 0.34).from(NOTIFICATION_BASE_POSITION.y + 12.0).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(card, "modulate:a", 1.0, 0.26).set_trans(Tween.TRANS_CUBIC).set_ease(
+		Tween.EASE_OUT
+	)
+	(
+		tween
+		. tween_property(card, "position:y", NOTIFICATION_BASE_POSITION.y - 18.0, 0.34)
+		. from(NOTIFICATION_BASE_POSITION.y + 12.0)
+		. set_trans(Tween.TRANS_CUBIC)
+		. set_ease(Tween.EASE_OUT)
+	)
 	await tween.finished
 
 	await get_tree().create_timer(1.5).timeout

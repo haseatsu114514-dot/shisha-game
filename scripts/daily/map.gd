@@ -63,9 +63,7 @@ const FACE_BY_SPOT_ID: Dictionary = {
 func _ready() -> void:
 	GameManager.play_daily_bgm()
 	confirm_dialog.confirmed.connect(_on_confirmed)
-	confirm_dialog.canceled.connect(func() -> void:
-		_pending_spot = {}
-	)
+	confirm_dialog.canceled.connect(func() -> void: _pending_spot = {})
 	_load_marker_textures()
 
 	# Restore today's visited spots
@@ -80,7 +78,9 @@ func _ready() -> void:
 			var dialogue_file = str(forced_event.get("dialogue_file", ""))
 			var dialogue_id = str(forced_event.get("dialogue_id", ""))
 			var event_metadata: Dictionary = forced_event.get("metadata", {})
-			var next_scene = GameManager.resolve_next_scene_path(str(forced_event.get("next_scene", "map")))
+			var next_scene = GameManager.resolve_next_scene_path(
+				str(forced_event.get("next_scene", "map"))
+			)
 			if dialogue_file != "" and dialogue_id != "":
 				GameManager.queue_dialogue(dialogue_file, dialogue_id, next_scene, event_metadata)
 				get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
@@ -149,15 +149,15 @@ func _refresh_spot_buttons(spots: Array) -> void:
 
 func _build_spot_list() -> Array:
 	var spots: Array = []
-	
+
 	if CalendarManager.is_interval and GameManager.current_chapter == 3:
 		return _build_all_japan_spots()
-	
+
 	if GameManager.current_chapter == 3:
 		return _build_ch3_spots()
 	elif GameManager.current_chapter == 4:
 		return _build_ch4_spots()
-		
+
 	# Chapter 1 or 2 (Local)
 	if CalendarManager.is_tournament_day():
 		spots.append({"id": "tonari", "label": "tonari（大会会場）"})
@@ -202,12 +202,13 @@ func _build_spot_list() -> Array:
 			spots.append({"id": "c_station", "label": "C.STATION（夜）"})
 	return spots
 
+
 func _build_all_japan_spots() -> Array:
 	var spots: Array = []
 	# 昼夜共通の拠点
 	if not _is_visited_today("shop"):
 		spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]"})
-	
+
 	if CalendarManager.current_time == "noon":
 		spots.append({"id": "tonari", "label": "tonari（地元）"})
 		spots.append({"id": "mukai", "label": "mukai（東京）"})
@@ -241,6 +242,7 @@ func _build_all_japan_spots() -> Array:
 		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り（夜）"})
 	return spots
 
+
 func _build_ch3_spots() -> Array:
 	var spots: Array = []
 	if CalendarManager.current_time == "noon":
@@ -255,6 +257,7 @@ func _build_ch3_spots() -> Array:
 			spots.append({"id": "shop", "label": "Dr.Hookah [SHOP]（夜）"})
 		spots.append({"id": "tokyo_shisha", "label": "東京のシーシャ屋巡り（夜）"})
 	return spots
+
 
 func _build_ch4_spots() -> Array:
 	var spots: Array = []
@@ -277,7 +280,13 @@ func _is_visited_today(spot_id: String) -> bool:
 
 
 func _mark_visited(spot_id: String) -> void:
-	if spot_id != "home" and spot_id != "tonari" and spot_id != "mukai" and spot_id != "dubai_shisha" and not _is_visited_today(spot_id):
+	if (
+		spot_id != "home"
+		and spot_id != "tonari"
+		and spot_id != "mukai"
+		and spot_id != "dubai_shisha"
+		and not _is_visited_today(spot_id)
+	):
 		_visited_today.append(spot_id)
 
 
@@ -295,21 +304,28 @@ func _on_spot_pressed(spot: Dictionary) -> void:
 		return
 	if id in ["naru", "adam", "minto"]:
 		if not _is_rival_present(id):
-			var rival_name = {"naru": "なる", "adam": "アダム", "minto": "眠都"}.get(id, id)
+			var rival_name = {"naru": "なる", "adam": "アダム", "minto": "みんと"}.get(id, id)
 			if not EventFlags.get_flag("known_name_" + id):
 				rival_name = "店長"
 			message_label.text = "今日は%sは出勤していないようだ。" % rival_name
 			GameManager.play_ui_se("cancel")
 			return
-		_open_cost_confirm(spot, RIVAL_VISIT_COST, "%s 訪問確認" % str(spot.get("label", "")), _build_rival_preview_text(id))
+		_open_cost_confirm(
+			spot,
+			RIVAL_VISIT_COST,
+			"%s 訪問確認" % str(spot.get("label", "")),
+			_build_rival_preview_text(id)
+		)
 		return
 	if id == "choizap":
 		if not EventFlags.get_flag("choizap_member"):
-			_open_cost_confirm(spot, CHOIZAP_MEMBERSHIP_COST, "チョイザップ 入会確認", _build_choizap_first_text())
+			_open_cost_confirm(
+				spot, CHOIZAP_MEMBERSHIP_COST, "チョイザップ 入会確認", _build_choizap_first_text()
+			)
 		else:
 			_enter_spot(spot)
 		return
-	
+
 	# Roaming spots: check if character event is available
 	if id in ["shotengai", "kannon", "choizap", "tv_tower_park"]:
 		if not _has_roaming_event(id):
@@ -329,7 +345,9 @@ func _on_confirmed() -> void:
 
 func _open_cost_confirm(spot: Dictionary, cost: int, title: String, text: String) -> void:
 	if PlayerData.money < cost:
-		message_label.text = "%s には %d円 が必要です。（所持金: %d円）" % [str(spot.get("label", "")), cost, PlayerData.money]
+		message_label.text = (
+			"%s には %d円 が必要です。（所持金: %d円）" % [str(spot.get("label", "")), cost, PlayerData.money]
+		)
 		return
 	_pending_spot = spot.duplicate(true)
 	confirm_dialog.title = title
@@ -405,7 +423,9 @@ func _enter_spot(spot: Dictionary) -> void:
 			_go_next_phase()
 		"naru", "adam", "minto":
 			if PlayerData.money < RIVAL_VISIT_COST:
-				message_label.text = "訪問には %d円 必要です。（所持金: %d円）" % [RIVAL_VISIT_COST, PlayerData.money]
+				message_label.text = (
+					"訪問には %d円 必要です。（所持金: %d円）" % [RIVAL_VISIT_COST, PlayerData.money]
+				)
 				return
 			if not CalendarManager.use_action():
 				_try_auto_return_home()
@@ -434,7 +454,11 @@ func _enter_spot(spot: Dictionary) -> void:
 				_save_visited()
 				GameManager.set_transient("interaction_target", "choizap")
 				GameManager.set_transient("advance_time_after_scene", true)
-				GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_choizap_first", "res://scenes/daily/map.tscn")
+				GameManager.queue_dialogue(
+					"res://data/dialogue/ch1_spots.json",
+					"ch1_choizap_first",
+					"res://scenes/daily/map.tscn"
+				)
 				get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 			else:
 				# Member - free visit, charm UP
@@ -443,7 +467,11 @@ func _enter_spot(spot: Dictionary) -> void:
 				_mark_visited(id)
 				_save_visited()
 				GameManager.set_transient("advance_time_after_scene", true)
-				GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_choizap_visit", "res://scenes/daily/map.tscn")
+				GameManager.queue_dialogue(
+					"res://data/dialogue/ch1_spots.json",
+					"ch1_choizap_visit",
+					"res://scenes/daily/map.tscn"
+				)
 				get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		"kannon":
 			if not CalendarManager.use_action():
@@ -457,7 +485,11 @@ func _enter_spot(spot: Dictionary) -> void:
 			_mark_visited(id)
 			_save_visited()
 			GameManager.set_transient("advance_time_after_scene", true)
-			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_kannon_visit", "res://scenes/daily/map.tscn")
+			GameManager.queue_dialogue(
+				"res://data/dialogue/ch1_spots.json",
+				"ch1_kannon_visit",
+				"res://scenes/daily/map.tscn"
+			)
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 			# Force save after prayer
 			GameManager.force_save()
@@ -470,7 +502,11 @@ func _enter_spot(spot: Dictionary) -> void:
 			_mark_visited(id)
 			_save_visited()
 			GameManager.set_transient("advance_time_after_scene", true)
-			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_cafe_visit", "res://scenes/daily/map.tscn")
+			GameManager.queue_dialogue(
+				"res://data/dialogue/ch1_spots.json",
+				"ch1_cafe_visit",
+				"res://scenes/daily/map.tscn"
+			)
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		"shotengai":
 			if not CalendarManager.use_action():
@@ -478,7 +514,9 @@ func _enter_spot(spot: Dictionary) -> void:
 				return
 			var event_id = _get_roaming_event_id("shotengai")
 			GameManager.set_transient("advance_time_after_scene", true)
-			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", event_id, "res://scenes/daily/map.tscn")
+			GameManager.queue_dialogue(
+				"res://data/dialogue/ch1_spots.json", event_id, "res://scenes/daily/map.tscn"
+			)
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		"tv_tower_park":
 			if not CalendarManager.use_action():
@@ -486,11 +524,15 @@ func _enter_spot(spot: Dictionary) -> void:
 				return
 			var event_id = _get_roaming_event_id("tv_tower_park")
 			GameManager.set_transient("advance_time_after_scene", true)
-			GameManager.queue_dialogue("res://data/dialogue/ch2_spots.json", event_id, "res://scenes/daily/map.tscn")
+			GameManager.queue_dialogue(
+				"res://data/dialogue/ch2_spots.json", event_id, "res://scenes/daily/map.tscn"
+			)
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		"c_station":
 			if PlayerData.money < C_STATION_VISIT_COST:
-				message_label.text = "入店には %d円 必要です。（所持金: %d円）" % [C_STATION_VISIT_COST, PlayerData.money]
+				message_label.text = (
+					"入店には %d円 必要です。（所持金: %d円）" % [C_STATION_VISIT_COST, PlayerData.money]
+				)
 				return
 			if not CalendarManager.use_action():
 				_try_auto_return_home()
@@ -503,7 +545,11 @@ func _enter_spot(spot: Dictionary) -> void:
 			_mark_visited("c_station")
 			_save_visited()
 			GameManager.set_transient("advance_time_after_scene", true)
-			GameManager.queue_dialogue("res://data/dialogue/ch1_spots.json", "ch1_c_station_visit", "res://scenes/daily/map.tscn")
+			GameManager.queue_dialogue(
+				"res://data/dialogue/ch1_spots.json",
+				"ch1_c_station_visit",
+				"res://scenes/daily/map.tscn"
+			)
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		"tokyo_shisha":
 			if not CalendarManager.use_action():
@@ -515,7 +561,11 @@ func _enter_spot(spot: Dictionary) -> void:
 			GameManager.log_stat_change("technique", 1.0)
 			GameManager.log_stat_change("sense", 1.0)
 			GameManager.set_transient("advance_time_after_scene", true)
-			GameManager.queue_dialogue("res://data/dialogue/ch3_spots.json", "ch3_tokyo_shisha", "res://scenes/daily/map.tscn")
+			GameManager.queue_dialogue(
+				"res://data/dialogue/ch3_spots.json",
+				"ch3_tokyo_shisha",
+				"res://scenes/daily/map.tscn"
+			)
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		"tokyo_sightseeing":
 			if not CalendarManager.use_action():
@@ -527,7 +577,11 @@ func _enter_spot(spot: Dictionary) -> void:
 			GameManager.log_stat_change("guts", 1.0)
 			GameManager.log_stat_change("insight", 1.0)
 			GameManager.set_transient("advance_time_after_scene", true)
-			GameManager.queue_dialogue("res://data/dialogue/ch3_spots.json", "ch3_tokyo_sightseeing", "res://scenes/daily/map.tscn")
+			GameManager.queue_dialogue(
+				"res://data/dialogue/ch3_spots.json",
+				"ch3_tokyo_sightseeing",
+				"res://scenes/daily/map.tscn"
+			)
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		"dubai_souq":
 			if not CalendarManager.use_action():
@@ -539,7 +593,11 @@ func _enter_spot(spot: Dictionary) -> void:
 			PlayerData.add_stat(chosen_stat, 2.0)
 			GameManager.log_stat_change(chosen_stat, 2.0)
 			GameManager.set_transient("advance_time_after_scene", true)
-			GameManager.queue_dialogue("res://data/dialogue/ch4_spots.json", "ch4_dubai_souq", "res://scenes/daily/map.tscn")
+			GameManager.queue_dialogue(
+				"res://data/dialogue/ch4_spots.json",
+				"ch4_dubai_souq",
+				"res://scenes/daily/map.tscn"
+			)
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 		"dubai_cafe":
 			if not CalendarManager.use_action():
@@ -549,7 +607,7 @@ func _enter_spot(spot: Dictionary) -> void:
 			var cost = 6000  # 海外価格
 			if PlayerData.money < cost:
 				message_label.text = "高級カフェに入るには %d円 必要です。（海外価格）" % cost
-				CalendarManager.undo_action() # refund action point
+				CalendarManager.undo_action()  # refund action point
 				return
 			PlayerData.spend_money(cost)
 			GameManager.log_money_change(-cost)
@@ -558,7 +616,11 @@ func _enter_spot(spot: Dictionary) -> void:
 			GameManager.log_stat_change("sense", 2)
 			GameManager.log_stat_change("charm", 2)
 			GameManager.set_transient("advance_time_after_scene", true)
-			GameManager.queue_dialogue("res://data/dialogue/ch4_spots.json", "ch4_dubai_cafe", "res://scenes/daily/map.tscn")
+			GameManager.queue_dialogue(
+				"res://data/dialogue/ch4_spots.json",
+				"ch4_dubai_cafe",
+				"res://scenes/daily/map.tscn"
+			)
 			get_tree().change_scene_to_file("res://scenes/dialogue/dialogue_box.tscn")
 
 
@@ -687,7 +749,9 @@ func _add_spot_marker(spot: Dictionary) -> void:
 
 
 func _get_marker_position(spot_id: String) -> Vector2:
-	var table = SPOT_POSITIONS_NIGHT if CalendarManager.current_time == "night" else SPOT_POSITIONS_DAY
+	var table = (
+		SPOT_POSITIONS_NIGHT if CalendarManager.current_time == "night" else SPOT_POSITIONS_DAY
+	)
 	var base = table.get(spot_id, Vector2(640, 360))
 	return base - Vector2(75, 58)
 
@@ -735,10 +799,12 @@ func _safe_load_texture(path: String) -> Texture2D:
 # the spot shows "特に用事はなさそうだ" and cannot be entered.
 
 const ROAMING_EVENTS := {
-	"shotengai": [
+	"shotengai":
+	[
 		{"id": "ch1_shotengai_tsumugi", "chance": 0.30},
 	],
-	"tv_tower_park": [
+	"tv_tower_park":
+	[
 		{"id": "ch2_tvtower_sumi", "chance": 0.35},
 	],
 }
@@ -777,27 +843,28 @@ func _get_roaming_event_id(spot_id: String) -> String:
 
 var _rival_absence_days_cache: Dictionary = {}
 
+
 func _is_rival_present(rival_id: String) -> bool:
 	var chapter = 1
 	if GameManager:
 		chapter = GameManager.current_chapter
-		
+
 	var cache_key = "%s_ch%d" % [rival_id, chapter]
-	
+
 	# Cache the specific days the rival is absent for the current chapter
 	if not _rival_absence_days_cache.has(cache_key):
 		var rng = RandomNumberGenerator.new()
 		rng.seed = cache_key.hash()
-		
+
 		# Each rival is absent for exactly 2 days out of the typical 14-day chapter
 		var absent_days = []
 		while absent_days.size() < 2:
-			var d = rng.randi_range(2, 13) # Avoid day 1 and 14
+			var d = rng.randi_range(2, 13)  # Avoid day 1 and 14
 			if not absent_days.has(d):
 				absent_days.append(d)
 		_rival_absence_days_cache[cache_key] = absent_days
-	
+
 	var today = CalendarManager.current_day
 	var is_absent = _rival_absence_days_cache[cache_key].has(today)
-	
+
 	return not is_absent

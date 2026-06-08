@@ -22,7 +22,7 @@
     },
     {
       "dialogue_id": "ch3_individuality_doubt",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tokyo_venue.png" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
       "lines": [
         { "speaker": "", "face": "", "text": "────大会会場の下見帰り。東京の夜道。" },
         { "speaker": "", "face": "", "text": "今日、出場者たちの練習を見学した。ナンディのスパイスが織りなす音楽的な煙。レイの圧倒的なカリスマ。スティーブの見た目に反した繊細さ。" },
@@ -37,7 +37,7 @@
     },
     {
       "dialogue_id": "ch3_tokyo_shop_gap",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tokyo_shisha_shop.png" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
       "lines": [
         { "speaker": "", "face": "", "text": "────東京のシーシャ店。" },
         { "speaker": "", "face": "", "text": "大会の準備の合間に、気になっていた店に入ってみた。" },
@@ -52,7 +52,7 @@
     },
     {
       "dialogue_id": "ch3_abyss_recovery",
-      "metadata": { "bg": "res://assets/backgrounds/bg_mukai.png" },
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
       "lines": [
         { "speaker": "", "face": "", "text": "────mukai。夜。" },
         { "speaker": "", "face": "", "text": "ましろとの練習を重ねて、数日が経った。" },
@@ -101,7 +101,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "『はじめくんっ♡ みんちゃん、明日の応援のために東京に来ちゃったよー！ ご指名のお客様のところにみんちゃんが出張サービスですっ♡』"
+          "text": "『はじめくんっ♡ みんと、明日の応援のために東京に来ちゃったよー！ ご指名のお客様のところにみんとが出張サービスですっ♡』"
         },
         {
           "speaker": "minto",
@@ -166,7 +166,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "「わあっ♡ 綺麗だねはじめくんっ！ ほら、手つなごっ？ ……寒くない？ はい、みんちゃんの手であっためてあげるねっ♡」"
+          "text": "「わあっ♡ 綺麗だねはじめくんっ！ ほら、手つなごっ？ ……寒くない？ はい、みんとの手であっためてあげるねっ♡」"
         },
         {
           "speaker": "",
@@ -196,7 +196,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "「明日はこれで頑張れるでしょ？ えへへ♡ ……大会終わったら……お家で、みんちゃんからのスペシャルご褒美……あるからねっ♡」"
+          "text": "「明日はこれで頑張れるでしょ？ えへへ♡ ……大会終わったら……お家で、みんとからのスペシャルご褒美……あるからねっ♡」"
         },
         {
           "speaker": "",
@@ -401,7 +401,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "「はじめくーんっ♡ 優勝おめでとう！ すっごくカッコよかった！ みんちゃんの推し、堂々のナンバーワンだよっ♡ ……はい、お水飲んで？ 喉乾いたでしょ？」"
+          "text": "「はじめくーんっ♡ 優勝おめでとう！ すっごくカッコよかった！ みんとの推し、堂々のナンバーワンだよっ♡ ……はい、お水飲んで？ 喉乾いたでしょ？」"
         },
         {
           "speaker": "hajime",
@@ -476,7 +476,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "「そ、そうそうっ♡ 世界大会なんだから、みんちゃん的に全力で応援するよっ！ ……（すごい勢いで流されちゃったけど、しょうがない、そういうことにしておこ……）」"
+          "text": "「そ、そうそうっ♡ 世界大会なんだから、みんと的に全力で応援するよっ！ ……（すごい勢いで流されちゃったけど、しょうがない、そういうことにしておこ……）」"
         },
         {
           "speaker": "hajime",
@@ -506,7 +506,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "「はじめくーんっ♡ 優勝おめでとう！ すっごくカッコよかった！ みんちゃんの推し、堂々のナンバーワンだよっ♡ ……はい、お水飲んで？ 喉乾いたでしょ？」"
+          "text": "「はじめくーんっ♡ 優勝おめでとう！ すっごくカッコよかった！ みんとの推し、堂々のナンバーワンだよっ♡ ……はい、お水飲んで？ 喉乾いたでしょ？」"
         },
         {
           "speaker": "mashiro",
@@ -731,7 +731,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "「はじめくーんっ♡ 優勝おめでとう！ すっごくカッコよかった！ みんちゃんの推し、堂々のナンバーワンだよっ♡ ……はい、お水飲んで？ 喉乾いたでしょ？」"
+          "text": "「はじめくーんっ♡ 優勝おめでとう！ すっごくカッコよかった！ みんとの推し、堂々のナンバーワンだよっ♡ ……はい、お水飲んで？ 喉乾いたでしょ？」"
         },
         {
           "speaker": "mashiro",
@@ -811,7 +811,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "「そ、そうそうっ♡ 世界大会なんだから、みんちゃん的に全力で応援するよっ！ ……（すごい勢いで流されちゃったけど、しょうがない、そういうことにしておこ……）」"
+          "text": "「そ、そうそうっ♡ 世界大会なんだから、みんと的に全力で応援するよっ！ ……（すごい勢いで流されちゃったけど、しょうがない、そういうことにしておこ……）」"
         },
         {
           "speaker": "mashiro",
@@ -827,7 +827,7 @@
     },
     {
       "dialogue_id": "ch3_abyss_hotel",
-      "metadata": { "bg": "res://assets/backgrounds/bg_hotel_night.png", "effect": "dark" },
+      "metadata": { "bg": "res://assets/backgrounds/tonari_night.png", "effect": "dark" },
       "lines": [
         { "speaker": "", "face": "", "text": "────大会終了後。ホテルの部屋。" },
         { "speaker": "", "face": "", "text": "トロフィーがベッドの上に置いてある。\n東京の夜景が窓の外に広がっている。" },
@@ -848,7 +848,7 @@
     },
     {
       "dialogue_id": "ch3_mashiro_recovery",
-      "metadata": { "bg": "res://assets/backgrounds/bg_mukai_night.png", "effect": "smoke_warm" },
+      "metadata": { "bg": "res://assets/backgrounds/tonari_night.png", "effect": "smoke_warm" },
       "lines": [
         { "speaker": "", "face": "", "text": "────数日後。mukai。" },
         { "speaker": "", "face": "", "text": "はじめは何をするでもなく、ぼんやりとmukaiのカウンターに座っていた。\n煙を作る気力がない。ただ、ここの空気が好きだったから来ただけ。" },

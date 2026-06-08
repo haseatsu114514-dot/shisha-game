@@ -28,6 +28,27 @@ If any check fails, stop immediately and tell the user which path was
 wrong. Do not guess. Do not continue from a parent monorepo or stale
 local checkout, because that is how ancestor reversion accidents happen.
 
+## Godot MCP Prompt Reduction
+
+- Default order of attack for Godot tasks in this repo:
+  1. edit repo files directly
+  2. use repo-local shell helpers in `tools/`
+  3. use read-only `gdai` tools for inspection
+  4. use `gdai` write tools only if blocked otherwise
+- Avoid `mcp__gdai__execute_editor_script` unless a task cannot be done
+  with dedicated `gdai` tools, direct file edits, or shell commands.
+- Treat these `gdai` tools as high-friction and avoid them by default:
+  `execute_editor_script`, `create_scene`, `create_script`,
+  `attach_script`, `add_node`, `add_scene`, `add_resource`,
+  `update_property`, `move_node`, `delete_node`, `delete_scene`,
+  `simulate_input`, `play_scene`, `stop_running_scene`
+- Avoid reading source assets directly from `~/Desktop`, `~/Downloads`,
+  or other folders outside the repo during normal iteration.
+- Import external images into `asset_sources/images/<group>/` first, then
+  copy the game-ready file into `assets/<group>/`.
+- Prefer `./tools/import_asset_image.sh` for image intake so future work
+  can stay inside the repo and avoid extra MCP approval prompts.
+
 ## Git rules
 
 - Start all feature work from `origin/main`.
