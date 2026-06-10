@@ -52,6 +52,9 @@ class DialogueEngine {
     this.waitingChoice = false;
     this.finished = true;
     this.slots = {}; // speaker -> slot index (0:left 1:right)
+    this.typeTimer = 0;
+    this.typing = false;
+    this.fullHtml = "";
   }
 
   start(dialogue, onFinish) {
@@ -75,6 +78,8 @@ class DialogueEngine {
 
   next() {
     if (this.finished || this.waitingChoice) return;
+    // タイプ中のクリックは全文表示に切り替える（送らない）
+    if (this.typing) return this.completeTyping();
     const line = this.queue.shift();
     if (line === undefined) {
       this.finished = true;
@@ -111,11 +116,15 @@ class DialogueEngine {
   showChoices(line) {
     this.waitingChoice = true;
     this.el.choices.innerHTML = "";
+    let delay = 0;
     for (const c of line.choices || []) {
       const btn = document.createElement("button");
       btn.className = "choice-btn";
+      btn.style.animationDelay = `${delay}ms`;
+      delay += 90;
       btn.innerHTML = formatText(c.text || "選択肢");
       btn.addEventListener("click", () => {
+        if (window.SFX) SFX.select();
         this.waitingChoice = false;
         this.el.choices.innerHTML = "";
         const key = String(c.next || "");
@@ -202,9 +211,10 @@ class DialogueEngine {
         this.slots[speaker] = slot;
         const img = document.createElement("img");
         img.dataset.speaker = speaker;
-        img.className = `portrait slot-${slot}`;
+        img.className = `portrait slot-${slot} enter`;
         img.onerror = () => img.remove();
         this.el.portraits.appendChild(img);
+        requestAnimationFrame(() => requestAnimationFrame(() => img.classList.remove("enter")));
       }
       const img = this.el.portraits.querySelector(`img[data-speaker="${speaker}"]`);
       if (img) {
@@ -222,14 +232,42 @@ class DialogueEngine {
   }
 
   typeText(raw) {
-    const html = formatText(raw);
+    const text = String(raw);
     const label = this.el.textLabel;
-    label.innerHTML = html;
-    const total = label.textContent.length;
-    label.style.setProperty("--chars", total);
-    label.classList.remove("typing");
-    void label.offsetWidth; // アニメーション再始動
-    label.classList.add("typing");
+    clearInterval(this.typeTimer);
+    this.fullHtml = formatText(text);
+    // 装飾タグ入りの行はフェード表示、それ以外は一文字ずつタイプ表示
+    if (text.includes("[")) {
+      this.typing = false;
+      label.innerHTML = this.fullHtml;
+      label.classList.remove("typing");
+      void label.offsetWidth;
+      label.classList.add("typing");
+      this.setAdvanceHint(true);
+      return;
+    }
+    this.typing = true;
+    this.setAdvanceHint(false);
+    let i = 0;
+    const step = Math.max(1, Math.round(text.length / 90)); // 長文は速める
+    label.innerHTML = "";
+    this.typeTimer = setInterval(() => {
+      i += step;
+      label.innerHTML = escapeHtml(text.slice(0, i)).replace(/\n/g, "<br>");
+      if (window.SFX && i % 4 < step) SFX.type();
+      if (i >= text.length) this.completeTyping();
+    }, 24);
+  }
+
+  completeTyping() {
+    clearInterval(this.typeTimer);
+    this.typing = false;
+    this.el.textLabel.innerHTML = this.fullHtml;
+    this.setAdvanceHint(true);
+  }
+
+  setAdvanceHint(visible) {
+    if (this.el.advance) this.el.advance.style.visibility = visible ? "visible" : "hidden";
   }
 }
 

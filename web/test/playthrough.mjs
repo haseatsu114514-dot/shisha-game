@@ -44,7 +44,7 @@ async function activeScreen() {
   return page.evaluate(() => document.querySelector(".screen.active")?.id || "none");
 }
 
-while (guard++ < 800) {
+while (guard++ < 5000) {
   const screen = await activeScreen();
   if (screen === "screen-tournament") break;
   if (screen === "screen-gameover") throw new Error("unexpected game over");
@@ -94,7 +94,7 @@ async function tnStep() {
 }
 
 guard = 0;
-while (guard++ < 600) {
+while (guard++ < 3000) {
   const screen = await activeScreen();
   if (screen === "screen-end") break;
   if (screen === "screen-dialogue") {

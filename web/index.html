@@ -15,6 +15,7 @@
     <span id="hud-day"></span>
     <span id="hud-ap"></span>
     <span id="hud-money"></span>
+    <button id="btn-mute" type="button">♪ ON</button>
     <button id="btn-status" type="button">ステータス</button>
   </header>
 
@@ -50,6 +51,7 @@
   <section id="screen-map" class="screen">
     <div class="panel">
       <h2>今日はどうする？</h2>
+      <p id="map-time" class="map-time"></p>
       <div id="map-spots" class="spot-list"></div>
     </div>
   </section>
@@ -73,10 +75,14 @@
 
   <!-- 大会 -->
   <section id="screen-tournament" class="screen tournament-bg">
-    <div class="panel">
-      <h2 id="tn-title"></h2>
-      <p id="tn-hint" class="tn-hint"></p>
-      <div id="tn-body"></div>
+    <div id="tn-layout">
+      <div id="tn-rig"></div>
+      <div class="panel">
+        <div id="tn-progress"></div>
+        <h2 id="tn-title"></h2>
+        <p id="tn-hint" class="tn-hint"></p>
+        <div id="tn-body"></div>
+      </div>
     </div>
   </section>
 
@@ -106,10 +112,12 @@
     </div>
   </div>
 
+  <div id="day-card"><div class="day-big"></div><div class="day-sub"></div></div>
   <div id="toasts"></div>
 </div>
 
 <script src="js/data.js"></script>
+<script src="js/sfx.js"></script>
 <script src="js/engine.js"></script>
 <script src="js/game.js"></script>
 </body>

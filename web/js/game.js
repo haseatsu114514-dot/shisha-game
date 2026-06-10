@@ -81,15 +81,41 @@ function gainAffinity(charId) {
 
 function addMoney(amount) {
   state.money = Math.max(0, state.money + amount);
+  if (amount > 0 && window.SFX) SFX.coin();
   if (amount > 0) toast(`¥${amount.toLocaleString()} を受け取った`);
   else if (amount < 0) toast(`¥${(-amount).toLocaleString()} を支払った`);
   updateHud();
 }
 
 function updateHud() {
-  $("#hud-day").textContent = state.phase === "tournament" ? "大会当日" : `DAY ${state.day} / ${MAX_DAYS}`;
-  $("#hud-ap").textContent = state.phase === "daily" ? `行動 残り${state.ap}` : "";
+  if (state.phase === "tournament") {
+    $("#hud-day").textContent = "SMOKE CROWN CUP 当日";
+  } else {
+    const left = MAX_DAYS + 1 - state.day;
+    $("#hud-day").textContent = `DAY ${state.day} ／ 大会まであと${left}日`;
+  }
+  $("#hud-ap").textContent = state.phase === "daily" ? (state.ap === 2 ? "☀ 昼" : "☾ 夜") + `（残り${state.ap}行動）` : "";
   $("#hud-money").textContent = `¥${state.money.toLocaleString()}`;
+}
+
+// 判定スタンプ演出
+function showStamp(container, result) {
+  const labels = { perfect: "PERFECT!", good: "GOOD", miss: "MISS…" };
+  const st = document.createElement("div");
+  st.className = `stamp stamp-${result}`;
+  st.textContent = labels[result] || result;
+  (container || $("#game")).appendChild(st);
+  if (window.SFX) { SFX.stamp(); setTimeout(() => SFX[result] && SFX[result](), 120); }
+  setTimeout(() => st.remove(), 950);
+}
+
+// 日替わりカード（演出のみ・操作は止めない）
+function showDayCard(big, sub) {
+  const card = $("#day-card");
+  card.querySelector(".day-big").textContent = big;
+  card.querySelector(".day-sub").textContent = sub;
+  card.classList.add("show");
+  setTimeout(() => card.classList.remove("show"), 1400);
 }
 
 // ---------------------------------------------------------------- dialogue
@@ -125,6 +151,7 @@ function initEngine() {
       box: $("#vn-box"),
       choices: $("#vn-choices"),
       cg: $("#vn-cg"),
+      advance: $("#vn-advance"),
     },
     {
       getStat: (en) => state.stats[en] || 0,
@@ -148,7 +175,7 @@ function initEngine() {
       findDialogue: (id) => D.dialogues[id] || null,
     }
   );
-  $("#vn-click-layer").addEventListener("click", () => engine.next());
+  $("#vn-click-layer").addEventListener("click", () => { if (window.SFX) SFX.click(); engine.next(); });
   document.addEventListener("keydown", (e) => {
     if ((e.key === "Enter" || e.key === " ") && $("#screen-dialogue").classList.contains("active")) {
       e.preventDefault();
@@ -223,10 +250,22 @@ const REPEAT_VISIT = {
   minto: { text: "みんとの店で一服。客あしらいの軽やかさは、やっぱり真似できない。", stats: { charm: 2 } },
 };
 
+const SPOT_ICONS = {
+  baito: "🫖", practice: "💨", sumi: "🪵", tsumugi: "📓",
+  naru: "⚡", adam: "🍎", minto: "🌿", choizap: "💪",
+  kannon: "⛩️", cafe: "☕", c_station: "🏟️", rest: "🛏️",
+};
+
 function showMap() {
   state.phase = "daily";
   updateHud();
+  if (window.SFX) SFX.bgm("daily_part");
   showScreen("#screen-map");
+  const night = state.ap <= 1;
+  $("#screen-map").style.backgroundImage =
+    `url('${assetUrl(`assets/backgrounds/bg_map_local_${night ? "night" : "day"}.png`)}')`;
+  const timeLabel = $("#map-time");
+  if (timeLabel) timeLabel.textContent = night ? "☾ 夜 — 今日はあと1回動ける" : "☀ 昼 — 今日は2回動ける";
   const list = $("#map-spots");
   list.innerHTML = "";
   for (const spot of SPOTS) {
@@ -234,13 +273,13 @@ function showMap() {
     btn.className = "spot-btn";
     // まだ会っていないキャラのおすすめスポットは行き先として知らない
     if (spot.requiresMet && state.visits[spot.requiresMet] === 0) {
-      btn.innerHTML = `<span class="spot-name">？？？</span><span class="spot-desc">まだ知らない場所。誰かに教えてもらえそうな気がする。</span>`;
+      btn.innerHTML = `<span class="spot-icon">❓</span><span class="spot-name">？？？</span><span class="spot-desc">まだ知らない場所。誰かに教えてもらえそうな気がする。</span>`;
       btn.disabled = true;
       list.appendChild(btn);
       continue;
     }
     const costLabel = spot.cost > 0 ? `<span class="spot-cost">¥${spot.cost.toLocaleString()}</span>` : "";
-    btn.innerHTML = `<span class="spot-name">${spot.label}</span>${costLabel}<span class="spot-desc">${spot.desc}</span>`;
+    btn.innerHTML = `<span class="spot-icon">${SPOT_ICONS[spot.id] || ""}</span><span class="spot-name">${spot.label}</span>${costLabel}<span class="spot-desc">${spot.desc}</span>`;
     if (spot.cost > state.money) btn.disabled = true;
     btn.addEventListener("click", () => selectSpot(spot));
     list.appendChild(btn);
@@ -284,6 +323,8 @@ function endDay() {
     state.day += 1;
     state.ap = 2;
     save();
+    const left = MAX_DAYS + 1 - state.day;
+    showDayCard(`DAY ${state.day}`, left === 1 ? "SMOKE CROWN CUP 前日" : `大会まで あと${left}日`);
     showMap();
   };
   // 夜の固定イベント
@@ -306,6 +347,7 @@ function endDay() {
 // --- バイト
 function doBaito() {
   visitContextChar = null;
+  if (window.SFX) SFX.bgm("tonari");
   let pool = D.baito_events.filter((e) => !state.usedBaito.includes(e.id));
   if (pool.length === 0) { state.usedBaito = []; pool = D.baito_events.slice(); }
   const ev = pool[Math.floor(Math.random() * pool.length)];
@@ -485,6 +527,7 @@ function stopGauge() {
 
 function startPractice() {
   visitContextChar = null;
+  if (window.SFX) SFX.bgm("tonari");
   showScreen("#screen-practice");
   $("#practice-title").textContent = "今日は何を練習する？";
   $("#practice-gauge-area").classList.add("hidden");
@@ -517,6 +560,7 @@ function runPracticeGauge(item) {
   stopBtn.onclick = () => {
     const result = stopGauge();
     stopBtn.disabled = true;
+    showStamp($("#screen-practice .panel"), result);
     const gains = { perfect: [4, 3], good: [3, 2], miss: [1, 0] }[result];
     const msgs = {
       perfect: "──完璧だ。煙がまとまって、香りの輪郭がはっきり見える。",
@@ -580,6 +624,110 @@ const FOCUS_WORDS = [
 ];
 
 let tt = null; // tournament temp state
+const rigState = { smokeTimer: 0, bubbleTimer: 0 };
+
+const STEP_FLOW = [
+  ["setup_bowl", "SETUP"], ["setup_hms", "SETUP"], ["setup_charcoal", "SETUP"],
+  ["theme", "FLAVOR"], ["mix", "MIX"], ["pack", "PACK"], ["foil", "FOIL"],
+  ["coalfire", "COAL"], ["coal", "HEAT"], ["steam", "STEAM"],
+  ["focus", "FOCUS"], ["pull", "PULL"], ["present", "PRESENT"],
+];
+
+const FLAVOR_COLORS = {
+  mint: "#8fe3c0", double_apple: "#d96a6a", blueberry: "#7d8df0",
+  vanilla: "#f0e3b0", pineapple: "#f0d060", coconut: "#f3f3ef",
+};
+
+function buildRig() {
+  const rig = $("#tn-rig");
+  rig.innerHTML = `
+    <div class="rig-label">WORKBENCH</div>
+    <div class="rig">
+      <div class="rig-smokes"></div>
+      <div class="rig-coals"></div>
+      <div class="rig-foil">${'<span class="rig-hole"></span>'.repeat(6)}</div>
+      <div class="rig-bowl"><div class="rig-flavor"></div></div>
+      <div class="rig-tray"></div>
+      <div class="rig-stem"></div>
+      <div class="rig-hose"></div>
+      <div class="rig-base"><div class="rig-water"></div></div>
+    </div>`;
+}
+
+function updateRig() {
+  if (!tt) return;
+  // フレーバーの充填
+  const total = Object.values(tt.mix).reduce((a, b) => a + b, 0);
+  const fl = $("#tn-rig .rig-flavor");
+  if (fl) {
+    fl.style.height = `${Math.round((total / 12) * 88)}%`;
+    const entries = Object.entries(tt.mix);
+    if (entries.length === 1) {
+      fl.style.background = FLAVOR_COLORS[entries[0][0]] || "#c77";
+    } else if (entries.length > 1) {
+      let acc = 0;
+      const stops = entries.map(([id, g]) => {
+        const from = (acc / total) * 100;
+        acc += g;
+        const to = (acc / total) * 100;
+        return `${FLAVOR_COLORS[id] || "#c77"} ${from}% ${to}%`;
+      });
+      fl.style.background = `linear-gradient(to top, ${stops.join(", ")})`;
+    }
+  }
+  // アルミ
+  const foil = $("#tn-rig .rig-foil");
+  if (foil) {
+    foil.classList.toggle("on", tt.foilDone === true);
+    foil.querySelectorAll(".rig-hole").forEach((h, i) => h.classList.toggle("lit", i < tt.foilHits));
+  }
+  // 炭
+  const coals = $("#tn-rig .rig-coals");
+  if (coals) {
+    const n = tt.coal === "two" ? 2 : tt.coal === "four" ? 4 : tt.coal === "triangle" ? 3 : 0;
+    coals.innerHTML = '<span class="rig-coal"></span>'.repeat(n);
+    coals.classList.toggle("on", n > 0 && tt.coalFire !== null);
+  }
+}
+
+function spawnSmokePuff() {
+  const layer = $("#tn-rig .rig-smokes");
+  if (!layer) return;
+  const puff = document.createElement("div");
+  puff.className = "smoke-puff";
+  const size = 18 + Math.random() * 26;
+  puff.style.width = puff.style.height = `${size}px`;
+  puff.style.left = `${70 + (Math.random() * 40 - 20)}px`;
+  puff.style.top = `${40 + Math.random() * 14}px`;
+  layer.appendChild(puff);
+  setTimeout(() => puff.remove(), 2700);
+}
+
+function startRigSmoke(rate) {
+  clearInterval(rigState.smokeTimer);
+  rigState.smokeTimer = setInterval(spawnSmokePuff, rate);
+}
+
+function spawnBubbles(count) {
+  const base = $("#tn-rig .rig-base");
+  if (!base) return;
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const b = document.createElement("div");
+      b.className = "rig-bubble";
+      b.style.left = `${20 + Math.random() * 70}px`;
+      base.appendChild(b);
+      setTimeout(() => b.remove(), 950);
+    }, i * 90);
+  }
+}
+
+function stopRigEffects() {
+  clearInterval(rigState.smokeTimer);
+  clearInterval(rigState.bubbleTimer);
+  rigState.smokeTimer = 0;
+  rigState.bubbleTimer = 0;
+}
 
 function startTournament() {
   state.phase = "tournament";
@@ -594,18 +742,25 @@ function beginMaking() {
   tt = {
     bowl: null, hms: null, charcoal: null,
     theme: null, mix: {}, pack: null,
-    foilHits: 0, coalFire: null, coal: null, steam: null,
-    focusCleared: 0, pull: null, present: null,
+    foilHits: 0, foilDone: false, coalFire: null, coal: null, steam: null,
+    focusCleared: 0, pull: null, present: null, step: "",
   };
+  stopRigEffects();
+  buildRig();
   tournamentStep("setup_bowl");
 }
 
 function tnPanel(title, hint) {
   showScreen("#screen-tournament");
+  const idx = STEP_FLOW.findIndex(([k]) => k === (tt && tt.step));
+  $("#tn-progress").innerHTML = idx >= 0
+    ? `STEP ${idx + 1}/${STEP_FLOW.length}・${STEP_FLOW[idx][1]} <span class="tn-steps">${STEP_FLOW.map(([, t], i) => (i <= idx ? "●" : "○")).join("")}</span>`
+    : "RESULT";
   $("#tn-title").textContent = title;
   $("#tn-hint").textContent = hint || "";
   const body = $("#tn-body");
   body.innerHTML = "";
+  updateRig();
   return body;
 }
 
@@ -618,6 +773,7 @@ function optionButton(label, desc, onClick) {
 }
 
 function tournamentStep(step) {
+  if (tt) tt.step = step;
   if (step === "setup_bowl" || step === "setup_hms" || step === "setup_charcoal") return stepSetup(step);
   if (step === "theme") {
     const body = tnPanel("テーマ選択", "今日の一台のコンセプトを決めろ。フレーバー選びの軸になる。");
@@ -641,6 +797,8 @@ function tournamentStep(step) {
     const body = tnPanel("蒸らし時間", "スミさんの教え:「蒸らしは基本5〜8分。焦るな」");
     for (const s of STEAMS) body.appendChild(optionButton(s.label, s.desc, () => {
       tt.steam = s.id;
+      if (window.SFX) SFX.smoke();
+      startRigSmoke(750);
       playDialogue("ch1_tournament_match", () => tournamentStep("focus"), "res://assets/backgrounds/bg_tournament_stage.png");
     }));
     return;
@@ -728,11 +886,16 @@ function stepFoil() {
     if (attempts >= 6) return;
     attempts++;
     const r = gauge.judge();
+    if (window.SFX) SFX.foil();
     if (r !== "miss") tt.foilHits++;
+    updateRig();
     update();
     if (attempts >= 6) {
       gauge.stop();
       btn.disabled = true;
+      tt.foilDone = true;
+      updateRig();
+      showStamp($("#tn-layout .panel"), tt.foilHits >= 6 ? "perfect" : tt.foilHits >= 4 ? "good" : "miss");
       result.textContent =
         tt.foilHits >= 6 ? "──美しい六角形。空気の通り道が完璧に揃った。"
         : tt.foilHits >= 4 ? "──まずまずの穴あけ。空気はちゃんと通る。"
@@ -765,6 +928,8 @@ function stepCoalFire() {
     gauge.stop();
     btn.disabled = true;
     tt.coalFire = gauge.judge();
+    if (window.SFX) SFX.coal();
+    showStamp($("#tn-layout .panel"), tt.coalFire);
     result.textContent = {
       perfect: "──完璧な熾き。炭全体が均一な赤に染まっている。",
       good: "──十分に熾きた。問題ない熱だ。",
@@ -814,6 +979,7 @@ function stepFocus() {
     const timer = setTimeout(() => { word.remove(); setTimeout(spawn, 250); }, lifetime);
     word.addEventListener("click", () => {
       clearTimeout(timer);
+      if (window.SFX) SFX.select();
       word.remove();
       tt.focusCleared++;
       setTimeout(spawn, 250);
@@ -860,14 +1026,18 @@ function stepMix() {
     minus.addEventListener("click", () => {
       tt.mix[f.id] = Math.max(0, (tt.mix[f.id] || 0) - 1);
       if (tt.mix[f.id] === 0) delete tt.mix[f.id];
+      if (window.SFX) SFX.click();
       update();
+      updateRig();
     });
     plus.addEventListener("click", () => {
       const kinds = Object.keys(tt.mix);
       if (!tt.mix[f.id] && kinds.length >= 3) { toast("ミックスは3種類まで"); return; }
       if (total() >= 12) return;
       tt.mix[f.id] = (tt.mix[f.id] || 0) + 1;
+      if (window.SFX) SFX.pour();
       update();
+      updateRig();
     });
     ctrl.append(minus, grams, plus);
     row.append(info, ctrl);
@@ -916,6 +1086,10 @@ function stepPull() {
     e.target.disabled = true;
     const center = (zone[0] + zone[1]) / 2, half = (zone[1] - zone[0]) / 2;
     tt.pull = Math.abs(pos - center) <= half * 0.4 ? "perfect" : pos >= zone[0] && pos <= zone[1] ? "good" : "miss";
+    if (window.SFX) SFX.bubble();
+    spawnBubbles(tt.pull === "perfect" ? 14 : tt.pull === "good" ? 9 : 4);
+    startRigSmoke(tt.pull === "miss" ? 900 : 320);
+    showStamp($("#tn-layout .panel"), tt.pull);
     const msgs = {
       perfect: "──完璧な一服。煙が重く、甘く、まとまっている。",
       good: "──いい煙だ。狙った味に近い。",
@@ -1023,19 +1197,41 @@ function finishTournament() {
 function showResult(results, rank, detail) {
   const body = tnPanel("審査結果", "");
   $("#tn-title").textContent = "SMOKE CROWN CUP — 審査結果";
+  $("#tn-progress").textContent = "RESULT";
   const note = document.createElement("div");
   note.className = "result-note";
   note.innerHTML = detail.map((d) => `<p>${d}</p>`).join("");
   const table = document.createElement("div");
   table.className = "result-table";
-  results.forEach((r, i) => {
+  const topScore = Math.max(...results.map((r) => r.score));
+  const rows = results.map((r, i) => {
     const row = document.createElement("div");
-    row.className = "result-row" + (r.id === "hajime" ? " me" : "");
-    row.innerHTML = `<span class="result-rank">${i + 1}位</span><span class="result-name">${r.name}</span>`;
+    row.className = "result-row" + (r.id === "hajime" ? " me" : "") + ` rank-${i + 1}`;
+    row.innerHTML =
+      `<div class="result-bar"></div>` +
+      `<span class="result-rank">${i + 1}位</span><span class="result-name">${r.name}</span>` +
+      `<span class="result-score">${r.score.toFixed(1)}</span>`;
     table.appendChild(row);
+    return row;
+  });
+  // 4位から順にリビール
+  rows.slice().reverse().forEach((row, i) => {
+    setTimeout(() => {
+      row.classList.add("show");
+      if (window.SFX) SFX.click();
+      const bar = row.querySelector(".result-bar");
+      const r = results[rows.indexOf(row)];
+      requestAnimationFrame(() => { bar.style.width = `${(r.score / topScore) * 100}%`; });
+      if (rows.indexOf(row) === 0 && results[0].id === "hajime" && window.SFX) {
+        setTimeout(() => SFX.fanfare(), 450);
+      }
+    }, 500 + i * 750);
   });
   const btn = document.createElement("button");
   btn.className = "primary-btn";
+  btn.style.opacity = "0";
+  btn.style.transition = "opacity 0.4s";
+  setTimeout(() => { btn.style.opacity = "1"; }, 500 + rows.length * 750 + 400);
   if (rank === 1) {
     btn.textContent = "結果発表へ";
     btn.addEventListener("click", () => {
@@ -1056,6 +1252,8 @@ function showResult(results, rank, detail) {
 }
 
 function showClear() {
+  stopRigEffects();
+  if (window.SFX) SFX.fanfare();
   state.phase = "cleared";
   save();
   showScreen("#screen-end");
@@ -1065,6 +1263,7 @@ function showClear() {
 }
 
 function showDefeat(rank) {
+  stopRigEffects();
   showScreen("#screen-end");
   $("#end-title").textContent = "敗北……";
   $("#end-sub").textContent = `結果は${rank}位。優勝だけが次への切符だった。`;
@@ -1127,12 +1326,20 @@ function init() {
   const saved = loadSave();
   $("#btn-new").addEventListener("click", () => {
     localStorage.removeItem(SAVE_KEY);
+    if (window.SFX) { SFX.select(); SFX.bgm("tonari"); }
     startNewGame();
+  });
+  $("#btn-mute").addEventListener("click", () => {
+    const m = !SFX.isMuted();
+    SFX.setMuted(m);
+    const b = $("#btn-mute");
+    b.textContent = m ? "♪ OFF" : "♪ ON";
+    b.classList.toggle("off", m);
   });
   const contBtn = $("#btn-continue");
   if (saved && saved.phase !== "opening") {
     contBtn.classList.remove("hidden");
-    contBtn.addEventListener("click", () => continueGame(saved));
+    contBtn.addEventListener("click", () => { if (window.SFX) { SFX.select(); SFX.bgm("daily_part"); } continueGame(saved); });
   }
   $("#btn-status").addEventListener("click", () => toggleStatus(true));
   $("#status-close").addEventListener("click", () => toggleStatus(false));

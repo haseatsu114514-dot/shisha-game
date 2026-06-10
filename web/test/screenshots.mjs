@@ -24,7 +24,7 @@ for (let i = 0; i < 6; i++) { await page.click("#vn-click-layer"); await page.wa
 await page.screenshot({ path: `${OUT}/02_opening.png` });
 
 // 選択肢が出るところまで進める
-for (let i = 0; i < 80; i++) {
+for (let i = 0; i < 200; i++) {
   if (await page.locator("#vn-choices .choice-btn").count()) break;
   await page.click("#vn-click-layer");
   await page.waitForTimeout(20);
@@ -33,7 +33,7 @@ await page.screenshot({ path: `${OUT}/03_choice.png` });
 
 // マップまで進める
 async function active() { return page.evaluate(() => document.querySelector(".screen.active")?.id); }
-for (let i = 0; i < 300; i++) {
+for (let i = 0; i < 2000; i++) {
   if ((await active()) === "screen-map") break;
   const c = page.locator("#vn-choices .choice-btn").first();
   if (await c.count()) await c.click(); else await page.click("#vn-click-layer");
@@ -64,7 +64,7 @@ await page.evaluate(() => {
   state.stats = { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 };
   startTournament();
 });
-for (let i = 0; i < 400; i++) {
+for (let i = 0; i < 2500; i++) {
   const s = await active();
   if (s === "screen-tournament") break;
   const c = page.locator("#vn-choices .choice-btn").first();
@@ -75,7 +75,7 @@ await page.screenshot({ path: `${OUT}/07_tournament_theme.png` });
 
 // わざと噛み合わない選択をして敗北させる
 async function title() { return page.locator("#tn-title").textContent(); }
-for (let i = 0; i < 400; i++) {
+for (let i = 0; i < 2500; i++) {
   const s = await active();
   if (s === "screen-end") break;
   if (s === "screen-dialogue") {
