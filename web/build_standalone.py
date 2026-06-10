@@ -63,6 +63,20 @@ def collect_assets() -> dict:
         assets["assets/ui/ui_title_logo.png"] = (
             "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
         )
+    # タイトル用キービジュアル: assets/ui/title_arts/*.png
+    arts_dir = REPO_ROOT / "assets" / "ui" / "title_arts"
+    if arts_dir.exists():
+        for png in sorted(arts_dir.glob("*.png")):
+            if png.stat().st_size == 0:
+                continue
+            im = Image.open(png).convert("RGB")
+            if im.width > BG_MAX_W:
+                im = im.resize((BG_MAX_W, round(im.height * BG_MAX_W / im.width)), Image.LANCZOS)
+            buf = io.BytesIO()
+            im.save(buf, "JPEG", quality=JPEG_QUALITY, optimize=True)
+            assets[f"assets/ui/title_arts/{png.name}"] = (
+                "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
+            )
     # 背景: ゲームから参照されうるものを全て
     for png in sorted((REPO_ROOT / "assets" / "backgrounds").glob("*.png")):
         assets[f"assets/backgrounds/{png.name}"] = encode_background(png)

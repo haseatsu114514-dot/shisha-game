@@ -1537,6 +1537,23 @@ function setupTitleLogo() {
   };
 }
 
+// タイトルの専用キービジュアル: build_data.py が assets/ui/title_arts/ を
+// 走査して D.title_arts に詰める。1枚以上あればランダムで1枚表示し、
+// 無ければキャラランダム表示にフォールバック。
+function setupTitleKeyVisual(onMiss) {
+  const frame = $("#title-art-frame");
+  const img = $("#title-art");
+  const arts = (D && D.title_arts) || [];
+  if (!arts.length) { frame.style.display = "none"; if (onMiss) onMiss(); return; }
+  const name = arts[Math.floor(Math.random() * arts.length)];
+  img.onerror = () => { frame.style.display = "none"; if (onMiss) onMiss(); };
+  img.onload = () => {
+    frame.classList.add("show");
+    $("#title-chara-window").style.display = "none";
+  };
+  img.src = assetUrl(`assets/ui/title_arts/${name}`);
+}
+
 function setupTitleChara() {
   const img = $("#title-chara");
   const win = $("#title-chara-window");
@@ -1658,7 +1675,8 @@ function init() {
   window.addEventListener("resize", fitStage);
   initEngine();
   setupTitleLogo();
-  setupTitleChara();
+  // キービジュアルがあればそれを最優先、無ければキャラランダム表示
+  setupTitleKeyVisual(() => setupTitleChara());
   // タイトルBGM: 自動再生がブロックされたら最初の操作で再試行する
   startTitleBgm();
   window.addEventListener("pointerdown", startTitleBgm, { once: true });
@@ -1698,11 +1716,19 @@ function init() {
   $("#vn-skip").addEventListener("click", toggleSkip);
   $("#vn-log").addEventListener("click", () => toast("ログは次回実装予定"));
   $("#vn-menu").addEventListener("click", () => toggleStatus(true));
-  // タイトルメニューのフォーカス演出（hover/focus でハイライト）
+  // タイトルメニューのフォーカス・hover演出 + ホバーSE
+  let lastHoverSfx = 0;
   for (const item of document.querySelectorAll(".title-menu-item")) {
     item.addEventListener("focus", () => {
       for (const x of document.querySelectorAll(".title-menu-item.focus")) x.classList.remove("focus");
       item.classList.add("focus");
+    });
+    item.addEventListener("mouseenter", () => {
+      if (item.disabled) return;
+      const now = performance.now();
+      if (now - lastHoverSfx < 90) return; // 連続ホバーで鳴りすぎないように
+      lastHoverSfx = now;
+      if (window.SFX) SFX.pageTurn();
     });
   }
   showScreen("#screen-title");

@@ -1342,3 +1342,230 @@ body {
 }
 .result-row .result-score { margin-left: auto; color: var(--accent); font-variant-numeric: tabular-nums; }
 .result-row.rank-1 .result-rank { color: #ffd878; text-shadow: 0 0 10px rgba(255,216,120,0.6); }
+
+/* ================= タイトル: コンシューマー級の質感パス ================= */
+
+/* (1) tonari店内の薄い焼き込み: ぼやけたバーがうっすら見える */
+#title-bar-bleed {
+  position: absolute; inset: 0;
+  background-image: url("../../assets/backgrounds/bg_tonari_inside.png");
+  background-size: cover; background-position: center;
+  filter: blur(8px) brightness(0.35) saturate(0.7);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* (3) 背景のネオン看板（点滅・極小） */
+.title-neon {
+  position: absolute;
+  font-family: "Brush Script MT", "Kunstler Script", cursive;
+  font-weight: bold;
+  pointer-events: none;
+  user-select: none;
+  text-transform: none;
+  z-index: 1;
+  filter: blur(0.3px);
+}
+.neon-tonari {
+  top: 18%; right: 6%;
+  font-size: 26px;
+  color: #ff7ab8;
+  text-shadow:
+    0 0 4px #ff7ab8, 0 0 12px #ff3a8f, 0 0 22px rgba(255,58,143,0.7),
+    0 0 38px rgba(255,58,143,0.45);
+  letter-spacing: 0.04em;
+  animation: neon-flicker-a 4.2s linear infinite;
+}
+.neon-shisha {
+  bottom: 24%; left: 4%;
+  font-family: "Times New Roman", serif;
+  font-size: 18px;
+  letter-spacing: 0.4em;
+  color: #7adfff;
+  text-shadow:
+    0 0 4px #7adfff, 0 0 10px #2bb6ff, 0 0 22px rgba(43,182,255,0.7);
+  animation: neon-flicker-b 5.8s linear infinite;
+}
+@keyframes neon-flicker-a {
+  0%, 92%, 100% { opacity: 1; }
+  93%, 95% { opacity: 0.3; }
+  94% { opacity: 0.9; }
+}
+@keyframes neon-flicker-b {
+  0%, 71%, 73%, 100% { opacity: 1; }
+  72%, 84% { opacity: 0.35; }
+  83% { opacity: 0.9; }
+}
+
+/* (5) アート窓の縁 vignette: 切り抜きと一枚絵の継ぎ目を消す */
+#title-art-frame {
+  position: absolute;
+  right: 1%;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  display: none; /* JSが title-art を読み込めたら表示 */
+  animation: chara-in 2.0s ease-out 0.6s forwards;
+  opacity: 0;
+}
+#title-art-frame.show { display: block; }
+#title-art {
+  position: absolute;
+  left: 0; top: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  animation: ken-burns 22s ease-in-out infinite alternate;
+  transform-origin: 50% 40%;
+}
+/* 縁を煙でぼかして、絵の縁取りが完全に背景に溶けるようにする */
+.art-vignette {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 45%, transparent 50%, rgba(5,3,8,0.85) 100%),
+    linear-gradient(to right, rgba(5,3,8,0.7) 0%, transparent 14%, transparent 86%, rgba(5,3,8,0.5) 100%);
+}
+
+/* (8) フィルムグレイン: SVG noise を画面全体にうっすら */
+.film-grain {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 11;
+  opacity: 0.10;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1   0 0 0 0 1   0 0 0 0 1   0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='1'/></svg>");
+  background-size: 200px 200px;
+  animation: grain-shift 0.9s steps(8) infinite;
+}
+@keyframes grain-shift {
+  0%   { transform: translate(0, 0); }
+  20%  { transform: translate(-3%, 2%); }
+  40%  { transform: translate(4%, -2%); }
+  60%  { transform: translate(-2%, -3%); }
+  80%  { transform: translate(3%, 3%); }
+  100% { transform: translate(0, 0); }
+}
+
+/* 画面全体の vignette: コンシューマーゲームっぽい締まり */
+.title-vignette {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 10;
+  background:
+    radial-gradient(ellipse 100% 80% at 50% 50%, transparent 55%, rgba(0,0,0,0.55) 100%);
+}
+
+/* (a) 入場アニメ: ロゴが「墨で書かれる」ように左→右に出現 */
+#title-logo-img {
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, #000 50%, transparent 60%);
+          mask-image: linear-gradient(90deg, #000 0%, #000 50%, transparent 60%);
+  -webkit-mask-size: 220% 100%;
+          mask-size: 220% 100%;
+  -webkit-mask-position: 100% 0;
+          mask-position: 100% 0;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  animation:
+    title-rise-logo 1.3s ease-out 0.55s forwards,
+    logo-inkstroke 1.8s cubic-bezier(0.22, 0.61, 0.36, 1) 0.55s forwards;
+}
+@keyframes logo-inkstroke {
+  from { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+  to   { -webkit-mask-position: 0% 0;   mask-position: 0% 0; }
+}
+
+/* (c) メニュー hover/focus: 文字ブルーム + シアンのリムライト */
+.title-menu-item:hover:not(:disabled),
+.title-menu-item.focus {
+  text-shadow:
+    0 0 8px rgba(122, 223, 255, 0.0),
+    0 0 0 rgba(255, 230, 150, 0);
+}
+.title-menu-item:not(:disabled) {
+  transition:
+    color 0.18s,
+    background 0.18s,
+    padding-left 0.18s,
+    text-shadow 0.25s;
+  text-shadow: 0 0 0 transparent;
+}
+.title-menu-item:not(:disabled)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(122,223,255,0.0) 0%, rgba(122,223,255,0.25) 50%, rgba(122,223,255,0.0) 100%);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.title-menu-item:hover:not(:disabled)::after,
+.title-menu-item.focus::after {
+  opacity: 1;
+}
+
+/* (7) ロゴと EN:CODE に薄いシアンのリムライト */
+#title-logo-img {
+  filter:
+    drop-shadow(0 6px 18px rgba(0, 0, 0, 0.7))
+    drop-shadow(0 0 14px rgba(122, 223, 255, 0.18));
+}
+.title-en {
+  text-shadow: 0 0 8px rgba(122, 223, 255, 0.35);
+}
+
+/* タイトル下部フッターを上品に */
+.title-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  font-family: "Times New Roman", serif;
+  font-size: 12px;
+  letter-spacing: 0.32em;
+  color: #c5b896;
+  text-shadow: 0 0 6px rgba(0,0,0,0.8);
+  animation: note-blink 4s ease-in-out 2s infinite, footer-in 1.2s ease-out 1.6s both;
+}
+.title-note .footer-hookah {
+  font-size: 16px;
+  filter: drop-shadow(0 0 6px rgba(244, 210, 122, 0.7));
+  animation: hookah-glow 3.2s ease-in-out infinite alternate;
+}
+.title-note .footer-line {
+  width: 80px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+.title-note .footer-chapter {
+  color: var(--accent);
+  letter-spacing: 0.32em;
+}
+@keyframes hookah-glow {
+  from { filter: drop-shadow(0 0 4px rgba(244,210,122,0.5)); }
+  to   { filter: drop-shadow(0 0 14px rgba(244,210,122,1)); }
+}
+@keyframes footer-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: var(--target-opacity, 1); transform: none; }
+}
+
+/* キャラ窓の縁の継ぎ目消し: ぼかしの煙レイヤーを追加 */
+#title-chara-window::after,
+#title-art-frame::after {
+  content: "";
+  position: absolute;
+  inset: -10%;
+  pointer-events: none;
+  background: radial-gradient(ellipse 60% 70% at 50% 50%, transparent 45%, rgba(15,8,22,0.75) 100%);
+  z-index: 3;
+}
+
+/* スマホ調整: 縦長になる端末ではロゴをより大きく、メニューを下に */
+@media (max-aspect-ratio: 16/10) {
+  .title-logo-wrap { top: 7%; }
+  #title-logo-img { width: 760px; }
+  .title-menu { bottom: 6%; width: 460px; }
+}

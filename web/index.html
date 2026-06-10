@@ -48,15 +48,24 @@
 
   <!-- タイトル -->
   <section id="screen-title" class="screen active">
+    <!-- 1. バーの店内を半透過で焼き込み（tonari背景の薄レイヤー） -->
+    <div id="title-bar-bleed"></div>
+    <!-- 2. 墨グラデの大気 -->
     <div class="title-ink"></div>
+    <!-- 3. ネオン看板（点滅） -->
+    <div class="title-neon neon-tonari">tonari</div>
+    <div class="title-neon neon-shisha">SHISHA</div>
+    <!-- 4. 揺らぐ大気の煙レイヤー -->
     <div class="title-smoke ts-1"></div>
     <div class="title-smoke ts-2"></div>
     <div class="title-smoke ts-3"></div>
     <div class="title-smoke ts-4"></div>
+    <!-- 5. 立ちのぼる細い煙wisp -->
     <div class="title-wisps">
       <span class="tw w1"></span><span class="tw w2"></span><span class="tw w3"></span>
       <span class="tw w4"></span><span class="tw w5"></span><span class="tw w6"></span>
     </div>
+    <!-- 6. キャラ星雲 -->
     <div id="title-nebula">
       <span class="neb n1"></span>
       <span class="neb n2"></span>
@@ -64,6 +73,16 @@
       <span class="neb n4"></span>
       <span class="neb n5"></span>
       <span class="neb n6"></span>
+    </div>
+    <!-- 7. アート窓: title-art は専用キービジュアル（あれば優先）、
+         無ければ chara-window のランダム表示が使われる -->
+    <div id="title-art-frame">
+      <img id="title-art" alt="" draggable="false">
+      <div class="art-vignette"></div>
+      <div class="chara-smoke cs-1"></div>
+      <div class="chara-smoke cs-2"></div>
+      <div class="chara-smoke cs-3"></div>
+      <div class="chara-smoke cs-4"></div>
     </div>
     <div id="title-chara-window">
       <img id="title-chara" alt="" draggable="false">
@@ -85,8 +104,16 @@
         <button id="btn-config" class="title-menu-item" type="button" disabled>CONFIG<span class="ja">コンフィグ</span></button>
         <button id="btn-exit" class="title-menu-item" type="button" disabled>EXIT<span class="ja">もどる</span></button>
       </div>
-      <p class="title-note">TAP / CLICK / ENTER</p>
+      <p class="title-note">
+        <span class="footer-hookah">🪔</span>
+        <span class="footer-text">TAP / CLICK / ENTER</span>
+        <span class="footer-line"></span>
+        <span class="footer-chapter">CH.01 — SMOKE CROWN CUP</span>
+      </p>
     </div>
+    <!-- 8. フィルムグレイン（最前面） -->
+    <div class="film-grain"></div>
+    <div class="title-vignette"></div>
   </section>
 
   <!-- 会話 -->

@@ -107,6 +107,16 @@ def collect_backgrounds() -> list:
     return sorted(p.name for p in bg_dir.glob("*.png"))
 
 
+def collect_title_arts() -> list:
+    """assets/ui/title_arts/ にある専用キービジュアル一覧。
+    タイトルが起動時にここからランダムに1枚選んで表示する。
+    画像が無ければ空配列 → タイトルはキャラランダム表示にフォールバック"""
+    arts_dir = REPO_ROOT / "assets" / "ui" / "title_arts"
+    if not arts_dir.exists():
+        return []
+    return sorted(p.name for p in arts_dir.glob("*.png") if p.stat().st_size > 0)
+
+
 def main() -> None:
     flavors = load_json(DATA_DIR / "flavors.json")["flavors"]
     baito = load_json(DATA_DIR / "baito_events.json")
@@ -135,6 +145,7 @@ def main() -> None:
         "portraits": portraits,
         "portrait_trims": portrait_trims,
         "backgrounds": collect_backgrounds(),
+        "title_arts": collect_title_arts(),
     }
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
