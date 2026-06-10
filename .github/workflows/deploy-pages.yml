@@ -1,10 +1,11 @@
 # web/dist/shisha_ch1.html（1ファイル版）を GitHub Pages に公開する。
-# main にマージされるたびに https://haseatsu114514-dot.github.io/shisha-game/ が更新される。
+# main または開発ブランチ（claude/**）への push のたびに
+# https://haseatsu114514-dot.github.io/shisha-game/ が更新される。
 name: Deploy web build to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [main, "claude/**"]
     paths:
       - "web/dist/**"
       - ".github/workflows/deploy-pages.yml"
