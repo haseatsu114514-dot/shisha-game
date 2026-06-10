@@ -20,6 +20,12 @@ const SPEAKER_COLORS = {
   maezono: "#ce93d8", salaryman: "#90a4ae",
 };
 
+// アセット解決: スタンドアロン版では window.ASSET_DATA に data URI が入る
+function assetUrl(rel) {
+  if (window.ASSET_DATA && window.ASSET_DATA[rel]) return window.ASSET_DATA[rel];
+  return "../" + rel;
+}
+
 function escapeHtml(s) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
@@ -63,8 +69,8 @@ class DialogueEngine {
   }
 
   setBackground(path) {
-    const rel = String(path).replace(/^res:\/\//, "../");
-    this.el.bg.style.backgroundImage = `url('${rel}')`;
+    const rel = String(path).replace(/^res:\/\//, "");
+    this.el.bg.style.backgroundImage = `url('${assetUrl(rel)}')`;
   }
 
   next() {
@@ -133,7 +139,7 @@ class DialogueEngine {
   }
 
   showCg(cgId) {
-    this.el.cg.style.backgroundImage = `url('../assets/cgs/${cgId}.png')`;
+    this.el.cg.style.backgroundImage = `url('${assetUrl(`assets/cgs/${cgId}.png`)}')`;
     this.el.cg.classList.add("visible");
   }
   hideCg() {
@@ -147,7 +153,7 @@ class DialogueEngine {
     let f = face && faces.includes(face) ? face : null;
     if (!f && faces.includes("normal")) f = "normal";
     if (!f) f = faces[0];
-    return `../assets/sprites/characters/${folder}/chr_${folder}_${f}.png`;
+    return assetUrl(`assets/sprites/characters/${folder}/chr_${folder}_${f}.png`);
   }
 
   showLine(line) {

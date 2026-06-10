@@ -63,3 +63,13 @@ node web/test/screenshots.mjs      # 敗北ルート＋スクショ
 セリフ内の「【技術】が上がった」等の文をエンジンが検出してステータスに反映する
 （少し=+2 / 無印=+3 / 大きく=+5）。報酬キューが無い会話でも、訪問・スポットごとの
 フォールバック報酬を必ず付与する（CLAUDE.md のイベント報酬ルール準拠）。
+
+## 1ファイル版（配布用）
+
+画像・データを全部埋め込んだ単体HTMLを生成できる（約5.6MB）。
+どこに置いてもダブルクリックだけで遊べる。
+
+```bash
+pip install pillow
+python3 web/build_standalone.py   # → web/dist/shisha_ch1.html
+```
