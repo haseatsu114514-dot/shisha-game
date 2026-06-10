@@ -202,19 +202,21 @@ body {
     linear-gradient(160deg, #0a0610 0%, #050308 55%, #0c0714 100%);
 }
 
-/* 漂う煙レイヤー（白系・低不透明度） */
+/* 漂う煙レイヤー（柔らかい大気を作る） */
 .title-smoke {
   position: absolute;
   width: 70%; height: 70%;
   border-radius: 50%;
-  filter: blur(60px);
-  opacity: 0.05;
+  filter: blur(64px);
+  opacity: 0.12;
   background: radial-gradient(circle, #cfd2e0 0%, transparent 65%);
   pointer-events: none;
+  mix-blend-mode: screen;
 }
 .ts-1 { top: -20%; left: -10%; animation: smoke-drift-a 46s ease-in-out infinite alternate; }
-.ts-2 { bottom: -30%; left: 30%; animation: smoke-drift-b 58s ease-in-out infinite alternate; opacity: 0.04; }
-.ts-3 { top: 10%; right: -20%; animation: smoke-drift-a 38s ease-in-out infinite alternate-reverse; opacity: 0.06; }
+.ts-2 { bottom: -30%; left: 30%; animation: smoke-drift-b 58s ease-in-out infinite alternate; opacity: 0.10; }
+.ts-3 { top: 10%; right: -20%; animation: smoke-drift-a 38s ease-in-out infinite alternate-reverse; opacity: 0.14; }
+.ts-4 { top: 30%; left: 10%; width: 50%; height: 50%; opacity: 0.08; animation: smoke-drift-c 72s ease-in-out infinite alternate; }
 @keyframes smoke-drift-a {
   from { transform: translate(0, 0) scale(1); }
   to { transform: translate(8%, -6%) scale(1.25); }
@@ -222,6 +224,41 @@ body {
 @keyframes smoke-drift-b {
   from { transform: translate(0, 0) scale(1.1); }
   to { transform: translate(-10%, -8%) scale(0.9); }
+}
+@keyframes smoke-drift-c {
+  from { transform: translate(-4%, 6%) scale(1); }
+  to { transform: translate(6%, -10%) scale(1.18); }
+}
+
+/* タイトル下から立ちのぼる細い煙のすじ（前景）。シーシャゲーらしい縦の動き */
+.title-wisps {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 2;
+}
+.tw {
+  position: absolute;
+  bottom: -15%;
+  width: 12%; height: 80%;
+  border-radius: 50%;
+  filter: blur(22px);
+  background: radial-gradient(ellipse, rgba(220,225,240,0.42), transparent 70%);
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: tw-rise 12s ease-in infinite;
+}
+.w1 { left:  3%; animation-duration: 13s; animation-delay: 0s; }
+.w2 { left: 16%; animation-duration: 15s; animation-delay: -4s; width: 9%; }
+.w3 { left: 30%; animation-duration: 11s; animation-delay: -8s; width: 14%; }
+.w4 { left: 44%; animation-duration: 16s; animation-delay: -2s; width: 10%; }
+.w5 { left:  9%; animation-duration: 14s; animation-delay: -10s; width: 11%; }
+.w6 { left: 22%; animation-duration: 17s; animation-delay: -6s; width: 8%; }
+@keyframes tw-rise {
+  0%   { transform: translate(0, 0) scale(0.5); opacity: 0; }
+  15%  { opacity: 0.6; }
+  60%  { transform: translate(2vw, -80%) scale(1.4); opacity: 0.45; }
+  100% { transform: translate(-2vw, -140%) scale(2.0); opacity: 0; }
 }
 
 /* 右側のカラフルな煙星雲（キャラの背景） */
@@ -263,32 +300,64 @@ body {
   opacity: 0;
   animation:
     chara-in 2.0s ease-out 0.6s forwards,
-    smoke-window 13s ease-in-out 0.6s infinite alternate;
+    smoke-window 22s ease-in-out 0.6s infinite;
+  /* 7枚のぼかし楕円のORでウィンドウ形を作る。
+     SVGフィルタの turbulence と組み合わせると煙のうねりが綺麗に出る */
   -webkit-mask-image:
-    radial-gradient(closest-side, #000 52%, transparent 100%),
-    radial-gradient(closest-side, #000 46%, transparent 100%),
-    radial-gradient(closest-side, #000 46%, transparent 100%),
+    radial-gradient(closest-side, #000 54%, transparent 100%),
+    radial-gradient(closest-side, #000 48%, transparent 100%),
+    radial-gradient(closest-side, #000 48%, transparent 100%),
+    radial-gradient(closest-side, #000 42%, transparent 100%),
     radial-gradient(closest-side, #000 40%, transparent 100%),
     radial-gradient(closest-side, #000 38%, transparent 100%),
-    radial-gradient(closest-side, #000 36%, transparent 100%);
+    radial-gradient(closest-side, #000 34%, transparent 100%);
   -webkit-mask-repeat: no-repeat;
-  -webkit-mask-size: 88% 64%, 66% 52%, 64% 50%, 52% 40%, 46% 34%, 42% 30%;
-  -webkit-mask-position: 50% 28%, 4% 56%, 92% 58%, 40% 86%, 0% 14%, 96% 10%;
+  -webkit-mask-size: 92% 66%, 70% 54%, 68% 52%, 56% 42%, 50% 36%, 44% 32%, 38% 28%;
+  -webkit-mask-position: 50% 28%, 4% 56%, 92% 58%, 40% 86%, 0% 14%, 96% 10%, 60% 4%;
   mask-image:
-    radial-gradient(closest-side, #000 52%, transparent 100%),
-    radial-gradient(closest-side, #000 46%, transparent 100%),
-    radial-gradient(closest-side, #000 46%, transparent 100%),
+    radial-gradient(closest-side, #000 54%, transparent 100%),
+    radial-gradient(closest-side, #000 48%, transparent 100%),
+    radial-gradient(closest-side, #000 48%, transparent 100%),
+    radial-gradient(closest-side, #000 42%, transparent 100%),
     radial-gradient(closest-side, #000 40%, transparent 100%),
     radial-gradient(closest-side, #000 38%, transparent 100%),
-    radial-gradient(closest-side, #000 36%, transparent 100%);
+    radial-gradient(closest-side, #000 34%, transparent 100%);
   mask-repeat: no-repeat;
-  mask-size: 88% 64%, 66% 52%, 64% 50%, 52% 40%, 46% 34%, 42% 30%;
-  mask-position: 50% 28%, 4% 56%, 92% 58%, 40% 86%, 0% 14%, 96% 10%;
+  mask-size: 92% 66%, 70% 54%, 68% 52%, 56% 42%, 50% 36%, 44% 32%, 38% 28%;
+  mask-position: 50% 28%, 4% 56%, 92% 58%, 40% 86%, 0% 14%, 96% 10%, 60% 4%;
 }
+/* 煙が「立ちのぼる」: 全体に上→下のドリフト、ひと吹きするような揺らぎ。
+   別レイヤーごとに位置とサイズを独立で動かすため keyframes は多段 */
 @keyframes smoke-window {
-  to {
-    -webkit-mask-position: 48% 24%, 10% 62%, 86% 52%, 46% 80%, 6% 8%, 90% 18%;
-    mask-position: 48% 24%, 10% 62%, 86% 52%, 46% 80%, 6% 8%, 90% 18%;
+  0%   {
+    -webkit-mask-size: 92% 66%, 70% 54%, 68% 52%, 56% 42%, 50% 36%, 44% 32%, 38% 28%;
+            mask-size: 92% 66%, 70% 54%, 68% 52%, 56% 42%, 50% 36%, 44% 32%, 38% 28%;
+    -webkit-mask-position: 50% 28%, 4% 56%, 92% 58%, 40% 86%, 0% 14%, 96% 10%, 60% 4%;
+            mask-position: 50% 28%, 4% 56%, 92% 58%, 40% 86%, 0% 14%, 96% 10%, 60% 4%;
+  }
+  25%  {
+    -webkit-mask-size: 96% 70%, 74% 58%, 64% 48%, 60% 46%, 46% 32%, 50% 38%, 36% 26%;
+            mask-size: 96% 70%, 74% 58%, 64% 48%, 60% 46%, 46% 32%, 50% 38%, 36% 26%;
+    -webkit-mask-position: 48% 22%, 8% 62%, 88% 52%, 44% 80%, 4% 6%, 92% 18%, 56% 8%;
+            mask-position: 48% 22%, 8% 62%, 88% 52%, 44% 80%, 4% 6%, 92% 18%, 56% 8%;
+  }
+  50%  {
+    -webkit-mask-size: 90% 64%, 68% 50%, 72% 56%, 54% 40%, 52% 38%, 42% 30%, 40% 30%;
+            mask-size: 90% 64%, 68% 50%, 72% 56%, 54% 40%, 52% 38%, 42% 30%, 40% 30%;
+    -webkit-mask-position: 52% 30%, 2% 50%, 96% 62%, 36% 88%, 6% 18%, 94% 6%, 64% 2%;
+            mask-position: 52% 30%, 2% 50%, 96% 62%, 36% 88%, 6% 18%, 94% 6%, 64% 2%;
+  }
+  75%  {
+    -webkit-mask-size: 94% 68%, 72% 56%, 66% 50%, 58% 44%, 48% 34%, 48% 36%, 34% 24%;
+            mask-size: 94% 68%, 72% 56%, 66% 50%, 58% 44%, 48% 34%, 48% 36%, 34% 24%;
+    -webkit-mask-position: 46% 26%, 10% 58%, 90% 54%, 42% 84%, 2% 10%, 90% 14%, 58% 6%;
+            mask-position: 46% 26%, 10% 58%, 90% 54%, 42% 84%, 2% 10%, 90% 14%, 58% 6%;
+  }
+  100% {
+    -webkit-mask-size: 92% 66%, 70% 54%, 68% 52%, 56% 42%, 50% 36%, 44% 32%, 38% 28%;
+            mask-size: 92% 66%, 70% 54%, 68% 52%, 56% 42%, 50% 36%, 44% 32%, 38% 28%;
+    -webkit-mask-position: 50% 28%, 4% 56%, 92% 58%, 40% 86%, 0% 14%, 96% 10%, 60% 4%;
+            mask-position: 50% 28%, 4% 56%, 92% 58%, 40% 86%, 0% 14%, 96% 10%, 60% 4%;
   }
 }
 #title-chara {
@@ -297,6 +366,46 @@ body {
   /* サイズ・位置はJSがbboxから算出。Ken Burnsでゆっくり寄る */
   animation: ken-burns 18s ease-in-out infinite alternate;
   transform-origin: 50% 35%;
+}
+
+/* キャラの前を立ちのぼる白煙のすじ。窓全体に煙の流れを生む */
+.chara-smoke {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(28px);
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+.cs-1 {
+  width: 38%; height: 60%;
+  left: 8%; bottom: -20%;
+  background: radial-gradient(circle, rgba(240,240,250,0.55), transparent 65%);
+  animation: smoke-rise 9s ease-in 0.5s infinite;
+}
+.cs-2 {
+  width: 30%; height: 55%;
+  left: 42%; bottom: -25%;
+  background: radial-gradient(circle, rgba(220,225,245,0.5), transparent 65%);
+  animation: smoke-rise 11s ease-in 2.2s infinite;
+}
+.cs-3 {
+  width: 34%; height: 58%;
+  left: 64%; bottom: -22%;
+  background: radial-gradient(circle, rgba(235,235,250,0.5), transparent 65%);
+  animation: smoke-rise 13s ease-in 1.0s infinite;
+}
+.cs-4 {
+  width: 26%; height: 48%;
+  left: 28%; bottom: -18%;
+  background: radial-gradient(circle, rgba(225,230,250,0.45), transparent 65%);
+  animation: smoke-rise 10s ease-in 3.5s infinite;
+}
+@keyframes smoke-rise {
+  0%   { transform: translate(0, 0) scale(0.6); opacity: 0; }
+  20%  { opacity: 0.85; }
+  60%  { transform: translate(-3%, -70%) scale(1.4); opacity: 0.55; }
+  100% { transform: translate(2%, -130%) scale(1.9); opacity: 0; }
 }
 @keyframes chara-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes ken-burns {
@@ -318,9 +427,9 @@ body {
   gap: 8px;
 }
 #title-logo-img {
-  width: 560px;
-  max-width: 46vw;
-  margin-left: -28px; /* ロゴ画像の余白ぶん左に寄せて文字位置を揃える */
+  width: 720px;
+  max-width: 95%;
+  margin-left: -36px; /* ロゴ画像の余白ぶん左に寄せて文字位置を揃える */
   filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.7));
   opacity: 0;
   animation: title-rise-logo 1.3s ease-out 0.55s forwards;
@@ -374,23 +483,24 @@ body {
 .title-menu {
   position: absolute;
   left: 6%;
-  bottom: 11%;
+  bottom: 8%;
   display: flex; flex-direction: column;
-  gap: 2px;
-  width: 340px;
+  gap: 4px;
+  width: 420px;
+  max-width: 46vw;
 }
 .title-menu-item {
   position: relative;
   display: flex;
   align-items: baseline;
-  gap: 18px;
-  padding: 11px 18px 11px 22px;
+  gap: 22px;
+  padding: 14px 22px 14px 26px;
   background: transparent;
   border: none;
   color: var(--text);
   font-family: "Times New Roman", "Hiragino Mincho ProN", serif;
-  font-size: 22px;
-  letter-spacing: 0.18em;
+  font-size: 28px;
+  letter-spacing: 0.20em;
   cursor: pointer;
   text-align: left;
   opacity: 0;
@@ -412,7 +522,7 @@ body {
   background: var(--accent);
   transition: transform 0.18s;
 }
-.title-menu-item .ja { font-size: 13px; color: var(--text-dim); letter-spacing: 0.2em; font-family: inherit; }
+.title-menu-item .ja { font-size: 15px; color: var(--text-dim); letter-spacing: 0.22em; font-family: inherit; }
 .title-menu-item:hover:not(:disabled), .title-menu-item.focus {
   color: #1a1018;
   padding-left: 30px;
@@ -421,6 +531,36 @@ body {
 .title-menu-item:hover:not(:disabled)::before, .title-menu-item.focus::before { transform: translateY(-50%) scaleY(1); }
 .title-menu-item:hover:not(:disabled) .ja, .title-menu-item.focus .ja { color: rgba(26,16,24,0.7); }
 .title-menu-item:active:not(:disabled) { transform: translateX(2px); }
+
+/* メニュー選択時の演出: 画面全体が煙に包まれてホワイトアウト */
+#smoke-veil {
+  position: absolute; inset: 0;
+  z-index: 95;
+  pointer-events: none;
+  opacity: 0;
+}
+#smoke-veil.engulf { animation: engulf 1.4s ease-out forwards; }
+#smoke-veil .puff {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,245,255,0.95) 0%, rgba(220,225,245,0.6) 40%, transparent 75%);
+  filter: blur(20px);
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: puff-engulf 1.4s ease-out forwards;
+}
+@keyframes engulf {
+  0%   { opacity: 0; backdrop-filter: blur(0); }
+  35%  { opacity: 1; backdrop-filter: blur(8px); }
+  85%  { opacity: 1; backdrop-filter: blur(14px); }
+  100% { opacity: 0; backdrop-filter: blur(0); }
+}
+@keyframes puff-engulf {
+  0%   { opacity: 0; transform: translate(0, 30vh) scale(0.4); }
+  30%  { opacity: 1; }
+  65%  { opacity: 0.95; transform: translate(var(--dx, 0), -10vh) scale(1.8); }
+  100% { opacity: 0; transform: translate(var(--dx, 0), -30vh) scale(2.6); }
+}
 .title-menu-item:disabled { cursor: default; animation-name: menu-in-dim; }
 .title-menu-item:disabled:hover { color: var(--text); background: transparent; padding-left: 22px; }
 @keyframes menu-in-dim { from { opacity: 0; transform: translateX(-22px); } to { opacity: 0.3; transform: none; } }
@@ -1258,6 +1398,11 @@ body {
     <div class="title-smoke ts-1"></div>
     <div class="title-smoke ts-2"></div>
     <div class="title-smoke ts-3"></div>
+    <div class="title-smoke ts-4"></div>
+    <div class="title-wisps">
+      <span class="tw w1"></span><span class="tw w2"></span><span class="tw w3"></span>
+      <span class="tw w4"></span><span class="tw w5"></span><span class="tw w6"></span>
+    </div>
     <div id="title-nebula">
       <span class="neb n1"></span>
       <span class="neb n2"></span>
@@ -1268,10 +1413,13 @@ body {
     </div>
     <div id="title-chara-window">
       <img id="title-chara" alt="" draggable="false">
+      <div class="chara-smoke cs-1"></div>
+      <div class="chara-smoke cs-2"></div>
+      <div class="chara-smoke cs-3"></div>
+      <div class="chara-smoke cs-4"></div>
     </div>
     <div class="title-inner">
       <div class="title-logo-wrap">
-        <p class="title-sub-text">SHISHA ADVENTURE — CHAPTER 01</p>
         <img id="title-logo-img" alt="水煙前線 -EN:CODE-" draggable="false">
         <h1 class="title-logo hidden">水煙前線</h1>
         <p class="title-en hidden">— EN : CODE —</p>
@@ -1384,6 +1532,7 @@ body {
   </div>
 
   <div id="day-card"><div class="day-big"></div><div class="day-sub"></div></div>
+  <div id="smoke-veil"></div>
   <div id="toasts"></div>
 </div>
 
@@ -1396,7 +1545,7 @@ window.GAME_DATA = {"dialogues":{"ch1_opening":{"dialogue_id":"ch1_opening","lin
 </script>
 <script>
 // 効果音(WebAudio合成) + BGM 管理。
-// 効果音はファイル不要で全てその場で合成する。
+// 効果音はファイル不要で全てその場で合成する（マスターにリバーブを通す）。
 // BGMは window.BGM_DATA (スタンドアロン版) か ../assets/audio/bgm/ から再生。
 "use strict";
 
@@ -1405,78 +1554,271 @@ const SFX = (() => {
   let muted = false;
   let bgmEl = null;
   let currentBgm = "";
+  let masterDry = null;
+  let masterWet = null;
+  let reverb = null;
+  let masterLP = null;
+  let masterOut = null;
 
   function ac() {
-    if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+    if (!ctx) {
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      // ---- マスターチェイン: ドライ + リバーブ(ConvolverNode) ----
+      masterOut = ctx.createGain();
+      masterOut.gain.value = 1.0;
+      masterLP = ctx.createBiquadFilter();
+      masterLP.type = "lowpass";
+      masterLP.frequency.value = 12000;
+      masterLP.Q.value = 0.4;
+      masterOut.connect(masterLP).connect(ctx.destination);
+
+      masterDry = ctx.createGain();
+      masterDry.gain.value = 1.0;
+      masterDry.connect(masterOut);
+
+      reverb = ctx.createConvolver();
+      reverb.buffer = makeImpulse(ctx, 2.2, 2.6);
+      masterWet = ctx.createGain();
+      masterWet.gain.value = 0.18;
+      masterDry.connect(reverb).connect(masterWet).connect(masterOut);
+    }
     if (ctx.state === "suspended") ctx.resume();
     return ctx;
   }
 
-  function env(gainNode, t0, attack, decay, peak) {
-    const g = gainNode.gain;
-    g.setValueAtTime(0.0001, t0);
-    g.exponentialRampToValueAtTime(peak, t0 + attack);
-    g.exponentialRampToValueAtTime(0.0001, t0 + attack + decay);
+  // 指数減衰のリバーブインパルスを合成
+  function makeImpulse(c, seconds, decay) {
+    const rate = c.sampleRate;
+    const len = Math.floor(rate * seconds);
+    const buf = c.createBuffer(2, len, rate);
+    for (let ch = 0; ch < 2; ch++) {
+      const d = buf.getChannelData(ch);
+      for (let i = 0; i < len; i++) {
+        d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
+      }
+    }
+    return buf;
   }
 
-  function tone(freq, type, attack, decay, peak, detune = 0, when = 0) {
+  // ---- ヘルパー ----
+  function envADR(g, t0, a, d, r, peak) {
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(peak, t0 + a);
+    g.gain.exponentialRampToValueAtTime(peak * 0.35, t0 + a + d);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + a + d + r);
+  }
+
+  // 単音（オシレータ + ローパス + リバーブ送り量）
+  function blip(opts) {
     if (muted) return;
+    const {
+      freq = 440, type = "sine", detune = 0, when = 0,
+      a = 0.005, d = 0.06, r = 0.05, peak = 0.18,
+      filterFreq = 6000, q = 1,
+      wet = 0.25, pan = 0, slide = null,
+    } = opts;
     try {
       const c = ac();
       const t0 = c.currentTime + when;
       const o = c.createOscillator();
-      const g = c.createGain();
       o.type = type;
       o.frequency.value = freq;
       o.detune.value = detune;
-      env(g, t0, attack, decay, peak);
-      o.connect(g).connect(c.destination);
+      if (slide) {
+        o.frequency.setValueAtTime(slide[0], t0);
+        o.frequency.exponentialRampToValueAtTime(slide[1], t0 + (slide[2] || a + d));
+      }
+      const f = c.createBiquadFilter();
+      f.type = "lowpass";
+      f.frequency.value = filterFreq;
+      f.Q.value = q;
+      const g = c.createGain();
+      envADR(g, t0, a, d, r, peak);
+      const stereoPan = c.createStereoPanner ? c.createStereoPanner() : null;
+      if (stereoPan) stereoPan.pan.value = pan;
+      const send = c.createGain();
+      send.gain.value = wet;
+      o.connect(f).connect(g);
+      if (stereoPan) {
+        g.connect(stereoPan);
+        stereoPan.connect(masterDry);
+        stereoPan.connect(send).connect(reverb);
+      } else {
+        g.connect(masterDry);
+        g.connect(send).connect(reverb);
+      }
       o.start(t0);
-      o.stop(t0 + attack + decay + 0.05);
-    } catch (e) { /* 音は出なくてもゲームは止めない */ }
+      o.stop(t0 + a + d + r + 0.05);
+    } catch (e) { /* noop */ }
   }
 
-  function noise(duration, peak, filterFreq, when = 0) {
+  // ノイズ（フィルタ付き）
+  function hiss(opts) {
     if (muted) return;
+    const {
+      dur = 0.2, when = 0,
+      a = 0.005, peak = 0.12,
+      filterType = "bandpass", filterFreq = 2000, q = 1,
+      pan = 0, wet = 0.2, sweep = null,
+    } = opts;
     try {
       const c = ac();
       const t0 = c.currentTime + when;
-      const len = Math.max(1, Math.floor(c.sampleRate * duration));
+      const len = Math.max(1, Math.floor(c.sampleRate * dur));
       const buf = c.createBuffer(1, len, c.sampleRate);
       const d = buf.getChannelData(0);
-      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / len);
+      // ピンクっぽいノイズ（隣接サンプルを平均化して高域を抑える）
+      let last = 0;
+      for (let i = 0; i < len; i++) {
+        const w = Math.random() * 2 - 1;
+        last = (last * 0.6 + w * 0.4);
+        d[i] = last * (1 - i / len);
+      }
       const src = c.createBufferSource();
       src.buffer = buf;
       const f = c.createBiquadFilter();
-      f.type = "bandpass";
+      f.type = filterType;
       f.frequency.value = filterFreq;
+      f.Q.value = q;
+      if (sweep) {
+        f.frequency.setValueAtTime(sweep[0], t0);
+        f.frequency.exponentialRampToValueAtTime(sweep[1], t0 + (sweep[2] || dur));
+      }
       const g = c.createGain();
-      g.gain.value = peak;
-      src.connect(f).connect(g).connect(c.destination);
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(peak, t0 + a);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      const stereoPan = c.createStereoPanner ? c.createStereoPanner() : null;
+      if (stereoPan) stereoPan.pan.value = pan;
+      const send = c.createGain();
+      send.gain.value = wet;
+      src.connect(f).connect(g);
+      if (stereoPan) {
+        g.connect(stereoPan);
+        stereoPan.connect(masterDry);
+        stereoPan.connect(send).connect(reverb);
+      } else {
+        g.connect(masterDry);
+        g.connect(send).connect(reverb);
+      }
       src.start(t0);
     } catch (e) { /* noop */ }
   }
 
   const api = {
-    // UI
-    click: () => tone(720, "triangle", 0.004, 0.06, 0.12),
-    select: () => { tone(540, "sine", 0.005, 0.09, 0.16); tone(810, "sine", 0.005, 0.12, 0.12, 0, 0.05); },
-    type: () => tone(1900 + Math.random() * 500, "square", 0.001, 0.015, 0.018),
-    // 判定
-    perfect: () => { tone(880, "sine", 0.01, 0.18, 0.2); tone(1318, "sine", 0.01, 0.25, 0.18, 0, 0.09); tone(1760, "sine", 0.01, 0.3, 0.13, 0, 0.18); },
-    good: () => { tone(660, "sine", 0.01, 0.15, 0.18); tone(990, "sine", 0.01, 0.2, 0.13, 0, 0.08); },
-    miss: () => { tone(160, "sawtooth", 0.01, 0.25, 0.16); tone(110, "sawtooth", 0.01, 0.3, 0.13, 0, 0.06); },
-    // シーシャ
-    pour: () => noise(0.25, 0.12, 1200),
-    foil: () => noise(0.08, 0.2, 3200),
-    coal: () => { noise(0.3, 0.1, 500); tone(95, "sine", 0.02, 0.25, 0.1); },
-    bubble: () => { tone(240, "sine", 0.02, 0.1, 0.12); tone(180, "sine", 0.02, 0.12, 0.1, 0, 0.07); tone(300, "sine", 0.01, 0.08, 0.08, 0, 0.13); },
-    smoke: () => noise(0.6, 0.06, 800),
-    stamp: () => { noise(0.06, 0.3, 900); tone(220, "triangle", 0.005, 0.12, 0.2); },
-    fanfare: () => {
-      [523, 659, 784, 1047].forEach((f, i) => tone(f, "triangle", 0.01, 0.35, 0.18, 0, i * 0.13));
+    // ---------- UI ----------
+    click: () => {
+      // 上品な木のノックぽい二音
+      blip({ freq: 1200, type: "sine", a: 0.001, d: 0.04, r: 0.08, peak: 0.18, filterFreq: 3500, wet: 0.25 });
+      blip({ freq: 600, type: "triangle", a: 0.001, d: 0.05, r: 0.12, peak: 0.10, filterFreq: 1800, wet: 0.3, when: 0.005 });
     },
-    coin: () => { tone(988, "square", 0.004, 0.08, 0.08); tone(1319, "square", 0.004, 0.18, 0.08, 0, 0.07); },
+    select: () => {
+      // パッキパキした選択音: ベル系の倍音
+      blip({ freq: 660, type: "sine", a: 0.002, d: 0.10, r: 0.30, peak: 0.20, filterFreq: 6000, wet: 0.35 });
+      blip({ freq: 990, type: "sine", a: 0.002, d: 0.12, r: 0.32, peak: 0.14, filterFreq: 5000, wet: 0.35, when: 0.02 });
+      blip({ freq: 1320, type: "sine", a: 0.002, d: 0.14, r: 0.36, peak: 0.10, filterFreq: 5000, wet: 0.4, when: 0.04 });
+    },
+    type: () => {
+      // 軽いタイプ音（リバーブ送り少なめ）
+      blip({
+        freq: 1800 + Math.random() * 600, type: "square",
+        a: 0.001, d: 0.012, r: 0.02, peak: 0.05,
+        filterFreq: 3000, q: 1.5, wet: 0.05,
+      });
+    },
+    // ---------- 判定 ----------
+    perfect: () => {
+      // 上昇する3和音 + 高域のキラッ
+      [880, 1318, 1760].forEach((f, i) =>
+        blip({ freq: f, type: "sine", a: 0.005, d: 0.20, r: 0.35, peak: 0.20 - i * 0.03, filterFreq: 7000, wet: 0.45, when: i * 0.07 })
+      );
+      hiss({ dur: 0.35, a: 0.005, peak: 0.06, filterType: "highpass", filterFreq: 4000, wet: 0.5, when: 0.08 });
+    },
+    good: () => {
+      [660, 990].forEach((f, i) =>
+        blip({ freq: f, type: "sine", a: 0.004, d: 0.16, r: 0.25, peak: 0.18 - i * 0.04, filterFreq: 6000, wet: 0.4, when: i * 0.06 })
+      );
+    },
+    miss: () => {
+      // 重い下降音 + ノイズ
+      blip({ freq: 180, type: "sawtooth", a: 0.005, d: 0.30, r: 0.20, peak: 0.18, filterFreq: 800, wet: 0.4,
+             slide: [180, 90, 0.45] });
+      hiss({ dur: 0.40, a: 0.005, peak: 0.07, filterType: "lowpass", filterFreq: 600, wet: 0.5 });
+    },
+    // ---------- シーシャ ----------
+    pour: () => {
+      // フレーバーを注ぐ音: 粒っぽい高域ノイズ + わずかな低音
+      hiss({ dur: 0.35, a: 0.01, peak: 0.10, filterType: "bandpass", filterFreq: 1500, q: 1.2, wet: 0.2,
+             sweep: [2200, 900, 0.35] });
+      blip({ freq: 220, type: "triangle", a: 0.01, d: 0.10, r: 0.10, peak: 0.04, filterFreq: 1200, wet: 0.2 });
+    },
+    foil: () => {
+      // アルミ穴あけ: 鋭い金属ピン + 短いノイズ
+      hiss({ dur: 0.06, a: 0.001, peak: 0.18, filterType: "highpass", filterFreq: 4500, wet: 0.3 });
+      blip({ freq: 4200, type: "triangle", a: 0.001, d: 0.04, r: 0.08, peak: 0.12, filterFreq: 8000, wet: 0.45 });
+      blip({ freq: 5600, type: "sine", a: 0.001, d: 0.05, r: 0.10, peak: 0.06, filterFreq: 8000, wet: 0.5, when: 0.005 });
+    },
+    coal: () => {
+      // 炭の置く音: ドスッとした低音 + バチバチ
+      blip({ freq: 80, type: "sine", a: 0.005, d: 0.18, r: 0.15, peak: 0.22, filterFreq: 400, wet: 0.25,
+             slide: [120, 60, 0.20] });
+      hiss({ dur: 0.45, a: 0.01, peak: 0.08, filterType: "bandpass", filterFreq: 2400, q: 3, wet: 0.4,
+             sweep: [3000, 1500, 0.45] });
+    },
+    bubble: () => {
+      // 水の中の泡: ピッチが上がる丸い音 × 3
+      [220, 280, 340].forEach((f, i) =>
+        blip({ freq: f, type: "sine", a: 0.005, d: 0.10, r: 0.12, peak: 0.13 - i * 0.02,
+               filterFreq: 2000, wet: 0.45, when: i * 0.06,
+               slide: [f * 0.7, f, 0.10] })
+      );
+    },
+    smoke: () => {
+      // 煙を吸い込む長めの空気音
+      hiss({ dur: 0.7, a: 0.05, peak: 0.06, filterType: "bandpass", filterFreq: 900, q: 1.5, wet: 0.5,
+             sweep: [600, 1400, 0.7] });
+    },
+    stamp: () => {
+      // スタンプの「ドンッ」: 木のヒット + 短いノイズ
+      blip({ freq: 160, type: "triangle", a: 0.002, d: 0.10, r: 0.20, peak: 0.28, filterFreq: 1200, wet: 0.4 });
+      hiss({ dur: 0.10, a: 0.002, peak: 0.18, filterType: "bandpass", filterFreq: 1800, q: 2, wet: 0.4 });
+      blip({ freq: 60, type: "sine", a: 0.002, d: 0.12, r: 0.15, peak: 0.18, filterFreq: 300, wet: 0.25 });
+    },
+    fanfare: () => {
+      // 短いファンファーレ（軽くベル系）
+      const notes = [523, 659, 784, 1047, 1319];
+      notes.forEach((f, i) =>
+        blip({ freq: f, type: "triangle", a: 0.005, d: 0.20, r: 0.45, peak: 0.18,
+               filterFreq: 6500, wet: 0.55, when: i * 0.10 })
+      );
+      // 高域のキラキラ
+      [1568, 1976, 2349].forEach((f, i) =>
+        blip({ freq: f, type: "sine", a: 0.005, d: 0.30, r: 0.50, peak: 0.10,
+               filterFreq: 8000, wet: 0.7, when: 0.55 + i * 0.07 })
+      );
+    },
+    coin: () => {
+      // コインのチャリン
+      blip({ freq: 988, type: "square", a: 0.001, d: 0.06, r: 0.12, peak: 0.10, filterFreq: 5000, wet: 0.4 });
+      blip({ freq: 1319, type: "square", a: 0.001, d: 0.10, r: 0.16, peak: 0.10, filterFreq: 5000, wet: 0.4, when: 0.06 });
+      blip({ freq: 1976, type: "sine", a: 0.001, d: 0.14, r: 0.22, peak: 0.06, filterFreq: 6000, wet: 0.6, when: 0.10 });
+    },
+    // ---------- 新規 ----------
+    open: () => {
+      // 画面遷移などで使えるソフトな開閉音（マップを開く時など）
+      blip({ freq: 220, type: "sine", a: 0.01, d: 0.20, r: 0.30, peak: 0.16, filterFreq: 2200, wet: 0.5,
+             slide: [180, 320, 0.18] });
+      blip({ freq: 440, type: "sine", a: 0.01, d: 0.20, r: 0.32, peak: 0.10, filterFreq: 4000, wet: 0.6,
+             slide: [360, 640, 0.18], when: 0.03 });
+    },
+    close: () => {
+      blip({ freq: 360, type: "sine", a: 0.01, d: 0.18, r: 0.22, peak: 0.13, filterFreq: 2200, wet: 0.45,
+             slide: [400, 180, 0.20] });
+    },
+    pageTurn: () => {
+      hiss({ dur: 0.30, a: 0.01, peak: 0.07, filterType: "bandpass", filterFreq: 3000, q: 1.5, wet: 0.3,
+             sweep: [2800, 1600, 0.30] });
+    },
 
     setMuted(m) {
       muted = m;
@@ -1487,7 +1829,6 @@ const SFX = (() => {
     // BGM: key は "tonari" | "daily" など
     bgm(key) {
       if (key === currentBgm) {
-        // 自動再生ブロックで止まったままなら再試行（ユーザー操作後に呼び直す）
         if (bgmEl && bgmEl.paused) bgmEl.play().catch(() => {});
         return;
       }
@@ -2004,6 +2345,32 @@ function showStamp(container, result) {
   (container || $("#game")).appendChild(st);
   if (window.SFX) { SFX.stamp(); setTimeout(() => SFX[result] && SFX[result](), 120); }
   setTimeout(() => st.remove(), 950);
+}
+
+// メニュー選択時の「煙に包まれる」演出。煙の煤を画面下から立ちのぼらせて
+// シーン切替を覆い隠す。完了は then(onMid) で受け取り、煙のピーク中で実行する
+function engulfInSmoke(onMid) {
+  const veil = $("#smoke-veil");
+  veil.innerHTML = "";
+  // 12個の煙パフを下からランダムに散らす
+  for (let i = 0; i < 12; i++) {
+    const p = document.createElement("div");
+    p.className = "puff";
+    const size = 280 + Math.random() * 380;
+    p.style.width = p.style.height = `${size}px`;
+    p.style.left = `${i * 8 + Math.random() * 14 - 8}%`;
+    p.style.bottom = `${-30 - Math.random() * 18}%`;
+    p.style.setProperty("--dx", `${(Math.random() - 0.5) * 16}vw`);
+    p.style.animationDelay = `${i * 0.03 + Math.random() * 0.1}s`;
+    veil.appendChild(p);
+  }
+  veil.classList.remove("engulf");
+  void veil.offsetWidth;
+  veil.classList.add("engulf");
+  if (window.SFX) SFX.smoke();
+  // ピーク（白く包まれた瞬間）で onMid を発火
+  if (onMid) setTimeout(onMid, 520);
+  setTimeout(() => veil.classList.remove("engulf"), 1450);
 }
 
 // 日替わりカード（演出のみ・操作は止めない）
@@ -3450,9 +3817,12 @@ function init() {
   window.addEventListener("keydown", startTitleBgm, { once: true });
   const saved = loadSave();
   $("#btn-new").addEventListener("click", () => {
-    localStorage.removeItem(SAVE_KEY);
-    if (window.SFX) { SFX.select(); SFX.bgm("tonari"); }
-    startNewGame();
+    if (window.SFX) SFX.select();
+    engulfInSmoke(() => {
+      localStorage.removeItem(SAVE_KEY);
+      if (window.SFX) SFX.bgm("tonari");
+      startNewGame();
+    });
   });
   $("#btn-mute").addEventListener("click", () => {
     const m = !SFX.isMuted();
@@ -3464,7 +3834,13 @@ function init() {
   const contBtn = $("#btn-continue");
   if (saved && saved.phase !== "opening") {
     contBtn.classList.remove("hidden");
-    contBtn.addEventListener("click", () => { if (window.SFX) { SFX.select(); SFX.bgm("daily_part"); } continueGame(saved); });
+    contBtn.addEventListener("click", () => {
+      if (window.SFX) SFX.select();
+      engulfInSmoke(() => {
+        if (window.SFX) SFX.bgm("daily_part");
+        continueGame(saved);
+      });
+    });
   }
   $("#btn-status").addEventListener("click", () => toggleStatus(true));
   $("#status-close").addEventListener("click", () => toggleStatus(false));

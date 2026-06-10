@@ -195,6 +195,32 @@ function showStamp(container, result) {
   setTimeout(() => st.remove(), 950);
 }
 
+// メニュー選択時の「煙に包まれる」演出。煙の煤を画面下から立ちのぼらせて
+// シーン切替を覆い隠す。完了は then(onMid) で受け取り、煙のピーク中で実行する
+function engulfInSmoke(onMid) {
+  const veil = $("#smoke-veil");
+  veil.innerHTML = "";
+  // 12個の煙パフを下からランダムに散らす
+  for (let i = 0; i < 12; i++) {
+    const p = document.createElement("div");
+    p.className = "puff";
+    const size = 280 + Math.random() * 380;
+    p.style.width = p.style.height = `${size}px`;
+    p.style.left = `${i * 8 + Math.random() * 14 - 8}%`;
+    p.style.bottom = `${-30 - Math.random() * 18}%`;
+    p.style.setProperty("--dx", `${(Math.random() - 0.5) * 16}vw`);
+    p.style.animationDelay = `${i * 0.03 + Math.random() * 0.1}s`;
+    veil.appendChild(p);
+  }
+  veil.classList.remove("engulf");
+  void veil.offsetWidth;
+  veil.classList.add("engulf");
+  if (window.SFX) SFX.smoke();
+  // ピーク（白く包まれた瞬間）で onMid を発火
+  if (onMid) setTimeout(onMid, 520);
+  setTimeout(() => veil.classList.remove("engulf"), 1450);
+}
+
 // 日替わりカード（演出のみ・操作は止めない）
 function showDayCard(big, sub) {
   const card = $("#day-card");
@@ -1639,9 +1665,12 @@ function init() {
   window.addEventListener("keydown", startTitleBgm, { once: true });
   const saved = loadSave();
   $("#btn-new").addEventListener("click", () => {
-    localStorage.removeItem(SAVE_KEY);
-    if (window.SFX) { SFX.select(); SFX.bgm("tonari"); }
-    startNewGame();
+    if (window.SFX) SFX.select();
+    engulfInSmoke(() => {
+      localStorage.removeItem(SAVE_KEY);
+      if (window.SFX) SFX.bgm("tonari");
+      startNewGame();
+    });
   });
   $("#btn-mute").addEventListener("click", () => {
     const m = !SFX.isMuted();
@@ -1653,7 +1682,13 @@ function init() {
   const contBtn = $("#btn-continue");
   if (saved && saved.phase !== "opening") {
     contBtn.classList.remove("hidden");
-    contBtn.addEventListener("click", () => { if (window.SFX) { SFX.select(); SFX.bgm("daily_part"); } continueGame(saved); });
+    contBtn.addEventListener("click", () => {
+      if (window.SFX) SFX.select();
+      engulfInSmoke(() => {
+        if (window.SFX) SFX.bgm("daily_part");
+        continueGame(saved);
+      });
+    });
   }
   $("#btn-status").addEventListener("click", () => toggleStatus(true));
   $("#status-close").addEventListener("click", () => toggleStatus(false));

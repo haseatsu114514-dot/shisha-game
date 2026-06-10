@@ -95,45 +95,140 @@ def _smooth_profile(points, steps=8):
 
 
 def hookah_silhouette(layer, cx, base_y, scale, color=(52, 50, 64), alpha=255):
-    """水パイプのシルエット。半輪郭をスプライン補間して左右対称に描く"""
+    """ハリル・マムーン風の水パイプのシルエットを合成図形で描く。
+    cx: 中心 X、base_y: 底面 Y、scale: パイプ全体の高さ目安
+    高さは scale 単位で約 1.40 ぶん上に伸びる"""
     d = ImageDraw.Draw(layer)
     s = scale
-    col = color + (alpha,)
-    top = base_y - 2.0 * s
-    # (半幅x/s, 上からのy/s): ボウル → くびれ → ステム → ベース → 脚
-    profile = [
-        (0.090, 0.00),   # ボウルのリム
-        (0.115, 0.04),   # リムの張り出し
-        (0.095, 0.12),   # ボウルの膨らみ
-        (0.052, 0.22),   # ボウル下のくびれ
-        (0.040, 0.27),
-        (0.028, 0.34),   # ステム上部
-        (0.024, 0.55),   # ステム（細く長く）
-        (0.026, 0.80),
-        (0.034, 0.95),   # ステム下部の広がり
-        (0.060, 1.18),   # ベースの首
-        (0.150, 1.38),   # ベースの肩
-        (0.215, 1.58),   # ベース最大径
-        (0.205, 1.74),
-        (0.150, 1.88),   # ベースのすぼまり
-        (0.110, 1.95),
-        (0.130, 2.00),   # 脚の小さな広がり
+    col = col_alpha = color + (alpha,)
+    # 各パーツの中心 Y（base_y からの相対オフセット）
+    # 配置: 底から、フラスコ → 真鍮ボディ → 首 → 皿 → クレイボウル
+    foot_cy = base_y - 0.02 * s
+    flask_cy = base_y - 0.20 * s
+    flask_top = base_y - 0.46 * s
+    brass_lower_cy = base_y - 0.58 * s
+    brass_mid_cy = base_y - 0.72 * s
+    brass_upper_cy = base_y - 0.86 * s
+    stem_top = base_y - 1.10 * s
+    saucer_cy = base_y - 1.14 * s
+    bowl_neck_y = base_y - 1.18 * s
+    bowl_cy = base_y - 1.28 * s
+    bowl_top = base_y - 1.36 * s
+
+    # ガラスフラスコ（底）
+    d.ellipse(
+        [cx - 0.24 * s, base_y - 0.40 * s, cx + 0.24 * s, base_y + 0.02 * s],
+        fill=col_alpha,
+    )
+    # フラスコの首（細く立ち上がる）
+    d.polygon([
+        (cx - 0.07 * s, flask_top + 0.02 * s),
+        (cx + 0.07 * s, flask_top + 0.02 * s),
+        (cx + 0.18 * s, base_y - 0.30 * s),
+        (cx - 0.18 * s, base_y - 0.30 * s),
+    ], fill=col_alpha)
+    # 台座リム
+    d.ellipse(
+        [cx - 0.13 * s, foot_cy - 0.018 * s, cx + 0.13 * s, foot_cy + 0.018 * s],
+        fill=col_alpha,
+    )
+
+    # 中段の真鍮ボディ（3つの楕円で「壺型」を作る）
+    d.ellipse(
+        [cx - 0.105 * s, brass_lower_cy - 0.06 * s, cx + 0.105 * s, brass_lower_cy + 0.10 * s],
+        fill=col_alpha,
+    )
+    d.ellipse(
+        [cx - 0.118 * s, brass_mid_cy - 0.07 * s, cx + 0.118 * s, brass_mid_cy + 0.08 * s],
+        fill=col_alpha,
+    )
+    d.ellipse(
+        [cx - 0.090 * s, brass_upper_cy - 0.08 * s, cx + 0.090 * s, brass_upper_cy + 0.07 * s],
+        fill=col_alpha,
+    )
+    # ボディ上下のスプール（飾りリング）
+    for y_off in (0.96, 0.88, 0.80, 0.50, 0.42):
+        ry = base_y - y_off * s
+        d.ellipse(
+            [cx - 0.060 * s, ry - 0.015 * s, cx + 0.060 * s, ry + 0.015 * s],
+            fill=col_alpha,
+        )
+        # 飾りの上下の細いリング
+        d.ellipse(
+            [cx - 0.046 * s, ry - 0.022 * s, cx + 0.046 * s, ry - 0.005 * s],
+            fill=col_alpha,
+        )
+    # 細い首（皿の下まで）
+    d.polygon([
+        (cx - 0.028 * s, brass_upper_cy - 0.08 * s),
+        (cx + 0.028 * s, brass_upper_cy - 0.08 * s),
+        (cx + 0.034 * s, stem_top + 0.04 * s),
+        (cx - 0.034 * s, stem_top + 0.04 * s),
+    ], fill=col_alpha)
+
+    # 真鍮の皿（saucer / ash plate）── 横に大きく広がる
+    d.ellipse(
+        [cx - 0.30 * s, saucer_cy - 0.022 * s, cx + 0.30 * s, saucer_cy + 0.022 * s],
+        fill=col_alpha,
+    )
+    # 皿の縁（上面）
+    d.ellipse(
+        [cx - 0.30 * s, saucer_cy - 0.030 * s, cx + 0.30 * s, saucer_cy - 0.005 * s],
+        fill=col_alpha,
+    )
+    # 皿〜ボウルの短い首
+    d.polygon([
+        (cx - 0.040 * s, saucer_cy - 0.022 * s),
+        (cx + 0.040 * s, saucer_cy - 0.022 * s),
+        (cx + 0.046 * s, bowl_neck_y),
+        (cx - 0.046 * s, bowl_neck_y),
+    ], fill=col_alpha)
+
+    # クレイボウル（壺型）
+    d.ellipse(
+        [cx - 0.115 * s, bowl_cy - 0.07 * s, cx + 0.115 * s, bowl_cy + 0.07 * s],
+        fill=col_alpha,
+    )
+    # ボウル口（上のリム）
+    d.ellipse(
+        [cx - 0.082 * s, bowl_top - 0.018 * s, cx + 0.082 * s, bowl_top + 0.014 * s],
+        fill=col_alpha,
+    )
+    # ボウル下のすぼまり
+    d.polygon([
+        (cx - 0.082 * s, bowl_cy + 0.04 * s),
+        (cx + 0.082 * s, bowl_cy + 0.04 * s),
+        (cx + 0.046 * s, bowl_neck_y),
+        (cx - 0.046 * s, bowl_neck_y),
+    ], fill=col_alpha)
+
+    # 上に炭（クレイボウルの上に小さく）
+    coal_cy = bowl_top - 0.028 * s
+    d.ellipse(
+        [cx - 0.060 * s, coal_cy - 0.014 * s, cx + 0.060 * s, coal_cy + 0.014 * s],
+        fill=(38, 36, 46, alpha),
+    )
+
+    # ホース（左の真鍮ボディから出て下にゆるく垂れる）
+    hose_pts = [
+        (cx - 0.118 * s, brass_mid_cy + 0.02 * s),
+        (cx - 0.22 * s, brass_mid_cy + 0.18 * s),
+        (cx - 0.33 * s, base_y - 0.40 * s),
+        (cx - 0.40 * s, base_y - 0.20 * s),
+        (cx - 0.42 * s, base_y - 0.05 * s),
     ]
-    right = [(cx + x * s, top + y * s) for x, y in _smooth_profile(profile)]
-    left = [(cx - x * s, top + y * s) for x, y in _smooth_profile(profile)]
-    d.polygon(right + left[::-1], fill=col)
-    # 皿（ボウル下の薄いディスク）
-    tray_y = top + 0.255 * s
-    d.ellipse([cx - 0.165 * s, tray_y - 0.020 * s, cx + 0.165 * s, tray_y + 0.020 * s], fill=col)
-    # ステム中央の飾りリング
-    ring_y = top + 0.62 * s
-    d.ellipse([cx - 0.045 * s, ring_y - 0.016 * s, cx + 0.045 * s, ring_y + 0.016 * s], fill=col)
-    # ベースのハイライト（左肩にわずかな抜き）
-    hl = Image.new("L", layer.size, 0)
-    hd = ImageDraw.Draw(hl)
-    hd.ellipse([cx - 0.16 * s, top + 1.42 * s, cx - 0.05 * s, top + 1.72 * s], fill=40)
-    hl = hl.filter(ImageFilter.GaussianBlur(int(0.03 * s)))
-    layer.putalpha(ImageChops.subtract(layer.getchannel("A"), hl))
+    smooth_hose = _smooth_profile(hose_pts, steps=14)
+    hose_w = int(0.024 * s)
+    for i in range(len(smooth_hose) - 1):
+        x0, y0 = smooth_hose[i]
+        x1, y1 = smooth_hose[i + 1]
+        d.line([x0, y0, x1, y1], fill=col_alpha, width=hose_w)
+    # ホースの吹き口
+    tip = smooth_hose[-1]
+    d.ellipse(
+        [tip[0] - 0.050 * s, tip[1] - 0.020 * s, tip[0] + 0.010 * s, tip[1] + 0.020 * s],
+        fill=col_alpha,
+    )
 
 
 def radial_arcs(layer, cx, cy, *, r0, n, color=(120, 118, 132), alpha=26):
@@ -156,9 +251,9 @@ def main() -> None:
 
     # ---- 1. 背景の幾何ライン + 水パイプのシルエット ----
     back = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    radial_arcs(back, W * 0.5, H * 0.28, r0=W * 0.22, n=4)
-    hookah_silhouette(back, W * 0.5, H * 0.94, H * 0.40, color=(50, 48, 62), alpha=255)
-    back = back.filter(ImageFilter.GaussianBlur(3))
+    radial_arcs(back, W * 0.5, H * 0.18, r0=W * 0.22, n=4)
+    hookah_silhouette(back, W * 0.5, H * 0.98, H * 0.78, color=(60, 58, 76), alpha=255)
+    back = back.filter(ImageFilter.GaussianBlur(2))
     img = Image.alpha_composite(img, back)
 
     # ---- 2. 上部の渦巻く墨煙（左に大きく、右にもう一つ） ----
