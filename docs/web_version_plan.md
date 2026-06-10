@@ -52,12 +52,33 @@
 
 ## 公開URL（プレイ・確認用）
 
-- **安定版（main マージ後に自動更新）**: https://haseatsu114514-dot.github.io/shisha-game/
-  - `.github/workflows/deploy-pages.yml` が main の `web/dist/` を GitHub Pages へ配備
-  - 初回のみ: リポジトリ Settings → Pages → Source を「GitHub Actions」にする（workflow が自動有効化を試みる）
-- **開発中ブランチの最新（push 直後に反映）**:
+- **開発中ブランチの最新（push 直後に反映・動作確認済み）**:
   `https://raw.githack.com/haseatsu114514-dot/shisha-game/<ブランチ名>/web/dist/shisha_ch1.html`
+  - 初回アクセス時に raw.githack の確認ページが出る →「Open the page」を1タップ
+- **安定版（未開通）**: https://haseatsu114514-dot.github.io/shisha-game/
+  - `.github/workflows/deploy-pages.yml` が `web/dist/` を GitHub Pages へ配備
+    （main と claude/** ブランチの push がトリガー）
+  - ⚠️ **ユーザーの作業待ち**: Settings → Pages → Source を「GitHub Actions」に
+    する必要がある（workflowのトークンでは初回有効化が403で失敗する。
+    実行ログで確認済み）。有効化後に再push（空コミットでよい）すれば公開される
+- jsDelivr / statically.io は HTML を text/plain で返すため使えない（検証済み）
 - スマホは横向き推奨（縦だと回転ヒントが出る）。PC/スマホどちらも同じURLでOK
+
+## 引き継ぎメモ（2026-06-10 時点の最新状態）
+
+- 開発ブランチ: `claude/hopeful-ride-5rg3zg`（mainに未マージ。続きはここから）
+- **タイトルロゴ**: ユーザー製ロゴ画像（黒地・墨筆風「水煙前線」）はチャット内
+  画像のためファイル未着。暫定で `tools/make_title_logo.py` による生成ロゴを
+  `assets/ui/ui_title_logo.png` に配置済み。**ユーザーからロゴPNGがファイル添付で
+  届いたら同パスに上書き → `python3 web/build_data.py && python3 web/build_standalone.py`
+  で反映**（黒背景つきならクロマキー等で透過化してから）
+- **タイトルBGM**: `assets/audio/bgm/title.mp3`（ユーザー提供 Hookah Midnight Loop、
+  64kbps）。スタンドアロンには先頭1.2MB（約150秒）を埋め込み
+- **タイトルキャラ**: `TITLE_CHARA_POOL`（game.js）= tsumugi / sumi / packii から
+  ランダム。切り抜き素材が増えたらプールに追加する
+- **一人称視点**: はじめの立ち絵は出さない（engine.js `NO_PORTRAIT_SPEAKERS`）
+- **チュートリアル**: opening後に1回だけ（`state.flags._tutorial_done`）。
+  フローは game.js `TUTORIAL_FLOW` / ヒントは `TUTORIAL_TIPS`
 
 ## 2026-06-10 セッションで実装済み（後半）
 
@@ -90,14 +111,19 @@
 
 ## 次回セッションの修正タスク
 
-1. **背景込み立ち絵の本番素材** — 上記の bgfull リストのキャラ立ち絵を
-   切り抜き素材に差し替えれば、ハジメ・スミと同じ扱いで大きく出せる。
+1. **正式ロゴの差し替え** — ユーザーのロゴPNGがファイルで届き次第
+   `assets/ui/ui_title_logo.png` に上書き（上の引き継ぎメモ参照）
+2. **GitHub Pages 開通の確認** — ユーザーが Settings で有効化したら
+   空コミットpushでデプロイし、URLの200を確認する
+3. **背景込み立ち絵の本番素材** — bgfull リスト（naru/adam/minto/ageha/
+   mashiro/ryuji）を切り抜き素材に差し替えれば大きく出せる。
    `tools/pixelize.py` で透過・トリム・パレット統一が可能
-2. **マップピン座標の手調整** — `SPOT_LAYOUT` は仮配置。
+4. **マップピン座標の手調整** — `SPOT_LAYOUT` は仮配置。
    背景画像の建物に合わせて x/y を微調整したい
-3. **モックアップ追加対応** — ユーザーの追加モックがあれば `docs/mockups/` へ
-4. **LOG ウィンドウ** — `vn-log` ボタンは未実装（toast のみ）
-5. **CONFIG / GALLERY** — タイトルメニューのダミーをアクティブ化
+5. **LOG ウィンドウ** — `vn-log` ボタンは未実装（toast のみ）
+6. **CONFIG / GALLERY** — タイトルメニューのダミーをアクティブ化
+7. **タイトルBGMのループ調整** — スタンドアロン版は曲の途中でループが
+   先頭に戻る（1.2MB切り出しのため）。気になるならフェード処理を入れる
 
 ## 画像生成パイプライン（統一感を出す方法）
 

@@ -46,9 +46,11 @@ normal PR. Stop and fix the Git layout first.
 
 第1章はHTML/JS版が `web/` にあり、**ブラウザ版がメインの開発トラック**。
 ブラウザ版の作業前に必ず `docs/web_version_plan.md`
-（開発方針・ロードマップ・次回タスク）を読むこと。
-開発ブランチ: `claude/game-chapter-1-browser-945uwp`
+（開発方針・ロードマップ・次回タスク・引き継ぎ）を読むこと。
+開発ブランチ: `claude/hopeful-ride-5rg3zg`
 （mainに未マージの場合はチェックアウトして続きを行う）
+ゲームの正式タイトルは **「水煙前線 -EN:CODE-」**。
+本作は一人称視点で、主人公はじめの立ち絵は基本表示しない。
 
 ---
 
