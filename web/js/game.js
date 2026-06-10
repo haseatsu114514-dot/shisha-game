@@ -10,6 +10,9 @@ const VISIT_COST = 3000;
 // ---------------------------------------------------------------- state
 let state = null;
 
+// 初期所持機材（各タイプの基本品。上位機材はショップで買う）
+const STARTER_EQUIPMENT = ["silicone_bowl", "lotos_hagal", "flat_charcoal"];
+
 function newState() {
   return {
     day: 1,
@@ -20,6 +23,7 @@ function newState() {
     visits: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0 },
     usedBaito: [],
     gymMember: false,
+    owned: STARTER_EQUIPMENT.slice(),
     flags: {},
     phase: "opening", // opening | daily | tournament | cleared
   };
@@ -216,9 +220,9 @@ function engulfInSmoke(onMid) {
   void veil.offsetWidth;
   veil.classList.add("engulf");
   if (window.SFX) SFX.smoke();
-  // ピーク（白く包まれた瞬間）で onMid を発火
-  if (onMid) setTimeout(onMid, 520);
-  setTimeout(() => veil.classList.remove("engulf"), 1450);
+  // 白く包まれてからひと呼吸おいて onMid（晴れていく中で次の画面が現れる）
+  if (onMid) setTimeout(onMid, 1050);
+  setTimeout(() => veil.classList.remove("engulf"), 2650);
 }
 
 // 日替わりカード（演出のみ・操作は止めない）
@@ -379,6 +383,7 @@ const SPOTS = [
   { id: "kannon", label: "観音堂", desc: "アダムに教えてもらった静かな場所", cost: 0, requiresMet: "adam" },
   { id: "cafe", label: "カフェ", desc: "なるおすすめのスパイスラテ", cost: 800, requiresMet: "naru" },
   { id: "c_station", label: "C.STATION", desc: "大会会場の下見に行く", cost: 0 },
+  { id: "shop", label: "機材ショップ", desc: "ボウル・HMS・炭を買い足す（時間はかからない）", cost: 0 },
   { id: "rest", label: "家で休む", desc: "しっかり寝て明日に備える", cost: 0 },
 ];
 
@@ -409,7 +414,7 @@ const REPEAT_VISIT = {
 const SPOT_ICONS = {
   baito: "労", practice: "練", sumi: "師", tsumugi: "紬",
   naru: "鳴", adam: "亜", minto: "緑", choizap: "筋",
-  kannon: "観", cafe: "珈", c_station: "C", rest: "休",
+  kannon: "観", cafe: "珈", c_station: "C", shop: "店", rest: "休",
 };
 
 // マップ上のピン位置（%）と短いラベル名
@@ -425,6 +430,7 @@ const SPOT_LAYOUT = {
   kannon:    { x: 78, y: 56, theme: "park",    short: "観音堂",     area: "古町" },
   cafe:      { x: 64, y: 64, theme: "cafe",    short: "カフェ",     area: "繁華街" },
   c_station: { x: 84, y: 36, theme: "stadium", short: "C.STATION",  area: "会場" },
+  shop:      { x: 36, y: 40, theme: "shop",    short: "ショップ",   area: "問屋街" },
   rest:      { x: 88, y: 76, theme: "rest",    short: "家",         area: "自宅" },
 };
 
@@ -504,6 +510,7 @@ function selectSpot(spot) {
     case "kannon": return doSpotDialogue("kannon", "ch1_kannon_visit", "bg_street_day.png");
     case "cafe": return doSpotDialogue("cafe", "ch1_cafe_visit", "bg_street_day.png");
     case "c_station": return doSpotDialogue("c_station", "ch1_c_station_visit", "bg_shop.png");
+    case "shop": return showShop();
     case "rest": return doRest();
     default: return doVisit(spot.id);
   }
@@ -579,16 +586,21 @@ function doBaito() {
   });
   lines.push({ type: "choice", id: ev.id, choices });
 
-  // バイト後の自主練の打診
+  // バイト後: オーダーチャレンジ（1台作る）か自主練か帰るか
   const pw = D.baito_settings.post_work_practice;
   if (pw && pw.enabled) {
-    lines.push({ speaker: "", face: "", text: pw.prompt });
+    lines.push({ speaker: "", face: "", text: "シフトの終わり際、新しいお客さんが入ってきた。\nスミさん「始、最後の一台、任せていいか」" });
     lines.push({
       type: "choice", id: "post_work", choices: [
-        { text: "練習していく", next: "pw_yes" },
-        { text: "今日は帰る", next: "pw_no" },
+        { text: "オーダーに挑戦する（一台作る）", next: "pw_order" },
+        { text: "今日は裏で自主練する", next: "pw_yes" },
+        { text: "上がらせてもらう", next: "pw_no" },
       ],
     });
+    branches.pw_order = [
+      { speaker: "", face: "", text: "エプロンを締め直して、作業台の前に立つ。大会の練習にもなるはずだ。" },
+      { type: "set_flag", flag: "_baito_order_go" },
+    ];
     branches.pw_yes = [
       { speaker: "", face: "", text: pw.accept_result },
       { type: "apply", stats: pw.accept_stats || {} },
@@ -598,7 +610,13 @@ function doBaito() {
 
   playCustom(
     { dialogue_id: "baito_" + ev.id, metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" }, lines, branches },
-    endAction
+    () => {
+      if (state.flags._baito_order_go) {
+        delete state.flags._baito_order_go;
+        return beginMaking("baito");
+      }
+      endAction();
+    }
   );
 }
 
@@ -671,6 +689,47 @@ function doChoizap() {
     return;
   }
   doSpotDialogue("choizap", "ch1_choizap_visit", "bg_street_day.png");
+}
+
+// --- ショップ（行動を消費しない）
+function showShop() {
+  visitContextChar = null;
+  showScreen("#screen-shop");
+  if (window.SFX) SFX.open();
+  $("#shop-money").textContent = `所持金 ${state.money.toLocaleString()}円`;
+  const list = $("#shop-list");
+  list.innerHTML = "";
+  const TYPE_ORDER = ["bowl", "hms", "charcoal"];
+  for (const type of TYPE_ORDER) {
+    const label = document.createElement("p");
+    label.className = "setup-group-label";
+    label.textContent = EQUIP_TYPE_LABELS[type];
+    list.appendChild(label);
+    const grid = document.createElement("div");
+    grid.className = "spot-list";
+    for (const e of D.equipment.filter((x) => x.type === type)) {
+      const ownedAlready = state.owned.includes(e.id);
+      const price = e.price || 0;
+      const btn = document.createElement("button");
+      btn.className = "spot-btn";
+      btn.innerHTML =
+        `<span class="spot-name">${e.name}</span>` +
+        `<span class="spot-cost">${ownedAlready ? "購入済み" : `${price.toLocaleString()}円`}</span>` +
+        `<span class="spot-desc">${e.description || ""}</span>`;
+      if (ownedAlready || price > state.money) btn.disabled = true;
+      btn.addEventListener("click", () => {
+        if (state.owned.includes(e.id) || e.price > state.money) return;
+        addMoney(-e.price);
+        state.owned.push(e.id);
+        save();
+        if (window.SFX) SFX.coin();
+        toast(`${e.name} を手に入れた`);
+        showShop(); // 表示を更新
+      });
+      grid.appendChild(btn);
+    }
+    list.appendChild(grid);
+  }
 }
 
 // --- 休む
@@ -946,9 +1005,11 @@ function startTournament() {
   );
 }
 
-function beginMaking(tutorial) {
+// mode: "tournament"（既定）| "tutorial"（開幕の通し体験）| "baito"（オーダーチャレンジ）
+function beginMaking(mode) {
+  mode = mode || "tournament";
   tt = {
-    tutorial: !!tutorial,
+    mode,
     bowl: null, hms: null, charcoal: null,
     theme: null, mix: {}, pack: null,
     foilHits: 0, foilDone: false, coalFire: null, coal: null, steam: null,
@@ -956,26 +1017,47 @@ function beginMaking(tutorial) {
   };
   stopRigEffects();
   buildRig();
-  tournamentStep(tutorial ? "theme" : "setup_bowl");
+  if (mode === "baito") {
+    // お客さんのリクエスト（テーマ）はランダムで決まる。
+    // 短縮フローで省く工程は無難な結果で埋めておく
+    tt.theme = THEMES[Math.floor(Math.random() * THEMES.length)];
+    tt.foilHits = 5;
+    tt.coalFire = "good";
+    tt.focusCleared = 3;
+    return tournamentStep("mix");
+  }
+  tournamentStep(mode === "tutorial" ? "theme" : "setup_bowl");
+}
+
+function makingFlow() {
+  if (!tt) return STEP_FLOW;
+  if (tt.mode === "tutorial") return TUTORIAL_FLOW;
+  if (tt.mode === "baito") return BAITO_FLOW;
+  return STEP_FLOW;
 }
 
 function tnPanel(title, hint) {
   showScreen("#screen-tournament");
-  const flow = tt && tt.tutorial ? TUTORIAL_FLOW : STEP_FLOW;
+  const flow = makingFlow();
   const idx = flow.findIndex(([k]) => k === (tt && tt.step));
-  const head = tt && tt.tutorial ? "TUTORIAL " : "STEP ";
+  const head = tt && tt.mode === "tutorial" ? "TUTORIAL " : tt && tt.mode === "baito" ? "ORDER " : "STEP ";
   $("#tn-progress").innerHTML = idx >= 0
     ? `${head}${idx + 1}/${flow.length}・${flow[idx][1]} <span class="tn-steps">${flow.map(([, t], i) => (i <= idx ? "●" : "○")).join("")}</span>`
     : "RESULT";
   $("#tn-title").textContent = title;
   $("#tn-hint").textContent = hint || "";
-  // チュートリアル中はスミさんのアドバイスを添える
   const oldTutor = document.querySelector("#tn-layout .tn-tutor");
   if (oldTutor) oldTutor.remove();
-  if (tt && tt.tutorial && TUTORIAL_TIPS[tt.step]) {
+  // チュートリアルはスミさんのアドバイス、バイトはお客さんのリクエストを添える
+  if (tt && tt.mode === "tutorial" && TUTORIAL_TIPS[tt.step]) {
     const tip = document.createElement("p");
     tip.className = "tn-tutor";
     tip.textContent = TUTORIAL_TIPS[tt.step];
+    $("#tn-hint").after(tip);
+  } else if (tt && tt.mode === "baito" && tt.theme) {
+    const tip = document.createElement("p");
+    tip.className = "tn-tutor";
+    tip.textContent = `お客さん「${tt.theme.label}な感じでお任せします」`;
     $("#tn-hint").after(tip);
   }
   const body = $("#tn-body");
@@ -1003,7 +1085,11 @@ function tournamentStep(step) {
   if (step === "mix") return stepMix();
   if (step === "pack") {
     const body = tnPanel("パッキング", "煙の密度と質感が決まる。フレーバーの重さと相談だ。");
-    for (const p of PACKS) body.appendChild(optionButton(p.label, p.desc, () => { tt.pack = p.id; tournamentStep("foil"); }));
+    for (const p of PACKS) body.appendChild(optionButton(p.label, p.desc, () => {
+      tt.pack = p.id;
+      // バイトの短縮フローでは穴あけ・炭起こしを省く
+      tournamentStep(tt.mode === "baito" ? "coal" : "foil");
+    }));
     return;
   }
   if (step === "foil") return stepFoil();
@@ -1019,7 +1105,7 @@ function tournamentStep(step) {
       tt.steam = s.id;
       if (window.SFX) SFX.smoke();
       startRigSmoke(750);
-      if (tt.tutorial) return tournamentStep("pull"); // チュートリアルは観客も対戦相手もいない
+      if (tt.mode !== "tournament") return tournamentStep("pull"); // 大会以外は観客の会話なし
       playDialogue("ch1_tournament_match", () => tournamentStep("focus"), "res://assets/backgrounds/bg_tournament_stage.png");
     }));
     return;
@@ -1043,7 +1129,8 @@ function stepSetup(step) {
     charcoal: "炭の種類で熱の性格が変わる。",
   };
   const body = tnPanel(`機材選択 — ${EQUIP_TYPE_LABELS[type]}`, hints[type]);
-  for (const e of D.equipment.filter((x) => x.type === type)) {
+  const owned = Array.isArray(state.owned) ? state.owned : STARTER_EQUIPMENT;
+  for (const e of D.equipment.filter((x) => x.type === type && owned.includes(x.id))) {
     const btn = optionButton(e.name, e.description, () => { tt[type] = e.id; tournamentStep(nextStep); });
     // タヌキッシュリッドは素焼きサイズには使えない
     if (e.id === "tanukish_lid" && tt.bowl === "suyaki_hagal") {
@@ -1319,8 +1406,12 @@ function stepPull() {
     wrap.querySelector("#tn-gauge-result").textContent = msgs[tt.pull];
     const nextBtn = document.createElement("button");
     nextBtn.className = "primary-btn";
-    nextBtn.textContent = tt.tutorial ? "スミさんに出す" : "提供する";
-    nextBtn.addEventListener("click", () => (tt.tutorial ? finishTutorial() : tournamentStep("present")));
+    nextBtn.textContent = tt.mode === "tutorial" ? "スミさんに出す" : "提供する";
+    nextBtn.addEventListener("click", () => {
+      if (tt.mode === "tutorial") return finishTutorial();
+      if (tt.mode === "baito") return finishBaitoOrder();
+      tournamentStep("present");
+    });
     wrap.appendChild(nextBtn);
   });
 }
@@ -1601,6 +1692,10 @@ const TUTORIAL_FLOW = [
   ["theme", "THEME"], ["mix", "MIX"], ["pack", "PACK"], ["foil", "FOIL"],
   ["coalfire", "COAL"], ["coal", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"],
 ];
+// バイト中のオーダーチャレンジ: お客さんのリクエストに合わせて短縮フローで1台作る
+const BAITO_FLOW = [
+  ["mix", "MIX"], ["pack", "PACK"], ["coal", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"],
+];
 const TUTORIAL_TIPS = {
   theme: "スミさん「まずは一台のコンセプトだ。今日は好きに選んでいい」",
   mix: "スミさん「合計12g。最初は2種類くらいが扱いやすいぞ」",
@@ -1622,7 +1717,30 @@ function startTutorial() {
       { speaker: "sumi", face: "smile", text: "ウチの作業台を貸してやる。テーマ決めから引きまで、本番と同じ流れだ。" },
       { speaker: "hajime", face: "normal", text: "（……やってみよう。何事も、まずは手を動かすところからだ）" },
     ],
-  }, () => beginMaking(true));
+  }, () => beginMaking("tutorial"));
+}
+
+// バイトのオーダーチャレンジの結果。出来に応じてチップとステータス
+function finishBaitoOrder() {
+  stopRigEffects();
+  const craft = craftScore();
+  const tier = craft.score >= 92 ? "great" : craft.score >= 72 ? "good" : "rough";
+  const tip = { great: 5000, good: 2500, rough: 500 }[tier];
+  const reaction = {
+    great: "「……うわ、何これ。雲みたい」お客さんは目を丸くして、ゆっくり煙を吐いた。常連になってくれそうな顔だ。",
+    good: "「うん、おいしい」お客さんは満足げに煙をくゆらせている。",
+    rough: "「……まあ、こんな感じよね」お客さんの表情は読めない。次はもっとうまく作りたい。",
+  }[tier];
+  playCustom({
+    dialogue_id: "baito_order_result",
+    metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" },
+    lines: [
+      { speaker: "", face: "", text: "──完成。トレイに乗せて、お客さんの席へ運ぶ。" },
+      { speaker: "", face: "", text: reaction },
+      { speaker: "", face: "", text: tier === "great" ? "チップをはずんでくれた。" : tier === "good" ? "チップをもらった。" : "それでも、心づけを少し置いていってくれた。" },
+      { type: "apply", stats: { technique: 2 }, money: tip },
+    ],
+  }, endAction);
 }
 
 function finishTutorial() {
@@ -1664,6 +1782,8 @@ function startNewGame() {
 
 function continueGame(saved) {
   state = saved;
+  // 旧セーブの互換: ショップ導入前のセーブには owned が無い
+  if (!Array.isArray(state.owned)) state.owned = STARTER_EQUIPMENT.slice();
   updateHud();
   if (state.phase === "tournament") startTournament();
   else if (state.phase === "cleared") showClear();
@@ -1710,6 +1830,7 @@ function init() {
   }
   $("#btn-status").addEventListener("click", () => toggleStatus(true));
   $("#status-close").addEventListener("click", () => toggleStatus(false));
+  $("#shop-close").addEventListener("click", () => { if (window.SFX) SFX.close(); showMap(); });
   $("#btn-gameover-title").addEventListener("click", () => location.reload());
   // ダイアログ右下ツール
   $("#vn-auto").addEventListener("click", toggleAuto);

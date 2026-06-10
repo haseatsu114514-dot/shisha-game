@@ -686,7 +686,7 @@
     }
   ],
   "baito_settings": {
-    "base_pay": 2500,
+    "base_pay": 6000,
     "description": "バイトの基本給（シフト1回あたり）。選択肢の出来によってmoney_bonusが追加される。",
     "post_work_practice": {
       "enabled": true,

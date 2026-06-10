@@ -21,11 +21,7 @@ const BG_FULL_PORTRAITS = new Set(["naru", "adam", "minto", "ageha", "mashiro", 
 // 立ち絵を出さないキャラ。本作は一人称視点なので主人公は基本表示しない。
 const NO_PORTRAIT_SPEAKERS = new Set(["hajime", "hazime"]);
 
-const SPEAKER_COLORS = {
-  hajime: "#7ec8ff", sumi: "#d9a066", naru: "#ff8a65", adam: "#a5d6a7",
-  minto: "#aed581", tsumugi: "#f48fb1", pakki: "#ffd54f", nagumo: "#b0bec5",
-  maezono: "#ce93d8", salaryman: "#90a4ae",
-};
+// キャラごとの名前色分けは廃止（視認性優先で白統一）
 
 // アセット解決: スタンドアロン版では window.ASSET_DATA に data URI が入る
 function assetUrl(rel) {
@@ -205,7 +201,7 @@ class DialogueEngine {
       const name = SPEAKER_NAMES[speaker] || (this.ctx.charNames || {})[speaker] || speaker;
       this.el.nameLabel.textContent = name;
       this.el.nameLabel.style.display = "";
-      this.el.nameLabel.style.color = SPEAKER_COLORS[speaker] || "#ffd878";
+      this.el.nameLabel.style.color = "#ffffff"; // キャラ色分けは視認性が悪いので白で統一
     } else {
       this.el.nameLabel.style.display = "none";
     }
