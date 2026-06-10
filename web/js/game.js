@@ -47,6 +47,16 @@ function fitStage() {
 function showScreen(id) {
   for (const s of document.querySelectorAll(".screen")) s.classList.remove("active");
   $(id).classList.add("active");
+  // タイトルではHUD・DAYカードを隠す
+  const isTitle = id === "#screen-title";
+  $("#hud").classList.toggle("hidden", isTitle);
+  if (isTitle) $("#hud-day-card").classList.remove("show");
+  // 大会・敗北画面ではDAYカードを消す
+  if (id !== "#screen-map") $("#hud-day-card").classList.remove("show");
+  else if (state && state.phase === "daily") $("#hud-day-card").classList.add("show");
+  // 画面を移ったら AUTO/SKIP を解除（ダイアログ専用）
+  if (id !== "#screen-dialogue") stopAutoSkip();
+  if (state) updateDayCard();
 }
 
 function toast(msg) {
@@ -87,15 +97,89 @@ function addMoney(amount) {
   updateHud();
 }
 
+// ---------- HUD ----------
+const LOCATION_FROM_BG = {
+  tonari_inside: ["シーシャラウンジ『tonari』", ""],
+  tonari_outside: ["tonari 外", ""],
+  tonari_night: ["シーシャラウンジ『tonari』", "夜"],
+  tonari_day: ["シーシャラウンジ『tonari』", "昼"],
+  shop: ["C.STATION", "大会会場"],
+  tournament_stage: ["C.STATION", "本戦ステージ"],
+  street_day: ["街中", "昼"],
+  street_night: ["街中", "夜"],
+  naru_shop: ["KEMURIKUSA", "なるの店"],
+  adam_shop: ["EDEN", "アダムの店"],
+  home: ["自宅", ""],
+  map_local_day: ["栄エリア", "昼"],
+  map_local_night: ["栄エリア", "夜"],
+  title: ["タイトル", ""],
+  kemurikusa: ["KEMURIKUSA", "なるの店"],
+  eden: ["EDEN", "アダムの店"],
+  pepermint: ["PEPERMINT", "みんとの店"],
+};
+function setLocationFromBg(rel) {
+  const m = String(rel || "").match(/bg_([\w_]+?)\.png|^([\w_]+)\.png/);
+  let key = "";
+  if (m) key = (m[1] || m[2] || "").replace(/_(day|night)$/, (_, t) => t);
+  // 末尾の day/night を別途分離
+  const bgName = String(rel).split("/").pop() || "";
+  const cleanName = bgName.replace(".png", "").replace(/^bg_/, "");
+  const found = LOCATION_FROM_BG[cleanName];
+  if (found) {
+    $("#hud-location-main").textContent = found[0];
+    $("#hud-location-sub").textContent = found[1];
+  } else {
+    $("#hud-location-main").textContent = "—";
+    $("#hud-location-sub").textContent = "";
+  }
+}
+
+function levelProxy() {
+  // 5ステータスの平均から擬似レベルを出す（10〜100 → Lv.1〜10）
+  const s = state ? state.stats : { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 };
+  const avg = (s.technique + s.sense + s.guts + s.charm + s.insight) / 5;
+  return Math.max(1, Math.min(99, Math.floor(avg / 10) + 1));
+}
+
 function updateHud() {
+  if (!state) return;
+  const hud = $("#hud");
+  // タイトルではHUD非表示
+  if (state.phase === "opening") { hud.classList.add("hidden"); return; }
+  hud.classList.remove("hidden");
+
+  // 行動回数の表示（旧 hud-day の場所）
+  const hudDay = $("#hud-day");
   if (state.phase === "tournament") {
-    $("#hud-day").textContent = "SMOKE CROWN CUP 当日";
+    hudDay.textContent = "SMOKE CROWN CUP 当日";
+    hudDay.classList.remove("hidden");
   } else {
     const left = MAX_DAYS + 1 - state.day;
-    $("#hud-day").textContent = `DAY ${state.day} ／ 大会まであと${left}日`;
+    hudDay.textContent = `DAY ${state.day} ／ 大会まであと${left}日`;
+    // ダイアログ中だけ薄く出す（マップでは大きな day-card に任せる）
+    const isMap = document.querySelector("#screen-map.active");
+    hudDay.classList.toggle("hidden", !!isMap);
   }
-  $("#hud-ap").textContent = state.phase === "daily" ? (state.ap === 2 ? "☀ 昼" : "☾ 夜") + `（残り${state.ap}行動）` : "";
-  $("#hud-money").textContent = `¥${state.money.toLocaleString()}`;
+  // レベル
+  const lv = levelProxy();
+  $("#hud-level-text").textContent = `Lv.${lv}`;
+  const s = state.stats;
+  const avg = (s.technique + s.sense + s.guts + s.charm + s.insight) / 5;
+  const pct = Math.min(100, ((avg / 10) - Math.floor(avg / 10)) * 100);
+  $("#hud-level-fill").style.width = `${pct}%`;
+  // マップ用 DAY カード
+  updateDayCard();
+}
+
+function updateDayCard() {
+  const isMap = document.querySelector("#screen-map.active");
+  const card = $("#hud-day-card");
+  card.classList.toggle("show", !!isMap && state && state.phase === "daily");
+  if (!isMap || !state) return;
+  $("#dc-day").textContent = state.day;
+  $("#dc-week").textContent = state.ap === 2 ? "☀ DAY" : "☾ NIGHT";
+  $("#dc-ap").textContent = (state.ap === 2 ? "☀" : "☾") + ` ${state.ap}`;
+  $("#dc-money").textContent = state.money.toLocaleString();
 }
 
 // 判定スタンプ演出
@@ -122,6 +206,42 @@ function showDayCard(big, sub) {
 let engine = null;
 let cueFiredInDialogue = false;
 let visitContextChar = null; // 好感度キューの対象キャラ
+let autoMode = false;
+let skipMode = false;
+let autoTimer = 0;
+
+function stopAutoSkip() {
+  autoMode = false; skipMode = false;
+  clearInterval(autoTimer); autoTimer = 0;
+  $("#vn-auto").classList.remove("on");
+  $("#vn-skip").classList.remove("on");
+}
+
+function toggleAuto() {
+  if (autoMode) { stopAutoSkip(); return; }
+  stopAutoSkip();
+  autoMode = true;
+  $("#vn-auto").classList.add("on");
+  autoTimer = setInterval(() => {
+    if (!engine || !$("#screen-dialogue").classList.contains("active")) return stopAutoSkip();
+    if (engine.waitingChoice) return; // 選択肢で停止
+    if (engine.typing) return; // タイプ中は待つ
+    engine.next();
+  }, 1400);
+}
+
+function toggleSkip() {
+  if (skipMode) { stopAutoSkip(); return; }
+  stopAutoSkip();
+  skipMode = true;
+  $("#vn-skip").classList.add("on");
+  autoTimer = setInterval(() => {
+    if (!engine || !$("#screen-dialogue").classList.contains("active")) return stopAutoSkip();
+    if (engine.waitingChoice) return stopAutoSkip();
+    if (engine.typing) engine.completeTyping();
+    else engine.next();
+  }, 60);
+}
 
 function parseTextCue(text) {
   if (!text.includes("上がった")) return;
@@ -173,9 +293,15 @@ function initEngine() {
         else showScreen("#screen-gameover");
       },
       findDialogue: (id) => D.dialogues[id] || null,
+      onBackgroundChange: (rel) => setLocationFromBg(rel),
     }
   );
-  $("#vn-click-layer").addEventListener("click", () => { if (window.SFX) SFX.click(); engine.next(); });
+  $("#vn-click-layer").addEventListener("click", () => {
+    // 手動クリックは AUTO/SKIP を解除して次へ
+    if (autoMode || skipMode) stopAutoSkip();
+    if (window.SFX) SFX.click();
+    engine.next();
+  });
   document.addEventListener("keydown", (e) => {
     if ((e.key === "Enter" || e.key === " ") && $("#screen-dialogue").classList.contains("active")) {
       e.preventDefault();
@@ -205,6 +331,7 @@ function playCustom(dialogue, onDone, bgOverride) {
   showScreen("#screen-dialogue");
   cueFiredInDialogue = false;
   if (bgOverride) engine.setBackground(bgOverride);
+  if (state) updateHud();
   engine.start(dialogue, () => {
     engine.hideCg();
     if (onDone) onDone();
@@ -256,35 +383,88 @@ const SPOT_ICONS = {
   kannon: "⛩️", cafe: "☕", c_station: "🏟️", rest: "🛏️",
 };
 
+// マップ上のピン位置（%）と短いラベル名
+const SPOT_LAYOUT = {
+  baito:     { x: 14, y: 32, theme: "baito",   short: "バイト",     area: "tonari" },
+  practice:  { x: 22, y: 50, theme: "shisha",  short: "練習",       area: "tonari" },
+  sumi:      { x: 12, y: 64, theme: "mentor",  short: "スミさん",   area: "tonari" },
+  tsumugi:   { x: 26, y: 70, theme: "shisha",  short: "つむぎ",     area: "tonari" },
+  naru:      { x: 42, y: 22, theme: "rival",   short: "なるの店",   area: "繁華街" },
+  adam:      { x: 56, y: 30, theme: "rival",   short: "アダムの店", area: "下町" },
+  minto:     { x: 70, y: 22, theme: "rival",   short: "みんとの店", area: "繁華街" },
+  choizap:   { x: 50, y: 50, theme: "shop",    short: "チョイザップ", area: "ジム" },
+  kannon:    { x: 78, y: 56, theme: "park",    short: "観音堂",     area: "古町" },
+  cafe:      { x: 64, y: 64, theme: "cafe",    short: "カフェ",     area: "繁華街" },
+  c_station: { x: 84, y: 36, theme: "stadium", short: "C.STATION",  area: "会場" },
+  rest:      { x: 88, y: 76, theme: "rest",    short: "家",         area: "自宅" },
+};
+
 function showMap() {
   state.phase = "daily";
-  updateHud();
   if (window.SFX) SFX.bgm("daily_part");
   showScreen("#screen-map");
   const night = state.ap <= 1;
-  $("#screen-map").style.backgroundImage =
+  $("#map-image").style.backgroundImage =
     `url('${assetUrl(`assets/backgrounds/bg_map_local_${night ? "night" : "day"}.png`)}')`;
-  const timeLabel = $("#map-time");
-  if (timeLabel) timeLabel.textContent = night ? "☾ 夜 — 今日はあと1回動ける" : "☀ 昼 — 今日は2回動ける";
-  const list = $("#map-spots");
-  list.innerHTML = "";
+  $("#map-time-toggle").innerHTML =
+    night ? '<span class="ico">🌙</span>夜 / 栄' : '<span class="ico">☀️</span>昼 / 栄';
+  updateHud();
+
+  const pins = $("#map-pins");
+  pins.innerHTML = "";
   for (const spot of SPOTS) {
+    const layout = SPOT_LAYOUT[spot.id];
+    if (!layout) continue;
     const btn = document.createElement("button");
-    btn.className = "spot-btn";
-    // まだ会っていないキャラのおすすめスポットは行き先として知らない
-    if (spot.requiresMet && state.visits[spot.requiresMet] === 0) {
-      btn.innerHTML = `<span class="spot-icon">❓</span><span class="spot-name">？？？</span><span class="spot-desc">まだ知らない場所。誰かに教えてもらえそうな気がする。</span>`;
+    btn.className = `spot-pin spot-btn pin-${layout.theme}`;
+    btn.style.left = `${layout.x}%`;
+    btn.style.top = `${layout.y}%`;
+    // テキストは「{label}」を含む（テストで hasText 検索される）
+    const locked = spot.requiresMet && state.visits[spot.requiresMet] === 0;
+    const tooPoor = spot.cost > state.money;
+    if (locked) {
+      btn.classList.add("locked");
+      btn.innerHTML = `<div class="shield"><div class="ico">🔒</div><div class="label">？？？</div></div>`;
       btn.disabled = true;
-      list.appendChild(btn);
-      continue;
+      btn.dataset.label = "未開放";
+    } else {
+      btn.innerHTML =
+        `<div class="shield">` +
+          `<div class="ico">${SPOT_ICONS[spot.id] || "📍"}</div>` +
+          `<div class="label">${layout.short}</div>` +
+        `</div>` +
+        `<div class="sub-label">${spot.label}</div>`;
+      if (tooPoor) btn.disabled = true;
     }
-    const costLabel = spot.cost > 0 ? `<span class="spot-cost">¥${spot.cost.toLocaleString()}</span>` : "";
-    btn.innerHTML = `<span class="spot-icon">${SPOT_ICONS[spot.id] || ""}</span><span class="spot-name">${spot.label}</span>${costLabel}<span class="spot-desc">${spot.desc}</span>`;
-    if (spot.cost > state.money) btn.disabled = true;
-    btn.addEventListener("click", () => selectSpot(spot));
-    list.appendChild(btn);
+    btn.addEventListener("mouseenter", () => updateMapInfo(spot, locked, tooPoor));
+    btn.addEventListener("focus", () => updateMapInfo(spot, locked, tooPoor));
+    btn.addEventListener("click", () => { if (!btn.disabled) selectSpot(spot); });
+    pins.appendChild(btn);
   }
+  updateMapInfo(null);
   save();
+}
+
+function updateMapInfo(spot, locked, tooPoor) {
+  if (!spot) {
+    $("#map-info-title").textContent = state.ap === 2 ? "今日はどうする？" : "夜の時間";
+    $("#map-info-desc").textContent = "気になる場所をタップ。残り行動と所持金に注意。";
+    $("#map-info-cost").textContent = "";
+    $("#map-info-hint").textContent =
+      state.ap === 2 ? "☀ 今日は2回動ける" : "☾ 今日はあと1回動ける";
+    return;
+  }
+  const layout = SPOT_LAYOUT[spot.id] || {};
+  $("#map-info-title").textContent = locked ? "？？？" : (layout.area || spot.label);
+  $("#map-info-desc").textContent = locked
+    ? "まだ知らない場所。誰かに教えてもらえそうな気がする。"
+    : spot.desc;
+  $("#map-info-cost").textContent = locked
+    ? ""
+    : (spot.cost > 0 ? `所持金から ¥${spot.cost.toLocaleString()} 必要` : "");
+  $("#map-info-hint").textContent = locked
+    ? "🔒 ロック中"
+    : tooPoor ? "所持金が足りない" : `タップして → ${spot.label}`;
 }
 
 function selectSpot(spot) {
@@ -1344,6 +1524,18 @@ function init() {
   $("#btn-status").addEventListener("click", () => toggleStatus(true));
   $("#status-close").addEventListener("click", () => toggleStatus(false));
   $("#btn-gameover-title").addEventListener("click", () => location.reload());
+  // ダイアログ右下ツール
+  $("#vn-auto").addEventListener("click", toggleAuto);
+  $("#vn-skip").addEventListener("click", toggleSkip);
+  $("#vn-log").addEventListener("click", () => toast("ログは次回実装予定"));
+  $("#vn-menu").addEventListener("click", () => toggleStatus(true));
+  // タイトルメニューのフォーカス演出（hover/focus でハイライト）
+  for (const item of document.querySelectorAll(".title-menu-item")) {
+    item.addEventListener("focus", () => {
+      for (const x of document.querySelectorAll(".title-menu-item.focus")) x.classList.remove("focus");
+      item.classList.add("focus");
+    });
+  }
   showScreen("#screen-title");
 }
 

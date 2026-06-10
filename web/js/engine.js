@@ -14,6 +14,10 @@ const SPEAKER_NAMES = {
 };
 const SPEAKER_ID_ALIASES = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki", pakki: "packii" };
 
+// 背景込みの一枚絵で生成されているキャラ。立ち絵スロットに小さくマスクして表示する。
+// 専用素材ができたらここから外す。
+const BG_FULL_PORTRAITS = new Set(["naru", "adam", "minto", "ageha", "mashiro", "ryuji"]);
+
 const SPEAKER_COLORS = {
   hajime: "#7ec8ff", sumi: "#d9a066", naru: "#ff8a65", adam: "#a5d6a7",
   minto: "#aed581", tsumugi: "#f48fb1", pakki: "#ffd54f", nagumo: "#b0bec5",
@@ -74,6 +78,7 @@ class DialogueEngine {
   setBackground(path) {
     const rel = String(path).replace(/^res:\/\//, "");
     this.el.bg.style.backgroundImage = `url('${assetUrl(rel)}')`;
+    if (this.ctx.onBackgroundChange) this.ctx.onBackgroundChange(rel);
   }
 
   next() {
@@ -157,18 +162,24 @@ class DialogueEngine {
 
   // 透過余白の差を補正し、どのキャラも実体が同じ高さで並ぶようにする
   applyPortraitTrim(img, speaker, face) {
-    const TARGET = 62; // 実体の表示高（ステージ高に対する%）
     const folder = SPEAKER_ID_ALIASES[speaker] || speaker;
+    // 背景込みの一枚絵は CSS に任せる（マスク＆固定サイズ）
+    if (BG_FULL_PORTRAITS.has(folder)) {
+      img.style.height = "";
+      img.style.bottom = "";
+      return;
+    }
+    const TARGET = 88; // 切り抜き素材はバストアップ気味に大きく
     const trims = (this.ctx.portraitTrims || {})[folder] || {};
     const faces = (this.ctx.portraitFaces || {})[folder] || [];
     let f = face && faces.includes(face) ? face : "normal";
     const t = trims[f] || trims.normal;
     if (!t || !t.h) {
-      img.style.height = "85%";
+      img.style.height = "100%";
       img.style.bottom = "0";
       return;
     }
-    const h = Math.min(TARGET / t.h, 115); // 余白が極端でも上げすぎない
+    const h = Math.min(TARGET / t.h, 145);
     img.style.height = `${h}%`;
     img.style.bottom = `${-(t.b * h)}%`;
   }
@@ -211,7 +222,9 @@ class DialogueEngine {
         this.slots[speaker] = slot;
         const img = document.createElement("img");
         img.dataset.speaker = speaker;
-        img.className = `portrait slot-${slot} enter`;
+        const folder2 = SPEAKER_ID_ALIASES[speaker] || speaker;
+        const bgfull = BG_FULL_PORTRAITS.has(folder2) ? " bgfull" : "";
+        img.className = `portrait slot-${slot} enter${bgfull}`;
         img.onerror = () => img.remove();
         this.el.portraits.appendChild(img);
         requestAnimationFrame(() => requestAnimationFrame(() => img.classList.remove("enter")));
