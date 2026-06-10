@@ -2,35 +2,117 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>シーシャバトル 第1章 — SMOKE CROWN CUP</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>水煙前線 -EN:CODE- 第1章</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div id="rotate-hint">スマホを横向きにすると<br>遊びやすくなります 📱↻</div>
+<div id="rotate-hint">スマホを横向きにすると<br>遊びやすくなります</div>
 <div id="game">
 
-  <!-- HUD -->
-  <header id="hud">
-    <span id="hud-day"></span>
-    <span id="hud-ap"></span>
-    <span id="hud-money"></span>
-    <button id="btn-mute" type="button">♪ ON</button>
-    <button id="btn-status" type="button">ステータス</button>
+  <!-- HUD（ダイアログ・大会で表示する） -->
+  <header id="hud" class="hidden">
+    <div id="hud-location">
+      <span class="hud-icon hud-anchor"></span>
+      <div class="hud-text">
+        <span class="main" id="hud-location-main">tonari</span>
+        <span class="ja" id="hud-location-sub">夜</span>
+      </div>
+    </div>
+    <div id="hud-day" class="hidden"></div>
+    <div id="hud-level">
+      <span class="hud-icon hud-flame"></span>
+      <div class="hud-text">
+        <span class="main" id="hud-level-text">Lv.1</span>
+        <div class="lv-bar"><div class="lv-fill" id="hud-level-fill" style="width:18%"></div></div>
+      </div>
+    </div>
+    <div class="hud-right-btns">
+      <button id="btn-mute" type="button">BGM ON</button>
+      <button id="btn-status" type="button">STATUS</button>
+    </div>
   </header>
+
+  <!-- DAY カード（マップ画面の左上に重ねる） -->
+  <div id="hud-day-card">
+    <div>
+      <div class="area-name" id="dc-area">Sakae</div>
+      <div class="day-num"><span id="dc-day">1</span><span class="max">/7</span></div>
+      <div class="day-week" id="dc-week">DAY</div>
+    </div>
+    <div class="day-meta">
+      <div class="row"><span class="row-label">行動</span><span id="dc-ap">昼 2</span></div>
+      <div class="row"><span class="row-label">所持金</span><span id="dc-money">30,000</span></div>
+    </div>
+  </div>
 
   <!-- タイトル -->
   <section id="screen-title" class="screen active">
-    <div class="title-inner">
-      <p class="title-sub">シーシャ屋アドベンチャー</p>
-      <h1 class="title-logo">シーシャバトル</h1>
-      <p class="title-chapter">第1章 「SMOKE CROWN CUP」</p>
-      <div class="title-menu">
-        <button id="btn-new" class="primary-btn" type="button">はじめから</button>
-        <button id="btn-continue" class="primary-btn hidden" type="button">つづきから</button>
-      </div>
-      <p class="title-note">クリック / Enter で読み進められます</p>
+    <!-- 1. バーの店内を半透過で焼き込み（tonari背景の薄レイヤー） -->
+    <div id="title-bar-bleed"></div>
+    <!-- 2. 墨グラデの大気 -->
+    <div class="title-ink"></div>
+    <!-- 3. ネオン看板（点滅） -->
+    <div class="title-neon neon-tonari">tonari</div>
+    <div class="title-neon neon-shisha">SHISHA</div>
+    <!-- 4. 揺らぐ大気の煙レイヤー -->
+    <div class="title-smoke ts-1"></div>
+    <div class="title-smoke ts-2"></div>
+    <div class="title-smoke ts-3"></div>
+    <div class="title-smoke ts-4"></div>
+    <!-- 5. 立ちのぼる細い煙wisp -->
+    <div class="title-wisps">
+      <span class="tw w1"></span><span class="tw w2"></span><span class="tw w3"></span>
+      <span class="tw w4"></span><span class="tw w5"></span><span class="tw w6"></span>
     </div>
+    <!-- 6. キャラ星雲 -->
+    <div id="title-nebula">
+      <span class="neb n1"></span>
+      <span class="neb n2"></span>
+      <span class="neb n3"></span>
+      <span class="neb n4"></span>
+      <span class="neb n5"></span>
+      <span class="neb n6"></span>
+    </div>
+    <!-- 7. アート窓: title-art は専用キービジュアル（あれば優先）、
+         無ければ chara-window のランダム表示が使われる -->
+    <div id="title-art-frame">
+      <img id="title-art" alt="" draggable="false">
+      <div class="art-vignette"></div>
+      <div class="chara-smoke cs-1"></div>
+      <div class="chara-smoke cs-2"></div>
+      <div class="chara-smoke cs-3"></div>
+      <div class="chara-smoke cs-4"></div>
+    </div>
+    <div id="title-chara-window">
+      <img id="title-chara" alt="" draggable="false">
+      <div class="chara-smoke cs-1"></div>
+      <div class="chara-smoke cs-2"></div>
+      <div class="chara-smoke cs-3"></div>
+      <div class="chara-smoke cs-4"></div>
+    </div>
+    <div class="title-inner">
+      <div class="title-logo-wrap">
+        <img id="title-logo-img" alt="水煙前線 -EN:CODE-" draggable="false">
+        <h1 class="title-logo hidden">水煙前線</h1>
+        <p class="title-en hidden">— EN : CODE —</p>
+      </div>
+      <div class="title-menu" id="title-menu">
+        <button id="btn-new" class="title-menu-item" type="button">NEW GAME<span class="ja">ニューゲーム</span></button>
+        <button id="btn-continue" class="title-menu-item hidden" type="button">LOAD<span class="ja">ロード</span></button>
+        <button id="btn-gallery" class="title-menu-item" type="button" disabled>GALLERY<span class="ja">ギャラリー</span></button>
+        <button id="btn-config" class="title-menu-item" type="button" disabled>CONFIG<span class="ja">コンフィグ</span></button>
+        <button id="btn-exit" class="title-menu-item" type="button" disabled>EXIT<span class="ja">もどる</span></button>
+      </div>
+      <p class="title-note">
+        <span class="footer-text">TAP / CLICK / ENTER</span>
+        <span class="footer-line"></span>
+        <span class="footer-chapter">CH.01 — SMOKE CROWN CUP</span>
+      </p>
+    </div>
+    <!-- 8. フィルムグレイン（最前面） -->
+    <div class="film-grain"></div>
+    <div class="title-vignette"></div>
   </section>
 
   <!-- 会話 -->
@@ -41,24 +123,37 @@
     <div id="vn-click-layer"></div>
     <div id="vn-choices"></div>
     <div id="vn-box">
+      <span class="corner-tl"></span><span class="corner-br"></span>
       <div id="vn-name"></div>
       <div id="vn-text"></div>
       <div id="vn-advance">▼</div>
+      <div id="vn-tools">
+        <button class="vn-tool" id="vn-auto" type="button">AUTO</button>
+        <button class="vn-tool" id="vn-skip" type="button">SKIP</button>
+        <button class="vn-tool" id="vn-log" type="button">LOG</button>
+        <button class="vn-tool" id="vn-menu" type="button">MENU</button>
+      </div>
     </div>
   </section>
 
-  <!-- マップ -->
+  <!-- マップ（タップ式） -->
   <section id="screen-map" class="screen">
-    <div class="panel">
-      <h2>今日はどうする？</h2>
-      <p id="map-time" class="map-time"></p>
-      <div id="map-spots" class="spot-list"></div>
+    <div id="map-image"></div>
+    <div id="map-pins"></div>
+    <div id="map-time-toggle">マップ</div>
+    <div id="map-info">
+      <span class="corner-tl"></span><span class="corner-br"></span>
+      <div class="info-banner" id="map-info-title">行き先を選ぶ</div>
+      <div class="info-desc" id="map-info-desc">気になる場所をタップ。残り行動と所持金に注意。</div>
+      <div class="info-cost" id="map-info-cost"></div>
+      <div class="info-hint" id="map-info-hint"></div>
     </div>
   </section>
 
   <!-- 練習 -->
   <section id="screen-practice" class="screen">
     <div class="panel">
+      <span class="corner-tl"></span><span class="corner-br"></span>
       <h2 id="practice-title"></h2>
       <div id="practice-menu" class="spot-list"></div>
       <div id="practice-gauge-area" class="gauge-wrap hidden">
@@ -78,6 +173,7 @@
     <div id="tn-layout">
       <div id="tn-rig"></div>
       <div class="panel">
+        <span class="corner-tl"></span><span class="corner-br"></span>
         <div id="tn-progress"></div>
         <h2 id="tn-title"></h2>
         <p id="tn-hint" class="tn-hint"></p>
@@ -89,6 +185,7 @@
   <!-- 章クリア / 敗北 -->
   <section id="screen-end" class="screen">
     <div class="panel center">
+      <span class="corner-tl"></span><span class="corner-br"></span>
       <h1 id="end-title"></h1>
       <p id="end-sub"></p>
       <div id="end-status" class="status-wrap"></div>
@@ -98,6 +195,7 @@
   <!-- ゲームオーバー -->
   <section id="screen-gameover" class="screen">
     <div class="panel center">
+      <span class="corner-tl"></span><span class="corner-br"></span>
       <h1>GAME OVER</h1>
       <button id="btn-gameover-title" class="primary-btn" type="button">タイトルへ戻る</button>
     </div>
@@ -106,6 +204,7 @@
   <!-- ステータスオーバーレイ -->
   <div id="status-overlay">
     <div class="panel">
+      <span class="corner-tl"></span><span class="corner-br"></span>
       <h2>蒸野 始（むしの はじめ）</h2>
       <div id="status-body" class="status-wrap"></div>
       <button id="status-close" class="primary-btn" type="button">閉じる</button>
@@ -113,6 +212,7 @@
   </div>
 
   <div id="day-card"><div class="day-big"></div><div class="day-sub"></div></div>
+  <div id="smoke-veil"></div>
   <div id="toasts"></div>
 </div>
 

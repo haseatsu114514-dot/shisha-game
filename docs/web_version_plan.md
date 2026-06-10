@@ -50,21 +50,86 @@
 - 演出: WebAudio合成SE・BGM・判定スタンプ・煙/泡パーティクル・結果リビール
 - 16:9固定ステージ（スマホ横向き対応）・localStorageセーブ・1ファイル配布ビルド
 
-## 次回セッションの修正タスク（ユーザー指摘 2026-06-10）
+## 公開URL（プレイ・確認用）
 
-1. **モックアップ準拠のUI刷新** — ユーザーがモックアップ画像を数枚持っている。
-   `docs/mockups/` に置いてもらう（またはチャットに添付）。それを正として
-   全画面のレイアウト・配色・フォントサイズを作り直す
-2. **マップをタップ移動式に** — 文字リストではなく `bg_map_local_day/night.png`
-   の絵の上に行き先ピン（ホットスポット）を重ね、地図を直接タップして移動する。
-   ピンにホバー/タップでスポット名・コスト表示。ロック中は鍵アイコン
-3. **スマホ操作の改善** — 連打でテキスト選択が起きる問題は
-   `user-select:none` 等で対応済み（2026-06-10）。残り: タップ領域の最小
-   44pxの確保、ダブルタップズーム抑止の確認、長押しメニュー抑止
-4. **UI品質パス** — サイズ比・余白・フォント階層がダサい問題。
-   市販ゲーム水準を目標に: パネルの装飾（角飾り・グラデ枠）、
-   見出しのレタリング、立ち絵の拡大率（バストアップ気味に大きく、
-   画面下端から自然に生える配置）、ボタンの押下アニメーション
+- **開発中ブランチの最新（push 直後に反映・動作確認済み）**:
+  `https://raw.githack.com/haseatsu114514-dot/shisha-game/<ブランチ名>/web/dist/shisha_ch1.html`
+  - 初回アクセス時に raw.githack の確認ページが出る →「Open the page」を1タップ
+- **安定版（未開通）**: https://haseatsu114514-dot.github.io/shisha-game/
+  - `.github/workflows/deploy-pages.yml` が `web/dist/` を GitHub Pages へ配備
+    （main と claude/** ブランチの push がトリガー）
+  - ⚠️ **ユーザーの作業待ち**: Settings → Pages → Source を「GitHub Actions」に
+    する必要がある（workflowのトークンでは初回有効化が403で失敗する。
+    実行ログで確認済み）。有効化後に再push（空コミットでよい）すれば公開される
+- jsDelivr / statically.io は HTML を text/plain で返すため使えない（検証済み）
+- スマホは横向き推奨（縦だと回転ヒントが出る）。PC/スマホどちらも同じURLでOK
+
+## 引き継ぎメモ（2026-06-10 時点の最新状態）
+
+- 開発ブランチ: `claude/hopeful-ride-5rg3zg`（mainに未マージ。続きはここから）
+- **タイトルロゴ**: ユーザー製ロゴ画像（黒地・墨筆風「水煙前線」）はチャット内
+  画像のためファイル未着。暫定で `tools/make_title_logo.py` による生成ロゴを
+  `assets/ui/ui_title_logo.png` に配置済み。**ユーザーからロゴPNGがファイル添付で
+  届いたら同パスに上書き → `python3 web/build_data.py && python3 web/build_standalone.py`
+  で反映**（黒背景つきならクロマキー等で透過化してから）
+- **タイトルBGM**: `assets/audio/bgm/title.mp3`（ユーザー提供 Hookah Midnight Loop、
+  64kbps）。スタンドアロンには先頭1.2MB（約150秒）を埋め込み
+- **タイトルキャラ**: `TITLE_CHARA_POOL`（game.js）= tsumugi / sumi / packii /
+  naru / adam / minto からランダム。アート一枚絵を煙マスクの窓
+  （#title-chara-window、CSSの多層radial-gradientマスクを揺らす）に
+  Ken Burnsズーム付きで表示。bbox情報は build_data.py の portrait_trim
+  （l/w を追加済み）から取得
+- **会話の背景込み立ち絵**（.portrait.bgfull）も同じ煙マスク表示に変更済み
+- **ロゴ**: `tools/make_title_logo.py` を参考画像準拠に作り直し
+  （水パイプのシルエット・渦煙・青/紫インク飛沫・-EN:CODE-長ダッシュ）
+- **一人称視点**: はじめの立ち絵は出さない（engine.js `NO_PORTRAIT_SPEAKERS`）
+- **チュートリアル**: opening後に1回だけ（`state.flags._tutorial_done`）。
+  フローは game.js `TUTORIAL_FLOW` / ヒントは `TUTORIAL_TIPS`
+
+## 2026-06-10 セッションで実装済み（後半）
+
+- **タイトル画面 v2** — 墨ベースの背景＋漂う煙レイヤー、右側にカラフルな煙星雲と
+  ランダムキャラ（つむぎ/スミ/パッキー、`TITLE_CHARA_POOL`）。ロゴ・メニューの
+  時間差フェードイン、メニューホバーの金バー演出
+- **タイトルBGM** — `assets/audio/bgm/title.mp3`（Hookah Midnight Loop)。
+  自動再生ブロック時は最初のタップ/キーで再試行
+- **チュートリアル** — オープニング後にスミさんの作業台で1回シーシャ作りを通し体験
+  （`TUTORIAL_FLOW`: テーマ→ミックス→パック→穴あけ→炭起こし→配置→蒸らし→引き、
+  各ステップにスミさんのアドバイス表示、結果に応じた講評＋技術/センス上昇）。
+  `state.flags._tutorial_done` で1回のみ
+- **一人称視点** — 主人公はじめの立ち絵は表示しない（`NO_PORTRAIT_SPEAKERS`）
+
+## 2026-06-10 セッションで実装済み
+
+1. **タイトル刷新** — 新ロゴ「水煙前線 -EN:CODE-」、左寄せ縦メニュー
+   （NEW GAME / LOAD / GALLERY / CONFIG / EXIT）。GALLERY・CONFIG・EXIT は
+   ダミーで disabled
+2. **ダイアログUI刷新** — 紫の花飾りネームプレート、金縁＋四隅装飾のテキスト枠、
+   右下に AUTO / SKIP / LOG / MENU ツール、左上に「⚓ 場所」HUD、
+   右上に「🔥 Lv.X」HUD（5ステータス平均から算出）
+3. **マップをタップ式に** — `#map-pins` にシールド型ピンを座標配置。
+   ロックは鍵アイコン＋グレースケール。右下に金バナーの情報パネル、
+   左上に Sakae 風の DAY カード（日数・行動・所持金）
+4. **立ち絵の拡大** — 切り抜き素材は TARGET 88% / 最大 145% でバストアップ気味に。
+   背景込み素材（naru/adam/minto/ageha/mashiro/ryuji）には `.portrait.bgfull`
+   クラスを当て、上下グラデマスクで枠に収める
+5. **演出** — ボタンに :active scale、選択肢に hover scale + shadow glow
+
+## 次回セッションの修正タスク
+
+1. **正式ロゴの差し替え** — ユーザーのロゴPNGがファイルで届き次第
+   `assets/ui/ui_title_logo.png` に上書き（上の引き継ぎメモ参照）
+2. **GitHub Pages 開通の確認** — ユーザーが Settings で有効化したら
+   空コミットpushでデプロイし、URLの200を確認する
+3. **背景込み立ち絵の本番素材** — bgfull リスト（naru/adam/minto/ageha/
+   mashiro/ryuji）を切り抜き素材に差し替えれば大きく出せる。
+   `tools/pixelize.py` で透過・トリム・パレット統一が可能
+4. **マップピン座標の手調整** — `SPOT_LAYOUT` は仮配置。
+   背景画像の建物に合わせて x/y を微調整したい
+5. **LOG ウィンドウ** — `vn-log` ボタンは未実装（toast のみ）
+6. **CONFIG / GALLERY** — タイトルメニューのダミーをアクティブ化
+7. **タイトルBGMのループ調整** — スタンドアロン版は曲の途中でループが
+   先頭に戻る（1.2MB切り出しのため）。気になるならフェード処理を入れる
 
 ## 画像生成パイプライン（統一感を出す方法）
 

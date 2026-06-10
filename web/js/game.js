@@ -47,6 +47,18 @@ function fitStage() {
 function showScreen(id) {
   for (const s of document.querySelectorAll(".screen")) s.classList.remove("active");
   $(id).classList.add("active");
+  // タイトルではHUD・DAYカードを隠す
+  const isTitle = id === "#screen-title";
+  $("#hud").classList.toggle("hidden", isTitle);
+  if (isTitle) $("#hud-day-card").classList.remove("show");
+  // マップでは場所チップを隠す（場所＝マップ自身。DAYカードと重なるのも防ぐ）
+  $("#hud-location").classList.toggle("hidden", id === "#screen-map");
+  // 大会・敗北画面ではDAYカードを消す
+  if (id !== "#screen-map") $("#hud-day-card").classList.remove("show");
+  else if (state && state.phase === "daily") $("#hud-day-card").classList.add("show");
+  // 画面を移ったら AUTO/SKIP を解除（ダイアログ専用）
+  if (id !== "#screen-dialogue") stopAutoSkip();
+  if (state) updateDayCard();
 }
 
 function toast(msg) {
@@ -87,15 +99,89 @@ function addMoney(amount) {
   updateHud();
 }
 
+// ---------- HUD ----------
+const LOCATION_FROM_BG = {
+  tonari_inside: ["シーシャラウンジ『tonari』", ""],
+  tonari_outside: ["tonari 外", ""],
+  tonari_night: ["シーシャラウンジ『tonari』", "夜"],
+  tonari_day: ["シーシャラウンジ『tonari』", "昼"],
+  shop: ["C.STATION", "大会会場"],
+  tournament_stage: ["C.STATION", "本戦ステージ"],
+  street_day: ["街中", "昼"],
+  street_night: ["街中", "夜"],
+  naru_shop: ["KEMURIKUSA", "なるの店"],
+  adam_shop: ["EDEN", "アダムの店"],
+  home: ["自宅", ""],
+  map_local_day: ["栄エリア", "昼"],
+  map_local_night: ["栄エリア", "夜"],
+  title: ["タイトル", ""],
+  kemurikusa: ["KEMURIKUSA", "なるの店"],
+  eden: ["EDEN", "アダムの店"],
+  pepermint: ["PEPERMINT", "みんとの店"],
+};
+function setLocationFromBg(rel) {
+  const m = String(rel || "").match(/bg_([\w_]+?)\.png|^([\w_]+)\.png/);
+  let key = "";
+  if (m) key = (m[1] || m[2] || "").replace(/_(day|night)$/, (_, t) => t);
+  // 末尾の day/night を別途分離
+  const bgName = String(rel).split("/").pop() || "";
+  const cleanName = bgName.replace(".png", "").replace(/^bg_/, "");
+  const found = LOCATION_FROM_BG[cleanName];
+  if (found) {
+    $("#hud-location-main").textContent = found[0];
+    $("#hud-location-sub").textContent = found[1];
+  } else {
+    $("#hud-location-main").textContent = "—";
+    $("#hud-location-sub").textContent = "";
+  }
+}
+
+function levelProxy() {
+  // 5ステータスの平均から擬似レベルを出す（10〜100 → Lv.1〜10）
+  const s = state ? state.stats : { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 };
+  const avg = (s.technique + s.sense + s.guts + s.charm + s.insight) / 5;
+  return Math.max(1, Math.min(99, Math.floor(avg / 10) + 1));
+}
+
 function updateHud() {
+  if (!state) return;
+  const hud = $("#hud");
+  // タイトルではHUD非表示
+  if (state.phase === "opening") { hud.classList.add("hidden"); return; }
+  hud.classList.remove("hidden");
+
+  // 行動回数の表示（旧 hud-day の場所）
+  const hudDay = $("#hud-day");
   if (state.phase === "tournament") {
-    $("#hud-day").textContent = "SMOKE CROWN CUP 当日";
+    hudDay.textContent = "SMOKE CROWN CUP 当日";
+    hudDay.classList.remove("hidden");
   } else {
     const left = MAX_DAYS + 1 - state.day;
-    $("#hud-day").textContent = `DAY ${state.day} ／ 大会まであと${left}日`;
+    hudDay.textContent = `DAY ${state.day} ／ 大会まであと${left}日`;
+    // ダイアログ中だけ薄く出す（マップでは大きな day-card に任せる）
+    const isMap = document.querySelector("#screen-map.active");
+    hudDay.classList.toggle("hidden", !!isMap);
   }
-  $("#hud-ap").textContent = state.phase === "daily" ? (state.ap === 2 ? "☀ 昼" : "☾ 夜") + `（残り${state.ap}行動）` : "";
-  $("#hud-money").textContent = `¥${state.money.toLocaleString()}`;
+  // レベル
+  const lv = levelProxy();
+  $("#hud-level-text").textContent = `Lv.${lv}`;
+  const s = state.stats;
+  const avg = (s.technique + s.sense + s.guts + s.charm + s.insight) / 5;
+  const pct = Math.min(100, ((avg / 10) - Math.floor(avg / 10)) * 100);
+  $("#hud-level-fill").style.width = `${pct}%`;
+  // マップ用 DAY カード
+  updateDayCard();
+}
+
+function updateDayCard() {
+  const isMap = document.querySelector("#screen-map.active");
+  const card = $("#hud-day-card");
+  card.classList.toggle("show", !!isMap && state && state.phase === "daily");
+  if (!isMap || !state) return;
+  $("#dc-day").textContent = state.day;
+  $("#dc-week").textContent = state.ap === 2 ? "DAY" : "NIGHT";
+  $("#dc-ap").textContent = (state.ap === 2 ? "昼" : "夜") + ` ${state.ap}`;
+  $("#dc-money").textContent = state.money.toLocaleString();
 }
 
 // 判定スタンプ演出
@@ -107,6 +193,32 @@ function showStamp(container, result) {
   (container || $("#game")).appendChild(st);
   if (window.SFX) { SFX.stamp(); setTimeout(() => SFX[result] && SFX[result](), 120); }
   setTimeout(() => st.remove(), 950);
+}
+
+// メニュー選択時の「煙に包まれる」演出。煙の煤を画面下から立ちのぼらせて
+// シーン切替を覆い隠す。完了は then(onMid) で受け取り、煙のピーク中で実行する
+function engulfInSmoke(onMid) {
+  const veil = $("#smoke-veil");
+  veil.innerHTML = "";
+  // 12個の煙パフを下からランダムに散らす
+  for (let i = 0; i < 12; i++) {
+    const p = document.createElement("div");
+    p.className = "puff";
+    const size = 280 + Math.random() * 380;
+    p.style.width = p.style.height = `${size}px`;
+    p.style.left = `${i * 8 + Math.random() * 14 - 8}%`;
+    p.style.bottom = `${-30 - Math.random() * 18}%`;
+    p.style.setProperty("--dx", `${(Math.random() - 0.5) * 16}vw`);
+    p.style.animationDelay = `${i * 0.03 + Math.random() * 0.1}s`;
+    veil.appendChild(p);
+  }
+  veil.classList.remove("engulf");
+  void veil.offsetWidth;
+  veil.classList.add("engulf");
+  if (window.SFX) SFX.smoke();
+  // ピーク（白く包まれた瞬間）で onMid を発火
+  if (onMid) setTimeout(onMid, 520);
+  setTimeout(() => veil.classList.remove("engulf"), 1450);
 }
 
 // 日替わりカード（演出のみ・操作は止めない）
@@ -122,6 +234,42 @@ function showDayCard(big, sub) {
 let engine = null;
 let cueFiredInDialogue = false;
 let visitContextChar = null; // 好感度キューの対象キャラ
+let autoMode = false;
+let skipMode = false;
+let autoTimer = 0;
+
+function stopAutoSkip() {
+  autoMode = false; skipMode = false;
+  clearInterval(autoTimer); autoTimer = 0;
+  $("#vn-auto").classList.remove("on");
+  $("#vn-skip").classList.remove("on");
+}
+
+function toggleAuto() {
+  if (autoMode) { stopAutoSkip(); return; }
+  stopAutoSkip();
+  autoMode = true;
+  $("#vn-auto").classList.add("on");
+  autoTimer = setInterval(() => {
+    if (!engine || !$("#screen-dialogue").classList.contains("active")) return stopAutoSkip();
+    if (engine.waitingChoice) return; // 選択肢で停止
+    if (engine.typing) return; // タイプ中は待つ
+    engine.next();
+  }, 1400);
+}
+
+function toggleSkip() {
+  if (skipMode) { stopAutoSkip(); return; }
+  stopAutoSkip();
+  skipMode = true;
+  $("#vn-skip").classList.add("on");
+  autoTimer = setInterval(() => {
+    if (!engine || !$("#screen-dialogue").classList.contains("active")) return stopAutoSkip();
+    if (engine.waitingChoice) return stopAutoSkip();
+    if (engine.typing) engine.completeTyping();
+    else engine.next();
+  }, 60);
+}
 
 function parseTextCue(text) {
   if (!text.includes("上がった")) return;
@@ -173,9 +321,15 @@ function initEngine() {
         else showScreen("#screen-gameover");
       },
       findDialogue: (id) => D.dialogues[id] || null,
+      onBackgroundChange: (rel) => setLocationFromBg(rel),
     }
   );
-  $("#vn-click-layer").addEventListener("click", () => { if (window.SFX) SFX.click(); engine.next(); });
+  $("#vn-click-layer").addEventListener("click", () => {
+    // 手動クリックは AUTO/SKIP を解除して次へ
+    if (autoMode || skipMode) stopAutoSkip();
+    if (window.SFX) SFX.click();
+    engine.next();
+  });
   document.addEventListener("keydown", (e) => {
     if ((e.key === "Enter" || e.key === " ") && $("#screen-dialogue").classList.contains("active")) {
       e.preventDefault();
@@ -205,6 +359,7 @@ function playCustom(dialogue, onDone, bgOverride) {
   showScreen("#screen-dialogue");
   cueFiredInDialogue = false;
   if (bgOverride) engine.setBackground(bgOverride);
+  if (state) updateHud();
   engine.start(dialogue, () => {
     engine.hideCg();
     if (onDone) onDone();
@@ -250,41 +405,94 @@ const REPEAT_VISIT = {
   minto: { text: "みんとの店で一服。客あしらいの軽やかさは、やっぱり真似できない。", stats: { charm: 2 } },
 };
 
+// 行き先ピンの短い見出し（絵文字は使わず日本語の頭文字や略号で）
 const SPOT_ICONS = {
-  baito: "🫖", practice: "💨", sumi: "🪵", tsumugi: "📓",
-  naru: "⚡", adam: "🍎", minto: "🌿", choizap: "💪",
-  kannon: "⛩️", cafe: "☕", c_station: "🏟️", rest: "🛏️",
+  baito: "労", practice: "練", sumi: "師", tsumugi: "紬",
+  naru: "鳴", adam: "亜", minto: "緑", choizap: "筋",
+  kannon: "観", cafe: "珈", c_station: "C", rest: "休",
+};
+
+// マップ上のピン位置（%）と短いラベル名
+const SPOT_LAYOUT = {
+  baito:     { x: 14, y: 32, theme: "baito",   short: "バイト",     area: "tonari" },
+  practice:  { x: 22, y: 50, theme: "shisha",  short: "練習",       area: "tonari" },
+  sumi:      { x: 12, y: 64, theme: "mentor",  short: "スミさん",   area: "tonari" },
+  tsumugi:   { x: 26, y: 70, theme: "shisha",  short: "つむぎ",     area: "tonari" },
+  naru:      { x: 42, y: 22, theme: "rival",   short: "なるの店",   area: "繁華街" },
+  adam:      { x: 56, y: 30, theme: "rival",   short: "アダムの店", area: "下町" },
+  minto:     { x: 70, y: 22, theme: "rival",   short: "みんとの店", area: "繁華街" },
+  choizap:   { x: 50, y: 50, theme: "shop",    short: "チョイザップ", area: "ジム" },
+  kannon:    { x: 78, y: 56, theme: "park",    short: "観音堂",     area: "古町" },
+  cafe:      { x: 64, y: 64, theme: "cafe",    short: "カフェ",     area: "繁華街" },
+  c_station: { x: 84, y: 36, theme: "stadium", short: "C.STATION",  area: "会場" },
+  rest:      { x: 88, y: 76, theme: "rest",    short: "家",         area: "自宅" },
 };
 
 function showMap() {
   state.phase = "daily";
-  updateHud();
   if (window.SFX) SFX.bgm("daily_part");
   showScreen("#screen-map");
   const night = state.ap <= 1;
-  $("#screen-map").style.backgroundImage =
+  $("#map-image").style.backgroundImage =
     `url('${assetUrl(`assets/backgrounds/bg_map_local_${night ? "night" : "day"}.png`)}')`;
-  const timeLabel = $("#map-time");
-  if (timeLabel) timeLabel.textContent = night ? "☾ 夜 — 今日はあと1回動ける" : "☀ 昼 — 今日は2回動ける";
-  const list = $("#map-spots");
-  list.innerHTML = "";
+  $("#map-time-toggle").textContent = night ? "夜 / 栄" : "昼 / 栄";
+  updateHud();
+
+  const pins = $("#map-pins");
+  pins.innerHTML = "";
   for (const spot of SPOTS) {
+    const layout = SPOT_LAYOUT[spot.id];
+    if (!layout) continue;
     const btn = document.createElement("button");
-    btn.className = "spot-btn";
-    // まだ会っていないキャラのおすすめスポットは行き先として知らない
-    if (spot.requiresMet && state.visits[spot.requiresMet] === 0) {
-      btn.innerHTML = `<span class="spot-icon">❓</span><span class="spot-name">？？？</span><span class="spot-desc">まだ知らない場所。誰かに教えてもらえそうな気がする。</span>`;
+    btn.className = `spot-pin spot-btn pin-${layout.theme}`;
+    btn.style.left = `${layout.x}%`;
+    btn.style.top = `${layout.y}%`;
+    // テキストは「{label}」を含む（テストで hasText 検索される）
+    const locked = spot.requiresMet && state.visits[spot.requiresMet] === 0;
+    const tooPoor = spot.cost > state.money;
+    if (locked) {
+      btn.classList.add("locked");
+      btn.innerHTML = `<div class="shield"><div class="ico">？</div><div class="label">？？？</div></div>`;
       btn.disabled = true;
-      list.appendChild(btn);
-      continue;
+      btn.dataset.label = "未開放";
+    } else {
+      btn.innerHTML =
+        `<div class="shield">` +
+          `<div class="ico">${SPOT_ICONS[spot.id] || ""}</div>` +
+          `<div class="label">${layout.short}</div>` +
+        `</div>` +
+        `<div class="sub-label">${spot.label}</div>`;
+      if (tooPoor) btn.disabled = true;
     }
-    const costLabel = spot.cost > 0 ? `<span class="spot-cost">¥${spot.cost.toLocaleString()}</span>` : "";
-    btn.innerHTML = `<span class="spot-icon">${SPOT_ICONS[spot.id] || ""}</span><span class="spot-name">${spot.label}</span>${costLabel}<span class="spot-desc">${spot.desc}</span>`;
-    if (spot.cost > state.money) btn.disabled = true;
-    btn.addEventListener("click", () => selectSpot(spot));
-    list.appendChild(btn);
+    btn.addEventListener("mouseenter", () => updateMapInfo(spot, locked, tooPoor));
+    btn.addEventListener("focus", () => updateMapInfo(spot, locked, tooPoor));
+    btn.addEventListener("click", () => { if (!btn.disabled) selectSpot(spot); });
+    pins.appendChild(btn);
   }
+  updateMapInfo(null);
   save();
+}
+
+function updateMapInfo(spot, locked, tooPoor) {
+  if (!spot) {
+    $("#map-info-title").textContent = state.ap === 2 ? "今日はどうする？" : "夜の時間";
+    $("#map-info-desc").textContent = "気になる場所をタップ。残り行動と所持金に注意。";
+    $("#map-info-cost").textContent = "";
+    $("#map-info-hint").textContent =
+      state.ap === 2 ? "昼 — 今日は2回動ける" : "夜 — 今日はあと1回動ける";
+    return;
+  }
+  const layout = SPOT_LAYOUT[spot.id] || {};
+  $("#map-info-title").textContent = locked ? "？？？" : (layout.area || spot.label);
+  $("#map-info-desc").textContent = locked
+    ? "まだ知らない場所。誰かに教えてもらえそうな気がする。"
+    : spot.desc;
+  $("#map-info-cost").textContent = locked
+    ? ""
+    : (spot.cost > 0 ? `所持金から ¥${spot.cost.toLocaleString()} 必要` : "");
+  $("#map-info-hint").textContent = locked
+    ? "ロック中"
+    : tooPoor ? "所持金が足りない" : `タップして移動: ${spot.label}`;
 }
 
 function selectSpot(spot) {
@@ -738,8 +946,9 @@ function startTournament() {
   );
 }
 
-function beginMaking() {
+function beginMaking(tutorial) {
   tt = {
+    tutorial: !!tutorial,
     bowl: null, hms: null, charcoal: null,
     theme: null, mix: {}, pack: null,
     foilHits: 0, foilDone: false, coalFire: null, coal: null, steam: null,
@@ -747,17 +956,28 @@ function beginMaking() {
   };
   stopRigEffects();
   buildRig();
-  tournamentStep("setup_bowl");
+  tournamentStep(tutorial ? "theme" : "setup_bowl");
 }
 
 function tnPanel(title, hint) {
   showScreen("#screen-tournament");
-  const idx = STEP_FLOW.findIndex(([k]) => k === (tt && tt.step));
+  const flow = tt && tt.tutorial ? TUTORIAL_FLOW : STEP_FLOW;
+  const idx = flow.findIndex(([k]) => k === (tt && tt.step));
+  const head = tt && tt.tutorial ? "TUTORIAL " : "STEP ";
   $("#tn-progress").innerHTML = idx >= 0
-    ? `STEP ${idx + 1}/${STEP_FLOW.length}・${STEP_FLOW[idx][1]} <span class="tn-steps">${STEP_FLOW.map(([, t], i) => (i <= idx ? "●" : "○")).join("")}</span>`
+    ? `${head}${idx + 1}/${flow.length}・${flow[idx][1]} <span class="tn-steps">${flow.map(([, t], i) => (i <= idx ? "●" : "○")).join("")}</span>`
     : "RESULT";
   $("#tn-title").textContent = title;
   $("#tn-hint").textContent = hint || "";
+  // チュートリアル中はスミさんのアドバイスを添える
+  const oldTutor = document.querySelector("#tn-layout .tn-tutor");
+  if (oldTutor) oldTutor.remove();
+  if (tt && tt.tutorial && TUTORIAL_TIPS[tt.step]) {
+    const tip = document.createElement("p");
+    tip.className = "tn-tutor";
+    tip.textContent = TUTORIAL_TIPS[tt.step];
+    $("#tn-hint").after(tip);
+  }
   const body = $("#tn-body");
   body.innerHTML = "";
   updateRig();
@@ -799,6 +1019,7 @@ function tournamentStep(step) {
       tt.steam = s.id;
       if (window.SFX) SFX.smoke();
       startRigSmoke(750);
+      if (tt.tutorial) return tournamentStep("pull"); // チュートリアルは観客も対戦相手もいない
       playDialogue("ch1_tournament_match", () => tournamentStep("focus"), "res://assets/backgrounds/bg_tournament_stage.png");
     }));
     return;
@@ -1098,8 +1319,8 @@ function stepPull() {
     wrap.querySelector("#tn-gauge-result").textContent = msgs[tt.pull];
     const nextBtn = document.createElement("button");
     nextBtn.className = "primary-btn";
-    nextBtn.textContent = "提供する";
-    nextBtn.addEventListener("click", () => tournamentStep("present"));
+    nextBtn.textContent = tt.tutorial ? "スミさんに出す" : "提供する";
+    nextBtn.addEventListener("click", () => (tt.tutorial ? finishTutorial() : tournamentStep("present")));
     wrap.appendChild(nextBtn);
   });
 }
@@ -1300,6 +1521,136 @@ function toggleStatus(show) {
   else ov.classList.remove("visible");
 }
 
+// ---------------------------------------------------------------- title
+// 一人称視点なので主人公は出さず、ヒロイン・ライバル・店の面々から日替わりで選ぶ。
+// アート一枚絵を煙マスクの窓（#title-chara-window）にコンシューマー風に表示する
+const TITLE_CHARA_POOL = ["tsumugi", "sumi", "packii", "naru", "adam", "minto"];
+
+function setupTitleLogo() {
+  const img = $("#title-logo-img");
+  img.src = assetUrl("assets/ui/ui_title_logo.png");
+  // ロゴ画像が無い環境ではテキスト版にフォールバック
+  img.onerror = () => {
+    img.classList.add("hidden");
+    $(".title-logo").classList.remove("hidden");
+    $(".title-en").classList.remove("hidden");
+  };
+}
+
+// タイトルの専用キービジュアル: build_data.py が assets/ui/title_arts/ を
+// 走査して D.title_arts に詰める。1枚以上あればランダムで1枚表示し、
+// 無ければキャラランダム表示にフォールバック。
+function setupTitleKeyVisual(onMiss) {
+  const frame = $("#title-art-frame");
+  const img = $("#title-art");
+  const arts = (D && D.title_arts) || [];
+  if (!arts.length) { frame.style.display = "none"; if (onMiss) onMiss(); return; }
+  const name = arts[Math.floor(Math.random() * arts.length)];
+  img.onerror = () => { frame.style.display = "none"; if (onMiss) onMiss(); };
+  img.onload = () => {
+    frame.classList.add("show");
+    $("#title-chara-window").style.display = "none";
+  };
+  img.src = assetUrl(`assets/ui/title_arts/${name}`);
+}
+
+function setupTitleChara() {
+  const img = $("#title-chara");
+  const win = $("#title-chara-window");
+  const pool = TITLE_CHARA_POOL.filter((id) => (D.portraits || {})[id]);
+  if (!pool.length) { win.style.display = "none"; return; }
+  const id = pool[Math.floor(Math.random() * pool.length)];
+  const faces = D.portraits[id] || [];
+  const face = faces.includes("normal") ? "normal" : faces[0];
+  const t = ((D.portrait_trims || {})[id] || {})[face] || {};
+  img.onerror = () => { win.style.display = "none"; };
+  img.onload = () => {
+    // 実コンテンツ(bbox)が窓を覆うように配置（cover相当）。
+    // 顔が来るbbox上部1/3あたりを窓のやや上に合わせる
+    const ww = win.clientWidth, wh = win.clientHeight;
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+    if (!ww || !iw) return;
+    const bw = iw * (t.w || 1);
+    const bh = ih * (t.h || 1);
+    const bx = iw * (t.l || 0);
+    const by = ih * (1 - (t.b || 0)) - bh;
+    // cover を基本に、細身の切り抜き（全身立ち絵）が極端にズームされないよう
+    // 「高さフィットの1.35倍」を上限にする。横が余れば星雲が透けて見える
+    const cover = Math.max(ww / bw, wh / bh);
+    const scale = Math.min(cover, (wh / bh) * 1.35) * 1.08; // Ken Burns の余白ぶん
+    img.style.width = `${iw * scale}px`;
+    img.style.height = "auto";
+    const focusX = (bx + bw * 0.5) * scale;
+    const focusY = (by + bh * 0.32) * scale;
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    const lo = (full, view) => Math.min(0, view - full);
+    const hi = (full, view) => Math.max(0, view - full);
+    img.style.left = `${clamp(ww * 0.5 - focusX, lo(iw * scale, ww), hi(iw * scale, ww))}px`;
+    img.style.top = `${clamp(wh * 0.42 - focusY, lo(ih * scale, wh), hi(ih * scale, wh))}px`;
+  };
+  img.src = assetUrl(`assets/sprites/characters/${id}/chr_${id}_${face}.png`);
+}
+
+function startTitleBgm() {
+  if (window.SFX && $("#screen-title").classList.contains("active")) SFX.bgm("title");
+}
+
+// ---------------------------------------------------------------- tutorial
+// 大会に出ろと言われた直後、tonariの作業台で一度シーシャ作りを通しで体験する
+const TUTORIAL_FLOW = [
+  ["theme", "THEME"], ["mix", "MIX"], ["pack", "PACK"], ["foil", "FOIL"],
+  ["coalfire", "COAL"], ["coal", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"],
+];
+const TUTORIAL_TIPS = {
+  theme: "スミさん「まずは一台のコンセプトだ。今日は好きに選んでいい」",
+  mix: "スミさん「合計12g。最初は2種類くらいが扱いやすいぞ」",
+  pack: "スミさん「迷ったらノーマル。フレーバーの重さで変えるんだ」",
+  foil: "スミさん「穴は均等に。リズムで開けると揃う」",
+  coalfire: "スミさん「炭は全体が赤く熾きてからだ。焦るな」",
+  coal: "スミさん「基本はトライアングル。熱が均等に回る」",
+  steam: "スミさん「蒸らしは5〜8分。ここで味が決まる」",
+  pull: "スミさん「最後は自分の肺で確かめろ」",
+};
+
+function startTutorial() {
+  if (state.flags._tutorial_done) return showMap();
+  playCustom({
+    dialogue_id: "tutorial_intro",
+    metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" },
+    lines: [
+      { speaker: "sumi", face: "normal", text: "おい、始。大会に出るって決めたなら、まず一回、通しで作ってみろ。" },
+      { speaker: "sumi", face: "smile", text: "ウチの作業台を貸してやる。テーマ決めから引きまで、本番と同じ流れだ。" },
+      { speaker: "hajime", face: "normal", text: "（……やってみよう。何事も、まずは手を動かすところからだ）" },
+    ],
+  }, () => beginMaking(true));
+}
+
+function finishTutorial() {
+  state.flags._tutorial_done = true;
+  stopRigEffects();
+  const craft = craftScore();
+  const grade = craft.score >= 90 ? "great" : craft.score >= 70 ? "good" : "rough";
+  const comment = {
+    great: { face: "surprise", text: "……驚いたな。初めての通しでこの煙か。お前、本当に筋がいいぞ。" },
+    good: { face: "smile", text: "悪くない。初めての通しなら上出来だ。あとは数をこなすだけだな。" },
+    rough: { face: "normal", text: "まあ、最初はこんなもんだ。どこで味が決まるか、体で覚えただろう。" },
+  }[grade];
+  playCustom({
+    dialogue_id: "tutorial_result",
+    metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" },
+    lines: [
+      { speaker: "", face: "", text: "──煙を一口、スミさんに渡す。ゆっくりと吐き出して、しばらく目を閉じた。" },
+      { speaker: "sumi", face: comment.face, text: comment.text },
+      { speaker: "sumi", face: "serious", text: "本番までの7日間、店も練習台も好きに使え。……優勝してこい。" },
+      { speaker: "", face: "", text: "……【技術】と【センス】が上がった。" },
+    ],
+  }, () => {
+    save();
+    showDayCard("DAY 1", "SMOKE CROWN CUP まで あと7日");
+    showMap();
+  });
+}
+
 // ---------------------------------------------------------------- boot
 function startNewGame() {
   state = newState();
@@ -1307,7 +1658,7 @@ function startNewGame() {
   playDialogue("ch1_opening", () => {
     state.phase = "daily";
     save();
-    showMap();
+    startTutorial();
   }, "res://assets/backgrounds/bg_tonari_inside.png");
 }
 
@@ -1323,27 +1674,63 @@ function init() {
   fitStage();
   window.addEventListener("resize", fitStage);
   initEngine();
+  setupTitleLogo();
+  // キービジュアルがあればそれを最優先、無ければキャラランダム表示
+  setupTitleKeyVisual(() => setupTitleChara());
+  // タイトルBGM: 自動再生がブロックされたら最初の操作で再試行する
+  startTitleBgm();
+  window.addEventListener("pointerdown", startTitleBgm, { once: true });
+  window.addEventListener("keydown", startTitleBgm, { once: true });
   const saved = loadSave();
   $("#btn-new").addEventListener("click", () => {
-    localStorage.removeItem(SAVE_KEY);
-    if (window.SFX) { SFX.select(); SFX.bgm("tonari"); }
-    startNewGame();
+    if (window.SFX) SFX.select();
+    engulfInSmoke(() => {
+      localStorage.removeItem(SAVE_KEY);
+      if (window.SFX) SFX.bgm("tonari");
+      startNewGame();
+    });
   });
   $("#btn-mute").addEventListener("click", () => {
     const m = !SFX.isMuted();
     SFX.setMuted(m);
     const b = $("#btn-mute");
-    b.textContent = m ? "♪ OFF" : "♪ ON";
+    b.textContent = m ? "BGM OFF" : "BGM ON";
     b.classList.toggle("off", m);
   });
   const contBtn = $("#btn-continue");
   if (saved && saved.phase !== "opening") {
     contBtn.classList.remove("hidden");
-    contBtn.addEventListener("click", () => { if (window.SFX) { SFX.select(); SFX.bgm("daily_part"); } continueGame(saved); });
+    contBtn.addEventListener("click", () => {
+      if (window.SFX) SFX.select();
+      engulfInSmoke(() => {
+        if (window.SFX) SFX.bgm("daily_part");
+        continueGame(saved);
+      });
+    });
   }
   $("#btn-status").addEventListener("click", () => toggleStatus(true));
   $("#status-close").addEventListener("click", () => toggleStatus(false));
   $("#btn-gameover-title").addEventListener("click", () => location.reload());
+  // ダイアログ右下ツール
+  $("#vn-auto").addEventListener("click", toggleAuto);
+  $("#vn-skip").addEventListener("click", toggleSkip);
+  $("#vn-log").addEventListener("click", () => toast("ログは次回実装予定"));
+  $("#vn-menu").addEventListener("click", () => toggleStatus(true));
+  // タイトルメニューのフォーカス・hover演出 + ホバーSE
+  let lastHoverSfx = 0;
+  for (const item of document.querySelectorAll(".title-menu-item")) {
+    item.addEventListener("focus", () => {
+      for (const x of document.querySelectorAll(".title-menu-item.focus")) x.classList.remove("focus");
+      item.classList.add("focus");
+    });
+    item.addEventListener("mouseenter", () => {
+      if (item.disabled) return;
+      const now = performance.now();
+      if (now - lastHoverSfx < 90) return; // 連続ホバーで鳴りすぎないように
+      lastHoverSfx = now;
+      if (window.SFX) SFX.pageTurn();
+    });
+  }
   showScreen("#screen-title");
 }
 

@@ -52,6 +52,31 @@ def encode_portrait(path: Path) -> str:
 
 def collect_assets() -> dict:
     assets = {}
+    # タイトルロゴ（煙のグラデーションを潰さないよう減色なしの透過PNG）
+    logo = REPO_ROOT / "assets" / "ui" / "ui_title_logo.png"
+    if logo.exists() and logo.stat().st_size > 0:
+        im = Image.open(logo).convert("RGBA")
+        if im.width > 1200:
+            im = im.resize((1200, round(im.height * 1200 / im.width)), Image.LANCZOS)
+        buf = io.BytesIO()
+        im.save(buf, "PNG", optimize=True)
+        assets["assets/ui/ui_title_logo.png"] = (
+            "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
+        )
+    # タイトル用キービジュアル: assets/ui/title_arts/*.png
+    arts_dir = REPO_ROOT / "assets" / "ui" / "title_arts"
+    if arts_dir.exists():
+        for png in sorted(arts_dir.glob("*.png")):
+            if png.stat().st_size == 0:
+                continue
+            im = Image.open(png).convert("RGB")
+            if im.width > BG_MAX_W:
+                im = im.resize((BG_MAX_W, round(im.height * BG_MAX_W / im.width)), Image.LANCZOS)
+            buf = io.BytesIO()
+            im.save(buf, "JPEG", quality=JPEG_QUALITY, optimize=True)
+            assets[f"assets/ui/title_arts/{png.name}"] = (
+                "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
+            )
     # 背景: ゲームから参照されうるものを全て
     for png in sorted((REPO_ROOT / "assets" / "backgrounds").glob("*.png")):
         assets[f"assets/backgrounds/{png.name}"] = encode_background(png)
@@ -66,7 +91,7 @@ def collect_assets() -> dict:
     return assets
 
 
-BGM_FILES = {"daily_part": "daily_part.mp3", "tonari": "tonari.mp3"}
+BGM_FILES = {"daily_part": "daily_part.mp3", "tonari": "tonari.mp3", "title": "title.mp3"}
 BGM_MAX_BYTES = 1_200_000  # 1曲あたり約75秒で切ってループさせる
 
 

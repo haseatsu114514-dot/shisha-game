@@ -55,7 +55,9 @@ def portrait_trim(png: Path):
     """透過余白を測り、立ち絵の実体サイズを正規化するための値を返す。
 
     h: 画像高さに対する実コンテンツの高さ比 / b: 下端の余白比
-    （キャラごとの余白差で見かけサイズがズレるのを補正する）
+    l: 左端の余白比 / w: 実コンテンツの幅比
+    （キャラごとの余白差で見かけサイズがズレるのを補正する。
+     l/w はタイトル等の「アートウィンドウ」での切り出しに使う）
     """
     if Image is None:
         return None
@@ -64,10 +66,12 @@ def portrait_trim(png: Path):
         bbox = im.getbbox()
         if not bbox:
             return None
-        _, top, _, bottom = bbox
+        left, top, right, bottom = bbox
         return {
             "h": round((bottom - top) / im.height, 3),
             "b": round((im.height - bottom) / im.height, 3),
+            "l": round(left / im.width, 3),
+            "w": round((right - left) / im.width, 3),
         }
     except OSError:
         return None
@@ -103,6 +107,16 @@ def collect_backgrounds() -> list:
     return sorted(p.name for p in bg_dir.glob("*.png"))
 
 
+def collect_title_arts() -> list:
+    """assets/ui/title_arts/ にある専用キービジュアル一覧。
+    タイトルが起動時にここからランダムに1枚選んで表示する。
+    画像が無ければ空配列 → タイトルはキャラランダム表示にフォールバック"""
+    arts_dir = REPO_ROOT / "assets" / "ui" / "title_arts"
+    if not arts_dir.exists():
+        return []
+    return sorted(p.name for p in arts_dir.glob("*.png") if p.stat().st_size > 0)
+
+
 def main() -> None:
     flavors = load_json(DATA_DIR / "flavors.json")["flavors"]
     baito = load_json(DATA_DIR / "baito_events.json")
@@ -131,6 +145,7 @@ def main() -> None:
         "portraits": portraits,
         "portrait_trims": portrait_trims,
         "backgrounds": collect_backgrounds(),
+        "title_arts": collect_title_arts(),
     }
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
