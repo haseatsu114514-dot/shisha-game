@@ -146,6 +146,24 @@ class DialogueEngine {
     this.el.cg.classList.remove("visible");
   }
 
+  // 透過余白の差を補正し、どのキャラも実体が同じ高さで並ぶようにする
+  applyPortraitTrim(img, speaker, face) {
+    const TARGET = 62; // 実体の表示高（ステージ高に対する%）
+    const folder = SPEAKER_ID_ALIASES[speaker] || speaker;
+    const trims = (this.ctx.portraitTrims || {})[folder] || {};
+    const faces = (this.ctx.portraitFaces || {})[folder] || [];
+    let f = face && faces.includes(face) ? face : "normal";
+    const t = trims[f] || trims.normal;
+    if (!t || !t.h) {
+      img.style.height = "85%";
+      img.style.bottom = "0";
+      return;
+    }
+    const h = Math.min(TARGET / t.h, 115); // 余白が極端でも上げすぎない
+    img.style.height = `${h}%`;
+    img.style.bottom = `${-(t.b * h)}%`;
+  }
+
   portraitSrc(speaker, face) {
     const folder = SPEAKER_ID_ALIASES[speaker] || speaker;
     const faces = (this.ctx.portraitFaces || {})[folder];
@@ -189,7 +207,10 @@ class DialogueEngine {
         this.el.portraits.appendChild(img);
       }
       const img = this.el.portraits.querySelector(`img[data-speaker="${speaker}"]`);
-      if (img) img.src = this.portraitSrc(speaker, face);
+      if (img) {
+        img.src = this.portraitSrc(speaker, face);
+        this.applyPortraitTrim(img, speaker, face);
+      }
     }
     for (const img of this.el.portraits.querySelectorAll("img")) {
       img.classList.toggle("active", img.dataset.speaker === speaker);

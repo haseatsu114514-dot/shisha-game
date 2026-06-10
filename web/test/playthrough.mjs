@@ -13,7 +13,7 @@ const BASE = process.env.BASE_URL || "http://127.0.0.1:8123/web/";
 const log = (...a) => console.log("[test]", ...a);
 
 const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage({ viewport: { width: 1100, height: 700 } });
+const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
 
 const errors = [];
 page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
@@ -27,14 +27,15 @@ log("title OK");
 await page.click("#btn-new");
 
 // 行動計画（マップで上から順に消費する）
+// キャラ訪問でスポットが解禁される順序も兼ねて検証する
 const plan = [
   "tonariでバイト", "スミさんと話す",
+  "なるの店へ行く", "アダムの店へ行く",
+  "みんとの店へ行く", "カフェ",
+  "観音堂", "チョイザップ",
   "シーシャの練習", "つむぎと話す",
-  "なるの店へ行く", "カフェ",
-  "観音堂", "C.STATION",
-  "チョイザップ", "みんとの店へ行く",
-  "tonariでバイト", "シーシャの練習",
-  "チョイザップ", "家で休む",
+  "tonariでバイト", "C.STATION",
+  "シーシャの練習", "家で休む",
 ];
 let planIdx = 0;
 let guard = 0;
@@ -105,7 +106,27 @@ while (guard++ < 600) {
   }
   if (screen === "screen-tournament") {
     const title = await tnStep();
-    if (title.includes("テーマ選択")) {
+    if (title.includes("機材選択")) {
+      await page.locator("#tn-body .spot-btn:not([disabled])").first().click();
+    } else if (title.includes("アルミ穴あけ")) {
+      for (let k = 0; k < 6; k++) {
+        await page.waitForTimeout(140);
+        await page.locator("button", { hasText: "穴を開ける" }).click();
+      }
+      await page.locator("button", { hasText: "次へ" }).click();
+    } else if (title.includes("炭起こし")) {
+      await page.waitForTimeout(250);
+      await page.locator("button", { hasText: "乗せる" }).click();
+      await page.locator("button", { hasText: "次へ" }).click();
+    } else if (title.includes("集中")) {
+      for (let k = 0; k < 60; k++) {
+        const fin = page.locator("button", { hasText: "仕上げに入る" });
+        if (await fin.count()) { await fin.click(); break; }
+        const w = page.locator(".focus-word");
+        if (await w.count()) await w.first().click().catch(() => {});
+        await page.waitForTimeout(150);
+      }
+    } else if (title.includes("テーマ選択")) {
       await page.locator(".spot-btn", { hasText: "フルーティ" }).click();
     } else if (title.includes("ミックス")) {
       // ブルーベリー8g + バニラ4g（fruit + sweet でテーマ一致）

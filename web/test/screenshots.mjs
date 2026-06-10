@@ -11,7 +11,7 @@ const OUT = process.env.OUT_DIR || "/tmp/shots";
 const log = (...a) => console.log("[shot]", ...a);
 
 const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage({ viewport: { width: 1100, height: 700 } });
+const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
 const errors = [];
 page.on("pageerror", (e) => errors.push(e.message));
 
@@ -86,7 +86,33 @@ for (let i = 0; i < 400; i++) {
   }
   if (s === "screen-tournament") {
     const t = await title();
-    if (t.includes("テーマ選択")) await page.locator(".spot-btn", { hasText: "高火力" }).click();
+    if (t.includes("機材選択")) {
+      if (t.includes("ボウル")) await page.screenshot({ path: `${OUT}/07b_setup.png` });
+      await page.locator("#tn-body .spot-btn:not([disabled])").first().click();
+    }
+    else if (t.includes("アルミ穴あけ")) {
+      await page.screenshot({ path: `${OUT}/08b_foil.png` });
+      for (let k = 0; k < 6; k++) await page.locator("button", { hasText: "穴を開ける" }).click();
+      await page.locator("button", { hasText: "次へ" }).click();
+    }
+    else if (t.includes("炭起こし")) {
+      await page.locator("button", { hasText: "乗せる" }).click();
+      await page.locator("button", { hasText: "次へ" }).click();
+    }
+    else if (t.includes("集中")) {
+      // わざと雑念を払わない（敗北ルート用）
+      let shot = false;
+      for (let k = 0; k < 90; k++) {
+        if (!shot && (await page.locator(".focus-word").count())) {
+          await page.screenshot({ path: `${OUT}/08c_focus.png` });
+          shot = true;
+        }
+        const fin = page.locator("button", { hasText: "仕上げに入る" });
+        if (await fin.count()) { await fin.click(); break; }
+        await page.waitForTimeout(200);
+      }
+    }
+    else if (t.includes("テーマ選択")) await page.locator(".spot-btn", { hasText: "高火力" }).click();
     else if (t.includes("ミックス")) {
       const plus = page.locator(".mix-row", { hasText: "バニラ" }).locator("button", { hasText: "＋" });
       for (let k = 0; k < 12; k++) await plus.click();
@@ -119,7 +145,7 @@ if (!endTitle.includes("敗北")) throw new Error("expected defeat, got " + endT
 await page.locator("button", { hasText: "もう一度挑戦する" }).click();
 await page.waitForTimeout(100);
 const t2 = await page.locator("#tn-title").textContent();
-if (!t2.includes("テーマ選択")) throw new Error("retry did not restart tournament");
+if (!t2.includes("機材選択")) throw new Error("retry did not restart tournament");
 log("defeat → retry OK");
 
 if (errors.length) { console.error("ERRORS:\n" + errors.join("\n")); process.exit(1); }

@@ -38,6 +38,12 @@ function loadSave() {
 // ---------------------------------------------------------------- helpers
 const $ = (sel) => document.querySelector(sel);
 
+// 16:9 (1280x720) のステージを画面サイズに合わせて等倍スケール
+function fitStage() {
+  const scale = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+  $("#game").style.transform = `scale(${scale})`;
+}
+
 function showScreen(id) {
   for (const s of document.querySelectorAll(".screen")) s.classList.remove("active");
   $(id).classList.add("active");
@@ -123,6 +129,7 @@ function initEngine() {
     {
       getStat: (en) => state.stats[en] || 0,
       portraitFaces: D.portraits,
+      portraitTrims: D.portrait_trims,
       charNames: D.char_names,
       setFlag: (flag) => { state.flags[flag] = true; },
       onTextCue: parseTextCue,
@@ -186,9 +193,9 @@ const SPOTS = [
   { id: "naru", label: "なるの店へ行く", desc: "ライバル店を偵察", cost: VISIT_COST },
   { id: "adam", label: "アダムの店へ行く", desc: "ダブルアップル職人の店", cost: VISIT_COST },
   { id: "minto", label: "みんとの店へ行く", desc: "自称20歳の店へ", cost: VISIT_COST },
-  { id: "choizap", label: "チョイザップ", desc: "商店街の角のジム", cost: 0 },
-  { id: "kannon", label: "観音堂", desc: "アダムに教えてもらった静かな場所", cost: 0 },
-  { id: "cafe", label: "カフェ", desc: "なるおすすめのスパイスラテ", cost: 800 },
+  { id: "choizap", label: "チョイザップ", desc: "みんとに教えてもらったジム", cost: 0, requiresMet: "minto" },
+  { id: "kannon", label: "観音堂", desc: "アダムに教えてもらった静かな場所", cost: 0, requiresMet: "adam" },
+  { id: "cafe", label: "カフェ", desc: "なるおすすめのスパイスラテ", cost: 800, requiresMet: "naru" },
   { id: "c_station", label: "C.STATION", desc: "大会会場の下見に行く", cost: 0 },
   { id: "rest", label: "家で休む", desc: "しっかり寝て明日に備える", cost: 0 },
 ];
@@ -225,6 +232,13 @@ function showMap() {
   for (const spot of SPOTS) {
     const btn = document.createElement("button");
     btn.className = "spot-btn";
+    // まだ会っていないキャラのおすすめスポットは行き先として知らない
+    if (spot.requiresMet && state.visits[spot.requiresMet] === 0) {
+      btn.innerHTML = `<span class="spot-name">？？？</span><span class="spot-desc">まだ知らない場所。誰かに教えてもらえそうな気がする。</span>`;
+      btn.disabled = true;
+      list.appendChild(btn);
+      continue;
+    }
     const costLabel = spot.cost > 0 ? `<span class="spot-cost">¥${spot.cost.toLocaleString()}</span>` : "";
     btn.innerHTML = `<span class="spot-name">${spot.label}</span>${costLabel}<span class="spot-desc">${spot.desc}</span>`;
     if (spot.cost > state.money) btn.disabled = true;
@@ -340,7 +354,7 @@ function doBaito() {
 
 // --- キャラ訪問
 const VISIT_BG = {
-  naru: "bg_naru_shop.png", adam: "bg_adam_shop.png", minto: "bg_shop.png",
+  naru: "kemurikusa.png", adam: "eden.png", minto: "pepermint.png",
   sumi: "bg_tonari_inside.png", tsumugi: "bg_tonari_inside.png",
 };
 
@@ -551,9 +565,18 @@ const PRESENTS = [
   { id: "unique", label: "余韻と独自性で語る", theme: "aftertaste" },
 ];
 const RIVALS = [
-  { id: "naru", name: "なる", base: 66 },
-  { id: "adam", name: "アダム", base: 62 },
-  { id: "minto", name: "みんと", base: 58 },
+  { id: "naru", name: "なる", base: 72 },
+  { id: "adam", name: "アダム", base: 67 },
+  { id: "minto", name: "みんと", base: 62 },
+];
+
+const EQUIP_TYPE_LABELS = { bowl: "ボウル", hms: "ヒートマネジメント", charcoal: "炭" };
+const FOCUS_WORDS = [
+  "手元、見られてる……",
+  "パッキーの野次がうるさい",
+  "時間が足りないかも……",
+  "なるの煙、もう上がってる",
+  "失敗したらどうしよう",
 ];
 
 let tt = null; // tournament temp state
@@ -568,8 +591,13 @@ function startTournament() {
 }
 
 function beginMaking() {
-  tt = { theme: null, mix: {}, pack: null, coal: null, steam: null, pull: null, present: null };
-  tournamentStep("theme");
+  tt = {
+    bowl: null, hms: null, charcoal: null,
+    theme: null, mix: {}, pack: null,
+    foilHits: 0, coalFire: null, coal: null, steam: null,
+    focusCleared: 0, pull: null, present: null,
+  };
+  tournamentStep("setup_bowl");
 }
 
 function tnPanel(title, hint) {
@@ -590,6 +618,7 @@ function optionButton(label, desc, onClick) {
 }
 
 function tournamentStep(step) {
+  if (step === "setup_bowl" || step === "setup_hms" || step === "setup_charcoal") return stepSetup(step);
   if (step === "theme") {
     const body = tnPanel("テーマ選択", "今日の一台のコンセプトを決めろ。フレーバー選びの軸になる。");
     for (const t of THEMES) body.appendChild(optionButton(t.label, t.desc, () => { tt.theme = t; tournamentStep("mix"); }));
@@ -598,9 +627,11 @@ function tournamentStep(step) {
   if (step === "mix") return stepMix();
   if (step === "pack") {
     const body = tnPanel("パッキング", "煙の密度と質感が決まる。フレーバーの重さと相談だ。");
-    for (const p of PACKS) body.appendChild(optionButton(p.label, p.desc, () => { tt.pack = p.id; tournamentStep("coal"); }));
+    for (const p of PACKS) body.appendChild(optionButton(p.label, p.desc, () => { tt.pack = p.id; tournamentStep("foil"); }));
     return;
   }
+  if (step === "foil") return stepFoil();
+  if (step === "coalfire") return stepCoalFire();
   if (step === "coal") {
     const body = tnPanel("炭の配置", "熱の入り方が決まる。基本はトライアングル。");
     for (const c of COALS) body.appendChild(optionButton(c.label, c.desc, () => { tt.coal = c.id; tournamentStep("steam"); }));
@@ -610,16 +641,185 @@ function tournamentStep(step) {
     const body = tnPanel("蒸らし時間", "スミさんの教え:「蒸らしは基本5〜8分。焦るな」");
     for (const s of STEAMS) body.appendChild(optionButton(s.label, s.desc, () => {
       tt.steam = s.id;
-      playDialogue("ch1_tournament_match", () => tournamentStep("pull"), "res://assets/backgrounds/bg_tournament_stage.png");
+      playDialogue("ch1_tournament_match", () => tournamentStep("focus"), "res://assets/backgrounds/bg_tournament_stage.png");
     }));
     return;
   }
+  if (step === "focus") return stepFocus();
   if (step === "pull") return stepPull();
   if (step === "present") {
     const body = tnPanel("プレゼンテーション", "完成・提供のあとはプレゼン。審査員に何を語る？");
     for (const p of PRESENTS) body.appendChild(optionButton(p.label, "", () => { tt.present = p; finishTournament(); }));
     return;
   }
+}
+
+// --- 機材選択（SETUP）
+function stepSetup(step) {
+  const type = step.replace("setup_", "");
+  const nextStep = { bowl: "setup_hms", hms: "setup_charcoal", charcoal: "theme" }[type];
+  const hints = {
+    bowl: "持ち込んだ機材から選ぶ。ボウルは味の土台になる。",
+    hms: "熱の伝わり方が決まる。ボウルとの相性も考えろ。",
+    charcoal: "炭の種類で熱の性格が変わる。",
+  };
+  const body = tnPanel(`機材選択 — ${EQUIP_TYPE_LABELS[type]}`, hints[type]);
+  for (const e of D.equipment.filter((x) => x.type === type)) {
+    const btn = optionButton(e.name, e.description, () => { tt[type] = e.id; tournamentStep(nextStep); });
+    // タヌキッシュリッドは素焼きサイズには使えない
+    if (e.id === "tanukish_lid" && tt.bowl === "suyaki_hagal") {
+      btn.disabled = true;
+      btn.querySelector(".spot-desc").textContent = "素焼きハガルには使えない。";
+    }
+    body.appendChild(btn);
+  }
+}
+
+// 汎用ゲージ: コンテナにゲージを作り、コントローラを返す
+function buildGauge(container, zone, speed) {
+  const wrap = document.createElement("div");
+  wrap.className = "gauge-wrap";
+  wrap.innerHTML = `<div class="gauge-bar"><div class="gauge-zone"></div><div class="gauge-needle"></div></div>`;
+  container.appendChild(wrap);
+  const zoneEl = wrap.querySelector(".gauge-zone");
+  zoneEl.style.left = `${zone[0] * 100}%`;
+  zoneEl.style.width = `${(zone[1] - zone[0]) * 100}%`;
+  const needle = wrap.querySelector(".gauge-needle");
+  const g = { pos: 0, dir: 1, running: true, raf: 0, zone };
+  let last = performance.now();
+  const tick = (now) => {
+    if (!g.running) return;
+    const dt = (now - last) / 1000;
+    last = now;
+    g.pos += g.dir * speed * dt;
+    if (g.pos >= 1) { g.pos = 1; g.dir = -1; }
+    if (g.pos <= 0) { g.pos = 0; g.dir = 1; }
+    needle.style.left = `${g.pos * 100}%`;
+    g.raf = requestAnimationFrame(tick);
+  };
+  g.raf = requestAnimationFrame(tick);
+  g.judge = () => {
+    const [a, b] = g.zone;
+    const center = (a + b) / 2, half = (b - a) / 2;
+    if (Math.abs(g.pos - center) <= half * 0.4) return "perfect";
+    return g.pos >= a && g.pos <= b ? "good" : "miss";
+  };
+  g.stop = () => { g.running = false; cancelAnimationFrame(g.raf); };
+  return { wrap, gauge: g };
+}
+
+// --- アルミ穴あけ（リズム6連打）
+function stepFoil() {
+  const body = tnPanel("アルミ穴あけ", "リズムよく6つ穴を開けろ。ゾーンに入った瞬間に押す！");
+  const counter = document.createElement("p");
+  counter.className = "tn-hint";
+  const zoneW = 0.14 + state.stats.technique / 700;
+  const left = 0.45 - zoneW / 2 + Math.random() * 0.2;
+  const { wrap, gauge } = buildGauge(body, [left, left + zoneW], Math.max(0.9, 1.25 - state.stats.technique / 300));
+  const btn = document.createElement("button");
+  btn.className = "primary-btn";
+  btn.textContent = "穴を開ける！";
+  const result = document.createElement("div");
+  result.className = "practice-result";
+  let attempts = 0;
+  const update = () => { counter.textContent = `穴: ${tt.foilHits} / 6（残り ${6 - attempts} 回）`; };
+  update();
+  btn.addEventListener("click", () => {
+    if (attempts >= 6) return;
+    attempts++;
+    const r = gauge.judge();
+    if (r !== "miss") tt.foilHits++;
+    update();
+    if (attempts >= 6) {
+      gauge.stop();
+      btn.disabled = true;
+      result.textContent =
+        tt.foilHits >= 6 ? "──美しい六角形。空気の通り道が完璧に揃った。"
+        : tt.foilHits >= 4 ? "──まずまずの穴あけ。空気はちゃんと通る。"
+        : "──穴が乱れた。空気の流れにムラが出そうだ……。";
+      const next = document.createElement("button");
+      next.className = "primary-btn";
+      next.textContent = "次へ";
+      next.addEventListener("click", () => tournamentStep("coalfire"));
+      result.appendChild(document.createElement("br"));
+      result.appendChild(next);
+    }
+  });
+  body.insertBefore(counter, wrap);
+  wrap.appendChild(btn);
+  body.appendChild(result);
+}
+
+// --- 炭起こし（一発タイミング）
+function stepCoalFire() {
+  const body = tnPanel("炭起こし", "コンロの炭をじっと見る。全体が赤く熾った、その瞬間に乗せろ！");
+  const zoneW = 0.10 + state.stats.guts / 900;
+  const left = 0.55 + Math.random() * 0.15;
+  const { wrap, gauge } = buildGauge(body, [left, left + zoneW], Math.max(1.0, 1.45 - state.stats.guts / 250));
+  const btn = document.createElement("button");
+  btn.className = "primary-btn";
+  btn.textContent = "今だ！乗せる！";
+  const result = document.createElement("div");
+  result.className = "practice-result";
+  btn.addEventListener("click", () => {
+    gauge.stop();
+    btn.disabled = true;
+    tt.coalFire = gauge.judge();
+    result.textContent = {
+      perfect: "──完璧な熾き。炭全体が均一な赤に染まっている。",
+      good: "──十分に熾きた。問題ない熱だ。",
+      miss: "──少し早かったか……。炭の片面がまだ黒い。",
+    }[tt.coalFire];
+    const next = document.createElement("button");
+    next.className = "primary-btn";
+    next.textContent = "次へ";
+    next.addEventListener("click", () => tournamentStep("coal"));
+    result.appendChild(document.createElement("br"));
+    result.appendChild(next);
+  });
+  body.append(result);
+  wrap.appendChild(btn);
+}
+
+// --- 集中（雑念タップ）
+function stepFocus() {
+  const body = tnPanel("集中", "雑念が頭をよぎる──タップして振り払え！");
+  const arena = document.createElement("div");
+  arena.className = "focus-arena";
+  const result = document.createElement("div");
+  result.className = "practice-result";
+  body.append(arena, result);
+  const lifetime = 1300 + state.stats.insight * 10; // 洞察が高いほど落ち着いて払える
+  let index = 0;
+  const finish = () => {
+    result.textContent =
+      tt.focusCleared >= 5 ? "──雑念が消えた。手元だけがクリアに見える。"
+      : tt.focusCleared >= 3 ? "──なんとか集中を保った。"
+      : "──ざわめきが頭から離れない……。";
+    const next = document.createElement("button");
+    next.className = "primary-btn";
+    next.textContent = "仕上げに入る";
+    next.addEventListener("click", () => tournamentStep("pull"));
+    result.appendChild(document.createElement("br"));
+    result.appendChild(next);
+  };
+  const spawn = () => {
+    if (index >= FOCUS_WORDS.length) return finish();
+    const word = document.createElement("button");
+    word.className = "focus-word";
+    word.textContent = FOCUS_WORDS[index++];
+    word.style.left = `${8 + Math.random() * 55}%`;
+    word.style.top = `${10 + Math.random() * 65}%`;
+    arena.appendChild(word);
+    const timer = setTimeout(() => { word.remove(); setTimeout(spawn, 250); }, lifetime);
+    word.addEventListener("click", () => {
+      clearTimeout(timer);
+      word.remove();
+      tt.focusCleared++;
+      setTimeout(spawn, 250);
+    });
+  };
+  spawn();
 }
 
 function stepMix() {
@@ -749,6 +949,31 @@ function craftScore() {
   const p = mixProfile();
   let score = 50;
   const detail = [];
+  const kinds = Object.keys(tt.mix).length;
+  // 機材の相性
+  const bowlBonus = { silicone_bowl: 2, hagal_80beat: 4, suyaki_hagal: kinds === 1 ? 5 : 1 };
+  score += bowlBonus[tt.bowl] || 0;
+  if (tt.bowl === "suyaki_hagal" && kinds === 1) detail.push("素焼きハガルが、一途なフレーバーの輪郭を太くした。");
+  if (tt.hms === "lotos_hagal") score += 2;
+  else if (tt.hms === "tanukish_lid") score += 3;
+  else if (tt.hms === "amaburst_hms") {
+    if (p.heat >= 1.05) { score += 5; detail.push("アマバーストの高火力が、耐熱フレーバーと噛み合った。"); }
+    else { score -= 3; detail.push("アマバーストの熱に、フレーバーが少し焼けた。"); }
+  }
+  if (tt.charcoal === "flat_charcoal") score += 3;
+  else if (tt.charcoal === "cube_charcoal") {
+    if (p.weight >= 1.0) { score += 4; detail.push("キューブ炭の火力が、重い煙を底から支えた。"); }
+    else { score -= 2; detail.push("キューブ炭には、煙が軽すぎたかもしれない。"); }
+  }
+  // アルミ穴あけ
+  score += Math.max(0, (tt.foilHits - 2) * 2);
+  if (tt.foilHits <= 2) detail.push("アルミの穴が乱れ、空気の通りにムラが出た。");
+  else if (tt.foilHits >= 6) detail.push("均等な穴あけが、煙の通り道を整えた。");
+  // 炭起こし
+  score += { perfect: 6, good: 3, miss: -2 }[tt.coalFire] || 0;
+  if (tt.coalFire === "miss") detail.push("熾きの甘い炭が、立ち上がりを鈍らせた。");
+  // 集中
+  score += tt.focusCleared * 1.6;
   // テーマとフレーバーカテゴリの噛み合い
   const matched = tt.theme.best.filter((c) => p.cats.has(c)).length;
   if (matched >= 2) { score += 12; detail.push("テーマとフレーバーの相性は抜群だった。"); }
@@ -896,6 +1121,8 @@ function continueGame(saved) {
 }
 
 function init() {
+  fitStage();
+  window.addEventListener("resize", fitStage);
   initEngine();
   const saved = loadSave();
   $("#btn-new").addEventListener("click", () => {
