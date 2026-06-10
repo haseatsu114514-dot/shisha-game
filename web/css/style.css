@@ -31,6 +31,12 @@ body {
   overflow: hidden;
   transform-origin: center center;
   background: radial-gradient(ellipse at 50% 30%, #1d1a2a 0%, #0b0a10 70%);
+  /* 連打でテキスト選択・タップハイライトが出ないようにする */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  cursor: default;
 }
 
 #rotate-hint {

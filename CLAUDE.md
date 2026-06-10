@@ -42,6 +42,16 @@ normal PR. Stop and fix the Git layout first.
 
 ---
 
+## ブラウザ版（web/）
+
+第1章はHTML/JS版が `web/` にあり、**ブラウザ版がメインの開発トラック**。
+ブラウザ版の作業前に必ず `docs/web_version_plan.md`
+（開発方針・ロードマップ・次回タスク）を読むこと。
+開発ブランチ: `claude/game-chapter-1-browser-945uwp`
+（mainに未マージの場合はチェックアウトして続きを行う）
+
+---
+
 ## ディレクトリ構成
 
 | パス | 内容 |
