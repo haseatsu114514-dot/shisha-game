@@ -87,6 +87,26 @@ body {
 }
 #hud-level { min-width: 0; margin-left: auto; padding: 8px 20px 8px 16px; }
 .hud-icon { font-size: 18px; line-height: 1; color: var(--accent); }
+/* HUD用の地味なアイコン（絵文字を使わずCSSだけで描く） */
+.hud-anchor, .hud-flame {
+  display: inline-block;
+  width: 14px; height: 14px;
+  background: var(--accent);
+  opacity: 0.9;
+}
+.hud-anchor {
+  /* 縦棒2本＋下のラインの簡素な「装飾」 */
+  mask: linear-gradient(var(--accent), var(--accent)) 50% 0 / 2px 100% no-repeat,
+        linear-gradient(var(--accent), var(--accent)) 50% 100% / 100% 2px no-repeat,
+        radial-gradient(circle at 50% 25%, var(--accent) 2px, transparent 2.5px) 0 0 / 100% 100% no-repeat;
+  -webkit-mask: linear-gradient(var(--accent), var(--accent)) 50% 0 / 2px 100% no-repeat,
+                linear-gradient(var(--accent), var(--accent)) 50% 100% / 100% 2px no-repeat,
+                radial-gradient(circle at 50% 25%, var(--accent) 2px, transparent 2.5px) 0 0 / 100% 100% no-repeat;
+}
+.hud-flame {
+  /* 上が尖って下が広い四角＝炎の代わり */
+  clip-path: polygon(50% 0%, 90% 50%, 75% 100%, 25% 100%, 10% 50%);
+}
 .hud-text { display: flex; flex-direction: column; line-height: 1.25; }
 .hud-text .sub { font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; }
 .hud-text .main { font-size: 15px; color: var(--accent); font-weight: bold; letter-spacing: 0.04em; }
@@ -171,9 +191,13 @@ body {
   background: rgba(255,255,255,0.65);
   border-radius: 12px;
   padding: 3px 9px;
-  min-width: 78px;
+  min-width: 88px;
 }
-#hud-day-card .day-meta .row span:first-child { font-size: 13px; }
+#hud-day-card .day-meta .row .row-label {
+  font-size: 10px;
+  color: #8a6275;
+  letter-spacing: 0.1em;
+}
 
 /* ================= screens ================= */
 .screen { position: absolute; inset: 0; display: none; }
@@ -701,11 +725,14 @@ body {
   box-shadow: 0 4px 14px rgba(0,0,0,0.5);
 }
 #vn-name::before, #vn-name::after {
-  content: "✿"; position: absolute; top: 50%; transform: translateY(-50%);
-  font-size: 12px; color: rgba(244,210,122,0.85);
+  content: ""; position: absolute; top: 50%; transform: translateY(-50%);
+  width: 6px; height: 6px;
+  background: rgba(244, 210, 122, 0.85);
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(244, 210, 122, 0.7);
 }
-#vn-name::before { left: 8px; }
-#vn-name::after  { right: 8px; }
+#vn-name::before { left: 12px; }
+#vn-name::after  { right: 12px; }
 
 #vn-text {
   font-size: 19px;
@@ -912,7 +939,17 @@ body {
 .spot-pin:disabled { filter: grayscale(0.8) brightness(0.55); cursor: default; }
 .spot-pin.locked .shield { background: linear-gradient(180deg, #4a4a52 0%, #2a2a32 100%); }
 .spot-pin.locked .shield::after { background: linear-gradient(135deg, #4a4a52, #2a2a32); }
-.spot-pin.locked .label::after { content: " 🔒"; }
+.spot-pin.locked .label::after {
+  content: "LOCK";
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.5);
+  border-radius: 3px;
+}
 
 /* マップ用のピン色テーマ */
 .pin-shisha   { --pin-from: #8a3fa5; --pin-to: #4a1c5e; }
@@ -1367,8 +1404,8 @@ body {
   filter: blur(0.3px);
 }
 .neon-tonari {
-  top: 18%; right: 6%;
-  font-size: 26px;
+  top: 4%; right: 4%;
+  font-size: 22px;
   color: #ff7ab8;
   text-shadow:
     0 0 4px #ff7ab8, 0 0 12px #ff3a8f, 0 0 22px rgba(255,58,143,0.7),
@@ -1377,10 +1414,10 @@ body {
   animation: neon-flicker-a 4.2s linear infinite;
 }
 .neon-shisha {
-  bottom: 24%; left: 4%;
+  top: 7%; right: 14%;
   font-family: "Times New Roman", serif;
-  font-size: 18px;
-  letter-spacing: 0.4em;
+  font-size: 14px;
+  letter-spacing: 0.5em;
   color: #7adfff;
   text-shadow:
     0 0 4px #7adfff, 0 0 10px #2bb6ff, 0 0 22px rgba(43,182,255,0.7);
@@ -1530,11 +1567,6 @@ body {
   text-shadow: 0 0 6px rgba(0,0,0,0.8);
   animation: note-blink 4s ease-in-out 2s infinite, footer-in 1.2s ease-out 1.6s both;
 }
-.title-note .footer-hookah {
-  font-size: 16px;
-  filter: drop-shadow(0 0 6px rgba(244, 210, 122, 0.7));
-  animation: hookah-glow 3.2s ease-in-out infinite alternate;
-}
 .title-note .footer-line {
   width: 80px; height: 1px;
   background: linear-gradient(90deg, transparent, var(--accent), transparent);
@@ -1542,10 +1574,6 @@ body {
 .title-note .footer-chapter {
   color: var(--accent);
   letter-spacing: 0.32em;
-}
-@keyframes hookah-glow {
-  from { filter: drop-shadow(0 0 4px rgba(244,210,122,0.5)); }
-  to   { filter: drop-shadow(0 0 14px rgba(244,210,122,1)); }
 }
 @keyframes footer-in {
   from { opacity: 0; transform: translateY(8px); }

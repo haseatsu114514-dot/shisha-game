@@ -7,13 +7,13 @@
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div id="rotate-hint">スマホを横向きにすると<br>遊びやすくなります 📱↻</div>
+<div id="rotate-hint">スマホを横向きにすると<br>遊びやすくなります</div>
 <div id="game">
 
   <!-- HUD（ダイアログ・大会で表示する） -->
   <header id="hud" class="hidden">
     <div id="hud-location">
-      <span class="hud-icon">⚓</span>
+      <span class="hud-icon hud-anchor"></span>
       <div class="hud-text">
         <span class="main" id="hud-location-main">tonari</span>
         <span class="ja" id="hud-location-sub">夜</span>
@@ -21,14 +21,14 @@
     </div>
     <div id="hud-day" class="hidden"></div>
     <div id="hud-level">
-      <span class="hud-icon">🔥</span>
+      <span class="hud-icon hud-flame"></span>
       <div class="hud-text">
         <span class="main" id="hud-level-text">Lv.1</span>
         <div class="lv-bar"><div class="lv-fill" id="hud-level-fill" style="width:18%"></div></div>
       </div>
     </div>
     <div class="hud-right-btns">
-      <button id="btn-mute" type="button">♪ ON</button>
+      <button id="btn-mute" type="button">BGM ON</button>
       <button id="btn-status" type="button">STATUS</button>
     </div>
   </header>
@@ -41,8 +41,8 @@
       <div class="day-week" id="dc-week">DAY</div>
     </div>
     <div class="day-meta">
-      <div class="row"><span>⚡</span><span id="dc-ap">☀ 2</span></div>
-      <div class="row"><span>💰</span><span id="dc-money">30,000</span></div>
+      <div class="row"><span class="row-label">行動</span><span id="dc-ap">昼 2</span></div>
+      <div class="row"><span class="row-label">所持金</span><span id="dc-money">30,000</span></div>
     </div>
   </div>
 
@@ -105,7 +105,6 @@
         <button id="btn-exit" class="title-menu-item" type="button" disabled>EXIT<span class="ja">もどる</span></button>
       </div>
       <p class="title-note">
-        <span class="footer-hookah">🪔</span>
         <span class="footer-text">TAP / CLICK / ENTER</span>
         <span class="footer-line"></span>
         <span class="footer-chapter">CH.01 — SMOKE CROWN CUP</span>
@@ -129,10 +128,10 @@
       <div id="vn-text"></div>
       <div id="vn-advance">▼</div>
       <div id="vn-tools">
-        <button class="vn-tool" id="vn-auto" type="button"><span class="ico">▶</span>AUTO</button>
-        <button class="vn-tool" id="vn-skip" type="button"><span class="ico">⏭</span>SKIP</button>
-        <button class="vn-tool" id="vn-log" type="button"><span class="ico">▤</span>LOG</button>
-        <button class="vn-tool" id="vn-menu" type="button"><span class="ico">☰</span>MENU</button>
+        <button class="vn-tool" id="vn-auto" type="button">AUTO</button>
+        <button class="vn-tool" id="vn-skip" type="button">SKIP</button>
+        <button class="vn-tool" id="vn-log" type="button">LOG</button>
+        <button class="vn-tool" id="vn-menu" type="button">MENU</button>
       </div>
     </div>
   </section>
@@ -141,7 +140,7 @@
   <section id="screen-map" class="screen">
     <div id="map-image"></div>
     <div id="map-pins"></div>
-    <div id="map-time-toggle"><span class="ico">🗺️</span>マップ切替</div>
+    <div id="map-time-toggle">マップ</div>
     <div id="map-info">
       <span class="corner-tl"></span><span class="corner-br"></span>
       <div class="info-banner" id="map-info-title">行き先を選ぶ</div>

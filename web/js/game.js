@@ -179,8 +179,8 @@ function updateDayCard() {
   card.classList.toggle("show", !!isMap && state && state.phase === "daily");
   if (!isMap || !state) return;
   $("#dc-day").textContent = state.day;
-  $("#dc-week").textContent = state.ap === 2 ? "☀ DAY" : "☾ NIGHT";
-  $("#dc-ap").textContent = (state.ap === 2 ? "☀" : "☾") + ` ${state.ap}`;
+  $("#dc-week").textContent = state.ap === 2 ? "DAY" : "NIGHT";
+  $("#dc-ap").textContent = (state.ap === 2 ? "昼" : "夜") + ` ${state.ap}`;
   $("#dc-money").textContent = state.money.toLocaleString();
 }
 
@@ -405,10 +405,11 @@ const REPEAT_VISIT = {
   minto: { text: "みんとの店で一服。客あしらいの軽やかさは、やっぱり真似できない。", stats: { charm: 2 } },
 };
 
+// 行き先ピンの短い見出し（絵文字は使わず日本語の頭文字や略号で）
 const SPOT_ICONS = {
-  baito: "🫖", practice: "💨", sumi: "🪵", tsumugi: "📓",
-  naru: "⚡", adam: "🍎", minto: "🌿", choizap: "💪",
-  kannon: "⛩️", cafe: "☕", c_station: "🏟️", rest: "🛏️",
+  baito: "労", practice: "練", sumi: "師", tsumugi: "紬",
+  naru: "鳴", adam: "亜", minto: "緑", choizap: "筋",
+  kannon: "観", cafe: "珈", c_station: "C", rest: "休",
 };
 
 // マップ上のピン位置（%）と短いラベル名
@@ -434,8 +435,7 @@ function showMap() {
   const night = state.ap <= 1;
   $("#map-image").style.backgroundImage =
     `url('${assetUrl(`assets/backgrounds/bg_map_local_${night ? "night" : "day"}.png`)}')`;
-  $("#map-time-toggle").innerHTML =
-    night ? '<span class="ico">🌙</span>夜 / 栄' : '<span class="ico">☀️</span>昼 / 栄';
+  $("#map-time-toggle").textContent = night ? "夜 / 栄" : "昼 / 栄";
   updateHud();
 
   const pins = $("#map-pins");
@@ -452,13 +452,13 @@ function showMap() {
     const tooPoor = spot.cost > state.money;
     if (locked) {
       btn.classList.add("locked");
-      btn.innerHTML = `<div class="shield"><div class="ico">🔒</div><div class="label">？？？</div></div>`;
+      btn.innerHTML = `<div class="shield"><div class="ico">？</div><div class="label">？？？</div></div>`;
       btn.disabled = true;
       btn.dataset.label = "未開放";
     } else {
       btn.innerHTML =
         `<div class="shield">` +
-          `<div class="ico">${SPOT_ICONS[spot.id] || "📍"}</div>` +
+          `<div class="ico">${SPOT_ICONS[spot.id] || ""}</div>` +
           `<div class="label">${layout.short}</div>` +
         `</div>` +
         `<div class="sub-label">${spot.label}</div>`;
@@ -479,7 +479,7 @@ function updateMapInfo(spot, locked, tooPoor) {
     $("#map-info-desc").textContent = "気になる場所をタップ。残り行動と所持金に注意。";
     $("#map-info-cost").textContent = "";
     $("#map-info-hint").textContent =
-      state.ap === 2 ? "☀ 今日は2回動ける" : "☾ 今日はあと1回動ける";
+      state.ap === 2 ? "昼 — 今日は2回動ける" : "夜 — 今日はあと1回動ける";
     return;
   }
   const layout = SPOT_LAYOUT[spot.id] || {};
@@ -491,8 +491,8 @@ function updateMapInfo(spot, locked, tooPoor) {
     ? ""
     : (spot.cost > 0 ? `所持金から ¥${spot.cost.toLocaleString()} 必要` : "");
   $("#map-info-hint").textContent = locked
-    ? "🔒 ロック中"
-    : tooPoor ? "所持金が足りない" : `タップして → ${spot.label}`;
+    ? "ロック中"
+    : tooPoor ? "所持金が足りない" : `タップして移動: ${spot.label}`;
 }
 
 function selectSpot(spot) {
@@ -1694,7 +1694,7 @@ function init() {
     const m = !SFX.isMuted();
     SFX.setMuted(m);
     const b = $("#btn-mute");
-    b.textContent = m ? "♪ OFF" : "♪ ON";
+    b.textContent = m ? "BGM OFF" : "BGM ON";
     b.classList.toggle("off", m);
   });
   const contBtn = $("#btn-continue");

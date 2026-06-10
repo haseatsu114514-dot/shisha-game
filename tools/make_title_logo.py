@@ -56,6 +56,21 @@ def smoke_curl(layer, x, y, *, scale, turns, color=(225, 225, 232), alpha=30, cc
         soft_blob(layer, px, py, r, color, int(alpha * (1 - t * 0.5)))
 
 
+def smoke_wisp(layer, x, y, *, up, sway, steps, r0, color=(220, 218, 232)):
+    """下から立ちのぼる細い煙。複数本束ねて厚みを出す"""
+    for strand in range(2):
+        phase = random.uniform(0, math.tau)
+        freq = random.uniform(1.0, 2.2)
+        ox = random.uniform(-r0 * 0.5, r0 * 0.5)
+        for i in range(steps):
+            t = i / steps
+            px = x + ox + math.sin(phase + t * freq * math.tau) * sway * t
+            py = y - up * t
+            r = r0 * (1 - t * 0.75) * random.uniform(0.75, 1.25)
+            a = int(18 * (1 - t) + 4)
+            soft_blob(layer, px, py, r, color, a)
+
+
 def ink_splash(layer, x, y, *, r, color, alpha, n=26):
     """インクの飛沫: 中心のしみ + 周囲に飛び散る点と尾"""
     d = ImageDraw.Draw(layer)
@@ -249,25 +264,31 @@ def main() -> None:
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     text_cy = int(H * 0.46)  # 文字の中心
 
-    # ---- 1. 背景の幾何ライン + 水パイプのシルエット ----
-    back = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    radial_arcs(back, W * 0.5, H * 0.18, r0=W * 0.22, n=4)
-    hookah_silhouette(back, W * 0.5, H * 0.98, H * 0.78, color=(60, 58, 76), alpha=255)
-    back = back.filter(ImageFilter.GaussianBlur(2))
-    img = Image.alpha_composite(img, back)
+    # ---- 1. 文字下を流れる墨の煙のひと吹き（横方向のかすかな帯） ----
+    base_smoke = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    for i in range(8):
+        soft_blob(
+            base_smoke,
+            W * (0.18 + i * 0.085 + random.uniform(-0.02, 0.02)),
+            text_cy + random.uniform(-30, 30),
+            random.uniform(220, 320),
+            (180, 178, 195),
+            random.randint(14, 22),
+        )
+    base_smoke = base_smoke.filter(ImageFilter.GaussianBlur(60))
+    img = Image.alpha_composite(img, base_smoke)
 
-    # ---- 2. 上部の渦巻く墨煙（左に大きく、右にもう一つ） ----
+    # ---- 2. 上部の渦巻く墨煙（文字の上にうっすら） ----
     smoke = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    smoke_curl(smoke, W * 0.20, H * 0.21, scale=220, turns=1.7, alpha=62)
-    smoke_curl(smoke, W * 0.30, H * 0.14, scale=130, turns=1.2, alpha=44, ccw=True)
-    smoke_curl(smoke, W * 0.57, H * 0.09, scale=140, turns=1.3, alpha=46, ccw=True)
-    smoke_curl(smoke, W * 0.81, H * 0.22, scale=180, turns=1.5, alpha=52, ccw=True)
+    smoke_curl(smoke, W * 0.22, H * 0.17, scale=200, turns=1.6, alpha=46)
+    smoke_curl(smoke, W * 0.50, H * 0.11, scale=160, turns=1.3, alpha=42, ccw=True)
+    smoke_curl(smoke, W * 0.78, H * 0.18, scale=180, turns=1.5, alpha=46, ccw=True)
     # 文字まわりの薄いもや
-    for i in range(16):
+    for i in range(14):
         soft_blob(
             smoke,
             random.uniform(W * 0.10, W * 0.90),
-            random.uniform(H * 0.18, H * 0.70),
+            random.uniform(H * 0.14, H * 0.40),
             random.uniform(60, 150),
             (210, 210, 222),
             random.randint(6, 14),
@@ -275,15 +296,13 @@ def main() -> None:
     smoke = smoke.filter(ImageFilter.GaussianBlur(10))
     img = Image.alpha_composite(img, smoke)
 
-    # ---- 3. インクの飛沫（左下: 青 / 右: 紫） ----
-    splash = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    ink_splash(splash, W * 0.135, H * 0.62, r=150, color=(40, 90, 190), alpha=200)
-    ink_splash(splash, W * 0.10, H * 0.70, r=90, color=(70, 130, 220), alpha=150)
-    ink_splash(splash, W * 0.885, H * 0.60, r=160, color=(140, 70, 200), alpha=190)
-    ink_splash(splash, W * 0.92, H * 0.40, r=100, color=(110, 60, 170), alpha=150)
-    ink_splash(splash, W * 0.83, H * 0.22, r=80, color=(90, 70, 130), alpha=120)
-    splash = splash.filter(ImageFilter.GaussianBlur(2.5))
-    img = Image.alpha_composite(img, splash)
+    # ---- 3. 両端から立ちのぼる白煙のすじ（青/紫の飛沫の置き換え） ----
+    side_smoke = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    for sx in (W * 0.10, W * 0.16, W * 0.84, W * 0.90):
+        smoke_wisp(side_smoke, sx, H * 0.78, up=H * 0.55, sway=70, steps=40, r0=80,
+                   color=(210, 208, 222))
+    side_smoke = side_smoke.filter(ImageFilter.GaussianBlur(22))
+    img = Image.alpha_composite(img, side_smoke)
 
     # ---- 4. 「水煙前線」本体（白の墨文字＋かすれ） ----
     font = ImageFont.truetype(str(FONT_PATH), 470)
@@ -320,24 +339,6 @@ def main() -> None:
     img = Image.alpha_composite(img, glow)
     img = Image.alpha_composite(img, text_rgb)
 
-    # 文字の角から飛ぶ細かい飛沫
-    spark = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    sd = ImageDraw.Draw(spark)
-    edge = tl.filter(ImageFilter.FIND_EDGES)
-    edge_px = edge.load()
-    cnt = 0
-    while cnt < 130:
-        x = random.randint(int(W * 0.1), int(W * 0.9))
-        y = random.randint(int(text_cy - th * 0.7), int(text_cy + th * 0.7))
-        if edge_px[x, y] > 100 and random.random() < 0.6:
-            ang = random.uniform(0, math.tau)
-            dist = random.uniform(8, 90)
-            px, py = x + math.cos(ang) * dist, y + math.sin(ang) * dist
-            r = random.uniform(1.5, 5)
-            sd.ellipse([px - r, py - r, px + r, py + r], fill=(235, 233, 240, random.randint(90, 200)))
-            cnt += 1
-    img = Image.alpha_composite(img, spark)
-
     # ---- 5. -EN:CODE-（両脇に長いダッシュ） ----
     lf = ImageFont.truetype(LATIN_FONT, 104)
     sub = "-EN:CODE-"
@@ -354,14 +355,12 @@ def main() -> None:
         cb = sd2.textbbox((0, 0), ch, font=lf)
         sd2.text((cx_cursor - cb[0], sy), ch, font=lf, fill=col)
         cx_cursor += (cb[2] - cb[0]) * 1.28 + 14
-    # 両脇のダッシュ（2本ずつ・段差）
+    # 両脇のダッシュ（片側1本ずつのシンプルな線）
     line_y = sy + (sb[3] - sb[1]) // 2 + 10
     for side in (-1, 1):
         x_in = W / 2 + side * (sw * 0.75)
-        x_out = W / 2 + side * (sw * 1.55)
-        x_mid = W / 2 + side * (sw * 1.12)
-        sd2.line([x_in, line_y, x_mid - side * 20, line_y], fill=col, width=8)
-        sd2.line([x_mid + side * 20, line_y, x_out, line_y], fill=col, width=8)
+        x_out = W / 2 + side * (sw * 1.30)
+        sd2.line([x_in, line_y, x_out, line_y], fill=col, width=6)
     img = Image.alpha_composite(img, sl)
 
     # ---- 縮小して書き出し ----
