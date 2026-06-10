@@ -1496,8 +1496,9 @@ function toggleStatus(show) {
 }
 
 // ---------------------------------------------------------------- title
-// 一人称視点なので主人公は出さず、ヒロイン・店の面々から日替わりで選ぶ
-const TITLE_CHARA_POOL = ["tsumugi", "sumi", "packii"];
+// 一人称視点なので主人公は出さず、ヒロイン・ライバル・店の面々から日替わりで選ぶ。
+// アート一枚絵を煙マスクの窓（#title-chara-window）にコンシューマー風に表示する
+const TITLE_CHARA_POOL = ["tsumugi", "sumi", "packii", "naru", "adam", "minto"];
 
 function setupTitleLogo() {
   const img = $("#title-logo-img");
@@ -1512,20 +1513,39 @@ function setupTitleLogo() {
 
 function setupTitleChara() {
   const img = $("#title-chara");
+  const win = $("#title-chara-window");
   const pool = TITLE_CHARA_POOL.filter((id) => (D.portraits || {})[id]);
-  if (!pool.length) { img.style.display = "none"; return; }
+  if (!pool.length) { win.style.display = "none"; return; }
   const id = pool[Math.floor(Math.random() * pool.length)];
   const faces = D.portraits[id] || [];
-  const face = faces.includes("smile") ? "smile" : faces.includes("normal") ? "normal" : faces[0];
+  const face = faces.includes("normal") ? "normal" : faces[0];
+  const t = ((D.portrait_trims || {})[id] || {})[face] || {};
+  img.onerror = () => { win.style.display = "none"; };
+  img.onload = () => {
+    // 実コンテンツ(bbox)が窓を覆うように配置（cover相当）。
+    // 顔が来るbbox上部1/3あたりを窓のやや上に合わせる
+    const ww = win.clientWidth, wh = win.clientHeight;
+    const iw = img.naturalWidth, ih = img.naturalHeight;
+    if (!ww || !iw) return;
+    const bw = iw * (t.w || 1);
+    const bh = ih * (t.h || 1);
+    const bx = iw * (t.l || 0);
+    const by = ih * (1 - (t.b || 0)) - bh;
+    // cover を基本に、細身の切り抜き（全身立ち絵）が極端にズームされないよう
+    // 「高さフィットの1.35倍」を上限にする。横が余れば星雲が透けて見える
+    const cover = Math.max(ww / bw, wh / bh);
+    const scale = Math.min(cover, (wh / bh) * 1.35) * 1.08; // Ken Burns の余白ぶん
+    img.style.width = `${iw * scale}px`;
+    img.style.height = "auto";
+    const focusX = (bx + bw * 0.5) * scale;
+    const focusY = (by + bh * 0.32) * scale;
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    const lo = (full, view) => Math.min(0, view - full);
+    const hi = (full, view) => Math.max(0, view - full);
+    img.style.left = `${clamp(ww * 0.5 - focusX, lo(iw * scale, ww), hi(iw * scale, ww))}px`;
+    img.style.top = `${clamp(wh * 0.42 - focusY, lo(ih * scale, wh), hi(ih * scale, wh))}px`;
+  };
   img.src = assetUrl(`assets/sprites/characters/${id}/chr_${id}_${face}.png`);
-  img.onerror = () => { img.style.display = "none"; };
-  // 透過余白を補正して、実体が画面高の約80%になるように
-  const t = ((D.portrait_trims || {})[id] || {})[face];
-  if (t && t.h) {
-    const h = Math.min(80 / t.h, 175);
-    img.style.height = `${h}%`;
-    img.style.bottom = `${-(t.b * h)}%`;
-  }
 }
 
 function startTitleBgm() {

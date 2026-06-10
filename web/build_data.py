@@ -55,7 +55,9 @@ def portrait_trim(png: Path):
     """透過余白を測り、立ち絵の実体サイズを正規化するための値を返す。
 
     h: 画像高さに対する実コンテンツの高さ比 / b: 下端の余白比
-    （キャラごとの余白差で見かけサイズがズレるのを補正する）
+    l: 左端の余白比 / w: 実コンテンツの幅比
+    （キャラごとの余白差で見かけサイズがズレるのを補正する。
+     l/w はタイトル等の「アートウィンドウ」での切り出しに使う）
     """
     if Image is None:
         return None
@@ -64,10 +66,12 @@ def portrait_trim(png: Path):
         bbox = im.getbbox()
         if not bbox:
             return None
-        _, top, _, bottom = bbox
+        left, top, right, bottom = bbox
         return {
             "h": round((bottom - top) / im.height, 3),
             "b": round((im.height - bottom) / im.height, 3),
+            "l": round(left / im.width, 3),
+            "w": round((right - left) / im.width, 3),
         }
     except OSError:
         return None

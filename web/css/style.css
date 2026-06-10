@@ -242,22 +242,60 @@ body {
   to { transform: scale(1.18) translate(2%, -3%); opacity: 1; }
 }
 
-/* タイトルキャラ（ランダム表示・ゆっくり浮遊） */
+/* タイトルキャラ: 煙のかたちに揺らぐマスク窓の中にアート一枚絵を表示する。
+   マスクは6枚のぼかし楕円の集合で、位置をゆっくり動かして煙の縁が
+   うごめいて見えるようにする */
+#title-chara-window {
+  position: absolute;
+  right: 2.5%;
+  top: 4%;
+  width: 44%;
+  height: 92%;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  animation:
+    chara-in 2.0s ease-out 0.6s forwards,
+    smoke-window 13s ease-in-out 0.6s infinite alternate;
+  -webkit-mask-image:
+    radial-gradient(closest-side, #000 52%, transparent 100%),
+    radial-gradient(closest-side, #000 46%, transparent 100%),
+    radial-gradient(closest-side, #000 46%, transparent 100%),
+    radial-gradient(closest-side, #000 40%, transparent 100%),
+    radial-gradient(closest-side, #000 38%, transparent 100%),
+    radial-gradient(closest-side, #000 36%, transparent 100%);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 88% 64%, 66% 52%, 64% 50%, 52% 40%, 46% 34%, 42% 30%;
+  -webkit-mask-position: 50% 28%, 4% 56%, 92% 58%, 40% 86%, 0% 14%, 96% 10%;
+  mask-image:
+    radial-gradient(closest-side, #000 52%, transparent 100%),
+    radial-gradient(closest-side, #000 46%, transparent 100%),
+    radial-gradient(closest-side, #000 46%, transparent 100%),
+    radial-gradient(closest-side, #000 40%, transparent 100%),
+    radial-gradient(closest-side, #000 38%, transparent 100%),
+    radial-gradient(closest-side, #000 36%, transparent 100%);
+  mask-repeat: no-repeat;
+  mask-size: 88% 64%, 66% 52%, 64% 50%, 52% 40%, 46% 34%, 42% 30%;
+  mask-position: 50% 28%, 4% 56%, 92% 58%, 40% 86%, 0% 14%, 96% 10%;
+}
+@keyframes smoke-window {
+  to {
+    -webkit-mask-position: 48% 24%, 10% 62%, 86% 52%, 46% 80%, 6% 8%, 90% 18%;
+    mask-position: 48% 24%, 10% 62%, 86% 52%, 46% 80%, 6% 8%, 90% 18%;
+  }
+}
 #title-chara {
   position: absolute;
-  right: 2%;
-  bottom: 0;
-  height: 92%;
-  max-width: 54%;
-  object-fit: contain;
-  object-position: center bottom;
-  filter: drop-shadow(0 0 36px rgba(150, 90, 200, 0.35));
-  opacity: 0;
-  animation: chara-in 1.6s ease-out 0.5s forwards, chara-float 7s ease-in-out 2.1s infinite alternate;
-  pointer-events: none;
+  left: 0; top: 0;
+  /* サイズ・位置はJSがbboxから算出。Ken Burnsでゆっくり寄る */
+  animation: ken-burns 18s ease-in-out infinite alternate;
+  transform-origin: 50% 35%;
 }
-@keyframes chara-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
-@keyframes chara-float { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+@keyframes chara-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ken-burns {
+  from { transform: scale(1) translate(0, 0); }
+  to { transform: scale(1.07) translate(-1.2%, 1.0%); }
+}
 
 .title-inner {
   position: absolute; inset: 0;
@@ -445,15 +483,37 @@ body {
 .portrait.slot-0 { left: -2%; }
 .portrait.slot-1 { right: -2%; }
 
-/* 背景込みの立ち絵（naru/adam/minto等）はマスクして枠に収める */
+/* 背景込みのアート一枚絵（naru/adam/packii等）は煙のかたちのマスク窓で表示。
+   縁がゆっくりうごめき、煙の中に像が浮かんでいるように見せる */
 .portrait.bgfull {
-  bottom: 18%;
-  height: 64%;
-  max-width: 40%;
-  border-radius: 14px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.65), inset 0 0 0 1px rgba(244,210,122,0.35);
-  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 78%, transparent 100%);
-          mask-image: linear-gradient(180deg, #000 0%, #000 78%, transparent 100%);
+  bottom: 10%;
+  height: 76%;
+  max-width: 44%;
+  -webkit-mask-image:
+    radial-gradient(closest-side, #000 50%, transparent 100%),
+    radial-gradient(closest-side, #000 44%, transparent 100%),
+    radial-gradient(closest-side, #000 42%, transparent 100%),
+    radial-gradient(closest-side, #000 38%, transparent 100%),
+    radial-gradient(closest-side, #000 34%, transparent 100%);
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 92% 62%, 70% 50%, 62% 46%, 50% 36%, 44% 30%;
+  -webkit-mask-position: 50% 26%, 2% 58%, 94% 56%, 42% 88%, 80% 6%;
+  mask-image:
+    radial-gradient(closest-side, #000 50%, transparent 100%),
+    radial-gradient(closest-side, #000 44%, transparent 100%),
+    radial-gradient(closest-side, #000 42%, transparent 100%),
+    radial-gradient(closest-side, #000 38%, transparent 100%),
+    radial-gradient(closest-side, #000 34%, transparent 100%);
+  mask-repeat: no-repeat;
+  mask-size: 92% 62%, 70% 50%, 62% 46%, 50% 36%, 44% 30%;
+  mask-position: 50% 26%, 2% 58%, 94% 56%, 42% 88%, 80% 6%;
+  animation: bgfull-smoke 12s ease-in-out infinite alternate;
+}
+@keyframes bgfull-smoke {
+  to {
+    -webkit-mask-position: 46% 22%, 8% 64%, 88% 50%, 48% 82%, 74% 12%;
+    mask-position: 46% 22%, 8% 64%, 88% 50%, 48% 82%, 74% 12%;
+  }
 }
 
 #vn-click-layer { position: absolute; inset: 0; z-index: 10; cursor: pointer; }

@@ -74,8 +74,14 @@
   で反映**（黒背景つきならクロマキー等で透過化してから）
 - **タイトルBGM**: `assets/audio/bgm/title.mp3`（ユーザー提供 Hookah Midnight Loop、
   64kbps）。スタンドアロンには先頭1.2MB（約150秒）を埋め込み
-- **タイトルキャラ**: `TITLE_CHARA_POOL`（game.js）= tsumugi / sumi / packii から
-  ランダム。切り抜き素材が増えたらプールに追加する
+- **タイトルキャラ**: `TITLE_CHARA_POOL`（game.js）= tsumugi / sumi / packii /
+  naru / adam / minto からランダム。アート一枚絵を煙マスクの窓
+  （#title-chara-window、CSSの多層radial-gradientマスクを揺らす）に
+  Ken Burnsズーム付きで表示。bbox情報は build_data.py の portrait_trim
+  （l/w を追加済み）から取得
+- **会話の背景込み立ち絵**（.portrait.bgfull）も同じ煙マスク表示に変更済み
+- **ロゴ**: `tools/make_title_logo.py` を参考画像準拠に作り直し
+  （水パイプのシルエット・渦煙・青/紫インク飛沫・-EN:CODE-長ダッシュ）
 - **一人称視点**: はじめの立ち絵は出さない（engine.js `NO_PORTRAIT_SPEAKERS`）
 - **チュートリアル**: opening後に1回だけ（`state.flags._tutorial_done`）。
   フローは game.js `TUTORIAL_FLOW` / ヒントは `TUTORIAL_TIPS`
