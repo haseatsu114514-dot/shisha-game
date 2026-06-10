@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>シーシャバトル 第1章 — SMOKE CROWN CUP</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="game">
+
+  <!-- HUD -->
+  <header id="hud">
+    <span id="hud-day"></span>
+    <span id="hud-ap"></span>
+    <span id="hud-money"></span>
+    <button id="btn-status" type="button">ステータス</button>
+  </header>
+
+  <!-- タイトル -->
+  <section id="screen-title" class="screen active">
+    <div class="title-inner">
+      <p class="title-sub">シーシャ屋アドベンチャー</p>
+      <h1 class="title-logo">シーシャバトル</h1>
+      <p class="title-chapter">第1章 「SMOKE CROWN CUP」</p>
+      <div class="title-menu">
+        <button id="btn-new" class="primary-btn" type="button">はじめから</button>
+        <button id="btn-continue" class="primary-btn hidden" type="button">つづきから</button>
+      </div>
+      <p class="title-note">クリック / Enter で読み進められます</p>
+    </div>
+  </section>
+
+  <!-- 会話 -->
+  <section id="screen-dialogue" class="screen">
+    <div id="vn-bg"></div>
+    <div id="vn-cg"></div>
+    <div id="vn-portraits"></div>
+    <div id="vn-click-layer"></div>
+    <div id="vn-choices"></div>
+    <div id="vn-box">
+      <div id="vn-name"></div>
+      <div id="vn-text"></div>
+      <div id="vn-advance">▼</div>
+    </div>
+  </section>
+
+  <!-- マップ -->
+  <section id="screen-map" class="screen">
+    <div class="panel">
+      <h2>今日はどうする？</h2>
+      <div id="map-spots" class="spot-list"></div>
+    </div>
+  </section>
+
+  <!-- 練習 -->
+  <section id="screen-practice" class="screen">
+    <div class="panel">
+      <h2 id="practice-title"></h2>
+      <div id="practice-menu" class="spot-list"></div>
+      <div id="practice-gauge-area" class="gauge-wrap hidden">
+        <p id="gauge-hint"></p>
+        <div class="gauge-bar">
+          <div class="gauge-zone" id="gauge-zone"></div>
+          <div class="gauge-needle" id="gauge-needle"></div>
+        </div>
+        <button id="gauge-stop" class="primary-btn" type="button">止める！</button>
+      </div>
+      <div id="practice-result" class="practice-result"></div>
+    </div>
+  </section>
+
+  <!-- 大会 -->
+  <section id="screen-tournament" class="screen tournament-bg">
+    <div class="panel">
+      <h2 id="tn-title"></h2>
+      <p id="tn-hint" class="tn-hint"></p>
+      <div id="tn-body"></div>
+    </div>
+  </section>
+
+  <!-- 章クリア / 敗北 -->
+  <section id="screen-end" class="screen">
+    <div class="panel center">
+      <h1 id="end-title"></h1>
+      <p id="end-sub"></p>
+      <div id="end-status" class="status-wrap"></div>
+    </div>
+  </section>
+
+  <!-- ゲームオーバー -->
+  <section id="screen-gameover" class="screen">
+    <div class="panel center">
+      <h1>GAME OVER</h1>
+      <button id="btn-gameover-title" class="primary-btn" type="button">タイトルへ戻る</button>
+    </div>
+  </section>
+
+  <!-- ステータスオーバーレイ -->
+  <div id="status-overlay">
+    <div class="panel">
+      <h2>蒸野 始（むしの はじめ）</h2>
+      <div id="status-body" class="status-wrap"></div>
+      <button id="status-close" class="primary-btn" type="button">閉じる</button>
+    </div>
+  </div>
+
+  <div id="toasts"></div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
