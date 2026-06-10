@@ -272,6 +272,16 @@ body {
   align-items: flex-start;
   gap: 8px;
 }
+#title-logo-img {
+  width: 560px;
+  max-width: 46vw;
+  margin-left: -28px; /* ロゴ画像の余白ぶん左に寄せて文字位置を揃える */
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.7));
+  opacity: 0;
+  animation: title-rise-logo 1.3s ease-out 0.55s forwards;
+  pointer-events: none;
+  user-select: none;
+}
 .title-sub-text {
   font-size: 11px;
   letter-spacing: 0.4em;

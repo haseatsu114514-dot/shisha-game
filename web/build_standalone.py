@@ -52,6 +52,17 @@ def encode_portrait(path: Path) -> str:
 
 def collect_assets() -> dict:
     assets = {}
+    # タイトルロゴ（煙のグラデーションを潰さないよう減色なしの透過PNG）
+    logo = REPO_ROOT / "assets" / "ui" / "ui_title_logo.png"
+    if logo.exists() and logo.stat().st_size > 0:
+        im = Image.open(logo).convert("RGBA")
+        if im.width > 1200:
+            im = im.resize((1200, round(im.height * 1200 / im.width)), Image.LANCZOS)
+        buf = io.BytesIO()
+        im.save(buf, "PNG", optimize=True)
+        assets["assets/ui/ui_title_logo.png"] = (
+            "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
+        )
     # 背景: ゲームから参照されうるものを全て
     for png in sorted((REPO_ROOT / "assets" / "backgrounds").glob("*.png")):
         assets[f"assets/backgrounds/{png.name}"] = encode_background(png)

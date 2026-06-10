@@ -1499,6 +1499,17 @@ function toggleStatus(show) {
 // 一人称視点なので主人公は出さず、ヒロイン・店の面々から日替わりで選ぶ
 const TITLE_CHARA_POOL = ["tsumugi", "sumi", "packii"];
 
+function setupTitleLogo() {
+  const img = $("#title-logo-img");
+  img.src = assetUrl("assets/ui/ui_title_logo.png");
+  // ロゴ画像が無い環境ではテキスト版にフォールバック
+  img.onerror = () => {
+    img.classList.add("hidden");
+    $(".title-logo").classList.remove("hidden");
+    $(".title-en").classList.remove("hidden");
+  };
+}
+
 function setupTitleChara() {
   const img = $("#title-chara");
   const pool = TITLE_CHARA_POOL.filter((id) => (D.portraits || {})[id]);
@@ -1600,6 +1611,7 @@ function init() {
   fitStage();
   window.addEventListener("resize", fitStage);
   initEngine();
+  setupTitleLogo();
   setupTitleChara();
   // タイトルBGM: 自動再生がブロックされたら最初の操作で再試行する
   startTitleBgm();
