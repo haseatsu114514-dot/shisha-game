@@ -51,6 +51,8 @@ function showScreen(id) {
   const isTitle = id === "#screen-title";
   $("#hud").classList.toggle("hidden", isTitle);
   if (isTitle) $("#hud-day-card").classList.remove("show");
+  // マップでは場所チップを隠す（場所＝マップ自身。DAYカードと重なるのも防ぐ）
+  $("#hud-location").classList.toggle("hidden", id === "#screen-map");
   // 大会・敗北画面ではDAYカードを消す
   if (id !== "#screen-map") $("#hud-day-card").classList.remove("show");
   else if (state && state.phase === "daily") $("#hud-day-card").classList.add("show");
@@ -918,8 +920,9 @@ function startTournament() {
   );
 }
 
-function beginMaking() {
+function beginMaking(tutorial) {
   tt = {
+    tutorial: !!tutorial,
     bowl: null, hms: null, charcoal: null,
     theme: null, mix: {}, pack: null,
     foilHits: 0, foilDone: false, coalFire: null, coal: null, steam: null,
@@ -927,17 +930,28 @@ function beginMaking() {
   };
   stopRigEffects();
   buildRig();
-  tournamentStep("setup_bowl");
+  tournamentStep(tutorial ? "theme" : "setup_bowl");
 }
 
 function tnPanel(title, hint) {
   showScreen("#screen-tournament");
-  const idx = STEP_FLOW.findIndex(([k]) => k === (tt && tt.step));
+  const flow = tt && tt.tutorial ? TUTORIAL_FLOW : STEP_FLOW;
+  const idx = flow.findIndex(([k]) => k === (tt && tt.step));
+  const head = tt && tt.tutorial ? "TUTORIAL " : "STEP ";
   $("#tn-progress").innerHTML = idx >= 0
-    ? `STEP ${idx + 1}/${STEP_FLOW.length}・${STEP_FLOW[idx][1]} <span class="tn-steps">${STEP_FLOW.map(([, t], i) => (i <= idx ? "●" : "○")).join("")}</span>`
+    ? `${head}${idx + 1}/${flow.length}・${flow[idx][1]} <span class="tn-steps">${flow.map(([, t], i) => (i <= idx ? "●" : "○")).join("")}</span>`
     : "RESULT";
   $("#tn-title").textContent = title;
   $("#tn-hint").textContent = hint || "";
+  // チュートリアル中はスミさんのアドバイスを添える
+  const oldTutor = document.querySelector("#tn-layout .tn-tutor");
+  if (oldTutor) oldTutor.remove();
+  if (tt && tt.tutorial && TUTORIAL_TIPS[tt.step]) {
+    const tip = document.createElement("p");
+    tip.className = "tn-tutor";
+    tip.textContent = TUTORIAL_TIPS[tt.step];
+    $("#tn-hint").after(tip);
+  }
   const body = $("#tn-body");
   body.innerHTML = "";
   updateRig();
@@ -979,6 +993,7 @@ function tournamentStep(step) {
       tt.steam = s.id;
       if (window.SFX) SFX.smoke();
       startRigSmoke(750);
+      if (tt.tutorial) return tournamentStep("pull"); // チュートリアルは観客も対戦相手もいない
       playDialogue("ch1_tournament_match", () => tournamentStep("focus"), "res://assets/backgrounds/bg_tournament_stage.png");
     }));
     return;
@@ -1278,8 +1293,8 @@ function stepPull() {
     wrap.querySelector("#tn-gauge-result").textContent = msgs[tt.pull];
     const nextBtn = document.createElement("button");
     nextBtn.className = "primary-btn";
-    nextBtn.textContent = "提供する";
-    nextBtn.addEventListener("click", () => tournamentStep("present"));
+    nextBtn.textContent = tt.tutorial ? "スミさんに出す" : "提供する";
+    nextBtn.addEventListener("click", () => (tt.tutorial ? finishTutorial() : tournamentStep("present")));
     wrap.appendChild(nextBtn);
   });
 }
@@ -1480,6 +1495,88 @@ function toggleStatus(show) {
   else ov.classList.remove("visible");
 }
 
+// ---------------------------------------------------------------- title
+// 一人称視点なので主人公は出さず、ヒロイン・店の面々から日替わりで選ぶ
+const TITLE_CHARA_POOL = ["tsumugi", "sumi", "packii"];
+
+function setupTitleChara() {
+  const img = $("#title-chara");
+  const pool = TITLE_CHARA_POOL.filter((id) => (D.portraits || {})[id]);
+  if (!pool.length) { img.style.display = "none"; return; }
+  const id = pool[Math.floor(Math.random() * pool.length)];
+  const faces = D.portraits[id] || [];
+  const face = faces.includes("smile") ? "smile" : faces.includes("normal") ? "normal" : faces[0];
+  img.src = assetUrl(`assets/sprites/characters/${id}/chr_${id}_${face}.png`);
+  img.onerror = () => { img.style.display = "none"; };
+  // 透過余白を補正して、実体が画面高の約80%になるように
+  const t = ((D.portrait_trims || {})[id] || {})[face];
+  if (t && t.h) {
+    const h = Math.min(80 / t.h, 175);
+    img.style.height = `${h}%`;
+    img.style.bottom = `${-(t.b * h)}%`;
+  }
+}
+
+function startTitleBgm() {
+  if (window.SFX && $("#screen-title").classList.contains("active")) SFX.bgm("title");
+}
+
+// ---------------------------------------------------------------- tutorial
+// 大会に出ろと言われた直後、tonariの作業台で一度シーシャ作りを通しで体験する
+const TUTORIAL_FLOW = [
+  ["theme", "THEME"], ["mix", "MIX"], ["pack", "PACK"], ["foil", "FOIL"],
+  ["coalfire", "COAL"], ["coal", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"],
+];
+const TUTORIAL_TIPS = {
+  theme: "スミさん「まずは一台のコンセプトだ。今日は好きに選んでいい」",
+  mix: "スミさん「合計12g。最初は2種類くらいが扱いやすいぞ」",
+  pack: "スミさん「迷ったらノーマル。フレーバーの重さで変えるんだ」",
+  foil: "スミさん「穴は均等に。リズムで開けると揃う」",
+  coalfire: "スミさん「炭は全体が赤く熾きてからだ。焦るな」",
+  coal: "スミさん「基本はトライアングル。熱が均等に回る」",
+  steam: "スミさん「蒸らしは5〜8分。ここで味が決まる」",
+  pull: "スミさん「最後は自分の肺で確かめろ」",
+};
+
+function startTutorial() {
+  if (state.flags._tutorial_done) return showMap();
+  playCustom({
+    dialogue_id: "tutorial_intro",
+    metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" },
+    lines: [
+      { speaker: "sumi", face: "normal", text: "おい、始。大会に出るって決めたなら、まず一回、通しで作ってみろ。" },
+      { speaker: "sumi", face: "smile", text: "ウチの作業台を貸してやる。テーマ決めから引きまで、本番と同じ流れだ。" },
+      { speaker: "hajime", face: "normal", text: "（……やってみよう。何事も、まずは手を動かすところからだ）" },
+    ],
+  }, () => beginMaking(true));
+}
+
+function finishTutorial() {
+  state.flags._tutorial_done = true;
+  stopRigEffects();
+  const craft = craftScore();
+  const grade = craft.score >= 90 ? "great" : craft.score >= 70 ? "good" : "rough";
+  const comment = {
+    great: { face: "surprise", text: "……驚いたな。初めての通しでこの煙か。お前、本当に筋がいいぞ。" },
+    good: { face: "smile", text: "悪くない。初めての通しなら上出来だ。あとは数をこなすだけだな。" },
+    rough: { face: "normal", text: "まあ、最初はこんなもんだ。どこで味が決まるか、体で覚えただろう。" },
+  }[grade];
+  playCustom({
+    dialogue_id: "tutorial_result",
+    metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" },
+    lines: [
+      { speaker: "", face: "", text: "──煙を一口、スミさんに渡す。ゆっくりと吐き出して、しばらく目を閉じた。" },
+      { speaker: "sumi", face: comment.face, text: comment.text },
+      { speaker: "sumi", face: "serious", text: "本番までの7日間、店も練習台も好きに使え。……優勝してこい。" },
+      { speaker: "", face: "", text: "……【技術】と【センス】が上がった。" },
+    ],
+  }, () => {
+    save();
+    showDayCard("DAY 1", "SMOKE CROWN CUP まで あと7日");
+    showMap();
+  });
+}
+
 // ---------------------------------------------------------------- boot
 function startNewGame() {
   state = newState();
@@ -1487,7 +1584,7 @@ function startNewGame() {
   playDialogue("ch1_opening", () => {
     state.phase = "daily";
     save();
-    showMap();
+    startTutorial();
   }, "res://assets/backgrounds/bg_tonari_inside.png");
 }
 
@@ -1503,6 +1600,11 @@ function init() {
   fitStage();
   window.addEventListener("resize", fitStage);
   initEngine();
+  setupTitleChara();
+  // タイトルBGM: 自動再生がブロックされたら最初の操作で再試行する
+  startTitleBgm();
+  window.addEventListener("pointerdown", startTitleBgm, { once: true });
+  window.addEventListener("keydown", startTitleBgm, { once: true });
   const saved = loadSave();
   $("#btn-new").addEventListener("click", () => {
     localStorage.removeItem(SAVE_KEY);

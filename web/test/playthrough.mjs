@@ -9,6 +9,8 @@ const { chromium } = (() => {
   catch { return require("/opt/node22/lib/node_modules/playwright"); }
 })();
 
+import { playTnStep } from "./steps.mjs";
+
 const BASE = process.env.BASE_URL || "http://127.0.0.1:8123/web/";
 const log = (...a) => console.log("[test]", ...a);
 
@@ -44,9 +46,17 @@ async function activeScreen() {
   return page.evaluate(() => document.querySelector(".screen.active")?.id || "none");
 }
 
+let tutorialSeen = false;
 while (guard++ < 5000) {
   const screen = await activeScreen();
-  if (screen === "screen-tournament") break;
+  if (screen === "screen-tournament") {
+    const phase = await page.evaluate(() => state.phase);
+    if (phase === "tournament") break; // 本番大会へ到達
+    // 日常フェーズの tournament 画面＝チュートリアル
+    if (!tutorialSeen) { tutorialSeen = true; log("tutorial making started"); }
+    await playTnStep(page);
+    continue;
+  }
   if (screen === "screen-gameover") throw new Error("unexpected game over");
   if (screen === "screen-dialogue") {
     const choice = page.locator("#vn-choices .choice-btn").first();
@@ -81,6 +91,8 @@ while (guard++ < 5000) {
   await page.waitForTimeout(50);
 }
 
+if (!tutorialSeen) throw new Error("tutorial making was not shown before tournament");
+log("tutorial OK");
 log("reached tournament, day check:", await page.locator("#hud-day").textContent());
 
 // 検証しやすいようにステータスを底上げ（勝利ルートを確認する）
@@ -88,11 +100,8 @@ await page.evaluate(() => {
   state.stats = { technique: 80, sense: 80, guts: 80, charm: 80, insight: 80 };
 });
 
-// 大会: テーマ → ミックス → パック → 炭 → 蒸らし → 会話 → 引き → プレゼン → 結果
-async function tnStep() {
-  return page.locator("#tn-title").textContent();
-}
-
+// 大会: 機材 → テーマ → ミックス → パック → 穴あけ → 炭起こし → 配置 →
+//       蒸らし → 会話 → 集中 → 引き → プレゼン → 結果
 guard = 0;
 while (guard++ < 3000) {
   const screen = await activeScreen();
@@ -105,55 +114,7 @@ while (guard++ < 3000) {
     continue;
   }
   if (screen === "screen-tournament") {
-    const title = await tnStep();
-    if (title.includes("機材選択")) {
-      await page.locator("#tn-body .spot-btn:not([disabled])").first().click();
-    } else if (title.includes("アルミ穴あけ")) {
-      for (let k = 0; k < 6; k++) {
-        await page.waitForTimeout(140);
-        await page.locator("button", { hasText: "穴を開ける" }).click();
-      }
-      await page.locator("button", { hasText: "次へ" }).click();
-    } else if (title.includes("炭起こし")) {
-      await page.waitForTimeout(250);
-      await page.locator("button", { hasText: "乗せる" }).click();
-      await page.locator("button", { hasText: "次へ" }).click();
-    } else if (title.includes("集中")) {
-      for (let k = 0; k < 60; k++) {
-        const fin = page.locator("button", { hasText: "仕上げに入る" });
-        if (await fin.count()) { await fin.click(); break; }
-        const w = page.locator(".focus-word");
-        if (await w.count()) await w.first().click().catch(() => {});
-        await page.waitForTimeout(150);
-      }
-    } else if (title.includes("テーマ選択")) {
-      await page.locator(".spot-btn", { hasText: "フルーティ" }).click();
-    } else if (title.includes("ミックス")) {
-      // ブルーベリー8g + バニラ4g（fruit + sweet でテーマ一致）
-      const rows = page.locator(".mix-row");
-      const plusOf = (name) => rows.filter({ hasText: name }).locator("button", { hasText: "＋" });
-      for (let i = 0; i < 8; i++) await plusOf("ブルーベリー").click();
-      for (let i = 0; i < 4; i++) await plusOf("バニラ").click();
-      await page.locator("button", { hasText: "この配合でいく" }).click();
-    } else if (title.includes("パッキング")) {
-      await page.locator(".spot-btn", { hasText: "ノーマル" }).click();
-    } else if (title.includes("炭の配置")) {
-      await page.locator(".spot-btn", { hasText: "トライアングル" }).click();
-    } else if (title.includes("蒸らし時間")) {
-      await page.locator(".spot-btn", { hasText: "8分" }).click();
-    } else if (title.includes("引き")) {
-      await page.waitForTimeout(300);
-      await page.click("#tn-gauge-stop");
-      await page.waitForTimeout(50);
-      await page.locator("button", { hasText: "提供する" }).click();
-    } else if (title.includes("プレゼン")) {
-      await page.locator(".spot-btn", { hasText: "味で語る" }).click();
-    } else if (title.includes("審査結果")) {
-      const rows = await page.locator(".result-row").allTextContents();
-      log("result:", rows.join(" / "));
-      await page.locator("#tn-body .primary-btn").click();
-    }
-    await page.waitForTimeout(40);
+    await playTnStep(page, { onResult: (rows) => log("result:", rows.join(" / ")) });
     continue;
   }
   await page.waitForTimeout(50);

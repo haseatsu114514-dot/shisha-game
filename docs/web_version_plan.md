@@ -50,6 +50,28 @@
 - 演出: WebAudio合成SE・BGM・判定スタンプ・煙/泡パーティクル・結果リビール
 - 16:9固定ステージ（スマホ横向き対応）・localStorageセーブ・1ファイル配布ビルド
 
+## 公開URL（プレイ・確認用）
+
+- **安定版（main マージ後に自動更新）**: https://haseatsu114514-dot.github.io/shisha-game/
+  - `.github/workflows/deploy-pages.yml` が main の `web/dist/` を GitHub Pages へ配備
+  - 初回のみ: リポジトリ Settings → Pages → Source を「GitHub Actions」にする（workflow が自動有効化を試みる）
+- **開発中ブランチの最新（push 直後に反映）**:
+  `https://raw.githack.com/haseatsu114514-dot/shisha-game/<ブランチ名>/web/dist/shisha_ch1.html`
+- スマホは横向き推奨（縦だと回転ヒントが出る）。PC/スマホどちらも同じURLでOK
+
+## 2026-06-10 セッションで実装済み（後半）
+
+- **タイトル画面 v2** — 墨ベースの背景＋漂う煙レイヤー、右側にカラフルな煙星雲と
+  ランダムキャラ（つむぎ/スミ/パッキー、`TITLE_CHARA_POOL`）。ロゴ・メニューの
+  時間差フェードイン、メニューホバーの金バー演出
+- **タイトルBGM** — `assets/audio/bgm/title.mp3`（Hookah Midnight Loop)。
+  自動再生ブロック時は最初のタップ/キーで再試行
+- **チュートリアル** — オープニング後にスミさんの作業台で1回シーシャ作りを通し体験
+  （`TUTORIAL_FLOW`: テーマ→ミックス→パック→穴あけ→炭起こし→配置→蒸らし→引き、
+  各ステップにスミさんのアドバイス表示、結果に応じた講評＋技術/センス上昇）。
+  `state.flags._tutorial_done` で1回のみ
+- **一人称視点** — 主人公はじめの立ち絵は表示しない（`NO_PORTRAIT_SPEAKERS`）
+
 ## 2026-06-10 セッションで実装済み
 
 1. **タイトル刷新** — 新ロゴ「水煙前線 -EN:CODE-」、左寄せ縦メニュー

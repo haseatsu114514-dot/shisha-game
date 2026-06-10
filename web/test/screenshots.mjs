@@ -6,6 +6,8 @@ const { chromium } = (() => {
   catch { return require("/opt/node22/lib/node_modules/playwright"); }
 })();
 
+import { playTnStep } from "./steps.mjs";
+
 const BASE = process.env.BASE_URL || "http://127.0.0.1:8123/web/";
 const OUT = process.env.OUT_DIR || "/tmp/shots";
 const log = (...a) => console.log("[shot]", ...a);
@@ -31,10 +33,20 @@ for (let i = 0; i < 200; i++) {
 }
 await page.screenshot({ path: `${OUT}/03_choice.png` });
 
-// マップまで進める
+// マップまで進める（途中のチュートリアル・シーシャ作りも通す）
 async function active() { return page.evaluate(() => document.querySelector(".screen.active")?.id); }
+let tutorialShot = false;
 for (let i = 0; i < 2000; i++) {
-  if ((await active()) === "screen-map") break;
+  const s = await active();
+  if (s === "screen-map") break;
+  if (s === "screen-tournament") {
+    if (!tutorialShot) {
+      tutorialShot = true;
+      await page.screenshot({ path: `${OUT}/03b_tutorial.png` });
+    }
+    await playTnStep(page);
+    continue;
+  }
   const c = page.locator("#vn-choices .choice-btn").first();
   if (await c.count()) await c.click(); else await page.click("#vn-click-layer");
   await page.waitForTimeout(15);

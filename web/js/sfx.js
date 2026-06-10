@@ -89,7 +89,11 @@ const SFX = (() => {
 
     // BGM: key は "tonari" | "daily" など
     bgm(key) {
-      if (key === currentBgm) return;
+      if (key === currentBgm) {
+        // 自動再生ブロックで止まったままなら再試行（ユーザー操作後に呼び直す）
+        if (bgmEl && bgmEl.paused) bgmEl.play().catch(() => {});
+        return;
+      }
       currentBgm = key;
       const src = (window.BGM_DATA && window.BGM_DATA[key]) || `../assets/audio/bgm/${key}.mp3`;
       if (!bgmEl) {

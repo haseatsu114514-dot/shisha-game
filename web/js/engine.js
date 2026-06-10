@@ -18,6 +18,9 @@ const SPEAKER_ID_ALIASES = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pa
 // 専用素材ができたらここから外す。
 const BG_FULL_PORTRAITS = new Set(["naru", "adam", "minto", "ageha", "mashiro", "ryuji"]);
 
+// 立ち絵を出さないキャラ。本作は一人称視点なので主人公は基本表示しない。
+const NO_PORTRAIT_SPEAKERS = new Set(["hajime", "hazime"]);
+
 const SPEAKER_COLORS = {
   hajime: "#7ec8ff", sumi: "#d9a066", naru: "#ff8a65", adam: "#a5d6a7",
   minto: "#aed581", tsumugi: "#f48fb1", pakki: "#ffd54f", nagumo: "#b0bec5",
@@ -206,8 +209,8 @@ class DialogueEngine {
     } else {
       this.el.nameLabel.style.display = "none";
     }
-    // 立ち絵（最大2スロット、発言者を明るく）
-    if (speaker && this.portraitSrc(speaker, face)) {
+    // 立ち絵（最大2スロット、発言者を明るく）。主人公は一人称視点なので出さない
+    if (speaker && !NO_PORTRAIT_SPEAKERS.has(speaker) && this.portraitSrc(speaker, face)) {
       if (!(speaker in this.slots)) {
         const used = Object.values(this.slots);
         let slot = [0, 1].find((s) => !used.includes(s));
