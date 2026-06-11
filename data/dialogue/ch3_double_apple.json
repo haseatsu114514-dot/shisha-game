@@ -1,0 +1,88 @@
+{
+  "comment": "第3章前半『ダブルアップル事件』── 味覚を失ったはじめが、ましろの出した一台を『ダブルアップル』と言われて同調してしまう。シーシャで最も分かりやすい味すら分からない絶望と、嘘がバレた瞬間。ましろだけが、何も聞かずに救う。ch3エンジン実装時に組み込む。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch3_mukai_arrival",
+      "metadata": { "bg": "res://assets/backgrounds/bg_street_night.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "東京。スミさんは「mukaiのムカイさんを頼れ」とだけ言った。それ以上は、何も。" },
+        { "speaker": "", "face": "", "text": "tonariの姉妹店mukai。雑居ビルの3階。看板は小さく、階段は狭い。──ドアを開けると、懐かしい匂いがした。tonariと同じ、炭とフレーバーと、コーヒーの残り香。" },
+        { "speaker": "mukai_master", "face": "normal", "text": "……ああ、君が。スミから聞いてるよ。全国王者くん" },
+        { "speaker": "hajime", "face": "normal", "text": "蒸野はじめです。よろしくお願いします" },
+        { "speaker": "mukai_master", "face": "normal", "text": "ここでは王者もバイトも関係ない。明日から皿洗いと炭起こしから。いいね" },
+        { "speaker": "", "face": "", "text": "カウンターの奥に、もう一人いた。おっとりした目をした、同い年くらいの女の子。ボウルに向かう手つきだけが、異様に確かだった。" },
+        { "speaker": "mashiro", "face": "normal", "text": "……ましろです。よろしく〜" },
+        { "speaker": "", "face": "", "text": "それが、ましろとの出会いだった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_double_apple_incident",
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "mukai、閉店後。客の引けた店内で、ましろがカウンターにフレーバーの缶を並べている。" },
+        { "speaker": "mashiro", "face": "normal", "text": "……はじめくん、今日、何か吸う？" },
+        { "speaker": "hajime", "face": "normal", "text": "あ、いえ、僕は……" },
+        { "speaker": "mashiro", "face": "normal", "text": "私が作るから。座ってて" },
+        { "speaker": "", "face": "", "text": "ましろは何の説明もなく、フレーバーをほぐし、ボウルに詰め、炭を置いた。その手つきには「勝つため」の気負いが一切ない。ただ、目の前の一台に集中している。" },
+        { "speaker": "", "face": "", "text": "数分後。ホースが差し出される。" },
+        { "speaker": "mashiro", "face": "normal", "text": "はい。──ダブルアップル。シンプルなやつ" },
+        { "speaker": "", "face": "", "text": "ダブルアップル。シーシャを覚えた人間が、最初に覚える味。林檎飴の濃い甘さ、皮の渋み、独特のスパイス感。スイカと混ぜてもマンゴーと混ぜても、芯が太くて消えない──シーシャの中で、一番「分かりやすい」味。" },
+        { "speaker": "", "face": "", "text": "スミさんが最初の特訓で持たせてくれたのも、この深紅のパッケージだった。" },
+        { "speaker": "", "face": "", "text": "煙を、吸う。" },
+        { "speaker": "hajime", "face": "normal", "text": "（…………）" },
+        { "speaker": "", "face": "", "text": "味は、する。何かの味は、する。柑橘のような。爽やかで、薄荷のような。──でも、林檎の輪郭が、どこにもない。" },
+        { "speaker": "hajime", "face": "normal", "text": "（落ち着け。ダブルアップルだ。あの味だ。覚えてるだろ。1年間、毎日嗅いできた香りだろ──）" },
+        { "speaker": "", "face": "", "text": "思い出せない。舌の上に、地図がない。" },
+        { "speaker": "", "face": "", "text": "──ここで「分からない」と言ったら、終わる気がした。全国王者が、ダブルアップルが分からない。そんなこと、口が裂けても。" },
+        { "speaker": "mashiro", "face": "normal", "text": "……どう？" },
+        { "speaker": "hajime", "face": "smile", "text": "……うん。ダブルアップル、ですね。懐かしい味。あの、定番の……林檎の、皮の苦みが、奥の方にちゃんとあって" },
+        { "speaker": "", "face": "", "text": "ましろは、黙って自分も一口吸った。煙をゆっくり吐いて、ボウルの中を覗き込む。" },
+        { "speaker": "mashiro", "face": "normal", "text": "──これ、シトラスミント。ダブルアップル、一粒も入ってないよ" },
+        { "speaker": "", "face": "", "text": "──────。" },
+        { "speaker": "", "face": "", "text": "店内の空気が、止まった。換気扇の音だけが、回り続けている。" },
+        { "speaker": "hajime", "face": "surprise", "text": "…………あ" },
+        { "speaker": "mashiro", "face": "normal", "text": "……はじめくん。何が見えてないの？" },
+        { "speaker": "", "face": "", "text": "答えられなかった。「味がしないんです」と言えば、全部終わる気がした。優勝した男の、最後のプライドだった。" },
+        { "speaker": "", "face": "", "text": "ましろはしばらく、はじめの顔を見ていた。それから、ホースを置いて、ぽつりと言った。" },
+        { "speaker": "mashiro", "face": "normal", "text": "……ううん。いい。私、何も聞かない" },
+        { "speaker": "hajime", "face": "surprise", "text": "え……" },
+        { "speaker": "mashiro", "face": "normal", "text": "ただ毎日、一杯作る。はじめくんは、毎日それを吸う。……それだけでいい" },
+        { "speaker": "hajime", "face": "sad", "text": "……っ" },
+        { "speaker": "", "face": "", "text": "なるは正面から叩いてくれた。みんとは笑顔で刺した。スミさんは問いを投げた。──ましろだけが、何も問わなかった。" },
+        { "speaker": "", "face": "", "text": "問わずに、ただ明日の一杯を約束した。" },
+        { "speaker": "", "face": "", "text": "気づいたら、涙が落ちていた。負けて泣くんじゃない。──許されて、泣いた。" },
+        { "speaker": "mashiro", "face": "normal", "text": "……泣いていいよ。煙のせいにしとけば、分かんないから" },
+        { "speaker": "", "face": "", "text": "閉店後のmukaiに、水タバコの呼吸音だけが、静かに続いていた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_daily_cup_1",
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "それから、ましろは本当に毎日一杯作った。" },
+        { "speaker": "mashiro", "face": "normal", "text": "はい、今日の" },
+        { "speaker": "", "face": "", "text": "名前は言わない。説明もしない。はじめも、聞かない。味が分からなくても、分かったふりは、もうしない。" },
+        { "speaker": "hajime", "face": "normal", "text": "……今日のは、すこし、あったかい感じがします" },
+        { "speaker": "mashiro", "face": "smile", "text": "……うん。それでいい" },
+        { "speaker": "", "face": "", "text": "味ではなく、温度。香りではなく、煙の重さ。言葉にできるものから、すこしずつ。──舌の地図を、ゼロから引き直していく日々が始まった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_taste_return",
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "何十杯目かの、ある夜。" },
+        { "speaker": "", "face": "", "text": "いつものように、ましろの一杯を吸う。──ふいに、舌の奥で、何かが灯った。" },
+        { "speaker": "hajime", "face": "surprise", "text": "──林檎だ" },
+        { "speaker": "mashiro", "face": "normal", "text": "…………" },
+        { "speaker": "hajime", "face": "surprise", "text": "林檎です、これ。ダブルアップル。皮の渋みが、奥に……ちゃんと、ある" },
+        { "speaker": "", "face": "", "text": "ましろは煙を一口吸って、ふっと笑った。" },
+        { "speaker": "mashiro", "face": "smile", "text": "──おかえり" },
+        { "speaker": "", "face": "", "text": "たった三文字だった。なのに、その三文字が、ここ半年の誰の言葉より深く沁みた。" },
+        { "speaker": "hajime", "face": "sad", "text": "……ただいま、です" },
+        { "speaker": "", "face": "", "text": "失って、初めて分かった。味が分かるということ。誰かのために作るということ。「tonariのはじめ」でも「全国王者」でもない、ただの蒸野はじめに戻る場所があるということ。" },
+        { "speaker": "", "face": "", "text": "──ここから、本当の第3章が始まる。" }
+      ]
+    }
+  ]
+}
