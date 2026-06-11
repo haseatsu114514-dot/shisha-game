@@ -15557,11 +15557,26 @@
       const eye = rage || warn || cast ? "#ff6e7f" : "#a8d9ff";
       const aura = transitioning ? 0.48 : (advantage ? 0.4 : 0.28);
 
-      // Outer aura shell for a clear phase change silhouette.
-      ctx.fillStyle = `rgba(120, 186, 255, ${aura})`;
-      ctx.fillRect(x - 5, y - 6, b.w + 10, b.h + 12);
-      ctx.fillStyle = `rgba(255, 131, 162, ${0.14 + (rage ? 0.16 : 0.08)})`;
-      ctx.fillRect(x - 3, y - 4, b.w + 6, b.h + 8);
+      // Outer aura: 四角形ではなくラジアルグローで神々しく
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      const acx = x + b.w * 0.5;
+      const acy = y + b.h * 0.5;
+      const ar = Math.max(b.w, b.h) * 0.9 + Math.sin(player.anim * 0.15) * 2.5;
+      const auraGrad = ctx.createRadialGradient(acx, acy, 2, acx, acy, ar);
+      auraGrad.addColorStop(0, `rgba(120, 186, 255, ${(aura * 0.9).toFixed(3)})`);
+      auraGrad.addColorStop(0.6, `rgba(150, 120, 255, ${(aura * 0.4).toFixed(3)})`);
+      auraGrad.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = auraGrad;
+      ctx.fillRect(acx - ar, acy - ar, ar * 2, ar * 2);
+      if (rage) {
+        const rageGrad = ctx.createRadialGradient(acx, acy, 2, acx, acy, ar * 0.7);
+        rageGrad.addColorStop(0, "rgba(255, 110, 140, 0.32)");
+        rageGrad.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = rageGrad;
+        ctx.fillRect(acx - ar, acy - ar, ar * 2, ar * 2);
+      }
+      ctx.restore();
 
       // Horned crown + head.
       ctx.fillStyle = "#10131c";
@@ -15580,6 +15595,17 @@
       ctx.fillStyle = eye;
       ctx.fillRect(x + 9, y + 9, 2, 1);
       ctx.fillRect(x + 13, y + 9, 2, 1);
+      // 目の発光
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      const eyeGlow = ctx.createRadialGradient(x + 12, y + 9.5, 0.5, x + 12, y + 9.5, 6);
+      eyeGlow.addColorStop(0, rage || warn || cast
+        ? "rgba(255, 110, 127, 0.55)"
+        : "rgba(168, 217, 255, 0.40)");
+      eyeGlow.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = eyeGlow;
+      ctx.fillRect(x + 6, y + 3, 12, 13);
+      ctx.restore();
       ctx.fillStyle = "#d3b09a";
       ctx.fillRect(x + 10, y + 12, 4, 1);
 
@@ -15646,6 +15672,21 @@
       }
       return;
     }
+
+    // 神格の聖なるオーラ（フェーズ1）
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    const gcx = x + 12;
+    const gcy = y + 18;
+    const gr = 30 + Math.sin(player.anim * 0.12) * 2.5;
+    const holyGlow = ctx.createRadialGradient(gcx, gcy, 2, gcx, gcy, gr);
+    holyGlow.addColorStop(0, warn || cast
+      ? "rgba(255, 226, 160, 0.30)"
+      : "rgba(200, 220, 255, 0.18)");
+    holyGlow.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = holyGlow;
+    ctx.fillRect(gcx - gr, gcy - gr, gr * 2, gr * 2);
+    ctx.restore();
 
     ctx.fillStyle = "#11131a";
     ctx.fillRect(x + 1, y, 22, 1);
@@ -16846,23 +16887,30 @@
       const tipX = Math.round(anchorX + Math.cos(baseAngle) * bladeLen);
       const tipY = Math.round(anchorY + Math.sin(baseAngle) * bladeLen);
 
-      // Slash trail arc (wide crescent)
+      // Slash trail arc (DMC風の発光する三日月クレセント)
       if (swing > 0.1) {
-        const trailAlpha = (swing - 0.1) * 0.7 * ratio;
-        ctx.save();
-        ctx.globalAlpha = trailAlpha;
-        ctx.strokeStyle = dtActive ? "#ff4422" : "#88bbff";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
+        const trailAlpha = (swing - 0.1) * 0.85 * ratio;
         const startA = dir > 0 ? -1.2 : Math.PI + 1.2;
         const endA = baseAngle;
-        ctx.arc(anchorX, anchorY, bladeLen * 0.85, startA, endA, dir < 0);
-        ctx.stroke();
-        // Inner brighter trail
-        ctx.strokeStyle = dtActive ? "#ffaa66" : "#cceeff";
-        ctx.lineWidth = 1;
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        ctx.globalAlpha = trailAlpha;
+        const fillCrescent = (rOut, rIn, color) => {
+          ctx.fillStyle = color;
+          ctx.beginPath();
+          ctx.arc(anchorX, anchorY, rOut, startA, endA, dir < 0);
+          ctx.arc(anchorX, anchorY, rIn, endA, startA, dir > 0);
+          ctx.closePath();
+          ctx.fill();
+        };
+        // 外周ソフトグロー → 内側の濃い帯の二層
+        fillCrescent(bladeLen * 0.96, bladeLen * 0.42, dtActive ? "rgba(255, 70, 40, 0.30)" : "rgba(90, 160, 255, 0.28)");
+        fillCrescent(bladeLen * 0.88, bladeLen * 0.58, dtActive ? "rgba(255, 150, 70, 0.36)" : "rgba(150, 210, 255, 0.34)");
+        // 最外周のシャープなエッジライン
+        ctx.strokeStyle = dtActive ? "#ffcc88" : "#e8f6ff";
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.arc(anchorX, anchorY, bladeLen * 0.75, startA, endA, dir < 0);
+        ctx.arc(anchorX, anchorY, bladeLen * 0.92, startA, endA, dir < 0);
         ctx.stroke();
         ctx.restore();
       }
@@ -16898,8 +16946,18 @@
       ctx.fillRect(-1, -3, 3, 6);
       ctx.restore();
 
-      // Tip sparkle
+      // Tip sparkle + 加算グロー
       const tipAlpha = ratio * 0.9;
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      const tipGlow = ctx.createRadialGradient(tipX, tipY, 0.5, tipX, tipY, 6);
+      tipGlow.addColorStop(0, dtActive
+        ? `rgba(255, 170, 90, ${(ratio * 0.6).toFixed(2)})`
+        : `rgba(190, 230, 255, ${(ratio * 0.55).toFixed(2)})`);
+      tipGlow.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = tipGlow;
+      ctx.fillRect(tipX - 6, tipY - 6, 12, 12);
+      ctx.restore();
       ctx.fillStyle = dtActive
         ? `rgba(255, 180, 80, ${tipAlpha.toFixed(2)})`
         : `rgba(255, 255, 255, ${tipAlpha.toFixed(2)})`;
