@@ -80,8 +80,8 @@ def collect_assets() -> dict:
     # 背景: ゲームから参照されうるものを全て
     for png in sorted((REPO_ROOT / "assets" / "backgrounds").glob("*.png")):
         assets[f"assets/backgrounds/{png.name}"] = encode_background(png)
-    # CG: 第1章の show_cg 対象
-    for png in sorted((REPO_ROOT / "assets" / "cgs").glob("cg_ch1_*.png")):
+    # CG: show_cg 対象（恋愛・日常スチル含む全部。素材が増えたらそのまま乗る）
+    for png in sorted((REPO_ROOT / "assets" / "cgs").glob("cg_*.png")):
         assets[f"assets/cgs/{png.name}"] = encode_background(png)
     # 立ち絵
     for char in CH1_PORTRAIT_CHARS:

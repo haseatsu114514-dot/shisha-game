@@ -141,7 +141,7 @@ quietly elegant adult warmth, understated, a little tired but at peace
 
 ---
 
-### ドクターケムリ（藤波 創）- 38歳
+### ドクターチャコール博士（藤波 創）- 38歳
 
 **参照画像**: `assets/39f7b2a8-ef53-4a7c-8a38-58ee443debc7.png`（白背景→ブルーバックで再生成）
 

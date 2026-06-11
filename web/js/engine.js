@@ -11,8 +11,10 @@ const SPEAKER_NAMES = {
   hazime: "はじめ", pakki: "パッキー", salaryman: "サラリーマン",
   nagumo: "南雲修二", maezono: "前園壮一郎", kirishima: "霧島レン",
   staff_choizap: "チョイザップスタッフ", kako: "かこ", rira: "りら",
+  oneesan: "お姉さん", // みんとの私服（素）の姿。正体は ch1 では明かさない
+  rin: "匂坂 凛（りん）",
 };
-const SPEAKER_ID_ALIASES = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki", pakki: "packii" };
+const SPEAKER_ID_ALIASES = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki", pakki: "packii", oneesan: "minto" };
 
 // 背景込みの一枚絵で生成されているキャラ。立ち絵スロットに小さくマスクして表示する。
 // 専用素材ができたらここから外す。
@@ -152,6 +154,9 @@ class DialogueEngine {
   }
 
   showCg(cgId) {
+    // CG素材がまだ無いことがある（生成待ち）。バンドルされた一覧で存在チェックし、
+    // 無ければ何も表示しない（404リクエストも出さない）
+    if (this.ctx.hasCg && !this.ctx.hasCg(cgId)) return;
     this.el.cg.style.backgroundImage = `url('${assetUrl(`assets/cgs/${cgId}.png`)}')`;
     this.el.cg.classList.add("visible");
   }
@@ -239,6 +244,11 @@ class DialogueEngine {
     }
     // テキスト（タイプライター表示）
     this.typeText(line.text || "");
+    // バックログへ記録
+    if (this.ctx.onLine) {
+      const name = speaker ? (SPEAKER_NAMES[speaker] || (this.ctx.charNames || {})[speaker] || speaker) : "";
+      this.ctx.onLine(name, String(line.text || ""));
+    }
     // テキスト内の報酬キューを通知
     if (this.ctx.onTextCue) this.ctx.onTextCue(String(line.text || ""), this.dialogueId);
   }

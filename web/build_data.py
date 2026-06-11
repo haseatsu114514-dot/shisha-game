@@ -9,6 +9,7 @@
     python3 web/build_data.py
 """
 
+import base64
 import json
 import re
 from pathlib import Path
@@ -30,7 +31,9 @@ CH1_DIALOGUE_FILES = [
     "ch1_minto.json",
     "ch1_tsumugi.json",
     "ch1_sumi.json",
+    "ch1_rin.json",
     "ch1_spots.json",
+    "ch1_events.json",
 ]
 
 # ch1 のバイトで使うイベントカテゴリ（story は章進行に紐づくため除外）
@@ -107,6 +110,26 @@ def collect_backgrounds() -> list:
     return sorted(p.name for p in bg_dir.glob("*.png"))
 
 
+def collect_cgs() -> list:
+    """存在するCGのid一覧。show_cg は素材が届くまで何も表示しない設計のため、
+    エンジンがこのリストで存在チェックする（404ノイズ防止）。"""
+    cg_dir = REPO_ROOT / "assets" / "cgs"
+    return sorted(p.stem for p in cg_dir.glob("cg_*.png") if p.stat().st_size > 0)
+
+
+def collect_face_icons() -> dict:
+    """assets/ui/face_icons/face_{id}.png（顔ドット絵）を data URI で埋め込む。
+    生成は tools/make_face_icons.py。1枚3〜5KBなので直接バンドルする。"""
+    icons = {}
+    icons_dir = REPO_ROOT / "assets" / "ui" / "face_icons"
+    if not icons_dir.exists():
+        return icons
+    for png in sorted(icons_dir.glob("face_*.png")):
+        cid = png.stem[len("face_"):]
+        icons[cid] = "data:image/png;base64," + base64.b64encode(png.read_bytes()).decode()
+    return icons
+
+
 def collect_title_arts() -> list:
     """assets/ui/title_arts/ にある専用キービジュアル一覧。
     タイトルが起動時にここからランダムに1枚選んで表示する。
@@ -145,7 +168,11 @@ def main() -> None:
         "portraits": portraits,
         "portrait_trims": portrait_trims,
         "backgrounds": collect_backgrounds(),
+        "cgs": collect_cgs(),
         "title_arts": collect_title_arts(),
+        "face_icons": collect_face_icons(),
+        "lime_messages": load_json(DATA_DIR / "lime_messages.json")["messages"],
+        "glossary": load_json(DATA_DIR / "glossary.json")["groups"],
     }
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)

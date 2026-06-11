@@ -15,23 +15,23 @@
             "lines": [
                 {
                     "speaker": "naru",
-                    "face": "normal",
-                    "text": "遅えよ。待たせんな"
+                    "face": "smile",
+                    "text": "お、来たな。じゃ行くか"
                 },
                 {
                     "speaker": "hajime",
                     "face": "normal",
-                    "text": "ごめん、少し手間取って。で、今日はどんな機材を探すの？"
+                    "text": "うん。で、今日はどんな機材を探すの？"
                 },
                 {
                     "speaker": "naru",
                     "face": "smile",
-                    "text": "新作のヒートマネジメントだ。炭の持ちが20％も違うらしい。最強の俺様理論に絶対必要なピースってわけ"
+                    "text": "新作のヒートマネジメント。炭の持ちが20％違うらしい。カタログの数字が本当か、実物見て確かめたくてさ"
                 },
                 {
                     "speaker": "naru",
                     "face": "normal",
-                    "text": "ほら、とっとと行くぞ。荷物は全部お前持ちだからな"
+                    "text": "お前も自分の目で見とけよ。道具の理屈知ってるかどうかで、本番の引き出しが変わる"
                 },
                 {
                     "speaker": "",
@@ -56,22 +56,22 @@
                 {
                     "speaker": "naru",
                     "face": "smile",
-                    "text": "正解。少しはわかるじゃん。まあ俺みたいに精密に使いこなせるかは別の話だけど"
+                    "text": "正解。いい読みだ。あとはそれを本番の熱管理にどう繋げるかだな"
                 },
                 {
                     "speaker": "hajime",
                     "face": "normal",
-                    "text": "（褒められた気がするけど、オチで全部持っていく……）"
+                    "text": "（……この人、ライバルの僕にここまで見せていいのか。それとも、見せても揺らがない自信があるのか）"
                 },
                 {
                     "speaker": "naru",
                     "face": "normal",
-                    "text": "買ったわ。帰るぞ。荷物持て"
+                    "text": "買ったわ。帰るぞ。……ん、これお前の分の炭。新作のついで。使って感想ちょうだい"
                 },
                 {
                     "speaker": "",
                     "face": "",
-                    "text": "なるに振り回された半日だったが、機材の仕組みについて今まで考えたことがなかった視点を得た。\n……【技術】が少し上がった。"
+                    "text": "なると機材を見て回った半日。道具の仕組みについて、今まで考えたことがなかった視点を得た。\n……【技術】が少し上がった。"
                 }
             ]
         },
@@ -174,8 +174,12 @@
                     "text": "待ち合わせ場所に着くと、フリルのついたブラウスに落ち着いた色のロングスカート姿の女性が立っていた。"
                 },
                 {
+                    "type": "show_cg",
+                    "cg_id": "cg_minto_casual"
+                },
+                {
                     "speaker": "minto",
-                    "face": "smile",
+                    "face": "ura_smile",
                     "text": "あっ、はじめくんっ！ 来てくれてありがとーっ♡"
                 },
                 {
@@ -185,7 +189,7 @@
                 },
                 {
                     "speaker": "minto",
-                    "face": "sad",
+                    "face": "ura_sad",
                     "text": "えっ、本当？ ……もしかして、あんまり似合ってない、かな……？"
                 },
                 {
@@ -195,18 +199,247 @@
                 },
                 {
                     "speaker": "minto",
-                    "face": "smile",
+                    "face": "ura_smile",
                     "text": "あははっ、やったぁ！ はじめくんにそう言ってもらえると自信つくかもっ♪"
                 },
                 {
-                    "speaker": "minto",
+                    "speaker": "hajime",
                     "face": "normal",
+                    "text": "（……ん？ この私服の感じ、どこかで……）"
+                },
+                {
+                    "speaker": "minto",
+                    "face": "ura_normal",
+                    "text": "ん？ どうかした、はじめくん"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "いや……なんでだろ。初めて会った気がしないなって"
+                },
+                {
+                    "speaker": "minto",
+                    "face": "ura_smile",
+                    "text": "……ふーん？ なにそれ、口説いてるの？"
+                },
+                {
+                    "speaker": "minto",
+                    "face": "ura_smile",
+                    "text": "（……まだ気づかないんだ。ふふ。……ちょっとだけ、もったいないから黙っておこ）"
+                },
+                {
+                    "type": "hide_cg"
+                },
+                {
+                    "speaker": "minto",
+                    "face": "ura_normal",
                     "text": "実はね、今日は新しいお店の制服の参考に、ちょっとお洋服を見たいなーって思ってて。付き合ってくれる？"
                 },
                 {
                     "speaker": "",
                     "face": "",
                     "text": "いつもより少し大人びた私服姿のみんとにドキドキしながら、一緒に買い物を楽しんだ。\n魅力が少し上がった気がする。"
+                }
+            ]
+        },
+        {
+            "dialogue_id": "interaction_naru_night_01",
+            "metadata": {
+                "bg": "res://assets/backgrounds/kemurikusa.png",
+                "add_affinity": {
+                    "naru": 1
+                },
+                "topic": "夜のテストラン"
+            },
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "閉店後のKEMURIKUSA。看板の灯りは落ちているのに、カウンターの奥だけが明るい。"
+                },
+                {
+                    "speaker": "naru",
+                    "face": "smile",
+                    "text": "お、来た来た。悪いな、夜に。……ほら、特等席"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "カウンターには組み上がったばかりの一台。ボウルから細い煙が、ためらいなくまっすぐ立っている。"
+                },
+                {
+                    "speaker": "naru",
+                    "face": "normal",
+                    "text": "新しいミックス。ライチベースに、隠し味でローズをひとつまみ。まず吸ってみ"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "surprise",
+                    "text": "……っ、何これ。最初の一口から香りが完成してる"
+                },
+                {
+                    "speaker": "naru",
+                    "face": "smile",
+                    "text": "だろ。その『最初の一口』の設計だけで、今日の午後が全部溶けたわ"
+                },
+                {
+                    "speaker": "naru",
+                    "face": "normal",
+                    "text": "コツは蒸らしの最後の1分で炭をひとつだけ外す。表面温度が落ち着いて、一口目が絶対に焦げない"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "（一口目のためだけに、そこまでやるのか……）"
+                },
+                {
+                    "speaker": "naru",
+                    "face": "fired_up",
+                    "text": "審査員も客も、一口目で半分決める。だから俺は、そこに全部置きに行く"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "……それ、僕に見せてよかったの？ 大会で使うんでしょ"
+                },
+                {
+                    "speaker": "naru",
+                    "face": "smile",
+                    "text": "いいんだよ。手の内見せて、それでも勝つのが俺の流儀なんで"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "閉店後の店で、煙の立ち上がりについて遅くまで話し込んだ。\n……【技術】と【洞察】が上がった。"
+                }
+            ]
+        },
+        {
+            "dialogue_id": "interaction_minto_noon_01",
+            "metadata": {
+                "bg": "res://assets/backgrounds/pepermint.png",
+                "add_affinity": {
+                    "minto": 1
+                },
+                "topic": "新作の試飲"
+            },
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "昼下がりのPEPERMINT。ドアベルを鳴らすと、カウンターの奥から声が飛んできた。"
+                },
+                {
+                    "speaker": "minto",
+                    "face": "smile",
+                    "text": "はじめくん、いらっしゃーいっ♡ ふふ、来てくれると思ってたよ"
+                },
+                {
+                    "speaker": "minto",
+                    "face": "smile",
+                    "text": "じゃーん、新作！ ミント×グレープフルーツ、仕上げにほんのり蜂蜜。『夏の昼専用』に作ったの"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "surprise",
+                    "text": "……すっきりしてるのに、後味だけ甘い。これ、昼に吸う前提の濃さなんだ"
+                },
+                {
+                    "speaker": "minto",
+                    "face": "normal",
+                    "text": "そうそう！ 時間帯でレシピを変えるの、大事なんだよ？ 夜のミックスのまま昼に出すと、重たくて疲れちゃうから"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "（時間帯で設計を変える……。大会の本番は昼だ。覚えておこう）"
+                },
+                {
+                    "speaker": "minto",
+                    "face": "smile",
+                    "text": "お代はいいから、そのかわり感想いっぱいちょうだい！ ……あ、あと約束のチェキねっ♡"
+                },
+                {
+                    "type": "show_cg",
+                    "cg_id": "cg_minto_cheki"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "押し切られるままツーショットを一枚。「営業用じゃない笑顔、いただきましたー♪」とみんとは満足げだった。\n……【センス】と【魅力】が上がった。"
+                },
+                {
+                    "type": "hide_cg"
+                }
+            ]
+        },
+        {
+            "dialogue_id": "outing_tsumugi_1",
+            "metadata": {
+                "bg": "res://assets/backgrounds/bg_street_day.png",
+                "add_affinity": {
+                    "tsumugi": 1
+                },
+                "add_stat": {
+                    "sense": 2
+                },
+                "topic": "絵の取材"
+            },
+            "lines": [
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "休日の昼。駅前で待っていたつむぎは、大きなトートバッグにiPadとスケッチブックを詰め込んでいた。"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……今日は、ありがとうございます。その、お仕事じゃない日に"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "serious",
+                    "text": "先に、言っておきます。これは取材です。……お店の人を、困らせたいわけじゃ、ないので"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "smile",
+                    "text": "わかってるよ。僕も他の店の煙、ちゃんと見てみたかったし。お互い取材ってことで"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "二軒まわった。つむぎは煙が立ちのぼるたび、iPadに色を走らせる。藍、橙、たまに銀。同じ煙のはずなのに、店ごとに全部違う色で。"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "smile",
+                    "text": "……ここのは、橙。あったかいけど、ちょっと騒がしい色。……tonariのは、もっと静かです"
+                },
+                {
+                    "speaker": "hajime",
+                    "face": "normal",
+                    "text": "（彼女の目には、店の性格まで色で見えてるんだ……）ねえ、その絵、大会の日も描くの？"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "normal",
+                    "text": "……はい。はじめさんの煙が、いちばんいい色になる日を、描きたいので"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "帰り道、つむぎはスケッチブックを抱えたまま、少しだけ歩くのが遅くなった。隣に並ぶと、ぽつりと。"
+                },
+                {
+                    "speaker": "tsumugi",
+                    "face": "smile",
+                    "text": "……取材、でした。今日のは。……たぶん"
+                },
+                {
+                    "speaker": "",
+                    "face": "",
+                    "text": "いろんな店の煙と、それを見るつむぎの横顔を見た一日だった。\n……【センス】が少し上がった。"
                 }
             ]
         }

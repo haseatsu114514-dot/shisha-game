@@ -53,16 +53,15 @@ for (let i = 0; i < 2000; i++) {
 }
 await page.screenshot({ path: `${OUT}/04_map.png` });
 
-// 練習画面
+// 練習画面（ドリル選択 → 本番と同じミニゲーム）
 await page.locator(".spot-btn", { hasText: "シーシャの練習" }).click();
 await page.waitForSelector("#practice-menu .spot-btn");
+await page.screenshot({ path: `${OUT}/05_practice_menu.png` });
 await page.locator("#practice-menu .spot-btn").first().click();
 await page.waitForTimeout(500);
-await page.screenshot({ path: `${OUT}/05_practice_gauge.png` });
+await page.screenshot({ path: `${OUT}/05b_practice_drill.png` });
 
 // ステータス画面
-await page.click("#gauge-stop");
-await page.waitForTimeout(100);
 await page.click("#btn-status");
 await page.waitForTimeout(100);
 await page.screenshot({ path: `${OUT}/06_status.png` });
@@ -104,12 +103,12 @@ for (let i = 0; i < 2500; i++) {
     }
     else if (t.includes("アルミ穴あけ")) {
       await page.screenshot({ path: `${OUT}/08b_foil.png` });
-      for (let k = 0; k < 6; k++) await page.locator("button", { hasText: "穴を開ける" }).click();
-      await page.locator("button", { hasText: "次へ" }).click();
+      for (let k = 0; k < 6; k++) await page.locator("#tn-body button", { hasText: "穴を開ける" }).click();
+      await page.locator("#tn-body button", { hasText: "次へ" }).click();
     }
     else if (t.includes("炭起こし")) {
-      await page.locator("button", { hasText: "乗せる" }).click();
-      await page.locator("button", { hasText: "次へ" }).click();
+      await page.locator("#tn-body button", { hasText: "乗せる" }).click();
+      await page.locator("#tn-body button", { hasText: "次へ" }).click();
     }
     else if (t.includes("集中")) {
       // わざと雑念を払わない（敗北ルート用）
@@ -119,17 +118,19 @@ for (let i = 0; i < 2500; i++) {
           await page.screenshot({ path: `${OUT}/08c_focus.png` });
           shot = true;
         }
-        const fin = page.locator("button", { hasText: "仕上げに入る" });
+        const fin = page.locator("#tn-body button", { hasText: "仕上げに入る" });
         if (await fin.count()) { await fin.click(); break; }
         await page.waitForTimeout(200);
       }
     }
+    else if (t.includes("炭替え・調整")) await page.locator(".spot-btn", { hasText: "このままでいく" }).click();
     else if (t.includes("テーマ選択")) await page.locator(".spot-btn", { hasText: "高火力" }).click();
     else if (t.includes("ミックス")) {
-      const plus = page.locator(".mix-row", { hasText: "バニラ" }).locator("button", { hasText: "＋" });
-      for (let k = 0; k < 12; k++) await plus.click();
+      const plusOf = (name) => page.locator(".mix-row", { hasText: name }).locator("button", { hasText: "＋" });
+      for (let k = 0; k < 2; k++) await plusOf("ミント").click();
+      for (let k = 0; k < 10; k++) await plusOf("バニラ").click();
       await page.screenshot({ path: `${OUT}/08_mix.png` });
-      await page.locator("button", { hasText: "この配合でいく" }).click();
+      await page.locator("#tn-body button", { hasText: "この配合でいく" }).click();
     } else if (t.includes("パッキング")) await page.locator(".spot-btn", { hasText: "ふんわり" }).click();
     else if (t.includes("炭の配置")) await page.locator(".spot-btn", { hasText: "炭4個" }).click();
     else if (t.includes("蒸らし時間")) await page.locator(".spot-btn", { hasText: "せっかち" }).click();
@@ -137,11 +138,15 @@ for (let i = 0; i < 2500; i++) {
       await page.waitForTimeout(150);
       await page.click("#tn-gauge-stop");
       await page.waitForTimeout(40);
-      await page.locator("button", { hasText: "提供する" }).click();
+      await page.locator("#tn-body button", { hasText: "提供する" }).click();
     } else if (t.includes("プレゼン")) await page.locator(".spot-btn", { hasText: "味で語る" }).click();
     else if (t.includes("審査結果")) {
       await page.screenshot({ path: `${OUT}/09_result.png` });
       await page.locator("#tn-body .primary-btn").click();
+    }
+    else if (await page.locator("#tn-body .primary-btn:not([disabled])").count()) {
+      // 中間発表など、ボタンひとつのパネル
+      await page.locator("#tn-body .primary-btn:not([disabled])").first().click();
     }
     await page.waitForTimeout(30);
     continue;
@@ -154,7 +159,7 @@ await page.screenshot({ path: `${OUT}/10_end.png` });
 if (!endTitle.includes("敗北")) throw new Error("expected defeat, got " + endTitle);
 
 // 再挑戦でテーマ選択に戻ること
-await page.locator("button", { hasText: "もう一度挑戦する" }).click();
+await page.locator("#screen-end button", { hasText: "もう一度挑戦する" }).click();
 await page.waitForTimeout(100);
 const t2 = await page.locator("#tn-title").textContent();
 if (!t2.includes("機材選択")) throw new Error("retry did not restart tournament");

@@ -1,0 +1,304 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "ch1_rin_first",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shop.png",
+        "topic": "出会い"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "問屋街の店『Dr.fookah』。1階は機材とフレーバーの物販に、申し訳程度の試飲席が2つ——卸会社の直営店だ。会計を待っていると、店の奥の階段から声が降ってきた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "──ちょっと、そこの君。……うん、君。いい肺してそうだね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え？ 肺……ですか？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "階段の上から、白いシャツの袖をまくった女性がこちらを見下ろしている。首元に細い紙が何本も挿してあって、煙とは違う、複雑な香りがした。"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "毎日シーシャを吸ってる肺。それも、仕事で。……tonariの子でしょ。前掛けの折り目でわかる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……観察されてた）は、はい。バイトの蒸野です"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "匂坂 凛。この店の上——2階で、海外メーカーの代理店部門をやってる。NIGHTSIDE……知らない？ まあ、いいや"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "ねえ、モルモットにならない？ 君"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "モ、モルモット？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ついて行った2階は、薄暗いショールームだった。棚一面に、日本語表記のないフレーバー缶。窓は黒いフィルムで塞がれている。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "未発売サンプルの市場フィードバック。要は、吸って、感想を言う。それだけ。報酬は出る"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "ん、これ同意書ね。──大丈夫、痛くしないから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（怪しい。圧倒的に怪しい。……でも棚の缶のロット管理、ものすごく丁寧だ。雑な仕事の人じゃない）"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "言っとくけど、危ない橋は渡らせない。サンプルは全部、私が先に吸ってる。……それが代理店の仕事だから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……わかりました。よろしくお願いします、匂坂さん"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "凛でいいよ、モルモットくん。じゃ、契約成立。──ようこそ、夜の側へ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "薄暗いショールームで、得体の知れない仕事を引き受けてしまった。でも不思議と、嫌な感じはしなかった。\n……【センス】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_rin_second",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shop.png",
+        "topic": "試香モニター"
+      },
+      "lines": [
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "お、来たね、モルモットくん。ちょうど今日の便でサンプルが届いたとこ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "作業台には小さな一台が組んであった。凛さんは慣れた手つきで炭を整え、ホースをこちらへ放る。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "ロットB-7。まず一口。考えるのは吐いてから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吸う。──知らない香りだ。甘いのに、最後にすっと冷たい何かが通る。"
+        },
+        {
+          "type": "choice",
+          "id": "rin_monitor_1",
+          "choices": [
+            {
+              "text": "「甘さの後ろに、冷たい金属みたいな香りが残ります」",
+              "next": "r_sharp"
+            },
+            {
+              "text": "「美味しいけど、tonariのお客さんには重いかも」",
+              "next": "r_market"
+            },
+            {
+              "text": "「……もう一口、いいですか」",
+              "next": "r_more"
+            }
+          ]
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "ふうん。……君の舌、素直だね。広告を経由しないで物を言う。それ、この業界だと結構めずらしい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛さんはクリップボードに何かを書き付けながら、口の端だけで笑った。"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "本国に送るレポート、君の感想をそのまま訳して載せるよ。……名前は出さないであげる。怖いでしょ、海外デビュー"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_ev_rin_monitor"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鼻の奥に残る香りを覚えたまま、階段を降りた。\n……【センス】と【洞察】が上がった。"
+        }
+      ],
+      "branches": {
+        "r_sharp": [
+          {
+            "speaker": "rin",
+            "face": "surprise",
+            "text": "──へえ。それ、ベルガモットの裏のメンソールバインダー。気づく？ 普通"
+          },
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "（小声）……いいモルモット拾ったかも"
+          }
+        ],
+        "r_market": [
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "市場目線。店に立ってる人間の感想だね。そういうのが一番高く売れるんだよ、実は"
+          }
+        ],
+        "r_more": [
+          {
+            "speaker": "rin",
+            "face": "smile",
+            "text": "……ふふ。いいよ、どうぞ。確かめてから喋る奴は信用できる"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch1_rin_third",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shop.png",
+        "topic": "夜の側のサンプル"
+      },
+      "lines": [
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "ん。今日はモニターじゃない。……これ、持っていきなよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "放られたのは、黒い缶。日本語のラベルはない。NIGHTSIDEのロゴの下に、手書きで『EARL GREY — PROTO』。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、未発売のサンプルって、外に出しちゃだめなんじゃ……"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "だめだね。だから、あげるんじゃなくて『フィールドテストの委託』。書類は作っておいた。……ね、悪い大人でしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（この人、グレーの線引きが正確すぎる……）いいんですか、本当に"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "君の大会、見に行けないからさ。代わりに私の仕事を一袋、ステージに乗せてよ。使うかどうかは君の判断でいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "缶を受け取るとき、凛さんがふと、こちらに少しだけ顔を寄せた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "……君、いい匂いがするね。煙と、炭と、ちょっとスパイス。──tonariの匂いだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "っ……そ、そうですか？ 自分じゃ、もう分からなくて"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "店の匂いが染みるまで働いた人間の匂い。私はそれを信用することにしてる。……はい、業務連絡おわり。帰った帰った"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_rin_sample"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "黒い缶をエプロンのポケットに沈めて、店を出た。夜の側の香りが、少しだけ自分の持ち物になった。\n（ミックスに「NS アールグレイ」が使えるようになった！）\n……【センス】が大きく上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_rin_repeat",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "ん、モルモットくん。今日はサンプル便なし。……ちょうど私物を吸ってたとこ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "試飲席の隅に、小さな一台。立ちのぼる煙から、濃い果実の香りがした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それ……ブルーベリーですか？ 意外と、普通なんですね"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "ふふ。仕事柄、世界中の限定品が吸えるのにさ。結局帰ってくるんだよね、これに。……推しは推せるうちに推せ、って言うでしょ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ショールームの隅で、凛さんの仕事を眺めながら少しだけ話した。海外の市場の話は、聞いているだけで鼻が良くなる気がする。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 1
+          }
+        }
+      ]
+    }
+  ]
+}

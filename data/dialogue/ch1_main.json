@@ -812,6 +812,160 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch1_cold_open",
+      "metadata": {
+        "effect": "smoke"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──ざわめき。乾いた熱気。砂と、香の匂い。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「HAZE: GRAND SMOKE──決勝ッ！　最後の一台が、いま、提供されます！」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "数千の観客が、息を呑んで一筋の煙を見つめている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "誰かが呟いた。「……なんだよ、この煙……」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "白い煙が、ゆっくりと会場を満たしていく。\nその向こうに、誰かが立っている。──顔は、まだ見えない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "[imp]──1年前。[/imp]"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_tutorial_oneesan",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "チュートリアルの片付けをしていると、ドアベルが鳴った。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "悪い、俺は仕込みがある。──始、頼めるか"
+        },
+        {
+          "speaker": "oneesan",
+          "face": "ura_normal",
+          "text": "こんばんはー。……あれ、今日はきみが作ってくれるの？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "たまに見かける常連のお姉さんだ。いつも一人でふらっと来て、静かに吸って、静かに帰っていく。名前は知らない。"
+        },
+        {
+          "speaker": "oneesan",
+          "face": "ura_smile",
+          "text": "じゃあ、お任せで一台。きみの好きに作っていいよ。……あ、ミントは平気。むしろ好きだから、気にしないで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "かしこまりました。（お客さんの方から好みを言ってくれた。……ありがたい）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それと、すみません。研修中の身なので、念のため年齢確認をさせてください"
+        },
+        {
+          "speaker": "oneesan",
+          "face": "ura_surprise",
+          "text": "…………え。あ、うん。はい、どうぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お姉さんは一瞬固まってから、財布から身分証を差し出した。生年月日の欄に目を走らせる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（えっと、平成──……ん？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そのとき、コンロの上で炭がパチンと爆ぜた。慌てて火床に向き直る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい、確認できました。ありがとうございます。（……あれ、今、何年生まれって書いてあったっけ。まあ、大丈夫だったし、いいか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "教わったばかりの手順を、ひとつずつ丁寧になぞる。ミントを一つまみ。蒸らしは焦らず、じっくり。"
+        },
+        {
+          "speaker": "oneesan",
+          "face": "ura_normal",
+          "text": "…………"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_oneesan_first_smoke"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お姉さんは一口吸って、ゆっくり煙を吐いた。それから、ちょっと意外そうな顔をした。"
+        },
+        {
+          "speaker": "oneesan",
+          "face": "ura_smile",
+          "text": "──おいしい。なにこれ、優しい煙。……きみ、いいシーシャ屋さんになるよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます。初めてのお客さんがお姉さんでよかったです"
+        },
+        {
+          "speaker": "oneesan",
+          "face": "ura_smile",
+          "text": "ふふ。じゃ、ごちそうさま。……がんばってね、新人くん"
+        },
+        {
+          "type": "hide_cg"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お姉さんは会計を済ませると、「ごちそうさま」と小さく言って帰っていった。\n名前も知らない、たまに来る綺麗なお姉さん。それだけの認識だった。──このときは。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "charm": 2
+          }
+        }
+      ]
     }
   ]
 }

@@ -132,7 +132,7 @@ const THEMES := [
 	{"id": "aftertaste", "name": "余韻", "flavors": ["vanilla", "blueberry", "coconut"]},
 ]
 
-## ゲスト審査員プール（南雲＋ケムリは固定。ここから1人ランダムで選出）
+## ゲスト審査員プール（南雲＋チャコール博士は固定。ここから1人ランダムで選出）
 const GUEST_JUDGES := [
 	{"id": "shiramine", "name": "白峰 恒一郎", "flavors": ["vanilla", "coconut", "pineapple"]},
 	{"id": "maezono", "name": "前園 壮一郎", "flavors": ["mint", "double_apple"]},
@@ -576,7 +576,7 @@ const SPEAKER_NAMES := {
 	"pakki": "パッキー",
 	"nagumo": "南雲修二",
 	"maezono": "前園壮一郎",
-	"dr_kemuri": "ドクター・ケムリ",
+	"dr_kemuri": "チャコール博士",
 }
 
 
@@ -5437,7 +5437,7 @@ func _build_temperature_gauge_text(current_temp: float, target: Vector2) -> Stri
 
 func _refresh_side_panel() -> void:
 	var judge_text = (
-		"MC: パッキー\n審査員: 南雲 修二 + ドクター・ケムリ + %s\nテーマ: %s"
+		"MC: パッキー\n審査員: 南雲 修二 + チャコール博士 + %s\nテーマ: %s"
 		% [
 			str(_random_judge.get("name", "審査員")),
 			str(_theme.get("name", "-")),

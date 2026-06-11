@@ -23,7 +23,7 @@ const THEMES := [
 	{"id": "aftertaste", "name": "余韻", "flavors": ["vanilla", "blueberry", "coconut"]},
 ]
 
-## ゲスト審査員プール（南雲＋ケムリは固定。ch2ゲスト = DJ SMOKE）
+## ゲスト審査員プール（南雲＋チャコール博士は固定。ch2ゲスト = DJ SMOKE）
 const GUEST_JUDGES := [
 	{"id": "dj_smoke", "name": "DJ SMOKE", "flavors": ["energy_drink", "mint", "blueberry"]},
 ]
@@ -3586,7 +3586,7 @@ func _build_temperature_gauge_text(current_temp: float, target: Vector2) -> Stri
 
 
 func _refresh_side_panel() -> void:
-	judge_label.text = "MC: パッキー\n審査員: 南雲 修二 + ドクター・ケムリ + %s\nテーマ: %s" % [
+	judge_label.text = "MC: パッキー\n審査員: 南雲 修二 + チャコール博士 + %s\nテーマ: %s" % [
 		str(_random_judge.get("name", "審査員")),
 		str(_theme.get("name", "-")),
 	]
