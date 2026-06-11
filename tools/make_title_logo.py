@@ -363,8 +363,16 @@ def main() -> None:
         sd2.line([x_in, line_y, x_out, line_y], fill=col, width=6)
     img = Image.alpha_composite(img, sl)
 
-    # ---- 縮小して書き出し ----
-    out = img.resize((OUT_W, int(H * OUT_W / W)), Image.LANCZOS)
+    # ---- 余白をクロップして縮小・書き出し ----
+    # 透明余白が残っているとCSS側の配置計算が狂うので、実コンテンツ＋小マージンに切る
+    bbox = img.getbbox()
+    if bbox:
+        m = 30
+        img = img.crop((
+            max(0, bbox[0] - m), max(0, bbox[1] - m),
+            min(W, bbox[2] + m), min(H, bbox[3] + m),
+        ))
+    out = img.resize((OUT_W, int(img.height * OUT_W / img.width)), Image.LANCZOS)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out.save(out_path)
     print(f"wrote {out_path} ({out_path.stat().st_size:,} bytes, {out.size[0]}x{out.size[1]})")

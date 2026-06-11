@@ -154,48 +154,59 @@ body {
 .hud-right-btns button.off { opacity: 0.45; }
 
 /* HUDの DAY 表示（マップ・大会で出す） */
+/* DAYカード: 墨×金（このゲームの世界観に合わせる） */
 #hud-day-card {
   position: absolute;
   top: 12px; left: 14px;
   z-index: 41;
   display: none;
   align-items: stretch;
-  background: linear-gradient(180deg, #ffe7ef 0%, #ffd4dd 100%);
-  border-radius: 14px;
-  padding: 10px 14px 10px 12px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.45);
-  min-width: 170px;
-  color: #5a3a4a;
-  font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+  background: linear-gradient(160deg, rgba(16,10,24,0.95), rgba(28,18,38,0.95));
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  padding: 12px 16px 12px 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.55);
+  min-width: 180px;
+  color: var(--text);
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
 }
+#hud-day-card::before, #hud-day-card::after {
+  content: ""; position: absolute; width: 12px; height: 12px;
+  border: 1px solid var(--accent);
+}
+#hud-day-card::before { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+#hud-day-card::after  { bottom: -2px; right: -2px; border-left: none; border-top: none; }
 #hud-day-card.show { display: flex; }
 #hud-day-card .area-name {
-  font-family: "Brush Script MT", "Kunstler Script", cursive;
-  font-size: 20px;
-  color: #d94872;
+  font-family: "Times New Roman", serif;
+  font-size: 11px;
+  letter-spacing: 0.34em;
+  color: var(--accent);
   line-height: 1;
+  margin-bottom: 4px;
 }
 #hud-day-card .day-num {
   font-size: 38px; font-weight: bold; line-height: 1;
-  color: #5a3a4a;
+  color: var(--text);
 }
-#hud-day-card .day-num .max { font-size: 14px; color: #8a6275; vertical-align: middle; }
-#hud-day-card .day-week { font-size: 12px; color: #8a6275; letter-spacing: 0.12em; margin-top: 2px; }
+#hud-day-card .day-num .max { font-size: 14px; color: var(--text-dim); vertical-align: middle; }
+#hud-day-card .day-week { font-size: 11px; color: var(--accent); letter-spacing: 0.22em; margin-top: 3px; }
 #hud-day-card .day-meta {
   display: flex; flex-direction: column; gap: 5px;
-  margin-left: 12px; justify-content: center;
-  font-size: 12px; color: #5a3a4a;
+  margin-left: 14px; justify-content: center;
+  font-size: 12px; color: var(--text);
 }
 #hud-day-card .day-meta .row {
-  display: flex; align-items: center; gap: 6px;
-  background: rgba(255,255,255,0.65);
-  border-radius: 12px;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  background: rgba(244,210,122,0.08);
+  border: 1px solid rgba(244,210,122,0.2);
+  border-radius: 4px;
   padding: 3px 9px;
-  min-width: 88px;
+  min-width: 96px;
 }
 #hud-day-card .day-meta .row .row-label {
   font-size: 10px;
-  color: #8a6275;
+  color: var(--text-dim);
   letter-spacing: 0.1em;
 }
 
@@ -444,9 +455,10 @@ body {
   gap: 8px;
 }
 #title-logo-img {
-  width: 720px;
-  max-width: 95%;
-  margin-left: -36px; /* ロゴ画像の余白ぶん左に寄せて文字位置を揃える */
+  /* ロゴPNGは実コンテンツでクロップ済み（make_title_logo.py）。
+     高さ ≒ 幅 × 0.42 なので 520px → 約220px。メニューは top 52% から始まる */
+  width: 520px;
+  max-width: 42vw;
   filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.7));
   opacity: 0;
   animation: title-rise-logo 1.3s ease-out 0.55s forwards;
@@ -498,11 +510,13 @@ body {
 }
 
 .title-menu {
+  /* ロゴの下端（約 9% + 220px ≒ 40%）より下に固定。
+     LOAD が増減しても上端は動かない（上アンカー） */
   position: absolute;
   left: 6%;
-  bottom: 8%;
+  top: 47%;
   display: flex; flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   width: 420px;
   max-width: 46vw;
 }
@@ -510,13 +524,13 @@ body {
   position: relative;
   display: flex;
   align-items: baseline;
-  gap: 22px;
-  padding: 14px 22px 14px 26px;
+  gap: 20px;
+  padding: 11px 22px 11px 26px;
   background: transparent;
   border: none;
   color: var(--text);
   font-family: "Times New Roman", "Hiragino Mincho ProN", serif;
-  font-size: 28px;
+  font-size: 25px;
   letter-spacing: 0.20em;
   cursor: pointer;
   text-align: left;
@@ -556,7 +570,7 @@ body {
   pointer-events: none;
   opacity: 0;
 }
-#smoke-veil.engulf { animation: engulf 1.4s ease-out forwards; }
+#smoke-veil.engulf { animation: engulf 2.6s ease-in-out forwards; }
 #smoke-veil .puff {
   position: absolute;
   border-radius: 50%;
@@ -564,19 +578,21 @@ body {
   filter: blur(20px);
   mix-blend-mode: screen;
   opacity: 0;
-  animation: puff-engulf 1.4s ease-out forwards;
+  animation: puff-engulf 2.6s ease-in-out forwards;
 }
+/* 立ち上がり→白に包まれて「間」→ゆっくり晴れる */
 @keyframes engulf {
   0%   { opacity: 0; backdrop-filter: blur(0); }
-  35%  { opacity: 1; backdrop-filter: blur(8px); }
-  85%  { opacity: 1; backdrop-filter: blur(14px); }
+  28%  { opacity: 1; backdrop-filter: blur(10px); }
+  62%  { opacity: 1; backdrop-filter: blur(14px); }
   100% { opacity: 0; backdrop-filter: blur(0); }
 }
 @keyframes puff-engulf {
   0%   { opacity: 0; transform: translate(0, 30vh) scale(0.4); }
-  30%  { opacity: 1; }
-  65%  { opacity: 0.95; transform: translate(var(--dx, 0), -10vh) scale(1.8); }
-  100% { opacity: 0; transform: translate(var(--dx, 0), -30vh) scale(2.6); }
+  22%  { opacity: 1; }
+  55%  { opacity: 0.95; transform: translate(var(--dx, 0), -6vh) scale(1.9); }
+  80%  { opacity: 0.5; transform: translate(var(--dx, 0), -18vh) scale(2.3); }
+  100% { opacity: 0; transform: translate(var(--dx, 0), -32vh) scale(2.7); }
 }
 .title-menu-item:disabled { cursor: default; animation-name: menu-in-dim; }
 .title-menu-item:disabled:hover { color: var(--text); background: transparent; padding-left: 22px; }
@@ -888,6 +904,8 @@ body {
 #map-pins { position: absolute; inset: 0; z-index: 2; }
 .spot-pin {
   position: absolute;
+  /* 拡縮は .shield 側で行う。外側のtransformを動かすと
+     カーソル下の領域が変わって hover が暴れる（ブレの原因）ため固定 */
   transform: translate(-50%, -100%);
   display: flex;
   flex-direction: column;
@@ -899,10 +917,14 @@ body {
   cursor: pointer;
   font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
   filter: drop-shadow(0 6px 12px rgba(0,0,0,0.55));
-  transition: transform 0.18s;
 }
-.spot-pin:hover:not(:disabled) { transform: translate(-50%, -100%) scale(1.08); z-index: 5; }
-.spot-pin:active:not(:disabled) { transform: translate(-50%, -100%) scale(0.96); }
+.spot-pin .shield { transition: transform 0.16s ease-out, box-shadow 0.16s; transform-origin: 50% 100%; }
+.spot-pin:hover:not(:disabled) { z-index: 5; }
+.spot-pin:hover:not(:disabled) .shield {
+  transform: scale(1.07);
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.35), 0 0 18px rgba(244,210,122,0.45);
+}
+.spot-pin:active:not(:disabled) .shield { transform: scale(0.97); }
 .spot-pin .shield {
   position: relative;
   min-width: 110px;
@@ -1007,18 +1029,17 @@ body {
 /* マップ左下の切替ボタン（飾り） */
 #map-time-toggle {
   position: absolute; bottom: 18px; left: 18px; z-index: 3;
-  background: linear-gradient(180deg, #ffeef2, #f5c7d4);
-  color: #8a3a5a;
-  border: none;
-  border-radius: 16px;
-  padding: 10px 16px;
-  font-family: "Hiragino Kaku Gothic ProN", sans-serif;
+  background: linear-gradient(160deg, rgba(16,10,24,0.95), rgba(28,18,38,0.95));
+  color: var(--accent);
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  padding: 9px 18px;
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
   font-size: 13px;
-  font-weight: bold;
+  letter-spacing: 0.18em;
   cursor: default;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
 }
-#map-time-toggle .ico { font-size: 14px; margin-right: 4px; }
 
 .spot-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .spot-btn {
@@ -1591,9 +1612,155 @@ body {
   z-index: 3;
 }
 
-/* スマホ調整: 縦長になる端末ではロゴをより大きく、メニューを下に */
+/* スマホ調整: 縦長寄りの端末ではロゴをわずかに大きく */
 @media (max-aspect-ratio: 16/10) {
   .title-logo-wrap { top: 7%; }
-  #title-logo-img { width: 760px; }
-  .title-menu { bottom: 6%; width: 460px; }
+  #title-logo-img { width: 560px; }
+  .title-menu { top: 45%; width: 440px; }
+}
+
+/* ================= ショップ ================= */
+.shop-money {
+  font-size: 15px;
+  color: var(--accent);
+  margin-bottom: 12px;
+  letter-spacing: 0.06em;
+}
+#shop-list { margin-bottom: 16px; }
+#shop-list .spot-list { margin-bottom: 10px; }
+#screen-shop {
+  background: linear-gradient(rgba(12, 9, 20, 0.6), rgba(12, 9, 20, 0.85)),
+              url("../../assets/backgrounds/bg_shop.png") center / cover no-repeat, #0b0a10;
+}
+
+/* ================= 経験値バナー（Persona風） =================
+   ステータスUP・好感度UP・金銭授受を画面中央寄りに大きく出す。
+   1枚ずつスライドインし、複数同時発生時はスタックして見せる */
+#gain-banner {
+  position: absolute;
+  /* DAYカードやAUTO等とぶつからない、画面の少し上中央 */
+  top: 26%; right: 4%;
+  z-index: 75;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  pointer-events: none;
+}
+.gain-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 24px 14px 20px;
+  min-width: 260px;
+  color: var(--text);
+  background: linear-gradient(135deg, #1c1226 0%, #0a0612 100%);
+  border: 1px solid var(--accent);
+  border-left-width: 6px;
+  border-radius: 4px;
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.7),
+    0 0 24px rgba(244,210,122,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+  transform: translateX(120%) rotate(-2deg);
+  opacity: 0;
+  animation: gain-in 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards,
+             gain-out 0.45s cubic-bezier(0.4, 0, 0.7, 0.2) forwards 1.85s;
+  letter-spacing: 0.04em;
+}
+.gain-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(244,210,122,0.18) 50%, transparent 70%);
+  animation: gain-shine 1.6s ease-out 0.25s;
+  pointer-events: none;
+}
+.gain-card .badge {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+  color: #1a1018;
+  display: flex; align-items: center; justify-content: center;
+  font-family: "Times New Roman", serif;
+  font-weight: bold;
+  font-size: 22px;
+  line-height: 1;
+  box-shadow: inset 0 -2px 4px rgba(0,0,0,0.3), 0 0 14px rgba(244,210,122,0.6);
+  flex: none;
+}
+.gain-card .meta {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.gain-card .meta .label-top {
+  font-family: "Times New Roman", serif;
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.gain-card .meta .label-main {
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--text);
+  text-shadow: 0 1px 6px rgba(0,0,0,0.8);
+}
+.gain-card .meta .label-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+}
+.gain-card.affinity {
+  border-color: #f48fb1;
+  background: linear-gradient(135deg, #2a1220 0%, #14060c 100%);
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.7),
+    0 0 24px rgba(244,143,177,0.22),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.gain-card.affinity .badge {
+  background: linear-gradient(135deg, #f48fb1, #aa3a64);
+  color: #fff;
+  box-shadow: inset 0 -2px 4px rgba(0,0,0,0.3), 0 0 14px rgba(244,143,177,0.6);
+}
+.gain-card.affinity .meta .label-top { color: #f48fb1; }
+.gain-card.money-plus {
+  border-color: #ffd878;
+}
+.gain-card.money-plus .badge {
+  background: linear-gradient(135deg, #ffe9a0, #c79a3c);
+}
+.gain-card.money-minus {
+  border-color: #888;
+  background: linear-gradient(135deg, #1a1620 0%, #0a0810 100%);
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.7),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.gain-card.money-minus .badge {
+  background: linear-gradient(135deg, #aaa, #555);
+  color: #1a1018;
+}
+.gain-card.money-minus .meta .label-top { color: #aaa; }
+.gain-card.item .badge {
+  background: linear-gradient(135deg, #8fd3a7, #3d7c52);
+  color: #0a1410;
+}
+.gain-card.item { border-color: #8fd3a7; }
+.gain-card.item .meta .label-top { color: #8fd3a7; }
+
+@keyframes gain-in {
+  0%   { transform: translateX(120%) rotate(-2deg); opacity: 0; }
+  60%  { transform: translateX(-6%)  rotate(-1deg); opacity: 1; }
+  100% { transform: translateX(0)    rotate(0deg);  opacity: 1; }
+}
+@keyframes gain-out {
+  0%   { transform: translateX(0)    rotate(0deg);  opacity: 1; }
+  100% { transform: translateX(140%) rotate(2deg);  opacity: 0; }
+}
+@keyframes gain-shine {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
 }

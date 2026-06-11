@@ -36,7 +36,7 @@
   <!-- DAY カード（マップ画面の左上に重ねる） -->
   <div id="hud-day-card">
     <div>
-      <div class="area-name" id="dc-area">Sakae</div>
+      <div class="area-name" id="dc-area">SAKAE</div>
       <div class="day-num"><span id="dc-day">1</span><span class="max">/7</span></div>
       <div class="day-week" id="dc-week">DAY</div>
     </div>
@@ -168,6 +168,18 @@
     </div>
   </section>
 
+  <!-- ショップ -->
+  <section id="screen-shop" class="screen">
+    <div class="panel">
+      <span class="corner-tl"></span><span class="corner-br"></span>
+      <h2>機材ショップ</h2>
+      <p class="tn-hint">大会で使う機材を買い足せる。買い物に行動は消費しない。</p>
+      <p id="shop-money" class="shop-money"></p>
+      <div id="shop-list"></div>
+      <button id="shop-close" class="primary-btn" type="button">店を出る</button>
+    </div>
+  </section>
+
   <!-- 大会 -->
   <section id="screen-tournament" class="screen tournament-bg">
     <div id="tn-layout">
@@ -213,6 +225,7 @@
 
   <div id="day-card"><div class="day-big"></div><div class="day-sub"></div></div>
   <div id="smoke-veil"></div>
+  <div id="gain-banner"></div>
   <div id="toasts"></div>
 </div>
 
