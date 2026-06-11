@@ -75,16 +75,70 @@ function toast(msg) {
   setTimeout(() => { t.classList.remove("show"); setTimeout(() => t.remove(), 400); }, 2600);
 }
 
+// ============ 経験値バナー（Persona風） ============
+// kind: "stat" | "affinity" | "money-plus" | "money-minus" | "item"
+// badge: バッジ内に出す1文字（漢字や記号）
+// labelTop: 上の小さい英字ラベル（"STATUS UP" など）
+// labelMain: メインのキャラ／ステータス名や金額
+// labelSub: 補足（"少し上がった" 等）
+const gainQueue = [];
+let gainShowing = 0;
+function gainBanner({ kind = "stat", badge = "+", labelTop = "STATUS UP", labelMain = "", labelSub = "" }) {
+  gainQueue.push({ kind, badge, labelTop, labelMain, labelSub });
+  flushGainQueue();
+}
+function flushGainQueue() {
+  if (!gainQueue.length) return;
+  if (gainShowing >= 3) return; // 同時表示は最大3枚まで（積みすぎ防止）
+  const item = gainQueue.shift();
+  const box = $("#gain-banner");
+  const card = document.createElement("div");
+  card.className = `gain-card ${item.kind}`;
+  card.innerHTML =
+    `<div class="badge">${item.badge}</div>` +
+    `<div class="meta">` +
+      `<span class="label-top">${item.labelTop}</span>` +
+      `<span class="label-main">${item.labelMain}</span>` +
+      (item.labelSub ? `<span class="label-sub">${item.labelSub}</span>` : "") +
+    `</div>`;
+  box.appendChild(card);
+  gainShowing++;
+  // SE
+  if (window.SFX) {
+    if (item.kind === "affinity") SFX.select();
+    else if (item.kind === "money-plus") SFX.coin();
+    else if (item.kind === "stat") SFX.stamp();
+  }
+  // CSSアニメは合計約2.3s（in 0.45s + 待機 1.4s + out 0.45s）
+  setTimeout(() => {
+    card.remove();
+    gainShowing--;
+    flushGainQueue();
+  }, 2350);
+  // 次のバナーは少しずらして見せる
+  setTimeout(flushGainQueue, 280);
+}
+
 function stars(value) {
   const n = Math.max(1, Math.min(5, Math.ceil(value / 20)));
   return "★".repeat(n) + "☆".repeat(5 - n);
 }
 
+// 数値プレイヤーには見せない仕様だが、伸びた実感は欲しいので
+// バッジには漢字一字、サブには「少し上がった」等の抽象表現を出す
+const STAT_BADGE = { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "観" };
+
 function gainStat(en, amount) {
   if (!(en in state.stats) || amount <= 0) return;
   state.stats[en] = Math.max(0, Math.min(100, state.stats[en] + amount));
   const label = amount >= 5 ? "大きく上がった" : amount >= 3 ? "上がった" : "少し上がった";
-  toast(`【${STAT_KEYS[en]}】が${label}`);
+  gainBanner({
+    kind: "stat",
+    badge: STAT_BADGE[en] || "上",
+    labelTop: "STATUS UP",
+    labelMain: STAT_KEYS[en],
+    labelSub: label,
+  });
 }
 
 function gainAffinity(charId) {
@@ -92,14 +146,35 @@ function gainAffinity(charId) {
   if (state.affinity[charId] >= AFFINITY_CAP) return;
   state.affinity[charId] += 1;
   const name = SPEAKER_NAMES[charId] || charId;
-  toast(`${name}との距離が縮まった気がする`);
+  // バッジは名前の頭文字
+  gainBanner({
+    kind: "affinity",
+    badge: (name.match(/[一-龯ぁ-んァ-ヴa-zA-Z]/) || ["♡"])[0],
+    labelTop: "AFFINITY UP",
+    labelMain: name,
+    labelSub: "距離が縮まった気がする",
+  });
 }
 
 function addMoney(amount) {
   state.money = Math.max(0, state.money + amount);
-  if (amount > 0 && window.SFX) SFX.coin();
-  if (amount > 0) toast(`¥${amount.toLocaleString()} を受け取った`);
-  else if (amount < 0) toast(`¥${(-amount).toLocaleString()} を支払った`);
+  if (amount > 0) {
+    gainBanner({
+      kind: "money-plus",
+      badge: "￥",
+      labelTop: "MONEY",
+      labelMain: `+${amount.toLocaleString()}円`,
+      labelSub: "を受け取った",
+    });
+  } else if (amount < 0) {
+    gainBanner({
+      kind: "money-minus",
+      badge: "￥",
+      labelTop: "PAYMENT",
+      labelMain: `-${(-amount).toLocaleString()}円`,
+      labelSub: "を支払った",
+    });
+  }
   updateHud();
 }
 
