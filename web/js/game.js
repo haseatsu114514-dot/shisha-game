@@ -1715,7 +1715,7 @@ function startTutorial() {
     lines: [
       { speaker: "sumi", face: "normal", text: "おい、始。大会に出るって決めたなら、まず一回、通しで作ってみろ。" },
       { speaker: "sumi", face: "smile", text: "ウチの作業台を貸してやる。テーマ決めから引きまで、本番と同じ流れだ。" },
-      { speaker: "hajime", face: "smile", text: "いいですね。僕の実力、見ててくださいよ。（毎日作ってるんだ、通しなんて楽勝だろ）" },
+      { speaker: "hajime", face: "smile", text: "はい。（……ふふ、ちょっと腕の見せどころかも）" },
     ],
   }, () => beginMaking("tutorial"));
 }
