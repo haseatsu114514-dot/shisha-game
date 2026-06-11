@@ -661,37 +661,167 @@
     },
     {
       "dialogue_id": "ch1_tsumugi_smoke_color",
-      "metadata": { "bg": "res://assets/backgrounds/tonari_night.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/tonari_night.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "バイト中、つむぎのテーブルにシーシャを運んだ。いつものラベンダー。" },
-        { "speaker": "", "face": "", "text": "つむぎが一口吸って、ふとペンの手を止めた。" },
-        { "speaker": "tsumugi", "face": "normal", "text": "……今日の煙、いつもと色が違う" },
-        { "speaker": "hajime", "face": "surprise", "text": "え？ 色？" },
-        { "speaker": "tsumugi", "face": "normal", "text": "……ううん。なんでもない" },
-        { "speaker": "", "face": "", "text": "つむぎはそれだけ言って、またiPadに視線を戻した。" },
-        { "speaker": "hajime", "face": "normal", "text": "（色が違う……？ 同じレシピで作ったのに。不思議なことを言う子だな）" },
-        { "speaker": "", "face": "", "text": "つむぎの言葉の意味は分からなかった。でも、自分の煙を「見てくれている」人がいることに、少しだけ温かい気持ちになった。" },
-        { "speaker": "", "face": "", "text": "……【センス】が少し上がった。" }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "バイト中、つむぎのテーブルにシーシャを運んだ。いつものラベンダー。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎが一口吸って、ふとペンの手を止めた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今日の煙、いつもと色が違う"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え？ 色？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……ううん。なんでもない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──と思ったら、つむぎはペンを置いた。何かを決めたような間があって、まっすぐこちらを見る。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "serious",
+          "text": "……やっぱり、言います。笑わないで、ください"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "わたし、煙に色が見えるんです。生まれつき。……変だって、思いますよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "思わないよ。……ねえ、今日の僕の煙は、何色だったの？"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_tsumugi_smoke_color"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……夕焼けの、すこし後の藍色。あったかいのに、ちょっとさみしい色。……大会が近いから、かな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女の見ている世界を、ほんの少しだけ覗いた気がした。同じ煙が、彼女には光って見えている。"
+        },
+        {
+          "type": "hide_cg"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "serious",
+          "text": "……はじめさん。大会の日の煙が何色になるか、わたしが一番に見ます。だから──濁らせちゃ、だめですよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……っ。（いつも受け身だった彼女に、初めて『命令』された。……なんだろう、この、完敗した感じ）"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……ふふ。言っちゃった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎはそれだけ言うと、耳まで赤くなって、またiPadに視線を落とした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【センス】が少し上がった。"
+        }
       ],
-      "growth_stats": { "sense": 1 }
+      "growth_stats": {
+        "sense": 1
+      }
     },
     {
       "dialogue_id": "ch1_tsumugi_eve",
-      "metadata": { "bg": "res://assets/backgrounds/tonari_night.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/tonari_night.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "大会前日。閉店間際。最後の客が帰っていく。" },
-        { "speaker": "", "face": "", "text": "つむぎがいつもの席で会計を済ませ、ドアに向かった。" },
-        { "speaker": "", "face": "", "text": "──と、ドアの前で立ち止まった。" },
-        { "speaker": "tsumugi", "face": "normal", "text": "……はじめさん" },
-        { "speaker": "hajime", "face": "normal", "text": "ん？" },
-        { "speaker": "", "face": "", "text": "つむぎがこちらを向いた。iPadを胸に抱えたまま。いつもの距離より、少しだけ近い。" },
-        { "speaker": "tsumugi", "face": "normal", "text": "……頑張って" },
-        { "speaker": "", "face": "", "text": "それだけ言って、ドアの向こうに消えた。" },
-        { "speaker": "", "face": "", "text": "つむぎが自分から声をかけてきたのは、初めてだった。" },
-        { "speaker": "hajime", "face": "normal", "text": "（……ありがとう。頑張るよ）" },
-        { "speaker": "", "face": "", "text": "たった一言。でも、それだけで胸の奥が静かに熱くなった。\n……【根性】が少し上がった。" }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会前日。閉店間際。最後の客が帰っていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎがいつもの席で会計を済ませ、ドアに向かった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──と、ドアの前で立ち止まった。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ん？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎがこちらを向いた。iPadを胸に抱えたまま。いつもの距離より、少しだけ近い。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……頑張って"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それだけ言って、ドアの向こうに消えた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎが自分から声をかけてきたのは、初めてだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……ありがとう。頑張るよ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "たった一言。でも、それだけで胸の奥が静かに熱くなった。\n……【根性】が少し上がった。"
+        }
       ],
-      "growth_stats": { "guts": 1 }
+      "growth_stats": {
+        "guts": 1
+      }
     }
   ]
 }

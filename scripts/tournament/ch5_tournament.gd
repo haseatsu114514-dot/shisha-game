@@ -23,9 +23,9 @@ const THEMES := [
 	{"id": "aftertaste", "name": "余韻", "flavors": ["vanilla", "blueberry", "coconut"]},
 ]
 
-## ch5はSMOKE LAB（裏ボス戦）。ケムリ主催のため審査員はケムリ自身＋南雲
+## ch5はSMOKE LAB（裏ボス戦）。チャコール博士主催のため審査員はチャコール博士自身＋南雲
 const GUEST_JUDGES := [
-	{"id": "dr_kemuri", "name": "ドクター・ケムリ", "flavors": ["cola", "double_apple"]},
+	{"id": "dr_kemuri", "name": "チャコール博士", "flavors": ["cola", "double_apple"]},
 ]
 
 const STANCE_PREFERENCE := {
@@ -241,7 +241,7 @@ func _ready() -> void:
 
 func _prepare_run() -> void:
 	_theme = THEMES[randi() % THEMES.size()]
-	# ch5はSMOKE LAB: ケムリ主催
+	# ch5はSMOKE LAB: チャコール博士主催
 	_random_judge = GUEST_JUDGES[0]
 	_selected_bowl = PlayerData.equipment_bowl
 	_selected_hms = PlayerData.equipment_hms
@@ -2996,7 +2996,7 @@ func _build_temperature_gauge_text(current_temp: float, target: Vector2) -> Stri
 
 
 func _refresh_side_panel() -> void:
-	judge_label.text = "MC: パッキー\n審査員: 南雲 修二 + ドクター・ケムリ\nテーマ: %s" % [
+	judge_label.text = "MC: パッキー\n審査員: 南雲 修二 + チャコール博士\nテーマ: %s" % [
 		str(_theme.get("name", "-")),
 	]
 

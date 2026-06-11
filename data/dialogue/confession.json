@@ -65,6 +65,10 @@
       },
       "lines": [
         {
+          "type": "show_cg",
+          "cg_id": "cg_minto_confession"
+        },
+        {
           "speaker": "minto",
           "face": "smile",
           "text": "「……っ！ よかったぁ……！ えへへ、年下のだんな様みたい……♡ 今まで一人で頑張ってきたけど、これからは……甘えても、いい？」"
@@ -113,6 +117,9 @@
           "speaker": "",
           "face": "",
           "text": "画面の映画には全く集中できなかったが、僕の腕の中には、世界で一番甘くて愛おしい熱があった。"
+        },
+        {
+          "type": "hide_cg"
         }
       ]
     },
@@ -195,6 +202,10 @@
         "set_romance": "tsumugi"
       },
       "lines": [
+        {
+          "type": "show_cg",
+          "cg_id": "cg_tsumugi_confession"
+        },
         {
           "speaker": "tsumugi",
           "face": "surprise",
@@ -284,6 +295,9 @@
           "speaker": "",
           "face": "",
           "text": "真っ赤になって微笑む彼女を、僕はもう我慢できずに、気付けば強く抱きしめていた。僕の胸におさまった彼女の小さな体は、とびきり暖かくて、柔らかかった。"
+        },
+        {
+          "type": "hide_cg"
         }
       ]
     },
@@ -351,6 +365,10 @@
         "set_romance": "ageha"
       },
       "lines": [
+        {
+          "type": "show_cg",
+          "cg_id": "cg_ageha_confession"
+        },
         {
           "speaker": "ageha",
           "face": "smile",
@@ -420,6 +438,9 @@
           "speaker": "",
           "face": "",
           "text": "甘く囁かれた言葉に、僕はこれから始まるであろう熱い夜を想像し、激しく喉を鳴らした。"
+        },
+        {
+          "type": "hide_cg"
         }
       ]
     },
@@ -492,6 +513,10 @@
         "set_romance": "mashiro"
       },
       "lines": [
+        {
+          "type": "show_cg",
+          "cg_id": "cg_mashiro_confession"
+        },
         {
           "speaker": "",
           "face": "",
@@ -581,6 +606,9 @@
           "speaker": "",
           "face": "",
           "text": "僕は彼女のあたたかい背中をゆっくりと撫でながら、もう一度浅い眠りについた。"
+        },
+        {
+          "type": "hide_cg"
         }
       ]
     },
@@ -601,6 +629,122 @@
           "speaker": "",
           "face": "",
           "text": "ましろちゃんはすぐに穏やかな笑顔に戻った。でも、窓の外に向けた目が、少しだけ遠いように見えた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_rin",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のショールーム。凛さんは珍しく、何のサンプルも出さなかった。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……モニター契約、今日で一区切りなんだよね。本国のテストフェーズが終わるから"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "だからさ。次に君がここに来る理由、なくなるわけ。……それで、ちょっと困ってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "困ってる……？"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "私はデータの人だからさ。理由のない訪問って、処理できないの。……君が、理由を作ってよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "試香紙を弄ぶ指が、ほんの少しだけ落ち着きをなくしている。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_rin_accept",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shop.png"
+      },
+      "lines": [
+        {
+          "type": "show_cg",
+          "cg_id": "cg_rin_confession"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ……契約じゃない理由で来ます。凛さんに会いに。それが理由です"
+        },
+        {
+          "speaker": "rin",
+          "face": "surprise",
+          "text": "…………"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛さんは試香紙を一本、ゆっくり置いた。それから、いつもの余裕が少しだけ剥がれた顔で笑った。"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "……ふうん。即答か。モルモットのくせに、生意気"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……ありがと。実はさ、君が階段を上がってくる足音、もうだいぶ前から聞き分けられるんだよね。香りより先に、音で分かるの。……重症でしょ"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "今日から君は、モルモットじゃなくて……ん-……『匂坂凛の、いちばん大事なサンプル』。非売品。門外不出"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "それ、結局商品扱いじゃないですか"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "ふふ。──いいの。私の在庫で、いちばん手放さないやつだから"
+        },
+        {
+          "type": "hide_cg"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "confession_rin_reject",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……友達として、これからも顔を出します。サンプルがなくても"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……ん。それも、いい答え。じゃあ君は今日から『友人枠の優良モニター』。……コーヒー豆くらいは出すよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛さんはいつもの顔に戻って、棚のロットを数え始めた。……指先が一瞬だけ止まったのは、見なかったことにした。"
         }
       ]
     }

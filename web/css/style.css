@@ -1764,3 +1764,292 @@ body {
   from { transform: translateX(-100%); }
   to   { transform: translateX(100%); }
 }
+
+/* ---------------- 顔ドット絵アイコン ---------------- */
+/* tools/make_face_icons.py で立ち絵から生成した48pxドット絵。
+   拡大時はにじませずドットの粒を見せる */
+.pixel-face, .pin-face, .lime-face {
+  image-rendering: pixelated;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+.gain-card .badge .pixel-face {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+}
+.spot-pin .ico .pin-face {
+  width: 30px; height: 30px;
+  margin: 0 auto;
+  border: 2px solid rgba(255,255,255,0.85);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+  background: #1a1422;
+}
+
+/* ---------------- LIME（朝のスマホ） ---------------- */
+#phone-overlay {
+  position: absolute; inset: 0;
+  z-index: 65; /* status(60)より上、toasts(70)/バナー(75)より下 */
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(5, 4, 10, 0.62);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s;
+}
+#phone-overlay.show { opacity: 1; pointer-events: auto; }
+#phone-frame {
+  width: 330px; height: 620px;
+  display: flex; flex-direction: column;
+  background: #8da3bd; /* チャット壁紙のくすんだ青 */
+  border: 6px solid #14101c;
+  border-radius: 30px;
+  box-shadow: 0 18px 60px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.12);
+  overflow: hidden;
+  transform: translateY(46px) scale(0.97);
+  transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+}
+#phone-overlay.show #phone-frame { transform: translateY(0) scale(1); }
+.phone-notch {
+  flex: none;
+  width: 110px; height: 14px;
+  margin: 6px auto 0;
+  background: #14101c;
+  border-radius: 0 0 10px 10px;
+}
+.phone-status {
+  flex: none;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 4px 16px 4px;
+  font-size: 11px;
+  color: #1d2433;
+  letter-spacing: 0.08em;
+  font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+}
+.phone-batt { letter-spacing: 1px; }
+.lime-header {
+  flex: none;
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px;
+  background: linear-gradient(180deg, #21b24e, #169a3e);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+.lime-logo {
+  font-family: "Times New Roman", serif;
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  background: rgba(255,255,255,0.92);
+  color: #169a3e;
+  border-radius: 6px;
+  padding: 2px 6px;
+}
+.lime-peer { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.lime-peer .lime-face { width: 30px; height: 30px; border: 2px solid rgba(255,255,255,0.85); }
+#lime-peer-name {
+  font-size: 15px; font-weight: bold;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+}
+.lime-unread {
+  margin-left: auto;
+  font-size: 11px;
+  background: rgba(0,0,0,0.25);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.lime-unread:empty { display: none; }
+#lime-chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 12px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.lime-row {
+  display: flex; align-items: flex-end; gap: 6px;
+  animation: lime-pop 0.22s ease-out both;
+}
+.lime-row.me { justify-content: flex-end; }
+.lime-row .lime-face.sm { width: 26px; height: 26px; flex: none; border: 1px solid rgba(255,255,255,0.7); }
+.lime-bubble {
+  max-width: 76%;
+  padding: 8px 12px;
+  border-radius: 16px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+  word-break: break-word;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.18);
+}
+.lime-row.peer .lime-bubble {
+  background: #fff;
+  color: #222;
+  border-bottom-left-radius: 4px;
+}
+.lime-row.me .lime-bubble {
+  background: #8de055;
+  color: #173311;
+  border-bottom-right-radius: 4px;
+}
+.lime-note {
+  align-self: center;
+  font-size: 11px;
+  color: #f4f7fb;
+  background: rgba(29, 36, 51, 0.55);
+  border-radius: 999px;
+  padding: 3px 12px;
+  animation: lime-pop 0.22s ease-out both;
+}
+@keyframes lime-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.96); }
+  to   { opacity: 1; transform: none; }
+}
+#lime-actions {
+  flex: none;
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 10px 12px 14px;
+  background: #f4f6f8;
+  border-top: 1px solid rgba(0,0,0,0.08);
+}
+#lime-actions:empty { padding: 6px 12px 12px; }
+.lime-reply {
+  appearance: none;
+  border: 1.5px solid #1f9a45;
+  background: #fff;
+  color: #17813a;
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-size: 13.5px;
+  font-weight: bold;
+  font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.lime-reply:hover { background: #e8f8ec; }
+.lime-reply:active { transform: scale(0.97); }
+
+/* ---------------- スマホ用うっすら操作パッド ---------------- */
+/* タッチ端末の会話画面でだけ表示（game.js が .show を制御）。
+   普段は気配だけ、触れている間だけはっきり浮かぶ */
+#touch-pad {
+  position: absolute;
+  right: 18px;
+  bottom: 200px; /* vn-box の右上に浮かべる */
+  z-index: 36;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.26;
+  transition: opacity 0.25s;
+}
+#touch-pad.show { display: flex; }
+#touch-pad:hover, #touch-pad:active, #touch-pad.lit { opacity: 0.92; }
+.tp-btn {
+  appearance: none;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(12, 7, 20, 0.66);
+  border: 1px solid rgba(244, 210, 122, 0.55);
+  color: var(--accent);
+  font-family: "Times New Roman", serif;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  backdrop-filter: blur(3px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+  transition: transform 0.1s, background 0.15s, color 0.15s;
+}
+.tp-btn:active { transform: scale(0.94); }
+.tp-btn.on {
+  background: linear-gradient(180deg, rgba(244,210,122,0.9), rgba(170,130,50,0.9));
+  color: #1a1018;
+}
+.tp-big {
+  width: 62px; height: 62px;
+  border-radius: 50%;
+  font-size: 20px;
+  padding-top: 4px;
+}
+.tp-small {
+  width: 56px; height: 28px;
+  border-radius: 999px;
+  font-size: 10px;
+}
+
+/* ---------------- バックログ ---------------- */
+#log-overlay {
+  position: absolute; inset: 0;
+  z-index: 62;
+  display: none;
+  background: rgba(0,0,0,0.75);
+}
+#log-overlay.visible { display: flex; align-items: center; justify-content: center; }
+#log-overlay .panel { width: min(760px, 86%); max-height: 84%; display: flex; flex-direction: column; }
+#log-list {
+  flex: 1;
+  overflow-y: auto;
+  margin: 12px 0 16px;
+  padding-right: 8px;
+  display: flex; flex-direction: column; gap: 10px;
+  text-align: left;
+}
+.log-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed rgba(244,210,122,0.16);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.log-name { color: var(--accent); font-weight: bold; }
+.log-name.narration { color: var(--text-dim); font-weight: normal; }
+.log-text { color: var(--text); }
+.log-empty { color: var(--text-dim); }
+
+/* DAYカード: スミさんの日替わりの一言 */
+.day-quote {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(244,210,122,0.25);
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--text-dim);
+  max-width: 170px;
+}
+
+/* ---------------- 用語集 ---------------- */
+#glossary-overlay {
+  position: absolute; inset: 0;
+  z-index: 62;
+  display: none;
+  background: rgba(0,0,0,0.75);
+}
+#glossary-overlay.visible { display: flex; align-items: center; justify-content: center; }
+#glossary-overlay .panel { width: min(820px, 88%); max-height: 86%; display: flex; flex-direction: column; }
+#glossary-list {
+  flex: 1;
+  overflow-y: auto;
+  margin: 12px 0 16px;
+  padding-right: 8px;
+  text-align: left;
+}
+.glossary-group {
+  color: var(--accent);
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  margin: 14px 0 6px;
+  border-bottom: 1px solid rgba(244,210,122,0.3);
+  padding-bottom: 4px;
+}
+.glossary-row {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 12px;
+  padding: 7px 2px;
+  border-bottom: 1px dashed rgba(244,210,122,0.14);
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+.glossary-term { color: var(--text); font-weight: bold; }
+.glossary-desc { color: var(--text-dim); }

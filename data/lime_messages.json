@@ -10,25 +10,21 @@
       "messages": [
         {
           "sender": "naru",
-          "text": "あー、暇？"
+          "text": "よう。今夜って暇？"
         },
         {
           "sender": "naru",
-          "text": "今日の夜、俺の至高のミックスのテストランするんだけど"
+          "text": "新しいミックスのテストランやるんだけど、お前の舌も借りたい"
         },
         {
           "sender": "naru",
-          "text": "特別に、最先端の煙の立ち上がりってやつを見せてやってもいいわ。こいよ"
-        },
-        {
-          "sender": "naru",
-          "text": "あ、素人は口出し無用な"
+          "text": "煙の立ち上がりの作り方、一回ナマで見とくと大会で絶対効くぞ。こいよ"
         }
       ],
       "accept_event": "interaction_naru_night_01",
       "decline_response": {
         "sender": "naru",
-        "text": "は？ なにそれ、俺の胸を借りるチャンスなのに。ウケる"
+        "text": "おけ、また今度な。大会前に一回見せたかったんだけど、まあ無理すんな"
       }
     },
     {
@@ -72,17 +68,17 @@
       "messages": [
         {
           "sender": "naru",
-          "text": "新しい機材見に行きたいんだけど"
+          "text": "新作の機材、見に行くんだけど"
         },
         {
           "sender": "naru",
-          "text": "お前も来る？ 荷物持ちくらいにはなるっしょ"
+          "text": "お前も来る？ ヒートマネジメントの新型、実物見とくと大会で差が出るぞ"
         }
       ],
       "accept_event": "outing_naru_1",
       "decline_response": {
         "sender": "naru",
-        "text": "あっそ。勝手にすれば"
+        "text": "りょ。気が向いたらいつでも声かけて"
       }
     },
     {
@@ -140,31 +136,31 @@
       "messages": [
         {
           "sender": "naru",
-          "text": "もうすぐ大会だね"
+          "text": "もうすぐ大会だな"
         },
         {
           "sender": "naru",
-          "text": "まあ俺は優勝確定してるからノーダメだけどｗｗ"
+          "text": "俺は仕上がってる。あとは当日、どう出すかだけ"
         },
         {
           "sender": "naru",
-          "text": "お前は？ 腹痛めてんの？"
+          "text": "お前はどうよ、調子"
         }
       ],
       "replies": [
         {
           "text": "少し緊張してる",
-          "response": "だろうな。まあ精々俺の引き立て役として頑張れば？",
+          "response": "いいじゃん、本気の証拠だろ。本番でそれを集中に変えられたら、お前は強いよ",
           "affinity": 1
         },
         {
-          "text": "全然",
-          "response": "ふーん。イキってんじゃん。大会で泣かされても知らないよ",
+          "text": "全然平気",
+          "response": "は、言うようになったな。なら当日、その自信ごと受けて立つわ",
           "affinity": 1
         },
         {
           "text": "楽しみにしてる",
-          "response": "へえ。エンジョイ勢乙って感じ",
+          "response": "……それ、一番いい状態だわ。俺もだよ。ステージで会おうぜ",
           "affinity": 1
         }
       ]
@@ -505,7 +501,7 @@
       "messages": [
         {
           "sender": "naru",
-          "text": "なぁ、ドクター・ケムリの話、知ってる？"
+          "text": "なぁ、チャコール博士の話、知ってる？"
         },
         {
           "sender": "naru",
@@ -589,6 +585,201 @@
         {
           "sender": "ageha",
           "text": "あの子、ガチの天才枠。うちらとは次元が違うかもしんない"
+        }
+      ]
+    },
+    {
+      "id": "lime_after_outing_minto",
+      "sender": "minto",
+      "trigger_condition": "flag",
+      "trigger_flag": "_outing_done_minto",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "おはよっ。昨日はお買い物付き合ってくれてありがとね♡"
+        },
+        {
+          "sender": "minto",
+          "text": "……はじめくんといると、お店の声、忘れちゃいそうになる"
+        },
+        {
+          "sender": "minto",
+          "text": "…………今のナシ！ 忘れて！ おやすみっ……じゃなくて、おはようっ！"
+        }
+      ],
+      "replies": [
+        {
+          "text": "忘れない",
+          "response": "〜〜〜っ！ きみ、ほんとそういうとこだからね！？ ……ばか。……ありがと",
+          "affinity": 2
+        },
+        {
+          "text": "おはよう、栞さん",
+          "response": "！！ 朝からその名前は心臓に悪いんですけど！？ ……ふふ。うん、おはよ",
+          "affinity": 2
+        },
+        {
+          "text": "お店の声も好きだよ",
+          "response": "あはは、なにそれ♡ じゃあ今度、どっちのみんとが好きか聞かせてもらおっかな〜？",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_after_outing_naru",
+      "sender": "naru",
+      "trigger_condition": "flag",
+      "trigger_flag": "_outing_done_naru",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "naru",
+          "text": "おう。昨日渡した炭、もう試した？"
+        },
+        {
+          "sender": "naru",
+          "text": "立ち上がりの3分だけ計っといて。新作と旧型で体感どれくらい違うか、お前の舌の感想が聞きたい"
+        }
+      ],
+      "replies": [
+        {
+          "text": "もう試した。立ち上がり早い",
+          "response": "だろ？ お前、感想出すの早いな。そういうの大事だぞ。本番でも使えよ",
+          "affinity": 1
+        },
+        {
+          "text": "これから試す",
+          "response": "おけ。蒸らし長めにすると差がわかりやすい。……ライバルに塩送りすぎてる自覚はある",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_after_outing_adam",
+      "sender": "adam",
+      "trigger_condition": "flag",
+      "trigger_flag": "_outing_done_adam",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "adam",
+          "text": "（月の写真が送られてきた）"
+        },
+        {
+          "sender": "adam",
+          "text": "昨夜の月ダ。……良い夜ダッタ。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "いい写真ですね",
+          "response": "ダロウ。……お前と見た月は、煙の形ニ似テイタ。",
+          "affinity": 1
+        },
+        {
+          "text": "また登りましょう",
+          "response": "アア。次は新たな『導き』ト共ニ……。",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_outing_tsumugi_1",
+      "sender": "tsumugi",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "invitation",
+      "time_slot": "noon",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "……おはようございます。変なお願いを、してもいいですか"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "煙の絵の取材で、いろんなお店の煙を見たいんです。でも、一人だと入りにくいお店があって"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……今日のお昼、付き合ってもらえたら、うれしいです。取材、なので"
+        }
+      ],
+      "accept_event": "outing_tsumugi_1",
+      "decline_response": {
+        "sender": "tsumugi",
+        "text": "……わかりました。お仕事、がんばってください。（また、誘います）"
+      }
+    },
+    {
+      "id": "lime_after_outing_tsumugi",
+      "sender": "tsumugi",
+      "trigger_condition": "flag",
+      "trigger_flag": "_outing_done_tsumugi",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "おはようございます。昨日の取材の絵、夜のうちに3枚描けました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……一枚だけ、煙じゃなくて、煙を見てる人の絵になっちゃいましたけど"
+        }
+      ],
+      "replies": [
+        {
+          "text": "見たい",
+          "response": "……だめです。これは、わたしの資料なので。……大会が終わったら、考えます",
+          "affinity": 2
+        },
+        {
+          "text": "誰の絵？",
+          "response": "…………ナイショです。おしごと、がんばってください",
+          "affinity": 2
+        },
+        {
+          "text": "今日もいい色が見えますように",
+          "response": "……！ ……はい。はじめさんも、いい煙を",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_rin_report",
+      "sender": "rin",
+      "trigger_condition": "flag",
+      "trigger_flag": "_ev_rin_monitor",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "rin",
+          "text": "おはよ、モルモットくん。昨日のB-7、本国がレポート気に入ったって"
+        },
+        {
+          "sender": "rin",
+          "text": "『日本の若い舌は正直だ』だってさ。ふふ、私の見立て通り"
+        },
+        {
+          "sender": "rin",
+          "text": "次の便も近いうちに入る。……気が向いたら2階においで"
+        }
+      ],
+      "replies": [
+        {
+          "text": "光栄です",
+          "response": "うん、素直でよろしい。その舌、大会まで大事にしなよ。夜更かしと辛いものは控えること。……モルモットの健康管理も仕事なので",
+          "affinity": 1
+        },
+        {
+          "text": "報酬の交渉がしたいです",
+          "response": "……ふふ、言うようになったね。いいよ、次のサンプルで払う。現物支給。文句ある？",
+          "affinity": 2
+        },
+        {
+          "text": "凛さんの見立て、外れないんですね",
+          "response": "外すよ、たまに。……君のことは、外してない気がするけど。さ、業務連絡おわり",
+          "affinity": 2
         }
       ]
     }

@@ -114,6 +114,15 @@
             "condition_type": "has_romance_and_max_affection",
             "char_id": "mashiro",
             "next_true": "sit_with_mashiro",
+            "next_false": "check_rin"
+          }
+        ],
+        "check_rin": [
+          {
+            "type": "condition",
+            "condition_type": "has_romance_and_max_affection",
+            "char_id": "rin",
+            "next_true": "sit_with_rin",
             "next_false": "ending_normal"
           }
         ]
@@ -122,6 +131,10 @@
     {
       "dialogue_id": "ending_shuraba",
       "lines": [
+        {
+          "type": "show_cg",
+          "cg_id": "cg_shuraba"
+        },
         {
           "speaker": "",
           "face": "",
@@ -173,8 +186,17 @@
               "condition_type": "has_romance",
               "char_id": "mashiro",
               "next_id": "sit_with_mashiro"
+            },
+            {
+              "text": "凛の隣に行く",
+              "condition_type": "has_romance",
+              "char_id": "rin",
+              "next_id": "shuraba_rin"
             }
           ]
+        },
+        {
+          "type": "hide_cg"
         }
       ]
     },
@@ -466,6 +488,10 @@
       "dialogue_id": "epilogue_minto",
       "lines": [
         {
+          "type": "show_cg",
+          "cg_id": "cg_minto_epilogue"
+        },
+        {
           "speaker": "minto",
           "face": "smile",
           "text": "「はじめく〜〜んっ♡ おかえりなさーいっ！ おつかれさま〜っ♡ みんとのだんな様、今日もカッコよかったよーっ♡」"
@@ -514,12 +540,19 @@
           "speaker": "",
           "face": "",
           "text": "手のひらから伝わる彼女の熱と、少し小悪魔な笑顔。僕の毎日に、とびきり甘くてドキドキする時間が加わった。"
+        },
+        {
+          "type": "hide_cg"
         }
       ]
     },
     {
       "dialogue_id": "epilogue_tsumugi",
       "lines": [
+        {
+          "type": "show_cg",
+          "cg_id": "cg_tsumugi_epilogue"
+        },
         {
           "speaker": "",
           "face": "",
@@ -569,12 +602,19 @@
           "speaker": "",
           "face": "",
           "text": "その愛おしさに、僕はもうたまらなくなって、立ち止まり、彼女の体を強く抱きしめた。"
+        },
+        {
+          "type": "hide_cg"
         }
       ]
     },
     {
       "dialogue_id": "epilogue_ageha",
       "lines": [
+        {
+          "type": "show_cg",
+          "cg_id": "cg_ageha_epilogue"
+        },
         {
           "speaker": "ageha",
           "face": "smile",
@@ -624,6 +664,9 @@
           "speaker": "",
           "face": "",
           "text": "堂々としていて、情熱的で、ちょっとだけ強引。彼女のその熱量に振り回されるのも、悪くないと本気で思っている自分がいる。"
+        },
+        {
+          "type": "hide_cg"
         }
       ]
     },
@@ -654,6 +697,10 @@
     {
       "dialogue_id": "epilogue_mashiro",
       "lines": [
+        {
+          "type": "show_cg",
+          "cg_id": "cg_mashiro_epilogue"
+        },
         {
           "speaker": "",
           "face": "",
@@ -708,6 +755,139 @@
           "speaker": "",
           "face": "",
           "text": "艶やかな瞳で見つめられ、僕は彼女の底なしの沼に喜んで溺れていく覚悟を決めた。"
+        },
+        {
+          "type": "hide_cg"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "sit_with_rin",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "僕は、壁際で一人グラスを傾けていた凛さんの隣に腰を下ろした。"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "……お疲れさま、世界一のモルモットくん。ふふ、表彰式、ちゃんと見てたよ"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "君の最後の一台……あの煙の立ち方、本国に報告したいくらいだった。しないけど。──あれは私だけのデータにする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "独占契約でしたもんね、僕たち"
+        },
+        {
+          "type": "jump",
+          "next_id": "epilogue_rin"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_rin",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "僕は、凛さんの隣の席に腰を下ろした。"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "……へえ。この空気の中で私を選ぶんだ。度胸あるね、モルモットくん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──背後から、複数の視線が突き刺さる。凛さんはそれを全部分かった上で、楽しそうに煙を吐いた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "（小声）……言っとくけど、私は逃がさない側の大人だから。覚悟しなよ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……おい、はじめ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんの低く響く声が場を制圧した。全員が一斉に静まり返る。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "どっちつかずの態度はシーシャの味もブレさせる。……これ以上みんなを振り回すような真似はするなよ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい……すみません、以後気をつけます……。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最終的にスミさんのお説教によってその場の空気は収まり、命だけは助かった形になった。"
+        },
+        {
+          "type": "jump",
+          "next_id": "epilogue_rin"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "epilogue_rin",
+      "lines": [
+        {
+          "type": "show_cg",
+          "cg_id": "cg_rin_epilogue"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "深夜の問屋街。2階のショールームには、僕と凛さんだけ。黒いフィルム越しに、街のネオンが滲んでいる。"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "ん。新しいロットが届いたから……と言いたいところだけど、今日は仕事の話、なし"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛さんはソファの隣をぽんぽんと叩いた。座ると、肩に頭の重さが乗ってくる。試香紙の森を抜けた先の、素の彼女の匂い。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……私さ、匂いで大体のことが分かるんだよね。嘘も、無理も、隠しごとも"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "でも君の匂いだけは、分かっても安心するの。煙と、炭と、ちょっとスパイス。……私の好きな人の匂い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……それ、世界一の褒め言葉です"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "ふふ。──ね、モルモットくん。最後のモニター調査。『世界一の男の隣は、いい匂いがするか』……結果はゆっくり、朝まで取らせて"
+        },
+        {
+          "type": "hide_cg"
         }
       ]
     }

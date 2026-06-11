@@ -19,7 +19,7 @@
           "text": "（とりあえず、大会の情報を集めながらこのエリアのシーシャ屋を回ってみよう）"
         },
         {
-          "speaker": "kemuri",
+          "speaker": "dr_kemuri",
           "face": "normal",
           "text": "——おや、おや？"
         },
@@ -29,7 +29,7 @@
           "text": "えっ？"
         },
         {
-          "speaker": "kemuri",
+          "speaker": "dr_kemuri",
           "face": "normal",
           "text": "君……実に興味深い『揺らぎ』を持っていますね。服に染み付いたカルダモンと……この、計算外の甘い香り。"
         },
@@ -39,22 +39,22 @@
           "text": "あなたは……？"
         },
         {
-          "speaker": "kemuri",
+          "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "私はドクター・ケムリ。誰も悲しまない、完璧なるシーシャの『最適解』を創る者です。"
+          "text": "私はチャコール博士。誰も悲しまない、完璧なるシーシャの『最適解』を創る者です。"
         },
         {
-          "speaker": "kemuri",
+          "speaker": "dr_kemuri",
           "face": "normal",
           "text": "フフ……大会、期待していますよ。君のその不完全なデータ、私の研究の糧にさせてくださいね。ヒッハハ！"
         },
         {
-          "speaker": "kemuri",
+          "speaker": "dr_kemuri",
           "face": "normal",
           "text": "……あ、そうそう。君が今持ってるその熱管理デバイスのプロトタイプ。"
         },
         {
-          "speaker": "kemuri",
+          "speaker": "dr_kemuri",
           "face": "normal",
           "text": "それ、作ったの俺だもん。"
         },
@@ -66,7 +66,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ケムリが嵐のように去っていく。な、なんだあの人……。"
+          "text": "チャコール博士が嵐のように去っていく。な、なんだあの人……。"
         },
         {
           "speaker": "",

@@ -156,7 +156,7 @@ quietly adult warmth — a little tired but never fraying, the composure of some
 
 ---
 
-### ドクターケムリ（藤波 創）- 研究者・審査員　38歳
+### ドクターチャコール博士（藤波 創）- 研究者・審査員　38歳
 
 **参照画像**: `assets/39f7b2a8-ef53-4a7c-8a38-58ee443debc7.png`（白背景・全身）
 > ⚠️ 白背景版のみ存在。**ブルーバックで再生成**。スタイル・衣装はこの画像に準拠。

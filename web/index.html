@@ -43,6 +43,8 @@
     <div class="day-meta">
       <div class="row"><span class="row-label">行動</span><span id="dc-ap">昼 2</span></div>
       <div class="row"><span class="row-label">所持金</span><span id="dc-money">30,000</span></div>
+      <div class="row"><span class="row-label">客層</span><span id="dc-request">−</span></div>
+      <div class="day-quote" id="dc-quote"></div>
     </div>
   </div>
 
@@ -131,6 +133,7 @@
         <button class="vn-tool" id="vn-auto" type="button">AUTO</button>
         <button class="vn-tool" id="vn-skip" type="button">SKIP</button>
         <button class="vn-tool" id="vn-log" type="button">LOG</button>
+        <button class="vn-tool" id="vn-glossary" type="button">用語</button>
         <button class="vn-tool" id="vn-menu" type="button">MENU</button>
       </div>
     </div>
@@ -172,8 +175,8 @@
   <section id="screen-shop" class="screen">
     <div class="panel">
       <span class="corner-tl"></span><span class="corner-br"></span>
-      <h2>機材ショップ</h2>
-      <p class="tn-hint">大会で使う機材を買い足せる。買い物に行動は消費しない。</p>
+      <h2>Dr.fookah</h2>
+      <p class="tn-hint">フレーバー卸の直営店。機材を買い足せて、1階の試飲席で一応吸える。買い物に行動は消費しない。</p>
       <p id="shop-money" class="shop-money"></p>
       <div id="shop-list"></div>
       <button id="shop-close" class="primary-btn" type="button">店を出る</button>
@@ -221,6 +224,55 @@
       <div id="status-body" class="status-wrap"></div>
       <button id="status-close" class="primary-btn" type="button">閉じる</button>
     </div>
+  </div>
+
+  <!-- 用語集 -->
+  <div id="glossary-overlay">
+    <div class="panel">
+      <span class="corner-tl"></span><span class="corner-br"></span>
+      <h2>シーシャ用語集</h2>
+      <div id="glossary-list"></div>
+      <button id="glossary-close" class="primary-btn" type="button">閉じる</button>
+    </div>
+  </div>
+
+  <!-- バックログ -->
+  <div id="log-overlay">
+    <div class="panel">
+      <span class="corner-tl"></span><span class="corner-br"></span>
+      <h2>ログ</h2>
+      <div id="log-list"></div>
+      <button id="log-close" class="primary-btn" type="button">閉じる</button>
+    </div>
+  </div>
+
+  <!-- LIME（朝のスマホ） -->
+  <div id="phone-overlay">
+    <div id="phone-frame">
+      <div class="phone-notch"></div>
+      <div class="phone-status">
+        <span id="phone-time">AM 7:30</span>
+        <span id="phone-day">DAY 1</span>
+        <span class="phone-batt">●●●▱</span>
+      </div>
+      <div class="lime-header">
+        <span class="lime-logo">LIME</span>
+        <div class="lime-peer">
+          <span id="lime-avatar"></span>
+          <span id="lime-peer-name"></span>
+        </div>
+        <span class="lime-unread" id="lime-unread"></span>
+      </div>
+      <div id="lime-chat"></div>
+      <div id="lime-actions"></div>
+    </div>
+  </div>
+
+  <!-- スマホ用のうっすら操作パッド（タッチ端末の会話画面のみ表示） -->
+  <div id="touch-pad">
+    <button id="tp-auto" class="tp-btn tp-small" type="button">AUTO</button>
+    <button id="tp-skip" class="tp-btn tp-small" type="button">SKIP</button>
+    <button id="tp-next" class="tp-btn tp-big" type="button">▼</button>
   </div>
 
   <div id="day-card"><div class="day-big"></div><div class="day-sub"></div></div>

@@ -31,10 +31,10 @@ await page.click("#btn-new");
 // 行動計画（マップで上から順に消費する）
 // キャラ訪問でスポットが解禁される順序も兼ねて検証する
 const plan = [
-  "tonariでバイト", "スミさんと話す",
+  "tonariでバイト", "Dr.fookah", "スミさんと話す",
   "なるの店へ行く", "アダムの店へ行く",
-  "みんとの店へ行く", "カフェ",
-  "観音堂", "チョイザップ",
+  "みんとの店へ行く", "Dr.fookah", "カフェ",
+  "観音堂", "Dr.fookah", "チョイザップ",
   "シーシャの練習", "つむぎと話す",
   "tonariでバイト", "C.STATION",
   "シーシャの練習", "家で休む",
@@ -47,7 +47,16 @@ async function activeScreen() {
 }
 
 let tutorialSeen = false;
+let limeSeen = false;
 while (guard++ < 5000) {
+  // LIME（朝のスマホ）が開いていたら返信して進める（先頭の返信＝招待は受ける）
+  if (await page.locator("#phone-overlay.show").count()) {
+    if (!limeSeen) { limeSeen = true; log("LIME morning phone shown"); }
+    const reply = page.locator("#phone-overlay .lime-reply").first();
+    if (await reply.count()) await reply.click();
+    await page.waitForTimeout(250);
+    continue;
+  }
   const screen = await activeScreen();
   if (screen === "screen-tournament") {
     const phase = await page.evaluate(() => state.phase);
@@ -65,27 +74,37 @@ while (guard++ < 5000) {
     await page.waitForTimeout(15);
     continue;
   }
+  if (screen === "screen-shop") {
+    // 凛さんのショールーム（1日1回）→ なければ店を出る
+    const rin = page.locator("#shop-rin:not([disabled])");
+    if (await rin.count()) { await rin.click(); await page.waitForTimeout(50); continue; }
+    await page.click("#shop-close");
+    await page.waitForTimeout(30);
+    continue;
+  }
   if (screen === "screen-map") {
     const label = plan[planIdx % plan.length];
     planIdx++;
     const btn = page.locator(".spot-btn", { hasText: label }).first();
-    if (await btn.isDisabled()) {
-      await page.locator(".spot-btn", { hasText: "家で休む" }).click();
-    } else {
-      await btn.click();
+    try {
+      if (await btn.isDisabled()) {
+        await page.locator(".spot-btn", { hasText: "家で休む" }).click({ timeout: 3000 });
+      } else {
+        await btn.click({ timeout: 3000 });
+      }
+    } catch {
+      planIdx--; // スマホ（LIME）が重なった等でクリックできなければ同じ行き先を再試行
+      continue;
     }
     await page.waitForTimeout(30);
     continue;
   }
   if (screen === "screen-practice") {
+    // ドリル（本番ミニゲームの部分練習）を選ぶ → 以降は screen-tournament 側で進む
     if (await page.locator("#practice-menu:not(.hidden) .spot-btn").count()) {
       await page.locator("#practice-menu .spot-btn").first().click();
-      await page.waitForTimeout(400);
-      await page.click("#gauge-stop");
-      await page.waitForTimeout(50);
-      await page.locator("button", { hasText: "練習を終える" }).click();
     }
-    await page.waitForTimeout(30);
+    await page.waitForTimeout(50);
     continue;
   }
   await page.waitForTimeout(50);
@@ -93,6 +112,8 @@ while (guard++ < 5000) {
 
 if (!tutorialSeen) throw new Error("tutorial making was not shown before tournament");
 log("tutorial OK");
+if (!limeSeen) throw new Error("LIME morning phone never appeared in 7 days");
+log("LIME OK");
 log("reached tournament, day check:", await page.locator("#hud-day").textContent());
 
 // 検証しやすいようにステータスを底上げ（勝利ルートを確認する）
@@ -103,7 +124,16 @@ await page.evaluate(() => {
 // 大会: 機材 → テーマ → ミックス → パック → 穴あけ → 炭起こし → 配置 →
 //       蒸らし → 会話 → 集中 → 引き → プレゼン → 結果
 guard = 0;
+let postPhoneSeen = false;
 while (guard++ < 3000) {
+  // 優勝の夜のスマホ（なるの採点表 →「？？？」通知）も読み進める
+  if (await page.locator("#phone-overlay.show").count()) {
+    if (!postPhoneSeen) { postPhoneSeen = true; log("post-victory LIME shown"); }
+    const reply = page.locator("#phone-overlay .lime-reply").first();
+    if (await reply.count()) await reply.click();
+    await page.waitForTimeout(250);
+    continue;
+  }
   const screen = await activeScreen();
   if (screen === "screen-end") break;
   if (screen === "screen-dialogue") {
@@ -120,6 +150,7 @@ while (guard++ < 3000) {
   await page.waitForTimeout(50);
 }
 
+if (!postPhoneSeen) throw new Error("post-victory LIME (score sheet / ???) was not shown");
 const endTitle = await page.locator("#end-title").textContent();
 log("end screen:", endTitle);
 if (!endTitle.includes("第1章クリア")) throw new Error("expected clear, got: " + endTitle);
