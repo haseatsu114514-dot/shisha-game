@@ -14283,12 +14283,50 @@
     top.addColorStop(1, topA);
     fillRoundedRect(ox, oy, s.w, topH, radius, top);
 
+    // ネオンが上面エッジに反射するブルーム
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = s.isWall
+      ? "rgba(255, 150, 185, 0.16)"
+      : s.kind === "crumble"
+        ? "rgba(255, 185, 120, 0.16)"
+        : "rgba(120, 200, 255, 0.14)";
+    ctx.fillRect(ox, oy - 1, s.w, 2);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.07)";
+    ctx.fillRect(ox, oy, s.w, 1);
+    ctx.restore();
+
     ctx.fillStyle = "rgba(255,255,255,0.12)";
     ctx.fillRect(ox + 2, oy + 1, Math.max(1, s.w - 4), 1);
     ctx.fillStyle = line;
     for (let x = 4; x < s.w - 2; x += 10) {
       ctx.fillRect(ox + x, oy + topH + 3, 1, Math.max(1, s.h - topH - 8));
     }
+    // ビル外壁らしいパネル目地と窓明かり
+    ctx.fillStyle = "rgba(8, 13, 22, 0.30)";
+    for (let y = topH + 6; y < s.h - 4; y += 9) {
+      ctx.fillRect(ox + 2, oy + y, Math.max(1, s.w - 4), 1);
+    }
+    if (s.h > 26 && !s.isWall && s.kind !== "crumble") {
+      for (let y = topH + 9; y < s.h - 6; y += 9) {
+        for (let x = 6; x < s.w - 5; x += 10) {
+          const lit = Math.floor((s.x + x) * 0.13 + (s.y + y) * 0.31) % 5;
+          if (lit === 0) {
+            ctx.fillStyle = "rgba(255, 214, 150, 0.20)";
+            ctx.fillRect(ox + x, oy + y, 2, 2);
+          } else if (lit === 2) {
+            ctx.fillStyle = "rgba(130, 200, 255, 0.13)";
+            ctx.fillRect(ox + x, oy + y, 2, 2);
+          }
+        }
+      }
+    }
+    // 側面の遮蔽影で立体感を出す
+    const sideShade = ctx.createLinearGradient(ox + s.w - 6, 0, ox + s.w, 0);
+    sideShade.addColorStop(0, "rgba(0,0,0,0)");
+    sideShade.addColorStop(1, "rgba(0,0,0,0.22)");
+    ctx.fillStyle = sideShade;
+    ctx.fillRect(ox + s.w - 6, oy + 1, 6, Math.max(1, s.h - 2));
     ctx.fillStyle = "rgba(0,0,0,0.18)";
     ctx.fillRect(ox + 1, oy + s.h - 2, Math.max(1, s.w - 2), 1);
     strokeRoundedRect(ox + 0.5, oy + 0.5, s.w - 1, s.h - 1, radius, "rgba(8, 14, 24, 0.55)");
@@ -14775,6 +14813,12 @@
     paint("#05060b", 4, 4, 1, 4);
     paint("#05060b", 8, 4, 1, 4);
     paint("#364865", 6, 3, 1, 2);
+    // 天使の輪（艶のハイライト）
+    paint("#2c3c5e", 3, 1, 7, 1);
+    paint("#4a6391", 4, 1, 4, 1);
+    paint("#7e9cc9", 5, 1, 2, 1);
+    paint("#3a4f78", 2, 2, 2, 1);
+    paint("#3a4f78", 10, 2, 1, 1);
 
     // Face: softer cute look, larger eyes, small blush.
     paint("#f8e9e1", 4, 6, 6, 6);
@@ -14805,6 +14849,11 @@
     paint("#2b3447", 9, 13, 2, 2);
     paint("#d8dde8", 2, 13, 1, 1);
     paint("#d8dde8", 11, 13, 1, 1);
+    // 肩のハイライト（革ジャンの艶）とジッパーの光
+    paint("#39496a", 2, 12, 3, 1);
+    paint("#39496a", 9, 12, 3, 1);
+    paint("#cfd9ea", 7, 15, 1, 1);
+    paint("#cfd9ea", 7, 17, 1, 1);
     paint(shirtMain, 5, 14, 4, 5);
     paint(shirtShade, 5, 18, 4, 1);
     paint("#bfc8d9", 9, 14, 1, 5);
@@ -14882,12 +14931,20 @@
       paint("#161118", 7, 23 + legB, 4, 1);
       paint("#2b1f27", 3, 24 + legA, 4, 1);
       paint("#2b1f27", 7, 24 + legB, 4, 1);
+      // ブーツの艶
+      paint("#544a5c", 4, 23 + legA, 1, 1);
+      paint("#544a5c", 8, 23 + legB, 1, 1);
     }
 
     // Subtle silhouette polish for readability on bright backgrounds.
     paint("#05060c", 0, 3, 1, 17);
     paint("#05060c", 13, 3, 1, 17);
     paint("#05060c", 2, 24, 10, 1);
+
+    // ネオンのリムライト（背中側に冷色、前面に暖色）
+    paint("rgba(126, 196, 255, 0.32)", 0, 4, 1, 14);
+    paint("rgba(126, 196, 255, 0.16)", 1, 3, 1, 4);
+    paint("rgba(255, 168, 142, 0.20)", 13, 6, 1, 12);
 
     ctx.restore();
   }
@@ -15093,10 +15150,24 @@
       ctx.fillRect(x + 2, y + 16, 3, 1);
       ctx.fillRect(x + 8, y + 16, 3, 1);
 
+      // ネオンのリムライト
+      ctx.fillStyle = "rgba(130, 200, 255, 0.20)";
+      ctx.fillRect(x, y + 2, 1, 11);
+      ctx.fillStyle = "rgba(255, 150, 170, 0.16)";
+      ctx.fillRect(x + 12, y + 2, 1, 11);
+
       if (blink) {
-        ctx.fillStyle = "#b8efff";
         const sx = enemy.dir > 0 ? x + 12 : x - 2;
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        const eg = ctx.createRadialGradient(sx, y + 5, 0.5, sx, y + 5, 4);
+        eg.addColorStop(0, "rgba(184, 239, 255, 0.7)");
+        eg.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = eg;
+        ctx.fillRect(sx - 4, y + 1, 8, 8);
+        ctx.fillStyle = "#dff7ff";
         ctx.fillRect(sx, y + 5, 1, 1);
+        ctx.restore();
       }
       drawEnemyHpPips(enemy, x, y);
       return;
@@ -15131,6 +15202,15 @@
       ctx.fillRect(tailX + 1, y + 11, 3, 1);
       ctx.fillStyle = "rgba(220, 255, 238, 0.45)";
       ctx.fillRect(tailX + 1, y + 6, 1, 4);
+      // 羽根の目玉が発光する
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      const tg = ctx.createRadialGradient(tailX + 2, y + 8, 1, tailX + 2, y + 8, 7);
+      tg.addColorStop(0, windup ? "rgba(190, 255, 170, 0.40)" : "rgba(110, 240, 200, 0.24)");
+      tg.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = tg;
+      ctx.fillRect(tailX - 5, y + 1, 14, 14);
+      ctx.restore();
 
       ctx.fillStyle = bodyMain;
       ctx.fillRect(x + 4, y + 8, 8, 6);
@@ -15194,6 +15274,15 @@
       ctx.fillStyle = visor;
       ctx.fillRect(x + 6, y + 5, 1, 1);
       ctx.fillRect(x + 9, y + 5, 1, 1);
+      // バイザーの発光
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      const vg = ctx.createRadialGradient(x + 8, y + 5.5, 0.5, x + 8, y + 5.5, 5);
+      vg.addColorStop(0, "rgba(150, 215, 255, 0.40)");
+      vg.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = vg;
+      ctx.fillRect(x + 3, y + 1, 10, 9);
+      ctx.restore();
 
       ctx.fillStyle = armor;
       ctx.fillRect(x + 2, y + 8, 12, 7);
@@ -15271,12 +15360,26 @@
     ctx.fillRect(x + 3, y + 17, 3, 1);
     ctx.fillRect(x + 8, y + 17, 3, 1);
 
+    // ネオンのリムライト
+    ctx.fillStyle = "rgba(130, 200, 255, 0.18)";
+    ctx.fillRect(x + 1, y + 2, 1, 11);
+    ctx.fillStyle = "rgba(255, 150, 170, 0.14)";
+    ctx.fillRect(x + 12, y + 2, 1, 11);
+
     if (enemy.flash > 0) {
       const mx = enemy.dir > 0 ? x + 13 : x - 2;
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      const fg = ctx.createRadialGradient(mx + 1, y + 7, 0.5, mx + 1, y + 7, 5);
+      fg.addColorStop(0, "rgba(255, 200, 110, 0.55)");
+      fg.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = fg;
+      ctx.fillRect(mx - 4, y + 2, 10, 10);
       ctx.fillStyle = "#ffe7a2";
       ctx.fillRect(mx, y + 7, 2, 1);
       ctx.fillStyle = "#ff9053";
       ctx.fillRect(mx + (enemy.dir > 0 ? 1 : -1), y + 7, 1, 1);
+      ctx.restore();
     }
     drawEnemyHpPips(enemy, x, y);
   }
@@ -15630,15 +15733,24 @@
     }
   }
 
+  function drawPickupGlow(cx, cy, r, color, pulse = 1) {
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    const g = ctx.createRadialGradient(cx, cy, 1, cx, cy, r);
+    g.addColorStop(0, color);
+    g.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.globalAlpha = 0.75 + pulse * 0.25;
+    ctx.fillStyle = g;
+    ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
+    ctx.restore();
+  }
+
   function drawProtein(protein) {
     if (protein.collected) return;
     const x = Math.floor(protein.x - cameraX);
     const y = Math.floor(protein.y + Math.sin(protein.bob) * 1.7);
 
-    ctx.fillStyle = "rgba(120, 220, 255, 0.18)";
-    ctx.fillRect(x - 2, y - 2, 14, 16);
-    ctx.fillStyle = "rgba(255, 244, 196, 0.14)";
-    ctx.fillRect(x - 1, y - 1, 12, 14);
+    drawPickupGlow(x + 5, y + 6, 11, "rgba(120, 220, 255, 0.30)", Math.sin(protein.bob * 2) * 0.5 + 0.5);
 
     // Cap
     ctx.fillStyle = "#0f1320";
@@ -15674,8 +15786,7 @@
     const y = Math.floor(item.y + Math.sin(item.bob) * 1.5);
     const pulse = Math.floor((player.anim + item.id * 9) * 0.2) % 2 === 0;
 
-    ctx.fillStyle = "rgba(255, 132, 168, 0.2)";
-    ctx.fillRect(x - 2, y - 2, 16, 16);
+    drawPickupGlow(x + 6, y + 6, 12, "rgba(255, 132, 168, 0.32)", pulse ? 1 : 0.4);
     ctx.fillStyle = "#261824";
     ctx.fillRect(x + 1, y + 1, 10, 10);
     ctx.fillStyle = "#d63f66";
@@ -15705,8 +15816,7 @@
     const y = Math.floor(item.y + Math.sin(item.bob) * 1.7);
     const blink = Math.floor((player.anim + item.id * 13) * 0.2) % 2 === 0;
 
-    ctx.fillStyle = "rgba(156, 255, 170, 0.2)";
-    ctx.fillRect(x - 2, y - 2, 16, 16);
+    drawPickupGlow(x + 6, y + 6, 12, "rgba(156, 255, 170, 0.30)", blink ? 1 : 0.4);
     ctx.fillStyle = "#152420";
     ctx.fillRect(x + 1, y + 1, 10, 10);
     ctx.fillStyle = "#54d87f";
@@ -15737,8 +15847,7 @@
     const y = Math.floor(token.y + Math.sin(token.bob) * 1.6);
     const blink = Math.floor((player.anim + token.id * 9) * 0.2) % 2 === 0;
 
-    ctx.fillStyle = "rgba(255, 245, 170, 0.2)";
-    ctx.fillRect(x - 3, y - 3, 18, 18);
+    drawPickupGlow(x + 6, y + 6, 13, "rgba(255, 245, 170, 0.32)", blink ? 1 : 0.4);
 
     ctx.fillStyle = "#1a2032";
     ctx.fillRect(x + 1, y + 1, 10, 10);
@@ -15766,6 +15875,9 @@
     const x = Math.floor(bike.x - cameraX);
     const y = Math.floor(bike.y + Math.sin(bike.bob) * 1.9);
     const blink = Math.floor(player.anim * 0.18) % 2 === 0;
+
+    drawPickupGlow(x + 9, y + 8, 14, "rgba(120, 220, 255, 0.26)", blink ? 1 : 0.5);
+    drawPickupGlow(x + 9, y + 8, 9, "rgba(255, 95, 160, 0.18)", 1);
 
     ctx.fillStyle = "#0f1220";
     ctx.fillRect(x + 2, y + 9, 5, 5);
@@ -15876,37 +15988,53 @@
         continue;
       }
       if (spark.kind === "streak") {
-        // Elongated trail aligned to velocity direction
+        // Elongated trail aligned to velocity direction (additive glow)
         const len = Math.max(3, Math.round(4 + Math.hypot(spark.vx, spark.vy) * 1.6));
         const dirX = spark.vx >= 0 ? 1 : -1;
         const isHorizontal = Math.abs(spark.vx) >= Math.abs(spark.vy);
         const a = 0.6 + lifeRatio * 0.4;
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
         ctx.globalAlpha = a;
         if (isHorizontal) {
           const ox = dirX > 0 ? -len : 0;
+          ctx.globalAlpha = a * 0.35;
           ctx.fillStyle = spark.color;
+          ctx.fillRect(sx + ox, sy - 1, len, 3);
+          ctx.globalAlpha = a;
           ctx.fillRect(sx + ox, sy, len, 1);
           ctx.fillStyle = "#ffffff";
           ctx.fillRect(sx + ox + Math.floor(len * 0.35), sy, Math.max(1, Math.floor(len * 0.35)), 1);
         } else {
           const dirY = spark.vy >= 0 ? 1 : -1;
           const oy = dirY > 0 ? -len : 0;
+          ctx.globalAlpha = a * 0.35;
           ctx.fillStyle = spark.color;
+          ctx.fillRect(sx - 1, sy + oy, 3, len);
+          ctx.globalAlpha = a;
           ctx.fillRect(sx, sy + oy, 1, len);
           ctx.fillStyle = "#ffffff";
           ctx.fillRect(sx, sy + oy + Math.floor(len * 0.35), 1, Math.max(1, Math.floor(len * 0.35)));
         }
+        ctx.restore();
         ctx.globalAlpha = 1;
         continue;
       }
       const size = lifeRatio > 0.6 ? 2 : 1;
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      // Soft halo around the spark core
+      ctx.globalAlpha = 0.3 * lifeRatio;
       ctx.fillStyle = spark.color;
+      ctx.fillRect(sx - 1, sy - 1, size + 2, size + 2);
+      ctx.globalAlpha = 1;
       ctx.fillRect(sx, sy, size, size);
       // White-hot core while the spark is fresh
       if (lifeRatio > 0.75) {
         ctx.fillStyle = "rgba(255,255,255,0.85)";
         ctx.fillRect(sx, sy, 1, 1);
       }
+      ctx.restore();
     }
   }
 
@@ -16357,6 +16485,8 @@
   }
 
   function drawWaveBursts() {
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
     for (const burst of waveBursts) {
       const ratio = clamp(burst.life / burst.maxLife, 0, 1);
       const cx = Math.floor(burst.x - cameraX);
@@ -16366,6 +16496,12 @@
         // Rapid expanding shockwave ring used by hit impacts
         const expand = 1 - ratio;
         const r = Math.max(3, burst.radius + expand * 18);
+        // 中心の熱グロー
+        const heat = ctx.createRadialGradient(cx, cy, 1, cx, cy, r);
+        heat.addColorStop(0, `rgba(255, 210, 140, ${0.30 * ratio})`);
+        heat.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = heat;
+        ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
         ctx.strokeStyle = `rgba(255, 244, 200, ${0.85 * ratio})`;
         ctx.lineWidth = 2;
         ctx.beginPath();
@@ -16406,6 +16542,7 @@
         ctx.stroke();
       }
     }
+    ctx.restore();
   }
 
   function drawBurstMeteors() {
@@ -17416,6 +17553,59 @@
     }
   }
 
+  function drawCityAtmosphere(godBossRoom) {
+    const t = performance.now() * 0.001;
+    ctx.save();
+
+    // 1) 地平線の深度フォグ（街明かりが滲む）
+    const fog = ctx.createLinearGradient(0, 96, 0, 152);
+    if (godBossRoom) {
+      fog.addColorStop(0, "rgba(40, 26, 52, 0)");
+      fog.addColorStop(1, "rgba(70, 40, 78, 0.30)");
+    } else {
+      fog.addColorStop(0, "rgba(34, 48, 78, 0)");
+      fog.addColorStop(1, "rgba(64, 96, 150, 0.24)");
+    }
+    ctx.fillStyle = fog;
+    ctx.fillRect(0, 96, W, 56);
+
+    // 2) 流れるネオンヘイズ（加算合成の光だまり）
+    ctx.globalCompositeOperation = "screen";
+    const hazeColors = godBossRoom
+      ? ["rgba(160, 90, 170, 0.10)", "rgba(95, 60, 150, 0.085)", "rgba(200, 120, 150, 0.07)"]
+      : ["rgba(70, 160, 255, 0.09)", "rgba(255, 100, 160, 0.075)", "rgba(130, 95, 255, 0.06)"];
+    const span = W + 160;
+    for (let i = 0; i < 3; i += 1) {
+      let hx = (i * 147 + t * (6 + i * 3) - cameraX * 0.18) % span;
+      if (hx < 0) hx += span;
+      hx -= 80;
+      const hy = 102 + i * 13 + Math.sin(t * 0.5 + i * 2.1) * 4;
+      const r = 70 - i * 12;
+      const grad = ctx.createRadialGradient(hx, hy, 4, hx, hy, r);
+      grad.addColorStop(0, hazeColors[i]);
+      grad.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = grad;
+      ctx.fillRect(hx - r, hy - r, r * 2, r * 2);
+    }
+
+    // 3) 浮遊する塵・火の粉（視差つき）
+    const eSpan = W + 24;
+    for (let i = 0; i < 14; i += 1) {
+      const seed = i * 37.7;
+      let ex = (seed * 13 + t * (4 + (i % 5)) - cameraX * 0.4) % eSpan;
+      if (ex < 0) ex += eSpan;
+      let ey = (seed * 7 - t * 2.4 + Math.sin(t * (0.6 + (i % 3) * 0.22) + seed) * 9) % H;
+      if (ey < 0) ey += H;
+      const tw = 0.5 + Math.sin(t * 3 + seed) * 0.5;
+      ctx.fillStyle = i % 4 === 0
+        ? `rgba(255, 170, 190, ${(0.08 + tw * 0.2).toFixed(3)})`
+        : `rgba(150, 210, 255, ${(0.06 + tw * 0.18).toFixed(3)})`;
+      ctx.fillRect(Math.floor(ex) - 12, Math.floor(ey), 1, 1);
+    }
+
+    ctx.restore();
+  }
+
   function drawWorld() {
     const godBossRoom = gameState === STATE.BOSS && stage.boss && stage.boss.kind === "god";
     if (godBossRoom) {
@@ -17424,6 +17614,7 @@
       drawSkyGradient();
       drawParallax();
     }
+    drawCityAtmosphere(godBossRoom);
     drawCinematicBackdropFX(godBossRoom);
     ctx.fillStyle = godBossRoom ? "rgba(6,8,12,0.09)" : "rgba(8,10,16,0.07)";
     ctx.fillRect(0, 0, W, H - 18);
@@ -17764,34 +17955,65 @@
     cameraX = Math.floor((Math.sin(t * 0.012) * 0.5 + 0.5) * 220);
     drawSkyGradient();
     drawParallax();
+    drawCityAtmosphere(false);
     cameraX = savedCamera;
 
-    ctx.fillStyle = "rgba(6, 8, 14, 0.48)";
+    // 暗幕 + シネマティックレターボックス
+    ctx.fillStyle = "rgba(6, 8, 14, 0.42)";
     ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "rgba(2, 3, 6, 0.85)";
+    ctx.fillRect(0, 0, W, 9);
+    ctx.fillRect(0, H - 9, W, 9);
 
-    const titleY = 36 + Math.sin(t * 0.07) * 1.5;
-    ctx.fillStyle = "rgba(34, 18, 28, 0.9)";
-    ctx.fillRect(66, 20, 188, 52);
-    ctx.fillStyle = "rgba(92, 46, 66, 0.8)";
-    ctx.fillRect(68, 22, 184, 7);
-    ctx.fillStyle = "rgba(255, 190, 160, 0.16)";
-    ctx.fillRect(68, 29, 184, 2);
+    ctx.save();
+    ctx.textAlign = "center";
+    const cx = W * 0.5;
+    const titleY = 42 + Math.sin(t * 0.07) * 1.5;
+    const glowPulse = 0.5 + Math.sin(t * 0.05) * 0.5;
 
-    ctx.fillStyle = "#2a1020";
-    ctx.font = "34px monospace";
-    ctx.fillText("RRR", 108, titleY + 1);
-    ctx.fillStyle = "#ffe0cf";
-    ctx.fillText("RRR", 106, titleY - 1);
-    ctx.fillStyle = "#ff6f8c";
-    ctx.font = "10px monospace";
-    ctx.fillText("Rila Riders Rescue", 112, 58);
-    ctx.fillStyle = isCinematicMode() ? "#9cf6ff" : "#ffe7b0";
+    // ネオン発光（加算合成の多層ブルーム）
+    ctx.font = "italic bold 36px monospace";
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = `rgba(255, 60, 110, ${(0.14 + glowPulse * 0.12).toFixed(3)})`;
+    ctx.fillText("RRR", cx, titleY + 2);
+    ctx.fillText("RRR", cx + 1, titleY + 3);
+    ctx.fillStyle = `rgba(80, 170, 255, ${(0.08 + glowPulse * 0.1).toFixed(3)})`;
+    ctx.fillText("RRR", cx - 2, titleY + 1);
+    ctx.restore();
+
+    // 色収差エッジ（シアン/マゼンタ）
+    ctx.fillStyle = "#2bd6ff";
+    ctx.fillText("RRR", cx - 1.5, titleY);
+    ctx.fillStyle = "#ff3d6e";
+    ctx.fillText("RRR", cx + 1.5, titleY + 1);
+    // ロゴ本体（上から白→ピンクのグラデーション）
+    const logoGrad = ctx.createLinearGradient(0, titleY - 30, 0, titleY + 4);
+    logoGrad.addColorStop(0, "#ffffff");
+    logoGrad.addColorStop(0.55, "#ffdce6");
+    logoGrad.addColorStop(1, "#ff8aa8");
+    ctx.fillStyle = logoGrad;
+    ctx.fillText("RRR", cx, titleY);
+
+    // サブタイトルと飾り罫線
+    ctx.fillStyle = "#dde6f5";
+    ctx.font = "8px monospace";
+    ctx.fillText("R I L A  R I D E R S  R E S C U E", cx, titleY + 15);
+    ctx.fillStyle = "rgba(255, 110, 140, 0.8)";
+    ctx.fillRect(cx - 80, titleY + 20, 160, 1);
+    ctx.fillStyle = "rgba(120, 200, 255, 0.55)";
+    ctx.fillRect(cx - 58, titleY + 22, 116, 1);
+
+    // モード表示（左下に控えめに）
+    ctx.textAlign = "left";
+    ctx.fillStyle = isCinematicMode() ? "rgba(156, 246, 255, 0.75)" : "rgba(255, 231, 176, 0.75)";
     ctx.font = "7px monospace";
     ctx.fillText(
-      isCinematicMode() ? "CINEMATIC MODE / G TOGGLE" : "RETRO MODE / G TOGGLE",
-      84,
-      68
+      isCinematicMode() ? "CINEMATIC / G" : "RETRO / G",
+      6,
+      H - 13
     );
+    ctx.textAlign = "center";
 
     const heroBob = Math.sin(t * 0.12) * 1.2;
     drawContactShadowScreen(66, 133 + heroBob, 24, 0.24, 1.6);
@@ -17799,22 +18021,29 @@
     drawHero(68, 108 + heroBob, 1, t * 1.08, 1.4);
     drawBoyfriend(228, 104 + heroBob * 0.4);
 
-    ctx.fillStyle = "rgba(12, 10, 16, 0.82)";
-    ctx.fillRect(28, 118, 264, 44);
-    ctx.strokeStyle = "rgba(223, 177, 181, 0.7)";
-    ctx.strokeRect(28, 118, 264, 44);
-    ctx.fillStyle = "#f5ebf1";
+    // 紹介テキスト（フチ線つきの半透明バンド）
+    ctx.fillStyle = "rgba(8, 9, 15, 0.62)";
+    ctx.fillRect(0, 118, W, 42);
+    ctx.fillStyle = "rgba(255, 130, 160, 0.45)";
+    ctx.fillRect(0, 118, W, 1);
+    ctx.fillStyle = "rgba(120, 200, 255, 0.3)";
+    ctx.fillRect(0, 159, W, 1);
+    ctx.fillStyle = "#e8edf8";
     ctx.font = "10px monospace";
-    ctx.fillText("彼氏救出アクション / 都会ステージ", 52, 126);
-    ctx.fillText("ピンチで攻撃力アップ", 92, 138);
-    ctx.fillText("黒閃: 発生で高確化 / 継続失敗で通常へ戻る", 26, 150);
+    ctx.fillText("彼氏救出アクション / 都会ステージ", cx, 128);
+    ctx.fillStyle = "#aeb9cf";
+    ctx.font = "9px monospace";
+    ctx.fillText("ピンチで攻撃力アップ", cx, 140);
+    ctx.fillText("黒閃: 発生で高確化 / 継続失敗で通常へ戻る", cx, 151);
 
-    const blink = Math.floor(t / 24) % 2 === 0;
-    if (blink) {
-      ctx.fillStyle = "#ffe7b0";
-      ctx.font = "11px monospace";
-      ctx.fillText("Tap / Enter でスタート", 86, 168);
-    }
+    // スタート表示（点滅ではなく呼吸するフェード）
+    const pulse = 0.5 + Math.sin(t * 0.1) * 0.5;
+    ctx.globalAlpha = 0.35 + pulse * 0.65;
+    ctx.fillStyle = "#ffe7b0";
+    ctx.font = "11px monospace";
+    ctx.fillText("Tap / Enter でスタート", cx, 170);
+    ctx.globalAlpha = 1;
+    ctx.restore();
   }
 
   function drawCutsceneCityBackdrop(t, danger = false) {
@@ -19578,8 +19807,18 @@
     const sx = Math.floor(kickBurstX - cameraX);
     const sy = Math.floor(kickBurstY);
 
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
     ctx.fillStyle = `rgba(255, 236, 176, ${0.08 * ratio * power})`;
     ctx.fillRect(0, 24, W, H - 24);
+
+    // 打撃点の熱グロー
+    const gr = 8 + power * 5;
+    const glow = ctx.createRadialGradient(sx, sy, 1, sx, sy, gr);
+    glow.addColorStop(0, `rgba(255, 230, 170, ${0.5 * ratio})`);
+    glow.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = glow;
+    ctx.fillRect(sx - gr, sy - gr, gr * 2, gr * 2);
 
     ctx.fillStyle = `rgba(255, 255, 255, ${0.16 * ratio})`;
     ctx.fillRect(sx - 2, sy - 2, 4, 4);
@@ -19594,6 +19833,7 @@
       ctx.lineTo(Math.floor(sx + Math.cos(ang) * len), Math.floor(sy + Math.sin(ang) * len));
       ctx.stroke();
     }
+    ctx.restore();
   }
 
   function drawWaveFlashOverlay() {
@@ -19604,6 +19844,15 @@
     const sx = Math.floor(waveFlashX - cameraX);
     const sy = Math.floor(waveFlashY);
     const pulse = 0.5 + Math.sin((player.anim + waveFlashTimer) * 0.26) * 0.5;
+
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    const wgr = 12 + power * 8;
+    const wglow = ctx.createRadialGradient(sx, sy, 1, sx, sy, wgr);
+    wglow.addColorStop(0, `rgba(150, 235, 255, ${0.45 * ratio})`);
+    wglow.addColorStop(1, "rgba(0,0,0,0)");
+    ctx.fillStyle = wglow;
+    ctx.fillRect(sx - wgr, sy - wgr, wgr * 2, wgr * 2);
 
     ctx.fillStyle = `rgba(138, 232, 255, ${0.1 * ratio * power})`;
     ctx.fillRect(0, 24, W, H - 24);
@@ -19628,6 +19877,7 @@
     ctx.fillRect(0, waveY - 1, W, 2);
     ctx.fillStyle = `rgba(131, 228, 255, ${0.25 * ratio})`;
     ctx.fillRect(0, waveY - 3, W, 6);
+    ctx.restore();
   }
 
   function drawEmergencyDodgeOverlay() {
