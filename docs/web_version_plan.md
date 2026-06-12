@@ -194,6 +194,23 @@
 - **face値の誤り14箇所**: `surprised`/`fired_up`/`thinking`/`nervous`/`angry` → 正規9種に修正（ch1_events/ch1_main/ch3/ch4/ending）
 - **モブ話者の表示名**: shop_clerk/old_man/customer/everyone を SPEAKER_NAMES に追加（ending.json等のバンドル時に生IDが出るのを予防）
 
+## 2026-06-12 セッションで実装済み（第16便: メッセージ性強化5点＋カメオ2点・全採用分）
+
+オーナー採用指示（ch1ch2全部採用／スティーブ採用／王煙楼モニター採用／シェイク・mukai見送り）:
+1. **「顔」の縦糸**: ch1決勝・吸い出し前にサラリーマンさんの顔（`ch1_tournament_r2_end`末尾）→
+   ch2バイト結果に「お客さんの顔が頭に残らない」差分（finishBaitoOrder）→
+   ch2決勝「誰の顔も、浮かばなかった」（`ch2_empty_victory`。朝スライスindex0-3は不変）
+2. **つむぎ「煙は人を覚えてる」**: ch1訪問2回目冒頭に見ないまま当てるビート（色は伏せて「匂いと雰囲気」）→
+   ch2 DAY13に「誰が作った煙か、分からなかった」
+3. **慢心の客可視化**: 上記1のch2バイト差分
+4. **スミさん「技は盗め。ただし、誰から盗んだかは忘れるな」**（チュートリアル結果）
+5. **ch1優勝の夜の祝杯が「馬鹿みたいにうまい」**（味覚喪失の逆向き予兆、`ch1_tournament_after`）
+- **スティーブカメオ**（`ch2_steve_cameo`）: ch2でDr.fookahに初めて入ると一度だけ。正体は伏せる。
+  「強い葉ほど、弱い火」＋東京（ch3会場）への誘い水
+- **王 煙楼のモニター映像**（`ch2_rivals_first_sight`冒頭）: 龍のようにうねる煙＋テロップのみ。
+  誰も足を止めない（世界はまだ風景）
+- 正典化: story doc 指針節（顔の縦糸／継承の対句／逆向きの予兆）・色チャート補足・ch2【起】
+
 ## 2026-06-12 セッションで実装済み（第15便: カメオ伏線＋吸い出し調整）
 
 - **ch1 DAY4夜: あげはカメオ**（`ch1_ageha_encounter`、未配線だった既存データを発掘して配線＋
@@ -211,12 +228,20 @@
   1回ごとに craft -3（「葉が痩せる」）。やめ時は自分で選ぶ。UI に⚠警告、用語集・CLAUDE.mdも更新
 - 正典化: story doc（香りの識別子=アゲハはホワイトグミベア、Ch1の引き#7〜9）・CLAUDE.md ID表
 
-## 次回セッションへの引き継ぎ（2026-06-12 第14便終了時点・最新）
+## 次回セッションへの引き継ぎ（2026-06-12 第16便終了時点・最新）
 
 **開始手順**: shisha-game 起点で新セッションを開く → mainに未マージの
 最新開発ブランチ（今回: `claude/great-galileo-omzoob`）をチェックアウト →
 `python3 web/build_data.py && python3 web/build_standalone.py` で再ビルド →
 テスト3本（playthrough.mjs / screenshots.mjs / ch2.mjs）で健全性確認。
+
+**立ち絵シートの受け取り**: オーナーが `assets/sheets_inbox/sheet_{id}.png`
+（横5表情・単色背景）をGitHubウェブからアップしてくる運用
+（手順と取り込みチェックリストは `assets/sheets_inbox/README.md`）。
+届いていたら `tools/split_sheet.py` で取り込み → `make_face_icons.py` →
+build 2本 → **engine.js の BG_FULL_PORTRAITS からそのキャラを外す** → テスト。
+あげは（青背景・ヒョウ柄ギャル）と黒ショートボブ＋ライダースの女性
+（おそらく凛の新デザイン。**idはオーナーに要確認**）のシートが生成済みとのこと。
 
 **現状**: **ch1とch2がブラウザで通しプレイ可能**。準備期間は14日制。
 - **ch2（HAZE: OPEN CLOUD）**: ch1クリア画面の「第2章へ進む」→ 章カットイン →

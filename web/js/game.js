@@ -1579,6 +1579,12 @@ function doChoizap() {
 // --- ショップ（行動を消費しない）
 function showShop() {
   visitContextChar = null;
+  // ch2の初回来店時に一度だけ: ch3ライバル・スティーブが客としてカメオ
+  // （Dr.fookahは海外メーカー代理店＝国際勢の自然な立ち寄り先）
+  if (state.chapter === 2 && state.phase === "daily" && !state.flags._ev_steve_cameo) {
+    state.flags._ev_steve_cameo = true;
+    return playDialogue("ch2_steve_cameo", () => showShop(), "res://assets/backgrounds/bg_shop.png");
+  }
   showScreen("#screen-shop");
   if (window.SFX) SFX.open();
   $("#shop-money").textContent = `所持金 ${state.money.toLocaleString()}円`;
@@ -3572,6 +3578,10 @@ function finishBaitoOrder() {
     lines: [
       { speaker: "", face: "", text: "──完成。トレイに乗せて、お客さんの席へ運ぶ。" },
       { speaker: "", face: "", text: reaction },
+      // ch2: 慢心と転落の可視化——出来は良くても、客の顔が頭に残らなくなっていく
+      ...(state.chapter === 2
+        ? [{ speaker: "hajime", face: "normal", text: "（……あれ。いま帰ったお客さんの顔、もう思い出せない。出来は悪くなかった、はずなのに）" }]
+        : []),
       { speaker: "", face: "", text: tier === "great" ? "閉店後、スミさんが黙って親指を立てて、その日の給料に売上ボーナスを乗せてくれた。" : tier === "good" ? "スミさんが「上出来だ」と、給料に少し色をつけてくれた。" : "スミさんは何も言わなかったが、まかないがいつもより少しだけ豪華だった。" },
       { type: "apply", stats: { technique: 2 }, money: tip },
     ],
@@ -3594,6 +3604,7 @@ function finishTutorial() {
     lines: [
       { speaker: "", face: "", text: "──煙を一口、スミさんに渡す。ゆっくりと吐き出して、しばらく目を閉じた。" },
       { speaker: "sumi", face: comment.face, text: comment.text },
+      { speaker: "sumi", face: "normal", text: "それと、ひとつだけ覚えとけ。──技は盗め。ただし、誰から盗んだかは忘れるな" },
       { speaker: "sumi", face: "serious", text: `本番までの${MAX_DAYS}日間、店も練習台も好きに使え。……優勝してこい。` },
       { speaker: "", face: "", text: "……【技術】と【センス】が上がった。" },
     ],
