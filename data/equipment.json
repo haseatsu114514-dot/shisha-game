@@ -9,7 +9,8 @@
       "sell_price": 500,
       "price": 1000,
       "value": "silicone_bowl",
-      "description": "初期装備。扱いやすく、熱管理の基礎を覚えやすい。"
+      "description": "初期装備。扱いやすく、熱管理の基礎を覚えやすい。容量12g。",
+      "capacity": 12
     },
     {
       "id": "hagal_80beat",
@@ -20,7 +21,8 @@
       "sell_price": 2000,
       "price": 4000,
       "value": "hagal_80beat",
-      "description": "癖があまりなく使いやすいハガル。"
+      "description": "癖があまりなく使いやすいハガル。大型で容量15g。",
+      "capacity": 15
     },
     {
       "id": "suyaki_hagal",
@@ -31,7 +33,8 @@
       "sell_price": 500,
       "price": 1000,
       "value": "suyaki",
-      "description": "同じ味を使うほど育つ。最初は土の味が少しする。"
+      "description": "同じ味を使うほど育つ。最初は土の味が少しする。大容量20g。",
+      "capacity": 20
     },
     {
       "id": "lotos_hagal",
@@ -108,7 +111,8 @@
       "sell_price": 2500,
       "price": 5000,
       "value": "suyaki_minto",
-      "description": "みんとが使い込んだ素焼きハガル。ミントの清涼感が染み付いている。"
+      "description": "みんとが使い込んだ素焼きハガル。ミントの清涼感が染み付いている。容量20g。",
+      "capacity": 20
     },
     {
       "id": "suyaki_adam",
@@ -119,7 +123,8 @@
       "sell_price": 2500,
       "price": 5000,
       "value": "suyaki_adam",
-      "description": "アダムの執念が宿る素焼きハガル。ダブルアップルの重層的な香りを極限まで引き出す。"
+      "description": "アダムの執念が宿る素焼きハガル。ダブルアップルの重層的な香りを極限まで引き出す。容量20g。",
+      "capacity": 20
     },
     {
       "id": "suyaki_naru",
@@ -130,7 +135,19 @@
       "sell_price": 2500,
       "price": 5000,
       "value": "suyaki_naru",
-      "description": "なるが愛用した素焼きハガル。バニラの甘い香味が深く根付いている。"
+      "description": "なるが愛用した素焼きハガル。バニラの甘い香味が深く根付いている。容量20g。",
+      "capacity": 20
+    },
+    {
+      "id": "home_rig_set",
+      "type": "homeware",
+      "name": "家シーシャ一式",
+      "chapter_min": 2,
+      "buy_price": 24800,
+      "sell_price": 9800,
+      "price": 24800,
+      "value": "home_rig_set",
+      "description": "自宅用の台・ホース・トング・マットのフルセット。寝る前の一服が、明日の煙を変える。"
     }
   ]
 }

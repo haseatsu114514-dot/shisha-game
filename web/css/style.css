@@ -1127,6 +1127,89 @@ body {
 .mix-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; }
 .mix-total { font-size: 17px; color: #ff9466; }
 .mix-total.ok { color: #8fd3a7; }
+.mix-price { font-size: 12px; color: var(--text-dim); margin-left: 6px; }
+.mix-price.free { color: #8fd3a7; }
+
+/* ---------------- 蒸らし弾幕（雑念よけ） ---------------- */
+.dodge-timer { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.dodge-timer-label { font-size: 14px; color: var(--accent); min-width: 130px; font-variant-numeric: tabular-nums; }
+.dodge-timer-bar { flex: 1; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
+.dodge-timer-fill { height: 100%; width: 100%; background: linear-gradient(to right, #8fd3a7, #f4d27a); transition: width 0.2s linear; }
+.dodge-arena {
+  position: relative;
+  height: 240px;
+  background: radial-gradient(ellipse at center, rgba(40,28,52,0.7), rgba(0,0,0,0.55));
+  border: 1px solid rgba(244,210,122,0.18);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: none;
+  touch-action: none;
+}
+.dodge-arena.flash { animation: dodge-flash 0.3s; }
+@keyframes dodge-flash { 0% { box-shadow: inset 0 0 60px rgba(255,90,90,0.55); } 100% { box-shadow: none; } }
+.dodge-soul {
+  position: absolute; left: 0; top: 0;
+  width: 16px; height: 18px;
+  color: #ff5a78;
+  font-size: 16px; line-height: 18px;
+  text-shadow: 0 0 8px rgba(255,90,120,0.8);
+  pointer-events: none;
+  will-change: transform;
+}
+.dodge-soul.hit { animation: soul-hit 0.32s; }
+@keyframes soul-hit { 0%, 100% { opacity: 1; } 25%, 75% { opacity: 0.15; } 50% { opacity: 0.6; } }
+.dodge-bullet {
+  position: absolute; left: 0; top: 0;
+  font-size: 12px;
+  color: #cdb8e8;
+  background: rgba(46, 28, 66, 0.85);
+  border: 1px solid rgba(160, 120, 220, 0.5);
+  border-radius: 999px;
+  padding: 2px 9px;
+  white-space: nowrap;
+  pointer-events: none;
+  will-change: transform;
+  text-shadow: 0 0 6px rgba(150, 110, 220, 0.6);
+}
+
+/* ---------------- 吸い出し（温度合わせ） ---------------- */
+.temp-wrap { margin-bottom: 14px; }
+.temp-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
+.temp-bar {
+  position: relative;
+  height: 18px;
+  background: linear-gradient(to right, #3a5a8a, #6a5a3a 55%, #8a3a3a);
+  border: 1px solid var(--panel-border);
+  border-radius: 9px;
+}
+.temp-zone {
+  position: absolute; top: -3px; bottom: -3px;
+  background: rgba(143, 211, 167, 0.35);
+  border-left: 2px solid #8fd3a7;
+  border-right: 2px solid #8fd3a7;
+  border-radius: 4px;
+}
+.temp-marker {
+  position: absolute; top: -7px; bottom: -7px;
+  width: 6px; margin-left: -3px;
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(255,255,255,0.9);
+  transition: left 0.35s cubic-bezier(0.3, 1.4, 0.4, 1);
+}
+.pull-bar {
+  position: relative;
+  display: flex;
+  width: 100%; height: 38px;
+  border: 1px solid var(--panel-border);
+  border-radius: 19px;
+  overflow: hidden;
+}
+.pull-zone { display: flex; align-items: center; justify-content: center; font-size: 12px; letter-spacing: 0.08em; }
+.pull-zone.up { width: 35%; background: linear-gradient(to right, rgba(220,90,70,0.55), rgba(220,120,70,0.25)); color: #ffc9b0; }
+.pull-zone.keep { width: 30%; background: rgba(255,255,255,0.06); color: var(--text-dim); }
+.pull-zone.down { width: 35%; background: linear-gradient(to right, rgba(80,120,200,0.25), rgba(70,110,220,0.55)); color: #b9d0ff; }
+.primary-btn.ghost { background: transparent; border: 1px solid var(--panel-border); }
 
 /* ---------------- result ---------------- */
 .result-note { font-size: 14.5px; line-height: 1.8; color: var(--text-dim); margin-bottom: 16px; }
@@ -1490,6 +1573,20 @@ body {
   filter: blur(2px);
   animation: puff-rise 2.6s ease-out forwards;
   pointer-events: none;
+}
+/* うしろめたさ（guilt）の可視化: 数値は出さない。段階が上がるほど煙の彩度が落ち、
+   最終段では「知らない色」（冷たい紫がかった濁り）が混ざる。
+   つむぎの共感覚検知（浮気リスク）・バッドエンド「ホワイトアウト」へ繋がる演出の前段 */
+.rig.guilt-1 .smoke-puff {
+  background: radial-gradient(circle, rgba(226,223,210,0.5), rgba(226,223,210,0) 70%);
+}
+.rig.guilt-2 .smoke-puff {
+  background: radial-gradient(circle, rgba(209,202,186,0.52), rgba(209,202,186,0) 70%);
+  filter: blur(2px) saturate(0.8);
+}
+.rig.guilt-3 .smoke-puff {
+  background: radial-gradient(circle, rgba(202,188,212,0.55), rgba(186,192,170,0) 72%);
+  filter: blur(2px) saturate(0.66) brightness(0.96);
 }
 @keyframes puff-rise {
   from { transform: translateY(0) scale(0.7); opacity: 0.85; }

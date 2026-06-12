@@ -1,0 +1,94 @@
+{
+  "comment": "ch4ドバイ・あげはの応援登場（彼女ルート限定。友達ルートでは来ない＝CLAUDE.mdの登場条件表に準拠）。ch2決勝前夜の『ごめん、明日行けない。理由は聞かないで』の裏側——はじめの連勝があげはの直感への自信を折っていた——を、一年越しにプレイヤーへ明かす回収シーン。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_ageha_dubai_girlfriend",
+      "metadata": {
+        "condition": "ageha_is_girlfriend",
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会前夜。会場の下見を終えて外に出ると、砂漠の夕方の熱気の中に、見覚えのある立ち姿があった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "「……あげはさん！？」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「よっ、ハジメっち。……なにその顔。彼氏の世界決戦じゃん。来るでしょ、普通に」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「だって、ドバイだよ……？」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "「飛行機乗れば着くし。……あと、ひとつ返してない借りがあるから」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「借り？」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "「──全国の決勝。あたし、行かなかったじゃん。『理由は聞かないで』ってやつ」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一年前の、空いたままの客席。──忘れたことは、なかった。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "「あの頃さ、あんたの煙、ずっと変だったんだよ。あたしのバイブスは『この煙きらい』って言ってんのに、あんたは勝ち続けるの」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "「そしたらさ、自分の直感が信じらんなくなった。あたしの全部が外れてるのか、世界のほうが間違ってるのか──決勝を見たら、どっちか確定しちゃう気がして。怖くて、行けなかった」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "「あげはさん……」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "「言っとくけど、あんたのせいって話じゃないよ。あたしが、あたしを信じきれなかっただけ。そこ間違えないでよね」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「で──答え合わせ。あたしのバイブス、壊れてなかった。あのときのあんたの煙は、ガチで嫌いな煙だった。それだけのこと」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「今のあんたの煙は、大好き。だから来た。……これが借りの返し方。一年遅れの、観戦チケット」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（──一年越しに、あの空席が埋まる音がした）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「明日、世界一の煙見せてよ。あたしのバイブス、もう一回ガチで騒がせて」"
+        }
+      ]
+    }
+  ]
+}

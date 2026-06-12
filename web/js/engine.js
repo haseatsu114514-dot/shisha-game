@@ -13,8 +13,10 @@ const SPEAKER_NAMES = {
   staff_choizap: "チョイザップスタッフ", kako: "かこ", rira: "りら",
   oneesan: "お姉さん", // みんとの私服（素）の姿。正体は ch1 では明かさない
   rin: "匂坂 凛（りん）",
+  // characters.json に載せないモブ話者（ending/dreams/ch3_mukai 等で使用）
+  shop_clerk: "店員", old_man: "老人", customer: "お客さん", everyone: "全員",
 };
-const SPEAKER_ID_ALIASES = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki", pakki: "packii", oneesan: "minto" };
+const SPEAKER_ID_ALIASES = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "packii", pakki: "packii", oneesan: "minto", kumicho: "ryuji" };
 
 // 背景込みの一枚絵で生成されているキャラ。立ち絵スロットに小さくマスクして表示する。
 // 専用素材ができたらここから外す。
@@ -107,15 +109,29 @@ class DialogueEngine {
 
   handleCondition(line) {
     const condType = String(line.condition_type || "stat");
-    let val = 0;
-    let threshold = Number(line.threshold || 0);
+    let ok;
     if (condType === "stat") {
       let stat = String(line.stat || "");
       if (STAT_JA2EN[stat]) stat = STAT_JA2EN[stat];
-      val = this.ctx.getStat ? this.ctx.getStat(stat) : 0;
+      const val = this.ctx.getStat ? this.ctx.getStat(stat) : 0;
+      ok = val >= Number(line.threshold || 0);
+    } else if (this.ctx.evalCondition) {
+      // 恋愛状態などゲーム側の条件（ending.json の has_romance_and_max_affection 等）
+      ok = !!this.ctx.evalCondition(line);
+    } else {
+      ok = false;
     }
-    const key = val >= threshold ? String(line.next_true || "") : String(line.next_false || "");
-    if (key && this.branches[key]) this.queue.unshift(...this.branches[key]);
+    const key = ok ? String(line.next_true || "") : String(line.next_false || "");
+    if (key && this.branches[key]) {
+      this.queue.unshift(...this.branches[key]);
+    } else if (key && this.ctx.findDialogue && this.ctx.findDialogue(key)) {
+      // branch に無ければ別ダイアログへのジャンプ（ending.json の分岐チェーン形式）
+      const target = this.ctx.findDialogue(key);
+      this.queue = (target.lines || []).slice();
+      this.branches = target.branches || {};
+      const meta = target.metadata || {};
+      if (meta.bg) this.setBackground(meta.bg);
+    }
     this.next();
   }
 
@@ -208,6 +224,9 @@ class DialogueEngine {
     const folder = SPEAKER_ID_ALIASES[speaker] || speaker;
     const faces = (this.ctx.portraitFaces || {})[folder];
     if (!faces) return null;
+    // 正体隠しエイリアス（oneesan=みんとの私服・素）は専用差分（ura_*）が届くまで出さない。
+    // 通常のみんと立ち絵で代用すると、ch1で隠している正体が見た目でバレてしまう
+    if (speaker === "oneesan" && !(face && faces.includes(face))) return null;
     let f = face && faces.includes(face) ? face : null;
     if (!f && faces.includes("normal")) f = "normal";
     if (!f) f = faces[0];

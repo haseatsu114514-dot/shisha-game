@@ -5,7 +5,7 @@
       "dialogue_id": "ch2_naru_confrontation",
       "metadata": { "bg": "res://assets/backgrounds/kemurikusa.png" },
       "lines": [
-        { "speaker": "", "face": "", "text": "全国大会の予選を勝ち上がった夜、ケムリクサに寄った。なるはカウンターの中で、黙ってボウルを磨いていた。" },
+        { "speaker": "", "face": "", "text": "全国大会の準決勝を勝ち上がった夜、ケムリクサに寄った。なるはカウンターの中で、黙ってボウルを磨いていた。" },
         { "speaker": "hajime", "face": "smile", "text": "なるさん、見ました？ 今日の準決勝。ヴォルクさんの精度を取り入れた新しいやつ、かなり手応えが──" },
         { "speaker": "naru", "face": "normal", "text": "見たよ。──なあ、はじめ。座れ" },
         { "speaker": "", "face": "", "text": "なるは一台のシーシャを差し出した。いつものチョコレートバニラ。だが今日は、何も言わずに。" },

@@ -147,9 +147,10 @@ def main() -> None:
     flavors = load_json(DATA_DIR / "flavors.json")["flavors"]
     baito = load_json(DATA_DIR / "baito_events.json")
     characters = load_json(DATA_DIR / "characters.json")
+    # ブラウザ版は ch2 まで遊べるため、ch2 解禁の機材（家シーシャ等）までバンドルする
     equipment = [
         e for e in load_json(DATA_DIR / "equipment.json")["equipment"]
-        if e.get("chapter_min", 1) <= 1
+        if e.get("chapter_min", 1) <= 2
     ]
 
     char_names = {}

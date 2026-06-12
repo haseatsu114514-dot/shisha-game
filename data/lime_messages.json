@@ -461,7 +461,9 @@
           "sender": "kumicho",
           "text": "……冗談だと思いたいがな。ワシも少し気になる"
         }
-      ]
+      ],
+      "trigger_day": 6,
+      "chapter": 2
     },
     {
       "id": "rumor_nagumo_cigarman",
@@ -490,7 +492,9 @@
           "sender": "nagumo",
           "text": "……私も、少し怖いと思っているよ。正直に言えば"
         }
-      ]
+      ],
+      "trigger_day": 4,
+      "chapter": 3
     },
     {
       "id": "rumor_kemuri_experiments",
@@ -519,7 +523,9 @@
           "sender": "naru",
           "text": "まあ南雲会長の旧知だから問題ないんだろうけどさ。たぶん"
         }
-      ]
+      ],
+      "trigger_day": 3,
+      "chapter": 2
     },
     {
       "id": "rumor_minto_late_night",
@@ -586,7 +592,9 @@
           "sender": "ageha",
           "text": "あの子、ガチの天才枠。うちらとは次元が違うかもしんない"
         }
-      ]
+      ],
+      "trigger_day": 6,
+      "chapter": 3
     },
     {
       "id": "lime_after_outing_minto",
