@@ -85,6 +85,7 @@ await page.evaluate(() => {
   state.practiceBest = { foil: 2, coalfire: 2, pull: 2, focus: 2 };
   state.guilt = 3; // うしろめたさの煙演出（リグの濁り）を道中で検証する
   state.owned.push("home_rig_set"); // 家シーシャ（寝る前の一服）の出現を検証する
+  state.visits.naru = 2; // ch1でなるとLIME交換済み相当（噂LIMEの配信条件）
   startChapter2();
 });
 

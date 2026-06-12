@@ -32,6 +32,7 @@ CH1_DIALOGUE_FILES = [
     "ch1_tsumugi.json",
     "ch1_sumi.json",
     "ch1_rin.json",
+    "ch1_ageha.json",
     "ch1_spots.json",
     "ch1_events.json",
     "ch2_main.json",

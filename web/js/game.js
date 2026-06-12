@@ -900,8 +900,10 @@ function limeDueMessages(tournamentDay) {
   for (const m of D.lime_messages || []) {
     const sender = m.sender;
     const cond = m.trigger_condition;
-    // 噂（rumor）は好感度・LIME交換と無関係に届く（業界の噂が回ってくる演出）
-    if (m.type !== "rumor") {
+    // 噂（rumor）のうち、知り合い（affinity管理外＝業界の重鎮など）からのものだけ
+    // ゲート無しで届く。知り合いからの噂は通常のLIME条件（交換済み等）に従う
+    const outsiderRumor = m.type === "rumor" && !(sender in state.affinity);
+    if (!outsiderRumor) {
       if (!(sender in state.affinity)) continue; // 登場済みキャラのみ
       if (state.visits[sender] < (LIME_EXCHANGE_VISITS[sender] || 1)) continue;
     }
@@ -1376,6 +1378,12 @@ function endDay() {
     state.flags._ev_salaryman = true;
     return playDialogue("ch1_salaryman_regular", finishDay, TONARI);
   }
+  // DAY4: あげはカメオ（謎のギャルが荷物を拾ってくれる）。ホワイトグミベアの残り香が
+  // ch2初対面（ch2_rivals_first_sight）で回収される伏線
+  if (state.day === 4 && !state.flags._ev_ageha_cameo) {
+    state.flags._ev_ageha_cameo = true;
+    return playDialogue("ch1_ageha_encounter", finishDay, "res://assets/backgrounds/bg_street_night.png");
+  }
   // DAY7夜（折り返し）: 中間チェック。スミさんが「素の一台」を講評し、残り日数に目的を作る
   if (state.day === 7 && !state.flags._ev_day3_check) {
     state.flags._ev_day3_check = true;
@@ -1429,9 +1437,15 @@ function endDay() {
 }
 
 // --- バイト
-function doBaito() {
+function doBaito(afterCameo) {
   visitContextChar = null;
   if (window.SFX) SFX.bgm("tonari");
+  // 2回目のバイトに一度だけ: 後の章のライバル（零-REI-）が正体を伏せたV系の客として来店。
+  // ch2決勝・ch3で「あの時の客」と繋がるカメオ伏線
+  if (state.chapter === 1 && !state.flags._ev_rei_cameo && (state.usedBaito || []).length >= 1) {
+    state.flags._ev_rei_cameo = true;
+    return playDialogue("ch1_rei_cameo", () => doBaito(true), "res://assets/backgrounds/bg_tonari_inside.png");
+  }
   let pool = D.baito_events.filter((e) => !state.usedBaito.includes(e.id));
   if (pool.length === 0) { state.usedBaito = []; pool = D.baito_events.slice(); }
   const ev = pool[Math.floor(Math.random() * pool.length)];
@@ -1439,7 +1453,9 @@ function doBaito() {
   const basePay = ev.base_pay || D.baito_settings.base_pay || 2500;
 
   const lines = [
-    { speaker: "", face: "", text: "今日はtonariでバイト。エプロンを締めて、カウンターに立つ。" },
+    afterCameo
+      ? { speaker: "", face: "", text: "──不思議な客を見送って、シフトに戻る。" }
+      : { speaker: "", face: "", text: "今日はtonariでバイト。エプロンを締めて、カウンターに立つ。" },
     { speaker: "", face: "", text: ev.text },
   ];
   const branches = {};
@@ -2754,8 +2770,9 @@ function runSteamDodge(steamOpt, onDone) {
 // --- 吸い出し（提供前の温度立ち上げ）: 炭を置いて蒸らした後、提供前に何度か吸って
 // ボウルの温度を整える工程。左右に走るゲージを止めた位置で吸い方が決まる——
 // 左側=上げ吸い（温度UP）／中央=キープ／右側=下げ吸い（温度DOWN）。
-// 最低2回・最大5回。適温ゾーンに合わせてから提供する
-const PULL_MIN = 2, PULL_MAX = 5;
+// 最低2回・3回まではノーペナルティ。4回目以降も吸えるが葉が痩せる（craft減点）。
+// やめ時はプレイヤーが選ぶ
+const PULL_MIN = 2, PULL_MAX = 5, PULL_SAFE = 3;
 const PULL_TARGET = [0.63, 0.79]; // 温度バー上の適温ゾーン（0..1）
 const PULL_DELTA = 0.13; // 1回の吸いで動かせる最大温度
 
@@ -2773,7 +2790,8 @@ function pullStartTemp() {
 function stepPull() {
   const body = tnPanel(
     "吸い出し（温度合わせ）",
-    "提供前に何度か吸って、ボウルの温度を立ち上げる。左で止めれば上げ吸い、右なら下げ吸い、真ん中はキープ。最低2回——適温ゾーンへ。"
+    "提供前に何度か吸って、ボウルの温度を立ち上げる。左で止めれば上げ吸い、右なら下げ吸い、真ん中はキープ。" +
+      `最低${PULL_MIN}回・${PULL_SAFE}回までは無傷、それ以上は葉が痩せる。やめ時は自分で決めろ。`
   );
   tt.temp = pullStartTemp();
   tt.pullCount = 0;
@@ -2813,7 +2831,10 @@ function stepPull() {
 
   const updateTemp = () => { marker.style.left = `${Math.max(0, Math.min(1, tt.temp)) * 100}%`; };
   const updateCount = () => {
-    countEl.textContent = `吸い出し ${tt.pullCount} / ${PULL_MAX} 回（最低${PULL_MIN}回）`;
+    countEl.textContent =
+      `吸い出し ${tt.pullCount} / ${PULL_MAX} 回（最低${PULL_MIN}回・${PULL_SAFE}回までは無傷）` +
+      (tt.pullCount >= PULL_SAFE ? "　⚠ ここから先は葉が痩せる" : "");
+    countEl.classList.toggle("tx-warn", tt.pullCount >= PULL_SAFE);
     serveBtn.disabled = tt.pullCount < PULL_MIN;
   };
   updateTemp();
@@ -2865,12 +2886,14 @@ function stepPull() {
     updateTemp();
     updateCount();
     result.textContent = `──${label}`;
+    // 4回目以降は吸いすぎ: 提供前に葉が痩せていく（craftScore で減点）
+    if (tt.pullCount > PULL_SAFE) result.textContent += "　（……吸いすぎだ。味の厚みが、少しずつ逃げていく）";
     if (window.SFX) SFX.bubble();
     spawnBubbles(7);
     startRigSmoke(620);
     if (tt.pullCount >= PULL_MAX) {
       goBtn.disabled = true;
-      result.textContent += "　……これ以上は吸いすぎだ。提供するしかない。";
+      result.textContent += "　もう提供するしかない。";
     }
   });
 
@@ -3002,6 +3025,12 @@ function craftScore() {
   }
   // 吸い出し（提供時の温度）
   score += { perfect: 12, good: 6, miss: 0 }[tt.pull];
+  // 吸いすぎペナルティ: 4回目以降の吸い出しは提供前に葉を痩せさせる
+  const overPulls = Math.max(0, (tt.pullCount || 0) - 3);
+  if (overPulls > 0) {
+    score -= overPulls * 3;
+    detail.push("提供前に吸いすぎた。葉が痩せて、最初の一口の厚みが削れている。");
+  }
   // ---- 準備の成果（大会本番のみ）----
   if (tt.mode === "tournament") {
     // 練習ドリルの自己ベスト（最大+8）

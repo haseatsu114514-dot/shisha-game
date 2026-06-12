@@ -904,6 +904,33 @@
           "affinity": 1
         }
       ]
+    },
+    {
+      "id": "rumor_cigarman_urban_legend",
+      "sender": "naru",
+      "trigger_day": 9,
+      "trigger_condition": "lime_exchanged",
+      "type": "rumor",
+      "rumor_about": "mashiro",
+      "chapter": 1,
+      "messages": [
+        {
+          "sender": "naru",
+          "text": "なあ、東京の専門学校時代のツレから変な話聞いたんだけど"
+        },
+        {
+          "sender": "naru",
+          "text": "『シガーマン』って都市伝説、知ってるか？ 夜のシーシャ屋にふらっと現れて、葉巻の葉っぱで化け物みたいな煙を出すらしい"
+        },
+        {
+          "sender": "naru",
+          "text": "吸った客はしばらく、他の店のシーシャじゃ物足りなくなるんだと"
+        },
+        {
+          "sender": "naru",
+          "text": "まあ都市伝説だけどな。でも思ったよ。地方で勝った負けたって言ってる間も、世界はとんでもなく広い。……お互い、行けるとこまで行こうぜ"
+        }
+      ]
     }
   ]
 }
