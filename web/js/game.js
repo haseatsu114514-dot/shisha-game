@@ -3,7 +3,7 @@
 
 const D = window.GAME_DATA;
 const SAVE_KEY = "shisha_ch1_save_v1";
-const MAX_DAYS = 7;
+const MAX_DAYS = 14; // 大会まで毎回14日間の準備期間
 const AFFINITY_CAP = 3; // 第1章の好感度上限
 const VISIT_COST = 3000;
 
@@ -33,15 +33,9 @@ function newState() {
 }
 
 function save() {
+  state.savedAt = Date.now();
   try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch (e) { /* file:// 等で失敗しても続行 */ }
 }
-function loadSave() {
-  try {
-    const raw = localStorage.getItem(SAVE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch (e) { return null; }
-}
-
 // ---------------------------------------------------------------- helpers
 const $ = (sel) => document.querySelector(sel);
 
@@ -272,13 +266,20 @@ function dailyTheme() {
   return THEMES[(state.day - 1) % THEMES.length];
 }
 
-// DAYカードに出すスミさんの日替わりの一言（締切感の演出。day3/6の夜イベントを予告する）
+// DAYカードに出すスミさんの日替わりの一言（締切感の演出。day7/13の夜イベントを予告する）
 const SUMI_QUOTES = [
   "初日から飛ばすな。一台ずつ、丁寧にな",
   "炭の置き方ひとつで味は変わるぞ",
-  "今夜、お前の素の一台を見せてもらう",
+  "迷ったら基本に戻れ。トライアングルだ",
   "人の煙を見るのも練習のうちだ",
+  "たまには外の空気も吸え。出会いも仕込みのうちだ",
+  "昨日と同じ一台を、今日も作れるか？　それが基礎だ",
+  "今夜、お前の素の一台を見せてもらう",
+  "折り返しだ。弱点から逃げるなよ",
   "疲れは煙に出る。今日は無理するな",
+  "道具を磨け。腕より先に、道具が腐るぞ",
+  "客の顔を思い出せ。誰に吸わせたい一台だ？",
+  "そろそろ仕上げを意識しろ",
   "今夜は通しのリハーサルだ。そのつもりでな",
   "前日だ。新しいことはするな。いつも通りにやれ",
 ];
@@ -293,7 +294,7 @@ function updateDayCard() {
   $("#dc-ap").textContent = (state.ap === 2 ? "昼" : "夜") + ` ${state.ap}`;
   $("#dc-money").textContent = state.money.toLocaleString();
   $("#dc-request").textContent = dailyTheme().label;
-  $("#dc-quote").textContent = `スミ「${SUMI_QUOTES[Math.min(Math.max(state.day, 1), 7) - 1]}」`;
+  $("#dc-quote").textContent = `スミ「${SUMI_QUOTES[Math.min(Math.max(state.day, 1), SUMI_QUOTES.length) - 1]}」`;
 }
 
 // 判定スタンプ演出
@@ -389,6 +390,172 @@ function showGlossary() {
   if (window.SFX) SFX.open();
 }
 
+// ---------------------------------------------------------------- config
+const CONFIG_KEY = "shisha_config_v1";
+const config = { textSpeed: 2, autoSpeed: 2, bgmVol: 100, sfxVol: 100 };
+
+function loadConfig() {
+  try { Object.assign(config, JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}")); } catch (e) { /* 壊れた設定は既定値で続行 */ }
+  applyConfig();
+}
+function applyConfig() {
+  if (window.SFX) {
+    SFX.setBgmVolume(config.bgmVol / 100);
+    SFX.setSfxVolume(config.sfxVol / 100);
+  }
+}
+function saveConfig() {
+  try { localStorage.setItem(CONFIG_KEY, JSON.stringify(config)); } catch (e) { /* file:// 等で失敗しても続行 */ }
+}
+
+function showConfig() {
+  const body = $("#config-body");
+  body.innerHTML = "";
+  const seg = (label, key, opts) => {
+    const row = document.createElement("div");
+    row.className = "config-row";
+    row.innerHTML = `<span class="config-label">${label}</span>`;
+    const grp = document.createElement("div");
+    grp.className = "config-seg";
+    for (const [val, text] of opts) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = text;
+      b.classList.toggle("on", config[key] === val);
+      b.addEventListener("click", () => {
+        config[key] = val;
+        saveConfig();
+        for (const x of grp.children) x.classList.remove("on");
+        b.classList.add("on");
+        if (window.SFX) SFX.click();
+      });
+      grp.appendChild(b);
+    }
+    row.appendChild(grp);
+    body.appendChild(row);
+  };
+  const slider = (label, key) => {
+    const row = document.createElement("div");
+    row.className = "config-row";
+    row.innerHTML = `<span class="config-label">${label}</span>`;
+    const input = document.createElement("input");
+    input.type = "range";
+    input.min = "0"; input.max = "100"; input.value = String(config[key]);
+    input.addEventListener("input", () => { config[key] = Number(input.value); saveConfig(); applyConfig(); });
+    input.addEventListener("change", () => { if (window.SFX) SFX.click(); });
+    row.appendChild(input);
+    body.appendChild(row);
+  };
+  seg("テキスト速度", "textSpeed", [[1, "遅い"], [2, "普通"], [3, "速い"], [4, "瞬間"]]);
+  seg("オート速度", "autoSpeed", [[1, "ゆっくり"], [2, "普通"], [3, "せっかち"]]);
+  slider("BGM音量", "bgmVol");
+  slider("効果音 音量", "sfxVol");
+  $("#config-overlay").classList.add("visible");
+  if (window.SFX) SFX.open();
+}
+
+// ---------------------------------------------------------------- gallery
+// CGの閲覧記録はセーブとは別に端末単位で持つ（周回しても消えない）
+const GALLERY_KEY = "shisha_gallery_v1";
+function gallerySeenSet() {
+  try { return new Set(JSON.parse(localStorage.getItem(GALLERY_KEY) || "[]")); } catch (e) { return new Set(); }
+}
+function galleryRecord(cgId) {
+  const s = gallerySeenSet();
+  if (s.has(cgId)) return;
+  s.add(cgId);
+  try { localStorage.setItem(GALLERY_KEY, JSON.stringify([...s])); } catch (e) { /* 続行 */ }
+}
+function showGallery() {
+  const grid = $("#gallery-grid");
+  grid.innerHTML = "";
+  const all = (D.cgs || []).slice().sort();
+  if (!all.length) {
+    grid.innerHTML = `<p class="gallery-empty">CGはまだ準備中……物語の更新をお楽しみに。</p>`;
+  }
+  const seen = gallerySeenSet();
+  for (const id of all) {
+    const cell = document.createElement("button");
+    cell.type = "button";
+    cell.className = "gallery-cell";
+    if (seen.has(id)) {
+      const img = document.createElement("img");
+      img.src = assetUrl(`assets/cgs/${id}.png`);
+      img.alt = id;
+      cell.appendChild(img);
+      cell.addEventListener("click", () => {
+        const v = $("#gallery-viewer");
+        v.style.backgroundImage = `url('${assetUrl(`assets/cgs/${id}.png`)}')`;
+        v.classList.add("visible");
+        if (window.SFX) SFX.open();
+      });
+    } else {
+      cell.classList.add("locked");
+      cell.textContent = "？？？";
+      cell.disabled = true;
+    }
+    grid.appendChild(cell);
+  }
+  $("#gallery-overlay").classList.add("visible");
+  if (window.SFX) SFX.open();
+}
+
+// ---------------------------------------------------------------- save slots
+const SAVE_SLOTS = [
+  { key: SAVE_KEY, label: "オートセーブ", auto: true },
+  { key: "shisha_ch1_slot1", label: "スロット 1" },
+  { key: "shisha_ch1_slot2", label: "スロット 2" },
+  { key: "shisha_ch1_slot3", label: "スロット 3" },
+];
+function readSlot(key) {
+  try {
+    const data = JSON.parse(localStorage.getItem(key) || "null");
+    return data && data.day ? data : null;
+  } catch (e) { return null; }
+}
+function showSaveLoad(mode) {
+  $("#saveload-title").textContent = mode === "save" ? "セーブ" : "ロード";
+  const box = $("#saveload-slots");
+  box.innerHTML = "";
+  for (const slot of SAVE_SLOTS) {
+    const data = readSlot(slot.key);
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "saveslot";
+    const when = data && data.savedAt ? new Date(data.savedAt).toLocaleString("ja-JP") : "";
+    const info = data
+      ? `DAY ${data.day} ／ ¥${(data.money || 0).toLocaleString()}${data.phase === "cleared" ? " ／ クリア済" : data.phase === "tournament" ? " ／ 大会当日" : ""}`
+      : "── 空きスロット ──";
+    btn.innerHTML =
+      `<span class="saveslot-label">${slot.label}</span>` +
+      `<span class="saveslot-info">${info}</span>` +
+      `<span class="saveslot-date">${when}</span>`;
+    if (mode === "save") {
+      if (slot.auto) { btn.disabled = true; btn.classList.add("dim"); }
+      else btn.addEventListener("click", () => {
+        try { localStorage.setItem(slot.key, JSON.stringify({ ...state, savedAt: Date.now() })); } catch (e) { /* 続行 */ }
+        if (window.SFX) SFX.select();
+        toast(`${slot.label} にセーブした`);
+        showSaveLoad("save"); // スロット表示を更新
+      });
+    } else {
+      if (!data) { btn.disabled = true; btn.classList.add("dim"); }
+      else btn.addEventListener("click", () => {
+        $("#saveload-overlay").classList.remove("visible");
+        toggleStatus(false);
+        if (window.SFX) SFX.select();
+        engulfInSmoke(() => {
+          if (window.SFX) SFX.bgm("daily_part");
+          continueGame(data);
+        });
+      });
+    }
+    box.appendChild(btn);
+  }
+  $("#saveload-overlay").classList.add("visible");
+  if (window.SFX) SFX.open();
+}
+
 let engine = null;
 let cueFiredInDialogue = false;
 let visitContextChar = null; // 好感度キューの対象キャラ
@@ -418,7 +585,7 @@ function toggleAuto() {
     if (engine.waitingChoice) return; // 選択肢で停止
     if (engine.typing) return; // タイプ中は待つ
     engine.next();
-  }, 1400);
+  }, { 1: 2200, 2: 1400, 3: 800 }[config.autoSpeed] || 1400);
 }
 
 function toggleSkip() {
@@ -473,6 +640,8 @@ function initEngine() {
       charNames: D.char_names,
       setFlag: (flag) => { state.flags[flag] = true; },
       hasCg: (cgId) => (D.cgs || []).includes(cgId),
+      getTextSpeed: () => config.textSpeed,
+      onCg: galleryRecord,
       onLine: pushLog,
       onTextCue: parseTextCue,
       onChoice: handleDialogueChoice,
@@ -978,8 +1147,8 @@ function endDay() {
     state.flags._ev_salaryman = true;
     return playDialogue("ch1_salaryman_regular", finishDay, TONARI);
   }
-  // DAY3夜: 中間チェック。スミさんが「素の一台」を講評し、残り日数に目的を作る
-  if (state.day === 3 && !state.flags._ev_day3_check) {
+  // DAY7夜（折り返し）: 中間チェック。スミさんが「素の一台」を講評し、残り日数に目的を作る
+  if (state.day === 7 && !state.flags._ev_day3_check) {
     state.flags._ev_day3_check = true;
     return playCustom({
       dialogue_id: "ch1_day3_check",
@@ -989,18 +1158,18 @@ function endDay() {
         { speaker: "sumi", face: "normal", text: "一台作ってみろ。練習でも本番でもない、今のお前の素の一台だ" },
         { speaker: "", face: "", text: "黙って組む。詰めて、熾して、置いて、待つ。スミさんは何も言わずに見ている。\n──完成。ホースを渡す。スミさんは目を閉じて、長い一服。" },
         { type: "condition", stat: "技術", threshold: 22, next_true: "mid_good", next_false: "mid_rough" },
-        { speaker: "sumi", face: "serious", text: "大会まであと4日。どこを磨くかは、お前が決めろ。──ただし、寝ること。それも仕込みのうちだ" },
-        { speaker: "hajime", face: "normal", text: "はい。（あと4日。……何を、どこまで持っていけるか）" },
+        { speaker: "sumi", face: "serious", text: "大会まで、ちょうど折り返しだ。どこを磨くかは、お前が決めろ。──ただし、寝ること。それも仕込みのうちだ" },
+        { speaker: "hajime", face: "normal", text: "はい。（あと7日。……何を、どこまで持っていけるか）" },
         { type: "apply", stats: { insight: 2 } },
       ],
       branches: {
         mid_good: [
-          { speaker: "sumi", face: "smile", text: "……腕、上げたな。3日前のお前の煙じゃない" },
+          { speaker: "sumi", face: "smile", text: "……腕、上げたな。初日のお前の煙じゃない" },
           { speaker: "sumi", face: "normal", text: "ここからは弱点を潰せ。引きか、熱か、詰めか。自分で分かってるだろ" },
         ],
         mid_rough: [
           { speaker: "sumi", face: "normal", text: "……悪くない。けど、本番でこれだと埋もれるな" },
-          { speaker: "sumi", face: "normal", text: "焦るな。まだ4日ある。基礎の反復が一番効く時期だ" },
+          { speaker: "sumi", face: "normal", text: "焦るな。まだ7日ある。基礎の反復が一番効く時期だ" },
         ],
       },
     }, finishDay);
@@ -1009,8 +1178,8 @@ function endDay() {
     state.flags._ev_day5 = true;
     return playDialogue("ch1_day5_sumi_story", finishDay, TONARI);
   }
-  // DAY6夜: 前日リハーサル（通し）。出来が本番の小ボーナスになる
-  if (state.day === 6 && !state.flags._ev_day6_rehearsal) {
+  // DAY13夜（大会前々日）: 前日リハーサル（通し）。出来が本番の小ボーナスになる
+  if (state.day === 13 && !state.flags._ev_day6_rehearsal) {
     state.flags._ev_day6_rehearsal = true;
     afterRehearsal = finishDay;
     return playCustom({
@@ -1023,7 +1192,7 @@ function endDay() {
       ],
     }, () => beginMaking("rehearsal"));
   }
-  if (state.day === 7 && !state.flags._ev_day7) {
+  if (state.day === 14 && !state.flags._ev_day7) {
     state.flags._ev_day7 = true;
     return playDialogue("ch1_day7_last_night", finishDay, TONARI);
   }
@@ -1424,6 +1593,39 @@ const FOCUS_WORDS = [
 
 let tt = null; // tournament temp state
 const rigState = { smokeTimer: 0, bubbleTimer: 0 };
+
+// --- パッキー実況ティッカー: ミニゲームの判定に即反応する実況テロップ（大会本番のみ）
+const PAKKI_TICKER = {
+  perfect: [
+    "うおーっと！　完璧だァ！　とんでもない手際です！",
+    "ぷぷぷっ！　今の見た！？　お手本みたいな仕事だよ！",
+    "会場どよめいてます！　審査員も身を乗り出したーっ！",
+  ],
+  good: [
+    "おっ、いい流れ！　会場の鼻がスンスンし始めた！",
+    "悪くない悪くない！　このまま行っちゃう！？",
+  ],
+  miss: [
+    "あらら〜♪　これは痛い！　でも勝負はまだわかんないよ！",
+    "おっと手元が乱れたか！？　審査員の眉がピクッとしました！",
+  ],
+};
+let tickerTimer = 0;
+function ticker(text) {
+  const el = $("#tn-ticker");
+  if (!el) return;
+  el.textContent = `🎤 パッキー「${text}」`;
+  el.classList.remove("show");
+  void el.offsetWidth; // アニメーション再起動
+  el.classList.add("show");
+  clearTimeout(tickerTimer);
+  tickerTimer = setTimeout(() => el.classList.remove("show"), 3600);
+}
+function pakkiLive(result) {
+  if (!tt || tt.mode !== "tournament") return;
+  const pool = PAKKI_TICKER[result] || [];
+  if (pool.length) ticker(pool[Math.floor(Math.random() * pool.length)]);
+}
 
 // 大会は3ラウンド制: R1=組み立て（setup〜steam）→ R2=調整（adjust＋focus）→ R3=提供（pull/present）。
 // ラウンドの切れ目で ch1_tournament_r1〜r3_end の会話が挟まる
@@ -1864,7 +2066,9 @@ function stepFoil() {
       btn.disabled = true;
       tt.foilDone = true;
       updateRig();
-      showStamp($("#tn-layout .panel"), tt.foilHits >= 6 ? "perfect" : tt.foilHits >= 4 ? "good" : "miss");
+      const foilResult = tt.foilHits >= 6 ? "perfect" : tt.foilHits >= 4 ? "good" : "miss";
+      showStamp($("#tn-layout .panel"), foilResult);
+      pakkiLive(foilResult);
       result.textContent =
         tt.foilHits >= 6 ? "──美しい六角形。空気の通り道が完璧に揃った。"
         : tt.foilHits >= 4 ? "──まずまずの穴あけ。空気はちゃんと通る。"
@@ -1899,6 +2103,7 @@ function stepCoalFire() {
     tt.coalFire = gauge.judge();
     if (window.SFX) SFX.coal();
     showStamp($("#tn-layout .panel"), tt.coalFire);
+    pakkiLive(tt.coalFire);
     result.textContent = {
       perfect: "──完璧な熾き。炭全体が均一な赤に染まっている。",
       good: "──十分に熾きた。問題ない熱だ。",
@@ -2111,6 +2316,7 @@ function stepPull() {
     spawnBubbles(tt.pull === "perfect" ? 14 : tt.pull === "good" ? 9 : 4);
     startRigSmoke(tt.pull === "miss" ? 900 : 320);
     showStamp($("#tn-layout .panel"), tt.pull);
+    pakkiLive(tt.pull);
     const msgs = {
       perfect: "──完璧な一服。煙が重く、甘く、まとまっている。",
       good: "──いい煙だ。狙った味に近い。",
@@ -2592,34 +2798,59 @@ function finishTutorial() {
     lines: [
       { speaker: "", face: "", text: "──煙を一口、スミさんに渡す。ゆっくりと吐き出して、しばらく目を閉じた。" },
       { speaker: "sumi", face: comment.face, text: comment.text },
-      { speaker: "sumi", face: "serious", text: "本番までの7日間、店も練習台も好きに使え。……優勝してこい。" },
+      { speaker: "sumi", face: "serious", text: `本番までの${MAX_DAYS}日間、店も練習台も好きに使え。……優勝してこい。` },
       { speaker: "", face: "", text: "……【技術】と【センス】が上がった。" },
     ],
   }, () => {
     // チュートリアル直後: 私服のみんと（お姉さん）が客として来る。正体は明かさない
     playDialogue("ch1_tutorial_oneesan", () => {
       save();
-      showDayCard("DAY 1", "SMOKE CROWN CUP まで あと7日");
+      showDayCard("DAY 1", `SMOKE CROWN CUP まで あと${MAX_DAYS}日`);
       showMap();
     }, "res://assets/backgrounds/bg_tonari_inside.png");
   });
 }
 
 // ---------------------------------------------------------------- boot
+// 章タイトルのカットイン（黒地＋金罫＋明朝の大文字）。章開始時に挟む
+function showChapterTitle(opts, onDone) {
+  const el = document.createElement("div");
+  el.id = "chapter-title";
+  el.innerHTML =
+    `<div class="ct-inner">` +
+    `<div class="ct-line"></div>` +
+    `<p class="ct-no">${opts.no}</p>` +
+    `<h2 class="ct-name">${opts.name}</h2>` +
+    (opts.read ? `<p class="ct-read">─ ${opts.read} ─</p>` : "") +
+    (opts.sub ? `<p class="ct-sub">${opts.sub}</p>` : "") +
+    `<div class="ct-line"></div>` +
+    `</div>`;
+  $("#game").appendChild(el);
+  if (window.SFX) SFX.smoke();
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("show")));
+  setTimeout(() => el.classList.add("out"), 3600);
+  setTimeout(() => { el.remove(); if (onDone) onDone(); }, 4600);
+}
+
 function startNewGame() {
   state = newState();
   updateHud();
   // コールドオープン: ch4ドバイ決勝の一瞬（顔も会場も見せない・暗転＋煙）
-  // → 白煙 →「1年前」のtonariへ。本番背景ができたら差し替える
+  // → 白煙 → 章タイトル →「1年前」のtonariへ。本番背景ができたら差し替える
   $("#vn-bg").style.backgroundImage = "none";
   playDialogue("ch1_cold_open", () => {
     engulfInSmoke(() => {
-      if (window.SFX) SFX.bgm("tonari");
-      playDialogue("ch1_opening", () => {
-        state.phase = "daily";
-        save();
-        startTutorial();
-      }, "res://assets/backgrounds/bg_tonari_inside.png");
+      showChapterTitle(
+        { no: "第 一 章", name: "一吸目", read: "ファーストパフ", sub: "SMOKE CROWN CUP 編" },
+        () => {
+          if (window.SFX) SFX.bgm("tonari");
+          playDialogue("ch1_opening", () => {
+            state.phase = "daily";
+            save();
+            startTutorial();
+          }, "res://assets/backgrounds/bg_tonari_inside.png");
+        }
+      );
     });
   });
 }
@@ -2643,6 +2874,7 @@ function continueGame(saved) {
 function init() {
   fitStage();
   window.addEventListener("resize", fitStage);
+  loadConfig();
   initEngine();
   setupTitleLogo();
   // キービジュアルがあればそれを最優先、無ければキャラランダム表示
@@ -2651,7 +2883,6 @@ function init() {
   startTitleBgm();
   window.addEventListener("pointerdown", startTitleBgm, { once: true });
   window.addEventListener("keydown", startTitleBgm, { once: true });
-  const saved = loadSave();
   $("#btn-new").addEventListener("click", () => {
     if (window.SFX) SFX.select();
     engulfInSmoke(() => {
@@ -2667,17 +2898,25 @@ function init() {
     b.textContent = m ? "BGM OFF" : "BGM ON";
     b.classList.toggle("off", m);
   });
+  // LOADはスロット選択画面を開く（オートセーブ＋手動スロット3つ）
   const contBtn = $("#btn-continue");
-  if (saved && saved.phase !== "opening") {
+  const anySave = SAVE_SLOTS.some((s) => { const d = readSlot(s.key); return d && d.phase !== "opening"; });
+  if (anySave) {
     contBtn.classList.remove("hidden");
     contBtn.addEventListener("click", () => {
       if (window.SFX) SFX.select();
-      engulfInSmoke(() => {
-        if (window.SFX) SFX.bgm("daily_part");
-        continueGame(saved);
-      });
+      showSaveLoad("load");
     });
   }
+  $("#btn-gallery").addEventListener("click", () => showGallery());
+  $("#btn-config").addEventListener("click", () => showConfig());
+  $("#config-close").addEventListener("click", () => { if (window.SFX) SFX.close(); $("#config-overlay").classList.remove("visible"); });
+  $("#gallery-close").addEventListener("click", () => { if (window.SFX) SFX.close(); $("#gallery-overlay").classList.remove("visible"); });
+  $("#gallery-viewer").addEventListener("click", () => $("#gallery-viewer").classList.remove("visible"));
+  $("#saveload-close").addEventListener("click", () => { if (window.SFX) SFX.close(); $("#saveload-overlay").classList.remove("visible"); });
+  $("#menu-save").addEventListener("click", () => showSaveLoad("save"));
+  $("#menu-load").addEventListener("click", () => showSaveLoad("load"));
+  $("#menu-config").addEventListener("click", () => showConfig());
   $("#btn-status").addEventListener("click", () => toggleStatus(true));
   $("#status-close").addEventListener("click", () => toggleStatus(false));
   $("#shop-close").addEventListener("click", () => { if (window.SFX) SFX.close(); showMap(); });
