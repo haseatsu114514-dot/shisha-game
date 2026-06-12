@@ -68,10 +68,11 @@ const weightOf = (table, id) => table.find((r) => r.id === id).weight;
 
 // ---- 4. フリーズ制御:「完全確率に見せかけて管理」されていること
 {
+  const baseBig = ROLES.find((r) => r.id === "big").weight;
   // (a) 序盤（warmup未満）はテーブルに存在しない（その分 big に折り込み）
   const early = effectiveTable({ count: 5, missRun: 0, bonusGap: 0, zoneLeft: 0, bonusCount: 1, freezeCount: 0 });
   assert.strictEqual(weightOf(early, "freeze"), 0, "序盤にフリーズが抽選されている");
-  assert.strictEqual(weightOf(early, "big"), 28 + FREEZE_CONTROL.baseWeight, "抑制分がbigに折り込まれていない");
+  assert.strictEqual(weightOf(early, "big"), baseBig + FREEZE_CONTROL.baseWeight, "抑制分がbigに折り込まれていない");
   // (b) 通常域では名目値
   const mid = effectiveTable({ count: 60, missRun: 0, bonusGap: 0, zoneLeft: 0, bonusCount: 5, freezeCount: 0 });
   assert.strictEqual(weightOf(mid, "freeze"), FREEZE_CONTROL.baseWeight);
@@ -104,7 +105,7 @@ const weightOf = (table, id) => table.find((r) => r.id === id).weight;
   assert.ok(weightOf(unlucky, "miss") < weightOf(base, "miss"), "救済分がハズレから引かれていない");
   // 最低サンプル数未満では発動しない
   const tooEarly = effectiveTable({ count: RESCUE.minSpins - 1, missRun: 0, bonusGap: 0, zoneLeft: 0, bonusCount: 0, freezeCount: 0 });
-  assert.strictEqual(weightOf(tooEarly, "reg"), 26, "救済が早すぎる");
+  assert.strictEqual(weightOf(tooEarly, "reg"), ROLES.find((r) => r.id === "reg").weight, "救済が早すぎる");
   log("rescue (裏確変) OK");
 }
 
