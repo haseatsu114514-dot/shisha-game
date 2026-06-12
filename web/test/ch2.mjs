@@ -83,6 +83,9 @@ await page.evaluate(() => {
   state.stats = { technique: 38, sense: 36, guts: 30, charm: 32, insight: 34 };
   state.money = 60000;
   state.practiceBest = { foil: 2, coalfire: 2, pull: 2, focus: 2 };
+  state.guilt = 3; // うしろめたさの煙演出（リグの濁り）を道中で検証する
+  state.owned.push("home_rig_set"); // 家シーシャ（寝る前の一服）の出現を検証する
+  state.visits.naru = 2; // ch1でなるとLIME交換済み相当（噂LIMEの配信条件）
   startChapter2();
 });
 
@@ -90,6 +93,7 @@ const plan = ["シーシャの練習", "tonariでバイト", "シーシャの練
 let planIdx = 0;
 let stagesSeen = [];
 let slumpSeen = false;
+let guiltSmokeSeen = false;
 const nightDialogues = new Set();
 async function active() { return page.evaluate(() => document.querySelector(".screen.active")?.id); }
 
@@ -107,7 +111,7 @@ while (guard++ < 8000) {
   if (screen === "screen-gameover") throw new Error("unexpected game over");
   if (screen === "screen-dialogue") {
     const id = await page.evaluate(() => engine && engine.dialogueId);
-    if (id && id.startsWith("ch2_")) nightDialogues.add(id);
+    if (id && (id.startsWith("ch2_") || id === "home_shisha_night")) nightDialogues.add(id);
     const c = page.locator("#vn-choices .choice-btn").first();
     if (await c.count()) await c.click();
     else await page.click("#vn-click-layer").catch(() => {});
@@ -120,6 +124,7 @@ while (guard++ < 8000) {
       const st = await page.evaluate(() => state.ch2Stage);
       if (st && !stagesSeen.includes(st)) { stagesSeen.push(st); log("stage:", st); }
       if (await page.locator(".taste-slump").count()) slumpSeen = true;
+      if (await page.locator("#tn-rig .rig.guilt-2").count()) guiltSmokeSeen = true;
     }
     await playTnStep(page, { onResult: (rows) => log("result:", rows.map((r) => r.replace(/\s+/g, " ").trim()).join(" / ")) });
     continue;
@@ -158,7 +163,15 @@ log("end screen:", endTitle);
 if (!endTitle.includes("第2章クリア")) throw new Error("expected ch2 clear, got " + endTitle);
 if (stagesSeen.join(",") !== "qual,semi,final") throw new Error("stages wrong: " + stagesSeen.join(","));
 if (!slumpSeen) throw new Error("taste slump UI not seen");
-for (const id of ["ch2_slump_taste", "ch2_pre_tournament_realisation", "ch2_naru_confrontation", "ch2_empty_victory_post"]) {
+if (!guiltSmokeSeen) throw new Error("guilt smoke tint (rig .guilt-2) not seen");
+// 噂LIME（クロスオーバー噂システム）がch2で配信されること
+const rumors = await page.evaluate(() => ["rumor_kemuri_experiments", "rumor_kumicho_cigarman"].filter((id) => state.limeDone.includes(id)));
+if (rumors.length !== 2) throw new Error("rumor LIMEs not delivered: " + rumors.join(","));
+for (const id of [
+  "ch2_slump_taste", "ch2_lingering_smell", "ch2_pre_tournament_realisation",
+  "ch2_sumi_silence", "ch2_naru_confrontation", "ch2_empty_victory_post",
+  "home_shisha_night",
+]) {
   if (!nightDialogues.has(id)) throw new Error("missing ch2 dialogue: " + id);
 }
 log("isolation/night dialogues:", [...nightDialogues].join(", "));

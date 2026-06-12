@@ -134,12 +134,30 @@ for (let i = 0; i < 2500; i++) {
     } else if (t.includes("パッキング")) await page.locator(".spot-btn", { hasText: "ふんわり" }).click();
     else if (t.includes("炭の配置")) await page.locator(".spot-btn", { hasText: "炭4個" }).click();
     else if (t.includes("蒸らし時間")) await page.locator(".spot-btn", { hasText: "せっかち" }).click();
-    else if (t.includes("引き")) {
-      await page.waitForTimeout(150);
-      await page.click("#tn-gauge-stop");
-      await page.waitForTimeout(40);
-      await page.locator("#tn-body button", { hasText: "提供する" }).click();
-    } else if (t.includes("プレゼン")) await page.locator(".spot-btn", { hasText: "味で語る" }).click();
+    else if (t.includes("蒸らし中")) {
+      // 弾幕はわざと避けない（敗北ルート用）。1枚だけスクショを残す
+      let shot = false;
+      for (let k = 0; k < 200; k++) {
+        if (!shot && (await page.locator(".dodge-bullet").count())) {
+          await page.screenshot({ path: `${OUT}/08d_dodge.png` });
+          shot = true;
+        }
+        const next = page.locator("#tn-body button", { hasText: "次へ" });
+        if (await next.count()) { await next.click(); break; }
+        await page.waitForTimeout(150);
+      }
+    }
+    else if (t.includes("吸い出し")) {
+      // 敗北ルート: 温度を合わせず、最低回数だけ吸ってすぐ出す
+      await page.locator("#tn-pull-go").click();
+      await page.waitForTimeout(120);
+      await page.locator("#tn-pull-go").click();
+      await page.waitForTimeout(120);
+      await page.screenshot({ path: `${OUT}/08e_pull.png` });
+      await page.locator("#tn-pull-serve").click();
+      await page.waitForTimeout(60);
+      await page.locator("#tn-body button", { hasText: "次へ" }).click();
+    }
     else if (t.includes("審査結果")) {
       await page.screenshot({ path: `${OUT}/09_result.png` });
       await page.locator("#tn-body .primary-btn").click();

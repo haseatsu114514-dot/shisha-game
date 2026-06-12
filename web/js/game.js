@@ -765,6 +765,14 @@ function initEngine() {
       portraitTrims: D.portrait_trims,
       charNames: D.char_names,
       setFlag: (flag) => { state.flags[flag] = true; },
+      // stat 以外の condition（ending.json の恋愛分岐など）の評価
+      evalCondition: (line) => {
+        if (line.condition_type === "has_romance_and_max_affection") {
+          const id = String(line.char_id || "");
+          return (state.lovers || []).includes(id) && (state.affinity[id] || 0) >= AFFINITY_CAP;
+        }
+        return false;
+      },
       hasCg: (cgId) => (D.cgs || []).includes(cgId),
       getTextSpeed: () => config.textSpeed,
       onCg: galleryRecord,
@@ -811,6 +819,10 @@ function handleDialogueChoice(dialogueId, choiceId, branchKey, nextId) {
   }
   // 浮気警告: 「それでも応える」を選んだ
   if (dialogueId.startsWith("cheat_warning_") && branchKey === "go") state.flags._cheat_go = true;
+  // 家シーシャ: 吸った夜を記録（連夜は効果が落ちる）
+  if (dialogueId === "home_shisha_night" && branchKey === "puff") {
+    state.homePuffLast = { chapter: state.chapter, day: state.day };
+  }
   // 告白の結果（confession.json は next_id で accept/reject に分岐する）
   const m = /^confession_(\w+)_(accept|reject)$/.exec(nextId || "");
   if (m) {
@@ -887,12 +899,19 @@ function limeDueMessages(tournamentDay) {
   const due = [];
   for (const m of D.lime_messages || []) {
     const sender = m.sender;
-    if (!(sender in state.affinity)) continue; // 登場済みキャラのみ
-    // 章が違うメッセージは出さない（指定なしは第1章扱い。ch2は離反演出があるため流用しない）
-    if ((m.chapter || 1) !== (state.chapter || 1)) continue;
-    if (state.limeDone.includes(m.id)) continue;
-    if (state.visits[sender] < (LIME_EXCHANGE_VISITS[sender] || 1)) continue;
     const cond = m.trigger_condition;
+    // 噂（rumor）のうち、知り合い（affinity管理外＝業界の重鎮など）からのものだけ
+    // ゲート無しで届く。知り合いからの噂は通常のLIME条件（交換済み等）に従う
+    const outsiderRumor = m.type === "rumor" && !(sender in state.affinity);
+    if (!outsiderRumor) {
+      if (!(sender in state.affinity)) continue; // 登場済みキャラのみ
+      if (state.visits[sender] < (LIME_EXCHANGE_VISITS[sender] || 1)) continue;
+    }
+    // 章が違うメッセージは出さない（指定なしは第1章扱い。ch2_started 等は当該章扱い。
+    // ch2の通常LIMEは離反演出のため流用しない）
+    const msgChapter = m.chapter || (cond === "ch2_started" ? 2 : cond === "ch3_started" ? 3 : 1);
+    if (msgChapter !== (state.chapter || 1)) continue;
+    if (state.limeDone.includes(m.id)) continue;
     if (cond === "lime_exchanged") {
       if (tournamentDay || m.trigger_day !== state.day) continue;
     } else if (cond === "affinity_level") {
@@ -902,8 +921,12 @@ function limeDueMessages(tournamentDay) {
     } else if (cond === "flag") {
       // デート（outing）翌朝のフォローLIMEなど、フラグ起動のメッセージ
       if (tournamentDay || !state.flags[m.trigger_flag]) continue;
+    } else if (cond === "ch2_started" || cond === "ch3_started") {
+      // 章開始トリガの噂LIME。trigger_day 指定があればその日の朝に届く
+      if (tournamentDay) continue;
+      if (m.trigger_day && m.trigger_day !== state.day) continue;
     } else {
-      continue; // ch2以降の条件（ch2_started 等）
+      continue; // 未対応の条件
     }
     due.push(m);
   }
@@ -1034,6 +1057,19 @@ function showLimeActions(m) {
         }, 800);
       },
     })));
+    return;
+  }
+  // 業界の噂（rumor）: 読むと洞察が伸びる（世界観のクロスオーバー演出）
+  if (m.type === "rumor") {
+    limeReplyButtons([
+      {
+        text: m.close_label || "へえ……（覚えておこう）",
+        onPick: () => {
+          gainStat("insight", 2);
+          setTimeout(nextLimeThread, 500);
+        },
+      },
+    ]);
     return;
   }
   // 返信無しのメッセージ（大会朝の応援など）: 読むだけで気合が入る
@@ -1276,6 +1312,7 @@ function advanceDay() {
   }
   state.day += 1;
   state.ap = 2;
+  delete state.flags._rested_today; // 「体力に余裕」は日をまたいだらリセット
   save();
   // ch2: 試合日（予選・準決勝・決勝）は行動なしでそのまま会場へ
   const stage = state.chapter === 2 ? chapterInfo().stageDays[state.day] : null;
@@ -1294,7 +1331,8 @@ function advanceDay() {
 }
 
 function endDay() {
-  const finishDay = advanceDay;
+  // 夜の締めに家シーシャ（第2章〜・一式所持時のみ選択肢が出る）を挟んでから翌朝へ
+  const finishDay = () => maybeHomeShisha(advanceDay);
   const TONARI = "res://assets/backgrounds/bg_tonari_inside.png";
   // ---- 第2章の夜の固定イベント（嫉妬と転落の進行）
   if (state.chapter === 2) {
@@ -1311,9 +1349,19 @@ function endDay() {
       // 味覚スランプ発症: 以後、ミックス画面の味の記憶がノイズ混じりになる
       return playDialogue("ch2_slump_taste", () => { state.flags._taste_slump = true; save(); finishDay(); }, TONARI);
     }
+    // DAY6: 全編モチーフ「店の匂い」のch2配置（炭落とし事故の匂いが店に残る）
+    if (state.day === 6 && !state.flags._ev2_smell) {
+      state.flags._ev2_smell = true;
+      return playDialogue("ch2_lingering_smell", finishDay);
+    }
     if (state.day === 7 && !state.flags._ev2_ageha) {
       state.flags._ev2_ageha = true;
       return playDialogue("ch2_pre_tournament_realisation", finishDay, "res://assets/backgrounds/bg_tournament_stage.png");
+    }
+    // DAY10: スミさんの沈黙（連勝が始まった頃。ch4特訓「同じ顔をさせたくなかった」の前振り）
+    if (state.day === 10 && !state.flags._ev2_sumi) {
+      state.flags._ev2_sumi = true;
+      return playDialogue("ch2_sumi_silence", finishDay);
     }
     if (state.day === 12 && !state.flags._ev2_minto) {
       state.flags._ev2_minto = true;
@@ -1329,6 +1377,12 @@ function endDay() {
   if (state.day === 2 && !state.flags._ev_salaryman) {
     state.flags._ev_salaryman = true;
     return playDialogue("ch1_salaryman_regular", finishDay, TONARI);
+  }
+  // DAY4: あげはカメオ（謎のギャルが荷物を拾ってくれる）。ホワイトグミベアの残り香が
+  // ch2初対面（ch2_rivals_first_sight）で回収される伏線
+  if (state.day === 4 && !state.flags._ev_ageha_cameo) {
+    state.flags._ev_ageha_cameo = true;
+    return playDialogue("ch1_ageha_encounter", finishDay, "res://assets/backgrounds/bg_street_night.png");
   }
   // DAY7夜（折り返し）: 中間チェック。スミさんが「素の一台」を講評し、残り日数に目的を作る
   if (state.day === 7 && !state.flags._ev_day3_check) {
@@ -1383,9 +1437,15 @@ function endDay() {
 }
 
 // --- バイト
-function doBaito() {
+function doBaito(afterCameo) {
   visitContextChar = null;
   if (window.SFX) SFX.bgm("tonari");
+  // 2回目のバイトに一度だけ: 後の章のライバル（零-REI-）が正体を伏せたV系の客として来店。
+  // ch2決勝・ch3で「あの時の客」と繋がるカメオ伏線
+  if (state.chapter === 1 && !state.flags._ev_rei_cameo && (state.usedBaito || []).length >= 1) {
+    state.flags._ev_rei_cameo = true;
+    return playDialogue("ch1_rei_cameo", () => doBaito(true), "res://assets/backgrounds/bg_tonari_inside.png");
+  }
   let pool = D.baito_events.filter((e) => !state.usedBaito.includes(e.id));
   if (pool.length === 0) { state.usedBaito = []; pool = D.baito_events.slice(); }
   const ev = pool[Math.floor(Math.random() * pool.length)];
@@ -1393,7 +1453,9 @@ function doBaito() {
   const basePay = ev.base_pay || D.baito_settings.base_pay || 2500;
 
   const lines = [
-    { speaker: "", face: "", text: "今日はtonariでバイト。エプロンを締めて、カウンターに立つ。" },
+    afterCameo
+      ? { speaker: "", face: "", text: "──不思議な客を見送って、シフトに戻る。" }
+      : { speaker: "", face: "", text: "今日はtonariでバイト。エプロンを締めて、カウンターに立つ。" },
     { speaker: "", face: "", text: ev.text },
   ];
   const branches = {};
@@ -1517,12 +1579,19 @@ function doChoizap() {
 // --- ショップ（行動を消費しない）
 function showShop() {
   visitContextChar = null;
+  // ch2の初回来店時に一度だけ: ch3ライバル・スティーブが客としてカメオ
+  // （Dr.fookahは海外メーカー代理店＝国際勢の自然な立ち寄り先）
+  if (state.chapter === 2 && state.phase === "daily" && !state.flags._ev_steve_cameo) {
+    state.flags._ev_steve_cameo = true;
+    return playDialogue("ch2_steve_cameo", () => showShop(), "res://assets/backgrounds/bg_shop.png");
+  }
   showScreen("#screen-shop");
   if (window.SFX) SFX.open();
   $("#shop-money").textContent = `所持金 ${state.money.toLocaleString()}円`;
   const list = $("#shop-list");
   list.innerHTML = "";
-  const TYPE_ORDER = ["bowl", "hms", "charcoal"];
+  // 家シーシャ一式は第2章から店頭に並ぶ
+  const TYPE_ORDER = state.chapter >= 2 ? ["bowl", "hms", "charcoal", "homeware"] : ["bowl", "hms", "charcoal"];
   for (const type of TYPE_ORDER) {
     const label = document.createElement("p");
     label.className = "setup-group-label";
@@ -1530,7 +1599,7 @@ function showShop() {
     list.appendChild(label);
     const grid = document.createElement("div");
     grid.className = "spot-list";
-    for (const e of D.equipment.filter((x) => x.type === type)) {
+    for (const e of D.equipment.filter((x) => x.type === type && (x.chapter_min || 1) <= state.chapter)) {
       const ownedAlready = state.owned.includes(e.id);
       const price = e.price || 0;
       const btn = document.createElement("button");
@@ -1602,6 +1671,7 @@ function doRinVisit() {
 // --- 休む
 function doRest() {
   visitContextChar = null;
+  state.flags._rested_today = true; // 体力に余裕がある日（家シーシャの効きが良くなる）
   playCustom({
     dialogue_id: "rest_home",
     metadata: { bg: "res://assets/backgrounds/bg_home.png" },
@@ -1613,15 +1683,58 @@ function doRest() {
   }, endAction);
 }
 
+// --- 家シーシャ（第2章〜・home_rig_set 所持時）
+// 寝る前の一服でステータスが少し伸びる。作る工程は遊ばせない（一服の演出だけ）。
+// バランス: 葉代600円／連夜は効果減（毎晩吸うのが最適にならない）／
+// その日「家で休む」を選んでいれば体力に余裕があり効果増。バイトの有無では縛らない
+function maybeHomeShisha(next) {
+  if (state.chapter < 2 || !(state.owned || []).includes("home_rig_set") || state.money < 600) return next();
+  const consecutive =
+    state.homePuffLast &&
+    state.homePuffLast.chapter === state.chapter &&
+    state.homePuffLast.day === state.day - 1;
+  const rested = !!state.flags._rested_today;
+  const amount = consecutive ? 1 : rested ? 3 : 2;
+  // 伸びるのは技術/センス/洞察のうち一番低いもの（詰み防止の追い上げ枠）
+  const stat = ["technique", "sense", "insight"].sort((a, b) => state.stats[a] - state.stats[b])[0];
+  const flavor = consecutive
+    ? "昨日も吸った。今夜のは、ただの習慣の煙だ。……発見は少ない。それでも、悪くない。"
+    : rested
+      ? "今日は体に余裕がある。煙の立ち方が、いつもよりよく見える。──ひとつ、いい気づきがあった。"
+      : "ゆっくり一服。自分の煙を、自分のためだけに吸う時間。";
+  playCustom({
+    dialogue_id: "home_shisha_night",
+    metadata: { bg: "res://assets/backgrounds/bg_home.png" },
+    lines: [
+      { speaker: "", face: "", text: "帰宅。部屋の隅で、自分の台が待っている。" },
+      { type: "choice", choices: [
+        { text: "寝る前に一服していく（葉代600円）", next: "puff" },
+        { text: "今日はもう寝る", next: "sleep" },
+      ] },
+    ],
+    branches: {
+      puff: [
+        { speaker: "", face: "", text: "自分の台に火を入れる。誰のためでもない、寝る前の一杯。" },
+        { speaker: "", face: "", text: flavor },
+        { type: "apply", stats: { [stat]: amount }, money: -600 },
+      ],
+      sleep: [
+        { speaker: "", face: "", text: "台にカバーを掛けて、布団に入った。" },
+      ],
+    },
+  }, next);
+}
+
 // ---------------------------------------------------------------- 練習ミニゲーム
 // 練習＝本番の部分練習。大会の実ミニゲームをそのまま1種選んで反復する。
 // 自己ベスト（practiceBest 0〜2）は大会本番のスコアボーナスになる
 const PRACTICE_DRILLS = [
   { id: "foil", label: "穴あけ反復", desc: "本番と同じリズムで6つ穴を開ける", stats: ["technique", "sense"] },
   { id: "coalfire", label: "炭起こしの見極め", desc: "全体が熾きた一瞬を逃さず乗せる", stats: ["guts", "technique"] },
-  { id: "pull", label: "引きの精度", desc: "仕上げの一服をゾーンで止める", stats: ["sense", "technique"] },
+  { id: "steam", label: "蒸らしの胆力", desc: "蒸らしの間、雑念の弾幕を躱し続ける訓練", stats: ["insight", "guts"] },
+  { id: "pull", label: "吸い出しの温度感", desc: "上げ吸い・下げ吸いを使い分けて適温に合わせる", stats: ["sense", "technique"] },
   { id: "focus", label: "集中トレーニング", desc: "雑念を振り払う訓練。本番の野次対策", stats: ["insight", "guts"] },
-  { id: "serve", label: "提供イメトレ", desc: "お客さんへの出し方・説明を組み立てる", stats: ["charm", "insight"] },
+  { id: "serve", label: "提供イメトレ", desc: "お客さんへの出し方・佇まいを組み立てる", stats: ["charm", "insight"] },
 ];
 
 let gauge = { raf: 0, pos: 0, dir: 1, speed: 0.9, running: false, onStop: null, zone: [0.56, 0.78] };
@@ -1748,16 +1861,20 @@ const COALS = [
   { id: "four", label: "炭4個", desc: "高火力。焦げのリスクと隣り合わせ" },
 ];
 const STEAMS = [
-  { id: 2, label: "2分", desc: "せっかち。立ち上がりが不安定" },
-  { id: 5, label: "5分", desc: "基本の蒸らし" },
-  { id: 8, label: "8分", desc: "じっくり。香りが開く" },
-  { id: 12, label: "12分", desc: "長すぎるかもしれない" },
+  { id: 2, label: "2分", desc: "せっかち。立ち上がりが不安定", dodge: 6 },
+  { id: 5, label: "5分", desc: "基本の蒸らし", dodge: 9 },
+  { id: 8, label: "8分", desc: "じっくり。香りが開く", dodge: 12 },
+  { id: 12, label: "12分", desc: "長すぎるかもしれない", dodge: 16 },
 ];
-const PRESENTS = [
-  { id: "taste", label: "味で語る", theme: "fruity" },
-  { id: "smoke", label: "煙の質で語る", theme: "high_heat" },
-  { id: "ease", label: "吸いやすさで語る", theme: "relax" },
-  { id: "unique", label: "余韻と独自性で語る", theme: "aftertaste" },
+// 蒸らし中の雑念弾幕（東方/Undertale風の回避ゲーム）に流れる言葉。
+// 第2章はスランプ期の嫉妬ワードに差し替わる
+const DODGE_WORDS = [
+  "手元、見られてる……", "時間が足りないかも", "隣の煙、もう上がってる",
+  "失敗したらどうしよう", "パッキーの野次", "審査員の視線", "炭、熾きてたかな",
+];
+const DODGE_WORDS_CH2 = [
+  "ヴォルクの精度", "組長の覚悟", "あげはのバイブス", "なるの配合ノート",
+  "“誰の煙だ？”", "採点表", "正解はどれだ", "味が、思い出せない",
 ];
 const RIVALS = [
   { id: "naru", name: "なる", base: 72 },
@@ -1765,7 +1882,7 @@ const RIVALS = [
   { id: "minto", name: "みんと", base: 62 },
 ];
 
-const EQUIP_TYPE_LABELS = { bowl: "ボウル", hms: "ヒートマネジメント", charcoal: "炭" };
+const EQUIP_TYPE_LABELS = { bowl: "ボウル", hms: "ヒートマネジメント", charcoal: "炭", homeware: "家シーシャ" };
 const FOCUS_WORDS = [
   "手元、見られてる……",
   "パッキーの野次がうるさい",
@@ -1810,13 +1927,14 @@ function pakkiLive(result) {
   if (pool.length) ticker(pool[Math.floor(Math.random() * pool.length)]);
 }
 
-// 大会は3ラウンド制: R1=組み立て（setup〜steam）→ R2=調整（adjust＋focus）→ R3=提供（pull/present）。
-// ラウンドの切れ目で ch1_tournament_r1〜r3_end の会話が挟まる
+// 大会は3ラウンド制: R1=組み立て（setup〜steam）→ R2=調整（adjust＋focus）→ R3=提供（吸い出し）。
+// ラウンドの切れ目で ch1_tournament_r1〜r3_end の会話が挟まる。
+// プレゼン工程は廃止（2026-06-12 オーナー決定）。提供の佇まいは魅力としてスコアに残る
 const STEP_FLOW = [
   ["setup_bowl", "SETUP"], ["setup_hms", "SETUP"], ["setup_charcoal", "SETUP"],
   ["theme", "FLAVOR"], ["mix", "MIX"], ["pack", "PACK"], ["foil", "FOIL"],
   ["coalfire", "COAL"], ["coal", "HEAT"], ["steam", "STEAM"],
-  ["adjust", "ROUND2"], ["focus", "FOCUS"], ["pull", "PULL"], ["present", "PRESENT"],
+  ["adjust", "ROUND2"], ["focus", "FOCUS"], ["pull", "PULL"],
 ];
 // 前日リハーサル: 短縮の通し（穴あけ・炭起こし・集中は無難な値で省略）
 const REHEARSAL_FLOW = [
@@ -1826,6 +1944,7 @@ const REHEARSAL_FLOW = [
 const DRILL_FLOWS = {
   foil: [["foil", "FOIL"]],
   coalfire: [["coalfire", "COAL"]],
+  steam: [["steam", "STEAM"]],
   pull: [["pull", "PULL"]],
   focus: [["focus", "FOCUS"]],
 };
@@ -1836,11 +1955,18 @@ const FLAVOR_COLORS = {
   nightside_earlgrey: "#b78d4e",
 };
 
+// うしろめたさ（guilt）の段階。数値は見せず、リグの煙の濁りだけで表現する。
+// つむぎの「……今日の色、わたしの知らない色」検知と同じものを、プレイヤーだけが先に見ている
+function guiltTier() {
+  const g = (state && state.guilt) || 0;
+  return g >= 5 ? 3 : g >= 3 ? 2 : g >= 1 ? 1 : 0;
+}
+
 function buildRig() {
   const rig = $("#tn-rig");
   rig.innerHTML = `
     <div class="rig-label">WORKBENCH</div>
-    <div class="rig">
+    <div class="rig${guiltTier() ? ` guilt-${guiltTier()}` : ""}">
       <div class="rig-smokes"></div>
       <div class="rig-coals"></div>
       <div class="rig-foil">${'<span class="rig-hole"></span>'.repeat(6)}</div>
@@ -1945,7 +2071,7 @@ function beginMaking(mode) {
     bowl: null, hms: null, charcoal: null,
     theme: null, mix: {}, pack: null,
     foilHits: 0, foilDone: false, coalFire: null, coal: null, steam: null,
-    focusCleared: 0, pull: null, present: null, step: "",
+    steamHits: null, focusCleared: 0, pull: null, temp: null, pullCount: 0, step: "",
   };
   stopRigEffects();
   buildRig();
@@ -1971,7 +2097,7 @@ function startDrill(kind) {
     bowl: null, hms: null, charcoal: null,
     theme: THEMES[0], mix: {}, pack: null,
     foilHits: 0, foilDone: false, coalFire: null, coal: null, steam: null,
-    focusCleared: 0, pull: null, present: null, step: "",
+    steamHits: null, focusCleared: 0, pull: null, temp: null, pullCount: 0, step: "",
   };
   stopRigEffects();
   buildRig();
@@ -2067,33 +2193,26 @@ function tournamentStep(step) {
     return;
   }
   if (step === "steam") {
-    const body = tnPanel("蒸らし時間", "スミさんの教え:「蒸らしは基本5〜8分。焦るな」");
+    const body = tnPanel("蒸らし時間", "スミさんの教え:「蒸らしは基本5〜8分。焦るな」 ──蒸らしの間、雑念に捕まらないこと。");
     for (const s of STEAMS) body.appendChild(optionButton(s.label, s.desc, () => {
       tt.steam = s.id;
       if (window.SFX) SFX.smoke();
       startRigSmoke(750);
-      // 大会以外・ch2の各試合は観客の会話なし（ラウンド会話はch1専用テキスト）
-      if (tt.mode !== "tournament" || state.chapter !== 1) return tnNext("steam");
-      // ラウンド1（組み立て）終了 → 観客の会話 → R1講評 → 中間発表 → ラウンド2（調整）へ
-      playDialogue("ch1_tournament_match", () =>
-        playDialogue("ch1_tournament_r1_end", () => showStandings(1, () => tournamentStep("adjust")), "res://assets/backgrounds/bg_tournament_stage.png"),
-        "res://assets/backgrounds/bg_tournament_stage.png");
+      // 蒸らしの間は「雑念の弾幕」回避。長い蒸らしほど雑念との我慢比べも長い
+      runSteamDodge(s, () => {
+        // 大会以外・ch2の各試合は観客の会話なし（ラウンド会話はch1専用テキスト）
+        if (tt.mode !== "tournament" || state.chapter !== 1) return tnNext("steam");
+        // ラウンド1（組み立て）終了 → 観客の会話 → R1講評 → 中間発表 → ラウンド2（調整）へ
+        playDialogue("ch1_tournament_match", () =>
+          playDialogue("ch1_tournament_r1_end", () => showStandings(1, () => tournamentStep("adjust")), "res://assets/backgrounds/bg_tournament_stage.png"),
+          "res://assets/backgrounds/bg_tournament_stage.png");
+      });
     }));
     return;
   }
   if (step === "adjust") return stepAdjust();
   if (step === "focus") return stepFocus();
   if (step === "pull") return stepPull();
-  if (step === "present") {
-    const body = tnPanel("プレゼンテーション", "完成・提供のあとはプレゼン。審査員に何を語る？");
-    for (const p of PRESENTS) body.appendChild(optionButton(p.label, "", () => {
-      tt.present = p;
-      if (state.chapter === 2) return finishCh2Stage();
-      // ラウンド3終了の会話を挟んで結果発表へ
-      playDialogue("ch1_tournament_r3_end", () => finishTournament(), "res://assets/backgrounds/bg_tournament_stage.png");
-    }));
-    return;
-  }
 }
 
 // --- 中間発表（R1/R2後）。審査は厳しめスタートで、南雲の総合印象点が入る
@@ -2130,7 +2249,7 @@ function showStandings(round, next) {
         : "前園「うーん、まだ硬いねえ」。──思ったより、点が伸びない。会場の空気が遠い。")
     : (myRank <= 2
         ? "あの人が最後まで持ち点を残すのは「もう一口吸いたい一台」に全部入れるためだ──と、誰かが囁いた。"
-        : "順位は重い。でも、南雲の持ち点10はまだ誰のものでもない。最後の引きとプレゼンで全部が変わる。");
+        : "順位は重い。でも、南雲の持ち点10はまだ誰のものでもない。最後の吸い出しと提供で全部が変わる。");
   const btn = document.createElement("button");
   btn.className = "primary-btn";
   btn.textContent = round === 1 ? "ラウンド2へ" : "最終ラウンドへ";
@@ -2376,11 +2495,25 @@ function activeRegulation() {
   return null;
 }
 
+// 選択中ボウルの容量（g）。詰める量の上限になる。未選択（バイト・チュートリアル等）は基本の12g
+function bowlCapacity() {
+  const b = D.equipment.find((e) => e.id === tt.bowl);
+  return (b && b.capacity) || 12;
+}
+// 葉代（1gあたり）。パック価格の1/10を目安に丸める。価格0（凛のサンプル等）は無償
+function mixGramCost(f) {
+  return Math.round((f.price || 0) / 10 / 5) * 5;
+}
+
 function stepMix() {
   const reg = activeRegulation();
+  const cap = bowlCapacity();
+  // 葉は自前で買って持ち込む（大会のみ）。店の仕込みで作るバイト等は店持ち
+  const charged = tt.mode === "tournament";
   const body = tnPanel(
     "フレーバー選択 & ミックス",
-    reg ? `合計12g・1〜3種類。レギュレーション: ${reg.label}` : "合計12gになるように配合しろ。1〜3種類まで。"
+    (reg ? `レギュレーション: ${reg.label}　` : "") +
+      `合計12g〜${cap}g・1〜3種類。多く詰むほど味の持ちは良くなるが、その分の熱${charged ? "と葉代" : ""}が要る。`
   );
   const regFlavorName = reg ? ((D.flavors.find((f) => f.id === reg.flavor) || {}).short_name || reg.flavor).replace(/^AF /, "") : "";
   if (reg) {
@@ -2412,19 +2545,30 @@ function stepMix() {
   goBtn.textContent = "この配合でいく";
   const regGrams = () => (reg ? tt.mix[reg.flavor] || 0 : 0);
   const regOk = () => !reg || (regGrams() >= (reg.min || 0) && regGrams() <= (reg.max ?? 99));
-  const valid = () => total() === 12 && regOk();
-  goBtn.addEventListener("click", () => { if (valid()) tnNext("mix"); });
+  const mixCost = () =>
+    Object.entries(tt.mix).reduce((sum, [id, g]) => {
+      const f = D.flavors.find((x) => x.id === id);
+      return sum + (f ? mixGramCost(f) * g : 0);
+    }, 0);
+  const valid = () => total() >= 12 && total() <= cap && regOk();
+  goBtn.addEventListener("click", () => {
+    if (!valid()) return;
+    if (charged && mixCost() > 0) addMoney(-mixCost()); // 葉代（買って持ち込んだ分）
+    tnNext("mix");
+  });
 
   const regName = reg ? ((D.flavors.find((f) => f.id === reg.flavor) || {}).short_name || reg.flavor) : "";
   const refresh = () => {
     let regText = "";
     if (reg) regText = reg.max === 0 ? `　${regName}: 入れない約束` : `　${regName} ${regGrams()}/${reg.min}g`;
-    totalLabel.textContent = `合計 ${total()} / 12g` + regText;
+    const costText = charged ? `　葉代 ${mixCost().toLocaleString()}円` : "";
+    totalLabel.textContent = `合計 ${total()}g / ${cap}g` + regText + costText;
     totalLabel.classList.toggle("ok", valid());
     goBtn.disabled = !valid();
     goBtn.textContent =
-      !regOk() && total() === 12
+      !regOk() && total() >= 12
         ? (tt.mode === "baito" ? "リクエストと違う……" : "課題フレーバーが足りない")
+        : total() < 12 ? "最低12gまで詰む"
         : "この配合でいく";
   };
 
@@ -2437,7 +2581,8 @@ function stepMix() {
     row.className = "mix-row";
     const info = document.createElement("div");
     info.className = "mix-info";
-    info.innerHTML = `<span class="spot-name">${f.short_name || f.name}</span><span class="spot-desc">${tasteSlump ? garble(f.description) : f.description}</span>`;
+    const priceTag = charged && mixGramCost(f) ? ` <span class="mix-price">${mixGramCost(f)}円/g</span>` : charged ? ` <span class="mix-price free">提供品</span>` : "";
+    info.innerHTML = `<span class="spot-name">${f.short_name || f.name}${priceTag}</span><span class="spot-desc">${tasteSlump ? garble(f.description) : f.description}</span>`;
     const ctrl = document.createElement("div");
     ctrl.className = "mix-ctrl";
     const minus = document.createElement("button");
@@ -2457,7 +2602,7 @@ function stepMix() {
     plus.addEventListener("click", () => {
       const kinds = Object.keys(tt.mix);
       if (!tt.mix[f.id] && kinds.length >= 3) { toast("ミックスは3種類まで"); return; }
-      if (total() >= 12) return;
+      if (total() >= cap) { toast(`このボウルは${cap}gまで`); return; }
       tt.mix[f.id] = (tt.mix[f.id] || 0) + 1;
       if (window.SFX) SFX.pour();
       update();
@@ -2473,59 +2618,322 @@ function stepMix() {
   refresh();
 }
 
+// --- 蒸らし弾幕（雑念よけ）: 蒸らしタイマーが切れるまで、心（♥）を動かして
+// 雑念ワードの弾幕を躱し続ける。実時間は短縮し、画面のタイマーは蒸らし時間を早回しで表示。
+// 被弾は蓄積（tt.steamHits）し、煙の落ち着き＝craftスコアに響く
+function runSteamDodge(steamOpt, onDone) {
+  const duration = steamOpt.dodge || 9;
+  const slump = state.chapter === 2 && state.flags._taste_slump && tt.mode !== "drill";
+  const body = tnPanel(
+    "蒸らし中 ── 雑念を躱せ",
+    slump
+      ? "頭の中が、ざわつく。借り物の言葉が雑念になって飛んでくる──煙のことだけ考えろ。"
+      : "心（♥）をドラッグ（または矢印キー）で動かして雑念を躱せ。被弾するほど煙が落ち着かない。"
+  );
+  const words = slump || (state.chapter === 2 && tt.mode === "tournament") ? DODGE_WORDS_CH2 : DODGE_WORDS;
+  const timer = document.createElement("div");
+  timer.className = "dodge-timer";
+  timer.innerHTML = `<span class="dodge-timer-label"></span><div class="dodge-timer-bar"><div class="dodge-timer-fill"></div></div>`;
+  const arena = document.createElement("div");
+  arena.className = "dodge-arena";
+  const soul = document.createElement("div");
+  soul.className = "dodge-soul";
+  soul.textContent = "♥";
+  arena.appendChild(soul);
+  const result = document.createElement("div");
+  result.className = "practice-result";
+  body.append(timer, arena, result);
+
+  const label = timer.querySelector(".dodge-timer-label");
+  const fill = timer.querySelector(".dodge-timer-fill");
+  let W = 760, H = 230;
+  let sx = W / 2, sy = H * 0.62;
+  let hits = 0, invuln = 0, remain = duration, last = performance.now();
+  let spawnIn = 0.6, raf = 0, ended = false;
+  const bullets = [];
+  const keys = {};
+  // 洞察が高いほど、雑念の湧きがわずかに穏やか（そこそこ有利、程度）
+  const spawnEvery = (slump ? 0.4 : 0.52) + Math.min(0.14, state.stats.insight / 500);
+  const bulletSpeed = slump ? 132 : 112;
+
+  const measure = () => {
+    W = arena.clientWidth || W;
+    H = arena.clientHeight || H;
+    sx = Math.min(sx, W - 12);
+    sy = Math.min(sy, H - 12);
+  };
+  const onPointer = (e) => {
+    const r = arena.getBoundingClientRect();
+    sx = Math.max(10, Math.min(W - 10, e.clientX - r.left));
+    sy = Math.max(10, Math.min(H - 10, e.clientY - r.top));
+    e.preventDefault();
+  };
+  const onKeyDown = (e) => {
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d"].includes(e.key)) {
+      keys[e.key] = true;
+      e.preventDefault();
+    }
+  };
+  const onKeyUp = (e) => { delete keys[e.key]; };
+  arena.addEventListener("pointermove", onPointer);
+  arena.addEventListener("pointerdown", onPointer);
+  document.addEventListener("keydown", onKeyDown);
+  document.addEventListener("keyup", onKeyUp);
+
+  const spawnBullet = () => {
+    const el = document.createElement("span");
+    el.className = "dodge-bullet";
+    el.textContent = words[Math.floor(Math.random() * words.length)];
+    arena.appendChild(el);
+    // 四辺のどこかから、心の位置めがけて（±ブレ）流れてくる
+    const side = Math.floor(Math.random() * 4);
+    let x, y;
+    if (side === 0) { x = -30; y = Math.random() * H; }
+    else if (side === 1) { x = W + 30; y = Math.random() * H; }
+    else if (side === 2) { x = Math.random() * W; y = -20; }
+    else { x = Math.random() * W; y = H + 20; }
+    const ang = Math.atan2(sy - y, sx - x) + (Math.random() * 0.9 - 0.45);
+    const sp = bulletSpeed * (0.75 + Math.random() * 0.6);
+    bullets.push({ el, x, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp });
+  };
+
+  const end = () => {
+    if (ended) return;
+    ended = true;
+    cancelAnimationFrame(raf);
+    document.removeEventListener("keydown", onKeyDown);
+    document.removeEventListener("keyup", onKeyUp);
+    for (const b of bullets) b.el.remove();
+    bullets.length = 0;
+    soul.classList.add("done");
+    tt.steamHits = hits;
+    const grade = hits === 0 ? "perfect" : hits <= 2 ? "good" : "miss";
+    showStamp($("#tn-layout .panel"), grade);
+    pakkiLive(grade);
+    result.textContent =
+      hits === 0 ? "──雑念ゼロ。蒸らしの間、煙のことだけを見ていられた。"
+      : hits <= 2 ? "──少し心がざわついた。でも、致命傷じゃない。"
+      : hits <= 4 ? "──雑念に何度か捕まった。煙が少し落ち着かない。"
+      : "──頭の中が騒がしいまま、蒸らしが終わってしまった……。";
+    const next = document.createElement("button");
+    next.className = "primary-btn";
+    next.textContent = "次へ";
+    next.addEventListener("click", onDone);
+    result.appendChild(document.createElement("br"));
+    result.appendChild(next);
+  };
+
+  const tick = (now) => {
+    if (ended) return;
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    measure();
+    remain -= dt;
+    invuln = Math.max(0, invuln - dt);
+    // タイマー表示は「蒸らしn分」を早回しした残り時間
+    const dispSec = Math.max(0, Math.round(steamOpt.id * 60 * (remain / duration)));
+    label.textContent = `蒸らし残り ${Math.floor(dispSec / 60)}:${String(dispSec % 60).padStart(2, "0")}`;
+    fill.style.width = `${Math.max(0, (remain / duration) * 100)}%`;
+    // キー移動
+    const v = 240 * dt;
+    if (keys.ArrowLeft || keys.a) sx -= v;
+    if (keys.ArrowRight || keys.d) sx += v;
+    if (keys.ArrowUp || keys.w) sy -= v;
+    if (keys.ArrowDown || keys.s) sy += v;
+    sx = Math.max(10, Math.min(W - 10, sx));
+    sy = Math.max(10, Math.min(H - 10, sy));
+    soul.style.transform = `translate(${sx - 8}px, ${sy - 9}px)`;
+    // 弾の生成と移動
+    spawnIn -= dt;
+    if (spawnIn <= 0) { spawnIn = spawnEvery; spawnBullet(); }
+    for (let i = bullets.length - 1; i >= 0; i--) {
+      const b = bullets[i];
+      b.x += b.vx * dt;
+      b.y += b.vy * dt;
+      b.el.style.transform = `translate(${b.x}px, ${b.y}px)`;
+      if (b.x < -80 || b.x > W + 80 || b.y < -60 || b.y > H + 60) {
+        b.el.remove();
+        bullets.splice(i, 1);
+        continue;
+      }
+      if (invuln <= 0 && Math.hypot(b.x - sx, b.y - sy) < 17) {
+        hits++;
+        invuln = 0.85;
+        soul.classList.add("hit");
+        arena.classList.add("flash");
+        setTimeout(() => { soul.classList.remove("hit"); arena.classList.remove("flash"); }, 320);
+        if (window.SFX) SFX.click();
+        b.el.remove();
+        bullets.splice(i, 1);
+      }
+    }
+    if (remain <= 0) return end();
+    raf = requestAnimationFrame(tick);
+  };
+  requestAnimationFrame((now) => { last = now; measure(); raf = requestAnimationFrame(tick); });
+}
+
+// --- 吸い出し（提供前の温度立ち上げ）: 炭を置いて蒸らした後、提供前に何度か吸って
+// ボウルの温度を整える工程。左右に走るゲージを止めた位置で吸い方が決まる——
+// 左側=上げ吸い（温度UP）／中央=キープ／右側=下げ吸い（温度DOWN）。
+// 最低2回・3回まではノーペナルティ。4回目以降も吸えるが葉が痩せる（craft減点）。
+// やめ時はプレイヤーが選ぶ
+const PULL_MIN = 2, PULL_MAX = 5, PULL_SAFE = 3;
+const PULL_TARGET = [0.63, 0.79]; // 温度バー上の適温ゾーン（0..1）
+const PULL_DELTA = 0.13; // 1回の吸いで動かせる最大温度
+
+function pullStartTemp() {
+  const totalG = Object.values(tt.mix).reduce((a, b) => a + b, 0) || 12;
+  let t = 0.5;
+  t += { two: -0.07, triangle: 0, four: 0.07 }[tt.coal] ?? -0.04;
+  t += { perfect: 0.04, good: 0, miss: -0.07 }[tt.coalFire] ?? 0;
+  t += { 2: -0.08, 5: 0, 8: 0.03, 12: 0.07 }[tt.steam] ?? 0;
+  t -= Math.max(0, totalG - 12) * 0.012; // 葉が多いほど温まりは遅い
+  t += Math.random() * 0.06 - 0.03;
+  return Math.max(0.16, Math.min(0.9, t));
+}
+
 function stepPull() {
-  const body = tnPanel("引き（PULL）", "煙の仕上がりを確かめる最後の一服。ゾーンで止めろ！");
+  const body = tnPanel(
+    "吸い出し（温度合わせ）",
+    "提供前に何度か吸って、ボウルの温度を立ち上げる。左で止めれば上げ吸い、右なら下げ吸い、真ん中はキープ。" +
+      `最低${PULL_MIN}回・${PULL_SAFE}回までは無傷、それ以上は葉が痩せる。やめ時は自分で決めろ。`
+  );
+  tt.temp = pullStartTemp();
+  tt.pullCount = 0;
+
+  const tempWrap = document.createElement("div");
+  tempWrap.className = "temp-wrap";
+  tempWrap.innerHTML = `
+    <div class="temp-labels"><span>ぬるい</span><span>適温</span><span>焦げる</span></div>
+    <div class="temp-bar"><div class="temp-zone"></div><div class="temp-marker"></div></div>`;
+  const zoneEl = tempWrap.querySelector(".temp-zone");
+  zoneEl.style.left = `${PULL_TARGET[0] * 100}%`;
+  zoneEl.style.width = `${(PULL_TARGET[1] - PULL_TARGET[0]) * 100}%`;
+  const marker = tempWrap.querySelector(".temp-marker");
+
   const wrap = document.createElement("div");
   wrap.className = "gauge-wrap";
   wrap.innerHTML = `
-    <div class="gauge-bar"><div class="gauge-zone" id="tn-gauge-zone"></div><div class="gauge-needle" id="tn-gauge-needle"></div></div>
-    <button class="primary-btn" id="tn-gauge-stop">止める！</button>
-    <div class="practice-result" id="tn-gauge-result"></div>`;
-  body.appendChild(wrap);
-  // センスが高いほどゾーンが広い
-  const width = 0.16 + state.stats.sense / 800;
-  const left = 0.5 + (Math.random() * 0.2 - 0.1) - width / 2;
-  const zone = [left, left + width];
-  const zoneEl = wrap.querySelector("#tn-gauge-zone");
-  zoneEl.style.left = `${zone[0] * 100}%`;
-  zoneEl.style.width = `${(zone[1] - zone[0]) * 100}%`;
-  let pos = 0, dir = 1, running = true, raf = 0;
-  const speed = Math.max(0.8, 1.15 - state.stats.technique / 350);
-  const needle = wrap.querySelector("#tn-gauge-needle");
-  let last = performance.now();
+    <div class="pull-bar">
+      <div class="pull-zone up"><span>上げ吸い</span></div>
+      <div class="pull-zone keep"><span>キープ</span></div>
+      <div class="pull-zone down"><span>下げ吸い</span></div>
+      <div class="gauge-needle" id="tn-pull-needle"></div>
+    </div>
+    <p class="tn-hint" id="tn-pull-count"></p>
+    <button class="primary-btn" id="tn-pull-go">吸う！</button>
+    <button class="primary-btn ghost" id="tn-pull-serve" disabled></button>
+    <div class="practice-result" id="tn-pull-result"></div>`;
+  body.append(tempWrap, wrap);
+
+  const needle = wrap.querySelector("#tn-pull-needle");
+  const countEl = wrap.querySelector("#tn-pull-count");
+  const goBtn = wrap.querySelector("#tn-pull-go");
+  const serveBtn = wrap.querySelector("#tn-pull-serve");
+  const result = wrap.querySelector("#tn-pull-result");
+  serveBtn.textContent =
+    { tutorial: "スミさんに出す", rehearsal: "スミさんに出す", baito: "お客さんに出す", drill: "結果を見る" }[tt.mode] || "提供する";
+
+  const updateTemp = () => { marker.style.left = `${Math.max(0, Math.min(1, tt.temp)) * 100}%`; };
+  const updateCount = () => {
+    countEl.textContent =
+      `吸い出し ${tt.pullCount} / ${PULL_MAX} 回（最低${PULL_MIN}回・${PULL_SAFE}回までは無傷）` +
+      (tt.pullCount >= PULL_SAFE ? "　⚠ ここから先は葉が痩せる" : "");
+    countEl.classList.toggle("tx-warn", tt.pullCount >= PULL_SAFE);
+    serveBtn.disabled = tt.pullCount < PULL_MIN;
+  };
+  updateTemp();
+  updateCount();
+
+  // ゲージは左→右に走り、右端まで行ったらまた左から（折り返さない）
+  let pos = 0, running = true, raf = 0, last = performance.now();
+  const speed = Math.max(0.42, 0.56 - state.stats.technique / 600); // 技術が高いほど少し遅い
   const tick = (now) => {
     if (!running) return;
     const dt = (now - last) / 1000;
     last = now;
-    pos += dir * speed * dt;
-    if (pos >= 1) { pos = 1; dir = -1; }
-    if (pos <= 0) { pos = 0; dir = 1; }
+    pos += speed * dt;
+    if (pos > 1) pos -= 1;
     needle.style.left = `${pos * 100}%`;
     raf = requestAnimationFrame(tick);
   };
   raf = requestAnimationFrame(tick);
-  wrap.querySelector("#tn-gauge-stop").addEventListener("click", (e) => {
+
+  // テスト用フック: 自動プレイが針位置と狙いゾーンを読むためのデバッグ窓
+  window.__pullDebug = () => {
+    const center = (PULL_TARGET[0] + PULL_TARGET[1]) / 2;
+    const need = Math.max(-PULL_DELTA, Math.min(PULL_DELTA, center - tt.temp));
+    let want;
+    if (need > 0.005) want = 0.35 * (1 - need / PULL_DELTA);
+    else if (need < -0.005) want = 0.65 + 0.35 * (-need / PULL_DELTA);
+    else want = 0.5;
+    return {
+      pos, temp: tt.temp, count: tt.pullCount,
+      canServe: tt.pullCount >= PULL_MIN,
+      tempOk: tt.temp >= PULL_TARGET[0] && tt.temp <= PULL_TARGET[1],
+      wantZone: [Math.max(0, want - 0.08), Math.min(1, want + 0.08)],
+    };
+  };
+
+  goBtn.addEventListener("click", () => {
+    if (tt.pullCount >= PULL_MAX) return;
+    tt.pullCount++;
+    // 止めた位置で吸い方が決まる: 左=上げ／中央=キープ／右=下げ
+    let delta = 0, label = "キープ。温度は動かさない";
+    if (pos < 0.35) {
+      delta = ((0.35 - pos) / 0.35) * PULL_DELTA;
+      label = "上げ吸い！　炭の熱がボウルに乗る";
+    } else if (pos > 0.65) {
+      delta = -((pos - 0.65) / 0.35) * PULL_DELTA;
+      label = "下げ吸い。熱を逃して落ち着かせる";
+    }
+    tt.temp = Math.max(0, Math.min(1, tt.temp + delta + (Math.random() * 0.024 - 0.012)));
+    updateTemp();
+    updateCount();
+    result.textContent = `──${label}`;
+    // 4回目以降は吸いすぎ: 提供前に葉が痩せていく（craftScore で減点）
+    if (tt.pullCount > PULL_SAFE) result.textContent += "　（……吸いすぎだ。味の厚みが、少しずつ逃げていく）";
+    if (window.SFX) SFX.bubble();
+    spawnBubbles(7);
+    startRigSmoke(620);
+    if (tt.pullCount >= PULL_MAX) {
+      goBtn.disabled = true;
+      result.textContent += "　もう提供するしかない。";
+    }
+  });
+
+  serveBtn.addEventListener("click", () => {
     running = false;
     cancelAnimationFrame(raf);
-    e.target.disabled = true;
-    const center = (zone[0] + zone[1]) / 2, half = (zone[1] - zone[0]) / 2;
-    tt.pull = Math.abs(pos - center) <= half * 0.4 ? "perfect" : pos >= zone[0] && pos <= zone[1] ? "good" : "miss";
+    goBtn.disabled = true;
+    serveBtn.disabled = true;
+    const [a, b] = PULL_TARGET;
+    const center = (a + b) / 2, half = (b - a) / 2;
+    tt.pull = Math.abs(tt.temp - center) <= half * 0.45 ? "perfect" : tt.temp >= a && tt.temp <= b ? "good" : "miss";
     if (window.SFX) SFX.bubble();
     spawnBubbles(tt.pull === "perfect" ? 14 : tt.pull === "good" ? 9 : 4);
     startRigSmoke(tt.pull === "miss" ? 900 : 320);
     showStamp($("#tn-layout .panel"), tt.pull);
     pakkiLive(tt.pull);
-    const msgs = {
-      perfect: "──完璧な一服。煙が重く、甘く、まとまっている。",
-      good: "──いい煙だ。狙った味に近い。",
-      miss: "──少しズレた。煙が軽い。……それでも、出すしかない。",
-    };
-    wrap.querySelector("#tn-gauge-result").textContent = msgs[tt.pull];
+    result.textContent = {
+      perfect: "──完璧な温度。煙が重く、甘く、まとまっている。",
+      good: "──いい温度だ。狙った味に近い。",
+      miss: tt.temp < a
+        ? "──少しぬるい。甘さが眠ったまま……それでも、出すしかない。"
+        : "──熱が走りすぎた。焦げの気配が混じる……それでも、出すしかない。",
+    }[tt.pull];
     const nextBtn = document.createElement("button");
     nextBtn.className = "primary-btn";
-    nextBtn.textContent =
-      { tutorial: "スミさんに出す", rehearsal: "スミさんに出す", drill: "結果を見る" }[tt.mode] || "提供する";
-    nextBtn.addEventListener("click", () => tnNext("pull"));
+    nextBtn.textContent = "次へ";
+    nextBtn.addEventListener("click", () => {
+      if (tt.mode === "tournament") {
+        if (state.chapter === 2) return finishCh2Stage();
+        // ラウンド3終了の会話を挟んで結果発表へ
+        return playDialogue("ch1_tournament_r3_end", () => finishTournament(), "res://assets/backgrounds/bg_tournament_stage.png");
+      }
+      tnNext("pull");
+    });
     wrap.appendChild(nextBtn);
   });
 }
@@ -2585,19 +2993,50 @@ function craftScore() {
   if (tt.pack === "normal") score += 6;
   else if (tt.pack === "fluffy") score += p.weight < 1.0 ? 9 : 3;
   else if (tt.pack === "firm") score += p.weight >= 1.0 ? 9 : 3;
+  // 葉の量（12g基準）× 熱の収支。多く詰むほど味の持ちは良くなるが、必要な熱も増える
+  const totalG = Object.values(tt.mix).reduce((a, b) => a + b, 0) || 12;
+  const extraG = Math.max(0, totalG - 12);
+  const heatPower =
+    ({ two: 2, triangle: 3, four: 4 }[tt.coal] || 3) +
+    (tt.charcoal === "cube_charcoal" ? 1 : 0) +
+    (tt.hms === "amaburst_hms" ? 1 : 0) +
+    (tt.coalFire === "perfect" ? 0.5 : tt.coalFire === "miss" ? -0.5 : 0);
+  const needHeat = totalG <= 13 ? 2 : totalG <= 16 ? 3 : 4;
+  if (extraG > 0) {
+    if (heatPower >= needHeat) {
+      score += Math.min(9, extraG * 1.2);
+      detail.push("多めに詰んだ葉が、味の劣化をゆっくりにした。最後の一口まで輪郭が残る。");
+    } else {
+      score -= 6;
+      detail.push("葉の量に熱が追いつかない。多めに詰んだ分が、温まりきらないまま埋もれた。");
+    }
+  }
   // 炭の配置
   if (tt.coal === "triangle") { score += 8; detail.push("トライアングルの炭が、安定した熱を作った。"); }
   else if (tt.coal === "two") score += 3;
   else if (tt.coal === "four") {
-    if (p.heat >= 1.05) { score += 7; detail.push("高火力に耐えるフレーバーが、力強い煙を生んだ。"); }
+    // 葉が多いボウルは高火力を受け止められる
+    if (p.heat >= 1.05 || totalG >= 15) { score += 7; detail.push("高火力に耐える一台が、力強い煙を生んだ。"); }
     else { score -= 4; detail.push("炭が多すぎた。焦げの気配が混じる。"); }
   }
   // 蒸らし
   if (tt.steam === 5 || tt.steam === 8) { score += 10; detail.push("蒸らしはちょうどいい。香りがきれいに開いた。"); }
   else if (tt.steam === 12) score += 4;
   else { score -= 5; detail.push("蒸らしが短すぎた。立ち上がりが粗い。"); }
-  // 引き
+  // 蒸らし中の雑念（弾幕の被弾数）
+  if (typeof tt.steamHits === "number") {
+    if (tt.steamHits === 0) { score += 6; detail.push("蒸らしの間、心は静かだった。雑念のない煙はまっすぐ立つ。"); }
+    else if (tt.steamHits <= 2) score += 3;
+    else if (tt.steamHits >= 5) { score -= 4; detail.push("蒸らしの間の雑念が、煙に出てしまった。"); }
+  }
+  // 吸い出し（提供時の温度）
   score += { perfect: 12, good: 6, miss: 0 }[tt.pull];
+  // 吸いすぎペナルティ: 4回目以降の吸い出しは提供前に葉を痩せさせる
+  const overPulls = Math.max(0, (tt.pullCount || 0) - 3);
+  if (overPulls > 0) {
+    score -= overPulls * 3;
+    detail.push("提供前に吸いすぎた。葉が痩せて、最初の一口の厚みが削れている。");
+  }
   // ---- 準備の成果（大会本番のみ）----
   if (tt.mode === "tournament") {
     // 練習ドリルの自己ベスト（最大+8）
@@ -2635,18 +3074,17 @@ function finishTournament() {
   const s = state.stats;
   const statScore = (s.technique * 1.2 + s.sense * 1.0 + s.guts * 0.6 + s.charm * 0.8 + s.insight * 1.0) / 4.6;
   const craft = craftScore();
-  let presentBonus = s.charm / 8;
-  if (tt.present.theme === tt.theme.id) presentBonus += 8;
-  // 仲間から教わったプレゼンの学び
+  // プレゼン工程は廃止。提供の所作・佇まいが魅力としてわずかに乗る
+  let serveBonus = s.charm / 10;
   if (state.flags._ev_outing_adam_1) {
-    presentBonus += 2;
-    craft.detail.push("『その煙で誰に何を伝えたいのか』。アダムの問いがプレゼンに芯を通した。");
+    serveBonus += 2;
+    craft.detail.push("『その煙で誰に何を伝えたいのか』。アダムの問いが、提供の一杯に芯を通した。");
   }
   if (state.flags._ev_outing_minto_1) {
-    presentBonus += 2;
-    craft.detail.push("みんと直伝の空気の作り方が、審査員の表情を柔らかくした。");
+    serveBonus += 2;
+    craft.detail.push("みんと直伝の空気の作り方が、提供の瞬間、審査員の表情を柔らかくした。");
   }
-  const base = statScore * 0.55 + craft.score * 0.45 + presentBonus;
+  const base = statScore * 0.55 + craft.score * 0.45 + serveBonus;
 
   const results = RIVALS.map((r) => ({
     id: r.id, name: r.name,
@@ -2863,9 +3301,8 @@ function finishCh2Stage() {
   const s = state.stats;
   const statScore = (s.technique * 1.2 + s.sense * 1.0 + s.guts * 0.6 + s.charm * 0.8 + s.insight * 1.0) / 4.6;
   const craft = craftScore();
-  let presentBonus = s.charm / 8;
-  if (tt.present.theme === tt.theme.id) presentBonus += 8;
-  const base = statScore * 0.55 + craft.score * 0.45 + presentBonus;
+  const serveBonus = s.charm / 10; // プレゼン廃止後は提供の佇まいだけが乗る
+  const base = statScore * 0.55 + craft.score * 0.45 + serveBonus;
   const results = cfg.rivals.map((r) => ({ id: r.id, name: r.name, score: r.base + (Math.random() * 6 - 3) }));
   const topRival = Math.max(...results.map((r) => r.score));
   let playerScore = base;
@@ -3033,13 +3470,13 @@ const BAITO_FLOW = [
 ];
 const TUTORIAL_TIPS = {
   theme: "スミさん「まずは一台のコンセプトだ。今日は好きに選んでいい」",
-  mix: "スミさん「合計12g。最初は2種類くらいが扱いやすいぞ」",
+  mix: "スミさん「基本は12g。ボウルの容量までは盛れるが、多く詰む分は熱も葉代も食うぞ」",
   pack: "スミさん「迷ったらノーマル。フレーバーの重さで変えるんだ」",
   foil: "スミさん「穴は均等に。リズムで開けると揃う」",
   coalfire: "スミさん「炭は全体が赤く熾きてからだ。焦るな」",
   coal: "スミさん「基本はトライアングル。熱が均等に回る」",
-  steam: "スミさん「蒸らしは5〜8分。ここで味が決まる」",
-  pull: "スミさん「最後は自分の肺で確かめろ」",
+  steam: "スミさん「蒸らしは5〜8分。待つ間、余計なことを考えるな。雑念は煙に出る」",
+  pull: "スミさん「提供前の吸い出しで温度を作る。左で止めれば上げ、右なら下げだ。最低2回」",
 };
 
 function startTutorial() {
@@ -3062,6 +3499,7 @@ function finishDrill() {
   let tier;
   if (kind === "foil") tier = tt.foilHits >= 6 ? 2 : tt.foilHits >= 4 ? 1 : 0;
   else if (kind === "coalfire") tier = { perfect: 2, good: 1, miss: 0 }[tt.coalFire] || 0;
+  else if (kind === "steam") tier = tt.steamHits === 0 ? 2 : tt.steamHits <= 2 ? 1 : 0;
   else if (kind === "pull") tier = { perfect: 2, good: 1, miss: 0 }[tt.pull] || 0;
   else tier = tt.focusCleared >= 5 ? 2 : tt.focusCleared >= 3 ? 1 : 0;
   const drill = PRACTICE_DRILLS.find((d) => d.id === kind) || { label: "練習", stats: ["technique", "sense"] };
@@ -3140,6 +3578,10 @@ function finishBaitoOrder() {
     lines: [
       { speaker: "", face: "", text: "──完成。トレイに乗せて、お客さんの席へ運ぶ。" },
       { speaker: "", face: "", text: reaction },
+      // ch2: 慢心と転落の可視化——出来は良くても、客の顔が頭に残らなくなっていく
+      ...(state.chapter === 2
+        ? [{ speaker: "hajime", face: "normal", text: "（……あれ。いま帰ったお客さんの顔、もう思い出せない。出来は悪くなかった、はずなのに）" }]
+        : []),
       { speaker: "", face: "", text: tier === "great" ? "閉店後、スミさんが黙って親指を立てて、その日の給料に売上ボーナスを乗せてくれた。" : tier === "good" ? "スミさんが「上出来だ」と、給料に少し色をつけてくれた。" : "スミさんは何も言わなかったが、まかないがいつもより少しだけ豪華だった。" },
       { type: "apply", stats: { technique: 2 }, money: tip },
     ],
@@ -3162,6 +3604,7 @@ function finishTutorial() {
     lines: [
       { speaker: "", face: "", text: "──煙を一口、スミさんに渡す。ゆっくりと吐き出して、しばらく目を閉じた。" },
       { speaker: "sumi", face: comment.face, text: comment.text },
+      { speaker: "sumi", face: "normal", text: "それと、ひとつだけ覚えとけ。──技は盗め。ただし、誰から盗んだかは忘れるな" },
       { speaker: "sumi", face: "serious", text: `本番までの${MAX_DAYS}日間、店も練習台も好きに使え。……優勝してこい。` },
       { speaker: "", face: "", text: "……【技術】と【センス】が上がった。" },
     ],

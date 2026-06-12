@@ -32,6 +32,7 @@ CH1_DIALOGUE_FILES = [
     "ch1_tsumugi.json",
     "ch1_sumi.json",
     "ch1_rin.json",
+    "ch1_ageha.json",
     "ch1_spots.json",
     "ch1_events.json",
     "ch2_main.json",
@@ -147,9 +148,10 @@ def main() -> None:
     flavors = load_json(DATA_DIR / "flavors.json")["flavors"]
     baito = load_json(DATA_DIR / "baito_events.json")
     characters = load_json(DATA_DIR / "characters.json")
+    # ブラウザ版は ch2 まで遊べるため、ch2 解禁の機材（家シーシャ等）までバンドルする
     equipment = [
         e for e in load_json(DATA_DIR / "equipment.json")["equipment"]
-        if e.get("chapter_min", 1) <= 1
+        if e.get("chapter_min", 1) <= 2
     ]
 
     char_names = {}

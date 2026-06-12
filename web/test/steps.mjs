@@ -58,13 +58,31 @@ export async function playTnStep(page, opts = {}) {
     await page.locator(".spot-btn", { hasText: "トライアングル" }).click();
   } else if (title.includes("蒸らし時間")) {
     await page.locator(".spot-btn", { hasText: "8分" }).click();
-  } else if (title.includes("引き")) {
-    await page.waitForTimeout(300);
-    await page.click("#tn-gauge-stop");
-    await page.waitForTimeout(50);
-    await page.locator("#tn-body button", { hasText: /提供する|スミさんに出す|お客さんに出す|結果を見る/ }).click();
-  } else if (title.includes("プレゼン")) {
-    await page.locator(".spot-btn", { hasText: "味で語る" }).click();
+  } else if (title.includes("蒸らし中")) {
+    // 雑念弾幕: 多少の被弾は許容してタイマー切れを待つ（craftへの影響は最大-4）
+    for (let k = 0; k < 200; k++) {
+      const next = page.locator("#tn-body button", { hasText: "次へ" });
+      if (await next.count()) { await next.click(); break; }
+      await page.waitForTimeout(120);
+    }
+  } else if (title.includes("吸い出し")) {
+    // 温度合わせ: __pullDebug（針位置・狙いゾーン）を読み、狙いに入った瞬間に吸う。
+    // 適温に入って最低回数を満たしたら提供する
+    for (let k = 0; k < 600; k++) {
+      const d = await page.evaluate(() => (window.__pullDebug ? __pullDebug() : null));
+      if (!d) { await page.waitForTimeout(60); continue; }
+      if ((d.canServe && d.tempOk) || d.count >= 5) {
+        await page.locator("#tn-pull-serve").click();
+        break;
+      }
+      if (d.pos >= d.wantZone[0] && d.pos <= d.wantZone[1]) {
+        await page.locator("#tn-pull-go").click().catch(() => {});
+        await page.waitForTimeout(120);
+      } else {
+        await page.waitForTimeout(20);
+      }
+    }
+    await page.locator("#tn-body button", { hasText: "次へ" }).click();
   } else if (title.includes("審査結果")) {
     const rows = await page.locator(".result-row").allTextContents();
     if (opts.onResult) opts.onResult(rows);

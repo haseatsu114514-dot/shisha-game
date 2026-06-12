@@ -235,6 +235,28 @@
       ]
     },
     {
+      "dialogue_id": "ch3_minto_small_lies",
+      "comment": "DA事件の残響。みんと（年齢の嘘）とはじめ（DA事件の嘘）の鏡像。みんとは自分の話をしているだけで、はじめの嘘を知っているとは明かさない（知っているかどうかも曖昧なまま）。彼女の告白シーン（嘘を打ち明ける場面）と贖罪の縦糸を繋ぐ。組み込みは ch3_double_apple_incident の後・ch3_daily_cup_1 の前後の夜",
+      "metadata": { "bg": "res://assets/backgrounds/bg_street_night.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "────夜。mukaiの裏口で換気をしていると、スマホが震えた。みんとさんからのLIME通話。" },
+        { "speaker": "minto", "face": "smile", "text": "『はーじめくん♡　生きてる？　東京、もう何日目？』" },
+        { "speaker": "hajime", "face": "normal", "text": "「みんとさん。……なんとか、生きてます」" },
+        { "speaker": "minto", "face": "normal", "text": "『ん。声、ちょっとマシになったね』" },
+        { "speaker": "", "face": "", "text": "近況をいくつか。店の新作のこと、常連さんのこと。どうでもいい話が、今はありがたかった。" },
+        { "speaker": "minto", "face": "smile", "text": "『あ、そうだ、聞いてよ〜。またお客さんに年齢いじられた。「自称二十歳、今年で何年目ですか」って。失礼しちゃうよね？』" },
+        { "speaker": "hajime", "face": "normal", "text": "「……あはは」" },
+        { "speaker": "minto", "face": "normal", "text": "『……ねえ、はじめくん。嘘ってさ、つき始めは小さいんだよ』" },
+        { "speaker": "hajime", "face": "surprise", "text": "「……え？」" },
+        { "speaker": "minto", "face": "normal", "text": "『最初はほんのちょっと盛るだけ。誰も困らないし、可愛いもんでしょ？　でもね、嘘って育つの。気づいたら嘘のほうが本当の顔になってて──戻り方が、分かんなくなるんだよね』" },
+        { "speaker": "hajime", "face": "normal", "text": "「…………」" },
+        { "speaker": "", "face": "", "text": "声が出なかった。シトラスミントの煙が、喉の奥に蘇る。" },
+        { "speaker": "minto", "face": "smile", "text": "『──なんてね。歳の話！　やめやめ。じゃ、ちゃんと寝なよ〜。切るね♡』" },
+        { "speaker": "", "face": "", "text": "通話が切れた。彼女がどこまで知っていて、どこから自分の話をしていたのか、最後まで分からなかった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（……嘘は、育つ。──僕のは、もうどのくらい育ってたんだろう）" }
+      ]
+    },
+    {
       "dialogue_id": "ch3_daily_cup_1",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside.png"

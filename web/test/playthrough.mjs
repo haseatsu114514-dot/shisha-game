@@ -122,7 +122,7 @@ await page.evaluate(() => {
 });
 
 // 大会: 機材 → テーマ → ミックス → パック → 穴あけ → 炭起こし → 配置 →
-//       蒸らし → 会話 → 集中 → 引き → プレゼン → 結果
+//       蒸らし(弾幕) → 会話 → 集中 → 吸い出し → 結果
 guard = 0;
 let postPhoneSeen = false;
 while (guard++ < 3000) {
