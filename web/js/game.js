@@ -1,11 +1,30 @@
-// 第1章ブラウザ版 — ゲーム進行（日常ループ → SMOKE CROWN CUP）
+// ブラウザ版 — ゲーム進行（日常ループ → 大会）。第1章＋第2章
 "use strict";
 
 const D = window.GAME_DATA;
 const SAVE_KEY = "shisha_ch1_save_v1";
 const MAX_DAYS = 14; // 大会まで毎回14日間の準備期間
-const AFFINITY_CAP = 3; // 第1章の好感度上限
+const AFFINITY_CAP = 5; // 好感度は5段階。5でロマンス対象は告白イベント
 const VISIT_COST = 3000;
+
+// 恋愛発展できるキャラ（5段階目で「付き合うか」のイベントが入る）。
+// confession.json に告白シーンがあるキャラのうち、現章までに登場済みのもの
+const ROMANCEABLE = ["tsumugi", "minto", "rin", "ageha"];
+
+// 章ごとの大会情報。stageDays は大会の試合日（14日制の中に予選〜決勝を配置）
+const CHAPTERS = {
+  1: { cup: "SMOKE CROWN CUP", stageDays: { 14: "final" } },
+  2: { cup: "HAZE: OPEN CLOUD", stageDays: { 8: "qual", 11: "semi", 14: "final" } },
+};
+const CH2_STAGE_LABEL = { qual: "予選ブロック", semi: "準決勝", final: "決勝" };
+
+function chapterInfo() { return CHAPTERS[(state && state.chapter) || 1]; }
+function cupName() { return chapterInfo().cup; }
+// 次の試合日（ch1は決勝のみ＝14日目）
+function nextStageDay() {
+  const days = Object.keys(chapterInfo().stageDays).map(Number).sort((a, b) => a - b);
+  return days.find((d) => d >= state.day) ?? days[days.length - 1];
+}
 
 // ---------------------------------------------------------------- state
 let state = null;
@@ -15,12 +34,16 @@ const STARTER_EQUIPMENT = ["silicone_bowl", "lotos_hagal", "flat_charcoal"];
 
 function newState() {
   return {
+    chapter: 1,
     day: 1,
     ap: 2,
     money: 30000,
     stats: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 },
-    affinity: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0, rin: 0 },
-    visits: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0, rin: 0 },
+    affinity: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0, rin: 0, ageha: 0 },
+    visits: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0, rin: 0, ageha: 0 },
+    lovers: [],            // 付き合っているキャラ（複数なら浮気状態）
+    loveLevel: {},         // 恋愛関係後の絆レベル（0〜5）
+    guilt: 0,              // うしろめたさ（非表示。浮気リスクシステムの内部値）
     usedBaito: [],
     gymMember: false,
     owned: STARTER_EQUIPMENT.slice(),
@@ -152,17 +175,99 @@ function gainStat(en, amount) {
 
 function gainAffinity(charId) {
   if (!(charId in state.affinity)) return;
+  const name = SPEAKER_NAMES[charId] || (D.char_names || {})[charId] || charId;
+  const badge = faceIconHtml(charId) || (name.match(/[一-龯ぁ-んァ-ヴa-zA-Z]/) || ["♡"])[0];
+  // 恋人になった後は「絆レベル」（恋愛関係後の5段階）が上がる
+  if ((state.lovers || []).includes(charId)) {
+    if ((state.loveLevel[charId] || 0) >= AFFINITY_CAP) return;
+    state.loveLevel[charId] = (state.loveLevel[charId] || 0) + 1;
+    gainBanner({
+      kind: "affinity",
+      badge,
+      labelTop: "BOND UP",
+      labelMain: name,
+      labelSub: "恋人との絆が深まった",
+    });
+    return;
+  }
   if (state.affinity[charId] >= AFFINITY_CAP) return;
   state.affinity[charId] += 1;
-  const name = SPEAKER_NAMES[charId] || charId;
-  // バッジは顔ドット絵（無いキャラのみ頭文字にフォールバック）
   gainBanner({
     kind: "affinity",
-    badge: faceIconHtml(charId) || (name.match(/[一-龯ぁ-んァ-ヴa-zA-Z]/) || ["♡"])[0],
+    badge,
     labelTop: "AFFINITY UP",
     labelMain: name,
     labelSub: "距離が縮まった気がする",
   });
+  // 好感度MAX到達 → 次にマップへ戻ったタイミングで告白イベント
+  if (
+    state.affinity[charId] >= AFFINITY_CAP &&
+    ROMANCEABLE.includes(charId) &&
+    !state.flags[`_friend_${charId}`] &&
+    !(state.lovers || []).includes(charId)
+  ) {
+    state.flags._confession_due = charId;
+  }
+}
+
+// ---------------------------------------------------------------- romance
+function becomeLovers(charId) {
+  if (!state.lovers.includes(charId)) state.lovers.push(charId);
+  state.loveLevel[charId] = state.loveLevel[charId] || 1;
+  const name = SPEAKER_NAMES[charId] || (D.char_names || {})[charId] || charId;
+  gainBanner({
+    kind: "affinity",
+    badge: faceIconHtml(charId) || "♥",
+    labelTop: "NEW RELATIONSHIP",
+    labelMain: name,
+    labelSub: "恋人になった",
+  });
+  // 2人目以降＝浮気状態。うしろめたさが積もり始める（ch3の修羅場の種）
+  if (state.lovers.length >= 2) state.guilt = (state.guilt || 0) + 2;
+  save();
+}
+
+// 行動の区切りで呼ぶ。好感度MAXのロマンス対象がいれば告白イベントを開始する。
+// next は告白イベント終了後の続き（昼夜の進行）
+function maybeStartConfession(next) {
+  const charId = state.flags._confession_due;
+  if (!charId || state.phase !== "daily") return false;
+  delete state.flags._confession_due;
+  if (state.lovers.includes(charId) || state.flags[`_friend_${charId}`]) return false;
+  const done = () => { save(); next ? next() : showMap(); };
+  const play = () => playDialogue(`confession_${charId}`, done);
+  // すでに恋人がいる場合は、応える前に警告を挟む
+  if (state.lovers.length > 0) {
+    const current = state.lovers
+      .map((id) => SPEAKER_NAMES[id] || (D.char_names || {})[id] || id)
+      .join("、");
+    playCustom({
+      dialogue_id: `cheat_warning_${charId}`,
+      lines: [
+        { speaker: "", face: "", text: `（……今、${current}と付き合っている。）` },
+        { speaker: "", face: "", text: "（この気持ちに応えれば──隠しごとがひとつ、増えることになる。それでも？）" },
+        { type: "choice", choices: [
+          { text: "それでも、気持ちに応えたい", next: "go" },
+          { text: "……今は、目の前の人を大切にする", next: "stay" },
+        ] },
+      ],
+      branches: {
+        go: [{ speaker: "", face: "", text: "（胸の奥が、少しだけ重くなった気がした。）" }],
+        stay: [{ speaker: "", face: "", text: "（気づかないふりをした。……この想いには、まだ答えを出さない。）" }],
+      },
+    }, () => {
+      if (state.flags._cheat_go) {
+        delete state.flags._cheat_go;
+        state.guilt = (state.guilt || 0) + 1;
+        play();
+      } else {
+        done();
+      }
+    });
+    return true;
+  }
+  play();
+  return true;
 }
 
 function addMoney(amount) {
@@ -241,11 +346,14 @@ function updateHud() {
   // 行動回数の表示（旧 hud-day の場所）
   const hudDay = $("#hud-day");
   if (state.phase === "tournament") {
-    hudDay.textContent = "SMOKE CROWN CUP 当日";
+    const stage = state.chapter === 2 ? `・${CH2_STAGE_LABEL[state.ch2Stage] || ""}` : "";
+    hudDay.textContent = `${cupName()} 当日${stage}`;
     hudDay.classList.remove("hidden");
   } else {
-    const left = MAX_DAYS + 1 - state.day;
-    hudDay.textContent = `DAY ${state.day} ／ 大会まであと${left}日`;
+    const stageDay = nextStageDay();
+    const left = state.chapter === 2 ? stageDay - state.day : stageDay + 1 - state.day;
+    const what = state.chapter === 2 ? CH2_STAGE_LABEL[chapterInfo().stageDays[stageDay]] : "大会";
+    hudDay.textContent = `DAY ${state.day} ／ ${what}まであと${left}日`;
     // ダイアログ中だけ薄く出す（マップでは大きな day-card に任せる）
     const isMap = document.querySelector("#screen-map.active");
     hudDay.classList.toggle("hidden", !!isMap);
@@ -283,6 +391,23 @@ const SUMI_QUOTES = [
   "今夜は通しのリハーサルだ。そのつもりでな",
   "前日だ。新しいことはするな。いつも通りにやれ",
 ];
+// 第2章のDAYカード（スミさんは焦るはじめを横目に、短く釘を刺す）
+const CH2_SUMI_QUOTES = [
+  "全国だからって、やることは変わらねえぞ",
+  "周りを見るのはいい。睨むのは違う",
+  "苺は熱に弱い。覚えとけ",
+  "……最近のお前の煙、迷ってるな",
+  "失敗は経験値だ。腐るのは別の話だがな",
+  "お前の感情、煙に出てるぞ。お前の煙は正直だからな",
+  "明日から本番だ。寝ろ",
+  "勝った日ほど、丁寧に片付けろ",
+  "誰のために作ってるか、忘れんなよ",
+  "舌より先に、手が覚えてる。信じてやれ",
+  "明日は二戦目か。──落ち着いていけ",
+  "勝ち続けてる顔じゃねえな。……飯、食ってるか",
+  "決勝前夜だ。客席なんか見るな。煙だけ見ろ",
+  "──行ってこい",
+];
 
 function updateDayCard() {
   const isMap = document.querySelector("#screen-map.active");
@@ -294,7 +419,8 @@ function updateDayCard() {
   $("#dc-ap").textContent = (state.ap === 2 ? "昼" : "夜") + ` ${state.ap}`;
   $("#dc-money").textContent = state.money.toLocaleString();
   $("#dc-request").textContent = dailyTheme().label;
-  $("#dc-quote").textContent = `スミ「${SUMI_QUOTES[Math.min(Math.max(state.day, 1), SUMI_QUOTES.length) - 1]}」`;
+  const quotes = state.chapter === 2 ? CH2_SUMI_QUOTES : SUMI_QUOTES;
+  $("#dc-quote").textContent = `スミ「${quotes[Math.min(Math.max(state.day, 1), quotes.length) - 1]}」`;
 }
 
 // 判定スタンプ演出
@@ -674,7 +800,7 @@ function initEngine() {
   });
 }
 
-function handleDialogueChoice(dialogueId, choiceId, branchKey) {
+function handleDialogueChoice(dialogueId, choiceId, branchKey, nextId) {
   // チョイザップ入会: 4,000円を支払いジム会員になる
   const isJoin =
     (dialogueId === "ch1_choizap_first" && branchKey === "register") ||
@@ -682,6 +808,14 @@ function handleDialogueChoice(dialogueId, choiceId, branchKey) {
   if (isJoin) {
     addMoney(-4000);
     state.gymMember = true;
+  }
+  // 浮気警告: 「それでも応える」を選んだ
+  if (dialogueId.startsWith("cheat_warning_") && branchKey === "go") state.flags._cheat_go = true;
+  // 告白の結果（confession.json は next_id で accept/reject に分岐する）
+  const m = /^confession_(\w+)_(accept|reject)$/.exec(nextId || "");
+  if (m) {
+    if (m[2] === "accept") becomeLovers(m[1]);
+    else state.flags[`_friend_${m[1]}`] = true; // 友達のまま（以後この告白は出ない）
   }
 }
 
@@ -753,7 +887,9 @@ function limeDueMessages(tournamentDay) {
   const due = [];
   for (const m of D.lime_messages || []) {
     const sender = m.sender;
-    if (!(sender in state.affinity)) continue; // 第1章の登場キャラのみ
+    if (!(sender in state.affinity)) continue; // 登場済みキャラのみ
+    // 章が違うメッセージは出さない（指定なしは第1章扱い。ch2は離反演出があるため流用しない）
+    if ((m.chapter || 1) !== (state.chapter || 1)) continue;
     if (state.limeDone.includes(m.id)) continue;
     if (state.visits[sender] < (LIME_EXCHANGE_VISITS[sender] || 1)) continue;
     const cond = m.trigger_condition;
@@ -1114,35 +1250,82 @@ function endAction() {
   state.ap -= 1;
   updateHud();
   save();
-  if (state.ap > 0) {
-    // LIMEで「夜に行く」と約束していたら、夜の頭に行動を消費せず遊びに行く
-    if (state.pendingLimeNight) {
-      const p = state.pendingLimeNight;
-      state.pendingLimeNight = null;
-      save();
-      return playLimeEvent(p.event, p.sender, showMap);
+  const resume = () => {
+    if (state.ap > 0) {
+      // LIMEで「夜に行く」と約束していたら、夜の頭に行動を消費せず遊びに行く
+      if (state.pendingLimeNight) {
+        const p = state.pendingLimeNight;
+        state.pendingLimeNight = null;
+        save();
+        return playLimeEvent(p.event, p.sender, showMap);
+      }
+      return showMap();
     }
-    return showMap();
+    endDay();
+  };
+  // 好感度MAXのロマンス対象がいれば、行動の区切りで告白イベント（行動は消費しない）
+  if (maybeStartConfession(resume)) return;
+  resume();
+}
+
+// 翌朝へ進める共通処理（試合日の判定を含む）。ch2の試合後にも使う
+function advanceDay() {
+  if (state.chapter === 1 && state.day >= MAX_DAYS) {
+    // ch1 大会当日の朝: 応援LIMEが届く
+    return morningPhone(() => startTournament(), { tournamentDay: true });
   }
-  endDay();
+  state.day += 1;
+  state.ap = 2;
+  save();
+  // ch2: 試合日（予選・準決勝・決勝）は行動なしでそのまま会場へ
+  const stage = state.chapter === 2 ? chapterInfo().stageDays[state.day] : null;
+  if (stage) {
+    // すぐ会場の会話へ移る（マップを操作可能なまま放置しない）。DAYカードは上に重なる
+    showDayCard(`DAY ${state.day}`, `${cupName()} ${CH2_STAGE_LABEL[stage]} 当日`);
+    return startCh2Stage(stage);
+  }
+  const stageDay = nextStageDay();
+  // ch2の試合はその日のうちに行われる（行動なし）ので残日数は前日基準
+  const left = state.chapter === 2 ? stageDay - state.day : stageDay + 1 - state.day;
+  const what = state.chapter === 2 ? CH2_STAGE_LABEL[chapterInfo().stageDays[stageDay]] : cupName();
+  showDayCard(`DAY ${state.day}`, left === 1 ? `${what} 前日` : `${what}まで あと${left}日`);
+  showMap();
+  morningPhone(showMap); // 朝のLIME（無ければ何もしない）
 }
 
 function endDay() {
-  const finishDay = () => {
-    if (state.day >= MAX_DAYS) {
-      // 大会当日の朝: 応援LIMEが届く
-      return morningPhone(() => startTournament(), { tournamentDay: true });
-    }
-    state.day += 1;
-    state.ap = 2;
-    save();
-    const left = MAX_DAYS + 1 - state.day;
-    showDayCard(`DAY ${state.day}`, left === 1 ? "SMOKE CROWN CUP 前日" : `大会まで あと${left}日`);
-    showMap();
-    morningPhone(showMap); // 朝のLIME（無ければ何もしない）
-  };
-  // 夜の固定イベント
+  const finishDay = advanceDay;
   const TONARI = "res://assets/backgrounds/bg_tonari_inside.png";
+  // ---- 第2章の夜の固定イベント（嫉妬と転落の進行）
+  if (state.chapter === 2) {
+    if (state.day === 2 && !state.flags._ev2_abyss) {
+      state.flags._ev2_abyss = true;
+      return playDialogue("ch2_abyss_baito", finishDay, TONARI);
+    }
+    if (state.day === 4 && !state.flags._ev2_sofa) {
+      state.flags._ev2_sofa = true;
+      return playDialogue("ch2_sofa_burn", finishDay, TONARI);
+    }
+    if (state.day === 5 && !state.flags._ev2_slump) {
+      state.flags._ev2_slump = true;
+      // 味覚スランプ発症: 以後、ミックス画面の味の記憶がノイズ混じりになる
+      return playDialogue("ch2_slump_taste", () => { state.flags._taste_slump = true; save(); finishDay(); }, TONARI);
+    }
+    if (state.day === 7 && !state.flags._ev2_ageha) {
+      state.flags._ev2_ageha = true;
+      return playDialogue("ch2_pre_tournament_realisation", finishDay, "res://assets/backgrounds/bg_tournament_stage.png");
+    }
+    if (state.day === 12 && !state.flags._ev2_minto) {
+      state.flags._ev2_minto = true;
+      return playDialogue("ch2_minto_warning", finishDay);
+    }
+    if (state.day === 13 && !state.flags._ev2_tsumugi) {
+      state.flags._ev2_tsumugi = true;
+      return playDialogue("ch2_tsumugi_color", finishDay, TONARI);
+    }
+    return finishDay();
+  }
+  // ---- 第1章の夜の固定イベント
   if (state.day === 2 && !state.flags._ev_salaryman) {
     state.flags._ev_salaryman = true;
     return playDialogue("ch1_salaryman_regular", finishDay, TONARI);
@@ -1889,7 +2072,8 @@ function tournamentStep(step) {
       tt.steam = s.id;
       if (window.SFX) SFX.smoke();
       startRigSmoke(750);
-      if (tt.mode !== "tournament") return tnNext("steam"); // 大会以外は観客の会話なし
+      // 大会以外・ch2の各試合は観客の会話なし（ラウンド会話はch1専用テキスト）
+      if (tt.mode !== "tournament" || state.chapter !== 1) return tnNext("steam");
       // ラウンド1（組み立て）終了 → 観客の会話 → R1講評 → 中間発表 → ラウンド2（調整）へ
       playDialogue("ch1_tournament_match", () =>
         playDialogue("ch1_tournament_r1_end", () => showStandings(1, () => tournamentStep("adjust")), "res://assets/backgrounds/bg_tournament_stage.png"),
@@ -1904,6 +2088,7 @@ function tournamentStep(step) {
     const body = tnPanel("プレゼンテーション", "完成・提供のあとはプレゼン。審査員に何を語る？");
     for (const p of PRESENTS) body.appendChild(optionButton(p.label, "", () => {
       tt.present = p;
+      if (state.chapter === 2) return finishCh2Stage();
       // ラウンド3終了の会話を挟んで結果発表へ
       playDialogue("ch1_tournament_r3_end", () => finishTournament(), "res://assets/backgrounds/bg_tournament_stage.png");
     }));
@@ -2139,8 +2324,8 @@ function stepFocus() {
     next.className = "primary-btn";
     next.textContent = "仕上げに入る";
     next.addEventListener("click", () => {
-      // 大会ではR2終了の会話と中間発表を挟む
-      if (tt.mode === "tournament") {
+      // ch1大会ではR2終了の会話と中間発表を挟む（テキストがch1専用のため）
+      if (tt.mode === "tournament" && state.chapter === 1) {
         playDialogue("ch1_tournament_r2_end", () => showStandings(2, () => tournamentStep("pull")), "res://assets/backgrounds/bg_tournament_stage.png");
       } else {
         tnNext("focus");
@@ -2172,6 +2357,9 @@ function stepFocus() {
 // 章ごとの大会レギュレーション（指定フレーバー）。ch1 = SMOKE CROWN CUP はミント指定。
 // 大会本番と前日リハーサルに適用される（バイト・チュートリアル・ドリルは自由）
 const CH1_REGULATION = { flavor: "mint", min: 2, label: "課題フレーバー「ミント」を2g以上使うこと" };
+// ch2 = HAZE: OPEN CLOUD はストロベリー指定（県特産タイアップ・輪郭の見えにくい高難度）
+const CH2_REGULATION = { flavor: "strawberry", min: 2, label: "課題フレーバー「ストロベリー」を2g以上使うこと" };
+function chapterRegulation() { return state.chapter === 2 ? CH2_REGULATION : CH1_REGULATION; }
 
 // バイト専用課題（お客さんのリクエスト）。大会の課題とは別物で、日替わり3種:
 // テーマ希望のみ／指名フレーバー（しっかり効かせて）／ミント抜き（苦手なお客さん）
@@ -2183,7 +2371,7 @@ function baitoRequest() {
 
 function activeRegulation() {
   if (!tt) return null;
-  if (tt.mode === "tournament" || tt.mode === "rehearsal") return CH1_REGULATION;
+  if (tt.mode === "tournament" || tt.mode === "rehearsal") return chapterRegulation();
   if (tt.mode === "baito") return baitoRequest();
   return null;
 }
@@ -2194,14 +2382,24 @@ function stepMix() {
     "フレーバー選択 & ミックス",
     reg ? `合計12g・1〜3種類。レギュレーション: ${reg.label}` : "合計12gになるように配合しろ。1〜3種類まで。"
   );
+  const regFlavorName = reg ? ((D.flavors.find((f) => f.id === reg.flavor) || {}).short_name || reg.flavor).replace(/^AF /, "") : "";
   if (reg) {
     const note = document.createElement("p");
     note.className = "tn-tutor";
     note.textContent = tt.mode === "baito"
       ? reg.label
-      : "パッキー「今大会の課題フレーバーはミント！ 入ってない一台は審査対象外ですよ〜♪」";
+      : `パッキー「今大会の課題フレーバーは${regFlavorName}！ 入ってない一台は審査対象外ですよ〜♪」`;
     body.appendChild(note);
   }
+  // 味覚スランプ（ch2）: 味の記憶がノイズ混じりになり、説明文が霞む
+  const tasteSlump = state.chapter === 2 && state.flags._taste_slump && tt.mode !== "drill";
+  if (tasteSlump) {
+    const slump = document.createElement("p");
+    slump.className = "tn-tutor taste-slump";
+    slump.textContent = "（……味の記憶が、霞んでいる。どの香りも、輪郭を結ばない）";
+    body.appendChild(slump);
+  }
+  const garble = (text) => text.replace(/[^、。！？♪]/g, (ch, i) => (((i * 7 + text.length) % 3) === 0 ? "▒" : ch));
   const total = () => Object.values(tt.mix).reduce((a, b) => a + b, 0);
   const list = document.createElement("div");
   list.className = "mix-list";
@@ -2239,7 +2437,7 @@ function stepMix() {
     row.className = "mix-row";
     const info = document.createElement("div");
     info.className = "mix-info";
-    info.innerHTML = `<span class="spot-name">${f.short_name || f.name}</span><span class="spot-desc">${f.description}</span>`;
+    info.innerHTML = `<span class="spot-name">${f.short_name || f.name}</span><span class="spot-desc">${tasteSlump ? garble(f.description) : f.description}</span>`;
     const ctrl = document.createElement("div");
     ctrl.className = "mix-ctrl";
     const minus = document.createElement("button");
@@ -2475,9 +2673,9 @@ function finishTournament() {
   showResult(results, rank, craft.detail);
 }
 
-function showResult(results, rank, detail) {
+function showResult(results, rank, detail, opts = {}) {
   const body = tnPanel("審査結果", "");
-  $("#tn-title").textContent = "SMOKE CROWN CUP — 審査結果";
+  $("#tn-title").textContent = opts.title || `${cupName()} — 審査結果`;
   $("#tn-progress").textContent = "RESULT";
   const note = document.createElement("div");
   note.className = "result-note";
@@ -2515,19 +2713,19 @@ function showResult(results, rank, detail) {
   setTimeout(() => { btn.style.opacity = "1"; }, 500 + rows.length * 750 + 400);
   if (rank === 1) {
     btn.textContent = "結果発表へ";
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", opts.onWin || (() => {
       addMoney(30000);
       playDialogue("ch1_tournament_result", () =>
         playDialogue("ch1_tournament_after", () => postClearPhone(() => showClear()), "res://assets/backgrounds/bg_tournament_stage.png"), "res://assets/backgrounds/bg_tournament_stage.png"
       );
-    });
+    }));
   } else {
     btn.textContent = "……結果を受け止める";
-    btn.addEventListener("click", () => {
+    btn.addEventListener("click", opts.onLose || (() => {
       tt.rank = rank;
       addMoney({ 2: 15000, 3: 5000, 4: 0 }[rank] || 0);
       playDialogue("ch1_tournament_defeat", () => showDefeat(rank), "res://assets/backgrounds/bg_tournament_stage.png");
-    });
+    }));
   }
   body.append(note, table, btn);
 }
@@ -2539,21 +2737,181 @@ function showClear() {
   save();
   showScreen("#screen-end");
   $("#end-title").textContent = "第1章クリア！";
-  $("#end-sub").textContent = "SMOKE CROWN CUP 優勝 ── 物語は第2章「東京編」へ続く。";
+  $("#end-sub").textContent = "SMOKE CROWN CUP 優勝 ── 全国大会 HAZE: OPEN CLOUD へ。";
   renderStatusInto($("#end-status"));
+  const goCh2 = document.createElement("button");
+  goCh2.className = "primary-btn";
+  goCh2.textContent = "第2章へ進む";
+  goCh2.addEventListener("click", () => { if (window.SFX) SFX.select(); startChapter2(); });
+  $("#end-status").appendChild(goCh2);
 }
 
 function showDefeat(rank) {
   stopRigEffects();
   showScreen("#screen-end");
   $("#end-title").textContent = "敗北……";
-  $("#end-sub").textContent = `結果は${rank}位。優勝だけが次への切符だった。`;
+  $("#end-sub").textContent = state.chapter === 2
+    ? `結果は${rank}位。${CH2_STAGE_LABEL[state.ch2Stage] || ""}敗退──1位だけが、先へ進める。`
+    : `結果は${rank}位。優勝だけが次への切符だった。`;
   renderStatusInto($("#end-status"));
   const retry = document.createElement("button");
   retry.className = "primary-btn";
   retry.textContent = "もう一度挑戦する";
   retry.addEventListener("click", () => beginMaking());
   $("#end-status").appendChild(retry);
+}
+
+// ---------------------------------------------------------------- 第2章 HAZE: OPEN CLOUD
+// 14日制の中に予選(DAY8)→準決勝(DAY11)→決勝(DAY14)を配置。
+// 1位のみ通過。名前付きライバルは別ブロックを勝ち上がって決勝で当たる
+const CH2_STAGES = {
+  qual: {
+    rivals: [
+      { id: "q1", name: "関東第二代表", base: 56 },
+      { id: "q2", name: "湾岸エリア代表", base: 61 },
+      { id: "q3", name: "港町の老舗代表", base: 53 },
+    ],
+    bar: 58,
+    prize: 10000,
+    after: "ch2_adam_distance",
+    winDetail: "──予選通過。審査席の端で、白衣の男が小さくペンを走らせた。",
+    loseDetail: "……札は伸びなかった。全国の「普通」は、地方の「上出来」より上にある。",
+  },
+  semi: {
+    rivals: [
+      { id: "ageha", name: "あげは", base: 69 },
+      { id: "s1", name: "北信越ブロック覇者", base: 64 },
+      { id: "s2", name: "九州ブロック覇者", base: 66 },
+    ],
+    bar: 70,
+    prize: 15000,
+    after: "ch2_naru_confrontation",
+    winDetail: "──審査席のチャコール博士が、はじめの欄に何かを長く書き込んでいる。「データに入らない強さ」、と。",
+    loseDetail: "……あと一歩、届かない。借り物の理屈では、ここから先の壁は破れない。",
+  },
+  final: {
+    rivals: [
+      { id: "rei", name: "零-REI-", base: 76 },
+      { id: "kumicho", name: "神崎竜二", base: 73 },
+      { id: "f1", name: "西日本ブロック覇者", base: 70 },
+    ],
+    bar: 80,
+    prize: 30000,
+    winDetail: "──最終発表。審査員たちの残り持ち点が、音を立ててこの一台に注がれていく。自分史上、もっとも綺麗にまとまった煙だった。",
+    loseDetail: "……持ち点は動かなかった。綺麗なだけの煙では、頂点の「もう一口」は引き出せない。",
+  },
+};
+
+function startChapter2() {
+  state.chapter = 2;
+  state.day = 1;
+  state.ap = 2;
+  state.phase = "daily";
+  state.pendingLimeNight = null;
+  delete state.ch2Stage;
+  save();
+  engulfInSmoke(() => {
+    showChapterTitle(
+      { no: "第二章", num: "Ⅱ", name: "才能の壁", read: "ジェラシー・ヘイズ ── JEALOUSY HAZE", sub: "HAZE: OPEN CLOUD 編" },
+      () => {
+        if (window.SFX) SFX.bgm("daily_part");
+        playDialogue("ch2_opening", () =>
+          playDialogue("ch2_rivals_first_sight", () => {
+            save();
+            showDayCard("DAY 1", "HAZE: OPEN CLOUD 予選まで あと7日");
+            showMap();
+          })
+        );
+      }
+    );
+  });
+}
+
+// 試合日の開始。stage: "qual" | "semi" | "final"
+function startCh2Stage(stage) {
+  state.phase = "tournament";
+  state.ch2Stage = stage;
+  updateHud();
+  save();
+  const BG = "res://assets/backgrounds/bg_tournament_stage.png";
+  if (stage === "final") {
+    // 決勝の朝（スミさんのLIME〜返信を打てない）は ch2_empty_victory の前半を使う
+    const ev = D.dialogues.ch2_empty_victory || { lines: [] };
+    return playCustom({
+      dialogue_id: "ch2_final_morning",
+      metadata: { bg: BG },
+      lines: ev.lines.slice(0, 4),
+    }, () => beginMaking());
+  }
+  const intro = stage === "qual"
+    ? [
+        { speaker: "", face: "", text: "──HAZE: OPEN CLOUD、予選ブロック当日。C.STATIONの天井は、地方会場の倍も高い。" },
+        { speaker: "pakki", face: "normal", text: "ぷぷぷっ！　全国の煙自慢が勢ぞろい！　今大会の課題フレーバーは──ストロベリー！　県特産の苺を2g以上、しっかり使ってね♪" },
+        { speaker: "hajime", face: "serious", text: "（苺……シーシャのストロベリーは、想像する甘さと違う。輪郭の見えにくい、いちばん難しい果実だ）" },
+      ]
+    : [
+        { speaker: "", face: "", text: "──準決勝。客席が、予選の倍に膨らんでいる。" },
+        { speaker: "pakki", face: "normal", text: "勝ち残ったのは各ブロックの猛者だけ！　課題は変わらずストロベリー！　それじゃあ──火を入れて！" },
+        { speaker: "hajime", face: "normal", text: "（……勝ってる。勝ててしまっている。借り物の理屈で）" },
+      ];
+  playCustom({ dialogue_id: `ch2_${stage}_intro`, metadata: { bg: BG }, lines: intro }, () => beginMaking());
+}
+
+function finishCh2Stage() {
+  const stage = state.ch2Stage || "qual";
+  const cfg = CH2_STAGES[stage];
+  const s = state.stats;
+  const statScore = (s.technique * 1.2 + s.sense * 1.0 + s.guts * 0.6 + s.charm * 0.8 + s.insight * 1.0) / 4.6;
+  const craft = craftScore();
+  let presentBonus = s.charm / 8;
+  if (tt.present.theme === tt.theme.id) presentBonus += 8;
+  const base = statScore * 0.55 + craft.score * 0.45 + presentBonus;
+  const results = cfg.rivals.map((r) => ({ id: r.id, name: r.name, score: r.base + (Math.random() * 6 - 3) }));
+  const topRival = Math.max(...results.map((r) => r.score));
+  let playerScore = base;
+  if (craft.score >= cfg.bar) {
+    playerScore = Math.max(base + 10, topRival + 1.0);
+    craft.detail.push(cfg.winDetail);
+  } else {
+    craft.detail.push(cfg.loseDetail);
+  }
+  results.push({ id: "hajime", name: "はじめ", score: playerScore });
+  results.sort((a, b) => b.score - a.score);
+  const rank = results.findIndex((r) => r.id === "hajime") + 1;
+  showResult(results, rank, craft.detail, {
+    title: `HAZE: OPEN CLOUD ${CH2_STAGE_LABEL[stage]} — 審査結果`,
+    onWin: () => {
+      addMoney(cfg.prize);
+      stopRigEffects();
+      state.phase = "daily";
+      save();
+      if (stage === "final") {
+        // 誰もいない優勝（ch2_empty_victory の後半）→ 章クリア
+        const ev = D.dialogues.ch2_empty_victory || { lines: [] };
+        return playCustom({
+          dialogue_id: "ch2_empty_victory_post",
+          metadata: { bg: "res://assets/backgrounds/bg_tournament_stage.png" },
+          lines: ev.lines.slice(4),
+        }, () => showCh2Clear());
+      }
+      // 勝った夜に、仲間がひとり離れていく
+      playDialogue(cfg.after, () => advanceDay());
+    },
+    onLose: () => {
+      tt.rank = rank;
+      showDefeat(rank);
+    },
+  });
+}
+
+function showCh2Clear() {
+  stopRigEffects();
+  state.phase = "cleared";
+  save();
+  showScreen("#screen-end");
+  $("#end-title").textContent = "第2章クリア";
+  $("#end-sub").textContent = "HAZE: OPEN CLOUD 優勝──誰もいない頂点。物語は第3章「東京編」へ続く。";
+  renderStatusInto($("#end-status"));
 }
 
 // ---------------------------------------------------------------- status
@@ -2568,7 +2926,13 @@ function renderStatusInto(el) {
   affBox.className = "status-block";
   affBox.innerHTML = "<h3>好感度</h3>" + Object.entries(state.affinity)
     .map(([id, lv]) => {
-      const name = SPEAKER_NAMES[id] || id;
+      const name = SPEAKER_NAMES[id] || (D.char_names || {})[id] || id;
+      // 恋人は「恋人」バッジ＋絆レベル（恋愛関係後の5段階）を表示
+      if ((state.lovers || []).includes(id)) {
+        const bond = state.loveLevel[id] || 0;
+        return `<div class="status-row"><span>${name} <span class="lover-badge">恋人</span></span>` +
+          `<span class="hearts bond">${"♥".repeat(bond)}${"♡".repeat(AFFINITY_CAP - bond)}</span></div>`;
+      }
       return `<div class="status-row"><span>${name}</span><span class="hearts">${"♥".repeat(lv)}${"♡".repeat(AFFINITY_CAP - lv)}</span></div>`;
     })
     .join("");
@@ -2812,24 +3176,24 @@ function finishTutorial() {
 }
 
 // ---------------------------------------------------------------- boot
-// 章タイトルのカットイン（黒地＋金罫＋明朝の大文字）。章開始時に挟む
+// 章タイトルのカットイン（黒地＋金罫＋大ローマ数字の透かし）。章開始時に挟む
 function showChapterTitle(opts, onDone) {
   const el = document.createElement("div");
   el.id = "chapter-title";
   el.innerHTML =
+    (opts.num ? `<div class="ct-watermark">${opts.num}</div>` : "") +
     `<div class="ct-inner">` +
-    `<div class="ct-line"></div>` +
-    `<p class="ct-no">${opts.no}</p>` +
-    `<h2 class="ct-name">${opts.name}</h2>` +
-    (opts.read ? `<p class="ct-read">─ ${opts.read} ─</p>` : "") +
+    `<p class="ct-no"><span class="ct-rule"></span><span class="ct-no-text">${opts.no}</span><span class="ct-rule"></span></p>` +
+    `<h2 class="ct-name">${[...String(opts.name)].map((c, i) => `<span class="ct-ch" style="transition-delay:${0.65 + i * 0.14}s">${c}</span>`).join("")}</h2>` +
+    (opts.read ? `<p class="ct-read">${opts.read}</p>` : "") +
     (opts.sub ? `<p class="ct-sub">${opts.sub}</p>` : "") +
-    `<div class="ct-line"></div>` +
-    `</div>`;
+    `</div>` +
+    `<div class="ct-frame"></div>`;
   $("#game").appendChild(el);
   if (window.SFX) SFX.smoke();
   requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("show")));
-  setTimeout(() => el.classList.add("out"), 3600);
-  setTimeout(() => { el.remove(); if (onDone) onDone(); }, 4600);
+  setTimeout(() => el.classList.add("out"), 3800);
+  setTimeout(() => { el.remove(); if (onDone) onDone(); }, 4800);
 }
 
 function startNewGame() {
@@ -2841,7 +3205,7 @@ function startNewGame() {
   playDialogue("ch1_cold_open", () => {
     engulfInSmoke(() => {
       showChapterTitle(
-        { no: "第 一 章", name: "一吸目", read: "ファーストパフ", sub: "SMOKE CROWN CUP 編" },
+        { no: "第一章", num: "Ⅰ", name: "一吸目", read: "ファーストパフ ── FIRST PUFF", sub: "SMOKE CROWN CUP 編" },
         () => {
           if (window.SFX) SFX.bgm("tonari");
           playDialogue("ch1_opening", () => {
@@ -2865,10 +3229,22 @@ function continueGame(saved) {
   if (!state.practiceBest) state.practiceBest = {};
   // 凛（問屋街の代理店）導入前のセーブ互換
   if (!("rin" in state.affinity)) { state.affinity.rin = 0; state.visits.rin = 0; }
+  // 第2章・恋愛システム導入前のセーブ互換
+  if (!state.chapter) state.chapter = 1;
+  if (!("ageha" in state.affinity)) { state.affinity.ageha = 0; state.visits.ageha = 0; }
+  if (!Array.isArray(state.lovers)) state.lovers = [];
+  if (!state.loveLevel) state.loveLevel = {};
+  if (typeof state.guilt !== "number") state.guilt = 0;
   updateHud();
-  if (state.phase === "tournament") startTournament();
-  else if (state.phase === "cleared") showClear();
-  else showMap();
+  if (state.phase === "tournament") {
+    if (state.chapter === 2) startCh2Stage(state.ch2Stage || "qual");
+    else startTournament();
+  } else if (state.phase === "cleared") {
+    if (state.chapter === 2) showCh2Clear();
+    else showClear();
+  } else {
+    showMap();
+  }
 }
 
 function init() {

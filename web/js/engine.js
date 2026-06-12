@@ -146,7 +146,7 @@ class DialogueEngine {
             if (meta.bg) this.setBackground(meta.bg);
           }
         }
-        if (this.ctx.onChoice) this.ctx.onChoice(this.dialogueId, String(line.id || ""), key);
+        if (this.ctx.onChoice) this.ctx.onChoice(this.dialogueId, String(line.id || ""), key, String(c.next_id || ""));
         this.next();
       });
       this.el.choices.appendChild(btn);
@@ -174,7 +174,7 @@ class DialogueEngine {
       img.style.bottom = "";
       return;
     }
-    const TARGET = 88; // 切り抜き素材はバストアップ気味に大きく
+    const TARGET = 102; // 切り抜き素材は実体が画面高いっぱいに出るくらい大きく
     const trims = (this.ctx.portraitTrims || {})[folder] || {};
     const faces = (this.ctx.portraitFaces || {})[folder] || [];
     let f = face && faces.includes(face) ? face : "normal";
@@ -184,7 +184,7 @@ class DialogueEngine {
       img.style.bottom = "0";
       return;
     }
-    const h = Math.min(TARGET / t.h, 145);
+    const h = Math.min(TARGET / t.h, 165);
     img.style.height = `${h}%`;
     img.style.bottom = `${-(t.b * h)}%`;
   }

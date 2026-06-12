@@ -28,9 +28,19 @@ export async function playTnStep(page, opts = {}) {
   } else if (title.includes("テーマ選択")) {
     await page.locator(".spot-btn", { hasText: "フルーティ" }).click();
   } else if (title.includes("ミックス")) {
-    // ミント2g（課題）+ ブルーベリー6g + バニラ4g（fruit + sweet でテーマ一致）
     const rows = page.locator(".mix-row");
     const plusOf = (name) => rows.filter({ hasText: name }).locator("button", { hasText: "＋" });
+    const totalText = (await page.locator("#tn-body .mix-total").textContent()) || "";
+    if (totalText.includes("ストロベリー")) {
+      // ch2課題: ストロベリー2g + ブルーベリー6g + バニラ4g（fruit + sweet でテーマ一致）
+      for (let i = 0; i < 2; i++) await plusOf("ストロベリー").click();
+      for (let i = 0; i < 6; i++) await plusOf("ブルーベリー").click();
+      for (let i = 0; i < 4; i++) await plusOf("バニラ").click();
+      await page.locator("#tn-body button", { hasText: "この配合でいく" }).click();
+      await page.waitForTimeout(40);
+      return;
+    }
+    // ch1課題: ミント2g + ブルーベリー6g + バニラ4g（fruit + sweet でテーマ一致）
     for (let i = 0; i < 2; i++) await plusOf("ミント").click();
     for (let i = 0; i < 6; i++) await plusOf("ブルーベリー").click();
     for (let i = 0; i < 4; i++) await plusOf("バニラ").click();
