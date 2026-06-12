@@ -782,6 +782,120 @@
           "affinity": 2
         }
       ]
+    },
+    {
+      "id": "lime_tsumugi_day8",
+      "sender": "tsumugi",
+      "trigger_day": 8,
+      "trigger_condition": "lime_exchanged",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "おはようございます。……夜中に、ふと思い出したことがあって"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "はじめさんの煙、最初の頃より、色がはっきりしてきた気がします"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "折り返し、ですね。大会"
+        }
+      ],
+      "replies": [
+        {
+          "text": "色、変わってきてるんだ",
+          "response": "はい。前は薄い水色だったのが、最近は……金色が、混ざる日があります。いい色だと思います",
+          "affinity": 1
+        },
+        {
+          "text": "見ててくれてありがとう",
+          "response": "……っ、別に、見てるわけじゃ……。いえ、見てます。ちゃんと。だから、頑張ってください",
+          "affinity": 1
+        },
+        {
+          "text": "正直ちょっと疲れてきた",
+          "response": "そういう日の煙は、灰色になります。今日は無理しないでください。……心配、するので",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_naru_day10",
+      "sender": "naru",
+      "trigger_day": 10,
+      "trigger_condition": "lime_exchanged",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "naru",
+          "text": "よう。あと4日だな"
+        },
+        {
+          "sender": "naru",
+          "text": "この時期にやることは2つだけだ。基礎の反復と、寝ること"
+        },
+        {
+          "sender": "naru",
+          "text": "新しいことに手ぇ出したくなるだろ、今。──出すなよ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "図星かも",
+          "response": "だろ。俺も最初の大会前にやらかした。前日に新レシピ試して、本番で空中分解。……お前は同じ轍踏むなよ",
+          "affinity": 1
+        },
+        {
+          "text": "もう仕上げに入ってる",
+          "response": "上等。なら当日は、仕上げた分だけ堂々とやれ。お前の煙、楽しみにしてるからな",
+          "affinity": 1
+        },
+        {
+          "text": "なるさんは余裕そうだね",
+          "response": "見えるだけだって。緊張はしてる。──ただ、緊張と仲良くなる練習だけは、人より積んでるかもな",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_minto_day12",
+      "sender": "minto",
+      "trigger_day": 12,
+      "trigger_condition": "lime_exchanged",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "はじめく〜ん、生きてる〜？♡"
+        },
+        {
+          "sender": "minto",
+          "text": "大会前のこの時期ってね、いちばん体調崩しやすいんだよ。お店のみんなも言ってた"
+        },
+        {
+          "sender": "minto",
+          "text": "ごはん、ちゃんと食べてる？"
+        }
+      ],
+      "replies": [
+        {
+          "text": "食べてます",
+          "response": "えらい！　じゃあ睡眠もね。……ふふ、つい世話焼いちゃうな。本番、客席から見てるからね♡",
+          "affinity": 1
+        },
+        {
+          "text": "正直カップ麺ばかり",
+          "response": "め！　……もう、しょうがないなあ。今度なにか作ってあげる。だから本番までは、ちゃんとしたの食べること。約束ね",
+          "affinity": 1
+        },
+        {
+          "text": "みんとさんこそ大丈夫？",
+          "response": "……っ。う、うん、平気平気！　わたしの心配より自分の心配！　……でも、ありがと。ちょっと嬉しかった",
+          "affinity": 1
+        }
+      ]
     }
   ]
 }

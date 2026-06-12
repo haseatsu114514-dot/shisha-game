@@ -7,6 +7,9 @@ const SFX = (() => {
   let ctx = null;
   let muted = false;
   let bgmEl = null;
+  const BGM_BASE = 0.35; // BGM音量の基準値（bgmVolume=1.0 のときの実音量）
+  let bgmVolume = 1.0;
+  let sfxVolume = 1.0;
   let currentBgm = "";
   let masterDry = null;
   let masterWet = null;
@@ -280,6 +283,18 @@ const SFX = (() => {
     },
     isMuted: () => muted,
 
+    // 音量（0.0〜1.0）。CONFIG画面から設定される
+    setBgmVolume(v) {
+      bgmVolume = Math.max(0, Math.min(1, v));
+      if (bgmEl) bgmEl.volume = BGM_BASE * bgmVolume;
+    },
+    getBgmVolume: () => bgmVolume,
+    setSfxVolume(v) {
+      sfxVolume = Math.max(0, Math.min(1, v));
+      if (masterOut) masterOut.gain.value = sfxVolume;
+    },
+    getSfxVolume: () => sfxVolume,
+
     // BGM: key は "tonari" | "daily" など
     bgm(key) {
       if (key === currentBgm) {
@@ -291,7 +306,19 @@ const SFX = (() => {
       if (!bgmEl) {
         bgmEl = new Audio();
         bgmEl.loop = true;
-        bgmEl.volume = 0.35;
+        bgmEl.volume = BGM_BASE * bgmVolume;
+        // スタンドアロン版は曲の途中で切り出しているため、ループの継ぎ目を
+        // フェードアウト→フェードインでなめらかにする
+        bgmEl.addEventListener("timeupdate", () => {
+          const d = bgmEl.duration;
+          if (!isFinite(d) || d <= 0) return;
+          const FADE = 2.2;
+          const base = BGM_BASE * bgmVolume;
+          const rem = d - bgmEl.currentTime;
+          if (rem < FADE) bgmEl.volume = base * Math.max(0, rem / FADE);
+          else if (bgmEl.currentTime < FADE) bgmEl.volume = base * (bgmEl.currentTime / FADE);
+          else if (bgmEl.volume !== base) bgmEl.volume = base;
+        });
       }
       bgmEl.muted = muted;
       bgmEl.src = src;

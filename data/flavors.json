@@ -37,6 +37,18 @@
       "leaf": "blond"
     },
     {
+      "id": "strawberry",
+      "name": "アルファーヘブン ストロベリー",
+      "short_name": "AF ストロベリー",
+      "category": "fruit",
+      "price": 1600,
+      "description": "県特産の苺を使った限定ロット。想像する甘さは無く、輪郭の見えにくい高難度フレーバー。熱を入れすぎると青臭さが顔を出す。",
+      "heat_tolerance": 0.85,
+      "smoke_weight": 0.9,
+      "steam_bias": 0.5,
+      "leaf": "blond"
+    },
+    {
       "id": "vanilla",
       "name": "アルファーヘブン バニラ",
       "short_name": "AF バニラ",

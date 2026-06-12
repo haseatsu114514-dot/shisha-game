@@ -102,8 +102,8 @@
       <div class="title-menu" id="title-menu">
         <button id="btn-new" class="title-menu-item" type="button">NEW GAME<span class="ja">ニューゲーム</span></button>
         <button id="btn-continue" class="title-menu-item hidden" type="button">LOAD<span class="ja">ロード</span></button>
-        <button id="btn-gallery" class="title-menu-item" type="button" disabled>GALLERY<span class="ja">ギャラリー</span></button>
-        <button id="btn-config" class="title-menu-item" type="button" disabled>CONFIG<span class="ja">コンフィグ</span></button>
+        <button id="btn-gallery" class="title-menu-item" type="button">GALLERY<span class="ja">ギャラリー</span></button>
+        <button id="btn-config" class="title-menu-item" type="button">CONFIG<span class="ja">コンフィグ</span></button>
         <button id="btn-exit" class="title-menu-item" type="button" disabled>EXIT<span class="ja">もどる</span></button>
       </div>
       <p class="title-note">
@@ -185,6 +185,7 @@
 
   <!-- 大会 -->
   <section id="screen-tournament" class="screen tournament-bg">
+    <div id="tn-ticker"></div>
     <div id="tn-layout">
       <div id="tn-rig"></div>
       <div class="panel">
@@ -222,6 +223,11 @@
       <span class="corner-tl"></span><span class="corner-br"></span>
       <h2>蒸野 始（むしの はじめ）</h2>
       <div id="status-body" class="status-wrap"></div>
+      <div id="menu-actions">
+        <button id="menu-save" class="menu-action" type="button">セーブ</button>
+        <button id="menu-load" class="menu-action" type="button">ロード</button>
+        <button id="menu-config" class="menu-action" type="button">コンフィグ</button>
+      </div>
       <button id="status-close" class="primary-btn" type="button">閉じる</button>
     </div>
   </div>
@@ -243,6 +249,37 @@
       <h2>ログ</h2>
       <div id="log-list"></div>
       <button id="log-close" class="primary-btn" type="button">閉じる</button>
+    </div>
+  </div>
+
+  <!-- コンフィグ -->
+  <div id="config-overlay">
+    <div class="panel">
+      <span class="corner-tl"></span><span class="corner-br"></span>
+      <h2>コンフィグ</h2>
+      <div id="config-body"></div>
+      <button id="config-close" class="primary-btn" type="button">閉じる</button>
+    </div>
+  </div>
+
+  <!-- ギャラリー -->
+  <div id="gallery-overlay">
+    <div class="panel">
+      <span class="corner-tl"></span><span class="corner-br"></span>
+      <h2>ギャラリー</h2>
+      <div id="gallery-grid"></div>
+      <button id="gallery-close" class="primary-btn" type="button">閉じる</button>
+    </div>
+  </div>
+  <div id="gallery-viewer"></div>
+
+  <!-- セーブ／ロード -->
+  <div id="saveload-overlay">
+    <div class="panel">
+      <span class="corner-tl"></span><span class="corner-br"></span>
+      <h2 id="saveload-title">ロード</h2>
+      <div id="saveload-slots"></div>
+      <button id="saveload-close" class="primary-btn" type="button">閉じる</button>
     </div>
   </div>
 

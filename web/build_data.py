@@ -34,6 +34,9 @@ CH1_DIALOGUE_FILES = [
     "ch1_rin.json",
     "ch1_spots.json",
     "ch1_events.json",
+    "ch2_main.json",
+    "ch2_isolation.json",
+    "confession.json",
 ]
 
 # ch1 のバイトで使うイベントカテゴリ（story は章進行に紐づくため除外）

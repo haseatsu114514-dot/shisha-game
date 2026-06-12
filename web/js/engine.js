@@ -146,7 +146,7 @@ class DialogueEngine {
             if (meta.bg) this.setBackground(meta.bg);
           }
         }
-        if (this.ctx.onChoice) this.ctx.onChoice(this.dialogueId, String(line.id || ""), key);
+        if (this.ctx.onChoice) this.ctx.onChoice(this.dialogueId, String(line.id || ""), key, String(c.next_id || ""));
         this.next();
       });
       this.el.choices.appendChild(btn);
@@ -159,6 +159,7 @@ class DialogueEngine {
     if (this.ctx.hasCg && !this.ctx.hasCg(cgId)) return;
     this.el.cg.style.backgroundImage = `url('${assetUrl(`assets/cgs/${cgId}.png`)}')`;
     this.el.cg.classList.add("visible");
+    if (this.ctx.onCg) this.ctx.onCg(cgId); // ギャラリーの閲覧記録
   }
   hideCg() {
     this.el.cg.classList.remove("visible");
@@ -173,7 +174,7 @@ class DialogueEngine {
       img.style.bottom = "";
       return;
     }
-    const TARGET = 88; // 切り抜き素材はバストアップ気味に大きく
+    const TARGET = 102; // 切り抜き素材は実体が画面高いっぱいに出るくらい大きく
     const trims = (this.ctx.portraitTrims || {})[folder] || {};
     const faces = (this.ctx.portraitFaces || {})[folder] || [];
     let f = face && faces.includes(face) ? face : "normal";
@@ -183,9 +184,24 @@ class DialogueEngine {
       img.style.bottom = "0";
       return;
     }
-    const h = Math.min(TARGET / t.h, 145);
+    const h = Math.min(TARGET / t.h, 165);
     img.style.height = `${h}%`;
     img.style.bottom = `${-(t.b * h)}%`;
+  }
+
+  // 立ち絵の配置: 1人なら画面中央、2人なら左右に分かれる
+  layoutPortraits() {
+    const imgs = [...this.el.portraits.querySelectorAll("img")];
+    this.el.portraits.classList.toggle("duo", imgs.length >= 2);
+    for (const img of imgs) {
+      img.classList.remove("pos-center", "pos-left", "pos-right");
+      if (imgs.length <= 1) {
+        img.classList.add("pos-center");
+      } else {
+        const slot = this.slots[img.dataset.speaker] ?? 0;
+        img.classList.add(slot === 0 ? "pos-left" : "pos-right");
+      }
+    }
   }
 
   portraitSrc(speaker, face) {
@@ -229,7 +245,7 @@ class DialogueEngine {
         const folder2 = SPEAKER_ID_ALIASES[speaker] || speaker;
         const bgfull = BG_FULL_PORTRAITS.has(folder2) ? " bgfull" : "";
         img.className = `portrait slot-${slot} enter${bgfull}`;
-        img.onerror = () => img.remove();
+        img.onerror = () => { img.remove(); this.layoutPortraits(); };
         this.el.portraits.appendChild(img);
         requestAnimationFrame(() => requestAnimationFrame(() => img.classList.remove("enter")));
       }
@@ -242,6 +258,7 @@ class DialogueEngine {
     for (const img of this.el.portraits.querySelectorAll("img")) {
       img.classList.toggle("active", img.dataset.speaker === speaker);
     }
+    this.layoutPortraits();
     // テキスト（タイプライター表示）
     this.typeText(line.text || "");
     // バックログへ記録
@@ -268,17 +285,26 @@ class DialogueEngine {
       this.setAdvanceHint(true);
       return;
     }
+    // CONFIGのテキスト速度（1=遅い 2=普通 3=速い 4=瞬間表示）
+    const speed = (this.ctx.getTextSpeed && this.ctx.getTextSpeed()) || 2;
+    if (speed >= 4) {
+      this.typing = false;
+      label.innerHTML = this.fullHtml;
+      this.setAdvanceHint(true);
+      return;
+    }
     this.typing = true;
     this.setAdvanceHint(false);
     let i = 0;
     const step = Math.max(1, Math.round(text.length / 90)); // 長文は速める
     label.innerHTML = "";
+    const interval = { 1: 42, 2: 24, 3: 12 }[speed] || 24;
     this.typeTimer = setInterval(() => {
       i += step;
       label.innerHTML = escapeHtml(text.slice(0, i)).replace(/\n/g, "<br>");
       if (window.SFX && i % 4 < step) SFX.type();
       if (i >= text.length) this.completeTyping();
-    }, 24);
+    }, interval);
   }
 
   completeTyping() {

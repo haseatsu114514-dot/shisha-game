@@ -3,3 +3,4 @@
 **/.DS_Store
 .codex/mcp-servers/
 .codex/artifacts/
+__pycache__/
