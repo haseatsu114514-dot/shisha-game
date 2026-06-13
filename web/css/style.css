@@ -2686,3 +2686,32 @@ body {
 
 /* 図柄を画像生成に差し替えたとき（assets/reel/sym_<id>.png）の表示 */
 .sym.sym-img { display: inline-block; width: 76px; height: 76px; background-size: contain; background-repeat: no-repeat; background-position: center; }
+
+/* ================================================================
+   ミニ/フル切替: 通常は左下に小さく常駐、当たって光った時だけ全画面に拡大
+   ================================================================ */
+.rstage-inner { display: block; }                 /* flex解除（子は絶対配置） */
+.rstage-veil { opacity: 1; transition: opacity 0.4s; }
+#reel-stage.mini .rstage-veil { opacity: 0; }     /* ミニは暗転なし */
+#reel-stage.mini { pointer-events: none; }        /* ミニはマップ操作を邪魔しない */
+#reel-stage.full { pointer-events: auto; }
+
+/* 筐体を左上基準に置き、translate+scale でミニ↔フルをなめらかにズーム */
+.rstage-cabinet { position: absolute; left: 0; top: 0; transform-origin: top left;
+  transition: transform 0.45s cubic-bezier(0.2, 1.05, 0.3, 1); }
+#reel-stage.full .rstage-cabinet { transform: translate(435px, 50px) scale(1); }
+#reel-stage.mini .rstage-cabinet { transform: translate(14px, 512px) scale(0.3); }
+
+/* gakkun はリールに当てる（筐体transformと競合させない） */
+#reel-stage.gakkun .rstage-cabinet { animation: none; }
+#reel-stage.gakkun .rstage-reels { animation: rs-gakkun 0.4s; }
+
+/* バナーは画面下中央のオーバーレイに */
+.rstage-banner { position: absolute; left: 50%; bottom: 8%; transform: translateX(-50%); width: 80%; max-width: 760px; }
+.rstage-banner.show { } /* 既存のopacity制御を維持 */
+
+/* ミニ時は data/banner/skip を隠し、モク連カウンタだけ左下ミニ筐体の上に小さく出す */
+#reel-stage.mini .rstage-data,
+#reel-stage.mini .rstage-banner,
+#reel-stage.mini .rstage-skip { display: none; }
+#reel-stage.mini .rstage-challenge { top: auto; bottom: 188px; left: 14px; transform: none; font-size: 12px; padding: 3px 10px; }

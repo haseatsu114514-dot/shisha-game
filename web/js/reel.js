@@ -139,17 +139,21 @@ const REEL = (() => {
     { id: "silent", weight: 10 },  // 無音回転（SE消失＝プレミア告知）
   ];
 
-  // ---- リール盤面（図柄ストリップ・ジャグラー配列を参考）----
+  // ---- リール盤面（図柄ストリップ・実機ジャグラー配列を参考）----
   // seven=赤7(BIG) / bar=BAR(REG) / bell=ベル(ジャグラーのぶどう枠＝常連小役) /
   // cherry=角チェリー / replay=リプレイ(シーシャの水の青) / smoke=煙ブランク / pakki=パッキー柄(ピエロ枠)
   // ・各リール 赤7×1・BAR×1・パッキー×1（ピエロ相当の激レア）
-  // ・有効ラインは【中段】のみ。実機ジャグラー準拠で「下段揃い」は役にしない。
-  //   → 同じ図柄を縦に隣接させない配列にして、中段で揃っても上下段が揃わない（＝下段揃いが出ない）。
-  // ・チェリーは左リール中心の角チェリー（上下段の隅に見せる）
+  // ・左リールは「BARの2コマ下にチェリー」配置＝常にBAR狙い。ハズレはBARを中段に、
+  //   チェリー成立時はBAR上段・チェリー下段（実機の角チェリー）。
+  // ・横一列（上段/下段）の揃いはベル/リプレイ/7/BARでは作らない（同図柄を縦に隣接させない）。
+  //   チェリーは小役なので下段（角）に止まってOK。有効ラインは中央＋斜め。
   const STRIPS = [
-    ["seven", "bell", "replay", "bell", "smoke", "bell", "replay", "cherry", "bell", "smoke", "bell", "replay", "bell", "bar", "smoke", "pakki"],
+    // 左リール: bar(idx6) の2コマ下に cherry(idx8)＝常にBAR狙いで角チェリー
+    ["seven", "bell", "replay", "bell", "smoke", "replay", "bar", "replay", "cherry", "bell", "replay", "smoke", "bell", "replay", "bell", "pakki"],
+    // 中リール
     ["bell", "seven", "replay", "bell", "cherry", "bell", "replay", "smoke", "bell", "replay", "bell", "smoke", "bell", "bar", "replay", "pakki"],
-    ["replay", "bell", "seven", "bell", "replay", "bell", "smoke", "bell", "replay", "cherry", "bell", "replay", "bell", "bar", "smoke", "pakki"],
+    // 右リール: seven(idx2) の真下に bar(idx3)＝実機の「7の下にBAR」
+    ["replay", "bell", "seven", "bar", "replay", "bell", "smoke", "bell", "replay", "cherry", "bell", "replay", "bell", "smoke", "bell", "pakki"],
   ];
   function stripIdx(strip, sym, rng) {
     const cands = [];
@@ -169,12 +173,13 @@ const REEL = (() => {
   }
   // 中段に止まる図柄のインデックスを返す（ボーナスはハズレ目で止まり、ランプが教える＝ジャグラー流）
   function stopsFor(role, rng) {
+    const BAR0 = STRIPS[0].indexOf("bar"); // 左リールは常にBARを中段に＝BAR狙い
     const missStops = () => {
-      // 左は煙固定なので、中・右が両方煙になると「煙揃い」に見えてしまう → 必ずバラす
+      // 左リールはBARを中段に（BAR狙い風）。中・右はバラして横揃いを作らない
       const midSym = rng() < 0.5 ? "smoke" : "cherry";
       const rightSym = midSym === "smoke" ? "replay" : (rng() < 0.5 ? "smoke" : "replay");
       return [
-        safeSmoke(STRIPS[0], rng),
+        BAR0,
         stripIdx(STRIPS[1], midSym, rng),
         stripIdx(STRIPS[2], rightSym, rng),
       ];
@@ -183,10 +188,8 @@ const REEL = (() => {
       case "replay": return STRIPS.map((s) => stripIdx(s, "replay", rng));
       case "bell":   return STRIPS.map((s) => stripIdx(s, "bell", rng));
       case "cherry": {
-        // 角チェリー: 左リールのチェリーを上下どちらかの隅に見せる
-        const c = stripIdx(STRIPS[0], "cherry", rng);
-        const off = rng() < 0.5 ? 1 : -1;
-        return [(c + off + STRIPS[0].length) % STRIPS[0].length,
+        // 角チェリー（BAR狙い）: 左リールは BAR上段・チェリー下段（bar の2コマ下が cherry）
+        return [(BAR0 + 1) % STRIPS[0].length,
                 stripIdx(STRIPS[1], "smoke", rng), stripIdx(STRIPS[2], "smoke", rng)];
       }
       case "rare": {
@@ -489,8 +492,10 @@ const REEL = (() => {
     stage.classList.toggle("lamp-on", !!on); // 顔（マスコット）も連動して光らせる
   }
   function banner(html, cls) { const b = stage && stage.querySelector("#rstage-banner"); if (!b) return; b.className = "rstage-banner" + (cls ? " " + cls : "") + (html ? " show" : ""); b.innerHTML = html || ""; }
-  function openStage() { ensureStage(); stage.classList.add("show"); renderData(); renderChallenge(); }
-  function closeStage() { if (stage) { stage.classList.remove("show", "freeze-mode"); banner(""); lamp(false); clearLines(); } }
+  function setMode(m) { if (!stage) return; stage.classList.toggle("mini", m === "mini"); stage.classList.toggle("full", m === "full"); }
+  function openStage(mode) { ensureStage(); stage.classList.add("show"); setMode(mode || "mini"); renderData(); renderChallenge(); }
+  function closeStage() { if (stage) { stage.classList.remove("show", "freeze-mode", "full", "mini"); banner(""); lamp(false); clearLines(); } }
+  function hideStage() { if (stage) stage.classList.remove("show"); }
 
   // 有効ライン（中央/斜め）の点滅
   function clearLines() { if (!stage) return; stage.querySelectorAll(".payline").forEach((p) => p.classList.remove("on")); }
@@ -569,7 +574,20 @@ const REEL = (() => {
     await wait(fast ? 240 : 1050);
   }
 
-  // 1回転の全画面演出
+  // ミニ表示の1回転（通常・小役）: 左下の小さな筐体で素早く回す。当たり（ペカ）は出さない
+  async function presentMini(r) {
+    banner(""); lamp(false);
+    if (r.gakkun) { stage.classList.add("gakkun"); setTimeout(() => stage.classList.remove("gakkun"), 500); }
+    sfx("reelLever");
+    await spinReels(r.stops, { fast: true });
+    if (r.role === "replay") { stage.classList.add("flash"); sfx("reelWin"); flashLine(r.line); setTimeout(() => { stage.classList.remove("flash"); clearLines(); }, 380); }
+    else if (r.role === "bell") { sfx("reelWin"); flashLine(r.line); setTimeout(clearLines, 380); }
+    else if (r.role === "cherry") { sfx("reelWin"); } // 角チェリーはライン点滅なし
+    if (!r.quiet) quietGain(r); // 小役のステ上昇は隅のバナーで（数値は出さない）
+    await wait(220);
+  }
+
+  // 1回転の全画面演出（当たり＝ペカ用）
   async function presentOne(r) {
     const fast = fx() === "lite";
     banner(""); lamp(false);
@@ -652,22 +670,36 @@ const REEL = (() => {
         reel.pending = []; if (typeof save === "function") save();
         return;
       }
-      openStage();
-      await wait(160);
+      const fast = fx() === "lite";
+      openStage("mini"); // 通常は左下にミニ筐体
+      await wait(140);
       while (reel.pending.length) {
         const r = reel.pending[0];
         skipReq = false;
-        renderData(); renderChallenge();
-        await presentOne(r);
-        applyReward(r);          // ← 回りきってから経験値を確定
-        await runRen(r);         // モク連チャレンジ（演出のみ・恩恵なし）
-        renderData();            // データランプ更新
+        renderChallenge();
+        const peka = PEKA.includes(r.role) || !!r.overlap;
+        if (peka) {
+          // 当たって光る時だけ全画面に拡大
+          setMode("full"); renderData(); renderChallenge();
+          await wait(fast ? 80 : 440); // ズームイン
+          await presentOne(r);
+          applyReward(r);              // 回りきってから経験値を確定
+          await runRen(r);             // モク連チャレンジ（GET/開始の盛り上げ）
+          renderData();
+          await wait(fast ? 80 : 260);
+          setMode("mini");             // ミニへズームアウト
+          await wait(fast ? 60 : 400);
+        } else {
+          await presentMini(r);
+          applyReward(r);
+          // モク連チャレンジ中の非当たりはカウントダウン（恩恵なし・カウンタのみ）
+          if (reel.renLeft > 0) { reel.renLeft -= 1; renderChallenge(); }
+        }
         reel.pending.shift();
         if (typeof save === "function") save();
-        await wait(120);
+        await wait(60);
       }
-      closeStage();
-      await wait(240);
+      // ミニ筐体はマップに常駐させる（closeStage しない）
     } finally { busy = false; }
   }
 
@@ -710,12 +742,17 @@ const REEL = (() => {
     playSession().then(done);
   }
 
-  // マップ復帰時の未消化分（リロード耐性）
+  // マップ表示時: 未消化があれば消化、無ければミニ筐体を常駐表示
   function onMapShown() {
     if (busy) return;
-    if (typeof state === "undefined" || !state || !state.reel || !state.reel.pending.length) return;
-    if (!state.reel.introDone && fx() !== "off") { showIntro(() => playSession()); return; }
-    if (!state.reel.introDone) state.reel.introDone = true;
+    if (typeof state === "undefined" || !state || !state.reel) return;
+    if (fx() === "off") { hideStage(); return; } // 演出OFFは筐体を出さない
+    if (!state.reel.pending.length) {
+      // 行動の隙間: 左下にミニ筐体だけ常駐
+      if (state.reel.introDone) openStage("mini");
+      return;
+    }
+    if (!state.reel.introDone) { showIntro(() => playSession()); return; }
     playSession();
   }
 
@@ -767,14 +804,16 @@ const REEL = (() => {
           variant: PEKA.includes(role) && role !== "freeze" ? (role === "rare" ? "premium" : "after") : "none",
           exp: role === "miss" ? 1 : 6, quiet: role === "miss", zone: false, gakkun: false, ceiling: "", target: "technique", applied: true, hitGap: 0,
         };
-        openStage(); skipReq = false;
-        await presentOne(r);
-        closeStage();
+        const peka = PEKA.includes(role) || !!r.overlap;
+        openStage(peka ? "full" : "mini"); skipReq = false;
+        if (peka) { await presentOne(r); } else { await presentMini(r); }
+        // 確認用に少し残してミニへ
+        if (peka) { await wait(300); setMode("mini"); }
       },
     };
   }
 
-  return { core, newReelState, noteStat, onAction, runActionSession, onMapShown };
+  return { core, newReelState, noteStat, onAction, runActionSession, onMapShown, hideStage };
 })();
 
 if (typeof window !== "undefined") window.REEL = REEL;

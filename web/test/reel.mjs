@@ -187,17 +187,17 @@ const weightOf = (table, id) => table.find((r) => r.id === id).weight;
       if (r.role === "rare") assert.ok(["cherry", "pakki"].includes(mids[0]), "プレミアの左中段が違う");
       if (r.role === "miss") {
         assert.ok(!(mids[0] === mids[1] && mids[1] === mids[2]), "ハズレで図柄が揃ってしまった");
-        assert.strictEqual(mids[0], "smoke", "ハズレの左中段は煙のはず");
-        // 角チェリーの誤爆（左リールの上下にチェリー）が無いこと
+        // 左リールは常にBARを中段に（BAR狙い）。角チェリーの誤爆が無いこと
+        assert.strictEqual(mids[0], "bar", "ハズレの左中段はBAR(BAR狙い)のはず");
         const strip = STRIPS[0], n = strip.length;
         assert.notStrictEqual(strip[(r.stops[0] + 1) % n], "cherry", "ハズレ目に角チェリーが見えている");
         assert.notStrictEqual(strip[(r.stops[0] - 1 + n) % n], "cherry", "ハズレ目に角チェリーが見えている");
       }
       if (r.role === "cherry") {
-        // 角チェリー: 左リールの上下どちらかにチェリーが見えている
+        // BAR狙い角チェリー: 左リールは BAR上段・チェリー下段
         const strip = STRIPS[0], n = strip.length;
-        const corner = strip[(r.stops[0] + 1) % n] === "cherry" || strip[(r.stops[0] - 1 + n) % n] === "cherry";
-        assert.ok(corner, "チェリー小役で角チェリーが見えていない");
+        assert.strictEqual(strip[(r.stops[0] + 1) % n], "cherry", "チェリーが下段(角)に無い");
+        assert.strictEqual(strip[(r.stops[0] - 1 + n) % n], "bar", "チェリー時の上段がBARでない(BAR狙い)");
       }
       // 有効ラインは中央＋斜めのみ。横一列（上段/下段）には同じ図柄が3つ並ばないこと
       if (r.role === "bell" || r.role === "replay") {
@@ -210,14 +210,20 @@ const weightOf = (table, id) => table.find((r) => r.id === id).weight;
       assert.ok(r.stops.every((s, i) => s >= 0 && s < STRIPS[i].length), "停止位置が盤面の範囲外");
     }
   }
-  // 配列そのものに同図柄の縦連続が無いこと（実機リール設計＝下段/上段の誤揃いを防ぐ）
+  // 配列そのものに同図柄の縦連続が無いこと（実機リール設計＝横一列の誤揃いを防ぐ）
   for (let i = 0; i < STRIPS.length; i++) {
     const s = STRIPS[i], n = s.length;
     for (let k = 0; k < n; k++) {
       assert.notStrictEqual(s[k], s[(k + 1) % n], `リール${i + 1} に同図柄の縦連続: ${s[k]} (idx ${k})`);
     }
   }
-  log("stop patterns / 有効ライン(中段のみ・下段揃い無し) OK");
+  // 実機風レイアウト: 左リールは bar の2コマ下に cherry（BAR狙い角チェリー）、右リールは 7 の真下に BAR
+  {
+    const L = STRIPS[0], R = STRIPS[2];
+    assert.strictEqual(L[(L.indexOf("bar") + 2) % L.length], "cherry", "左リール: BARの2コマ下がチェリーでない");
+    assert.strictEqual(R[(R.indexOf("seven") + 1) % R.length], "bar", "右リール: 7の真下がBARでない");
+  }
+  log("stop patterns / 有効ライン(中央+斜め) / 実機風配列(BAR狙い・7下BAR) OK");
 }
 
 // ---- 9. 参考値の出力（バランス調整用）

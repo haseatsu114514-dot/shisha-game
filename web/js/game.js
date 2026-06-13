@@ -95,6 +95,8 @@ function showScreen(id) {
   else if (state && state.phase === "daily") $("#hud-day-card").classList.add("show");
   // 画面を移ったら AUTO/SKIP を解除（ダイアログ専用）
   if (id !== "#screen-dialogue") stopAutoSkip();
+  // 日常リールのミニ筐体はマップ専用。それ以外の画面では隠す
+  if (id !== "#screen-map" && typeof REEL !== "undefined" && REEL.hideStage) REEL.hideStage();
   if (state) updateDayCard();
 }
 
