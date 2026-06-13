@@ -149,6 +149,8 @@ FREEZE BONUS＋パッキー乱舞→赤7揃い→「殿堂入り！スロノー�
 
 ## 10. 組み込み手順（GOが出たらこの順で）
 
+> **実装者への引き渡しには `docs/pakki_slot_install_guide.md`（実行用の作業指示書）を使うこと。**
+> 本節は同じ内容の要約版で、正は指示書側。
 > 作業前に `docs/web_version_plan.md` の最新引き継ぎを読み、ブランチを確認すること。
 > reel.js は game.js のグローバル（state / save / gainBanner / updateHud / STAT_KEYS /
 > STAT_BADGE / config / faceIconHtml）を実行時参照する。読み込み順は engine.js の後・game.js の前。
