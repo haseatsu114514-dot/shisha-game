@@ -2660,9 +2660,8 @@ const PACKS = [
   { id: "firm", label: "かため", desc: "ぎゅっと密度を出す" },
 ];
 const COALS = [
-  { id: "two", label: "炭2個", desc: "低めの熱でじっくり" },
-  { id: "triangle", label: "トライアングル", desc: "基本の三角配置。安定の熱まわり" },
-  { id: "four", label: "炭4個", desc: "高火力。焦げのリスクと隣り合わせ" },
+  { id: "triangle", label: "トライアングル", desc: "基本の三角配置（3個）。安定の熱まわり" },
+  { id: "four", label: "炭4個", desc: "3個よりかなり熱が上がる高火力。焦げのリスクと隣り合わせ" },
 ];
 const STEAMS = [
   { id: 2, label: "2分", desc: "せっかち。立ち上がりが不安定", dodge: 6 },
@@ -2737,7 +2736,7 @@ function pakkiLive(result) {
 const STEP_FLOW = [
   ["setup_bowl", "SETUP"], ["setup_hms", "SETUP"], ["setup_charcoal", "SETUP"],
   ["theme", "FLAVOR"], ["mix", "MIX"], ["pack", "PACK"], ["foil", "FOIL"],
-  ["coalfire", "COAL"], ["coal", "HEAT"], ["steam", "STEAM"],
+  ["coal", "SET"], ["coalfire", "HEAT"], ["steam", "STEAM"],
   ["adjust", "ROUND2"], ["focus", "FOCUS"], ["pull", "PULL"],
 ];
 // 前日リハーサル: 短縮の通し（穴あけ・炭起こし・集中は無難な値で省略）
@@ -2996,7 +2995,7 @@ function tournamentStep(step) {
   if (step === "foil") return stepFoil();
   if (step === "coalfire") return stepCoalFire();
   if (step === "coal") {
-    const body = tnPanel("炭の配置", "熱の入り方が決まる。基本はトライアングル。");
+    const body = tnPanel("炭をコンロにセット", "何個の炭を熾すか決める。ここでコンロに乗せ、焼けたら次の工程で取り上げる。多いほど高火力だが焦げやすい。基本はトライアングル(3個)。");
     for (const c of COALS) body.appendChild(optionButton(c.label, c.desc, () => { tt.coal = c.id; tnNext("coal"); }));
     return;
   }
@@ -3069,15 +3068,47 @@ function showStandings(round, next) {
 // --- ラウンド2: 炭替え・調整。一箇所だけ作りを直せる
 // ラウンド2（中盤の調整）: 一度組んだら詰め直し・蒸らし直しは物理的に無理。
 // 動かせるのは炭の位置と数だけ（温度の最終調整は提供前の吸い出しで作る）#15
+// ラウンド2: 今の温度を見て、適温（テーマ依存）からズレてたら炭で寄せる（#45/#46）。
+// 詰め直し・蒸らし直しは不可。炭は新しく替えてもいいし、あえて前の炭のまま（非推奨）でもいい。
 function stepAdjust() {
   const body = tnPanel("ラウンド2：炭替え・調整",
-    "中盤戦。一度組んだら詰め直しも蒸らし直しもできない。いま動かせるのは炭の位置と数だけだ（温度の最終調整は、提供前の吸い出しで作る）。");
-  const cur = (list, id) => (list.find((x) => x.id === id) || {}).label || "-";
-  body.appendChild(optionButton("このままでいく", "今の熱を信じる", () => {
+    "今の温度を見ろ。適温からズレてたら炭で寄せる。詰め直し・蒸らし直しはできない（温度の最終調整は提供前の吸い出しで）。");
+  const target = pullTargetZone();
+  const tw = document.createElement("div");
+  tw.className = "temp-wrap";
+  tw.innerHTML =
+    `<div class="temp-labels"><span>ぬるい</span><span>適温</span><span>焦げる</span></div>` +
+    `<div class="temp-bar"><div class="temp-zone"></div><div class="temp-marker"></div></div>` +
+    `<div class="adjust-read" id="adjust-read"></div>`;
+  tw.querySelector(".temp-zone").style.left = `${target[0] * 100}%`;
+  tw.querySelector(".temp-zone").style.width = `${(target[1] - target[0]) * 100}%`;
+  const marker = tw.querySelector(".temp-marker");
+  const read = tw.querySelector("#adjust-read");
+  const refresh = () => {
+    const t = projectedTemp();
+    marker.style.left = `${Math.round(t * 100)}%`;
+    const inZone = t >= target[0] && t <= target[1];
+    read.textContent = inZone ? "◎ 今の温度は適温に乗っている。" : t < target[0] ? "▽ 少しぬるい。炭を増やすと温まる。" : "△ 少し熱い。炭を減らすと落ち着く。";
+    read.className = `adjust-read ${inZone ? "ok" : "warn"}`;
+  };
+  body.appendChild(tw);
+  refresh();
+  const coalRow = document.createElement("div");
+  coalRow.className = "adjust-coals";
+  const mark = (sel) => [...coalRow.children].forEach((x) => x.classList.toggle("sel", x === sel));
+  for (const c of COALS) {
+    const b = optionButton(`炭を${c.label}に替える`, c.desc, () => {
+      tt.coal = c.id; if (window.SFX) SFX.select(); updateRig(); refresh(); mark(b);
+    });
+    if (tt.coal === c.id) b.classList.add("sel");
+    coalRow.appendChild(b);
+  }
+  body.appendChild(coalRow);
+  // 確定（炭を替えないのも手＝前の炭のまま・非推奨でも進める）。テスト互換のため「このままでいく」を残す
+  body.appendChild(optionButton("このままでいく", "今の温度で勝負する", () => {
     if (window.SFX) SFX.select();
     tnNext("adjust");
   }));
-  body.appendChild(optionButton("炭の位置・数を変える", `現在: ${cur(COALS, tt.coal)}`, () => redoAdjust("coal")));
 }
 
 function redoAdjust(kind) {
@@ -3201,6 +3232,7 @@ function stepFoil() {
       </div>
       <button class="primary-btn hole-punch" id="hole-punch">穴を開ける</button>
       <button class="primary-btn ghost hole-advance" id="hole-advance">次の周へ ▶</button>
+      <button class="primary-btn ghost hole-finish" id="hole-finish">ここで切り上げる ▶</button>
     </div>`;
   body.appendChild(arena);
   const result = document.createElement("div");
@@ -3214,6 +3246,7 @@ function stepFoil() {
   const calloutEl = arena.querySelector("#hole-callout");
   const punchBtn = arena.querySelector("#hole-punch");
   const advBtn = arena.querySelector("#hole-advance");
+  const finishBtn = arena.querySelector("#hole-finish"); // 1週/2週で切り上げる（#28）
 
   const ringData = HOLE_RINGS.map((r) => ({ ...r, angles: [] }));
   let ringIdx = 0;
@@ -3232,6 +3265,8 @@ function stepFoil() {
     arena.querySelector("#hole-rolename").textContent = r.role;
     board.dataset.ring = r.key;
     advBtn.textContent = ringIdx < ringData.length - 1 ? "次の周へ ▶" : "穴あけを仕上げる ▶";
+    // 最終リングは advBtn 自体が仕上げる＝切り上げボタンは不要。1周/2周で切り上げたい時だけ出す
+    finishBtn.style.display = ringIdx < ringData.length - 1 ? "" : "none";
     refreshMeter();
   };
   const refreshMeter = () => {
@@ -3240,6 +3275,7 @@ function stepFoil() {
     arena.querySelector("#hole-even").style.width = `${Math.round(even * 100)}%`;
     arena.querySelector("#hole-count").textContent = `穴 ${r.angles.length} / ${r.target}`;
     advBtn.disabled = r.angles.length < 1;
+    finishBtn.disabled = r.angles.length < 1;
   };
 
   const tick = (now) => {
@@ -3299,23 +3335,25 @@ function stepFoil() {
     }
   };
   advBtn.addEventListener("click", finishRing);
+  finishBtn.addEventListener("click", finishHole); // 今のリングで切り上げ（#28）
 
   function finishHole() {
     running = false; cancelAnimationFrame(raf);
     punchBtn.disabled = true; advBtn.disabled = true;
     // ---- 評価: 均等度50% + 円形精度(リング完成度)10% + 各リングの充足 + 残量 ----
-    let evenSum = 0, fillSum = 0, totalHoles = 0;
+    let evenSum = 0, fillSum = 0, totalHoles = 0, doneRings = 0;
     const per = {};
     for (const r of ringData) {
       const ev = ringEvenness(r.angles);
       const fill = Math.min(1, r.angles.length / r.target);
-      evenSum += ev; fillSum += fill;
+      if (r.angles.length > 0) { evenSum += ev; fillSum += fill; doneRings++; } // 切り上げ可(#28): 開けた周だけで評価
       totalHoles += r.angles.length;
       per[r.key] = { holes: r.angles.length, evenness: Math.round(ev * 100) };
     }
-    const evenAvg = evenSum / ringData.length;
-    const fillAvg = fillSum / ringData.length;
-    const quality = evenAvg * 0.6 + fillAvg * 0.4; // 0..1（均等度重視）
+    const nDone = Math.max(1, doneRings);
+    const evenAvg = evenSum / nDone;
+    const fillAvg = fillSum / nDone;
+    const quality = evenAvg * 0.6 + fillAvg * 0.4; // 0..1（均等度重視・開けた周のみで平均）
     // 既存craftScore互換: foilHits 0-6
     tt.foilHits = Math.round(quality * 6);
     tt.foilDone = true;
@@ -3361,8 +3399,8 @@ const HEAT_STOPS = [
   [0.26, [74, 28, 22]],    // 端がうっすら赤い
   [0.50, [156, 42, 20]],   // 赤
   [0.72, [228, 84, 28]],   // 赤熱
-  [0.90, [255, 242, 205]], // ピカン（芯が白く閃く）
-  [1.04, [255, 214, 150]], // 白熱
+  [0.90, [255, 168, 96]],  // ピカン（赤さを残したまま白い芯が閃く＝炭らしさを保つ・#52）
+  [1.04, [255, 232, 198]], // 白熱（焼きすぎ寄り＝ここで白くなる）
   [1.30, [176, 170, 158]], // 灰かぶり
 ];
 function heatRGB(h) {
@@ -3399,7 +3437,7 @@ const HEAT_GRADE = {
 
 function stepCoalFire() {
   const body = tnPanel("HEAT IGNITION ── 炭起こし",
-    "コンロの炭をよく見ろ。芯がピカッと閃いた、その瞬間に取り上げる。早すぎれば生焼け、遅すぎれば灰になる。");
+    "炭はもうコンロで赤く熾きかけている。芯がピカッと閃く、その一瞬で取り上げろ。遅れれば灰をかぶる。");
   const isDrill = tt.mode === "drill";
 
   const arena = document.createElement("div");
@@ -3426,22 +3464,25 @@ function stepCoalFire() {
   const calloutEl = arena.querySelector("#heat-callout");
   const countEl = arena.querySelector("#heat-count");
 
+  // 炭の数は前工程「炭をコンロにセット」での選択に従う（2個/トライアングル3個/4個）
+  const count = tt.coal === "two" ? 2 : tt.coal === "four" ? 4 : 3;
   // 根性が高いほどジャスト窓が広く、温度上昇がわずかに緩やか（数値は見せない）
   const guts = state.stats.guts;
   const justHi = 0.96 + Math.min(0.12, guts / 900);
   const baseRate = 0.235 - Math.min(0.075, guts / 1300);
-  const RATE_MUL = [1.15, 1.0, 0.88]; // 炭ごとに焼けるスピードを少し変える
-  const START = [0.10, -0.10, -0.30]; // 立ち上がりをずらす（同時に閃かせない）
 
   const coals = [];
-  for (let i = 0; i < HEAT_COUNT; i++) {
+  for (let i = 0; i < count; i++) {
     const el = document.createElement("button");
     el.className = "heat-coal";
     el.id = `heat-coal-${i}`;
     el.innerHTML = `<span class="heat-core"></span><span class="heat-badge"></span>`;
     coalsEl.appendChild(el);
+    // 既にコンロで7割ほど焼けた状態からスタート（生焼けの待ち時間は無し）。
+    // どの炭が先に熱が入るかはランダム＝立ち上がりと速度を炭ごとにばらつかせる（#51）
     coals.push({ el, core: el.querySelector(".heat-core"), badge: el.querySelector(".heat-badge"),
-                 heat: START[i], rate: baseRate * RATE_MUL[i], taken: false, inJust: false, grade: null, zone: null });
+                 heat: 0.66 - Math.random() * 0.17, rate: baseRate * (0.9 + Math.random() * 0.36),
+                 taken: false, inJust: false, grade: null, zone: null });
     el.addEventListener("click", () => takeCoal(i));
   }
 
@@ -3451,7 +3492,7 @@ function stepCoalFire() {
     setTimeout(() => calloutEl.classList.remove("show"), 720);
   };
   const updateCount = () => {
-    countEl.textContent = `取った炭 ${coals.filter((c) => c.taken).length} / ${HEAT_COUNT}`;
+    countEl.textContent = `取った炭 ${coals.filter((c) => c.taken).length} / ${count}`;
   };
   updateCount();
 
@@ -3911,25 +3952,42 @@ const PULL_MIN = 2, PULL_MAX = 5, PULL_SAFE = 3;
 // ジャスト帯（master_spec #13）: 各ゾーン中央の細い帯。
 // キープのジャスト=ブレほぼ消滅／上げ下げのジャスト=通常より強く効く
 const PULL_JUST = { up: [0.14, 0.205], keep: [0.468, 0.532], down: [0.795, 0.86] };
-const PULL_TARGET = [0.63, 0.79]; // 温度バー上の適温ゾーン（0..1）
+// 適温ゾーンは客の需要（テーマ/コンセプト）で変わる（#38）。
+// リラックスは高温にしすぎない／高火力は高め／フルーティは香りを飛ばさない中温
+function pullTargetZone() {
+  return ({
+    relax: [0.44, 0.60], high_heat: [0.70, 0.86], fruity: [0.55, 0.71], aftertaste: [0.64, 0.80],
+  })[tt && tt.theme ? tt.theme.id : ""] || [0.62, 0.78];
+}
 const PULL_DELTA = 0.13; // 1回の吸いで動かせる最大温度
 
-function pullStartTemp() {
+// 今の仕込み（炭/炭起こし/蒸らし/葉量）から決まる温度。決定論なので R2の表示と吸い出しの起点で共有（#45）
+function projectedTemp() {
   const totalG = Object.values(tt.mix).reduce((a, b) => a + b, 0) || 12;
   let t = 0.5;
-  t += { two: -0.07, triangle: 0, four: 0.07 }[tt.coal] ?? -0.04;
+  t += { triangle: 0, four: 0.14 }[tt.coal] ?? 0; // 炭3個=基準／4個でかなり上がる（#50）
+  t += { flat_charcoal: -0.03, cube_charcoal: 0.06 }[tt.charcoal] ?? 0; // フラット炭/キューブ炭でも温度差（#50）
   t += { perfect: 0.04, good: 0, miss: -0.07 }[tt.coalFire] ?? 0;
   t += { 2: -0.08, 5: 0, 8: 0.03, 12: 0.07 }[tt.steam] ?? 0;
   t -= Math.max(0, totalG - 12) * 0.012; // 葉が多いほど温まりは遅い
-  t += Math.random() * 0.06 - 0.03;
   return Math.max(0.16, Math.min(0.9, t));
+}
+function pullStartTemp() {
+  return Math.max(0.16, Math.min(0.9, projectedTemp() + (Math.random() * 0.06 - 0.03)));
 }
 
 function stepPull() {
+  const PULL_TARGET = pullTargetZone(); // 適温はテーマ依存（#38）
+  const tempNote = (tt && tt.theme) ? ({
+    relax: "　今日はリラックス系——高温にしすぎないのが適温だ。",
+    high_heat: "　今日は高火力系——しっかり高温まで上げろ。",
+    fruity: "　今日はフルーティ——香りを飛ばさない中温が適温。",
+    aftertaste: "　今日は余韻系——やや高めの適温で香りを伸ばせ。",
+  })[tt.theme.id] || "" : "";
   const body = tnPanel(
     "吸い出し（温度合わせ）",
     "提供前に何度か吸って、ボウルの温度を立ち上げる。左で止めれば上げ吸い、右なら下げ吸い、真ん中はキープ。" +
-      `最低${PULL_MIN}回・${PULL_SAFE}回までは無傷、それ以上は葉が痩せる。やめ時は自分で決めろ。`
+      `最低${PULL_MIN}回・${PULL_SAFE}回までは無傷、それ以上は葉が痩せる。` + tempNote
   );
   tt.temp = pullStartTemp();
   tt.pullCount = 0;
@@ -4076,9 +4134,9 @@ function stepPull() {
     nextBtn.textContent = "次へ";
     nextBtn.addEventListener("click", () => {
       if (tt.mode === "tournament") {
-        if (state.chapter === 2) return finishCh2Stage();
-        // ラウンド3終了の会話を挟んで結果発表へ
-        return playDialogue("ch1_tournament_r3_end", () => finishTournament(), "res://assets/backgrounds/bg_tournament_stage.png");
+        // 提供 → FLAVOR TRIAL（審査）→ 結果発表（#13）
+        if (state.chapter === 2) return flavorTrial(finishCh2Stage);
+        return playDialogue("ch1_tournament_r3_end", () => flavorTrial(finishTournament), "res://assets/backgrounds/bg_tournament_stage.png");
       }
       tnNext("pull");
     });
@@ -4218,6 +4276,105 @@ function craftScore() {
   return { score, detail };
 }
 
+// ============================================================================
+// FLAVOR TRIAL（審査）— master_spec 第2部 #3。CLAUDE.mdの「プレゼン工程は廃止」を本仕様が上書き。
+// コンセプト(=tt.theme/制作前の方針) と、制作結果から自動生成したアピールポイント(=実績)を、
+// 審査員のザワザワ(疑問)に「ぶつける」。実績で裏打ちされた一致=納得↑／口だけ=「香ってない！」／
+// 見当違い=「ズレてる！」。正式用語=コンセプト/アピールポイント/ぶつける（弾丸系は使わない・#17）。
+// ============================================================================
+// cat: aroma(香り) / smoke(煙量) / craft(仕上げ) / burn(焦げにくさ)
+function buildAppeals() {
+  const hr = tt.holeResult || {}, cr = tt.coalResult || {}, prof = mixProfile();
+  const themeMatch = tt.theme ? tt.theme.best.filter((c) => prof.cats.has(c)).length >= 1 : false;
+  return [
+    { id: "hole_even", label: "外周の穴が均等に開いてる", cat: "craft", backed: (hr.heatSpread || 0) >= 62 || (hr.evenness || 0) >= 70 },
+    { id: "hole_a", label: "穴あけはA評価の通り", cat: "craft", backed: (hr.score || 0) >= 76 },
+    { id: "inner_low", label: "内周は攻めすぎていない", cat: "burn", backed: (hr.innerHoles || 0) <= 4 },
+    { id: "just_coal", label: "炭はジャストで取り上げた", cat: "aroma", backed: (cr.justCount || 0) >= 1 },
+    { id: "flash", label: "炭の芯をピカンで仕留めた", cat: "craft", backed: !!cr.coalFlashSuccess },
+    { id: "heat_stable", label: "火力は安定している", cat: "smoke", backed: (cr.heatStability || 0) >= 62 },
+    { id: "low_burn", label: "焦げリスクは低めに収めた", cat: "burn", backed: (cr.burnRisk == null ? 50 : cr.burnRisk) <= 48 },
+    { id: "smoke_a", label: "煙量はしっかり出ている", cat: "smoke", backed: prof.weight >= 0.95 },
+    { id: "aroma_on", label: "狙った香りが芯まで乗ってる", cat: "aroma", backed: themeMatch && (cr.aromaRetention || 50) >= 55 },
+  ];
+}
+const TRIAL_DOUBTS = [
+  { need: "aroma", text: "……この一台、狙った香りはちゃんと芯まで残っているのか？" },
+  { need: "smoke", text: "悪くない。だが、煙量が少し物足りなく感じるな。" },
+  { need: "craft", text: "急いで仕上げた分、詰めや穴に粗さは出ていないか？" },
+];
+
+function flavorTrial(onDone) {
+  if (tt) tt.step = "trial";
+  const appeals = buildAppeals();
+  let gauge = 50, round = 0, successCount = 0, lieCount = 0;
+
+  const render = () => {
+    const body = tnPanel("審査 ── FLAVOR TRIAL",
+      "審査員のザワザワに、自分の“アピールポイント”をぶつけて納得させろ。実績の伴わない強気は「香ってない！」と返される。");
+    const d = TRIAL_DOUBTS[round];
+    const arena = document.createElement("div");
+    arena.className = "trial-arena";
+    arena.innerHTML =
+      `<div class="trial-gauge"><span>納得ゲージ</span><i class="trial-gauge-bar"><b id="trial-gauge-b" style="width:${gauge}%"></b></i></div>` +
+      `<div class="trial-doubt" id="trial-doubt" data-need="${d.need}">「${d.text}」<span class="trial-zawa">ザワ…ザワ…</span></div>` +
+      `<div class="trial-concept">あなたのコンセプト: <b>${tt.theme ? tt.theme.label : "—"}</b>　── これを証明する一手をぶつけろ</div>` +
+      `<div class="trial-hand" id="trial-hand"></div>` +
+      `<div class="trial-feedback" id="trial-feedback"></div>`;
+    body.appendChild(arena);
+    const hand = arena.querySelector("#trial-hand");
+    for (const a of appeals) {
+      const btn = document.createElement("button");
+      btn.className = "trial-appeal" + (a.backed ? " backed" : " weak");
+      btn.dataset.cat = a.cat; btn.dataset.backed = a.backed ? "1" : "0";
+      btn.innerHTML = `<span class="ta-label">${a.label}</span><span class="ta-badge">${a.backed ? "✓実績" : "強気"}</span>`;
+      btn.addEventListener("click", () => hit(a));
+      hand.appendChild(btn);
+    }
+  };
+
+  const hit = (a) => {
+    const d = TRIAL_DOUBTS[round];
+    document.querySelectorAll(".trial-appeal").forEach((b) => (b.disabled = true));
+    let res, cls, delta;
+    if (a.cat === d.need && a.backed) { res = "ぶつけた──「確かに、言う通りだ！」　FLAVOR SYNC!!"; cls = "good"; delta = 18; successCount++; }
+    else if (a.cat === d.need && !a.backed) { res = "「香ってない！ それは口だけだ！」　SESSION BREAK"; cls = "bad"; delta = -14; lieCount++; }
+    else { res = "「それは……今の話とズレてる！」"; cls = "bad"; delta = -7; }
+    gauge = Math.max(0, Math.min(100, gauge + delta));
+    const gb = $("#trial-gauge-b"); if (gb) gb.style.width = `${gauge}%`;
+    const fb = $("#trial-feedback");
+    fb.innerHTML = `<span class="trial-line">${res}</span>`;
+    fb.className = `trial-feedback show ${cls}`;
+    if (window.SFX) (delta > 0 ? SFX.perfect : SFX.miss)();
+    if (delta > 0) { showStamp($("#tn-layout .panel"), "just"); if (tt.mode === "tournament") pakkiLive("perfect"); }
+    const next = document.createElement("button");
+    next.className = "primary-btn";
+    next.textContent = round < TRIAL_DOUBTS.length - 1 ? "次のザワザワへ ▶" : "審査を終える ▶";
+    next.addEventListener("click", () => { round++; (round < TRIAL_DOUBTS.length) ? render() : finishTrial(); });
+    fb.appendChild(next);
+  };
+
+  const finishTrial = () => {
+    tt.presentationResult = { score: Math.round(gauge), convinceGauge: Math.round(gauge), successCount, lieCount };
+    const body = tnPanel("FLAVOR TRIAL ── 講評", "");
+    const r = document.createElement("div");
+    r.className = "practice-result";
+    r.innerHTML =
+      (gauge >= 75 ? "──審査員が深く頷いた。「言ったことと、煙が、ちゃんと一致している」"
+      : gauge >= 45 ? "──審査員は半分だけ納得した様子だ。「悪くはない」"
+      : "──審査員の眉根は寄ったままだ。「言葉は立派だが……香ってこない」") +
+      `<div class="hole-summary">納得 ${Math.round(gauge)}％ ／ 一致 ${successCount} ／ 乖離 ${lieCount}</div>`;
+    const next = document.createElement("button");
+    next.className = "primary-btn";
+    next.textContent = "結果発表へ ▶";
+    next.addEventListener("click", () => onDone());
+    r.appendChild(next);
+    body.appendChild(r);
+  };
+
+  render();
+}
+
 function finishTournament() {
   const s = state.stats;
   const statScore = (s.technique * 1.2 + s.sense * 1.0 + s.guts * 0.6 + s.charm * 0.8 + s.insight * 1.0) / 4.6;
@@ -4232,7 +4389,13 @@ function finishTournament() {
     serveBonus += 2;
     craft.detail.push("みんと直伝の空気の作り方が、提供の瞬間、審査員の表情を柔らかくした。");
   }
-  const base = statScore * 0.55 + craft.score * 0.45 + serveBonus;
+  // FLAVOR TRIAL（審査）の納得ゲージをわずかに上乗せ（master_spec §7のプレゼン枠・±で効く）
+  const pres = tt.presentationResult ? (tt.presentationResult.convinceGauge - 50) / 6 : 0;
+  if (tt.presentationResult) {
+    if (tt.presentationResult.convinceGauge >= 70) craft.detail.push("審査で、コンセプトとアピールポイントがぴたりと噛み合った。");
+    else if ((tt.presentationResult.lieCount || 0) >= 2) craft.detail.push("審査では、実績を伴わないアピールが見抜かれ「香ってない」と返された。");
+  }
+  const base = statScore * 0.55 + craft.score * 0.45 + serveBonus + pres;
 
   const results = RIVALS.map((r) => ({
     id: r.id, name: r.name,
@@ -4808,13 +4971,13 @@ function startTitleBgm() {
 // 大会に出ろと言われた直後、tonariの作業台で一度シーシャ作りを通しで体験する
 const TUTORIAL_FLOW = [
   ["theme", "THEME"], ["mix", "MIX"], ["pack", "PACK"], ["foil", "FOIL"],
-  ["coalfire", "COAL"], ["coal", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"],
+  ["coal", "SET"], ["coalfire", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"],
 ];
 // バイト中のオーダーチャレンジ: お客さんのリクエスト（日替わり）に合わせて
 // 大会同様のフル工程で1台作る（テーマと集中だけ接客中なので省略）
 const BAITO_FLOW = [
-  ["mix", "MIX"], ["pack", "PACK"], ["foil", "FOIL"], ["coalfire", "COAL"],
-  ["coal", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"],
+  ["mix", "MIX"], ["pack", "PACK"], ["foil", "FOIL"], ["coal", "SET"],
+  ["coalfire", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"],
 ];
 const TUTORIAL_TIPS = {
   theme: "スミさん「まずは一台のコンセプトだ。今日は好きに選んでいい」",
@@ -4996,7 +5159,7 @@ function startNewGame() {
   playDialogue("ch1_cold_open", () => {
     engulfInSmoke(() => {
       showChapterTitle(
-        { no: "第一章", num: "Ⅰ", name: "一引き目", read: "ファーストドロー ── FIRST DRAW", sub: "SMOKE CROWN CUP 編" },
+        { no: "第一章", num: "Ⅰ", name: "一吸目", read: "ファーストドロー ── FIRST DRAW", sub: "SMOKE CROWN CUP 編" },
         () => {
           if (window.SFX) SFX.bgm("tonari");
           playDialogue("ch1_opening", () => {

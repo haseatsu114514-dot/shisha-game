@@ -708,7 +708,9 @@ body {
   position: absolute;
   left: 3.5%; right: 3.5%; bottom: 3%;
   z-index: 20;
-  min-height: 190px; /* 4行分を安定確保（#4 改ページでこれ以上は伸びない） */
+  /* サイズ固定（#29/#30）。本文は大きめ文字で最大2行に改ページ。2行ぶん(≈92px)＋余白で固定し、
+     内容で伸縮させない（常に同じ高さ） */
+  height: 152px;
   background: linear-gradient(180deg, rgba(8,4,14,0.92) 0%, rgba(14,8,22,0.97) 100%);
   border: 1px solid var(--panel-border);
   border-radius: 6px;
@@ -756,9 +758,9 @@ body {
 #vn-name::after  { right: 12px; }
 
 #vn-text {
-  font-size: 19px;
-  line-height: 1.85;
-  min-height: 70px;
+  font-size: 24px; /* #30 大きめに */
+  line-height: 1.8;
+  min-height: 86px; /* 2行ぶんを確保（短文でも箱がブレない） */
   margin-top: 4px;
   line-break: strict; /* 日本語禁則（自動改行の保険） */
   word-break: normal;
@@ -1197,6 +1199,13 @@ body {
 
 /* ---------------- 吸い出し（温度合わせ） ---------------- */
 .temp-wrap { margin-bottom: 14px; }
+/* R2 調整の温度表示＋炭の再選択（#45/#46） */
+.adjust-read { margin-top: 8px; font-size: 14px; text-align: center; letter-spacing: 0.03em; }
+.adjust-read.ok { color: #9fe7b4; }
+.adjust-read.warn { color: #ffc08a; }
+.adjust-coals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 14px 0 8px; }
+.adjust-coals .spot-btn.sel { border-color: #ffe79a; box-shadow: 0 0 12px rgba(255,210,120,0.45); }
+@media (max-width: 760px) { .adjust-coals { grid-template-columns: 1fr; } }
 .temp-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
 .temp-bar {
   position: relative;
@@ -2716,6 +2725,32 @@ body {
 .heat-count { font-size: 14px; color: #cdd6ee; }
 .heat-summary { margin-top: 8px; font-size: 12.5px; color: #aeb8d6; letter-spacing: 0.04em; }
 @media (max-width: 760px) { .heat-arena { flex-direction: column; gap: 12px; } .heat-burner { width: 280px; } }
+
+/* ============ FLAVOR TRIAL（審査・master_spec 第2部 #3） ============ */
+.trial-arena { display: flex; flex-direction: column; gap: 13px; padding: 4px 0; }
+.trial-gauge { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-dim); }
+.trial-gauge-bar { flex: 1; height: 12px; background: rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; border: 1px solid rgba(120,140,200,0.25); }
+.trial-gauge-bar > b { display: block; height: 100%; width: 50%; background: linear-gradient(90deg,#69d98e,#ffe79a); transition: width 0.4s cubic-bezier(.2,.9,.3,1); }
+.trial-doubt { position: relative; background: rgba(12,16,28,0.85); border: 1px solid rgba(180,90,90,0.4); border-radius: 10px; padding: 13px 16px; font-size: 17px; color: #f6ecd0; }
+.trial-zawa { display: block; margin-top: 4px; font-size: 11px; letter-spacing: 0.3em; color: #d07; opacity: 0.7; }
+.trial-concept { font-size: 13px; color: #aeb8d6; }
+.trial-concept b { color: #ffe79a; }
+.trial-hand { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.trial-appeal { display: flex; justify-content: space-between; align-items: center; gap: 8px; text-align: left;
+  background: rgba(20,24,40,0.9); border: 1px solid rgba(120,140,200,0.3); border-radius: 8px; padding: 9px 12px;
+  color: #dfe6f5; font-size: 13.5px; cursor: pointer; transition: transform 0.1s, border-color 0.15s; }
+.trial-appeal:hover:not(:disabled) { transform: translateY(-2px); border-color: #ffe79a; }
+.trial-appeal:disabled { opacity: 0.5; cursor: default; }
+.trial-appeal.backed { border-color: rgba(105,217,142,0.5); }
+.ta-badge { font-size: 10px; padding: 1px 6px; border-radius: 4px; white-space: nowrap; }
+.trial-appeal.backed .ta-badge { background: rgba(105,217,142,0.25); color: #9fe7b4; }
+.trial-appeal.weak .ta-badge { background: rgba(255,150,90,0.2); color: #ffc08a; }
+.trial-feedback { min-height: 28px; font-size: 15px; opacity: 0; }
+.trial-feedback.show { opacity: 1; animation: fadein 0.25s ease-out; }
+.trial-feedback.good .trial-line { color: #ffe79a; text-shadow: 0 0 14px rgba(255,200,90,0.6); font-weight: 700; }
+.trial-feedback.bad .trial-line { color: #ff9a9a; font-weight: 700; }
+.trial-feedback .primary-btn { display: block; margin-top: 10px; }
+@media (max-width: 760px) { .trial-hand { grid-template-columns: 1fr; } }
 
 /* ============ RESULT 10 COUNT（結果発表10カウント・master_spec 第2部 #4） ============ */
 #result-count { position: absolute; inset: 0; z-index: 60; display: none; align-items: center; justify-content: center;

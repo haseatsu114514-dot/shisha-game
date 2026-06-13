@@ -151,7 +151,7 @@ for (let i = 0; i < 2500; i++) {
       await page.screenshot({ path: `${OUT}/08_mix.png` });
       await page.locator("#tn-body button", { hasText: "この配合でいく" }).click();
     } else if (t.includes("パッキング")) await page.locator(".spot-btn", { hasText: "ふんわり" }).click();
-    else if (t.includes("炭の配置")) await page.locator(".spot-btn", { hasText: "炭4個" }).click();
+    else if (t.includes("炭をコンロにセット") || t.includes("炭の配置")) await page.locator(".spot-btn", { hasText: "炭4個" }).click();
     else if (t.includes("蒸らし時間")) await page.locator(".spot-btn", { hasText: "せっかち" }).click();
     else if (t.includes("蒸らし中")) {
       // 弾幕はわざと避けない（敗北ルート用）。1枚だけスクショを残す
@@ -176,6 +176,19 @@ for (let i = 0; i < 2500; i++) {
       await page.locator("#tn-pull-serve").click();
       await page.waitForTimeout(60);
       await page.locator("#tn-body button", { hasText: "次へ" }).click();
+    }
+    else if (t.includes("FLAVOR TRIAL")) {
+      // 審査: アピールをぶつけて進める（敗北ルートなので実績は乏しいが、進行できればよい）
+      if (await page.locator("#trial-doubt").count()) {
+        const need = await page.locator("#trial-doubt").getAttribute("data-need").catch(() => null);
+        let pick = page.locator(`.trial-appeal[data-backed="1"][data-cat="${need}"]`).first();
+        if (!(await pick.count())) pick = page.locator(".trial-appeal").first();
+        await pick.click().catch(() => {});
+        await page.waitForTimeout(40);
+        await page.locator("#tn-body button", { hasText: /次のザワザワへ|審査を終える/ }).click().catch(() => {});
+      } else {
+        await page.locator("#tn-body button", { hasText: "結果発表へ" }).click().catch(() => {});
+      }
     }
     else if (t.includes("審査結果")) {
       await page.screenshot({ path: `${OUT}/09_result.png` });

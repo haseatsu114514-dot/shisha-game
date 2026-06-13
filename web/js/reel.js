@@ -1,4 +1,4 @@
-// PUFF!PUFF!パッキー — C.STATION公式マスコットアプリのスロット（日常リール）。
+// MOKUMOKUパッキー — 謎のマスコット「パッキー」のスロット（日常リール）。
 //
 // ⚠️ 実装待ちパッケージ（本編未接続）: 組み込み手順・仕様の正典は docs/pakki_slot_spec.md。
 //    このファイル単体で完結しており、game.js 等への接続はオーナーのGOが出てから行う。
@@ -391,14 +391,14 @@ const REEL = (() => {
     widget = document.createElement("div");
     widget.id = "reel-widget";
     widget.innerHTML =
-      `<button id="reel-lamp" type="button" title="PUFF!PUFF!パッキー">${pakkiFace("rw-face")}</button>` +
+      `<button id="reel-lamp" type="button" title="MOKUMOKUパッキー">${pakkiFace("rw-face")}</button>` +
       `<div class="rw-machine">` +
       STRIPS.map((strip, i) =>
         `<div class="rw-reel" data-i="${i}"><div class="rw-strip">` +
         strip.concat(strip, strip).map((s) => `<div class="rw-cell">${SYM_HTML[s]}</div>`).join("") +
         `</div></div>`).join("") +
       `</div>` +
-      `<div class="rw-plate">PUFF!PUFF!<b>パッキー</b></div>` +
+      `<div class="rw-plate">MOKUMOKU<b>パッキー</b></div>` +
       `<div class="rw-bubble" id="reel-bubble"></div>`;
     map.appendChild(widget);
     setStops([1, 1, 2]); // 初期出目
@@ -591,14 +591,16 @@ const REEL = (() => {
     if (fast || fx() === "lite") { sfx("fanfare"); return finish(); }
     const isBig = b.role === "big" || b.role === "rare" || b.overlap === "big";
     const c = ensureCutin();
-    const sym = isBig ? SYM_HTML.seven : SYM_HTML.bar;
+    // BIG=赤7赤7赤7 / バケ(REG)=7-7-BAR（#40）。1コマずつ出るので「赤7・赤7…」のあとBARでバケ確定の見せ方になる
+    const cellSyms = isBig ? [SYM_HTML.seven, SYM_HTML.seven, SYM_HTML.seven]
+                           : [SYM_HTML.seven, SYM_HTML.seven, SYM_HTML.bar];
     const label = isBig ? "BIG BONUS" : "BONUS";
     c.className = "show bonus";
     c.innerHTML =
       `<div class="rc-bonus-board">` +
-      `<div class="rc-aim">${isBig ? "赤7を狙えっ！" : "BARを狙えっ！"}</div>` +
+      `<div class="rc-aim">${isBig ? "リーチ──赤7ッ！" : "赤7…赤7…！？"}</div>` +
       `<div class="rc-cells">` +
-      [0, 1, 2].map(() => `<div class="rc-cell">${sym}</div>`).join("") +
+      cellSyms.map((s) => `<div class="rc-cell">${s}</div>`).join("") +
       `</div>` +
       `<div class="rc-bonus-label">${label}</div>` +
       `</div>`;
@@ -669,7 +671,7 @@ const REEL = (() => {
 
   // ---- 初回のみ: パッキーのアプリ説明 ----
   const INTRO_LINES = [
-    "ぷぷぷっ！ C.STATION公式アプリ『PUFF!PUFF!パッキー』、インストール完了〜！",
+    "ぷぷぷっ！ C.STATION公式アプリ『MOKUMOKUパッキー』、インストール完了〜！",
     "キミが一日なにか行動するたび、ボクのスロットがかってに1回転するよ。回すんじゃない——回っちゃうんだ。",
     "ルールはシンプル！ ボクの顔が光ったら——大当たりっ！ それだけ！",
     "外れても大丈夫。回したぶんだけ、その日がんばったことがちゃーんと積もるしくみ。それじゃ、今日もぷかぷかいこう！",
@@ -685,7 +687,7 @@ const REEL = (() => {
     const render = () => {
       box.innerHTML =
         `<div class="ri-panel">` +
-        `<div class="ri-head">${pakkiFace("rw-face big")}<span class="ri-app">PUFF!PUFF!パッキー</span></div>` +
+        `<div class="ri-head">${pakkiFace("rw-face big")}<span class="ri-app">MOKUMOKUパッキー</span></div>` +
         `<p class="ri-text">${INTRO_LINES[i]}</p>` +
         `<span class="ri-next">▼ タップ</span>` +
         `</div>`;

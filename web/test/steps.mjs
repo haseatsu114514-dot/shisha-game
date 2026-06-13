@@ -67,7 +67,7 @@ export async function playTnStep(page, opts = {}) {
     await page.locator("#tn-body button", { hasText: "この配合でいく" }).click();
   } else if (title.includes("パッキング")) {
     await page.locator(".spot-btn", { hasText: "ノーマル" }).click();
-  } else if (title.includes("炭の配置")) {
+  } else if (title.includes("炭をコンロにセット") || title.includes("炭の配置")) {
     await page.locator(".spot-btn", { hasText: "トライアングル" }).click();
   } else if (title.includes("蒸らし時間")) {
     await page.locator(".spot-btn", { hasText: "8分" }).click();
@@ -96,6 +96,19 @@ export async function playTnStep(page, opts = {}) {
       }
     }
     await page.locator("#tn-body button", { hasText: "次へ" }).click();
+  } else if (title.includes("FLAVOR TRIAL")) {
+    // 審査: ザワザワのneed(data-need)に合う「実績(backed)」アピールをぶつける。なければ実績優先で何かぶつける
+    if (await page.locator("#trial-doubt").count()) {
+      const need = await page.locator("#trial-doubt").getAttribute("data-need").catch(() => null);
+      let pick = page.locator(`.trial-appeal[data-backed="1"][data-cat="${need}"]`).first();
+      if (!(await pick.count())) pick = page.locator(`.trial-appeal[data-backed="1"]`).first();
+      if (!(await pick.count())) pick = page.locator(".trial-appeal").first();
+      await pick.click().catch(() => {});
+      await page.waitForTimeout(50);
+      await page.locator("#tn-body button", { hasText: /次のザワザワへ|審査を終える/ }).click().catch(() => {});
+    } else {
+      await page.locator("#tn-body button", { hasText: "結果発表へ" }).click().catch(() => {});
+    }
   } else if (title.includes("審査結果")) {
     const rows = await page.locator(".result-row").allTextContents();
     if (opts.onResult) opts.onResult(rows);
