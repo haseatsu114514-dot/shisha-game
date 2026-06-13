@@ -4789,14 +4789,16 @@ const REEL = (() => {
     if (fast || fx() === "lite") { sfx("fanfare"); return finish(); }
     const isBig = b.role === "big" || b.role === "rare" || b.overlap === "big";
     const c = ensureCutin();
-    const sym = isBig ? SYM_HTML.seven : SYM_HTML.bar;
+    // BIG=赤7赤7赤7 / バケ(REG)=7-7-BAR（#40）。1コマずつ出るので「赤7・赤7…」のあとBARでバケ確定の見せ方になる
+    const cellSyms = isBig ? [SYM_HTML.seven, SYM_HTML.seven, SYM_HTML.seven]
+                           : [SYM_HTML.seven, SYM_HTML.seven, SYM_HTML.bar];
     const label = isBig ? "BIG BONUS" : "BONUS";
     c.className = "show bonus";
     c.innerHTML =
       `<div class="rc-bonus-board">` +
-      `<div class="rc-aim">${isBig ? "赤7を狙えっ！" : "BARを狙えっ！"}</div>` +
+      `<div class="rc-aim">${isBig ? "リーチ──赤7ッ！" : "赤7…赤7…！？"}</div>` +
       `<div class="rc-cells">` +
-      [0, 1, 2].map(() => `<div class="rc-cell">${sym}</div>`).join("") +
+      cellSyms.map((s) => `<div class="rc-cell">${s}</div>`).join("") +
       `</div>` +
       `<div class="rc-bonus-label">${label}</div>` +
       `</div>`;
