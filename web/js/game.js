@@ -515,7 +515,7 @@ function updateHud() {
     hudDay.classList.remove("hidden");
   } else {
     const stageDay = nextStageDay();
-    const left = state.chapter === 2 ? stageDay - state.day : stageDay + 1 - state.day;
+    const left = daysUntilTournament();
     const what = state.chapter === 2 ? CH2_STAGE_LABEL[chapterInfo().stageDays[stageDay]] : "大会";
     hudDay.textContent = `DAY ${state.day} ／ ${what}まであと${left}日`;
     // ダイアログ中だけ薄く出す（マップでは大きな day-card に任せる）
@@ -539,6 +539,24 @@ function updateHud() {
   $("#hud-level-fill").style.width = `${pct}%`;
   // マップ用 DAY カード
   updateDayCard();
+}
+
+// 大会まであと何日か。HUD・台詞・LIME の数字をここに一本化し、カレンダー（MAX_DAYS）が
+// 変わっても表示が矛盾しないようにする（旧7日制の名残で台詞の日数がズレていた #35）
+function daysUntilTournament() {
+  if (!state || state.phase === "tournament" || state.phase === "cleared") return 0;
+  const stageDay = nextStageDay();
+  const left = state.chapter === 2 ? stageDay - state.day : stageDay + 1 - state.day;
+  return Math.max(0, left);
+}
+
+// 台詞・LIME テキスト内の {daysLeft} トークンを実数に置換する。
+// 静的な会話JSONに「あと3日」と直書きせず、ここで現在のカレンダーに合わせて差し込む
+function interpolate(text) {
+  if (text == null) return text;
+  let t = String(text);
+  if (t.indexOf("{daysLeft}") !== -1) t = t.split("{daysLeft}").join(String(daysUntilTournament()));
+  return t;
 }
 
 // 日替わりの客のリクエスト傾向（バイトのオーダーチャレンジのテーマになる）
@@ -950,6 +968,7 @@ function initEngine() {
     },
     {
       getStat: (en) => state.stats[en] || 0,
+      interpolate: (t) => interpolate(t),
       portraitFaces: D.portraits,
       portraitTrims: D.portrait_trims,
       portraitScales: D.portrait_scales,
@@ -1222,6 +1241,7 @@ let limeOnDone = null;
 let limeAcceptedNoon = [];
 
 function morningPhone(onDone, opts = {}) {
+  stopAutoSkip(); // LIMEはAUTO/SKIPで読み飛ばさせない（スキップがLIMEまで貫通する問題の解消）
   const due = limeDueMessages(!!opts.tournamentDay);
   if (!due.length) { if (onDone) onDone(); return; }
   limeQueue = due;
@@ -1264,7 +1284,7 @@ function addLimeBubble(side, text, sender) {
   const row = document.createElement("div");
   row.className = `lime-row ${side}`;
   const avatar = side === "peer" && sender ? faceIconHtml(sender, "lime-face sm") || "" : "";
-  row.innerHTML = `${avatar}<div class="lime-bubble">${formatText(String(text))}</div>`;
+  row.innerHTML = `${avatar}<div class="lime-bubble">${formatText(interpolate(String(text)))}</div>`;
   chat.appendChild(row);
   chat.scrollTop = chat.scrollHeight;
   if (window.SFX) SFX.bubble();
@@ -1436,6 +1456,7 @@ function closePhone() {
   const chain = (i) => {
     if (i >= accepted.length) { if (done) done(); return; }
     playLimeEvent(accepted[i].event, accepted[i].sender, () => {
+      if (typeof REEL !== "undefined") REEL.onAction(); // 昼の誘いに乗った行動もスロットを回す(#33)
       state.ap = Math.max(0, state.ap - 1);
       updateHud();
       save();
@@ -1449,6 +1470,7 @@ function closePhone() {
 
 // LIME経由のイベント再生。会話内の報酬キューに加えて必ず好感度を付ける
 function playLimeEvent(dialogueId, sender, after, viaInvite) {
+  stopAutoSkip(); // 直前の会話でSKIP中でも、誘い/デート等のイベントは飛ばさず頭から見せる
   visitContextChar = sender;
   markMet(sender);
   // 誘い/イベントでそのキャラに会った日は、同じ店（spot）への通常訪問を不可にする
@@ -1635,7 +1657,7 @@ const SPOT_LAYOUT = {
   rest:      { x: 88, y: 60, theme: "rest",    short: "家",         area: "自宅" },
 };
 
-function showMap() {
+function showMap(opts = {}) {
   state.phase = "daily";
   if (window.SFX) SFX.bgm("daily_part");
   showScreen("#screen-map");
@@ -1711,7 +1733,9 @@ function showMap() {
   }
   updateMapInfo(null);
   save();
-  if (typeof REEL !== "undefined") REEL.onMapShown(); // たまったスロット結果をマップ表示時に精算（非ブロッキング）
+  // たまったスロット結果をマップ表示時に精算（非ブロッキング）。
+  // skipReel 指定時は精算を保留（DAYカード/LIMEと被らせないため advanceDay が後で回す #34）
+  if (!opts.skipReel && typeof REEL !== "undefined") REEL.onMapShown();
 }
 
 function updateMapInfo(spot, locked, tooPoor, closed, visited) {
@@ -1841,11 +1865,14 @@ function endAction() {
         const p = state.pendingLimeNight;
         state.pendingLimeNight = null;
         save();
-        return playLimeEvent(p.event, p.sender, () => {
+        // 昼の用事が終わってから夜の約束へ。即切り替えると唐突なので時間が流れる一拍を挟む（違和感の解消）
+        showDayCard("夕暮れ", "約束の時間だ");
+        return setTimeout(() => playLimeEvent(p.event, p.sender, () => {
+          if (typeof REEL !== "undefined") REEL.onAction(); // 夜の約束もひとつの行動＝スロットを回す(#33)
           state.ap = 0;
           save();
           endDay();
-        }, true);
+        }, true), 1500);
       }
       return showMap();
     }
@@ -1896,11 +1923,12 @@ function advanceDay() {
   }
   const stageDay = nextStageDay();
   // ch2の試合はその日のうちに行われる（行動なし）ので残日数は前日基準
-  const left = state.chapter === 2 ? stageDay - state.day : stageDay + 1 - state.day;
+  const left = daysUntilTournament();
   const what = state.chapter === 2 ? CH2_STAGE_LABEL[chapterInfo().stageDays[stageDay]] : cupName();
   showDayCard(`DAY ${state.day}`, left === 1 ? `${what} 前日` : `${what}まで あと${left}日`);
-  showMap();
-  morningPhone(showMap); // 朝のLIME（無ければ何もしない）
+  // 昨日の行動のスロットは、DAYカード→朝のLIMEを消化してから回す（被って見えない問題の解消 #34/#23）
+  showMap({ skipReel: true });
+  morningPhone(showMap); // 朝のLIME（無ければ即 showMap がスロットを精算）
 }
 
 function endDay() {
@@ -1970,7 +1998,7 @@ function endDay() {
         { speaker: "", face: "", text: "黙って組む。詰めて、熾して、置いて、待つ。スミさんは何も言わずに見ている。\n──完成。ホースを渡す。スミさんは目を閉じて、長い一服。" },
         { type: "condition", stat: "技術", threshold: 22, next_true: "mid_good", next_false: "mid_rough" },
         { speaker: "sumi", face: "serious", text: "大会まで、ちょうど折り返しだ。どこを磨くかは、お前が決めろ。──ただし、寝ること。それも仕込みのうちだ" },
-        { speaker: "hajime", face: "normal", text: "はい。（あと7日。……何を、どこまで持っていけるか）" },
+        { speaker: "hajime", face: "normal", text: "はい。（あと{daysLeft}日。……何を、どこまで持っていけるか）" },
         { type: "apply", stats: { insight: 2 } },
       ],
       branches: {
@@ -1980,7 +2008,7 @@ function endDay() {
         ],
         mid_rough: [
           { speaker: "sumi", face: "normal", text: "……悪くない。けど、本番でこれだと埋もれるな" },
-          { speaker: "sumi", face: "normal", text: "焦るな。まだ7日ある。基礎の反復が一番効く時期だ" },
+          { speaker: "sumi", face: "normal", text: "焦るな。まだ{daysLeft}日ある。基礎の反復が一番効く時期だ" },
         ],
       },
     }, finishDay);

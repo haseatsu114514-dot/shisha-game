@@ -230,6 +230,8 @@ const REEL = (() => {
         gakkun: !!ctx && !!ctx.chapterFirst && chain === 0,
         ceiling: st.bonusGap >= CEILING.mainRun ? "main" : (role !== "miss" && st.missRun >= CEILING.zoneRun ? "zone" : ""),
       };
+      // リプレイ連鎖の途中（直前がリプレイ）かどうか。演出を速回しせずフルで見せる判定に使う
+      result._afterReplay = chain > 0;
       // カウンタ更新
       reel.count += 1;
       reel.missRun = role === "miss" ? reel.missRun + 1 : 0;
@@ -463,9 +465,12 @@ const REEL = (() => {
   function runQueue(items) {
     if (!items.length) { busy = false; return; }
     busy = true;
-    // 積み残し（夜の分など）が複数あれば、最後の1件だけフル演出・残りは速回し
+    // 積み残し（夜の分など）が複数あれば、最後の1件だけフル演出・残りは速回し。
+    // ただしリプレイ連鎖（もう1回転）は一瞬で過ぎると何が起きたか分からないのでフルで見せる
     const item = items.shift();
-    presentSpin(item, items.length > 0 || fx() === "lite", () => runQueue(items));
+    const inReplayChain = item.role === "replay" || item._afterReplay;
+    const fast = fx() === "lite" || (items.length > 0 && !inReplayChain);
+    presentSpin(item, fast, () => runQueue(items));
   }
 
   // ---- 1回転の演出 ----
@@ -519,8 +524,10 @@ const REEL = (() => {
       case "miss":
         return done();
       case "replay":
-        if (!fast) { widget.classList.add("flash-blue"); sfx("reelWin"); bubble("もう1回転！"); }
-        setTimeout(() => { widget.classList.remove("flash-blue"); done(); }, fast ? 60 : 420);
+        // リプレイ＝もう1回転。次の回転がすぐ始まるので、何が起きたか分かるよう
+        // ひと呼吸おき、吹き出しは次の回転の頭まで残す（#リプレイが一瞬すぎる）
+        if (!fast) { widget.classList.add("flash-blue"); sfx("reelWin"); bubble("リプレイ！　もう1回転", 1500); }
+        setTimeout(() => { widget.classList.remove("flash-blue"); done(); }, fast ? 60 : 720);
         return;
       case "cherry": {
         sfx("reelWin");
