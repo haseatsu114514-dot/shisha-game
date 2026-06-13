@@ -228,6 +228,43 @@
   1回ごとに craft -3（「葉が痩せる」）。やめ時は自分で選ぶ。UI に⚠警告、用語集・CLAUDE.mdも更新
 - 正典化: story doc（香りの識別子=アゲハはホワイトグミベア、Ch1の引き#7〜9）・CLAUDE.md ID表
 
+## 次回への引き継ぎ（2026-06-13 第23便・UX大量修正＋HEAT/スロット）
+
+**この便でやったこと（オーナーのプレイ報告に基づく一括修正）。開発は `claude/great-galileo-omzoob`。**
+
+### コミット済み（テスト緑: playthrough/ch2/screenshots/reel/kuji/balance/map_hover）
+- **A1 #2 HEAT IGNITION**: 炭起こしを「炭を目で見て芯がピカッと閃いた瞬間に取る」方式へ刷新。
+  3つの炭が黒→赤→赤熱→ピカン→白熱→灰かぶりと変化。出力 `tt.coalFire` 維持＋`tt.coalResult` 追加。
+  `stepCoalFire()`／CSS「HEAT IGNITION」節／SFX.spark／`__heatDebug` フック。
+- **UX修正バッチ（commit b0fb597）**:
+  - #5 会話の変な改行（固定文字数で名前が割れ末尾1字が孤立）→ 「ん」「小書きカナ」を行頭禁則に追加＋
+    残り2字以下は折らず吸収。engine.js `autoWrap`。
+  - #4 長文でウィンドウが伸びる → 4行/ページで**改ページ**（クリックで送る）。engine.js `typeText`/`renderPage`。
+  - #6 行けない場所が薄すぎて消えて見える → `#map-pins .spot-pin:disabled` を opacity 0.85 でグレー明示。
+  - #7 情報パネルがピンを隠す → `#map-pins` を z-index 4（#map-info より前面）＋「家」ピンを移動。
+  - #8 誘いの日に同店2回 → `playLimeEvent` で会ったキャラの当日 `dayVisited` を記録。
+  - #11 穴あけで狙い位置が見えない → アクティブリング上に脈動する `.hole-aim` 輪を表示。
+  - #15 調整(R2)で再パック/再蒸らし可能 → 廃止。炭の位置・数のみ（温度は吸い出しで）。
+- **#12 スロット配線（commit c67684d）**: オーナーGOで温存解除。docs/pakki_slot_spec.md §10準拠。
+  **行動後に自動で1回転**（endActionでREEL.onAction）／**アプリ建て付けは出さない**（introDone=true で
+  初回説明スキップ）＝パッキーは理由を説明されない謎のマスコット兼司会として説明なく回す。
+  reel.js を index.html・standalone に同梱、reel.css 連結、reel用SFX追加、CONFIGにスロット演出。
+
+### 残り（オーナー指摘・未対応）
+- **#9 tonari統合**: つむぎ会話・練習・バイト（・スミさん）を tonari 1スポットに集約し、
+  入って選ぶ「場所で管理」へ。SPOTS/SPOT_LAYOUT/showMap/selectSpot＋テストのマップ巡回プラン改修が要る。
+- **#13 FLAVOR TRIAL（A1 #3・審査）**: コンセプト×アピールポイント（holeResult/coalResult/craftから自動生成）を
+  審査員のザワザワに「ぶつける」。弾丸系用語禁止(#17)。着手時にCLAUDE.mdの「プレゼン廃止」を本仕様で上書きと明記。
+- **#14 RESULT 10 COUNT（A1 #4・結果発表）**: showResult前に10カウント＋プチュン(1位)/パリン(2位以下=GAME OVER)。
+- **#16 第2章マップ**: ch2拠点のマップを用意（1章の舞台へも移動できる）。
+- **#17 ch2 日常会話**: ch2で店を訪ねると大会と無関係の会話（「お疲れ」「すごかったよ」等＝ch1優勝後の反応）。
+- **要オーナー確認（該当シーンが特定できず）**:
+  - #2 みんとの「素」を見た後の会話が初回扱い（矛盾）→ 具体シーン/スクショ希望。
+  - #3 みんとがライバル出場者なのに「観戦」と言う矛盾 → ch1-2の該当セリフが特定できず（"観戦/感染"の文字列なし）。
+  - #10 LIME7日目が大会 → day7はch1大会当日なので**仕様通り**の可能性大。違う具体メッセージなら指摘を。
+- **デプロイ**: アダムのカタコト等が古いままなら Pages は旧ビルド。Settings→Pages→Source を
+  「GitHub Actions」にすれば `claude/**` push で最新公開（HOLE/HEAT/各修正が反映）。
+
 ## 次回への引き継ぎ（2026-06-13 第21〜22便・A1着手）
 
 **現状サマリ**: main は最新（PR #77済・Pages公開中 https://haseatsu114514-dot.github.io/shisha-game/）。
