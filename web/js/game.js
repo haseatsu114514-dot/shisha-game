@@ -164,6 +164,8 @@ function newState() {
     goods: [],             // くじ等で得た売却可グッズ [{name, sell}]
     pendingLimeNight: null, // 夜に約束したLIMEイベント {event, sender}
     practiceBest: {},      // 練習ドリルの自己ベスト（0〜2）。大会本番のボーナスになる
+    // 日常スロット（パッキー＝理由は語られない謎のマスコット兼司会）。アプリ演出は出さない
+    reel: (typeof REEL !== "undefined" ? Object.assign(REEL.newReelState(), { introDone: true }) : null),
     flags: {},
     phase: "opening", // opening | daily | tournament | cleared
   };
@@ -283,6 +285,7 @@ function gainStat(en, amount) {
     en = open[Math.floor(Math.random() * open.length)];
   }
   state.stats[en] = Math.max(0, Math.min(100, state.stats[en] + amount));
+  if (typeof REEL !== "undefined") REEL.noteStat(en, amount); // 直近の伸びをスロットのアンコール抽選に記録
   const label = amount >= 5 ? "大きく上がった" : amount >= 3 ? "上がった" : "少し上がった";
   gainBanner({
     kind: "stat",
@@ -703,7 +706,7 @@ function showGlossary() {
 
 // ---------------------------------------------------------------- config
 const CONFIG_KEY = "shisha_config_v1";
-const config = { textSpeed: 2, autoSpeed: 2, bgmVol: 100, sfxVol: 100 };
+const config = { textSpeed: 2, autoSpeed: 2, bgmVol: 100, sfxVol: 100, reelFx: "full" };
 
 function loadConfig() {
   try { Object.assign(config, JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}")); } catch (e) { /* 壊れた設定は既定値で続行 */ }
@@ -759,6 +762,7 @@ function showConfig() {
   };
   seg("テキスト速度", "textSpeed", [[1, "遅い"], [2, "普通"], [3, "速い"], [4, "瞬間"]]);
   seg("オート速度", "autoSpeed", [[1, "ゆっくり"], [2, "普通"], [3, "せっかち"]]);
+  seg("スロット演出", "reelFx", [["full", "フル"], ["lite", "簡易"], ["off", "OFF"]]);
   slider("BGM音量", "bgmVol");
   slider("効果音 音量", "sfxVol");
   $("#config-overlay").classList.add("visible");
@@ -1707,6 +1711,7 @@ function showMap() {
   }
   updateMapInfo(null);
   save();
+  if (typeof REEL !== "undefined") REEL.onMapShown(); // たまったスロット結果をマップ表示時に精算（非ブロッキング）
 }
 
 function updateMapInfo(spot, locked, tooPoor, closed, visited) {
@@ -1824,6 +1829,8 @@ function doSpotDialogue(spotId, dialogueId, bg) {
 }
 
 function endAction() {
+  // 1行動=1回転（パッキーの謎スロット）。結果はこの場で確定し、直後の save() に乗る＝引き直し不可（#12）
+  if (typeof REEL !== "undefined") REEL.onAction();
   state.ap -= 1;
   updateHud();
   save();
@@ -4952,6 +4959,8 @@ function continueGame(saved) {
   if (!Array.isArray(state.limeDone)) state.limeDone = [];
   if (state.pendingLimeNight === undefined) state.pendingLimeNight = null;
   if (!state.practiceBest) state.practiceBest = {};
+  // 日常スロット導入前のセーブ互換（アプリ説明は出さない）
+  if (!state.reel && typeof REEL !== "undefined") state.reel = Object.assign(REEL.newReelState(), { introDone: true });
   // 凛（問屋街の代理店）導入前のセーブ互換
   if (!("rin" in state.affinity)) { state.affinity.rin = 0; state.visits.rin = 0; }
   // 第2章・恋愛システム導入前のセーブ互換
