@@ -2558,3 +2558,6 @@ body {
 .radar-rank { fill: #c9b88a; font-size: 9.5px; font-family: inherit; }
 .radar-up { fill: #7be08e; font-size: 12px; }
 .radar-legend { font-size: 10.5px; color: var(--text-dim); margin-top: 6px; text-align: center; }
+
+/* マップ: 事前の成長ヒント（主人公の見立て） */
+.info-grow { font-size: 12.5px; color: #9fd8a8; margin: 4px 0 2px; letter-spacing: 0.03em; }

@@ -276,6 +276,12 @@ const STAT_BADGE = { technique: "技", sense: "感", guts: "根", charm: "魅", 
 
 function gainStat(en, amount) {
   if (!(en in state.stats) || amount <= 0) return;
+  // 対象がすでに上限なら、未カンストのステータスへランダムに振り替える（伸び続ける実感を保つ）
+  if (state.stats[en] >= 100) {
+    const open = Object.keys(state.stats).filter((k) => state.stats[k] < 100);
+    if (!open.length) return; // 全部カンストなら何もしない
+    en = open[Math.floor(Math.random() * open.length)];
+  }
   state.stats[en] = Math.max(0, Math.min(100, state.stats[en] + amount));
   const label = amount >= 5 ? "大きく上がった" : amount >= 3 ? "上がった" : "少し上がった";
   gainBanner({
@@ -1056,10 +1062,26 @@ const SPOT_UNKNOWN = {
 };
 
 // 報酬キューが鳴らなかった場合の保険（全イベントに必ず報酬を付ける）
-const SPOT_FALLBACK_STAT = {
-  kannon: "guts", cafe: "sense", c_station: "insight",
-  sumi: "technique", tsumugi: "sense", naru: "insight", adam: "insight", minto: "insight",
+// キャラ別の「絡むと伸びる」主要ステータス（master_spec 新要望 / ch1〜4の配分）。
+// 事前ヒント・訪問報酬・繰り返し報酬すべてこの表を正とする。全体では5種が満遍なく伸び、
+// 通うキャラを偏らせれば特化もできる。ch1の6人だけで5種を一通りカバーする配分
+const CHAR_STAT = {
+  // ch1
+  sumi: "technique", tsumugi: "sense", naru: "insight", adam: "guts", minto: "charm", rin: "sense",
+  // ch2
+  ageha: "sense", kumicho: "guts", rei: "charm", dr_kemuri: "insight",
+  // ch3
+  mashiro: "sense", mukai_master: "charm", nandi: "technique", steve: "insight", volk: "guts",
+  // ch4
+  master_hookah: "technique", sheikh: "charm", da_silva: "sense",
 };
+const SPOT_FALLBACK_STAT = {
+  // 施設スポット（キャラ以外）。ch1で5種をさらに補完する
+  kannon: "guts", cafe: "sense", c_station: "insight", choizap: "charm",
+  // キャラは CHAR_STAT に委譲（このオブジェクトに無いキーは下のProxyで解決）
+};
+// スポット/キャラの主要ステータスを解決（CHAR_STAT→SPOT_FALLBACK_STAT→insight）
+function spotStat(id) { return CHAR_STAT[id] || SPOT_FALLBACK_STAT[id] || "insight"; }
 
 const VISIT_SEQUENCES = {
   sumi: ["ch1_sumi_tutorial", "ch1_sumi_basics", "ch1_sumi_training", "ch1_sumi_secret", "ch1_sumi_closing", "ch1_sumi_final"],
@@ -1073,7 +1095,7 @@ const VISIT_SEQUENCES = {
 const REPEAT_VISIT = {
   sumi: { text: "スミさんの手元を眺めながら、何気ない話をした。炭の切り方ひとつにも年季がにじんでいる。", stats: { technique: 2 } },
   tsumugi: { text: "つむぎの席の近くで、煙の形の話をした。彼女の見ている世界は、少しだけ自分と違う。", stats: { sense: 2 } },
-  naru: { text: "なるの店で一服。スピード勝負の段取りを盗み見る。", stats: { technique: 2 } },
+  naru: { text: "なるの店で一服。スピード勝負の段取りを盗み見る。鼻の良さに毎回気づかされる。", stats: { insight: 2 } },
   adam: { text: "アダムの店で一服。ダブルアップル一筋の頑固さに、芯の強さを感じる。", stats: { guts: 2 } },
   minto: { text: "みんとの店で一服。客あしらいの軽やかさは、やっぱり真似できない。", stats: { charm: 2 } },
 };
@@ -1710,6 +1732,20 @@ function updateMapInfo(spot, locked, tooPoor, closed, visited) {
     : visited ? "今日はもう顔を出した。また明日"
     : tooPoor ? "所持金が足りない"
     : `タップして移動: ${un ? un.label : spot.label}`;
+  // 事前に「何が伸びそうか」を主人公の見立てとして示す（master_spec 新要望）
+  const hintStat = !locked && (CHAR_STAT[spot.id] || SPOT_FALLBACK_STAT[spot.id]);
+  const growEl = $("#map-info-grow");
+  if (growEl) {
+    if (hintStat && !visited && !closed) {
+      const allMax = Object.values(state.stats).every((v) => v >= 100);
+      growEl.textContent = allMax
+        ? "（ここで学べることは、もう全部わが身になった）"
+        : `（ここに通うと【${STAT_KEYS[hintStat]}】が伸びそうだ）`;
+      growEl.style.display = "";
+    } else {
+      growEl.style.display = "none";
+    }
+  }
 }
 
 function selectSpot(spot) {
@@ -1779,7 +1815,7 @@ function doSpotDialogue(spotId, dialogueId, bg) {
   // シーシャと無関係の場所は息抜きになる（体力小回復）
   if (STAMINA_GAIN[spotId]) addStamina(STAMINA_GAIN[spotId]);
   playDialogue(dialogueId, () => {
-    if (!cueFiredInDialogue) gainStat(SPOT_FALLBACK_STAT[spotId] || "insight", 2);
+    if (!cueFiredInDialogue) gainStat(spotStat(spotId), 2);
     endAction();
   }, `res://assets/backgrounds/${bg}`);
 }
@@ -2057,7 +2093,7 @@ function doVisit(charId) {
     playDialogue(seq[idx], () => {
       // 会話内に報酬キューが無くても、必ず好感度かステータスを付与する
       const got = gainAffinity(charId, "visit");
-      if (!cueFiredInDialogue && !got) gainStat(SPOT_FALLBACK_STAT[charId] || "insight", 2);
+      if (!cueFiredInDialogue && !got) gainStat(spotStat(charId), 2);
       after();
     }, `res://assets/backgrounds/${bg}`);
   } else {
