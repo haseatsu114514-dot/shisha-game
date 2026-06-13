@@ -367,7 +367,7 @@ class DialogueEngine {
   // 本文を組版（自動改行）→ 長ければ MAX_PAGE_LINES 行ごとに改ページ。
   // ウィンドウを縦に伸ばさず、続きはクリックで次ページへ送る（#4）。
   typeText(raw) {
-    const MAX_PAGE_LINES = 4;
+    const MAX_PAGE_LINES = 2; // #30 大きめ文字＋最大2行で改ページ
     const allLines = autoWrap(String(raw)).split("\n");
     this.pages = [];
     for (let k = 0; k < allLines.length; k += MAX_PAGE_LINES) {

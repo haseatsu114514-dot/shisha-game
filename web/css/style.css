@@ -708,7 +708,9 @@ body {
   position: absolute;
   left: 3.5%; right: 3.5%; bottom: 3%;
   z-index: 20;
-  min-height: 190px; /* 4行分を安定確保（#4 改ページでこれ以上は伸びない） */
+  /* サイズ固定（#29/#30）。本文は大きめ文字で最大2行に改ページ。2行ぶん(≈92px)＋余白で固定し、
+     内容で伸縮させない（常に同じ高さ） */
+  height: 152px;
   background: linear-gradient(180deg, rgba(8,4,14,0.92) 0%, rgba(14,8,22,0.97) 100%);
   border: 1px solid var(--panel-border);
   border-radius: 6px;
@@ -756,9 +758,9 @@ body {
 #vn-name::after  { right: 12px; }
 
 #vn-text {
-  font-size: 19px;
-  line-height: 1.85;
-  min-height: 70px;
+  font-size: 24px; /* #30 大きめに */
+  line-height: 1.8;
+  min-height: 86px; /* 2行ぶんを確保（短文でも箱がブレない） */
   margin-top: 4px;
   line-break: strict; /* 日本語禁則（自動改行の保険） */
   word-break: normal;
