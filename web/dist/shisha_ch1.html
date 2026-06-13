@@ -4352,10 +4352,10 @@ const REEL = (() => {
   //   ベル 1/83（レア小役）／中段チェリー等 1/200（BIG確定プレミア）／
   //   ペカ合算 ≒ 1/15（章1.8回前後。ハマれば天井が拾う）／フリーズは別枠制御（下記）
   const ROLES = [
-    { id: "miss",   weight: 682 },
+    { id: "miss",   weight: 666 },
     { id: "replay", weight: 137 },
     { id: "cherry", weight: 110 },
-    { id: "bell",   weight: 12 },
+    { id: "bell",   weight: 28 },
     { id: "rare",   weight: 5 },   // 中段チェリー/単独パッキー → BIG確定（プレミア告知）
     { id: "reg",    weight: 24 },
     { id: "big",    weight: 26 },
@@ -4838,13 +4838,49 @@ const REEL = (() => {
     }, spinMs);
   }
 
+  // 役の恩恵をパッキー口調で説明する（T18）。経験値は数値を出さず体感語で
+  function benefitLine(r) {
+    const names = typeof STAT_KEYS !== "undefined" ? STAT_KEYS : {};
+    const stat = (r && r.target && names[r.target]) ? names[r.target] : null;
+    const amt = r.exp >= 6 ? "どっさり" : r.exp >= 4 ? "しっかり" : r.exp >= 2 ? "ちょっと" : "わずかに";
+    return stat ? `【${stat}】の経験値が${amt}入ったよ！` : `経験値が${amt}入ったよ！`;
+  }
+  // 天井が近いときの抽象的な示唆（数値は出さない・近づくほど熱く）（T19）
+  const CEILING_HINTS = {
+    far:  ["……なんだか、近い気がするよ？", "そろそろ来てもいい頃合いじゃない？"],
+    near: ["おっ、これはもうすぐかも……！", "ボクのセンサーがピクピクしてる……近いっ！"],
+    soon: ["次っ……次こそ来るんじゃない！？", "もう、いつ光ってもおかしくないよ……！"],
+  };
+  function ceilingHint(remain) {
+    const pool = remain <= 1 ? CEILING_HINTS.soon : remain <= 3 ? CEILING_HINTS.near : CEILING_HINTS.far;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+  // 外れでもたまに楽しいことを言う（T18）
+  const FUN_MISS = [
+    "はずれ〜♪　でもこの一台、ボクは嫌いじゃないよ",
+    "ぷぷっ、今のはノーカン！……にはできないか〜",
+    "むむ、惜しい……気がするだけかも？",
+    "煙はウソをつかないけど、ボクはたまにつくよ♪",
+    "今ちょうど、いい感じに力を溜めてるとこ！たぶん！",
+  ];
+  function funMiss() { return FUN_MISS[Math.floor(Math.random() * FUN_MISS.length)]; }
+  function bonusName(r) {
+    return (r.role === "big" || r.overlap === "big") ? "ビッグボーナス"
+      : r.role === "rare" ? "プレミア"
+      : "レギュラーボーナス";
+  }
+
   function afterStop(r, fast, done) {
     switch (r.role) {
       case "miss":
-        // 本天井（15回）が近いと示唆する（残り5回から）。当たればリセットされる
-        if (!fast && r.ceilingRemain > 0 && r.ceilingRemain <= 5) {
-          bubble(`天井まで あと${r.ceilingRemain}回…！`, 1700);
-          if (r.ceilingRemain <= 2 && fx() !== "off") sfx("puka");
+        // 天井が近いと抽象的に示唆（数値は出さない）。たまに外れでも楽しいことを言う（T18/T19）
+        if (!fast) {
+          if (r.ceilingRemain > 0 && r.ceilingRemain <= 5) {
+            bubble(ceilingHint(r.ceilingRemain), 1700);
+            if (r.ceilingRemain <= 2 && fx() !== "off") sfx("puka");
+          } else if (Math.random() < 0.16) {
+            bubble(funMiss(), 1500);
+          }
         }
         return done();
       case "replay":
@@ -4860,9 +4896,9 @@ const REEL = (() => {
       case "cherry": {
         sfx("reelWin");
         if (!r.overlap) {
-          if (!fast) bubble("チェリー！");
+          if (!fast) bubble(`チェリーッ！　${benefitLine(r)}`, 1900); // 役名＋恩恵を読み上げ（T18）
           announce(r);
-          return setTimeout(done, fast ? 60 : 550);
+          return setTimeout(done, fast ? 60 : 700);
         }
         // チェリー重複: 小役の払い出しの後にひと呼吸おいてペカッ。
         // キューは止めない（ランプ点灯のまま進み、タップ or 次の回転前に自動精算）
@@ -4878,9 +4914,9 @@ const REEL = (() => {
       }
       case "bell":
         sfx("reelWin");
-        bubble("パインベル！");
+        if (!fast) bubble(`パインベルッ！　${benefitLine(r)}`, 1900); // 役名＋恩恵を読み上げ（T18）
         announce(r);
-        return setTimeout(done, fast ? 60 : 600);
+        return setTimeout(done, fast ? 60 : 800);
       case "rare": {
         // 中段チェリー/単独パッキー = BIG確定（プレミア告知）
         const start = () => {
@@ -4922,7 +4958,12 @@ const REEL = (() => {
     bonusWait = null;
     lampOff();
     bubble("", 1);
-    const finish = () => { announce(b); if (b.done) { const d = b.done; b.done = null; d(); } };
+    const finish = () => {
+      announce(b);
+      // ボーナスも役名＋恩恵をパッキーが読み上げる（T18）
+      if (!fast && fx() !== "off") bubble(`${bonusName(b)}ッ！　${benefitLine(b)}`, 2600);
+      if (b.done) { const d = b.done; b.done = null; d(); }
+    };
     if (fast || fx() === "lite") { sfx("fanfare"); return finish(); }
     const isBig = b.role === "big" || b.role === "rare" || b.overlap === "big";
     const c = ensureCutin();
