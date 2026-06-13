@@ -28,6 +28,9 @@ await page.goto(BASE, { waitUntil: "load" });
 await page.waitForSelector("#screen-title.active");
 log("title OK");
 await page.click("#btn-new");
+await page.waitForSelector("#disclaimer-overlay.visible");
+await page.click("#disclaimer-accept");
+log("disclaimer acknowledged");
 
 // 行動計画（マップで上から順に消費する）
 // キャラ訪問でスポットが解禁される順序も兼ねて検証する

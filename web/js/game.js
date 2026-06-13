@@ -5522,8 +5522,18 @@ function init() {
   startTitleBgm();
   window.addEventListener("pointerdown", startTitleBgm, { once: true });
   window.addEventListener("keydown", startTitleBgm, { once: true });
+  // NEW GAME はまず注意書き（フィクション／演出の断り）を挟んでから本編へ
   $("#btn-new").addEventListener("click", () => {
     if (window.SFX) SFX.select();
+    $("#disclaimer-overlay").classList.add("visible");
+  });
+  $("#disclaimer-back").addEventListener("click", () => {
+    if (window.SFX) SFX.close();
+    $("#disclaimer-overlay").classList.remove("visible");
+  });
+  $("#disclaimer-accept").addEventListener("click", () => {
+    if (window.SFX) SFX.select();
+    $("#disclaimer-overlay").classList.remove("visible");
     engulfInSmoke(() => {
       localStorage.removeItem(SAVE_KEY);
       if (window.SFX) SFX.bgmStop(); // コールドオープンは無音で（tonariのBGMは日常から）
