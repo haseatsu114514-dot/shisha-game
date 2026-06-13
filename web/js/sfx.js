@@ -222,6 +222,12 @@ const SFX = (() => {
       hiss({ dur: 0.45, a: 0.01, peak: 0.08, filterType: "bandpass", filterFreq: 2400, q: 3, wet: 0.4,
              sweep: [3000, 1500, 0.45] });
     },
+    spark: () => {
+      // 炭の芯がピカッと閃く（HEAT IGNITION ジャスト窓の合図）: 鋭く短い高域スパーク
+      blip({ freq: 2800, type: "triangle", a: 0.001, d: 0.05, r: 0.08, peak: 0.13, filterFreq: 9000, wet: 0.4,
+             slide: [3400, 2200, 0.06] });
+      hiss({ dur: 0.09, a: 0.001, peak: 0.10, filterType: "highpass", filterFreq: 5200, wet: 0.35 });
+    },
     bubble: () => {
       // 水の中の泡: ピッチが上がる丸い音 × 3
       [220, 280, 340].forEach((f, i) =>

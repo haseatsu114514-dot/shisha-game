@@ -2524,7 +2524,7 @@ function maybeHomeShisha(next) {
 // 自己ベスト（practiceBest 0〜2）は大会本番のスコアボーナスになる
 const PRACTICE_DRILLS = [
   { id: "foil", label: "穴あけ反復", desc: "本番と同じリズムで6つ穴を開ける", stats: ["technique", "sense"] },
-  { id: "coalfire", label: "炭起こしの見極め", desc: "全体が熾きた一瞬を逃さず乗せる", stats: ["guts", "technique"] },
+  { id: "coalfire", label: "炭起こしの見極め", desc: "芯がピカッと閃く瞬間を見極めて取り上げる", stats: ["guts", "technique"] },
   { id: "steam", label: "蒸らしの胆力", desc: "蒸らしの間、雑念の弾幕を躱し続ける訓練", stats: ["insight", "guts"] },
   { id: "pull", label: "吸い出しの温度感", desc: "上げ吸い・下げ吸いを使い分けて適温に合わせる", stats: ["sense", "technique"] },
   { id: "focus", label: "集中トレーニング", desc: "雑念を振り払う訓練。本番の野次対策", stats: ["insight", "guts"] },
@@ -2867,7 +2867,7 @@ function beginMaking(mode) {
     mode,
     bowl: null, hms: null, charcoal: null,
     theme: null, mix: {}, pack: null,
-    foilHits: 0, foilDone: false, coalFire: null, coal: null, steam: null,
+    foilHits: 0, foilDone: false, holeResult: null, coalFire: null, coalResult: null, coal: null, steam: null,
     steamHits: null, focusCleared: 0, pull: null, temp: null, pullCount: 0, step: "",
   };
   stopRigEffects();
@@ -2894,7 +2894,7 @@ function startDrill(kind) {
     mode: "drill", drill: kind,
     bowl: null, hms: null, charcoal: null,
     theme: THEMES[0], mix: {}, pack: null,
-    foilHits: 0, foilDone: false, coalFire: null, coal: null, steam: null,
+    foilHits: 0, foilDone: false, holeResult: null, coalFire: null, coalResult: null, coal: null, steam: null,
     steamHits: null, focusCleared: 0, pull: null, temp: null, pullCount: 0, step: "",
   };
   stopRigEffects();
@@ -3331,38 +3331,209 @@ function stepFoil() {
   setRingUI();
 }
 
-// --- 炭起こし（一発タイミング）
+// ============================================================================
+// HEAT IGNITION（炭起こし・観察＆ジャスト発火）— master_spec 第2部 #2
+// コンロの3つの炭を「目で見て」最適なタイミングで取り上げる。ゲージ停止ゲームではない。
+// 黒→赤→赤熱→ピカン(芯が一瞬閃く)→白熱→灰かぶり と色が変化し、ピカンで取ると最高評価。
+// 出力: tt.coalFire（"perfect"/"good"/"miss"・既存craftScore互換）＋ tt.coalResult（FLAVOR TRIAL用の詳細）
+// ============================================================================
+const HEAT_COUNT = 3;
+// 炭の芯温(heat)に対する見た目。pos昇順の多段補間で色を作る
+const HEAT_STOPS = [
+  [0.00, [40, 38, 44]],    // 冷たい黒
+  [0.26, [74, 28, 22]],    // 端がうっすら赤い
+  [0.50, [156, 42, 20]],   // 赤
+  [0.72, [228, 84, 28]],   // 赤熱
+  [0.90, [255, 242, 205]], // ピカン（芯が白く閃く）
+  [1.04, [255, 214, 150]], // 白熱
+  [1.30, [176, 170, 158]], // 灰かぶり
+];
+function heatRGB(h) {
+  const s = HEAT_STOPS;
+  if (h <= s[0][0]) return s[0][1];
+  if (h >= s[s.length - 1][0]) return s[s.length - 1][1];
+  for (let i = 1; i < s.length; i++) {
+    if (h <= s[i][0]) {
+      const p0 = s[i - 1][0], c0 = s[i - 1][1], p1 = s[i][0], c1 = s[i][1];
+      const u = (h - p0) / (p1 - p0);
+      return [0, 1, 2].map((k) => Math.round(c0[k] + (c1[k] - c0[k]) * u));
+    }
+  }
+  return s[s.length - 1][1];
+}
+// heat→評価ゾーン。JUST窓の上端は根性でわずかに広がる（そこそこ有利）
+function heatZone(h, justHi) {
+  if (h < 0.30) return "black";   // 生焼け
+  if (h < 0.58) return "early";   // 早取り
+  if (h < 0.84) return "ready";   // 適温前（赤熱）
+  if (h <= justHi) return "just"; // ジャスト
+  if (h <= 1.18) return "hot";    // 攻め焼き（白熱）
+  return "ash";                   // 焼きすぎ（灰かぶり）
+}
+// 各ゾーンの品質係数と性能影響（master_spec 第2部 #2「性能影響の数値例」を踏襲）
+const HEAT_GRADE = {
+  black: { q: 0.15, label: "CORE BLACK",      sub: "生焼け",   heatPower: -30, heatStability: -10, startupSpeed: -30, burnRisk: -10, aromaRetention: 0 },
+  early: { q: 0.40, label: "EARLY",           sub: "早取り",   heatPower: -20, heatStability: -10, startupSpeed: -20, burnRisk: -15, aromaRetention: 10 },
+  ready: { q: 0.74, label: "HEAT STABLE",     sub: "適温前",   heatPower: 5,   heatStability: 15,  startupSpeed: 5,   burnRisk: -5,  aromaRetention: 20 },
+  just:  { q: 1.00, label: "JUST IGNITION!!", sub: "ジャスト", heatPower: 20,  heatStability: 30,  startupSpeed: 15,  burnRisk: 0,   aromaRetention: 15 },
+  hot:   { q: 0.62, label: "OVER REACH",      sub: "攻め焼き", heatPower: 25,  heatStability: -5,  startupSpeed: 20,  burnRisk: 20,  aromaRetention: -10 },
+  ash:   { q: 0.10, label: "OVER HEAT",       sub: "焼きすぎ", heatPower: 35,  heatStability: -10, startupSpeed: 25,  burnRisk: 30,  aromaRetention: -20 },
+};
+
 function stepCoalFire() {
-  const body = tnPanel("炭起こし", "コンロの炭をじっと見る。全体が赤く熾った、その瞬間に乗せろ！");
-  const zoneW = 0.10 + state.stats.guts / 900;
-  const left = 0.55 + Math.random() * 0.15;
-  const { wrap, gauge } = buildGauge(body, [left, left + zoneW], Math.max(1.0, 1.45 - state.stats.guts / 250));
-  const btn = document.createElement("button");
-  btn.className = "primary-btn";
-  btn.textContent = "今だ！乗せる！";
+  const body = tnPanel("HEAT IGNITION ── 炭起こし",
+    "コンロの炭をよく見ろ。芯がピカッと閃いた、その瞬間に取り上げる。早すぎれば生焼け、遅すぎれば灰になる。");
+  const isDrill = tt.mode === "drill";
+
+  const arena = document.createElement("div");
+  arena.className = "heat-arena";
+  arena.innerHTML = `
+    <div class="heat-burner" id="heat-burner">
+      <div class="heat-grate"></div>
+      <div class="heat-coals" id="heat-coals"></div>
+      <div class="heat-callout" id="heat-callout"></div>
+    </div>
+    <div class="heat-side">
+      <div class="heat-readout">
+        <div class="heat-title-s">IGNITION</div>
+        <div class="heat-sub-s">芯の閃きを見極めろ</div>
+        <div class="heat-count" id="heat-count"></div>
+      </div>
+    </div>`;
+  body.appendChild(arena);
   const result = document.createElement("div");
   result.className = "practice-result";
-  btn.addEventListener("click", () => {
-    gauge.stop();
-    btn.disabled = true;
-    tt.coalFire = gauge.judge();
-    if (window.SFX) SFX.coal();
-    showStamp($("#tn-layout .panel"), tt.coalFire);
-    pakkiLive(tt.coalFire);
-    result.textContent = {
-      perfect: "──完璧な熾き。炭全体が均一な赤に染まっている。",
-      good: "──十分に熾きた。問題ない熱だ。",
-      miss: "──少し早かったか……。炭の片面がまだ黒い。",
-    }[tt.coalFire];
+  body.appendChild(result);
+
+  const coalsEl = arena.querySelector("#heat-coals");
+  const calloutEl = arena.querySelector("#heat-callout");
+  const countEl = arena.querySelector("#heat-count");
+
+  // 根性が高いほどジャスト窓が広く、温度上昇がわずかに緩やか（数値は見せない）
+  const guts = state.stats.guts;
+  const justHi = 0.96 + Math.min(0.12, guts / 900);
+  const baseRate = 0.235 - Math.min(0.075, guts / 1300);
+  const RATE_MUL = [1.15, 1.0, 0.88]; // 炭ごとに焼けるスピードを少し変える
+  const START = [0.10, -0.10, -0.30]; // 立ち上がりをずらす（同時に閃かせない）
+
+  const coals = [];
+  for (let i = 0; i < HEAT_COUNT; i++) {
+    const el = document.createElement("button");
+    el.className = "heat-coal";
+    el.id = `heat-coal-${i}`;
+    el.innerHTML = `<span class="heat-core"></span><span class="heat-badge"></span>`;
+    coalsEl.appendChild(el);
+    coals.push({ el, core: el.querySelector(".heat-core"), badge: el.querySelector(".heat-badge"),
+                 heat: START[i], rate: baseRate * RATE_MUL[i], taken: false, inJust: false, grade: null, zone: null });
+    el.addEventListener("click", () => takeCoal(i));
+  }
+
+  const callout = (text, cls) => {
+    calloutEl.textContent = text;
+    calloutEl.className = `heat-callout show ${cls || ""}`;
+    setTimeout(() => calloutEl.classList.remove("show"), 720);
+  };
+  const updateCount = () => {
+    countEl.textContent = `取った炭 ${coals.filter((c) => c.taken).length} / ${HEAT_COUNT}`;
+  };
+  updateCount();
+
+  const paint = (c) => {
+    const [r, g, b] = heatRGB(c.heat);
+    const edge = `rgb(${r},${g},${b})`;
+    const mid = `rgb(${Math.min(255, r + 40)},${Math.min(255, g + 30)},${Math.min(255, b + 24)})`;
+    c.el.style.background = `radial-gradient(circle at 50% 36%, ${mid}, ${edge} 72%)`;
+    const glow = c.heat < 0.22 ? 0 : c.heat <= 1.04 ? (c.heat - 0.22) * 46 : Math.max(5, (1.42 - c.heat) * 46);
+    c.el.style.boxShadow =
+      `0 0 ${glow.toFixed(0)}px rgba(255,${Math.round(120 + glow)},60,${Math.min(0.85, glow / 40).toFixed(2)}),` +
+      ` inset 0 2px 6px rgba(255,255,255,0.12), inset 0 -6px 12px rgba(0,0,0,0.5)`;
+    // 芯: ジャスト窓では白く閃く（in-just時はCSSアニメが上書き）
+    const z = heatZone(c.heat, justHi);
+    c.core.style.opacity = z === "just" ? "1" : (z === "ready" || z === "hot") ? "0.5" : "0.15";
+  };
+
+  let raf = 0, last = performance.now(), running = true;
+  const tick = (now) => {
+    if (!running) return;
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    for (const c of coals) {
+      if (c.taken) continue;
+      c.heat = Math.min(1.42, c.heat + c.rate * dt);
+      const inJust = heatZone(c.heat, justHi) === "just";
+      if (inJust && !c.inJust) { c.el.classList.add("flash"); if (window.SFX) SFX.spark(); }
+      else if (!inJust && c.inJust) c.el.classList.remove("flash");
+      c.el.classList.toggle("in-just", inJust);
+      c.inJust = inJust;
+      paint(c);
+    }
+    raf = requestAnimationFrame(tick);
+  };
+  raf = requestAnimationFrame(tick);
+
+  function takeCoal(i) {
+    const c = coals[i];
+    if (!running || c.taken) return;
+    const z = heatZone(c.heat, justHi);
+    c.taken = true; c.zone = z; c.grade = HEAT_GRADE[z];
+    c.el.classList.add("taken"); c.el.classList.remove("flash", "in-just");
+    c.el.disabled = true;
+    c.badge.textContent = c.grade.sub;
+    c.badge.className = `heat-badge show z-${z}`;
+    paint(c);
+    if (window.SFX) { SFX.coal(); if (z === "just") SFX.spark(); }
+    callout(c.grade.label, z === "just" ? "great" : (z === "black" || z === "ash") ? "warn" : "");
+    updateCount();
+    if (coals.every((x) => x.taken)) finishHeat();
+  }
+
+  function finishHeat() {
+    running = false; cancelAnimationFrame(raf);
+    let qSum = 0, justCount = 0, readyCount = 0, earlyCount = 0, overheatCount = 0;
+    const acc = { heatPower: 0, heatStability: 0, startupSpeed: 0, burnRisk: 0, aromaRetention: 0 };
+    for (const c of coals) {
+      qSum += c.grade.q;
+      if (c.zone === "just") justCount++;
+      else if (c.zone === "ready") readyCount++;
+      else if (c.zone === "black" || c.zone === "early") earlyCount++;
+      else overheatCount++; // hot / ash
+      for (const k in acc) acc[k] += c.grade[k];
+    }
+    const qAvg = qSum / coals.length;
+    for (const k in acc) acc[k] = Math.round(acc[k] / coals.length);
+    // 既存craftScore互換: 文字列1値に集約
+    tt.coalFire = qAvg >= 0.8 ? "perfect" : qAvg >= 0.45 ? "good" : "miss";
+    // FLAVOR TRIAL 用の詳細（性能影響は 0..100 スケール・基準50 に寄せる）
+    const sc = (v) => Math.max(0, Math.min(100, 50 + v));
+    tt.coalResult = {
+      score: Math.round(qAvg * 100),
+      justCount, readyCount, earlyCount, overheatCount,
+      heatPower: sc(acc.heatPower), heatStability: sc(acc.heatStability),
+      startupSpeed: sc(acc.startupSpeed), aromaRetention: sc(acc.aromaRetention),
+      burnRisk: sc(acc.burnRisk), coalFlashSuccess: justCount >= 1,
+    };
+    const rank = tt.coalFire;
+    showStamp(arena.querySelector("#heat-burner"), rank === "perfect" ? "just" : rank);
+    pakkiLive(rank);
+    if (rank === "perfect") smokeRings(3);
+    result.innerHTML =
+      (justCount >= 2 ? "──三つの芯が、ほぼ同時にピカッと閃いた。火力も香りも申し分ない熾きだ。"
+      : qAvg >= 0.45 ? "──悪くない熾き。炭はちゃんと使える熱を持っている。"
+      : overheatCount >= 2 ? "──焼きすぎた。灰をかぶった炭は熱が暴れて、香りを飛ばしてしまう……。"
+      : "──芯が黒い。火力が立ち上がりきらないかもしれない……。") +
+      `<div class="heat-summary">ジャスト ${justCount} ／ 適温 ${readyCount} ／ 早取り ${earlyCount} ／ 焼きすぎ ${overheatCount}</div>`;
     const next = document.createElement("button");
     next.className = "primary-btn";
-    next.textContent = "次へ";
+    next.textContent = isDrill ? "結果を見る" : "次へ";
     next.addEventListener("click", () => tnNext("coalfire"));
-    result.appendChild(document.createElement("br"));
     result.appendChild(next);
-  });
-  body.append(result);
-  wrap.appendChild(btn);
+  }
+
+  // テスト用フック: 各炭の温度・取り頃を読む（自動プレイ用）
+  window.__heatDebug = () => coals.map((c, i) => ({
+    i, heat: c.heat, taken: c.taken, zone: heatZone(c.heat, justHi),
+    justNow: !c.taken && heatZone(c.heat, justHi) === "just",
+    goodNow: !c.taken && c.heat >= 0.58 && c.heat <= 1.18,
+  }));
 }
 
 // --- 集中（雑念タップ）
@@ -4574,7 +4745,7 @@ const TUTORIAL_TIPS = {
   mix: "スミさん「基本は12g。ボウルの容量までは盛れるが、多く詰む分は熱も葉代も食うぞ」",
   pack: "スミさん「迷ったらノーマル。フレーバーの重さで変えるんだ」",
   foil: "スミさん「穴は均等に。リズムで開けると揃う」",
-  coalfire: "スミさん「炭は全体が赤く熾きてからだ。焦るな」",
+  coalfire: "スミさん「炭の芯が一瞬ピカッと閃く。その瞬間に取り上げろ。早すぎりゃ生焼け、遅けりゃ灰だ」",
   coal: "スミさん「基本はトライアングル。熱が均等に回る」",
   steam: "スミさん「蒸らしは5〜8分。待つ間、余計なことを考えるな。雑念は煙に出る」",
   pull: "スミさん「提供前の吸い出しで温度を作る。左で止めれば上げ、右なら下げだ。最低2回」",

@@ -2632,6 +2632,86 @@ body {
 .hole-summary { margin-top: 8px; font-size: 12.5px; color: #aeb8d6; letter-spacing: 0.04em; }
 @media (max-width: 760px) { .hole-arena { flex-direction: column; gap: 12px; } .hole-board { width: 230px; height: 230px; } }
 
+/* ============ HEAT IGNITION（炭起こし・観察＆ジャスト発火・master_spec 第2部 #2 / A1） ============ */
+.heat-arena { display: flex; gap: 22px; align-items: center; justify-content: center; padding: 8px 0 2px; }
+.heat-burner {
+  position: relative; width: 320px; min-height: 196px; flex: 0 0 auto;
+  border-radius: 16px; padding: 30px 20px 30px;
+  background:
+    radial-gradient(circle at 50% 118%, rgba(255,92,28,0.16), transparent 60%),
+    linear-gradient(160deg, #14161f 0%, #0a0b12 100%);
+  border: 1px solid rgba(120,140,200,0.22);
+  box-shadow: inset 0 0 50px rgba(0,0,0,0.6), 0 0 30px rgba(60,90,160,0.25);
+  overflow: hidden; display: flex; align-items: center; justify-content: center;
+}
+/* コンロの五徳と熾きの照り返し */
+.heat-grate {
+  position: absolute; inset: auto 0 0 0; height: 60%; pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 38px, rgba(255,255,255,0.045) 38px 40px),
+    radial-gradient(ellipse at 50% 110%, rgba(255,72,20,0.20), transparent 66%);
+  -webkit-mask: linear-gradient(transparent, #000 62%); mask: linear-gradient(transparent, #000 62%);
+}
+.heat-coals { position: relative; display: flex; gap: 24px; justify-content: center; align-items: center; z-index: 1; min-height: 90px; }
+.heat-coal {
+  position: relative; width: 70px; height: 70px; padding: 0; border: none; cursor: pointer;
+  -webkit-appearance: none; appearance: none; color: inherit;
+  /* 角を不揃いにして炭の塊らしく */
+  border-radius: 17px 14px 18px 13px / 14px 18px 13px 17px;
+  background: #2a282e; transform: rotate(-3deg); transition: transform 0.12s ease;
+}
+.heat-coal:nth-child(2) { transform: rotate(4deg); }
+.heat-coal:nth-child(3) { transform: rotate(-1deg); }
+.heat-coal:hover:not(.taken) { transform: translateY(-3px) rotate(0deg); }
+.heat-coal.in-just { animation: heat-bob 0.5s ease-in-out infinite; z-index: 2; }
+@keyframes heat-bob { 50% { transform: translateY(-5px) scale(1.05); } }
+.heat-coal.flash { animation: heat-flash 0.45s ease-out; }
+@keyframes heat-flash {
+  0% { box-shadow: 0 0 0 rgba(255,242,206,0); }
+  28% { box-shadow: 0 0 48px 12px rgba(255,246,214,0.96); }
+  100% { box-shadow: 0 0 18px rgba(255,200,120,0.5); }
+}
+.heat-coal.taken { cursor: default; filter: saturate(0.8) brightness(0.78); transform: scale(0.9) translateY(6px) rotate(0deg); opacity: 0.92; }
+/* 炭の芯: 中央で白く閃く */
+.heat-core {
+  position: absolute; left: 50%; top: 38%; width: 22px; height: 18px; transform: translate(-50%,-50%);
+  border-radius: 50%; background: radial-gradient(circle, #fff8e6, rgba(255,210,140,0.25) 68%, transparent);
+  opacity: 0.15; transition: opacity 0.1s; pointer-events: none;
+}
+.heat-coal.in-just .heat-core { animation: heat-core-pulse 0.34s ease-in-out infinite; }
+@keyframes heat-core-pulse {
+  0%,100% { opacity: 0.72; transform: translate(-50%,-50%) scale(0.9); }
+  50% { opacity: 1; transform: translate(-50%,-50%) scale(1.28); }
+}
+.heat-badge {
+  position: absolute; left: 50%; bottom: -19px; transform: translateX(-50%); white-space: nowrap;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.05em; opacity: 0; pointer-events: none;
+  color: #cdd6ee; text-shadow: 0 1px 2px #000;
+}
+.heat-badge.show { opacity: 1; }
+.heat-badge.z-just { color: #ffe79a; }
+.heat-badge.z-black, .heat-badge.z-ash { color: #ff9a9a; }
+.heat-callout {
+  position: absolute; left: 50%; top: 16px; transform: translate(-50%,0) scale(0.6); opacity: 0;
+  font-weight: 900; font-size: 24px; letter-spacing: 0.05em; color: #fff;
+  text-shadow: 0 0 16px rgba(255,160,80,0.9); pointer-events: none; z-index: 3;
+}
+.heat-callout.show { animation: heat-callout 0.72s ease-out; }
+.heat-callout.great { color: #ffe79a; text-shadow: 0 0 22px rgba(255,210,90,1); }
+.heat-callout.warn { color: #ff9a9a; text-shadow: 0 0 18px rgba(255,90,90,0.9); }
+@keyframes heat-callout {
+  0% { opacity: 0; transform: translate(-50%,8px) scale(0.6); }
+  25% { opacity: 1; transform: translate(-50%,0) scale(1.1); }
+  100% { opacity: 0; transform: translate(-50%,-10px) scale(1); }
+}
+.heat-side { display: flex; flex-direction: column; gap: 10px; min-width: 188px; }
+.heat-readout { background: rgba(12,16,28,0.8); border: 1px solid rgba(120,140,200,0.25); border-radius: 10px; padding: 14px 16px; }
+.heat-title-s { font-size: 20px; font-weight: bold; color: #ffb066; letter-spacing: 0.12em; }
+.heat-sub-s { font-size: 12px; color: var(--text-dim); margin-bottom: 12px; }
+.heat-count { font-size: 14px; color: #cdd6ee; }
+.heat-summary { margin-top: 8px; font-size: 12.5px; color: #aeb8d6; letter-spacing: 0.04em; }
+@media (max-width: 760px) { .heat-arena { flex-direction: column; gap: 12px; } .heat-burner { width: 280px; } }
+
 /* ============ GAME OVER（2位以下＝敗退・master_spec改定） ============ */
 #screen-end.gameover { background: linear-gradient(rgba(20,4,8,0.82), rgba(8,2,4,0.92)), url("data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCALQBQADASIAAhEBAxEB/8QAGgABAAMBAQEAAAAAAAAAAAAAAAQFBgIBA//EAC8QAQACAgEEAQIEBAcAAAAAAAABAgMEEQUSITETIkEUFWFxBiQzUSM1U3SRobL/xAAYAQEBAQEBAAAAAAAAAAAAAAAAAQIEBf/EABsRAQEAAwEBAQAAAAAAAAAAAAABAhESE0ED/9oADAMBAAIRAxEAPwCYLD+H/wDPum/7nF/7hafl2L8D835d/Oxk7J1O6/8AT/1ffPvxz6+7hmO3kTC2bZsTerYser1ncxYqR8OLYvStJmZjti0xEc+171rRwTt7t/wkUxz8+S2aJtEY7Ra3ZWPPH1RFJ/Xv8eDkmFu2VGnr0bDXqF4ya9o1r9Tw4cPNp4thtN+eJ58xMRXz/wBo3TsGnsV0Ivp052922CZ77/RTjH68+/rmfPJzV86oRptbpOvbB022bB/V2dalrRNuMlckWmY554+0R4iOPXMy4waehtYcM3wV1oyYKZrZK3tPZ/MRin3Mxx2+f3/TwcU86zg0eTR06bmGL6mWkfFsXvivE4+6KY5tWeO+0+4nzzxPH7uMeLD+A2MmLVx92fp/y9kTaYpMbHbM188+q8/f1/bmDk4rPi36Bp4tyM9b4PlvzWK2mZitInnmZ4nmPt9UxMR9/a2zdOw7GC2e2nWtZ062renf4muvFuffEfV45nnniY45iZJjbNk/O2bZIX3VtDDr9P2b49X44x7NMeHP3Wn5qTW893mePPbWeYUKWaZyx5AEQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB3hxXzZa48Ve69vUJMW2um37f8OIyRFvMUy1tETPEx7ifPPmP1cdO27aW5TPSJmaxas8W7Z4mJieJ+08TPl11LcndzUvPy8UpFInLlnJafMz5mf3n1EL8ampN/XFt3atjvSdnNNMkza9e+eLTPuZhHBGdgAAAD2szW0TWZiY8xMfZ4A+uxs59m0TsZsuWY8ROS824/5fIASdnd2NnHFMt4mvPdPFIr3TxxzMxHmf1n+8owBbsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//9k=") center / cover no-repeat, #0a0608; }
 #screen-end.gameover #end-title { color: #ff6b6b; text-shadow: 0 0 24px rgba(255,60,60,0.6), 0 2px 0 rgba(0,0,0,0.6); letter-spacing: 0.14em; }
@@ -3191,6 +3271,12 @@ const SFX = (() => {
              slide: [120, 60, 0.20] });
       hiss({ dur: 0.45, a: 0.01, peak: 0.08, filterType: "bandpass", filterFreq: 2400, q: 3, wet: 0.4,
              sweep: [3000, 1500, 0.45] });
+    },
+    spark: () => {
+      // 炭の芯がピカッと閃く（HEAT IGNITION ジャスト窓の合図）: 鋭く短い高域スパーク
+      blip({ freq: 2800, type: "triangle", a: 0.001, d: 0.05, r: 0.08, peak: 0.13, filterFreq: 9000, wet: 0.4,
+             slide: [3400, 2200, 0.06] });
+      hiss({ dur: 0.09, a: 0.001, peak: 0.10, filterType: "highpass", filterFreq: 5200, wet: 0.35 });
     },
     bubble: () => {
       // 水の中の泡: ピッチが上がる丸い音 × 3
@@ -6241,7 +6327,7 @@ function maybeHomeShisha(next) {
 // 自己ベスト（practiceBest 0〜2）は大会本番のスコアボーナスになる
 const PRACTICE_DRILLS = [
   { id: "foil", label: "穴あけ反復", desc: "本番と同じリズムで6つ穴を開ける", stats: ["technique", "sense"] },
-  { id: "coalfire", label: "炭起こしの見極め", desc: "全体が熾きた一瞬を逃さず乗せる", stats: ["guts", "technique"] },
+  { id: "coalfire", label: "炭起こしの見極め", desc: "芯がピカッと閃く瞬間を見極めて取り上げる", stats: ["guts", "technique"] },
   { id: "steam", label: "蒸らしの胆力", desc: "蒸らしの間、雑念の弾幕を躱し続ける訓練", stats: ["insight", "guts"] },
   { id: "pull", label: "吸い出しの温度感", desc: "上げ吸い・下げ吸いを使い分けて適温に合わせる", stats: ["sense", "technique"] },
   { id: "focus", label: "集中トレーニング", desc: "雑念を振り払う訓練。本番の野次対策", stats: ["insight", "guts"] },
@@ -6584,7 +6670,7 @@ function beginMaking(mode) {
     mode,
     bowl: null, hms: null, charcoal: null,
     theme: null, mix: {}, pack: null,
-    foilHits: 0, foilDone: false, coalFire: null, coal: null, steam: null,
+    foilHits: 0, foilDone: false, holeResult: null, coalFire: null, coalResult: null, coal: null, steam: null,
     steamHits: null, focusCleared: 0, pull: null, temp: null, pullCount: 0, step: "",
   };
   stopRigEffects();
@@ -6611,7 +6697,7 @@ function startDrill(kind) {
     mode: "drill", drill: kind,
     bowl: null, hms: null, charcoal: null,
     theme: THEMES[0], mix: {}, pack: null,
-    foilHits: 0, foilDone: false, coalFire: null, coal: null, steam: null,
+    foilHits: 0, foilDone: false, holeResult: null, coalFire: null, coalResult: null, coal: null, steam: null,
     steamHits: null, focusCleared: 0, pull: null, temp: null, pullCount: 0, step: "",
   };
   stopRigEffects();
@@ -7048,38 +7134,209 @@ function stepFoil() {
   setRingUI();
 }
 
-// --- 炭起こし（一発タイミング）
+// ============================================================================
+// HEAT IGNITION（炭起こし・観察＆ジャスト発火）— master_spec 第2部 #2
+// コンロの3つの炭を「目で見て」最適なタイミングで取り上げる。ゲージ停止ゲームではない。
+// 黒→赤→赤熱→ピカン(芯が一瞬閃く)→白熱→灰かぶり と色が変化し、ピカンで取ると最高評価。
+// 出力: tt.coalFire（"perfect"/"good"/"miss"・既存craftScore互換）＋ tt.coalResult（FLAVOR TRIAL用の詳細）
+// ============================================================================
+const HEAT_COUNT = 3;
+// 炭の芯温(heat)に対する見た目。pos昇順の多段補間で色を作る
+const HEAT_STOPS = [
+  [0.00, [40, 38, 44]],    // 冷たい黒
+  [0.26, [74, 28, 22]],    // 端がうっすら赤い
+  [0.50, [156, 42, 20]],   // 赤
+  [0.72, [228, 84, 28]],   // 赤熱
+  [0.90, [255, 242, 205]], // ピカン（芯が白く閃く）
+  [1.04, [255, 214, 150]], // 白熱
+  [1.30, [176, 170, 158]], // 灰かぶり
+];
+function heatRGB(h) {
+  const s = HEAT_STOPS;
+  if (h <= s[0][0]) return s[0][1];
+  if (h >= s[s.length - 1][0]) return s[s.length - 1][1];
+  for (let i = 1; i < s.length; i++) {
+    if (h <= s[i][0]) {
+      const p0 = s[i - 1][0], c0 = s[i - 1][1], p1 = s[i][0], c1 = s[i][1];
+      const u = (h - p0) / (p1 - p0);
+      return [0, 1, 2].map((k) => Math.round(c0[k] + (c1[k] - c0[k]) * u));
+    }
+  }
+  return s[s.length - 1][1];
+}
+// heat→評価ゾーン。JUST窓の上端は根性でわずかに広がる（そこそこ有利）
+function heatZone(h, justHi) {
+  if (h < 0.30) return "black";   // 生焼け
+  if (h < 0.58) return "early";   // 早取り
+  if (h < 0.84) return "ready";   // 適温前（赤熱）
+  if (h <= justHi) return "just"; // ジャスト
+  if (h <= 1.18) return "hot";    // 攻め焼き（白熱）
+  return "ash";                   // 焼きすぎ（灰かぶり）
+}
+// 各ゾーンの品質係数と性能影響（master_spec 第2部 #2「性能影響の数値例」を踏襲）
+const HEAT_GRADE = {
+  black: { q: 0.15, label: "CORE BLACK",      sub: "生焼け",   heatPower: -30, heatStability: -10, startupSpeed: -30, burnRisk: -10, aromaRetention: 0 },
+  early: { q: 0.40, label: "EARLY",           sub: "早取り",   heatPower: -20, heatStability: -10, startupSpeed: -20, burnRisk: -15, aromaRetention: 10 },
+  ready: { q: 0.74, label: "HEAT STABLE",     sub: "適温前",   heatPower: 5,   heatStability: 15,  startupSpeed: 5,   burnRisk: -5,  aromaRetention: 20 },
+  just:  { q: 1.00, label: "JUST IGNITION!!", sub: "ジャスト", heatPower: 20,  heatStability: 30,  startupSpeed: 15,  burnRisk: 0,   aromaRetention: 15 },
+  hot:   { q: 0.62, label: "OVER REACH",      sub: "攻め焼き", heatPower: 25,  heatStability: -5,  startupSpeed: 20,  burnRisk: 20,  aromaRetention: -10 },
+  ash:   { q: 0.10, label: "OVER HEAT",       sub: "焼きすぎ", heatPower: 35,  heatStability: -10, startupSpeed: 25,  burnRisk: 30,  aromaRetention: -20 },
+};
+
 function stepCoalFire() {
-  const body = tnPanel("炭起こし", "コンロの炭をじっと見る。全体が赤く熾った、その瞬間に乗せろ！");
-  const zoneW = 0.10 + state.stats.guts / 900;
-  const left = 0.55 + Math.random() * 0.15;
-  const { wrap, gauge } = buildGauge(body, [left, left + zoneW], Math.max(1.0, 1.45 - state.stats.guts / 250));
-  const btn = document.createElement("button");
-  btn.className = "primary-btn";
-  btn.textContent = "今だ！乗せる！";
+  const body = tnPanel("HEAT IGNITION ── 炭起こし",
+    "コンロの炭をよく見ろ。芯がピカッと閃いた、その瞬間に取り上げる。早すぎれば生焼け、遅すぎれば灰になる。");
+  const isDrill = tt.mode === "drill";
+
+  const arena = document.createElement("div");
+  arena.className = "heat-arena";
+  arena.innerHTML = `
+    <div class="heat-burner" id="heat-burner">
+      <div class="heat-grate"></div>
+      <div class="heat-coals" id="heat-coals"></div>
+      <div class="heat-callout" id="heat-callout"></div>
+    </div>
+    <div class="heat-side">
+      <div class="heat-readout">
+        <div class="heat-title-s">IGNITION</div>
+        <div class="heat-sub-s">芯の閃きを見極めろ</div>
+        <div class="heat-count" id="heat-count"></div>
+      </div>
+    </div>`;
+  body.appendChild(arena);
   const result = document.createElement("div");
   result.className = "practice-result";
-  btn.addEventListener("click", () => {
-    gauge.stop();
-    btn.disabled = true;
-    tt.coalFire = gauge.judge();
-    if (window.SFX) SFX.coal();
-    showStamp($("#tn-layout .panel"), tt.coalFire);
-    pakkiLive(tt.coalFire);
-    result.textContent = {
-      perfect: "──完璧な熾き。炭全体が均一な赤に染まっている。",
-      good: "──十分に熾きた。問題ない熱だ。",
-      miss: "──少し早かったか……。炭の片面がまだ黒い。",
-    }[tt.coalFire];
+  body.appendChild(result);
+
+  const coalsEl = arena.querySelector("#heat-coals");
+  const calloutEl = arena.querySelector("#heat-callout");
+  const countEl = arena.querySelector("#heat-count");
+
+  // 根性が高いほどジャスト窓が広く、温度上昇がわずかに緩やか（数値は見せない）
+  const guts = state.stats.guts;
+  const justHi = 0.96 + Math.min(0.12, guts / 900);
+  const baseRate = 0.235 - Math.min(0.075, guts / 1300);
+  const RATE_MUL = [1.15, 1.0, 0.88]; // 炭ごとに焼けるスピードを少し変える
+  const START = [0.10, -0.10, -0.30]; // 立ち上がりをずらす（同時に閃かせない）
+
+  const coals = [];
+  for (let i = 0; i < HEAT_COUNT; i++) {
+    const el = document.createElement("button");
+    el.className = "heat-coal";
+    el.id = `heat-coal-${i}`;
+    el.innerHTML = `<span class="heat-core"></span><span class="heat-badge"></span>`;
+    coalsEl.appendChild(el);
+    coals.push({ el, core: el.querySelector(".heat-core"), badge: el.querySelector(".heat-badge"),
+                 heat: START[i], rate: baseRate * RATE_MUL[i], taken: false, inJust: false, grade: null, zone: null });
+    el.addEventListener("click", () => takeCoal(i));
+  }
+
+  const callout = (text, cls) => {
+    calloutEl.textContent = text;
+    calloutEl.className = `heat-callout show ${cls || ""}`;
+    setTimeout(() => calloutEl.classList.remove("show"), 720);
+  };
+  const updateCount = () => {
+    countEl.textContent = `取った炭 ${coals.filter((c) => c.taken).length} / ${HEAT_COUNT}`;
+  };
+  updateCount();
+
+  const paint = (c) => {
+    const [r, g, b] = heatRGB(c.heat);
+    const edge = `rgb(${r},${g},${b})`;
+    const mid = `rgb(${Math.min(255, r + 40)},${Math.min(255, g + 30)},${Math.min(255, b + 24)})`;
+    c.el.style.background = `radial-gradient(circle at 50% 36%, ${mid}, ${edge} 72%)`;
+    const glow = c.heat < 0.22 ? 0 : c.heat <= 1.04 ? (c.heat - 0.22) * 46 : Math.max(5, (1.42 - c.heat) * 46);
+    c.el.style.boxShadow =
+      `0 0 ${glow.toFixed(0)}px rgba(255,${Math.round(120 + glow)},60,${Math.min(0.85, glow / 40).toFixed(2)}),` +
+      ` inset 0 2px 6px rgba(255,255,255,0.12), inset 0 -6px 12px rgba(0,0,0,0.5)`;
+    // 芯: ジャスト窓では白く閃く（in-just時はCSSアニメが上書き）
+    const z = heatZone(c.heat, justHi);
+    c.core.style.opacity = z === "just" ? "1" : (z === "ready" || z === "hot") ? "0.5" : "0.15";
+  };
+
+  let raf = 0, last = performance.now(), running = true;
+  const tick = (now) => {
+    if (!running) return;
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    for (const c of coals) {
+      if (c.taken) continue;
+      c.heat = Math.min(1.42, c.heat + c.rate * dt);
+      const inJust = heatZone(c.heat, justHi) === "just";
+      if (inJust && !c.inJust) { c.el.classList.add("flash"); if (window.SFX) SFX.spark(); }
+      else if (!inJust && c.inJust) c.el.classList.remove("flash");
+      c.el.classList.toggle("in-just", inJust);
+      c.inJust = inJust;
+      paint(c);
+    }
+    raf = requestAnimationFrame(tick);
+  };
+  raf = requestAnimationFrame(tick);
+
+  function takeCoal(i) {
+    const c = coals[i];
+    if (!running || c.taken) return;
+    const z = heatZone(c.heat, justHi);
+    c.taken = true; c.zone = z; c.grade = HEAT_GRADE[z];
+    c.el.classList.add("taken"); c.el.classList.remove("flash", "in-just");
+    c.el.disabled = true;
+    c.badge.textContent = c.grade.sub;
+    c.badge.className = `heat-badge show z-${z}`;
+    paint(c);
+    if (window.SFX) { SFX.coal(); if (z === "just") SFX.spark(); }
+    callout(c.grade.label, z === "just" ? "great" : (z === "black" || z === "ash") ? "warn" : "");
+    updateCount();
+    if (coals.every((x) => x.taken)) finishHeat();
+  }
+
+  function finishHeat() {
+    running = false; cancelAnimationFrame(raf);
+    let qSum = 0, justCount = 0, readyCount = 0, earlyCount = 0, overheatCount = 0;
+    const acc = { heatPower: 0, heatStability: 0, startupSpeed: 0, burnRisk: 0, aromaRetention: 0 };
+    for (const c of coals) {
+      qSum += c.grade.q;
+      if (c.zone === "just") justCount++;
+      else if (c.zone === "ready") readyCount++;
+      else if (c.zone === "black" || c.zone === "early") earlyCount++;
+      else overheatCount++; // hot / ash
+      for (const k in acc) acc[k] += c.grade[k];
+    }
+    const qAvg = qSum / coals.length;
+    for (const k in acc) acc[k] = Math.round(acc[k] / coals.length);
+    // 既存craftScore互換: 文字列1値に集約
+    tt.coalFire = qAvg >= 0.8 ? "perfect" : qAvg >= 0.45 ? "good" : "miss";
+    // FLAVOR TRIAL 用の詳細（性能影響は 0..100 スケール・基準50 に寄せる）
+    const sc = (v) => Math.max(0, Math.min(100, 50 + v));
+    tt.coalResult = {
+      score: Math.round(qAvg * 100),
+      justCount, readyCount, earlyCount, overheatCount,
+      heatPower: sc(acc.heatPower), heatStability: sc(acc.heatStability),
+      startupSpeed: sc(acc.startupSpeed), aromaRetention: sc(acc.aromaRetention),
+      burnRisk: sc(acc.burnRisk), coalFlashSuccess: justCount >= 1,
+    };
+    const rank = tt.coalFire;
+    showStamp(arena.querySelector("#heat-burner"), rank === "perfect" ? "just" : rank);
+    pakkiLive(rank);
+    if (rank === "perfect") smokeRings(3);
+    result.innerHTML =
+      (justCount >= 2 ? "──三つの芯が、ほぼ同時にピカッと閃いた。火力も香りも申し分ない熾きだ。"
+      : qAvg >= 0.45 ? "──悪くない熾き。炭はちゃんと使える熱を持っている。"
+      : overheatCount >= 2 ? "──焼きすぎた。灰をかぶった炭は熱が暴れて、香りを飛ばしてしまう……。"
+      : "──芯が黒い。火力が立ち上がりきらないかもしれない……。") +
+      `<div class="heat-summary">ジャスト ${justCount} ／ 適温 ${readyCount} ／ 早取り ${earlyCount} ／ 焼きすぎ ${overheatCount}</div>`;
     const next = document.createElement("button");
     next.className = "primary-btn";
-    next.textContent = "次へ";
+    next.textContent = isDrill ? "結果を見る" : "次へ";
     next.addEventListener("click", () => tnNext("coalfire"));
-    result.appendChild(document.createElement("br"));
     result.appendChild(next);
-  });
-  body.append(result);
-  wrap.appendChild(btn);
+  }
+
+  // テスト用フック: 各炭の温度・取り頃を読む（自動プレイ用）
+  window.__heatDebug = () => coals.map((c, i) => ({
+    i, heat: c.heat, taken: c.taken, zone: heatZone(c.heat, justHi),
+    justNow: !c.taken && heatZone(c.heat, justHi) === "just",
+    goodNow: !c.taken && c.heat >= 0.58 && c.heat <= 1.18,
+  }));
 }
 
 // --- 集中（雑念タップ）
@@ -8291,7 +8548,7 @@ const TUTORIAL_TIPS = {
   mix: "スミさん「基本は12g。ボウルの容量までは盛れるが、多く詰む分は熱も葉代も食うぞ」",
   pack: "スミさん「迷ったらノーマル。フレーバーの重さで変えるんだ」",
   foil: "スミさん「穴は均等に。リズムで開けると揃う」",
-  coalfire: "スミさん「炭は全体が赤く熾きてからだ。焦るな」",
+  coalfire: "スミさん「炭の芯が一瞬ピカッと閃く。その瞬間に取り上げろ。早すぎりゃ生焼け、遅けりゃ灰だ」",
   coal: "スミさん「基本はトライアングル。熱が均等に回る」",
   steam: "スミさん「蒸らしは5〜8分。待つ間、余計なことを考えるな。雑念は煙に出る」",
   pull: "スミさん「提供前の吸い出しで温度を作る。左で止めれば上げ、右なら下げだ。最低2回」",
