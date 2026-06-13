@@ -4,13 +4,18 @@ export async function playTnStep(page, opts = {}) {
   const title = await page.locator("#tn-title").textContent();
   if (title.includes("機材選択")) {
     await page.locator("#tn-body .spot-btn:not([disabled])").first().click();
-  } else if (title.includes("アルミ穴あけ")) {
-    for (let k = 0; k < 6; k++) {
-      await page.waitForTimeout(140);
-      await page.locator("#tn-body button", { hasText: "穴を開ける" }).click();
+  } else if (title.includes("アルミ穴あけ") || title.includes("HOLE RHYTHM")) {
+    // HOLE RHYTHM BATTLE: 各リングで数回穴を開けて「仕上げる」を押す（3リング）
+    for (let ring = 0; ring < 3; ring++) {
+      const punch = page.locator("#hole-punch");
+      const target = [8, 6, 4][ring];
+      for (let k = 0; k < target; k++) { await punch.click().catch(() => {}); await page.waitForTimeout(300); }
+      const adv = page.locator("#hole-advance:not([disabled])");
+      if (await adv.count()) await adv.click().catch(() => {});
+      await page.waitForTimeout(60);
     }
-    await page.locator("#tn-body button", { hasText: "次へ" }).click();
-  } else if (title.includes("炭起こし")) {
+    await page.locator("#tn-body button", { hasText: /次へ|結果を見る/ }).click();
+  } else if (title.includes("炭起こし") || title.includes("HEAT IGNITION")) {
     await page.waitForTimeout(250);
     await page.locator("#tn-body button", { hasText: "乗せる" }).click();
     await page.locator("#tn-body button", { hasText: "次へ" }).click();

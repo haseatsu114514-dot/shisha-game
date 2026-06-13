@@ -101,10 +101,17 @@ for (let i = 0; i < 2500; i++) {
       if (t.includes("ボウル")) await page.screenshot({ path: `${OUT}/07b_setup.png` });
       await page.locator("#tn-body .spot-btn:not([disabled])").first().click();
     }
-    else if (t.includes("アルミ穴あけ")) {
+    else if (t.includes("アルミ穴あけ") || t.includes("HOLE RHYTHM")) {
       await page.screenshot({ path: `${OUT}/08b_foil.png` });
-      for (let k = 0; k < 6; k++) await page.locator("#tn-body button", { hasText: "穴を開ける" }).click();
-      await page.locator("#tn-body button", { hasText: "次へ" }).click();
+      // スクショ用: 各リング軽く穴を開けて仕上げる（敗北ルートなので質は問わない）
+      for (let ring = 0; ring < 3; ring++) {
+        for (let k = 0; k < 3; k++) { await page.locator("#hole-punch").click().catch(() => {}); await page.waitForTimeout(70); }
+        const adv = page.locator("#hole-advance:not([disabled])");
+        if (await adv.count()) await adv.click().catch(() => {});
+        await page.waitForTimeout(50);
+      }
+      const nx = page.locator("#tn-body button", { hasText: /次へ|結果を見る/ });
+      if (await nx.count()) await nx.click().catch(() => {});
     }
     else if (t.includes("炭起こし")) {
       await page.locator("#tn-body button", { hasText: "乗せる" }).click();

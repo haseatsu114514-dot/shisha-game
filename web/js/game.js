@@ -3139,53 +3139,194 @@ function buildGauge(container, zone, speed) {
   return { wrap, gauge: g };
 }
 
-// --- アルミ穴あけ（リズム6連打）
+// ============================================================================
+// HOLE RHYTHM BATTLE（アルミ穴あけ・円周カーソル式）— master_spec 第2部 #1
+// アルミ盤の上をカーソルが円周状に回り、タップで穴を開ける。評価の主軸は「均等度」。
+// 外周→中周→内周の3リング。各リングの役割（熱拡散/ドロー/抜け）で完成品ステータスが変わる。
+// 出力: tt.foilHits（0-6・既存craftScore互換）＋ tt.holeResult（FLAVOR TRIAL用の詳細）
+// ============================================================================
+const HOLE_RINGS = [
+  { key: "outer", label: "外周", r: 0.80, target: 8, role: "熱拡散・安定", hue: 28 },
+  { key: "middle", label: "中周", r: 0.55, target: 6, role: "ドロー・煙量", hue: 200 },
+  { key: "inner", label: "内周", r: 0.30, target: 4, role: "抜け・攻め", hue: 330 },
+];
+// 角度ギャップの均等度（0..1）。穴が円周に均等なら1に近い
+function ringEvenness(angles) {
+  if (angles.length < 2) return angles.length === 1 ? 0.5 : 0;
+  const s = [...angles].sort((a, b) => a - b);
+  const gaps = [];
+  for (let i = 0; i < s.length; i++) gaps.push(((s[(i + 1) % s.length] - s[i] + 360) % 360) || 360);
+  const ideal = 360 / s.length;
+  let dev = 0;
+  for (const g of gaps) dev += Math.abs(g - ideal);
+  // 平均ズレを ideal で正規化。0ズレ=1.0、ideal分ズレ=0
+  return Math.max(0, 1 - dev / gaps.length / ideal);
+}
+
 function stepFoil() {
-  const body = tnPanel("アルミ穴あけ", "リズムよく6つ穴を開けろ。ゾーンに入った瞬間に押す！");
-  const counter = document.createElement("p");
-  counter.className = "tn-hint";
-  const zoneW = 0.14 + state.stats.technique / 700;
-  const left = 0.45 - zoneW / 2 + Math.random() * 0.2;
-  const { wrap, gauge } = buildGauge(body, [left, left + zoneW], Math.max(0.9, 1.25 - state.stats.technique / 300));
-  const btn = document.createElement("button");
-  btn.className = "primary-btn";
-  btn.textContent = "穴を開ける！";
+  const body = tnPanel("HOLE RHYTHM BATTLE ── アルミ穴あけ",
+    "回るカーソルに合わせてタップ。穴は“均等に”開けるほど美しい。外周→中周→内周の順に。");
+  const isDrill = tt.mode === "drill";
+
+  const arena = document.createElement("div");
+  arena.className = "hole-arena";
+  arena.innerHTML = `
+    <div class="hole-board" id="hole-board">
+      <div class="hole-ring r-outer"></div>
+      <div class="hole-ring r-middle"></div>
+      <div class="hole-ring r-inner"></div>
+      <div class="hole-core"></div>
+      <div class="hole-cursor" id="hole-cursor"><i></i></div>
+      <div class="hole-dots" id="hole-dots"></div>
+      <div class="hole-callout" id="hole-callout"></div>
+    </div>
+    <div class="hole-side">
+      <div class="hole-readout">
+        <div class="hole-ringname" id="hole-ringname">外周</div>
+        <div class="hole-rolename" id="hole-rolename">熱拡散・安定</div>
+        <div class="hole-meter"><span>均等度</span><i class="hole-meter-bar"><b id="hole-even"></b></i></div>
+        <div class="hole-count" id="hole-count"></div>
+      </div>
+      <button class="primary-btn hole-punch" id="hole-punch">穴を開ける</button>
+      <button class="primary-btn ghost hole-advance" id="hole-advance">このリングを仕上げる ▶</button>
+    </div>`;
+  body.appendChild(arena);
   const result = document.createElement("div");
   result.className = "practice-result";
-  let attempts = 0;
-  const update = () => { counter.textContent = `穴: ${tt.foilHits} / 6（残り ${6 - attempts} 回）`; };
-  update();
-  btn.addEventListener("click", () => {
-    if (attempts >= 6) return;
-    attempts++;
-    const r = gauge.judge();
-    if (window.SFX) SFX.foil();
-    if (r !== "miss") tt.foilHits++;
-    updateRig();
-    update();
-    if (attempts >= 6) {
-      gauge.stop();
-      btn.disabled = true;
-      tt.foilDone = true;
-      updateRig();
-      const foilResult = tt.foilHits >= 6 ? "perfect" : tt.foilHits >= 4 ? "good" : "miss";
-      showStamp($("#tn-layout .panel"), foilResult);
-      pakkiLive(foilResult);
-      result.textContent =
-        tt.foilHits >= 6 ? "──美しい六角形。空気の通り道が完璧に揃った。"
-        : tt.foilHits >= 4 ? "──まずまずの穴あけ。空気はちゃんと通る。"
-        : "──穴が乱れた。空気の流れにムラが出そうだ……。";
-      const next = document.createElement("button");
-      next.className = "primary-btn";
-      next.textContent = "次へ";
-      next.addEventListener("click", () => tnNext("foil"));
-      result.appendChild(document.createElement("br"));
-      result.appendChild(next);
-    }
-  });
-  body.insertBefore(counter, wrap);
-  wrap.appendChild(btn);
   body.appendChild(result);
+
+  const board = arena.querySelector("#hole-board");
+  const cursor = arena.querySelector("#hole-cursor");
+  const dotsEl = arena.querySelector("#hole-dots");
+  const calloutEl = arena.querySelector("#hole-callout");
+  const punchBtn = arena.querySelector("#hole-punch");
+  const advBtn = arena.querySelector("#hole-advance");
+
+  const ringData = HOLE_RINGS.map((r) => ({ ...r, angles: [] }));
+  let ringIdx = 0;
+  let angle = -90;            // 現在のカーソル角（度）
+  const speed = 150 - Math.min(70, state.stats.technique * 0.7); // 技術が高いほどゆっくり=狙いやすい（deg/s）
+  let raf = 0, last = performance.now(), running = true;
+
+  const callout = (text, cls) => {
+    calloutEl.textContent = text;
+    calloutEl.className = `hole-callout show ${cls || ""}`;
+    setTimeout(() => calloutEl.classList.remove("show"), 620);
+  };
+  const setRingUI = () => {
+    const r = ringData[ringIdx];
+    arena.querySelector("#hole-ringname").textContent = r.label;
+    arena.querySelector("#hole-rolename").textContent = r.role;
+    board.dataset.ring = r.key;
+    refreshMeter();
+  };
+  const refreshMeter = () => {
+    const r = ringData[ringIdx];
+    const even = ringEvenness(r.angles);
+    arena.querySelector("#hole-even").style.width = `${Math.round(even * 100)}%`;
+    arena.querySelector("#hole-count").textContent = `穴 ${r.angles.length} / ${r.target}`;
+    advBtn.disabled = r.angles.length < 2;
+  };
+
+  const tick = (now) => {
+    if (!running) return;
+    const dt = (now - last) / 1000; last = now;
+    angle = (angle + speed * dt) % 360;
+    cursor.style.transform = `rotate(${angle}deg)`;
+    raf = requestAnimationFrame(tick);
+  };
+  raf = requestAnimationFrame(tick);
+
+  const placeDot = (ringR, a, hue) => {
+    const dot = document.createElement("span");
+    dot.className = "hole-dot";
+    const pr = ringR * 50; // %半径（盤の半径=50%）
+    const x = 50 + Math.cos((a - 90) * Math.PI / 180) * pr;
+    const y = 50 + Math.sin((a - 90) * Math.PI / 180) * pr;
+    dot.style.left = `${x}%`;
+    dot.style.top = `${y}%`;
+    dot.style.setProperty("--hue", hue);
+    dotsEl.appendChild(dot);
+    requestAnimationFrame(() => dot.classList.add("on"));
+  };
+
+  punchBtn.addEventListener("click", () => {
+    if (!running) return;
+    const r = ringData[ringIdx];
+    if (r.angles.length >= r.target + 2) { callout("TOO MANY", "warn"); return; }
+    // 近すぎる穴チェック（過密ペナルティの気づき）
+    const tooClose = r.angles.some((x) => { const d = Math.abs(((x - angle + 540) % 360) - 180); return (180 - d) < 14; });
+    r.angles.push(angle);
+    placeDot(r.r, angle, r.hue);
+    if (window.SFX) SFX.foil();
+    if (tooClose) callout("TOO CLOSE", "warn");
+    else if (r.angles.length === r.target && ringEvenness(r.angles) > 0.8) callout("BEAUTIFUL RING", "great");
+    else callout("PUNCH", "");
+    refreshMeter();
+    if (r.angles.length >= r.target) advBtn.classList.add("ready");
+  });
+
+  const finishRing = () => {
+    const r = ringData[ringIdx];
+    const even = ringEvenness(r.angles);
+    if (even > 0.82 && r.angles.length >= r.target) { callout("RING COMPLETE", "great"); showStamp(board, "just"); }
+    else callout("AIR FLOW", even > 0.6 ? "" : "warn");
+    advBtn.classList.remove("ready");
+    if (ringIdx < ringData.length - 1) {
+      ringIdx++;
+      setRingUI();
+    } else {
+      finishHole();
+    }
+  };
+  advBtn.addEventListener("click", finishRing);
+
+  function finishHole() {
+    running = false; cancelAnimationFrame(raf);
+    punchBtn.disabled = true; advBtn.disabled = true;
+    // ---- 評価: 均等度50% + 円形精度(リング完成度)10% + 各リングの充足 + 残量 ----
+    let evenSum = 0, fillSum = 0, totalHoles = 0;
+    const per = {};
+    for (const r of ringData) {
+      const ev = ringEvenness(r.angles);
+      const fill = Math.min(1, r.angles.length / r.target);
+      evenSum += ev; fillSum += fill;
+      totalHoles += r.angles.length;
+      per[r.key] = { holes: r.angles.length, evenness: Math.round(ev * 100) };
+    }
+    const evenAvg = evenSum / ringData.length;
+    const fillAvg = fillSum / ringData.length;
+    const quality = evenAvg * 0.6 + fillAvg * 0.4; // 0..1（均等度重視）
+    // 既存craftScore互換: foilHits 0-6
+    tt.foilHits = Math.round(quality * 6);
+    tt.foilDone = true;
+    // FLAVOR TRIAL 用の詳細
+    tt.holeResult = {
+      score: Math.round(quality * 100),
+      evenness: Math.round(evenAvg * 100),
+      outerHoles: per.outer.holes, middleHoles: per.middle.holes, innerHoles: per.inner.holes,
+      // 穴が多いほどドロー軽・煙量↑・熱保持↓。内周過多は焦げリスク
+      draw: Math.min(100, totalHoles * 5),
+      burnRisk: Math.max(0, (per.inner.holes - 4) * 12),
+      heatSpread: per.outer.evenness,
+    };
+    const rank = quality >= 0.85 ? "perfect" : quality >= 0.6 ? "good" : "miss";
+    showStamp(board, rank === "perfect" ? "just" : rank);
+    pakkiLive(rank);
+    if (rank === "perfect") smokeRings(3);
+    result.innerHTML =
+      (quality >= 0.85 ? "──寸分違わぬ円。どのリングも穴が均等に散って、空気の通り道が完璧に整った。"
+      : quality >= 0.6 ? "──悪くない穴あけ。空気はちゃんと通る。"
+      : "──穴が偏った。空気の流れにムラが出そうだ……。") +
+      `<div class="hole-summary">均等度 ${Math.round(evenAvg*100)}％ ／ 外${per.outer.holes}・中${per.middle.holes}・内${per.inner.holes}</div>`;
+    const next = document.createElement("button");
+    next.className = "primary-btn";
+    next.textContent = isDrill ? "結果を見る" : "次へ";
+    next.addEventListener("click", () => tnNext("foil"));
+    result.appendChild(next);
+  }
+
+  setRingUI();
 }
 
 // --- 炭起こし（一発タイミング）
