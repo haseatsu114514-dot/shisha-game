@@ -9,7 +9,7 @@ export async function playTnStep(page, opts = {}) {
     for (let ring = 0; ring < 3; ring++) {
       const punch = page.locator("#hole-punch");
       const target = [8, 6, 4][ring];
-      for (let k = 0; k < target; k++) { await punch.click().catch(() => {}); await page.waitForTimeout(300); }
+      for (let k = 0; k < target; k++) { await punch.click().catch(() => {}); await page.waitForTimeout(110); }
       const adv = page.locator("#hole-advance:not([disabled])");
       if (await adv.count()) await adv.click().catch(() => {});
       await page.waitForTimeout(60);

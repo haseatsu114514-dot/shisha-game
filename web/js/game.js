@@ -3165,7 +3165,7 @@ function ringEvenness(angles) {
 
 function stepFoil() {
   const body = tnPanel("HOLE RHYTHM BATTLE ── アルミ穴あけ",
-    "回るカーソルに合わせてタップ。穴は“均等に”開けるほど美しい。外周→中周→内周の順に。");
+    "カーソルは何周でも回せる。納得いくまで穴を開けたら〔次の周へ〕。穴は“均等に”開けるほど美しい。");
   const isDrill = tt.mode === "drill";
 
   const arena = document.createElement("div");
@@ -3188,7 +3188,7 @@ function stepFoil() {
         <div class="hole-count" id="hole-count"></div>
       </div>
       <button class="primary-btn hole-punch" id="hole-punch">穴を開ける</button>
-      <button class="primary-btn ghost hole-advance" id="hole-advance">このリングを仕上げる ▶</button>
+      <button class="primary-btn ghost hole-advance" id="hole-advance">次の周へ ▶</button>
     </div>`;
   body.appendChild(arena);
   const result = document.createElement("div");
@@ -3218,6 +3218,7 @@ function stepFoil() {
     arena.querySelector("#hole-ringname").textContent = r.label;
     arena.querySelector("#hole-rolename").textContent = r.role;
     board.dataset.ring = r.key;
+    advBtn.textContent = ringIdx < ringData.length - 1 ? "次の周へ ▶" : "穴あけを仕上げる ▶";
     refreshMeter();
   };
   const refreshMeter = () => {
@@ -3225,7 +3226,7 @@ function stepFoil() {
     const even = ringEvenness(r.angles);
     arena.querySelector("#hole-even").style.width = `${Math.round(even * 100)}%`;
     arena.querySelector("#hole-count").textContent = `穴 ${r.angles.length} / ${r.target}`;
-    advBtn.disabled = r.angles.length < 2;
+    advBtn.disabled = r.angles.length < 1;
   };
 
   const tick = (now) => {
@@ -3253,7 +3254,8 @@ function stepFoil() {
   punchBtn.addEventListener("click", () => {
     if (!running) return;
     const r = ringData[ringIdx];
-    if (r.angles.length >= r.target + 2) { callout("TOO MANY", "warn"); return; }
+    if (r.angles.length >= 16) { callout("もう十分だ", "warn"); return; } // 物理上限のみ
+    if (r.angles.length >= r.target + 2) callout("TOO MANY", "warn"); // 開けすぎは均等度・焦げリスクに響く（開けるのは自由）
     // 近すぎる穴チェック（過密ペナルティの気づき）
     const tooClose = r.angles.some((x) => { const d = Math.abs(((x - angle + 540) % 360) - 180); return (180 - d) < 14; });
     r.angles.push(angle);
@@ -4118,8 +4120,8 @@ function showResult(results, rank, detail, opts = {}) {
   } else {
     btn.textContent = "……結果を受け止める";
     btn.addEventListener("click", opts.onLose || (() => {
+      // 1位のみ進出。2位以下はゲームオーバー（賞金なし・やり直す/タイトルへ）
       tt.rank = rank;
-      addMoney({ 2: 20000, 3: 10000, 4: 3000 }[rank] || 0); // 順位別賞金（4位は参加賞）
       playDialogue("ch1_tournament_defeat", () => showDefeat(rank), "res://assets/backgrounds/bg_tournament_stage.png");
     }));
   }
@@ -4132,6 +4134,7 @@ function showClear() {
   state.phase = "cleared";
   save();
   showScreen("#screen-end");
+  $("#screen-end").classList.remove("gameover");
   $("#end-title").textContent = "第1章クリア！";
   $("#end-sub").textContent = "SMOKE CROWN CUP 優勝 ── 全国大会 HAZE: OPEN CLOUD へ。";
   renderStatusInto($("#end-status"));
@@ -4145,16 +4148,28 @@ function showClear() {
 function showDefeat(rank) {
   stopRigEffects();
   showScreen("#screen-end");
-  $("#end-title").textContent = "敗北……";
+  $("#screen-end").classList.add("gameover");
+  $("#end-title").textContent = "GAME OVER";
   $("#end-sub").textContent = state.chapter === 2
-    ? `結果は${rank}位。${CH2_STAGE_LABEL[state.ch2Stage] || ""}敗退──1位だけが、先へ進める。`
-    : `結果は${rank}位。優勝だけが次への切符だった。`;
+    ? `結果は${rank}位。${CH2_STAGE_LABEL[state.ch2Stage] || ""}敗退──1位だけが、先へ進める。ここで終わりだ。`
+    : `結果は${rank}位。優勝だけが次への切符だった。ここで、終わってしまった。`;
   renderStatusInto($("#end-status"));
+  const btns = document.createElement("div");
+  btns.className = "gameover-actions";
   const retry = document.createElement("button");
   retry.className = "primary-btn";
   retry.textContent = "もう一度挑戦する";
-  retry.addEventListener("click", () => beginMaking());
-  $("#end-status").appendChild(retry);
+  retry.addEventListener("click", () => { $("#screen-end").classList.remove("gameover"); beginMaking(); });
+  const toTitle = document.createElement("button");
+  toTitle.className = "primary-btn ghost";
+  toTitle.textContent = "タイトルに戻る";
+  toTitle.addEventListener("click", () => {
+    $("#screen-end").classList.remove("gameover");
+    if (window.SFX) SFX.bgm("title");
+    showScreen("#screen-title");
+  });
+  btns.append(retry, toTitle);
+  $("#end-status").appendChild(btns);
 }
 
 // ---------------------------------------------------------------- 第2章 HAZE: OPEN CLOUD
@@ -4308,6 +4323,7 @@ function showCh2Clear() {
   state.phase = "cleared";
   save();
   showScreen("#screen-end");
+  $("#screen-end").classList.remove("gameover");
   $("#end-title").textContent = "第2章クリア";
   $("#end-sub").textContent = "HAZE: OPEN CLOUD 優勝──誰もいない頂点。物語は第3章「東京編」へ続く。";
   renderStatusInto($("#end-status"));

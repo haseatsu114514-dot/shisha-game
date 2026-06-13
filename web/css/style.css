@@ -2624,3 +2624,8 @@ body {
 @keyframes hole-ready { 50% { box-shadow: 0 0 16px rgba(255,210,120,0.6); } }
 .hole-summary { margin-top: 8px; font-size: 12.5px; color: #aeb8d6; letter-spacing: 0.04em; }
 @media (max-width: 760px) { .hole-arena { flex-direction: column; gap: 12px; } .hole-board { width: 230px; height: 230px; } }
+
+/* ============ GAME OVER（2位以下＝敗退・master_spec改定） ============ */
+#screen-end.gameover { background: linear-gradient(rgba(20,4,8,0.82), rgba(8,2,4,0.92)), url("../../assets/backgrounds/bg_tournament_stage.png") center / cover no-repeat, #0a0608; }
+#screen-end.gameover #end-title { color: #ff6b6b; text-shadow: 0 0 24px rgba(255,60,60,0.6), 0 2px 0 rgba(0,0,0,0.6); letter-spacing: 0.14em; }
+.gameover-actions { display: flex; gap: 12px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
