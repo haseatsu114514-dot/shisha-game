@@ -276,16 +276,25 @@ function stars(value) {
 // バッジには漢字一字、サブには「少し上がった」等の抽象表現を出す
 const STAT_BADGE = { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "観" };
 
+// 章ごとのステータス育成ソフトキャップ（#42）。ch1で上限に張り付かないよう抑え、
+// 5章で全100＝完全攻略を狙えるカーブにする。数値は非表示なので体感は「★がゆっくり伸びる」
+function statSoftCap() {
+  return ({ 1: 42, 2: 60, 3: 76, 4: 92, 5: 100 })[state ? state.chapter : 1] || 100;
+}
+
 function gainStat(en, amount) {
   if (!(en in state.stats) || amount <= 0) return;
-  // 対象がすでに上限なら、未カンストのステータスへランダムに振り替える（伸び続ける実感を保つ）
-  if (state.stats[en] >= 100) {
-    const open = Object.keys(state.stats).filter((k) => state.stats[k] < 100);
-    if (!open.length) return; // 全部カンストなら何もしない
+  const cap = statSoftCap();
+  // 対象がその章の上限なら、未到達のステータスへ振り替える（伸び続ける実感を保つ）
+  if (state.stats[en] >= cap) {
+    const open = Object.keys(state.stats).filter((k) => state.stats[k] < cap);
+    if (!open.length) return; // 全ステが章上限なら、今章はこれ以上伸びない
     en = open[Math.floor(Math.random() * open.length)];
   }
-  state.stats[en] = Math.max(0, Math.min(100, state.stats[en] + amount));
-  if (typeof REEL !== "undefined") REEL.noteStat(en, amount); // 直近の伸びをスロットのアンコール抽選に記録
+  const before = state.stats[en];
+  state.stats[en] = Math.max(0, Math.min(cap, before + amount));
+  if (state.stats[en] === before) return; // 実際に増えなかったら通知しない
+  if (typeof REEL !== "undefined") REEL.noteStat(en, state.stats[en] - before); // 直近の伸びをスロットのアンコール抽選に記録
   const label = amount >= 5 ? "大きく上がった" : amount >= 3 ? "上がった" : "少し上がった";
   gainBanner({
     kind: "stat",

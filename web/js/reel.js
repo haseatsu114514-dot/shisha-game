@@ -340,9 +340,10 @@ const REEL = (() => {
     const results = spinSeries(reel, { chapterFirst });
     for (const r of results) {
       r.target = target;
-      // ステ上乗せ（直接書き込み。バナーは演出時に出す）
+      // ステ上乗せ（直接書き込み。バナーは演出時に出す）。章ごとのソフトキャップを尊重(#42)
       if (r.exp > 0 && state.stats && target in state.stats) {
-        state.stats[target] = Math.max(0, Math.min(100, state.stats[target] + r.exp));
+        const cap = (typeof statSoftCap === "function") ? statSoftCap() : 100;
+        state.stats[target] = Math.max(0, Math.min(cap, state.stats[target] + r.exp));
       }
       // スロノート（Phase 2 の記録画面用に今から積んでおく）
       const note = reel.note || (reel.note = {});
