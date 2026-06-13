@@ -258,10 +258,13 @@
   プチュン＝1位確定。審査員4分割カットイン。
 
 ### テスト（重要・次便で最適化）
-- ✅ 通過: playthrough / map_hover / kuji / balance / reel
-- ⚠ ch2 / screenshots は **新HOLEミニゲームの自動操作で所要時間が伸び**、外部タイムアウトに当たりやすい
-  （ゲーム本体は健全。playthroughは最後まで完走＝1位クリア確認済み）。
-  対策候補: steps.mjs の HOLE 操作をさらに短縮 or 一部スキップ、ch2の各ステージは make を軽量化。
+- ✅ **6本すべて緑**: playthrough / ch2 / map_hover / kuji / balance / reel / screenshots。
+  HEAT IGNITION は steps.mjs / screenshots.mjs とも `__heatDebug` 駆動で取り頃をつかむ。
+- ✅ **screenshots 敗北ルートの赤を修復**（#2 とは別問題の既存テスト不具合）: 練習ドリル(HOLE)を
+  開いたまま startTournament() を呼ぶと突入待ちループがドリルで即 break し本番大会に入れなかった。
+  敗北セットアップ前にドリルを終わらせマップへ戻すよう screenshots.mjs を修正。ゲーム側の
+  敗北→GAME OVER 経路自体は正常（rank=4 → onGameOver → showDefeat → GAME OVER を確認済み）。
+- ⚠ ch2 / screenshots は新ミニゲームの自動操作で所要時間が長め（外部タイムアウトに注意。本体は健全）。
 - foilテクスチャ未アップ中の404はplaythroughでフィルタ済（良性）。
 - 起動: `python3 -m http.server 8123` 後、`node web/test/<name>.mjs`。ビルド: build_data→build_standalone。
 
