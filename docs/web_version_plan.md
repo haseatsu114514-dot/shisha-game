@@ -251,16 +251,18 @@
   reel.js を index.html・standalone に同梱、reel.css 連結、reel用SFX追加、CONFIGにスロット演出。
 
 ### 追加コミット済み
+- **★A1（大会パート大改修）4要素 完成**: HOLE穴あけ / HEAT炭起こし / **FLAVOR TRIAL審査** /
+  RESULT 10カウント が全て実装済み（master_spec 第2部・本作の華）。
+- **A1 #3 FLAVOR TRIAL（審査）**: 提供後・結果発表の前に挿入。コンセプト(=theme)×アピールポイント
+  (holeResult/coalResult/craftから自動生成)を審査員のザワザワに「ぶつける」。実績で裏打ち=納得↑／
+  口だけ=「香ってない！」／見当違い=「ズレてる！」。presentationResultを総合スコアに上乗せ。
+  `flavorTrial()`。ch1/ch2両方のpull→結果の間に挿入。CLAUDE.mdのプレゼン廃止を本仕様で上書き済。
 - **A1 #4 RESULT 10 COUNT（結果発表10カウント）**: showResult前に集計中→10…0→プチュン(1位)/
-  パリン(2位以下=GAME OVER)。カットイン＋プレミアのフライングプチュン。`runResultCountdown()`。
-  カウント中は大会画面に切替＆空にして直前の会話画面を残さない（自動操作の取りこぼし回避）。
+  パリン(2位以下=GAME OVER)。`runResultCountdown()`。カウント中は大会画面に切替＆空にして取りこぼし回避。
+- **#12 MOKUMOKUパッキー**: 名称をPUFF!PUFF!→MOKUMOKUに（もくもく＝煙）。行動後に自動回転・脱アプリ。
+- **#19 改行エディタ**: `web/tools/linebreak_editor.html`。本編autoWrapと同規則でプレビュー＋手動改行。
 
 ### 残り（オーナー指摘・未対応）
-- **#13 FLAVOR TRIAL（A1 #3・審査）★A1の最後の1要素**: コンセプト×アピールポイント
-  （holeResult/coalResult/craftから自動生成）を審査員のザワザワに「ぶつける」。納得ゲージ。
-  正式用語=コンセプト/アピールポイント/ぶつける、反論=「香ってない！/ズレてる！」。弾丸系禁止(#17)。
-  着手時にCLAUDE.mdの「プレゼン廃止」を本仕様で上書きと明記。pull の後・finishTournament の前に挿入。
-  presentationResult を総合スコア(§7: 穴25/炭25/完成品25/プレゼン25)に反映。steps.mjsに自動操作追加。
 - **#9 tonari統合**: つむぎ会話・練習・バイト（・スミさん）を tonari 1スポットに集約し、
   入って選ぶ「場所で管理」へ。SPOTS/SPOT_LAYOUT/showMap/selectSpot＋テストのマップ巡回プラン改修が要る。
 - **#16 第2章マップ**: ch2拠点のマップを用意（1章の舞台へも移動できる）。
