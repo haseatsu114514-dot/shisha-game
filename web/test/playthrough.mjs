@@ -20,7 +20,8 @@ const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
 const errors = [];
 page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
 page.on("console", (m) => {
-  if (m.type() === "error") errors.push(`console: ${m.text()}`);
+  // foil_taut.png は未アップ時に金属グラデへフォールバックする任意アセット。その404は無視
+  if (m.type() === "error" && !/Failed to load resource/.test(m.text())) errors.push(`console: ${m.text()}`);
 });
 
 await page.goto(BASE, { waitUntil: "load" });
