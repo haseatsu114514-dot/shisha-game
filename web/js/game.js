@@ -142,6 +142,7 @@ function newState() {
     ap: 2,
     money: 30000,
     stats: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 },
+    statsBaseline: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 },
     affinity: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0, rin: 0, ageha: 0 },
     affinityPts: {},       // 好感度の内部ポイント（隠し数値。閾値で affinity の段階が上がる）
     visits: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0, rin: 0, ageha: 0 },
@@ -4022,6 +4023,7 @@ const CH2_STAGES = {
 
 function startChapter2() {
   state.chapter = 2;
+  state.statsBaseline = { ...state.stats }; // 章開始時の値を成長の起点として記録
   state.day = 1;
   state.ap = 2;
   state.phase = "daily";
@@ -4185,8 +4187,49 @@ function inventoryHtml() {
     `<div class="status-block"><h3>機材</h3>${owned || '<p class="status-empty">手持ちの機材はない。</p>'}</div>`;
 }
 
+// 五角形レーダーチャート（master_spec #19-a）。SVGで現在値と章開始時を重ね描き。
+// 数値は出さない（CLAUDE.mdルール）。形・★・ランク呼称で成長を見せる
+const RADAR_AXES = ["technique", "sense", "guts", "charm", "insight"];
+function radarPoint(cx, cy, R, i, v) {
+  const ang = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
+  const r = R * Math.max(0.04, Math.min(1, v / 100));
+  return [cx + r * Math.cos(ang), cy + r * Math.sin(ang)];
+}
+function buildRadarSVG() {
+  const cx = 130, cy = 122, R = 92;
+  const base = state.statsBaseline || state.stats;
+  let grid = "";
+  for (let g = 1; g <= 4; g++) {
+    const pts = RADAR_AXES.map((_, i) => radarPoint(cx, cy, R * (g / 4), i, 100).join(",")).join(" ");
+    grid += `<polygon points="${pts}" class="radar-grid"/>`;
+  }
+  let axes = "";
+  RADAR_AXES.forEach((_, i) => {
+    const [x, y] = radarPoint(cx, cy, R, i, 100);
+    axes += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" class="radar-axis"/>`;
+  });
+  const curPts = RADAR_AXES.map((en, i) => radarPoint(cx, cy, R, i, state.stats[en]).join(",")).join(" ");
+  const basePts = RADAR_AXES.map((en, i) => radarPoint(cx, cy, R, i, base[en]).join(",")).join(" ");
+  const grew = RADAR_AXES.some((en) => (state.stats[en] || 0) > (base[en] || 0));
+  let badges = "";
+  RADAR_AXES.forEach((en, i) => {
+    const [x, y] = radarPoint(cx, cy, R + 18, i, 100);
+    const up = (state.stats[en] || 0) > (base[en] || 0) ? '<tspan class="radar-up"> \u2191</tspan>' : "";
+    const anchor = Math.abs(x - cx) < 6 ? "middle" : x < cx ? "end" : "start";
+    badges += `<text x="${x}" y="${y - 2}" text-anchor="${anchor}" class="radar-label">${STAT_KEYS[en]}${up}</text>` +
+      `<text x="${x}" y="${y + 11}" text-anchor="${anchor}" class="radar-rank">${statRankLabel(en)}</text>`;
+  });
+  return `<svg class="radar-svg" viewBox="0 0 260 244" role="img" aria-label="ステータス レーダー">` +
+    grid + axes +
+    (grew ? `<polygon points="${basePts}" class="radar-base"/>` : "") +
+    `<polygon points="${curPts}" class="radar-cur"/>` +
+    badges +
+    `</svg>`;
+}
+
 // メインのステータスタブ（数値は出さず★とランク呼称・体力・大会の歩み）
 function mainStatusHtml() {
+  const radar = `<div class="radar-wrap">${buildRadarSVG()}<p class="radar-legend">明るい面＝今／暗い面＝章のはじめ。広がったぶんが成長。</p></div>`;
   const statRows = Object.entries(STAT_KEYS)
     .map(([en, ja]) => `<div class="status-row stat-row"><span class="stat-name">${ja}</span>` +
       `<span class="stars">${stars(state.stats[en])}</span>` +
@@ -4201,7 +4244,7 @@ function mainStatusHtml() {
   const progress = state.phase === "cleared" ? "優勝・クリア" : state.phase === "tournament" ? "大会本番" : `DAY ${state.day} / 準備中`;
   const tour = `<div class="status-row"><span>挑戦中の大会</span><span>${chapName}</span></div>` +
     `<div class="status-row"><span>状況</span><span>${progress}</span></div>`;
-  return `<div class="status-block"><h3>ステータス</h3>${statRows}</div>` +
+  return `<div class="status-block"><h3>ステータス</h3>${radar}${statRows}</div>` +
     `<div class="status-block"><h3>コンディション</h3>${cond}${tour}</div>`;
 }
 
@@ -4545,6 +4588,7 @@ function continueGame(saved) {
   if (typeof state.guilt !== "number") state.guilt = 0;
   // 体力・好感度二層化・名前開示・恋人デート導入前のセーブ互換
   if (typeof state.stamina !== "number") state.stamina = 100;
+  if (!state.statsBaseline) state.statsBaseline = { ...state.stats };
   if (!state.dayVisited) state.dayVisited = {};
   if (!state.lastDate) state.lastDate = {};
   if (!state.lovePts) state.lovePts = {};
