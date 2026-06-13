@@ -2858,6 +2858,30 @@ body {
 .rb-hints { font-size: 12.5px; line-height: 1.7; color: var(--text-dim); }
 .rb-hints p { margin: 2px 0; }
 
+/* ===== 入場演出（#27・プロレス風の選手紹介＋スミさんの事前ブリーフィング） ===== */
+#tn-entrance { position: absolute; inset: 0; z-index: 50; display: none; align-items: center; justify-content: center;
+  pointer-events: none; background: radial-gradient(circle at 50% 40%, rgba(8,8,14,0.9), rgba(2,2,5,0.98)); }
+#tn-entrance.show { display: flex; pointer-events: auto; cursor: pointer; }
+.ent-card { display: flex; align-items: center; gap: 22px; max-width: 82%; padding: 20px 26px; border-radius: 18px;
+  background: linear-gradient(120deg, rgba(40,22,60,0.92), rgba(18,12,30,0.94));
+  border: 1px solid rgba(255,210,120,0.4); box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+  transform: translateX(-60px) skewX(-6deg); opacity: 0; transition: transform 0.4s cubic-bezier(.2,.9,.3,1.2), opacity 0.35s; }
+.ent-card.in { transform: none; opacity: 1; }
+.ent-card.me { border-color: #ffd878; box-shadow: 0 12px 50px rgba(255,200,90,0.4); }
+.ent-cut { position: relative; width: 128px; height: 128px; border-radius: 14px; overflow: hidden; flex: none;
+  background: linear-gradient(180deg, rgba(60,50,80,0.9), rgba(20,16,30,0.95));
+  border: 1px solid rgba(255,225,150,0.3); display: flex; align-items: center; justify-content: center; }
+.ent-face { width: 100%; height: 100%; object-fit: cover; }
+.ent-face-ph { font-size: 30px; color: #cdb8e8; letter-spacing: 0.08em; }
+.ent-cut-tag { position: absolute; left: 0; bottom: 0; font-size: 10px; letter-spacing: 0.16em; color: #1a1020;
+  background: #ffd878; padding: 2px 8px; font-weight: 800; border-radius: 0 8px 0 0; }
+.ent-meta { min-width: 0; }
+.ent-ring { font-size: 14px; color: #ffd07a; letter-spacing: 0.12em; }
+.ent-name { font-size: 34px; font-weight: 900; color: #fff; letter-spacing: 0.04em; line-height: 1.1; }
+.ent-name small { font-size: 16px; font-weight: 600; color: #cbbcc8; margin-left: 6px; }
+.ent-card.me .ent-name { color: #ffe79a; }
+.ent-note { margin-top: 8px; font-size: 14px; line-height: 1.6; color: #d8d0e6; max-width: 460px; }
+
 /* ============ GAME OVER（2位以下＝敗退・master_spec改定） ============ */
 #screen-end.gameover { background: linear-gradient(rgba(20,4,8,0.82), rgba(8,2,4,0.92)), url("../../assets/backgrounds/bg_tournament_stage.png") center / cover no-repeat, #0a0608; }
 #screen-end.gameover #end-title { color: #ff6b6b; text-shadow: 0 0 24px rgba(255,60,60,0.6), 0 2px 0 rgba(0,0,0,0.6); letter-spacing: 0.14em; }

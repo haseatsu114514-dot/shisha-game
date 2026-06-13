@@ -2999,6 +2999,51 @@ function stopRigEffects() {
   rigState.bubbleTimer = 0;
 }
 
+// #27 入場演出: プロレス風にライバル→主人公を順に紹介。各ライバルのカードに、スミさんの
+// 事前ブリーフィング（対戦相手の特徴解説）を重ねる。お祈り/立ち絵の専用画像は生成待ちのため、
+// 顔アイコン（あれば）＋名前＋異名＋スミさんの一言で骨組み。クリックでも自動でも進む（テスト安全）。
+const ENTRANCE = {
+  naru:  { ring: "孤高の探求者", note: "なる……人格者だが、煙は別人だ。基礎が異常に堅い。崩れねえぞ。" },
+  adam:  { ring: "ダブルアップルの匠", note: "アダムは一点突破。ダブルアップル一本で会場を甘さに沈める。正面から殴り合うな。" },
+  minto: { ring: "甘い嵐", note: "みんと……年齢は知らん。だが緩急で揺さぶる老獪さがある。乗せられるな。" },
+  hajime: { ring: "tonari の新星", note: "" },
+};
+function entranceIntro(onDone) {
+  showScreen("#screen-tournament");
+  // 直前の工程（チュートリアル/バイト）の残骸を消す。残しておくと入場中に古いボタン/見出しが
+  // 見えてしまい、自動操作（playTnStep）も古い見出しに反応して詰まる
+  $("#tn-title").textContent = ""; $("#tn-progress").textContent = ""; $("#tn-hint").textContent = "";
+  $("#tn-body").innerHTML = "";
+  let ov = document.getElementById("tn-entrance");
+  if (!ov) { ov = document.createElement("div"); ov.id = "tn-entrance"; $("#screen-tournament").appendChild(ov); }
+  ov.className = "tn-entrance show";
+  const list = [...RIVALS, { id: "hajime", name: "はじめ" }]; // ライバル紹介 → 主人公が最後に入場
+  let i = 0;
+  const showOne = () => {
+    if (i >= list.length) { ov.className = "tn-entrance"; ov.innerHTML = ""; if (onDone) onDone(); return; }
+    const c = list[i++];
+    const e = ENTRANCE[c.id] || { ring: c.name, note: "" };
+    const isMe = c.id === "hajime";
+    const face = faceIconHtml(c.id, "ent-face") || `<span class="ent-face-ph">${isMe ? "あなた" : "？"}</span>`;
+    ov.innerHTML =
+      `<div class="ent-card${isMe ? " me" : ""}">` +
+        `<div class="ent-cut">${face}<span class="ent-cut-tag">${isMe ? "CHALLENGER" : "RIVAL"}</span></div>` +
+        `<div class="ent-meta">` +
+          `<div class="ent-ring">${e.ring || ""}</div>` +
+          `<div class="ent-name">${c.name}<small>選手</small></div>` +
+          `<div class="ent-note">${e.note ? `スミ「${e.note}」` : (isMe ? "スミ「──行ってこい。お前の煙を見せてやれ」" : "")}</div>` +
+        `</div></div>`;
+    const card = ov.querySelector(".ent-card");
+    requestAnimationFrame(() => card.classList.add("in"));
+    if (window.SFX) (isMe ? SFX.fanfare() : SFX.select());
+    let advanced = false;
+    const adv = () => { if (advanced) return; advanced = true; ov.removeEventListener("click", adv); clearTimeout(timer); showOne(); };
+    ov.addEventListener("click", adv);
+    const timer = setTimeout(adv, isMe ? 2400 : 2000);
+  };
+  showOne();
+}
+
 function startTournament() {
   state.phase = "tournament";
   // 会場ではMCが出場者と審査員を紹介する（名前の開示）
@@ -3007,7 +3052,7 @@ function startTournament() {
   save();
   // 会場へ歩み入る瞬間を煙ワイプで（master_spec #20）
   smokeWipe(() => playDialogue("ch1_tournament_arrival", () =>
-    playDialogue("ch1_tournament_opening", () => beginMaking(), "res://assets/backgrounds/bg_tournament_stage.png")
+    playDialogue("ch1_tournament_opening", () => entranceIntro(() => beginMaking()), "res://assets/backgrounds/bg_tournament_stage.png")
   ));
 }
 

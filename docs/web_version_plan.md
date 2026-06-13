@@ -228,7 +228,54 @@
   1回ごとに craft -3（「葉が痩せる」）。やめ時は自分で選ぶ。UI に⚠警告、用語集・CLAUDE.mdも更新
 - 正典化: story doc（香りの識別子=アゲハはホワイトグミベア、Ch1の引き#7〜9）・CLAUDE.md ID表
 
-## 次回への引き継ぎ（2026-06-13 第25便終了・コンテキスト引き継ぎ）★まずここを読む
+## 次回への引き継ぎ（2026-06-13 第26便終了・大会演出オーバーホール＋日常UX）★まずここを読む
+
+**開発は `claude/great-galileo-omzoob`（PRでmainへ）。この便は3コミット push 済み・全テスト緑
+（playthrough/ch2/screenshots/reel/kuji/balance/map_hover）。**
+
+### この便で完了・push 済み
+1. **日常ループUX修正バッチ**（オーナーのプレイ報告・画像の日付矛盾＋4点）:
+   - **日付整合（#35ほか）**: 旧7日制の名残で台詞/LIMEの「あとN日」が14日制HUDと矛盾していた
+     （画像: DAY5 HUD「あと10日」vs スミさん「あと3日」）。HUD/会話/LIME を `daysUntilTournament()` に一本化し、
+     会話JSONは `{daysLeft}` トークンを実数差し込み（engine.js に interpolate フック・LIMEは addLimeBubble）。
+     直した台詞: ch1_opening / ch1_day5_sumi_story / DAY7折り返し / lime_minto_day5 / lime_naru_day10。
+   - **スキップ貫通**: morningPhone / playLimeEvent で stopAutoSkip()。会話を飛ばしても夜の誘い/朝LIMEは頭から見せる。
+   - **午後の予定の唐突さ**: endAction の pendingLimeNight に「夕暮れ／約束の時間だ」の一拍。
+   - **スロット×LIME×DAY被り（#34/#23）**: advanceDay で `showMap({skipReel:true})`→朝LIME消化→スロット精算の順へ。
+     誘い/デート行動もスロットを回す（#33・closePhone と night invite で REEL.onAction）。
+   - **リプレイ再回転が一瞬（reel.js）**: リプレイ連鎖を速回し対象から除外（`_afterReplay` タグ）＋「リプレイ！もう1回転」の間。
+2. **大会演出オーバーホール（骨組み・本番大会のみ）**:
+   - **#24 可視スコア＋ニコ動コメント**: 「体感スコア」を新設（審査員票と別系統）。判定で `+N P` ポップ＋
+     ニコ動風コメントが流れる。`feelPop/nicoComment/nicoBurst/broadcastJudge`、CSS `#tn-comments/#tn-feel`。
+   - **#20 工程ブロックMC実況 / #26 ライバル実況**: `mcBlockIntro` を tournamentStep にフック（ticker＋ライバルの動き）。
+   - **#14 結果10カウントのカット割**: カウントの周りに出場者の「お祈りカット＋作った一台（色）」。
+     `runResultCountdown(rank,premium,onDone,contestants)`＋`contestantShishaColor`。#47 暗転→プチュン / #48 “発表前”文言。
+     （カウント数字が消えていた不具合も修正）。
+   - **#25 大会後リザルト内訳**: 結果画面に工程A/B/C＋手がかり＋体感スコア。`tournamentBreakdown/buildBreakdownPanel`。
+   - **#27 入場演出**: ライバル→主人公をプロレス風に順次紹介＋各カードにスミさんの事前ブリーフィング。
+     `entranceIntro`＋`ENTRANCE`、startTournament の opening 後にフック。自動送り（テスト安全）。
+
+### ⚠️ 素材待ち（骨組みで実装済み・画像が来たら差すだけ）
+- **#14 お祈りカット / #27 入場の立ち絵**: 現状は顔アイコン＋名前＋色（一台）＋異名／スミ解説で仮表示。
+  お祈り/入場の専用立ち絵が来たら `runResultCountdown` の `.rc-pray` と `entranceIntro` の `.ent-cut` に差す。
+- bg_tournament_stage 等の本番背景プレースホルダも未差し替え（直接呼びのスクショが白飛びするのはこのため・実機は暗背景でOK）。
+
+### 大会演出で“まだ”のもの
+- **#46**（R2にも吸い出しと同じニードル温度ゲームを入れるか）= オーナー要再判断（3択・前回dismiss）。
+- ライバルの実況/お祈り/入場は ch1 のみ（ch2+ は RIVALS/ENTRANCE をその章用に増やせば流用可）。
+
+### 大会以外の積み残し（下の旧セクション群に詳細）
+- **#53 ステ→ミニゲーム反映**（設計タスク・序盤難→育成で楽）／ **#41 体力蓄積制** ／ **#44 フレーバー持参制** ／
+  **#42 ch1ステ上がりすぎ微減** ／ **#2/#3/#31 みんとナラティブ** ／ **#9 tonari統合** ／ **#16/#17 ch2マップ・日常会話** ／
+  **#43残 なるの敗者復活背景** ／ **#36 マップ初回チュート**。
+
+### 進め方の推奨 / テスト互換のキー
+- contained修正はその場で→fixごとに build2本＋playthrough。ビルド: `python3 web/build_data.py && python3 web/build_standalone.py`（要 Pillow）。
+- テスト: `python3 -m http.server 8123` 起動後 `node web/test/<name>.mjs`。playthrough は大会が長く ~6分。
+- 大会フロー: setup→theme→mix→pack→foil→coal→coalfire→steam→adjust→focus→pull→flavorTrial→finishTournament→showResult→runResultCountdown→reveal。
+  生放送レイヤーは `broadcastActive()`（mode==="tournament"）でガード＝チュートリアル/バイト/ドリルには出ない。
+
+## 次回への引き継ぎ（2026-06-13 第25便終了・コンテキスト引き継ぎ）
 
 **コンテキスト圧迫のため新セッションへ。開発は `claude/great-galileo-omzoob`（origin/main の約30コミット先・全テスト緑）。
 オーナーがプレイ通しで挙げた指摘 #2〜#52 を、A1完成後に大量に潰した便。残りは下の各セクションに全部ある。**
