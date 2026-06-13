@@ -67,6 +67,13 @@ await page.waitForTimeout(100);
 await page.screenshot({ path: `${OUT}/06_status.png` });
 await page.click("#status-close");
 
+// 練習ドリル(HOLE)を終わらせてマップへ戻す。これをしないと drill 状態が残ったまま
+// 次の startTournament() を呼んでも突入ループ（screen-tournament で break）が
+// ドリル画面で即 break し、本番大会に入れず敗北画面まで到達しない
+await page.evaluate(() => { if (typeof tt !== "undefined" && tt && tt.step === "foil") tnNext("foil"); });
+await page.locator("#tn-body button", { hasText: "練習を終える" }).click().catch(() => {});
+await page.waitForSelector("#screen-map.active", { timeout: 5000 }).catch(() => {});
+
 // 敗北ルート確認: 大会に低ステータスで突入する
 await page.evaluate(() => {
   state.day = 7;
