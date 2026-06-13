@@ -1199,6 +1199,13 @@ body {
 
 /* ---------------- 吸い出し（温度合わせ） ---------------- */
 .temp-wrap { margin-bottom: 14px; }
+/* R2 調整の温度表示＋炭の再選択（#45/#46） */
+.adjust-read { margin-top: 8px; font-size: 14px; text-align: center; letter-spacing: 0.03em; }
+.adjust-read.ok { color: #9fe7b4; }
+.adjust-read.warn { color: #ffc08a; }
+.adjust-coals { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 14px 0 8px; }
+.adjust-coals .spot-btn.sel { border-color: #ffe79a; box-shadow: 0 0 12px rgba(255,210,120,0.45); }
+@media (max-width: 760px) { .adjust-coals { grid-template-columns: 1fr; } }
 .temp-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
 .temp-bar {
   position: relative;

@@ -3069,15 +3069,47 @@ function showStandings(round, next) {
 // --- ラウンド2: 炭替え・調整。一箇所だけ作りを直せる
 // ラウンド2（中盤の調整）: 一度組んだら詰め直し・蒸らし直しは物理的に無理。
 // 動かせるのは炭の位置と数だけ（温度の最終調整は提供前の吸い出しで作る）#15
+// ラウンド2: 今の温度を見て、適温（テーマ依存）からズレてたら炭で寄せる（#45/#46）。
+// 詰め直し・蒸らし直しは不可。炭は新しく替えてもいいし、あえて前の炭のまま（非推奨）でもいい。
 function stepAdjust() {
   const body = tnPanel("ラウンド2：炭替え・調整",
-    "中盤戦。一度組んだら詰め直しも蒸らし直しもできない。いま動かせるのは炭の位置と数だけだ（温度の最終調整は、提供前の吸い出しで作る）。");
-  const cur = (list, id) => (list.find((x) => x.id === id) || {}).label || "-";
-  body.appendChild(optionButton("このままでいく", "今の熱を信じる", () => {
+    "今の温度を見ろ。適温からズレてたら炭で寄せる。詰め直し・蒸らし直しはできない（温度の最終調整は提供前の吸い出しで）。");
+  const target = pullTargetZone();
+  const tw = document.createElement("div");
+  tw.className = "temp-wrap";
+  tw.innerHTML =
+    `<div class="temp-labels"><span>ぬるい</span><span>適温</span><span>焦げる</span></div>` +
+    `<div class="temp-bar"><div class="temp-zone"></div><div class="temp-marker"></div></div>` +
+    `<div class="adjust-read" id="adjust-read"></div>`;
+  tw.querySelector(".temp-zone").style.left = `${target[0] * 100}%`;
+  tw.querySelector(".temp-zone").style.width = `${(target[1] - target[0]) * 100}%`;
+  const marker = tw.querySelector(".temp-marker");
+  const read = tw.querySelector("#adjust-read");
+  const refresh = () => {
+    const t = projectedTemp();
+    marker.style.left = `${Math.round(t * 100)}%`;
+    const inZone = t >= target[0] && t <= target[1];
+    read.textContent = inZone ? "◎ 今の温度は適温に乗っている。" : t < target[0] ? "▽ 少しぬるい。炭を増やすと温まる。" : "△ 少し熱い。炭を減らすと落ち着く。";
+    read.className = `adjust-read ${inZone ? "ok" : "warn"}`;
+  };
+  body.appendChild(tw);
+  refresh();
+  const coalRow = document.createElement("div");
+  coalRow.className = "adjust-coals";
+  const mark = (sel) => [...coalRow.children].forEach((x) => x.classList.toggle("sel", x === sel));
+  for (const c of COALS) {
+    const b = optionButton(`炭を${c.label}に替える`, c.desc, () => {
+      tt.coal = c.id; if (window.SFX) SFX.select(); updateRig(); refresh(); mark(b);
+    });
+    if (tt.coal === c.id) b.classList.add("sel");
+    coalRow.appendChild(b);
+  }
+  body.appendChild(coalRow);
+  // 確定（炭を替えないのも手＝前の炭のまま・非推奨でも進める）。テスト互換のため「このままでいく」を残す
+  body.appendChild(optionButton("このままでいく", "今の温度で勝負する", () => {
     if (window.SFX) SFX.select();
     tnNext("adjust");
   }));
-  body.appendChild(optionButton("炭の位置・数を変える", `現在: ${cur(COALS, tt.coal)}`, () => redoAdjust("coal")));
 }
 
 function redoAdjust(kind) {
@@ -3928,15 +3960,18 @@ function pullTargetZone() {
 }
 const PULL_DELTA = 0.13; // 1回の吸いで動かせる最大温度
 
-function pullStartTemp() {
+// 今の仕込み（炭/炭起こし/蒸らし/葉量）から決まる温度。決定論なので R2の表示と吸い出しの起点で共有（#45）
+function projectedTemp() {
   const totalG = Object.values(tt.mix).reduce((a, b) => a + b, 0) || 12;
   let t = 0.5;
   t += { two: -0.07, triangle: 0, four: 0.07 }[tt.coal] ?? -0.04;
   t += { perfect: 0.04, good: 0, miss: -0.07 }[tt.coalFire] ?? 0;
   t += { 2: -0.08, 5: 0, 8: 0.03, 12: 0.07 }[tt.steam] ?? 0;
   t -= Math.max(0, totalG - 12) * 0.012; // 葉が多いほど温まりは遅い
-  t += Math.random() * 0.06 - 0.03;
   return Math.max(0.16, Math.min(0.9, t));
+}
+function pullStartTemp() {
+  return Math.max(0.16, Math.min(0.9, projectedTemp() + (Math.random() * 0.06 - 0.03)));
 }
 
 function stepPull() {
