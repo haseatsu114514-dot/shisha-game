@@ -2660,9 +2660,8 @@ const PACKS = [
   { id: "firm", label: "かため", desc: "ぎゅっと密度を出す" },
 ];
 const COALS = [
-  { id: "two", label: "炭2個", desc: "低めの熱でじっくり" },
-  { id: "triangle", label: "トライアングル", desc: "基本の三角配置。安定の熱まわり" },
-  { id: "four", label: "炭4個", desc: "高火力。焦げのリスクと隣り合わせ" },
+  { id: "triangle", label: "トライアングル", desc: "基本の三角配置（3個）。安定の熱まわり" },
+  { id: "four", label: "炭4個", desc: "3個よりかなり熱が上がる高火力。焦げのリスクと隣り合わせ" },
 ];
 const STEAMS = [
   { id: 2, label: "2分", desc: "せっかち。立ち上がりが不安定", dodge: 6 },
@@ -3400,8 +3399,8 @@ const HEAT_STOPS = [
   [0.26, [74, 28, 22]],    // 端がうっすら赤い
   [0.50, [156, 42, 20]],   // 赤
   [0.72, [228, 84, 28]],   // 赤熱
-  [0.90, [255, 242, 205]], // ピカン（芯が白く閃く）
-  [1.04, [255, 214, 150]], // 白熱
+  [0.90, [255, 168, 96]],  // ピカン（赤さを残したまま白い芯が閃く＝炭らしさを保つ・#52）
+  [1.04, [255, 232, 198]], // 白熱（焼きすぎ寄り＝ここで白くなる）
   [1.30, [176, 170, 158]], // 灰かぶり
 ];
 function heatRGB(h) {
@@ -3479,9 +3478,11 @@ function stepCoalFire() {
     el.id = `heat-coal-${i}`;
     el.innerHTML = `<span class="heat-core"></span><span class="heat-badge"></span>`;
     coalsEl.appendChild(el);
-    // 既にコンロで7割ほど焼けた状態からスタート（生焼けの待ち時間は無し）。炭ごとに少しずらす
+    // 既にコンロで7割ほど焼けた状態からスタート（生焼けの待ち時間は無し）。
+    // どの炭が先に熱が入るかはランダム＝立ち上がりと速度を炭ごとにばらつかせる（#51）
     coals.push({ el, core: el.querySelector(".heat-core"), badge: el.querySelector(".heat-badge"),
-                 heat: 0.66 - i * 0.05, rate: baseRate * (1.15 - i * 0.09), taken: false, inJust: false, grade: null, zone: null });
+                 heat: 0.66 - Math.random() * 0.17, rate: baseRate * (0.9 + Math.random() * 0.36),
+                 taken: false, inJust: false, grade: null, zone: null });
     el.addEventListener("click", () => takeCoal(i));
   }
 
@@ -3964,7 +3965,8 @@ const PULL_DELTA = 0.13; // 1回の吸いで動かせる最大温度
 function projectedTemp() {
   const totalG = Object.values(tt.mix).reduce((a, b) => a + b, 0) || 12;
   let t = 0.5;
-  t += { two: -0.07, triangle: 0, four: 0.07 }[tt.coal] ?? -0.04;
+  t += { triangle: 0, four: 0.14 }[tt.coal] ?? 0; // 炭3個=基準／4個でかなり上がる（#50）
+  t += { flat_charcoal: -0.03, cube_charcoal: 0.06 }[tt.charcoal] ?? 0; // フラット炭/キューブ炭でも温度差（#50）
   t += { perfect: 0.04, good: 0, miss: -0.07 }[tt.coalFire] ?? 0;
   t += { 2: -0.08, 5: 0, 8: 0.03, 12: 0.07 }[tt.steam] ?? 0;
   t -= Math.max(0, totalG - 12) * 0.012; // 葉が多いほど温まりは遅い
