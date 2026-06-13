@@ -3412,7 +3412,7 @@ function ringEvenness(angles) {
 
 function stepFoil() {
   const body = tnPanel("HOLE RHYTHM BATTLE ── アルミ穴あけ",
-    "カーソルは何周でも回せる。納得いくまで穴を開けたら〔次の周へ〕。穴は“均等に”開けるほど美しい。");
+    "カーソルは何周でも回せる（周回数での減点はなし）。大事なのは穴の“均等さ”。穴が多いほど煙は抜けるが外気も吸い、少ないほど熱がこもる──狙いに合わせて。");
   const isDrill = tt.mode === "drill";
 
   const arena = document.createElement("div");
@@ -3545,30 +3545,31 @@ function stepFoil() {
   function finishHole() {
     running = false; cancelAnimationFrame(raf);
     punchBtn.disabled = true; advBtn.disabled = true;
-    // ---- 評価: 均等度50% + 円形精度(リング完成度)10% + 各リングの充足 + 残量 ----
-    let evenSum = 0, fillSum = 0, totalHoles = 0, doneRings = 0;
-    const per = {};
+    // ---- 評価: 仕上がりは「均等度」だけで見る。周回数(リング数)・穴の数による減点はしない（T22-B）。
+    //      穴の数は減点ではなく「抜け⇄熱のこもり」のトレードオフとして温度/審査に効く。
+    let evenSum = 0, totalHoles = 0, doneRings = 0;
+    const per = { outer: { holes: 0, evenness: 0 }, middle: { holes: 0, evenness: 0 }, inner: { holes: 0, evenness: 0 } };
     for (const r of ringData) {
       const ev = ringEvenness(r.angles);
-      const fill = Math.min(1, r.angles.length / r.target);
-      if (r.angles.length > 0) { evenSum += ev; fillSum += fill; doneRings++; } // 切り上げ可(#28): 開けた周だけで評価
+      if (r.angles.length > 0) { evenSum += ev; doneRings++; } // 開けた周だけで均等度を平均（何周でも自由）
       totalHoles += r.angles.length;
       per[r.key] = { holes: r.angles.length, evenness: Math.round(ev * 100) };
     }
     const nDone = Math.max(1, doneRings);
     const evenAvg = evenSum / nDone;
-    const fillAvg = fillSum / nDone;
-    const quality = evenAvg * 0.6 + fillAvg * 0.4; // 0..1（均等度重視・開けた周のみで平均）
+    const quality = evenAvg; // 職人の腕＝均等度。何周開けても、開けた周がきれいなら高評価（周回減点なし）
     // 既存craftScore互換: foilHits 0-6
     tt.foilHits = Math.round(quality * 6);
     tt.foilDone = true;
-    // FLAVOR TRIAL 用の詳細
+    // FLAVOR TRIAL / 温度用の詳細。穴の数 = 抜け⇄熱のトレードオフ（基準は中庸の18穴）
     tt.holeResult = {
       score: Math.round(quality * 100),
       evenness: Math.round(evenAvg * 100),
+      totalHoles,
       outerHoles: per.outer.holes, middleHoles: per.middle.holes, innerHoles: per.inner.holes,
-      // 穴が多いほどドロー軽・煙量↑・熱保持↓。内周過多は焦げリスク
-      draw: Math.min(100, totalHoles * 5),
+      draw: Math.min(100, totalHoles * 5),               // 穴が多いほど煙が抜けやすい
+      outsideAir: Math.max(0, (totalHoles - 18) * 7),    // 開けすぎ＝外気を吸いやすい
+      heatRetention: Math.max(0, (16 - totalHoles) * 6), // 少なめ＝熱がこもりやすい
       burnRisk: Math.max(0, (per.inner.holes - 4) * 12),
       heatSpread: per.outer.evenness,
     };
@@ -3577,11 +3578,14 @@ function stepFoil() {
     pakkiLive(rank);
     broadcastJudge(rank, "穴あけ");
     if (rank === "perfect") smokeRings(3);
+    const heatNote = totalHoles <= 13 ? "穴は少なめ──熱がこもりやすい一台だ。"
+      : totalHoles >= 22 ? "穴は多め──よく抜けるが、外気も吸いやすい。"
+      : "抜けと熱が、ちょうどいい穴数だ。";
     result.innerHTML =
-      (quality >= 0.85 ? "──寸分違わぬ円。どのリングも穴が均等に散って、空気の通り道が完璧に整った。"
+      (quality >= 0.85 ? "──寸分違わぬ円。どのリングも穴が均等に散って、空気の通り道が整った。"
       : quality >= 0.6 ? "──悪くない穴あけ。空気はちゃんと通る。"
-      : "──穴が偏った。空気の流れにムラが出そうだ……。") +
-      `<div class="hole-summary">均等度 ${Math.round(evenAvg*100)}％ ／ 外${per.outer.holes}・中${per.middle.holes}・内${per.inner.holes}</div>`;
+      : "──穴が偏った。空気の流れにムラが出そうだ……。") + heatNote +
+      `<div class="hole-summary">均等度 ${Math.round(evenAvg*100)}％ ／ 穴 計${totalHoles}（外${per.outer.holes}・中${per.middle.holes}・内${per.inner.holes}）</div>`;
     const next = document.createElement("button");
     next.className = "primary-btn";
     next.textContent = isDrill ? "結果を見る" : "次へ";
@@ -4202,6 +4206,10 @@ function projectedTemp() {
   t += { perfect: 0.04, good: 0, miss: -0.07 }[tt.coalFire] ?? 0;
   t += { 2: -0.08, 5: 0, 8: 0.03, 12: 0.07 }[tt.steam] ?? 0;
   t -= Math.max(0, totalG - 12) * 0.012; // 葉が多いほど温まりは遅い
+  // アルミの穴の数（T22-B）: 少ないほど熱がこもり(温度↑)、多いほど抜けて下がる。基準は中庸の18穴
+  if (tt.holeResult && typeof tt.holeResult.totalHoles === "number") {
+    t += (18 - tt.holeResult.totalHoles) * 0.005;
+  }
   return Math.max(0.16, Math.min(0.9, t));
 }
 function pullStartTemp() {
