@@ -1408,24 +1408,24 @@ function phoneShowCustom(threads, onDone, header = {}) {
   setTimeout(nextLimeThread, 800);
 }
 
-// 優勝の夜のスマホ: なるの採点表どんでん →「？？？」の不穏な通知。
-// 「実力で勝った」という自己認識を最初から揺らし、ch2の転落と
-// ch5のチャコール博士まで効く縦糸を張る
+// 優勝の夜のスマホ: スミさんの採点表どんでん →「？？？」の不穏な通知。
+// 「実力で勝った」という自己認識を、師匠の口から最初に揺らす。ch2の転落と
+// ch5のチャコール博士まで効く縦糸を張る（突きつけ役をなる→スミさんへ・オーナー指定）
 function postClearPhone(onDone) {
   phoneShowCustom([
     {
-      id: "_sys_naru_scoresheet",
-      sender: "naru",
+      id: "_sys_sumi_scoresheet",
+      sender: "sumi",
       type: "chat",
       messages: [
-        "今日はマジでおめでとう。……で、なんだけど",
-        "家帰ってから、開示された採点表をずっと見直してた",
-        "技術点も個性点も、お前は4人の中で下位だ。俺にも負けてる",
-        "お前を優勝させたのは、南雲さんの「総合印象点」ひとつだけ。あの人、お前にだけ満点つけてる",
-        "おめでとうは取り消さない。今日のお前の煙が美味かったのも本当だ。……でも「実力で勝った」とはまだ言わせない",
-        "あの一票が何だったのか──全国までに、お互い答えを持っていこうぜ",
+        "おう。優勝、見事だった",
+        "……で、だ。開示された採点表、もう見たか",
+        "技術点も個性点も、お前は4人の中で下位だ。なるにも負けてる",
+        "お前を勝たせたのは、南雲さんの「総合印象点」ひとつ。あの人が、お前にだけ満点をつけた",
+        "勝ちは勝ちだ。今日のお前の煙が美味かったのも、嘘じゃない。──だが「実力で勝った」とは思うな",
+        "あの一票が何だったのか。全国までに、自分で答えを出せ",
       ],
-      close_label: "……うん。ありがとう、なるさん",
+      close_label: "……はい。ありがとうございます、スミさん",
       no_reward: true,
     },
     {
@@ -1734,8 +1734,12 @@ function showMap(opts = {}) {
   updateMapInfo(null);
   save();
   // たまったスロット結果をマップ表示時に精算（非ブロッキング）。
-  // skipReel 指定時は精算を保留（DAYカード/LIMEと被らせないため advanceDay が後で回す #34）
-  if (!opts.skipReel && typeof REEL !== "undefined") REEL.onMapShown();
+  // skipReel 指定時は精算を保留（advanceDay が朝のLIMEの後で回す #34）。
+  // DAYカード表示中は被るので、カードが消えてから回す（#11 「DAY表示中にスロットが回る」）
+  if (!opts.skipReel && typeof REEL !== "undefined") {
+    if (document.querySelector("#day-card.show")) setTimeout(() => REEL.onMapShown(), 1500);
+    else REEL.onMapShown();
+  }
 }
 
 function updateMapInfo(spot, locked, tooPoor, closed, visited) {
@@ -5386,9 +5390,9 @@ function finishTutorial() {
   const craft = craftScore();
   const grade = craft.score >= 90 ? "great" : craft.score >= 70 ? "good" : "rough";
   const comment = {
-    great: { face: "surprise", text: "……驚いたな。初めての通しでこの煙か。お前、本当に筋がいいぞ。" },
-    good: { face: "smile", text: "悪くない。初めての通しなら上出来だ。あとは数をこなすだけだな。" },
-    rough: { face: "normal", text: "まあ、最初はこんなもんだ。どこで味が決まるか、体で覚えただろう。" },
+    great: { face: "surprise", text: "……驚いたな。バイト3ヶ月でこの煙か。お前、本当に筋がいいぞ。" },
+    good: { face: "smile", text: "悪くない。3ヶ月ならむしろ上出来だ。あとは数をこなすだけだな。" },
+    rough: { face: "normal", text: "まあ、こんなもんだ。どこで味が決まるか、体で覚えただろう。" },
   }[grade];
   playCustom({
     dialogue_id: "tutorial_result",

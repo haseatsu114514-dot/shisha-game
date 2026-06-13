@@ -56,7 +56,7 @@ const REEL = (() => {
   // 裏確変（引き弱救済）: 生涯ペカ数が期待値の55%を割っていたら、こっそり reg/big を1.7倍
   const RESCUE = { minSpins: 30, ratio: 0.55, mult: 1.7, expectedRate: 0.075 };
   // 天井: ゾーン=8連続ハズレで次回小役以上 ／ 本天井=40Gペカ無しで次回ペカ確定（日・章をまたいで持ち越し）
-  const CEILING = { zoneRun: 8, mainRun: 40 };
+  const CEILING = { zoneRun: 8, mainRun: 15 }; // 本天井=15回でペカ確定（当たればリセット）。残り5回から示唆を出す
   // ジャグ連: BIG級（big/rare/freeze/重複BIG）後 5G は reg/big ×1.5（ハズレから移譲）
   const JUG_REN = { games: 5, mult: 1.5 };
   const REPLAY_CHAIN_MAX = 4;
@@ -236,6 +236,8 @@ const REEL = (() => {
       reel.count += 1;
       reel.missRun = role === "miss" ? reel.missRun + 1 : 0;
       reel.bonusGap = isPeka ? 0 : reel.bonusGap + 1;
+      // 本天井（15回）までの残り。当たれば満タンに戻る。残り5回から示唆を出す
+      result.ceilingRemain = isPeka ? CEILING.mainRun : Math.max(0, CEILING.mainRun - reel.bonusGap);
       reel.bonusCount = (reel.bonusCount || 0) + (isPeka ? 1 : 0);
       if (role === "freeze") reel.freezeCount = (reel.freezeCount || 0) + 1;
       if (result.zone) reel.zoneLeft = JUG_REN.games;
@@ -522,12 +524,21 @@ const REEL = (() => {
   function afterStop(r, fast, done) {
     switch (r.role) {
       case "miss":
+        // 本天井（15回）が近いと示唆する（残り5回から）。当たればリセットされる
+        if (!fast && r.ceilingRemain > 0 && r.ceilingRemain <= 5) {
+          bubble(`天井まで あと${r.ceilingRemain}回…！`, 1700);
+          if (r.ceilingRemain <= 2 && fx() !== "off") sfx("puka");
+        }
         return done();
       case "replay":
-        // リプレイ＝もう1回転。次の回転がすぐ始まるので、何が起きたか分かるよう
-        // ひと呼吸おき、吹き出しは次の回転の頭まで残す（#リプレイが一瞬すぎる）
-        if (!fast) { widget.classList.add("flash-blue"); sfx("reelWin"); bubble("リプレイ！　もう1回転", 1500); }
-        setTimeout(() => { widget.classList.remove("flash-blue"); done(); }, fast ? 60 : 720);
+        // リプレイ成立＝もう1回転。揃った直後に再回転すると何が起きたか分からないので、
+        // 「リプレイ成立！」を見せたまま、はっきり間をおいてから次の回転へ（指摘2回目・#リプレイが一瞬）
+        if (fast) { setTimeout(done, 60); return; }
+        widget.classList.add("flash-blue"); sfx("reelWin");
+        bubble("リプレイ成立！", 0); // 0=自動で消さず保持。揃いをしっかり見せる
+        setTimeout(() => widget.classList.remove("flash-blue"), 520);
+        setTimeout(() => { bubble("……もう1回転！", 1000); sfx("puka"); }, 1050); // ひと呼吸おいて予告
+        setTimeout(() => { done(); }, 1700); // 揃い → 間 → 再回転
         return;
       case "cherry": {
         sfx("reelWin");
