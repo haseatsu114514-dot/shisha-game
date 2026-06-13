@@ -515,7 +515,7 @@ function updateHud() {
     hudDay.classList.remove("hidden");
   } else {
     const stageDay = nextStageDay();
-    const left = state.chapter === 2 ? stageDay - state.day : stageDay + 1 - state.day;
+    const left = daysUntilTournament();
     const what = state.chapter === 2 ? CH2_STAGE_LABEL[chapterInfo().stageDays[stageDay]] : "大会";
     hudDay.textContent = `DAY ${state.day} ／ ${what}まであと${left}日`;
     // ダイアログ中だけ薄く出す（マップでは大きな day-card に任せる）
@@ -539,6 +539,24 @@ function updateHud() {
   $("#hud-level-fill").style.width = `${pct}%`;
   // マップ用 DAY カード
   updateDayCard();
+}
+
+// 大会まであと何日か。HUD・台詞・LIME の数字をここに一本化し、カレンダー（MAX_DAYS）が
+// 変わっても表示が矛盾しないようにする（旧7日制の名残で台詞の日数がズレていた #35）
+function daysUntilTournament() {
+  if (!state || state.phase === "tournament" || state.phase === "cleared") return 0;
+  const stageDay = nextStageDay();
+  const left = state.chapter === 2 ? stageDay - state.day : stageDay + 1 - state.day;
+  return Math.max(0, left);
+}
+
+// 台詞・LIME テキスト内の {daysLeft} トークンを実数に置換する。
+// 静的な会話JSONに「あと3日」と直書きせず、ここで現在のカレンダーに合わせて差し込む
+function interpolate(text) {
+  if (text == null) return text;
+  let t = String(text);
+  if (t.indexOf("{daysLeft}") !== -1) t = t.split("{daysLeft}").join(String(daysUntilTournament()));
+  return t;
 }
 
 // 日替わりの客のリクエスト傾向（バイトのオーダーチャレンジのテーマになる）
@@ -950,6 +968,7 @@ function initEngine() {
     },
     {
       getStat: (en) => state.stats[en] || 0,
+      interpolate: (t) => interpolate(t),
       portraitFaces: D.portraits,
       portraitTrims: D.portrait_trims,
       portraitScales: D.portrait_scales,
@@ -1222,6 +1241,7 @@ let limeOnDone = null;
 let limeAcceptedNoon = [];
 
 function morningPhone(onDone, opts = {}) {
+  stopAutoSkip(); // LIMEはAUTO/SKIPで読み飛ばさせない（スキップがLIMEまで貫通する問題の解消）
   const due = limeDueMessages(!!opts.tournamentDay);
   if (!due.length) { if (onDone) onDone(); return; }
   limeQueue = due;
@@ -1264,7 +1284,7 @@ function addLimeBubble(side, text, sender) {
   const row = document.createElement("div");
   row.className = `lime-row ${side}`;
   const avatar = side === "peer" && sender ? faceIconHtml(sender, "lime-face sm") || "" : "";
-  row.innerHTML = `${avatar}<div class="lime-bubble">${formatText(String(text))}</div>`;
+  row.innerHTML = `${avatar}<div class="lime-bubble">${formatText(interpolate(String(text)))}</div>`;
   chat.appendChild(row);
   chat.scrollTop = chat.scrollHeight;
   if (window.SFX) SFX.bubble();
@@ -1436,6 +1456,7 @@ function closePhone() {
   const chain = (i) => {
     if (i >= accepted.length) { if (done) done(); return; }
     playLimeEvent(accepted[i].event, accepted[i].sender, () => {
+      if (typeof REEL !== "undefined") REEL.onAction(); // 昼の誘いに乗った行動もスロットを回す(#33)
       state.ap = Math.max(0, state.ap - 1);
       updateHud();
       save();
@@ -1449,6 +1470,7 @@ function closePhone() {
 
 // LIME経由のイベント再生。会話内の報酬キューに加えて必ず好感度を付ける
 function playLimeEvent(dialogueId, sender, after, viaInvite) {
+  stopAutoSkip(); // 直前の会話でSKIP中でも、誘い/デート等のイベントは飛ばさず頭から見せる
   visitContextChar = sender;
   markMet(sender);
   // 誘い/イベントでそのキャラに会った日は、同じ店（spot）への通常訪問を不可にする
@@ -1635,7 +1657,7 @@ const SPOT_LAYOUT = {
   rest:      { x: 88, y: 60, theme: "rest",    short: "家",         area: "自宅" },
 };
 
-function showMap() {
+function showMap(opts = {}) {
   state.phase = "daily";
   if (window.SFX) SFX.bgm("daily_part");
   showScreen("#screen-map");
@@ -1711,7 +1733,9 @@ function showMap() {
   }
   updateMapInfo(null);
   save();
-  if (typeof REEL !== "undefined") REEL.onMapShown(); // たまったスロット結果をマップ表示時に精算（非ブロッキング）
+  // たまったスロット結果をマップ表示時に精算（非ブロッキング）。
+  // skipReel 指定時は精算を保留（DAYカード/LIMEと被らせないため advanceDay が後で回す #34）
+  if (!opts.skipReel && typeof REEL !== "undefined") REEL.onMapShown();
 }
 
 function updateMapInfo(spot, locked, tooPoor, closed, visited) {
@@ -1841,11 +1865,14 @@ function endAction() {
         const p = state.pendingLimeNight;
         state.pendingLimeNight = null;
         save();
-        return playLimeEvent(p.event, p.sender, () => {
+        // 昼の用事が終わってから夜の約束へ。即切り替えると唐突なので時間が流れる一拍を挟む（違和感の解消）
+        showDayCard("夕暮れ", "約束の時間だ");
+        return setTimeout(() => playLimeEvent(p.event, p.sender, () => {
+          if (typeof REEL !== "undefined") REEL.onAction(); // 夜の約束もひとつの行動＝スロットを回す(#33)
           state.ap = 0;
           save();
           endDay();
-        }, true);
+        }, true), 1500);
       }
       return showMap();
     }
@@ -1896,11 +1923,12 @@ function advanceDay() {
   }
   const stageDay = nextStageDay();
   // ch2の試合はその日のうちに行われる（行動なし）ので残日数は前日基準
-  const left = state.chapter === 2 ? stageDay - state.day : stageDay + 1 - state.day;
+  const left = daysUntilTournament();
   const what = state.chapter === 2 ? CH2_STAGE_LABEL[chapterInfo().stageDays[stageDay]] : cupName();
   showDayCard(`DAY ${state.day}`, left === 1 ? `${what} 前日` : `${what}まで あと${left}日`);
-  showMap();
-  morningPhone(showMap); // 朝のLIME（無ければ何もしない）
+  // 昨日の行動のスロットは、DAYカード→朝のLIMEを消化してから回す（被って見えない問題の解消 #34/#23）
+  showMap({ skipReel: true });
+  morningPhone(showMap); // 朝のLIME（無ければ即 showMap がスロットを精算）
 }
 
 function endDay() {
@@ -1970,7 +1998,7 @@ function endDay() {
         { speaker: "", face: "", text: "黙って組む。詰めて、熾して、置いて、待つ。スミさんは何も言わずに見ている。\n──完成。ホースを渡す。スミさんは目を閉じて、長い一服。" },
         { type: "condition", stat: "技術", threshold: 22, next_true: "mid_good", next_false: "mid_rough" },
         { speaker: "sumi", face: "serious", text: "大会まで、ちょうど折り返しだ。どこを磨くかは、お前が決めろ。──ただし、寝ること。それも仕込みのうちだ" },
-        { speaker: "hajime", face: "normal", text: "はい。（あと7日。……何を、どこまで持っていけるか）" },
+        { speaker: "hajime", face: "normal", text: "はい。（あと{daysLeft}日。……何を、どこまで持っていけるか）" },
         { type: "apply", stats: { insight: 2 } },
       ],
       branches: {
@@ -1980,7 +2008,7 @@ function endDay() {
         ],
         mid_rough: [
           { speaker: "sumi", face: "normal", text: "……悪くない。けど、本番でこれだと埋もれるな" },
-          { speaker: "sumi", face: "normal", text: "焦るな。まだ7日ある。基礎の反復が一番効く時期だ" },
+          { speaker: "sumi", face: "normal", text: "焦るな。まだ{daysLeft}日ある。基礎の反復が一番効く時期だ" },
         ],
       },
     }, finishDay);
@@ -2730,6 +2758,121 @@ function pakkiLive(result) {
   if (pool.length) ticker(pool[Math.floor(Math.random() * pool.length)]);
 }
 
+// ============================================================================
+// 大会の生放送レイヤー（本番のみ）:
+//   #24 可視スコア（体感スコア「+N P」ポップ）＋ニコ動風コメント
+//   #20 工程ブロックの頭でMCが前振り ／ #26 ライバルのリアルタイム実況
+// 審査員の持ち点とは別系統の「観客ウケ」を可視化して気持ちよさを出す。
+// ============================================================================
+const NICO_POOL = {
+  perfect: ["うますぎｗ", "神業ｷﾀ━(ﾟ∀ﾟ)━!", "完璧すぎる", "もう優勝でいいだろ", "手元ブレなさすぎ", "プロかよ", "88888888", "ファッ!?", "鳥肌たった", "うおおお"],
+  good:    ["いいぞいいぞ", "おっ", "安定してる", "丁寧だなぁ", "うまい", "ここから上げてけ", "ナイス", "おちついてる"],
+  miss:    ["あー", "おしいっ", "ドンマイ", "巻き返せ！", "緊張してる？", "まだいける", "がんば", "ここから"],
+  serve:   ["もう完成したの!?", "提供はやっ", "早ぇｗ", "段取りいいな", "迷いがない", "仕事はやい"],
+  block:   ["きたきた", "次の工程だ", "見せ場ｷﾀ", "ここ大事", "おっ動いた", "ふむふむ"],
+  rival:   ["ライバルも本気だ", "他のもいい匂いしそう", "接戦になりそう", "向こうも仕上げてる"],
+};
+
+function broadcastActive() { return !!(tt && tt.mode === "tournament"); }
+
+function ensureBroadcast() {
+  if (!broadcastActive()) return null;
+  const stage = $("#screen-tournament");
+  let lane = document.getElementById("tn-comments");
+  if (!lane) { lane = document.createElement("div"); lane.id = "tn-comments"; stage.appendChild(lane); }
+  let feel = document.getElementById("tn-feel");
+  if (!feel) {
+    feel = document.createElement("div"); feel.id = "tn-feel";
+    feel.innerHTML = `<span class="tf-label">体感スコア</span><span class="tf-num" id="tn-feel-num">0</span><span class="tf-p">P</span>`;
+    stage.appendChild(feel);
+  }
+  return { lane, feel };
+}
+
+function resetBroadcast() {
+  if (tt) tt.feelScore = 0;
+  const lane = document.getElementById("tn-comments"); if (lane) lane.innerHTML = "";
+  const num = document.getElementById("tn-feel-num"); if (num) num.textContent = "0";
+  const feel = document.getElementById("tn-feel"); if (feel) feel.classList.remove("show");
+}
+
+// ニコ動風コメントを1本流す（右→左）
+function nicoComment(text, opts = {}) {
+  const b = ensureBroadcast(); if (!b) return;
+  const c = document.createElement("div");
+  c.className = "nico" + (opts.cls ? " " + opts.cls : "");
+  c.textContent = text;
+  const row = opts.row != null ? (opts.row % 6) : Math.floor(Math.random() * 6);
+  c.style.top = `${5 + row * 13}%`;
+  const dur = opts.dur || (4.2 + Math.random() * 1.8);
+  c.style.animationDuration = `${dur}s`;
+  b.lane.appendChild(c);
+  setTimeout(() => c.remove(), dur * 1000 + 250);
+}
+
+function nicoBurst(kind, n) {
+  const pool = NICO_POOL[kind] || [];
+  if (!pool.length) return;
+  n = n != null ? n : (kind === "perfect" ? 3 : kind === "miss" ? 2 : 2);
+  for (let i = 0; i < n; i++) {
+    const t = pool[Math.floor(Math.random() * pool.length)];
+    setTimeout(() => nicoComment(t, { cls: kind === "perfect" || kind === "miss" || kind === "rival" ? kind : "", row: i }), i * 170);
+  }
+}
+
+// 体感スコア加点＋「+N P」ポップ
+function feelPop(pts, label) {
+  const b = ensureBroadcast(); if (!b || !(pts > 0)) return;
+  tt.feelScore = (tt.feelScore || 0) + pts;
+  const num = document.getElementById("tn-feel-num");
+  if (num) { num.textContent = String(tt.feelScore); num.classList.remove("bump"); void num.offsetWidth; num.classList.add("bump"); }
+  b.feel.classList.add("show");
+  const pop = document.createElement("div");
+  pop.className = "feel-pop";
+  pop.innerHTML = `+${pts}<span class="fp-p">P</span>${label ? `<small>${label}</small>` : ""}`;
+  b.feel.appendChild(pop);
+  setTimeout(() => pop.remove(), 1150);
+}
+
+// 判定（perfect/just/great/good/miss）→ 体感スコアとコメントへ一括反映
+const FEEL_PTS = { perfect: 12, just: 11, great: 10, good: 6, miss: 0 };
+const FEEL_NICO = { perfect: "perfect", just: "perfect", great: "perfect", good: "good", miss: "miss" };
+function broadcastJudge(result, label) {
+  if (!broadcastActive()) return;
+  const pts = FEEL_PTS[result] != null ? FEEL_PTS[result] : 6;
+  if (pts > 0) feelPop(pts, label || (FEEL_PTS[result] != null && pts >= 10 ? "GREAT" : ""));
+  nicoBurst(FEEL_NICO[result] || "good");
+}
+
+// #20 工程ブロックの頭でMCが前振り＋数ブロックに一度ライバルの動きも実況（#26）
+const MC_BLOCK = {
+  theme:    "さあ、はじめ選手！　まずはコンセプト決めだ！",
+  mix:      "配合に入ったァ！　どんな一台を組む！？",
+  pack:     "詰めの工程！　ここで密度が決まるぞ！",
+  foil:     "アルミ巻きィ！　穴あけのリズムに注目だ！",
+  coalfire: "炭起こし！　芯がピカッと閃く瞬間を狙えっ！",
+  steam:    "蒸らしに入った……ここはじっくり待つ！",
+  adjust:   "第2ラウンド、調整だ！　今の温度を読めるか！？",
+  pull:     "いよいよ吸い出し──提供はもう目前だァ！",
+};
+const RIVAL_MC = [
+  "おっと、なる選手はもう炭を置いた！　速い！",
+  "アダム選手、ダブルアップルの甘い香りが審査席まで！",
+  "みんと選手、危なげなく工程を進めています！",
+  "なる選手、早くも提供の体勢に入ったか！？",
+];
+function mcBlockIntro(step) {
+  if (!broadcastActive()) return;
+  const line = MC_BLOCK[step];
+  if (!line) return;
+  ticker(line);
+  nicoBurst("block", 1);
+  if (Math.random() < 0.5) {
+    const r = RIVAL_MC[Math.floor(Math.random() * RIVAL_MC.length)];
+    setTimeout(() => { if (broadcastActive()) { ticker(r); nicoBurst("rival", 1); } }, 2700);
+  }
+}
+
 // 大会は3ラウンド制: R1=組み立て（setup〜steam）→ R2=調整（adjust＋focus）→ R3=提供（吸い出し）。
 // ラウンドの切れ目で ch1_tournament_r1〜r3_end の会話が挟まる。
 // プレゼン工程は廃止（2026-06-12 オーナー決定）。提供の佇まいは魅力としてスコアに残る
@@ -2856,6 +2999,51 @@ function stopRigEffects() {
   rigState.bubbleTimer = 0;
 }
 
+// #27 入場演出: プロレス風にライバル→主人公を順に紹介。各ライバルのカードに、スミさんの
+// 事前ブリーフィング（対戦相手の特徴解説）を重ねる。お祈り/立ち絵の専用画像は生成待ちのため、
+// 顔アイコン（あれば）＋名前＋異名＋スミさんの一言で骨組み。クリックでも自動でも進む（テスト安全）。
+const ENTRANCE = {
+  naru:  { ring: "孤高の探求者", note: "なる……人格者だが、煙は別人だ。基礎が異常に堅い。崩れねえぞ。" },
+  adam:  { ring: "ダブルアップルの匠", note: "アダムは一点突破。ダブルアップル一本で会場を甘さに沈める。正面から殴り合うな。" },
+  minto: { ring: "甘い嵐", note: "みんと……年齢は知らん。だが緩急で揺さぶる老獪さがある。乗せられるな。" },
+  hajime: { ring: "tonari の新星", note: "" },
+};
+function entranceIntro(onDone) {
+  showScreen("#screen-tournament");
+  // 直前の工程（チュートリアル/バイト）の残骸を消す。残しておくと入場中に古いボタン/見出しが
+  // 見えてしまい、自動操作（playTnStep）も古い見出しに反応して詰まる
+  $("#tn-title").textContent = ""; $("#tn-progress").textContent = ""; $("#tn-hint").textContent = "";
+  $("#tn-body").innerHTML = "";
+  let ov = document.getElementById("tn-entrance");
+  if (!ov) { ov = document.createElement("div"); ov.id = "tn-entrance"; $("#screen-tournament").appendChild(ov); }
+  ov.className = "tn-entrance show";
+  const list = [...RIVALS, { id: "hajime", name: "はじめ" }]; // ライバル紹介 → 主人公が最後に入場
+  let i = 0;
+  const showOne = () => {
+    if (i >= list.length) { ov.className = "tn-entrance"; ov.innerHTML = ""; if (onDone) onDone(); return; }
+    const c = list[i++];
+    const e = ENTRANCE[c.id] || { ring: c.name, note: "" };
+    const isMe = c.id === "hajime";
+    const face = faceIconHtml(c.id, "ent-face") || `<span class="ent-face-ph">${isMe ? "あなた" : "？"}</span>`;
+    ov.innerHTML =
+      `<div class="ent-card${isMe ? " me" : ""}">` +
+        `<div class="ent-cut">${face}<span class="ent-cut-tag">${isMe ? "CHALLENGER" : "RIVAL"}</span></div>` +
+        `<div class="ent-meta">` +
+          `<div class="ent-ring">${e.ring || ""}</div>` +
+          `<div class="ent-name">${c.name}<small>選手</small></div>` +
+          `<div class="ent-note">${e.note ? `スミ「${e.note}」` : (isMe ? "スミ「──行ってこい。お前の煙を見せてやれ」" : "")}</div>` +
+        `</div></div>`;
+    const card = ov.querySelector(".ent-card");
+    requestAnimationFrame(() => card.classList.add("in"));
+    if (window.SFX) (isMe ? SFX.fanfare() : SFX.select());
+    let advanced = false;
+    const adv = () => { if (advanced) return; advanced = true; ov.removeEventListener("click", adv); clearTimeout(timer); showOne(); };
+    ov.addEventListener("click", adv);
+    const timer = setTimeout(adv, isMe ? 2400 : 2000);
+  };
+  showOne();
+}
+
 function startTournament() {
   state.phase = "tournament";
   // 会場ではMCが出場者と審査員を紹介する（名前の開示）
@@ -2864,7 +3052,7 @@ function startTournament() {
   save();
   // 会場へ歩み入る瞬間を煙ワイプで（master_spec #20）
   smokeWipe(() => playDialogue("ch1_tournament_arrival", () =>
-    playDialogue("ch1_tournament_opening", () => beginMaking(), "res://assets/backgrounds/bg_tournament_stage.png")
+    playDialogue("ch1_tournament_opening", () => entranceIntro(() => beginMaking()), "res://assets/backgrounds/bg_tournament_stage.png")
   ));
 }
 
@@ -2881,6 +3069,7 @@ function beginMaking(mode) {
   };
   stopRigEffects();
   buildRig();
+  resetBroadcast(); // 体感スコア・ニコ動コメントを初期化（本番のみ実体が出る）
   if (mode === "baito") {
     // お客さんのリクエスト（テーマ）は日替わり。大会同様のフル工程で作る
     tt.theme = dailyTheme();
@@ -2977,6 +3166,7 @@ function optionButton(label, desc, onClick) {
 
 function tournamentStep(step) {
   if (tt) tt.step = step;
+  mcBlockIntro(step); // #20 工程ブロックの頭でMC実況（本番のみ・対象ブロックのみ）
   if (step === "setup_bowl" || step === "setup_hms" || step === "setup_charcoal") return stepSetup(step);
   if (step === "theme") {
     const body = tnPanel("テーマ選択", "今日の一台のコンセプトを決めろ。フレーバー選びの軸になる。");
@@ -3324,7 +3514,7 @@ function stepFoil() {
   const finishRing = () => {
     const r = ringData[ringIdx];
     const even = ringEvenness(r.angles);
-    if (even > 0.82 && r.angles.length >= r.target) { callout("RING COMPLETE", "great"); showStamp(board, "just"); }
+    if (even > 0.82 && r.angles.length >= r.target) { callout("RING COMPLETE", "great"); showStamp(board, "just"); feelPop(6, "RING"); nicoBurst("good", 1); }
     else callout("AIR FLOW", even > 0.6 ? "" : "warn");
     advBtn.classList.remove("ready");
     if (ringIdx < ringData.length - 1) {
@@ -3370,6 +3560,7 @@ function stepFoil() {
     const rank = quality >= 0.85 ? "perfect" : quality >= 0.6 ? "good" : "miss";
     showStamp(board, rank === "perfect" ? "just" : rank);
     pakkiLive(rank);
+    broadcastJudge(rank, "穴あけ");
     if (rank === "perfect") smokeRings(3);
     result.innerHTML =
       (quality >= 0.85 ? "──寸分違わぬ円。どのリングも穴が均等に散って、空気の通り道が完璧に整った。"
@@ -3572,6 +3763,7 @@ function stepCoalFire() {
     const rank = tt.coalFire;
     showStamp(arena.querySelector("#heat-burner"), rank === "perfect" ? "just" : rank);
     pakkiLive(rank);
+    broadcastJudge(rank, "炭");
     if (rank === "perfect") smokeRings(3);
     result.innerHTML =
       (justCount >= 2 ? "──三つの芯が、ほぼ同時にピカッと閃いた。火力も香りも申し分ない熾きだ。"
@@ -3880,6 +4072,7 @@ function runSteamDodge(steamOpt, onDone) {
     const grade = hits === 0 ? "perfect" : hits <= 2 ? "good" : "miss";
     showStamp($("#tn-layout .panel"), grade);
     pakkiLive(grade);
+    broadcastJudge(grade, "蒸らし");
     result.textContent =
       hits === 0 ? "──雑念ゼロ。蒸らしの間、煙のことだけを見ていられた。"
       : hits <= 2 ? "──少し心がざわついた。でも、致命傷じゃない。"
@@ -4092,6 +4285,7 @@ function stepPull() {
     if (just) {
       tt.pullJust = (tt.pullJust || 0) + 1;
       showStamp($("#tn-layout .panel"), "just");
+      feelPop(8, "JUST"); nicoBurst("perfect", 1);
       if (window.SFX) SFX.perfect && SFX.perfect();
     }
     tt.temp = Math.max(0, Math.min(1, tt.temp + delta + (Math.random() * 2 - 1) * jitter));
@@ -4122,6 +4316,8 @@ function stepPull() {
     startRigSmoke(tt.pull === "miss" ? 900 : 320);
     showStamp($("#tn-layout .panel"), tt.pull);
     pakkiLive(tt.pull);
+    broadcastJudge(tt.pull, "提供");
+    nicoBurst("serve", 1); // 提供スピード感のウケ
     result.textContent = {
       perfect: "──完璧な温度。煙が重く、甘く、まとまっている。",
       good: "──いい温度だ。狙った味に近い。",
@@ -4346,7 +4542,8 @@ function flavorTrial(onDone) {
     fb.innerHTML = `<span class="trial-line">${res}</span>`;
     fb.className = `trial-feedback show ${cls}`;
     if (window.SFX) (delta > 0 ? SFX.perfect : SFX.miss)();
-    if (delta > 0) { showStamp($("#tn-layout .panel"), "just"); if (tt.mode === "tournament") pakkiLive("perfect"); }
+    if (delta > 0) { showStamp($("#tn-layout .panel"), "just"); if (tt.mode === "tournament") { pakkiLive("perfect"); broadcastJudge("perfect", "SYNC"); } }
+    else if (tt.mode === "tournament") nicoBurst("miss", 1);
     const next = document.createElement("button");
     next.className = "primary-btn";
     next.textContent = round < TRIAL_DOUBTS.length - 1 ? "次のザワザワへ ▶" : "審査を終える ▶";
@@ -4376,6 +4573,9 @@ function flavorTrial(onDone) {
 }
 
 function finishTournament() {
+  // 生放送レイヤーの流れるコメントは結果発表前に片付ける（体感スコアtt.feelScoreは保持＝#25で使う）
+  const lane = document.getElementById("tn-comments"); if (lane) lane.innerHTML = "";
+  const feelEl = document.getElementById("tn-feel"); if (feelEl) feelEl.classList.remove("show");
   const s = state.stats;
   const statScore = (s.technique * 1.2 + s.sense * 1.0 + s.guts * 0.6 + s.charm * 0.8 + s.insight * 1.0) / 4.6;
   const craft = craftScore();
@@ -4425,19 +4625,50 @@ function finishTournament() {
 // RESULT 10 COUNT（結果発表の10カウント演出）— master_spec 第2部 #4
 // 集計中…→会場ざわめき→10…0→プチュン(1位確定)/パリン(2位以下)。カウント中はカットインを挟む。
 // プレミア時は2〜3秒残しでフライングプチュン。プチュンは必ず1位、パリンは2位以下。
-function runResultCountdown(rank, premium, onDone) {
+// 出場者が作った一台（シーシャ）の色。はじめは配合の主役フレーバー、ライバルは仮の代表色。
+const RIVAL_SHISHA = {
+  naru: "#8fe3c0", adam: "#d96a6a", minto: "#e89ad0",
+  kumicho: "#b69cff", rei: "#9ab8ff", ageha: "#ffc46a",
+  nandi: "#e0b060", steve: "#90c0d0", volk: "#c0c8d8",
+  sheikh: "#e8c878", master_hookah: "#d0a0ff", shisha_9000: "#7de8ff",
+};
+function contestantShishaColor(id) {
+  if (id === "hajime") {
+    const top = Object.entries(tt.mix || {}).sort((a, b) => b[1] - a[1])[0];
+    return (top && FLAVOR_COLORS[top[0]]) || (tt.theme && tt.theme.best && FLAVOR_COLORS[tt.theme.best[0]]) || "#cdb98a";
+  }
+  return RIVAL_SHISHA[id] || "#bda0e0";
+}
+
+// RESULT 10 COUNT（結果発表“前”のbuildup・#14/#48）。中央のカウントの周りに、
+// 出場者の「お祈りカット」と作った一台を並べる＝カット割。お祈り/立ち絵の専用画像は生成待ちのため、
+// 顔アイコン（あれば）＋名前＋一台の色で仮組み。プレミア(#47)は暗転→プチュンのフライング。
+function runResultCountdown(rank, premium, onDone, contestants) {
   let ov = document.getElementById("result-count");
   if (!ov) { ov = document.createElement("div"); ov.id = "result-count"; $("#game").appendChild(ov); }
+  const list = (contestants && contestants.length) ? contestants : [{ id: "hajime", name: "はじめ" }, ...RIVALS];
+  const cards = list.map((c) => {
+    const pray = faceIconHtml(c.id, "rc-pray-face") || `<span class="rc-pray-ph">🙏</span>`;
+    return `<div class="rc-card${c.id === "hajime" ? " me" : ""}" data-id="${c.id}">` +
+      `<div class="rc-pray">${pray}<span class="rc-pray-tag">祈</span></div>` +
+      `<div class="rc-bowl" style="--cc:${contestantShishaColor(c.id)}"></div>` +
+      `<div class="rc-card-name">${c.name}</div></div>`;
+  }).join("");
   ov.className = "rc show";
-  ov.innerHTML = `<div class="rc-cutin" id="rc-cutin"></div><div class="rc-num" id="rc-num"></div><div class="rc-msg" id="rc-msg">集計中……</div>`;
+  ov.innerHTML =
+    `<div class="rc-cards">${cards}</div>` +
+    `<div class="rc-num" id="rc-num"></div>` +
+    `<div class="rc-msg" id="rc-msg">集計中……</div>`;
   const numEl = ov.querySelector("#rc-num");
   const msgEl = ov.querySelector("#rc-msg");
-  const cutinEl = ov.querySelector("#rc-cutin");
-  const CUTINS = ["真剣な横顔", "アルミの穴", "炭のピカン", "立ちのぼる煙", "審査員の目元", "ざわめく会場"];
+  const cardEls = [...ov.querySelectorAll(".rc-card")];
+  // カット割: カウント中、ランダムな出場者の「お祈り」にカットを切り替える（緊張の高まり）
   const flashCut = () => {
-    cutinEl.textContent = CUTINS[Math.floor(Math.random() * CUTINS.length)];
-    cutinEl.className = "rc-cutin show";
-    setTimeout(() => cutinEl.classList.remove("show"), 300);
+    if (!cardEls.length) return;
+    const pick = cardEls[Math.floor(Math.random() * cardEls.length)];
+    cardEls.forEach((el) => el.classList.remove("cut"));
+    pick.classList.add("cut");
+    setTimeout(() => pick.classList.remove("cut"), 330);
   };
   const finish = (cls, msg, sfx, smoke) => {
     numEl.textContent = ""; msgEl.textContent = "";
@@ -4448,16 +4679,25 @@ function runResultCountdown(rank, premium, onDone) {
     t.className = `rc-final ${cls}`;
     t.textContent = msg;
     ov.appendChild(t);
-    setTimeout(() => { ov.className = "rc"; ov.innerHTML = ""; onDone(); }, 1550);
+    setTimeout(() => { ov.className = "rc"; ov.innerHTML = ""; onDone(); }, 1650);
   };
-  const puchun = () => finish("puchun", "PERFECT SESSION!!", () => { SFX.bubble(); setTimeout(() => SFX.fanfare(), 220); }, true);
+  const doPuchun = () => finish("puchun", "PERFECT SESSION!!", () => { SFX.bubble(); setTimeout(() => SFX.fanfare(), 220); }, true);
+  const puchun = () => {
+    // #47 プレミアは暗転(ブラックアウト)→プチュンのフライング
+    if (premium) {
+      ov.classList.add("blackout");
+      if (window.SFX) SFX.click();
+      return setTimeout(() => { ov.classList.remove("blackout"); doPuchun(); }, 380);
+    }
+    doPuchun();
+  };
   const parin = () => finish("parin", "SESSION BREAK", () => SFX.miss(), false);
   let n = 10;
   const premiumAt = premium ? 3 : -1; // プレミアは少し残してフライング
   setTimeout(function tick() {
-    msgEl.textContent = "会場がざわめく……";
-    if (n <= 0) return rank === 1 ? puchun() : parin();
-    if (rank === 1 && n === premiumAt) return puchun(); // フライングプチュン（1位のみ）
+    if (n <= 0) { msgEl.textContent = "──結果発表！"; return rank === 1 ? puchun() : parin(); }
+    if (rank === 1 && n === premiumAt) { msgEl.textContent = "……!?"; return puchun(); } // フライング（1位のみ）
+    msgEl.textContent = n > 6 ? "まもなく、結果発表……" : "結果発表まで、あと";
     numEl.textContent = String(n);
     numEl.classList.remove("pop"); void numEl.offsetWidth; numEl.classList.add("pop");
     if (window.SFX) SFX.click();
@@ -4465,6 +4705,43 @@ function runResultCountdown(rank, premium, onDone) {
     n--;
     setTimeout(tick, 360);
   }, 520);
+}
+
+// 大会後リザルトの工程内訳（#25）。各工程をA/B/Cで採点し、低い工程に“次への手がかり”を添える。
+function gradeLetter(tier) { return tier >= 2 ? "A" : tier === 1 ? "B" : "C"; }
+function tournamentBreakdown() {
+  const items = [];
+  const add = (label, tier, hint) => items.push({ label, grade: gradeLetter(tier), tier, hint });
+  add("穴あけ", tt.foilHits >= 6 ? 2 : tt.foilHits >= 4 ? 1 : 0, "リングの均等度を上げると煙の通りが整う");
+  add("炭起こし", tt.coalFire === "perfect" ? 2 : tt.coalFire === "good" ? 1 : 0, "芯がピカッと閃く“取り頃”で取ると熱が乗る");
+  if (typeof tt.steamHits === "number") add("蒸らし", tt.steamHits === 0 ? 2 : tt.steamHits <= 2 ? 1 : 0, "雑念の被弾を減らすと煙がまっすぐ立つ");
+  add("集中", tt.focusCleared >= 5 ? 2 : tt.focusCleared >= 3 ? 1 : 0, "集中を保つと手元のブレが減る");
+  add("吸い出し", tt.pull === "perfect" ? 2 : tt.pull === "good" ? 1 : 0, "適温の窓でJUSTを重ねると一気に伸びる");
+  const p = mixProfile();
+  const matched = tt.theme && tt.theme.best ? tt.theme.best.filter((c) => p.cats.has(c)).length : 0;
+  add("テーマ相性", matched >= 2 ? 2 : matched === 1 ? 1 : 0, "コンセプトに合うカテゴリを2つ以上揃える");
+  if (tt.presentationResult) {
+    const g = tt.presentationResult.convinceGauge;
+    add("審査", g >= 75 ? 2 : g >= 45 ? 1 : 0, "実績の伴うアピールを“ぶつける”と納得が伸びる");
+  }
+  return items;
+}
+function buildBreakdownPanel() {
+  const items = tournamentBreakdown();
+  const el = document.createElement("div");
+  el.className = "result-breakdown";
+  const lows = items.filter((it) => it.tier < 2).slice(0, 3);
+  el.innerHTML =
+    `<div class="rb-head">出来の内訳<span class="rb-sub">── 次への手がかり</span>` +
+    (tt.feelScore ? `<span class="rb-feel">観客の体感スコア <b>${tt.feelScore}</b> P</span>` : "") + `</div>` +
+    `<div class="rb-grid">` +
+    items.map((it) => `<div class="rb-item g-${it.grade}"><span class="rb-label">${it.label}</span><span class="rb-grade">${it.grade}</span></div>`).join("") +
+    `</div>` +
+    `<div class="rb-hints">` +
+    (lows.length ? lows.map((it) => `<p>・${it.label}: ${it.hint}</p>`).join("")
+      : `<p>・どの工程も高水準。次は他のテーマでも安定を狙おう。</p>`) +
+    `</div>`;
+  return el;
 }
 
 function showResult(results, rank, detail, opts = {}) {
@@ -4501,11 +4778,14 @@ function showResult(results, rank, detail, opts = {}) {
       }
     }, 500 + i * 750);
   });
+  // 出来の内訳（#25）。順位リビールが終わってから、ボタンと一緒にふわっと出す
+  const breakdown = (tt && tt.mode === "tournament") ? buildBreakdownPanel() : null;
+  if (breakdown) { breakdown.style.opacity = "0"; breakdown.style.transition = "opacity 0.5s"; }
   const btn = document.createElement("button");
   btn.className = "primary-btn";
   btn.style.opacity = "0";
   btn.style.transition = "opacity 0.4s";
-  setTimeout(() => { btn.style.opacity = "1"; }, 500 + rows.length * 750 + 400);
+  setTimeout(() => { if (breakdown) breakdown.style.opacity = "1"; btn.style.opacity = "1"; }, 500 + rows.length * 750 + 400);
   if (rank === 1) {
     btn.textContent = "結果発表へ";
     btn.addEventListener("click", opts.onWin || (() => {
@@ -4522,7 +4802,8 @@ function showResult(results, rank, detail, opts = {}) {
       playDialogue("ch1_tournament_defeat", () => showDefeat(rank), "res://assets/backgrounds/bg_tournament_stage.png");
     }));
   }
-  body.append(note, table, btn);
+  if (breakdown) body.append(note, table, breakdown, btn);
+  else body.append(note, table, btn);
   };
   // 大会の結果発表だけ、RESULT 10 COUNT（プチュン=1位/パリン=2位以下）を先に挟む（#14）。
   // カウント中は大会画面に切り替えて中身を空にする（直前の会話画面を active に残さない＝
@@ -4533,7 +4814,7 @@ function showResult(results, rank, detail, opts = {}) {
     $("#tn-progress").textContent = "RESULT";
     $("#tn-body").innerHTML = "";
     const premium = rank === 1 && tt.foilHits >= 6 && tt.coalFire === "perfect";
-    return runResultCountdown(rank, premium, reveal);
+    return runResultCountdown(rank, premium, reveal, results);
   }
   reveal();
 }

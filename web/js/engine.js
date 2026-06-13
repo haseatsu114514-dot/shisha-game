@@ -354,14 +354,17 @@ class DialogueEngine {
       img.classList.toggle("active", img.dataset.speaker === speaker);
     }
     this.layoutPortraits();
+    // {daysLeft} 等のトークンを実数へ（カレンダー連動で台詞の日数が矛盾しないように）
+    const raw = String(line.text || "");
+    const text = this.ctx.interpolate ? String(this.ctx.interpolate(raw)) : raw;
     // テキスト（タイプライター表示）
-    this.typeText(line.text || "");
+    this.typeText(text);
     // バックログへ記録
     if (this.ctx.onLine) {
-      this.ctx.onLine(speaker ? this.resolveName(speaker) : "", String(line.text || ""));
+      this.ctx.onLine(speaker ? this.resolveName(speaker) : "", text);
     }
     // テキスト内の報酬キューを通知
-    if (this.ctx.onTextCue) this.ctx.onTextCue(String(line.text || ""), this.dialogueId);
+    if (this.ctx.onTextCue) this.ctx.onTextCue(text, this.dialogueId);
   }
 
   // 本文を組版（自動改行）→ 長ければ MAX_PAGE_LINES 行ごとに改ページ。

@@ -228,6 +228,106 @@
   1回ごとに craft -3（「葉が痩せる」）。やめ時は自分で選ぶ。UI に⚠警告、用語集・CLAUDE.mdも更新
 - 正典化: story doc（香りの識別子=アゲハはホワイトグミベア、Ch1の引き#7〜9）・CLAUDE.md ID表
 
+## 次回への引き継ぎ（2026-06-13 第26便終了・大会演出オーバーホール＋日常UX）★まずここを読む
+
+**開発は `claude/great-galileo-omzoob`（PRでmainへ）。この便は3コミット push 済み・全テスト緑
+（playthrough/ch2/screenshots/reel/kuji/balance/map_hover）。**
+
+### この便で完了・push 済み
+1. **日常ループUX修正バッチ**（オーナーのプレイ報告・画像の日付矛盾＋4点）:
+   - **日付整合（#35ほか）**: 旧7日制の名残で台詞/LIMEの「あとN日」が14日制HUDと矛盾していた
+     （画像: DAY5 HUD「あと10日」vs スミさん「あと3日」）。HUD/会話/LIME を `daysUntilTournament()` に一本化し、
+     会話JSONは `{daysLeft}` トークンを実数差し込み（engine.js に interpolate フック・LIMEは addLimeBubble）。
+     直した台詞: ch1_opening / ch1_day5_sumi_story / DAY7折り返し / lime_minto_day5 / lime_naru_day10。
+   - **スキップ貫通**: morningPhone / playLimeEvent で stopAutoSkip()。会話を飛ばしても夜の誘い/朝LIMEは頭から見せる。
+   - **午後の予定の唐突さ**: endAction の pendingLimeNight に「夕暮れ／約束の時間だ」の一拍。
+   - **スロット×LIME×DAY被り（#34/#23）**: advanceDay で `showMap({skipReel:true})`→朝LIME消化→スロット精算の順へ。
+     誘い/デート行動もスロットを回す（#33・closePhone と night invite で REEL.onAction）。
+   - **リプレイ再回転が一瞬（reel.js）**: リプレイ連鎖を速回し対象から除外（`_afterReplay` タグ）＋「リプレイ！もう1回転」の間。
+2. **大会演出オーバーホール（骨組み・本番大会のみ）**:
+   - **#24 可視スコア＋ニコ動コメント**: 「体感スコア」を新設（審査員票と別系統）。判定で `+N P` ポップ＋
+     ニコ動風コメントが流れる。`feelPop/nicoComment/nicoBurst/broadcastJudge`、CSS `#tn-comments/#tn-feel`。
+   - **#20 工程ブロックMC実況 / #26 ライバル実況**: `mcBlockIntro` を tournamentStep にフック（ticker＋ライバルの動き）。
+   - **#14 結果10カウントのカット割**: カウントの周りに出場者の「お祈りカット＋作った一台（色）」。
+     `runResultCountdown(rank,premium,onDone,contestants)`＋`contestantShishaColor`。#47 暗転→プチュン / #48 “発表前”文言。
+     （カウント数字が消えていた不具合も修正）。
+   - **#25 大会後リザルト内訳**: 結果画面に工程A/B/C＋手がかり＋体感スコア。`tournamentBreakdown/buildBreakdownPanel`。
+   - **#27 入場演出**: ライバル→主人公をプロレス風に順次紹介＋各カードにスミさんの事前ブリーフィング。
+     `entranceIntro`＋`ENTRANCE`、startTournament の opening 後にフック。自動送り（テスト安全）。
+
+### ⚠️ 素材待ち（骨組みで実装済み・画像が来たら差すだけ）
+- **#14 お祈りカット / #27 入場の立ち絵**: 現状は顔アイコン＋名前＋色（一台）＋異名／スミ解説で仮表示。
+  お祈り/入場の専用立ち絵が来たら `runResultCountdown` の `.rc-pray` と `entranceIntro` の `.ent-cut` に差す。
+- bg_tournament_stage 等の本番背景プレースホルダも未差し替え（直接呼びのスクショが白飛びするのはこのため・実機は暗背景でOK）。
+
+### 大会演出で“まだ”のもの
+- **#46**（R2にも吸い出しと同じニードル温度ゲームを入れるか）= オーナー要再判断（3択・前回dismiss）。
+- ライバルの実況/お祈り/入場は ch1 のみ（ch2+ は RIVALS/ENTRANCE をその章用に増やせば流用可）。
+
+### 大会以外の積み残し（下の旧セクション群に詳細）
+- **#53 ステ→ミニゲーム反映**（設計タスク・序盤難→育成で楽）／ **#41 体力蓄積制** ／ **#44 フレーバー持参制** ／
+  **#42 ch1ステ上がりすぎ微減** ／ **#2/#3/#31 みんとナラティブ** ／ **#9 tonari統合** ／ **#16/#17 ch2マップ・日常会話** ／
+  **#43残 なるの敗者復活背景** ／ **#36 マップ初回チュート**。
+
+### 進め方の推奨 / テスト互換のキー
+- contained修正はその場で→fixごとに build2本＋playthrough。ビルド: `python3 web/build_data.py && python3 web/build_standalone.py`（要 Pillow）。
+- テスト: `python3 -m http.server 8123` 起動後 `node web/test/<name>.mjs`。playthrough は大会が長く ~6分。
+- 大会フロー: setup→theme→mix→pack→foil→coal→coalfire→steam→adjust→focus→pull→flavorTrial→finishTournament→showResult→runResultCountdown→reveal。
+  生放送レイヤーは `broadcastActive()`（mode==="tournament"）でガード＝チュートリアル/バイト/ドリルには出ない。
+
+## 次回への引き継ぎ（2026-06-13 第25便終了・コンテキスト引き継ぎ）
+
+**コンテキスト圧迫のため新セッションへ。開発は `claude/great-galileo-omzoob`（origin/main の約30コミット先・全テスト緑）。
+オーナーがプレイ通しで挙げた指摘 #2〜#52 を、A1完成後に大量に潰した便。残りは下の各セクションに全部ある。**
+
+### 開始手順
+1. shisha-game 起点 → `claude/great-galileo-omzoob` をチェックアウト。`./tools/check_git_safety.sh`／hooks有効化／canonicalRoot設定。
+2. `pip install Pillow` → `python3 web/build_data.py && python3 web/build_standalone.py`。
+3. `python3 -m http.server 8123` 起動 → `node web/test/<name>.mjs` で6本（playthrough / ch2 / screenshots / reel / kuji / balance / map_hover）。**全緑が基準**。
+   - 注: playthrough は大会が長くなったため1本 ~6分。`tail -2` だと進捗が見えないので素のログで。
+4. CLAUDE.md（特に「大会ルール=2位以下GAME OVER・敗者復活廃止」「プレゼン廃止→FLAVOR TRIAL」「ステ5種」「数値非表示」）と docs/master_spec.md 第2部。
+
+### 第24-25便で完成・コミット済み（全テスト緑）
+- **★A1 大会パート4要素 完成**: HOLE穴あけ / HEAT炭起こし / **FLAVOR TRIAL審査** / **RESULT 10カウント**。
+- 会話: 改行禁則(名前割れ/孤立回避)・**改ページ(最大2行)**・ウィンドウ**24px/152px固定**・改行エディタ(`web/tools/linebreak_editor.html`)。
+- マップ: ロック地点の視認性・ピン埋もれ(z-index)・誘い日の同店2回。穴あけ狙い表示。
+- **スロット MOKUMOKUパッキー**: 行動後に自動回転・脱アプリ(introスキップ)・狙え撤去・バケ=7-7-BAR。reel.js は配線済み。
+- 大会制作: 炭は「セット→7割焼けからスタート取り出し」・**適温=テーマ依存**・**R2で温度可視化＋炭で寄せる**・
+  炭2個削除/4個で大昇温/フラット・キューブ炭で温度差・炭焼き順ランダム・ジャスト色(赤さ残し)・穴あけ切り上げ(1/2/3周)・調整の整合。
+- 章タイトル「一吸目」・敗者復活廃止の文言反映。
+
+### 残り＝大きく4群（★が最重要。詳細・対象ファイルは下の旧セクション群）
+1. **大会演出オーバーホール（★一括が綺麗・互いに連動）**: #20 工程ブロック分割＋MC実況 ／ #24 体感スコア「+N P」＋ニコ動コメント ／
+   #14 結果10カウントのカット割(#47 プレミア=暗転プチュン / #48 カウントは"発表前") ／ #25 大会後リザルト(改善ヒント) ／
+   #27 入場紹介＋スミさんの対戦相手ブリーフィング ／ #26 ライバルのリアルタイム実況。
+   ※お祈り/立ち絵カットは画像生成待ち→**仮(名前＋カット割)で骨組み**を作る方針。
+2. **温度/スロットの残り**: #46 R2にも吸い出しと同じニードル温度ゲームを入れるか（**3択でオーナー要再判断**・前回dismiss） ／
+   #49 パッキー点灯(ペカ)で**自動拡大**（reel.js の bonusWait タップ待ち撤去）。
+3. **日常/経済/UX**: #41 体力を蓄積制(寝る=全回復/恋人=好感度で一定) ／ #44 フレーバー持参制(不足→スミ案内の強制購入/無一文→DA1回分) ／
+   #23 行動後シーケンス(暗転→スロット→ステUP→次の日・DAY表示と被らせない) ／ #42 ch1ステ上がりすぎ→微減 ／ #39 バイト報酬3000は安い ／
+   #33 スロットが招待行動で回らない ／ #34 スロット消化→LIME→次の日 の順 ／ #32 DAY2の強制職場行きに理由 ／ #35 みんとday5「あと3日」日数ズレ ／ #36 マップ初回チュート(点滅説明)。
+4. **みんとナラ＋大物**: #2 みんと買い物イベント作り直し(tonariへフレーバー/方向音痴で駅まで案内・**初の素はここ**・説明ナレ削る・fifthで初扱い再主張しない) ／
+   #3 みんと観戦=**rival↔supporter設計矛盾**(ch1で「みんとも出る」→ch3+応援側・台詞でなく設計判断) ／ #31 みんとの店で主人公はコンカフェと知らず戸惑う ／
+   #9 tonari統合(場所で管理・テスト巡回改修要) ／ #16 ch2マップ(1章へも移動) ／ #17 ch2の日常会話(お疲れ/すごかったよ) ／
+   #43残 なるの敗者復活背景(ch4/characters・廃止と矛盾) ／ #10 LIME7日目(day7=大会当日なので仕様通りの可能性)。
+
+### ★設計タスク #53: ステータスがミニゲーム（特に温度コントロール）に効くように
+**問題**: 序盤から温度コントロール等がうまくいき過ぎ＝ステ育成の意味が薄い。**まず設計案を出すのもタスク**。
+- 現状の効き具合（既存）: HOLEカーソル速度=技術／HEATジャスト窓=根性／吸い出しは固定気味。これを**序盤=難/育成で楽**へ。
+- たたき台案（要検討・要バランステスト）:
+  - **吸い出し**: 針速度＝技術／センスで可変（低=速くシビア・高=ゆっくり）。適温の許容幅＝センスで可変（低=狭い）。
+    1回で動かせる温度(PULL_DELTA)も技術で可変。低根性=温度がわずかに揺れる(ドリフト)＝保持が難。
+  - **R2温度**: 低センスだと「現温度」表示がやや曖昧（±でブレて見える）→ 高センスでピタッと見える。
+  - **HOLE/HEAT**: 既存の技術/根性依存を序盤はもっと厳しく（カーソル速め・ジャスト窓狭め）、育成で緩和。
+  - 方針: 数値は見せず体感で。CLAUDE.md「育成で詰まない/そこそこ有利」を厳守（極端にしない）。playthroughは中ステで勝てる範囲に。
+- 実装場所: stepPull(針速度/PULL_DELTA/適温許容)・stepAdjust(#45表示の揺れ)・stepFoil(speed)・stepCoalFire(justHi/baseRate)。
+
+### 進め方の推奨 / テスト互換のキー
+- contained修正はその場で→fixごとに build2本＋playthrough(最低)。大物は1パス集中。
+- **テスト互換**: R2は「このままでいく」を残す／炭セットは「トライアングル」「炭4個」ラベル／適温は `__pullDebug` が動的target追従／HEATは `__heatDebug`／審査は `.trial-appeal[data-backed][data-cat]`＋`#trial-doubt[data-need]`／結果10カウントは pointer-events:none。
+- 大会フロー: setup→theme→mix→pack→foil→**coal(炭セット)→coalfire(HEAT)**→steam→**adjust(R2温度)**→focus→pull→（r3_end）→**flavorTrial**→finishTournament→showResult→**runResultCountdown**→reveal。
+- デプロイ: 古い表示なら Settings→Pages→Source を「GitHub Actions」に。mainへはPR（直push禁止）。数値非表示・★とランク。
+
 ## 次回への引き継ぎ（2026-06-13 第23便・UX大量修正＋HEAT/スロット）
 
 **この便でやったこと（オーナーのプレイ報告に基づく一括修正）。開発は `claude/great-galileo-omzoob`。**

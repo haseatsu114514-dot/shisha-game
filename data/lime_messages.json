@@ -174,7 +174,7 @@
       "messages": [
         {
           "sender": "minto",
-          "text": "あと3日だね"
+          "text": "あと{daysLeft}日だね"
         },
         {
           "sender": "minto",
@@ -838,7 +838,7 @@
       "messages": [
         {
           "sender": "naru",
-          "text": "よう。あと4日だな"
+          "text": "よう。あと{daysLeft}日だな"
         },
         {
           "sender": "naru",
