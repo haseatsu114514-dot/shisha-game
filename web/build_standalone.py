@@ -125,6 +125,7 @@ def main() -> None:
     data_js = (WEB_DIR / "js" / "data.js").read_text(encoding="utf-8")
     sfx_js = (WEB_DIR / "js" / "sfx.js").read_text(encoding="utf-8")
     engine_js = (WEB_DIR / "js" / "engine.js").read_text(encoding="utf-8")
+    reel_js = (WEB_DIR / "js" / "reel.js").read_text(encoding="utf-8")
     game_js = (WEB_DIR / "js" / "game.js").read_text(encoding="utf-8")
 
     asset_js = "window.ASSET_DATA = " + json.dumps(assets) + ";"
@@ -137,10 +138,12 @@ def main() -> None:
         '<script src="js/data.js"></script>\n'
         '<script src="js/sfx.js"></script>\n'
         '<script src="js/engine.js"></script>\n'
+        '<script src="js/reel.js"></script>\n'
         '<script src="js/game.js"></script>',
         "<script>\n" + asset_js + "\n" + bgm_js + "\n" + data_js + "\n</script>\n"
         "<script>\n" + sfx_js + "\n</script>\n"
         "<script>\n" + engine_js + "\n</script>\n"
+        "<script>\n" + reel_js + "\n</script>\n"
         "<script>\n" + game_js + "\n</script>",
     )
 

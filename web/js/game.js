@@ -50,6 +50,7 @@ function newState() {
     limeDone: [],          // 既読のLIMEメッセージID
     pendingLimeNight: null, // 夜に約束したLIMEイベント {event, sender}
     practiceBest: {},      // 練習ドリルの自己ベスト（0〜2）。大会本番のボーナスになる
+    reel: (typeof REEL !== "undefined" ? REEL.newReelState() : null), // PUFF!PUFF!パッキー（日常リール）
     flags: {},
     phase: "opening", // opening | daily | tournament | cleared
   };
@@ -163,6 +164,8 @@ const STAT_BADGE = { technique: "技", sense: "感", guts: "根", charm: "魅", 
 function gainStat(en, amount) {
   if (!(en in state.stats) || amount <= 0) return;
   state.stats[en] = Math.max(0, Math.min(100, state.stats[en] + amount));
+  // 日常リール用に「この行動で伸びたステ」を記録（リールのアンコール抽選の対象になる）
+  if (typeof REEL !== "undefined") REEL.noteStat(en, amount);
   const label = amount >= 5 ? "大きく上がった" : amount >= 3 ? "上がった" : "少し上がった";
   gainBanner({
     kind: "stat",
@@ -518,7 +521,7 @@ function showGlossary() {
 
 // ---------------------------------------------------------------- config
 const CONFIG_KEY = "shisha_config_v1";
-const config = { textSpeed: 2, autoSpeed: 2, bgmVol: 100, sfxVol: 100 };
+const config = { textSpeed: 2, autoSpeed: 2, bgmVol: 100, sfxVol: 100, reelFx: "full" };
 
 function loadConfig() {
   try { Object.assign(config, JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}")); } catch (e) { /* 壊れた設定は既定値で続行 */ }
@@ -574,6 +577,7 @@ function showConfig() {
   };
   seg("テキスト速度", "textSpeed", [[1, "遅い"], [2, "普通"], [3, "速い"], [4, "瞬間"]]);
   seg("オート速度", "autoSpeed", [[1, "ゆっくり"], [2, "普通"], [3, "せっかち"]]);
+  seg("スロット演出", "reelFx", [["full", "フル"], ["lite", "簡易"], ["off", "OFF"]]);
   slider("BGM音量", "bgmVol");
   slider("効果音 音量", "sfxVol");
   $("#config-overlay").classList.add("visible");
@@ -1233,6 +1237,8 @@ function showMap() {
   }
   updateMapInfo(null);
   save();
+  // 日常リール: 未演出の回転（夜に回した分など）をここで流す
+  if (typeof REEL !== "undefined") REEL.onMapShown();
 }
 
 function updateMapInfo(spot, locked, tooPoor) {
@@ -1283,6 +1289,8 @@ function doSpotDialogue(spotId, dialogueId, bg) {
 }
 
 function endAction() {
+  // 1行動=1回転: 結果と報酬はこの場で確定して直後の save() に乗る（ロードしても同じ結果＝引き直し不可）
+  if (typeof REEL !== "undefined") REEL.onAction();
   state.ap -= 1;
   updateHud();
   save();
@@ -3678,6 +3686,8 @@ function continueGame(saved) {
   if (!Array.isArray(state.lovers)) state.lovers = [];
   if (!state.loveLevel) state.loveLevel = {};
   if (typeof state.guilt !== "number") state.guilt = 0;
+  // 日常リール（PUFF!PUFF!パッキー）導入前のセーブ互換
+  if (!state.reel && typeof REEL !== "undefined") state.reel = REEL.newReelState();
   updateHud();
   if (state.phase === "tournament") {
     if (state.chapter === 2) startCh2Stage(state.ch2Stage || "qual");

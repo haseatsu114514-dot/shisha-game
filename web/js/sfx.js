@@ -276,6 +276,52 @@ const SFX = (() => {
       hiss({ dur: 0.30, a: 0.01, peak: 0.07, filterType: "bandpass", filterFreq: 3000, q: 1.5, wet: 0.3,
              sweep: [2800, 1600, 0.30] });
     },
+    // ---------- 日常リール（PUFF!PUFF!パッキー） ----------
+    reelLever: () => {
+      // レバオンのカチャッ
+      blip({ freq: 900, type: "square", a: 0.001, d: 0.03, r: 0.05, peak: 0.10, filterFreq: 3200, wet: 0.15 });
+      blip({ freq: 240, type: "triangle", a: 0.001, d: 0.05, r: 0.08, peak: 0.12, filterFreq: 1200, wet: 0.2, when: 0.01 });
+    },
+    reelStop: () => {
+      // リール停止のコトッ
+      blip({ freq: 1400, type: "triangle", a: 0.001, d: 0.03, r: 0.06, peak: 0.12, filterFreq: 4000, wet: 0.15 });
+      blip({ freq: 320, type: "sine", a: 0.001, d: 0.04, r: 0.06, peak: 0.08, filterFreq: 1500, wet: 0.15, when: 0.005 });
+    },
+    puka: () => {
+      // 告知「プカッ」: キュイン系の上昇音 + ベルの重なり + きらめき
+      blip({ freq: 600, type: "sawtooth", a: 0.01, d: 0.30, r: 0.25, peak: 0.16, filterFreq: 5200, q: 2,
+             wet: 0.5, slide: [520, 1860, 0.34] });
+      [1175, 1568, 2093].forEach((f, i) =>
+        blip({ freq: f, type: "sine", a: 0.003, d: 0.18, r: 0.45, peak: 0.16 - i * 0.03, filterFreq: 7000, wet: 0.55, when: 0.20 + i * 0.06 }));
+      hiss({ dur: 0.4, a: 0.005, peak: 0.06, filterType: "highpass", filterFreq: 5000, wet: 0.6, when: 0.26 });
+    },
+    pugo: () => {
+      // 遅れ「……プゴッ」: ガコッ系の低い衝撃音
+      blip({ freq: 110, type: "square", a: 0.002, d: 0.14, r: 0.12, peak: 0.30, filterFreq: 600, q: 2, wet: 0.3,
+             slide: [150, 78, 0.16] });
+      hiss({ dur: 0.12, a: 0.002, peak: 0.16, filterType: "lowpass", filterFreq: 900, wet: 0.3 });
+    },
+    reelWin: () => {
+      // 小役のチン
+      blip({ freq: 1319, type: "sine", a: 0.002, d: 0.10, r: 0.22, peak: 0.14, filterFreq: 6000, wet: 0.4 });
+      blip({ freq: 1760, type: "sine", a: 0.002, d: 0.12, r: 0.26, peak: 0.10, filterFreq: 6000, wet: 0.45, when: 0.05 });
+    },
+    glitch: () => {
+      // EN:CODEグリッチ: ノイズバースト + デジタルなビープの乱れ
+      for (let i = 0; i < 5; i++) {
+        hiss({ dur: 0.05 + Math.random() * 0.06, a: 0.001, peak: 0.12, filterType: "bandpass",
+               filterFreq: 800 + Math.random() * 4000, q: 4, wet: 0.25, when: i * 0.12 + Math.random() * 0.04 });
+        blip({ freq: 300 + Math.random() * 2400, type: "square", a: 0.001, d: 0.02, r: 0.03, peak: 0.07,
+               filterFreq: 6000, wet: 0.2, when: i * 0.12 });
+      }
+    },
+    freezeBoom: () => {
+      // フリーズ突入のドンッ + 余韻
+      blip({ freq: 60, type: "sine", a: 0.003, d: 0.30, r: 0.40, peak: 0.32, filterFreq: 300, wet: 0.35,
+             slide: [110, 48, 0.45] });
+      hiss({ dur: 0.5, a: 0.003, peak: 0.14, filterType: "lowpass", filterFreq: 700, wet: 0.5 });
+      blip({ freq: 880, type: "sine", a: 0.01, d: 0.4, r: 0.6, peak: 0.07, filterFreq: 5000, wet: 0.8, when: 0.15 });
+    },
 
     setMuted(m) {
       muted = m;

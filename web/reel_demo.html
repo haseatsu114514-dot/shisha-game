@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>PUFF!PUFF!パッキー 試打台</title>
+<!-- 本体に一切触れない独立デモ。reel.js / reel.css をそのまま読み込んで動作確認する。
+     本編接続の手順は docs/pakki_slot_install_guide.md を参照。 -->
+<link rel="stylesheet" href="css/reel.css">
+<style>
+  :root { --accent: #f4d27a; --accent-deep: #b88a2e; --text: #f2ecdf; --dim: #b6abc4; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #0c0810; color: var(--text);
+    font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #wrap { max-width: 480px; margin: 0 auto; padding: 12px 12px 40px; }
+  h1 { font-size: 18px; letter-spacing: 0.08em; margin: 6px 0 2px; color: var(--accent); }
+  .sub { font-size: 11px; color: var(--dim); margin: 0 0 12px; line-height: 1.6; }
+  .sub b { color: var(--accent); }
+
+  /* 疑似ステージ（マップ画面の代わり）。reel.js は #screen-map.active を要求する */
+  #game { position: relative; }
+  #screen-map {
+    position: relative; height: 300px; border-radius: 14px; overflow: hidden;
+    background:
+      radial-gradient(120% 90% at 70% 10%, rgba(80,60,110,0.5), transparent 60%),
+      linear-gradient(170deg, #221a30 0%, #130d1d 70%, #0a0610 100%);
+    border: 1px solid rgba(244,210,122,0.25);
+  }
+  #screen-map::before {
+    content: "▲ ここがマップ画面（行動するたび左下の筐体が回る）";
+    position: absolute; top: 10px; left: 0; right: 0; text-align: center;
+    font-size: 11px; color: rgba(255,255,255,0.3);
+  }
+
+  /* 操作パネル */
+  .panel {
+    margin-top: 12px; background: linear-gradient(180deg, #1c1626, #140e1e);
+    border: 1px solid rgba(244,210,122,0.22); border-radius: 12px; padding: 12px;
+  }
+  .panel h2 { font-size: 12px; letter-spacing: 0.12em; color: var(--accent); margin: 0 0 10px; }
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  button.act {
+    flex: 1; min-width: 120px; padding: 14px 10px; font-size: 15px; font-weight: bold;
+    color: #1a1018; border: none; border-radius: 10px; cursor: pointer;
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep));
+    box-shadow: 0 3px 0 #6e521c; transition: transform 0.08s, box-shadow 0.08s;
+  }
+  button.act:active { transform: translateY(2px); box-shadow: 0 1px 0 #6e521c; }
+  button.act:disabled { opacity: 0.4; box-shadow: none; cursor: default; }
+  button.sub-act {
+    flex: 1; min-width: 90px; padding: 10px 8px; font-size: 13px; font-weight: bold;
+    color: var(--text); background: #2a2233; border: 1px solid rgba(244,210,122,0.3);
+    border-radius: 9px; cursor: pointer;
+  }
+  button.sub-act:active { background: #352a42; }
+  .seg { display: flex; gap: 6px; margin-top: 10px; align-items: center; }
+  .seg .lbl { font-size: 12px; color: var(--dim); margin-right: 4px; }
+  .seg button {
+    padding: 6px 12px; font-size: 12px; border-radius: 8px; cursor: pointer;
+    background: #241d2e; color: var(--dim); border: 1px solid rgba(255,255,255,0.12);
+  }
+  .seg button.on { background: var(--accent); color: #1a1018; font-weight: bold; border-color: var(--accent); }
+
+  /* データカウンター（ホールのデータロボ風） */
+  .counter { margin-top: 12px; }
+  .counter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .cell {
+    background: #0a0610; border: 1px solid rgba(244,210,122,0.18); border-radius: 8px;
+    padding: 8px 10px; display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .cell .k { font-size: 11px; color: var(--dim); }
+  .cell .v { font-size: 17px; font-weight: bold; color: var(--text); font-variant-numeric: tabular-nums; }
+  .cell .v.big { color: #ff5a4e; }
+  .cell .v.gold { color: var(--accent); }
+  .cell.full { grid-column: 1 / 3; }
+  .state-line { font-size: 12px; color: var(--dim); margin-top: 8px; line-height: 1.7; }
+  .state-line .tag { display: inline-block; padding: 1px 7px; border-radius: 6px; font-size: 11px; font-weight: bold; margin-left: 4px; }
+  .tag.on { background: #4f86d2; color: #fff; }
+  .tag.warm { background: #5a5a5a; color: #fff; }
+  .tag.base { background: #3a7a3a; color: #fff; }
+  .tag.pity { background: #d2604f; color: #fff; }
+  .tag.done { background: #886; color: #fff; }
+  .hint { font-size: 11px; color: var(--dim); margin-top: 10px; line-height: 1.7; }
+  .hint code { color: var(--accent); background: rgba(244,210,122,0.1); padding: 1px 4px; border-radius: 3px; }
+
+  /* gain-banner（本体style.cssの簡易再現） */
+  #gain-banner { position: absolute; top: 40px; right: 10px; z-index: 40; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
+  .gain-card {
+    display: flex; align-items: center; gap: 8px; padding: 7px 12px 7px 8px;
+    background: linear-gradient(135deg, #1c1226, #0a0612); border: 1px solid var(--accent);
+    border-radius: 8px; box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+    animation: gain-in 0.4s cubic-bezier(0.2,1.5,0.4,1);
+  }
+  @keyframes gain-in { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  .gain-card .badge {
+    width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--accent), var(--accent-deep)); color: #1a1018;
+    font-weight: bold; border-radius: 6px; font-size: 14px;
+  }
+  .gain-card .meta { display: flex; flex-direction: column; }
+  .gain-card .label-top { font-size: 8px; letter-spacing: 0.1em; color: var(--accent); }
+  .gain-card .label-main { font-size: 14px; font-weight: bold; }
+  .gain-card .label-sub { font-size: 9px; color: var(--dim); }
+  #toasts { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); z-index: 40; }
+  .toast { background: rgba(0,0,0,0.85); color: #fff; padding: 6px 14px; border-radius: 14px; font-size: 12px; opacity: 0; transition: opacity 0.3s; }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <h1>PUFF!PUFF!パッキー 試打台</h1>
+  <p class="sub">
+    本編に組み込む前の<b>動作・手触り確認用</b>。1タップ＝日常の1行動＝1回転。<br>
+    ランプ（パッキーの顔）が<b>光ったらタップ</b>して当たりを引き込む。
+    確率を詰めたくなったら <code>web/js/reel.js</code> 冒頭の定数を変えてリロード。
+  </p>
+
+  <!-- reel.js が要求する DOM。#game の中に #screen-map.active -->
+  <div id="game">
+    <div id="screen-map" class="screen active"></div>
+    <div id="gain-banner"></div>
+    <div id="toasts"></div>
+  </div>
+
+  <div class="panel">
+    <h2>まわす</h2>
+    <div class="btn-row">
+      <button class="act" id="spin1">1回まわす（演出あり）</button>
+    </div>
+    <div class="btn-row" style="margin-top:8px">
+      <button class="sub-act" id="spin28">1章ぶん（+28・集計のみ）</button>
+      <button class="sub-act" id="spin112">4章ぶん（+112・集計のみ）</button>
+      <button class="sub-act" id="reset">リセット（新台）</button>
+    </div>
+    <div class="seg">
+      <span class="lbl">演出</span>
+      <button data-fx="full" class="on">フル</button>
+      <button data-fx="lite">簡易</button>
+      <button data-fx="off">OFF</button>
+      <button id="mute" style="margin-left:auto">🔇 音 OFF</button>
+    </div>
+  </div>
+
+  <div class="panel counter">
+    <h2>データカウンター</h2>
+    <div class="counter-grid">
+      <div class="cell"><span class="k">総回転</span><span class="v" id="c-count">0</span></div>
+      <div class="cell"><span class="k">ペカ合算</span><span class="v gold" id="c-rate">1/–</span></div>
+      <div class="cell"><span class="k">BIG</span><span class="v big" id="c-big">0</span></div>
+      <div class="cell"><span class="k">REG</span><span class="v" id="c-reg">0</span></div>
+      <div class="cell"><span class="k">プレミア(中段等)</span><span class="v gold" id="c-rare">0</span></div>
+      <div class="cell"><span class="k">フリーズ</span><span class="v gold" id="c-freeze">0</span></div>
+      <div class="cell"><span class="k">チェリー(重複)</span><span class="v" id="c-cherry">0</span></div>
+      <div class="cell"><span class="k">ベル / リプレイ</span><span class="v" id="c-misc">0 / 0</span></div>
+      <div class="cell"><span class="k">ハマり中</span><span class="v" id="c-gap">0</span></div>
+      <div class="cell"><span class="k">最大ハマり</span><span class="v" id="c-maxgap">0</span></div>
+    </div>
+    <div class="state-line">
+      天井まで：<b id="s-ceil">40</b>G ／ ジャグ連ゾーン残り：<b id="s-zone">0</b>G
+    </div>
+    <div class="state-line">
+      フリーズ状態：<span id="s-freeze" class="tag warm">ウォームアップ</span>
+      裏確変（引き弱救済）：<span id="s-rescue" class="tag warm">―</span>
+    </div>
+    <p class="hint">
+      ・<b>フリーズ状態</b>: 序盤=ウォームアップ(出ない) → 通常(1/250) → 110回転で未取得なら裏昇格(1/83) → 取得後は0（1セーブ1回）。<br>
+      ・<b>裏確変</b>: 生涯ペカが期待値の55%を割るとON（REG/BIGがこっそり増える）。<br>
+      ・コンソールで <code>__reelDebug.force("freeze")</code> / <code>force("rare")</code> / <code>force("cherry")</code> で演出だけ確認可。
+    </p>
+  </div>
+</div>
+
+<script>
+// ---- reel.js が参照するグローバルのスタブ（本体 game.js の最小代替） ----
+window.STAT_KEYS  = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
+window.STAT_BADGE = { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "観" };
+window.config = { reelFx: "full" };
+window.save = function () {};        // デモではセーブしない
+window.updateHud = function () {};
+window.faceIconHtml = function () { return null; }; // 顔アイコン無し → reel.js が「ぷ」にフォールバック
+
+// gain-banner（本体の簡易再現）
+const gq = [];
+let gshow = 0;
+window.gainBanner = function (o) { gq.push(o); flushG(); };
+function flushG() {
+  if (!gq.length || gshow >= 3) return;
+  const it = gq.shift();
+  const box = document.getElementById("gain-banner");
+  const c = document.createElement("div");
+  c.className = "gain-card " + (it.kind || "stat");
+  c.innerHTML = '<div class="badge">' + (it.badge || "+") + '</div><div class="meta">' +
+    '<span class="label-top">' + (it.labelTop || "") + '</span>' +
+    '<span class="label-main">' + (it.labelMain || "") + '</span>' +
+    (it.labelSub ? '<span class="label-sub">' + it.labelSub + '</span>' : '') + '</div>';
+  box.appendChild(c);
+  gshow++;
+  setTimeout(() => { c.remove(); gshow--; flushG(); }, 2200);
+  setTimeout(flushG, 260);
+}
+
+// ---- 自己完結の合成SE（本体 sfx.js に後で入れる7種＋汎用3種。同じ設計値） ----
+window.SFX = (function () {
+  let ctx = null, muted = false;
+  function ac() { if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); if (ctx.state === "suspended") ctx.resume(); return ctx; }
+  function blip(o) {
+    if (muted) return;
+    const c = ac(), t = c.currentTime + (o.when || 0);
+    const osc = c.createOscillator(), f = c.createBiquadFilter(), g = c.createGain();
+    osc.type = o.type || "sine"; osc.frequency.value = o.freq || 440;
+    if (o.slide) { osc.frequency.setValueAtTime(o.slide[0], t); osc.frequency.exponentialRampToValueAtTime(o.slide[1], t + (o.slide[2] || 0.2)); }
+    f.type = "lowpass"; f.frequency.value = o.filterFreq || 6000; f.Q.value = o.q || 1;
+    const pk = o.peak || 0.15, a = o.a || 0.005, d = o.d || 0.08, r = o.r || 0.08;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(pk, t + a);
+    g.gain.exponentialRampToValueAtTime(pk * 0.35, t + a + d);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + a + d + r);
+    osc.connect(f).connect(g).connect(c.destination);
+    osc.start(t); osc.stop(t + a + d + r + 0.05);
+  }
+  function hiss(o) {
+    if (muted) return;
+    const c = ac(), t = c.currentTime + (o.when || 0), len = Math.floor(c.sampleRate * (o.dur || 0.2));
+    const buf = c.createBuffer(1, len, c.sampleRate), dat = buf.getChannelData(0);
+    let last = 0;
+    for (let i = 0; i < len; i++) { const w = Math.random() * 2 - 1; last = last * 0.6 + w * 0.4; dat[i] = last * (1 - i / len); }
+    const src = c.createBufferSource(); src.buffer = buf;
+    const f = c.createBiquadFilter(); f.type = o.filterType || "bandpass"; f.frequency.value = o.filterFreq || 2000; f.Q.value = o.q || 1;
+    const g = c.createGain(); const pk = o.peak || 0.1, a = o.a || 0.005;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(pk, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + (o.dur || 0.2));
+    src.connect(f).connect(g).connect(c.destination); src.start(t);
+  }
+  return {
+    setMuted(m) { muted = m; },
+    reelLever() { blip({ freq: 900, type: "square", a: 0.001, d: 0.03, r: 0.05, peak: 0.10, filterFreq: 3200 }); blip({ freq: 240, type: "triangle", a: 0.001, d: 0.05, r: 0.08, peak: 0.12, filterFreq: 1200, when: 0.01 }); },
+    reelStop() { blip({ freq: 1400, type: "triangle", a: 0.001, d: 0.03, r: 0.06, peak: 0.12, filterFreq: 4000 }); blip({ freq: 320, type: "sine", a: 0.001, d: 0.04, r: 0.06, peak: 0.08, filterFreq: 1500, when: 0.005 }); },
+    puka() {
+      blip({ freq: 600, type: "sawtooth", a: 0.01, d: 0.30, r: 0.25, peak: 0.16, filterFreq: 5200, q: 2, slide: [520, 1860, 0.34] });
+      [1175, 1568, 2093].forEach((f, i) => blip({ freq: f, type: "sine", a: 0.003, d: 0.18, r: 0.45, peak: 0.16 - i * 0.03, filterFreq: 7000, when: 0.20 + i * 0.06 }));
+      hiss({ dur: 0.4, a: 0.005, peak: 0.06, filterType: "highpass", filterFreq: 5000, when: 0.26 });
+    },
+    pugo() { blip({ freq: 110, type: "square", a: 0.002, d: 0.14, r: 0.12, peak: 0.30, filterFreq: 600, q: 2, slide: [150, 78, 0.16] }); hiss({ dur: 0.12, a: 0.002, peak: 0.16, filterType: "lowpass", filterFreq: 900 }); },
+    reelWin() { blip({ freq: 1319, type: "sine", a: 0.002, d: 0.10, r: 0.22, peak: 0.14, filterFreq: 6000 }); blip({ freq: 1760, type: "sine", a: 0.002, d: 0.12, r: 0.26, peak: 0.10, filterFreq: 6000, when: 0.05 }); },
+    glitch() { for (let i = 0; i < 5; i++) { hiss({ dur: 0.05 + Math.random() * 0.06, a: 0.001, peak: 0.12, filterType: "bandpass", filterFreq: 800 + Math.random() * 4000, q: 4, when: i * 0.12 }); blip({ freq: 300 + Math.random() * 2400, type: "square", a: 0.001, d: 0.02, r: 0.03, peak: 0.07, filterFreq: 6000, when: i * 0.12 }); } },
+    freezeBoom() { blip({ freq: 60, type: "sine", a: 0.003, d: 0.30, r: 0.40, peak: 0.32, filterFreq: 300, slide: [110, 48, 0.45] }); hiss({ dur: 0.5, a: 0.003, peak: 0.14, filterType: "lowpass", filterFreq: 700 }); blip({ freq: 880, type: "sine", a: 0.01, d: 0.4, r: 0.6, peak: 0.07, filterFreq: 5000, when: 0.15 }); },
+    fanfare() { [523, 659, 784, 1047, 1319].forEach((f, i) => blip({ freq: f, type: "triangle", a: 0.005, d: 0.2, r: 0.45, peak: 0.16, filterFreq: 6500, when: i * 0.1 })); },
+    click() { blip({ freq: 1200, type: "sine", a: 0.001, d: 0.04, r: 0.08, peak: 0.16, filterFreq: 3500 }); },
+    open() { blip({ freq: 220, type: "sine", a: 0.01, d: 0.2, r: 0.3, peak: 0.14, filterFreq: 2200, slide: [180, 320, 0.18] }); },
+  };
+})();
+
+// ---- デモ用の最小 state ----（reel は reel.js 読み込み後に作る）
+function makeState() {
+  return {
+    phase: "daily", chapter: 1, day: 1, money: 30000,
+    stats: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 },
+    reel: (typeof REEL !== "undefined" ? REEL.newReelState() : null),
+  };
+}
+window.state = makeState();
+function seedFromUrl() { const m = location.search.match(/seed=(\d+)/); return m ? (Number(m[1]) >>> 0) : 0; }
+
+let maxGap = 0;
+
+// 1行動（演出あり）
+function doSpin() {
+  maxGap = Math.max(maxGap, state.reel.bonusGap);
+  REEL.onAction();
+  REEL.onMapShown();
+  render();
+  // 演出中は連打防止（スピン/カットインが消えるまで待つ）
+  const btn = document.getElementById("spin1");
+  if (config.reelFx === "off") return;
+  btn.disabled = true;
+  const poll = setInterval(() => {
+    const spinning = document.querySelector("#reel-widget .rw-strip.spinning");
+    const cutin = document.querySelector("#reel-cutin.show");
+    const intro = document.querySelector("#reel-intro.show");
+    if (!spinning && !cutin && !intro && (!state.reel.pending || !state.reel.pending.length)) {
+      clearInterval(poll); btn.disabled = false; render();
+    }
+  }, 120);
+}
+
+// まとめ回し（集計のみ・演出なし）
+function batch(n) {
+  for (let i = 0; i < n; i++) {
+    maxGap = Math.max(maxGap, state.reel.bonusGap);
+    REEL.onAction();
+  }
+  // 演出は出さず、保留はそのまま結果として消化済み（報酬は適用済み）。保留をクリア
+  state.reel.pending = [];
+  render();
+  toast("+" + n + "回 まわした");
+}
+
+function toast(msg) {
+  const box = document.getElementById("toasts");
+  const t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
+  box.appendChild(t); setTimeout(() => t.classList.add("show"), 16);
+  setTimeout(() => { t.classList.remove("show"); setTimeout(() => t.remove(), 320); }, 1600);
+}
+
+function render() {
+  const r = state.reel;
+  if (!r) return; // reel.js 読み込み前
+  const n = r.note;
+  maxGap = Math.max(maxGap, r.bonusGap);
+  const pekas = n.big + n.reg + n.rare + n.freeze + n.cherryOverlap;
+  document.getElementById("c-count").textContent = r.count;
+  document.getElementById("c-rate").textContent = pekas ? "1/" + (r.count / pekas).toFixed(1) : "1/–";
+  document.getElementById("c-big").textContent = n.big;
+  document.getElementById("c-reg").textContent = n.reg;
+  document.getElementById("c-rare").textContent = n.rare;
+  document.getElementById("c-freeze").textContent = n.freeze;
+  document.getElementById("c-cherry").textContent = n.cherry + " (" + n.cherryOverlap + ")";
+  document.getElementById("c-misc").textContent = n.bell + " / " + n.replay;
+  document.getElementById("c-gap").textContent = r.bonusGap;
+  document.getElementById("c-maxgap").textContent = maxGap;
+  document.getElementById("s-ceil").textContent = Math.max(0, 40 - r.bonusGap);
+  document.getElementById("s-zone").textContent = r.zoneLeft;
+
+  // フリーズ状態（reel.js の FREEZE_CONTROL と同じ判定を表示）
+  const fz = document.getElementById("s-freeze");
+  if (r.freezeCount >= 1) { fz.textContent = "取得済（以降0）"; fz.className = "tag done"; }
+  else if (r.count < 20) { fz.textContent = "ウォームアップ"; fz.className = "tag warm"; }
+  else if (r.count >= 110) { fz.textContent = "裏昇格 1/83"; fz.className = "tag pity"; }
+  else { fz.textContent = "通常 1/250"; fz.className = "tag base"; }
+
+  // 裏確変（RESCUE: count>=30 かつ 生涯ペカ < count*0.075*0.55）
+  const rescue = document.getElementById("s-rescue");
+  const on = r.count >= 30 && r.bonusCount < r.count * 0.075 * 0.55;
+  rescue.textContent = on ? "ON（救済中）" : (r.count < 30 ? "判定前" : "OFF");
+  rescue.className = "tag " + (on ? "on" : "warm");
+}
+
+// ---- イベント配線 ----
+document.getElementById("spin1").addEventListener("click", doSpin);
+document.getElementById("spin28").addEventListener("click", () => batch(28));
+document.getElementById("spin112").addEventListener("click", () => batch(112));
+document.getElementById("reset").addEventListener("click", () => {
+  state = makeState();
+  state.reel.introDone = true; // 新台は説明を飛ばす
+  maxGap = 0;
+  document.getElementById("gain-banner").innerHTML = "";
+  // 既存ウィジェットを消して作り直す
+  const w = document.getElementById("reel-widget"); if (w) w.remove();
+  const ci = document.getElementById("reel-cutin"); if (ci) { ci.className = ""; ci.innerHTML = ""; }
+  render();
+  toast("新台に入れ替えた");
+});
+document.querySelectorAll(".seg [data-fx]").forEach((b) => {
+  b.addEventListener("click", () => {
+    config.reelFx = b.dataset.fx;
+    document.querySelectorAll(".seg [data-fx]").forEach((x) => x.classList.remove("on"));
+    b.classList.add("on");
+  });
+});
+let muted = false;
+document.getElementById("mute").addEventListener("click", (e) => {
+  muted = !muted; SFX.setMuted(muted);
+  e.target.textContent = muted ? "🔊 音 ON" : "🔇 音 OFF";
+});
+
+render();
+</script>
+<script src="js/reel.js"></script>
+<script>
+// reel.js 読み込み後に state.reel を作り直す（newReelState が REEL に依存するため）
+state.reel = REEL.newReelState();
+if (seedFromUrl()) state.reel.seed = seedFromUrl();
+render();
+</script>
+</body>
+</html>

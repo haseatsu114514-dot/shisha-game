@@ -106,6 +106,12 @@ while (guard++ < 8000) {
     await page.waitForTimeout(200);
     continue;
   }
+  // 日常リールの初回説明（パッキーのアプリ紹介）はタップで読み進める
+  if (await page.locator("#reel-intro.show").count()) {
+    await page.click("#reel-intro");
+    await page.waitForTimeout(60);
+    continue;
+  }
   const screen = await active();
   if (screen === "screen-end") break;
   if (screen === "screen-gameover") throw new Error("unexpected game over");

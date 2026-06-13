@@ -48,6 +48,7 @@ async function activeScreen() {
 
 let tutorialSeen = false;
 let limeSeen = false;
+let reelIntroSeen = false;
 while (guard++ < 5000) {
   // LIME（朝のスマホ）が開いていたら返信して進める（先頭の返信＝招待は受ける）
   if (await page.locator("#phone-overlay.show").count()) {
@@ -55,6 +56,13 @@ while (guard++ < 5000) {
     const reply = page.locator("#phone-overlay .lime-reply").first();
     if (await reply.count()) await reply.click();
     await page.waitForTimeout(250);
+    continue;
+  }
+  // 日常リールの初回説明（パッキーのアプリ紹介）はタップで読み進める
+  if (await page.locator("#reel-intro.show").count()) {
+    if (!reelIntroSeen) { reelIntroSeen = true; log("reel intro shown"); }
+    await page.click("#reel-intro");
+    await page.waitForTimeout(60);
     continue;
   }
   const screen = await activeScreen();
@@ -114,6 +122,10 @@ if (!tutorialSeen) throw new Error("tutorial making was not shown before tournam
 log("tutorial OK");
 if (!limeSeen) throw new Error("LIME morning phone never appeared in 7 days");
 log("LIME OK");
+if (!reelIntroSeen) throw new Error("reel intro (PUFF!PUFF!パッキー) never appeared");
+const reelSpins = await page.evaluate(() => state.reel && state.reel.count);
+if (!reelSpins) throw new Error("daily reel never spun");
+log("daily reel OK:", reelSpins, "spins");
 log("reached tournament, day check:", await page.locator("#hud-day").textContent());
 
 // 検証しやすいようにステータスを底上げ（勝利ルートを確認する）

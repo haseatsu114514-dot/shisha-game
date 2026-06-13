@@ -51,6 +51,11 @@ for (let i = 0; i < 2000; i++) {
   if (await c.count()) await c.click(); else await page.click("#vn-click-layer");
   await page.waitForTimeout(15);
 }
+// 日常リールの初回説明が出ていたら読み進める
+while (await page.locator("#reel-intro.show").count()) {
+  await page.click("#reel-intro");
+  await page.waitForTimeout(60);
+}
 await page.screenshot({ path: `${OUT}/04_map.png` });
 
 // 練習画面（ドリル選択 → 本番と同じミニゲーム）
