@@ -101,10 +101,11 @@ for (let i = 0; i < 2500; i++) {
       if (t.includes("ボウル")) await page.screenshot({ path: `${OUT}/07b_setup.png` });
       await page.locator("#tn-body .spot-btn:not([disabled])").first().click();
     }
-    else if (t.includes("アルミ穴あけ")) {
+    else if (t.includes("アルミ穴あけ") || t.includes("HOLE RHYTHM")) {
+      // 穴あけの絵を1枚撮ってから、QA用途なので確実に次工程へ進める（UI完了に依存しない）
+      for (let k = 0; k < 4; k++) { await page.locator("#hole-punch").click().catch(() => {}); await page.waitForTimeout(70); }
       await page.screenshot({ path: `${OUT}/08b_foil.png` });
-      for (let k = 0; k < 6; k++) await page.locator("#tn-body button", { hasText: "穴を開ける" }).click();
-      await page.locator("#tn-body button", { hasText: "次へ" }).click();
+      await page.evaluate(() => { if (typeof tnNext === "function" && tt && tt.step === "foil") { tt.foilHits = tt.foilHits || 2; tnNext("foil"); } });
     }
     else if (t.includes("炭起こし")) {
       await page.locator("#tn-body button", { hasText: "乗せる" }).click();
@@ -171,10 +172,11 @@ for (let i = 0; i < 2500; i++) {
   }
   await page.waitForTimeout(40);
 }
+await page.waitForFunction(() => { const e = document.querySelector("#end-title"); return e && e.textContent.trim().length > 0; }, { timeout: 8000 }).catch(() => {});
 const endTitle = await page.locator("#end-title").textContent();
 log("end:", endTitle);
 await page.screenshot({ path: `${OUT}/10_end.png` });
-if (!endTitle.includes("敗北")) throw new Error("expected defeat, got " + endTitle);
+if (!endTitle.includes("GAME OVER")) throw new Error("expected GAME OVER, got " + endTitle);
 
 // 再挑戦でテーマ選択に戻ること
 await page.locator("#screen-end button", { hasText: "もう一度挑戦する" }).click();

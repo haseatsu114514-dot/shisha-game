@@ -2569,6 +2569,74 @@ body {
 /* マップ: 事前の成長ヒント（主人公の見立て） */
 .info-grow { font-size: 12.5px; color: #9fd8a8; margin: 4px 0 2px; letter-spacing: 0.03em; }
 
+/* ============ HOLE RHYTHM BATTLE（master_spec 第2部 #1 / A1） ============ */
+.hole-arena { display: flex; gap: 22px; align-items: center; justify-content: center; padding: 6px 0 2px; }
+.hole-board {
+  position: relative; width: 300px; height: 300px; flex: 0 0 auto;
+  border-radius: 50%;
+  /* ピンと張ったアルミの中央部だけを使う: テクスチャを 210% にズームして縁(しわ)をクロップ。
+     テクスチャが無い環境では下の金属グラデにフォールバック */
+  background:
+    radial-gradient(circle at 50% 38%, rgba(255,255,255,0.10), transparent 60%),
+    url("../../assets/ui/foil_taut.png") center / 210% no-repeat,
+    linear-gradient(135deg, #d8dde6 0%, #b9c0cc 28%, #e9edf3 50%, #aab2c0 74%, #cfd6e0 100%),
+    #c3cad6;
+  box-shadow: 0 0 0 2px rgba(120,140,200,0.3), 0 0 36px rgba(70,100,170,0.4), inset 0 0 46px rgba(0,0,0,0.45);
+  overflow: hidden;
+}
+/* アルミの上でネオンのリング・穴が映えるよう、ごく薄い暗幕をかける */
+.hole-board::before {
+  content: ""; position: absolute; inset: 0; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle at 50% 42%, rgba(12,16,28,0.28), rgba(8,10,18,0.5) 72%);
+  mix-blend-mode: multiply;
+}
+.hole-ring { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); border-radius: 50%; border: 1px dashed rgba(150,170,220,0.22); }
+.hole-ring.r-outer  { width: 80%; height: 80%; }
+.hole-ring.r-middle { width: 55%; height: 55%; }
+.hole-ring.r-inner  { width: 30%; height: 30%; }
+.hole-board[data-ring="outer"]  .r-outer,
+.hole-board[data-ring="middle"] .r-middle,
+.hole-board[data-ring="inner"]  .r-inner { border-style: solid; border-color: rgba(255,220,140,0.7); box-shadow: 0 0 14px rgba(255,200,110,0.4); }
+.hole-core { position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; transform: translate(-50%,-50%); border-radius: 50%; background: rgba(255,230,160,0.8); box-shadow: 0 0 10px rgba(255,210,120,0.8); }
+/* 回転カーソル: 中心から外周へ伸びる針 */
+.hole-cursor { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-origin: 0 0; }
+.hole-cursor > i { position: absolute; left: -1.5px; top: -2px; width: 3px; height: 44%; transform-origin: 50% 0;
+  /* 針は上方向(0deg=上)に伸ばす */ transform: rotate(180deg) translateY(2px);
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,150,80,0.15));
+  box-shadow: 0 0 10px rgba(255,180,90,0.9); border-radius: 2px; }
+.hole-cursor > i::after { content: ""; position: absolute; left: 50%; bottom: -2px; width: 9px; height: 9px; transform: translateX(-50%); border-radius: 50%; background: #fff; box-shadow: 0 0 12px rgba(255,210,120,1); }
+.hole-dots { position: absolute; inset: 0; pointer-events: none; }
+.hole-dot { position: absolute; width: 13px; height: 13px; transform: translate(-50%,-50%) scale(0); border-radius: 50%;
+  background: radial-gradient(circle, hsl(var(--hue,30) 90% 75%), hsl(var(--hue,30) 80% 45%));
+  box-shadow: 0 0 10px hsla(var(--hue,30) 90% 60% / 0.8), inset 0 0 4px rgba(0,0,0,0.5);
+  transition: transform 0.18s cubic-bezier(.2,1.6,.4,1); }
+.hole-dot.on { transform: translate(-50%,-50%) scale(1); }
+.hole-callout { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%) scale(0.6); opacity: 0;
+  font-weight: 900; font-size: 26px; letter-spacing: 0.06em; color: #fff; text-shadow: 0 0 16px rgba(120,160,255,0.9); pointer-events: none; }
+.hole-callout.show { animation: hole-callout 0.62s ease-out; }
+.hole-callout.great { color: #ffe79a; text-shadow: 0 0 20px rgba(255,200,90,1); }
+.hole-callout.warn { color: #ff9a9a; text-shadow: 0 0 18px rgba(255,90,90,0.9); }
+@keyframes hole-callout { 0%{opacity:0;transform:translate(-50%,-50%) scale(0.5);} 25%{opacity:1;transform:translate(-50%,-60%) scale(1.1);} 100%{opacity:0;transform:translate(-50%,-78%) scale(1);} }
+.hole-side { display: flex; flex-direction: column; gap: 10px; min-width: 188px; }
+.hole-readout { background: rgba(12,16,28,0.8); border: 1px solid rgba(120,140,200,0.25); border-radius: 10px; padding: 12px 14px; }
+.hole-ringname { font-size: 20px; font-weight: bold; color: #ffe79a; letter-spacing: 0.1em; }
+.hole-rolename { font-size: 12px; color: var(--text-dim); margin-bottom: 10px; }
+.hole-meter { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-dim); }
+.hole-meter-bar { flex: 1; height: 7px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+.hole-meter-bar > b { display: block; height: 100%; width: 0; background: linear-gradient(90deg,#69d98e,#ffe79a); transition: width 0.25s; }
+.hole-count { margin-top: 8px; font-size: 13px; color: #cdd6ee; }
+.hole-punch { font-size: 17px; }
+.hole-advance { font-size: 13px; }
+.hole-advance.ready { animation: hole-ready 1s ease-in-out infinite; border-color: #ffe79a; }
+@keyframes hole-ready { 50% { box-shadow: 0 0 16px rgba(255,210,120,0.6); } }
+.hole-summary { margin-top: 8px; font-size: 12.5px; color: #aeb8d6; letter-spacing: 0.04em; }
+@media (max-width: 760px) { .hole-arena { flex-direction: column; gap: 12px; } .hole-board { width: 230px; height: 230px; } }
+
+/* ============ GAME OVER（2位以下＝敗退・master_spec改定） ============ */
+#screen-end.gameover { background: linear-gradient(rgba(20,4,8,0.82), rgba(8,2,4,0.92)), url("data:image/jpeg;base64,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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//9k=") center / cover no-repeat, #0a0608; }
+#screen-end.gameover #end-title { color: #ff6b6b; text-shadow: 0 0 24px rgba(255,60,60,0.6), 0 2px 0 rgba(0,0,0,0.6); letter-spacing: 0.14em; }
+.gameover-actions { display: flex; gap: 12px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
+
 </style>
 </head>
 <body>
@@ -6788,53 +6856,196 @@ function buildGauge(container, zone, speed) {
   return { wrap, gauge: g };
 }
 
-// --- アルミ穴あけ（リズム6連打）
+// ============================================================================
+// HOLE RHYTHM BATTLE（アルミ穴あけ・円周カーソル式）— master_spec 第2部 #1
+// アルミ盤の上をカーソルが円周状に回り、タップで穴を開ける。評価の主軸は「均等度」。
+// 外周→中周→内周の3リング。各リングの役割（熱拡散/ドロー/抜け）で完成品ステータスが変わる。
+// 出力: tt.foilHits（0-6・既存craftScore互換）＋ tt.holeResult（FLAVOR TRIAL用の詳細）
+// ============================================================================
+const HOLE_RINGS = [
+  { key: "outer", label: "外周", r: 0.80, target: 8, role: "熱拡散・安定", hue: 28 },
+  { key: "middle", label: "中周", r: 0.55, target: 6, role: "ドロー・煙量", hue: 200 },
+  { key: "inner", label: "内周", r: 0.30, target: 4, role: "抜け・攻め", hue: 330 },
+];
+// 角度ギャップの均等度（0..1）。穴が円周に均等なら1に近い
+function ringEvenness(angles) {
+  if (angles.length < 2) return angles.length === 1 ? 0.5 : 0;
+  const s = [...angles].sort((a, b) => a - b);
+  const gaps = [];
+  for (let i = 0; i < s.length; i++) gaps.push(((s[(i + 1) % s.length] - s[i] + 360) % 360) || 360);
+  const ideal = 360 / s.length;
+  let dev = 0;
+  for (const g of gaps) dev += Math.abs(g - ideal);
+  // 平均ズレを ideal で正規化。0ズレ=1.0、ideal分ズレ=0
+  return Math.max(0, 1 - dev / gaps.length / ideal);
+}
+
 function stepFoil() {
-  const body = tnPanel("アルミ穴あけ", "リズムよく6つ穴を開けろ。ゾーンに入った瞬間に押す！");
-  const counter = document.createElement("p");
-  counter.className = "tn-hint";
-  const zoneW = 0.14 + state.stats.technique / 700;
-  const left = 0.45 - zoneW / 2 + Math.random() * 0.2;
-  const { wrap, gauge } = buildGauge(body, [left, left + zoneW], Math.max(0.9, 1.25 - state.stats.technique / 300));
-  const btn = document.createElement("button");
-  btn.className = "primary-btn";
-  btn.textContent = "穴を開ける！";
+  const body = tnPanel("HOLE RHYTHM BATTLE ── アルミ穴あけ",
+    "カーソルは何周でも回せる。納得いくまで穴を開けたら〔次の周へ〕。穴は“均等に”開けるほど美しい。");
+  const isDrill = tt.mode === "drill";
+
+  const arena = document.createElement("div");
+  arena.className = "hole-arena";
+  arena.innerHTML = `
+    <div class="hole-board" id="hole-board">
+      <div class="hole-ring r-outer"></div>
+      <div class="hole-ring r-middle"></div>
+      <div class="hole-ring r-inner"></div>
+      <div class="hole-core"></div>
+      <div class="hole-cursor" id="hole-cursor"><i></i></div>
+      <div class="hole-dots" id="hole-dots"></div>
+      <div class="hole-callout" id="hole-callout"></div>
+    </div>
+    <div class="hole-side">
+      <div class="hole-readout">
+        <div class="hole-ringname" id="hole-ringname">外周</div>
+        <div class="hole-rolename" id="hole-rolename">熱拡散・安定</div>
+        <div class="hole-meter"><span>均等度</span><i class="hole-meter-bar"><b id="hole-even"></b></i></div>
+        <div class="hole-count" id="hole-count"></div>
+      </div>
+      <button class="primary-btn hole-punch" id="hole-punch">穴を開ける</button>
+      <button class="primary-btn ghost hole-advance" id="hole-advance">次の周へ ▶</button>
+    </div>`;
+  body.appendChild(arena);
   const result = document.createElement("div");
   result.className = "practice-result";
-  let attempts = 0;
-  const update = () => { counter.textContent = `穴: ${tt.foilHits} / 6（残り ${6 - attempts} 回）`; };
-  update();
-  btn.addEventListener("click", () => {
-    if (attempts >= 6) return;
-    attempts++;
-    const r = gauge.judge();
-    if (window.SFX) SFX.foil();
-    if (r !== "miss") tt.foilHits++;
-    updateRig();
-    update();
-    if (attempts >= 6) {
-      gauge.stop();
-      btn.disabled = true;
-      tt.foilDone = true;
-      updateRig();
-      const foilResult = tt.foilHits >= 6 ? "perfect" : tt.foilHits >= 4 ? "good" : "miss";
-      showStamp($("#tn-layout .panel"), foilResult);
-      pakkiLive(foilResult);
-      result.textContent =
-        tt.foilHits >= 6 ? "──美しい六角形。空気の通り道が完璧に揃った。"
-        : tt.foilHits >= 4 ? "──まずまずの穴あけ。空気はちゃんと通る。"
-        : "──穴が乱れた。空気の流れにムラが出そうだ……。";
-      const next = document.createElement("button");
-      next.className = "primary-btn";
-      next.textContent = "次へ";
-      next.addEventListener("click", () => tnNext("foil"));
-      result.appendChild(document.createElement("br"));
-      result.appendChild(next);
-    }
-  });
-  body.insertBefore(counter, wrap);
-  wrap.appendChild(btn);
   body.appendChild(result);
+
+  const board = arena.querySelector("#hole-board");
+  const cursor = arena.querySelector("#hole-cursor");
+  const dotsEl = arena.querySelector("#hole-dots");
+  const calloutEl = arena.querySelector("#hole-callout");
+  const punchBtn = arena.querySelector("#hole-punch");
+  const advBtn = arena.querySelector("#hole-advance");
+
+  const ringData = HOLE_RINGS.map((r) => ({ ...r, angles: [] }));
+  let ringIdx = 0;
+  let angle = -90;            // 現在のカーソル角（度）
+  const speed = 150 - Math.min(70, state.stats.technique * 0.7); // 技術が高いほどゆっくり=狙いやすい（deg/s）
+  let raf = 0, last = performance.now(), running = true;
+
+  const callout = (text, cls) => {
+    calloutEl.textContent = text;
+    calloutEl.className = `hole-callout show ${cls || ""}`;
+    setTimeout(() => calloutEl.classList.remove("show"), 620);
+  };
+  const setRingUI = () => {
+    const r = ringData[ringIdx];
+    arena.querySelector("#hole-ringname").textContent = r.label;
+    arena.querySelector("#hole-rolename").textContent = r.role;
+    board.dataset.ring = r.key;
+    advBtn.textContent = ringIdx < ringData.length - 1 ? "次の周へ ▶" : "穴あけを仕上げる ▶";
+    refreshMeter();
+  };
+  const refreshMeter = () => {
+    const r = ringData[ringIdx];
+    const even = ringEvenness(r.angles);
+    arena.querySelector("#hole-even").style.width = `${Math.round(even * 100)}%`;
+    arena.querySelector("#hole-count").textContent = `穴 ${r.angles.length} / ${r.target}`;
+    advBtn.disabled = r.angles.length < 1;
+  };
+
+  const tick = (now) => {
+    if (!running) return;
+    const dt = (now - last) / 1000; last = now;
+    angle = (angle + speed * dt) % 360;
+    cursor.style.transform = `rotate(${angle}deg)`;
+    raf = requestAnimationFrame(tick);
+  };
+  raf = requestAnimationFrame(tick);
+
+  const placeDot = (ringR, a, hue) => {
+    const dot = document.createElement("span");
+    dot.className = "hole-dot";
+    const pr = ringR * 50; // %半径（盤の半径=50%）
+    const x = 50 + Math.cos((a - 90) * Math.PI / 180) * pr;
+    const y = 50 + Math.sin((a - 90) * Math.PI / 180) * pr;
+    dot.style.left = `${x}%`;
+    dot.style.top = `${y}%`;
+    dot.style.setProperty("--hue", hue);
+    dotsEl.appendChild(dot);
+    requestAnimationFrame(() => dot.classList.add("on"));
+  };
+
+  punchBtn.addEventListener("click", () => {
+    if (!running) return;
+    const r = ringData[ringIdx];
+    if (r.angles.length >= 16) { callout("もう十分だ", "warn"); return; } // 物理上限のみ
+    if (r.angles.length >= r.target + 2) callout("TOO MANY", "warn"); // 開けすぎは均等度・焦げリスクに響く（開けるのは自由）
+    // 近すぎる穴チェック（過密ペナルティの気づき）
+    const tooClose = r.angles.some((x) => { const d = Math.abs(((x - angle + 540) % 360) - 180); return (180 - d) < 14; });
+    r.angles.push(angle);
+    placeDot(r.r, angle, r.hue);
+    if (window.SFX) SFX.foil();
+    if (tooClose) callout("TOO CLOSE", "warn");
+    else if (r.angles.length === r.target && ringEvenness(r.angles) > 0.8) callout("BEAUTIFUL RING", "great");
+    else callout("PUNCH", "");
+    refreshMeter();
+    if (r.angles.length >= r.target) advBtn.classList.add("ready");
+  });
+
+  const finishRing = () => {
+    const r = ringData[ringIdx];
+    const even = ringEvenness(r.angles);
+    if (even > 0.82 && r.angles.length >= r.target) { callout("RING COMPLETE", "great"); showStamp(board, "just"); }
+    else callout("AIR FLOW", even > 0.6 ? "" : "warn");
+    advBtn.classList.remove("ready");
+    if (ringIdx < ringData.length - 1) {
+      ringIdx++;
+      setRingUI();
+    } else {
+      finishHole();
+    }
+  };
+  advBtn.addEventListener("click", finishRing);
+
+  function finishHole() {
+    running = false; cancelAnimationFrame(raf);
+    punchBtn.disabled = true; advBtn.disabled = true;
+    // ---- 評価: 均等度50% + 円形精度(リング完成度)10% + 各リングの充足 + 残量 ----
+    let evenSum = 0, fillSum = 0, totalHoles = 0;
+    const per = {};
+    for (const r of ringData) {
+      const ev = ringEvenness(r.angles);
+      const fill = Math.min(1, r.angles.length / r.target);
+      evenSum += ev; fillSum += fill;
+      totalHoles += r.angles.length;
+      per[r.key] = { holes: r.angles.length, evenness: Math.round(ev * 100) };
+    }
+    const evenAvg = evenSum / ringData.length;
+    const fillAvg = fillSum / ringData.length;
+    const quality = evenAvg * 0.6 + fillAvg * 0.4; // 0..1（均等度重視）
+    // 既存craftScore互換: foilHits 0-6
+    tt.foilHits = Math.round(quality * 6);
+    tt.foilDone = true;
+    // FLAVOR TRIAL 用の詳細
+    tt.holeResult = {
+      score: Math.round(quality * 100),
+      evenness: Math.round(evenAvg * 100),
+      outerHoles: per.outer.holes, middleHoles: per.middle.holes, innerHoles: per.inner.holes,
+      // 穴が多いほどドロー軽・煙量↑・熱保持↓。内周過多は焦げリスク
+      draw: Math.min(100, totalHoles * 5),
+      burnRisk: Math.max(0, (per.inner.holes - 4) * 12),
+      heatSpread: per.outer.evenness,
+    };
+    const rank = quality >= 0.85 ? "perfect" : quality >= 0.6 ? "good" : "miss";
+    showStamp(board, rank === "perfect" ? "just" : rank);
+    pakkiLive(rank);
+    if (rank === "perfect") smokeRings(3);
+    result.innerHTML =
+      (quality >= 0.85 ? "──寸分違わぬ円。どのリングも穴が均等に散って、空気の通り道が完璧に整った。"
+      : quality >= 0.6 ? "──悪くない穴あけ。空気はちゃんと通る。"
+      : "──穴が偏った。空気の流れにムラが出そうだ……。") +
+      `<div class="hole-summary">均等度 ${Math.round(evenAvg*100)}％ ／ 外${per.outer.holes}・中${per.middle.holes}・内${per.inner.holes}</div>`;
+    const next = document.createElement("button");
+    next.className = "primary-btn";
+    next.textContent = isDrill ? "結果を見る" : "次へ";
+    next.addEventListener("click", () => tnNext("foil"));
+    result.appendChild(next);
+  }
+
+  setRingUI();
 }
 
 // --- 炭起こし（一発タイミング）
@@ -7626,8 +7837,8 @@ function showResult(results, rank, detail, opts = {}) {
   } else {
     btn.textContent = "……結果を受け止める";
     btn.addEventListener("click", opts.onLose || (() => {
+      // 1位のみ進出。2位以下はゲームオーバー（賞金なし・やり直す/タイトルへ）
       tt.rank = rank;
-      addMoney({ 2: 20000, 3: 10000, 4: 3000 }[rank] || 0); // 順位別賞金（4位は参加賞）
       playDialogue("ch1_tournament_defeat", () => showDefeat(rank), "res://assets/backgrounds/bg_tournament_stage.png");
     }));
   }
@@ -7640,6 +7851,7 @@ function showClear() {
   state.phase = "cleared";
   save();
   showScreen("#screen-end");
+  $("#screen-end").classList.remove("gameover");
   $("#end-title").textContent = "第1章クリア！";
   $("#end-sub").textContent = "SMOKE CROWN CUP 優勝 ── 全国大会 HAZE: OPEN CLOUD へ。";
   renderStatusInto($("#end-status"));
@@ -7653,16 +7865,28 @@ function showClear() {
 function showDefeat(rank) {
   stopRigEffects();
   showScreen("#screen-end");
-  $("#end-title").textContent = "敗北……";
+  $("#screen-end").classList.add("gameover");
+  $("#end-title").textContent = "GAME OVER";
   $("#end-sub").textContent = state.chapter === 2
-    ? `結果は${rank}位。${CH2_STAGE_LABEL[state.ch2Stage] || ""}敗退──1位だけが、先へ進める。`
-    : `結果は${rank}位。優勝だけが次への切符だった。`;
+    ? `結果は${rank}位。${CH2_STAGE_LABEL[state.ch2Stage] || ""}敗退──1位だけが、先へ進める。ここで終わりだ。`
+    : `結果は${rank}位。優勝だけが次への切符だった。ここで、終わってしまった。`;
   renderStatusInto($("#end-status"));
+  const btns = document.createElement("div");
+  btns.className = "gameover-actions";
   const retry = document.createElement("button");
   retry.className = "primary-btn";
   retry.textContent = "もう一度挑戦する";
-  retry.addEventListener("click", () => beginMaking());
-  $("#end-status").appendChild(retry);
+  retry.addEventListener("click", () => { $("#screen-end").classList.remove("gameover"); beginMaking(); });
+  const toTitle = document.createElement("button");
+  toTitle.className = "primary-btn ghost";
+  toTitle.textContent = "タイトルに戻る";
+  toTitle.addEventListener("click", () => {
+    $("#screen-end").classList.remove("gameover");
+    if (window.SFX) SFX.bgm("title");
+    showScreen("#screen-title");
+  });
+  btns.append(retry, toTitle);
+  $("#end-status").appendChild(btns);
 }
 
 // ---------------------------------------------------------------- 第2章 HAZE: OPEN CLOUD
@@ -7816,6 +8040,7 @@ function showCh2Clear() {
   state.phase = "cleared";
   save();
   showScreen("#screen-end");
+  $("#screen-end").classList.remove("gameover");
   $("#end-title").textContent = "第2章クリア";
   $("#end-sub").textContent = "HAZE: OPEN CLOUD 優勝──誰もいない頂点。物語は第3章「東京編」へ続く。";
   renderStatusInto($("#end-status"));
