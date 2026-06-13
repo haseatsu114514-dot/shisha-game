@@ -3912,7 +3912,13 @@ const PULL_MIN = 2, PULL_MAX = 5, PULL_SAFE = 3;
 // ジャスト帯（master_spec #13）: 各ゾーン中央の細い帯。
 // キープのジャスト=ブレほぼ消滅／上げ下げのジャスト=通常より強く効く
 const PULL_JUST = { up: [0.14, 0.205], keep: [0.468, 0.532], down: [0.795, 0.86] };
-const PULL_TARGET = [0.63, 0.79]; // 温度バー上の適温ゾーン（0..1）
+// 適温ゾーンは客の需要（テーマ/コンセプト）で変わる（#38）。
+// リラックスは高温にしすぎない／高火力は高め／フルーティは香りを飛ばさない中温
+function pullTargetZone() {
+  return ({
+    relax: [0.44, 0.60], high_heat: [0.70, 0.86], fruity: [0.55, 0.71], aftertaste: [0.64, 0.80],
+  })[tt && tt.theme ? tt.theme.id : ""] || [0.62, 0.78];
+}
 const PULL_DELTA = 0.13; // 1回の吸いで動かせる最大温度
 
 function pullStartTemp() {
@@ -3927,10 +3933,17 @@ function pullStartTemp() {
 }
 
 function stepPull() {
+  const PULL_TARGET = pullTargetZone(); // 適温はテーマ依存（#38）
+  const tempNote = (tt && tt.theme) ? ({
+    relax: "　今日はリラックス系——高温にしすぎないのが適温だ。",
+    high_heat: "　今日は高火力系——しっかり高温まで上げろ。",
+    fruity: "　今日はフルーティ——香りを飛ばさない中温が適温。",
+    aftertaste: "　今日は余韻系——やや高めの適温で香りを伸ばせ。",
+  })[tt.theme.id] || "" : "";
   const body = tnPanel(
     "吸い出し（温度合わせ）",
     "提供前に何度か吸って、ボウルの温度を立ち上げる。左で止めれば上げ吸い、右なら下げ吸い、真ん中はキープ。" +
-      `最低${PULL_MIN}回・${PULL_SAFE}回までは無傷、それ以上は葉が痩せる。やめ時は自分で決めろ。`
+      `最低${PULL_MIN}回・${PULL_SAFE}回までは無傷、それ以上は葉が痩せる。` + tempNote
   );
   tt.temp = pullStartTemp();
   tt.pullCount = 0;
