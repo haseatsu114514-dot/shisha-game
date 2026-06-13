@@ -708,7 +708,7 @@ body {
   position: absolute;
   left: 3.5%; right: 3.5%; bottom: 3%;
   z-index: 20;
-  min-height: 160px;
+  min-height: 190px; /* 4行分を安定確保（#4 改ページでこれ以上は伸びない） */
   background: linear-gradient(180deg, rgba(8,4,14,0.92) 0%, rgba(14,8,22,0.97) 100%);
   border: 1px solid var(--panel-border);
   border-radius: 6px;
@@ -760,6 +760,8 @@ body {
   line-height: 1.85;
   min-height: 70px;
   margin-top: 4px;
+  line-break: strict; /* 日本語禁則（自動改行の保険） */
+  word-break: normal;
   font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
   color: #f6ecd0;
   text-shadow: 0 1px 2px rgba(0,0,0,0.6);
@@ -916,7 +918,8 @@ body {
 #screen-end { background: linear-gradient(rgba(12, 9, 20, 0.7), rgba(12, 9, 20, 0.85)), url("../../assets/backgrounds/bg_tournament_stage.png") center / cover no-repeat, #0b0a10; }
 
 /* ===== タップ式マップ（ピン式） ===== */
-#map-pins { position: absolute; inset: 0; z-index: 2; }
+/* ピンは情報パネル(#map-info z:3)より前面に。重なっても必ず押せる/見える（#7） */
+#map-pins { position: absolute; inset: 0; z-index: 4; }
 .spot-pin {
   position: absolute;
   /* 拡縮は .shield 側で行う。外側のtransformを動かすと
@@ -973,7 +976,9 @@ body {
   border-radius: 8px;
   white-space: nowrap;
 }
-.spot-pin:disabled { filter: grayscale(0.8) brightness(0.55); cursor: default; }
+/* 行けない場所（未開放/訪問済/定休/所持金不足）は「消えた」ではなく「無効化」に見せる。
+   薄すぎると消えて見えるため、はっきり残しつつグレーで落とす（#6） */
+#map-pins .spot-pin:disabled { opacity: 0.85; filter: grayscale(0.5) brightness(0.74); cursor: default; }
 .spot-pin.locked .shield { background: linear-gradient(180deg, #4a4a52 0%, #2a2a32 100%); }
 .spot-pin.locked .shield::after { background: linear-gradient(135deg, #4a4a52, #2a2a32); }
 .spot-pin.locked .label::after {
@@ -2598,6 +2603,13 @@ body {
   background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,150,80,0.15));
   box-shadow: 0 0 10px rgba(255,180,90,0.9); border-radius: 2px; }
 .hole-cursor > i::after { content: ""; position: absolute; left: 50%; bottom: -2px; width: 9px; height: 9px; transform: translateX(-50%); border-radius: 50%; background: #fff; box-shadow: 0 0 12px rgba(255,210,120,1); }
+/* 狙い表示: いま穴があくリング上の位置を脈動する輪で示す（#11） */
+.hole-aim { position: absolute; width: 28px; height: 28px; transform: translate(-50%,-50%); border-radius: 50%;
+  border: 2px solid rgba(255,242,190,0.95); pointer-events: none; z-index: 3;
+  box-shadow: 0 0 16px rgba(255,210,120,0.9), inset 0 0 9px rgba(255,210,120,0.55);
+  animation: hole-aim-pulse 0.85s ease-in-out infinite; }
+.hole-aim::after { content: ""; position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; transform: translate(-50%,-50%); border-radius: 50%; background: #fff; box-shadow: 0 0 8px rgba(255,220,140,1); }
+@keyframes hole-aim-pulse { 0%,100% { transform: translate(-50%,-50%) scale(0.82); opacity: 0.82; } 50% { transform: translate(-50%,-50%) scale(1.12); opacity: 1; } }
 .hole-dots { position: absolute; inset: 0; pointer-events: none; }
 .hole-dot { position: absolute; width: 13px; height: 13px; transform: translate(-50%,-50%) scale(0); border-radius: 50%;
   background: radial-gradient(circle, hsl(var(--hue,30) 90% 75%), hsl(var(--hue,30) 80% 45%));

@@ -1447,6 +1447,9 @@ function closePhone() {
 function playLimeEvent(dialogueId, sender, after, viaInvite) {
   visitContextChar = sender;
   markMet(sender);
+  // 誘い/イベントでそのキャラに会った日は、同じ店（spot）への通常訪問を不可にする
+  // （誘いがあった日に同じ店へ2回行けてしまう問題の修正・#8）
+  if (sender) state.dayVisited[sender] = state.day;
   // 恋人とのデート（date_xxx は動的生成、outing_xxx は既存イベント）は絆が深まる時間
   const isDate = dialogueId.startsWith("date_") || dialogueId.startsWith("outing_");
   if (isDate && (state.lovers || []).includes(sender)) dateContext = true;
@@ -1625,7 +1628,7 @@ const SPOT_LAYOUT = {
   cafe:      { x: 64, y: 64, theme: "cafe",    short: "カフェ",     area: "繁華街" },
   c_station: { x: 84, y: 36, theme: "stadium", short: "C.STATION",  area: "会場" },
   shop:      { x: 36, y: 40, theme: "shop",    short: "Dr.fookah",  area: "問屋街" },
-  rest:      { x: 88, y: 76, theme: "rest",    short: "家",         area: "自宅" },
+  rest:      { x: 88, y: 60, theme: "rest",    short: "家",         area: "自宅" },
 };
 
 function showMap() {
@@ -3057,16 +3060,17 @@ function showStandings(round, next) {
 }
 
 // --- ラウンド2: 炭替え・調整。一箇所だけ作りを直せる
+// ラウンド2（中盤の調整）: 一度組んだら詰め直し・蒸らし直しは物理的に無理。
+// 動かせるのは炭の位置と数だけ（温度の最終調整は提供前の吸い出しで作る）#15
 function stepAdjust() {
-  const body = tnPanel("ラウンド2：炭替え・調整", "中盤戦。煙の様子を見て、一箇所だけ調整できる。どこを触る？");
+  const body = tnPanel("ラウンド2：炭替え・調整",
+    "中盤戦。一度組んだら詰め直しも蒸らし直しもできない。いま動かせるのは炭の位置と数だけだ（温度の最終調整は、提供前の吸い出しで作る）。");
   const cur = (list, id) => (list.find((x) => x.id === id) || {}).label || "-";
-  body.appendChild(optionButton("このままでいく", "今の仕上がりを信じる", () => {
+  body.appendChild(optionButton("このままでいく", "今の熱を信じる", () => {
     if (window.SFX) SFX.select();
     tnNext("adjust");
   }));
-  body.appendChild(optionButton("パッキングを直す", `現在: ${cur(PACKS, tt.pack)}`, () => redoAdjust("pack")));
-  body.appendChild(optionButton("炭の配置を変える", `現在: ${cur(COALS, tt.coal)}`, () => redoAdjust("coal")));
-  body.appendChild(optionButton("蒸らしを取り直す", `現在: ${tt.steam}分`, () => redoAdjust("steam")));
+  body.appendChild(optionButton("炭の位置・数を変える", `現在: ${cur(COALS, tt.coal)}`, () => redoAdjust("coal")));
 }
 
 function redoAdjust(kind) {
@@ -3177,6 +3181,7 @@ function stepFoil() {
       <div class="hole-ring r-inner"></div>
       <div class="hole-core"></div>
       <div class="hole-cursor" id="hole-cursor"><i></i></div>
+      <div class="hole-aim" id="hole-aim"></div>
       <div class="hole-dots" id="hole-dots"></div>
       <div class="hole-callout" id="hole-callout"></div>
     </div>
@@ -3197,6 +3202,7 @@ function stepFoil() {
 
   const board = arena.querySelector("#hole-board");
   const cursor = arena.querySelector("#hole-cursor");
+  const aim = arena.querySelector("#hole-aim");
   const dotsEl = arena.querySelector("#hole-dots");
   const calloutEl = arena.querySelector("#hole-callout");
   const punchBtn = arena.querySelector("#hole-punch");
@@ -3234,6 +3240,10 @@ function stepFoil() {
     const dt = (now - last) / 1000; last = now;
     angle = (angle + speed * dt) % 360;
     cursor.style.transform = `rotate(${angle}deg)`;
+    // いま穴があく位置（アクティブなリング上の狙い）を可視化（#11）
+    const ar = ringData[ringIdx].r * 50;
+    aim.style.left = `${50 + Math.cos((angle - 90) * Math.PI / 180) * ar}%`;
+    aim.style.top = `${50 + Math.sin((angle - 90) * Math.PI / 180) * ar}%`;
     raf = requestAnimationFrame(tick);
   };
   raf = requestAnimationFrame(tick);
