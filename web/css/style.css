@@ -826,11 +826,18 @@ body {
   transition: background 0.18s, transform 0.08s, box-shadow 0.18s;
   box-shadow: 0 4px 14px rgba(0,0,0,0.5);
 }
+/* ホバー時、左端に炭の赤熱グローが灯る（master_spec #20 選択カーソル=炭の赤熱） */
+.choice-btn::before {
+  content: ""; position: absolute; left: 0; top: 12%; bottom: 12%; width: 3px;
+  border-radius: 3px; background: linear-gradient(180deg, #ff7a3c, #ffb24a);
+  opacity: 0; box-shadow: 0 0 12px rgba(255,140,60,0.85); transition: opacity 0.18s;
+}
 .choice-btn:hover {
   background: linear-gradient(180deg, rgba(60,40,80,0.95), rgba(30,18,42,0.95));
   transform: scale(1.02);
   box-shadow: 0 6px 22px rgba(244,210,122,0.22);
 }
+.choice-btn:hover::before { opacity: 1; }
 .choice-btn:active { transform: scale(0.99); }
 
 /* テキスト装飾タグ */
@@ -2486,3 +2493,20 @@ body {
 .inv-money { color: var(--accent); font-weight: bold; }
 .st-bar > i.warn { background: linear-gradient(90deg, #e9c46a, #f4a261); }
 .st-bar > i.danger { background: linear-gradient(90deg, #e76f51, #d62828); }
+
+/* ===== P5風ポリッシュ（master_spec #20 / B7） ===== */
+/* 勝利・恋人成立のスモークリング（中央から輪が抜ける） */
+.smoke-ring {
+  position: absolute; left: 50%; top: 54%;
+  width: 80px; height: 80px; margin: -40px 0 0 -40px;
+  border: 14px solid rgba(245,245,255,0.0);
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgba(255,255,255,0.35), inset 0 0 24px rgba(255,255,255,0.3);
+  pointer-events: none;
+  animation: smoke-ring-rise 1.5s ease-out forwards;
+}
+@keyframes smoke-ring-rise {
+  0%   { opacity: 0; transform: translateY(40px) scale(0.5); border-color: rgba(245,245,255,0.0); }
+  25%  { opacity: 0.85; border-color: rgba(245,245,255,0.7); }
+  100% { opacity: 0; transform: translateY(-160px) scale(2.6); border-color: rgba(245,245,255,0.0); }
+}

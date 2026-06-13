@@ -344,6 +344,7 @@ function becomeLovers(charId) {
     labelMain: displayName(charId),
     labelSub: "恋人になった",
   });
+  smokeRings(4); // 恋人成立の華
   // 2人目以降＝浮気状態。うしろめたさが積もり始める（ch3の修羅場の種）
   if (state.lovers.length >= 2) state.guilt = (state.guilt || 0) + 2;
   save();
@@ -619,6 +620,20 @@ function engulfInSmoke(onMid) {
   // 白く包まれてからひと呼吸おいて onMid（晴れていく中で次の画面が現れる）
   if (onMid) setTimeout(onMid, 1050);
   setTimeout(() => veil.classList.remove("engulf"), 2650);
+}
+// 煙ワイプの汎用API（master_spec #20）。pointer-events:none なので操作は止めない
+function smokeWipe(onMid) { engulfInSmoke(onMid); }
+
+// スモークリングのフラッシュ（勝利・ランクアップの華）。中央から輪が連続で抜ける
+function smokeRings(n = 3) {
+  const box = $("#smoke-veil");
+  for (let i = 0; i < n; i++) {
+    const ring = document.createElement("div");
+    ring.className = "smoke-ring";
+    ring.style.animationDelay = `${i * 0.22}s`;
+    box.appendChild(ring);
+    setTimeout(() => ring.remove(), 1600 + i * 220);
+  }
 }
 
 // 日替わりカード（演出のみ・操作は止めない）
@@ -2635,9 +2650,10 @@ function startTournament() {
   for (const id of ["naru", "adam", "minto", "nagumo", "maezono"]) markMet(id);
   updateHud();
   save();
-  playDialogue("ch1_tournament_arrival", () =>
+  // 会場へ歩み入る瞬間を煙ワイプで（master_spec #20）
+  smokeWipe(() => playDialogue("ch1_tournament_arrival", () =>
     playDialogue("ch1_tournament_opening", () => beginMaking(), "res://assets/backgrounds/bg_tournament_stage.png")
-  );
+  ));
 }
 
 // mode: "tournament"（既定）| "tutorial"（開幕の通し体験）| "baito"（オーダーチャレンジ）
