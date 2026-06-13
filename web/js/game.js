@@ -2711,10 +2711,12 @@ const DODGE_WORDS_CH2 = [
   "ヴォルクの精度", "組長の覚悟", "あげはのバイブス", "なるの配合ノート",
   "“誰の煙だ？”", "採点表", "正解はどれだ", "味が、思い出せない",
 ];
+// ch1ライバルの基礎点。実力（statScore+craft）だけでは普通3〜4位・最良でも2位に収まり、
+// 1位は南雲の総合印象点（craft基準超えで一括投入）だけが生む。逆転を「効かせる」ための難度設定。
 const RIVALS = [
-  { id: "naru", name: "なる", base: 72 },
-  { id: "adam", name: "アダム", base: 67 },
-  { id: "minto", name: "みんと", base: 62 },
+  { id: "naru", name: "なる", base: 82 },
+  { id: "adam", name: "アダム", base: 74 },
+  { id: "minto", name: "みんと", base: 67 },
 ];
 
 const EQUIP_TYPE_LABELS = { bowl: "ボウル", hms: "ヒートマネジメント", charcoal: "炭", homeware: "家シーシャ" };
@@ -4791,12 +4793,11 @@ function showResult(results, rank, detail, opts = {}) {
   btn.style.transition = "opacity 0.4s";
   setTimeout(() => { if (breakdown) breakdown.style.opacity = "1"; btn.style.opacity = "1"; }, 500 + rows.length * 750 + 400);
   if (rank === 1) {
-    btn.textContent = "結果発表へ";
+    btn.textContent = "──表彰のあとへ ▶";
     btn.addEventListener("click", opts.onWin || (() => {
       addMoney(50000); // 優勝賞金（master_spec #21）
-      playDialogue("ch1_tournament_result", () =>
-        playDialogue("ch1_tournament_after", () => postClearPhone(() => showClear()), "res://assets/backgrounds/bg_tournament_stage.png"), "res://assets/backgrounds/bg_tournament_stage.png"
-      );
+      // 審査(judging)・発表(reveal)は既にカウント前後で流したので、ここは表彰後の余韻だけ
+      playDialogue("ch1_tournament_after", () => postClearPhone(() => showClear()), "res://assets/backgrounds/bg_tournament_stage.png");
     }));
   } else {
     btn.textContent = "……結果を受け止める";
@@ -4818,6 +4819,14 @@ function showResult(results, rank, detail, opts = {}) {
     $("#tn-progress").textContent = "RESULT";
     $("#tn-body").innerHTML = "";
     const premium = rank === 1 && tt.foilHits >= 6 && tt.coalFire === "perfect";
+    const BG = "res://assets/backgrounds/bg_tournament_stage.png";
+    // ch1優勝ルートだけ、順番を整える（#16/#48）: 審査(南雲の二口)→「もうだめだ」→
+    // 10カウント(buildup)→ 総合印象点の満点で逆転発表。負け/ch2は従来どおり。
+    if (state.chapter === 1 && rank === 1) {
+      return playDialogue("ch1_tournament_judging",
+        () => runResultCountdown(rank, premium,
+          () => playDialogue("ch1_tournament_reveal", reveal, BG), results), BG);
+    }
     return runResultCountdown(rank, premium, reveal, results);
   }
   reveal();
