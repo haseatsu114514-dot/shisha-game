@@ -2758,6 +2758,121 @@ function pakkiLive(result) {
   if (pool.length) ticker(pool[Math.floor(Math.random() * pool.length)]);
 }
 
+// ============================================================================
+// 大会の生放送レイヤー（本番のみ）:
+//   #24 可視スコア（体感スコア「+N P」ポップ）＋ニコ動風コメント
+//   #20 工程ブロックの頭でMCが前振り ／ #26 ライバルのリアルタイム実況
+// 審査員の持ち点とは別系統の「観客ウケ」を可視化して気持ちよさを出す。
+// ============================================================================
+const NICO_POOL = {
+  perfect: ["うますぎｗ", "神業ｷﾀ━(ﾟ∀ﾟ)━!", "完璧すぎる", "もう優勝でいいだろ", "手元ブレなさすぎ", "プロかよ", "88888888", "ファッ!?", "鳥肌たった", "うおおお"],
+  good:    ["いいぞいいぞ", "おっ", "安定してる", "丁寧だなぁ", "うまい", "ここから上げてけ", "ナイス", "おちついてる"],
+  miss:    ["あー", "おしいっ", "ドンマイ", "巻き返せ！", "緊張してる？", "まだいける", "がんば", "ここから"],
+  serve:   ["もう完成したの!?", "提供はやっ", "早ぇｗ", "段取りいいな", "迷いがない", "仕事はやい"],
+  block:   ["きたきた", "次の工程だ", "見せ場ｷﾀ", "ここ大事", "おっ動いた", "ふむふむ"],
+  rival:   ["ライバルも本気だ", "他のもいい匂いしそう", "接戦になりそう", "向こうも仕上げてる"],
+};
+
+function broadcastActive() { return !!(tt && tt.mode === "tournament"); }
+
+function ensureBroadcast() {
+  if (!broadcastActive()) return null;
+  const stage = $("#screen-tournament");
+  let lane = document.getElementById("tn-comments");
+  if (!lane) { lane = document.createElement("div"); lane.id = "tn-comments"; stage.appendChild(lane); }
+  let feel = document.getElementById("tn-feel");
+  if (!feel) {
+    feel = document.createElement("div"); feel.id = "tn-feel";
+    feel.innerHTML = `<span class="tf-label">体感スコア</span><span class="tf-num" id="tn-feel-num">0</span><span class="tf-p">P</span>`;
+    stage.appendChild(feel);
+  }
+  return { lane, feel };
+}
+
+function resetBroadcast() {
+  if (tt) tt.feelScore = 0;
+  const lane = document.getElementById("tn-comments"); if (lane) lane.innerHTML = "";
+  const num = document.getElementById("tn-feel-num"); if (num) num.textContent = "0";
+  const feel = document.getElementById("tn-feel"); if (feel) feel.classList.remove("show");
+}
+
+// ニコ動風コメントを1本流す（右→左）
+function nicoComment(text, opts = {}) {
+  const b = ensureBroadcast(); if (!b) return;
+  const c = document.createElement("div");
+  c.className = "nico" + (opts.cls ? " " + opts.cls : "");
+  c.textContent = text;
+  const row = opts.row != null ? (opts.row % 6) : Math.floor(Math.random() * 6);
+  c.style.top = `${5 + row * 13}%`;
+  const dur = opts.dur || (4.2 + Math.random() * 1.8);
+  c.style.animationDuration = `${dur}s`;
+  b.lane.appendChild(c);
+  setTimeout(() => c.remove(), dur * 1000 + 250);
+}
+
+function nicoBurst(kind, n) {
+  const pool = NICO_POOL[kind] || [];
+  if (!pool.length) return;
+  n = n != null ? n : (kind === "perfect" ? 3 : kind === "miss" ? 2 : 2);
+  for (let i = 0; i < n; i++) {
+    const t = pool[Math.floor(Math.random() * pool.length)];
+    setTimeout(() => nicoComment(t, { cls: kind === "perfect" || kind === "miss" || kind === "rival" ? kind : "", row: i }), i * 170);
+  }
+}
+
+// 体感スコア加点＋「+N P」ポップ
+function feelPop(pts, label) {
+  const b = ensureBroadcast(); if (!b || !(pts > 0)) return;
+  tt.feelScore = (tt.feelScore || 0) + pts;
+  const num = document.getElementById("tn-feel-num");
+  if (num) { num.textContent = String(tt.feelScore); num.classList.remove("bump"); void num.offsetWidth; num.classList.add("bump"); }
+  b.feel.classList.add("show");
+  const pop = document.createElement("div");
+  pop.className = "feel-pop";
+  pop.innerHTML = `+${pts}<span class="fp-p">P</span>${label ? `<small>${label}</small>` : ""}`;
+  b.feel.appendChild(pop);
+  setTimeout(() => pop.remove(), 1150);
+}
+
+// 判定（perfect/just/great/good/miss）→ 体感スコアとコメントへ一括反映
+const FEEL_PTS = { perfect: 12, just: 11, great: 10, good: 6, miss: 0 };
+const FEEL_NICO = { perfect: "perfect", just: "perfect", great: "perfect", good: "good", miss: "miss" };
+function broadcastJudge(result, label) {
+  if (!broadcastActive()) return;
+  const pts = FEEL_PTS[result] != null ? FEEL_PTS[result] : 6;
+  if (pts > 0) feelPop(pts, label || (FEEL_PTS[result] != null && pts >= 10 ? "GREAT" : ""));
+  nicoBurst(FEEL_NICO[result] || "good");
+}
+
+// #20 工程ブロックの頭でMCが前振り＋数ブロックに一度ライバルの動きも実況（#26）
+const MC_BLOCK = {
+  theme:    "さあ、はじめ選手！　まずはコンセプト決めだ！",
+  mix:      "配合に入ったァ！　どんな一台を組む！？",
+  pack:     "詰めの工程！　ここで密度が決まるぞ！",
+  foil:     "アルミ巻きィ！　穴あけのリズムに注目だ！",
+  coalfire: "炭起こし！　芯がピカッと閃く瞬間を狙えっ！",
+  steam:    "蒸らしに入った……ここはじっくり待つ！",
+  adjust:   "第2ラウンド、調整だ！　今の温度を読めるか！？",
+  pull:     "いよいよ吸い出し──提供はもう目前だァ！",
+};
+const RIVAL_MC = [
+  "おっと、なる選手はもう炭を置いた！　速い！",
+  "アダム選手、ダブルアップルの甘い香りが審査席まで！",
+  "みんと選手、危なげなく工程を進めています！",
+  "なる選手、早くも提供の体勢に入ったか！？",
+];
+function mcBlockIntro(step) {
+  if (!broadcastActive()) return;
+  const line = MC_BLOCK[step];
+  if (!line) return;
+  ticker(line);
+  nicoBurst("block", 1);
+  if (Math.random() < 0.5) {
+    const r = RIVAL_MC[Math.floor(Math.random() * RIVAL_MC.length)];
+    setTimeout(() => { if (broadcastActive()) { ticker(r); nicoBurst("rival", 1); } }, 2700);
+  }
+}
+
 // 大会は3ラウンド制: R1=組み立て（setup〜steam）→ R2=調整（adjust＋focus）→ R3=提供（吸い出し）。
 // ラウンドの切れ目で ch1_tournament_r1〜r3_end の会話が挟まる。
 // プレゼン工程は廃止（2026-06-12 オーナー決定）。提供の佇まいは魅力としてスコアに残る
@@ -2909,6 +3024,7 @@ function beginMaking(mode) {
   };
   stopRigEffects();
   buildRig();
+  resetBroadcast(); // 体感スコア・ニコ動コメントを初期化（本番のみ実体が出る）
   if (mode === "baito") {
     // お客さんのリクエスト（テーマ）は日替わり。大会同様のフル工程で作る
     tt.theme = dailyTheme();
@@ -3005,6 +3121,7 @@ function optionButton(label, desc, onClick) {
 
 function tournamentStep(step) {
   if (tt) tt.step = step;
+  mcBlockIntro(step); // #20 工程ブロックの頭でMC実況（本番のみ・対象ブロックのみ）
   if (step === "setup_bowl" || step === "setup_hms" || step === "setup_charcoal") return stepSetup(step);
   if (step === "theme") {
     const body = tnPanel("テーマ選択", "今日の一台のコンセプトを決めろ。フレーバー選びの軸になる。");
@@ -3352,7 +3469,7 @@ function stepFoil() {
   const finishRing = () => {
     const r = ringData[ringIdx];
     const even = ringEvenness(r.angles);
-    if (even > 0.82 && r.angles.length >= r.target) { callout("RING COMPLETE", "great"); showStamp(board, "just"); }
+    if (even > 0.82 && r.angles.length >= r.target) { callout("RING COMPLETE", "great"); showStamp(board, "just"); feelPop(6, "RING"); nicoBurst("good", 1); }
     else callout("AIR FLOW", even > 0.6 ? "" : "warn");
     advBtn.classList.remove("ready");
     if (ringIdx < ringData.length - 1) {
@@ -3398,6 +3515,7 @@ function stepFoil() {
     const rank = quality >= 0.85 ? "perfect" : quality >= 0.6 ? "good" : "miss";
     showStamp(board, rank === "perfect" ? "just" : rank);
     pakkiLive(rank);
+    broadcastJudge(rank, "穴あけ");
     if (rank === "perfect") smokeRings(3);
     result.innerHTML =
       (quality >= 0.85 ? "──寸分違わぬ円。どのリングも穴が均等に散って、空気の通り道が完璧に整った。"
@@ -3600,6 +3718,7 @@ function stepCoalFire() {
     const rank = tt.coalFire;
     showStamp(arena.querySelector("#heat-burner"), rank === "perfect" ? "just" : rank);
     pakkiLive(rank);
+    broadcastJudge(rank, "炭");
     if (rank === "perfect") smokeRings(3);
     result.innerHTML =
       (justCount >= 2 ? "──三つの芯が、ほぼ同時にピカッと閃いた。火力も香りも申し分ない熾きだ。"
@@ -3908,6 +4027,7 @@ function runSteamDodge(steamOpt, onDone) {
     const grade = hits === 0 ? "perfect" : hits <= 2 ? "good" : "miss";
     showStamp($("#tn-layout .panel"), grade);
     pakkiLive(grade);
+    broadcastJudge(grade, "蒸らし");
     result.textContent =
       hits === 0 ? "──雑念ゼロ。蒸らしの間、煙のことだけを見ていられた。"
       : hits <= 2 ? "──少し心がざわついた。でも、致命傷じゃない。"
@@ -4120,6 +4240,7 @@ function stepPull() {
     if (just) {
       tt.pullJust = (tt.pullJust || 0) + 1;
       showStamp($("#tn-layout .panel"), "just");
+      feelPop(8, "JUST"); nicoBurst("perfect", 1);
       if (window.SFX) SFX.perfect && SFX.perfect();
     }
     tt.temp = Math.max(0, Math.min(1, tt.temp + delta + (Math.random() * 2 - 1) * jitter));
@@ -4150,6 +4271,8 @@ function stepPull() {
     startRigSmoke(tt.pull === "miss" ? 900 : 320);
     showStamp($("#tn-layout .panel"), tt.pull);
     pakkiLive(tt.pull);
+    broadcastJudge(tt.pull, "提供");
+    nicoBurst("serve", 1); // 提供スピード感のウケ
     result.textContent = {
       perfect: "──完璧な温度。煙が重く、甘く、まとまっている。",
       good: "──いい温度だ。狙った味に近い。",
@@ -4374,7 +4497,8 @@ function flavorTrial(onDone) {
     fb.innerHTML = `<span class="trial-line">${res}</span>`;
     fb.className = `trial-feedback show ${cls}`;
     if (window.SFX) (delta > 0 ? SFX.perfect : SFX.miss)();
-    if (delta > 0) { showStamp($("#tn-layout .panel"), "just"); if (tt.mode === "tournament") pakkiLive("perfect"); }
+    if (delta > 0) { showStamp($("#tn-layout .panel"), "just"); if (tt.mode === "tournament") { pakkiLive("perfect"); broadcastJudge("perfect", "SYNC"); } }
+    else if (tt.mode === "tournament") nicoBurst("miss", 1);
     const next = document.createElement("button");
     next.className = "primary-btn";
     next.textContent = round < TRIAL_DOUBTS.length - 1 ? "次のザワザワへ ▶" : "審査を終える ▶";
@@ -4404,6 +4528,9 @@ function flavorTrial(onDone) {
 }
 
 function finishTournament() {
+  // 生放送レイヤーの流れるコメントは結果発表前に片付ける（体感スコアtt.feelScoreは保持＝#25で使う）
+  const lane = document.getElementById("tn-comments"); if (lane) lane.innerHTML = "";
+  const feelEl = document.getElementById("tn-feel"); if (feelEl) feelEl.classList.remove("show");
   const s = state.stats;
   const statScore = (s.technique * 1.2 + s.sense * 1.0 + s.guts * 0.6 + s.charm * 0.8 + s.insight * 1.0) / 4.6;
   const craft = craftScore();
@@ -4453,19 +4580,50 @@ function finishTournament() {
 // RESULT 10 COUNT（結果発表の10カウント演出）— master_spec 第2部 #4
 // 集計中…→会場ざわめき→10…0→プチュン(1位確定)/パリン(2位以下)。カウント中はカットインを挟む。
 // プレミア時は2〜3秒残しでフライングプチュン。プチュンは必ず1位、パリンは2位以下。
-function runResultCountdown(rank, premium, onDone) {
+// 出場者が作った一台（シーシャ）の色。はじめは配合の主役フレーバー、ライバルは仮の代表色。
+const RIVAL_SHISHA = {
+  naru: "#8fe3c0", adam: "#d96a6a", minto: "#e89ad0",
+  kumicho: "#b69cff", rei: "#9ab8ff", ageha: "#ffc46a",
+  nandi: "#e0b060", steve: "#90c0d0", volk: "#c0c8d8",
+  sheikh: "#e8c878", master_hookah: "#d0a0ff", shisha_9000: "#7de8ff",
+};
+function contestantShishaColor(id) {
+  if (id === "hajime") {
+    const top = Object.entries(tt.mix || {}).sort((a, b) => b[1] - a[1])[0];
+    return (top && FLAVOR_COLORS[top[0]]) || (tt.theme && tt.theme.best && FLAVOR_COLORS[tt.theme.best[0]]) || "#cdb98a";
+  }
+  return RIVAL_SHISHA[id] || "#bda0e0";
+}
+
+// RESULT 10 COUNT（結果発表“前”のbuildup・#14/#48）。中央のカウントの周りに、
+// 出場者の「お祈りカット」と作った一台を並べる＝カット割。お祈り/立ち絵の専用画像は生成待ちのため、
+// 顔アイコン（あれば）＋名前＋一台の色で仮組み。プレミア(#47)は暗転→プチュンのフライング。
+function runResultCountdown(rank, premium, onDone, contestants) {
   let ov = document.getElementById("result-count");
   if (!ov) { ov = document.createElement("div"); ov.id = "result-count"; $("#game").appendChild(ov); }
+  const list = (contestants && contestants.length) ? contestants : [{ id: "hajime", name: "はじめ" }, ...RIVALS];
+  const cards = list.map((c) => {
+    const pray = faceIconHtml(c.id, "rc-pray-face") || `<span class="rc-pray-ph">🙏</span>`;
+    return `<div class="rc-card${c.id === "hajime" ? " me" : ""}" data-id="${c.id}">` +
+      `<div class="rc-pray">${pray}<span class="rc-pray-tag">祈</span></div>` +
+      `<div class="rc-bowl" style="--cc:${contestantShishaColor(c.id)}"></div>` +
+      `<div class="rc-card-name">${c.name}</div></div>`;
+  }).join("");
   ov.className = "rc show";
-  ov.innerHTML = `<div class="rc-cutin" id="rc-cutin"></div><div class="rc-num" id="rc-num"></div><div class="rc-msg" id="rc-msg">集計中……</div>`;
+  ov.innerHTML =
+    `<div class="rc-cards">${cards}</div>` +
+    `<div class="rc-num" id="rc-num"></div>` +
+    `<div class="rc-msg" id="rc-msg">集計中……</div>`;
   const numEl = ov.querySelector("#rc-num");
   const msgEl = ov.querySelector("#rc-msg");
-  const cutinEl = ov.querySelector("#rc-cutin");
-  const CUTINS = ["真剣な横顔", "アルミの穴", "炭のピカン", "立ちのぼる煙", "審査員の目元", "ざわめく会場"];
+  const cardEls = [...ov.querySelectorAll(".rc-card")];
+  // カット割: カウント中、ランダムな出場者の「お祈り」にカットを切り替える（緊張の高まり）
   const flashCut = () => {
-    cutinEl.textContent = CUTINS[Math.floor(Math.random() * CUTINS.length)];
-    cutinEl.className = "rc-cutin show";
-    setTimeout(() => cutinEl.classList.remove("show"), 300);
+    if (!cardEls.length) return;
+    const pick = cardEls[Math.floor(Math.random() * cardEls.length)];
+    cardEls.forEach((el) => el.classList.remove("cut"));
+    pick.classList.add("cut");
+    setTimeout(() => pick.classList.remove("cut"), 330);
   };
   const finish = (cls, msg, sfx, smoke) => {
     numEl.textContent = ""; msgEl.textContent = "";
@@ -4476,16 +4634,25 @@ function runResultCountdown(rank, premium, onDone) {
     t.className = `rc-final ${cls}`;
     t.textContent = msg;
     ov.appendChild(t);
-    setTimeout(() => { ov.className = "rc"; ov.innerHTML = ""; onDone(); }, 1550);
+    setTimeout(() => { ov.className = "rc"; ov.innerHTML = ""; onDone(); }, 1650);
   };
-  const puchun = () => finish("puchun", "PERFECT SESSION!!", () => { SFX.bubble(); setTimeout(() => SFX.fanfare(), 220); }, true);
+  const doPuchun = () => finish("puchun", "PERFECT SESSION!!", () => { SFX.bubble(); setTimeout(() => SFX.fanfare(), 220); }, true);
+  const puchun = () => {
+    // #47 プレミアは暗転(ブラックアウト)→プチュンのフライング
+    if (premium) {
+      ov.classList.add("blackout");
+      if (window.SFX) SFX.click();
+      return setTimeout(() => { ov.classList.remove("blackout"); doPuchun(); }, 380);
+    }
+    doPuchun();
+  };
   const parin = () => finish("parin", "SESSION BREAK", () => SFX.miss(), false);
   let n = 10;
   const premiumAt = premium ? 3 : -1; // プレミアは少し残してフライング
   setTimeout(function tick() {
-    msgEl.textContent = "会場がざわめく……";
-    if (n <= 0) return rank === 1 ? puchun() : parin();
-    if (rank === 1 && n === premiumAt) return puchun(); // フライングプチュン（1位のみ）
+    if (n <= 0) { msgEl.textContent = "──結果発表！"; return rank === 1 ? puchun() : parin(); }
+    if (rank === 1 && n === premiumAt) { msgEl.textContent = "……!?"; return puchun(); } // フライング（1位のみ）
+    msgEl.textContent = n > 6 ? "まもなく、結果発表……" : "結果発表まで、あと";
     numEl.textContent = String(n);
     numEl.classList.remove("pop"); void numEl.offsetWidth; numEl.classList.add("pop");
     if (window.SFX) SFX.click();
@@ -4493,6 +4660,43 @@ function runResultCountdown(rank, premium, onDone) {
     n--;
     setTimeout(tick, 360);
   }, 520);
+}
+
+// 大会後リザルトの工程内訳（#25）。各工程をA/B/Cで採点し、低い工程に“次への手がかり”を添える。
+function gradeLetter(tier) { return tier >= 2 ? "A" : tier === 1 ? "B" : "C"; }
+function tournamentBreakdown() {
+  const items = [];
+  const add = (label, tier, hint) => items.push({ label, grade: gradeLetter(tier), tier, hint });
+  add("穴あけ", tt.foilHits >= 6 ? 2 : tt.foilHits >= 4 ? 1 : 0, "リングの均等度を上げると煙の通りが整う");
+  add("炭起こし", tt.coalFire === "perfect" ? 2 : tt.coalFire === "good" ? 1 : 0, "芯がピカッと閃く“取り頃”で取ると熱が乗る");
+  if (typeof tt.steamHits === "number") add("蒸らし", tt.steamHits === 0 ? 2 : tt.steamHits <= 2 ? 1 : 0, "雑念の被弾を減らすと煙がまっすぐ立つ");
+  add("集中", tt.focusCleared >= 5 ? 2 : tt.focusCleared >= 3 ? 1 : 0, "集中を保つと手元のブレが減る");
+  add("吸い出し", tt.pull === "perfect" ? 2 : tt.pull === "good" ? 1 : 0, "適温の窓でJUSTを重ねると一気に伸びる");
+  const p = mixProfile();
+  const matched = tt.theme && tt.theme.best ? tt.theme.best.filter((c) => p.cats.has(c)).length : 0;
+  add("テーマ相性", matched >= 2 ? 2 : matched === 1 ? 1 : 0, "コンセプトに合うカテゴリを2つ以上揃える");
+  if (tt.presentationResult) {
+    const g = tt.presentationResult.convinceGauge;
+    add("審査", g >= 75 ? 2 : g >= 45 ? 1 : 0, "実績の伴うアピールを“ぶつける”と納得が伸びる");
+  }
+  return items;
+}
+function buildBreakdownPanel() {
+  const items = tournamentBreakdown();
+  const el = document.createElement("div");
+  el.className = "result-breakdown";
+  const lows = items.filter((it) => it.tier < 2).slice(0, 3);
+  el.innerHTML =
+    `<div class="rb-head">出来の内訳<span class="rb-sub">── 次への手がかり</span>` +
+    (tt.feelScore ? `<span class="rb-feel">観客の体感スコア <b>${tt.feelScore}</b> P</span>` : "") + `</div>` +
+    `<div class="rb-grid">` +
+    items.map((it) => `<div class="rb-item g-${it.grade}"><span class="rb-label">${it.label}</span><span class="rb-grade">${it.grade}</span></div>`).join("") +
+    `</div>` +
+    `<div class="rb-hints">` +
+    (lows.length ? lows.map((it) => `<p>・${it.label}: ${it.hint}</p>`).join("")
+      : `<p>・どの工程も高水準。次は他のテーマでも安定を狙おう。</p>`) +
+    `</div>`;
+  return el;
 }
 
 function showResult(results, rank, detail, opts = {}) {
@@ -4529,11 +4733,14 @@ function showResult(results, rank, detail, opts = {}) {
       }
     }, 500 + i * 750);
   });
+  // 出来の内訳（#25）。順位リビールが終わってから、ボタンと一緒にふわっと出す
+  const breakdown = (tt && tt.mode === "tournament") ? buildBreakdownPanel() : null;
+  if (breakdown) { breakdown.style.opacity = "0"; breakdown.style.transition = "opacity 0.5s"; }
   const btn = document.createElement("button");
   btn.className = "primary-btn";
   btn.style.opacity = "0";
   btn.style.transition = "opacity 0.4s";
-  setTimeout(() => { btn.style.opacity = "1"; }, 500 + rows.length * 750 + 400);
+  setTimeout(() => { if (breakdown) breakdown.style.opacity = "1"; btn.style.opacity = "1"; }, 500 + rows.length * 750 + 400);
   if (rank === 1) {
     btn.textContent = "結果発表へ";
     btn.addEventListener("click", opts.onWin || (() => {
@@ -4550,7 +4757,8 @@ function showResult(results, rank, detail, opts = {}) {
       playDialogue("ch1_tournament_defeat", () => showDefeat(rank), "res://assets/backgrounds/bg_tournament_stage.png");
     }));
   }
-  body.append(note, table, btn);
+  if (breakdown) body.append(note, table, breakdown, btn);
+  else body.append(note, table, btn);
   };
   // 大会の結果発表だけ、RESULT 10 COUNT（プチュン=1位/パリン=2位以下）を先に挟む（#14）。
   // カウント中は大会画面に切り替えて中身を空にする（直前の会話画面を active に残さない＝
@@ -4561,7 +4769,7 @@ function showResult(results, rank, detail, opts = {}) {
     $("#tn-progress").textContent = "RESULT";
     $("#tn-body").innerHTML = "";
     const premium = rank === 1 && tt.foilHits >= 6 && tt.coalFire === "perfect";
-    return runResultCountdown(rank, premium, reveal);
+    return runResultCountdown(rank, premium, reveal, results);
   }
   reveal();
 }

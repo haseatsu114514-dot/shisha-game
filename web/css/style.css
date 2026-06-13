@@ -2393,6 +2393,47 @@ body {
 }
 #tn-ticker.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
+/* ===== 大会の生放送レイヤー: ニコ動風コメント＋体感スコア（#24/#20/#26） ===== */
+#tn-comments { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 30; }
+.nico {
+  position: absolute; left: 0; white-space: nowrap;
+  font-weight: 800; font-size: 19px; color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 7px rgba(0,0,0,0.6);
+  transform: translateX(100vw); animation: nico-fly linear forwards; will-change: transform;
+}
+.nico.perfect { color: #ffe79a; }
+.nico.miss { color: #ff9a9a; }
+.nico.rival { color: #aad4ff; }
+@keyframes nico-fly { to { transform: translateX(-100%); } }
+
+#tn-feel {
+  position: absolute; top: 12px; right: 16px; z-index: 33; pointer-events: none;
+  display: flex; align-items: baseline; gap: 5px; padding: 6px 13px; border-radius: 13px;
+  background: linear-gradient(180deg, rgba(24,18,34,0.85), rgba(12,10,20,0.92));
+  border: 1px solid rgba(255,210,120,0.42); box-shadow: 0 4px 14px rgba(0,0,0,0.45);
+  opacity: 0; transform: translateY(-8px); transition: opacity 0.3s ease, transform 0.3s ease;
+}
+#tn-feel.show { opacity: 1; transform: translateY(0); }
+.tf-label { font-size: 11px; letter-spacing: 0.1em; color: #c9b78a; }
+.tf-num { font-size: 26px; font-weight: 900; color: #ffe79a; line-height: 1;
+  font-family: "Arial Black", sans-serif; text-shadow: 0 0 12px rgba(255,200,90,0.55); }
+.tf-num.bump { animation: tf-bump 0.4s ease-out; }
+@keyframes tf-bump { 0%{transform:scale(1);} 40%{transform:scale(1.4);} 100%{transform:scale(1);} }
+.tf-p { font-size: 12px; color: #c9b78a; }
+.feel-pop {
+  position: absolute; right: 10px; top: 100%; margin-top: 5px;
+  font-weight: 900; font-size: 21px; color: #fff36b; white-space: nowrap; pointer-events: none;
+  text-shadow: 0 0 10px rgba(255,210,90,0.95);
+  animation: feel-pop-rise 1.1s ease-out forwards;
+}
+.feel-pop .fp-p { font-size: 13px; margin-left: 1px; }
+.feel-pop small { font-size: 11px; color: #d8e0ff; margin-left: 5px; font-weight: 700; }
+@keyframes feel-pop-rise {
+  0%   { opacity: 0; transform: translateY(8px) scale(0.8); }
+  25%  { opacity: 1; transform: translateY(0) scale(1.12); }
+  100% { opacity: 0; transform: translateY(-28px) scale(1); }
+}
+
 #glossary-overlay {
   position: absolute; inset: 0;
   z-index: 62;
@@ -2756,10 +2797,11 @@ body {
 #result-count { position: absolute; inset: 0; z-index: 60; display: none; align-items: center; justify-content: center;
   background: radial-gradient(circle at 50% 45%, rgba(8,8,14,0.86), rgba(2,2,5,0.97)); pointer-events: none; overflow: hidden; }
 #result-count.show { display: flex; }
-.rc-num { font-size: 160px; font-weight: 900; color: #fff; line-height: 1; font-family: "Arial Black", sans-serif;
+.rc-num { font-size: 132px; font-weight: 900; color: #fff; line-height: 1; font-family: "Arial Black", sans-serif;
   text-shadow: 0 0 40px rgba(120,170,255,0.85), 0 0 12px rgba(255,255,255,0.9); }
-.rc-num.pop { animation: rc-pop 0.45s ease-out; }
-@keyframes rc-pop { 0% { transform: scale(1.8); opacity: 0; } 30% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.92); opacity: 0.85; } }
+.rc-num.pop { animation: rc-pop 0.34s ease-out; }
+/* スケールの弾みだけにして数字は常に見える状態に（tick間隔より長いopacity 0復帰で消えていた不具合の修正） */
+@keyframes rc-pop { 0% { transform: scale(1.7); } 38% { transform: scale(0.93); } 100% { transform: scale(1); } }
 .rc-msg { position: absolute; bottom: 22%; font-size: 18px; letter-spacing: 0.2em; color: #aeb8d6; }
 .rc-cutin { position: absolute; top: 16%; font-size: 22px; font-weight: 700; letter-spacing: 0.14em; color: #ffe79a;
   opacity: 0; text-shadow: 0 0 18px rgba(255,200,90,0.8); }
@@ -2773,6 +2815,48 @@ body {
 @keyframes rc-flash { 0% { background-color: rgba(255,255,255,0.92); } 100% { background-color: rgba(10,10,18,0.95); } }
 #result-count.parin { animation: rc-shake 0.42s ease-out; }
 @keyframes rc-shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(5px); } }
+
+/* RESULT 10 COUNT のカット割（#14）: カウントの周りに出場者のお祈り＋作った一台 */
+#result-count.show { flex-direction: column; gap: 20px; }
+.rc-cards { display: flex; gap: 16px; justify-content: center; align-items: flex-end; flex-wrap: wrap; max-width: 92%; }
+.rc-card { width: 92px; display: flex; flex-direction: column; align-items: center; gap: 5px; opacity: 0.8; transition: transform 0.18s ease, opacity 0.18s ease; }
+.rc-card.me { opacity: 1; }
+.rc-card.cut { transform: scale(1.16); opacity: 1; z-index: 2; }
+.rc-pray { position: relative; width: 74px; height: 74px; border-radius: 12px; overflow: hidden;
+  background: linear-gradient(180deg, rgba(42,36,56,0.92), rgba(18,16,28,0.96));
+  border: 1px solid rgba(255,225,150,0.28); display: flex; align-items: center; justify-content: center; }
+.rc-card.me .rc-pray { border-color: #ffd878; box-shadow: 0 0 16px rgba(255,210,120,0.5); }
+.rc-card.cut .rc-pray { box-shadow: 0 0 24px rgba(255,230,160,0.85); border-color: #ffe79a; }
+.rc-pray-face { width: 100%; height: 100%; object-fit: cover; }
+.rc-pray-ph { font-size: 36px; }
+.rc-pray-tag { position: absolute; right: 3px; bottom: 2px; font-size: 10.5px; color: #ffe79a;
+  background: rgba(0,0,0,0.55); border-radius: 4px; padding: 0 4px; letter-spacing: 0.1em; }
+.rc-bowl { width: 28px; height: 36px; border-radius: 0 0 14px 14px / 0 0 22px 22px; position: relative;
+  background: linear-gradient(180deg, var(--cc, #cdb98a), rgba(0,0,0,0.45)); box-shadow: 0 0 12px var(--cc, #cdb98a); }
+.rc-bowl::before { content: ""; position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
+  width: 22px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.28); }
+.rc-card-name { font-size: 12.5px; color: #e8e0f0; letter-spacing: 0.05em; }
+.rc-card.me .rc-card-name { color: #ffe79a; font-weight: 700; }
+#result-count.blackout { background: #000 !important; animation: none; }
+#result-count.blackout .rc-cards, #result-count.blackout .rc-num, #result-count.blackout .rc-msg { opacity: 0; }
+
+/* 大会後リザルトの工程内訳（#25） */
+.result-breakdown { margin: 2px 0 16px; padding: 12px 14px; border-radius: 12px;
+  background: rgba(20,18,30,0.55); border: 1px solid var(--panel-border); }
+.rb-head { font-size: 14px; font-weight: 700; color: #ffe79a; letter-spacing: 0.05em; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.rb-sub { font-size: 11.5px; color: var(--text-dim); font-weight: 400; letter-spacing: 0.03em; }
+.rb-feel { margin-left: auto; font-size: 12px; color: #cdb98a; font-weight: 400; }
+.rb-feel b { color: #ffe79a; font-size: 16px; }
+.rb-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.rb-item { display: flex; align-items: center; gap: 7px; padding: 5px 10px; border-radius: 9px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+.rb-label { font-size: 13px; color: #e8e0f0; }
+.rb-grade { font-size: 15px; font-weight: 900; width: 18px; text-align: center; }
+.rb-item.g-A { border-color: rgba(143,227,160,0.4); } .rb-item.g-A .rb-grade { color: #8fe3a0; }
+.rb-item.g-B .rb-grade { color: #ffd878; }
+.rb-item.g-C { border-color: rgba(255,140,140,0.35); } .rb-item.g-C .rb-grade { color: #ff9a9a; }
+.rb-hints { font-size: 12.5px; line-height: 1.7; color: var(--text-dim); }
+.rb-hints p { margin: 2px 0; }
 
 /* ============ GAME OVER（2位以下＝敗退・master_spec改定） ============ */
 #screen-end.gameover { background: linear-gradient(rgba(20,4,8,0.82), rgba(8,2,4,0.92)), url("../../assets/backgrounds/bg_tournament_stage.png") center / cover no-repeat, #0a0608; }
