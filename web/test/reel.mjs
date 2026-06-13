@@ -1,4 +1,4 @@
-// 日常リール（PUFF!PUFF!パッキー）の抽選コアのテスト。ブラウザ不要・node単体で走る。
+// 日常リール（MOKU!MOKU!パッキー）の抽選コアのテスト。ブラウザ不要・node単体で走る。
 // 使い方: `node web/test/reel.mjs`
 // ※ 本機能は実装待ちパッケージ（docs/pakki_slot_spec.md）。本編未接続でもこのテストは常に有効。
 import assert from "node:assert";
@@ -190,10 +190,26 @@ const weightOf = (table, id) => table.find((r) => r.id === id).weight;
         const corner = strip[(r.stops[0] + 1) % n] === "cherry" || strip[(r.stops[0] - 1 + n) % n] === "cherry";
         assert.ok(corner, "チェリー小役で角チェリーが見えていない");
       }
+      // 有効ラインは中段のみ（実機ジャグラー準拠＝下段揃いは無効）。
+      // ベル/リプレイ/7が中段で揃っても、下段・上段には同じ図柄が並ばないこと
+      if (r.role === "bell" || r.role === "replay") {
+        const sym = r.role;
+        const lower = r.stops.map((s, i) => STRIPS[i][(s + 1) % STRIPS[i].length]);
+        const upper = r.stops.map((s, i) => STRIPS[i][(s - 1 + STRIPS[i].length) % STRIPS[i].length]);
+        assert.ok(!lower.every((m) => m === sym), `下段に ${sym} が揃ってしまった（下段は無効ライン）`);
+        assert.ok(!upper.every((m) => m === sym), `上段に ${sym} が揃ってしまった`);
+      }
       assert.ok(r.stops.every((s, i) => s >= 0 && s < STRIPS[i].length), "停止位置が盤面の範囲外");
     }
   }
-  log("stop patterns OK");
+  // 配列そのものに同図柄の縦連続が無いこと（実機リール設計＝下段/上段の誤揃いを防ぐ）
+  for (let i = 0; i < STRIPS.length; i++) {
+    const s = STRIPS[i], n = s.length;
+    for (let k = 0; k < n; k++) {
+      assert.notStrictEqual(s[k], s[(k + 1) % n], `リール${i + 1} に同図柄の縦連続: ${s[k]} (idx ${k})`);
+    }
+  }
+  log("stop patterns / 有効ライン(中段のみ・下段揃い無し) OK");
 }
 
 // ---- 9. 参考値の出力（バランス調整用）

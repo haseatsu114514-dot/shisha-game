@@ -22,6 +22,8 @@ await page.waitForSelector("#screen-title.active");
 await page.screenshot({ path: `${OUT}/01_title.png` });
 
 await page.click("#btn-new");
+// 全画面スロット演出はテストではOFF（演出待ちでスクショ手順が固まるのを防ぐ）
+await page.evaluate(() => { try { config.reelFx = "off"; } catch (e) {} });
 for (let i = 0; i < 6; i++) { await page.click("#vn-click-layer"); await page.waitForTimeout(60); }
 await page.screenshot({ path: `${OUT}/02_opening.png` });
 

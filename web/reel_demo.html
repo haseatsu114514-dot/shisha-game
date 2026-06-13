@@ -3,11 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>PUFF!PUFF!パッキー 試打台</title>
+<title>MOKU!MOKU!パッキー 試打台</title>
 <!-- 本体に一切触れない独立デモ。reel.js / reel.css をそのまま読み込んで動作確認する。
      本編接続の手順は docs/pakki_slot_install_guide.md を参照。 -->
 <link rel="stylesheet" href="css/reel.css">
 <style>
+  /* デモでは全画面スロットをビューポート全体に出す */
+  #reel-stage { position: fixed !important; z-index: 9999; }
+  #reel-intro { position: fixed !important; z-index: 10000; }
   :root { --accent: #f4d27a; --accent-deep: #b88a2e; --text: #f2ecdf; --dim: #b6abc4; }
   * { box-sizing: border-box; }
   body {
@@ -111,7 +114,7 @@
 </head>
 <body>
 <div id="wrap">
-  <h1>PUFF!PUFF!パッキー 試打台</h1>
+  <h1>MOKU!MOKU!パッキー 試打台</h1>
   <p class="sub">
     本編に組み込む前の<b>動作・手触り確認用</b>。1タップ＝日常の1行動＝1回転。<br>
     ランプ（パッキーの顔）が<b>光ったらタップ</b>して当たりを引き込む。
@@ -265,24 +268,14 @@ function seedFromUrl() { const m = location.search.match(/seed=(\d+)/); return m
 
 let maxGap = 0;
 
-// 1行動（演出あり）
+// 1行動（全画面演出あり）
 function doSpin() {
   maxGap = Math.max(maxGap, state.reel.bonusGap);
-  REEL.onAction();
-  REEL.onMapShown();
-  render();
-  // 演出中は連打防止（スピン/カットインが消えるまで待つ）
   const btn = document.getElementById("spin1");
-  if (config.reelFx === "off") return;
   btn.disabled = true;
-  const poll = setInterval(() => {
-    const spinning = document.querySelector("#reel-widget .rw-strip.spinning");
-    const cutin = document.querySelector("#reel-cutin.show");
-    const intro = document.querySelector("#reel-intro.show");
-    if (!spinning && !cutin && !intro && (!state.reel.pending || !state.reel.pending.length)) {
-      clearInterval(poll); btn.disabled = false; render();
-    }
-  }, 120);
+  // runActionSession が抽選→全画面演出→報酬確定までやって、終わったら呼び戻す
+  REEL.runActionSession(() => { btn.disabled = false; render(); });
+  render();
 }
 
 // まとめ回し（集計のみ・演出なし）
@@ -346,9 +339,9 @@ document.getElementById("reset").addEventListener("click", () => {
   state.reel.introDone = true; // 新台は説明を飛ばす
   maxGap = 0;
   document.getElementById("gain-banner").innerHTML = "";
-  // 既存ウィジェットを消して作り直す
-  const w = document.getElementById("reel-widget"); if (w) w.remove();
-  const ci = document.getElementById("reel-cutin"); if (ci) { ci.className = ""; ci.innerHTML = ""; }
+  // 全画面ステージ・初回説明を消して作り直す
+  const st = document.getElementById("reel-stage"); if (st) st.remove();
+  const intro = document.getElementById("reel-intro"); if (intro) { intro.className = ""; intro.innerHTML = ""; }
   render();
   toast("新台に入れ替えた");
 });

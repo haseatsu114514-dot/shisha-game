@@ -21,6 +21,8 @@ page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
 
 await page.goto(BASE, { waitUntil: "load" });
 await page.waitForSelector("#screen-title.active");
+// 全画面スロット演出はテストではOFF
+await page.evaluate(() => { try { config.reelFx = "off"; } catch (e) {} });
 
 // ---- 恋愛システム: 告白 → 恋人化 → 2人目で浮気警告
 await page.evaluate(() => {

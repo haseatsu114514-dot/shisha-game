@@ -276,7 +276,7 @@ const SFX = (() => {
       hiss({ dur: 0.30, a: 0.01, peak: 0.07, filterType: "bandpass", filterFreq: 3000, q: 1.5, wet: 0.3,
              sweep: [2800, 1600, 0.30] });
     },
-    // ---------- 日常リール（PUFF!PUFF!パッキー） ----------
+    // ---------- 日常リール（MOKU!MOKU!パッキー） ----------
     reelLever: () => {
       // レバオンのカチャッ
       blip({ freq: 900, type: "square", a: 0.001, d: 0.03, r: 0.05, peak: 0.10, filterFreq: 3200, wet: 0.15 });

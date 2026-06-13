@@ -1,10 +1,10 @@
-// PUFF!PUFF!パッキー — C.STATION公式マスコットアプリのスロット（日常リール）。
+// MOKU!MOKU!パッキー — C.STATION公式マスコットアプリのスロット（日常リール）。
 //
 // 本編接続済み（2026-06-13）。仕様の正典は docs/pakki_slot_spec.md、
 // 接続箇所は docs/pakki_slot_install_guide.md。動作確認用の試打台は web/reel_demo.html。
 //
-// Aタイプ＋天井。「1行動=1回転」でマップ隅のミニ筐体が回り、
-// パッキーのランプが光ったら大当たり（完全告知）。
+// Aタイプ＋天井のジャグラー風スロット。「1行動=1回転」で全画面のスロット画面が出て、
+// GOGO!風の「MOKU!」ランプ（パッキー）が光ったら大当たり（完全告知）。回りきってから報酬確定。
 // ・抽選は決定論RNG（シード＋総回転数）— ロードしても結果が変わらない＝リセマラ不可
 // ・恩恵はステータスのみ:「直前の行動で伸びたステがさらに伸びる」アンコール抽選
 // ・ハズレでも対象ステ+1（サイレント）。天井（ゾーン/本天井・持ち越し）で最終的に全員救済
@@ -30,20 +30,20 @@ const REEL = (() => {
   }
 
   // ---- 役テーブル（weight 合計 1000）----
-  // 回せる回数が少ない（1章 ≒ 14日×2行動 = 28回転）前提で逆算。
-  // 天井（持ち越し）がある分、当たりはシブめに寄せる（2026-06-12 オーナー指示）:
-  //   リプレイ 1/7.3（実機オマージュ）／チェリー 1/9.1（うち約1/16がボーナス重複）／
-  //   ベル 1/83（レア小役）／中段チェリー等 1/200（BIG確定プレミア）／
-  //   ペカ合算 ≒ 1/15（章1.8回前後。ハマれば天井が拾う）／フリーズは別枠制御（下記）
+  // ジャグラー準拠の役構成（2026-06-13 オーナー指示）。1章 ≒ 14日×2行動 = 28回転前提:
+  //   ベル＝ジャグラーの「ぶどう」枠の常連小役（1/6.7・コツコツ +2）
+  //   リプレイ 1/7.3（実機オマージュ・再遊技）／チェリー＝角チェリー 1/25（うち約1/16が重複ペカ）
+  //   REG=BAR（バケ）＝1/31／BIG=赤7＝1/36／中段チェリー等 1/200（BIG確定プレミア）
+  //   ペカ合算 ≒ 1/14（バケ寄りに少し増量）／フリーズは別枠制御（下記）
   const ROLES = [
-    { id: "miss",   weight: 682 },
+    { id: "miss",   weight: 604 },
     { id: "replay", weight: 137 },
-    { id: "cherry", weight: 110 },
-    { id: "bell",   weight: 12 },
-    { id: "rare",   weight: 5 },   // 中段チェリー/単独パッキー → BIG確定（プレミア告知）
-    { id: "reg",    weight: 24 },
-    { id: "big",    weight: 26 },
-    { id: "freeze", weight: 4 },   // 名目値。実際は FREEZE_CONTROL が管理する
+    { id: "bell",   weight: 150 },  // ぶどう枠の常連小役（ジャグラーのぶどう相当）
+    { id: "cherry", weight: 40 },   // 角チェリー（うち一部が重複ペカ）
+    { id: "rare",   weight: 5 },    // 中段チェリー/単独パッキー → BIG確定（プレミア告知）
+    { id: "reg",    weight: 32 },   // バケ（BAR）。オーナー指示で少し増量
+    { id: "big",    weight: 28 },   // BIG（赤7）
+    { id: "freeze", weight: 4 },    // 名目値。実際は FREEZE_CONTROL が管理する
   ];
   const PEKA = ["reg", "big", "freeze", "rare"]; // ランプが光る役（チェリー重複は別途）
   // チェリー重複: チェリーのうち約1/16で同時当選（重複ペカ）。
@@ -67,8 +67,8 @@ const REEL = (() => {
   const EFFECTS = {
     miss:   { exp: 1, quiet: true },
     replay: { exp: 1, quiet: true },
-    cherry: { exp: 2 },                 // 重複時はボーナスぶんが上乗せされる
-    bell:   { exp: 3 },
+    bell:   { exp: 2 },                 // ぶどう枠の常連小役（コツコツ積もる）
+    cherry: { exp: 2 },                 // 角チェリー。重複時はボーナスぶんが上乗せされる
     rare:   { exp: 6, zone: true },     // BIG確定（プレミア）
     reg:    { exp: 4 },
     big:    { exp: 6, zone: true },
@@ -139,13 +139,17 @@ const REEL = (() => {
     { id: "silent", weight: 10 },  // 無音回転（SE消失＝プレミア告知）
   ];
 
-  // ---- リール盤面（図柄ストリップ）----
-  // seven=赤7 / bar=BAR / bell=パイナップルのベル / cherry=チェリー /
-  // replay=リプレイ(シーシャの水の青) / smoke=煙ブランク / pakki=パッキー柄(ピエロ枠)
+  // ---- リール盤面（図柄ストリップ・ジャグラー配列を参考）----
+  // seven=赤7(BIG) / bar=BAR(REG) / bell=ベル(ジャグラーのぶどう枠＝常連小役) /
+  // cherry=角チェリー / replay=リプレイ(シーシャの水の青) / smoke=煙ブランク / pakki=パッキー柄(ピエロ枠)
+  // ・各リール 赤7×1・BAR×1・パッキー×1（ピエロ相当の激レア）
+  // ・有効ラインは【中段】のみ。実機ジャグラー準拠で「下段揃い」は役にしない。
+  //   → 同じ図柄を縦に隣接させない配列にして、中段で揃っても上下段が揃わない（＝下段揃いが出ない）。
+  // ・チェリーは左リール中心の角チェリー（上下段の隅に見せる）
   const STRIPS = [
-    ["seven", "smoke", "replay", "cherry", "smoke", "bar", "replay", "smoke", "bell", "cherry", "smoke", "replay", "pakki", "smoke", "cherry", "replay"],
-    ["smoke", "seven", "replay", "smoke", "cherry", "bar", "smoke", "replay", "bell", "smoke", "cherry", "replay", "smoke", "pakki", "replay", "smoke"],
-    ["replay", "smoke", "seven", "cherry", "replay", "bar", "smoke", "bell", "replay", "smoke", "cherry", "smoke", "replay", "bar", "smoke", "pakki"],
+    ["seven", "bell", "replay", "bell", "smoke", "bell", "replay", "cherry", "bell", "smoke", "bell", "replay", "bell", "bar", "smoke", "pakki"],
+    ["bell", "seven", "replay", "bell", "cherry", "bell", "replay", "smoke", "bell", "replay", "bell", "smoke", "bell", "bar", "replay", "pakki"],
+    ["replay", "bell", "seven", "bell", "replay", "bell", "smoke", "bell", "replay", "cherry", "bell", "replay", "bell", "bar", "smoke", "pakki"],
   ];
   function stripIdx(strip, sym, rng) {
     const cands = [];
@@ -275,8 +279,9 @@ const REEL = (() => {
   };
 
   // ================================================================ ここからブラウザ専用
-  // （game.js のグローバル: state / save / gainBanner / toast / updateHud /
-  //   STAT_KEYS / STAT_BADGE / config / faceIconHtml / $ を実行時に参照する）
+  // game.js のグローバル: state / save / gainBanner / updateHud / STAT_KEYS /
+  //   STAT_BADGE / config / faceIconHtml を実行時参照する。
+  // 行動するたびに【全画面スロット画面】(#reel-stage) を出し、回りきってから報酬を確定する。
 
   function newReelState() {
     return {
@@ -287,7 +292,7 @@ const REEL = (() => {
       zoneLeft: 0,    // ジャグ連ゾーン残りG
       bonusCount: 0,  // 生涯ペカ数（裏確変の判定に使う）
       freezeCount: 0, // フリーズ取得数（1セーブ1回制御）
-      pending: [],    // 未演出の結果（演出前にリロードしても同じ内容が再生される）
+      pending: [],    // 未演出かつ未確定の結果（演出後に報酬を適用する）
       introDone: false,
       lastChapter: 0,
       note: { big: 0, reg: 0, rare: 0, freeze: 0, replay: 0, cherry: 0, cherryOverlap: 0, bell: 0, freezeLog: [] },
@@ -304,7 +309,6 @@ const REEL = (() => {
     const keys = Object.keys(statBuffer);
     let target = null;
     if (keys.length) {
-      // 一番大きく伸びたステを対象に（同率はステ定義順で決定論的に）
       const order = ["technique", "sense", "guts", "charm", "insight"];
       target = order.filter((k) => keys.includes(k))
         .sort((a, b) => statBuffer[b] - statBuffer[a])[0] || keys[0];
@@ -324,23 +328,17 @@ const REEL = (() => {
     if (typeof window !== "undefined" && window.SFX && SFX[name]) { try { SFX[name](...args); } catch (e) { /* noop */ } }
   }
 
-  // ---- 行動時のコミット（endAction から呼ばれる）----
-  // 結果と報酬はこの瞬間に確定して state に書き込む。演出は後追い（スロットの内部抽選と同じ構造）
+  // ---- 抽選コミット（カウンタと記録は確定。報酬は applyReward で演出後に確定する） ----
   function onAction() {
     if (typeof state === "undefined" || !state || !state.reel) return;
-    if (state.phase !== "daily") return; // 日常の行動のみ（チュートリアル・大会は回さない）
+    if (state.phase !== "daily") return; // 日常の行動のみ
     const reel = state.reel;
     const chapterFirst = reel.lastChapter !== state.chapter;
     reel.lastChapter = state.chapter;
     const target = pickTarget();
     const results = spinSeries(reel, { chapterFirst });
     for (const r of results) {
-      r.target = target;
-      // ステ上乗せ（直接書き込み。バナーは演出時に出す）
-      if (r.exp > 0 && state.stats && target in state.stats) {
-        state.stats[target] = Math.max(0, Math.min(100, state.stats[target] + r.exp));
-      }
-      // スロノート（Phase 2 の記録画面用に今から積んでおく）
+      r.target = target; r.applied = false;
       const note = reel.note || (reel.note = {});
       const bump = (k) => { note[k] = (note[k] || 0) + 1; };
       if (r.role === "big") bump("big");
@@ -356,350 +354,281 @@ const REEL = (() => {
       }
       reel.pending.push(r);
     }
+    if (typeof save === "function") save();
     if (typeof updateHud === "function") updateHud();
   }
 
-  // ================================================================ ウィジェット・演出
-  const CELL = 26;        // リール1コマの高さpx
-  const LEN = STRIPS[0].length;
-  let widget = null;
-  let cutin = null;
-  let busy = false;       // 演出シーケンス中
-  let bonusWait = null;   // プカ点灯中（タップ待ち）の結果
+  // 報酬確定（スロットが回りきってから呼ぶ＝「回ってから経験値」）
+  function applyReward(r) {
+    if (!r || r.applied) return;
+    r.applied = true;
+    if (r.exp > 0 && state.stats && r.target in state.stats) {
+      state.stats[r.target] = Math.max(0, Math.min(100, state.stats[r.target] + r.exp));
+    }
+    if (typeof updateHud === "function") updateHud();
+    if (typeof save === "function") save();
+  }
 
-  const SYM_HTML = {
+  // ================================================================ 全画面ステージ
+  const SYM = {
     seven:  '<span class="sym sym-seven">7</span>',
     bar:    '<span class="sym sym-bar">BAR</span>',
-    bell:   '<span class="sym sym-bell">🍍</span>',
+    bell:   '<span class="sym sym-bell"></span>',   // 形は CSS で（沖ドキ風の鐘＋パイン網目）
     cherry: '<span class="sym sym-cherry">🍒</span>',
     replay: '<span class="sym sym-replay">💧</span>',
     smoke:  '<span class="sym sym-smoke">☁︎</span>',
     pakki:  '<span class="sym sym-pakki">ぷ</span>',
   };
   function pakkiFace(cls) {
-    if (typeof faceIconHtml === "function") {
-      const h = faceIconHtml("packii", cls || "rw-face");
-      if (h) return h;
-    }
-    return `<span class="${(cls || "rw-face")} rw-face-fallback">ぷ</span>`;
+    if (typeof faceIconHtml === "function") { const h = faceIconHtml("packii", cls || "rs-face"); if (h) return h; }
+    return '<span class="' + (cls || "rs-face") + ' rs-face-fallback">ぷ</span>';
   }
 
-  function ensureWidget() {
-    if (widget) return widget;
-    const map = document.querySelector("#screen-map");
-    if (!map) return null;
-    widget = document.createElement("div");
-    widget.id = "reel-widget";
-    widget.innerHTML =
-      `<button id="reel-lamp" type="button" title="PUFF!PUFF!パッキー">${pakkiFace("rw-face")}</button>` +
-      `<div class="rw-machine">` +
-      STRIPS.map((strip, i) =>
-        `<div class="rw-reel" data-i="${i}"><div class="rw-strip">` +
-        strip.concat(strip, strip).map((s) => `<div class="rw-cell">${SYM_HTML[s]}</div>`).join("") +
-        `</div></div>`).join("") +
-      `</div>` +
-      `<div class="rw-plate">PUFF!PUFF!<b>パッキー</b></div>` +
-      `<div class="rw-bubble" id="reel-bubble"></div>`;
-    map.appendChild(widget);
-    setStops([1, 1, 2]); // 初期出目
-    document.querySelector("#reel-lamp").addEventListener("click", () => {
-      if (bonusWait) settleBonus(bonusWait, false);
+  const CELL = 84, LEN = STRIPS[0].length;
+  let stage = null, busy = false, skipReq = false;
+
+  function ensureStage() {
+    if (stage) return stage;
+    const game = document.querySelector("#game"); if (!game) return null;
+    stage = document.createElement("div"); stage.id = "reel-stage";
+    stage.innerHTML =
+      '<div class="rstage-veil"></div>' +
+      '<div class="rstage-inner">' +
+        '<div class="rstage-cabinet">' +
+          '<div class="rstage-top">' +
+            '<div class="rstage-lamp" id="rstage-lamp"><span class="rl-sign"><i>M</i><i>O</i><i>K</i><i>U</i><i>!</i></span></div>' +
+          '</div>' +
+          '<div class="rstage-reels">' +
+            STRIPS.map((strip) => '<div class="rstage-reel"><div class="rstage-strip">' +
+              strip.concat(strip, strip).map((s) => '<div class="rstage-cell">' + SYM[s] + '</div>').join('') +
+            '</div></div>').join('') +
+          '</div>' +
+          '<div class="rstage-deck">' +
+            '<div class="rstage-lever" id="rstage-lever"><span class="lever-mount"></span><span class="lever-stick"></span><span class="lever-ball"><i></i></span></div>' +
+            '<div class="rstage-bet"><span class="betbtn max">MAX<br>BET</span></div>' +
+            '<div class="rstage-stops"><span class="stopbtn"></span><span class="stopbtn"></span><span class="stopbtn"></span></div>' +
+          '</div>' +
+          '<div class="rstage-bottom">' +
+            '<div class="rl-mascot">' + pakkiFace("rs-face") + '</div>' +
+            '<div class="rstage-name">MOKU!MOKU!パッキー</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="rstage-banner" id="rstage-banner"></div>' +
+      '</div>' +
+      '<div class="rstage-skip">タップでとばす</div>';
+    game.appendChild(stage);
+    stage.addEventListener("click", () => { skipReq = true; });
+    setStops([1, 1, 1]);
+    return stage;
+  }
+  function strips() { return [...stage.querySelectorAll(".rstage-strip")]; }
+  function tyFor(i) { return -CELL * (i + LEN - 1); }
+  function setStops(s) { strips().forEach((el, i) => { el.classList.remove("spinning"); el.style.transform = "translateY(" + tyFor(s[i]) + "px)"; }); }
+  function lamp(on, prem) {
+    const l = stage && stage.querySelector("#rstage-lamp"); if (!l) return;
+    l.classList.toggle("lit", !!on); l.classList.toggle("premium", !!prem);
+    stage.classList.toggle("lamp-on", !!on); // 顔（マスコット）も連動して光らせる
+  }
+  function banner(html, cls) { const b = stage && stage.querySelector("#rstage-banner"); if (!b) return; b.className = "rstage-banner" + (cls ? " " + cls : "") + (html ? " show" : ""); b.innerHTML = html || ""; }
+  function openStage() { ensureStage(); stage.classList.add("show"); }
+  function closeStage() { if (stage) { stage.classList.remove("show", "freeze-mode"); banner(""); lamp(false); } }
+
+  // skip対応の待機。タップ（skipReq）で即解決
+  function wait(ms) {
+    return new Promise((resolve) => {
+      if (skipReq) return resolve();
+      const to = setTimeout(() => { clearInterval(iv); resolve(); }, ms);
+      const iv = setInterval(() => { if (skipReq) { clearTimeout(to); clearInterval(iv); resolve(); } }, 40);
     });
-    return widget;
-  }
-  function stripEls() { return [...widget.querySelectorAll(".rw-strip")]; }
-  function tyFor(idx) { return -CELL * (idx + LEN - 1); }
-  function setStops(stops) {
-    stripEls().forEach((el, i) => {
-      el.classList.remove("spinning");
-      el.style.transform = `translateY(${tyFor(stops[i])}px)`;
-    });
-  }
-  function bubble(text, ms) {
-    const b = document.querySelector("#reel-bubble");
-    if (!b) return;
-    b.textContent = text;
-    b.classList.add("show");
-    clearTimeout(bubble._t);
-    if (ms !== 0) bubble._t = setTimeout(() => b.classList.remove("show"), ms || 1800);
-  }
-  function lampOn(premium) {
-    const lamp = document.querySelector("#reel-lamp");
-    if (!lamp) return;
-    lamp.classList.add("lit");
-    if (premium) lamp.classList.add("premium");
-    widget.classList.add("attract");
-  }
-  function lampOff() {
-    const lamp = document.querySelector("#reel-lamp");
-    if (!lamp) return;
-    lamp.classList.remove("lit", "premium");
-    widget.classList.remove("attract");
   }
 
-  function ensureCutin() {
-    if (cutin) return cutin;
-    cutin = document.createElement("div");
-    cutin.id = "reel-cutin";
-    document.querySelector("#game").appendChild(cutin);
-    return cutin;
-  }
-
-  // ---- マップ表示時に未演出の結果を流す（showMap から呼ばれる）----
-  function onMapShown() {
-    if (typeof state === "undefined" || !state || !state.reel) return;
-    if (!ensureWidget()) return;
-    widget.classList.toggle("hidden", fx() === "off");
-    if (busy) return;
-    const queue = state.reel.pending;
-    if (!queue || !queue.length) return;
-    if (!state.reel.introDone) { showIntro(() => onMapShown()); return; }
-    // 取り出してから保存（演出前にリロードされても二重適用しない。報酬は適用済み）
-    const items = queue.splice(0, queue.length);
-    if (typeof save === "function") save();
-    runQueue(items);
-  }
-
-  function runQueue(items) {
-    if (!items.length) { busy = false; return; }
-    busy = true;
-    // 積み残し（夜の分など）が複数あれば、最後の1件だけフル演出・残りは速回し
-    const item = items.shift();
-    presentSpin(item, items.length > 0 || fx() === "lite", () => runQueue(items));
-  }
-
-  // ---- 1回転の演出 ----
-  function presentSpin(r, fast, done) {
-    if (!widget || !document.querySelector("#screen-map.active") || fx() === "off") {
-      // マップ外・演出OFFなら結果通知だけ（報酬は適用済み）
-      announce(r);
-      return done();
+  async function spinReels(stopArr, opts) {
+    opts = opts || {};
+    const els = strips();
+    // レバーオン: レバーをガコッと引く
+    const lever = stage.querySelector("#rstage-lever");
+    if (lever) { lever.classList.add("pull"); setTimeout(() => lever.classList.remove("pull"), 320); }
+    const btns = [...stage.querySelectorAll(".stopbtn")];
+    btns.forEach((b) => b.classList.add("armed"));
+    els.forEach((el) => { el.style.transform = ""; el.classList.add("spinning"); });
+    if (opts.silent) stage.classList.add("silent"); else stage.classList.remove("silent");
+    await wait(opts.fast ? 160 : (opts.silent ? 1300 : 540));
+    for (let i = 0; i < 3; i++) {
+      els[i].classList.remove("spinning");
+      els[i].style.transform = "translateY(" + tyFor(stopArr[i]) + "px)";
+      els[i].classList.add("land");
+      // 対応する停止ボタンを押した演出
+      if (btns[i]) { btns[i].classList.remove("armed"); btns[i].classList.add("hit"); setTimeout(() => btns[i].classList.remove("hit"), 220); }
+      sfx("reelStop");
+      await wait(opts.fast ? 60 : 160);
+      els[i].classList.remove("land");
     }
-    // 前のボーナスがタップされないまま残っていたら即精算
-    if (bonusWait) settleBonus(bonusWait, true);
+    btns.forEach((b) => b.classList.remove("armed"));
+    stage.classList.remove("silent");
+  }
+
+  // 抽象表現でステ上昇を見せる（数値は出さない＝CLAUDE.md準拠）
+  function rewardWord(exp) { return exp >= 5 ? "大きく上がった" : exp >= 3 ? "上がった" : "少し上がった"; }
+  async function showReward(r, fast, bonus) {
+    const names = typeof STAT_KEYS !== "undefined" ? STAT_KEYS : {};
+    const badges = typeof STAT_BADGE !== "undefined" ? STAT_BADGE : {};
+    const nm = names[r.target] || r.target;
+    banner('<div class="rs-reward' + (bonus ? " bonus" : "") + '">' +
+      '<span class="rs-rw-badge">' + (badges[r.target] || "上") + '</span>' +
+      '<span class="rs-rw-text">【' + nm + '】が<br>' + rewardWord(r.exp) + '！</span></div>', "reward");
+    if (!bonus) sfx("reelWin");
+    await wait(fast ? 240 : 1050);
+  }
+
+  // 1回転の全画面演出
+  async function presentOne(r) {
+    const fast = fx() === "lite";
+    banner(""); lamp(false);
+    if (r.gakkun) { stage.classList.add("gakkun"); setTimeout(() => stage.classList.remove("gakkun"), 500); }
+    if (r.role === "freeze" && !fast) { await presentFreeze(r); return; }
 
     const silent = r.variant === "silent" && !fast;
-    const strips = stripEls();
-    lampOff();
-
-    // レバオン
-    if (r.gakkun) widget.classList.add("gakkun");           // 章の1回転目だけガックン（分かる人向け）
-    setTimeout(() => widget.classList.remove("gakkun"), 500);
     if (!silent) sfx("reelLever");
-    if (r.variant === "okure" && !fast) setTimeout(() => sfx("pugo"), 420); // 遅れ「……プゴッ」
-    if (r.variant === "before" && !fast) setTimeout(() => lampOn(false), 220); // 先プカ
-    strips.forEach((el) => { el.style.transform = ""; el.classList.add("spinning"); });
-    if (silent) widget.classList.add("silent-spin");
+    if (r.variant === "before" && !fast) lamp(true, false);                  // 先プカ
+    if (r.variant === "okure" && !fast) setTimeout(() => sfx("pugo"), 420);   // 遅れプゴッ
+    await spinReels(r.stops, { fast, silent });
 
-    if (r.role === "freeze" && !fast) return presentFreeze(r, done);
+    if (r.role === "miss") { banner('<span class="rs-koto">こつこつ…</span>', "quiet"); await wait(fast ? 140 : 380); return; }
+    if (r.role === "replay") {
+      stage.classList.add("flash"); sfx("reelWin");
+      banner('<b>リプレイ</b><span>もう1回転！</span>', "replay");
+      await wait(fast ? 150 : 680); stage.classList.remove("flash"); return;
+    }
+    if (r.role === "bell") { sfx("reelWin"); banner('<b>ベル</b>', "win"); await showReward(r, fast); return; }
+    if (r.role === "cherry" && !r.overlap) { sfx("reelWin"); banner('<b>チェリー</b>', "win"); await showReward(r, fast); return; }
 
-    // 停止（ハズレはテンポ最優先で速く）
-    const spinMs = fast ? 120 : silent ? 1600 : (r.role === "miss" ? 240 : 420);
-    const gap = fast ? 40 : 130;
-    setTimeout(() => {
-      r.stops.forEach((stop, i) => {
-        setTimeout(() => {
-          const el = strips[i];
-          el.classList.remove("spinning");
-          el.style.transform = `translateY(${tyFor(stop)}px)`;
-          el.classList.add("land");
-          setTimeout(() => el.classList.remove("land"), 240);
-          if (!silent && !fast) sfx("reelStop");
-        }, gap * i);
-      });
-      setTimeout(() => {
-        widget.classList.remove("silent-spin");
-        afterStop(r, fast, done);
-      }, gap * 2 + (fast ? 60 : 200) + (silent ? 500 : 0));
-    }, spinMs);
+    // ---- ペカ（reg / big / rare / チェリー重複）----
+    const big = r.role === "big" || r.role === "rare" || r.overlap === "big";
+    if (r.variant === "okure" && !fast) await wait(280);
+    lamp(true, r.premium || r.ceiling === "main");
+    sfx("puka");
+    banner(r.premium ? '<b>ぷぷぷぷぷーっ！</b>' : (r.ceiling === "main" ? '<b>おたすけパッキー！</b>' : '<b>ぷぷぷっ！</b>'), "peka");
+    await wait(fast ? 160 : 680);
+    // 7 / BAR をそろえる
+    banner('<span>' + (big ? "赤7" : "BAR") + 'をそろえろ！</span>', "aim");
+    await spinReels(STRIPS.map((s) => s.indexOf(big ? "seven" : "bar")), { fast });
+    sfx("fanfare");
+    stage.classList.add("win-flash"); setTimeout(() => stage.classList.remove("win-flash"), 600);
+    await showReward(r, fast, true);
   }
 
-  function afterStop(r, fast, done) {
-    switch (r.role) {
-      case "miss":
-        return done();
-      case "replay":
-        if (!fast) { widget.classList.add("flash-blue"); sfx("reelWin"); bubble("もう1回転！"); }
-        setTimeout(() => { widget.classList.remove("flash-blue"); done(); }, fast ? 60 : 420);
+  // ロングフリーズ（プレミア）
+  async function presentFreeze(r) {
+    const els = strips();
+    els.forEach((el) => { el.style.transform = ""; el.classList.add("spinning"); });
+    await wait(500);
+    els.forEach((el) => el.classList.add("frozen"));
+    sfx("pugo"); stage.classList.add("silent", "freeze-mode");
+    await wait(900);
+    banner('<div class="rs-glitch"></div><div class="rs-encode"><b>EN:CODE</b><span>運命、再コンパイル中……</span></div>', "freeze");
+    sfx("glitch");
+    await wait(1400);
+    els.forEach((el) => el.classList.remove("frozen", "spinning"));
+    stage.classList.remove("silent");
+    setStops(STRIPS.map((s) => s.indexOf("seven")));
+    banner('<div class="rs-freeze-label">FREEZE</div>' +
+      '<div class="rs-pakki-dance">' + pakkiFace("rs-face big") + pakkiFace("rs-face big") + pakkiFace("rs-face big") + '</div>' +
+      '<div class="rs-freeze-sub">ぷぷぷぷぷーーっ！！</div>', "freeze boom");
+    sfx("freezeBoom"); sfx("fanfare"); lamp(true, true);
+    await wait(1900);
+    stage.classList.remove("freeze-mode");
+    await showReward(r, false, true);
+    banner('<div class="rs-hall">殿堂入り！スロノートに刻まれた</div>', "reward");
+    await wait(1300);
+  }
+
+  // 演出OFF時の控えめなバナー（既存の隅バナーを流用）
+  function quietGain(r) {
+    if (typeof gainBanner !== "function" || r.quiet) return;
+    const names = typeof STAT_KEYS !== "undefined" ? STAT_KEYS : {};
+    const badges = typeof STAT_BADGE !== "undefined" ? STAT_BADGE : {};
+    gainBanner({ kind: "stat", badge: badges[r.target] || "上", labelTop: "PAKKI SLOT", labelMain: names[r.target] || r.target, labelSub: rewardWord(r.exp) });
+  }
+
+  // pending を順に消化（リプレイ連鎖も「揃い→もう1回転」と続けて見せる）
+  async function playSession() {
+    const reel = state && state.reel;
+    if (!reel || !reel.pending.length) return;
+    if (busy) return; busy = true;
+    try {
+      if (fx() === "off") {
+        for (const r of reel.pending) { applyReward(r); quietGain(r); }
+        reel.pending = []; if (typeof save === "function") save();
         return;
-      case "cherry": {
-        sfx("reelWin");
-        if (!r.overlap) {
-          if (!fast) bubble("チェリー！");
-          announce(r);
-          return setTimeout(done, fast ? 60 : 550);
-        }
-        // チェリー重複: 小役の払い出しの後にひと呼吸おいてペカッ。
-        // キューは止めない（ランプ点灯のまま進み、タップ or 次の回転前に自動精算）
-        const start = () => {
-          lampOn(false);
-          sfx("puka");
-          bubble("重複ペカ！？", 0);
-          bonusWait = { ...r, done: null };
-          if (fast) settleBonus(bonusWait, true);
-          done();
-        };
-        return setTimeout(start, fast ? 0 : 600);
       }
-      case "bell":
-        sfx("reelWin");
-        bubble("パインベル！");
-        announce(r);
-        return setTimeout(done, fast ? 60 : 600);
-      case "rare": {
-        // 中段チェリー/単独パッキー = BIG確定（プレミア告知）
-        const start = () => {
-          lampOn(true);
-          sfx("puka");
-          bubble("ぷぷぷぷぷ！！", 0);
-          bonusWait = { ...r, done: null };
-          if (fast) settleBonus(bonusWait, true);
-          done();
-        };
-        if (fast) return start();
-        sfx("pugo");
-        return setTimeout(start, 650);
+      openStage();
+      await wait(160);
+      while (reel.pending.length) {
+        const r = reel.pending[0];
+        skipReq = false;
+        await presentOne(r);
+        applyReward(r);          // ← 回りきってから経験値を確定
+        reel.pending.shift();
+        if (typeof save === "function") save();
+        await wait(120);
       }
-      case "reg":
-      case "big": {
-        // プカッ（完全告知）。タップでボーナス開始、放置しても次の回転前に自動精算
-        const start = () => {
-          lampOn(r.variant === "silent" || r.ceiling === "main");
-          sfx("puka");
-          bubble(r.ceiling === "main" ? "おたすけパッキー！" : "ぷぷぷっ！", 0);
-          bonusWait = { ...r, done: null };
-          if (fast) settleBonus(bonusWait, true);
-          done();
-        };
-        return setTimeout(start, r.variant === "after" || r.variant === "silent" ? (fast ? 0 : 320) : 0);
-      }
-      case "freeze":
-        // fast時のフリーズはカットイン省略で即精算
-        announce(r);
-        return done();
-      default:
-        return done();
+      closeStage();
+      await wait(240);
+    } finally { busy = false; }
+  }
+
+  // 行動セッション（endAction から呼ぶ）: 抽選 → 全画面演出 → done
+  function runActionSession(done) {
+    done = done || function () {};
+    if (typeof state === "undefined" || !state || !state.reel || state.phase !== "daily") { done(); return; }
+    onAction();
+    if (!state.reel.pending.length) { done(); return; }
+    if (!state.reel.introDone) {
+      if (fx() === "off") { state.reel.introDone = true; if (typeof save === "function") save(); playSession().then(done); return; }
+      showIntro(() => { playSession().then(done); });
+      return;
     }
+    playSession().then(done);
   }
 
-  // ---- ボーナス精算（狙え→揃い→バナー）----
-  function settleBonus(b, fast) {
-    bonusWait = null;
-    lampOff();
-    bubble("", 1);
-    const finish = () => { announce(b); if (b.done) { const d = b.done; b.done = null; d(); } };
-    if (fast || fx() === "lite") { sfx("fanfare"); return finish(); }
-    const isBig = b.role === "big" || b.role === "rare" || b.overlap === "big";
-    const c = ensureCutin();
-    const sym = isBig ? SYM_HTML.seven : SYM_HTML.bar;
-    const label = isBig ? "BIG BONUS" : "BONUS";
-    c.className = "show bonus";
-    c.innerHTML =
-      `<div class="rc-bonus-board">` +
-      `<div class="rc-aim">${isBig ? "赤7を狙えっ！" : "BARを狙えっ！"}</div>` +
-      `<div class="rc-cells">` +
-      [0, 1, 2].map(() => `<div class="rc-cell">${sym}</div>`).join("") +
-      `</div>` +
-      `<div class="rc-bonus-label">${label}</div>` +
-      `</div>`;
-    const cells = [...c.querySelectorAll(".rc-cell")];
-    cells.forEach((cell, i) => setTimeout(() => { cell.classList.add("on"); sfx("reelStop"); }, 380 + i * 330));
-    setTimeout(() => {
-      c.querySelector(".rc-bonus-board").classList.add("done");
-      sfx("fanfare");
-      if (b.zone) bubble("パッキータイム！", 2600);
-    }, 380 + 3 * 330);
-    setTimeout(() => { c.className = ""; c.innerHTML = ""; finish(); }, 2500);
+  // マップ復帰時の未消化分（リロード耐性）
+  function onMapShown() {
+    if (busy) return;
+    if (typeof state === "undefined" || !state || !state.reel || !state.reel.pending.length) return;
+    if (!state.reel.introDone && fx() !== "off") { showIntro(() => playSession()); return; }
+    if (!state.reel.introDone) state.reel.introDone = true;
+    playSession();
   }
 
-  // ---- ロングフリーズ（プレミア: 回転が止まる→EN:CODEグリッチ→7揃い確定）----
-  function presentFreeze(r, done) {
-    const strips = stripEls();
-    const c = ensureCutin();
-    setTimeout(() => {
-      // 回転が「ガッ」と止まる → 全SE消失の間
-      strips.forEach((el) => el.classList.add("frozen"));
-      sfx("pugo");
-      widget.classList.add("silent-spin");
-      setTimeout(() => {
-        c.className = "show freeze";
-        c.innerHTML =
-          `<div class="rc-freeze">` +
-          `<div class="rc-glitch-lines"></div>` +
-          `<div class="rc-freeze-text"><b>EN:CODE</b><span>運命、再コンパイル中……</span></div>` +
-          `</div>`;
-        sfx("glitch");
-        setTimeout(() => {
-          c.innerHTML =
-            `<div class="rc-freeze boom">` +
-            `<div class="rc-freeze-label">FREEZE BONUS</div>` +
-            `<div class="rc-pakki-dance">${pakkiFace("rw-face big")}${pakkiFace("rw-face big")}${pakkiFace("rw-face big")}</div>` +
-            `<div class="rc-freeze-sub">ぷぷぷぷぷーーっ！！</div>` +
-            `</div>`;
-          sfx("freezeBoom"); sfx("fanfare");
-          strips.forEach((el) => { el.classList.remove("frozen", "spinning"); });
-          setStops(STRIPS.map((s) => s.indexOf("seven")));
-          widget.classList.remove("silent-spin");
-          lampOn(true);
-          setTimeout(() => {
-            c.className = ""; c.innerHTML = "";
-            lampOff();
-            bubble("殿堂入り！スロノートに刻まれた", 3000);
-            announce(r);
-            done();
-          }, 2400);
-        }, 1500);
-      }, 1100);
-    }, 700);
-  }
-
-  // ---- 報酬バナー（報酬自体はコミット時に適用済み。ここは見せるだけ）----
-  function announce(r) {
-    if (typeof gainBanner !== "function") return;
-    if (r.exp > 0 && !r.quiet && r.target) {
-      const label = r.exp >= 5 ? "大きく上がった" : r.exp >= 3 ? "上がった" : "少し上がった";
-      const names = typeof STAT_KEYS !== "undefined" ? STAT_KEYS : {};
-      const badges = typeof STAT_BADGE !== "undefined" ? STAT_BADGE : {};
-      gainBanner({
-        kind: "stat", badge: badges[r.target] || "上",
-        labelTop: "PAKKI SLOT", labelMain: names[r.target] || r.target, labelSub: label,
-      });
-    }
-  }
-
-  // ---- 初回のみ: パッキーのアプリ説明 ----
+  // ---- 初回のみ: パッキーのアプリ説明（詳しめ）----
   const INTRO_LINES = [
-    "ぷぷぷっ！ C.STATION公式アプリ『PUFF!PUFF!パッキー』、インストール完了〜！",
-    "キミが一日なにか行動するたび、ボクのスロットがかってに1回転するよ。回すんじゃない——回っちゃうんだ。",
-    "ルールはシンプル！ ボクの顔が光ったら——大当たりっ！ それだけ！",
-    "外れても大丈夫。回したぶんだけ、その日がんばったことがちゃーんと積もるしくみ。それじゃ、今日もぷかぷかいこう！",
+    "ぷぷぷっ！ C.STATIONの公式アプリ『MOKU!MOKU!パッキー』、キミのスマホに入れといたよ〜！",
+    "使い方はカンタン。キミが一日に【行動】するたび、このスロットが自動でまわるんだ。自分でレバーは叩かない——勝手に、まわる。",
+    "ボクの顔（このランプ）が【光ったら大当たり】！ 赤7やBARがそろって、キミのステータスがグーンと伸びるよ。",
+    "ハズレても損はナシ。まわすたび、その日がんばったことが【ちょっとずつ】積もっていく。お金は出ないけど、そのぶん全部キミの実力になる。",
+    "当たりが遠い日も心配ご無用。しばらく当たらないと【天井】でボクが救済する。粘った分はちゃーんと報われるよ。",
+    "そして……ごくまれに、画面ごと世界がバグる【フリーズ】ってのがある。ゲームを通して拝めるかどうかの超レア。出たら自慢していい。",
+    "むずかしいことは考えなくてOK。行動して、光ったら喜ぶ。それだけ！ それじゃ、いってみよう——ぷぷぷっ！",
   ];
   function showIntro(onClose) {
     let box = document.querySelector("#reel-intro");
-    if (!box) {
-      box = document.createElement("div");
-      box.id = "reel-intro";
-      document.querySelector("#game").appendChild(box);
-    }
+    if (!box) { box = document.createElement("div"); box.id = "reel-intro"; document.querySelector("#game").appendChild(box); }
     let i = 0;
     const render = () => {
       box.innerHTML =
-        `<div class="ri-panel">` +
-        `<div class="ri-head">${pakkiFace("rw-face big")}<span class="ri-app">PUFF!PUFF!パッキー</span></div>` +
-        `<p class="ri-text">${INTRO_LINES[i]}</p>` +
-        `<span class="ri-next">▼ タップ</span>` +
-        `</div>`;
+        '<div class="ri-panel">' +
+          '<div class="ri-head">' + pakkiFace("rs-face big") + '<span class="ri-app">MOKU!MOKU!パッキー</span></div>' +
+          '<p class="ri-text">' + INTRO_LINES[i] + '</p>' +
+          '<span class="ri-next">▼ タップ（' + (i + 1) + '/' + INTRO_LINES.length + '）</span>' +
+        '</div>';
     };
-    render();
-    box.className = "show";
-    sfx("open");
+    render(); box.className = "show"; sfx("open");
     box.onclick = () => {
       i += 1;
-      if (i === 2) sfx("puka"); // 「光ったら大当たり」のデモ
+      if (i === 2) sfx("puka");
       if (i < INTRO_LINES.length) { render(); sfx("click"); return; }
       box.className = ""; box.innerHTML = ""; box.onclick = null;
-      state.reel.introDone = true;
-      if (typeof save === "function") save();
+      state.reel.introDone = true; if (typeof save === "function") save();
       if (onClose) onClose();
     };
   }
@@ -707,25 +636,25 @@ const REEL = (() => {
   // デバッグ/調整用フック（テスト・コンソールから使う）
   if (typeof window !== "undefined") {
     window.__reelDebug = {
-      core,
-      simulate,
+      core, simulate,
       state: () => (typeof state !== "undefined" && state ? state.reel : null),
-      // 演出確認用: 役を偽造して演出だけ再生（カウンタ・報酬は動かさない）
-      force(role) {
+      // 演出確認用: 役を偽造して全画面演出だけ再生（カウンタ・報酬は動かさない）
+      async force(role) {
         const rng = mulberry32((Date.now() & 0xffff) >>> 0);
         const r = {
           n: 0, role, overlap: null, premium: role === "rare" || role === "freeze",
           stops: stopsFor(role, rng),
           variant: PEKA.includes(role) && role !== "freeze" ? (role === "rare" ? "premium" : "after") : "none",
-          exp: 0, quiet: true, zone: false, gakkun: false, ceiling: "", target: null,
+          exp: role === "miss" ? 1 : 6, quiet: role === "miss", zone: false, gakkun: false, ceiling: "", target: "technique", applied: true,
         };
-        ensureWidget();
-        presentSpin(r, false, () => {});
+        openStage(); skipReq = false;
+        await presentOne(r);
+        closeStage();
       },
     };
   }
 
-  return { core, newReelState, noteStat, onAction, onMapShown };
+  return { core, newReelState, noteStat, onAction, runActionSession, onMapShown };
 })();
 
 if (typeof window !== "undefined") window.REEL = REEL;

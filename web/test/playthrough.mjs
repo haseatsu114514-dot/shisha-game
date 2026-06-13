@@ -27,6 +27,8 @@ await page.goto(BASE, { waitUntil: "load" });
 await page.waitForSelector("#screen-title.active");
 log("title OK");
 await page.click("#btn-new");
+// 全画面スロット演出はテストではOFF（抽選・天井・報酬・カウンタは動く）
+await page.evaluate(() => { try { config.reelFx = "off"; } catch (e) {} });
 
 // 行動計画（マップで上から順に消費する）
 // キャラ訪問でスポットが解禁される順序も兼ねて検証する
@@ -122,10 +124,11 @@ if (!tutorialSeen) throw new Error("tutorial making was not shown before tournam
 log("tutorial OK");
 if (!limeSeen) throw new Error("LIME morning phone never appeared in 7 days");
 log("LIME OK");
-if (!reelIntroSeen) throw new Error("reel intro (PUFF!PUFF!パッキー) never appeared");
 const reelSpins = await page.evaluate(() => state.reel && state.reel.count);
 if (!reelSpins) throw new Error("daily reel never spun");
-log("daily reel OK:", reelSpins, "spins");
+const reelPending = await page.evaluate(() => state.reel && state.reel.pending.length);
+if (reelPending) throw new Error("reel rewards not consumed (pending left): " + reelPending);
+log("daily reel OK:", reelSpins, "spins, pending cleared");
 log("reached tournament, day check:", await page.locator("#hud-day").textContent());
 
 // 検証しやすいようにステータスを底上げ（勝利ルートを確認する）

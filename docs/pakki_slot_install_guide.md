@@ -1,4 +1,4 @@
-# 【実装指示書】PUFF!PUFF!パッキー（日常リール）の本編組み込み
+# 【実装指示書】MOKU!MOKU!パッキー（日常リール）の本編組み込み
 
 > ✅ **2026-06-13 実行済み**（ブラウザ版に接続・全テスト通過）。
 > 以降は再組み込み手順の記録／別環境(Godot版等)への移植リファレンスとして残す。
@@ -86,7 +86,7 @@ cat web/css/reel.css >> web/css/style.css
 `practiceBest: {},` の行の直後に追加:
 
 ```js
-    reel: (typeof REEL !== "undefined" ? REEL.newReelState() : null), // PUFF!PUFF!パッキー（日常リール）
+    reel: (typeof REEL !== "undefined" ? REEL.newReelState() : null), // MOKU!MOKU!パッキー（日常リール）
 ```
 
 **(b) `gainStat()` — アンコール抽選の対象記録**
@@ -121,7 +121,7 @@ cat web/css/reel.css >> web/css/style.css
 既存の互換ブロック（`if (typeof state.guilt !== "number") state.guilt = 0;` の直後）に追加:
 
 ```js
-  // 日常リール（PUFF!PUFF!パッキー）導入前のセーブ互換
+  // 日常リール（MOKU!MOKU!パッキー）導入前のセーブ互換
   if (!state.reel && typeof REEL !== "undefined") state.reel = REEL.newReelState();
 ```
 
@@ -146,7 +146,7 @@ reel.js は存在しないSFX名を黙ってスキップするため省略可能
 api オブジェクト内、`pageTurn: ...},` の直後・`setMuted(m) {` の前に貼り付け:
 
 ```js
-    // ---------- 日常リール（PUFF!PUFF!パッキー） ----------
+    // ---------- 日常リール（MOKU!MOKU!パッキー） ----------
     reelLever: () => {
       blip({ freq: 900, type: "square", a: 0.001, d: 0.03, r: 0.05, peak: 0.10, filterFreq: 3200, wet: 0.15 });
       blip({ freq: 240, type: "triangle", a: 0.001, d: 0.05, r: 0.08, peak: 0.12, filterFreq: 1200, wet: 0.2, when: 0.01 });
@@ -215,7 +215,7 @@ reel.js を追加。**検索側が STEP 1 の index.html と一致していな�
     )
 ```
 
-ビルド後、`grep -c "PUFF!PUFF!パッキー" web/dist/shisha_ch1.html` が 1 以上であることを確認。
+ビルド後、`grep -c "MOKU!MOKU!パッキー" web/dist/shisha_ch1.html` が 1 以上であることを確認。
 
 ### STEP 6: 既存playwrightテストの対応（必須）
 
@@ -312,10 +312,10 @@ node web/test/ch2.mjs
 ## 5. 仕上げ
 
 1. `docs/web_version_plan.md` の
-   「2026-06-12 設計完了・実装待ちパッケージ: PUFF!PUFF!パッキー」の節を
+   「2026-06-12 設計完了・実装待ちパッケージ: MOKU!MOKU!パッキー」の節を
    **実装済み**に書き換え（日付・やったこと1〜3行）、新しいセッション節を追加する
 2. コミットを分ける必要はない。コミットメッセージ例:
-   `日常リール「PUFF!PUFF!パッキー」を本編に接続（docs/pakki_slot_spec.md §10 実施）`
+   `日常リール「MOKU!MOKU!パッキー」を本編に接続（docs/pakki_slot_spec.md §10 実施）`
 3. 現在の開発ブランチに push（main 直 push 禁止。PR はオーナーの指示があるときのみ）
 4. 完了報告には以下を含める: テスト4本の結果／受け入れ基準のチェック結果／
    raw.githack の確認URL（`docs/web_version_plan.md` の公開URL節参照）

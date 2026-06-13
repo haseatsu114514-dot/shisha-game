@@ -50,7 +50,7 @@ function newState() {
     limeDone: [],          // 既読のLIMEメッセージID
     pendingLimeNight: null, // 夜に約束したLIMEイベント {event, sender}
     practiceBest: {},      // 練習ドリルの自己ベスト（0〜2）。大会本番のボーナスになる
-    reel: (typeof REEL !== "undefined" ? REEL.newReelState() : null), // PUFF!PUFF!パッキー（日常リール）
+    reel: (typeof REEL !== "undefined" ? REEL.newReelState() : null), // MOKU!MOKU!パッキー（日常リール）
     flags: {},
     phase: "opening", // opening | daily | tournament | cleared
   };
@@ -1289,8 +1289,6 @@ function doSpotDialogue(spotId, dialogueId, bg) {
 }
 
 function endAction() {
-  // 1行動=1回転: 結果と報酬はこの場で確定して直後の save() に乗る（ロードしても同じ結果＝引き直し不可）
-  if (typeof REEL !== "undefined") REEL.onAction();
   state.ap -= 1;
   updateHud();
   save();
@@ -1307,9 +1305,14 @@ function endAction() {
     }
     endDay();
   };
-  // 好感度MAXのロマンス対象がいれば、行動の区切りで告白イベント（行動は消費しない）
-  if (maybeStartConfession(resume)) return;
-  resume();
+  const afterReel = () => {
+    // 好感度MAXのロマンス対象がいれば、行動の区切りで告白イベント（行動は消費しない）
+    if (maybeStartConfession(resume)) return;
+    resume();
+  };
+  // 1行動=1回転: 抽選は確定（決定論でリセマラ不可）→ 全画面スロットが回りきってから報酬を確定し、次へ
+  if (typeof REEL !== "undefined") REEL.runActionSession(afterReel);
+  else afterReel();
 }
 
 // 翌朝へ進める共通処理（試合日の判定を含む）。ch2の試合後にも使う
@@ -3686,7 +3689,7 @@ function continueGame(saved) {
   if (!Array.isArray(state.lovers)) state.lovers = [];
   if (!state.loveLevel) state.loveLevel = {};
   if (typeof state.guilt !== "number") state.guilt = 0;
-  // 日常リール（PUFF!PUFF!パッキー）導入前のセーブ互換
+  // 日常リール（MOKU!MOKU!パッキー）導入前のセーブ互換
   if (!state.reel && typeof REEL !== "undefined") state.reel = REEL.newReelState();
   updateHud();
   if (state.phase === "tournament") {
