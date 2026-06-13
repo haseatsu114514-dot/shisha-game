@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>改行エディタ — 水煙前線 会話テキスト整形</title>
+<!--
+  会話テキストの改行を「目で見て」手動で調整するための開発ツール（#19）。
+  ・ゲーム本体(engine.js)の autoWrap と同じ規則でプレビューする。
+  ・手動で改行を入れたい場所はテキスト中に \n（実改行）を置けば autoWrap がそこで必ず折る。
+  ・このツールの WRAP_* と autoWrap は engine.js のミラー。engine.js を変えたらここも合わせること。
+-->
+<style>
+  :root { --bg:#0e0a16; --panel:#161020; --line:#3a2f50; --accent:#f4d27a; --text:#f6ecd0; --dim:#9a90b0; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif; }
+  header { padding:14px 20px; border-bottom:1px solid var(--line); display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; }
+  header h1 { font-size:18px; margin:0; color:var(--accent); letter-spacing:0.06em; }
+  header .hint { font-size:12px; color:var(--dim); }
+  .wrap { display:grid; grid-template-columns:1fr 1fr; gap:18px; padding:18px 20px; max-width:1280px; }
+  @media (max-width:880px){ .wrap{ grid-template-columns:1fr; } }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:14px; }
+  .card h2 { font-size:13px; color:var(--dim); margin:0 0 10px; letter-spacing:0.1em; font-weight:600; }
+  textarea { width:100%; min-height:120px; background:#0b0712; color:var(--text); border:1px solid var(--line);
+    border-radius:6px; padding:10px 12px; font-size:15px; line-height:1.7; font-family:"Hiragino Mincho ProN","Yu Mincho",serif; resize:vertical; }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  button { background:#22182f; color:var(--text); border:1px solid var(--line); border-radius:6px; padding:7px 12px; font-size:13px; cursor:pointer; }
+  button:hover { border-color:var(--accent); }
+  button.primary { background:#3a2c12; border-color:var(--accent); color:var(--accent); }
+  .stat { font-size:12px; color:var(--dim); margin-top:8px; }
+  .stat b { color:var(--text); }
+  .stat .warn { color:#ff9a9a; }
+  /* VN ボックス再現（#vn-text と同じ：19px / line-height 1.85 / 明朝）。幅は本編の文字領域に合わせ余裕を持たせる */
+  .vnbox { background:linear-gradient(180deg,rgba(8,4,14,0.92),rgba(14,8,22,0.97)); border:1px solid var(--line);
+    border-radius:6px; padding:18px 22px; }
+  .vntext { font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif; font-size:19px; line-height:1.85;
+    color:#f6ecd0; white-space:pre-wrap; width:640px; max-width:100%; }
+  .page-sep { border-top:1px dashed #6a5a8a; margin:8px 0; font-size:10px; color:#6a5a8a; text-align:center; letter-spacing:0.2em; }
+  /* クリックで改行を入れる文字グリッド */
+  .grid { line-height:2.0; font-family:"Hiragino Mincho ProN","Yu Mincho",serif; font-size:18px; user-select:none; }
+  .grid .ch { display:inline-block; cursor:pointer; border-radius:3px; padding:0 1px; }
+  .grid .ch:hover { background:rgba(244,210,122,0.25); }
+  .grid .br { display:inline-block; color:var(--accent); }
+  .grid .nl { display:block; height:0; }
+  code { background:#0b0712; padding:1px 5px; border-radius:4px; color:#cfe; }
+  .out { width:100%; min-height:60px; background:#0b0712; color:#bfe; border:1px solid var(--line); border-radius:6px;
+    padding:10px 12px; font-size:13px; font-family:monospace; white-space:pre-wrap; word-break:break-all; }
+</style>
+</head>
+<body>
+<header>
+  <h1>改行エディタ</h1>
+  <span class="hint">会話テキストを本編と同じ規則(autoWrap)でプレビュー。手動で折りたい所は下の「文字をクリック」か、テキストに直接 \n を入れる。</span>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <h2>入力（dialogue の text。\n または実改行＝手動の改行）</h2>
+    <textarea id="src" spellcheck="false">対戦相手のいいところを、全部もらったので。なるさんの熱の入れ方も、アダムさんの一途さも、みんとさんの空気の作り方も……全部、今日の一台に入ってます</textarea>
+    <div class="controls">
+      <button class="primary" id="apply">自動整形を反映（\nを書き込む）</button>
+      <button id="clearbr">手動改行を全部消す</button>
+      <button id="copy">JSON用にコピー</button>
+    </div>
+    <div class="stat" id="stat"></div>
+    <h2 style="margin-top:14px;">JSON出力（text の値）</h2>
+    <div class="out" id="out"></div>
+  </div>
+
+  <div class="card">
+    <h2>プレビュー（本編の会話ボックス・4行ごとに改ページ）</h2>
+    <div class="vnbox"><div class="vntext" id="preview"></div></div>
+    <h2 style="margin-top:14px;">文字をクリックで改行を入れる／消す</h2>
+    <div class="grid" id="grid"></div>
+  </div>
+</div>
+
+<script>
+// ===== engine.js の autoWrap のミラー（同期必須） =====
+const WRAP_LIMIT = 24;
+const WRAP_BREAK_AFTER = "、。，．！？…‥」』）】〉》";
+const WRAP_NO_LINE_START = "、。，．！？…‥ー〜ぁぃぅぇぉっゃゅょんゎ々ァィゥェォッャュョ」』）】〉》・";
+function autoWrap(raw, limit = WRAP_LIMIT) {
+  const text = String(raw);
+  if (!text) return text;
+  return text.split("\n").map((seg) => {
+    let out = "", line = 0, i = 0;
+    while (i < seg.length) {
+      if (seg[i] === "[") { const c = seg.indexOf("]", i); if (c !== -1) { out += seg.slice(i, c + 1); i = c + 1; continue; } }
+      out += seg[i]; line += seg.charCodeAt(i) <= 0xff ? 0.5 : 1; i++;
+      if (line >= limit && i < seg.length) {
+        let take = 0;
+        for (let k = 0; k < 8 && i + k < seg.length; k++) { if (WRAP_BREAK_AFTER.includes(seg[i + k])) { take = k + 1; break; } }
+        out += seg.slice(i, i + take); i += take;
+        while (i < seg.length && WRAP_NO_LINE_START.includes(seg[i])) { out += seg[i]; i++; }
+        if (i < seg.length && "「『（【〈《".includes(out[out.length - 1])) { const o = out[out.length - 1]; out = out.slice(0, -1) + "\n" + o; line = 1; continue; }
+        let rem = 0; for (let k = i; k < seg.length; k++) rem += seg.charCodeAt(k) <= 0xff ? 0.5 : 1;
+        if (i < seg.length && rem > 2) { out += "\n"; line = 0; }
+      }
+    }
+    return out;
+  }).join("\n");
+}
+const MAX_PAGE_LINES = 4;
+
+const $ = (id) => document.getElementById(id);
+function render() {
+  const raw = $("src").value;
+  const wrapped = autoWrap(raw);
+  const lines = wrapped.split("\n");
+  // プレビュー（4行ごとにページ区切り）
+  const pv = $("preview"); pv.innerHTML = "";
+  lines.forEach((ln, idx) => {
+    if (idx > 0 && idx % MAX_PAGE_LINES === 0) { const s = document.createElement("div"); s.className = "page-sep"; s.textContent = "── 改ページ ──"; pv.appendChild(s); }
+    const d = document.createElement("div"); d.textContent = ln || " "; pv.appendChild(d);
+  });
+  // 統計
+  const pages = Math.max(1, Math.ceil(lines.length / MAX_PAGE_LINES));
+  const longest = Math.max(...lines.map((l) => [...l].reduce((a, c) => a + (c.charCodeAt(0) <= 0xff ? 0.5 : 1), 0)));
+  const widow = lines.length > 1 && [...lines[lines.length - 1]].length === 1;
+  $("stat").innerHTML = `行数 <b>${lines.length}</b> ／ ページ <b>${pages}</b> ／ 最長行 <b>${longest}</b>字` +
+    (longest > 26 ? ` <span class="warn">（箱からはみ出る恐れ）</span>` : "") +
+    (widow ? ` <span class="warn">（末尾1文字が孤立）</span>` : "");
+  // JSON出力
+  $("out").textContent = JSON.stringify(raw).slice(1, -1);
+  // クリック用グリッド（実改行は↵で表示・クリックでトグル）
+  const g = $("grid"); g.innerHTML = "";
+  const chars = [...raw];
+  chars.forEach((c, i) => {
+    if (c === "\n") { const b = document.createElement("span"); b.className = "br"; b.textContent = "↵"; b.title = "クリックで改行を消す"; b.onclick = () => toggleAt(i, true); g.appendChild(b); g.appendChild(Object.assign(document.createElement("span"), { className: "nl" })); return; }
+    const s = document.createElement("span"); s.className = "ch"; s.textContent = c; s.title = "クリックでこの後に改行";
+    s.onclick = () => toggleAt(i + 1, false); g.appendChild(s);
+  });
+}
+function toggleAt(pos, isRemove) {
+  const raw = [...$("src").value];
+  if (isRemove) raw.splice(pos, 1);
+  else raw.splice(pos, 0, "\n");
+  $("src").value = raw.join(""); render();
+}
+$("apply").onclick = () => { $("src").value = autoWrap($("src").value); render(); };
+$("clearbr").onclick = () => { $("src").value = $("src").value.replace(/\n/g, ""); render(); };
+$("copy").onclick = () => { navigator.clipboard.writeText($("out").textContent).then(() => { $("copy").textContent = "コピー済み✓"; setTimeout(() => ($("copy").textContent = "JSON用にコピー"), 1200); }); };
+$("src").addEventListener("input", render);
+render();
+</script>
+</body>
+</html>
