@@ -228,7 +228,43 @@
   1回ごとに craft -3（「葉が痩せる」）。やめ時は自分で選ぶ。UI に⚠警告、用語集・CLAUDE.mdも更新
 - 正典化: story doc（香りの識別子=アゲハはホワイトグミベア、Ch1の引き#7〜9）・CLAUDE.md ID表
 
-## 次回セッションへの引き継ぎ（2026-06-13 第17〜20便終了時点・最新）
+## 次回への引き継ぎ（2026-06-13 第21〜22便・A1着手）
+
+**現状サマリ**: main は最新（PR #77済・Pages公開中 https://haseatsu114514-dot.github.io/shisha-game/）。
+日常システム大改修＋恋愛/くじ/レーダー/体力は反映済み。第1章タイトルは「一吸目（ファーストドロー）」。
+**A1（大会パート大改修）に着手し、4要素のうち1つ目が完成**。開発は引き続き `claude/great-galileo-omzoob`。
+
+### A1 進捗（docs/master_spec.md 第2部が仕様）
+- ✅ **#1 HOLE RHYTHM BATTLE（アルミ穴あけ）完成**: 円周カーソル＋均等度評価。外周→中周→内周、
+  カーソルは何周でも回せ「次の周へ/穴あけを仕上げる」で進む。黒地×ネオンUI＋均等度メーター＋
+  BEAUTIFUL RING等の演出。採点は従来互換(tt.foilHits)＋tt.holeResult(FLAVOR TRIAL用)も生成。
+  `stepFoil()`（web/js/game.js）。CSSは style.css の「HOLE RHYTHM BATTLE」節。
+- ✅ **アルミ盤テクスチャ取り込み口**: `assets/ui/foil_taut.png` を中央210%ズームで使用（しわ縁をクロップ）。
+  **未アップなので今は金属グラデにフォールバック**。オーナーが foil_taut.png をアップ→build2本で反映。
+  build_standalone は存在時のみ埋め込み。
+- ✅ **2位以下＝GAME OVER**（master_spec改定）: 1位のみ進出。2位以下は賞金なしで GAME OVER 画面
+  （「もう一度挑戦する」＋「タイトルに戻る」）。showDefeat()。勝利画面は gameover クラス除去済み。
+- ⬜ **#2 HEAT IGNITION（炭焼き）未**: 現 stepCoalFire() を、炭の色を観察しジャスト発光で取る方式へ。
+  出力契約は tt.coalFire("perfect"/"good"/"miss")維持＋tt.coalResult追加。
+- ⬜ **#3 FLAVOR TRIAL（審査）未**: コンセプト(=theme)×アピールポイント(holeResult/coalResult/craftから自動生成)を
+  審査員のザワザワにぶつける。用語は「コンセプト/アピールポイント/ぶつける」、反論は「香ってない！」。
+  弾丸系は使わない（#17）。CLAUDE.mdの「プレゼン廃止」はこのFLAVOR TRIALで上書き予定（着手時に更新）。
+- ⬜ **#4 RESULT 10 COUNT（結果発表）未**: showResult の前に10カウント演出。1位=プチュン/2位以下=パリン。
+  プチュン＝1位確定。審査員4分割カットイン。
+
+### テスト（重要・次便で最適化）
+- ✅ 通過: playthrough / map_hover / kuji / balance / reel
+- ⚠ ch2 / screenshots は **新HOLEミニゲームの自動操作で所要時間が伸び**、外部タイムアウトに当たりやすい
+  （ゲーム本体は健全。playthroughは最後まで完走＝1位クリア確認済み）。
+  対策候補: steps.mjs の HOLE 操作をさらに短縮 or 一部スキップ、ch2の各ステージは make を軽量化。
+- foilテクスチャ未アップ中の404はplaythroughでフィルタ済（良性）。
+- 起動: `python3 -m http.server 8123` 後、`node web/test/<name>.mjs`。ビルド: build_data→build_standalone。
+
+### 注意
+- リール（PUFF!PUFF!パッキー日常リール）は別スレッドで開発中のため**本編未配線のまま**（衝突回避）。
+  reel.js等は同梱。配線手順は docs/pakki_slot_spec.md §10（向こうが固まってから一箇所で）。
+
+## 次回セッションへの引き継ぎ（2026-06-13 第17〜20便終了時点）
 
 **開始手順**: shisha-game 起点 → `claude/great-galileo-omzoob` をチェックアウト →
 `python3 web/build_data.py && python3 web/build_standalone.py` →
