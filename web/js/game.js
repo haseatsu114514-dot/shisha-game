@@ -4592,7 +4592,7 @@ function startNewGame() {
   playDialogue("ch1_cold_open", () => {
     engulfInSmoke(() => {
       showChapterTitle(
-        { no: "第一章", num: "Ⅰ", name: "一吸目", read: "ファーストパフ ── FIRST PUFF", sub: "SMOKE CROWN CUP 編" },
+        { no: "第一章", num: "Ⅰ", name: "一引き目", read: "ファーストドロー ── FIRST DRAW", sub: "SMOKE CROWN CUP 編" },
         () => {
           if (window.SFX) SFX.bgm("tonari");
           playDialogue("ch1_opening", () => {
