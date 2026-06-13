@@ -5,14 +5,17 @@
 const STAT_KEYS = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
 const STAT_JA2EN = { 技術: "technique", センス: "sense", 根性: "guts", 魅力: "charm", 洞察: "insight" };
 
+// 本名が別にあるキャラも、表示は基本あだ名（本名は会話テキスト内でだけ触れる）
 const SPEAKER_NAMES = {
   hajime: "はじめ", sumi: "スミさん", naru: "なる", adam: "アダム",
-  minto: "緑川 栞（みんと）", mashiro: "ましろ", tsumugi: "つむぎ", tumugi: "つむぎ",
+  minto: "みんと", mashiro: "ましろ", tsumugi: "つむぎ", tumugi: "つむぎ",
   hazime: "はじめ", pakki: "パッキー", salaryman: "サラリーマン",
   nagumo: "南雲修二", maezono: "前園壮一郎", kirishima: "霧島レン",
   staff_choizap: "チョイザップスタッフ", kako: "かこ", rira: "りら",
   oneesan: "お姉さん", // みんとの私服（素）の姿。正体は ch1 では明かさない
-  rin: "匂坂 凛（りん）",
+  rin: "凛",
+  ageha: "あげは", rei: "零-REI-", kumicho: "神崎竜二",
+  dr_kemuri: "チャコール博士",
   // characters.json に載せないモブ話者（ending/dreams/ch3_mukai 等で使用）
   shop_clerk: "店員", old_man: "老人", customer: "お客さん", everyone: "全員",
 };
@@ -27,14 +30,65 @@ const NO_PORTRAIT_SPEAKERS = new Set(["hajime", "hazime"]);
 
 // キャラごとの名前色分けは廃止（視認性優先で白統一）
 
+// 旧アセット → 最新版への参照差し替え（ファイルは退避せず参照だけ変える）
+const ASSET_ALIASES = {
+  "assets/backgrounds/bg_tonari_inside.png": "assets/backgrounds/tonari_night.png", // ネオン版は旧。最新は練習シーンの夜tonari
+};
+
 // アセット解決: スタンドアロン版では window.ASSET_DATA に data URI が入る
 function assetUrl(rel) {
+  rel = ASSET_ALIASES[rel] || rel;
   if (window.ASSET_DATA && window.ASSET_DATA[rel]) return window.ASSET_DATA[rel];
   return "../" + rel;
 }
 
 function escapeHtml(s) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// 一気に読める文字数は25文字程度なので、長い行は句読点優先で自動改行する。
+// [imp] 等の装飾タグは幅0として数え、タグの途中では改行しない。
+// 半角文字は0.5文字として数える（英字交じりの行が早く折れすぎないように）。
+const WRAP_LIMIT = 24;
+const WRAP_BREAK_AFTER = "、。，．！？…‥」』）】〉》";  // ここで切ると区切りが良い
+const WRAP_NO_LINE_START = "、。，．！？…‥ー〜ぁぃぅぇぉっゃゅょ々」』）】〉》・";
+function autoWrap(raw, limit = WRAP_LIMIT) {
+  const text = String(raw);
+  if (!text) return text;
+  return text.split("\n").map((seg) => {
+    let out = "";
+    let line = 0;
+    let i = 0;
+    while (i < seg.length) {
+      if (seg[i] === "[") {
+        const close = seg.indexOf("]", i);
+        if (close !== -1) { out += seg.slice(i, close + 1); i = close + 1; continue; }
+      }
+      out += seg[i];
+      line += seg.charCodeAt(i) <= 0xff ? 0.5 : 1;
+      i++;
+      if (line >= limit && i < seg.length) {
+        // 少し先に句読点があればそこまで引っ張って、区切りの良い位置で折る
+        let take = 0;
+        for (let k = 0; k < 8 && i + k < seg.length; k++) {
+          if (WRAP_BREAK_AFTER.includes(seg[i + k])) { take = k + 1; break; }
+        }
+        out += seg.slice(i, i + take);
+        i += take;
+        // 行頭に来てはいけない文字（閉じ括弧・小書きかな等）は巻き取る
+        while (i < seg.length && WRAP_NO_LINE_START.includes(seg[i])) { out += seg[i]; i++; }
+        // 開き括弧で行が終わるなら、括弧ごと次の行へ送る
+        if (i < seg.length && "「『（【〈《".includes(out[out.length - 1])) {
+          const open = out[out.length - 1];
+          out = out.slice(0, -1) + "\n" + open;
+          line = 1;
+          continue;
+        }
+        if (i < seg.length) { out += "\n"; line = 0; }
+      }
+    }
+    return out;
+  }).join("\n");
 }
 
 // [imp]/[warn]/[hint]/[red]/[blue]/[sub] タグを span に変換
@@ -181,12 +235,14 @@ class DialogueEngine {
     this.el.cg.classList.remove("visible");
   }
 
-  // 透過余白の差を補正し、どのキャラも実体が同じ高さで並ぶようにする
+  // 透過余白の差を補正し、どのキャラも実体が同じ高さで並ぶようにする。
+  // キャラ別の微調整は spriteScale（characters.json / portrait_scales 経由）で吸収できる（既定1.0）
   applyPortraitTrim(img, speaker, face) {
     const folder = SPEAKER_ID_ALIASES[speaker] || speaker;
-    // 背景込みの一枚絵は CSS に任せる（マスク＆固定サイズ）
+    const scale = (this.ctx.portraitScales || {})[folder] || 1;
+    // 背景込みの一枚絵は CSS に任せる（マスク＆固定サイズ）。スケール指定があれば乗算
     if (BG_FULL_PORTRAITS.has(folder)) {
-      img.style.height = "";
+      img.style.height = scale !== 1 ? `${92 * scale}%` : "";
       img.style.bottom = "";
       return;
     }
@@ -196,11 +252,11 @@ class DialogueEngine {
     let f = face && faces.includes(face) ? face : "normal";
     const t = trims[f] || trims.normal;
     if (!t || !t.h) {
-      img.style.height = "100%";
+      img.style.height = `${100 * scale}%`;
       img.style.bottom = "0";
       return;
     }
-    const h = Math.min(TARGET / t.h, 165);
+    const h = Math.min((TARGET / t.h) * scale, 175);
     img.style.height = `${h}%`;
     img.style.bottom = `${-(t.b * h)}%`;
   }
@@ -233,12 +289,19 @@ class DialogueEngine {
     return assetUrl(`assets/sprites/characters/${folder}/chr_${folder}_${f}.png`);
   }
 
+  // 表示名の解決。ctx.getName があれば優先（？？？＝未紹介の出し分けはゲーム側で行う）
+  resolveName(speaker) {
+    if (!speaker) return "";
+    if (this.ctx.getName) return this.ctx.getName(speaker);
+    return SPEAKER_NAMES[speaker] || (this.ctx.charNames || {})[speaker] || speaker;
+  }
+
   showLine(line) {
     const speaker = String(line.speaker || "");
     const face = String(line.face || "");
     // 名前ラベル
     if (speaker) {
-      const name = SPEAKER_NAMES[speaker] || (this.ctx.charNames || {})[speaker] || speaker;
+      const name = this.resolveName(speaker);
       this.el.nameLabel.textContent = name;
       this.el.nameLabel.style.display = "";
       this.el.nameLabel.style.color = "#ffffff"; // キャラ色分けは視認性が悪いので白で統一
@@ -282,15 +345,14 @@ class DialogueEngine {
     this.typeText(line.text || "");
     // バックログへ記録
     if (this.ctx.onLine) {
-      const name = speaker ? (SPEAKER_NAMES[speaker] || (this.ctx.charNames || {})[speaker] || speaker) : "";
-      this.ctx.onLine(name, String(line.text || ""));
+      this.ctx.onLine(speaker ? this.resolveName(speaker) : "", String(line.text || ""));
     }
     // テキスト内の報酬キューを通知
     if (this.ctx.onTextCue) this.ctx.onTextCue(String(line.text || ""), this.dialogueId);
   }
 
   typeText(raw) {
-    const text = String(raw);
+    const text = autoWrap(String(raw));
     const label = this.el.textLabel;
     clearInterval(this.typeTimer);
     this.fullHtml = formatText(text);
@@ -339,5 +401,6 @@ class DialogueEngine {
 }
 
 window.DialogueEngine = DialogueEngine;
+window.autoWrap = autoWrap;
 window.STAT_KEYS = STAT_KEYS;
 window.formatText = formatText;

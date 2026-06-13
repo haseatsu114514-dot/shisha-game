@@ -53,6 +53,10 @@
           "text": "正直でよろしい。俺は鳴切。なるでいい。SMOKE CROWN CUP、俺も出る"
         },
         {
+          "type": "set_flag",
+          "flag": "_met_naru"
+        },
+        {
           "speaker": "naru",
           "face": "normal",
           "text": "偵察ってことなら、ちょうどいい。今から一台立ち上げるから、座って全部見てけ。詰めから炭の置き方まで、隠すもんは何もない"

@@ -43,6 +43,10 @@
           "text": "匂坂 凛。この店の上——2階で、海外メーカーの代理店部門をやってる。NIGHTSIDE……知らない？ まあ、いいや"
         },
         {
+          "type": "set_flag",
+          "flag": "_met_rin"
+        },
+        {
           "speaker": "rin",
           "face": "smile",
           "text": "ねえ、モルモットにならない？ 君"

@@ -75,6 +75,92 @@ if (!(await page.evaluate(() => state.lovers.length === 2 && state.guilt > 0))) 
 }
 log("cheating warning + second lover + guilt OK");
 
+
+// ---- 新システム検証: ？？？名前 / 定休日 / 好感度MAX警告 / 恋人デート誘い
+// (1) 未紹介キャラは？？？・店ピンは店名のみ
+await page.evaluate(() => {
+  state = newState();
+  state.phase = "daily";
+  state.flags._tutorial_done = true;
+  showMap();
+});
+await page.waitForSelector("#screen-map.active");
+if ((await page.evaluate(() => displayName("naru"))) !== "？？？") throw new Error("unmet naru should be ？？？");
+if (!(await page.locator(".spot-pin", { hasText: "KEMURIKUSAを覗く" }).count())) throw new Error("unknown naru pin label missing");
+await page.evaluate(() => { state.flags._met_naru = true; showMap(); });
+if ((await page.evaluate(() => displayName("naru"))) !== "なる") throw new Error("met naru should be なる");
+if (!(await page.locator(".spot-pin", { hasText: "なるの店へ行く" }).count())) throw new Error("known naru pin label missing");
+log("？？？ name system OK");
+
+// (2) 定休日: day%7===3 は KEMURIKUSA が閉まる
+await page.evaluate(() => { state.day = 3; showMap(); });
+const naruPin = page.locator(".spot-pin", { hasText: "KEMURIKUSA" }).first();
+if (!(await naruPin.isDisabled())) throw new Error("naru shop should be closed on day3");
+if (!(await page.locator(".spot-pin", { hasText: "定休日" }).count())) throw new Error("closure tag missing");
+log("closure system OK");
+
+// (3) 好感度MAX警告: 通っても上がらない確認 → やめておくでコマ・金を消費しない
+await page.evaluate(() => {
+  state.day = 2; state.ap = 2; state.money = 30000;
+  state.flags._met_naru = true;
+  state.affinity.naru = 5;
+  state.visits.naru = 99;
+  showMap();
+});
+await page.locator(".spot-pin", { hasText: "KEMURIKUSA" }).first().click();
+for (let i = 0; i < 30 && !(await page.locator("#vn-choices .choice-btn").count()); i++) {
+  await page.click("#vn-click-layer").catch(() => {});
+  await page.waitForTimeout(80);
+}
+const warnTexts = await page.locator("#vn-choices .choice-btn").allTextContents();
+if (!warnTexts.some((t) => t.includes("やめておく"))) throw new Error("max-affinity warning missing");
+await page.locator("#vn-choices .choice-btn", { hasText: "やめておく" }).click();
+for (let i = 0; i < 20; i++) {
+  if ((await page.evaluate(() => document.querySelector(".screen.active")?.id)) === "screen-map") break;
+  await page.click("#vn-click-layer").catch(() => {});
+  await page.waitForTimeout(60);
+}
+const after = await page.evaluate(() => ({ ap: state.ap, money: state.money }));
+if (after.ap !== 2 || after.money !== 30000) throw new Error("cancel should not consume AP/money: " + JSON.stringify(after));
+log("max-affinity warning OK");
+
+// (4) 恋人のデート誘いLIME → 受けるとコマ消費なしでデート → 恋人ポイントが動く
+await page.evaluate(() => {
+  state = newState(); // 他キャラのLIMEが混ざらないよう素の状態から
+  state.phase = "daily";
+  state.flags._tutorial_done = true;
+  state.lovers = ["tsumugi"];
+  state.loveLevel.tsumugi = 1;
+  state.lovePts.tsumugi = 9;
+  state.day = 5; state.ap = 2;
+  state.flags._met_tsumugi = true;
+  morningPhone(() => {});
+});
+await page.waitForSelector("#phone-overlay.show");
+await page.locator("#phone-overlay .lime-reply", { hasText: "行く" }).click();
+for (let i = 0; i < 400; i++) {
+  if (await page.locator("#phone-overlay.show").count()) {
+    const r = page.locator("#phone-overlay .lime-reply").first();
+    if (await r.count()) await r.click().catch(() => {});
+    await page.waitForTimeout(120);
+    continue;
+  }
+  const sc = await page.evaluate(() => document.querySelector(".screen.active")?.id);
+  if (sc === "screen-dialogue") {
+    const c = page.locator("#vn-choices .choice-btn").first();
+    if (await c.count()) await c.click();
+    else await page.click("#vn-click-layer").catch(() => {});
+  }
+  const pts = await page.evaluate(() => state.lovePts.tsumugi || 0);
+  if (pts > 9) break;
+  await page.waitForTimeout(30);
+}
+const dateRes = await page.evaluate(() => ({ pts: state.lovePts.tsumugi, ap: state.ap, last: state.lastDate.tsumugi }));
+if (!(dateRes.pts > 9)) throw new Error("date should add love pts: " + JSON.stringify(dateRes));
+if (dateRes.ap !== 1) throw new Error("invite date should consume exactly 1 AP: " + JSON.stringify(dateRes));
+if (dateRes.last !== 5) throw new Error("lastDate not recorded");
+log("lover date invite OK (1 AP consumed)");
+
 // ---- 第2章: ch1クリア相当の状態から開始
 await page.evaluate(() => {
   state = newState();

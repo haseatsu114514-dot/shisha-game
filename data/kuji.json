@@ -1,0 +1,37 @@
+{
+  "_comment": "シーシャくじ（master_spec #25 / A2）。ボックス制・上位集約。type: goods/stand=売却可, flavor/consumable=売却不可。sell=中古売値。equipId は実機能に紐づくもののみ（home_rig_set）。くじ専用の小物は goods 扱いで売却可。",
+  "meta": { "refillDays": 3 },
+  "grades": {
+    "g500": {
+      "price": 500,
+      "boxSize": 20,
+      "chapterMin": 1,
+      "label": "シーシャくじ（1回500円）",
+      "ev_comment": "投資10,000円。フルボックス(20枚)の売却可現金=S(6000)+A5枚(計4500)=10,500 ⇒ 還元105%。ラストワン賞(1,000)込みで11,500=115%。下位14枚は売却不可の消耗品(使用価値のみ)。Sを引かないと黒字化せず、1箱の最大現金利益は約+1,500円でバイト1回(8,000)に遠く及ばない。",
+      "prizes": [
+        { "rank": "S", "name": "限定コラボ・ガラスハガル", "type": "goods", "sell": 6000, "count": 1, "desc": "コラボ限定の硝子製ハガル。コレクター垂涎の一品。" },
+        { "rank": "A", "name": "ステンレストング（上物）", "type": "goods", "sell": 1000, "count": 2, "desc": "握りの良い業務用トング。売れば良い値段。" },
+        { "rank": "A", "name": "シリコンホース（限定色）", "type": "goods", "sell": 800, "count": 2, "desc": "限定カラーのシリコンホース。" },
+        { "rank": "A", "name": "木製マウスピース", "type": "goods", "sell": 900, "count": 1, "desc": "手に馴染む木工マウスピース。" },
+        { "rank": "B", "name": "ココナッツ炭（1箱）", "type": "consumable", "sell": 0, "count": 8, "desc": "火付きの良い定番の炭。実用品。" },
+        { "rank": "B", "name": "アルミホイル（業務用）", "type": "consumable", "sell": 0, "count": 6, "desc": "厚手の業務用アルミ。実用品。" }
+      ],
+      "lastOne": { "rank": "LAST", "name": "ラストワン賞・木製スタンド", "type": "goods", "sell": 1000, "count": 1, "desc": "箱を引き切った人だけがもらえる、ちょっと良い木工スタンド。" }
+    },
+    "g1000": {
+      "price": 1000,
+      "boxSize": 12,
+      "chapterMin": 2,
+      "label": "プレミアムくじ（1回1,000円）",
+      "ev_comment": "投資12,000円。上位賞は『台（家シーシャ本体）』＝使用価値が主、ダブり売値は低め(3,000)。台量産→売却は割に合わない設計。家シーシャ未所持なら破格の当たり。",
+      "prizes": [
+        { "rank": "S", "name": "家シーシャ一式（コンパクト台）", "type": "stand", "equipId": "home_rig_set", "sell": 3000, "count": 1, "desc": "家で吸える小型の台一式。家シーシャが解禁される。" },
+        { "rank": "A", "name": "クリアパイプ（中級機）", "type": "goods", "sell": 2000, "count": 1, "desc": "扱いやすい中級パイプ。売れば良い値段。" },
+        { "rank": "A", "name": "人気フレーバー詰め合わせ", "type": "flavor", "sell": 0, "count": 2, "desc": "人気どころのフレーバー数種。使用価値の塊。" },
+        { "rank": "B", "name": "ココナッツ炭（大箱）", "type": "consumable", "sell": 0, "count": 5, "desc": "大容量の炭。実用品。" },
+        { "rank": "B", "name": "くじ屋オリジナル・ステッカー", "type": "goods", "sell": 100, "count": 3, "desc": "ほぼ景品。集めると可愛い、かも。" }
+      ],
+      "lastOne": { "rank": "LAST", "name": "ラストワン賞・限定ボウル", "type": "goods", "sell": 3000, "count": 1, "desc": "箱を引き切った人だけの限定ボウル。" }
+    }
+  }
+}

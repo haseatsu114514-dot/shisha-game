@@ -32,10 +32,10 @@ await page.click("#btn-new");
 // キャラ訪問でスポットが解禁される順序も兼ねて検証する
 const plan = [
   "tonariでバイト", "Dr.fookah", "スミさんと話す",
-  "なるの店へ行く", "アダムの店へ行く",
-  "みんとの店へ行く", "Dr.fookah", "カフェ",
+  "KEMURIKUSA", "EDEN",
+  "PEPERMINT", "Dr.fookah", "カフェ",
   "観音堂", "Dr.fookah", "チョイザップ",
-  "シーシャの練習", "つむぎと話す",
+  "シーシャの練習", "常連席",
   "tonariでバイト", "C.STATION",
   "シーシャの練習", "家で休む",
 ];
@@ -160,6 +160,7 @@ await page.click("#btn-status");
 const statusText = await page.locator("#status-body").textContent();
 if (!statusText.includes("技術") || !statusText.includes("★")) throw new Error("status screen broken");
 log("status screen OK");
+log("money at clear:", await page.evaluate(() => state.money));
 
 if (errors.length) {
   console.error("PAGE ERRORS:\n" + errors.join("\n"));
