@@ -420,13 +420,25 @@ const REEL = (() => {
       el.style.transform = `translateY(${tyFor(stops[i])}px)`;
     });
   }
-  function bubble(text, ms) {
+  function bubble(text, ms, cls) {
     const b = document.querySelector("#reel-bubble");
     if (!b) return;
     b.textContent = text;
+    b.classList.remove("hot", "rare");
+    if (cls) b.classList.add(cls); // 熱い/レアなセリフは色を変える（T24）
     b.classList.add("show");
     clearTimeout(bubble._t);
     if (ms !== 0) bubble._t = setTimeout(() => b.classList.remove("show"), ms || 1800);
+  }
+  // 直近3件と被らないランダム抽選（同じセリフの連発を防ぐ・T24）
+  const _recentLines = [];
+  function pick(pool) {
+    if (!pool || !pool.length) return "";
+    let c, tries = 0;
+    do { c = pool[Math.floor(Math.random() * pool.length)]; tries++; }
+    while (_recentLines.includes(c) && tries < 10 && pool.length > 3);
+    _recentLines.push(c); if (_recentLines.length > 3) _recentLines.shift();
+    return c;
   }
   function lampOn(premium) {
     const lamp = document.querySelector("#reel-lamp");
@@ -529,25 +541,29 @@ const REEL = (() => {
     const amt = r.exp >= 6 ? "どっさり" : r.exp >= 4 ? "しっかり" : r.exp >= 2 ? "ちょっと" : "わずかに";
     return stat ? `【${stat}】の経験値が${amt}入ったよ！` : `経験値が${amt}入ったよ！`;
   }
-  // 天井が近いときの抽象的な示唆（数値は出さない・近づくほど熱く）（T19）
+  // 天井が近いときの抽象的な示唆（数値は出さない・短く・近づくほど熱く・パターン多め）（T19/T21/T24）
   const CEILING_HINTS = {
-    far:  ["……なんだか、近い気がするよ？", "そろそろ来てもいい頃合いじゃない？"],
-    near: ["おっ、これはもうすぐかも……！", "ボクのセンサーがピクピクしてる……近いっ！"],
-    soon: ["次っ……次こそ来るんじゃない！？", "もう、いつ光ってもおかしくないよ……！"],
+    far:  ["……近いかも？", "そろそろ？", "む、来そう", "気配がする……", "んん？", "ボクの勘が……"],
+    near: ["もうすぐ……！？", "近い……！", "ピクッ……！", "あと少し……？", "うずうず……！", "そろそろだよっ"],
+    soon: ["次っ……！？", "来るッ……！", "いつ光っても……！", "ビンビンくる……！", "うおっ、もう！", "ためてためて……！"],
   };
   function ceilingHint(remain) {
-    const pool = remain <= 1 ? CEILING_HINTS.soon : remain <= 3 ? CEILING_HINTS.near : CEILING_HINTS.far;
-    return pool[Math.floor(Math.random() * pool.length)];
+    return pick(remain <= 1 ? CEILING_HINTS.soon : remain <= 3 ? CEILING_HINTS.near : CEILING_HINTS.far);
   }
-  // 外れでもたまに楽しいことを言う（T18）
+  // 外れでもたまに楽しいことを言う（T18/T21/T24・短く・多バリエーション）
   const FUN_MISS = [
-    "はずれ〜♪　でもこの一台、ボクは嫌いじゃないよ",
-    "ぷぷっ、今のはノーカン！……にはできないか〜",
-    "むむ、惜しい……気がするだけかも？",
-    "煙はウソをつかないけど、ボクはたまにつくよ♪",
-    "今ちょうど、いい感じに力を溜めてるとこ！たぶん！",
+    "はずれ〜♪", "ぷぷっ、ノーカン！", "むむ、惜しい", "今、力ためてる！たぶん", "ボクはウソつくよ♪",
+    "ノーれんちゃん中〜", "やる気は満タン！", "次に期待してね♪", "危なかった……何が？", "知ってた（嘘）",
+    "煙、いい色〜", "まばたきした？", "今のは練習！", "宇宙を感じる……", "ぷかぷか〜", "ぐぬぬ",
+    "せーの、で来るやつ", "……はっ、寝てた", "ノーコメントで！", "ちっ", "むむむ", "ぼちぼち〜",
   ];
-  function funMiss() { return FUN_MISS[Math.floor(Math.random() * FUN_MISS.length)]; }
+  function funMiss() { return pick(FUN_MISS); }
+  // ごくまれに出るレア台詞（外れ時・短く・赤文字で表示）（T21/T24）
+  const RARE_MISS = [
+    "ねえ、たまにはボクの話も♪", "（小声）誰が作ったんだろ、これ", "スミさん、さっき笑ってたよ？",
+    "今、いい匂いした。気のせい？", "案外いいコンビかもね", "キミの煙、ボク好きだよ",
+  ];
+  function rareMiss() { return pick(RARE_MISS); }
   function bonusName(r) {
     return (r.role === "big" || r.overlap === "big") ? "ビッグボーナス"
       : r.role === "rare" ? "プレミア"
@@ -557,13 +573,15 @@ const REEL = (() => {
   function afterStop(r, fast, done) {
     switch (r.role) {
       case "miss":
-        // 天井が近いと抽象的に示唆（数値は出さない）。たまに外れでも楽しいことを言う（T18/T19）
+        // 天井が近いと抽象的に示唆（数値は出さない）。たまに外れでも楽しい/レアなことを言う（T18/T19/T24）
         if (!fast) {
           if (r.ceilingRemain > 0 && r.ceilingRemain <= 5) {
-            bubble(ceilingHint(r.ceilingRemain), 1700);
+            bubble(ceilingHint(r.ceilingRemain), 1500, r.ceilingRemain <= 1 ? "hot" : null);
             if (r.ceilingRemain <= 2 && fx() !== "off") sfx("puka");
-          } else if (Math.random() < 0.16) {
-            bubble(funMiss(), 1500);
+          } else {
+            const rnd = Math.random();
+            if (rnd < 0.025) { bubble(rareMiss(), 2200, "rare"); sfx("reelWin"); }
+            else if (rnd < 0.20) bubble(funMiss(), 1400);
           }
         }
         return done();
@@ -644,8 +662,9 @@ const REEL = (() => {
     bubble("", 1);
     const finish = () => {
       announce(b);
-      // ボーナスも役名＋恩恵をパッキーが読み上げる（T18）
-      if (!fast && fx() !== "off") bubble(`${bonusName(b)}ッ！　${benefitLine(b)}`, 2600);
+      // ボーナスも役名＋恩恵をパッキーが読み上げる（T18）。BIG/プレミアは熱いので赤文字（T24）
+      const big = b.role === "big" || b.role === "rare" || b.overlap === "big";
+      if (!fast && fx() !== "off") bubble(`${bonusName(b)}ッ！　${benefitLine(b)}`, 2600, big ? "hot" : null);
       if (b.done) { const d = b.done; b.done = null; d(); }
     };
     if (fast || fx() === "lite") { sfx("fanfare"); return finish(); }

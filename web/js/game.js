@@ -4186,6 +4186,16 @@ function pullStartTemp() {
 
 function stepPull() {
   const PULL_TARGET = pullTargetZone(); // 適温はテーマ依存（#38）
+  // ジャスト判定はベースを狭くして達成感を出す（T23・旧 半幅0.032 → 0.018）。
+  // ステータスによる難易度緩和は「ゲーム的な落とし所を設計してから」入れる方針につき今は保留（ステ自体は上昇する）。
+  // ※ PULL_DELTA / PULL_JUST はここでモジュール定数を上書き（__pullDebug もこの値を参照）
+  const PULL_DELTA = 0.13;
+  const _jhw = 0.018;
+  const PULL_JUST = {
+    up:   [0.1725 - _jhw, 0.1725 + _jhw],
+    keep: [0.5 - _jhw, 0.5 + _jhw],
+    down: [0.8275 - _jhw, 0.8275 + _jhw],
+  };
   const tempNote = (tt && tt.theme) ? ({
     relax: "　今日はリラックス系——高温にしすぎないのが適温だ。",
     high_heat: "　今日は高火力系——しっかり高温まで上げろ。",
@@ -4250,7 +4260,8 @@ function stepPull() {
 
   // ゲージは左→右に走り、右端まで行ったらまた左から（折り返さない）
   let pos = 0, running = true, raf = 0, last = performance.now();
-  const speed = Math.max(0.42, 0.56 - state.stats.technique / 600); // 技術が高いほど少し遅い
+  // 針速度: ベースをややシビアに固定（T23・達成感）。ステによる緩和は落とし所を設計してから（保留）
+  const speed = 0.52;
   const tick = (now) => {
     if (!running) return;
     const dt = (now - last) / 1000;
