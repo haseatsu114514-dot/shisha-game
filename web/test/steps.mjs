@@ -16,9 +16,17 @@ export async function playTnStep(page, opts = {}) {
     }
     await page.locator("#tn-body button", { hasText: /次へ|結果を見る/ }).click();
   } else if (title.includes("炭起こし") || title.includes("HEAT IGNITION")) {
-    await page.waitForTimeout(250);
-    await page.locator("#tn-body button", { hasText: "乗せる" }).click();
-    await page.locator("#tn-body button", { hasText: "次へ" }).click();
+    // HEAT IGNITION: 3つの炭を観察し、芯がピカッと閃いた瞬間(justNow)に取り上げる。
+    // 閃きを取り逃して白熱/灰(hot/ash)まで行った炭は救済で取る（取り残しを防ぐ）。
+    for (let k = 0; k < 400; k++) {
+      const d = await page.evaluate(() => (window.__heatDebug ? __heatDebug() : null));
+      if (!d) { await page.waitForTimeout(40); continue; }
+      if (d.every((c) => c.taken)) break;
+      const pick = d.find((c) => c.justNow) || d.find((c) => !c.taken && (c.zone === "hot" || c.zone === "ash"));
+      if (pick) await page.locator(`#heat-coal-${pick.i}`).click().catch(() => {});
+      await page.waitForTimeout(40);
+    }
+    await page.locator("#tn-body button", { hasText: /次へ|結果を見る/ }).click();
   } else if (title.includes("集中")) {
     for (let k = 0; k < 60; k++) {
       const fin = page.locator("#tn-body button", { hasText: "仕上げに入る" });

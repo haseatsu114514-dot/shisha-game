@@ -67,6 +67,13 @@ await page.waitForTimeout(100);
 await page.screenshot({ path: `${OUT}/06_status.png` });
 await page.click("#status-close");
 
+// 練習ドリル(HOLE)を終わらせてマップへ戻す。これをしないと drill 状態が残ったまま
+// 次の startTournament() を呼んでも突入ループ（screen-tournament で break）が
+// ドリル画面で即 break し、本番大会に入れず敗北画面まで到達しない
+await page.evaluate(() => { if (typeof tt !== "undefined" && tt && tt.step === "foil") tnNext("foil"); });
+await page.locator("#tn-body button", { hasText: "練習を終える" }).click().catch(() => {});
+await page.waitForSelector("#screen-map.active", { timeout: 5000 }).catch(() => {});
+
 // 敗北ルート確認: 大会に低ステータスで突入する
 await page.evaluate(() => {
   state.day = 7;
@@ -107,9 +114,20 @@ for (let i = 0; i < 2500; i++) {
       await page.screenshot({ path: `${OUT}/08b_foil.png` });
       await page.evaluate(() => { if (typeof tnNext === "function" && tt && tt.step === "foil") { tt.foilHits = tt.foilHits || 2; tnNext("foil"); } });
     }
-    else if (t.includes("炭起こし")) {
-      await page.locator("#tn-body button", { hasText: "乗せる" }).click();
-      await page.locator("#tn-body button", { hasText: "次へ" }).click();
+    else if (t.includes("炭起こし") || t.includes("HEAT IGNITION")) {
+      // 炭が赤熱した絵を1枚撮ってから、取り頃で3つとも取り上げる
+      await page.waitForTimeout(1100);
+      await page.screenshot({ path: `${OUT}/08d_heat.png` });
+      for (let k = 0; k < 200; k++) {
+        const d = await page.evaluate(() => (window.__heatDebug ? __heatDebug() : null));
+        if (!d || d.every((c) => c.taken)) break;
+        const pick = d.find((c) => c.justNow) || d.find((c) => !c.taken && (c.zone === "hot" || c.zone === "ash"));
+        if (pick) await page.locator(`#heat-coal-${pick.i}`).click().catch(() => {});
+        await page.waitForTimeout(45);
+      }
+      const nb = page.locator("#tn-body button", { hasText: /次へ|結果を見る/ });
+      if (await nb.count()) await nb.click().catch(() => {});
+      else await page.evaluate(() => { if (typeof tnNext === "function" && tt && tt.step === "coalfire") tnNext("coalfire"); });
     }
     else if (t.includes("集中")) {
       // わざと雑念を払わない（敗北ルート用）

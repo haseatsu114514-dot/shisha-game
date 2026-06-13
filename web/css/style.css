@@ -2625,6 +2625,86 @@ body {
 .hole-summary { margin-top: 8px; font-size: 12.5px; color: #aeb8d6; letter-spacing: 0.04em; }
 @media (max-width: 760px) { .hole-arena { flex-direction: column; gap: 12px; } .hole-board { width: 230px; height: 230px; } }
 
+/* ============ HEAT IGNITION（炭起こし・観察＆ジャスト発火・master_spec 第2部 #2 / A1） ============ */
+.heat-arena { display: flex; gap: 22px; align-items: center; justify-content: center; padding: 8px 0 2px; }
+.heat-burner {
+  position: relative; width: 320px; min-height: 196px; flex: 0 0 auto;
+  border-radius: 16px; padding: 30px 20px 30px;
+  background:
+    radial-gradient(circle at 50% 118%, rgba(255,92,28,0.16), transparent 60%),
+    linear-gradient(160deg, #14161f 0%, #0a0b12 100%);
+  border: 1px solid rgba(120,140,200,0.22);
+  box-shadow: inset 0 0 50px rgba(0,0,0,0.6), 0 0 30px rgba(60,90,160,0.25);
+  overflow: hidden; display: flex; align-items: center; justify-content: center;
+}
+/* コンロの五徳と熾きの照り返し */
+.heat-grate {
+  position: absolute; inset: auto 0 0 0; height: 60%; pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 38px, rgba(255,255,255,0.045) 38px 40px),
+    radial-gradient(ellipse at 50% 110%, rgba(255,72,20,0.20), transparent 66%);
+  -webkit-mask: linear-gradient(transparent, #000 62%); mask: linear-gradient(transparent, #000 62%);
+}
+.heat-coals { position: relative; display: flex; gap: 24px; justify-content: center; align-items: center; z-index: 1; min-height: 90px; }
+.heat-coal {
+  position: relative; width: 70px; height: 70px; padding: 0; border: none; cursor: pointer;
+  -webkit-appearance: none; appearance: none; color: inherit;
+  /* 角を不揃いにして炭の塊らしく */
+  border-radius: 17px 14px 18px 13px / 14px 18px 13px 17px;
+  background: #2a282e; transform: rotate(-3deg); transition: transform 0.12s ease;
+}
+.heat-coal:nth-child(2) { transform: rotate(4deg); }
+.heat-coal:nth-child(3) { transform: rotate(-1deg); }
+.heat-coal:hover:not(.taken) { transform: translateY(-3px) rotate(0deg); }
+.heat-coal.in-just { animation: heat-bob 0.5s ease-in-out infinite; z-index: 2; }
+@keyframes heat-bob { 50% { transform: translateY(-5px) scale(1.05); } }
+.heat-coal.flash { animation: heat-flash 0.45s ease-out; }
+@keyframes heat-flash {
+  0% { box-shadow: 0 0 0 rgba(255,242,206,0); }
+  28% { box-shadow: 0 0 48px 12px rgba(255,246,214,0.96); }
+  100% { box-shadow: 0 0 18px rgba(255,200,120,0.5); }
+}
+.heat-coal.taken { cursor: default; filter: saturate(0.8) brightness(0.78); transform: scale(0.9) translateY(6px) rotate(0deg); opacity: 0.92; }
+/* 炭の芯: 中央で白く閃く */
+.heat-core {
+  position: absolute; left: 50%; top: 38%; width: 22px; height: 18px; transform: translate(-50%,-50%);
+  border-radius: 50%; background: radial-gradient(circle, #fff8e6, rgba(255,210,140,0.25) 68%, transparent);
+  opacity: 0.15; transition: opacity 0.1s; pointer-events: none;
+}
+.heat-coal.in-just .heat-core { animation: heat-core-pulse 0.34s ease-in-out infinite; }
+@keyframes heat-core-pulse {
+  0%,100% { opacity: 0.72; transform: translate(-50%,-50%) scale(0.9); }
+  50% { opacity: 1; transform: translate(-50%,-50%) scale(1.28); }
+}
+.heat-badge {
+  position: absolute; left: 50%; bottom: -19px; transform: translateX(-50%); white-space: nowrap;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.05em; opacity: 0; pointer-events: none;
+  color: #cdd6ee; text-shadow: 0 1px 2px #000;
+}
+.heat-badge.show { opacity: 1; }
+.heat-badge.z-just { color: #ffe79a; }
+.heat-badge.z-black, .heat-badge.z-ash { color: #ff9a9a; }
+.heat-callout {
+  position: absolute; left: 50%; top: 16px; transform: translate(-50%,0) scale(0.6); opacity: 0;
+  font-weight: 900; font-size: 24px; letter-spacing: 0.05em; color: #fff;
+  text-shadow: 0 0 16px rgba(255,160,80,0.9); pointer-events: none; z-index: 3;
+}
+.heat-callout.show { animation: heat-callout 0.72s ease-out; }
+.heat-callout.great { color: #ffe79a; text-shadow: 0 0 22px rgba(255,210,90,1); }
+.heat-callout.warn { color: #ff9a9a; text-shadow: 0 0 18px rgba(255,90,90,0.9); }
+@keyframes heat-callout {
+  0% { opacity: 0; transform: translate(-50%,8px) scale(0.6); }
+  25% { opacity: 1; transform: translate(-50%,0) scale(1.1); }
+  100% { opacity: 0; transform: translate(-50%,-10px) scale(1); }
+}
+.heat-side { display: flex; flex-direction: column; gap: 10px; min-width: 188px; }
+.heat-readout { background: rgba(12,16,28,0.8); border: 1px solid rgba(120,140,200,0.25); border-radius: 10px; padding: 14px 16px; }
+.heat-title-s { font-size: 20px; font-weight: bold; color: #ffb066; letter-spacing: 0.12em; }
+.heat-sub-s { font-size: 12px; color: var(--text-dim); margin-bottom: 12px; }
+.heat-count { font-size: 14px; color: #cdd6ee; }
+.heat-summary { margin-top: 8px; font-size: 12.5px; color: #aeb8d6; letter-spacing: 0.04em; }
+@media (max-width: 760px) { .heat-arena { flex-direction: column; gap: 12px; } .heat-burner { width: 280px; } }
+
 /* ============ GAME OVER（2位以下＝敗退・master_spec改定） ============ */
 #screen-end.gameover { background: linear-gradient(rgba(20,4,8,0.82), rgba(8,2,4,0.92)), url("../../assets/backgrounds/bg_tournament_stage.png") center / cover no-repeat, #0a0608; }
 #screen-end.gameover #end-title { color: #ff6b6b; text-shadow: 0 0 24px rgba(255,60,60,0.6), 0 2px 0 rgba(0,0,0,0.6); letter-spacing: 0.14em; }
