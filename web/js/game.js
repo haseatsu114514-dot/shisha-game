@@ -11,6 +11,109 @@ const VISIT_COST = 3000;
 // confession.json に告白シーンがあるキャラのうち、現章までに登場済みのもの
 const ROMANCEABLE = ["tsumugi", "minto", "rin", "ageha"];
 
+// ============ 名前の開示（？？？）システム（master_spec #1/#8） ============
+// 未紹介キャラはネームプレート・LIME・マップ等すべてで「？？？」。
+// 名乗り（dialogue内の set_flag _met_xxx）か紹介イベントで解禁する。
+// モブ・最初から知っている相手（師匠等）は常時表示
+const ALWAYS_KNOWN = new Set([
+  "hajime", "hazime", "sumi", "salaryman", "kako", "rira", "oneesan",
+  "shop_clerk", "old_man", "customer", "everyone", "staff_choizap", "pakki", "???",
+]);
+function isMet(id) {
+  return !state || !!state.flags[`_met_${id}`];
+}
+function markMet(id) {
+  if (state && id) state.flags[`_met_${id}`] = true;
+}
+function displayName(id) {
+  if (!id) return "";
+  const real = SPEAKER_NAMES[id] || (D.char_names || {})[id] || id;
+  if (ALWAYS_KNOWN.has(id) || isMet(id)) return real;
+  return "？？？";
+}
+
+// ============ 好感度ポイント（二層化 master_spec #23） ============
+// 内部ポイント（隠し数値）が閾値を超えると段階（state.affinity = ランク0..5）が上がる。
+// 選択肢をそこそこ当てて7〜8回会うと最大段階に届くバランス
+const AFFINITY_RANK_PTS = [0, 9, 20, 33, 48, 66]; // ランク1..5 の必要ポイント
+const AFFINITY_PTS = { visit: 6, repeat: 3, lime: 3, event: 5, invite: 9, date: 10, quick: 3 };
+function rankFromPts(pts) {
+  let r = 0;
+  for (let i = 1; i < AFFINITY_RANK_PTS.length; i++) if (pts >= AFFINITY_RANK_PTS[i]) r = i;
+  return r;
+}
+
+// ============ 体力（スタミナ）system（master_spec #6） ============
+// 「若いので甘め。ただし無理を重ねると寝込む」。数値は非表示でゲージのみ
+const STAMINA_LOW = 25;        // ここ未満でシーシャ系行動 → 警告→強行で酸欠
+const STAMINA_COST = { baito: 18, visit: 10, talk: 5, practice: 8, rin: 10, date: 6, homePuff: 8, gym: 6 };
+const STAMINA_GAIN = { rest: 35, cafe: 12, kannon: 12, sleep: 28 };
+function stamina() { return state.stamina ?? 100; }
+function addStamina(n) {
+  state.stamina = Math.max(0, Math.min(100, stamina() + n));
+  updateHud();
+}
+function staminaLow() { return stamina() < STAMINA_LOW; }
+
+// シーシャ系の行動前ガード。体力が低いと警告し、強行すると酸欠（ヤニクラ）で
+// その日の残り行動を失う。無理を重ねる（2回strikes）と翌朝は風邪で1日休み
+function shishaGuard(proceed, cancel) {
+  if (!staminaLow()) return proceed();
+  playCustom({
+    dialogue_id: "stamina_warning",
+    lines: [
+      { speaker: "", face: "", text: "（……正直、体が重い。このまま煙を吸ったら、確実にクラる気がする。）" },
+      { type: "choice", choices: [
+        { text: "やめておく（今日は無理しない）", next: "stay" },
+        { text: "構わず続ける", next: "go" },
+      ] },
+    ],
+    branches: {
+      stay: [{ speaker: "", face: "", text: "（……無理は、しない。それも仕込みのうちだ。）" }],
+      go: [{ type: "set_flag", flag: "_stamina_push" }],
+    },
+  }, () => {
+    if (state.flags._stamina_push) {
+      delete state.flags._stamina_push;
+      return yaniKura();
+    }
+    cancel ? cancel() : showMap();
+  });
+}
+
+// 酸欠（ヤニクラ）。半日〜1日が飛ぶ
+function yaniKura() {
+  state.flags._overwork = (state.flags._overwork || 0) + 1;
+  playCustom({
+    dialogue_id: "yani_kura",
+    metadata: { bg: "res://assets/backgrounds/bg_home.png" },
+    lines: [
+      { speaker: "", face: "", text: "数口で、視界の端が白くなった。耳の奥で、自分の心臓だけが大きい。" },
+      { speaker: "hajime", face: "sad", text: "（……まずい。クラった——酸欠だ）" },
+      { speaker: "", face: "", text: "壁に手をついて、ずるずると座り込む。気づけば、1時間がどこかへ消えていた。\n今日はもう、何もできそうにない。" },
+    ],
+  }, () => {
+    state.stamina = Math.max(stamina(), 40);
+    state.ap = 1;
+    endAction(); // 残り行動を失って夜→帰宅へ
+  });
+}
+
+// ============ 定休日・臨時休業（master_spec #5の補完） ============
+// 通い詰めのワンパターン化防止。スケジュールは決定的（セーブ&ロードで変わらない）
+const SHOP_CLOSURES = { naru: 3, adam: 5, minto: 6 }; // state.day % 7 がこの値の日は定休日
+const RIN_AWAY_CYCLE = 2; // 凛は day % 7 === 2 の日は出張で不在（店は開いている）
+function closureInfo(spotId) {
+  if (!state) return null;
+  const cyc = SHOP_CLOSURES[spotId];
+  if (cyc === undefined) return null;
+  if (state.day % 7 === cyc) return "定休日";
+  // 臨時休業（約1割・章と日付から決定的に決まる）
+  const h = ((state.chapter || 1) * 131 + state.day * 31 + spotId.charCodeAt(0) * 7) % 10;
+  if (h === 0) return "臨時休業";
+  return null;
+}
+
 // 章ごとの大会情報。stageDays は大会の試合日（14日制の中に予選〜決勝を配置）
 const CHAPTERS = {
   1: { cup: "SMOKE CROWN CUP", stageDays: { 14: "final" } },
@@ -40,9 +143,15 @@ function newState() {
     money: 30000,
     stats: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 },
     affinity: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0, rin: 0, ageha: 0 },
+    affinityPts: {},       // 好感度の内部ポイント（隠し数値。閾値で affinity の段階が上がる）
     visits: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0, rin: 0, ageha: 0 },
+    stamina: 100,          // 体力（数値は非表示・ゲージのみ）
+    dayVisited: {},        // 店ごとの最終訪問日（同じ店は1日1回まで）
     lovers: [],            // 付き合っているキャラ（複数なら浮気状態）
-    loveLevel: {},         // 恋愛関係後の絆レベル（0〜5）
+    loveLevel: {},         // 恋愛関係後の絆レベル（恋人Lv 0〜5）
+    lovePts: {},           // 恋人Lvの内部ポイント
+    lastDate: {},          // 恋人ごとの最終デート日（誘いLIMEのクールダウン）
+    loverQuickDay: 0,      // 「恋人とちょい会い」を使った日（1日1回・コマ消費なし）
     guilt: 0,              // うしろめたさ（非表示。浮気リスクシステムの内部値）
     usedBaito: [],
     gymMember: false,
@@ -173,32 +282,41 @@ function gainStat(en, amount) {
   });
 }
 
-function gainAffinity(charId) {
-  if (!(charId in state.affinity)) return;
-  const name = SPEAKER_NAMES[charId] || (D.char_names || {})[charId] || charId;
+// 恋人とのデート文脈でだけ恋人Lvが上がる（絆はプライベートで深める）
+let dateContext = false;
+
+// 好感度ポイントを加算し、段階が上がったらバナーを出す。
+// 戻り値: 何かしら付与できたか（呼び出し側の報酬フォールバック判定に使う）
+function gainAffinity(charId, kind = "visit") {
+  if (!(charId in state.affinity)) return false;
+  markMet(charId); // ポイントが動く＝面識がある
+  const name = displayName(charId);
   const badge = faceIconHtml(charId) || (name.match(/[一-龯ぁ-んァ-ヴa-zA-Z]/) || ["♡"])[0];
-  // 恋人になった後は「絆レベル」（恋愛関係後の5段階）が上がる
+  const pts = AFFINITY_PTS[kind] ?? AFFINITY_PTS.visit;
+  // ---- 恋人: プライベート（デート/ちょい会い）でだけ恋人Lvポイントが動く
   if ((state.lovers || []).includes(charId)) {
-    if ((state.loveLevel[charId] || 0) >= AFFINITY_CAP) return;
-    state.loveLevel[charId] = (state.loveLevel[charId] || 0) + 1;
-    gainBanner({
-      kind: "affinity",
-      badge,
-      labelTop: "BOND UP",
-      labelMain: name,
-      labelSub: "恋人との絆が深まった",
-    });
-    return;
+    if (!dateContext) return false; // 店で会っても絆は深まらない（master_spec #24）
+    if ((state.loveLevel[charId] || 0) >= AFFINITY_CAP) return false;
+    state.lovePts[charId] = (state.lovePts[charId] || 0) + pts;
+    const next = rankFromPts(state.lovePts[charId]);
+    if (next > (state.loveLevel[charId] || 0)) {
+      state.loveLevel[charId] = next;
+      gainBanner({ kind: "affinity", badge, labelTop: "BOND UP", labelMain: name, labelSub: `恋人との絆が深まった（Lv.${next}）` });
+    } else {
+      gainBanner({ kind: "affinity", badge, labelTop: "BOND", labelMain: name, labelSub: "心の距離が少し近づいた" });
+    }
+    return true;
   }
-  if (state.affinity[charId] >= AFFINITY_CAP) return;
-  state.affinity[charId] += 1;
-  gainBanner({
-    kind: "affinity",
-    badge,
-    labelTop: "AFFINITY UP",
-    labelMain: name,
-    labelSub: "距離が縮まった気がする",
-  });
+  // ---- 通常: 内部ポイント加算 → 閾値で段階アップ
+  if (state.affinity[charId] >= AFFINITY_CAP) return false;
+  state.affinityPts[charId] = (state.affinityPts[charId] || 0) + pts;
+  const rank = rankFromPts(state.affinityPts[charId]);
+  if (rank > state.affinity[charId]) {
+    state.affinity[charId] = rank;
+    gainBanner({ kind: "affinity", badge, labelTop: "AFFINITY UP", labelMain: name, labelSub: "距離が縮まった気がする" });
+  } else {
+    gainBanner({ kind: "affinity", badge, labelTop: "AFFINITY", labelMain: name, labelSub: "少し打ち解けた気がする" });
+  }
   // 好感度MAX到達 → 次にマップへ戻ったタイミングで告白イベント
   if (
     state.affinity[charId] >= AFFINITY_CAP &&
@@ -208,18 +326,20 @@ function gainAffinity(charId) {
   ) {
     state.flags._confession_due = charId;
   }
+  return true;
 }
 
 // ---------------------------------------------------------------- romance
 function becomeLovers(charId) {
   if (!state.lovers.includes(charId)) state.lovers.push(charId);
   state.loveLevel[charId] = state.loveLevel[charId] || 1;
-  const name = SPEAKER_NAMES[charId] || (D.char_names || {})[charId] || charId;
+  state.lovePts[charId] = Math.max(state.lovePts[charId] || 0, AFFINITY_RANK_PTS[1]);
+  markMet(charId);
   gainBanner({
     kind: "affinity",
     badge: faceIconHtml(charId) || "♥",
     labelTop: "NEW RELATIONSHIP",
-    labelMain: name,
+    labelMain: displayName(charId),
     labelSub: "恋人になった",
   });
   // 2人目以降＝浮気状態。うしろめたさが積もり始める（ch3の修羅場の種）
@@ -228,19 +348,48 @@ function becomeLovers(charId) {
 }
 
 // 行動の区切りで呼ぶ。好感度MAXのロマンス対象がいれば告白イベントを開始する。
+// あげは以外は「主人公が踏み出すかどうか」の選択から始まる（master_spec #11）。
 // next は告白イベント終了後の続き（昼夜の進行）
 function maybeStartConfession(next) {
   const charId = state.flags._confession_due;
   if (!charId || state.phase !== "daily") return false;
+  // 「まだ今は」を選んだ日はしばらく寝かせる（2日後に再打診）
+  if ((state.flags._confession_wait || 0) > state.day) return false;
   delete state.flags._confession_due;
   if (state.lovers.includes(charId) || state.flags[`_friend_${charId}`]) return false;
   const done = () => { save(); next ? next() : showMap(); };
   const play = () => playDialogue(`confession_${charId}`, done);
+  // あげはだけは向こうから来る（キャラ性として例外）。他は主人公の決断から
+  const start = charId === "ageha" ? play : () => {
+    playCustom({
+      dialogue_id: `confession_gate_${charId}`,
+      lines: [
+        { speaker: "", face: "", text: `（……${displayName(charId)}のことを考えると、胸の奥がずっと落ち着かない。）` },
+        { speaker: "", face: "", text: "（この気持ちに、名前をつけるなら——）" },
+        { type: "choice", choices: [
+          { text: "今日、想いを伝えよう", next: "go" },
+          { text: "……まだ、今は胸にしまっておく", next: "wait" },
+        ] },
+      ],
+      branches: {
+        go: [{ type: "set_flag", flag: "_confession_go" }],
+        wait: [{ speaker: "", face: "", text: "（大会のこと、店のこと。……今は目の前のことに集中しよう。でも、いつかきっと。）" }],
+      },
+    }, () => {
+      if (state.flags._confession_go) {
+        delete state.flags._confession_go;
+        play();
+      } else {
+        // 後日もう一度きっかけが来る
+        state.flags._confession_due = charId;
+        state.flags._confession_wait = state.day + 2;
+        done();
+      }
+    });
+  };
   // すでに恋人がいる場合は、応える前に警告を挟む
   if (state.lovers.length > 0) {
-    const current = state.lovers
-      .map((id) => SPEAKER_NAMES[id] || (D.char_names || {})[id] || id)
-      .join("、");
+    const current = state.lovers.map((id) => displayName(id)).join("、");
     playCustom({
       dialogue_id: `cheat_warning_${charId}`,
       lines: [
@@ -266,7 +415,7 @@ function maybeStartConfession(next) {
     });
     return true;
   }
-  play();
+  start();
   return true;
 }
 
@@ -358,6 +507,14 @@ function updateHud() {
     const isMap = document.querySelector("#screen-map.active");
     hudDay.classList.toggle("hidden", !!isMap);
   }
+  // 体力ゲージ（数値は出さない。色で危険度を伝える）
+  const stFill = $("#hud-stamina-fill");
+  if (stFill) {
+    const st = stamina();
+    stFill.style.width = `${st}%`;
+    stFill.classList.toggle("warn", st < 50 && st >= STAMINA_LOW);
+    stFill.classList.toggle("danger", st < STAMINA_LOW);
+  }
   // レベル
   const lv = levelProxy();
   $("#hud-level-text").textContent = `Lv.${lv}`;
@@ -418,14 +575,16 @@ function updateDayCard() {
   $("#dc-week").textContent = state.ap === 2 ? "DAY" : "NIGHT";
   $("#dc-ap").textContent = (state.ap === 2 ? "昼" : "夜") + ` ${state.ap}`;
   $("#dc-money").textContent = state.money.toLocaleString();
-  $("#dc-request").textContent = dailyTheme().label;
+  // 「今日の客層」は廃止（master_spec #18）。枠は体力の気配表示に転用
+  const st = stamina();
+  $("#dc-request").textContent = st >= 70 ? "体は軽い" : st >= STAMINA_LOW ? "すこし疲れ気味" : "かなり疲れている";
   const quotes = state.chapter === 2 ? CH2_SUMI_QUOTES : SUMI_QUOTES;
   $("#dc-quote").textContent = `スミ「${quotes[Math.min(Math.max(state.day, 1), quotes.length) - 1]}」`;
 }
 
 // 判定スタンプ演出
 function showStamp(container, result) {
-  const labels = { perfect: "PERFECT!", good: "GOOD", miss: "MISS…" };
+  const labels = { perfect: "PERFECT!", good: "GOOD", miss: "MISS…", just: "ジャスト！" };
   const st = document.createElement("div");
   st.className = `stamp stamp-${result}`;
   st.textContent = labels[result] || result;
@@ -764,6 +923,7 @@ function initEngine() {
       portraitFaces: D.portraits,
       portraitTrims: D.portrait_trims,
       charNames: D.char_names,
+      getName: (id) => displayName(id),
       setFlag: (flag) => { state.flags[flag] = true; },
       // stat 以外の condition（ending.json の恋愛分岐など）の評価
       evalCondition: (line) => {
@@ -822,6 +982,7 @@ function handleDialogueChoice(dialogueId, choiceId, branchKey, nextId) {
   // 家シーシャ: 吸った夜を記録（連夜は効果が落ちる）
   if (dialogueId === "home_shisha_night" && branchKey === "puff") {
     state.homePuffLast = { chapter: state.chapter, day: state.day };
+    addStamina(-STAMINA_COST.homePuff);
   }
   // 告白の結果（confession.json は next_id で accept/reject に分岐する）
   const m = /^confession_(\w+)_(accept|reject)$/.exec(nextId || "");
@@ -852,11 +1013,11 @@ function playCustom(dialogue, onDone, bgOverride) {
 const SPOTS = [
   { id: "baito", label: "tonariでバイト", desc: "接客で稼ぐ。基本給＋オーダーの出来で売上ボーナス", cost: 0 },
   { id: "practice", label: "シーシャの練習", desc: "tonariの隅で腕を磨く", cost: 0 },
-  { id: "sumi", label: "スミさんと話す", desc: "師匠の昔話と教え", cost: 0 },
-  { id: "tsumugi", label: "つむぎと話す", desc: "tonari常連の彼女の席へ", cost: 0 },
-  { id: "naru", label: "なるの店へ行く", desc: "ライバル店を偵察", cost: VISIT_COST },
-  { id: "adam", label: "アダムの店へ行く", desc: "ダブルアップル職人の店", cost: VISIT_COST },
-  { id: "minto", label: "みんとの店へ行く", desc: "自称20歳の店へ", cost: VISIT_COST },
+  { id: "sumi", label: "スミさんと話す", desc: "師匠の昔話と教え", cost: 0, charId: "sumi" },
+  { id: "tsumugi", label: "つむぎと話す", desc: "tonari常連の彼女の席へ", cost: 0, charId: "tsumugi" },
+  { id: "naru", label: "なるの店へ行く", desc: "ライバル店を偵察", cost: VISIT_COST, charId: "naru" },
+  { id: "adam", label: "アダムの店へ行く", desc: "ダブルアップル職人の店", cost: VISIT_COST, charId: "adam" },
+  { id: "minto", label: "みんとの店へ行く", desc: "コンカフェ風シーシャ屋へ", cost: VISIT_COST, charId: "minto" },
   { id: "choizap", label: "チョイザップ", desc: "みんとに教えてもらったジム", cost: 0, requiresMet: "minto" },
   { id: "kannon", label: "観音堂", desc: "アダムに教えてもらった静かな場所", cost: 0, requiresMet: "adam" },
   { id: "cafe", label: "カフェ", desc: "なるおすすめのスパイスラテ", cost: 800, requiresMet: "naru" },
@@ -864,6 +1025,14 @@ const SPOTS = [
   { id: "shop", label: "Dr.fookah", desc: "卸直営のショップ。機材・フレーバーが揃い、1階の試飲席で一応吸える（時間はかからない）", cost: 0 },
   { id: "rest", label: "家で休む", desc: "しっかり寝て明日に備える", cost: 0 },
 ];
+
+// まだ会っていない店主・常連は名前を出さない（店名は看板で分かる）
+const SPOT_UNKNOWN = {
+  naru: { label: "KEMURIKUSAを覗く", desc: "隣町の人気店。若い店主が一人で回しているらしい" },
+  adam: { label: "EDENを覗く", desc: "下町の店。焼き林檎みたいな甘い匂いが漏れている" },
+  minto: { label: "PEPERMINTを覗く", desc: "繁華街のポップな店。SNSで人気らしい" },
+  tsumugi: { label: "常連の子と話す", desc: "カウンターの奥、いつも同じ席にいる女の子" },
+};
 
 // 報酬キューが鳴らなかった場合の保険（全イベントに必ず報酬を付ける）
 const SPOT_FALLBACK_STAT = {
@@ -895,6 +1064,32 @@ const REPEAT_VISIT = {
 // LIMEを交換済みとみなす訪問回数（会話内で交換シーンがあるキャラはその回）
 const LIME_EXCHANGE_VISITS = { naru: 2, adam: 3, minto: 1, tsumugi: 1, sumi: 1, rin: 2 };
 
+// 恋人からのデートの誘い（プライベートで絆を深める。master_spec #24）。
+// 行ける時間帯は昼/夜交互。受けても行動コマは消費しない
+const DATE_INVITE_LINES = {
+  tsumugi: ["あの……", "今度、よその店の煙、見に行きませんか", "はじめさんと……一緒がいい、です"],
+  minto: ["ねえ、はじめくん", "……今度、その……二人で、よそのお店、行かない……？", "や、やっぱり迷惑だったら、いいの……！"],
+  rin: ["モルモットくん、業務連絡", "よその店の煙を吸うのも勉強のうち。……付き合いなさい", "…………ま、ただのデートよ"],
+  ageha: ["ハジメっち！！", "気になる店みつけた！ガチで雰囲気いいらしい！", "今日いこ！！バイブス上げてこ！！"],
+};
+const DATE_DECLINE_LINES = {
+  tsumugi: "……はい。お忙しい、ですもんね。また、今度……",
+  minto: "そ、そっか……うん、大丈夫。……また、誘うね……？",
+  rin: "ふうん。……サンプルのくせに生意気。また連絡する",
+  ageha: "りょ！またさそうわ！むりはだめだぞ〜！",
+};
+function makeDateInvite(charId, id) {
+  return {
+    id,
+    sender: charId,
+    type: "invitation",
+    time_slot: state.day % 2 === 0 ? "night" : "noon",
+    accept_event: `date_${charId}`,
+    messages: DATE_INVITE_LINES[charId] || ["今日、少し会えない？"],
+    decline_response: { text: DATE_DECLINE_LINES[charId] || "また今度ね" },
+  };
+}
+
 function limeDueMessages(tournamentDay) {
   const due = [];
   for (const m of D.lime_messages || []) {
@@ -905,6 +1100,7 @@ function limeDueMessages(tournamentDay) {
     const outsiderRumor = m.type === "rumor" && !(sender in state.affinity);
     if (!outsiderRumor) {
       if (!(sender in state.affinity)) continue; // 登場済みキャラのみ
+      // LIME交換イベントを経たキャラからしか届かない（master_spec #26 のガード）
       if (state.visits[sender] < (LIME_EXCHANGE_VISITS[sender] || 1)) continue;
     }
     // 章が違うメッセージは出さない（指定なしは第1章扱い。ch2_started 等は当該章扱い。
@@ -913,7 +1109,8 @@ function limeDueMessages(tournamentDay) {
     if (msgChapter !== (state.chapter || 1)) continue;
     if (state.limeDone.includes(m.id)) continue;
     if (cond === "lime_exchanged") {
-      if (tournamentDay || m.trigger_day !== state.day) continue;
+      // 指定日以降なら届く（同じ朝に同一人物から複数届く場合は翌朝以降へ繰り越す）
+      if (tournamentDay || state.day < (m.trigger_day || 1)) continue;
     } else if (cond === "affinity_level") {
       if (tournamentDay || state.affinity[sender] < (m.trigger_value || 99)) continue;
     } else if (cond === "tournament_day") {
@@ -922,15 +1119,34 @@ function limeDueMessages(tournamentDay) {
       // デート（outing）翌朝のフォローLIMEなど、フラグ起動のメッセージ
       if (tournamentDay || !state.flags[m.trigger_flag]) continue;
     } else if (cond === "ch2_started" || cond === "ch3_started") {
-      // 章開始トリガの噂LIME。trigger_day 指定があればその日の朝に届く
+      // 章開始トリガの噂LIME。trigger_day 指定があればその日以降の朝に届く
       if (tournamentDay) continue;
-      if (m.trigger_day && m.trigger_day !== state.day) continue;
+      if (m.trigger_day && state.day < m.trigger_day) continue;
     } else {
       continue; // 未対応の条件
     }
     due.push(m);
   }
-  return due;
+  // 恋人からのデートの誘い（試合の朝には来ない）
+  if (!tournamentDay) {
+    for (const id of state.lovers || []) {
+      if ((state.loveLevel[id] || 0) >= AFFINITY_CAP) continue;
+      const last = state.lastDate[id] ?? -9;
+      if (state.day - last < 3) continue; // 数日おき
+      if (chapterInfo().stageDays[state.day]) continue;
+      const inviteId = `_date_inv_${id}_d${state.day}`;
+      if (state.limeDone.includes(inviteId)) continue;
+      due.push(makeDateInvite(id, inviteId));
+    }
+  }
+  // 同一キャラからは1日1話題まで（master_spec #7）。あふれた分は翌朝以降に繰り越し
+  const seen = new Set();
+  return due.filter((m) => {
+    if (m.ignoreDailyLimit) return true;
+    if (seen.has(m.sender)) return false;
+    seen.add(m.sender);
+    return true;
+  });
 }
 
 let limeQueue = [];
@@ -958,7 +1174,7 @@ function nextLimeThread() {
   save();
   $("#lime-chat").innerHTML = "";
   $("#lime-actions").innerHTML = "";
-  $("#lime-peer-name").textContent = SPEAKER_NAMES[m.sender] || (D.char_names || {})[m.sender] || m.sender;
+  $("#lime-peer-name").textContent = displayName(m.sender);
   $("#lime-avatar").innerHTML = faceIconHtml(m.sender, "lime-face") || "";
   $("#lime-unread").textContent = limeQueue.length ? `未読 ${limeQueue.length}` : "";
   const bubbles = (m.messages || []).map((b) => (typeof b === "string" ? b : b.text));
@@ -1014,9 +1230,14 @@ function limeReplyButtons(list) {
 
 function showLimeActions(m) {
   if (m.type === "invitation") {
+    // 初回だけ「システムの声」でルールを説明（誘いの透明性）
+    if (!state.flags._sysnote_invite) {
+      state.flags._sysnote_invite = true;
+      addLimeNote("〜 誘いに乗ると行動を1回使う。そのぶん、ふつうに会いに行くより仲が深まりやすい。断っても嫌われたりはしない 〜");
+    }
     limeReplyButtons([
       {
-        text: "行く！",
+        text: "行く！（行動を1回使う）",
         onPick: () => {
           addLimeBubble("me", "行く！");
           if (m.time_slot === "night") {
@@ -1033,6 +1254,10 @@ function showLimeActions(m) {
         text: "ごめん、今日は難しい",
         onPick: () => {
           addLimeBubble("me", "ごめん、今日は難しい");
+          // デートの誘いを断ったら、少し間を置いてまた誘ってくれる
+          if (String(m.accept_event || "").startsWith("date_")) {
+            state.lastDate[m.sender] = state.day - 1;
+          }
           const res = m.decline_response;
           setTimeout(() => {
             if (res) addLimeBubble("peer", res.text, m.sender);
@@ -1050,9 +1275,8 @@ function showLimeActions(m) {
         addLimeBubble("me", r.text);
         setTimeout(() => {
           addLimeBubble("peer", r.response, m.sender);
-          // 好感度が上限なら代わりに魅力を伸ばす（イベント報酬ルール）
-          if ((state.affinity[m.sender] || 0) >= AFFINITY_CAP) gainStat("charm", 2);
-          else gainAffinity(m.sender);
+          // 返信は好感度ポイントになる（付与できない相手は魅力に振り替え）
+          if (!gainAffinity(m.sender, "lime")) gainStat("charm", 2);
           setTimeout(nextLimeThread, 1700);
         }, 800);
       },
@@ -1139,27 +1363,157 @@ function closePhone() {
   limeAcceptedNoon = [];
   const done = limeOnDone;
   limeOnDone = null;
-  // 昼の約束はスマホを閉じた足でそのまま向かう（行動は消費しない）。
-  // 遅延を挟むとその隙にマップ操作ができてしまうので、即座に遷移する
+  // 昼の約束はスマホを閉じた足でそのまま向かう。誘いに乗ると行動を1コマ使う
+  // （そのぶん好感度が大きく上がる）。コマが尽きたら夜→翌日へ流れる
   const chain = (i) => {
     if (i >= accepted.length) { if (done) done(); return; }
-    playLimeEvent(accepted[i].event, accepted[i].sender, () => chain(i + 1));
+    playLimeEvent(accepted[i].event, accepted[i].sender, () => {
+      state.ap = Math.max(0, state.ap - 1);
+      updateHud();
+      save();
+      if (i + 1 < accepted.length && state.ap > 0) return chain(i + 1);
+      if (state.ap <= 0) return endDay();
+      if (done) done();
+    }, true);
   };
   chain(0);
 }
 
-// LIME経由のイベント再生。会話内の報酬キューに加えて必ず好感度を1つ付ける
-function playLimeEvent(dialogueId, sender, after) {
+// LIME経由のイベント再生。会話内の報酬キューに加えて必ず好感度を付ける
+function playLimeEvent(dialogueId, sender, after, viaInvite) {
   visitContextChar = sender;
+  markMet(sender);
+  // 恋人とのデート（date_xxx は動的生成、outing_xxx は既存イベント）は絆が深まる時間
+  const isDate = dialogueId.startsWith("date_") || dialogueId.startsWith("outing_");
+  if (isDate && (state.lovers || []).includes(sender)) dateContext = true;
+  if (dialogueId.startsWith("date_")) {
+    return playLoverDate(sender, () => {
+      dateContext = false;
+      visitContextChar = null;
+      if (after) after();
+    });
+  }
   playDialogue(dialogueId, () => {
-    gainAffinity(sender);
-    if (!cueFiredInDialogue) gainStat("insight", 2);
+    const got = gainAffinity(sender, viaInvite ? "invite" : "event");
+    if (!cueFiredInDialogue && !got) gainStat("insight", 2);
     // デート（outing）後は翌朝のフォローLIMEが届く
     if (dialogueId.startsWith("outing_")) state.flags[`_outing_done_${sender}`] = true;
     // 「教わった技」として大会本番の小ボーナスに使う
     state.flags[`_ev_${dialogueId}`] = true;
+    dateContext = false;
     visitContextChar = null;
     if (after) after();
+  });
+}
+
+// ============ 恋人とのデート（よその店を二人で巡る。コマ消費なし） ============
+const DATE_VENUES = [
+  { id: "kemurikusa", name: "KEMURIKUSA", bg: "kemurikusa.png", note: "スピード勝負の店の、迷いのない煙" },
+  { id: "eden", name: "EDEN", bg: "eden.png", note: "ダブルアップル一筋の店の、深く甘い香り" },
+  { id: "pepermint", name: "PEPERMINT", bg: "pepermint.png", note: "ポップな内装に、意外と丁寧な一台" },
+  { id: "hideaway", name: "裏通りの隠れ家ラウンジ", bg: "bg_street_night.png", note: "看板のない店。常連だけが知る静けさ" },
+];
+// キャラの台詞（venue共通の骨格に、キャラの声を差し込む）
+const DATE_SCENES = {
+  tsumugi: {
+    arrive: { face: "normal", text: "……来て、くれた。うれしい、です" },
+    mid: { face: "smile", text: "（煙を目で追いながら）……ここの煙は、淡い水色。はじめさんの煙とは、ぜんぜん違う色……" },
+    choiceQ: "（つむぎは煙の色の話を、ぽつりぽつりと続けている。）",
+    optA: { text: "「俺の煙は、何色だった？」と聞く", line: "……内緒、です。……でも、好きな色", stat: "sense" },
+    optB: { text: "黙って、同じ煙を目で追う", line: "（しばらくして）……一緒の煙、見てるの、いいですね", stat: "insight" },
+    close: { face: "smile", text: "今日のこと……ノートに、描いてもいいですか。……二人の、記録" },
+  },
+  minto: {
+    arrive: { face: "ura_normal", text: "……き、来ちゃった。えへへ……今日は、その、栞の方で……いい？" },
+    mid: { face: "ura_normal", text: "（小さな声で）……お店のみんとだと、こういうの、できないから……。普通にデートって、初めてかも……" },
+    choiceQ: "（隣の彼女は、店のテンションが嘘みたいに静かだ。）",
+    optA: { text: "「素の栞さんの方が、好きだよ」と伝える", line: "～～っ。……そういうの、ほんとに、心臓に悪い……っ", stat: "charm" },
+    optB: { text: "「店のみんとも栞さんも、どっちも本物でしょ」と言う", line: "……っ、う。……うん。……ありがと。……どっちも、私……", stat: "insight" },
+    close: { face: "ura_smile", text: "……今日、誘ってよかった。……また、誘っても、いい……？" },
+  },
+  rin: {
+    arrive: { face: "normal", text: "時間ぴったり。……ん、合格。じゃ、行くよモルモットくん" },
+    mid: { face: "normal", text: "（一服して）……ふうん。立ち上げ早いのに香りが残ってる。盗みなさい、こういうのは" },
+    choiceQ: "（凛さんは仕事の顔で煙を観察して——ふと、こちらを見た。）",
+    optA: { text: "「今日は仕事抜きで、って言いませんでした？」とからかう", line: "……言ったわね。……じゃあ今のは無し。……隣、座って", stat: "charm" },
+    optB: { text: "言われた通り、煙の立ち上げを観察する", line: "……真面目。……そういうとこ、嫌いじゃないけど。今日は私も見てよね", stat: "technique" },
+    close: { face: "smile", text: "……今日のデータは上々。another sample, please——また付き合いなさい、って意味" },
+  },
+  ageha: {
+    arrive: { face: "normal", text: "ハジメっち！こっちこっち！もう頼んじゃった！" },
+    mid: { face: "smile", text: "見て見て、この煙の量！ヤバくない！？……でもハジメっちのが美味いわ、ガチで" },
+    choiceQ: "（あげははホースを差し出してきた。「はい、回し吸い！」）",
+    optA: { text: "受け取って、ゆっくり一服する", line: "……ふふ、間接……てのは置いといて！どう？この店のバイブス！", stat: "guts" },
+    optB: { text: "「フィルター越しでも味は分かるよ」と職人ぶる", line: "でた職人モード！そういうとこ好きだけどね！ガチで！", stat: "sense" },
+    close: { face: "smile", text: "今日チョー楽しかった！次はアタシが見つけたタコパもいくよ！覚悟しといて！" },
+  },
+};
+
+function playLoverDate(charId, after) {
+  const sc = DATE_SCENES[charId] || DATE_SCENES.tsumugi;
+  // 行き先はデート回数でローテーション（自分の店・働く店は除外）
+  const exclude = { minto: "pepermint", rin: "drfookah" }[charId];
+  const venues = DATE_VENUES.filter((v) => v.id !== exclude);
+  const venue = venues[((state.loveLevel[charId] || 1) + (state.lastDate[charId] || 0)) % venues.length];
+  state.lastDate[charId] = state.day;
+  const name = displayName(charId);
+  playCustom({
+    dialogue_id: `date_${charId}`,
+    metadata: { bg: `res://assets/backgrounds/${venue.bg}` },
+    lines: [
+      { speaker: "", face: "", text: `約束の店——『${venue.name}』。${venue.note}。\n店先で、${name}が待っていた。` },
+      { speaker: charId, face: sc.arrive.face, text: sc.arrive.text },
+      { speaker: "", face: "", text: "二人で一台を頼んで、向かい合う。よその店の煙を、よその客として吸う時間。" },
+      { speaker: charId, face: sc.mid.face, text: sc.mid.text },
+      { speaker: "", face: "", text: sc.choiceQ },
+      { type: "choice", choices: [
+        { text: sc.optA.text, next: "a" },
+        { text: sc.optB.text, next: "b" },
+      ] },
+      { speaker: charId, face: sc.close.face, text: sc.close.text },
+      { speaker: "", face: "", text: "（よその店の煙も、隣にこの人がいると、ぜんぶ思い出の味になる。）" },
+    ],
+    branches: {
+      a: [
+        { speaker: charId, face: sc.arrive.face, text: sc.optA.line },
+        { type: "apply", stats: { [sc.optA.stat]: 2 } },
+      ],
+      b: [
+        { speaker: charId, face: sc.arrive.face, text: sc.optB.line },
+        { type: "apply", stats: { [sc.optB.stat]: 2 } },
+      ],
+    },
+  }, () => {
+    gainAffinity(charId, "date");
+    addStamina(-STAMINA_COST.date);
+    save();
+    if (after) after();
+  });
+}
+
+// 「恋人とちょい会い」: 1日1回・コマ消費なしの短い触れ合い（master_spec #24）
+const LOVER_QUICK_LINES = {
+  tsumugi: ["……顔、見れた。それだけで、今日はいい日です", "（隣に座って、しばらく同じ煙を見ていた。）"],
+  minto: ["……えへへ。来てくれた。……それだけで、その、うれしい……", "（手をつなぐだけの、短い時間だった。）"],
+  rin: ["なに、顔見に来ただけ？　……ふうん。悪くない習慣ね", "（5分だけ、と言いながら、コーヒーを出してくれた。）"],
+  ageha: ["きた！！すきぴの顔！今日もかわちい！", "（写真を3枚撮られた。「待ち受けにする」らしい。）"],
+};
+function loverQuickMeet(charId) {
+  state.loverQuickDay = state.day;
+  dateContext = true;
+  const lines = LOVER_QUICK_LINES[charId] || ["少しだけ、顔を見て話した。"];
+  playCustom({
+    dialogue_id: `lover_quick_${charId}`,
+    lines: [
+      { speaker: "", face: "", text: "（少しだけ、恋人の顔を見に行く。行動の合間の、ささやかな時間。）" },
+      { speaker: charId, face: "smile", text: lines[0] },
+      { speaker: "", face: "", text: lines[1] || "短い時間でも、会えるとぜんぜん違う。" },
+    ],
+  }, () => {
+    gainAffinity(charId, "quick");
+    dateContext = false;
+    save();
+    showMap();
   });
 }
 
@@ -1177,10 +1531,10 @@ const SPOT_LAYOUT = {
   baito:     { x: 14, y: 32, theme: "baito",   short: "バイト",     area: "tonari" },
   practice:  { x: 22, y: 50, theme: "shisha",  short: "練習",       area: "tonari" },
   sumi:      { x: 12, y: 64, theme: "mentor",  short: "スミさん",   area: "tonari" },
-  tsumugi:   { x: 26, y: 70, theme: "shisha",  short: "つむぎ",     area: "tonari" },
-  naru:      { x: 42, y: 22, theme: "rival",   short: "なるの店",   area: "繁華街" },
-  adam:      { x: 56, y: 30, theme: "rival",   short: "アダムの店", area: "下町" },
-  minto:     { x: 70, y: 22, theme: "rival",   short: "みんとの店", area: "繁華街" },
+  tsumugi:   { x: 26, y: 70, theme: "shisha",  short: "常連席",     area: "tonari" },
+  naru:      { x: 42, y: 22, theme: "rival",   short: "KEMURIKUSA", area: "繁華街" },
+  adam:      { x: 56, y: 30, theme: "rival",   short: "EDEN",       area: "下町" },
+  minto:     { x: 70, y: 22, theme: "rival",   short: "PEPERMINT",  area: "繁華街" },
   choizap:   { x: 50, y: 50, theme: "shop",    short: "チョイザップ", area: "ジム" },
   kannon:    { x: 78, y: 56, theme: "park",    short: "観音堂",     area: "古町" },
   cafe:      { x: 64, y: 64, theme: "cafe",    short: "カフェ",     area: "繁華街" },
@@ -1211,71 +1565,156 @@ function showMap() {
     // テキストは「{label}」を含む（テストで hasText 検索される）
     const locked = spot.requiresMet && state.visits[spot.requiresMet] === 0;
     const tooPoor = spot.cost > state.money;
+    const closed = closureInfo(spot.id);
+    const visited = spot.charId && state.dayVisited[spot.charId] === state.day;
+    const known = !spot.charId || isMet(spot.charId);
+    const un = !known && SPOT_UNKNOWN[spot.id];
     if (locked) {
       btn.classList.add("locked");
       btn.innerHTML = `<div class="shield"><div class="ico">？</div><div class="label">？？？</div></div>`;
       btn.disabled = true;
       btn.dataset.label = "未開放";
     } else {
-      const face = SPOT_FACE[spot.id] && faceIconHtml(SPOT_FACE[spot.id], "pin-face");
+      const face = known && SPOT_FACE[spot.id] && faceIconHtml(SPOT_FACE[spot.id], "pin-face");
+      const subText = closed ? `本日${closed}` : visited ? "今日はもう行った" : (un ? un.label : spot.label);
       btn.innerHTML =
         `<div class="shield">` +
-          `<div class="ico">${face || SPOT_ICONS[spot.id] || ""}</div>` +
+          `<div class="ico">${face || (un ? "煙" : SPOT_ICONS[spot.id] || "")}</div>` +
           `<div class="label">${layout.short}</div>` +
         `</div>` +
-        `<div class="sub-label">${spot.label}</div>`;
-      if (tooPoor) btn.disabled = true;
+        `<div class="sub-label${closed || visited ? " closed-tag" : ""}">${subText}</div>`;
+      if (tooPoor || closed || visited) btn.disabled = true;
+      if (closed || visited) btn.classList.add("closed");
     }
-    btn.addEventListener("mouseenter", () => updateMapInfo(spot, locked, tooPoor));
-    btn.addEventListener("focus", () => updateMapInfo(spot, locked, tooPoor));
+    btn.addEventListener("mouseenter", () => updateMapInfo(spot, locked, tooPoor, closed, visited));
+    btn.addEventListener("focus", () => updateMapInfo(spot, locked, tooPoor, closed, visited));
     btn.addEventListener("click", () => { if (!btn.disabled) selectSpot(spot); });
     pins.appendChild(btn);
+  }
+  // 恋人とのちょい会い（1日1回・行動コマを使わない）
+  if ((state.lovers || []).length && state.loverQuickDay !== state.day) {
+    const quick = document.createElement("button");
+    quick.className = "lover-quick-btn";
+    quick.id = "lover-quick";
+    quick.innerHTML = `<span class="lq-heart">♥</span><span>恋人に会いに行く<small>コマを使わない・1日1回</small></span>`;
+    quick.addEventListener("click", () => {
+      const lovers = state.lovers.slice();
+      if (lovers.length === 1) return loverQuickMeet(lovers[0]);
+      // 複数恋人（浮気状態）なら誰に会うか選ぶ
+      playCustom({
+        dialogue_id: "lover_quick_pick",
+        lines: [
+          { speaker: "", face: "", text: "（……少しだけ顔を見に行こう。誰のところへ？）" },
+          { type: "choice", choices: lovers.map((id, i) => ({ text: displayName(id), next: `l${i}` })) },
+        ],
+        branches: Object.fromEntries(lovers.map((id, i) => [`l${i}`, [{ type: "set_flag", flag: `_lq_${id}` }]])),
+      }, () => {
+        const picked = lovers.find((id) => state.flags[`_lq_${id}`]);
+        for (const id of lovers) delete state.flags[`_lq_${id}`];
+        if (picked) loverQuickMeet(picked);
+        else showMap();
+      });
+    });
+    pins.appendChild(quick);
   }
   updateMapInfo(null);
   save();
 }
 
-function updateMapInfo(spot, locked, tooPoor) {
+function updateMapInfo(spot, locked, tooPoor, closed, visited) {
   if (!spot) {
     $("#map-info-title").textContent = state.ap === 2 ? "今日はどうする？" : "夜の時間";
     $("#map-info-desc").textContent = "気になる場所をタップ。残り行動と所持金に注意。";
     $("#map-info-cost").textContent = "";
+    const tired = staminaLow() ? "　⚠ 体が重い。今日は無理しない方がいい" : "";
     $("#map-info-hint").textContent =
-      state.ap === 2 ? "昼 — 今日は2回動ける" : "夜 — 今日はあと1回動ける";
+      (state.ap === 2 ? "昼 — 今日は2回動ける" : "夜 — 今日はあと1回動ける") + tired;
     return;
   }
   const layout = SPOT_LAYOUT[spot.id] || {};
+  const known = !spot.charId || isMet(spot.charId);
+  const un = !known && SPOT_UNKNOWN[spot.id];
   $("#map-info-title").textContent = locked ? "？？？" : (layout.area || spot.label);
-  let desc = spot.desc;
-  if (!locked && spot.id === "baito") desc += `／今日の客は「${dailyTheme().label}」狙いが多いらしい`;
   $("#map-info-desc").textContent = locked
     ? "まだ知らない場所。誰かに教えてもらえそうな気がする。"
-    : desc;
+    : (un ? un.desc : spot.desc);
   $("#map-info-cost").textContent = locked
     ? ""
     : (spot.cost > 0 ? `所持金から ¥${spot.cost.toLocaleString()} 必要` : "");
   $("#map-info-hint").textContent = locked
     ? "ロック中"
-    : tooPoor ? "所持金が足りない" : `タップして移動: ${spot.label}`;
+    : closed ? `今日は${closed}。また明日にしよう`
+    : visited ? "今日はもう顔を出した。また明日"
+    : tooPoor ? "所持金が足りない"
+    : `タップして移動: ${un ? un.label : spot.label}`;
 }
 
 function selectSpot(spot) {
-  if (spot.cost > 0) addMoney(-spot.cost);
-  switch (spot.id) {
-    case "baito": return doBaito();
-    case "practice": return startPractice();
-    case "choizap": return doChoizap();
-    case "kannon": return doSpotDialogue("kannon", "ch1_kannon_visit", "bg_street_day.png");
-    case "cafe": return doSpotDialogue("cafe", "ch1_cafe_visit", "bg_street_day.png");
-    case "c_station": return doSpotDialogue("c_station", "ch1_c_station_visit", "bg_shop.png");
-    case "shop": return showShop();
-    case "rest": return doRest();
-    default: return doVisit(spot.id);
-  }
+  const proceed = () => {
+    if (spot.cost > 0) addMoney(-spot.cost);
+    switch (spot.id) {
+      case "baito": return shishaGuard(() => doBaito());
+      case "practice": return shishaGuard(() => startPractice());
+      case "choizap": return doChoizap();
+      case "kannon": return doSpotDialogue("kannon", "ch1_kannon_visit", "bg_street_day.png");
+      case "cafe": return doSpotDialogue("cafe", "ch1_cafe_visit", "bg_street_day.png");
+      case "c_station": return doSpotDialogue("c_station", "ch1_c_station_visit", "bg_shop.png");
+      case "shop": return showShop();
+      case "rest": return doRest();
+      default: {
+        // よその店での一服は体力を使う（tonari内のスミさん・つむぎとの会話は軽い）
+        const heavySmoke = ["naru", "adam", "minto"].includes(spot.id);
+        return heavySmoke ? shishaGuard(() => doVisit(spot.id)) : doVisit(spot.id);
+      }
+    }
+  };
+  // キャラ訪問: 好感度が上限まで来ていたら、行く前にひと言（master_spec の最大警告）
+  if (spot.charId) return maybeVisitWarning(spot.charId, proceed, () => showMap());
+  proceed();
+}
+
+// 好感度MAX/恋人の店に通おうとした時の事前確認。
+// 特別イベント（告白due等）が控えている場合は黙って通す
+function maybeVisitWarning(charId, proceed, cancel) {
+  if (!(charId in (state.affinity || {}))) return proceed();
+  const seq = VISIT_SEQUENCES[charId];
+  const seqDone = !seq || state.visits[charId] >= seq.length;
+  if (!seqDone) return proceed(); // 未読の会話が残っているなら止めない
+  if (state.flags._confession_due === charId) return proceed();
+  const isLover = (state.lovers || []).includes(charId);
+  const maxed = (state.affinity[charId] || 0) >= AFFINITY_CAP;
+  if (!isLover && !maxed) return proceed();
+  const name = displayName(charId);
+  const msg = isLover
+    ? `（${name}は恋人だ。でも店では、店員と客。ここで会っても絆は深まらない——\n絆を深めるなら、プライベートの時間だ。それでも顔を見たい気持ちはあるけど。）`
+    : `（${name}との仲は、もう十分に深い。ここから先、通っても好感度はこれ以上上がらない。）`;
+  playCustom({
+    dialogue_id: `visit_warning_${charId}`,
+    lines: [
+      { speaker: "", face: "", text: msg },
+      { type: "choice", choices: [
+        { text: "それでも顔を見に行く（学びはある）", next: "go" },
+        { text: "やめておく", next: "stay" },
+      ] },
+    ],
+    branches: {
+      go: [{ type: "set_flag", flag: "_visit_warn_go" }],
+      stay: [{ speaker: "", face: "", text: "（……今日は別のことをしよう。）" }],
+    },
+  }, () => {
+    if (state.flags._visit_warn_go) {
+      delete state.flags._visit_warn_go;
+      proceed();
+    } else {
+      cancel ? cancel() : showMap();
+    }
+  });
 }
 
 function doSpotDialogue(spotId, dialogueId, bg) {
   visitContextChar = null;
+  // シーシャと無関係の場所は息抜きになる（体力小回復）
+  if (STAMINA_GAIN[spotId]) addStamina(STAMINA_GAIN[spotId]);
   playDialogue(dialogueId, () => {
     if (!cueFiredInDialogue) gainStat(SPOT_FALLBACK_STAT[spotId] || "insight", 2);
     endAction();
@@ -1288,12 +1727,16 @@ function endAction() {
   save();
   const resume = () => {
     if (state.ap > 0) {
-      // LIMEで「夜に行く」と約束していたら、夜の頭に行動を消費せず遊びに行く
+      // LIMEで「夜に行く」と約束していたら、夜はその約束に向かう（夜のコマを使う）
       if (state.pendingLimeNight) {
         const p = state.pendingLimeNight;
         state.pendingLimeNight = null;
         save();
-        return playLimeEvent(p.event, p.sender, showMap);
+        return playLimeEvent(p.event, p.sender, () => {
+          state.ap = 0;
+          save();
+          endDay();
+        }, true);
       }
       return showMap();
     }
@@ -1310,10 +1753,31 @@ function advanceDay() {
     // ch1 大会当日の朝: 応援LIMEが届く
     return morningPhone(() => startTournament(), { tournamentDay: true });
   }
+  // 就寝の自然回復。寝る前に空っぽ＋無理を重ねていたら翌朝は風邪で1日休み
+  const exhausted = stamina() <= 0 || (state.flags._overwork || 0) >= 2;
+  addStamina(STAMINA_GAIN.sleep);
   state.day += 1;
   state.ap = 2;
   delete state.flags._rested_today; // 「体力に余裕」は日をまたいだらリセット
   save();
+  if (exhausted) {
+    state.flags._overwork = 0;
+    showDayCard(`DAY ${state.day}`, "……熱っぽい");
+    return playCustom({
+      dialogue_id: "sick_day",
+      metadata: { bg: "res://assets/backgrounds/bg_home.png" },
+      lines: [
+        { speaker: "", face: "", text: "朝。喉の奥が痛い。額に手を当てると、じんわり熱い。——風邪だ。" },
+        { speaker: "hajime", face: "sad", text: "（……無理が祟った。今日は、休むしかない）" },
+        { speaker: "", face: "", text: "水だけ飲んで、布団に戻る。スマホを枕元に置いて、目を閉じた。\n一日、ゆっくり眠った。" },
+        { type: "apply", stats: { guts: 2 } },
+      ],
+    }, () => {
+      state.stamina = Math.max(stamina(), 80);
+      state.ap = 0;
+      endDay();
+    });
+  }
   // ch2: 試合日（予選・準決勝・決勝）は行動なしでそのまま会場へ
   const stage = state.chapter === 2 ? chapterInfo().stageDays[state.day] : null;
   if (stage) {
@@ -1331,8 +1795,9 @@ function advanceDay() {
 }
 
 function endDay() {
-  // 夜の締めに家シーシャ（第2章〜・一式所持時のみ選択肢が出る）を挟んでから翌朝へ
-  const finishDay = () => maybeHomeShisha(advanceDay);
+  // 夜の締め: 必ず家に帰って1日を終える（master_spec #3）。
+  // 家シーシャ（第2章〜・一式所持時）はその帰宅シーンの中で選択肢になる
+  const finishDay = () => maybeNightcap(advanceDay);
   const TONARI = "res://assets/backgrounds/bg_tonari_inside.png";
   // ---- 第2章の夜の固定イベント（嫉妬と転落の進行）
   if (state.chapter === 2) {
@@ -1391,7 +1856,7 @@ function endDay() {
       dialogue_id: "ch1_day3_check",
       metadata: { bg: TONARI },
       lines: [
-        { speaker: "", face: "", text: "閉店後。片付けをしていると、スミさんが作業台を顎で指した。" },
+        { speaker: "", face: "", text: "夜、tonariに顔を出すと、スミさんが作業台を顎で指した。" },
         { speaker: "sumi", face: "normal", text: "一台作ってみろ。練習でも本番でもない、今のお前の素の一台だ" },
         { speaker: "", face: "", text: "黙って組む。詰めて、熾して、置いて、待つ。スミさんは何も言わずに見ている。\n──完成。ホースを渡す。スミさんは目を閉じて、長い一服。" },
         { type: "condition", stat: "技術", threshold: 22, next_true: "mid_good", next_false: "mid_rough" },
@@ -1440,6 +1905,7 @@ function endDay() {
 function doBaito(afterCameo) {
   visitContextChar = null;
   if (window.SFX) SFX.bgm("tonari");
+  if (!afterCameo) addStamina(-STAMINA_COST.baito); // 接客はけっこう体力を使う
   // 2回目のバイトに一度だけ: 後の章のライバル（零-REI-）が正体を伏せたV系の客として来店。
   // ch2決勝・ch3で「あの時の客」と繋がるカメオ伏線
   if (state.chapter === 1 && !state.flags._ev_rei_cameo && (state.usedBaito || []).length >= 1) {
@@ -1450,7 +1916,7 @@ function doBaito(afterCameo) {
   if (pool.length === 0) { state.usedBaito = []; pool = D.baito_events.slice(); }
   const ev = pool[Math.floor(Math.random() * pool.length)];
   state.usedBaito.push(ev.id);
-  const basePay = ev.base_pay || D.baito_settings.base_pay || 2500;
+  const basePay = Math.max(8000, ev.base_pay || D.baito_settings.base_pay || 8000); // 給料は最低8,000円（master_spec #21）
 
   const lines = [
     afterCameo
@@ -1516,7 +1982,10 @@ function doVisit(charId) {
   const seq = VISIT_SEQUENCES[charId];
   const idx = state.visits[charId];
   const bg = VISIT_BG[charId] || "bg_tonari_inside.png";
+  state.dayVisited[charId] = state.day; // 同じ店は1日1回まで
+  addStamina(-(["naru", "adam", "minto"].includes(charId) ? STAMINA_COST.visit : STAMINA_COST.talk));
   const after = () => {
+    markMet(charId); // 会話を終えた＝面識ができた（名乗りの set_flag の保険）
     visitContextChar = null;
     endAction();
   };
@@ -1524,8 +1993,8 @@ function doVisit(charId) {
     state.visits[charId] += 1;
     playDialogue(seq[idx], () => {
       // 会話内に報酬キューが無くても、必ず好感度かステータスを付与する
-      gainAffinity(charId);
-      if (!cueFiredInDialogue) gainStat(SPOT_FALLBACK_STAT[charId] || "insight", 2);
+      const got = gainAffinity(charId, "visit");
+      if (!cueFiredInDialogue && !got) gainStat(SPOT_FALLBACK_STAT[charId] || "insight", 2);
       after();
     }, `res://assets/backgrounds/${bg}`);
   } else {
@@ -1539,7 +2008,10 @@ function doVisit(charId) {
           { type: "apply", stats: rep.stats },
         ],
       },
-      after
+      () => {
+        gainAffinity(charId, "repeat"); // 通い続ける積み重ねも少しずつ効く
+        after();
+      }
     );
   }
 }
@@ -1573,6 +2045,7 @@ function doChoizap() {
     }, endAction);
     return;
   }
+  addStamina(-STAMINA_COST.gym);
   doSpotDialogue("choizap", "ch1_choizap_visit", "bg_street_day.png");
 }
 
@@ -1622,10 +2095,43 @@ function showShop() {
     }
     list.appendChild(grid);
   }
-  // 2階: 凛さんのショールーム（NIGHTSIDE日本代理店）。1日1回・行動は消費しない
+  // 売却（中古買取）: 機材のみ買値の50%で売れる。フレーバー系は開封済み扱いで不可（master_spec #21）
+  const sellLabel = document.createElement("p");
+  sellLabel.className = "setup-group-label";
+  sellLabel.textContent = "買取カウンター（機材のみ・買値の約50%）";
+  const sellGrid = document.createElement("div");
+  sellGrid.className = "spot-list";
+  const sellable = state.owned.filter((id) => {
+    const e = D.equipment.find((x) => x.id === id);
+    return e && !STARTER_EQUIPMENT.includes(id) && (e.price || 0) > 0;
+  });
+  if (!sellable.length) {
+    const none = document.createElement("p");
+    none.className = "tn-hint";
+    none.textContent = "（売れる機材は持っていない。初期装備と消耗品は買取対象外）";
+    sellGrid.appendChild(none);
+  }
+  for (const id of sellable) {
+    const e = D.equipment.find((x) => x.id === id);
+    const price = Math.round((e.price || 0) * 0.5);
+    const btn = document.createElement("button");
+    btn.className = "spot-btn";
+    btn.innerHTML = `<span class="spot-name">${e.name} を売る</span><span class="spot-cost">+${price.toLocaleString()}円</span>`;
+    btn.addEventListener("click", () => {
+      state.owned = state.owned.filter((x) => x !== id);
+      addMoney(price);
+      save();
+      toast(`${e.name} を売った`);
+      showShop();
+    });
+    sellGrid.appendChild(btn);
+  }
+  list.append(sellLabel, sellGrid);
+  // 2階: 凛さんのショールーム（NIGHTSIDE日本代理店）。会いに行くと行動を1回使う
   const rinWrap = document.createElement("div");
   rinWrap.className = "spot-list";
   const visitedToday = !!state.flags[`_rin_d${state.day}`];
+  const rinAway = state.day % 7 === RIN_AWAY_CYCLE;
   const label = document.createElement("p");
   label.className = "setup-group-label";
   label.textContent = "2階";
@@ -1634,44 +2140,50 @@ function showShop() {
   rinBtn.id = "shop-rin";
   rinBtn.innerHTML =
     state.visits.rin === 0
-      ? `<span class="spot-name">2階から視線を感じる……</span><span class="spot-desc">階段の上に、誰かいる</span>`
-      : `<span class="spot-name">2階のショールーム（凛さん）</span>` +
-        `<span class="spot-cost">${visitedToday ? "今日はもう顔を出した" : ""}</span>` +
-        `<span class="spot-desc">NIGHTSIDE日本代理店。試香モニターの呼び出しがあるかもしれない</span>`;
-  rinBtn.disabled = visitedToday;
+      ? `<span class="spot-name">2階から視線を感じる……</span><span class="spot-cost">行動を1回使う</span><span class="spot-desc">階段の上に、誰かいる</span>`
+      : `<span class="spot-name">2階のショールーム（${displayName("rin")}）</span>` +
+        `<span class="spot-cost">${rinAway ? "今日は出張で不在" : visitedToday ? "今日はもう顔を出した" : "会いに行く（行動を1回使う）"}</span>` +
+        `<span class="spot-desc">NIGHTSIDE日本代理店。買い物だけなら時間はかからない</span>`;
+  rinBtn.disabled = visitedToday || rinAway;
   rinBtn.addEventListener("click", doRinVisit);
   rinWrap.appendChild(rinBtn);
   list.append(label, rinWrap);
 }
 
-// 凛さんのショールーム（行動を消費しない。1日1回）
+// 凛さんのショールーム（会いに行くと1コマ消費。買い物だけなら消費なし。1日1回）
 const RIN_SEQUENCE = ["ch1_rin_first", "ch1_rin_second", "ch1_rin_third"];
 function doRinVisit() {
   if (state.flags[`_rin_d${state.day}`]) return;
-  state.flags[`_rin_d${state.day}`] = true;
-  visitContextChar = "rin";
-  const idx = state.visits.rin;
-  const after = () => {
-    visitContextChar = null;
-    save();
-    showShop();
-  };
-  if (idx < RIN_SEQUENCE.length) {
-    state.visits.rin += 1;
-    playDialogue(RIN_SEQUENCE[idx], () => {
-      gainAffinity("rin");
-      if (!cueFiredInDialogue) gainStat("sense", 2);
-      after();
-    }, "res://assets/backgrounds/bg_shop.png");
-  } else {
-    playDialogue("ch1_rin_repeat", after, "res://assets/backgrounds/bg_shop.png");
-  }
+  const play = () => shishaGuard(() => {
+    state.flags[`_rin_d${state.day}`] = true;
+    visitContextChar = "rin";
+    addStamina(-STAMINA_COST.rin);
+    const idx = state.visits.rin;
+    const after = () => {
+      markMet("rin");
+      visitContextChar = null;
+      save();
+      endAction(); // 凛に会うのは1コマ（行けば行くほど得、を防ぐ）
+    };
+    if (idx < RIN_SEQUENCE.length) {
+      state.visits.rin += 1;
+      playDialogue(RIN_SEQUENCE[idx], () => {
+        const got = gainAffinity("rin", "visit");
+        if (!cueFiredInDialogue && !got) gainStat("sense", 2);
+        after();
+      }, "res://assets/backgrounds/bg_shop.png");
+    } else {
+      playDialogue("ch1_rin_repeat", () => { gainAffinity("rin", "repeat"); after(); }, "res://assets/backgrounds/bg_shop.png");
+    }
+  }, () => showShop());
+  maybeVisitWarning("rin", play, () => showShop());
 }
 
 // --- 休む
 function doRest() {
   visitContextChar = null;
   state.flags._rested_today = true; // 体力に余裕がある日（家シーシャの効きが良くなる）
+  addStamina(STAMINA_GAIN.rest);
   playCustom({
     dialogue_id: "rest_home",
     metadata: { bg: "res://assets/backgrounds/bg_home.png" },
@@ -1687,6 +2199,25 @@ function doRest() {
 // 寝る前の一服でステータスが少し伸びる。作る工程は遊ばせない（一服の演出だけ）。
 // バランス: 葉代600円／連夜は効果減（毎晩吸うのが最適にならない）／
 // その日「家で休む」を選んでいれば体力に余裕があり効果増。バイトの有無では縛らない
+// 1日の終わり: 帰宅して眠る（「夜の行動後にまた店にいる」感の解消）。
+// 家シーシャ条件を満たす夜はそちらが帰宅演出を兼ねる
+const HOMECOMING_LINES = [
+  "店明かりの落ちた商店街を抜けて、家に帰る。\n熱いシャワーを浴びると、今日一日の煙の匂いが流れていった。",
+  "帰り道、夜風が少しだけ煙の匂いを連れていく。\n布団に入ると、すぐに眠気がやってきた。",
+  "家に着く頃には、日付が変わりかけていた。\nスマホを枕元に置いて、目を閉じる。",
+];
+function maybeNightcap(next) {
+  const canPuff = state.chapter >= 2 && (state.owned || []).includes("home_rig_set") && state.money >= 600 && !staminaLow();
+  if (canPuff) return maybeHomeShisha(next);
+  playCustom({
+    dialogue_id: "night_homecoming",
+    metadata: { bg: "res://assets/backgrounds/bg_home.png" },
+    lines: [
+      { speaker: "", face: "", text: `${HOMECOMING_LINES[state.day % HOMECOMING_LINES.length]}\n——DAY ${state.day}、おわり。` },
+    ],
+  }, next);
+}
+
 function maybeHomeShisha(next) {
   if (state.chapter < 2 || !(state.owned || []).includes("home_rig_set") || state.money < 600) return next();
   const consecutive =
@@ -2055,6 +2586,8 @@ function stopRigEffects() {
 
 function startTournament() {
   state.phase = "tournament";
+  // 会場ではMCが出場者と審査員を紹介する（名前の開示）
+  for (const id of ["naru", "adam", "minto", "nagumo", "maezono"]) markMet(id);
   updateHud();
   save();
   playDialogue("ch1_tournament_arrival", () =>
@@ -2092,6 +2625,7 @@ function beginMaking(mode) {
 
 // 練習ドリル: 本番のミニゲームを1種だけ回す
 function startDrill(kind) {
+  addStamina(-STAMINA_COST.practice);
   tt = {
     mode: "drill", drill: kind,
     bowl: null, hms: null, charcoal: null,
@@ -2779,6 +3313,9 @@ function runSteamDodge(steamOpt, onDone) {
 // 最低2回・3回まではノーペナルティ。4回目以降も吸えるが葉が痩せる（craft減点）。
 // やめ時はプレイヤーが選ぶ
 const PULL_MIN = 2, PULL_MAX = 5, PULL_SAFE = 3;
+// ジャスト帯（master_spec #13）: 各ゾーン中央の細い帯。
+// キープのジャスト=ブレほぼ消滅／上げ下げのジャスト=通常より強く効く
+const PULL_JUST = { up: [0.14, 0.205], keep: [0.468, 0.532], down: [0.795, 0.86] };
 const PULL_TARGET = [0.63, 0.79]; // 温度バー上の適温ゾーン（0..1）
 const PULL_DELTA = 0.13; // 1回の吸いで動かせる最大温度
 
@@ -2819,8 +3356,12 @@ function stepPull() {
       <div class="pull-zone up"><span>上げ吸い</span></div>
       <div class="pull-zone keep"><span>キープ</span></div>
       <div class="pull-zone down"><span>下げ吸い</span></div>
+      <div class="pull-just" style="left:${PULL_JUST.up[0] * 100}%;width:${(PULL_JUST.up[1] - PULL_JUST.up[0]) * 100}%"></div>
+      <div class="pull-just" style="left:${PULL_JUST.keep[0] * 100}%;width:${(PULL_JUST.keep[1] - PULL_JUST.keep[0]) * 100}%"></div>
+      <div class="pull-just" style="left:${PULL_JUST.down[0] * 100}%;width:${(PULL_JUST.down[1] - PULL_JUST.down[0]) * 100}%"></div>
       <div class="gauge-needle" id="tn-pull-needle"></div>
     </div>
+    <p class="tn-hint">細い光の帯で止めると<span class="tx-hint">ジャスト</span>——上げ下げは強く効き、キープはブレがほぼ消える。狙わない自由もある。</p>
     <p class="tn-hint" id="tn-pull-count"></p>
     <button class="primary-btn" id="tn-pull-go">吸う！</button>
     <button class="primary-btn ghost" id="tn-pull-serve" disabled></button>
@@ -2879,16 +3420,28 @@ function stepPull() {
   goBtn.addEventListener("click", () => {
     if (tt.pullCount >= PULL_MAX) return;
     tt.pullCount++;
-    // 止めた位置で吸い方が決まる: 左=上げ／中央=キープ／右=下げ
-    let delta = 0, label = "キープ。温度は動かさない";
+    // 止めた位置で吸い方が決まる: 左=上げ／中央=キープ／右=下げ。
+    // 各ゾーン中央の細い帯=ジャスト（上げ下げは強く効き、キープはブレが大幅減）
+    const inBand = (band) => pos >= band[0] && pos <= band[1];
+    let delta = 0, jitter = 0.012, just = false, label = "キープ。温度は動かさない";
     if (pos < 0.35) {
       delta = ((0.35 - pos) / 0.35) * PULL_DELTA;
       label = "上げ吸い！　炭の熱がボウルに乗る";
+      if (inBand(PULL_JUST.up)) { just = true; delta = PULL_DELTA * 1.5; label = "ジャスト上げ！　ひと吸いで一気に熱が立つ"; }
     } else if (pos > 0.65) {
       delta = -((pos - 0.65) / 0.35) * PULL_DELTA;
       label = "下げ吸い。熱を逃して落ち着かせる";
+      if (inBand(PULL_JUST.down)) { just = true; delta = -PULL_DELTA * 1.5; label = "ジャスト下げ！　狙いどおりに熱が抜ける"; }
+    } else if (inBand(PULL_JUST.keep)) {
+      just = true; jitter = 0.003; // ジャストキープでも完全固定にはしない
+      label = "ジャストキープ。煙が、ほとんど揺れない";
     }
-    tt.temp = Math.max(0, Math.min(1, tt.temp + delta + (Math.random() * 0.024 - 0.012)));
+    if (just) {
+      tt.pullJust = (tt.pullJust || 0) + 1;
+      showStamp($("#tn-layout .panel"), "just");
+      if (window.SFX) SFX.perfect && SFX.perfect();
+    }
+    tt.temp = Math.max(0, Math.min(1, tt.temp + delta + (Math.random() * 2 - 1) * jitter));
     updateTemp();
     updateCount();
     result.textContent = `──${label}`;
@@ -3152,7 +3705,7 @@ function showResult(results, rank, detail, opts = {}) {
   if (rank === 1) {
     btn.textContent = "結果発表へ";
     btn.addEventListener("click", opts.onWin || (() => {
-      addMoney(30000);
+      addMoney(50000); // 優勝賞金（master_spec #21）
       playDialogue("ch1_tournament_result", () =>
         playDialogue("ch1_tournament_after", () => postClearPhone(() => showClear()), "res://assets/backgrounds/bg_tournament_stage.png"), "res://assets/backgrounds/bg_tournament_stage.png"
       );
@@ -3161,7 +3714,7 @@ function showResult(results, rank, detail, opts = {}) {
     btn.textContent = "……結果を受け止める";
     btn.addEventListener("click", opts.onLose || (() => {
       tt.rank = rank;
-      addMoney({ 2: 15000, 3: 5000, 4: 0 }[rank] || 0);
+      addMoney({ 2: 20000, 3: 10000, 4: 3000 }[rank] || 0); // 順位別賞金（4位は参加賞）
       playDialogue("ch1_tournament_defeat", () => showDefeat(rank), "res://assets/backgrounds/bg_tournament_stage.png");
     }));
   }
@@ -3268,6 +3821,9 @@ function startChapter2() {
 // 試合日の開始。stage: "qual" | "semi" | "final"
 function startCh2Stage(stage) {
   state.phase = "tournament";
+  // 全国大会の組み合わせ発表で対戦相手の名前が判明する
+  if (stage === "semi") markMet("ageha");
+  if (stage === "final") { markMet("rei"); markMet("kumicho"); }
   state.ch2Stage = stage;
   updateHud();
   save();
@@ -3359,18 +3915,29 @@ function renderStatusInto(el) {
   statBox.innerHTML = "<h3>ステータス</h3>" + Object.entries(STAT_KEYS)
     .map(([en, ja]) => `<div class="status-row"><span>${ja}</span><span class="stars">${stars(state.stats[en])}</span></div>`)
     .join("");
+  const st = stamina();
+  const stLabel = st >= 70 ? "好調" : st >= STAMINA_LOW ? "疲れ気味" : "限界が近い";
+  statBox.innerHTML += `<div class="status-row"><span>体力</span><span class="stamina-cell"><i class="st-bar"><i style="width:${st}%"></i></i> ${stLabel}</span></div>`;
   const affBox = document.createElement("div");
   affBox.className = "status-block";
-  affBox.innerHTML = "<h3>好感度</h3>" + Object.entries(state.affinity)
+  affBox.innerHTML = "<h3>人間関係</h3>" + Object.entries(state.affinity)
     .map(([id, lv]) => {
-      const name = SPEAKER_NAMES[id] || (D.char_names || {})[id] || id;
-      // 恋人は「恋人」バッジ＋絆レベル（恋愛関係後の5段階）を表示
+      // まだ会っていない相手は一覧に出さない（？？？システム）
+      if (!ALWAYS_KNOWN.has(id) && !isMet(id) && lv <= 0) return "";
+      const name = displayName(id);
+      // 恋人は「恋人」バッジ＋絆レベル（恋人Lv 5段階）を表示
       if ((state.lovers || []).includes(id)) {
         const bond = state.loveLevel[id] || 0;
         return `<div class="status-row"><span>${name} <span class="lover-badge">恋人</span></span>` +
           `<span class="hearts bond">${"♥".repeat(bond)}${"♡".repeat(AFFINITY_CAP - bond)}</span></div>`;
       }
-      return `<div class="status-row"><span>${name}</span><span class="hearts">${"♥".repeat(lv)}${"♡".repeat(AFFINITY_CAP - lv)}</span></div>`;
+      // 次の段階までのおおまかなゲージ（master_spec #23 の可視化）
+      const pts = (state.affinityPts || {})[id] || 0;
+      const lo = AFFINITY_RANK_PTS[lv] ?? 0;
+      const hi = AFFINITY_RANK_PTS[lv + 1];
+      const pct = hi === undefined ? 100 : Math.min(100, Math.round(((pts - lo) / (hi - lo)) * 100));
+      const gauge = lv >= AFFINITY_CAP ? "" : `<i class="aff-next"><i style="width:${pct}%"></i></i>`;
+      return `<div class="status-row"><span>${name}</span><span class="hearts">${"♥".repeat(lv)}${"♡".repeat(AFFINITY_CAP - lv)}${gauge}</span></div>`;
     })
     .join("");
   el.append(statBox, affBox);
@@ -3678,6 +4245,21 @@ function continueGame(saved) {
   if (!Array.isArray(state.lovers)) state.lovers = [];
   if (!state.loveLevel) state.loveLevel = {};
   if (typeof state.guilt !== "number") state.guilt = 0;
+  // 体力・好感度二層化・名前開示・恋人デート導入前のセーブ互換
+  if (typeof state.stamina !== "number") state.stamina = 100;
+  if (!state.dayVisited) state.dayVisited = {};
+  if (!state.lastDate) state.lastDate = {};
+  if (!state.lovePts) state.lovePts = {};
+  if (typeof state.loverQuickDay !== "number") state.loverQuickDay = 0;
+  if (!state.affinityPts) {
+    // 既存の段階値を相当ポイントへ変換して引き継ぐ（master_spec #23）
+    state.affinityPts = {};
+    for (const [id, rank] of Object.entries(state.affinity)) {
+      state.affinityPts[id] = AFFINITY_RANK_PTS[Math.max(0, Math.min(5, rank))] || 0;
+      if (rank > 0) markMet(id); // 好感度があるなら面識済み
+    }
+    for (const [id, v] of Object.entries(state.visits || {})) if (v > 0) markMet(id);
+  }
   updateHud();
   if (state.phase === "tournament") {
     if (state.chapter === 2) startCh2Stage(state.ch2Stage || "qual");

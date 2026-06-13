@@ -44,6 +44,10 @@
           "text": "私はチャコール博士。誰も悲しまない、完璧なるシーシャの『最適解』を創る者です。"
         },
         {
+          "type": "set_flag",
+          "flag": "_met_dr_kemuri"
+        },
+        {
           "speaker": "dr_kemuri",
           "face": "normal",
           "text": "フフ……大会、期待していますよ。君のその不完全なデータ、私の研究の糧にさせてくださいね。ヒッハハ！"
@@ -87,196 +91,791 @@
     },
     {
       "dialogue_id": "ch2_rivals_first_sight",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "────HAZE: OPEN CLOUD 会場。受付前日。" },
-        { "speaker": "", "face": "", "text": "C.STATIONのエントランスに入った瞬間、空気が変わった。天井が高い。音の広がり方が違う。立っているスタッフの数が違う。" },
-        { "speaker": "hajime", "face": "normal", "text": "（……でかい）" },
-        { "speaker": "", "face": "", "text": "エントランスの大型モニターに、海外の大会映像が流れていた。金色の装束の男が、玉座みたいな椅子から煙を吐く。──その煙が、一瞬、龍みたいにうねった気がした。" },
-        { "speaker": "", "face": "", "text": "テロップ:【HAZE: GRAND SMOKE 世界王者 王 煙楼】。行き交う出場者の誰も、足を止めない。ここでは「世界」すら、流れていく映像のひとつらしい。" },
-        { "speaker": "hajime", "face": "normal", "text": "（世界王者……。遠すぎて、ピンとこないな）" },
-        { "speaker": "", "face": "", "text": "受付を済ませ、会場内を見渡す。出場者たちが思い思いの準備をしていた。" },
-        { "speaker": "", "face": "", "text": "一角に視線が吸い寄せられた。腕一面に刺青の入った、ごつい体格の男だった。でも、運営スタッフに向けて深々と頭を下げていた。" },
-        { "speaker": "", "face": "", "text": "「お世話になります。神崎です。当日もよろしくお願いします」" },
-        { "speaker": "", "face": "", "text": "声は低くて太い。でも言葉は丁寧だった。そしてその手が機材ケースの取っ手を握る指が——ちゃんと見ると、信じられないくらい優しかった。" },
-        { "speaker": "hajime", "face": "normal", "text": "（……あの人が、神崎竜二さん……？）" },
-        { "speaker": "", "face": "", "text": "別の壁際では、長身の男が空調の吹き出し口に小さな器具をかざしていた。数値をメモに記す。また別の位置で同じことをする。室温と湿度を計測しているようだった。" },
-        { "speaker": "hajime", "face": "serious", "text": "（え、会場の空調データを取ってる……？ 試合前日に？）" },
-        { "speaker": "", "face": "", "text": "男が一瞬、こちらを見た。目が合う。何も言わずに、また計測に戻った。" },
-        { "speaker": "hajime", "face": "serious", "text": "（……怖い）" },
-        { "speaker": "", "face": "", "text": "──ふいに、覚えのある甘い匂いが鼻先をかすめた。" },
-        { "speaker": "ageha", "face": "surprise", "text": "「……あれ？ あーーっ！！ 荷物の人じゃん！ 商店街で袋ぶちまけてた！」" },
-        { "speaker": "hajime", "face": "surprise", "text": "「あっ……あの時の！（この匂い──やっぱりホワイトグミベアだ。香水じゃなくて、フレーバーの匂いだったんだ）」" },
-        { "speaker": "ageha", "face": "smile", "text": "「こんなとこにいるってことは、出場者でしょ？ ウケる、世間ガチでせまーい！ あたし宵野葉子。あげはって呼んで」" },
-        { "speaker": "", "face": "", "text": "あげはと名乗った彼女は、はじめの首から下がった出場者パスをひょいと覗き込んだ。" },
-        { "speaker": "ageha", "face": "smile", "text": "「えーっと、蒸野はじめくん、と。……よし、ハジメっちね！ あたし会場もうめちゃくちゃチェックしちゃったよ」" },
-        { "speaker": "ageha", "face": "smile", "text": "「見た？ さっきの外国の人。去年のブロック1位らしいよ。怖かったー！ でもあたしには関係ないけど」" },
-        { "speaker": "hajime", "face": "normal", "text": "「え、関係ないって……」" },
-        { "speaker": "ageha", "face": "smile", "text": "「だってバイブスで戦うから。相手の情報とか関係ないじゃん。そんなの考えてたら逆に揺れるでしょ」" },
-        { "speaker": "", "face": "", "text": "あっけらかんと言い放って、あげははまた会場の奥へ歩いていった。甘い残り香だけが、その場に漂っている。" },
-        { "speaker": "hajime", "face": "normal", "text": "（……シーシャ、作る人だったんだ。あの子。──あの夜の『まさかな』、当たってたんじゃないか）" },
-        { "speaker": "hajime", "face": "serious", "text": "（みんな、違う種類の強さを持ってる。組長の覚悟。あの長身の人の精度。あげはさんのバイブス）" },
-        { "speaker": "hajime", "face": "sad", "text": "（僕は……どこで戦えばいいんだ）" }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "────HAZE: OPEN CLOUD 会場。受付前日。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "C.STATIONのエントランスに入った瞬間、空気が変わった。天井が高い。音の広がり方が違う。立っているスタッフの数が違う。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……でかい）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "エントランスの大型モニターに、海外の大会映像が流れていた。金色の装束の男が、玉座みたいな椅子から煙を吐く。──その煙が、一瞬、龍みたいにうねった気がした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "テロップ:【HAZE: GRAND SMOKE 世界王者 王 煙楼】。行き交う出場者の誰も、足を止めない。ここでは「世界」すら、流れていく映像のひとつらしい。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（世界王者……。遠すぎて、ピンとこないな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付を済ませ、会場内を見渡す。出場者たちが思い思いの準備をしていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一角に視線が吸い寄せられた。腕一面に刺青の入った、ごつい体格の男だった。でも、運営スタッフに向けて深々と頭を下げていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「お世話になります。神崎です。当日もよろしくお願いします」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "声は低くて太い。でも言葉は丁寧だった。そしてその手が機材ケースの取っ手を握る指が——ちゃんと見ると、信じられないくらい優しかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……あの人が、神崎竜二さん……？）"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_kumicho"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "別の壁際では、長身の男が空調の吹き出し口に小さな器具をかざしていた。数値をメモに記す。また別の位置で同じことをする。室温と湿度を計測しているようだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（え、会場の空調データを取ってる……？ 試合前日に？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "男が一瞬、こちらを見た。目が合う。何も言わずに、また計測に戻った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（……怖い）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──ふいに、覚えのある甘い匂いが鼻先をかすめた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "「……あれ？ あーーっ！！ 荷物の人じゃん！ 商店街で袋ぶちまけてた！」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "「あっ……あの時の！（この匂い──やっぱりホワイトグミベアだ。香水じゃなくて、フレーバーの匂いだったんだ）」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「こんなとこにいるってことは、出場者でしょ？ ウケる、世間ガチでせまーい！ あたし宵野葉子。あげはって呼んで」"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_ageha"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはと名乗った彼女は、はじめの首から下がった出場者パスをひょいと覗き込んだ。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「えーっと、蒸野はじめくん、と。……よし、ハジメっちね！ あたし会場もうめちゃくちゃチェックしちゃったよ」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「見た？ さっきの外国の人。去年のブロック1位らしいよ。怖かったー！ でもあたしには関係ないけど」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「え、関係ないって……」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「だってバイブスで戦うから。相手の情報とか関係ないじゃん。そんなの考えてたら逆に揺れるでしょ」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あっけらかんと言い放って、あげははまた会場の奥へ歩いていった。甘い残り香だけが、その場に漂っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……シーシャ、作る人だったんだ。あの子。──あの夜の『まさかな』、当たってたんじゃないか）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（みんな、違う種類の強さを持ってる。組長の覚悟。あの長身の人の精度。あげはさんのバイブス）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（僕は……どこで戦えばいいんだ）"
+        }
       ]
     },
     {
       "dialogue_id": "ch2_abyss_baito",
-      "metadata": { "bg": "res://assets/backgrounds/tonari_night.png", "effect": "dark" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/tonari_night.png",
+        "effect": "dark"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "────夜。tonariのバイト中。" },
-        { "speaker": "", "face": "", "text": "3卓の炭替え。いつもの作業。でも今日は、手が動かない。" },
-        { "speaker": "hajime", "face": "serious", "text": "（組長の揺るぎない覚悟……ヴォルクの鉄壁の精度……あげはさんのバイブス……）" },
-        { "speaker": "hajime", "face": "serious", "text": "（みんな「自分の武器」がある。僕には……何がある？）" },
-        { "speaker": "sumi", "face": "serious", "text": "「……最近のお前の煙、迷ってるな」" },
-        { "speaker": "hajime", "face": "sad", "text": "「え？」" },
-        { "speaker": "sumi", "face": "normal", "text": "「吸えば分かる。味はちゃんとしてるんだよ。技術は悪くない。\n……でも、迷ってる味がする。どこかを探ってるような煙だ」" },
-        { "speaker": "sumi", "face": "serious", "text": "「真似して学ぶのは悪いことじゃない。お前はそれが上手い。\nでもな、今のお前は学んでるんじゃなくて、正解を探してる。それは別物だ」" },
-        { "speaker": "", "face": "", "text": "────閉店後。店の裏口。" },
-        { "speaker": "", "face": "", "text": "座り込んで、膝を抱えた。動けない。" },
-        { "speaker": "hajime", "face": "sad", "text": "「……僕、シーシャ、向いてないのかな」" },
-        { "speaker": "", "face": "", "text": "好きだったはずなのに。シーシャ、好きだったはずなのに。\n……なんでこんな苦しいんだろう。" },
-        { "speaker": "", "face": "", "text": "涙は出なかった。出ないことが、余計に辛かった。" }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "────夜。tonariのバイト中。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "3卓の炭替え。いつもの作業。でも今日は、手が動かない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（組長の揺るぎない覚悟……ヴォルクの鉄壁の精度……あげはさんのバイブス……）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（みんな「自分の武器」がある。僕には……何がある？）"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "「……最近のお前の煙、迷ってるな」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "「え？」"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "「吸えば分かる。味はちゃんとしてるんだよ。技術は悪くない。\n……でも、迷ってる味がする。どこかを探ってるような煙だ」"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "「真似して学ぶのは悪いことじゃない。お前はそれが上手い。\nでもな、今のお前は学んでるんじゃなくて、正解を探してる。それは別物だ」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "────閉店後。店の裏口。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "座り込んで、膝を抱えた。動けない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "「……僕、シーシャ、向いてないのかな」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "好きだったはずなのに。シーシャ、好きだったはずなのに。\n……なんでこんな苦しいんだろう。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "涙は出なかった。出ないことが、余計に辛かった。"
+        }
       ]
     },
     {
       "dialogue_id": "ch2_slump_taste",
-      "metadata": { "bg": "res://assets/backgrounds/tonari_night.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/tonari_night.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "────tonari。閉店後。" },
-        { "speaker": "", "face": "", "text": "自分用にシーシャを作ってみた。いつものレシピ。いつもの手順。" },
-        { "speaker": "", "face": "", "text": "──味が、薄い。" },
-        { "speaker": "hajime", "face": "sad", "text": "（フレーバーの香りは嗅げる。煙も出てる。でも……吸っても何かが足りない。正解が分からない）" },
-        { "speaker": "", "face": "", "text": "不安になって、スミさんに吸ってもらった。" },
-        { "speaker": "sumi", "face": "normal", "text": "……普通にいつものお前の煙だぞ" },
-        { "speaker": "hajime", "face": "sad", "text": "え……？ でも、僕が吸うと全然味がしなくて……" },
-        { "speaker": "sumi", "face": "normal", "text": "吸ったけど、いつものはじめと変わらない。ちゃんと味する" },
-        { "speaker": "", "face": "", "text": "スミさんがカウンター越しに、じっとはじめの顔を見た。" },
-        { "speaker": "sumi", "face": "serious", "text": "それ多分、疲れてて味覚弱くなってるだけだ。亜鉛でもとって、しっかり休め。寝ろ" },
-        { "speaker": "hajime", "face": "sad", "text": "でも、大会が……" },
-        { "speaker": "sumi", "face": "serious", "text": "休むのも仕事だ" },
-        { "speaker": "", "face": "", "text": "スミさんの言葉は正しかった。でも、はじめは休めなかった。" },
-        { "speaker": "hajime", "face": "sad", "text": "（あげはさんは今頃、バイブスで新しいミックスを生み出してるんだろうな……。組長はあの丁寧な手つきで、ここでしか出せない一杯を磨いてる。ヴォルクはもっと精度のデータを積んでる。なるは配合ノートを更新してる）" },
-        { "speaker": "hajime", "face": "sad", "text": "（みんな『自分の正解』を持ってる。僕は自分の煙の味すら分からなくなってるのに）" }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "────tonari。閉店後。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "自分用にシーシャを作ってみた。いつものレシピ。いつもの手順。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──味が、薄い。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（フレーバーの香りは嗅げる。煙も出てる。でも……吸っても何かが足りない。正解が分からない）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "不安になって、スミさんに吸ってもらった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……普通にいつものお前の煙だぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "え……？ でも、僕が吸うと全然味がしなくて……"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "吸ったけど、いつものはじめと変わらない。ちゃんと味する"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんがカウンター越しに、じっとはじめの顔を見た。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "それ多分、疲れてて味覚弱くなってるだけだ。亜鉛でもとって、しっかり休め。寝ろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "でも、大会が……"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "休むのも仕事だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんの言葉は正しかった。でも、はじめは休めなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（あげはさんは今頃、バイブスで新しいミックスを生み出してるんだろうな……。組長はあの丁寧な手つきで、ここでしか出せない一杯を磨いてる。ヴォルクはもっと精度のデータを積んでる。なるは配合ノートを更新してる）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（みんな『自分の正解』を持ってる。僕は自分の煙の味すら分からなくなってるのに）"
+        }
       ]
     },
     {
       "dialogue_id": "ch2_sofa_burn",
-      "metadata": { "bg": "res://assets/backgrounds/tonari_night.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/tonari_night.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "────tonari。バイト中。" },
-        { "speaker": "", "face": "", "text": "3卓の炭替え。頭の中はぐちゃぐちゃだった。組長の覚悟。ヴォルクの精度。あげはの直感。なるの情熱。全部が回って──" },
-        { "speaker": "", "face": "", "text": "──炭を、落とした。" },
-        { "speaker": "", "face": "", "text": "トングから滑り落ちた真っ赤な炭が、ソファの上に転がった。" },
-        { "speaker": "", "face": "", "text": "焦げる革の匂い。客が驚いて立ち上がる。黒い焼け跡がソファに残った。" },
-        { "speaker": "hajime", "face": "sad", "text": "す、すみません……！！" },
-        { "speaker": "", "face": "", "text": "スミさんがすぐに来て、静かに頭を下げた。" },
-        { "speaker": "", "face": "", "text": "客は「大丈夫ですよ」と笑っていた。──その優しさが、余計に辛かった。" },
-        { "speaker": "", "face": "", "text": "シーシャ屋では起こりうるミスだ。でもはじめにとっては初めてだった。" },
-        { "speaker": "hajime", "face": "sad", "text": "（……情けない。こんな基本的なミスをするなんて。何をやってるんだ、僕は）" }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "────tonari。バイト中。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "3卓の炭替え。頭の中はぐちゃぐちゃだった。組長の覚悟。ヴォルクの精度。あげはの直感。なるの情熱。全部が回って──"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──炭を、落とした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "トングから滑り落ちた真っ赤な炭が、ソファの上に転がった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "焦げる革の匂い。客が驚いて立ち上がる。黒い焼け跡がソファに残った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "す、すみません……！！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんがすぐに来て、静かに頭を下げた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客は「大丈夫ですよ」と笑っていた。──その優しさが、余計に辛かった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シーシャ屋では起こりうるミスだ。でもはじめにとっては初めてだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（……情けない。こんな基本的なミスをするなんて。何をやってるんだ、僕は）"
+        }
       ]
     },
     {
       "dialogue_id": "ch2_pre_tournament_realisation",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "────大会前日の夜。会場の外のベンチに、一人でいた。" },
-        { "speaker": "hajime", "face": "serious", "text": "（……僕、ずっと嫉妬してたんだよな。いろんなお店に行って、いいなって思う店員さんや、すごいなって思う店員さんに会うたびに、羨ましくて）" },
-        { "speaker": "hajime", "face": "sad", "text": "（分かってる。嫉妬するのは良くないって。でも、どうしても「ずるい」って思っちゃって……そんな自分が嫌で）" },
-        { "speaker": "ageha", "face": "normal", "text": "「あれ、ハジメっち。こんなとこで何してんの」" },
-        { "speaker": "hajime", "face": "normal", "text": "「……あげはさん。ちょっと、頭冷やしてて」" },
-        { "speaker": "ageha", "face": "normal", "text": "「また悩んでる顔じゃん。何、もしかしてまだ引きずってる？」" },
-        { "speaker": "hajime", "face": "sad", "text": "「……うまく言えないんですけど。みんなに嫉妬してるって気づいて。嫉妬するのって、良くないじゃないですか。でも、どうしても羨ましいって思っちゃうんですよ」" },
-        { "speaker": "ageha", "face": "normal", "text": "「……ふーん」" },
-        { "speaker": "", "face": "", "text": "あげはがベンチに隣に座って、少し考えるように上を向いた。" },
-        { "speaker": "ageha", "face": "smile", "text": "「ねえ、ちょっと聞いていい。あんたが羨ましいって思う人って、正直どんな人？」" },
-        { "speaker": "hajime", "face": "serious", "text": "「……たとえば、すごく丁寧な手つきで炭を置く人とか。一ミリのブレも許さない精度で作り続けてる人とか。あとは──」" },
-        { "speaker": "ageha", "face": "smile", "text": "「うん、あたしは？」" },
-        { "speaker": "hajime", "face": "normal", "text": "「バイブスだけで戦えることを、ちゃんと信じてる。自分を信じるのが怖くなかったのかな、って」" },
-        { "speaker": "ageha", "face": "normal", "text": "「……ねえ、ハジメっち。それってジェラシーっぽいけど、全部「すごい」って思ってるじゃん」" },
-        { "speaker": "hajime", "face": "normal", "text": "「え？」" },
-        { "speaker": "ageha", "face": "smile", "text": "「どうでもいい人のこと、羨ましいとか思わないじゃん普通。羨ましいって思うのって、その人のことちゃんと認めてるからじゃね？」" },
-        { "speaker": "", "face": "", "text": "はじめは何も言えなかった。" },
-        { "speaker": "ageha", "face": "smile", "text": "「ジェラシーって言ってるけどさ。あたしには、リスペクトにしか聞こえなかったよ」" },
-        { "speaker": "ageha", "face": "normal", "text": "「……あたしも、あんたのそういうところ羨ましいって思う。誰のことも素直にすごいって思えるとこ、あたしにはないから」" },
-        { "speaker": "hajime", "face": "normal", "text": "（……それって、気を遣ってくれてるだけじゃないの）" },
-        { "speaker": "ageha", "face": "normal", "text": "「あー、その顔。どうせ「建前でしょ」とか思ってるでしょ」" },
-        { "speaker": "hajime", "face": "surprise", "text": "「……え」" },
-        { "speaker": "ageha", "face": "normal", "text": "「そういうとこよ。人のことちゃんとリスペクトできるくせに、自分が受け取る側になると信じられないじゃん」" },
-        { "speaker": "hajime", "face": "normal", "text": "「……」" },
-        { "speaker": "ageha", "face": "smile", "text": "「本当のことだって。あたしにない種類のものだから、ちゃんと羨ましいよ。建前じゃなくて」" },
-        { "speaker": "", "face": "", "text": "──今度こそ、はじめは何も言えなかった。" },
-        { "speaker": "ageha", "face": "smile", "text": "「みんなそういうもんじゃね？ ないものねだりって、たぶん人間の普通のことだよ。羨ましいって思うのは、ちゃんと相手のことすごいと認めてる証拠なんだから」" },
-        { "speaker": "hajime", "face": "normal", "text": "「……羨ましいって感じること自体は、ダメじゃなかったんですね」" },
-        { "speaker": "ageha", "face": "smile", "text": "「ダメなわけないじゃん。羨ましかったら、リスペクトして、吸収すればいい。それだけじゃね？」" },
-        { "speaker": "hajime", "face": "normal", "text": "「……吸収」" },
-        { "speaker": "ageha", "face": "serious", "text": "「てかちょっと待って。あんた、そこまで真剣に悩むぐらい妬みやすいってことはさ」" },
-        { "speaker": "ageha", "face": "normal", "text": "「相手の何がすごいか、ちゃんと見えてるってことじゃん」" },
-        { "speaker": "hajime", "face": "normal", "text": "「……え？」" },
-        { "speaker": "ageha", "face": "serious", "text": "「さっきあんた、どんな人がどこがすごいか、スラスラ出てきたじゃん。「ずるい」って思うぐらいちゃんと見えてたってことでしょ」" },
-        { "speaker": "hajime", "face": "normal", "text": "「……言われてみれば」" },
-        { "speaker": "ageha", "face": "smile", "text": "「それってさ、地味にとんでもない武器じゃね？ 相手が何年もかけて積み上げてきた技術とか、作り方とか──それをちゃんと観察して吸収できるなら、ショートカットできるじゃん」" },
-        { "speaker": "hajime", "face": "surprise", "text": "「……ショートカット？」" },
-        { "speaker": "ageha", "face": "normal", "text": "「普通の人は「あの人うまいな」で終わる。でもあんたは「どこが、なぜすごいか」まで見てる。だったらその人の努力ごと、自分のものにできるよ」" },
-        { "speaker": "hajime", "face": "normal", "text": "「……努力ごと」" },
-        { "speaker": "ageha", "face": "smile", "text": "「妬みやすいって、逆に言えば相手の良さにちゃんと気づけるってことだから。あたしは正直、それが羨ましいよ」" },
-        { "speaker": "", "face": "", "text": "──それは、誰かに言われないと気づけない種類の言葉だった。" },
-        { "speaker": "hajime", "face": "normal", "text": "（……そっか。最初から「すごい」と思ってた。焦りがそれを「ずるい」に変えてただけで）" },
-        { "speaker": "hajime", "face": "normal", "text": "（みんなそれぞれ、自分にないものを誰かに羨んでる。それが普通のことなら、吸収すればいい）" },
-        { "speaker": "hajime", "face": "smile", "text": "「……ありがとうございます。なんか、スッキリしました」" },
-        { "speaker": "ageha", "face": "smile", "text": "「明日、ちゃんと戦いなよ。あたし全力で行くから、ハジメっちも全力でこい」" },
-        { "speaker": "", "face": "", "text": "深淵の底から、少しだけ浮かび上がる気配がした。\n……【根性】が上がった。" }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "────大会前日の夜。会場の外のベンチに、一人でいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（……僕、ずっと嫉妬してたんだよな。いろんなお店に行って、いいなって思う店員さんや、すごいなって思う店員さんに会うたびに、羨ましくて）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（分かってる。嫉妬するのは良くないって。でも、どうしても「ずるい」って思っちゃって……そんな自分が嫌で）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "「あれ、ハジメっち。こんなとこで何してんの」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「……あげはさん。ちょっと、頭冷やしてて」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "「また悩んでる顔じゃん。何、もしかしてまだ引きずってる？」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "「……うまく言えないんですけど。みんなに嫉妬してるって気づいて。嫉妬するのって、良くないじゃないですか。でも、どうしても羨ましいって思っちゃうんですよ」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "「……ふーん」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはがベンチに隣に座って、少し考えるように上を向いた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「ねえ、ちょっと聞いていい。あんたが羨ましいって思う人って、正直どんな人？」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "「……たとえば、すごく丁寧な手つきで炭を置く人とか。一ミリのブレも許さない精度で作り続けてる人とか。あとは──」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「うん、あたしは？」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「バイブスだけで戦えることを、ちゃんと信じてる。自分を信じるのが怖くなかったのかな、って」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "「……ねえ、ハジメっち。それってジェラシーっぽいけど、全部「すごい」って思ってるじゃん」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「え？」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「どうでもいい人のこと、羨ましいとか思わないじゃん普通。羨ましいって思うのって、その人のことちゃんと認めてるからじゃね？」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめは何も言えなかった。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「ジェラシーって言ってるけどさ。あたしには、リスペクトにしか聞こえなかったよ」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "「……あたしも、あんたのそういうところ羨ましいって思う。誰のことも素直にすごいって思えるとこ、あたしにはないから」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……それって、気を遣ってくれてるだけじゃないの）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "「あー、その顔。どうせ「建前でしょ」とか思ってるでしょ」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "「……え」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "「そういうとこよ。人のことちゃんとリスペクトできるくせに、自分が受け取る側になると信じられないじゃん」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「……」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「本当のことだって。あたしにない種類のものだから、ちゃんと羨ましいよ。建前じゃなくて」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──今度こそ、はじめは何も言えなかった。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「みんなそういうもんじゃね？ ないものねだりって、たぶん人間の普通のことだよ。羨ましいって思うのは、ちゃんと相手のことすごいと認めてる証拠なんだから」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「……羨ましいって感じること自体は、ダメじゃなかったんですね」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「ダメなわけないじゃん。羨ましかったら、リスペクトして、吸収すればいい。それだけじゃね？」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「……吸収」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "「てかちょっと待って。あんた、そこまで真剣に悩むぐらい妬みやすいってことはさ」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "「相手の何がすごいか、ちゃんと見えてるってことじゃん」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「……え？」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "「さっきあんた、どんな人がどこがすごいか、スラスラ出てきたじゃん。「ずるい」って思うぐらいちゃんと見えてたってことでしょ」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「……言われてみれば」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「それってさ、地味にとんでもない武器じゃね？ 相手が何年もかけて積み上げてきた技術とか、作り方とか──それをちゃんと観察して吸収できるなら、ショートカットできるじゃん」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "「……ショートカット？」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "「普通の人は「あの人うまいな」で終わる。でもあんたは「どこが、なぜすごいか」まで見てる。だったらその人の努力ごと、自分のものにできるよ」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「……努力ごと」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「妬みやすいって、逆に言えば相手の良さにちゃんと気づけるってことだから。あたしは正直、それが羨ましいよ」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──それは、誰かに言われないと気づけない種類の言葉だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……そっか。最初から「すごい」と思ってた。焦りがそれを「ずるい」に変えてただけで）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（みんなそれぞれ、自分にないものを誰かに羨んでる。それが普通のことなら、吸収すればいい）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "「……ありがとうございます。なんか、スッキリしました」"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "「明日、ちゃんと戦いなよ。あたし全力で行くから、ハジメっちも全力でこい」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "深淵の底から、少しだけ浮かび上がる気配がした。\n……【根性】が上がった。"
+        }
       ],
-      "growth_stats": { "guts": 2 }
+      "growth_stats": {
+        "guts": 2
+      }
     },
     {
       "dialogue_id": "ch2_steve_cameo",
       "comment": "ch3ライバル・スティーブのカメオ（Dr.fookahはNIGHTSIDE代理店＝海外勢が立ち寄る理由が最初からある）。名前は出さない。巨漢×異常に繊細＝低温でじっくり育てる流儀の片鱗だけ見せ、ch3で回収",
-      "metadata": { "bg": "res://assets/backgrounds/bg_shop.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shop.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "────Dr.fookah、1階。" },
-        { "speaker": "", "face": "", "text": "棚の前に、見上げるほど大きな外国人のお客さんがいた。ピザの箱を小脇に抱えたまま、フレーバーの缶を手に取ってはラベルの細かい字までじっくり読んで、そっと戻している。──巨体に似合わず、指先の動きがやけに繊細だ。" },
-        { "speaker": "", "face": "", "text": "「……Hey」　目が合うと、彼はにっと笑って、棚の缶をひとつ掲げた。" },
-        { "speaker": "", "face": "", "text": "「コレ、火どのくらいでイケる？ キミ、舌持ってるカオしてるネ」" },
-        { "speaker": "hajime", "face": "normal", "text": "えっと……それ、結構デリケートなやつなので。炭は控えめにして、低い温度でゆっくり育てる感じが合うと思います" },
-        { "speaker": "", "face": "", "text": "「──Exactly!! 強い葉ほど、弱い火。……わかってるネ、この店」" },
-        { "speaker": "", "face": "", "text": "彼は満足げに缶を山ほど抱えてレジへ向かい、去り際にふと振り返った。" },
-        { "speaker": "", "face": "", "text": "「東京の大会、行く機会があるなら見ておくとイイよ。アジアの煙はもう、日本だけのモノじゃないからネ。──See ya」" },
-        { "speaker": "", "face": "", "text": "自動ドアが閉まる。ピザとシナモンの匂いが、少しだけ残った。" },
-        { "speaker": "hajime", "face": "normal", "text": "（……今の人、何者なんだろう。缶の選び方が、完全に「作る側」のそれだった）" },
-        { "speaker": "", "face": "", "text": "……【洞察】が少し上がった。" }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "────Dr.fookah、1階。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "棚の前に、見上げるほど大きな外国人のお客さんがいた。ピザの箱を小脇に抱えたまま、フレーバーの缶を手に取ってはラベルの細かい字までじっくり読んで、そっと戻している。──巨体に似合わず、指先の動きがやけに繊細だ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「……Hey」　目が合うと、彼はにっと笑って、棚の缶をひとつ掲げた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「コレ、火どのくらいでイケる？ キミ、舌持ってるカオしてるネ」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "えっと……それ、結構デリケートなやつなので。炭は控えめにして、低い温度でゆっくり育てる感じが合うと思います"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「──Exactly!! 強い葉ほど、弱い火。……わかってるネ、この店」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼は満足げに缶を山ほど抱えてレジへ向かい、去り際にふと振り返った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「東京の大会、行く機会があるなら見ておくとイイよ。アジアの煙はもう、日本だけのモノじゃないからネ。──See ya」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "自動ドアが閉まる。ピザとシナモンの匂いが、少しだけ残った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……今の人、何者なんだろう。缶の選び方が、完全に「作る側」のそれだった）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【洞察】が少し上がった。"
+        }
       ]
     },
     {
       "dialogue_id": "ch2_lingering_smell",
       "comment": "全編モチーフ「店の匂い」のch2配置（各章一度だけ・説明しない）。DAY4の炭落とし事故の匂いが店に残る。ch1のなる「店の匂いは畳んでも消えない」の反転——はじめが初めて“悪い匂い”を店に刻む",
-      "metadata": { "bg": "res://assets/backgrounds/tonari_night.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/tonari_night.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "────夜。閉店後のtonari。" },
-        { "speaker": "", "face": "", "text": "ソファの焦げ跡には、張り替え業者が来るまでカバーがかかっている。モップを掛け、灰皿を洗い、椅子を直す。いつもの手順。" },
-        { "speaker": "", "face": "", "text": "灯りを落とすと、店はゆっくりと「tonariの匂い」に戻っていく。蜜の甘さ。炭の名残。コーヒーの残り香。──その一番底に。" },
-        { "speaker": "", "face": "", "text": "……まだ、いる。焦げた革の匂いが、かすかに。" },
-        { "speaker": "hajime", "face": "normal", "text": "「……おやすみなさい」" },
-        { "speaker": "", "face": "", "text": "誰もいない店に頭を下げて、鍵を閉めた。" }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "────夜。閉店後のtonari。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ソファの焦げ跡には、張り替え業者が来るまでカバーがかかっている。モップを掛け、灰皿を洗い、椅子を直す。いつもの手順。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "灯りを落とすと、店はゆっくりと「tonariの匂い」に戻っていく。蜜の甘さ。炭の名残。コーヒーの残り香。──その一番底に。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……まだ、いる。焦げた革の匂いが、かすかに。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「……おやすみなさい」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "誰もいない店に頭を下げて、鍵を閉めた。"
+        }
       ]
     },
     {
       "dialogue_id": "ch2_sumi_silence",
       "comment": "スミさんが「何も言わない」理由を1シーンだけ可視化（DAY10夜・連勝が始まった頃）。自分も同じ顔をして、誰にも止められなかったから言葉が見つからない——ch4特訓「俺はお前に同じ顔をさせたくなかった」と帰国告白の前振り。スミ自身の話だとは明かさない",
-      "metadata": { "bg": "res://assets/backgrounds/tonari_night.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/tonari_night.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "────夜。バイト上がり。配合ノートを店に忘れて、取りに戻った。" },
-        { "speaker": "", "face": "", "text": "裏口の鍵はまだ開いていた。フロアの灯りは半分落ちて、カウンターにだけ明かりが残っている。スミさんと、終電を逃したらしいサラリーマンさんだ。" },
-        { "speaker": "", "face": "", "text": "声をかけようとして──足が、止まった。" },
-        { "speaker": "salaryman", "face": "normal", "text": "「はじめくん、全国で勝ち進んでるんでしょう。すごいことですよ。……でもスミさん、最近あの子に何も言いませんね。師匠として、何かこう、あるんじゃないですか」" },
-        { "speaker": "", "face": "", "text": "スミさんは答えない。火皿の上で、炭をひとつ置き直しただけだった。" },
-        { "speaker": "salaryman", "face": "normal", "text": "「……スミさん？」" },
-        { "speaker": "sumi", "face": "normal", "text": "「──言葉ってのはな、自分に効いたやつしか、人には出せねえんだ」" },
-        { "speaker": "sumi", "face": "serious", "text": "「あの顔は、知ってる。周りの声が全部、ガラスの向こうから聞こえてるって顔だ。……あの顔の男に効いた言葉を、俺はひとつも知らねえ」" },
-        { "speaker": "salaryman", "face": "normal", "text": "「……その人は、どうなったんです」" },
-        { "speaker": "", "face": "", "text": "長い沈黙。換気扇の音だけが回っている。スミさんは答えずに、吸い終わったボウルの灰を、静かに落とした。" },
-        { "speaker": "", "face": "", "text": "──それ以上は、誰も何も言わなかった。" },
-        { "speaker": "hajime", "face": "normal", "text": "（……誰の話だろう。……まあ、いいか。明日も勝てば、全部正しくなる）" },
-        { "speaker": "", "face": "", "text": "ノートは、取らずに帰った。あの明かりの輪の中に、入っていける気がしなかった。" }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "────夜。バイト上がり。配合ノートを店に忘れて、取りに戻った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "裏口の鍵はまだ開いていた。フロアの灯りは半分落ちて、カウンターにだけ明かりが残っている。スミさんと、終電を逃したらしいサラリーマンさんだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "声をかけようとして──足が、止まった。"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "「はじめくん、全国で勝ち進んでるんでしょう。すごいことですよ。……でもスミさん、最近あの子に何も言いませんね。師匠として、何かこう、あるんじゃないですか」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは答えない。火皿の上で、炭をひとつ置き直しただけだった。"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "「……スミさん？」"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "「──言葉ってのはな、自分に効いたやつしか、人には出せねえんだ」"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "「あの顔は、知ってる。周りの声が全部、ガラスの向こうから聞こえてるって顔だ。……あの顔の男に効いた言葉を、俺はひとつも知らねえ」"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "「……その人は、どうなったんです」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "長い沈黙。換気扇の音だけが回っている。スミさんは答えずに、吸い終わったボウルの灰を、静かに落とした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──それ以上は、誰も何も言わなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……誰の話だろう。……まあ、いいか。明日も勝てば、全部正しくなる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートは、取らずに帰った。あの明かりの輪の中に、入っていける気がしなかった。"
+        }
       ]
     }
   ]

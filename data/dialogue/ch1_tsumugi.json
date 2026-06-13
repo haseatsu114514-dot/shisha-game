@@ -40,6 +40,10 @@
         },
         {
           "type": "set_flag",
+          "flag": "_met_tsumugi"
+        },
+        {
+          "type": "set_flag",
           "flag": "known_name_tsumugi"
         },
         {

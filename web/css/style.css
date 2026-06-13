@@ -671,9 +671,9 @@ body {
 /* 背景込みのアート一枚絵（naru/adam/packii等）は煙のかたちのマスク窓で表示。
    縁がゆっくりうごめき、煙の中に像が浮かんでいるように見せる */
 .portrait.bgfull {
-  bottom: 2%;
-  height: 92%;
-  max-width: 56%;
+  bottom: 0;
+  height: 100%;
+  max-width: 60%;
   -webkit-mask-image:
     radial-gradient(closest-side, #000 50%, transparent 100%),
     radial-gradient(closest-side, #000 44%, transparent 100%),
@@ -1069,6 +1069,17 @@ body {
 }
 .spot-btn:active:not(:disabled) { transform: translateY(0); }
 .spot-btn:disabled { opacity: 0.35; cursor: default; }
+/* マップピンは .spot-btn:hover/:active の transform に基準位置
+   translate(-50%, -100%) を上書きされると「カーソルから逃げる」
+   （半幅右・全高下へ瞬間移動→hover解除→戻る…の発振）。
+   同じ詳細度なので後置きで基準位置を再固定する。背景・枠線の
+   ホバー演出も pin には不要（.shield 側で行う）ため打ち消す */
+.spot-pin:hover:not(:disabled),
+.spot-pin:active:not(:disabled) {
+  transform: translate(-50%, -100%);
+  background: transparent;
+  border-color: transparent; /* border:none だと1px分のレイアウトずれが出る */
+}
 .spot-name { font-size: 16px; font-weight: bold; letter-spacing: 0.05em; }
 .spot-desc { font-size: 12.5px; color: var(--text-dim); line-height: 1.5; }
 .spot-cost { font-size: 12px; color: var(--accent); }
@@ -2395,3 +2406,59 @@ body {
 }
 .glossary-term { color: var(--text); font-weight: bold; }
 .glossary-desc { color: var(--text-dim); }
+
+
+/* ===== 体力（スタミナ）HUD ===== */
+#hud-stamina { display: flex; align-items: center; gap: 8px; margin-left: 14px; }
+#hud-stamina .main { font-size: 11px; letter-spacing: 0.14em; color: var(--text-dim); }
+.stamina-bar { width: 92px; }
+.stamina-bar .lv-fill { background: linear-gradient(90deg, #69d98e, #b7e98a); transition: width 0.4s ease, background 0.3s; }
+.stamina-bar .lv-fill.warn { background: linear-gradient(90deg, #e9c46a, #f4a261); }
+.stamina-bar .lv-fill.danger { background: linear-gradient(90deg, #e76f51, #d62828); animation: stamina-blink 1.1s ease-in-out infinite; }
+@keyframes stamina-blink { 50% { opacity: 0.55; } }
+.stamina-cell { display: inline-flex; align-items: center; gap: 8px; }
+.st-bar { display: inline-block; width: 90px; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+.st-bar > i { display: block; height: 100%; background: linear-gradient(90deg, #69d98e, #b7e98a); border-radius: 4px; }
+
+/* 好感度: 次の段階までのおおまかなゲージ */
+.aff-next { display: inline-block; width: 46px; height: 5px; margin-left: 8px; vertical-align: middle; background: rgba(255,255,255,0.12); border-radius: 3px; overflow: hidden; }
+.aff-next > i { display: block; height: 100%; background: linear-gradient(90deg, #e58fb1, #f4d27a); }
+
+/* ===== 定休日・訪問済みピン ===== */
+.spot-pin.closed { filter: grayscale(0.75) brightness(0.6); }
+.spot-pin .sub-label.closed-tag { background: rgba(40, 18, 24, 0.92); color: #f0b9b9; border: 1px solid rgba(240, 185, 185, 0.4); }
+
+/* ===== 恋人とのちょい会い（コマ消費なし） ===== */
+.lover-quick-btn {
+  position: absolute; left: 2.2%; bottom: 22%;
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px 10px 12px;
+  background: linear-gradient(135deg, rgba(58, 18, 34, 0.94), rgba(34, 12, 26, 0.94));
+  border: 1.5px solid rgba(229, 143, 177, 0.65);
+  border-radius: 999px;
+  color: #ffe3ee;
+  font-family: inherit; font-size: 14px; font-weight: bold; letter-spacing: 0.04em;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.5), 0 0 14px rgba(229,143,177,0.25);
+  transition: transform 0.15s ease, box-shadow 0.2s;
+  z-index: 4;
+}
+.lover-quick-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,0.55), 0 0 20px rgba(229,143,177,0.45); }
+.lover-quick-btn .lq-heart { font-size: 19px; color: #e58fb1; animation: lq-beat 1.6s ease-in-out infinite; }
+.lover-quick-btn small { display: block; font-size: 10px; font-weight: normal; color: rgba(255,227,238,0.72); letter-spacing: 0.06em; }
+@keyframes lq-beat { 0%, 100% { transform: scale(1); } 12% { transform: scale(1.22); } 24% { transform: scale(1); } }
+
+/* ===== 吸い出しのジャスト帯 ===== */
+.pull-bar { position: relative; }
+.pull-just {
+  position: absolute; top: 0; height: 100%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.0), rgba(255,243,178,0.55), rgba(255,255,255,0.0));
+  border-left: 1px solid rgba(255, 243, 178, 0.8);
+  border-right: 1px solid rgba(255, 243, 178, 0.8);
+  box-shadow: 0 0 10px rgba(255, 230, 140, 0.45);
+  pointer-events: none;
+  animation: just-glow 1.8s ease-in-out infinite;
+  z-index: 1;
+}
+@keyframes just-glow { 50% { box-shadow: 0 0 16px rgba(255, 230, 140, 0.8); opacity: 0.85; } }
+.stamp.stamp-just { color: #ffe9a8; text-shadow: 0 0 18px rgba(255, 220, 120, 0.9), 0 2px 0 rgba(0,0,0,0.5); }

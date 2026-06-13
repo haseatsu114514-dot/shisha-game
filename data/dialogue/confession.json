@@ -2,56 +2,59 @@
   "dialogues": [
     {
       "dialogue_id": "confession_minto",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png"
+      },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "お店が閉店した後。みんとが、いつもの『コンカフェ嬢』のトーンとは違う、落ち着いた声で話しかけてきた。"
+          "text": "店の外で待ち合わせて、川沿いの遊歩道を二人で歩いた。\n私服の彼女は、店の灯りから離れるほど、口数が減っていく。"
         },
         {
           "speaker": "minto",
-          "face": "normal",
-          "text": "ねえ、はじめくん。今日は……本当にありがとう。あのさ、ちょっとだけ、いいかな。……今日は、みんとモードじゃなくて、私として話させて。"
+          "face": "ura_normal",
+          "text": "……今日は、その。誘ってくれて、ありがと。\n……外で会うの、まだちょっと、緊張する……"
         },
         {
           "speaker": "minto",
-          "face": "normal",
-          "text": "私ね、ずっと隠してたことがあるの。……はじめくんには、ちゃんと話しておきたいなって。"
+          "face": "ura_normal",
+          "text": "あのね。……私、ずっと、言えてないことがあって。\n……笑わないで、聞いてくれる……？"
         },
         {
           "speaker": "minto",
-          "face": "smile",
-          "text": "私……『20歳』って言ってるけど……本当はね、今年で29歳なの……。"
+          "face": "ura_sad",
+          "text": "私……お店では『はたち』って言ってるけど。\n……ほんとは、今年で29、なの……。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "（彼女は耳まで真っ赤にして、顔を両手で覆いながら恥ずかしそうに下を向いた）"
+          "text": "彼女は耳まで赤くなって、消え入りそうな声でそう言った。\n川風が、二人の間を抜けていく。"
         },
         {
           "speaker": "minto",
+          "face": "ura_sad",
+          "text": "騙してた……よね。ごめんなさい。\n引かれちゃうのが、怖くて……ずっと、言えなかった……"
+        },
+        {
+          "speaker": "hajime",
           "face": "normal",
-          "text": "だ、騙すみたいになっててごめんなさい！ お店では『ピチピチのハタチ』で通してるし、引かれちゃうかなって……ずっと怖くて言えなくて……っ"
+          "text": "（——店の『みんと』じゃない。目の前にいるのは、年齢をひとつ打ち明けるだけで震えてる、素の栞さんだ）"
         },
         {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "でも、はじめくんの優しいシーシャに触れてたら……ちゃんと、素の『みどりかわ しおり』として、はじめくんの隣にいたいって……そう思っちゃった。"
-        },
-        {
-          "speaker": "minto",
+          "speaker": "hajime",
           "face": "normal",
-          "text": "……ねえ、引いた？ いつもご飯食べたかとか寝れてるかとか、つい世話焼いちゃうのも……年上だから、つい出ちゃうんだよね。……こんなお姉さんだけど……私のこと、彼女にして……くれませんか……？"
+          "text": "（この人の隣にいたい。……そう思っているのは、僕の方だ。なら、言うのは——僕からだ）"
         },
         {
           "type": "choice",
           "choices": [
             {
-              "text": "みんとのことが好きだよ。年齢なんて関係ない",
+              "text": "「年齢ごと、栞さんが好きだ」と伝える",
               "next_id": "confession_minto_accept"
             },
             {
-              "text": "ごめんなさい、ライバルのままがいい",
+              "text": "「……話してくれてありがとう」とだけ返す（ライバルのままでいる）",
               "next_id": "confession_minto_reject"
             }
           ]
@@ -128,18 +131,18 @@
       "lines": [
         {
           "speaker": "minto",
-          "face": "normal",
-          "text": "……そっか。ううん、ごめんね！ 困らせちゃって。お姉さんが変なこと言っちゃったね……"
+          "face": "ura_normal",
+          "text": "……そっか。……うん。聞いてくれただけで、うれしい……"
         },
         {
           "speaker": "minto",
-          "face": "smile",
-          "text": "じゃあ、これからも『一番のライバルお姉さん』ってことでっ♡ みんと、絶対負けないからねっ！ ……でも、体調悪い時はちゃんと言うんだよ？"
+          "face": "ura_smile",
+          "text": "じゃあ……これからも、『一番のライバルのお姉さん』で……いさせてね。\n……負けない、から……"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "（無理に作った明るい笑顔が、少しだけ痛ましかった）"
+          "text": "無理に持ち上げた口角が、少しだけ痛ましかった。"
         }
       ]
     },
@@ -635,13 +638,13 @@
     {
       "dialogue_id": "confession_rin",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_shop.png"
+        "bg": "res://assets/backgrounds/bg_street_night.png"
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "閉店後のショールーム。凛さんは珍しく、何のサンプルも出さなかった。"
+          "text": "閉店間際、凛さんに「そこまで歩くよ」と言われた。\n問屋街の帰り道。シャッターの下りた通りに、二人の足音だけが響く。"
         },
         {
           "speaker": "rin",
@@ -651,7 +654,7 @@
         {
           "speaker": "rin",
           "face": "normal",
-          "text": "だからさ。次に君がここに来る理由、なくなるわけ。……それで、ちょっと困ってる"
+          "text": "だからさ。次に君があの階段を上がってくる理由、なくなるわけ。……それで、ちょっと困ってる"
         },
         {
           "speaker": "hajime",
@@ -660,20 +663,38 @@
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "私はデータの人だからさ。理由のない訪問って、処理できないの。……君が、理由を作ってよ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "試香紙を弄ぶ指が、ほんの少しだけ落ち着きをなくしている。"
+          "text": "街灯の下で立ち止まる。試香紙を弄ぶ指が、ほんの少しだけ落ち着きをなくしている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（理由なら、もうずっと前からある。……契約のためじゃなく、この人に会いに行ってた。それを、言葉にするなら——）"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "「凛さんに会いに行く。それが理由です」と踏み込む",
+              "next_id": "confession_rin_accept"
+            },
+            {
+              "text": "「友達として、これからも顔を出します」と返す",
+              "next_id": "confession_rin_reject"
+            }
+          ]
         }
       ]
     },
     {
       "dialogue_id": "confession_rin_accept",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_shop.png"
+        "bg": "res://assets/backgrounds/bg_street_night.png"
       },
       "lines": [
         {
@@ -683,7 +704,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "じゃあ……契約じゃない理由で来ます。凛さんに会いに。それが理由です"
+          "text": "じゃあ……契約じゃない理由で、会いに行きます。凛さんに。それが理由です"
         },
         {
           "speaker": "rin",
@@ -728,7 +749,7 @@
     {
       "dialogue_id": "confession_rin_reject",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_shop.png"
+        "bg": "res://assets/backgrounds/bg_street_night.png"
       },
       "lines": [
         {
@@ -744,7 +765,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "凛さんはいつもの顔に戻って、棚のロットを数え始めた。……指先が一瞬だけ止まったのは、見なかったことにした。"
+          "text": "凛さんはいつもの顔に戻って、「じゃ、また」と歩き出した。……一瞬だけ足が止まったのは、見なかったことにした。"
         }
       ]
     }
