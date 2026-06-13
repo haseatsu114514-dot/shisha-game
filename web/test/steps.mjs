@@ -67,7 +67,7 @@ export async function playTnStep(page, opts = {}) {
     await page.locator("#tn-body button", { hasText: "この配合でいく" }).click();
   } else if (title.includes("パッキング")) {
     await page.locator(".spot-btn", { hasText: "ノーマル" }).click();
-  } else if (title.includes("炭の配置")) {
+  } else if (title.includes("炭をコンロにセット") || title.includes("炭の配置")) {
     await page.locator(".spot-btn", { hasText: "トライアングル" }).click();
   } else if (title.includes("蒸らし時間")) {
     await page.locator(".spot-btn", { hasText: "8分" }).click();

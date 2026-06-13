@@ -7668,7 +7668,7 @@ function pakkiLive(result) {
 const STEP_FLOW = [
   ["setup_bowl", "SETUP"], ["setup_hms", "SETUP"], ["setup_charcoal", "SETUP"],
   ["theme", "FLAVOR"], ["mix", "MIX"], ["pack", "PACK"], ["foil", "FOIL"],
-  ["coalfire", "COAL"], ["coal", "HEAT"], ["steam", "STEAM"],
+  ["coal", "SET"], ["coalfire", "HEAT"], ["steam", "STEAM"],
   ["adjust", "ROUND2"], ["focus", "FOCUS"], ["pull", "PULL"],
 ];
 // 前日リハーサル: 短縮の通し（穴あけ・炭起こし・集中は無難な値で省略）
@@ -7927,7 +7927,7 @@ function tournamentStep(step) {
   if (step === "foil") return stepFoil();
   if (step === "coalfire") return stepCoalFire();
   if (step === "coal") {
-    const body = tnPanel("炭の配置", "熱の入り方が決まる。基本はトライアングル。");
+    const body = tnPanel("炭をコンロにセット", "何個の炭を熾すか決める。ここでコンロに乗せ、焼けたら次の工程で取り上げる。多いほど高火力だが焦げやすい。基本はトライアングル(3個)。");
     for (const c of COALS) body.appendChild(optionButton(c.label, c.desc, () => { tt.coal = c.id; tnNext("coal"); }));
     return;
   }
@@ -8330,7 +8330,7 @@ const HEAT_GRADE = {
 
 function stepCoalFire() {
   const body = tnPanel("HEAT IGNITION ── 炭起こし",
-    "コンロの炭をよく見ろ。芯がピカッと閃いた、その瞬間に取り上げる。早すぎれば生焼け、遅すぎれば灰になる。");
+    "炭はもうコンロで赤く熾きかけている。芯がピカッと閃く、その一瞬で取り上げろ。遅れれば灰をかぶる。");
   const isDrill = tt.mode === "drill";
 
   const arena = document.createElement("div");
@@ -8357,22 +8357,23 @@ function stepCoalFire() {
   const calloutEl = arena.querySelector("#heat-callout");
   const countEl = arena.querySelector("#heat-count");
 
+  // 炭の数は前工程「炭をコンロにセット」での選択に従う（2個/トライアングル3個/4個）
+  const count = tt.coal === "two" ? 2 : tt.coal === "four" ? 4 : 3;
   // 根性が高いほどジャスト窓が広く、温度上昇がわずかに緩やか（数値は見せない）
   const guts = state.stats.guts;
   const justHi = 0.96 + Math.min(0.12, guts / 900);
   const baseRate = 0.235 - Math.min(0.075, guts / 1300);
-  const RATE_MUL = [1.15, 1.0, 0.88]; // 炭ごとに焼けるスピードを少し変える
-  const START = [0.10, -0.10, -0.30]; // 立ち上がりをずらす（同時に閃かせない）
 
   const coals = [];
-  for (let i = 0; i < HEAT_COUNT; i++) {
+  for (let i = 0; i < count; i++) {
     const el = document.createElement("button");
     el.className = "heat-coal";
     el.id = `heat-coal-${i}`;
     el.innerHTML = `<span class="heat-core"></span><span class="heat-badge"></span>`;
     coalsEl.appendChild(el);
+    // 既にコンロで7割ほど焼けた状態からスタート（生焼けの待ち時間は無し）。炭ごとに少しずらす
     coals.push({ el, core: el.querySelector(".heat-core"), badge: el.querySelector(".heat-badge"),
-                 heat: START[i], rate: baseRate * RATE_MUL[i], taken: false, inJust: false, grade: null, zone: null });
+                 heat: 0.66 - i * 0.05, rate: baseRate * (1.15 - i * 0.09), taken: false, inJust: false, grade: null, zone: null });
     el.addEventListener("click", () => takeCoal(i));
   }
 
@@ -8382,7 +8383,7 @@ function stepCoalFire() {
     setTimeout(() => calloutEl.classList.remove("show"), 720);
   };
   const updateCount = () => {
-    countEl.textContent = `取った炭 ${coals.filter((c) => c.taken).length} / ${HEAT_COUNT}`;
+    countEl.textContent = `取った炭 ${coals.filter((c) => c.taken).length} / ${count}`;
   };
   updateCount();
 
@@ -9844,13 +9845,13 @@ function startTitleBgm() {
 // 大会に出ろと言われた直後、tonariの作業台で一度シーシャ作りを通しで体験する
 const TUTORIAL_FLOW = [
   ["theme", "THEME"], ["mix", "MIX"], ["pack", "PACK"], ["foil", "FOIL"],
-  ["coalfire", "COAL"], ["coal", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"],
+  ["coal", "SET"], ["coalfire", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"],
 ];
 // バイト中のオーダーチャレンジ: お客さんのリクエスト（日替わり）に合わせて
 // 大会同様のフル工程で1台作る（テーマと集中だけ接客中なので省略）
 const BAITO_FLOW = [
-  ["mix", "MIX"], ["pack", "PACK"], ["foil", "FOIL"], ["coalfire", "COAL"],
-  ["coal", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"],
+  ["mix", "MIX"], ["pack", "PACK"], ["foil", "FOIL"], ["coal", "SET"],
+  ["coalfire", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"],
 ];
 const TUTORIAL_TIPS = {
   theme: "スミさん「まずは一台のコンセプトだ。今日は好きに選んでいい」",
@@ -10032,7 +10033,7 @@ function startNewGame() {
   playDialogue("ch1_cold_open", () => {
     engulfInSmoke(() => {
       showChapterTitle(
-        { no: "第一章", num: "Ⅰ", name: "一引き目", read: "ファーストドロー ── FIRST DRAW", sub: "SMOKE CROWN CUP 編" },
+        { no: "第一章", num: "Ⅰ", name: "一吸目", read: "ファーストドロー ── FIRST DRAW", sub: "SMOKE CROWN CUP 編" },
         () => {
           if (window.SFX) SFX.bgm("tonari");
           playDialogue("ch1_opening", () => {

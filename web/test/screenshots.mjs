@@ -151,7 +151,7 @@ for (let i = 0; i < 2500; i++) {
       await page.screenshot({ path: `${OUT}/08_mix.png` });
       await page.locator("#tn-body button", { hasText: "この配合でいく" }).click();
     } else if (t.includes("パッキング")) await page.locator(".spot-btn", { hasText: "ふんわり" }).click();
-    else if (t.includes("炭の配置")) await page.locator(".spot-btn", { hasText: "炭4個" }).click();
+    else if (t.includes("炭をコンロにセット") || t.includes("炭の配置")) await page.locator(".spot-btn", { hasText: "炭4個" }).click();
     else if (t.includes("蒸らし時間")) await page.locator(".spot-btn", { hasText: "せっかち" }).click();
     else if (t.includes("蒸らし中")) {
       // 弾幕はわざと避けない（敗北ルート用）。1枚だけスクショを残す
