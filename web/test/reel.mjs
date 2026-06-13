@@ -173,8 +173,17 @@ const weightOf = (table, id) => table.find((r) => r.id === id).weight;
     for (const r of spinSeries(reel, {})) {
       spins++;
       const mids = r.stops.map((s, i) => STRIPS[i][s]);
-      if (r.role === "replay") assert.ok(mids.every((m) => m === "replay"), "リプレイが揃っていない");
-      if (r.role === "bell") assert.ok(mids.every((m) => m === "bell"), "ベルが揃っていない");
+      // 有効ライン上（中央/右下がり/右上がり）に揃っているかを確認するヘルパー
+      // 表示行: top=strip[s-1] / mid=strip[s] / bottom=strip[s+1]
+      const onLine = (sym, line) => r.stops.every((s, i) => {
+        const n = STRIPS[i].length;
+        const off = line === "down" ? (i === 0 ? -1 : i === 2 ? 1 : 0)   // 左上→右下
+                  : line === "up" ? (i === 0 ? 1 : i === 2 ? -1 : 0)     // 左下→右上
+                  : 0;
+        return STRIPS[i][(s + off + n) % n] === sym;
+      });
+      if (r.role === "replay") { assert.ok(["center", "down", "up"].includes(r.line), "リプレイにラインが無い"); assert.ok(onLine("replay", r.line), "リプレイが指定ラインに揃っていない"); }
+      if (r.role === "bell") { assert.ok(onLine("bell", r.line), "ベルが指定ラインに揃っていない"); }
       if (r.role === "rare") assert.ok(["cherry", "pakki"].includes(mids[0]), "プレミアの左中段が違う");
       if (r.role === "miss") {
         assert.ok(!(mids[0] === mids[1] && mids[1] === mids[2]), "ハズレで図柄が揃ってしまった");
@@ -190,14 +199,13 @@ const weightOf = (table, id) => table.find((r) => r.id === id).weight;
         const corner = strip[(r.stops[0] + 1) % n] === "cherry" || strip[(r.stops[0] - 1 + n) % n] === "cherry";
         assert.ok(corner, "チェリー小役で角チェリーが見えていない");
       }
-      // 有効ラインは中段のみ（実機ジャグラー準拠＝下段揃いは無効）。
-      // ベル/リプレイ/7が中段で揃っても、下段・上段には同じ図柄が並ばないこと
+      // 有効ラインは中央＋斜めのみ。横一列（上段/下段）には同じ図柄が3つ並ばないこと
       if (r.role === "bell" || r.role === "replay") {
         const sym = r.role;
         const lower = r.stops.map((s, i) => STRIPS[i][(s + 1) % STRIPS[i].length]);
         const upper = r.stops.map((s, i) => STRIPS[i][(s - 1 + STRIPS[i].length) % STRIPS[i].length]);
-        assert.ok(!lower.every((m) => m === sym), `下段に ${sym} が揃ってしまった（下段は無効ライン）`);
-        assert.ok(!upper.every((m) => m === sym), `上段に ${sym} が揃ってしまった`);
+        assert.ok(!lower.every((m) => m === sym), `下段に ${sym} の横揃いが出てしまった（無効ライン）`);
+        assert.ok(!upper.every((m) => m === sym), `上段に ${sym} の横揃いが出てしまった（無効ライン）`);
       }
       assert.ok(r.stops.every((s, i) => s >= 0 && s < STRIPS[i].length), "停止位置が盤面の範囲外");
     }

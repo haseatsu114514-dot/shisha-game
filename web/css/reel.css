@@ -241,3 +241,50 @@
 .ri-app { color: #f4d27a; font-weight: bold; letter-spacing: 0.1em; font-size: 17px; }
 .ri-text { color: #f2ecdf; font-size: 18px; line-height: 1.85; min-height: 96px; margin: 0; }
 .ri-next { display: block; text-align: right; color: #cdb8e6; font-size: 13px; animation: rs-flicker 1.4s infinite; }
+
+/* ================================================================
+   追加要素: 有効ライン / モク連チャレンジ / データランプ / 図柄画像差し替え
+   ================================================================ */
+/* リール窓＋ペイライン重ね */
+.rstage-window { position: relative; }
+.rstage-lines { position: absolute; inset: 0; pointer-events: none; z-index: 3; }
+.payline { position: absolute; left: 5%; right: 5%; top: 50%; height: 5px; margin-top: -2.5px; border-radius: 3px; opacity: 0; transition: opacity 0.12s; }
+.payline.center { background: #ff5a5a; box-shadow: 0 0 12px rgba(255,90,90,0.9); }
+.payline.down { background: #5ac8ff; box-shadow: 0 0 12px rgba(90,200,255,0.9); transform: rotate(24deg); }
+.payline.up { background: #7ef07a; box-shadow: 0 0 12px rgba(126,240,122,0.9); transform: rotate(-24deg); }
+.payline.on { opacity: 1; animation: pl-flash 0.28s infinite alternate; }
+@keyframes pl-flash { from { filter: brightness(1); } to { filter: brightness(1.7); } }
+/* 既存の中段赤線（リール毎の::after）は薄めにして、勝利時はオーバーレイで強調 */
+.rstage-reel::after { border-top-color: rgba(255,80,80,0.28); border-bottom-color: rgba(255,80,80,0.28); }
+
+/* モク連チャレンジ表示（最上部のオーバーレイ・恩恵なしの盛り上げ） */
+.rstage-challenge { display: none; position: absolute; top: 42px; left: 50%; transform: translateX(-50%); z-index: 6;
+  padding: 5px 16px; border-radius: 20px; white-space: nowrap;
+  background: linear-gradient(90deg, rgba(255,60,60,0.25), rgba(255,160,40,0.4), rgba(255,60,60,0.25));
+  border: 1px solid rgba(255,170,60,0.7); color: #ffd95e; font-weight: bold; font-size: 15px; letter-spacing: 0.06em;
+  box-shadow: 0 0 16px rgba(255,140,40,0.5); }
+.rstage-challenge.show { display: block; animation: rc-fadein 0.2s; }
+.rstage-challenge b { color: #fff; margin-left: 4px; }
+.rstage-challenge .rc-fire { filter: drop-shadow(0 0 4px rgba(255,140,40,0.8)); }
+/* モク連バナー（中央の演出文字） */
+.rstage-banner.ren b { font-size: 40px; }
+.rstage-banner.ren .rc-go { color: #ffd95e; text-shadow: 0 0 22px rgba(255,170,60,0.95); }
+.rstage-banner.ren .rc-get { color: #ff5ed0; text-shadow: 0 0 26px rgba(255,90,200,1); animation: rs-pop 0.4s cubic-bezier(0.2,1.6,0.4,1); }
+.rstage-banner.ren .rc-miss { font-size: 18px; color: #9a90a8; }
+
+/* データランプ（機種上部のデータカウンタ風・最上部オーバーレイ） */
+.rstage-data { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); z-index: 6;
+  display: flex; align-items: center; gap: 8px; padding: 4px 12px; white-space: nowrap;
+  background: #0a0710; border: 1px solid rgba(244,210,122,0.3); border-radius: 8px; box-shadow: inset 0 2px 6px rgba(0,0,0,0.8); }
+.rd-cell { font-size: 11px; color: #b6abc4; letter-spacing: 0.05em; font-family: "Courier New", monospace; }
+.rd-cell b { font-size: 16px; margin-left: 2px; }
+.rd-bb b { color: #ff5a4e; text-shadow: 0 0 6px rgba(255,80,60,0.6); }
+.rd-rb b { color: #5aa0ff; text-shadow: 0 0 6px rgba(90,160,255,0.6); }
+.rd-g b { color: #ffd95e; }
+.rd-hist { display: flex; gap: 3px; margin-left: 6px; }
+.rd-hist i { font-style: normal; font-family: "Courier New", monospace; font-size: 11px; font-weight: bold; padding: 1px 5px; border-radius: 4px; background: #1a1422; }
+.rd-hist i.bb { color: #ff7a6e; }
+.rd-hist i.rb { color: #7ab0ff; }
+
+/* 図柄を画像生成に差し替えたとき（assets/reel/sym_<id>.png）の表示 */
+.sym.sym-img { display: inline-block; width: 76px; height: 76px; background-size: contain; background-repeat: no-repeat; background-position: center; }

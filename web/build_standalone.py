@@ -88,6 +88,12 @@ def collect_assets() -> dict:
         char_dir = REPO_ROOT / "assets" / "sprites" / "characters" / char
         for png in sorted(char_dir.glob("chr_*.png")):
             assets[f"assets/sprites/characters/{char}/{png.name}"] = encode_portrait(png)
+    # 日常リールの図柄（差し替え用。assets/reel/sym_*.png があれば透過PNGで埋め込む）
+    reel_dir = REPO_ROOT / "assets" / "reel"
+    if reel_dir.exists():
+        for png in sorted(reel_dir.glob("sym_*.png")):
+            if png.stat().st_size > 0:
+                assets[f"assets/reel/{png.name}"] = encode_portrait(png)
     return assets
 
 

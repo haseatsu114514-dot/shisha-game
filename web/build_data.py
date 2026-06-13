@@ -134,6 +134,21 @@ def collect_face_icons() -> dict:
     return icons
 
 
+def collect_reel_symbols() -> list:
+    """日常リール（MOKU!MOKU!パッキー）の図柄差し替え用。
+    assets/reel/sym_{id}.png を置くと、その図柄が画像表示に切り替わる
+    （id: seven/bar/bell/cherry/replay/smoke/pakki）。ファイルが無ければCSS描画のまま。
+    実体は build_standalone.py が ASSET_DATA に埋め込み、開発時は web/ から相対参照する。"""
+    syms = []
+    reel_dir = REPO_ROOT / "assets" / "reel"
+    if not reel_dir.exists():
+        return syms
+    for png in sorted(reel_dir.glob("sym_*.png")):
+        if png.stat().st_size > 0:
+            syms.append(png.stem[len("sym_"):])
+    return syms
+
+
 def collect_title_arts() -> list:
     """assets/ui/title_arts/ にある専用キービジュアル一覧。
     タイトルが起動時にここからランダムに1枚選んで表示する。
@@ -176,6 +191,7 @@ def main() -> None:
         "cgs": collect_cgs(),
         "title_arts": collect_title_arts(),
         "face_icons": collect_face_icons(),
+        "reel_symbols": collect_reel_symbols(),
         "lime_messages": load_json(DATA_DIR / "lime_messages.json")["messages"],
         "glossary": load_json(DATA_DIR / "glossary.json")["groups"],
     }

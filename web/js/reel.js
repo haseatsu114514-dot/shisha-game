@@ -199,6 +199,26 @@ const REEL = (() => {
     }
   }
 
+  // 有効ライン: 中段＋右下がり＋右上がり（実機ジャグラーは上下段も含む5ラインだが、
+  // 本作はオーナー方針で「中央＋斜め」に絞る）。下段・上段の横揃いは作らない。
+  const LINES = [
+    { id: "center", weight: 60 },
+    { id: "down",   weight: 20 }, // 右下がり（左上→右下）
+    { id: "up",     weight: 20 }, // 右上がり（左下→右上）
+  ];
+  function pickLine(rng) { return pickWeighted(rng, LINES); }
+  // 指定ラインに sym を揃える停止位置。表示は top=strip[s-1]/mid=strip[s]/bottom=strip[s+1]
+  function lineStops(sym, line, rng) {
+    return STRIPS.map((strip, i) => {
+      const base = stripIdx(strip, sym, rng);
+      const n = strip.length;
+      let off = 0;
+      if (line === "down") off = (i === 0 ? 1 : i === 2 ? -1 : 0); // 左上→右下
+      else if (line === "up") off = (i === 0 ? -1 : i === 2 ? 1 : 0); // 左下→右上
+      return (base + off + n) % n;
+    });
+  }
+
   // 1行動ぶんの抽選（リプレイ連鎖込み）。reel の counters/count を進め、結果配列を返す。
   // 結果はこの場で確定・保存される前提（決定論なのでロードしても同じ結果になる）
   function spinSeries(reel, ctx) {
@@ -219,12 +239,17 @@ const REEL = (() => {
       const eff = EFFECTS[role];
       const isPeka = PEKA.includes(role) || !!overlap;
       const premium = role === "rare" || role === "freeze";
+      // 当たり/ボーナスは揃えるライン（中央/斜め）を決める。小役は初期停止からそのラインに揃える
+      const line = (role === "bell" || role === "replay" || isPeka) ? pickLine(rng) : "center";
+      const stops = (role === "bell" || role === "replay") ? lineStops(role, line, rng) : stopsFor(role, rng);
       const result = {
         n: reel.count,
         role,
         overlap,
         premium,
-        stops: stopsFor(role, rng),
+        line,
+        hitGap: isPeka ? st.bonusGap + 1 : 0, // この当たりまでのゲーム数（データランプ用）
+        stops,
         variant: isPeka && role !== "freeze"
           ? (premium ? "premium" : pickWeighted(rng, VARIANTS))
           : "none",
@@ -274,8 +299,8 @@ const REEL = (() => {
 
   const core = {
     mulberry32, rngFor, ROLES, EFFECTS, PEKA, CEILING, JUG_REN, REPLAY_CHAIN_MAX,
-    CHERRY_OVERLAP, FREEZE_CONTROL, RESCUE, VARIANTS, STRIPS,
-    effectiveTable, rollRole, stopsFor, spinSeries, simulate, pickWeighted,
+    CHERRY_OVERLAP, FREEZE_CONTROL, RESCUE, VARIANTS, STRIPS, LINES,
+    effectiveTable, rollRole, stopsFor, pickLine, lineStops, spinSeries, simulate, pickWeighted,
   };
 
   // ================================================================ ここからブラウザ専用
@@ -293,9 +318,10 @@ const REEL = (() => {
       bonusCount: 0,  // 生涯ペカ数（裏確変の判定に使う）
       freezeCount: 0, // フリーズ取得数（1セーブ1回制御）
       pending: [],    // 未演出かつ未確定の結果（演出後に報酬を適用する）
+      renLeft: 0,     // モク連チャレンジ残りG（0=非アクティブ。演出のみ・恩恵なし）
       introDone: false,
       lastChapter: 0,
-      note: { big: 0, reg: 0, rare: 0, freeze: 0, replay: 0, cherry: 0, cherryOverlap: 0, bell: 0, freezeLog: [] },
+      note: { big: 0, reg: 0, rare: 0, freeze: 0, replay: 0, cherry: 0, cherryOverlap: 0, bell: 0, freezeLog: [], history: [] },
     };
   }
 
@@ -352,6 +378,13 @@ const REEL = (() => {
         bump("freeze");
         (note.freezeLog || (note.freezeLog = [])).push({ chapter: state.chapter, day: state.day, n: r.n });
       }
+      // データランプ用の当たり履歴（BB=赤7/プレミア/フリーズ・重複BIG ／ RB=BAR）
+      const isPeka = PEKA.includes(r.role) || !!r.overlap;
+      if (isPeka) {
+        const kind = (r.role === "reg" || r.overlap === "reg") ? "RB" : "BB";
+        (note.history || (note.history = [])).push({ kind, g: r.hitGap || 0 });
+        if (note.history.length > 30) note.history.shift();
+      }
       reel.pending.push(r);
     }
     if (typeof save === "function") save();
@@ -370,6 +403,9 @@ const REEL = (() => {
   }
 
   // ================================================================ 全画面ステージ
+  // 図柄は当面 CSS/絵文字のプレースホルダ。後で画像生成に差し替え可能:
+  //   assets/reel/sym_<id>.png（seven/bar/bell/cherry/replay/smoke/pakki）を置いて
+  //   build_data.py / build_standalone.py で取り込むと自動で画像表示に切り替わる（symHtml）。
   const SYM = {
     seven:  '<span class="sym sym-seven">7</span>',
     bar:    '<span class="sym sym-bar">BAR</span>',
@@ -379,6 +415,22 @@ const REEL = (() => {
     smoke:  '<span class="sym sym-smoke">☁︎</span>',
     pakki:  '<span class="sym sym-pakki">ぷ</span>',
   };
+  // 図柄画像が用意されていれば <img> で差し替え、無ければ CSS プレースホルダにフォールバック
+  function symAsset(s) {
+    const key = "assets/reel/sym_" + s + ".png";
+    if (typeof window !== "undefined" && window.ASSET_DATA && window.ASSET_DATA[key]) return window.ASSET_DATA[key];
+    return "../" + key; // 開発時（web/ から見た相対）
+  }
+  function symAvailable(s) {
+    const key = "assets/reel/sym_" + s + ".png";
+    if (typeof window !== "undefined" && window.ASSET_DATA && window.ASSET_DATA[key]) return true;
+    const D2 = (typeof window !== "undefined" && window.GAME_DATA) || null;
+    return !!(D2 && Array.isArray(D2.reel_symbols) && D2.reel_symbols.includes(s));
+  }
+  function symHtml(s) {
+    if (symAvailable(s)) return '<span class="sym sym-img sym-' + s + '" style="background-image:url(\'' + symAsset(s) + '\')"></span>';
+    return SYM[s];
+  }
   function pakkiFace(cls) {
     if (typeof faceIconHtml === "function") { const h = faceIconHtml("packii", cls || "rs-face"); if (h) return h; }
     return '<span class="' + (cls || "rs-face") + ' rs-face-fallback">ぷ</span>';
@@ -394,14 +446,21 @@ const REEL = (() => {
     stage.innerHTML =
       '<div class="rstage-veil"></div>' +
       '<div class="rstage-inner">' +
+        '<div class="rstage-data" id="rstage-data"></div>' +
+        '<div class="rstage-challenge" id="rstage-challenge"></div>' +
         '<div class="rstage-cabinet">' +
           '<div class="rstage-top">' +
             '<div class="rstage-lamp" id="rstage-lamp"><span class="rl-sign"><i>M</i><i>O</i><i>K</i><i>U</i><i>!</i></span></div>' +
           '</div>' +
-          '<div class="rstage-reels">' +
-            STRIPS.map((strip) => '<div class="rstage-reel"><div class="rstage-strip">' +
-              strip.concat(strip, strip).map((s) => '<div class="rstage-cell">' + SYM[s] + '</div>').join('') +
-            '</div></div>').join('') +
+          '<div class="rstage-window">' +
+            '<div class="rstage-reels">' +
+              STRIPS.map((strip) => '<div class="rstage-reel"><div class="rstage-strip">' +
+                strip.concat(strip, strip).map((s) => '<div class="rstage-cell">' + symHtml(s) + '</div>').join('') +
+              '</div></div>').join('') +
+            '</div>' +
+            '<div class="rstage-lines" id="rstage-lines">' +
+              '<span class="payline center"></span><span class="payline down"></span><span class="payline up"></span>' +
+            '</div>' +
           '</div>' +
           '<div class="rstage-deck">' +
             '<div class="rstage-lever" id="rstage-lever"><span class="lever-mount"></span><span class="lever-stick"></span><span class="lever-ball"><i></i></span></div>' +
@@ -430,8 +489,38 @@ const REEL = (() => {
     stage.classList.toggle("lamp-on", !!on); // 顔（マスコット）も連動して光らせる
   }
   function banner(html, cls) { const b = stage && stage.querySelector("#rstage-banner"); if (!b) return; b.className = "rstage-banner" + (cls ? " " + cls : "") + (html ? " show" : ""); b.innerHTML = html || ""; }
-  function openStage() { ensureStage(); stage.classList.add("show"); }
-  function closeStage() { if (stage) { stage.classList.remove("show", "freeze-mode"); banner(""); lamp(false); } }
+  function openStage() { ensureStage(); stage.classList.add("show"); renderData(); renderChallenge(); }
+  function closeStage() { if (stage) { stage.classList.remove("show", "freeze-mode"); banner(""); lamp(false); clearLines(); } }
+
+  // 有効ライン（中央/斜め）の点滅
+  function clearLines() { if (!stage) return; stage.querySelectorAll(".payline").forEach((p) => p.classList.remove("on")); }
+  function flashLine(line) {
+    if (!stage) return; clearLines();
+    const el = stage.querySelector(".payline." + (line || "center"));
+    if (el) el.classList.add("on");
+  }
+
+  // データランプ（BB/RB回数・総ゲーム・直近の当たりG履歴）
+  function renderData() {
+    const box = stage && stage.querySelector("#rstage-data"); if (!box || !state || !state.reel) return;
+    const hist = (state.reel.note && state.reel.note.history) || [];
+    const bb = hist.filter((h) => h.kind === "BB").length;
+    const rb = hist.filter((h) => h.kind === "RB").length;
+    const recent = hist.slice(-8);
+    box.innerHTML =
+      '<span class="rd-cell rd-bb">BB <b>' + bb + '</b></span>' +
+      '<span class="rd-cell rd-rb">RB <b>' + rb + '</b></span>' +
+      '<span class="rd-cell rd-g">G <b>' + (state.reel.count || 0) + '</b></span>' +
+      '<span class="rd-hist">' + recent.map((h) => '<i class="' + (h.kind === "RB" ? "rb" : "bb") + '">' + h.g + '</i>').join('') + '</span>';
+  }
+
+  // モク連チャレンジ（残りG表示。恩恵なしの演出）
+  function renderChallenge() {
+    const box = stage && stage.querySelector("#rstage-challenge"); if (!box || !state || !state.reel) return;
+    const left = state.reel.renLeft || 0;
+    if (left > 0) { box.classList.add("show"); box.innerHTML = '<span class="rc-fire">🔥</span> モク連チャレンジ <b>残り ' + left + '</b>'; }
+    else { box.classList.remove("show"); box.innerHTML = ''; }
+  }
 
   // skip対応の待機。タップ（skipReq）で即解決
   function wait(ms) {
@@ -495,11 +584,11 @@ const REEL = (() => {
 
     if (r.role === "miss") { banner('<span class="rs-koto">こつこつ…</span>', "quiet"); await wait(fast ? 140 : 380); return; }
     if (r.role === "replay") {
-      stage.classList.add("flash"); sfx("reelWin");
+      stage.classList.add("flash"); sfx("reelWin"); flashLine(r.line);
       banner('<b>リプレイ</b><span>もう1回転！</span>', "replay");
-      await wait(fast ? 150 : 680); stage.classList.remove("flash"); return;
+      await wait(fast ? 150 : 680); stage.classList.remove("flash"); clearLines(); return;
     }
-    if (r.role === "bell") { sfx("reelWin"); banner('<b>ベル</b>', "win"); await showReward(r, fast); return; }
+    if (r.role === "bell") { sfx("reelWin"); flashLine(r.line); banner('<b>ベル</b>', "win"); await showReward(r, fast); clearLines(); return; }
     if (r.role === "cherry" && !r.overlap) { sfx("reelWin"); banner('<b>チェリー</b>', "win"); await showReward(r, fast); return; }
 
     // ---- ペカ（reg / big / rare / チェリー重複）----
@@ -509,12 +598,14 @@ const REEL = (() => {
     sfx("puka");
     banner(r.premium ? '<b>ぷぷぷぷぷーっ！</b>' : (r.ceiling === "main" ? '<b>おたすけパッキー！</b>' : '<b>ぷぷぷっ！</b>'), "peka");
     await wait(fast ? 160 : 680);
-    // 7 / BAR をそろえる
+    // 7 / BAR を有効ライン（中央/斜め）にそろえる
     banner('<span>' + (big ? "赤7" : "BAR") + 'をそろえろ！</span>', "aim");
-    await spinReels(STRIPS.map((s) => s.indexOf(big ? "seven" : "bar")), { fast });
+    await spinReels(lineStops(big ? "seven" : "bar", r.line || "center", Math.random), { fast });
+    flashLine(r.line);
     sfx("fanfare");
     stage.classList.add("win-flash"); setTimeout(() => stage.classList.remove("win-flash"), 600);
     await showReward(r, fast, true);
+    clearLines();
   }
 
   // ロングフリーズ（プレミア）
@@ -557,7 +648,7 @@ const REEL = (() => {
     if (busy) return; busy = true;
     try {
       if (fx() === "off") {
-        for (const r of reel.pending) { applyReward(r); quietGain(r); }
+        for (const r of reel.pending) { applyReward(r); quietGain(r); updateRen(r); }
         reel.pending = []; if (typeof save === "function") save();
         return;
       }
@@ -566,8 +657,11 @@ const REEL = (() => {
       while (reel.pending.length) {
         const r = reel.pending[0];
         skipReq = false;
+        renderData(); renderChallenge();
         await presentOne(r);
         applyReward(r);          // ← 回りきってから経験値を確定
+        await runRen(r);         // モク連チャレンジ（演出のみ・恩恵なし）
+        renderData();            // データランプ更新
         reel.pending.shift();
         if (typeof save === "function") save();
         await wait(120);
@@ -575,6 +669,31 @@ const REEL = (() => {
       closeStage();
       await wait(240);
     } finally { busy = false; }
+  }
+
+  // モク連チャレンジ: 当たるたびに10G挑戦開始。10G以内にまた当たれば「モク連GET！」で継続。
+  // 恩恵は無し（純粋な盛り上げ演出）。renLeft は state に永続。
+  function updateRen(r) {
+    if (!state || !state.reel) return;
+    const isPeka = PEKA.includes(r.role) || !!r.overlap;
+    if (isPeka) { state.reel.renLeft = 10; }
+    else if (state.reel.renLeft > 0) { state.reel.renLeft -= 1; }
+  }
+  async function runRen(r) {
+    if (!state || !state.reel) return;
+    const isPeka = PEKA.includes(r.role) || !!r.overlap;
+    const fast = fx() === "lite";
+    if (isPeka) {
+      const wasActive = state.reel.renLeft > 0;
+      state.reel.renLeft = 10; // 開始/継続
+      renderChallenge();
+      banner(wasActive ? '<b class="rc-get">モク連GET！</b>' : '<b class="rc-go">モク連チャレンジ！</b>', "ren");
+      await wait(fast ? 200 : 1100);
+    } else if (state.reel.renLeft > 0) {
+      state.reel.renLeft -= 1;
+      renderChallenge();
+      if (state.reel.renLeft === 0) { banner('<span class="rc-miss">モク連ならず…</span>', "ren"); await wait(fast ? 120 : 600); }
+    }
   }
 
   // 行動セッション（endAction から呼ぶ）: 抽選 → 全画面演出 → done
@@ -639,13 +758,14 @@ const REEL = (() => {
       core, simulate,
       state: () => (typeof state !== "undefined" && state ? state.reel : null),
       // 演出確認用: 役を偽造して全画面演出だけ再生（カウンタ・報酬は動かさない）
-      async force(role) {
+      async force(role, line) {
         const rng = mulberry32((Date.now() & 0xffff) >>> 0);
+        const ln = line || (role === "bell" || role === "replay" || PEKA.includes(role) ? "center" : "center");
         const r = {
-          n: 0, role, overlap: null, premium: role === "rare" || role === "freeze",
-          stops: stopsFor(role, rng),
+          n: 0, role, overlap: null, premium: role === "rare" || role === "freeze", line: ln,
+          stops: (role === "bell" || role === "replay") ? lineStops(role, ln, rng) : stopsFor(role, rng),
           variant: PEKA.includes(role) && role !== "freeze" ? (role === "rare" ? "premium" : "after") : "none",
-          exp: role === "miss" ? 1 : 6, quiet: role === "miss", zone: false, gakkun: false, ceiling: "", target: "technique", applied: true,
+          exp: role === "miss" ? 1 : 6, quiet: role === "miss", zone: false, gakkun: false, ceiling: "", target: "technique", applied: true, hitGap: 0,
         };
         openStage(); skipReq = false;
         await presentOne(r);
