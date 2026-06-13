@@ -4259,7 +4259,53 @@ function finishTournament() {
   showResult(results, rank, craft.detail);
 }
 
+// RESULT 10 COUNT（結果発表の10カウント演出）— master_spec 第2部 #4
+// 集計中…→会場ざわめき→10…0→プチュン(1位確定)/パリン(2位以下)。カウント中はカットインを挟む。
+// プレミア時は2〜3秒残しでフライングプチュン。プチュンは必ず1位、パリンは2位以下。
+function runResultCountdown(rank, premium, onDone) {
+  let ov = document.getElementById("result-count");
+  if (!ov) { ov = document.createElement("div"); ov.id = "result-count"; $("#game").appendChild(ov); }
+  ov.className = "rc show";
+  ov.innerHTML = `<div class="rc-cutin" id="rc-cutin"></div><div class="rc-num" id="rc-num"></div><div class="rc-msg" id="rc-msg">集計中……</div>`;
+  const numEl = ov.querySelector("#rc-num");
+  const msgEl = ov.querySelector("#rc-msg");
+  const cutinEl = ov.querySelector("#rc-cutin");
+  const CUTINS = ["真剣な横顔", "アルミの穴", "炭のピカン", "立ちのぼる煙", "審査員の目元", "ざわめく会場"];
+  const flashCut = () => {
+    cutinEl.textContent = CUTINS[Math.floor(Math.random() * CUTINS.length)];
+    cutinEl.className = "rc-cutin show";
+    setTimeout(() => cutinEl.classList.remove("show"), 300);
+  };
+  const finish = (cls, msg, sfx, smoke) => {
+    numEl.textContent = ""; msgEl.textContent = "";
+    ov.classList.add(cls);
+    if (window.SFX && sfx) sfx();
+    if (smoke) smokeRings(4);
+    const t = document.createElement("div");
+    t.className = `rc-final ${cls}`;
+    t.textContent = msg;
+    ov.appendChild(t);
+    setTimeout(() => { ov.className = "rc"; ov.innerHTML = ""; onDone(); }, 1550);
+  };
+  const puchun = () => finish("puchun", "PERFECT SESSION!!", () => { SFX.bubble(); setTimeout(() => SFX.fanfare(), 220); }, true);
+  const parin = () => finish("parin", "SESSION BREAK", () => SFX.miss(), false);
+  let n = 10;
+  const premiumAt = premium ? 3 : -1; // プレミアは少し残してフライング
+  setTimeout(function tick() {
+    msgEl.textContent = "会場がざわめく……";
+    if (n <= 0) return rank === 1 ? puchun() : parin();
+    if (rank === 1 && n === premiumAt) return puchun(); // フライングプチュン（1位のみ）
+    numEl.textContent = String(n);
+    numEl.classList.remove("pop"); void numEl.offsetWidth; numEl.classList.add("pop");
+    if (window.SFX) SFX.click();
+    if (n % 2 === 0) flashCut();
+    n--;
+    setTimeout(tick, 360);
+  }, 520);
+}
+
 function showResult(results, rank, detail, opts = {}) {
+  const reveal = () => {
   const body = tnPanel("審査結果", "");
   $("#tn-title").textContent = opts.title || `${cupName()} — 審査結果`;
   $("#tn-progress").textContent = "RESULT";
@@ -4314,6 +4360,19 @@ function showResult(results, rank, detail, opts = {}) {
     }));
   }
   body.append(note, table, btn);
+  };
+  // 大会の結果発表だけ、RESULT 10 COUNT（プチュン=1位/パリン=2位以下）を先に挟む（#14）。
+  // カウント中は大会画面に切り替えて中身を空にする（直前の会話画面を active に残さない＝
+  // 自動操作・プレイヤーが消えた会話レイヤーを触ってしまうのを防ぐ）
+  if (tt && tt.mode === "tournament" && !opts.skipCountdown) {
+    showScreen("#screen-tournament");
+    $("#tn-title").textContent = "";
+    $("#tn-progress").textContent = "RESULT";
+    $("#tn-body").innerHTML = "";
+    const premium = rank === 1 && tt.foilHits >= 6 && tt.coalFire === "perfect";
+    return runResultCountdown(rank, premium, reveal);
+  }
+  reveal();
 }
 
 function showClear() {

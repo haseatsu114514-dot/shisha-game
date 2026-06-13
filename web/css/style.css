@@ -2717,6 +2717,28 @@ body {
 .heat-summary { margin-top: 8px; font-size: 12.5px; color: #aeb8d6; letter-spacing: 0.04em; }
 @media (max-width: 760px) { .heat-arena { flex-direction: column; gap: 12px; } .heat-burner { width: 280px; } }
 
+/* ============ RESULT 10 COUNT（結果発表10カウント・master_spec 第2部 #4） ============ */
+#result-count { position: absolute; inset: 0; z-index: 60; display: none; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 50% 45%, rgba(8,8,14,0.86), rgba(2,2,5,0.97)); pointer-events: none; overflow: hidden; }
+#result-count.show { display: flex; }
+.rc-num { font-size: 160px; font-weight: 900; color: #fff; line-height: 1; font-family: "Arial Black", sans-serif;
+  text-shadow: 0 0 40px rgba(120,170,255,0.85), 0 0 12px rgba(255,255,255,0.9); }
+.rc-num.pop { animation: rc-pop 0.45s ease-out; }
+@keyframes rc-pop { 0% { transform: scale(1.8); opacity: 0; } 30% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.92); opacity: 0.85; } }
+.rc-msg { position: absolute; bottom: 22%; font-size: 18px; letter-spacing: 0.2em; color: #aeb8d6; }
+.rc-cutin { position: absolute; top: 16%; font-size: 22px; font-weight: 700; letter-spacing: 0.14em; color: #ffe79a;
+  opacity: 0; text-shadow: 0 0 18px rgba(255,200,90,0.8); }
+.rc-cutin.show { animation: rc-cutin 0.3s ease-out; }
+@keyframes rc-cutin { 0% { opacity: 0; transform: translateX(-30px) skewX(-12deg); } 40% { opacity: 1; transform: translateX(0) skewX(-12deg); } 100% { opacity: 0; transform: translateX(30px) skewX(-12deg); } }
+.rc-final { font-size: 54px; font-weight: 900; letter-spacing: 0.06em; animation: rc-final 0.6s ease-out; }
+.rc-final.puchun { color: #ffe9a8; text-shadow: 0 0 40px rgba(255,220,120,1), 0 0 14px #fff; }
+.rc-final.parin { color: #ff9a9a; text-shadow: 0 0 30px rgba(255,90,90,0.9); }
+@keyframes rc-final { 0% { transform: scale(0.4); opacity: 0; } 50% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+#result-count.puchun { background: radial-gradient(circle at 50% 45%, rgba(255,250,235,0.5), rgba(10,10,18,0.95)); animation: rc-flash 0.55s ease-out; }
+@keyframes rc-flash { 0% { background-color: rgba(255,255,255,0.92); } 100% { background-color: rgba(10,10,18,0.95); } }
+#result-count.parin { animation: rc-shake 0.42s ease-out; }
+@keyframes rc-shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(5px); } }
+
 /* ============ GAME OVER（2位以下＝敗退・master_spec改定） ============ */
 #screen-end.gameover { background: linear-gradient(rgba(20,4,8,0.82), rgba(8,2,4,0.92)), url("../../assets/backgrounds/bg_tournament_stage.png") center / cover no-repeat, #0a0608; }
 #screen-end.gameover #end-title { color: #ff6b6b; text-shadow: 0 0 24px rgba(255,60,60,0.6), 0 2px 0 rgba(0,0,0,0.6); letter-spacing: 0.14em; }
