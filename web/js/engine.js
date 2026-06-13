@@ -235,12 +235,14 @@ class DialogueEngine {
     this.el.cg.classList.remove("visible");
   }
 
-  // 透過余白の差を補正し、どのキャラも実体が同じ高さで並ぶようにする
+  // 透過余白の差を補正し、どのキャラも実体が同じ高さで並ぶようにする。
+  // キャラ別の微調整は spriteScale（characters.json / portrait_scales 経由）で吸収できる（既定1.0）
   applyPortraitTrim(img, speaker, face) {
     const folder = SPEAKER_ID_ALIASES[speaker] || speaker;
-    // 背景込みの一枚絵は CSS に任せる（マスク＆固定サイズ）
+    const scale = (this.ctx.portraitScales || {})[folder] || 1;
+    // 背景込みの一枚絵は CSS に任せる（マスク＆固定サイズ）。スケール指定があれば乗算
     if (BG_FULL_PORTRAITS.has(folder)) {
-      img.style.height = "";
+      img.style.height = scale !== 1 ? `${92 * scale}%` : "";
       img.style.bottom = "";
       return;
     }
@@ -250,11 +252,11 @@ class DialogueEngine {
     let f = face && faces.includes(face) ? face : "normal";
     const t = trims[f] || trims.normal;
     if (!t || !t.h) {
-      img.style.height = "100%";
+      img.style.height = `${100 * scale}%`;
       img.style.bottom = "0";
       return;
     }
-    const h = Math.min(TARGET / t.h, 165);
+    const h = Math.min((TARGET / t.h) * scale, 175);
     img.style.height = `${h}%`;
     img.style.bottom = `${-(t.b * h)}%`;
   }

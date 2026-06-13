@@ -151,12 +151,14 @@ function newState() {
     loveLevel: {},         // 恋愛関係後の絆レベル（恋人Lv 0〜5）
     lovePts: {},           // 恋人Lvの内部ポイント
     lastDate: {},          // 恋人ごとの最終デート日（誘いLIMEのクールダウン）
+    loverEventsSeen: [],   // 再生済みの恋人マイルストーンイベントID
     loverQuickDay: 0,      // 「恋人とちょい会い」を使った日（1日1回・コマ消費なし）
     guilt: 0,              // うしろめたさ（非表示。浮気リスクシステムの内部値）
     usedBaito: [],
     gymMember: false,
     owned: STARTER_EQUIPMENT.slice(),
     limeDone: [],          // 既読のLIMEメッセージID
+    limeContacts: [],      // 連絡先を交換済みのキャラ（LIME配信のゲート）
     pendingLimeNight: null, // 夜に約束したLIMEイベント {event, sender}
     practiceBest: {},      // 練習ドリルの自己ベスト（0〜2）。大会本番のボーナスになる
     flags: {},
@@ -922,6 +924,7 @@ function initEngine() {
       getStat: (en) => state.stats[en] || 0,
       portraitFaces: D.portraits,
       portraitTrims: D.portrait_trims,
+      portraitScales: D.portrait_scales,
       charNames: D.char_names,
       getName: (id) => displayName(id),
       setFlag: (flag) => { state.flags[flag] = true; },
@@ -1062,7 +1065,28 @@ const REPEAT_VISIT = {
 // 招待(invitation)は受けると行動を消費せずイベントが起きる。
 
 // LIMEを交換済みとみなす訪問回数（会話内で交換シーンがあるキャラはその回）
-const LIME_EXCHANGE_VISITS = { naru: 2, adam: 3, minto: 1, tsumugi: 1, sumi: 1, rin: 2 };
+const LIME_EXCHANGE_VISITS = { naru: 2, adam: 3, minto: 1, tsumugi: 2, sumi: 1, rin: 2 };
+
+// 連絡先を交換済みか（master_spec #26）。LIME配信は必ずこのゲートを通す。
+// 交換は作中の出来事（訪問を重ねて親しくなる＝交換イベント相当）として起こる。
+// 一度交換したら state.limeContacts に永続記録（訪問回数が0に戻っても保持）
+function hasLimeContact(id) {
+  if (!state) return false;
+  if ((state.limeContacts || []).includes(id)) return true;
+  // 会話内の明示的な交換ビート（set_flag _lime_contact_xxx）も交換成立とみなす
+  if (state.flags[`_lime_contact_${id}`]) {
+    state.limeContacts = state.limeContacts || [];
+    if (!state.limeContacts.includes(id)) { state.limeContacts.push(id); save(); }
+    return true;
+  }
+  // 訪問が交換のしきい値に達していれば交換成立（その瞬間に記録）
+  if ((state.visits[id] || 0) >= (LIME_EXCHANGE_VISITS[id] || 1)) {
+    state.limeContacts = state.limeContacts || [];
+    if (!state.limeContacts.includes(id)) { state.limeContacts.push(id); save(); }
+    return true;
+  }
+  return false;
+}
 
 // 恋人からのデートの誘い（プライベートで絆を深める。master_spec #24）。
 // 行ける時間帯は昼/夜交互。受けても行動コマは消費しない
@@ -1100,8 +1124,8 @@ function limeDueMessages(tournamentDay) {
     const outsiderRumor = m.type === "rumor" && !(sender in state.affinity);
     if (!outsiderRumor) {
       if (!(sender in state.affinity)) continue; // 登場済みキャラのみ
-      // LIME交換イベントを経たキャラからしか届かない（master_spec #26 のガード）
-      if (state.visits[sender] < (LIME_EXCHANGE_VISITS[sender] || 1)) continue;
+      // 連絡先を交換したキャラからしか届かない（master_spec #26 のガード）
+      if (!hasLimeContact(sender)) continue;
     }
     // 章が違うメッセージは出さない（指定なしは第1章扱い。ch2_started 等は当該章扱い。
     // ch2の通常LIMEは離反演出のため流用しない）
@@ -1484,8 +1508,29 @@ function playLoverDate(charId, after) {
       ],
     },
   }, () => {
+    const before = state.loveLevel[charId] || 0;
     gainAffinity(charId, "date");
     addStamina(-STAMINA_COST.date);
+    save();
+    // 恋人Lvが上がったら、そのレベルのマイルストーン恋愛イベントを解禁・再生
+    maybeLoverMilestone(charId, before, after);
+  });
+}
+
+// 恋人Lvが上がった節目に、固有の恋愛イベント（lover_events.json）を再生する。
+// 2本目スロット（_b）があれば交互に。無ければ素通り
+function maybeLoverMilestone(charId, beforeLv, after) {
+  const lv = state.loveLevel[charId] || 0;
+  if (lv <= beforeLv) { if (after) after(); return; }
+  state.loverEventsSeen = state.loverEventsSeen || [];
+  const candidates = [`lover_${charId}_lv${lv}`, `lover_${charId}_lv${lv}_b`];
+  const id = candidates.find((c) => D.dialogues[c] && !state.loverEventsSeen.includes(c));
+  if (!id) { if (after) after(); return; }
+  state.loverEventsSeen.push(id);
+  save();
+  dateContext = true; // 恋愛イベント内の好感度キューも絆として扱う
+  playDialogue(id, () => {
+    dateContext = false;
     save();
     if (after) after();
   });
@@ -3908,44 +3953,115 @@ function showCh2Clear() {
 }
 
 // ---------------------------------------------------------------- status
-function renderStatusInto(el) {
-  el.innerHTML = "";
-  const statBox = document.createElement("div");
-  statBox.className = "status-block";
-  statBox.innerHTML = "<h3>ステータス</h3>" + Object.entries(STAT_KEYS)
-    .map(([en, ja]) => `<div class="status-row"><span>${ja}</span><span class="stars">${stars(state.stats[en])}</span></div>`)
-    .join("");
-  const st = stamina();
-  const stLabel = st >= 70 ? "好調" : st >= STAMINA_LOW ? "疲れ気味" : "限界が近い";
-  statBox.innerHTML += `<div class="status-row"><span>体力</span><span class="stamina-cell"><i class="st-bar"><i style="width:${st}%"></i></i> ${stLabel}</span></div>`;
-  const affBox = document.createElement("div");
-  affBox.className = "status-block";
-  affBox.innerHTML = "<h3>人間関係</h3>" + Object.entries(state.affinity)
+// 抽象ランク呼称（master_spec #19-a。レーダー化はFable側A4で。ここでは一言ラベル）
+const STAT_RANK_LABELS = {
+  technique: ["見習い", "様になってきた", "一人前", "職人肌", "神業"],
+  sense:     ["ふつう", "光るものがある", "冴えてる", "唯一無二", "天才肌"],
+  guts:      ["三日坊主", "粘り気味", "へこたれない", "不屈", "鋼メンタル"],
+  charm:     ["影うすい", "親しみやすい", "華がある", "目が離せない", "カリスマ"],
+  insight:   ["鈍め", "気が利く", "よく見てる", "見抜く目", "千里眼"],
+};
+function statRankLabel(en) {
+  const v = state.stats[en] || 0;
+  const i = Math.max(0, Math.min(4, Math.ceil(v / 20) - 1));
+  return (STAT_RANK_LABELS[en] || [])[v <= 0 ? 0 : i] || "";
+}
+
+// 関係性タブの中身（人間関係）
+function relationsHtml() {
+  const rows = Object.entries(state.affinity)
     .map(([id, lv]) => {
-      // まだ会っていない相手は一覧に出さない（？？？システム）
       if (!ALWAYS_KNOWN.has(id) && !isMet(id) && lv <= 0) return "";
       const name = displayName(id);
-      // 恋人は「恋人」バッジ＋絆レベル（恋人Lv 5段階）を表示
+      const face = faceIconHtml(id, "rel-face");
+      const avatar = face || `<span class="rel-face rel-face-txt">${(name[0] || "?")}</span>`;
       if ((state.lovers || []).includes(id)) {
         const bond = state.loveLevel[id] || 0;
-        return `<div class="status-row"><span>${name} <span class="lover-badge">恋人</span></span>` +
+        return `<div class="status-row rel-row"><span class="rel-name">${avatar}${name} <span class="lover-badge">恋人</span></span>` +
           `<span class="hearts bond">${"♥".repeat(bond)}${"♡".repeat(AFFINITY_CAP - bond)}</span></div>`;
       }
-      // 次の段階までのおおまかなゲージ（master_spec #23 の可視化）
       const pts = (state.affinityPts || {})[id] || 0;
       const lo = AFFINITY_RANK_PTS[lv] ?? 0;
       const hi = AFFINITY_RANK_PTS[lv + 1];
       const pct = hi === undefined ? 100 : Math.min(100, Math.round(((pts - lo) / (hi - lo)) * 100));
       const gauge = lv >= AFFINITY_CAP ? "" : `<i class="aff-next"><i style="width:${pct}%"></i></i>`;
-      return `<div class="status-row"><span>${name}</span><span class="hearts">${"♥".repeat(lv)}${"♡".repeat(AFFINITY_CAP - lv)}${gauge}</span></div>`;
+      return `<div class="status-row rel-row"><span class="rel-name">${avatar}${name}</span><span class="hearts">${"♥".repeat(lv)}${"♡".repeat(AFFINITY_CAP - lv)}${gauge}</span></div>`;
     })
+    .filter(Boolean)
     .join("");
-  el.append(statBox, affBox);
+  return rows || `<p class="status-empty">まだ誰とも親しくなっていない。</p>`;
+}
+
+// 持ち物タブ（所持機材＋家シーシャ一式）
+function inventoryHtml() {
+  const owned = (state.owned || []).map((id) => {
+    const e = (D.equipment || []).find((x) => x.id === id);
+    return e ? `<div class="status-row"><span>${e.name}</span><span class="inv-type">${EQUIP_TYPE_LABELS[e.type] || ""}</span></div>` : "";
+  }).filter(Boolean).join("");
+  const money = `<div class="status-row"><span>所持金</span><span class="inv-money">¥${state.money.toLocaleString()}</span></div>`;
+  return `<div class="status-block"><h3>所持金</h3>${money}</div>` +
+    `<div class="status-block"><h3>機材</h3>${owned || '<p class="status-empty">手持ちの機材はない。</p>'}</div>`;
+}
+
+// メインのステータスタブ（数値は出さず★とランク呼称・体力・大会の歩み）
+function mainStatusHtml() {
+  const statRows = Object.entries(STAT_KEYS)
+    .map(([en, ja]) => `<div class="status-row stat-row"><span class="stat-name">${ja}</span>` +
+      `<span class="stars">${stars(state.stats[en])}</span>` +
+      `<span class="stat-rank">${statRankLabel(en)}</span></div>`)
+    .join("");
+  const st = stamina();
+  const stLabel = st >= 70 ? "好調" : st >= STAMINA_LOW ? "疲れ気味" : "限界が近い";
+  const stCls = st >= 70 ? "" : st >= STAMINA_LOW ? "warn" : "danger";
+  const cond = `<div class="status-row"><span>体力</span><span class="stamina-cell"><i class="st-bar"><i class="${stCls}" style="width:${st}%"></i></i> ${stLabel}</span></div>`;
+  // 大会の歩み（既存データから導出。新パラメータは作らない）
+  const chapName = { 1: "SMOKE CROWN CUP（地方）", 2: "HAZE: OPEN CLOUD（全国）" }[state.chapter] || `第${state.chapter}章`;
+  const progress = state.phase === "cleared" ? "優勝・クリア" : state.phase === "tournament" ? "大会本番" : `DAY ${state.day} / 準備中`;
+  const tour = `<div class="status-row"><span>挑戦中の大会</span><span>${chapName}</span></div>` +
+    `<div class="status-row"><span>状況</span><span>${progress}</span></div>`;
+  return `<div class="status-block"><h3>ステータス</h3>${statRows}</div>` +
+    `<div class="status-block"><h3>コンディション</h3>${cond}${tour}</div>`;
+}
+
+// el に描画。opts.tabbed=true でタブUI（日常メニュー）、false で従来の積み上げ（クリア画面）
+function renderStatusInto(el, opts = {}) {
+  el.innerHTML = "";
+  if (!opts.tabbed) {
+    // クリア画面など: ステータス＋人間関係を素朴に積む
+    const wrap = document.createElement("div");
+    wrap.innerHTML = mainStatusHtml() + `<div class="status-block"><h3>人間関係</h3>${relationsHtml()}</div>`;
+    el.append(...wrap.childNodes);
+    return;
+  }
+  const tabs = [
+    { id: "main", label: "ステータス", html: mainStatusHtml },
+    { id: "rel", label: "人間関係", html: () => `<div class="status-block"><h3>人間関係</h3>${relationsHtml()}</div>` },
+    { id: "inv", label: "持ち物", html: inventoryHtml },
+  ];
+  const bar = document.createElement("div");
+  bar.className = "status-tabs";
+  const body = document.createElement("div");
+  body.className = "status-tabbody";
+  const show = (id) => {
+    const t = tabs.find((x) => x.id === id) || tabs[0];
+    body.innerHTML = t.html();
+    for (const b of bar.children) b.classList.toggle("on", b.dataset.tab === id);
+  };
+  for (const t of tabs) {
+    const b = document.createElement("button");
+    b.className = "status-tab";
+    b.dataset.tab = t.id;
+    b.textContent = t.label;
+    b.addEventListener("click", () => { if (window.SFX) SFX.select(); show(t.id); });
+    bar.appendChild(b);
+  }
+  el.append(bar, body);
+  show("main");
 }
 
 function toggleStatus(show) {
   const ov = $("#status-overlay");
-  if (show) { renderStatusInto($("#status-body")); ov.classList.add("visible"); }
+  if (show) { renderStatusInto($("#status-body"), { tabbed: true }); ov.classList.add("visible"); }
   else ov.classList.remove("visible");
 }
 
@@ -4251,6 +4367,14 @@ function continueGame(saved) {
   if (!state.lastDate) state.lastDate = {};
   if (!state.lovePts) state.lovePts = {};
   if (typeof state.loverQuickDay !== "number") state.loverQuickDay = 0;
+  if (!Array.isArray(state.loverEventsSeen)) state.loverEventsSeen = [];
+  if (!Array.isArray(state.limeContacts)) {
+    // 既存セーブ: 訪問しきい値を超えているキャラを交換済みとして引き継ぐ
+    state.limeContacts = [];
+    for (const [id, v] of Object.entries(state.visits || {})) {
+      if (v >= (LIME_EXCHANGE_VISITS[id] || 1)) state.limeContacts.push(id);
+    }
+  }
   if (!state.affinityPts) {
     // 既存の段階値を相当ポイントへ変換して引き継ぐ（master_spec #23）
     state.affinityPts = {};

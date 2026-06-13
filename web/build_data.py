@@ -38,6 +38,7 @@ CH1_DIALOGUE_FILES = [
     "ch2_main.json",
     "ch2_isolation.json",
     "confession.json",
+    "lover_events.json",
 ]
 
 # ch1 のバイトで使うイベントカテゴリ（story は章進行に紐づくため除外）
@@ -161,6 +162,11 @@ def main() -> None:
             char_names[c["id"]] = c.get("name", c["id"])
 
     portraits, portrait_trims = collect_portraits()
+    # キャラ別の立ち絵スケール係数（characters.json の任意フィールド spriteScale、既定1.0）
+    portrait_scales = {}
+    for c in (characters if isinstance(characters, list) else []):
+        if isinstance(c, dict) and "id" in c and c.get("spriteScale"):
+            portrait_scales[c["id"]] = c["spriteScale"]
     bundle = {
         "dialogues": collect_dialogues(),
         "flavors": flavors,
@@ -172,6 +178,7 @@ def main() -> None:
         "char_names": char_names,
         "portraits": portraits,
         "portrait_trims": portrait_trims,
+        "portrait_scales": portrait_scales,
         "backgrounds": collect_backgrounds(),
         "cgs": collect_cgs(),
         "title_arts": collect_title_arts(),
