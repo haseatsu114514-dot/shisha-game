@@ -4076,9 +4076,9 @@ function stepPull() {
     nextBtn.textContent = "次へ";
     nextBtn.addEventListener("click", () => {
       if (tt.mode === "tournament") {
-        if (state.chapter === 2) return finishCh2Stage();
-        // ラウンド3終了の会話を挟んで結果発表へ
-        return playDialogue("ch1_tournament_r3_end", () => finishTournament(), "res://assets/backgrounds/bg_tournament_stage.png");
+        // 提供 → FLAVOR TRIAL（審査）→ 結果発表（#13）
+        if (state.chapter === 2) return flavorTrial(finishCh2Stage);
+        return playDialogue("ch1_tournament_r3_end", () => flavorTrial(finishTournament), "res://assets/backgrounds/bg_tournament_stage.png");
       }
       tnNext("pull");
     });
@@ -4218,6 +4218,105 @@ function craftScore() {
   return { score, detail };
 }
 
+// ============================================================================
+// FLAVOR TRIAL（審査）— master_spec 第2部 #3。CLAUDE.mdの「プレゼン工程は廃止」を本仕様が上書き。
+// コンセプト(=tt.theme/制作前の方針) と、制作結果から自動生成したアピールポイント(=実績)を、
+// 審査員のザワザワ(疑問)に「ぶつける」。実績で裏打ちされた一致=納得↑／口だけ=「香ってない！」／
+// 見当違い=「ズレてる！」。正式用語=コンセプト/アピールポイント/ぶつける（弾丸系は使わない・#17）。
+// ============================================================================
+// cat: aroma(香り) / smoke(煙量) / craft(仕上げ) / burn(焦げにくさ)
+function buildAppeals() {
+  const hr = tt.holeResult || {}, cr = tt.coalResult || {}, prof = mixProfile();
+  const themeMatch = tt.theme ? tt.theme.best.filter((c) => prof.cats.has(c)).length >= 1 : false;
+  return [
+    { id: "hole_even", label: "外周の穴が均等に開いてる", cat: "craft", backed: (hr.heatSpread || 0) >= 62 || (hr.evenness || 0) >= 70 },
+    { id: "hole_a", label: "穴あけはA評価の通り", cat: "craft", backed: (hr.score || 0) >= 76 },
+    { id: "inner_low", label: "内周は攻めすぎていない", cat: "burn", backed: (hr.innerHoles || 0) <= 4 },
+    { id: "just_coal", label: "炭はジャストで取り上げた", cat: "aroma", backed: (cr.justCount || 0) >= 1 },
+    { id: "flash", label: "炭の芯をピカンで仕留めた", cat: "craft", backed: !!cr.coalFlashSuccess },
+    { id: "heat_stable", label: "火力は安定している", cat: "smoke", backed: (cr.heatStability || 0) >= 62 },
+    { id: "low_burn", label: "焦げリスクは低めに収めた", cat: "burn", backed: (cr.burnRisk == null ? 50 : cr.burnRisk) <= 48 },
+    { id: "smoke_a", label: "煙量はしっかり出ている", cat: "smoke", backed: prof.weight >= 0.95 },
+    { id: "aroma_on", label: "狙った香りが芯まで乗ってる", cat: "aroma", backed: themeMatch && (cr.aromaRetention || 50) >= 55 },
+  ];
+}
+const TRIAL_DOUBTS = [
+  { need: "aroma", text: "……この一台、狙った香りはちゃんと芯まで残っているのか？" },
+  { need: "smoke", text: "悪くない。だが、煙量が少し物足りなく感じるな。" },
+  { need: "craft", text: "急いで仕上げた分、詰めや穴に粗さは出ていないか？" },
+];
+
+function flavorTrial(onDone) {
+  if (tt) tt.step = "trial";
+  const appeals = buildAppeals();
+  let gauge = 50, round = 0, successCount = 0, lieCount = 0;
+
+  const render = () => {
+    const body = tnPanel("審査 ── FLAVOR TRIAL",
+      "審査員のザワザワに、自分の“アピールポイント”をぶつけて納得させろ。実績の伴わない強気は「香ってない！」と返される。");
+    const d = TRIAL_DOUBTS[round];
+    const arena = document.createElement("div");
+    arena.className = "trial-arena";
+    arena.innerHTML =
+      `<div class="trial-gauge"><span>納得ゲージ</span><i class="trial-gauge-bar"><b id="trial-gauge-b" style="width:${gauge}%"></b></i></div>` +
+      `<div class="trial-doubt" id="trial-doubt" data-need="${d.need}">「${d.text}」<span class="trial-zawa">ザワ…ザワ…</span></div>` +
+      `<div class="trial-concept">あなたのコンセプト: <b>${tt.theme ? tt.theme.label : "—"}</b>　── これを証明する一手をぶつけろ</div>` +
+      `<div class="trial-hand" id="trial-hand"></div>` +
+      `<div class="trial-feedback" id="trial-feedback"></div>`;
+    body.appendChild(arena);
+    const hand = arena.querySelector("#trial-hand");
+    for (const a of appeals) {
+      const btn = document.createElement("button");
+      btn.className = "trial-appeal" + (a.backed ? " backed" : " weak");
+      btn.dataset.cat = a.cat; btn.dataset.backed = a.backed ? "1" : "0";
+      btn.innerHTML = `<span class="ta-label">${a.label}</span><span class="ta-badge">${a.backed ? "✓実績" : "強気"}</span>`;
+      btn.addEventListener("click", () => hit(a));
+      hand.appendChild(btn);
+    }
+  };
+
+  const hit = (a) => {
+    const d = TRIAL_DOUBTS[round];
+    document.querySelectorAll(".trial-appeal").forEach((b) => (b.disabled = true));
+    let res, cls, delta;
+    if (a.cat === d.need && a.backed) { res = "ぶつけた──「確かに、言う通りだ！」　FLAVOR SYNC!!"; cls = "good"; delta = 18; successCount++; }
+    else if (a.cat === d.need && !a.backed) { res = "「香ってない！ それは口だけだ！」　SESSION BREAK"; cls = "bad"; delta = -14; lieCount++; }
+    else { res = "「それは……今の話とズレてる！」"; cls = "bad"; delta = -7; }
+    gauge = Math.max(0, Math.min(100, gauge + delta));
+    const gb = $("#trial-gauge-b"); if (gb) gb.style.width = `${gauge}%`;
+    const fb = $("#trial-feedback");
+    fb.innerHTML = `<span class="trial-line">${res}</span>`;
+    fb.className = `trial-feedback show ${cls}`;
+    if (window.SFX) (delta > 0 ? SFX.perfect : SFX.miss)();
+    if (delta > 0) { showStamp($("#tn-layout .panel"), "just"); if (tt.mode === "tournament") pakkiLive("perfect"); }
+    const next = document.createElement("button");
+    next.className = "primary-btn";
+    next.textContent = round < TRIAL_DOUBTS.length - 1 ? "次のザワザワへ ▶" : "審査を終える ▶";
+    next.addEventListener("click", () => { round++; (round < TRIAL_DOUBTS.length) ? render() : finishTrial(); });
+    fb.appendChild(next);
+  };
+
+  const finishTrial = () => {
+    tt.presentationResult = { score: Math.round(gauge), convinceGauge: Math.round(gauge), successCount, lieCount };
+    const body = tnPanel("FLAVOR TRIAL ── 講評", "");
+    const r = document.createElement("div");
+    r.className = "practice-result";
+    r.innerHTML =
+      (gauge >= 75 ? "──審査員が深く頷いた。「言ったことと、煙が、ちゃんと一致している」"
+      : gauge >= 45 ? "──審査員は半分だけ納得した様子だ。「悪くはない」"
+      : "──審査員の眉根は寄ったままだ。「言葉は立派だが……香ってこない」") +
+      `<div class="hole-summary">納得 ${Math.round(gauge)}％ ／ 一致 ${successCount} ／ 乖離 ${lieCount}</div>`;
+    const next = document.createElement("button");
+    next.className = "primary-btn";
+    next.textContent = "結果発表へ ▶";
+    next.addEventListener("click", () => onDone());
+    r.appendChild(next);
+    body.appendChild(r);
+  };
+
+  render();
+}
+
 function finishTournament() {
   const s = state.stats;
   const statScore = (s.technique * 1.2 + s.sense * 1.0 + s.guts * 0.6 + s.charm * 0.8 + s.insight * 1.0) / 4.6;
@@ -4232,7 +4331,13 @@ function finishTournament() {
     serveBonus += 2;
     craft.detail.push("みんと直伝の空気の作り方が、提供の瞬間、審査員の表情を柔らかくした。");
   }
-  const base = statScore * 0.55 + craft.score * 0.45 + serveBonus;
+  // FLAVOR TRIAL（審査）の納得ゲージをわずかに上乗せ（master_spec §7のプレゼン枠・±で効く）
+  const pres = tt.presentationResult ? (tt.presentationResult.convinceGauge - 50) / 6 : 0;
+  if (tt.presentationResult) {
+    if (tt.presentationResult.convinceGauge >= 70) craft.detail.push("審査で、コンセプトとアピールポイントがぴたりと噛み合った。");
+    else if ((tt.presentationResult.lieCount || 0) >= 2) craft.detail.push("審査では、実績を伴わないアピールが見抜かれ「香ってない」と返された。");
+  }
+  const base = statScore * 0.55 + craft.score * 0.45 + serveBonus + pres;
 
   const results = RIVALS.map((r) => ({
     id: r.id, name: r.name,
