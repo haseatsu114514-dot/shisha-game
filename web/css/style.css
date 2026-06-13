@@ -2278,8 +2278,8 @@ body {
   background: rgba(0,0,0,0.82);
 }
 #disclaimer-overlay.visible { display: flex; align-items: center; justify-content: center; }
-#disclaimer-overlay .panel { width: min(600px, 90%); }
-.disclaimer-body { text-align: left; margin: 4px 0 22px; }
+#disclaimer-overlay .panel { width: min(600px, 90%); cursor: pointer; }
+.disclaimer-body { text-align: left; margin: 4px 0 20px; }
 .disclaimer-body p {
   color: var(--text);
   font-size: 15px;
@@ -2288,7 +2288,16 @@ body {
 }
 .disclaimer-body p:last-child { margin-bottom: 0; }
 .disclaimer-body strong { color: var(--accent); font-weight: bold; }
-.disclaimer-actions { display: flex; gap: 14px; justify-content: center; }
+.disclaimer-hint {
+  color: var(--accent);
+  font-size: 14px;
+  letter-spacing: 0.14em;
+  text-align: center;
+  margin: 0;
+  opacity: 0.85;
+  animation: disclaimer-blink 1.6s ease-in-out infinite;
+}
+@keyframes disclaimer-blink { 0%, 100% { opacity: 0.85; } 50% { opacity: 0.35; } }
 
 .config-row { display: flex; align-items: center; gap: 14px; margin: 16px 0; text-align: left; }
 .config-label { width: 132px; color: var(--accent); font-size: 15px; letter-spacing: 0.08em; flex-shrink: 0; }

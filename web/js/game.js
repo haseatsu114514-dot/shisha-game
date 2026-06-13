@@ -5522,16 +5522,18 @@ function init() {
   startTitleBgm();
   window.addEventListener("pointerdown", startTitleBgm, { once: true });
   window.addEventListener("keydown", startTitleBgm, { once: true });
-  // NEW GAME はまず注意書き（フィクション／演出の断り）を挟んでから本編へ
+  // NEW GAME はまず注意書き（フィクション／演出の断り）を挟んでから本編へ。
+  // 承知ボタンは設けず、Enter / Space / クリックで本編へ進める。
+  let disclaimerProceeding = false;
   $("#btn-new").addEventListener("click", () => {
     if (window.SFX) SFX.select();
+    disclaimerProceeding = false;
     $("#disclaimer-overlay").classList.add("visible");
   });
-  $("#disclaimer-back").addEventListener("click", () => {
-    if (window.SFX) SFX.close();
-    $("#disclaimer-overlay").classList.remove("visible");
-  });
-  $("#disclaimer-accept").addEventListener("click", () => {
+  function proceedFromDisclaimer() {
+    if (disclaimerProceeding) return;
+    if (!$("#disclaimer-overlay").classList.contains("visible")) return;
+    disclaimerProceeding = true;
     if (window.SFX) SFX.select();
     $("#disclaimer-overlay").classList.remove("visible");
     engulfInSmoke(() => {
@@ -5539,6 +5541,13 @@ function init() {
       if (window.SFX) SFX.bgmStop(); // コールドオープンは無音で（tonariのBGMは日常から）
       startNewGame();
     });
+  }
+  $("#disclaimer-overlay").addEventListener("click", proceedFromDisclaimer);
+  document.addEventListener("keydown", (e) => {
+    if ((e.key === "Enter" || e.key === " ") && $("#disclaimer-overlay").classList.contains("visible")) {
+      e.preventDefault();
+      proceedFromDisclaimer();
+    }
   });
   $("#btn-mute").addEventListener("click", () => {
     const m = !SFX.isMuted();

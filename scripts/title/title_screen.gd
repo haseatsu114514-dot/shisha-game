@@ -16,6 +16,10 @@ const SETTINGS_PATH := "user://settings.cfg"
 @onready var se_slider: HSlider = %SESlider
 @onready var text_speed_slider: HSlider = %TextSpeedSlider
 
+var disclaimer_overlay: Control
+var _disclaimer_active := false
+var _disclaimer_proceeding := false
+
 
 func _ready() -> void:
 	settings_panel.visible = false
@@ -27,6 +31,7 @@ func _ready() -> void:
 	_apply_visual_theme()
 	_build_title_card_content()
 	_build_title_context()
+	_build_disclaimer()
 	GameManager.play_bgm(GameManager.BGM_TITLE_PATH, -8.0, true)
 	_play_intro_animation()
 	_apply_font()
@@ -285,7 +290,94 @@ func _collect_text_nodes(root: Node) -> Array:
 	return result
 
 
+# 注意書き（フィクション／演出の断り）。NEW GAME 時に一度だけ表示し、
+# Enter / Space / クリックで本編へ進める（承知ボタンは設けない）。
+func _build_disclaimer() -> void:
+	if disclaimer_overlay != null:
+		return
+	disclaimer_overlay = Control.new()
+	disclaimer_overlay.name = "DisclaimerOverlay"
+	disclaimer_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
+	disclaimer_overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	disclaimer_overlay.visible = false
+	add_child(disclaimer_overlay)
+
+	var dim = ColorRect.new()
+	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
+	dim.color = Color(0, 0, 0, 0.82)
+	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	disclaimer_overlay.add_child(dim)
+
+	var center = CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	disclaimer_overlay.add_child(center)
+
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(620, 0)
+	panel.add_theme_stylebox_override("panel", _make_panel_style(Color(0.04, 0.06, 0.11, 0.96), Color("feae34", 0.72), 4))
+	center.add_child(panel)
+
+	var margin = MarginContainer.new()
+	margin.add_theme_constant_override("margin_left", 34)
+	margin.add_theme_constant_override("margin_right", 34)
+	margin.add_theme_constant_override("margin_top", 28)
+	margin.add_theme_constant_override("margin_bottom", 26)
+	panel.add_child(margin)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 16)
+	margin.add_child(vbox)
+
+	var heading = Label.new()
+	heading.text = "はじめに"
+	heading.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	heading.add_theme_font_size_override("font_size", 30)
+	heading.add_theme_color_override("font_color", Color("fff0cf"))
+	vbox.add_child(heading)
+
+	var body = Label.new()
+	body.text = "本作はフィクションです。登場する人物・店舗・団体・大会などは、実在のものとは関係ありません。\n\nシーシャの調理・提供の描写は、ゲームを楽しんでいただくための演出です。手順・分量・時間などを、現実のシーシャ作りに忠実に再現したものではなく、実際とは異なる部分があります。\n\nあくまでエンターテインメントとして、その点をご承知のうえでお楽しみください。"
+	body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	body.add_theme_font_size_override("font_size", 20)
+	body.add_theme_color_override("font_color", Color("ead4aa"))
+	vbox.add_child(body)
+
+	var hint = Label.new()
+	hint.text = "Enter / クリックで本編へ"
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.add_theme_font_size_override("font_size", 18)
+	hint.add_theme_color_override("font_color", Color("f4c87b"))
+	vbox.add_child(hint)
+
+
+func _input(event: InputEvent) -> void:
+	if not _disclaimer_active:
+		return
+	var proceed := false
+	if event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode == KEY_ENTER or event.keycode == KEY_KP_ENTER or event.keycode == KEY_SPACE:
+			proceed = true
+	elif event is InputEventMouseButton and event.pressed:
+		proceed = true
+	if proceed:
+		get_viewport().set_input_as_handled()
+		_dismiss_disclaimer_and_start()
+
+
 func _on_new_game_pressed() -> void:
+	GameManager.play_ui_se("confirm")
+	_disclaimer_proceeding = false
+	_disclaimer_active = true
+	disclaimer_overlay.visible = true
+
+
+func _dismiss_disclaimer_and_start() -> void:
+	if _disclaimer_proceeding:
+		return
+	_disclaimer_proceeding = true
+	_disclaimer_active = false
+	disclaimer_overlay.visible = false
 	GameManager.play_ui_se("confirm")
 	GameManager.start_new_game()
 	GameManager.queue_dialogue(

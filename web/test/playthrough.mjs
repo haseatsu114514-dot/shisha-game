@@ -29,7 +29,7 @@ await page.waitForSelector("#screen-title.active");
 log("title OK");
 await page.click("#btn-new");
 await page.waitForSelector("#disclaimer-overlay.visible");
-await page.click("#disclaimer-accept");
+await page.keyboard.press("Enter"); // 注意書きは Enter / クリックで本編へ
 log("disclaimer acknowledged");
 
 // 行動計画（マップで上から順に消費する）

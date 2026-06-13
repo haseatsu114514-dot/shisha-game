@@ -23,7 +23,7 @@ await page.screenshot({ path: `${OUT}/01_title.png` });
 
 await page.click("#btn-new");
 await page.waitForSelector("#disclaimer-overlay.visible");
-await page.click("#disclaimer-accept");
+await page.keyboard.press("Enter"); // 注意書きは Enter / クリックで本編へ
 for (let i = 0; i < 6; i++) { await page.click("#vn-click-layer"); await page.waitForTimeout(60); }
 await page.screenshot({ path: `${OUT}/02_opening.png` });
 
