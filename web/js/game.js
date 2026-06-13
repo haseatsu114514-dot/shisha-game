@@ -164,6 +164,8 @@ function newState() {
     goods: [],             // くじ等で得た売却可グッズ [{name, sell}]
     pendingLimeNight: null, // 夜に約束したLIMEイベント {event, sender}
     practiceBest: {},      // 練習ドリルの自己ベスト（0〜2）。大会本番のボーナスになる
+    // 日常スロット（パッキー＝理由は語られない謎のマスコット兼司会）。アプリ演出は出さない
+    reel: (typeof REEL !== "undefined" ? Object.assign(REEL.newReelState(), { introDone: true }) : null),
     flags: {},
     phase: "opening", // opening | daily | tournament | cleared
   };
@@ -283,6 +285,7 @@ function gainStat(en, amount) {
     en = open[Math.floor(Math.random() * open.length)];
   }
   state.stats[en] = Math.max(0, Math.min(100, state.stats[en] + amount));
+  if (typeof REEL !== "undefined") REEL.noteStat(en, amount); // 直近の伸びをスロットのアンコール抽選に記録
   const label = amount >= 5 ? "大きく上がった" : amount >= 3 ? "上がった" : "少し上がった";
   gainBanner({
     kind: "stat",
@@ -703,7 +706,7 @@ function showGlossary() {
 
 // ---------------------------------------------------------------- config
 const CONFIG_KEY = "shisha_config_v1";
-const config = { textSpeed: 2, autoSpeed: 2, bgmVol: 100, sfxVol: 100 };
+const config = { textSpeed: 2, autoSpeed: 2, bgmVol: 100, sfxVol: 100, reelFx: "full" };
 
 function loadConfig() {
   try { Object.assign(config, JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}")); } catch (e) { /* 壊れた設定は既定値で続行 */ }
@@ -759,6 +762,7 @@ function showConfig() {
   };
   seg("テキスト速度", "textSpeed", [[1, "遅い"], [2, "普通"], [3, "速い"], [4, "瞬間"]]);
   seg("オート速度", "autoSpeed", [[1, "ゆっくり"], [2, "普通"], [3, "せっかち"]]);
+  seg("スロット演出", "reelFx", [["full", "フル"], ["lite", "簡易"], ["off", "OFF"]]);
   slider("BGM音量", "bgmVol");
   slider("効果音 音量", "sfxVol");
   $("#config-overlay").classList.add("visible");
@@ -1447,6 +1451,9 @@ function closePhone() {
 function playLimeEvent(dialogueId, sender, after, viaInvite) {
   visitContextChar = sender;
   markMet(sender);
+  // 誘い/イベントでそのキャラに会った日は、同じ店（spot）への通常訪問を不可にする
+  // （誘いがあった日に同じ店へ2回行けてしまう問題の修正・#8）
+  if (sender) state.dayVisited[sender] = state.day;
   // 恋人とのデート（date_xxx は動的生成、outing_xxx は既存イベント）は絆が深まる時間
   const isDate = dialogueId.startsWith("date_") || dialogueId.startsWith("outing_");
   if (isDate && (state.lovers || []).includes(sender)) dateContext = true;
@@ -1625,7 +1632,7 @@ const SPOT_LAYOUT = {
   cafe:      { x: 64, y: 64, theme: "cafe",    short: "カフェ",     area: "繁華街" },
   c_station: { x: 84, y: 36, theme: "stadium", short: "C.STATION",  area: "会場" },
   shop:      { x: 36, y: 40, theme: "shop",    short: "Dr.fookah",  area: "問屋街" },
-  rest:      { x: 88, y: 76, theme: "rest",    short: "家",         area: "自宅" },
+  rest:      { x: 88, y: 60, theme: "rest",    short: "家",         area: "自宅" },
 };
 
 function showMap() {
@@ -1704,6 +1711,7 @@ function showMap() {
   }
   updateMapInfo(null);
   save();
+  if (typeof REEL !== "undefined") REEL.onMapShown(); // たまったスロット結果をマップ表示時に精算（非ブロッキング）
 }
 
 function updateMapInfo(spot, locked, tooPoor, closed, visited) {
@@ -1821,6 +1829,8 @@ function doSpotDialogue(spotId, dialogueId, bg) {
 }
 
 function endAction() {
+  // 1行動=1回転（パッキーの謎スロット）。結果はこの場で確定し、直後の save() に乗る＝引き直し不可（#12）
+  if (typeof REEL !== "undefined") REEL.onAction();
   state.ap -= 1;
   updateHud();
   save();
@@ -3057,16 +3067,17 @@ function showStandings(round, next) {
 }
 
 // --- ラウンド2: 炭替え・調整。一箇所だけ作りを直せる
+// ラウンド2（中盤の調整）: 一度組んだら詰め直し・蒸らし直しは物理的に無理。
+// 動かせるのは炭の位置と数だけ（温度の最終調整は提供前の吸い出しで作る）#15
 function stepAdjust() {
-  const body = tnPanel("ラウンド2：炭替え・調整", "中盤戦。煙の様子を見て、一箇所だけ調整できる。どこを触る？");
+  const body = tnPanel("ラウンド2：炭替え・調整",
+    "中盤戦。一度組んだら詰め直しも蒸らし直しもできない。いま動かせるのは炭の位置と数だけだ（温度の最終調整は、提供前の吸い出しで作る）。");
   const cur = (list, id) => (list.find((x) => x.id === id) || {}).label || "-";
-  body.appendChild(optionButton("このままでいく", "今の仕上がりを信じる", () => {
+  body.appendChild(optionButton("このままでいく", "今の熱を信じる", () => {
     if (window.SFX) SFX.select();
     tnNext("adjust");
   }));
-  body.appendChild(optionButton("パッキングを直す", `現在: ${cur(PACKS, tt.pack)}`, () => redoAdjust("pack")));
-  body.appendChild(optionButton("炭の配置を変える", `現在: ${cur(COALS, tt.coal)}`, () => redoAdjust("coal")));
-  body.appendChild(optionButton("蒸らしを取り直す", `現在: ${tt.steam}分`, () => redoAdjust("steam")));
+  body.appendChild(optionButton("炭の位置・数を変える", `現在: ${cur(COALS, tt.coal)}`, () => redoAdjust("coal")));
 }
 
 function redoAdjust(kind) {
@@ -3177,6 +3188,7 @@ function stepFoil() {
       <div class="hole-ring r-inner"></div>
       <div class="hole-core"></div>
       <div class="hole-cursor" id="hole-cursor"><i></i></div>
+      <div class="hole-aim" id="hole-aim"></div>
       <div class="hole-dots" id="hole-dots"></div>
       <div class="hole-callout" id="hole-callout"></div>
     </div>
@@ -3197,6 +3209,7 @@ function stepFoil() {
 
   const board = arena.querySelector("#hole-board");
   const cursor = arena.querySelector("#hole-cursor");
+  const aim = arena.querySelector("#hole-aim");
   const dotsEl = arena.querySelector("#hole-dots");
   const calloutEl = arena.querySelector("#hole-callout");
   const punchBtn = arena.querySelector("#hole-punch");
@@ -3234,6 +3247,10 @@ function stepFoil() {
     const dt = (now - last) / 1000; last = now;
     angle = (angle + speed * dt) % 360;
     cursor.style.transform = `rotate(${angle}deg)`;
+    // いま穴があく位置（アクティブなリング上の狙い）を可視化（#11）
+    const ar = ringData[ringIdx].r * 50;
+    aim.style.left = `${50 + Math.cos((angle - 90) * Math.PI / 180) * ar}%`;
+    aim.style.top = `${50 + Math.sin((angle - 90) * Math.PI / 180) * ar}%`;
     raf = requestAnimationFrame(tick);
   };
   raf = requestAnimationFrame(tick);
@@ -4242,7 +4259,53 @@ function finishTournament() {
   showResult(results, rank, craft.detail);
 }
 
+// RESULT 10 COUNT（結果発表の10カウント演出）— master_spec 第2部 #4
+// 集計中…→会場ざわめき→10…0→プチュン(1位確定)/パリン(2位以下)。カウント中はカットインを挟む。
+// プレミア時は2〜3秒残しでフライングプチュン。プチュンは必ず1位、パリンは2位以下。
+function runResultCountdown(rank, premium, onDone) {
+  let ov = document.getElementById("result-count");
+  if (!ov) { ov = document.createElement("div"); ov.id = "result-count"; $("#game").appendChild(ov); }
+  ov.className = "rc show";
+  ov.innerHTML = `<div class="rc-cutin" id="rc-cutin"></div><div class="rc-num" id="rc-num"></div><div class="rc-msg" id="rc-msg">集計中……</div>`;
+  const numEl = ov.querySelector("#rc-num");
+  const msgEl = ov.querySelector("#rc-msg");
+  const cutinEl = ov.querySelector("#rc-cutin");
+  const CUTINS = ["真剣な横顔", "アルミの穴", "炭のピカン", "立ちのぼる煙", "審査員の目元", "ざわめく会場"];
+  const flashCut = () => {
+    cutinEl.textContent = CUTINS[Math.floor(Math.random() * CUTINS.length)];
+    cutinEl.className = "rc-cutin show";
+    setTimeout(() => cutinEl.classList.remove("show"), 300);
+  };
+  const finish = (cls, msg, sfx, smoke) => {
+    numEl.textContent = ""; msgEl.textContent = "";
+    ov.classList.add(cls);
+    if (window.SFX && sfx) sfx();
+    if (smoke) smokeRings(4);
+    const t = document.createElement("div");
+    t.className = `rc-final ${cls}`;
+    t.textContent = msg;
+    ov.appendChild(t);
+    setTimeout(() => { ov.className = "rc"; ov.innerHTML = ""; onDone(); }, 1550);
+  };
+  const puchun = () => finish("puchun", "PERFECT SESSION!!", () => { SFX.bubble(); setTimeout(() => SFX.fanfare(), 220); }, true);
+  const parin = () => finish("parin", "SESSION BREAK", () => SFX.miss(), false);
+  let n = 10;
+  const premiumAt = premium ? 3 : -1; // プレミアは少し残してフライング
+  setTimeout(function tick() {
+    msgEl.textContent = "会場がざわめく……";
+    if (n <= 0) return rank === 1 ? puchun() : parin();
+    if (rank === 1 && n === premiumAt) return puchun(); // フライングプチュン（1位のみ）
+    numEl.textContent = String(n);
+    numEl.classList.remove("pop"); void numEl.offsetWidth; numEl.classList.add("pop");
+    if (window.SFX) SFX.click();
+    if (n % 2 === 0) flashCut();
+    n--;
+    setTimeout(tick, 360);
+  }, 520);
+}
+
 function showResult(results, rank, detail, opts = {}) {
+  const reveal = () => {
   const body = tnPanel("審査結果", "");
   $("#tn-title").textContent = opts.title || `${cupName()} — 審査結果`;
   $("#tn-progress").textContent = "RESULT";
@@ -4297,6 +4360,19 @@ function showResult(results, rank, detail, opts = {}) {
     }));
   }
   body.append(note, table, btn);
+  };
+  // 大会の結果発表だけ、RESULT 10 COUNT（プチュン=1位/パリン=2位以下）を先に挟む（#14）。
+  // カウント中は大会画面に切り替えて中身を空にする（直前の会話画面を active に残さない＝
+  // 自動操作・プレイヤーが消えた会話レイヤーを触ってしまうのを防ぐ）
+  if (tt && tt.mode === "tournament" && !opts.skipCountdown) {
+    showScreen("#screen-tournament");
+    $("#tn-title").textContent = "";
+    $("#tn-progress").textContent = "RESULT";
+    $("#tn-body").innerHTML = "";
+    const premium = rank === 1 && tt.foilHits >= 6 && tt.coalFire === "perfect";
+    return runResultCountdown(rank, premium, reveal);
+  }
+  reveal();
 }
 
 function showClear() {
@@ -4942,6 +5018,8 @@ function continueGame(saved) {
   if (!Array.isArray(state.limeDone)) state.limeDone = [];
   if (state.pendingLimeNight === undefined) state.pendingLimeNight = null;
   if (!state.practiceBest) state.practiceBest = {};
+  // 日常スロット導入前のセーブ互換（アプリ説明は出さない）
+  if (!state.reel && typeof REEL !== "undefined") state.reel = Object.assign(REEL.newReelState(), { introDone: true });
   // 凛（問屋街の代理店）導入前のセーブ互換
   if (!("rin" in state.affinity)) { state.affinity.rin = 0; state.visits.rin = 0; }
   // 第2章・恋愛システム導入前のセーブ互換

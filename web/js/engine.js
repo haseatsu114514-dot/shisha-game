@@ -51,7 +51,9 @@ function escapeHtml(s) {
 // 半角文字は0.5文字として数える（英字交じりの行が早く折れすぎないように）。
 const WRAP_LIMIT = 24;
 const WRAP_BREAK_AFTER = "、。，．！？…‥」』）】〉》";  // ここで切ると区切りが良い
-const WRAP_NO_LINE_START = "、。，．！？…‥ー〜ぁぃぅぇぉっゃゅょ々」』）】〉》・";
+// 行頭禁則: 小書きかな・長音・閉じ括弧に加え、「ん」と小書きカタカナも巻き取り、
+// 「なるさ｜ん」のように名前（〜さん/〜くん）が割れるのを防ぐ
+const WRAP_NO_LINE_START = "、。，．！？…‥ー〜ぁぃぅぇぉっゃゅょんゎ々ァィゥェォッャュョ」』）】〉》・";
 function autoWrap(raw, limit = WRAP_LIMIT) {
   const text = String(raw);
   if (!text) return text;
@@ -84,7 +86,10 @@ function autoWrap(raw, limit = WRAP_LIMIT) {
           line = 1;
           continue;
         }
-        if (i < seg.length) { out += "\n"; line = 0; }
+        // 残りが2文字以下なら折り返さず現在行へ吸収（末尾1文字だけが孤立するのを防ぐ）
+        let rem = 0;
+        for (let k = i; k < seg.length; k++) rem += seg.charCodeAt(k) <= 0xff ? 0.5 : 1;
+        if (i < seg.length && rem > 2) { out += "\n"; line = 0; }
       }
     }
     return out;
@@ -116,6 +121,8 @@ class DialogueEngine {
     this.typeTimer = 0;
     this.typing = false;
     this.fullHtml = "";
+    this.pages = null;   // 長文の改ページ（1本文を複数ページに分割表示）
+    this.pageIdx = 0;
   }
 
   start(dialogue, onFinish) {
@@ -142,6 +149,12 @@ class DialogueEngine {
     if (this.finished || this.waitingChoice) return;
     // タイプ中のクリックは全文表示に切り替える（送らない）
     if (this.typing) return this.completeTyping();
+    // 改ページ: まだ続きのページがあれば、行を進めず次ページを表示
+    if (this.pages && this.pageIdx < this.pages.length - 1) {
+      this.pageIdx++;
+      return this.renderPage(this.pageIdx);
+    }
+    this.pages = null;
     const line = this.queue.shift();
     if (line === undefined) {
       this.finished = true;
@@ -351,8 +364,22 @@ class DialogueEngine {
     if (this.ctx.onTextCue) this.ctx.onTextCue(String(line.text || ""), this.dialogueId);
   }
 
+  // 本文を組版（自動改行）→ 長ければ MAX_PAGE_LINES 行ごとに改ページ。
+  // ウィンドウを縦に伸ばさず、続きはクリックで次ページへ送る（#4）。
   typeText(raw) {
-    const text = autoWrap(String(raw));
+    const MAX_PAGE_LINES = 4;
+    const allLines = autoWrap(String(raw)).split("\n");
+    this.pages = [];
+    for (let k = 0; k < allLines.length; k += MAX_PAGE_LINES) {
+      this.pages.push(allLines.slice(k, k + MAX_PAGE_LINES).join("\n"));
+    }
+    if (this.pages.length === 0) this.pages = [""];
+    this.pageIdx = 0;
+    this.renderPage(0);
+  }
+
+  renderPage(idx) {
+    const text = this.pages[idx];
     const label = this.el.textLabel;
     clearInterval(this.typeTimer);
     this.fullHtml = formatText(text);
