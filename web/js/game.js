@@ -159,6 +159,8 @@ function newState() {
     owned: STARTER_EQUIPMENT.slice(),
     limeDone: [],          // 既読のLIMEメッセージID
     limeContacts: [],      // 連絡先を交換済みのキャラ（LIME配信のゲート）
+    kuji: {},              // くじのボックス状態（grade別: box順・drawn・空にした日）
+    goods: [],             // くじ等で得た売却可グッズ [{name, sell}]
     pendingLimeNight: null, // 夜に約束したLIMEイベント {event, sender}
     practiceBest: {},      // 練習ドリルの自己ベスト（0〜2）。大会本番のボーナスになる
     flags: {},
@@ -2186,7 +2188,26 @@ function showShop() {
     });
     sellGrid.appendChild(btn);
   }
+  // くじで得た売却可グッズ（限定グッズ等）も買取対象
+  (state.goods || []).forEach((g, gi) => {
+    if (!g.sell) return;
+    const btn = document.createElement("button");
+    btn.className = "spot-btn";
+    btn.innerHTML = `<span class="spot-name">${g.name} を売る</span><span class="spot-cost">+${g.sell.toLocaleString()}円</span>`;
+    btn.addEventListener("click", () => {
+      state.goods.splice(gi, 1);
+      addMoney(g.sell);
+      save();
+      toast(`${g.name} を売った`);
+      showShop();
+    });
+    sellGrid.appendChild(btn);
+  });
   list.append(sellLabel, sellGrid);
+
+  // シーシャくじコーナー（master_spec #25 / A2）
+  renderKujiSection(list);
+
   // 2階: 凛さんのショールーム（NIGHTSIDE日本代理店）。会いに行くと行動を1回使う
   const rinWrap = document.createElement("div");
   rinWrap.className = "spot-list";
@@ -2208,6 +2229,151 @@ function showShop() {
   rinBtn.addEventListener("click", doRinVisit);
   rinWrap.appendChild(rinBtn);
   list.append(label, rinWrap);
+}
+
+// ============ シーシャくじ（master_spec #25 / A2） ============
+// ボックス制・上位集約の期待値。リセマラ防止: ボックスは生成時に並びを確定して
+// セーブし、引くたびに先頭から取り出す。引いた直後に save（結果を見てからのロード無効）。
+function kujiGrades() {
+  const data = (D.kuji && D.kuji.grades) || {};
+  return Object.entries(data)
+    .filter(([, g]) => (g.chapterMin || 1) <= (state.chapter || 1))
+    .map(([id, g]) => ({ id, ...g }));
+}
+
+// ボックスを生成（賞品を枚数ぶん展開→シャッフル→保存）。決定的にしたいので一度だけ
+function buildKujiBox(gradeId) {
+  const g = D.kuji.grades[gradeId];
+  const pool = [];
+  g.prizes.forEach((p, pi) => { for (let i = 0; i < p.count; i++) pool.push(pi); });
+  // Fisher–Yates
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return { order: pool, drawn: 0, emptyDay: null };
+}
+
+function kujiBoxState(gradeId) {
+  const st = state.kuji[gradeId];
+  // 補充: 空にしてから refillDays 経過したら新ボックス
+  if (st && st.drawn >= D.kuji.grades[gradeId].boxSize) {
+    const refill = (D.kuji.meta.refillDays || 3);
+    if (st.emptyDay != null && state.day - st.emptyDay >= refill) {
+      state.kuji[gradeId] = buildKujiBox(gradeId);
+      save();
+    }
+    return state.kuji[gradeId];
+  }
+  if (!st) { state.kuji[gradeId] = buildKujiBox(gradeId); save(); }
+  return state.kuji[gradeId];
+}
+
+function renderKujiSection(list) {
+  const grades = kujiGrades();
+  if (!grades.length) return;
+  const label = document.createElement("p");
+  label.className = "setup-group-label";
+  label.textContent = "シーシャくじ（仮）";
+  list.appendChild(label);
+  const prov = document.createElement("p");
+  prov.className = "tn-hint";
+  prov.textContent = "※システム・抽選演出の試作です。賞品アイテムや専用演出は今後の実装で本実装されます。";
+  list.appendChild(prov);
+  // 初回だけ凛のメタ発言（在庫の口すべり＋リセマラ無効の予告）
+  if (!state.flags._kuji_seen) {
+    const note = document.createElement("p");
+    note.className = "tn-hint";
+    note.textContent = `${displayName("rin")}「これ、実は在庫しょぶ……なんでもない。あ、セーブしてやり直しても出るもの同じだから。そういうふうにできてるの」`;
+    list.appendChild(note);
+  }
+  const wrap = document.createElement("div");
+  wrap.className = "spot-list";
+  for (const g of grades) {
+    const box = kujiBoxState(g.id);
+    const left = g.boxSize - box.drawn;
+    const empty = left <= 0;
+    const refill = D.kuji.meta.refillDays || 3;
+    const sinceEmpty = empty && box.emptyDay != null ? state.day - box.emptyDay : 0;
+    const btn = document.createElement("button");
+    btn.className = "spot-btn kuji-btn";
+    const status = empty
+      ? `売り切れ（あと${Math.max(0, refill - sinceEmpty)}日で補充）`
+      : `のこり ${left} / ${g.boxSize} 枚`;
+    btn.innerHTML =
+      `<span class="spot-name">${g.label}</span>` +
+      `<span class="spot-cost">${empty ? status : `${g.price.toLocaleString()}円 ・ ${status}`}</span>` +
+      `<span class="spot-desc">${empty ? "箱が空っぽだ。新しい箱を待とう。" : (left === 1 ? "次がラスト1枚！ ラストワン賞つき" : "上位賞は1箱に1つだけ。")}</span>`;
+    btn.disabled = empty || g.price > state.money;
+    btn.addEventListener("click", () => drawKuji(g.id));
+    wrap.appendChild(btn);
+  }
+  list.appendChild(wrap);
+  state.flags._kuji_seen = true;
+}
+
+function drawKuji(gradeId) {
+  const g = D.kuji.grades[gradeId];
+  const box = kujiBoxState(gradeId);
+  if (box.drawn >= g.boxSize || g.price > state.money) return;
+  addMoney(-g.price);
+  const prizeIdx = box.order[box.drawn];
+  box.drawn += 1;
+  const isLast = box.drawn >= g.boxSize;
+  if (isLast) box.emptyDay = state.day;
+  save(); // 引いた直後に保存（結果を見てからのロード無効）
+  const prize = g.prizes[prizeIdx];
+  grantKujiPrize(prize);
+  const extras = isLast && g.lastOne ? [g.lastOne] : [];
+  for (const ex of extras) grantKujiPrize(ex);
+  save();
+  revealKuji(prize, extras, () => showShop());
+}
+
+// 賞品を実体化。equipId は所持機材へ（重複は売値ぶん現金化）。goods は売却可在庫へ
+function grantKujiPrize(prize) {
+  if (prize.equipId) {
+    if ((state.owned || []).includes(prize.equipId)) {
+      if (prize.sell) addMoney(Math.round(prize.sell * 0.5)); // ダブりは控えめに現金化
+    } else {
+      state.owned.push(prize.equipId);
+    }
+    return;
+  }
+  if (prize.type === "goods" && prize.sell) {
+    state.goods.push({ name: prize.name, sell: prize.sell });
+  }
+  // flavor / consumable は使用価値（このゲームでは抽象）。獲得演出のみ
+}
+
+// 引き演出: 箱→ティケット→ランク開封。上位賞は煙＋スモークリング
+function revealKuji(prize, extras, done) {
+  const ov = $("#kuji-overlay");
+  const card = $("#kuji-card");
+  ov.classList.add("show");
+  card.className = "kuji-card drawing";
+  card.innerHTML = `<div class="kuji-ticket">？</div>`;
+  if (window.SFX) SFX.open();
+  const top = prize.rank === "S" || prize.rank === "LAST";
+  setTimeout(() => {
+    card.className = `kuji-card reveal rank-${prize.rank}`;
+    card.innerHTML =
+      `<div class="kuji-rank">${prize.rank}</div>` +
+      `<div class="kuji-prize-name">${prize.name}</div>` +
+      `<div class="kuji-prize-desc">${prize.desc || ""}</div>`;
+    if (window.SFX) { SFX.stamp(); if (top && SFX.perfect) SFX.perfect(); }
+    if (top) { engulfInSmoke(); smokeRings(4); }
+    for (const ex of extras) toast(`${ex.name} を手に入れた！`);
+  }, 700);
+  const close = () => {
+    ov.classList.remove("show");
+    ov.removeEventListener("click", onClick);
+    if (done) done();
+  };
+  const onClick = () => { if (card.classList.contains("reveal")) close(); };
+  ov.addEventListener("click", onClick);
+  // 自動で閉じない（プレイヤーがクリックで閉じる）が、保険で長めのタイムアウト
+  setTimeout(() => { if (ov.classList.contains("show")) close(); }, 6000);
 }
 
 // 凛さんのショールーム（会いに行くと1コマ消費。買い物だけなら消費なし。1日1回）
@@ -4384,6 +4550,8 @@ function continueGame(saved) {
   if (!state.lovePts) state.lovePts = {};
   if (typeof state.loverQuickDay !== "number") state.loverQuickDay = 0;
   if (!Array.isArray(state.loverEventsSeen)) state.loverEventsSeen = [];
+  if (!state.kuji) state.kuji = {};
+  if (!Array.isArray(state.goods)) state.goods = [];
   if (!Array.isArray(state.limeContacts)) {
     // 既存セーブ: 訪問しきい値を超えているキャラを交換済みとして引き継ぐ
     state.limeContacts = [];

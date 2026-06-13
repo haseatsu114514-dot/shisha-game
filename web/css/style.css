@@ -2510,3 +2510,34 @@ body {
   25%  { opacity: 0.85; border-color: rgba(245,245,255,0.7); }
   100% { opacity: 0; transform: translateY(-160px) scale(2.6); border-color: rgba(245,245,255,0.0); }
 }
+
+/* ===== シーシャくじ（master_spec #25 / A2） ===== */
+.kuji-btn .spot-name::before { content: "🎫 "; }
+#kuji-overlay {
+  position: absolute; inset: 0; z-index: 120;
+  display: none; align-items: center; justify-content: center; flex-direction: column;
+  background: radial-gradient(circle at 50% 45%, rgba(30,16,40,0.82), rgba(6,4,12,0.95));
+  backdrop-filter: blur(3px);
+}
+#kuji-overlay.show { display: flex; animation: tabfade 0.25s ease; }
+.kuji-card {
+  width: 320px; min-height: 200px; padding: 26px 24px;
+  border-radius: 16px; text-align: center;
+  background: linear-gradient(180deg, #241430, #140c1e);
+  border: 2px solid rgba(244,210,122,0.5);
+  box-shadow: 0 18px 50px rgba(0,0,0,0.6);
+}
+.kuji-card.drawing { animation: kuji-shake 0.7s ease-in-out; }
+@keyframes kuji-shake { 0%,100%{transform:rotate(0)} 20%{transform:rotate(-3deg)} 40%{transform:rotate(3deg)} 60%{transform:rotate(-2deg)} 80%{transform:rotate(2deg)} }
+.kuji-card.reveal { animation: kuji-pop 0.4s cubic-bezier(.2,1.4,.4,1) both; }
+@keyframes kuji-pop { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.kuji-ticket { font-size: 64px; color: var(--accent); margin-top: 40px; }
+.kuji-rank { font-size: 56px; font-weight: 900; letter-spacing: 0.08em; line-height: 1; margin-bottom: 10px;
+  background: linear-gradient(180deg, #fff, #cbb06a); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.kuji-prize-name { font-size: 18px; font-weight: bold; color: #fff; margin-bottom: 8px; }
+.kuji-prize-desc { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+.kuji-card.rank-S, .kuji-card.rank-LAST { border-color: #ffd76a; box-shadow: 0 0 40px rgba(255,210,90,0.6), 0 18px 50px rgba(0,0,0,0.6); }
+.kuji-card.rank-S .kuji-rank, .kuji-card.rank-LAST .kuji-rank { background: linear-gradient(180deg,#fff5cf,#ffb347); -webkit-background-clip: text; background-clip: text; }
+.kuji-card.rank-B { border-color: rgba(160,160,180,0.5); }
+.kuji-hint { margin-top: 18px; font-size: 12px; color: rgba(255,255,255,0.5); letter-spacing: 0.1em; }
+#kuji-overlay:not(.show) .kuji-hint { display: none; }
