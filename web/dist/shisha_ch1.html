@@ -8134,6 +8134,7 @@ function stepFoil() {
       </div>
       <button class="primary-btn hole-punch" id="hole-punch">穴を開ける</button>
       <button class="primary-btn ghost hole-advance" id="hole-advance">次の周へ ▶</button>
+      <button class="primary-btn ghost hole-finish" id="hole-finish">ここで切り上げる ▶</button>
     </div>`;
   body.appendChild(arena);
   const result = document.createElement("div");
@@ -8147,6 +8148,7 @@ function stepFoil() {
   const calloutEl = arena.querySelector("#hole-callout");
   const punchBtn = arena.querySelector("#hole-punch");
   const advBtn = arena.querySelector("#hole-advance");
+  const finishBtn = arena.querySelector("#hole-finish"); // 1週/2週で切り上げる（#28）
 
   const ringData = HOLE_RINGS.map((r) => ({ ...r, angles: [] }));
   let ringIdx = 0;
@@ -8165,6 +8167,8 @@ function stepFoil() {
     arena.querySelector("#hole-rolename").textContent = r.role;
     board.dataset.ring = r.key;
     advBtn.textContent = ringIdx < ringData.length - 1 ? "次の周へ ▶" : "穴あけを仕上げる ▶";
+    // 最終リングは advBtn 自体が仕上げる＝切り上げボタンは不要。1周/2周で切り上げたい時だけ出す
+    finishBtn.style.display = ringIdx < ringData.length - 1 ? "" : "none";
     refreshMeter();
   };
   const refreshMeter = () => {
@@ -8173,6 +8177,7 @@ function stepFoil() {
     arena.querySelector("#hole-even").style.width = `${Math.round(even * 100)}%`;
     arena.querySelector("#hole-count").textContent = `穴 ${r.angles.length} / ${r.target}`;
     advBtn.disabled = r.angles.length < 1;
+    finishBtn.disabled = r.angles.length < 1;
   };
 
   const tick = (now) => {
@@ -8232,23 +8237,25 @@ function stepFoil() {
     }
   };
   advBtn.addEventListener("click", finishRing);
+  finishBtn.addEventListener("click", finishHole); // 今のリングで切り上げ（#28）
 
   function finishHole() {
     running = false; cancelAnimationFrame(raf);
     punchBtn.disabled = true; advBtn.disabled = true;
     // ---- 評価: 均等度50% + 円形精度(リング完成度)10% + 各リングの充足 + 残量 ----
-    let evenSum = 0, fillSum = 0, totalHoles = 0;
+    let evenSum = 0, fillSum = 0, totalHoles = 0, doneRings = 0;
     const per = {};
     for (const r of ringData) {
       const ev = ringEvenness(r.angles);
       const fill = Math.min(1, r.angles.length / r.target);
-      evenSum += ev; fillSum += fill;
+      if (r.angles.length > 0) { evenSum += ev; fillSum += fill; doneRings++; } // 切り上げ可(#28): 開けた周だけで評価
       totalHoles += r.angles.length;
       per[r.key] = { holes: r.angles.length, evenness: Math.round(ev * 100) };
     }
-    const evenAvg = evenSum / ringData.length;
-    const fillAvg = fillSum / ringData.length;
-    const quality = evenAvg * 0.6 + fillAvg * 0.4; // 0..1（均等度重視）
+    const nDone = Math.max(1, doneRings);
+    const evenAvg = evenSum / nDone;
+    const fillAvg = fillSum / nDone;
+    const quality = evenAvg * 0.6 + fillAvg * 0.4; // 0..1（均等度重視・開けた周のみで平均）
     // 既存craftScore互換: foilHits 0-6
     tt.foilHits = Math.round(quality * 6);
     tt.foilDone = true;
