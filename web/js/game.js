@@ -3641,6 +3641,27 @@ const HEAT_GRADE = {
   ash:   { q: 0.10, label: "OVER HEAT",       sub: "焼きすぎ", heatPower: 35,  heatStability: -10, startupSpeed: 25,  burnRisk: 30,  aromaRetention: -20 },
 };
 
+// タイミング系ミニゲームの開始前カウントダウン（3・2・1・スタート）。
+// 開始直後のシビアな判定で理不尽に外れるのを防ぐ（T22-C・必須）。onStart で本編の時計を回す
+function miniCountdown(container, onStart) {
+  if (!container) { onStart(); return; }
+  const ov = document.createElement("div");
+  ov.className = "mini-countdown";
+  container.appendChild(ov);
+  const seq = ["3", "2", "1", "スタート！"];
+  let i = 0;
+  const step = () => {
+    if (i >= seq.length) { ov.remove(); onStart(); return; }
+    ov.textContent = seq[i];
+    ov.classList.toggle("go", i === seq.length - 1);
+    ov.classList.remove("pop"); void ov.offsetWidth; ov.classList.add("pop");
+    if (window.SFX) { if (i < 3) SFX.click && SFX.click(); else SFX.perfect && SFX.perfect(); }
+    i++;
+    setTimeout(step, i <= 3 ? 460 : 380);
+  };
+  step();
+}
+
 function stepCoalFire() {
   const body = tnPanel("HEAT IGNITION ── 炭起こし",
     "炭はもうコンロで赤く熾きかけている。芯がピカッと閃く、その一瞬で取り上げろ。遅れれば灰をかぶる。");
@@ -3716,7 +3737,7 @@ function stepCoalFire() {
     c.core.style.opacity = z === "just" ? "1" : (z === "ready" || z === "hot") ? "0.5" : "0.15";
   };
 
-  let raf = 0, last = performance.now(), running = true;
+  let raf = 0, last = performance.now(), running = false; // カウントダウン中は停止（炭は熱が入らない）
   const tick = (now) => {
     if (!running) return;
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
@@ -3732,7 +3753,9 @@ function stepCoalFire() {
     }
     raf = requestAnimationFrame(tick);
   };
-  raf = requestAnimationFrame(tick);
+  for (const c of coals) paint(c); // 初期状態を見せて待たせる
+  // 3・2・1 を挟んでから炭が熱を持ち始める（開始直後の理不尽な判定を防ぐ・T22-C）
+  miniCountdown(arena, () => { running = true; last = performance.now(); raf = requestAnimationFrame(tick); });
 
   function takeCoal(i) {
     const c = coals[i];
@@ -3847,7 +3870,8 @@ function stepFocus() {
       setTimeout(spawn, 250);
     });
   };
-  spawn();
+  // 3・2・1 を挟んでから雑念が湧き始める（開始直後の理不尽を防ぐ・T22-C）
+  miniCountdown(arena, () => spawn());
 }
 
 // 章ごとの大会レギュレーション（指定フレーバー）。ch1 = SMOKE CROWN CUP はミント指定。
