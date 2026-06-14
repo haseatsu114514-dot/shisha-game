@@ -261,7 +261,8 @@ node web/test/map_hover.mjs       # マップのホバー安定性
 - スロット文言は `bubble(text, ms, cls)`、連発防止は `pick()`、ステ伸びは `gainStat()`＋章上限 `statSoftCap()`。
 
 ### やらない（テスト・正史を壊す）
-- テストフックを壊さない: `__pullDebug` / `__heatDebug` / 調整(R2)の「このままでいく」 / 審査の `.trial-appeal[data-backed][data-cat]`＋`#trial-doubt[data-need]` / 結果カウントの `pointer-events:none`。
+- テストフックを壊さない: `__pullDebug` / `__heatDebug` / `__steamDebug().end()`（蒸らし弾幕の即終了） / 調整(R2)の「このままでいく」 / 審査の `.trial-appeal[data-backed][data-cat]`＋`#trial-doubt[data-need]` / 結果カウントの `pointer-events:none`。
+- **蒸らしミニゲームは雑念弾幕（`runSteamDodge`）**。「覚悟＋締め」(`runSteamWait`) は2026-06-14にオーナー指定で差し戻し済み。復活させない。0分は神崎交友で解放＝弾幕スキップ。
 - ステの生数値をUIに出さない（★と抽象語のみ）。旧ステ名（技術力/洞察力/メンタル/度胸/味覚/集中力）禁止。
 - タイミング系ミニゲームは必ず `miniCountdown()` で 3・2・1 を挟む。
 - `main` へ直push禁止＝PR。`--force`/`--allow-unrelated-histories` 禁止（Git Safety）。

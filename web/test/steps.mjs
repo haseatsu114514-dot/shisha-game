@@ -72,17 +72,12 @@ export async function playTnStep(page, opts = {}) {
   } else if (title.includes("蒸らし時間")) {
     await page.locator(".spot-btn", { hasText: "8分" }).click();
   } else if (title.includes("蒸らし中")) {
-    // 蒸らし待ち: タイマー後の「覚悟の締め」を狙って押す
-    for (let k = 0; k < 240; k++) {
+    // 蒸らし=雑念弾幕。テストでは即終了（無操作＝被弾0＝perfect）して結果へ
+    await page.evaluate(() => { const o = window.__steamDebug && window.__steamDebug(); if (o && o.end) o.end(); });
+    for (let k = 0; k < 120; k++) {
       const next = page.locator("#tn-body button", { hasText: "次へ" });
       if (await next.count()) { await next.click(); break; }
-      const d = await page.evaluate(() => (window.__steamDebug ? __steamDebug() : null));
-      if (d && d.ready && d.pos >= d.wantZone[0] && d.pos <= d.wantZone[1]) {
-        await page.locator("#steam-finish").click().catch(() => {});
-        await page.waitForTimeout(80);
-      } else {
-        await page.waitForTimeout(30);
-      }
+      await page.waitForTimeout(25);
     }
   } else if (title.includes("吸い出し")) {
     // 温度合わせ: __pullDebug（針位置・狙いゾーン）を読み、狙いに入った瞬間に吸う。

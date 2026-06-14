@@ -8572,6 +8572,15 @@ const COALS = [
   { id: "triangle", label: "トライアングル", desc: "基本の三角配置（3個）。安定の熱まわり" },
   { id: "four", label: "炭4個", desc: "3個よりかなり熱が上がる高火力。焦げのリスクと隣り合わせ" },
 ];
+// 蒸らし中に飛んでくる「雑念」（弾幕の弾の文言）。ch2+は離反/味覚喪失の影が混じる
+const DODGE_WORDS = [
+  "手元、見られてる……", "時間が足りないかも", "隣の煙、もう上がってる",
+  "失敗したらどうしよう", "パッキーの野次", "審査員の視線", "炭、熾きてたかな",
+];
+const DODGE_WORDS_CH2 = [
+  "ヴォルクの精度", "組長の覚悟", "あげはのバイブス", "なるの配合ノート",
+  "“誰の煙だ？”", "採点表", "正解はどれだ", "味が、思い出せない",
+];
 const STEAMS = [
   { id: 0, label: "0分", desc: "吸いながら一気に立ち上げる型破りな技。神崎竜二との交友で解放", unlock: "kumicho" },
   { id: 3, label: "3分", desc: "早めに立ち上げる。香りは軽く、温度合わせが忙しい" },
@@ -9256,7 +9265,7 @@ function tournamentStep(step) {
       tt.steam = s.id;
       if (window.SFX) SFX.select();
       // 蒸らしは湯気を出さず、タイマーと鼓動で待つ。最後に覚悟の一手を入れる
-      runSteamWait(s, () => {
+      runSteamDodge(s, () => {
         // 大会以外・ch2の各試合は観客の会話なし（ラウンド会話はch1専用テキスト）
         if (tt.mode !== "tournament" || state.chapter !== 1) return tnNext("steam");
         // ラウンド1（組み立て）終了 → 観客の会話 → R1講評 → 中間発表 → ラウンド2（調整）へ
@@ -10080,14 +10089,39 @@ function stepMix() {
 
 // --- 蒸らし待ち: 湯気は出さず、タイマーと鼓動で「待つ」緊張を作る。
 // 最後に一度だけ覚悟の締めを入れ、タイミングが craft に響く。
-function runSteamWait(steamOpt, onDone) {
-  const duration = steamOpt.id === 0 ? 0.9 : 1.2 + steamOpt.id * 0.22;
+// --- 蒸らし: 雑念弾幕（アンダーテール風の回避）。オーナー指定で「覚悟＋締め」から
+// 弾幕回避へ差し戻し（現デザインのタイマー＋鼓動の枠は維持）。心(♥)を動かして
+// 雑念弾を躱す。被弾が少ないほど craft が上がる（tt.steamHits を採点が読む）。
+// 0分(神崎流)は蒸らさない＝雑念ビート無しで即立ち上げ。
+function runSteamDodge(steamOpt, onDone) {
+  if (steamOpt.id === 0) {
+    const body = tnPanel("蒸らし: 0分スタイル", "蒸らさない。吸いながら一気に立ち上げる──神崎竜二の型破りなやり方だ。");
+    tt.steamHits = 0; tt.steamFinish = "perfect";
+    showStamp($("#tn-layout .panel"), "perfect");
+    pakkiLive("perfect"); broadcastJudge("perfect", "蒸らし");
+    if (window.SFX) SFX.perfect();
+    const result = document.createElement("div");
+    result.className = "practice-result";
+    result.textContent = "──腹を決めて、吸いながら一気に立ち上げた。雑念の入る隙もない。";
+    const next = document.createElement("button");
+    next.className = "primary-btn"; next.textContent = "次へ";
+    next.addEventListener("click", onDone);
+    result.appendChild(document.createElement("br")); result.appendChild(next);
+    body.append(result);
+    window.__steamDebug = () => ({ dodge: true, hits: 0, done: true, end: () => {} });
+    return;
+  }
+  // 蒸らしが長いほど雑念に晒される時間も長い（蒸らし時間の選択に意味を持たせる）
+  const duration = Math.min(12, 4.5 + steamOpt.id * 0.6);
+  const slump = state.chapter === 2 && state.flags._taste_slump && tt.mode !== "drill";
   const body = tnPanel(
-    "蒸らし中 ── 覚悟の待ち時間",
-    steamOpt.id === 0
-      ? "蒸らさない。吸いながら立ち上げる。神崎竜二の型破りなやり方だ。"
-      : "リグを見つめて待つ。焦らず、タイマーが切れる直前に一度だけ締める。"
+    "蒸らし中 ── 雑念を躱せ",
+    slump
+      ? "頭の中が、ざわつく。借り物の言葉が雑念になって飛んでくる──煙のことだけ考えろ。"
+      : "心（♥）をドラッグ（または矢印キー）で動かして雑念を躱せ。被弾するほど煙が落ち着かない。"
   );
+  const words = slump || (state.chapter === 2 && tt.mode === "tournament") ? DODGE_WORDS_CH2 : DODGE_WORDS;
+  // 現デザイン維持: 上部にタイマー＋鼓動、その下に回避アリーナ
   const wrap = document.createElement("div");
   wrap.className = "steam-wait";
   wrap.innerHTML = `
@@ -10095,54 +10129,80 @@ function runSteamWait(steamOpt, onDone) {
       <span class="steam-timer-label" id="steam-timer-label"></span>
       <div class="steam-timer-bar"><div class="steam-timer-fill" id="steam-timer-fill"></div></div>
     </div>
-    <div class="steam-heart"><span></span><span></span><span></span></div>
-    <div class="steam-final hidden" id="steam-final">
-      <div class="steam-timing-bar">
-        <div class="steam-timing-zone"></div>
-        <div class="steam-timing-needle" id="steam-timing-needle"></div>
-      </div>
-      <button class="primary-btn" id="steam-finish">覚悟の締め</button>
-    </div>`;
+    <div class="steam-heart"><span></span><span></span><span></span></div>`;
+  const arena = document.createElement("div");
+  arena.className = "dodge-arena";
+  const soul = document.createElement("div");
+  soul.className = "dodge-soul";
+  soul.textContent = "♥";
+  arena.appendChild(soul);
   const result = document.createElement("div");
   result.className = "practice-result";
-  body.append(wrap, result);
+  body.append(wrap, arena, result);
 
   const label = wrap.querySelector("#steam-timer-label");
   const fill = wrap.querySelector("#steam-timer-fill");
-  const final = wrap.querySelector("#steam-final");
-  const finishBtn = wrap.querySelector("#steam-finish");
-  const needle = wrap.querySelector("#steam-timing-needle");
-  const zone = [0.44, 0.56];
-  let remain = duration, last = performance.now(), raf = 0, phase = "wait", pos = 0, done = false;
-  let beatTimer = 0;
-  const playBeat = () => { if (!done && phase === "wait" && window.SFX) SFX.click(); };
-  beatTimer = setInterval(playBeat, steamOpt.id >= 8 ? 760 : 620);
+  let W = 760, H = 220;
+  let sx = W / 2, sy = H * 0.62;
+  let hits = 0, invuln = 0, remain = duration, last = performance.now();
+  let spawnIn = 0.6, raf = 0, ended = false;
+  const bullets = [];
+  const keys = {};
+  // 洞察が高いほど雑念の湧きがわずかに穏やか（そこそこ有利、程度）
+  const spawnEvery = (slump ? 0.42 : 0.54) + Math.min(0.14, state.stats.insight / 500);
+  const bulletSpeed = slump ? 130 : 110;
 
-  const showFinal = () => {
-    phase = "final";
-    final.classList.remove("hidden");
-    label.textContent = "締めの一手";
-    fill.style.width = "0%";
+  const measure = () => { W = arena.clientWidth || W; H = arena.clientHeight || H; sx = Math.min(sx, W - 12); sy = Math.min(sy, H - 12); };
+  const onPointer = (e) => {
+    const r = arena.getBoundingClientRect();
+    sx = Math.max(10, Math.min(W - 10, e.clientX - r.left));
+    sy = Math.max(10, Math.min(H - 10, e.clientY - r.top));
+    e.preventDefault();
+  };
+  const onKeyDown = (e) => { if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d"].includes(e.key)) { keys[e.key] = true; e.preventDefault(); } };
+  const onKeyUp = (e) => { delete keys[e.key]; };
+  arena.addEventListener("pointermove", onPointer);
+  arena.addEventListener("pointerdown", onPointer);
+  document.addEventListener("keydown", onKeyDown);
+  document.addEventListener("keyup", onKeyUp);
+
+  const spawnBullet = () => {
+    const el = document.createElement("span");
+    el.className = "dodge-bullet";
+    el.textContent = words[Math.floor(Math.random() * words.length)];
+    arena.appendChild(el);
+    const side = Math.floor(Math.random() * 4);
+    let x, y;
+    if (side === 0) { x = -30; y = Math.random() * H; }
+    else if (side === 1) { x = W + 30; y = Math.random() * H; }
+    else if (side === 2) { x = Math.random() * W; y = -20; }
+    else { x = Math.random() * W; y = H + 20; }
+    const ang = Math.atan2(sy - y, sx - x) + (Math.random() * 0.9 - 0.45);
+    const sp = bulletSpeed * (0.75 + Math.random() * 0.6);
+    bullets.push({ el, x, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp });
   };
 
-  const finish = () => {
-    if (done || phase !== "final") return;
-    done = true;
-    clearInterval(beatTimer);
+  const end = () => {
+    if (ended) return;
+    ended = true;
     cancelAnimationFrame(raf);
-    const near = pos >= 0.32 && pos <= 0.68;
-    const just = pos >= zone[0] && pos <= zone[1];
-    tt.steamHits = just ? 0 : near ? 1 : 3;
-    tt.steamFinish = just ? "perfect" : near ? "good" : "miss";
-    finishBtn.disabled = true;
-    showStamp($("#tn-layout .panel"), tt.steamFinish);
-    pakkiLive(tt.steamFinish);
-    broadcastJudge(tt.steamFinish, "蒸らし");
-    if (window.SFX) (just ? SFX.perfect() : near ? SFX.good() : SFX.miss());
+    document.removeEventListener("keydown", onKeyDown);
+    document.removeEventListener("keyup", onKeyUp);
+    for (const b of bullets) b.el.remove();
+    bullets.length = 0;
+    soul.classList.add("done");
+    tt.steamHits = hits;
+    const grade = hits === 0 ? "perfect" : hits <= 2 ? "good" : "miss";
+    tt.steamFinish = grade;
+    showStamp($("#tn-layout .panel"), grade);
+    pakkiLive(grade);
+    broadcastJudge(grade, "蒸らし");
+    if (window.SFX) (grade === "perfect" ? SFX.perfect() : grade === "good" ? SFX.good() : SFX.miss());
     result.textContent =
-      just ? "──締めの一手が、ぴたりと入った。待った時間が煙の芯になる。"
-      : near ? "──少し早い。でも、覚悟は切れていない。煙はちゃんと立つ。"
-      : "──締めが乱れた。待ちの緊張が、最後に少しだけほどけた。";
+      hits === 0 ? "──雑念ゼロ。蒸らしの間、煙のことだけを見ていられた。"
+      : hits <= 2 ? "──少し心がざわついた。でも、致命傷じゃない。"
+      : hits <= 4 ? "──雑念に何度か捕まった。煙が少し落ち着かない。"
+      : "──頭の中が騒がしいまま、蒸らしが終わってしまった……。";
     const next = document.createElement("button");
     next.className = "primary-btn";
     next.textContent = "次へ";
@@ -10152,27 +10212,48 @@ function runSteamWait(steamOpt, onDone) {
   };
 
   const tick = (now) => {
+    if (ended) return;
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
-    if (phase === "wait") {
-      remain -= dt;
-      const ratio = Math.max(0, remain / duration);
-      const dispSec = Math.max(0, Math.round(steamOpt.id * 60 * ratio));
-      label.textContent = steamOpt.id === 0
-        ? "0分スタイル"
-        : `蒸らし残り ${Math.floor(dispSec / 60)}:${String(dispSec % 60).padStart(2, "0")}`;
-      fill.style.width = `${ratio * 100}%`;
-      if (remain <= 0) showFinal();
-    } else if (phase === "final") {
-      pos += dt * 0.78;
-      if (pos > 1) pos -= 1;
-      needle.style.left = `${pos * 100}%`;
+    measure();
+    remain -= dt;
+    invuln = Math.max(0, invuln - dt);
+    const ratio = Math.max(0, remain / duration);
+    const dispSec = Math.max(0, Math.round(steamOpt.id * 60 * ratio));
+    label.textContent = `蒸らし残り ${Math.floor(dispSec / 60)}:${String(dispSec % 60).padStart(2, "0")}`;
+    fill.style.width = `${ratio * 100}%`;
+    const v = 240 * dt;
+    if (keys.ArrowLeft || keys.a) sx -= v;
+    if (keys.ArrowRight || keys.d) sx += v;
+    if (keys.ArrowUp || keys.w) sy -= v;
+    if (keys.ArrowDown || keys.s) sy += v;
+    sx = Math.max(10, Math.min(W - 10, sx));
+    sy = Math.max(10, Math.min(H - 10, sy));
+    soul.style.transform = `translate(${sx - 8}px, ${sy - 9}px)`;
+    spawnIn -= dt;
+    if (spawnIn <= 0) { spawnIn = spawnEvery; spawnBullet(); }
+    for (let i = bullets.length - 1; i >= 0; i--) {
+      const b = bullets[i];
+      b.x += b.vx * dt; b.y += b.vy * dt;
+      b.el.style.transform = `translate(${b.x}px, ${b.y}px)`;
+      if (b.x < -80 || b.x > W + 80 || b.y < -60 || b.y > H + 60) { b.el.remove(); bullets.splice(i, 1); continue; }
+      if (invuln <= 0 && Math.hypot(b.x - sx, b.y - sy) < 17) {
+        hits++;
+        invuln = 0.85;
+        soul.classList.add("hit");
+        arena.classList.add("flash");
+        setTimeout(() => { soul.classList.remove("hit"); arena.classList.remove("flash"); }, 320);
+        if (window.SFX) SFX.click();
+        b.el.remove();
+        bullets.splice(i, 1);
+      }
     }
-    if (!done) raf = requestAnimationFrame(tick);
+    if (remain <= 0) return end();
+    raf = requestAnimationFrame(tick);
   };
-  finishBtn.addEventListener("click", finish);
-  window.__steamDebug = () => ({ ready: phase === "final", pos, wantZone: zone, done });
-  requestAnimationFrame((now) => { last = now; raf = requestAnimationFrame(tick); });
+  // テストフック: 弾幕を即終了して結果へ（無操作なら被弾0＝perfect）
+  window.__steamDebug = () => ({ dodge: true, hits, remain, end });
+  requestAnimationFrame((now) => { last = now; measure(); raf = requestAnimationFrame(tick); });
 }
 
 // --- 吸い出し（提供前の温度立ち上げ）: 炭を置いて蒸らした後、提供前に何度か吸って
@@ -10495,7 +10576,7 @@ function craftScore() {
   }
   // 蒸らしの締め（一手のタイミング）
   if (typeof tt.steamHits === "number") {
-    if (tt.steamHits === 0) { score += 6; detail.push("蒸らし終わりの締めが、ぴたりと入った。"); }
+    if (tt.steamHits === 0) { score += 6; detail.push("蒸らし中、雑念に一度も捕まらなかった。煙に芯が立つ。"); }
     else if (tt.steamHits <= 2) score += 3;
     else { score -= 4; detail.push("蒸らし終わりの一手が乱れ、煙の芯が少し揺れた。"); }
   }
@@ -10782,7 +10863,7 @@ function tournamentBreakdown() {
   const add = (label, tier, hint) => items.push({ label, grade: gradeLetter(tier), tier, hint });
   add("穴あけ", tt.foilHits >= 6 ? 2 : tt.foilHits >= 4 ? 1 : 0, "リングの均等度を上げると煙の通りが整う");
   add("炭起こし", tt.coalFire === "perfect" ? 2 : tt.coalFire === "good" ? 1 : 0, "芯がピカッと閃く“取り頃”で取ると熱が乗る");
-  if (typeof tt.steamHits === "number") add("蒸らし", tt.steamHits === 0 ? 2 : tt.steamHits <= 2 ? 1 : 0, "タイマー切れ直前の締めを合わせると煙の芯が立つ");
+  if (typeof tt.steamHits === "number") add("蒸らし", tt.steamHits === 0 ? 2 : tt.steamHits <= 2 ? 1 : 0, "蒸らし中の雑念を躱しきると煙の芯が立つ");
   add("集中", tt.focusCleared >= 5 ? 2 : tt.focusCleared >= 3 ? 1 : 0, "集中を保つと手元のブレが減る");
   add("吸い出し", tt.pull === "perfect" ? 2 : tt.pull === "good" ? 1 : 0, "適温の窓でJUSTを重ねると一気に伸びる");
   const p = mixProfile();
