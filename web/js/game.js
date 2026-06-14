@@ -620,6 +620,9 @@ function updateDayCard() {
   card.classList.toggle("show", !!isMap && state && state.phase === "daily");
   if (!isMap || !state) return;
   $("#dc-day").textContent = state.day;
+  // 大会最終日（章ごとに可変）を分母にする。7日固定だった旧UIの修正
+  const dcMax = $("#dc-max");
+  if (dcMax) dcMax.textContent = "/" + Math.max(...Object.keys(chapterInfo().stageDays).map(Number));
   $("#dc-week").textContent = state.ap === 2 ? "DAY" : "NIGHT";
   $("#dc-ap").textContent = (state.ap === 2 ? "昼" : "夜") + ` ${state.ap}`;
   $("#dc-money").textContent = state.money.toLocaleString();
@@ -2327,7 +2330,7 @@ function showFookahMenu() {
     `<p class="tn-menu-title">Dr.fookah ── どうする？</p>` +
     `<div class="tn-menu-list">` +
     `<button class="spot-btn" id="fookah-shop"><span class="spot-name">物販を利用する</span><span class="spot-cost">無料・コマ不要</span><span class="spot-desc">機材とフレーバーの買い物だけ。時間はかからない</span></button>` +
-    `<button class="spot-btn" id="fookah-rin"${rinOff ? " disabled" : ""}><span class="spot-name">凛さんに会う＋ブースで一服</span><span class="spot-cost">${rinDone ? "今日はもう行った" : broke ? "所持金が足りない（2,500円）" : "2,500円・コマを使う"}</span><span class="spot-desc">吸えるブースつき。物販もやってる分、他店より少し安い（3,000円→2,500円）</span></button>` +
+    `<button class="spot-btn" id="fookah-rin"${rinOff ? " disabled" : ""}><span class="spot-name">${isMet("rin") ? "凛さんに会う＋ブースで一服" : "ブースで一服する"}</span><span class="spot-cost">${rinDone ? "今日はもう行った" : broke ? "所持金が足りない（2,500円）" : "2,500円・コマを使う"}</span><span class="spot-desc">吸えるブースつき。物販もやってる分、他店より少し安い（3,000円→2,500円）</span></button>` +
     `</div>` +
     `<button class="primary-btn ghost tn-close" id="fookah-close">← マップに戻る</button>` +
     `</div>`;
