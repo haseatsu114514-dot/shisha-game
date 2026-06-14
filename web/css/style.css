@@ -19,6 +19,9 @@ html, body {
   background: #000;
   color: var(--text);
   font-family: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", "Hiragino Kaku Gothic ProN", "Noto Sans JP", serif;
+  touch-action: manipulation; /* スマホ: ダブルタップ拡大とタップ遅延を抑制（オーナー指摘・iOSはuser-scalable=noを無視するため） */
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
 }
 
 body {
