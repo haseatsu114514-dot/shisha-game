@@ -99,6 +99,13 @@ await page.screenshot({ path: `${OUT}/07_tournament_theme.png` });
 async function title() { return page.locator("#tn-title").textContent(); }
 for (let i = 0; i < 2500; i++) {
   const s = await active();
+  // 朝のLIME（phone-overlay）が出ていたら先に返信して閉じる（クリック横取り対策・ch2.mjsと同様）
+  if (await page.locator("#phone-overlay.show").count()) {
+    const r = page.locator("#phone-overlay .lime-reply").first();
+    if (await r.count()) await r.click().catch(() => {});
+    await page.waitForTimeout(120);
+    continue;
+  }
   if (s === "screen-end") break;
   if (s === "screen-dialogue") {
     const c = page.locator("#vn-choices .choice-btn").first();
