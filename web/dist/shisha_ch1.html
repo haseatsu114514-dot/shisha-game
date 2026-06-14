@@ -5204,7 +5204,8 @@ function rankFromPts(pts) {
 // 「若いので甘め。ただし無理を重ねると寝込む」。数値は非表示でゲージのみ
 const STAMINA_LOW = 25;        // ここ未満でシーシャ系行動 → 警告→強行で酸欠
 const STAMINA_COST = { baito: 18, visit: 10, talk: 5, practice: 8, rin: 10, date: 6, homePuff: 8, gym: 6 };
-const STAMINA_GAIN = { rest: 35, cafe: 12, kannon: 12, sleep: 28 };
+// 体力は蓄積制(#41): 夜の自然回復(sleep)は控えめ＝疲労が溜まる。フル回復は「家で休む」、恋人会いは好感度に応じて
+const STAMINA_GAIN = { rest: 35, cafe: 12, kannon: 12, sleep: 22 };
 function stamina() { return state.stamina ?? 100; }
 function addStamina(n) {
   state.stamina = Math.max(0, Math.min(100, stamina() + n));
@@ -6791,6 +6792,8 @@ function loverQuickMeet(charId) {
     ],
   }, () => {
     gainAffinity(charId, "quick");
+    // 恋人に会うと好感度に応じて体力が回復する（#41・コマは使わない）
+    addStamina(12 + (state.affinity[charId] || 0) * 5);
     dateContext = false;
     save();
     showMap();
@@ -7682,12 +7685,15 @@ function doRinVisit() {
 function doRest() {
   visitContextChar = null;
   state.flags._rested_today = true; // 体力に余裕がある日（家シーシャの効きが良くなる）
-  addStamina(STAMINA_GAIN.rest);
+  // 家で休む＝フル回復（#41）。溜まった疲労（overwork）もリセット＝「あえて休む」選択に意味
+  state.stamina = 100;
+  state.flags._overwork = 0;
+  updateHud();
   playCustom({
     dialogue_id: "rest_home",
     metadata: { bg: "res://assets/backgrounds/bg_home.png" },
     lines: [
-      { speaker: "", face: "", text: "今日は家でゆっくり休んだ。湯船に浸かって、早めに布団に入る。" },
+      { speaker: "", face: "", text: "今日は家でゆっくり休んだ。湯船に浸かって、早めに布団に入る。\n……体の芯から、疲れがすっかり抜けていった。" },
       { speaker: "hajime", face: "normal", text: "（大会まで、あと少し。……やれるだけのことは、やろう）" },
       { type: "apply", stats: { guts: 2 } },
     ],
