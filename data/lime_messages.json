@@ -95,13 +95,13 @@
         },
         {
           "sender": "adam",
-          "text": "今夜、観音で新たな『導き』を見つけに行クガ……同行スルカ？"
+          "text": "今宵、観音で新たな『導き』を見つけに行く。……同行するか？"
         }
       ],
       "accept_event": "outing_adam_1",
       "decline_response": {
         "sender": "adam",
-        "text": "ソウカ……ならば一人で歩モウ。"
+        "text": "そうか……ならば、一人で歩もう。"
       }
     },
     {
@@ -413,7 +413,7 @@
         },
         {
           "sender": "adam",
-          "text": "もうすぐ大会ダネ。リンゴの祝福は受ケテイルカ？"
+          "text": "もうすぐ大会だな。リンゴの祝福は、受けているか？"
         }
       ],
       "replies": [
@@ -676,7 +676,7 @@
         },
         {
           "sender": "adam",
-          "text": "昨夜の月ダ。……良い夜ダッタ。"
+          "text": "昨夜の月だ。……良い夜だった。"
         }
       ],
       "replies": [
@@ -930,6 +930,36 @@
           "sender": "naru",
           "text": "まあ都市伝説だけどな。でも思ったよ。地方で勝った負けたって言ってる間も、世界はとんでもなく広い。……お互い、行けるとこまで行こうぜ"
         }
+      ]
+    },
+    {
+      "id": "lime_fookah_promo_1",
+      "sender": "rin",
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 4,
+      "type": "chat",
+      "messages": [
+        { "sender": "rin", "text": "【Dr.fookah 入荷情報】新しいロット、棚に並べたよ" },
+        { "sender": "rin", "text": "今期のイチ推しは『AF グレープ』。素直に旨い、迷ったらこれ。くじにも何袋か紛れてるらしい" },
+        { "sender": "rin", "text": "……モルモットくんの舌なら、違いが分かるでしょ。2階の試香、いつでもどうぞ" }
+      ],
+      "replies": [
+        { "text": "行ってみます", "response": "うん。財布と相談しなよ。……いいフレーバーは、いい一台の半分だからね", "affinity": 0 }
+      ]
+    },
+    {
+      "id": "lime_fookah_promo_2",
+      "sender": "rin",
+      "trigger_condition": "lime_exchanged",
+      "trigger_day": 9,
+      "type": "chat",
+      "messages": [
+        { "sender": "rin", "text": "【Dr.fookah 入荷情報】限定フローラル『AF ローズ』、少量だけ入った" },
+        { "sender": "rin", "text": "気難しい子だけど、ハマると余韻がすごい。大会前の隠し玉にどう？" },
+        { "sender": "rin", "text": "在庫は早い者勝ち。くじを回すなら、そっちにも紛れてるかもね" }
+      ],
+      "replies": [
+        { "text": "チェックします", "response": "よろしい。……本番、楽しみにしてる", "affinity": 0 }
       ]
     }
   ]

@@ -159,6 +159,8 @@ class DialogueEngine {
     if (line === undefined) {
       this.finished = true;
       this.el.choices.innerHTML = "";
+      // シーン（この会話）が終わった合図。SKIPはここで解除して、転換は通常速度で見せる
+      if (this.ctx.onSceneEnd) this.ctx.onSceneEnd();
       if (this.onFinish) this.onFinish();
       return;
     }

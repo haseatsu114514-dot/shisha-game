@@ -59,8 +59,10 @@ const weightOf = (table, id) => table.find((r) => r.id === id).weight;
     const m = (sim[role.id] || "0 (").match(/^(\d+)/);
     const n = m ? Number(m[1]) : 0;
     const expected = (role.weight / 1000) * total;
-    // フリーズ折り込み(bigへ+4)・天井格上げ・救済があるため緩めの帯で確認
-    const lo = expected * 0.7, hi = expected * 1.5;
+    // フリーズ折り込み(bigへ+4)・救済があるため緩めの帯で確認。
+    // reg/big は本天井(15回)で底上げされる（当たり保証）ので上限を広く取る
+    const ceilingAffected = role.id === "reg" || role.id === "big";
+    const lo = expected * 0.7, hi = expected * (ceilingAffected ? 2.8 : 1.5);
     assert.ok(n > lo && n < hi, `${role.id} の出現数が帯域外: ${n} (期待≒${Math.round(expected)})`);
   }
   log("distribution OK:", JSON.stringify(sim.perChapter28), "ペカ合算", sim.pekaRate);

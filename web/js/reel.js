@@ -36,10 +36,10 @@ const REEL = (() => {
   //   ベル 1/83（レア小役）／中段チェリー等 1/200（BIG確定プレミア）／
   //   ペカ合算 ≒ 1/15（章1.8回前後。ハマれば天井が拾う）／フリーズは別枠制御（下記）
   const ROLES = [
-    { id: "miss",   weight: 682 },
+    { id: "miss",   weight: 666 },
     { id: "replay", weight: 137 },
     { id: "cherry", weight: 110 },
-    { id: "bell",   weight: 12 },
+    { id: "bell",   weight: 28 },
     { id: "rare",   weight: 5 },   // 中段チェリー/単独パッキー → BIG確定（プレミア告知）
     { id: "reg",    weight: 24 },
     { id: "big",    weight: 26 },
@@ -56,7 +56,7 @@ const REEL = (() => {
   // 裏確変（引き弱救済）: 生涯ペカ数が期待値の55%を割っていたら、こっそり reg/big を1.7倍
   const RESCUE = { minSpins: 30, ratio: 0.55, mult: 1.7, expectedRate: 0.075 };
   // 天井: ゾーン=8連続ハズレで次回小役以上 ／ 本天井=40Gペカ無しで次回ペカ確定（日・章をまたいで持ち越し）
-  const CEILING = { zoneRun: 8, mainRun: 40 };
+  const CEILING = { zoneRun: 8, mainRun: 15 }; // 本天井=15回でペカ確定（当たればリセット）。残り5回から示唆を出す
   // ジャグ連: BIG級（big/rare/freeze/重複BIG）後 5G は reg/big ×1.5（ハズレから移譲）
   const JUG_REN = { games: 5, mult: 1.5 };
   const REPLAY_CHAIN_MAX = 4;
@@ -236,6 +236,8 @@ const REEL = (() => {
       reel.count += 1;
       reel.missRun = role === "miss" ? reel.missRun + 1 : 0;
       reel.bonusGap = isPeka ? 0 : reel.bonusGap + 1;
+      // 本天井（15回）までの残り。当たれば満タンに戻る。残り5回から示唆を出す
+      result.ceilingRemain = isPeka ? CEILING.mainRun : Math.max(0, CEILING.mainRun - reel.bonusGap);
       reel.bonusCount = (reel.bonusCount || 0) + (isPeka ? 1 : 0);
       if (role === "freeze") reel.freezeCount = (reel.freezeCount || 0) + 1;
       if (result.zone) reel.zoneLeft = JUG_REN.games;
@@ -338,9 +340,10 @@ const REEL = (() => {
     const results = spinSeries(reel, { chapterFirst });
     for (const r of results) {
       r.target = target;
-      // ステ上乗せ（直接書き込み。バナーは演出時に出す）
+      // ステ上乗せ（直接書き込み。バナーは演出時に出す）。章ごとのソフトキャップを尊重(#42)
       if (r.exp > 0 && state.stats && target in state.stats) {
-        state.stats[target] = Math.max(0, Math.min(100, state.stats[target] + r.exp));
+        const cap = (typeof statSoftCap === "function") ? statSoftCap() : 100;
+        state.stats[target] = Math.max(0, Math.min(cap, state.stats[target] + r.exp));
       }
       // スロノート（Phase 2 の記録画面用に今から積んでおく）
       const note = reel.note || (reel.note = {});
@@ -417,13 +420,25 @@ const REEL = (() => {
       el.style.transform = `translateY(${tyFor(stops[i])}px)`;
     });
   }
-  function bubble(text, ms) {
+  function bubble(text, ms, cls) {
     const b = document.querySelector("#reel-bubble");
     if (!b) return;
     b.textContent = text;
+    b.classList.remove("hot", "rare");
+    if (cls) b.classList.add(cls); // 熱い/レアなセリフは色を変える（T24）
     b.classList.add("show");
     clearTimeout(bubble._t);
     if (ms !== 0) bubble._t = setTimeout(() => b.classList.remove("show"), ms || 1800);
+  }
+  // 直近3件と被らないランダム抽選（同じセリフの連発を防ぐ・T24）
+  const _recentLines = [];
+  function pick(pool) {
+    if (!pool || !pool.length) return "";
+    let c, tries = 0;
+    do { c = pool[Math.floor(Math.random() * pool.length)]; tries++; }
+    while (_recentLines.includes(c) && tries < 10 && pool.length > 3);
+    _recentLines.push(c); if (_recentLines.length > 3) _recentLines.shift();
+    return c;
   }
   function lampOn(premium) {
     const lamp = document.querySelector("#reel-lamp");
@@ -492,7 +507,7 @@ const REEL = (() => {
     setTimeout(() => widget.classList.remove("gakkun"), 500);
     if (!silent) sfx("reelLever");
     if (r.variant === "okure" && !fast) setTimeout(() => sfx("pugo"), 420); // 遅れ「……プゴッ」
-    if (r.variant === "before" && !fast) setTimeout(() => lampOn(false), 220); // 先プカ
+    // 先告知（先プカ）は廃止：回転前には光らせない。点灯はリール停止後に見せてから揃える（T31）
     strips.forEach((el) => { el.style.transform = ""; el.classList.add("spinning"); });
     if (silent) widget.classList.add("silent-spin");
 
@@ -519,22 +534,73 @@ const REEL = (() => {
     }, spinMs);
   }
 
+  // 役の恩恵をパッキー口調で説明する（T18）。経験値は数値を出さず体感語で
+  function benefitLine(r) {
+    const names = typeof STAT_KEYS !== "undefined" ? STAT_KEYS : {};
+    const stat = (r && r.target && names[r.target]) ? names[r.target] : null;
+    const amt = r.exp >= 6 ? "どっさり" : r.exp >= 4 ? "しっかり" : r.exp >= 2 ? "ちょっと" : "わずかに";
+    return stat ? `【${stat}】の経験値が${amt}入ったよ！` : `経験値が${amt}入ったよ！`;
+  }
+  // 天井が近いときの抽象的な示唆（数値は出さない・短く・近づくほど熱く・パターン多め）（T19/T21/T24）
+  const CEILING_HINTS = {
+    far:  ["……近いかも？", "そろそろ？", "む、来そう", "気配がする……", "んん？", "ボクの勘が……"],
+    near: ["もうすぐ……！？", "近い……！", "ピクッ……！", "あと少し……？", "うずうず……！", "そろそろだよっ"],
+    soon: ["次っ……！？", "来るッ……！", "いつ光っても……！", "ビンビンくる……！", "うおっ、もう！", "ためてためて……！"],
+  };
+  function ceilingHint(remain) {
+    return pick(remain <= 1 ? CEILING_HINTS.soon : remain <= 3 ? CEILING_HINTS.near : CEILING_HINTS.far);
+  }
+  // 外れでもたまに楽しいことを言う（T18/T21/T24・短く・多バリエーション）
+  const FUN_MISS = [
+    "はずれ〜♪", "ぷぷっ、ノーカン！", "むむ、惜しい", "今、力ためてる！たぶん", "ボクはウソつくよ♪",
+    "ノーれんちゃん中〜", "やる気は満タン！", "次に期待してね♪", "危なかった……何が？", "知ってた（嘘）",
+    "煙、いい色〜", "まばたきした？", "今のは練習！", "宇宙を感じる……", "ぷかぷか〜", "ぐぬぬ",
+    "せーの、で来るやつ", "……はっ、寝てた", "ノーコメントで！", "ちっ", "むむむ", "ぼちぼち〜",
+  ];
+  function funMiss() { return pick(FUN_MISS); }
+  // ごくまれに出るレア台詞（外れ時・短く・赤文字で表示）（T21/T24）
+  const RARE_MISS = [
+    "ねえ、たまにはボクの話も♪", "（小声）誰が作ったんだろ、これ", "スミさん、さっき笑ってたよ？",
+    "今、いい匂いした。気のせい？", "案外いいコンビかもね", "キミの煙、ボク好きだよ",
+  ];
+  function rareMiss() { return pick(RARE_MISS); }
+  function bonusName(r) {
+    return (r.role === "big" || r.overlap === "big") ? "ビッグボーナス"
+      : r.role === "rare" ? "プレミア"
+      : "レギュラーボーナス";
+  }
+
   function afterStop(r, fast, done) {
     switch (r.role) {
       case "miss":
+        // 天井が近いと抽象的に示唆（数値は出さない）。たまに外れでも楽しい/レアなことを言う（T18/T19/T24）
+        if (!fast) {
+          if (r.ceilingRemain > 0 && r.ceilingRemain <= 5) {
+            bubble(ceilingHint(r.ceilingRemain), 1500, r.ceilingRemain <= 1 ? "hot" : null);
+            if (r.ceilingRemain <= 2 && fx() !== "off") sfx("puka");
+          } else {
+            const rnd = Math.random();
+            if (rnd < 0.025) { bubble(rareMiss(), 2200, "rare"); sfx("reelWin"); }
+            else if (rnd < 0.20) bubble(funMiss(), 1400);
+          }
+        }
         return done();
       case "replay":
-        // リプレイ＝もう1回転。次の回転がすぐ始まるので、何が起きたか分かるよう
-        // ひと呼吸おき、吹き出しは次の回転の頭まで残す（#リプレイが一瞬すぎる）
-        if (!fast) { widget.classList.add("flash-blue"); sfx("reelWin"); bubble("リプレイ！　もう1回転", 1500); }
-        setTimeout(() => { widget.classList.remove("flash-blue"); done(); }, fast ? 60 : 720);
+        // リプレイ成立＝もう1回転。揃った直後に再回転すると何が起きたか分からないので、
+        // 「リプレイ成立！」を見せたまま、はっきり間をおいてから次の回転へ（指摘2回目・#リプレイが一瞬）
+        if (fast) { setTimeout(done, 60); return; }
+        widget.classList.add("flash-blue"); sfx("reelWin");
+        bubble("リプレイ成立！", 0); // 0=自動で消さず保持。揃いをしっかり見せる
+        setTimeout(() => widget.classList.remove("flash-blue"), 520);
+        setTimeout(() => { bubble("……もう1回転！", 1000); sfx("puka"); }, 1050); // ひと呼吸おいて予告
+        setTimeout(() => { done(); }, 1700); // 揃い → 間 → 再回転
         return;
       case "cherry": {
         sfx("reelWin");
         if (!r.overlap) {
-          if (!fast) bubble("チェリー！");
+          if (!fast) bubble(`チェリーッ！　${benefitLine(r)}`, 1900); // 役名＋恩恵を読み上げ（T18）
           announce(r);
-          return setTimeout(done, fast ? 60 : 550);
+          return setTimeout(done, fast ? 60 : 700);
         }
         // チェリー重複: 小役の払い出しの後にひと呼吸おいてペカッ。
         // キューは止めない（ランプ点灯のまま進み、タップ or 次の回転前に自動精算）
@@ -542,26 +608,26 @@ const REEL = (() => {
           lampOn(false);
           sfx("puka");
           bubble("重複ペカ！？", 0);
-          bonusWait = { ...r, done: null };
-          if (fast) settleBonus(bonusWait, true);
-          done();
+          bonusWait = { ...r, done };
+          if (fast) return settleBonus(bonusWait, true);
+          setTimeout(() => { if (bonusWait) settleBonus(bonusWait, false); }, 1000); // 点灯を見せてから自動で揃え(T31)
         };
         return setTimeout(start, fast ? 0 : 600);
       }
       case "bell":
         sfx("reelWin");
-        bubble("パインベル！");
+        if (!fast) bubble(`パインベルッ！　${benefitLine(r)}`, 1900); // 役名＋恩恵を読み上げ（T18）
         announce(r);
-        return setTimeout(done, fast ? 60 : 600);
+        return setTimeout(done, fast ? 60 : 800);
       case "rare": {
         // 中段チェリー/単独パッキー = BIG確定（プレミア告知）
         const start = () => {
           lampOn(true);
           sfx("puka");
           bubble("ぷぷぷぷぷ！！", 0);
-          bonusWait = { ...r, done: null };
-          if (fast) settleBonus(bonusWait, true);
-          done();
+          bonusWait = { ...r, done };
+          if (fast) return settleBonus(bonusWait, true);
+          setTimeout(() => { if (bonusWait) settleBonus(bonusWait, false); }, 1100); // 点灯を見せてから自動で揃え(T31)
         };
         if (fast) return start();
         sfx("pugo");
@@ -574,9 +640,10 @@ const REEL = (() => {
           lampOn(r.variant === "silent" || r.ceiling === "main");
           sfx("puka");
           bubble(r.ceiling === "main" ? "おたすけパッキー！" : "ぷぷぷっ！", 0);
-          bonusWait = { ...r, done: null };
-          if (fast) settleBonus(bonusWait, true);
-          done();
+          bonusWait = { ...r, done };
+          if (fast) return settleBonus(bonusWait, true);
+          // 光ったのを見せてから、タップ不要で自動的にリールが揃えに入る（ジャグラー風）(#49/T31)
+          setTimeout(() => { if (bonusWait) settleBonus(bonusWait, false); }, 1000);
         };
         return setTimeout(start, r.variant === "after" || r.variant === "silent" ? (fast ? 0 : 320) : 0);
       }
@@ -594,7 +661,13 @@ const REEL = (() => {
     bonusWait = null;
     lampOff();
     bubble("", 1);
-    const finish = () => { announce(b); if (b.done) { const d = b.done; b.done = null; d(); } };
+    const finish = () => {
+      announce(b);
+      // ボーナスも役名＋恩恵をパッキーが読み上げる（T18）。BIG/プレミアは熱いので赤文字（T24）
+      const big = b.role === "big" || b.role === "rare" || b.overlap === "big";
+      if (!fast && fx() !== "off") bubble(`${bonusName(b)}ッ！　${benefitLine(b)}`, 2600, big ? "hot" : null);
+      if (b.done) { const d = b.done; b.done = null; d(); }
+    };
     if (fast || fx() === "lite") { sfx("fanfare"); return finish(); }
     const isBig = b.role === "big" || b.role === "rare" || b.overlap === "big";
     const c = ensureCutin();

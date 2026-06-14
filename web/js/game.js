@@ -47,7 +47,9 @@ function rankFromPts(pts) {
 // 「若いので甘め。ただし無理を重ねると寝込む」。数値は非表示でゲージのみ
 const STAMINA_LOW = 25;        // ここ未満でシーシャ系行動 → 警告→強行で酸欠
 const STAMINA_COST = { baito: 18, visit: 10, talk: 5, practice: 8, rin: 10, date: 6, homePuff: 8, gym: 6 };
-const STAMINA_GAIN = { rest: 35, cafe: 12, kannon: 12, sleep: 28 };
+// 体力は蓄積制(#41): 夜の自然回復(sleep)はやや控えめ＝疲労が緩く溜まる（普通の混在プレイは持つが、無理は溜まる）。
+// フル回復は「家で休む」、恋人会いは好感度に応じて
+const STAMINA_GAIN = { rest: 35, cafe: 12, kannon: 12, sleep: 25 };
 function stamina() { return state.stamina ?? 100; }
 function addStamina(n) {
   state.stamina = Math.max(0, Math.min(100, stamina() + n));
@@ -276,16 +278,25 @@ function stars(value) {
 // バッジには漢字一字、サブには「少し上がった」等の抽象表現を出す
 const STAT_BADGE = { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "観" };
 
+// 章ごとのステータス育成ソフトキャップ（#42）。ch1で上限に張り付かないよう抑え、
+// 5章で全100＝完全攻略を狙えるカーブにする。数値は非表示なので体感は「★がゆっくり伸びる」
+function statSoftCap() {
+  return ({ 1: 42, 2: 60, 3: 76, 4: 92, 5: 100 })[state ? state.chapter : 1] || 100;
+}
+
 function gainStat(en, amount) {
   if (!(en in state.stats) || amount <= 0) return;
-  // 対象がすでに上限なら、未カンストのステータスへランダムに振り替える（伸び続ける実感を保つ）
-  if (state.stats[en] >= 100) {
-    const open = Object.keys(state.stats).filter((k) => state.stats[k] < 100);
-    if (!open.length) return; // 全部カンストなら何もしない
+  const cap = statSoftCap();
+  // 対象がその章の上限なら、未到達のステータスへ振り替える（伸び続ける実感を保つ）
+  if (state.stats[en] >= cap) {
+    const open = Object.keys(state.stats).filter((k) => state.stats[k] < cap);
+    if (!open.length) return; // 全ステが章上限なら、今章はこれ以上伸びない
     en = open[Math.floor(Math.random() * open.length)];
   }
-  state.stats[en] = Math.max(0, Math.min(100, state.stats[en] + amount));
-  if (typeof REEL !== "undefined") REEL.noteStat(en, amount); // 直近の伸びをスロットのアンコール抽選に記録
+  const before = state.stats[en];
+  state.stats[en] = Math.max(0, Math.min(cap, before + amount));
+  if (state.stats[en] === before) return; // 実際に増えなかったら通知しない
+  if (typeof REEL !== "undefined") REEL.noteStat(en, state.stats[en] - before); // 直近の伸びをスロットのアンコール抽選に記録
   const label = amount >= 5 ? "大きく上がった" : amount >= 3 ? "上がった" : "少し上がった";
   gainBanner({
     kind: "stat",
@@ -988,6 +999,7 @@ function initEngine() {
     {
       getStat: (en) => state.stats[en] || 0,
       interpolate: (t) => interpolate(t),
+      onSceneEnd: () => { if (skipMode) stopAutoSkip(); }, // 会話が終わったらSKIP解除（シーン転換を飛ばさない・T29）
       portraitFaces: D.portraits,
       portraitTrims: D.portrait_trims,
       portraitScales: D.portrait_scales,
@@ -1079,11 +1091,16 @@ function playCustom(dialogue, onDone, bgOverride) {
 }
 
 // ---------------------------------------------------------------- daily loop
-const SPOTS = [
+// tonari統合(#9): バイト・練習・スミさん・常連席(つむぎ) は「tonari」1スポットに集約（場所で管理）。
+// マップでは tonari ピン → サブメニュー（showTonari）でどれをするか選ぶ。
+const TONARI_SPOTS = [
   { id: "baito", label: "tonariでバイト", desc: "接客で稼ぐ。基本給＋オーダーの出来で売上ボーナス", cost: 0 },
   { id: "practice", label: "シーシャの練習", desc: "tonariの隅で腕を磨く", cost: 0 },
   { id: "sumi", label: "スミさんと話す", desc: "師匠の昔話と教え", cost: 0, charId: "sumi" },
-  { id: "tsumugi", label: "つむぎと話す", desc: "tonari常連の彼女の席へ", cost: 0, charId: "tsumugi" },
+  { id: "tsumugi", label: "常連席（つむぎ）", desc: "tonari常連の彼女の席へ", cost: 0, charId: "tsumugi" },
+];
+const SPOTS = [
+  { id: "tonari", label: "tonari（お店）", desc: "バイト・練習・スミさん・常連席。今日は店で何をする？", cost: 0 },
   { id: "naru", label: "なるの店へ行く", desc: "ライバル店を偵察", cost: VISIT_COST, charId: "naru" },
   { id: "adam", label: "アダムの店へ行く", desc: "ダブルアップル職人の店", cost: VISIT_COST, charId: "adam" },
   { id: "minto", label: "みんとの店へ行く", desc: "コンカフェ風シーシャ屋へ", cost: VISIT_COST, charId: "minto" },
@@ -1440,24 +1457,24 @@ function phoneShowCustom(threads, onDone, header = {}) {
   setTimeout(nextLimeThread, 800);
 }
 
-// 優勝の夜のスマホ: なるの採点表どんでん →「？？？」の不穏な通知。
-// 「実力で勝った」という自己認識を最初から揺らし、ch2の転落と
-// ch5のチャコール博士まで効く縦糸を張る
+// 優勝の夜のスマホ: スミさんの採点表どんでん →「？？？」の不穏な通知。
+// 「実力で勝った」という自己認識を、師匠の口から最初に揺らす。ch2の転落と
+// ch5のチャコール博士まで効く縦糸を張る（突きつけ役をなる→スミさんへ・オーナー指定）
 function postClearPhone(onDone) {
   phoneShowCustom([
     {
-      id: "_sys_naru_scoresheet",
-      sender: "naru",
+      id: "_sys_sumi_scoresheet",
+      sender: "sumi",
       type: "chat",
       messages: [
-        "今日はマジでおめでとう。……で、なんだけど",
-        "家帰ってから、開示された採点表をずっと見直してた",
-        "技術点も個性点も、お前は4人の中で下位だ。俺にも負けてる",
-        "お前を優勝させたのは、南雲さんの「総合印象点」ひとつだけ。あの人、お前にだけ満点つけてる",
-        "おめでとうは取り消さない。今日のお前の煙が美味かったのも本当だ。……でも「実力で勝った」とはまだ言わせない",
-        "あの一票が何だったのか──全国までに、お互い答えを持っていこうぜ",
+        "おう。優勝、見事だった",
+        "……で、だ。開示された採点表、もう見たか",
+        "技術点も個性点も、お前は4人の中で下位だ。なるにも負けてる",
+        "お前を勝たせたのは、南雲さんの「総合印象点」ひとつ。あの人が、お前にだけ満点をつけた",
+        "勝ちは勝ちだ。今日のお前の煙が美味かったのも、嘘じゃない。──だが「実力で勝った」とは思うな",
+        "あの一票が何だったのか。全国までに、自分で答えを出せ",
       ],
-      close_label: "……うん。ありがとう、なるさん",
+      close_label: "……はい。ありがとうございます、スミさん",
       no_reward: true,
     },
     {
@@ -1657,6 +1674,8 @@ function loverQuickMeet(charId) {
     ],
   }, () => {
     gainAffinity(charId, "quick");
+    // 恋人に会うと好感度に応じて体力が回復する（#41・コマは使わない）
+    addStamina(12 + (state.affinity[charId] || 0) * 5);
     dateContext = false;
     save();
     showMap();
@@ -1666,18 +1685,15 @@ function loverQuickMeet(charId) {
 // 行き先ピンの短い見出し。キャラのいる場所は顔ドット絵を優先し、
 // 施設は日本語の略号（顔アイコンが無い場合のフォールバックも兼ねる）
 const SPOT_ICONS = {
-  baito: "労", practice: "練", sumi: "師", tsumugi: "紬",
+  tonari: "店", baito: "労", practice: "練", sumi: "師", tsumugi: "紬",
   naru: "鳴", adam: "亜", minto: "緑", choizap: "筋",
   kannon: "観", cafe: "珈", c_station: "C", shop: "店", rest: "休",
 };
-const SPOT_FACE = { sumi: "sumi", tsumugi: "tsumugi", naru: "naru", adam: "adam", minto: "minto" };
+const SPOT_FACE = { tonari: "sumi", sumi: "sumi", tsumugi: "tsumugi", naru: "naru", adam: "adam", minto: "minto" };
 
 // マップ上のピン位置（%）と短いラベル名
 const SPOT_LAYOUT = {
-  baito:     { x: 14, y: 32, theme: "baito",   short: "バイト",     area: "tonari" },
-  practice:  { x: 22, y: 50, theme: "shisha",  short: "練習",       area: "tonari" },
-  sumi:      { x: 12, y: 64, theme: "mentor",  short: "スミさん",   area: "tonari" },
-  tsumugi:   { x: 26, y: 70, theme: "shisha",  short: "常連席",     area: "tonari" },
+  tonari:    { x: 16, y: 50, theme: "baito",   short: "tonari",     area: "tonari" },
   naru:      { x: 42, y: 22, theme: "rival",   short: "KEMURIKUSA", area: "繁華街" },
   adam:      { x: 56, y: 30, theme: "rival",   short: "EDEN",       area: "下町" },
   minto:     { x: 70, y: 22, theme: "rival",   short: "PEPERMINT",  area: "繁華街" },
@@ -1766,8 +1782,45 @@ function showMap(opts = {}) {
   updateMapInfo(null);
   save();
   // たまったスロット結果をマップ表示時に精算（非ブロッキング）。
-  // skipReel 指定時は精算を保留（DAYカード/LIMEと被らせないため advanceDay が後で回す #34）
-  if (!opts.skipReel && typeof REEL !== "undefined") REEL.onMapShown();
+  // skipReel 指定時は精算を保留（advanceDay が朝のLIMEの後で回す #34）。
+  // DAYカード表示中は被るので、カードが消えてから回す（#11 「DAY表示中にスロットが回る」）
+  if (!opts.skipReel && typeof REEL !== "undefined") {
+    // 夜のスロットは「日付変更画面（DAYカード）」が消えてから回す＝被って見えない問題の解消(#34/T30)。
+    // カードが出ている間はポーリングで待ち、消えたら回す
+    const drainReel = () => {
+      if (document.querySelector("#day-card.show")) { setTimeout(drainReel, 250); return; }
+      REEL.onMapShown();
+    };
+    drainReel();
+  }
+  mapTutorial(); // 初回だけマップの使い方を点滅で案内（#36）
+}
+
+// 初めてマップに出たときだけ、機能を点滅つきで一度だけ説明する（#36）。
+// クリックを邪魔しない（pointer-events:none・タップか数秒で消える）＝自動テストも止めない
+function mapTutorial() {
+  if (!state || state.flags._map_tutorial_done) return;
+  const screen = document.querySelector("#screen-map");
+  if (!screen || !screen.classList.contains("active")) return;
+  state.flags._map_tutorial_done = true; save();
+  // 主要ピンを点滅させて注意を引く
+  screen.querySelectorAll("#map-pins .spot-pin:not(:disabled)").forEach((p, i) => {
+    if (i < 4) { p.classList.add("tut-pulse"); setTimeout(() => p.classList.remove("tut-pulse"), 6200); }
+  });
+  const ov = document.createElement("div");
+  ov.id = "map-tutorial";
+  ov.innerHTML =
+    `<div class="mt-card">` +
+    `<p class="mt-title">ここがマップ</p>` +
+    `<p class="mt-body">行きたい場所をタップして、1日2回うごこう。<br>` +
+    `<b>バイト</b>でお金、<b>練習</b>でスキル、<b>人に会う</b>と好感度。<br>` +
+    `行ける場所は明るいピン、暗いピンはまだ解放前。大会の日までに、できることを。</p>` +
+    `<p class="mt-tap">（タップで閉じる）</p></div>`;
+  screen.appendChild(ov);
+  requestAnimationFrame(() => ov.classList.add("show"));
+  const close = () => { ov.classList.remove("show"); setTimeout(() => ov.remove(), 350); screen.removeEventListener("click", close, true); };
+  setTimeout(close, 7000);
+  setTimeout(() => screen.addEventListener("click", close, true), 400); // 少し置いてからタップで閉じられる
 }
 
 function updateMapInfo(spot, locked, tooPoor, closed, visited) {
@@ -1816,13 +1869,14 @@ function selectSpot(spot) {
   const proceed = () => {
     if (spot.cost > 0) addMoney(-spot.cost);
     switch (spot.id) {
+      case "tonari": return showTonari(); // tonari統合(#9): 中で何をするか選ぶ（行動はサブ選択時に消費）
       case "baito": return shishaGuard(() => doBaito());
       case "practice": return shishaGuard(() => startPractice());
       case "choizap": return doChoizap();
       case "kannon": return doSpotDialogue("kannon", "ch1_kannon_visit", "bg_street_day.png");
       case "cafe": return doSpotDialogue("cafe", "ch1_cafe_visit", "bg_street_day.png");
       case "c_station": return doSpotDialogue("c_station", "ch1_c_station_visit", "bg_shop.png");
-      case "shop": return showShop();
+      case "shop": return showFookahMenu(); // Dr.fookah: 物販利用 or 凛＋ブース を選ぶ(T28)
       case "rest": return doRest();
       default: {
         // よその店での一服は体力を使う（tonari内のスミさん・つむぎとの会話は軽い）
@@ -1834,6 +1888,44 @@ function selectSpot(spot) {
   // キャラ訪問: 好感度が上限まで来ていたら、行く前にひと言（master_spec の最大警告）
   if (spot.charId) return maybeVisitWarning(spot.charId, proceed, () => showMap());
   proceed();
+}
+
+// tonari統合(#9): tonari の中で「バイト/練習/スミさん/常連席」を選ぶサブメニュー。
+// マップ上にオーバーレイで出す（pointer-eventsは効かせる＝選ぶ）。選んだら selectSpot に委譲＝既存の流儀・警告・行動消費をそのまま使う
+function showTonari() {
+  document.getElementById("tonari-menu")?.remove();
+  const screen = document.querySelector("#screen-map");
+  if (!screen) return;
+  if (window.SFX) SFX.open();
+  const ov = document.createElement("div");
+  ov.id = "tonari-menu";
+  ov.innerHTML =
+    `<div class="tn-menu-card">` +
+    `<p class="tn-menu-title">tonari ── 今日は店で何をする？</p>` +
+    `<div class="tn-menu-list" id="tonari-list"></div>` +
+    `<button class="primary-btn ghost tn-close" id="tonari-close">← マップに戻る</button>` +
+    `</div>`;
+  screen.appendChild(ov);
+  const list = ov.querySelector("#tonari-list");
+  for (const spot of TONARI_SPOTS) {
+    const visited = spot.charId && state.dayVisited[spot.charId] === state.day;
+    const known = !spot.charId || isMet(spot.charId);
+    // つむぎは未紹介でも「常連席」の場所は分かる（名前だけ伏せる）＝ラベルに常連席を残す
+    const label = (spot.id === "tsumugi" && !known) ? "常連席（いつもの常連の子）" : spot.label;
+    const desc = visited ? "今日はもう行った" : (!known && SPOT_UNKNOWN[spot.id] ? SPOT_UNKNOWN[spot.id].desc : spot.desc);
+    const btn = document.createElement("button");
+    btn.className = "spot-btn";
+    btn.innerHTML = `<span class="spot-name">${label}</span><span class="spot-desc">${desc}</span>`;
+    if (visited) btn.disabled = true;
+    btn.addEventListener("click", () => {
+      if (btn.disabled) return;
+      ov.remove();
+      selectSpot(spot);
+    });
+    list.appendChild(btn);
+  }
+  ov.querySelector("#tonari-close").addEventListener("click", () => { if (window.SFX) SFX.close(); ov.remove(); });
+  requestAnimationFrame(() => ov.classList.add("show"));
 }
 
 // 好感度MAX/恋人の店に通おうとした時の事前確認。
@@ -2218,6 +2310,35 @@ function doChoizap() {
   doSpotDialogue("choizap", "ch1_choizap_visit", "bg_street_day.png");
 }
 
+// Dr.fookah を選んだら、物販利用か凛さんに会うかを選ぶ（T28・場所で管理）。
+// 物販=買い物のみ(無料・コマ不要)／凛=吸えるブースで一服＋会う(2,500円・コマを使う。物販もやってる分、他店3,000円より少し安い)
+function showFookahMenu() {
+  document.getElementById("fookah-menu")?.remove();
+  const screen = document.querySelector("#screen-map");
+  if (!screen) return;
+  if (window.SFX) SFX.open();
+  const rinDone = !!state.flags[`_rin_d${state.day}`];
+  const broke = state.money < FOOKAH_BOOTH_FEE;
+  const rinOff = rinDone || broke;
+  const ov = document.createElement("div");
+  ov.id = "fookah-menu";
+  ov.innerHTML =
+    `<div class="tn-menu-card">` +
+    `<p class="tn-menu-title">Dr.fookah ── どうする？</p>` +
+    `<div class="tn-menu-list">` +
+    `<button class="spot-btn" id="fookah-shop"><span class="spot-name">物販を利用する</span><span class="spot-cost">無料・コマ不要</span><span class="spot-desc">機材とフレーバーの買い物だけ。時間はかからない</span></button>` +
+    `<button class="spot-btn" id="fookah-rin"${rinOff ? " disabled" : ""}><span class="spot-name">凛さんに会う＋ブースで一服</span><span class="spot-cost">${rinDone ? "今日はもう行った" : broke ? "所持金が足りない（2,500円）" : "2,500円・コマを使う"}</span><span class="spot-desc">吸えるブースつき。物販もやってる分、他店より少し安い（3,000円→2,500円）</span></button>` +
+    `</div>` +
+    `<button class="primary-btn ghost tn-close" id="fookah-close">← マップに戻る</button>` +
+    `</div>`;
+  screen.appendChild(ov);
+  ov.querySelector("#fookah-shop").addEventListener("click", () => { ov.remove(); showShop(); });
+  const rinBtn = ov.querySelector("#fookah-rin");
+  if (!rinOff) rinBtn.addEventListener("click", () => { ov.remove(); doRinVisit(); });
+  ov.querySelector("#fookah-close").addEventListener("click", () => { if (window.SFX) SFX.close(); ov.remove(); });
+  requestAnimationFrame(() => ov.classList.add("show"));
+}
+
 // --- ショップ（行動を消費しない）
 function showShop() {
   visitContextChar = null;
@@ -2263,6 +2384,46 @@ function showShop() {
       grid.appendChild(btn);
     }
     list.appendChild(grid);
+  }
+  // フレーバー入荷（Dr.fookah）。その章の解放可能フレーバーを買うとミックスで使える＝パレットが広がる(#くじ/ショップにフレーバー)。
+  // 基本フレーバーは常時使える。買わなくても本番はスミさんがお情けで分けてくれる(#44)。
+  {
+    const flLabel = document.createElement("p");
+    flLabel.className = "setup-group-label";
+    flLabel.textContent = "フレーバー入荷（Dr.fookah）";
+    list.appendChild(flLabel);
+    const flGrid = document.createElement("div");
+    flGrid.className = "spot-list";
+    const stockable = D.flavors.filter((f) => f.unlockable && (f.chapter_min || 1) <= state.chapter);
+    for (const f of stockable) {
+      const owned = !!state.flags[f.requires_flag];
+      const price = f.price || 0;
+      const btn = document.createElement("button");
+      btn.className = "spot-btn";
+      btn.innerHTML =
+        `<span class="spot-name">${f.short_name || f.name}</span>` +
+        `<span class="spot-cost">${owned ? "入荷済み" : `${price.toLocaleString()}円`}</span>` +
+        `<span class="spot-desc">${f.description || ""}</span>`;
+      if (owned || price > state.money) btn.disabled = true;
+      btn.addEventListener("click", () => {
+        if (state.flags[f.requires_flag] || price > state.money) return;
+        addMoney(-price);
+        state.flags[f.requires_flag] = true;
+        state.flags._flavor_stocked = true; // 本番持参の救済条件(#44)も満たす
+        save();
+        if (window.SFX) SFX.coin();
+        toast(`${f.short_name || f.name} を入荷した`);
+        showShop();
+      });
+      flGrid.appendChild(btn);
+    }
+    if (!stockable.length) {
+      const none = document.createElement("p");
+      none.className = "tn-tutor";
+      none.textContent = "新しいフレーバーは、また後日入荷予定。";
+      flGrid.appendChild(none);
+    }
+    list.appendChild(flGrid);
   }
   // 売却（中古買取）: 機材のみ買値の50%で売れる。フレーバー系は開封済み扱いで不可（master_spec #21）
   const sellLabel = document.createElement("p");
@@ -2328,11 +2489,11 @@ function showShop() {
   rinBtn.id = "shop-rin";
   rinBtn.innerHTML =
     state.visits.rin === 0
-      ? `<span class="spot-name">2階から視線を感じる……</span><span class="spot-cost">行動を1回使う</span><span class="spot-desc">階段の上に、誰かいる</span>`
-      : `<span class="spot-name">2階のショールーム（${displayName("rin")}）</span>` +
-        `<span class="spot-cost">${rinAway ? "今日は出張で不在" : visitedToday ? "今日はもう顔を出した" : "会いに行く（行動を1回使う）"}</span>` +
-        `<span class="spot-desc">NIGHTSIDE日本代理店。買い物だけなら時間はかからない</span>`;
-  rinBtn.disabled = visitedToday || rinAway;
+      ? `<span class="spot-name">2階から視線を感じる……</span><span class="spot-cost">2,500円・行動を1回使う</span><span class="spot-desc">階段の上に、誰かいる。ブース付き</span>`
+      : `<span class="spot-name">2階のショールーム＋ブース（${displayName("rin")}）</span>` +
+        `<span class="spot-cost">${rinAway ? "今日は出張で不在" : visitedToday ? "今日はもう顔を出した" : "2,500円・会いに行く（行動を1回使う）"}</span>` +
+        `<span class="spot-desc">NIGHTSIDE日本代理店。吸えるブースつき（他店より少し安い）。買い物だけなら時間はかからない</span>`;
+  rinBtn.disabled = visitedToday || rinAway || state.money < FOOKAH_BOOTH_FEE; // ブース料が払えないと不可（T28）
   rinBtn.addEventListener("click", doRinVisit);
   rinWrap.appendChild(rinBtn);
   list.append(label, rinWrap);
@@ -2447,10 +2608,16 @@ function grantKujiPrize(prize) {
     }
     return;
   }
+  // フレーバー賞: ミックスで使えるように解放（その章のフレーバーが当たる）。本番持参の救済条件も満たす(#44)
+  if (prize.type === "flavor" && prize.flavorId) {
+    state.flags["_flavor_" + prize.flavorId] = true;
+    state.flags._flavor_stocked = true;
+    return;
+  }
   if (prize.type === "goods" && prize.sell) {
     state.goods.push({ name: prize.name, sell: prize.sell });
   }
-  // flavor / consumable は使用価値（このゲームでは抽象）。獲得演出のみ
+  // consumable は使用価値（このゲームでは抽象）。獲得演出のみ
 }
 
 // 引き演出: 箱→ティケット→ランク開封。上位賞は煙＋スモークリング
@@ -2485,9 +2652,12 @@ function revealKuji(prize, extras, done) {
 
 // 凛さんのショールーム（会いに行くと1コマ消費。買い物だけなら消費なし。1日1回）
 const RIN_SEQUENCE = ["ch1_rin_first", "ch1_rin_second", "ch1_rin_third"];
+const FOOKAH_BOOTH_FEE = 2500; // ブース利用料（物販もやってる分、他店3,000円より少し安い）(T28)
 function doRinVisit() {
   if (state.flags[`_rin_d${state.day}`]) return;
   const play = () => shishaGuard(() => {
+    if (state.money < FOOKAH_BOOTH_FEE) { toast(`ブース利用は${FOOKAH_BOOTH_FEE.toLocaleString()}円。所持金が足りない`); return showShop(); }
+    addMoney(-FOOKAH_BOOTH_FEE);
     state.flags[`_rin_d${state.day}`] = true;
     visitContextChar = "rin";
     addStamina(-STAMINA_COST.rin);
@@ -2516,12 +2686,15 @@ function doRinVisit() {
 function doRest() {
   visitContextChar = null;
   state.flags._rested_today = true; // 体力に余裕がある日（家シーシャの効きが良くなる）
-  addStamina(STAMINA_GAIN.rest);
+  // 家で休む＝フル回復（#41）。溜まった疲労（overwork）もリセット＝「あえて休む」選択に意味
+  state.stamina = 100;
+  state.flags._overwork = 0;
+  updateHud();
   playCustom({
     dialogue_id: "rest_home",
     metadata: { bg: "res://assets/backgrounds/bg_home.png" },
     lines: [
-      { speaker: "", face: "", text: "今日は家でゆっくり休んだ。湯船に浸かって、早めに布団に入る。" },
+      { speaker: "", face: "", text: "今日は家でゆっくり休んだ。湯船に浸かって、早めに布団に入る。\n……体の芯から、疲れがすっかり抜けていった。" },
       { speaker: "hajime", face: "normal", text: "（大会まで、あと少し。……やれるだけのことは、やろう）" },
       { type: "apply", stats: { guts: 2 } },
     ],
@@ -2739,10 +2912,12 @@ const DODGE_WORDS_CH2 = [
   "ヴォルクの精度", "組長の覚悟", "あげはのバイブス", "なるの配合ノート",
   "“誰の煙だ？”", "採点表", "正解はどれだ", "味が、思い出せない",
 ];
+// ch1ライバルの基礎点。実力（statScore+craft）だけでは普通3〜4位・最良でも2位に収まり、
+// 1位は南雲の総合印象点（craft基準超えで一括投入）だけが生む。逆転を「効かせる」ための難度設定。
 const RIVALS = [
-  { id: "naru", name: "なる", base: 72 },
-  { id: "adam", name: "アダム", base: 67 },
-  { id: "minto", name: "みんと", base: 62 },
+  { id: "naru", name: "なる", base: 82 },
+  { id: "adam", name: "アダム", base: 74 },
+  { id: "minto", name: "みんと", base: 67 },
 ];
 
 const EQUIP_TYPE_LABELS = { bowl: "ボウル", hms: "ヒートマネジメント", charcoal: "炭", homeware: "家シーシャ" };
@@ -2887,20 +3062,28 @@ const MC_BLOCK = {
   adjust:   "第2ラウンド、調整だ！　今の温度を読めるか！？",
   pull:     "いよいよ吸い出し──提供はもう目前だァ！",
 };
-const RIVAL_MC = [
-  "おっと、なる選手はもう炭を置いた！　速い！",
-  "アダム選手、ダブルアップルの甘い香りが審査席まで！",
-  "みんと選手、危なげなく工程を進めています！",
-  "なる選手、早くも提供の体勢に入ったか！？",
+// #26 ライバル実況フィード: 工程が進むほど「どのライバルが何を完了したか」が順に流れる＝ライブ感。
+// 実際のライバル制作は数値だけだが、提供までの進行を台本で見せる（はじめより少し速い緊張感）
+const RIVAL_FEED = [
+  "おっと、なる選手はもう配合を終えた！　速いィ！",
+  "アダム選手、ダブルアップルを詰め始めたぞ！",
+  "みんと選手、丁寧にアルミを巻いている！",
+  "なる選手、炭を置いたァ！　手際がいい！",
+  "アダム選手、蒸らしに入りました……勝負所だ！",
+  "なる選手、早くも吸い出し——提供間近か！？",
+  "みんと選手、危なげなく仕上げてきた！",
+  "アダム選手、提供完了ッ！　会場がどよめく！",
 ];
+let rivalFeedIdx = 0;
 function mcBlockIntro(step) {
   if (!broadcastActive()) return;
   const line = MC_BLOCK[step];
   if (!line) return;
   ticker(line);
   nicoBurst("block", 1);
-  if (Math.random() < 0.5) {
-    const r = RIVAL_MC[Math.floor(Math.random() * RIVAL_MC.length)];
+  // 各ブロックでライバルの進行を順に1つ流す＝はじめと並走している実況感（#26）
+  if (rivalFeedIdx < RIVAL_FEED.length) {
+    const r = RIVAL_FEED[rivalFeedIdx++];
     setTimeout(() => { if (broadcastActive()) { ticker(r); nicoBurst("rival", 1); } }, 2700);
   }
 }
@@ -3082,16 +3265,48 @@ function startTournament() {
   for (const id of ["naru", "adam", "minto", "nagumo", "maezono"]) markMet(id);
   updateHud();
   save();
-  // 会場へ歩み入る瞬間を煙ワイプで（master_spec #20）
-  smokeWipe(() => playDialogue("ch1_tournament_arrival", () =>
-    playDialogue("ch1_tournament_opening", () => entranceIntro(() => beginMaking()), "res://assets/backgrounds/bg_tournament_stage.png")
-  ));
+  // 出発前に「持参フレーバー」を確認。未仕入れならスミさんがお情けで分けてくれる（#44）
+  flavorBringIn(() =>
+    // 会場へ歩み入る瞬間を煙ワイプで（master_spec #20）
+    smokeWipe(() => playDialogue("ch1_tournament_arrival", () =>
+      playDialogue("ch1_tournament_opening", () => entranceIntro(() => beginMaking()), "res://assets/backgrounds/bg_tournament_stage.png")
+    ))
+  );
+}
+
+// 大会前の持参フレーバー確認（#44 持参制）。仕入れ済み＝持参、未仕入れ＝スミさんのお情け（強制購入はしない）
+function flavorBringIn(next) {
+  if (state.chapter !== 1) return next();
+  const TONARI = "res://assets/backgrounds/bg_tonari_inside.png";
+  if (state.flags._flavor_stocked) {
+    return playCustom({
+      dialogue_id: "flavor_brought",
+      metadata: { bg: TONARI },
+      lines: [
+        { speaker: "", face: "", text: "会場へ向かう前に、仕入れておいた本番用のフレーバーをケースに並べていく。……準備は、できている。" },
+      ],
+    }, next);
+  }
+  state.flags._flavor_rescued = true;
+  return playCustom({
+    dialogue_id: "flavor_rescue",
+    metadata: { bg: TONARI },
+    lines: [
+      { speaker: "", face: "", text: "会場へ向かおうとして、気づく。……本番用のフレーバーを、仕入れ忘れていた。" },
+      { speaker: "hajime", face: "sad", text: "（やってしまった……手持ちが、ほとんどない）" },
+      { speaker: "sumi", face: "normal", text: "……持ってきてねえのか。しょうがねえ奴だな" },
+      { speaker: "", face: "", text: "スミさんが棚の奥から小さな缶を出して、ぽんと寄越した。" },
+      { speaker: "sumi", face: "normal", text: "ダブルアップル、一回分だ。足りる範囲でやりくりしろ。……次はちゃんと仕入れてから来い" },
+      { speaker: "hajime", face: "normal", text: "……すみません。ありがとうございます" },
+    ],
+  }, next);
 }
 
 // mode: "tournament"（既定）| "tutorial"（開幕の通し体験）| "baito"（オーダーチャレンジ）
 //       | "rehearsal"（DAY6夜の前日リハーサル）
 function beginMaking(mode) {
   mode = mode || "tournament";
+  rivalFeedIdx = 0; // ライバル実況フィードを頭出し（#26）
   tt = {
     mode,
     bowl: null, hms: null, charcoal: null,
@@ -3429,7 +3644,7 @@ function ringEvenness(angles) {
 
 function stepFoil() {
   const body = tnPanel("HOLE RHYTHM BATTLE ── アルミ穴あけ",
-    "カーソルは何周でも回せる。納得いくまで穴を開けたら〔次の周へ〕。穴は“均等に”開けるほど美しい。");
+    "カーソルは何周でも回せる（周回数での減点はなし）。大事なのは穴の“均等さ”。穴が多いほど煙は抜けるが外気も吸い、少ないほど熱がこもる──狙いに合わせて。");
   const isDrill = tt.mode === "drill";
 
   const arena = document.createElement("div");
@@ -3562,30 +3777,31 @@ function stepFoil() {
   function finishHole() {
     running = false; cancelAnimationFrame(raf);
     punchBtn.disabled = true; advBtn.disabled = true;
-    // ---- 評価: 均等度50% + 円形精度(リング完成度)10% + 各リングの充足 + 残量 ----
-    let evenSum = 0, fillSum = 0, totalHoles = 0, doneRings = 0;
-    const per = {};
+    // ---- 評価: 仕上がりは「均等度」だけで見る。周回数(リング数)・穴の数による減点はしない（T22-B）。
+    //      穴の数は減点ではなく「抜け⇄熱のこもり」のトレードオフとして温度/審査に効く。
+    let evenSum = 0, totalHoles = 0, doneRings = 0;
+    const per = { outer: { holes: 0, evenness: 0 }, middle: { holes: 0, evenness: 0 }, inner: { holes: 0, evenness: 0 } };
     for (const r of ringData) {
       const ev = ringEvenness(r.angles);
-      const fill = Math.min(1, r.angles.length / r.target);
-      if (r.angles.length > 0) { evenSum += ev; fillSum += fill; doneRings++; } // 切り上げ可(#28): 開けた周だけで評価
+      if (r.angles.length > 0) { evenSum += ev; doneRings++; } // 開けた周だけで均等度を平均（何周でも自由）
       totalHoles += r.angles.length;
       per[r.key] = { holes: r.angles.length, evenness: Math.round(ev * 100) };
     }
     const nDone = Math.max(1, doneRings);
     const evenAvg = evenSum / nDone;
-    const fillAvg = fillSum / nDone;
-    const quality = evenAvg * 0.6 + fillAvg * 0.4; // 0..1（均等度重視・開けた周のみで平均）
+    const quality = evenAvg; // 職人の腕＝均等度。何周開けても、開けた周がきれいなら高評価（周回減点なし）
     // 既存craftScore互換: foilHits 0-6
     tt.foilHits = Math.round(quality * 6);
     tt.foilDone = true;
-    // FLAVOR TRIAL 用の詳細
+    // FLAVOR TRIAL / 温度用の詳細。穴の数 = 抜け⇄熱のトレードオフ（基準は中庸の18穴）
     tt.holeResult = {
       score: Math.round(quality * 100),
       evenness: Math.round(evenAvg * 100),
+      totalHoles,
       outerHoles: per.outer.holes, middleHoles: per.middle.holes, innerHoles: per.inner.holes,
-      // 穴が多いほどドロー軽・煙量↑・熱保持↓。内周過多は焦げリスク
-      draw: Math.min(100, totalHoles * 5),
+      draw: Math.min(100, totalHoles * 5),               // 穴が多いほど煙が抜けやすい
+      outsideAir: Math.max(0, (totalHoles - 18) * 7),    // 開けすぎ＝外気を吸いやすい
+      heatRetention: Math.max(0, (16 - totalHoles) * 6), // 少なめ＝熱がこもりやすい
       burnRisk: Math.max(0, (per.inner.holes - 4) * 12),
       heatSpread: per.outer.evenness,
     };
@@ -3594,11 +3810,14 @@ function stepFoil() {
     pakkiLive(rank);
     broadcastJudge(rank, "穴あけ");
     if (rank === "perfect") smokeRings(3);
+    const heatNote = totalHoles <= 13 ? "穴は少なめ──熱がこもりやすい一台だ。"
+      : totalHoles >= 22 ? "穴は多め──よく抜けるが、外気も吸いやすい。"
+      : "抜けと熱が、ちょうどいい穴数だ。";
     result.innerHTML =
-      (quality >= 0.85 ? "──寸分違わぬ円。どのリングも穴が均等に散って、空気の通り道が完璧に整った。"
+      (quality >= 0.85 ? "──寸分違わぬ円。どのリングも穴が均等に散って、空気の通り道が整った。"
       : quality >= 0.6 ? "──悪くない穴あけ。空気はちゃんと通る。"
-      : "──穴が偏った。空気の流れにムラが出そうだ……。") +
-      `<div class="hole-summary">均等度 ${Math.round(evenAvg*100)}％ ／ 外${per.outer.holes}・中${per.middle.holes}・内${per.inner.holes}</div>`;
+      : "──穴が偏った。空気の流れにムラが出そうだ……。") + heatNote +
+      `<div class="hole-summary">均等度 ${Math.round(evenAvg*100)}％ ／ 穴 計${totalHoles}（外${per.outer.holes}・中${per.middle.holes}・内${per.inner.holes}）</div>`;
     const next = document.createElement("button");
     next.className = "primary-btn";
     next.textContent = isDrill ? "結果を見る" : "次へ";
@@ -3657,6 +3876,27 @@ const HEAT_GRADE = {
   hot:   { q: 0.62, label: "OVER REACH",      sub: "攻め焼き", heatPower: 25,  heatStability: -5,  startupSpeed: 20,  burnRisk: 20,  aromaRetention: -10 },
   ash:   { q: 0.10, label: "OVER HEAT",       sub: "焼きすぎ", heatPower: 35,  heatStability: -10, startupSpeed: 25,  burnRisk: 30,  aromaRetention: -20 },
 };
+
+// タイミング系ミニゲームの開始前カウントダウン（3・2・1・スタート）。
+// 開始直後のシビアな判定で理不尽に外れるのを防ぐ（T22-C・必須）。onStart で本編の時計を回す
+function miniCountdown(container, onStart) {
+  if (!container) { onStart(); return; }
+  const ov = document.createElement("div");
+  ov.className = "mini-countdown";
+  container.appendChild(ov);
+  const seq = ["3", "2", "1", "スタート！"];
+  let i = 0;
+  const step = () => {
+    if (i >= seq.length) { ov.remove(); onStart(); return; }
+    ov.textContent = seq[i];
+    ov.classList.toggle("go", i === seq.length - 1);
+    ov.classList.remove("pop"); void ov.offsetWidth; ov.classList.add("pop");
+    if (window.SFX) { if (i < 3) SFX.click && SFX.click(); else SFX.perfect && SFX.perfect(); }
+    i++;
+    setTimeout(step, i <= 3 ? 460 : 380);
+  };
+  step();
+}
 
 function stepCoalFire() {
   const body = tnPanel("HEAT IGNITION ── 炭起こし",
@@ -3733,7 +3973,7 @@ function stepCoalFire() {
     c.core.style.opacity = z === "just" ? "1" : (z === "ready" || z === "hot") ? "0.5" : "0.15";
   };
 
-  let raf = 0, last = performance.now(), running = true;
+  let raf = 0, last = performance.now(), running = false; // カウントダウン中は停止（炭は熱が入らない）
   const tick = (now) => {
     if (!running) return;
     const dt = Math.min(0.05, (now - last) / 1000); last = now;
@@ -3749,7 +3989,9 @@ function stepCoalFire() {
     }
     raf = requestAnimationFrame(tick);
   };
-  raf = requestAnimationFrame(tick);
+  for (const c of coals) paint(c); // 初期状態を見せて待たせる
+  // 3・2・1 を挟んでから炭が熱を持ち始める（開始直後の理不尽な判定を防ぐ・T22-C）
+  miniCountdown(arena, () => { running = true; last = performance.now(); raf = requestAnimationFrame(tick); });
 
   function takeCoal(i) {
     const c = coals[i];
@@ -3864,7 +4106,8 @@ function stepFocus() {
       setTimeout(spawn, 250);
     });
   };
-  spawn();
+  // 3・2・1 を挟んでから雑念が湧き始める（開始直後の理不尽を防ぐ・T22-C）
+  miniCountdown(arena, () => spawn());
 }
 
 // 章ごとの大会レギュレーション（指定フレーバー）。ch1 = SMOKE CROWN CUP はミント指定。
@@ -4202,6 +4445,10 @@ function projectedTemp() {
   t += { perfect: 0.04, good: 0, miss: -0.07 }[tt.coalFire] ?? 0;
   t += { 2: -0.08, 5: 0, 8: 0.03, 12: 0.07 }[tt.steam] ?? 0;
   t -= Math.max(0, totalG - 12) * 0.012; // 葉が多いほど温まりは遅い
+  // アルミの穴の数（T22-B）: 少ないほど熱がこもり(温度↑)、多いほど抜けて下がる。基準は中庸の18穴
+  if (tt.holeResult && typeof tt.holeResult.totalHoles === "number") {
+    t += (18 - tt.holeResult.totalHoles) * 0.005;
+  }
   return Math.max(0.16, Math.min(0.9, t));
 }
 function pullStartTemp() {
@@ -4210,6 +4457,16 @@ function pullStartTemp() {
 
 function stepPull() {
   const PULL_TARGET = pullTargetZone(); // 適温はテーマ依存（#38）
+  // ジャスト判定はベースを狭くして達成感を出す（T23・旧 半幅0.032 → 0.018）。
+  // ステータスによる難易度緩和は「ゲーム的な落とし所を設計してから」入れる方針につき今は保留（ステ自体は上昇する）。
+  // ※ PULL_DELTA / PULL_JUST はここでモジュール定数を上書き（__pullDebug もこの値を参照）
+  const PULL_DELTA = 0.13;
+  const _jhw = 0.018;
+  const PULL_JUST = {
+    up:   [0.1725 - _jhw, 0.1725 + _jhw],
+    keep: [0.5 - _jhw, 0.5 + _jhw],
+    down: [0.8275 - _jhw, 0.8275 + _jhw],
+  };
   const tempNote = (tt && tt.theme) ? ({
     relax: "　今日はリラックス系——高温にしすぎないのが適温だ。",
     high_heat: "　今日は高火力系——しっかり高温まで上げろ。",
@@ -4274,7 +4531,8 @@ function stepPull() {
 
   // ゲージは左→右に走り、右端まで行ったらまた左から（折り返さない）
   let pos = 0, running = true, raf = 0, last = performance.now();
-  const speed = Math.max(0.42, 0.56 - state.stats.technique / 600); // 技術が高いほど少し遅い
+  // 針速度: ベースをややシビアに固定（T23・達成感）。ステによる緩和は落とし所を設計してから（保留）
+  const speed = 0.52;
   const tick = (now) => {
     if (!running) return;
     const dt = (now - last) / 1000;
@@ -4826,12 +5084,11 @@ function showResult(results, rank, detail, opts = {}) {
   btn.style.transition = "opacity 0.4s";
   setTimeout(() => { if (breakdown) breakdown.style.opacity = "1"; btn.style.opacity = "1"; }, 500 + rows.length * 750 + 400);
   if (rank === 1) {
-    btn.textContent = "結果発表へ";
+    btn.textContent = "──表彰のあとへ ▶";
     btn.addEventListener("click", opts.onWin || (() => {
       addMoney(CHAPTER_PRIZE[1]); // 優勝賞金（章別スケーリング）
-      playDialogue("ch1_tournament_result", () =>
-        playDialogue("ch1_tournament_after", () => postClearPhone(() => showClear()), "res://assets/backgrounds/bg_tournament_stage.png"), "res://assets/backgrounds/bg_tournament_stage.png"
-      );
+      // 審査(judging)・発表(reveal)は既にカウント前後で流したので、ここは表彰後の余韻だけ
+      playDialogue("ch1_tournament_after", () => postClearPhone(() => showClear()), "res://assets/backgrounds/bg_tournament_stage.png");
     }));
   } else {
     btn.textContent = "……結果を受け止める";
@@ -4853,6 +5110,14 @@ function showResult(results, rank, detail, opts = {}) {
     $("#tn-progress").textContent = "RESULT";
     $("#tn-body").innerHTML = "";
     const premium = rank === 1 && tt.foilHits >= 6 && tt.coalFire === "perfect";
+    const BG = "res://assets/backgrounds/bg_tournament_stage.png";
+    // ch1優勝ルートだけ、順番を整える（#16/#48）: 審査(南雲の二口)→「もうだめだ」→
+    // 10カウント(buildup)→ 総合印象点の満点で逆転発表。負け/ch2は従来どおり。
+    if (state.chapter === 1 && rank === 1) {
+      return playDialogue("ch1_tournament_judging",
+        () => runResultCountdown(rank, premium,
+          () => playDialogue("ch1_tournament_reveal", reveal, BG), results), BG);
+    }
     return runResultCountdown(rank, premium, reveal, results);
   }
   reveal();
@@ -5425,9 +5690,9 @@ function finishTutorial() {
   const craft = craftScore();
   const grade = craft.score >= 90 ? "great" : craft.score >= 70 ? "good" : "rough";
   const comment = {
-    great: { face: "surprise", text: "……驚いたな。初めての通しでこの煙か。お前、本当に筋がいいぞ。" },
-    good: { face: "smile", text: "悪くない。初めての通しなら上出来だ。あとは数をこなすだけだな。" },
-    rough: { face: "normal", text: "まあ、最初はこんなもんだ。どこで味が決まるか、体で覚えただろう。" },
+    great: { face: "surprise", text: "……驚いたな。バイト3ヶ月でこの煙か。お前、本当に筋がいいぞ。" },
+    good: { face: "smile", text: "悪くない。3ヶ月ならむしろ上出来だ。あとは数をこなすだけだな。" },
+    rough: { face: "normal", text: "まあ、こんなもんだ。どこで味が決まるか、体で覚えただろう。" },
   }[grade];
   playCustom({
     dialogue_id: "tutorial_result",

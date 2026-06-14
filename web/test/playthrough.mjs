@@ -89,6 +89,35 @@ while (guard++ < 5000) {
   if (screen === "screen-map") {
     const label = plan[planIdx % plan.length];
     planIdx++;
+    // Dr.fookah(T28): ピン→サブメニュー[物販/凛]。テストは物販を選んで screen-shop へ（その先で #shop-rin が凛）
+    if (label === "Dr.fookah") {
+      try {
+        const pin = page.locator("#map-pins .spot-pin", { hasText: "Dr.fookah" }).first();
+        if (await pin.count() && !(await pin.isDisabled())) await pin.click({ timeout: 3000 });
+        await page.waitForSelector("#fookah-menu.show", { timeout: 3000 });
+        await page.locator("#fookah-menu #fookah-shop").click({ timeout: 3000 });
+      } catch { planIdx--; }
+      await page.waitForTimeout(30);
+      continue;
+    }
+    // tonari統合(#9): バイト/練習/スミさん/常連席 は tonari ピン → サブメニューの2段
+    const isTonariSub = ["tonariでバイト", "シーシャの練習", "スミさんと話す", "常連席"].some((s) => label.includes(s));
+    if (isTonariSub) {
+      try {
+        const pin = page.locator("#map-pins .spot-pin", { hasText: "tonari" }).first();
+        if (await pin.count() && !(await pin.isDisabled())) await pin.click({ timeout: 3000 });
+        await page.waitForSelector("#tonari-menu.show", { timeout: 3000 });
+        const sub = page.locator("#tonari-menu .spot-btn", { hasText: label }).first();
+        if (await sub.count() && !(await sub.isDisabled())) {
+          await sub.click({ timeout: 3000 });
+        } else {
+          await page.locator("#tonari-menu .tn-close").click({ timeout: 2000 }).catch(() => {});
+          await page.locator(".spot-btn", { hasText: "家で休む" }).click({ timeout: 3000 }).catch(() => {});
+        }
+      } catch { planIdx--; }
+      await page.waitForTimeout(30);
+      continue;
+    }
     const btn = page.locator(".spot-btn", { hasText: label }).first();
     try {
       if (await btn.isDisabled()) {
