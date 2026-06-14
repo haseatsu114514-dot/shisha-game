@@ -226,11 +226,48 @@ jq '[.dialogues[].dialogue_id]' data/dialogue/ch1_main.json
 
 ---
 
-## よく使うコマンド
+## ブラウザ版 開発ワークフロー（ビルド・テスト・規約）
 
+**ブラウザ版（`web/`）がメインの開発トラック。Godot版は当面保留**（ブラウザ版優先・余裕が出たら移植）。
+作業前に `docs/web_version_plan.md`（方針）と `docs/owner_requests.md`（要望台帳＝反映漏れ防止）を読む。
+
+### ビルド（data/ や web/ を変えたら必須・両方）
 ```bash
-python3 tools/dialogue_editor.py   # 会話データ編集
+pip install Pillow                # 立ち絵の透過余白計測（初回のみ）
+python3 web/build_data.py         # data/*.json → web/js/data.js に束ねる
+python3 web/build_standalone.py   # 1ファイル配布版 web/dist/shisha_ch1.html を生成
 ```
+- 追加した JSON は build_data.py の読み込み一覧に入れないと web に出ない（例: `sheesha_posts.json` はGodot専用で未バンドル）。
+
+### ヘッドレステスト（全7本・全緑が基準）
+```bash
+python3 -m http.server 8123       # リポジトリルートで起動して放置
+node web/test/playthrough.mjs     # 1章優勝ルート通し（~6分・stats=80を強制して勝ちを検証）
+node web/test/ch2.mjs             # 2章通し
+node web/test/screenshots.mjs     # 敗北→再挑戦
+node web/test/reel.mjs            # スロット分布/天井/救済（純ロジック・速い）
+node web/test/kuji.mjs            # くじ収支
+node web/test/balance.mjs         # 経済（バイト最低8000円 等）
+node web/test/map_hover.mjs       # マップのホバー安定性
+```
+- 重い3本(playthrough/ch2/screenshots)は**同時に走らせない**（CPU枯渇でタイムアウト）。1本ずつ。
+- playwright 依存（`require("playwright")` か `/opt/node22/lib/node_modules/playwright`）。
+- 会話編集 `python3 tools/dialogue_editor.py` ／ 改行プレビュー `web/tools/linebreak_editor.html`。
+
+### 状態管理・流儀（別パターンを勝手に増やさない）
+- 状態は単一の `state`（`save()`/localStorage `shisha_ch1_save_v1`）、大会中の一時状態は `tt`。
+- 会話は dialogue JSON →`DialogueEngine`（`playDialogue`/`playCustom`）。報酬は「〜上がった」テキストキュー(`parseTextCue`)か `type:"apply"`/metadata で付ける。
+- 残り日数は `daysUntilTournament()`/`{daysLeft}` に一本化（台詞へ日数を直書きしない）。台詞は `interpolate()` を通る。
+- スロット文言は `bubble(text, ms, cls)`、連発防止は `pick()`、ステ伸びは `gainStat()`＋章上限 `statSoftCap()`。
+
+### やらない（テスト・正史を壊す）
+- テストフックを壊さない: `__pullDebug` / `__heatDebug` / 調整(R2)の「このままでいく」 / 審査の `.trial-appeal[data-backed][data-cat]`＋`#trial-doubt[data-need]` / 結果カウントの `pointer-events:none`。
+- ステの生数値をUIに出さない（★と抽象語のみ）。旧ステ名（技術力/洞察力/メンタル/度胸/味覚/集中力）禁止。
+- タイミング系ミニゲームは必ず `miniCountdown()` で 3・2・1 を挟む。
+- `main` へ直push禁止＝PR。`--force`/`--allow-unrelated-histories` 禁止（Git Safety）。
+
+### 参照（巨大docは本体に詰めず参照）
+`docs/web_version_plan.md`（方針/引き継ぎ）・`docs/owner_requests.md`（要望台帳）・`docs/master_spec.md` 第2部（大会仕様）・`brand/story_and_structure.md`（章別・必要章のみ）
 
 ---
 
