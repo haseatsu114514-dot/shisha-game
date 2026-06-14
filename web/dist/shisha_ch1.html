@@ -10296,11 +10296,13 @@ function pullStartTemp() {
 
 function stepPull() {
   const PULL_TARGET = pullTargetZone(); // 適温はテーマ依存（#38）
-  // ジャスト判定はベースを狭くして達成感を出す（T23・旧 半幅0.032 → 0.018）。
-  // ステータスによる難易度緩和は「ゲーム的な落とし所を設計してから」入れる方針につき今は保留（ステ自体は上昇する）。
+  // 温度コントロールは技術・センスで上達する（オーナー指定。旧「保留」だったステ連動を実装）。
+  // ステが低いうちは1吸いで動く温度が小さい＝手数がかかり、ジャストを狙う価値が高い。
+  // 上がるほど1吸いの効きとジャスト帯が広がり、少ない手数で適温に寄せられる（＝上達の実感）。
   // ※ PULL_DELTA / PULL_JUST はここでモジュール定数を上書き（__pullDebug もこの値を参照）
-  const PULL_DELTA = 0.13;
-  const _jhw = 0.018;
+  const ctrl = ((state.stats.technique || 10) + (state.stats.sense || 10)) / 2; // 温度コントロール力 0〜100
+  const PULL_DELTA = 0.05 + (ctrl / 100) * 0.07; // 0.05(低ステ)〜0.12(満) ／ 1吸いで動かせる最大温度（旧固定0.13をナーフ＋ステ連動）
+  const _jhw = 0.012 + (ctrl / 100) * 0.013;      // ジャスト帯の半幅: 低ステほど狭く、上達で広がる
   const PULL_JUST = {
     up:   [0.1725 - _jhw, 0.1725 + _jhw],
     keep: [0.5 - _jhw, 0.5 + _jhw],
@@ -10411,12 +10413,12 @@ function stepPull() {
       pullKind = "up"; motionMs = 520;
       delta = ((0.35 - pos) / 0.35) * PULL_DELTA;
       label = "上げ吸い！　炭の熱がボウルに乗る";
-      if (inBand(PULL_JUST.up)) { just = true; delta = PULL_DELTA * 1.5; label = "ジャスト上げ！　ひと吸いで一気に熱が立つ"; }
+      if (inBand(PULL_JUST.up)) { just = true; delta = PULL_DELTA * 2.0; label = "ジャスト上げ！　ひと吸いで一気に熱が立つ"; }
     } else if (pos > 0.65) {
       pullKind = "down"; motionMs = 1120;
       delta = -((pos - 0.65) / 0.35) * PULL_DELTA;
       label = "下げ吸い。熱を逃して落ち着かせる";
-      if (inBand(PULL_JUST.down)) { just = true; delta = -PULL_DELTA * 1.5; label = "ジャスト下げ！　狙いどおりに熱が抜ける"; }
+      if (inBand(PULL_JUST.down)) { just = true; delta = -PULL_DELTA * 2.0; label = "ジャスト下げ！　狙いどおりに熱が抜ける"; }
     } else if (inBand(PULL_JUST.keep)) {
       just = true; jitter = 0.003; // ジャストキープでも完全固定にはしない
       label = "ジャストキープ。煙が、ほとんど揺れない";
