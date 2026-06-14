@@ -2318,33 +2318,44 @@ function showShop() {
     }
     list.appendChild(grid);
   }
-  // 大会用フレーバーの仕入れ（#44 持参制）。買わなくても本番でスミさんがお情けで分けてくれる（強制購入イベントは無し）
+  // フレーバー入荷（Dr.fookah）。その章の解放可能フレーバーを買うとミックスで使える＝パレットが広がる(#くじ/ショップにフレーバー)。
+  // 基本フレーバーは常時使える。買わなくても本番はスミさんがお情けで分けてくれる(#44)。
   {
     const flLabel = document.createElement("p");
     flLabel.className = "setup-group-label";
-    flLabel.textContent = "大会用フレーバー（持参制）";
+    flLabel.textContent = "フレーバー入荷（Dr.fookah）";
     list.appendChild(flLabel);
     const flGrid = document.createElement("div");
     flGrid.className = "spot-list";
-    const stocked = !!state.flags._flavor_stocked;
-    const FL_COST = 6000;
-    const flBtn = document.createElement("button");
-    flBtn.className = "spot-btn";
-    flBtn.innerHTML =
-      `<span class="spot-name">本番用フレーバーを仕入れる</span>` +
-      `<span class="spot-cost">${stocked ? "仕入れ済み" : `${FL_COST.toLocaleString()}円`}</span>` +
-      `<span class="spot-desc">大会には自分のフレーバーを持ち込む。仕入れておけば本番で安心（買わなければ本番でスミさんがお情けでダブルアップルを分けてくれる）</span>`;
-    if (stocked || FL_COST > state.money) flBtn.disabled = true;
-    flBtn.addEventListener("click", () => {
-      if (state.flags._flavor_stocked || FL_COST > state.money) return;
-      addMoney(-FL_COST);
-      state.flags._flavor_stocked = true;
-      save();
-      if (window.SFX) SFX.coin();
-      toast("本番用フレーバーを仕入れた");
-      showShop();
-    });
-    flGrid.appendChild(flBtn);
+    const stockable = D.flavors.filter((f) => f.unlockable && (f.chapter_min || 1) <= state.chapter);
+    for (const f of stockable) {
+      const owned = !!state.flags[f.requires_flag];
+      const price = f.price || 0;
+      const btn = document.createElement("button");
+      btn.className = "spot-btn";
+      btn.innerHTML =
+        `<span class="spot-name">${f.short_name || f.name}</span>` +
+        `<span class="spot-cost">${owned ? "入荷済み" : `${price.toLocaleString()}円`}</span>` +
+        `<span class="spot-desc">${f.description || ""}</span>`;
+      if (owned || price > state.money) btn.disabled = true;
+      btn.addEventListener("click", () => {
+        if (state.flags[f.requires_flag] || price > state.money) return;
+        addMoney(-price);
+        state.flags[f.requires_flag] = true;
+        state.flags._flavor_stocked = true; // 本番持参の救済条件(#44)も満たす
+        save();
+        if (window.SFX) SFX.coin();
+        toast(`${f.short_name || f.name} を入荷した`);
+        showShop();
+      });
+      flGrid.appendChild(btn);
+    }
+    if (!stockable.length) {
+      const none = document.createElement("p");
+      none.className = "tn-tutor";
+      none.textContent = "新しいフレーバーは、また後日入荷予定。";
+      flGrid.appendChild(none);
+    }
     list.appendChild(flGrid);
   }
   // 売却（中古買取）: 機材のみ買値の50%で売れる。フレーバー系は開封済み扱いで不可（master_spec #21）
@@ -2530,10 +2541,16 @@ function grantKujiPrize(prize) {
     }
     return;
   }
+  // フレーバー賞: ミックスで使えるように解放（その章のフレーバーが当たる）。本番持参の救済条件も満たす(#44)
+  if (prize.type === "flavor" && prize.flavorId) {
+    state.flags["_flavor_" + prize.flavorId] = true;
+    state.flags._flavor_stocked = true;
+    return;
+  }
   if (prize.type === "goods" && prize.sell) {
     state.goods.push({ name: prize.name, sell: prize.sell });
   }
-  // flavor / consumable は使用価値（このゲームでは抽象）。獲得演出のみ
+  // consumable は使用価値（このゲームでは抽象）。獲得演出のみ
 }
 
 // 引き演出: 箱→ティケット→ランク開封。上位賞は煙＋スモークリング

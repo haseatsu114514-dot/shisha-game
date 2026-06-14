@@ -13,8 +13,10 @@
         { "rank": "A", "name": "ステンレストング（上物）", "type": "goods", "sell": 1000, "count": 2, "desc": "握りの良い業務用トング。売れば良い値段。" },
         { "rank": "A", "name": "シリコンホース（限定色）", "type": "goods", "sell": 800, "count": 2, "desc": "限定カラーのシリコンホース。" },
         { "rank": "A", "name": "木製マウスピース", "type": "goods", "sell": 900, "count": 1, "desc": "手に馴染む木工マウスピース。" },
-        { "rank": "B", "name": "ココナッツ炭（1箱）", "type": "consumable", "sell": 0, "count": 8, "desc": "火付きの良い定番の炭。実用品。" },
-        { "rank": "B", "name": "アルミホイル（業務用）", "type": "consumable", "sell": 0, "count": 6, "desc": "厚手の業務用アルミ。実用品。" }
+        { "rank": "B", "name": "ココナッツ炭（1箱）", "type": "consumable", "sell": 0, "count": 5, "desc": "火付きの良い定番の炭。実用品。" },
+        { "rank": "B", "name": "アルミホイル（業務用）", "type": "consumable", "sell": 0, "count": 6, "desc": "厚手の業務用アルミ。実用品。" },
+        { "rank": "C", "name": "AF グレープ（フレーバー1袋）", "type": "flavor", "flavorId": "grape", "sell": 0, "count": 2, "desc": "Dr.fookah入荷の人気フレーバー。当たればミックスで使えるようになる。" },
+        { "rank": "C", "name": "AF ローズ（フレーバー1袋）", "type": "flavor", "flavorId": "rose", "sell": 0, "count": 1, "desc": "Dr.fookah入荷の限定フローラル。当たればミックスで使える。" }
       ],
       "lastOne": { "rank": "LAST", "name": "ラストワン賞・木製スタンド", "type": "goods", "sell": 1000, "count": 1, "desc": "箱を引き切った人だけがもらえる、ちょっと良い木工スタンド。" }
     },

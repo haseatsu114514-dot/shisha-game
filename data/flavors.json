@@ -96,6 +96,36 @@
       "steam_bias": 0.5,
       "requires_flag": "_rin_sample",
       "leaf": "blond"
+    },
+    {
+      "id": "grape",
+      "name": "アルファーヘブン グレープ",
+      "short_name": "AF グレープ",
+      "category": "fruit",
+      "price": 1700,
+      "description": "Dr.fookah入荷の人気ロット。完熟ぶどうのジューシーな甘み。冷涼系とも甘系とも組みやすい万能株。",
+      "heat_tolerance": 0.95,
+      "smoke_weight": 1.0,
+      "steam_bias": 0.2,
+      "requires_flag": "_flavor_grape",
+      "unlockable": true,
+      "chapter_min": 1,
+      "leaf": "blond"
+    },
+    {
+      "id": "rose",
+      "name": "アルファーヘブン ローズ",
+      "short_name": "AF ローズ",
+      "category": "sweet",
+      "price": 1800,
+      "description": "Dr.fookah入荷の限定フローラル。華やかな薔薇の含み香で、余韻を伸ばす一台に化ける。扱いは少し気難しい。",
+      "heat_tolerance": 0.8,
+      "smoke_weight": 0.95,
+      "steam_bias": 0.4,
+      "requires_flag": "_flavor_rose",
+      "unlockable": true,
+      "chapter_min": 1,
+      "leaf": "blond"
     }
   ]
 }
