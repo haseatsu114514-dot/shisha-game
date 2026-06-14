@@ -2394,12 +2394,12 @@ body {
 #tn-ticker.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
 /* ===== 大会の生放送レイヤー: ニコ動風コメント＋体感スコア（#24/#20/#26） ===== */
-#tn-comments { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 30; }
+#tn-comments { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 30; container-type: inline-size; }
 .nico {
   position: absolute; left: 0; white-space: nowrap;
   font-weight: 800; font-size: 19px; color: #fff;
   text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 7px rgba(0,0,0,0.6);
-  transform: translateX(100vw); animation: nico-fly linear forwards; will-change: transform;
+  transform: translateX(100cqw); animation: nico-fly linear forwards; will-change: transform;
 }
 .nico.perfect { color: #ffe79a; }
 .nico.miss { color: #ff9a9a; }

@@ -2870,20 +2870,28 @@ const MC_BLOCK = {
   adjust:   "第2ラウンド、調整だ！　今の温度を読めるか！？",
   pull:     "いよいよ吸い出し──提供はもう目前だァ！",
 };
-const RIVAL_MC = [
-  "おっと、なる選手はもう炭を置いた！　速い！",
-  "アダム選手、ダブルアップルの甘い香りが審査席まで！",
-  "みんと選手、危なげなく工程を進めています！",
-  "なる選手、早くも提供の体勢に入ったか！？",
+// #26 ライバル実況フィード: 工程が進むほど「どのライバルが何を完了したか」が順に流れる＝ライブ感。
+// 実際のライバル制作は数値だけだが、提供までの進行を台本で見せる（はじめより少し速い緊張感）
+const RIVAL_FEED = [
+  "おっと、なる選手はもう配合を終えた！　速いィ！",
+  "アダム選手、ダブルアップルを詰め始めたぞ！",
+  "みんと選手、丁寧にアルミを巻いている！",
+  "なる選手、炭を置いたァ！　手際がいい！",
+  "アダム選手、蒸らしに入りました……勝負所だ！",
+  "なる選手、早くも吸い出し——提供間近か！？",
+  "みんと選手、危なげなく仕上げてきた！",
+  "アダム選手、提供完了ッ！　会場がどよめく！",
 ];
+let rivalFeedIdx = 0;
 function mcBlockIntro(step) {
   if (!broadcastActive()) return;
   const line = MC_BLOCK[step];
   if (!line) return;
   ticker(line);
   nicoBurst("block", 1);
-  if (Math.random() < 0.5) {
-    const r = RIVAL_MC[Math.floor(Math.random() * RIVAL_MC.length)];
+  // 各ブロックでライバルの進行を順に1つ流す＝はじめと並走している実況感（#26）
+  if (rivalFeedIdx < RIVAL_FEED.length) {
+    const r = RIVAL_FEED[rivalFeedIdx++];
     setTimeout(() => { if (broadcastActive()) { ticker(r); nicoBurst("rival", 1); } }, 2700);
   }
 }
@@ -3075,6 +3083,7 @@ function startTournament() {
 //       | "rehearsal"（DAY6夜の前日リハーサル）
 function beginMaking(mode) {
   mode = mode || "tournament";
+  rivalFeedIdx = 0; // ライバル実況フィードを頭出し（#26）
   tt = {
     mode,
     bowl: null, hms: null, charcoal: null,
