@@ -980,6 +980,7 @@ function initEngine() {
     {
       getStat: (en) => state.stats[en] || 0,
       interpolate: (t) => interpolate(t),
+      onSceneEnd: () => { if (skipMode) stopAutoSkip(); }, // 会話が終わったらSKIP解除（シーン転換を飛ばさない・T29）
       portraitFaces: D.portraits,
       portraitTrims: D.portrait_trims,
       portraitScales: D.portrait_scales,
@@ -1752,8 +1753,13 @@ function showMap(opts = {}) {
   // skipReel 指定時は精算を保留（advanceDay が朝のLIMEの後で回す #34）。
   // DAYカード表示中は被るので、カードが消えてから回す（#11 「DAY表示中にスロットが回る」）
   if (!opts.skipReel && typeof REEL !== "undefined") {
-    if (document.querySelector("#day-card.show")) setTimeout(() => REEL.onMapShown(), 1500);
-    else REEL.onMapShown();
+    // 夜のスロットは「日付変更画面（DAYカード）」が消えてから回す＝被って見えない問題の解消(#34/T30)。
+    // カードが出ている間はポーリングで待ち、消えたら回す
+    const drainReel = () => {
+      if (document.querySelector("#day-card.show")) { setTimeout(drainReel, 250); return; }
+      REEL.onMapShown();
+    };
+    drainReel();
   }
   mapTutorial(); // 初回だけマップの使い方を点滅で案内（#36）
 }
@@ -1838,7 +1844,7 @@ function selectSpot(spot) {
       case "kannon": return doSpotDialogue("kannon", "ch1_kannon_visit", "bg_street_day.png");
       case "cafe": return doSpotDialogue("cafe", "ch1_cafe_visit", "bg_street_day.png");
       case "c_station": return doSpotDialogue("c_station", "ch1_c_station_visit", "bg_shop.png");
-      case "shop": return showShop();
+      case "shop": return showFookahMenu(); // Dr.fookah: 物販利用 or 凛＋ブース を選ぶ(T28)
       case "rest": return doRest();
       default: {
         // よその店での一服は体力を使う（tonari内のスミさん・つむぎとの会話は軽い）
@@ -2272,6 +2278,35 @@ function doChoizap() {
   doSpotDialogue("choizap", "ch1_choizap_visit", "bg_street_day.png");
 }
 
+// Dr.fookah を選んだら、物販利用か凛さんに会うかを選ぶ（T28・場所で管理）。
+// 物販=買い物のみ(無料・コマ不要)／凛=吸えるブースで一服＋会う(2,500円・コマを使う。物販もやってる分、他店3,000円より少し安い)
+function showFookahMenu() {
+  document.getElementById("fookah-menu")?.remove();
+  const screen = document.querySelector("#screen-map");
+  if (!screen) return;
+  if (window.SFX) SFX.open();
+  const rinDone = !!state.flags[`_rin_d${state.day}`];
+  const broke = state.money < FOOKAH_BOOTH_FEE;
+  const rinOff = rinDone || broke;
+  const ov = document.createElement("div");
+  ov.id = "fookah-menu";
+  ov.innerHTML =
+    `<div class="tn-menu-card">` +
+    `<p class="tn-menu-title">Dr.fookah ── どうする？</p>` +
+    `<div class="tn-menu-list">` +
+    `<button class="spot-btn" id="fookah-shop"><span class="spot-name">物販を利用する</span><span class="spot-cost">無料・コマ不要</span><span class="spot-desc">機材とフレーバーの買い物だけ。時間はかからない</span></button>` +
+    `<button class="spot-btn" id="fookah-rin"${rinOff ? " disabled" : ""}><span class="spot-name">凛さんに会う＋ブースで一服</span><span class="spot-cost">${rinDone ? "今日はもう行った" : broke ? "所持金が足りない（2,500円）" : "2,500円・コマを使う"}</span><span class="spot-desc">吸えるブースつき。物販もやってる分、他店より少し安い（3,000円→2,500円）</span></button>` +
+    `</div>` +
+    `<button class="primary-btn ghost tn-close" id="fookah-close">← マップに戻る</button>` +
+    `</div>`;
+  screen.appendChild(ov);
+  ov.querySelector("#fookah-shop").addEventListener("click", () => { ov.remove(); showShop(); });
+  const rinBtn = ov.querySelector("#fookah-rin");
+  if (!rinOff) rinBtn.addEventListener("click", () => { ov.remove(); doRinVisit(); });
+  ov.querySelector("#fookah-close").addEventListener("click", () => { if (window.SFX) SFX.close(); ov.remove(); });
+  requestAnimationFrame(() => ov.classList.add("show"));
+}
+
 // --- ショップ（行動を消費しない）
 function showShop() {
   visitContextChar = null;
@@ -2422,11 +2457,11 @@ function showShop() {
   rinBtn.id = "shop-rin";
   rinBtn.innerHTML =
     state.visits.rin === 0
-      ? `<span class="spot-name">2階から視線を感じる……</span><span class="spot-cost">行動を1回使う</span><span class="spot-desc">階段の上に、誰かいる</span>`
-      : `<span class="spot-name">2階のショールーム（${displayName("rin")}）</span>` +
-        `<span class="spot-cost">${rinAway ? "今日は出張で不在" : visitedToday ? "今日はもう顔を出した" : "会いに行く（行動を1回使う）"}</span>` +
-        `<span class="spot-desc">NIGHTSIDE日本代理店。買い物だけなら時間はかからない</span>`;
-  rinBtn.disabled = visitedToday || rinAway;
+      ? `<span class="spot-name">2階から視線を感じる……</span><span class="spot-cost">2,500円・行動を1回使う</span><span class="spot-desc">階段の上に、誰かいる。ブース付き</span>`
+      : `<span class="spot-name">2階のショールーム＋ブース（${displayName("rin")}）</span>` +
+        `<span class="spot-cost">${rinAway ? "今日は出張で不在" : visitedToday ? "今日はもう顔を出した" : "2,500円・会いに行く（行動を1回使う）"}</span>` +
+        `<span class="spot-desc">NIGHTSIDE日本代理店。吸えるブースつき（他店より少し安い）。買い物だけなら時間はかからない</span>`;
+  rinBtn.disabled = visitedToday || rinAway || state.money < FOOKAH_BOOTH_FEE; // ブース料が払えないと不可（T28）
   rinBtn.addEventListener("click", doRinVisit);
   rinWrap.appendChild(rinBtn);
   list.append(label, rinWrap);
@@ -2585,9 +2620,12 @@ function revealKuji(prize, extras, done) {
 
 // 凛さんのショールーム（会いに行くと1コマ消費。買い物だけなら消費なし。1日1回）
 const RIN_SEQUENCE = ["ch1_rin_first", "ch1_rin_second", "ch1_rin_third"];
+const FOOKAH_BOOTH_FEE = 2500; // ブース利用料（物販もやってる分、他店3,000円より少し安い）(T28)
 function doRinVisit() {
   if (state.flags[`_rin_d${state.day}`]) return;
   const play = () => shishaGuard(() => {
+    if (state.money < FOOKAH_BOOTH_FEE) { toast(`ブース利用は${FOOKAH_BOOTH_FEE.toLocaleString()}円。所持金が足りない`); return showShop(); }
+    addMoney(-FOOKAH_BOOTH_FEE);
     state.flags[`_rin_d${state.day}`] = true;
     visitContextChar = "rin";
     addStamina(-STAMINA_COST.rin);

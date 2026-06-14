@@ -507,7 +507,7 @@ const REEL = (() => {
     setTimeout(() => widget.classList.remove("gakkun"), 500);
     if (!silent) sfx("reelLever");
     if (r.variant === "okure" && !fast) setTimeout(() => sfx("pugo"), 420); // 遅れ「……プゴッ」
-    if (r.variant === "before" && !fast) setTimeout(() => lampOn(false), 220); // 先プカ
+    // 先告知（先プカ）は廃止：回転前には光らせない。点灯はリール停止後に見せてから揃える（T31）
     strips.forEach((el) => { el.style.transform = ""; el.classList.add("spinning"); });
     if (silent) widget.classList.add("silent-spin");
 
@@ -608,9 +608,9 @@ const REEL = (() => {
           lampOn(false);
           sfx("puka");
           bubble("重複ペカ！？", 0);
-          bonusWait = { ...r, done: null };
-          if (fast) settleBonus(bonusWait, true);
-          done();
+          bonusWait = { ...r, done };
+          if (fast) return settleBonus(bonusWait, true);
+          setTimeout(() => { if (bonusWait) settleBonus(bonusWait, false); }, 1000); // 点灯を見せてから自動で揃え(T31)
         };
         return setTimeout(start, fast ? 0 : 600);
       }
@@ -625,9 +625,9 @@ const REEL = (() => {
           lampOn(true);
           sfx("puka");
           bubble("ぷぷぷぷぷ！！", 0);
-          bonusWait = { ...r, done: null };
-          if (fast) settleBonus(bonusWait, true);
-          done();
+          bonusWait = { ...r, done };
+          if (fast) return settleBonus(bonusWait, true);
+          setTimeout(() => { if (bonusWait) settleBonus(bonusWait, false); }, 1100); // 点灯を見せてから自動で揃え(T31)
         };
         if (fast) return start();
         sfx("pugo");
@@ -640,9 +640,10 @@ const REEL = (() => {
           lampOn(r.variant === "silent" || r.ceiling === "main");
           sfx("puka");
           bubble(r.ceiling === "main" ? "おたすけパッキー！" : "ぷぷぷっ！", 0);
-          bonusWait = { ...r, done: null };
-          if (fast) settleBonus(bonusWait, true);
-          done();
+          bonusWait = { ...r, done };
+          if (fast) return settleBonus(bonusWait, true);
+          // 光ったのを見せてから、タップ不要で自動的にリールが揃えに入る（ジャグラー風）(#49/T31)
+          setTimeout(() => { if (bonusWait) settleBonus(bonusWait, false); }, 1000);
         };
         return setTimeout(start, r.variant === "after" || r.variant === "silent" ? (fast ? 0 : 320) : 0);
       }
