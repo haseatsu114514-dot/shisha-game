@@ -3243,6 +3243,16 @@ body {
 /* 店内サブメニュー（tonari統合#9 / Dr.fookah選択T28） */
 #tonari-menu, #fookah-menu { position: absolute; inset: 0; z-index: 9; display: flex; align-items: center; justify-content: center; background: rgba(8,6,14,0.55); opacity: 0; transition: opacity 0.2s; }
 #tonari-menu.show, #fookah-menu.show { opacity: 1; }
+/* #16: 強制イベント前の「つなぎ」一拍（マップ→スロット→自動でイベント）の非操作オーバーレイ */
+#map-beat {
+  position: absolute; inset: 0; z-index: 30;
+  display: flex; align-items: flex-end; justify-content: center;
+  background: linear-gradient(180deg, rgba(8,6,14,0) 45%, rgba(8,6,14,0.5) 100%);
+  cursor: pointer; animation: fadein 0.3s ease-out;
+}
+.map-beat-card { margin-bottom: 13%; text-align: center; }
+.map-beat-card .mb-dots { display: block; font-size: 30px; letter-spacing: 0.3em; color: #ffe79a; text-shadow: 0 2px 8px rgba(0,0,0,0.8); animation: bounce 1.2s infinite; }
+.map-beat-card .mb-sub { display: block; font-size: 11px; letter-spacing: 0.24em; color: var(--text-dim); margin-top: 6px; }
 #tonari-menu .tn-menu-card, #fookah-menu .tn-menu-card { width: min(88%, 460px); background: linear-gradient(180deg, rgba(28,21,38,0.97), rgba(15,12,23,0.98)); border: 1px solid rgba(255,210,120,0.45); border-radius: 16px; padding: 16px 18px; box-shadow: 0 12px 34px rgba(0,0,0,0.6); }
 .tn-menu-title { font-size: 17px; font-weight: 800; color: #ffe79a; margin: 0 0 12px; text-align: center; }
 .tn-menu-list { display: flex; flex-direction: column; gap: 9px; }

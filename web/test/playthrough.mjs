@@ -61,6 +61,12 @@ while (guard++ < 5000) {
     await page.waitForTimeout(250);
     continue;
   }
+  // #16 つなぎのマップビート（強制イベント前の一拍）が出ていたら飛ばす
+  if (await page.locator("#map-beat").count()) {
+    await page.locator("#map-beat").click().catch(() => {});
+    await page.waitForTimeout(80);
+    continue;
+  }
   const screen = await activeScreen();
   if (screen === "screen-tournament") {
     const phase = await page.evaluate(() => state.phase);
