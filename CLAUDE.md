@@ -93,7 +93,7 @@ normal PR. Stop and fix the Git layout first.
 `技術` / `センス` / `根性` / `魅力` / `洞察`
 
 - ❌ `技術力` / `洞察力` / `メンタル` / `度胸` / `味覚` / `集中力` は存在しない（旧名・誤記）
-- 初期値は全て10（均等スタート）。第4章末までに頑張れば全て100（★5）到達可能
+- 初期値は全て10（均等スタート）。**章ごとのソフトキャップ**で伸びを抑え（ch1≈42/ch2≈60/ch3≈76/ch4≈92/ch5=100。`statSoftCap()`）、第5章で頑張れば全て100（★5）＝完全攻略を狙える。ch1で上限に張り付かない（#42）
 
 ### ステータス表示ルール
 
@@ -226,11 +226,48 @@ jq '[.dialogues[].dialogue_id]' data/dialogue/ch1_main.json
 
 ---
 
-## よく使うコマンド
+## ブラウザ版 開発ワークフロー（ビルド・テスト・規約）
 
+**ブラウザ版（`web/`）がメインの開発トラック。Godot版は当面保留**（ブラウザ版優先・余裕が出たら移植）。
+作業前に `docs/web_version_plan.md`（方針）と `docs/owner_requests.md`（要望台帳＝反映漏れ防止）を読む。
+
+### ビルド（data/ や web/ を変えたら必須・両方）
 ```bash
-python3 tools/dialogue_editor.py   # 会話データ編集
+pip install Pillow                # 立ち絵の透過余白計測（初回のみ）
+python3 web/build_data.py         # data/*.json → web/js/data.js に束ねる
+python3 web/build_standalone.py   # 1ファイル配布版 web/dist/shisha_ch1.html を生成
 ```
+- 追加した JSON は build_data.py の読み込み一覧に入れないと web に出ない（例: `sheesha_posts.json` はGodot専用で未バンドル）。
+
+### ヘッドレステスト（全7本・全緑が基準）
+```bash
+python3 -m http.server 8123       # リポジトリルートで起動して放置
+node web/test/playthrough.mjs     # 1章優勝ルート通し（~6分・stats=80を強制して勝ちを検証）
+node web/test/ch2.mjs             # 2章通し
+node web/test/screenshots.mjs     # 敗北→再挑戦
+node web/test/reel.mjs            # スロット分布/天井/救済（純ロジック・速い）
+node web/test/kuji.mjs            # くじ収支
+node web/test/balance.mjs         # 経済（バイト最低8000円 等）
+node web/test/map_hover.mjs       # マップのホバー安定性
+```
+- 重い3本(playthrough/ch2/screenshots)は**同時に走らせない**（CPU枯渇でタイムアウト）。1本ずつ。
+- playwright 依存（`require("playwright")` か `/opt/node22/lib/node_modules/playwright`）。
+- 会話編集 `python3 tools/dialogue_editor.py` ／ 改行プレビュー `web/tools/linebreak_editor.html`。
+
+### 状態管理・流儀（別パターンを勝手に増やさない）
+- 状態は単一の `state`（`save()`/localStorage `shisha_ch1_save_v1`）、大会中の一時状態は `tt`。
+- 会話は dialogue JSON →`DialogueEngine`（`playDialogue`/`playCustom`）。報酬は「〜上がった」テキストキュー(`parseTextCue`)か `type:"apply"`/metadata で付ける。
+- 残り日数は `daysUntilTournament()`/`{daysLeft}` に一本化（台詞へ日数を直書きしない）。台詞は `interpolate()` を通る。
+- スロット文言は `bubble(text, ms, cls)`、連発防止は `pick()`、ステ伸びは `gainStat()`＋章上限 `statSoftCap()`。
+
+### やらない（テスト・正史を壊す）
+- テストフックを壊さない: `__pullDebug` / `__heatDebug` / 調整(R2)の「このままでいく」 / 審査の `.trial-appeal[data-backed][data-cat]`＋`#trial-doubt[data-need]` / 結果カウントの `pointer-events:none`。
+- ステの生数値をUIに出さない（★と抽象語のみ）。旧ステ名（技術力/洞察力/メンタル/度胸/味覚/集中力）禁止。
+- タイミング系ミニゲームは必ず `miniCountdown()` で 3・2・1 を挟む。
+- `main` へ直push禁止＝PR。`--force`/`--allow-unrelated-histories` 禁止（Git Safety）。
+
+### 参照（巨大docは本体に詰めず参照）
+`docs/web_version_plan.md`（方針/引き継ぎ）・`docs/owner_requests.md`（要望台帳）・`docs/master_spec.md` 第2部（大会仕様）・`brand/story_and_structure.md`（章別・必要章のみ）
 
 ---
 
@@ -255,7 +292,7 @@ python3 tools/dialogue_editor.py   # 会話データ編集
 - **スミさんが折れた理由**は「負けたから」ではなく「勝つための煙で客の顔が見えなくなったから」（はじめの ch2 の鏡像）
 - **チャコール博士は味覚を失った元職人**（はじめの味覚喪失の鏡像）。ch5戦後、9000は破壊されず教材として残る
 - **全編モチーフ「店の匂い」**: 店を持つとは匂いを背負うこと。各章に一度だけさりげなく置く（説明しない）
-- **ch1の優勝は実力ではない**: 技術点・個性点は下位で、南雲の総合印象点1票だけで勝っている（なるが優勝の夜のLIMEで採点表を突きつける）。「実力で勝った」と書かない
+- **ch1の優勝は実力ではない**: 技術点・個性点は下位で、南雲の総合印象点1票だけで勝っている（**師匠スミさん**が優勝の夜のLIMEで採点表を突きつける＝突きつけ役はなるではなくスミさん・2026-06-13改定）。「実力で勝った」と書かない
 - **みんとの私服=「お姉さん」**(speaker `oneesan`)。ch1では正体を明かさない。身分証確認の記憶が「自称20歳」の嘘の伏線
 
 ## 接客・金銭の規範

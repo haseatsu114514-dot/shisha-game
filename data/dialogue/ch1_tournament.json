@@ -397,7 +397,7 @@
       }
     },
     {
-      "dialogue_id": "ch1_tournament_result",
+      "dialogue_id": "ch1_tournament_judging",
       "metadata": {
         "effect": "smoke"
       },
@@ -492,6 +492,24 @@
           "face": "",
           "text": "技術点。個性点。どちらも、はじめは下位だった。──ああ、やっぱり届かなかったか。指先が、すっと冷たくなる。"
         },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（……だめだ。技術でも、個性でも、僕は下位だ。ここまで来て、届かなかった）"
+        },
+        {
+          "speaker": "pakki",
+          "face": "evil",
+          "text": "さあ、残すは最後の一項目──『総合印象点』ッ！　運命の発表まで、あと、わずかァ……！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_tournament_reveal",
+      "metadata": {
+        "effect": "smoke"
+      },
+      "lines": [
         {
           "speaker": "",
           "face": "",

@@ -142,6 +142,11 @@
   border-bottom: none;
 }
 .rw-bubble.show { opacity: 1; transform: translateX(-50%) scale(1); }
+/* 熱いセリフ＝赤、レアセリフ＝金〜桃のグラデ（スロット演出風）（T24） */
+.rw-bubble.hot { background: #ff3d3d; color: #fff; box-shadow: 0 0 12px rgba(255,90,90,0.85); }
+.rw-bubble.hot::after { border-top-color: #ff3d3d; }
+.rw-bubble.rare { background: linear-gradient(120deg, #ffd24a, #ff7ae0); color: #2a1530; box-shadow: 0 0 14px rgba(255,170,90,0.9); }
+.rw-bubble.rare::after { border-top-color: #ff7ae0; }
 
 /* ---- カットイン（ボーナス揃え／フリーズ）。pointer-events:none の自走シネマ ---- */
 #reel-cutin {
