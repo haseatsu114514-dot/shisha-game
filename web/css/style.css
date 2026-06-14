@@ -858,7 +858,7 @@ body {
   left: 50%; top: 52%;
   transform: translate(-50%, -50%);
   width: min(760px, 92%);
-  max-height: 86%;
+  max-height: 90%;
   overflow-y: auto;
   background: linear-gradient(180deg, rgba(12,8,18,0.96), rgba(18,12,26,0.96));
   border: 1px solid var(--panel-border);
@@ -2469,11 +2469,11 @@ body {
   background: rgba(0,0,0,0.75);
 }
 #glossary-overlay.visible { display: flex; align-items: center; justify-content: center; }
-#glossary-overlay .panel { width: min(820px, 88%); max-height: 86%; display: flex; flex-direction: column; }
+#glossary-overlay .panel { width: min(820px, 88%); height: min(660px, 92%); max-height: 92%; display: flex; flex-direction: column; padding: 22px 28px; overflow: hidden; }
 #glossary-list {
   flex: 1;
   overflow-y: auto;
-  margin: 12px 0 16px;
+  margin: 8px 0 8px;
   padding-right: 8px;
   text-align: left;
 }
@@ -2487,15 +2487,39 @@ body {
 }
 .glossary-row {
   display: grid;
-  grid-template-columns: 190px 1fr;
+  grid-template-columns: 172px 1fr;
   gap: 12px;
-  padding: 7px 2px;
+  padding: 5px 2px;
   border-bottom: 1px dashed rgba(244,210,122,0.14);
-  font-size: 13.5px;
-  line-height: 1.65;
+  font-size: 12.5px;
+  line-height: 1.5;
 }
 .glossary-term { color: var(--text); font-weight: bold; }
 .glossary-desc { color: var(--text-dim); }
+#glossary-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 2px;
+}
+.glossary-tab {
+  font-family: inherit;
+  font-size: 12.5px;
+  padding: 5px 12px;
+  color: var(--text-dim);
+  background: rgba(244,210,122,0.06);
+  border: 1px solid rgba(244,210,122,0.25);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.glossary-tab:hover { color: var(--text); border-color: rgba(244,210,122,0.5); }
+.glossary-tab.active {
+  color: #1a1018;
+  background: var(--accent);
+  border-color: var(--accent);
+  font-weight: bold;
+}
 
 
 /* ===== 体力（スタミナ）HUD ===== */

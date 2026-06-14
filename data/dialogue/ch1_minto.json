@@ -120,6 +120,25 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（……真面目に煙と向き合っているのが馬鹿らしくなるというか、同業者として、なんだか少し複雑な気分だな……）"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "あ、そうだ。はじめくん、連絡先こうかんしよ？\n常連さんには、こっそり教えてるんだ♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ、はい。……じゃあ、お願いします"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひらひらと手を振って、みんとはあっという間にQRを差し出してきた。\n──こうして、みんとと連絡先を交換した。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_lime_contact_minto"
         }
       ]
     },

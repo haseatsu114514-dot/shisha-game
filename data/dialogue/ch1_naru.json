@@ -151,6 +151,25 @@
           "speaker": "",
           "face": "",
           "text": "（……強いだけじゃない。この人は、強くなり方がまっすぐだ）"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "あ、そうだ。連絡先、交換しとくか。\n気になったこと、いつでも聞いていいぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……いいんですか。ありがとうございます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──こうして、なるさんと連絡先を交換した。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_lime_contact_naru"
         }
       ],
       "branches": {}

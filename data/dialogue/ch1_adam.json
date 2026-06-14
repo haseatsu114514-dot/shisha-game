@@ -202,6 +202,25 @@
           "text": "ふっ……リンゴの導きが繋いだ縁だ。大切にせよ。"
         },
         {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "──時に、貴公。連絡先を交わそうではないか。\nリンゴの福音は、いつ訪れるか分からぬのでな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（相変わらず大げさだな……）\nはい、ぜひ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──こうして、アダムと連絡先を交換した。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_lime_contact_adam"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "……【洞察】が少し上がった。"
