@@ -103,7 +103,19 @@ NG: 文字/ロゴ/UI/数字の焼き込み（数値はゲーム側UIで出すの
 
 ---
 
-## 3. 既に存在する＝生成不要（コード配線するだけ＝下記A）
-`assets/ui/` に生成済みで未使用: `ui_phone_frame.png` / `ui_lime_bubble_left|right.png` / `ui_hud_action|calendar|money.png` /
-`ui_map_pin.png` / `ui_map_pin_event.png` / `ui_dialogue_box.png` / `ui_dialogue_namebox.png` / `ui_status_radar.png` / `ui_hand_left|right.png`。
-→ これらは**生成不要**。コード側で参照を繋ぐ（A作業）。
+## 3. 既存UI素材は「ダミー（自動生成プレースホルダ）」＝再生成が必要
+
+⚠️ **訂正**: `assets/ui/` の下記は「未使用の即戦力」ではなく、**ファイル名が書かれただけの色板ダミー**（各 0.8〜5KB、`tools/generate_dummy_images.py` 由来）。
+コードが使っていないのは“ダミーだから”。繋ぐと**悪化する**ので、**まず codex で本物を生成**してから配線する。
+
+| ファイル | 用途 | 生成の方向性 | 寸法/透過 |
+|---|---|---|---|
+| `ui_hud_action.png` `ui_hud_calendar.png` `ui_hud_money.png` | HUDの行動/日付/所持金アイコン | 煙・炎・カレンダー・コインを琥珀ネオンの線画アイコンで（小さく視認性重視）| 透過 ~64px角 |
+| `ui_map_pin.png` `ui_map_pin_event.png` | マップのピン（通常/イベント）| 下端が尖ったピン。イベント版は光る縁取り。下端アンカー | 透過 ~96×128 |
+| `ui_phone_frame.png` | LIMEのスマホ筐体フレーム | スマホの外枠（ベゼル＋上部ノッチ）。中央は空（チャットを抜く）| 透過 ~520×900 |
+| `ui_lime_bubble_left.png` `ui_lime_bubble_right.png` | LIME吹き出し（相手/自分）| 角丸の吹き出し（9スライス可能な余白）。相手=淡灰／自分=琥珀 | 透過 ~80px角(9-slice) |
+| `ui_dialogue_box.png` `ui_dialogue_namebox.png` | 会話ウィンドウ枠/名前枠 | 半透明の黒枠＋金のコーナー装飾（9スライス）| 透過 横長(9-slice) |
+| `ui_status_radar.png` | ステータスのレーダー下地 | 五角形グリッド＋グロー枠の装飾下地（数値は載せない）| 透過 ~520px角 |
+| `ui_hand_left.png` `ui_hand_right.png` | 一人称の手（作りパート＝§1で用途別に分岐）| §1の `hand_*` 群で代替推奨 | 透過 |
+
+→ 生成後は同名で上書き → build2本 → コード側で CSS図形/絵文字から差し替え（その時点で“配線”は数行）。

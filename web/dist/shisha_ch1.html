@@ -1132,7 +1132,15 @@ body {
 #gauge-hint { font-size: 14px; color: var(--text-dim); }
 
 /* ---------------- mix ---------------- */
-.mix-list { display: flex; flex-direction: column; gap: 8px; }
+/* 配合＝ハガル（ボウル）に葉を詰める見立て: リストをボウル容器に */
+.mix-list {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 14px 14px 16px;
+  border-radius: 14px 14px 20px 20px;
+  background: linear-gradient(180deg, rgba(34,25,44,0.55), rgba(16,11,22,0.85));
+  border: 1px solid rgba(244,210,122,0.16);
+  box-shadow: inset 0 10px 26px rgba(0,0,0,0.5), inset 0 -5px 12px rgba(0,0,0,0.4);
+}
 .mix-row {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   background: rgba(255,255,255,0.04);
@@ -1156,9 +1164,31 @@ body {
 .mix-ctrl button:hover { background: linear-gradient(180deg, #51405e, #2e2238); }
 .mix-ctrl button:active { transform: scale(0.94); }
 .mix-grams { min-width: 40px; text-align: center; font-size: 15px; color: var(--accent); }
-.mix-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; }
-.mix-total { font-size: 17px; color: #ff9466; }
-.mix-total.ok { color: #8fd3a7; }
+/* 測りの台＋デジタル表示の見立て */
+.mix-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 12px; padding: 11px 16px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #221820, #14101a);
+  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+}
+.mix-total {
+  font-family: "Courier New", ui-monospace, monospace;
+  font-size: 18px; font-weight: bold; letter-spacing: 0.04em;
+  color: #ffb070;
+  padding: 6px 14px; border-radius: 6px;
+  background: #0c0a10;
+  border: 1px solid rgba(255,140,80,0.25);
+  box-shadow: inset 0 0 10px rgba(255,140,80,0.15);
+  text-shadow: 0 0 6px rgba(255,140,80,0.5);
+}
+.mix-total.ok {
+  color: #8fffb0;
+  border-color: rgba(120,255,160,0.3);
+  box-shadow: inset 0 0 10px rgba(120,255,160,0.15);
+  text-shadow: 0 0 7px rgba(120,255,160,0.55);
+}
 .mix-price { font-size: 12px; color: var(--text-dim); margin-left: 6px; }
 .mix-price.free { color: #8fd3a7; }
 
