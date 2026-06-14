@@ -36,7 +36,7 @@ no held objects
 
 ---
 
-### スミさん（炭場 丈一郎）- 師匠 46歳
+### スミさん（墨田 丈一郎）- 師匠 46歳
 
 **参照画像**: `assets/sumi.png`（全身・承認済み）
 
@@ -141,7 +141,7 @@ quietly elegant adult warmth, understated, a little tired but at peace
 
 ---
 
-### ドクターチャコール博士（藤波 創）- 38歳
+### ドクターチャコール博士（炭場 創）- 38歳
 
 **参照画像**: `assets/39f7b2a8-ef53-4a7c-8a38-58ee443debc7.png`（白背景→ブルーバックで再生成）
 

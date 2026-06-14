@@ -467,6 +467,10 @@ function addMoney(amount) {
   updateHud();
 }
 
+// 大会賞金は章が上がるほど桁が増える（世界に近づくほど一台の価値が跳ねる）。
+// ch2は予選/準決の進出ボーナス（小額）＋決勝＝CHAPTER_PRIZE[2]。ch3/ch4は実装時に自動で効く
+const CHAPTER_PRIZE = { 1: 30000, 2: 50000, 3: 100000, 4: 500000, 5: 0 };
+
 // ---------- HUD ----------
 const LOCATION_FROM_BG = {
   tonari_inside: ["シーシャラウンジ『tonari』", ""],
@@ -715,20 +719,35 @@ function showLog() {
 
 // 用語集（シーシャを知らない人向けの解説。data/glossary.json）
 function showGlossary() {
+  const groups = D.glossary || [];
+  const tabs = $("#glossary-tabs");
   const list = $("#glossary-list");
-  list.innerHTML = "";
-  for (const group of D.glossary || []) {
-    const h = document.createElement("h3");
-    h.className = "glossary-group";
-    h.textContent = group.title;
-    list.appendChild(h);
-    for (const t of group.terms) {
+  // グループをタブで切り替え、1グループずつ表示する（縦スクロールせず1画面に収める）
+  const renderGroup = (gi) => {
+    list.innerHTML = "";
+    const group = groups[gi];
+    if (!group) return;
+    for (const t of (group.terms || [])) {
       const row = document.createElement("div");
       row.className = "glossary-row";
       row.innerHTML = `<span class="glossary-term">${t.term}</span><span class="glossary-desc">${t.desc}</span>`;
       list.appendChild(row);
     }
+    list.scrollTop = 0;
+    if (tabs) [...tabs.children].forEach((b, i) => b.classList.toggle("active", i === gi));
+  };
+  if (tabs) {
+    tabs.innerHTML = "";
+    groups.forEach((group, gi) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "glossary-tab";
+      b.textContent = group.title;
+      b.addEventListener("click", () => { if (window.SFX) SFX.select(); renderGroup(gi); });
+      tabs.appendChild(b);
+    });
   }
+  renderGroup(0);
   $("#glossary-overlay").classList.add("visible");
   if (window.SFX) SFX.open();
 }
@@ -1257,6 +1276,17 @@ let limeQueue = [];
 let limeOnDone = null;
 let limeAcceptedNoon = [];
 
+// スマホUIを開くたびに前回の吹き出し・操作ボタン・未読/相手表示を消してから開く。
+// （後日また開いた時、前日のスレッドが一瞬残って“そこから”始まって見える不具合の解消）
+function resetPhoneDom() {
+  const chat = $("#lime-chat");
+  if (chat) { chat.innerHTML = ""; chat.scrollTop = 0; }
+  if ($("#lime-actions")) $("#lime-actions").innerHTML = "";
+  if ($("#lime-unread")) $("#lime-unread").textContent = "";
+  if ($("#lime-peer-name")) $("#lime-peer-name").textContent = "";
+  if ($("#lime-avatar")) $("#lime-avatar").innerHTML = "";
+}
+
 function morningPhone(onDone, opts = {}) {
   stopAutoSkip(); // LIMEはAUTO/SKIPで読み飛ばさせない（スキップがLIMEまで貫通する問題の解消）
   const due = limeDueMessages(!!opts.tournamentDay);
@@ -1266,6 +1296,7 @@ function morningPhone(onDone, opts = {}) {
   limeAcceptedNoon = [];
   $("#phone-time").textContent = opts.tournamentDay ? "AM 8:00" : "AM 7:30";
   $("#phone-day").textContent = opts.tournamentDay ? "大会当日" : `DAY ${state.day}`;
+  resetPhoneDom(); // 前回のスレッドが800msの間チラ見えするのを防ぐ
   const ov = $("#phone-overlay");
   ov.classList.add("show");
   if (window.SFX) { SFX.open(); setTimeout(() => SFX.bubble(), 200); } // 通知音風
@@ -1420,6 +1451,7 @@ function phoneShowCustom(threads, onDone, header = {}) {
   limeAcceptedNoon = [];
   $("#phone-time").textContent = header.time || "PM 9:12";
   $("#phone-day").textContent = header.day || "";
+  resetPhoneDom(); // 開く前に前回のスレッドを消す
   $("#phone-overlay").classList.add("show");
   if (window.SFX) { SFX.open(); setTimeout(() => SFX.bubble(), 200); }
   setTimeout(nextLimeThread, 800);
@@ -4179,8 +4211,15 @@ function stepMix() {
 
   // 限定フレーバー（凛のサンプル等）はフラグ解放後にだけ並ぶ。
   // 主人公の配合はブロンドリーフのみ（ダーク/シガーは用語・他キャラの演出専用）
+  // 大会(tournament/rehearsal)では competition_legal:false、接客(baito)では serve_legal:false を除外。
+  // 凛の未発売サンプルは練習/ドリル等の試香でのみ使える（大会・店では出せない）
+  const compMode = tt.mode === "tournament" || tt.mode === "rehearsal";
+  const serveMode = tt.mode === "baito";
   const flavors = D.flavors.filter((f) =>
-    (!f.requires_flag || state.flags[f.requires_flag]) && (!f.leaf || f.leaf === "blond"));
+    (!f.requires_flag || state.flags[f.requires_flag]) &&
+    (!f.leaf || f.leaf === "blond") &&
+    !(compMode && f.competition_legal === false) &&
+    !(serveMode && f.serve_legal === false));
   for (const f of flavors) {
     const row = document.createElement("div");
     row.className = "mix-row";
@@ -5047,7 +5086,7 @@ function showResult(results, rank, detail, opts = {}) {
   if (rank === 1) {
     btn.textContent = "──表彰のあとへ ▶";
     btn.addEventListener("click", opts.onWin || (() => {
-      addMoney(50000); // 優勝賞金（master_spec #21）
+      addMoney(CHAPTER_PRIZE[1]); // 優勝賞金（章別スケーリング）
       // 審査(judging)・発表(reveal)は既にカウント前後で流したので、ここは表彰後の余韻だけ
       playDialogue("ch1_tournament_after", () => postClearPhone(() => showClear()), "res://assets/backgrounds/bg_tournament_stage.png");
     }));
@@ -5139,7 +5178,7 @@ const CH2_STAGES = {
       { id: "q3", name: "港町の老舗代表", base: 53 },
     ],
     bar: 58,
-    prize: 10000,
+    prize: 5000,
     after: "ch2_adam_distance",
     winDetail: "──予選通過。審査席の端で、白衣の男が小さくペンを走らせた。",
     loseDetail: "……札は伸びなかった。全国の「普通」は、地方の「上出来」より上にある。",
@@ -5151,7 +5190,7 @@ const CH2_STAGES = {
       { id: "s2", name: "九州ブロック覇者", base: 66 },
     ],
     bar: 70,
-    prize: 15000,
+    prize: 10000,
     after: "ch2_naru_confrontation",
     winDetail: "──審査席のチャコール博士が、はじめの欄に何かを長く書き込んでいる。「データに入らない強さ」、と。",
     loseDetail: "……あと一歩、届かない。借り物の理屈では、ここから先の壁は破れない。",
@@ -5163,7 +5202,7 @@ const CH2_STAGES = {
       { id: "f1", name: "西日本ブロック覇者", base: 70 },
     ],
     bar: 80,
-    prize: 30000,
+    prize: CHAPTER_PRIZE[2], // 決勝＝章別優勝賞金
     winDetail: "──最終発表。審査員たちの残り持ち点が、音を立ててこの一台に注がれていく。自分史上、もっとも綺麗にまとまった煙だった。",
     loseDetail: "……持ち点は動かなかった。綺麗なだけの煙では、頂点の「もう一口」は引き出せない。",
   },
@@ -5840,6 +5879,7 @@ function init() {
   $("#menu-save").addEventListener("click", () => showSaveLoad("save"));
   $("#menu-load").addEventListener("click", () => showSaveLoad("load"));
   $("#menu-config").addEventListener("click", () => showConfig());
+  $("#menu-glossary").addEventListener("click", () => { toggleStatus(false); showGlossary(); });
   $("#btn-status").addEventListener("click", () => toggleStatus(true));
   $("#status-close").addEventListener("click", () => toggleStatus(false));
   $("#shop-close").addEventListener("click", () => { if (window.SFX) SFX.close(); showMap(); });
@@ -5848,7 +5888,6 @@ function init() {
   $("#vn-auto").addEventListener("click", toggleAuto);
   $("#vn-skip").addEventListener("click", toggleSkip);
   $("#vn-log").addEventListener("click", showLog);
-  $("#vn-glossary").addEventListener("click", showGlossary);
   $("#glossary-close").addEventListener("click", () => {
     if (window.SFX) SFX.close();
     $("#glossary-overlay").classList.remove("visible");

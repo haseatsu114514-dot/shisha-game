@@ -569,7 +569,7 @@ var _pull_gauge_visual_node: Control = null
 
 const SPEAKER_NAMES := {
 	"hajime": "はじめ",
-	"sumi": "炭場",
+	"sumi": "墨田",
 	"naru": "なる",
 	"adam": "アダム",
 	"minto": "緑川 栞（みんと）",

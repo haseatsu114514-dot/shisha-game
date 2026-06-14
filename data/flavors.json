@@ -90,11 +90,27 @@
       "short_name": "NS アールグレイ",
       "category": "spice",
       "price": 0,
-      "description": "海外メーカーNIGHTSIDEの未発売サンプル。ベルガモットの紅茶香が長く残る。凛さんから託された一袋。",
+      "description": "海外メーカーNIGHTSIDEの未発売サンプル。ベルガモットの紅茶香が長く残る。凛さんから託された一袋。試香専用——未発売のため大会・接客では出せない。",
       "heat_tolerance": 1.15,
       "smoke_weight": 1.05,
       "steam_bias": 0.5,
       "requires_flag": "_rin_sample",
+      "sample": true,
+      "competition_legal": false,
+      "serve_legal": false,
+      "leaf": "blond"
+    },
+    {
+      "id": "nightside_earlgrey_release",
+      "name": "ナイトサイド アールグレイ",
+      "short_name": "NS アールグレイ",
+      "category": "spice",
+      "price": 1700,
+      "description": "NIGHTSIDEから正式発売されたアールグレイ。試香モニター『モルモットくん』の感想が、最後のひと匙を決めたという。ch3以降、_rin_release フラグで解放（時差発売の回収）。",
+      "heat_tolerance": 1.15,
+      "smoke_weight": 1.05,
+      "steam_bias": 0.5,
+      "requires_flag": "_rin_release",
       "leaf": "blond"
     },
     {

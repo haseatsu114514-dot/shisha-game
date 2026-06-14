@@ -170,7 +170,7 @@ normal PR. Stop and fix the Git layout first.
 | ID | 名前 | 役割 |
 |---|---|---|
 | `hajime` | 蒸野 始 | 主人公 |
-| `sumi` | 炭場 丈一郎 | 師匠 (tonari) |
+| `sumi` | 墨田 丈一郎 | 師匠 (tonari) |
 | `naru` | 鳴切 亮太 | ライバル ch1（**人格者の好敵手**。惜しみなく教える。イキリは旧設定） |
 | `adam` | 吾妻 大夢 | ライバル ch1（ダブルアップル職人） |
 | `minto` | 緑川 栞 | ライバル ch1（自称20歳・実年齢29歳） |
@@ -183,7 +183,7 @@ normal PR. Stop and fix the Git layout first.
 | `ageha` | 宵野 葉子 | ライバル ch2（ch1 DAY4夜に「謎のギャル」としてカメオ。香り=ホワイトグミベア） |
 | `kumicho` | 神崎 竜二 | ライバル ch2（シーシャ組長） |
 | `rei` | 田中 健太 | ライバル ch2-3（V系。ch1バイトに正体を伏せてカメオ来店済み） |
-| `dr_kemuri` | チャコール博士 / 藤波 創 | ライバル ch2・裏ボス戦の仕掛け人 ch5（❌「ドクター・ケムリ」は旧名） |
+| `dr_kemuri` | チャコール博士 / 炭場 創 | ライバル ch2・裏ボス戦の仕掛け人 ch5（❌「ドクター・ケムリ」は旧名） |
 | `mashiro` | 真白 ましろ | ヒロイン ch3（別名:シガーマン） |
 | `mukai_master` | ムカイさん / 向井 | ch3 溜まり場「mukai」店長 |
 | `tetsuko` | テツコ | mukai 裏口の猫 |
