@@ -99,6 +99,13 @@ await page.screenshot({ path: `${OUT}/07_tournament_theme.png` });
 async function title() { return page.locator("#tn-title").textContent(); }
 for (let i = 0; i < 2500; i++) {
   const s = await active();
+  // 朝のLIME（phone-overlay）が出ていたら先に返信して閉じる（クリック横取り対策・ch2.mjsと同様）
+  if (await page.locator("#phone-overlay.show").count()) {
+    const r = page.locator("#phone-overlay .lime-reply").first();
+    if (await r.count()) await r.click().catch(() => {});
+    await page.waitForTimeout(120);
+    continue;
+  }
   if (s === "screen-end") break;
   if (s === "screen-dialogue") {
     const c = page.locator("#vn-choices .choice-btn").first();
@@ -158,21 +165,17 @@ for (let i = 0; i < 2500; i++) {
     else if (t.includes("炭をコンロにセット") || t.includes("炭の配置")) await page.locator(".spot-btn", { hasText: "炭4個" }).click();
     else if (t.includes("蒸らし時間")) await page.locator(".spot-btn", { hasText: "3分" }).click();
     else if (t.includes("蒸らし中")) {
-      // 待ちビートは締めの一手を外し気味に押す（敗北ルート用）。1枚だけスクショを残す
+      // 蒸らし=雑念弾幕。アリーナを1枚撮ってから即終了→結果へ
       let shot = false;
       for (let k = 0; k < 200; k++) {
-        if (!shot && (await page.locator(".steam-wait").count())) {
-          await page.screenshot({ path: `${OUT}/08d_steam_wait.png` });
+        if (!shot && (await page.locator(".dodge-arena").count())) {
+          await page.screenshot({ path: `${OUT}/08d_steam_dodge.png` });
           shot = true;
-        }
-        const d = await page.evaluate(() => (window.__steamDebug ? __steamDebug() : null));
-        if (d && d.ready && (d.pos < d.wantZone[0] || d.pos > d.wantZone[1])) {
-          await page.locator("#steam-finish").click().catch(() => {});
-          await page.waitForTimeout(80);
+          await page.evaluate(() => { const o = window.__steamDebug && window.__steamDebug(); if (o && o.end) o.end(); });
         }
         const next = page.locator("#tn-body button", { hasText: "次へ" });
         if (await next.count()) { await next.click(); break; }
-        await page.waitForTimeout(150);
+        await page.waitForTimeout(100);
       }
     }
     else if (t.includes("吸い出し")) {

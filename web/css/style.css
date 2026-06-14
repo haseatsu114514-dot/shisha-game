@@ -461,7 +461,7 @@ body {
   max-width: 42vw;
   filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.7));
   opacity: 0;
-  animation: title-rise-logo 1.3s ease-out 0.55s forwards;
+  animation: title-rise-logo 1.3s ease-out 0.2s forwards;
   pointer-events: none;
   user-select: none;
 }
@@ -581,11 +581,15 @@ body {
   animation: puff-engulf 2.6s ease-in-out forwards;
 }
 /* 立ち上がり→白に包まれて「間」→ゆっくり晴れる */
+/* 立ち上がり→白に包まれて「間」→ゆっくり晴れる。
+   ピークでは画面全体を白で覆う（オーナー指摘: 上の方が見えてしまうのを解消）。
+   煙パフは下から上がるが、最終的に veil 自体の白で全画面を覆い切る */
 @keyframes engulf {
-  0%   { opacity: 0; backdrop-filter: blur(0); }
-  28%  { opacity: 1; backdrop-filter: blur(10px); }
-  62%  { opacity: 1; backdrop-filter: blur(14px); }
-  100% { opacity: 0; backdrop-filter: blur(0); }
+  0%   { opacity: 0; background: rgba(246,247,252,0);    backdrop-filter: blur(0); }
+  26%  { opacity: 1; background: rgba(246,247,252,0.30); backdrop-filter: blur(10px); }
+  50%  { opacity: 1; background: rgba(246,247,252,0.99); backdrop-filter: blur(16px); }
+  66%  { opacity: 1; background: rgba(246,247,252,0.99); backdrop-filter: blur(16px); }
+  100% { opacity: 0; background: rgba(246,247,252,0);    backdrop-filter: blur(0); }
 }
 @keyframes puff-engulf {
   0%   { opacity: 0; transform: translate(0, 30vh) scale(0.4); }
@@ -2170,7 +2174,7 @@ body {
   -webkit-mask-repeat: no-repeat;
           mask-repeat: no-repeat;
   animation:
-    title-rise-logo 1.3s ease-out 0.55s forwards,
+    title-rise-logo 1.3s ease-out 0.2s forwards,
     logo-inkstroke 1.8s cubic-bezier(0.22, 0.61, 0.36, 1) 0.55s forwards;
 }
 @keyframes logo-inkstroke {
@@ -3234,7 +3238,8 @@ body {
 .mt-body b { color: #ffd27a; }
 .mt-tap { font-size: 12px; color: #9aa0b8; margin: 9px 0 0; }
 .spot-pin.tut-pulse { animation: tut-pulse 1s ease-in-out infinite; z-index: 5; }
-@keyframes tut-pulse { 0%,100% { filter: drop-shadow(0 0 0 rgba(255,210,120,0)); } 50% { filter: drop-shadow(0 0 10px rgba(255,210,120,0.95)); transform: scale(1.08); } }
+/* 動かさない（オーナー指摘: ピンが動いてアピールするのがうざい）。静かなグローのみ */
+@keyframes tut-pulse { 0%,100% { filter: drop-shadow(0 0 0 rgba(255,210,120,0)); } 50% { filter: drop-shadow(0 0 7px rgba(255,210,120,0.6)); } }
 /* 店内サブメニュー（tonari統合#9 / Dr.fookah選択T28） */
 #tonari-menu, #fookah-menu { position: absolute; inset: 0; z-index: 9; display: flex; align-items: center; justify-content: center; background: rgba(8,6,14,0.55); opacity: 0; transition: opacity 0.2s; }
 #tonari-menu.show, #fookah-menu.show { opacity: 1; }

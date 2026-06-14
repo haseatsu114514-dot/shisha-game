@@ -538,8 +538,8 @@ const REEL = (() => {
   function benefitLine(r) {
     const names = typeof STAT_KEYS !== "undefined" ? STAT_KEYS : {};
     const stat = (r && r.target && names[r.target]) ? names[r.target] : null;
-    const amt = r.exp >= 6 ? "どっさり" : r.exp >= 4 ? "しっかり" : r.exp >= 2 ? "ちょっと" : "わずかに";
-    return stat ? `【${stat}】の経験値が${amt}入ったよ！` : `経験値が${amt}入ったよ！`;
+    const amt = r.exp >= 6 ? "ぐーんと" : r.exp >= 4 ? "かなり" : r.exp >= 2 ? "ちょっと" : "少し";
+    return stat ? `【${stat}】が${amt}上がったよ！` : `${amt}上がったよ！`;
   }
   // 天井が近いときの抽象的な示唆（数値は出さない・短く・近づくほど熱く・パターン多め）（T19/T21/T24）
   const CEILING_HINTS = {
@@ -556,6 +556,10 @@ const REEL = (() => {
     "ノーれんちゃん中〜", "やる気は満タン！", "次に期待してね♪", "危なかった……何が？", "知ってた（嘘）",
     "煙、いい色〜", "まばたきした？", "今のは練習！", "宇宙を感じる……", "ぷかぷか〜", "ぐぬぬ",
     "せーの、で来るやつ", "……はっ、寝てた", "ノーコメントで！", "ちっ", "むむむ", "ぼちぼち〜",
+    "ふー、ねむい", "鼻がムズムズ", "おっと", "んっ、今の見た？", "へいきへいき", "ボクは元気〜",
+    "もういっちょ！", "ぷっぷくぷー", "なんでもないよ", "風が呼んでる……", "むにゃ……", "しゃきーん",
+    "おなかすいた", "次こそ次こそ", "ボクを信じて？", "ちょい待ち〜", "うーん、地味", "今のはノーサイド",
+    "ぼー……", "き、来るかと思った", "ここで一句", "ふっかーつ！", "まだまだいくよ", "そういう日もある",
   ];
   function funMiss() { return pick(FUN_MISS); }
   // ごくまれに出るレア台詞（外れ時・短く・赤文字で表示）（T21/T24）
@@ -579,9 +583,10 @@ const REEL = (() => {
             bubble(ceilingHint(r.ceilingRemain), 1500, r.ceilingRemain <= 1 ? "hot" : null);
             if (r.ceilingRemain <= 2 && fx() !== "off") sfx("puka");
           } else {
+            // 回すごとに必ず何かしらコメントする（オーナー要望）。レアはまれに赤文字で
             const rnd = Math.random();
-            if (rnd < 0.025) { bubble(rareMiss(), 2200, "rare"); sfx("reelWin"); }
-            else if (rnd < 0.20) bubble(funMiss(), 1400);
+            if (rnd < 0.04) { bubble(rareMiss(), 2200, "rare"); sfx("reelWin"); }
+            else bubble(funMiss(), 1400);
           }
         }
         return done();

@@ -147,7 +147,7 @@ function newState() {
     statsBaseline: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 },
     affinity: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0, rin: 0, ageha: 0 },
     affinityPts: {},       // 好感度の内部ポイント（隠し数値。閾値で affinity の段階が上がる）
-    visits: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0, rin: 0, ageha: 0 },
+    visits: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0, rin: 0, ageha: 0, kumicho: 0, rei: 0, volk: 0 },
     stamina: 100,          // 体力（数値は非表示・ゲージのみ）
     dayVisited: {},        // 店ごとの最終訪問日（同じ店は1日1回まで）
     lovers: [],            // 付き合っているキャラ（複数なら浮気状態）
@@ -281,7 +281,8 @@ const STAT_BADGE = { technique: "技", sense: "感", guts: "根", charm: "魅", 
 // 章ごとのステータス育成ソフトキャップ（#42）。ch1で上限に張り付かないよう抑え、
 // 5章で全100＝完全攻略を狙えるカーブにする。数値は非表示なので体感は「★がゆっくり伸びる」
 function statSoftCap() {
-  return ({ 1: 42, 2: 60, 3: 76, 4: 92, 5: 100 })[state ? state.chapter : 1] || 100;
+  // 上限を少し上げてスロット大当たりでも章途中でカンストしにくく（オーナー指摘）。ch5=100は維持
+  return ({ 1: 48, 2: 66, 3: 82, 4: 96, 5: 100 })[state ? state.chapter : 1] || 100;
 }
 
 function gainStat(en, amount) {
@@ -620,6 +621,9 @@ function updateDayCard() {
   card.classList.toggle("show", !!isMap && state && state.phase === "daily");
   if (!isMap || !state) return;
   $("#dc-day").textContent = state.day;
+  // 大会最終日（章ごとに可変）を分母にする。7日固定だった旧UIの修正
+  const dcMax = $("#dc-max");
+  if (dcMax) dcMax.textContent = "/" + Math.max(...Object.keys(chapterInfo().stageDays).map(Number));
   $("#dc-week").textContent = state.ap === 2 ? "DAY" : "NIGHT";
   $("#dc-ap").textContent = (state.ap === 2 ? "昼" : "夜") + ` ${state.ap}`;
   $("#dc-money").textContent = state.money.toLocaleString();
@@ -1101,9 +1105,14 @@ const TONARI_SPOTS = [
 ];
 const SPOTS = [
   { id: "tonari", label: "tonari（お店）", desc: "バイト・練習・スミさん・常連席。今日は店で何をする？", cost: 0 },
-  { id: "naru", label: "なるの店へ行く", desc: "ライバル店を偵察", cost: VISIT_COST, charId: "naru" },
-  { id: "adam", label: "アダムの店へ行く", desc: "ダブルアップル職人の店", cost: VISIT_COST, charId: "adam" },
-  { id: "minto", label: "みんとの店へ行く", desc: "コンカフェ風シーシャ屋へ", cost: VISIT_COST, charId: "minto" },
+  { id: "naru", label: "なるの店へ行く", desc: "ライバル店を偵察", cost: VISIT_COST, charId: "naru", chapter: 1 },
+  { id: "adam", label: "アダムの店へ行く", desc: "ダブルアップル職人の店", cost: VISIT_COST, charId: "adam", chapter: 1 },
+  { id: "minto", label: "みんとの店へ行く", desc: "コンカフェ風シーシャ屋へ", cost: VISIT_COST, charId: "minto", chapter: 1 },
+  // 第2章のライバル店（章で出し分け）。神崎煙草店は2回通うと0分立ち上げ解放
+  { id: "kumicho", label: "神崎煙草店へ行く", desc: "暖簾の奥にシーシャ。組長が一人で回す老舗", cost: VISIT_COST, charId: "kumicho", chapter: 2 },
+  { id: "ageha", label: "アゲハの店へ行く", desc: "繁華街の派手な店。SNSで人気のギャル店主", cost: VISIT_COST, charId: "ageha", chapter: 2 },
+  { id: "rei", label: "零-ZERO-へ行く", desc: "重いロックが鳴る薄暗い店", cost: VISIT_COST, charId: "rei", chapter: 2 },
+  { id: "volk", label: "鉄の煙へ行く", desc: "計器だらけ。無愛想なロシア人の店", cost: VISIT_COST, charId: "volk", chapter: 2 },
   { id: "choizap", label: "チョイザップ", desc: "みんとに教えてもらったジム", cost: 0, requiresMet: "minto" },
   { id: "kannon", label: "観音堂", desc: "アダムに教えてもらった静かな場所", cost: 0, requiresMet: "adam" },
   { id: "cafe", label: "カフェ", desc: "なるおすすめのスパイスラテ", cost: 800, requiresMet: "naru" },
@@ -1118,6 +1127,10 @@ const SPOT_UNKNOWN = {
   adam: { label: "EDENを覗く", desc: "下町の店。焼き林檎みたいな甘い匂いが漏れている" },
   minto: { label: "PEPERMINTを覗く", desc: "繁華街のポップな店。SNSで人気らしい" },
   tsumugi: { label: "常連の子と話す", desc: "カウンターの奥、いつも同じ席にいる女の子" },
+  kumicho: { label: "神崎煙草店を覗く", desc: "暖簾の奥にシーシャの気配。古い佇まいの老舗" },
+  ageha: { label: "派手な店を覗く", desc: "繁華街の目立つ店。ギャルっぽい店主がいるらしい" },
+  rei: { label: "零-ZERO-を覗く", desc: "重低音が漏れる薄暗い店。タトゥーの店主の噂" },
+  volk: { label: "鉄の煙を覗く", desc: "計器だらけの不思議な店。外国人がやっているらしい" },
 };
 
 // 報酬キューが鳴らなかった場合の保険（全イベントに必ず報酬を付ける）
@@ -1148,6 +1161,11 @@ const VISIT_SEQUENCES = {
   naru: ["ch1_naru_first", "ch1_naru_second", "ch1_naru_third", "ch1_naru_fourth", "ch1_naru_fifth"],
   adam: ["ch1_adam_first", "ch1_adam_second", "ch1_adam_third", "ch1_adam_fourth", "ch1_adam_fifth"],
   minto: ["ch1_minto_first", "ch1_minto_second", "ch1_minto_third", "ch1_minto_fourth", "ch1_minto_fifth"],
+  // 第2章ライバル店（通うと交流が進む。神崎は2回目=ch2_kumicho_second で0分立ち上げ解放）
+  ageha: ["ch2_ageha_first", "ch2_ageha_second", "ch2_ageha_third", "ch2_ageha_fourth", "ch2_ageha_fifth"],
+  kumicho: ["ch2_kumicho_first", "ch2_kumicho_second", "ch2_kumicho_third", "ch2_kumicho_fourth"],
+  rei: ["ch2_rei_first", "ch2_rei_second", "ch2_rei_third", "ch2_rei_fourth", "ch2_rei_fifth"],
+  volk: ["ch2_volk_first", "ch2_volk_second", "ch2_volk_third", "ch2_volk_fourth"],
 };
 
 // 通い切ったあとの繰り返し訪問（必ず何かしらの報酬を付ける）
@@ -1157,6 +1175,10 @@ const REPEAT_VISIT = {
   naru: { text: "なるの店で一服。スピード勝負の段取りを盗み見る。鼻の良さに毎回気づかされる。", stats: { insight: 2 } },
   adam: { text: "アダムの店で一服。ダブルアップル一筋の頑固さに、芯の強さを感じる。", stats: { guts: 2 } },
   minto: { text: "みんとの店で一服。客あしらいの軽やかさは、やっぱり真似できない。", stats: { charm: 2 } },
+  ageha: { text: "アゲハの店で一服。明るさに当てられて、こっちまで肩の力が抜ける。", stats: { sense: 2 } },
+  kumicho: { text: "神崎煙草店で一服。組長と黙って同じ煙を吸うだけで、不思議と腹が据わる。", stats: { guts: 2 } },
+  rei: { text: "零-ZERO-で一服。爆音の中、REIは何も言わない。でも、煙はやさしい。", stats: { charm: 2 } },
+  volk: { text: "鉄の煙で一服。ヴォルクの精密な手つきを盗み見る。数字の裏に、職人の勘がある。", stats: { guts: 2 } },
 };
 
 // ============ LIME（朝のスマホ演出） ============
@@ -1687,6 +1709,7 @@ function loverQuickMeet(charId) {
 const SPOT_ICONS = {
   tonari: "店", baito: "労", practice: "練", sumi: "師", tsumugi: "紬",
   naru: "鳴", adam: "亜", minto: "緑", choizap: "筋",
+  kumicho: "崎", ageha: "蝶", rei: "零", volk: "鉄",
   kannon: "観", cafe: "珈", c_station: "C", shop: "店", rest: "休",
 };
 const SPOT_FACE = { tonari: "sumi", sumi: "sumi", tsumugi: "tsumugi", naru: "naru", adam: "adam", minto: "minto" };
@@ -1697,6 +1720,10 @@ const SPOT_LAYOUT = {
   naru:      { x: 42, y: 22, theme: "rival",   short: "KEMURIKUSA", area: "繁華街" },
   adam:      { x: 56, y: 30, theme: "rival",   short: "EDEN",       area: "下町" },
   minto:     { x: 70, y: 22, theme: "rival",   short: "PEPERMINT",  area: "繁華街" },
+  kumicho:   { x: 40, y: 24, theme: "rival",   short: "神崎煙草店", area: "旧市街" },
+  ageha:     { x: 58, y: 20, theme: "rival",   short: "AGEHA",      area: "繁華街" },
+  rei:       { x: 72, y: 32, theme: "rival",   short: "零-ZERO-",   area: "ライブ通り" },
+  volk:      { x: 50, y: 38, theme: "rival",   short: "鉄の煙",     area: "工業地区" },
   choizap:   { x: 50, y: 50, theme: "shop",    short: "チョイザップ", area: "ジム" },
   kannon:    { x: 78, y: 56, theme: "park",    short: "観音堂",     area: "古町" },
   cafe:      { x: 64, y: 64, theme: "cafe",    short: "カフェ",     area: "繁華街" },
@@ -1718,6 +1745,7 @@ function showMap(opts = {}) {
   const pins = $("#map-pins");
   pins.innerHTML = "";
   for (const spot of SPOTS) {
+    if (spot.chapter && spot.chapter !== state.chapter) continue; // 章限定スポット（ch1/ch2でライバル店を出し分け）
     const layout = SPOT_LAYOUT[spot.id];
     if (!layout) continue;
     const btn = document.createElement("button");
@@ -1880,7 +1908,7 @@ function selectSpot(spot) {
       case "rest": return doRest();
       default: {
         // よその店での一服は体力を使う（tonari内のスミさん・つむぎとの会話は軽い）
-        const heavySmoke = ["naru", "adam", "minto"].includes(spot.id);
+        const heavySmoke = ["naru", "adam", "minto", "kumicho", "ageha", "rei", "volk"].includes(spot.id);
         return heavySmoke ? shishaGuard(() => doVisit(spot.id)) : doVisit(spot.id);
       }
     }
@@ -2244,7 +2272,7 @@ function doVisit(charId) {
   const idx = state.visits[charId];
   const bg = VISIT_BG[charId] || "bg_tonari_inside.png";
   state.dayVisited[charId] = state.day; // 同じ店は1日1回まで
-  addStamina(-(["naru", "adam", "minto"].includes(charId) ? STAMINA_COST.visit : STAMINA_COST.talk));
+  addStamina(-(["naru", "adam", "minto", "kumicho", "ageha", "rei", "volk"].includes(charId) ? STAMINA_COST.visit : STAMINA_COST.talk));
   const after = () => {
     markMet(charId); // 会話を終えた＝面識ができた（名乗りの set_flag の保険）
     visitContextChar = null;
@@ -2327,7 +2355,7 @@ function showFookahMenu() {
     `<p class="tn-menu-title">Dr.fookah ── どうする？</p>` +
     `<div class="tn-menu-list">` +
     `<button class="spot-btn" id="fookah-shop"><span class="spot-name">物販を利用する</span><span class="spot-cost">無料・コマ不要</span><span class="spot-desc">機材とフレーバーの買い物だけ。時間はかからない</span></button>` +
-    `<button class="spot-btn" id="fookah-rin"${rinOff ? " disabled" : ""}><span class="spot-name">凛さんに会う＋ブースで一服</span><span class="spot-cost">${rinDone ? "今日はもう行った" : broke ? "所持金が足りない（2,500円）" : "2,500円・コマを使う"}</span><span class="spot-desc">吸えるブースつき。物販もやってる分、他店より少し安い（3,000円→2,500円）</span></button>` +
+    `<button class="spot-btn" id="fookah-rin"${rinOff ? " disabled" : ""}><span class="spot-name">${isMet("rin") ? "凛さんに会う＋ブースで一服" : "ブースで一服する"}</span><span class="spot-cost">${rinDone ? "今日はもう行った" : broke ? "所持金が足りない（2,500円）" : "2,500円・コマを使う"}</span><span class="spot-desc">吸えるブースつき。物販もやってる分、他店より少し安い（3,000円→2,500円）</span></button>` +
     `</div>` +
     `<button class="primary-btn ghost tn-close" id="fookah-close">← マップに戻る</button>` +
     `</div>`;
@@ -2895,6 +2923,21 @@ const PACKS = [
 const COALS = [
   { id: "triangle", label: "トライアングル", desc: "基本の三角配置（3個）。安定の熱まわり" },
   { id: "four", label: "炭4個", desc: "3個よりかなり熱が上がる高火力。焦げのリスクと隣り合わせ" },
+];
+// 蒸らし中に飛んでくる「雑念」（弾幕の弾の文言）。ch2+は離反/味覚喪失の影が混じる
+const DODGE_WORDS = [
+  "手元、見られてる……", "時間が足りないかも", "隣の煙、もう上がってる",
+  "失敗したらどうしよう", "パッキーの野次", "審査員の視線", "炭、熾きてたかな",
+  "詰めすぎたか？", "灰、落ちないか", "客の咳ばらい", "温度、大丈夫か",
+  "香り、飛んでないか", "手が、汗ばむ", "時計の秒針", "深呼吸、わすれてた",
+  "ボウル、熱いな", "煙、薄い気がする", "スミさんなら…", "隣のジャスト音",
+];
+const DODGE_WORDS_CH2 = [
+  "ヴォルクの精度", "組長の覚悟", "あげはのバイブス", "なるの配合ノート",
+  "“誰の煙だ？”", "採点表", "正解はどれだ", "味が、思い出せない",
+  "なるの背中", "勝てば、いいのか", "客の顔が見えない", "ましろなら…",
+  "この味で合ってる？", "上手いだけの煙", "舌が、遠い", "勝ち筋をなぞる",
+  "本当に、好きか", "誰かの正解", "拍手が、遠い",
 ];
 const STEAMS = [
   { id: 0, label: "0分", desc: "吸いながら一気に立ち上げる型破りな技。神崎竜二との交友で解放", unlock: "kumicho" },
@@ -3580,7 +3623,7 @@ function tournamentStep(step) {
       tt.steam = s.id;
       if (window.SFX) SFX.select();
       // 蒸らしは湯気を出さず、タイマーと鼓動で待つ。最後に覚悟の一手を入れる
-      runSteamWait(s, () => {
+      runSteamDodge(s, () => {
         // 大会以外・ch2の各試合は観客の会話なし（ラウンド会話はch1専用テキスト）
         if (tt.mode !== "tournament" || state.chapter !== 1) return tnNext("steam");
         // ラウンド1（組み立て）終了 → 観客の会話 → R1講評 → 中間発表 → ラウンド2（調整）へ
@@ -4404,14 +4447,39 @@ function stepMix() {
 
 // --- 蒸らし待ち: 湯気は出さず、タイマーと鼓動で「待つ」緊張を作る。
 // 最後に一度だけ覚悟の締めを入れ、タイミングが craft に響く。
-function runSteamWait(steamOpt, onDone) {
-  const duration = steamOpt.id === 0 ? 0.9 : 1.2 + steamOpt.id * 0.22;
+// --- 蒸らし: 雑念弾幕（アンダーテール風の回避）。オーナー指定で「覚悟＋締め」から
+// 弾幕回避へ差し戻し（現デザインのタイマー＋鼓動の枠は維持）。心(♥)を動かして
+// 雑念弾を躱す。被弾が少ないほど craft が上がる（tt.steamHits を採点が読む）。
+// 0分(神崎流)は蒸らさない＝雑念ビート無しで即立ち上げ。
+function runSteamDodge(steamOpt, onDone) {
+  if (steamOpt.id === 0) {
+    const body = tnPanel("蒸らし: 0分スタイル", "蒸らさない。吸いながら一気に立ち上げる──神崎竜二の型破りなやり方だ。");
+    tt.steamHits = 0; tt.steamFinish = "perfect";
+    showStamp($("#tn-layout .panel"), "perfect");
+    pakkiLive("perfect"); broadcastJudge("perfect", "蒸らし");
+    if (window.SFX) SFX.perfect();
+    const result = document.createElement("div");
+    result.className = "practice-result";
+    result.textContent = "──腹を決めて、吸いながら一気に立ち上げた。雑念の入る隙もない。";
+    const next = document.createElement("button");
+    next.className = "primary-btn"; next.textContent = "次へ";
+    next.addEventListener("click", onDone);
+    result.appendChild(document.createElement("br")); result.appendChild(next);
+    body.append(result);
+    window.__steamDebug = () => ({ dodge: true, hits: 0, done: true, end: () => {} });
+    return;
+  }
+  // 蒸らしが長いほど雑念に晒される時間も長い（蒸らし時間の選択に意味を持たせる）
+  const duration = Math.min(12, 4.5 + steamOpt.id * 0.6);
+  const slump = state.chapter === 2 && state.flags._taste_slump && tt.mode !== "drill";
   const body = tnPanel(
-    "蒸らし中 ── 覚悟の待ち時間",
-    steamOpt.id === 0
-      ? "蒸らさない。吸いながら立ち上げる。神崎竜二の型破りなやり方だ。"
-      : "リグを見つめて待つ。焦らず、タイマーが切れる直前に一度だけ締める。"
+    "蒸らし中 ── 雑念を躱せ",
+    slump
+      ? "頭の中が、ざわつく。借り物の言葉が雑念になって飛んでくる──煙のことだけ考えろ。"
+      : "心（♥）をドラッグ（または矢印キー）で動かして雑念を躱せ。被弾するほど煙が落ち着かない。"
   );
+  const words = slump || (state.chapter === 2 && tt.mode === "tournament") ? DODGE_WORDS_CH2 : DODGE_WORDS;
+  // 現デザイン維持: 上部にタイマー＋鼓動、その下に回避アリーナ
   const wrap = document.createElement("div");
   wrap.className = "steam-wait";
   wrap.innerHTML = `
@@ -4419,54 +4487,113 @@ function runSteamWait(steamOpt, onDone) {
       <span class="steam-timer-label" id="steam-timer-label"></span>
       <div class="steam-timer-bar"><div class="steam-timer-fill" id="steam-timer-fill"></div></div>
     </div>
-    <div class="steam-heart"><span></span><span></span><span></span></div>
-    <div class="steam-final hidden" id="steam-final">
-      <div class="steam-timing-bar">
-        <div class="steam-timing-zone"></div>
-        <div class="steam-timing-needle" id="steam-timing-needle"></div>
-      </div>
-      <button class="primary-btn" id="steam-finish">覚悟の締め</button>
-    </div>`;
+    <div class="steam-heart"><span></span><span></span><span></span></div>`;
+  const arena = document.createElement("div");
+  arena.className = "dodge-arena";
+  const soul = document.createElement("div");
+  soul.className = "dodge-soul";
+  soul.textContent = "♥";
+  arena.appendChild(soul);
   const result = document.createElement("div");
   result.className = "practice-result";
-  body.append(wrap, result);
+  body.append(wrap, arena, result);
 
   const label = wrap.querySelector("#steam-timer-label");
   const fill = wrap.querySelector("#steam-timer-fill");
-  const final = wrap.querySelector("#steam-final");
-  const finishBtn = wrap.querySelector("#steam-finish");
-  const needle = wrap.querySelector("#steam-timing-needle");
-  const zone = [0.44, 0.56];
-  let remain = duration, last = performance.now(), raf = 0, phase = "wait", pos = 0, done = false;
-  let beatTimer = 0;
-  const playBeat = () => { if (!done && phase === "wait" && window.SFX) SFX.click(); };
-  beatTimer = setInterval(playBeat, steamOpt.id >= 8 ? 760 : 620);
+  let W = 760, H = 220;
+  let sx = W / 2, sy = H * 0.62;
+  let hits = 0, invuln = 0, remain = duration, last = performance.now();
+  let spawnIn = 0.6, raf = 0, ended = false;
+  const bullets = [];
+  const keys = {};
+  // 洞察が高いほど雑念の湧きがわずかに穏やか（そこそこ有利、程度）
+  const spawnEvery = (slump ? 0.42 : 0.54) + Math.min(0.14, state.stats.insight / 500);
+  const bulletSpeed = slump ? 130 : 110;
 
-  const showFinal = () => {
-    phase = "final";
-    final.classList.remove("hidden");
-    label.textContent = "締めの一手";
-    fill.style.width = "0%";
+  const measure = () => { W = arena.clientWidth || W; H = arena.clientHeight || H; sx = Math.min(sx, W - 12); sy = Math.min(sy, H - 12); };
+  const onPointer = (e) => {
+    const r = arena.getBoundingClientRect();
+    sx = Math.max(10, Math.min(W - 10, e.clientX - r.left));
+    sy = Math.max(10, Math.min(H - 10, e.clientY - r.top));
+    e.preventDefault();
+  };
+  const onKeyDown = (e) => { if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d"].includes(e.key)) { keys[e.key] = true; e.preventDefault(); } };
+  const onKeyUp = (e) => { delete keys[e.key]; };
+  arena.addEventListener("pointermove", onPointer);
+  arena.addEventListener("pointerdown", onPointer);
+  document.addEventListener("keydown", onKeyDown);
+  document.addEventListener("keyup", onKeyUp);
+
+  // 弾の生成（共通）。文言はランダムな雑念
+  const addBullet = (x, y, vx, vy, word) => {
+    const el = document.createElement("span");
+    el.className = "dodge-bullet";
+    el.textContent = word || words[Math.floor(Math.random() * words.length)];
+    arena.appendChild(el);
+    bullets.push({ el, x, y, vx, vy });
+  };
+  const edgePoint = () => {
+    const side = Math.floor(Math.random() * 4);
+    if (side === 0) return { x: -30, y: Math.random() * H };
+    if (side === 1) return { x: W + 30, y: Math.random() * H };
+    if (side === 2) return { x: Math.random() * W, y: -20 };
+    return { x: Math.random() * W, y: H + 20 };
+  };
+  // 弾幕パターン（アンダーテール/東方風の遊び）。位相ごとに切り替えて単調さを消す
+  let spiralAng = Math.random() * 6.28;
+  const PATTERNS = {
+    // 狙い撃ち: 四辺から心へ（±ブレ）
+    aim: () => { const p = edgePoint(); const a = Math.atan2(sy - p.y, sx - p.x) + (Math.random() * 0.8 - 0.4); const sp = bulletSpeed * (0.8 + Math.random() * 0.5); addBullet(p.x, p.y, Math.cos(a) * sp, Math.sin(a) * sp); },
+    // 扇: 一辺から心へ3way
+    fan: () => { const p = edgePoint(); const base = Math.atan2(sy - p.y, sx - p.x); const sp = bulletSpeed * 0.95; for (const d of [-0.34, 0, 0.34]) addBullet(p.x, p.y, Math.cos(base + d) * sp, Math.sin(base + d) * sp); },
+    // スパイラル: 中央上から回転しながら放射（2本の腕）
+    spiral: () => { spiralAng += 0.42; const cx = W / 2, cy = H * 0.34, sp = bulletSpeed * 0.82; for (const k of [0, Math.PI]) addBullet(cx, cy, Math.cos(spiralAng + k) * sp, Math.sin(spiralAng + k) * sp); },
+    // 雨: 上から落下（横に流れる）
+    rain: () => { for (let i = 0; i < 2; i++) addBullet(Math.random() * W, -20, (Math.random() * 2 - 1) * 36, bulletSpeed * (0.7 + Math.random() * 0.3)); },
+    // 横薙ぎ: 左右どちらかから水平に
+    sweep: () => { const fromLeft = Math.random() < 0.5; const sp = bulletSpeed * (0.9 + Math.random() * 0.4); addBullet(fromLeft ? -24 : W + 24, Math.random() * H, (fromLeft ? 1 : -1) * sp, (Math.random() * 2 - 1) * 18); },
+  };
+  const PK = Object.keys(PATTERNS);
+  let patternKey = PK[Math.floor(Math.random() * PK.length)];
+  let phaseRemain = 2.4 + Math.random() * 1.2;
+  let ringIn = 2.2;
+  // 見せ場: 心と反対側から全方位リングバースト（蒸らしが長いほど頻繁・弾多め）
+  const ringBurst = () => {
+    const cx = (sx < W / 2 ? W * 0.66 : W * 0.34) + (Math.random() * 40 - 20);
+    const cy = (sy < H / 2 ? H * 0.66 : H * 0.34) + (Math.random() * 30 - 15);
+    const count = 9 + Math.round(steamOpt.id / 3), sp = bulletSpeed * 0.66;
+    for (let i = 0; i < count; i++) { const a = (i / count) * 6.283 + Math.random() * 0.12; addBullet(cx, cy, Math.cos(a) * sp, Math.sin(a) * sp); }
+  };
+  const spawnStep = (dt) => {
+    phaseRemain -= dt;
+    if (phaseRemain <= 0) { let k; do { k = PK[Math.floor(Math.random() * PK.length)]; } while (k === patternKey && PK.length > 1); patternKey = k; phaseRemain = 2.4 + Math.random() * 1.2; }
+    spawnIn -= dt;
+    if (spawnIn <= 0) { spawnIn = spawnEvery; PATTERNS[patternKey](); }
+    ringIn -= dt;
+    if (ringIn <= 0) { ringIn = 2.8 - Math.min(0.9, steamOpt.id * 0.07) + Math.random() * 0.9; ringBurst(); }
   };
 
-  const finish = () => {
-    if (done || phase !== "final") return;
-    done = true;
-    clearInterval(beatTimer);
+  const end = () => {
+    if (ended) return;
+    ended = true;
     cancelAnimationFrame(raf);
-    const near = pos >= 0.32 && pos <= 0.68;
-    const just = pos >= zone[0] && pos <= zone[1];
-    tt.steamHits = just ? 0 : near ? 1 : 3;
-    tt.steamFinish = just ? "perfect" : near ? "good" : "miss";
-    finishBtn.disabled = true;
-    showStamp($("#tn-layout .panel"), tt.steamFinish);
-    pakkiLive(tt.steamFinish);
-    broadcastJudge(tt.steamFinish, "蒸らし");
-    if (window.SFX) (just ? SFX.perfect() : near ? SFX.good() : SFX.miss());
+    document.removeEventListener("keydown", onKeyDown);
+    document.removeEventListener("keyup", onKeyUp);
+    for (const b of bullets) b.el.remove();
+    bullets.length = 0;
+    soul.classList.add("done");
+    tt.steamHits = hits;
+    const grade = hits === 0 ? "perfect" : hits <= 2 ? "good" : "miss";
+    tt.steamFinish = grade;
+    showStamp($("#tn-layout .panel"), grade);
+    pakkiLive(grade);
+    broadcastJudge(grade, "蒸らし");
+    if (window.SFX) (grade === "perfect" ? SFX.perfect() : grade === "good" ? SFX.good() : SFX.miss());
     result.textContent =
-      just ? "──締めの一手が、ぴたりと入った。待った時間が煙の芯になる。"
-      : near ? "──少し早い。でも、覚悟は切れていない。煙はちゃんと立つ。"
-      : "──締めが乱れた。待ちの緊張が、最後に少しだけほどけた。";
+      hits === 0 ? "──雑念ゼロ。蒸らしの間、煙のことだけを見ていられた。"
+      : hits <= 2 ? "──少し心がざわついた。でも、致命傷じゃない。"
+      : hits <= 4 ? "──雑念に何度か捕まった。煙が少し落ち着かない。"
+      : "──頭の中が騒がしいまま、蒸らしが終わってしまった……。";
     const next = document.createElement("button");
     next.className = "primary-btn";
     next.textContent = "次へ";
@@ -4476,27 +4603,47 @@ function runSteamWait(steamOpt, onDone) {
   };
 
   const tick = (now) => {
+    if (ended) return;
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
-    if (phase === "wait") {
-      remain -= dt;
-      const ratio = Math.max(0, remain / duration);
-      const dispSec = Math.max(0, Math.round(steamOpt.id * 60 * ratio));
-      label.textContent = steamOpt.id === 0
-        ? "0分スタイル"
-        : `蒸らし残り ${Math.floor(dispSec / 60)}:${String(dispSec % 60).padStart(2, "0")}`;
-      fill.style.width = `${ratio * 100}%`;
-      if (remain <= 0) showFinal();
-    } else if (phase === "final") {
-      pos += dt * 0.78;
-      if (pos > 1) pos -= 1;
-      needle.style.left = `${pos * 100}%`;
+    measure();
+    remain -= dt;
+    invuln = Math.max(0, invuln - dt);
+    const ratio = Math.max(0, remain / duration);
+    const dispSec = Math.max(0, Math.round(steamOpt.id * 60 * ratio));
+    label.textContent = `蒸らし残り ${Math.floor(dispSec / 60)}:${String(dispSec % 60).padStart(2, "0")}`;
+    fill.style.width = `${ratio * 100}%`;
+    const v = 240 * dt;
+    if (keys.ArrowLeft || keys.a) sx -= v;
+    if (keys.ArrowRight || keys.d) sx += v;
+    if (keys.ArrowUp || keys.w) sy -= v;
+    if (keys.ArrowDown || keys.s) sy += v;
+    sx = Math.max(10, Math.min(W - 10, sx));
+    sy = Math.max(10, Math.min(H - 10, sy));
+    soul.style.transform = `translate(${sx - 8}px, ${sy - 9}px)`;
+    spawnStep(dt);
+    for (let i = bullets.length - 1; i >= 0; i--) {
+      const b = bullets[i];
+      b.x += b.vx * dt; b.y += b.vy * dt;
+      b.el.style.transform = `translate(${b.x}px, ${b.y}px)`;
+      if (b.x < -80 || b.x > W + 80 || b.y < -60 || b.y > H + 60) { b.el.remove(); bullets.splice(i, 1); continue; }
+      if (invuln <= 0 && Math.hypot(b.x - sx, b.y - sy) < 17) {
+        hits++;
+        invuln = 0.85;
+        soul.classList.add("hit");
+        arena.classList.add("flash");
+        setTimeout(() => { soul.classList.remove("hit"); arena.classList.remove("flash"); }, 320);
+        if (window.SFX) SFX.click();
+        b.el.remove();
+        bullets.splice(i, 1);
+      }
     }
-    if (!done) raf = requestAnimationFrame(tick);
+    if (remain <= 0) return end();
+    raf = requestAnimationFrame(tick);
   };
-  finishBtn.addEventListener("click", finish);
-  window.__steamDebug = () => ({ ready: phase === "final", pos, wantZone: zone, done });
-  requestAnimationFrame((now) => { last = now; raf = requestAnimationFrame(tick); });
+  // テストフック: 弾幕を即終了して結果へ（無操作なら被弾0＝perfect）
+  window.__steamDebug = () => ({ dodge: true, hits, remain, end });
+  requestAnimationFrame((now) => { last = now; measure(); raf = requestAnimationFrame(tick); });
 }
 
 // --- 吸い出し（提供前の温度立ち上げ）: 炭を置いて蒸らした後、提供前に何度か吸って
@@ -4538,11 +4685,13 @@ function pullStartTemp() {
 
 function stepPull() {
   const PULL_TARGET = pullTargetZone(); // 適温はテーマ依存（#38）
-  // ジャスト判定はベースを狭くして達成感を出す（T23・旧 半幅0.032 → 0.018）。
-  // ステータスによる難易度緩和は「ゲーム的な落とし所を設計してから」入れる方針につき今は保留（ステ自体は上昇する）。
+  // 温度コントロールは技術・センスで上達する（オーナー指定。旧「保留」だったステ連動を実装）。
+  // ステが低いうちは1吸いで動く温度が小さい＝手数がかかり、ジャストを狙う価値が高い。
+  // 上がるほど1吸いの効きとジャスト帯が広がり、少ない手数で適温に寄せられる（＝上達の実感）。
   // ※ PULL_DELTA / PULL_JUST はここでモジュール定数を上書き（__pullDebug もこの値を参照）
-  const PULL_DELTA = 0.13;
-  const _jhw = 0.018;
+  const ctrl = ((state.stats.technique || 10) + (state.stats.sense || 10)) / 2; // 温度コントロール力 0〜100
+  const PULL_DELTA = 0.05 + (ctrl / 100) * 0.07; // 0.05(低ステ)〜0.12(満) ／ 1吸いで動かせる最大温度（旧固定0.13をナーフ＋ステ連動）
+  const _jhw = 0.012 + (ctrl / 100) * 0.013;      // ジャスト帯の半幅: 低ステほど狭く、上達で広がる
   const PULL_JUST = {
     up:   [0.1725 - _jhw, 0.1725 + _jhw],
     keep: [0.5 - _jhw, 0.5 + _jhw],
@@ -4653,12 +4802,12 @@ function stepPull() {
       pullKind = "up"; motionMs = 520;
       delta = ((0.35 - pos) / 0.35) * PULL_DELTA;
       label = "上げ吸い！　炭の熱がボウルに乗る";
-      if (inBand(PULL_JUST.up)) { just = true; delta = PULL_DELTA * 1.5; label = "ジャスト上げ！　ひと吸いで一気に熱が立つ"; }
+      if (inBand(PULL_JUST.up)) { just = true; delta = PULL_DELTA * 2.0; label = "ジャスト上げ！　ひと吸いで一気に熱が立つ"; }
     } else if (pos > 0.65) {
       pullKind = "down"; motionMs = 1120;
       delta = -((pos - 0.65) / 0.35) * PULL_DELTA;
       label = "下げ吸い。熱を逃して落ち着かせる";
-      if (inBand(PULL_JUST.down)) { just = true; delta = -PULL_DELTA * 1.5; label = "ジャスト下げ！　狙いどおりに熱が抜ける"; }
+      if (inBand(PULL_JUST.down)) { just = true; delta = -PULL_DELTA * 2.0; label = "ジャスト下げ！　狙いどおりに熱が抜ける"; }
     } else if (inBand(PULL_JUST.keep)) {
       just = true; jitter = 0.003; // ジャストキープでも完全固定にはしない
       label = "ジャストキープ。煙が、ほとんど揺れない";
@@ -4819,7 +4968,7 @@ function craftScore() {
   }
   // 蒸らしの締め（一手のタイミング）
   if (typeof tt.steamHits === "number") {
-    if (tt.steamHits === 0) { score += 6; detail.push("蒸らし終わりの締めが、ぴたりと入った。"); }
+    if (tt.steamHits === 0) { score += 6; detail.push("蒸らし中、雑念に一度も捕まらなかった。煙に芯が立つ。"); }
     else if (tt.steamHits <= 2) score += 3;
     else { score -= 4; detail.push("蒸らし終わりの一手が乱れ、煙の芯が少し揺れた。"); }
   }
@@ -5106,7 +5255,7 @@ function tournamentBreakdown() {
   const add = (label, tier, hint) => items.push({ label, grade: gradeLetter(tier), tier, hint });
   add("穴あけ", tt.foilHits >= 6 ? 2 : tt.foilHits >= 4 ? 1 : 0, "リングの均等度を上げると煙の通りが整う");
   add("炭起こし", tt.coalFire === "perfect" ? 2 : tt.coalFire === "good" ? 1 : 0, "芯がピカッと閃く“取り頃”で取ると熱が乗る");
-  if (typeof tt.steamHits === "number") add("蒸らし", tt.steamHits === 0 ? 2 : tt.steamHits <= 2 ? 1 : 0, "タイマー切れ直前の締めを合わせると煙の芯が立つ");
+  if (typeof tt.steamHits === "number") add("蒸らし", tt.steamHits === 0 ? 2 : tt.steamHits <= 2 ? 1 : 0, "蒸らし中の雑念を躱しきると煙の芯が立つ");
   add("集中", tt.focusCleared >= 5 ? 2 : tt.focusCleared >= 3 ? 1 : 0, "集中を保つと手元のブレが減る");
   add("吸い出し", tt.pull === "perfect" ? 2 : tt.pull === "good" ? 1 : 0, "適温の窓でJUSTを重ねると一気に伸びる");
   const p = mixProfile();
@@ -5868,6 +6017,12 @@ function continueGame(saved) {
   // 第2章・恋愛システム導入前のセーブ互換
   if (!state.chapter) state.chapter = 1;
   if (!("ageha" in state.affinity)) { state.affinity.ageha = 0; state.visits.ageha = 0; }
+  // 第2章ライバル店（神崎竜二/REI/ヴォルク）導入前のセーブ互換。
+  // ※ affinity には入れない＝噂LIME（outsiderRumor）のゲート無し配信を保つため。
+  //    rivalは恋愛対象外なので、訪問報酬は gainStat フォールバックで付く
+  for (const _id of ["kumicho", "rei", "volk"]) {
+    if (!(_id in state.visits)) state.visits[_id] = 0;
+  }
   if (!Array.isArray(state.lovers)) state.lovers = [];
   if (!state.loveLevel) state.loveLevel = {};
   if (typeof state.guilt !== "number") state.guilt = 0;
