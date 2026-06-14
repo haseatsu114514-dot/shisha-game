@@ -598,7 +598,7 @@ const SUMI_QUOTES = [
 ];
 // 第2章のDAYカード（スミさんは焦るはじめを横目に、短く釘を刺す）
 const CH2_SUMI_QUOTES = [
-  "全国だからって、やることは変わらねえぞ",
+  "会場が変わったって、やることは変わらねえぞ",
   "周りを見るのはいい。睨むのは違う",
   "苺は熱に弱い。覚えとけ",
   "……最近のお前の煙、迷ってるな",
@@ -1472,7 +1472,7 @@ function postClearPhone(onDone) {
         "技術点も個性点も、お前は4人の中で下位だ。なるにも負けてる",
         "お前を勝たせたのは、南雲さんの「総合印象点」ひとつ。あの人が、お前にだけ満点をつけた",
         "勝ちは勝ちだ。今日のお前の煙が美味かったのも、嘘じゃない。──だが「実力で勝った」とは思うな",
-        "あの一票が何だったのか。全国までに、自分で答えを出せ",
+        "あの一票が何だったのか。次の舞台までに、自分で答えを出せ",
       ],
       close_label: "……はい。ありがとうございます、スミさん",
       no_reward: true,
@@ -2768,7 +2768,7 @@ function maybeHomeShisha(next) {
 const PRACTICE_DRILLS = [
   { id: "foil", label: "穴あけ反復", desc: "本番と同じリズムで6つ穴を開ける", stats: ["technique", "sense"] },
   { id: "coalfire", label: "炭起こしの見極め", desc: "芯がピカッと閃く瞬間を見極めて取り上げる", stats: ["guts", "technique"] },
-  { id: "steam", label: "蒸らしの胆力", desc: "蒸らしの間、雑念の弾幕を躱し続ける訓練", stats: ["insight", "guts"] },
+  { id: "steam", label: "蒸らしの胆力", desc: "蒸らしの待ち時間を見切り、最後の一手を合わせる訓練", stats: ["insight", "guts"] },
   { id: "pull", label: "吸い出しの温度感", desc: "上げ吸い・下げ吸いを使い分けて適温に合わせる", stats: ["sense", "technique"] },
   { id: "focus", label: "集中トレーニング", desc: "雑念を振り払う訓練。本番の野次対策", stats: ["insight", "guts"] },
   { id: "serve", label: "提供イメトレ", desc: "お客さんへの出し方・佇まいを組み立てる", stats: ["charm", "insight"] },
@@ -2897,20 +2897,11 @@ const COALS = [
   { id: "four", label: "炭4個", desc: "3個よりかなり熱が上がる高火力。焦げのリスクと隣り合わせ" },
 ];
 const STEAMS = [
-  { id: 2, label: "2分", desc: "せっかち。立ち上がりが不安定", dodge: 6 },
-  { id: 5, label: "5分", desc: "基本の蒸らし", dodge: 9 },
-  { id: 8, label: "8分", desc: "じっくり。香りが開く", dodge: 12 },
-  { id: 12, label: "12分", desc: "長すぎるかもしれない", dodge: 16 },
-];
-// 蒸らし中の雑念弾幕（東方/Undertale風の回避ゲーム）に流れる言葉。
-// 第2章はスランプ期の嫉妬ワードに差し替わる
-const DODGE_WORDS = [
-  "手元、見られてる……", "時間が足りないかも", "隣の煙、もう上がってる",
-  "失敗したらどうしよう", "パッキーの野次", "審査員の視線", "炭、熾きてたかな",
-];
-const DODGE_WORDS_CH2 = [
-  "ヴォルクの精度", "組長の覚悟", "あげはのバイブス", "なるの配合ノート",
-  "“誰の煙だ？”", "採点表", "正解はどれだ", "味が、思い出せない",
+  { id: 0, label: "0分", desc: "吸いながら一気に立ち上げる型破りな技。神崎竜二との交友で解放", unlock: "kumicho" },
+  { id: 3, label: "3分", desc: "早めに立ち上げる。香りは軽く、温度合わせが忙しい" },
+  { id: 5, label: "5分", desc: "基本の蒸らし。香りの輪郭を残しやすい" },
+  { id: 8, label: "8分", desc: "じっくり待つ。甘さと余韻が開く" },
+  { id: 10, label: "10分", desc: "攻めた長めの蒸らし。重い煙には効くが、焦げの気配も近い" },
 ];
 // ch1ライバルの基礎点。実力（statScore+craft）だけでは普通3〜4位・最良でも2位に収まり、
 // 1位は南雲の総合印象点（craft基準超えで一括投入）だけが生む。逆転を「効かせる」ための難度設定。
@@ -3113,8 +3104,147 @@ const DRILL_FLOWS = {
 const FLAVOR_COLORS = {
   mint: "#8fe3c0", double_apple: "#d96a6a", blueberry: "#7d8df0",
   vanilla: "#f0e3b0", pineapple: "#f0d060", coconut: "#f3f3ef",
+  strawberry: "#e9687c", grape: "#9b71dc", rose: "#e78bb4",
   nightside_earlgrey: "#b78d4e",
 };
+
+const MAKING_WORKBENCH_STEPS = new Set([
+  "setup_bowl", "setup_hms", "setup_charcoal", "theme", "mix", "pack", "foil",
+  "coal", "coalfire", "steam", "adjust", "focus", "pull",
+]);
+const MAKING_SCENE = {
+  setup_bowl: "setup", setup_hms: "setup", setup_charcoal: "setup",
+  theme: "theme", mix: "mix", pack: "pack", foil: "foil",
+  coal: "coal", coalfire: "coalfire", steam: "steam",
+  adjust: "adjust", focus: "focus", pull: "pull",
+};
+const MAKING_PANEL_SKIP = /審査|中間発表|FLAVOR TRIAL|講評|結果|練習結果/;
+
+function hasMakingAsset(name) {
+  return !!(name && (D.making_assets || []).includes(name));
+}
+function setMakingAsset(el, name) {
+  if (!el || !name) return;
+  el.dataset.asset = name.replace(/\.png$/, "");
+  if (hasMakingAsset(name)) {
+    el.style.backgroundImage = `url('${assetUrl(`assets/ui/making/${name}`)}')`;
+    el.classList.remove("missing");
+  } else {
+    el.classList.add("missing");
+  }
+}
+function makingLayer(name, cls) {
+  const el = document.createElement("div");
+  el.className = `making-layer ${cls || ""}`;
+  setMakingAsset(el, name);
+  return el;
+}
+function bowlMakingAsset(filled = false) {
+  if (filled && tt && tt.pack) {
+    return ({ fluffy: "bowl_packed_airy.png", normal: "bowl_packed_normal.png", firm: "bowl_packed_firm.png" })[tt.pack] || "bowl_packed_normal.png";
+  }
+  if (tt && String(tt.bowl || "").includes("suyaki")) return "bowl_empty_clay.png";
+  if (tt && tt.bowl === "hagal_80beat") return "bowl_empty_phunnel.png";
+  return "bowl_empty_silicone.png";
+}
+function mixTotalGrams() {
+  return tt ? Object.values(tt.mix || {}).reduce((a, b) => a + b, 0) : 0;
+}
+function leafPileAsset(total = mixTotalGrams()) {
+  if (total <= 0) return "";
+  if (total < 4) return "leaf_pile_1.png";
+  if (total < 8) return "leaf_pile_2.png";
+  if (total < 12) return "leaf_pile_3.png";
+  return "leaf_pile_4.png";
+}
+function coalHeatAsset() {
+  if (!tt || tt.step === "coal") return "coal_cold.png";
+  if (tt.coalFire === "perfect") return "coal_white.png";
+  if (tt.coalFire === "miss") return "coal_cold.png";
+  return "coal_red.png";
+}
+function zeroSteamUnlocked() {
+  if (!state) return false;
+  return !!(
+    state.flags._kumicho_zero_steam ||
+    (state.affinity && (state.affinity.kumicho || 0) > 0) ||
+    (state.affinityPts && (state.affinityPts.kumicho || 0) > 0) ||
+    (state.visits && (state.visits.kumicho || 0) >= 2)
+  );
+}
+function availableSteamOptions() {
+  return STEAMS.filter((s) => s.id !== 0 || zeroSteamUnlocked());
+}
+function renderMakingWorkbench(step, opts = {}) {
+  const scene = MAKING_SCENE[step] || "setup";
+  const stage = document.createElement("div");
+  stage.className = `making-stage making-${scene}`;
+  stage.dataset.step = scene;
+  stage.appendChild(makingLayer("bench_base.png", "bench-base"));
+  if (["steam", "focus", "pull"].includes(scene)) stage.appendChild(makingLayer("vignette_focus.png", "bench-vignette"));
+
+  if (scene === "theme" || scene === "setup") {
+    stage.appendChild(makingLayer("bench_note.png", "bench-note"));
+    stage.appendChild(makingLayer(bowlMakingAsset(false), "bench-bowl"));
+    stage.appendChild(makingLayer("jar_pour.png", "bench-jar idle"));
+  } else if (scene === "mix") {
+    stage.appendChild(makingLayer("mix_scale.png", "mix-scale"));
+    stage.appendChild(makingLayer(bowlMakingAsset(false), "mix-bowl"));
+    const pile = leafPileAsset();
+    if (pile) stage.appendChild(makingLayer(pile, "mix-leaf-pile"));
+    const jar = makingLayer("jar_pour.png", `mix-jar${opts.pour ? " pouring" : ""}`);
+    stage.appendChild(jar);
+    const display = document.createElement("div");
+    display.className = "scale-display";
+    display.textContent = `${mixTotalGrams().toFixed(1)}g`;
+    stage.appendChild(display);
+  } else if (scene === "pack") {
+    stage.appendChild(makingLayer(bowlMakingAsset(true), "pack-bowl"));
+    stage.appendChild(makingLayer(tt && tt.pack === "firm" ? "hand_press.png" : "hand_fork.png", "pack-hand"));
+  } else if (scene === "foil") {
+    stage.appendChild(makingLayer("foil_surface.png", "foil-sheet"));
+    if (tt && tt.foilHits > 0) stage.appendChild(makingLayer("hole_punched.png", "foil-holes"));
+    stage.appendChild(makingLayer("hand_pin.png", "foil-hand"));
+  } else if (scene === "coal" || scene === "coalfire") {
+    stage.appendChild(makingLayer("stove_coil.png", "stove-coil"));
+    stage.appendChild(makingLayer(coalHeatAsset(), "stove-coal coal-a"));
+    stage.appendChild(makingLayer(coalHeatAsset(), "stove-coal coal-b"));
+    if ((tt && tt.coal) !== "two") stage.appendChild(makingLayer(coalHeatAsset(), "stove-coal coal-c"));
+    if (tt && tt.coal === "four") stage.appendChild(makingLayer(coalHeatAsset(), "stove-coal coal-d"));
+    stage.appendChild(makingLayer(scene === "coalfire" ? "hand_tongs_closed.png" : "hand_tongs_open.png", "tongs-hand"));
+  } else if (scene === "steam") {
+    stage.appendChild(makingLayer("steam_wait_bg.png", "steam-rig"));
+    stage.appendChild(makingLayer("heat_glow.png", "heat-glow"));
+    const pulse = document.createElement("div");
+    pulse.className = "heartbeat-focus";
+    stage.appendChild(pulse);
+  } else if (scene === "adjust" || scene === "focus") {
+    stage.appendChild(makingLayer("steam_wait_bg.png", "steam-rig"));
+    stage.appendChild(makingLayer("heat_glow.png", "heat-glow soft"));
+    stage.appendChild(makingLayer("hand_tongs_open.png", "tongs-hand adjust"));
+  } else if (scene === "pull") {
+    stage.appendChild(makingLayer("serve_hose.png", "serve-hose"));
+    stage.appendChild(makingLayer("hose_tip.png", "hose-tip"));
+    stage.appendChild(makingLayer("smoke_thick.png", "pull-smoke"));
+  }
+  return stage;
+}
+function refreshMakingWorkbench(opts = {}) {
+  const old = document.querySelector("#tn-body .making-stage");
+  if (!old || !tt) return;
+  old.replaceWith(renderMakingWorkbench(tt.step, opts));
+}
+function playMakingMotion(cls, ms = 700) {
+  const stage = document.querySelector("#tn-body .making-stage");
+  if (!stage) return;
+  stage.classList.remove(cls);
+  void stage.offsetWidth;
+  stage.classList.add(cls);
+  setTimeout(() => stage.classList.remove(cls), ms);
+}
+function isMakingWorkbenchPanel(title) {
+  return !!(tt && MAKING_WORKBENCH_STEPS.has(tt.step) && !MAKING_PANEL_SKIP.test(title || ""));
+}
 
 // うしろめたさ（guilt）の段階。数値は見せず、リグの煙の濁りだけで表現する。
 // つむぎの「……今日の色、わたしの知らない色」検知と同じものを、プレイヤーだけが先に見ている
@@ -3370,6 +3500,9 @@ function tnNext(cur) {
 
 function tnPanel(title, hint) {
   showScreen("#screen-tournament");
+  const workbench = isMakingWorkbenchPanel(title);
+  $("#screen-tournament").classList.toggle("making-workbench", workbench);
+  $("#screen-tournament").dataset.makingStep = workbench && tt ? (MAKING_SCENE[tt.step] || tt.step) : "";
   const flow = makingFlow();
   const idx = flow.findIndex(([k]) => k === (tt && tt.step));
   const head =
@@ -3400,7 +3533,12 @@ function tnPanel(title, hint) {
   const body = $("#tn-body");
   body.innerHTML = "";
   updateRig();
-  return body;
+  if (!workbench) return body;
+  body.appendChild(renderMakingWorkbench(tt.step));
+  const controls = document.createElement("div");
+  controls.className = `making-controls making-controls-${MAKING_SCENE[tt.step] || tt.step}`;
+  body.appendChild(controls);
+  return controls;
 }
 
 function optionButton(label, desc, onClick) {
@@ -3437,13 +3575,12 @@ function tournamentStep(step) {
     return;
   }
   if (step === "steam") {
-    const body = tnPanel("蒸らし時間", "スミさんの教え:「蒸らしは基本5〜8分。焦るな」 ──蒸らしの間、雑念に捕まらないこと。");
-    for (const s of STEAMS) body.appendChild(optionButton(s.label, s.desc, () => {
+    const body = tnPanel("蒸らし時間", "0/3/5/8/10分から選ぶ。0分は神崎竜二との交友で覚える、吸いながら立ち上げる型破りな技だ。");
+    for (const s of availableSteamOptions()) body.appendChild(optionButton(s.label, s.desc, () => {
       tt.steam = s.id;
-      if (window.SFX) SFX.smoke();
-      startRigSmoke(750);
-      // 蒸らしの間は「雑念の弾幕」回避。長い蒸らしほど雑念との我慢比べも長い
-      runSteamDodge(s, () => {
+      if (window.SFX) SFX.select();
+      // 蒸らしは湯気を出さず、タイマーと鼓動で待つ。最後に覚悟の一手を入れる
+      runSteamWait(s, () => {
         // 大会以外・ch2の各試合は観客の会話なし（ラウンド会話はch1専用テキスト）
         if (tt.mode !== "tournament" || state.chapter !== 1) return tnNext("steam");
         // ラウンド1（組み立て）終了 → 観客の会話 → R1講評 → 中間発表 → ラウンド2（調整）へ
@@ -3552,7 +3689,7 @@ function redoAdjust(kind) {
   const defs = {
     pack: { title: "調整：パッキング", list: PACKS, set: (v) => { tt.pack = v.id; } },
     coal: { title: "調整：炭の配置", list: COALS, set: (v) => { tt.coal = v.id; } },
-    steam: { title: "調整：蒸らし", list: STEAMS, set: (v) => { tt.steam = v.id; } },
+    steam: { title: "調整：蒸らし", list: availableSteamOptions(), set: (v) => { tt.steam = v.id; } },
   }[kind];
   const body = tnPanel(defs.title, "やり直すならここしかない。");
   for (const v of defs.list) body.appendChild(optionButton(v.label, v.desc, () => {
@@ -4242,6 +4379,7 @@ function stepMix() {
       if (window.SFX) SFX.click();
       update();
       updateRig();
+      refreshMakingWorkbench();
     });
     plus.addEventListener("click", () => {
       const kinds = Object.keys(tt.mix);
@@ -4251,6 +4389,8 @@ function stepMix() {
       if (window.SFX) SFX.pour();
       update();
       updateRig();
+      refreshMakingWorkbench({ pour: true });
+      setTimeout(() => refreshMakingWorkbench(), 520);
     });
     ctrl.append(minus, grams, plus);
     row.append(info, ctrl);
@@ -4262,104 +4402,71 @@ function stepMix() {
   refresh();
 }
 
-// --- 蒸らし弾幕（雑念よけ）: 蒸らしタイマーが切れるまで、心（♥）を動かして
-// 雑念ワードの弾幕を躱し続ける。実時間は短縮し、画面のタイマーは蒸らし時間を早回しで表示。
-// 被弾は蓄積（tt.steamHits）し、煙の落ち着き＝craftスコアに響く
-function runSteamDodge(steamOpt, onDone) {
-  const duration = steamOpt.dodge || 9;
-  const slump = state.chapter === 2 && state.flags._taste_slump && tt.mode !== "drill";
+// --- 蒸らし待ち: 湯気は出さず、タイマーと鼓動で「待つ」緊張を作る。
+// 最後に一度だけ覚悟の締めを入れ、タイミングが craft に響く。
+function runSteamWait(steamOpt, onDone) {
+  const duration = steamOpt.id === 0 ? 0.9 : 1.2 + steamOpt.id * 0.22;
   const body = tnPanel(
-    "蒸らし中 ── 雑念を躱せ",
-    slump
-      ? "頭の中が、ざわつく。借り物の言葉が雑念になって飛んでくる──煙のことだけ考えろ。"
-      : "心（♥）をドラッグ（または矢印キー）で動かして雑念を躱せ。被弾するほど煙が落ち着かない。"
+    "蒸らし中 ── 覚悟の待ち時間",
+    steamOpt.id === 0
+      ? "蒸らさない。吸いながら立ち上げる。神崎竜二の型破りなやり方だ。"
+      : "リグを見つめて待つ。焦らず、タイマーが切れる直前に一度だけ締める。"
   );
-  const words = slump || (state.chapter === 2 && tt.mode === "tournament") ? DODGE_WORDS_CH2 : DODGE_WORDS;
-  const timer = document.createElement("div");
-  timer.className = "dodge-timer";
-  timer.innerHTML = `<span class="dodge-timer-label"></span><div class="dodge-timer-bar"><div class="dodge-timer-fill"></div></div>`;
-  const arena = document.createElement("div");
-  arena.className = "dodge-arena";
-  const soul = document.createElement("div");
-  soul.className = "dodge-soul";
-  soul.textContent = "♥";
-  arena.appendChild(soul);
+  const wrap = document.createElement("div");
+  wrap.className = "steam-wait";
+  wrap.innerHTML = `
+    <div class="steam-timer">
+      <span class="steam-timer-label" id="steam-timer-label"></span>
+      <div class="steam-timer-bar"><div class="steam-timer-fill" id="steam-timer-fill"></div></div>
+    </div>
+    <div class="steam-heart"><span></span><span></span><span></span></div>
+    <div class="steam-final hidden" id="steam-final">
+      <div class="steam-timing-bar">
+        <div class="steam-timing-zone"></div>
+        <div class="steam-timing-needle" id="steam-timing-needle"></div>
+      </div>
+      <button class="primary-btn" id="steam-finish">覚悟の締め</button>
+    </div>`;
   const result = document.createElement("div");
   result.className = "practice-result";
-  body.append(timer, arena, result);
+  body.append(wrap, result);
 
-  const label = timer.querySelector(".dodge-timer-label");
-  const fill = timer.querySelector(".dodge-timer-fill");
-  let W = 760, H = 230;
-  let sx = W / 2, sy = H * 0.62;
-  let hits = 0, invuln = 0, remain = duration, last = performance.now();
-  let spawnIn = 0.6, raf = 0, ended = false;
-  const bullets = [];
-  const keys = {};
-  // 洞察が高いほど、雑念の湧きがわずかに穏やか（そこそこ有利、程度）
-  const spawnEvery = (slump ? 0.4 : 0.52) + Math.min(0.14, state.stats.insight / 500);
-  const bulletSpeed = slump ? 132 : 112;
+  const label = wrap.querySelector("#steam-timer-label");
+  const fill = wrap.querySelector("#steam-timer-fill");
+  const final = wrap.querySelector("#steam-final");
+  const finishBtn = wrap.querySelector("#steam-finish");
+  const needle = wrap.querySelector("#steam-timing-needle");
+  const zone = [0.44, 0.56];
+  let remain = duration, last = performance.now(), raf = 0, phase = "wait", pos = 0, done = false;
+  let beatTimer = 0;
+  const playBeat = () => { if (!done && phase === "wait" && window.SFX) SFX.click(); };
+  beatTimer = setInterval(playBeat, steamOpt.id >= 8 ? 760 : 620);
 
-  const measure = () => {
-    W = arena.clientWidth || W;
-    H = arena.clientHeight || H;
-    sx = Math.min(sx, W - 12);
-    sy = Math.min(sy, H - 12);
-  };
-  const onPointer = (e) => {
-    const r = arena.getBoundingClientRect();
-    sx = Math.max(10, Math.min(W - 10, e.clientX - r.left));
-    sy = Math.max(10, Math.min(H - 10, e.clientY - r.top));
-    e.preventDefault();
-  };
-  const onKeyDown = (e) => {
-    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "w", "a", "s", "d"].includes(e.key)) {
-      keys[e.key] = true;
-      e.preventDefault();
-    }
-  };
-  const onKeyUp = (e) => { delete keys[e.key]; };
-  arena.addEventListener("pointermove", onPointer);
-  arena.addEventListener("pointerdown", onPointer);
-  document.addEventListener("keydown", onKeyDown);
-  document.addEventListener("keyup", onKeyUp);
-
-  const spawnBullet = () => {
-    const el = document.createElement("span");
-    el.className = "dodge-bullet";
-    el.textContent = words[Math.floor(Math.random() * words.length)];
-    arena.appendChild(el);
-    // 四辺のどこかから、心の位置めがけて（±ブレ）流れてくる
-    const side = Math.floor(Math.random() * 4);
-    let x, y;
-    if (side === 0) { x = -30; y = Math.random() * H; }
-    else if (side === 1) { x = W + 30; y = Math.random() * H; }
-    else if (side === 2) { x = Math.random() * W; y = -20; }
-    else { x = Math.random() * W; y = H + 20; }
-    const ang = Math.atan2(sy - y, sx - x) + (Math.random() * 0.9 - 0.45);
-    const sp = bulletSpeed * (0.75 + Math.random() * 0.6);
-    bullets.push({ el, x, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp });
+  const showFinal = () => {
+    phase = "final";
+    final.classList.remove("hidden");
+    label.textContent = "締めの一手";
+    fill.style.width = "0%";
   };
 
-  const end = () => {
-    if (ended) return;
-    ended = true;
+  const finish = () => {
+    if (done || phase !== "final") return;
+    done = true;
+    clearInterval(beatTimer);
     cancelAnimationFrame(raf);
-    document.removeEventListener("keydown", onKeyDown);
-    document.removeEventListener("keyup", onKeyUp);
-    for (const b of bullets) b.el.remove();
-    bullets.length = 0;
-    soul.classList.add("done");
-    tt.steamHits = hits;
-    const grade = hits === 0 ? "perfect" : hits <= 2 ? "good" : "miss";
-    showStamp($("#tn-layout .panel"), grade);
-    pakkiLive(grade);
-    broadcastJudge(grade, "蒸らし");
+    const near = pos >= 0.32 && pos <= 0.68;
+    const just = pos >= zone[0] && pos <= zone[1];
+    tt.steamHits = just ? 0 : near ? 1 : 3;
+    tt.steamFinish = just ? "perfect" : near ? "good" : "miss";
+    finishBtn.disabled = true;
+    showStamp($("#tn-layout .panel"), tt.steamFinish);
+    pakkiLive(tt.steamFinish);
+    broadcastJudge(tt.steamFinish, "蒸らし");
+    if (window.SFX) (just ? SFX.perfect() : near ? SFX.good() : SFX.miss());
     result.textContent =
-      hits === 0 ? "──雑念ゼロ。蒸らしの間、煙のことだけを見ていられた。"
-      : hits <= 2 ? "──少し心がざわついた。でも、致命傷じゃない。"
-      : hits <= 4 ? "──雑念に何度か捕まった。煙が少し落ち着かない。"
-      : "──頭の中が騒がしいまま、蒸らしが終わってしまった……。";
+      just ? "──締めの一手が、ぴたりと入った。待った時間が煙の芯になる。"
+      : near ? "──少し早い。でも、覚悟は切れていない。煙はちゃんと立つ。"
+      : "──締めが乱れた。待ちの緊張が、最後に少しだけほどけた。";
     const next = document.createElement("button");
     next.className = "primary-btn";
     next.textContent = "次へ";
@@ -4369,53 +4476,27 @@ function runSteamDodge(steamOpt, onDone) {
   };
 
   const tick = (now) => {
-    if (ended) return;
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
-    measure();
-    remain -= dt;
-    invuln = Math.max(0, invuln - dt);
-    // タイマー表示は「蒸らしn分」を早回しした残り時間
-    const dispSec = Math.max(0, Math.round(steamOpt.id * 60 * (remain / duration)));
-    label.textContent = `蒸らし残り ${Math.floor(dispSec / 60)}:${String(dispSec % 60).padStart(2, "0")}`;
-    fill.style.width = `${Math.max(0, (remain / duration) * 100)}%`;
-    // キー移動
-    const v = 240 * dt;
-    if (keys.ArrowLeft || keys.a) sx -= v;
-    if (keys.ArrowRight || keys.d) sx += v;
-    if (keys.ArrowUp || keys.w) sy -= v;
-    if (keys.ArrowDown || keys.s) sy += v;
-    sx = Math.max(10, Math.min(W - 10, sx));
-    sy = Math.max(10, Math.min(H - 10, sy));
-    soul.style.transform = `translate(${sx - 8}px, ${sy - 9}px)`;
-    // 弾の生成と移動
-    spawnIn -= dt;
-    if (spawnIn <= 0) { spawnIn = spawnEvery; spawnBullet(); }
-    for (let i = bullets.length - 1; i >= 0; i--) {
-      const b = bullets[i];
-      b.x += b.vx * dt;
-      b.y += b.vy * dt;
-      b.el.style.transform = `translate(${b.x}px, ${b.y}px)`;
-      if (b.x < -80 || b.x > W + 80 || b.y < -60 || b.y > H + 60) {
-        b.el.remove();
-        bullets.splice(i, 1);
-        continue;
-      }
-      if (invuln <= 0 && Math.hypot(b.x - sx, b.y - sy) < 17) {
-        hits++;
-        invuln = 0.85;
-        soul.classList.add("hit");
-        arena.classList.add("flash");
-        setTimeout(() => { soul.classList.remove("hit"); arena.classList.remove("flash"); }, 320);
-        if (window.SFX) SFX.click();
-        b.el.remove();
-        bullets.splice(i, 1);
-      }
+    if (phase === "wait") {
+      remain -= dt;
+      const ratio = Math.max(0, remain / duration);
+      const dispSec = Math.max(0, Math.round(steamOpt.id * 60 * ratio));
+      label.textContent = steamOpt.id === 0
+        ? "0分スタイル"
+        : `蒸らし残り ${Math.floor(dispSec / 60)}:${String(dispSec % 60).padStart(2, "0")}`;
+      fill.style.width = `${ratio * 100}%`;
+      if (remain <= 0) showFinal();
+    } else if (phase === "final") {
+      pos += dt * 0.78;
+      if (pos > 1) pos -= 1;
+      needle.style.left = `${pos * 100}%`;
     }
-    if (remain <= 0) return end();
-    raf = requestAnimationFrame(tick);
+    if (!done) raf = requestAnimationFrame(tick);
   };
-  requestAnimationFrame((now) => { last = now; measure(); raf = requestAnimationFrame(tick); });
+  finishBtn.addEventListener("click", finish);
+  window.__steamDebug = () => ({ ready: phase === "final", pos, wantZone: zone, done });
+  requestAnimationFrame((now) => { last = now; raf = requestAnimationFrame(tick); });
 }
 
 // --- 吸い出し（提供前の温度立ち上げ）: 炭を置いて蒸らした後、提供前に何度か吸って
@@ -4443,7 +4524,7 @@ function projectedTemp() {
   t += { triangle: 0, four: 0.14 }[tt.coal] ?? 0; // 炭3個=基準／4個でかなり上がる（#50）
   t += { flat_charcoal: -0.03, cube_charcoal: 0.06 }[tt.charcoal] ?? 0; // フラット炭/キューブ炭でも温度差（#50）
   t += { perfect: 0.04, good: 0, miss: -0.07 }[tt.coalFire] ?? 0;
-  t += { 2: -0.08, 5: 0, 8: 0.03, 12: 0.07 }[tt.steam] ?? 0;
+  t += { 0: -0.12, 3: -0.05, 5: 0, 8: 0.03, 10: 0.06 }[tt.steam] ?? 0;
   t -= Math.max(0, totalG - 12) * 0.012; // 葉が多いほど温まりは遅い
   // アルミの穴の数（T22-B）: 少ないほど熱がこもり(温度↑)、多いほど抜けて下がる。基準は中庸の18穴
   if (tt.holeResult && typeof tt.holeResult.totalHoles === "number") {
@@ -4567,11 +4648,14 @@ function stepPull() {
     // 各ゾーン中央の細い帯=ジャスト（上げ下げは強く効き、キープはブレが大幅減）
     const inBand = (band) => pos >= band[0] && pos <= band[1];
     let delta = 0, jitter = 0.012, just = false, label = "キープ。温度は動かさない";
+    let pullKind = "keep", motionMs = 760;
     if (pos < 0.35) {
+      pullKind = "up"; motionMs = 520;
       delta = ((0.35 - pos) / 0.35) * PULL_DELTA;
       label = "上げ吸い！　炭の熱がボウルに乗る";
       if (inBand(PULL_JUST.up)) { just = true; delta = PULL_DELTA * 1.5; label = "ジャスト上げ！　ひと吸いで一気に熱が立つ"; }
     } else if (pos > 0.65) {
+      pullKind = "down"; motionMs = 1120;
       delta = -((pos - 0.65) / 0.35) * PULL_DELTA;
       label = "下げ吸い。熱を逃して落ち着かせる";
       if (inBand(PULL_JUST.down)) { just = true; delta = -PULL_DELTA * 1.5; label = "ジャスト下げ！　狙いどおりに熱が抜ける"; }
@@ -4591,6 +4675,7 @@ function stepPull() {
     result.textContent = `──${label}`;
     // 4回目以降は吸いすぎ: 提供前に葉が痩せていく（craftScore で減点）
     if (tt.pullCount > PULL_SAFE) result.textContent += "　（……吸いすぎだ。味の厚みが、少しずつ逃げていく）";
+    playMakingMotion(`pull-${pullKind}`, motionMs);
     if (window.SFX) SFX.bubble();
     spawnBubbles(7);
     startRigSmoke(620);
@@ -4719,14 +4804,24 @@ function craftScore() {
     else { score -= 4; detail.push("炭が多すぎた。焦げの気配が混じる。"); }
   }
   // 蒸らし
-  if (tt.steam === 5 || tt.steam === 8) { score += 10; detail.push("蒸らしはちょうどいい。香りがきれいに開いた。"); }
-  else if (tt.steam === 12) score += 4;
-  else { score -= 5; detail.push("蒸らしが短すぎた。立ち上がりが粗い。"); }
-  // 蒸らし中の雑念（弾幕の被弾数）
+  if (tt.steam === 5 || tt.steam === 8) {
+    score += 10;
+    detail.push("蒸らしはちょうどいい。香りがきれいに開いた。");
+  } else if (tt.steam === 3) {
+    score += tt.theme && tt.theme.id === "fruity" ? 6 : 3;
+    detail.push("短めの蒸らしで、香りの立ち上がりは軽い。");
+  } else if (tt.steam === 10) {
+    if (p.weight >= 1.0 || (tt.theme && tt.theme.id === "aftertaste")) { score += 6; detail.push("長めの蒸らしが、重い煙と余韻を引き出した。"); }
+    else { score -= 2; detail.push("長めに待ったぶん、軽い香りが少し飛んだ。"); }
+  } else if (tt.steam === 0) {
+    if (zeroSteamUnlocked()) { score += tt.theme && tt.theme.id === "high_heat" ? 8 : 4; detail.push("神崎竜二譲りの0分スタイルで、吸いながら温度を立ち上げた。"); }
+    else { score -= 6; detail.push("蒸らしを飛ばしたことで、立ち上がりが粗くなった。"); }
+  }
+  // 蒸らしの締め（一手のタイミング）
   if (typeof tt.steamHits === "number") {
-    if (tt.steamHits === 0) { score += 6; detail.push("蒸らしの間、心は静かだった。雑念のない煙はまっすぐ立つ。"); }
+    if (tt.steamHits === 0) { score += 6; detail.push("蒸らし終わりの締めが、ぴたりと入った。"); }
     else if (tt.steamHits <= 2) score += 3;
-    else if (tt.steamHits >= 5) { score -= 4; detail.push("蒸らしの間の雑念が、煙に出てしまった。"); }
+    else { score -= 4; detail.push("蒸らし終わりの一手が乱れ、煙の芯が少し揺れた。"); }
   }
   // 吸い出し（提供時の温度）
   score += { perfect: 12, good: 6, miss: 0 }[tt.pull];
@@ -5011,7 +5106,7 @@ function tournamentBreakdown() {
   const add = (label, tier, hint) => items.push({ label, grade: gradeLetter(tier), tier, hint });
   add("穴あけ", tt.foilHits >= 6 ? 2 : tt.foilHits >= 4 ? 1 : 0, "リングの均等度を上げると煙の通りが整う");
   add("炭起こし", tt.coalFire === "perfect" ? 2 : tt.coalFire === "good" ? 1 : 0, "芯がピカッと閃く“取り頃”で取ると熱が乗る");
-  if (typeof tt.steamHits === "number") add("蒸らし", tt.steamHits === 0 ? 2 : tt.steamHits <= 2 ? 1 : 0, "雑念の被弾を減らすと煙がまっすぐ立つ");
+  if (typeof tt.steamHits === "number") add("蒸らし", tt.steamHits === 0 ? 2 : tt.steamHits <= 2 ? 1 : 0, "タイマー切れ直前の締めを合わせると煙の芯が立つ");
   add("集中", tt.focusCleared >= 5 ? 2 : tt.focusCleared >= 3 ? 1 : 0, "集中を保つと手元のブレが減る");
   add("吸い出し", tt.pull === "perfect" ? 2 : tt.pull === "good" ? 1 : 0, "適温の窓でJUSTを重ねると一気に伸びる");
   const p = mixProfile();
@@ -5131,7 +5226,7 @@ function showClear() {
   showScreen("#screen-end");
   $("#screen-end").classList.remove("gameover");
   $("#end-title").textContent = "第1章クリア！";
-  $("#end-sub").textContent = "SMOKE CROWN CUP 優勝 ── 全国大会 HAZE: OPEN CLOUD へ。";
+  $("#end-sub").textContent = "SMOKE CROWN CUP 優勝 ── 地区大会 HAZE: OPEN CLOUD へ。";
   renderStatusInto($("#end-status"));
   const goCh2 = document.createElement("button");
   goCh2.className = "primary-btn";
@@ -5173,7 +5268,7 @@ function showDefeat(rank) {
 const CH2_STAGES = {
   qual: {
     rivals: [
-      { id: "q1", name: "関東第二代表", base: 56 },
+      { id: "q1", name: "東部エリア代表", base: 56 },
       { id: "q2", name: "湾岸エリア代表", base: 61 },
       { id: "q3", name: "港町の老舗代表", base: 53 },
     ],
@@ -5181,13 +5276,13 @@ const CH2_STAGES = {
     prize: 5000,
     after: "ch2_adam_distance",
     winDetail: "──予選通過。審査席の端で、白衣の男が小さくペンを走らせた。",
-    loseDetail: "……札は伸びなかった。全国の「普通」は、地方の「上出来」より上にある。",
+    loseDetail: "……札は伸びなかった。地区上位の「普通」は、地元の「上出来」より上にある。",
   },
   semi: {
     rivals: [
       { id: "ageha", name: "あげは", base: 69 },
-      { id: "s1", name: "北信越ブロック覇者", base: 64 },
-      { id: "s2", name: "九州ブロック覇者", base: 66 },
+      { id: "s1", name: "北部ブロック覇者", base: 64 },
+      { id: "s2", name: "南部ブロック覇者", base: 66 },
     ],
     bar: 70,
     prize: 10000,
@@ -5199,7 +5294,7 @@ const CH2_STAGES = {
     rivals: [
       { id: "rei", name: "零-REI-", base: 76 },
       { id: "kumicho", name: "神崎竜二", base: 73 },
-      { id: "f1", name: "西日本ブロック覇者", base: 70 },
+      { id: "f1", name: "西地区ブロック覇者", base: 70 },
     ],
     bar: 80,
     prize: CHAPTER_PRIZE[2], // 決勝＝章別優勝賞金
@@ -5237,7 +5332,7 @@ function startChapter2() {
 // 試合日の開始。stage: "qual" | "semi" | "final"
 function startCh2Stage(stage) {
   state.phase = "tournament";
-  // 全国大会の組み合わせ発表で対戦相手の名前が判明する
+  // 地区大会の組み合わせ発表で対戦相手の名前が判明する
   if (stage === "semi") markMet("ageha");
   if (stage === "final") { markMet("rei"); markMet("kumicho"); }
   state.ch2Stage = stage;
@@ -5256,7 +5351,7 @@ function startCh2Stage(stage) {
   const intro = stage === "qual"
     ? [
         { speaker: "", face: "", text: "──HAZE: OPEN CLOUD、予選ブロック当日。C.STATIONの天井は、地方会場の倍も高い。" },
-        { speaker: "pakki", face: "normal", text: "ぷぷぷっ！　全国の煙自慢が勢ぞろい！　今大会の課題フレーバーは──ストロベリー！　県特産の苺を2g以上、しっかり使ってね♪" },
+        { speaker: "pakki", face: "normal", text: "ぷぷぷっ！　地区の煙自慢が勢ぞろい！　今大会の課題フレーバーは──ストロベリー！　県特産の苺を2g以上、しっかり使ってね♪" },
         { speaker: "hajime", face: "serious", text: "（苺……シーシャのストロベリーは、想像する甘さと違う。輪郭の見えにくい、いちばん難しい果実だ）" },
       ]
     : [
@@ -5428,7 +5523,7 @@ function mainStatusHtml() {
   const stCls = st >= 70 ? "" : st >= STAMINA_LOW ? "warn" : "danger";
   const cond = `<div class="status-row"><span>体力</span><span class="stamina-cell"><i class="st-bar"><i class="${stCls}" style="width:${st}%"></i></i> ${stLabel}</span></div>`;
   // 大会の歩み（既存データから導出。新パラメータは作らない）
-  const chapName = { 1: "SMOKE CROWN CUP（地方）", 2: "HAZE: OPEN CLOUD（全国）" }[state.chapter] || `第${state.chapter}章`;
+  const chapName = { 1: "SMOKE CROWN CUP（地方）", 2: "HAZE: OPEN CLOUD（地区）" }[state.chapter] || `第${state.chapter}章`;
   const progress = state.phase === "cleared" ? "優勝・クリア" : state.phase === "tournament" ? "大会本番" : `DAY ${state.day} / 準備中`;
   const tour = `<div class="status-row"><span>挑戦中の大会</span><span>${chapName}</span></div>` +
     `<div class="status-row"><span>状況</span><span>${progress}</span></div>`;
@@ -5571,7 +5666,7 @@ const TUTORIAL_TIPS = {
   foil: "スミさん「穴は均等に。リズムで開けると揃う」",
   coalfire: "スミさん「炭の芯が一瞬ピカッと閃く。その瞬間に取り上げろ。早すぎりゃ生焼け、遅けりゃ灰だ」",
   coal: "スミさん「基本はトライアングル。熱が均等に回る」",
-  steam: "スミさん「蒸らしは5〜8分。待つ間、余計なことを考えるな。雑念は煙に出る」",
+  steam: "スミさん「蒸らしは0/3/5/8/10分から選ぶ。基本は5〜8分、0分は神崎の型だ」",
   pull: "スミさん「提供前の吸い出しで温度を作る。左で止めれば上げ、右なら下げだ。最低2回」",
 };
 

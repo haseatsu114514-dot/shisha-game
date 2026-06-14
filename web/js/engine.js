@@ -19,11 +19,12 @@ const SPEAKER_NAMES = {
   // characters.json に載せないモブ話者（ending/dreams/ch3_mukai 等で使用）
   shop_clerk: "店員", old_man: "老人", customer: "お客さん", everyone: "全員",
 };
+window.SPEAKER_NAMES = SPEAKER_NAMES;
 const SPEAKER_ID_ALIASES = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "packii", pakki: "packii", oneesan: "minto", kumicho: "ryuji" };
 
 // 背景込みの一枚絵で生成されているキャラ。立ち絵スロットに小さくマスクして表示する。
 // 専用素材ができたらここから外す。
-const BG_FULL_PORTRAITS = new Set(["naru", "adam", "minto", "ageha", "mashiro", "ryuji"]);
+const BG_FULL_PORTRAITS = new Set(["minto", "ageha", "mashiro", "ryuji"]);
 
 // 立ち絵を出さないキャラ。本作は一人称視点なので主人公は基本表示しない。
 const NO_PORTRAIT_SPEAKERS = new Set(["hajime", "hazime"]);

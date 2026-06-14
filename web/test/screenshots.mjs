@@ -156,14 +156,19 @@ for (let i = 0; i < 2500; i++) {
       await page.locator("#tn-body button", { hasText: "この配合でいく" }).click();
     } else if (t.includes("パッキング")) await page.locator(".spot-btn", { hasText: "ふんわり" }).click();
     else if (t.includes("炭をコンロにセット") || t.includes("炭の配置")) await page.locator(".spot-btn", { hasText: "炭4個" }).click();
-    else if (t.includes("蒸らし時間")) await page.locator(".spot-btn", { hasText: "せっかち" }).click();
+    else if (t.includes("蒸らし時間")) await page.locator(".spot-btn", { hasText: "3分" }).click();
     else if (t.includes("蒸らし中")) {
-      // 弾幕はわざと避けない（敗北ルート用）。1枚だけスクショを残す
+      // 待ちビートは締めの一手を外し気味に押す（敗北ルート用）。1枚だけスクショを残す
       let shot = false;
       for (let k = 0; k < 200; k++) {
-        if (!shot && (await page.locator(".dodge-bullet").count())) {
-          await page.screenshot({ path: `${OUT}/08d_dodge.png` });
+        if (!shot && (await page.locator(".steam-wait").count())) {
+          await page.screenshot({ path: `${OUT}/08d_steam_wait.png` });
           shot = true;
+        }
+        const d = await page.evaluate(() => (window.__steamDebug ? __steamDebug() : null));
+        if (d && d.ready && (d.pos < d.wantZone[0] || d.pos > d.wantZone[1])) {
+          await page.locator("#steam-finish").click().catch(() => {});
+          await page.waitForTimeout(80);
         }
         const next = page.locator("#tn-body button", { hasText: "次へ" });
         if (await next.count()) { await next.click(); break; }
