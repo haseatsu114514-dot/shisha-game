@@ -5930,7 +5930,8 @@ const STAT_BADGE = { technique: "技", sense: "感", guts: "根", charm: "魅", 
 // 章ごとのステータス育成ソフトキャップ（#42）。ch1で上限に張り付かないよう抑え、
 // 5章で全100＝完全攻略を狙えるカーブにする。数値は非表示なので体感は「★がゆっくり伸びる」
 function statSoftCap() {
-  return ({ 1: 42, 2: 60, 3: 76, 4: 92, 5: 100 })[state ? state.chapter : 1] || 100;
+  // 上限を少し上げてスロット大当たりでも章途中でカンストしにくく（オーナー指摘）。ch5=100は維持
+  return ({ 1: 48, 2: 66, 3: 82, 4: 96, 5: 100 })[state ? state.chapter : 1] || 100;
 }
 
 function gainStat(en, amount) {
