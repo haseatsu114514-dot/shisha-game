@@ -72,11 +72,17 @@ export async function playTnStep(page, opts = {}) {
   } else if (title.includes("蒸らし時間")) {
     await page.locator(".spot-btn", { hasText: "8分" }).click();
   } else if (title.includes("蒸らし中")) {
-    // 雑念弾幕: 多少の被弾は許容してタイマー切れを待つ（craftへの影響は最大-4）
-    for (let k = 0; k < 200; k++) {
+    // 蒸らし待ち: タイマー後の「覚悟の締め」を狙って押す
+    for (let k = 0; k < 240; k++) {
       const next = page.locator("#tn-body button", { hasText: "次へ" });
       if (await next.count()) { await next.click(); break; }
-      await page.waitForTimeout(120);
+      const d = await page.evaluate(() => (window.__steamDebug ? __steamDebug() : null));
+      if (d && d.ready && d.pos >= d.wantZone[0] && d.pos <= d.wantZone[1]) {
+        await page.locator("#steam-finish").click().catch(() => {});
+        await page.waitForTimeout(80);
+      } else {
+        await page.waitForTimeout(30);
+      }
     }
   } else if (title.includes("吸い出し")) {
     // 温度合わせ: __pullDebug（針位置・狙いゾーン）を読み、狙いに入った瞬間に吸う。

@@ -37,9 +37,10 @@ TUNE = {
     "mashiro": {"w": 0.78},
     "ageha":   {"w": 0.74},
     "hajime":  {"w": 0.74},
-    # naru/adam/ryuji は現状同じ placeholder 一枚絵（背景込み）
-    "naru":    {"abs": True, "cx": 0.60, "cy": 0.535, "side": 0.26},
-    "adam":    {"abs": True, "cx": 0.60, "cy": 0.535, "side": 0.26},
+    "naru":    {"w": 0.66},
+    "adam":    {"w": 0.66},
+    "rin":     {"w": 0.70},
+    # ryuji は現状 placeholder 一枚絵（背景込み）
     "ryuji":   {"abs": True, "cx": 0.60, "cy": 0.535, "side": 0.26},
 }
 

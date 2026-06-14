@@ -9,7 +9,7 @@
         { "speaker": "kumicho", "face": "normal", "text": "ようこそ、いらっしゃいませ。遠いところを、わざわざ" },
         { "speaker": "hajime", "face": "surprise", "text": "（……丁寧すぎる。それに──腕。見えてる。インクが）" },
         { "speaker": "kumicho", "face": "normal", "text": "お初にお目にかかります。神崎、と申します。大会のご参加者でございますか" },
-        { "speaker": "hajime", "face": "normal", "text": "はい。全日本大会に出ていて、この辺りのシーシャ屋を回っていたら、ここが気になって" },
+        { "speaker": "hajime", "face": "normal", "text": "はい。地区大会に出ていて、この辺りのシーシャ屋を回っていたら、ここが気になって" },
         { "speaker": "kumicho", "face": "normal", "text": "……ほう。大会、でございますか" },
         { "speaker": "", "face": "", "text": "目が、一瞬だけ細くなった。値踏みするような、でも品のある目だ。すぐに柔らかくなる。" },
         { "speaker": "kumicho", "face": "normal", "text": "よろしければ、一服いかがでしょう。ドラゴンフルーツを、ぜひ" },
@@ -42,6 +42,8 @@
         { "speaker": "kumicho", "face": "normal", "text": "今日は何をご所望で。重いのがよろしいですか、軽いのがよろしいですか" },
         { "speaker": "hajime", "face": "normal", "text": "……重い方で、お願いします" },
         { "speaker": "", "face": "", "text": "組長が静かに炭の準備を始めた。その背中は広くて、威圧感がある。なのになぜか、ここにいると落ち着く。" },
+        { "type": "set_flag", "flag": "_kumicho_zero_steam" },
+        { "speaker": "kumicho", "face": "normal", "text": "待つだけが蒸らしではありません。吸いながら、腹を決めて立ち上げるやり方もある。……覚えておいて損はない" },
         { "speaker": "", "face": "", "text": "……【根性】が少し上がった。" }
       ]
     },

@@ -23,7 +23,7 @@ REPO_ROOT = WEB_DIR.parent
 OUT_PATH = WEB_DIR / "dist" / "shisha_ch1.html"
 
 # 第1章で使うキャラ（立ち絵を全表情埋め込む）
-CH1_PORTRAIT_CHARS = ["hajime", "sumi", "naru", "adam", "minto", "tsumugi", "packii"]
+CH1_PORTRAIT_CHARS = ["hajime", "sumi", "naru", "adam", "minto", "tsumugi", "packii", "rin"]
 BG_MAX_W = 1280
 PORTRAIT_MAX_H = 900
 JPEG_QUALITY = 80
@@ -45,6 +45,16 @@ def encode_portrait(path: Path) -> str:
     if im.height > PORTRAIT_MAX_H:
         im = im.resize((round(im.width * PORTRAIT_MAX_H / im.height), PORTRAIT_MAX_H), Image.LANCZOS)
     im = im.quantize(colors=256, method=Image.FASTOCTREE)
+    buf = io.BytesIO()
+    im.save(buf, "PNG", optimize=True)
+    return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
+
+
+def encode_png_asset(path: Path, max_w: int = BG_MAX_W) -> str:
+    """作業台UIなど透過があり得るPNG素材を埋め込む。"""
+    im = Image.open(path).convert("RGBA")
+    if im.width > max_w:
+        im = im.resize((max_w, round(im.height * max_w / im.width)), Image.LANCZOS)
     buf = io.BytesIO()
     im.save(buf, "PNG", optimize=True)
     return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
@@ -82,6 +92,12 @@ def collect_assets() -> dict:
     foil = REPO_ROOT / "assets" / "ui" / "foil_taut.png"
     if foil.exists():
         assets["assets/ui/foil_taut.png"] = encode_background(foil)
+    making_dir = REPO_ROOT / "assets" / "ui" / "making"
+    if making_dir.exists():
+        for png in sorted(making_dir.glob("*.png")):
+            if png.stat().st_size == 0:
+                continue
+            assets[f"assets/ui/making/{png.name}"] = encode_png_asset(png)
     for png in sorted((REPO_ROOT / "assets" / "backgrounds").glob("*.png")):
         assets[f"assets/backgrounds/{png.name}"] = encode_background(png)
     # CG: show_cg 対象（恋愛・日常スチル含む全部。素材が増えたらそのまま乗る）

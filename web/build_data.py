@@ -145,6 +145,15 @@ def collect_title_arts() -> list:
     return sorted(p.name for p in arts_dir.glob("*.png") if p.stat().st_size > 0)
 
 
+def collect_making_assets() -> list:
+    """assets/ui/making/ にある作業台素材一覧。
+    web側はこのリストで存在チェックし、未着素材はCSSフォールバックを使う。"""
+    making_dir = REPO_ROOT / "assets" / "ui" / "making"
+    if not making_dir.exists():
+        return []
+    return sorted(p.name for p in making_dir.glob("*.png") if p.stat().st_size > 0)
+
+
 def main() -> None:
     flavors = load_json(DATA_DIR / "flavors.json")["flavors"]
     baito = load_json(DATA_DIR / "baito_events.json")
@@ -182,6 +191,7 @@ def main() -> None:
         "backgrounds": collect_backgrounds(),
         "cgs": collect_cgs(),
         "title_arts": collect_title_arts(),
+        "making_assets": collect_making_assets(),
         "face_icons": collect_face_icons(),
         "lime_messages": load_json(DATA_DIR / "lime_messages.json")["messages"],
         "glossary": load_json(DATA_DIR / "glossary.json")["groups"],
