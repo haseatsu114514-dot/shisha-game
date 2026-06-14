@@ -8577,10 +8577,16 @@ const COALS = [
 const DODGE_WORDS = [
   "手元、見られてる……", "時間が足りないかも", "隣の煙、もう上がってる",
   "失敗したらどうしよう", "パッキーの野次", "審査員の視線", "炭、熾きてたかな",
+  "詰めすぎたか？", "灰、落ちないか", "客の咳ばらい", "温度、大丈夫か",
+  "香り、飛んでないか", "手が、汗ばむ", "時計の秒針", "深呼吸、わすれてた",
+  "ボウル、熱いな", "煙、薄い気がする", "スミさんなら…", "隣のジャスト音",
 ];
 const DODGE_WORDS_CH2 = [
   "ヴォルクの精度", "組長の覚悟", "あげはのバイブス", "なるの配合ノート",
   "“誰の煙だ？”", "採点表", "正解はどれだ", "味が、思い出せない",
+  "なるの背中", "勝てば、いいのか", "客の顔が見えない", "ましろなら…",
+  "この味で合ってる？", "上手いだけの煙", "舌が、遠い", "勝ち筋をなぞる",
+  "本当に、好きか", "誰かの正解", "拍手が、遠い",
 ];
 const STEAMS = [
   { id: 0, label: "0分", desc: "吸いながら一気に立ち上げる型破りな技。神崎竜二との交友で解放", unlock: "kumicho" },
@@ -10167,20 +10173,53 @@ function runSteamDodge(steamOpt, onDone) {
   document.addEventListener("keydown", onKeyDown);
   document.addEventListener("keyup", onKeyUp);
 
-  const spawnBullet = () => {
+  // 弾の生成（共通）。文言はランダムな雑念
+  const addBullet = (x, y, vx, vy, word) => {
     const el = document.createElement("span");
     el.className = "dodge-bullet";
-    el.textContent = words[Math.floor(Math.random() * words.length)];
+    el.textContent = word || words[Math.floor(Math.random() * words.length)];
     arena.appendChild(el);
+    bullets.push({ el, x, y, vx, vy });
+  };
+  const edgePoint = () => {
     const side = Math.floor(Math.random() * 4);
-    let x, y;
-    if (side === 0) { x = -30; y = Math.random() * H; }
-    else if (side === 1) { x = W + 30; y = Math.random() * H; }
-    else if (side === 2) { x = Math.random() * W; y = -20; }
-    else { x = Math.random() * W; y = H + 20; }
-    const ang = Math.atan2(sy - y, sx - x) + (Math.random() * 0.9 - 0.45);
-    const sp = bulletSpeed * (0.75 + Math.random() * 0.6);
-    bullets.push({ el, x, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp });
+    if (side === 0) return { x: -30, y: Math.random() * H };
+    if (side === 1) return { x: W + 30, y: Math.random() * H };
+    if (side === 2) return { x: Math.random() * W, y: -20 };
+    return { x: Math.random() * W, y: H + 20 };
+  };
+  // 弾幕パターン（アンダーテール/東方風の遊び）。位相ごとに切り替えて単調さを消す
+  let spiralAng = Math.random() * 6.28;
+  const PATTERNS = {
+    // 狙い撃ち: 四辺から心へ（±ブレ）
+    aim: () => { const p = edgePoint(); const a = Math.atan2(sy - p.y, sx - p.x) + (Math.random() * 0.8 - 0.4); const sp = bulletSpeed * (0.8 + Math.random() * 0.5); addBullet(p.x, p.y, Math.cos(a) * sp, Math.sin(a) * sp); },
+    // 扇: 一辺から心へ3way
+    fan: () => { const p = edgePoint(); const base = Math.atan2(sy - p.y, sx - p.x); const sp = bulletSpeed * 0.95; for (const d of [-0.34, 0, 0.34]) addBullet(p.x, p.y, Math.cos(base + d) * sp, Math.sin(base + d) * sp); },
+    // スパイラル: 中央上から回転しながら放射（2本の腕）
+    spiral: () => { spiralAng += 0.42; const cx = W / 2, cy = H * 0.34, sp = bulletSpeed * 0.82; for (const k of [0, Math.PI]) addBullet(cx, cy, Math.cos(spiralAng + k) * sp, Math.sin(spiralAng + k) * sp); },
+    // 雨: 上から落下（横に流れる）
+    rain: () => { for (let i = 0; i < 2; i++) addBullet(Math.random() * W, -20, (Math.random() * 2 - 1) * 36, bulletSpeed * (0.7 + Math.random() * 0.3)); },
+    // 横薙ぎ: 左右どちらかから水平に
+    sweep: () => { const fromLeft = Math.random() < 0.5; const sp = bulletSpeed * (0.9 + Math.random() * 0.4); addBullet(fromLeft ? -24 : W + 24, Math.random() * H, (fromLeft ? 1 : -1) * sp, (Math.random() * 2 - 1) * 18); },
+  };
+  const PK = Object.keys(PATTERNS);
+  let patternKey = PK[Math.floor(Math.random() * PK.length)];
+  let phaseRemain = 2.4 + Math.random() * 1.2;
+  let ringIn = 2.2;
+  // 見せ場: 心と反対側から全方位リングバースト（蒸らしが長いほど頻繁・弾多め）
+  const ringBurst = () => {
+    const cx = (sx < W / 2 ? W * 0.66 : W * 0.34) + (Math.random() * 40 - 20);
+    const cy = (sy < H / 2 ? H * 0.66 : H * 0.34) + (Math.random() * 30 - 15);
+    const count = 9 + Math.round(steamOpt.id / 3), sp = bulletSpeed * 0.66;
+    for (let i = 0; i < count; i++) { const a = (i / count) * 6.283 + Math.random() * 0.12; addBullet(cx, cy, Math.cos(a) * sp, Math.sin(a) * sp); }
+  };
+  const spawnStep = (dt) => {
+    phaseRemain -= dt;
+    if (phaseRemain <= 0) { let k; do { k = PK[Math.floor(Math.random() * PK.length)]; } while (k === patternKey && PK.length > 1); patternKey = k; phaseRemain = 2.4 + Math.random() * 1.2; }
+    spawnIn -= dt;
+    if (spawnIn <= 0) { spawnIn = spawnEvery; PATTERNS[patternKey](); }
+    ringIn -= dt;
+    if (ringIn <= 0) { ringIn = 2.8 - Math.min(0.9, steamOpt.id * 0.07) + Math.random() * 0.9; ringBurst(); }
   };
 
   const end = () => {
@@ -10231,8 +10270,7 @@ function runSteamDodge(steamOpt, onDone) {
     sx = Math.max(10, Math.min(W - 10, sx));
     sy = Math.max(10, Math.min(H - 10, sy));
     soul.style.transform = `translate(${sx - 8}px, ${sy - 9}px)`;
-    spawnIn -= dt;
-    if (spawnIn <= 0) { spawnIn = spawnEvery; spawnBullet(); }
+    spawnStep(dt);
     for (let i = bullets.length - 1; i >= 0; i--) {
       const b = bullets[i];
       b.x += b.vx * dt; b.y += b.vy * dt;
