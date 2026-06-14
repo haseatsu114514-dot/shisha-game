@@ -228,7 +228,52 @@
   1回ごとに craft -3（「葉が痩せる」）。やめ時は自分で選ぶ。UI に⚠警告、用語集・CLAUDE.mdも更新
 - 正典化: story doc（香りの識別子=アゲハはホワイトグミベア、Ch1の引き#7〜9）・CLAUDE.md ID表
 
-## 次回への引き継ぎ（2026-06-13 第26便終了・大会演出オーバーホール＋日常UX）★まずここを読む
+## 次回への引き継ぎ（2026-06-14 → Codexへ）★まずここを読む
+
+**この引き継ぎは Codex がリポジトリと一緒に受け取る前提でまとめた、自己完結の作業ガイド。**
+
+### 0. まず読む順番
+1. **`CLAUDE.md`**（プロジェクト規約・正史・**ブラウザ版の開発ワークフロー**＝ビルド/テストの正確なコマンド・禁止事項）。
+2. **`docs/owner_requests.md`**（オーナー要望の**生きた台帳**＝完了/残/保留が常に最新。新しい要望が来たらまずここへ1行追記してから着手）。
+3. このセクション（全体像）。詳細仕様は `docs/master_spec.md` 第2部（大会）・`brand/story_and_structure.md`（章別）を必要分だけ。
+
+### 1. 現状（重要）
+- 開発ブランチ **`claude/great-galileo-omzoob`**（PRでmainへ・**直push禁止**）。**全7テスト緑**で push 済み。
+- メイン開発トラックは**ブラウザ版 `web/`**。**Godot版は当面保留**（オーナー指定・余裕が出たら移植）。Godoo側は触らない。
+- ビルド: `python3 web/build_data.py && python3 web/build_standalone.py`（要 `pip install Pillow`）。`data/` か `web/` を変えたら**必ず両方**。
+- テスト: `python3 -m http.server 8123` 起動後 `node web/test/<name>.mjs` を7本（playthrough/ch2/screenshots/reel/kuji/balance/map_hover）。重い3本は**1本ずつ**。playthroughは ~6分。
+
+### 2. このセッションで完了・push 済み（要約）
+- **日常ループUX**: 日付整合（`daysUntilTournament()`＋`{daysLeft}`トークンに一本化）・スキップ貫通停止・午後の予定の一拍・スロット/LIME/DAYカードの順序（LIME消化後に回す）。
+- **スロット(reel.js)**: 役名＋恩恵の読み上げ・**天井15回**＋抽象的な示唆（数値は出さない）・リプレイの間・パイナップル優遇・**直近3件被らないpick()**・熱い赤/レア金桃の色分け・外れの楽しい/レア台詞。
+- **大会演出**: 実況/可視スコア(体感スコア)/ニコ動コメント（**右→左へ全幅cqw**）/結果カット割/リザルト内訳/入場。**#26ライバル実況フィード**（工程ごとに誰が何を完了したか進行表示）。
+- **大会の山場**: 結果の順序整合（審査=南雲の二口→「もうだめだ」despair→10カウント→総合印象点満点で逆転）。ライバル基礎値↑で**実力は3〜4位・1位は南雲票のみ**。大会後LIMEの突きつけ役を**なる→スミさん**に。
+- **ミニゲーム**: 吸い出しJUST難化（達成感）・**3-2-1カウントダウン**（`miniCountdown()`・炭起こし/集中）・**アルミ穴あけ改修**（周回減点撤廃→穴数で抜け⇄熱トレードオフ・`projectedTemp`に穴数項基準18）。
+- **育成**: **#42 章ごとソフトキャップ `statSoftCap()`**（ch1≈42…ch5=100・gainStatとスロット両方に適用）。
+- **日常系**: **#41 体力蓄積**（夜回復25・家で休む=フル+overworkリセット・恋人=好感度で回復）／**#44 フレーバー持参制**（Dr.fookahで仕入れ／未仕入れはスミのお情けDA・**強制購入なし**）／**#36 マップ初回チュート**（点滅・非ブロッキング）。
+- **#9 tonari統合**: バイト/練習/スミさん/常連席を **tonari 1スポット**に集約（`TONARI_SPOTS`＋`showTonari()`サブメニュー）。**テスト3本の巡回も2段ナビに改修済**（pin→`#tonari-menu .spot-btn`）。
+- **ナラティブ**: 主人公を**勤務3ヶ月目**に統一・みんと初登場の戸惑い＋買い物イベント作り直し（初の素）・**アダムのカタコト修正**（LIMEに残ってた）・なるの敗者復活背景の書き換え（廃止と矛盾解消）・みんとrival→supporter転換。
+- **docs**: CLAUDE.md にワークフロー明文化・**owner_requests.md（要望台帳）新設**。
+
+### 3. 残タスク（owner_requests.md が一次ソース）
+- **#17** ch2日常会話 ／ **#16** ch2マップ（1章エリアへも移動）＝ch2の日常ループ/SPOTS構造に踏み込む。要調査。
+- **#53** ステがミニゲームに効く落とし所＝**オーナーが設計検討中（保留）**。勝手に実装しない。決まり次第。
+- **#46** 調整吸い（R2で炭替え＋調整吸い・適温ゲージ共通）＝設計確定済み・未着手。
+- データランプ（役の記録）のメニュー閲覧（好きな人向け・程度）。
+- 素材待ち: お祈りカット/入場立ち絵/大会本番背景/凛の立ち絵（来たら差すだけ）。
+
+### 4. Codex向けの落とし穴・前提（コードに書いてない約束）
+- **テストフックを壊さない**: `__pullDebug`/`__heatDebug`／R2の「このままでいく」／審査の `.trial-appeal[data-backed][data-cat]`＋`#trial-doubt[data-need]`／結果カウントの `pointer-events:none`／**tonariサブは `#map-pins .spot-pin`(tonari)→`#tonari-menu .spot-btn` の2段**（テストもこの順）。
+- **数値を見せない**: ステは★と抽象語のみ。天井示唆も「近い…！？」等の抽象表現（数値NG）。旧ステ名（技術力/洞察力/メンタル/度胸/味覚/集中力）禁止。
+- 状態は単一の `state`（`save()`/localStorage `shisha_ch1_save_v1`）＋大会中は `tt`。別パターンを増やさない。
+- 大会の生放送レイヤーは `broadcastActive()`（mode==="tournament"）でガード＝チュートリアル/バイト/ドリルには出さない。
+- タイミング系ミニゲームは**必ず `miniCountdown()`** を挟む。
+- 「DAYカウントが7のまま」等のオーナー報告は**旧セーブ/キャッシュ残留**の可能性（現コードは `daysUntilTournament()` で正しい・DAY11→あと4日を検証済）。ハードリロード/New Gameを案内。セーブ版数ガードは未実装＝入れてもよい。
+- 大会フロー: setup→theme→mix→pack→foil→coal→coalfire→steam→adjust→focus→pull→flavorTrial→finishTournament→showResult→runResultCountdown→（ch1勝ち時のみ judging→count→reveal）→表彰→postClearPhone。
+
+---
+
+## 次回への引き継ぎ（2026-06-13 第26便終了・大会演出オーバーホール＋日常UX）
 
 **開発は `claude/great-galileo-omzoob`（PRでmainへ）。この便は3コミット push 済み・全テスト緑
 （playthrough/ch2/screenshots/reel/kuji/balance/map_hover）。**

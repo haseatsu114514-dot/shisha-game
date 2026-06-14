@@ -47,8 +47,9 @@ function rankFromPts(pts) {
 // 「若いので甘め。ただし無理を重ねると寝込む」。数値は非表示でゲージのみ
 const STAMINA_LOW = 25;        // ここ未満でシーシャ系行動 → 警告→強行で酸欠
 const STAMINA_COST = { baito: 18, visit: 10, talk: 5, practice: 8, rin: 10, date: 6, homePuff: 8, gym: 6 };
-// 体力は蓄積制(#41): 夜の自然回復(sleep)は控えめ＝疲労が溜まる。フル回復は「家で休む」、恋人会いは好感度に応じて
-const STAMINA_GAIN = { rest: 35, cafe: 12, kannon: 12, sleep: 22 };
+// 体力は蓄積制(#41): 夜の自然回復(sleep)はやや控えめ＝疲労が緩く溜まる（普通の混在プレイは持つが、無理は溜まる）。
+// フル回復は「家で休む」、恋人会いは好感度に応じて
+const STAMINA_GAIN = { rest: 35, cafe: 12, kannon: 12, sleep: 25 };
 function stamina() { return state.stamina ?? 100; }
 function addStamina(n) {
   state.stamina = Math.max(0, Math.min(100, stamina() + n));
@@ -1070,11 +1071,16 @@ function playCustom(dialogue, onDone, bgOverride) {
 }
 
 // ---------------------------------------------------------------- daily loop
-const SPOTS = [
+// tonari統合(#9): バイト・練習・スミさん・常連席(つむぎ) は「tonari」1スポットに集約（場所で管理）。
+// マップでは tonari ピン → サブメニュー（showTonari）でどれをするか選ぶ。
+const TONARI_SPOTS = [
   { id: "baito", label: "tonariでバイト", desc: "接客で稼ぐ。基本給＋オーダーの出来で売上ボーナス", cost: 0 },
   { id: "practice", label: "シーシャの練習", desc: "tonariの隅で腕を磨く", cost: 0 },
   { id: "sumi", label: "スミさんと話す", desc: "師匠の昔話と教え", cost: 0, charId: "sumi" },
-  { id: "tsumugi", label: "つむぎと話す", desc: "tonari常連の彼女の席へ", cost: 0, charId: "tsumugi" },
+  { id: "tsumugi", label: "常連席（つむぎ）", desc: "tonari常連の彼女の席へ", cost: 0, charId: "tsumugi" },
+];
+const SPOTS = [
+  { id: "tonari", label: "tonari（お店）", desc: "バイト・練習・スミさん・常連席。今日は店で何をする？", cost: 0 },
   { id: "naru", label: "なるの店へ行く", desc: "ライバル店を偵察", cost: VISIT_COST, charId: "naru" },
   { id: "adam", label: "アダムの店へ行く", desc: "ダブルアップル職人の店", cost: VISIT_COST, charId: "adam" },
   { id: "minto", label: "みんとの店へ行く", desc: "コンカフェ風シーシャ屋へ", cost: VISIT_COST, charId: "minto" },
@@ -1646,18 +1652,15 @@ function loverQuickMeet(charId) {
 // 行き先ピンの短い見出し。キャラのいる場所は顔ドット絵を優先し、
 // 施設は日本語の略号（顔アイコンが無い場合のフォールバックも兼ねる）
 const SPOT_ICONS = {
-  baito: "労", practice: "練", sumi: "師", tsumugi: "紬",
+  tonari: "店", baito: "労", practice: "練", sumi: "師", tsumugi: "紬",
   naru: "鳴", adam: "亜", minto: "緑", choizap: "筋",
   kannon: "観", cafe: "珈", c_station: "C", shop: "店", rest: "休",
 };
-const SPOT_FACE = { sumi: "sumi", tsumugi: "tsumugi", naru: "naru", adam: "adam", minto: "minto" };
+const SPOT_FACE = { tonari: "sumi", sumi: "sumi", tsumugi: "tsumugi", naru: "naru", adam: "adam", minto: "minto" };
 
 // マップ上のピン位置（%）と短いラベル名
 const SPOT_LAYOUT = {
-  baito:     { x: 14, y: 32, theme: "baito",   short: "バイト",     area: "tonari" },
-  practice:  { x: 22, y: 50, theme: "shisha",  short: "練習",       area: "tonari" },
-  sumi:      { x: 12, y: 64, theme: "mentor",  short: "スミさん",   area: "tonari" },
-  tsumugi:   { x: 26, y: 70, theme: "shisha",  short: "常連席",     area: "tonari" },
+  tonari:    { x: 16, y: 50, theme: "baito",   short: "tonari",     area: "tonari" },
   naru:      { x: 42, y: 22, theme: "rival",   short: "KEMURIKUSA", area: "繁華街" },
   adam:      { x: 56, y: 30, theme: "rival",   short: "EDEN",       area: "下町" },
   minto:     { x: 70, y: 22, theme: "rival",   short: "PEPERMINT",  area: "繁華街" },
@@ -1828,6 +1831,7 @@ function selectSpot(spot) {
   const proceed = () => {
     if (spot.cost > 0) addMoney(-spot.cost);
     switch (spot.id) {
+      case "tonari": return showTonari(); // tonari統合(#9): 中で何をするか選ぶ（行動はサブ選択時に消費）
       case "baito": return shishaGuard(() => doBaito());
       case "practice": return shishaGuard(() => startPractice());
       case "choizap": return doChoizap();
@@ -1846,6 +1850,44 @@ function selectSpot(spot) {
   // キャラ訪問: 好感度が上限まで来ていたら、行く前にひと言（master_spec の最大警告）
   if (spot.charId) return maybeVisitWarning(spot.charId, proceed, () => showMap());
   proceed();
+}
+
+// tonari統合(#9): tonari の中で「バイト/練習/スミさん/常連席」を選ぶサブメニュー。
+// マップ上にオーバーレイで出す（pointer-eventsは効かせる＝選ぶ）。選んだら selectSpot に委譲＝既存の流儀・警告・行動消費をそのまま使う
+function showTonari() {
+  document.getElementById("tonari-menu")?.remove();
+  const screen = document.querySelector("#screen-map");
+  if (!screen) return;
+  if (window.SFX) SFX.open();
+  const ov = document.createElement("div");
+  ov.id = "tonari-menu";
+  ov.innerHTML =
+    `<div class="tn-menu-card">` +
+    `<p class="tn-menu-title">tonari ── 今日は店で何をする？</p>` +
+    `<div class="tn-menu-list" id="tonari-list"></div>` +
+    `<button class="primary-btn ghost tn-close" id="tonari-close">← マップに戻る</button>` +
+    `</div>`;
+  screen.appendChild(ov);
+  const list = ov.querySelector("#tonari-list");
+  for (const spot of TONARI_SPOTS) {
+    const visited = spot.charId && state.dayVisited[spot.charId] === state.day;
+    const known = !spot.charId || isMet(spot.charId);
+    // つむぎは未紹介でも「常連席」の場所は分かる（名前だけ伏せる）＝ラベルに常連席を残す
+    const label = (spot.id === "tsumugi" && !known) ? "常連席（いつもの常連の子）" : spot.label;
+    const desc = visited ? "今日はもう行った" : (!known && SPOT_UNKNOWN[spot.id] ? SPOT_UNKNOWN[spot.id].desc : spot.desc);
+    const btn = document.createElement("button");
+    btn.className = "spot-btn";
+    btn.innerHTML = `<span class="spot-name">${label}</span><span class="spot-desc">${desc}</span>`;
+    if (visited) btn.disabled = true;
+    btn.addEventListener("click", () => {
+      if (btn.disabled) return;
+      ov.remove();
+      selectSpot(spot);
+    });
+    list.appendChild(btn);
+  }
+  ov.querySelector("#tonari-close").addEventListener("click", () => { if (window.SFX) SFX.close(); ov.remove(); });
+  requestAnimationFrame(() => ov.classList.add("show"));
 }
 
 // 好感度MAX/恋人の店に通おうとした時の事前確認。

@@ -16,6 +16,7 @@ await page.waitForSelector("#screen-title.active");
 await page.evaluate(() => {
   state = newState();
   state.flags._tutorial_done = true;
+  state.flags._map_tutorial_done = true; // 初回マップ案内の点滅(#36)を出さない＝ホバー静止の純粋確認
   showMap();
 });
 await page.waitForSelector("#screen-map.active");
