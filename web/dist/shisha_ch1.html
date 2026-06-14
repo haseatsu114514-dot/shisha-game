@@ -7433,6 +7433,35 @@ function showShop() {
     }
     list.appendChild(grid);
   }
+  // 大会用フレーバーの仕入れ（#44 持参制）。買わなくても本番でスミさんがお情けで分けてくれる（強制購入イベントは無し）
+  {
+    const flLabel = document.createElement("p");
+    flLabel.className = "setup-group-label";
+    flLabel.textContent = "大会用フレーバー（持参制）";
+    list.appendChild(flLabel);
+    const flGrid = document.createElement("div");
+    flGrid.className = "spot-list";
+    const stocked = !!state.flags._flavor_stocked;
+    const FL_COST = 6000;
+    const flBtn = document.createElement("button");
+    flBtn.className = "spot-btn";
+    flBtn.innerHTML =
+      `<span class="spot-name">本番用フレーバーを仕入れる</span>` +
+      `<span class="spot-cost">${stocked ? "仕入れ済み" : `${FL_COST.toLocaleString()}円`}</span>` +
+      `<span class="spot-desc">大会には自分のフレーバーを持ち込む。仕入れておけば本番で安心（買わなければ本番でスミさんがお情けでダブルアップルを分けてくれる）</span>`;
+    if (stocked || FL_COST > state.money) flBtn.disabled = true;
+    flBtn.addEventListener("click", () => {
+      if (state.flags._flavor_stocked || FL_COST > state.money) return;
+      addMoney(-FL_COST);
+      state.flags._flavor_stocked = true;
+      save();
+      if (window.SFX) SFX.coin();
+      toast("本番用フレーバーを仕入れた");
+      showShop();
+    });
+    flGrid.appendChild(flBtn);
+    list.appendChild(flGrid);
+  }
   // 売却（中古買取）: 機材のみ買値の50%で売れる。フレーバー系は開封済み扱いで不可（master_spec #21）
   const sellLabel = document.createElement("p");
   sellLabel.className = "setup-group-label";
@@ -8264,10 +8293,41 @@ function startTournament() {
   for (const id of ["naru", "adam", "minto", "nagumo", "maezono"]) markMet(id);
   updateHud();
   save();
-  // 会場へ歩み入る瞬間を煙ワイプで（master_spec #20）
-  smokeWipe(() => playDialogue("ch1_tournament_arrival", () =>
-    playDialogue("ch1_tournament_opening", () => entranceIntro(() => beginMaking()), "res://assets/backgrounds/bg_tournament_stage.png")
-  ));
+  // 出発前に「持参フレーバー」を確認。未仕入れならスミさんがお情けで分けてくれる（#44）
+  flavorBringIn(() =>
+    // 会場へ歩み入る瞬間を煙ワイプで（master_spec #20）
+    smokeWipe(() => playDialogue("ch1_tournament_arrival", () =>
+      playDialogue("ch1_tournament_opening", () => entranceIntro(() => beginMaking()), "res://assets/backgrounds/bg_tournament_stage.png")
+    ))
+  );
+}
+
+// 大会前の持参フレーバー確認（#44 持参制）。仕入れ済み＝持参、未仕入れ＝スミさんのお情け（強制購入はしない）
+function flavorBringIn(next) {
+  if (state.chapter !== 1) return next();
+  const TONARI = "res://assets/backgrounds/bg_tonari_inside.png";
+  if (state.flags._flavor_stocked) {
+    return playCustom({
+      dialogue_id: "flavor_brought",
+      metadata: { bg: TONARI },
+      lines: [
+        { speaker: "", face: "", text: "会場へ向かう前に、仕入れておいた本番用のフレーバーをケースに並べていく。……準備は、できている。" },
+      ],
+    }, next);
+  }
+  state.flags._flavor_rescued = true;
+  return playCustom({
+    dialogue_id: "flavor_rescue",
+    metadata: { bg: TONARI },
+    lines: [
+      { speaker: "", face: "", text: "会場へ向かおうとして、気づく。……本番用のフレーバーを、仕入れ忘れていた。" },
+      { speaker: "hajime", face: "sad", text: "（やってしまった……手持ちが、ほとんどない）" },
+      { speaker: "sumi", face: "normal", text: "……持ってきてねえのか。しょうがねえ奴だな" },
+      { speaker: "", face: "", text: "スミさんが棚の奥から小さな缶を出して、ぽんと寄越した。" },
+      { speaker: "sumi", face: "normal", text: "ダブルアップル、一回分だ。足りる範囲でやりくりしろ。……次はちゃんと仕入れてから来い" },
+      { speaker: "hajime", face: "normal", text: "……すみません。ありがとうございます" },
+    ],
+  }, next);
 }
 
 // mode: "tournament"（既定）| "tutorial"（開幕の通し体験）| "baito"（オーダーチャレンジ）
