@@ -2776,6 +2776,16 @@ body {
   30% { opacity: 1; transform: scale(1); }
   100% { opacity: 0.85; transform: scale(0.92); }
 }
+/* 初回マップ案内（#36）。pointer-events:none で操作は止めない */
+#map-tutorial { position: absolute; inset: 0; z-index: 6; pointer-events: none; display: flex; align-items: flex-end; justify-content: center; opacity: 0; transition: opacity 0.3s; }
+#map-tutorial.show { opacity: 1; }
+#map-tutorial .mt-card { margin-bottom: 13%; max-width: min(86%, 520px); background: linear-gradient(180deg, rgba(26,20,36,0.95), rgba(14,11,22,0.96)); border: 1px solid rgba(255,210,120,0.5); border-radius: 14px; padding: 14px 18px; box-shadow: 0 8px 28px rgba(0,0,0,0.5); text-align: center; }
+.mt-title { font-size: 20px; font-weight: 900; color: #ffe79a; margin: 0 0 6px; }
+.mt-body { font-size: 14px; line-height: 1.7; color: #e9e4f2; margin: 0; }
+.mt-body b { color: #ffd27a; }
+.mt-tap { font-size: 12px; color: #9aa0b8; margin: 9px 0 0; }
+.spot-pin.tut-pulse { animation: tut-pulse 1s ease-in-out infinite; z-index: 5; }
+@keyframes tut-pulse { 0%,100% { filter: drop-shadow(0 0 0 rgba(255,210,120,0)); } 50% { filter: drop-shadow(0 0 10px rgba(255,210,120,0.95)); transform: scale(1.08); } }
 @keyframes heat-callout {
   0% { opacity: 0; transform: translate(-50%,8px) scale(0.6); }
   25% { opacity: 1; transform: translate(-50%,0) scale(1.1); }
@@ -6896,6 +6906,34 @@ function showMap(opts = {}) {
     if (document.querySelector("#day-card.show")) setTimeout(() => REEL.onMapShown(), 1500);
     else REEL.onMapShown();
   }
+  mapTutorial(); // 初回だけマップの使い方を点滅で案内（#36）
+}
+
+// 初めてマップに出たときだけ、機能を点滅つきで一度だけ説明する（#36）。
+// クリックを邪魔しない（pointer-events:none・タップか数秒で消える）＝自動テストも止めない
+function mapTutorial() {
+  if (!state || state.flags._map_tutorial_done) return;
+  const screen = document.querySelector("#screen-map");
+  if (!screen || !screen.classList.contains("active")) return;
+  state.flags._map_tutorial_done = true; save();
+  // 主要ピンを点滅させて注意を引く
+  screen.querySelectorAll("#map-pins .spot-pin:not(:disabled)").forEach((p, i) => {
+    if (i < 4) { p.classList.add("tut-pulse"); setTimeout(() => p.classList.remove("tut-pulse"), 6200); }
+  });
+  const ov = document.createElement("div");
+  ov.id = "map-tutorial";
+  ov.innerHTML =
+    `<div class="mt-card">` +
+    `<p class="mt-title">ここがマップ</p>` +
+    `<p class="mt-body">行きたい場所をタップして、1日2回うごこう。<br>` +
+    `<b>バイト</b>でお金、<b>練習</b>でスキル、<b>人に会う</b>と好感度。<br>` +
+    `行ける場所は明るいピン、暗いピンはまだ解放前。大会の日までに、できることを。</p>` +
+    `<p class="mt-tap">（タップで閉じる）</p></div>`;
+  screen.appendChild(ov);
+  requestAnimationFrame(() => ov.classList.add("show"));
+  const close = () => { ov.classList.remove("show"); setTimeout(() => ov.remove(), 350); screen.removeEventListener("click", close, true); };
+  setTimeout(close, 7000);
+  setTimeout(() => screen.addEventListener("click", close, true), 400); // 少し置いてからタップで閉じられる
 }
 
 function updateMapInfo(spot, locked, tooPoor, closed, visited) {

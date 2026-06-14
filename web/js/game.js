@@ -1749,6 +1749,34 @@ function showMap(opts = {}) {
     if (document.querySelector("#day-card.show")) setTimeout(() => REEL.onMapShown(), 1500);
     else REEL.onMapShown();
   }
+  mapTutorial(); // 初回だけマップの使い方を点滅で案内（#36）
+}
+
+// 初めてマップに出たときだけ、機能を点滅つきで一度だけ説明する（#36）。
+// クリックを邪魔しない（pointer-events:none・タップか数秒で消える）＝自動テストも止めない
+function mapTutorial() {
+  if (!state || state.flags._map_tutorial_done) return;
+  const screen = document.querySelector("#screen-map");
+  if (!screen || !screen.classList.contains("active")) return;
+  state.flags._map_tutorial_done = true; save();
+  // 主要ピンを点滅させて注意を引く
+  screen.querySelectorAll("#map-pins .spot-pin:not(:disabled)").forEach((p, i) => {
+    if (i < 4) { p.classList.add("tut-pulse"); setTimeout(() => p.classList.remove("tut-pulse"), 6200); }
+  });
+  const ov = document.createElement("div");
+  ov.id = "map-tutorial";
+  ov.innerHTML =
+    `<div class="mt-card">` +
+    `<p class="mt-title">ここがマップ</p>` +
+    `<p class="mt-body">行きたい場所をタップして、1日2回うごこう。<br>` +
+    `<b>バイト</b>でお金、<b>練習</b>でスキル、<b>人に会う</b>と好感度。<br>` +
+    `行ける場所は明るいピン、暗いピンはまだ解放前。大会の日までに、できることを。</p>` +
+    `<p class="mt-tap">（タップで閉じる）</p></div>`;
+  screen.appendChild(ov);
+  requestAnimationFrame(() => ov.classList.add("show"));
+  const close = () => { ov.classList.remove("show"); setTimeout(() => ov.remove(), 350); screen.removeEventListener("click", close, true); };
+  setTimeout(close, 7000);
+  setTimeout(() => screen.addEventListener("click", close, true), 400); // 少し置いてからタップで閉じられる
 }
 
 function updateMapInfo(spot, locked, tooPoor, closed, visited) {
