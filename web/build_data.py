@@ -37,6 +37,10 @@ CH1_DIALOGUE_FILES = [
     "ch1_events.json",
     "ch2_main.json",
     "ch2_isolation.json",
+    "ch2_kumicho.json",
+    "ch2_ageha.json",
+    "ch2_rei.json",
+    "ch2_volk.json",
     "confession.json",
     "lover_events.json",
 ]

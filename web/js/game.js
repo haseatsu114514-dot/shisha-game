@@ -147,7 +147,7 @@ function newState() {
     statsBaseline: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 },
     affinity: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0, rin: 0, ageha: 0 },
     affinityPts: {},       // 好感度の内部ポイント（隠し数値。閾値で affinity の段階が上がる）
-    visits: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0, rin: 0, ageha: 0 },
+    visits: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0, rin: 0, ageha: 0, kumicho: 0, rei: 0, volk: 0 },
     stamina: 100,          // 体力（数値は非表示・ゲージのみ）
     dayVisited: {},        // 店ごとの最終訪問日（同じ店は1日1回まで）
     lovers: [],            // 付き合っているキャラ（複数なら浮気状態）
@@ -1104,9 +1104,14 @@ const TONARI_SPOTS = [
 ];
 const SPOTS = [
   { id: "tonari", label: "tonari（お店）", desc: "バイト・練習・スミさん・常連席。今日は店で何をする？", cost: 0 },
-  { id: "naru", label: "なるの店へ行く", desc: "ライバル店を偵察", cost: VISIT_COST, charId: "naru" },
-  { id: "adam", label: "アダムの店へ行く", desc: "ダブルアップル職人の店", cost: VISIT_COST, charId: "adam" },
-  { id: "minto", label: "みんとの店へ行く", desc: "コンカフェ風シーシャ屋へ", cost: VISIT_COST, charId: "minto" },
+  { id: "naru", label: "なるの店へ行く", desc: "ライバル店を偵察", cost: VISIT_COST, charId: "naru", chapter: 1 },
+  { id: "adam", label: "アダムの店へ行く", desc: "ダブルアップル職人の店", cost: VISIT_COST, charId: "adam", chapter: 1 },
+  { id: "minto", label: "みんとの店へ行く", desc: "コンカフェ風シーシャ屋へ", cost: VISIT_COST, charId: "minto", chapter: 1 },
+  // 第2章のライバル店（章で出し分け）。神崎煙草店は2回通うと0分立ち上げ解放
+  { id: "kumicho", label: "神崎煙草店へ行く", desc: "暖簾の奥にシーシャ。組長が一人で回す老舗", cost: VISIT_COST, charId: "kumicho", chapter: 2 },
+  { id: "ageha", label: "アゲハの店へ行く", desc: "繁華街の派手な店。SNSで人気のギャル店主", cost: VISIT_COST, charId: "ageha", chapter: 2 },
+  { id: "rei", label: "零-ZERO-へ行く", desc: "重いロックが鳴る薄暗い店", cost: VISIT_COST, charId: "rei", chapter: 2 },
+  { id: "volk", label: "鉄の煙へ行く", desc: "計器だらけ。無愛想なロシア人の店", cost: VISIT_COST, charId: "volk", chapter: 2 },
   { id: "choizap", label: "チョイザップ", desc: "みんとに教えてもらったジム", cost: 0, requiresMet: "minto" },
   { id: "kannon", label: "観音堂", desc: "アダムに教えてもらった静かな場所", cost: 0, requiresMet: "adam" },
   { id: "cafe", label: "カフェ", desc: "なるおすすめのスパイスラテ", cost: 800, requiresMet: "naru" },
@@ -1121,6 +1126,10 @@ const SPOT_UNKNOWN = {
   adam: { label: "EDENを覗く", desc: "下町の店。焼き林檎みたいな甘い匂いが漏れている" },
   minto: { label: "PEPERMINTを覗く", desc: "繁華街のポップな店。SNSで人気らしい" },
   tsumugi: { label: "常連の子と話す", desc: "カウンターの奥、いつも同じ席にいる女の子" },
+  kumicho: { label: "神崎煙草店を覗く", desc: "暖簾の奥にシーシャの気配。古い佇まいの老舗" },
+  ageha: { label: "派手な店を覗く", desc: "繁華街の目立つ店。ギャルっぽい店主がいるらしい" },
+  rei: { label: "零-ZERO-を覗く", desc: "重低音が漏れる薄暗い店。タトゥーの店主の噂" },
+  volk: { label: "鉄の煙を覗く", desc: "計器だらけの不思議な店。外国人がやっているらしい" },
 };
 
 // 報酬キューが鳴らなかった場合の保険（全イベントに必ず報酬を付ける）
@@ -1151,6 +1160,11 @@ const VISIT_SEQUENCES = {
   naru: ["ch1_naru_first", "ch1_naru_second", "ch1_naru_third", "ch1_naru_fourth", "ch1_naru_fifth"],
   adam: ["ch1_adam_first", "ch1_adam_second", "ch1_adam_third", "ch1_adam_fourth", "ch1_adam_fifth"],
   minto: ["ch1_minto_first", "ch1_minto_second", "ch1_minto_third", "ch1_minto_fourth", "ch1_minto_fifth"],
+  // 第2章ライバル店（通うと交流が進む。神崎は2回目=ch2_kumicho_second で0分立ち上げ解放）
+  ageha: ["ch2_ageha_first", "ch2_ageha_second", "ch2_ageha_third", "ch2_ageha_fourth", "ch2_ageha_fifth"],
+  kumicho: ["ch2_kumicho_first", "ch2_kumicho_second", "ch2_kumicho_third", "ch2_kumicho_fourth"],
+  rei: ["ch2_rei_first", "ch2_rei_second", "ch2_rei_third", "ch2_rei_fourth", "ch2_rei_fifth"],
+  volk: ["ch2_volk_first", "ch2_volk_second", "ch2_volk_third", "ch2_volk_fourth"],
 };
 
 // 通い切ったあとの繰り返し訪問（必ず何かしらの報酬を付ける）
@@ -1160,6 +1174,10 @@ const REPEAT_VISIT = {
   naru: { text: "なるの店で一服。スピード勝負の段取りを盗み見る。鼻の良さに毎回気づかされる。", stats: { insight: 2 } },
   adam: { text: "アダムの店で一服。ダブルアップル一筋の頑固さに、芯の強さを感じる。", stats: { guts: 2 } },
   minto: { text: "みんとの店で一服。客あしらいの軽やかさは、やっぱり真似できない。", stats: { charm: 2 } },
+  ageha: { text: "アゲハの店で一服。明るさに当てられて、こっちまで肩の力が抜ける。", stats: { sense: 2 } },
+  kumicho: { text: "神崎煙草店で一服。組長と黙って同じ煙を吸うだけで、不思議と腹が据わる。", stats: { guts: 2 } },
+  rei: { text: "零-ZERO-で一服。爆音の中、REIは何も言わない。でも、煙はやさしい。", stats: { charm: 2 } },
+  volk: { text: "鉄の煙で一服。ヴォルクの精密な手つきを盗み見る。数字の裏に、職人の勘がある。", stats: { guts: 2 } },
 };
 
 // ============ LIME（朝のスマホ演出） ============
@@ -1690,6 +1708,7 @@ function loverQuickMeet(charId) {
 const SPOT_ICONS = {
   tonari: "店", baito: "労", practice: "練", sumi: "師", tsumugi: "紬",
   naru: "鳴", adam: "亜", minto: "緑", choizap: "筋",
+  kumicho: "崎", ageha: "蝶", rei: "零", volk: "鉄",
   kannon: "観", cafe: "珈", c_station: "C", shop: "店", rest: "休",
 };
 const SPOT_FACE = { tonari: "sumi", sumi: "sumi", tsumugi: "tsumugi", naru: "naru", adam: "adam", minto: "minto" };
@@ -1700,6 +1719,10 @@ const SPOT_LAYOUT = {
   naru:      { x: 42, y: 22, theme: "rival",   short: "KEMURIKUSA", area: "繁華街" },
   adam:      { x: 56, y: 30, theme: "rival",   short: "EDEN",       area: "下町" },
   minto:     { x: 70, y: 22, theme: "rival",   short: "PEPERMINT",  area: "繁華街" },
+  kumicho:   { x: 40, y: 24, theme: "rival",   short: "神崎煙草店", area: "旧市街" },
+  ageha:     { x: 58, y: 20, theme: "rival",   short: "AGEHA",      area: "繁華街" },
+  rei:       { x: 72, y: 32, theme: "rival",   short: "零-ZERO-",   area: "ライブ通り" },
+  volk:      { x: 50, y: 38, theme: "rival",   short: "鉄の煙",     area: "工業地区" },
   choizap:   { x: 50, y: 50, theme: "shop",    short: "チョイザップ", area: "ジム" },
   kannon:    { x: 78, y: 56, theme: "park",    short: "観音堂",     area: "古町" },
   cafe:      { x: 64, y: 64, theme: "cafe",    short: "カフェ",     area: "繁華街" },
@@ -1721,6 +1744,7 @@ function showMap(opts = {}) {
   const pins = $("#map-pins");
   pins.innerHTML = "";
   for (const spot of SPOTS) {
+    if (spot.chapter && spot.chapter !== state.chapter) continue; // 章限定スポット（ch1/ch2でライバル店を出し分け）
     const layout = SPOT_LAYOUT[spot.id];
     if (!layout) continue;
     const btn = document.createElement("button");
@@ -1883,7 +1907,7 @@ function selectSpot(spot) {
       case "rest": return doRest();
       default: {
         // よその店での一服は体力を使う（tonari内のスミさん・つむぎとの会話は軽い）
-        const heavySmoke = ["naru", "adam", "minto"].includes(spot.id);
+        const heavySmoke = ["naru", "adam", "minto", "kumicho", "ageha", "rei", "volk"].includes(spot.id);
         return heavySmoke ? shishaGuard(() => doVisit(spot.id)) : doVisit(spot.id);
       }
     }
@@ -2247,7 +2271,7 @@ function doVisit(charId) {
   const idx = state.visits[charId];
   const bg = VISIT_BG[charId] || "bg_tonari_inside.png";
   state.dayVisited[charId] = state.day; // 同じ店は1日1回まで
-  addStamina(-(["naru", "adam", "minto"].includes(charId) ? STAMINA_COST.visit : STAMINA_COST.talk));
+  addStamina(-(["naru", "adam", "minto", "kumicho", "ageha", "rei", "volk"].includes(charId) ? STAMINA_COST.visit : STAMINA_COST.talk));
   const after = () => {
     markMet(charId); // 会話を終えた＝面識ができた（名乗りの set_flag の保険）
     visitContextChar = null;
@@ -5871,6 +5895,12 @@ function continueGame(saved) {
   // 第2章・恋愛システム導入前のセーブ互換
   if (!state.chapter) state.chapter = 1;
   if (!("ageha" in state.affinity)) { state.affinity.ageha = 0; state.visits.ageha = 0; }
+  // 第2章ライバル店（神崎竜二/REI/ヴォルク）導入前のセーブ互換。
+  // ※ affinity には入れない＝噂LIME（outsiderRumor）のゲート無し配信を保つため。
+  //    rivalは恋愛対象外なので、訪問報酬は gainStat フォールバックで付く
+  for (const _id of ["kumicho", "rei", "volk"]) {
+    if (!(_id in state.visits)) state.visits[_id] = 0;
+  }
   if (!Array.isArray(state.lovers)) state.lovers = [];
   if (!state.loveLevel) state.loveLevel = {};
   if (typeof state.guilt !== "number") state.guilt = 0;
