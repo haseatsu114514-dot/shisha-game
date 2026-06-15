@@ -1,22 +1,22 @@
 # .claudeignore
-# Claude Code がインデックス・自動参照しないファイルを指定
-
-# Godot エンジン内部ファイル（大量のバイナリキャッシュ）
-.godot/
-*.import
-*.uid
+# Claude Code がインデックス・自動参照しないファイルを指定。
+# 目的: 旧設定の残骸・履歴・巨大資料を AI に拾わせず、矛盾の伝播とトークン浪費を防ぐ。
+# （正本は CLAUDE.md ＋ data/dialogue/ ＋ data/characters.json ＋ brand/story_and_structure.md。
+#  レビュー対象範囲は docs/review_scope.md を参照）
 
 # アセット系（画像・音声は Claude が処理不要）
 assets/
 asset_sources/
-
-# 翻訳バイナリ
 *.translation
 
 # スプレッドシート系（CSV は必要時のみ手動で参照）
 アセット差し替え進捗管理表.*
 
-# 過去のフィードバック記録（作業中に毎回読む必要なし）
+# 旧設定の残骸（参照禁止・正史ではない。旧タイトル/旧名を含む）
+brand/brand
+brand/chapter1（character）
+
+# 過去のフィードバック記録・添削履歴（作業中に毎回読む必要なし）
 brand/comprehensive_feedback.md
 brand/gameplay_feedback.md
 brand/editorial_notes.md
@@ -26,6 +26,7 @@ brand/claude_code_prompt.md
 brand/claude_prompt_comprehensive.md
 brand/claude_prompt_template.md
 
-# テスト用スクリプト（一時ファイル）
-test_join.gd
-stash_output.txt
+# 引き継ぎメモ・巨大な計画/履歴ドキュメント（現役仕様は master_spec / web_version_plan / owner_requests）
+docs/handoff/
+docs/next_session_prompts.md
+docs/minigame_implementation_plan.md
