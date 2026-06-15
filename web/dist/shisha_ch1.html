@@ -7547,7 +7547,9 @@ function updateMapInfo(spot, locked, tooPoor, closed, visited) {
       const allMax = Object.values(state.stats).every((v) => v >= 100);
       growEl.textContent = allMax
         ? "（ここで学べることは、もう全部わが身になった）"
-        : `（ここに通うと【${STAT_KEYS[hintStat]}】が伸びそうだ）`;
+        : CHAR_STAT[spot.id]
+          ? `（ここに通うと【${STAT_KEYS[hintStat]}】が伸びそうだ）`
+          : `（集中特訓だから、人に会うより【${STAT_KEYS[hintStat]}】がぐっと伸びる）`;
       growEl.style.display = "";
     } else {
       growEl.style.display = "none";
@@ -7662,6 +7664,8 @@ function doSpotDialogue(spotId, dialogueId, bg) {
   if (STAMINA_GAIN[spotId]) addStamina(STAMINA_GAIN[spotId]);
   playDialogue(dialogueId, () => {
     if (!cueFiredInDialogue) gainStat(spotStat(spotId), 2);
+    // 施設スポット＝「集中特訓」: 好感度は付かない代わりに、人に会うより伸びが大きい（#23）
+    gainStat(spotStat(spotId), 3);
     endAction();
   }, `res://assets/backgrounds/${bg}`);
 }
