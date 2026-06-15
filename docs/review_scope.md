@@ -16,7 +16,7 @@ AI（Claude / GLM 等）や人間がこのリポジトリを「矛盾点・改�
 
 | ティア | パス | 目安トークン | 中身 |
 |---|---|---|---|
-| **コア（最小）** | `data/dialogue/**` ＋ `brand/**` | ~230k | 台詞・ストーリー構成・キャラ設定の「正」 |
+| **コア（最小）** | `data/dialogue/**` ＋ `brand/story_and_structure.md` ＋ `brand/character_profiles.md` | ~230k | 台詞・ストーリー構成・キャラ設定の「正」 |
 | 標準（実物） | ＋ `data/*.json`（characters / flavors / equipment / glossary 等）＋ `web/js/game.js` | ~375k | 実際にプレイされるブラウザ版の挙動・データ |
 | 仕様照合（必要時のみ） | ＋ `docs/master_spec.md` ＋ `docs/web_version_plan.md` ＋ `docs/owner_requests.md` | +数十k | 仕様・要望台帳と突き合わせるとき |
 
@@ -37,6 +37,7 @@ AI（Claude / GLM 等）や人間がこのリポジトリを「矛盾点・改�
 | `web/js/data.js` | `data/*.json` から**生成された複製**。原本（`data/`）の方を見る |
 | `web/lib/**` ・各種 minified / ベンダーJS | 外部ライブラリ |
 | `docs/handoff/**` ほか過去の引き継ぎメモ | 履歴資料。常時レビュー不要 |
+| `brand/brand` ・ `brand/chapter1（character）` ・ `brand/*_feedback.md` ・ `brand/editorial_notes.md` | **旧設定の残骸／フィードバック履歴**。旧タイトル「煙の向こう側」・旧名「ドクター・ケムリ」等を含み、正史として読むと矛盾が湧く。`brand/**` でも除外 |
 
 > 注: 別ゲーム `riders_rescue/`（Rila Riders Rescue）は 2026-06-14 に削除済み。
 
