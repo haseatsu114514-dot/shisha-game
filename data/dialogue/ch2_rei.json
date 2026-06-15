@@ -2,7 +2,9 @@
   "dialogues": [
     {
       "dialogue_id": "ch2_rei_first",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
       "lines": [
         {
           "speaker": "",
@@ -12,7 +14,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "カウンターの中に、人がいた。赤と黒に染めた非対称の髪。首から手の甲まで続くタトゥーが、ろうそくの照明に浮かび上がっている。\nその目が、こちらを向いた。"
+          "text": "カウンターの中に、人がいた。赤と黒に染めた非対称の髪。首から手の甲まで続くタトゥーが、ろうそくの照明に浮かび上がっている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その目が、こちらを向いた。"
         },
         {
           "speaker": "",
@@ -72,7 +79,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……僕に言ったのか、シーシャに言ったのか、よく分からなかった）"
+          "text": "（……俺に言ったのか、シーシャに言ったのか、よく分からなかった）"
         },
         {
           "speaker": "rei",
@@ -82,7 +89,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "低い声。REIはそれきり何も言わず、シーシャの準備を始めた。\n「イエス」という名のミックスが、静かにテーブルに置かれた。"
+          "text": "低い声。REIはそれきり何も言わず、シーシャの準備を始めた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「イエス」という名のミックスが、静かにテーブルに置かれた。"
         },
         {
           "speaker": "hajime",
@@ -153,7 +165,9 @@
     },
     {
       "dialogue_id": "ch2_rei_second",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
       "lines": [
         {
           "speaker": "",
@@ -278,7 +292,7 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……（hajimeの肩を軽く叩く）\n仲間だ"
+          "text": "……（はじめの肩を軽く叩く）仲間だ"
         },
         {
           "speaker": "hajime",
@@ -288,7 +302,12 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "ミックスの名前は全部、曲から取ってる。\n……月光花は、夜に咲いて朝には消える花のことで——儚さと甘さが同時にあって——それをこのミックスで出したかった。ジャスミンをベースに、ブルーベリーで夜の深みを足して——スモーキーな感じと、でも一瞬だけ甘くなる後味と——"
+          "text": "ミックスの名前は全部、曲から取ってる。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……月光花は、夜に咲いて朝には消える花のことで——儚さと甘さが同時にあって——それをこのミックスで出したかった。ジャスミンをベースに、ブルーベリーで夜の深みを足して——スモーキーな感じと、でも一瞬だけ甘くなる後味と——"
         },
         {
           "speaker": "hajime",
@@ -319,7 +338,9 @@
     },
     {
       "dialogue_id": "ch2_rei_third",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
       "lines": [
         {
           "speaker": "",
@@ -404,7 +425,12 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "人が……怖いんだ。話しかけられると、何を言えばいいか分からなくなる。\nこのスタイルにすると……みんな自分から距離を置いてくれる"
+          "text": "人が……怖いんだ。話しかけられると、何を言えばいいか分からなくなる。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "このスタイルにすると……みんな自分から距離を置いてくれる"
         },
         {
           "speaker": "hajime",
@@ -430,7 +456,9 @@
     },
     {
       "dialogue_id": "ch2_rei_fourth",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
       "lines": [
         {
           "speaker": "",
@@ -450,7 +478,7 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……前の客が、「怖い」と言って帰った。\nまた、失敗した"
+          "text": "……前の客が、「怖い」と言って帰った。また、失敗した"
         },
         {
           "speaker": "hajime",
@@ -500,7 +528,7 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……「笑えばいい」って、そういう歌詞があって。\nそれが……正しいと思って"
+          "text": "……「笑えばいい」って、そういう歌詞があって。それが……正しいと思って"
         },
         {
           "speaker": "hajime",
@@ -520,7 +548,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "長い沈黙の後、REIがほんの少しだけ、口の端を上げた。\nそれはたぶん、笑顔の練習の成果だった。"
+          "text": "長い沈黙の後、REIがほんの少しだけ、口の端を上げた。それはたぶん、笑顔の練習の成果だった。"
         },
         {
           "speaker": "",
@@ -531,7 +559,9 @@
     },
     {
       "dialogue_id": "ch2_rei_fifth",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
       "lines": [
         {
           "speaker": "",
@@ -626,7 +656,7 @@
         {
           "speaker": "rei",
           "face": "normal",
-          "text": "……負けない。本気で煙を出す。\nだが……お前には、ちゃんと届けたい"
+          "text": "……負けない。本気で煙を出す。だが……お前には、ちゃんと届けたい"
         },
         {
           "speaker": "hajime",
@@ -676,7 +706,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（全然忘れない）\n（……これだ。REIさんはこういう人だったんだ）"
+          "text": "（全然忘れない）（……これだ。REIさんはこういう人だったんだ）"
         },
         {
           "speaker": "",
@@ -687,7 +717,9 @@
     },
     {
       "dialogue_id": "ch2_rei_group_concert_prep",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
       "lines": [
         {
           "speaker": "",
@@ -697,7 +729,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "「REIさん！ 今日の嘘、最高でした！ あのスモーク感、原曲のイントロと一緒だよ！」\n「月光花と交互に吸うの、もはや儀式じゃん！！」\n「ライブ前は絶対ここ来るんだよね！」"
+          "text": "「REIさん！ 今日の嘘、最高でした！ あのスモーク感、原曲のイントロと一緒だよ！」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「月光花と交互に吸うの、もはや儀式じゃん！！」「ライブ前は絶対ここ来るんだよね！」"
         },
         {
           "speaker": "rei",
@@ -712,7 +749,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "「あっ、REIさん今顔赤くなった！ 照れてる！！」\n「かわいい〜！ こんな顔すんだ！！」\n「でもシーシャはガチでやばいよ、V系の魂こもってる」"
+          "text": "「あっ、REIさん今顔赤くなった！ 照れてる！！」「かわいい〜！ こんな顔すんだ！！」"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「でもシーシャはガチでやばいよ、V系の魂こもってる」"
         },
         {
           "speaker": "hajime",
@@ -727,7 +769,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "声が、蚊の鳴くほど小さかった。ファンたちがまたわっと盛り上がった。\nREIは顔を少し赤くしながら、黙々と次のシーシャの準備に戻った。"
+          "text": "声が、蚊の鳴くほど小さかった。ファンたちがまたわっと盛り上がった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "REIは顔を少し赤くしながら、黙々と次のシーシャの準備に戻った。"
         },
         {
           "speaker": "hajime",
@@ -797,7 +844,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "REIは顔を逸らしたまま、仕込みに戻った。\n……仲間だと認定されたのが、こういう形でくるとは思っていなかった。"
+          "text": "REIは顔を逸らしたまま、仕込みに戻った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……仲間だと認定されたのが、こういう形でくるとは思っていなかった。"
         }
       ]
     }

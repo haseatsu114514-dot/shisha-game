@@ -3,7 +3,7 @@
     {
       "dialogue_id": "ch4_mashiro_dubai_friend",
       "metadata": {
-        "condition": "mashiro_affinity_min_2",
+        "condition": "ch3_cleared",
         "bg": "res://assets/backgrounds/bg_tournament_stage.png"
       },
       "lines": [

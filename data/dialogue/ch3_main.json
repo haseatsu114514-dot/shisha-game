@@ -22,53 +22,193 @@
     },
     {
       "dialogue_id": "ch3_individuality_doubt",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "────大会会場の下見帰り。東京の夜道。" },
-        { "speaker": "", "face": "", "text": "今日、出場者たちの練習を見学した。ナンディのスパイスが織りなす音楽的な煙。レイの圧倒的なカリスマ。スティーブの見た目に反した繊細さ。" },
-        { "speaker": "hajime", "face": "sad", "text": "（みんな「自分のシーシャ」を持ってる。スタイルがある。個性がある。方向性がある）" },
-        { "speaker": "hajime", "face": "sad", "text": "（僕は……ここまで勝ち抜いてきたけど、やっぱり「これ」がない。得意な方向性も、まだ見つかってない）" },
-        { "speaker": "", "face": "", "text": "あげはの言葉がよぎる。" },
-        { "speaker": "", "face": "", "text": "──「理論がないから、いつか当たらなくなるんじゃないかって怖い」" },
-        { "speaker": "hajime", "face": "sad", "text": "（あの時のあげはさんと同じだ。今作れてるクオリティが、いつ崩れるか分からない。Ch2のスランプみたいに、また味が分からなくなるかもしれない）" },
-        { "speaker": "hajime", "face": "sad", "text": "（みんなには戻る場所がある。「自分のスタイル」がある。僕にはそれがない。崩れたら……何を頼りに立て直せばいいんだ？）" },
-        { "speaker": "", "face": "", "text": "東京の夜景がきらめいている。綺麗だ。でも、その光の中に自分の居場所が見つからなかった。" }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "────大会会場の下見帰り。東京の夜道。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今日、出場者たちの練習を見学した。ナンディのスパイスが織りなす音楽的な煙。レイの圧倒的なカリスマ。スティーブの見た目に反した繊細さ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（みんな「自分のシーシャ」を持ってる。スタイルがある。個性がある。方向性がある）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（俺は……ここまで勝ち抜いてきたけど、やっぱり「これ」がない。得意な方向性も、まだ見つかってない）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはの言葉がよぎる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──「理論がないから、いつか当たらなくなるんじゃないかって怖い」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（あの時のあげはさんと同じだ。今作れてるクオリティが、いつ崩れるか分からない。ある日突然、また味が分からなくなるかもしれない）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（みんなには戻る場所がある。「自分のスタイル」がある。俺にはそれがない。崩れたら……何を頼りに立て直せばいいんだ？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "東京の夜景がきらめいている。綺麗だ。でも、その光の中に自分の居場所が見つからなかった。"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_tokyo_shop_gap",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "────東京のシーシャ店。" },
-        { "speaker": "", "face": "", "text": "大会の準備の合間に、気になっていた店に入ってみた。" },
-        { "speaker": "", "face": "", "text": "一口目で──衝撃が走った。" },
-        { "speaker": "", "face": "", "text": "味持ちの良さが、次元が違う。一杯吸い終えても、口の中にフレーバーの余韻がずっと残っている。煙の厚みも、立ち上がりの早さも、何もかもが洗練されていた。" },
-        { "speaker": "hajime", "face": "sad", "text": "（……すごい。うちのシーシャは、こんなに余韻が残らない）" },
-        { "speaker": "", "face": "", "text": "店を出た後も、口の中にまだ煙の記憶が残っている。" },
-        { "speaker": "hajime", "face": "sad", "text": "（技術の差。環境の差。フレーバーの質の差。……tonariでの「いつもの丁寧な仕事」が、どこまで通用するんだろう）" },
-        { "speaker": "", "face": "", "text": "東京のレベルを肌で感じた。「自分はまだまだだ」という事実が、重くのしかかった。\n……【洞察】が少し上がった。" }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "────東京のシーシャ店。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会の準備の合間に、気になっていた店に入ってみた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口目で──衝撃が走った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "味持ちの良さが、次元が違う。一杯吸い終えても、口の中にフレーバーの余韻がずっと残っている。煙の厚みも、立ち上がりの早さも、何もかもが洗練されていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（……すごい。うちのシーシャは、こんなに余韻が残らない）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店を出た後も、口の中にまだ煙の記憶が残っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（技術の差。環境の差。フレーバーの質の差。……tonariでの「いつもの丁寧な仕事」が、どこまで通用するんだろう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "東京のレベルを肌で感じた。「自分はまだまだだ」という事実が、重くのしかかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【洞察】が少し上がった。"
+        }
       ],
-      "growth_stats": { "insight": 1 }
+      "growth_stats": {
+        "insight": 1
+      }
     },
     {
       "dialogue_id": "ch3_abyss_recovery",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "────mukai。夜。" },
-        { "speaker": "", "face": "", "text": "ましろとの練習を重ねて、数日が経った。" },
-        { "speaker": "", "face": "", "text": "今日もmukaiのカウンターで、二人で黙々とシーシャを作っている。" },
-        { "speaker": "mashiro", "face": "normal", "text": "……はじめくん、最初に来た時と煙が違うよぉ" },
-        { "speaker": "hajime", "face": "normal", "text": "え？" },
-        { "speaker": "mashiro", "face": "smile", "text": "最初は「どうにかしなきゃ」って感じの煙だったけどぉ……今は、なんていうか……はじめくんの煙に戻ってる" },
-        { "speaker": "hajime", "face": "normal", "text": "……僕の煙？" },
-        { "speaker": "mashiro", "face": "smile", "text": "うん。丁寧で、優しくて……なんか安心する煙。わたし、好きだよぉ" },
-        { "speaker": "", "face": "", "text": "「正解」を追いかけるのではなく、目の前の一台を丁寧に作ること。それは、tonariでバイトしていた頃と同じ。" },
-        { "speaker": "hajime", "face": "normal", "text": "（僕には何もない。だからこそ、全部吸収できる……のかな）" },
-        { "speaker": "", "face": "", "text": "まだ仮説だ。確信には程遠い。でも──深淵から、抜け出していた。" },
-        { "speaker": "hajime", "face": "serious", "text": "（明日の大会。自分のシーシャが何なのか、まだ分からない。でも──今の僕にできる、一番丁寧な一台を出そう）" },
-        { "speaker": "", "face": "", "text": "深淵から完全に抜け出した。大会に挑む準備ができた。\n……【根性】が大きく上がった！" }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "────mukai。夜。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろとの練習を重ねて、数日が経った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今日もmukaiのカウンターで、二人で黙々とシーシャを作っている。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……はじめくん、最初に来た時と煙が違うよぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "え？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "最初は「どうにかしなきゃ」って感じの煙だったけどぉ……今は、なんていうか……はじめくんの煙に戻ってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……俺の煙？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。丁寧で、優しくて……なんか安心する煙。わたし、好きだよぉ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「正解」を追いかけるのではなく、目の前の一台を丁寧に作ること。それは、tonariでバイトしていた頃と同じ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（俺には何もない。だからこそ、全部吸収できる……のかな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "まだ仮説だ。確信には程遠い。でも──深淵から、抜け出していた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（明日の大会。自分のシーシャが何なのか、まだ分からない。でも──今の俺にできる、一番丁寧な一台を出そう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "深淵から完全に抜け出した。大会に挑む準備ができた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【根性】が大きく上がった！"
+        }
       ],
-      "growth_stats": { "guts": 3 }
+      "growth_stats": {
+        "guts": 3
+      }
     },
     {
       "dialogue_id": "ch3_tournament_eve",
@@ -146,7 +286,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "（もしここで鉢合わせでもしたら……僕の命が明日の大会前に終わるぞ……！？）"
+          "text": "（もしここで鉢合わせでもしたら……俺の命が明日の大会前に終わるぞ……！？）"
         },
         {
           "speaker": "hajime",
@@ -171,7 +311,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "彼女は僕の右手をとり、自分の指を絡めてくる。"
+          "text": "彼女は俺の右手をとり、自分の指を絡めてくる。"
         },
         {
           "speaker": "hajime",
@@ -191,7 +331,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "すると、みんとは繋いだ手にギュッと力を込めると、背伸びをして僕の頬に柔らかい唇を押し当てた。"
+          "text": "すると、みんとは繋いだ手にギュッと力を込めると、背伸びをして俺の頬に柔らかい唇を押し当てた。"
         },
         {
           "speaker": "minto",
@@ -201,12 +341,17 @@
         {
           "speaker": "",
           "face": "",
-          "text": "（もっとスゴイことって……っ！ 耳元に吹きかけられた甘い吐息に、僕は理性を保つので必死だった）"
+          "text": "（もっとスゴイことって……っ！ 耳元に吹きかけられた甘い吐息に、俺は理性を保つので必死だった）"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "みんとの熱い応援のおかげで、明日の大会への気持ちが最高潮になった！\n……【根性】と【魅力】が大きく上がった！"
+          "text": "みんとの熱い応援のおかげで、明日の大会への気持ちが最高潮になった！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【根性】と【魅力】が大きく上がった！"
         }
       ]
     },
@@ -236,7 +381,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "周囲の目も気にせず、彼女は歩きながら僕の腕に強く抱き着いてきた。"
+          "text": "周囲の目も気にせず、彼女は歩きながら俺の腕に強く抱き着いてきた。"
         },
         {
           "speaker": "",
@@ -256,12 +401,17 @@
         {
           "speaker": "",
           "face": "",
-          "text": "色気たっぷりに囁かれ、密着した腕から彼女の体温がジワジワと伝わってくる。僕は明日の夜を想像してしまい、心臓が爆発しそうだった。"
+          "text": "色気たっぷりに囁かれ、密着した腕から彼女の体温がジワジワと伝わってくる。俺は明日の夜を想像してしまい、心臓が爆発しそうだった。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "アゲハの熱すぎる応援のおかげで、明日の大会への気持ちが最高潮になった！\n……【根性】と【魅力】が大きく上がった！"
+          "text": "アゲハの熱すぎる応援のおかげで、明日の大会への気持ちが最高潮になった！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【根性】と【魅力】が大きく上がった！"
         }
       ]
     },
@@ -366,7 +516,7 @@
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "（僕のシーシャがどこまで通用するか……やるしかない！）"
+          "text": "（俺のシーシャがどこまで通用するか……やるしかない！）"
         }
       ]
     },
@@ -827,64 +977,285 @@
     },
     {
       "dialogue_id": "ch3_abyss_hotel",
-      "metadata": { "bg": "res://assets/backgrounds/tonari_night.png", "effect": "dark" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/tonari_night.png",
+        "effect": "dark"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "────大会終了後。ホテルの部屋。" },
-        { "speaker": "", "face": "", "text": "トロフィーがベッドの上に置いてある。\n東京の夜景が窓の外に広がっている。" },
-        { "speaker": "hajime", "face": "normal", "text": "…………" },
-        { "speaker": "", "face": "", "text": "何かを作ってみようと思った。\nシーシャを、一人で。誰に出すでもなく。" },
-        { "speaker": "", "face": "", "text": "炭を準備する。フレーバーを選ぶ。\nいつもの手順。でも──" },
-        { "speaker": "hajime", "face": "sad", "text": "…………何を、作りたいんだ？" },
-        { "speaker": "", "face": "", "text": "大会では、相手を見て、審査員を見て、最適解を出してきた。\nでも今、目の前に誰もいない。" },
-        { "speaker": "", "face": "", "text": "一人で煙を作ろうとしたとき。何も出てこなかった。" },
-        { "speaker": "hajime", "face": "sad", "text": "……誰かがいないと、煙が作れない" },
-        { "speaker": "", "face": "", "text": "その事実が、はじめを打ちのめした。" },
-        { "speaker": "", "face": "", "text": "他人のスタイルを吸収する。素直に受け入れる。\nそれは確かに強かった。" },
-        { "speaker": "", "face": "", "text": "でもその『素直さ』は──自分が空っぽだから、何でも入るだけだったんじゃないか。" },
-        { "speaker": "hajime", "face": "sad", "text": "全部借り物じゃないか。\n僕のシーシャなんて……最初からどこにもなかったんだ" },
-        { "speaker": "", "face": "", "text": "トロフィーを横目に、天井を見つめた。\n煙が消えていく。自分の煙の残り香が、何の特徴もないことに気づいた。" },
-        { "speaker": "", "face": "", "text": "────優勝した夜が、はじめにとって最も暗い夜だった。" }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "────大会終了後。ホテルの部屋。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "トロフィーがベッドの上に置いてある。東京の夜景が窓の外に広がっている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "…………"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "何かを作ってみようと思った。シーシャを、一人で。誰に出すでもなく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭を準備する。フレーバーを選ぶ。いつもの手順。でも──"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "…………何を、作りたいんだ？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会では、相手を見て、審査員を見て、最適解を出してきた。でも今、目の前に誰もいない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一人で煙を作ろうとしたとき。何も出てこなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……誰かがいないと、煙が作れない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その事実が、はじめを打ちのめした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "他人のスタイルを吸収する。素直に受け入れる。それは確かに強かった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "でもその『素直さ』は──自分が空っぽだから、何でも入るだけだったんじゃないか。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "全部借り物じゃないか。俺のシーシャなんて……最初からどこにもなかったんだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "トロフィーを横目に、天井を見つめた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙が消えていく。自分の煙の残り香が、何の特徴もないことに気づいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "────優勝した夜が、はじめにとって最も暗い夜だった。"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_mashiro_recovery",
-      "metadata": { "bg": "res://assets/backgrounds/tonari_night.png", "effect": "smoke_warm" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/tonari_night.png",
+        "effect": "smoke_warm"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "────数日後。mukai。" },
-        { "speaker": "", "face": "", "text": "はじめは何をするでもなく、ぼんやりとmukaiのカウンターに座っていた。\n煙を作る気力がない。ただ、ここの空気が好きだったから来ただけ。" },
-        { "speaker": "mashiro", "face": "normal", "text": "はじめくん……だいじょうぶぅ……？" },
-        { "speaker": "hajime", "face": "sad", "text": "……ましろちゃん。いや、大丈夫です。ちょっと疲れただけで" },
-        { "speaker": "mashiro", "face": "normal", "text": "うそぉ。……いつものはじめくんじゃないよぉ" },
-        { "speaker": "", "face": "", "text": "ましろがゆっくりとシーシャを準備し始める。\nいつもの、おっとりした手つきで。" },
-        { "speaker": "mashiro", "face": "normal", "text": "ねぇ、はじめくん。\nわたしね、シガーリーフっていうの使うんだけど……知ってるぅ？" },
-        { "speaker": "hajime", "face": "normal", "text": "葉巻の……葉っぱですよね。めちゃくちゃ扱い難しいって聞きます" },
-        { "speaker": "mashiro", "face": "smile", "text": "うんぅ。すっごく気難しいの。ちょっとでも温度間違えると、もう駄目ぇ" },
-        { "speaker": "mashiro", "face": "normal", "text": "でもねぇ……シガーリーフってね、失敗するたびに、ちがう顔を見せてくれるの" },
-        { "speaker": "mashiro", "face": "smile", "text": "同じ葉っぱなのに、毎回ちがう。\n温度がちょっと高いと重厚になるし、低いとすっきりするし" },
-        { "speaker": "mashiro", "face": "normal", "text": "わたし、最初は「正解」を探してたの。\nでもね……そんなの、なかったんだよぉ" },
-        { "speaker": "hajime", "face": "surprise", "text": "……正解が、ない？" },
-        { "speaker": "mashiro", "face": "smile", "text": "うんぅ。正解がないから、その日のわたしの気持ちで作るの。\n今日の葉っぱさんと、今日のわたしの対話だから" },
-        { "speaker": "", "face": "", "text": "ましろが差し出したシーシャを吸った。" },
-        { "speaker": "", "face": "", "text": "────重い。でも、温かい。\nシガーリーフの野性的な香りの奥に、ましろの穏やかさが漂っている。" },
-        { "speaker": "", "face": "", "text": "完璧じゃない。でも、この煙は間違いなく「ましろの煙」だった。" },
-        { "speaker": "mashiro", "face": "normal", "text": "……ねぇ、はじめくん。\nわたしね、普通のシーシャ吸うと「お水ですか？」って思っちゃうの" },
-        { "speaker": "hajime", "face": "surprise", "text": "え……お水？" },
-        { "speaker": "mashiro", "face": "normal", "text": "うんぅ。味がしないの。どんなに上手く作ってあっても、なんにも感じない" },
-        { "speaker": "mashiro", "face": "smile", "text": "でもね……想いが乗ってる煙だけは、ちゃんと分かるの。\n味も、香りも、全部" },
-        { "speaker": "mashiro", "face": "sad", "text": "……はじめくん、前に一度だけ、わたし、はじめくんの煙が分からなかったことがあったの" },
-        { "speaker": "hajime", "face": "surprise", "text": "…………" },
-        { "speaker": "mashiro", "face": "sad", "text": "あの時のはじめくんの煙、何も入ってなかったから……\nまだはじめくんのこともよく分からなかったし……ごめんねぇ" },
-        { "speaker": "mashiro", "face": "smile", "text": "でも今日のはじめくんの煙はねぇ……わたし、好きだよぉ" },
-        { "speaker": "hajime", "face": "surprise", "text": "え……？" },
-        { "speaker": "mashiro", "face": "smile", "text": "だって、吸うたびにちがうもの。\n会った人の影響とか、その日の気持ちとか、全部入ってて" },
-        { "speaker": "mashiro", "face": "smile", "text": "それって、「空っぽ」じゃなくて……「生きてる煙」なんじゃないかなぁ" },
-        { "speaker": "hajime", "face": "sad", "text": "……" },
-        { "speaker": "", "face": "", "text": "その言葉が、凍りついていた胸の奥に、じんわりと染みた。" },
-        { "speaker": "", "face": "", "text": "正解なんてない。\nただ、その日の自分と、目の前の人と、この煙の対話。" },
-        { "speaker": "", "face": "", "text": "──それでいいんだ。\nまだ答えは出ない。でも、「それでいい」と思えたことが、何よりの光だった。" },
-        { "speaker": "", "face": "", "text": "……【センス】と【根性】が上がった。" }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "────数日後。mukai。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめは何をするでもなく、ぼんやりとmukaiのカウンターに座っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙を作る気力がない。ただ、ここの空気が好きだったから来ただけ。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくん……だいじょうぶぅ……？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……ましろちゃん。いや、大丈夫です。ちょっと疲れただけで"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うそぉ。……いつものはじめくんじゃないよぉ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろがゆっくりとシーシャを準備し始める。いつもの、おっとりした手つきで。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ねぇ、はじめくん。わたしね、シガーリーフっていうの使うんだけど……知ってるぅ？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "葉巻の……葉っぱですよね。めちゃくちゃ扱い難しいって聞きます"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うんぅ。すっごく気難しいの。ちょっとでも温度間違えると、もう駄目ぇ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "でもねぇ……シガーリーフってね、失敗するたびに、ちがう顔を見せてくれるの"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "同じ葉っぱなのに、毎回ちがう。温度がちょっと高いと重厚になるし、低いとすっきりするし"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "わたし、最初は「正解」を探してたの。でもね……そんなの、なかったんだよぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……正解が、ない？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うんぅ。正解がないから、その日のわたしの気持ちで作るの。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "今日の葉っぱさんと、今日のわたしの対話だから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろが差し出したシーシャを吸った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "────重い。でも、温かい。シガーリーフの野性的な香りの奥に、ましろの穏やかさが漂っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "完璧じゃない。でも、この煙は間違いなく「ましろの煙」だった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……ねぇ、はじめくん。わたしね、普通のシーシャ吸うと「お水ですか？」って思っちゃうの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え……お水？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うんぅ。味がしないの。どんなに上手く作ってあっても、なんにも感じない"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "でもね……想いが乗ってる煙だけは、ちゃんと分かるの。味も、香りも、全部"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "……はじめくん、前に一度だけ、わたし、はじめくんの煙が分からなかったことがあったの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "…………"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "あの時のはじめくんの煙、何も入ってなかったから……"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "まだはじめくんのこともよく分からなかったし……ごめんねぇ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "でも今日のはじめくんの煙はねぇ……わたし、好きだよぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え……？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "だって、吸うたびにちがうもの。会った人の影響とか、その日の気持ちとか、全部入ってて"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "それって、「空っぽ」じゃなくて……「生きてる煙」なんじゃないかなぁ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その言葉が、凍りついていた胸の奥に、じんわりと染みた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "正解なんてない。ただ、その日の自分と、目の前の人と、この煙の対話。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──それでいいんだ。まだ答えは出ない。でも、「それでいい」と思えたことが、何よりの光だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【センス】と【根性】が上がった。"
+        }
       ],
-      "growth_stats": { "sense": 3, "guts": 3 }
+      "growth_stats": {
+        "sense": 3,
+        "guts": 3
+      }
     }
   ]
 }

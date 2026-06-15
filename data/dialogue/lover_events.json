@@ -252,6 +252,117 @@
         { "speaker": "ageha", "face": "smile", "text": "あはは！知ってる！……アタシも。ガチで、ずっと好（ハオ）だわ" },
         { "type": "apply", "stats": { "guts": 2, "charm": 2 } }
       ]
+    },
+
+    {
+      "dialogue_id": "lover_mashiro_lv1",
+      "metadata": { "bg": "res://assets/backgrounds/bg_home.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "休みの夜。ましろちゃんが部屋に来て、ソファに並んで何か観ていた。" },
+        { "speaker": "", "face": "", "text": "……いつの間にか、ましろちゃんの体重が、俺の肩に預けられている。" },
+        { "speaker": "mashiro", "face": "smile", "text": "……はじめくん、あったかいねぇ……ぽかぽか" },
+        { "speaker": "hajime", "face": "smile", "text": "……寝そうになってない？ ましろちゃん" },
+        { "speaker": "mashiro", "face": "normal", "text": "……寝てないよぉ。……はじめくんの匂い、かいでるだけ。充電中……" },
+        { "speaker": "", "face": "", "text": "そのまま、ましろちゃんはゆっくり目を閉じた。呼吸が穏やかになっていく。" },
+        { "speaker": "mashiro", "face": "smile", "text": "……はじめくんのそば、安心するんだぁ……えへへ" },
+        { "speaker": "", "face": "", "text": "……【魅力】が少し上がった。" },
+        { "type": "apply", "stats": { "charm": 2 } }
+      ]
+    },
+    {
+      "dialogue_id": "lover_mashiro_lv2",
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "ある日、ましろちゃんが古い缶を大事そうに差し出してきた。" },
+        { "speaker": "mashiro", "face": "smile", "text": "はい、はじめくん。これ、うちが自分で仕入れたシガーリーフ。特別なやつだよぉ" },
+        { "speaker": "hajime", "face": "surprise", "text": "……俺に？ ましろちゃんのシガーリーフって、すごい貴重なんじゃ" },
+        { "speaker": "mashiro", "face": "normal", "text": "うん。でもね、はじめくんに知ってほしくて。うちの世界の葉っぱのこと" },
+        { "speaker": "mashiro", "face": "normal", "text": "ブロンドとは火の入り方が違うんだぁ。ゆっくり、じわって熱を通すの。急ぐと焦げちゃう" },
+        { "speaker": "hajime", "face": "normal", "text": "……なるほど。炭の距離をもっと取って、蒸らしも長めか" },
+        { "speaker": "mashiro", "face": "smile", "text": "そうそう。さすがはじめくん、のみこみ早いねぇ……えへへ" },
+        { "speaker": "", "face": "", "text": "……【技術】が少し上がった。" },
+        { "speaker": "", "face": "", "text": "……【洞察】が少し上がった。" },
+        { "type": "apply", "stats": { "technique": 2, "insight": 1 } }
+      ]
+    },
+    {
+      "dialogue_id": "lover_mashiro_lv3",
+      "metadata": { "bg": "res://assets/backgrounds/bg_street_night.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "夜。mukaiの裏口のベンチ。テツコが足元で丸くなっていた。" },
+        { "speaker": "mashiro", "face": "normal", "text": "……ねぇ、はじめくん。うち、ときどき考えるんだぁ" },
+        { "speaker": "mashiro", "face": "sad", "text": "『シガーマン』って呼ばれてるとき……みんな、うちのこと見てないよね" },
+        { "speaker": "mashiro", "face": "sad", "text": "うちじゃなくて、『シガーマン』っていう怖い人を見てる。……それが、ちょっとだけ寂しいなぁって" },
+        { "speaker": "hajime", "face": "serious", "text": "……俺は、ましろちゃんを見てる。シガーマンじゃなくて" },
+        { "speaker": "mashiro", "face": "surprise", "text": "……っ。……はじめくん" },
+        { "speaker": "mashiro", "face": "smile", "text": "……うん。知ってるよぉ。はじめくんだけは、最初からうちを見てくれてた" },
+        { "speaker": "", "face": "", "text": "テツコが、にゃあ、と小さく鳴いた。ましろちゃんが目元を袖で拭う。" },
+        { "speaker": "", "face": "", "text": "……【根性】が少し上がった。" },
+        { "speaker": "", "face": "", "text": "……【センス】が少し上がった。" },
+        { "type": "apply", "stats": { "guts": 2, "sense": 1 } }
+      ]
+    },
+    {
+      "dialogue_id": "lover_mashiro_lv4",
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "閉店後のmukai。ましろちゃんが、めずらしく真剣な顔をしていた。" },
+        { "speaker": "mashiro", "face": "normal", "text": "……うちね。シガーリーフ、最初は逃げだったんだぁ" },
+        { "speaker": "mashiro", "face": "sad", "text": "普通の煙じゃ、なにも感じなくなって。……味が濃い葉じゃないと、生きてる気がしなかった" },
+        { "speaker": "mashiro", "face": "normal", "text": "でも今は違うよぉ。シガーリーフは、うちの言葉なの。うちにしか出せない煙がある" },
+        { "speaker": "mashiro", "face": "smile", "text": "……それに気づけたの、はじめくんのおかげだよぉ。はじめくんの煙を感じてからだから" },
+        { "speaker": "hajime", "face": "smile", "text": "……ましろちゃんの煙は、最初から本物だったよ" },
+        { "speaker": "mashiro", "face": "smile", "text": "えへへ……ありがとぉ。うち、もっと胸張ってシガーリーフ、吸うねぇ" },
+        { "speaker": "", "face": "", "text": "……【魅力】が少し上がった。" },
+        { "speaker": "", "face": "", "text": "……【洞察】が少し上がった。" },
+        { "type": "apply", "stats": { "charm": 2, "insight": 1 } }
+      ]
+    },
+    {
+      "dialogue_id": "lover_mashiro_lv5",
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "深夜のmukai。カウンターに、ましろちゃんが準備した一台があった。" },
+        { "speaker": "mashiro", "face": "smile", "text": "はじめくん。今日は、特別なの作ったんだぁ。……一緒に吸おぉ？" },
+        { "speaker": "hajime", "face": "normal", "text": "……これ、ブロンドとシガーリーフ、両方入ってないか？" },
+        { "speaker": "mashiro", "face": "smile", "text": "うん。はじめくんの世界と、うちの世界。……混ぜてみたの" },
+        { "speaker": "", "face": "", "text": "ホースを受け取って、吸う。軽やかなブロンドの甘さの奥に、シガーの深い余韻が重なっている。" },
+        { "speaker": "hajime", "face": "surprise", "text": "……すごい。喧嘩してない。ちゃんと、ひとつの味になってる" },
+        { "speaker": "mashiro", "face": "smile", "text": "でしょぉ？ ……うちとはじめくんみたい。全然ちがうのに、一緒にいると、ちょうどいいの" },
+        { "speaker": "mashiro", "face": "normal", "text": "……ずっと、こうやって、ふたりの煙を混ぜていたいなぁ" },
+        { "speaker": "", "face": "", "text": "ましろちゃんが、そっと俺の手に指を絡めた。煙が天井へ、ゆっくりと昇っていく。" },
+        { "speaker": "", "face": "", "text": "……【センス】が上がった。" },
+        { "speaker": "", "face": "", "text": "……【魅力】が上がった。" },
+        { "type": "apply", "stats": { "sense": 2, "charm": 2 } }
+      ]
+    },
+
+    {
+      "dialogue_id": "shuraba_mashiro",
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "tonariの閉店後。スミさんに呼び出された。……嫌な予感しかしない。" },
+        { "speaker": "sumi", "face": "serious", "text": "始。お前に話がある。座れ" },
+        { "speaker": "sumi", "face": "serious", "text": "……お前、何人と付き合ってるんだ？" },
+        { "speaker": "hajime", "face": "surprise", "text": "……っ" },
+        { "speaker": "sumi", "face": "serious", "text": "バレてないと思ったか？ シーシャ屋の噂は煙より早いんだよ" },
+        { "speaker": "sumi", "face": "serious", "text": "一台の台に炭を何個も載せたらどうなる。……焦げるだろう。人の心も同じだ" },
+        { "speaker": "", "face": "", "text": "何も言い返せない。スミさんの言葉が、重く刺さる。" },
+        { "speaker": "mashiro", "face": "surprise", "text": "あれぇ……？ はじめくん、顔こわいよぉ。なにかあったのぉ？" },
+        { "speaker": "", "face": "", "text": "ましろちゃんが、のんびりした足取りで入ってきた。" },
+        { "speaker": "sumi", "face": "normal", "text": "……ちょうどいい。ましろ、こいつに聞いてやれ" },
+        { "speaker": "mashiro", "face": "normal", "text": "えっと……はじめくん？ なんの話かなぁ" },
+        { "speaker": "hajime", "face": "sad", "text": "……ましろちゃん。俺、ましろちゃん以外にも、付き合ってる人がいて……" },
+        { "speaker": "mashiro", "face": "surprise", "text": "……えっ" },
+        { "speaker": "mashiro", "face": "normal", "text": "……えっと……みんな好きなの、かなぁ？" },
+        { "speaker": "hajime", "face": "sad", "text": "…………" },
+        { "speaker": "mashiro", "face": "sad", "text": "……そっかぁ。うち、はじめくんのことだけ見てたから……ちょっと、びっくりしちゃったなぁ" },
+        { "speaker": "mashiro", "face": "normal", "text": "……怒ってるんじゃないよぉ。ただ……うちだけじゃ、足りなかったのかなって" },
+        { "speaker": "sumi", "face": "serious", "text": "……始。誠実に、考えろ。煙と同じだ。雑に扱えば、味は濁る" },
+        { "speaker": "", "face": "", "text": "スミさんが立ち上がり、店を出ていった。静かな店内に、ましろちゃんと二人きり。" },
+        { "speaker": "mashiro", "face": "smile", "text": "……うちはね。はじめくんが選んでくれるなら、待ってるよぉ。……ゆっくりでいいから" },
+        { "speaker": "", "face": "", "text": "ましろちゃんは怒りもせず、ただ穏やかにそう言った。……それが、かえって胸に痛かった。" }
+      ]
     }
   ]
 }
