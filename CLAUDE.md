@@ -410,17 +410,16 @@ node web/test/map_hover.mjs       # マップのホバー安定性
 台詞・設定を触ったら、コミット前に最低これを確認:
 
 ```bash
-# 1) 旧名・旧設定・旧タイトルの混入チェック（ヒットしたら直す）
-grep -rn 'ましろさん\|にしお\|シーシャ・ステーション\|シーシャステーション\|地方予選\|県大会\|ドクター・ケムリ\|煙の向こう側\|技術力\|洞察力\|度胸\|集中力' data/dialogue/
-# 2) 話者IDが characters.json に存在するか（speaker と id の一致）
-# 3) 手動 \n を入れていないか / 1行が全角24字を超えていないか
-grep -rn '\\n' data/dialogue/<触ったファイル>
-# 4) JSONが壊れていないか＆web再生成
+# 1) 構造リンタ（禁止語・話者ID実在・手動改行・行長・報酬キューを一括検査）
+python3 tools/lint_dialogue.py            # ERROR が出たら直す（exit 1）。WARN は気付き用
+python3 tools/lint_dialogue.py ch1_main   # 触ったファイルだけ部分一致で
+# 2) JSONが壊れていないか＆web再生成
 python3 -m json.tool data/dialogue/<触ったファイル> >/dev/null && python3 web/build_data.py
-# 5) ヘッドレステスト（該当章）
+# 3) ヘッドレステスト（該当章）
 ```
 
-> 将来的には上記を `tools/lint_dialogue.py` に束ね、テストに組み込むのが望ましい（禁止語・話者ID実在・手動改行・行長・報酬キュー整合を一括検査）。
+- `tools/lint_dialogue.py` の **ERROR**（旧名・旧設定の混入／未登録 speaker／壊れた JSON）は**必ず0**にしてからコミット。
+- **WARN**（手動 `\n`／全角48字超／報酬キュー）は崩れ・誤発火の温床。新規追加では出さない方針。既存の WARN（`lover_events.json` 等の手動改行）は崩れ報告が出た箇所から撤去する。
 
 ### 5. モデル差（Fable→Opus）で崩れが増える理由と対策
 
