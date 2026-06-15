@@ -3,254 +3,1399 @@
   "dialogues": [
     {
       "dialogue_id": "lover_tsumugi_lv1",
-      "metadata": { "bg": "res://assets/backgrounds/bg_street_night.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "付き合い始めて、最初の帰り道。つむぎは、いつもの半歩うしろじゃなく、半歩となりを歩いていた。" },
-        { "speaker": "tsumugi", "face": "sad", "text": "……あの。手、つないでも……いい、ですか" },
-        { "speaker": "hajime", "face": "smile", "text": "うん。こっちからつなぎたかった" },
-        { "speaker": "tsumugi", "face": "smile", "text": "……っ。……はじめさんの手、あったかい。……煙の、においがする" },
-        { "speaker": "", "face": "", "text": "つないだ指先は最初だけ冷たくて、すぐに、同じ体温になった。" },
-        { "speaker": "tsumugi", "face": "smile", "text": "……今日のこと、ノートに描きます。……二人の、いちばん最初のページ" },
-        { "type": "apply", "stats": { "sense": 2 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "付き合い始めて、最初の帰り道。つむぎは、いつもの半歩うしろじゃなく、半歩となりを歩いていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "……あの。手、つないでも……いい、ですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "うん。こっちからつなぎたかった"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……っ。……はじめさんの手、あったかい。……煙の、においがする"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つないだ指先は最初だけ冷たくて、すぐに、同じ体温になった。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……今日のこと、ノートに描きます。……二人の、いちばん最初のページ"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 2
+          }
+        }
       ]
     },
     {
       "dialogue_id": "lover_tsumugi_lv2",
-      "metadata": { "bg": "res://assets/backgrounds/bg_home.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "休みの昼下がり。つむぎが、ひびの入ったiPadを抱えて部屋に来た。" },
-        { "speaker": "tsumugi", "face": "normal", "text": "……見せたいもの、あって。……ずっと、誰にも見せたこと、ないんですけど" },
-        { "speaker": "", "face": "", "text": "画面いっぱいに描かれていたのは、色とりどりの「煙」の絵だった。何十枚も、何十枚も。" },
-        { "speaker": "tsumugi", "face": "sad", "text": "……わたしに見える色、です。お客さんの煙、ぜんぶ。……変、ですよね" },
-        { "speaker": "hajime", "face": "serious", "text": "変じゃない。……すごく、きれいだ" },
-        { "speaker": "tsumugi", "face": "smile", "text": "……はじめさんのは、いちばん最後のページ。……いちばん、好きな色だから" },
-        { "type": "apply", "stats": { "sense": 2, "insight": 1 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "休みの昼下がり。つむぎが、ひびの入ったiPadを抱えて部屋に来た。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……見せたいもの、あって。……ずっと、誰にも見せたこと、ないんですけど"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面いっぱいに描かれていたのは、色とりどりの「煙」の絵だった。何十枚も、何十枚も。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "……わたしに見える色、です。お客さんの煙、ぜんぶ。……変、ですよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "変じゃない。……すごく、きれいだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……はじめさんのは、いちばん最後のページ。……いちばん、好きな色だから"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 2,
+            "insight": 1
+          }
+        }
       ]
     },
     {
       "dialogue_id": "lover_tsumugi_lv3",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "閉店後。誰もいないtonariで、つむぎのために一台、組んだ。" },
-        { "speaker": "tsumugi", "face": "normal", "text": "……お店のじゃなくて。わたしのために、だけの一台" },
-        { "speaker": "", "face": "", "text": "ホースを渡す。つむぎは目を閉じて、長く、ゆっくり吸った。" },
-        { "speaker": "tsumugi", "face": "smile", "text": "……澄んだ、水色。……はじめさんが、ちゃんとここにいる色" },
-        { "speaker": "tsumugi", "face": "serious", "text": "……ねえ。大会で、もし煙が濁ったら。わたしが、ちゃんと言います。……『濁ってる』って。だから、こわくないで" },
-        { "speaker": "hajime", "face": "smile", "text": "……うん。君がいるなら、こわくない" },
-        { "type": "apply", "stats": { "guts": 2, "sense": 1 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後。誰もいないtonariで、つむぎのために一台、組んだ。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……お店のじゃなくて。わたしのために、だけの一台"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ホースを渡す。つむぎは目を閉じて、長く、ゆっくり吸った。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……澄んだ、水色。……はじめさんが、ちゃんとここにいる色"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "serious",
+          "text": "……ねえ。大会で、もし煙が濁ったら。わたしが、ちゃんと言います。……『濁ってる』って。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "serious",
+          "text": "だから、こわくないで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……うん。君がいるなら、こわくない"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2,
+            "sense": 1
+          }
+        }
       ]
     },
     {
       "dialogue_id": "lover_tsumugi_lv4",
-      "metadata": { "bg": "res://assets/backgrounds/bg_street_day.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "昼の公園。つむぎが、めずらしく自分から話したいことがある、と言った。" },
-        { "speaker": "tsumugi", "face": "sad", "text": "……わたし、昔。人の輪が、こわくて。……色が、見えすぎて、しんどくて" },
-        { "speaker": "tsumugi", "face": "normal", "text": "……でも、はじめさんの煙だけは、見てて、苦しくなかった。……だから、tonariに通えた" },
-        { "speaker": "tsumugi", "face": "smile", "text": "……今は、こわくないです。はじめさんの、となりなら" },
-        { "speaker": "hajime", "face": "smile", "text": "……俺も。君の見てる世界を、もっと知りたい" },
-        { "type": "apply", "stats": { "charm": 2, "insight": 1 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼の公園。つむぎが、めずらしく自分から話したいことがある、と言った。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "……わたし、昔。人の輪が、こわくて。……色が、見えすぎて、しんどくて"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……でも、はじめさんの煙だけは、見てて、苦しくなかった。……だから、tonariに通えた"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……今は、こわくないです。はじめさんの、となりなら"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……俺も。君の見てる世界を、もっと知りたい"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "charm": 2,
+            "insight": 1
+          }
+        }
       ]
     },
     {
       "dialogue_id": "lover_tsumugi_lv5",
-      "metadata": { "bg": "res://assets/backgrounds/bg_street_night.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "夜。つむぎが、新しいiPadを抱えていた。……ひびの入っていない、新品の。" },
-        { "speaker": "tsumugi", "face": "smile", "text": "……ひびのやつ、卒業しました。……こわくて、ずっと買い替えられなかったけど" },
-        { "speaker": "tsumugi", "face": "normal", "text": "……新しいページの、いちばん最初。……もう描いてあるんです" },
-        { "speaker": "", "face": "", "text": "見せてくれた画面には、二つの煙が、ひとつの色に溶けていた。澄んだ、いちばん深い水色。" },
-        { "speaker": "tsumugi", "face": "smile", "text": "……わたしと、はじめさんの色。……ずっと、この色のままで、いてください" },
-        { "speaker": "hajime", "face": "smile", "text": "……約束する。ずっと、この色だ" },
-        { "type": "apply", "stats": { "sense": 3, "charm": 1 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜。つむぎが、新しいiPadを抱えていた。……ひびの入っていない、新品の。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……ひびのやつ、卒業しました。……こわくて、ずっと買い替えられなかったけど"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……新しいページの、いちばん最初。……もう描いてあるんです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "見せてくれた画面には、二つの煙が、ひとつの色に溶けていた。澄んだ、いちばん深い水色。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……わたしと、はじめさんの色。……ずっと、この色のままで、いてください"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……約束する。ずっと、この色だ"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 3,
+            "charm": 1
+          }
+        }
       ]
     },
-
     {
       "dialogue_id": "lover_minto_lv1",
-      "metadata": { "bg": "res://assets/backgrounds/bg_street_night.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "付き合い始めて最初のデートの帰り。素の栞は、店の「みんと」とは別人みたいに、ずっと静かだった。" },
-        { "speaker": "minto", "face": "ura_sad", "text": "……ねえ。ほんとに、私でいいの……？……7コも、上だよ。私" },
-        { "speaker": "hajime", "face": "smile", "text": "栞さんがいい。年齢は関係ない" },
-        { "speaker": "minto", "face": "ura_surprise", "text": "……っ。……もう。そういうの、ずるい……" },
-        { "speaker": "minto", "face": "ura_normal", "text": "……あのね。店の『みんと』じゃない私、……かわいくないよ。弱いし、暗いし" },
-        { "speaker": "hajime", "face": "normal", "text": "その栞さんを、知れてうれしい" },
-        { "speaker": "minto", "face": "ura_smile", "text": "……ばか。……ありがと" },
-        { "type": "apply", "stats": { "charm": 2 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "付き合い始めて最初のデートの帰り。素の栞は、店の「みんと」とは別人みたいに、ずっと静かだった。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_sad",
+          "text": "……ねえ。ほんとに、私でいいの……？……7コも、上だよ。私"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "栞さんがいい。年齢は関係ない"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_surprise",
+          "text": "……っ。……もう。そういうの、ずるい……"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……あのね。店の『みんと』じゃない私、……かわいくないよ。弱いし、暗いし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "その栞さんを、知れてうれしい"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……ばか。……ありがと"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "charm": 2
+          }
+        }
       ]
     },
     {
       "dialogue_id": "lover_minto_lv2",
-      "metadata": { "bg": "res://assets/backgrounds/bg_street_day.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "休日。栞に連れられて、古い商店街の外れまで来た。" },
-        { "speaker": "minto", "face": "ura_normal", "text": "……ここ。昔、うちの実家の喫茶店だったとこ。……今は、精肉店だけど" },
-        { "speaker": "minto", "face": "ura_sad", "text": "……チョコミントのパフェが、看板でね。……手放したとき、私、なんにもできなくて" },
-        { "speaker": "minto", "face": "ura_normal", "text": "だから、ミントの香りで、……ぜんぶ、上書きしようとしてた。ずっと、ひとりで" },
-        { "speaker": "hajime", "face": "serious", "text": "……もう、ひとりじゃない" },
-        { "speaker": "minto", "face": "ura_smile", "text": "……うん。……聞いてくれて、ありがと。……これ、店の『みんと』には、言えないこと" },
-        { "type": "apply", "stats": { "insight": 2, "charm": 1 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "休日。栞に連れられて、古い商店街の外れまで来た。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……ここ。昔、うちの実家の喫茶店だったとこ。……今は、精肉店だけど"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_sad",
+          "text": "……チョコミントのパフェが、看板でね。……手放したとき、私、なんにもできなくて"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "だから、ミントの香りで、……ぜんぶ、上書きしようとしてた。ずっと、ひとりで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "……もう、ひとりじゃない"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……うん。……聞いてくれて、ありがと。……これ、店の『みんと』には、言えないこと"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 2,
+            "charm": 1
+          }
+        }
       ]
     },
     {
       "dialogue_id": "lover_minto_lv3",
-      "metadata": { "bg": "res://assets/backgrounds/bg_home.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "栞が、部屋に古いコースターをそっと置いた。すり切れた、喫茶店のロゴ入り。" },
-        { "speaker": "minto", "face": "ura_normal", "text": "……実家のやつ。これと、傷だらけのトング、……ずっと、こっそり使ってるの" },
-        { "speaker": "minto", "face": "ura_sad", "text": "……重いでしょ。29にもなって、昔のものに、しがみついて" },
-        { "speaker": "hajime", "face": "smile", "text": "大事なものを、大事にしてるだけだ。……かっこいいよ、栞さん" },
-        { "speaker": "minto", "face": "ura_surprise", "text": "……っ、〜〜！……もう、ほんと、その素直なの、心臓に、わるい……" },
-        { "type": "apply", "stats": { "charm": 2, "guts": 1 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "栞が、部屋に古いコースターをそっと置いた。すり切れた、喫茶店のロゴ入り。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……実家のやつ。これと、傷だらけのトング、……ずっと、こっそり使ってるの"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_sad",
+          "text": "……重いでしょ。29にもなって、昔のものに、しがみついて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "大事なものを、大事にしてるだけだ。……かっこいいよ、栞さん"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_surprise",
+          "text": "……っ、〜〜！……もう、ほんと、その素直なの、心臓に、わるい……"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "charm": 2,
+            "guts": 1
+          }
+        }
       ]
     },
     {
       "dialogue_id": "lover_minto_lv4",
-      "metadata": { "bg": "res://assets/backgrounds/bg_street_night.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "夜。栞が、めずらしくお酒を少しだけ飲んで、頬を赤くしていた。" },
-        { "speaker": "minto", "face": "ura_smile", "text": "……あのね。私、目標が、できたの。お店、買い戻すだけじゃなくて" },
-        { "speaker": "minto", "face": "ura_normal", "text": "……いつか、チョコミントのパフェ、もう一回、出すんだ。……はじめくんにも、食べてほしい" },
-        { "speaker": "hajime", "face": "smile", "text": "絶対食べる。一番乗りで" },
-        { "speaker": "minto", "face": "ura_smile", "text": "……ふふ。約束ね。……ひとりの夢が、ふたりの夢になった。……こんなの、初めて" },
-        { "type": "apply", "stats": { "charm": 2, "insight": 1 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜。栞が、めずらしくお酒を少しだけ飲んで、頬を赤くしていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……あのね。私、目標が、できたの。お店、買い戻すだけじゃなくて"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……いつか、チョコミントのパフェ、もう一回、出すんだ。……はじめくんにも、食べてほしい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "絶対食べる。一番乗りで"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……ふふ。約束ね。……ひとりの夢が、ふたりの夢になった。……こんなの、初めて"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "charm": 2,
+            "insight": 1
+          }
+        }
       ]
     },
     {
       "dialogue_id": "lover_minto_lv5",
-      "metadata": { "bg": "res://assets/backgrounds/bg_home.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "穏やかな休日の朝。栞は、化粧もしないで、素のまま、となりで笑っていた。" },
-        { "speaker": "minto", "face": "ura_smile", "text": "……ねえ、見て。すっぴんだよ。……『みんと』、どこにもいないでしょ" },
-        { "speaker": "hajime", "face": "smile", "text": "……うん。こっちの栞さんが、一番好きだ" },
-        { "speaker": "minto", "face": "ura_normal", "text": "……もう、隠さなくていいんだ。年も、過去も、弱いとこも。……ぜんぶ、知られてる" },
-        { "speaker": "minto", "face": "ura_smile", "text": "……こんなに、楽なの、生まれて初めて。……ありがとね、はじめくん" },
-        { "type": "apply", "stats": { "charm": 3 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "穏やかな休日の朝。栞は、化粧もしないで、素のまま、となりで笑っていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……ねえ、見て。すっぴんだよ。……『みんと』、どこにもいないでしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……うん。こっちの栞さんが、一番好きだ"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……もう、隠さなくていいんだ。年も、過去も、弱いとこも。……ぜんぶ、知られてる"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……こんなに、楽なの、生まれて初めて。……ありがとね、はじめくん"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "charm": 3
+          }
+        }
       ]
     },
-
     {
       "dialogue_id": "lover_rin_lv1",
-      "metadata": { "bg": "res://assets/backgrounds/bg_shop.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shop.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "閉店後のショールーム。凛が、契約書のかわりに、コーヒーを2つ淹れていた。" },
-        { "speaker": "rin", "face": "normal", "text": "……モニター契約は終わり。でも君は、まだここに来る。……理由は、もう要らないんだよね" },
-        { "speaker": "hajime", "face": "smile", "text": "はい。会いに来てるだけです" },
-        { "speaker": "rin", "face": "smile", "text": "……ふうん。即答。モルモットのくせに、生意気" },
-        { "speaker": "rin", "face": "normal", "text": "……コーヒー、冷める前に飲みなさい。……私が淹れたの、初めてでしょ" },
-        { "type": "apply", "stats": { "sense": 2 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のショールーム。凛が、契約書のかわりに、コーヒーを2つ淹れていた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……モニター契約は終わり。でも君は、まだここに来る。……理由は、もう要らないんだよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。会いに来てるだけです"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "……ふうん。即答。モルモットのくせに、生意気"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……コーヒー、冷める前に飲みなさい。……私が淹れたの、初めてでしょ"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 2
+          }
+        }
       ]
     },
     {
       "dialogue_id": "lover_rin_lv2",
-      "metadata": { "bg": "res://assets/backgrounds/bg_shop.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shop.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "2階のショールーム。凛が、海外メーカーの新作サンプルを、こっそり開けた。" },
-        { "speaker": "rin", "face": "normal", "text": "……これ、まだ日本に1つしかない。本国から来たばっかり。……君に、最初に吸わせてあげる" },
-        { "speaker": "hajime", "face": "surprise", "text": "え、いいんですか。そんな貴重なの" },
-        { "speaker": "rin", "face": "smile", "text": "……いいの。君の感想が、私のいちばん信頼してるデータだから。……世界中のモニターの中で、ね" },
-        { "speaker": "", "face": "", "text": "凛の声は、いつもの余裕の下に、ほんの少しだけ、照れがにじんでいた。" },
-        { "type": "apply", "stats": { "sense": 2, "technique": 1 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "2階のショールーム。凛が、海外メーカーの新作サンプルを、こっそり開けた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……これ、まだ日本に1つしかない。本国から来たばっかり。……君に、最初に吸わせてあげる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、いいんですか。そんな貴重なの"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "……いいの。君の感想が、私のいちばん信頼してるデータだから。……世界中のモニターの中で、ね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛の声は、いつもの余裕の下に、ほんの少しだけ、照れがにじんでいた。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 2,
+            "technique": 1
+          }
+        }
       ]
     },
     {
       "dialogue_id": "lover_rin_lv3",
-      "metadata": { "bg": "res://assets/backgrounds/bg_street_night.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "問屋街の帰り道。凛が、ふと自分のことを話し始めた。めずらしく。" },
-        { "speaker": "rin", "face": "normal", "text": "……私さ、香りは何百種類も分かるのに。人の気持ちは、ぜんぜん読めないの。……だから、データに逃げてた" },
-        { "speaker": "rin", "face": "serious", "text": "……でも君の前だと、読めないのが、こわくない。……分かんないまま、隣にいられる" },
-        { "speaker": "hajime", "face": "smile", "text": "……俺も、凛さんの隣は落ち着きます" },
-        { "speaker": "rin", "face": "smile", "text": "……ん。……今の、データに記録しとく。『被験者、いい顔した』って" },
-        { "type": "apply", "stats": { "insight": 2, "sense": 1 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "問屋街の帰り道。凛が、ふと自分のことを話し始めた。めずらしく。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……私さ、香りは何百種類も分かるのに。人の気持ちは、ぜんぜん読めないの。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……だから、データに逃げてた"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "……でも君の前だと、読めないのが、こわくない。……分かんないまま、隣にいられる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……俺も、凛さんの隣は落ち着きます"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "……ん。……今の、データに記録しとく。『被験者、いい顔した』って"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 2,
+            "sense": 1
+          }
+        }
       ]
     },
     {
       "dialogue_id": "lover_rin_lv4",
-      "metadata": { "bg": "res://assets/backgrounds/bg_shop.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shop.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "凛が、めずらしく真剣な顔でノートパソコンを閉じた。" },
-        { "speaker": "rin", "face": "serious", "text": "……本国から、帰任の打診が来てる。NIGHTSIDEの本社。……キャリアとしては、上" },
-        { "speaker": "hajime", "face": "surprise", "text": "……っ。それは……" },
-        { "speaker": "rin", "face": "smile", "text": "……断った。即で。……『最重要サンプルが日本にあるので』って書いて送った" },
-        { "speaker": "rin", "face": "normal", "text": "……君のことだよ。モルモットくん。……私の在庫で、いちばん手放せないやつ" },
-        { "type": "apply", "stats": { "charm": 2, "insight": 1 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛が、めずらしく真剣な顔でノートパソコンを閉じた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "……本国から、帰任の打診が来てる。NIGHTSIDEの本社。……キャリアとしては、上"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……っ。それは……"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "……断った。即で。……『最重要サンプルが日本にあるので』って書いて送った"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……君のことだよ。モルモットくん。……私の在庫で、いちばん手放せないやつ"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "charm": 2,
+            "insight": 1
+          }
+        }
       ]
     },
     {
       "dialogue_id": "lover_rin_lv5",
-      "metadata": { "bg": "res://assets/backgrounds/bg_street_night.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "夜。凛が、試香紙に何か書いて、そっと差し出してきた。" },
-        { "speaker": "rin", "face": "smile", "text": "……新作の香り、名前つけたの。……読んでみて" },
-        { "speaker": "", "face": "", "text": "試香紙には、几帳面な字でこう書いてあった。──『Hajime』。" },
-        { "speaker": "hajime", "face": "surprise", "text": "……俺の、名前……？" },
-        { "speaker": "rin", "face": "normal", "text": "……澄んでて、優しくて、ずっと嗅いでいたくなる香り。……君以外に、つけようがなかった" },
-        { "speaker": "rin", "face": "smile", "text": "……非売品。門外不出。……世界で、私だけのもの" },
-        { "type": "apply", "stats": { "sense": 2, "charm": 2 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜。凛が、試香紙に何か書いて、そっと差し出してきた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "……新作の香り、名前つけたの。……読んでみて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "試香紙には、几帳面な字でこう書いてあった。──『Hajime』。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……俺の、名前……？"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……澄んでて、優しくて、ずっと嗅いでいたくなる香り。……君以外に、つけようがなかった"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "……非売品。門外不出。……世界で、私だけのもの"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 2,
+            "charm": 2
+          }
+        }
       ]
     },
-
     {
       "dialogue_id": "lover_ageha_lv1",
-      "metadata": { "bg": "res://assets/backgrounds/bg_street_night.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "付き合った初日の夜。あげはは、テンション高く腕を組んできた。" },
-        { "speaker": "ageha", "face": "smile", "text": "ハジメっち、もうアタシの男なんだから！手つなぐの、当たり前っしょ！" },
-        { "speaker": "hajime", "face": "smile", "text": "……あげはは、ほんと迷いがないな" },
-        { "speaker": "ageha", "face": "normal", "text": "迷う意味なくない？好きなもんは好き。バイブスがすべて！" },
-        { "speaker": "ageha", "face": "smile", "text": "……でもさ。アタシの直感、ハジメっちのこと『当たり』って言ってる。この直感は、ガチで外さないから" },
-        { "type": "apply", "stats": { "guts": 2 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "付き合った初日の夜。あげはは、テンション高く腕を組んできた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち、もうアタシの男なんだから！手つなぐの、当たり前っしょ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……あげはは、ほんと迷いがないな"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "迷う意味なくない？好きなもんは好き。バイブスがすべて！"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……でもさ。アタシの直感、ハジメっちのこと『当たり』って言ってる。この直感は、ガチで外さないから"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
       ]
     },
     {
       "dialogue_id": "lover_ageha_lv2",
-      "metadata": { "bg": "res://assets/backgrounds/bg_street_day.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "昼。あげはオススメの店をハシゴした。5軒目で、さすがに笑ってしまう。" },
-        { "speaker": "ageha", "face": "smile", "text": "次！この先にエモい店あるらしい！……って、ハジメっち、もう吸いすぎ？ｗ" },
-        { "speaker": "hajime", "face": "normal", "text": "あげはの体力、化け物すぎる……" },
-        { "speaker": "ageha", "face": "normal", "text": "あはは！でもさ、いろんな店まわると、わかんない？『あ、この店、客のこと好きだな』って" },
-        { "speaker": "ageha", "face": "smile", "text": "アタシそういうの、匂いで分かる。……ハジメっちの店も、好きだよ。客のこと" },
-        { "type": "apply", "stats": { "sense": 2, "guts": 1 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼。あげはオススメの店をハシゴした。5軒目で、さすがに笑ってしまう。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "次！この先にエモい店あるらしい！……って、ハジメっち、もう吸いすぎ？ｗ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あげはの体力、化け物すぎる……"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "あはは！でもさ、いろんな店まわると、わかんない？『あ、この店、客のこと好きだな』って"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "アタシそういうの、匂いで分かる。……ハジメっちの店も、好きだよ。客のこと"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 2,
+            "guts": 1
+          }
+        }
       ]
     },
     {
       "dialogue_id": "lover_ageha_lv3",
-      "metadata": { "bg": "res://assets/backgrounds/bg_street_night.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "夜。あげはが、めずらしくトーンを落として話し始めた。" },
-        { "speaker": "ageha", "face": "normal", "text": "……アタシさ。バイブスで戦うって言うけど。ほんとは、こわいんだよね、たまに" },
-        { "speaker": "ageha", "face": "sad", "text": "理屈で勝ってくる奴ら見ると。……アタシの直感、間違ってんのかなって" },
-        { "speaker": "hajime", "face": "serious", "text": "……あげはの直感は、本物だ。俺が保証する" },
-        { "speaker": "ageha", "face": "surprise", "text": "……っ。……ハジメっち" },
-        { "speaker": "ageha", "face": "smile", "text": "……ありがと。……うん。アタシ、アタシのままでいくわ" },
-        { "type": "apply", "stats": { "guts": 2, "insight": 1 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜。あげはが、めずらしくトーンを落として話し始めた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……アタシさ。バイブスで戦うって言うけど。ほんとは、こわいんだよね、たまに"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "理屈で勝ってくる奴ら見ると。……アタシの直感、間違ってんのかなって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "……あげはの直感は、本物だ。俺が保証する"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "……っ。……ハジメっち"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……ありがと。……うん。アタシ、アタシのままでいくわ"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2,
+            "insight": 1
+          }
+        }
       ]
     },
     {
       "dialogue_id": "lover_ageha_lv4",
-      "metadata": { "bg": "res://assets/backgrounds/bg_street_day.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "あげはが、スマホで自分の煙の動画を見せてきた。ホワイトグミベアの、甘い香り。" },
-        { "speaker": "ageha", "face": "smile", "text": "見て！この煙のうねり！アタシの『好き』を、ぜんぶ詰めた一台！" },
-        { "speaker": "hajime", "face": "smile", "text": "……すごい。あげはにしか作れない煙だ" },
-        { "speaker": "ageha", "face": "normal", "text": "でしょ？……ハジメっちの煙とは、全然ちがう。でもさ、それでいいんだよね" },
-        { "speaker": "ageha", "face": "smile", "text": "違うから、並べると、楽しい。……いつか、隣の台で一緒に作ろ？" },
-        { "type": "apply", "stats": { "sense": 2, "charm": 1 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはが、スマホで自分の煙の動画を見せてきた。ホワイトグミベアの、甘い香り。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "見て！この煙のうねり！アタシの『好き』を、ぜんぶ詰めた一台！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……すごい。あげはにしか作れない煙だ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "でしょ？……ハジメっちの煙とは、全然ちがう。でもさ、それでいいんだよね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "違うから、並べると、楽しい。……いつか、隣の台で一緒に作ろ？"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 2,
+            "charm": 1
+          }
+        }
       ]
     },
     {
       "dialogue_id": "lover_ageha_lv5",
-      "metadata": { "bg": "res://assets/backgrounds/bg_street_night.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "夜。あげはが、いつもの満面の笑みじゃなく、やわらかい顔で、となりに座った。" },
-        { "speaker": "ageha", "face": "normal", "text": "……ハジメっちといると、さ。アタシ、バイブスだけじゃなくて、ちゃんと『考える』ようになった" },
-        { "speaker": "ageha", "face": "smile", "text": "でも芯は変わんない。直感も、勢いも、ぜんぶアタシ。……それを、好きでいてくれる人がいる" },
-        { "speaker": "hajime", "face": "smile", "text": "……ずっと、あげはのバイブスのファンだよ" },
-        { "speaker": "ageha", "face": "smile", "text": "あはは！知ってる！……アタシも。ガチで、ずっと好（ハオ）だわ" },
-        { "type": "apply", "stats": { "guts": 2, "charm": 2 } }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜。あげはが、いつもの満面の笑みじゃなく、やわらかい顔で、となりに座った。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……ハジメっちといると、さ。アタシ、バイブスだけじゃなくて、ちゃんと『考える』ようになった"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "でも芯は変わんない。直感も、勢いも、ぜんぶアタシ。……それを、好きでいてくれる人がいる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……ずっと、あげはのバイブスのファンだよ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "あはは！知ってる！……アタシも。ガチで、ずっと好（ハオ）だわ"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2,
+            "charm": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_mashiro_lv1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "休みの夜。ソファに並んで何か観ていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつの間にか、ましろちゃんが肩にもたれている。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……あったかいねぇ……ぽかぽか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……寝そうになってない？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "寝てないよぉ。……匂い、かいでるだけ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……充電中……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんがゆっくり目を閉じた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "呼吸が穏やかになっていく。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……はじめくんのそば、安心する……えへへ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【魅力】が少し上がった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "charm": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_mashiro_lv2",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんが古い缶を差し出してきた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "はい。うちが仕入れたシガーリーフ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "特別なやつだよぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……俺に？ すごい貴重なんじゃ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。でもね、知ってほしくて"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うちの世界の葉っぱのこと"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ブロンドとは火の入り方が違うんだぁ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "じわって熱を通すの。急ぐと焦げちゃう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭の距離を取って、蒸らし長めか"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "さすが、のみこみ早いねぇ……えへへ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【技術】が少し上がった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【洞察】が少し上がった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "technique": 2,
+            "insight": 1
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_mashiro_lv3",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜。mukaiの裏口のベンチ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "テツコが足元で丸くなっている。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……ねぇ。うち、ときどき考えるんだぁ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "『シガーマン』って呼ばれてるとき……"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "みんな、うちのこと見てないよね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "怖い人を見てる。……ちょっと寂しいなぁ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "……俺はましろちゃんを見てる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "……っ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……知ってるよぉ。最初からうちを見てくれてた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "テツコが小さく鳴いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんが袖で目元を拭う。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【根性】が少し上がった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【センス】が少し上がった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2,
+            "sense": 1
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_mashiro_lv4",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のmukai。めずらしく真剣な顔。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……うちね。シガーリーフ、最初は逃げだった"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "普通の煙じゃ、なにも感じなくなって"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "味が濃い葉じゃないと、生きてる気がしなかった"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "でも今は違うよぉ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "シガーリーフは、うちの言葉なの"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "それに気づけたの、はじめくんのおかげ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "はじめくんの煙を感じてからだから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ましろちゃんの煙は、最初から本物だったよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "えへへ……ありがとぉ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "もっと胸張って吸うねぇ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【魅力】が少し上がった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【洞察】が少し上がった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "charm": 2,
+            "insight": 1
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "lover_mashiro_lv5",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "深夜のmukai。一台が用意されていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "特別なの作ったんだぁ。一緒に吸おぉ？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ブロンドとシガーリーフ、両方入ってないか？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。はじめくんの世界と、うちの世界"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……混ぜてみたの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ホースを受け取って、吸う。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ブロンドの甘さの奥にシガーの余韻が重なる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……すごい。ひとつの味になってる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "でしょぉ？ うちとはじめくんみたい"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "全然ちがうのに、一緒だと、ちょうどいいの"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……ずっと、ふたりの煙を混ぜていたいなぁ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そっと俺の手に指を絡めてきた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙が天井へ、ゆっくり昇っていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【センス】が上がった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【魅力】が上がった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 2,
+            "charm": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shuraba_mashiro",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariの閉店後。スミさんに呼び出された。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……嫌な予感しかしない。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "始。お前に話がある。座れ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "……何人と付き合ってるんだ？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……っ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "バレてないと思ったか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "シーシャ屋の噂は煙より早い"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "一台に炭を何個も載せたらどうなる"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "……焦げるだろう。人の心も同じだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "何も言い返せない。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "あれぇ……？ はじめくん、顔こわいよぉ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんがのんびり入ってきた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ちょうどいい。ましろ、こいつに聞いてやれ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "えっと……なんの話かなぁ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……ましろちゃん以外にも、付き合ってる人がいて"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "……えっ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……みんな好きなの、かなぁ？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "…………"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "……そっかぁ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "うち、はじめくんだけ見てたから"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sad",
+          "text": "ちょっと、びっくりしちゃったなぁ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "怒ってるんじゃないよぉ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ただ……うちだけじゃ足りなかったのかなって"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "始。誠実に考えろ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "煙と同じだ。雑に扱えば味は濁る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが出ていった。二人きりになる。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……うちはね。選んでくれるなら、待ってるよぉ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……ゆっくりでいいから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "怒りもせず、穏やかにそう言った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……それが、かえって胸に痛かった。"
+        }
       ]
     }
   ]

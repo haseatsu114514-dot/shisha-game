@@ -3,89 +3,417 @@
   "dialogues": [
     {
       "dialogue_id": "ch2_naru_confrontation",
-      "metadata": { "bg": "res://assets/backgrounds/kemurikusa.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/kemurikusa.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "この街に来てから、なるとはずいぶん仲良くなった。勝ち上がるたびにケムリクサに寄ると、なるは自分のことみたいに喜んで、配合のコツまで惜しみなく教えてくれた。" },
-        { "speaker": "", "face": "", "text": "──だから今夜も、いつもの調子で扉を開けた。準決勝を勝ち上がった夜。なるはカウンターの中で、黙ってボウルを磨いていた。" },
-        { "speaker": "hajime", "face": "smile", "text": "なるさん、見ました？ 今日の準決勝。ヴォルクさんの精度を取り入れた新しいやつ、かなり手応えが──" },
-        { "speaker": "naru", "face": "normal", "text": "見たよ。──なあ、はじめ。座れ" },
-        { "speaker": "", "face": "", "text": "なるは一台のシーシャを差し出した。いつものチョコレートバニラ。だが今日は、何も言わずに。" },
-        { "speaker": "naru", "face": "serious", "text": "率直に言う。……今日のお前のシーシャ、俺は好きじゃない" },
-        { "speaker": "hajime", "face": "surprise", "text": "……え？" },
-        { "speaker": "naru", "face": "serious", "text": "技術は上がってる。構成も完璧だ。審査員が点を入れるのも分かる。──でもあれ、誰の煙だ？ ヴォルクの精度に、チャコール博士のデータに、あげはのバイブス。全部入ってて、お前がどこにもいない" },
-        { "speaker": "hajime", "face": "normal", "text": "……それが僕のスタイルですよ。いいところを全部吸収する。なるさんだって、最初は見て盗めって──" },
-        { "speaker": "naru", "face": "serious", "text": "それは吸収じゃねえ。借り物で着飾ってるだけだ。──吸収ってのは、リスペクトして自分のものにすることだろ。今のお前のは、ただ借りてきた服を重ね着してるだけだ" },
-        { "speaker": "naru", "face": "serious", "text": "前のお前の煙には、tonariのカウンターの匂いがした。今のお前の煙は、どこの匂いもしない" },
-        { "speaker": "hajime", "face": "serious", "text": "──勝ってるのは僕です" },
-        { "speaker": "", "face": "", "text": "言った瞬間、後悔した。でも、もう遅かった。" },
-        { "speaker": "naru", "face": "normal", "text": "……そうだな。勝ってるのはお前だ" },
-        { "speaker": "", "face": "", "text": "なるは静かにボウルを置いて、店の奥に下がった。怒鳴られた方が、ずっと楽だった。" },
-        { "speaker": "", "face": "", "text": "それから、なるからのLIMEは来なくなった。既読はつく。返信はない。" }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "この街に来てから、なるとはずいぶん仲良くなった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "勝ち上がるたびにケムリクサに寄ると、なるは自分のことみたいに喜んで、"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "配合のコツまで惜しみなく教えてくれた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──だから今夜も、いつもの調子で扉を開けた。準決勝を勝ち上がった夜。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるはカウンターの中で、黙ってボウルを磨いていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "なるさん、見ました？ 今日の準決勝。ヴォルクさんの精度を取り入れた新しいやつ、かなり手応えが──"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "見たよ。──なあ、はじめ。座れ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは一台のシーシャを差し出した。いつものチョコレートバニラ。だが今日は、何も言わずに。"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "率直に言う。……今日のお前のシーシャ、俺は好きじゃない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……え？"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "技術は上がってる。構成も完璧だ。審査員が点を入れるのも分かる。──でもあれ、誰の煙だ？"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": " ヴォルクの精度に、チャコール博士のデータに、あげはのバイブス。"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "全部入ってて、お前がどこにもいない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……それが俺のスタイルですよ。いいところを全部吸収する。なるさんだって、最初は見て盗めって──"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "それは吸収じゃねえ。借り物で着飾ってるだけだ。"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "──吸収ってのは、リスペクトして自分のものにすることだろ。"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "今のお前のは、ただ借りてきた服を重ね着してるだけだ"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "前のお前の煙には、tonariのカウンターの匂いがした。今のお前の煙は、どこの匂いもしない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "──勝ってるのは俺です"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言った瞬間、後悔した。でも、もう遅かった。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……そうだな。勝ってるのはお前だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは静かにボウルを置いて、店の奥に下がった。怒鳴られた方が、ずっと楽だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それから、なるからのLIMEは来なくなった。既読はつく。返信はない。"
+        }
       ]
     },
     {
       "dialogue_id": "ch2_adam_distance",
-      "metadata": { "bg": "res://assets/backgrounds/eden.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/eden.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "EDENに顔を出した。アダムはカウンターにいた。目が合った。" },
-        { "speaker": "hajime", "face": "normal", "text": "アダムさん、お久しぶりです" },
-        { "speaker": "adam", "face": "normal", "text": "……" },
-        { "speaker": "", "face": "", "text": "アダムは何も言わずに、ダブルアップルのボウルを見つめていた。すれ違いざま、ぽつりと。" },
-        { "speaker": "adam", "face": "normal", "text": "……お前の煙、全部入ってるんだってな。なんでも吸収して、なんでも出せる" },
-        { "speaker": "adam", "face": "normal", "text": "──なあ。俺の宇宙、いる？　ダブルアップルしかない俺の宇宙なんて、お前にはもう、いらないんじゃないのか" },
-        { "speaker": "hajime", "face": "surprise", "text": "そんなこと──" },
-        { "speaker": "", "face": "", "text": "言いかけた言葉が続かなかった。アダムはもう、こちらを見ていなかった。" }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "EDENに顔を出した。アダムはカウンターにいた。目が合った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "アダムさん、お久しぶりです"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは何も言わずに、ダブルアップルのボウルを見つめていた。すれ違いざま、ぽつりと。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "……お前の煙、全部入ってるんだってな。なんでも吸収して、なんでも出せる"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "──なあ。俺の宇宙、いる？"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "　ダブルアップルしかない俺の宇宙なんて、お前にはもう、いらないんじゃないのか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "そんなこと──"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言いかけた言葉が続かなかった。アダムはもう、こちらを見ていなかった。"
+        }
       ]
     },
     {
       "dialogue_id": "ch2_minto_warning",
-      "metadata": { "bg": "res://assets/backgrounds/pepermint.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/pepermint.png"
+      },
       "lines": [
-        { "speaker": "minto", "face": "smile", "text": "はじめくん、いらっしゃ〜い♡　……今日もまた勝ったんだって？　すごいねえ" },
-        { "speaker": "hajime", "face": "normal", "text": "ありがとうございます。次の決勝も──" },
-        { "speaker": "minto", "face": "normal", "text": "ねえ。……なるちゃんが沈んでるの、アダムくんが店を閉めがちなの、知ってる？" },
-        { "speaker": "hajime", "face": "normal", "text": "……" },
-        { "speaker": "minto", "face": "sad", "text": "別に、責めてるんじゃないよ？　勝負の世界だもん。勝ってるはじめくんは、何も悪くない" },
-        { "speaker": "minto", "face": "normal", "text": "ただ……はじめくん自身が、ちょっとしんどそうに見えるの。わたしは、それがいちばん心配" },
-        { "speaker": "hajime", "face": "surprise", "text": "……えっ" },
-        { "speaker": "minto", "face": "smile", "text": "何があっても、わたしはここにいるから。疲れたら、いつでも吸いに来な。ね？" },
-        { "speaker": "", "face": "", "text": "みんとはいつもの笑顔で、それだけ言った。──突き放されなかったことが、なぜだか少しだけ、こたえた。" }
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくん、いらっしゃ〜い♡　……今日もまた勝ったんだって？　すごいねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとうございます。次の決勝も──"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "ねえ。……なるちゃんが沈んでるの、アダムくんが店を閉めがちなの、知ってる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……"
+        },
+        {
+          "speaker": "minto",
+          "face": "sad",
+          "text": "別に、責めてるんじゃないよ？　勝負の世界だもん。勝ってるはじめくんは、何も悪くない"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "ただ……はじめくん自身が、ちょっとしんどそうに見えるの。わたしは、それがいちばん心配"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……えっ"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "何があっても、わたしはここにいるから。疲れたら、いつでも吸いに来な。ね？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとはいつもの笑顔で、それだけ言った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──突き放されなかったことが、なぜだか少しだけ、こたえた。"
+        }
       ]
     },
     {
       "dialogue_id": "ch2_tsumugi_color",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "tonariに、つむぎはいつも通り来てくれる。いつもの席で、いつものノートを広げて。" },
-        { "speaker": "hajime", "face": "normal", "text": "つむぎさん、新しいミックス試したんです。よかったら" },
-        { "speaker": "", "face": "", "text": "つむぎは一口吸って、ゆっくり煙を吐いた。その目が、少しだけ揺れた。" },
-        { "speaker": "tsumugi", "face": "normal", "text": "……はじめさん。怒らないで、聞いてくれますか" },
-        { "speaker": "hajime", "face": "normal", "text": "はい" },
-        { "speaker": "tsumugi", "face": "sad", "text": "……色が、見えないんです。はじめさんの煙、前は淡いオレンジ色だったのに。今は──透明というか、灰色というか" },
-        { "speaker": "tsumugi", "face": "sad", "text": "綺麗なのに、何も見えない。こんなの、初めてで……" },
-        { "speaker": "tsumugi", "face": "sad", "text": "それに……前は、お店に入った瞬間に分かったんです。あ、はじめさんの煙だ、って。今日のは──誰が作った煙か、分からなかった" },
-        { "speaker": "hajime", "face": "normal", "text": "（共感覚のつむぎさんに、僕の煙の色が見えない。──味のしない僕と、色の見えない彼女。同じものを見てるのかもしれない）" }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariに、つむぎはいつも通り来てくれる。いつもの席で、いつものノートを広げて。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "つむぎさん、新しいミックス試したんです。よかったら"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは一口吸って、ゆっくり煙を吐いた。その目が、少しだけ揺れた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん。怒らないで、聞いてくれますか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "……色が、見えないんです。はじめさんの煙、前は淡いオレンジ色だったのに。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "今は──透明というか、灰色というか"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "綺麗なのに、何も見えない。こんなの、初めてで……"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "それに……前は、お店に入った瞬間に分かったんです。あ、はじめさんの煙だ、って。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "今日のは──誰が作った煙か、分からなかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（共感覚のつむぎさんに、俺の煙の色が見えない。──味のしない俺と、色の見えない彼女。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "同じものを見てるのかもしれない）"
+        }
       ]
     },
     {
       "dialogue_id": "ch2_empty_victory",
-      "metadata": { "bg": "res://assets/backgrounds/bg_tournament_stage.png" },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
       "lines": [
-        { "speaker": "", "face": "", "text": "──地区大会、決勝。" },
-        { "speaker": "", "face": "", "text": "朝、スミさんからLIMEが一通。" },
-        { "speaker": "", "face": "", "text": "『ガラ空きの応援席を見て怯むようなお前じゃない、と思いたい。だが一つだけ言わせろ。──お前は今、誰のために作ってる？』" },
-        { "speaker": "", "face": "", "text": "返信は、打てなかった。" },
-        { "speaker": "", "face": "", "text": "決勝の煙は、自分史上もっとも綺麗にまとまった。審査員が満点に近い札を上げる。──優勝。地区の頂点。" },
-        { "speaker": "", "face": "", "text": "最後の吸い出しのとき、癖で、誰かの顔を思い出そうとした。──誰の顔も、浮かばなかった。" },
-        { "speaker": "", "face": "", "text": "表彰台。スポットライト。拍手はまばらだった。観客席に、知っている顔は一つもない。" },
-        { "speaker": "", "face": "", "text": "なるは来ていない。アダムも。あげはの席は──昨夜『ごめん、明日行けない。理由は聞かないで』とだけ来て、空いたままだ。" },
-        { "speaker": "", "face": "", "text": "控え室。優勝賞品のフレーバー缶を抱えて、ひとり。スマホを開く。「おめでとう」は、一通も来ていない。" },
-        { "speaker": "", "face": "", "text": "ただ一件だけ。みんとから。──『勝ったね。でも、声が聞きたくなったらいつでも吸いに来な』。祝福の言葉は、なかった。" },
-        { "speaker": "hajime", "face": "normal", "text": "…………" },
-        { "speaker": "", "face": "", "text": "祝勝の一服を、自分で作って、自分で吸った。" },
-        { "speaker": "", "face": "", "text": "味は、しなかった。" },
-        { "speaker": "hajime", "face": "sad", "text": "（……あれ。僕、なんのために勝ったんだっけ）" },
-        { "speaker": "", "face": "", "text": "誰もいない控え室で、優勝トロフィーだけが鈍く光っていた。──東京行きの切符を握ったまま、はじめは長いこと、動けなかった。" }
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──地区大会、決勝。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "朝、スミさんからLIMEが一通。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "『ガラ空きの応援席を見て怯むようなお前じゃない、と思いたい。だが一つだけ言わせろ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──お前は今、誰のために作ってる？』"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "返信は、打てなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "決勝の煙は、自分史上もっとも綺麗にまとまった。審査員が満点に近い札を上げる。──優勝。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "地区の頂点。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の吸い出しのとき、癖で、誰かの顔を思い出そうとした。──誰の顔も、浮かばなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "表彰台。スポットライト。拍手はまばらだった。観客席に、知っている顔は一つもない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは来ていない。アダムも。あげはの席は──昨夜『ごめん、明日行けない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "理由は聞かないで』とだけ来て、空いたままだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "控え室。優勝賞品のフレーバー缶を抱えて、ひとり。スマホを開く。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「おめでとう」は、一通も来ていない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ただ一件だけ。みんとから。──『勝ったね。でも、声が聞きたくなったらいつでも吸いに来な』。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "祝福の言葉は、なかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "…………"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "祝勝の一服を、自分で作って、自分で吸った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "味は、しなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（……あれ。俺、なんのために勝ったんだっけ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "誰もいない控え室で、優勝トロフィーだけが鈍く光っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──東京行きの切符を握ったまま、はじめは長いこと、動けなかった。"
+        }
       ]
     }
   ]
