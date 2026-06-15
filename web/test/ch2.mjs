@@ -192,6 +192,12 @@ while (guard++ < 8000) {
     await page.waitForTimeout(200);
     continue;
   }
+  // #16 つなぎのマップビート（強制イベント前の一拍）が出ていたら飛ばす
+  if (await page.locator("#map-beat").count()) {
+    await page.locator("#map-beat").click().catch(() => {});
+    await page.waitForTimeout(80);
+    continue;
+  }
   const screen = await active();
   if (screen === "screen-end") break;
   if (screen === "screen-gameover") throw new Error("unexpected game over");

@@ -1885,7 +1885,9 @@ function updateMapInfo(spot, locked, tooPoor, closed, visited) {
       const allMax = Object.values(state.stats).every((v) => v >= 100);
       growEl.textContent = allMax
         ? "（ここで学べることは、もう全部わが身になった）"
-        : `（ここに通うと【${STAT_KEYS[hintStat]}】が伸びそうだ）`;
+        : CHAR_STAT[spot.id]
+          ? `（ここに通うと【${STAT_KEYS[hintStat]}】が伸びそうだ）`
+          : `（集中特訓だから、人に会うより【${STAT_KEYS[hintStat]}】がぐっと伸びる）`;
       growEl.style.display = "";
     } else {
       growEl.style.display = "none";
@@ -2000,6 +2002,8 @@ function doSpotDialogue(spotId, dialogueId, bg) {
   if (STAMINA_GAIN[spotId]) addStamina(STAMINA_GAIN[spotId]);
   playDialogue(dialogueId, () => {
     if (!cueFiredInDialogue) gainStat(spotStat(spotId), 2);
+    // 施設スポット＝「集中特訓」: 好感度は付かない代わりに、人に会うより伸びが大きい（#23）
+    gainStat(spotStat(spotId), 3);
     endAction();
   }, `res://assets/backgrounds/${bg}`);
 }
@@ -2083,65 +2087,87 @@ function advanceDay() {
   morningPhone(showMap); // 朝のLIME（無ければ即 showMap がスロットを精算）
 }
 
+// #16: 強制イベントの前に「マップに戻る→スロット精算→自動で次イベント」の一拍を挟む（オーナー指定）。
+// 行動の結果画面からシームレスに夜イベントへ飛ぶ「急に画面が変わった」感を消す。
+// 非操作のオーバーレイで一拍置き、タップで早送り可。テストは #map-beat を検出して飛ばす。
+function mapBeat(onDone) {
+  if (!state) return onDone();
+  showMap(); // マップ表示＋スロット精算（REEL.onMapShown）
+  const screen = document.querySelector("#screen-map");
+  if (!screen) return onDone();
+  document.getElementById("map-beat")?.remove();
+  const ov = document.createElement("div");
+  ov.id = "map-beat";
+  ov.innerHTML = `<div class="map-beat-card"><span class="mb-dots">……</span><span class="mb-sub">タップで次へ</span></div>`;
+  screen.appendChild(ov);
+  let done = false;
+  const go = () => { if (done) return; done = true; ov.remove(); onDone(); };
+  ov.addEventListener("click", go);
+  setTimeout(go, 2100);
+}
+
 function endDay() {
   // 夜の締め: 必ず家に帰って1日を終える（master_spec #3）。
   // 家シーシャ（第2章〜・一式所持時）はその帰宅シーンの中で選択肢になる
   const finishDay = () => maybeNightcap(advanceDay);
+  // 夜の強制イベントは mapBeat（つなぎの一拍）を通してから再生する（#16）
+  const pd = (id, cb, bg) => mapBeat(() => playDialogue(id, cb, bg));
+  const pc = (obj, cb) => mapBeat(() => playCustom(obj, cb));
   const TONARI = "res://assets/backgrounds/bg_tonari_inside.png";
   // ---- 第2章の夜の固定イベント（嫉妬と転落の進行）
   if (state.chapter === 2) {
     if (state.day === 2 && !state.flags._ev2_abyss) {
       state.flags._ev2_abyss = true;
-      return playDialogue("ch2_abyss_baito", finishDay, TONARI);
+      return pd("ch2_abyss_baito", finishDay, TONARI);
     }
     if (state.day === 4 && !state.flags._ev2_sofa) {
       state.flags._ev2_sofa = true;
-      return playDialogue("ch2_sofa_burn", finishDay, TONARI);
+      return pd("ch2_sofa_burn", finishDay, TONARI);
     }
     if (state.day === 5 && !state.flags._ev2_slump) {
       state.flags._ev2_slump = true;
       // 味覚スランプ発症: 以後、ミックス画面の味の記憶がノイズ混じりになる
-      return playDialogue("ch2_slump_taste", () => { state.flags._taste_slump = true; save(); finishDay(); }, TONARI);
+      return pd("ch2_slump_taste", () => { state.flags._taste_slump = true; save(); finishDay(); }, TONARI);
     }
     // DAY6: 全編モチーフ「店の匂い」のch2配置（炭落とし事故の匂いが店に残る）
     if (state.day === 6 && !state.flags._ev2_smell) {
       state.flags._ev2_smell = true;
-      return playDialogue("ch2_lingering_smell", finishDay);
+      return pd("ch2_lingering_smell", finishDay);
     }
     if (state.day === 7 && !state.flags._ev2_ageha) {
       state.flags._ev2_ageha = true;
-      return playDialogue("ch2_pre_tournament_realisation", finishDay, "res://assets/backgrounds/bg_tournament_stage.png");
+      return pd("ch2_pre_tournament_realisation", finishDay, "res://assets/backgrounds/bg_tournament_stage.png");
     }
     // DAY10: スミさんの沈黙（連勝が始まった頃。ch4特訓「同じ顔をさせたくなかった」の前振り）
     if (state.day === 10 && !state.flags._ev2_sumi) {
       state.flags._ev2_sumi = true;
-      return playDialogue("ch2_sumi_silence", finishDay);
+      return pd("ch2_sumi_silence", finishDay);
     }
     if (state.day === 12 && !state.flags._ev2_minto) {
       state.flags._ev2_minto = true;
-      return playDialogue("ch2_minto_warning", finishDay);
+      return pd("ch2_minto_warning", finishDay);
     }
     if (state.day === 13 && !state.flags._ev2_tsumugi) {
       state.flags._ev2_tsumugi = true;
-      return playDialogue("ch2_tsumugi_color", finishDay, TONARI);
+      return pd("ch2_tsumugi_color", finishDay, TONARI);
     }
     return finishDay();
   }
   // ---- 第1章の夜の固定イベント
   if (state.day === 2 && !state.flags._ev_salaryman) {
     state.flags._ev_salaryman = true;
-    return playDialogue("ch1_salaryman_regular", finishDay, TONARI);
+    return pd("ch1_salaryman_regular", finishDay, TONARI);
   }
   // DAY4: あげはカメオ（謎のギャルが荷物を拾ってくれる）。ホワイトグミベアの残り香が
   // ch2初対面（ch2_rivals_first_sight）で回収される伏線
   if (state.day === 4 && !state.flags._ev_ageha_cameo) {
     state.flags._ev_ageha_cameo = true;
-    return playDialogue("ch1_ageha_encounter", finishDay, "res://assets/backgrounds/bg_street_night.png");
+    return pd("ch1_ageha_encounter", finishDay, "res://assets/backgrounds/bg_street_night.png");
   }
   // DAY7夜（折り返し）: 中間チェック。スミさんが「素の一台」を講評し、残り日数に目的を作る
   if (state.day === 7 && !state.flags._ev_day3_check) {
     state.flags._ev_day3_check = true;
-    return playCustom({
+    return pc({
       dialogue_id: "ch1_day3_check",
       metadata: { bg: TONARI },
       lines: [
@@ -2167,13 +2193,13 @@ function endDay() {
   }
   if (state.day === 5 && !state.flags._ev_day5) {
     state.flags._ev_day5 = true;
-    return playDialogue("ch1_day5_sumi_story", finishDay, TONARI);
+    return pd("ch1_day5_sumi_story", finishDay, TONARI);
   }
   // DAY13夜（大会前々日）: 前日リハーサル（通し）。出来が本番の小ボーナスになる
   if (state.day === 13 && !state.flags._ev_day6_rehearsal) {
     state.flags._ev_day6_rehearsal = true;
     afterRehearsal = finishDay;
-    return playCustom({
+    return pc({
       dialogue_id: "ch1_day6_rehearsal",
       metadata: { bg: TONARI },
       lines: [
@@ -2185,7 +2211,7 @@ function endDay() {
   }
   if (state.day === 14 && !state.flags._ev_day7) {
     state.flags._ev_day7 = true;
-    return playDialogue("ch1_day7_last_night", finishDay, TONARI);
+    return pd("ch1_day7_last_night", finishDay, TONARI);
   }
   finishDay();
 }
