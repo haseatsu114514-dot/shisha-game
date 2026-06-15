@@ -53,16 +53,17 @@ normal PR. Stop and fix the Git layout first.
 ゲームの正式タイトルは **「水煙前線 -EN:CODE-」**。
 本作は一人称視点で、主人公はじめの立ち絵は基本表示しない。
 
-### Godot版は凍結（web/ が正史・2026-06-14）
+### Godot版は削除済み（web/ が唯一の正史・2026-06-15）
 
-Godot版（`scripts/*.gd` / `scenes/` / `*.tscn` / `*.import` / `*.uid` / `assets/` / `project.godot`）は
-**当面凍結**。**ブラウザ版（`web/`）＋ `data/*.json` ＋ `brand/` が唯一の正史**。
+Godot版（`scripts/*.gd` / `scenes/` / `*.tscn` / `*.import` / `*.uid` / `project.godot`）は
+**リポジトリから削除済み**（オーナー指定・2026-06-15）。web と二重実装で約34,000行あり、
+旧設定・偽の矛盾・トークン浪費の温床だったため整理した。**ブラウザ版（`web/`）＋ `data/*.json` ＋ `brand/` が唯一の正史**。
 
-- バランス・大会フロー・UI文言・ロジックの変更は **`web/` と `data/` だけ** に入れる。`scripts/*.gd` は**編集しない**（大会ロジックだけで約21,000行あり web と二重実装。手で同期しようとしない）。
-- 台詞は `data/dialogue/*.json` を web/Godot 双方が共有ロードするので、JSON 編集は両方に効く（JSON はいじってよい）。
-- テストは web ヘッドレス（本ファイル下部の全7本）だけ緑にすればよい。Godot 側は回さない。
-- **削除はしない**（将来の移植資産）。移植時は「.gd を手で同期」ではなく、完成した `web/` ＋ `data/*.json` を仕様として**作り直す**。
-- AI で矛盾・改行・セリフを点検する際の**対象範囲は `docs/review_scope.md`** を参照（Godot・ビルド成果物・別ゲームを除外し、偽の矛盾とトークン浪費を防ぐ）。
+- バランス・大会フロー・UI文言・ロジックの変更は **`web/` と `data/` だけ** に入れる。
+- 台詞・キャラ・フレーバー等の `data/*.json` と `assets/`（立ち絵・背景・音声）は**残置**（web が使用）。
+- テストは web ヘッドレス（本ファイル下部の全7本）だけ緑にすればよい。
+- 復活が必要になったら git 履歴（削除コミット以前）から取り出せる。手で同期し直すのではなく、完成した `web/` ＋ `data/*.json` を仕様として**作り直す**前提。
+- AI で矛盾・改行・セリフを点検する際の**対象範囲は `docs/review_scope.md`** を参照（ビルド成果物・旧brandファイルを除外し、偽の矛盾とトークン浪費を防ぐ）。
 
 ---
 
@@ -77,10 +78,10 @@ Godot版（`scripts/*.gd` / `scenes/` / `*.tscn` / `*.import` / `*.uid` / `asset
 | `data/baito_events.json` | バイトイベントデータ |
 | `brand/story_and_structure.md` | 全章ストーリー構成（読む場合は必要な章のみ） |
 | `brand/character_profiles.md` | キャラクター設定詳細（要部分読み取り） |
-| `scripts/autoload/` | GameManager, PlayerData, AfffinityManager 等 |
-| `scripts/tournament/` | 大会スクリプト ch1〜ch4（各約3,000〜4,200行） |
-| `scripts/daily/` | 日常パート（バイト・練習・マップ移動） |
-| `scripts/ui/` | UIコンポーネント |
+| `web/js/game.js` | ブラウザ版ゲーム本体（状態管理・大会・報酬・UI） |
+| `web/js/engine.js` | 会話エンジン（改行 autoWrap・表示名・タイプ表示） |
+| `web/build_data.py` | `data/*.json` → `web/js/data.js` バンドル生成 |
+| `tools/lint_dialogue.py` | 台詞リンタ（禁止語・話者ID・改行・報酬キュー検査） |
 | `tools/` | dialogue_editor.py 等の開発支援スクリプト |
 
 ---
@@ -219,7 +220,7 @@ Godot版（`scripts/*.gd` / `scenes/` / `*.tscn` / `*.import` / `*.uid` / `asset
 
 | ファイル | 行数 | 推奨アクセス方法 |
 |---|---|---|
-| `scripts/tournament/ch1_tournament.gd` | 4,261行 | 該当関数名で Grep してから部分読み取り |
+| `web/js/game.js` | 約8,000行 | 関数名・定数名で Grep してから部分読み取り |
 | `data/dialogue/ch1_main.json` | 926行 | `dialogue_id` で Grep して前後だけ読む |
 | `data/dialogue/ch1_tournament.json` | 838行 | 同上 |
 | `data/characters.json` | 656行 | `jq '.[] | select(.id == "xxx")'` で1件抽出 |
