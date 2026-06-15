@@ -1,0 +1,31 @@
+name: Lint dialogue
+
+# 台詞JSONの構造リンタ。旧名/旧設定の混入・未登録speaker・壊れたJSONを
+# ERROR として検出し、main / claude/** への push と PR で止める。
+# （重い web ヘッドレステストはローカル運用のまま。これは軽量な静的検査）
+
+on:
+  push:
+    branches: [main, "claude/**"]
+    paths:
+      - "data/dialogue/**"
+      - "data/characters.json"
+      - "tools/lint_dialogue.py"
+      - ".github/workflows/lint-dialogue.yml"
+  pull_request:
+    paths:
+      - "data/dialogue/**"
+      - "data/characters.json"
+      - "tools/lint_dialogue.py"
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Run dialogue linter
+        run: python3 tools/lint_dialogue.py
