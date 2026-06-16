@@ -407,6 +407,271 @@
     {
       "dialogue_id": "ch1_c_station_end",
       "lines": []
+    },
+    {
+      "dialogue_id": "cs_staff_greeting",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "C.STATIONに入ると、スタッフが声をかけてきた。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "いらっしゃいませ。……あ、SMOKE CROWN CUPの出場者の方ですよね？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、わかるんですか？"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "エントリーリスト見てますから。頑張ってくださいね"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "あ、ちなみに今回のレギュ、ミント2g以上必須なの知ってます？"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "ミントの扱い方で差がつくって、常連さんが言ってました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ミントで差がつく……か。覚えておこう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "チェーン店のシーシャを一服。広い店内で、色んな煙が混ざり合っている。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cs_customer_rumor",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "C.STATIONの奥のソファ席で、シーシャを吸いながら耳をすます。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣のテーブルの客が、大会の話をしている。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "今回のSMOKE CROWN CUP、KEMURIKUSAのなるが本命って話だ"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "あとEDENのアダム。ダブルアップルであいつに勝てるやつ、そういないぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "もう一人が口を挟む。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "PEPERMINTのみんとも侮れない。客あしらいが上手い。審査員の心もつかむだろう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（みんな名前が挙がるんだな……。tonariのはじめ、は？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "自分の名前は聞こえなかった。でも、ここにいる意味はある。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cs_stage_setup",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "C.STATIONの奥に、大会ステージの準備が進んでいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "作業台が4つ。客席が前面にずらり。照明のテストで、スポットが点滅している。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（4人同時か。隣のやつの手元も、客席からは丸見えなんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スタッフが資材を運びながら話している。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "審査席は正面。南雲会長がいつも一番端。最後まで点を入れないんですよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（南雲会長が最後まで温存……。あの人を動かすには、何が必要なんだろう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "本番のステージを見て、イメージが少しだけ具体的になった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cs_regular_chat",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "C.STATIONのカウンターで一服。隣に座った常連らしき男性が話しかけてきた。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "お兄ちゃん、大会出るの？ 顔つきが違うもんな、出場者は"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はは、わかります？"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "去年の優勝者はね、技術はそこそこだったんだよ。でも「もう一口吸いたい」って審査員に思わせた"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "結局、数字じゃなくて、心に残るかどうかなんだよ。シーシャって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（心に残るシーシャ……。技術だけじゃないんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "知らない人の言葉が、意外と深く刺さった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cs_nagumo_glimpse",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "C.STATIONの奥に、見覚えのある背中があった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "南雲会長。一人で静かにシーシャを吸っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ただ静かに煙を味わっている。審査員というより、ただの「煙が好きなおじさん」だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（あの人も、こうやって一人で吸いに来るんだ……。普通の客なんだよな、本当は）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "会長が煙を吐く。ゆっくりと天井に広がる。その煙を目で追いながら、少しだけ微笑んでいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（『もう一口吸いたい』──あの人にそう思わせる煙って、どんな一台だ？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "声はかけなかった。でも、ヒントをもらった気がする。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cs_kemuri_solo",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "C.STATIONのカウンターの端に、白衣の男がいた。ノートPCを開いて何かを入力している。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "チャコール博士──炭場創。審査員でもあり、研究者でもある変人。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "……温度分布の標準偏差が1.2℃。ふむ。ボウルの素材で有意差あり"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（何言ってるかわからないけど……すごい細かいな）"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "おや、きみ。見ない顔だね。今度の大会の出場者かい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "は、はい。tonariの蒸野です"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "tonari。……スミさんのところか。あの人の炭は数値が美しい"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "きみに一つだけ。炭の火入れは、見た目より0.5秒長く。それだけで味が変わるよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（0.5秒……。覚えておこう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "博士はすぐにPCに目を戻した。会話は終わり、でも収穫はあった。"
+        }
+      ]
     }
   ]
 }

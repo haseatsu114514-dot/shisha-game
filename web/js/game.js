@@ -167,6 +167,7 @@ function newState() {
     pendingLimeNight: null, // 夜に約束したLIMEイベント {event, sender}
     practiceBest: {},      // 練習ドリルの自己ベスト（0〜2）。大会本番のボーナスになる
     customerNotes: {},     // 常連ノート: {event_id: {first, count}} バイトで会った客の記録
+    csVisits: 0,           // C.STATION訪問回数（初回は特別イベント、以降はローテーション）
     // 日常スロット（パッキー＝理由は語られない謎のマスコット兼司会）。アプリ演出は出さない
     reel: (typeof REEL !== "undefined" ? Object.assign(REEL.newReelState(), { introDone: true }) : null),
     flags: {},
@@ -1117,7 +1118,7 @@ const SPOTS = [
   { id: "choizap", label: "チョイザップ", desc: "みんとに教えてもらったジム", cost: 0, requiresMet: "minto" },
   { id: "kannon", label: "観音堂", desc: "アダムに教えてもらった静かな場所", cost: 0, requiresMet: "adam" },
   { id: "cafe", label: "カフェ", desc: "なるおすすめのスパイスラテ", cost: 800, requiresMet: "naru" },
-  { id: "c_station", label: "C.STATION", desc: "大会会場の下見に行く", cost: 0 },
+  { id: "c_station", label: "C.STATION", desc: "大会会場のチェーン店。噂や大会情報が集まる", cost: 2500 },
   { id: "shop", label: "Dr.fookah", desc: "卸直営のショップ。機材・フレーバーが揃い、1階の試飲席で一応吸える（時間はかからない）", cost: 0 },
   { id: "rest", label: "家で休む", desc: "しっかり寝て明日に備える", cost: 0 },
 ];
@@ -1906,7 +1907,7 @@ function selectSpot(spot) {
       case "choizap": return doChoizap();
       case "kannon": return doSpotDialogue("kannon", "ch1_kannon_visit", "bg_street_day.png");
       case "cafe": return doSpotDialogue("cafe", "ch1_cafe_visit", "bg_street_day.png");
-      case "c_station": return doSpotDialogue("c_station", "ch1_c_station_visit", "bg_shop.png");
+      case "c_station": return doCStation();
       case "shop": return showFookahMenu(); // Dr.fookah: 物販利用 or 凛＋ブース を選ぶ(T28)
       case "rest": return doRest();
       default: {
@@ -2007,6 +2008,24 @@ function doSpotDialogue(spotId, dialogueId, bg) {
     gainStat(spotStat(spotId), 3);
     endAction();
   }, `res://assets/backgrounds/${bg}`);
+}
+
+const CS_VISIT_POOL = [
+  "cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup",
+  "cs_regular_chat", "cs_nagumo_glimpse", "cs_kemuri_solo",
+];
+
+function doCStation() {
+  visitContextChar = null;
+  if (!state.csVisits) state.csVisits = 0;
+  const first = state.csVisits === 0;
+  state.csVisits++;
+  const dialogueId = first ? "ch1_c_station_visit" : CS_VISIT_POOL[(state.csVisits - 2) % CS_VISIT_POOL.length];
+  playDialogue(dialogueId, () => {
+    if (!cueFiredInDialogue) gainStat("insight", 2);
+    gainStat(spotStat("c_station"), 3);
+    endAction();
+  }, "res://assets/backgrounds/bg_shop.png");
 }
 
 function endAction() {
@@ -6124,6 +6143,7 @@ function continueGame(saved) {
   if (state.pendingLimeNight === undefined) state.pendingLimeNight = null;
   if (!state.practiceBest) state.practiceBest = {};
   if (!state.customerNotes) state.customerNotes = {};
+  if (!state.csVisits) state.csVisits = 0;
   // 日常スロット導入前のセーブ互換（アプリ説明は出さない）
   if (!state.reel && typeof REEL !== "undefined") state.reel = Object.assign(REEL.newReelState(), { introDone: true });
   // 凛（問屋街の代理店）導入前のセーブ互換
