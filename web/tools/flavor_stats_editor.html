@@ -206,7 +206,63 @@ body > .progress-bar { display: block; text-align: center; }
   white-space: nowrap;
 }
 .reset-row-btn:hover { color: #e94560; border-color: #e94560; }
-td.action-cell { min-width: 56px; }
+td.action-cell { min-width: 70px; }
+.add-flavor-form {
+  max-width: 900px;
+  margin: 0 auto 20px;
+  background: #16213e;
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.add-flavor-form label {
+  font-size: 0.82em;
+  color: #aaa;
+  white-space: nowrap;
+}
+.add-flavor-form input, .add-flavor-form select {
+  background: #0f3460;
+  color: #e0e0e0;
+  border: 1px solid #444;
+  border-radius: 4px;
+  padding: 5px 8px;
+  font-size: 0.85em;
+}
+.add-flavor-form input { width: 160px; }
+.add-flavor-form input:focus, .add-flavor-form select:focus {
+  border-color: #e94560; outline: none;
+}
+.add-flavor-btn {
+  background: #e94560; color: white; border: none;
+  padding: 6px 16px; border-radius: 6px; cursor: pointer;
+  font-size: 0.85em;
+}
+.add-flavor-btn:hover { background: #c73550; }
+.delete-row-btn {
+  background: transparent;
+  color: #e94560;
+  border: 1px solid #e94560;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.72em;
+  margin-top: 3px;
+  white-space: nowrap;
+}
+.delete-row-btn:hover { background: rgba(233,69,96,0.15); }
+.custom-badge {
+  display: inline-block;
+  background: #e94560;
+  color: white;
+  font-size: 0.6em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  margin-left: 4px;
+  vertical-align: middle;
+}
 #file-input-wrap {
   display: none;
   justify-content: center;
@@ -267,6 +323,25 @@ td.action-cell { min-width: 56px; }
   <input type="file" id="file-input" accept=".json" onchange="loadFromFlavorsJSON(this)">
 </div>
 
+<div class="add-flavor-form">
+  <label>ID:</label>
+  <input type="text" id="new-id" placeholder="例: lemon">
+  <label>表示名:</label>
+  <input type="text" id="new-name" placeholder="例: AF レモン">
+  <label>正式名:</label>
+  <input type="text" id="new-full" placeholder="例: アルファーヘブン レモン">
+  <label>カテゴリ:</label>
+  <select id="new-cat">
+    <option value="fruit">フルーツ</option>
+    <option value="sweet">スイート</option>
+    <option value="cooling">清涼</option>
+    <option value="spice">スパイス</option>
+    <option value="floral">フローラル</option>
+    <option value="other">その他</option>
+  </select>
+  <button class="add-flavor-btn" onclick="addCustomFlavor()">＋ フレーバー追加</button>
+</div>
+
 <div class="table-wrap">
   <table id="flavor-table">
     <thead>
@@ -281,7 +356,7 @@ td.action-cell { min-width: 56px; }
 <div id="copy-toast" class="copy-toast">コピーしました</div>
 
 <script>
-const FLAVORS = [
+const BASE_FLAVORS = [
   { id: "mint", name: "AF ミント", full: "アルファーヘブン ミント", cat: "cooling" },
   { id: "double_apple", name: "AF ダブルアップル", full: "アルファーヘブン ダブルアップル", cat: "spice" },
   { id: "blueberry", name: "AF ブルーベリー", full: "アルファーヘブン ブルーベリー", cat: "fruit" },
@@ -295,7 +370,10 @@ const FLAVORS = [
   { id: "rose", name: "AF ローズ", full: "アルファーヘブン ローズ", cat: "sweet" }
 ];
 
-const CAT_JA = { cooling: "清涼", spice: "スパイス", fruit: "フルーツ", sweet: "スイート" };
+let customFlavors = [];
+function allFlavors() { return [...BASE_FLAVORS, ...customFlavors]; }
+
+const CAT_JA = { cooling: "清涼", spice: "スパイス", fruit: "フルーツ", sweet: "スイート", floral: "フローラル", other: "その他" };
 
 const STATS = [
   { key: "heat_resistance", label: "熱耐性", desc: "高温耐性+立ち上がり" },
@@ -312,7 +390,10 @@ const STATS = [
   { key: "nicotine", label: "ニコチンの強さ", desc: "ニコチン感" }
 ];
 
+function isCustom(id) { return customFlavors.some(f => f.id === id); }
+
 function buildTable() {
+  const flavors = allFlavors();
   const hr = document.getElementById("header-row");
   hr.innerHTML = "";
   const thName = document.createElement("th");
@@ -338,14 +419,18 @@ function buildTable() {
   const body = document.getElementById("flavor-body");
   body.innerHTML = "";
 
-  for (const f of FLAVORS) {
+  for (const f of flavors) {
     const tr = document.createElement("tr");
     tr.dataset.id = f.id;
 
     const tdName = document.createElement("td");
     tdName.className = "flavor-name";
-    tdName.textContent = f.name;
     tdName.title = f.full;
+    if (isCustom(f.id)) {
+      tdName.innerHTML = f.name + '<span class="custom-badge">NEW</span>';
+    } else {
+      tdName.textContent = f.name;
+    }
     tr.appendChild(tdName);
 
     const tdCat = document.createElement("td");
@@ -377,13 +462,8 @@ function buildTable() {
 
     const tdNg = document.createElement("td");
     tdNg.className = "ng-cell";
-    for (const other of FLAVORS) {
+    for (const other of flavors) {
       if (other.id === f.id) continue;
-      if (other.id === "nightside_earlgrey" && f.id !== "nightside_earlgrey_release") continue;
-      if (other.id === "nightside_earlgrey_release" && f.id !== "nightside_earlgrey") continue;
-      if (f.id === "nightside_earlgrey" || f.id === "nightside_earlgrey_release") {
-        if (other.id === "nightside_earlgrey" || other.id === "nightside_earlgrey_release") continue;
-      }
       const label = document.createElement("label");
       const cb = document.createElement("input");
       cb.type = "checkbox";
@@ -405,10 +485,16 @@ function buildTable() {
     resetBtn.className = "reset-row-btn";
     resetBtn.textContent = "リセット";
     resetBtn.dataset.flavor = f.id;
-    resetBtn.addEventListener("click", function() {
-      resetRow(this.dataset.flavor);
-    });
+    resetBtn.addEventListener("click", function() { resetRow(this.dataset.flavor); });
     tdAction.appendChild(resetBtn);
+    if (isCustom(f.id)) {
+      const delBtn = document.createElement("button");
+      delBtn.className = "delete-row-btn";
+      delBtn.textContent = "削除";
+      delBtn.dataset.flavor = f.id;
+      delBtn.addEventListener("click", function() { deleteCustomFlavor(this.dataset.flavor); });
+      tdAction.appendChild(delBtn);
+    }
     tr.appendChild(tdAction);
 
     body.appendChild(tr);
@@ -417,8 +503,9 @@ function buildTable() {
 
 function collectData() {
   const result = [];
-  for (const f of FLAVORS) {
+  for (const f of allFlavors()) {
     const entry = { id: f.id, name: f.full, short_name: f.name, category: f.cat, stats: {} };
+    if (isCustom(f.id)) entry.custom = true;
     for (const s of STATS) {
       const sel = document.querySelector(`select[data-flavor="${f.id}"][data-stat="${s.key}"]`);
       entry.stats[s.key] = sel ? parseInt(sel.value) : 5;
@@ -434,8 +521,12 @@ function collectData() {
 
 function exportJSON() {
   const data = collectData();
-  const flat = data.map(f => ({ id: f.id, stats: f.stats, ng_flavors: f.ng_flavors }));
-  const json = JSON.stringify(flat, null, 2);
+  const out = data.map(f => {
+    const o = { id: f.id, stats: f.stats, ng_flavors: f.ng_flavors };
+    if (f.custom) { o.name = f.name; o.short_name = f.short_name; o.category = f.category; o.custom = true; }
+    return o;
+  });
+  const json = JSON.stringify(out, null, 2);
   const area = document.getElementById("export-area");
   area.style.display = "block";
   area.value = json;
@@ -444,8 +535,12 @@ function exportJSON() {
 
 function copyJSON() {
   const data = collectData();
-  const flat = data.map(f => ({ id: f.id, stats: f.stats, ng_flavors: f.ng_flavors }));
-  const json = JSON.stringify(flat, null, 2);
+  const out = data.map(f => {
+    const o = { id: f.id, stats: f.stats, ng_flavors: f.ng_flavors };
+    if (f.custom) { o.name = f.name; o.short_name = f.short_name; o.category = f.category; o.custom = true; }
+    return o;
+  });
+  const json = JSON.stringify(out, null, 2);
   navigator.clipboard.writeText(json).then(() => {
     const toast = document.getElementById("copy-toast");
     toast.style.display = "block";
@@ -483,6 +578,14 @@ function importJSON() {
     const data = JSON.parse(raw);
     const list = data.flavor_stats || data.flavors || data;
     if (!Array.isArray(list)) throw new Error("配列が見つかりません");
+    const savedState = collectData();
+    for (const entry of list) {
+      if (entry.custom && entry.id && !allFlavors().some(f => f.id === entry.id)) {
+        customFlavors.push({ id: entry.id, name: entry.short_name || entry.id, full: entry.name || entry.id, cat: entry.category || "other", custom: true });
+      }
+    }
+    buildTable();
+    applyFlavorData(savedState);
     applyFlavorData(list);
     alert("インポート完了");
   } catch (e) {
@@ -492,8 +595,8 @@ function importJSON() {
 
 function resetAll() {
   if (!confirm("全ステータスを初期値（5）に戻しますか？")) return;
-  document.querySelectorAll("select").forEach(sel => { sel.value = 5; sel.className = "val-5"; });
-  document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+  document.querySelectorAll("#flavor-body select").forEach(sel => { sel.value = 5; sel.className = "val-5"; });
+  document.querySelectorAll('#flavor-body input[type="checkbox"]').forEach(cb => cb.checked = false);
   autoSave();
   updateProgress();
 }
@@ -503,8 +606,13 @@ const LS_KEY = "flavor_stats_draft";
 function autoSave() {
   try {
     const data = collectData();
-    const flat = data.map(f => ({ id: f.id, stats: f.stats, ng_flavors: f.ng_flavors }));
-    localStorage.setItem(LS_KEY, JSON.stringify(flat));
+    const flat = data.map(f => {
+      const o = { id: f.id, stats: f.stats, ng_flavors: f.ng_flavors };
+      if (f.custom) { o.name = f.name; o.short_name = f.short_name; o.category = f.category; o.custom = true; }
+      return o;
+    });
+    const save = { customFlavors: customFlavors, values: flat };
+    localStorage.setItem(LS_KEY, JSON.stringify(save));
   } catch (e) { /* localStorage unavailable */ }
 }
 
@@ -512,17 +620,29 @@ function loadFromLocalStorage() {
   try {
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) return false;
-    const list = JSON.parse(raw);
-    if (!Array.isArray(list)) return false;
-    applyFlavorData(list);
+    const parsed = JSON.parse(raw);
+    if (Array.isArray(parsed)) {
+      applyFlavorData(parsed);
+      return true;
+    }
+    if (parsed.customFlavors) {
+      for (const cf of parsed.customFlavors) {
+        if (!allFlavors().some(f => f.id === cf.id)) {
+          customFlavors.push(cf);
+        }
+      }
+      buildTable();
+    }
+    if (parsed.values) applyFlavorData(parsed.values);
     return true;
   } catch (e) { return false; }
 }
 
 function updateProgress() {
-  const total = FLAVORS.length;
+  const flavors = allFlavors();
+  const total = flavors.length;
   let customized = 0;
-  for (const f of FLAVORS) {
+  for (const f of flavors) {
     let changed = false;
     for (const s of STATS) {
       const sel = document.querySelector(`select[data-flavor="${f.id}"][data-stat="${s.key}"]`);
@@ -536,23 +656,54 @@ function updateProgress() {
   }
   const el = document.getElementById("progress-bar");
   el.textContent = `設定済み: ${customized}/${total}`;
-  if (customized === total) {
-    el.style.color = "#8be9a0";
-  } else if (customized > 0) {
-    el.style.color = "#f0e68c";
-  } else {
-    el.style.color = "#888";
-  }
+  if (customized === total) el.style.color = "#8be9a0";
+  else if (customized > 0) el.style.color = "#f0e68c";
+  else el.style.color = "#888";
 }
 
 function resetRow(flavorId) {
   document.querySelectorAll(`select[data-flavor="${flavorId}"]`).forEach(sel => {
-    sel.value = 5;
-    sel.className = "val-5";
+    sel.value = 5; sel.className = "val-5";
   });
-  document.querySelectorAll(`input[data-flavor="${flavorId}"]`).forEach(cb => {
-    cb.checked = false;
-  });
+  document.querySelectorAll(`input[data-flavor="${flavorId}"]`).forEach(cb => cb.checked = false);
+  autoSave();
+  updateProgress();
+}
+
+function addCustomFlavor() {
+  const id = document.getElementById("new-id").value.trim().toLowerCase().replace(/[^a-z0-9_]/g, "_");
+  const name = document.getElementById("new-name").value.trim();
+  const full = document.getElementById("new-full").value.trim() || name;
+  const cat = document.getElementById("new-cat").value;
+  if (!id) { alert("IDを入力してください（英数字・アンダースコア）"); return; }
+  if (!name) { alert("表示名を入力してください"); return; }
+  if (allFlavors().some(f => f.id === id)) { alert("ID「" + id + "」は既に存在します"); return; }
+  const savedState = collectData();
+  customFlavors.push({ id, name, full, cat, custom: true });
+  buildTable();
+  applyFlavorData(savedState);
+  autoSave();
+  updateProgress();
+  document.getElementById("new-id").value = "";
+  document.getElementById("new-name").value = "";
+  document.getElementById("new-full").value = "";
+  const toast = document.getElementById("copy-toast");
+  toast.textContent = "「" + name + "」を追加しました";
+  toast.style.display = "block";
+  toast.style.animation = "none";
+  void toast.offsetHeight;
+  toast.style.animation = "fadeout 2s forwards";
+  setTimeout(() => { toast.style.display = "none"; toast.textContent = "コピーしました"; }, 2100);
+}
+
+function deleteCustomFlavor(id) {
+  const f = customFlavors.find(f => f.id === id);
+  if (!f) return;
+  if (!confirm("「" + f.name + "」を削除しますか？")) return;
+  const savedState = collectData().filter(e => e.id !== id);
+  customFlavors = customFlavors.filter(f => f.id !== id);
+  buildTable();
+  applyFlavorData(savedState);
   autoSave();
   updateProgress();
 }
@@ -571,6 +722,20 @@ function loadFromFlavorsJSON(input) {
       const data = JSON.parse(e.target.result);
       const list = data.flavors || data.flavor_stats || data;
       if (!Array.isArray(list)) throw new Error("配列が見つかりません");
+      const savedState = collectData();
+      for (const entry of list) {
+        if (entry.id && !allFlavors().some(f => f.id === entry.id)) {
+          customFlavors.push({
+            id: entry.id,
+            name: entry.short_name || entry.name || entry.id,
+            full: entry.name || entry.id,
+            cat: entry.category || "other",
+            custom: true
+          });
+        }
+      }
+      buildTable();
+      applyFlavorData(savedState);
       applyFlavorData(list);
       alert("flavors.json から読み込み完了（" + list.length + " 件）");
     } catch (err) {
