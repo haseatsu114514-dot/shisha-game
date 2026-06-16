@@ -10,7 +10,22 @@
       "heat_tolerance": 1.2,
       "smoke_weight": 0.7,
       "steam_bias": -1.0,
-      "leaf": "blond"
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 5,
+        "sweet_natural": 5,
+        "sweet_confection": 5,
+        "cooling": 5,
+        "assertiveness": 5,
+        "acquired_taste": 5,
+        "smoke_body": 5,
+        "sourness": 5,
+        "spiciness": 5,
+        "floral": 5,
+        "nicotine": 5
+      },
+      "ng_flavors": []
     },
     {
       "id": "double_apple",
@@ -22,7 +37,22 @@
       "heat_tolerance": 1.0,
       "smoke_weight": 1.3,
       "steam_bias": 0.5,
-      "leaf": "blond"
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 5,
+        "sweet_natural": 5,
+        "sweet_confection": 5,
+        "cooling": 5,
+        "assertiveness": 5,
+        "acquired_taste": 5,
+        "smoke_body": 5,
+        "sourness": 5,
+        "spiciness": 5,
+        "floral": 5,
+        "nicotine": 5
+      },
+      "ng_flavors": []
     },
     {
       "id": "blueberry",
@@ -34,7 +64,22 @@
       "heat_tolerance": 0.9,
       "smoke_weight": 1.0,
       "steam_bias": 0.0,
-      "leaf": "blond"
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 5,
+        "sweet_natural": 5,
+        "sweet_confection": 5,
+        "cooling": 5,
+        "assertiveness": 5,
+        "acquired_taste": 5,
+        "smoke_body": 5,
+        "sourness": 5,
+        "spiciness": 5,
+        "floral": 5,
+        "nicotine": 5
+      },
+      "ng_flavors": []
     },
     {
       "id": "strawberry",
@@ -46,7 +91,22 @@
       "heat_tolerance": 0.85,
       "smoke_weight": 0.9,
       "steam_bias": 0.5,
-      "leaf": "blond"
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 5,
+        "sweet_natural": 5,
+        "sweet_confection": 5,
+        "cooling": 5,
+        "assertiveness": 5,
+        "acquired_taste": 5,
+        "smoke_body": 5,
+        "sourness": 5,
+        "spiciness": 5,
+        "floral": 5,
+        "nicotine": 5
+      },
+      "ng_flavors": []
     },
     {
       "id": "vanilla",
@@ -58,7 +118,22 @@
       "heat_tolerance": 0.8,
       "smoke_weight": 1.1,
       "steam_bias": 0.3,
-      "leaf": "blond"
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 5,
+        "sweet_natural": 5,
+        "sweet_confection": 5,
+        "cooling": 5,
+        "assertiveness": 5,
+        "acquired_taste": 5,
+        "smoke_body": 5,
+        "sourness": 5,
+        "spiciness": 5,
+        "floral": 5,
+        "nicotine": 5
+      },
+      "ng_flavors": []
     },
     {
       "id": "pineapple",
@@ -70,7 +145,22 @@
       "heat_tolerance": 1.1,
       "smoke_weight": 0.9,
       "steam_bias": -0.3,
-      "leaf": "blond"
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 5,
+        "sweet_natural": 5,
+        "sweet_confection": 5,
+        "cooling": 5,
+        "assertiveness": 5,
+        "acquired_taste": 5,
+        "smoke_body": 5,
+        "sourness": 5,
+        "spiciness": 5,
+        "floral": 5,
+        "nicotine": 5
+      },
+      "ng_flavors": []
     },
     {
       "id": "coconut",
@@ -82,7 +172,22 @@
       "heat_tolerance": 0.85,
       "smoke_weight": 1.2,
       "steam_bias": 0.6,
-      "leaf": "blond"
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 5,
+        "sweet_natural": 5,
+        "sweet_confection": 5,
+        "cooling": 5,
+        "assertiveness": 5,
+        "acquired_taste": 5,
+        "smoke_body": 5,
+        "sourness": 5,
+        "spiciness": 5,
+        "floral": 5,
+        "nicotine": 5
+      },
+      "ng_flavors": []
     },
     {
       "id": "nightside_earlgrey",
@@ -98,7 +203,22 @@
       "sample": true,
       "competition_legal": false,
       "serve_legal": false,
-      "leaf": "blond"
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 5,
+        "sweet_natural": 5,
+        "sweet_confection": 5,
+        "cooling": 5,
+        "assertiveness": 5,
+        "acquired_taste": 5,
+        "smoke_body": 5,
+        "sourness": 5,
+        "spiciness": 5,
+        "floral": 5,
+        "nicotine": 5
+      },
+      "ng_flavors": []
     },
     {
       "id": "nightside_earlgrey_release",
@@ -111,7 +231,22 @@
       "smoke_weight": 1.05,
       "steam_bias": 0.5,
       "requires_flag": "_rin_release",
-      "leaf": "blond"
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 5,
+        "sweet_natural": 5,
+        "sweet_confection": 5,
+        "cooling": 5,
+        "assertiveness": 5,
+        "acquired_taste": 5,
+        "smoke_body": 5,
+        "sourness": 5,
+        "spiciness": 5,
+        "floral": 5,
+        "nicotine": 5
+      },
+      "ng_flavors": []
     },
     {
       "id": "grape",
@@ -126,7 +261,22 @@
       "requires_flag": "_flavor_grape",
       "unlockable": true,
       "chapter_min": 1,
-      "leaf": "blond"
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 5,
+        "sweet_natural": 5,
+        "sweet_confection": 5,
+        "cooling": 5,
+        "assertiveness": 5,
+        "acquired_taste": 5,
+        "smoke_body": 5,
+        "sourness": 5,
+        "spiciness": 5,
+        "floral": 5,
+        "nicotine": 5
+      },
+      "ng_flavors": []
     },
     {
       "id": "rose",
@@ -141,7 +291,22 @@
       "requires_flag": "_flavor_rose",
       "unlockable": true,
       "chapter_min": 1,
-      "leaf": "blond"
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 5,
+        "refreshing": 5,
+        "sweet_natural": 5,
+        "sweet_confection": 5,
+        "cooling": 5,
+        "assertiveness": 5,
+        "acquired_taste": 5,
+        "smoke_body": 5,
+        "sourness": 5,
+        "spiciness": 5,
+        "floral": 5,
+        "nicotine": 5
+      },
+      "ng_flavors": []
     }
   ]
 }
