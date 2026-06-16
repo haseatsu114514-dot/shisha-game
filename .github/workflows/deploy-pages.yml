@@ -8,6 +8,7 @@ on:
     branches: [main, "claude/**"]
     paths:
       - "web/dist/**"
+      - "web/tools/**"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -30,8 +31,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Prepare site
         run: |
-          mkdir -p _site
+          mkdir -p _site/tools
           cp web/dist/shisha_ch1.html _site/index.html
+          cp web/tools/flavor_stats_editor.html _site/tools/flavor_stats_editor.html
       - uses: actions/configure-pages@v5
         with:
           enablement: true
