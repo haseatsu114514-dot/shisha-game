@@ -278,17 +278,21 @@
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "（──なんてね。でも、ちょっとだけ想像しちゃうんだよな。"
+            "text": "（──なんてね。でも、ちょっとだけ想像しちゃうんだよな）"
           },
           {
-            "speaker": "hajime",
-            "face": "smile",
-            "text": "表彰台の上の俺と、それを見た誰かが『あれ、tonariのはじめくんだ』って言うところ）"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "想像の中の彼は、いつも誰かに見られている。──大会まであと{daysLeft}日。"
+            "type": "choice",
+            "id": "opening_fantasy",
+            "choices": [
+              {
+                "text": "（優勝したら、一気に名前が売れるかもしれない）",
+                "next": "of_shop"
+              },
+              {
+                "text": "（ライバルたちの前で、俺の煙を見せてやるんだ）",
+                "next": "of_rival"
+              }
+            ]
           }
         ],
         "hesitate": [
@@ -356,6 +360,65 @@
             "speaker": "",
             "face": "",
             "text": "想像の中の彼は、いつも誰かに見られている。──大会まであと{daysLeft}日。"
+          }
+        ],
+        "of_shop": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "スミさん、俺が優勝したら取材とか来ますかね。「期待の新星、tonariから」みたいな"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スミさんの手が、一瞬だけ止まった。"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "……まず一台作れ。話はそれからだ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "短い沈黙。何か余計なことを言った気がした。──でも、想像するのは自由だろう。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "帰り道。有名になった自分の姿は、やたらとリアルだった。大会まであと{daysLeft}日。"
+          }
+        ],
+        "of_rival": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "エースが来るんですよね。楽しみだな。俺の煙、見せてやりたいです"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スミさんがこちらを見た。少しだけ、眉が動いた。"
+          },
+          {
+            "speaker": "sumi",
+            "face": "serious",
+            "text": "……見せるんじゃなくて、届けるんだよ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "え？"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "いい。帰れ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "言葉の意味はまだわからない。でも帰り道、なぜか引っかかっていた。大会まであと{daysLeft}日。"
           }
         ]
       }
@@ -1025,7 +1088,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "チュートリアルの片付けをしていると、ドアベルが鳴った。"
+          "text": "さっきの練習の片付けをしていると、ドアベルが鳴った。"
         },
         {
           "speaker": "sumi",
@@ -1123,7 +1186,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "ありがとうございます。初めてのお客さんがお姉さんでよかったです"
+          "text": "ありがとうございます。ひとりで作ったの初めてで……お姉さんが最初のお客さんでよかった"
         },
         {
           "speaker": "oneesan",
@@ -1144,12 +1207,97 @@
           "text": "名前も知らない、たまに来る綺麗なお姉さん。それだけの認識だった。"
         },
         {
+          "type": "choice",
+          "id": "oneesan_praise_feel",
+          "choices": [
+            {
+              "text": "（やっぱり俺、才能あるかも。初めてでこの反応だし）",
+              "next": "op_talent"
+            },
+            {
+              "text": "（これ、スミさんに報告したら褒めてくれるかな）",
+              "next": "op_report"
+            }
+          ]
+        },
+        {
           "type": "apply",
           "stats": {
             "charm": 2
           }
         }
-      ]
+      ],
+      "branches": {
+        "op_talent": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "スミさん、俺やっぱセンスあるかもです。初めてで、いきなり褒められちゃいました"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スミさんは仕込みの手を止めずに答えた。"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "……お客さんは何て？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "『おいしい』って。あと『いいシーシャ屋になる』って"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "そうか。──で、その人はどんな顔で吸ってた？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "え？ ……えーと……"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "答えに詰まった。褒められた言葉は覚えているのに、その人の表情は思い出せなかった。"
+          }
+        ],
+        "op_report": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "スミさん、お客さんに『おいしい』って言ってもらえました。……どうです？"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スミさんは一瞬だけこちらを見て、仕込みに戻った。"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "俺に聞いてどうする。褒めてほしいのか"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "いや、そういうわけじゃ……"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "客が満足したなら、それでいい。次"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "スミさんの反応は薄かった。喜んでくれると思ったのに。"
+          }
+        ]
+      }
     }
   ]
 }

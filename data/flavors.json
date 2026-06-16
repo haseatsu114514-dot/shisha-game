@@ -190,6 +190,18 @@
       "ng_flavors": []
     },
     {
+      "id": "mango",
+      "name": "アルファーヘブン マンゴー",
+      "short_name": "AF マンゴー",
+      "category": "fruit",
+      "price": 1550,
+      "description": "アルファーヘブンのマンゴー。トロピカルな甘みが一口目から広がり、果実系ミックスの華になる。",
+      "heat_tolerance": 0.95,
+      "smoke_weight": 1.0,
+      "steam_bias": 0.2,
+      "leaf": "blond"
+    },
+    {
       "id": "nightside_earlgrey",
       "name": "ナイトサイド アールグレイ（試作）",
       "short_name": "NS アールグレイ",
