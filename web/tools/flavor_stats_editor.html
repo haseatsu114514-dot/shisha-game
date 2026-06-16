@@ -603,7 +603,7 @@ td.action-cell { min-width: 120px; }
 
 <!-- Progress -->
 <div class="progress-wrap">
-  <div class="progress-text" id="progress-text">設定済み: 0 / 60</div>
+  <div class="progress-text" id="progress-text">設定済み: 0 / 64</div>
   <div class="progress-meter"><div class="progress-fill" id="progress-fill"></div></div>
 </div>
 
@@ -614,6 +614,7 @@ td.action-cell { min-width: 120px; }
   <button class="secondary" onclick="importJSON()">インポート</button>
   <button class="secondary" onclick="showFileInput()">ファイル読込</button>
   <button class="secondary" onclick="resetAll()">リセット</button>
+  <button class="secondary" onclick="restoreAllHidden()">削除済み復元</button>
 </div>
 <div id="file-input-wrap">
   <input type="file" id="file-input" accept=".json" onchange="loadFromFlavorsJSON(this)">
@@ -784,11 +785,16 @@ const BASE_FLAVORS = [
   { id: "espresso", name: "dobaj エスプレッソ", full: "ドバージュ エスプレッソ", cat: "sweet" },
   { id: "black_tea", name: "アブサル ブラックティー", full: "アブサル ブラックティー", cat: "spice" },
   { id: "absal_earlgrey", name: "アブサル アールグレイ", full: "アブサル アールグレイ", cat: "floral" },
-  { id: "lemon_tea", name: "AF レモンティー", full: "アルファーヘブン レモンティー", cat: "fruit" }
+  { id: "lemon_tea", name: "AF レモンティー", full: "アルファーヘブン レモンティー", cat: "fruit" },
+  { id: "dobaj_double_apple", name: "dobaj ダブルアップル", full: "ドバージュ ダブルアップル", cat: "spice" },
+  { id: "absal_double_apple", name: "アブサル ダブルアップル", full: "アブサル ダブルアップル", cat: "spice" },
+  { id: "dobaj_mint", name: "dobaj ミント", full: "ドバージュ ミント", cat: "cooling" },
+  { id: "absal_mint", name: "アブサル ミント", full: "アブサル ミント", cat: "cooling" }
 ];
 
 let customFlavors = [];
-function allFlavors() { return [...BASE_FLAVORS, ...customFlavors]; }
+let hiddenIds = new Set();
+function allFlavors() { return [...BASE_FLAVORS, ...customFlavors].filter(f => !hiddenIds.has(f.id)); }
 
 const CAT_JA = { cooling: "清涼", spice: "スパイス", fruit: "フルーツ", sweet: "スイート", floral: "フローラル", other: "その他" };
 
@@ -1105,14 +1111,12 @@ function buildTable() {
     resetBtn.dataset.flavor = f.id;
     resetBtn.addEventListener("click", function() { resetRow(this.dataset.flavor); });
     tdAction.appendChild(resetBtn);
-    if (isCustom(f.id)) {
-      const delBtn = document.createElement("button");
-      delBtn.className = "delete-row-btn";
-      delBtn.textContent = "削除";
-      delBtn.dataset.flavor = f.id;
-      delBtn.addEventListener("click", function() { deleteCustomFlavor(this.dataset.flavor); });
-      tdAction.appendChild(delBtn);
-    }
+    const delBtn = document.createElement("button");
+    delBtn.className = "delete-row-btn";
+    delBtn.textContent = "削除";
+    delBtn.dataset.flavor = f.id;
+    delBtn.addEventListener("click", function() { deleteFlavor(this.dataset.flavor); });
+    tdAction.appendChild(delBtn);
     tr.appendChild(tdAction);
 
     body.appendChild(tr);
@@ -1245,14 +1249,12 @@ function buildCardView() {
     resetBtn.dataset.flavor = f.id;
     resetBtn.addEventListener("click", function() { resetRow(this.dataset.flavor); });
     actions.appendChild(resetBtn);
-    if (isCustom(f.id)) {
-      const delBtn = document.createElement("button");
-      delBtn.className = "delete-row-btn";
-      delBtn.textContent = "削除";
-      delBtn.dataset.flavor = f.id;
-      delBtn.addEventListener("click", function() { deleteCustomFlavor(this.dataset.flavor); });
-      actions.appendChild(delBtn);
-    }
+    const delBtn = document.createElement("button");
+    delBtn.className = "delete-row-btn";
+    delBtn.textContent = "削除";
+    delBtn.dataset.flavor = f.id;
+    delBtn.addEventListener("click", function() { deleteFlavor(this.dataset.flavor); });
+    actions.appendChild(delBtn);
     body.appendChild(actions);
 
     card.appendChild(body);
@@ -1404,7 +1406,7 @@ function autoSave() {
       if (f.custom) { o.name = f.name; o.short_name = f.short_name; o.category = f.category; o.custom = true; }
       return o;
     });
-    const save = { customFlavors: customFlavors, values: flat };
+    const save = { customFlavors, hiddenIds: [...hiddenIds], values: flat };
     localStorage.setItem(LS_KEY, JSON.stringify(save));
   } catch (e) { /* localStorage unavailable */ }
 }
@@ -1418,9 +1420,12 @@ function loadFromLocalStorage() {
       applyFlavorData(parsed);
       return true;
     }
+    if (parsed.hiddenIds) {
+      hiddenIds = new Set(parsed.hiddenIds);
+    }
     if (parsed.customFlavors) {
       for (const cf of parsed.customFlavors) {
-        if (!allFlavors().some(f => f.id === cf.id)) {
+        if (!customFlavors.some(f => f.id === cf.id) && !BASE_FLAVORS.some(f => f.id === cf.id)) {
           customFlavors.push(cf);
         }
       }
@@ -1554,18 +1559,35 @@ function createVariant(sourceId) {
   showToast("亜種「" + tb.label + " " + baseName + "」を作成しました");
 }
 
-function deleteCustomFlavor(id) {
-  const f = customFlavors.find(f => f.id === id);
+function deleteFlavor(id) {
+  const f = allFlavors().find(f => f.id === id);
   if (!f) return;
   if (!confirm("「" + f.name + "」を削除しますか？")) return;
   const savedState = collectData().filter(e => e.id !== id);
-  customFlavors = customFlavors.filter(f => f.id !== id);
+  if (isCustom(id)) {
+    customFlavors = customFlavors.filter(f => f.id !== id);
+  } else {
+    hiddenIds.add(id);
+  }
   buildTable();
   buildCardView();
   applyFlavorData(savedState);
   applyCategoryFilter();
   autoSave();
   updateProgress();
+}
+function restoreAllHidden() {
+  if (!hiddenIds.size) { alert("非表示のフレーバーはありません"); return; }
+  if (!confirm(hiddenIds.size + "件の非表示フレーバーを復元しますか？")) return;
+  hiddenIds.clear();
+  const savedState = collectData();
+  buildTable();
+  buildCardView();
+  applyFlavorData(savedState);
+  applyCategoryFilter();
+  autoSave();
+  updateProgress();
+  showToast("全フレーバーを復元しました");
 }
 
 function showFileInput() {
