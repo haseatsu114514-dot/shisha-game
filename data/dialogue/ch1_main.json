@@ -278,17 +278,21 @@
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "（──なんてね。でも、ちょっとだけ想像しちゃうんだよな。"
+            "text": "（──なんてね。でも、ちょっとだけ想像しちゃうんだよな）"
           },
           {
-            "speaker": "hajime",
-            "face": "smile",
-            "text": "表彰台の上の俺と、それを見た誰かが『あれ、tonariのはじめくんだ』って言うところ）"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "想像の中の彼は、いつも誰かに見られている。──大会まであと{daysLeft}日。"
+            "type": "choice",
+            "id": "opening_fantasy",
+            "choices": [
+              {
+                "text": "（将来、自分の店に『大会優勝者の店』って掲げたい）",
+                "next": "of_shop"
+              },
+              {
+                "text": "（ライバルたちの前で、俺の煙を見せてやるんだ）",
+                "next": "of_rival"
+              }
+            ]
           }
         ],
         "hesitate": [
@@ -356,6 +360,55 @@
             "speaker": "",
             "face": "",
             "text": "想像の中の彼は、いつも誰かに見られている。──大会まであと{daysLeft}日。"
+          }
+        ],
+        "of_shop": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "（看板に『SMOKE CROWN CUP優勝』って書ける店、かっこいいだろうな）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "（内装は和風にして、入口の暖簾に俺の名前入れて──）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "頭の中の店は、いつも完璧だ。看板も壁の色も全部見えている。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "──ただ、「なんのために」だけが、まだ白紙だった。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "大会まであと{daysLeft}日。"
+          }
+        ],
+        "of_rival": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "（エース揃いだろうと、俺だってtonariで毎日作ってるんだ）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "（……本番で俺のシーシャを吸わせたら、きっと驚くぞ）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "まだ対戦相手の顔も見ていない。それでも、勝った顔は浮かんでいた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "大会まであと{daysLeft}日。"
           }
         ]
       }
@@ -1123,7 +1176,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "ありがとうございます。ひとりで作ったの初めてだったんですけど……お姉さんが最初のお客さんでよかったです"
+          "text": "ありがとうございます。ひとりで作ったの初めてで……お姉さんが最初のお客さんでよかった"
         },
         {
           "speaker": "oneesan",
@@ -1144,12 +1197,57 @@
           "text": "名前も知らない、たまに来る綺麗なお姉さん。それだけの認識だった。"
         },
         {
+          "type": "choice",
+          "id": "oneesan_praise_feel",
+          "choices": [
+            {
+              "text": "（やっぱり俺、才能あるかも。初めてでこの反応だし）",
+              "next": "op_talent"
+            },
+            {
+              "text": "（これ、スミさんに報告したら褒めてくれるかな）",
+              "next": "op_report"
+            }
+          ]
+        },
+        {
           "type": "apply",
           "stats": {
             "charm": 2
           }
         }
-      ]
+      ],
+      "branches": {
+        "op_talent": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "（たった1杯で『いいシーシャ屋になる』って。……見る目あるなあ、あの人）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "1杯の成功で、もう才能を確信している。褒められた煙は、甘い。"
+          }
+        ],
+        "op_report": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "（お客さんが『おいしい』って言ってましたよ──って言ったら、スミさんなんて返すかな）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "喜んでくれた客の顔より先に、師匠の反応が気になっている。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "彼の「いい仕事」は、いつも誰かに向かっている。"
+          }
+        ]
+      }
     }
   ]
 }

@@ -2256,34 +2256,42 @@ function doBaito(afterCameo) {
   });
   lines.push({ type: "choice", id: ev.id, choices });
 
-  // バイト後: オーダーチャレンジ（1台作る）か自主練か帰るか
-  const pw = D.baito_settings.post_work_practice;
-  if (pw && pw.enabled) {
-    lines.push({ speaker: "", face: "", text: "シフトの終わり際、新しいお客さんが入ってきた。\nスミさん「始、最後の一台、任せていいか」" });
-    lines.push({
-      type: "choice", id: "post_work", choices: [
-        { text: "オーダーに挑戦する（一台作る）", next: "pw_order" },
-        { text: "今日は裏で自主練する", next: "pw_yes" },
-        { text: "上がらせてもらう", next: "pw_no" },
-      ],
-    });
-    branches.pw_order = [
-      { speaker: "", face: "", text: "エプロンを締め直して、作業台の前に立つ。大会の練習にもなるはずだ。" },
-      { type: "set_flag", flag: "_baito_order_go" },
-    ];
-    branches.pw_yes = [
-      { speaker: "", face: "", text: pw.accept_result },
-      { type: "apply", stats: pw.accept_stats || {} },
-    ];
-    branches.pw_no = [{ speaker: "", face: "", text: pw.decline_result }];
-  }
+  // バイト後: 上がる／スミさんと話す／練習する
+  lines.push({ speaker: "", face: "", text: "シフトが終わった。スミさんが「もう上がっていいぞ」と言った。" });
+  lines.push({
+    type: "choice", id: "post_work", choices: [
+      { text: "上がらせてもらう", next: "pw_home" },
+      { text: "スミさんと少し話す", next: "pw_sumi" },
+      { text: "裏で自主練していく", next: "pw_drill" },
+    ],
+  });
+  branches.pw_home = [
+    { speaker: "", face: "", text: "エプロンを外して、夜の空気を吸う。今日も一日、お疲れさま。" },
+  ];
+  const sumiLines = [
+    { talk: "スミさんがカウンターを拭きながら、ぽつりと言った。「炭の置き方、最近マシになったな」", stats: { technique: 2 } },
+    { talk: "スミさん「温度で迷ったら、葉の様子を見ろ。煙が教えてくれる」", stats: { insight: 2 } },
+    { talk: "スミさん「客が何を求めてるか、まず空気を読め。メニューは後だ」", stats: { charm: 2 } },
+    { talk: "スミさん「急ぐな。蒸らしを待てない奴に、いい煙は作れない」", stats: { guts: 2 } },
+    { talk: "スミさん「同じフレーバーでも、詰め方ひとつで別物になる。手を抜くな」", stats: { sense: 2 } },
+  ];
+  const si = Math.floor(Math.random() * sumiLines.length);
+  branches.pw_sumi = [
+    { speaker: "sumi", face: "normal", text: sumiLines[si].talk.replace(/^スミさん/, "") },
+    { type: "apply", stats: sumiLines[si].stats },
+  ];
+  branches.pw_drill = [
+    { speaker: "", face: "", text: "残って練習する。使い古しのフレーバーで十分だ。" },
+    { type: "set_flag", flag: "_baito_drill_go" },
+  ];
 
   playCustom(
     { dialogue_id: "baito_" + ev.id, metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" }, lines, branches },
     () => {
-      if (state.flags._baito_order_go) {
-        delete state.flags._baito_order_go;
-        return beginMaking("baito");
+      if (state.flags._baito_drill_go) {
+        delete state.flags._baito_drill_go;
+        state.flags._baito_drill_free = true;
+        return startPractice();
       }
       endAction();
     }
@@ -3541,7 +3549,8 @@ function beginMaking(mode) {
 
 // 練習ドリル: 本番のミニゲームを1種だけ回す
 function startDrill(kind) {
-  addStamina(-STAMINA_COST.practice);
+  if (!state.flags._baito_drill_free) addStamina(-STAMINA_COST.practice);
+  delete state.flags._baito_drill_free;
   tt = {
     mode: "drill", drill: kind,
     bowl: null, hms: null, charcoal: null,
