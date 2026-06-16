@@ -2,6 +2,24 @@
 "use strict";
 
 const D = window.GAME_DATA;
+
+// エディタ(flavor_stats_editor.html)からの即時反映: 同じブラウザのlocalStorageを共有
+(function applyFlavorStatsDraft() {
+  try {
+    const raw = localStorage.getItem("flavor_stats_draft");
+    if (!raw) return;
+    const parsed = JSON.parse(raw);
+    const values = parsed.values || (Array.isArray(parsed) ? parsed : null);
+    if (!values) return;
+    for (const v of values) {
+      const f = D.flavors.find(x => x.id === v.id);
+      if (!f) continue;
+      if (v.stats) f.stats = v.stats;
+      if (v.ng_flavors) f.ng_flavors = v.ng_flavors;
+    }
+  } catch (e) {}
+})();
+
 const SAVE_KEY = "shisha_ch1_save_v1";
 const MAX_DAYS = 14; // 大会まで毎回14日間の準備期間
 const AFFINITY_CAP = 5; // 好感度は5段階。5でロマンス対象は告白イベント

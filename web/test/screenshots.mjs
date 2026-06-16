@@ -161,7 +161,7 @@ for (let i = 0; i < 2500; i++) {
       for (let k = 0; k < 10; k++) await plusOf("vanilla").click();
       await page.screenshot({ path: `${OUT}/08_mix.png` });
       await page.locator("#tn-body button", { hasText: "この配合でいく" }).click();
-    } else if (t.includes("パッキング")) await page.locator(".spot-btn", { hasText: "ふんわり" }).click();
+    } else if (t.includes("パッキング")) await page.locator(".spot-btn", { hasText: "かため" }).click();
     else if (t.includes("炭をコンロにセット") || t.includes("炭の配置")) await page.locator(".spot-btn", { hasText: "炭4個" }).click();
     else if (t.includes("蒸らし時間")) await page.locator(".spot-btn", { hasText: "3分" }).click();
     else if (t.includes("蒸らし中")) {
@@ -171,7 +171,7 @@ for (let i = 0; i < 2500; i++) {
         if (!shot && (await page.locator(".dodge-arena").count())) {
           await page.screenshot({ path: `${OUT}/08d_steam_dodge.png` });
           shot = true;
-          await page.evaluate(() => { const o = window.__steamDebug && window.__steamDebug(); if (o && o.end) o.end(); });
+          await page.evaluate(() => { const o = window.__steamDebug && window.__steamDebug(); if (o && o.end) o.end(); if (typeof tt !== "undefined" && tt) tt.steamHits = 4; });
         }
         const next = page.locator("#tn-body button", { hasText: "次へ" });
         if (await next.count()) { await next.click(); break; }
