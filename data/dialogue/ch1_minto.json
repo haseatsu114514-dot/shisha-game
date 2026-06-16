@@ -786,7 +786,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "……【洞察】と【魅力】が上がった。"
+          "text": "……【洞察】が上がった。【魅力】が少し上がった。"
         }
       ],
       "growth_stats": {
@@ -858,102 +858,97 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "（……この感じ。どこかで見た——いや、『見た』なんてものじゃない。tonariのカウンターの隅。"
+          "text": "（……あれ。この横顔……どこかで……）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "メニューを眺める仕草。グラスに手を伸ばす指先の角度。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──ふと、tonariのカウンターの隅にいた、あのお姉さんの面影が重なった気がした。"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "静かにグラスを傾けて、『お任せで』って頼む……あのお姉さんと、同じ姿だ）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "──あっ"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_normal",
-          "text": "ん？ どうしたの？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "みんと……もしかして、tonariに来たことある？ お客さんとして。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "一人で、静かにカウンターに座って、『お任せで』って……"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_smile",
-          "text": "……。……ふふ。……やっと、気づいた……？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "やっぱり……！ あの時の……！？"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_smile",
-          "text": "……うん。たまに、プライベートで吸いに行ってたの。はじめくんのお店、どんな感じなのかな……って"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "全然気づかなかった……あんなに雰囲気が違うなんて……"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_normal",
-          "text": "……でしょ。お店のみんとと……素の、私。……テンションも見た目も、ぜんぜん違うから……"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_smile",
-          "text": "ね……覚えてる？　きみが研修上がりに、初めて作った一台。"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_smile",
-          "text": "……あれ、飲んだの、私だよ。『研修中の身なので』って、真面目な顔で年齢確認まで、されちゃった……"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "あれもみんとさんだったの！？"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_normal",
-          "text": "そ……。……で、さ。あのとき……身分証も、見られちゃったわけじゃない……？"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_normal",
-          "text": "……私の年齢……バレてる、んだよね……"
+          "text": "（いや……気のせいか。雰囲気が全然違う。でも、なんだろう、この既視感……）"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（確認は、した。……でも生年月日までは、覚えてない。覚えてないったら、覚えてない）"
+          "text": "……みんと、さ。"
         },
         {
           "speaker": "minto",
-          "face": "ura_serious",
-          "text": "……はじめくん？　……いま、なにか、考えてる……？"
+          "face": "ura_normal",
+          "text": "ん？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……いや、なんでもない。ちょっとぼーっとしてた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……なに見てるの？　顔に何かついてる？"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……いえ、何も見てません。（お客さんの秘密は、店に置いていく。それが店員のルールだ）"
+          "text": "ごめんごめん。今日のみんと、なんか落ち着いてて新鮮だなって。"
         },
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "……ほんとに？　……ふふ。……じゃあ、その優しさに免じて。"
+          "text": "……ふーん。まあ、お店じゃないし……。素の私はこんな感じだよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（素のみんと、か。……やっぱりどこかで、この雰囲気を知ってる気がする）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（誰だっけ……思い出せそうで、思い出せない）"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……ねえ。はじめくんって、お店ではすっごい真面目に働いてるんでしょ？"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "誰かに聞いたんだ。研修上がりの頃から、お客さんに丁寧で……って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "え、誰から……？"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……さあ？　誰だったかな……"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとは小さく微笑んで、メニューに視線を戻した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──その仕草に、また、あの既視感。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……気になる。でも今は、目の前のみんとを楽しもう）"
         },
         {
           "speaker": "minto",
@@ -963,56 +958,22 @@
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "私ね……ほんとは、最初から気づいてた。"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_smile",
-          "text": "はじめくんが一生懸命働いてるの……カウンター越しに、ずっと、見てたから……"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "……"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_normal",
-          "text": "営業のみんとじゃなくて、ただの『栞』として。はじめくんの煙を、ちゃんと味わいたかったの"
-        },
-        {
-          "type": "set_flag",
-          "flag": "_minto_real_name"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "『緑川 栞』。本名を名乗る彼女の目は、パステルカラーの店内でキラキラ輝く小悪魔の目ではなくて。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "──静かに、ちゃんと、こちらを見ている大人の女性の目だった。"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_smile",
-          "text": "だから、今日は……『栞』として、よろしくね。はじめくん"
+          "text": "私の知ってる美味しいフレーバーの組み合わせとか、ね"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……うん。よろしく、栞さん"
+          "text": "ほんとに？ ありがとう。"
         },
         {
           "speaker": "minto",
           "face": "ura_surprise",
-          "text": "っっ！！ いきなり呼ぶ！？ ……もーっ、やっぱはじめくんって、天然でいっちばんズルいんだから……っ"
+          "text": "……もーっ。素直にお礼言われると、調子狂うんだから……"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "……【洞察】と【魅力】が上がった。"
+          "text": "……【洞察】が少し上がった。【魅力】が上がった。"
         }
       ],
       "growth_stats": {

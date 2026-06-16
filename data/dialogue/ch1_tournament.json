@@ -158,7 +158,12 @@
         {
           "speaker": "pakki",
           "face": "excited",
-          "text": "SMOKE CROWN CUP、[imp]開幕[/imp]ですッ！！ MCはパッキーが務めさせていただきますッ！ ぷぷぷっ！"
+          "text": "SMOKE CROWN CUP、[imp]開幕[/imp]ですッ！！"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "MCはパッキーが務めますッ！ ぷぷぷっ！"
         },
         {
           "speaker": "",
@@ -193,7 +198,7 @@
         {
           "speaker": "pakki",
           "face": "evil",
-          "text": "敗者復活なんて甘い救済はナシ！ 一回こっきりの真剣勝負、シビれるでしょ〜？"
+          "text": "負けたら終わり！ 二度目のチャンスなんてナシ！ シビれるでしょ〜？"
         },
         {
           "speaker": "pakki",
