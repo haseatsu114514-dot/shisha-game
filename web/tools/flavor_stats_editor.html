@@ -11,42 +11,47 @@ body {
   background: #1a1a2e;
   color: #e0e0e0;
   padding: 20px;
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 h1 {
   text-align: center;
   color: #e94560;
-  margin-bottom: 8px;
-  font-size: 1.5em;
+  margin-bottom: 4px;
+  font-size: 1.4em;
+  letter-spacing: 0.05em;
 }
 .subtitle {
   text-align: center;
-  color: #888;
-  margin-bottom: 20px;
-  font-size: 0.85em;
+  color: #777;
+  margin-bottom: 16px;
+  font-size: 0.8em;
 }
 .controls {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   flex-wrap: wrap;
 }
 button {
   background: #e94560;
   color: white;
   border: none;
-  padding: 8px 20px;
+  padding: 7px 16px;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.9em;
-  transition: background 0.2s;
+  font-size: 0.85em;
+  transition: background 0.2s, transform 0.1s;
 }
 button:hover { background: #c73550; }
+button:active { transform: scale(0.97); }
 button.secondary {
   background: #16213e;
-  border: 1px solid #e94560;
+  border: 1px solid #444;
+  color: #ccc;
 }
-button.secondary:hover { background: #1a2a50; }
+button.secondary:hover { background: #1a2a50; border-color: #e94560; color: #fff; }
 .table-wrap {
   overflow-x: auto;
   margin-bottom: 20px;
@@ -57,57 +62,81 @@ table {
   min-width: 1200px;
 }
 th, td {
-  border: 1px solid #333;
-  padding: 6px 8px;
+  border: 1px solid #2a2a40;
+  padding: 5px 6px;
   text-align: center;
-  font-size: 0.82em;
+  font-size: 0.8em;
 }
 th {
-  background: #16213e;
+  background: #0f1a30;
   color: #e94560;
   position: sticky;
   top: 0;
   z-index: 2;
   white-space: nowrap;
+  font-size: 0.75em;
+  padding: 8px 6px;
+  border-bottom: 2px solid #e94560;
 }
 th .th-desc {
   display: block;
   font-weight: normal;
-  font-size: 0.75em;
-  color: #888;
+  font-size: 0.8em;
+  color: #666;
+  margin-top: 1px;
 }
 td.flavor-name {
   text-align: left;
   font-weight: bold;
   white-space: nowrap;
-  background: #16213e;
+  background: #0f1a30;
   position: sticky;
   left: 0;
   z-index: 1;
-  min-width: 160px;
+  min-width: 140px;
+  padding-left: 10px;
+  border-right: 2px solid #2a2a40;
 }
 td.flavor-cat {
-  font-size: 0.75em;
-  color: #aaa;
+  font-size: 0.7em;
 }
-tr:nth-child(even) { background: rgba(255,255,255,0.03); }
-tr:hover { background: rgba(233,69,96,0.08); }
+.cat-badge {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 0.85em;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.cat-badge.cat-fruit { background: #1a3a2a; color: #6dd490; }
+.cat-badge.cat-cooling { background: #1a2a3e; color: #6bc5f0; }
+.cat-badge.cat-spice { background: #3a2a1a; color: #f0a060; }
+.cat-badge.cat-sweet { background: #3a1a2a; color: #f0a0c0; }
+.cat-badge.cat-floral { background: #2a1a3a; color: #c0a0f0; }
+.cat-badge.cat-other { background: #2a2a2a; color: #aaa; }
+tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+tr:hover { background: rgba(233,69,96,0.07); }
 select {
   background: #0f3460;
   color: #e0e0e0;
-  border: 1px solid #444;
+  border: 1px solid #333;
   border-radius: 4px;
-  padding: 3px 6px;
+  padding: 3px 4px;
   font-size: 0.85em;
   cursor: pointer;
-  width: 50px;
+  width: 46px;
+  text-align: center;
 }
 select:focus { border-color: #e94560; outline: none; }
-select.val-1, select.val-2 { color: #6bc5f0; }
-select.val-3, select.val-4 { color: #8be9a0; }
-select.val-5, select.val-6 { color: #f0e68c; }
-select.val-7, select.val-8 { color: #f0a060; }
-select.val-9 { color: #e94560; }
+select.val-1 { background: linear-gradient(90deg, #1a3a5a 11%, #0f3460 11%); color: #6bc5f0; }
+select.val-2 { background: linear-gradient(90deg, #1a3a5a 22%, #0f3460 22%); color: #6bc5f0; }
+select.val-3 { background: linear-gradient(90deg, #1a4a3a 33%, #0f3460 33%); color: #8be9a0; }
+select.val-4 { background: linear-gradient(90deg, #1a4a3a 44%, #0f3460 44%); color: #8be9a0; }
+select.val-5 { background: linear-gradient(90deg, #3a3a1a 56%, #0f3460 56%); color: #f0e68c; }
+select.val-6 { background: linear-gradient(90deg, #3a3a1a 67%, #0f3460 67%); color: #f0e68c; }
+select.val-7 { background: linear-gradient(90deg, #3a2a1a 78%, #0f3460 78%); color: #f0a060; }
+select.val-8 { background: linear-gradient(90deg, #3a2a1a 89%, #0f3460 89%); color: #f0a060; }
+select.val-9 { background: linear-gradient(90deg, #5a1a2a 100%, #0f3460 100%); color: #e94560; font-weight: bold; }
 .ng-cell {
   text-align: left;
   min-width: 180px;
@@ -115,7 +144,7 @@ select.val-9 { color: #e94560; }
 .ng-cell label {
   display: inline-block;
   margin: 1px 4px;
-  font-size: 0.75em;
+  font-size: 0.72em;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -126,7 +155,7 @@ select.val-9 { color: #e94560; }
 #export-area {
   display: none;
   width: 100%;
-  min-height: 300px;
+  min-height: 200px;
   background: #0f3460;
   color: #8be9a0;
   border: 1px solid #444;
@@ -141,28 +170,59 @@ select.val-9 { color: #e94560; }
 .legend {
   display: flex;
   justify-content: center;
-  gap: 16px;
-  margin-bottom: 16px;
-  font-size: 0.8em;
+  gap: 10px;
+  margin-bottom: 14px;
+  font-size: 0.75em;
   flex-wrap: wrap;
 }
 .legend span {
-  padding: 2px 10px;
+  padding: 3px 10px;
   border-radius: 4px;
   background: #16213e;
+  border: 1px solid #2a2a40;
 }
-.stat-guide {
+
+/* --- Collapsible sections --- */
+.collapsible {
   max-width: 900px;
-  margin: 0 auto 20px;
+  margin: 0 auto 14px;
   background: #16213e;
   border-radius: 8px;
-  padding: 16px;
-  font-size: 0.82em;
-  line-height: 1.7;
+  overflow: hidden;
+  border: 1px solid #2a2a40;
 }
-.stat-guide h3 { color: #e94560; margin-bottom: 8px; }
-.stat-guide dt { color: #f0e68c; font-weight: bold; }
-.stat-guide dd { margin: 0 0 6px 16px; color: #bbb; }
+.collapsible-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+.collapsible-header:hover { background: #1a2a50; }
+.collapsible-header h3 {
+  color: #e94560;
+  font-size: 0.9em;
+  margin: 0;
+}
+.collapsible-toggle {
+  color: #666;
+  font-size: 0.8em;
+  transition: transform 0.3s;
+}
+.collapsible-toggle.open { transform: rotate(180deg); }
+.collapsible-body {
+  display: none;
+  padding: 12px 16px;
+  border-top: 1px solid #2a2a40;
+}
+.collapsible-body.open { display: block; }
+
+.stat-guide { font-size: 0.8em; line-height: 1.6; }
+.stat-guide dt { color: #f0e68c; font-weight: bold; margin-top: 4px; }
+.stat-guide dd { margin: 0 0 2px 16px; color: #999; font-size: 0.95em; }
+
 .copy-toast {
   position: fixed;
   bottom: 30px;
@@ -174,45 +234,51 @@ select.val-9 { color: #e94560; }
   border-radius: 8px;
   display: none;
   z-index: 100;
+  font-size: 0.9em;
+  box-shadow: 0 4px 20px rgba(233,69,96,0.4);
   animation: fadeout 2s forwards;
 }
 @keyframes fadeout {
   0%, 70% { opacity: 1; }
   100% { opacity: 0; }
 }
-.progress-bar {
+.progress-wrap {
+  max-width: 400px;
+  margin: 0 auto 16px;
   text-align: center;
-  margin-bottom: 16px;
-  padding: 8px 16px;
-  background: #16213e;
-  border-radius: 6px;
-  font-size: 0.95em;
-  color: #f0e68c;
-  display: inline-block;
-  margin-left: auto;
-  margin-right: auto;
-  width: auto;
 }
-body > .progress-bar { display: block; text-align: center; }
+.progress-text {
+  font-size: 0.85em;
+  color: #888;
+  margin-bottom: 6px;
+}
+.progress-meter {
+  height: 6px;
+  background: #0f1a30;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease, background 0.4s;
+  width: 0%;
+  background: #888;
+}
 .reset-row-btn {
   background: transparent;
-  color: #888;
-  border: 1px solid #444;
+  color: #666;
+  border: 1px solid #333;
   padding: 2px 8px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.72em;
+  font-size: 0.7em;
   transition: color 0.2s, border-color 0.2s;
   white-space: nowrap;
 }
 .reset-row-btn:hover { color: #e94560; border-color: #e94560; }
 td.action-cell { min-width: 70px; }
 .add-flavor-form {
-  max-width: 900px;
-  margin: 0 auto 20px;
-  background: #16213e;
-  border-radius: 8px;
-  padding: 14px 16px;
   display: flex;
   gap: 8px;
   align-items: center;
@@ -231,7 +297,7 @@ td.action-cell { min-width: 70px; }
   padding: 5px 8px;
   font-size: 0.85em;
 }
-.add-flavor-form input { width: 160px; }
+.add-flavor-form input { width: 150px; }
 .add-flavor-form input:focus, .add-flavor-form select:focus {
   border-color: #e94560; outline: none;
 }
@@ -248,7 +314,7 @@ td.action-cell { min-width: 70px; }
   padding: 2px 8px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 0.72em;
+  font-size: 0.7em;
   margin-top: 3px;
   white-space: nowrap;
 }
@@ -257,7 +323,7 @@ td.action-cell { min-width: 70px; }
   display: inline-block;
   background: #e94560;
   color: white;
-  font-size: 0.6em;
+  font-size: 0.55em;
   padding: 1px 5px;
   border-radius: 3px;
   margin-left: 4px;
@@ -278,42 +344,32 @@ td.action-cell { min-width: 70px; }
   cursor: pointer;
 }
 
-/* --- GitHub panel --- */
-.gh-panel {
-  max-width: 900px;
-  margin: 0 auto 20px;
-  background: #16213e;
-  border-radius: 8px;
-  overflow: hidden;
-}
-.gh-panel-header {
+/* --- Search filter --- */
+.filter-bar {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
   align-items: center;
-  padding: 10px 16px;
-  cursor: pointer;
-  user-select: none;
-  background: #16213e;
-  border-bottom: 1px solid #333;
-  transition: background 0.2s;
 }
-.gh-panel-header:hover { background: #1a2a50; }
-.gh-panel-header h3 {
-  color: #e94560;
-  font-size: 0.95em;
-  margin: 0;
-}
-.gh-panel-header .gh-toggle {
+.filter-bar label {
+  font-size: 0.82em;
   color: #888;
+}
+#search-input {
+  background: #0f3460;
+  color: #e0e0e0;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 6px 12px;
   font-size: 0.85em;
-  transition: transform 0.3s;
+  width: 200px;
 }
-.gh-panel-header .gh-toggle.open { transform: rotate(180deg); }
-.gh-panel-body {
-  display: none;
-  padding: 14px 16px;
-}
-.gh-panel-body.open { display: block; }
+#search-input:focus { border-color: #e94560; outline: none; }
+#search-input::placeholder { color: #555; }
+
+/* --- GitHub panel (uses .collapsible) --- */
 .gh-row {
   display: flex;
   gap: 10px;
@@ -361,22 +417,11 @@ td.action-cell { min-width: 70px; }
 .gh-status.error { color: #e94560; }
 
 /* --- Category filter --- */
-.category-filter-wrap {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 16px;
-  gap: 8px;
-  align-items: center;
-}
-.category-filter-wrap label {
-  font-size: 0.85em;
-  color: #aaa;
-}
 #category-filter {
   background: #0f3460;
   color: #e0e0e0;
   border: 1px solid #444;
-  border-radius: 4px;
+  border-radius: 6px;
   padding: 5px 10px;
   font-size: 0.85em;
   cursor: pointer;
@@ -389,39 +434,57 @@ td.action-cell { min-width: 70px; }
 }
 .flavor-card {
   background: #16213e;
-  border-radius: 8px;
-  margin-bottom: 12px;
+  border-radius: 10px;
+  margin-bottom: 10px;
   overflow: hidden;
-  border: 1px solid #333;
+  border: 1px solid #2a2a40;
 }
 .flavor-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 14px;
-  background: #0f3460;
+  padding: 12px 14px;
+  background: #0f1a30;
   cursor: pointer;
   user-select: none;
+  gap: 8px;
 }
 .flavor-card-header .card-name {
   font-weight: bold;
-  font-size: 0.95em;
+  font-size: 0.92em;
   color: #e0e0e0;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .flavor-card-header .card-cat {
-  font-size: 0.72em;
-  color: #aaa;
-  background: #1a1a2e;
+  font-size: 0.7em;
   padding: 2px 8px;
   border-radius: 10px;
+  flex-shrink: 0;
 }
 .flavor-card-header .card-toggle {
-  color: #888;
-  font-size: 0.8em;
-  margin-left: 8px;
+  color: #555;
+  font-size: 0.75em;
+  margin-left: 4px;
   transition: transform 0.3s;
+  flex-shrink: 0;
 }
 .flavor-card-header .card-toggle.open { transform: rotate(180deg); }
+.card-stat-summary {
+  display: flex;
+  gap: 2px;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+.card-stat-dot {
+  width: 4px;
+  height: 12px;
+  border-radius: 2px;
+  background: #333;
+}
 .flavor-card-body {
   display: none;
   padding: 10px 14px;
@@ -431,22 +494,23 @@ td.action-cell { min-width: 70px; }
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 5px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
 }
 .card-stat-row:last-child { border-bottom: none; }
 .card-stat-label {
   font-size: 0.82em;
-  color: #aaa;
+  color: #999;
   flex: 1;
 }
 .card-stat-row select {
-  width: 60px;
+  width: 64px;
+  font-size: 0.9em;
 }
 .card-ng-section {
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid #333;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #2a2a40;
 }
 .card-ng-section .card-ng-title {
   font-size: 0.8em;
@@ -456,7 +520,7 @@ td.action-cell { min-width: 70px; }
 .card-ng-section label {
   display: inline-block;
   margin: 2px 6px 2px 0;
-  font-size: 0.75em;
+  font-size: 0.78em;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -469,12 +533,13 @@ td.action-cell { min-width: 70px; }
   gap: 8px;
   margin-top: 10px;
   padding-top: 8px;
-  border-top: 1px solid #333;
+  border-top: 1px solid #2a2a40;
 }
 
 /* --- Media queries --- */
 @media (max-width: 768px) {
-  body { padding: 10px; }
+  body { padding: 8px; }
+  h1 { font-size: 1.2em; }
   .table-wrap { display: none; }
   #card-view { display: block; }
   .add-flavor-form {
@@ -482,15 +547,17 @@ td.action-cell { min-width: 70px; }
     align-items: stretch;
   }
   .add-flavor-form input { width: 100%; }
-  .controls { flex-direction: column; align-items: stretch; }
-  .controls button { width: 100%; }
+  .controls { gap: 6px; }
+  .controls button { padding: 8px 12px; font-size: 0.82em; }
   .gh-row { flex-direction: column; align-items: stretch; }
   .gh-row label { min-width: auto; }
   .gh-row input[type="password"] { min-width: auto; width: 100%; }
   .gh-buttons { flex-direction: column; }
   .gh-buttons button { width: 100%; }
-  .legend { gap: 8px; }
-  .stat-guide { padding: 12px; font-size: 0.78em; }
+  .legend { gap: 6px; font-size: 0.7em; }
+  .stat-guide dd { font-size: 0.9em; }
+  #search-input { width: 140px; }
+  .filter-bar { gap: 8px; }
 }
 @media (min-width: 769px) {
   #card-view { display: none !important; }
@@ -503,12 +570,12 @@ td.action-cell { min-width: 70px; }
 <p class="subtitle">各フレーバーのステータス（1〜9）を設定し、JSONでエクスポート</p>
 
 <!-- GitHub panel -->
-<div class="gh-panel">
-  <div class="gh-panel-header" onclick="toggleGhPanel()">
+<div class="collapsible">
+  <div class="collapsible-header" onclick="toggleSection('gh')">
     <h3>GitHub 連携</h3>
-    <span class="gh-toggle" id="gh-toggle-icon">&#9660;</span>
+    <span class="collapsible-toggle" id="toggle-gh">&#9660;</span>
   </div>
-  <div class="gh-panel-body" id="gh-panel-body">
+  <div class="collapsible-body" id="body-gh">
     <div class="gh-row">
       <label>Token:</label>
       <input type="password" id="gh-token" placeholder="ghp_xxxx... (Personal Access Token)">
@@ -521,50 +588,37 @@ td.action-cell { min-width: 70px; }
   </div>
 </div>
 
-<div id="progress-bar" class="progress-bar">設定済み: 0/11</div>
-
-<div class="stat-guide">
-  <h3>ステータス説明</h3>
-  <dl>
-    <dt>熱耐性</dt><dd>高温にどれだけ耐えるか＋立ち上がりの速さ。9=ガンガン焚ける＆すぐ香る、1=すぐ焦げる＆じっくり型</dd>
-    <dt>さっぱり</dt><dd>後味のさっぱり感。9=スッキリ、1=こってり</dd>
-    <dt>甘い（その他）</dt><dd>フルーツ・自然由来の甘さ。9=とても甘い</dd>
-    <dt>甘い（お菓子的）</dt><dd>バニラ・キャラメル等の人工的な甘さ。9=とても甘い</dd>
-    <dt>清涼感</dt><dd>メントール・冷感。9=ガツンと冷たい、1=冷感なし</dd>
-    <dt>主張の強さ</dt><dd>混ぜた時にどれだけ自己主張するか。9=必ず顔を出す</dd>
-    <dt>癖の強さ</dt><dd>好き嫌いが分かれる度合い。9=かなりクセが強い</dd>
-    <dt>煙の重さ</dt><dd>煙のボディ感。9=どっしり重い、1=ふわっと軽い</dd>
-    <dt>酸味</dt><dd>柑橘・ベリー系のすっぱさ。9=しっかり酸味、1=なし</dd>
-    <dt>スパイス感</dt><dd>スパイス・ハーブ系の刺激。9=ガツンとスパイシー、1=なし</dd>
-    <dt>華やかさ</dt><dd>フローラル系の香りの広がり。9=華やか、1=地味</dd>
-    <dt>ニコチンの強さ</dt><dd>葉のニコチン感。9=ガツンとくる、1=ほぼ感じない</dd>
-    <dt>NGフレーバー</dt><dd>一緒に混ぜると大幅減点になる組み合わせ</dd>
-  </dl>
+<!-- Progress -->
+<div class="progress-wrap">
+  <div class="progress-text" id="progress-text">設定済み: 0 / 59</div>
+  <div class="progress-meter"><div class="progress-fill" id="progress-fill"></div></div>
 </div>
 
-<div class="legend">
-  <span style="color:#6bc5f0">1-2: 低い</span>
-  <span style="color:#8be9a0">3-4: やや低い</span>
-  <span style="color:#f0e68c">5-6: 中程度</span>
-  <span style="color:#f0a060">7-8: 高い</span>
-  <span style="color:#e94560">9: 最大</span>
-</div>
-
+<!-- Controls -->
 <div class="controls">
   <button onclick="exportJSON()">JSON エクスポート</button>
-  <button class="secondary" onclick="copyJSON()">クリップボードにコピー</button>
-  <button class="secondary" onclick="importJSON()">JSON インポート</button>
-  <button class="secondary" onclick="showFileInput()">flavors.json から読み込み</button>
+  <button class="secondary" onclick="copyJSON()">コピー</button>
+  <button class="secondary" onclick="importJSON()">インポート</button>
+  <button class="secondary" onclick="showFileInput()">ファイル読込</button>
   <button class="secondary" onclick="resetAll()">リセット</button>
 </div>
 <div id="file-input-wrap">
   <input type="file" id="file-input" accept=".json" onchange="loadFromFlavorsJSON(this)">
 </div>
 
-<!-- Category filter -->
-<div class="category-filter-wrap">
-  <label for="category-filter">カテゴリ:</label>
-  <select id="category-filter" onchange="applyCategoryFilter()">
+<!-- Legend -->
+<div class="legend">
+  <span style="color:#6bc5f0">1-2 低</span>
+  <span style="color:#8be9a0">3-4 やや低</span>
+  <span style="color:#f0e68c">5-6 中</span>
+  <span style="color:#f0a060">7-8 高</span>
+  <span style="color:#e94560">9 最大</span>
+</div>
+
+<!-- Filter bar -->
+<div class="filter-bar">
+  <input type="text" id="search-input" placeholder="フレーバー名で検索..." oninput="applyFilters()">
+  <select id="category-filter" onchange="applyFilters()">
     <option value="all">すべて</option>
     <option value="fruit">フルーツ</option>
     <option value="sweet">スイート</option>
@@ -575,23 +629,57 @@ td.action-cell { min-width: 70px; }
   </select>
 </div>
 
-<div class="add-flavor-form">
-  <label>ID:</label>
-  <input type="text" id="new-id" placeholder="例: lemon">
-  <label>表示名:</label>
-  <input type="text" id="new-name" placeholder="例: AF レモン">
-  <label>正式名:</label>
-  <input type="text" id="new-full" placeholder="例: アルファーヘブン レモン">
-  <label>カテゴリ:</label>
-  <select id="new-cat">
-    <option value="fruit">フルーツ</option>
-    <option value="sweet">スイート</option>
-    <option value="cooling">清涼</option>
-    <option value="spice">スパイス</option>
-    <option value="floral">フローラル</option>
-    <option value="other">その他</option>
-  </select>
-  <button class="add-flavor-btn" onclick="addCustomFlavor()">＋ フレーバー追加</button>
+<!-- Stat guide (collapsed by default) -->
+<div class="collapsible">
+  <div class="collapsible-header" onclick="toggleSection('guide')">
+    <h3>ステータス説明</h3>
+    <span class="collapsible-toggle" id="toggle-guide">&#9660;</span>
+  </div>
+  <div class="collapsible-body stat-guide" id="body-guide">
+    <dl>
+      <dt>熱耐性</dt><dd>高温耐性＋立ち上がりの速さ。9=ガンガン焚ける、1=すぐ焦げる</dd>
+      <dt>さっぱり</dt><dd>後味のさっぱり感。9=スッキリ、1=こってり</dd>
+      <dt>甘い（その他）</dt><dd>フルーツ・自然由来の甘さ</dd>
+      <dt>甘い（お菓子的）</dt><dd>バニラ・キャラメル等の人工的甘さ</dd>
+      <dt>清涼感</dt><dd>メントール・冷感。9=ガツンと冷たい</dd>
+      <dt>主張の強さ</dt><dd>混ぜた時の自己主張度。9=必ず顔を出す</dd>
+      <dt>癖の強さ</dt><dd>好き嫌いの度合い。9=かなりクセが強い</dd>
+      <dt>煙の重さ</dt><dd>煙のボディ感。9=どっしり重い</dd>
+      <dt>酸味</dt><dd>柑橘・ベリー系のすっぱさ</dd>
+      <dt>スパイス感</dt><dd>スパイス・ハーブ系の刺激</dd>
+      <dt>華やかさ</dt><dd>フローラル系の香り。9=華やか</dd>
+      <dt>ニコチンの強さ</dt><dd>葉のニコチン感。9=ガツンとくる</dd>
+      <dt>NGフレーバー</dt><dd>一緒に混ぜると大幅減点の組み合わせ</dd>
+    </dl>
+  </div>
+</div>
+
+<!-- Add flavor (collapsed by default) -->
+<div class="collapsible">
+  <div class="collapsible-header" onclick="toggleSection('addflavor')">
+    <h3>フレーバー追加</h3>
+    <span class="collapsible-toggle" id="toggle-addflavor">&#9660;</span>
+  </div>
+  <div class="collapsible-body" id="body-addflavor">
+    <div class="add-flavor-form">
+      <label>ID:</label>
+      <input type="text" id="new-id" placeholder="例: lemon">
+      <label>表示名:</label>
+      <input type="text" id="new-name" placeholder="例: AF レモン">
+      <label>正式名:</label>
+      <input type="text" id="new-full" placeholder="例: アルファーヘブン レモン">
+      <label>カテゴリ:</label>
+      <select id="new-cat">
+        <option value="fruit">フルーツ</option>
+        <option value="sweet">スイート</option>
+        <option value="cooling">清涼</option>
+        <option value="spice">スパイス</option>
+        <option value="floral">フローラル</option>
+        <option value="other">その他</option>
+      </select>
+      <button class="add-flavor-btn" onclick="addCustomFlavor()">追加</button>
+    </div>
+  </div>
 </div>
 
 <div class="table-wrap">
@@ -695,21 +783,18 @@ const STATS = [
 
 function isCustom(id) { return customFlavors.some(f => f.id === id); }
 
+/* --- Collapsible toggle --- */
+function toggleSection(id) {
+  const body = document.getElementById("body-" + id);
+  const icon = document.getElementById("toggle-" + id);
+  const isOpen = body.classList.toggle("open");
+  icon.classList.toggle("open", isOpen);
+}
+
 /* --- GitHub API --- */
 const GH_TOKEN_KEY = "gh_token_flavor_editor";
 const GH_API_URL = "https://api.github.com/repos/haseatsu114514-dot/shisha-game/contents/data/flavors.json";
 let ghFileSha = null;
-
-function toggleGhPanel() {
-  const body = document.getElementById("gh-panel-body");
-  const icon = document.getElementById("gh-toggle-icon");
-  const isOpen = body.classList.toggle("open");
-  if (isOpen) {
-    icon.classList.add("open");
-  } else {
-    icon.classList.remove("open");
-  }
-}
 
 function ghSetStatus(msg, cls) {
   const el = document.getElementById("gh-status");
@@ -721,12 +806,6 @@ function ghGetToken() {
   return document.getElementById("gh-token").value.trim();
 }
 
-// Persist token
-document.addEventListener("DOMContentLoaded", function() {
-  const saved = localStorage.getItem(GH_TOKEN_KEY);
-  if (saved) document.getElementById("gh-token").value = saved;
-});
-// Save token on change
 function initGhTokenPersistence() {
   const input = document.getElementById("gh-token");
   input.addEventListener("input", function() {
@@ -853,34 +932,29 @@ async function ghSave() {
   }
 }
 
-/* --- Category filter --- */
-function applyCategoryFilter() {
-  const val = document.getElementById("category-filter").value;
-  // Filter table rows
+/* --- Filter (category + search) --- */
+function applyFilters() {
+  const cat = document.getElementById("category-filter").value;
+  const q = (document.getElementById("search-input").value || "").trim().toLowerCase();
+  const flavors = allFlavors();
   const rows = document.querySelectorAll("#flavor-body tr");
   for (const row of rows) {
-    const fId = row.dataset.id;
-    const f = allFlavors().find(fl => fl.id === fId);
+    const f = flavors.find(fl => fl.id === row.dataset.id);
     if (!f) continue;
-    if (val === "all" || f.cat === val) {
-      row.style.display = "";
-    } else {
-      row.style.display = "none";
-    }
+    const catOk = cat === "all" || f.cat === cat;
+    const searchOk = !q || f.name.toLowerCase().includes(q) || f.full.toLowerCase().includes(q) || f.id.includes(q);
+    row.style.display = (catOk && searchOk) ? "" : "none";
   }
-  // Filter cards
   const cards = document.querySelectorAll(".flavor-card");
   for (const card of cards) {
-    const fId = card.dataset.id;
-    const f = allFlavors().find(fl => fl.id === fId);
+    const f = flavors.find(fl => fl.id === card.dataset.id);
     if (!f) continue;
-    if (val === "all" || f.cat === val) {
-      card.style.display = "";
-    } else {
-      card.style.display = "none";
-    }
+    const catOk = cat === "all" || f.cat === cat;
+    const searchOk = !q || f.name.toLowerCase().includes(q) || f.full.toLowerCase().includes(q) || f.id.includes(q);
+    card.style.display = (catOk && searchOk) ? "" : "none";
   }
 }
+function applyCategoryFilter() { applyFilters(); }
 
 /* --- Table building --- */
 function buildTable() {
@@ -926,7 +1000,7 @@ function buildTable() {
 
     const tdCat = document.createElement("td");
     tdCat.className = "flavor-cat";
-    tdCat.textContent = CAT_JA[f.cat] || f.cat;
+    tdCat.innerHTML = `<span class="cat-badge cat-${f.cat}">${CAT_JA[f.cat] || f.cat}</span>`;
     tr.appendChild(tdCat);
 
     for (const s of STATS) {
@@ -1019,12 +1093,21 @@ function buildCardView() {
     rightWrap.style.display = "flex";
     rightWrap.style.alignItems = "center";
     const catSpan = document.createElement("span");
-    catSpan.className = "card-cat";
+    catSpan.className = "card-cat cat-badge cat-" + f.cat;
     catSpan.textContent = CAT_JA[f.cat] || f.cat;
+    const summaryWrap = document.createElement("span");
+    summaryWrap.className = "card-stat-summary";
+    summaryWrap.dataset.cardSummary = f.id;
+    for (let i = 0; i < 12; i++) {
+      const dot = document.createElement("span");
+      dot.className = "card-stat-dot";
+      summaryWrap.appendChild(dot);
+    }
     const toggleSpan = document.createElement("span");
     toggleSpan.className = "card-toggle";
     toggleSpan.innerHTML = "&#9660;";
     rightWrap.appendChild(catSpan);
+    rightWrap.appendChild(summaryWrap);
     rightWrap.appendChild(toggleSpan);
     header.appendChild(nameSpan);
     header.appendChild(rightWrap);
@@ -1308,12 +1391,31 @@ function updateProgress() {
       ngBoxes.forEach(cb => { if (cb.checked) changed = true; });
     }
     if (changed) customized++;
+    updateCardSummary(f.id);
   }
-  const el = document.getElementById("progress-bar");
-  el.textContent = `設定済み: ${customized}/${total}`;
-  if (customized === total) el.style.color = "#8be9a0";
-  else if (customized > 0) el.style.color = "#f0e68c";
-  else el.style.color = "#888";
+  const pct = total > 0 ? (customized / total * 100) : 0;
+  const textEl = document.getElementById("progress-text");
+  const fillEl = document.getElementById("progress-fill");
+  textEl.textContent = `設定済み: ${customized} / ${total}`;
+  fillEl.style.width = pct + "%";
+  if (customized === total) { fillEl.style.background = "#8be9a0"; textEl.style.color = "#8be9a0"; }
+  else if (customized > 0) { fillEl.style.background = "#f0e68c"; textEl.style.color = "#f0e68c"; }
+  else { fillEl.style.background = "#555"; textEl.style.color = "#888"; }
+}
+
+const STAT_DOT_COLORS = {
+  1: "#2a4a6a", 2: "#3a5a7a", 3: "#2a5a3a", 4: "#3a6a4a",
+  5: "#5a5a2a", 6: "#6a6a3a", 7: "#6a4a2a", 8: "#7a5a3a", 9: "#8a2a3a"
+};
+function updateCardSummary(flavorId) {
+  const wrap = document.querySelector(`[data-card-summary="${flavorId}"]`);
+  if (!wrap) return;
+  const dots = wrap.querySelectorAll(".card-stat-dot");
+  STATS.forEach((s, i) => {
+    const sel = document.querySelector(`select[data-flavor="${flavorId}"][data-stat="${s.key}"]`);
+    const v = sel ? parseInt(sel.value) : 5;
+    if (dots[i]) dots[i].style.background = STAT_DOT_COLORS[v] || "#333";
+  });
 }
 
 function resetRow(flavorId) {
