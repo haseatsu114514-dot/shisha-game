@@ -14,7 +14,7 @@
     "growth_stats": {
       "primary": "洞察",
       "secondary": "技術",
-      "notes": "はじめの強みは『素直さ』──他人の良さに素直に気づける力。出会うライバル（例えばなるやアダム）のシーシャに素直に感動し、いつの間にか彼らの良い部分（緻密な温度管理やフレーバーの乗せ方）を自然と自分の煙にブレンドするようになっていた。"
+      "notes": "はじめの強みは「素直さ」──他人の良さに素直に気づける力。出会うライバル（例えばなるやアダム）のシーシャに素直に感動し、いつの間にか彼らの良い部分（緻密な温度管理やフレーバーの乗せ方）を自然と自分の煙にブレンドするようになっていた。"
     },
     "visual_concepts": [
       "22s japanese young man, ordinary and friendly face, short messy black hair, wearing a simple white t-shirt and a tonari logo apron, relaxed posture, casual cafe staff aesthetic",
@@ -273,7 +273,7 @@
     "id": "tsumugi",
     "name": "つむぎ",
     "role": "sub_character",
-    "age": 20,
+    "age": 21,
     "nationality": "Japan",
     "affiliation": "tonari常連",
     "play_style": "N/A",
@@ -318,7 +318,7 @@
     "id": "ageha",
     "name": "アゲハ / 宵野 葉子（よいの ようこ）",
     "role": "rival_ch2",
-    "age": 24,
+    "age": 22,
     "nationality": "Japan",
     "affiliation": "第2章ライバル",
     "play_style": "「バイブスと直感」",

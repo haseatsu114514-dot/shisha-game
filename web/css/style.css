@@ -3009,6 +3009,13 @@ body {
 .rel-face-txt { display: inline-flex; align-items: center; justify-content: center; background: rgba(244,210,122,0.18); color: var(--accent); font-size: 13px; font-weight: bold; }
 .inv-type { color: var(--text-dim); font-size: 12px; }
 .inv-money { color: var(--accent); font-weight: bold; }
+.note-progress { color: var(--accent); font-size: 13px; margin-bottom: 10px; }
+.note-entry { padding: 8px 10px; margin-bottom: 6px; border-radius: 6px; background: rgba(244,210,122,0.06); }
+.note-entry.found { border-left: 3px solid var(--accent); }
+.note-entry.locked { border-left: 3px solid rgba(244,210,122,0.15); opacity: 0.4; }
+.note-name { font-weight: bold; font-size: 14px; }
+.note-count { float: right; color: var(--text-dim); font-size: 12px; }
+.note-memo { color: var(--text-dim); font-size: 12px; margin-top: 4px; line-height: 1.5; }
 .st-bar > i.warn { background: linear-gradient(90deg, #e9c46a, #f4a261); }
 .st-bar > i.danger { background: linear-gradient(90deg, #e76f51, #d62828); }
 
