@@ -1,0 +1,37 @@
+水煙前線 -EN:CODE- 第1章 背景画像生成プロンプト集
+解像度: 1280x720 / 保存先: assets/backgrounds/
+画風参考: kemurikusa.png, eden.png, pepermint.png, tonari_night.png
+==========
+
+--- 1/11: bg_home.png ---
+Anime visual novel background, detailed digital painting, warm lighting, no people, 1280x720, painterly brushwork. Interior of a small one-room apartment of a young man living alone in a Japanese city. Night. A simple bed, a low wooden table, a small kitchenette in the corner. A bookshelf with hookah books and magazines. Warm lamplight from a desk lamp. Window showing city lights. Modest but cozy, lived-in. Muted warm brown and amber tones.
+
+--- 2/11: bg_street_day.png ---
+Anime visual novel background, detailed digital painting, warm lighting, no people, 1280x720, painterly brushwork. A narrow Japanese urban shopping street in daytime at street level. Small shisha bar signs and hookah lounge signs among storefronts. Chalkboard menus outside cafes. Older 2-3 story buildings mixed with modern facades. Bright afternoon sunlight, soft shadows. Potted plants near entrances. Blue sky, power lines overhead. Warm inviting atmosphere of a trendy district.
+
+--- 3/11: bg_street_night.png ---
+Anime visual novel background, detailed digital painting, warm lighting, no people, 1280x720, painterly brushwork. A narrow Japanese urban shopping street at night. Neon signs glowing pink, blue, orange — hookah lounges, bars, cafes. Light spilling from shop windows onto wet pavement. Streetlights creating warm pools of light. Deep navy sky. Wisps of smoke from a shisha bar door. Reflections on ground. Deep indigo, warm amber, neon accents.
+
+--- 4/11: bg_tonari_outside.png ---
+Anime visual novel background, detailed digital painting, warm lighting, no people, 1280x720, painterly brushwork. Exterior of a small cozy shisha bar on the ground floor of an old Japanese building. A hand-painted wooden sign reads "tonari" in lowercase. Warm light through frosted glass door and small windows. Chalkboard welcome sign outside. Potted plants flanking entrance. Weathered but charming concrete walls. Evening sky, dusky orange and purple. Narrow sidewalk. Welcoming, intimate neighborhood spot. Warm earth tones, amber glow from inside.
+
+--- 5/11: bg_title.png ---
+Anime visual novel background, detailed digital painting, dramatic lighting, no people, 1280x720, painterly brushwork. Dreamlike cinematic shot for a game title screen. An ornate hookah pipe on a low table center-foreground, thick smoke rising and swirling upward filling the upper half. Smoke catches deep purple, warm gold, soft pink light. Background fades to dark gradient. Mysterious and elegant. Deep shadows, rim lighting. Indigo, gold, magenta, smoky white. Open space in upper center for title text overlay.
+
+--- 6/11: bg_tournament_stage.png ---
+Anime visual novel background, detailed digital painting, dramatic lighting, no people, 1280x720, painterly brushwork. A grand indoor stage for a shisha competition. Four identical preparation stations in a row on an elevated stage, each with a counter and hookah equipment. Dramatic spotlights from above — pink, blue, gold beams through haze. Large LED screen behind the stage. Judges panel desk at front. Empty audience seats in foreground. Concert-hall atmosphere. Dark venue, vibrant neon accent lighting.
+
+--- 7/11: bg_shop.png ---
+Anime visual novel background, detailed digital painting, warm lighting, no people, 1280x720, painterly brushwork. Interior of an upscale hookah flavor wholesale shop. Floor-to-ceiling wooden shelves filled with hundreds of colorful flavor bottles and tins. Glass display cases with premium hookah equipment. Industrial-chic: exposed brick, dark metal fixtures, Edison bulbs. Wooden counter with register. Metal staircase in back leading to second floor. Sophisticated specialist shop. Warm amber, dark wood, colorful bottle accents.
+
+--- 8/11: bg_tonari_inside.png ---
+Anime visual novel background, detailed digital painting, warm lighting, no people, 1280x720, painterly brushwork. Interior of a cozy Japanese shisha bar during daytime. Warm sunlight through windows. Comfortable sofas and low wooden tables. Wooden bookshelf displaying glass hookah pipes. Persian-style rug on dark hardwood floor. Framed art prints on cream walls. Hanging plants. Round paper lantern ceiling lights off, natural light instead. Books on shelves. Feels like a living room — warm, homey, relaxed. Bar counter partially visible. Beige, brown, forest green with golden sunlight.
+
+--- 9/11: bg_hideaway.png ---
+Anime visual novel background, detailed digital painting, warm lighting, no people, 1280x720, painterly brushwork. Interior of a hidden underground hookah lounge — no sign outside, known only to regulars. Dim amber candlelight, low pendant lights. Deep leather sofas and armchairs around low tables. Exposed brick walls. Small intimate space, 6-8 seats. Thick smoke catching candlelight. Vintage record player in corner. Private and exclusive. Deep brown, burgundy, amber, smoky haze. Heavy curtain for entrance.
+
+--- 10/11: bg_c_station_lobby.png ---
+Anime visual novel background, detailed digital painting, bright lighting, no people, 1280x720, painterly brushwork. Lobby of a large modern shisha cafe chain. Spacious, clean, corporate interior with polished floors and modern furniture. Reception counter with large logo. Digital menu screens on walls. Sleek hookah display cases. Large windows. Wide walkways, organized seating in background. A competition banner hangs from ceiling. Modern, commercial, professional. Cool gray and white with teal and gold accents.
+
+--- 11/11: bg_choizap.png ---
+Anime visual novel background, detailed digital painting, bright lighting, no people, 1280x720, painterly brushwork. Interior of a small Japanese 24-hour fitness gym. Compact space with treadmills, free weights, mirror wall. Bright fluorescent lighting. White and green color scheme. Water cooler near entrance. Posters on walls. Rubber flooring. Small changing area in back. Basic, affordable, functional. Daytime, some natural light from small windows. Clean energetic atmosphere.
