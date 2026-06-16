@@ -127,6 +127,25 @@ td.flavor-cat {
 .brand-badge.brand-dobaj { background: #2a1a0a; color: #e0a050; border: 1px solid #5a3a1a; }
 .brand-badge.brand-absal { background: #1a1a2a; color: #80a0e0; border: 1px solid #3a3a6a; }
 .brand-badge.brand-ns { background: #2a0a2a; color: #d080d0; border: 1px solid #5a2a5a; }
+.cat-toggle {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 0.75em;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 1px 2px;
+  opacity: 0.3;
+  border: 1px solid transparent;
+  transition: opacity 0.2s, border-color 0.2s;
+  user-select: none;
+}
+.cat-toggle.active { opacity: 1; border-color: rgba(255,255,255,0.3); }
+.cat-toggle.cat-fruit { background: #1a3a2a; color: #6dd490; }
+.cat-toggle.cat-cooling { background: #1a2a3e; color: #6bc5f0; }
+.cat-toggle.cat-spice { background: #3a2a1a; color: #f0a060; }
+.cat-toggle.cat-sweet { background: #3a1a2a; color: #f0a0c0; }
+.cat-toggle.cat-floral { background: #2a1a3a; color: #c0a0f0; }
 tr:nth-child(even) { background: rgba(255,255,255,0.02); }
 tr:hover { background: rgba(233,69,96,0.07); }
 select {
@@ -797,6 +816,12 @@ let hiddenIds = new Set();
 function allFlavors() { return [...BASE_FLAVORS, ...customFlavors].filter(f => !hiddenIds.has(f.id)); }
 
 const CAT_JA = { cooling: "清涼", spice: "スパイス", fruit: "フルーツ", sweet: "スイート", floral: "フローラル", other: "その他" };
+const CAT_KEYS = ["fruit", "cooling", "spice", "sweet", "floral"];
+function getCats(f) {
+  if (Array.isArray(f.cat)) return f.cat;
+  return [f.cat];
+}
+function hasCat(f, c) { return getCats(f).includes(c); }
 
 const BRANDS = {
   af: { label: "AF", full: "アルファーヘブン", price: 1550 },
@@ -950,8 +975,8 @@ async function ghSave() {
     // Build the JSON content
     const data = collectData();
     const out = data.map(f => {
-      const o = { id: f.id, stats: f.stats, ng_flavors: f.ng_flavors };
-      if (f.custom) { o.name = f.name; o.short_name = f.short_name; o.category = f.category; o.custom = true; }
+      const o = { id: f.id, category: f.category, stats: f.stats, ng_flavors: f.ng_flavors };
+      if (f.custom) { o.name = f.name; o.short_name = f.short_name; o.custom = true; }
       return o;
     });
     const jsonStr = JSON.stringify(out, null, 2) + "\n";
@@ -992,7 +1017,7 @@ function applyFilters() {
   const q = (document.getElementById("search-input").value || "").trim().toLowerCase();
   const flavors = allFlavors();
   function matches(f) {
-    const catOk = cat === "all" || f.cat === cat;
+    const catOk = cat === "all" || getCats(f).includes(cat);
     const brandOk = brand === "all" || getBrand(f) === brand;
     const searchOk = !q || f.name.toLowerCase().includes(q) || f.full.toLowerCase().includes(q) || f.id.includes(q);
     return catOk && brandOk && searchOk;
@@ -1051,7 +1076,20 @@ function buildTable() {
 
     const tdCat = document.createElement("td");
     tdCat.className = "flavor-cat";
-    tdCat.innerHTML = `<span class="cat-badge cat-${f.cat}">${CAT_JA[f.cat] || f.cat}</span>`;
+    const activeCats = getCats(f);
+    for (const ck of CAT_KEYS) {
+      const badge = document.createElement("span");
+      badge.className = `cat-toggle cat-${ck}` + (activeCats.includes(ck) ? " active" : "");
+      badge.textContent = CAT_JA[ck];
+      badge.dataset.flavor = f.id;
+      badge.dataset.catKey = ck;
+      badge.addEventListener("click", function() {
+        this.classList.toggle("active");
+        syncCatToCard(f.id);
+        autoSave();
+      });
+      tdCat.appendChild(badge);
+    }
     tr.appendChild(tdCat);
 
     for (const s of STATS) {
@@ -1146,9 +1184,10 @@ function buildCardView() {
     const rightWrap = document.createElement("span");
     rightWrap.style.display = "flex";
     rightWrap.style.alignItems = "center";
+    const cardActiveCats = getCats(f);
     const catSpan = document.createElement("span");
-    catSpan.className = "card-cat cat-badge cat-" + f.cat;
-    catSpan.textContent = CAT_JA[f.cat] || f.cat;
+    catSpan.className = "card-cat cat-badge cat-" + cardActiveCats[0];
+    catSpan.textContent = getCats(f).map(c => CAT_JA[c]).join("+");
     const summaryWrap = document.createElement("span");
     summaryWrap.className = "card-stat-summary";
     summaryWrap.dataset.cardSummary = f.id;
@@ -1179,6 +1218,34 @@ function buildCardView() {
     // Body
     const body = document.createElement("div");
     body.className = "flavor-card-body";
+
+    // Category toggles
+    const catRow = document.createElement("div");
+    catRow.className = "card-stat-row";
+    catRow.style.paddingBottom = "10px";
+    catRow.style.borderBottom = "1px solid #2a2a40";
+    const catLabel = document.createElement("span");
+    catLabel.className = "card-stat-label";
+    catLabel.textContent = "カテゴリ";
+    catLabel.style.color = "#e94560";
+    catRow.appendChild(catLabel);
+    const catWrap = document.createElement("span");
+    for (const ck of CAT_KEYS) {
+      const cb = document.createElement("span");
+      cb.className = `cat-toggle cat-${ck}` + (cardActiveCats.includes(ck) ? " active" : "");
+      cb.textContent = CAT_JA[ck];
+      cb.dataset.cardFlavor = f.id;
+      cb.dataset.cardCatKey = ck;
+      cb.addEventListener("click", function(e) {
+        e.stopPropagation();
+        this.classList.toggle("active");
+        syncCatToTable(f.id);
+        autoSave();
+      });
+      catWrap.appendChild(cb);
+    }
+    catRow.appendChild(catWrap);
+    body.appendChild(catRow);
 
     // Stats
     for (const s of STATS) {
@@ -1284,6 +1351,31 @@ function syncNgToCard(flavorId, ngId, checked) {
   if (cardCb) cardCb.checked = checked;
 }
 
+function syncCatToCard(flavorId) {
+  const tableCats = document.querySelectorAll(`.cat-toggle[data-flavor="${flavorId}"]`);
+  const active = [];
+  tableCats.forEach(b => { if (b.classList.contains("active")) active.push(b.dataset.catKey); });
+  const cardCats = document.querySelectorAll(`.cat-toggle[data-card-flavor="${flavorId}"]`);
+  cardCats.forEach(b => {
+    b.classList.toggle("active", active.includes(b.dataset.cardCatKey));
+  });
+}
+function syncCatToTable(flavorId) {
+  const cardCats = document.querySelectorAll(`.cat-toggle[data-card-flavor="${flavorId}"]`);
+  const active = [];
+  cardCats.forEach(b => { if (b.classList.contains("active")) active.push(b.dataset.cardCatKey); });
+  const tableCats = document.querySelectorAll(`.cat-toggle[data-flavor="${flavorId}"]`);
+  tableCats.forEach(b => {
+    b.classList.toggle("active", active.includes(b.dataset.catKey));
+  });
+}
+function getFlavorCats(flavorId) {
+  const badges = document.querySelectorAll(`.cat-toggle[data-flavor="${flavorId}"].active`);
+  const cats = [];
+  badges.forEach(b => cats.push(b.dataset.catKey));
+  return cats.length ? cats : ["other"];
+}
+
 function syncNgToTable(flavorId, ngId, checked) {
   const tableCb = document.querySelector(`input[data-flavor="${flavorId}"][data-ng="${ngId}"]`);
   if (tableCb) tableCb.checked = checked;
@@ -1293,7 +1385,8 @@ function syncNgToTable(flavorId, ngId, checked) {
 function collectData() {
   const result = [];
   for (const f of allFlavors()) {
-    const entry = { id: f.id, name: f.full, short_name: f.name, category: f.cat, stats: {} };
+    const cats = getFlavorCats(f.id);
+    const entry = { id: f.id, name: f.full, short_name: f.name, category: cats.length === 1 ? cats[0] : cats, stats: {} };
     if (isCustom(f.id)) entry.custom = true;
     for (const s of STATS) {
       const sel = document.querySelector(`select[data-flavor="${f.id}"][data-stat="${s.key}"]`);
@@ -1311,8 +1404,8 @@ function collectData() {
 function exportJSON() {
   const data = collectData();
   const out = data.map(f => {
-    const o = { id: f.id, stats: f.stats, ng_flavors: f.ng_flavors };
-    if (f.custom) { o.name = f.name; o.short_name = f.short_name; o.category = f.category; o.custom = true; }
+    const o = { id: f.id, category: f.category, stats: f.stats, ng_flavors: f.ng_flavors };
+    if (f.custom) { o.name = f.name; o.short_name = f.short_name; o.custom = true; }
     return o;
   });
   const json = JSON.stringify(out, null, 2);
@@ -1325,8 +1418,8 @@ function exportJSON() {
 function copyJSON() {
   const data = collectData();
   const out = data.map(f => {
-    const o = { id: f.id, stats: f.stats, ng_flavors: f.ng_flavors };
-    if (f.custom) { o.name = f.name; o.short_name = f.short_name; o.category = f.category; o.custom = true; }
+    const o = { id: f.id, category: f.category, stats: f.stats, ng_flavors: f.ng_flavors };
+    if (f.custom) { o.name = f.name; o.short_name = f.short_name; o.custom = true; }
     return o;
   });
   const json = JSON.stringify(out, null, 2);
@@ -1338,11 +1431,19 @@ function copyJSON() {
 function applyFlavorData(list) {
   for (const entry of list) {
     if (!entry.id) continue;
+    if (entry.category) {
+      const cats = Array.isArray(entry.category) ? entry.category : [entry.category];
+      document.querySelectorAll(`.cat-toggle[data-flavor="${entry.id}"]`).forEach(b => {
+        b.classList.toggle("active", cats.includes(b.dataset.catKey));
+      });
+      document.querySelectorAll(`.cat-toggle[data-card-flavor="${entry.id}"]`).forEach(b => {
+        b.classList.toggle("active", cats.includes(b.dataset.cardCatKey));
+      });
+    }
     if (entry.stats) {
       for (const [key, val] of Object.entries(entry.stats)) {
         const sel = document.querySelector(`select[data-flavor="${entry.id}"][data-stat="${key}"]`);
         if (sel) { sel.value = val; sel.className = "val-" + val; }
-        // Also sync to card
         const cardSel = document.querySelector(`select[data-card-flavor="${entry.id}"][data-card-stat="${key}"]`);
         if (cardSel) { cardSel.value = val; cardSel.className = "val-" + val; }
       }
@@ -1350,7 +1451,6 @@ function applyFlavorData(list) {
     if (entry.ng_flavors) {
       const ngBoxes = document.querySelectorAll(`input[data-flavor="${entry.id}"]`);
       ngBoxes.forEach(cb => { cb.checked = entry.ng_flavors.includes(cb.dataset.ng); });
-      // Also sync to card
       const cardNgBoxes = document.querySelectorAll(`input[data-card-flavor="${entry.id}"]`);
       cardNgBoxes.forEach(cb => { cb.checked = entry.ng_flavors.includes(cb.dataset.cardNg); });
     }
@@ -1402,8 +1502,8 @@ function autoSave() {
   try {
     const data = collectData();
     const flat = data.map(f => {
-      const o = { id: f.id, stats: f.stats, ng_flavors: f.ng_flavors };
-      if (f.custom) { o.name = f.name; o.short_name = f.short_name; o.category = f.category; o.custom = true; }
+      const o = { id: f.id, category: f.category, stats: f.stats, ng_flavors: f.ng_flavors };
+      if (f.custom) { o.name = f.name; o.short_name = f.short_name; o.custom = true; }
       return o;
     });
     const save = { customFlavors, hiddenIds: [...hiddenIds], values: flat };

@@ -10639,7 +10639,8 @@ function mixProfile() {
     if (!f) continue;
     heat += f.heat_tolerance * g;
     weight += f.smoke_weight * g;
-    cats.add(f.category);
+    const fCats = Array.isArray(f.category) ? f.category : [f.category];
+    for (const c of fCats) cats.add(c);
     if (f.stats) {
       for (const [k, v] of Object.entries(f.stats)) {
         statSums[k] = (statSums[k] || 0) + v * g;
