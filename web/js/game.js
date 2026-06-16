@@ -4943,14 +4943,31 @@ function mixProfile() {
   const total = Object.values(tt.mix).reduce((a, b) => a + b, 0) || 1;
   let heat = 0, weight = 0;
   const cats = new Set();
+  const statSums = {};
+  const mixIds = Object.keys(tt.mix);
+  const ngHits = [];
   for (const [id, g] of Object.entries(tt.mix)) {
     const f = D.flavors.find((x) => x.id === id);
     if (!f) continue;
     heat += f.heat_tolerance * g;
     weight += f.smoke_weight * g;
     cats.add(f.category);
+    if (f.stats) {
+      for (const [k, v] of Object.entries(f.stats)) {
+        statSums[k] = (statSums[k] || 0) + v * g;
+      }
+    }
+    if (f.ng_flavors) {
+      for (const ngId of f.ng_flavors) {
+        if (mixIds.includes(ngId) && !ngHits.some(h => (h[0] === id && h[1] === ngId) || (h[0] === ngId && h[1] === id))) {
+          ngHits.push([id, ngId]);
+        }
+      }
+    }
   }
-  return { heat: heat / total, weight: weight / total, cats };
+  const stats = {};
+  for (const [k, v] of Object.entries(statSums)) stats[k] = v / total;
+  return { heat: heat / total, weight: weight / total, cats, stats, ngHits };
 }
 
 function craftScore() {
@@ -5076,6 +5093,11 @@ function craftScore() {
       score += { great: 4, good: 3, rough: 2 }[rt] || 2;
       detail.push("前日のリハーサルが、体の力みを抜いてくれた。");
     }
+  }
+  // NGフレーバーペナルティ
+  if (p.ngHits && p.ngHits.length > 0) {
+    score -= p.ngHits.length * 15;
+    detail.push("相性の悪いフレーバー同士がぶつかっている。");
   }
   return { score, detail };
 }
