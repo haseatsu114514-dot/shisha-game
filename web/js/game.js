@@ -2600,13 +2600,11 @@ function renderKujiSection(list) {
   list.appendChild(label);
   const prov = document.createElement("p");
   prov.className = "tn-hint";
-  prov.textContent = "※システム・抽選演出の試作です。賞品アイテムや専用演出は今後の実装で本実装されます。";
-  list.appendChild(prov);
-  // 初回だけ凛のメタ発言（在庫の口すべり＋リセマラ無効の予告）
+  // 初回だけ凛の口すべり（在庫処分のほのめかし＋運任せの忠告）
   if (!state.flags._kuji_seen) {
     const note = document.createElement("p");
     note.className = "tn-hint";
-    note.textContent = `${displayName("rin")}「これ、実は在庫しょぶ……なんでもない。あ、セーブしてやり直しても出るもの同じだから。そういうふうにできてるの」`;
+    note.textContent = `${displayName("rin")}「これ、実は在庫しょぶ……なんでもない。まあ、引きは引き。悩んでも結果は変わらないから、直感で行きなさい」`;
     list.appendChild(note);
   }
   const wrap = document.createElement("div");
