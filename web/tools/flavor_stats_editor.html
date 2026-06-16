@@ -114,6 +114,19 @@ td.flavor-cat {
 .cat-badge.cat-sweet { background: #3a1a2a; color: #f0a0c0; }
 .cat-badge.cat-floral { background: #2a1a3a; color: #c0a0f0; }
 .cat-badge.cat-other { background: #2a2a2a; color: #aaa; }
+.brand-badge {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 0.78em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin-right: 4px;
+}
+.brand-badge.brand-af { background: #1a2a1a; color: #8cc88c; border: 1px solid #3a5a3a; }
+.brand-badge.brand-dobaj { background: #2a1a0a; color: #e0a050; border: 1px solid #5a3a1a; }
+.brand-badge.brand-absal { background: #1a1a2a; color: #80a0e0; border: 1px solid #3a3a6a; }
+.brand-badge.brand-ns { background: #2a0a2a; color: #d080d0; border: 1px solid #5a2a5a; }
 tr:nth-child(even) { background: rgba(255,255,255,0.02); }
 tr:hover { background: rgba(233,69,96,0.07); }
 select {
@@ -277,7 +290,7 @@ select.val-9 { background: linear-gradient(90deg, #5a1a2a 100%, #0f3460 100%); c
   white-space: nowrap;
 }
 .reset-row-btn:hover { color: #e94560; border-color: #e94560; }
-td.action-cell { min-width: 70px; }
+td.action-cell { min-width: 120px; }
 .add-flavor-form {
   display: flex;
   gap: 8px;
@@ -590,7 +603,7 @@ td.action-cell { min-width: 70px; }
 
 <!-- Progress -->
 <div class="progress-wrap">
-  <div class="progress-text" id="progress-text">設定済み: 0 / 59</div>
+  <div class="progress-text" id="progress-text">設定済み: 0 / 60</div>
   <div class="progress-meter"><div class="progress-fill" id="progress-fill"></div></div>
 </div>
 
@@ -618,8 +631,15 @@ td.action-cell { min-width: 70px; }
 <!-- Filter bar -->
 <div class="filter-bar">
   <input type="text" id="search-input" placeholder="フレーバー名で検索..." oninput="applyFilters()">
+  <select id="brand-filter" onchange="applyFilters()">
+    <option value="all">全メーカー</option>
+    <option value="af">AF アルファーヘブン</option>
+    <option value="dobaj">dobaj ドバージュ</option>
+    <option value="absal">アブサル</option>
+    <option value="ns">NS ナイトサイド</option>
+  </select>
   <select id="category-filter" onchange="applyFilters()">
-    <option value="all">すべて</option>
+    <option value="all">全カテゴリ</option>
     <option value="fruit">フルーツ</option>
     <option value="sweet">スイート</option>
     <option value="cooling">清涼</option>
@@ -664,10 +684,15 @@ td.action-cell { min-width: 70px; }
     <div class="add-flavor-form">
       <label>ID:</label>
       <input type="text" id="new-id" placeholder="例: lemon">
-      <label>表示名:</label>
-      <input type="text" id="new-name" placeholder="例: AF レモン">
-      <label>正式名:</label>
-      <input type="text" id="new-full" placeholder="例: アルファーヘブン レモン">
+      <label>フレーバー名:</label>
+      <input type="text" id="new-name" placeholder="例: レモン">
+      <label>メーカー:</label>
+      <select id="new-brand">
+        <option value="af">AF アルファーヘブン</option>
+        <option value="dobaj">dobaj ドバージュ</option>
+        <option value="absal">アブサル</option>
+        <option value="ns">NS ナイトサイド</option>
+      </select>
       <label>カテゴリ:</label>
       <select id="new-cat">
         <option value="fruit">フルーツ</option>
@@ -766,6 +791,27 @@ let customFlavors = [];
 function allFlavors() { return [...BASE_FLAVORS, ...customFlavors]; }
 
 const CAT_JA = { cooling: "清涼", spice: "スパイス", fruit: "フルーツ", sweet: "スイート", floral: "フローラル", other: "その他" };
+
+const BRANDS = {
+  af: { label: "AF", full: "アルファーヘブン", price: 1550 },
+  dobaj: { label: "dobaj", full: "ドバージュ", price: 1750 },
+  absal: { label: "アブサル", full: "アブサル", price: 1750 },
+  ns: { label: "NS", full: "ナイトサイド", price: 0 }
+};
+function getBrand(f) {
+  if (f.name.startsWith("dobaj ")) return "dobaj";
+  if (f.name.startsWith("アブサル ")) return "absal";
+  if (f.name.startsWith("NS ")) return "ns";
+  return "af";
+}
+function getFlavorBaseName(f) {
+  const b = getBrand(f);
+  const prefix = BRANDS[b].label + " ";
+  return f.name.startsWith(prefix) ? f.name.slice(prefix.length) : f.name;
+}
+function makeBrandBadge(brand) {
+  return `<span class="brand-badge brand-${brand}">${BRANDS[brand].label}</span>`;
+}
 
 const STATS = [
   { key: "heat_resistance", label: "熱耐性", desc: "高温耐性+立ち上がり" },
@@ -936,23 +982,22 @@ async function ghSave() {
 /* --- Filter (category + search) --- */
 function applyFilters() {
   const cat = document.getElementById("category-filter").value;
+  const brand = document.getElementById("brand-filter").value;
   const q = (document.getElementById("search-input").value || "").trim().toLowerCase();
   const flavors = allFlavors();
-  const rows = document.querySelectorAll("#flavor-body tr");
-  for (const row of rows) {
-    const f = flavors.find(fl => fl.id === row.dataset.id);
-    if (!f) continue;
+  function matches(f) {
     const catOk = cat === "all" || f.cat === cat;
+    const brandOk = brand === "all" || getBrand(f) === brand;
     const searchOk = !q || f.name.toLowerCase().includes(q) || f.full.toLowerCase().includes(q) || f.id.includes(q);
-    row.style.display = (catOk && searchOk) ? "" : "none";
+    return catOk && brandOk && searchOk;
   }
-  const cards = document.querySelectorAll(".flavor-card");
-  for (const card of cards) {
+  for (const row of document.querySelectorAll("#flavor-body tr")) {
+    const f = flavors.find(fl => fl.id === row.dataset.id);
+    row.style.display = (f && matches(f)) ? "" : "none";
+  }
+  for (const card of document.querySelectorAll(".flavor-card")) {
     const f = flavors.find(fl => fl.id === card.dataset.id);
-    if (!f) continue;
-    const catOk = cat === "all" || f.cat === cat;
-    const searchOk = !q || f.name.toLowerCase().includes(q) || f.full.toLowerCase().includes(q) || f.id.includes(q);
-    card.style.display = (catOk && searchOk) ? "" : "none";
+    card.style.display = (f && matches(f)) ? "" : "none";
   }
 }
 function applyCategoryFilter() { applyFilters(); }
@@ -992,11 +1037,10 @@ function buildTable() {
     const tdName = document.createElement("td");
     tdName.className = "flavor-name";
     tdName.title = f.full;
-    if (isCustom(f.id)) {
-      tdName.innerHTML = f.name + '<span class="custom-badge">NEW</span>';
-    } else {
-      tdName.textContent = f.name;
-    }
+    const brand = getBrand(f);
+    let nameHtml = makeBrandBadge(brand) + getFlavorBaseName(f);
+    if (isCustom(f.id)) nameHtml += '<span class="custom-badge">NEW</span>';
+    tdName.innerHTML = nameHtml;
     tr.appendChild(tdName);
 
     const tdCat = document.createElement("td");
@@ -1042,13 +1086,19 @@ function buildTable() {
         updateProgress();
       });
       label.appendChild(cb);
-      label.appendChild(document.createTextNode(other.name.replace(/^(AF|NS) /, "")));
+      label.appendChild(document.createTextNode(getFlavorBaseName(other)));
       tdNg.appendChild(label);
     }
     tr.appendChild(tdNg);
 
     const tdAction = document.createElement("td");
     tdAction.className = "action-cell";
+    const varBtn = document.createElement("button");
+    varBtn.className = "reset-row-btn";
+    varBtn.textContent = "亜種作成";
+    varBtn.dataset.flavor = f.id;
+    varBtn.addEventListener("click", function() { createVariant(this.dataset.flavor); });
+    tdAction.appendChild(varBtn);
     const resetBtn = document.createElement("button");
     resetBtn.className = "reset-row-btn";
     resetBtn.textContent = "リセット";
@@ -1085,11 +1135,10 @@ function buildCardView() {
     header.className = "flavor-card-header";
     const nameSpan = document.createElement("span");
     nameSpan.className = "card-name";
-    if (isCustom(f.id)) {
-      nameSpan.innerHTML = f.name + ' <span class="custom-badge">NEW</span>';
-    } else {
-      nameSpan.textContent = f.name;
-    }
+    const cardBrand = getBrand(f);
+    let cardNameHtml = makeBrandBadge(cardBrand) + getFlavorBaseName(f);
+    if (isCustom(f.id)) cardNameHtml += ' <span class="custom-badge">NEW</span>';
+    nameSpan.innerHTML = cardNameHtml;
     const rightWrap = document.createElement("span");
     rightWrap.style.display = "flex";
     rightWrap.style.alignItems = "center";
@@ -1176,7 +1225,7 @@ function buildCardView() {
         updateProgress();
       });
       label.appendChild(cb);
-      label.appendChild(document.createTextNode(other.name.replace(/^(AF|NS) /, "")));
+      label.appendChild(document.createTextNode(getFlavorBaseName(other)));
       ngSection.appendChild(label);
     }
     body.appendChild(ngSection);
@@ -1184,6 +1233,12 @@ function buildCardView() {
     // Actions
     const actions = document.createElement("div");
     actions.className = "card-actions";
+    const cardVarBtn = document.createElement("button");
+    cardVarBtn.className = "reset-row-btn";
+    cardVarBtn.textContent = "亜種作成";
+    cardVarBtn.dataset.flavor = f.id;
+    cardVarBtn.addEventListener("click", function() { createVariant(this.dataset.flavor); });
+    actions.appendChild(cardVarBtn);
     const resetBtn = document.createElement("button");
     resetBtn.className = "reset-row-btn";
     resetBtn.textContent = "リセット";
@@ -1435,12 +1490,15 @@ function resetRow(flavorId) {
 
 function addCustomFlavor() {
   const id = document.getElementById("new-id").value.trim().toLowerCase().replace(/[^a-z0-9_]/g, "_");
-  const name = document.getElementById("new-name").value.trim();
-  const full = document.getElementById("new-full").value.trim() || name;
+  const rawName = document.getElementById("new-name").value.trim();
+  const brandKey = document.getElementById("new-brand").value;
   const cat = document.getElementById("new-cat").value;
   if (!id) { alert("IDを入力してください（英数字・アンダースコア）"); return; }
-  if (!name) { alert("表示名を入力してください"); return; }
+  if (!rawName) { alert("フレーバー名を入力してください"); return; }
   if (allFlavors().some(f => f.id === id)) { alert("ID「" + id + "」は既に存在します"); return; }
+  const b = BRANDS[brandKey];
+  const name = b.label + " " + rawName;
+  const full = b.full + " " + rawName;
   const savedState = collectData();
   customFlavors.push({ id, name, full, cat, custom: true });
   buildTable();
@@ -1451,8 +1509,49 @@ function addCustomFlavor() {
   updateProgress();
   document.getElementById("new-id").value = "";
   document.getElementById("new-name").value = "";
-  document.getElementById("new-full").value = "";
   showToast("「" + name + "」を追加しました");
+}
+
+function createVariant(sourceId) {
+  const srcFlavor = allFlavors().find(f => f.id === sourceId);
+  if (!srcFlavor) return;
+  const srcBrand = getBrand(srcFlavor);
+  const baseName = getFlavorBaseName(srcFlavor);
+  const others = Object.keys(BRANDS).filter(b => b !== srcBrand && b !== "ns");
+  if (!others.length) { alert("他のメーカーがありません"); return; }
+  const labels = others.map(b => BRANDS[b].label + " " + BRANDS[b].full);
+  const choice = prompt(
+    "「" + srcFlavor.name + "」の亜種を作成\nメーカーを選択（番号）:\n" +
+    others.map((b, i) => (i + 1) + ". " + labels[i] + " (" + BRANDS[b].price + "円)").join("\n"),
+    "1"
+  );
+  if (!choice) return;
+  const idx = parseInt(choice) - 1;
+  if (idx < 0 || idx >= others.length) { alert("無効な番号です"); return; }
+  const targetBrand = others[idx];
+  const tb = BRANDS[targetBrand];
+  const newId = targetBrand + "_" + sourceId.replace(/^(af_|dobaj_|absal_)/, "");
+  if (allFlavors().some(f => f.id === newId)) {
+    alert("ID「" + newId + "」は既に存在します");
+    return;
+  }
+  const savedState = collectData();
+  const srcData = savedState.find(e => e.id === sourceId);
+  customFlavors.push({
+    id: newId,
+    name: tb.label + " " + baseName,
+    full: tb.full + " " + baseName,
+    cat: srcFlavor.cat,
+    custom: true
+  });
+  buildTable();
+  buildCardView();
+  applyFlavorData(savedState);
+  if (srcData) applyFlavorData([{ id: newId, stats: { ...srcData.stats }, ng_flavors: [...srcData.ng_flavors] }]);
+  applyCategoryFilter();
+  autoSave();
+  updateProgress();
+  showToast("亜種「" + tb.label + " " + baseName + "」を作成しました");
 }
 
 function deleteCustomFlavor(id) {
