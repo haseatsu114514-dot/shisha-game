@@ -166,6 +166,7 @@ function newState() {
     goods: [],             // くじ等で得た売却可グッズ [{name, sell}]
     pendingLimeNight: null, // 夜に約束したLIMEイベント {event, sender}
     practiceBest: {},      // 練習ドリルの自己ベスト（0〜2）。大会本番のボーナスになる
+    customerNotes: {},     // 常連ノート: {event_id: {first, count}} バイトで会った客の記録
     // 日常スロット（パッキー＝理由は語られない謎のマスコット兼司会）。アプリ演出は出さない
     reel: (typeof REEL !== "undefined" ? Object.assign(REEL.newReelState(), { introDone: true }) : null),
     flags: {},
@@ -2231,6 +2232,9 @@ function doBaito(afterCameo) {
   if (pool.length === 0) { state.usedBaito = []; pool = D.baito_events.slice(); }
   const ev = pool[Math.floor(Math.random() * pool.length)];
   state.usedBaito.push(ev.id);
+  if (!state.customerNotes) state.customerNotes = {};
+  if (!state.customerNotes[ev.id]) state.customerNotes[ev.id] = { first: state.day || 1, count: 0 };
+  state.customerNotes[ev.id].count++;
   const basePay = Math.max(8000, ev.base_pay || D.baito_settings.base_pay || 8000); // 給料は最低8,000円（master_spec #21）
 
   const lines = [
@@ -2870,7 +2874,7 @@ function startPractice() {
   showScreen("#screen-practice");
   $("#practice-title").textContent = "今日は何を練習する？";
   $("#practice-gauge-area").classList.add("hidden");
-  $("#practice-result").textContent = "自己ベスト（★）は大会本番のスコアに上乗せされる。";
+  $("#practice-result").textContent = "シーシャ作りの各工程を個別に練習できる。自己ベスト（★）は大会本番のスコアに上乗せされる。";
   const menu = $("#practice-menu");
   menu.classList.remove("hidden");
   menu.innerHTML = "";
@@ -2898,6 +2902,12 @@ function runPracticeGauge(item) {
   const area = $("#practice-gauge-area");
   area.classList.remove("hidden");
   $("#gauge-hint").textContent = "ちょうどいい熱の入り方になる場所で止めろ！";
+  if (DRILL_TIPS[item.id]) {
+    const tip = document.createElement("p");
+    tip.className = "tn-tutor";
+    tip.textContent = DRILL_TIPS[item.id];
+    $("#gauge-hint").after(tip);
+  }
   const stopBtn = $("#gauge-stop");
   stopBtn.disabled = false;
   stopBtn.textContent = "止める！";
@@ -3590,6 +3600,11 @@ function tnPanel(title, hint) {
     const tip = document.createElement("p");
     tip.className = "tn-tutor";
     tip.textContent = TUTORIAL_TIPS[tt.step];
+    $("#tn-hint").after(tip);
+  } else if (tt && tt.mode === "drill" && DRILL_TIPS[tt.step]) {
+    const tip = document.createElement("p");
+    tip.className = "tn-tutor";
+    tip.textContent = DRILL_TIPS[tt.step];
     $("#tn-hint").after(tip);
   } else if (tt && tt.mode === "baito" && tt.theme) {
     const tip = document.createElement("p");
@@ -5633,6 +5648,62 @@ function relationsHtml() {
 }
 
 // 持ち物タブ（所持機材＋家シーシャ一式）
+const CUSTOMER_ENTRIES = {
+  baito_beginner_01: { name: "初シーシャの女の子", memo: "おすすめを聞いてきた。好みの飲み物からフレーバーを推理する楽しさを教えてくれた" },
+  baito_couple_time: { name: "初心者カップル", memo: "二人で一緒に吸うのかと聞いてきた。シェアの楽しみ方を提案できた" },
+  baito_trouble_01: { name: "不満顔のサラリーマン", memo: "「全然煙出ない」と苦情。炭の管理の大切さを痛感した" },
+  baito_rush_01: { name: "ピーク時の3卓", memo: "同時コールの嵐。手を止めずに回す修行だった" },
+  baito_mob_flavor_police: { name: "認可チェックのおじさん", memo: "フレーバーの認可を気にする慎重派。知識が試された" },
+  baito_mob_insta: { name: "映え狙いの女性客", memo: "一口も吸わず写真だけ撮り続けていた。炭の管理が地味に大変だった" },
+  baito_regular_01: { name: "おっちゃん（常連）", memo: "メニューも見ずに座る。「いつもの」で通じる、tonariの顔" },
+  baito_drunk_01: { name: "酔っぱらいのおじさん", memo: "「俺にも作らせろ」と絡んできた。接客の胆力が鍛えられた" },
+  baito_body_bad_01: { name: "「体に悪い？」のカップル", memo: "彼氏が不安そうだった。正しい知識で安心してもらうことも仕事" },
+  baito_closing_smoke: { name: "閉店後の一服", memo: "スミさんと二人、閉店後のtonari。フレーバーの残り香が一日の終わりを告げる" },
+  baito_smoke_ring: { name: "リング職人のおっちゃん", memo: "煙で綺麗な輪っかを作る常連。いつか追いつきたい技" },
+  baito_foreign_tourist: { name: "外国人観光客", memo: "言葉は通じなくても、煙の美味しさは世界共通だった" },
+  baito_regulars_chat: { name: "常連の夜（3人）", memo: "おっちゃんたちが顔を合わせた珍しい夜。tonariの空気が温かかった" },
+  baito_rainy_day: { name: "雨の日のtonari", memo: "雨音とゴボゴボの音。静かな店内で、シーシャの香りがいつもより濃く感じた" },
+  baito_closing_late: { name: "閉店間際のスーツ", memo: "「1杯だけ」と滑り込んできた。疲れた顔が、帰る頃には少し柔らかくなっていた" },
+  baito_mysterious_customer: { name: "謎の女性客", memo: "落ち着いた雰囲気の女性。どこかで会ったことがあるような……" },
+  baito_jiro_call: { name: "ガタイのいい常連", memo: "「煙多め、濃いめ、熱め」。注文がシンプルで潔い" },
+  baito_mob_01: { name: "初シーシャの大学生4人組", memo: "元気がいい。全員違うフレーバーにすると回し吸いで盛り上がる" },
+  baito_mob_02: { name: "誕生日パーティーの6人組", memo: "煙の演出でサプライズ。シーシャにはこういう使い方もある" },
+  baito_mob_03: { name: "おっちゃんの友達連れ", memo: "紹介した側の顔を立てるのも、いい接客のひとつ" },
+  baito_atmosphere_01: { name: "金曜の満席", memo: "スミさんの背中を追いかけた夜。自己最多記録の台数を作った" },
+  baito_atmosphere_02: { name: "午後の静けさ", memo: "光がボトルのガラスを通って虹を落としていた。tonariの匂いを意識した日" },
+  baito_atmosphere_03: { name: "閉店後のスミさん", memo: "「まだ下手だ」──一拍置いて──「3ヶ月前よりはマシだけどな」" },
+  baito_trouble_02: { name: "注文違いの女性客", memo: "ブルーベリーとグレープを間違えた。ミスの後のリカバリーが大事" },
+  baito_trouble_03: { name: "ボトル転倒の客", memo: "赤い炭が床を転がった。安全第一。炭→水→復旧の優先順位を学んだ" },
+  baito_trouble_04: { name: "焦げ臭い苦情の客", memo: "ヒートマネジメントの失敗。炭の位置ひとつで味が変わる" },
+  baito_regular_02: { name: "サラリーマン田中さん", memo: "毎週来る。ネクタイを緩める仕草が来店の合図" },
+  baito_regular_03: { name: "フリーランスのお兄さん", memo: "いつもはMacで仕事。たまに本を読んでいる日がある" },
+  baito_regular_04: { name: "常連3人の同時来店", memo: "おっちゃん、田中さん、フリーランスのお兄さん。同時は珍しい" },
+  baito_rush_02: { name: "土曜夜の行列", memo: "入口に2組。待ち時間の案内も大事な仕事" },
+  baito_rush_03: { name: "3卓同時リクエスト", memo: "フレーバー変更、灰掃除、追加注文が同時に来た" },
+  baito_rush_04: { name: "退勤ラッシュの4組", memo: "10分で4組。ボウルの在庫が足りなくなりかけた" },
+};
+
+function customerNotesHtml() {
+  const notes = state.customerNotes || {};
+  const total = Object.keys(CUSTOMER_ENTRIES).length;
+  const found = Object.keys(notes).filter((id) => CUSTOMER_ENTRIES[id]).length;
+  let html = `<div class="status-block"><h3>常連ノート</h3>` +
+    `<p class="note-progress">${found} / ${total} 人</p>`;
+  const entries = Object.entries(CUSTOMER_ENTRIES);
+  for (const [id, entry] of entries) {
+    if (notes[id]) {
+      const count = notes[id].count || 1;
+      html += `<div class="note-entry found"><span class="note-name">${entry.name}</span>` +
+        `<span class="note-count">×${count}</span>` +
+        `<p class="note-memo">${entry.memo}</p></div>`;
+    } else {
+      html += `<div class="note-entry locked"><span class="note-name">？？？</span></div>`;
+    }
+  }
+  html += `</div>`;
+  return html;
+}
+
 function inventoryHtml() {
   const owned = (state.owned || []).map((id) => {
     const e = (D.equipment || []).find((x) => x.id === id);
@@ -5718,6 +5789,7 @@ function renderStatusInto(el, opts = {}) {
     { id: "main", label: "ステータス", html: mainStatusHtml },
     { id: "rel", label: "人間関係", html: () => `<div class="status-block"><h3>人間関係</h3>${relationsHtml()}</div>` },
     { id: "inv", label: "持ち物", html: inventoryHtml },
+    { id: "note", label: "常連ノート", html: customerNotesHtml },
   ];
   const bar = document.createElement("div");
   bar.className = "status-tabs";
@@ -5841,6 +5913,14 @@ const TUTORIAL_TIPS = {
   coal: "スミさん「基本はトライアングル。熱が均等に回る」",
   steam: "スミさん「蒸らしは0/3/5/8/10分から選ぶ。基本は5〜8分、0分は神崎の型だ」",
   pull: "スミさん「提供前の吸い出しで温度を作る。左で止めれば上げ、右なら下げだ。最低2回」",
+};
+const DRILL_TIPS = {
+  foil: "💡 アルミホイルに穴を開ける工程。穴の数と配置で熱の通り方が決まる。均等に開けるほど味がブレにくい",
+  coalfire: "💡 専用の炭を火で炙って使う。外は赤いのに中が黒い「生焼け」だと嫌な味が出る。芯まで火を通すのが大事",
+  steam: "💡 炭を置いた後、すぐに吸わず数分待つ。葉に熱を行き渡らせる「蒸らし」で、味の立ち上がりが変わる",
+  pull: "💡 お客さんに出す前に自分で何度か吸って温度を整える。吸い方の強弱で温度を上げ下げできる",
+  focus: "💡 大会中は観客の声援や野次が飛ぶ。集中を切らさず自分のペースを守る精神力の訓練",
+  serve: "💡 完成したシーシャをお客さんに出す瞬間。温度・煙量・香りがベストなタイミングを見極める",
 };
 
 function startTutorial() {
@@ -6034,6 +6114,7 @@ function continueGame(saved) {
   if (!Array.isArray(state.limeDone)) state.limeDone = [];
   if (state.pendingLimeNight === undefined) state.pendingLimeNight = null;
   if (!state.practiceBest) state.practiceBest = {};
+  if (!state.customerNotes) state.customerNotes = {};
   // 日常スロット導入前のセーブ互換（アプリ説明は出さない）
   if (!state.reel && typeof REEL !== "undefined") state.reel = Object.assign(REEL.newReelState(), { introDone: true });
   // 凛（問屋街の代理店）導入前のセーブ互換
