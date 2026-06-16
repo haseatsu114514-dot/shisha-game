@@ -156,9 +156,9 @@ for (let i = 0; i < 2500; i++) {
     else if (t.includes("炭替え・調整")) await page.locator(".spot-btn", { hasText: "このままでいく" }).click();
     else if (t.includes("テーマ選択")) await page.locator(".spot-btn", { hasText: "高火力" }).click();
     else if (t.includes("ミックス")) {
-      const plusOf = (name) => page.locator(".mix-row", { hasText: name }).locator("button", { hasText: "＋" });
-      for (let k = 0; k < 2; k++) await plusOf("ミント").click();
-      for (let k = 0; k < 10; k++) await plusOf("バニラ").click();
+      const plusOf = (id) => page.locator(`.mix-row[data-flavor-id="${id}"] button`, { hasText: "＋" });
+      for (let k = 0; k < 2; k++) await plusOf("mint").click();
+      for (let k = 0; k < 10; k++) await plusOf("vanilla").click();
       await page.screenshot({ path: `${OUT}/08_mix.png` });
       await page.locator("#tn-body button", { hasText: "この配合でいく" }).click();
     } else if (t.includes("パッキング")) await page.locator(".spot-btn", { hasText: "かため" }).click();

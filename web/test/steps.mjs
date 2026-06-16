@@ -42,27 +42,25 @@ export async function playTnStep(page, opts = {}) {
     await page.locator(".spot-btn", { hasText: "フルーティ" }).click();
   } else if (title.includes("ミックス")) {
     const rows = page.locator(".mix-row");
-    const plusOf = (name) => rows.filter({ hasText: name }).locator("button", { hasText: "＋" });
+    const plusById = (id) => rows.filter({ has: page.locator(`[data-flavor-id="${id}"]`) }).first().locator("button", { hasText: "＋" });
+    const plusOf = (id) => page.locator(`.mix-row[data-flavor-id="${id}"] button`, { hasText: "＋" });
     const totalText = (await page.locator("#tn-body .mix-total").textContent()) || "";
     if (totalText.includes("ストロベリー")) {
-      // ch2課題: ストロベリー2g + ブルーベリー6g + バニラ4g（fruit + sweet でテーマ一致）
-      for (let i = 0; i < 2; i++) await plusOf("ストロベリー").click();
-      for (let i = 0; i < 6; i++) await plusOf("ブルーベリー").click();
-      for (let i = 0; i < 4; i++) await plusOf("バニラ").click();
+      for (let i = 0; i < 2; i++) await plusOf("strawberry").click();
+      for (let i = 0; i < 6; i++) await plusOf("blueberry").click();
+      for (let i = 0; i < 4; i++) await plusOf("vanilla").click();
       await page.locator("#tn-body button", { hasText: "この配合でいく" }).click();
       await page.waitForTimeout(40);
       return;
     }
-    // ch1課題: ミント2g + ブルーベリー6g + バニラ4g（fruit + sweet でテーマ一致）
-    for (let i = 0; i < 2; i++) await plusOf("ミント").click();
-    for (let i = 0; i < 6; i++) await plusOf("ブルーベリー").click();
-    for (let i = 0; i < 4; i++) await plusOf("バニラ").click();
-    // バイトの「ミント抜き」リクエストの日はミントをブルーベリーに振り替える
+    for (let i = 0; i < 2; i++) await plusOf("mint").click();
+    for (let i = 0; i < 6; i++) await plusOf("blueberry").click();
+    for (let i = 0; i < 4; i++) await plusOf("vanilla").click();
     const go = page.locator("#tn-body .mix-footer .primary-btn");
     if (await go.isDisabled()) {
-      const minusOf = (name) => rows.filter({ hasText: name }).locator("button", { hasText: "−" });
-      for (let i = 0; i < 2; i++) await minusOf("ミント").click();
-      for (let i = 0; i < 2; i++) await plusOf("ブルーベリー").click();
+      const minusOf = (id) => page.locator(`.mix-row[data-flavor-id="${id}"] button`, { hasText: "−" });
+      for (let i = 0; i < 2; i++) await minusOf("mint").click();
+      for (let i = 0; i < 2; i++) await plusOf("blueberry").click();
     }
     await page.locator("#tn-body button", { hasText: "この配合でいく" }).click();
   } else if (title.includes("パッキング")) {

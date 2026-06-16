@@ -4488,6 +4488,7 @@ function stepMix() {
   for (const f of flavors) {
     const row = document.createElement("div");
     row.className = "mix-row";
+    row.dataset.flavorId = f.id;
     const info = document.createElement("div");
     info.className = "mix-info";
     const priceTag = charged && mixGramCost(f) ? ` <span class="mix-price">${mixGramCost(f)}円/g</span>` : charged ? ` <span class="mix-price free">提供品</span>` : "";
