@@ -11,22 +11,3 @@ asset_sources/
 
 # スプレッドシート系（CSV は必要時のみ手動で参照）
 アセット差し替え進捗管理表.*
-
-# 旧設定の残骸（参照禁止・正史ではない。旧タイトル/旧名を含む）
-brand/brand
-brand/chapter1（character）
-
-# 過去のフィードバック記録・添削履歴（作業中に毎回読む必要なし）
-brand/comprehensive_feedback.md
-brand/gameplay_feedback.md
-brand/editorial_notes.md
-
-# 旧プロンプトテンプレート（CLAUDE.md に集約済み）
-brand/claude_code_prompt.md
-brand/claude_prompt_comprehensive.md
-brand/claude_prompt_template.md
-
-# 引き継ぎメモ・巨大な計画/履歴ドキュメント（現役仕様は master_spec / web_version_plan / owner_requests）
-docs/handoff/
-docs/next_session_prompts.md
-docs/minigame_implementation_plan.md
