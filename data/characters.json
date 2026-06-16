@@ -704,5 +704,47 @@
       "notes": ""
     },
     "visual_concepts": []
+  },
+  {
+    "id": "oneesan",
+    "name": "お姉さん",
+    "role": "alias",
+    "description": "みんとの私服姿"
+  },
+  {
+    "id": "customer",
+    "name": "客",
+    "role": "mob",
+    "description": "mukai の一般客"
+  },
+  {
+    "id": "old_man",
+    "name": "老人",
+    "role": "mob",
+    "description": "夢・回想に登場する老人NPC"
+  },
+  {
+    "id": "shop_clerk",
+    "name": "店員",
+    "role": "mob",
+    "description": "ショップスタッフ"
+  },
+  {
+    "id": "everyone",
+    "name": "みんな",
+    "role": "mob",
+    "description": "複数人が同時に話す場面用"
+  },
+  {
+    "id": "staff_choizap",
+    "name": "スタッフ",
+    "role": "mob",
+    "description": "チョイザップのジムスタッフ"
+  },
+  {
+    "id": "mystery_girl",
+    "name": "？？？",
+    "role": "mob",
+    "description": "ch1で正体不明のまま登場するアゲハ"
   }
 ]

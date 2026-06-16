@@ -906,12 +906,6 @@
           "speaker": "",
           "face": "",
           "text": "……【魅力】が少し上がった。"
-        },
-        {
-          "type": "apply",
-          "stats": {
-            "charm": 2
-          }
         }
       ]
     },
@@ -980,13 +974,6 @@
           "speaker": "",
           "face": "",
           "text": "……【洞察】が少し上がった。"
-        },
-        {
-          "type": "apply",
-          "stats": {
-            "technique": 2,
-            "insight": 1
-          }
         }
       ]
     },
@@ -1060,13 +1047,6 @@
           "speaker": "",
           "face": "",
           "text": "……【センス】が少し上がった。"
-        },
-        {
-          "type": "apply",
-          "stats": {
-            "guts": 2,
-            "sense": 1
-          }
         }
       ]
     },
@@ -1140,13 +1120,6 @@
           "speaker": "",
           "face": "",
           "text": "……【洞察】が少し上がった。"
-        },
-        {
-          "type": "apply",
-          "stats": {
-            "charm": 2,
-            "insight": 1
-          }
         }
       ]
     },
@@ -1230,13 +1203,6 @@
           "speaker": "",
           "face": "",
           "text": "……【魅力】が上がった。"
-        },
-        {
-          "type": "apply",
-          "stats": {
-            "sense": 2,
-            "charm": 2
-          }
         }
       ]
     },
