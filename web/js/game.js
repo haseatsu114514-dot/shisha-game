@@ -2511,13 +2511,13 @@ function showShop() {
     sellGrid.appendChild(btn);
   }
   // くじで得た売却可グッズ（限定グッズ等）も買取対象
-  (state.goods || []).forEach((g, gi) => {
+  (state.goods || []).forEach((g) => {
     if (!g.sell) return;
     const btn = document.createElement("button");
     btn.className = "spot-btn";
     btn.innerHTML = `<span class="spot-name">${g.name} を売る</span><span class="spot-cost">+${g.sell.toLocaleString()}円</span>`;
     btn.addEventListener("click", () => {
-      state.goods.splice(gi, 1);
+      state.goods = state.goods.filter((x) => x !== g);
       addMoney(g.sell);
       save();
       toast(`${g.name} を売った`);
