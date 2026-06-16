@@ -585,10 +585,10 @@
     },
     {
       "id": "lychee",
-      "name": "アルファーヘブン ライチ",
-      "short_name": "AF ライチ",
+      "name": "アブサル ライチ",
+      "short_name": "アブサル ライチ",
       "category": "fruit",
-      "price": 1550,
+      "price": 1750,
       "description": "Dr.fookah入荷の華やか枠。上品な甘みとほのかな花香が、ミックスに繊細さを加える。",
       "heat_tolerance": 0.9,
       "smoke_weight": 0.95,
@@ -1648,6 +1648,33 @@
         "spiciness": 3,
         "floral": 4,
         "nicotine": 5
+      },
+      "ng_flavors": []
+    },
+    {
+      "id": "absal_earlgrey",
+      "name": "アブサル アールグレイ",
+      "short_name": "アブサル アールグレイ",
+      "category": "floral",
+      "price": 1750,
+      "description": "アブサルのアールグレイ。ベルガモットの柑橘香と紅茶の渋みが調和した、落ち着きのある一台。ナイトサイドの試作品とは別のアプローチで、伝統的な茶葉感を前面に出している。",
+      "heat_tolerance": 0.9,
+      "smoke_weight": 1.0,
+      "steam_bias": 0.2,
+      "leaf": "blond",
+      "stats": {
+        "heat_resistance": 4,
+        "refreshing": 5,
+        "sweet_natural": 3,
+        "sweet_confection": 2,
+        "cooling": 2,
+        "assertiveness": 5,
+        "acquired_taste": 6,
+        "smoke_body": 5,
+        "sourness": 3,
+        "spiciness": 2,
+        "floral": 7,
+        "nicotine": 4
       },
       "ng_flavors": []
     },
