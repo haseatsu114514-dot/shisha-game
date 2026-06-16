@@ -190,7 +190,7 @@ select.val-9 { color: #e94560; }
 <div class="stat-guide">
   <h3>ステータス説明</h3>
   <dl>
-    <dt>熱耐性</dt><dd>高温にどれだけ耐えるか。9=ガンガン焚ける、1=すぐ焦げる</dd>
+    <dt>熱耐性</dt><dd>高温にどれだけ耐えるか＋立ち上がりの速さ。9=ガンガン焚ける＆すぐ香る、1=すぐ焦げる＆じっくり型</dd>
     <dt>さっぱり</dt><dd>後味のさっぱり感。9=スッキリ、1=こってり</dd>
     <dt>甘い（その他）</dt><dd>フルーツ・自然由来の甘さ。9=とても甘い</dd>
     <dt>甘い（お菓子的）</dt><dd>バニラ・キャラメル等の人工的な甘さ。9=とても甘い</dd>
@@ -198,10 +198,10 @@ select.val-9 { color: #e94560; }
     <dt>主張の強さ</dt><dd>混ぜた時にどれだけ自己主張するか。9=必ず顔を出す</dd>
     <dt>癖の強さ</dt><dd>好き嫌いが分かれる度合い。9=かなりクセが強い</dd>
     <dt>煙の重さ</dt><dd>煙のボディ感。9=どっしり重い、1=ふわっと軽い</dd>
-    <dt>余韻の長さ</dt><dd>吐いた後の残り香。9=いつまでも残る、1=すぐ消える</dd>
-    <dt>立ち上がり</dt><dd>蒸らし始めてからの香り出し速度。9=即座に出る、1=じっくり待つ</dd>
     <dt>酸味</dt><dd>柑橘・ベリー系のすっぱさ。9=しっかり酸味、1=なし</dd>
-    <dt>華やかさ</dt><dd>フローラル・ハーブ系の香りの広がり。9=華やか、1=地味</dd>
+    <dt>スパイス感</dt><dd>スパイス・ハーブ系の刺激。9=ガツンとスパイシー、1=なし</dd>
+    <dt>華やかさ</dt><dd>フローラル系の香りの広がり。9=華やか、1=地味</dd>
+    <dt>ニコチンの強さ</dt><dd>葉のニコチン感。9=ガツンとくる、1=ほぼ感じない</dd>
     <dt>NGフレーバー</dt><dd>一緒に混ぜると大幅減点になる組み合わせ</dd>
   </dl>
 </div>
@@ -252,7 +252,7 @@ const FLAVORS = [
 const CAT_JA = { cooling: "清涼", spice: "スパイス", fruit: "フルーツ", sweet: "スイート" };
 
 const STATS = [
-  { key: "heat_resistance", label: "熱耐性", desc: "高温耐性" },
+  { key: "heat_resistance", label: "熱耐性", desc: "高温耐性+立ち上がり" },
   { key: "refreshing", label: "さっぱり", desc: "さっぱり感" },
   { key: "sweet_natural", label: "甘い（その他）", desc: "自然な甘さ" },
   { key: "sweet_confection", label: "甘い（お菓子的）", desc: "お菓子的甘さ" },
@@ -260,10 +260,10 @@ const STATS = [
   { key: "assertiveness", label: "主張の強さ", desc: "自己主張度" },
   { key: "acquired_taste", label: "癖の強さ", desc: "好き嫌い度" },
   { key: "smoke_body", label: "煙の重さ", desc: "ボディ感" },
-  { key: "aftertaste", label: "余韻の長さ", desc: "残り香" },
-  { key: "onset_speed", label: "立ち上がり", desc: "香り出し速度" },
   { key: "sourness", label: "酸味", desc: "すっぱさ" },
-  { key: "floral", label: "華やかさ", desc: "フローラル感" }
+  { key: "spiciness", label: "スパイス感", desc: "スパイス刺激" },
+  { key: "floral", label: "華やかさ", desc: "フローラル感" },
+  { key: "nicotine", label: "ニコチンの強さ", desc: "ニコチン感" }
 ];
 
 function buildTable() {
