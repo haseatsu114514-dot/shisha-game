@@ -1,4 +1,4 @@
-# web/dist/shisha_ch1.html（1ファイル版）を GitHub Pages に公開する。
+# ソースから web/dist/shisha_ch1.html（1ファイル版）を生成し、GitHub Pages に公開する。
 # main または開発ブランチ（claude/**）への push のたびに
 # https://haseatsu114514-dot.github.io/shisha-game/ が更新される。
 name: Deploy web build to GitHub Pages
@@ -7,8 +7,14 @@ on:
   push:
     branches: [main, "claude/**"]
     paths:
+      - "assets/**"
+      - "data/**"
+      - "web/css/**"
+      - "web/js/**"
       - "web/dist/**"
       - "web/tools/**"
+      - "web/build_data.py"
+      - "web/build_standalone.py"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -29,6 +35,13 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Build standalone web bundle
+        run: |
+          python3 web/build_data.py
+          python3 web/build_standalone.py
       - name: Prepare site
         run: |
           mkdir -p _site/tools
