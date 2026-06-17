@@ -649,7 +649,7 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "だから休め。味覚なんてそのうち戻るって。"
+          "text": "だから休め。舌の感覚なんてそのうち戻るって。"
         },
         {
           "speaker": "ageha",
@@ -680,7 +680,7 @@
     {
       "dialogue_id": "ch2_ageha_group_gyarufriend",
       "metadata": {
-        "bg": "res://assets/backgrounds/pepermint.png"
+        "bg": "res://assets/backgrounds/bg_ageha_shop.png"
       },
       "lines": [
         {
@@ -753,7 +753,7 @@
     {
       "dialogue_id": "ch2_ageha_group_new_customer",
       "metadata": {
-        "bg": "res://assets/backgrounds/pepermint.png"
+        "bg": "res://assets/backgrounds/bg_ageha_shop.png"
       },
       "lines": [
         {
@@ -904,7 +904,7 @@
     {
       "dialogue_id": "ch2_ageha_after_ch2",
       "metadata": {
-        "bg": "res://assets/backgrounds/pepermint.png"
+        "bg": "res://assets/backgrounds/bg_ageha_shop.png"
       },
       "lines": [
         {
@@ -986,7 +986,7 @@
     {
       "dialogue_id": "ch2_ageha_after_ch2_firstshop",
       "metadata": {
-        "bg": "res://assets/backgrounds/pepermint.png"
+        "bg": "res://assets/backgrounds/bg_ageha_shop.png"
       },
       "lines": [
         {

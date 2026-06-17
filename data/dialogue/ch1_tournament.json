@@ -3,7 +3,7 @@
     {
       "dialogue_id": "ch1_tournament_arrival",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png",
+        "bg": "res://assets/backgrounds/bg_c_station_lobby.png",
         "effect": "smoke"
       },
       "lines": [

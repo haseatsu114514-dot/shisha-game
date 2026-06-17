@@ -1736,19 +1736,19 @@ const SPOT_FACE = { tonari: "sumi", sumi: "sumi", tsumugi: "tsumugi", naru: "nar
 
 // マップ上のピン位置（%）と短いラベル名
 const SPOT_LAYOUT = {
-  tonari:    { x: 16, y: 50, theme: "baito",   short: "tonari",     area: "tonari" },
-  naru:      { x: 42, y: 22, theme: "rival",   short: "KEMURIKUSA", area: "繁華街" },
-  adam:      { x: 56, y: 30, theme: "rival",   short: "EDEN",       area: "下町" },
-  minto:     { x: 70, y: 22, theme: "rival",   short: "PEPERMINT",  area: "繁華街" },
+  tonari:    { x: 86.7, y: 41.7, theme: "baito",   short: "tonari",     area: "tonari" },
+  naru:      { x: 72.3, y: 37.5, theme: "rival",   short: "KEMURIKUSA", area: "繁華街" },
+  adam:      { x: 47.7, y: 47.2, theme: "rival",   short: "EDEN",       area: "下町" },
+  minto:     { x: 34.8, y: 54.2, theme: "rival",   short: "PEPERMINT",  area: "繁華街" },
   kumicho:   { x: 40, y: 24, theme: "rival",   short: "神崎煙草店", area: "旧市街" },
   ageha:     { x: 58, y: 20, theme: "rival",   short: "AGEHA",      area: "繁華街" },
   rei:       { x: 72, y: 32, theme: "rival",   short: "零-ZERO-",   area: "ライブ通り" },
   volk:      { x: 50, y: 38, theme: "rival",   short: "鉄の煙",     area: "工業地区" },
-  choizap:   { x: 50, y: 50, theme: "shop",    short: "チョイザップ", area: "ジム" },
-  kannon:    { x: 78, y: 56, theme: "park",    short: "観音堂",     area: "古町" },
-  cafe:      { x: 64, y: 64, theme: "cafe",    short: "カフェ",     area: "繁華街" },
-  c_station: { x: 84, y: 36, theme: "stadium", short: "C.STATION",  area: "会場" },
-  shop:      { x: 36, y: 40, theme: "shop",    short: "Dr.fookah",  area: "問屋街" },
+  choizap:   { x: 28.9, y: 32.6, theme: "shop",    short: "チョイザップ", area: "ジム" },
+  kannon:    { x: 16.0, y: 54.2, theme: "park",    short: "観音堂",     area: "古町" },
+  cafe:      { x: 84.0, y: 53.5, theme: "cafe",    short: "カフェ",     area: "繁華街" },
+  c_station: { x: 59.4, y: 60.4, theme: "stadium", short: "C.STATION",  area: "会場" },
+  shop:      { x: 42.2, y: 37.5, theme: "shop",    short: "Dr.fookah",  area: "問屋街" },
   rest:      { x: 88, y: 60, theme: "rest",    short: "家",         area: "自宅" },
 };
 
@@ -1758,7 +1758,7 @@ function showMap(opts = {}) {
   showScreen("#screen-map");
   const night = state.ap <= 1;
   $("#map-image").style.backgroundImage =
-    `url('${assetUrl(`assets/backgrounds/bg_map_local_${night ? "night" : "day"}.png`)}')`;
+    `url('${assetUrl(`assets/backgrounds/bg_osu_map_${night ? "night" : "day"}.png`)}')`;
   $("#map-time-toggle").textContent = night ? "夜 / 栄" : "昼 / 栄";
   updateHud();
 
@@ -1923,8 +1923,8 @@ function selectSpot(spot) {
       case "baito": return shishaGuard(() => doBaito());
       case "practice": return shishaGuard(() => startPractice());
       case "choizap": return doChoizap();
-      case "kannon": return doSpotDialogue("kannon", "ch1_kannon_visit", "bg_street_day.png");
-      case "cafe": return doSpotDialogue("cafe", "ch1_cafe_visit", "bg_street_day.png");
+      case "kannon": return doSpotDialogue("kannon", "ch1_kannon_visit", "bg_kannon_day.png");
+      case "cafe": return doSpotDialogue("cafe", "ch1_cafe_visit", "bg_cafe_day.png");
       case "c_station": return doCStation();
       case "shop": return showFookahMenu(); // Dr.fookah: 物販利用 or 凛＋ブース を選ぶ(T28)
       case "rest": return doRest();
@@ -2043,7 +2043,7 @@ function doCStation() {
     if (!cueFiredInDialogue) gainStat("insight", 2);
     gainStat(spotStat("c_station"), 3);
     endAction();
-  }, "res://assets/backgrounds/bg_shop.png");
+  }, "res://assets/backgrounds/bg_c_station_day.png");
 }
 
 function endAction() {
@@ -2385,13 +2385,13 @@ function doChoizap() {
   visitContextChar = null;
   if (!state.flags._choizap_seen) {
     state.flags._choizap_seen = true;
-    playDialogue("ch1_choizap_first", endAction, "res://assets/backgrounds/bg_street_day.png");
+    playDialogue("ch1_choizap_first", endAction, "res://assets/backgrounds/bg_choizap.png");
     return;
   }
   if (!state.gymMember) {
     playCustom({
       dialogue_id: "choizap_retry",
-      metadata: { bg: "res://assets/backgrounds/bg_street_day.png" },
+      metadata: { bg: "res://assets/backgrounds/bg_choizap.png" },
       lines: [
         { speaker: "", face: "", text: "チョイザップの前まで来た。" },
         { type: "choice", id: "choizap_again", choices: [
@@ -2410,7 +2410,7 @@ function doChoizap() {
     return;
   }
   addStamina(-STAMINA_COST.gym);
-  doSpotDialogue("choizap", "ch1_choizap_visit", "bg_street_day.png");
+  doSpotDialogue("choizap", "ch1_choizap_visit", "bg_choizap.png");
 }
 
 // Dr.fookah を選んだら、物販利用か凛さんに会うかを選ぶ（T28・場所で管理）。
