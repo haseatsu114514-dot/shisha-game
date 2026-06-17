@@ -171,11 +171,14 @@ select.val-8 { background: linear-gradient(90deg, #3a2a1a 89%, #0f3460 89%); col
 select.val-9 { background: linear-gradient(90deg, #5a1a2a 100%, #0f3460 100%); color: #e94560; font-weight: bold; }
 .ng-cell {
   text-align: left;
-  min-width: 180px;
+  min-width: 280px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px 8px;
 }
 .ng-cell label {
   display: inline-block;
-  margin: 1px 4px;
+  margin: 1px 0;
   font-size: 0.72em;
   cursor: pointer;
   white-space: nowrap;
@@ -543,15 +546,19 @@ td.action-cell { min-width: 120px; }
   margin-top: 10px;
   padding-top: 10px;
   border-top: 1px solid #2a2a40;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px 8px;
 }
 .card-ng-section .card-ng-title {
   font-size: 0.8em;
   color: #e94560;
   margin-bottom: 6px;
+  grid-column: 1 / -1;
 }
 .card-ng-section label {
   display: inline-block;
-  margin: 2px 6px 2px 0;
+  margin: 2px 0;
   font-size: 0.78em;
   cursor: pointer;
   white-space: nowrap;
@@ -745,70 +752,70 @@ td.action-cell { min-width: 120px; }
 
 <script>
 const BASE_FLAVORS = [
-  { id: "mint", name: "AF ミント", full: "アルファーヘブン ミント", cat: "cooling" },
-  { id: "double_apple", name: "AF ダブルアップル", full: "アルファーヘブン ダブルアップル", cat: "spice" },
-  { id: "blueberry", name: "AF ブルーベリー", full: "アルファーヘブン ブルーベリー", cat: "fruit" },
-  { id: "strawberry", name: "AF ストロベリー", full: "アルファーヘブン ストロベリー", cat: "fruit" },
-  { id: "vanilla", name: "dobaj バニラ", full: "ドバージュ バニラ", cat: "sweet" },
-  { id: "pineapple", name: "AF パイナップル", full: "アルファーヘブン パイナップル", cat: "fruit" },
-  { id: "coconut", name: "dobaj ココナッツ", full: "ドバージュ ココナッツ", cat: "fruit" },
-  { id: "mango", name: "dobaj マンゴー", full: "ドバージュ マンゴー", cat: "fruit" },
-  { id: "nightside_earlgrey", name: "NS アールグレイ（試作）", full: "ナイトサイド アールグレイ（試作）", cat: "floral" },
-  { id: "nightside_earlgrey_release", name: "NS アールグレイ", full: "ナイトサイド アールグレイ", cat: "floral" },
-  { id: "grape", name: "AF グレープ", full: "アルファーヘブン グレープ", cat: "fruit" },
-  { id: "rose", name: "アブサル ローズ", full: "アブサル ローズ", cat: "floral" },
-  { id: "peach", name: "dobaj ピーチ", full: "ドバージュ ピーチ", cat: "fruit" },
-  { id: "orange", name: "AF オレンジ", full: "アルファーヘブン オレンジ", cat: "fruit" },
-  { id: "lemon", name: "AF レモン", full: "アルファーヘブン レモン", cat: "fruit" },
-  { id: "watermelon", name: "AF スイカ", full: "アルファーヘブン スイカ", cat: "fruit" },
-  { id: "guava", name: "AF グアバ", full: "アルファーヘブン グアバ", cat: "fruit" },
-  { id: "dragonfruit", name: "AF ドラゴンフルーツ", full: "アルファーヘブン ドラゴンフルーツ", cat: "fruit" },
-  { id: "kiwi", name: "AF キウイ", full: "アルファーヘブン キウイ", cat: "fruit" },
-  { id: "melon", name: "dobaj メロン", full: "ドバージュ メロン", cat: "fruit" },
-  { id: "banana", name: "dobaj バナナ", full: "ドバージュ バナナ", cat: "fruit" },
-  { id: "lychee", name: "アブサル ライチ", full: "アブサル ライチ", cat: "fruit" },
-  { id: "cool_mint", name: "AF クールミント", full: "アルファーヘブン クールミント", cat: "cooling" },
-  { id: "twice_ice", name: "AF トワイスアイス", full: "アルファーヘブン トワイスアイス", cat: "cooling" },
-  { id: "peppermint_shake", name: "dobaj ペパーミントシェイク", full: "ドバージュ ペパーミントシェイク", cat: "cooling" },
-  { id: "ice_grape", name: "AF アイスグレープ", full: "アルファーヘブン アイスグレープ", cat: "cooling" },
-  { id: "ice_lemon", name: "AF アイスレモン", full: "アルファーヘブン アイスレモン", cat: "cooling" },
-  { id: "death_by_ice", name: "AF デスバイアイス", full: "アルファーヘブン デスバイアイス", cat: "cooling" },
-  { id: "blueberry_mint", name: "AF ブルーベリーミント", full: "アルファーヘブン ブルーベリーミント", cat: "cooling" },
-  { id: "frozen_citrus", name: "AF フローズンシトラス", full: "アルファーヘブン フローズンシトラス", cat: "cooling" },
-  { id: "frozen_berry", name: "AF フローズンベリー", full: "アルファーヘブン フローズンベリー", cat: "cooling" },
-  { id: "cardamom", name: "アブサル カルダモン", full: "アブサル カルダモン", cat: "spice" },
-  { id: "cinnamon", name: "AF シナモン", full: "アルファーヘブン シナモン", cat: "spice" },
-  { id: "clove", name: "アブサル クローブ", full: "アブサル クローブ", cat: "spice" },
-  { id: "basil", name: "アブサル バジル", full: "アブサル バジル", cat: "spice" },
-  { id: "anise", name: "アブサル アニス", full: "アブサル アニス", cat: "spice" },
-  { id: "licorice", name: "アブサル リコリス", full: "アブサル リコリス", cat: "spice" },
-  { id: "nutmeg", name: "アブサル ナツメグ", full: "アブサル ナツメグ", cat: "spice" },
-  { id: "black_pepper", name: "アブサル ブラックペッパー", full: "アブサル ブラックペッパー", cat: "spice" },
-  { id: "ginger", name: "アブサル ジンジャー", full: "アブサル ジンジャー", cat: "spice" },
-  { id: "lavender", name: "AF ラベンダー", full: "アルファーヘブン ラベンダー", cat: "floral" },
-  { id: "jasmine", name: "アブサル ジャスミン", full: "アブサル ジャスミン", cat: "floral" },
-  { id: "chamomile", name: "AF カモミール", full: "アルファーヘブン カモミール", cat: "floral" },
-  { id: "sakura", name: "AF 桜", full: "アルファーヘブン 桜", cat: "floral" },
-  { id: "lily", name: "AF リリー", full: "アルファーヘブン リリー", cat: "floral" },
-  { id: "white_rose", name: "AF ホワイトローズ", full: "アルファーヘブン ホワイトローズ", cat: "floral" },
-  { id: "violet_rose", name: "dobaj バイオレットローズ", full: "ドバージュ バイオレットローズ", cat: "floral" },
-  { id: "gardenia", name: "dobaj ガーデニア", full: "ドバージュ ガーデニア", cat: "floral" },
-  { id: "chocolate", name: "dobaj チョコレート", full: "ドバージュ チョコレート", cat: "sweet" },
-  { id: "dark_chocolate", name: "dobaj ダークチョコ", full: "ドバージュ ダークチョコレート", cat: "sweet" },
-  { id: "caramel", name: "dobaj キャラメル", full: "ドバージュ キャラメル", cat: "sweet" },
-  { id: "cotton_candy", name: "AF コットンキャンディ", full: "アルファーヘブン コットンキャンディ", cat: "sweet" },
-  { id: "popcorn", name: "AF ポップコーン", full: "アルファーヘブン ポップコーン", cat: "sweet" },
-  { id: "hazelnut", name: "dobaj ヘーゼルナッツ", full: "ドバージュ ヘーゼルナッツ", cat: "sweet" },
-  { id: "cappuccino", name: "dobaj カプチーノ", full: "ドバージュ カプチーノ", cat: "sweet" },
-  { id: "coffee", name: "dobaj コーヒー", full: "ドバージュ コーヒー", cat: "sweet" },
-  { id: "espresso", name: "dobaj エスプレッソ", full: "ドバージュ エスプレッソ", cat: "sweet" },
-  { id: "black_tea", name: "アブサル ブラックティー", full: "アブサル ブラックティー", cat: "spice" },
-  { id: "absal_earlgrey", name: "アブサル アールグレイ", full: "アブサル アールグレイ", cat: "floral" },
-  { id: "lemon_tea", name: "AF レモンティー", full: "アルファーヘブン レモンティー", cat: "fruit" },
-  { id: "dobaj_double_apple", name: "dobaj ダブルアップル", full: "ドバージュ ダブルアップル", cat: "spice" },
-  { id: "absal_double_apple", name: "アブサル ダブルアップル", full: "アブサル ダブルアップル", cat: "spice" },
-  { id: "dobaj_mint", name: "dobaj ミント", full: "ドバージュ ミント", cat: "cooling" },
-  { id: "absal_mint", name: "アブサル ミント", full: "アブサル ミント", cat: "cooling" }
+  { id: "mint", name: "AF ミント", full: "アルファーヘブン ミント", cat: "cooling", stats: { heat_resistance: 6, refreshing: 8, sweet_natural: 2, sweet_confection: 1, cooling: 8, assertiveness: 6, acquired_taste: 2, smoke_body: 3, sourness: 1, spiciness: 3, floral: 2, nicotine: 4 } },
+  { id: "double_apple", name: "AF ダブルアップル", full: "アルファーヘブン ダブルアップル", cat: "spice", stats: { heat_resistance: 5, refreshing: 3, sweet_natural: 5, sweet_confection: 4, cooling: 1, assertiveness: 7, acquired_taste: 7, smoke_body: 7, sourness: 2, spiciness: 6, floral: 3, nicotine: 5 } },
+  { id: "blueberry", name: "AF ブルーベリー", full: "アルファーヘブン ブルーベリー", cat: "fruit", stats: { heat_resistance: 4, refreshing: 5, sweet_natural: 7, sweet_confection: 4, cooling: 1, assertiveness: 4, acquired_taste: 1, smoke_body: 5, sourness: 4, spiciness: 1, floral: 2, nicotine: 3 } },
+  { id: "strawberry", name: "AF ストロベリー", full: "アルファーヘブン ストロベリー", cat: "fruit", stats: { heat_resistance: 4, refreshing: 5, sweet_natural: 7, sweet_confection: 5, cooling: 1, assertiveness: 4, acquired_taste: 1, smoke_body: 4, sourness: 3, spiciness: 1, floral: 2, nicotine: 3 } },
+  { id: "vanilla", name: "dobaj バニラ", full: "ドバージュ バニラ", cat: "sweet", stats: { heat_resistance: 3, refreshing: 2, sweet_natural: 3, sweet_confection: 8, cooling: 1, assertiveness: 5, acquired_taste: 2, smoke_body: 7, sourness: 1, spiciness: 1, floral: 3, nicotine: 4 } },
+  { id: "pineapple", name: "AF パイナップル", full: "アルファーヘブン パイナップル", cat: "fruit", stats: { heat_resistance: 4, refreshing: 6, sweet_natural: 6, sweet_confection: 3, cooling: 2, assertiveness: 5, acquired_taste: 2, smoke_body: 4, sourness: 6, spiciness: 1, floral: 2, nicotine: 3 } },
+  { id: "coconut", name: "dobaj ココナッツ", full: "ドバージュ ココナッツ", cat: "fruit", stats: { heat_resistance: 4, refreshing: 3, sweet_natural: 5, sweet_confection: 6, cooling: 1, assertiveness: 5, acquired_taste: 3, smoke_body: 7, sourness: 1, spiciness: 1, floral: 2, nicotine: 4 } },
+  { id: "mango", name: "dobaj マンゴー", full: "ドバージュ マンゴー", cat: "fruit", stats: { heat_resistance: 4, refreshing: 5, sweet_natural: 8, sweet_confection: 3, cooling: 1, assertiveness: 6, acquired_taste: 2, smoke_body: 5, sourness: 3, spiciness: 1, floral: 3, nicotine: 3 } },
+  { id: "nightside_earlgrey", name: "NS アールグレイ（試作）", full: "ナイトサイド アールグレイ（試作）", cat: "floral", stats: { heat_resistance: 4, refreshing: 5, sweet_natural: 3, sweet_confection: 2, cooling: 2, assertiveness: 5, acquired_taste: 5, smoke_body: 5, sourness: 3, spiciness: 2, floral: 7, nicotine: 4 } },
+  { id: "nightside_earlgrey_release", name: "NS アールグレイ", full: "ナイトサイド アールグレイ", cat: "floral", stats: { heat_resistance: 5, refreshing: 6, sweet_natural: 4, sweet_confection: 2, cooling: 2, assertiveness: 6, acquired_taste: 4, smoke_body: 5, sourness: 3, spiciness: 2, floral: 8, nicotine: 4 } },
+  { id: "grape", name: "AF グレープ", full: "アルファーヘブン グレープ", cat: "fruit", stats: { heat_resistance: 5, refreshing: 5, sweet_natural: 7, sweet_confection: 4, cooling: 1, assertiveness: 4, acquired_taste: 1, smoke_body: 5, sourness: 3, spiciness: 1, floral: 2, nicotine: 3 } },
+  { id: "rose", name: "アブサル ローズ", full: "アブサル ローズ", cat: "floral", stats: { heat_resistance: 4, refreshing: 4, sweet_natural: 4, sweet_confection: 3, cooling: 1, assertiveness: 6, acquired_taste: 5, smoke_body: 5, sourness: 1, spiciness: 2, floral: 9, nicotine: 4 } },
+  { id: "peach", name: "dobaj ピーチ", full: "ドバージュ ピーチ", cat: "fruit", stats: { heat_resistance: 3, refreshing: 5, sweet_natural: 8, sweet_confection: 4, cooling: 1, assertiveness: 3, acquired_taste: 1, smoke_body: 4, sourness: 2, spiciness: 1, floral: 3, nicotine: 3 } },
+  { id: "orange", name: "AF オレンジ", full: "アルファーヘブン オレンジ", cat: "fruit", stats: { heat_resistance: 4, refreshing: 7, sweet_natural: 6, sweet_confection: 3, cooling: 2, assertiveness: 4, acquired_taste: 1, smoke_body: 4, sourness: 5, spiciness: 1, floral: 2, nicotine: 3 } },
+  { id: "lemon", name: "AF レモン", full: "アルファーヘブン レモン", cat: "fruit", stats: { heat_resistance: 4, refreshing: 8, sweet_natural: 3, sweet_confection: 2, cooling: 3, assertiveness: 5, acquired_taste: 3, smoke_body: 3, sourness: 8, spiciness: 1, floral: 2, nicotine: 3 } },
+  { id: "watermelon", name: "AF スイカ", full: "アルファーヘブン スイカ", cat: "fruit", stats: { heat_resistance: 3, refreshing: 7, sweet_natural: 6, sweet_confection: 3, cooling: 3, assertiveness: 3, acquired_taste: 1, smoke_body: 3, sourness: 2, spiciness: 1, floral: 1, nicotine: 2 } },
+  { id: "guava", name: "AF グアバ", full: "アルファーヘブン グアバ", cat: "fruit", stats: { heat_resistance: 4, refreshing: 5, sweet_natural: 6, sweet_confection: 3, cooling: 1, assertiveness: 5, acquired_taste: 4, smoke_body: 5, sourness: 4, spiciness: 1, floral: 3, nicotine: 3 } },
+  { id: "dragonfruit", name: "AF ドラゴンフルーツ", full: "アルファーヘブン ドラゴンフルーツ", cat: "fruit", stats: { heat_resistance: 4, refreshing: 5, sweet_natural: 5, sweet_confection: 3, cooling: 1, assertiveness: 3, acquired_taste: 3, smoke_body: 4, sourness: 3, spiciness: 1, floral: 2, nicotine: 3 } },
+  { id: "kiwi", name: "AF キウイ", full: "アルファーヘブン キウイ", cat: "fruit", stats: { heat_resistance: 4, refreshing: 6, sweet_natural: 5, sweet_confection: 2, cooling: 2, assertiveness: 4, acquired_taste: 2, smoke_body: 4, sourness: 6, spiciness: 1, floral: 2, nicotine: 3 } },
+  { id: "melon", name: "dobaj メロン", full: "ドバージュ メロン", cat: "fruit", stats: { heat_resistance: 3, refreshing: 5, sweet_natural: 8, sweet_confection: 5, cooling: 1, assertiveness: 4, acquired_taste: 1, smoke_body: 5, sourness: 1, spiciness: 1, floral: 3, nicotine: 3 } },
+  { id: "banana", name: "dobaj バナナ", full: "ドバージュ バナナ", cat: "fruit", stats: { heat_resistance: 3, refreshing: 3, sweet_natural: 6, sweet_confection: 7, cooling: 1, assertiveness: 5, acquired_taste: 3, smoke_body: 6, sourness: 1, spiciness: 1, floral: 1, nicotine: 4 } },
+  { id: "lychee", name: "アブサル ライチ", full: "アブサル ライチ", cat: "fruit", stats: { heat_resistance: 4, refreshing: 6, sweet_natural: 7, sweet_confection: 3, cooling: 2, assertiveness: 5, acquired_taste: 4, smoke_body: 4, sourness: 2, spiciness: 1, floral: 6, nicotine: 4 } },
+  { id: "cool_mint", name: "AF クールミント", full: "アルファーヘブン クールミント", cat: "cooling", stats: { heat_resistance: 6, refreshing: 9, sweet_natural: 1, sweet_confection: 1, cooling: 9, assertiveness: 7, acquired_taste: 3, smoke_body: 3, sourness: 1, spiciness: 3, floral: 1, nicotine: 4 } },
+  { id: "twice_ice", name: "AF トワイスアイス", full: "アルファーヘブン トワイスアイス", cat: "cooling", stats: { heat_resistance: 6, refreshing: 8, sweet_natural: 2, sweet_confection: 2, cooling: 9, assertiveness: 7, acquired_taste: 4, smoke_body: 3, sourness: 1, spiciness: 2, floral: 1, nicotine: 4 } },
+  { id: "peppermint_shake", name: "dobaj ペパーミントシェイク", full: "ドバージュ ペパーミントシェイク", cat: "cooling", stats: { heat_resistance: 5, refreshing: 6, sweet_natural: 3, sweet_confection: 7, cooling: 7, assertiveness: 5, acquired_taste: 2, smoke_body: 5, sourness: 1, spiciness: 2, floral: 1, nicotine: 3 } },
+  { id: "ice_grape", name: "AF アイスグレープ", full: "アルファーヘブン アイスグレープ", cat: "cooling", stats: { heat_resistance: 5, refreshing: 7, sweet_natural: 5, sweet_confection: 3, cooling: 6, assertiveness: 5, acquired_taste: 2, smoke_body: 4, sourness: 3, spiciness: 1, floral: 1, nicotine: 3 } },
+  { id: "ice_lemon", name: "AF アイスレモン", full: "アルファーヘブン アイスレモン", cat: "cooling", stats: { heat_resistance: 5, refreshing: 8, sweet_natural: 2, sweet_confection: 2, cooling: 7, assertiveness: 5, acquired_taste: 3, smoke_body: 3, sourness: 7, spiciness: 1, floral: 1, nicotine: 3 } },
+  { id: "death_by_ice", name: "AF デスバイアイス", full: "アルファーヘブン デスバイアイス", cat: "cooling", stats: { heat_resistance: 7, refreshing: 7, sweet_natural: 1, sweet_confection: 1, cooling: 9, assertiveness: 9, acquired_taste: 7, smoke_body: 3, sourness: 1, spiciness: 3, floral: 1, nicotine: 5 } },
+  { id: "blueberry_mint", name: "AF ブルーベリーミント", full: "アルファーヘブン ブルーベリーミント", cat: "cooling", stats: { heat_resistance: 5, refreshing: 7, sweet_natural: 5, sweet_confection: 3, cooling: 5, assertiveness: 4, acquired_taste: 1, smoke_body: 4, sourness: 3, spiciness: 1, floral: 2, nicotine: 3 } },
+  { id: "frozen_citrus", name: "AF フローズンシトラス", full: "アルファーヘブン フローズンシトラス", cat: "cooling", stats: { heat_resistance: 5, refreshing: 8, sweet_natural: 4, sweet_confection: 2, cooling: 6, assertiveness: 5, acquired_taste: 2, smoke_body: 3, sourness: 6, spiciness: 1, floral: 2, nicotine: 3 } },
+  { id: "frozen_berry", name: "AF フローズンベリー", full: "アルファーヘブン フローズンベリー", cat: "cooling", stats: { heat_resistance: 5, refreshing: 7, sweet_natural: 5, sweet_confection: 3, cooling: 6, assertiveness: 4, acquired_taste: 1, smoke_body: 4, sourness: 4, spiciness: 1, floral: 2, nicotine: 3 } },
+  { id: "cardamom", name: "アブサル カルダモン", full: "アブサル カルダモン", cat: "spice", stats: { heat_resistance: 6, refreshing: 3, sweet_natural: 3, sweet_confection: 2, cooling: 2, assertiveness: 7, acquired_taste: 6, smoke_body: 6, sourness: 1, spiciness: 8, floral: 4, nicotine: 5 } },
+  { id: "cinnamon", name: "AF シナモン", full: "アルファーヘブン シナモン", cat: "spice", stats: { heat_resistance: 5, refreshing: 2, sweet_natural: 4, sweet_confection: 5, cooling: 1, assertiveness: 6, acquired_taste: 4, smoke_body: 6, sourness: 1, spiciness: 7, floral: 3, nicotine: 4 } },
+  { id: "clove", name: "アブサル クローブ", full: "アブサル クローブ", cat: "spice", stats: { heat_resistance: 6, refreshing: 2, sweet_natural: 2, sweet_confection: 1, cooling: 2, assertiveness: 7, acquired_taste: 7, smoke_body: 7, sourness: 1, spiciness: 8, floral: 3, nicotine: 6 } },
+  { id: "basil", name: "アブサル バジル", full: "アブサル バジル", cat: "spice", stats: { heat_resistance: 5, refreshing: 5, sweet_natural: 2, sweet_confection: 1, cooling: 3, assertiveness: 5, acquired_taste: 6, smoke_body: 4, sourness: 1, spiciness: 5, floral: 4, nicotine: 4 } },
+  { id: "anise", name: "アブサル アニス", full: "アブサル アニス", cat: "spice", stats: { heat_resistance: 5, refreshing: 2, sweet_natural: 3, sweet_confection: 2, cooling: 1, assertiveness: 8, acquired_taste: 8, smoke_body: 6, sourness: 1, spiciness: 7, floral: 3, nicotine: 5 } },
+  { id: "licorice", name: "アブサル リコリス", full: "アブサル リコリス", cat: "spice", stats: { heat_resistance: 5, refreshing: 2, sweet_natural: 4, sweet_confection: 5, cooling: 1, assertiveness: 7, acquired_taste: 8, smoke_body: 7, sourness: 1, spiciness: 5, floral: 2, nicotine: 5 } },
+  { id: "nutmeg", name: "アブサル ナツメグ", full: "アブサル ナツメグ", cat: "spice", stats: { heat_resistance: 5, refreshing: 2, sweet_natural: 3, sweet_confection: 3, cooling: 1, assertiveness: 5, acquired_taste: 5, smoke_body: 6, sourness: 1, spiciness: 6, floral: 3, nicotine: 5 } },
+  { id: "black_pepper", name: "アブサル ブラックペッパー", full: "アブサル ブラックペッパー", cat: "spice", stats: { heat_resistance: 7, refreshing: 2, sweet_natural: 1, sweet_confection: 1, cooling: 1, assertiveness: 8, acquired_taste: 7, smoke_body: 5, sourness: 1, spiciness: 9, floral: 1, nicotine: 6 } },
+  { id: "ginger", name: "アブサル ジンジャー", full: "アブサル ジンジャー", cat: "spice", stats: { heat_resistance: 6, refreshing: 4, sweet_natural: 2, sweet_confection: 1, cooling: 2, assertiveness: 6, acquired_taste: 5, smoke_body: 5, sourness: 2, spiciness: 8, floral: 2, nicotine: 5 } },
+  { id: "lavender", name: "AF ラベンダー", full: "アルファーヘブン ラベンダー", cat: "floral", stats: { heat_resistance: 4, refreshing: 5, sweet_natural: 3, sweet_confection: 2, cooling: 2, assertiveness: 5, acquired_taste: 5, smoke_body: 4, sourness: 1, spiciness: 1, floral: 8, nicotine: 3 } },
+  { id: "jasmine", name: "アブサル ジャスミン", full: "アブサル ジャスミン", cat: "floral", stats: { heat_resistance: 4, refreshing: 5, sweet_natural: 4, sweet_confection: 2, cooling: 1, assertiveness: 6, acquired_taste: 5, smoke_body: 5, sourness: 1, spiciness: 1, floral: 9, nicotine: 4 } },
+  { id: "chamomile", name: "AF カモミール", full: "アルファーヘブン カモミール", cat: "floral", stats: { heat_resistance: 4, refreshing: 5, sweet_natural: 3, sweet_confection: 2, cooling: 1, assertiveness: 3, acquired_taste: 3, smoke_body: 3, sourness: 1, spiciness: 1, floral: 7, nicotine: 2 } },
+  { id: "sakura", name: "AF 桜", full: "アルファーヘブン 桜", cat: "floral", stats: { heat_resistance: 3, refreshing: 5, sweet_natural: 4, sweet_confection: 3, cooling: 1, assertiveness: 3, acquired_taste: 3, smoke_body: 3, sourness: 1, spiciness: 1, floral: 8, nicotine: 2 } },
+  { id: "lily", name: "AF リリー", full: "アルファーヘブン リリー", cat: "floral", stats: { heat_resistance: 4, refreshing: 4, sweet_natural: 4, sweet_confection: 3, cooling: 1, assertiveness: 5, acquired_taste: 4, smoke_body: 5, sourness: 1, spiciness: 1, floral: 8, nicotine: 3 } },
+  { id: "white_rose", name: "AF ホワイトローズ", full: "アルファーヘブン ホワイトローズ", cat: "floral", stats: { heat_resistance: 4, refreshing: 5, sweet_natural: 4, sweet_confection: 2, cooling: 1, assertiveness: 4, acquired_taste: 4, smoke_body: 4, sourness: 1, spiciness: 1, floral: 8, nicotine: 3 } },
+  { id: "violet_rose", name: "dobaj バイオレットローズ", full: "ドバージュ バイオレットローズ", cat: "floral", stats: { heat_resistance: 4, refreshing: 3, sweet_natural: 4, sweet_confection: 4, cooling: 1, assertiveness: 6, acquired_taste: 5, smoke_body: 6, sourness: 1, spiciness: 1, floral: 9, nicotine: 4 } },
+  { id: "gardenia", name: "dobaj ガーデニア", full: "ドバージュ ガーデニア", cat: "floral", stats: { heat_resistance: 3, refreshing: 4, sweet_natural: 5, sweet_confection: 4, cooling: 1, assertiveness: 5, acquired_taste: 4, smoke_body: 5, sourness: 1, spiciness: 1, floral: 8, nicotine: 3 } },
+  { id: "chocolate", name: "dobaj チョコレート", full: "ドバージュ チョコレート", cat: "sweet", stats: { heat_resistance: 4, refreshing: 1, sweet_natural: 3, sweet_confection: 8, cooling: 1, assertiveness: 6, acquired_taste: 2, smoke_body: 8, sourness: 1, spiciness: 1, floral: 1, nicotine: 5 } },
+  { id: "dark_chocolate", name: "dobaj ダークチョコ", full: "ドバージュ ダークチョコレート", cat: "sweet", stats: { heat_resistance: 5, refreshing: 2, sweet_natural: 2, sweet_confection: 6, cooling: 1, assertiveness: 7, acquired_taste: 5, smoke_body: 8, sourness: 2, spiciness: 2, floral: 1, nicotine: 6 } },
+  { id: "caramel", name: "dobaj キャラメル", full: "ドバージュ キャラメル", cat: "sweet", stats: { heat_resistance: 3, refreshing: 1, sweet_natural: 4, sweet_confection: 9, cooling: 1, assertiveness: 5, acquired_taste: 2, smoke_body: 7, sourness: 1, spiciness: 1, floral: 1, nicotine: 4 } },
+  { id: "cotton_candy", name: "AF コットンキャンディ", full: "アルファーヘブン コットンキャンディ", cat: "sweet", stats: { heat_resistance: 3, refreshing: 3, sweet_natural: 3, sweet_confection: 9, cooling: 1, assertiveness: 4, acquired_taste: 3, smoke_body: 4, sourness: 1, spiciness: 1, floral: 1, nicotine: 2 } },
+  { id: "popcorn", name: "AF ポップコーン", full: "アルファーヘブン ポップコーン", cat: "sweet", stats: { heat_resistance: 4, refreshing: 2, sweet_natural: 2, sweet_confection: 6, cooling: 1, assertiveness: 5, acquired_taste: 5, smoke_body: 6, sourness: 1, spiciness: 1, floral: 1, nicotine: 3 } },
+  { id: "hazelnut", name: "dobaj ヘーゼルナッツ", full: "ドバージュ ヘーゼルナッツ", cat: "sweet", stats: { heat_resistance: 5, refreshing: 2, sweet_natural: 3, sweet_confection: 6, cooling: 1, assertiveness: 5, acquired_taste: 3, smoke_body: 7, sourness: 1, spiciness: 1, floral: 1, nicotine: 5 } },
+  { id: "cappuccino", name: "dobaj カプチーノ", full: "ドバージュ カプチーノ", cat: "sweet", stats: { heat_resistance: 5, refreshing: 2, sweet_natural: 2, sweet_confection: 6, cooling: 1, assertiveness: 6, acquired_taste: 3, smoke_body: 7, sourness: 2, spiciness: 1, floral: 1, nicotine: 6 } },
+  { id: "coffee", name: "dobaj コーヒー", full: "ドバージュ コーヒー", cat: "sweet", stats: { heat_resistance: 5, refreshing: 2, sweet_natural: 1, sweet_confection: 4, cooling: 1, assertiveness: 7, acquired_taste: 4, smoke_body: 7, sourness: 3, spiciness: 1, floral: 1, nicotine: 7 } },
+  { id: "espresso", name: "dobaj エスプレッソ", full: "ドバージュ エスプレッソ", cat: "sweet", stats: { heat_resistance: 6, refreshing: 1, sweet_natural: 1, sweet_confection: 3, cooling: 1, assertiveness: 8, acquired_taste: 6, smoke_body: 8, sourness: 4, spiciness: 2, floral: 1, nicotine: 8 } },
+  { id: "black_tea", name: "アブサル ブラックティー", full: "アブサル ブラックティー", cat: "spice", stats: { heat_resistance: 5, refreshing: 5, sweet_natural: 3, sweet_confection: 2, cooling: 1, assertiveness: 5, acquired_taste: 4, smoke_body: 5, sourness: 3, spiciness: 2, floral: 4, nicotine: 5 } },
+  { id: "absal_earlgrey", name: "アブサル アールグレイ", full: "アブサル アールグレイ", cat: "floral", stats: { heat_resistance: 4, refreshing: 5, sweet_natural: 3, sweet_confection: 2, cooling: 2, assertiveness: 5, acquired_taste: 6, smoke_body: 5, sourness: 3, spiciness: 2, floral: 7, nicotine: 4 } },
+  { id: "lemon_tea", name: "AF レモンティー", full: "アルファーヘブン レモンティー", cat: "fruit", stats: { heat_resistance: 4, refreshing: 7, sweet_natural: 4, sweet_confection: 3, cooling: 2, assertiveness: 4, acquired_taste: 2, smoke_body: 4, sourness: 5, spiciness: 1, floral: 4, nicotine: 3 } },
+  { id: "dobaj_double_apple", name: "dobaj ダブルアップル", full: "ドバージュ ダブルアップル", cat: "spice", stats: { heat_resistance: 5, refreshing: 3, sweet_natural: 6, sweet_confection: 6, cooling: 1, assertiveness: 4, acquired_taste: 3, smoke_body: 7, sourness: 2, spiciness: 4, floral: 4, nicotine: 4 } },
+  { id: "absal_double_apple", name: "アブサル ダブルアップル", full: "アブサル ダブルアップル", cat: "spice", stats: { heat_resistance: 6, refreshing: 2, sweet_natural: 4, sweet_confection: 3, cooling: 1, assertiveness: 7, acquired_taste: 7, smoke_body: 7, sourness: 2, spiciness: 7, floral: 3, nicotine: 6 } },
+  { id: "dobaj_mint", name: "dobaj ミント", full: "ドバージュ ミント", cat: "cooling", stats: { heat_resistance: 5, refreshing: 6, sweet_natural: 3, sweet_confection: 5, cooling: 7, assertiveness: 5, acquired_taste: 2, smoke_body: 4, sourness: 1, spiciness: 2, floral: 2, nicotine: 3 } },
+  { id: "absal_mint", name: "アブサル ミント", full: "アブサル ミント", cat: "cooling", stats: { heat_resistance: 6, refreshing: 4, sweet_natural: 2, sweet_confection: 1, cooling: 6, assertiveness: 6, acquired_taste: 5, smoke_body: 5, sourness: 2, spiciness: 4, floral: 3, nicotine: 5 } }
 ];
 
 let customFlavors = [];
@@ -1103,8 +1110,9 @@ function buildTable() {
         opt.textContent = i;
         sel.appendChild(opt);
       }
-      sel.value = 5;
-      sel.className = "val-5";
+      const initVal = (f.stats && f.stats[s.key]) || 5;
+      sel.value = initVal;
+      sel.className = "val-" + initVal;
       sel.addEventListener("change", function() {
         this.className = "val-" + this.value;
         syncToCard(f.id, s.key, this.value);
@@ -1130,7 +1138,7 @@ function buildTable() {
         updateProgress();
       });
       label.appendChild(cb);
-      label.appendChild(document.createTextNode(getFlavorBaseName(other)));
+      label.appendChild(document.createTextNode(other.name));
       tdNg.appendChild(label);
     }
     tr.appendChild(tdNg);
@@ -1263,8 +1271,9 @@ function buildCardView() {
         opt.textContent = i;
         sel.appendChild(opt);
       }
-      sel.value = 5;
-      sel.className = "val-5";
+      const cardInitVal = (f.stats && f.stats[s.key]) || 5;
+      sel.value = cardInitVal;
+      sel.className = "val-" + cardInitVal;
       sel.addEventListener("change", function() {
         this.className = "val-" + this.value;
         syncToTable(f.id, s.key, this.value);
@@ -1296,7 +1305,7 @@ function buildCardView() {
         updateProgress();
       });
       label.appendChild(cb);
-      label.appendChild(document.createTextNode(getFlavorBaseName(other)));
+      label.appendChild(document.createTextNode(other.name));
       ngSection.appendChild(label);
     }
     body.appendChild(ngSection);
@@ -1486,11 +1495,18 @@ function importJSON() {
 }
 
 function resetAll() {
-  if (!confirm("全ステータスを初期値（5）に戻しますか？")) return;
-  document.querySelectorAll("#flavor-body select").forEach(sel => { sel.value = 5; sel.className = "val-5"; });
+  if (!confirm("全ステータスをデフォルト値に戻しますか？")) return;
+  const all = allFlavors();
+  for (const f of all) {
+    for (const s of STATS) {
+      const v = (f.stats && f.stats[s.key]) || 5;
+      const tSel = document.querySelector(`select[data-flavor="${f.id}"][data-stat="${s.key}"]`);
+      if (tSel) { tSel.value = v; tSel.className = "val-" + v; }
+      const cSel = document.querySelector(`select[data-card-flavor="${f.id}"][data-card-stat="${s.key}"]`);
+      if (cSel) { cSel.value = v; cSel.className = "val-" + v; }
+    }
+  }
   document.querySelectorAll('#flavor-body input[type="checkbox"]').forEach(cb => cb.checked = false);
-  // Sync to cards
-  document.querySelectorAll("#card-view select").forEach(sel => { sel.value = 5; sel.className = "val-5"; });
   document.querySelectorAll('#card-view input[type="checkbox"]').forEach(cb => cb.checked = false);
   autoSave();
   updateProgress();
@@ -1580,14 +1596,15 @@ function updateCardSummary(flavorId) {
 }
 
 function resetRow(flavorId) {
-  document.querySelectorAll(`select[data-flavor="${flavorId}"]`).forEach(sel => {
-    sel.value = 5; sel.className = "val-5";
-  });
+  const f = allFlavors().find(x => x.id === flavorId);
+  for (const s of STATS) {
+    const v = (f && f.stats && f.stats[s.key]) || 5;
+    const tSel = document.querySelector(`select[data-flavor="${flavorId}"][data-stat="${s.key}"]`);
+    if (tSel) { tSel.value = v; tSel.className = "val-" + v; }
+    const cSel = document.querySelector(`select[data-card-flavor="${flavorId}"][data-card-stat="${s.key}"]`);
+    if (cSel) { cSel.value = v; cSel.className = "val-" + v; }
+  }
   document.querySelectorAll(`input[data-flavor="${flavorId}"]`).forEach(cb => cb.checked = false);
-  // Sync to cards
-  document.querySelectorAll(`select[data-card-flavor="${flavorId}"]`).forEach(sel => {
-    sel.value = 5; sel.className = "val-5";
-  });
   document.querySelectorAll(`input[data-card-flavor="${flavorId}"]`).forEach(cb => cb.checked = false);
   autoSave();
   updateProgress();
