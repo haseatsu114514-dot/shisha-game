@@ -94,7 +94,9 @@
           }
         ]
       },
-      "metadata": {}
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_choizap.png"
+      }
     },
     {
       "dialogue_id": "ch1_choizap_visit",
@@ -135,7 +137,9 @@
           "text": "……【魅力】が少し上がった。"
         }
       ],
-      "metadata": {}
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_choizap.png"
+      }
     },
     {
       "dialogue_id": "ch1_kannon_visit",
@@ -185,7 +189,10 @@
           "face": "",
           "text": "……【根性】が少し上がった。"
         }
-      ]
+      ],
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      }
     },
     {
       "dialogue_id": "ch1_cafe_visit",
@@ -250,7 +257,10 @@
           "face": "",
           "text": "……【センス】が少し上がった。"
         }
-      ]
+      ],
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      }
     },
     {
       "dialogue_id": "ch1_c_station_visit",
@@ -402,7 +412,10 @@
             }
           ]
         }
-      ]
+      ],
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_c_station_day.png"
+      }
     },
     {
       "dialogue_id": "ch1_c_station_end",

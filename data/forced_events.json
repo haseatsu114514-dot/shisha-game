@@ -347,7 +347,7 @@
       "day": 6,
       "time_slot": "noon",
       "flag": "ch2_forced_recovery_done",
-      "title": "味覚が戻った朝",
+      "title": "感覚が戻った朝",
       "description": "亜鉛と睡眠を経て、ふと作ったシーシャの味が──戻っていた。",
       "dialogue_file": "res://data/dialogue/ch2_main.json",
       "dialogue_id": "ch2_taste_recovery",

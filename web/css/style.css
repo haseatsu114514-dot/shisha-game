@@ -915,7 +915,7 @@ body {
 #screen-map { background: #0b0a10; }
 #map-image {
   position: absolute; inset: 0;
-  background: url("../../assets/backgrounds/bg_map_local_day.png") center / cover no-repeat;
+  background: url("../../assets/backgrounds/bg_osu_map_day.png") center / cover no-repeat;
   filter: saturate(1.05);
 }
 #map-image::after {

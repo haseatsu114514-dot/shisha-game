@@ -41,7 +41,7 @@ TRUE,FALSE,背景,assets/backgrounds,bg_home.png,自室の背景,差し替え済
 TRUE,FALSE,背景,assets/backgrounds,bg_street_night.png,街の通り（夜）の背景,差し替え済み（AI確認）,,
 TRUE,FALSE,背景,assets/backgrounds,bg_map_local.png,地方マップ（通常/不明）の背景,差し替え済み（AI確認）,,
 TRUE,FALSE,背景,assets/backgrounds,bg_adam_shop.png,アダムの店の背景,差し替え済み（AI確認）,,
-FALSE,FALSE,背景,assets/backgrounds,bg_minto_shop.png,眠都（みんちゃん）の店の背景,未着手（仮でも未作成）,,第1章のマップ・大会用に必要
+TRUE,FALSE,背景,assets/backgrounds,pepermint.png,ぺぱーみんと（みんとの勤務先）の背景,差し替え済み（AI確認）,,第1章のマップ・大会用に必要
 TRUE,FALSE,BGM・SE,assets/audio/bgm,daily_part.mp3,日常パートのBGM,差し替え済み（AI確認）,,
 FALSE,FALSE,BGM・SE,assets/audio/bgm,chill_house.mp3,tonariのBGM,未着手（仮アセット）,,
 TRUE,FALSE,立ち絵,assets/sprites/characters,chr_naru_fired_up.png,立ち絵：なる（熱血/気合い）,差し替え済み（AI確認）,,
