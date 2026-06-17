@@ -92,6 +92,39 @@
       "description": "火力を上げる時に有効。重たい煙が好きな層に刺さるが有効範囲は狭い。"
     },
     {
+      "id": "pipe_middle",
+      "type": "pipe",
+      "name": "中級パイプ（スチール製）",
+      "chapter_min": 1,
+      "buy_price": 30000,
+      "sell_price": 15000,
+      "price": 30000,
+      "value": "pipe_middle",
+      "description": "少し値が張るが、気密性が高く味と煙が安定する。大会では専門評価に少し補正が入る。"
+    },
+    {
+      "id": "pipe_high",
+      "type": "pipe",
+      "name": "高級パイプ（ガラス・真鍮）",
+      "chapter_min": 2,
+      "buy_price": 100000,
+      "sell_price": 50000,
+      "price": 100000,
+      "value": "pipe_high",
+      "description": "美しさと実用性を兼ね備えた名機。味の輪郭と見栄えに補正が入る。"
+    },
+    {
+      "id": "pipe_highest",
+      "type": "pipe",
+      "name": "最高級パイプ（特注品）",
+      "chapter_min": 3,
+      "buy_price": 300000,
+      "sell_price": 150000,
+      "price": 300000,
+      "value": "pipe_highest",
+      "description": "限られた職人しか作れない特注品。味、煙、プレゼンすべてに高い補正が入る。"
+    },
+    {
       "id": "winkwink_hagal",
       "type": "hms",
       "name": "winkwinkハガル",
