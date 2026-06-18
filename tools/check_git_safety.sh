@@ -27,10 +27,14 @@ if [ -n "$canonical_root" ] && [ "$actual_root" != "$canonical_root" ]; then
     "wrong local checkout. Expected '$canonical_root' but got '$actual_root'"
 fi
 
-[ -f "project.godot" ] || fail \
-  "git root must be the Godot project root. Current git root: $repo_root"
-[ -d "scenes" ] || fail "git root is missing scenes/"
-[ -d "scripts" ] || fail "git root is missing scripts/"
+if [ -f "project.godot" ]; then
+  [ -d "scenes" ] || fail "git root is missing scenes/"
+  [ -d "scripts" ] || fail "git root is missing scripts/"
+else
+  [ -d "web" ] || fail "git root is missing web/"
+  [ -d "data" ] || fail "git root is missing data/"
+  [ -d "assets" ] || fail "git root is missing assets/"
+fi
 
 origin_url="$(git remote get-url origin 2>/dev/null || true)"
 

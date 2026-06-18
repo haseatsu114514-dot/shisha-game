@@ -503,7 +503,7 @@
     {
       "dialogue_id": "ch2_ageha_slump_visit",
       "metadata": {
-        "bg": "res://assets/backgrounds/tonari_night.png"
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
       },
       "lines": [
         {
@@ -816,7 +816,7 @@
     {
       "dialogue_id": "ch2_ageha_outing_shisha",
       "metadata": {
-        "bg": "res://assets/backgrounds/tonari_night.png"
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
       },
       "lines": [
         {

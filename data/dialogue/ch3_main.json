@@ -1263,7 +1263,7 @@
     {
       "dialogue_id": "ch3_abyss_hotel",
       "metadata": {
-        "bg": "res://assets/backgrounds/tonari_night.png",
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png",
         "effect": "dark"
       },
       "lines": [
@@ -1352,7 +1352,7 @@
     {
       "dialogue_id": "ch3_mashiro_recovery",
       "metadata": {
-        "bg": "res://assets/backgrounds/tonari_night.png",
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png",
         "effect": "smoke_warm"
       },
       "lines": [

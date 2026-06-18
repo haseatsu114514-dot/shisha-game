@@ -127,7 +127,7 @@
     {
       "dialogue_id": "ch2_adam_distance",
       "metadata": {
-        "bg": "res://assets/backgrounds/eden.png"
+        "bg": "res://assets/backgrounds/bg_eden_shop.png"
       },
       "lines": [
         {

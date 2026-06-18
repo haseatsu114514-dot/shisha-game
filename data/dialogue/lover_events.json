@@ -854,7 +854,7 @@
     {
       "dialogue_id": "lover_mashiro_lv1",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_home.png"
+        "bg": "res://assets/backgrounds/bg_home_night.png"
       },
       "lines": [
         {
