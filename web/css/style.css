@@ -2182,6 +2182,23 @@ body {
   opacity: 0;
 }
 #title-art-frame.show { display: block; }
+#title-art-frame::before {
+  content: "";
+  position: absolute;
+  left: -2px;
+  top: -2px;
+  bottom: -2px;
+  width: 54px;
+  pointer-events: none;
+  z-index: 4;
+  background: linear-gradient(
+    to right,
+    #050308 0,
+    rgba(5,3,8,0.96) 6px,
+    rgba(5,3,8,0.62) 28px,
+    transparent 54px
+  );
+}
 #title-art {
   position: absolute;
   left: 0; top: 0;
