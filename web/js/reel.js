@@ -321,7 +321,7 @@ const REEL = (() => {
   }
 
   function fx() {
-    try { return (typeof config !== "undefined" && config.reelFx) || "full"; } catch (e) { return "full"; }
+    return "full";
   }
   function sfx(name, ...args) {
     if (fx() === "off") return;

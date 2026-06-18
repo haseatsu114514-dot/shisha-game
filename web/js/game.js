@@ -782,6 +782,7 @@ const config = { textSpeed: 2, autoSpeed: 2, bgmVol: 100, sfxVol: 100, reelFx: "
 
 function loadConfig() {
   try { Object.assign(config, JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}")); } catch (e) { /* 壊れた設定は既定値で続行 */ }
+  config.reelFx = "full";
   applyConfig();
 }
 function applyConfig() {
@@ -834,7 +835,6 @@ function showConfig() {
   };
   seg("テキスト速度", "textSpeed", [[1, "遅い"], [2, "普通"], [3, "速い"], [4, "瞬間"]]);
   seg("オート速度", "autoSpeed", [[1, "ゆっくり"], [2, "普通"], [3, "せっかち"]]);
-  seg("スロット演出", "reelFx", [["full", "フル"], ["lite", "簡易"], ["off", "OFF"]]);
   slider("BGM音量", "bgmVol");
   slider("効果音 音量", "sfxVol");
   $("#config-overlay").classList.add("visible");
