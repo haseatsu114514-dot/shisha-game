@@ -900,6 +900,28 @@ function readSlot(key) {
     return data && data.day ? data : null;
   } catch (e) { return null; }
 }
+function slotMayHaveSave(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    return !!raw && raw.includes('"day":');
+  } catch (e) { return false; }
+}
+function scheduleAfterPaint(fn) {
+  requestAnimationFrame(() => setTimeout(fn, 0));
+}
+function setupContinueButton() {
+  const contBtn = $("#btn-continue");
+  scheduleAfterPaint(() => {
+    if (!SAVE_SLOTS.some((s) => slotMayHaveSave(s.key))) return;
+    contBtn.classList.remove("hidden");
+    if (contBtn.dataset.ready) return;
+    contBtn.dataset.ready = "1";
+    contBtn.addEventListener("click", () => {
+      if (window.SFX) SFX.select();
+      showSaveLoad("load");
+    });
+  });
+}
 function showSaveLoad(mode) {
   $("#saveload-title").textContent = mode === "save" ? "セーブ" : "ロード";
   const box = $("#saveload-slots");
@@ -6374,15 +6396,7 @@ function init() {
     b.classList.toggle("off", m);
   });
   // LOADはスロット選択画面を開く（オートセーブ＋手動スロット3つ）
-  const contBtn = $("#btn-continue");
-  const anySave = SAVE_SLOTS.some((s) => { const d = readSlot(s.key); return d && d.phase !== "opening"; });
-  if (anySave) {
-    contBtn.classList.remove("hidden");
-    contBtn.addEventListener("click", () => {
-      if (window.SFX) SFX.select();
-      showSaveLoad("load");
-    });
-  }
+  setupContinueButton();
   $("#btn-gallery").addEventListener("click", () => showGallery());
   $("#btn-config").addEventListener("click", () => showConfig());
   $("#config-close").addEventListener("click", () => { if (window.SFX) SFX.close(); $("#config-overlay").classList.remove("visible"); });

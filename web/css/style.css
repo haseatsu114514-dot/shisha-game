@@ -2171,10 +2171,10 @@ body {
 /* (5) アート窓の縁 vignette: 切り抜きと一枚絵の継ぎ目を消す */
 #title-art-frame {
   position: absolute;
-  right: 0;
-  top: 0;
-  width: 56%;
-  height: 100%;
+  right: -1px;
+  top: -2px;
+  width: 46%;
+  height: calc(100% + 4px);
   pointer-events: none;
   overflow: hidden;
   display: none; /* JSが title-art を読み込めたら表示 */
@@ -2188,7 +2188,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 58% center;
+  object-position: center center;
   animation: ken-burns 22s ease-in-out infinite alternate;
   transform-origin: 50% 40%;
 }
