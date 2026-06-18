@@ -71,6 +71,26 @@ function autoWrap(raw, limit = WRAP_LIMIT) {
       line += seg.charCodeAt(i) <= 0xff ? 0.5 : 1;
       i++;
       if (line >= limit && i < seg.length) {
+        // 現在行の直近の句読点で折れるなら、そこで先に折る。
+        let backSplit = -1;
+        const lineStart = out.lastIndexOf("\n") + 1;
+        for (let k = out.length - 1; k >= lineStart; k--) {
+          if (WRAP_BREAK_AFTER.includes(out[k])) {
+            let candidate = k + 1;
+            while (candidate < out.length && WRAP_NO_LINE_START.includes(out[candidate])) candidate++;
+            let firstW = 0;
+            for (let j = lineStart; j < candidate; j++) firstW += out.charCodeAt(j) <= 0xff ? 0.5 : 1;
+            if (firstW >= limit * 0.3) { backSplit = candidate; break; }
+          }
+        }
+        if (backSplit >= 0 && backSplit < out.length) {
+          const tail = out.slice(backSplit);
+          out = out.slice(0, backSplit) + "\n" + tail;
+          line = 0;
+          for (const ch of tail) line += ch.charCodeAt(0) <= 0xff ? 0.5 : 1;
+          continue;
+        }
+
         // 少し先に句読点があればそこまで引っ張って、区切りの良い位置で折る
         let take = 0;
         for (let k = 0; k < 8 && i + k < seg.length; k++) {
