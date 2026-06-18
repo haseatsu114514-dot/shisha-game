@@ -318,7 +318,7 @@
     {
       "dialogue_id": "ch2_abyss_baito",
       "metadata": {
-        "bg": "res://assets/backgrounds/tonari_night.png",
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png",
         "effect": "dark"
       },
       "lines": [
@@ -402,7 +402,7 @@
     {
       "dialogue_id": "ch2_slump_taste",
       "metadata": {
-        "bg": "res://assets/backgrounds/tonari_night.png"
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
       },
       "lines": [
         {
@@ -490,7 +490,7 @@
     {
       "dialogue_id": "ch2_sofa_burn",
       "metadata": {
-        "bg": "res://assets/backgrounds/tonari_night.png"
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
       },
       "lines": [
         {
@@ -784,7 +784,7 @@
       "dialogue_id": "ch2_lingering_smell",
       "comment": "全編モチーフ「店の匂い」のch2配置（各章一度だけ・説明しない）。DAY4の炭落とし事故の匂いが店に残る。ch1のなる「店の匂いは畳んでも消えない」の反転——はじめが初めて“悪い匂い”を店に刻む",
       "metadata": {
-        "bg": "res://assets/backgrounds/tonari_night.png"
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
       },
       "lines": [
         {
@@ -833,7 +833,7 @@
       "dialogue_id": "ch2_sumi_silence",
       "comment": "スミさんが「何も言わない」理由を1シーンだけ可視化（DAY10夜・連勝が始まった頃）。自分も同じ顔をして、誰にも止められなかったから言葉が見つからない——ch4特訓「俺はお前に同じ顔をさせたくなかった」と帰国告白の前振り。スミ自身の話だとは明かさない",
       "metadata": {
-        "bg": "res://assets/backgrounds/tonari_night.png"
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
       },
       "lines": [
         {

@@ -490,7 +490,7 @@
     {
       "dialogue_id": "ch1_adam_group_soutoku",
       "metadata": {
-        "bg": "res://assets/backgrounds/eden.png"
+        "bg": "res://assets/backgrounds/bg_eden_shop.png"
       },
       "lines": [
         {
@@ -641,7 +641,7 @@
     {
       "dialogue_id": "ch1_adam_after_ch1",
       "metadata": {
-        "bg": "res://assets/backgrounds/eden.png"
+        "bg": "res://assets/backgrounds/bg_eden_shop.png"
       },
       "lines": [
         {
@@ -708,7 +708,7 @@
     {
       "dialogue_id": "ch1_adam_after_ch1_firstshop",
       "metadata": {
-        "bg": "res://assets/backgrounds/eden.png"
+        "bg": "res://assets/backgrounds/bg_eden_shop.png"
       },
       "lines": [
         {

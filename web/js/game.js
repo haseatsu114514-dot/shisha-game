@@ -495,7 +495,11 @@ const CHAPTER_PRIZE = { 1: 30000, 2: 50000, 3: 100000, 4: 500000, 5: 0 };
 // ---------- HUD ----------
 const LOCATION_FROM_BG = {
   tonari_inside: ["シーシャラウンジ『tonari』", ""],
+  tonari_inside_day: ["シーシャラウンジ『tonari』", "昼"],
+  tonari_inside_night: ["シーシャラウンジ『tonari』", "夜"],
   tonari_outside: ["tonari 外", ""],
+  tonari_outside_day: ["tonari 外", "昼"],
+  tonari_outside_night: ["tonari 外", "夜"],
   tonari_night: ["シーシャラウンジ『tonari』", "夜"],
   tonari_day: ["シーシャラウンジ『tonari』", "昼"],
   shop: ["C.STATION", "大会会場"],
@@ -504,7 +508,10 @@ const LOCATION_FROM_BG = {
   street_night: ["街中", "夜"],
   naru_shop: ["KEMURIKUSA", "なるの店"],
   adam_shop: ["EDEN", "アダムの店"],
+  eden_shop: ["EDEN", "アダムの店"],
   home: ["自宅", ""],
+  home_day: ["自宅", "昼"],
+  home_night: ["自宅", "夜"],
   map_local_day: ["栄エリア", "昼"],
   map_local_night: ["栄エリア", "夜"],
   title: ["タイトル", ""],
@@ -1615,7 +1622,7 @@ function playLimeEvent(dialogueId, sender, after, viaInvite) {
 // ============ 恋人とのデート（よその店を二人で巡る。コマ消費なし） ============
 const DATE_VENUES = [
   { id: "kemurikusa", name: "KEMURIKUSA", bg: "kemurikusa.png", note: "スピード勝負の店の、迷いのない煙" },
-  { id: "eden", name: "EDEN", bg: "eden.png", note: "ダブルアップル一筋の店の、深く甘い香り" },
+  { id: "eden", name: "EDEN", bg: "bg_eden_shop.png", note: "ダブルアップル一筋の店の、深く甘い香り" },
   { id: "pepermint", name: "PEPERMINT", bg: "pepermint.png", note: "ポップな内装に、意外と丁寧な一台" },
   { id: "hideaway", name: "裏通りの隠れ家ラウンジ", bg: "bg_street_night.png", note: "看板のない店。常連だけが知る静けさ" },
 ];
@@ -2173,7 +2180,7 @@ function endDay() {
   // 夜の強制イベントは mapBeat（つなぎの一拍）を通してから再生する（#16）
   const pd = (id, cb, bg) => mapBeat(() => playDialogue(id, cb, bg));
   const pc = (obj, cb) => mapBeat(() => playCustom(obj, cb));
-  const TONARI = "res://assets/backgrounds/bg_tonari_inside.png";
+  const TONARI = "res://assets/backgrounds/bg_tonari_inside_night.png";
   // ---- 第2章の夜の固定イベント（嫉妬と転落の進行）
   if (state.chapter === 2) {
     if (state.day === 2 && !state.flags._ev2_abyss) {
@@ -2359,7 +2366,7 @@ function doBaito(afterCameo) {
 
 // --- キャラ訪問
 const VISIT_BG = {
-  naru: "kemurikusa.png", adam: "eden.png", minto: "pepermint.png",
+  naru: "kemurikusa.png", adam: "bg_eden_shop.png", minto: "pepermint.png",
   sumi: "bg_tonari_inside.png", tsumugi: "bg_tonari_inside.png",
 };
 
@@ -2815,7 +2822,7 @@ function doRest() {
   updateHud();
   playCustom({
     dialogue_id: "rest_home",
-    metadata: { bg: "res://assets/backgrounds/bg_home.png" },
+    metadata: { bg: "res://assets/backgrounds/bg_home_night.png" },
     lines: [
       { speaker: "", face: "", text: "今日は家でゆっくり休んだ。湯船に浸かって、早めに布団に入る。\n……体の芯から、疲れがすっかり抜けていった。" },
       { speaker: "hajime", face: "normal", text: "（大会まで、あと少し。……やれるだけのことは、やろう）" },
@@ -2840,7 +2847,7 @@ function maybeNightcap(next) {
   if (canPuff) return maybeHomeShisha(next);
   playCustom({
     dialogue_id: "night_homecoming",
-    metadata: { bg: "res://assets/backgrounds/bg_home.png" },
+    metadata: { bg: "res://assets/backgrounds/bg_home_night.png" },
     lines: [
       { speaker: "", face: "", text: `${HOMECOMING_LINES[state.day % HOMECOMING_LINES.length]}\n——DAY ${state.day}、おわり。` },
     ],
@@ -2864,7 +2871,7 @@ function maybeHomeShisha(next) {
       : "ゆっくり一服。自分の煙を、自分のためだけに吸う時間。";
   playCustom({
     dialogue_id: "home_shisha_night",
-    metadata: { bg: "res://assets/backgrounds/bg_home.png" },
+    metadata: { bg: "res://assets/backgrounds/bg_home_night.png" },
     lines: [
       { speaker: "", face: "", text: "帰宅。部屋の隅で、自分の台が待っている。" },
       { type: "choice", choices: [

@@ -33,7 +33,10 @@ const NO_PORTRAIT_SPEAKERS = new Set(["hajime", "hazime"]);
 
 // 旧アセット → 最新版への参照差し替え（ファイルは退避せず参照だけ変える）
 const ASSET_ALIASES = {
-  "assets/backgrounds/bg_tonari_inside.png": "assets/backgrounds/tonari_night.png", // ネオン版は旧。最新は練習シーンの夜tonari
+  "assets/backgrounds/tonari_day.png": "assets/backgrounds/bg_tonari_inside_day.png",
+  "assets/backgrounds/tonari_night.png": "assets/backgrounds/bg_tonari_inside_night.png",
+  "assets/backgrounds/eden.png": "assets/backgrounds/bg_eden_shop.png",
+  "assets/backgrounds/bg_adam_shop.png": "assets/backgrounds/bg_eden_shop.png",
 };
 
 // アセット解決: スタンドアロン版では window.ASSET_DATA に data URI が入る

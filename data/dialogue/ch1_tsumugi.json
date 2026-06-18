@@ -820,7 +820,7 @@
     {
       "dialogue_id": "ch1_tsumugi_smoke_color",
       "metadata": {
-        "bg": "res://assets/backgrounds/tonari_night.png"
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
       },
       "lines": [
         {
@@ -923,7 +923,7 @@
     {
       "dialogue_id": "ch1_tsumugi_eve",
       "metadata": {
-        "bg": "res://assets/backgrounds/tonari_night.png"
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
       },
       "lines": [
         {
