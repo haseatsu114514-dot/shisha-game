@@ -9,6 +9,11 @@
 <body>
 <div id="rotate-hint">スマホを横向きにすると<br>遊びやすくなります</div>
 <div id="game">
+  <div id="boot-overlay" role="status" aria-live="polite">
+    <div class="boot-mark">水煙前線</div>
+    <div class="boot-status"><span id="boot-status-text">起動中</span><span class="boot-dots" aria-hidden="true"></span></div>
+    <div class="boot-bar"><span id="boot-fill"></span></div>
+  </div>
 
   <!-- HUD（ダイアログ・大会で表示する） -->
   <header id="hud" class="hidden">
@@ -320,9 +325,9 @@
       <span class="corner-tl"></span><span class="corner-br"></span>
       <h2>はじめに</h2>
       <div class="disclaimer-body">
-        <p>本作はフィクションです。登場する人物・店舗・団体・大会などは、実在のものとは関係ありません。</p>
-        <p>シーシャの調理・提供の描写は、ゲームを楽しんでいただくための<strong>演出</strong>です。手順・分量・時間などを、現実のシーシャ作りに忠実に再現したものではなく、実際とは異なる部分があります。</p>
-        <p>あくまでエンターテインメントとして、その点をご承知のうえでお楽しみください。</p>
+        <p>本作はフィクションです。</p>
+        <p>登場する人物・店舗・団体・大会などは実在のものとは関係ありません。シーシャの描写はゲーム演出として簡略化しており、実際のシーシャ作りや提供手順を再現するものではありません。</p>
+        <p>あくまでもエンターテインメントとして、その点をご承知のうえでお楽しみください。</p>
       </div>
       <p class="disclaimer-hint">Enter / クリックで本編へ</p>
     </div>

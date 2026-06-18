@@ -45,6 +45,70 @@ body {
   cursor: default;
 }
 
+#boot-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  background:
+    radial-gradient(ellipse 44% 34% at 50% 44%, rgba(244, 210, 122, 0.12), transparent 70%),
+    linear-gradient(160deg, #050308 0%, #0b0610 62%, #020103 100%);
+  color: var(--text);
+  transition: opacity 0.55s ease, visibility 0.55s ease;
+}
+#boot-overlay.done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.boot-mark {
+  font-size: 56px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-indent: 0.12em;
+  color: #f8f1dc;
+  text-shadow: 0 0 24px rgba(244, 210, 122, 0.24), 0 8px 20px rgba(0,0,0,0.75);
+}
+.boot-status {
+  min-width: 148px;
+  color: var(--accent);
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  text-indent: 0.18em;
+  text-align: center;
+}
+.boot-dots::after {
+  content: "...";
+  display: inline-block;
+  width: 1.5em;
+  overflow: hidden;
+  text-align: left;
+  vertical-align: bottom;
+  animation: boot-dots 1.1s steps(4, end) infinite;
+}
+.boot-bar {
+  width: min(360px, 48%);
+  height: 3px;
+  overflow: hidden;
+  background: rgba(244, 210, 122, 0.14);
+}
+#boot-fill {
+  display: block;
+  width: 18%;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-deep), var(--accent), #fff2bc);
+  box-shadow: 0 0 18px rgba(244, 210, 122, 0.32);
+  transition: width 0.28s ease;
+}
+@keyframes boot-dots {
+  from { width: 0; }
+  to { width: 1.5em; }
+}
+
 #rotate-hint {
   display: none;
   position: fixed;
@@ -2689,13 +2753,13 @@ body {
   background: rgba(0,0,0,0.82);
 }
 #disclaimer-overlay.visible { display: flex; align-items: center; justify-content: center; }
-#disclaimer-overlay .panel { width: min(600px, 90%); cursor: pointer; }
+#disclaimer-overlay .panel { width: min(760px, 92%); cursor: pointer; }
 .disclaimer-body { text-align: left; margin: 4px 0 20px; }
 .disclaimer-body p {
   color: var(--text);
-  font-size: 15px;
-  line-height: 1.85;
-  margin: 0 0 14px;
+  font-size: 16px;
+  line-height: 1.75;
+  margin: 0 0 12px;
 }
 .disclaimer-body p:last-child { margin-bottom: 0; }
 .disclaimer-body strong { color: var(--accent); font-weight: bold; }

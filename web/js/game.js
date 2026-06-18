@@ -5893,50 +5893,134 @@ function toggleStatus(show) {
 // アート一枚絵を煙マスクの窓（#title-chara-window）にコンシューマー風に表示する
 const TITLE_CHARA_POOL = ["tsumugi", "sumi", "packii", "naru", "adam", "minto"];
 
-function setupTitleLogo() {
+function onceCallback(fn) {
+  let called = false;
+  return () => {
+    if (called) return;
+    called = true;
+    if (fn) fn();
+  };
+}
+
+function createTitleBootGate() {
+  const boot = $("#boot-overlay");
+  const fill = $("#boot-fill");
+  const text = $("#boot-status-text");
+  if (!boot) return { track: () => () => {}, closeWhenReady: () => {} };
+  const minMs = 650;
+  const maxMs = 2600;
+  const startedAt = performance.now();
+  let expected = 0;
+  let settled = 0;
+  let armed = false;
+  let closing = false;
+
+  function setProgress(value) {
+    if (!fill) return;
+    fill.style.width = `${Math.max(18, Math.min(100, value))}%`;
+  }
+  function close() {
+    if (closing) return;
+    closing = true;
+    clearTimeout(fallback);
+    if (text) text.textContent = "READY";
+    setProgress(100);
+    const wait = Math.max(0, minMs - (performance.now() - startedAt));
+    setTimeout(() => {
+      boot.classList.add("done");
+      setTimeout(() => boot.remove(), 650);
+    }, wait);
+  }
+  function maybeClose() {
+    if (!armed || closing) return;
+    if (expected === 0 || settled >= expected) close();
+  }
+
+  const fallback = setTimeout(close, maxMs);
+  requestAnimationFrame(() => setProgress(30));
+  return {
+    track() {
+      expected += 1;
+      setProgress(Math.min(82, 30 + expected * 10));
+      let done = false;
+      return () => {
+        if (done || closing) return;
+        done = true;
+        settled += 1;
+        setProgress(38 + Math.round((settled / expected) * 54));
+        maybeClose();
+      };
+    },
+    closeWhenReady() {
+      armed = true;
+      maybeClose();
+    },
+  };
+}
+
+function setupTitleLogo(onReady) {
   const img = $("#title-logo-img");
-  img.src = assetUrl("assets/ui/ui_title_logo.png");
+  const ready = onceCallback(onReady);
+  img.onload = ready;
   // ロゴ画像が無い環境ではテキスト版にフォールバック
   img.onerror = () => {
     img.classList.add("hidden");
     $(".title-logo").classList.remove("hidden");
     $(".title-en").classList.remove("hidden");
+    ready();
   };
+  img.src = assetUrl("assets/ui/ui_title_logo.png");
 }
 
 // タイトルの専用キービジュアル: build_data.py が assets/ui/title_arts/ を
 // 走査して D.title_arts に詰める。1枚以上あればランダムで1枚表示し、
 // 無ければキャラランダム表示にフォールバック。
-function setupTitleKeyVisual(onMiss) {
+function setupTitleKeyVisual(onMiss, onReady) {
   const frame = $("#title-art-frame");
   const img = $("#title-art");
   const arts = (D && D.title_arts) || [];
-  if (!arts.length) { frame.style.display = "none"; if (onMiss) onMiss(); return; }
+  const ready = onceCallback(onReady);
+  if (!arts.length) {
+    frame.style.display = "none";
+    if (onMiss) onMiss();
+    ready();
+    return;
+  }
   const name = arts[Math.floor(Math.random() * arts.length)];
-  img.onerror = () => { frame.style.display = "none"; if (onMiss) onMiss(); };
+  img.onerror = () => {
+    frame.style.display = "none";
+    if (onMiss) onMiss();
+    ready();
+  };
   img.onload = () => {
     frame.classList.add("show");
     $("#title-chara-window").style.display = "none";
+    ready();
   };
   img.src = assetUrl(`assets/ui/title_arts/${name}`);
 }
 
-function setupTitleChara() {
+function setupTitleChara(onReady) {
   const img = $("#title-chara");
   const win = $("#title-chara-window");
   const pool = TITLE_CHARA_POOL.filter((id) => (D.portraits || {})[id]);
-  if (!pool.length) { win.style.display = "none"; return; }
+  const ready = onceCallback(onReady);
+  if (!pool.length) {
+    win.style.display = "none";
+    ready();
+    return;
+  }
   const id = pool[Math.floor(Math.random() * pool.length)];
   const faces = D.portraits[id] || [];
   const face = faces.includes("normal") ? "normal" : faces[0];
   const t = ((D.portrait_trims || {})[id] || {})[face] || {};
-  img.onerror = () => { win.style.display = "none"; };
+  img.onerror = () => { win.style.display = "none"; ready(); };
   img.onload = () => {
     // 実コンテンツ(bbox)が窓を覆うように配置（cover相当）。
     // 顔が来るbbox上部1/3あたりを窓のやや上に合わせる
     const ww = win.clientWidth, wh = win.clientHeight;
     const iw = img.naturalWidth, ih = img.naturalHeight;
-    if (!ww || !iw) return;
+    if (!ww || !iw) { ready(); return; }
     const bw = iw * (t.w || 1);
     const bh = ih * (t.h || 1);
     const bx = iw * (t.l || 0);
@@ -5954,6 +6038,7 @@ function setupTitleChara() {
     const hi = (full, view) => Math.max(0, view - full);
     img.style.left = `${clamp(ww * 0.5 - focusX, lo(iw * scale, ww), hi(iw * scale, ww))}px`;
     img.style.top = `${clamp(wh * 0.42 - focusY, lo(ih * scale, wh), hi(ih * scale, wh))}px`;
+    ready();
   };
   img.src = assetUrl(`assets/sprites/characters/${id}/chr_${id}_${face}.png`);
 }
@@ -6245,9 +6330,11 @@ function init() {
   window.addEventListener("resize", fitStage);
   loadConfig();
   initEngine();
-  setupTitleLogo();
+  const titleBoot = createTitleBootGate();
+  setupTitleLogo(titleBoot.track());
   // キービジュアルがあればそれを最優先、無ければキャラランダム表示
-  setupTitleKeyVisual(() => setupTitleChara());
+  setupTitleKeyVisual(() => setupTitleChara(titleBoot.track()), titleBoot.track());
+  titleBoot.closeWhenReady();
   // タイトルBGM: 自動再生がブロックされたら最初の操作で再試行する
   startTitleBgm();
   window.addEventListener("pointerdown", startTitleBgm, { once: true });
