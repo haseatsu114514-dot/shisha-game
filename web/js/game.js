@@ -5484,7 +5484,7 @@ function showClear() {
   showScreen("#screen-end");
   $("#screen-end").classList.remove("gameover");
   $("#end-title").textContent = "第1章クリア！";
-  $("#end-sub").textContent = "SMOKE CROWN CUP 優勝 ── 地区大会 HAZE: OPEN CLOUD へ。";
+  $("#end-sub").textContent = "SMOKE CROWN CUP 優勝 ── 県大会 HAZE: OPEN CLOUD へ。";
   renderStatusInto($("#end-status"));
   const goCh2 = document.createElement("button");
   goCh2.className = "primary-btn";
@@ -5590,7 +5590,7 @@ function startChapter2() {
 // 試合日の開始。stage: "qual" | "semi" | "final"
 function startCh2Stage(stage) {
   state.phase = "tournament";
-  // 地区大会の組み合わせ発表で対戦相手の名前が判明する
+  // 県大会の組み合わせ発表で対戦相手の名前が判明する
   if (stage === "semi") markMet("ageha");
   if (stage === "final") { markMet("rei"); markMet("kumicho"); }
   state.ch2Stage = stage;

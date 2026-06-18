@@ -54,7 +54,6 @@ LEGACY_STAT_ERROR = {
 
 LEGACY_WARN = {
     "地方予選": "SMOKE CROWN CUP に統一",
-    "県大会": "大会名を確認",
     "第12回": "旧大会名",
 }
 
@@ -63,7 +62,7 @@ ALLOWED_CONTEXTS = {
 }
 
 DOC_CONTEXT_RE = re.compile(
-    r"(禁止|旧名|旧設定|旧タイトル|旧表記|旧ステ|BANNED|❌|NG表現|は存在しない|は使わない|に統一|に置換|改名|削除済み|廃止)",
+    r"(禁止|旧名|旧キャラ名|旧大会名|旧店名|旧呼び方|旧設定|旧タイトル|旧表記|旧ステ|BANNED|❌|NG表現|は存在しない|は使わない|に統一|に置換|改名|削除済み|廃止)",
 )
 
 DOC_FILES = {
@@ -72,6 +71,7 @@ DOC_FILES = {
     "check_legacy_terms.py",
     "check_speakers.py",
     "review_scope.md",
+    "story_review_prompt.md",
     "web_version_plan.md",
 }
 
