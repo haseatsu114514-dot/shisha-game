@@ -21,13 +21,21 @@ const SPEAKER_NAMES = {
 };
 window.SPEAKER_NAMES = SPEAKER_NAMES;
 const SPEAKER_ID_ALIASES = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "packii", pakki: "packii", oneesan: "minto", kumicho: "ryuji" };
+const FACE_ALIASES = {
+  hajime: { excited: "smile" },
+  naru: { excited: "smile", smug: "serious", fired_up: "serious" },
+  adam: { silent: "normal", smug: "smile" },
+  minto: { serious: "normal", ura_serious: "ura_sad" },
+  tsumugi: { focus: "serious", shy: "sad" },
+  packii: { excited: "smile", smug: "smile", evil: "angry" },
+};
 
-// 背景込みの一枚絵で生成されているキャラ。立ち絵スロットに小さくマスクして表示する。
-// 専用素材ができたらここから外す。
-const BG_FULL_PORTRAITS = new Set(["minto", "ageha", "mashiro", "ryuji"]);
+// 背景込みの一枚絵で生成されているキャラ。専用の透過立ち絵がない場合だけここに入れる。
+// 現在は本番用の透過立ち絵を使うため空。
+const BG_FULL_PORTRAITS = new Set();
 
-// 立ち絵を出さないキャラ。本作は一人称視点なので主人公は基本表示しない。
-const NO_PORTRAIT_SPEAKERS = new Set(["hajime", "hazime"]);
+// 立ち絵を出さないキャラ。
+const NO_PORTRAIT_SPEAKERS = new Set();
 
 // キャラごとの名前色分けは廃止（視認性優先で白統一）
 
@@ -319,10 +327,11 @@ class DialogueEngine {
     const folder = SPEAKER_ID_ALIASES[speaker] || speaker;
     const faces = (this.ctx.portraitFaces || {})[folder];
     if (!faces) return null;
+    const aliasedFace = face && FACE_ALIASES[folder] && FACE_ALIASES[folder][face] ? FACE_ALIASES[folder][face] : face;
     // 正体隠しエイリアス（oneesan=みんとの私服・素）は専用差分（ura_*）が届くまで出さない。
     // 通常のみんと立ち絵で代用すると、ch1で隠している正体が見た目でバレてしまう
-    if (speaker === "oneesan" && !(face && faces.includes(face))) return null;
-    let f = face && faces.includes(face) ? face : null;
+    if (speaker === "oneesan" && !(aliasedFace && faces.includes(aliasedFace))) return null;
+    let f = aliasedFace && faces.includes(aliasedFace) ? aliasedFace : null;
     if (!f && faces.includes("normal")) f = "normal";
     if (!f) f = faces[0];
     return assetUrl(`assets/sprites/characters/${folder}/chr_${folder}_${f}.png`);

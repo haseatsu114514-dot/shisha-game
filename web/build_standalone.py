@@ -22,8 +22,6 @@ WEB_DIR = Path(__file__).resolve().parent
 REPO_ROOT = WEB_DIR.parent
 OUT_PATH = WEB_DIR / "dist" / "shisha_ch1.html"
 
-# 第1章で使うキャラ（立ち絵を全表情埋め込む）
-CH1_PORTRAIT_CHARS = ["hajime", "sumi", "naru", "adam", "minto", "tsumugi", "packii", "rin"]
 BG_MAX_W = 1280
 PORTRAIT_MAX_H = 900
 JPEG_QUALITY = 80
@@ -103,9 +101,10 @@ def collect_assets() -> dict:
     # CG: show_cg 対象（恋愛・日常スチル含む全部。素材が増えたらそのまま乗る）
     for png in sorted((REPO_ROOT / "assets" / "cgs").glob("cg_*.png")):
         assets[f"assets/cgs/{png.name}"] = encode_background(png)
-    # 立ち絵
-    for char in CH1_PORTRAIT_CHARS:
-        char_dir = REPO_ROOT / "assets" / "sprites" / "characters" / char
+    # 立ち絵: 本番は単体HTMLだけを配信するため、存在するキャラ素材を全て埋め込む。
+    chars_dir = REPO_ROOT / "assets" / "sprites" / "characters"
+    for char_dir in sorted(p for p in chars_dir.iterdir() if p.is_dir()):
+        char = char_dir.name
         for png in sorted(char_dir.glob("chr_*.png")):
             assets[f"assets/sprites/characters/{char}/{png.name}"] = encode_portrait(png)
     return assets
