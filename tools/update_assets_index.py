@@ -45,6 +45,11 @@ IGNORED_FILENAMES = {
     ".DS_Store",
 }
 
+IGNORED_PATH_PREFIXES = (
+    ("assets", "sprites", "characters_backup"),
+    ("assets", "sprites", "comparison"),
+)
+
 IMAGE_SUFFIXES = {
     ".png",
     ".jpg",
@@ -134,6 +139,20 @@ def should_index(path: Path) -> bool:
     return True
 
 
+def should_skip_relative_path(relative_path: Path) -> bool:
+    parts = relative_path.parts
+    for prefix in IGNORED_PATH_PREFIXES:
+        if parts[: len(prefix)] == prefix:
+            return True
+    if (
+        len(parts) >= 5
+        and parts[:3] == ("assets", "sprites", "characters")
+        and parts[4] == "parts"
+    ):
+        return True
+    return False
+
+
 def split_asset_sets(project_root: Path) -> tuple[list[Path], list[Path]]:
     runtime_files: list[Path] = []
     extra_files: list[Path] = []
@@ -146,6 +165,9 @@ def split_asset_sets(project_root: Path) -> tuple[list[Path], list[Path]]:
 
     for path in sorted(assets_root.rglob("*")):
         if not path.is_file() or not should_index(path):
+            continue
+        relative_path = path.relative_to(project_root)
+        if should_skip_relative_path(relative_path):
             continue
 
         if any(path.is_relative_to(root) for root in canonical_roots):

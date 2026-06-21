@@ -4,3 +4,6 @@
 .codex/mcp-servers/
 .codex/artifacts/
 __pycache__/
+*.import
+**/.gdignore
+asset_sources/portrait_sync_backup_*/
