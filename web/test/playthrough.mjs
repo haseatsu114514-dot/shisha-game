@@ -41,7 +41,7 @@ const plan = [
   "観音堂", "Dr.fookah", "チョイザップ",
   "シーシャの練習", "常連席",
   "tonariでバイト", "C.STATION",
-  "シーシャの練習", "家で休む",
+  "シーシャの練習", "家に帰る",
 ];
 let planIdx = 0;
 let guard = 0;
@@ -118,7 +118,7 @@ while (guard++ < 5000) {
           await sub.click({ timeout: 3000 });
         } else {
           await page.locator("#tonari-menu .tn-close").click({ timeout: 2000 }).catch(() => {});
-          await page.locator(".spot-btn", { hasText: "家で休む" }).click({ timeout: 3000 }).catch(() => {});
+          await page.locator(".spot-btn", { hasText: "家に帰る" }).click({ timeout: 3000 }).catch(() => {});
         }
       } catch { planIdx--; }
       await page.waitForTimeout(30);
@@ -127,7 +127,7 @@ while (guard++ < 5000) {
     const btn = page.locator(".spot-btn", { hasText: label }).first();
     try {
       if (await btn.isDisabled()) {
-        await page.locator(".spot-btn", { hasText: "家で休む" }).click({ timeout: 3000 });
+        await page.locator(".spot-btn", { hasText: "家に帰る" }).click({ timeout: 3000 });
       } else {
         await btn.click({ timeout: 3000 });
       }

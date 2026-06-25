@@ -175,7 +175,7 @@ await page.evaluate(() => {
   startChapter2();
 });
 
-const plan = ["シーシャの練習", "tonariでバイト", "シーシャの練習", "家で休む"];
+const plan = ["シーシャの練習", "tonariでバイト", "シーシャの練習", "家に帰る"];
 let planIdx = 0;
 let stagesSeen = [];
 let slumpSeen = false;
@@ -240,7 +240,7 @@ while (guard++ < 8000) {
         if (await sub.count() && !(await sub.isDisabled())) await sub.click({ timeout: 3000 });
         else {
           await page.locator("#tonari-menu .tn-close").click({ timeout: 2000 }).catch(() => {});
-          await page.locator(".spot-btn", { hasText: "家で休む" }).click({ timeout: 3000 }).catch(() => {});
+          await page.locator(".spot-btn", { hasText: "家に帰る" }).click({ timeout: 3000 }).catch(() => {});
         }
       } catch { planIdx--; }
       await page.waitForTimeout(30);
@@ -248,7 +248,7 @@ while (guard++ < 8000) {
     }
     const btn = page.locator(".spot-btn", { hasText: label }).first();
     try {
-      if (await btn.isDisabled()) await page.locator(".spot-btn", { hasText: "家で休む" }).click({ timeout: 3000 });
+      if (await btn.isDisabled()) await page.locator(".spot-btn", { hasText: "家に帰る" }).click({ timeout: 3000 });
       else await btn.click({ timeout: 3000 });
     } catch {
       planIdx--;
