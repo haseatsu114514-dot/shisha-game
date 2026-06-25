@@ -65,9 +65,9 @@ function rankFromPts(pts) {
 // 「若いので甘め。ただし無理を重ねると寝込む」。数値は非表示でゲージのみ
 const STAMINA_LOW = 25;        // ここ未満でシーシャ系行動 → 警告→強行で酸欠
 const STAMINA_COST = { baito: 18, visit: 10, talk: 5, practice: 8, rin: 10, date: 6, homePuff: 8, gym: 6 };
-// 体力は蓄積制(#41): 夜の自然回復(sleep)はやや控えめ＝疲労が緩く溜まる（普通の混在プレイは持つが、無理は溜まる）。
-// フル回復は「家で休む」、恋人会いは好感度に応じて
-const STAMINA_GAIN = { rest: 35, cafe: 12, kannon: 12, sleep: 25 };
+// 体力は蓄積制(#41): 夜の自然回復(sleep)は1行動ぶん程度。
+// まとまった回復は「家に帰る」で行動を使って取る。
+const STAMINA_GAIN = { rest: 50, cafe: 12, kannon: 12, sleep: 12 };
 function stamina() { return state.stamina ?? 100; }
 function addStamina(n) {
   state.stamina = Math.max(0, Math.min(100, stamina() + n));
@@ -910,23 +910,18 @@ function readSlot(key) {
 function slotMayHaveSave(key) {
   try {
     const raw = localStorage.getItem(key);
-    return !!raw && raw.includes('"day":');
+    return !!raw && raw.slice(0, 512).includes('"day":');
   } catch (e) { return false; }
-}
-function scheduleAfterPaint(fn) {
-  requestAnimationFrame(() => setTimeout(fn, 0));
 }
 function setupContinueButton() {
   const contBtn = $("#btn-continue");
-  scheduleAfterPaint(() => {
-    if (!SAVE_SLOTS.some((s) => slotMayHaveSave(s.key))) return;
-    contBtn.classList.remove("hidden");
-    if (contBtn.dataset.ready) return;
-    contBtn.dataset.ready = "1";
-    contBtn.addEventListener("click", () => {
-      if (window.SFX) SFX.select();
-      showSaveLoad("load");
-    });
+  if (!SAVE_SLOTS.some((s) => slotMayHaveSave(s.key))) return;
+  contBtn.classList.remove("hidden");
+  if (contBtn.dataset.ready) return;
+  contBtn.dataset.ready = "1";
+  contBtn.addEventListener("click", () => {
+    if (window.SFX) SFX.select();
+    showSaveLoad("load");
   });
 }
 function showSaveLoad(mode) {
@@ -1167,7 +1162,7 @@ const SPOTS = [
   { id: "cafe", label: "カフェ", desc: "なるおすすめのスパイスラテ", cost: 800, requiresMet: "naru" },
   { id: "c_station", label: "C.STATION", desc: "大会会場のチェーン店。噂や大会情報が集まる", cost: 2500 },
   { id: "shop", label: "Dr.fookah", desc: "卸直営のショップ。機材・フレーバーが揃い、1階の試飲席で一応吸える（時間はかからない）", cost: 0 },
-  { id: "rest", label: "家で休む", desc: "しっかり寝て明日に備える", cost: 0 },
+  { id: "rest", label: "家に帰る", desc: "1行動使って体を休め、体力を半分ほど戻す", cost: 0 },
 ];
 
 // まだ会っていない店主・常連は名前を出さない（店名は看板で分かる）
@@ -1945,6 +1940,15 @@ function updateMapInfo(spot, locked, tooPoor, closed, visited) {
 }
 
 function selectSpot(spot) {
+  if (typeof REEL !== "undefined" && REEL.isResolving && REEL.isResolving()) {
+    if (selectSpot._waitingForReel) return;
+    selectSpot._waitingForReel = true;
+    if (REEL.waitForIdle) REEL.waitForIdle(() => {
+      selectSpot._waitingForReel = false;
+      selectSpot(spot);
+    });
+    return;
+  }
   const proceed = () => {
     if (spot.cost > 0) addMoney(-spot.cost);
     switch (spot.id) {
@@ -2089,13 +2093,14 @@ function endAction() {
         state.pendingLimeNight = null;
         save();
         // 昼の用事が終わってから夜の約束へ。即切り替えると唐突なので時間が流れる一拍を挟む（違和感の解消）
+        // スロット演出が残っている場合は、終わってから夜イベントへ進む。
         showDayCard("夕暮れ", "約束の時間だ");
-        return setTimeout(() => playLimeEvent(p.event, p.sender, () => {
+        return mapBeat(() => playLimeEvent(p.event, p.sender, () => {
           if (typeof REEL !== "undefined") REEL.onAction(); // 夜の約束もひとつの行動＝スロットを回す(#33)
           state.ap = 0;
           save();
           endDay();
-        }, true), 1500);
+        }, true));
       }
       return showMap();
     }
@@ -2168,15 +2173,25 @@ function mapBeat(onDone) {
   ov.innerHTML = `<div class="map-beat-card"><span class="mb-dots">……</span><span class="mb-sub">タップで次へ</span></div>`;
   screen.appendChild(ov);
   let done = false;
-  const go = () => { if (done) return; done = true; ov.remove(); onDone(); };
-  ov.addEventListener("click", go);
-  setTimeout(go, 2100);
+  let requested = false;
+  let reelIdle = !(typeof REEL !== "undefined" && REEL.isResolving && REEL.isResolving());
+  const go = () => {
+    if (done || !requested || !reelIdle) return;
+    done = true;
+    ov.remove();
+    onDone();
+  };
+  const requestGo = () => { requested = true; go(); };
+  ov.addEventListener("click", requestGo);
+  setTimeout(requestGo, 2100);
+  if (!reelIdle && REEL.waitForIdle) REEL.waitForIdle(() => { reelIdle = true; go(); });
 }
 
 function endDay() {
   // 夜の締め: 必ず家に帰って1日を終える（master_spec #3）。
   // 家シーシャ（第2章〜・一式所持時）はその帰宅シーンの中で選択肢になる
   const finishDay = () => maybeNightcap(advanceDay);
+  const finishAfterReel = () => mapBeat(finishDay);
   // 夜の強制イベントは mapBeat（つなぎの一拍）を通してから再生する（#16）
   const pd = (id, cb, bg) => mapBeat(() => playDialogue(id, cb, bg));
   const pc = (obj, cb) => mapBeat(() => playCustom(obj, cb));
@@ -2218,7 +2233,7 @@ function endDay() {
       state.flags._ev2_tsumugi = true;
       return pd("ch2_tsumugi_color", finishDay, TONARI);
     }
-    return finishDay();
+    return finishAfterReel();
   }
   // ---- 第1章の夜の固定イベント
   if (state.day === 2 && !state.flags._ev_salaryman) {
@@ -2280,7 +2295,7 @@ function endDay() {
     state.flags._ev_day7 = true;
     return pd("ch1_day7_last_night", finishDay, TONARI);
   }
-  finishDay();
+  finishAfterReel();
 }
 
 // --- バイト
@@ -2815,16 +2830,19 @@ function doRinVisit() {
 // --- 休む
 function doRest() {
   visitContextChar = null;
+  const night = state.ap <= 1;
   state.flags._rested_today = true; // 体力に余裕がある日（家シーシャの効きが良くなる）
-  // 家で休む＝フル回復（#41）。溜まった疲労（overwork）もリセット＝「あえて休む」選択に意味
-  state.stamina = 100;
+  // 家に帰る＝最大体力の半分ぶん回復。溜まった疲労（overwork）もリセット＝「あえて帰る」選択に意味
+  addStamina(STAMINA_GAIN.rest);
   state.flags._overwork = 0;
   updateHud();
   playCustom({
     dialogue_id: "rest_home",
-    metadata: { bg: "res://assets/backgrounds/bg_home_night.png" },
+    metadata: { bg: `res://assets/backgrounds/${night ? "bg_home_night.png" : "bg_home_day.png"}` },
     lines: [
-      { speaker: "", face: "", text: "今日は家でゆっくり休んだ。湯船に浸かって、早めに布団に入る。\n……体の芯から、疲れがすっかり抜けていった。" },
+      { speaker: "", face: "", text: night
+        ? "今日はもう家に帰ることにした。湯船に浸かって、早めに布団へ入る。\n……体の重さが、少しずつほどけていった。"
+        : "いったん家に帰ることにした。靴を脱いで、ソファに体を沈める。\n短い休憩でも、体の芯に少し余裕が戻ってくる。" },
       { speaker: "hajime", face: "normal", text: "（大会まで、あと少し。……やれるだけのことは、やろう）" },
       { type: "apply", stats: { guts: 2 } },
     ],
@@ -2834,7 +2852,7 @@ function doRest() {
 // --- 家シーシャ（第2章〜・home_rig_set 所持時）
 // 寝る前の一服でステータスが少し伸びる。作る工程は遊ばせない（一服の演出だけ）。
 // バランス: 葉代600円／連夜は効果減（毎晩吸うのが最適にならない）／
-// その日「家で休む」を選んでいれば体力に余裕があり効果増。バイトの有無では縛らない
+// その日「家に帰る」を選んでいれば体力に余裕があり効果増。バイトの有無では縛らない
 // 1日の終わり: 帰宅して眠る（「夜の行動後にまた店にいる」感の解消）。
 // 家シーシャ条件を満たす夜はそちらが帰宅演出を兼ねる
 const HOMECOMING_LINES = [

@@ -371,6 +371,7 @@ const REEL = (() => {
   let cutin = null;
   let busy = false;       // 演出シーケンス中
   let bonusWait = null;   // プカ点灯中（タップ待ち）の結果
+  let idleWaiters = [];
 
   const SYM_HTML = {
     seven:  '<span class="sym sym-seven">7</span>',
@@ -462,14 +463,44 @@ const REEL = (() => {
     return cutin;
   }
 
+  function hasPending() {
+    return !!(typeof state !== "undefined" && state && state.reel && state.reel.pending && state.reel.pending.length);
+  }
+  function isResolving() {
+    return busy || !!bonusWait || hasPending();
+  }
+  function notifyIdle() {
+    if (isResolving()) return;
+    const waiters = idleWaiters.splice(0);
+    waiters.forEach((fn) => fn());
+  }
+  function waitForIdle(cb, timeoutMs = 12000) {
+    if (!cb) return;
+    if (!isResolving()) return cb();
+    let done = false;
+    let timer = 0;
+    const wrapped = () => {
+      if (done) return;
+      done = true;
+      clearTimeout(timer);
+      cb();
+    };
+    idleWaiters.push(wrapped);
+    timer = setTimeout(() => {
+      const i = idleWaiters.indexOf(wrapped);
+      if (i >= 0) idleWaiters.splice(i, 1);
+      wrapped();
+    }, timeoutMs);
+  }
+
   // ---- マップ表示時に未演出の結果を流す（showMap から呼ばれる）----
   function onMapShown() {
     if (typeof state === "undefined" || !state || !state.reel) return;
-    if (!ensureWidget()) return;
+    if (!ensureWidget()) { notifyIdle(); return; }
     widget.classList.toggle("hidden", fx() === "off");
     if (busy) return;
     const queue = state.reel.pending;
-    if (!queue || !queue.length) return;
+    if (!queue || !queue.length) { notifyIdle(); return; }
     if (!state.reel.introDone) { showIntro(() => onMapShown()); return; }
     // 取り出してから保存（演出前にリロードされても二重適用しない。報酬は適用済み）
     const items = queue.splice(0, queue.length);
@@ -478,7 +509,7 @@ const REEL = (() => {
   }
 
   function runQueue(items) {
-    if (!items.length) { busy = false; return; }
+    if (!items.length) { busy = false; notifyIdle(); return; }
     busy = true;
     // 積み残し（夜の分など）が複数あれば、最後の1件だけフル演出・残りは速回し。
     // ただしリプレイ連鎖（もう1回転）は一瞬で過ぎると何が起きたか分からないのでフルで見せる
@@ -812,7 +843,7 @@ const REEL = (() => {
     };
   }
 
-  return { core, newReelState, noteStat, onAction, onMapShown };
+  return { core, newReelState, noteStat, onAction, onMapShown, isResolving, waitForIdle };
 })();
 
 if (typeof window !== "undefined") window.REEL = REEL;
