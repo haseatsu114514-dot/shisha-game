@@ -36,6 +36,7 @@ body {
   height: 720px;
   flex: none;
   overflow: hidden;
+  overflow: clip;
   transform-origin: center center;
   background: radial-gradient(ellipse at 50% 30%, #1d1a2a 0%, #0b0a10 70%);
   user-select: none;
@@ -634,6 +635,8 @@ body {
 #smoke-veil {
   position: absolute; inset: 0;
   z-index: 95;
+  overflow: hidden;
+  overflow: clip;
   pointer-events: none;
   opacity: 0;
 }
@@ -704,6 +707,13 @@ body {
 .primary-btn:disabled { opacity: 0.35; cursor: default; }
 
 /* ================= dialogue (VN) ================= */
+#screen-dialogue {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
 #vn-bg {
   position: absolute; inset: 0;
   background: #14121c center / cover no-repeat;
@@ -719,25 +729,25 @@ body {
 }
 #vn-cg.visible { opacity: 1; }
 
-#vn-portraits { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+#vn-portraits { position: absolute; inset: 0; z-index: 5; overflow: hidden; pointer-events: none; }
 .portrait {
   position: absolute;
   bottom: 0;
   left: 50%;
   height: 100%;
-  max-width: 64%;
+  max-width: none;
   object-fit: contain;
   object-position: center bottom;
   filter: brightness(0.55) saturate(0.85);
-  transform: translateX(-50%);
-  transition: filter 0.3s, transform 0.3s, opacity 0.35s, left 0.45s ease;
+  transform: translateX(var(--portrait-anchor-x, -50%));
+  transition: filter 0.3s, opacity 0.35s, left 0.45s ease;
 }
-.portrait.active { filter: brightness(1) saturate(1); transform: translateX(-50%) translateY(-6px); z-index: 6; }
+.portrait.active { filter: brightness(1) saturate(1); transform: translateX(var(--portrait-anchor-x, -50%)) translateY(-2px); z-index: 6; }
 /* 1人のときは画面中央、2人いるときだけ左右に分かれる */
 .portrait.pos-center { left: 50%; }
-.portrait.pos-left { left: 27%; }
-.portrait.pos-right { left: 73%; }
-#vn-portraits.duo .portrait { max-width: 50%; }
+.portrait.pos-left { left: 30%; }
+.portrait.pos-right { left: 70%; }
+#vn-portraits.duo .portrait { max-width: none; }
 
 /* 背景込みのアート一枚絵（naru/adam/packii等）は煙のかたちのマスク窓で表示。
    縁がゆっくりうごめき、煙の中に像が浮かんでいるように見せる */
@@ -1614,7 +1624,7 @@ body {
 #chapter-title.show .ct-sub { opacity: 1; transform: none; }
 
 /* 立ち絵の登場 */
-.portrait.enter { opacity: 0; transform: translateX(-50%) translateY(26px); }
+.portrait.enter { opacity: 0; transform: translateX(var(--portrait-anchor-x, -50%)) translateY(26px); }
 
 /* 選択肢のポップイン */
 .choice-btn { opacity: 0; animation: choice-in 0.28s ease-out both; }

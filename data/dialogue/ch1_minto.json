@@ -816,6 +816,10 @@
           "text": "ベージュのケーブルニットに、落ち着いたロングスカート。薄いメイクに、おとなしく下ろされた髪。"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_ch1_minto_casual_reveal"
+        },
+        {
           "speaker": "hajime",
           "face": "surprise",
           "text": "……え？ みんと……？"
@@ -844,6 +848,9 @@
           "speaker": "minto",
           "face": "ura_surprise",
           "text": "……っ。……そ、そういうの……お店では、言ってくれない、くせに……"
+        },
+        {
+          "type": "hide_cg"
         },
         {
           "speaker": "",

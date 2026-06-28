@@ -5,6 +5,12 @@
 const STAT_KEYS = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
 const STAT_JA2EN = { 技術: "technique", センス: "sense", 根性: "guts", 魅力: "charm", 洞察: "insight" };
 
+const PORTRAIT_FRAMING_PRESETS = Object.freeze({
+  baseline: Object.freeze({ target: 132, sink: 35 }),
+  closeup: Object.freeze({ target: 138, sink: 41 }),
+});
+const PORTRAIT_FRAMING = PORTRAIT_FRAMING_PRESETS.closeup;
+
 // 本名が別にあるキャラも、表示は基本あだ名（本名は会話テキスト内でだけ触れる）
 const SPEAKER_NAMES = {
   hajime: "はじめ", sumi: "スミさん", naru: "なる", adam: "アダム",
@@ -34,8 +40,8 @@ const FACE_ALIASES = {
 // 現在は本番用の透過立ち絵を使うため空。
 const BG_FULL_PORTRAITS = new Set();
 
-// 立ち絵を出さないキャラ。
-const NO_PORTRAIT_SPEAKERS = new Set();
+// 立ち絵を出さないキャラ。主人公は基本一人称視点なので、意図したCG演出以外では出さない。
+const NO_PORTRAIT_SPEAKERS = new Set(["hajime", "hazime"]);
 
 // キャラごとの名前色分けは廃止（視認性優先で白統一）
 
@@ -293,19 +299,23 @@ class DialogueEngine {
       img.style.bottom = "";
       return;
     }
-    const TARGET = 102; // 切り抜き素材は実体が画面高いっぱいに出るくらい大きく
+    const TARGET = folder === "packii" ? 94 : PORTRAIT_FRAMING.target;
+    const SINK = folder === "packii" ? 8 : PORTRAIT_FRAMING.sink; // 頭上に約20pxの余白を残し、足元は画面外へ逃がす
     const trims = (this.ctx.portraitTrims || {})[folder] || {};
     const faces = (this.ctx.portraitFaces || {})[folder] || [];
-    let f = face && faces.includes(face) ? face : "normal";
+    const aliasedFace = face && FACE_ALIASES[folder] && FACE_ALIASES[folder][face] ? FACE_ALIASES[folder][face] : face;
+    let f = aliasedFace && faces.includes(aliasedFace) ? aliasedFace : "normal";
     const t = trims[f] || trims.normal;
     if (!t || !t.h) {
       img.style.height = `${100 * scale}%`;
       img.style.bottom = "0";
+      img.style.setProperty("--portrait-anchor-x", "-50%");
       return;
     }
-    const h = Math.min((TARGET / t.h) * scale, 175);
+    const h = Math.min((TARGET / t.h) * scale, folder === "packii" ? 225 : 240);
     img.style.height = `${h}%`;
-    img.style.bottom = `${-(t.b * h)}%`;
+    img.style.bottom = `${-(t.b * h + SINK)}%`;
+    img.style.setProperty("--portrait-anchor-x", `${-((t.l + t.w / 2) * 100)}%`);
   }
 
   // 立ち絵の配置: 1人なら画面中央、2人なら左右に分かれる
