@@ -695,7 +695,10 @@ function engulfInSmoke(onMid) {
   if (window.SFX) SFX.smoke();
   // 白く包まれてからひと呼吸おいて onMid（晴れていく中で次の画面が現れる）
   if (onMid) setTimeout(onMid, 1050);
-  setTimeout(() => veil.classList.remove("engulf"), 2650);
+  setTimeout(() => {
+    veil.classList.remove("engulf");
+    veil.innerHTML = "";
+  }, 2650);
 }
 // 煙ワイプの汎用API（master_spec #20）。pointer-events:none なので操作は止めない
 function smokeWipe(onMid) { engulfInSmoke(onMid); }

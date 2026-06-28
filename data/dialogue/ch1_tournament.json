@@ -289,6 +289,10 @@
           "text": "[warn]制限時間60分[/warn]。4人が同時にシーシャを作り、審査員に提出する。"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_ch1_tournament_battle"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "フレーバーの袋を開ける。甘い香りが手元から立ち上る。"
@@ -388,6 +392,9 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（……これが、今の俺の全力だ）"
+        },
+        {
+          "type": "hide_cg"
         },
         {
           "speaker": "pakki",
@@ -829,6 +836,10 @@
           "text": "ふと視線を感じて観客席を見上げると、ほとんど人の捌けた席の隅に、白衣の男が一人だけ残っていた。"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_ch1_dr_kemuri_hook"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "拍手をするでもなく、ノートPCに何かを打ち込み続けている。"
@@ -837,6 +848,9 @@
           "speaker": "",
           "face": "",
           "text": "目が合う寸前、男は画面を閉じて、出口へ消えた。"
+        },
+        {
+          "type": "hide_cg"
         },
         {
           "speaker": "",

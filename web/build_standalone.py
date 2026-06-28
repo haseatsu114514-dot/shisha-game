@@ -149,22 +149,27 @@ def main() -> None:
 
     asset_js = "window.ASSET_DATA = " + json.dumps(assets) + ";"
     bgm_js = "window.BGM_DATA = " + json.dumps(bgm) + ";"
-    html = html.replace(
-        '<link rel="stylesheet" href="css/style.css">',
-        "<style>\n" + inline_css(assets) + "\n</style>",
+    html, css_count = re.subn(
+        r'<link rel="stylesheet" href="css/style\.css(?:\?[^\"]*)?">',
+        lambda _: "<style>\n" + inline_css(assets) + "\n</style>",
+        html,
     )
-    html = html.replace(
-        '<script src="js/data.js"></script>\n'
-        '<script src="js/sfx.js"></script>\n'
-        '<script src="js/engine.js"></script>\n'
-        '<script src="js/reel.js"></script>\n'
-        '<script src="js/game.js"></script>',
+    script_pattern = r"\n".join(
+        rf'<script src="js/{name}\.js(?:\?[^\"]*)?"></script>'
+        for name in ("data", "sfx", "engine", "reel", "game")
+    )
+    inline_scripts = (
         "<script>\n" + asset_js + "\n" + bgm_js + "\n" + data_js + "\n</script>\n"
         "<script>\n" + sfx_js + "\n</script>\n"
         "<script>\n" + engine_js + "\n</script>\n"
         "<script>\n" + reel_js + "\n</script>\n"
-        "<script>\n" + game_js + "\n</script>",
+        "<script>\n" + game_js + "\n</script>"
     )
+    html, script_count = re.subn(script_pattern, lambda _: inline_scripts, html)
+    if css_count != 1 or script_count != 1:
+        raise RuntimeError(
+            f"failed to inline web entrypoints: css={css_count}, scripts={script_count}"
+        )
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUT_PATH.write_text(html, encoding="utf-8")

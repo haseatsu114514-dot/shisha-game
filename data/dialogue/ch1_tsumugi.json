@@ -636,6 +636,10 @@
           "text": "つむぎがiPadの画面をこちらに向けた。傷のある画面。その傷の上に──1枚の絵が描かれていた。"
         },
         {
+          "type": "show_cg",
+          "cg_id": "cg_ch1_tsumugi_heart_art"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "tonariの店内。カウンターの温かい照明。シーシャのボトルが並ぶ棚。そして──煙。"
@@ -779,6 +783,9 @@
           "speaker": "",
           "face": "",
           "text": "今まで見たことのない、小さくて、でも確かな笑顔だった。"
+        },
+        {
+          "type": "hide_cg"
         },
         {
           "speaker": "hajime",

@@ -91,7 +91,12 @@ def portrait_trim(png: Path):
 
 def collect_portraits() -> tuple[dict, dict]:
     """assets/sprites/characters/ を走査して
-    ({char_id: [face,...]}, {char_id: {face: trim}}) を返す。"""
+    ({char_id: [face,...]}, {char_id: {face: trim}}) を返す。
+
+    会話中の表情差分では、同じキャラの立ち絵が上下に動かないことを優先する。
+    そのため表示用の h/b はキャラ単位の共通値にそろえる。
+    l/w はタイトル等の切り出し用途に使えるよう、各表情の実測値を残す。
+    """
     portraits = {}
     trims = {}
     chars_dir = REPO_ROOT / "assets" / "sprites" / "characters"
@@ -109,6 +114,19 @@ def collect_portraits() -> tuple[dict, dict]:
                 if t:
                     face_trims[m.group(1)] = t
         if faces:
+            if face_trims:
+                common_top = 1.0
+                common_bottom = 0.0
+                for t in face_trims.values():
+                    top = 1.0 - t["b"] - t["h"]
+                    bottom = 1.0 - t["b"]
+                    common_top = min(common_top, top)
+                    common_bottom = max(common_bottom, bottom)
+                common_h = round(common_bottom - common_top, 3)
+                common_b = round(1.0 - common_bottom, 3)
+                for t in face_trims.values():
+                    t["h"] = common_h
+                    t["b"] = common_b
             portraits[char_dir.name] = faces
             trims[char_dir.name] = face_trims
     return portraits, trims
