@@ -154,6 +154,22 @@ let state = null;
 
 // 初期所持機材（各タイプの基本品。上位機材はショップで買う）
 const STARTER_EQUIPMENT = ["silicone_bowl", "lotos_hagal", "flat_charcoal"];
+// 最初から持っているのはダブルアップルのみ。その他は購入・くじ・イベントで入手する。
+const STARTER_FLAVOR_IDS = new Set(["double_apple"]);
+// 59種拡張前からあった定番品は Dr.fookah でいつでも買える。
+const CORE_SHOP_FLAVOR_IDS = new Set([
+  "mint", "double_apple", "blueberry", "strawberry",
+  "vanilla", "pineapple", "coconut", "mango",
+]);
+
+function flavorOwnershipFlag(flavor) {
+  return flavor.requires_flag || `_flavor_${flavor.id}`;
+}
+
+function ownsFlavor(flavor) {
+  return STARTER_FLAVOR_IDS.has(flavor.id) ||
+    !!state.flags[flavorOwnershipFlag(flavor)];
+}
 
 function newState() {
   return {
@@ -2535,8 +2551,8 @@ function showShop() {
     }
     list.appendChild(grid);
   }
-  // フレーバー入荷（Dr.fookah）。その章の解放可能フレーバーを買うとミックスで使える＝パレットが広がる(#くじ/ショップにフレーバー)。
-  // 基本フレーバーは常時使える。買わなくても本番はスミさんがお情けで分けてくれる(#44)。
+  // フレーバー入荷（Dr.fookah）。その章の解放可能フレーバーを買うと所持品に加わり、ミックスで使える(#くじ/ショップにフレーバー)。
+  // 初期所持はオープニングでスミさんから渡されるダブルアップルだけ。
   {
     const flLabel = document.createElement("p");
     flLabel.className = "setup-group-label";
@@ -2544,9 +2560,12 @@ function showShop() {
     list.appendChild(flLabel);
     const flGrid = document.createElement("div");
     flGrid.className = "spot-list";
-    const stockable = D.flavors.filter((f) => f.unlockable && (f.chapter_min || 1) <= state.chapter);
+    const stockable = D.flavors.filter((f) =>
+      (CORE_SHOP_FLAVOR_IDS.has(f.id) || f.unlockable) &&
+      (f.chapter_min || 1) <= state.chapter);
     for (const f of stockable) {
-      const owned = !!state.flags[f.requires_flag];
+      const ownershipFlag = flavorOwnershipFlag(f);
+      const owned = ownsFlavor(f);
       const price = f.price || 0;
       const btn = document.createElement("button");
       btn.className = "spot-btn";
@@ -2556,9 +2575,9 @@ function showShop() {
         `<span class="spot-desc">${f.description || ""}</span>`;
       if (owned || price > state.money) btn.disabled = true;
       btn.addEventListener("click", () => {
-        if (state.flags[f.requires_flag] || price > state.money) return;
+        if (ownsFlavor(f) || price > state.money) return;
         addMoney(-price);
-        state.flags[f.requires_flag] = true;
+        state.flags[ownershipFlag] = true;
         state.flags._flavor_stocked = true; // 本番持参の救済条件(#44)も満たす
         save();
         if (window.SFX) SFX.coin();
@@ -4524,14 +4543,14 @@ function stepMix() {
         : "この配合でいく";
   };
 
-  // 限定フレーバー（凛のサンプル等）はフラグ解放後にだけ並ぶ。
+  // バイトは店の在庫を使うため全種。それ以外は初期所持か、購入・くじ・イベントで入手したものだけ並ぶ。
   // 主人公の配合はブロンドリーフのみ（ダーク/シガーは用語・他キャラの演出専用）
   // 大会(tournament/rehearsal)では competition_legal:false、接客(baito)では serve_legal:false を除外。
   // 凛の未発売サンプルは練習/ドリル等の試香でのみ使える（大会・店では出せない）
   const compMode = tt.mode === "tournament" || tt.mode === "rehearsal";
   const serveMode = tt.mode === "baito";
   const flavors = D.flavors.filter((f) =>
-    (!f.requires_flag || state.flags[f.requires_flag]) &&
+    (serveMode || ownsFlavor(f)) &&
     (!f.leaf || f.leaf === "blond") &&
     !(compMode && f.competition_legal === false) &&
     !(serveMode && f.serve_legal === false));
