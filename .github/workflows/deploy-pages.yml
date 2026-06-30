@@ -1,11 +1,11 @@
 # ソースから web/dist/shisha_ch1.html（1ファイル版）を生成し、GitHub Pages に公開する。
-# main または開発ブランチ（claude/**）への push のたびに
+# main または開発ブランチ（claude/**、codex/**）への push のたびに
 # https://haseatsu114514-dot.github.io/shisha-game/ が更新される。
 name: Deploy web build to GitHub Pages
 
 on:
   push:
-    branches: [main, "claude/**"]
+    branches: [main, "claude/**", "codex/**"]
     paths:
       - "assets/**"
       - "data/**"
@@ -15,6 +15,7 @@ on:
       - "web/tools/**"
       - "web/build_data.py"
       - "web/build_standalone.py"
+      - "project-invoice-clone/**"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -46,9 +47,10 @@ jobs:
           python3 web/build_standalone.py
       - name: Prepare site
         run: |
-          mkdir -p _site/tools
+          mkdir -p _site/tools _site/project-invoice-clone
           cp web/dist/shisha_ch1.html _site/index.html
           cp web/tools/flavor_stats_editor.html _site/tools/flavor_stats_editor.html
+          cp -R project-invoice-clone/. _site/project-invoice-clone/
       - uses: actions/configure-pages@v5
         with:
           enablement: true
