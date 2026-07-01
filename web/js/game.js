@@ -1801,7 +1801,8 @@ const SPOT_LAYOUT = {
   volk:      { x: 50, y: 38, theme: "rival",   short: "鉄の煙",     area: "工業地区" },
   choizap:   { x: 28.9, y: 32.6, theme: "shop",    short: "チョイザップ", area: "ジム" },
   kannon:    { x: 16.0, y: 54.2, theme: "park",    short: "観音堂",     area: "古町" },
-  cafe:      { x: 84.0, y: 53.5, theme: "cafe",    short: "カフェ",     area: "繁華街" },
+  // カフェは tonari／家 と重なると家のピンに覆われてタップ不能になる（#ピン団子）。右上クラスタから離す
+  cafe:      { x: 74.5, y: 57.0, theme: "cafe",    short: "カフェ",     area: "繁華街" },
   c_station: { x: 59.4, y: 60.4, theme: "stadium", short: "C.STATION",  area: "会場" },
   shop:      { x: 42.2, y: 37.5, theme: "shop",    short: "Dr.fookah",  area: "問屋街" },
   rest:      { x: 88, y: 60, theme: "rest",    short: "家",         area: "自宅" },
