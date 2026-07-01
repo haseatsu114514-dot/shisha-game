@@ -45,6 +45,7 @@ const plan = [
 ];
 let planIdx = 0;
 let guard = 0;
+let failStreak = 0; // 同じ行き先のクリック連続失敗数（3回で諦めて次へ）
 
 async function activeScreen() {
   return page.evaluate(() => document.querySelector(".screen.active")?.id || "none");
@@ -125,14 +126,25 @@ while (guard++ < 5000) {
       continue;
     }
     const btn = page.locator(".spot-btn", { hasText: label }).first();
+    // 未解禁（??? LOCK）・定休日でピンが無い行き先は飛ばして次へ（プランは周回するので後で再訪できる）。
+    // ここで同じ行き先をリトライし続けると、解禁チェーンがズレた周回で永遠に詰まる
+    if (!(await btn.count())) {
+      log("plan skip (locked/closed):", label);
+      await page.waitForTimeout(120);
+      continue;
+    }
     try {
       if (await btn.isDisabled()) {
         await page.locator(".spot-btn", { hasText: "家に帰る" }).click({ timeout: 3000 });
       } else {
         await btn.click({ timeout: 3000 });
       }
+      failStreak = 0;
     } catch {
-      planIdx--; // スマホ（LIME）が重なった等でクリックできなければ同じ行き先を再試行
+      // スマホ（LIME）が重なった等の一時的な失敗は同じ行き先を再試行。
+      // 3連続で失敗したら恒久的に押せない状態とみなして次の行き先へ（無限リトライ防止）
+      if (++failStreak >= 3) { failStreak = 0; log("plan giveup:", label); continue; }
+      planIdx--;
       continue;
     }
     await page.waitForTimeout(30);
