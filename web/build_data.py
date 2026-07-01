@@ -19,6 +19,13 @@ try:
 except ImportError:
     Image = None
 
+try:
+    import numpy as np
+    from scipy import ndimage
+except ImportError:
+    np = None
+    ndimage = None
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "data"
 OUT_PATH = Path(__file__).resolve().parent / "js" / "data.js"
@@ -68,25 +75,71 @@ def portrait_trim(png: Path):
 
     h: 画像高さに対する実コンテンツの高さ比 / b: 下端の余白比
     l: 左端の余白比 / w: 実コンテンツの幅比
+    ax: 横アンカー比（本体下部＝足元の重心x）。表情差分で腕の出し方が
+        変わっても bbox 中心のように引っ張られないので、engine.js は
+        これを使って立ち絵の横位置を固定する
     （キャラごとの余白差で見かけサイズがズレるのを補正する。
      l/w はタイトル等の「アートウィンドウ」での切り出しに使う）
+
+    scipy がある環境では、背景消し残りのゴミピクセル（本体から離れた
+    小さな島）を無視して本体だけを測る。無い環境は従来の getbbox。
     """
     if Image is None:
         return None
     try:
         im = Image.open(png).convert("RGBA")
-        bbox = im.getbbox()
+        if np is not None and ndimage is not None:
+            bbox, feet_cx = _measure_main_content(im)
+        else:
+            bbox, feet_cx = im.getbbox(), None
         if not bbox:
             return None
         left, top, right, bottom = bbox
-        return {
+        trim = {
             "h": round((bottom - top) / im.height, 3),
             "b": round((im.height - bottom) / im.height, 3),
             "l": round(left / im.width, 3),
             "w": round((right - left) / im.width, 3),
         }
+        if feet_cx is not None:
+            trim["ax"] = round(feet_cx / im.width, 3)
+        return trim
     except OSError:
         return None
+
+
+def _measure_main_content(im):
+    """本体（最大連結成分＋その近傍/同規模の成分）の bbox と足元重心xを返す。
+
+    alpha>=24 で二値化し、最大成分の1%未満かつ本体から12px超離れた
+    孤立ゴミを計測から除外する。足元重心はコンテンツ下端20%の重心x。
+    """
+    alpha = np.asarray(im)[..., 3]
+    visible = alpha >= 24
+    if not visible.any():
+        return None, None
+    labels, n = ndimage.label(visible)
+    mask = visible
+    if n > 1:
+        sizes = ndimage.sum(visible, labels, range(1, n + 1))
+        main_label = int(np.argmax(sizes)) + 1
+        main_size = sizes[main_label - 1]
+        near_main = ndimage.binary_dilation(labels == main_label, iterations=12)
+        keep = np.zeros(n + 1, dtype=bool)
+        for i, size in enumerate(sizes, start=1):
+            keep[i] = (
+                i == main_label
+                or size >= main_size * 0.01
+                or bool((labels == i)[near_main].any())
+            )
+        mask = keep[labels]
+    ys, xs = np.where(mask)
+    x0, x1 = int(xs.min()), int(xs.max()) + 1
+    y0, y1 = int(ys.min()), int(ys.max()) + 1
+    feet_top = y1 - max(1, int((y1 - y0) * 0.2))
+    fys, fxs = np.where(mask[feet_top:y1])
+    feet_cx = float(fxs.mean()) if len(fxs) else (x0 + x1) / 2
+    return (x0, y0, x1, y1), feet_cx
 
 
 def collect_portraits() -> tuple[dict, dict]:

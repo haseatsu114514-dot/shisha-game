@@ -315,7 +315,10 @@ class DialogueEngine {
     const h = Math.min((TARGET / t.h) * scale, folder === "packii" ? 225 : 240);
     img.style.height = `${h}%`;
     img.style.bottom = `${-(t.b * h + SINK)}%`;
-    img.style.setProperty("--portrait-anchor-x", `${-((t.l + t.w / 2) * 100)}%`);
+    // 横位置は足元の重心（ax）でアンカーする。bbox 中心だと表情差分で
+    // 腕を広げた絵に中心が引っ張られ、立ち絵が左右に滑って見える
+    const ax = typeof t.ax === "number" ? t.ax : t.l + t.w / 2;
+    img.style.setProperty("--portrait-anchor-x", `${-(ax * 100)}%`);
   }
 
   // 立ち絵の配置: 1人なら画面中央、2人なら左右に分かれる
