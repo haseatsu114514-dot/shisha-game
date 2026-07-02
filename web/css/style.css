@@ -1794,6 +1794,26 @@ body {
   background-size: contain;
   pointer-events: none;
 }
+/* ---- 生成画像への差し替え（artAsset）----
+   assets/ui/making/ にPNGが置かれた要素には .has-asset が付き、
+   CSSアートの塗り（グラデ・影・枠）を消してPNGだけを見せる。
+   位置・大きさは既存のレイアウト値をそのまま使う（配線は game.js の artAsset） */
+.making-stage .has-asset {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  box-shadow: none;
+  border: none;
+}
+.art-bowl.has-asset { background-position: center bottom; }
+.art-hole.has-asset { background-color: transparent; width: 8px; height: 8px; margin: -4px; }
+.art-hose-line.has-asset { border-bottom: none; transform: none; filter: none; }
+.art-stove.has-asset::after { display: none; }
+.art-grain.has-asset { width: 9px; height: 8px; border-radius: 0; }
+/* ガラスベースPNGは水・泡の上に重なる透けレイヤー */
+.art-hookah-glass { position: absolute; inset: -2px; z-index: 3; pointer-events: none; }
+.art-hookah-base.glass-asset { border-color: transparent; background: none; box-shadow: none; }
 .bench-base { inset: 0; opacity: 0.92; background-size: cover; }
 .bench-base.missing {
   background-image:
@@ -2089,6 +2109,9 @@ body {
     linear-gradient(160deg, #7c3220, #b0421f 52%, #57241a);
   animation: coal-breathe 1.4s ease-in-out infinite;
 }
+/* PNG炭（coal_red.png 等）でも熾きの明滅・灰の色味はコード側で乗せる */
+.art-coal.lit-heating.has-asset { animation: coal-breathe 1.4s ease-in-out infinite; }
+.art-coal.lit-ash.has-asset { filter: grayscale(0.55) brightness(1.08); }
 .art-coal.lit-heating { box-shadow: 0 0 26px rgba(255,96,40,0.5); }
 @keyframes coal-breathe { 50% { filter: brightness(1.35); } }
 .art-coal.lit-on .art-coal-face {

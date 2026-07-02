@@ -3369,6 +3369,15 @@ function artDiv(cls, parent) {
   if (parent) parent.appendChild(el);
   return el;
 }
+// 生成画像が assets/ui/making/ に置かれていれば要素の絵をPNGへ差し替える共通口。
+// 置かれていなければ false を返し、呼び出し側が従来のCSSアートを組み立てる。
+// 対応ファイル名と構図は docs/asset_gen_prompts.md §1（Codex向け）を正とする
+function artAsset(el, name) {
+  if (!hasMakingAsset(name)) return false;
+  setMakingAsset(el, name);
+  el.classList.add("has-asset");
+  return true;
+}
 function flavorColor(id) {
   return FLAVOR_COLORS[id] || "#8a6a45";
 }
@@ -3413,6 +3422,7 @@ function addFoilHole(holes, r, angleDeg) {
   d.className = "art-hole";
   d.style.left = `${50 + Math.cos(a) * r * 42}%`;
   d.style.top = `${50 + Math.sin(a) * r * 36}%`;
+  artAsset(d, "hole_punched.png"); // 穴スプライトの生成画像があれば差し替え
   holes.appendChild(d);
   return d;
 }
@@ -3426,7 +3436,8 @@ function stageFoilPunch(r, angleDeg) {
 // 炭キューブ。lit: "off"（生）| "heating"（熾き中）| "on"（本熾き）| "ash"（灰）
 function buildCoalArt(lit) {
   const c = artDiv(`art-coal lit-${lit || "off"}`);
-  artDiv("art-coal-face", c);
+  const asset = { heating: "coal_red.png", on: "coal_white.png" }[lit] || "coal_cold.png";
+  if (!artAsset(c, asset)) artDiv("art-coal-face", c);
   return c;
 }
 function coalLitState() {
@@ -3438,21 +3449,25 @@ function coalLitState() {
 function coalCount() {
   return (tt && tt.coal) === "two" ? 2 : (tt && tt.coal) === "four" ? 4 : 3;
 }
-// ボウル（クレイ/シリコン/ファンネル）。fill=葉、foil=アルミ、coals=炭を上に乗せる
+// ボウル（クレイ/シリコン/ファンネル）。fill=葉、foil=アルミ、coals=炭を上に乗せる。
+// 生成画像 bowl_empty_*.png があれば器の絵はPNG、葉の色層・穴・炭はコードで重ねる
 function buildBowlArt(opts = {}) {
   const kind = tt && String(tt.bowl || "").includes("suyaki") ? "clay"
     : tt && tt.bowl === "hagal_80beat" ? "phunnel" : "silicone";
   const bowl = artDiv(`art-bowl ${opts.cls || ""}`);
   bowl.dataset.kind = kind;
-  artDiv("art-bowl-body", bowl);
+  const bowlAsset = { clay: "bowl_empty_clay.png", phunnel: "bowl_empty_phunnel.png", silicone: "bowl_empty_silicone.png" }[kind];
+  const hasBowlImg = artAsset(bowl, bowlAsset);
+  if (!hasBowlImg) artDiv("art-bowl-body", bowl);
   const cavity = artDiv("art-bowl-cavity", bowl);
   if (opts.fill) cavity.appendChild(buildLeafFill(opts.compact));
-  if (kind === "phunnel") artDiv("art-bowl-spire", bowl);
-  artDiv("art-bowl-rim", bowl);
+  if (!hasBowlImg && kind === "phunnel") artDiv("art-bowl-spire", bowl);
+  if (!hasBowlImg) artDiv("art-bowl-rim", bowl);
   if (opts.foil) {
     const foil = artDiv("art-foil", bowl);
+    const hasFoilImg = artAsset(foil, "foil_surface.png");
     artDiv("art-foil-sheen", foil);
-    artDiv("art-foil-crimp", foil);
+    if (!hasFoilImg) artDiv("art-foil-crimp", foil);
     const holes = artDiv("art-foil-holes", foil);
     if (opts.holesFromResult) fillFoilHolesFromResult(holes);
   }
@@ -3463,18 +3478,23 @@ function buildBowlArt(opts = {}) {
   }
   return bowl;
 }
-// フレーバージャー。ガラス瓶＋中身の色＋手書きラベル
+// フレーバージャー。ガラス瓶＋中身の色＋手書きラベル。
+// jar_glass.png（瓶単体・中身が透ける窓）/ jar_pour.png（注ぐ手元の一枚）があれば差し替え
 function buildJarArt(flavorId, opts = {}) {
   const jar = artDiv(`art-jar ${opts.cls || ""}`);
   jar.style.setProperty("--jar-color", flavorColor(flavorId));
-  artDiv("art-jar-lid", jar);
-  artDiv("art-jar-glass", jar);
-  artDiv("art-jar-content", jar);
+  if (opts.pourArt && artAsset(jar, "jar_pour.png")) return jar; // 注ぎ手元の一枚絵は丸ごと差し替え
+  const glassHasImg = hasMakingAsset("jar_glass.png");
+  if (!glassHasImg) artDiv("art-jar-lid", jar);
+  const glass = artDiv("art-jar-glass", jar);
+  if (glassHasImg) artAsset(glass, "jar_glass.png");
+  artDiv("art-jar-content", jar); // 中身の色（z-indexでガラスの下に入る）
   const label = artDiv("art-jar-label", jar);
   label.textContent = flavorId ? flavorShortName(flavorId) : "";
   return jar;
 }
-// 組み上がった一式（ボウル＋ステム＋ガラスベース＋ホース）
+// 組み上がった一式（ボウル＋ステム＋ガラスベース＋ホース）。
+// hookah_tray/stem/base.png があれば各部をPNGへ。水・泡・煙はコードで重ねる
 function buildHookahArt(opts = {}) {
   const rig = artDiv(`art-hookah ${opts.cls || ""}`);
   if (opts.smoke) {
@@ -3483,12 +3503,15 @@ function buildHookahArt(opts = {}) {
   }
   const top = artDiv("art-hookah-top", rig);
   top.appendChild(buildBowlArt({ fill: true, compact: true, foil: true, holesFromResult: true, coals: opts.coals !== false, cls: "on-rig" }));
-  artDiv("art-hookah-tray", rig);
-  artDiv("art-hookah-stem", rig);
+  artAsset(artDiv("art-hookah-tray", rig), "hookah_tray.png");
+  artAsset(artDiv("art-hookah-stem", rig), "hookah_stem.png");
   const base = artDiv("art-hookah-base", rig);
   const water = artDiv("art-hookah-water", base);
   water.classList.add("art-water");
   artDiv("art-hookah-bubbles", water);
+  // ガラスは水・泡の上に重ねる別レイヤー（PNGの透け感で中の水が見える）
+  const glass = artDiv("art-hookah-glass", base);
+  if (artAsset(glass, "hookah_base.png")) base.classList.add("glass-asset");
   artDiv("art-hookah-hoseport", rig);
   return rig;
 }
@@ -3514,7 +3537,7 @@ function spawnPourGrains(stage, flavorId) {
   for (let i = 0; i < 9; i++) {
     const g = document.createElement("i");
     g.className = "art-grain";
-    g.style.background = color;
+    if (!artAsset(g, "leaf_grain.png")) g.style.background = color;
     g.style.left = `${42 + Math.random() * 16}%`;
     g.style.animationDelay = `${i * 34 + Math.random() * 24}ms`;
     g.style.setProperty("--gdrift", `${(Math.random() - 0.5) * 26}px`);
@@ -3543,10 +3566,10 @@ function renderMakingWorkbench(step, opts = {}) {
   } else if (scene === "mix") {
     // 計量: スケールの上のボウルへ、ジャーから葉を注ぐ
     const scale = artDiv("art-scale", stage);
-    artDiv("art-scale-plate", scale);
+    if (!artAsset(scale, "mix_scale.png")) artDiv("art-scale-plate", scale);
     stage.appendChild(buildBowlArt({ fill: true, cls: "art-bowl-mid on-scale" }));
     artDiv("art-pour-zone", stage);
-    const jar = buildJarArt(opts.flavor || Object.keys((tt && tt.mix) || {}).pop() || "", { cls: `art-jar-hand${opts.pour ? " pouring" : ""}` });
+    const jar = buildJarArt(opts.flavor || Object.keys((tt && tt.mix) || {}).pop() || "", { cls: `art-jar-hand${opts.pour ? " pouring" : ""}`, pourArt: true });
     stage.appendChild(jar);
     const display = document.createElement("div");
     display.className = `scale-display${opts.pour ? " bump" : ""}`;
@@ -3557,15 +3580,15 @@ function renderMakingWorkbench(step, opts = {}) {
     // 詰め: ボウルのドアップ。フォークでほぐし入れる手元
     stage.appendChild(buildBowlArt({ fill: true, compact: !!(tt && tt.pack), cls: "art-bowl-big" }));
     const fork = artDiv("art-fork", stage);
-    artDiv("art-fork-tines", fork);
+    if (!artAsset(fork, "hand_fork.png")) artDiv("art-fork-tines", fork);
   } else if (scene === "foil") {
     // アルミ張り: 張ったアルミの上に、ミニゲームと同じ位置へ穴が増えていく
     stage.appendChild(buildBowlArt({ fill: true, compact: true, foil: true, cls: "art-bowl-big foil-view" }));
-    artDiv("art-pick", stage);
+    artAsset(artDiv("art-pick", stage), "hand_pin.png");
   } else if (scene === "coal" || scene === "coalfire") {
     // 炭起こし: 電熱コンロの上でココナラ炭が赤くなっていく
     const stove = artDiv("art-stove", stage);
-    artDiv("art-stove-coil", stove);
+    if (!artAsset(stove, "stove_coil.png")) artDiv("art-stove-coil", stove);
     const coalsWrap = artDiv("art-stove-coals", stove);
     const lit = scene === "coal" ? "off" : coalLitState();
     for (let i = 0; i < Math.min(4, coalCount()); i++) coalsWrap.appendChild(buildCoalArt(scene === "coalfire" ? "heating" : lit));
@@ -3574,8 +3597,10 @@ function renderMakingWorkbench(step, opts = {}) {
       for (let i = 0; i < 7; i++) artDiv(`art-spark s${i}`, sparks);
     }
     const tongs = artDiv("art-tongs", stage);
-    artDiv("art-tongs-arm a1", tongs);
-    artDiv("art-tongs-arm a2", tongs);
+    if (!artAsset(tongs, "hand_tongs_open.png")) {
+      artDiv("art-tongs-arm a1", tongs);
+      artDiv("art-tongs-arm a2", tongs);
+    }
   } else if (scene === "steam") {
     // 蒸らし: 組み上がった一台。炭の熱がゆっくり乗るのを待つ
     stage.appendChild(buildHookahArt({ smoke: true }));
@@ -3588,17 +3613,19 @@ function renderMakingWorkbench(step, opts = {}) {
     stage.appendChild(makingLayer("heat_glow.png", "heat-glow soft"));
     if (scene === "adjust") {
       const tongs = artDiv("art-tongs adjust", stage);
-      artDiv("art-tongs-arm a1", tongs);
-      artDiv("art-tongs-arm a2", tongs);
+      if (!artAsset(tongs, "hand_tongs_open.png")) {
+        artDiv("art-tongs-arm a1", tongs);
+        artDiv("art-tongs-arm a2", tongs);
+      }
     }
   } else if (scene === "pull") {
     // 吸い出し: 一人称。左に一台、右手前にマウスピース、煙が立ちはじめる
     stage.appendChild(buildHookahArt({ smoke: true, cls: "at-left" }));
     const hose = artDiv("art-hose", stage);
-    artDiv("art-hose-line", hose);
+    artAsset(artDiv("art-hose-line", hose), "hose_line.png");
     const mouth = artDiv("art-mouthpiece", hose);
-    artDiv("art-mouthpiece-tip", mouth);
-    artDiv("art-pull-smoke", stage);
+    if (!artAsset(mouth, "hose_tip.png")) artDiv("art-mouthpiece-tip", mouth);
+    artAsset(artDiv("art-pull-smoke", stage), "smoke_thick.png");
   }
   return stage;
 }
