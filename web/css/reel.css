@@ -272,3 +272,80 @@
 .ri-app { color: #f4d27a; font-weight: bold; letter-spacing: 0.1em; font-size: 15px; }
 .ri-text { color: #f2ecdf; font-size: 16px; line-height: 1.8; min-height: 58px; margin: 0; }
 .ri-next { display: block; text-align: right; color: #cdb8e6; font-size: 12px; animation: rc-flicker 1.4s infinite; }
+
+/* ================================================================
+   ジャグラー風の告知・動きの強化（2026-07-02）
+   ①GOGOランプ風: 点灯ポップ＋回転する光条レイ ②レバーアーム
+   ③当たり回転は第3リールに「溜め」＋筐体の微振動
+   ④揃い時: 中段ラインのフラッシュ＋筐体ポップ ⑤天井接近でランプ予熱
+   ================================================================ */
+.rw-lamp-wrap { position: relative; width: 48px; margin: 0 auto -7px; z-index: 2; }
+.rw-lamp-wrap #reel-lamp { margin: 0; width: 48px; height: 48px; }
+.rw-lamp-rays {
+  position: absolute; inset: -15px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgba(255,226,122,0.9) 0deg 7deg, transparent 7deg 30deg);
+  -webkit-mask: radial-gradient(circle, transparent 44%, #000 45%, #000 72%, transparent 73%);
+          mask: radial-gradient(circle, transparent 44%, #000 45%, #000 72%, transparent 73%);
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.15s;
+  pointer-events: none;
+}
+#reel-widget.lamp-lit .rw-lamp-rays { opacity: 1; animation: rw-rays 1.7s linear infinite; }
+#reel-widget.lamp-premium .rw-lamp-rays {
+  background: repeating-conic-gradient(
+    rgba(255,140,200,0.9) 0deg 7deg, rgba(120,205,255,0.9) 7deg 14deg,
+    rgba(160,255,150,0.9) 14deg 21deg, transparent 21deg 30deg);
+}
+@keyframes rw-rays { from { transform: scale(1) rotate(0deg); } to { transform: scale(1) rotate(360deg); } }
+/* 点灯の瞬間「ペカッ」と弾む（既存の明滅と併走） */
+#reel-widget.lamp-lit #reel-lamp {
+  animation: rw-peka 0.55s infinite alternate, rw-peka-pop 0.5s cubic-bezier(0.2, 2.4, 0.4, 1);
+}
+@keyframes rw-peka-pop { 0% { transform: scale(0.72); } 55% { transform: scale(1.22); } 100% { transform: scale(1); } }
+/* 天井が近い時のほんのり予熱（数値は出さない・気配だけ） */
+#reel-widget.warm #reel-lamp { border-color: rgba(255,196,100,0.85); animation: rw-warm 2.4s ease-in-out infinite; }
+@keyframes rw-warm {
+  0%, 100% { box-shadow: 0 0 5px rgba(255,170,60,0.16); }
+  50% { box-shadow: 0 0 15px rgba(255,175,65,0.5); }
+}
+/* レバーアーム（回すたびにカチッと倒れる） */
+.rw-lever-arm {
+  position: absolute; left: -10px; bottom: 32px;
+  width: 12px; height: 32px;
+  pointer-events: none;
+  transform-origin: 85% 92%;
+  filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
+}
+.rw-lever-arm::before {
+  content: ""; position: absolute; left: 5px; top: 7px;
+  width: 4px; height: 24px; border-radius: 2px;
+  background: linear-gradient(180deg, #969cb0, #4c5060);
+}
+.rw-lever-arm::after {
+  content: ""; position: absolute; left: 0; top: 0;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ff9d9d, #b02222 72%);
+  box-shadow: inset 0 -2px 3px rgba(0,0,0,0.45);
+}
+#reel-widget.lever-pull .rw-lever-arm { animation: rw-lever 0.36s ease-out; }
+@keyframes rw-lever { 0% { transform: rotate(0deg); } 35% { transform: rotate(-44deg); } 100% { transform: rotate(0deg); } }
+/* 第3リールの溜め（2つ止まって、残り1つ……） */
+#reel-widget.tension .rw-machine {
+  border-color: rgba(255,222,120,0.9);
+  animation: rw-tension 0.12s linear infinite;
+}
+@keyframes rw-tension {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(0.7px, -0.4px); }
+  75% { transform: translate(-0.7px, 0.4px); }
+}
+/* 揃った瞬間: 中段ラインが光る＋筐体がひと弾み */
+#reel-widget.win-flash .rw-reel::after {
+  border-top-color: rgba(255,232,140,0.95);
+  border-bottom-color: rgba(255,232,140,0.95);
+  box-shadow: 0 0 10px rgba(255,212,90,0.6);
+}
+#reel-widget.bonus-pop .rw-machine { animation: rw-bonus-pop 0.6s cubic-bezier(0.2, 2, 0.4, 1); }
+@keyframes rw-bonus-pop { 0% { transform: scale(1); } 40% { transform: scale(1.09); } 100% { transform: scale(1); } }
