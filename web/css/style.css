@@ -11,7 +11,32 @@
   --panel-border-soft: rgba(244, 210, 122, 0.28);
   --text: #f4ecd6;
   --text-dim: #c9bfa6;
+  /* ステータス共通カラー（全画面でここだけを正とする。
+     色だけに頼らず、必ず名前・漢字バッジと併記して使う） */
+  --stat-technique: #f2c34c; /* 技術 = 黄 */
+  --stat-sense:     #6cc6e8; /* センス = 水色 */
+  --stat-guts:      #ef7a5e; /* 根性 = 朱 */
+  --stat-charm:     #f292c6; /* 魅力 = 桃 */
+  --stat-insight:   #93cf7d; /* 洞察 = 緑 */
 }
+/* ステータス色の適用クラス（JSは stat-c-<en> を付けるだけ） */
+.stat-c-technique { color: var(--stat-technique); }
+.stat-c-sense     { color: var(--stat-sense); }
+.stat-c-guts      { color: var(--stat-guts); }
+.stat-c-charm     { color: var(--stat-charm); }
+.stat-c-insight   { color: var(--stat-insight); }
+/* SVG（レーダーチャートのラベル）は fill で塗る */
+.radar-svg .stat-c-technique { fill: var(--stat-technique); }
+.radar-svg .stat-c-sense     { fill: var(--stat-sense); }
+.radar-svg .stat-c-guts      { fill: var(--stat-guts); }
+.radar-svg .stat-c-charm     { fill: var(--stat-charm); }
+.radar-svg .stat-c-insight   { fill: var(--stat-insight); }
+/* 経験値バナーの漢字バッジ（バッジ地色をステ色に。文字は暗色でコントラスト維持） */
+.gain-card .badge.stat-c-technique { background: linear-gradient(135deg, var(--stat-technique), color-mix(in srgb, var(--stat-technique) 55%, #201408)); color: #1a1018; }
+.gain-card .badge.stat-c-sense     { background: linear-gradient(135deg, var(--stat-sense), color-mix(in srgb, var(--stat-sense) 55%, #0a1a20)); color: #101a20; }
+.gain-card .badge.stat-c-guts      { background: linear-gradient(135deg, var(--stat-guts), color-mix(in srgb, var(--stat-guts) 55%, #200e08)); color: #200e08; }
+.gain-card .badge.stat-c-charm     { background: linear-gradient(135deg, var(--stat-charm), color-mix(in srgb, var(--stat-charm) 55%, #200a18)); color: #26101e; }
+.gain-card .badge.stat-c-insight   { background: linear-gradient(135deg, var(--stat-insight), color-mix(in srgb, var(--stat-insight) 55%, #0e2008)); color: #10200a; }
 
 html, body {
   height: 100%;
@@ -722,6 +747,16 @@ body {
   background: #14121c center / cover no-repeat;
   transition: background-image 0.3s;
 }
+/* 夜専用画像が無い場所の夜訪問: 読みやすさを保った夜用の色調補正。
+   青みの暗さを乗せて「夜の店内」に寄せる（昼夜ペアがある背景には掛けない） */
+#vn-bg.night-tint::after {
+  content: "";
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 20%, rgba(64, 70, 120, 0.10), transparent 60%),
+    linear-gradient(180deg, rgba(14, 18, 44, 0.34), rgba(8, 8, 22, 0.44));
+  pointer-events: none;
+}
 #vn-cg {
   position: absolute; inset: 0;
   background: center / contain no-repeat;
@@ -1020,13 +1055,14 @@ body {
   padding: 0;
   cursor: pointer;
   font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
-  filter: drop-shadow(0 6px 12px rgba(0,0,0,0.55));
+  /* filter: drop-shadow はシルエット全周に薄い半透明の縁・矩形として
+     見える（縮小表示時のレイヤ境界も出る）ため使わない。影は各要素の box-shadow で */
 }
 .spot-pin .shield { transition: transform 0.16s ease-out, box-shadow 0.16s; transform-origin: 50% 100%; }
 .spot-pin:hover:not(:disabled) { z-index: 5; }
 .spot-pin:hover:not(:disabled) .shield {
   transform: scale(1.07);
-  box-shadow: 0 0 0 2px rgba(0,0,0,0.35), 0 0 18px rgba(244,210,122,0.45);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.5), 0 0 18px rgba(244,210,122,0.45);
 }
 .spot-pin:active:not(:disabled) .shield { transform: scale(0.97); }
 .spot-pin .shield {
@@ -1040,7 +1076,7 @@ body {
   text-align: center;
   font-weight: bold;
   letter-spacing: 0.04em;
-  box-shadow: 0 0 0 2px rgba(0,0,0,0.35);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.45);
 }
 .spot-pin .shield::after {
   content: ""; position: absolute;
@@ -1061,6 +1097,7 @@ body {
   margin-top: 8px;
   border-radius: 8px;
   white-space: nowrap;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.35);
 }
 /* 行けない場所（未開放/訪問済/定休/所持金不足）は「消えた」ではなく「無効化」に見せる。
    薄すぎると消えて見えるため、はっきり残しつつグレーで落とす（#6） */
@@ -1463,6 +1500,20 @@ body {
   background: rgba(0,0,0,0.7);
 }
 #status-overlay.visible { display: block; }
+/* ステータス画面: 中身が長くても「閉じる」やセーブ等の操作列が
+   画面外に沈まないよう、本文だけを内側スクロールにする */
+#status-overlay .panel {
+  display: flex;
+  flex-direction: column;
+  max-height: 88%;
+}
+#status-overlay .panel > * { flex: none; }
+#status-overlay .panel > #status-body {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 6px;
+}
 .status-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 14px 0 18px; text-align: left; }
 .status-block h3 { color: var(--accent); font-size: 15px; margin-bottom: 8px; letter-spacing: 0.1em; }
 .status-row {
@@ -1694,6 +1745,15 @@ body {
   width: auto;
   flex: 1;
   max-height: 100%;
+  /* 進行ボタンが下に沈まないよう、本文(#tn-body)だけを内側スクロールに */
+  display: flex;
+  flex-direction: column;
+}
+#tn-layout .panel > * { flex: none; }
+#tn-layout .panel > #tn-body {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
 }
 #tn-progress { font-size: 12px; letter-spacing: 0.18em; color: var(--accent); opacity: 0.9; margin-bottom: 8px; }
 #tn-progress .tn-steps { opacity: 0.65; }
@@ -1761,6 +1821,7 @@ body {
   grid-template-columns: minmax(0, 1fr) minmax(430px, 560px);
   gap: 16px;
   min-height: 0;
+  overflow: visible; /* 作業台モードは全面レイアウト＝外側スクロールさせない */
 }
 .making-stage {
   position: relative;
@@ -1786,7 +1847,19 @@ body {
   border: 1px solid rgba(244,210,122,0.24);
   box-shadow: 0 14px 34px rgba(0,0,0,0.46);
   backdrop-filter: blur(4px);
+  /* 決定ボタンを常に画面内に: 長いリスト（ミックス等）は内側だけスクロールし、
+     フッター（合計＋決定）はパネル下端に固定する（縦スクロール問題の解消） */
+  display: flex;
+  flex-direction: column;
 }
+.making-controls > * { flex: none; }
+.making-controls > .mix-list,
+.making-controls > .spot-list {
+  flex: 0 1 auto; /* 短いときは伸ばさず、長いときだけ縮めて内側スクロール */
+  min-height: 0;
+  overflow-y: auto;
+}
+.making-controls > .mix-footer { flex: none; }
 .making-layer {
   position: absolute;
   background-repeat: no-repeat;
@@ -2702,6 +2775,20 @@ body {
 }
 #shop-list { margin-bottom: 16px; }
 #shop-list .spot-list { margin-bottom: 10px; }
+/* ショップは品目が多く縦に伸びる。「店を出る」ボタンが画面外に沈まないよう、
+   パネルをflex化して品目リストだけを内側スクロールにする */
+#screen-shop .panel {
+  display: flex;
+  flex-direction: column;
+  max-height: 86%;
+}
+#screen-shop .panel > * { flex: none; }
+#screen-shop .panel > #shop-list {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 6px;
+}
 #screen-shop {
   background: linear-gradient(rgba(12, 9, 20, 0.6), rgba(12, 9, 20, 0.85)),
               url("../../assets/backgrounds/bg_shop.png") center / cover no-repeat, #0b0a10;
@@ -3686,7 +3773,7 @@ body {
   cursor: pointer; animation: fadein 0.3s ease-out;
 }
 .map-beat-card { margin-bottom: 13%; text-align: center; }
-.map-beat-card .mb-dots { display: block; font-size: 30px; letter-spacing: 0.3em; color: #ffe79a; text-shadow: 0 2px 8px rgba(0,0,0,0.8); animation: bounce 1.2s infinite; }
+.map-beat-card .mb-dots { display: block; font-size: 24px; letter-spacing: 0.22em; color: #ffe79a; text-shadow: 0 2px 8px rgba(0,0,0,0.8); animation: bounce 1.2s infinite; }
 .map-beat-card .mb-sub { display: block; font-size: 11px; letter-spacing: 0.24em; color: var(--text-dim); margin-top: 6px; }
 #tonari-menu .tn-menu-card, #fookah-menu .tn-menu-card { width: min(88%, 460px); background: linear-gradient(180deg, rgba(28,21,38,0.97), rgba(15,12,23,0.98)); border: 1px solid rgba(255,210,120,0.45); border-radius: 16px; padding: 16px 18px; box-shadow: 0 12px 34px rgba(0,0,0,0.6); }
 .tn-menu-title { font-size: 17px; font-weight: 800; color: #ffe79a; margin: 0 0 12px; text-align: center; }
@@ -3946,16 +4033,23 @@ body {
 .rw-plate b { color: #f4d27a; }
 .rw-bubble {
   position: absolute;
-  left: 50%;
-  top: -26px;
-  transform: translateX(-50%) scale(0.7);
+  left: 0;
+  bottom: calc(100% + 8px);
+  top: auto;
+  transform: scale(0.7);
+  transform-origin: 58px 100%;
   background: #fff;
   color: #221a2c;
   font-size: 11px;
   font-weight: bold;
   padding: 3px 9px;
   border-radius: 10px;
-  white-space: nowrap;
+  /* 長台詞は折り返す（画面左端の筐体から画面外へはみ出さない） */
+  white-space: normal;
+  width: max-content;
+  max-width: 230px;
+  line-height: 1.45;
+  text-align: left;
   opacity: 0;
   transition: opacity 0.18s, transform 0.18s;
   pointer-events: none;
@@ -3963,13 +4057,13 @@ body {
 .rw-bubble::after {
   content: "";
   position: absolute;
-  left: 50%; bottom: -5px;
+  left: 58px; bottom: -5px;
   margin-left: -4px;
   border: 5px solid transparent;
   border-top-color: #fff;
   border-bottom: none;
 }
-.rw-bubble.show { opacity: 1; transform: translateX(-50%) scale(1); }
+.rw-bubble.show { opacity: 1; transform: scale(1); }
 
 /* ---- カットイン（ボーナス揃え／フリーズ）。pointer-events:none の自走シネマ ---- */
 #reel-cutin {

@@ -42,8 +42,14 @@ except ImportError:
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CHARS_DIR = REPO_ROOT / "assets" / "sprites" / "characters"
 
-# 浮遊半透明ゴミ: 不透明部からこの距離(px)以上離れた半透明ピクセルは消す
+# 浮遊半透明ゴミ: 不透明部からこの距離(px)以内はアンチエイリアスとして常に残す
 FLOAT_SEMI_DIST = 3
+# 髪の房の保護（2026-07-02）: 細い毛先は「そこそこ濃い半透明（α64〜）が本体の
+# 4〜15px先に浮く」形で存在する。旧実装（3px超の半透明を全消し）はこれを
+# ゴミと誤判定して髪を食っていた。本体からこの距離(px)までは α が
+# GHOST_MAX_ALPHA 以上の半透明を髪として残す
+WISP_KEEP_DIST = 24
+GHOST_MAX_ALPHA = 64
 # 孤立成分: 本体面積のこの割合未満 かつ 本体からこの距離(px)超なら消す
 STRAY_RATIO = 0.01
 STRAY_DIST = 12
@@ -74,10 +80,13 @@ def clean(png: Path, dry: bool) -> bool:
     is_card = len(ys) / bbox_area >= CARD_FILL_RATIO
 
     if not is_card:
-        # --- 2) 浮遊半透明ゴミ（枠線・すじ）
+        # --- 2) 浮遊半透明ゴミ（枠線・すじ）。髪の毛先（濃いめの半透明・本体の近く）は残す
         solid = alpha >= 240
         near_solid = ndimage.binary_dilation(solid, iterations=FLOAT_SEMI_DIST)
-        alpha[(alpha > 0) & (alpha < 240) & ~near_solid] = 0
+        wisp_zone = ndimage.binary_dilation(solid, iterations=WISP_KEEP_DIST)
+        ghost = (alpha > 0) & (alpha < 240) & ~near_solid
+        # 消すのは「ごく薄い（マット残り）」か「本体から遠すぎる」半透明だけ
+        alpha[ghost & ((alpha < GHOST_MAX_ALPHA) | ~wisp_zone)] = 0
 
         # --- 3) 孤立ゴミ成分（本体から離れた小さな島）
         visible = alpha > 0

@@ -178,7 +178,9 @@ class DialogueEngine {
   }
 
   setBackground(path) {
-    const rel = String(path).replace(/^res:\/\//, "");
+    let rel = String(path).replace(/^res:\/\//, "");
+    // 昼夜つき背景の自動差し替え（ゲーム側が時間帯を知っているので委譲する）
+    if (this.ctx.resolveBg) rel = this.ctx.resolveBg(rel);
     this.el.bg.style.backgroundImage = `url('${assetUrl(rel)}')`;
     if (this.ctx.onBackgroundChange) this.ctx.onBackgroundChange(rel);
   }
