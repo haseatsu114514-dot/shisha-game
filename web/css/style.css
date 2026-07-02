@@ -1309,6 +1309,11 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 }
 .mix-price { font-size: 12px; color: var(--text-dim); margin-left: 6px; }
 .mix-price.free { color: #8fd3a7; }
+/* 洞察ヒント（#53）: テーマに噛み合うフレーバーのバッジ・審査員の好み開示 */
+.mix-fit { font-size: 11px; color: #ffd479; margin-left: 6px; text-shadow: 0 0 6px rgba(255,212,121,0.4); }
+.tn-tutor.insight-hint { color: #b9c8ff; font-style: italic; }
+/* 根性リトライ（#53）: 大会中1回のやり直し */
+.guts-retry { margin-top: 8px; border-color: rgba(255,140,90,0.5); color: #ffb08a; }
 
 /* ---------------- 蒸らし弾幕（雑念よけ） ---------------- */
 .dodge-timer { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }

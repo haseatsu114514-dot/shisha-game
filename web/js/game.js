@@ -1176,6 +1176,13 @@ function handleDialogueChoice(dialogueId, choiceId, branchKey, nextId) {
   }
   // 浮気警告: 「それでも応える」を選んだ
   if (dialogueId.startsWith("cheat_warning_") && branchKey === "go") state.flags._cheat_go = true;
+  // 大会前夜の3択（#3・前夜の過ごし方）。恩恵は三者三様:
+  //   practice=本番craft小ボーナス（craftScore）／talk_sumi=根性UP（台詞キュー）／
+  //   sleep_early=体力全快＋当日ゲージ微減速（lastNightGaugeCalm）
+  if (dialogueId === "ch1_day7_last_night") {
+    state.flags._last_night = branchKey;
+    if (branchKey === "sleep_early") state.stamina = 100;
+  }
   // 家シーシャ: 吸った夜を記録（連夜は効果が落ちる）
   if (dialogueId === "home_shisha_night" && branchKey === "puff") {
     state.homePuffLast = { chapter: state.chapter, day: state.day };
@@ -3131,6 +3138,9 @@ const THEMES = [
   { id: "fruity", label: "フルーティ", desc: "果実感の輪郭で勝負する", best: ["fruit", "sweet"] },
   { id: "aftertaste", label: "余韻", desc: "吸い終わったあとに残る香り", best: ["spice", "sweet"] },
 ];
+// フレーバーカテゴリの表示名（洞察ヒント用）
+const CAT_LABELS = { cooling: "清涼", sweet: "スイート", fruit: "フルーツ", spice: "スパイス", floral: "フローラル" };
+const catLabelsOf = (cats) => (cats || []).map((c) => CAT_LABELS[c] || c).join("＋");
 const PACKS = [
   { id: "fluffy", label: "ふんわり", desc: "空気を含ませて軽く詰める" },
   { id: "normal", label: "ノーマル", desc: "基本に忠実な詰め方" },
@@ -4016,7 +4026,18 @@ function tournamentStep(step) {
   if (step === "setup_bowl" || step === "setup_hms" || step === "setup_charcoal") return stepSetup(step);
   if (step === "theme") {
     const body = tnPanel("テーマ選択", "今日の一台のコンセプトを決めろ。フレーバー選びの軸になる。");
-    for (const t of THEMES) body.appendChild(optionButton(t.label, t.desc, () => { tt.theme = t; tnNext("theme"); }));
+    // 洞察: 審査員（テーマ）の好みが読める＝各テーマに刺さるカテゴリを開示
+    const insightful = (state.stats.insight || 0) >= INSIGHT_HINT_BAR;
+    if (insightful) {
+      const hint = document.createElement("p");
+      hint.className = "tn-tutor insight-hint";
+      hint.textContent = "（……審査席の空気が読める。それぞれのコンセプトに“刺さる”香りの系統が見えた）";
+      body.appendChild(hint);
+    }
+    for (const t of THEMES) {
+      const desc = insightful ? `${t.desc}　◇相性: ${catLabelsOf(t.best)}` : t.desc;
+      body.appendChild(optionButton(t.label, desc, () => { tt.theme = t; tnNext("theme"); }));
+    }
     return;
   }
   if (step === "mix") return stepMix();
@@ -4287,7 +4308,8 @@ function stepFoil() {
   const ringData = HOLE_RINGS.map((r) => ({ ...r, angles: [] }));
   let ringIdx = 0;
   let angle = -90;            // 現在のカーソル角（度）
-  const speed = 150 - Math.min(70, state.stats.technique * 0.7); // 技術が高いほどゆっくり=狙いやすい（deg/s）
+  // 技術が高いほどカーソルがゆっくり=狙いやすい（deg/s）。序盤は速く、育成で体感できる差にする
+  const speed = (165 - Math.min(95, state.stats.technique * 0.95)) * lastNightGaugeCalm();
   let raf = 0, last = performance.now(), running = true;
 
   const callout = (text, cls) => {
@@ -4423,6 +4445,8 @@ function stepFoil() {
     next.textContent = isDrill ? "結果を見る" : "次へ";
     next.addEventListener("click", () => tnNext("foil"));
     result.appendChild(next);
+    // 根性: 穴が乱れたときだけ、大会中1回のやり直しを差し出す
+    if (quality < 0.6) offerGutsRetry(result, "foil", () => { tt.foilHits = 0; tt.foilDone = false; tt.holeResult = null; });
   }
 
   setRingUI();
@@ -4477,6 +4501,38 @@ const HEAT_GRADE = {
   ash:   { q: 0.10, label: "OVER HEAT",       sub: "焼きすぎ", heatPower: 35,  heatStability: -10, startupSpeed: 25,  burnRisk: 30,  aromaRetention: -20 },
 };
 
+// ============================================================================
+// ステータス→ミニゲーム入力反映（#53確定版・2026-07-02）
+// 結果への加点ではなく「操作が楽になる」方向でステを効かせる:
+//   技術 = ゲージ系（穴あけカーソル・炭の熱入り・吸い出しの針）の速度を減速
+//   センス = ジャスト/PERFECT帯の幅を拡大
+//   洞察 = ミックス/テーマ選択で審査員（テーマ）の好みヒントを開示
+//   根性 = 大会本番中1回だけ、しくじった工程をやり直せる（リハーサル・練習は無効）
+// ============================================================================
+const INSIGHT_HINT_BAR = 25;      // テーマ相性ヒントが見え始める洞察
+const INSIGHT_MIX_BAR = 40;       // ミックス画面の相性バッジが見える洞察
+const GUTS_RETRY_BAR = 30;        // 大会中のやり直しが解放される根性
+// 前夜「早く寝る」の恩恵: 大会当日だけゲージ系がわずかに減速（手元が落ち着く）
+function lastNightGaugeCalm() {
+  return tt && tt.mode === "tournament" && state.flags._last_night === "sleep_early" ? 0.93 : 1;
+}
+// 根性リトライ: 大会本番でしくじった工程を、1大会に1度だけやり直せる
+function offerGutsRetry(container, step, resetFn) {
+  if (!tt || tt.mode !== "tournament" || tt.gutsRetryUsed) return;
+  if ((state.stats.guts || 0) < GUTS_RETRY_BAR) return;
+  const btn = document.createElement("button");
+  btn.className = "primary-btn ghost guts-retry";
+  btn.textContent = "──歯を食いしばって、やり直す（根性・大会中1回）";
+  btn.addEventListener("click", () => {
+    tt.gutsRetryUsed = true;
+    if (window.SFX) SFX.select();
+    toast("根性で踏みとどまった。もう一度だけ──");
+    if (resetFn) resetFn();
+    tournamentStep(step);
+  });
+  container.appendChild(btn);
+}
+
 // タイミング系ミニゲームの開始前カウントダウン（3・2・1・スタート）。
 // 開始直後のシビアな判定で理不尽に外れるのを防ぐ（T22-C・必須）。onStart で本編の時計を回す
 function miniCountdown(container, onStart) {
@@ -4529,10 +4585,9 @@ function stepCoalFire() {
 
   // 炭の数は前工程「炭をコンロにセット」での選択に従う（2個/トライアングル3個/4個）
   const count = tt.coal === "two" ? 2 : tt.coal === "four" ? 4 : 3;
-  // 根性が高いほどジャスト窓が広く、温度上昇がわずかに緩やか（数値は見せない）
-  const guts = state.stats.guts;
-  const justHi = 0.96 + Math.min(0.12, guts / 900);
-  const baseRate = 0.235 - Math.min(0.075, guts / 1300);
+  // センスが高いほどジャスト窓が広く、技術が高いほど熱の入りが緩やか（数値は見せない）
+  const justHi = 0.96 + Math.min(0.12, state.stats.sense * 0.0015);
+  const baseRate = (0.26 - Math.min(0.1, state.stats.technique * 0.00125)) * lastNightGaugeCalm();
 
   const coals = [];
   for (let i = 0; i < count; i++) {
@@ -4650,6 +4705,8 @@ function stepCoalFire() {
     next.textContent = isDrill ? "結果を見る" : "次へ";
     next.addEventListener("click", () => tnNext("coalfire"));
     result.appendChild(next);
+    // 根性: 熾きをしくじったときだけ、大会中1回のやり直しを差し出す
+    if (tt.coalFire === "miss") offerGutsRetry(result, "coalfire", () => { tt.coalFire = null; tt.coalResult = null; });
   }
 
   // テスト用フック: 各炭の温度・取り頃を読む（自動プレイ用）
@@ -4821,6 +4878,13 @@ function stepMix() {
     (!f.leaf || f.leaf === "blond") &&
     !(compMode && f.competition_legal === false) &&
     !(serveMode && f.serve_legal === false));
+  // 洞察: テーマ（審査員の好み）に噛み合うフレーバーが見える（#53）
+  const mixInsight = (state.stats.insight || 0) >= INSIGHT_MIX_BAR && tt.theme && tt.theme.best;
+  const themeFit = (f) => {
+    if (!mixInsight) return false;
+    const fCats = Array.isArray(f.category) ? f.category : [f.category];
+    return fCats.some((c) => tt.theme.best.includes(c));
+  };
   for (const f of flavors) {
     const row = document.createElement("div");
     row.className = "mix-row";
@@ -4828,7 +4892,8 @@ function stepMix() {
     const info = document.createElement("div");
     info.className = "mix-info";
     const priceTag = charged && mixGramCost(f) ? ` <span class="mix-price">${mixGramCost(f)}円/g</span>` : charged ? ` <span class="mix-price free">提供品</span>` : "";
-    info.innerHTML = `<span class="spot-name">${f.short_name || f.name}${priceTag}</span><span class="spot-desc">${tasteSlump ? garble(f.description) : f.description}</span>`;
+    const fitTag = themeFit(f) ? ` <span class="mix-fit">◎コンセプト向き</span>` : "";
+    info.innerHTML = `<span class="spot-name">${f.short_name || f.name}${fitTag}${priceTag}</span><span class="spot-desc">${tasteSlump ? garble(f.description) : f.description}</span>`;
     const ctrl = document.createElement("div");
     ctrl.className = "mix-ctrl";
     const minus = document.createElement("button");
@@ -5111,9 +5176,8 @@ function stepPull() {
   // ステが低いうちは1吸いで動く温度が小さい＝手数がかかり、ジャストを狙う価値が高い。
   // 上がるほど1吸いの効きとジャスト帯が広がり、少ない手数で適温に寄せられる（＝上達の実感）。
   // ※ PULL_DELTA / PULL_JUST はここでモジュール定数を上書き（__pullDebug もこの値を参照）
-  const ctrl = ((state.stats.technique || 10) + (state.stats.sense || 10)) / 2; // 温度コントロール力 0〜100
-  const PULL_DELTA = 0.05 + (ctrl / 100) * 0.07; // 0.05(低ステ)〜0.12(満) ／ 1吸いで動かせる最大温度（旧固定0.13をナーフ＋ステ連動）
-  const _jhw = 0.012 + (ctrl / 100) * 0.013;      // ジャスト帯の半幅: 低ステほど狭く、上達で広がる
+  const PULL_DELTA = 0.05 + ((state.stats.technique || 10) / 100) * 0.07; // 0.05(低ステ)〜0.12(満) ／ 1吸いで動かせる最大温度＝技術
+  const _jhw = 0.01 + ((state.stats.sense || 10) / 100) * 0.016;          // ジャスト帯の半幅: センスで広がる
   const PULL_JUST = {
     up:   [0.1725 - _jhw, 0.1725 + _jhw],
     keep: [0.5 - _jhw, 0.5 + _jhw],
@@ -5183,8 +5247,8 @@ function stepPull() {
 
   // ゲージは左→右に走り、右端まで行ったらまた左から（折り返さない）
   let pos = 0, running = true, raf = 0, last = performance.now();
-  // 針速度: ベースをややシビアに固定（T23・達成感）。ステによる緩和は落とし所を設計してから（保留）
-  const speed = 0.52;
+  // 針速度: 技術が高いほどゆっくり＝狙いやすい（#53確定・序盤は速くてシビア）
+  const speed = (0.56 - Math.min(0.18, (state.stats.technique || 10) * 0.002)) * lastNightGaugeCalm();
   const tick = (now) => {
     if (!running) return;
     const dt = (now - last) / 1000;
@@ -5291,6 +5355,8 @@ function stepPull() {
       tnNext("pull");
     });
     wrap.appendChild(nextBtn);
+    // 根性: 温度を外した提供のときだけ、大会中1回のやり直しを差し出す
+    if (tt.pull === "miss") offerGutsRetry(wrap, "pull", () => { tt.pull = null; tt.pullJust = 0; });
   });
 }
 
@@ -5347,8 +5413,8 @@ function craftScore() {
     if (p.weight >= 1.0) { score += 4; detail.push("キューブ炭の火力が、重い煙を底から支えた。"); }
     else { score -= 2; detail.push("キューブ炭には、煙が軽すぎたかもしれない。"); }
   }
-  // アルミ穴あけ
-  score += Math.max(0, (tt.foilHits - 2) * 2);
+  // アルミ穴あけ（乱れた穴あけは明確なマイナス。基準は「まずまず(3)」）
+  score += Math.max(-4, Math.min(6, (tt.foilHits - 3) * 2));
   if (tt.foilHits <= 2) detail.push("アルミの穴が乱れ、空気の通りにムラが出た。");
   else if (tt.foilHits >= 6) detail.push("均等な穴あけが、煙の通り道を整えた。");
   // 炭起こし
@@ -5358,8 +5424,8 @@ function craftScore() {
   score += tt.focusCleared * 1.6;
   // テーマとフレーバーカテゴリの噛み合い
   const matched = tt.theme.best.filter((c) => p.cats.has(c)).length;
-  if (matched >= 2) { score += 12; detail.push("テーマとフレーバーの相性は抜群だった。"); }
-  else if (matched === 1) { score += 7; detail.push("テーマとフレーバーはよく噛み合っていた。"); }
+  if (matched >= 2) { score += 10; detail.push("テーマとフレーバーの相性は抜群だった。"); }
+  else if (matched === 1) { score += 6; detail.push("テーマとフレーバーはよく噛み合っていた。"); }
   else { detail.push("テーマとフレーバーが、どこか噛み合っていない。"); }
   // 高火力テーマは耐熱が必要
   if (tt.theme.id === "high_heat" && p.heat < 1.0) { score -= 6; detail.push("熱にフレーバーが負けてしまった。"); }
@@ -5391,7 +5457,7 @@ function craftScore() {
   else if (tt.coal === "four") {
     // 葉が多いボウルは高火力を受け止められる
     if (p.heat >= 1.05 || totalG >= 15) { score += 7; detail.push("高火力に耐える一台が、力強い煙を生んだ。"); }
-    else { score -= 4; detail.push("炭が多すぎた。焦げの気配が混じる。"); }
+    else { score -= 5; detail.push("炭が多すぎた。焦げの気配が混じる。"); }
   }
   // 蒸らし
   if (tt.steam === 5 || tt.steam === 8) {
@@ -5413,8 +5479,9 @@ function craftScore() {
     else if (tt.steamHits <= 2) score += 3;
     else { score -= 4; detail.push("蒸らし終わりの一手が乱れ、煙の芯が少し揺れた。"); }
   }
-  // 吸い出し（提供時の温度）
-  score += { perfect: 12, good: 6, miss: 0 }[tt.pull];
+  // 吸い出し（提供時の温度）。適温を外した提供は素直に減点＝準備が本番に効く
+  score += { perfect: 12, good: 6, miss: -5 }[tt.pull];
+  if (tt.pull === "miss") detail.push("提供温度が狙いから外れた。最初の一口の印象がぼやける。");
   // 吸いすぎペナルティ: 4回目以降の吸い出しは提供前に葉を痩せさせる
   const overPulls = Math.max(0, (tt.pullCount || 0) - 3);
   if (overPulls > 0) {
@@ -5449,6 +5516,11 @@ function craftScore() {
     if (rt) {
       score += { great: 4, good: 3, rough: 2 }[rt] || 2;
       detail.push("前日のリハーサルが、体の力みを抜いてくれた。");
+    }
+    // 前夜の過ごし方（3択の恩恵は三者三様。練習=本番の出来に直接効く）
+    if (f._last_night === "practice") {
+      score += 4;
+      detail.push("前夜、閉店後の店で重ねた最後の反復が、指先に残っている。");
     }
   }
   // NGフレーバーペナルティ
@@ -5594,6 +5666,7 @@ function finishTournament() {
   // 基準を超えたときだけ、最終発表で全持ち点を一括投入して逆転が起きる。
   // 基準未達なら持ち点は動かず、暫定順位のまま＝普通に敗北する
   const NAGUMO_CRAFT_BAR = 80;
+  window.__craftDebug = craft.score; // テスト・バランス検証用（UIには出さない）
   let playerScore = base;
   if (craft.score >= NAGUMO_CRAFT_BAR) {
     playerScore = Math.max(base + 16, topRival + 1.2);
@@ -5711,6 +5784,14 @@ function tournamentBreakdown() {
     const g = tt.presentationResult.convinceGauge;
     add("審査", g >= 75 ? 2 : g >= 45 ? 1 : 0, "実績の伴うアピールを“ぶつける”と納得が伸びる");
   }
+  // 前夜の過ごし方（ch1・3択の恩恵を内訳で見せる）
+  const LAST_NIGHT_ROWS = {
+    practice: ["前夜: 最後の練習", "反復が一台の完成度を底上げした"],
+    talk_sumi: ["前夜: スミさんと話した", "覚悟が据わり、土壇場で踏みとどまれる"],
+    sleep_early: ["前夜: 早めに休んだ", "休養で当日の手元が落ち着いた"],
+  };
+  const ln = LAST_NIGHT_ROWS[state.flags._last_night];
+  if (ln && state.chapter === 1) add(ln[0], 2, ln[1]);
   return items;
 }
 function buildBreakdownPanel() {
