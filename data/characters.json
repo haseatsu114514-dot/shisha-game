@@ -41,7 +41,8 @@
     "visual_concepts": [
       "46s japanese man, shop owner, slightly long unkempt hair tied back, stubble beard, wearing a relaxed linen shirt and apron, holding tongs for charcoal, seasoned and calm aura, mature chill vibe",
       "middle-aged japanese cafe master, silver-streaked black hair, round glasses, wearing a comfortable cardigan and an apron, holding a shisha hose with a nostalgic expression, vintage cafe background"
-    ]
+    ],
+    "spriteScale": 1.05
   },
   {
     "id": "naru",
@@ -63,7 +64,8 @@
     "visual_concepts": [
       "23s japanese male, confident and slightly cocky expression, short dyed silver hair, wearing a stylish streetwear jacket and multiple silver rings, holding a digital thermometer, cyberpunk-lite cafe vibe",
       "young japanese competitive shisha player, sharp eyes, silver-ash hair, wearing an oversized graphic tee and dark necklace, working precisely with scales and foil, neon lit modern cafe setting"
-    ]
+    ],
+    "spriteScale": 1.02
   },
   {
     "id": "adam",
@@ -85,7 +87,8 @@
     "visual_concepts": [
       "28s japanese male, eccentric but lovable expression, stylish Eden shop outfit, surrounded by red apples and anise props, performing grandly while preparing a shisha bowl",
       "japanese double apple specialist, dramatic self-styled Adam persona, playful confidence, slightly messy private-life vibe, modern shisha lounge Eden background"
-    ]
+    ],
+    "spriteScale": 1.03
   },
   {
     "id": "minto",
@@ -117,7 +120,8 @@
       "shisha_world": "シーシャの世界（大会、応援、店舗など）では常にコンカフェ嬢の姿（ミントグリーンのツインテール、コンカフェ衣装）で登場する。これが業界内で有名な『ぺぱーみんとのみんと』の姿。",
       "private_date": "恋人ルート確定後のデートシーンでのみ、私服姿（ダークブラウンの地毛、ベージュのケーブルニット、ロングスカート、薄化粧）で登場する。コンカフェの仮面を脱いだ『緑川栞』としての素顔。",
       "first_visit": "Ch1序盤の強制バイトイベントでtonariに『綺麗なお客さん』として私服姿で来店。名前も正体も明かさず『お任せで』と注文する。はじめはペパーミントのミントだとは知らない状態。"
-    }
+    },
+    "spriteScale": 0.91
   },
   {
     "id": "shisha_9000",
@@ -289,7 +293,8 @@
     "visual_concepts": [
       "20s japanese girl, introverted and quiet, bob cut black hair slightly covering her eyes, wearing oversized comfy sweater and headphones, staring intently at a cracked iPad screen with an apple pencil",
       "melancholy young female artist, pale complexion, dark hair, wearing a loose cardigan over a simple dress, sitting alone in a dim cafe corner, accompanied by purple lavender-scented smoke"
-    ]
+    ],
+    "spriteScale": 0.88
   },
   {
     "id": "rin",
@@ -312,7 +317,8 @@
       "27 year old japanese woman, long dusty-blue hair tied low and loose, languid half-lidded eyes, white shirt with rolled sleeves over black slacks, paper scent strips tucked at her collar, silver hoop earrings, holding a clipboard, dim showroom shelves of unlabeled flavor tins, mature onee-san allure, slight teasing smirk",
       "same woman at midnight, hair untied and very long, black-framed glasses, leaning on a counter with a jar of coffee beans, blueberry shisha bowl beside her, neon glow leaking through black-filmed windows, relaxed private mood, anime style"
     ],
-    "appearance": "鈍色がかったブルーのロングヘアを、低い位置で無造作にひとつ結び（仕事中は邪魔なので雑にまとめる。ほどくと驚くほど長い）。白シャツの袖まくり＋黒スラックス、首元に試香紙（ムエット）数本。銀のフープピアス。ネイルは常に無色（商材の香りを邪魔しないため＝職業的な色気）。普段はコンタクトで、深夜の2階では黒縁眼鏡＝眼鏡の凛はルート進行者だけが見られる姿。低めの声でゆっくり喋り、笑うと目尻が緩むのを本人は少し気にしている。"
+    "appearance": "鈍色がかったブルーのロングヘアを、低い位置で無造作にひとつ結び（仕事中は邪魔なので雑にまとめる。ほどくと驚くほど長い）。白シャツの袖まくり＋黒スラックス、首元に試香紙（ムエット）数本。銀のフープピアス。ネイルは常に無色（商材の香りを邪魔しないため＝職業的な色気）。普段はコンタクトで、深夜の2階では黒縁眼鏡＝眼鏡の凛はルート進行者だけが見られる姿。低めの声でゆっくり喋り、笑うと目尻が緩むのを本人は少し気にしている。",
+    "spriteScale": 0.97
   },
   {
     "id": "ageha",
@@ -334,7 +340,8 @@
     "visual_concepts": [
       "24s japanese gyaru female, classic heisei-era gyaru style mixed with modern fashion sense, honey-blonde hair with pink highlights and voluminous styling, dramatic makeup with long lashes and glossy lips, energetic and slightly chaotic vibe, wearing trendy off-shoulder top with platform shoes, holding a colorful hookah hose with blinged-out acrylic nails",
       "vibrant young gyaru-style shisha player turned magazine reader model, charismatic wide smile, dyed layered hair, wearing fashionable club-style outfit with choker and ankle bracelet, surrounded by regulars from all walks of life (otaku fans, gyaru friends, shisha enthusiasts), lively night lounge background with neon glints"
-    ]
+    ],
+    "spriteScale": 0.93
   },
   {
     "id": "salaryman",
@@ -378,7 +385,8 @@
     "visual_concepts": [
       "39s japanese yakuza boss, intimidating sharp face with a small scar, slicked back hair, wearing a tailored dark suit without a tie showing traditional irezumi tattoos on his chest, very delicate and precise hands handling hot charcoal",
       "former bōsōzoku turned yakuza, stern expression, wearing a dark luxurious patterned silk shirt, intricate japanese tattoos visible on forearms, holding silver tongs with extreme care, cinematic lighting in a VIP room"
-    ]
+    ],
+    "spriteScale": 1.06
   },
   {
     "id": "dr_kemuri",
@@ -401,7 +409,8 @@
     "visual_concepts": [
       "38 year old japanese male researcher, neat side-parted hair, silver-framed glasses, light blue dress shirt with blue plaid tie, chino pants and white lab coat, slight stubble, wearing sandals without socks, gentle and slightly disheveled appearance, surrounded by shisha data equipment and clipboards",
       "analytical researcher character, warm intelligent eyes behind silver framed glasses, wearing a white lab coat over a light blue shirt and plaid tie, calm and approachable demeanor, shisha lab setting"
-    ]
+    ],
+    "spriteScale": 1.02
   },
   {
     "id": "pakki",
@@ -445,7 +454,8 @@
     "visual_concepts": [
       "45s japanese business man, sharp and authoritative, short cleanly cut hair, wearing a very expensive tailored three-piece navy suit, examining a shisha with a critical and intimidating eye",
       "corporate executive judge, mature alpha male, silver tie and luxury watch, sitting imposingly at a judge's table, looking analytical but with a hidden passionate glint in his eyes, upscale lounge aesthetic"
-    ]
+    ],
+    "spriteScale": 1.03
   },
   {
     "id": "emil",
@@ -555,7 +565,8 @@
     "visual_concepts": [
       "22s japanese female, relaxed and sleepy expression, messy soft light brown hair in a loose braid, wearing a loose oversized knit cardigan over an apron, puffing a massive cloud of heavy cigar-scented smoke effortlessly, cozy and slightly chaotic cafe atmosphere, same-age peer vibe rather than older-sister type",
       "young chill cafe worker female, droopy eyes, holding a large shisha hose, surrounded by dark heavy smoke but looking completely unbothered and sweet, contrasting gap moe, boku-pronoun casual energy, peer-friend rather than older-sister"
-    ]
+    ],
+    "spriteScale": 0.9
   },
   {
     "id": "kako",

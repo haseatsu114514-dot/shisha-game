@@ -64,10 +64,11 @@ function rankFromPts(pts) {
 // ============ 体力（スタミナ）system（master_spec #6） ============
 // 「若いので甘め。ただし無理を重ねると寝込む」。数値は非表示でゲージのみ
 const STAMINA_LOW = 25;        // ここ未満でシーシャ系行動 → 警告→強行で酸欠
-const STAMINA_COST = { baito: 18, visit: 10, talk: 5, practice: 8, rin: 10, date: 6, homePuff: 8, gym: 6 };
-// 体力は蓄積制(#41): 夜の自然回復(sleep)はやや控えめ＝普通の混在プレイ
-// （昼バイト＋夜訪問）はゆっくり削れる程度で事故らない（master_spec A3）。
-// 無理（毎日2バイト等）を重ねたときだけ低体力に落ちる。
+const STAMINA_COST = { baito: 20, visit: 12, talk: 6, practice: 12, rin: 12, date: 8, homePuff: 8, gym: 8 };
+// 体力は蓄積制(#41): 夜の自然回復(sleep)は1日分の消耗をやや下回る＝
+// 普通の混在プレイ（昼バイト＋夜訪問）でも章の後半には一度
+// 「家で休むか」を考えるゲージまで落ちる（1章に1回程度・オーナー指定）。
+// ただし毎日休まないと詰む厳しさにはしない（休憩1回で立て直せる曲線）。
 // まとまった回復は「家に帰る」で行動を使って取る。
 const STAMINA_GAIN = { rest: 50, cafe: 12, kannon: 12, sleep: 26 };
 function stamina() { return state.stamina ?? 100; }
@@ -271,8 +272,8 @@ function toast(msg) {
 // labelSub: 補足（"少し上がった" 等）
 const gainQueue = [];
 let gainShowing = 0;
-function gainBanner({ kind = "stat", badge = "+", labelTop = "STATUS UP", labelMain = "", labelSub = "" }) {
-  gainQueue.push({ kind, badge, labelTop, labelMain, labelSub });
+function gainBanner({ kind = "stat", stat = "", badge = "+", labelTop = "STATUS UP", labelMain = "", labelSub = "" }) {
+  gainQueue.push({ kind, stat, badge, labelTop, labelMain, labelSub });
   flushGainQueue();
 }
 function flushGainQueue() {
@@ -282,11 +283,13 @@ function flushGainQueue() {
   const box = $("#gain-banner");
   const card = document.createElement("div");
   card.className = `gain-card ${item.kind}`;
+  // ステータス種別ごとの共通色（--stat-* が正本）。名前・漢字と併記＝色だけに依存しない
+  const statCls = item.stat ? ` stat-c-${item.stat}` : "";
   card.innerHTML =
-    `<div class="badge">${item.badge}</div>` +
+    `<div class="badge${statCls}">${item.badge}</div>` +
     `<div class="meta">` +
       `<span class="label-top">${item.labelTop}</span>` +
-      `<span class="label-main">${item.labelMain}</span>` +
+      `<span class="label-main${statCls}">${item.labelMain}</span>` +
       (item.labelSub ? `<span class="label-sub">${item.labelSub}</span>` : "") +
     `</div>`;
   box.appendChild(card);
@@ -339,6 +342,7 @@ function gainStat(en, amount) {
   const label = amount >= 5 ? "大きく上がった" : amount >= 3 ? "上がった" : "少し上がった";
   gainBanner({
     kind: "stat",
+    stat: en,
     badge: STAT_BADGE[en] || "上",
     labelTop: "STATUS UP",
     labelMain: STAT_KEYS[en],
@@ -537,7 +541,32 @@ const LOCATION_FROM_BG = {
   eden: ["EDEN", "アダムの店"],
   pepermint: ["PEPERMINT", "みんとの店"],
 };
+// ============ 背景の昼夜解決（2026-07-02） ============
+// _day/_night ペアが揃っている背景は、シーンの時間帯（昼=ap2 / 夜=ap<=1）で
+// 自動的に差し替える。ペアが無い背景は #vn-bg に夜用の色調補正（.night-tint）を
+// 掛けて夜を表現する（「夜に訪問しても昼背景」問題の解消）。
+const BG_TIME_BASE = new Set([
+  "bg_tonari_inside", "bg_tonari_outside", "bg_home",
+  "bg_c_station", "bg_cafe", "bg_street",
+]);
+function sceneIsNight() {
+  return !!(state && state.phase === "daily" && state.ap <= 1);
+}
+function resolveSceneBg(rel) {
+  const m = String(rel).match(/^assets\/backgrounds\/(.+?)(_day|_night)?\.png$/);
+  if (!m) return rel;
+  let base = m[1];
+  if (base === "bg_c_station_lobby") base = "bg_c_station"; // 無印の実体エイリアス
+  if (!BG_TIME_BASE.has(base)) return rel;
+  if (sceneIsNight()) return `assets/backgrounds/${base}_night.png`;
+  // 昼: 明示の _night 指定は演出（閉店後など）なので触らない。無印と _day は昼画像へ
+  return m[2] === "_night" ? rel : `assets/backgrounds/${base}_day.png`;
+}
+
 function setLocationFromBg(rel) {
+  // 昼夜ペアの無い背景は、夜だけ色調補正を重ねる（tint。_night 画像はそのまま）
+  const bgEl = $("#vn-bg");
+  if (bgEl) bgEl.classList.toggle("night-tint", sceneIsNight() && !/_night\.png$/.test(String(rel)));
   const m = String(rel || "").match(/bg_([\w_]+?)\.png|^([\w_]+)\.png/);
   let key = "";
   if (m) key = (m[1] || m[2] || "").replace(/_(day|night)$/, (_, t) => t);
@@ -674,7 +703,11 @@ function updateDayCard() {
   $("#dc-money").textContent = state.money.toLocaleString();
   // 「今日の客層」は廃止（master_spec #18）。枠は体力の気配表示に転用
   const st = stamina();
-  $("#dc-request").textContent = st >= 70 ? "体は軽い" : st >= STAMINA_LOW ? "すこし疲れ気味" : "かなり疲れている";
+  $("#dc-request").textContent =
+    st >= 70 ? "体は軽い"
+    : st >= STAMINA_LOW + 15 ? "すこし疲れ気味"
+    : st >= STAMINA_LOW ? "疲れがたまってきた"
+    : "かなり疲れている";
   const quotes = state.chapter === 2 ? CH2_SUMI_QUOTES : SUMI_QUOTES;
   $("#dc-quote").textContent = `スミ「${quotes[Math.min(Math.max(state.day, 1), quotes.length) - 1]}」`;
 }
@@ -1091,6 +1124,7 @@ function initEngine() {
       onCg: galleryRecord,
       onLine: pushLog,
       onTextCue: parseTextCue,
+      resolveBg: (rel) => resolveSceneBg(rel),
       onChoice: handleDialogueChoice,
       onApply: (line) => {
         if (line.stats) for (const [k, v] of Object.entries(line.stats)) gainStat(k, v);
@@ -1650,7 +1684,7 @@ const DATE_VENUES = [
   { id: "kemurikusa", name: "KEMURIKUSA", bg: "kemurikusa.png", note: "スピード勝負の店の、迷いのない煙" },
   { id: "eden", name: "EDEN", bg: "bg_eden_shop.png", note: "ダブルアップル一筋の店の、深く甘い香り" },
   { id: "pepermint", name: "PEPERMINT", bg: "pepermint.png", note: "ポップな内装に、意外と丁寧な一台" },
-  { id: "hideaway", name: "裏通りの隠れ家ラウンジ", bg: "bg_street_night.png", note: "看板のない店。常連だけが知る静けさ" },
+  { id: "hideaway", name: "裏通りの隠れ家ラウンジ", bg: "bg_hideaway.png", note: "看板のない店。常連だけが知る静けさ" },
 ];
 // キャラの台詞（venue共通の骨格に、キャラの声を差し込む）
 const DATE_SCENES = {
@@ -1932,7 +1966,9 @@ function updateMapInfo(spot, locked, tooPoor, closed, visited) {
     $("#map-info-title").textContent = state.ap === 2 ? "今日はどうする？" : "夜の時間";
     $("#map-info-desc").textContent = "気になる場所をタップ。残り行動と所持金に注意。";
     $("#map-info-cost").textContent = "";
-    const tired = staminaLow() ? "　⚠ 体が重い。今日は無理しない方がいい" : "";
+    const tired = staminaLow()
+      ? "　⚠ 体が重い。今日は無理しない方がいい"
+      : stamina() < STAMINA_LOW + 15 ? "　疲れがたまってきた。家で休むのも手だ" : "";
     $("#map-info-hint").textContent =
       (state.ap === 2 ? "昼 — 今日は2回動ける" : "夜 — 今日はあと1回動ける") + tired;
     return;
@@ -2132,7 +2168,7 @@ function endAction() {
           state.ap = 0;
           save();
           endDay();
-        }, true));
+        }, true), "約束の場所へ向かう");
       }
       return showMap();
     }
@@ -2191,10 +2227,12 @@ function advanceDay() {
   morningPhone(showMap); // 朝のLIME（無ければ即 showMap がスロットを精算）
 }
 
-// #16: 強制イベントの前に「マップに戻る→スロット精算→自動で次イベント」の一拍を挟む（オーナー指定）。
+// #16: 強制イベントの前に「マップに戻る→スロット精算→次イベント」の一拍を挟む（オーナー指定）。
 // 行動の結果画面からシームレスに夜イベントへ飛ぶ「急に画面が変わった」感を消す。
-// 非操作のオーバーレイで一拍置き、タップで早送り可。テストは #map-beat を検出して飛ばす。
-function mapBeat(onDone) {
+// スロット消化直後に勝手に帰宅・イベントへ進まないよう、先へ進むのは
+// プレイヤーのタップだけ（自動送りしない・2026-07-02）。何が起きるかは label で明示する。
+// テストは #map-beat を検出してクリックで飛ばす。
+function mapBeat(onDone, label) {
   if (!state) return onDone();
   showMap(); // マップ表示＋スロット精算（REEL.onMapShown）
   const screen = document.querySelector("#screen-map");
@@ -2202,7 +2240,7 @@ function mapBeat(onDone) {
   document.getElementById("map-beat")?.remove();
   const ov = document.createElement("div");
   ov.id = "map-beat";
-  ov.innerHTML = `<div class="map-beat-card"><span class="mb-dots">……</span><span class="mb-sub">タップで次へ</span></div>`;
+  ov.innerHTML = `<div class="map-beat-card"><span class="mb-dots">${label || "……"}</span><span class="mb-sub">▼ タップで次へ</span></div>`;
   screen.appendChild(ov);
   let done = false;
   let requested = false;
@@ -2215,7 +2253,6 @@ function mapBeat(onDone) {
   };
   const requestGo = () => { requested = true; go(); };
   ov.addEventListener("click", requestGo);
-  setTimeout(requestGo, 2100);
   if (!reelIdle && REEL.waitForIdle) REEL.waitForIdle(() => { reelIdle = true; go(); });
 }
 
@@ -2223,10 +2260,10 @@ function endDay() {
   // 夜の締め: 必ず家に帰って1日を終える（master_spec #3）。
   // 家シーシャ（第2章〜・一式所持時）はその帰宅シーンの中で選択肢になる
   const finishDay = () => maybeNightcap(advanceDay);
-  const finishAfterReel = () => mapBeat(finishDay);
+  const finishAfterReel = () => mapBeat(finishDay, "今日はここまで——家に帰る");
   // 夜の強制イベントは mapBeat（つなぎの一拍）を通してから再生する（#16）
-  const pd = (id, cb, bg) => mapBeat(() => playDialogue(id, cb, bg));
-  const pc = (obj, cb) => mapBeat(() => playCustom(obj, cb));
+  const pd = (id, cb, bg) => mapBeat(() => playDialogue(id, cb, bg), "夜になった——");
+  const pc = (obj, cb) => mapBeat(() => playCustom(obj, cb), "夜になった——");
   const TONARI = "res://assets/backgrounds/bg_tonari_inside_night.png";
   // ---- 第2章の夜の固定イベント（嫉妬と転落の進行）
   if (state.chapter === 2) {
@@ -6095,7 +6132,7 @@ function buildRadarSVG() {
     const [x, y] = radarPoint(cx, cy, R + 18, i, 100);
     const up = (state.stats[en] || 0) > (base[en] || 0) ? '<tspan class="radar-up"> \u2191</tspan>' : "";
     const anchor = Math.abs(x - cx) < 6 ? "middle" : x < cx ? "end" : "start";
-    badges += `<text x="${x}" y="${y - 2}" text-anchor="${anchor}" class="radar-label">${STAT_KEYS[en]}${up}</text>` +
+    badges += `<text x="${x}" y="${y - 2}" text-anchor="${anchor}" class="radar-label stat-c-${en}">${STAT_KEYS[en]}${up}</text>` +
       `<text x="${x}" y="${y + 11}" text-anchor="${anchor}" class="radar-rank">${statRankLabel(en)}</text>`;
   });
   return `<svg class="radar-svg" viewBox="0 0 260 244" role="img" aria-label="ステータス レーダー">` +
@@ -6110,8 +6147,8 @@ function buildRadarSVG() {
 function mainStatusHtml() {
   const radar = `<div class="radar-wrap">${buildRadarSVG()}<p class="radar-legend">明るい面＝今／暗い面＝章のはじめ。広がったぶんが成長。</p></div>`;
   const statRows = Object.entries(STAT_KEYS)
-    .map(([en, ja]) => `<div class="status-row stat-row"><span class="stat-name">${ja}</span>` +
-      `<span class="stars">${stars(state.stats[en])}</span>` +
+    .map(([en, ja]) => `<div class="status-row stat-row"><span class="stat-name stat-c-${en}">${ja}</span>` +
+      `<span class="stars stat-c-${en}">${stars(state.stats[en])}</span>` +
       `<span class="stat-rank">${statRankLabel(en)}</span></div>`)
     .join("");
   const st = stamina();
@@ -6189,7 +6226,9 @@ function createTitleBootGate() {
   const fill = $("#boot-fill");
   const text = $("#boot-status-text");
   if (!boot) return { track: () => () => {}, closeWhenReady: () => {} };
-  const minMs = 650;
+  // minMs はロゴ演出のための人工的な最低表示時間。起動の体感を悪くしない範囲まで短縮
+  //（計測: タイトル到達の支配コストは配布HTMLの解析であり、セーブ有無では変わらない・2026-07-02）
+  const minMs = 250;
   const maxMs = 2600;
   const startedAt = performance.now();
   let expected = 0;

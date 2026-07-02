@@ -118,16 +118,23 @@
 .rw-plate b { color: #f4d27a; }
 .rw-bubble {
   position: absolute;
-  left: 50%;
-  top: -26px;
-  transform: translateX(-50%) scale(0.7);
+  left: 0;
+  bottom: calc(100% + 8px);
+  top: auto;
+  transform: scale(0.7);
+  transform-origin: 58px 100%;
   background: #fff;
   color: #221a2c;
   font-size: 11px;
   font-weight: bold;
   padding: 3px 9px;
   border-radius: 10px;
-  white-space: nowrap;
+  /* 長台詞は折り返す（画面左端の筐体から画面外へはみ出さない） */
+  white-space: normal;
+  width: max-content;
+  max-width: 230px;
+  line-height: 1.45;
+  text-align: left;
   opacity: 0;
   transition: opacity 0.18s, transform 0.18s;
   pointer-events: none;
@@ -135,13 +142,13 @@
 .rw-bubble::after {
   content: "";
   position: absolute;
-  left: 50%; bottom: -5px;
+  left: 58px; bottom: -5px;
   margin-left: -4px;
   border: 5px solid transparent;
   border-top-color: #fff;
   border-bottom: none;
 }
-.rw-bubble.show { opacity: 1; transform: translateX(-50%) scale(1); }
+.rw-bubble.show { opacity: 1; transform: scale(1); }
 /* 熱いセリフ＝赤、レアセリフ＝金〜桃のグラデ（スロット演出風）（T24） */
 .rw-bubble.hot { background: #ff3d3d; color: #fff; box-shadow: 0 0 12px rgba(255,90,90,0.85); }
 .rw-bubble.hot::after { border-top-color: #ff3d3d; }

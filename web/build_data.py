@@ -246,11 +246,14 @@ def main() -> None:
             char_names[c["id"]] = c.get("name", c["id"])
 
     portraits, portrait_trims = collect_portraits()
-    # キャラ別の立ち絵スケール係数（characters.json の任意フィールド spriteScale、既定1.0）
+    # キャラ別の立ち絵スケール係数（characters.json の任意フィールド spriteScale、既定1.0）。
+    # engine.js はスプライトの「フォルダ名」で引くため、characters.json の id と
+    # フォルダ名が違うキャラはここで読み替える（engine.js SPEAKER_ID_ALIASES と対応）
+    SPRITE_FOLDER_ALIASES = {"kumicho": "ryuji", "pakki": "packii", "oneesan": "minto"}
     portrait_scales = {}
     for c in (characters if isinstance(characters, list) else []):
         if isinstance(c, dict) and "id" in c and c.get("spriteScale"):
-            portrait_scales[c["id"]] = c["spriteScale"]
+            portrait_scales[SPRITE_FOLDER_ALIASES.get(c["id"], c["id"])] = c["spriteScale"]
     bundle = {
         "dialogues": collect_dialogues(),
         "flavors": flavors,

@@ -712,9 +712,10 @@ const REEL = (() => {
                            : [SYM_HTML.seven, SYM_HTML.seven, SYM_HTML.bar];
     const label = isBig ? "BIG BONUS" : "BONUS";
     c.className = "show bonus";
+    // 完全告知（ランプが先に光る）なので「リーチ」ではなく、揃えにいく実況にする
     c.innerHTML =
       `<div class="rc-bonus-board">` +
-      `<div class="rc-aim">${isBig ? "リーチ──赤7ッ！" : "赤7…赤7…！？"}</div>` +
+      `<div class="rc-aim">${isBig ? "光ったら揃う！　赤7──" : "赤7…赤7…からの──！？"}</div>` +
       `<div class="rc-cells">` +
       cellSyms.map((s) => `<div class="rc-cell">${s}</div>`).join("") +
       `</div>` +
@@ -779,7 +780,7 @@ const REEL = (() => {
       const names = typeof STAT_KEYS !== "undefined" ? STAT_KEYS : {};
       const badges = typeof STAT_BADGE !== "undefined" ? STAT_BADGE : {};
       gainBanner({
-        kind: "stat", badge: badges[r.target] || "上",
+        kind: "stat", stat: r.target, badge: badges[r.target] || "上",
         labelTop: "PAKKI SLOT", labelMain: names[r.target] || r.target, labelSub: label,
       });
     }
