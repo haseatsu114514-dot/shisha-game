@@ -316,7 +316,12 @@ class DialogueEngine {
     }
     const h = Math.min((TARGET / t.h) * scale, folder === "packii" ? 225 : 240);
     img.style.height = `${h}%`;
-    img.style.bottom = `${-(t.b * h + SINK)}%`;
+    // 大柄キャラ（spriteScale>1）は頭が画面上端で見切れないよう、超過分だけ深く沈める。
+    // 足元は元々画面外（SINK）なので見た目は破綻せず、身長差は頭の位置と体格差で残る
+    const MAX_HEAD_TOP = 97; // コンテンツ上端の上限（コンテナ高さ%・頭上に最低3%の余白）
+    const contentTop = t.h * h - SINK;
+    const extraSink = Math.max(0, contentTop - MAX_HEAD_TOP);
+    img.style.bottom = `${-(t.b * h + SINK + extraSink)}%`;
     // 横位置は足元の重心（ax）でアンカーする。bbox 中心だと表情差分で
     // 腕を広げた絵に中心が引っ張られ、立ち絵が左右に滑って見える
     const ax = typeof t.ax === "number" ? t.ax : t.l + t.w / 2;

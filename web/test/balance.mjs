@@ -36,6 +36,20 @@ if (considered < 1) throw new Error("A3: 14日間で一度も休憩を考える�
 if (considered > 3) throw new Error("A3: 休憩の検討が3回を超える（厳しすぎ）");
 if (sickNormal) throw new Error("A3: 素直に休んでも警告ラインを割る（厳しすぎ）");
 
+// (A3-1b) 店巡りだけ（訪問×2/日）でも体力は減っていき、章内に一度は休憩を考える
+// （旧バランスは訪問2回<就寝回復で一生減らなかった＝オーナー報告 2026-07-02）
+sta = 100; let consideredVisit = 0; let sickVisit = false;
+for (let d = 0; d < 14; d++) {
+  sta = Math.max(0, sta - c.cost.visit);
+  if (sta <= CONSIDER) { consideredVisit++; sta = Math.min(100, sta + c.gain.rest); }
+  else sta = Math.max(0, sta - c.cost.visit);
+  if (sta < c.low) sickVisit = true;
+  sta = Math.min(100, sta + c.gain.sleep);
+}
+log(`店巡りプレイ14日: 最終体力${sta} 休憩検討${consideredVisit}回 警告未満=${sickVisit}`);
+if (consideredVisit < 1) throw new Error("A3-1b: 店巡りだけだと体力が一生減らない（訪問コスト<回復）");
+if (sickVisit) throw new Error("A3-1b: 店巡りで警告ラインを割る（厳しすぎ）");
+
 // (A3-2) 毎日2回バイト（無理し続ける）→ いずれ低体力に入る（システムが機能している）
 sta = 100; let hitLow = false;
 for (let d = 0; d < 14; d++) {

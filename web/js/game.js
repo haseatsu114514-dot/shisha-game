@@ -64,13 +64,13 @@ function rankFromPts(pts) {
 // ============ 体力（スタミナ）system（master_spec #6） ============
 // 「若いので甘め。ただし無理を重ねると寝込む」。数値は非表示でゲージのみ
 const STAMINA_LOW = 25;        // ここ未満でシーシャ系行動 → 警告→強行で酸欠
-const STAMINA_COST = { baito: 20, visit: 12, talk: 6, practice: 12, rin: 12, date: 8, homePuff: 8, gym: 8 };
-// 体力は蓄積制(#41): 夜の自然回復(sleep)は1日分の消耗をやや下回る＝
-// 普通の混在プレイ（昼バイト＋夜訪問）でも章の後半には一度
-// 「家で休むか」を考えるゲージまで落ちる（1章に1回程度・オーナー指定）。
-// ただし毎日休まないと詰む厳しさにはしない（休憩1回で立て直せる曲線）。
-// まとまった回復は「家に帰る」で行動を使って取る。
-const STAMINA_GAIN = { rest: 50, cafe: 12, kannon: 12, sleep: 26 };
+const STAMINA_COST = { baito: 18, visit: 14, talk: 8, practice: 14, rin: 12, date: 8, homePuff: 8, gym: 8 };
+// 体力は蓄積制(#41): 就寝回復(24)は「どの行動の組み合わせでも」1日分の消耗を
+// やや下回る＝店巡り（訪問×2=28）だけの日も含めて毎日すこしずつ削れる
+// （旧値は訪問2回<回復で、店巡り中心だと一生減らなかった・2026-07-02オーナー報告）。
+// 目安: バイト＋訪問なら章に2回、訪問だけなら章に1回「家で休むか」を考える。
+// 毎日休まないと詰む厳しさにはしない（休憩1回で立て直せる曲線）。
+const STAMINA_GAIN = { rest: 50, cafe: 12, kannon: 12, sleep: 24 };
 function stamina() { return state.stamina ?? 100; }
 function addStamina(n) {
   state.stamina = Math.max(0, Math.min(100, stamina() + n));
@@ -2269,9 +2269,18 @@ function endDay() {
   // 家シーシャ（第2章〜・一式所持時）はその帰宅シーンの中で選択肢になる
   const finishDay = () => maybeNightcap(advanceDay);
   const finishAfterReel = () => mapBeat(finishDay, "今日はここまで——家に帰る");
-  // 夜の強制イベントは mapBeat（つなぎの一拍）を通してから再生する（#16）
-  const pd = (id, cb, bg) => mapBeat(() => playDialogue(id, cb, bg), "夜になった——");
-  const pc = (obj, cb) => mapBeat(() => playCustom(obj, cb), "夜になった——");
+  // 夜の強制イベントは mapBeat（つなぎの一拍）を通してから再生する（#16）。
+  // つなぎ文言は行き先に合わせる＝夜に別の店へ行った直後でも
+  // 「なぜ急にtonariのシーンに？」とならないように（2026-07-02）
+  const beatLabel = (bg) => {
+    const b = String(bg || "");
+    if (b.includes("tonari")) return "帰り道、tonariに寄っていく——";
+    if (b.includes("street")) return "帰り道——";
+    return "夜になった——";
+  };
+  const dlgBg = (id) => (((D.dialogues[id] || {}).metadata || {}).bg || "");
+  const pd = (id, cb, bg) => mapBeat(() => playDialogue(id, cb, bg), beatLabel(bg || dlgBg(id)));
+  const pc = (obj, cb) => mapBeat(() => playCustom(obj, cb), beatLabel(obj && obj.metadata && obj.metadata.bg));
   const TONARI = "res://assets/backgrounds/bg_tonari_inside_night.png";
   // ---- 第2章の夜の固定イベント（嫉妬と転落の進行）
   if (state.chapter === 2) {
@@ -6234,11 +6243,14 @@ function createTitleBootGate() {
   const boot = $("#boot-overlay");
   const fill = $("#boot-fill");
   const text = $("#boot-status-text");
-  if (!boot) return { track: () => () => {}, closeWhenReady: () => {} };
+  if (!boot) {
+    document.body.classList.add("booted"); // メニュー登場アニメの解禁
+    return { track: () => () => {}, closeWhenReady: () => {} };
+  }
   // minMs はロゴ演出のための人工的な最低表示時間。起動の体感を悪くしない範囲まで短縮
   //（計測: タイトル到達の支配コストは配布HTMLの解析であり、セーブ有無では変わらない・2026-07-02）
   const minMs = 250;
-  const maxMs = 2600;
+  const maxMs = 1800;
   const startedAt = performance.now();
   let expected = 0;
   let settled = 0;
@@ -6258,6 +6270,8 @@ function createTitleBootGate() {
     const wait = Math.max(0, minMs - (performance.now() - startedAt));
     setTimeout(() => {
       boot.classList.add("done");
+      // メニューの登場アニメを一斉に開始（LOADだけ遅れて出てくる問題の解消）
+      document.body.classList.add("booted");
       setTimeout(() => boot.remove(), 650);
     }, wait);
   }
@@ -6662,8 +6676,10 @@ function init() {
   initEngine();
   const titleBoot = createTitleBootGate();
   setupTitleLogo(titleBoot.track());
-  // キービジュアルがあればそれを最優先、無ければキャラランダム表示
-  setupTitleKeyVisual(() => setupTitleChara(titleBoot.track()), titleBoot.track());
+  // キービジュアル/立ち絵は起動ゲートで待たない（大きなPNGのデコード待ちで
+  // 「起動中」が伸びる主因だった）。準備でき次第フェードインで後追い表示する
+  const noGate = () => {};
+  setupTitleKeyVisual(() => setupTitleChara(noGate), noGate);
   titleBoot.closeWhenReady();
   // タイトルBGM: 自動再生がブロックされたら最初の操作で再試行する
   startTitleBgm();
