@@ -3,7 +3,7 @@
     {
       "dialogue_id": "ch1_rin_first",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_shop.png",
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
         "topic": "出会い"
       },
       "lines": [
@@ -156,7 +156,7 @@
     {
       "dialogue_id": "ch1_rin_second",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_shop.png",
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
         "topic": "試香モニター"
       },
       "lines": [
@@ -265,7 +265,7 @@
     {
       "dialogue_id": "ch1_rin_third",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_shop.png",
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
         "topic": "夜の側のサンプル"
       },
       "lines": [
@@ -368,7 +368,7 @@
     {
       "dialogue_id": "ch1_rin_repeat",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_shop.png"
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
       },
       "lines": [
         {

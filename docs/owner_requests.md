@@ -32,8 +32,16 @@
 | 起動速度 | 計測の結果セーブ有無で差は無し（支配コストは配布HTML解析）。ブートゲートの人工的最低表示 650ms→250ms で体感短縮（実測 約1.7s→約1.2s） |
 | セリフ | 「来週だ」（14日制と矛盾）→「2週間後だ」、敗北エンドの旧章タイトル「なんとなく始めた」→「一吸目」、行頭半角スペース90行除去、スミさんの呼称「始」→「はじめ」統一 |
 
-### 📋 要画像（今回は生成せず・仕様のみ）
-- 詳細はセッション報告参照: Dr.fookah 2階ショールーム / KEMURIKUSA 内装の再生成（現状暗すぎ＋Dr.fookahと構図類似）/ 夜差分が無い店の夜画像（任意・tintで代替中）
+### ✅ 完了（第2便: 身長スケール全展開＋背景再生成プロンプト）
+| 件 | 内容 |
+|---|---|
+| 身長スケール全キャラ | maezono(推定168cm=0.98・正典未設定)・master_hookah(165)・sheikh(192)・kako(160) を追加＝立ち絵があるキャラは全員反映、未支給キャラも届いた瞬間から正しく出る。naru×ageha / adam×tsumugi / nagumo×mashiro / maezono×rin の4ペアで見え方と足元の床合わせを確認 |
+| 背景再生成プロンプト | `tools/bg_prompts.txt` 末尾に「再生成バッチ（2026-07-02）」を追加（Codex作業用・全10件＋共通ワークフロー）。2048x1152で生成→Lanczosで1280x720へ縮小・夜も輝度80〜110で焼き込まない・触ってはいけない重複ファイル一覧つき |
+| 新背景の自動配線 | `bg_fookah_showroom.png`（凛の2階ショールーム）を先に配線し、`BG_FALLBACKS` で未着の間は bg_shop.png を表示。PNGを置いて build するだけで自動切替 |
+
+### 📋 要画像（プロンプトは tools/bg_prompts.txt の再生成バッチ参照）
+- 新規: bg_fookah_showroom.png（配線済み）／差し替え: bg_ryuji_shop.png（4KBプレースホルダ）
+- 再生成: kemurikusa.png・bg_tonari_inside_night・bg_home_night・bg_c_station_night・bg_cafe_night・bg_street_night・bg_hideaway・bg_tonari_outside_night（低解像度生成→引き伸ばし＋暗さ焼き込みが原因のぼんやり）
 
 ### 🧪 既知の残課題
 - screenshots.mjs の敗北ルートは採点境界に近く、乱数（炭・穴あけ・吸い出し温度）でまれに勝ってしまうフレーキーがある（変更前のコードでも再現）。敗北保証の仕込み（例: craft を強制的に下げるテストフック）を検討

@@ -271,7 +271,8 @@
     "visual_concepts": [
       "58s asian elderly man, wise hermit appearance, long white beard tied at the end, wearing traditional linen martial arts style clothing, holding a very old brass and wood engraved hookah pipe",
       "ancient asian shisha master, serene expression and closed eyes, long white hair, wearing a simple earthy-toned robe, mystical smoke forming Yin-Yang patterns around him, temple-like background"
-    ]
+    ],
+    "spriteScale": 0.96
   },
   {
     "id": "tsumugi",
@@ -521,7 +522,8 @@
     "visual_concepts": [
       "52s middle eastern royalty, regal and commanding presence, wearing an immaculate white kandura and a golden-trimmed ghutra, smoking from an extravagant pure gold hookah, luxurious palace surroundings",
       "wealthy arab sheikh, neatly trimmed beard, majestic and wealthy aura, adorned with subtle but incredibly expensive jewelry, standing confidently next to a jeweled masterpiece shisha pipe"
-    ]
+    ],
+    "spriteScale": 1.06
   },
   {
     "id": "da_silva",
@@ -588,7 +590,8 @@
     "visual_concepts": [
       "26s japanese female, pale skin like a japanese doll, hime-cut long black hair, wearing stylish black monochrome mode fashion, typing rapidly on a customized keyboard, slightly slouching, socially awkward but intense vibe",
       "introverted female designer, dark elegant hime-cut hair, wearing oversized dark avant-garde clothing, surrounded by personal shisha equipment, mixing flavors very methodically like a nerd, computer screens glowing in the background"
-    ]
+    ],
+    "spriteScale": 0.93
   },
   {
     "id": "rira",
@@ -695,7 +698,8 @@
     "visual_concepts": [
       "39s friendly japanese male journalist, round cheerful face with a warm welcoming smile, slightly pudgy build, wearing smart casual (shirt with blazer, no tie), always holding a notepad and a shisha hose, genuinely excited expression while tasting",
       "enthusiastic shisha media person, expressive happy face, wearing glasses and a press lanyard, leaning forward eagerly over the judge table, looking like he's about to declare something delicious at any moment"
-    ]
+    ],
+    "spriteScale": 0.98
   },
   {
     "id": "kirishima",

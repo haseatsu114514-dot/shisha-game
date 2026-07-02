@@ -552,7 +552,15 @@ const BG_TIME_BASE = new Set([
 function sceneIsNight() {
   return !!(state && state.phase === "daily" && state.ap <= 1);
 }
+// 生成待ちの新背景の代替。本命PNGが assets/backgrounds/ に届いて build すれば
+// 自動でそちらに切り替わる（コード変更不要・作りパートの artAsset と同じ思想）
+const BG_FALLBACKS = { "bg_fookah_showroom.png": "bg_shop.png" };
 function resolveSceneBg(rel) {
+  // 未着ファイルはフォールバックへ（D.backgrounds は実在するPNGの一覧）
+  const f = String(rel).match(/^assets\/backgrounds\/([^/]+\.png)$/);
+  if (f && BG_FALLBACKS[f[1]] && Array.isArray(D.backgrounds) && !D.backgrounds.includes(f[1])) {
+    rel = `assets/backgrounds/${BG_FALLBACKS[f[1]]}`;
+  }
   const m = String(rel).match(/^assets\/backgrounds\/(.+?)(_day|_night)?\.png$/);
   if (!m) return rel;
   let base = m[1];
@@ -2885,15 +2893,16 @@ function doRinVisit() {
       save();
       endAction(); // 凛に会うのは1コマ（行けば行くほど得、を防ぐ）
     };
+    // 2階ショールームの専用背景（未着の間は BG_FALLBACKS が 1階物販 bg_shop.png を出す）
     if (idx < RIN_SEQUENCE.length) {
       state.visits.rin += 1;
       playDialogue(RIN_SEQUENCE[idx], () => {
         const got = gainAffinity("rin", "visit");
         if (!cueFiredInDialogue && !got) gainStat("sense", 2);
         after();
-      }, "res://assets/backgrounds/bg_shop.png");
+      }, "res://assets/backgrounds/bg_fookah_showroom.png");
     } else {
-      playDialogue("ch1_rin_repeat", () => { gainAffinity("rin", "repeat"); after(); }, "res://assets/backgrounds/bg_shop.png");
+      playDialogue("ch1_rin_repeat", () => { gainAffinity("rin", "repeat"); after(); }, "res://assets/backgrounds/bg_fookah_showroom.png");
     }
   }, () => showShop());
   maybeVisitWarning("rin", play, () => showShop());
