@@ -56,7 +56,10 @@
   `https://raw.githack.com/haseatsu114514-dot/shisha-game/<ブランチ名>/web/dist/shisha_ch1.html`
   - 初回アクセス時に raw.githack の確認ページが出る →「Open the page」を1タップ
 - **GitHub Pages（安定版）**: https://haseatsu114514-dot.github.io/shisha-game/
-  - `.github/workflows/deploy-pages.yml` が配備（main と claude/** ブランチの push がトリガー）
+  - `.github/workflows/deploy-pages.yml` が配備。**実際に公開されるのは main への
+    マージ時のみ**（claude/** の push もトリガーには入っているが、github-pages 環境の
+    保護ルールで即時拒否される＝ランナー未割当の1秒失敗。2026-07-03 確認）。
+    開発中の動作確認は raw.githack（上記）を使う
   - **レイアウト（2026-07-02 改定・起動高速化）**: ルート→`/web/`（分割ファイル版・
     HTML+CSS+JS 約1.2MBだけ先に読み、画像・音声は遅延取得＝起動が速い）へ転送。
     1ファイル版（約22MB）は `/shisha_ch1.html` にダウンロード用として残置
