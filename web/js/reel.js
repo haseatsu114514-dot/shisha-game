@@ -384,7 +384,7 @@ const REEL = (() => {
   };
   function pakkiFace(cls) {
     if (typeof faceIconHtml === "function") {
-      const h = faceIconHtml("packii", cls || "rw-face");
+      const h = faceIconHtml("pakki", cls || "rw-face");
       if (h) return h;
     }
     return `<span class="${(cls || "rw-face")} rw-face-fallback">ぷ</span>`;

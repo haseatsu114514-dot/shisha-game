@@ -26,14 +26,14 @@ const SPEAKER_NAMES = {
   shop_clerk: "店員", old_man: "老人", customer: "お客さん", everyone: "全員",
 };
 window.SPEAKER_NAMES = SPEAKER_NAMES;
-const SPEAKER_ID_ALIASES = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "packii", pakki: "packii", oneesan: "minto", kumicho: "ryuji" };
+const SPEAKER_ID_ALIASES = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki", oneesan: "minto", kumicho: "ryuji" };
 const FACE_ALIASES = {
   hajime: { excited: "smile" },
   naru: { excited: "smile", smug: "serious", fired_up: "serious" },
   adam: { silent: "normal", smug: "smile" },
   minto: { serious: "normal", ura_serious: "ura_sad" },
   tsumugi: { focus: "serious", shy: "sad" },
-  packii: { excited: "smile", smug: "smile", evil: "angry" },
+  pakki: { excited: "smile", smug: "smile", evil: "angry" },
 };
 
 // 背景込みの一枚絵で生成されているキャラ。専用の透過立ち絵がない場合だけここに入れる。
@@ -213,7 +213,18 @@ class DialogueEngine {
     if (type === "hide_cg") { this.hideCg(); return this.next(); }
     if (type === "game_over") { this.finished = true; if (this.ctx.onGameOver) this.ctx.onGameOver(); return; }
     if (type === "apply") { if (this.ctx.onApply) this.ctx.onApply(line); return this.next(); }
+    // SE行（#21）: {"type":"sfx","id":"coal_snip"}。id は sfx.js のAPI名（snake_case可）
+    if (type === "sfx") { this.playSfx(line.id); return this.next(); }
+    // 演出行（#25/#26）: {"type":"fx","id":"flash|shake|sepia|sepia_off|cutin|scent"}
+    if (type === "fx") { if (this.ctx.onFx) this.ctx.onFx(line); return this.next(); }
     this.showLine(line);
+  }
+
+  // SE行の再生。存在しない id は黙って無視する（データ先行で書けるように）
+  playSfx(id) {
+    if (!window.SFX || !id) return;
+    const key = String(id).replace(/_([a-z])/g, (m, c) => c.toUpperCase());
+    if (typeof SFX[key] === "function") { try { SFX[key](); } catch (e) { /* noop */ } }
   }
 
   handleCondition(line) {
@@ -301,8 +312,8 @@ class DialogueEngine {
       img.style.bottom = "";
       return;
     }
-    const TARGET = folder === "packii" ? 94 : PORTRAIT_FRAMING.target;
-    const SINK = folder === "packii" ? 8 : PORTRAIT_FRAMING.sink; // 頭上に約20pxの余白を残し、足元は画面外へ逃がす
+    const TARGET = folder === "pakki" ? 94 : PORTRAIT_FRAMING.target;
+    const SINK = folder === "pakki" ? 8 : PORTRAIT_FRAMING.sink; // 頭上に約20pxの余白を残し、足元は画面外へ逃がす
     const trims = (this.ctx.portraitTrims || {})[folder] || {};
     const faces = (this.ctx.portraitFaces || {})[folder] || [];
     const aliasedFace = face && FACE_ALIASES[folder] && FACE_ALIASES[folder][face] ? FACE_ALIASES[folder][face] : face;
@@ -314,7 +325,7 @@ class DialogueEngine {
       img.style.setProperty("--portrait-anchor-x", "-50%");
       return;
     }
-    const h = Math.min((TARGET / t.h) * scale, folder === "packii" ? 225 : 240);
+    const h = Math.min((TARGET / t.h) * scale, folder === "pakki" ? 225 : 240);
     img.style.height = `${h}%`;
     // 大柄キャラ（spriteScale>1）は頭が画面上端で見切れないよう、超過分だけ深く沈める。
     // 足元は元々画面外（SINK）なので見た目は破綻せず、身長差は頭の位置と体格差で残る
@@ -367,6 +378,9 @@ class DialogueEngine {
   showLine(line) {
     const speaker = String(line.speaker || "");
     const face = String(line.face || "");
+    this.curSpeaker = speaker; // 文字送りボイス（#22）のピッチ決定に使う
+    // 行付きの感情エフェクト（#26）: {"speaker":..., "fx":"flash"} で行表示と同時に発火
+    if (line.fx && this.ctx.onFx) this.ctx.onFx({ id: String(line.fx) });
     // 名前ラベル
     if (speaker) {
       const name = this.resolveName(speaker);
@@ -448,6 +462,8 @@ class DialogueEngine {
       label.classList.remove("typing");
       void label.offsetWidth;
       label.classList.add("typing");
+      // [imp]付き台詞は軽い自動演出（#25: 一瞬のフラッシュ＋テキスト強調）
+      if (text.includes("[imp]") && this.ctx.onFx) this.ctx.onFx({ id: "imp" });
       this.setAdvanceHint(true);
       return;
     }
@@ -468,7 +484,10 @@ class DialogueEngine {
     this.typeTimer = setInterval(() => {
       i += step;
       label.innerHTML = escapeHtml(text.slice(0, i)).replace(/\n/g, "<br>");
-      if (window.SFX && i % 4 < step) SFX.type();
+      if (window.SFX && i % 4 < step) {
+        // キャラ別文字送りボイス（#22）。未対応ビルドでは従来のタイプ音へフォールバック
+        if (SFX.charBlip) SFX.charBlip(this.curSpeaker); else SFX.type();
+      }
       if (i >= text.length) this.completeTyping();
     }, interval);
   }

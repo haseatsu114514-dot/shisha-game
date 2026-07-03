@@ -72,6 +72,117 @@
 - jsDelivr / statically.io は HTML を text/plain で返すため使えない（検証済み）
 - スマホは横向き推奨（縦だと回転ヒントが出る）。PC/スマホどちらも同じURLでOK
 
+## 2026-07-03 第1章ブラッシュアップ（レビュー反映・全部盛り #1〜#37）★全フェーズ実装済み
+
+**開発ブランチ: `claude/exciting-pascal-nkvwhs`（旧 `claude/adoring-franklin-nzt0k8` の
+フェーズ1〜3を引き継ぎ、origin/main（PR#139まで）をマージして継続。PRでmainへ）。**
+オーナー依頼「第1章ブラッシュアップ実装依頼（全37項目・6フェーズ）」の
+**フェーズ1〜6を実装完了**（フェーズごとにテスト全緑→コミット済み）。
+依頼原文は PR 説明とこのセクションを参照。
+
+### 完了済み（コミット済み・全8テスト緑）
+
+- **フェーズ1（#1〜#3）**: craft配点調整（雑プレイのボットが南雲バー80に届かず
+  screenshots.mjsが敗北で緑／playthroughは優勝維持）。ステ→ミニゲーム入力反映
+  （技術=ゲージ減速・センス=ジャスト帯拡大・洞察=テーマ/ミックスの好みヒント
+  `INSIGHT_HINT_BAR=25`/`INSIGHT_MIX_BAR=40`・根性=大会中1回やり直し
+  `GUTS_RETRY_BAR=30`/`offerGutsRetry`）。前夜3択の効果差別化
+  （practice=craft+4/talk_sumi=根性/sleep=体力全快+`lastNightGaugeCalm()`0.93）＋
+  リザルト内訳に前夜行。`window.__craftDebug` でcraft値を検証できる
+- **フェーズ2（#4〜#10）**: 南雲カットイン `nagumoCutin()`（暫定順位バー→ざわめき→
+  無音→カットイン→バー伸長＋順位入替→優勝コール＋紙吹雪 `confettiBurst`）。
+  10カウントは `runResultCountdown(..., {noFinale:true})` でプチュン抑制→カットインへ。
+  開幕MCに持ち点ルール説明・煽り削減、中間発表の実況パネル未append バグ修正、
+  絶望の溜め延長＋結果発表前BGM停止（`SFX.bgmStop`）＋終盤カウント心音、
+  コールドオープン演出（観客シルエット・色煙・crowd SE）、敗北後フォローシーン
+  （ch1_tournament_defeat の game_over 行は撤去→フォロー→showDefeat）、
+  勝利時リザルト「次章への課題」。sfx.js に crowd/heartbeat/jingle/doorbell/
+  coalSnip/bubbling を合成追加
+
+### フェーズ3（#11〜#20）実装済み・コミット済み
+
+- #11 DAY9夜「出場者説明会」`ch1_meet_rivals`（3ライバル顔合わせ＋_met_フラグ）
+- #12 DAY10夜サラリーマン異変 `ch1_salaryman_change`／DAY12夜つむぎ `ch1_tsumugi_sketch`
+- #13 スミさんの解説は南雲の基準まで（「何が引き出したかは自分で考えろ」）
+- #14 「見せるんじゃなくて、届けるんだよ」をDAY13リハ導入（必ず通る）に再登場
+- #15 hesitate分岐に小分岐 hz_show/hz_unease
+- #16 オープニングに「なんで俺なんだろう」独白
+- #17 メタ介入をコールドオープンにも配置（章末の既存と統一）
+- #18 インタビュー3択に余韻1行ずつ
+- #19 章末スリム化（スミ「顔つき」ブロック撤去）＋第2章予告パネル `showCh2Teaser`
+  （**pointer-events:none＋約5秒自動送り**。クリック吸い込み・画面切替競合で
+  playthroughが2回落ちた経緯あり→ showClear を先に呼びパネルを上に被せる形で解決）
+- #20 PEPERMINT→**PEPPERMINT**（背景 `peppermint.png` にgit mv・全参照更新。
+  DATE_VENUES の内部id "pepermint" のみセーブ互換で旧綴り据え置き＝コメント明記）。
+  スプライトフォルダ **packii→pakki** にgit mv（engine/build_data/reel/TITLE_CHARA_POOL
+  のエイリアス・参照を更新）。outing_adam_1 の bg を夜に。ミックス「合計12gちょうど」。
+  控室「昨日の陽気な雰囲気」→「説明会の夜の」に整合。playthrough.mjs の plan も
+  PEPPERMINT に更新済み
+
+### フェーズ4（#21〜#27）音とエフェクト基盤・コミット済み
+
+- #21 engine.js に SE行 `{"type":"sfx","id":"coal_snip"}`（id は sfx.js API名・snake_case可、
+  未知idは黙殺）。配置: オープニング（bubbling/coal_snip/doorbell）、控室・開幕・審査
+  （crowd）、day5（bubbling）
+- #22 キャラ別文字送りボイス `SFX.charBlip(speaker)`（スミ=低260Hz/みんと=高1480Hz/
+  パッキー=square変調/地の文=無音。プロファイル表 `CHAR_BLIP`）。CONFIG
+  「文字送りボイス」ON/OFF（`config.voiceBlip`→`SFX.setVoiceBlip`。OFFで従来タイプ音）
+- #23 ジングル: 章タイトル・優勝コール（フェーズ2実装済み）＋南雲二口目に配置
+- #24 BGM差分: 会場入り=`bgm_tournament_wait`→開幕後=`bgm_tournament_edm`→
+  結果発表前=無音（既存）→優勝リザルト=`bgm_result_emotional`。夜の固定イベント
+  （tonari）=`tonari`（endDay の `nightBgm`）
+- #25 [imp]台詞は自動で軽フラッシュ（engine→`ctx.onFx({id:"imp"})`）。カットイン級
+  `{"type":"fx","id":"cutin"}` をスミ「大会出ろ」と南雲二口目に配置
+- #26 感情エフェクト: 行タイプ `fx` か行付き `"fx":"..."` で flash/shake/sepia/sepia_off。
+  game.js `dialogueFx()`。セピア・香り煙は会話終了時 `clearSceneFx()` で自動掃除。
+  配置: day5回想=sepia、審査の動揺=shake、あげはカメオ=shake+flash
+- #27 香りの色パーティクル `{"type":"fx","id":"scent","color":"#..."}`（co-haze流用の
+  `.fx-scent`）。day5私物フレーバー回=琥珀。コールドオープンは既存 cold-open-fx
+
+### フェーズ5（#28〜#33）日常フック・コミット済み
+
+- #28 翌日予告: 就寝暗転（nightFadeHome）に「明日、○○で何かありそう」＋当日マップの
+  該当ピンに「!」バッジ。`CH1_NIGHT_EVENTS`（**endDayの固定イベント日と一致必須**）
+- #29 DAY2初回トースト「今日しか会えねえ客もいるぞ」（`_hint_daylimited`）
+- #30 常連ノート連動: `condition_type:"customer_note"`（evalCondition追加）。田中さん
+  （baito_regular_02）2回以上接客で r2_end の回想が好み入り強化版に
+- #31 解禁可視化: Dr.fookah 2階に「あと○回で奥の棚」進捗、マップホバーに
+  「あと1回で打ち解けられそう」（affinityPts と次ランク閾値から算出）
+- #32 スミの日替わり一言タップで1行返事（`sumiQuoteReply`・1日1回・報酬なし・未返事は▼）
+- #33 自己ベスト演出: スタンプ `stamp-best`「自己ベスト！」＋スミ講評トースト
+  （`SUMI_BEST_COMMENTS`。練習・大会前ドリル両方）
+- 風邪ペナルティ初回のみ半日（`_sick_once`・ap=1で夜だけ動ける。オーナー承認済み）
+
+### フェーズ6（#34〜#37）UI修正・コミット済み
+
+- #34 DAY1チュートリアルはDAYカードが消えるまで待つ（mapTutorial 直列化）
+- #35 タイトル視認性: メニュー背後に暗色帯＋文字シャドウ・ロゴ影強化
+- #36 吸い出しスタンプは `.gauge-wrap` に出す（説明文に被らない）。体感スコアHUD
+  `#tn-feel` を top:68px（グローバルHUD右上との重なり解消）
+- #37 大会直前オートセーブをトースト「大会直前のデータをセーブした」で明示
+
+### プレイ報告対応（2026-07-03・同ブランチ）
+
+- **表情切替の立ち絵横ズレ再発** → 原因は足元アンカー `ax` が表情ごとに別値
+  （AI生成差分はポーズが微ブレ→足元重心が0.45〜0.55で揺れる）。build_data.py で
+  **axをキャラ単位に共通化**（normal優先・無ければ平均。h/bと同じ方針）
+- **窓なし店は夜も昼絵でよい**（オーナー指定）→ `BG_NO_NIGHT_TINT`
+  （naru/eden/ageha/ryuji/Dr.fookah/hideaway）は夜の night-tint を掛けない。
+  窓のあるチョイザップ等は従来どおり
+
+### 残タスク（このブランチのPRマージ後に検討）
+
+- オーナー判断A「お姉さん」正体は**据え置き**（気づく人は気づく）で確定済み・作業なし
+- BGM「閉店後」専用曲・追加SE素材はアセットが届いたら差し替え（現状は合成SEとtonari曲）
+- 受け入れスクショ確認済み（タイトル/DAY1直列/南雲カットイン/優勝コール/予告パネル）
+
+### 注意（今回の実装で増えた約束）
+
+- 南雲カットイン・予告パネルは**自動送り**（テストが詰まるのでクリック必須にしない）
+- craftバランスを再調整するときは screenshots.mjs（雑=敗北）と playthrough.mjs
+  （真面目=優勝）の**両立**が完了条件。`__craftDebug` で値を確認
+- 根性リトライのボタン文言に「次へ/結果を見る」を含めない（テストのロケータと衝突）
+
 ## 2026-07-02 追記（作りパート: 生成画像の差し替え基盤＝Codex向け）
 
 - **PNG差し替えプラミング実装** — `assets/ui/making/` に規定名のPNGを置いて

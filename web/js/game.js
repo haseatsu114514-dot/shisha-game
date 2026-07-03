@@ -540,7 +540,7 @@ const LOCATION_FROM_BG = {
   title: ["タイトル", ""],
   kemurikusa: ["KEMURIKUSA", "なるの店"],
   eden: ["EDEN", "アダムの店"],
-  pepermint: ["PEPERMINT", "みんとの店"],
+  peppermint: ["PEPPERMINT", "みんとの店"],
 };
 // ============ 背景の昼夜解決（2026-07-02） ============
 // _day/_night ペアが揃っている背景は、シーンの時間帯（昼=ap2 / 夜=ap<=1）で
@@ -572,10 +572,19 @@ function resolveSceneBg(rel) {
   return m[2] === "_night" ? rel : `assets/backgrounds/${base}_day.png`;
 }
 
+// 窓の無い店内は外光が入らない＝夜も昼と同じ絵でよい（オーナー指定・2026-07-03）。
+// 夜の色調補正（.night-tint）を掛けない背景の一覧
+const BG_NO_NIGHT_TINT = new Set([
+  "bg_naru_shop.png", "bg_eden_shop.png", "bg_adam_shop.png", "bg_ageha_shop.png",
+  "bg_ryuji_shop.png", "bg_shop.png", "bg_fookah_showroom.png", "bg_hideaway.png",
+]);
+
 function setLocationFromBg(rel) {
-  // 昼夜ペアの無い背景は、夜だけ色調補正を重ねる（tint。_night 画像はそのまま）
+  // 昼夜ペアの無い背景は、夜だけ色調補正を重ねる（tint。_night 画像と窓なし店内はそのまま）
   const bgEl = $("#vn-bg");
-  if (bgEl) bgEl.classList.toggle("night-tint", sceneIsNight() && !/_night\.png$/.test(String(rel)));
+  const bgFile = String(rel || "").split("/").pop() || "";
+  if (bgEl) bgEl.classList.toggle("night-tint",
+    sceneIsNight() && !/_night\.png$/.test(bgFile) && !BG_NO_NIGHT_TINT.has(bgFile));
   const m = String(rel || "").match(/bg_([\w_]+?)\.png|^([\w_]+)\.png/);
   let key = "";
   if (m) key = (m[1] || m[2] || "").replace(/_(day|night)$/, (_, t) => t);
@@ -718,12 +727,38 @@ function updateDayCard() {
     : st >= STAMINA_LOW ? "疲れがたまってきた"
     : "かなり疲れている";
   const quotes = state.chapter === 2 ? CH2_SUMI_QUOTES : SUMI_QUOTES;
-  $("#dc-quote").textContent = `スミ「${quotes[Math.min(Math.max(state.day, 1), quotes.length) - 1]}」`;
+  const replied = !!state.flags[`_sumi_reply_c${state.chapter}_d${state.day}`];
+  $("#dc-quote").textContent = `スミ「${quotes[Math.min(Math.max(state.day, 1), quotes.length) - 1]}」` +
+    (replied ? "" : " ▼");
+  $("#dc-quote").classList.toggle("can-reply", !replied);
+}
+
+// 自己ベスト更新時のスミさんの一言講評（#33）
+const SUMI_BEST_COMMENTS = [
+  "……今の感じ、忘れんな", "腕、上がったな", "その手応えが基礎になる",
+  "本番でもそれをやれ", "いい煙の顔になってきた",
+];
+
+// スミさんの日替わり一言に、タップで1行だけ返事できる（#32。1日1回・報酬なし）
+const SUMI_QUOTE_REPLIES = [
+  "……はい、丁寧にやります", "肝に銘じます", "今日も一台ずつ、やってみます",
+  "……たしかに", "見ててください", "はい。……ちょっとだけ、ワクワクしてます",
+  "うっ、図星です", "了解です、師匠", "……その言い方、かっこいいですね",
+];
+function sumiQuoteReply() {
+  if (!state || state.phase !== "daily") return;
+  const key = `_sumi_reply_c${state.chapter}_d${state.day}`;
+  if (state.flags[key]) return;
+  state.flags[key] = true;
+  toast(`はじめ「${SUMI_QUOTE_REPLIES[(state.day * 3 + state.chapter) % SUMI_QUOTE_REPLIES.length]}」`);
+  if (window.SFX) SFX.click();
+  updateDayCard();
+  save();
 }
 
 // 判定スタンプ演出
 function showStamp(container, result) {
-  const labels = { perfect: "PERFECT!", good: "GOOD", miss: "MISS…", just: "ジャスト！" };
+  const labels = { perfect: "PERFECT!", good: "GOOD", miss: "MISS…", just: "ジャスト！", best: "自己ベスト！" };
   const st = document.createElement("div");
   st.className = `stamp stamp-${result}`;
   st.textContent = labels[result] || result;
@@ -776,6 +811,60 @@ function smokeRings(n = 3) {
     box.appendChild(ring);
     setTimeout(() => ring.remove(), 1600 + i * 220);
   }
+}
+
+// ---------------------------------------------------------------- 会話内エフェクト（#25/#26/#27）
+// dialogue JSON の {"type":"fx","id":"..."} や行付き "fx" から発火する軽演出。
+// すべて pointer-events:none（テストのクリックを吸わない）・自動終了。
+function dialogueFx(line) {
+  const id = String((line && line.id) || "");
+  const game = $("#game");
+  if (!game) return;
+  if (id === "flash" || id === "imp") {
+    // 白フラッシュ（驚き／[imp]台詞の自動演出。impはより控えめ）
+    const f = document.createElement("div");
+    f.className = `fx-flash${id === "imp" ? " soft" : ""}`;
+    game.appendChild(f);
+    setTimeout(() => f.remove(), 450);
+  } else if (id === "shake") {
+    // 画面微揺れ（動揺）。#game はインラインの scale() を持つので内側の画面を揺らす
+    const scr = $("#screen-dialogue");
+    scr.classList.remove("fx-shake");
+    void scr.offsetWidth;
+    scr.classList.add("fx-shake");
+    setTimeout(() => scr.classList.remove("fx-shake"), 600);
+  } else if (id === "sepia") {
+    // 回想=セピア。sepia_off か会話終了（clearSceneFx）で解除
+    $("#screen-dialogue").classList.add("fx-sepia");
+  } else if (id === "sepia_off") {
+    $("#screen-dialogue").classList.remove("fx-sepia");
+  } else if (id === "cutin") {
+    // カットイン級（スミ「大会出ろ」・南雲の二口目）: 帯スイープ＋フラッシュ
+    const c = document.createElement("div");
+    c.className = "fx-cutin";
+    c.innerHTML = `<i class="band a"></i><i class="band b"></i><i class="flash"></i>`;
+    game.appendChild(c);
+    if (window.SFX) SFX.stamp();
+    setTimeout(() => c.remove(), 900);
+  } else if (id === "scent") {
+    // 香りの色パーティクル（#27）: 画面端に色付きの煙を流す。color/color2 で指定
+    const s = document.createElement("div");
+    s.className = "fx-scent";
+    s.innerHTML =
+      `<div class="co-haze l" style="--haze:${line.color || "#d9a441"}"></div>` +
+      `<div class="co-haze r" style="--haze:${line.color2 || line.color || "#d9a441"}"></div>`;
+    $("#screen-dialogue").appendChild(s);
+    setTimeout(() => s.classList.add("fade"), 9000);
+    setTimeout(() => s.remove(), 12000);
+  }
+}
+
+// 会話終了時に残留するエフェクト（セピア・香り煙）を掃除する
+function clearSceneFx() {
+  const scr = $("#screen-dialogue");
+  if (!scr) return;
+  scr.classList.remove("fx-sepia");
+  for (const el of scr.querySelectorAll(".fx-scent")) el.remove();
 }
 
 // 日替わりカード（演出のみ・操作は止めない）
@@ -851,7 +940,7 @@ function showGlossary() {
 
 // ---------------------------------------------------------------- config
 const CONFIG_KEY = "shisha_config_v1";
-const config = { textSpeed: 2, autoSpeed: 2, bgmVol: 100, sfxVol: 100, reelFx: "full" };
+const config = { textSpeed: 2, autoSpeed: 2, bgmVol: 100, sfxVol: 100, reelFx: "full", voiceBlip: 1 };
 
 function loadConfig() {
   try { Object.assign(config, JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}")); } catch (e) { /* 壊れた設定は既定値で続行 */ }
@@ -862,6 +951,7 @@ function applyConfig() {
   if (window.SFX) {
     SFX.setBgmVolume(config.bgmVol / 100);
     SFX.setSfxVolume(config.sfxVol / 100);
+    if (SFX.setVoiceBlip) SFX.setVoiceBlip(!!config.voiceBlip); // 文字送りボイス（#22）
   }
 }
 function saveConfig() {
@@ -885,6 +975,7 @@ function showConfig() {
       b.addEventListener("click", () => {
         config[key] = val;
         saveConfig();
+        applyConfig();
         for (const x of grp.children) x.classList.remove("on");
         b.classList.add("on");
         if (window.SFX) SFX.click();
@@ -908,6 +999,7 @@ function showConfig() {
   };
   seg("テキスト速度", "textSpeed", [[1, "遅い"], [2, "普通"], [3, "速い"], [4, "瞬間"]]);
   seg("オート速度", "autoSpeed", [[1, "ゆっくり"], [2, "普通"], [3, "せっかち"]]);
+  seg("文字送りボイス", "voiceBlip", [[1, "ON"], [0, "OFF"]]); // キャラ別blip（#22）
   slider("BGM音量", "bgmVol");
   slider("効果音 音量", "sfxVol");
   $("#config-overlay").classList.add("visible");
@@ -1113,7 +1205,7 @@ function initEngine() {
     {
       getStat: (en) => state.stats[en] || 0,
       interpolate: (t) => interpolate(t),
-      onSceneEnd: () => { if (skipMode) stopAutoSkip(); }, // 会話が終わったらSKIP解除（シーン転換を飛ばさない・T29）
+      onSceneEnd: () => { if (skipMode) stopAutoSkip(); clearSceneFx(); }, // SKIP解除＋残留エフェクト掃除
       portraitFaces: D.portraits,
       portraitTrims: D.portrait_trims,
       portraitScales: D.portrait_scales,
@@ -1126,6 +1218,11 @@ function initEngine() {
           const id = String(line.char_id || "");
           return (state.lovers || []).includes(id) && (state.affinity[id] || 0) >= AFFINITY_CAP;
         }
+        // 常連ノート連動（#30）: 該当の客を所定回数以上接客していると回想が強化版になる
+        if (line.condition_type === "customer_note") {
+          const note = (state.customerNotes || {})[String(line.note_id || "")];
+          return !!note && (note.count || 0) >= Number(line.threshold || 1);
+        }
         return false;
       },
       hasCg: (cgId) => (D.cgs || []).includes(cgId),
@@ -1135,6 +1232,7 @@ function initEngine() {
       onTextCue: parseTextCue,
       resolveBg: (rel) => resolveSceneBg(rel),
       onChoice: handleDialogueChoice,
+      onFx: dialogueFx,
       onApply: (line) => {
         if (line.stats) for (const [k, v] of Object.entries(line.stats)) gainStat(k, v);
         if (line.money) addMoney(line.money);
@@ -1177,6 +1275,13 @@ function handleDialogueChoice(dialogueId, choiceId, branchKey, nextId) {
   }
   // 浮気警告: 「それでも応える」を選んだ
   if (dialogueId.startsWith("cheat_warning_") && branchKey === "go") state.flags._cheat_go = true;
+  // 大会前夜の3択（#3・前夜の過ごし方）。恩恵は三者三様:
+  //   practice=本番craft小ボーナス（craftScore）／talk_sumi=根性UP（台詞キュー）／
+  //   sleep_early=体力全快＋当日ゲージ微減速（lastNightGaugeCalm）
+  if (dialogueId === "ch1_day7_last_night") {
+    state.flags._last_night = branchKey;
+    if (branchKey === "sleep_early") state.stamina = 100;
+  }
   // 家シーシャ: 吸った夜を記録（連夜は効果が落ちる）
   if (dialogueId === "home_shisha_night" && branchKey === "puff") {
     state.homePuffLast = { chapter: state.chapter, day: state.day };
@@ -1243,7 +1348,7 @@ const SPOTS = [
 const SPOT_UNKNOWN = {
   naru: { label: "KEMURIKUSAを覗く", desc: "隣町の人気店。若い店主が一人で回しているらしい" },
   adam: { label: "EDENを覗く", desc: "下町の店。焼き林檎みたいな甘い匂いが漏れている" },
-  minto: { label: "PEPERMINTを覗く", desc: "繁華街のポップな店。SNSで人気らしい" },
+  minto: { label: "PEPPERMINTを覗く", desc: "繁華街のポップな店。SNSで人気らしい" },
   tsumugi: { label: "常連の子と話す", desc: "カウンターの奥、いつも同じ席にいる女の子" },
   kumicho: { label: "神崎煙草店を覗く", desc: "暖簾の奥にシーシャの気配。古い佇まいの老舗" },
   ageha: { label: "派手な店を覗く", desc: "繁華街の目立つ店。ギャルっぽい店主がいるらしい" },
@@ -1692,7 +1797,8 @@ function playLimeEvent(dialogueId, sender, after, viaInvite) {
 const DATE_VENUES = [
   { id: "kemurikusa", name: "KEMURIKUSA", bg: "kemurikusa.png", note: "スピード勝負の店の、迷いのない煙" },
   { id: "eden", name: "EDEN", bg: "bg_eden_shop.png", note: "ダブルアップル一筋の店の、深く甘い香り" },
-  { id: "pepermint", name: "PEPERMINT", bg: "pepermint.png", note: "ポップな内装に、意外と丁寧な一台" },
+  // 表示・背景は PEPPERMINT に統一済み（#20）。id "pepermint" は旧綴りのまま＝セーブ互換のため据え置き
+  { id: "pepermint", name: "PEPPERMINT", bg: "peppermint.png", note: "ポップな内装に、意外と丁寧な一台" },
   { id: "hideaway", name: "裏通りの隠れ家ラウンジ", bg: "bg_hideaway.png", note: "看板のない店。常連だけが知る静けさ" },
 ];
 // キャラの台詞（venue共通の骨格に、キャラの声を差し込む）
@@ -1837,7 +1943,7 @@ const SPOT_LAYOUT = {
   tonari:    { x: 86.7, y: 41.7, theme: "baito",   short: "tonari",     area: "tonari" },
   naru:      { x: 72.3, y: 37.5, theme: "rival",   short: "KEMURIKUSA", area: "繁華街" },
   adam:      { x: 47.7, y: 47.2, theme: "rival",   short: "EDEN",       area: "下町" },
-  minto:     { x: 34.8, y: 54.2, theme: "rival",   short: "PEPERMINT",  area: "繁華街" },
+  minto:     { x: 34.8, y: 54.2, theme: "rival",   short: "PEPPERMINT",  area: "繁華街" },
   kumicho:   { x: 40, y: 24, theme: "rival",   short: "神崎煙草店", area: "旧市街" },
   ageha:     { x: 58, y: 20, theme: "rival",   short: "AGEHA",      area: "繁華街" },
   rei:       { x: 72, y: 32, theme: "rival",   short: "零-ZERO-",   area: "ライブ通り" },
@@ -1886,8 +1992,11 @@ function showMap(opts = {}) {
     } else {
       const face = known && SPOT_FACE[spot.id] && faceIconHtml(SPOT_FACE[spot.id], "pin-face");
       const subText = closed ? `本日${closed}` : visited ? "今日はもう行った" : (un ? un.label : spot.label);
+      // 今夜の固定イベント地には「!」バッジ（#28。イベント自体は夜に自動で起きる＝予感の演出）
+      const nightEv = state.chapter === 1 && CH1_NIGHT_EVENTS[state.day];
+      const evBadge = nightEv && nightEv.pin === spot.id ? `<i class="evt-badge">!</i>` : "";
       btn.innerHTML =
-        `<div class="shield">` +
+        `<div class="shield">${evBadge}` +
           `<div class="ico">${face || (un ? "煙" : SPOT_ICONS[spot.id] || "")}</div>` +
           `<div class="label">${layout.short}</div>` +
         `</div>` +
@@ -1941,6 +2050,11 @@ function showMap(opts = {}) {
     drainReel();
   }
   mapTutorial(); // 初回だけマップの使い方を点滅で案内（#36）
+  // その日限定イベントの存在を初回だけさりげなく伝える（#29。あげはカメオ等の取り逃し防止）
+  if (state.chapter === 1 && state.day >= 2 && !state.flags._hint_daylimited) {
+    state.flags._hint_daylimited = true;
+    toast("スミ「シーシャ屋の一日は一期一会だ。今日しか会えねえ客もいるぞ」");
+  }
 }
 
 // 初めてマップに出たときだけ、機能を点滅つきで一度だけ説明する（#36）。
@@ -1949,6 +2063,8 @@ function mapTutorial() {
   if (!state || state.flags._map_tutorial_done) return;
   const screen = document.querySelector("#screen-map");
   if (!screen || !screen.classList.contains("active")) return;
+  // DAYカードが出ている間は待つ（#34: カード→チュートリアルの直列化。重なって読めない問題）
+  if (document.querySelector("#day-card.show")) { setTimeout(mapTutorial, 300); return; }
   state.flags._map_tutorial_done = true; save();
   // 主要ピンを点滅させて注意を引く
   screen.querySelectorAll("#map-pins .spot-pin:not(:disabled)").forEach((p, i) => {
@@ -2009,6 +2125,15 @@ function updateMapInfo(spot, locked, tooPoor, closed, visited) {
         : CHAR_STAT[spot.id]
           ? `（ここに通うと【${STAT_KEYS[hintStat]}】が伸びそうだ）`
           : `（集中特訓だから、人に会うより【${STAT_KEYS[hintStat]}】がぐっと伸びる）`;
+      // 好感度の進捗可視化（#31）: あと1回の訪問で段階が上がるキャラは「あと1回」を明示
+      const cid = spot.charId;
+      if (cid && known && (cid in (state.affinity || {})) && state.affinity[cid] < AFFINITY_CAP) {
+        const pts = (state.affinityPts || {})[cid] || 0;
+        const need = AFFINITY_RANK_PTS[state.affinity[cid] + 1] - pts;
+        if (need > 0 && need <= AFFINITY_PTS.visit) {
+          growEl.textContent += "（あと1回で、もっと打ち解けられそうだ）";
+        }
+      }
       growEl.style.display = "";
     } else {
       growEl.style.display = "none";
@@ -2204,6 +2329,28 @@ function advanceDay() {
   if (exhausted) {
     state.flags._overwork = 0;
     showDayCard(`DAY ${state.day}`, "……熱っぽい");
+    // 初回の風邪だけは半日で回復（オーナー承認・2026-07-03）: 初見の理不尽感を減らす。
+    // 2回目以降は従来どおり丸1日ロス＝体調管理もゲームのうち
+    const firstSick = !state.flags._sick_once;
+    state.flags._sick_once = true;
+    if (firstSick) {
+      return playCustom({
+        dialogue_id: "sick_day_first",
+        metadata: { bg: "res://assets/backgrounds/bg_home.png" },
+        lines: [
+          { speaker: "", face: "", text: "朝。喉の奥が痛い。額に手を当てると、じんわり熱い。——風邪だ。" },
+          { speaker: "hajime", face: "sad", text: "（……無理が祟った。午前中は、休むしかない）" },
+          { speaker: "", face: "", text: "水だけ飲んで、布団に戻る。……昼過ぎ。汗と一緒に、熱が抜けていった。" },
+          { speaker: "hajime", face: "normal", text: "（今回は軽く済んだ。……次に無理をしたら、丸一日寝込む気がする）" },
+          { type: "apply", stats: { guts: 2 } },
+        ],
+      }, () => {
+        state.stamina = Math.max(stamina(), 60);
+        state.ap = 1; // 半日ロス: 夜の1行動だけ残る
+        save();
+        showMap();
+      });
+    }
     return playCustom({
       dialogue_id: "sick_day",
       metadata: { bg: "res://assets/backgrounds/bg_home.png" },
@@ -2268,13 +2415,33 @@ function mapBeat(onDone, label) {
 // 夜の行動を終えたら、マップへ戻さずその場で暗転→「今日は家へ帰ろう」→帰宅シーンへ。
 // 旧「今日はここまで——家に帰る」タップ（mapBeat）はボタン式で不自然という指摘で廃止（2026-07-02）。
 // スロットの未演出分は翌朝のマップ精算（#34/#23の仕組み）にそのまま乗るので取りこぼさない
+// 第1章の夜の固定イベント日（#28 翌日予告＋マップピン「!」バッジ）。
+// endDay の第1章分岐と日付・場所を一致させること（ズレると嘘の予告になる）
+const CH1_NIGHT_EVENTS = {
+  2: { pin: "tonari", label: "tonari" },
+  4: { pin: "", label: "帰り道" }, // あげはカメオ（ピンは無い＝予告文のみ）
+  5: { pin: "tonari", label: "tonari" },
+  7: { pin: "tonari", label: "tonari" },
+  9: { pin: "c_station", label: "C.STATION" },
+  10: { pin: "tonari", label: "tonari" },
+  12: { pin: "tonari", label: "tonari" },
+  13: { pin: "tonari", label: "tonari" },
+  14: { pin: "tonari", label: "tonari" },
+};
+function tomorrowNightEvent() {
+  return state && state.chapter === 1 ? CH1_NIGHT_EVENTS[state.day + 1] || null : null;
+}
+
 function nightFadeHome(next) {
   const host = $("#game");
   if (!host) return next();
   document.getElementById("night-fade")?.remove();
   const ov = document.createElement("div");
   ov.id = "night-fade";
-  ov.innerHTML = `<span>……今日は、家へ帰ろう。</span>`;
+  // 翌日予告（#28）: 明日が固定イベント日なら、就寝の1行に予感を添える
+  const ev = tomorrowNightEvent();
+  ov.innerHTML = `<span>……今日は、家へ帰ろう。</span>` +
+    (ev ? `<small class="nf-teaser">（明日、${ev.label}で何かありそうな気がする）</small>` : "");
   host.appendChild(ov);
   requestAnimationFrame(() => ov.classList.add("dark"));
   setTimeout(() => {
@@ -2299,8 +2466,10 @@ function endDay() {
     return "夜になった——";
   };
   const dlgBg = (id) => (((D.dialogues[id] || {}).metadata || {}).bg || "");
-  const pd = (id, cb, bg) => mapBeat(() => playDialogue(id, cb, bg), beatLabel(bg || dlgBg(id)));
-  const pc = (obj, cb) => mapBeat(() => playCustom(obj, cb), beatLabel(obj && obj.metadata && obj.metadata.bg));
+  // 夜の固定イベントは閉店後の静かな空気に合わせてBGMを店の曲へ落とす（#24 BGM差分）
+  const nightBgm = (bg) => { if (window.SFX && String(bg || "").includes("tonari")) SFX.bgm("tonari"); };
+  const pd = (id, cb, bg) => mapBeat(() => { nightBgm(bg || dlgBg(id)); playDialogue(id, cb, bg); }, beatLabel(bg || dlgBg(id)));
+  const pc = (obj, cb) => mapBeat(() => { nightBgm(obj && obj.metadata && obj.metadata.bg); playCustom(obj, cb); }, beatLabel(obj && obj.metadata && obj.metadata.bg));
   const TONARI = "res://assets/backgrounds/bg_tonari_inside_night.png";
   // ---- 第2章の夜の固定イベント（嫉妬と転落の進行）
   if (state.chapter === 2) {
@@ -2383,6 +2552,21 @@ function endDay() {
     state.flags._ev_day5 = true;
     return pd("ch1_day5_sumi_story", finishDay, TONARI);
   }
+  // DAY9夜: 出場者説明会（#11 3ライバルとの強制顔合わせ。未交流でも大会会話が破綻しない）
+  if (state.day === 9 && !state.flags._ev_meet_rivals) {
+    state.flags._ev_meet_rivals = true;
+    return pd("ch1_meet_rivals", finishDay, "res://assets/backgrounds/bg_c_station_night.png");
+  }
+  // DAY10夜: サラリーマン常連の小さな異変（後章の仕込み・#12）
+  if (state.day === 10 && !state.flags._ev_salaryman_change) {
+    state.flags._ev_salaryman_change = true;
+    return pd("ch1_salaryman_change", finishDay, TONARI);
+  }
+  // DAY12夜: つむぎの個別イベント（煙の色スケッチ・#12）
+  if (state.day === 12 && !state.flags._ev_tsumugi_night) {
+    state.flags._ev_tsumugi_night = true;
+    return pd("ch1_tsumugi_sketch", finishDay, TONARI);
+  }
   // DAY13夜（大会前々日）: 前日リハーサル（通し）。出来が本番の小ボーナスになる
   if (state.day === 13 && !state.flags._ev_day6_rehearsal) {
     state.flags._ev_day6_rehearsal = true;
@@ -2393,7 +2577,9 @@ function endDay() {
       lines: [
         { speaker: "sumi", face: "normal", text: "明後日が本番だ。今夜は通しでやるぞ。テーマ決めから引きまで、店の作業台を本番だと思え" },
         { speaker: "sumi", face: "serious", text: "リハーサルってのはな、失敗するためにやるんだ。今夜失敗した分だけ、本番で落ち着ける" },
-        { speaker: "hajime", face: "normal", text: "はい。（……手が少し冷たい。本番前夜って、こういう感じなのか）" },
+        // 章のテーマ台詞は必ず通る位置にも置く（#14。of_rival分岐と重なっても再登場として機能する）
+        { speaker: "sumi", face: "serious", text: "それと、これだけは持っていけ。──見せるんじゃなくて、届けるんだよ" },
+        { speaker: "hajime", face: "normal", text: "（見せるんじゃなくて、届ける……）はい。（……手が少し冷たい。本番前夜って、こういう感じなのか）" },
       ],
     }, () => beginMaking("rehearsal"));
   }
@@ -2487,7 +2673,7 @@ function doBaito(afterCameo) {
 
 // --- キャラ訪問
 const VISIT_BG = {
-  naru: "kemurikusa.png", adam: "bg_eden_shop.png", minto: "pepermint.png",
+  naru: "kemurikusa.png", adam: "bg_eden_shop.png", minto: "peppermint.png",
   sumi: "bg_tonari_inside.png", tsumugi: "bg_tonari_inside.png",
 };
 
@@ -2748,7 +2934,13 @@ function showShop() {
       ? `<span class="spot-name">2階から視線を感じる……</span><span class="spot-cost">2,500円・行動を1回使う</span><span class="spot-desc">階段の上に、誰かいる。ブース付き</span>`
       : `<span class="spot-name">2階のショールーム＋ブース（${displayName("rin")}）</span>` +
         `<span class="spot-cost">${rinAway ? "今日は出張で不在" : visitedToday ? "今日はもう顔を出した" : "2,500円・会いに行く（行動を1回使う）"}</span>` +
-        `<span class="spot-desc">NIGHTSIDE日本代理店。吸えるブースつき（他店より少し安い）。買い物だけなら時間はかからない</span>`;
+        `<span class="spot-desc">NIGHTSIDE日本代理店。吸えるブースつき（他店より少し安い）。買い物だけなら時間はかからない</span>` +
+        // 3回目の解禁を必ず可視化（#31。「あと○回」で奥の棚＝限定サンプルの気配を出す）
+        (state.visits.rin < RIN_SEQUENCE.length
+          ? `<span class="spot-progress">${state.visits.rin === RIN_SEQUENCE.length - 1
+              ? "あと1回通えば、彼女の“奥の棚”が開きそうだ"
+              : `通うたび、奥の棚が近づく気がする（あと${RIN_SEQUENCE.length - state.visits.rin}回）`}</span>`
+          : "");
   rinBtn.disabled = visitedToday || rinAway || state.money < FOOKAH_BOOTH_FEE; // ブース料が払えないと不可（T28）
   rinBtn.addEventListener("click", doRinVisit);
   rinWrap.appendChild(rinBtn);
@@ -3133,7 +3325,9 @@ function runPracticeGauge(item) {
     const tier = { perfect: 2, good: 1, miss: 0 }[result] || 0;
     if (tier > (state.practiceBest[item.id] || 0)) {
       state.practiceBest[item.id] = tier;
-      toast("自己ベスト更新！ 本番に効くはずだ");
+      // 自己ベスト演出（#33）: スタンプ＋スミさんの一言講評
+      setTimeout(() => showStamp($("#screen-practice .panel"), "best"), 550);
+      toast(`スミ「${SUMI_BEST_COMMENTS[(state.day + tier) % SUMI_BEST_COMMENTS.length]}」`);
     }
     const done = document.createElement("button");
     done.className = "primary-btn";
@@ -3151,6 +3345,9 @@ const THEMES = [
   { id: "fruity", label: "フルーティ", desc: "果実感の輪郭で勝負する", best: ["fruit", "sweet"] },
   { id: "aftertaste", label: "余韻", desc: "吸い終わったあとに残る香り", best: ["spice", "sweet"] },
 ];
+// フレーバーカテゴリの表示名（洞察ヒント用）
+const CAT_LABELS = { cooling: "清涼", sweet: "スイート", fruit: "フルーツ", spice: "スパイス", floral: "フローラル" };
+const catLabelsOf = (cats) => (cats || []).map((c) => CAT_LABELS[c] || c).join("＋");
 const PACKS = [
   { id: "fluffy", label: "ふんわり", desc: "空気を含ませて軽く詰める" },
   { id: "normal", label: "ノーマル", desc: "基本に忠実な詰め方" },
@@ -3892,12 +4089,19 @@ function startTournament() {
   for (const id of ["naru", "adam", "minto", "nagumo", "maezono"]) markMet(id);
   updateHud();
   save();
+  toast("大会直前のデータをセーブした"); // #37: 敗北=GAME OVERがあるので明示しておく
   // 出発前に「持参フレーバー」を確認。未仕入れならスミさんがお情けで分けてくれる（#44）
   flavorBringIn(() =>
     // 会場へ歩み入る瞬間を煙ワイプで（master_spec #20）
-    smokeWipe(() => playDialogue("ch1_tournament_arrival", () =>
-      playDialogue("ch1_tournament_opening", () => entranceIntro(() => beginMaking()), "res://assets/backgrounds/bg_tournament_stage.png")
-    ))
+    smokeWipe(() => {
+      if (window.SFX) SFX.bgm("bgm_tournament_wait"); // 会場入り〜控室（#24 BGM差分）
+      playDialogue("ch1_tournament_arrival", () =>
+        playDialogue("ch1_tournament_opening", () => {
+          if (window.SFX) SFX.bgm("bgm_tournament_edm"); // 開幕コール後は本番の熱に切り替え
+          entranceIntro(() => beginMaking());
+        }, "res://assets/backgrounds/bg_tournament_stage.png")
+      );
+    })
   );
 }
 
@@ -4058,7 +4262,18 @@ function tournamentStep(step) {
   if (step === "setup_bowl" || step === "setup_hms" || step === "setup_charcoal") return stepSetup(step);
   if (step === "theme") {
     const body = tnPanel("テーマ選択", "今日の一台のコンセプトを決めろ。フレーバー選びの軸になる。");
-    for (const t of THEMES) body.appendChild(optionButton(t.label, t.desc, () => { tt.theme = t; tnNext("theme"); }));
+    // 洞察: 審査員（テーマ）の好みが読める＝各テーマに刺さるカテゴリを開示
+    const insightful = (state.stats.insight || 0) >= INSIGHT_HINT_BAR;
+    if (insightful) {
+      const hint = document.createElement("p");
+      hint.className = "tn-tutor insight-hint";
+      hint.textContent = "（……審査席の空気が読める。それぞれのコンセプトに“刺さる”香りの系統が見えた）";
+      body.appendChild(hint);
+    }
+    for (const t of THEMES) {
+      const desc = insightful ? `${t.desc}　◇相性: ${catLabelsOf(t.best)}` : t.desc;
+      body.appendChild(optionButton(t.label, desc, () => { tt.theme = t; tnNext("theme"); }));
+    }
     return;
   }
   if (step === "mix") return stepMix();
@@ -4139,7 +4354,8 @@ function showStandings(round, next) {
   btn.className = "primary-btn";
   btn.textContent = round === 1 ? "ラウンド2へ" : "最終ラウンドへ";
   btn.addEventListener("click", next);
-  body.append(table, comment, btn);
+  // 持ち点の途中経過実況（#6）: 南雲だけ動かないことを不穏に見せる
+  body.append(table, judges, comment, btn);
   if (window.SFX) SFX.stamp();
 }
 
@@ -4329,7 +4545,8 @@ function stepFoil() {
   const ringData = HOLE_RINGS.map((r) => ({ ...r, angles: [] }));
   let ringIdx = 0;
   let angle = -90;            // 現在のカーソル角（度）
-  const speed = 150 - Math.min(70, state.stats.technique * 0.7); // 技術が高いほどゆっくり=狙いやすい（deg/s）
+  // 技術が高いほどカーソルがゆっくり=狙いやすい（deg/s）。序盤は速く、育成で体感できる差にする
+  const speed = (165 - Math.min(95, state.stats.technique * 0.95)) * lastNightGaugeCalm();
   let raf = 0, last = performance.now(), running = true;
 
   const callout = (text, cls) => {
@@ -4465,6 +4682,8 @@ function stepFoil() {
     next.textContent = isDrill ? "結果を見る" : "次へ";
     next.addEventListener("click", () => tnNext("foil"));
     result.appendChild(next);
+    // 根性: 穴が乱れたときだけ、大会中1回のやり直しを差し出す
+    if (quality < 0.6) offerGutsRetry(result, "foil", () => { tt.foilHits = 0; tt.foilDone = false; tt.holeResult = null; });
   }
 
   setRingUI();
@@ -4519,6 +4738,38 @@ const HEAT_GRADE = {
   ash:   { q: 0.10, label: "OVER HEAT",       sub: "焼きすぎ", heatPower: 35,  heatStability: -10, startupSpeed: 25,  burnRisk: 30,  aromaRetention: -20 },
 };
 
+// ============================================================================
+// ステータス→ミニゲーム入力反映（#53確定版・2026-07-02）
+// 結果への加点ではなく「操作が楽になる」方向でステを効かせる:
+//   技術 = ゲージ系（穴あけカーソル・炭の熱入り・吸い出しの針）の速度を減速
+//   センス = ジャスト/PERFECT帯の幅を拡大
+//   洞察 = ミックス/テーマ選択で審査員（テーマ）の好みヒントを開示
+//   根性 = 大会本番中1回だけ、しくじった工程をやり直せる（リハーサル・練習は無効）
+// ============================================================================
+const INSIGHT_HINT_BAR = 25;      // テーマ相性ヒントが見え始める洞察
+const INSIGHT_MIX_BAR = 40;       // ミックス画面の相性バッジが見える洞察
+const GUTS_RETRY_BAR = 30;        // 大会中のやり直しが解放される根性
+// 前夜「早く寝る」の恩恵: 大会当日だけゲージ系がわずかに減速（手元が落ち着く）
+function lastNightGaugeCalm() {
+  return tt && tt.mode === "tournament" && state.flags._last_night === "sleep_early" ? 0.93 : 1;
+}
+// 根性リトライ: 大会本番でしくじった工程を、1大会に1度だけやり直せる
+function offerGutsRetry(container, step, resetFn) {
+  if (!tt || tt.mode !== "tournament" || tt.gutsRetryUsed) return;
+  if ((state.stats.guts || 0) < GUTS_RETRY_BAR) return;
+  const btn = document.createElement("button");
+  btn.className = "primary-btn ghost guts-retry";
+  btn.textContent = "──歯を食いしばって、やり直す（根性・大会中1回）";
+  btn.addEventListener("click", () => {
+    tt.gutsRetryUsed = true;
+    if (window.SFX) SFX.select();
+    toast("根性で踏みとどまった。もう一度だけ──");
+    if (resetFn) resetFn();
+    tournamentStep(step);
+  });
+  container.appendChild(btn);
+}
+
 // タイミング系ミニゲームの開始前カウントダウン（3・2・1・スタート）。
 // 開始直後のシビアな判定で理不尽に外れるのを防ぐ（T22-C・必須）。onStart で本編の時計を回す
 function miniCountdown(container, onStart) {
@@ -4571,10 +4822,9 @@ function stepCoalFire() {
 
   // 炭の数は前工程「炭をコンロにセット」での選択に従う（2個/トライアングル3個/4個）
   const count = tt.coal === "two" ? 2 : tt.coal === "four" ? 4 : 3;
-  // 根性が高いほどジャスト窓が広く、温度上昇がわずかに緩やか（数値は見せない）
-  const guts = state.stats.guts;
-  const justHi = 0.96 + Math.min(0.12, guts / 900);
-  const baseRate = 0.235 - Math.min(0.075, guts / 1300);
+  // センスが高いほどジャスト窓が広く、技術が高いほど熱の入りが緩やか（数値は見せない）
+  const justHi = 0.96 + Math.min(0.12, state.stats.sense * 0.0015);
+  const baseRate = (0.26 - Math.min(0.1, state.stats.technique * 0.00125)) * lastNightGaugeCalm();
 
   const coals = [];
   for (let i = 0; i < count; i++) {
@@ -4692,6 +4942,8 @@ function stepCoalFire() {
     next.textContent = isDrill ? "結果を見る" : "次へ";
     next.addEventListener("click", () => tnNext("coalfire"));
     result.appendChild(next);
+    // 根性: 熾きをしくじったときだけ、大会中1回のやり直しを差し出す
+    if (tt.coalFire === "miss") offerGutsRetry(result, "coalfire", () => { tt.coalFire = null; tt.coalResult = null; });
   }
 
   // テスト用フック: 各炭の温度・取り頃を読む（自動プレイ用）
@@ -4792,7 +5044,9 @@ function stepMix() {
   const body = tnPanel(
     "フレーバー選択 & ミックス",
     (reg ? `レギュレーション: ${reg.label}　` : "") +
-      `合計12g〜${cap}g・1〜3種類。多く詰むほど味の持ちは良くなるが、その分の熱${charged ? "と葉代" : ""}が要る。`
+      (cap <= 12
+        ? "合計12gちょうど・1〜3種類。このボウルは12gが上限だ。"
+        : `合計12g〜${cap}g・1〜3種類。多く詰むほど味の持ちは良くなるが、その分の熱${charged ? "と葉代" : ""}が要る。`)
   );
   const regFlavorName = reg ? ((D.flavors.find((f) => f.id === reg.flavor) || {}).short_name || reg.flavor).replace(/^AF /, "") : "";
   if (reg) {
@@ -4863,6 +5117,13 @@ function stepMix() {
     (!f.leaf || f.leaf === "blond") &&
     !(compMode && f.competition_legal === false) &&
     !(serveMode && f.serve_legal === false));
+  // 洞察: テーマ（審査員の好み）に噛み合うフレーバーが見える（#53）
+  const mixInsight = (state.stats.insight || 0) >= INSIGHT_MIX_BAR && tt.theme && tt.theme.best;
+  const themeFit = (f) => {
+    if (!mixInsight) return false;
+    const fCats = Array.isArray(f.category) ? f.category : [f.category];
+    return fCats.some((c) => tt.theme.best.includes(c));
+  };
   for (const f of flavors) {
     const row = document.createElement("div");
     row.className = "mix-row";
@@ -4870,7 +5131,8 @@ function stepMix() {
     const info = document.createElement("div");
     info.className = "mix-info";
     const priceTag = charged && mixGramCost(f) ? ` <span class="mix-price">${mixGramCost(f)}円/g</span>` : charged ? ` <span class="mix-price free">提供品</span>` : "";
-    info.innerHTML = `<span class="spot-name">${f.short_name || f.name}${priceTag}</span><span class="spot-desc">${tasteSlump ? garble(f.description) : f.description}</span>`;
+    const fitTag = themeFit(f) ? ` <span class="mix-fit">◎コンセプト向き</span>` : "";
+    info.innerHTML = `<span class="spot-name">${f.short_name || f.name}${fitTag}${priceTag}</span><span class="spot-desc">${tasteSlump ? garble(f.description) : f.description}</span>`;
     const ctrl = document.createElement("div");
     ctrl.className = "mix-ctrl";
     const minus = document.createElement("button");
@@ -5153,9 +5415,8 @@ function stepPull() {
   // ステが低いうちは1吸いで動く温度が小さい＝手数がかかり、ジャストを狙う価値が高い。
   // 上がるほど1吸いの効きとジャスト帯が広がり、少ない手数で適温に寄せられる（＝上達の実感）。
   // ※ PULL_DELTA / PULL_JUST はここでモジュール定数を上書き（__pullDebug もこの値を参照）
-  const ctrl = ((state.stats.technique || 10) + (state.stats.sense || 10)) / 2; // 温度コントロール力 0〜100
-  const PULL_DELTA = 0.05 + (ctrl / 100) * 0.07; // 0.05(低ステ)〜0.12(満) ／ 1吸いで動かせる最大温度（旧固定0.13をナーフ＋ステ連動）
-  const _jhw = 0.012 + (ctrl / 100) * 0.013;      // ジャスト帯の半幅: 低ステほど狭く、上達で広がる
+  const PULL_DELTA = 0.05 + ((state.stats.technique || 10) / 100) * 0.07; // 0.05(低ステ)〜0.12(満) ／ 1吸いで動かせる最大温度＝技術
+  const _jhw = 0.01 + ((state.stats.sense || 10) / 100) * 0.016;          // ジャスト帯の半幅: センスで広がる
   const PULL_JUST = {
     up:   [0.1725 - _jhw, 0.1725 + _jhw],
     keep: [0.5 - _jhw, 0.5 + _jhw],
@@ -5225,8 +5486,8 @@ function stepPull() {
 
   // ゲージは左→右に走り、右端まで行ったらまた左から（折り返さない）
   let pos = 0, running = true, raf = 0, last = performance.now();
-  // 針速度: ベースをややシビアに固定（T23・達成感）。ステによる緩和は落とし所を設計してから（保留）
-  const speed = 0.52;
+  // 針速度: 技術が高いほどゆっくり＝狙いやすい（#53確定・序盤は速くてシビア）
+  const speed = (0.56 - Math.min(0.18, (state.stats.technique || 10) * 0.002)) * lastNightGaugeCalm();
   const tick = (now) => {
     if (!running) return;
     const dt = (now - last) / 1000;
@@ -5278,7 +5539,7 @@ function stepPull() {
     }
     if (just) {
       tt.pullJust = (tt.pullJust || 0) + 1;
-      showStamp($("#tn-layout .panel"), "just");
+      showStamp(wrap, "just"); // ゲージ側に出す（#36: 説明文に被らない）
       feelPop(8, "JUST"); nicoBurst("perfect", 1);
       if (window.SFX) SFX.perfect && SFX.perfect();
     }
@@ -5310,7 +5571,7 @@ function stepPull() {
     if (window.SFX) SFX.bubble();
     spawnBubbles(tt.pull === "perfect" ? 14 : tt.pull === "good" ? 9 : 4);
     startRigSmoke(tt.pull === "miss" ? 900 : 320);
-    showStamp($("#tn-layout .panel"), tt.pull);
+    showStamp(wrap, tt.pull); // ゲージ側に出す（#36: 説明文に被らない）
     pakkiLive(tt.pull);
     broadcastJudge(tt.pull, "提供");
     nicoBurst("serve", 1); // 提供スピード感のウケ
@@ -5333,6 +5594,8 @@ function stepPull() {
       tnNext("pull");
     });
     wrap.appendChild(nextBtn);
+    // 根性: 温度を外した提供のときだけ、大会中1回のやり直しを差し出す
+    if (tt.pull === "miss") offerGutsRetry(wrap, "pull", () => { tt.pull = null; tt.pullJust = 0; });
   });
 }
 
@@ -5389,26 +5652,27 @@ function craftScore() {
     if (p.weight >= 1.0) { score += 4; detail.push("キューブ炭の火力が、重い煙を底から支えた。"); }
     else { score -= 2; detail.push("キューブ炭には、煙が軽すぎたかもしれない。"); }
   }
-  // アルミ穴あけ
-  score += Math.max(0, (tt.foilHits - 2) * 2);
+  // アルミ穴あけ（乱れた穴あけは明確なマイナス。基準は「まずまず(3)」）
+  score += Math.max(-4, Math.min(6, (tt.foilHits - 3) * 2));
   if (tt.foilHits <= 2) detail.push("アルミの穴が乱れ、空気の通りにムラが出た。");
   else if (tt.foilHits >= 6) detail.push("均等な穴あけが、煙の通り道を整えた。");
   // 炭起こし
   score += { perfect: 6, good: 3, miss: -2 }[tt.coalFire] || 0;
   if (tt.coalFire === "miss") detail.push("熾きの甘い炭が、立ち上がりを鈍らせた。");
-  // 集中
+  // 集中（雑念を一つも払えないと手元が乱れる）
   score += tt.focusCleared * 1.6;
+  if (tt.focusCleared === 0) { score -= 3; detail.push("雑念が頭から離れないまま、仕上げに入ってしまった。"); }
   // テーマとフレーバーカテゴリの噛み合い
   const matched = tt.theme.best.filter((c) => p.cats.has(c)).length;
-  if (matched >= 2) { score += 12; detail.push("テーマとフレーバーの相性は抜群だった。"); }
-  else if (matched === 1) { score += 7; detail.push("テーマとフレーバーはよく噛み合っていた。"); }
+  if (matched >= 2) { score += 8; detail.push("テーマとフレーバーの相性は抜群だった。"); }
+  else if (matched === 1) { score += 6; detail.push("テーマとフレーバーはよく噛み合っていた。"); }
   else { detail.push("テーマとフレーバーが、どこか噛み合っていない。"); }
   // 高火力テーマは耐熱が必要
   if (tt.theme.id === "high_heat" && p.heat < 1.0) { score -= 6; detail.push("熱にフレーバーが負けてしまった。"); }
   // パッキング × 煙の重さ
   if (tt.pack === "normal") score += 6;
-  else if (tt.pack === "fluffy") score += p.weight < 1.0 ? 9 : 3;
-  else if (tt.pack === "firm") score += p.weight >= 1.0 ? 9 : 3;
+  else if (tt.pack === "fluffy") score += p.weight < 1.0 ? 7 : 3;
+  else if (tt.pack === "firm") score += p.weight >= 1.0 ? 7 : 3;
   // 葉の量（12g基準）× 熱の収支。多く詰むほど味の持ちは良くなるが、必要な熱も増える
   const totalG = Object.values(tt.mix).reduce((a, b) => a + b, 0) || 12;
   const extraG = Math.max(0, totalG - 12);
@@ -5433,7 +5697,7 @@ function craftScore() {
   else if (tt.coal === "four") {
     // 葉が多いボウルは高火力を受け止められる
     if (p.heat >= 1.05 || totalG >= 15) { score += 7; detail.push("高火力に耐える一台が、力強い煙を生んだ。"); }
-    else { score -= 4; detail.push("炭が多すぎた。焦げの気配が混じる。"); }
+    else { score -= 5; detail.push("炭が多すぎた。焦げの気配が混じる。"); }
   }
   // 蒸らし
   if (tt.steam === 5 || tt.steam === 8) {
@@ -5453,10 +5717,11 @@ function craftScore() {
   if (typeof tt.steamHits === "number") {
     if (tt.steamHits === 0) { score += 6; detail.push("蒸らし中、雑念に一度も捕まらなかった。煙に芯が立つ。"); }
     else if (tt.steamHits <= 2) score += 3;
-    else { score -= 4; detail.push("蒸らし終わりの一手が乱れ、煙の芯が少し揺れた。"); }
+    else { score -= 6; detail.push("蒸らし終わりの一手が乱れ、煙の芯が少し揺れた。"); }
   }
-  // 吸い出し（提供時の温度）
-  score += { perfect: 12, good: 6, miss: 0 }[tt.pull];
+  // 吸い出し（提供時の温度）。適温を外した提供は素直に減点＝準備が本番に効く
+  score += { perfect: 12, good: 6, miss: -5 }[tt.pull];
+  if (tt.pull === "miss") detail.push("提供温度が狙いから外れた。最初の一口の印象がぼやける。");
   // 吸いすぎペナルティ: 4回目以降の吸い出しは提供前に葉を痩せさせる
   const overPulls = Math.max(0, (tt.pullCount || 0) - 3);
   if (overPulls > 0) {
@@ -5491,6 +5756,11 @@ function craftScore() {
     if (rt) {
       score += { great: 4, good: 3, rough: 2 }[rt] || 2;
       detail.push("前日のリハーサルが、体の力みを抜いてくれた。");
+    }
+    // 前夜の過ごし方（3択の恩恵は三者三様。練習=本番の出来に直接効く）
+    if (f._last_night === "practice") {
+      score += 4;
+      detail.push("前夜、閉店後の店で重ねた最後の反復が、指先に残っている。");
     }
   }
   // NGフレーバーペナルティ
@@ -5636,8 +5906,12 @@ function finishTournament() {
   // 基準を超えたときだけ、最終発表で全持ち点を一括投入して逆転が起きる。
   // 基準未達なら持ち点は動かず、暫定順位のまま＝普通に敗北する
   const NAGUMO_CRAFT_BAR = 80;
+  window.__craftDebug = craft.score; // テスト・バランス検証用（UIには出さない）
   let playerScore = base;
   if (craft.score >= NAGUMO_CRAFT_BAR) {
+    // 南雲カットイン演出（#4）用: 南雲票が入る前の暫定順位（はじめ=最下位付近）を保存
+    tt.provisionalResults = [...results.map((r) => ({ ...r })), { id: "hajime", name: "はじめ", score: base }]
+      .sort((a, b) => b.score - a.score);
     playerScore = Math.max(base + 16, topRival + 1.2);
     craft.detail.push("──最終発表。それまで一度も動かなかった南雲修二が、温存していた持ち点10を、すべてこの一台に投入した。");
   } else {
@@ -5672,7 +5946,7 @@ function contestantShishaColor(id) {
 // RESULT 10 COUNT（結果発表“前”のbuildup・#14/#48）。中央のカウントの周りに、
 // 出場者の「お祈りカット」と作った一台を並べる＝カット割。お祈り/立ち絵の専用画像は生成待ちのため、
 // 顔アイコン（あれば）＋名前＋一台の色で仮組み。プレミア(#47)は暗転→プチュンのフライング。
-function runResultCountdown(rank, premium, onDone, contestants) {
+function runResultCountdown(rank, premium, onDone, contestants, opts = {}) {
   let ov = document.getElementById("result-count");
   if (!ov) { ov = document.createElement("div"); ov.id = "result-count"; $("#game").appendChild(ov); }
   const list = (contestants && contestants.length) ? contestants : [{ id: "hajime", name: "はじめ" }, ...RIVALS];
@@ -5724,12 +5998,17 @@ function runResultCountdown(rank, premium, onDone, contestants) {
   let n = 10;
   const premiumAt = premium ? 3 : -1; // プレミアは少し残してフライング
   setTimeout(function tick() {
-    if (n <= 0) { msgEl.textContent = "──結果発表！"; return rank === 1 ? puchun() : parin(); }
+    if (n <= 0) {
+      msgEl.textContent = "──結果発表！";
+      // #4 南雲カットインに直結する場合はプチュン/パリンを出さない（優勝コールの二重化防止）
+      if (opts.noFinale) { setTimeout(() => { ov.className = "rc"; ov.innerHTML = ""; onDone(); }, 700); return; }
+      return rank === 1 ? puchun() : parin();
+    }
     if (rank === 1 && n === premiumAt) { msgEl.textContent = "……!?"; return puchun(); } // フライング（1位のみ）
     msgEl.textContent = n > 6 ? "まもなく、結果発表……" : "結果発表まで、あと";
     numEl.textContent = String(n);
     numEl.classList.remove("pop"); void numEl.offsetWidth; numEl.classList.add("pop");
-    if (window.SFX) SFX.click();
+    if (window.SFX) { if (n <= 4) SFX.heartbeat(); else SFX.click(); } // 終盤は無音の中の心音（#24）
     if (n % 2 === 0) flashCut();
     n--;
     setTimeout(tick, 360);
@@ -5753,24 +6032,124 @@ function tournamentBreakdown() {
     const g = tt.presentationResult.convinceGauge;
     add("審査", g >= 75 ? 2 : g >= 45 ? 1 : 0, "実績の伴うアピールを“ぶつける”と納得が伸びる");
   }
+  // 前夜の過ごし方（ch1・3択の恩恵を内訳で見せる）
+  const LAST_NIGHT_ROWS = {
+    practice: ["前夜: 最後の練習", "反復が一台の完成度を底上げした"],
+    talk_sumi: ["前夜: スミさんと話した", "覚悟が据わり、土壇場で踏みとどまれる"],
+    sleep_early: ["前夜: 早めに休んだ", "休養で当日の手元が落ち着いた"],
+  };
+  const ln = LAST_NIGHT_ROWS[state.flags._last_night];
+  if (ln && state.chapter === 1) add(ln[0], 2, ln[1]);
   return items;
 }
-function buildBreakdownPanel() {
+function buildBreakdownPanel(rank) {
   const items = tournamentBreakdown();
   const el = document.createElement("div");
   el.className = "result-breakdown";
   const lows = items.filter((it) => it.tier < 2).slice(0, 3);
+  // 勝っても「次章への課題」として同じヒント欄を流用する（#10）
+  const subLabel = rank === 1 ? "── 次章への課題" : "── 次への手がかり";
   el.innerHTML =
-    `<div class="rb-head">出来の内訳<span class="rb-sub">── 次への手がかり</span>` +
+    `<div class="rb-head">出来の内訳<span class="rb-sub">${subLabel}</span>` +
     (tt.feelScore ? `<span class="rb-feel">観客の体感スコア <b>${tt.feelScore}</b> P</span>` : "") + `</div>` +
     `<div class="rb-grid">` +
     items.map((it) => `<div class="rb-item g-${it.grade}"><span class="rb-label">${it.label}</span><span class="rb-grade">${it.grade}</span></div>`).join("") +
     `</div>` +
     `<div class="rb-hints">` +
     (lows.length ? lows.map((it) => `<p>・${it.label}: ${it.hint}</p>`).join("")
+      : rank === 1 ? `<p>・どの工程も高水準。だが県大会の壁は、この完成度が「普通」になる世界だ。</p>`
       : `<p>・どの工程も高水準。次は他のテーマでも安定を狙おう。</p>`) +
     `</div>`;
   return el;
+}
+
+// 紙吹雪（優勝コール用）。#game に短命の紙片を散らす
+function confettiBurst(n = 60) {
+  const host = $("#game");
+  if (!host) return;
+  const wrap = document.createElement("div");
+  wrap.className = "confetti-wrap";
+  const colors = ["#ffd479", "#8fe3c0", "#e89ad0", "#9ab8ff", "#ff9d76", "#fff6d8"];
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement("i");
+    p.style.left = `${Math.random() * 100}%`;
+    p.style.background = colors[i % colors.length];
+    p.style.animationDelay = `${Math.random() * 0.7}s`;
+    p.style.animationDuration = `${1.6 + Math.random() * 1.4}s`;
+    p.style.setProperty("--cx", `${(Math.random() * 2 - 1) * 60}px`);
+    wrap.appendChild(p);
+  }
+  host.appendChild(wrap);
+  setTimeout(() => wrap.remove(), 3600);
+}
+
+// ============================================================================
+// 南雲修二・持ち点10一括投入カットイン（#4・章のクライマックス演出）
+// 暫定順位バー（はじめ最下位付近）→ ざわめき → 無音の1拍 → 南雲カットイン →
+// 持ち点バーが一気に伸びて順位が入れ替わる → 優勝コール＋ファンファーレ＋紙吹雪＋smokeRings
+// ============================================================================
+function nagumoCutin(finalResults, onDone) {
+  const provisional = (tt && tt.provisionalResults) ||
+    [...finalResults].sort((a, b) => b.score - a.score);
+  let ov = document.getElementById("nagumo-cutin");
+  if (!ov) { ov = document.createElement("div"); ov.id = "nagumo-cutin"; $("#game").appendChild(ov); }
+  ov.className = "ngc show";
+  const top = Math.max(...provisional.map((r) => r.score), ...finalResults.map((r) => r.score));
+  const rowsHtml = provisional.map((r, i) =>
+    `<div class="ngc-row${r.id === "hajime" ? " me" : ""}" data-id="${r.id}" style="top:${i * 52}px">` +
+    `<span class="ngc-rank">${i + 1}位</span><span class="ngc-name">${r.name}</span>` +
+    `<i class="ngc-bar"><b style="width:${Math.max(6, (r.score / top) * 100)}%"></b></i></div>`).join("");
+  ov.innerHTML =
+    `<div class="ngc-caption" id="ngc-caption">暫定集計──総合印象点を残すのみ</div>` +
+    `<div class="ngc-table" style="height:${provisional.length * 52}px">${rowsHtml}</div>`;
+  if (window.SFX) { SFX.bgmStop(); SFX.crowd(2.0); }
+  const caption = ov.querySelector("#ngc-caption");
+  const setCap = (t, cls) => { caption.textContent = t; caption.className = `ngc-caption ${cls || ""}`; };
+
+  // 1) ざわめき → 2) 無音の1拍
+  setTimeout(() => { setCap("……会場が、静まり返る", "hush"); ov.classList.add("dim"); }, 1500);
+  // 3) 南雲カットイン
+  setTimeout(() => {
+    const cut = document.createElement("div");
+    cut.className = "ngc-cut";
+    cut.innerHTML =
+      `<div class="ngc-face">${faceIconHtml("nagumo", "ngc-face-img") || ""}</div>` +
+      `<div class="ngc-cut-text"><b>南雲修二、動く。</b><span>温存していた持ち点10──一括投入ッ！！</span></div>`;
+    ov.appendChild(cut);
+    if (window.SFX) { SFX.jingle(); SFX.stamp(); }
+    requestAnimationFrame(() => requestAnimationFrame(() => cut.classList.add("in")));
+  }, 2700);
+  // 4) 持ち点バーが一気に伸びて順位が入れ替わる
+  setTimeout(() => {
+    const cut = ov.querySelector(".ngc-cut");
+    if (cut) cut.classList.add("side");
+    ov.classList.remove("dim");
+    const finalSorted = [...finalResults].sort((a, b) => b.score - a.score);
+    const meRow = ov.querySelector(".ngc-row.me");
+    if (meRow) meRow.querySelector(".ngc-bar b").style.width = "100%";
+    if (window.SFX) SFX.perfect();
+    setTimeout(() => {
+      finalSorted.forEach((r, i) => {
+        const row = ov.querySelector(`.ngc-row[data-id="${r.id}"]`);
+        if (!row) return;
+        row.style.top = `${i * 52}px`;
+        row.querySelector(".ngc-rank").textContent = `${i + 1}位`;
+      });
+      setCap("──順位が、ひっくり返った", "flip");
+      if (window.SFX) SFX.crowd(1.6);
+    }, 700);
+  }, 4400);
+  // 5) 優勝コール＋ファンファーレ＋紙吹雪＋smokeRings
+  setTimeout(() => {
+    const call = document.createElement("div");
+    call.className = "ngc-call";
+    call.textContent = "優勝──蒸野 始ッ！！";
+    ov.appendChild(call);
+    if (window.SFX) { SFX.fanfare(); setTimeout(() => SFX.jingle(), 300); }
+    confettiBurst(70);
+    smokeRings(4);
+  }, 6300);
+  setTimeout(() => { ov.className = "ngc"; ov.innerHTML = ""; onDone(); }, 8600);
 }
 
 function showResult(results, rank, detail, opts = {}) {
@@ -5808,7 +6187,7 @@ function showResult(results, rank, detail, opts = {}) {
     }, 500 + i * 750);
   });
   // 出来の内訳（#25）。順位リビールが終わってから、ボタンと一緒にふわっと出す
-  const breakdown = (tt && tt.mode === "tournament") ? buildBreakdownPanel() : null;
+  const breakdown = (tt && tt.mode === "tournament") ? buildBreakdownPanel(rank) : null;
   if (breakdown) { breakdown.style.opacity = "0"; breakdown.style.transition = "opacity 0.5s"; }
   const btn = document.createElement("button");
   btn.className = "primary-btn";
@@ -5819,15 +6198,27 @@ function showResult(results, rank, detail, opts = {}) {
     btn.textContent = "──表彰のあとへ ▶";
     btn.addEventListener("click", opts.onWin || (() => {
       addMoney(CHAPTER_PRIZE[1]); // 優勝賞金（章別スケーリング）
-      // 審査(judging)・発表(reveal)は既にカウント前後で流したので、ここは表彰後の余韻だけ
-      playDialogue("ch1_tournament_after", () => postClearPhone(() => showClear()), "res://assets/backgrounds/bg_tournament_stage.png");
+      // 審査(judging)・発表(reveal)は既にカウント前後で流したので、ここは表彰後の余韻だけ。
+      // 章末は ???のLIME（本命のヒキ）→ 第2章予告パネル（#19）→ クリア画面の順に見せる。
+      // 内部的には先にクリア画面を整えてから予告を上に被せる（画面切替の瞬間に
+      // 会話レイヤーへのクリックが宙に浮く競合と、テストの即時タイトル読みを避ける）
+      playDialogue("ch1_tournament_after", () => postClearPhone(() => { showClear(); showCh2Teaser(() => {}); }), "res://assets/backgrounds/bg_tournament_stage.png");
     }));
   } else {
     btn.textContent = "……結果を受け止める";
     btn.addEventListener("click", opts.onLose || (() => {
-      // 1位のみ進出。2位以下はゲームオーバー（賞金なし・やり直す/タイトルへ）
+      // 1位のみ進出。2位以下はゲームオーバー（賞金なし・やり直す/タイトルへ）。
+      // GAME OVER画面の前に、閉店後tonariの短いフォローシーンを挟む（#9・再挑戦導線）
       tt.rank = rank;
-      playDialogue("ch1_tournament_defeat", () => showDefeat(rank), "res://assets/backgrounds/bg_tournament_stage.png");
+      playDialogue("ch1_tournament_defeat", () => playCustom({
+        dialogue_id: "ch1_defeat_follow",
+        metadata: { bg: "res://assets/backgrounds/bg_tonari_inside_night.png" },
+        lines: [
+          { speaker: "", face: "", text: "その夜。閉店後のtonari。スミさんは何も聞かず、自分用の一台に火を入れていた。" },
+          { speaker: "sumi", face: "normal", text: "……で、どうする？" },
+          { speaker: "hajime", face: "serious", text: "（──もう一回だ。もう一回、あの舞台で）" },
+        ],
+      }, () => showDefeat(rank)), "res://assets/backgrounds/bg_tournament_stage.png");
     }));
   }
   if (breakdown) body.append(note, table, breakdown, btn);
@@ -5841,23 +6232,48 @@ function showResult(results, rank, detail, opts = {}) {
     $("#tn-title").textContent = "";
     $("#tn-progress").textContent = "RESULT";
     $("#tn-body").innerHTML = "";
+    if (window.SFX) SFX.bgmStop(); // 結果発表前はBGMを止めて無音に（#7/#24）
     const premium = rank === 1 && tt.foilHits >= 6 && tt.coalFire === "perfect";
     const BG = "res://assets/backgrounds/bg_tournament_stage.png";
     // ch1優勝ルートだけ、順番を整える（#16/#48）: 審査(南雲の二口)→「もうだめだ」→
-    // 10カウント(buildup)→ 総合印象点の満点で逆転発表。負け/ch2は従来どおり。
+    // 10カウント(buildup)→ 南雲カットイン(#4・持ち点10一括投入で逆転)→ 発表。
+    // カウントのプチュンはカットイン側の優勝コールに譲る（二重化防止）。負け/ch2は従来どおり。
     if (state.chapter === 1 && rank === 1) {
       return playDialogue("ch1_tournament_judging",
-        () => runResultCountdown(rank, premium,
-          () => playDialogue("ch1_tournament_reveal", reveal, BG), results), BG);
+        () => runResultCountdown(rank, false,
+          () => nagumoCutin(results,
+            () => playDialogue("ch1_tournament_reveal", reveal, BG)),
+          results, { noFinale: true }), BG);
     }
     return runResultCountdown(rank, premium, reveal, results);
   }
   reveal();
 }
 
+// 第2章予告パネル（#19）: 県大会の名前＋出場者のシルエット1枚で章を締める。
+// クリックか約5秒で自動送り（テスト・放置でも詰まらない）
+function showCh2Teaser(onDone) {
+  let ov = document.getElementById("ch2-teaser");
+  if (!ov) { ov = document.createElement("div"); ov.id = "ch2-teaser"; $("#game").appendChild(ov); }
+  const sil = ["ageha", "kumicho", "rei"]
+    .map((id) => `<span class="ct-sil">${faceIconHtml(id, "ct-sil-img") || ""}</span>`).join("");
+  ov.className = "ct show";
+  ov.innerHTML =
+    `<div class="ct-label">NEXT ──</div>` +
+    `<div class="ct-cup">県大会『HAZE: OPEN CLOUD』</div>` +
+    `<div class="ct-sils">${sil}</div>` +
+    `<div class="ct-sub">県中の煙自慢が、この称号を狙っている。</div>`;
+  if (window.SFX) { SFX.jingle(); SFX.crowd(1.8); }
+  // クリックは吸わない（pointer-events:none）＝下の画面を触っている自動テスト・連打を
+  // 巻き込まない。予告は約5秒で自動送り
+  let done = false;
+  const finish = () => { if (done) return; done = true; ov.className = "ct"; ov.innerHTML = ""; onDone(); };
+  setTimeout(finish, 5200);
+}
+
 function showClear() {
   stopRigEffects();
-  if (window.SFX) SFX.fanfare();
+  if (window.SFX) { SFX.fanfare(); SFX.bgm("bgm_result_emotional"); } // 優勝の余韻（#24）
   state.phase = "cleared";
   save();
   showScreen("#screen-end");
@@ -6270,7 +6686,7 @@ function toggleStatus(show) {
 // ---------------------------------------------------------------- title
 // 一人称視点なので主人公は出さず、ヒロイン・ライバル・店の面々から日替わりで選ぶ。
 // アート一枚絵を煙マスクの窓（#title-chara-window）にコンシューマー風に表示する
-const TITLE_CHARA_POOL = ["tsumugi", "sumi", "packii", "naru", "adam", "minto"];
+const TITLE_CHARA_POOL = ["tsumugi", "sumi", "pakki", "naru", "adam", "minto"];
 
 function onceCallback(fn) {
   let called = false;
@@ -6508,6 +6924,9 @@ function finishDrill() {
     best.className = "tn-hint";
     best.textContent = `自己ベスト更新！（${"★".repeat(tier)}）この手応えは本番のスコアに乗る。`;
     body.appendChild(best);
+    // 自己ベスト演出（#33）: スタンプ＋スミさんの一言講評
+    setTimeout(() => showStamp(body, "best"), 550);
+    toast(`スミ「${SUMI_BEST_COMMENTS[(state.day + tier) % SUMI_BEST_COMMENTS.length]}」`);
     if (window.SFX) SFX.fanfare();
   }
   const done = document.createElement("button");
@@ -6630,7 +7049,18 @@ function startNewGame() {
   // コールドオープン: ch4ドバイ決勝の一瞬（顔も会場も見せない・暗転＋煙）
   // → 白煙 → 章タイトル →「1年前」のtonariへ。本番背景ができたら差し替える
   $("#vn-bg").style.backgroundImage = "none";
+  // コールドオープン専用演出（#8）: 観客シルエット＋香りの色煙＋歓声。章で一番豪華な導入
+  const scr = $("#screen-dialogue");
+  scr.classList.add("cold-open");
+  const coFx = document.createElement("div");
+  coFx.className = "cold-open-fx";
+  coFx.innerHTML = `<div class="co-haze l" style="--haze:#e8c878"></div><div class="co-haze r" style="--haze:#d96a6a"></div><div class="co-crowd"></div>`;
+  scr.appendChild(coFx);
+  if (window.SFX) { SFX.crowd(3.2); setTimeout(() => SFX.crowd(2.4), 3400); }
   playDialogue("ch1_cold_open", () => {
+    scr.classList.remove("cold-open");
+    coFx.remove();
+    if (window.SFX) SFX.jingle(); // 章タイトルのジングル（#23）
     engulfInSmoke(() => {
       showChapterTitle(
         { no: "第一章", num: "Ⅰ", name: "一吸目", read: "ファーストドロー ── FIRST DRAW", sub: "SMOKE CROWN CUP 編" },
@@ -6771,6 +7201,7 @@ function init() {
   setupContinueButton();
   $("#btn-gallery").addEventListener("click", () => showGallery());
   $("#btn-config").addEventListener("click", () => showConfig());
+  $("#dc-quote")?.addEventListener("click", sumiQuoteReply); // スミの一言に1行返事（#32）
   $("#config-close").addEventListener("click", () => { if (window.SFX) SFX.close(); $("#config-overlay").classList.remove("visible"); });
   $("#gallery-close").addEventListener("click", () => { if (window.SFX) SFX.close(); $("#gallery-overlay").classList.remove("visible"); });
   $("#gallery-viewer").addEventListener("click", () => $("#gallery-viewer").classList.remove("visible"));
