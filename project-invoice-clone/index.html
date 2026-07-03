@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>動画編集 案件管理</title>
+    <link rel="stylesheet" href="./styles.css" />
+    <script defer src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+    <script defer src="./app.js"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">
+            <i data-lucide="clapperboard"></i>
+          </span>
+          <div class="brand-copy">
+            <h1>動画編集 案件管理</h1>
+            <div class="summary-line">
+              <span>進行中 <strong id="active-count">0</strong>件</span>
+              <span class="divider" aria-hidden="true"></span>
+              <span>納品済み <strong id="delivered-count">0</strong>件</span>
+            </div>
+          </div>
+        </div>
+
+        <nav class="toolbar" aria-label="管理メニュー">
+          <div class="month-control" aria-label="管理月">
+            <button class="icon-button" type="button" id="prev-month-button" aria-label="前月">
+              <i data-lucide="chevron-left"></i>
+            </button>
+            <input id="month-picker" type="month" aria-label="管理月" />
+            <button class="icon-button" type="button" id="next-month-button" aria-label="翌月">
+              <i data-lucide="chevron-right"></i>
+            </button>
+          </div>
+          <button class="btn ghost" type="button" id="clients-button">
+            <i data-lucide="users"></i>
+            <span>クライアント</span>
+          </button>
+          <button class="btn ghost" type="button" id="items-button">
+            <i data-lucide="package"></i>
+            <span>品目</span>
+          </button>
+          <button class="btn ghost" type="button" id="expenses-button">
+            <i data-lucide="receipt"></i>
+            <span>経費</span>
+          </button>
+          <button class="btn ghost" type="button" id="invoice-button">
+            <i data-lucide="file-text"></i>
+            <span>請求書</span>
+          </button>
+          <button class="btn ghost" type="button" id="settings-button">
+            <i data-lucide="settings"></i>
+            <span>設定</span>
+          </button>
+          <button class="btn primary" type="button" id="new-project-button">
+            <i data-lucide="plus"></i>
+            <span>新規案件</span>
+          </button>
+        </nav>
+      </header>
+
+      <main class="board-shell" aria-label="案件ボード">
+        <section class="finance-strip" aria-label="月次サマリー">
+          <article class="metric-card">
+            <span>売上</span>
+            <strong id="month-revenue">¥0</strong>
+          </article>
+          <article class="metric-card">
+            <span>経費</span>
+            <strong id="month-expenses">¥0</strong>
+          </article>
+          <article class="metric-card emphasis">
+            <span>粗利</span>
+            <strong id="month-profit">¥0</strong>
+          </article>
+          <article class="metric-card">
+            <span>案件数</span>
+            <strong id="month-projects">0</strong>
+          </article>
+        </section>
+        <section class="board" id="board"></section>
+      </main>
+    </div>
+
+    <div id="modal-root" aria-live="polite"></div>
+    <div class="toast" id="toast" role="status"></div>
+  </body>
+</html>

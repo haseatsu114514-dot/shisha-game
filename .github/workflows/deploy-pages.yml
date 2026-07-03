@@ -7,6 +7,7 @@
 #   /web/        … 分割ファイル版（アセット遅延読み込み・起動が速い、こちらが本線）
 #   /shisha_ch1.html … 1ファイル配布版（約22MB・ダウンロードして持ち歩く用）
 #   /tools/flavor_stats_editor.html … フレーバー調整ツール
+#   /project-invoice-clone/ … 案件・請求書管理アプリ
 name: Deploy web build to GitHub Pages
 
 on:
@@ -22,6 +23,7 @@ on:
       - "web/tools/**"
       - "web/build_data.py"
       - "web/build_standalone.py"
+      - "project-invoice-clone/**"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -55,7 +57,7 @@ jobs:
           python3 web/build_standalone.py
       - name: Prepare site
         run: |
-          mkdir -p _site/web _site/tools
+          mkdir -p _site/web _site/tools _site/project-invoice-clone
           # 分割ファイル版（本線）: HTML+CSS+JSだけ先に読み、画像・音はスクリーンごとに遅延取得
           cp web/index.html _site/web/index.html
           cp -r web/css _site/web/css
@@ -79,6 +81,7 @@ jobs:
           # 1ファイル配布版はダウンロード用に残す
           cp web/dist/shisha_ch1.html _site/shisha_ch1.html
           cp web/tools/flavor_stats_editor.html _site/tools/flavor_stats_editor.html
+          cp -R project-invoice-clone/. _site/project-invoice-clone/
       - uses: actions/configure-pages@v5
         with:
           enablement: true
