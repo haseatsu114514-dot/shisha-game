@@ -6,6 +6,26 @@
 const SFX = (() => {
   let ctx = null;
   let muted = false;
+  let voiceBlip = true; // キャラ別文字送りボイス（#22）。CONFIGでOFFにすると従来タイプ音
+  // キャラ固有ピッチ表（スミ=低、みんと=高、パッキー=変調）。無いキャラは _default
+  const CHAR_BLIP = {
+    sumi:    { freq: 260, type: "triangle", peak: 0.07, filterFreq: 1600 },
+    nagumo:  { freq: 300, type: "triangle", peak: 0.06, filterFreq: 1800 },
+    kumicho: { freq: 230, type: "triangle", peak: 0.07, filterFreq: 1500 },
+    maezono: { freq: 420, type: "triangle", peak: 0.05 },
+    naru:    { freq: 640, type: "sine" },
+    adam:    { freq: 480, type: "sine" },
+    hajime:  { freq: 720, type: "sine" },
+    salaryman: { freq: 520, type: "sine" },
+    minto:   { freq: 1480, type: "sine", peak: 0.045 },
+    oneesan: { freq: 1180, type: "sine", peak: 0.045 },
+    tsumugi: { freq: 1080, type: "sine", peak: 0.045 },
+    rin:     { freq: 960, type: "sine", peak: 0.045 },
+    ageha:   { freq: 1250, type: "sine", peak: 0.045 },
+    pakki:   { freq: 980, type: "square", mod: true, peak: 0.04, filterFreq: 3200 },
+    dr_kemuri: { freq: 560, type: "square", peak: 0.04, filterFreq: 2400 },
+    _default: { freq: 760, type: "sine" },
+  };
   let bgmEl = null;
   const BGM_BASE = 0.35; // BGM音量の基準値（bgmVolume=1.0 のときの実音量）
   let bgmVolume = 1.0;
@@ -181,6 +201,21 @@ const SFX = (() => {
         freq: 1800 + Math.random() * 600, type: "square",
         a: 0.001, d: 0.012, r: 0.02, peak: 0.05,
         filterFreq: 3000, q: 1.5, wet: 0.05,
+      });
+    },
+    // キャラ別の文字送りボイス（#22）。speaker id でピッチを変える。
+    // 地の文（speaker空）はボイス無音。OFF時は従来のタイプ音へフォールバック
+    charBlip: (speaker) => {
+      if (!voiceBlip) return api.type();
+      if (!speaker) return; // 地の文=無音
+      const p = CHAR_BLIP[speaker] || CHAR_BLIP._default;
+      const f = p.mod
+        ? p.freq * (0.7 + Math.random() * 0.9)      // パッキー: ピッチが暴れる変調ボイス
+        : p.freq * (0.95 + Math.random() * 0.1);    // 通常: わずかな揺らぎだけ
+      blip({
+        freq: f, type: p.type || "sine",
+        a: 0.001, d: 0.02, r: 0.03, peak: p.peak || 0.05,
+        filterFreq: p.filterFreq || 4200, q: 1.2, wet: 0.06,
       });
     },
     // ---------- 判定 ----------
@@ -374,6 +409,8 @@ const SFX = (() => {
       if (bgmEl) bgmEl.muted = m;
     },
     isMuted: () => muted,
+    setVoiceBlip(v) { voiceBlip = !!v; },
+    getVoiceBlip: () => voiceBlip,
 
     // 音量（0.0〜1.0）。CONFIG画面から設定される
     setBgmVolume(v) {

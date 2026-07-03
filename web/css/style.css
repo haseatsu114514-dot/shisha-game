@@ -4423,3 +4423,39 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 .ct-sil-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.08) contrast(1.4);
   image-rendering: pixelated; }
 .ct-sub { font-size: 15px; color: #9aa4c4; letter-spacing: 0.1em; }
+
+/* ---------------- 会話内エフェクト（#25/#26/#27 音とエフェクト基盤） ---------------- */
+/* 白フラッシュ（驚き）。.soft は [imp] 台詞の自動演出用の控えめ版 */
+.fx-flash { position: absolute; inset: 0; z-index: 66; pointer-events: none; background: #fff;
+  animation: fx-flash-out 0.45s ease-out forwards; }
+.fx-flash.soft { animation: fx-flash-out-soft 0.32s ease-out forwards; }
+@keyframes fx-flash-out { from { opacity: 0.85; } to { opacity: 0; } }
+@keyframes fx-flash-out-soft { from { opacity: 0.28; } to { opacity: 0; } }
+/* 画面微揺れ（動揺）。#game はインライン scale() を持つため screen 側に掛ける */
+#screen-dialogue.fx-shake { animation: fx-shake 0.5s ease-in-out; }
+@keyframes fx-shake {
+  10% { transform: translate(-7px, 2px); } 25% { transform: translate(6px, -2px); }
+  40% { transform: translate(-5px, 1px); } 55% { transform: translate(4px, -1px); }
+  70% { transform: translate(-2px, 1px); } 85% { transform: translate(1px, 0); }
+}
+/* 回想=セピア（fx:"sepia" 〜 "sepia_off" / 会話終了で自動解除） */
+#screen-dialogue.fx-sepia #vn-bg, #screen-dialogue.fx-sepia #vn-portraits {
+  filter: sepia(0.65) brightness(0.92); transition: filter 0.8s ease; }
+/* カットイン級（スミ「大会出ろ」・南雲の二口目）: 斜め帯スイープ＋フラッシュ */
+.fx-cutin { position: absolute; inset: 0; z-index: 66; pointer-events: none; overflow: hidden; }
+.fx-cutin .flash { position: absolute; inset: 0; background: #fff; animation: fx-flash-out 0.5s ease-out forwards; }
+.fx-cutin .band { position: absolute; left: -30%; width: 160%; height: 13%;
+  background: linear-gradient(90deg, transparent, rgba(20,24,40,0.92), transparent);
+  transform: translateX(-110%) rotate(-7deg); animation: fx-band-sweep 0.7s cubic-bezier(0.2,0.8,0.2,1) forwards; }
+.fx-cutin .band.a { top: 26%; }
+.fx-cutin .band.b { top: 58%; animation-delay: 0.08s; }
+@keyframes fx-band-sweep { 45% { transform: translateX(0) rotate(-7deg); }
+  to { transform: translateX(110%) rotate(-7deg); } }
+/* 香りの色パーティクル（#27）: cold-open の co-haze を会話画面でも使えるようにする */
+.fx-scent { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden;
+  transition: opacity 2.5s ease; }
+.fx-scent.fade { opacity: 0; }
+.fx-scent .co-haze { position: absolute; width: 46%; height: 120%; top: -10%; opacity: 0.22; filter: blur(26px);
+  animation: co-haze-drift 9s ease-in-out infinite alternate; }
+.fx-scent .co-haze.l { left: -14%; background: radial-gradient(ellipse, var(--haze, #e8c878), transparent 70%); }
+.fx-scent .co-haze.r { right: -14%; background: radial-gradient(ellipse, var(--haze, #e8c878), transparent 70%); animation-delay: -4.5s; }

@@ -778,6 +778,60 @@ function smokeRings(n = 3) {
   }
 }
 
+// ---------------------------------------------------------------- 会話内エフェクト（#25/#26/#27）
+// dialogue JSON の {"type":"fx","id":"..."} や行付き "fx" から発火する軽演出。
+// すべて pointer-events:none（テストのクリックを吸わない）・自動終了。
+function dialogueFx(line) {
+  const id = String((line && line.id) || "");
+  const game = $("#game");
+  if (!game) return;
+  if (id === "flash" || id === "imp") {
+    // 白フラッシュ（驚き／[imp]台詞の自動演出。impはより控えめ）
+    const f = document.createElement("div");
+    f.className = `fx-flash${id === "imp" ? " soft" : ""}`;
+    game.appendChild(f);
+    setTimeout(() => f.remove(), 450);
+  } else if (id === "shake") {
+    // 画面微揺れ（動揺）。#game はインラインの scale() を持つので内側の画面を揺らす
+    const scr = $("#screen-dialogue");
+    scr.classList.remove("fx-shake");
+    void scr.offsetWidth;
+    scr.classList.add("fx-shake");
+    setTimeout(() => scr.classList.remove("fx-shake"), 600);
+  } else if (id === "sepia") {
+    // 回想=セピア。sepia_off か会話終了（clearSceneFx）で解除
+    $("#screen-dialogue").classList.add("fx-sepia");
+  } else if (id === "sepia_off") {
+    $("#screen-dialogue").classList.remove("fx-sepia");
+  } else if (id === "cutin") {
+    // カットイン級（スミ「大会出ろ」・南雲の二口目）: 帯スイープ＋フラッシュ
+    const c = document.createElement("div");
+    c.className = "fx-cutin";
+    c.innerHTML = `<i class="band a"></i><i class="band b"></i><i class="flash"></i>`;
+    game.appendChild(c);
+    if (window.SFX) SFX.stamp();
+    setTimeout(() => c.remove(), 900);
+  } else if (id === "scent") {
+    // 香りの色パーティクル（#27）: 画面端に色付きの煙を流す。color/color2 で指定
+    const s = document.createElement("div");
+    s.className = "fx-scent";
+    s.innerHTML =
+      `<div class="co-haze l" style="--haze:${line.color || "#d9a441"}"></div>` +
+      `<div class="co-haze r" style="--haze:${line.color2 || line.color || "#d9a441"}"></div>`;
+    $("#screen-dialogue").appendChild(s);
+    setTimeout(() => s.classList.add("fade"), 9000);
+    setTimeout(() => s.remove(), 12000);
+  }
+}
+
+// 会話終了時に残留するエフェクト（セピア・香り煙）を掃除する
+function clearSceneFx() {
+  const scr = $("#screen-dialogue");
+  if (!scr) return;
+  scr.classList.remove("fx-sepia");
+  for (const el of scr.querySelectorAll(".fx-scent")) el.remove();
+}
+
 // 日替わりカード（演出のみ・操作は止めない）
 function showDayCard(big, sub) {
   const card = $("#day-card");
@@ -851,7 +905,7 @@ function showGlossary() {
 
 // ---------------------------------------------------------------- config
 const CONFIG_KEY = "shisha_config_v1";
-const config = { textSpeed: 2, autoSpeed: 2, bgmVol: 100, sfxVol: 100, reelFx: "full" };
+const config = { textSpeed: 2, autoSpeed: 2, bgmVol: 100, sfxVol: 100, reelFx: "full", voiceBlip: 1 };
 
 function loadConfig() {
   try { Object.assign(config, JSON.parse(localStorage.getItem(CONFIG_KEY) || "{}")); } catch (e) { /* 壊れた設定は既定値で続行 */ }
@@ -862,6 +916,7 @@ function applyConfig() {
   if (window.SFX) {
     SFX.setBgmVolume(config.bgmVol / 100);
     SFX.setSfxVolume(config.sfxVol / 100);
+    if (SFX.setVoiceBlip) SFX.setVoiceBlip(!!config.voiceBlip); // 文字送りボイス（#22）
   }
 }
 function saveConfig() {
@@ -885,6 +940,7 @@ function showConfig() {
       b.addEventListener("click", () => {
         config[key] = val;
         saveConfig();
+        applyConfig();
         for (const x of grp.children) x.classList.remove("on");
         b.classList.add("on");
         if (window.SFX) SFX.click();
@@ -908,6 +964,7 @@ function showConfig() {
   };
   seg("テキスト速度", "textSpeed", [[1, "遅い"], [2, "普通"], [3, "速い"], [4, "瞬間"]]);
   seg("オート速度", "autoSpeed", [[1, "ゆっくり"], [2, "普通"], [3, "せっかち"]]);
+  seg("文字送りボイス", "voiceBlip", [[1, "ON"], [0, "OFF"]]); // キャラ別blip（#22）
   slider("BGM音量", "bgmVol");
   slider("効果音 音量", "sfxVol");
   $("#config-overlay").classList.add("visible");
@@ -1113,7 +1170,7 @@ function initEngine() {
     {
       getStat: (en) => state.stats[en] || 0,
       interpolate: (t) => interpolate(t),
-      onSceneEnd: () => { if (skipMode) stopAutoSkip(); }, // 会話が終わったらSKIP解除（シーン転換を飛ばさない・T29）
+      onSceneEnd: () => { if (skipMode) stopAutoSkip(); clearSceneFx(); }, // SKIP解除＋残留エフェクト掃除
       portraitFaces: D.portraits,
       portraitTrims: D.portrait_trims,
       portraitScales: D.portrait_scales,
@@ -1135,6 +1192,7 @@ function initEngine() {
       onTextCue: parseTextCue,
       resolveBg: (rel) => resolveSceneBg(rel),
       onChoice: handleDialogueChoice,
+      onFx: dialogueFx,
       onApply: (line) => {
         if (line.stats) for (const [k, v] of Object.entries(line.stats)) gainStat(k, v);
         if (line.money) addMoney(line.money);
@@ -2307,8 +2365,10 @@ function endDay() {
     return "夜になった——";
   };
   const dlgBg = (id) => (((D.dialogues[id] || {}).metadata || {}).bg || "");
-  const pd = (id, cb, bg) => mapBeat(() => playDialogue(id, cb, bg), beatLabel(bg || dlgBg(id)));
-  const pc = (obj, cb) => mapBeat(() => playCustom(obj, cb), beatLabel(obj && obj.metadata && obj.metadata.bg));
+  // 夜の固定イベントは閉店後の静かな空気に合わせてBGMを店の曲へ落とす（#24 BGM差分）
+  const nightBgm = (bg) => { if (window.SFX && String(bg || "").includes("tonari")) SFX.bgm("tonari"); };
+  const pd = (id, cb, bg) => mapBeat(() => { nightBgm(bg || dlgBg(id)); playDialogue(id, cb, bg); }, beatLabel(bg || dlgBg(id)));
+  const pc = (obj, cb) => mapBeat(() => { nightBgm(obj && obj.metadata && obj.metadata.bg); playCustom(obj, cb); }, beatLabel(obj && obj.metadata && obj.metadata.bg));
   const TONARI = "res://assets/backgrounds/bg_tonari_inside_night.png";
   // ---- 第2章の夜の固定イベント（嫉妬と転落の進行）
   if (state.chapter === 2) {
@@ -3923,9 +3983,15 @@ function startTournament() {
   // 出発前に「持参フレーバー」を確認。未仕入れならスミさんがお情けで分けてくれる（#44）
   flavorBringIn(() =>
     // 会場へ歩み入る瞬間を煙ワイプで（master_spec #20）
-    smokeWipe(() => playDialogue("ch1_tournament_arrival", () =>
-      playDialogue("ch1_tournament_opening", () => entranceIntro(() => beginMaking()), "res://assets/backgrounds/bg_tournament_stage.png")
-    ))
+    smokeWipe(() => {
+      if (window.SFX) SFX.bgm("bgm_tournament_wait"); // 会場入り〜控室（#24 BGM差分）
+      playDialogue("ch1_tournament_arrival", () =>
+        playDialogue("ch1_tournament_opening", () => {
+          if (window.SFX) SFX.bgm("bgm_tournament_edm"); // 開幕コール後は本番の熱に切り替え
+          entranceIntro(() => beginMaking());
+        }, "res://assets/backgrounds/bg_tournament_stage.png")
+      );
+    })
   );
 }
 
@@ -6097,7 +6163,7 @@ function showCh2Teaser(onDone) {
 
 function showClear() {
   stopRigEffects();
-  if (window.SFX) SFX.fanfare();
+  if (window.SFX) { SFX.fanfare(); SFX.bgm("bgm_result_emotional"); } // 優勝の余韻（#24）
   state.phase = "cleared";
   save();
   showScreen("#screen-end");

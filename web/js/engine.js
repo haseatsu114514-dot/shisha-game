@@ -213,7 +213,18 @@ class DialogueEngine {
     if (type === "hide_cg") { this.hideCg(); return this.next(); }
     if (type === "game_over") { this.finished = true; if (this.ctx.onGameOver) this.ctx.onGameOver(); return; }
     if (type === "apply") { if (this.ctx.onApply) this.ctx.onApply(line); return this.next(); }
+    // SE行（#21）: {"type":"sfx","id":"coal_snip"}。id は sfx.js のAPI名（snake_case可）
+    if (type === "sfx") { this.playSfx(line.id); return this.next(); }
+    // 演出行（#25/#26）: {"type":"fx","id":"flash|shake|sepia|sepia_off|cutin|scent"}
+    if (type === "fx") { if (this.ctx.onFx) this.ctx.onFx(line); return this.next(); }
     this.showLine(line);
+  }
+
+  // SE行の再生。存在しない id は黙って無視する（データ先行で書けるように）
+  playSfx(id) {
+    if (!window.SFX || !id) return;
+    const key = String(id).replace(/_([a-z])/g, (m, c) => c.toUpperCase());
+    if (typeof SFX[key] === "function") { try { SFX[key](); } catch (e) { /* noop */ } }
   }
 
   handleCondition(line) {
@@ -367,6 +378,9 @@ class DialogueEngine {
   showLine(line) {
     const speaker = String(line.speaker || "");
     const face = String(line.face || "");
+    this.curSpeaker = speaker; // 文字送りボイス（#22）のピッチ決定に使う
+    // 行付きの感情エフェクト（#26）: {"speaker":..., "fx":"flash"} で行表示と同時に発火
+    if (line.fx && this.ctx.onFx) this.ctx.onFx({ id: String(line.fx) });
     // 名前ラベル
     if (speaker) {
       const name = this.resolveName(speaker);
@@ -448,6 +462,8 @@ class DialogueEngine {
       label.classList.remove("typing");
       void label.offsetWidth;
       label.classList.add("typing");
+      // [imp]付き台詞は軽い自動演出（#25: 一瞬のフラッシュ＋テキスト強調）
+      if (text.includes("[imp]") && this.ctx.onFx) this.ctx.onFx({ id: "imp" });
       this.setAdvanceHint(true);
       return;
     }
@@ -468,7 +484,10 @@ class DialogueEngine {
     this.typeTimer = setInterval(() => {
       i += step;
       label.innerHTML = escapeHtml(text.slice(0, i)).replace(/\n/g, "<br>");
-      if (window.SFX && i % 4 < step) SFX.type();
+      if (window.SFX && i % 4 < step) {
+        // キャラ別文字送りボイス（#22）。未対応ビルドでは従来のタイプ音へフォールバック
+        if (SFX.charBlip) SFX.charBlip(this.curSpeaker); else SFX.type();
+      }
       if (i >= text.length) this.completeTyping();
     }, interval);
   }
