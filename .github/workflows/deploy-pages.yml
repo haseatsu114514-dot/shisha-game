@@ -87,7 +87,18 @@ jobs:
           path: _site
       - id: deployment
         uses: actions/deploy-pages@v4
+        continue-on-error: true
         with:
           # Pages側のキューが詰まると既定10分では deployment_queued のまま
           # タイムアウトする（2026-07-02 に5連続で発生）。20分まで粘る
+          timeout: 1200000
+      # Pages基盤が「Deployment failed, try again later」を返すことがある
+      # （2026-07-03 run166 で発生）。間を置いて1回だけ再試行する
+      - name: Wait before retrying transient Pages failure
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 90
+      - id: deployment-retry
+        if: steps.deployment.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+        with:
           timeout: 1200000
