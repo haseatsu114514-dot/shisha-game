@@ -3332,7 +3332,10 @@ function makingLayer(name, cls) {
 }
 function bowlMakingAsset(filled = false) {
   if (filled && tt && tt.pack) {
-    return ({ fluffy: "bowl_packed_airy.png", normal: "bowl_packed_normal.png", firm: "bowl_packed_firm.png" })[tt.pack] || "bowl_packed_normal.png";
+    const density = ({ fluffy: "airy", normal: "normal", firm: "firm" })[tt.pack] || "normal";
+    // ファンネルは中央スパイアの穴を塞がない専用リングパックを使う。
+    if (tt.bowl === "hagal_80beat") return `bowl_packed_phunnel_${density}.png`;
+    return `bowl_packed_${density}.png`;
   }
   if (tt && String(tt.bowl || "").includes("suyaki")) return "bowl_empty_clay.png";
   if (tt && tt.bowl === "hagal_80beat") return "bowl_empty_phunnel.png";
@@ -3349,10 +3352,30 @@ function leafPileAsset(total = mixTotalGrams()) {
   return "leaf_pile_4.png";
 }
 function coalHeatAsset() {
-  if (!tt || tt.step === "coal") return "coal_cold.png";
-  if (tt.coalFire === "perfect") return "coal_white.png";
-  if (tt.coalFire === "miss") return "coal_cold.png";
-  return "coal_red.png";
+  const shape = tt && tt.charcoal === "flat_charcoal" ? "coal_flat" : "coal";
+  let heat = "red";
+  if (!tt || tt.step === "coal" || tt.coalFire === "miss") heat = "cold";
+  else if (tt.coalFire === "perfect") heat = "just";
+  else if (tt.coalFire === "good") heat = "white";
+  return `${shape}_${heat}.png`;
+}
+function makingHoleLayer(count) {
+  const group = document.createElement("div");
+  group.className = "making-layer foil-holes";
+  const positions = [[50,18],[72,31],[76,56],[50,74],[24,56],[28,31]];
+  if (!hasMakingAsset("hole_punched.png")) {
+    group.classList.add("missing");
+    return group;
+  }
+  positions.slice(0, Math.max(0, Math.min(count || 0, positions.length))).forEach(([x, y]) => {
+    const hole = document.createElement("span");
+    hole.className = "foil-hole";
+    hole.style.left = `${x}%`;
+    hole.style.top = `${y}%`;
+    setMakingAsset(hole, "hole_punched.png");
+    group.appendChild(hole);
+  });
+  return group;
 }
 function zeroSteamUnlocked() {
   if (!state) return false;
@@ -3394,7 +3417,7 @@ function renderMakingWorkbench(step, opts = {}) {
     stage.appendChild(makingLayer(tt && tt.pack === "firm" ? "hand_press.png" : "hand_fork.png", "pack-hand"));
   } else if (scene === "foil") {
     stage.appendChild(makingLayer("foil_surface.png", "foil-sheet"));
-    if (tt && tt.foilHits > 0) stage.appendChild(makingLayer("hole_punched.png", "foil-holes"));
+    if (tt && tt.foilHits > 0) stage.appendChild(makingHoleLayer(tt.foilHits));
     stage.appendChild(makingLayer("hand_pin.png", "foil-hand"));
   } else if (scene === "coal" || scene === "coalfire") {
     stage.appendChild(makingLayer("stove_coil.png", "stove-coil"));

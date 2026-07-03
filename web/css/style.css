@@ -1854,7 +1854,7 @@ body {
   content: ""; position: absolute; left: 28px; right: 28px; bottom: 44px; height: 52px;
 }
 .mix-jar, .bench-jar {
-  right: 8%; top: 12%; width: 210px; height: 210px; z-index: 4;
+  right: 3%; top: 7%; width: 310px; height: 250px; z-index: 4;
   transform-origin: 54% 78%;
 }
 .mix-jar.missing, .bench-jar.missing {
@@ -1865,7 +1865,9 @@ body {
   box-shadow: inset 0 6px 18px rgba(255,255,255,0.18), 0 14px 26px rgba(0,0,0,0.4);
 }
 .mix-jar.pouring { animation: jar-pour 0.52s ease-in-out; }
-@keyframes jar-pour { 45% { transform: rotate(-32deg) translate(-34px, 18px); } }
+@keyframes jar-pour {
+  45% { transform: rotate(3deg) translate(-34px, 24px) scale(1.03); }
+}
 .pack-hand {
   right: 12%; bottom: 128px; width: 260px; height: 190px; z-index: 4;
   transform: rotate(-8deg);
@@ -1876,7 +1878,7 @@ body {
   opacity: 0.82;
 }
 .foil-sheet {
-  left: 50%; top: 50%; width: 440px; height: 300px; transform: translate(-50%,-50%);
+  left: 50%; top: 51%; width: 360px; height: 360px; transform: translate(-50%,-50%);
   z-index: 2;
 }
 .foil-sheet.missing {
@@ -1884,7 +1886,14 @@ body {
   border-radius: 50%;
   box-shadow: inset 0 0 36px rgba(0,0,0,0.36), 0 16px 28px rgba(0,0,0,0.42);
 }
-.foil-holes { left: 50%; top: 50%; width: 420px; height: 280px; transform: translate(-50%,-50%); z-index: 3; }
+.foil-holes { left: 50%; top: 51%; width: 286px; height: 286px; transform: translate(-50%,-50%); z-index: 3; }
+.foil-hole {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  transform: translate(-50%, -50%);
+  background: center / contain no-repeat;
+}
 .foil-holes.missing {
   background:
     radial-gradient(circle at 34% 44%, #1d2028 0 4px, transparent 5px),
@@ -1909,18 +1918,19 @@ body {
   box-shadow: inset 0 0 46px rgba(255,92,40,0.22), 0 18px 34px rgba(0,0,0,0.45);
 }
 .stove-coal {
-  width: 78px; height: 78px; z-index: 3;
+  width: 82px; height: 82px; z-index: 3;
+  transform-origin: center;
 }
 .stove-coal.missing {
   background: radial-gradient(circle at 50% 38%, #fff2c0, #e65a2e 45%, #2b2524 76%);
   border-radius: 18px 14px 20px 13px;
   box-shadow: 0 0 26px rgba(255,90,35,0.55), inset 0 -10px 18px rgba(0,0,0,0.45);
 }
-.coal-a { left: 41%; bottom: 172px; }
-.coal-b { left: 51%; bottom: 164px; }
-.coal-c { left: 46%; bottom: 106px; }
-.coal-d { left: 56%; bottom: 106px; }
-.tongs-hand { right: 8%; bottom: 120px; width: 300px; height: 220px; z-index: 4; transform: rotate(-8deg); }
+.coal-a { left: 40%; bottom: 174px; transform: rotate(-13deg); }
+.coal-b { left: 52%; bottom: 168px; transform: rotate(9deg); }
+.coal-c { left: 45%; bottom: 104px; transform: rotate(21deg); }
+.coal-d { left: 57%; bottom: 108px; transform: rotate(-24deg); }
+.tongs-hand { right: 7%; bottom: 118px; width: 270px; height: 200px; z-index: 4; transform: rotate(-8deg); }
 .tongs-hand.adjust { right: 11%; bottom: 82px; }
 .steam-rig {
   left: 50%; bottom: 42px; width: 540px; height: 380px; transform: translateX(-50%);
@@ -3183,11 +3193,11 @@ body {
 .hole-board {
   position: relative; width: 300px; height: 300px; flex: 0 0 auto;
   border-radius: 50%;
-  /* ピンと張ったアルミの中央部だけを使う: テクスチャを 210% にズームして縁(しわ)をクロップ。
+  /* 制作パートと同じ、しわなく張ったアルミ面を使う。
      テクスチャが無い環境では下の金属グラデにフォールバック */
   background:
     radial-gradient(circle at 50% 38%, rgba(255,255,255,0.10), transparent 60%),
-    url("../../assets/ui/foil_taut.png") center / 210% no-repeat,
+    url("../../assets/ui/making/foil_surface.png") center / 122% no-repeat,
     linear-gradient(135deg, #d8dde6 0%, #b9c0cc 28%, #e9edf3 50%, #aab2c0 74%, #cfd6e0 100%),
     #c3cad6;
   box-shadow: 0 0 0 2px rgba(120,140,200,0.3), 0 0 36px rgba(70,100,170,0.4), inset 0 0 46px rgba(0,0,0,0.45);
