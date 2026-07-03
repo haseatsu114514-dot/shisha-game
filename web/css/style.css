@@ -4459,3 +4459,35 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   animation: co-haze-drift 9s ease-in-out infinite alternate; }
 .fx-scent .co-haze.l { left: -14%; background: radial-gradient(ellipse, var(--haze, #e8c878), transparent 70%); }
 .fx-scent .co-haze.r { right: -14%; background: radial-gradient(ellipse, var(--haze, #e8c878), transparent 70%); animation-delay: -4.5s; }
+
+/* ---------------- 日常フック（#28〜#33） ---------------- */
+/* 就寝時の翌日予告（#28） */
+#night-fade { flex-direction: column; gap: 14px; }
+#night-fade .nf-teaser {
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-size: 13px; letter-spacing: 0.14em; color: #8f84a6;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 0.8s ease 0.9s, transform 0.8s ease 0.9s;
+}
+#night-fade.dark .nf-teaser { opacity: 1; transform: translateY(0); }
+#night-fade.clear .nf-teaser { opacity: 0; transition: opacity 0.4s ease; }
+/* 今夜の固定イベント地の「!」バッジ（#28） */
+.spot-pin .shield { position: relative; }
+.spot-pin .evt-badge {
+  position: absolute; top: -7px; right: -7px; z-index: 2;
+  width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-style: normal; font-weight: 900; font-size: 14px;
+  color: #2a1a00; background: #ffd35e; border: 2px solid #fff2cc;
+  box-shadow: 0 0 10px rgba(255, 211, 94, 0.8);
+  animation: evt-badge-pulse 1.4s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes evt-badge-pulse { 50% { transform: scale(1.18); box-shadow: 0 0 16px rgba(255,211,94,1); } }
+/* Dr.fookah 2階の解禁進捗（#31） */
+.spot-progress { display: block; margin-top: 3px; font-size: 12px; color: #ffd35e; }
+/* スミの一言・返事できる状態（#32） */
+#dc-quote.can-reply { cursor: pointer; }
+#dc-quote.can-reply:hover { color: #ffe9b0; }
+/* 自己ベストスタンプ（#33） */
+.stamp-best { color: #ffb64e; }

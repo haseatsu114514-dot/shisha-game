@@ -718,12 +718,38 @@ function updateDayCard() {
     : st >= STAMINA_LOW ? "疲れがたまってきた"
     : "かなり疲れている";
   const quotes = state.chapter === 2 ? CH2_SUMI_QUOTES : SUMI_QUOTES;
-  $("#dc-quote").textContent = `スミ「${quotes[Math.min(Math.max(state.day, 1), quotes.length) - 1]}」`;
+  const replied = !!state.flags[`_sumi_reply_c${state.chapter}_d${state.day}`];
+  $("#dc-quote").textContent = `スミ「${quotes[Math.min(Math.max(state.day, 1), quotes.length) - 1]}」` +
+    (replied ? "" : " ▼");
+  $("#dc-quote").classList.toggle("can-reply", !replied);
+}
+
+// 自己ベスト更新時のスミさんの一言講評（#33）
+const SUMI_BEST_COMMENTS = [
+  "……今の感じ、忘れんな", "腕、上がったな", "その手応えが基礎になる",
+  "本番でもそれをやれ", "いい煙の顔になってきた",
+];
+
+// スミさんの日替わり一言に、タップで1行だけ返事できる（#32。1日1回・報酬なし）
+const SUMI_QUOTE_REPLIES = [
+  "……はい、丁寧にやります", "肝に銘じます", "今日も一台ずつ、やってみます",
+  "……たしかに", "見ててください", "はい。……ちょっとだけ、ワクワクしてます",
+  "うっ、図星です", "了解です、師匠", "……その言い方、かっこいいですね",
+];
+function sumiQuoteReply() {
+  if (!state || state.phase !== "daily") return;
+  const key = `_sumi_reply_c${state.chapter}_d${state.day}`;
+  if (state.flags[key]) return;
+  state.flags[key] = true;
+  toast(`はじめ「${SUMI_QUOTE_REPLIES[(state.day * 3 + state.chapter) % SUMI_QUOTE_REPLIES.length]}」`);
+  if (window.SFX) SFX.click();
+  updateDayCard();
+  save();
 }
 
 // 判定スタンプ演出
 function showStamp(container, result) {
-  const labels = { perfect: "PERFECT!", good: "GOOD", miss: "MISS…", just: "ジャスト！" };
+  const labels = { perfect: "PERFECT!", good: "GOOD", miss: "MISS…", just: "ジャスト！", best: "自己ベスト！" };
   const st = document.createElement("div");
   st.className = `stamp stamp-${result}`;
   st.textContent = labels[result] || result;
@@ -1182,6 +1208,11 @@ function initEngine() {
         if (line.condition_type === "has_romance_and_max_affection") {
           const id = String(line.char_id || "");
           return (state.lovers || []).includes(id) && (state.affinity[id] || 0) >= AFFINITY_CAP;
+        }
+        // 常連ノート連動（#30）: 該当の客を所定回数以上接客していると回想が強化版になる
+        if (line.condition_type === "customer_note") {
+          const note = (state.customerNotes || {})[String(line.note_id || "")];
+          return !!note && (note.count || 0) >= Number(line.threshold || 1);
         }
         return false;
       },
@@ -1952,8 +1983,11 @@ function showMap(opts = {}) {
     } else {
       const face = known && SPOT_FACE[spot.id] && faceIconHtml(SPOT_FACE[spot.id], "pin-face");
       const subText = closed ? `本日${closed}` : visited ? "今日はもう行った" : (un ? un.label : spot.label);
+      // 今夜の固定イベント地には「!」バッジ（#28。イベント自体は夜に自動で起きる＝予感の演出）
+      const nightEv = state.chapter === 1 && CH1_NIGHT_EVENTS[state.day];
+      const evBadge = nightEv && nightEv.pin === spot.id ? `<i class="evt-badge">!</i>` : "";
       btn.innerHTML =
-        `<div class="shield">` +
+        `<div class="shield">${evBadge}` +
           `<div class="ico">${face || (un ? "煙" : SPOT_ICONS[spot.id] || "")}</div>` +
           `<div class="label">${layout.short}</div>` +
         `</div>` +
@@ -2007,6 +2041,11 @@ function showMap(opts = {}) {
     drainReel();
   }
   mapTutorial(); // 初回だけマップの使い方を点滅で案内（#36）
+  // その日限定イベントの存在を初回だけさりげなく伝える（#29。あげはカメオ等の取り逃し防止）
+  if (state.chapter === 1 && state.day >= 2 && !state.flags._hint_daylimited) {
+    state.flags._hint_daylimited = true;
+    toast("スミ「シーシャ屋の一日は一期一会だ。今日しか会えねえ客もいるぞ」");
+  }
 }
 
 // 初めてマップに出たときだけ、機能を点滅つきで一度だけ説明する（#36）。
@@ -2075,6 +2114,15 @@ function updateMapInfo(spot, locked, tooPoor, closed, visited) {
         : CHAR_STAT[spot.id]
           ? `（ここに通うと【${STAT_KEYS[hintStat]}】が伸びそうだ）`
           : `（集中特訓だから、人に会うより【${STAT_KEYS[hintStat]}】がぐっと伸びる）`;
+      // 好感度の進捗可視化（#31）: あと1回の訪問で段階が上がるキャラは「あと1回」を明示
+      const cid = spot.charId;
+      if (cid && known && (cid in (state.affinity || {})) && state.affinity[cid] < AFFINITY_CAP) {
+        const pts = (state.affinityPts || {})[cid] || 0;
+        const need = AFFINITY_RANK_PTS[state.affinity[cid] + 1] - pts;
+        if (need > 0 && need <= AFFINITY_PTS.visit) {
+          growEl.textContent += "（あと1回で、もっと打ち解けられそうだ）";
+        }
+      }
       growEl.style.display = "";
     } else {
       growEl.style.display = "none";
@@ -2270,6 +2318,28 @@ function advanceDay() {
   if (exhausted) {
     state.flags._overwork = 0;
     showDayCard(`DAY ${state.day}`, "……熱っぽい");
+    // 初回の風邪だけは半日で回復（オーナー承認・2026-07-03）: 初見の理不尽感を減らす。
+    // 2回目以降は従来どおり丸1日ロス＝体調管理もゲームのうち
+    const firstSick = !state.flags._sick_once;
+    state.flags._sick_once = true;
+    if (firstSick) {
+      return playCustom({
+        dialogue_id: "sick_day_first",
+        metadata: { bg: "res://assets/backgrounds/bg_home.png" },
+        lines: [
+          { speaker: "", face: "", text: "朝。喉の奥が痛い。額に手を当てると、じんわり熱い。——風邪だ。" },
+          { speaker: "hajime", face: "sad", text: "（……無理が祟った。午前中は、休むしかない）" },
+          { speaker: "", face: "", text: "水だけ飲んで、布団に戻る。……昼過ぎ。汗と一緒に、熱が抜けていった。" },
+          { speaker: "hajime", face: "normal", text: "（今回は軽く済んだ。……次に無理をしたら、丸一日寝込む気がする）" },
+          { type: "apply", stats: { guts: 2 } },
+        ],
+      }, () => {
+        state.stamina = Math.max(stamina(), 60);
+        state.ap = 1; // 半日ロス: 夜の1行動だけ残る
+        save();
+        showMap();
+      });
+    }
     return playCustom({
       dialogue_id: "sick_day",
       metadata: { bg: "res://assets/backgrounds/bg_home.png" },
@@ -2334,13 +2404,33 @@ function mapBeat(onDone, label) {
 // 夜の行動を終えたら、マップへ戻さずその場で暗転→「今日は家へ帰ろう」→帰宅シーンへ。
 // 旧「今日はここまで——家に帰る」タップ（mapBeat）はボタン式で不自然という指摘で廃止（2026-07-02）。
 // スロットの未演出分は翌朝のマップ精算（#34/#23の仕組み）にそのまま乗るので取りこぼさない
+// 第1章の夜の固定イベント日（#28 翌日予告＋マップピン「!」バッジ）。
+// endDay の第1章分岐と日付・場所を一致させること（ズレると嘘の予告になる）
+const CH1_NIGHT_EVENTS = {
+  2: { pin: "tonari", label: "tonari" },
+  4: { pin: "", label: "帰り道" }, // あげはカメオ（ピンは無い＝予告文のみ）
+  5: { pin: "tonari", label: "tonari" },
+  7: { pin: "tonari", label: "tonari" },
+  9: { pin: "c_station", label: "C.STATION" },
+  10: { pin: "tonari", label: "tonari" },
+  12: { pin: "tonari", label: "tonari" },
+  13: { pin: "tonari", label: "tonari" },
+  14: { pin: "tonari", label: "tonari" },
+};
+function tomorrowNightEvent() {
+  return state && state.chapter === 1 ? CH1_NIGHT_EVENTS[state.day + 1] || null : null;
+}
+
 function nightFadeHome(next) {
   const host = $("#game");
   if (!host) return next();
   document.getElementById("night-fade")?.remove();
   const ov = document.createElement("div");
   ov.id = "night-fade";
-  ov.innerHTML = `<span>……今日は、家へ帰ろう。</span>`;
+  // 翌日予告（#28）: 明日が固定イベント日なら、就寝の1行に予感を添える
+  const ev = tomorrowNightEvent();
+  ov.innerHTML = `<span>……今日は、家へ帰ろう。</span>` +
+    (ev ? `<small class="nf-teaser">（明日、${ev.label}で何かありそうな気がする）</small>` : "");
   host.appendChild(ov);
   requestAnimationFrame(() => ov.classList.add("dark"));
   setTimeout(() => {
@@ -2833,7 +2923,13 @@ function showShop() {
       ? `<span class="spot-name">2階から視線を感じる……</span><span class="spot-cost">2,500円・行動を1回使う</span><span class="spot-desc">階段の上に、誰かいる。ブース付き</span>`
       : `<span class="spot-name">2階のショールーム＋ブース（${displayName("rin")}）</span>` +
         `<span class="spot-cost">${rinAway ? "今日は出張で不在" : visitedToday ? "今日はもう顔を出した" : "2,500円・会いに行く（行動を1回使う）"}</span>` +
-        `<span class="spot-desc">NIGHTSIDE日本代理店。吸えるブースつき（他店より少し安い）。買い物だけなら時間はかからない</span>`;
+        `<span class="spot-desc">NIGHTSIDE日本代理店。吸えるブースつき（他店より少し安い）。買い物だけなら時間はかからない</span>` +
+        // 3回目の解禁を必ず可視化（#31。「あと○回」で奥の棚＝限定サンプルの気配を出す）
+        (state.visits.rin < RIN_SEQUENCE.length
+          ? `<span class="spot-progress">${state.visits.rin === RIN_SEQUENCE.length - 1
+              ? "あと1回通えば、彼女の“奥の棚”が開きそうだ"
+              : `通うたび、奥の棚が近づく気がする（あと${RIN_SEQUENCE.length - state.visits.rin}回）`}</span>`
+          : "");
   rinBtn.disabled = visitedToday || rinAway || state.money < FOOKAH_BOOTH_FEE; // ブース料が払えないと不可（T28）
   rinBtn.addEventListener("click", doRinVisit);
   rinWrap.appendChild(rinBtn);
@@ -3218,7 +3314,9 @@ function runPracticeGauge(item) {
     const tier = { perfect: 2, good: 1, miss: 0 }[result] || 0;
     if (tier > (state.practiceBest[item.id] || 0)) {
       state.practiceBest[item.id] = tier;
-      toast("自己ベスト更新！ 本番に効くはずだ");
+      // 自己ベスト演出（#33）: スタンプ＋スミさんの一言講評
+      setTimeout(() => showStamp($("#screen-practice .panel"), "best"), 550);
+      toast(`スミ「${SUMI_BEST_COMMENTS[(state.day + tier) % SUMI_BEST_COMMENTS.length]}」`);
     }
     const done = document.createElement("button");
     done.className = "primary-btn";
@@ -6814,6 +6912,9 @@ function finishDrill() {
     best.className = "tn-hint";
     best.textContent = `自己ベスト更新！（${"★".repeat(tier)}）この手応えは本番のスコアに乗る。`;
     body.appendChild(best);
+    // 自己ベスト演出（#33）: スタンプ＋スミさんの一言講評
+    setTimeout(() => showStamp(body, "best"), 550);
+    toast(`スミ「${SUMI_BEST_COMMENTS[(state.day + tier) % SUMI_BEST_COMMENTS.length]}」`);
     if (window.SFX) SFX.fanfare();
   }
   const done = document.createElement("button");
@@ -7088,6 +7189,7 @@ function init() {
   setupContinueButton();
   $("#btn-gallery").addEventListener("click", () => showGallery());
   $("#btn-config").addEventListener("click", () => showConfig());
+  $("#dc-quote")?.addEventListener("click", sumiQuoteReply); // スミの一言に1行返事（#32）
   $("#config-close").addEventListener("click", () => { if (window.SFX) SFX.close(); $("#config-overlay").classList.remove("visible"); });
   $("#gallery-close").addEventListener("click", () => { if (window.SFX) SFX.close(); $("#gallery-overlay").classList.remove("visible"); });
   $("#gallery-viewer").addEventListener("click", () => $("#gallery-viewer").classList.remove("visible"));
