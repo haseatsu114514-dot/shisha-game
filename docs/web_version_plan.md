@@ -64,6 +64,76 @@
 - jsDelivr / statically.io は HTML を text/plain で返すため使えない（検証済み）
 - スマホは横向き推奨（縦だと回転ヒントが出る）。PC/スマホどちらも同じURLでOK
 
+## 2026-07-03 第1章ブラッシュアップ（レビュー反映・全部盛り #1〜#37）★進行中・まずここを読む
+
+**開発ブランチ: `claude/adoring-franklin-nzt0k8`（origin/mainから分岐・PRでmainへ）。**
+オーナー依頼「第1章ブラッシュアップ実装依頼（全37項目・6フェーズ）」を
+フェーズ順に実装中。**フェーズごとにテスト全緑→コミット**の流れ。
+依頼原文は PR 説明とこのセクションを参照。
+
+### 完了済み（コミット済み・全7テスト緑）
+
+- **フェーズ1（#1〜#3）**: craft配点調整（雑プレイのボットが南雲バー80に届かず
+  screenshots.mjsが敗北で緑／playthroughは優勝維持）。ステ→ミニゲーム入力反映
+  （技術=ゲージ減速・センス=ジャスト帯拡大・洞察=テーマ/ミックスの好みヒント
+  `INSIGHT_HINT_BAR=25`/`INSIGHT_MIX_BAR=40`・根性=大会中1回やり直し
+  `GUTS_RETRY_BAR=30`/`offerGutsRetry`）。前夜3択の効果差別化
+  （practice=craft+4/talk_sumi=根性/sleep=体力全快+`lastNightGaugeCalm()`0.93）＋
+  リザルト内訳に前夜行。`window.__craftDebug` でcraft値を検証できる
+- **フェーズ2（#4〜#10）**: 南雲カットイン `nagumoCutin()`（暫定順位バー→ざわめき→
+  無音→カットイン→バー伸長＋順位入替→優勝コール＋紙吹雪 `confettiBurst`）。
+  10カウントは `runResultCountdown(..., {noFinale:true})` でプチュン抑制→カットインへ。
+  開幕MCに持ち点ルール説明・煽り削減、中間発表の実況パネル未append バグ修正、
+  絶望の溜め延長＋結果発表前BGM停止（`SFX.bgmStop`）＋終盤カウント心音、
+  コールドオープン演出（観客シルエット・色煙・crowd SE）、敗北後フォローシーン
+  （ch1_tournament_defeat の game_over 行は撤去→フォロー→showDefeat）、
+  勝利時リザルト「次章への課題」。sfx.js に crowd/heartbeat/jingle/doorbell/
+  coalSnip/bubbling を合成追加
+
+### フェーズ3（#11〜#20）実装済み・テスト確認中（このセクション執筆時点）
+
+- #11 DAY9夜「出場者説明会」`ch1_meet_rivals`（3ライバル顔合わせ＋_met_フラグ）
+- #12 DAY10夜サラリーマン異変 `ch1_salaryman_change`／DAY12夜つむぎ `ch1_tsumugi_sketch`
+- #13 スミさんの解説は南雲の基準まで（「何が引き出したかは自分で考えろ」）
+- #14 「見せるんじゃなくて、届けるんだよ」をDAY13リハ導入（必ず通る）に再登場
+- #15 hesitate分岐に小分岐 hz_show/hz_unease
+- #16 オープニングに「なんで俺なんだろう」独白
+- #17 メタ介入をコールドオープンにも配置（章末の既存と統一）
+- #18 インタビュー3択に余韻1行ずつ
+- #19 章末スリム化（スミ「顔つき」ブロック撤去）＋第2章予告パネル `showCh2Teaser`
+  （**pointer-events:none＋約5秒自動送り**。クリック吸い込み・画面切替競合で
+  playthroughが2回落ちた経緯あり→ showClear を先に呼びパネルを上に被せる形で解決）
+- #20 PEPERMINT→**PEPPERMINT**（背景 `peppermint.png` にgit mv・全参照更新。
+  DATE_VENUES の内部id "pepermint" のみセーブ互換で旧綴り据え置き＝コメント明記）。
+  スプライトフォルダ **packii→pakki** にgit mv（engine/build_data/reel/TITLE_CHARA_POOL
+  のエイリアス・参照を更新）。outing_adam_1 の bg を夜に。ミックス「合計12gちょうど」。
+  控室「昨日の陽気な雰囲気」→「説明会の夜の」に整合。playthrough.mjs の plan も
+  PEPPERMINT に更新済み
+
+### 残タスク（再開したらここから）
+
+1. **フェーズ3の締め**: playthrough/screenshots/ch2＋軽4本を全部回して緑を確認→
+   フェーズ3をコミット（メッセージ雛形は過去2コミット参照）
+2. **フェーズ4（#21〜#27）音とエフェクト**: engine.js に `{"type":"sfx","id":"..."}` 行
+   （SFXは追加済み＝配置だけ）、キャラ別文字送りblip（config ON/OFF）、ジングル配置、
+   BGM差分、[imp]自動演出、感情エフェクト（metadata指定: flash/shake/sepia）、
+   香りの色パーティクル（day5私物フレーバー回。コールドオープンは実装済みの
+   cold-open-fx を流用可）
+3. **フェーズ5（#28〜#33）日常フック**: 翌日予告＋ピン「!」、限定イベント示唆、
+   customerNotes→r2_end回想強化、解禁進捗の可視化（凛3回目必須）、スミ一言に返事、
+   自己ベスト演出
+4. **フェーズ6（#34〜#37）UI**: DAY1チュートとDAYカードの直列化、タイトル視認性、
+   吸い出しスタンプ被り・HUD見切れ、大会前オートセーブ表示
+5. **受け入れ**: ヘッドレスでスクショ（タイトル/DAY1マップ/南雲カットイン/優勝演出/
+   予告パネル）を撮って目視確認・報告。全テスト緑。docs更新
+
+### 注意（今回の実装で増えた約束）
+
+- 南雲カットイン・予告パネルは**自動送り**（テストが詰まるのでクリック必須にしない）
+- craftバランスを再調整するときは screenshots.mjs（雑=敗北）と playthrough.mjs
+  （真面目=優勝）の**両立**が完了条件。`__craftDebug` で値を確認
+- 根性リトライのボタン文言に「次へ/結果を見る」を含めない（テストのロケータと衝突）
+
 ## 2026-07-02 追記（作りパート: 生成画像の差し替え基盤＝Codex向け）
 
 - **PNG差し替えプラミング実装** — `assets/ui/making/` に規定名のPNGを置いて

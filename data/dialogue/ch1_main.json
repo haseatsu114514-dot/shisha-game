@@ -199,6 +199,11 @@
           "text": "それはそうですけど。（とは言っても、看板に泥は塗れないでしょ、普通）"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……そういえば、なんで俺なんだろう。この店には、スミさんがいるのに）"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "スミさんは何か言いかけて、やめた。グラスを置く音だけが、静かに響いた。"
@@ -357,9 +362,18 @@
             "text": "（……ま、出るからには、いいとこ見せたいよね。tonariの名前もあるわけだし）"
           },
           {
-            "speaker": "",
-            "face": "",
-            "text": "想像の中の彼は、いつも誰かに見られている。──大会まであと{daysLeft}日。"
+            "type": "choice",
+            "id": "hesitate_mood",
+            "choices": [
+              {
+                "text": "（いいとこ見せたい。それだけだ）",
+                "next": "hz_show"
+              },
+              {
+                "text": "（……正直、ちょっと不安だ）",
+                "next": "hz_unease"
+              }
+            ]
           }
         ],
         "of_shop": [
@@ -419,6 +433,30 @@
             "speaker": "",
             "face": "",
             "text": "言葉の意味はまだわからない。でも帰り道、なぜか引っかかっていた。大会まであと{daysLeft}日。"
+          }
+        ],
+        "hz_show": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "想像の中の彼は、いつも誰かに見られている。悪くない気分だった。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "──大会まであと{daysLeft}日。"
+          }
+        ],
+        "hz_unease": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（エース揃いの中に、バイトの俺。……笑われないようにしないと）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "不安の底に、ほんの少しだけ、負けたくない気持ちが沈んでいる。──大会まであと{daysLeft}日。"
           }
         ]
       }
@@ -1095,6 +1133,11 @@
         {
           "speaker": "",
           "face": "",
+          "text": "──シーシャプレイヤーの話ってのは、いつだって一杯目から始まる。これは、その一杯目の話だ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "[imp]──1年前。[/imp]"
         }
       ]
@@ -1318,6 +1361,182 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch1_meet_rivals",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_c_station_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のC.STATION。ロビーに『SMOKE CROWN CUP 出場者説明会』の立て看板が出ている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付で名前を言うと、スタッフが控室へ通してくれた。──先客が、3人。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "お、あんたが4人目？ 俺はなる。KEMURIKUSAってとこでやってる"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_naru"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "……EDENのアダムだ。作るのはダブルアップル。それだけ覚えてくれればいい"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_adam"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "みんとでーす♪ PEPPERMINTの看板娘！ 全員まとめてライバルってことで、よろしくね？"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_minto"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "tonariの蒸野始です。よろしくお願いします"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スタッフが資料を配っていく。課題フレーバー、持ち時間、審査員の持ち点制──。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "緊張してる？ 大丈夫、当日はもっと緊張するから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（笑えない冗談だ。でも……この人たち、悪い人じゃなさそうだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "説明会は30分で終わった。帰り際、3人の背中を見送る。──あれが、地元のエースたち。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【洞察】が上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_salaryman_change",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のtonari。いつもの時間に、いつものサラリーマンが来た。……でも、今日は少し違う。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつもの席に座らず、入口に近い席を選んだ。ネクタイも、緩めていない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ダブルアップルにミント少し、でいいですか？"
+        },
+        {
+          "speaker": "salaryman",
+          "face": "normal",
+          "text": "……ああ。いや……今日は、ミント多めで。頭、冷やしたいんで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スマホの画面を伏せて置いて、煙を長く、深く吐く。肩の力は、最後まで抜けなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……何かあったのかな。聞かない方がいい気がする）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、サラリーマンは一度だけ振り返って、小さく頭を下げた。──初めてのことだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【洞察】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_tsumugi_sketch",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店間際のtonari。奥の席で、つむぎがスケッチブックを広げていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……あ。おつかれさま、です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "何描いてるの？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……煙。今日の、お客さんたちの煙"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ページの中で、何色もの淡い線が立ちのぼっている。同じ店の煙のはずなのに、一本ずつ色が違う。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（煙に、色……？）"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "はじめさんの煙も、そのうち描かせてください。……大会の日、ちゃんと見てるので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……プレッシャーだ。でも、悪くないプレッシャーだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【センス】が少し上がった。"
+        }
+      ]
     }
   ]
 }

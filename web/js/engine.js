@@ -26,14 +26,14 @@ const SPEAKER_NAMES = {
   shop_clerk: "店員", old_man: "老人", customer: "お客さん", everyone: "全員",
 };
 window.SPEAKER_NAMES = SPEAKER_NAMES;
-const SPEAKER_ID_ALIASES = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "packii", pakki: "packii", oneesan: "minto", kumicho: "ryuji" };
+const SPEAKER_ID_ALIASES = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki", oneesan: "minto", kumicho: "ryuji" };
 const FACE_ALIASES = {
   hajime: { excited: "smile" },
   naru: { excited: "smile", smug: "serious", fired_up: "serious" },
   adam: { silent: "normal", smug: "smile" },
   minto: { serious: "normal", ura_serious: "ura_sad" },
   tsumugi: { focus: "serious", shy: "sad" },
-  packii: { excited: "smile", smug: "smile", evil: "angry" },
+  pakki: { excited: "smile", smug: "smile", evil: "angry" },
 };
 
 // 背景込みの一枚絵で生成されているキャラ。専用の透過立ち絵がない場合だけここに入れる。
@@ -301,8 +301,8 @@ class DialogueEngine {
       img.style.bottom = "";
       return;
     }
-    const TARGET = folder === "packii" ? 94 : PORTRAIT_FRAMING.target;
-    const SINK = folder === "packii" ? 8 : PORTRAIT_FRAMING.sink; // 頭上に約20pxの余白を残し、足元は画面外へ逃がす
+    const TARGET = folder === "pakki" ? 94 : PORTRAIT_FRAMING.target;
+    const SINK = folder === "pakki" ? 8 : PORTRAIT_FRAMING.sink; // 頭上に約20pxの余白を残し、足元は画面外へ逃がす
     const trims = (this.ctx.portraitTrims || {})[folder] || {};
     const faces = (this.ctx.portraitFaces || {})[folder] || [];
     const aliasedFace = face && FACE_ALIASES[folder] && FACE_ALIASES[folder][face] ? FACE_ALIASES[folder][face] : face;
@@ -314,7 +314,7 @@ class DialogueEngine {
       img.style.setProperty("--portrait-anchor-x", "-50%");
       return;
     }
-    const h = Math.min((TARGET / t.h) * scale, folder === "packii" ? 225 : 240);
+    const h = Math.min((TARGET / t.h) * scale, folder === "pakki" ? 225 : 240);
     img.style.height = `${h}%`;
     // 大柄キャラ（spriteScale>1）は頭が画面上端で見切れないよう、超過分だけ深く沈める。
     // 足元は元々画面外（SINK）なので見た目は破綻せず、身長差は頭の位置と体格差で残る

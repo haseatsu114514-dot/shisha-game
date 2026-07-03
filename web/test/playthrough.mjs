@@ -37,7 +37,7 @@ log("disclaimer acknowledged");
 const plan = [
   "tonariでバイト", "Dr.fookah", "スミさんと話す",
   "KEMURIKUSA", "EDEN",
-  "PEPERMINT", "Dr.fookah", "カフェ",
+  "PEPPERMINT", "Dr.fookah", "カフェ",
   "観音堂", "Dr.fookah", "チョイザップ",
   "シーシャの練習", "常連席",
   "tonariでバイト", "C.STATION",

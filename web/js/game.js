@@ -539,7 +539,7 @@ const LOCATION_FROM_BG = {
   title: ["タイトル", ""],
   kemurikusa: ["KEMURIKUSA", "なるの店"],
   eden: ["EDEN", "アダムの店"],
-  pepermint: ["PEPERMINT", "みんとの店"],
+  peppermint: ["PEPPERMINT", "みんとの店"],
 };
 // ============ 背景の昼夜解決（2026-07-02） ============
 // _day/_night ペアが揃っている背景は、シーンの時間帯（昼=ap2 / 夜=ap<=1）で
@@ -1249,7 +1249,7 @@ const SPOTS = [
 const SPOT_UNKNOWN = {
   naru: { label: "KEMURIKUSAを覗く", desc: "隣町の人気店。若い店主が一人で回しているらしい" },
   adam: { label: "EDENを覗く", desc: "下町の店。焼き林檎みたいな甘い匂いが漏れている" },
-  minto: { label: "PEPERMINTを覗く", desc: "繁華街のポップな店。SNSで人気らしい" },
+  minto: { label: "PEPPERMINTを覗く", desc: "繁華街のポップな店。SNSで人気らしい" },
   tsumugi: { label: "常連の子と話す", desc: "カウンターの奥、いつも同じ席にいる女の子" },
   kumicho: { label: "神崎煙草店を覗く", desc: "暖簾の奥にシーシャの気配。古い佇まいの老舗" },
   ageha: { label: "派手な店を覗く", desc: "繁華街の目立つ店。ギャルっぽい店主がいるらしい" },
@@ -1698,7 +1698,8 @@ function playLimeEvent(dialogueId, sender, after, viaInvite) {
 const DATE_VENUES = [
   { id: "kemurikusa", name: "KEMURIKUSA", bg: "kemurikusa.png", note: "スピード勝負の店の、迷いのない煙" },
   { id: "eden", name: "EDEN", bg: "bg_eden_shop.png", note: "ダブルアップル一筋の店の、深く甘い香り" },
-  { id: "pepermint", name: "PEPERMINT", bg: "pepermint.png", note: "ポップな内装に、意外と丁寧な一台" },
+  // 表示・背景は PEPPERMINT に統一済み（#20）。id "pepermint" は旧綴りのまま＝セーブ互換のため据え置き
+  { id: "pepermint", name: "PEPPERMINT", bg: "peppermint.png", note: "ポップな内装に、意外と丁寧な一台" },
   { id: "hideaway", name: "裏通りの隠れ家ラウンジ", bg: "bg_hideaway.png", note: "看板のない店。常連だけが知る静けさ" },
 ];
 // キャラの台詞（venue共通の骨格に、キャラの声を差し込む）
@@ -1843,7 +1844,7 @@ const SPOT_LAYOUT = {
   tonari:    { x: 86.7, y: 41.7, theme: "baito",   short: "tonari",     area: "tonari" },
   naru:      { x: 72.3, y: 37.5, theme: "rival",   short: "KEMURIKUSA", area: "繁華街" },
   adam:      { x: 47.7, y: 47.2, theme: "rival",   short: "EDEN",       area: "下町" },
-  minto:     { x: 34.8, y: 54.2, theme: "rival",   short: "PEPERMINT",  area: "繁華街" },
+  minto:     { x: 34.8, y: 54.2, theme: "rival",   short: "PEPPERMINT",  area: "繁華街" },
   kumicho:   { x: 40, y: 24, theme: "rival",   short: "神崎煙草店", area: "旧市街" },
   ageha:     { x: 58, y: 20, theme: "rival",   short: "AGEHA",      area: "繁華街" },
   rei:       { x: 72, y: 32, theme: "rival",   short: "零-ZERO-",   area: "ライブ通り" },
@@ -2370,6 +2371,21 @@ function endDay() {
     state.flags._ev_day5 = true;
     return pd("ch1_day5_sumi_story", finishDay, TONARI);
   }
+  // DAY9夜: 出場者説明会（#11 3ライバルとの強制顔合わせ。未交流でも大会会話が破綻しない）
+  if (state.day === 9 && !state.flags._ev_meet_rivals) {
+    state.flags._ev_meet_rivals = true;
+    return pd("ch1_meet_rivals", finishDay, "res://assets/backgrounds/bg_c_station_night.png");
+  }
+  // DAY10夜: サラリーマン常連の小さな異変（後章の仕込み・#12）
+  if (state.day === 10 && !state.flags._ev_salaryman_change) {
+    state.flags._ev_salaryman_change = true;
+    return pd("ch1_salaryman_change", finishDay, TONARI);
+  }
+  // DAY12夜: つむぎの個別イベント（煙の色スケッチ・#12）
+  if (state.day === 12 && !state.flags._ev_tsumugi_night) {
+    state.flags._ev_tsumugi_night = true;
+    return pd("ch1_tsumugi_sketch", finishDay, TONARI);
+  }
   // DAY13夜（大会前々日）: 前日リハーサル（通し）。出来が本番の小ボーナスになる
   if (state.day === 13 && !state.flags._ev_day6_rehearsal) {
     state.flags._ev_day6_rehearsal = true;
@@ -2380,7 +2396,9 @@ function endDay() {
       lines: [
         { speaker: "sumi", face: "normal", text: "明後日が本番だ。今夜は通しでやるぞ。テーマ決めから引きまで、店の作業台を本番だと思え" },
         { speaker: "sumi", face: "serious", text: "リハーサルってのはな、失敗するためにやるんだ。今夜失敗した分だけ、本番で落ち着ける" },
-        { speaker: "hajime", face: "normal", text: "はい。（……手が少し冷たい。本番前夜って、こういう感じなのか）" },
+        // 章のテーマ台詞は必ず通る位置にも置く（#14。of_rival分岐と重なっても再登場として機能する）
+        { speaker: "sumi", face: "serious", text: "それと、これだけは持っていけ。──見せるんじゃなくて、届けるんだよ" },
+        { speaker: "hajime", face: "normal", text: "（見せるんじゃなくて、届ける……）はい。（……手が少し冷たい。本番前夜って、こういう感じなのか）" },
       ],
     }, () => beginMaking("rehearsal"));
   }
@@ -2474,7 +2492,7 @@ function doBaito(afterCameo) {
 
 // --- キャラ訪問
 const VISIT_BG = {
-  naru: "kemurikusa.png", adam: "bg_eden_shop.png", minto: "pepermint.png",
+  naru: "kemurikusa.png", adam: "bg_eden_shop.png", minto: "peppermint.png",
   sumi: "bg_tonari_inside.png", tsumugi: "bg_tonari_inside.png",
 };
 
@@ -4808,7 +4826,9 @@ function stepMix() {
   const body = tnPanel(
     "フレーバー選択 & ミックス",
     (reg ? `レギュレーション: ${reg.label}　` : "") +
-      `合計12g〜${cap}g・1〜3種類。多く詰むほど味の持ちは良くなるが、その分の熱${charged ? "と葉代" : ""}が要る。`
+      (cap <= 12
+        ? "合計12gちょうど・1〜3種類。このボウルは12gが上限だ。"
+        : `合計12g〜${cap}g・1〜3種類。多く詰むほど味の持ちは良くなるが、その分の熱${charged ? "と葉代" : ""}が要る。`)
   );
   const regFlavorName = reg ? ((D.flavors.find((f) => f.id === reg.flavor) || {}).short_name || reg.flavor).replace(/^AF /, "") : "";
   if (reg) {
@@ -5960,8 +5980,11 @@ function showResult(results, rank, detail, opts = {}) {
     btn.textContent = "──表彰のあとへ ▶";
     btn.addEventListener("click", opts.onWin || (() => {
       addMoney(CHAPTER_PRIZE[1]); // 優勝賞金（章別スケーリング）
-      // 審査(judging)・発表(reveal)は既にカウント前後で流したので、ここは表彰後の余韻だけ
-      playDialogue("ch1_tournament_after", () => postClearPhone(() => showClear()), "res://assets/backgrounds/bg_tournament_stage.png");
+      // 審査(judging)・発表(reveal)は既にカウント前後で流したので、ここは表彰後の余韻だけ。
+      // 章末は ???のLIME（本命のヒキ）→ 第2章予告パネル（#19）→ クリア画面の順に見せる。
+      // 内部的には先にクリア画面を整えてから予告を上に被せる（画面切替の瞬間に
+      // 会話レイヤーへのクリックが宙に浮く競合と、テストの即時タイトル読みを避ける）
+      playDialogue("ch1_tournament_after", () => postClearPhone(() => { showClear(); showCh2Teaser(() => {}); }), "res://assets/backgrounds/bg_tournament_stage.png");
     }));
   } else {
     btn.textContent = "……結果を受け止める";
@@ -6007,6 +6030,27 @@ function showResult(results, rank, detail, opts = {}) {
     return runResultCountdown(rank, premium, reveal, results);
   }
   reveal();
+}
+
+// 第2章予告パネル（#19）: 県大会の名前＋出場者のシルエット1枚で章を締める。
+// クリックか約5秒で自動送り（テスト・放置でも詰まらない）
+function showCh2Teaser(onDone) {
+  let ov = document.getElementById("ch2-teaser");
+  if (!ov) { ov = document.createElement("div"); ov.id = "ch2-teaser"; $("#game").appendChild(ov); }
+  const sil = ["ageha", "kumicho", "rei"]
+    .map((id) => `<span class="ct-sil">${faceIconHtml(id, "ct-sil-img") || ""}</span>`).join("");
+  ov.className = "ct show";
+  ov.innerHTML =
+    `<div class="ct-label">NEXT ──</div>` +
+    `<div class="ct-cup">県大会『HAZE: OPEN CLOUD』</div>` +
+    `<div class="ct-sils">${sil}</div>` +
+    `<div class="ct-sub">県中の煙自慢が、この称号を狙っている。</div>`;
+  if (window.SFX) { SFX.jingle(); SFX.crowd(1.8); }
+  // クリックは吸わない（pointer-events:none）＝下の画面を触っている自動テスト・連打を
+  // 巻き込まない。予告は約5秒で自動送り
+  let done = false;
+  const finish = () => { if (done) return; done = true; ov.className = "ct"; ov.innerHTML = ""; onDone(); };
+  setTimeout(finish, 5200);
 }
 
 function showClear() {
@@ -6424,7 +6468,7 @@ function toggleStatus(show) {
 // ---------------------------------------------------------------- title
 // 一人称視点なので主人公は出さず、ヒロイン・ライバル・店の面々から日替わりで選ぶ。
 // アート一枚絵を煙マスクの窓（#title-chara-window）にコンシューマー風に表示する
-const TITLE_CHARA_POOL = ["tsumugi", "sumi", "packii", "naru", "adam", "minto"];
+const TITLE_CHARA_POOL = ["tsumugi", "sumi", "pakki", "naru", "adam", "minto"];
 
 function onceCallback(fn) {
   let called = false;

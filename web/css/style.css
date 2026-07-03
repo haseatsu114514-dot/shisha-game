@@ -791,7 +791,7 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 .portrait.pos-right { left: 70%; }
 #vn-portraits.duo .portrait { max-width: none; }
 
-/* 背景込みのアート一枚絵（naru/adam/packii等）は煙のかたちのマスク窓で表示。
+/* 背景込みのアート一枚絵（naru/adam/pakki等）は煙のかたちのマスク窓で表示。
    縁がゆっくりうごめき、煙の中に像が浮かんでいるように見せる */
 .portrait.bgfull {
   bottom: 0;
@@ -4335,3 +4335,19 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 .cold-open-fx .co-haze.l { left: -14%; background: radial-gradient(ellipse, var(--haze, #e8c878), transparent 70%); }
 .cold-open-fx .co-haze.r { right: -14%; background: radial-gradient(ellipse, var(--haze, #e8c878), transparent 70%); animation-delay: -4.5s; }
 @keyframes co-haze-drift { from { transform: translateY(-4%) scale(1); } to { transform: translateY(6%) scale(1.12); } }
+
+/* ---------------- 第2章予告パネル（#19） ---------------- */
+#ch2-teaser { position: absolute; inset: 0; z-index: 64; display: none; flex-direction: column; align-items: center;
+  justify-content: center; gap: 16px; background: radial-gradient(ellipse at 50% 45%, rgba(16,20,36,0.97), rgba(4,6,12,0.99));
+  pointer-events: none; }
+#ch2-teaser.show { display: flex; animation: ct-in 0.8s ease-out; }
+@keyframes ct-in { from { opacity: 0; } to { opacity: 1; } }
+.ct-label { font-size: 15px; letter-spacing: 0.5em; color: #7f8ab0; }
+.ct-cup { font-size: 38px; font-weight: 900; color: #d7e2ff; letter-spacing: 0.06em;
+  text-shadow: 0 0 24px rgba(120,160,255,0.5); }
+.ct-sils { display: flex; gap: 22px; margin-top: 6px; }
+.ct-sil { width: 84px; height: 84px; border-radius: 50%; overflow: hidden; background: #10131f;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12); }
+.ct-sil-img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.08) contrast(1.4);
+  image-rendering: pixelated; }
+.ct-sub { font-size: 15px; color: #9aa4c4; letter-spacing: 0.1em; }
