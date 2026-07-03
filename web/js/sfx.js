@@ -325,6 +325,50 @@ const SFX = (() => {
       blip({ freq: 880, type: "sine", a: 0.01, d: 0.4, r: 0.6, peak: 0.07, filterFreq: 5000, wet: 0.8, when: 0.15 });
     },
 
+    // ---------- 会場・店の環境音（第1章ブラッシュアップ #21/#23/#24） ----------
+    crowd: (dur = 2.2) => {
+      // 会場のざわめき: 低めのノイズのうねり＋ぽつぽつと声のような中域
+      hiss({ dur, a: 0.25, peak: 0.10, filterType: "bandpass", filterFreq: 600, q: 0.8, wet: 0.6 });
+      for (let i = 0; i < Math.floor(dur * 4); i++) {
+        blip({ freq: 180 + Math.random() * 420, type: "sine", a: 0.03, d: 0.10, r: 0.14,
+               peak: 0.028, filterFreq: 1200, wet: 0.5, when: 0.1 + Math.random() * (dur - 0.4),
+               pan: Math.random() * 1.4 - 0.7 });
+      }
+    },
+    heartbeat: () => {
+      // 心音「ドクン」1拍（結果発表前の無音に置く）
+      blip({ freq: 62, type: "sine", a: 0.004, d: 0.10, r: 0.14, peak: 0.30, filterFreq: 220, wet: 0.15 });
+      blip({ freq: 52, type: "sine", a: 0.004, d: 0.12, r: 0.18, peak: 0.22, filterFreq: 200, wet: 0.15, when: 0.17 });
+    },
+    jingle: () => {
+      // 決定的瞬間の専用ジングル（南雲の二口目・優勝コール・章タイトル）
+      const seq = [392, 523, 659, 784, 1047];
+      seq.forEach((f, i) =>
+        blip({ freq: f, type: "triangle", a: 0.004, d: 0.16, r: 0.5, peak: 0.16,
+               filterFreq: 6000, wet: 0.6, when: i * 0.09 }));
+      blip({ freq: 2093, type: "sine", a: 0.004, d: 0.4, r: 0.7, peak: 0.08, filterFreq: 9000, wet: 0.8, when: 0.5 });
+    },
+    doorbell: () => {
+      // 店のドアベル「カラン、コロン」
+      blip({ freq: 1760, type: "triangle", a: 0.001, d: 0.12, r: 0.5, peak: 0.14, filterFreq: 7000, wet: 0.7 });
+      blip({ freq: 1319, type: "triangle", a: 0.001, d: 0.14, r: 0.6, peak: 0.12, filterFreq: 6000, wet: 0.7, when: 0.16 });
+    },
+    coalSnip: () => {
+      // 炭切りバサミ「パチンッ」
+      blip({ freq: 2400, type: "square", a: 0.001, d: 0.015, r: 0.03, peak: 0.14, filterFreq: 8000, wet: 0.25 });
+      hiss({ dur: 0.06, a: 0.001, peak: 0.14, filterType: "highpass", filterFreq: 4000, wet: 0.3 });
+      blip({ freq: 420, type: "triangle", a: 0.001, d: 0.05, r: 0.07, peak: 0.10, filterFreq: 1800, wet: 0.3, when: 0.01 });
+    },
+    bubbling: () => {
+      // 水パイプのゴボゴボ（1.5秒ぶん。ループしたい場面では再呼び出し）
+      for (let i = 0; i < 7; i++) {
+        blip({ freq: 180 + Math.random() * 160, type: "sine", a: 0.004, d: 0.05, r: 0.08,
+               peak: 0.10, filterFreq: 900, wet: 0.4, when: i * 0.2 + Math.random() * 0.06,
+               slide: [220, 140, 0.1] });
+      }
+      hiss({ dur: 1.5, a: 0.1, peak: 0.03, filterType: "lowpass", filterFreq: 600, wet: 0.4 });
+    },
+
     setMuted(m) {
       muted = m;
       if (bgmEl) bgmEl.muted = m;

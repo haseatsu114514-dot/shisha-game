@@ -4118,7 +4118,8 @@ function showStandings(round, next) {
   btn.className = "primary-btn";
   btn.textContent = round === 1 ? "ラウンド2へ" : "最終ラウンドへ";
   btn.addEventListener("click", next);
-  body.append(table, comment, btn);
+  // 持ち点の途中経過実況（#6）: 南雲だけ動かないことを不穏に見せる
+  body.append(table, judges, comment, btn);
   if (window.SFX) SFX.stamp();
 }
 
@@ -5420,19 +5421,20 @@ function craftScore() {
   // 炭起こし
   score += { perfect: 6, good: 3, miss: -2 }[tt.coalFire] || 0;
   if (tt.coalFire === "miss") detail.push("熾きの甘い炭が、立ち上がりを鈍らせた。");
-  // 集中
+  // 集中（雑念を一つも払えないと手元が乱れる）
   score += tt.focusCleared * 1.6;
+  if (tt.focusCleared === 0) { score -= 3; detail.push("雑念が頭から離れないまま、仕上げに入ってしまった。"); }
   // テーマとフレーバーカテゴリの噛み合い
   const matched = tt.theme.best.filter((c) => p.cats.has(c)).length;
-  if (matched >= 2) { score += 10; detail.push("テーマとフレーバーの相性は抜群だった。"); }
+  if (matched >= 2) { score += 8; detail.push("テーマとフレーバーの相性は抜群だった。"); }
   else if (matched === 1) { score += 6; detail.push("テーマとフレーバーはよく噛み合っていた。"); }
   else { detail.push("テーマとフレーバーが、どこか噛み合っていない。"); }
   // 高火力テーマは耐熱が必要
   if (tt.theme.id === "high_heat" && p.heat < 1.0) { score -= 6; detail.push("熱にフレーバーが負けてしまった。"); }
   // パッキング × 煙の重さ
   if (tt.pack === "normal") score += 6;
-  else if (tt.pack === "fluffy") score += p.weight < 1.0 ? 9 : 3;
-  else if (tt.pack === "firm") score += p.weight >= 1.0 ? 9 : 3;
+  else if (tt.pack === "fluffy") score += p.weight < 1.0 ? 7 : 3;
+  else if (tt.pack === "firm") score += p.weight >= 1.0 ? 7 : 3;
   // 葉の量（12g基準）× 熱の収支。多く詰むほど味の持ちは良くなるが、必要な熱も増える
   const totalG = Object.values(tt.mix).reduce((a, b) => a + b, 0) || 12;
   const extraG = Math.max(0, totalG - 12);
@@ -5477,7 +5479,7 @@ function craftScore() {
   if (typeof tt.steamHits === "number") {
     if (tt.steamHits === 0) { score += 6; detail.push("蒸らし中、雑念に一度も捕まらなかった。煙に芯が立つ。"); }
     else if (tt.steamHits <= 2) score += 3;
-    else { score -= 4; detail.push("蒸らし終わりの一手が乱れ、煙の芯が少し揺れた。"); }
+    else { score -= 6; detail.push("蒸らし終わりの一手が乱れ、煙の芯が少し揺れた。"); }
   }
   // 吸い出し（提供時の温度）。適温を外した提供は素直に減点＝準備が本番に効く
   score += { perfect: 12, good: 6, miss: -5 }[tt.pull];
@@ -5669,6 +5671,9 @@ function finishTournament() {
   window.__craftDebug = craft.score; // テスト・バランス検証用（UIには出さない）
   let playerScore = base;
   if (craft.score >= NAGUMO_CRAFT_BAR) {
+    // 南雲カットイン演出（#4）用: 南雲票が入る前の暫定順位（はじめ=最下位付近）を保存
+    tt.provisionalResults = [...results.map((r) => ({ ...r })), { id: "hajime", name: "はじめ", score: base }]
+      .sort((a, b) => b.score - a.score);
     playerScore = Math.max(base + 16, topRival + 1.2);
     craft.detail.push("──最終発表。それまで一度も動かなかった南雲修二が、温存していた持ち点10を、すべてこの一台に投入した。");
   } else {
@@ -5703,7 +5708,7 @@ function contestantShishaColor(id) {
 // RESULT 10 COUNT（結果発表“前”のbuildup・#14/#48）。中央のカウントの周りに、
 // 出場者の「お祈りカット」と作った一台を並べる＝カット割。お祈り/立ち絵の専用画像は生成待ちのため、
 // 顔アイコン（あれば）＋名前＋一台の色で仮組み。プレミア(#47)は暗転→プチュンのフライング。
-function runResultCountdown(rank, premium, onDone, contestants) {
+function runResultCountdown(rank, premium, onDone, contestants, opts = {}) {
   let ov = document.getElementById("result-count");
   if (!ov) { ov = document.createElement("div"); ov.id = "result-count"; $("#game").appendChild(ov); }
   const list = (contestants && contestants.length) ? contestants : [{ id: "hajime", name: "はじめ" }, ...RIVALS];
@@ -5755,12 +5760,17 @@ function runResultCountdown(rank, premium, onDone, contestants) {
   let n = 10;
   const premiumAt = premium ? 3 : -1; // プレミアは少し残してフライング
   setTimeout(function tick() {
-    if (n <= 0) { msgEl.textContent = "──結果発表！"; return rank === 1 ? puchun() : parin(); }
+    if (n <= 0) {
+      msgEl.textContent = "──結果発表！";
+      // #4 南雲カットインに直結する場合はプチュン/パリンを出さない（優勝コールの二重化防止）
+      if (opts.noFinale) { setTimeout(() => { ov.className = "rc"; ov.innerHTML = ""; onDone(); }, 700); return; }
+      return rank === 1 ? puchun() : parin();
+    }
     if (rank === 1 && n === premiumAt) { msgEl.textContent = "……!?"; return puchun(); } // フライング（1位のみ）
     msgEl.textContent = n > 6 ? "まもなく、結果発表……" : "結果発表まで、あと";
     numEl.textContent = String(n);
     numEl.classList.remove("pop"); void numEl.offsetWidth; numEl.classList.add("pop");
-    if (window.SFX) SFX.click();
+    if (window.SFX) { if (n <= 4) SFX.heartbeat(); else SFX.click(); } // 終盤は無音の中の心音（#24）
     if (n % 2 === 0) flashCut();
     n--;
     setTimeout(tick, 360);
@@ -5794,22 +5804,114 @@ function tournamentBreakdown() {
   if (ln && state.chapter === 1) add(ln[0], 2, ln[1]);
   return items;
 }
-function buildBreakdownPanel() {
+function buildBreakdownPanel(rank) {
   const items = tournamentBreakdown();
   const el = document.createElement("div");
   el.className = "result-breakdown";
   const lows = items.filter((it) => it.tier < 2).slice(0, 3);
+  // 勝っても「次章への課題」として同じヒント欄を流用する（#10）
+  const subLabel = rank === 1 ? "── 次章への課題" : "── 次への手がかり";
   el.innerHTML =
-    `<div class="rb-head">出来の内訳<span class="rb-sub">── 次への手がかり</span>` +
+    `<div class="rb-head">出来の内訳<span class="rb-sub">${subLabel}</span>` +
     (tt.feelScore ? `<span class="rb-feel">観客の体感スコア <b>${tt.feelScore}</b> P</span>` : "") + `</div>` +
     `<div class="rb-grid">` +
     items.map((it) => `<div class="rb-item g-${it.grade}"><span class="rb-label">${it.label}</span><span class="rb-grade">${it.grade}</span></div>`).join("") +
     `</div>` +
     `<div class="rb-hints">` +
     (lows.length ? lows.map((it) => `<p>・${it.label}: ${it.hint}</p>`).join("")
+      : rank === 1 ? `<p>・どの工程も高水準。だが県大会の壁は、この完成度が「普通」になる世界だ。</p>`
       : `<p>・どの工程も高水準。次は他のテーマでも安定を狙おう。</p>`) +
     `</div>`;
   return el;
+}
+
+// 紙吹雪（優勝コール用）。#game に短命の紙片を散らす
+function confettiBurst(n = 60) {
+  const host = $("#game");
+  if (!host) return;
+  const wrap = document.createElement("div");
+  wrap.className = "confetti-wrap";
+  const colors = ["#ffd479", "#8fe3c0", "#e89ad0", "#9ab8ff", "#ff9d76", "#fff6d8"];
+  for (let i = 0; i < n; i++) {
+    const p = document.createElement("i");
+    p.style.left = `${Math.random() * 100}%`;
+    p.style.background = colors[i % colors.length];
+    p.style.animationDelay = `${Math.random() * 0.7}s`;
+    p.style.animationDuration = `${1.6 + Math.random() * 1.4}s`;
+    p.style.setProperty("--cx", `${(Math.random() * 2 - 1) * 60}px`);
+    wrap.appendChild(p);
+  }
+  host.appendChild(wrap);
+  setTimeout(() => wrap.remove(), 3600);
+}
+
+// ============================================================================
+// 南雲修二・持ち点10一括投入カットイン（#4・章のクライマックス演出）
+// 暫定順位バー（はじめ最下位付近）→ ざわめき → 無音の1拍 → 南雲カットイン →
+// 持ち点バーが一気に伸びて順位が入れ替わる → 優勝コール＋ファンファーレ＋紙吹雪＋smokeRings
+// ============================================================================
+function nagumoCutin(finalResults, onDone) {
+  const provisional = (tt && tt.provisionalResults) ||
+    [...finalResults].sort((a, b) => b.score - a.score);
+  let ov = document.getElementById("nagumo-cutin");
+  if (!ov) { ov = document.createElement("div"); ov.id = "nagumo-cutin"; $("#game").appendChild(ov); }
+  ov.className = "ngc show";
+  const top = Math.max(...provisional.map((r) => r.score), ...finalResults.map((r) => r.score));
+  const rowsHtml = provisional.map((r, i) =>
+    `<div class="ngc-row${r.id === "hajime" ? " me" : ""}" data-id="${r.id}" style="top:${i * 52}px">` +
+    `<span class="ngc-rank">${i + 1}位</span><span class="ngc-name">${r.name}</span>` +
+    `<i class="ngc-bar"><b style="width:${Math.max(6, (r.score / top) * 100)}%"></b></i></div>`).join("");
+  ov.innerHTML =
+    `<div class="ngc-caption" id="ngc-caption">暫定集計──総合印象点を残すのみ</div>` +
+    `<div class="ngc-table" style="height:${provisional.length * 52}px">${rowsHtml}</div>`;
+  if (window.SFX) { SFX.bgmStop(); SFX.crowd(2.0); }
+  const caption = ov.querySelector("#ngc-caption");
+  const setCap = (t, cls) => { caption.textContent = t; caption.className = `ngc-caption ${cls || ""}`; };
+
+  // 1) ざわめき → 2) 無音の1拍
+  setTimeout(() => { setCap("……会場が、静まり返る", "hush"); ov.classList.add("dim"); }, 1500);
+  // 3) 南雲カットイン
+  setTimeout(() => {
+    const cut = document.createElement("div");
+    cut.className = "ngc-cut";
+    cut.innerHTML =
+      `<div class="ngc-face">${faceIconHtml("nagumo", "ngc-face-img") || ""}</div>` +
+      `<div class="ngc-cut-text"><b>南雲修二、動く。</b><span>温存していた持ち点10──一括投入ッ！！</span></div>`;
+    ov.appendChild(cut);
+    if (window.SFX) { SFX.jingle(); SFX.stamp(); }
+    requestAnimationFrame(() => requestAnimationFrame(() => cut.classList.add("in")));
+  }, 2700);
+  // 4) 持ち点バーが一気に伸びて順位が入れ替わる
+  setTimeout(() => {
+    const cut = ov.querySelector(".ngc-cut");
+    if (cut) cut.classList.add("side");
+    ov.classList.remove("dim");
+    const finalSorted = [...finalResults].sort((a, b) => b.score - a.score);
+    const meRow = ov.querySelector(".ngc-row.me");
+    if (meRow) meRow.querySelector(".ngc-bar b").style.width = "100%";
+    if (window.SFX) SFX.perfect();
+    setTimeout(() => {
+      finalSorted.forEach((r, i) => {
+        const row = ov.querySelector(`.ngc-row[data-id="${r.id}"]`);
+        if (!row) return;
+        row.style.top = `${i * 52}px`;
+        row.querySelector(".ngc-rank").textContent = `${i + 1}位`;
+      });
+      setCap("──順位が、ひっくり返った", "flip");
+      if (window.SFX) SFX.crowd(1.6);
+    }, 700);
+  }, 4400);
+  // 5) 優勝コール＋ファンファーレ＋紙吹雪＋smokeRings
+  setTimeout(() => {
+    const call = document.createElement("div");
+    call.className = "ngc-call";
+    call.textContent = "優勝──蒸野 始ッ！！";
+    ov.appendChild(call);
+    if (window.SFX) { SFX.fanfare(); setTimeout(() => SFX.jingle(), 300); }
+    confettiBurst(70);
+    smokeRings(4);
+  }, 6300);
+  setTimeout(() => { ov.className = "ngc"; ov.innerHTML = ""; onDone(); }, 8600);
 }
 
 function showResult(results, rank, detail, opts = {}) {
@@ -5847,7 +5949,7 @@ function showResult(results, rank, detail, opts = {}) {
     }, 500 + i * 750);
   });
   // 出来の内訳（#25）。順位リビールが終わってから、ボタンと一緒にふわっと出す
-  const breakdown = (tt && tt.mode === "tournament") ? buildBreakdownPanel() : null;
+  const breakdown = (tt && tt.mode === "tournament") ? buildBreakdownPanel(rank) : null;
   if (breakdown) { breakdown.style.opacity = "0"; breakdown.style.transition = "opacity 0.5s"; }
   const btn = document.createElement("button");
   btn.className = "primary-btn";
@@ -5864,9 +5966,18 @@ function showResult(results, rank, detail, opts = {}) {
   } else {
     btn.textContent = "……結果を受け止める";
     btn.addEventListener("click", opts.onLose || (() => {
-      // 1位のみ進出。2位以下はゲームオーバー（賞金なし・やり直す/タイトルへ）
+      // 1位のみ進出。2位以下はゲームオーバー（賞金なし・やり直す/タイトルへ）。
+      // GAME OVER画面の前に、閉店後tonariの短いフォローシーンを挟む（#9・再挑戦導線）
       tt.rank = rank;
-      playDialogue("ch1_tournament_defeat", () => showDefeat(rank), "res://assets/backgrounds/bg_tournament_stage.png");
+      playDialogue("ch1_tournament_defeat", () => playCustom({
+        dialogue_id: "ch1_defeat_follow",
+        metadata: { bg: "res://assets/backgrounds/bg_tonari_inside_night.png" },
+        lines: [
+          { speaker: "", face: "", text: "その夜。閉店後のtonari。スミさんは何も聞かず、自分用の一台に火を入れていた。" },
+          { speaker: "sumi", face: "normal", text: "……で、どうする？" },
+          { speaker: "hajime", face: "serious", text: "（──もう一回だ。もう一回、あの舞台で）" },
+        ],
+      }, () => showDefeat(rank)), "res://assets/backgrounds/bg_tournament_stage.png");
     }));
   }
   if (breakdown) body.append(note, table, breakdown, btn);
@@ -5880,14 +5991,18 @@ function showResult(results, rank, detail, opts = {}) {
     $("#tn-title").textContent = "";
     $("#tn-progress").textContent = "RESULT";
     $("#tn-body").innerHTML = "";
+    if (window.SFX) SFX.bgmStop(); // 結果発表前はBGMを止めて無音に（#7/#24）
     const premium = rank === 1 && tt.foilHits >= 6 && tt.coalFire === "perfect";
     const BG = "res://assets/backgrounds/bg_tournament_stage.png";
     // ch1優勝ルートだけ、順番を整える（#16/#48）: 審査(南雲の二口)→「もうだめだ」→
-    // 10カウント(buildup)→ 総合印象点の満点で逆転発表。負け/ch2は従来どおり。
+    // 10カウント(buildup)→ 南雲カットイン(#4・持ち点10一括投入で逆転)→ 発表。
+    // カウントのプチュンはカットイン側の優勝コールに譲る（二重化防止）。負け/ch2は従来どおり。
     if (state.chapter === 1 && rank === 1) {
       return playDialogue("ch1_tournament_judging",
-        () => runResultCountdown(rank, premium,
-          () => playDialogue("ch1_tournament_reveal", reveal, BG), results), BG);
+        () => runResultCountdown(rank, false,
+          () => nagumoCutin(results,
+            () => playDialogue("ch1_tournament_reveal", reveal, BG)),
+          results, { noFinale: true }), BG);
     }
     return runResultCountdown(rank, premium, reveal, results);
   }
@@ -6669,7 +6784,18 @@ function startNewGame() {
   // コールドオープン: ch4ドバイ決勝の一瞬（顔も会場も見せない・暗転＋煙）
   // → 白煙 → 章タイトル →「1年前」のtonariへ。本番背景ができたら差し替える
   $("#vn-bg").style.backgroundImage = "none";
+  // コールドオープン専用演出（#8）: 観客シルエット＋香りの色煙＋歓声。章で一番豪華な導入
+  const scr = $("#screen-dialogue");
+  scr.classList.add("cold-open");
+  const coFx = document.createElement("div");
+  coFx.className = "cold-open-fx";
+  coFx.innerHTML = `<div class="co-haze l" style="--haze:#e8c878"></div><div class="co-haze r" style="--haze:#d96a6a"></div><div class="co-crowd"></div>`;
+  scr.appendChild(coFx);
+  if (window.SFX) { SFX.crowd(3.2); setTimeout(() => SFX.crowd(2.4), 3400); }
   playDialogue("ch1_cold_open", () => {
+    scr.classList.remove("cold-open");
+    coFx.remove();
+    if (window.SFX) SFX.jingle(); // 章タイトルのジングル（#23）
     engulfInSmoke(() => {
       showChapterTitle(
         { no: "第一章", num: "Ⅰ", name: "一吸目", read: "ファーストドロー ── FIRST DRAW", sub: "SMOKE CROWN CUP 編" },
