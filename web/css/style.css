@@ -4491,3 +4491,20 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 #dc-quote.can-reply:hover { color: #ffe9b0; }
 /* 自己ベストスタンプ（#33） */
 .stamp-best { color: #ffb64e; }
+
+/* ---------------- UI修正（#35/#36） ---------------- */
+/* タイトル画面の視認性（#35）: ロゴ・メニューの背後を締めて文字を立たせる */
+.title-menu {
+  background: linear-gradient(90deg, rgba(8,6,12,0.66), rgba(8,6,12,0.34) 72%, transparent);
+  border-radius: 12px;
+  padding: 10px 26px 10px 8px;
+}
+.title-menu-item { text-shadow: 0 1px 3px rgba(0,0,0,0.95), 0 0 14px rgba(0,0,0,0.8); }
+.title-menu-item .ja { color: #c3b8d6; text-shadow: 0 1px 3px rgba(0,0,0,0.95); }
+.title-menu-item:hover:not(:disabled) .ja, .title-menu-item.focus .ja { color: rgba(26,16,24,0.7); text-shadow: none; }
+#title-logo-img { filter: drop-shadow(0 6px 18px rgba(0,0,0,0.85)) drop-shadow(0 0 34px rgba(0,0,0,0.6)); }
+.title-note { text-shadow: 0 1px 3px rgba(0,0,0,0.9); }
+/* 体感スコアHUDの見切れ修正（#36）: グローバルHUD（右上・z40）の下に逃がす */
+#tn-feel { top: 68px; }
+/* 吸い出しのスタンプをゲージ側に出すための基準位置（#36） */
+.gauge-wrap { position: relative; }

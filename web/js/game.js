@@ -2063,6 +2063,8 @@ function mapTutorial() {
   if (!state || state.flags._map_tutorial_done) return;
   const screen = document.querySelector("#screen-map");
   if (!screen || !screen.classList.contains("active")) return;
+  // DAYカードが出ている間は待つ（#34: カード→チュートリアルの直列化。重なって読めない問題）
+  if (document.querySelector("#day-card.show")) { setTimeout(mapTutorial, 300); return; }
   state.flags._map_tutorial_done = true; save();
   // 主要ピンを点滅させて注意を引く
   screen.querySelectorAll("#map-pins .spot-pin:not(:disabled)").forEach((p, i) => {
@@ -4087,6 +4089,7 @@ function startTournament() {
   for (const id of ["naru", "adam", "minto", "nagumo", "maezono"]) markMet(id);
   updateHud();
   save();
+  toast("大会直前のデータをセーブした"); // #37: 敗北=GAME OVERがあるので明示しておく
   // 出発前に「持参フレーバー」を確認。未仕入れならスミさんがお情けで分けてくれる（#44）
   flavorBringIn(() =>
     // 会場へ歩み入る瞬間を煙ワイプで（master_spec #20）
@@ -5536,7 +5539,7 @@ function stepPull() {
     }
     if (just) {
       tt.pullJust = (tt.pullJust || 0) + 1;
-      showStamp($("#tn-layout .panel"), "just");
+      showStamp(wrap, "just"); // ゲージ側に出す（#36: 説明文に被らない）
       feelPop(8, "JUST"); nicoBurst("perfect", 1);
       if (window.SFX) SFX.perfect && SFX.perfect();
     }
@@ -5568,7 +5571,7 @@ function stepPull() {
     if (window.SFX) SFX.bubble();
     spawnBubbles(tt.pull === "perfect" ? 14 : tt.pull === "good" ? 9 : 4);
     startRigSmoke(tt.pull === "miss" ? 900 : 320);
-    showStamp($("#tn-layout .panel"), tt.pull);
+    showStamp(wrap, tt.pull); // ゲージ側に出す（#36: 説明文に被らない）
     pakkiLive(tt.pull);
     broadcastJudge(tt.pull, "提供");
     nicoBurst("serve", 1); // 提供スピード感のウケ
