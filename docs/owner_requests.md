@@ -48,6 +48,7 @@
 |---|---|
 | 頻出作業のスキル化 | 再発バグ防止と意図の汲み取りのため `.claude/skills/` に5本新設: owner-request（要望対応フロー）/ dialogue-edit（台詞チェックリスト）/ web-build-test（ビルド・テスト対応表）/ canon-check（矛盾点検）/ portrait-fix（立ち絵ズレ診断） |
 | 立ち絵が表情でずれるバグの再発対策 | オーナー報告「表情によって立ち絵がずれるバグがよく起こる」→ 症状別診断フローを `portrait-fix` スキルに整備（scipy欠落→ax欠測、原画バラつき→sprite_face_swap/normalize_sprites、髪欠け→clean_sprite_alpha一括適用禁止、身長→spriteScale+portraits.mjs）。個別のズレ報告が来たらこのスキルで対応する |
+| ストーリー添削・初見プレイ感想もスキル化 | オーナー要望「ストーリーの添削と、初見プレイヤーになりきった感想もたまにやらせているのでスキルに」→ `story-review`（評価軸は docs/story_review_prompt.md B節を正本に。良かった点明記＋具体的書き換え案を48字制約内で・提案止まり）と `playtest-feedback`（設定知識を封印した初見視点・感情メーター記録・退屈ワースト/良かったトップ・修正はしない）を新設。計7本 |
 
 ## 2026-07-02 セッション（ブランチ: claude/modest-curie-9q5kc5 / プレイ報告5点＋Pages調査）
 
