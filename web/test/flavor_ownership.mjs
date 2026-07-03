@@ -32,9 +32,14 @@ for (const id of ["peach", "grape"]) {
   if (tutorial.includes(id)) throw new Error(`チュートリアルに未所持フレーバーが出ている: ${id}`);
 }
 
+// 大会は所持フレーバー＋課題フレーバー（主催者支給）だけが並ぶ。
+// 課題（ch1=ミント）を仕入れ忘れてもレギュレーションを満たせる＝詰み防止
 const tournament = await shownFlavors("tournament");
-if (tournament.join(",") !== "double_apple") throw new Error(`大会も未入手の味は出さない: ${tournament.join(", ")}`);
-if (tournament.includes("peach")) throw new Error("大会に未所持フレーバーが出ている: peach");
+const tournamentSet = new Set(tournament);
+if (!tournamentSet.has("double_apple")) throw new Error(`初期所持のダブルアップルが大会に出ない: ${tournament.join(", ")}`);
+if (!tournamentSet.has("mint")) throw new Error(`課題フレーバー（主催者支給）が大会に出ない: ${tournament.join(", ")}`);
+if (tournament.length !== 2) throw new Error(`大会は所持＋課題のみのはず: ${tournament.join(", ")}`);
+if (tournamentSet.has("peach")) throw new Error("大会に未所持フレーバーが出ている: peach");
 
 const tutorialMixReady = await page.evaluate(() => {
   state = newState();

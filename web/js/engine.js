@@ -178,7 +178,9 @@ class DialogueEngine {
   }
 
   setBackground(path) {
-    const rel = String(path).replace(/^res:\/\//, "");
+    let rel = String(path).replace(/^res:\/\//, "");
+    // 昼夜つき背景の自動差し替え（ゲーム側が時間帯を知っているので委譲する）
+    if (this.ctx.resolveBg) rel = this.ctx.resolveBg(rel);
     this.el.bg.style.backgroundImage = `url('${assetUrl(rel)}')`;
     if (this.ctx.onBackgroundChange) this.ctx.onBackgroundChange(rel);
   }
@@ -314,8 +316,16 @@ class DialogueEngine {
     }
     const h = Math.min((TARGET / t.h) * scale, folder === "packii" ? 225 : 240);
     img.style.height = `${h}%`;
-    img.style.bottom = `${-(t.b * h + SINK)}%`;
-    img.style.setProperty("--portrait-anchor-x", `${-((t.l + t.w / 2) * 100)}%`);
+    // 大柄キャラ（spriteScale>1）は頭が画面上端で見切れないよう、超過分だけ深く沈める。
+    // 足元は元々画面外（SINK）なので見た目は破綻せず、身長差は頭の位置と体格差で残る
+    const MAX_HEAD_TOP = 97; // コンテンツ上端の上限（コンテナ高さ%・頭上に最低3%の余白）
+    const contentTop = t.h * h - SINK;
+    const extraSink = Math.max(0, contentTop - MAX_HEAD_TOP);
+    img.style.bottom = `${-(t.b * h + SINK + extraSink)}%`;
+    // 横位置は足元の重心（ax）でアンカーする。bbox 中心だと表情差分で
+    // 腕を広げた絵に中心が引っ張られ、立ち絵が左右に滑って見える
+    const ax = typeof t.ax === "number" ? t.ax : t.l + t.w / 2;
+    img.style.setProperty("--portrait-anchor-x", `${-(ax * 100)}%`);
   }
 
   // 立ち絵の配置: 1人なら画面中央、2人なら左右に分かれる

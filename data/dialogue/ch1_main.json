@@ -151,7 +151,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "[imp]SMOKE CROWN CUP[/imp]。来週だ"
+          "text": "[imp]SMOKE CROWN CUP[/imp]。2週間後だ"
         },
         {
           "speaker": "sumi",
@@ -426,6 +426,11 @@
     {
       "dialogue_id": "ch1_salaryman_regular",
       "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のtonari。顔を出すと、スミさんに「ちょうどいい、カウンター頼めるか」と頼まれた。"
+        },
         {
           "speaker": "",
           "face": "",
@@ -1093,7 +1098,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "悪い、俺は仕込みがある。──始、頼めるか"
+          "text": "悪い、俺は仕込みがある。──はじめ、頼めるか"
         },
         {
           "speaker": "oneesan",

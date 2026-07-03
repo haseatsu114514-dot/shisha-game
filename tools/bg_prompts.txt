@@ -35,3 +35,130 @@ Anime visual novel background, detailed digital painting, bright lighting, no pe
 
 --- 11/11: bg_choizap.png ---
 Anime visual novel background, detailed digital painting, bright lighting, no people, 1280x720, painterly brushwork. Interior of a small Japanese 24-hour fitness gym. Compact space with treadmills, free weights, mirror wall. Bright fluorescent lighting. White and green color scheme. Water cooler near entrance. Posters on walls. Rubber flooring. Small changing area in back. Basic, affordable, functional. Daytime, some natural light from small windows. Clean energetic atmosphere.
+
+==========================================================================
+再生成バッチ（2026-07-02）: ぼんやり背景の作り直し＋新規2点
+==========================================================================
+◆ なぜ再生成するか（計測結果）
+  夜系の内装画像はシャープネスが昼画像の 1/5〜1/10 しかなく、1024px に縮小→再拡大しても
+  ほぼ同じ画像になる＝「低解像度で生成→引き伸ばし」の痕跡がある。さらに平均輝度が
+  25〜50/255 と暗さが焼き込まれていて、階調が潰れて安っぽく見える。
+
+◆ 生成ワークフロー（全件共通・重要）
+  1. 2048x1152（最低でも 1536x864）の 16:9 で生成する。
+  2. Lanczos 等の高品質リサンプルで 1280x720 へ「縮小」して保存（縮小はシャープになる。
+     拡大は厳禁＝今回のぼやけの主因）。
+  3. 夜シーンでも暗さを画像に焼き込まない。平均輝度の目安は 80〜110/255。
+     影の中もディテールが読めること。「真っ黒の面」を作らない。
+     ※ 暗さの演出はゲーム側（夜トーン .night-tint / 各画面のグラデ）が重ねる。
+  4. 仕上げの強いノイズ除去・ソフト系アップスケーラは使わない（高周波が消える）。
+  5. 画風はこのファイル冒頭の基準どおり（bg_eden_shop.png が第一基準・ドット感を残す）。
+  6. assets/backgrounds/ へ同名で保存 →
+     python3 web/build_data.py && python3 web/build_standalone.py
+
+◆ 触らなくてよい重複・未参照ファイル（迷い防止）
+  - bg_naru_shop.png（kemurikusa.png の複製・コード未参照）
+  - tonari_day.png / tonari_night.png / eden.png / bg_adam_shop.png / bg_map_local.png /
+    bg_c_station_lobby.png（旧名の複製。参照はエンジンのエイリアスが解決済み）
+  - bg_title.png（タイトル画面はCSS合成＋title_arts を使用・コード未参照）
+
+--- R1/10: bg_fookah_showroom.png ★新規（配線済み・置くだけで自動切替） ---
+用途: 凛イベント（Dr.fookah 2階ショールーム／試香ブース）。現在は1階物販 bg_shop.png を
+仮表示しており、このファイルが届くと自動で切り替わる。窓は黒フィルムで塞がれた薄暗い部屋
+だが、輝度は焼き込まず「薄暗いのに読める」絵にする。
+Anime visual novel background, detailed digital painting, moody but readable lighting, no
+people, 16:9, painterly brushwork. Second-floor private showroom of a hookah flavor import
+agency above a wholesale shop in Japan. Windows fully covered with black film, thin slits of
+daylight leaking at the edges. Metal industrial shelves lined with unlabeled foreign flavor
+tins and sample jars with handwritten tags. One tasting booth: a single hookah on a low
+table with a leather stool. A tidy agent desk with documents, a consent form on a clipboard,
+and a banker's lamp. Warm desk light pooling on the desk, cool ambient elsewhere, no pure
+black areas. Secretive, professional, faintly dangerous. Deep gray-blue palette with warm
+amber accents.
+
+--- R2/10: kemurikusa.png ★再生成（現状: 輝度25/255でほぼ黒・Dr.fookahと構図類似） ---
+用途: なるの店 KEMURIKUSA（訪問・デート）。正典: 隣町の人気店。若い店主が一人で回す、
+スピード勝負の店。「迷いのない煙」。Dr.fookah（棚＋ソファのラウンジ）と見分けがつくよう、
+カウンター主体の構図に変える。
+Anime visual novel background, detailed digital painting, warm lighting, no people, 16:9,
+painterly brushwork. Interior of a popular modern shisha bar run single-handedly by a young
+owner. Built for speed: one long straight counter with bar seats facing the workstation,
+rows of prepped hookahs standing by, tongs and bowls lined up in perfect order, an order
+slip rail. A few small tables along the wall. Clean semi-industrial interior, blackboard
+menu, crisp white task lighting over the counter, warm ambient light elsewhere. Energetic,
+efficient, evening. Average brightness, readable everywhere.
+
+--- R3/10: bg_ryuji_shop.png ★差し替え（現状: 4KBのプレースホルダ） ---
+用途: ch2 神崎竜二の店「神崎煙草店」。正典: 店名だけ見ればただの老舗タバコ屋。暖簾、
+古い木と葉巻の香り、奥にシーシャのセット。客はいない。静かすぎるくらい静か。
+Anime visual novel background, detailed digital painting, warm lighting, no people, 16:9,
+painterly brushwork. Interior of an old Japanese tobacco shop that secretly serves shisha.
+Front area: aged wooden counter and glass cases of cigars and pipe tobacco, a noren curtain
+at the entrance, faded wooden shelves. In the back, a small immaculate shisha corner: one
+polished hookah on a low table, cushions, a hanging lantern. Dust motes in a shaft of warm
+light. Dead quiet, spotless, slightly intimidating dignity. Aged wood browns with deep
+green and gold accents.
+
+--- R4/10: bg_tonari_inside_night.png ★再生成（最重症: シャープネス50） ---
+用途: tonari店内・夜（閉店後イベント多数）。昼版 bg_tonari_inside.png と同じ部屋・同じ
+レイアウトの夜バージョンにする（ソファ・本棚のガラスパイプ・ラグ・カウンターの位置を維持）。
+Anime visual novel background, detailed digital painting, warm lighting, no people, 16:9,
+painterly brushwork. The same cozy Japanese shisha bar interior as the daytime version, at
+night after closing. Round paper lantern ceiling lights on, pooling warm amber light over
+the sofas and low wooden tables. Windows show deep blue night and faint city lights.
+Bookshelf of glass hookah pipes catching highlights. Persian rug, cream walls, hanging
+plants all clearly readable in the warm dimness. Intimate, quiet, end-of-day mood. No pure
+black shadows.
+
+--- R5/10: bg_home_night.png ★再生成（現状: bg_home.png と同一の潰れた夜画像） ---
+用途: 主人公の自室・夜（帰宅・家シーシャ・就寝）。昼版 bg_home_day.png と同じ部屋。
+Anime visual novel background, detailed digital painting, warm lighting, no people, 16:9,
+painterly brushwork. The same small one-room apartment as the daytime version, at night. A
+warm desk lamp and a small floor light on, bed and low wooden table softly lit, bookshelf
+with hookah books readable in the shadows. Window shows city lights and a deep navy sky.
+Lived-in, calm, restful. Warm amber against cool night blue, no crushed blacks.
+
+--- R6/10: bg_c_station_night.png ★再生成（シャープネス68） ---
+用途: C.STATION・夜。昼版 bg_c_station_day.png と同じ大型チェーン店内の夜。
+Anime visual novel background, detailed digital painting, cool bright interior lighting, no
+people, 16:9, painterly brushwork. The same large modern shisha cafe chain interior at
+night. Interior fully lit: digital menu screens glowing, sleek display cases illuminated,
+polished floor reflecting light. Large windows show the dark city outside. Corporate-clean
+night shift atmosphere. Cool gray and white with teal and gold accents, everything crisp
+and readable.
+
+--- R7/10: bg_cafe_night.png ★再生成 ---
+用途: カフェ・夜。昼版 bg_cafe_day.png と同じ小さなカフェの夜。
+Anime visual novel background, detailed digital painting, warm lighting, no people, 16:9,
+painterly brushwork. The same small Japanese cafe interior at night. Warm pendant lights
+over wooden tables, chalkboard menu lit softly, espresso machine gleaming behind the
+counter. Windows show a quiet dark street with a streetlight. Cozy late-hours mood, white
+walls turned warm cream by the lighting. Readable details everywhere.
+
+--- R8/10: bg_street_night.png ★再生成 ---
+用途: 商店街・夜（あげは遭遇ほか夜イベント）。昼版 bg_street_day.png と同じ通り。
+Anime visual novel background, detailed digital painting, neon night lighting, no people,
+16:9, painterly brushwork. The same narrow Japanese shopping street as the daytime version,
+at night. Neon signs (pink, blue, orange) of hookah lounges and bars, light spilling from
+shop windows onto the pavement, streetlights making warm pools. Deep navy sky, thin wisps
+of shisha smoke from a doorway. Crisp signage and window details, reflections readable, no
+crushed blacks.
+
+--- R9/10: bg_hideaway.png ★再生成（デート会場で使用中） ---
+用途: デート「裏通りの隠れ家ラウンジ」。構図は現行を踏襲（レンガ・革ソファ・キャンドル・
+レコードプレーヤー）しつつ、読める明るさで作り直す。
+Anime visual novel background, detailed digital painting, candlelit warm lighting, no
+people, 16:9, painterly brushwork. Interior of a hidden hookah lounge known only to
+regulars. Exposed brick walls, deep leather sofas around low tables, candles and low
+pendant lights making layered warm pools, a vintage record player in the corner, heavy
+curtain at the entrance, thin smoke catching the light. Small, private, exclusive. Deep
+brown, burgundy and amber — dim but every surface readable, no pure black areas.
+
+--- R10/10: bg_tonari_outside_night.png ★再生成（無印と同一の潰れ画像） ---
+用途: tonari外観・夜。昼版 bg_tonari_outside_day.png と同じ建物・同じ看板配置の夜。
+Anime visual novel background, detailed digital painting, warm lighting, no people, 16:9,
+painterly brushwork. The same small shisha bar exterior as the daytime version, at night.
+Warm light glowing through the frosted glass door and small windows, the lowercase "tonari"
+wooden sign lit by a small lamp, chalkboard sign readable, potted plants catching the glow.
+Deep blue night sky, a streetlight down the narrow sidewalk. Inviting neighborhood warmth
+against the cool night. No crushed blacks.

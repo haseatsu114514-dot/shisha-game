@@ -64,10 +64,13 @@ function rankFromPts(pts) {
 // ============ 体力（スタミナ）system（master_spec #6） ============
 // 「若いので甘め。ただし無理を重ねると寝込む」。数値は非表示でゲージのみ
 const STAMINA_LOW = 25;        // ここ未満でシーシャ系行動 → 警告→強行で酸欠
-const STAMINA_COST = { baito: 18, visit: 10, talk: 5, practice: 8, rin: 10, date: 6, homePuff: 8, gym: 6 };
-// 体力は蓄積制(#41): 夜の自然回復(sleep)は1行動ぶん程度。
-// まとまった回復は「家に帰る」で行動を使って取る。
-const STAMINA_GAIN = { rest: 50, cafe: 12, kannon: 12, sleep: 12 };
+const STAMINA_COST = { baito: 18, visit: 14, talk: 8, practice: 14, rin: 12, date: 8, homePuff: 8, gym: 8 };
+// 体力は蓄積制(#41): 就寝回復(24)は「どの行動の組み合わせでも」1日分の消耗を
+// やや下回る＝店巡り（訪問×2=28）だけの日も含めて毎日すこしずつ削れる
+// （旧値は訪問2回<回復で、店巡り中心だと一生減らなかった・2026-07-02オーナー報告）。
+// 目安: バイト＋訪問なら章に2回、訪問だけなら章に1回「家で休むか」を考える。
+// 毎日休まないと詰む厳しさにはしない（休憩1回で立て直せる曲線）。
+const STAMINA_GAIN = { rest: 50, cafe: 12, kannon: 12, sleep: 24 };
 function stamina() { return state.stamina ?? 100; }
 function addStamina(n) {
   state.stamina = Math.max(0, Math.min(100, stamina() + n));
@@ -269,8 +272,8 @@ function toast(msg) {
 // labelSub: 補足（"少し上がった" 等）
 const gainQueue = [];
 let gainShowing = 0;
-function gainBanner({ kind = "stat", badge = "+", labelTop = "STATUS UP", labelMain = "", labelSub = "" }) {
-  gainQueue.push({ kind, badge, labelTop, labelMain, labelSub });
+function gainBanner({ kind = "stat", stat = "", badge = "+", labelTop = "STATUS UP", labelMain = "", labelSub = "" }) {
+  gainQueue.push({ kind, stat, badge, labelTop, labelMain, labelSub });
   flushGainQueue();
 }
 function flushGainQueue() {
@@ -280,11 +283,13 @@ function flushGainQueue() {
   const box = $("#gain-banner");
   const card = document.createElement("div");
   card.className = `gain-card ${item.kind}`;
+  // ステータス種別ごとの共通色（--stat-* が正本）。名前・漢字と併記＝色だけに依存しない
+  const statCls = item.stat ? ` stat-c-${item.stat}` : "";
   card.innerHTML =
-    `<div class="badge">${item.badge}</div>` +
+    `<div class="badge${statCls}">${item.badge}</div>` +
     `<div class="meta">` +
       `<span class="label-top">${item.labelTop}</span>` +
-      `<span class="label-main">${item.labelMain}</span>` +
+      `<span class="label-main${statCls}">${item.labelMain}</span>` +
       (item.labelSub ? `<span class="label-sub">${item.labelSub}</span>` : "") +
     `</div>`;
   box.appendChild(card);
@@ -337,6 +342,7 @@ function gainStat(en, amount) {
   const label = amount >= 5 ? "大きく上がった" : amount >= 3 ? "上がった" : "少し上がった";
   gainBanner({
     kind: "stat",
+    stat: en,
     badge: STAT_BADGE[en] || "上",
     labelTop: "STATUS UP",
     labelMain: STAT_KEYS[en],
@@ -535,7 +541,40 @@ const LOCATION_FROM_BG = {
   eden: ["EDEN", "アダムの店"],
   pepermint: ["PEPERMINT", "みんとの店"],
 };
+// ============ 背景の昼夜解決（2026-07-02） ============
+// _day/_night ペアが揃っている背景は、シーンの時間帯（昼=ap2 / 夜=ap<=1）で
+// 自動的に差し替える。ペアが無い背景は #vn-bg に夜用の色調補正（.night-tint）を
+// 掛けて夜を表現する（「夜に訪問しても昼背景」問題の解消）。
+const BG_TIME_BASE = new Set([
+  "bg_tonari_inside", "bg_tonari_outside", "bg_home",
+  "bg_c_station", "bg_cafe", "bg_street",
+]);
+function sceneIsNight() {
+  return !!(state && state.phase === "daily" && state.ap <= 1);
+}
+// 生成待ちの新背景の代替。本命PNGが assets/backgrounds/ に届いて build すれば
+// 自動でそちらに切り替わる（コード変更不要・作りパートの artAsset と同じ思想）
+const BG_FALLBACKS = { "bg_fookah_showroom.png": "bg_shop.png" };
+function resolveSceneBg(rel) {
+  // 未着ファイルはフォールバックへ（D.backgrounds は実在するPNGの一覧）
+  const f = String(rel).match(/^assets\/backgrounds\/([^/]+\.png)$/);
+  if (f && BG_FALLBACKS[f[1]] && Array.isArray(D.backgrounds) && !D.backgrounds.includes(f[1])) {
+    rel = `assets/backgrounds/${BG_FALLBACKS[f[1]]}`;
+  }
+  const m = String(rel).match(/^assets\/backgrounds\/(.+?)(_day|_night)?\.png$/);
+  if (!m) return rel;
+  let base = m[1];
+  if (base === "bg_c_station_lobby") base = "bg_c_station"; // 無印の実体エイリアス
+  if (!BG_TIME_BASE.has(base)) return rel;
+  if (sceneIsNight()) return `assets/backgrounds/${base}_night.png`;
+  // 昼: 明示の _night 指定は演出（閉店後など）なので触らない。無印と _day は昼画像へ
+  return m[2] === "_night" ? rel : `assets/backgrounds/${base}_day.png`;
+}
+
 function setLocationFromBg(rel) {
+  // 昼夜ペアの無い背景は、夜だけ色調補正を重ねる（tint。_night 画像はそのまま）
+  const bgEl = $("#vn-bg");
+  if (bgEl) bgEl.classList.toggle("night-tint", sceneIsNight() && !/_night\.png$/.test(String(rel)));
   const m = String(rel || "").match(/bg_([\w_]+?)\.png|^([\w_]+)\.png/);
   let key = "";
   if (m) key = (m[1] || m[2] || "").replace(/_(day|night)$/, (_, t) => t);
@@ -672,7 +711,11 @@ function updateDayCard() {
   $("#dc-money").textContent = state.money.toLocaleString();
   // 「今日の客層」は廃止（master_spec #18）。枠は体力の気配表示に転用
   const st = stamina();
-  $("#dc-request").textContent = st >= 70 ? "体は軽い" : st >= STAMINA_LOW ? "すこし疲れ気味" : "かなり疲れている";
+  $("#dc-request").textContent =
+    st >= 70 ? "体は軽い"
+    : st >= STAMINA_LOW + 15 ? "すこし疲れ気味"
+    : st >= STAMINA_LOW ? "疲れがたまってきた"
+    : "かなり疲れている";
   const quotes = state.chapter === 2 ? CH2_SUMI_QUOTES : SUMI_QUOTES;
   $("#dc-quote").textContent = `スミ「${quotes[Math.min(Math.max(state.day, 1), quotes.length) - 1]}」`;
 }
@@ -705,18 +748,21 @@ function engulfInSmoke(onMid) {
     p.style.animationDelay = `${i * 0.03 + Math.random() * 0.1}s`;
     veil.appendChild(p);
   }
-  veil.classList.remove("engulf");
+  veil.classList.remove("engulf", "clearing");
   void veil.offsetWidth;
   veil.classList.add("engulf");
   if (window.SFX) SFX.smoke();
   // 白く包まれてからひと呼吸おいて onMid（晴れていく中で次の画面が現れる）
   if (onMid) setTimeout(onMid, 1050);
+  // 画面が煙で覆われている間は誤タップを吸い込む。晴れ始めたら操作を返す
+  setTimeout(() => veil.classList.add("clearing"), 1900);
   setTimeout(() => {
-    veil.classList.remove("engulf");
+    veil.classList.remove("engulf", "clearing");
     veil.innerHTML = "";
   }, 2650);
 }
-// 煙ワイプの汎用API（master_spec #20）。pointer-events:none なので操作は止めない
+// 煙ワイプの汎用API（master_spec #20）。煙が画面を覆っている間は誤タップを吸い込み、
+// 晴れ始め（1.9s〜）に操作を返す（トランジション中にボタンが押せてしまう問題の修正）
 function smokeWipe(onMid) { engulfInSmoke(onMid); }
 
 // スモークリングのフラッシュ（勝利・ランクアップの華）。中央から輪が連続で抜ける
@@ -1086,6 +1132,7 @@ function initEngine() {
       onCg: galleryRecord,
       onLine: pushLog,
       onTextCue: parseTextCue,
+      resolveBg: (rel) => resolveSceneBg(rel),
       onChoice: handleDialogueChoice,
       onApply: (line) => {
         if (line.stats) for (const [k, v] of Object.entries(line.stats)) gainStat(k, v);
@@ -1103,6 +1150,7 @@ function initEngine() {
     }
   );
   $("#vn-click-layer").addEventListener("click", () => {
+    if (Date.now() < dialogueOpenLockUntil) return; // 開幕直後の連打タップで1行目が飛ぶのを防ぐ
     // 手動クリックは AUTO/SKIP を解除して次へ
     if (autoMode || skipMode) stopAutoSkip();
     if (window.SFX) SFX.click();
@@ -1111,6 +1159,7 @@ function initEngine() {
   document.addEventListener("keydown", (e) => {
     if ((e.key === "Enter" || e.key === " ") && $("#screen-dialogue").classList.contains("active")) {
       e.preventDefault();
+      if (Date.now() < dialogueOpenLockUntil) return;
       engine.next();
     }
   });
@@ -1146,8 +1195,13 @@ function playDialogue(id, onDone, bgOverride) {
   playCustom(d, onDone, bgOverride);
 }
 
+// 会話の開幕直後は前画面からの持ち越しタップを無視する（1行目の見逃し防止）
+let dialogueOpenLockUntil = 0;
+
 function playCustom(dialogue, onDone, bgOverride) {
+  const wasActive = $("#screen-dialogue").classList.contains("active");
   showScreen("#screen-dialogue");
+  if (!wasActive) dialogueOpenLockUntil = Date.now() + 320;
   cueFiredInDialogue = false;
   if (bgOverride) engine.setBackground(bgOverride);
   if (state) updateHud();
@@ -1638,7 +1692,7 @@ const DATE_VENUES = [
   { id: "kemurikusa", name: "KEMURIKUSA", bg: "kemurikusa.png", note: "スピード勝負の店の、迷いのない煙" },
   { id: "eden", name: "EDEN", bg: "bg_eden_shop.png", note: "ダブルアップル一筋の店の、深く甘い香り" },
   { id: "pepermint", name: "PEPERMINT", bg: "pepermint.png", note: "ポップな内装に、意外と丁寧な一台" },
-  { id: "hideaway", name: "裏通りの隠れ家ラウンジ", bg: "bg_street_night.png", note: "看板のない店。常連だけが知る静けさ" },
+  { id: "hideaway", name: "裏通りの隠れ家ラウンジ", bg: "bg_hideaway.png", note: "看板のない店。常連だけが知る静けさ" },
 ];
 // キャラの台詞（venue共通の骨格に、キャラの声を差し込む）
 const DATE_SCENES = {
@@ -1789,7 +1843,8 @@ const SPOT_LAYOUT = {
   volk:      { x: 50, y: 38, theme: "rival",   short: "鉄の煙",     area: "工業地区" },
   choizap:   { x: 28.9, y: 32.6, theme: "shop",    short: "チョイザップ", area: "ジム" },
   kannon:    { x: 16.0, y: 54.2, theme: "park",    short: "観音堂",     area: "古町" },
-  cafe:      { x: 84.0, y: 53.5, theme: "cafe",    short: "カフェ",     area: "繁華街" },
+  // カフェは tonari／家 と重なると家のピンに覆われてタップ不能になる（#ピン団子）。右上クラスタから離す
+  cafe:      { x: 74.5, y: 57.0, theme: "cafe",    short: "カフェ",     area: "繁華街" },
   c_station: { x: 59.4, y: 60.4, theme: "stadium", short: "C.STATION",  area: "会場" },
   shop:      { x: 42.2, y: 37.5, theme: "shop",    short: "Dr.fookah",  area: "問屋街" },
   rest:      { x: 88, y: 60, theme: "rest",    short: "家",         area: "自宅" },
@@ -1919,7 +1974,9 @@ function updateMapInfo(spot, locked, tooPoor, closed, visited) {
     $("#map-info-title").textContent = state.ap === 2 ? "今日はどうする？" : "夜の時間";
     $("#map-info-desc").textContent = "気になる場所をタップ。残り行動と所持金に注意。";
     $("#map-info-cost").textContent = "";
-    const tired = staminaLow() ? "　⚠ 体が重い。今日は無理しない方がいい" : "";
+    const tired = staminaLow()
+      ? "　⚠ 体が重い。今日は無理しない方がいい"
+      : stamina() < STAMINA_LOW + 15 ? "　疲れがたまってきた。家で休むのも手だ" : "";
     $("#map-info-hint").textContent =
       (state.ap === 2 ? "昼 — 今日は2回動ける" : "夜 — 今日はあと1回動ける") + tired;
     return;
@@ -2119,7 +2176,7 @@ function endAction() {
           state.ap = 0;
           save();
           endDay();
-        }, true));
+        }, true), "約束の場所へ向かう");
       }
       return showMap();
     }
@@ -2178,10 +2235,12 @@ function advanceDay() {
   morningPhone(showMap); // 朝のLIME（無ければ即 showMap がスロットを精算）
 }
 
-// #16: 強制イベントの前に「マップに戻る→スロット精算→自動で次イベント」の一拍を挟む（オーナー指定）。
+// #16: 強制イベントの前に「マップに戻る→スロット精算→次イベント」の一拍を挟む（オーナー指定）。
 // 行動の結果画面からシームレスに夜イベントへ飛ぶ「急に画面が変わった」感を消す。
-// 非操作のオーバーレイで一拍置き、タップで早送り可。テストは #map-beat を検出して飛ばす。
-function mapBeat(onDone) {
+// スロット消化直後に勝手に帰宅・イベントへ進まないよう、先へ進むのは
+// プレイヤーのタップだけ（自動送りしない・2026-07-02）。何が起きるかは label で明示する。
+// テストは #map-beat を検出してクリックで飛ばす。
+function mapBeat(onDone, label) {
   if (!state) return onDone();
   showMap(); // マップ表示＋スロット精算（REEL.onMapShown）
   const screen = document.querySelector("#screen-map");
@@ -2189,7 +2248,7 @@ function mapBeat(onDone) {
   document.getElementById("map-beat")?.remove();
   const ov = document.createElement("div");
   ov.id = "map-beat";
-  ov.innerHTML = `<div class="map-beat-card"><span class="mb-dots">……</span><span class="mb-sub">タップで次へ</span></div>`;
+  ov.innerHTML = `<div class="map-beat-card"><span class="mb-dots">${label || "……"}</span><span class="mb-sub">▼ タップで次へ</span></div>`;
   screen.appendChild(ov);
   let done = false;
   let requested = false;
@@ -2202,7 +2261,6 @@ function mapBeat(onDone) {
   };
   const requestGo = () => { requested = true; go(); };
   ov.addEventListener("click", requestGo);
-  setTimeout(requestGo, 2100);
   if (!reelIdle && REEL.waitForIdle) REEL.waitForIdle(() => { reelIdle = true; go(); });
 }
 
@@ -2210,10 +2268,19 @@ function endDay() {
   // 夜の締め: 必ず家に帰って1日を終える（master_spec #3）。
   // 家シーシャ（第2章〜・一式所持時）はその帰宅シーンの中で選択肢になる
   const finishDay = () => maybeNightcap(advanceDay);
-  const finishAfterReel = () => mapBeat(finishDay);
-  // 夜の強制イベントは mapBeat（つなぎの一拍）を通してから再生する（#16）
-  const pd = (id, cb, bg) => mapBeat(() => playDialogue(id, cb, bg));
-  const pc = (obj, cb) => mapBeat(() => playCustom(obj, cb));
+  const finishAfterReel = () => mapBeat(finishDay, "今日はここまで——家に帰る");
+  // 夜の強制イベントは mapBeat（つなぎの一拍）を通してから再生する（#16）。
+  // つなぎ文言は行き先に合わせる＝夜に別の店へ行った直後でも
+  // 「なぜ急にtonariのシーンに？」とならないように（2026-07-02）
+  const beatLabel = (bg) => {
+    const b = String(bg || "");
+    if (b.includes("tonari")) return "帰り道、tonariに寄っていく——";
+    if (b.includes("street")) return "帰り道——";
+    return "夜になった——";
+  };
+  const dlgBg = (id) => (((D.dialogues[id] || {}).metadata || {}).bg || "");
+  const pd = (id, cb, bg) => mapBeat(() => playDialogue(id, cb, bg), beatLabel(bg || dlgBg(id)));
+  const pc = (obj, cb) => mapBeat(() => playCustom(obj, cb), beatLabel(obj && obj.metadata && obj.metadata.bg));
   const TONARI = "res://assets/backgrounds/bg_tonari_inside_night.png";
   // ---- 第2章の夜の固定イベント（嫉妬と転落の進行）
   if (state.chapter === 2) {
@@ -2835,15 +2902,16 @@ function doRinVisit() {
       save();
       endAction(); // 凛に会うのは1コマ（行けば行くほど得、を防ぐ）
     };
+    // 2階ショールームの専用背景（未着の間は BG_FALLBACKS が 1階物販 bg_shop.png を出す）
     if (idx < RIN_SEQUENCE.length) {
       state.visits.rin += 1;
       playDialogue(RIN_SEQUENCE[idx], () => {
         const got = gainAffinity("rin", "visit");
         if (!cueFiredInDialogue && !got) gainStat("sense", 2);
         after();
-      }, "res://assets/backgrounds/bg_shop.png");
+      }, "res://assets/backgrounds/bg_fookah_showroom.png");
     } else {
-      playDialogue("ch1_rin_repeat", () => { gainAffinity("rin", "repeat"); after(); }, "res://assets/backgrounds/bg_shop.png");
+      playDialogue("ch1_rin_repeat", () => { gainAffinity("rin", "repeat"); after(); }, "res://assets/backgrounds/bg_fookah_showroom.png");
     }
   }, () => showShop());
   maybeVisitWarning("rin", play, () => showShop());
@@ -3330,52 +3398,8 @@ function makingLayer(name, cls) {
   setMakingAsset(el, name);
   return el;
 }
-function bowlMakingAsset(filled = false) {
-  if (filled && tt && tt.pack) {
-    const density = ({ fluffy: "airy", normal: "normal", firm: "firm" })[tt.pack] || "normal";
-    // ファンネルは中央スパイアの穴を塞がない専用リングパックを使う。
-    if (tt.bowl === "hagal_80beat") return `bowl_packed_phunnel_${density}.png`;
-    return `bowl_packed_${density}.png`;
-  }
-  if (tt && String(tt.bowl || "").includes("suyaki")) return "bowl_empty_clay.png";
-  if (tt && tt.bowl === "hagal_80beat") return "bowl_empty_phunnel.png";
-  return "bowl_empty_silicone.png";
-}
 function mixTotalGrams() {
   return tt ? Object.values(tt.mix || {}).reduce((a, b) => a + b, 0) : 0;
-}
-function leafPileAsset(total = mixTotalGrams()) {
-  if (total <= 0) return "";
-  if (total < 4) return "leaf_pile_1.png";
-  if (total < 8) return "leaf_pile_2.png";
-  if (total < 12) return "leaf_pile_3.png";
-  return "leaf_pile_4.png";
-}
-function coalHeatAsset() {
-  const shape = tt && tt.charcoal === "flat_charcoal" ? "coal_flat" : "coal";
-  let heat = "red";
-  if (!tt || tt.step === "coal" || tt.coalFire === "miss") heat = "cold";
-  else if (tt.coalFire === "perfect") heat = "just";
-  else if (tt.coalFire === "good") heat = "white";
-  return `${shape}_${heat}.png`;
-}
-function makingHoleLayer(count) {
-  const group = document.createElement("div");
-  group.className = "making-layer foil-holes";
-  const positions = [[50,18],[72,31],[76,56],[50,74],[24,56],[28,31]];
-  if (!hasMakingAsset("hole_punched.png")) {
-    group.classList.add("missing");
-    return group;
-  }
-  positions.slice(0, Math.max(0, Math.min(count || 0, positions.length))).forEach(([x, y]) => {
-    const hole = document.createElement("span");
-    hole.className = "foil-hole";
-    hole.style.left = `${x}%`;
-    hole.style.top = `${y}%`;
-    setMakingAsset(hole, "hole_punched.png");
-    group.appendChild(hole);
-  });
-  return group;
 }
 function zeroSteamUnlocked() {
   if (!state) return false;
@@ -3389,57 +3413,274 @@ function zeroSteamUnlocked() {
 function availableSteamOptions() {
   return STEAMS.filter((s) => s.id !== 0 || zeroSteamUnlocked());
 }
+// ============================================================================
+// 作業台アート（CSS多層描画）。assets/ui/making/ のPNGが無い前提で、
+// ボウル・ジャー・コンロ・一式のシーシャをCSSで組み立てて「実際に作っている」
+// 手元を見せる。bench_base.png 等が届けば setMakingAsset が下地を差し替える。
+// ============================================================================
+function artDiv(cls, parent) {
+  const el = document.createElement("div");
+  el.className = cls;
+  if (parent) parent.appendChild(el);
+  return el;
+}
+// 生成画像が assets/ui/making/ に置かれていれば要素の絵をPNGへ差し替える共通口。
+// 置かれていなければ false を返し、呼び出し側が従来のCSSアートを組み立てる。
+// 対応ファイル名と構図は docs/asset_gen_prompts.md §1（Codex向け）を正とする
+function artAsset(el, name) {
+  if (!hasMakingAsset(name)) return false;
+  setMakingAsset(el, name);
+  el.classList.add("has-asset");
+  return true;
+}
+function flavorColor(id) {
+  return FLAVOR_COLORS[id] || "#8a6a45";
+}
+function flavorShortName(id) {
+  const f = (D.flavors || []).find((x) => x.id === id);
+  return ((f && (f.short_name || f.name)) || id).replace(/^AF |^NS /, "");
+}
+// ボウルの中の葉。入れた順に色の層が下から積もる。pack 後は詰め方で嵩が変わる
+function buildLeafFill(compact = false) {
+  const fill = artDiv("art-leaf-fill");
+  const entries = Object.entries((tt && tt.mix) || {}).filter(([, g]) => g > 0);
+  const total = entries.reduce((a, [, g]) => a + g, 0);
+  if (!total) { fill.style.height = "0%"; return fill; }
+  const cap = typeof bowlCapacity === "function" ? bowlCapacity() : 15;
+  let packScale = 1;
+  if (compact) packScale = ({ fluffy: 1.05, normal: 0.9, firm: 0.74 })[tt.pack] || 0.9;
+  fill.style.height = `${Math.min(96, (26 + (total / cap) * 66) * packScale)}%`;
+  let acc = 0;
+  const stops = [];
+  for (const [id, g] of entries) {
+    const c = flavorColor(id);
+    stops.push(`${c} ${(acc / total) * 100}%`);
+    acc += g;
+    stops.push(`${c} ${(acc / total) * 100}%`);
+  }
+  fill.style.background = `linear-gradient(0deg, ${stops.join(",")})`;
+  return fill;
+}
+// アルミの穴。実際に開けた角度（stageFoilPunch）か、工程通過後は記録から均等配置
+function fillFoilHolesFromResult(holes) {
+  const per = tt && tt.holeResult
+    ? [["outer", tt.holeResult.outerHoles], ["middle", tt.holeResult.middleHoles], ["inner", tt.holeResult.innerHoles]]
+    : [["outer", 8], ["middle", 6], ["inner", Math.max(0, (tt ? tt.foilHits : 0) - 2)]];
+  const radii = { outer: 0.8, middle: 0.55, inner: 0.3 };
+  for (const [key, n] of per) {
+    for (let i = 0; i < (n || 0); i++) addFoilHole(holes, radii[key], (360 / Math.max(1, n)) * i);
+  }
+}
+function addFoilHole(holes, r, angleDeg) {
+  const a = ((angleDeg - 90) * Math.PI) / 180;
+  const d = document.createElement("i");
+  d.className = "art-hole";
+  d.style.left = `${50 + Math.cos(a) * r * 42}%`;
+  d.style.top = `${50 + Math.sin(a) * r * 36}%`;
+  artAsset(d, "hole_punched.png"); // 穴スプライトの生成画像があれば差し替え
+  holes.appendChild(d);
+  return d;
+}
+// 穴あけミニゲームから呼ばれ、作業台のアルミにも同じ位置に穴が開く
+function stageFoilPunch(r, angleDeg) {
+  const holes = document.querySelector("#tn-body .art-foil-holes");
+  if (!holes) return;
+  const d = addFoilHole(holes, r, angleDeg);
+  d.classList.add("fresh");
+}
+// 炭キューブ。lit: "off"（生）| "heating"（熾き中）| "on"（本熾き）| "ash"（灰）
+function buildCoalArt(lit) {
+  const c = artDiv(`art-coal lit-${lit || "off"}`);
+  const asset = { heating: "coal_red.png", on: "coal_white.png" }[lit] || "coal_cold.png";
+  if (!artAsset(c, asset)) artDiv("art-coal-face", c);
+  return c;
+}
+function coalLitState() {
+  if (!tt || tt.step === "coal") return "off";
+  if (tt.coalFire === "perfect") return "on";
+  if (tt.coalFire === "miss") return "ash";
+  return "heating";
+}
+function coalCount() {
+  return (tt && tt.coal) === "two" ? 2 : (tt && tt.coal) === "four" ? 4 : 3;
+}
+// ボウル（クレイ/シリコン/ファンネル）。fill=葉、foil=アルミ、coals=炭を上に乗せる。
+// 生成画像 bowl_empty_*.png があれば器の絵はPNG、葉の色層・穴・炭はコードで重ねる
+function buildBowlArt(opts = {}) {
+  const kind = tt && String(tt.bowl || "").includes("suyaki") ? "clay"
+    : tt && tt.bowl === "hagal_80beat" ? "phunnel" : "silicone";
+  const bowl = artDiv(`art-bowl ${opts.cls || ""}`);
+  bowl.dataset.kind = kind;
+  const bowlAsset = { clay: "bowl_empty_clay.png", phunnel: "bowl_empty_phunnel.png", silicone: "bowl_empty_silicone.png" }[kind];
+  const hasBowlImg = artAsset(bowl, bowlAsset);
+  if (!hasBowlImg) artDiv("art-bowl-body", bowl);
+  const cavity = artDiv("art-bowl-cavity", bowl);
+  if (opts.fill) cavity.appendChild(buildLeafFill(opts.compact));
+  if (!hasBowlImg && kind === "phunnel") artDiv("art-bowl-spire", bowl);
+  if (!hasBowlImg) artDiv("art-bowl-rim", bowl);
+  if (opts.foil) {
+    const foil = artDiv("art-foil", bowl);
+    const hasFoilImg = artAsset(foil, "foil_surface.png");
+    artDiv("art-foil-sheen", foil);
+    if (!hasFoilImg) artDiv("art-foil-crimp", foil);
+    const holes = artDiv("art-foil-holes", foil);
+    if (opts.holesFromResult) fillFoilHolesFromResult(holes);
+  }
+  if (opts.coals) {
+    const tray = artDiv("art-bowl-coals", bowl);
+    const lit = coalLitState();
+    for (let i = 0; i < Math.min(4, coalCount()); i++) tray.appendChild(buildCoalArt(lit));
+  }
+  return bowl;
+}
+// フレーバージャー。ガラス瓶＋中身の色＋手書きラベル。
+// jar_glass.png（瓶単体・中身が透ける窓）/ jar_pour.png（注ぐ手元の一枚）があれば差し替え
+function buildJarArt(flavorId, opts = {}) {
+  const jar = artDiv(`art-jar ${opts.cls || ""}`);
+  jar.style.setProperty("--jar-color", flavorColor(flavorId));
+  if (opts.pourArt && artAsset(jar, "jar_pour.png")) return jar; // 注ぎ手元の一枚絵は丸ごと差し替え
+  const glassHasImg = hasMakingAsset("jar_glass.png");
+  if (!glassHasImg) artDiv("art-jar-lid", jar);
+  const glass = artDiv("art-jar-glass", jar);
+  if (glassHasImg) artAsset(glass, "jar_glass.png");
+  artDiv("art-jar-content", jar); // 中身の色（z-indexでガラスの下に入る）
+  const label = artDiv("art-jar-label", jar);
+  label.textContent = flavorId ? flavorShortName(flavorId) : "";
+  return jar;
+}
+// 組み上がった一式（ボウル＋ステム＋ガラスベース＋ホース）。
+// hookah_tray/stem/base.png があれば各部をPNGへ。水・泡・煙はコードで重ねる
+function buildHookahArt(opts = {}) {
+  const rig = artDiv(`art-hookah ${opts.cls || ""}`);
+  if (opts.smoke) {
+    const smoke = artDiv("art-hookah-smoke", rig);
+    for (let i = 0; i < 4; i++) artDiv(`art-wisp w${i}`, smoke);
+  }
+  const top = artDiv("art-hookah-top", rig);
+  top.appendChild(buildBowlArt({ fill: true, compact: true, foil: true, holesFromResult: true, coals: opts.coals !== false, cls: "on-rig" }));
+  artAsset(artDiv("art-hookah-tray", rig), "hookah_tray.png");
+  artAsset(artDiv("art-hookah-stem", rig), "hookah_stem.png");
+  const base = artDiv("art-hookah-base", rig);
+  const water = artDiv("art-hookah-water", base);
+  water.classList.add("art-water");
+  artDiv("art-hookah-bubbles", water);
+  // ガラスは水・泡の上に重ねる別レイヤー（PNGの透け感で中の水が見える）
+  const glass = artDiv("art-hookah-glass", base);
+  if (artAsset(glass, "hookah_base.png")) base.classList.add("glass-asset");
+  artDiv("art-hookah-hoseport", rig);
+  return rig;
+}
+// 吸い出し・提供時の泡。ベースの水がボコボコと沸く
+function spawnBaseBubbles(count = 8) {
+  const holder = document.querySelector("#tn-body .art-hookah-bubbles");
+  if (!holder) return;
+  for (let i = 0; i < count; i++) {
+    const b = document.createElement("i");
+    b.className = "art-bubble";
+    b.style.left = `${18 + Math.random() * 64}%`;
+    b.style.animationDelay = `${Math.random() * 260}ms`;
+    b.style.setProperty("--bsize", `${4 + Math.random() * 7}px`);
+    holder.appendChild(b);
+    setTimeout(() => b.remove(), 1400);
+  }
+}
+// ジャーからボウルへ葉が落ちる（ミックスの＋を押した瞬間）
+function spawnPourGrains(stage, flavorId) {
+  const zone = stage.querySelector(".art-pour-zone");
+  if (!zone) return;
+  const color = flavorColor(flavorId);
+  for (let i = 0; i < 9; i++) {
+    const g = document.createElement("i");
+    g.className = "art-grain";
+    if (!artAsset(g, "leaf_grain.png")) g.style.background = color;
+    g.style.left = `${42 + Math.random() * 16}%`;
+    g.style.animationDelay = `${i * 34 + Math.random() * 24}ms`;
+    g.style.setProperty("--gdrift", `${(Math.random() - 0.5) * 26}px`);
+    zone.appendChild(g);
+    setTimeout(() => g.remove(), 900);
+  }
+}
+
 function renderMakingWorkbench(step, opts = {}) {
   const scene = MAKING_SCENE[step] || "setup";
   const stage = document.createElement("div");
   stage.className = `making-stage making-${scene}`;
   stage.dataset.step = scene;
   stage.appendChild(makingLayer("bench_base.png", "bench-base"));
+  artDiv("bench-board", stage); // 木の作業台の天板
   if (["steam", "focus", "pull"].includes(scene)) stage.appendChild(makingLayer("vignette_focus.png", "bench-vignette"));
 
   if (scene === "theme" || scene === "setup") {
+    // 開店前の作業台: メモ・空のボウル・棚のジャー
     stage.appendChild(makingLayer("bench_note.png", "bench-note"));
-    stage.appendChild(makingLayer(bowlMakingAsset(false), "bench-bowl"));
-    stage.appendChild(makingLayer("jar_pour.png", "bench-jar idle"));
+    const shelf = artDiv("art-shelf", stage);
+    for (const id of ["mint", "double_apple", "blueberry"]) shelf.appendChild(buildJarArt(id, { cls: "on-shelf" }));
+    const b = buildBowlArt({ fill: false, cls: "art-bowl-mid" });
+    b.classList.add("on-bench");
+    stage.appendChild(b);
   } else if (scene === "mix") {
-    stage.appendChild(makingLayer("mix_scale.png", "mix-scale"));
-    stage.appendChild(makingLayer(bowlMakingAsset(false), "mix-bowl"));
-    const pile = leafPileAsset();
-    if (pile) stage.appendChild(makingLayer(pile, "mix-leaf-pile"));
-    const jar = makingLayer("jar_pour.png", `mix-jar${opts.pour ? " pouring" : ""}`);
+    // 計量: スケールの上のボウルへ、ジャーから葉を注ぐ
+    const scale = artDiv("art-scale", stage);
+    if (!artAsset(scale, "mix_scale.png")) artDiv("art-scale-plate", scale);
+    stage.appendChild(buildBowlArt({ fill: true, cls: "art-bowl-mid on-scale" }));
+    artDiv("art-pour-zone", stage);
+    const jar = buildJarArt(opts.flavor || Object.keys((tt && tt.mix) || {}).pop() || "", { cls: `art-jar-hand${opts.pour ? " pouring" : ""}`, pourArt: true });
     stage.appendChild(jar);
     const display = document.createElement("div");
-    display.className = "scale-display";
+    display.className = `scale-display${opts.pour ? " bump" : ""}`;
     display.textContent = `${mixTotalGrams().toFixed(1)}g`;
     stage.appendChild(display);
+    if (opts.pour) spawnPourGrains(stage, opts.flavor);
   } else if (scene === "pack") {
-    stage.appendChild(makingLayer(bowlMakingAsset(true), "pack-bowl"));
-    stage.appendChild(makingLayer(tt && tt.pack === "firm" ? "hand_press.png" : "hand_fork.png", "pack-hand"));
+    // 詰め: ボウルのドアップ。フォークでほぐし入れる手元
+    stage.appendChild(buildBowlArt({ fill: true, compact: !!(tt && tt.pack), cls: "art-bowl-big" }));
+    const fork = artDiv("art-fork", stage);
+    if (!artAsset(fork, "hand_fork.png")) artDiv("art-fork-tines", fork);
   } else if (scene === "foil") {
-    stage.appendChild(makingLayer("foil_surface.png", "foil-sheet"));
-    if (tt && tt.foilHits > 0) stage.appendChild(makingHoleLayer(tt.foilHits));
-    stage.appendChild(makingLayer("hand_pin.png", "foil-hand"));
+    // アルミ張り: 張ったアルミの上に、ミニゲームと同じ位置へ穴が増えていく
+    stage.appendChild(buildBowlArt({ fill: true, compact: true, foil: true, cls: "art-bowl-big foil-view" }));
+    artAsset(artDiv("art-pick", stage), "hand_pin.png");
   } else if (scene === "coal" || scene === "coalfire") {
-    stage.appendChild(makingLayer("stove_coil.png", "stove-coil"));
-    stage.appendChild(makingLayer(coalHeatAsset(), "stove-coal coal-a"));
-    stage.appendChild(makingLayer(coalHeatAsset(), "stove-coal coal-b"));
-    if ((tt && tt.coal) !== "two") stage.appendChild(makingLayer(coalHeatAsset(), "stove-coal coal-c"));
-    if (tt && tt.coal === "four") stage.appendChild(makingLayer(coalHeatAsset(), "stove-coal coal-d"));
-    stage.appendChild(makingLayer(scene === "coalfire" ? "hand_tongs_closed.png" : "hand_tongs_open.png", "tongs-hand"));
+    // 炭起こし: 電熱コンロの上でココナラ炭が赤くなっていく
+    const stove = artDiv("art-stove", stage);
+    if (!artAsset(stove, "stove_coil.png")) artDiv("art-stove-coil", stove);
+    const coalsWrap = artDiv("art-stove-coals", stove);
+    const lit = scene === "coal" ? "off" : coalLitState();
+    for (let i = 0; i < Math.min(4, coalCount()); i++) coalsWrap.appendChild(buildCoalArt(scene === "coalfire" ? "heating" : lit));
+    if (scene === "coalfire") {
+      const sparks = artDiv("art-sparks", stove);
+      for (let i = 0; i < 7; i++) artDiv(`art-spark s${i}`, sparks);
+    }
+    const tongs = artDiv("art-tongs", stage);
+    if (!artAsset(tongs, "hand_tongs_open.png")) {
+      artDiv("art-tongs-arm a1", tongs);
+      artDiv("art-tongs-arm a2", tongs);
+    }
   } else if (scene === "steam") {
-    stage.appendChild(makingLayer("steam_wait_bg.png", "steam-rig"));
+    // 蒸らし: 組み上がった一台。炭の熱がゆっくり乗るのを待つ
+    stage.appendChild(buildHookahArt({ smoke: true }));
     stage.appendChild(makingLayer("heat_glow.png", "heat-glow"));
     const pulse = document.createElement("div");
     pulse.className = "heartbeat-focus";
     stage.appendChild(pulse);
   } else if (scene === "adjust" || scene === "focus") {
-    stage.appendChild(makingLayer("steam_wait_bg.png", "steam-rig"));
+    stage.appendChild(buildHookahArt({ smoke: scene === "focus" }));
     stage.appendChild(makingLayer("heat_glow.png", "heat-glow soft"));
-    stage.appendChild(makingLayer("hand_tongs_open.png", "tongs-hand adjust"));
+    if (scene === "adjust") {
+      const tongs = artDiv("art-tongs adjust", stage);
+      if (!artAsset(tongs, "hand_tongs_open.png")) {
+        artDiv("art-tongs-arm a1", tongs);
+        artDiv("art-tongs-arm a2", tongs);
+      }
+    }
   } else if (scene === "pull") {
-    stage.appendChild(makingLayer("serve_hose.png", "serve-hose"));
-    stage.appendChild(makingLayer("hose_tip.png", "hose-tip"));
-    stage.appendChild(makingLayer("smoke_thick.png", "pull-smoke"));
+    // 吸い出し: 一人称。左に一台、右手前にマウスピース、煙が立ちはじめる
+    stage.appendChild(buildHookahArt({ smoke: true, cls: "at-left" }));
+    const hose = artDiv("art-hose", stage);
+    artAsset(artDiv("art-hose-line", hose), "hose_line.png");
+    const mouth = artDiv("art-mouthpiece", hose);
+    if (!artAsset(mouth, "hose_tip.png")) artDiv("art-mouthpiece-tip", mouth);
+    artAsset(artDiv("art-pull-smoke", stage), "smoke_thick.png");
   }
   return stage;
 }
@@ -3783,7 +4024,8 @@ function tournamentStep(step) {
     const body = tnPanel("パッキング", "煙の密度と質感が決まる。フレーバーの重さと相談だ。");
     for (const p of PACKS) body.appendChild(optionButton(p.label, p.desc, () => {
       tt.pack = p.id;
-      tnNext("pack");
+      if (window.SFX) SFX.select();
+      tnNext("pack"); // 詰めた結果（嵩の違い）は次工程のボウル表示で見える
     }));
     return;
   }
@@ -4107,6 +4349,7 @@ function stepFoil() {
     const tooClose = r.angles.some((x) => { const d = Math.abs(((x - angle + 540) % 360) - 180); return (180 - d) < 14; });
     r.angles.push(angle);
     placeDot(r.r, angle, r.hue);
+    stageFoilPunch(r.r, angle); // 作業台のアルミにも同じ場所に穴が開く
     if (window.SFX) SFX.foil();
     if (tooClose) callout("TOO CLOSE", "warn");
     else if (r.angles.length === r.target && ringEvenness(r.angles) > 0.8) callout("BEAUTIFUL RING", "great");
@@ -4572,8 +4815,9 @@ function stepMix() {
   // 凛の未発売サンプルは練習/ドリル等の試香でのみ使える（大会・店では出せない）
   const compMode = tt.mode === "tournament" || tt.mode === "rehearsal";
   const serveMode = tt.mode === "baito";
+  // 課題フレーバーは主催者支給＝未仕入れでも大会・リハで必ず使える（仕入れ忘れで詰まない）
   const flavors = D.flavors.filter((f) =>
-    (serveMode || ownsFlavor(f)) &&
+    (serveMode || ownsFlavor(f) || (compMode && reg && f.id === reg.flavor)) &&
     (!f.leaf || f.leaf === "blond") &&
     !(compMode && f.competition_legal === false) &&
     !(serveMode && f.serve_legal === false));
@@ -4610,8 +4854,8 @@ function stepMix() {
       if (window.SFX) SFX.pour();
       update();
       updateRig();
-      refreshMakingWorkbench({ pour: true });
-      setTimeout(() => refreshMakingWorkbench(), 520);
+      refreshMakingWorkbench({ pour: true, flavor: f.id });
+      setTimeout(() => refreshMakingWorkbench({ flavor: f.id }), 620);
     });
     ctrl.append(minus, grams, plus);
     row.append(info, ctrl);
@@ -5003,6 +5247,7 @@ function stepPull() {
     // 4回目以降は吸いすぎ: 提供前に葉が痩せていく（craftScore で減点）
     if (tt.pullCount > PULL_SAFE) result.textContent += "　（……吸いすぎだ。味の厚みが、少しずつ逃げていく）";
     playMakingMotion(`pull-${pullKind}`, motionMs);
+    spawnBaseBubbles(pullKind === "keep" ? 6 : 10); // 吸うとベースの水がボコボコ鳴る見た目
     if (window.SFX) SFX.bubble();
     spawnBubbles(7);
     startRigSmoke(620);
@@ -5905,7 +6150,7 @@ function buildRadarSVG() {
     const [x, y] = radarPoint(cx, cy, R + 18, i, 100);
     const up = (state.stats[en] || 0) > (base[en] || 0) ? '<tspan class="radar-up"> \u2191</tspan>' : "";
     const anchor = Math.abs(x - cx) < 6 ? "middle" : x < cx ? "end" : "start";
-    badges += `<text x="${x}" y="${y - 2}" text-anchor="${anchor}" class="radar-label">${STAT_KEYS[en]}${up}</text>` +
+    badges += `<text x="${x}" y="${y - 2}" text-anchor="${anchor}" class="radar-label stat-c-${en}">${STAT_KEYS[en]}${up}</text>` +
       `<text x="${x}" y="${y + 11}" text-anchor="${anchor}" class="radar-rank">${statRankLabel(en)}</text>`;
   });
   return `<svg class="radar-svg" viewBox="0 0 260 244" role="img" aria-label="ステータス レーダー">` +
@@ -5920,8 +6165,8 @@ function buildRadarSVG() {
 function mainStatusHtml() {
   const radar = `<div class="radar-wrap">${buildRadarSVG()}<p class="radar-legend">明るい面＝今／暗い面＝章のはじめ。広がったぶんが成長。</p></div>`;
   const statRows = Object.entries(STAT_KEYS)
-    .map(([en, ja]) => `<div class="status-row stat-row"><span class="stat-name">${ja}</span>` +
-      `<span class="stars">${stars(state.stats[en])}</span>` +
+    .map(([en, ja]) => `<div class="status-row stat-row"><span class="stat-name stat-c-${en}">${ja}</span>` +
+      `<span class="stars stat-c-${en}">${stars(state.stats[en])}</span>` +
       `<span class="stat-rank">${statRankLabel(en)}</span></div>`)
     .join("");
   const st = stamina();
@@ -5998,9 +6243,14 @@ function createTitleBootGate() {
   const boot = $("#boot-overlay");
   const fill = $("#boot-fill");
   const text = $("#boot-status-text");
-  if (!boot) return { track: () => () => {}, closeWhenReady: () => {} };
-  const minMs = 650;
-  const maxMs = 2600;
+  if (!boot) {
+    document.body.classList.add("booted"); // メニュー登場アニメの解禁
+    return { track: () => () => {}, closeWhenReady: () => {} };
+  }
+  // minMs はロゴ演出のための人工的な最低表示時間。起動の体感を悪くしない範囲まで短縮
+  //（計測: タイトル到達の支配コストは配布HTMLの解析であり、セーブ有無では変わらない・2026-07-02）
+  const minMs = 250;
+  const maxMs = 1800;
   const startedAt = performance.now();
   let expected = 0;
   let settled = 0;
@@ -6020,6 +6270,8 @@ function createTitleBootGate() {
     const wait = Math.max(0, minMs - (performance.now() - startedAt));
     setTimeout(() => {
       boot.classList.add("done");
+      // メニューの登場アニメを一斉に開始（LOADだけ遅れて出てくる問題の解消）
+      document.body.classList.add("booted");
       setTimeout(() => boot.remove(), 650);
     }, wait);
   }
@@ -6424,8 +6676,10 @@ function init() {
   initEngine();
   const titleBoot = createTitleBootGate();
   setupTitleLogo(titleBoot.track());
-  // キービジュアルがあればそれを最優先、無ければキャラランダム表示
-  setupTitleKeyVisual(() => setupTitleChara(titleBoot.track()), titleBoot.track());
+  // キービジュアル/立ち絵は起動ゲートで待たない（大きなPNGのデコード待ちで
+  // 「起動中」が伸びる主因だった）。準備でき次第フェードインで後追い表示する
+  const noGate = () => {};
+  setupTitleKeyVisual(() => setupTitleChara(noGate), noGate);
   titleBoot.closeWhenReady();
   // タイトルBGM: 自動再生がブロックされたら最初の操作で再試行する
   startTitleBgm();

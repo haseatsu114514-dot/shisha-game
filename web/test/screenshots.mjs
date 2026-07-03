@@ -156,9 +156,14 @@ for (let i = 0; i < 2500; i++) {
     else if (t.includes("炭替え・調整")) await page.locator(".spot-btn", { hasText: "このままでいく" }).click();
     else if (t.includes("テーマ選択")) await page.locator(".spot-btn", { hasText: "高火力" }).click();
     else if (t.includes("ミックス")) {
+      // 大会ミックスは所持フレーバー＋課題（主催者支給）だけ並ぶ。
+      // 課題ミント2g＋所持している埋めフレーバー（初期はダブルアップル）で12gにする
       const plusOf = (id) => page.locator(`.mix-row[data-flavor-id="${id}"] button`, { hasText: "＋" });
       for (let k = 0; k < 2; k++) await plusOf("mint").click();
-      for (let k = 0; k < 10; k++) await plusOf("vanilla").click();
+      const fillerId = await page.locator(".mix-row").evaluateAll((rows) =>
+        (rows.find((r) => r.dataset.flavorId === "double_apple") ||
+         rows.find((r) => r.dataset.flavorId !== "mint") || rows[0]).dataset.flavorId);
+      for (let k = 0; k < 10; k++) await plusOf(fillerId).click();
       await page.screenshot({ path: `${OUT}/08_mix.png` });
       await page.locator("#tn-body button", { hasText: "この配合でいく" }).click();
     } else if (t.includes("パッキング")) await page.locator(".spot-btn", { hasText: "かため" }).click();

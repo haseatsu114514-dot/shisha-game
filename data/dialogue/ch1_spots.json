@@ -402,24 +402,11 @@
           "speaker": "",
           "face": "",
           "text": "……【洞察】が上がった。"
-        },
-        {
-          "type": "choice",
-          "choices": [
-            {
-              "text": "帰る",
-              "next_id": "ch1_c_station_end"
-            }
-          ]
         }
       ],
       "metadata": {
         "bg": "res://assets/backgrounds/bg_c_station_day.png"
       }
-    },
-    {
-      "dialogue_id": "ch1_c_station_end",
-      "lines": []
     },
     {
       "dialogue_id": "cs_staff_greeting",
