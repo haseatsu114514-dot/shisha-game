@@ -3460,6 +3460,13 @@ function flavorShortName(id) {
   const f = (D.flavors || []).find((x) => x.id === id);
   return ((f && (f.short_name || f.name)) || id).replace(/^AF |^NS /, "");
 }
+function leafPileAsset(total) {
+  if (total <= 0) return "";
+  if (total < 4) return "leaf_pile_1.png";
+  if (total < 8) return "leaf_pile_2.png";
+  if (total < 12) return "leaf_pile_3.png";
+  return "leaf_pile_4.png";
+}
 // ボウルの中の葉。入れた順に色の層が下から積もる。pack 後は詰め方で嵩が変わる
 function buildLeafFill(compact = false) {
   const fill = artDiv("art-leaf-fill");
@@ -3479,6 +3486,9 @@ function buildLeafFill(compact = false) {
     stops.push(`${c} ${(acc / total) * 100}%`);
   }
   fill.style.background = `linear-gradient(0deg, ${stops.join(",")})`;
+  // 実物に近い、シロップで湿った赤い葉片の輪郭と艶を量別PNGで重ねる。
+  const texture = leafPileAsset(total);
+  if (texture && artAsset(fill, texture)) fill.classList.add("leaf-texture");
   return fill;
 }
 // アルミの穴。実際に開けた角度（stageFoilPunch）か、工程通過後は記録から均等配置
@@ -3511,14 +3521,16 @@ function stageFoilPunch(r, angleDeg) {
 // 炭キューブ。lit: "off"（生）| "heating"（熾き中）| "on"（本熾き）| "ash"（灰）
 function buildCoalArt(lit) {
   const c = artDiv(`art-coal lit-${lit || "off"}`);
-  const asset = { heating: "coal_red.png", on: "coal_white.png" }[lit] || "coal_cold.png";
+  const shape = tt && tt.charcoal === "flat_charcoal" ? "coal_flat" : "coal";
+  const heat = { heating: "red", on: "just", ash: "white" }[lit] || "cold";
+  const asset = `${shape}_${heat}.png`;
   if (!artAsset(c, asset)) artDiv("art-coal-face", c);
   return c;
 }
 function coalLitState() {
   if (!tt || tt.step === "coal") return "off";
   if (tt.coalFire === "perfect") return "on";
-  if (tt.coalFire === "miss") return "ash";
+  if (tt.coalFire === "good") return "ash";
   return "heating";
 }
 function coalCount() {
@@ -3532,10 +3544,20 @@ function buildBowlArt(opts = {}) {
   const bowl = artDiv(`art-bowl ${opts.cls || ""}`);
   bowl.dataset.kind = kind;
   const bowlAsset = { clay: "bowl_empty_clay.png", phunnel: "bowl_empty_phunnel.png", silicone: "bowl_empty_silicone.png" }[kind];
-  const hasBowlImg = artAsset(bowl, bowlAsset);
+  const total = mixTotalGrams();
+  const density = opts.compact && tt && tt.pack
+    ? (({ fluffy: "airy", normal: "normal", firm: "firm" })[tt.pack] || "normal")
+    : total < 4 ? "airy" : total < 9 ? "normal" : "firm";
+  const packedAsset = kind === "phunnel" ? `bowl_packed_phunnel_${density}.png` : `bowl_packed_${density}.png`;
+  // 葉が入ったら実葉の画像へ。ファンネルは中央スパイアの通気穴が露出した専用画像を使う。
+  const usePackedAsset = !!(opts.fill && total > 0 && hasMakingAsset(packedAsset));
+  const hasBowlImg = artAsset(bowl, usePackedAsset ? packedAsset : bowlAsset);
+  if (usePackedAsset) bowl.classList.add("packed-asset");
   if (!hasBowlImg) artDiv("art-bowl-body", bowl);
-  const cavity = artDiv("art-bowl-cavity", bowl);
-  if (opts.fill) cavity.appendChild(buildLeafFill(opts.compact));
+  if (!usePackedAsset) {
+    const cavity = artDiv("art-bowl-cavity", bowl);
+    if (opts.fill) cavity.appendChild(buildLeafFill(opts.compact));
+  }
   if (!hasBowlImg && kind === "phunnel") artDiv("art-bowl-spire", bowl);
   if (!hasBowlImg) artDiv("art-bowl-rim", bowl);
   if (opts.foil) {
@@ -3553,8 +3575,7 @@ function buildBowlArt(opts = {}) {
   }
   return bowl;
 }
-// フレーバージャー。ガラス瓶＋中身の色＋手書きラベル。
-// jar_glass.png（瓶単体・中身が透ける窓）/ jar_pour.png（注ぐ手元の一枚）があれば差し替え
+// フレーバー保存容器。棚ではタッパー、計量ではタッパーからフォークで盛る一枚絵。
 function buildJarArt(flavorId, opts = {}) {
   const jar = artDiv(`art-jar ${opts.cls || ""}`);
   jar.style.setProperty("--jar-color", flavorColor(flavorId));
@@ -3654,8 +3675,9 @@ function renderMakingWorkbench(step, opts = {}) {
   } else if (scene === "pack") {
     // 詰め: ボウルのドアップ。フォークでほぐし入れる手元
     stage.appendChild(buildBowlArt({ fill: true, compact: !!(tt && tt.pack), cls: "art-bowl-big" }));
-    const fork = artDiv("art-fork", stage);
-    if (!artAsset(fork, "hand_fork.png")) artDiv("art-fork-tines", fork);
+    const tool = artDiv("art-fork", stage);
+    const toolAsset = tt && tt.pack === "firm" ? "hand_press.png" : "hand_fork.png";
+    if (!artAsset(tool, toolAsset)) artDiv("art-fork-tines", tool);
   } else if (scene === "foil") {
     // アルミ張り: 張ったアルミの上に、ミニゲームと同じ位置へ穴が増えていく
     stage.appendChild(buildBowlArt({ fill: true, compact: true, foil: true, cls: "art-bowl-big foil-view" }));
@@ -3688,7 +3710,7 @@ function renderMakingWorkbench(step, opts = {}) {
     stage.appendChild(makingLayer("heat_glow.png", "heat-glow soft"));
     if (scene === "adjust") {
       const tongs = artDiv("art-tongs adjust", stage);
-      if (!artAsset(tongs, "hand_tongs_open.png")) {
+      if (!artAsset(tongs, "hand_tongs_closed.png")) {
         artDiv("art-tongs-arm a1", tongs);
         artDiv("art-tongs-arm a2", tongs);
       }
