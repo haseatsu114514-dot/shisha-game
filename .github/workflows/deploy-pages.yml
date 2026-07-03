@@ -1,5 +1,5 @@
 # ソースから web ビルドを生成し、GitHub Pages に公開する。
-# main または開発ブランチ（claude/**、codex/**）への push のたびに
+# main または開発ブランチ（claude/**）への push のたびに
 # https://haseatsu114514-dot.github.io/shisha-game/ が更新される。
 #
 # 配備レイアウト（2026-07-02 改定・起動高速化）:
@@ -12,7 +12,7 @@ name: Deploy web build to GitHub Pages
 
 on:
   push:
-    branches: [main, "claude/**", "codex/**"]
+    branches: [main, "claude/**"]
     paths:
       - "assets/**"
       - "data/**"
