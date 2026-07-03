@@ -188,6 +188,19 @@ def collect_portraits() -> tuple[dict, dict]:
                 for t in face_trims.values():
                     t["h"] = common_h
                     t["b"] = common_b
+                # 横アンカー(ax)もキャラ単位で共通化する。AI生成の表情差分は
+                # ポーズが微妙に違い、足元重心が表情ごとにブレる（例: 0.45〜0.55）。
+                # 表情別の ax をそのまま使うと表情切替のたびに立ち絵が左右へ
+                # 滑って見える（2026-07-03 オーナー報告の再発バグ）。キャンバスは
+                # 全表情共通なので、normal（無ければ平均）の1値に固定して
+                # 「表情を変えても絵が動かない」ことを優先する
+                axes = [t["ax"] for t in face_trims.values() if "ax" in t]
+                if axes:
+                    common_ax = (face_trims.get("normal") or {}).get("ax")
+                    if common_ax is None:
+                        common_ax = round(sum(axes) / len(axes), 3)
+                    for t in face_trims.values():
+                        t["ax"] = common_ax
             portraits[char_dir.name] = faces
             trims[char_dir.name] = face_trims
     return portraits, trims

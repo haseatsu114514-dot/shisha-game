@@ -572,10 +572,19 @@ function resolveSceneBg(rel) {
   return m[2] === "_night" ? rel : `assets/backgrounds/${base}_day.png`;
 }
 
+// 窓の無い店内は外光が入らない＝夜も昼と同じ絵でよい（オーナー指定・2026-07-03）。
+// 夜の色調補正（.night-tint）を掛けない背景の一覧
+const BG_NO_NIGHT_TINT = new Set([
+  "bg_naru_shop.png", "bg_eden_shop.png", "bg_adam_shop.png", "bg_ageha_shop.png",
+  "bg_ryuji_shop.png", "bg_shop.png", "bg_fookah_showroom.png", "bg_hideaway.png",
+]);
+
 function setLocationFromBg(rel) {
-  // 昼夜ペアの無い背景は、夜だけ色調補正を重ねる（tint。_night 画像はそのまま）
+  // 昼夜ペアの無い背景は、夜だけ色調補正を重ねる（tint。_night 画像と窓なし店内はそのまま）
   const bgEl = $("#vn-bg");
-  if (bgEl) bgEl.classList.toggle("night-tint", sceneIsNight() && !/_night\.png$/.test(String(rel)));
+  const bgFile = String(rel || "").split("/").pop() || "";
+  if (bgEl) bgEl.classList.toggle("night-tint",
+    sceneIsNight() && !/_night\.png$/.test(bgFile) && !BG_NO_NIGHT_TINT.has(bgFile));
   const m = String(rel || "").match(/bg_([\w_]+?)\.png|^([\w_]+)\.png/);
   let key = "";
   if (m) key = (m[1] || m[2] || "").replace(/_(day|night)$/, (_, t) => t);
