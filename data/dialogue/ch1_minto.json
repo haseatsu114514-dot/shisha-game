@@ -655,7 +655,7 @@
     {
       "dialogue_id": "ch1_minto_phantom_smell",
       "metadata": {
-        "bg": "res://assets/backgrounds/pepermint.png"
+        "bg": "res://assets/backgrounds/peppermint.png"
       },
       "lines": [
         {
@@ -1084,7 +1084,7 @@
     {
       "dialogue_id": "ch1_minto_after_ch1",
       "metadata": {
-        "bg": "res://assets/backgrounds/pepermint.png"
+        "bg": "res://assets/backgrounds/peppermint.png"
       },
       "lines": [
         {
@@ -1201,7 +1201,7 @@
     {
       "dialogue_id": "ch1_minto_after_ch1_firstshop",
       "metadata": {
-        "bg": "res://assets/backgrounds/pepermint.png"
+        "bg": "res://assets/backgrounds/peppermint.png"
       },
       "lines": [
         {
@@ -1283,7 +1283,7 @@
     {
       "dialogue_id": "ch1_minto_group_regulars",
       "metadata": {
-        "bg": "res://assets/backgrounds/pepermint.png"
+        "bg": "res://assets/backgrounds/peppermint.png"
       },
       "lines": [
         {
