@@ -7,3 +7,4 @@ __pycache__/
 *.import
 **/.gdignore
 asset_sources/portrait_sync_backup_*/
+web/test/shots/

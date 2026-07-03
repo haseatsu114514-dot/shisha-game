@@ -198,6 +198,11 @@ while (guard++ < 8000) {
     await page.waitForTimeout(80);
     continue;
   }
+  // 夜の帰宅暗転（#night-fade）はタップ不要の自動遷移。明けるまで待つ
+  if (await page.locator("#night-fade").count()) {
+    await page.waitForTimeout(200);
+    continue;
+  }
   const screen = await active();
   if (screen === "screen-end") break;
   if (screen === "screen-gameover") throw new Error("unexpected game over");

@@ -37,6 +37,24 @@
 .gain-card .badge.stat-c-guts      { background: linear-gradient(135deg, var(--stat-guts), color-mix(in srgb, var(--stat-guts) 55%, #200e08)); color: #200e08; }
 .gain-card .badge.stat-c-charm     { background: linear-gradient(135deg, var(--stat-charm), color-mix(in srgb, var(--stat-charm) 55%, #200a18)); color: #26101e; }
 .gain-card .badge.stat-c-insight   { background: linear-gradient(135deg, var(--stat-insight), color-mix(in srgb, var(--stat-insight) 55%, #0e2008)); color: #10200a; }
+/* 経験値バナーの吹き出し自体もステ色に連動（枠・地色・光・見出し。カードに stat-c-<en> が付く） */
+.gain-card.stat-c-technique { --gc: var(--stat-technique); }
+.gain-card.stat-c-sense     { --gc: var(--stat-sense); }
+.gain-card.stat-c-guts      { --gc: var(--stat-guts); }
+.gain-card.stat-c-charm     { --gc: var(--stat-charm); }
+.gain-card.stat-c-insight   { --gc: var(--stat-insight); }
+.gain-card.stat {
+  border-color: var(--gc, var(--accent));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--gc, var(--accent)) 18%, #140b1e) 0%, #0a0612 100%);
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.7),
+    0 0 24px color-mix(in srgb, var(--gc, var(--accent)) 30%, transparent),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.gain-card.stat::before {
+  background: linear-gradient(110deg, transparent 30%, color-mix(in srgb, var(--gc, var(--accent)) 22%, transparent) 50%, transparent 70%);
+}
+.gain-card.stat .meta .label-top { color: var(--gc, var(--accent)); }
 
 html, body {
   height: 100%;
@@ -2751,6 +2769,18 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: var(--target-opacity, 1); transform: none; }
 }
+/* ビルド版数の刻印（タイトル右下・控えめ）。古い版を掴んでいないかを一目で確認できる */
+#build-stamp {
+  position: absolute;
+  right: 10px; bottom: 6px;
+  z-index: 12; /* film-grain(11)より上＝グレインで滲まないように */
+  font-family: "Times New Roman", serif;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: rgba(197,184,150,0.55);
+  text-shadow: 0 0 4px rgba(0,0,0,0.8);
+  pointer-events: none;
+}
 
 /* キャラ窓の縁の継ぎ目消し: ぼかしの煙レイヤーを追加 */
 #title-chara-window::after,
@@ -3779,6 +3809,25 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 .map-beat-card { margin-bottom: 13%; text-align: center; }
 .map-beat-card .mb-dots { display: block; font-size: 24px; letter-spacing: 0.22em; color: #ffe79a; text-shadow: 0 2px 8px rgba(0,0,0,0.8); animation: bounce 1.2s infinite; }
 .map-beat-card .mb-sub { display: block; font-size: 11px; letter-spacing: 0.24em; color: var(--text-dim); margin-top: 6px; }
+/* 夜の帰宅の暗転。行動イベントの余韻のまま黒に沈み、「……今日は、家へ帰ろう。」を
+   ひと呼吸見せてから帰宅シーンが黒の下で始まる（タップ不要・誤タップは吸収） */
+#night-fade {
+  position: absolute; inset: 0; z-index: 76; /* バナー(75)より上・暗転中は全部覆う */
+  display: flex; align-items: center; justify-content: center;
+  background: #05040a; opacity: 0;
+  transition: opacity 0.7s ease;
+  pointer-events: all; cursor: default;
+}
+#night-fade span {
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-size: 20px; letter-spacing: 0.18em; color: #cfc4de;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 0.8s ease 0.45s, transform 0.8s ease 0.45s;
+}
+#night-fade.dark { opacity: 1; }
+#night-fade.dark span { opacity: 1; transform: translateY(0); }
+#night-fade.clear { opacity: 0; transition: opacity 0.9s ease 0.1s; }
+#night-fade.clear span { opacity: 0; transition: opacity 0.4s ease; }
 #tonari-menu .tn-menu-card, #fookah-menu .tn-menu-card { width: min(88%, 460px); background: linear-gradient(180deg, rgba(28,21,38,0.97), rgba(15,12,23,0.98)); border: 1px solid rgba(255,210,120,0.45); border-radius: 16px; padding: 16px 18px; box-shadow: 0 12px 34px rgba(0,0,0,0.6); }
 .tn-menu-title { font-size: 17px; font-weight: 800; color: #ffe79a; margin: 0 0 12px; text-align: center; }
 .tn-menu-list { display: flex; flex-direction: column; gap: 9px; }
@@ -3916,9 +3965,9 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 #screen-end.gameover #end-title { color: #ff6b6b; text-shadow: 0 0 24px rgba(255,60,60,0.6), 0 2px 0 rgba(0,0,0,0.6); letter-spacing: 0.14em; }
 .gameover-actions { display: flex; gap: 12px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
 
-/* ===== reel.css 連結ここから（PUFF!PUFF!パッキー 日常スロット・#12） ===== */
+/* ===== reel.css 連結ここから（MOKUMOKUパッキー 日常スロット・#12） ===== */
 /* ================================================================
-   PUFF!PUFF!パッキー（日常リール）— マップ隅のミニ筐体
+   MOKUMOKUパッキー（日常リール）— マップ隅のミニ筐体
    ⚠️ 実装待ちパッケージ。組み込み時は本ファイルの中身を style.css 末尾に
       連結する（手順は docs/pakki_slot_spec.md）。
    ================================================================ */
@@ -4068,6 +4117,12 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   border-bottom: none;
 }
 .rw-bubble.show { opacity: 1; transform: scale(1); }
+/* 熱いセリフ＝赤、レアセリフ＝金〜桃のグラデ（スロット演出風）（T24）
+   ⚠️ reel.css との連結ドリフトで本番側から欠けていたのを再同期（2026-07-02） */
+.rw-bubble.hot { background: #ff3d3d; color: #fff; box-shadow: 0 0 12px rgba(255,90,90,0.85); }
+.rw-bubble.hot::after { border-top-color: #ff3d3d; }
+.rw-bubble.rare { background: linear-gradient(120deg, #ffd24a, #ff7ae0); color: #2a1530; box-shadow: 0 0 14px rgba(255,170,90,0.9); }
+.rw-bubble.rare::after { border-top-color: #ff7ae0; }
 
 /* ---- カットイン（ボーナス揃え／フリーズ）。pointer-events:none の自走シネマ ---- */
 #reel-cutin {

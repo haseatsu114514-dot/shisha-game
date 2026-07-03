@@ -245,13 +245,13 @@ jq '[.dialogues[].dialogue_id]' data/dialogue/ch1_main.json
 
 ### ビルド（data/ や web/ を変えたら必須・両方）
 ```bash
-pip install Pillow                # 立ち絵の透過余白計測（初回のみ）
+pip install Pillow numpy scipy    # 立ち絵の透過余白計測＋足元アンカー(ax)計測（初回のみ。scipy欠落だと立ち絵の横位置がズレる）
 python3 web/build_data.py         # data/*.json → web/js/data.js に束ねる
 python3 web/build_standalone.py   # 1ファイル配布版 web/dist/shisha_ch1.html を生成
 ```
 - 追加した JSON は build_data.py の読み込み一覧に入れないと web に出ない（例: `sheesha_posts.json` はGodot専用で未バンドル）。
 
-### ヘッドレステスト（全7本・全緑が基準）
+### ヘッドレステスト（全8本・全緑が基準）
 ```bash
 python3 -m http.server 8123       # リポジトリルートで起動して放置
 node web/test/playthrough.mjs     # 1章優勝ルート通し（~6分・stats=80を強制して勝ちを検証）
@@ -261,6 +261,7 @@ node web/test/reel.mjs            # スロット分布/天井/救済（純ロジ
 node web/test/kuji.mjs            # くじ収支
 node web/test/balance.mjs         # 経済（バイト最低8000円 等）
 node web/test/map_hover.mjs       # マップのホバー安定性
+node web/test/portraits.mjs       # 立ち絵の身長スケール回帰（スミさん=みんと等身に見えたらFAIL・速い）
 ```
 - 重い3本(playthrough/ch2/screenshots)は**同時に走らせない**（CPU枯渇でタイムアウト）。1本ずつ。
 - playwright 依存（`require("playwright")` か `/opt/node22/lib/node_modules/playwright`）。

@@ -10,8 +10,10 @@
 """
 
 import base64
+import datetime
 import json
 import re
+import subprocess
 from pathlib import Path
 
 try:
@@ -25,6 +27,12 @@ try:
 except ImportError:
     np = None
     ndimage = None
+    import sys
+    print(
+        "WARN: numpy/scipy が見つからないため、立ち絵の足元アンカー(ax)を計測できない。\n"
+        "      このまま build すると立ち絵の横位置がズレる（pip install numpy scipy 推奨）",
+        file=sys.stderr,
+    )
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "data"
@@ -229,6 +237,24 @@ def collect_making_assets() -> list:
     return sorted(p.name for p in making_dir.glob("*.png") if p.stat().st_size > 0)
 
 
+def build_info() -> dict:
+    """タイトル画面に刻むビルド版数。「Pagesが古い版のまま」に気づけるようにする（再発防止）。
+
+    commit はビルド時点の git HEAD 短縮ハッシュ（git が無い環境では空）。
+    built_at は UTC。表示はゲーム側（#build-stamp）が行う。
+    """
+    commit = ""
+    try:
+        commit = subprocess.run(
+            ["git", "rev-parse", "--short", "HEAD"],
+            cwd=REPO_ROOT, capture_output=True, text=True, timeout=10,
+        ).stdout.strip()
+    except Exception:
+        pass
+    built_at = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    return {"commit": commit, "built_at": built_at}
+
+
 def main() -> None:
     flavors = load_json(DATA_DIR / "flavors.json")["flavors"]
     baito = load_json(DATA_DIR / "baito_events.json")
@@ -255,6 +281,7 @@ def main() -> None:
         if isinstance(c, dict) and "id" in c and c.get("spriteScale"):
             portrait_scales[SPRITE_FOLDER_ALIASES.get(c["id"], c["id"])] = c["spriteScale"]
     bundle = {
+        "build": build_info(),
         "dialogues": collect_dialogues(),
         "flavors": flavors,
         "equipment": equipment,
