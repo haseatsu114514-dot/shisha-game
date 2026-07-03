@@ -3599,6 +3599,26 @@ const MAKING_PANEL_SKIP = /審査|中間発表|FLAVOR TRIAL|講評|結果|練習
 function hasMakingAsset(name) {
   return !!(name && (D.making_assets || []).includes(name));
 }
+function makingAssetMeta(name) {
+  return (D.making_asset_meta || {})[name] || null;
+}
+// 生成PNGはキャンバス余白・アスペクトがまちまちで、contain配置のままだと
+// 絵が箱の中で浮く（アルミがボウルに乗らない・ボウルがスケールから浮く等）。
+// build_data.py が計測した実コンテンツbboxで余白を打ち消し、絵を箱に正着させる。
+// fitBox=true なら箱の縦横比も実絵に合わせる（歪みゼロで箱いっぱい）
+function normalizeMakingAsset(el, name, fitBox) {
+  const m = makingAssetMeta(name);
+  if (!m || !hasMakingAsset(name)) return null;
+  el.style.backgroundSize = `${(100 / m.w).toFixed(2)}% ${(100 / m.h).toFixed(2)}%`;
+  const px = m.w >= 1 ? 50 : (m.x0 / (1 - m.w)) * 100;
+  const py = m.h >= 1 ? 50 : (m.y0 / (1 - m.h)) * 100;
+  el.style.backgroundPosition = `${px.toFixed(2)}% ${py.toFixed(2)}%`;
+  if (fitBox && m.ar) {
+    el.style.height = "auto";
+    el.style.aspectRatio = String(m.ar);
+  }
+  return m;
+}
 function setMakingAsset(el, name) {
   if (!el || !name) return;
   el.dataset.asset = name.replace(/\.png$/, "");
@@ -3673,7 +3693,8 @@ function buildLeafFill(compact = false) {
   const cap = typeof bowlCapacity === "function" ? bowlCapacity() : 15;
   let packScale = 1;
   if (compact) packScale = ({ fluffy: 1.05, normal: 0.9, firm: 0.74 })[tt.pack] || 0.9;
-  fill.style.height = `${Math.min(96, (26 + (total / cap) * 66) * packScale)}%`;
+  // 1gずつ入れるたびに底から積もっていく（最初から山盛りに見せない）
+  fill.style.height = `${Math.min(96, (8 + (total / cap) * 84) * packScale)}%`;
   let acc = 0;
   const stops = [];
   for (const [id, g] of entries) {
@@ -3682,10 +3703,24 @@ function buildLeafFill(compact = false) {
     acc += g;
     stops.push(`${c} ${(acc / total) * 100}%`);
   }
-  fill.style.background = `linear-gradient(0deg, ${stops.join(",")})`;
+  const gradient = `linear-gradient(0deg, ${stops.join(",")})`;
   // 実物に近い、シロップで湿った赤い葉片の輪郭と艶を量別PNGで重ねる。
+  // background ショートハンドは使わない（インラインで background-size が
+  // auto にリセットされ、テクスチャが巨大な原寸で描かれて見えなくなる）
   const texture = leafPileAsset(total);
-  if (texture && artAsset(fill, texture)) fill.classList.add("leaf-texture");
+  const tm = texture ? makingAssetMeta(texture) : null;
+  if (texture && hasMakingAsset(texture) && tm) {
+    fill.classList.add("leaf-texture", "has-asset");
+    fill.dataset.asset = texture.replace(/\.png$/, "");
+    // テクスチャの透過余白を打ち消して箱いっぱいに敷く（下の色層が縁から覗かない）
+    const px = tm.w >= 1 ? 50 : (tm.x0 / (1 - tm.w)) * 100;
+    const py = tm.h >= 1 ? 50 : (tm.y0 / (1 - tm.h)) * 100;
+    fill.style.backgroundImage = `url('${assetUrl(`assets/ui/making/${texture}`)}'), ${gradient}`;
+    fill.style.backgroundSize = `${(100 / tm.w).toFixed(2)}% ${(100 / tm.h).toFixed(2)}%, 100% 100%`;
+    fill.style.backgroundPosition = `${px.toFixed(2)}% ${py.toFixed(2)}%, center`;
+  } else {
+    fill.style.backgroundImage = gradient;
+  }
   return fill;
 }
 // アルミの穴。実際に開けた角度（stageFoilPunch）か、工程通過後は記録から均等配置
@@ -3722,6 +3757,7 @@ function buildCoalArt(lit) {
   const heat = { heating: "red", on: "just", ash: "white" }[lit] || "cold";
   const asset = `${shape}_${heat}.png`;
   if (!artAsset(c, asset)) artDiv("art-coal-face", c);
+  else normalizeMakingAsset(c, asset); // 余白を打ち消して炭の底を接地させる
   return c;
 }
 function coalLitState() {
@@ -3734,7 +3770,9 @@ function coalCount() {
   return (tt && tt.coal) === "two" ? 2 : (tt && tt.coal) === "four" ? 4 : 3;
 }
 // ボウル（クレイ/シリコン/ファンネル）。fill=葉、foil=アルミ、coals=炭を上に乗せる。
-// 生成画像 bowl_empty_*.png があれば器の絵はPNG、葉の色層・穴・炭はコードで重ねる
+// 生成画像 bowl_empty_*.png があれば器の絵はPNG、葉の色層・穴・炭はコードで重ねる。
+// PNGは normalizeMakingAsset で箱に正着させ、リム楕円の実測値（meta.rim）を基準に
+// アルミ・炭・葉の重なり位置を決める＝生成画像の余白や構図が変わってもズレない
 function buildBowlArt(opts = {}) {
   const kind = tt && String(tt.bowl || "").includes("suyaki") ? "clay"
     : tt && tt.bowl === "hagal_80beat" ? "phunnel" : "silicone";
@@ -3742,24 +3780,47 @@ function buildBowlArt(opts = {}) {
   bowl.dataset.kind = kind;
   const bowlAsset = { clay: "bowl_empty_clay.png", phunnel: "bowl_empty_phunnel.png", silicone: "bowl_empty_silicone.png" }[kind];
   const total = mixTotalGrams();
-  const density = opts.compact && tt && tt.pack
+  const density = tt && tt.pack
     ? (({ fluffy: "airy", normal: "normal", firm: "firm" })[tt.pack] || "normal")
-    : total < 4 ? "airy" : total < 9 ? "normal" : "firm";
+    : "airy";
   const packedAsset = kind === "phunnel" ? `bowl_packed_phunnel_${density}.png` : `bowl_packed_${density}.png`;
-  // 葉が入ったら実葉の画像へ。ファンネルは中央スパイアの通気穴が露出した専用画像を使う。
-  const usePackedAsset = !!(opts.fill && total > 0 && hasMakingAsset(packedAsset));
-  const hasBowlImg = artAsset(bowl, usePackedAsset ? packedAsset : bowlAsset);
+  // 詰め工程を経たら実葉の画像へ。計量中（compactでない間）は空ボウル＋量に応じて
+  // 育つ葉レイヤーで「入れた分だけ盛られていく」を見せる（最初から山盛りにしない）。
+  // アルミを張ったら葉は見せない（覆われているのが正しい・オーナー指定 2026-07-03）
+  const usePackedAsset = !!(opts.fill && opts.compact && !opts.foil && total > 0 && hasMakingAsset(packedAsset));
+  const usedAsset = usePackedAsset ? packedAsset : bowlAsset;
+  const hasBowlImg = artAsset(bowl, usedAsset);
+  const meta = hasBowlImg ? normalizeMakingAsset(bowl, usedAsset, true) : null;
+  if (meta) bowl.style.top = "auto"; // on-rig の inset:0 を下辺アンカーへ倒す
+  const rim = meta && meta.rim ? meta.rim * 100 : null; // リム楕円の高さ（箱%）
   if (usePackedAsset) bowl.classList.add("packed-asset");
   if (!hasBowlImg) artDiv("art-bowl-body", bowl);
   if (!usePackedAsset) {
     const cavity = artDiv("art-bowl-cavity", bowl);
-    if (opts.fill) cavity.appendChild(buildLeafFill(opts.compact));
+    if (rim) {
+      // 開口部＝リム楕円を器の壁ぶんだけ内側へ寄せた楕円
+      cavity.style.left = "14%";
+      cavity.style.right = "14%";
+      cavity.style.top = `${(rim * 0.16).toFixed(1)}%`;
+      cavity.style.height = `${(rim * 0.68).toFixed(1)}%`;
+    }
+    if (hasBowlImg && kind === "phunnel") cavity.classList.add("phunnel-hole"); // 中央スパイアを葉で塞がない
+    // アルミ張り後は開口部が覆われる＝葉レイヤーは重ねない
+    if (opts.fill && !opts.foil) cavity.appendChild(buildLeafFill(opts.compact));
   }
   if (!hasBowlImg && kind === "phunnel") artDiv("art-bowl-spire", bowl);
   if (!hasBowlImg) artDiv("art-bowl-rim", bowl);
   if (opts.foil) {
     const foil = artDiv("art-foil", bowl);
     const hasFoilImg = artAsset(foil, "foil_surface.png");
+    if (hasFoilImg) normalizeMakingAsset(foil, "foil_surface.png");
+    if (rim) {
+      // アルミはリム楕円をちょうど覆う＝ボウルに「張り付いた」見た目になる
+      foil.style.left = "2%";
+      foil.style.right = "2%";
+      foil.style.top = "-1%";
+      foil.style.height = `${(rim * 0.98).toFixed(1)}%`;
+    }
     artDiv("art-foil-sheen", foil);
     if (!hasFoilImg) artDiv("art-foil-crimp", foil);
     const holes = artDiv("art-foil-holes", foil);
@@ -3767,6 +3828,11 @@ function buildBowlArt(opts = {}) {
   }
   if (opts.coals) {
     const tray = artDiv("art-bowl-coals", bowl);
+    if (rim) {
+      // 炭の底がアルミ面（リム楕円の中心近く）に着地する
+      tray.style.top = `${(rim * 0.42).toFixed(1)}%`;
+      tray.style.transform = "translate(-50%, -90%)";
+    }
     const lit = coalLitState();
     for (let i = 0; i < Math.min(4, coalCount()); i++) tray.appendChild(buildCoalArt(lit));
   }
@@ -3860,10 +3926,21 @@ function renderMakingWorkbench(step, opts = {}) {
     // 計量: スケールの上のボウルへ、ジャーから葉を注ぐ
     const scale = artDiv("art-scale", stage);
     if (!artAsset(scale, "mix_scale.png")) artDiv("art-scale-plate", scale);
+    else normalizeMakingAsset(scale, "mix_scale.png", true);
     stage.appendChild(buildBowlArt({ fill: true, cls: "art-bowl-mid on-scale" }));
     artDiv("art-pour-zone", stage);
-    const jar = buildJarArt(opts.flavor || Object.keys((tt && tt.mix) || {}).pop() || "", { cls: `art-jar-hand${opts.pour ? " pouring" : ""}`, pourArt: true });
-    stage.appendChild(jar);
+    if (hasMakingAsset("jar_open.png")) {
+      // 分離合成: タッパーは据え置き、すくう手（hand_fork）だけが動く
+      const jarStatic = artDiv("art-jar-open", stage);
+      artAsset(jarStatic, "jar_open.png");
+      normalizeMakingAsset(jarStatic, "jar_open.png", true);
+      const scoop = artDiv(`art-scoop${opts.pour ? " pouring" : ""}`, stage);
+      artAsset(scoop, "hand_fork.png");
+    } else {
+      // 暫定: 一枚絵（手＋フォーク＋タッパー）。動きは小さな沈み込みのみ
+      const jar = buildJarArt(opts.flavor || Object.keys((tt && tt.mix) || {}).pop() || "", { cls: `art-jar-hand${opts.pour ? " pouring" : ""}`, pourArt: true });
+      stage.appendChild(jar);
+    }
     const display = document.createElement("div");
     display.className = `scale-display${opts.pour ? " bump" : ""}`;
     display.textContent = `${mixTotalGrams().toFixed(1)}g`;
@@ -3882,8 +3959,15 @@ function renderMakingWorkbench(step, opts = {}) {
   } else if (scene === "coal" || scene === "coalfire") {
     // 炭起こし: 電熱コンロの上でココナラ炭が赤くなっていく
     const stove = artDiv("art-stove", stage);
-    if (!artAsset(stove, "stove_coil.png")) artDiv("art-stove-coil", stove);
+    const hasStoveImg = artAsset(stove, "stove_coil.png");
+    if (!hasStoveImg) artDiv("art-stove-coil", stove);
+    else normalizeMakingAsset(stove, "stove_coil.png", true);
     const coalsWrap = artDiv("art-stove-coals", stove);
+    if (hasStoveImg) {
+      // 炭の底をコイル面（コンロ上面の渦の中心あたり）へ着地させる
+      coalsWrap.style.top = "40%";
+      coalsWrap.style.transform = "translateY(-92%)";
+    }
     const lit = scene === "coal" ? "off" : coalLitState();
     for (let i = 0; i < Math.min(4, coalCount()); i++) coalsWrap.appendChild(buildCoalArt(scene === "coalfire" ? "heating" : lit));
     if (scene === "coalfire") {
@@ -4148,6 +4232,14 @@ function beginMaking(mode) {
   stopRigEffects();
   buildRig();
   resetBroadcast(); // 体感スコア・ニコ動コメントを初期化（本番のみ実体が出る）
+  // 作業台素材の先読み: 直後に使う下地・ボウルを先頭に、残りを低優先度で温める
+  if (typeof queuePreload === "function") {
+    const head = ["bench_base.png", "bench_note.png", "vignette_focus.png",
+      "bowl_empty_silicone.png", "bowl_empty_clay.png", "bowl_empty_phunnel.png",
+      "mix_scale.png", "jar_pour.png"];
+    const rest = (D.making_assets || []).filter((n) => !head.includes(n));
+    queuePreload(head.concat(rest).map((n) => `assets/ui/making/${n}`));
+  }
   if (mode === "baito") {
     // お客さんのリクエスト（テーマ）は日替わり。大会同様のフル工程で作る
     tt.theme = dailyTheme();
@@ -5847,7 +5939,8 @@ function flavorTrial(onDone) {
     next.className = "primary-btn";
     next.textContent = round < TRIAL_DOUBTS.length - 1 ? "次のザワザワへ ▶" : "審査を終える ▶";
     next.addEventListener("click", () => { round++; (round < TRIAL_DOUBTS.length) ? render() : finishTrial(); });
-    fb.appendChild(next);
+    // #tn-body 直下に置く＝下端スティッキーが効いて、低い画面でもスクロール不要で押せる
+    $("#tn-body").appendChild(next);
   };
 
   const finishTrial = () => {
@@ -5864,8 +5957,8 @@ function flavorTrial(onDone) {
     next.className = "primary-btn";
     next.textContent = "結果発表へ ▶";
     next.addEventListener("click", () => onDone());
-    r.appendChild(next);
     body.appendChild(r);
+    body.appendChild(next); // 直下に置いて下端スティッキーを効かせる
   };
 
   render();
@@ -7251,6 +7344,23 @@ function init() {
     });
   }
   showScreen("#screen-title");
+  // タイトル表示後の暇な時間に、よく使う画像を低優先度で先読みしてキャッシュを温める
+  //（分割ファイル版でシーン切替のたびに背景の取得待ちが見える問題への対策）
+  setTimeout(startIdlePrefetch, 2200);
+}
+
+// 背景 → 顔アイコン → 作業台素材 の順に直列プリフェッチ。
+// 順序は「最初に目にする画面」優先（tonari・自宅・マップ・大会ステージ）
+function startIdlePrefetch() {
+  if (typeof queuePreload !== "function") return;
+  const bgs = (D.backgrounds || []).slice();
+  const first = ["bg_tonari_inside_night.png", "bg_tonari_inside_day.png", "bg_home.png", "bg_map_local_day.png", "bg_tournament_stage.png"];
+  bgs.sort((a, b) => {
+    const ia = first.indexOf(a), ib = first.indexOf(b);
+    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+  });
+  queuePreload(bgs.map((n) => `assets/backgrounds/${n}`));
+  queuePreload((D.making_assets || []).map((n) => `assets/ui/making/${n}`));
 }
 
 document.addEventListener("DOMContentLoaded", init);

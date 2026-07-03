@@ -250,6 +250,55 @@ def collect_making_assets() -> list:
     return sorted(p.name for p in making_dir.glob("*.png") if p.stat().st_size > 0)
 
 
+def collect_making_asset_meta() -> dict:
+    """作業台素材の「実コンテンツ」計測値。生成画像はキャンバス余白・アスペクトが
+    まちまちで、CSSの contain 配置では絵が箱の中で浮く（アルミがボウルに乗らない等）。
+    web側（game.js setMakingAsset）はこの値で余白を打ち消して絵を箱に正着させる。
+
+    x0/y0/w/h: 画像サイズに対する実コンテンツ bbox の比（0..1）
+    rim: ボウル系のみ。コンテンツ高に対する「リム楕円の高さ」比。
+         上から見下ろす構図では、輪郭の横幅が最大になる行＝リム楕円の
+         縦中心なので、(その行 - コンテンツ上端) * 2 で楕円の高さが出る。
+         アルミ・炭・葉の重なり位置はこの値から決まる
+    """
+    making_dir = REPO_ROOT / "assets" / "ui" / "making"
+    if Image is None or not making_dir.exists():
+        return {}
+    meta = {}
+    for png in sorted(making_dir.glob("*.png")):
+        if png.stat().st_size <= 0:
+            continue
+        try:
+            im = Image.open(png).convert("RGBA")
+        except OSError:
+            continue
+        alpha = im.getchannel("A")
+        mask = alpha.point(lambda v: 255 if v >= 24 else 0)
+        bbox = mask.getbbox()
+        if not bbox:
+            continue
+        x0, y0, x1, y1 = bbox
+        entry = {
+            "x0": round(x0 / im.width, 4),
+            "y0": round(y0 / im.height, 4),
+            "w": round((x1 - x0) / im.width, 4),
+            "h": round((y1 - y0) / im.height, 4),
+            # 実コンテンツのアスペクト比（幅/高さ）。web側はこれで箱の縦横比を
+            # 実絵に合わせ、絵を歪めずに箱いっぱいへ正着させる
+            "ar": round((x1 - x0) / max(1, (y1 - y0)), 4),
+        }
+        if png.name.startswith("bowl_") and np is not None:
+            a = np.asarray(im)[..., 3] >= 24
+            rows = a[y0:y1, x0:x1]
+            widths = rows.sum(axis=1)
+            max_w = widths.max()
+            # 上から最初に最大幅の99%へ達する行 ≒ リム楕円の縦中心
+            rim_mid = int(np.argmax(widths >= max_w * 0.99))
+            entry["rim"] = round(min(1.0, (rim_mid * 2) / max(1, (y1 - y0))), 4)
+        meta[png.name] = entry
+    return meta
+
+
 def build_info() -> dict:
     """タイトル画面に刻むビルド版数。「Pagesが古い版のまま」に気づけるようにする（再発防止）。
 
@@ -310,6 +359,7 @@ def main() -> None:
         "cgs": collect_cgs(),
         "title_arts": collect_title_arts(),
         "making_assets": collect_making_assets(),
+        "making_asset_meta": collect_making_asset_meta(),
         "face_icons": collect_face_icons(),
         "lime_messages": load_json(DATA_DIR / "lime_messages.json")["messages"],
         "glossary": load_json(DATA_DIR / "glossary.json")["groups"],
