@@ -65,7 +65,7 @@
         {
           "speaker": "naru",
           "face": "serious",
-          "text": " ヴォルクの精度に、チャコール博士のデータに、あげはのバイブス。"
+          "text": "ヴォルクの精度に、チャコール博士のデータに、あげはのバイブス。"
         },
         {
           "speaker": "naru",
@@ -180,7 +180,7 @@
     {
       "dialogue_id": "ch2_minto_warning",
       "metadata": {
-        "bg": "res://assets/backgrounds/pepermint.png"
+        "bg": "res://assets/backgrounds/peppermint.png"
       },
       "lines": [
         {

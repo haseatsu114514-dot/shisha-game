@@ -23,26 +23,23 @@ OUT_DIR = REPO_ROOT / "assets" / "ui" / "face_icons"
 SIZE = 48          # ドット絵の解像度
 COLORS = 32        # パレット色数
 
-# 頭部クロップの調整値（コンテンツbbox基準）。
-#   w: bbox幅に対する正方形の辺の比 / dy: bbox上端からの下方オフセット比(高さ基準)
-#   dx: 横ズレ比(幅基準、+で右)
-# 立ち絵の頭はbbox上端・中央にあるので、基本値でほぼ合う。
+# 頭部クロップの調整値。
+# 立ち絵（透過スプライト）は「頭部スライスの重心」を顔の中心とみなし、
+# コンテンツ高さ ch に対する比 f で正方形の辺を決める（bbox幅基準だと
+# ツインテール・広げた腕などで拡大率がキャラごとにバラつくため・2026-07-02）。
+#   f:  辺 = ch * f（大きいほど引き＝顔が小さく写る）
+#   dx/dy: 辺に対する比での微調整（+で右/下）
 # 背景込み一枚絵のキャラは abs 指定（画像全体に対する顔中心 cx/cy と辺 side の比）。
-DEFAULT = {"w": 0.62, "dy": 0.0, "dx": 0.0}
+DEFAULT = {"f": 0.20, "dx": 0.0, "dy": 0.0}
 TUNE = {
-    "sumi":    {"w": 0.55, "dy": 0.0},
-    "packii":  {"w": 0.95, "dy": 0.0},   # マスコットは頭身が低い
-    "minto":   {"w": 0.72},
-    "tsumugi": {"w": 0.78},
-    "mashiro": {"w": 0.78},
-    "ageha":   {"w": 0.74},
-    "hajime":  {"w": 0.74},
-    "naru":    {"w": 0.66},
-    "adam":    {"w": 0.66},
-    "rin":     {"w": 0.70},
-    # ryuji は現状 placeholder 一枚絵（背景込み）
-    "ryuji":   {"abs": True, "cx": 0.60, "cy": 0.535, "side": 0.26},
+    "packii":  {"f": 0.98, "dy": 0.02},  # マスコットは全身がほぼ顔
+    # 一枚絵カード（VALHALLAの店内アート）: 顔位置を直接指定
+    "ryuji":   {"abs": True, "cx": 0.615, "cy": 0.455, "side": 0.235},
 }
+# 頭部重心を取るスライス（bbox上端からコンテンツ高さのこの比率まで）
+HEAD_SLICE = 0.14
+# 円形アイコンで頭が切れないよう、上に持たせる余白（辺に対する比）
+HEADROOM = 0.08
 
 
 def make_icon(char_id: str, src: Path) -> Image.Image | None:
@@ -58,10 +55,25 @@ def make_icon(char_id: str, src: Path) -> Image.Image | None:
         x0 = int(im.width * p["cx"] - side / 2)
         y0 = int(im.height * p["cy"] - side / 2)
     else:
-        side = int(cw * p["w"])
-        cx = left + cw / 2 + cw * p["dx"]
+        side = int(ch * p["f"])
+        # 頭部スライス（bbox上端付近）のアルファ重心 = 顔の横中心。
+        # bbox中心だと髪・腕・持ち物に引っ張られて顔が偏る
+        alpha = im.getchannel("A")
+        head = alpha.crop((left, top, right, top + max(1, int(ch * HEAD_SLICE))))
+        hx = head.size[0] / 2
+        data = list(head.getdata())
+        wsum = 0
+        xsum = 0.0
+        hw = head.size[0]
+        for i, a in enumerate(data):
+            if a > 32:
+                wsum += a
+                xsum += (i % hw) * a
+        if wsum:
+            hx = xsum / wsum
+        cx = left + hx + side * p["dx"]
         x0 = int(cx - side / 2)
-        y0 = int(top + ch * p["dy"])
+        y0 = int(top - side * (HEADROOM - p["dy"]))
     crop = im.crop((x0, y0, x0 + side, y0 + side))
     # 縮小 → 減色（αは別管理: quantizeで半透明が荒れるのを防ぐ）
     small = crop.resize((SIZE, SIZE), Image.LANCZOS)

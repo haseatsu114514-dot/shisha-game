@@ -37,7 +37,7 @@ log("disclaimer acknowledged");
 const plan = [
   "tonariでバイト", "Dr.fookah", "スミさんと話す",
   "KEMURIKUSA", "EDEN",
-  "PEPERMINT", "Dr.fookah", "カフェ",
+  "PEPPERMINT", "Dr.fookah", "カフェ",
   "観音堂", "Dr.fookah", "チョイザップ",
   "シーシャの練習", "常連席",
   "tonariでバイト", "C.STATION",
@@ -45,6 +45,7 @@ const plan = [
 ];
 let planIdx = 0;
 let guard = 0;
+let failStreak = 0; // 同じ行き先のクリック連続失敗数（3回で諦めて次へ）
 
 async function activeScreen() {
   return page.evaluate(() => document.querySelector(".screen.active")?.id || "none");
@@ -52,7 +53,13 @@ async function activeScreen() {
 
 let tutorialSeen = false;
 let limeSeen = false;
+let lastTrace = "";
 while (guard++ < 5000) {
+  // 進行トレース（詰まり調査用・日/画面が変わった時と500刻みで出す）
+  if (process.env.TRACE) {
+    const tr = await page.evaluate(() => (typeof state === "undefined" || !state) ? "no-state" : `day=${state.day} ap=${state.ap} scr=${document.querySelector(".screen.active")?.id} dlg=${typeof engine !== "undefined" && engine ? engine.dialogueId : ""}`);
+    if (tr !== lastTrace || guard % 500 === 0) { log(`[g${guard}]`, tr); lastTrace = tr; }
+  }
   // LIME（朝のスマホ）が開いていたら返信して進める（先頭の返信＝招待は受ける）
   if (await page.locator("#phone-overlay.show").count()) {
     if (!limeSeen) { limeSeen = true; log("LIME morning phone shown"); }
@@ -65,6 +72,11 @@ while (guard++ < 5000) {
   if (await page.locator("#map-beat").count()) {
     await page.locator("#map-beat").click().catch(() => {});
     await page.waitForTimeout(80);
+    continue;
+  }
+  // 夜の帰宅暗転（#night-fade）はタップ不要の自動遷移。明けるまで待つ
+  if (await page.locator("#night-fade").count()) {
+    await page.waitForTimeout(200);
     continue;
   }
   const screen = await activeScreen();
@@ -125,14 +137,25 @@ while (guard++ < 5000) {
       continue;
     }
     const btn = page.locator(".spot-btn", { hasText: label }).first();
+    // 未解禁（??? LOCK）・定休日でピンが無い行き先は飛ばして次へ（プランは周回するので後で再訪できる）。
+    // ここで同じ行き先をリトライし続けると、解禁チェーンがズレた周回で永遠に詰まる
+    if (!(await btn.count())) {
+      log("plan skip (locked/closed):", label);
+      await page.waitForTimeout(120);
+      continue;
+    }
     try {
       if (await btn.isDisabled()) {
         await page.locator(".spot-btn", { hasText: "家に帰る" }).click({ timeout: 3000 });
       } else {
         await btn.click({ timeout: 3000 });
       }
+      failStreak = 0;
     } catch {
-      planIdx--; // スマホ（LIME）が重なった等でクリックできなければ同じ行き先を再試行
+      // スマホ（LIME）が重なった等の一時的な失敗は同じ行き先を再試行。
+      // 3連続で失敗したら恒久的に押せない状態とみなして次の行き先へ（無限リトライ防止）
+      if (++failStreak >= 3) { failStreak = 0; log("plan giveup:", label); continue; }
+      planIdx--;
       continue;
     }
     await page.waitForTimeout(30);

@@ -14,16 +14,41 @@ await page.waitForSelector("#screen-title.active");
 const c = await page.evaluate(() => ({ cost: STAMINA_COST, gain: STAMINA_GAIN, low: STAMINA_LOW }));
 log("stamina cost:", JSON.stringify(c.cost), "gain:", JSON.stringify(c.gain), "low:", c.low);
 
-// (A3-1) 通常の混在プレイ（昼バイト＋夜キャラ訪問、就寝回復）を14日 → 寝込みに入らない
-let sta = 100, sickNormal = false;
+// (A3-1) 通常の混在プレイ（昼バイト＋夜キャラ訪問、就寝回復）を14日。
+// 新仕様（2026-07-02 オーナー指定）: 章の間に一度は「家で休むか」を考える
+// ゾーン（警告ライン+15）まで落ちること。かつ、落ちたら1回休む素直な
+// プレイで警告ライン未満（酸欠リスク）には入らない＝詰まないこと。
+const CONSIDER = c.low + 15; // 休憩を検討し始めるゲージ
+let sta = 100, considered = 0, sickNormal = false;
 for (let d = 0; d < 14; d++) {
-  sta = Math.max(0, sta - c.cost.baito);   // 昼: バイト
-  sta = Math.max(0, sta - c.cost.visit);   // 夜: 訪問
-  if (sta < c.low) sickNormal = true;       // 行動前に低かったら無理扱い
-  sta = Math.min(100, sta + c.gain.sleep);  // 就寝回復
+  sta = Math.max(0, sta - c.cost.baito);        // 昼: バイト
+  if (sta <= CONSIDER) {
+    considered++;                                // 夜: ゲージを見て家で休む判断
+    sta = Math.min(100, sta + c.gain.rest);
+  } else {
+    sta = Math.max(0, sta - c.cost.visit);       // 夜: 訪問
+  }
+  if (sta < c.low) sickNormal = true;            // 警告ライン未満まで落ちたら厳しすぎ
+  sta = Math.min(100, sta + c.gain.sleep);       // 就寝回復
 }
-log(`通常プレイ14日: 最終体力${sta} 寝込み=${sickNormal}`);
-if (sickNormal) throw new Error("A3: 通常の混在プレイで寝込んでしまう（厳しすぎ）");
+log(`通常プレイ14日: 最終体力${sta} 休憩検討${considered}回 警告未満=${sickNormal}`);
+if (considered < 1) throw new Error("A3: 14日間で一度も休憩を考える場面が来ない（減りが緩すぎ）");
+if (considered > 3) throw new Error("A3: 休憩の検討が3回を超える（厳しすぎ）");
+if (sickNormal) throw new Error("A3: 素直に休んでも警告ラインを割る（厳しすぎ）");
+
+// (A3-1b) 店巡りだけ（訪問×2/日）でも体力は減っていき、章内に一度は休憩を考える
+// （旧バランスは訪問2回<就寝回復で一生減らなかった＝オーナー報告 2026-07-02）
+sta = 100; let consideredVisit = 0; let sickVisit = false;
+for (let d = 0; d < 14; d++) {
+  sta = Math.max(0, sta - c.cost.visit);
+  if (sta <= CONSIDER) { consideredVisit++; sta = Math.min(100, sta + c.gain.rest); }
+  else sta = Math.max(0, sta - c.cost.visit);
+  if (sta < c.low) sickVisit = true;
+  sta = Math.min(100, sta + c.gain.sleep);
+}
+log(`店巡りプレイ14日: 最終体力${sta} 休憩検討${consideredVisit}回 警告未満=${sickVisit}`);
+if (consideredVisit < 1) throw new Error("A3-1b: 店巡りだけだと体力が一生減らない（訪問コスト<回復）");
+if (sickVisit) throw new Error("A3-1b: 店巡りで警告ラインを割る（厳しすぎ）");
 
 // (A3-2) 毎日2回バイト（無理し続ける）→ いずれ低体力に入る（システムが機能している）
 sta = 100; let hitLow = false;

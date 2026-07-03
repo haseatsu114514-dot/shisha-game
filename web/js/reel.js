@@ -384,7 +384,7 @@ const REEL = (() => {
   };
   function pakkiFace(cls) {
     if (typeof faceIconHtml === "function") {
-      const h = faceIconHtml("packii", cls || "rw-face");
+      const h = faceIconHtml("pakki", cls || "rw-face");
       if (h) return h;
     }
     return `<span class="${(cls || "rw-face")} rw-face-fallback">ぷ</span>`;
@@ -397,7 +397,9 @@ const REEL = (() => {
     widget = document.createElement("div");
     widget.id = "reel-widget";
     widget.innerHTML =
-      `<button id="reel-lamp" type="button" title="MOKUMOKUパッキー">${pakkiFace("rw-face")}</button>` +
+      `<div class="rw-lamp-wrap"><span class="rw-lamp-rays" aria-hidden="true"></span>` +
+      `<button id="reel-lamp" type="button" title="MOKUMOKUパッキー">${pakkiFace("rw-face")}</button></div>` +
+      `<span class="rw-lever-arm" aria-hidden="true"></span>` +
       `<div class="rw-machine">` +
       STRIPS.map((strip, i) =>
         `<div class="rw-reel" data-i="${i}"><div class="rw-strip">` +
@@ -446,13 +448,16 @@ const REEL = (() => {
     if (!lamp) return;
     lamp.classList.add("lit");
     if (premium) lamp.classList.add("premium");
-    widget.classList.add("attract");
+    // GOGOランプ風: 点灯ポップ＋光条レイ＋中段ラインのフラッシュ。予熱は解除
+    widget.classList.add("attract", "lamp-lit", "win-flash");
+    widget.classList.remove("warm");
+    if (premium) widget.classList.add("lamp-premium");
   }
   function lampOff() {
     const lamp = document.querySelector("#reel-lamp");
     if (!lamp) return;
     lamp.classList.remove("lit", "premium");
-    widget.classList.remove("attract");
+    widget.classList.remove("attract", "lamp-lit", "lamp-premium", "win-flash");
   }
 
   function ensureCutin() {
@@ -533,7 +538,11 @@ const REEL = (() => {
     const strips = stripEls();
     lampOff();
 
-    // レバオン
+    // レバオン（レバーアームを叩く小アニメ・ジャグラー風の儀式感）
+    if (!fast) {
+      widget.classList.add("lever-pull");
+      setTimeout(() => widget.classList.remove("lever-pull"), 380);
+    }
     if (r.gakkun) widget.classList.add("gakkun");           // 章の1回転目だけガックン（分かる人向け）
     setTimeout(() => widget.classList.remove("gakkun"), 500);
     if (!silent) sfx("reelLever");
@@ -544,9 +553,14 @@ const REEL = (() => {
 
     if (r.role === "freeze" && !fast) return presentFreeze(r, done);
 
-    // 停止（ハズレはテンポ最優先で速く）
+    // 停止（ハズレはテンポ最優先で速く）。
+    // 当たり（ペカ予定）の回転は第3リールだけ「溜め」を入れる＝
+    // 止まる……止まる……ペカッ、のジャグラー的なドキドキ（2026-07-02）
     const spinMs = fast ? 120 : silent ? 1600 : (r.role === "miss" ? 240 : 420);
     const gap = fast ? 40 : 130;
+    const willPeka = PEKA.includes(r.role) || !!r.overlap;
+    const tension = willPeka && !fast && r.role !== "freeze";
+    const tensionMs = tension ? 560 : 0;
     setTimeout(() => {
       r.stops.forEach((stop, i) => {
         setTimeout(() => {
@@ -556,12 +570,14 @@ const REEL = (() => {
           el.classList.add("land");
           setTimeout(() => el.classList.remove("land"), 240);
           if (!silent && !fast) sfx("reelStop");
-        }, gap * i);
+          if (tension && i === 1) widget.classList.add("tension");   // 2つ止まって残り1つ…
+          if (i === 2) widget.classList.remove("tension");
+        }, gap * i + (i === 2 ? tensionMs : 0));
       });
       setTimeout(() => {
-        widget.classList.remove("silent-spin");
+        widget.classList.remove("silent-spin", "tension");
         afterStop(r, fast, done);
-      }, gap * 2 + (fast ? 60 : 200) + (silent ? 500 : 0));
+      }, gap * 2 + tensionMs + (fast ? 60 : 200) + (silent ? 500 : 0));
     }, spinMs);
   }
 
@@ -581,22 +597,25 @@ const REEL = (() => {
   function ceilingHint(remain) {
     return pick(remain <= 1 ? CEILING_HINTS.soon : remain <= 3 ? CEILING_HINTS.near : CEILING_HINTS.far);
   }
-  // 外れでもたまに楽しいことを言う（T18/T21/T24・短く・多バリエーション）
+  // 外れでもたまに楽しいことを言う（T18/T21/T24・短く・多バリエーション）。
+  // パッキーの人格＝かわいい見た目で他人事、たまに毒、基本ごきげん（2026-07-02 見直し）
   const FUN_MISS = [
     "はずれ〜♪", "ぷぷっ、ノーカン！", "むむ、惜しい", "今、力ためてる！たぶん", "ボクはウソつくよ♪",
-    "ノーれんちゃん中〜", "やる気は満タン！", "次に期待してね♪", "危なかった……何が？", "知ってた（嘘）",
+    "やる気は満タン！", "次に期待してね♪", "知ってた（嘘）", "ボクのせいじゃないよ？",
     "煙、いい色〜", "まばたきした？", "今のは練習！", "宇宙を感じる……", "ぷかぷか〜", "ぐぬぬ",
-    "せーの、で来るやつ", "……はっ、寝てた", "ノーコメントで！", "ちっ", "むむむ", "ぼちぼち〜",
+    "……はっ、寝てた", "ノーコメントで！", "むむむ", "ぼちぼち〜", "外れの音も、わりと好き",
     "ふー、ねむい", "鼻がムズムズ", "おっと", "んっ、今の見た？", "へいきへいき", "ボクは元気〜",
-    "もういっちょ！", "ぷっぷくぷー", "なんでもないよ", "風が呼んでる……", "むにゃ……", "しゃきーん",
-    "おなかすいた", "次こそ次こそ", "ボクを信じて？", "ちょい待ち〜", "うーん、地味", "今のはノーサイド",
-    "ぼー……", "き、来るかと思った", "ここで一句", "ふっかーつ！", "まだまだいくよ", "そういう日もある",
+    "もういっちょ！", "ぷっぷくぷー", "なんでもないよ", "むにゃ……", "しゃきーん",
+    "おなかすいた", "次こそ次こそ", "ボクを信じて？", "うーん、地味", "運も仕込みのうち！",
+    "ぼー……", "き、来るかと思った", "ふっかーつ！", "そういう日もある", "夢は次回に持ち越し！",
+    "けむに巻かれたね♪", "回すキミの顔、真剣〜", "光る予定は未定！", "ハズレも実力のうち♪",
   ];
   function funMiss() { return pick(FUN_MISS); }
   // ごくまれに出るレア台詞（外れ時・短く・赤文字で表示）（T21/T24）
   const RARE_MISS = [
     "ねえ、たまにはボクの話も♪", "（小声）誰が作ったんだろ、これ", "スミさん、さっき笑ってたよ？",
     "今、いい匂いした。気のせい？", "案外いいコンビかもね", "キミの煙、ボク好きだよ",
+    "ボク、夜はどこで寝てると思う？", "光る瞬間はね、ボクにも見えないんだ",
   ];
   function rareMiss() { return pick(RARE_MISS); }
   function bonusName(r) {
@@ -608,6 +627,8 @@ const REEL = (() => {
   function afterStop(r, fast, done) {
     switch (r.role) {
       case "miss":
+        // 天井が近いほどランプがほんのり「予熱」する（数値は出さない・雰囲気の楽しみ）
+        widget.classList.toggle("warm", r.ceilingRemain > 0 && r.ceilingRemain <= 3);
         // 天井が近いと抽象的に示唆（数値は出さない）。たまに外れでも楽しい/レアなことを言う（T18/T19/T24）
         if (!fast) {
           if (r.ceilingRemain > 0 && r.ceilingRemain <= 5) {
@@ -634,7 +655,8 @@ const REEL = (() => {
       case "cherry": {
         sfx("reelWin");
         if (!r.overlap) {
-          if (!fast) bubble(`チェリーッ！　${benefitLine(r)}`, 1900); // 役名＋恩恵を読み上げ（T18）
+          // 役名→恩恵の2段読み上げ（T18）。連結すると吹き出しが2行に折れて長いため分ける
+          if (!fast) { bubble("チェリーッ！", 800); setTimeout(() => bubble(benefitLine(r), 1500), 850); }
           announce(r);
           return setTimeout(done, fast ? 60 : 700);
         }
@@ -643,16 +665,17 @@ const REEL = (() => {
         const start = () => {
           lampOn(false);
           sfx("puka");
-          bubble("重複ペカ！？", 0);
+          bubble("えっ、チェリーと一緒に光った！？", 0);
           bonusWait = { ...r, done };
           if (fast) return settleBonus(bonusWait, true);
-          setTimeout(() => { if (bonusWait) settleBonus(bonusWait, false); }, 1000); // 点灯を見せてから自動で揃え(T31)
+          setTimeout(() => { if (bonusWait) settleBonus(bonusWait, false); }, 700); // 点灯を見せたら自動で揃える（タップ不要・タップは早送り）
         };
         return setTimeout(start, fast ? 0 : 600);
       }
       case "bell":
         sfx("reelWin");
-        if (!fast) bubble(`パインベルッ！　${benefitLine(r)}`, 1900); // 役名＋恩恵を読み上げ（T18）
+        // 役名→恩恵の2段読み上げ（T18）。連結すると吹き出しが2行に折れて長いため分ける
+        if (!fast) { bubble("パインベルッ！", 800); setTimeout(() => bubble(benefitLine(r), 1500), 850); }
         announce(r);
         return setTimeout(done, fast ? 60 : 800);
       case "rare": {
@@ -663,7 +686,7 @@ const REEL = (() => {
           bubble("ぷぷぷぷぷ！！", 0);
           bonusWait = { ...r, done };
           if (fast) return settleBonus(bonusWait, true);
-          setTimeout(() => { if (bonusWait) settleBonus(bonusWait, false); }, 1100); // 点灯を見せてから自動で揃え(T31)
+          setTimeout(() => { if (bonusWait) settleBonus(bonusWait, false); }, 800); // 点灯を見せたら自動で揃える（タップ不要・タップは早送り）
         };
         if (fast) return start();
         sfx("pugo");
@@ -671,15 +694,14 @@ const REEL = (() => {
       }
       case "reg":
       case "big": {
-        // プカッ（完全告知）。タップでボーナス開始、放置しても次の回転前に自動精算
+        // プカッ（完全告知）。光ったら自動でリールが揃う（タップは早送りできるだけ）
         const start = () => {
           lampOn(r.variant === "silent" || r.ceiling === "main");
           sfx("puka");
           bubble(r.ceiling === "main" ? "おたすけパッキー！" : "ぷぷぷっ！", 0);
           bonusWait = { ...r, done };
           if (fast) return settleBonus(bonusWait, true);
-          // 光ったのを見せてから、タップ不要で自動的にリールが揃えに入る（ジャグラー風）(#49/T31)
-          setTimeout(() => { if (bonusWait) settleBonus(bonusWait, false); }, 1000);
+          setTimeout(() => { if (bonusWait) settleBonus(bonusWait, false); }, 700);
         };
         return setTimeout(start, r.variant === "after" || r.variant === "silent" ? (fast ? 0 : 320) : 0);
       }
@@ -697,11 +719,23 @@ const REEL = (() => {
     bonusWait = null;
     lampOff();
     bubble("", 1);
+    // 揃った瞬間の筐体ポップ（気持ちよさの一押し）
+    if (!fast && widget) {
+      widget.classList.remove("bonus-pop");
+      void widget.offsetWidth;
+      widget.classList.add("bonus-pop");
+      setTimeout(() => widget.classList.remove("bonus-pop"), 700);
+    }
     const finish = () => {
       announce(b);
-      // ボーナスも役名＋恩恵をパッキーが読み上げる（T18）。BIG/プレミアは熱いので赤文字（T24）
+      // ボーナスも役名→恩恵の2段でパッキーが読み上げる（T18・連結だと吹き出しが2行に折れる）。
+      // BIG/プレミアは熱いので赤文字（T24）
       const big = b.role === "big" || b.role === "rare" || b.overlap === "big";
-      if (!fast && fx() !== "off") bubble(`${bonusName(b)}ッ！　${benefitLine(b)}`, 2600, big ? "hot" : null);
+      if (!fast && fx() !== "off") {
+        const cls = big ? "hot" : null;
+        bubble(`${bonusName(b)}ッ！`, 950, cls);
+        setTimeout(() => bubble(benefitLine(b), 1900, cls), 1000);
+      }
       if (b.done) { const d = b.done; b.done = null; d(); }
     };
     if (fast || fx() === "lite") { sfx("fanfare"); return finish(); }
@@ -712,9 +746,10 @@ const REEL = (() => {
                            : [SYM_HTML.seven, SYM_HTML.seven, SYM_HTML.bar];
     const label = isBig ? "BIG BONUS" : "BONUS";
     c.className = "show bonus";
+    // 完全告知（ランプが先に光る）なので「リーチ」ではなく、揃えにいく実況にする
     c.innerHTML =
       `<div class="rc-bonus-board">` +
-      `<div class="rc-aim">${isBig ? "リーチ──赤7ッ！" : "赤7…赤7…！？"}</div>` +
+      `<div class="rc-aim">${isBig ? "光ったら揃う！　赤7──" : "赤7…赤7…からの──！？"}</div>` +
       `<div class="rc-cells">` +
       cellSyms.map((s) => `<div class="rc-cell">${s}</div>`).join("") +
       `</div>` +
@@ -779,7 +814,7 @@ const REEL = (() => {
       const names = typeof STAT_KEYS !== "undefined" ? STAT_KEYS : {};
       const badges = typeof STAT_BADGE !== "undefined" ? STAT_BADGE : {};
       gainBanner({
-        kind: "stat", badge: badges[r.target] || "上",
+        kind: "stat", stat: r.target, badge: badges[r.target] || "上",
         labelTop: "PAKKI SLOT", labelMain: names[r.target] || r.target, labelSub: label,
       });
     }

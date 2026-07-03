@@ -60,7 +60,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": " はじめくん、だっけ？"
+          "text": "はじめくん、だっけ？"
         },
         {
           "speaker": "hajime",
@@ -80,7 +80,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": " ご指名ありがとうございますっ♡ ……あ、もうウチの推しメンに認定しちゃうからねっ？"
+          "text": "ご指名ありがとうございますっ♡ ……あ、もうウチの推しメンに認定しちゃうからねっ？"
         },
         {
           "type": "set_flag",
@@ -124,7 +124,7 @@
         {
           "speaker": "minto",
           "face": "normal",
-          "text": " tonariみたいな渋いのもいいけどー、"
+          "text": "tonariみたいな渋いのもいいけどー、"
         },
         {
           "speaker": "minto",
@@ -174,7 +174,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": " 空きっ腹で吸うと酔うからね？ ……って、同業者に言うのもヘンだけど♡ 偵察ならお手柔らかにね？"
+          "text": "空きっ腹で吸うと酔うからね？ ……って、同業者に言うのもヘンだけど♡ 偵察ならお手柔らかにね？"
         },
         {
           "speaker": "",
@@ -263,7 +263,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": " 嬉しいなー、常連さんに昇格しちゃうよ〜？"
+          "text": "嬉しいなー、常連さんに昇格しちゃうよ〜？"
         },
         {
           "speaker": "hajime",
@@ -308,7 +308,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": " お客さんにも大人気なの♡"
+          "text": "お客さんにも大人気なの♡"
         },
         {
           "speaker": "minto",
@@ -318,7 +318,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": " カラコンじゃないよ？ ……たぶん♡"
+          "text": "カラコンじゃないよ？ ……たぶん♡"
         },
         {
           "speaker": "hajime",
@@ -368,7 +368,7 @@
         {
           "speaker": "minto",
           "face": "normal",
-          "text": " みんとまだ20歳だもんっ♡ ……えっと、デビューしてからずっとこの調子、かな"
+          "text": "みんとまだ20歳だもんっ♡ ……えっと、デビューしてからずっとこの調子、かな"
         },
         {
           "speaker": "hajime",
@@ -383,7 +383,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": " みんとの永久指名、してくれたら嬉しいなー♡"
+          "text": "みんとの永久指名、してくれたら嬉しいなー♡"
         },
         {
           "speaker": "hajime",
@@ -523,7 +523,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": " みんとになんでもわがまま言っていいからねっ♡ ご指名、お待ちしておりました〜"
+          "text": "みんとになんでもわがまま言っていいからねっ♡ ご指名、お待ちしておりました〜"
         },
         {
           "speaker": "hajime",
@@ -548,7 +548,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": " 他のお客さんには内緒だけど……はじめくんだから、だよ♡"
+          "text": "他のお客さんには内緒だけど……はじめくんだから、だよ♡"
         },
         {
           "speaker": "hajime",
@@ -593,7 +593,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": " ……何年かかったかは秘密だけど♡ で、改装して今のシーシャ屋にしたってわけ！"
+          "text": "……何年かかったかは秘密だけど♡ で、改装して今のシーシャ屋にしたってわけ！"
         },
         {
           "speaker": "minto",
@@ -655,7 +655,7 @@
     {
       "dialogue_id": "ch1_minto_phantom_smell",
       "metadata": {
-        "bg": "res://assets/backgrounds/pepermint.png"
+        "bg": "res://assets/backgrounds/peppermint.png"
       },
       "lines": [
         {
@@ -1084,7 +1084,7 @@
     {
       "dialogue_id": "ch1_minto_after_ch1",
       "metadata": {
-        "bg": "res://assets/backgrounds/pepermint.png"
+        "bg": "res://assets/backgrounds/peppermint.png"
       },
       "lines": [
         {
@@ -1201,7 +1201,7 @@
     {
       "dialogue_id": "ch1_minto_after_ch1_firstshop",
       "metadata": {
-        "bg": "res://assets/backgrounds/pepermint.png"
+        "bg": "res://assets/backgrounds/peppermint.png"
       },
       "lines": [
         {
@@ -1283,7 +1283,7 @@
     {
       "dialogue_id": "ch1_minto_group_regulars",
       "metadata": {
-        "bg": "res://assets/backgrounds/pepermint.png"
+        "bg": "res://assets/backgrounds/peppermint.png"
       },
       "lines": [
         {
@@ -1314,7 +1314,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": " ……あっ、おかえりなさーいっ♡ はじめくんっ！ ご指名ありがとっ♡"
+          "text": "……あっ、おかえりなさーいっ♡ はじめくんっ！ ご指名ありがとっ♡"
         },
         {
           "speaker": "hajime",
@@ -1359,7 +1359,7 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": " すっきりするの？ みんとに全部教えて？"
+          "text": "すっきりするの？ みんとに全部教えて？"
         },
         {
           "speaker": "hajime",

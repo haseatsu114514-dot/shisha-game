@@ -103,7 +103,7 @@
     {
       "dialogue_id": "outing_adam_1",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_day.png",
+        "bg": "res://assets/backgrounds/bg_street_night.png",
         "add_affinity": {
           "adam": 1
         },
@@ -220,7 +220,7 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": " さっきから同じ角ばっかり曲がってる気がして"
+          "text": "さっきから同じ角ばっかり曲がってる気がして"
         },
         {
           "speaker": "hajime",
@@ -382,7 +382,7 @@
     {
       "dialogue_id": "interaction_minto_noon_01",
       "metadata": {
-        "bg": "res://assets/backgrounds/pepermint.png",
+        "bg": "res://assets/backgrounds/peppermint.png",
         "add_affinity": {
           "minto": 1
         },
@@ -392,7 +392,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "昼下がりのPEPERMINT。ドアベルを鳴らすと、カウンターの奥から声が飛んできた。"
+          "text": "昼下がりのPEPPERMINT。ドアベルを鳴らすと、カウンターの奥から声が飛んできた。"
         },
         {
           "speaker": "minto",
@@ -417,7 +417,7 @@
         {
           "speaker": "minto",
           "face": "normal",
-          "text": " 夜のミックスのまま昼に出すと、重たくて疲れちゃうから"
+          "text": "夜のミックスのまま昼に出すと、重たくて疲れちゃうから"
         },
         {
           "speaker": "hajime",
