@@ -282,9 +282,10 @@ function flushGainQueue() {
   const item = gainQueue.shift();
   const box = $("#gain-banner");
   const card = document.createElement("div");
-  card.className = `gain-card ${item.kind}`;
-  // ステータス種別ごとの共通色（--stat-* が正本）。名前・漢字と併記＝色だけに依存しない
+  // ステータス種別ごとの共通色（--stat-* が正本）。名前・漢字と併記＝色だけに依存しない。
+  // カード自体にも stat-c-<en> を付け、吹き出しの枠・地色・光まで項目色に連動させる
   const statCls = item.stat ? ` stat-c-${item.stat}` : "";
+  card.className = `gain-card ${item.kind}${statCls}`;
   card.innerHTML =
     `<div class="badge${statCls}">${item.badge}</div>` +
     `<div class="meta">` +
@@ -2264,11 +2265,30 @@ function mapBeat(onDone, label) {
   if (!reelIdle && REEL.waitForIdle) REEL.waitForIdle(() => { reelIdle = true; go(); });
 }
 
+// 夜の行動を終えたら、マップへ戻さずその場で暗転→「今日は家へ帰ろう」→帰宅シーンへ。
+// 旧「今日はここまで——家に帰る」タップ（mapBeat）はボタン式で不自然という指摘で廃止（2026-07-02）。
+// スロットの未演出分は翌朝のマップ精算（#34/#23の仕組み）にそのまま乗るので取りこぼさない
+function nightFadeHome(next) {
+  const host = $("#game");
+  if (!host) return next();
+  document.getElementById("night-fade")?.remove();
+  const ov = document.createElement("div");
+  ov.id = "night-fade";
+  ov.innerHTML = `<span>……今日は、家へ帰ろう。</span>`;
+  host.appendChild(ov);
+  requestAnimationFrame(() => ov.classList.add("dark"));
+  setTimeout(() => {
+    next(); // 帰宅シーン（night_homecoming / 家シーシャ）を黒の下で始めてから明ける
+    ov.classList.add("clear");
+    setTimeout(() => ov.remove(), 1000);
+  }, 1600);
+}
+
 function endDay() {
   // 夜の締め: 必ず家に帰って1日を終える（master_spec #3）。
   // 家シーシャ（第2章〜・一式所持時）はその帰宅シーンの中で選択肢になる
   const finishDay = () => maybeNightcap(advanceDay);
-  const finishAfterReel = () => mapBeat(finishDay, "今日はここまで——家に帰る");
+  const goHome = () => nightFadeHome(finishDay);
   // 夜の強制イベントは mapBeat（つなぎの一拍）を通してから再生する（#16）。
   // つなぎ文言は行き先に合わせる＝夜に別の店へ行った直後でも
   // 「なぜ急にtonariのシーンに？」とならないように（2026-07-02）
@@ -2319,7 +2339,7 @@ function endDay() {
       state.flags._ev2_tsumugi = true;
       return pd("ch2_tsumugi_color", finishDay, TONARI);
     }
-    return finishAfterReel();
+    return goHome();
   }
   // ---- 第1章の夜の固定イベント
   if (state.day === 2 && !state.flags._ev_salaryman) {
@@ -2381,7 +2401,7 @@ function endDay() {
     state.flags._ev_day7 = true;
     return pd("ch1_day7_last_night", finishDay, TONARI);
   }
-  finishAfterReel();
+  goHome();
 }
 
 // --- バイト
@@ -6676,6 +6696,12 @@ function init() {
   initEngine();
   const titleBoot = createTitleBootGate();
   setupTitleLogo(titleBoot.track());
+  // ビルド版数の刻印: 「Pagesが古い版のまま」等をタイトル画面で見分けられるようにする。
+  // 値は build_data.py が data.js（D.build）に焼き込む
+  const stamp = $("#build-stamp");
+  if (stamp && D.build) {
+    stamp.textContent = `build ${D.build.commit || "local"} · ${D.build.built_at || ""}`;
+  }
   // キービジュアル/立ち絵は起動ゲートで待たない（大きなPNGのデコード待ちで
   // 「起動中」が伸びる主因だった）。準備でき次第フェードインで後追い表示する
   const noGate = () => {};

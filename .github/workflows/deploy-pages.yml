@@ -1,6 +1,12 @@
-# ソースから web/dist/shisha_ch1.html（1ファイル版）を生成し、GitHub Pages に公開する。
+# ソースから web ビルドを生成し、GitHub Pages に公開する。
 # main または開発ブランチ（claude/**）への push のたびに
 # https://haseatsu114514-dot.github.io/shisha-game/ が更新される。
+#
+# 配備レイアウト（2026-07-02 改定・起動高速化）:
+#   /            … /web/ へ即リダイレクト（既存ブックマークを生かす）
+#   /web/        … 分割ファイル版（アセット遅延読み込み・起動が速い、こちらが本線）
+#   /shisha_ch1.html … 1ファイル配布版（約22MB・ダウンロードして持ち歩く用）
+#   /tools/flavor_stats_editor.html … フレーバー調整ツール
 name: Deploy web build to GitHub Pages
 
 on:
@@ -11,6 +17,7 @@ on:
       - "data/**"
       - "web/css/**"
       - "web/js/**"
+      - "web/index.html"
       - "web/dist/**"
       - "web/tools/**"
       - "web/build_data.py"
@@ -39,15 +46,38 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install build dependencies
-        run: python3 -m pip install --upgrade pip Pillow
-      - name: Build standalone web bundle
+        # numpy/scipy が無いと立ち絵の足元アンカー(ax)が計測されず、
+        # Pages版だけ立ち絵の横位置がズレる（2026-07-02 発見）
+        run: python3 -m pip install --upgrade pip Pillow numpy scipy
+      - name: Build web bundle
         run: |
           python3 web/build_data.py
           python3 web/build_standalone.py
       - name: Prepare site
         run: |
-          mkdir -p _site/tools
-          cp web/dist/shisha_ch1.html _site/index.html
+          mkdir -p _site/web _site/tools
+          # 分割ファイル版（本線）: HTML+CSS+JSだけ先に読み、画像・音はスクリーンごとに遅延取得
+          cp web/index.html _site/web/index.html
+          cp -r web/css _site/web/css
+          cp -r web/js _site/web/js
+          cp -r assets _site/assets
+          # ルートは分割版へ転送（旧URLのブックマークでも速い方が開く）
+          cat > _site/index.html <<'HTML'
+          <!DOCTYPE html>
+          <html lang="ja">
+          <head>
+          <meta charset="UTF-8">
+          <meta http-equiv="refresh" content="0; url=./web/">
+          <title>水煙前線 -EN:CODE-</title>
+          <script>location.replace("./web/" + location.search + location.hash);</script>
+          </head>
+          <body style="background:#0a0612;color:#c5b896;font-family:serif;text-align:center;padding-top:20vh">
+          <p>ゲームへ移動中……<br><a href="./web/" style="color:#f4d27a">開かない場合はこちら</a></p>
+          </body>
+          </html>
+          HTML
+          # 1ファイル配布版はダウンロード用に残す
+          cp web/dist/shisha_ch1.html _site/shisha_ch1.html
           cp web/tools/flavor_stats_editor.html _site/tools/flavor_stats_editor.html
       - uses: actions/configure-pages@v5
         with:
@@ -57,3 +87,7 @@ jobs:
           path: _site
       - id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          # Pages側のキューが詰まると既定10分では deployment_queued のまま
+          # タイムアウトする（2026-07-02 に5連続で発生）。20分まで粘る
+          timeout: 1200000

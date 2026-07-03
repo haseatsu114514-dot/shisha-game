@@ -53,7 +53,13 @@ async function activeScreen() {
 
 let tutorialSeen = false;
 let limeSeen = false;
+let lastTrace = "";
 while (guard++ < 5000) {
+  // 進行トレース（詰まり調査用・日/画面が変わった時と500刻みで出す）
+  if (process.env.TRACE) {
+    const tr = await page.evaluate(() => (typeof state === "undefined" || !state) ? "no-state" : `day=${state.day} ap=${state.ap} scr=${document.querySelector(".screen.active")?.id} dlg=${typeof engine !== "undefined" && engine ? engine.dialogueId : ""}`);
+    if (tr !== lastTrace || guard % 500 === 0) { log(`[g${guard}]`, tr); lastTrace = tr; }
+  }
   // LIME（朝のスマホ）が開いていたら返信して進める（先頭の返信＝招待は受ける）
   if (await page.locator("#phone-overlay.show").count()) {
     if (!limeSeen) { limeSeen = true; log("LIME morning phone shown"); }
@@ -66,6 +72,11 @@ while (guard++ < 5000) {
   if (await page.locator("#map-beat").count()) {
     await page.locator("#map-beat").click().catch(() => {});
     await page.waitForTimeout(80);
+    continue;
+  }
+  // 夜の帰宅暗転（#night-fade）はタップ不要の自動遷移。明けるまで待つ
+  if (await page.locator("#night-fade").count()) {
+    await page.waitForTimeout(200);
     continue;
   }
   const screen = await activeScreen();
