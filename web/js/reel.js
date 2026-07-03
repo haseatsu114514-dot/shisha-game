@@ -655,7 +655,8 @@ const REEL = (() => {
       case "cherry": {
         sfx("reelWin");
         if (!r.overlap) {
-          if (!fast) bubble(`チェリーッ！　${benefitLine(r)}`, 1900); // 役名＋恩恵を読み上げ（T18）
+          // 役名→恩恵の2段読み上げ（T18）。連結すると吹き出しが2行に折れて長いため分ける
+          if (!fast) { bubble("チェリーッ！", 800); setTimeout(() => bubble(benefitLine(r), 1500), 850); }
           announce(r);
           return setTimeout(done, fast ? 60 : 700);
         }
@@ -673,7 +674,8 @@ const REEL = (() => {
       }
       case "bell":
         sfx("reelWin");
-        if (!fast) bubble(`パインベルッ！　${benefitLine(r)}`, 1900); // 役名＋恩恵を読み上げ（T18）
+        // 役名→恩恵の2段読み上げ（T18）。連結すると吹き出しが2行に折れて長いため分ける
+        if (!fast) { bubble("パインベルッ！", 800); setTimeout(() => bubble(benefitLine(r), 1500), 850); }
         announce(r);
         return setTimeout(done, fast ? 60 : 800);
       case "rare": {
@@ -726,9 +728,14 @@ const REEL = (() => {
     }
     const finish = () => {
       announce(b);
-      // ボーナスも役名＋恩恵をパッキーが読み上げる（T18）。BIG/プレミアは熱いので赤文字（T24）
+      // ボーナスも役名→恩恵の2段でパッキーが読み上げる（T18・連結だと吹き出しが2行に折れる）。
+      // BIG/プレミアは熱いので赤文字（T24）
       const big = b.role === "big" || b.role === "rare" || b.overlap === "big";
-      if (!fast && fx() !== "off") bubble(`${bonusName(b)}ッ！　${benefitLine(b)}`, 2600, big ? "hot" : null);
+      if (!fast && fx() !== "off") {
+        const cls = big ? "hot" : null;
+        bubble(`${bonusName(b)}ッ！`, 950, cls);
+        setTimeout(() => bubble(benefitLine(b), 1900, cls), 1000);
+      }
       if (b.done) { const d = b.done; b.done = null; d(); }
     };
     if (fast || fx() === "lite") { sfx("fanfare"); return finish(); }

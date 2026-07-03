@@ -37,6 +37,24 @@
 .gain-card .badge.stat-c-guts      { background: linear-gradient(135deg, var(--stat-guts), color-mix(in srgb, var(--stat-guts) 55%, #200e08)); color: #200e08; }
 .gain-card .badge.stat-c-charm     { background: linear-gradient(135deg, var(--stat-charm), color-mix(in srgb, var(--stat-charm) 55%, #200a18)); color: #26101e; }
 .gain-card .badge.stat-c-insight   { background: linear-gradient(135deg, var(--stat-insight), color-mix(in srgb, var(--stat-insight) 55%, #0e2008)); color: #10200a; }
+/* 経験値バナーの吹き出し自体もステ色に連動（枠・地色・光・見出し。カードに stat-c-<en> が付く） */
+.gain-card.stat-c-technique { --gc: var(--stat-technique); }
+.gain-card.stat-c-sense     { --gc: var(--stat-sense); }
+.gain-card.stat-c-guts      { --gc: var(--stat-guts); }
+.gain-card.stat-c-charm     { --gc: var(--stat-charm); }
+.gain-card.stat-c-insight   { --gc: var(--stat-insight); }
+.gain-card.stat {
+  border-color: var(--gc, var(--accent));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--gc, var(--accent)) 18%, #140b1e) 0%, #0a0612 100%);
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.7),
+    0 0 24px color-mix(in srgb, var(--gc, var(--accent)) 30%, transparent),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.gain-card.stat::before {
+  background: linear-gradient(110deg, transparent 30%, color-mix(in srgb, var(--gc, var(--accent)) 22%, transparent) 50%, transparent 70%);
+}
+.gain-card.stat .meta .label-top { color: var(--gc, var(--accent)); }
 
 html, body {
   height: 100%;
@@ -1889,6 +1907,16 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   border: none;
 }
 .art-bowl.has-asset { background-position: center bottom; }
+.art-bowl.packed-asset { background-size: contain; }
+.art-leaf-fill.has-asset {
+  background-size: cover;
+  background-position: center 58%;
+  filter: saturate(1.12) contrast(1.06);
+}
+.art-foil.has-asset {
+  background-size: 100% 100%;
+  overflow: hidden;
+}
 .art-hole.has-asset { background-color: transparent; width: 8px; height: 8px; margin: -4px; }
 .art-hose-line.has-asset { border-bottom: none; transform: none; filter: none; }
 .art-stove.has-asset::after { display: none; }
@@ -2038,7 +2066,7 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 }
 .art-hole.fresh { animation: hole-pop 0.3s ease-out; }
 @keyframes hole-pop { 0% { transform: scale(3); background: #fff; } 100% { transform: scale(1); } }
-.foil-view .art-foil { top: -4%; height: 46%; }
+.foil-view .art-foil { top: 3%; height: 46%; }
 .foil-view .art-foil-crimp { border-width: 5px; }
 /* 穴あけ用のピック（爪楊枝） */
 .art-pick {
@@ -2048,35 +2076,37 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   border-radius: 4px 4px 60% 60%;
   box-shadow: 0 10px 16px rgba(0,0,0,0.4);
 }
+.art-pick.has-asset { right: 4%; top: 4%; width: 300px; height: 240px; }
 
-/* ---- フレーバージャー（ガラス瓶・中身は選んだ味の色） ---- */
-.art-jar { position: absolute; width: 120px; height: 150px; z-index: 4; pointer-events: none; --jar-color: #8a6a45; }
+/* ---- フレーバー保存タッパー（湿った赤い葉をフォークで盛る） ---- */
+.art-jar { position: absolute; width: 132px; height: 104px; z-index: 4; pointer-events: none; --jar-color: #9f3028; }
 .art-jar-lid {
-  position: absolute; left: 16%; right: 16%; top: 0; height: 16%;
-  background: linear-gradient(180deg, #d9d2c4, #8f887b 78%, #6b655a);
-  border-radius: 7px 7px 3px 3px;
+  position: absolute; left: 2%; right: 2%; top: 0; height: 14%;
+  background: linear-gradient(180deg, rgba(238,244,247,0.9), rgba(154,174,184,0.92));
+  border-radius: 7px 7px 4px 4px;
   box-shadow: 0 3px 6px rgba(0,0,0,0.4);
 }
 .art-jar-glass {
-  position: absolute; left: 6%; right: 6%; top: 13%; bottom: 0;
-  border-radius: 14px 14px 18px 18px;
+  position: absolute; left: 4%; right: 4%; top: 11%; bottom: 0;
+  border-radius: 6px 6px 13px 13px;
   border: 2px solid rgba(255,255,255,0.28);
   background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.04) 30%, rgba(255,255,255,0.02) 62%, rgba(255,255,255,0.26));
   box-shadow: inset 0 -8px 16px rgba(255,255,255,0.08), 0 12px 20px rgba(0,0,0,0.4);
   z-index: 2;
 }
 .art-jar-content {
-  position: absolute; left: 10%; right: 10%; bottom: 5%; height: 58%;
-  border-radius: 8px 8px 13px 13px;
+  position: absolute; left: 8%; right: 8%; bottom: 7%; height: 62%;
+  border-radius: 4px 4px 10px 10px;
   background:
-    radial-gradient(circle at 30% 26%, rgba(0,0,0,0.28) 0 3px, transparent 4px),
-    radial-gradient(circle at 66% 58%, rgba(0,0,0,0.24) 0 3px, transparent 4px),
-    linear-gradient(180deg, var(--jar-color), color-mix(in srgb, var(--jar-color) 55%, #241206));
-  background-size: 22px 18px, 22px 18px, 100% 100%;
+    linear-gradient(28deg, transparent 0 35%, rgba(90,22,17,0.65) 36% 47%, transparent 48% 100%),
+    linear-gradient(-24deg, transparent 0 42%, rgba(255,158,116,0.35) 43% 49%, transparent 50% 100%),
+    linear-gradient(180deg, #bd4336, color-mix(in srgb, var(--jar-color) 68%, #35100d));
+  background-size: 22px 17px, 19px 16px, 100% 100%;
+  box-shadow: inset 0 4px 8px rgba(255,180,145,0.2);
   z-index: 1;
 }
 .art-jar-label {
-  position: absolute; left: 12%; right: 12%; top: 42%; height: 30%;
+  position: absolute; left: 13%; right: 13%; top: 40%; height: 29%;
   z-index: 3;
   display: flex; align-items: center; justify-content: center;
   background: linear-gradient(180deg, #f4ecd8, #ddd0b2);
@@ -2086,18 +2116,18 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   text-align: center; overflow: hidden; padding: 0 4px; white-space: nowrap;
   box-shadow: 0 2px 4px rgba(0,0,0,0.25);
 }
-.art-shelf { position: absolute; left: 44%; bottom: 48%; width: 330px; height: 150px; z-index: 2; }
+.art-shelf { position: absolute; left: 43%; bottom: 49%; width: 350px; height: 112px; z-index: 2; }
 .art-shelf::after {
   content: ""; position: absolute; left: -4%; right: -4%; bottom: -12px; height: 14px;
   background: linear-gradient(180deg, #5a4127, #332415);
   border-radius: 3px;
   box-shadow: 0 10px 18px rgba(0,0,0,0.5);
 }
-.art-jar.on-shelf { position: relative; display: inline-block; margin-right: 12px; width: 96px; height: 124px; }
+.art-jar.on-shelf { position: relative; display: inline-block; margin-right: 12px; width: 98px; height: 78px; }
 .art-jar.on-shelf .art-jar-label { font-size: 10px; }
-.art-jar-hand { right: 9%; top: 7%; width: 132px; height: 164px; transform: rotate(-20deg); transform-origin: 50% 86%; }
+.art-jar-hand { right: 2%; top: 5%; width: 310px; height: 250px; transform: rotate(0deg); transform-origin: 54% 78%; }
 .art-jar-hand.pouring { animation: jar-pour 0.6s ease-in-out; }
-@keyframes jar-pour { 40% { transform: rotate(-58deg) translate(-56px, 26px); } 75% { transform: rotate(-52deg) translate(-50px, 24px); } }
+@keyframes jar-pour { 45% { transform: rotate(3deg) translate(-34px, 24px) scale(1.03); } }
 /* 注ぎの葉粒。ジャーの口からボウルへ落ちる */
 .art-pour-zone { position: absolute; left: 44%; top: 16%; width: 22%; height: 52%; z-index: 5; pointer-events: none; }
 .art-grain {
@@ -2137,6 +2167,7 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   border-radius: 10px 10px 2px 2px;
   box-shadow: 0 12px 20px rgba(0,0,0,0.4);
 }
+.art-fork.has-asset { right: 3%; top: 8%; width: 300px; height: 250px; }
 .art-fork-tines {
   position: absolute; left: 50%; bottom: -44px; width: 34px; height: 46px;
   transform: translateX(-50%);
@@ -2176,6 +2207,10 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   z-index: 2;
   display: flex; justify-content: center; align-items: flex-end; gap: 10px;
 }
+.art-stove-coals .art-coal:nth-child(1) { transform: rotate(-13deg); }
+.art-stove-coals .art-coal:nth-child(2) { transform: rotate(9deg); }
+.art-stove-coals .art-coal:nth-child(3) { transform: rotate(21deg); }
+.art-stove-coals .art-coal:nth-child(4) { transform: rotate(-24deg); }
 .art-coal { position: relative; width: 62px; height: 54px; border-radius: 10px 12px 9px 11px; }
 .art-coal-face {
   position: absolute; inset: 0;
@@ -2229,7 +2264,7 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   100% { opacity: 0; transform: translateY(-96px) translateX(6px) scale(0.5); }
 }
 /* トング（金属の火ばさみ） */
-.art-tongs { position: absolute; right: 10%; bottom: 30%; width: 200px; height: 130px; z-index: 4; transform: rotate(-14deg); }
+.art-tongs { position: absolute; right: 10%; bottom: 30%; width: 240px; height: 190px; z-index: 4; transform: rotate(-14deg); }
 .art-tongs.adjust { right: 12%; bottom: 40%; }
 .art-tongs-arm {
   position: absolute; right: 0; top: 46%; width: 100%; height: 9px;
@@ -2755,6 +2790,18 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 @keyframes footer-in {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: var(--target-opacity, 1); transform: none; }
+}
+/* ビルド版数の刻印（タイトル右下・控えめ）。古い版を掴んでいないかを一目で確認できる */
+#build-stamp {
+  position: absolute;
+  right: 10px; bottom: 6px;
+  z-index: 12; /* film-grain(11)より上＝グレインで滲まないように */
+  font-family: "Times New Roman", serif;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: rgba(197,184,150,0.55);
+  text-shadow: 0 0 4px rgba(0,0,0,0.8);
+  pointer-events: none;
 }
 
 /* キャラ窓の縁の継ぎ目消し: ぼかしの煙レイヤーを追加 */
@@ -3613,11 +3660,11 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 .hole-board {
   position: relative; width: 300px; height: 300px; flex: 0 0 auto;
   border-radius: 50%;
-  /* ピンと張ったアルミの中央部だけを使う: テクスチャを 210% にズームして縁(しわ)をクロップ。
+  /* 制作パートと同じ、しわなく張ったアルミ面を使う。
      テクスチャが無い環境では下の金属グラデにフォールバック */
   background:
     radial-gradient(circle at 50% 38%, rgba(255,255,255,0.10), transparent 60%),
-    url("../../assets/ui/foil_taut.png") center / 210% no-repeat,
+    url("../../assets/ui/making/foil_surface.png") center / 122% no-repeat,
     linear-gradient(135deg, #d8dde6 0%, #b9c0cc 28%, #e9edf3 50%, #aab2c0 74%, #cfd6e0 100%),
     #c3cad6;
   box-shadow: 0 0 0 2px rgba(120,140,200,0.3), 0 0 36px rgba(70,100,170,0.4), inset 0 0 46px rgba(0,0,0,0.45);
@@ -3784,6 +3831,25 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 .map-beat-card { margin-bottom: 13%; text-align: center; }
 .map-beat-card .mb-dots { display: block; font-size: 24px; letter-spacing: 0.22em; color: #ffe79a; text-shadow: 0 2px 8px rgba(0,0,0,0.8); animation: bounce 1.2s infinite; }
 .map-beat-card .mb-sub { display: block; font-size: 11px; letter-spacing: 0.24em; color: var(--text-dim); margin-top: 6px; }
+/* 夜の帰宅の暗転。行動イベントの余韻のまま黒に沈み、「……今日は、家へ帰ろう。」を
+   ひと呼吸見せてから帰宅シーンが黒の下で始まる（タップ不要・誤タップは吸収） */
+#night-fade {
+  position: absolute; inset: 0; z-index: 76; /* バナー(75)より上・暗転中は全部覆う */
+  display: flex; align-items: center; justify-content: center;
+  background: #05040a; opacity: 0;
+  transition: opacity 0.7s ease;
+  pointer-events: all; cursor: default;
+}
+#night-fade span {
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-size: 20px; letter-spacing: 0.18em; color: #cfc4de;
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 0.8s ease 0.45s, transform 0.8s ease 0.45s;
+}
+#night-fade.dark { opacity: 1; }
+#night-fade.dark span { opacity: 1; transform: translateY(0); }
+#night-fade.clear { opacity: 0; transition: opacity 0.9s ease 0.1s; }
+#night-fade.clear span { opacity: 0; transition: opacity 0.4s ease; }
 #tonari-menu .tn-menu-card, #fookah-menu .tn-menu-card { width: min(88%, 460px); background: linear-gradient(180deg, rgba(28,21,38,0.97), rgba(15,12,23,0.98)); border: 1px solid rgba(255,210,120,0.45); border-radius: 16px; padding: 16px 18px; box-shadow: 0 12px 34px rgba(0,0,0,0.6); }
 .tn-menu-title { font-size: 17px; font-weight: 800; color: #ffe79a; margin: 0 0 12px; text-align: center; }
 .tn-menu-list { display: flex; flex-direction: column; gap: 9px; }
@@ -3921,9 +3987,9 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 #screen-end.gameover #end-title { color: #ff6b6b; text-shadow: 0 0 24px rgba(255,60,60,0.6), 0 2px 0 rgba(0,0,0,0.6); letter-spacing: 0.14em; }
 .gameover-actions { display: flex; gap: 12px; justify-content: center; margin-top: 18px; flex-wrap: wrap; }
 
-/* ===== reel.css 連結ここから（PUFF!PUFF!パッキー 日常スロット・#12） ===== */
+/* ===== reel.css 連結ここから（MOKUMOKUパッキー 日常スロット・#12） ===== */
 /* ================================================================
-   PUFF!PUFF!パッキー（日常リール）— マップ隅のミニ筐体
+   MOKUMOKUパッキー（日常リール）— マップ隅のミニ筐体
    ⚠️ 実装待ちパッケージ。組み込み時は本ファイルの中身を style.css 末尾に
       連結する（手順は docs/pakki_slot_spec.md）。
    ================================================================ */
@@ -4073,6 +4139,12 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   border-bottom: none;
 }
 .rw-bubble.show { opacity: 1; transform: scale(1); }
+/* 熱いセリフ＝赤、レアセリフ＝金〜桃のグラデ（スロット演出風）（T24）
+   ⚠️ reel.css との連結ドリフトで本番側から欠けていたのを再同期（2026-07-02） */
+.rw-bubble.hot { background: #ff3d3d; color: #fff; box-shadow: 0 0 12px rgba(255,90,90,0.85); }
+.rw-bubble.hot::after { border-top-color: #ff3d3d; }
+.rw-bubble.rare { background: linear-gradient(120deg, #ffd24a, #ff7ae0); color: #2a1530; box-shadow: 0 0 14px rgba(255,170,90,0.9); }
+.rw-bubble.rare::after { border-top-color: #ff7ae0; }
 
 /* ---- カットイン（ボーナス揃え／フリーズ）。pointer-events:none の自走シネマ ---- */
 #reel-cutin {
