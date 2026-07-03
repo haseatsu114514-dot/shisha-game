@@ -48,7 +48,8 @@
 |---|---|
 | 頻出作業のスキル化 | 再発バグ防止と意図の汲み取りのため `.claude/skills/` に5本新設: owner-request（要望対応フロー）/ dialogue-edit（台詞チェックリスト）/ web-build-test（ビルド・テスト対応表）/ canon-check（矛盾点検）/ portrait-fix（立ち絵ズレ診断） |
 | 立ち絵が表情でずれるバグの再発対策 | オーナー報告「表情によって立ち絵がずれるバグがよく起こる」→ 症状別診断フローを `portrait-fix` スキルに整備（scipy欠落→ax欠測、原画バラつき→sprite_face_swap/normalize_sprites、髪欠け→clean_sprite_alpha一括適用禁止、身長→spriteScale+portraits.mjs）。個別のズレ報告が来たらこのスキルで対応する |
-| ストーリー添削・初見プレイ感想もスキル化 | オーナー要望「ストーリーの添削と、初見プレイヤーになりきった感想もたまにやらせているのでスキルに」→ `story-review`（評価軸は docs/story_review_prompt.md B節を正本に。良かった点明記＋具体的書き換え案を48字制約内で・提案止まり）と `playtest-feedback`（設定知識を封印した初見視点・感情メーター記録・退屈ワースト/良かったトップ・修正はしない）を新設。計7本 |
+| ストーリー添削・初見プレイ感想もスキル化 | オーナー要望「ストーリーの添削と、初見プレイヤーになりきった感想もたまにやらせているのでスキルに」→ `story-review`（評価軸は docs/story_review_prompt.md B節を正本に。良かった点明記＋具体的書き換え案を48字制約内で・提案止まり）と `playtest-feedback`（設定知識を封印した初見視点・感情メーター記録・退屈ワースト/良かったトップ・修正はしない）を新設 |
+| Codex用画像プロンプト・Suno用BGMプロンプトもスキル化 | オーナー要望「画像生成・修正はCodexに作らせるプロンプトを貰う流れ、BGM新規はSuno用プロンプトを貰う流れをスキルに」→ `codex-image-prompt`（種類別正本=bg_prompts.txt/asset_gen_prompts.md/image_generation_guide.md から書式を写す・焼き込み禁止6点セット・受け取り後の組み込み・良いプロンプトは正本に追記して資産化）と `suno-bgm-prompt`（0バイトプレースホルダ=曲待ち5曲の把握・Instrumental/ループ構造/冒頭75秒に山・BGM_FILES登録と起動時間コスト）を新設。計9本。ついでに image_generation_guide.md の旧人格残骸「自信なさげ」を現行設定の表現に修正 |
 
 ## 2026-07-02 セッション（ブランチ: claude/modest-curie-9q5kc5 / プレイ報告5点＋Pages調査）
 
