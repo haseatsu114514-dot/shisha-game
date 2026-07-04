@@ -3815,15 +3815,21 @@ function buildBowlArt(opts = {}) {
     const hasFoilImg = artAsset(foil, "foil_surface.png");
     if (hasFoilImg) normalizeMakingAsset(foil, "foil_surface.png");
     if (rim) {
-      // アルミはリム楕円をちょうど覆う＝ボウルに「張り付いた」見た目になる
-      foil.style.left = "2%";
-      foil.style.right = "2%";
+      // アルミはリムより少し外まで回し、余りを外壁へ折り下げる。
+      // 実物どおり「上に円盤を置いた」のではなく、ボウルを抱き込む見た目にする。
+      foil.style.left = "-4%";
+      foil.style.right = "-4%";
       foil.style.top = "-1%";
-      foil.style.height = `${(rim * 0.98).toFixed(1)}%`;
+      foil.style.height = `${(rim * 1.55).toFixed(1)}%`;
     }
     artDiv("art-foil-sheen", foil);
     if (!hasFoilImg) artDiv("art-foil-crimp", foil);
     const holes = artDiv("art-foil-holes", foil);
+    if (hasFoilImg && rim) {
+      // 深くした折り込みスカートには穴を置かず、上面の楕円だけを穴の座標系にする。
+      holes.style.height = "65%";
+      holes.style.bottom = "auto";
+    }
     if (opts.holesFromResult) fillFoilHolesFromResult(holes);
   }
   if (opts.coals) {
@@ -3862,15 +3868,29 @@ function buildHookahArt(opts = {}) {
   }
   const top = artDiv("art-hookah-top", rig);
   top.appendChild(buildBowlArt({ fill: true, compact: true, foil: true, holesFromResult: true, coals: opts.coals !== false, cls: "on-rig" }));
-  artAsset(artDiv("art-hookah-tray", rig), "hookah_tray.png");
-  artAsset(artDiv("art-hookah-stem", rig), "hookah_stem.png");
+  const tray = artDiv("art-hookah-tray", rig);
+  if (artAsset(tray, "hookah_tray.png")) normalizeMakingAsset(tray, "hookah_tray.png");
+  const stem = artDiv("art-hookah-stem", rig);
+  if (artAsset(stem, "hookah_stem.png")) normalizeMakingAsset(stem, "hookah_stem.png");
   const base = artDiv("art-hookah-base", rig);
   const water = artDiv("art-hookah-water", base);
   water.classList.add("art-water");
   artDiv("art-hookah-bubbles", water);
   // ガラスは水・泡の上に重ねる別レイヤー（PNGの透け感で中の水が見える）
   const glass = artDiv("art-hookah-glass", base);
-  if (artAsset(glass, "hookah_base.png")) base.classList.add("glass-asset");
+  if (artAsset(glass, "hookah_base.png")) {
+    base.classList.add("glass-asset");
+    const glassMeta = makingAssetMeta("hookah_base.png");
+    if (glassMeta) {
+      // 水色のdivもガラスPNGの実コンテンツ幅へ合わせる。
+      // 透明余白ぶんまで塗って青い四角が見えるのを防ぐ。
+      const innerInset = 0.08; // ガラス輪郭ではなく内腔へ収める安全幅
+      base.style.setProperty("--glass-left", `${((glassMeta.x0 + innerInset) * 100).toFixed(1)}%`);
+      base.style.setProperty("--glass-right", `${((1 - glassMeta.x0 - glassMeta.w + innerInset) * 100).toFixed(1)}%`);
+      base.style.setProperty("--glass-bottom", `${((1 - glassMeta.y0 - glassMeta.h + 0.06) * 100).toFixed(1)}%`);
+      base.style.setProperty("--glass-water-height", `${(glassMeta.h * 38).toFixed(1)}%`);
+    }
+  }
   artDiv("art-hookah-hoseport", rig);
   return rig;
 }
