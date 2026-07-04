@@ -196,7 +196,18 @@ body {
   box-shadow: 0 4px 12px rgba(0,0,0,0.6);
   min-width: 220px;
 }
-#hud-level { min-width: 0; margin-left: auto; padding: 8px 20px 8px 16px; }
+#hud-level {
+  min-width: 0; margin-left: auto; padding: 5px 8px;
+  cursor: pointer; font: inherit;
+}
+#hud-level:hover { border-color: var(--accent); box-shadow: 0 0 10px rgba(244,210,122,0.35); }
+/* ステータス五角形（N1）。数値は出さず★段階の形だけを見せる */
+#hud-radar-svg { width: 34px; height: 34px; display: block; }
+#hud-radar-svg .radar-grid { fill: none; stroke: rgba(244,210,122,0.28); stroke-width: 0.8; }
+#hud-radar-svg .radar-fill {
+  fill: rgba(255,158,109,0.45);
+  stroke: #ffd35e; stroke-width: 1.2; stroke-linejoin: round;
+}
 .hud-icon { font-size: 18px; line-height: 1; color: var(--accent); }
 /* HUD用の地味なアイコン（絵文字を使わずCSSだけで描く） */
 .hud-anchor, .hud-flame {
@@ -4089,6 +4100,34 @@ body:has(#screen-tournament.active.making-workbench) #gain-banner {
 .rc-card.me .rc-card-name { color: #ffe79a; font-weight: 700; }
 #result-count.blackout { background: #000 !important; animation: none; }
 #result-count.blackout .rc-cards, #result-count.blackout .rc-num, #result-count.blackout .rc-msg { opacity: 0; }
+
+/* 10カウント豪華化（N5）: スポットライト・光の輪・緊張ビネット・終盤の震え */
+#result-count .rc-spotlights { position: absolute; inset: 0; pointer-events: none; opacity: 0.55; }
+#result-count .rc-spotlights .rs {
+  position: absolute; top: -12%; left: 50%; width: 36%; height: 150%;
+  transform-origin: 50% 0;
+  background: linear-gradient(to bottom, rgba(255,230,170,0.30), rgba(255,230,170,0.05) 62%, transparent 75%);
+  clip-path: polygon(45% 0, 55% 0, 100% 100%, 0 100%);
+}
+#result-count .rc-spotlights .rs.l { animation: rc-sweep 3.8s ease-in-out infinite alternate; }
+#result-count .rc-spotlights .rs.r { animation: rc-sweep 3.8s ease-in-out infinite alternate-reverse; }
+@keyframes rc-sweep { from { transform: translateX(-50%) rotate(-22deg); } to { transform: translateX(-50%) rotate(22deg); } }
+#result-count .rc-ring {
+  position: absolute; left: 50%; top: 46%; width: 40px; height: 40px;
+  border: 2px solid rgba(255,211,94,0.85); border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: rc-ring-out 0.85s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes rc-ring-out { to { width: 430px; height: 430px; opacity: 0; border-width: 1px; } }
+/* --tension 0→1 で外周が赤黒く締まる */
+#result-count::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(circle at 50% 50%, transparent 44%, rgba(110,8,20, calc(0.6 * var(--tension, 0))) 100%);
+}
+#result-count.tense .rc-card { animation: rc-tremble 0.26s linear infinite; }
+#result-count.tense .rc-num { text-shadow: 0 0 46px rgba(255,120,90,0.9), 0 0 14px rgba(255,255,255,0.95); }
+@keyframes rc-tremble { 25% { transform: translate(0.7px, -0.7px); } 75% { transform: translate(-0.7px, 0.7px); } }
 
 /* 大会後リザルトの工程内訳（#25） */
 .result-breakdown { margin: 2px 0 16px; padding: 12px 14px; border-radius: 12px;

@@ -61,6 +61,12 @@ while (guard++ < 5000) {
     if (tr !== lastTrace || guard % 500 === 0) { log(`[g${guard}]`, tr); lastTrace = tr; }
   }
   // LIME（朝のスマホ）が開いていたら返信して進める（先頭の返信＝招待は受ける）
+  // 初回お誘いのシステムヒント（O12）が出ていたらOKで閉じる
+  if (await page.locator("#hint-overlay .hint-ok").count()) {
+    await page.locator("#hint-overlay .hint-ok").click().catch(() => {});
+    await page.waitForTimeout(80);
+    continue;
+  }
   if (await page.locator("#phone-overlay.show").count()) {
     if (!limeSeen) { limeSeen = true; log("LIME morning phone shown"); }
     const reply = page.locator("#phone-overlay .lime-reply").first();
@@ -189,6 +195,12 @@ guard = 0;
 let postPhoneSeen = false;
 while (guard++ < 3000) {
   // 優勝の夜のスマホ（なるの採点表 →「？？？」通知）も読み進める
+  // 初回お誘いのシステムヒント（O12）が出ていたらOKで閉じる
+  if (await page.locator("#hint-overlay .hint-ok").count()) {
+    await page.locator("#hint-overlay .hint-ok").click().catch(() => {});
+    await page.waitForTimeout(80);
+    continue;
+  }
   if (await page.locator("#phone-overlay.show").count()) {
     if (!postPhoneSeen) { postPhoneSeen = true; log("post-victory LIME shown"); }
     const reply = page.locator("#phone-overlay .lime-reply").first();

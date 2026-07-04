@@ -116,7 +116,7 @@ function yaniKura() {
     lines: [
       { speaker: "", face: "", text: "数口で、視界の端が白くなった。耳の奥で、自分の心臓だけが大きい。" },
       { speaker: "hajime", face: "sad", text: "（……まずい。クラった——酸欠だ）" },
-      { speaker: "", face: "", text: "壁に手をついて、ずるずると座り込む。気づけば、1時間がどこかへ消えていた。\n今日はもう、何もできそうにない。" },
+      { speaker: "", face: "", text: "壁に手をついて、ずるずると座り込む。気づけば、1時間がどこかへ消えていた。今日はもう、何もできそうにない。" },
     ],
   }, () => {
     state.stamina = Math.max(stamina(), 40);
@@ -687,11 +687,29 @@ function setLocationFromBg(rel) {
   }
 }
 
-function levelProxy() {
-  // 5ステータスの平均から擬似レベルを出す（10〜100 → Lv.1〜10）
-  const s = state ? state.stats : { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 };
-  const avg = (s.technique + s.sense + s.guts + s.charm + s.insight) / 5;
-  return Math.max(1, Math.min(99, Math.floor(avg / 10) + 1));
+// ステータス五角形（N1）: HUDに常設するミニレーダー。数値は見せない仕様なので
+// 形は★段階（1〜5）から作る。クリックで既存のステータス画面（詳細）を開く。
+// 旧「Lv.表示」は用途が無かったためこのレーダーで置き換え（N10）
+const RADAR_STAT_ORDER = ["technique", "sense", "guts", "charm", "insight"];
+function radarPolygonPoints(size, vals, scale = 1) {
+  const cx = size / 2, cy = size / 2, r = (size / 2 - 2) * scale;
+  return vals.map((v, i) => {
+    const a = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
+    return `${(cx + Math.cos(a) * r * v).toFixed(1)},${(cy + Math.sin(a) * r * v).toFixed(1)}`;
+  }).join(" ");
+}
+function renderHudRadar() {
+  const svg = $("#hud-radar-svg");
+  if (!svg || !state) return;
+  const SIZE = 40;
+  const stats = state.stats;
+  // ★段階（1〜5）を 0.2〜1.0 に正規化（最低でも小さな五角形が見える）
+  const vals = RADAR_STAT_ORDER.map((k) => Math.max(1, Math.min(5, Math.ceil((stats[k] || 10) / 20))) / 5);
+  const grid = [1, 0.66, 0.33]
+    .map((g) => `<polygon points="${radarPolygonPoints(SIZE, [1, 1, 1, 1, 1], g)}" class="radar-grid"/>`)
+    .join("");
+  svg.setAttribute("viewBox", `0 0 ${SIZE} ${SIZE}`);
+  svg.innerHTML = grid + `<polygon points="${radarPolygonPoints(SIZE, vals)}" class="radar-fill"/>`;
 }
 
 function updateHud() {
@@ -724,13 +742,8 @@ function updateHud() {
     stFill.classList.toggle("warn", st < 50 && st >= STAMINA_LOW);
     stFill.classList.toggle("danger", st < STAMINA_LOW);
   }
-  // レベル
-  const lv = levelProxy();
-  $("#hud-level-text").textContent = `Lv.${lv}`;
-  const s = state.stats;
-  const avg = (s.technique + s.sense + s.guts + s.charm + s.insight) / 5;
-  const pct = Math.min(100, ((avg / 10) - Math.floor(avg / 10)) * 100);
-  $("#hud-level-fill").style.width = `${pct}%`;
+  // ステータス五角形（クリックで詳細・N1）
+  renderHudRadar();
   // マップ用 DAY カード
   updateDayCard();
 }
@@ -1984,7 +1997,7 @@ function playLoverDate(charId, after) {
     dialogue_id: `date_${charId}`,
     metadata: { bg: `res://assets/backgrounds/${venue.bg}` },
     lines: [
-      { speaker: "", face: "", text: `約束の店——『${venue.name}』。${venue.note}。\n店先で、${name}が待っていた。` },
+      { speaker: "", face: "", text: `約束の店——『${venue.name}』。${venue.note}。店先で、${name}が待っていた。` },
       { speaker: charId, face: sc.arrive.face, text: sc.arrive.text },
       { speaker: "", face: "", text: "二人で一台を頼んで、向かい合う。よその店の煙を、よその客として吸う時間。" },
       { speaker: charId, face: sc.mid.face, text: sc.mid.text },
@@ -2507,7 +2520,7 @@ function advanceDay() {
       lines: [
         { speaker: "", face: "", text: "朝。喉の奥が痛い。額に手を当てると、じんわり熱い。——風邪だ。" },
         { speaker: "hajime", face: "sad", text: "（……無理が祟った。今日は、休むしかない）" },
-        { speaker: "", face: "", text: "水だけ飲んで、布団に戻る。スマホを枕元に置いて、目を閉じた。\n一日、ゆっくり眠った。" },
+        { speaker: "", face: "", text: "水だけ飲んで、布団に戻る。スマホを枕元に置いて、目を閉じた。一日、ゆっくり眠った。" },
       ],
     }, () => {
       state.stamina = Math.max(stamina(), 80);
@@ -2701,7 +2714,7 @@ function endDay() {
       lines: [
         { speaker: "", face: "", text: "夜、tonariに顔を出すと、スミさんが作業台を顎で指した。" },
         { speaker: "sumi", face: "normal", text: "一台作ってみろ。練習でも本番でもない、今のお前の素の一台だ" },
-        { speaker: "", face: "", text: "黙って組む。詰めて、熾して、置いて、待つ。スミさんは何も言わずに見ている。\n──完成。ホースを渡す。スミさんは目を閉じて、長い一服。" },
+        { speaker: "", face: "", text: "黙って組む。詰めて、熾して、置いて、待つ。スミさんは何も言わずに見ている。──完成。ホースを渡す。スミさんは目を閉じて、長い一服。" },
         { type: "condition", stat: "技術", threshold: 22, next_true: "mid_good", next_false: "mid_rough" },
         { speaker: "sumi", face: "serious", text: "大会まで、ちょうど折り返しだ。どこを磨くかは、お前が決めろ。──ただし、寝ること。それも仕込みのうちだ" },
         { speaker: "hajime", face: "normal", text: "はい。（あと{daysLeft}日。……何を、どこまで持っていけるか）" },
@@ -3352,8 +3365,8 @@ function doRest() {
     metadata: { bg: `res://assets/backgrounds/${night ? "bg_home_night.png" : "bg_home_day.png"}` },
     lines: [
       { speaker: "", face: "", text: night
-        ? "今日はもう家に帰ることにした。湯船に浸かって、早めに布団へ入る。\n……体の重さが、少しずつほどけていった。"
-        : "いったん家に帰ることにした。靴を脱いで、ソファに体を沈める。\n短い休憩でも、体の芯に少し余裕が戻ってくる。" },
+        ? "今日はもう家に帰ることにした。湯船に浸かって、早めに布団へ入る。……体の重さが、少しずつほどけていった。"
+        : "いったん家に帰ることにした。靴を脱いで、ソファに体を沈める。短い休憩でも、体の芯に少し余裕が戻ってくる。" },
       { speaker: "hajime", face: "normal", text: "（大会まで、あと少し。……やれるだけのことは、やろう）" },
     ],
   }, endAction);
@@ -3366,9 +3379,9 @@ function doRest() {
 // 1日の終わり: 帰宅して眠る（「夜の行動後にまた店にいる」感の解消）。
 // 家シーシャ条件を満たす夜はそちらが帰宅演出を兼ねる
 const HOMECOMING_LINES = [
-  "店明かりの落ちた商店街を抜けて、家に帰る。\n熱いシャワーを浴びると、今日一日の煙の匂いが流れていった。",
-  "帰り道、夜風が少しだけ煙の匂いを連れていく。\n布団に入ると、すぐに眠気がやってきた。",
-  "家に着く頃には、日付が変わりかけていた。\nスマホを枕元に置いて、目を閉じる。",
+  "店明かりの落ちた商店街を抜けて、家に帰る。熱いシャワーを浴びると、今日一日の煙の匂いが流れていった。",
+  "帰り道、夜風が少しだけ煙の匂いを連れていく。布団に入ると、すぐに眠気がやってきた。",
+  "家に着く頃には、日付が変わりかけていた。スマホを枕元に置いて、目を閉じる。",
 ];
 function maybeNightcap(next) {
   const canPuff = state.chapter >= 2 && (state.owned || []).includes("home_rig_set") && state.money >= 600 && !staminaLow();
@@ -3377,7 +3390,7 @@ function maybeNightcap(next) {
     dialogue_id: "night_homecoming",
     metadata: { bg: "res://assets/backgrounds/bg_home_night.png" },
     lines: [
-      { speaker: "", face: "", text: `${HOMECOMING_LINES[state.day % HOMECOMING_LINES.length]}\n——DAY ${state.day}、おわり。` },
+      { speaker: "", face: "", text: `${HOMECOMING_LINES[state.day % HOMECOMING_LINES.length]}　——DAY ${state.day}、おわり。` },
     ],
   }, next);
 }
@@ -3646,13 +3659,51 @@ function pakkiLive(result) {
 //   #20 工程ブロックの頭でMCが前振り ／ #26 ライバルのリアルタイム実況
 // 審査員の持ち点とは別系統の「観客ウケ」を可視化して気持ちよさを出す。
 // ============================================================================
+// コメントの質・バリエーション見直し（N4・2026-07-04）。
+// 方針: ①シーシャ文化が匂う具体的なコメントを混ぜる ②観客の人間味（素人・常連・ミーハー）を出す
+// ③ネットスラングは1プールに1〜2個まで ④どの工程でも使える汎用と、工程専用（NICO_STEP）の二層
 const NICO_POOL = {
-  perfect: ["うますぎｗ", "神業ｷﾀ━(ﾟ∀ﾟ)━!", "完璧すぎる", "もう優勝でいいだろ", "手元ブレなさすぎ", "プロかよ", "88888888", "ファッ!?", "鳥肌たった", "うおおお"],
-  good:    ["いいぞいいぞ", "おっ", "安定してる", "丁寧だなぁ", "うまい", "ここから上げてけ", "ナイス", "おちついてる"],
-  miss:    ["あー", "おしいっ", "ドンマイ", "巻き返せ！", "緊張してる？", "まだいける", "がんば", "ここから"],
-  serve:   ["もう完成したの!?", "提供はやっ", "早ぇｗ", "段取りいいな", "迷いがない", "仕事はやい"],
-  block:   ["きたきた", "次の工程だ", "見せ場ｷﾀ", "ここ大事", "おっ動いた", "ふむふむ"],
-  rival:   ["ライバルも本気だ", "他のもいい匂いしそう", "接戦になりそう", "向こうも仕上げてる"],
+  perfect: [
+    "うますぎｗ", "神業ｷﾀ━(ﾟ∀ﾟ)━!", "完璧すぎる", "もう優勝でいいだろ", "手元ブレなさすぎ",
+    "プロかよ", "88888888", "鳥肌たった", "うおおお", "今のスロー再生ほしい",
+    "静かに見ろって、今いいとこ", "息するの忘れてた", "会場の空気変わったな",
+    "針に糸通すレベル", "この店どこ？通いたい", "家で真似したら火傷するやつ",
+  ],
+  good: [
+    "いいぞいいぞ", "おっ", "安定してる", "丁寧だなぁ", "うまい", "ここから上げてけ",
+    "ナイス", "おちついてる", "見てて安心する", "基本に忠実", "いぶし銀",
+    "流れがきれい", "素人目にも分かるうまさ", "じわじわ来てる",
+  ],
+  miss: [
+    "あー", "おしいっ", "ドンマイ", "巻き返せ！", "緊張してる？", "まだいける",
+    "がんば", "ここから", "あっ……", "手が滑ったか", "深呼吸だ深呼吸",
+    "誰にでもある", "切り替えてこ", "ここ乗り越えたら本物",
+  ],
+  serve: [
+    "もう完成したの!?", "提供はやっ", "段取りいいな", "迷いがない", "仕事はやい",
+    "提供の姿勢きれい", "トレイさばきよ", "もう吸いたい", "マウスピースの角度まで丁寧",
+  ],
+  block: [
+    "きたきた", "次の工程だ", "ここ大事", "おっ動いた", "ふむふむ",
+    "ここ見どころ", "正念場だぞ", "カメラ寄って", "手元アップにして",
+  ],
+  rival: [
+    "ライバルも本気だ", "接戦になりそう", "向こうも仕上げてる",
+    "4人とも型が違って面白い", "なる選手の応援団いるだろ", "アダム選手のリンゴ、匂いここまで来た",
+    "みんと選手のファン多いなｗ", "隣のブースも煙すごい",
+  ],
+};
+
+// 工程専用の観客コメント（工程の頭で1本流す）。シーシャ文化の解像度を上げる係
+const NICO_STEP = {
+  theme:    ["コンセプト何でくる？", "ミント縛りをどう料理する？", "最初の宣言、大事", "メモった"],
+  mix:      ["配合レシピ気になる", "ここのグラム数で全部決まる", "秤の目盛りガン見", "俺ならバニラ足すね（素人）"],
+  pack:     ["ふんわり派？ぎっしり派？", "詰めの密度、煙に出るんだよな", "空気の通り道が命", "職人の指先"],
+  foil:     ["アルミぴっちり張るの気持ちいい", "穴のリズム、音楽みたい", "穴あけASMR", "ここ地味に難しいらしい"],
+  coalfire: ["炭の香ばしい匂いした", "熾きの色きれい", "炭は赤くなってからが本番", "火の管理＝味の管理"],
+  steam:    ["蒸らしの待ち時間も演出", "今フレーバーが目を覚ましてる", "待てるやつが勝つ", "会場が静かになった"],
+  adjust:   ["温度の読み合い、渋い", "攻めるか守るか", "炭を少しずらすだけで味が変わるらしい", "二口目の調整が肝"],
+  pull:     ["吸い出しキタ", "審査員より先に吸うのな", "立ち上げの白さ見ろ", "煙の色でわかるらしい"],
 };
 
 function broadcastActive() { return !!(tt && tt.mode === "tournament"); }
@@ -3756,6 +3807,12 @@ function mcBlockIntro(step) {
   if (!line) return;
   ticker(line);
   nicoBurst("block", 1);
+  // 工程専用コメント（N4）: その工程らしい観客の声を1本混ぜる
+  const stepPool = NICO_STEP[step];
+  if (stepPool && stepPool.length) {
+    const t = stepPool[Math.floor(Math.random() * stepPool.length)];
+    setTimeout(() => nicoComment(t, { row: 4 }), 900);
+  }
   // 各ブロックでライバルの進行を順に1つ流す＝はじめと並走している実況感（#26）
   if (rivalFeedIdx < RIVAL_FEED.length) {
     const r = RIVAL_FEED[rivalFeedIdx++];
@@ -3772,10 +3829,8 @@ const STEP_FLOW = [
   ["coal", "SET"], ["coalfire", "HEAT"], ["steam", "STEAM"],
   ["adjust", "ROUND2"], ["focus", "FOCUS"], ["pull", "PULL"],
 ];
-// 前日リハーサル: 短縮の通し（穴あけ・炭起こし・集中は無難な値で省略）
-const REHEARSAL_FLOW = [
-  ["theme", "THEME"], ["mix", "MIX"], ["pack", "PACK"], ["coal", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"],
-];
+// 前日リハーサル: 大会と全く同じ工程列（N14。旧: 穴あけ・炭起こし・集中を省く短縮版だった）
+const REHEARSAL_FLOW = STEP_FLOW;
 // 練習ドリル: 本番ミニゲームを単体で回す
 const DRILL_FLOWS = {
   foil: [["foil", "FOIL"]],
@@ -4474,13 +4529,8 @@ function beginMaking(mode) {
     tt.focusCleared = 3; // 接客中なので集中ミニゲームは無し
     return tournamentStep("mix");
   }
-  if (mode === "rehearsal") {
-    tt.foilHits = 5;
-    tt.coalFire = "good";
-    tt.focusCleared = 3;
-    return tournamentStep("theme");
-  }
-  tournamentStep(mode === "tutorial" ? "theme" : "setup_bowl");
+  // リハーサル・チュートリアルも大会と全く同じ流れ＝SETUP（ハガル選び等）から（N14）
+  tournamentStep("setup_bowl");
 }
 
 // 練習ドリル: 本番のミニゲームを1種だけ回す
@@ -6285,9 +6335,11 @@ function runResultCountdown(rank, premium, onDone, contestants, opts = {}) {
   }).join("");
   ov.className = "rc show";
   ov.innerHTML =
+    `<div class="rc-spotlights" aria-hidden="true"><span class="rs l"></span><span class="rs r"></span></div>` +
     `<div class="rc-cards">${cards}</div>` +
     `<div class="rc-num" id="rc-num"></div>` +
     `<div class="rc-msg" id="rc-msg">集計中……</div>`;
+  if (window.SFX) SFX.crowd(2.2); // 会場のざわめきからカウントへ（N5）
   const numEl = ov.querySelector("#rc-num");
   const msgEl = ov.querySelector("#rc-msg");
   const cardEls = [...ov.querySelectorAll(".rc-card")];
@@ -6323,21 +6375,40 @@ function runResultCountdown(rank, premium, onDone, contestants, opts = {}) {
   const parin = () => finish("parin", "SESSION BREAK", () => SFX.miss(), false);
   let n = 10;
   const premiumAt = premium ? 3 : -1; // プレミアは少し残してフライング
+  // 終盤ほど1カウントを溜める＝あっさり流れない（N5・10→7:テンポ良く、3→1:重く）
+  const tickDelay = (k) => (k > 6 ? 380 : k > 3 ? 560 : 850);
   setTimeout(function tick() {
     if (n <= 0) {
       msgEl.textContent = "──結果発表！";
       // #4 南雲カットインに直結する場合はプチュン/パリンを出さない（優勝コールの二重化防止）
       if (opts.noFinale) { setTimeout(() => { ov.className = "rc"; ov.innerHTML = ""; onDone(); }, 700); return; }
-      return rank === 1 ? puchun() : parin();
+      // 最後にひと呼吸の暗転（心臓ひとつ分）を挟んでから開票（N5）
+      ov.classList.add("blackout");
+      if (window.SFX) SFX.heartbeat();
+      return setTimeout(() => {
+        ov.classList.remove("blackout");
+        rank === 1 ? puchun() : parin();
+      }, 680);
     }
     if (rank === 1 && n === premiumAt) { msgEl.textContent = "……!?"; return puchun(); } // フライング（1位のみ）
     msgEl.textContent = n > 6 ? "まもなく、結果発表……" : "結果発表まで、あと";
     numEl.textContent = String(n);
     numEl.classList.remove("pop"); void numEl.offsetWidth; numEl.classList.add("pop");
-    if (window.SFX) { if (n <= 4) SFX.heartbeat(); else SFX.click(); } // 終盤は無音の中の心音（#24）
+    // 数字と同時に広がる光の輪＋緊張の締まり（N5）
+    const ring = document.createElement("span");
+    ring.className = "rc-ring";
+    ov.appendChild(ring);
+    setTimeout(() => ring.remove(), 900);
+    ov.style.setProperty("--tension", String((10 - n) / 10));
+    ov.classList.toggle("tense", n <= 3);
+    if (window.SFX) {
+      if (n <= 3) { SFX.heartbeat(); setTimeout(() => SFX.heartbeat(), 260); } // 終盤は二連の心音
+      else if (n <= 6) SFX.heartbeat();
+      else SFX.click();
+    }
     if (n % 2 === 0) flashCut();
     n--;
-    setTimeout(tick, 360);
+    setTimeout(tick, tickDelay(n));
   }, 520);
 }
 
@@ -7179,10 +7250,9 @@ function startTitleBgm() {
 
 // ---------------------------------------------------------------- tutorial
 // 大会に出ろと言われた直後、tonariの作業台で一度シーシャ作りを通しで体験する
-const TUTORIAL_FLOW = [
-  ["theme", "THEME"], ["mix", "MIX"], ["pack", "PACK"], ["foil", "FOIL"],
-  ["coal", "SET"], ["coalfire", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"],
-];
+// チュートリアルは大会と全く同じ工程列（N14・2026-07-04 オーナー指定）。
+// ハガル（ボウル）選び等のSETUPも通し、本番で初見の工程が無いようにする
+const TUTORIAL_FLOW = STEP_FLOW;
 // バイト中のオーダーチャレンジ: お客さんのリクエスト（日替わり）に合わせて
 // 大会同様のフル工程で1台作る（テーマと集中だけ接客中なので省略）
 const BAITO_FLOW = [
@@ -7569,6 +7639,8 @@ function init() {
     $("#log-overlay").classList.remove("visible");
   });
   $("#vn-menu").addEventListener("click", () => toggleStatus(true));
+  // HUDのステータス五角形 → クリックで詳細（既存のステータス画面）を開く（N1）
+  $("#hud-level")?.addEventListener("click", () => { if (window.SFX) SFX.open(); toggleStatus(true); });
   // スマホ用うっすらパッド（会話画面のみ表示）
   $("#tp-next").addEventListener("click", () => {
     if (autoMode || skipMode) stopAutoSkip();

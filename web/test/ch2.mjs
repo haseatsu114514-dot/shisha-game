@@ -32,6 +32,9 @@ await page.evaluate(() => {
 });
 await page.evaluate(() => maybeStartConfession(() => {}));
 for (let i = 0; i < 200; i++) {
+  // 告白前の一拍（P9・2026-07-04）: マップの #map-beat をタップして本編へ
+  const mb = page.locator("#map-beat");
+  if (await mb.count()) { await mb.click().catch(() => {}); await page.waitForTimeout(30); continue; }
   const c = page.locator("#vn-choices .choice-btn").first();
   if (await c.count()) {
     const t = await c.textContent();
@@ -54,6 +57,8 @@ await page.evaluate(() => {
 await page.waitForTimeout(400);
 let warned = false;
 for (let i = 0; i < 300; i++) {
+  const mb2 = page.locator("#map-beat");
+  if (await mb2.count()) { await mb2.click().catch(() => {}); await page.waitForTimeout(30); continue; }
   const c = page.locator("#vn-choices .choice-btn").first();
   if (await c.count()) {
     const texts = await page.locator("#vn-choices .choice-btn").allTextContents();
@@ -137,8 +142,21 @@ await page.evaluate(() => {
   morningPhone(() => {});
 });
 await page.waitForSelector("#phone-overlay.show");
-await page.locator("#phone-overlay .lime-reply", { hasText: "行く" }).click();
+// 初回お誘いヒント（O12）が被っていたら閉じてから「行く」
+for (let i = 0; i < 100; i++) {
+  const ok = page.locator("#hint-overlay .hint-ok");
+  if (await ok.count()) { await ok.click().catch(() => {}); await page.waitForTimeout(80); continue; }
+  const go = page.locator("#phone-overlay .lime-reply", { hasText: "行く" });
+  if (await go.count()) { await go.click().catch(() => {}); break; }
+  await page.waitForTimeout(100);
+}
 for (let i = 0; i < 400; i++) {
+  // 初回お誘いのシステムヒント（O12）が出ていたらOKで閉じる
+  if (await page.locator("#hint-overlay .hint-ok").count()) {
+    await page.locator("#hint-overlay .hint-ok").click().catch(() => {});
+    await page.waitForTimeout(80);
+    continue;
+  }
   if (await page.locator("#phone-overlay.show").count()) {
     const r = page.locator("#phone-overlay .lime-reply").first();
     if (await r.count()) await r.click().catch(() => {});
@@ -186,6 +204,12 @@ async function active() { return page.evaluate(() => document.querySelector(".sc
 let guard = 0;
 while (guard++ < 8000) {
   // LIME
+  // 初回お誘いのシステムヒント（O12）が出ていたらOKで閉じる
+  if (await page.locator("#hint-overlay .hint-ok").count()) {
+    await page.locator("#hint-overlay .hint-ok").click().catch(() => {});
+    await page.waitForTimeout(80);
+    continue;
+  }
   if (await page.locator("#phone-overlay.show").count()) {
     const reply = page.locator("#phone-overlay .lime-reply").first();
     if (await reply.count()) await reply.click();
