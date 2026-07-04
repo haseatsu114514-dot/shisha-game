@@ -543,6 +543,161 @@
       "branches": {}
     },
     {
+      "dialogue_id": "ch1_naru_promise",
+      "metadata": {
+        "bg": "res://assets/backgrounds/kemurikusa.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "優勝の翌日の夜。ケムリクサに呼び出された。閉店後の店に、道具が一式並べてある。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "約束、覚えてたか。──勝った方が作る、だ"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "俺の店で、お前の煙を出せ。道具も葉も、好きに使っていい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。じゃあ、遠慮なく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "勝者の一台を、敗者の店で作る。──変な緊張感だ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつものダブルアップルに、ミントをひとつまみ。炭はトライアングル。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるさんは一口吸って、長いこと黙っていた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……数字はうちのノートが上だ。それは今も思ってる"
+        },
+        {
+          "speaker": "naru",
+          "face": "sad",
+          "text": "でもこれ、もう一口吸いたくなるんだよな。──悔しいけど"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるさんは3年分のノートを静かに閉じて、新しいページを開いた。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "interview_pride",
+          "next_true": "mrp_iv_pride",
+          "next_false": "mrp_chk_honest"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なるさんは、なんで大会に出るんですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるさんは煙をひとつ吐いてから、店の天井を見上げた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "優勝の看板ってのはな、潰れない店の保険なんだよ"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "──俺は、それが欲しかった。……ま、次の大会でな"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "次は俺の番だ。……覚悟しとけよ、チャンピオン"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【センス】が上がった。"
+        }
+      ],
+      "branches": {
+        "mrp_chk_honest": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "interview_honest",
+            "next_true": "mrp_iv_honest",
+            "next_false": "mrp_chk_sumi"
+          }
+        ],
+        "mrp_chk_sumi": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "interview_sumi",
+            "next_true": "mrp_iv_sumi"
+          }
+        ],
+        "mrp_iv_pride": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "そういや、インタビュー見たぞ。『いけると思ってました』？"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "言うようになったじゃん。──ま、次は俺が黙らせるからいいけど"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "うっ。……あれは、その、勢いです"
+          }
+        ],
+        "mrp_iv_honest": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "インタビューの『相手のいいところを全部もらった』ってやつ"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "……あれ、ちょっと嬉しかったわ。負けた甲斐が半分くらいあった"
+          }
+        ],
+        "mrp_iv_sumi": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "てか、インタビューで店の宣伝すんなよ。思わず笑ったわ"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "──ま、ああいうちゃっかりは嫌いじゃない。師匠孝行だしな"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "ch1_naru_group_regulars",
       "metadata": {
         "bg": "res://assets/backgrounds/kemurikusa.png"

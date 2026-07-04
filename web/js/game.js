@@ -1223,6 +1223,10 @@ function initEngine() {
           const note = (state.customerNotes || {})[String(line.note_id || "")];
           return !!note && (note.count || 0) >= Number(line.threshold || 1);
         }
+        // フラグ分岐: 交友済みキャラとの再会挨拶・選択の記憶など state.flags を直接見る
+        if (line.condition_type === "flag") {
+          return !!state.flags[String(line.flag || "")];
+        }
         return false;
       },
       hasCg: (cgId) => (D.cgs || []).includes(cgId),
@@ -6295,7 +6299,8 @@ function showResult(results, rank, detail, opts = {}) {
       // 章末は ???のLIME（本命のヒキ）→ 第2章予告パネル（#19）→ クリア画面の順に見せる。
       // 内部的には先にクリア画面を整えてから予告を上に被せる（画面切替の瞬間に
       // 会話レイヤーへのクリックが宙に浮く競合と、テストの即時タイトル読みを避ける）
-      playDialogue("ch1_tournament_after", () => postClearPhone(() => { showClear(); showCh2Teaser(() => {}); }), "res://assets/backgrounds/bg_tournament_stage.png");
+      // 採点表LIME（優勝の夜）→ 翌日ケムリクサで「勝った方が作る」約束を回収 → クリア画面
+      playDialogue("ch1_tournament_after", () => postClearPhone(() => playDialogue("ch1_naru_promise", () => { showClear(); showCh2Teaser(() => {}); })), "res://assets/backgrounds/bg_tournament_stage.png");
     }));
   } else {
     btn.textContent = "……結果を受け止める";
@@ -6421,6 +6426,7 @@ const CH2_STAGES = {
     bar: 58,
     prize: 5000,
     after: "ch2_adam_distance",
+    after2: "ch2_naru_warm", // アダムの距離（冷）→ なるの祝福（温）。「この頃はまだ」の対比で孤立アークを立てる
     winDetail: "──予選通過。審査席の端で、白衣の男が小さくペンを走らせた。",
     loseDetail: "……札は伸びなかった。地区上位の「普通」は、地元の「上出来」より上にある。",
   },
@@ -6544,8 +6550,8 @@ function finishCh2Stage() {
           lines: ev.lines.slice(4),
         }, () => showCh2Clear());
       }
-      // 勝った夜に、仲間がひとり離れていく
-      playDialogue(cfg.after, () => advanceDay());
+      // 勝った夜に、仲間がひとり離れていく（after2 は同じ夜の対比シーン）
+      playDialogue(cfg.after, () => (cfg.after2 ? playDialogue(cfg.after2, () => advanceDay()) : advanceDay()));
     },
     onLose: () => {
       tt.rank = rank;

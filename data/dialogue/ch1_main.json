@@ -858,12 +858,12 @@
         {
           "speaker": "hajime",
           "face": "sad",
-          "text": "出るのは、地元の店のエースたち。なるの鼻は、きっと俺の指先の匂いまで嗅ぎ分ける。"
+          "text": "出るのは、地元の店のエースたち。なるさんの鼻は、きっと俺の指先の匂いまで嗅ぎ分ける。"
         },
         {
           "speaker": "hajime",
           "face": "sad",
-          "text": "あの人の「好き」は、分析で裏打ちされた確信だ"
+          "text": "あの人の『美味い』は、分析で裏打ちされた確信だ"
         },
         {
           "speaker": "hajime",
@@ -1413,36 +1413,30 @@
           "text": "受付で名前を言うと、スタッフが控室へ通してくれた。──先客が、3人。"
         },
         {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "お、あんたが4人目？ 俺はなる。KEMURIKUSAってとこでやってる"
-        },
-        {
-          "type": "set_flag",
-          "flag": "_met_naru"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "……EDENのアダムだ。作るのはダブルアップル。それだけ覚えてくれればいい"
-        },
-        {
-          "type": "set_flag",
-          "flag": "_met_adam"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "みんとでーす♪ PEPPERMINTの看板娘！ 全員まとめてライバルってことで、よろしくね？"
-        },
-        {
-          "type": "set_flag",
-          "flag": "_met_minto"
-        },
-        {
           "speaker": "hajime",
           "face": "normal",
           "text": "tonariの蒸野始です。よろしくお願いします"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_naru",
+          "next_true": "mr_naru_known",
+          "next_false": "mr_naru_new"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_adam",
+          "next_true": "mr_adam_known",
+          "next_false": "mr_adam_new"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_minto",
+          "next_true": "mr_minto_known",
+          "next_false": "mr_minto_new"
         },
         {
           "speaker": "",
@@ -1469,7 +1463,68 @@
           "face": "",
           "text": "……【洞察】が上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "mr_naru_new": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "お、あんたが4人目？ 俺はなる。KEMURIKUSAってとこでやってる"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_met_naru"
+          }
+        ],
+        "mr_naru_known": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "よう、はじめ。硬えって。──こっちでも会うとはな"
+          }
+        ],
+        "mr_adam_new": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "……EDENのアダムだ。作るのはダブルアップル。それだけ覚えてくれればいい"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_met_adam"
+          }
+        ],
+        "mr_adam_known": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "……来たな"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "アダムさんは小さく頷いた。挨拶は、それで十分だった。"
+          }
+        ],
+        "mr_minto_new": [
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "みんとでーす♪ PEPPERMINTの看板娘！ 全員まとめてライバルってことで、よろしくね？"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_met_minto"
+          }
+        ],
+        "mr_minto_known": [
+          {
+            "speaker": "minto",
+            "face": "wink",
+            "text": "あ、はじめ君だ♪ ふふ、ここからは正式にライバルってことで、よろしくね？"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_salaryman_change",

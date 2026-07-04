@@ -1,6 +1,72 @@
 {
   "dialogues": [
     {
+      "dialogue_id": "ch3_naru_reconcile",
+      "comment": "ch2絶縁（ch2_naru_confrontation）の和解。ch3エンジン実装時: 全国優勝の夜（ましろ回復後）に再生→以後ケムリクサ訪問で ch1_naru_after_return（訪問済み）/ ch1_naru_after_return_firstshop（未訪問）を発火する。これ以降はじめ→なるはタメ口（ch4「ありがとう、なる」への接続）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "全国優勝の夜。ホテルに戻ると、スマホが震えた。──なるさんからだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あの夜から、ずっと止まっていた名前。指が、一瞬だけ迷った。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "全国優勝、見てた。客席から"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "言ってなかったけど、俺も全国に来てたんだ。別ブロック。──負けた"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "地元から勝ち直して、また負けて。それでもまだ、答え探しの途中でさ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "今日の煙、ちゃんとお前だった"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "──それだけ言いたくてさ。おかえり"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……なるさん。俺、あの時"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "あー、いい。全部いい。今度、店で聞く"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "あと、返信でさん付けすんな。負けた男に敬語使うな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "既読をつけたまま、しばらく画面が滲んで見えなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【根性】が上がった。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch3_opening",
       "lines": [
         {
