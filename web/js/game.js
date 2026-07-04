@@ -172,9 +172,26 @@ function flavorOwnershipFlag(flavor) {
   return flavor.requires_flag || `_flavor_${flavor.id}`;
 }
 
+// フレーバーは1箱50g（オーナー指定・2026-07-04）。買う＝在庫+50g、
+// 大会で詰んだ分だけ減る（課題フレーバーは主催者支給＝減らない）
+const FLAVOR_BOX_GRAMS = 50;
+function flavorStock(flavor) {
+  if (!state.flavorStock) state.flavorStock = {};
+  if (!(flavor.id in state.flavorStock)) {
+    // 在庫制導入前のセーブ・初期所持は1箱ぶんとして引き継ぐ
+    state.flavorStock[flavor.id] =
+      STARTER_FLAVOR_IDS.has(flavor.id) || state.flags[flavorOwnershipFlag(flavor)]
+        ? FLAVOR_BOX_GRAMS : 0;
+  }
+  return state.flavorStock[flavor.id];
+}
+function addFlavorStock(id, grams) {
+  if (!state.flavorStock) state.flavorStock = {};
+  state.flavorStock[id] = Math.max(0, (state.flavorStock[id] || 0) + grams);
+}
+
 function ownsFlavor(flavor) {
-  return STARTER_FLAVOR_IDS.has(flavor.id) ||
-    !!state.flags[flavorOwnershipFlag(flavor)];
+  return flavorStock(flavor) > 0;
 }
 
 function newState() {
@@ -182,7 +199,7 @@ function newState() {
     chapter: 1,
     day: 1,
     ap: 2,
-    money: 30000,
+    money: 20000,  // 初期所持金。バイトに出る動機が生まれる額に減額（N13・旧30000）
     stats: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 },
     statsBaseline: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 },
     affinity: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0, rin: 0, ageha: 0 },
@@ -350,6 +367,12 @@ function flushGainQueue() {
   setTimeout(flushGainQueue, 280);
 }
 
+// 表示中・待機中の報酬バナーが全部流れ終わるのを待つ（暗転演出と重ねないため・N8）
+function waitGainBanners(cb) {
+  if (gainShowing === 0 && gainQueue.length === 0) return cb();
+  setTimeout(() => waitGainBanners(cb), 180);
+}
+
 function stars(value) {
   const n = Math.max(1, Math.min(5, Math.ceil(value / 20)));
   return "★".repeat(n) + "☆".repeat(5 - n);
@@ -425,7 +448,7 @@ function gainAffinity(charId, kind = "visit") {
   const rank = rankFromPts(state.affinityPts[charId]);
   if (rank > state.affinity[charId]) {
     state.affinity[charId] = rank;
-    gainBanner({ kind: "affinity", badge, labelTop: "AFFINITY UP", labelMain: name, labelSub: "距離が縮まった気がする", hearts });
+    gainBanner({ kind: "affinity", badge, labelTop: "AFFINITY UP", labelMain: name, labelSub: `仲良し度が ♥${rank} に上がった！`, hearts });
   } else {
     gainBanner({ kind: "affinity", badge, labelTop: "AFFINITY", labelMain: name, labelSub: "少し打ち解けた気がする", hearts });
   }
@@ -1153,6 +1176,7 @@ function toggleAuto() {
     if (!engine || !$("#screen-dialogue").classList.contains("active")) return stopAutoSkip();
     if (engine.waitingChoice) return; // 選択肢で停止
     if (engine.typing) return; // タイプ中は待つ
+    if (engine.assetsPending && engine.assetsPending()) return; // 画像の取得待ち（N7）
     engine.next();
   }, { 1: 2200, 2: 1400, 3: 800 }[config.autoSpeed] || 1400);
 }
@@ -1167,6 +1191,8 @@ function toggleSkip() {
   autoTimer = setInterval(() => {
     if (!engine || !$("#screen-dialogue").classList.contains("active")) return stopAutoSkip();
     if (engine.waitingChoice) return stopAutoSkip();
+    // 背景・立ち絵の取得が追いつかないうちは送らない（SKIPで画像が真っ白になる対策・N7）
+    if (engine.assetsPending && engine.assetsPending()) return;
     if (engine.typing) engine.completeTyping();
     else engine.next();
   }, 60);
@@ -1557,6 +1583,30 @@ function limeDueMessages(tournamentDay) {
       due.push(makeDateInvite(id, inviteId));
     }
   }
+  // スミさんのバイト誘い（N13）: 序盤の固定2回（DAY3/8）＋4日以上バイトに出ていない朝。
+  // 乗るとその足でシフトへ（行動1コマ・給料に特別ボーナス）。
+  // 昼の誘いが他にある朝は重ねない（受諾チェーンを単純に保つ）
+  if (!tournamentDay && state.chapter === 1 && state.day < MAX_DAYS) {
+    const fixed = state.day === 3 || state.day === 8;
+    const slacking = state.day >= 5 && state.day - (state.lastBaitoDay || 0) >= 4;
+    const inviteId = `_sumi_baito_inv_d${state.day}`;
+    const hasNoonInvite = due.some((m) => m.type === "invitation" && m.time_slot === "noon");
+    if ((fixed || slacking) && !hasNoonInvite && !state.limeDone.includes(inviteId)) {
+      due.push({
+        id: inviteId,
+        sender: "sumi",
+        type: "invitation",
+        time_slot: "noon",
+        accept_event: "__sumi_baito__",
+        messages: [
+          "急で悪い。今日、昼のシフト入れるか？",
+          "常連の団体が入ってな。人手が足りん",
+          "……代わりと言っちゃなんだが、給料は弾むぞ",
+        ],
+        decline_response: { text: "おう、わかった。無理はするな" },
+      });
+    }
+  }
   // 同一キャラからは1日1話題まで（master_spec #7）。あふれた分は翌朝以降に繰り越し
   const seen = new Set();
   return due.filter((m) => {
@@ -1842,6 +1892,14 @@ function closePhone() {
 // LIME経由のイベント再生。会話内の報酬キューに加えて必ず好感度を付ける
 function playLimeEvent(dialogueId, sender, after, viaInvite) {
   stopAutoSkip(); // 直前の会話でSKIP中でも、誘い/デート等のイベントは飛ばさず頭から見せる
+  // スミさんのバイト誘い（N13）: 会話イベントではなく、その足でシフトに入る。
+  // 行動の消化は doBaito→endAction が担う（chain 側の ap-- は通らない）
+  if (dialogueId === "__sumi_baito__") {
+    state.flags._baito_bonus = true;
+    visitContextChar = null;
+    state.dayVisited.sumi = state.day; // 同日のスミさん重複会話を防ぐ
+    return shishaGuard(() => doBaito());
+  }
   visitContextChar = sender;
   markMet(sender);
   // 誘い/イベントでそのキャラに会った日は、同じ店（spot）への通常訪問を不可にする
@@ -2435,7 +2493,6 @@ function advanceDay() {
           { speaker: "hajime", face: "sad", text: "（……無理が祟った。午前中は、休むしかない）" },
           { speaker: "", face: "", text: "水だけ飲んで、布団に戻る。……昼過ぎ。汗と一緒に、熱が抜けていった。" },
           { speaker: "hajime", face: "normal", text: "（今回は軽く済んだ。……次に無理をしたら、丸一日寝込む気がする）" },
-          { type: "apply", stats: { guts: 2 } },
         ],
       }, () => {
         state.stamina = Math.max(stamina(), 60);
@@ -2451,7 +2508,6 @@ function advanceDay() {
         { speaker: "", face: "", text: "朝。喉の奥が痛い。額に手を当てると、じんわり熱い。——風邪だ。" },
         { speaker: "hajime", face: "sad", text: "（……無理が祟った。今日は、休むしかない）" },
         { speaker: "", face: "", text: "水だけ飲んで、布団に戻る。スマホを枕元に置いて、目を閉じた。\n一日、ゆっくり眠った。" },
-        { type: "apply", stats: { guts: 2 } },
       ],
     }, () => {
       state.stamina = Math.max(stamina(), 80);
@@ -2534,17 +2590,23 @@ function nightFadeHome(next) {
   document.getElementById("night-fade")?.remove();
   const ov = document.createElement("div");
   ov.id = "night-fade";
+  ov.classList.add("quiet"); // 文言は報酬バナーが流れ切ってから出す（N8）
   // 翌日予告（#28）: 明日が固定イベント日なら、就寝の1行に予感を添える
   const ev = tomorrowNightEvent();
   ov.innerHTML = `<span>……今日は、家へ帰ろう。</span>` +
     (ev ? `<small class="nf-teaser">（明日、${ev.label}で何かありそうな気がする）</small>` : "");
   host.appendChild(ov);
   requestAnimationFrame(() => ov.classList.add("dark"));
-  setTimeout(() => {
-    next(); // 帰宅シーン（night_homecoming / 家シーシャ）を黒の下で始めてから明ける
-    ov.classList.add("clear");
-    setTimeout(() => ov.remove(), 1000);
-  }, 1600);
+  // まず暗転だけして、イベントの報酬バナー（ステUP・好感度等）を黒の上で
+  // 流し切ってから「家へ帰ろう」→帰宅シーンへ（バナーが見えないまま消える問題・N8）
+  waitGainBanners(() => {
+    ov.classList.remove("quiet");
+    setTimeout(() => {
+      next(); // 帰宅シーン（night_homecoming / 家シーシャ）を黒の下で始めてから明ける
+      ov.classList.add("clear");
+      setTimeout(() => ov.remove(), 1000);
+    }, 1600);
+  });
 }
 
 function endDay() {
@@ -2703,6 +2765,7 @@ function endDay() {
 function doBaito(afterCameo) {
   visitContextChar = null;
   if (window.SFX) SFX.bgm("tonari");
+  state.lastBaitoDay = state.day; // スミさんのバイト誘い（N13）の「サボり検知」に使う
   if (!afterCameo) addStamina(-STAMINA_COST.baito); // 接客はけっこう体力を使う
   // 2回目のバイトに一度だけ: 後の章のライバル（零-REI-）が正体を伏せたV系の客として来店。
   // ch2決勝・ch3で「あの時の客」と繋がるカメオ伏線
@@ -2717,12 +2780,16 @@ function doBaito(afterCameo) {
   if (!state.customerNotes) state.customerNotes = {};
   if (!state.customerNotes[ev.id]) state.customerNotes[ev.id] = { first: state.day || 1, count: 0 };
   state.customerNotes[ev.id].count++;
-  const basePay = Math.max(8000, ev.base_pay || D.baito_settings.base_pay || 8000); // 給料は最低8,000円（master_spec #21）
+  // スミさんの誘い（N13）で来た日は給料に特別ボーナスが乗る
+  const inviteBonus = state.flags._baito_bonus ? 5000 : 0;
+  delete state.flags._baito_bonus;
+  const basePay = Math.max(8000, ev.base_pay || D.baito_settings.base_pay || 8000) + inviteBonus; // 給料は最低8,000円（master_spec #21）
 
   const lines = [
     afterCameo
       ? { speaker: "", face: "", text: "──不思議な客を見送って、シフトに戻る。" }
       : { speaker: "", face: "", text: "今日はtonariでバイト。エプロンを締めて、カウンターに立つ。" },
+    ...(inviteBonus ? [{ speaker: "sumi", face: "smile", text: "急に悪いな、助かる。今日の分は色をつけとくぞ" }] : []),
     { speaker: "", face: "", text: ev.text },
   ];
   const branches = {};
@@ -2975,23 +3042,25 @@ function showShop() {
       (f.chapter_min || 1) <= state.chapter);
     for (const f of stockable) {
       const ownershipFlag = flavorOwnershipFlag(f);
-      const owned = ownsFlavor(f);
+      const stock = flavorStock(f);
       const price = f.price || 0;
       const btn = document.createElement("button");
       btn.className = "spot-btn";
+      // 1箱=50g。使い切ったら買い足せる（在庫制・N3）
       btn.innerHTML =
         `<span class="spot-name">${f.short_name || f.name}</span>` +
-        `<span class="spot-cost">${owned ? "入荷済み" : `${price.toLocaleString()}円`}</span>` +
+        `<span class="spot-cost">${price.toLocaleString()}円/箱50g${stock > 0 ? `・在庫${stock}g` : ""}</span>` +
         `<span class="spot-desc">${f.description || ""}</span>`;
-      if (owned || price > state.money) btn.disabled = true;
+      if (price > state.money) btn.disabled = true;
       btn.addEventListener("click", () => {
-        if (ownsFlavor(f) || price > state.money) return;
+        if (price > state.money) return;
         addMoney(-price);
+        addFlavorStock(f.id, FLAVOR_BOX_GRAMS);
         state.flags[ownershipFlag] = true;
         state.flags._flavor_stocked = true; // 本番持参の救済条件(#44)も満たす
         save();
         if (window.SFX) SFX.coin();
-        toast(`${f.short_name || f.name} を入荷した`);
+        toast(`${f.short_name || f.name} 1箱（${FLAVOR_BOX_GRAMS}g）を仕入れた`);
         showShop();
       });
       flGrid.appendChild(btn);
@@ -3194,6 +3263,7 @@ function grantKujiPrize(prize) {
   // フレーバー賞: ミックスで使えるように解放（その章のフレーバーが当たる）。本番持参の救済条件も満たす(#44)
   if (prize.type === "flavor" && prize.flavorId) {
     state.flags["_flavor_" + prize.flavorId] = true;
+    addFlavorStock(prize.flavorId, FLAVOR_BOX_GRAMS); // くじの景品も1箱（50g）
     state.flags._flavor_stocked = true;
     return;
   }
@@ -3285,7 +3355,6 @@ function doRest() {
         ? "今日はもう家に帰ることにした。湯船に浸かって、早めに布団へ入る。\n……体の重さが、少しずつほどけていった。"
         : "いったん家に帰ることにした。靴を脱いで、ソファに体を沈める。\n短い休憩でも、体の芯に少し余裕が戻ってくる。" },
       { speaker: "hajime", face: "normal", text: "（大会まで、あと少し。……やれるだけのことは、やろう）" },
-      { type: "apply", stats: { guts: 2 } },
     ],
   }, endAction);
 }
@@ -5282,22 +5351,17 @@ function bowlCapacity() {
   const b = D.equipment.find((e) => e.id === tt.bowl);
   return (b && b.capacity) || 12;
 }
-// 葉代（1gあたり）。パック価格の1/10を目安に丸める。価格0（凛のサンプル等）は無償
-function mixGramCost(f) {
-  return Math.round((f.price || 0) / 10 / 5) * 5;
-}
-
 function stepMix() {
   const reg = activeRegulation();
   const cap = bowlCapacity();
-  // 葉は自前で買って持ち込む（大会のみ）。店の仕込みで作るバイト等は店持ち
-  const charged = tt.mode === "tournament";
+  // 葉はショップ等で買って持ち込む＝所持フレーバーだけが並ぶ。
+  // 詰んだ量での葉代徴収は廃止（N3・2026-07-04 オーナー指定。買った時点で払っており二重取りだった）
   const body = tnPanel(
     "フレーバー選択 & ミックス",
     (reg ? `レギュレーション: ${reg.label}　` : "") +
       (cap <= 12
         ? "合計12gちょうど・1〜3種類。このボウルは12gが上限だ。"
-        : `合計12g〜${cap}g・1〜3種類。多く詰むほど味の持ちは良くなるが、その分の熱${charged ? "と葉代" : ""}が要る。`)
+        : `合計12g〜${cap}g・1〜3種類。多く詰むほど味の持ちは良くなるが、その分の熱が要る。`)
   );
   const regFlavorName = reg ? ((D.flavors.find((f) => f.id === reg.flavor) || {}).short_name || reg.flavor).replace(/^AF /, "") : "";
   if (reg) {
@@ -5329,15 +5393,19 @@ function stepMix() {
   goBtn.textContent = "この配合でいく";
   const regGrams = () => (reg ? tt.mix[reg.flavor] || 0 : 0);
   const regOk = () => !reg || (regGrams() >= (reg.min || 0) && regGrams() <= (reg.max ?? 99));
-  const mixCost = () =>
-    Object.entries(tt.mix).reduce((sum, [id, g]) => {
-      const f = D.flavors.find((x) => x.id === id);
-      return sum + (f ? mixGramCost(f) * g : 0);
-    }, 0);
   const valid = () => total() >= 12 && total() <= cap && regOk();
+  // 大会本番は持ち込んだ在庫から詰む＝確定時に詰んだ分だけ在庫が減る（1箱50g・N3）。
+  // 課題フレーバーは主催者支給なので減らない。リハ・バイト・練習は店の葉＝減らない
+  const consumesStock = tt.mode === "tournament";
+  const supplied = (id) => reg && id === reg.flavor;
   goBtn.addEventListener("click", () => {
     if (!valid()) return;
-    if (charged && mixCost() > 0) addMoney(-mixCost()); // 葉代（買って持ち込んだ分）
+    if (consumesStock) {
+      for (const [id, g] of Object.entries(tt.mix)) {
+        if (!supplied(id)) addFlavorStock(id, -g);
+      }
+      save();
+    }
     tnNext("mix");
   });
 
@@ -5345,8 +5413,7 @@ function stepMix() {
   const refresh = () => {
     let regText = "";
     if (reg) regText = reg.max === 0 ? `　${regName}: 入れない約束` : `　${regName} ${regGrams()}/${reg.min}g`;
-    const costText = charged ? `　葉代 ${mixCost().toLocaleString()}円` : "";
-    totalLabel.textContent = `合計 ${total()}g / ${cap}g` + regText + costText;
+    totalLabel.textContent = `合計 ${total()}g / ${cap}g` + regText;
     totalLabel.classList.toggle("ok", valid());
     goBtn.disabled = !valid();
     goBtn.textContent =
@@ -5381,9 +5448,11 @@ function stepMix() {
     row.dataset.flavorId = f.id;
     const info = document.createElement("div");
     info.className = "mix-info";
-    const priceTag = charged && mixGramCost(f) ? ` <span class="mix-price">${mixGramCost(f)}円/g</span>` : charged ? ` <span class="mix-price free">提供品</span>` : "";
     const fitTag = themeFit(f) ? ` <span class="mix-fit">◎コンセプト向き</span>` : "";
-    info.innerHTML = `<span class="spot-name">${f.short_name || f.name}${fitTag}${priceTag}</span><span class="spot-desc">${tasteSlump ? garble(f.description) : f.description}</span>`;
+    const stockTag = consumesStock
+      ? (supplied(f.id) ? ` <span class="mix-price free">主催支給</span>` : ` <span class="mix-price">残り${flavorStock(f)}g</span>`)
+      : "";
+    info.innerHTML = `<span class="spot-name">${f.short_name || f.name}${fitTag}${stockTag}</span><span class="spot-desc">${tasteSlump ? garble(f.description) : f.description}</span>`;
     const ctrl = document.createElement("div");
     ctrl.className = "mix-ctrl";
     const minus = document.createElement("button");
@@ -5405,6 +5474,11 @@ function stepMix() {
       const kinds = Object.keys(tt.mix);
       if (!tt.mix[f.id] && kinds.length >= 3) { toast("ミックスは3種類まで"); return; }
       if (total() >= cap) { toast(`このボウルは${cap}gまで`); return; }
+      // 大会は持ち込み在庫が上限（課題フレーバーは主催支給＝無制限・N3）
+      if (consumesStock && !supplied(f.id) && (tt.mix[f.id] || 0) >= flavorStock(f)) {
+        toast(`${f.short_name || f.name}の持ち込みは残り${flavorStock(f)}gまで`);
+        return;
+      }
       tt.mix[f.id] = (tt.mix[f.id] || 0) + 1;
       if (window.SFX) SFX.pour();
       update();
@@ -7117,7 +7191,7 @@ const BAITO_FLOW = [
 ];
 const TUTORIAL_TIPS = {
   theme: "スミさん「まずは一台のコンセプトだ。今日は好きに選んでいい」",
-  mix: "スミさん「基本は12g。ボウルの容量までは盛れるが、多く詰む分は熱も葉代も食うぞ」",
+  mix: "スミさん「基本は12g。ボウルの容量までは盛れるが、多く詰む分は熱を食うぞ」",
   pack: "スミさん「迷ったらノーマル。フレーバーの重さで変えるんだ」",
   foil: "スミさん「穴は均等に。リズムで開けると揃う」",
   coalfire: "スミさん「炭の芯が一瞬ピカッと閃く。その瞬間に取り上げろ。早すぎりゃ生焼け、遅けりゃ灰だ」",

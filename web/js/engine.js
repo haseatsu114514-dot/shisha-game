@@ -239,8 +239,28 @@ class DialogueEngine {
     let rel = String(path).replace(/^res:\/\//, "");
     // 昼夜つき背景の自動差し替え（ゲーム側が時間帯を知っているので委譲する）
     if (this.ctx.resolveBg) rel = this.ctx.resolveBg(rel);
-    this.el.bg.style.backgroundImage = `url('${assetUrl(rel)}')`;
+    const url = assetUrl(rel);
+    this.el.bg.style.backgroundImage = `url('${url}')`;
+    // SKIP送りの取得待ち判定（N7）。data URI（スタンドアロン版）は即時扱い
+    this._bgReady = true;
+    if (!url.startsWith("data:")) {
+      const probe = new Image();
+      this._bgReady = false;
+      this._bgProbe = probe;
+      probe.onload = probe.onerror = () => { if (this._bgProbe === probe) this._bgReady = true; };
+      probe.src = url;
+      if (probe.complete) this._bgReady = true; // キャッシュ済みなら同期で立つ
+    }
     if (this.ctx.onBackgroundChange) this.ctx.onBackgroundChange(rel);
+  }
+
+  // SKIP/AUTOが画像の取得より先に進まないようにするための「読み込み待ちがあるか」（N7）
+  assetsPending() {
+    if (this._bgReady === false) return true;
+    for (const img of this.el.portraits.querySelectorAll("img.active")) {
+      if (img.src && !img.complete) return true;
+    }
+    return false;
   }
 
   next() {
