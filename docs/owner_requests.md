@@ -41,6 +41,14 @@
 | bench_base の「変な四角い枠」（黒い革マット）と中央の焼き込み影 | オーナーが気になると報告。bench_base 再生成時に**マット・影なし**のプレーンな木天板にする（再生成キュー#3に含めた） |
 | 右サイドバー #tn-rig（WORKBENCH表示）の一台がCSS簡易アートのまま | hookah_tray/stem/base のPNGが来たら、作業台と同じコンポーネント（buildHookahArt）へ寄せて質感を統一する（guilt演出 `.smoke-puff` の移植を忘れない） |
 
+## 2026-07-03 セッション（ブランチ: claude/game-dev-skill-creation-fy133l / 制作スキル整備）
+
+### ✅ 完了（このブランチ）
+| 件 | 内容 |
+|---|---|
+| 頻出作業のスキル化 | 再発バグ防止と意図の汲み取りのため `.claude/skills/` に5本新設: owner-request（要望対応フロー）/ dialogue-edit（台詞チェックリスト）/ web-build-test（ビルド・テスト対応表）/ canon-check（矛盾点検）/ portrait-fix（立ち絵ズレ診断） |
+| 立ち絵が表情でずれるバグの再発対策 | オーナー報告「表情によって立ち絵がずれるバグがよく起こる」→ 症状別診断フローを `portrait-fix` スキルに整備（scipy欠落→ax欠測、原画バラつき→sprite_face_swap/normalize_sprites、髪欠け→clean_sprite_alpha一括適用禁止、身長→spriteScale+portraits.mjs）。個別のズレ報告が来たらこのスキルで対応する |
+
 ## 2026-07-02 セッション（ブランチ: claude/modest-curie-9q5kc5 / プレイ報告5点＋Pages調査）
 
 ### ✅ 完了（このコミット）
