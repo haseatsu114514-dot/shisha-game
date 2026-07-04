@@ -1336,7 +1336,7 @@ const TONARI_SPOTS = [
 const SPOTS = [
   { id: "tonari", label: "tonari（お店）", desc: "バイト・練習・スミさん・常連席。今日は店で何をする？", cost: 0 },
   { id: "naru", label: "なるの店へ行く", desc: "ライバル店を偵察", cost: VISIT_COST, charId: "naru", chapter: 1 },
-  { id: "adam", label: "アダムの店へ行く", desc: "ダブルアップル職人の店", cost: VISIT_COST, charId: "adam", chapter: 1 },
+  { id: "adam", label: "アダムの店へ行く", desc: "ダブルアップル職人の店。他の注文はなぜかいつも品切れ", cost: VISIT_COST, charId: "adam", chapter: 1 },
   { id: "minto", label: "みんとの店へ行く", desc: "コンカフェ風シーシャ屋へ", cost: VISIT_COST, charId: "minto", chapter: 1 },
   // 第2章のライバル店（章で出し分け）。神崎煙草店は2回通うと0分立ち上げ解放
   { id: "kumicho", label: "神崎煙草店へ行く", desc: "暖簾の奥にシーシャ。組長が一人で回す老舗", cost: VISIT_COST, charId: "kumicho", chapter: 2 },
@@ -1418,6 +1418,8 @@ const REPEAT_VISIT = {
   adam: { text: [
     "アダムの店で一服。ダブルアップル一筋の頑固さに、芯の強さを感じる。",
     "今日も店中がダブルアップルの甘い匂い。アダムは黙って頷いた。",
+    "常連が「総督、いつもの」と頼んでいた。この店の「いつもの」は一種類しかない。",
+    "別のフレーバーを頼んだ客に、アダムは首を振った。「あいにく、切らしてる」棚は満杯に見えるのに。",
   ], stats: { guts: 2 } },
   minto: { text: [
     "みんとの店で一服。客あしらいの軽やかさは、やっぱり真似できない。",
@@ -1427,6 +1429,15 @@ const REPEAT_VISIT = {
   kumicho: { text: "神崎煙草店で一服。組長と黙って同じ煙を吸うだけで、不思議と腹が据わる。", stats: { guts: 2 } },
   rei: { text: "零-ZERO-で一服。爆音の中、REIは何も言わない。でも、煙はやさしい。", stats: { charm: 2 } },
   volk: { text: "鉄の煙で一服。ヴォルクの精密な手つきを盗み見る。数字の裏に、職人の勘がある。", stats: { guts: 2 } },
+};
+
+// テンプレ訪問の代わりに一度だけ挟まる特別回（O17）。
+// 常連の「総督」呼び＝ ch1_adam_group_soutoku ／ クレーンゲーム回 ＝ ch1_adam_outing_dagurikura
+const SPECIAL_REPEAT_VISITS = {
+  adam: [
+    { id: "ch1_adam_group_soutoku", flag: "_ev_adam_soutoku", minStory: 2 },
+    { id: "ch1_adam_outing_dagurikura", flag: "_ev_adam_dagurikura", minStory: 3 },
+  ],
 };
 
 // ============ LIME（朝のスマホ演出） ============
@@ -2320,11 +2331,23 @@ function maybeVisitWarning(charId, proceed, cancel) {
   });
 }
 
+// 2回目以降の施設訪問はテキストをローテーション（毎回同じで飽きる対策・O10）。
+// C.STATION の CS_VISIT_POOL と同じ流儀。プールを一周したら繰り返しでよい（オーナー了承）
+const SPOT_VISIT_POOLS = {
+  kannon: ["kannon_cat", "kannon_sweep"],
+  cafe: ["cafe_herb_tea", "cafe_counter_watch", "cafe_crowd"],
+  choizap: ["choizap_lesson", "choizap_mirror"],
+};
+
 function doSpotDialogue(spotId, dialogueId, bg) {
   visitContextChar = null;
   // シーシャと無関係の場所は息抜きになる（体力小回復）
   if (STAMINA_GAIN[spotId]) addStamina(STAMINA_GAIN[spotId]);
-  playDialogue(dialogueId, () => {
+  if (!state.spotVisits) state.spotVisits = {};
+  const n = (state.spotVisits[spotId] = (state.spotVisits[spotId] || 0) + 1);
+  const pool = SPOT_VISIT_POOLS[spotId];
+  const id = (n <= 1 || !pool) ? dialogueId : pool[(n - 2) % pool.length];
+  playDialogue(D.dialogues[id] ? id : dialogueId, () => {
     if (!cueFiredInDialogue) gainStat(spotStat(spotId), 2);
     // 施設スポット＝「集中特訓」: 好感度は付かない代わりに、人に会うより伸びが大きい（#23）
     gainStat(spotStat(spotId), 3);
@@ -2799,6 +2822,18 @@ function doVisit(charId, opts = {}) {
       after();
     }, `res://assets/backgrounds/${bg}`);
   } else {
+    // 一度だけ挟まる特別回（O17: 総督回・だぐりくら回の配線。未配線のまま眠っていた小イベントの回収）。
+    // minStory: 固有会話をこれだけ見てから＝関係ができてから挟む
+    const specials = SPECIAL_REPEAT_VISITS[charId] || [];
+    const sp = specials.find((x) => !state.flags[x.flag] && storyIdx >= (x.minStory || 0) && D.dialogues[x.id]);
+    if (sp) {
+      state.flags[sp.flag] = true;
+      return playDialogue(sp.id, () => {
+        const got = gainAffinity(charId, "event");
+        if (!cueFiredInDialogue && !got) gainStat(spotStat(charId), 2);
+        after();
+      }, `res://assets/backgrounds/${bg}`);
+    }
     const rep = REPEAT_VISIT[charId];
     const texts = Array.isArray(rep.text) ? rep.text : [rep.text];
     playCustom(

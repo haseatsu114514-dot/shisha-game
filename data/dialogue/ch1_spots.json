@@ -672,6 +672,242 @@
           "text": "博士はすぐにPCに目を戻した。会話は終わり、でも収穫はあった。"
         }
       ]
+    },
+    {
+      "dialogue_id": "kannon_cat",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "観音堂。今日も住宅街の物音が遠い。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "石段の下で、白い猫が寝ていた。近づいても逃げない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（……おまえ、いい場所知ってるな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣に腰を下ろして、しばらくぼんやりする。頭の中の雑音が、少しずつ静かになっていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（大会のこと、考えすぎてたかも。……よし）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【根性】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "kannon_sweep",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "観音堂に来ると、砂利に箒の跡がきれいに残っていた。誰かが毎朝掃いているらしい。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（毎日同じことを、同じ丁寧さで……スミさんの仕込みと同じだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手を合わせて、深呼吸をひとつ。線香の匂いが胸の奥まで届く。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……焦らず、一台ずつ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【根性】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cafe_herb_tea",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カフェに来た。今日は「季節のハーブティー」が黒板に出ている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、それでお願いします"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カモミールにミントがひと枝。湯気と一緒に、やわらかい香りが立ちのぼる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（香りの立ち上がり方……お湯の温度でこんなに変わるのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の一口まで、香りの輪郭を追いかけて飲んだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【センス】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cafe_counter_watch",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カフェのカウンター席で、マスターの手元を眺める。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "豆を挽き、湯を細く注ぐ。蒸らして、待って、また注ぐ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……蒸らしてる。コーヒーも「待つ」んだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一連の所作に無駄がない。出てきた一杯は、いつもより深い味がした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【センス】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cafe_crowd",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カフェは今日は混んでいた。窓際の席で、周りの注文に耳をすます。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「甘さ控えめで」「ミルク多めに」……注文ひとつにも、その人の好みが出る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（客の好みを聞き分けるのも、修行のうちかもな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【洞察】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "choizap_lesson",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_choizap.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "チョイザップ。今日はスタッフのミニレッスンの日らしい。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「呼吸を止めないで〜」と言われながら、フォームを直される。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（呼吸か……煙を扱う仕事なのに、普段意識してなかったな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "深く吸って、ゆっくり吐く。それだけで持ち上がる重さが変わった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【根性】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "choizap_mirror",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_choizap.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "チョイザップで軽く汗を流す。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鏡の前でフォームを確認していると、隣のお客さんと目が合って会釈した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（姿勢がいいと、それだけで様になるな。接客でも同じかも）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、体が軽い。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【魅力】が少し上がった。"
+        }
+      ]
     }
   ]
 }
