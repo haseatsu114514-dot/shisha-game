@@ -84,7 +84,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "うん。……なる、顔がマジだね"
+          "text": "はい。……なるさん、顔がマジですね"
         },
         {
           "speaker": "naru",
@@ -406,8 +406,8 @@
         },
         {
           "speaker": "naru",
-          "face": "smile",
-          "text": "（計算上の理想値、100%達成。これ以上の煙はこの会場に存在しない）"
+          "face": "serious",
+          "text": "（3年分のノート、全部この一台に置いてきた。──出し切った）"
         },
         {
           "speaker": "hajime",
@@ -830,6 +830,41 @@
           "text": "そのとき、ロビーの空気が少し変わった。──南雲修二が、こちらへ歩いてくる。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "と思ったら、南雲はまず、なるの前で足を止めた。"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "──鳴切くん。あの配合、自分で？"
+        },
+        {
+          "speaker": "naru",
+          "face": "surprise",
+          "text": "……はい"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "技術は今日一番面白かった。だが、届け先が見えん"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "serious",
+          "text": "あれが『伝わる形』で出ていたら、結果は分からなかったよ"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "また大会で会おう。その時は、答えを持ってきなさい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるが何か言うより先に、南雲はもう歩き出していた。──そして、はじめの前で止まる。"
+        },
+        {
           "speaker": "nagumo",
           "face": "normal",
           "text": "蒸野くん、と言ったか"
@@ -858,6 +893,21 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "いや、全然。初対面だけど……（懐かしいって、何が？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるはまだ、南雲が消えた出口の方を見ていた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……『伝わる形』、ね"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "──宿題、もらっちまったな"
         },
         {
           "speaker": "",
@@ -968,6 +1018,31 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "もう一口吸いたい、か……。（……へえ。俺の煙、そんなふうに思われてたんだ。……ふふ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが、ふと目を細めた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……顔つき、変わったな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "え、そうですか？ 自信ついたってことですかね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "──そうだといいけどな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんはそれ以上、何も言わなかった。"
         },
         {
           "speaker": "",
@@ -1171,8 +1246,8 @@
         },
         {
           "speaker": "naru",
-          "face": "smug",
-          "text": "ふん、初期の熱入れだけなら誰でもできるさ。温度をブレさせないこれからが本番だよ"
+          "face": "normal",
+          "text": "立ち上がりは全員決めてくる。差が出るのは、ここからの温度維持だよ"
         },
         {
           "speaker": "adam",
@@ -1217,7 +1292,7 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "俺の理論は完璧だ。データ通りの挙動……よし、このままいける"
+          "text": "（挙動はノート通り。……焦るな、手順を信じろ）"
         },
         {
           "type": "condition",

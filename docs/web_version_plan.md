@@ -388,6 +388,17 @@
   1回ごとに craft -3（「葉が痩せる」）。やめ時は自分で選ぶ。UI に⚠警告、用語集・CLAUDE.mdも更新
 - 正典化: story doc（香りの識別子=アゲハはホワイトグミベア、Ch1の引き#7〜9）・CLAUDE.md ID表
 
+## 2026-07-04 ストーリー添削反映（ch1添削＋なる強化・レポート全採用）
+
+`docs/story_review_report_20260704.md` のB1〜B9・C-1〜C-5・D1〜D5を実装（詳細はレポート）。実装上の要点と**将来の配線メモ**:
+
+- **flag条件を追加**: dialogue の `{"type":"condition","condition_type":"flag","flag":"..."}` が使えるようになった（game.js `evalCondition`）。`ch1_meet_rivals` の既知/初対面分岐と `ch1_naru_promise` のインタビュー回収で使用中。
+- **ch1優勝フロー変更**: `ch1_tournament_after` → 採点表LIME（`postClearPhone`）→ **`ch1_naru_promise`（新規・勝った方が作る回収）** → クリア画面。
+- **ch2予選通過の夜**: `ch2_adam_distance`（冷）→ **`ch2_naru_warm`（新規・温）** の順で再生（stage設定の `after2` フィールド）。
+- **⚠️ ch3エンジン実装時の配線（忘れずに）**: ①全国優勝の夜に **`ch3_naru_reconcile`**（和解LIME・ch3_main.json先頭）を再生 ②以後ケムリクサ訪問で **`ch1_naru_after_return`**（ch1でなる訪問済み）/ **`ch1_naru_after_return_firstshop`**（未訪問）を発火。この2本は現在**未接続**（dialogueのcommentにも記載）。③これ以降はじめ→なるは**タメ口**。
+- **⚠️ 発見: `ch1_interval.json` は全編未接続**（interval_day1_morning等5本。game.jsから一切呼ばれない）。ch1→ch2にインターバルパートを作る場合はここを配線する。当面は `ch1_naru_promise` が実質のインターバルを担う。
+- **なるの大会遍歴の正史**は `brand/story_and_structure.md`「なる（鳴切亮太）のルート」に一本化（敗者復活戦は廃止済み・別ラインの地元大会から勝ち直す）。
+
 ## 次回への引き継ぎ（2026-06-14 → Codexへ）★まずここを読む
 
 **この引き継ぎは Codex がリポジトリと一緒に受け取る前提でまとめた、自己完結の作業ガイド。**
