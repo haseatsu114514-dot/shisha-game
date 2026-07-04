@@ -170,6 +170,8 @@ def main() -> None:
         raise RuntimeError(
             f"failed to inline web entrypoints: css={css_count}, scripts={script_count}"
         )
+    # 1ファイル版はBGMを埋め込むため、分割版向けのaudioプリロードは外部参照になり不要
+    html = re.sub(r'<link rel="preload"[^>]*as="audio"[^>]*>\n?', "", html)
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUT_PATH.write_text(html, encoding="utf-8")

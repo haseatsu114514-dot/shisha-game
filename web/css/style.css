@@ -1241,27 +1241,44 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 .spot-desc { font-size: 12.5px; color: var(--text-dim); line-height: 1.5; }
 .spot-cost { font-size: 12px; color: var(--accent); }
 
-/* ---------------- gauge minigame ---------------- */
+/* ---------------- gauge minigame ----------------
+   計器は「琥珀ネオンの計器盤」で統一（世界観: 黒〜濃紫の闇＋金の暖色ネオン）。
+   ガラスの奥に目盛りが沈み、狙いゾーンが琥珀に灯り、針は白熱して走る */
 .gauge-wrap { display: flex; flex-direction: column; gap: 14px; align-items: center; padding: 10px 0; }
 .gauge-bar {
   position: relative;
   width: 100%; height: 34px;
-  background: linear-gradient(to right, #2b2738, #463e5c, #2b2738);
-  border: 1px solid var(--panel-border);
+  background:
+    repeating-linear-gradient(90deg, transparent 0 23px, rgba(244,210,122,0.13) 23px 24px),
+    linear-gradient(180deg, rgba(46,38,62,0.9), #171221 55%, #0d0a14);
+  border: 1px solid rgba(244,210,122,0.38);
   border-radius: 17px;
   overflow: hidden;
+  box-shadow:
+    inset 0 2px 6px rgba(0,0,0,0.75),
+    inset 0 -1px 0 rgba(255,255,255,0.05),
+    0 0 14px rgba(244,210,122,0.12);
+}
+.gauge-bar::after {
+  /* ガラスの映り込み */
+  content: ""; position: absolute; left: 2%; right: 2%; top: 2px; height: 40%;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.1), transparent);
+  pointer-events: none;
 }
 .gauge-zone {
   position: absolute; top: 0; bottom: 0;
-  background: rgba(143, 211, 167, 0.45);
-  border-left: 1px solid #8fd3a7;
-  border-right: 1px solid #8fd3a7;
+  background: linear-gradient(180deg, rgba(255,222,140,0.42), rgba(244,180,90,0.24));
+  border-left: 1px solid #ffe79a;
+  border-right: 1px solid #ffe79a;
+  box-shadow: inset 0 0 12px rgba(255,214,120,0.35), 0 0 10px rgba(255,214,120,0.28);
 }
 .gauge-needle {
   position: absolute; top: -2px; bottom: -2px;
   width: 4px;
-  background: var(--accent);
-  box-shadow: 0 0 8px var(--accent);
+  border-radius: 2px;
+  background: linear-gradient(180deg, #fff8e8, #ffd27a);
+  box-shadow: 0 0 10px rgba(255,226,150,0.95), 0 0 22px rgba(255,190,90,0.5);
 }
 .practice-result { margin-top: 14px; font-size: 16px; line-height: 1.7; text-align: center; }
 .practice-result .primary-btn { margin-top: 12px; }
@@ -1470,26 +1487,31 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 .adjust-coals .spot-btn.sel { border-color: #ffe79a; box-shadow: 0 0 12px rgba(255,210,120,0.45); }
 @media (max-width: 760px) { .adjust-coals { grid-template-columns: 1fr; } }
 .temp-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
+/* 温度計: 冷えた紫紺 → 適温の琥珀 → 焦げの熾火赤。計器盤と同じ琥珀ネオンの枠 */
 .temp-bar {
   position: relative;
   height: 18px;
-  background: linear-gradient(to right, #3a5a8a, #6a5a3a 55%, #8a3a3a);
-  border: 1px solid var(--panel-border);
+  background:
+    repeating-linear-gradient(90deg, transparent 0 19px, rgba(10,8,14,0.5) 19px 20px),
+    linear-gradient(to right, #35406e, #6e5a35 52%, #8a3a2e 82%, #a33326);
+  border: 1px solid rgba(244,210,122,0.38);
   border-radius: 9px;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.6), 0 0 12px rgba(244,210,122,0.1);
 }
 .temp-zone {
   position: absolute; top: -3px; bottom: -3px;
-  background: rgba(143, 211, 167, 0.35);
-  border-left: 2px solid #8fd3a7;
-  border-right: 2px solid #8fd3a7;
+  background: linear-gradient(180deg, rgba(255,222,140,0.4), rgba(244,180,90,0.22));
+  border-left: 2px solid #ffe79a;
+  border-right: 2px solid #ffe79a;
   border-radius: 4px;
+  box-shadow: inset 0 0 10px rgba(255,214,120,0.35), 0 0 10px rgba(255,214,120,0.3);
 }
 .temp-marker {
   position: absolute; top: -7px; bottom: -7px;
   width: 6px; margin-left: -3px;
-  background: #fff;
+  background: linear-gradient(180deg, #ffffff, #ffe3ae);
   border-radius: 3px;
-  box-shadow: 0 0 10px rgba(255,255,255,0.9);
+  box-shadow: 0 0 10px rgba(255,240,200,0.95), 0 0 20px rgba(255,196,110,0.5);
   transition: left 0.35s cubic-bezier(0.3, 1.4, 0.4, 1);
 }
 .pull-bar {
@@ -1782,6 +1804,21 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   min-height: 0;
   overflow-y: auto;
 }
+/* 進行ボタン（次へ/結果へ等）は内側スクロールの下端に吸着させ、
+   低い画面でもスクロールせずに押せるようにする（#tn-body直下に置くのが前提） */
+#tn-layout .panel > #tn-body > .primary-btn,
+.making-controls > .primary-btn {
+  position: sticky;
+  bottom: 0;
+  z-index: 6;
+  margin-top: 10px;
+  background: linear-gradient(180deg, #3a2e44, #221a2e);
+  box-shadow: 0 -14px 18px -8px rgba(8, 7, 12, 0.9), 0 2px 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+#tn-layout .panel > #tn-body > .primary-btn:hover:not(:disabled),
+.making-controls > .primary-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #51405e, #2e2238);
+}
 #tn-progress { font-size: 12px; letter-spacing: 0.18em; color: var(--accent); opacity: 0.9; margin-bottom: 8px; }
 #tn-progress .tn-steps { opacity: 0.65; }
 
@@ -1957,7 +1994,7 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   box-shadow: 0 -14px 36px rgba(0,0,0,0.4), inset 0 16px 42px rgba(0,0,0,0.34);
 }
 .scale-display {
-  position: absolute; left: 50%; bottom: 34px; transform: translateX(-50%);
+  position: absolute; left: 50%; bottom: 56px; transform: translateX(-50%);
   z-index: 6;
   min-width: 118px;
   padding: 7px 12px;
@@ -2012,6 +2049,13 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   overflow: hidden;
   background: radial-gradient(ellipse at 50% 30%, #33201573, #1d110b 78%);
   box-shadow: inset 0 6px 14px rgba(0,0,0,0.75);
+}
+/* PNGボウルの上に重ねる開口部は、CSSアート用の塗りを消して葉だけ見せる */
+.art-bowl.has-asset .art-bowl-cavity { background: none; box-shadow: none; }
+/* ファンネルは中央スパイアの通気穴を葉レイヤーで塞がない（中心を抜く） */
+.art-bowl-cavity.phunnel-hole {
+  -webkit-mask: radial-gradient(ellipse 17% 22% at 50% 46%, transparent 96%, #000 100%);
+  mask: radial-gradient(ellipse 17% 22% at 50% 46%, transparent 96%, #000 100%);
 }
 .art-bowl-spire {
   position: absolute; left: 50%; top: 8%; width: 12%; height: 16%;
@@ -2126,8 +2170,15 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 .art-jar.on-shelf { position: relative; display: inline-block; margin-right: 12px; width: 98px; height: 78px; }
 .art-jar.on-shelf .art-jar-label { font-size: 10px; }
 .art-jar-hand { right: 2%; top: 5%; width: 310px; height: 250px; transform: rotate(0deg); transform-origin: 54% 78%; }
+/* 一枚絵（手＋フォーク＋タッパー）は大きく動かすとタッパーごと揺れて不自然なので、
+   盛る瞬間は小さな沈み込みだけにする（葉粒の落下 spawnPourGrains が主役） */
 .art-jar-hand.pouring { animation: jar-pour 0.6s ease-in-out; }
-@keyframes jar-pour { 45% { transform: rotate(3deg) translate(-34px, 24px) scale(1.03); } }
+@keyframes jar-pour { 45% { transform: translate(-8px, 9px); } }
+/* 分離合成（jar_open.png が届いたら）: タッパーは据え置き、すくう手だけ動く */
+.art-jar-open { position: absolute; right: 4%; top: 10%; width: 240px; height: 190px; z-index: 4; pointer-events: none; }
+.art-scoop { position: absolute; right: 20%; top: 2%; width: 250px; height: 210px; z-index: 5; pointer-events: none; }
+.art-scoop.pouring { animation: scoop-dip 0.6s ease-in-out; }
+@keyframes scoop-dip { 45% { transform: rotate(-6deg) translate(-56px, 40px); } }
 /* 注ぎの葉粒。ジャーの口からボウルへ落ちる */
 .art-pour-zone { position: absolute; left: 44%; top: 16%; width: 22%; height: 52%; z-index: 5; pointer-events: none; }
 .art-grain {
@@ -2158,6 +2209,8 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   box-shadow: 0 6px 10px rgba(0,0,0,0.35);
 }
 .art-bowl-mid.on-scale { bottom: 108px; }
+/* PNGスケール（正規化で実寸が伸びる）に合わせてボウルを上皿へ着地させる */
+.art-scale.has-asset ~ .art-bowl-mid.on-scale { bottom: 172px; }
 
 /* ---- パッキング（フォークでほぐし詰め） ---- */
 .art-fork {
@@ -2182,7 +2235,7 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 
 /* ---- 炭起こし（電熱コンロ＋ココナラ炭） ---- */
 .art-stove {
-  position: absolute; left: 50%; bottom: 13%; width: 330px; height: 190px;
+  position: absolute; left: 50%; bottom: 9%; width: 400px; height: 190px;
   transform: translateX(-50%); z-index: 2;
 }
 .art-stove::after {
@@ -2372,9 +2425,9 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 /* ---- 吸い出し（一人称のホースと煙） ---- */
 .art-hose { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
 .art-hose-line {
-  position: absolute; left: 30%; right: 18%; bottom: 34%; height: 34%;
+  position: absolute; left: 27%; right: 24%; bottom: 30%; height: 30%;
   z-index: 1; /* ガラスベースの後ろを通す */
-  border-bottom: 26px solid #262230;
+  border-bottom: 16px solid #262230;
   border-radius: 0 0 50% 46%;
   filter: drop-shadow(0 12px 16px rgba(0,0,0,0.45));
   transform: rotate(-6deg);
@@ -2385,6 +2438,13 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   background: linear-gradient(180deg, #34303e, #191622 74%);
   border-radius: 40px 16px 16px 40px;
   box-shadow: inset 0 4px 8px rgba(255,255,255,0.14), 0 14px 22px rgba(0,0,0,0.5);
+}
+/* 生成PNG（右手前に構えた斜めのマウスピース）は縦長なので箱を差し替える */
+.art-mouthpiece.has-asset {
+  right: 3%; bottom: 2%;
+  width: 300px; height: 300px;
+  transform: none;
+  border-radius: 0;
 }
 .art-mouthpiece-tip {
   position: absolute; right: -30px; top: 16%; width: 46px; height: 68%;
@@ -2863,6 +2923,13 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   align-items: flex-end;
   gap: 8px;
   pointer-events: none;
+}
+/* 作業台モードは右側が操作パネル＝バナーが操作を隠すので、左の作業台側へ出す */
+body:has(#screen-tournament.active.making-workbench) #gain-banner {
+  right: auto;
+  left: 3%;
+  top: 20%;
+  align-items: flex-start;
 }
 .gain-card {
   position: relative;
@@ -3401,7 +3468,8 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 #tn-ticker.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
 /* ===== 大会の生放送レイヤー: ニコ動風コメント＋体感スコア（#24/#20/#26） ===== */
-#tn-comments { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 30; container-type: inline-size; }
+/* 上端はHUD・工程タイトルの帯を避けて流す＝文字同士の重なり事故を防ぐ */
+#tn-comments { position: absolute; inset: 148px 0 0; overflow: hidden; pointer-events: none; z-index: 30; container-type: inline-size; }
 .nico {
   position: absolute; left: 0; white-space: nowrap;
   font-weight: 800; font-size: 19px; color: #fff;
@@ -3715,8 +3783,19 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 .hole-ringname { font-size: 20px; font-weight: bold; color: #ffe79a; letter-spacing: 0.1em; }
 .hole-rolename { font-size: 12px; color: var(--text-dim); margin-bottom: 10px; }
 .hole-meter { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--text-dim); }
-.hole-meter-bar { flex: 1; height: 7px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
-.hole-meter-bar > b { display: block; height: 100%; width: 0; background: linear-gradient(90deg,#69d98e,#ffe79a); transition: width 0.25s; }
+.hole-meter-bar {
+  flex: 1; height: 8px;
+  background: linear-gradient(180deg, #171221, #0d0a14);
+  border: 1px solid rgba(244,210,122,0.3);
+  border-radius: 4px; overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.7);
+}
+.hole-meter-bar > b {
+  display: block; height: 100%; width: 0;
+  background: linear-gradient(90deg, #b98c46, #ffd27a 70%, #fff0c8);
+  box-shadow: 0 0 8px rgba(255,214,120,0.55);
+  transition: width 0.25s;
+}
 .hole-count { margin-top: 8px; font-size: 13px; color: #cdd6ee; }
 .hole-punch { font-size: 17px; }
 .hole-advance { font-size: 13px; }
@@ -3870,13 +3949,26 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 /* ============ FLAVOR TRIAL（審査・master_spec 第2部 #3） ============ */
 .trial-arena { display: flex; flex-direction: column; gap: 13px; padding: 4px 0; }
 .trial-gauge { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-dim); }
-.trial-gauge-bar { flex: 1; height: 12px; background: rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; border: 1px solid rgba(120,140,200,0.25); }
-.trial-gauge-bar > b { display: block; height: 100%; width: 50%; background: linear-gradient(90deg,#69d98e,#ffe79a); transition: width 0.4s cubic-bezier(.2,.9,.3,1); }
+.trial-gauge-bar {
+  flex: 1; height: 12px;
+  background: linear-gradient(180deg, #171221, #0d0a14);
+  border-radius: 6px; overflow: hidden;
+  border: 1px solid rgba(244,210,122,0.32);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.7);
+}
+.trial-gauge-bar > b {
+  display: block; height: 100%; width: 50%;
+  background: linear-gradient(90deg, #b98c46, #ffd27a 70%, #fff0c8);
+  box-shadow: 0 0 10px rgba(255,214,120,0.5);
+  transition: width 0.4s cubic-bezier(.2,.9,.3,1);
+}
 .trial-doubt { position: relative; background: rgba(12,16,28,0.85); border: 1px solid rgba(180,90,90,0.4); border-radius: 10px; padding: 13px 16px; font-size: 17px; color: #f6ecd0; }
 .trial-zawa { display: block; margin-top: 4px; font-size: 11px; letter-spacing: 0.3em; color: #d07; opacity: 0.7; }
 .trial-concept { font-size: 13px; color: #aeb8d6; }
 .trial-concept b { color: #ffe79a; }
-.trial-hand { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+/* 9枚の手札が縦に伸びて進行ボタンが720pの外へ落ちないよう3列で畳む */
+.trial-hand { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+@media (max-width: 900px) { .trial-hand { grid-template-columns: 1fr 1fr; } }
 .trial-appeal { display: flex; justify-content: space-between; align-items: center; gap: 8px; text-align: left;
   background: rgba(20,24,40,0.9); border: 1px solid rgba(120,140,200,0.3); border-radius: 8px; padding: 9px 12px;
   color: #dfe6f5; font-size: 13.5px; cursor: pointer; transition: transform 0.1s, border-color 0.15s; }

@@ -60,6 +60,36 @@ function assetUrl(rel) {
   return "../" + rel;
 }
 
+// ---- 先読み（分割ファイル版のシーン切替・作業台のもたつき対策）----
+// 画像は初回参照時にネットワーク取得が走り、背景や作業台素材（数百KB〜2MB）で
+// 表示の待ちが見える。低優先度の直列キューで先にキャッシュへ温めておく。
+// スタンドアロン版（data URI）は対象外。多重登録は無視する。
+const _preloadedUrls = new Set();
+const _preloadQueue = [];
+let _preloadRunning = false;
+function queuePreload(rels) {
+  for (const rel of rels || []) {
+    if (!rel) continue;
+    const url = assetUrl(rel);
+    if (url.startsWith("data:") || _preloadedUrls.has(url)) continue;
+    _preloadedUrls.add(url);
+    _preloadQueue.push(url);
+  }
+  if (_preloadRunning) return;
+  _preloadRunning = true;
+  const next = () => {
+    const url = _preloadQueue.shift();
+    if (!url) { _preloadRunning = false; return; }
+    const img = new Image();
+    img.decoding = "async";
+    const go = () => setTimeout(next, 40); // 1枚ずつ・描画を邪魔しない間隔で
+    img.onload = go;
+    img.onerror = go;
+    img.src = url;
+  };
+  next();
+}
+
 function escapeHtml(s) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
