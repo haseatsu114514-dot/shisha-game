@@ -220,9 +220,12 @@ function save() {
 const $ = (sel) => document.querySelector(sel);
 
 // 顔ドット絵アイコン（tools/make_face_icons.py 生成・data.js に埋め込み）。
-// 無いキャラは null を返し、呼び出し側が文字バッジ等にフォールバックする
+// 無いキャラは null を返し、呼び出し側が文字バッジ等にフォールバックする。
+// ⚠️ oneesan（みんとの私服）は正体隠しのため意図的にエイリアスしない（文字バッジに落とす）
+const FACE_ICON_ALIASES = { kumicho: "ryuji", tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki" };
 function faceIconHtml(charId, cls = "pixel-face") {
-  const src = (D.face_icons || {})[charId];
+  const icons = D.face_icons || {};
+  const src = icons[charId] || icons[FACE_ICON_ALIASES[charId]];
   return src ? `<img class="${cls}" src="${src}" alt="">` : null;
 }
 
@@ -429,6 +432,10 @@ function maybeStartConfession(next) {
   if (state.lovers.includes(charId) || state.flags[`_friend_${charId}`]) return false;
   const done = () => { save(); next ? next() : showMap(); };
   const play = () => playDialogue(`confession_${charId}`, done);
+  // 行動結果から前触れなく告白シーンへ飛ばない。他の割り込みイベントと同じ
+  // 「マップに戻る→一拍→シーン」のリズムを挟む（P9）
+  const beat = (fn) => mapBeat(fn,
+    charId === "ageha" ? "——と、そのとき。" : `（……${displayName(charId)}の顔が、ふと浮かんだ）`);
   // あげはだけは向こうから来る（キャラ性として例外）。他は主人公の決断から
   const start = charId === "ageha" ? play : () => {
     playCustom({
@@ -460,7 +467,7 @@ function maybeStartConfession(next) {
   // すでに恋人がいる場合は、応える前に警告を挟む
   if (state.lovers.length > 0) {
     const current = state.lovers.map((id) => displayName(id)).join("、");
-    playCustom({
+    beat(() => playCustom({
       dialogue_id: `cheat_warning_${charId}`,
       lines: [
         { speaker: "", face: "", text: `（……今、${current}と付き合っている。）` },
@@ -482,10 +489,10 @@ function maybeStartConfession(next) {
       } else {
         done();
       }
-    });
+    }));
     return true;
   }
-  start();
+  beat(start);
   return true;
 }
 
@@ -525,8 +532,18 @@ const LOCATION_FROM_BG = {
   tonari_outside_night: ["tonari 外", "夜"],
   tonari_night: ["シーシャラウンジ『tonari』", "夜"],
   tonari_day: ["シーシャラウンジ『tonari』", "昼"],
-  shop: ["C.STATION", "大会会場"],
+  // 旧: shop=["C.STATION","大会会場"] は大会会場が bg_c_station_lobby に移る前の残骸（P5）
+  shop: ["Dr.fookah", "1階 ショップ"],
+  fookah_showroom: ["Dr.fookah", "2階 ショールーム"],
   tournament_stage: ["C.STATION", "本戦ステージ"],
+  c_station_day: ["C.STATION", "昼"],
+  c_station_night: ["C.STATION", "夜"],
+  c_station_lobby: ["C.STATION", "大会会場"],
+  cafe_day: ["カフェ", "昼"],
+  cafe_night: ["カフェ", "夜"],
+  kannon_day: ["観音堂", ""],
+  choizap: ["チョイザップ", ""],
+  hideaway: ["隠れ家ラウンジ", ""],
   street_day: ["街中", "昼"],
   street_night: ["街中", "夜"],
   naru_shop: ["KEMURIKUSA", "なるの店"],
@@ -582,10 +599,13 @@ const BG_NO_NIGHT_TINT = new Set([
   "kemurikusa.png", "peppermint.png",
 ]);
 
+// 直前に表示していたシーン背景（endDay のつなぎ文言が「今どこにいるか」を知るため・P7）
+let currentSceneBg = "";
 function setLocationFromBg(rel) {
   // 昼夜ペアの無い背景は、夜だけ色調補正を重ねる（tint。_night 画像と窓なし店内はそのまま）
   const bgEl = $("#vn-bg");
   const bgFile = String(rel || "").split("/").pop() || "";
+  currentSceneBg = bgFile;
   if (bgEl) bgEl.classList.toggle("night-tint",
     sceneIsNight() && !/_night\.png$/.test(bgFile) && !BG_NO_NIGHT_TINT.has(bgFile));
   const m = String(rel || "").match(/bg_([\w_]+?)\.png|^([\w_]+)\.png/);
@@ -1393,12 +1413,22 @@ const DATE_DECLINE_LINES = {
   rin: "ふうん。……サンプルのくせに生意気。また連絡する",
   ageha: "りょ！またさそうわ！むりはだめだぞ〜！",
 };
+// その日の夜に固定イベントが入っているか（夜の約束と固定イベントで
+// 1晩に外出が2回続くのを防ぐ・P8）。ch2 の日付は endDay の固定イベント分岐と一致させること
+function hasFixedNightEvent(day) {
+  if (!state) return false;
+  if (state.chapter === 1) return !!CH1_NIGHT_EVENTS[day];
+  if (state.chapter === 2) return [2, 4, 5, 6, 7, 10, 12, 13].includes(day);
+  return false;
+}
+
 function makeDateInvite(charId, id) {
   return {
     id,
     sender: charId,
     type: "invitation",
-    time_slot: state.day % 2 === 0 ? "night" : "noon",
+    // 固定イベントの夜はデートを昼に回す（P8）
+    time_slot: state.day % 2 === 0 && !hasFixedNightEvent(state.day) ? "night" : "noon",
     accept_event: `date_${charId}`,
     messages: DATE_INVITE_LINES[charId] || ["今日、少し会えない？"],
     decline_response: { text: DATE_DECLINE_LINES[charId] || "また今度ね" },
@@ -1440,6 +1470,9 @@ function limeDueMessages(tournamentDay) {
     } else {
       continue; // 未対応の条件
     }
+    // 夜の固定イベント日に夜のお誘いを重ねない（1晩に外出2回を防ぐ・P8）。
+    // 既読にはしないので、翌朝以降に自然に繰り越される
+    if (m.type === "invitation" && m.time_slot === "night" && hasFixedNightEvent(state.day)) continue;
     due.push(m);
   }
   // 恋人からのデートの誘い（試合の朝には来ない）
@@ -1530,6 +1563,28 @@ function addLimeBubble(side, text, sender) {
   if (window.SFX) SFX.bubble();
 }
 
+// 1回だけ出すシステムヒントのカード（LIMEのチャット外・画面中央に重ねる）。
+// タップ/OKで閉じるだけ。ゲーム進行は裏で待たせない（表示中も下のUIは生きている）
+function showSystemHint(title, text) {
+  const el = document.createElement("div");
+  el.id = "hint-overlay";
+  el.innerHTML =
+    `<div class="hint-card">` +
+    `<div class="hint-title">${title}</div>` +
+    `<p class="hint-text">${text}</p>` +
+    `<button class="hint-ok" type="button">OK</button>` +
+    `</div>`;
+  $("#game").appendChild(el);
+  requestAnimationFrame(() => el.classList.add("show"));
+  const close = () => {
+    if (window.SFX) SFX.select();
+    el.classList.remove("show");
+    setTimeout(() => el.remove(), 260);
+  };
+  el.querySelector(".hint-ok").addEventListener("click", close);
+  el.addEventListener("click", (e) => { if (e.target === el) close(); });
+}
+
 function addLimeNote(text) {
   const chat = $("#lime-chat");
   const note = document.createElement("div");
@@ -1558,10 +1613,15 @@ function limeReplyButtons(list) {
 
 function showLimeActions(m) {
   if (m.type === "invitation") {
-    // 初回だけ「システムの声」でルールを説明（誘いの透明性）
+    // 初めて誘いが届いたときだけ、LIMEのチャット外にシステムヒントを1回出す
+    //（チャット内のシステム文はトークの空気を壊すためやめた・O12）
     if (!state.flags._sysnote_invite) {
       state.flags._sysnote_invite = true;
-      addLimeNote("〜 誘いに乗ると行動を1回使う。そのぶん、ふつうに会いに行くより仲が深まりやすい。断っても嫌われたりはしない 〜");
+      save();
+      showSystemHint(
+        "はじめてのお誘い",
+        "誘いに乗ると行動を1回使う。そのぶん、ふつうに会いに行くより仲が深まりやすい。断っても嫌われたりはしない。"
+      );
     }
     limeReplyButtons([
       {
@@ -2263,7 +2323,8 @@ function endAction() {
 // 翌朝へ進める共通処理（試合日の判定を含む）。ch2の試合後にも使う
 function advanceDay() {
   if (state.chapter === 1 && state.day >= MAX_DAYS) {
-    // ch1 大会当日の朝: 応援LIMEが届く
+    // ch1 大会当日の朝: 他の朝と同じくDAYカードで日付を区切ってから（P6）、応援LIMEが届く
+    showDayCard(`DAY ${MAX_DAYS + 1}`, `${cupName()} 当日`);
     return morningPhone(() => startTournament(), { tournamentDay: true });
   }
   // 就寝の自然回復。寝る前に空っぽ＋無理を重ねていたら翌朝は風邪で1日休み
@@ -2310,6 +2371,9 @@ function advanceDay() {
     }, () => {
       state.stamina = Math.max(stamina(), 80);
       state.ap = 0;
+      // 丸一日寝込んだ＝ずっと家にいる。帰宅演出は挟まない（P4）。
+      // その日の固定イベントがある場合だけ「外に出る」つなぎ文言を通して再生される
+      state.flags._home_tonight = true;
       endDay();
     });
   }
@@ -2402,14 +2466,27 @@ function endDay() {
   // 夜の締め: 必ず家に帰って1日を終える（master_spec #3）。
   // 家シーシャ（第2章〜・一式所持時）はその帰宅シーンの中で選択肢になる
   const finishDay = () => maybeNightcap(advanceDay);
+  // 「家で休んだ／寝込んだ」夜はすでに家にいる＝暗転「家へ帰ろう」も帰り道ナレも挟まない（P3/P4）
+  const endedAtHome = !!state.flags._home_tonight;
+  delete state.flags._home_tonight;
   const goHome = () => nightFadeHome(finishDay);
+  // 固定イベントが無い夜の締め。家にいる夜はそのまま翌朝へ
+  const closeDay = endedAtHome ? advanceDay : goHome;
   // 夜の強制イベントは mapBeat（つなぎの一拍）を通してから再生する（#16）。
-  // つなぎ文言は行き先に合わせる＝夜に別の店へ行った直後でも
-  // 「なぜ急にtonariのシーンに？」とならないように（2026-07-02）
+  // つなぎ文言は「今どこにいるか」×「行き先」で決める＝夜にtonariでバイトした直後に
+  // 「帰り道、tonariに寄っていく」と出るような矛盾を消す（P7）
   const beatLabel = (bg) => {
-    const b = String(bg || "");
-    if (b.includes("tonari")) return "帰り道、tonariに寄っていく——";
-    if (b.includes("street")) return "帰り道——";
+    const dest = String(bg || "");
+    const destTonari = dest.includes("tonari");
+    if (endedAtHome) {
+      return destTonari
+        ? "——夜。ひと息ついた頃、tonariの明かりが気になって外に出た。"
+        : "——夜。少しだけ、外の空気を吸いに出る。";
+    }
+    const from = String(currentSceneBg || "");
+    if (destTonari && from.includes("tonari")) return "閉店後の店に、もう少しだけ残る——";
+    if (destTonari) return "帰り道、tonariに寄っていく——";
+    if (dest.includes("street")) return "帰り道——";
     return "夜になった——";
   };
   const dlgBg = (id) => (((D.dialogues[id] || {}).metadata || {}).bg || "");
@@ -2422,51 +2499,51 @@ function endDay() {
   if (state.chapter === 2) {
     if (state.day === 2 && !state.flags._ev2_abyss) {
       state.flags._ev2_abyss = true;
-      return pd("ch2_abyss_baito", finishDay, TONARI);
+      return pd("ch2_abyss_baito", goHome, TONARI);
     }
     if (state.day === 4 && !state.flags._ev2_sofa) {
       state.flags._ev2_sofa = true;
-      return pd("ch2_sofa_burn", finishDay, TONARI);
+      return pd("ch2_sofa_burn", goHome, TONARI);
     }
     if (state.day === 5 && !state.flags._ev2_slump) {
       state.flags._ev2_slump = true;
       // 味覚スランプ発症: 以後、ミックス画面の味の記憶がノイズ混じりになる
-      return pd("ch2_slump_taste", () => { state.flags._taste_slump = true; save(); finishDay(); }, TONARI);
+      return pd("ch2_slump_taste", () => { state.flags._taste_slump = true; save(); goHome(); }, TONARI);
     }
     // DAY6: 全編モチーフ「店の匂い」のch2配置（炭落とし事故の匂いが店に残る）
     if (state.day === 6 && !state.flags._ev2_smell) {
       state.flags._ev2_smell = true;
-      return pd("ch2_lingering_smell", finishDay);
+      return pd("ch2_lingering_smell", goHome);
     }
     if (state.day === 7 && !state.flags._ev2_ageha) {
       state.flags._ev2_ageha = true;
-      return pd("ch2_pre_tournament_realisation", finishDay, "res://assets/backgrounds/bg_tournament_stage.png");
+      return pd("ch2_pre_tournament_realisation", goHome, "res://assets/backgrounds/bg_tournament_stage.png");
     }
     // DAY10: スミさんの沈黙（連勝が始まった頃。ch4特訓「同じ顔をさせたくなかった」の前振り）
     if (state.day === 10 && !state.flags._ev2_sumi) {
       state.flags._ev2_sumi = true;
-      return pd("ch2_sumi_silence", finishDay);
+      return pd("ch2_sumi_silence", goHome);
     }
     if (state.day === 12 && !state.flags._ev2_minto) {
       state.flags._ev2_minto = true;
-      return pd("ch2_minto_warning", finishDay);
+      return pd("ch2_minto_warning", goHome);
     }
     if (state.day === 13 && !state.flags._ev2_tsumugi) {
       state.flags._ev2_tsumugi = true;
-      return pd("ch2_tsumugi_color", finishDay, TONARI);
+      return pd("ch2_tsumugi_color", goHome, TONARI);
     }
-    return goHome();
+    return closeDay();
   }
   // ---- 第1章の夜の固定イベント
   if (state.day === 2 && !state.flags._ev_salaryman) {
     state.flags._ev_salaryman = true;
-    return pd("ch1_salaryman_regular", finishDay, TONARI);
+    return pd("ch1_salaryman_regular", goHome, TONARI);
   }
   // DAY4: あげはカメオ（謎のギャルが荷物を拾ってくれる）。ホワイトグミベアの残り香が
   // ch2初対面（ch2_rivals_first_sight）で回収される伏線
   if (state.day === 4 && !state.flags._ev_ageha_cameo) {
     state.flags._ev_ageha_cameo = true;
-    return pd("ch1_ageha_encounter", finishDay, "res://assets/backgrounds/bg_street_night.png");
+    return pd("ch1_ageha_encounter", goHome, "res://assets/backgrounds/bg_street_night.png");
   }
   // DAY7夜（折り返し）: 中間チェック。スミさんが「素の一台」を講評し、残り日数に目的を作る
   if (state.day === 7 && !state.flags._ev_day3_check) {
@@ -2493,31 +2570,31 @@ function endDay() {
           { speaker: "sumi", face: "normal", text: "焦るな。まだ{daysLeft}日ある。基礎の反復が一番効く時期だ" },
         ],
       },
-    }, finishDay);
+    }, goHome);
   }
   if (state.day === 5 && !state.flags._ev_day5) {
     state.flags._ev_day5 = true;
-    return pd("ch1_day5_sumi_story", finishDay, TONARI);
+    return pd("ch1_day5_sumi_story", goHome, TONARI);
   }
   // DAY9夜: 出場者説明会（#11 3ライバルとの強制顔合わせ。未交流でも大会会話が破綻しない）
   if (state.day === 9 && !state.flags._ev_meet_rivals) {
     state.flags._ev_meet_rivals = true;
-    return pd("ch1_meet_rivals", finishDay, "res://assets/backgrounds/bg_c_station_night.png");
+    return pd("ch1_meet_rivals", goHome, "res://assets/backgrounds/bg_c_station_night.png");
   }
   // DAY10夜: サラリーマン常連の小さな異変（後章の仕込み・#12）
   if (state.day === 10 && !state.flags._ev_salaryman_change) {
     state.flags._ev_salaryman_change = true;
-    return pd("ch1_salaryman_change", finishDay, TONARI);
+    return pd("ch1_salaryman_change", goHome, TONARI);
   }
   // DAY12夜: つむぎの個別イベント（煙の色スケッチ・#12）
   if (state.day === 12 && !state.flags._ev_tsumugi_night) {
     state.flags._ev_tsumugi_night = true;
-    return pd("ch1_tsumugi_sketch", finishDay, TONARI);
+    return pd("ch1_tsumugi_sketch", goHome, TONARI);
   }
   // DAY13夜（大会前々日）: 前日リハーサル（通し）。出来が本番の小ボーナスになる
   if (state.day === 13 && !state.flags._ev_day6_rehearsal) {
     state.flags._ev_day6_rehearsal = true;
-    afterRehearsal = finishDay;
+    afterRehearsal = goHome;
     return pc({
       dialogue_id: "ch1_day6_rehearsal",
       metadata: { bg: TONARI },
@@ -2532,9 +2609,9 @@ function endDay() {
   }
   if (state.day === 14 && !state.flags._ev_day7) {
     state.flags._ev_day7 = true;
-    return pd("ch1_day7_last_night", finishDay, TONARI);
+    return pd("ch1_day7_last_night", goHome, TONARI);
   }
-  goHome();
+  closeDay();
 }
 
 // --- バイト
@@ -3080,6 +3157,8 @@ function doRinVisit() {
 function doRest() {
   visitContextChar = null;
   const night = state.ap <= 1;
+  // 夜に家で休んだ＝もう家にいる。endDay の帰宅演出（暗転＋帰り道ナレ）を重複させない（P3）
+  if (night) state.flags._home_tonight = true;
   state.flags._rested_today = true; // 体力に余裕がある日（家シーシャの効きが良くなる）
   // 家に帰る＝最大体力の半分ぶん回復。溜まった疲労（overwork）もリセット＝「あえて帰る」選択に意味
   addStamina(STAMINA_GAIN.rest);
@@ -7057,7 +7136,10 @@ function finishTutorial() {
   }, () => {
     // チュートリアル直後: 私服のみんと（お姉さん）が客として来る。正体は明かさない
     playDialogue("ch1_tutorial_oneesan", () => {
+      // ここで初めて日常フェーズ開始＝HUDの解禁とDAY 1カードを同時に出す（P1）
+      state.phase = "daily";
       save();
+      updateHud();
       showDayCard("DAY 1", `SMOKE CROWN CUP まで あと${MAX_DAYS}日`);
       showMap();
     }, "res://assets/backgrounds/bg_tonari_inside.png");
@@ -7109,7 +7191,9 @@ function startNewGame() {
         () => {
           if (window.SFX) SFX.bgm("tonari");
           playDialogue("ch1_opening", () => {
-            state.phase = "daily";
+            // phase はまだ "opening" のまま＝HUDは出さない。チュートリアル通し体験まで
+            // 同じ会話の流れなので、UIが途中から突然出現しないようにする（P1）。
+            // HUD解禁とDAY 1カードは finishTutorial 側でまとめて行う
             save();
             startTutorial();
           }, "res://assets/backgrounds/bg_tonari_inside.png");
@@ -7131,6 +7215,9 @@ function continueGame(saved) {
   if (!state.csVisits) state.csVisits = 0;
   // 日常スロット導入前のセーブ互換（アプリ説明は出さない）
   if (!state.reel && typeof REEL !== "undefined") state.reel = Object.assign(REEL.newReelState(), { introDone: true });
+  // phase="opening" のままのセーブ（チュートリアル途中の中断）は日常として復帰させる。
+  // opening 中は HUD が出ない仕様（P1）のため、そのまま復帰するとHUDが永遠に出ない
+  if (state.phase === "opening") state.phase = "daily";
   // 凛（問屋街の代理店）導入前のセーブ互換
   if (!("rin" in state.affinity)) { state.affinity.rin = 0; state.visits.rin = 0; }
   // 第2章・恋愛システム導入前のセーブ互換
