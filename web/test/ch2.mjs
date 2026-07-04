@@ -175,7 +175,7 @@ await page.evaluate(() => {
   startChapter2();
 });
 
-const plan = ["シーシャの練習", "tonariでバイト", "シーシャの練習", "家に帰る"];
+const plan = ["tonariでバイト", "お客さんとして利用", "tonariでバイト", "家に帰る"];
 let planIdx = 0;
 let stagesSeen = [];
 let slumpSeen = false;
@@ -234,8 +234,8 @@ while (guard++ < 8000) {
   if (screen === "screen-map") {
     const label = plan[planIdx % plan.length];
     planIdx++;
-    // tonari統合(#9): バイト/練習/スミさん/常連席 は tonari ピン → サブメニューの2段
-    const isTonariSub = ["tonariでバイト", "シーシャの練習", "スミさんと話す", "常連席"].some((s) => label.includes(s));
+    // tonari統合(O16): 「お客さんとして利用/バイト」の2択は tonari ピン → サブメニューの2段
+    const isTonariSub = ["tonariでバイト", "お客さんとして利用"].some((s) => label.includes(s));
     if (isTonariSub) {
       try {
         const pin = page.locator("#map-pins .spot-pin", { hasText: "tonari" }).first();

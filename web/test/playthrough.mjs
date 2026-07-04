@@ -35,13 +35,13 @@ log("disclaimer acknowledged");
 // 行動計画（マップで上から順に消費する）
 // キャラ訪問でスポットが解禁される順序も兼ねて検証する
 const plan = [
-  "tonariでバイト", "Dr.fookah", "スミさんと話す",
+  "tonariでバイト", "Dr.fookah", "お客さんとして利用",
   "KEMURIKUSA", "EDEN",
   "PEPPERMINT", "Dr.fookah", "カフェ",
   "観音堂", "Dr.fookah", "チョイザップ",
-  "シーシャの練習", "常連席",
+  "tonariでバイト", "お客さんとして利用",
   "tonariでバイト", "C.STATION",
-  "シーシャの練習", "家に帰る",
+  "tonariでバイト", "家に帰る",
 ];
 let planIdx = 0;
 let guard = 0;
@@ -118,8 +118,8 @@ while (guard++ < 5000) {
       await page.waitForTimeout(30);
       continue;
     }
-    // tonari統合(#9): バイト/練習/スミさん/常連席 は tonari ピン → サブメニューの2段
-    const isTonariSub = ["tonariでバイト", "シーシャの練習", "スミさんと話す", "常連席"].some((s) => label.includes(s));
+    // tonari統合(O16): 「お客さんとして利用/バイト」の2択は tonari ピン → サブメニューの2段
+    const isTonariSub = ["tonariでバイト", "お客さんとして利用"].some((s) => label.includes(s));
     if (isTonariSub) {
       try {
         const pin = page.locator("#map-pins .spot-pin", { hasText: "tonari" }).first();

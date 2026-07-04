@@ -55,10 +55,9 @@ for (let i = 0; i < 2000; i++) {
 }
 await page.screenshot({ path: `${OUT}/04_map.png` });
 
-// 練習画面（ドリル選択 → 本番と同じミニゲーム）。tonari統合(#9): tonari → 練習 の2段
-await page.locator("#map-pins .spot-pin", { hasText: "tonari" }).first().click();
-await page.waitForSelector("#tonari-menu.show");
-await page.locator("#tonari-menu .spot-btn", { hasText: "シーシャの練習" }).click();
+// 練習画面（ドリル選択 → 本番と同じミニゲーム）。
+// O16でメニューからは撤去（バイトのシフト後導線に統合）のため、スクショ用に直接開く
+await page.evaluate(() => { state.flags._baito_drill_free = true; startPractice(); });
 await page.waitForSelector("#practice-menu .spot-btn");
 await page.screenshot({ path: `${OUT}/05_practice_menu.png` });
 await page.locator("#practice-menu .spot-btn").first().click();

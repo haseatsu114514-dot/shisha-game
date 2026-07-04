@@ -64,13 +64,16 @@ function rankFromPts(pts) {
 // ============ 体力（スタミナ）system（master_spec #6） ============
 // 「若いので甘め。ただし無理を重ねると寝込む」。数値は非表示でゲージのみ
 const STAMINA_LOW = 25;        // ここ未満でシーシャ系行動 → 警告→強行で酸欠
-const STAMINA_COST = { baito: 18, visit: 14, talk: 8, practice: 14, rin: 12, date: 8, homePuff: 8, gym: 8 };
-// 体力は蓄積制(#41): 就寝回復(24)は「どの行動の組み合わせでも」1日分の消耗を
-// やや下回る＝店巡り（訪問×2=28）だけの日も含めて毎日すこしずつ削れる
-// （旧値は訪問2回<回復で、店巡り中心だと一生減らなかった・2026-07-02オーナー報告）。
-// 目安: バイト＋訪問なら章に2回、訪問だけなら章に1回「家で休むか」を考える。
-// 毎日休まないと詰む厳しさにはしない（休憩1回で立て直せる曲線）。
-const STAMINA_GAIN = { rest: 50, cafe: 12, kannon: 12, sleep: 24 };
+const STAMINA_COST = { baito: 24, visit: 16, talk: 10, practice: 18, rin: 14, date: 10, homePuff: 8, gym: 8 };
+// 体力は蓄積制(#41): 就寝回復(26)は「どの行動の組み合わせでも」1日分の消耗を
+// 下回る＝店巡り（訪問×2=32）だけの日も含めて毎日目に見えて削れる
+// （2026-07-04 再調整: 旧値 baito18/visit14/sleep24 は減りが緩く
+//   「ずっと行動しても全然減らない」とオーナー報告 → 全体を強めた）。
+// 目安: バイト＋訪問なら DAY4-5 に最初の「家で休むか」が来て章に2〜3回、
+// 訪問だけなら章に1回。毎日休まないと詰む厳しさにはしない（休憩1回で立て直せる曲線）。
+// 変えるときは web/test/balance.mjs A3 の曲線検証（検討1〜3回・素直に休めば
+// 警告ライン未満に落ちない）を必ず通すこと。
+const STAMINA_GAIN = { rest: 55, cafe: 12, kannon: 12, sleep: 26 };
 function stamina() { return state.stamina ?? 100; }
 function addStamina(n) {
   state.stamina = Math.max(0, Math.min(100, stamina() + n));
@@ -185,6 +188,7 @@ function newState() {
     affinity: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0, rin: 0, ageha: 0 },
     affinityPts: {},       // 好感度の内部ポイント（隠し数値。閾値で affinity の段階が上がる）
     visits: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0, rin: 0, ageha: 0, kumicho: 0, rei: 0, volk: 0 },
+    visitStory: {},        // 固有会話の消化数（O21。visits は「行った回数」で別カウント）
     stamina: 100,          // 体力（数値は非表示・ゲージのみ）
     dayVisited: {},        // 店ごとの最終訪問日（同じ店は1日1回まで）
     lovers: [],            // 付き合っているキャラ（複数なら浮気状態）
@@ -275,9 +279,26 @@ function toast(msg) {
 // labelSub: 補足（"少し上がった" 等）
 const gainQueue = [];
 let gainShowing = 0;
-function gainBanner({ kind = "stat", stat = "", badge = "+", labelTop = "STATUS UP", labelMain = "", labelSub = "" }) {
-  gainQueue.push({ kind, stat, badge, labelTop, labelMain, labelSub });
+function gainBanner({ kind = "stat", stat = "", badge = "+", labelTop = "STATUS UP", labelMain = "", labelSub = "", hearts = null, duration = 0 }) {
+  gainQueue.push({ kind, stat, badge, labelTop, labelMain, labelSub, hearts, duration });
   flushGainQueue();
+}
+
+// 好感度バナー用: 5つのハート列。前の状態から新しい状態へ「中の色がぐいーんと伸びる」
+// アニメで進捗を見せる（O20）。rank=満タンのハート数 / frac=次の段階への進み（0〜1）
+function affinityHearts(prevPts, newPts) {
+  const seg = (r) => (AFFINITY_RANK_PTS[Math.min(r + 1, AFFINITY_RANK_PTS.length - 1)] - AFFINITY_RANK_PTS[r]) || 1;
+  const frac = (pts, r) => (r >= AFFINITY_CAP ? 1 : Math.max(0, Math.min(1, (pts - AFFINITY_RANK_PTS[r]) / seg(r))));
+  const prevRank = rankFromPts(prevPts);
+  const rank = rankFromPts(newPts);
+  return { prevRank, rank, from: frac(prevPts, prevRank), to: frac(newPts, rank) };
+}
+
+// ハート i（0始まり）の塗り率（%）。rank個は満タン、rank番目のハートに進捗が入る
+function heartFill(rank, frac, i) {
+  if (i < rank) return 100;
+  if (i === rank) return Math.round(frac * 100);
+  return 0;
 }
 function flushGainQueue() {
   if (!gainQueue.length) return;
@@ -289,14 +310,28 @@ function flushGainQueue() {
   // カード自体にも stat-c-<en> を付け、吹き出しの枠・地色・光まで項目色に連動させる
   const statCls = item.stat ? ` stat-c-${item.stat}` : "";
   card.className = `gain-card ${item.kind}${statCls}`;
+  const h = item.hearts;
+  const heartsHtml = h
+    ? `<div class="gain-hearts">${[0, 1, 2, 3, 4].map((i) =>
+        `<span class="gh${i >= h.prevRank && i < h.rank ? " pop" : ""}" style="--fill:${heartFill(h.prevRank, h.from, i)}%"></span>`).join("")}</div>`
+    : "";
   card.innerHTML =
     `<div class="badge${statCls}">${item.badge}</div>` +
     `<div class="meta">` +
       `<span class="label-top">${item.labelTop}</span>` +
       `<span class="label-main${statCls}">${item.labelMain}</span>` +
       (item.labelSub ? `<span class="label-sub">${item.labelSub}</span>` : "") +
+      heartsHtml +
     `</div>`;
   box.appendChild(card);
+  if (h) {
+    // 1フレーム置いてから最終状態へ→ CSS transition で「ぐいーん」と伸びる
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      card.querySelectorAll(".gh").forEach((el, i) => {
+        el.style.setProperty("--fill", `${heartFill(h.rank, h.to, i)}%`);
+      });
+    }));
+  }
   gainShowing++;
   // SE
   if (window.SFX) {
@@ -304,12 +339,13 @@ function flushGainQueue() {
     else if (item.kind === "money-plus") SFX.coin();
     else if (item.kind === "stat") SFX.stamp();
   }
-  // CSSアニメは合計約2.3s（in 0.45s + 待機 1.4s + out 0.45s）
+  // CSSアニメは合計約2.3s（in 0.45s + 待機 1.4s + out 0.45s）。
+  // ハートの段階アップは伸びる演出を見せたいので少し長く出す
   setTimeout(() => {
     card.remove();
     gainShowing--;
     flushGainQueue();
-  }, 2350);
+  }, item.duration || (item.hearts && item.hearts.rank > item.hearts.prevRank ? 3000 : 2350));
   // 次のバナーは少しずらして見せる
   setTimeout(flushGainQueue, 280);
 }
@@ -369,25 +405,29 @@ function gainAffinity(charId, kind = "visit") {
   if ((state.lovers || []).includes(charId)) {
     if (!dateContext) return false; // 店で会っても絆は深まらない（master_spec #24）
     if ((state.loveLevel[charId] || 0) >= AFFINITY_CAP) return false;
-    state.lovePts[charId] = (state.lovePts[charId] || 0) + pts;
+    const prevLovePts = state.lovePts[charId] || 0;
+    state.lovePts[charId] = prevLovePts + pts;
+    const hearts = affinityHearts(prevLovePts, state.lovePts[charId]);
     const next = rankFromPts(state.lovePts[charId]);
     if (next > (state.loveLevel[charId] || 0)) {
       state.loveLevel[charId] = next;
-      gainBanner({ kind: "affinity", badge, labelTop: "BOND UP", labelMain: name, labelSub: `恋人との絆が深まった（Lv.${next}）` });
+      gainBanner({ kind: "affinity", badge, labelTop: "BOND UP", labelMain: name, labelSub: `恋人との絆が深まった（Lv.${next}）`, hearts });
     } else {
-      gainBanner({ kind: "affinity", badge, labelTop: "BOND", labelMain: name, labelSub: "心の距離が少し近づいた" });
+      gainBanner({ kind: "affinity", badge, labelTop: "BOND", labelMain: name, labelSub: "心の距離が少し近づいた", hearts });
     }
     return true;
   }
   // ---- 通常: 内部ポイント加算 → 閾値で段階アップ
   if (state.affinity[charId] >= AFFINITY_CAP) return false;
-  state.affinityPts[charId] = (state.affinityPts[charId] || 0) + pts;
+  const prevPts = state.affinityPts[charId] || 0;
+  state.affinityPts[charId] = prevPts + pts;
+  const hearts = affinityHearts(prevPts, state.affinityPts[charId]);
   const rank = rankFromPts(state.affinityPts[charId]);
   if (rank > state.affinity[charId]) {
     state.affinity[charId] = rank;
-    gainBanner({ kind: "affinity", badge, labelTop: "AFFINITY UP", labelMain: name, labelSub: "距離が縮まった気がする" });
+    gainBanner({ kind: "affinity", badge, labelTop: "AFFINITY UP", labelMain: name, labelSub: "距離が縮まった気がする", hearts });
   } else {
-    gainBanner({ kind: "affinity", badge, labelTop: "AFFINITY", labelMain: name, labelSub: "少し打ち解けた気がする" });
+    gainBanner({ kind: "affinity", badge, labelTop: "AFFINITY", labelMain: name, labelSub: "少し打ち解けた気がする", hearts });
   }
   // 好感度MAX到達 → 次にマップへ戻ったタイミングで告白イベント
   if (
@@ -1287,11 +1327,11 @@ function playCustom(dialogue, onDone, bgOverride) {
 // ---------------------------------------------------------------- daily loop
 // tonari統合(#9): バイト・練習・スミさん・常連席(つむぎ) は「tonari」1スポットに集約（場所で管理）。
 // マップでは tonari ピン → サブメニュー（showTonari）でどれをするか選ぶ。
+// tonari のサブメニュー（O16・2026-07-04 再編）: 「お客さんとして利用」と「バイト」の2択。
+// 練習とスミさんとの交流はバイトのシフト後の選択肢に、つむぎは客席（お客さん利用）に統合
 const TONARI_SPOTS = [
-  { id: "baito", label: "tonariでバイト", desc: "接客で稼ぐ。基本給＋オーダーの出来で売上ボーナス", cost: 0 },
-  { id: "practice", label: "シーシャの練習", desc: "tonariの隅で腕を磨く", cost: 0 },
-  { id: "sumi", label: "スミさんと話す", desc: "師匠の昔話と教え", cost: 0, charId: "sumi" },
-  { id: "tsumugi", label: "常連席（つむぎ）", desc: "tonari常連の彼女の席へ", cost: 0, charId: "tsumugi" },
+  { id: "customer", label: "お客さんとして利用", desc: "客席でゆっくり一服。常連席にはいつもの子がいる", cost: 0, charId: "tsumugi" },
+  { id: "baito", label: "tonariでバイト", desc: "接客で稼ぐ。シフト後はスミさんと話したり、裏で自主練もできる", cost: 0 },
 ];
 const SPOTS = [
   { id: "tonari", label: "tonari（お店）", desc: "バイト・練習・スミさん・常連席。今日は店で何をする？", cost: 0 },
@@ -1358,13 +1398,31 @@ const VISIT_SEQUENCES = {
   volk: ["ch2_volk_first", "ch2_volk_second", "ch2_volk_third", "ch2_volk_fourth"],
 };
 
-// 通い切ったあとの繰り返し訪問（必ず何かしらの報酬を付ける）
+// テンプレ訪問（固有会話が無い回。必ず何かしらの報酬を付ける）。
+// text は配列にすると訪問回数でローテーションする（毎回同じ文言の単調さ対策）
 const REPEAT_VISIT = {
-  sumi: { text: "スミさんの手元を眺めながら、何気ない話をした。炭の切り方ひとつにも年季がにじんでいる。", stats: { technique: 2 } },
-  tsumugi: { text: "つむぎの席の近くで、煙の形の話をした。彼女の見ている世界は、少しだけ自分と違う。", stats: { sense: 2 } },
-  naru: { text: "なるの店で一服。スピード勝負の段取りを盗み見る。鼻の良さに毎回気づかされる。", stats: { insight: 2 } },
-  adam: { text: "アダムの店で一服。ダブルアップル一筋の頑固さに、芯の強さを感じる。", stats: { guts: 2 } },
-  minto: { text: "みんとの店で一服。客あしらいの軽やかさは、やっぱり真似できない。", stats: { charm: 2 } },
+  sumi: { text: [
+    "スミさんの手元を眺めながら、何気ない話をした。炭の切り方ひとつにも年季がにじんでいる。",
+    "閉店作業のスミさんの隣で、道具の手入れを教わった。ブラシの角度まで理由がある。",
+    "常連さんの噂話に混ざりながら、スミさんの手元を目で追った。",
+  ], stats: { technique: 2 } },
+  tsumugi: { text: [
+    "つむぎの席の近くで、煙の形の話をした。彼女の見ている世界は、少しだけ自分と違う。",
+    "つむぎの隣で、今日の煙をスケッチする横顔をしばらく眺めていた。",
+    "つむぎとぽつぽつ、好きな香りの話をした。静かで、悪くない時間。",
+  ], stats: { sense: 2 } },
+  naru: { text: [
+    "なるの店で一服。スピード勝負の段取りを盗み見る。鼻の良さに毎回気づかされる。",
+    "なるは今日も忙しそうだ。合間の一言二言で、それでも十分伝わる。",
+  ], stats: { insight: 2 } },
+  adam: { text: [
+    "アダムの店で一服。ダブルアップル一筋の頑固さに、芯の強さを感じる。",
+    "今日も店中がダブルアップルの甘い匂い。アダムは黙って頷いた。",
+  ], stats: { guts: 2 } },
+  minto: { text: [
+    "みんとの店で一服。客あしらいの軽やかさは、やっぱり真似できない。",
+    "みんとの店は今日もにぎやか。隅の席で一服して帰った。",
+  ], stats: { charm: 2 } },
   ageha: { text: "アゲハの店で一服。明るさに当てられて、こっちまで肩の力が抜ける。", stats: { sense: 2 } },
   kumicho: { text: "神崎煙草店で一服。組長と黙って同じ煙を吸うだけで、不思議と腹が据わる。", stats: { guts: 2 } },
   rei: { text: "零-ZERO-で一服。爆音の中、REIは何も言わない。でも、煙はやさしい。", stats: { charm: 2 } },
@@ -1390,8 +1448,9 @@ function hasLimeContact(id) {
     if (!state.limeContacts.includes(id)) { state.limeContacts.push(id); save(); }
     return true;
   }
-  // 訪問が交換のしきい値に達していれば交換成立（その瞬間に記録）
-  if ((state.visits[id] || 0) >= (LIME_EXCHANGE_VISITS[id] || 1)) {
+  // 固有会話の消化数が交換のしきい値に達していれば交換成立（その瞬間に記録）。
+  // 交換シーンは固有会話の中にあるので、テンプレ訪問の回数では数えない（O21）
+  if (visitStoryCount(id) >= (LIME_EXCHANGE_VISITS[id] || 1)) {
     state.limeContacts = state.limeContacts || [];
     if (!state.limeContacts.includes(id)) { state.limeContacts.push(id); save(); }
     return true;
@@ -1945,23 +2004,26 @@ const SPOT_ICONS = {
 };
 const SPOT_FACE = { tonari: "sumi", sumi: "sumi", tsumugi: "tsumugi", naru: "naru", adam: "adam", minto: "minto" };
 
-// マップ上のピン位置（%）と短いラベル名
+// マップ上のピン位置（%）と短いラベル名。
+// 密集して押しづらいという報告（O19・2026-07-04）を受けて全体を再配置。
+// ルール: 同時に出るピン同士は横12%か縦10%以上離す／右下の情報パネル
+// （x≳62%・y≳70%）にはピンを置かない／ch2はライバル店が入れ替わるので
+// ch1専用（naru/adam/minto）とch2専用（kumicho/ageha/rei/volk）の重なりは許容
 const SPOT_LAYOUT = {
-  tonari:    { x: 86.7, y: 41.7, theme: "baito",   short: "tonari",     area: "tonari" },
-  naru:      { x: 72.3, y: 37.5, theme: "rival",   short: "KEMURIKUSA", area: "繁華街" },
-  adam:      { x: 47.7, y: 47.2, theme: "rival",   short: "EDEN",       area: "下町" },
-  minto:     { x: 34.8, y: 54.2, theme: "rival",   short: "PEPPERMINT",  area: "繁華街" },
-  kumicho:   { x: 40, y: 24, theme: "rival",   short: "神崎煙草店", area: "旧市街" },
-  ageha:     { x: 58, y: 20, theme: "rival",   short: "AGEHA",      area: "繁華街" },
-  rei:       { x: 72, y: 32, theme: "rival",   short: "零-ZERO-",   area: "ライブ通り" },
-  volk:      { x: 50, y: 38, theme: "rival",   short: "鉄の煙",     area: "工業地区" },
-  choizap:   { x: 28.9, y: 32.6, theme: "shop",    short: "チョイザップ", area: "ジム" },
-  kannon:    { x: 16.0, y: 54.2, theme: "park",    short: "観音堂",     area: "古町" },
-  // カフェは tonari／家 と重なると家のピンに覆われてタップ不能になる（#ピン団子）。右上クラスタから離す
-  cafe:      { x: 74.5, y: 57.0, theme: "cafe",    short: "カフェ",     area: "繁華街" },
-  c_station: { x: 59.4, y: 60.4, theme: "stadium", short: "C.STATION",  area: "会場" },
-  shop:      { x: 42.2, y: 37.5, theme: "shop",    short: "Dr.fookah",  area: "問屋街" },
-  rest:      { x: 88, y: 60, theme: "rest",    short: "家",         area: "自宅" },
+  tonari:    { x: 86, y: 36, theme: "baito",   short: "tonari",     area: "tonari" },
+  naru:      { x: 70, y: 24, theme: "rival",   short: "KEMURIKUSA", area: "繁華街" },
+  adam:      { x: 46, y: 48, theme: "rival",   short: "EDEN",       area: "下町" },
+  minto:     { x: 28, y: 62, theme: "rival",   short: "PEPPERMINT",  area: "繁華街" },
+  kumicho:   { x: 30, y: 16, theme: "rival",   short: "神崎煙草店", area: "旧市街" },
+  ageha:     { x: 52, y: 18, theme: "rival",   short: "AGEHA",      area: "繁華街" },
+  rei:       { x: 70, y: 30, theme: "rival",   short: "零-ZERO-",   area: "ライブ通り" },
+  volk:      { x: 48, y: 40, theme: "rival",   short: "鉄の煙",     area: "工業地区" },
+  choizap:   { x: 20, y: 36, theme: "shop",    short: "チョイザップ", area: "ジム" },
+  kannon:    { x: 12, y: 56, theme: "park",    short: "観音堂",     area: "古町" },
+  cafe:      { x: 72, y: 54, theme: "cafe",    short: "カフェ",     area: "繁華街" },
+  c_station: { x: 54, y: 66, theme: "stadium", short: "C.STATION",  area: "会場" },
+  shop:      { x: 36, y: 30, theme: "shop",    short: "Dr.fookah",  area: "問屋街" },
+  rest:      { x: 89, y: 62, theme: "rest",    short: "家",         area: "自宅" },
 };
 
 function showMap(opts = {}) {
@@ -2163,7 +2225,8 @@ function selectSpot(spot) {
     switch (spot.id) {
       case "tonari": return showTonari(); // tonari統合(#9): 中で何をするか選ぶ（行動はサブ選択時に消費）
       case "baito": return shishaGuard(() => doBaito());
-      case "practice": return shishaGuard(() => startPractice());
+      case "customer": return doVisit("tsumugi"); // 客席利用＝常連席のつむぎと過ごす（O16）
+      case "practice": return shishaGuard(() => startPractice()); // 現在はバイトのシフト後からのみ到達（O16）
       case "choizap": return doChoizap();
       case "kannon": return doSpotDialogue("kannon", "ch1_kannon_visit", "bg_kannon_day.png");
       case "cafe": return doSpotDialogue("cafe", "ch1_cafe_visit", "bg_cafe_day.png");
@@ -2201,10 +2264,9 @@ function showTonari() {
   const list = ov.querySelector("#tonari-list");
   for (const spot of TONARI_SPOTS) {
     const visited = spot.charId && state.dayVisited[spot.charId] === state.day;
-    const known = !spot.charId || isMet(spot.charId);
-    // つむぎは未紹介でも「常連席」の場所は分かる（名前だけ伏せる）＝ラベルに常連席を残す
-    const label = (spot.id === "tsumugi" && !known) ? "常連席（いつもの常連の子）" : spot.label;
-    const desc = visited ? "今日はもう行った" : (!known && SPOT_UNKNOWN[spot.id] ? SPOT_UNKNOWN[spot.id].desc : spot.desc);
+    // 「お客さんとして利用」はつむぎ未紹介でも文言で名前を出さない（descが匿名表現）
+    const label = spot.label;
+    const desc = visited ? "今日はもう利用した" : spot.desc;
     const btn = document.createElement("button");
     btn.className = "spot-btn";
     btn.innerHTML = `<span class="spot-name">${label}</span><span class="spot-desc">${desc}</span>`;
@@ -2225,7 +2287,7 @@ function showTonari() {
 function maybeVisitWarning(charId, proceed, cancel) {
   if (!(charId in (state.affinity || {}))) return proceed();
   const seq = VISIT_SEQUENCES[charId];
-  const seqDone = !seq || state.visits[charId] >= seq.length;
+  const seqDone = !seq || visitStoryCount(charId) >= seq.length;
   if (!seqDone) return proceed(); // 未読の会話が残っているなら止めない
   if (state.flags._confession_due === charId) return proceed();
   const isLover = (state.lovers || []).includes(charId);
@@ -2653,29 +2715,18 @@ function doBaito(afterCameo) {
   });
   lines.push({ type: "choice", id: ev.id, choices });
 
-  // バイト後: 上がる／スミさんと話す／練習する
+  // バイト後: 上がる／スミさんと話す（師匠との交流＝固有会話/テンプレ訪問）／裏で自主練（O16）
   lines.push({ speaker: "", face: "", text: "シフトが終わった。スミさんが「もう上がっていいぞ」と言った。" });
-  lines.push({
-    type: "choice", id: "post_work", choices: [
-      { text: "上がらせてもらう", next: "pw_home" },
-      { text: "スミさんと少し話す", next: "pw_sumi" },
-      { text: "裏で自主練していく", next: "pw_drill" },
-    ],
-  });
+  const postChoices = [{ text: "上がらせてもらう", next: "pw_home" }];
+  if (state.dayVisited.sumi !== state.day) postChoices.push({ text: "スミさんと少し話す", next: "pw_sumi" });
+  postChoices.push({ text: "裏で自主練していく", next: "pw_drill" });
+  lines.push({ type: "choice", id: "post_work", choices: postChoices });
   branches.pw_home = [
     { speaker: "", face: "", text: "エプロンを外して、夜の空気を吸う。今日も一日、お疲れさま。" },
   ];
-  const sumiLines = [
-    { talk: "スミさんがカウンターを拭きながら、ぽつりと言った。「炭の置き方、最近マシになったな」", stats: { technique: 2 } },
-    { talk: "スミさん「温度で迷ったら、葉の様子を見ろ。煙が教えてくれる」", stats: { insight: 2 } },
-    { talk: "スミさん「客が何を求めてるか、まず空気を読め。メニューは後だ」", stats: { charm: 2 } },
-    { talk: "スミさん「急ぐな。蒸らしを待てない奴に、いい煙は作れない」", stats: { guts: 2 } },
-    { talk: "スミさん「同じフレーバーでも、詰め方ひとつで別物になる。手を抜くな」", stats: { sense: 2 } },
-  ];
-  const si = Math.floor(Math.random() * sumiLines.length);
   branches.pw_sumi = [
-    { speaker: "sumi", face: "normal", text: sumiLines[si].talk.replace(/^スミさん/, "") },
-    { type: "apply", stats: sumiLines[si].stats },
+    { speaker: "", face: "", text: "帰り支度の手を止めて、カウンターの中のスミさんに声をかけた。" },
+    { type: "set_flag", flag: "_baito_sumi_go" },
   ];
   branches.pw_drill = [
     { speaker: "", face: "", text: "残って練習する。使い古しのフレーバーで十分だ。" },
@@ -2685,6 +2736,11 @@ function doBaito(afterCameo) {
   playCustom(
     { dialogue_id: "baito_" + ev.id, metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" }, lines, branches },
     () => {
+      if (state.flags._baito_sumi_go) {
+        delete state.flags._baito_sumi_go;
+        // シフト後の雑談＝スミさんとの交流（固有会話 or テンプレ）。体力は引かない
+        return doVisit("sumi", { skipCost: true });
+      }
       if (state.flags._baito_drill_go) {
         delete state.flags._baito_drill_go;
         state.flags._baito_drill_free = true;
@@ -2701,21 +2757,42 @@ const VISIT_BG = {
   sumi: "bg_tonari_inside.png", tsumugi: "bg_tonari_inside.png",
 };
 
-function doVisit(charId) {
+// そのキャラの「固有会話をいくつ見たか」。旧セーブは visits がそのまま固有会話の消化数
+function visitStoryCount(charId) {
+  if (state.visitStory && typeof state.visitStory[charId] === "number") return state.visitStory[charId];
+  return Math.min(state.visits[charId] || 0, (VISIT_SEQUENCES[charId] || []).length);
+}
+
+// キャラ訪問（O21・2026-07-04 再編）:
+// 固有会話は「初回」と「好感度メーターが次の段階に上がる訪問」でだけ再生し、
+// それ以外はテンプレ訪問（REPEAT_VISIT のローテ文＋報酬）。
+// 好感度メーターが無い相手（ch2ライバルの kumicho/rei/volk 等）は従来どおり順番に消化する。
+// opts.skipCost: バイト後のスミさん雑談など、行動の中に組み込まれた訪問（体力を引かない）
+function doVisit(charId, opts = {}) {
   visitContextChar = charId;
   const seq = VISIT_SEQUENCES[charId];
-  const idx = state.visits[charId];
+  if (!state.visitStory) state.visitStory = {};
+  const storyIdx = visitStoryCount(charId);
   const bg = VISIT_BG[charId] || "bg_tonari_inside.png";
   state.dayVisited[charId] = state.day; // 同じ店は1日1回まで
-  addStamina(-(["naru", "adam", "minto", "kumicho", "ageha", "rei", "volk"].includes(charId) ? STAMINA_COST.visit : STAMINA_COST.talk));
+  if (!opts.skipCost) {
+    addStamina(-(["naru", "adam", "minto", "kumicho", "ageha", "rei", "volk"].includes(charId) ? STAMINA_COST.visit : STAMINA_COST.talk));
+  }
   const after = () => {
     markMet(charId); // 会話を終えた＝面識ができた（名乗りの set_flag の保険）
     visitContextChar = null;
     endAction();
   };
-  if (idx < seq.length) {
-    state.visits[charId] += 1;
-    playDialogue(seq[idx], () => {
+  // 固有会話を見せる訪問か: 初回、または今回の加点でメーターが次の段階に届く訪問
+  const hasAff = charId in state.affinity;
+  const rank = hasAff ? state.affinity[charId] || 0 : 0;
+  const pts = hasAff ? state.affinityPts[charId] || 0 : 0;
+  const willRankUp = hasAff && rank < AFFINITY_CAP && rankFromPts(pts + AFFINITY_PTS.repeat) > rank;
+  const playUnique = storyIdx < seq.length && (!hasAff || storyIdx === 0 || willRankUp);
+  state.visits[charId] = (state.visits[charId] || 0) + 1;
+  if (playUnique) {
+    state.visitStory[charId] = storyIdx + 1;
+    playDialogue(seq[storyIdx], () => {
       // 会話内に報酬キューが無くても、必ず好感度かステータスを付与する
       const got = gainAffinity(charId, "visit");
       if (!cueFiredInDialogue && !got) gainStat(spotStat(charId), 2);
@@ -2723,12 +2800,13 @@ function doVisit(charId) {
     }, `res://assets/backgrounds/${bg}`);
   } else {
     const rep = REPEAT_VISIT[charId];
+    const texts = Array.isArray(rep.text) ? rep.text : [rep.text];
     playCustom(
       {
         dialogue_id: `repeat_${charId}`,
         metadata: { bg: `res://assets/backgrounds/${bg}` },
         lines: [
-          { speaker: "", face: "", text: rep.text },
+          { speaker: "", face: "", text: texts[(state.visits[charId] || 0) % texts.length] },
           { type: "apply", stats: rep.stats },
         ],
       },
@@ -7215,6 +7293,13 @@ function continueGame(saved) {
   if (!state.csVisits) state.csVisits = 0;
   // 日常スロット導入前のセーブ互換（アプリ説明は出さない）
   if (!state.reel && typeof REEL !== "undefined") state.reel = Object.assign(REEL.newReelState(), { introDone: true });
+  // 固有会話の消化数（O21）導入前のセーブ互換: 従来は visits が固有会話の索引だった
+  if (!state.visitStory) {
+    state.visitStory = {};
+    for (const [id, v] of Object.entries(state.visits || {})) {
+      state.visitStory[id] = Math.min(v || 0, (VISIT_SEQUENCES[id] || []).length);
+    }
+  }
   // phase="opening" のままのセーブ（チュートリアル途中の中断）は日常として復帰させる。
   // opening 中は HUD が出ない仕様（P1）のため、そのまま復帰するとHUDが永遠に出ない
   if (state.phase === "opening") state.phase = "daily";
