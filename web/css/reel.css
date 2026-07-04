@@ -99,6 +99,9 @@
 .sym-replay { filter: saturate(1.6); }
 .sym-smoke { color: #9aa0ad; font-size: 18px; opacity: 0.8; }
 .sym-pakki { color: #f4d27a; font-weight: 900; font-size: 15px; border: 1px dashed rgba(244,210,122,0.6); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
+/* パッキー柄を顔アイコン画像で描く場合（O11）。文字フォールバック時は上の従来スタイル */
+.sym-pakki.has-face { border: none; }
+.sym-pakki .sym-face { width: 20px; height: 20px; object-fit: contain; image-rendering: pixelated; display: block; }
 #reel-widget.flash-blue .rw-machine { animation: rw-flash-blue 0.35s; }
 @keyframes rw-flash-blue {
   0%, 100% { box-shadow: none; }

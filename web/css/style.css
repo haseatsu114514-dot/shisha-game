@@ -3291,17 +3291,6 @@ body:has(#screen-tournament.active.making-workbench) #gain-banner {
 .log-text { color: var(--text); }
 .log-empty { color: var(--text-dim); }
 
-/* DAYカード: スミさんの日替わりの一言 */
-.day-quote {
-  margin-top: 6px;
-  padding-top: 6px;
-  border-top: 1px dashed rgba(244,210,122,0.25);
-  font-size: 10px;
-  line-height: 1.5;
-  color: var(--text-dim);
-  max-width: 170px;
-}
-
 /* ---------------- 用語集 ---------------- */
 /* ---------------- config / gallery / save slots ---------------- */
 #config-overlay, #gallery-overlay, #saveload-overlay {
@@ -4181,6 +4170,9 @@ body:has(#screen-tournament.active.making-workbench) #gain-banner {
 .sym-replay { filter: saturate(1.6); }
 .sym-smoke { color: #9aa0ad; font-size: 18px; opacity: 0.8; }
 .sym-pakki { color: #f4d27a; font-weight: 900; font-size: 15px; border: 1px dashed rgba(244,210,122,0.6); border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; }
+/* パッキー柄を顔アイコン画像で描く場合（O11）。文字フォールバック時は上の従来スタイル */
+.sym-pakki.has-face { border: none; }
+.sym-pakki .sym-face { width: 20px; height: 20px; object-fit: contain; image-rendering: pixelated; display: block; }
 #reel-widget.flash-blue .rw-machine { animation: rw-flash-blue 0.35s; }
 @keyframes rw-flash-blue {
   0%, 100% { box-shadow: none; }
@@ -4578,9 +4570,6 @@ body:has(#screen-tournament.active.making-workbench) #gain-banner {
 @keyframes evt-badge-pulse { 50% { transform: scale(1.18); box-shadow: 0 0 16px rgba(255,211,94,1); } }
 /* Dr.fookah 2階の解禁進捗（#31） */
 .spot-progress { display: block; margin-top: 3px; font-size: 12px; color: #ffd35e; }
-/* スミの一言・返事できる状態（#32） */
-#dc-quote.can-reply { cursor: pointer; }
-#dc-quote.can-reply:hover { color: #ffe9b0; }
 /* 自己ベストスタンプ（#33） */
 .stamp-best { color: #ffb64e; }
 

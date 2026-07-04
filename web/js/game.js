@@ -577,6 +577,9 @@ function resolveSceneBg(rel) {
 const BG_NO_NIGHT_TINT = new Set([
   "bg_naru_shop.png", "bg_eden_shop.png", "bg_adam_shop.png", "bg_ageha_shop.png",
   "bg_ryuji_shop.png", "bg_shop.png", "bg_fookah_showroom.png", "bg_hideaway.png",
+  // 実際に使われる店内背景のファイル名（naru訪問=kemurikusa / minto訪問=peppermint）。
+  // 上の bg_naru_shop/bg_adam_shop は旧名（エイリアス経由の保険で残置）
+  "kemurikusa.png", "peppermint.png",
 ]);
 
 function setLocationFromBg(rel) {
@@ -672,41 +675,6 @@ function dailyTheme() {
   return THEMES[(state.day - 1) % THEMES.length];
 }
 
-// DAYカードに出すスミさんの日替わりの一言（締切感の演出。day7/13の夜イベントを予告する）
-const SUMI_QUOTES = [
-  "初日から飛ばすな。一台ずつ、丁寧にな",
-  "炭の置き方ひとつで味は変わるぞ",
-  "迷ったら基本に戻れ。トライアングルだ",
-  "人の煙を見るのも練習のうちだ",
-  "たまには外の空気も吸え。出会いも仕込みのうちだ",
-  "昨日と同じ一台を、今日も作れるか？　それが基礎だ",
-  "今夜、お前の素の一台を見せてもらう",
-  "折り返しだ。弱点から逃げるなよ",
-  "疲れは煙に出る。今日は無理するな",
-  "道具を磨け。腕より先に、道具が腐るぞ",
-  "客の顔を思い出せ。誰に吸わせたい一台だ？",
-  "そろそろ仕上げを意識しろ",
-  "今夜は通しのリハーサルだ。そのつもりでな",
-  "前日だ。新しいことはするな。いつも通りにやれ",
-];
-// 第2章のDAYカード（スミさんは焦るはじめを横目に、短く釘を刺す）
-const CH2_SUMI_QUOTES = [
-  "会場が変わったって、やることは変わらねえぞ",
-  "周りを見るのはいい。睨むのは違う",
-  "苺は熱に弱い。覚えとけ",
-  "……最近のお前の煙、迷ってるな",
-  "失敗は経験値だ。腐るのは別の話だがな",
-  "お前の感情、煙に出てるぞ。お前の煙は正直だからな",
-  "明日から本番だ。寝ろ",
-  "勝った日ほど、丁寧に片付けろ",
-  "誰のために作ってるか、忘れんなよ",
-  "舌より先に、手が覚えてる。信じてやれ",
-  "明日は二戦目か。──落ち着いていけ",
-  "勝ち続けてる顔じゃねえな。……飯、食ってるか",
-  "決勝前夜だ。客席なんか見るな。煙だけ見ろ",
-  "──行ってこい",
-];
-
 function updateDayCard() {
   const isMap = document.querySelector("#screen-map.active");
   const card = $("#hud-day-card");
@@ -717,20 +685,9 @@ function updateDayCard() {
   const dcMax = $("#dc-max");
   if (dcMax) dcMax.textContent = "/" + Math.max(...Object.keys(chapterInfo().stageDays).map(Number));
   $("#dc-week").textContent = state.ap === 2 ? "DAY" : "NIGHT";
-  $("#dc-ap").textContent = (state.ap === 2 ? "昼" : "夜") + ` ${state.ap}`;
+  // 行動数・体調・スミの一言の欄は撤去（オーナー指定・2026-07-04）。
+  // 体調は HUD の体力バー、行動は DAY/NIGHT 表示に情報を集約する
   $("#dc-money").textContent = state.money.toLocaleString();
-  // 「今日の客層」は廃止（master_spec #18）。枠は体力の気配表示に転用
-  const st = stamina();
-  $("#dc-request").textContent =
-    st >= 70 ? "体は軽い"
-    : st >= STAMINA_LOW + 15 ? "すこし疲れ気味"
-    : st >= STAMINA_LOW ? "疲れがたまってきた"
-    : "かなり疲れている";
-  const quotes = state.chapter === 2 ? CH2_SUMI_QUOTES : SUMI_QUOTES;
-  const replied = !!state.flags[`_sumi_reply_c${state.chapter}_d${state.day}`];
-  $("#dc-quote").textContent = `スミ「${quotes[Math.min(Math.max(state.day, 1), quotes.length) - 1]}」` +
-    (replied ? "" : " ▼");
-  $("#dc-quote").classList.toggle("can-reply", !replied);
 }
 
 // 自己ベスト更新時のスミさんの一言講評（#33）
@@ -738,23 +695,6 @@ const SUMI_BEST_COMMENTS = [
   "……今の感じ、忘れんな", "腕、上がったな", "その手応えが基礎になる",
   "本番でもそれをやれ", "いい煙の顔になってきた",
 ];
-
-// スミさんの日替わり一言に、タップで1行だけ返事できる（#32。1日1回・報酬なし）
-const SUMI_QUOTE_REPLIES = [
-  "……はい、丁寧にやります", "肝に銘じます", "今日も一台ずつ、やってみます",
-  "……たしかに", "見ててください", "はい。……ちょっとだけ、ワクワクしてます",
-  "うっ、図星です", "了解です、師匠", "……その言い方、かっこいいですね",
-];
-function sumiQuoteReply() {
-  if (!state || state.phase !== "daily") return;
-  const key = `_sumi_reply_c${state.chapter}_d${state.day}`;
-  if (state.flags[key]) return;
-  state.flags[key] = true;
-  toast(`はじめ「${SUMI_QUOTE_REPLIES[(state.day * 3 + state.chapter) % SUMI_QUOTE_REPLIES.length]}」`);
-  if (window.SFX) SFX.click();
-  updateDayCard();
-  save();
-}
 
 // 判定スタンプ演出
 function showStamp(container, result) {
@@ -1254,6 +1194,9 @@ function initEngine() {
   );
   $("#vn-click-layer").addEventListener("click", () => {
     if (Date.now() < dialogueOpenLockUntil) return; // 開幕直後の連打タップで1行目が飛ぶのを防ぐ
+    // 会話が終わった後の演出中（章タイトル・カットイン等）や選択肢待ちは
+    // next() が空振りする＝SEだけ鳴るので、何も起きないクリックは無音にする
+    if (!engine || engine.finished || engine.waitingChoice) return;
     // 手動クリックは AUTO/SKIP を解除して次へ
     if (autoMode || skipMode) stopAutoSkip();
     if (window.SFX) SFX.click();
@@ -7300,7 +7243,6 @@ function init() {
   setupContinueButton();
   $("#btn-gallery").addEventListener("click", () => showGallery());
   $("#btn-config").addEventListener("click", () => showConfig());
-  $("#dc-quote")?.addEventListener("click", sumiQuoteReply); // スミの一言に1行返事（#32）
   $("#config-close").addEventListener("click", () => { if (window.SFX) SFX.close(); $("#config-overlay").classList.remove("visible"); });
   $("#gallery-close").addEventListener("click", () => { if (window.SFX) SFX.close(); $("#gallery-overlay").classList.remove("visible"); });
   $("#gallery-viewer").addEventListener("click", () => $("#gallery-viewer").classList.remove("visible"));
