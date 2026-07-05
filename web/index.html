@@ -8,6 +8,9 @@
 <!-- タイトルBGMをHTML解析の段階から取得開始（映像より遅れて鳴り出す問題の緩和。
      スタンドアロン版は BGM_DATA 埋め込みのため build_standalone.py がこの行を除去してよい） -->
 <link rel="preload" href="../assets/audio/bgm/title.mp3" as="audio">
+<!-- タイトル右のキービジュアル。表示が遅れて見えるため最優先で取得する（O1）。
+     title_arts に画像を追加したらここも見直す（現状1枚なので直指定でよい） -->
+<link rel="preload" href="../assets/ui/title_arts/title_art_keyvisual_01.png" as="image">
 </head>
 <body>
 <div id="rotate-hint">スマホを横向きにすると<br>遊びやすくなります</div>
@@ -28,13 +31,9 @@
       </div>
     </div>
     <div id="hud-day" class="hidden"></div>
-    <div id="hud-level">
-      <span class="hud-icon hud-flame"></span>
-      <div class="hud-text">
-        <span class="main" id="hud-level-text">Lv.1</span>
-        <div class="lv-bar"><div class="lv-fill" id="hud-level-fill" style="width:18%"></div></div>
-      </div>
-    </div>
+    <button id="hud-level" type="button" title="ステータス（クリックで詳細）">
+      <svg id="hud-radar-svg" viewBox="0 0 40 40" aria-label="ステータス五角形"></svg>
+    </button>
     <div id="hud-stamina">
       <span class="hud-icon hud-heart"></span>
       <div class="hud-text">
@@ -56,10 +55,7 @@
       <div class="day-week" id="dc-week">DAY</div>
     </div>
     <div class="day-meta">
-      <div class="row"><span class="row-label">行動</span><span id="dc-ap">昼 2</span></div>
       <div class="row"><span class="row-label">所持金</span><span id="dc-money">30,000</span></div>
-      <div class="row"><span class="row-label">体調</span><span id="dc-request">−</span></div>
-      <div class="day-quote" id="dc-quote"></div>
     </div>
   </div>
 
@@ -195,7 +191,9 @@
       <h2>Dr.fookah</h2>
       <p class="tn-hint">フレーバー卸の直営店。機材を買い足せて、1階の試飲席で一応吸える。買い物に行動は消費しない。</p>
       <p id="shop-money" class="shop-money"></p>
+      <div id="shop-receipt" class="shop-receipt"></div>
       <div id="shop-list"></div>
+      <div id="shop-detail" class="shop-detail empty"></div>
       <button id="shop-close" class="primary-btn" type="button">店を出る</button>
     </div>
   </section>

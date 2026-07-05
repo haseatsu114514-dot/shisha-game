@@ -49,16 +49,29 @@ for (let i = 0; i < 2000; i++) {
     await playTnStep(page);
     continue;
   }
+  if (s === "screen-shop") {
+    // Day1強制の買い出し（N18）: ミントを仕入れてから店を出る
+    const errandPending = await page.evaluate(() => !!(state && state.flags._shop_errand_pending));
+    if (errandPending) {
+      const mintRow = page.locator('.shop-row[data-shop-id="mint"]');
+      if (await mintRow.count()) await mintRow.click().catch(() => {});
+      const buyBtn = page.locator("#shop-buy-btn:not([disabled])");
+      if (await buyBtn.count()) await buyBtn.click().catch(() => {});
+      await page.waitForTimeout(50);
+    }
+    await page.click("#shop-close").catch(() => {});
+    await page.waitForTimeout(30);
+    continue;
+  }
   const c = page.locator("#vn-choices .choice-btn").first();
   if (await c.count()) await c.click(); else await page.click("#vn-click-layer");
   await page.waitForTimeout(15);
 }
 await page.screenshot({ path: `${OUT}/04_map.png` });
 
-// 練習画面（ドリル選択 → 本番と同じミニゲーム）。tonari統合(#9): tonari → 練習 の2段
-await page.locator("#map-pins .spot-pin", { hasText: "tonari" }).first().click();
-await page.waitForSelector("#tonari-menu.show");
-await page.locator("#tonari-menu .spot-btn", { hasText: "シーシャの練習" }).click();
+// 練習画面（ドリル選択 → 本番と同じミニゲーム）。
+// O16でメニューからは撤去（バイトのシフト後導線に統合）のため、スクショ用に直接開く
+await page.evaluate(() => { state.flags._baito_drill_free = true; startPractice(); });
 await page.waitForSelector("#practice-menu .spot-btn");
 await page.screenshot({ path: `${OUT}/05_practice_menu.png` });
 await page.locator("#practice-menu .spot-btn").first().click();

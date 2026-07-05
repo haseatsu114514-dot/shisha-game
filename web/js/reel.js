@@ -389,6 +389,14 @@ const REEL = (() => {
     }
     return `<span class="${(cls || "rw-face")} rw-face-fallback">ぷ</span>`;
   }
+  // パッキー柄はリール上も顔アイコンで描く（O11）。アイコン未ロード時のみ従来の文字
+  function symHtml(s) {
+    if (s === "pakki" && typeof faceIconHtml === "function") {
+      const h = faceIconHtml("pakki", "sym-face");
+      if (h) return `<span class="sym sym-pakki has-face">${h}</span>`;
+    }
+    return SYM_HTML[s];
+  }
 
   function ensureWidget() {
     if (widget) return widget;
@@ -403,7 +411,7 @@ const REEL = (() => {
       `<div class="rw-machine">` +
       STRIPS.map((strip, i) =>
         `<div class="rw-reel" data-i="${i}"><div class="rw-strip">` +
-        strip.concat(strip, strip).map((s) => `<div class="rw-cell">${SYM_HTML[s]}</div>`).join("") +
+        strip.concat(strip, strip).map((s) => `<div class="rw-cell">${symHtml(s)}</div>`).join("") +
         `</div></div>`).join("") +
       `</div>` +
       `<div class="rw-plate">MOKUMOKU<b>パッキー</b></div>` +
@@ -675,7 +683,7 @@ const REEL = (() => {
       case "bell":
         sfx("reelWin");
         // 役名→恩恵の2段読み上げ（T18）。連結すると吹き出しが2行に折れて長いため分ける
-        if (!fast) { bubble("パインベルッ！", 800); setTimeout(() => bubble(benefitLine(r), 1500), 850); }
+        if (!fast) { bubble("パインッ！", 800); setTimeout(() => bubble(benefitLine(r), 1500), 850); }
         announce(r);
         return setTimeout(done, fast ? 60 : 800);
       case "rare": {
@@ -749,7 +757,7 @@ const REEL = (() => {
     // 完全告知（ランプが先に光る）なので「リーチ」ではなく、揃えにいく実況にする
     c.innerHTML =
       `<div class="rc-bonus-board">` +
-      `<div class="rc-aim">${isBig ? "光ったら揃う！　赤7──" : "赤7…赤7…からの──！？"}</div>` +
+      `<div class="rc-aim">${isBig ? "ボーナス確定！　赤7──" : "赤7…赤7…からの──！？"}</div>` +
       `<div class="rc-cells">` +
       cellSyms.map((s) => `<div class="rc-cell">${s}</div>`).join("") +
       `</div>` +

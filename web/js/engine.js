@@ -51,6 +51,7 @@ const ASSET_ALIASES = {
   "assets/backgrounds/tonari_night.png": "assets/backgrounds/bg_tonari_inside_night.png",
   "assets/backgrounds/eden.png": "assets/backgrounds/bg_eden_shop.png",
   "assets/backgrounds/bg_adam_shop.png": "assets/backgrounds/bg_eden_shop.png",
+  "assets/backgrounds/bg_naru_shop.png": "assets/backgrounds/kemurikusa.png",
 };
 
 // アセット解決: スタンドアロン版では window.ASSET_DATA に data URI が入る
@@ -202,17 +203,64 @@ class DialogueEngine {
     this.finished = false;
     this.slots = {};
     this.el.portraits.innerHTML = "";
+    this.prefetchPortraits(dialogue);
     const meta = dialogue.metadata || {};
     if (meta.bg) this.setBackground(meta.bg);
     this.next();
+  }
+
+  // この会話に登場する立ち絵（speaker×face）を開幕で温める。
+  // 分割ファイル版は表情差分が初回参照時に取得され、表示に間が空くため
+  //（O3・2026-07-04）。スタンドアロン版（data URI）は対象外
+  prefetchPortraits(dialogue) {
+    const seen = new Set();
+    const urls = [];
+    const collect = (lines) => {
+      for (const ln of lines || []) {
+        if (!ln || !ln.speaker || NO_PORTRAIT_SPEAKERS.has(ln.speaker)) continue;
+        const key = `${ln.speaker}|${ln.face || ""}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        const src = this.portraitSrc(ln.speaker, ln.face);
+        if (src && !src.startsWith("data:")) urls.push(src);
+      }
+    };
+    collect(dialogue.lines);
+    for (const k of Object.keys(dialogue.branches || {})) collect(dialogue.branches[k]);
+    // 会話1本ぶんの差分は数枚なので即時・並列で取得してよい
+    for (const u of urls.slice(0, 16)) {
+      const im = new Image();
+      im.decoding = "async";
+      im.src = u;
+    }
   }
 
   setBackground(path) {
     let rel = String(path).replace(/^res:\/\//, "");
     // 昼夜つき背景の自動差し替え（ゲーム側が時間帯を知っているので委譲する）
     if (this.ctx.resolveBg) rel = this.ctx.resolveBg(rel);
-    this.el.bg.style.backgroundImage = `url('${assetUrl(rel)}')`;
+    const url = assetUrl(rel);
+    this.el.bg.style.backgroundImage = `url('${url}')`;
+    // SKIP送りの取得待ち判定（N7）。data URI（スタンドアロン版）は即時扱い
+    this._bgReady = true;
+    if (!url.startsWith("data:")) {
+      const probe = new Image();
+      this._bgReady = false;
+      this._bgProbe = probe;
+      probe.onload = probe.onerror = () => { if (this._bgProbe === probe) this._bgReady = true; };
+      probe.src = url;
+      if (probe.complete) this._bgReady = true; // キャッシュ済みなら同期で立つ
+    }
     if (this.ctx.onBackgroundChange) this.ctx.onBackgroundChange(rel);
+  }
+
+  // SKIP/AUTOが画像の取得より先に進まないようにするための「読み込み待ちがあるか」（N7）
+  assetsPending() {
+    if (this._bgReady === false) return true;
+    for (const img of this.el.portraits.querySelectorAll("img.active")) {
+      if (img.src && !img.complete) return true;
+    }
+    return false;
   }
 
   next() {

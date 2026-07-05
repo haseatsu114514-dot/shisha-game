@@ -96,6 +96,12 @@ def collect_assets() -> dict:
             if png.stat().st_size == 0:
                 continue
             assets[f"assets/ui/making/{png.name}"] = encode_png_asset(png)
+    shop_dir = REPO_ROOT / "assets" / "ui" / "shop"
+    if shop_dir.exists():
+        for png in sorted(shop_dir.glob("*.png")):
+            if png.stat().st_size == 0:
+                continue
+            assets[f"assets/ui/shop/{png.name}"] = encode_png_asset(png)
     for png in sorted((REPO_ROOT / "assets" / "backgrounds").glob("*.png")):
         assets[f"assets/backgrounds/{png.name}"] = encode_background(png)
     # CG: show_cg 対象（恋愛・日常スチル含む全部。素材が増えたらそのまま乗る）
@@ -170,8 +176,9 @@ def main() -> None:
         raise RuntimeError(
             f"failed to inline web entrypoints: css={css_count}, scripts={script_count}"
         )
-    # 1ファイル版はBGMを埋め込むため、分割版向けのaudioプリロードは外部参照になり不要
-    html = re.sub(r'<link rel="preload"[^>]*as="audio"[^>]*>\n?', "", html)
+    # 1ファイル版はBGM・画像を埋め込むため、分割版向けのプリロードは外部参照になり不要
+    html = re.sub(r'<link rel="preload"[^>]*as="(?:audio|image)"[^>]*>\n?', "", html)
+    html = re.sub(r"<!-- タイトル右のキービジュアル。[^>]*-->\n?", "", html, flags=re.S)
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUT_PATH.write_text(html, encoding="utf-8")

@@ -119,6 +119,7 @@ def main() -> int:
 
                 if "上がった" in text and CUE_RE.search(text):
                     phrase = "大きく上がった" if "大きく上がった" in text else \
+                             "かなり上がった" if "かなり上がった" in text else \
                              "少し上がった" if "少し上がった" in text else "上がった"
                     stats = "/".join(s for s in (STAT_WORDS + ["好感度"]) if s in text)
                     warns.append(f"{where}: 報酬キュー検出（{stats}・{phrase}）→ 意図通りか確認")
