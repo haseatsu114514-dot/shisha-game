@@ -346,7 +346,7 @@ def main() -> None:
     # キャラ別の立ち絵スケール係数（characters.json の任意フィールド spriteScale、既定1.0）。
     # engine.js はスプライトの「フォルダ名」で引くため、characters.json の id と
     # フォルダ名が違うキャラはここで読み替える（engine.js SPEAKER_ID_ALIASES と対応）
-    SPRITE_FOLDER_ALIASES = {"kumicho": "ryuji", "oneesan": "minto"}
+    SPRITE_FOLDER_ALIASES = {"oneesan": "minto"}
     portrait_scales = {}
     for c in (characters if isinstance(characters, list) else []):
         if isinstance(c, dict) and "id" in c and c.get("spriteScale"):

@@ -73,6 +73,7 @@ DOC_FILES = {
     "review_scope.md",
     "story_review_prompt.md",
     "web_version_plan.md",
+    "build_setting_reference.py",
 }
 
 EXTENSIONS = {".json", ".js", ".md", ".py", ".gd", ".txt", ".csv", ".sh"}

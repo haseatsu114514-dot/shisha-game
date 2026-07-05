@@ -192,7 +192,7 @@
   {
     "id": "volk",
     "name": "ヴォルク / ヴォルク・イヴァノフ",
-    "role": "rival_ch2",
+    "role": "rival_ch3",
     "age": 37,
     "nationality": "Russia",
     "affiliation": "Железный Дым（ジェレーズヌイ・ドゥイム）",
@@ -329,7 +329,7 @@
     "nationality": "Japan",
     "affiliation": "第2章ライバル",
     "play_style": "「バイブスと直感」",
-    "description": "第2章で立ちはだかるライバルでありヒロイン候補の一人。はじめより2歳年上の24歳。\nベースは平成ギャルマインド──「カワイイは最強」「バイブスで全部OK」「人に優しく、自分にもゆるく」が信条。ギャル友のグループとよく連む。\n雑誌の読者モデルとして活動しており、雑誌掲載をきっかけにファンになったオタクたちが通うようになった（見た目に反して誰にでも分け隔てなく接してくれるため）。シーシャ好き・ギャル仲間・オタクと、客層の幅がとびきり広い。\n理論ではなく「バイブス」だけで最高の一杯を作り上げてしまう天才肌だが、内心ではいつか通用しなくなる不安と戦っている。\nもともと体が丈夫でなく、手が震える日や感覚が鈍る日がある。朝起きるたびに「今日、感覚あるかな…」と確かめるのが習慣になっており、このことは主人公だけが知る秘密になる。",
+    "description": "第2章で立ちはだかるライバルでありヒロイン候補の一人。はじめと同い年の22歳。\nベースは平成ギャルマインド──「カワイイは最強」「バイブスで全部OK」「人に優しく、自分にもゆるく」が信条。ギャル友のグループとよく連む。\n雑誌の読者モデルとして活動しており、雑誌掲載をきっかけにファンになったオタクたちが通うようになった（見た目に反して誰にでも分け隔てなく接してくれるため）。シーシャ好き・ギャル仲間・オタクと、客層の幅がとびきり広い。\n理論ではなく「バイブス」だけで最高の一杯を作り上げてしまう天才肌だが、内心ではいつか通用しなくなる不安と戦っている。\nもともと体が丈夫でなく、手が震える日や感覚が鈍る日がある。朝起きるたびに「今日、感覚あるかな…」と確かめるのが習慣になっており、このことは主人公だけが知る秘密になる。",
     "background_secret": "誰よりも周りの空気を読むことに長けているため、逆に「自分自身」が分からなくなっている。他人に合わせる『バイブス』を自分の才能だと自己暗示をかけている。\n教えられない本当の理由は「言語化した瞬間に魔法が消える気がする」という恐怖心。理屈にした瞬間に自分が凡人になる気がして、『理論に負けたくない』という意地が根底にある。主人公がその感覚を少しずつ言語化していく構図が彼女の成長軸になる。\nホワイトグミベアは子供の頃の安心の象徴。病院帰りに母親がよく買ってくれたため、甘い匂いに今でも救われる。だから「ただかわいいから好き」以上の意味がある。\n雑誌の読者モデルは「友達に頼まれてノリで応募したら受かった」がきっかけ。本人はシーシャ職人として見られたいので、雑誌モデルの話を店では積極的にしない。",
     "favorite_flavor": "ホワイトグミベアとレッドグミベア",
     "specialty_flavor": "トロピカルフルーツ系",
@@ -478,28 +478,6 @@
     "visual_concepts": [
       "48s turkish man, rugged and distinguished, thick mustache and short dark hair with greying temples, wearing a smart casual vest and rolled-up shirtsleeves, deep intense eyes evaluating smoke",
       "experienced turkish nargile craftsman, weathered face with lines of wisdom, wearing a simple collared shirt and suspenders, observing shisha smoke with profound concentration, traditional coffeehouse background hints"
-    ]
-  },
-  {
-    "id": "dj_smoke",
-    "name": "DJ SMOKE",
-    "role": "judge",
-    "age": 35,
-    "nationality": "Japan",
-    "affiliation": "大会審査員（クラブVJ兼任）",
-    "play_style": "N/A",
-    "description": "シーシャ大会の審査員の一人。DJとして長年「空間の空気感」を作ってきた経験から、シーシャの煙が場の雰囲気とどう調和しているかを重点的に評価する。\n「技術の前に、場を支配できているか」が彼の審査基準。\n普段は飄々としたクールキャラだが、心を動かされた煙の前では反射的にヘッドホンを外して目を閉じる癖がある。これが「DJ SMOKEがヘッドホンを外した」という大会の隠れた見どころになっている。",
-    "background_secret": "実は重度の嗅覚障害を患いかけており、味や香りの繊細な判別が困難になりつつある。だからこそ、『場の空気』や『空間との調和』という自分の得意領域に審査の比重を全振りしている。",
-    "favorite_flavor": "エナジードリンク（仮）",
-    "specialty_flavor": "N/A",
-    "growth_stats": {
-      "primary": "センス",
-      "secondary": "洞察",
-      "notes": "空間を計算通りに支配することだけを評価の軸にしていたが、はじめの『全く計算されていないが、なぜか客が安心してしまう』不思議な空気感に出会い、いつの間にかコントロールしない空間の美学も認めるようになっていた。"
-    },
-    "visual_concepts": [
-      "35s japanese male DJ, cool street style, wearing a bucket hat, oversized stylish hoodie, and thick headphones slung around his neck, bobbing his head slightly to an imaginary beat, neon club lighting",
-      "trendy club DJ and judge, wearing large tinted sunglasses and complex layered streetwear, observing the competition from a DJ booth setup, lasers and smoke machine atmosphere"
     ]
   },
   {
@@ -660,25 +638,6 @@
     ]
   },
   {
-    "id": "shiramine",
-    "name": "白峰 恒一郎",
-    "role": "judge",
-    "age": 52,
-    "nationality": "Japan",
-    "affiliation": "大会審査員",
-    "play_style": "N/A",
-    "description": "伝統を重んじる厳格な審査員。「吸いやすさ」と「味」のバランスを高く評価する。",
-    "background_secret": "かつては荒削りな煙を好んでいたが、年齢と共に調和を求めるようになった。",
-    "favorite_flavor": "バニラ、ココナッツ、パイナップル",
-    "specialty_flavor": "N/A",
-    "growth_stats": {
-      "primary": "洞察",
-      "secondary": "技術",
-      "notes": ""
-    },
-    "visual_concepts": []
-  },
-  {
     "id": "maezono",
     "name": "前園 壮一郎",
     "role": "judge",
@@ -700,25 +659,6 @@
       "enthusiastic shisha media person, expressive happy face, wearing glasses and a press lanyard, leaning forward eagerly over the judge table, looking like he's about to declare something delicious at any moment"
     ],
     "spriteScale": 0.98
-  },
-  {
-    "id": "kirishima",
-    "name": "霧島 レン",
-    "role": "judge",
-    "age": 28,
-    "nationality": "Japan",
-    "affiliation": "大会審査員",
-    "play_style": "N/A",
-    "description": "若くして審査員を務める実力派。「個性」と「吸いやすさ」をバランスよく評価する。",
-    "background_secret": "実はスイーツ好きで、フルーティーな甘い香りに目がない。",
-    "favorite_flavor": "ブルーベリー、パイナップル",
-    "specialty_flavor": "N/A",
-    "growth_stats": {
-      "primary": "洞察",
-      "secondary": "センス",
-      "notes": ""
-    },
-    "visual_concepts": []
   },
   {
     "id": "oneesan",

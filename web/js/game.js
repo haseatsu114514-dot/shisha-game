@@ -243,7 +243,7 @@ const $ = (sel) => document.querySelector(sel);
 // 顔ドット絵アイコン（tools/make_face_icons.py 生成・data.js に埋め込み）。
 // 無いキャラは null を返し、呼び出し側が文字バッジ等にフォールバックする。
 // ⚠️ oneesan（みんとの私服）は正体隠しのため意図的にエイリアスしない（文字バッジに落とす）
-const FACE_ICON_ALIASES = { kumicho: "ryuji", tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki" };
+const FACE_ICON_ALIASES = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki" };
 function faceIconHtml(charId, cls = "pixel-face") {
   const icons = D.face_icons || {};
   const src = icons[charId] || icons[FACE_ICON_ALIASES[charId]];
