@@ -13,6 +13,8 @@
 
 ## 2026-07-05 セッション（設定資料集ブランチ claude/game-reference-doc-g3mtbq・資料フィードバック便）
 
+全件 ✅（commit e603320・lint/legacy 0・portraits/ch2 テスト緑）
+
 | # | 状態 | 内容 |
 |---|---|---|
 | R1 | ✅ | **アゲハは22歳**: characters.json の description「はじめより2歳年上の24歳」→「はじめと同い年の22歳」に修正（age:22 と整合）。設定資料集も22歳表記に |
