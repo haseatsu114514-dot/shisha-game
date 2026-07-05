@@ -27,7 +27,6 @@ PORTRAITS = {
     "rin": "rin/chr_rin_normal.png",
     "ageha": "ageha/chr_ageha_normal.png",
     "mashiro": "mashiro/chr_mashiro_normal.png",
-    "kumicho": "ryuji/chr_ryuji_normal.png",
     "dr_kemuri": "dr_kemuri/chr_dr_kemuri_normal.png",
     "nagumo": "nagumo/chr_nagumo_normal.png",
     "maezono": "maezono/chr_maezono_normal.png",
@@ -94,8 +93,8 @@ CH1_MAIN = [
          blurb="純日本人なのに頑なに「アダム」と名乗る、<strong>ダブルアップル特化</strong>の愛すべき変人。DAを宇宙の原点のように語り、ローランド風の名言と過剰な自己演出で周囲を振り回すが、一つの味を掘り下げる技術は本物。ch3のダブルアップル事件、そしてch5のDA単体勝負（贖罪とリスペクトの回収）まで、実は全編の背骨に関わる。"),
     dict(id="minto", img="p_minto", name="緑川 栞", kana="みんと", tags=["ライバル ch1", "ヒロイン", "自称20歳（実29歳）", "ぺぱーみんと"],
          blurb="コンセプトカフェ「ぺぱーみんと」の人気No.1キャスト。「ばえ」重視に見えて、実は客の心理を計算し尽くした戦略家。真の目的は精肉店に乗っ取られた<em>実家の純喫茶の場所を買い戻す</em>こと。心にこびりついた「血と肉の匂い」の幻臭を、ミントの香りと煙で上書きしたいという強迫観念を抱えている。"),
-    dict(id="oneesan", img="p_oneesan", name="お姉さん", kana="みんとの私服・素の姿", tags=["エイリアス", "ch1では正体非公開"],
-         blurb="私服・素の姿のみんとが客としてtonariに来るときの表示名（speaker: <code>oneesan</code>／立ち絵は minto の <code>ura_*</code>）。はじめのデビュー一台を最初に飲んだ客。研修中の身分証確認で「平成──…ん？」となった記憶が<em>「自称20歳」の嘘の伏線</em>。ch1では正体を明かさない。"),
+    dict(id="oneesan", img="p_oneesan", name="お姉さん", kana="みんとの私服・素の姿", tags=["エイリアス", "訪問5回目で正体判明"],
+         blurb="私服・素の姿のみんとが客としてtonariに来るときの表示名（speaker: <code>oneesan</code>／立ち絵は minto の <code>ura_*</code>）。はじめのデビュー一台を最初に飲んだ客。研修中の身分証確認で「平成──…ん？」となった記憶が<em>「自称20歳」の嘘の伏線</em>。通常営業では正体を伏せられているが、みんと訪問5回目の私服デート（<code>ch1_minto_fifth</code>）で<em>ch1内でも正体が判明する</em>（正史）。"),
     dict(id="tsumugi", img="p_tsumugi", name="つむぎ", kana="白木 つむぎ", tags=["ヒロイン", "21歳", "tonari常連"],
          blurb="画面にひびの入ったiPadでいつも絵を描いている寡黙な少女。頼むのはラベンダーだけ。煙の色が視える共感覚の持ち主で、優勝の夜に「最後の方だけ、ちょっとだけ──濁ってた」と、はじめの慢心をプレイヤーにだけゾクッと可視化する。"),
     dict(id="rin", img="p_rin", name="匂坂 凛", kana="さぎさか りん", tags=["ヒロイン", "27歳", "Dr.fookah 2階"],
@@ -124,10 +123,10 @@ CH1_CAMEO = [
          blurb="童顔×ライダースの少し男勝りなお姉さん。4歳下の彼氏の愚痴をこぼしていく。かこ同様、裏好感度MAXで応援に来てくれる。"),
 ]
 CH2_CHARS = [
-    dict(id="ageha", img="p_ageha", name="宵野 葉子", kana="アゲハ", tags=["ライバル ch2", "ヒロイン", "読者モデル"],
+    dict(id="ageha", img="p_ageha", name="宵野 葉子", kana="アゲハ", tags=["ライバル ch2", "ヒロイン", "22歳", "読者モデル"],
          blurb="平成ギャルマインド——「カワイイは最強」「バイブスで全部OK」「人に優しく、自分にもゆるく」。理論ゼロ、<strong>バイブスだけで最高の一杯を作る天才肌</strong>。だが体は丈夫でなく、朝起きるたび「今日、感覚あるかな…」と確かめるのが習慣。この秘密は主人公だけが知る。ch2スランプのはじめの回復の糸口にもなる。香りはホワイトグミベア。"),
-    dict(id="kumicho", img="p_kumicho", name="神崎 竜二", kana="シーシャ組長", tags=["ライバル ch2", "39歳", "神崎煙草店"],
-         blurb="非常に丁寧な接客で知られる店主。正体はヤクザの組長（シノギで店を営んでいることは隠している）。プレイスタイルは「スジを通す煙」。交友を深めると<strong>蒸らし0分（吸いながら立ち上げる高等テク）</strong>が解放される。<br>※左は現行のゲーム内立ち絵（chr_ryuji_*）だが、39歳組長の設定と合っていない——要差し替え検討。"),
+    dict(id="kumicho", img=None, name="神崎 竜二", kana="シーシャ組長", tags=["ライバル ch2", "39歳", "神崎煙草店"],
+         blurb="非常に丁寧な接客で知られる店主。正体はヤクザの組長（シノギで店を営んでいることは隠している）。プレイスタイルは「スジを通す煙」。交友を深めると<strong>蒸らし0分（吸いながら立ち上げる高等テク）</strong>が解放される。<br>※立ち絵は未実装（旧画像は設定不一致のため廃止済み・2026-07-05）。新規作成時は chr_kumicho_* で追加。"),
     dict(id="rei", img=None, name="田中 健太", kana="零-REI-", tags=["ライバル ch2-3", "25歳", "零-ZERO-店長"],
          blurb="V系コンセプトカフェ「零-ZERO-」店長。全身の刺青と非対称カラーリング、ステージに立つだけで空気が変わるカリスマ。ミックス名はすべてV系バンドへのオマージュ（「嘘の薔薇」「CASSIS MEMORIAL」等）。フローラルを極限まで重ね、煙をパフォーマンスに変える。ch3ではなるを僅差で降す。"),
     dict(id="dr_kemuri", img="p_dr_kemuri", name="炭場 創", kana="チャコール博士", tags=["ライバル ch2", "審査員兼研究者", "ch5仕掛け人", "38歳"],
@@ -141,7 +140,7 @@ CH3_CHARS = [
     dict(id="steve", img=None, name="スティーブ・デイビス", kana="Smoke & Glory", tags=["ライバル ch3", "30歳"],
          blurb="ピザを愛す巨漢だが、作りは異常なまでに繊細。クセの強いアメリカ産フレーバーを極めて低い温度帯でじっくり育てる達人。"),
     dict(id="volk", img=None, name="ヴォルク・イヴァノフ", kana="Железный Дым", tags=["ライバル ch3", "37歳", "ロシア"],
-         blurb="データと徹底した温度管理システムによる「ブレない完璧な提供」。機械のように精密なシーシャを作る——ch5のSHISHA-9000を予感させる人間側の精度番長。※characters.json では role: rival_ch2 表記（既知のゆれ、下の正本ガイド参照）。"),
+         blurb="データと徹底した温度管理システムによる「ブレない完璧な提供」。機械のように精密なシーシャを作る——ch5のSHISHA-9000を予感させる人間側の精度番長。"),
     dict(id="mukai_master", img=None, name="ムカイさん", kana="向井", tags=["ch3 溜まり場", "48歳", "mukai店長"],
          blurb="tonari姉妹店「mukai」の店長。次元大輔ルックスの超絶渋いダンディ。周囲からシガーマンと勘違いされているが、実はシガーは得意ではない。"),
     dict(id="tetsuko", img=None, name="テツコ", kana="mukai裏口の猫", tags=["猫"],
@@ -162,8 +161,6 @@ CH5_CHARS = [
 JUDGES_MISC = [
     dict(id="emil", img=None, name="エミル", kana="元トプハーネ地区ナルギレ職人", tags=["審査員", "48歳", "トルコ"],
          blurb="伝統と歴史に根ざした深みを誰よりも理解し、「新しいだけでは本物ではない」という信念で人の煙を見極める。かつて出会った放浪の日本人（スミさん）の煙が審査員を目指したきっかけとも噂される。感動するとトルコ語でぽつりとつぶやく。"),
-    dict(id="dj_smoke", img=None, name="DJ SMOKE", kana="クラブVJ兼任", tags=["審査員", "35歳"],
-         blurb="「技術の前に、場を支配できているか」。心を動かされた煙の前では反射的にヘッドホンを外して目を閉じる——それが大会の隠れた見どころ。"),
 ]
 
 HEROINES = [
@@ -206,7 +203,7 @@ CHAPTERS = [
     dict(no="第5章", title="機械仕掛けの神（Deus Ex Machina）", cup="SHISHA-9000戦（SMOKE LAB・真の最終章）", reg="ダブルアップル単体・配合自由度ゼロ",
          theme="AIにシーシャは代替されるのか — EN:CODE回収", img="bg_cstation",
          imgcap="背景: C.STATION（bg_c_station_day）",
-         body="""世界王者となったはじめの前に、審査員チャコール博士が究極のAI「SHISHA-9000」を携えて再登場（章タイトル演出は「煙の向こう側」）。9000は完璧で、環境センサーで「目の前の人に合わせる」ことすらできる——「合わせる」では勝てない。最後の一台は<strong>賭け</strong>。課題はダブルアップル単体、配合自由度ゼロの純粋技術勝負であり、ch3事件の贖罪とアダムへのリスペクトの最終回収でもある。<br><br>採点UIは出ない。勝敗は観客の<strong>「もう一回吸いたいのはどっち」の挙手</strong>。ここでタイトルが回収される——煙を作る＝生き方のエンコード、吸う＝デコード。AIの煙は誰もエンコードしていないコード、宛先のない煙。9000は破壊されず教材として残り、博士は十数年ぶりに自分の舌で一台を作る。<br><br>ラストはtonariの変わらない日常。常連のサラリーマンが、はじめを抜き去る新人を絶賛する。はじめは完敗だと笑う。<em>「人の好みはそれぞれ。だからシーシャは面白い」</em>。""",
+         body="""世界王者となったはじめの前に、審査員チャコール博士が究極のAI「SHISHA-9000」を携えて再登場（章タイトルは演出上の残置で「煙の向こう側」表記）。9000は完璧で、環境センサーで「目の前の人に合わせる」ことすらできる——「合わせる」では勝てない。最後の一台は<strong>賭け</strong>。課題はダブルアップル単体、配合自由度ゼロの純粋技術勝負であり、ch3事件の贖罪とアダムへのリスペクトの最終回収でもある。<br><br>採点UIは出ない。勝敗は観客の<strong>「もう一回吸いたいのはどっち」の挙手</strong>。ここでタイトルが回収される——煙を作る＝生き方のエンコード、吸う＝デコード。AIの煙は誰もエンコードしていないコード、宛先のない煙。9000は破壊されず教材として残り、博士は十数年ぶりに自分の舌で一台を作る。<br><br>ラストはtonariの変わらない日常。常連のサラリーマンが、はじめを抜き去る新人を絶賛する。はじめは完敗だと笑う。<em>「人の好みはそれぞれ。だからシーシャは面白い」</em>。""",
          points=["「-EN:CODE-」の意味はここまで作中で一切説明しない（大会ロゴ等の意匠のみ）",
                  "エンディングはヒロイン好感度に応じた個別エンド or 修羅場エンドへ分岐",
                  "隠しボス戦であり、チャコール博士の再生の物語でもある"]),
@@ -238,9 +235,8 @@ CANON_ROWS = [
 CANON_NOTES = [
     "旧タイトル「煙の向こう側」が brand/docs に残存 → 正式タイトルは<strong>「水煙前線 -EN:CODE-」</strong>（ch5の章題演出としてのみ「煙の向こう側」を残置）。",
     "<code>brand/brand</code>・<code>brand/chapter1（character）</code> は旧設定の残骸。参照・引用しない（旧名「ドクター・ケムリ」等）。",
-    "ヴォルクの章: CLAUDE.md 早見表は「ライバル ch3」、characters.json は role: rival_ch2 —— 要整理の既知のゆれ。",
-    "アゲハの年齢: characters.json の age は 22、同ファイルの description 内は「はじめより2歳年上の24歳」—— 要整理の既知のゆれ。",
-    "神崎竜二の現行立ち絵（<code>assets/sprites/characters/ryuji/</code>）は39歳ヤクザ組長の設定と合わない画（ネオンバーの少女）—— 要差し替え検討。",
+    "旧審査員 <strong>DJ SMOKE・白峰恒一郎・霧島レン</strong> は廃止済み（2026-07-05・オーナー指定）。データ・台詞に再登場させない。",
+    "神崎竜二の立ち絵は<strong>未実装</strong>（旧ネオンバー画像は設定不一致のため廃止）。新規作成時は <code>chr_kumicho_*</code> で追加する。",
     "Godot版は削除済み（2026-06-15）。web/ ＋ data/*.json ＋ brand/ が唯一の正史。",
 ]
 
@@ -609,7 +605,7 @@ footer .wrap {{ display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: 
     <li><strong>ミントの好み</strong> — 苦手な客は自分から「ミント抜きで」と言う。毎回口頭確認はしない（不自然）。「お任せで」は普通にある注文。</li>
     <li><strong>チップ文化はない</strong> — 客が現金を置いていく描写は禁止。臨時収入は「売上ボーナス」「まかない」等で表現。</li>
     <li><strong>「シガー」の意味</strong> — 本作でシガーは基本、葉巻ではなく<em>シガーリーフを使ったシーシャ</em>のこと。シガーマン＝シガーリーフシーシャの凄腕職人。</li>
-    <li><strong>表記</strong> — C.STATIONが正式名称（「シーシャステーション」はNG）。ch1大会は SMOKE CROWN CUP（「地方シーシャバトル」「地方予選」はNG）。</li>
+    <li><strong>表記</strong> — C.STATIONが正式名称（旧表記「シーシャステーション」はNG）。ch1大会は SMOKE CROWN CUP（旧名「地方シーシャバトル」「地方予選」はNG）。</li>
     <li><strong>噂のクロスオーバー</strong> — 南雲がシガーマンの噂を恐れている／ムカイさんがシガーマンと勘違いされている／チャコール博士の人体実験の噂——キャラ同士の噂が世界観を深くする。</li>
   </ul>
 </section>
@@ -629,7 +625,7 @@ footer .wrap {{ display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: 
 
 <footer><div class="wrap">
   <span>水煙前線 -EN:CODE- 設定資料集（開発用・二次資料）</span>
-  <span>出典: data/characters.json ・ brand/story_and_structure.md ・ CLAUDE.md ／ 2026-07-05 生成</span>
+  <span>出典: data/characters.json ・ brand/story_and_structure.md ・ CLAUDE.md ／ 2026-07-05 更新</span>
 </div></footer>
 '''
 

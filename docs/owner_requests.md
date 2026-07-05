@@ -11,6 +11,18 @@
 
 ---
 
+## 2026-07-05 セッション（設定資料集ブランチ claude/game-reference-doc-g3mtbq・資料フィードバック便）
+
+| # | 状態 | 内容 |
+|---|---|---|
+| R1 | ✅ | **アゲハは22歳**: characters.json の description「はじめより2歳年上の24歳」→「はじめと同い年の22歳」に修正（age:22 と整合）。設定資料集も22歳表記に |
+| R2 | ✅ | **みんとの正体はch1でも判明する**: CLAUDE.md の「ch1では正体を明かさない」2箇所を「訪問5回目の私服デート ch1_minto_fifth でch1内でも判明（正史）」に改定。engine.js のコメント・設定資料集も追随 |
+| R3 | ✅ | **りゅうじ（神崎竜二）の旧立ち絵を廃止**: ネオンバーの少女画（chr_ryuji_*・face_ryuji）は設定不一致のため assets から削除し、kumicho→ryuji のエイリアス（engine.js/game.js/build_data.py）も撤去。ゲーム内は文字バッジ「崎」にフォールバック。新画像は chr_kumicho_* で追加する運用 |
+| R4 | ✅ | **前園の名前確認**: ゲーム内・characters.json とも「前園 壮一郎」で統一済みを確認。旧審査員の残骸 **白峰恒一郎・霧島レン** を characters.json / engine.js から削除（台詞での使用ゼロを確認済み） |
+| R5 | ✅ | **DJ SMOKE を廃止**: characters.json から削除（台詞・game.js での使用ゼロ）。CLAUDE.md 早見表・brand/character_profiles.md（ch2審査員候補→ゲスト未定）・設定資料集からも除去 |
+| R6 | ✅ | **紛らわしい残存の掃除**: secret_recipes.json の character:"ryuji"→"kumicho"、profiles のch4審査員候補からチャドを外す（審査員はダ・シルヴァに統合済み・店主としては登場継続）、tools のryuji例記述を整理、characters.json の volk role rival_ch2→rival_ch3（CLAUDE.md 早見表に整合） |
+| R7 | ✅ | **設定資料集へ反映**: docs/setting_reference.html を再生成（アゲハ22歳・みんと正体の記述・組長立ち絵プレースホルダ化・DJ SMOKE削除・ゆれ注記の解消） |
+
 ## 2026-07-05 セッション（同ブランチ・第3便: ショップ改装＋Day1強制チュートリアル2本＋ステータス演出）
 
 ### ✅ 完了（全10テスト緑・commit予定）

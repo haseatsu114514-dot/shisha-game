@@ -15,12 +15,12 @@
   3. 孤立ゴミ成分: 本体と連結していない小さな不透明の島
      （髪の毛の房などは本体の近くにあるので残る）。
 
-例外: ryuji のような「枠付き一枚絵カード」（bbox 内をほぼ塗り潰す矩形
+例外:「枠付き一枚絵カード」（bbox 内をほぼ塗り潰す矩形
 アート）は枠や余白が正規のデザインなので、内部固化以外は行わない。
 
 使い方:
   python3 tools/clean_sprite_alpha.py                 # 全キャラ処理（上書き）
-  python3 tools/clean_sprite_alpha.py minto ryuji     # フォルダ名で絞り込み
+  python3 tools/clean_sprite_alpha.py minto sumi      # フォルダ名で絞り込み
   python3 tools/clean_sprite_alpha.py --dry-run       # 変更内容の確認のみ
 
 処理後は必ず再ビルドする:
@@ -74,7 +74,7 @@ def clean(png: Path, dry: bool) -> bool:
     interior = ndimage.binary_erosion(body, iterations=SOLIDIFY_ERODE)
     alpha[interior & (alpha >= SOLIDIFY_MIN_ALPHA) & (alpha < 255)] = 255
 
-    # 一枚絵カード（ryuji 等）は枠が正規デザインなのでゴミ除去をスキップ
+    # 一枚絵カードは枠が正規デザインなのでゴミ除去をスキップ
     ys, xs = np.where(alpha > 0)
     bbox_area = (ys.max() - ys.min() + 1) * (xs.max() - xs.min() + 1)
     is_card = len(ys) / bbox_area >= CARD_FILL_RATIO

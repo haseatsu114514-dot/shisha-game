@@ -16,9 +16,9 @@ const SPEAKER_NAMES = {
   hajime: "はじめ", sumi: "スミさん", naru: "なる", adam: "アダム",
   minto: "みんと", mashiro: "ましろ", tsumugi: "つむぎ", tumugi: "つむぎ",
   hazime: "はじめ", pakki: "パッキー", salaryman: "サラリーマン",
-  nagumo: "南雲修二", maezono: "前園壮一郎", kirishima: "霧島レン",
+  nagumo: "南雲修二", maezono: "前園壮一郎",
   staff_choizap: "チョイザップスタッフ", kako: "かこ", rira: "りら",
-  oneesan: "お姉さん", // みんとの私服（素）の姿。正体は ch1 では明かさない
+  oneesan: "お姉さん", // みんとの私服（素）の姿。正体はみんと訪問5回目（ch1_minto_fifth）で判明するまで伏せる
   rin: "凛",
   ageha: "あげは", rei: "零-REI-", kumicho: "神崎竜二",
   dr_kemuri: "チャコール博士",
@@ -26,7 +26,8 @@ const SPEAKER_NAMES = {
   shop_clerk: "店員", old_man: "老人", customer: "お客さん", everyone: "全員",
 };
 window.SPEAKER_NAMES = SPEAKER_NAMES;
-const SPEAKER_ID_ALIASES = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki", oneesan: "minto", kumicho: "ryuji" };
+// kumicho の立ち絵は廃止（2026-07-05 オーナー指定・旧 ryuji 画像は設定不一致のため撤去。新画像が出来たら chr_kumicho_* で追加）
+const SPEAKER_ID_ALIASES = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki", oneesan: "minto" };
 const FACE_ALIASES = {
   hajime: { excited: "smile" },
   naru: { excited: "smile", smug: "serious", fired_up: "serious" },
