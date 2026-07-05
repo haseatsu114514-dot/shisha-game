@@ -250,6 +250,15 @@ def collect_making_assets() -> list:
     return sorted(p.name for p in making_dir.glob("*.png") if p.stat().st_size > 0)
 
 
+def collect_shop_assets() -> list:
+    """assets/ui/shop/ にあるショップ商品画像一覧（N17/N21・flavor_<id>.png / equip_<id>.png）。
+    making_assets と同じ流儀: 無ければ web側がCSSアイコンにフォールバックする。"""
+    shop_dir = REPO_ROOT / "assets" / "ui" / "shop"
+    if not shop_dir.exists():
+        return []
+    return sorted(p.name for p in shop_dir.glob("*.png") if p.stat().st_size > 0)
+
+
 def collect_making_asset_meta() -> dict:
     """作業台素材の「実コンテンツ」計測値。生成画像はキャンバス余白・アスペクトが
     まちまちで、CSSの contain 配置では絵が箱の中で浮く（アルミがボウルに乗らない等）。
@@ -360,6 +369,7 @@ def main() -> None:
         "title_arts": collect_title_arts(),
         "making_assets": collect_making_assets(),
         "making_asset_meta": collect_making_asset_meta(),
+        "shop_assets": collect_shop_assets(),
         "face_icons": collect_face_icons(),
         "lime_messages": load_json(DATA_DIR / "lime_messages.json")["messages"],
         "glossary": load_json(DATA_DIR / "glossary.json")["groups"],

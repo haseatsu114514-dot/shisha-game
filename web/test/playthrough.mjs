@@ -103,6 +103,18 @@ while (guard++ < 5000) {
     continue;
   }
   if (screen === "screen-shop") {
+    // Day1強制の買い出し（N18）: ミントを選んで詳細パネルの「仕入れる」を押すまで店を出られない
+    const errandPending = await page.evaluate(() => !!(state && state.flags._shop_errand_pending));
+    if (errandPending) {
+      const mintRow = page.locator('.shop-row[data-shop-id="mint"]');
+      if (await mintRow.count()) await mintRow.click().catch(() => {});
+      const buyBtn = page.locator("#shop-buy-btn:not([disabled])");
+      if (await buyBtn.count()) await buyBtn.click().catch(() => {});
+      await page.waitForTimeout(50);
+      await page.click("#shop-close").catch(() => {});
+      await page.waitForTimeout(30);
+      continue;
+    }
     // 凛さんのショールーム（1日1回）→ なければ店を出る
     const rin = page.locator("#shop-rin:not([disabled])");
     if (await rin.count()) { await rin.click(); await page.waitForTimeout(50); continue; }

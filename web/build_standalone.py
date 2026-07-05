@@ -96,6 +96,12 @@ def collect_assets() -> dict:
             if png.stat().st_size == 0:
                 continue
             assets[f"assets/ui/making/{png.name}"] = encode_png_asset(png)
+    shop_dir = REPO_ROOT / "assets" / "ui" / "shop"
+    if shop_dir.exists():
+        for png in sorted(shop_dir.glob("*.png")):
+            if png.stat().st_size == 0:
+                continue
+            assets[f"assets/ui/shop/{png.name}"] = encode_png_asset(png)
     for png in sorted((REPO_ROOT / "assets" / "backgrounds").glob("*.png")):
         assets[f"assets/backgrounds/{png.name}"] = encode_background(png)
     # CG: show_cg 対象（恋愛・日常スチル含む全部。素材が増えたらそのまま乗る）

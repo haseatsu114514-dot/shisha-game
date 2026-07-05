@@ -49,6 +49,20 @@ for (let i = 0; i < 2000; i++) {
     await playTnStep(page);
     continue;
   }
+  if (s === "screen-shop") {
+    // Day1強制の買い出し（N18）: ミントを仕入れてから店を出る
+    const errandPending = await page.evaluate(() => !!(state && state.flags._shop_errand_pending));
+    if (errandPending) {
+      const mintRow = page.locator('.shop-row[data-shop-id="mint"]');
+      if (await mintRow.count()) await mintRow.click().catch(() => {});
+      const buyBtn = page.locator("#shop-buy-btn:not([disabled])");
+      if (await buyBtn.count()) await buyBtn.click().catch(() => {});
+      await page.waitForTimeout(50);
+    }
+    await page.click("#shop-close").catch(() => {});
+    await page.waitForTimeout(30);
+    continue;
+  }
   const c = page.locator("#vn-choices .choice-btn").first();
   if (await c.count()) await c.click(); else await page.click("#vn-click-layer");
   await page.waitForTimeout(15);

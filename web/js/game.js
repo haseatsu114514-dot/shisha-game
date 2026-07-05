@@ -356,6 +356,9 @@ function flushGainQueue() {
     else if (item.kind === "money-plus") SFX.coin();
     else if (item.kind === "stat") SFX.stamp();
   }
+  // ステータスの伸びはHUDの五角形へ光が飛んでいく（N20）。カードが出た少し後、
+  // 消える前に発射するので「窓が出る→光が飛ぶ→五角形が反応する」の順で伝わる
+  if (item.kind === "stat") setTimeout(() => spawnStatBolt(card, item.stat), 420);
   // CSSアニメは合計約2.3s（in 0.45s + 待機 1.4s + out 0.45s）。
   // ハートの段階アップは伸びる演出を見せたいので少し長く出す
   setTimeout(() => {
@@ -367,9 +370,10 @@ function flushGainQueue() {
   setTimeout(flushGainQueue, 280);
 }
 
-// 表示中・待機中の報酬バナーが全部流れ終わるのを待つ（暗転演出と重ねないため・N8）
+// 表示中・待機中の報酬バナーが全部流れ終わるのを待つ（暗転演出と重ねないため・N8）。
+// ステータス合算待ち（N20の statGainBatchTimer）も解決してから「完了」とみなす
 function waitGainBanners(cb) {
-  if (gainShowing === 0 && gainQueue.length === 0) return cb();
+  if (gainShowing === 0 && gainQueue.length === 0 && !statGainBatchTimer) return cb();
   setTimeout(() => waitGainBanners(cb), 180);
 }
 
@@ -389,6 +393,14 @@ function statSoftCap() {
   return ({ 1: 48, 2: 66, 3: 82, 4: 96, 5: 100 })[state ? state.chapter : 1] || 100;
 }
 
+// 同じステータスへの複数回の加算を1つのバナーへまとめる（N20・2026-07-05）。
+// 1つの出来事の中で同じ項目が何度も伸びると「少し上がった」窓が連発して
+// 結局どれだけ伸びたのか分からなくなるため、短い時間窓に入った分は合算してから
+// 1枚だけ出す。違うステータス（例: 技術と魅力が同時に伸びる）はそれぞれ別枠のまま。
+// 窓の長さは「同じ場面で連続してクリックする」程度の間隔を吸収できる長さにしてある
+const STAT_GAIN_MERGE_MS = 700;
+let statGainBatch = {};      // en -> 今の窓で溜まった実際の増分
+let statGainBatchTimer = null;
 function gainStat(en, amount) {
   if (!(en in state.stats) || amount <= 0) return;
   const cap = statSoftCap();
@@ -400,17 +412,33 @@ function gainStat(en, amount) {
   }
   const before = state.stats[en];
   state.stats[en] = Math.max(0, Math.min(cap, before + amount));
-  if (state.stats[en] === before) return; // 実際に増えなかったら通知しない
-  if (typeof REEL !== "undefined") REEL.noteStat(en, state.stats[en] - before); // 直近の伸びをスロットのアンコール抽選に記録
-  const label = amount >= 5 ? "大きく上がった" : amount >= 3 ? "上がった" : "少し上がった";
-  gainBanner({
-    kind: "stat",
-    stat: en,
-    badge: STAT_BADGE[en] || "上",
-    labelTop: "STATUS UP",
-    labelMain: STAT_KEYS[en],
-    labelSub: label,
-  });
+  const actual = state.stats[en] - before;
+  if (actual <= 0) return; // 実際に増えなかったら通知しない
+  if (typeof REEL !== "undefined") REEL.noteStat(en, actual); // 直近の伸びをスロットのアンコール抽選に記録
+  statGainBatch[en] = (statGainBatch[en] || 0) + actual;
+  if (statGainBatchTimer) clearTimeout(statGainBatchTimer);
+  statGainBatchTimer = setTimeout(flushStatGainBatch, STAT_GAIN_MERGE_MS);
+}
+
+// 4段階表現: 1〜2=少し上がった／3〜4=上がった／5〜7=かなり上がった（複数回の合算はここに乗りやすい）／8〜=大きく上がった
+function statGainLabel(total) {
+  return total >= 8 ? "大きく上がった" : total >= 5 ? "かなり上がった" : total >= 3 ? "上がった" : "少し上がった";
+}
+
+function flushStatGainBatch() {
+  statGainBatchTimer = null;
+  const batch = statGainBatch;
+  statGainBatch = {};
+  for (const [en, total] of Object.entries(batch)) {
+    gainBanner({
+      kind: "stat",
+      stat: en,
+      badge: STAT_BADGE[en] || "上",
+      labelTop: "STATUS UP",
+      labelMain: STAT_KEYS[en],
+      labelSub: statGainLabel(total),
+    });
+  }
 }
 
 // 恋人とのデート文脈でだけ恋人Lvが上がる（絆はプライベートで深める）
@@ -448,7 +476,7 @@ function gainAffinity(charId, kind = "visit") {
   const rank = rankFromPts(state.affinityPts[charId]);
   if (rank > state.affinity[charId]) {
     state.affinity[charId] = rank;
-    gainBanner({ kind: "affinity", badge, labelTop: "AFFINITY UP", labelMain: name, labelSub: `仲良し度が ♥${rank} に上がった！`, hearts });
+    gainBanner({ kind: "affinity", badge, labelTop: "AFFINITY UP", labelMain: name, labelSub: `好感度が ♥${rank} に上がった！`, hearts });
   } else {
     gainBanner({ kind: "affinity", badge, labelTop: "AFFINITY", labelMain: name, labelSub: "少し打ち解けた気がする", hearts });
   }
@@ -710,6 +738,41 @@ function renderHudRadar() {
     .join("");
   svg.setAttribute("viewBox", `0 0 ${SIZE} ${SIZE}`);
   svg.innerHTML = grid + `<polygon points="${radarPolygonPoints(SIZE, vals)}" class="radar-fill"/>`;
+}
+
+// ステータス上昇バナーからHUDの五角形へ「光がビヨンと飛んでいく」演出（N20）。
+// #game は1280x720固定でfitStage()がscale()するだけなので、getBoundingClientRect同士の
+// 差分を#gameの実寸(スケール後)で割れば、#game内のCSS px（スケール前の座標系）に変換できる
+function spawnStatBolt(fromEl, stat) {
+  const host = $("#game");
+  const hud = $("#hud-level");
+  if (!host || !hud || !fromEl || !fromEl.isConnected) return;
+  const g = host.getBoundingClientRect();
+  if (!g.width) return;
+  const scale = g.width / 1280;
+  const toLocal = (rect) => ({
+    x: (rect.left - g.left) / scale + (rect.width / scale) / 2,
+    y: (rect.top - g.top) / scale + (rect.height / scale) / 2,
+  });
+  const from = toLocal(fromEl.getBoundingClientRect());
+  const to = toLocal(hud.getBoundingClientRect());
+  const bolt = document.createElement("div");
+  bolt.className = "stat-bolt";
+  bolt.style.setProperty("--bolt-color", `var(--stat-${stat}, #ffd35e)`);
+  bolt.style.left = `${from.x}px`;
+  bolt.style.top = `${from.y}px`;
+  host.appendChild(bolt);
+  requestAnimationFrame(() => {
+    bolt.style.left = `${to.x}px`;
+    bolt.style.top = `${to.y}px`;
+    bolt.classList.add("fly");
+  });
+  setTimeout(() => {
+    bolt.remove();
+    hud.classList.add("radar-hit");
+    if (window.SFX) SFX.select();
+    setTimeout(() => hud.classList.remove("radar-hit"), 420);
+  }, 560);
 }
 
 function updateHud() {
@@ -1215,9 +1278,12 @@ function parseTextCue(text) {
   if (!text.includes("上がった")) return;
   const m = text.match(/(技術|センス|根性|魅力|洞察|好感度)/g);
   if (!m) return;
+  // 4段階表現に対応（N20）: 大きく上がった/かなり上がった/少し上がった/(無指定=上がった)。
+  // amount は statGainLabel() の閾値(3/5/8)を通した時に同じ言葉へ戻るように選ぶ
   const big = text.includes("大きく上がった");
+  const quite = text.includes("かなり上がった");
   const small = text.includes("少し上がった");
-  const amount = big ? 5 : small ? 2 : 3;
+  const amount = big ? 8 : quite ? 6 : small ? 2 : 3;
   for (const ja of new Set(m)) {
     if (ja === "好感度") {
       if (visitContextChar) gainAffinity(visitContextChar);
@@ -2206,6 +2272,11 @@ function showMap(opts = {}) {
     state.flags._hint_daylimited = true;
     toast("スミ「シーシャ屋の一日は一期一会だ。今日しか会えねえ客もいるぞ」");
   }
+  // Day1強制偵察（N19）の直後だけ、他店訪問の意味を一言で教える
+  if (state.flags._scouting_hint_pending) {
+    delete state.flags._scouting_hint_pending;
+    toast("（……こうやって他の店に顔を出すと、ライバルとも仲良くなれるのかもしれない）");
+  }
 }
 
 // 初めてマップに出たときだけ、機能を点滅つきで一度だけ説明する（#36）。
@@ -2995,7 +3066,83 @@ function showFookahMenu() {
   requestAnimationFrame(() => ov.classList.add("show"));
 }
 
+// ============================================================================
+// ショップの商品サムネイル（N17・2026-07-05）。
+// 生成PNGがある種別（ボウル/炭）は作業台と同じ素材を流用し、無い種別（ヒートマネジメント/
+// パイプ/家シーシャ）はCSSだけで簡易アイコンを描く。フレーバーは色付きジャーで香りの
+// 系統（カテゴリ）を一目で示す。「選んだ商品の絵が見える」買い物の実感を作る（オーナー要望）。
+// ============================================================================
+const CHARCOAL_ASSET = { flat_charcoal: "coal_flat_cold.png", cube_charcoal: "coal_cold.png" };
+// 使い込まれた素焼き（キャラゆかりの一台）は、育て元のフレーバー色でリムを彩る
+const GROWN_BOWL_TINT = { suyaki_minto: "mint", suyaki_adam: "double_apple", suyaki_naru: "vanilla" };
+
+// 実写風の商品パッケージ画像（Codex生成・N21）。assets/ui/shop/ に
+// flavor_<id>.png / equip_<id>.png が届けばそちらを最優先で使い、
+// 無ければ従来のCSSアイコン／作業台素材流用にフォールバックする
+function hasShopAsset(name) {
+  return !!(name && (D.shop_assets || []).includes(name));
+}
+function applyShopAsset(el, name) {
+  el.style.backgroundImage = `url('${assetUrl(`assets/ui/shop/${name}`)}')`;
+  el.style.backgroundSize = "cover";
+  el.style.backgroundPosition = "50% 50%";
+  el.classList.add("has-asset");
+}
+
+function productThumb(kind, item) {
+  const el = document.createElement("div");
+  el.className = "shop-thumb";
+  const packageAsset = kind === "flavor" ? `flavor_${item.id}.png` : `equip_${item.id}.png`;
+  if (hasShopAsset(packageAsset)) {
+    el.classList.add(kind === "flavor" ? "thumb-flavor" : "thumb-equip");
+    applyShopAsset(el, packageAsset);
+    return el;
+  }
+  if (kind === "flavor") {
+    el.classList.add("thumb-flavor");
+    el.style.setProperty("--thumb-fill", flavorColor(item.id));
+    const cat = Array.isArray(item.category) ? item.category[0] : item.category;
+    el.innerHTML =
+      `<span class="thumb-jar-body"><span class="thumb-jar-fill"></span></span>` +
+      `<span class="thumb-jar-cap"></span>` +
+      `<span class="thumb-jar-badge">${CATEGORY_BADGE[cat] || "香"}</span>`;
+    return el;
+  }
+  // 機材
+  if (item.type === "bowl") {
+    const bkind = bowlArtKind(item.id);
+    el.classList.add("thumb-bowl", `thumb-bowl-${bkind}`);
+    const asset = `bowl_empty_${bkind}.png`;
+    if (artAsset(el, asset)) normalizeMakingAsset(el, asset, true);
+    else el.classList.add("thumb-missing");
+    const tint = GROWN_BOWL_TINT[item.id];
+    if (tint) el.style.setProperty("--thumb-ring", flavorColor(tint));
+  } else if (item.type === "charcoal") {
+    el.classList.add("thumb-charcoal");
+    const asset = CHARCOAL_ASSET[item.id] || "coal_cold.png";
+    if (artAsset(el, asset)) normalizeMakingAsset(el, asset, true);
+    else el.classList.add("thumb-missing");
+  } else if (item.type === "hms") {
+    el.classList.add("thumb-hms");
+    el.innerHTML = `<span class="thumb-hms-dome"></span><span class="thumb-hms-vent"></span>`;
+  } else if (item.type === "pipe" || item.type === "homeware") {
+    el.classList.add("thumb-pipe", `thumb-pipe-${item.type}`);
+    el.innerHTML =
+      `<span class="thumb-pipe-bowltop"></span><span class="thumb-pipe-stem"></span>` +
+      `<span class="thumb-pipe-base"></span>` +
+      (item.type === "homeware" ? `<span class="thumb-home-badge">HOME</span>` : "");
+  } else {
+    el.classList.add("thumb-missing");
+  }
+  return el;
+}
+
 // --- ショップ（行動を消費しない）
+// 選択中の商品（N17・2026-07-05）。行を選ぶと詳細パネルに大きい画像＋説明＋購入ボタンが出る、
+// という「見て→選んで→買う」買い物の手触りにする。renderShop() の再描画をまたいで保持される
+let shopSelected = null; // { kind: "equip" | "flavor", id }
+let shopReceipt = [];    // 今回の来店で買ったものの控え（レシート演出）
+
 function showShop() {
   visitContextChar = null;
   // ch2の初回来店時に一度だけ: ch3ライバル・スティーブが客としてカメオ
@@ -3006,9 +3153,64 @@ function showShop() {
   }
   showScreen("#screen-shop");
   if (window.SFX) SFX.open();
+  shopSelected = null;
+  shopReceipt = [];
+  renderShop();
+}
+
+function selectShopItem(kind, id) {
+  shopSelected = (shopSelected && shopSelected.kind === kind && shopSelected.id === id) ? null : { kind, id };
+  if (window.SFX) SFX.select();
+  renderShop();
+}
+
+function addShopReceipt(label, amount) {
+  shopReceipt.unshift({ label, amount });
+  if (shopReceipt.length > 4) shopReceipt.length = 4;
+}
+
+function buyEquipment(e) {
+  if (state.owned.includes(e.id) || (e.price || 0) > state.money) return;
+  addMoney(-e.price);
+  state.owned.push(e.id);
+  save();
+  if (window.SFX) SFX.coin();
+  toast(`${e.name} を手に入れた`);
+  addShopReceipt(e.name, -(e.price || 0));
+  renderShop();
+}
+
+function buyFlavor(f) {
+  const price = f.price || 0;
+  if (price > state.money) return;
+  addMoney(-price);
+  addFlavorStock(f.id, FLAVOR_BOX_GRAMS);
+  state.flags[flavorOwnershipFlag(f)] = true;
+  state.flags._flavor_stocked = true; // 本番持参の救済条件(#44)も満たす
+  save();
+  if (window.SFX) SFX.coin();
+  toast(`${f.short_name || f.name} 1箱（${FLAVOR_BOX_GRAMS}g）を仕入れた`);
+  addShopReceipt(`${f.short_name || f.name} 1箱`, -price);
+  renderShop();
+}
+
+// 商品リスト＋詳細パネル＋レシートを描き直す（購入直後の更新もこちら。
+// showShop() 自体は入店時の選択・レシートのリセットだけを担う）
+function renderShop() {
   $("#shop-money").textContent = `所持金 ${state.money.toLocaleString()}円`;
   const list = $("#shop-list");
   list.innerHTML = "";
+  const shopRow = (kind, id, ownedTag, priceTag, thumbKind, thumbItem) => {
+    const btn = document.createElement("button");
+    btn.className = "spot-btn shop-row";
+    if (shopSelected && shopSelected.kind === kind && shopSelected.id === id) btn.classList.add("selected");
+    btn.dataset.shopKind = kind;
+    btn.dataset.shopId = id;
+    btn.innerHTML = `<span class="spot-name">${ownedTag}</span><span class="spot-cost">${priceTag}</span>`;
+    btn.prepend(productThumb(thumbKind, thumbItem));
+    btn.addEventListener("click", () => selectShopItem(kind, id));
+    return btn;
+  };
   // 家シーシャ一式は第2章から店頭に並ぶ
   const TYPE_ORDER = state.chapter >= 2 ? ["bowl", "hms", "charcoal", "homeware"] : ["bowl", "hms", "charcoal"];
   for (const type of TYPE_ORDER) {
@@ -3021,28 +3223,13 @@ function showShop() {
     for (const e of D.equipment.filter((x) => x.type === type && (x.chapter_min || 1) <= state.chapter)) {
       const ownedAlready = state.owned.includes(e.id);
       const price = e.price || 0;
-      const btn = document.createElement("button");
-      btn.className = "spot-btn";
-      btn.innerHTML =
-        `<span class="spot-name">${e.name}</span>` +
-        `<span class="spot-cost">${ownedAlready ? "購入済み" : `${price.toLocaleString()}円`}</span>` +
-        `<span class="spot-desc">${e.description || ""}</span>`;
-      if (ownedAlready || price > state.money) btn.disabled = true;
-      btn.addEventListener("click", () => {
-        if (state.owned.includes(e.id) || e.price > state.money) return;
-        addMoney(-e.price);
-        state.owned.push(e.id);
-        save();
-        if (window.SFX) SFX.coin();
-        toast(`${e.name} を手に入れた`);
-        showShop(); // 表示を更新
-      });
-      grid.appendChild(btn);
+      grid.appendChild(shopRow("equip", e.id, e.name,
+        ownedAlready ? "所持済み" : `${price.toLocaleString()}円`, "equip", e));
     }
     list.appendChild(grid);
   }
   // フレーバー入荷（Dr.fookah）。その章の解放可能フレーバーを買うと所持品に加わり、ミックスで使える(#くじ/ショップにフレーバー)。
-  // 初期所持はオープニングでスミさんから渡されるダブルアップルだけ。
+  // 初期所持はオープニングでスミさんから渡されるダブルアップルだけ。1箱=50g、使い切ったら買い足せる（在庫制・N3）
   {
     const flLabel = document.createElement("p");
     flLabel.className = "setup-group-label";
@@ -3054,29 +3241,15 @@ function showShop() {
       (CORE_SHOP_FLAVOR_IDS.has(f.id) || f.unlockable) &&
       (f.chapter_min || 1) <= state.chapter);
     for (const f of stockable) {
-      const ownershipFlag = flavorOwnershipFlag(f);
       const stock = flavorStock(f);
       const price = f.price || 0;
-      const btn = document.createElement("button");
-      btn.className = "spot-btn";
-      // 1箱=50g。使い切ったら買い足せる（在庫制・N3）
-      btn.innerHTML =
-        `<span class="spot-name">${f.short_name || f.name}</span>` +
-        `<span class="spot-cost">${price.toLocaleString()}円/箱50g${stock > 0 ? `・在庫${stock}g` : ""}</span>` +
-        `<span class="spot-desc">${f.description || ""}</span>`;
-      if (price > state.money) btn.disabled = true;
-      btn.addEventListener("click", () => {
-        if (price > state.money) return;
-        addMoney(-price);
-        addFlavorStock(f.id, FLAVOR_BOX_GRAMS);
-        state.flags[ownershipFlag] = true;
-        state.flags._flavor_stocked = true; // 本番持参の救済条件(#44)も満たす
-        save();
-        if (window.SFX) SFX.coin();
-        toast(`${f.short_name || f.name} 1箱（${FLAVOR_BOX_GRAMS}g）を仕入れた`);
-        showShop();
-      });
-      flGrid.appendChild(btn);
+      const row = shopRow("flavor", f.id, f.short_name || f.name,
+        `${price.toLocaleString()}円/箱50g${stock > 0 ? `・在庫${stock}g` : ""}`, "flavor", f);
+      // 買い出しの頼まれ物（N18）は目に留まるよう縁を光らせる
+      if (state.flags._shop_errand_pending && state.flags._shop_errand_target === f.id) {
+        row.classList.add("errand-target");
+      }
+      flGrid.appendChild(row);
     }
     if (!stockable.length) {
       const none = document.createElement("p");
@@ -3113,7 +3286,8 @@ function showShop() {
       addMoney(price);
       save();
       toast(`${e.name} を売った`);
-      showShop();
+      if (shopSelected && shopSelected.kind === "equip" && shopSelected.id === id) shopSelected = null;
+      renderShop();
     });
     sellGrid.appendChild(btn);
   }
@@ -3128,7 +3302,7 @@ function showShop() {
       addMoney(g.sell);
       save();
       toast(`${g.name} を売った`);
-      showShop();
+      renderShop();
     });
     sellGrid.appendChild(btn);
   });
@@ -3137,33 +3311,102 @@ function showShop() {
   // シーシャくじコーナー（master_spec #25 / A2）
   renderKujiSection(list);
 
-  // 2階: 凛さんのショールーム（NIGHTSIDE日本代理店）。会いに行くと行動を1回使う
-  const rinWrap = document.createElement("div");
-  rinWrap.className = "spot-list";
-  const visitedToday = !!state.flags[`_rin_d${state.day}`];
-  const rinAway = state.day % 7 === RIN_AWAY_CYCLE;
-  const label = document.createElement("p");
-  label.className = "setup-group-label";
-  label.textContent = "2階";
-  const rinBtn = document.createElement("button");
-  rinBtn.className = "spot-btn";
-  rinBtn.id = "shop-rin";
-  rinBtn.innerHTML =
-    state.visits.rin === 0
-      ? `<span class="spot-name">2階から視線を感じる……</span><span class="spot-cost">2,500円・行動を1回使う</span><span class="spot-desc">階段の上に、誰かいる。ブース付き</span>`
-      : `<span class="spot-name">2階のショールーム＋ブース（${displayName("rin")}）</span>` +
-        `<span class="spot-cost">${rinAway ? "今日は出張で不在" : visitedToday ? "今日はもう顔を出した" : "2,500円・会いに行く（行動を1回使う）"}</span>` +
-        `<span class="spot-desc">NIGHTSIDE日本代理店。吸えるブースつき（他店より少し安い）。買い物だけなら時間はかからない</span>` +
-        // 3回目の解禁を必ず可視化（#31。「あと○回」で奥の棚＝限定サンプルの気配を出す）
-        (state.visits.rin < RIN_SEQUENCE.length
-          ? `<span class="spot-progress">${state.visits.rin === RIN_SEQUENCE.length - 1
-              ? "あと1回通えば、彼女の“奥の棚”が開きそうだ"
-              : `通うたび、奥の棚が近づく気がする（あと${RIN_SEQUENCE.length - state.visits.rin}回）`}</span>`
-          : "");
-  rinBtn.disabled = visitedToday || rinAway || state.money < FOOKAH_BOOTH_FEE; // ブース料が払えないと不可（T28）
-  rinBtn.addEventListener("click", doRinVisit);
-  rinWrap.appendChild(rinBtn);
-  list.append(label, rinWrap);
+  // 2階: 凛さんのショールーム（NIGHTSIDE日本代理店）。会いに行くと行動を1回使う。
+  // スミさんの買い出し中（N18）は行動を消費する寄り道を出さない
+  // （#shop-close のゲートを踏まずに endAction() 経由で自由行動へ抜けてしまうため）
+  if (!state.flags._shop_errand_pending) {
+    const rinWrap = document.createElement("div");
+    rinWrap.className = "spot-list";
+    const visitedToday = !!state.flags[`_rin_d${state.day}`];
+    const rinAway = state.day % 7 === RIN_AWAY_CYCLE;
+    const label = document.createElement("p");
+    label.className = "setup-group-label";
+    label.textContent = "2階";
+    const rinBtn = document.createElement("button");
+    rinBtn.className = "spot-btn";
+    rinBtn.id = "shop-rin";
+    rinBtn.innerHTML =
+      state.visits.rin === 0
+        ? `<span class="spot-name">2階から視線を感じる……</span><span class="spot-cost">2,500円・行動を1回使う</span><span class="spot-desc">階段の上に、誰かいる。ブース付き</span>`
+        : `<span class="spot-name">2階のショールーム＋ブース（${displayName("rin")}）</span>` +
+          `<span class="spot-cost">${rinAway ? "今日は出張で不在" : visitedToday ? "今日はもう顔を出した" : "2,500円・会いに行く（行動を1回使う）"}</span>` +
+          `<span class="spot-desc">NIGHTSIDE日本代理店。吸えるブースつき（他店より少し安い）。買い物だけなら時間はかからない</span>` +
+          // 3回目の解禁を必ず可視化（#31。「あと○回」で奥の棚＝限定サンプルの気配を出す）
+          (state.visits.rin < RIN_SEQUENCE.length
+            ? `<span class="spot-progress">${state.visits.rin === RIN_SEQUENCE.length - 1
+                ? "あと1回通えば、彼女の“奥の棚”が開きそうだ"
+                : `通うたび、奥の棚が近づく気がする（あと${RIN_SEQUENCE.length - state.visits.rin}回）`}</span>`
+            : "");
+    rinBtn.disabled = visitedToday || rinAway || state.money < FOOKAH_BOOTH_FEE; // ブース料が払えないと不可（T28）
+    rinBtn.addEventListener("click", doRinVisit);
+    rinWrap.appendChild(rinBtn);
+    list.append(label, rinWrap);
+  }
+
+  renderShopReceipt();
+  renderShopDetail();
+}
+
+function renderShopReceipt() {
+  const box = $("#shop-receipt");
+  if (!shopReceipt.length) { box.innerHTML = ""; box.classList.remove("show"); return; }
+  box.classList.add("show");
+  box.innerHTML =
+    `<p class="shop-receipt-title">お買い物メモ</p>` +
+    shopReceipt.map((r) =>
+      `<p class="shop-receipt-row"><span>${r.label}</span><span>${r.amount.toLocaleString()}円</span></p>`
+    ).join("");
+}
+
+// 選択中の商品を大きく見せる詳細パネル。「見て→選んで→買う」の最後の一歩をここでやる
+function renderShopDetail() {
+  const box = $("#shop-detail");
+  box.innerHTML = "";
+  if (!shopSelected) {
+    box.classList.add("empty");
+    box.innerHTML = `<p class="shop-detail-empty">気になる商品をタップすると、ここに大きく出るよ</p>`;
+    return;
+  }
+  const kind = shopSelected.kind;
+  const item = kind === "equip"
+    ? D.equipment.find((x) => x.id === shopSelected.id)
+    : D.flavors.find((x) => x.id === shopSelected.id);
+  if (!item) { shopSelected = null; box.classList.add("empty"); return; }
+  box.classList.remove("empty");
+  const thumbWrap = document.createElement("div");
+  thumbWrap.className = "shop-detail-thumb";
+  thumbWrap.appendChild(productThumb(kind === "equip" ? "equip" : "flavor", item));
+  const body = document.createElement("div");
+  body.className = "shop-detail-body";
+  const name = document.createElement("p");
+  name.className = "shop-detail-name";
+  name.textContent = kind === "equip" ? item.name : (item.short_name || item.name);
+  const desc = document.createElement("p");
+  desc.className = "shop-detail-desc";
+  desc.textContent = item.description || "";
+  const price = item.price || 0;
+  const afford = price <= state.money;
+  const buyBtn = document.createElement("button");
+  buyBtn.id = "shop-buy-btn";
+  buyBtn.className = "primary-btn";
+  if (kind === "equip") {
+    const owned = state.owned.includes(item.id);
+    buyBtn.textContent = owned ? "所持済み" : afford ? `購入する（${price.toLocaleString()}円）` : "所持金が足りない";
+    buyBtn.disabled = owned || !afford;
+    buyBtn.addEventListener("click", () => buyEquipment(item));
+  } else {
+    const stock = flavorStock(item);
+    const stat = document.createElement("p");
+    stat.className = "shop-detail-stock";
+    stat.textContent = `在庫 ${stock}g（1箱${FLAVOR_BOX_GRAMS}g）`;
+    body.append(name, stat, desc);
+    buyBtn.textContent = afford ? `仕入れる（${price.toLocaleString()}円）` : "所持金が足りない";
+    buyBtn.disabled = !afford;
+    buyBtn.addEventListener("click", () => buyFlavor(item));
+  }
+  if (kind === "equip") body.append(name, desc);
+  body.appendChild(buyBtn);
+  box.append(thumbWrap, body);
 }
 
 // ============ シーシャくじ（master_spec #25 / A2） ============
@@ -3292,7 +3535,16 @@ function revealKuji(prize, extras, done) {
   const card = $("#kuji-card");
   ov.classList.add("show");
   card.className = "kuji-card drawing";
-  card.innerHTML = `<div class="kuji-ticket">？</div>`;
+  // ボックスくじを引く手触り（N18）: 棚に並んだ箱から1つを引き当てる見た目。
+  // タイミングは変えない（700msでreveal。ヘッドレステストが#kuji-card.revealを待つ）
+  const boxCount = 6;
+  const pickIdx = Math.floor(Math.random() * boxCount);
+  card.innerHTML =
+    `<div class="kuji-shelf">` +
+    Array.from({ length: boxCount }, (_, i) =>
+      `<span class="kuji-box${i === pickIdx ? " reach" : ""}"></span>`).join("") +
+    `</div>` +
+    `<div class="kuji-drawing-label">箱を引いています……</div>`;
   if (window.SFX) SFX.open();
   const top = prize.rank === "S" || prize.rank === "LAST";
   setTimeout(() => {
@@ -3846,6 +4098,12 @@ const FLAVOR_COLORS = {
   strawberry: "#e9687c", grape: "#9b71dc", rose: "#e78bb4",
   nightside_earlgrey: "#b78d4e",
 };
+// 個別色が無いフレーバーはカテゴリ色にフォールバック（ショップの商品ジャー用・N17）。
+// 単一の茶色止まりだと64種の見分けがつかないため、5カテゴリで色の当たりをつける
+const CATEGORY_COLORS = {
+  cooling: "#7fd6c8", fruit: "#e69a4e", sweet: "#f0c26a", spice: "#c98a5a", floral: "#dd93c4",
+};
+const CATEGORY_BADGE = { cooling: "涼", fruit: "果", sweet: "甘", spice: "香", floral: "花" };
 
 const MAKING_WORKBENCH_STEPS = new Set([
   "setup_bowl", "setup_hms", "setup_charcoal", "theme", "mix", "pack", "foil",
@@ -3934,7 +4192,10 @@ function artAsset(el, name) {
   return true;
 }
 function flavorColor(id) {
-  return FLAVOR_COLORS[id] || "#8a6a45";
+  if (FLAVOR_COLORS[id]) return FLAVOR_COLORS[id];
+  const f = (D.flavors || []).find((x) => x.id === id);
+  const cat = f && (Array.isArray(f.category) ? f.category[0] : f.category);
+  return CATEGORY_COLORS[cat] || "#8a6a45";
 }
 function flavorShortName(id) {
   const f = (D.flavors || []).find((x) => x.id === id);
@@ -4032,13 +4293,18 @@ function coalLitState() {
 function coalCount() {
   return (tt && tt.coal) === "two" ? 2 : (tt && tt.coal) === "four" ? 4 : 3;
 }
+// ボウルの見た目カテゴリ（クレイ/シリコン/ファンネル）を機材IDから判定。
+// 作業台描画とショップの商品サムネ（N17）で共有するヘルパー
+function bowlArtKind(bowlId) {
+  return String(bowlId || "").includes("suyaki") ? "clay"
+    : bowlId === "hagal_80beat" ? "phunnel" : "silicone";
+}
 // ボウル（クレイ/シリコン/ファンネル）。fill=葉、foil=アルミ、coals=炭を上に乗せる。
 // 生成画像 bowl_empty_*.png があれば器の絵はPNG、葉の色層・穴・炭はコードで重ねる。
 // PNGは normalizeMakingAsset で箱に正着させ、リム楕円の実測値（meta.rim）を基準に
 // アルミ・炭・葉の重なり位置を決める＝生成画像の余白や構図が変わってもズレない
 function buildBowlArt(opts = {}) {
-  const kind = tt && String(tt.bowl || "").includes("suyaki") ? "clay"
-    : tt && tt.bowl === "hagal_80beat" ? "phunnel" : "silicone";
+  const kind = bowlArtKind(tt && tt.bowl);
   const bowl = artDiv(`art-bowl ${opts.cls || ""}`);
   bowl.dataset.kind = kind;
   const bowlAsset = { clay: "bowl_empty_clay.png", phunnel: "bowl_empty_phunnel.png", silicone: "bowl_empty_silicone.png" }[kind];
@@ -7418,8 +7684,71 @@ function finishTutorial() {
       save();
       updateHud();
       showDayCard("DAY 1", `SMOKE CROWN CUP まで あと${MAX_DAYS}日`);
-      showMap();
+      startDay1TutorialErrands(); // 自由行動の前に、ショップとライバル店の使い方を実地で覚える（N18/N19）
     }, "res://assets/backgrounds/bg_tonari_inside.png");
+  });
+}
+
+// ============================================================================
+// DAY1 強制チュートリアル（N18/N19・2026-07-05 オーナー指定）:
+// 自由行動を渡す前に「①ショップの使い方」「②他店訪問＝ライバル交友」を
+// 実地で1回ずつ経験させる。①は買い物なので行動を消費しない、②は通常どおり
+// 1行動＋交通費を使う（＝Day1の残り行動は1つ。DAY2から本当の自由行動）。
+// ============================================================================
+function startDay1TutorialErrands() {
+  playCustom({
+    dialogue_id: "day1_sumi_shop_errand",
+    metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" },
+    lines: [
+      { speaker: "sumi", face: "normal", text: "始。お前の道具、まだ揃ってないだろ" },
+      { speaker: "sumi", face: "normal", text: "Dr.fookahに行って、ミントを仕入れてこい。大会の課題フレーバーだ" },
+      { speaker: "hajime", face: "normal", text: "はい、行ってきます" },
+    ],
+  }, () => {
+    state.flags._shop_errand_pending = true;
+    state.flags._shop_errand_target = "mint";
+    save();
+    showShop();
+  });
+}
+
+// ショップを閉じるときのゲート。買い出し中はミントを仕入れるまで店を出せない
+// （ハード制限ではなく、スミさんの一言で軽く押し戻す＝詰みにはしない）
+function closeShop() {
+  if (window.SFX) SFX.close();
+  if (state.flags._shop_errand_pending) {
+    const mint = (D.flavors || []).find((f) => f.id === state.flags._shop_errand_target);
+    if (!mint || !ownsFlavor(mint)) {
+      toast(`スミ「おい、${mint ? (mint.short_name || mint.name) : "頼んだ物"}を仕入れてから戻ってこい」`);
+      return;
+    }
+    state.flags._shop_errand_pending = false;
+    delete state.flags._shop_errand_target;
+    save();
+    return finishShopErrand();
+  }
+  showMap();
+}
+
+function finishShopErrand() {
+  gainStat("insight", 2); // 仕入れの感覚を掴んだ（報酬）
+  save();
+  toast("スミ「上出来だ。……この調子で、ちゃんと店を回せ」");
+  startDay1RivalScouting();
+}
+
+function startDay1RivalScouting() {
+  playCustom({
+    dialogue_id: "day1_sumi_scouting_intro",
+    metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" },
+    lines: [
+      { speaker: "sumi", face: "normal", text: "……ついでに、隣町の店も覗いてこい" },
+      { speaker: "sumi", face: "serious", text: "『ケムリクサ』ってとこだ。同業の煙も知っとけ" },
+      { speaker: "hajime", face: "normal", text: "分かりました。行ってきます" },
+    ],
+  }, () => {
+    state.flags._scouting_hint_pending = true;
+    shishaGuard(() => doVisit("naru"));
   });
 }
 
@@ -7624,7 +7953,7 @@ function init() {
   $("#menu-glossary").addEventListener("click", () => { toggleStatus(false); showGlossary(); });
   $("#btn-status").addEventListener("click", () => toggleStatus(true));
   $("#status-close").addEventListener("click", () => toggleStatus(false));
-  $("#shop-close").addEventListener("click", () => { if (window.SFX) SFX.close(); showMap(); });
+  $("#shop-close").addEventListener("click", closeShop);
   $("#btn-gameover-title").addEventListener("click", () => location.reload());
   // ダイアログ右下ツール
   $("#vn-auto").addEventListener("click", toggleAuto);
