@@ -123,6 +123,13 @@ while (guard++ < 5000) {
     continue;
   }
   if (screen === "screen-map") {
+    // Day1ガイド（A3）: 買い出し・偵察は目的地ピンだけ有効＝吹き出しが出ていたら目的地をタップ
+    if (await page.locator(".map-guide-bubble").count()) {
+      const target = page.locator("#map-pins .spot-pin.tut-pulse").first();
+      if (await target.count()) await target.click().catch(() => {});
+      await page.waitForTimeout(120);
+      continue;
+    }
     const label = plan[planIdx % plan.length];
     planIdx++;
     // Dr.fookah(T28): ピン→サブメニュー[物販/凛]。テストは物販を選んで screen-shop へ（その先で #shop-rin が凛）
@@ -202,7 +209,7 @@ await page.evaluate(() => {
 });
 
 // 大会: 機材 → テーマ → ミックス → パック → 穴あけ → 炭起こし → 配置 →
-//       蒸らし(待ちビート) → 会話 → 集中 → 吸い出し → 結果
+//       蒸らし(待ちビート) → 会話 → 調整 → 吸い出し → 結果
 guard = 0;
 let postPhoneSeen = false;
 while (guard++ < 3000) {

@@ -202,7 +202,7 @@ body {
 }
 #hud-level:hover { border-color: var(--accent); box-shadow: 0 0 10px rgba(244,210,122,0.35); }
 /* ステータス五角形（N1）。数値は出さず★段階の形だけを見せる */
-#hud-radar-svg { width: 34px; height: 34px; display: block; }
+#hud-radar-svg { width: 48px; height: 48px; display: block; }
 #hud-radar-svg .radar-grid { fill: none; stroke: rgba(244,210,122,0.28); stroke-width: 0.8; }
 #hud-radar-svg .radar-fill {
   fill: rgba(255,158,109,0.45);
@@ -1220,6 +1220,19 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   border-radius: 3px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.4);
 }
+/* 行き先の背景プレビュー（A5）。ホバー/フォーカス中のスポットの中の様子を見せる */
+#map-info .info-preview {
+  display: none;
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  margin: 2px 0 10px;
+  border: 2px solid rgba(212,182,106,0.75);
+  border-radius: 6px;
+  background-size: cover;
+  background-position: center 38%;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.55), inset 0 0 18px rgba(0,0,0,0.35);
+}
+#map-info .info-preview.show { display: block; }
 #map-info .info-desc { font-size: 13.5px; line-height: 1.6; color: var(--text-dim); }
 #map-info .info-cost { margin-top: 8px; font-size: 13px; color: var(--accent); }
 #map-info .info-hint {
@@ -1670,30 +1683,7 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 }
 #hint-overlay .hint-ok:hover { background: rgba(244,210,122,0.26); }
 
-/* ---------------- focus minigame ---------------- */
-.focus-arena {
-  position: relative;
-  height: 320px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(244,210,122,0.18);
-  border-radius: 8px;
-  overflow: hidden;
-}
-.focus-word {
-  position: absolute;
-  background: rgba(70, 26, 60, 0.97);
-  border: 2px solid #ff9466;
-  color: #ffd2b0;
-  border-radius: 999px;
-  padding: 12px 24px;
-  font-size: 19px;
-  font-weight: bold;
-  cursor: pointer;
-  box-shadow: 0 0 18px rgba(255, 148, 102, 0.5);
-  animation: focus-pop 0.18s ease-out;
-}
-.focus-word:hover { background: rgba(80, 35, 60, 0.95); }
-@keyframes focus-pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+/* focus minigame（雑念タップ）は廃止（2026-07-06 A2） */
 
 /* ---------------- equipment / setup ---------------- */
 .setup-group-label { margin: 10px 0 6px; font-size: 15px; color: var(--accent); }
@@ -2088,8 +2078,10 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 /* ---- ボウル（クレイ/シリコン/ファンネル）。多層CSSで側面から描く ---- */
 .art-bowl { position: absolute; width: 200px; height: 170px; z-index: 3; pointer-events: none; }
 .art-bowl-mid { left: 50%; bottom: 118px; transform: translateX(-50%); }
-.art-bowl-mid.on-bench { left: 56%; bottom: 14%; }
-.art-bowl-big { left: 50%; bottom: 12%; width: 320px; height: 270px; transform: translateX(-50%); }
+/* 開店前の作業台: 棚のジャーと重ならないよう、ボウルは左寄りに置く（A1） */
+.art-bowl-mid.on-bench { left: 34%; bottom: 12%; }
+/* ドアップのボウル（詰め・アルミ張り）。ステージからはみ出さないサイズに（A1） */
+.art-bowl-big { left: 50%; bottom: 8%; width: min(280px, 40%); height: 270px; transform: translateX(-50%); }
 .art-bowl-body {
   position: absolute; left: 12%; right: 12%; top: 16%; bottom: 4%;
   background: linear-gradient(180deg, #b57a58 0%, #8a5238 46%, #5c3322 92%);
@@ -2195,7 +2187,8 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   border-radius: 4px 4px 60% 60%;
   box-shadow: 0 10px 16px rgba(0,0,0,0.4);
 }
-.art-pick.has-asset { right: 4%; top: 4%; width: 300px; height: 240px; }
+/* 穴あけの手はボウルのリムに届く位置へ（A1） */
+.art-pick.has-asset { right: 9%; top: 12%; width: min(280px, 40%); height: auto; aspect-ratio: 5 / 4; }
 
 /* ---- フレーバー保存タッパー（湿った赤い葉をフォークで盛る） ---- */
 .art-jar { position: absolute; width: 132px; height: 104px; z-index: 4; pointer-events: none; --jar-color: #9f3028; }
@@ -2235,14 +2228,15 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   text-align: center; overflow: hidden; padding: 0 4px; white-space: nowrap;
   box-shadow: 0 2px 4px rgba(0,0,0,0.25);
 }
-.art-shelf { position: absolute; left: 43%; bottom: 49%; width: 350px; height: 112px; z-index: 2; }
+/* 棚はボウルと重ならない右上へ（A1・ボウルは on-bench で左寄せ） */
+.art-shelf { position: absolute; left: 52%; bottom: 56%; width: min(360px, 47%); height: 112px; z-index: 2; }
 .art-shelf::after {
   content: ""; position: absolute; left: -4%; right: -4%; bottom: -12px; height: 14px;
   background: linear-gradient(180deg, #5a4127, #332415);
   border-radius: 3px;
   box-shadow: 0 10px 18px rgba(0,0,0,0.5);
 }
-.art-jar.on-shelf { position: relative; display: inline-block; margin-right: 12px; width: 98px; height: 78px; }
+.art-jar.on-shelf { position: relative; display: inline-block; margin-right: 8px; width: 92px; height: 74px; }
 .art-jar.on-shelf .art-jar-label { font-size: 10px; }
 .art-jar-hand { right: 2%; top: 5%; width: 310px; height: 250px; transform: rotate(0deg); transform-origin: 54% 78%; }
 /* 一枚絵（手＋フォーク＋タッパー）は大きく動かすとタッパーごと揺れて不自然なので、
@@ -2295,7 +2289,8 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   border-radius: 10px 10px 2px 2px;
   box-shadow: 0 12px 20px rgba(0,0,0,0.4);
 }
-.art-fork.has-asset { right: 3%; top: 8%; width: 300px; height: 250px; }
+/* 詰めの手はボウルのリムに届く位置へ（A1） */
+.art-fork.has-asset { right: 12%; top: 20%; width: min(270px, 38%); height: auto; aspect-ratio: 6 / 5; }
 .art-fork-tines {
   position: absolute; left: 50%; bottom: -44px; width: 34px; height: 46px;
   transform: translateX(-50%);
@@ -2392,8 +2387,9 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   100% { opacity: 0; transform: translateY(-96px) translateX(6px) scale(0.5); }
 }
 /* トング（金属の火ばさみ） */
-.art-tongs { position: absolute; right: 10%; bottom: 30%; width: 240px; height: 190px; z-index: 4; transform: rotate(-14deg); }
-.art-tongs.adjust { right: 12%; bottom: 40%; }
+.art-tongs { position: absolute; right: 14%; bottom: 32%; width: 240px; height: 190px; z-index: 4; transform: rotate(-14deg); }
+/* 調整の手は画面上から差し込み、トングの先がボウル（炭）へ届く（A1） */
+.art-tongs.adjust { right: 18%; bottom: auto; top: -9%; }
 .art-tongs-arm {
   position: absolute; right: 0; top: 46%; width: 100%; height: 9px;
   background: linear-gradient(90deg, #c9ced4, #82898f 60%, #b9bfc5);
@@ -2404,14 +2400,18 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 .art-tongs-arm.a1 { transform: rotate(-9deg); }
 .art-tongs-arm.a2 { transform: rotate(9deg); }
 
-/* ---- 組み上がった一台（蒸らし・調整・吸い出し） ---- */
+/* ---- 組み上がった一台（蒸らし・調整・吸い出し） ----
+   A1（2026-07-06）: 固定pxをやめ、一台の箱（高さ基準・縦横比固定）に対する%で
+   各部品を置く＝ステージの大きさが変わってもボウル・トレイ・ステム・ベースが
+   離れない。比率は実物寄り（ベース＞ボウル）に調整 */
 .art-hookah {
-  position: absolute; left: 50%; bottom: 5%; width: 320px; height: 86%;
+  position: absolute; left: 50%; bottom: 4%;
+  height: 88%; width: auto; aspect-ratio: 0.62;
   transform: translateX(-50%);
   z-index: 3; pointer-events: none;
 }
-.art-hookah.at-left { left: 27%; bottom: 6%; transform: translateX(-50%) scale(0.94); }
-.art-hookah-top { position: absolute; left: 50%; top: 3%; width: 120px; height: 26%; transform: translateX(-50%); z-index: 4; }
+.art-hookah.at-left { left: 26%; bottom: 5%; transform: translateX(-50%) scale(0.94); }
+.art-hookah-top { position: absolute; left: 50%; top: 0; width: 38%; height: 24%; transform: translateX(-50%); z-index: 4; }
 .art-hookah-top .art-bowl { position: absolute; inset: 0; width: 100%; height: 100%; }
 /* ボウルの上（アルミの上）に乗る炭 */
 .art-bowl-coals {
@@ -2420,10 +2420,10 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   display: flex; align-items: flex-end; gap: 4px;
   z-index: 6;
 }
-.art-bowl-coals .art-coal { position: relative; width: 30px; height: 25px; border-radius: 6px 7px 5px 6px; }
+.art-bowl-coals .art-coal { position: relative; width: 26px; height: 22px; border-radius: 6px 7px 5px 6px; }
 .art-bowl-coals .art-coal:nth-child(2) { margin-bottom: 5px; }
 .art-hookah-tray {
-  position: absolute; left: 50%; top: 28%; width: 190px; height: 26px;
+  position: absolute; left: 50%; top: 22%; width: 56%; height: 4.6%;
   transform: translateX(-50%);
   border-radius: 50%;
   background: radial-gradient(ellipse at 50% 34%, #e7d8ac, #a98d55 58%, #6e5731);
@@ -2431,7 +2431,7 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   z-index: 3;
 }
 .art-hookah-stem {
-  position: absolute; left: 50%; top: 26%; bottom: 14%; width: 15px;
+  position: absolute; left: 50%; top: 22.5%; bottom: 25%; width: 5.6%;
   transform: translateX(-50%);
   background: linear-gradient(90deg, #6e5a30, #e5cf96 46%, #8a713c);
   border-radius: 6px;
@@ -2439,14 +2439,16 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   z-index: 2;
 }
 .art-hookah-hoseport {
-  position: absolute; left: 50%; top: 38%; width: 46px; height: 13px;
+  position: absolute; left: 50%; top: 38%; width: 15%; height: 3%;
   transform: translateX(-4px);
   background: linear-gradient(180deg, #d9c48c, #8a713c);
   border-radius: 4px 8px 8px 4px;
   z-index: 2;
 }
+/* ステムPNGがある場合、CSSアートのホース差し込み口は出さない（浮いた棒に見える） */
+.art-hookah-stem.has-asset ~ .art-hookah-hoseport { display: none; }
 .art-hookah-base {
-  position: absolute; left: 50%; bottom: 0; width: 170px; height: 34%;
+  position: absolute; left: 50%; bottom: 0; width: 66%; height: 34%;
   transform: translateX(-50%);
   border-radius: 48% 48% 44% 44% / 58% 58% 40% 40%;
   border: 2px solid rgba(200,225,255,0.3);
@@ -2485,7 +2487,7 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   100% { opacity: 0; transform: translateY(-64px) scale(1.15); }
 }
 /* 立ちのぼる煙（蒸らし〜提供） */
-.art-hookah-smoke { position: absolute; left: 50%; top: 2%; width: 200px; height: 30%; transform: translateX(-50%); z-index: 5; }
+.art-hookah-smoke { position: absolute; left: 50%; top: 0; width: 70%; height: 28%; transform: translateX(-50%); z-index: 5; }
 .art-wisp {
   position: absolute; bottom: 0; left: 50%; width: 54px; height: 54px;
   border-radius: 50%;
@@ -2514,6 +2516,13 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   filter: drop-shadow(0 12px 16px rgba(0,0,0,0.45));
   transform: rotate(-6deg);
 }
+/* ホースPNG（A1）: 左端の口金を一台のステム差し込み口に重ね、右端は手前の
+   マウスピース（.art-mouthpiece）の陰に沈めて「繋がっている」ように見せる */
+.art-hose-line.has-asset {
+  left: 22%; right: 9%; top: 40%; bottom: auto; height: 30%;
+  transform: rotate(16deg);
+  transform-origin: 6% 20%;
+}
 .art-mouthpiece {
   position: absolute; right: 6%; bottom: 30%; width: 250px; height: 74px;
   transform: rotate(-22deg);
@@ -2521,12 +2530,14 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   border-radius: 40px 16px 16px 40px;
   box-shadow: inset 0 4px 8px rgba(255,255,255,0.14), 0 14px 22px rgba(0,0,0,0.5);
 }
-/* 生成PNG（右手前に構えた斜めのマウスピース）は縦長なので箱を差し替える */
+/* 生成PNG（右手前に構えた斜めのマウスピース）は縦長なので箱を差し替える。
+   z-index はホース（z1）より上＝ホースの右端が手元の陰に沈んで繋がって見える（A1） */
 .art-mouthpiece.has-asset {
   right: 3%; bottom: 2%;
   width: 300px; height: 300px;
   transform: none;
   border-radius: 0;
+  z-index: 2;
 }
 .art-mouthpiece-tip {
   position: absolute; right: -30px; top: 16%; width: 46px; height: 68%;
@@ -2547,7 +2558,7 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   mix-blend-mode: screen; opacity: 0.74; z-index: 2;
 }
 /* 一台が組み上がっているシーンでは、熱の照り返しはボウル（上部）に出る */
-.making-steam .heat-glow, .making-adjust .heat-glow, .making-focus .heat-glow {
+.making-steam .heat-glow, .making-adjust .heat-glow {
   bottom: auto; top: 2%;
 }
 .making-pull .heat-glow { bottom: auto; top: 2%; left: 27%; }
@@ -4158,6 +4169,42 @@ body:has(#screen-tournament.active.making-workbench) #gain-banner {
 .spot-pin.tut-pulse { animation: tut-pulse 1s ease-in-out infinite; z-index: 5; }
 /* 動かさない（オーナー指摘: ピンが動いてアピールするのがうざい）。静かなグローのみ */
 @keyframes tut-pulse { 0%,100% { filter: drop-shadow(0 0 0 rgba(255,210,120,0)); } 50% { filter: drop-shadow(0 0 7px rgba(255,210,120,0.6)); } }
+/* Day1買い出し・偵察ガイド（A3）: 目的地以外は減光、目的地の上に吹き出し */
+.spot-pin.tut-dim { opacity: 0.32; filter: saturate(0.4); }
+.map-guide-bubble {
+  position: absolute; z-index: 6;
+  /* ピン（アンカーから上に伸びる盾＋アイコン）を隠さない高さへ */
+  transform: translate(-50%, calc(-100% - 96px));
+  max-width: 260px;
+  padding: 9px 14px;
+  background: linear-gradient(180deg, rgba(30,22,40,0.97), rgba(16,12,24,0.97));
+  border: 1px solid rgba(255,210,120,0.7);
+  border-radius: 10px;
+  color: #ffe79a;
+  font-size: 13.5px;
+  font-weight: bold;
+  line-height: 1.5;
+  text-align: center;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.55);
+  pointer-events: none;
+  animation: guide-bob 1.4s ease-in-out infinite;
+}
+.map-guide-bubble::after {
+  content: ""; position: absolute; left: 50%; bottom: -7px;
+  width: 12px; height: 12px; transform: translateX(-50%) rotate(45deg);
+  background: rgba(16,12,24,0.97);
+  border-right: 1px solid rgba(255,210,120,0.7);
+  border-bottom: 1px solid rgba(255,210,120,0.7);
+}
+/* 画面上端に近いピン用: 吹き出しをピンの下へ・矢印は上向き */
+.map-guide-bubble.below { transform: translate(-50%, 62px); }
+.map-guide-bubble.below::after {
+  bottom: auto; top: -7px;
+  border-right: none; border-bottom: none;
+  border-left: 1px solid rgba(255,210,120,0.7);
+  border-top: 1px solid rgba(255,210,120,0.7);
+}
+@keyframes guide-bob { 0%,100% { margin-top: 0; } 50% { margin-top: -5px; } }
 /* 店内サブメニュー（tonari統合#9 / Dr.fookah選択T28） */
 #tonari-menu, #fookah-menu { position: absolute; inset: 0; z-index: 9; display: flex; align-items: center; justify-content: center; background: rgba(8,6,14,0.55); opacity: 0; transition: opacity 0.2s; }
 #tonari-menu.show, #fookah-menu.show { opacity: 1; }
