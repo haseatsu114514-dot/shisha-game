@@ -13,7 +13,7 @@
 
 ## 2026-07-06 セッション（ブランチ claude/asset-positioning-mechanics-u1rcka・作り工程アセット＋マップ操作便）
 
-全件 ✅（lint ERROR 0・ヘッドレステスト10本全緑: reel/kuji/portraits/map_hover/balance/flavor_ownership/fookah/playthrough/ch2/screenshots）
+全件 ✅（commit 02dcd38・lint ERROR 0・ヘッドレステスト10本全緑: reel/kuji/portraits/map_hover/balance/flavor_ownership/fookah/playthrough/ch2/screenshots）
 
 | # | 状態 | 内容 |
 |---|---|---|
