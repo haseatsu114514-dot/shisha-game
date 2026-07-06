@@ -153,19 +153,6 @@ for (let i = 0; i < 2500; i++) {
       if (await nb.count()) await nb.click().catch(() => {});
       else await page.evaluate(() => { if (typeof tnNext === "function" && tt && tt.step === "coalfire") tnNext("coalfire"); });
     }
-    else if (t.includes("集中")) {
-      // わざと雑念を払わない（敗北ルート用）
-      let shot = false;
-      for (let k = 0; k < 90; k++) {
-        if (!shot && (await page.locator(".focus-word").count())) {
-          await page.screenshot({ path: `${OUT}/08c_focus.png` });
-          shot = true;
-        }
-        const fin = page.locator("#tn-body button", { hasText: "仕上げに入る" });
-        if (await fin.count()) { await fin.click(); break; }
-        await page.waitForTimeout(200);
-      }
-    }
     else if (t.includes("炭替え・調整")) await page.locator(".spot-btn", { hasText: "このままでいく" }).click();
     else if (t.includes("テーマ選択")) await page.locator(".spot-btn", { hasText: "高火力" }).click();
     else if (t.includes("ミックス")) {

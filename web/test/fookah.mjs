@@ -38,7 +38,16 @@ while (guard++ < 2000) {
     continue;
   }
   const screen = await page.evaluate(() => document.querySelector(".screen.active")?.id || "none");
-  if (screen === "screen-map") break;
+  if (screen === "screen-map") {
+    // Day1ガイド（A3）: 買い出し・偵察の吹き出しが出ている間は目的地ピンをタップして進める
+    if (await page.locator(".map-guide-bubble").count()) {
+      const target = page.locator("#map-pins .spot-pin.tut-pulse").first();
+      if (await target.count()) await target.click().catch(() => {});
+      await page.waitForTimeout(120);
+      continue;
+    }
+    break;
+  }
   if (screen === "screen-tournament") {
     // チュートリアル: tournament画面のボタンを順次クリック
     const { playTnStep } = await import("./steps.mjs");

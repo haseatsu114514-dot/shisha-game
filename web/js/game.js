@@ -2174,6 +2174,23 @@ const SPOT_LAYOUT = {
   rest:      { x: 89, y: 62, theme: "rest",    short: "家",         area: "自宅" },
 };
 
+// スポット→行き先の背景画像（A5: マップ右下のプレビュー／A7: 入場前の先読みで共用）。
+// 実際に入ったときに表示される背景と同じファイルを指す（プレビューと中身をズラさない）。
+// 対応が無いスポット（rei/volk等）はプレビュー無し＝null
+function spotBg(spotId, night) {
+  const t = night ? "night" : "day";
+  const map = {
+    tonari: `bg_tonari_inside_${t}.png`,
+    naru: "kemurikusa.png", adam: "bg_eden_shop.png", minto: "peppermint.png",
+    kumicho: "bg_ryuji_shop.png", ageha: "bg_ageha_shop.png",
+    choizap: "bg_choizap.png", kannon: "bg_kannon_day.png",
+    cafe: `bg_cafe_${t}.png`, c_station: `bg_c_station_${t}.png`,
+    shop: "bg_fookah_showroom.png",
+    rest: `bg_home_${t}.png`,
+  };
+  return map[spotId] || null;
+}
+
 function showMap(opts = {}) {
   state.phase = "daily";
   if (window.SFX) SFX.bgm("daily_part");
@@ -2183,9 +2200,21 @@ function showMap(opts = {}) {
     `url('${assetUrl(`assets/backgrounds/bg_osu_map_${night ? "night" : "day"}.png`)}')`;
   $("#map-time-toggle").textContent = night ? "夜 / 栄" : "昼 / 栄";
   updateHud();
+  // 入場した瞬間に背景が出るよう、マップに出た時点で行き先候補の背景を先読み（A7）
+  queuePreload(
+    SPOTS.filter((s) => !s.chapter || s.chapter === state.chapter)
+      .map((s) => spotBg(s.id, night))
+      .filter(Boolean)
+      .map((f) => `assets/backgrounds/${f}`)
+  );
 
   const pins = $("#map-pins");
   pins.innerHTML = "";
+  // Day1強制チュートリアル（A3・2026-07-06）: 仕入れ・偵察は自動遷移せず、
+  // プレイヤー自身にマップのピンをタップさせて操作を覚えてもらう。
+  // 目的地だけ押せる状態にして点滅＋吹き出しで指す
+  const guideTarget = state.flags._shop_errand_pending ? "shop"
+    : state.flags._scouting_pending ? "naru" : null;
   for (const spot of SPOTS) {
     if (spot.chapter && spot.chapter !== state.chapter) continue; // 章限定スポット（ch1/ch2でライバル店を出し分け）
     const layout = SPOT_LAYOUT[spot.id];
@@ -2221,10 +2250,31 @@ function showMap(opts = {}) {
       if (tooPoor || closed || visited) btn.disabled = true;
       if (closed || visited) btn.classList.add("closed");
     }
+    if (guideTarget) {
+      if (spot.id === guideTarget) {
+        btn.classList.add("tut-pulse");
+      } else {
+        btn.disabled = true;
+        btn.classList.add("tut-dim");
+      }
+    }
     btn.addEventListener("mouseenter", () => updateMapInfo(spot, locked, tooPoor, closed, visited));
     btn.addEventListener("focus", () => updateMapInfo(spot, locked, tooPoor, closed, visited));
     btn.addEventListener("click", () => { if (!btn.disabled) selectSpot(spot); });
     pins.appendChild(btn);
+  }
+  // ガイドの吹き出し: 目的地のピンの真上に「ここをタップ」を出す
+  // （画面上端に近いピンは、はみ出さないよう下側へ出す）
+  if (guideTarget && SPOT_LAYOUT[guideTarget]) {
+    const gl = SPOT_LAYOUT[guideTarget];
+    const g = document.createElement("div");
+    g.className = `map-guide-bubble${gl.y < 26 ? " below" : ""}`;
+    g.textContent = guideTarget === "shop"
+      ? "スミさんに頼まれた仕入れへ。Dr.fookahをタップ！"
+      : "偵察に行こう。KEMURIKUSAをタップ！";
+    g.style.left = `${gl.x}%`;
+    g.style.top = `${gl.y}%`;
+    pins.appendChild(g);
   }
   // 恋人とのちょい会い（1日1回・行動コマを使わない）
   if ((state.lovers || []).length && state.loverQuickDay !== state.day) {
@@ -2283,6 +2333,8 @@ function showMap(opts = {}) {
 // クリックを邪魔しない（pointer-events:none・タップか数秒で消える）＝自動テストも止めない
 function mapTutorial() {
   if (!state || state.flags._map_tutorial_done) return;
+  // Day1の買い出し・偵察ガイド中（A3）は出さない。ガイドが終わった通常のマップで初めて出す
+  if (state.flags._shop_errand_pending || state.flags._scouting_pending) return;
   const screen = document.querySelector("#screen-map");
   if (!screen || !screen.classList.contains("active")) return;
   // DAYカードが出ている間は待つ（#34: カード→チュートリアルの直列化。重なって読めない問題）
@@ -2308,7 +2360,22 @@ function mapTutorial() {
   setTimeout(() => screen.addEventListener("click", close, true), 400); // 少し置いてからタップで閉じられる
 }
 
+// 右下パネルのプレビュー画像（A5）。行き先の背景をサムネイルで見せる。
+// background-image に張った時点でブラウザが取得する＝入場前の先読み（A7）も兼ねる
+function updateMapPreview(spot, locked) {
+  const pv = $("#map-info-preview");
+  if (!pv) return;
+  const bg = spot && !locked ? spotBg(spot.id, state.ap <= 1) : null;
+  if (bg) {
+    pv.style.backgroundImage = `url('${assetUrl(`assets/backgrounds/${bg}`)}')`;
+    pv.classList.add("show");
+  } else {
+    pv.classList.remove("show");
+  }
+}
+
 function updateMapInfo(spot, locked, tooPoor, closed, visited) {
+  updateMapPreview(spot, locked);
   if (!spot) {
     $("#map-info-title").textContent = state.ap === 2 ? "今日はどうする？" : "夜の時間";
     $("#map-info-desc").textContent = "気になる場所をタップ。残り行動と所持金に注意。";
@@ -2346,7 +2413,7 @@ function updateMapInfo(spot, locked, tooPoor, closed, visited) {
         ? "（ここで学べることは、もう全部わが身になった）"
         : CHAR_STAT[spot.id]
           ? `（ここに通うと【${STAT_KEYS[hintStat]}】が伸びそうだ）`
-          : `（集中特訓だから、人に会うより【${STAT_KEYS[hintStat]}】がぐっと伸びる）`;
+          : `（一人でじっくり過ごせる場所だ。人に会うより【${STAT_KEYS[hintStat]}】がぐっと伸びる）`;
       // 好感度の進捗可視化（#31）: あと1回の訪問で段階が上がるキャラは「あと1回」を明示
       const cid = spot.charId;
       if (cid && known && (cid in (state.affinity || {})) && state.affinity[cid] < AFFINITY_CAP) {
@@ -2375,6 +2442,13 @@ function selectSpot(spot) {
   }
   const proceed = () => {
     if (spot.cost > 0) addMoney(-spot.cost);
+    // Day1偵察ガイド（A3）: なるの店を自分でタップできたらガイド完了。
+    // 帰還後のマップで「他の店に行くと仲良くなれるかも」のヒントを出す
+    if (state.flags._scouting_pending && spot.id === "naru") {
+      delete state.flags._scouting_pending;
+      state.flags._scouting_hint_pending = true;
+      save();
+    }
     switch (spot.id) {
       case "tonari": return showTonari(); // tonari統合(#9): 中で何をするか選ぶ（行動はサブ選択時に消費）
       case "baito": return shishaGuard(() => doBaito());
@@ -2384,7 +2458,8 @@ function selectSpot(spot) {
       case "kannon": return doSpotDialogue("kannon", "ch1_kannon_visit", "bg_kannon_day.png");
       case "cafe": return doSpotDialogue("cafe", "ch1_cafe_visit", "bg_cafe_day.png");
       case "c_station": return doCStation();
-      case "shop": return showFookahMenu(); // Dr.fookah: 物販利用 or 凛＋ブース を選ぶ(T28)
+      // Dr.fookah: 物販利用 or 凛＋ブース を選ぶ(T28)。Day1の買い出しガイド中はショップへ直行
+      case "shop": return state.flags._shop_errand_pending ? showShop() : showFookahMenu();
       case "rest": return doRest();
       default: {
         // よその店での一服は体力を使う（tonari内のスミさん・つむぎとの会話は軽い）
@@ -2491,7 +2566,7 @@ function doSpotDialogue(spotId, dialogueId, bg) {
   const id = (n <= 1 || !pool) ? dialogueId : pool[(n - 2) % pool.length];
   playDialogue(D.dialogues[id] ? id : dialogueId, () => {
     if (!cueFiredInDialogue) gainStat(spotStat(spotId), 2);
-    // 施設スポット＝「集中特訓」: 好感度は付かない代わりに、人に会うより伸びが大きい（#23）
+    // 施設スポット＝一人の時間: 好感度は付かない代わりに、人に会うより伸びが大きい（#23）
     gainStat(spotStat(spotId), 3);
     endAction();
   }, `res://assets/backgrounds/${bg}`);
@@ -3693,7 +3768,6 @@ const PRACTICE_DRILLS = [
   { id: "coalfire", label: "炭起こしの見極め", desc: "芯がピカッと閃く瞬間を見極めて取り上げる", stats: ["guts", "technique"] },
   { id: "steam", label: "蒸らしの胆力", desc: "蒸らしの待ち時間を見切り、最後の一手を合わせる訓練", stats: ["insight", "guts"] },
   { id: "pull", label: "吸い出しの温度感", desc: "上げ吸い・下げ吸いを使い分けて適温に合わせる", stats: ["sense", "technique"] },
-  { id: "focus", label: "集中トレーニング", desc: "雑念を振り払う訓練。本番の野次対策", stats: ["insight", "guts"] },
   { id: "serve", label: "提供イメトレ", desc: "お客さんへの出し方・佇まいを組み立てる", stats: ["charm", "insight"] },
 ];
 
@@ -3861,13 +3935,6 @@ const RIVALS = [
 ];
 
 const EQUIP_TYPE_LABELS = { bowl: "ボウル", hms: "ヒートマネジメント", charcoal: "炭", homeware: "家シーシャ" };
-const FOCUS_WORDS = [
-  "手元、見られてる……",
-  "パッキーの野次がうるさい",
-  "時間が足りないかも……",
-  "なるの煙、もう上がってる",
-  "失敗したらどうしよう",
-];
 
 let tt = null; // tournament temp state
 const rigState = { smokeTimer: 0, bubbleTimer: 0 };
@@ -4072,14 +4139,15 @@ function mcBlockIntro(step) {
   }
 }
 
-// 大会は3ラウンド制: R1=組み立て（setup〜steam）→ R2=調整（adjust＋focus）→ R3=提供（吸い出し）。
+// 大会は3ラウンド制: R1=組み立て（setup〜steam）→ R2=調整（adjust）→ R3=提供（吸い出し）。
 // ラウンドの切れ目で ch1_tournament_r1〜r3_end の会話が挟まる。
-// プレゼン工程は廃止（2026-06-12 オーナー決定）。提供の佇まいは魅力としてスコアに残る
+// プレゼン工程は廃止（2026-06-12 オーナー決定）。提供の佇まいは魅力としてスコアに残る。
+// 集中（雑念タップ）工程は廃止（2026-07-06 オーナー指定 A2）
 const STEP_FLOW = [
   ["setup_bowl", "SETUP"], ["setup_hms", "SETUP"], ["setup_charcoal", "SETUP"],
   ["theme", "FLAVOR"], ["mix", "MIX"], ["pack", "PACK"], ["foil", "FOIL"],
   ["coal", "SET"], ["coalfire", "HEAT"], ["steam", "STEAM"],
-  ["adjust", "ROUND2"], ["focus", "FOCUS"], ["pull", "PULL"],
+  ["adjust", "ROUND2"], ["pull", "PULL"],
 ];
 // 前日リハーサル: 大会と全く同じ工程列（N14。旧: 穴あけ・炭起こし・集中を省く短縮版だった）
 const REHEARSAL_FLOW = STEP_FLOW;
@@ -4089,7 +4157,6 @@ const DRILL_FLOWS = {
   coalfire: [["coalfire", "COAL"]],
   steam: [["steam", "STEAM"]],
   pull: [["pull", "PULL"]],
-  focus: [["focus", "FOCUS"]],
 };
 
 const FLAVOR_COLORS = {
@@ -4107,13 +4174,13 @@ const CATEGORY_BADGE = { cooling: "涼", fruit: "果", sweet: "甘", spice: "香
 
 const MAKING_WORKBENCH_STEPS = new Set([
   "setup_bowl", "setup_hms", "setup_charcoal", "theme", "mix", "pack", "foil",
-  "coal", "coalfire", "steam", "adjust", "focus", "pull",
+  "coal", "coalfire", "steam", "adjust", "pull",
 ]);
 const MAKING_SCENE = {
   setup_bowl: "setup", setup_hms: "setup", setup_charcoal: "setup",
   theme: "theme", mix: "mix", pack: "pack", foil: "foil",
   coal: "coal", coalfire: "coalfire", steam: "steam",
-  adjust: "adjust", focus: "focus", pull: "pull",
+  adjust: "adjust", pull: "pull",
 };
 const MAKING_PANEL_SKIP = /審査|中間発表|FLAVOR TRIAL|講評|結果|練習結果/;
 
@@ -4327,11 +4394,12 @@ function buildBowlArt(opts = {}) {
   if (!usePackedAsset) {
     const cavity = artDiv("art-bowl-cavity", bowl);
     if (rim) {
-      // 開口部＝リム楕円を器の壁ぶんだけ内側へ寄せた楕円
-      cavity.style.left = "14%";
-      cavity.style.right = "14%";
-      cavity.style.top = `${(rim * 0.16).toFixed(1)}%`;
-      cavity.style.height = `${(rim * 0.68).toFixed(1)}%`;
+      // 開口部＝リム楕円を器の壁ぶんだけ内側へ寄せた楕円。
+      // リムの縁の輪に葉が乗り上げないよう、少しタイトに収める（A1）
+      cavity.style.left = "17%";
+      cavity.style.right = "17%";
+      cavity.style.top = `${(rim * 0.2).toFixed(1)}%`;
+      cavity.style.height = `${(rim * 0.56).toFixed(1)}%`;
     }
     if (hasBowlImg && kind === "phunnel") cavity.classList.add("phunnel-hole"); // 中央スパイアを葉で塞がない
     // アルミ張り後は開口部が覆われる＝葉レイヤーは重ねない
@@ -4461,7 +4529,7 @@ function renderMakingWorkbench(step, opts = {}) {
   stage.dataset.step = scene;
   stage.appendChild(makingLayer("bench_base.png", "bench-base"));
   artDiv("bench-board", stage); // 木の作業台の天板
-  if (["steam", "focus", "pull"].includes(scene)) stage.appendChild(makingLayer("vignette_focus.png", "bench-vignette"));
+  if (["steam", "pull"].includes(scene)) stage.appendChild(makingLayer("vignette_focus.png", "bench-vignette"));
 
   if (scene === "theme" || scene === "setup") {
     // 開店前の作業台: メモ・空のボウル・棚のジャー
@@ -4535,21 +4603,21 @@ function renderMakingWorkbench(step, opts = {}) {
     const pulse = document.createElement("div");
     pulse.className = "heartbeat-focus";
     stage.appendChild(pulse);
-  } else if (scene === "adjust" || scene === "focus") {
-    stage.appendChild(buildHookahArt({ smoke: scene === "focus" }));
+  } else if (scene === "adjust") {
+    stage.appendChild(buildHookahArt({ smoke: false }));
     stage.appendChild(makingLayer("heat_glow.png", "heat-glow soft"));
-    if (scene === "adjust") {
-      const tongs = artDiv("art-tongs adjust", stage);
-      if (!artAsset(tongs, "hand_tongs_closed.png")) {
-        artDiv("art-tongs-arm a1", tongs);
-        artDiv("art-tongs-arm a2", tongs);
-      }
+    const tongs = artDiv("art-tongs adjust", stage);
+    if (!artAsset(tongs, "hand_tongs_closed.png")) {
+      artDiv("art-tongs-arm a1", tongs);
+      artDiv("art-tongs-arm a2", tongs);
     }
   } else if (scene === "pull") {
     // 吸い出し: 一人称。左に一台、右手前にマウスピース、煙が立ちはじめる
     stage.appendChild(buildHookahArt({ smoke: true, cls: "at-left" }));
     const hose = artDiv("art-hose", stage);
-    artAsset(artDiv("art-hose-line", hose), "hose_line.png");
+    const hoseLine = artDiv("art-hose-line", hose);
+    // 余白を打ち消して口金の位置を確定させる（左端をステムの差し込み口に合わせる・A1）
+    if (artAsset(hoseLine, "hose_line.png")) normalizeMakingAsset(hoseLine, "hose_line.png", true);
     const mouth = artDiv("art-mouthpiece", hose);
     if (!artAsset(mouth, "hose_tip.png")) artDiv("art-mouthpiece-tip", mouth);
     artAsset(artDiv("art-pull-smoke", stage), "smoke_thick.png");
@@ -4776,7 +4844,7 @@ function beginMaking(mode) {
     bowl: null, hms: null, charcoal: null,
     theme: null, mix: {}, pack: null,
     foilHits: 0, foilDone: false, holeResult: null, coalFire: null, coalResult: null, coal: null, steam: null,
-    steamHits: null, focusCleared: 0, pull: null, temp: null, pullCount: 0, step: "",
+    steamHits: null, pull: null, temp: null, pullCount: 0, step: "",
   };
   stopRigEffects();
   buildRig();
@@ -4792,7 +4860,6 @@ function beginMaking(mode) {
   if (mode === "baito") {
     // お客さんのリクエスト（テーマ）は日替わり。大会同様のフル工程で作る
     tt.theme = dailyTheme();
-    tt.focusCleared = 3; // 接客中なので集中ミニゲームは無し
     return tournamentStep("mix");
   }
   // リハーサル・チュートリアルも大会と全く同じ流れ＝SETUP（ハガル選び等）から（N14）
@@ -4808,7 +4875,7 @@ function startDrill(kind) {
     bowl: null, hms: null, charcoal: null,
     theme: THEMES[0], mix: {}, pack: null,
     foilHits: 0, foilDone: false, holeResult: null, coalFire: null, coalResult: null, coal: null, steam: null,
-    steamHits: null, focusCleared: 0, pull: null, temp: null, pullCount: 0, step: "",
+    steamHits: null, pull: null, temp: null, pullCount: 0, step: "",
   };
   stopRigEffects();
   buildRig();
@@ -4947,7 +5014,6 @@ function tournamentStep(step) {
     return;
   }
   if (step === "adjust") return stepAdjust();
-  if (step === "focus") return stepFocus();
   if (step === "pull") return stepPull();
 }
 
@@ -5037,8 +5103,18 @@ function stepAdjust() {
   // 確定（炭を替えないのも手＝前の炭のまま・非推奨でも進める）。テスト互換のため「このままでいく」を残す
   body.appendChild(optionButton("このままでいく", "今の温度で勝負する", () => {
     if (window.SFX) SFX.select();
-    tnNext("adjust");
+    endAdjust();
   }));
+}
+
+// R2（調整）の締め。ch1大会は観客の会話→中間発表を挟んでから提供へ
+// （旧・集中工程が担っていた進行を移設。集中ミニゲーム自体は廃止・A2）
+function endAdjust() {
+  if (tt.mode === "tournament" && state.chapter === 1) {
+    playDialogue("ch1_tournament_r2_end", () => showStandings(2, () => tournamentStep("pull")), "res://assets/backgrounds/bg_tournament_stage.png");
+  } else {
+    tnNext("adjust");
+  }
 }
 
 function redoAdjust(kind) {
@@ -5052,7 +5128,7 @@ function redoAdjust(kind) {
     defs.set(v);
     if (window.SFX) SFX.select();
     updateRig();
-    tnNext("adjust");
+    endAdjust();
   }));
 }
 
@@ -5590,55 +5666,7 @@ function stepCoalFire() {
   }));
 }
 
-// --- 集中（雑念タップ）
-function stepFocus() {
-  const body = tnPanel("集中", "雑念が頭をよぎる──タップして振り払え！");
-  const arena = document.createElement("div");
-  arena.className = "focus-arena";
-  const result = document.createElement("div");
-  result.className = "practice-result";
-  body.append(arena, result);
-  const lifetime = 1300 + state.stats.insight * 10; // 洞察が高いほど落ち着いて払える
-  let index = 0;
-  const finish = () => {
-    result.textContent =
-      tt.focusCleared >= 5 ? "──雑念が消えた。手元だけがクリアに見える。"
-      : tt.focusCleared >= 3 ? "──なんとか集中を保った。"
-      : "──ざわめきが頭から離れない……。";
-    const next = document.createElement("button");
-    next.className = "primary-btn";
-    next.textContent = "仕上げに入る";
-    next.addEventListener("click", () => {
-      // ch1大会ではR2終了の会話と中間発表を挟む（テキストがch1専用のため）
-      if (tt.mode === "tournament" && state.chapter === 1) {
-        playDialogue("ch1_tournament_r2_end", () => showStandings(2, () => tournamentStep("pull")), "res://assets/backgrounds/bg_tournament_stage.png");
-      } else {
-        tnNext("focus");
-      }
-    });
-    result.appendChild(document.createElement("br"));
-    result.appendChild(next);
-  };
-  const spawn = () => {
-    if (index >= FOCUS_WORDS.length) return finish();
-    const word = document.createElement("button");
-    word.className = "focus-word";
-    word.textContent = FOCUS_WORDS[index++];
-    word.style.left = `${8 + Math.random() * 55}%`;
-    word.style.top = `${10 + Math.random() * 65}%`;
-    arena.appendChild(word);
-    const timer = setTimeout(() => { word.remove(); setTimeout(spawn, 250); }, lifetime);
-    word.addEventListener("click", () => {
-      clearTimeout(timer);
-      if (window.SFX) SFX.select();
-      word.remove();
-      tt.focusCleared++;
-      setTimeout(spawn, 250);
-    });
-  };
-  // 3・2・1 を挟んでから雑念が湧き始める（開始直後の理不尽を防ぐ・T22-C）
-  miniCountdown(arena, () => spawn());
-}
+// --- 集中（雑念タップ）ミニゲームは廃止（2026-07-06 オーナー指定 A2）
 
 // 章ごとの大会レギュレーション（指定フレーバー）。ch1 = SMOKE CROWN CUP はミント指定。
 // 大会本番と前日リハーサルに適用される（バイト・チュートリアル・ドリルは自由）
@@ -6300,9 +6328,9 @@ function craftScore() {
   // 炭起こし
   score += { perfect: 6, good: 3, miss: -2 }[tt.coalFire] || 0;
   if (tt.coalFire === "miss") detail.push("熾きの甘い炭が、立ち上がりを鈍らせた。");
-  // 集中（雑念を一つも払えないと手元が乱れる）
-  score += tt.focusCleared * 1.6;
-  if (tt.focusCleared === 0) { score -= 3; detail.push("雑念が頭から離れないまま、仕上げに入ってしまった。"); }
+  // 集中（雑念タップ）工程は廃止（A2）。かつての加点ぶんは基礎点として置き換え、
+  // 廃止前後で合格ライン（南雲のcraft基準）が動かないようにする
+  score += 5;
   // テーマとフレーバーカテゴリの噛み合い
   const matched = tt.theme.best.filter((c) => p.cats.has(c)).length;
   if (matched >= 2) { score += 8; detail.push("テーマとフレーバーの相性は抜群だった。"); }
@@ -6686,7 +6714,6 @@ function tournamentBreakdown() {
   add("穴あけ", tt.foilHits >= 6 ? 2 : tt.foilHits >= 4 ? 1 : 0, "リングの均等度を上げると煙の通りが整う");
   add("炭起こし", tt.coalFire === "perfect" ? 2 : tt.coalFire === "good" ? 1 : 0, "芯がピカッと閃く“取り頃”で取ると熱が乗る");
   if (typeof tt.steamHits === "number") add("蒸らし", tt.steamHits === 0 ? 2 : tt.steamHits <= 2 ? 1 : 0, "蒸らし中の雑念を躱しきると煙の芯が立つ");
-  add("集中", tt.focusCleared >= 5 ? 2 : tt.focusCleared >= 3 ? 1 : 0, "集中を保つと手元のブレが減る");
   add("吸い出し", tt.pull === "perfect" ? 2 : tt.pull === "good" ? 1 : 0, "適温の窓でJUSTを重ねると一気に伸びる");
   const p = mixProfile();
   const matched = tt.theme && tt.theme.best ? tt.theme.best.filter((c) => p.cats.has(c)).length : 0;
@@ -7540,7 +7567,6 @@ const DRILL_TIPS = {
   coalfire: "💡 専用の炭を火で炙って使う。外は赤いのに中が黒い「生焼け」だと嫌な味が出る。芯まで火を通すのが大事",
   steam: "💡 炭を置いた後、すぐに吸わず数分待つ。葉に熱を行き渡らせる「蒸らし」で、味の立ち上がりが変わる",
   pull: "💡 お客さんに出す前に自分で何度か吸って温度を整える。吸い方の強弱で温度を上げ下げできる",
-  focus: "💡 大会中は観客の声援や野次が飛ぶ。集中を切らさず自分のペースを守る精神力の訓練",
   serve: "💡 完成したシーシャをお客さんに出す瞬間。温度・煙量・香りがベストなタイミングを見極める",
 };
 
@@ -7565,8 +7591,7 @@ function finishDrill() {
   if (kind === "foil") tier = tt.foilHits >= 6 ? 2 : tt.foilHits >= 4 ? 1 : 0;
   else if (kind === "coalfire") tier = { perfect: 2, good: 1, miss: 0 }[tt.coalFire] || 0;
   else if (kind === "steam") tier = tt.steamHits === 0 ? 2 : tt.steamHits <= 2 ? 1 : 0;
-  else if (kind === "pull") tier = { perfect: 2, good: 1, miss: 0 }[tt.pull] || 0;
-  else tier = tt.focusCleared >= 5 ? 2 : tt.focusCleared >= 3 ? 1 : 0;
+  else tier = { perfect: 2, good: 1, miss: 0 }[tt.pull] || 0;
   const drill = PRACTICE_DRILLS.find((d) => d.id === kind) || { label: "練習", stats: ["technique", "sense"] };
   const gains = [[1, 0], [3, 2], [4, 3]][tier];
   const msgs = [
@@ -7705,10 +7730,11 @@ function startDay1TutorialErrands() {
       { speaker: "hajime", face: "normal", text: "はい、行ってきます" },
     ],
   }, () => {
+    // 自動でショップへ飛ばさず、マップで Dr.fookah を自分でタップしてもらう（A3）
     state.flags._shop_errand_pending = true;
     state.flags._shop_errand_target = "mint";
     save();
-    showShop();
+    showMap();
   });
 }
 
@@ -7747,8 +7773,10 @@ function startDay1RivalScouting() {
       { speaker: "hajime", face: "normal", text: "分かりました。行ってきます" },
     ],
   }, () => {
-    state.flags._scouting_hint_pending = true;
-    shishaGuard(() => doVisit("naru"));
+    // こちらも自動遷移せず、マップで KEMURIKUSA のピンをタップしてもらう（A3）
+    state.flags._scouting_pending = true;
+    save();
+    showMap();
   });
 }
 
