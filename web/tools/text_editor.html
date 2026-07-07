@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>台詞エディタ — 水煙前線</title>
+<!--
+  台詞テキストの閲覧・検索・編集・保存を1画面でやる開発ツール（G4・2026-07-07）。
+  tools/text_editor_server.py から配信される（file:// では動かない）。
+  改行プレビューは /wrap.js ＝ engine.js の autoWrap 実物なので本編と絶対にズレない。
+-->
+<style>
+  :root { --bg:#0e0a16; --panel:#161020; --line:#3a2f50; --accent:#f4d27a; --text:#f6ecd0; --dim:#9a90b0; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif; }
+  header { padding:10px 16px; border-bottom:1px solid var(--line); display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:16px; margin:0; color:var(--accent); }
+  select,input[type=text] { background:#0b0712; color:var(--text); border:1px solid var(--line); border-radius:6px; padding:6px 10px; font-size:13px; }
+  input[type=text] { min-width:200px; }
+  .cols { display:grid; grid-template-columns:minmax(300px,420px) 1fr; gap:0; height:calc(100vh - 53px); }
+  #list { overflow-y:auto; border-right:1px solid var(--line); }
+  .row { padding:7px 12px; border-bottom:1px solid #221a30; cursor:pointer; font-size:13px; line-height:1.5; }
+  .row:hover { background:#1c1428; }
+  .row.sel { background:#2a1f3d; border-left:3px solid var(--accent); }
+  .row .sp { color:var(--accent); font-size:11px; margin-right:6px; }
+  .row .warn-mark { color:#ff9a9a; font-size:11px; margin-left:6px; }
+  #edit { padding:16px 20px; overflow-y:auto; }
+  textarea { width:100%; min-height:110px; background:#0b0712; color:var(--text); border:1px solid var(--line);
+    border-radius:6px; padding:10px 12px; font-size:16px; line-height:1.8; font-family:"Hiragino Mincho ProN","Yu Mincho",serif; resize:vertical; }
+  .controls { display:flex; gap:8px; align-items:center; margin:10px 0; flex-wrap:wrap; }
+  button { background:#22182f; color:var(--text); border:1px solid var(--line); border-radius:6px; padding:7px 14px; font-size:13px; cursor:pointer; }
+  button:hover { border-color:var(--accent); }
+  button.primary { background:#3a2c12; border-color:var(--accent); color:var(--accent); font-weight:bold; }
+  .stat { font-size:12px; color:var(--dim); }
+  .stat .warn { color:#ff9a9a; }
+  .vnbox { background:linear-gradient(180deg,rgba(8,4,14,0.92),rgba(14,8,22,0.97)); border:1px solid var(--line); border-radius:6px; padding:16px 20px; max-width:700px; }
+  .vntext { font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif; font-size:19px; line-height:1.85; white-space:pre-wrap; }
+  .page-sep { border-top:1px dashed #6a5a8a; margin:8px 0; font-size:10px; color:#6a5a8a; text-align:center; letter-spacing:0.2em; }
+  .grid { line-height:2.0; font-family:"Hiragino Mincho ProN","Yu Mincho",serif; font-size:17px; user-select:none; max-width:700px; margin-top:6px; }
+  .grid .ch { display:inline-block; cursor:pointer; border-radius:3px; padding:0 1px; }
+  .grid .ch:hover { background:rgba(244,210,122,0.25); }
+  .grid .br { display:inline-block; color:var(--accent); cursor:pointer; }
+  .grid .nl { display:block; height:0; }
+  h3 { font-size:12px; color:var(--dim); margin:16px 0 6px; letter-spacing:0.1em; }
+  #savemsg { font-size:12px; color:#9fe8b0; }
+  .empty { color:var(--dim); padding:30px; font-size:13px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>台詞エディタ</h1>
+  <select id="file"></select>
+  <input type="text" id="search" placeholder="本文・話者で検索…">
+  <span class="stat">⚠マーク＝要注意（48字超 / 「。……」 / 「。」3個以上 / 手動\n）。保存後は build_data.py を実行</span>
+</header>
+<div class="cols">
+  <div id="list"><div class="empty">ファイルを選択してください</div></div>
+  <div id="edit"><div class="empty">左の一覧から行を選ぶと、ここで編集できます</div></div>
+</div>
+<script src="/wrap.js"></script>
+<script>
+const $ = (s) => document.querySelector(s);
+let lines = [], sel = -1, curFile = "";
+
+const width = (s) => { let n = 0; for (const ch of s) n += ch.charCodeAt(0) <= 0xff ? 0.5 : 1; return n; };
+const warnsOf = (t) => {
+  const w = [];
+  if (width(t) > 48) w.push("48字超（自動改ページで文が割れる）");
+  if (t.includes("。……") || t.includes("。…")) w.push("「。……」→「、……」を検討（G1）");
+  if ((t.match(/。/g) || []).length >= 3) w.push("「。」3個以上＝行の分割を検討");
+  if (t.includes("\n")) w.push("手動\\n（崩れ報告が出たら撤去方針）");
+  return w;
+};
+
+async function loadFiles() {
+  const files = await (await fetch("/api/files")).json();
+  $("#file").innerHTML = files.map((f) => `<option>${f}</option>`).join("");
+  loadLines();
+}
+async function loadLines() {
+  curFile = $("#file").value;
+  lines = await (await fetch(`/api/lines?file=${encodeURIComponent(curFile)}`)).json();
+  sel = -1;
+  renderList();
+  $("#edit").innerHTML = '<div class="empty">左の一覧から行を選ぶと、ここで編集できます</div>';
+}
+function renderList() {
+  const q = $("#search").value.trim();
+  const box = $("#list");
+  box.innerHTML = "";
+  lines.forEach((ln, i) => {
+    if (q && !ln.text.includes(q) && !ln.speaker.includes(q)) return;
+    const div = document.createElement("div");
+    div.className = "row" + (i === sel ? " sel" : "");
+    const w = warnsOf(ln.text);
+    div.innerHTML = `<span class="sp">${ln.speaker || "ナレ"}</span>${ln.text.slice(0, 42).replace(/</g, "&lt;")}` +
+      (w.length ? `<span class="warn-mark">⚠${w.length}</span>` : "");
+    div.onclick = () => { sel = i; renderList(); renderEdit(); };
+    box.appendChild(div);
+  });
+}
+function renderEdit() {
+  const ln = lines[sel];
+  const ed = $("#edit");
+  ed.innerHTML = `
+    <div class="stat">話者: <b>${ln.speaker || "（ナレーション）"}</b> ／ ${curFile} ${ln.path}</div>
+    <h3>本文（実改行＝手動改行として保存される）</h3>
+    <textarea id="src" spellcheck="false"></textarea>
+    <div class="controls">
+      <button class="primary" id="save">保存</button>
+      <button id="reset">元に戻す</button>
+      <span class="stat" id="stat"></span>
+      <span id="savemsg"></span>
+    </div>
+    <h3>本編プレビュー（autoWrap 実物・点線＝改ページ）</h3>
+    <div class="vnbox"><div class="vntext" id="pv"></div></div>
+    <h3>文字をクリックすると、その直前で手動改行（もう一度クリックで解除）</h3>
+    <div class="grid" id="grid"></div>`;
+  const src = $("#src");
+  src.value = ln.text;
+  src.addEventListener("input", refresh);
+  $("#save").onclick = save;
+  $("#reset").onclick = () => { src.value = ln.text; refresh(); };
+  refresh();
+}
+function refresh() {
+  const t = $("#src").value;
+  const wrapped = autoWrap(t);
+  const rows = wrapped.split("\n");
+  // 本編と同じ改ページ（2行ごと・孤立ページ回避は engine 側と同等の見え方確認用に点線のみ）
+  const pv = $("#pv");
+  pv.innerHTML = "";
+  rows.forEach((r, i) => {
+    if (i > 0 && i % 2 === 0) {
+      const sep = document.createElement("div");
+      sep.className = "page-sep";
+      sep.textContent = "▼ 改ページ";
+      pv.appendChild(sep);
+    }
+    pv.appendChild(document.createTextNode(r + "\n"));
+  });
+  const w = warnsOf(t);
+  $("#stat").innerHTML = `全角換算 <b>${width(t)}</b> 字 / ${rows.length} 行` +
+    (w.length ? `<span class="warn"> ⚠ ${w.join(" ／ ")}</span>` : "");
+  // クリック改行グリッド
+  const grid = $("#grid");
+  grid.innerHTML = "";
+  [...t].forEach((ch, i) => {
+    if (ch === "\n") {
+      const br = document.createElement("span");
+      br.className = "br";
+      br.textContent = "⏎";
+      br.title = "クリックで手動改行を解除";
+      br.onclick = () => { $("#src").value = t.slice(0, i) + t.slice(i + 1); refresh(); };
+      grid.appendChild(br);
+      grid.appendChild(Object.assign(document.createElement("span"), { className: "nl" }));
+      return;
+    }
+    const s = document.createElement("span");
+    s.className = "ch";
+    s.textContent = ch;
+    s.title = "クリックでこの文字の直前に手動改行";
+    s.onclick = () => { $("#src").value = t.slice(0, i) + "\n" + t.slice(i); refresh(); };
+    grid.appendChild(s);
+  });
+}
+async function save() {
+  const ln = lines[sel];
+  const text = $("#src").value;
+  const res = await (await fetch("/api/save", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ file: curFile, path: ln.path, text }),
+  })).json();
+  if (res.ok) {
+    ln.text = text;
+    renderList();
+    $("#savemsg").textContent = "保存しました（build_data.py の実行を忘れずに）";
+    setTimeout(() => { const m = $("#savemsg"); if (m) m.textContent = ""; }, 4000);
+  } else {
+    $("#savemsg").textContent = "保存に失敗: " + (res.error || "");
+  }
+}
+$("#file").addEventListener("change", loadLines);
+$("#search").addEventListener("input", renderList);
+loadFiles();
+</script>
+</body>
+</html>

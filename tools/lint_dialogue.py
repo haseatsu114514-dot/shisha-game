@@ -113,6 +113,17 @@ def main() -> int:
                 if "\\n" in text or "\n" in text:
                     warns.append(f"{where}: 手動改行を含む（autoWrap に任せたい）")
 
+                # 句読点規範（G1・2026-07-07 オーナー指定。正本: .claude/skills/text-style）
+                # 「。……＋短い続き」だけ警告（続きが独立文なら「。……」のままで良い＝tidyと同じ判定）
+                if re.search(r"。(……|…)(?![^。]*。)(?=[^。」』）]{1,8}[」』）]?$)", text):
+                    warns.append(f"{where}: 「。……＋短い続き」→「、……」に（tidy_dialogue_text.py で自動整形可）")
+                if re.match(r"^[「（]?(え|あ|お|わ|うわ|ん)。", text):
+                    warns.append(f"{where}: 冒頭の間投詞のあとは「。」でなく「、」（例: 「え、俺が〜」）")
+                if sp and text.rstrip("」』）").endswith("。"):
+                    warns.append(f"{where}: 台詞の末尾「。」は取る（本作の台詞は末尾句点なしで統一）")
+                if sp and text.count("。") >= 3:
+                    warns.append(f"{where}: 台詞に「。」が3個以上。行の分割を検討（。の多すぎ対策）")
+
                 flen = fullwidth_len(text)
                 if flen > MAX_PAGE_FULLWIDTH:
                     warns.append(f"{where}: 1台詞が全角{flen:.0f}字（>48）。改ページで割れやすい → 台詞を分ける")

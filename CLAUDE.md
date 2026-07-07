@@ -269,7 +269,7 @@ node web/test/portraits.mjs       # 立ち絵の身長スケール回帰（ス�
 ```
 - 重い3本(playthrough/ch2/screenshots)は**同時に走らせない**（CPU枯渇でタイムアウト）。1本ずつ。
 - playwright 依存（`require("playwright")` か `/opt/node22/lib/node_modules/playwright`）。
-- 会話編集 `python3 tools/dialogue_editor.py` ／ 改行プレビュー `web/tools/linebreak_editor.html`。
+- 会話編集 `python3 tools/dialogue_editor.py` ／ 台詞エディタ（検索・編集・保存・本編同一の改行プレビュー）`python3 tools/text_editor_server.py` ／ 簡易プレビュー `web/tools/linebreak_editor.html`。句読点・改行の規範は **text-style スキル**が正本。
 
 ### 状態管理・流儀（別パターンを勝手に増やさない）
 - 状態は単一の `state`（`save()`/localStorage `shisha_ch1_save_v1`）、大会中の一時状態は `tt`。
@@ -297,6 +297,7 @@ node web/test/portraits.mjs       # 立ち絵の身長スケール回帰（ス�
 |---|---|
 | `owner-request` | オーナーの指摘・要望・バグ報告・プレイ感想への対応全般（受領→解釈確認→横断確認→台帳更新） |
 | `dialogue-edit` | 台詞・イベント・ゲーム内テキストの追加・編集（改行・報酬キュー・旧名・話者IDのチェックリスト） |
+| `text-style` | 句読点（。/、の使い分け・。の量）・改行・改ページの規範と自動整形/手動エディタ。テキストの見た目の違和感対応はまずこれ |
 | `web-build-test` | web/・data/ 変更後のビルドとヘッドレステスト（変更→テスト対応表・直列実行ルール） |
 | `canon-check` | 矛盾・設定齟齬・旧名残存の点検、設定に関わる文章を書く前の正本確認 |
 | `portrait-fix` | 立ち絵のズレ・表情切替ジャンプ・見切れ・髪欠け・身長バランス・立ち絵追加（症状別診断フロー） |
@@ -418,7 +419,7 @@ node web/test/portraits.mjs       # 立ち絵の身長スケール回帰（ス�
   - 例外: 演出上どうしても改行したい箇所のみ。その場合も**1行が全角24文字を超えない**ように書く。
   - 既存の手動 `\n`（`lover_events.json` に多数）は崩れ報告が出たら撤去方向で直す。
 - 1台詞は**全角24文字×2行＝48文字**を目安に収める。超えると自動で改ページされ、文の途中で切れて不自然になる。長い説明は台詞を分ける。
-- 改行確認は `web/tools/linebreak_editor.html`。日数は直書きせず `{daysLeft}`（`interpolate()`）を使う。
+- 改行確認は台詞エディタ（`python3 tools/text_editor_server.py`）か `web/tools/linebreak_editor.html`。句読点・改行の規範と自動整形は **text-style スキル**参照。日数は直書きせず `{daysLeft}`（`interpolate()`）を使う。
 
 ### 3. 報酬を地の文に埋めない（埋めるなら厳密に）
 

@@ -73,9 +73,18 @@ const STAMINA_COST = { baito: 24, visit: 16, talk: 10, practice: 18, rin: 14, da
 // 訪問だけなら章に1回。毎日休まないと詰む厳しさにはしない（休憩1回で立て直せる曲線）。
 // 変えるときは web/test/balance.mjs A3 の曲線検証（検討1〜3回・素直に休めば
 // 警告ライン未満に落ちない）を必ず通すこと。
-const STAMINA_GAIN = { rest: 55, cafe: 12, kannon: 12, sleep: 26 };
+// sleep 26→19（F8・2026-07-07）: 訪問+会話(26)で±0＝「一生減らない」の穴を塞ぐ。
+// どの2行動でも毎日すこしずつ削れ、章の間に3〜4回は「家で休むか」を考えるカーブ
+const STAMINA_GAIN = { rest: 55, cafe: 12, kannon: 12, sleep: 19 };
 function stamina() { return state.stamina ?? 100; }
 function addStamina(n) {
+  // 根性が高いと消耗がすこし軽くなる（F10: 作りパート以外のステ活用。
+  // 「そこそこ有利」の範囲＝★2後半で-15%・★4で-30%。回復量には効かない）
+  if (n < 0 && state && state.stats) {
+    const guts = state.stats.guts || 10;
+    if (guts >= 70) n = Math.round(n * 0.7);
+    else if (guts >= 40) n = Math.round(n * 0.85);
+  }
   state.stamina = Math.max(0, Math.min(100, stamina() + n));
   updateHud();
 }
@@ -202,6 +211,7 @@ function newState() {
     money: 20000,  // 初期所持金。バイトに出る動機が生まれる額に減額（N13・旧30000）
     stats: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 },
     statsBaseline: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 },
+    statXp: {},            // ステ経験値の端数（F10: ★が上がるほど+1が重くなる段階制）
     affinity: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0, rin: 0, ageha: 0 },
     affinityPts: {},       // 好感度の内部ポイント（隠し数値。閾値で affinity の段階が上がる）
     visits: { sumi: 0, naru: 0, adam: 0, minto: 0, tsumugi: 0, rin: 0, ageha: 0, kumicho: 0, rei: 0, volk: 0 },
@@ -401,6 +411,12 @@ function statSoftCap() {
 const STAT_GAIN_MERGE_MS = 700;
 let statGainBatch = {};      // en -> 今の窓で溜まった実際の増分
 let statGainBatchTimer = null;
+// 必要経験値の段階制（F10・2026-07-07）: ★が上がるほど内部値+1に必要な経験値が増える。
+// ★1→★2 は等倍、★2→★3 は1.5倍……と重くなる＝1章で伸びすぎない。
+// 台詞キューや type:"apply" の加算量はそのまま「経験値」として扱い、
+// 端数は state.statXp に貯めて取りこぼさない（少量の加算でも積めば必ず伸びる）
+const STAT_TIER_COST = [1, 1.5, 2, 3, 4]; // ★1帯〜★5帯の「+1に必要な経験値」
+function statTierCost(v) { return STAT_TIER_COST[Math.max(0, Math.min(4, Math.floor(v / 20)))]; }
 function gainStat(en, amount) {
   if (!(en in state.stats) || amount <= 0) return;
   const cap = statSoftCap();
@@ -411,7 +427,13 @@ function gainStat(en, amount) {
     en = open[Math.floor(Math.random() * open.length)];
   }
   const before = state.stats[en];
-  state.stats[en] = Math.max(0, Math.min(cap, before + amount));
+  // 経験値→内部値の変換。帯をまたぐ分は帯ごとのコストで順に消化する
+  if (!state.statXp) state.statXp = {};
+  let xp = (state.statXp[en] || 0) + amount;
+  let v = before;
+  while (v < cap && xp >= statTierCost(v)) { xp -= statTierCost(v); v += 1; }
+  state.statXp[en] = v >= cap ? 0 : xp;
+  state.stats[en] = Math.max(0, Math.min(cap, v));
   const actual = state.stats[en] - before;
   if (actual <= 0) return; // 実際に増えなかったら通知しない
   if (typeof REEL !== "undefined") REEL.noteStat(en, actual); // 直近の伸びをスロットのアンコール抽選に記録
@@ -444,6 +466,15 @@ function flushStatGainBatch() {
 // 恋人とのデート文脈でだけ恋人Lvが上がる（絆はプライベートで深める）
 let dateContext = false;
 
+// 占い効果（F11）: 指名した相手と「次に会ったとき」だけ好感度の伸びが1.5倍。
+// 実際にポイントが動く瞬間に消費し、効果をオーナー指定のニュアンスで言語化する
+function fortunePts(charId, pts) {
+  if (!(state.fortune && state.fortune.char === charId)) return pts;
+  delete state.fortune;
+  setTimeout(() => toast("（占いの効果もあってか、いつもより仲良くなれた気がする）"), 1400);
+  return Math.round(pts * 1.5);
+}
+
 // 好感度ポイントを加算し、段階が上がったらバナーを出す。
 // 戻り値: 何かしら付与できたか（呼び出し側の報酬フォールバック判定に使う）
 function gainAffinity(charId, kind = "visit") {
@@ -457,7 +488,7 @@ function gainAffinity(charId, kind = "visit") {
     if (!dateContext) return false; // 店で会っても絆は深まらない（master_spec #24）
     if ((state.loveLevel[charId] || 0) >= AFFINITY_CAP) return false;
     const prevLovePts = state.lovePts[charId] || 0;
-    state.lovePts[charId] = prevLovePts + pts;
+    state.lovePts[charId] = prevLovePts + fortunePts(charId, pts);
     const hearts = affinityHearts(prevLovePts, state.lovePts[charId]);
     const next = rankFromPts(state.lovePts[charId]);
     if (next > (state.loveLevel[charId] || 0)) {
@@ -471,7 +502,7 @@ function gainAffinity(charId, kind = "visit") {
   // ---- 通常: 内部ポイント加算 → 閾値で段階アップ
   if (state.affinity[charId] >= AFFINITY_CAP) return false;
   const prevPts = state.affinityPts[charId] || 0;
-  state.affinityPts[charId] = prevPts + pts;
+  state.affinityPts[charId] = prevPts + fortunePts(charId, pts);
   const hearts = affinityHearts(prevPts, state.affinityPts[charId]);
   const rank = rankFromPts(state.affinityPts[charId]);
   if (rank > state.affinity[charId]) {
@@ -747,6 +778,11 @@ function spawnStatBolt(fromEl, stat) {
   const host = $("#game");
   const hud = $("#hud-level");
   if (!host || !hud || !fromEl || !fromEl.isConnected) return;
+  // 暗転・煙ワイプ・DAYカードが画面を覆っている間は光を飛ばさない（F12）。
+  // 覆いの下ではHUDの五角形が見えず「真っ暗な画面に光だけ出る」ため、演出ごと省略する
+  if (document.querySelector("#night-fade") ||
+      document.querySelector("#smoke-veil.engulf") ||
+      document.querySelector("#day-card.show")) return;
   const g = host.getBoundingClientRect();
   if (!g.width) return;
   const scale = g.width / 1280;
@@ -1453,6 +1489,9 @@ const SPOTS = [
   { id: "cafe", label: "カフェ", desc: "なるおすすめのスパイスラテ", cost: 800, requiresMet: "naru" },
   { id: "c_station", label: "C.STATION", desc: "大会会場のチェーン店。噂や大会情報が集まる", cost: 2500 },
   { id: "shop", label: "Dr.fookah", desc: "卸直営のショップ。機材・フレーバーが揃い、1階の試飲席で一応吸える（時間はかからない）", cost: 0 },
+  // 路上占い師（F11・2026-07-07）: 週2日だけ現れる。相性占い5,000円・コマ消費なし・1日1回。
+  // 正体を知るまでは「？」のスポット（SPOT_UNKNOWN.fortune）
+  { id: "fortune", label: "路上占い師", desc: "相性占いをしてくれる。誰かとの縁を見てもらえるらしい（5,000円・時間はかからない）", cost: 0, charId: "uranaishi", chapter: 1 },
   { id: "rest", label: "家に帰る", desc: "1行動使って体を休め、体力を半分ほど戻す", cost: 0 },
 ];
 
@@ -1466,6 +1505,8 @@ const SPOT_UNKNOWN = {
   ageha: { label: "派手な店を覗く", desc: "繁華街の目立つ店。ギャルっぽい店主がいるらしい" },
   rei: { label: "零-ZERO-を覗く", desc: "重低音が漏れる薄暗い店。タトゥーの店主の噂" },
   volk: { label: "鉄の煙を覗く", desc: "計器だらけの不思議な店。外国人がやっているらしい" },
+  // 路上占い師は正体を知るまで「？」のスポット（F11）
+  fortune: { label: "様子を見に行く", desc: "路地の隅に、見慣れない小さな出店がある。……誰か座っている？", short: "？", icon: "？" },
 };
 
 // 報酬キューが鳴らなかった場合の保険（全イベントに必ず報酬を付ける）
@@ -1534,6 +1575,92 @@ const REPEAT_VISIT = {
   kumicho: { text: "神崎煙草店で一服。組長と黙って同じ煙を吸うだけで、不思議と腹が据わる。", stats: { guts: 2 } },
   rei: { text: "零-ZERO-で一服。爆音の中、REIは何も言わない。でも、煙はやさしい。", stats: { charm: 2 } },
   volk: { text: "鉄の煙で一服。ヴォルクの精密な手つきを盗み見る。数字の裏に、職人の勘がある。", stats: { guts: 2 } },
+};
+
+// 好感度が育ち始めた相手（♥1以上）のテンプレ訪問は、地の文だけでなく
+// 「そのキャラの価値観がちらっと見える小会話」を混ぜる（F5・2026-07-07 オーナー要望
+// 「行った甲斐を増やしたい。ちょっとした会話でキャラの価値観がわかるように」）。
+// 報酬は従来のテンプレ訪問と同一（rep.stats + repeat好感度）＝バランス不変
+const REPEAT_TALKS = {
+  sumi: [
+    [
+      { speaker: "sumi", face: "normal", text: "道具はな、嘘をつかねえ。手を抜いた日は煙が教えてくる" },
+      { speaker: "hajime", face: "normal", text: "煙が、ですか？" },
+      { speaker: "sumi", face: "smile", text: "ああ。だから俺は、煙に恥ずかしくねえ仕事をする。それだけだ" },
+    ],
+    [
+      { speaker: "", face: "", text: "常連さんの帰り際、スミさんは必ず店の外まで見送りに出る。" },
+      { speaker: "sumi", face: "normal", text: "客はな、味を忘れても「どう扱われたか」は忘れねえんだよ" },
+      { speaker: "hajime", face: "normal", text: "（……煙の外側にも、味があるのか）" },
+    ],
+  ],
+  tsumugi: [
+    [
+      { speaker: "tsumugi", face: "normal", text: "煙って、消えるから綺麗なんだと思う" },
+      { speaker: "hajime", face: "normal", text: "消えるから？" },
+      { speaker: "tsumugi", face: "smile", text: "うん。残らないものこそ、ちゃんと見ていたいの" },
+    ],
+    [
+      { speaker: "tsumugi", face: "normal", text: "はじめくんの煙、今日はちょっと急いでる形してた" },
+      { speaker: "hajime", face: "surprise", text: "（……見抜かれてる。つむぎちゃんには、煙が表情に見えるらしい）" },
+    ],
+  ],
+  naru: [
+    [
+      { speaker: "naru", face: "smile", text: "技はどんどん見て盗んでいいよ。俺も誰かの煙で育ったから" },
+      { speaker: "naru", face: "normal", text: "その代わり、いつか誰かに返してね。この業界は、そうやって回ってる" },
+      { speaker: "hajime", face: "normal", text: "（……強いのに、囲い込まない。この人の強さは、それ込みなんだ）" },
+    ],
+    [
+      { speaker: "naru", face: "normal", text: "忙しい日ほど、一杯目の水音を聞くんだ。焦ってる時は音が濁る" },
+      { speaker: "hajime", face: "normal", text: "（音で自分を測る……そういう物差しを、いくつ持ってるんだろう）" },
+    ],
+  ],
+  adam: [
+    [
+      { speaker: "adam", face: "serious", text: "一つを極めるのは、逃げじゃない。……毎日、選び直してるんだ" },
+      { speaker: "hajime", face: "normal", text: "（毎日、ダブルアップルを選び直す。惰性と一途は、外からは同じに見えるのに）" },
+    ],
+    [
+      { speaker: "", face: "", text: "常連さんが「たまには別のも吸えば」と笑った。アダムは静かに首を振る。" },
+      { speaker: "adam", face: "normal", text: "浮気しないから、深くなる。……煙も、たぶん人もだ" },
+    ],
+  ],
+  minto: [
+    [
+      { speaker: "minto", face: "smile", text: "かわいいは武器だけど、武器だけじゃお店は続かないんだよね〜" },
+      { speaker: "minto", face: "wink", text: "常連さんの「いつもの」を覚えてるかどうか。結局そこ！" },
+      { speaker: "hajime", face: "normal", text: "（にぎやかさの下に、ちゃんと商売人の顔がある）" },
+    ],
+    [
+      { speaker: "minto", face: "smile", text: "笑顔はサービスじゃなくて、こっちが楽しんでる証拠なの。伝染するから" },
+      { speaker: "hajime", face: "normal", text: "（たしかに、この店を出るときはいつも少し元気になってる）" },
+    ],
+  ],
+  ageha: [
+    [
+      { speaker: "ageha", face: "normal", text: "映える煙と美味い煙、両方作れなきゃSNSの人気なんて三日で終わるよ" },
+      { speaker: "hajime", face: "normal", text: "（派手さの裏で、ちゃんと二正面作戦をやってるんだ）" },
+    ],
+  ],
+  kumicho: [
+    [
+      { speaker: "kumicho", face: "normal", text: "煙ってのはな、急かすと逃げる。人間と同じだ" },
+      { speaker: "hajime", face: "normal", text: "（……この店の時間だけ、ゆっくり流れてる気がする）" },
+    ],
+  ],
+  rei: [
+    [
+      { speaker: "rei", face: "normal", text: "……音がデカいのは、静かに吸いたい客のためだ。誰の会話も、誰にも聞こえない" },
+      { speaker: "hajime", face: "normal", text: "（爆音が、この店のついたてなのか）" },
+    ],
+  ],
+  volk: [
+    [
+      { speaker: "volk", face: "serious", text: "計器は嘘をつかない。だが、最後の0.5度は指で覚えるしかない" },
+      { speaker: "hajime", face: "normal", text: "（数字の人だと思ってた。……数字の先の話だった）" },
+    ],
+  ],
 };
 
 // テンプレ訪問の代わりに一度だけ挟まる特別回（O17）。
@@ -1822,11 +1949,15 @@ function showLimeActions(m) {
         "誘いに乗ると行動を1回使う。そのぶん、ふつうに会いに行くより仲が深まりやすい。断っても嫌われたりはしない。"
       );
     }
+    // スミさん（店長・師匠）への返信は敬語（F6・2026-07-07）。友達口調は同世代の相手だけ
+    const polite = m.sender === "sumi" || m.sender === "nagumo";
+    const goText = polite ? "行きます！" : "行く！";
+    const ngText = polite ? "すみません、今日は難しいです……" : "ごめん、今日は難しい";
     limeReplyButtons([
       {
-        text: "行く！（行動を1回使う）",
+        text: `${goText}（行動を1回使う）`,
         onPick: () => {
-          addLimeBubble("me", "行く！");
+          addLimeBubble("me", goText);
           if (m.time_slot === "night") {
             state.pendingLimeNight = { event: m.accept_event, sender: m.sender };
             save();
@@ -1838,9 +1969,9 @@ function showLimeActions(m) {
         },
       },
       {
-        text: "ごめん、今日は難しい",
+        text: ngText,
         onPick: () => {
-          addLimeBubble("me", "ごめん、今日は難しい");
+          addLimeBubble("me", ngText);
           // デートの誘いを断ったら、少し間を置いてまた誘ってくれる
           if (String(m.accept_event || "").startsWith("date_")) {
             state.lastDate[m.sender] = state.day - 1;
@@ -2148,7 +2279,7 @@ const SPOT_ICONS = {
   tonari: "店", baito: "労", practice: "練", sumi: "師", tsumugi: "紬",
   naru: "鳴", adam: "亜", minto: "緑", choizap: "筋",
   kumicho: "崎", ageha: "蝶", rei: "零", volk: "鉄",
-  kannon: "観", cafe: "珈", c_station: "C", shop: "店", rest: "休",
+  kannon: "観", cafe: "珈", c_station: "C", shop: "店", rest: "休", fortune: "占",
 };
 const SPOT_FACE = { tonari: "sumi", sumi: "sumi", tsumugi: "tsumugi", naru: "naru", adam: "adam", minto: "minto" };
 
@@ -2171,7 +2302,8 @@ const SPOT_LAYOUT = {
   cafe:      { x: 72, y: 54, theme: "cafe",    short: "カフェ",     area: "繁華街" },
   c_station: { x: 54, y: 66, theme: "stadium", short: "C.STATION",  area: "会場" },
   shop:      { x: 36, y: 30, theme: "shop",    short: "Dr.fookah",  area: "問屋街" },
-  rest:      { x: 89, y: 62, theme: "rest",    short: "家",         area: "自宅" },
+  rest:      { x: 89, y: 52, theme: "rest",    short: "家",         area: "自宅" }, // 右下の情報パネルと被らない高さへ（F4）
+  fortune:   { x: 63, y: 78, theme: "park",    short: "路上占い",   area: "アーケード脇" }, // 週2日だけ現れる（F11）
 };
 
 // スポット→行き先の背景画像（A5: マップ右下のプレビュー／A7: 入場前の先読みで共用）。
@@ -2217,6 +2349,7 @@ function showMap(opts = {}) {
     : state.flags._scouting_pending ? "naru" : null;
   for (const spot of SPOTS) {
     if (spot.chapter && spot.chapter !== state.chapter) continue; // 章限定スポット（ch1/ch2でライバル店を出し分け）
+    if (spot.id === "fortune" && !fortuneTellerToday()) continue; // 占い師は週2日だけ出店（F11）
     const layout = SPOT_LAYOUT[spot.id];
     if (!layout) continue;
     const btn = document.createElement("button");
@@ -2243,8 +2376,8 @@ function showMap(opts = {}) {
       const evBadge = nightEv && nightEv.pin === spot.id ? `<i class="evt-badge">!</i>` : "";
       btn.innerHTML =
         `<div class="shield">${evBadge}` +
-          `<div class="ico">${face || (un ? "煙" : SPOT_ICONS[spot.id] || "")}</div>` +
-          `<div class="label">${layout.short}</div>` +
+          `<div class="ico">${face || (un ? (un.icon || "煙") : SPOT_ICONS[spot.id] || "")}</div>` +
+          `<div class="label">${un && un.short ? un.short : layout.short}</div>` +
         `</div>` +
         `<div class="sub-label${closed || visited ? " closed-tag" : ""}">${subText}</div>`;
       if (tooPoor || closed || visited) btn.disabled = true;
@@ -2397,12 +2530,13 @@ function updateMapInfo(spot, locked, tooPoor, closed, visited) {
   $("#map-info-cost").textContent = locked
     ? ""
     : (spot.cost > 0 ? `所持金から ¥${spot.cost.toLocaleString()} 必要` : "");
+  // 「タップして移動」の定型文は出さない（F4）。注意があるときだけ一言添える
   $("#map-info-hint").textContent = locked
     ? "ロック中"
     : closed ? `今日は${closed}。また明日にしよう`
     : visited ? "今日はもう顔を出した。また明日"
     : tooPoor ? "所持金が足りない"
-    : `タップして移動: ${un ? un.label : spot.label}`;
+    : "";
   // 事前に「何が伸びそうか」を主人公の見立てとして示す（master_spec 新要望）
   const hintStat = !locked && (CHAR_STAT[spot.id] || SPOT_FALLBACK_STAT[spot.id]);
   const growEl = $("#map-info-grow");
@@ -2460,6 +2594,7 @@ function selectSpot(spot) {
       case "c_station": return doCStation();
       // Dr.fookah: 物販利用 or 凛＋ブース を選ぶ(T28)。Day1の買い出しガイド中はショップへ直行
       case "shop": return state.flags._shop_errand_pending ? showShop() : showFookahMenu();
+      case "fortune": return doFortune(); // 路上占い師（F11・コマ消費なし）
       case "rest": return doRest();
       default: {
         // よその店での一服は体力を使う（tonari内のスミさん・つむぎとの会話は軽い）
@@ -2590,6 +2725,98 @@ function doCStation() {
   }, "res://assets/backgrounds/bg_c_station_day.png");
 }
 
+// ============ 路上占い師（F11・2026-07-07） ============
+// 週2日（DAYを7日週に見立てて3・6日目）だけアーケード脇に現れる。
+// 相性占い5,000円・1日1回・コマ消費なし。指名した相手と「次に会ったとき」だけ
+// 好感度の伸びが1.5倍になる（消費型。gainAffinity 側の fortunePts で発火）
+const FORTUNE_FEE = 5000;
+function fortuneTellerToday() {
+  return !!state && state.chapter === 1 && (state.day % 7 === 3 || state.day % 7 === 6);
+}
+function doFortune() {
+  visitContextChar = null;
+  const bg = `res://assets/backgrounds/bg_street_${state.ap <= 1 ? "night" : "day"}.png`;
+  const first = !state.flags._fortune_met;
+  state.flags._fortune_met = true;
+  markMet("uranaishi");
+  save();
+  const done = () => { save(); showMap(); }; // コマは消費しない
+  const intro = first
+    ? [
+        { speaker: "", face: "", text: "アーケードの外れ。折りたたみの机に紫の布、小さな水晶玉が鈍く光っている。" },
+        { speaker: "uranaishi", face: "normal", text: "……おや。いい煙の匂いを連れて歩く子だね。座っていきな" },
+        { speaker: "hajime", face: "surprise", text: "（占い師……？ こんなところに出てたっけ）" },
+        { speaker: "uranaishi", face: "smile", text: "アタシは出たり出なかったりさ。縁があれば、また会える" },
+      ]
+    : [{ speaker: "uranaishi", face: "smile", text: "……また来たね。今日は誰との縁が気になるんだい？" }];
+  // 1日1回（ピン側でも今日済みは無効化しているが、念のための保険）
+  if (state.fortuneDay === state.day) {
+    return playCustom({ dialogue_id: "fortune_done_today", metadata: { bg }, lines: [
+      { speaker: "uranaishi", face: "normal", text: "今日はもう見ただろう。1日に何度も覗くと、縁がすり切れるよ" },
+      { speaker: "hajime", face: "normal", text: "（……そういうものらしい。また今度にしよう）" },
+    ] }, done);
+  }
+  if (state.money < FORTUNE_FEE) {
+    return playCustom({ dialogue_id: "fortune_broke", metadata: { bg }, lines: intro.concat([
+      { speaker: "uranaishi", face: "normal", text: "相性占いは、ひとつ5,000円、……お代が足りないね" },
+      { speaker: "uranaishi", face: "smile", text: "縁は逃げやしない。稼いでから、また来な" },
+    ]) }, done);
+  }
+  playCustom({
+    dialogue_id: "fortune_offer",
+    metadata: { bg },
+    lines: intro.concat([
+      { speaker: "uranaishi", face: "normal", text: "相性占い、ひとつ5,000円。気になる相手との縁を見てあげるよ" },
+      { type: "choice", choices: [
+        { text: "相性占いをお願いする（5,000円）", next: "go" },
+        { text: "やめておく", next: "no" },
+      ] },
+    ]),
+    branches: {
+      go: [{ type: "set_flag", flag: "_fortune_go" }],
+      no: [{ speaker: "uranaishi", face: "normal", text: "そうかい。縁が呼んだら、また来な" }],
+    },
+  }, () => {
+    if (!state.flags._fortune_go) return done();
+    delete state.flags._fortune_go;
+    // 知り合っている相手から占う対象を選ぶ
+    const targets = Object.keys(state.affinity || {}).filter((id) => isMet(id));
+    if (!targets.length) {
+      return playCustom({ dialogue_id: "fortune_no_target", metadata: { bg }, lines: [
+        { speaker: "uranaishi", face: "normal", text: "……おや、まだ縁の糸が細いね。誰かと知り合ってから、また来な" },
+      ] }, done);
+    }
+    playCustom({
+      dialogue_id: "fortune_pick",
+      metadata: { bg },
+      lines: [
+        { speaker: "uranaishi", face: "normal", text: "……で、誰との縁を見るんだい？" },
+        { type: "choice", choices: targets.map((id, i) => ({ text: displayName(id), next: `t${i}` })) },
+      ],
+      branches: Object.fromEntries(targets.map((id, i) => [`t${i}`, [{ type: "set_flag", flag: `_fortune_pick_${id}` }]])),
+    }, () => {
+      const picked = targets.find((id) => state.flags[`_fortune_pick_${id}`]);
+      for (const id of targets) delete state.flags[`_fortune_pick_${id}`];
+      if (!picked) return done();
+      addMoney(-FORTUNE_FEE);
+      state.fortune = { char: picked };
+      state.fortuneDay = state.day;
+      state.dayVisited.uranaishi = state.day; // ピンを「今日はもう行った」に
+      save();
+      playCustom({
+        dialogue_id: "fortune_result",
+        metadata: { bg },
+        lines: [
+          { speaker: "", face: "", text: "占い師は水晶玉に手をかざし、目を閉じた。……長い沈黙。" },
+          { speaker: "uranaishi", face: "smile", text: `いい糸だ。${displayName(picked)}との縁は、いま撚りどきに入ってる` },
+          { speaker: "uranaishi", face: "normal", text: "次に会ったとき、いつもより素直に話せるだろうさ。……効き目は一度きりだよ" },
+          { speaker: "hajime", face: "normal", text: "（信じるかどうかは別として……次に会うのが、少し楽しみになった）" },
+        ],
+      }, done);
+    });
+  });
+}
+
 function endAction() {
   // 1行動=1回転（パッキーの謎スロット）。結果はこの場で確定し、直後の save() に乗る＝引き直し不可（#12）
   if (typeof REEL !== "undefined") REEL.onAction();
@@ -2705,9 +2932,12 @@ function mapBeat(onDone, label) {
   const screen = document.querySelector("#screen-map");
   if (!screen) return onDone();
   document.getElementById("map-beat")?.remove();
+  // F1（2026-07-07）: このマップは「次のイベントへのつなぎ」であって自由行動の番ではない。
+  // ピンを減光し情報パネルを隠して「また行動できる」期待をさせない
+  screen.classList.add("beat-hold");
   const ov = document.createElement("div");
   ov.id = "map-beat";
-  ov.innerHTML = `<div class="map-beat-card"><span class="mb-dots">${label || "……"}</span><span class="mb-sub">▼ タップで次へ</span></div>`;
+  ov.innerHTML = `<div class="map-beat-card"><span class="mb-dots">${label || "……"}</span><span class="mb-sub">▼ タップでイベントへ</span></div>`;
   screen.appendChild(ov);
   let done = false;
   let requested = false;
@@ -2716,6 +2946,7 @@ function mapBeat(onDone, label) {
     if (done || !requested || !reelIdle) return;
     done = true;
     ov.remove();
+    screen.classList.remove("beat-hold");
     onDone();
   };
   const requestGo = () => { requested = true; go(); };
@@ -2746,20 +2977,19 @@ function tomorrowNightEvent() {
 function nightFadeHome(next) {
   const host = $("#game");
   if (!host) return next();
-  document.getElementById("night-fade")?.remove();
-  const ov = document.createElement("div");
-  ov.id = "night-fade";
-  ov.classList.add("quiet"); // 文言は報酬バナーが流れ切ってから出す（N8）
-  // 翌日予告（#28）: 明日が固定イベント日なら、就寝の1行に予感を添える
-  const ev = tomorrowNightEvent();
-  ov.innerHTML = `<span>……今日は、家へ帰ろう。</span>` +
-    (ev ? `<small class="nf-teaser">（明日、${ev.label}で何かありそうな気がする）</small>` : "");
-  host.appendChild(ov);
-  requestAnimationFrame(() => ov.classList.add("dark"));
-  // まず暗転だけして、イベントの報酬バナー（ステUP・好感度等）を黒の上で
-  // 流し切ってから「家へ帰ろう」→帰宅シーンへ（バナーが見えないまま消える問題・N8）
+  // 報酬バナー・ステ光は「暗転が始まる前に」流し切る（F12・2026-07-07 オーナー指定）。
+  // 旧仕様（N8: 先に暗転→黒の上でバナー）は、暗転(z:76)がバナー(z:75)を覆う一方で
+  // ステの光(bolt)だけが上(z:90)に抜けて「真っ暗な画面に光だけ飛ぶ」怪奇現象になっていた
   waitGainBanners(() => {
-    ov.classList.remove("quiet");
+    document.getElementById("night-fade")?.remove();
+    const ov = document.createElement("div");
+    ov.id = "night-fade";
+    // 翌日予告（#28）: 明日が固定イベント日なら、就寝の1行に予感を添える
+    const ev = tomorrowNightEvent();
+    ov.innerHTML = `<span>……今日は、家へ帰ろう。</span>` +
+      (ev ? `<small class="nf-teaser">（明日、${ev.label}で何かありそうな気がする）</small>` : "");
+    host.appendChild(ov);
+    requestAnimationFrame(() => ov.classList.add("dark"));
     setTimeout(() => {
       next(); // 帰宅シーン（night_homecoming / 家シーシャ）を黒の下で始めてから明ける
       ov.classList.add("clear");
@@ -3062,12 +3292,16 @@ function doVisit(charId, opts = {}) {
     }
     const rep = REPEAT_VISIT[charId];
     const texts = Array.isArray(rep.text) ? rep.text : [rep.text];
+    // 好感度が育ち始めた相手（♥1以上）は、地の文の代わりに小会話をローテーション（F5）。
+    // 「通った甲斐」＝そのキャラの価値観がちらっと見える数行。報酬は従来と同じ
+    const talks = rank >= 1 ? REPEAT_TALKS[charId] : null;
+    const talk = talks && talks.length ? talks[(state.visits[charId] || 0) % talks.length] : null;
     playCustom(
       {
         dialogue_id: `repeat_${charId}`,
         metadata: { bg: `res://assets/backgrounds/${bg}` },
         lines: [
-          { speaker: "", face: "", text: texts[(state.visits[charId] || 0) % texts.length] },
+          ...(talk || [{ speaker: "", face: "", text: texts[(state.visits[charId] || 0) % texts.length] }]),
           { type: "apply", stats: rep.stats },
         ],
       },
@@ -4104,8 +4338,8 @@ const MC_BLOCK = {
   foil:     "アルミ巻きィ！　穴あけのリズムに注目だ！",
   coalfire: "炭起こし！　芯がピカッと閃く瞬間を狙えっ！",
   steam:    "蒸らしに入った……ここはじっくり待つ！",
-  adjust:   "第2ラウンド、調整だ！　今の温度を読めるか！？",
   pull:     "いよいよ吸い出し──提供はもう目前だァ！",
+  adjust:   "提供後の熱管理だ！　吸われている間も、炭は生きているッ！",
 };
 // #26 ライバル実況フィード: 工程が進むほど「どのライバルが何を完了したか」が順に流れる＝ライブ感。
 // 実際のライバル制作は数値だけだが、提供までの進行を台本で見せる（はじめより少し速い緊張感）
@@ -4139,7 +4373,9 @@ function mcBlockIntro(step) {
   }
 }
 
-// 大会は3ラウンド制: R1=組み立て（setup〜steam）→ R2=調整（adjust）→ R3=提供（吸い出し）。
+// 大会は3ラウンド制: R1=組み立て（setup〜steam）→ R2=提供（吸い出し）→ R3=調整（提供後の熱管理）。
+// 調整は「一通り完成して提供した後」の工程（F2・2026-07-07 オーナー指定。
+// 旧: 炭焼き→蒸らしの直後に調整があり「なぜ完成前に調整？」と不自然だった）。
 // ラウンドの切れ目で ch1_tournament_r1〜r3_end の会話が挟まる。
 // プレゼン工程は廃止（2026-06-12 オーナー決定）。提供の佇まいは魅力としてスコアに残る。
 // 集中（雑念タップ）工程は廃止（2026-07-06 オーナー指定 A2）
@@ -4147,7 +4383,7 @@ const STEP_FLOW = [
   ["setup_bowl", "SETUP"], ["setup_hms", "SETUP"], ["setup_charcoal", "SETUP"],
   ["theme", "FLAVOR"], ["mix", "MIX"], ["pack", "PACK"], ["foil", "FOIL"],
   ["coal", "SET"], ["coalfire", "HEAT"], ["steam", "STEAM"],
-  ["adjust", "ROUND2"], ["pull", "PULL"],
+  ["pull", "PULL"], ["adjust", "CARE"],
 ];
 // 前日リハーサル: 大会と全く同じ工程列（N14。旧: 穴あけ・炭起こし・集中を省く短縮版だった）
 const REHEARSAL_FLOW = STEP_FLOW;
@@ -5005,9 +5241,9 @@ function tournamentStep(step) {
       runSteamDodge(s, () => {
         // 大会以外・ch2の各試合は観客の会話なし（ラウンド会話はch1専用テキスト）
         if (tt.mode !== "tournament" || state.chapter !== 1) return tnNext("steam");
-        // ラウンド1（組み立て）終了 → 観客の会話 → R1講評 → 中間発表 → ラウンド2（調整）へ
+        // ラウンド1（組み立て）終了 → 観客の会話 → R1講評 → 中間発表 → ラウンド2（吸い出し・提供）へ
         playDialogue("ch1_tournament_match", () =>
-          playDialogue("ch1_tournament_r1_end", () => showStandings(1, () => tournamentStep("adjust")), "res://assets/backgrounds/bg_tournament_stage.png"),
+          playDialogue("ch1_tournament_r1_end", () => showStandings(1, () => tournamentStep("pull")), "res://assets/backgrounds/bg_tournament_stage.png"),
           "res://assets/backgrounds/bg_tournament_stage.png");
       });
     }));
@@ -5061,15 +5297,23 @@ function showStandings(round, next) {
   if (window.SFX) SFX.stamp();
 }
 
-// --- ラウンド2: 炭替え・調整。一箇所だけ作りを直せる
-// ラウンド2（中盤の調整）: 一度組んだら詰め直し・蒸らし直しは物理的に無理。
-// 動かせるのは炭の位置と数だけ（温度の最終調整は提供前の吸い出しで作る）#15
-// ラウンド2: 今の温度を見て、適温（テーマ依存）からズレてたら炭で寄せる（#45/#46）。
-// 詰め直し・蒸らし直しは不可。炭は新しく替えてもいいし、あえて前の炭のまま（非推奨）でもいい。
+// --- 調整（提供後の熱管理）。動かせるのは炭だけ＝詰め直し・蒸らし直しは物理的に無理 #15
+// 提供後の炭の焼け進みで動く温度（F2）。提供時の温度(tt.temp)を起点に、
+// 炭が多いほど熱が乗り、少ないと痩せていく。炭を替えれば行き先が変わる
+function afterServeDrift(coalId) {
+  let d = { triangle: 0.05, four: 0.13 }[coalId] ?? 0.05;
+  d += { flat_charcoal: -0.02, cube_charcoal: 0.03 }[tt.charcoal] ?? 0;
+  return d;
+}
+
+// 調整＝提供後の熱管理（F2・2026-07-07 オーナー指定「調整は一通り完成した後・提供後」）。
+// 出した一台は審査員（お客さん）が吸っている間も炭が焼け進んで熱が動く。
+// それを見て炭を替えるか、このまま守り切るかを選ぶ
 function stepAdjust() {
-  const body = tnPanel("ラウンド2：炭替え・調整",
-    "今の温度を見ろ。適温からズレてたら炭で寄せる。詰め直し・蒸らし直しはできない（温度の最終調整は提供前の吸い出しで）。");
+  const body = tnPanel("提供後の熱管理（炭替え・調整）",
+    "出したら終わりじゃない。吸われている間も炭は焼け進み、熱が動く。行き先の温度を見て、炭で寄せろ。");
   const target = pullTargetZone();
+  const baseTemp = typeof tt.temp === "number" ? tt.temp : projectedTemp();
   const tw = document.createElement("div");
   tw.className = "temp-wrap";
   tw.innerHTML =
@@ -5080,11 +5324,15 @@ function stepAdjust() {
   tw.querySelector(".temp-zone").style.width = `${(target[1] - target[0]) * 100}%`;
   const marker = tw.querySelector(".temp-marker");
   const read = tw.querySelector("#adjust-read");
+  const current = () => Math.max(0.16, Math.min(0.9, baseTemp + afterServeDrift(tt.coal)));
   const refresh = () => {
-    const t = projectedTemp();
+    const t = current();
     marker.style.left = `${Math.round(t * 100)}%`;
     const inZone = t >= target[0] && t <= target[1];
-    read.textContent = inZone ? "◎ 今の温度は適温に乗っている。" : t < target[0] ? "▽ 少しぬるい。炭を増やすと温まる。" : "△ 少し熱い。炭を減らすと落ち着く。";
+    read.textContent = inZone
+      ? "◎ この熱なら、最後の一口まで味が守れそうだ。"
+      : t < target[0] ? "▽ 炭が痩せて、後半ぬるくなりそうだ。炭を足すと持ち直す。"
+      : "△ 焼け進んで熱が乗りすぎる。炭を減らして落ち着かせたい。";
     read.className = `adjust-read ${inZone ? "ok" : "warn"}`;
   };
   body.appendChild(tw);
@@ -5100,36 +5348,24 @@ function stepAdjust() {
     coalRow.appendChild(b);
   }
   body.appendChild(coalRow);
-  // 確定（炭を替えないのも手＝前の炭のまま・非推奨でも進める）。テスト互換のため「このままでいく」を残す
-  body.appendChild(optionButton("このままでいく", "今の温度で勝負する", () => {
+  // 確定（炭を替えないのも手）。テスト互換のため「このままでいく」を残す
+  body.appendChild(optionButton("このままでいく", "この熱で最後まで守り切る", () => {
     if (window.SFX) SFX.select();
+    const t = current();
+    const [a, b] = pullTargetZone();
+    const center = (a + b) / 2, half = (b - a) / 2;
+    tt.care = Math.abs(t - center) <= half * 0.45 ? "perfect" : t >= a && t <= b ? "good" : "miss";
     endAdjust();
   }));
 }
 
-// R2（調整）の締め。ch1大会は観客の会話→中間発表を挟んでから提供へ
-// （旧・集中工程が担っていた進行を移設。集中ミニゲーム自体は廃止・A2）
+// R3（調整＝提供後の熱管理）の締め。ch1大会はここから最終会話→審査（FLAVOR TRIAL）へ
 function endAdjust() {
-  if (tt.mode === "tournament" && state.chapter === 1) {
-    playDialogue("ch1_tournament_r2_end", () => showStandings(2, () => tournamentStep("pull")), "res://assets/backgrounds/bg_tournament_stage.png");
-  } else {
-    tnNext("adjust");
+  if (tt.mode === "tournament") {
+    if (state.chapter === 2) return flavorTrial(finishCh2Stage);
+    return playDialogue("ch1_tournament_r3_end", () => flavorTrial(finishTournament), "res://assets/backgrounds/bg_tournament_stage.png");
   }
-}
-
-function redoAdjust(kind) {
-  const defs = {
-    pack: { title: "調整：パッキング", list: PACKS, set: (v) => { tt.pack = v.id; } },
-    coal: { title: "調整：炭の配置", list: COALS, set: (v) => { tt.coal = v.id; } },
-    steam: { title: "調整：蒸らし", list: availableSteamOptions(), set: (v) => { tt.steam = v.id; } },
-  }[kind];
-  const body = tnPanel(defs.title, "やり直すならここしかない。");
-  for (const v of defs.list) body.appendChild(optionButton(v.label, v.desc, () => {
-    defs.set(v);
-    if (window.SFX) SFX.select();
-    updateRig();
-    endAdjust();
-  }));
+  tnNext("adjust"); // 調整は最終工程＝チュートリアル/バイト/リハはここで締めへ
 }
 
 // --- 機材選択（SETUP）
@@ -5859,8 +6095,7 @@ function runSteamDodge(steamOpt, onDone) {
     const next = document.createElement("button");
     next.className = "primary-btn"; next.textContent = "次へ";
     next.addEventListener("click", onDone);
-    result.appendChild(document.createElement("br")); result.appendChild(next);
-    body.append(result);
+    body.append(result, next); // ボタンはパネル直下＝下端吸着でスクロール不要（G3）
     window.__steamDebug = () => ({ dodge: true, hits: 0, done: true, end: () => {} });
     return;
   }
@@ -5993,8 +6228,8 @@ function runSteamDodge(steamOpt, onDone) {
     next.className = "primary-btn";
     next.textContent = "次へ";
     next.addEventListener("click", onDone);
-    result.appendChild(document.createElement("br"));
-    result.appendChild(next);
+    // 進行ボタンはパネル直下に置く＝下端吸着（sticky）が効き、スクロール不要で押せる（G3）
+    result.after(next);
   };
 
   const tick = (now) => {
@@ -6059,7 +6294,7 @@ function pullTargetZone() {
 }
 const PULL_DELTA = 0.13; // 1回の吸いで動かせる最大温度
 
-// 今の仕込み（炭/炭起こし/蒸らし/葉量）から決まる温度。決定論なので R2の表示と吸い出しの起点で共有（#45）
+// 今の仕込み（炭/炭起こし/蒸らし/葉量）から決まる温度。吸い出しの起点温度に使う（#45）
 function projectedTemp() {
   const totalG = Object.values(tt.mix).reduce((a, b) => a + b, 0) || 12;
   let t = 0.5;
@@ -6255,12 +6490,12 @@ function stepPull() {
     nextBtn.className = "primary-btn";
     nextBtn.textContent = "次へ";
     nextBtn.addEventListener("click", () => {
-      if (tt.mode === "tournament") {
-        // 提供 → FLAVOR TRIAL（審査）→ 結果発表（#13）
-        if (state.chapter === 2) return flavorTrial(finishCh2Stage);
-        return playDialogue("ch1_tournament_r3_end", () => flavorTrial(finishTournament), "res://assets/backgrounds/bg_tournament_stage.png");
+      // 提供 → 提供後の熱管理（調整・F2）→ FLAVOR TRIAL（審査）→ 結果発表（#13）
+      if (tt.mode === "tournament" && state.chapter === 1) {
+        // ラウンド2（提供）終了の会話 → 中間発表 → ラウンド3（調整）へ
+        return playDialogue("ch1_tournament_r2_end", () => showStandings(2, () => tournamentStep("adjust")), "res://assets/backgrounds/bg_tournament_stage.png");
       }
-      tnNext("pull");
+      tnNext("pull"); // ch2の試合・練習系も次工程＝調整へ
     });
     wrap.appendChild(nextBtn);
     // 根性: 温度を外した提供のときだけ、大会中1回のやり直しを差し出す
@@ -6396,6 +6631,12 @@ function craftScore() {
   if (overPulls > 0) {
     score -= overPulls * 3;
     detail.push("提供前に吸いすぎた。葉が痩せて、最初の一口の厚みが削れている。");
+  }
+  // 提供後の熱管理（F2: 調整は提供後の工程へ移設・2026-07-07）。控えめな加減点＝そこそこ有利
+  if (tt.care) {
+    score += { perfect: 4, good: 2, miss: -4 }[tt.care] || 0;
+    if (tt.care === "perfect") detail.push("提供後も熱が守られ、最後の一口まで味が崩れなかった。");
+    else if (tt.care === "miss") detail.push("吸われている間に熱がズレた。後半、味の輪郭がぼやけた。");
   }
   // ---- 準備の成果（大会本番のみ）----
   if (tt.mode === "tournament") {
@@ -6715,6 +6956,8 @@ function tournamentBreakdown() {
   add("炭起こし", tt.coalFire === "perfect" ? 2 : tt.coalFire === "good" ? 1 : 0, "芯がピカッと閃く“取り頃”で取ると熱が乗る");
   if (typeof tt.steamHits === "number") add("蒸らし", tt.steamHits === 0 ? 2 : tt.steamHits <= 2 ? 1 : 0, "蒸らし中の雑念を躱しきると煙の芯が立つ");
   add("吸い出し", tt.pull === "perfect" ? 2 : tt.pull === "good" ? 1 : 0, "適温の窓でJUSTを重ねると一気に伸びる");
+  // 提供後の熱管理（F2で調整を提供後へ移設）
+  if (tt.care) add("熱管理", tt.care === "perfect" ? 2 : tt.care === "good" ? 1 : 0, "提供後の炭の焼け進みを読んで、最後の一口まで守る");
   const p = mixProfile();
   const matched = tt.theme && tt.theme.best ? tt.theme.best.filter((c) => p.cats.has(c)).length : 0;
   add("テーマ相性", matched >= 2 ? 2 : matched === 1 ? 1 : 0, "コンセプトに合うカテゴリを2つ以上揃える");
@@ -7547,7 +7790,8 @@ function startTitleBgm() {
 // ハガル（ボウル）選び等のSETUPも通し、本番で初見の工程が無いようにする
 const TUTORIAL_FLOW = STEP_FLOW;
 // バイト中のオーダーチャレンジ: お客さんのリクエスト（日替わり）に合わせて
-// 大会同様のフル工程で1台作る（テーマと集中だけ接客中なので省略）
+// 大会同様の工程で1台作る（テーマは客のリクエスト＝省略。提供後の熱管理(調整)は
+// 接客の流れの中で自然にやる想定なので工程化しない）
 const BAITO_FLOW = [
   ["mix", "MIX"], ["pack", "PACK"], ["foil", "FOIL"], ["coal", "SET"],
   ["coalfire", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"],
@@ -7561,6 +7805,7 @@ const TUTORIAL_TIPS = {
   coal: "スミさん「基本はトライアングル。熱が均等に回る」",
   steam: "スミさん「蒸らしは0/3/5/8/10分から選ぶ。基本は5〜8分、0分は神崎の型だ」",
   pull: "スミさん「提供前の吸い出しで温度を作る。左で止めれば上げ、右なら下げだ。最低2回」",
+  adjust: "スミさん「出したら終わりじゃない。吸われてる間も炭は焼け進む。熱の行き先を読んで、炭で整えろ」",
 };
 const DRILL_TIPS = {
   foil: "💡 アルミホイルに穴を開ける工程。穴の数と配置で熱の通り方が決まる。均等に開けるほど味がブレにくい",
@@ -7576,8 +7821,8 @@ function startTutorial() {
     dialogue_id: "tutorial_intro",
     metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" },
     lines: [
-      { speaker: "sumi", face: "normal", text: "おい、始。大会に出るって決めたなら、まず一回、通しで作ってみろ。" },
-      { speaker: "sumi", face: "smile", text: "ウチの作業台を貸してやる。テーマ決めから引きまで、本番と同じ流れだ。" },
+      { speaker: "sumi", face: "normal", text: "おい、始。大会に出るって決めたなら、まず一回、通しで作ってみろ" },
+      { speaker: "sumi", face: "smile", text: "ウチの作業台を貸してやる。テーマ決めから引きまで、本番と同じ流れだ" },
       { speaker: "hajime", face: "smile", text: "はい。（……ふふ、ちょっと腕の見せどころかも）" },
     ],
   }, () => beginMaking("tutorial"));
@@ -7659,7 +7904,9 @@ function finishBaitoOrder() {
   const tier = craft.score >= 92 ? "great" : craft.score >= 72 ? "good" : "rough";
   // リクエスト（指名・苦手抜き）に応えた日は店からのボーナスが増える
   const reqBonus = baitoRequest() ? 500 : 0;
-  const tip = { great: 5000, good: 2500, rough: 500 }[tier] + reqBonus;
+  // 魅力が高いと指名・リピートが増えて売上ボーナスに乗る（F10: 作りパート以外のステ活用）
+  const charmBonus = Math.round((Math.max(0, (state.stats.charm || 10) - 10) * 30) / 100) * 100;
+  const tip = { great: 5000, good: 2500, rough: 500 }[tier] + reqBonus + charmBonus;
   const reaction = {
     great: "「……うわ、何これ。雲みたい」お客さんは目を丸くして、ゆっくり煙を吐いた。常連になってくれそうな顔だ。",
     good: "「うん、おいしい」お客さんは満足げに煙をくゆらせている。",
@@ -7676,6 +7923,10 @@ function finishBaitoOrder() {
         ? [{ speaker: "hajime", face: "normal", text: "（……あれ。いま帰ったお客さんの顔、もう思い出せない。出来は悪くなかった、はずなのに）" }]
         : []),
       { speaker: "", face: "", text: tier === "great" ? "閉店後、スミさんが黙って親指を立てて、その日の給料に売上ボーナスを乗せてくれた。" : tier === "good" ? "スミさんが「上出来だ」と、給料に少し色をつけてくれた。" : "スミさんは何も言わなかったが、まかないがいつもより少しだけ豪華だった。" },
+      // 魅力ボーナスが目に見える額のときだけ、理由をさりげなく一行（F10）
+      ...(charmBonus >= 500
+        ? [{ speaker: "", face: "", text: "帰り際、「君がいる日に、また来るよ」と常連さんに言われた。指名が増えると、店のボーナスも少し弾む。" }]
+        : []),
       { type: "apply", stats: { technique: 2 }, money: tip },
     ],
   }, endAction);
@@ -7883,6 +8134,8 @@ function continueGame(saved) {
   if (!Array.isArray(state.loverEventsSeen)) state.loverEventsSeen = [];
   if (!state.kuji) state.kuji = {};
   if (!Array.isArray(state.goods)) state.goods = [];
+  if (!state.statXp) state.statXp = {};       // 必要経験値の段階制（F10）導入前のセーブ互換
+  if (!state.spotVisits) state.spotVisits = {};
   if (!Array.isArray(state.limeContacts)) {
     // 既存セーブ: 訪問しきい値を超えているキャラを交換済みとして引き継ぐ
     state.limeContacts = [];
@@ -8022,17 +8275,34 @@ function init() {
     });
   }
   showScreen("#screen-title");
+  warmMapImages(); // マップ画像だけは待たずに即・高優先で温める（F9: マップ入場ラグの根治）
   // タイトル表示後の暇な時間に、よく使う画像を低優先度で先読みしてキャッシュを温める
   //（分割ファイル版でシーン切替のたびに背景の取得待ちが見える問題への対策）
   setTimeout(startIdlePrefetch, 2200);
 }
 
+// マップ画像はマップに出た瞬間に必ず使う＝起動直後に最優先で取得・デコードしておく（F9）。
+// 従来は直列プリフェッチの後ろの方に回っていて（しかも優先リストが旧ファイル名
+// bg_map_local_day.png を指していた）、初回のマップ表示で読み込み待ちが見えていた。
+// Image要素をモジュール変数で保持し続けることで、デコード済みビットマップの解放も防ぐ
+const _warmMapImages = [];
+function warmMapImages() {
+  for (const n of ["bg_osu_map_day.png", "bg_osu_map_night.png"]) {
+    const img = new Image();
+    img.decoding = "async";
+    if ("fetchPriority" in img) img.fetchPriority = "high";
+    img.src = assetUrl(`assets/backgrounds/${n}`);
+    if (img.decode) img.decode().catch(() => {});
+    _warmMapImages.push(img);
+  }
+}
+
 // 背景 → 顔アイコン → 作業台素材 の順に直列プリフェッチ。
-// 順序は「最初に目にする画面」優先（tonari・自宅・マップ・大会ステージ）
+// 順序は「最初に目にする画面」優先（マップ・tonari・自宅・大会ステージ）
 function startIdlePrefetch() {
   if (typeof queuePreload !== "function") return;
   const bgs = (D.backgrounds || []).slice();
-  const first = ["bg_tonari_inside_night.png", "bg_tonari_inside_day.png", "bg_home.png", "bg_map_local_day.png", "bg_tournament_stage.png"];
+  const first = ["bg_osu_map_day.png", "bg_osu_map_night.png", "bg_tonari_inside_night.png", "bg_tonari_inside_day.png", "bg_home.png", "bg_tournament_stage.png"];
   bgs.sort((a, b) => {
     const ia = first.indexOf(a), ib = first.indexOf(b);
     return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);

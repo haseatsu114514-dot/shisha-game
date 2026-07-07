@@ -72,6 +72,23 @@
 - jsDelivr / statically.io は HTML を text/plain で返すため使えない（検証済み）
 - スマホは横向き推奨（縦だと回転ヒントが出る）。PC/スマホどちらも同じURLでOK
 
+## 2026-07-07 セッション（ブランチ claude/game-balance-ui-fixes-1saylu・プレイ感想12件＋テキスト品質5件）
+
+詳細は `docs/owner_requests.md` の 2026-07-07 の2表（F1〜F12・G1〜G5）。構造的に大きいもの:
+
+- **工程順の変更（F2）**: 調整は「提供後の熱管理」として吸い出し・提供の後ろへ移設。
+  R1=組み立て → R2=吸い出し・提供 → R3=調整。tt.care が craftScore とリザルト内訳に乗る
+- **ステ育成の段階制（F10）**: gainStat が経験値制に（★帯ごとに+1のコストが1/1.5/2/3/4倍。
+  端数は state.statXp）。魅力=バイト売上ボーナス・根性=体力消耗軽減 も追加
+- **路上占い師（F11）**: ch1 の DAY3/6/10/13 のみ出現する「？」スポット。
+  相性占い5,000円→指名相手の次の好感度1.5倍（gainAffinity の fortunePts で消費）
+- **テキスト規範（G1〜G5）**: 句読点・改行の正本は `.claude/skills/text-style/SKILL.md`。
+  自動整形 `tools/tidy_dialogue_text.py`／台詞エディタ `tools/text_editor_server.py`（:8321）。
+  engine.js autoWrap は文末優先折り＋孤立ページ回避になった
+- **立ち絵**: 凛の赤フリンジ除去 `tools/defringe_sprite.py`（⚠️一括適用禁止・1キャラずつ目視）。
+  みんとは頭部重心で水平整列（⚠️ `characters_backup/` は過去セッションの古い座標系が混ざって
+  いるので**一括コピーで復元しない**。復元は git から）
+
 ## 2026-07-03 第1章ブラッシュアップ（レビュー反映・全部盛り #1〜#37）★全フェーズ実装済み
 
 **開発ブランチ: `claude/exciting-pascal-nkvwhs`（旧 `claude/adoring-franklin-nzt0k8` の

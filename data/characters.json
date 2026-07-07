@@ -594,6 +594,27 @@
     ]
   },
   {
+    "id": "uranaishi",
+    "name": "路上占い師",
+    "role": "sub_character",
+    "age": null,
+    "nationality": "Japan",
+    "affiliation": "アーケード脇の路上（週2日だけ出店）",
+    "play_style": "N/A",
+    "description": "アーケードの外れに週2日だけ現れる路上占い師。折りたたみの机に紫の布、小さな水晶玉。年齢不詳の女性で、一人称は「アタシ」。相性占い（5,000円）で「次に会う相手との縁」を見てくれる。\n※システム上は好感度を持たないちょい役。占いの効果は「指名した相手と次に会ったとき、好感度の伸びが1.5倍」。",
+    "background_secret": "夜はどこかの店で煙を吸っているらしいが、誰も店にいるところを見たことがない。",
+    "favorite_flavor": "不明",
+    "specialty_flavor": "不明",
+    "growth_stats": {
+      "primary": "洞察",
+      "secondary": "魅力",
+      "notes": "占いを信じたわけではない。ただ、占ってもらった日は、相手の話を聞く姿勢がいつの間にか少し丁寧になっていた。"
+    },
+    "visual_concepts": [
+      "mysterious street fortune teller woman of unknown age, purple cloth over a folding table, small crystal ball, japanese shopping arcade back alley at dusk, knowing smile"
+    ]
+  },
+  {
     "id": "tetsuko",
     "internal_name": "tetsuko",
     "display_name": "てつこ",
