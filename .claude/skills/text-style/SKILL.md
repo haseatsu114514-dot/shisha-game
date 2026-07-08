@@ -46,6 +46,8 @@ python3 tools/lint_dialogue.py
 python3 tools/text_editor_server.py   # → http://127.0.0.1:8321/
 #   ・保存すると data/dialogue/*.json に直接書き戻る
 #   ・プレビューは engine.js の autoWrap 実物を配信＝本編とズレない
+#   ・画面の「🔨ビルド反映」「⬆️コミット&プッシュ」で 4) まで完結できる（main/masterでは拒否）
+#   ・使い方の詳細は docs/text_editor_manual.md（アプリ内「❓ヘルプ」からも読める）
 
 # 4) 反映
 python3 web/build_data.py && python3 web/build_standalone.py

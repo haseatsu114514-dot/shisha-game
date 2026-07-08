@@ -5,185 +5,443 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>台詞エディタ — 水煙前線</title>
 <!--
-  台詞テキストの閲覧・検索・編集・保存を1画面でやる開発ツール（G4・2026-07-07）。
+  台詞テキストの閲覧・検索・編集・保存・ビルド反映・Git反映を1画面でやる開発ツール（G4）。
   tools/text_editor_server.py から配信される（file:// では動かない）。
   改行プレビューは /wrap.js ＝ engine.js の autoWrap 実物なので本編と絶対にズレない。
 -->
 <style>
-  :root { --bg:#0e0a16; --panel:#161020; --line:#3a2f50; --accent:#f4d27a; --text:#f6ecd0; --dim:#9a90b0; }
+  :root { --bg:#0e0a16; --panel:#161020; --panel2:#1c1430; --line:#3a2f50; --accent:#f4d27a;
+    --text:#f6ecd0; --dim:#9a90b0; --ok:#9fe8b0; --warn:#ffb0b0; --blue:#8fb6ff; }
   * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--text); font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif; }
-  header { padding:10px 16px; border-bottom:1px solid var(--line); display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
-  header h1 { font-size:16px; margin:0; color:var(--accent); }
-  select,input[type=text] { background:#0b0712; color:var(--text); border:1px solid var(--line); border-radius:6px; padding:6px 10px; font-size:13px; }
-  input[type=text] { min-width:200px; }
-  .cols { display:grid; grid-template-columns:minmax(300px,420px) 1fr; gap:0; height:calc(100vh - 53px); }
-  #list { overflow-y:auto; border-right:1px solid var(--line); }
+  html,body { height:100%; }
+  body { margin:0; background:var(--bg); color:var(--text);
+    font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif; display:flex; flex-direction:column; }
+  /* ---- ツールバー ---- */
+  header { padding:8px 14px; border-bottom:1px solid var(--line); display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:15px; margin:0; color:var(--accent); letter-spacing:0.04em; white-space:nowrap; }
+  .branch { font-size:12px; color:var(--blue); background:#0b0712; border:1px solid var(--line);
+    padding:4px 9px; border-radius:6px; }
+  .branch.protected { color:var(--warn); border-color:#5a2f3f; }
+  .grow { flex:1; }
+  .tbtn { background:#22182f; color:var(--text); border:1px solid var(--line); border-radius:7px;
+    padding:7px 13px; font-size:13px; cursor:pointer; white-space:nowrap; }
+  .tbtn:hover { border-color:var(--accent); }
+  .tbtn.accent { background:#3a2c12; border-color:var(--accent); color:var(--accent); font-weight:bold; }
+  .tbtn:disabled { opacity:0.45; cursor:default; }
+  /* ---- 2ペイン ---- */
+  .cols { display:grid; grid-template-columns:minmax(320px,440px) 1fr; flex:1; min-height:0; }
+  #left { border-right:1px solid var(--line); display:flex; flex-direction:column; min-height:0; }
+  .leftbar { padding:9px 12px; border-bottom:1px solid var(--line); display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  select,input[type=text] { background:#0b0712; color:var(--text); border:1px solid var(--line);
+    border-radius:6px; padding:6px 10px; font-size:13px; }
+  input[type=text] { flex:1; min-width:120px; }
+  .chip { font-size:12px; color:var(--dim); cursor:pointer; user-select:none; border:1px solid var(--line);
+    border-radius:20px; padding:4px 11px; }
+  .chip.on { color:var(--accent); border-color:var(--accent); background:#3a2c12; }
+  #list { overflow-y:auto; flex:1; min-height:0; }
   .row { padding:7px 12px; border-bottom:1px solid #221a30; cursor:pointer; font-size:13px; line-height:1.5; }
   .row:hover { background:#1c1428; }
-  .row.sel { background:#2a1f3d; border-left:3px solid var(--accent); }
+  .row.sel { background:#2a1f3d; border-left:3px solid var(--accent); padding-left:9px; }
+  .row.dirty::after { content:" ●"; color:var(--accent); }
   .row .sp { color:var(--accent); font-size:11px; margin-right:6px; }
-  .row .warn-mark { color:#ff9a9a; font-size:11px; margin-left:6px; }
-  #edit { padding:16px 20px; overflow-y:auto; }
-  textarea { width:100%; min-height:110px; background:#0b0712; color:var(--text); border:1px solid var(--line);
-    border-radius:6px; padding:10px 12px; font-size:16px; line-height:1.8; font-family:"Hiragino Mincho ProN","Yu Mincho",serif; resize:vertical; }
+  .row .did { color:var(--dim); font-size:10px; margin-right:6px; opacity:0.7; }
+  .row .warn-mark { color:var(--warn); font-size:11px; margin-left:6px; }
+  .count { font-size:11px; color:var(--dim); }
+  /* ---- エディタ ---- */
+  #edit { padding:14px 20px; overflow-y:auto; min-height:0; }
+  .meta { font-size:12px; color:var(--dim); margin-bottom:4px; }
+  .meta b { color:var(--text); }
+  textarea { width:100%; min-height:120px; background:#0b0712; color:var(--text); border:1px solid var(--line);
+    border-radius:6px; padding:11px 13px; font-size:17px; line-height:1.8;
+    font-family:"Hiragino Mincho ProN","Yu Mincho",serif; resize:vertical; }
   .controls { display:flex; gap:8px; align-items:center; margin:10px 0; flex-wrap:wrap; }
-  button { background:#22182f; color:var(--text); border:1px solid var(--line); border-radius:6px; padding:7px 14px; font-size:13px; cursor:pointer; }
-  button:hover { border-color:var(--accent); }
-  button.primary { background:#3a2c12; border-color:var(--accent); color:var(--accent); font-weight:bold; }
+  button.act { background:#22182f; color:var(--text); border:1px solid var(--line); border-radius:6px;
+    padding:7px 14px; font-size:13px; cursor:pointer; }
+  button.act:hover { border-color:var(--accent); }
+  button.act.primary { background:#3a2c12; border-color:var(--accent); color:var(--accent); font-weight:bold; }
   .stat { font-size:12px; color:var(--dim); }
-  .stat .warn { color:#ff9a9a; }
-  .vnbox { background:linear-gradient(180deg,rgba(8,4,14,0.92),rgba(14,8,22,0.97)); border:1px solid var(--line); border-radius:6px; padding:16px 20px; max-width:700px; }
-  .vntext { font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif; font-size:19px; line-height:1.85; white-space:pre-wrap; }
-  .page-sep { border-top:1px dashed #6a5a8a; margin:8px 0; font-size:10px; color:#6a5a8a; text-align:center; letter-spacing:0.2em; }
-  .grid { line-height:2.0; font-family:"Hiragino Mincho ProN","Yu Mincho",serif; font-size:17px; user-select:none; max-width:700px; margin-top:6px; }
+  .stat .warn { color:var(--warn); }
+  .dirtyflag { color:var(--accent); font-size:12px; }
+  h3 { font-size:12px; color:var(--dim); margin:16px 0 6px; letter-spacing:0.1em; }
+  .vnbox { background:linear-gradient(180deg,rgba(8,4,14,0.92),rgba(14,8,22,0.97)); border:1px solid var(--line);
+    border-radius:6px; padding:16px 20px; max-width:720px; }
+  .vntext { font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif; font-size:19px;
+    line-height:1.85; white-space:pre-wrap; }
+  .page-sep { border-top:1px dashed #6a5a8a; margin:8px 0; font-size:10px; color:#6a5a8a;
+    text-align:center; letter-spacing:0.2em; }
+  .grid { line-height:2.0; font-family:"Hiragino Mincho ProN","Yu Mincho",serif; font-size:17px;
+    user-select:none; max-width:720px; margin-top:6px; }
   .grid .ch { display:inline-block; cursor:pointer; border-radius:3px; padding:0 1px; }
   .grid .ch:hover { background:rgba(244,210,122,0.25); }
   .grid .br { display:inline-block; color:var(--accent); cursor:pointer; }
   .grid .nl { display:block; height:0; }
-  h3 { font-size:12px; color:var(--dim); margin:16px 0 6px; letter-spacing:0.1em; }
-  #savemsg { font-size:12px; color:#9fe8b0; }
   .empty { color:var(--dim); padding:30px; font-size:13px; }
+  /* ---- モーダル ---- */
+  .modal { position:fixed; inset:0; background:rgba(4,2,10,0.72); display:none; align-items:center;
+    justify-content:center; z-index:50; }
+  .modal.show { display:flex; }
+  .modal-card { background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:20px 24px;
+    width:min(760px,92vw); max-height:88vh; overflow-y:auto; box-shadow:0 18px 50px rgba(0,0,0,0.6); }
+  .modal-card h2 { margin:0 0 12px; color:var(--accent); font-size:17px; }
+  .modal-card label { display:block; font-size:13px; color:var(--dim); margin:12px 0 5px; }
+  .modal-card textarea { min-height:70px; font-family:inherit; font-size:14px; line-height:1.6; }
+  .modal-card .ckrow { display:flex; gap:16px; margin:12px 0; font-size:13px; }
+  .modal-card .ckrow label { display:inline-flex; align-items:center; gap:6px; margin:0; color:var(--text); }
+  .log { background:#07040e; border:1px solid var(--line); border-radius:6px; padding:10px 12px; font-size:12px;
+    font-family:monospace; white-space:pre-wrap; max-height:320px; overflow:auto; color:#bfe; margin-top:10px; }
+  .log.err { color:var(--warn); }
+  .mdbody { font-size:14px; line-height:1.75; }
+  .mdbody h1 { font-size:19px; color:var(--accent); }
+  .mdbody h2 { font-size:16px; color:var(--accent); margin-top:20px; }
+  .mdbody h3 { font-size:14px; color:var(--text); }
+  .mdbody code { background:#07040e; padding:1px 6px; border-radius:4px; color:#bfe; }
+  .mdbody pre { background:#07040e; padding:10px 12px; border-radius:6px; overflow-x:auto; }
+  .mdbody pre code { background:none; padding:0; }
+  .mdbody ul,.mdbody ol { padding-left:22px; }
+  .modal .close { float:right; }
+  #toast { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:#1c1430;
+    border:1px solid var(--accent); color:var(--text); padding:9px 18px; border-radius:8px; font-size:13px;
+    opacity:0; transition:opacity 0.25s; pointer-events:none; z-index:60; }
+  #toast.show { opacity:1; }
 </style>
 </head>
 <body>
 <header>
   <h1>台詞エディタ</h1>
-  <select id="file"></select>
-  <input type="text" id="search" placeholder="本文・話者で検索…">
-  <span class="stat">⚠マーク＝要注意（48字超 / 「。……」 / 「。」3個以上 / 手動\n）。保存後は build_data.py を実行</span>
+  <span class="branch" id="branch">branch: …</span>
+  <span class="grow"></span>
+  <button class="tbtn" id="btn-build">🔨 ビルド反映</button>
+  <button class="tbtn accent" id="btn-commit">⬆️ コミット & プッシュ</button>
+  <button class="tbtn" id="btn-help">❓ ヘルプ</button>
 </header>
+
 <div class="cols">
-  <div id="list"><div class="empty">ファイルを選択してください</div></div>
+  <div id="left">
+    <div class="leftbar">
+      <select id="file"></select>
+      <span class="count" id="filecount"></span>
+      <input type="text" id="search" placeholder="本文・話者・IDで検索…（Ctrl+F）">
+      <span class="chip" id="warnonly">⚠のみ</span>
+      <span class="chip" id="nextwarn">次の⚠へ</span>
+    </div>
+    <div id="list"><div class="empty">ファイルを選択してください</div></div>
+  </div>
   <div id="edit"><div class="empty">左の一覧から行を選ぶと、ここで編集できます</div></div>
 </div>
+
+<!-- コミットモーダル -->
+<div class="modal" id="commit-modal">
+  <div class="modal-card">
+    <button class="tbtn close" data-close>✕</button>
+    <h2>コミット & プッシュ</h2>
+    <p class="stat" id="commit-status">…</p>
+    <label>コミットメッセージ</label>
+    <textarea id="commit-msg" placeholder="例: 台詞の句読点・改行を調整"></textarea>
+    <div class="ckrow">
+      <label><input type="checkbox" id="commit-push" checked> リモートへ push する</label>
+      <label><input type="checkbox" id="commit-standalone"> 配布版(dist)も再生成（遅い）</label>
+    </div>
+    <div class="controls">
+      <button class="act primary" id="commit-run">ビルド → コミット → プッシュ</button>
+      <span class="stat" id="commit-busy"></span>
+    </div>
+    <div class="log" id="commit-log" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ビルドログモーダル -->
+<div class="modal" id="build-modal">
+  <div class="modal-card">
+    <button class="tbtn close" data-close>✕</button>
+    <h2>ビルド反映</h2>
+    <div class="ckrow">
+      <label><input type="checkbox" id="build-standalone"> 配布版(dist)も再生成（遅い）</label>
+    </div>
+    <div class="controls">
+      <button class="act primary" id="build-run">data.js を再生成</button>
+      <span class="stat" id="build-busy"></span>
+    </div>
+    <div class="log" id="build-log" style="display:none"></div>
+  </div>
+</div>
+
+<!-- ヘルプモーダル -->
+<div class="modal" id="help-modal">
+  <div class="modal-card">
+    <button class="tbtn close" data-close>✕</button>
+    <div class="mdbody" id="help-body">読み込み中…</div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
 <script src="/wrap.js"></script>
 <script>
 const $ = (s) => document.querySelector(s);
-let lines = [], sel = -1, curFile = "";
+let lines = [], sel = -1, curFile = "", dirty = new Set(), draft = "";
 
+/* ---- 警告判定（editor 側の目安。正本は lint_dialogue.py / text-style スキル）---- */
 const width = (s) => { let n = 0; for (const ch of s) n += ch.charCodeAt(0) <= 0xff ? 0.5 : 1; return n; };
-const warnsOf = (t) => {
+function warnsOf(t, sp) {
   const w = [];
-  if (width(t) > 48) w.push("48字超（自動改ページで文が割れる）");
-  if (t.includes("。……") || t.includes("。…")) w.push("「。……」→「、……」を検討（G1）");
-  if ((t.match(/。/g) || []).length >= 3) w.push("「。」3個以上＝行の分割を検討");
-  if (t.includes("\n")) w.push("手動\\n（崩れ報告が出たら撤去方針）");
+  if (width(t) > 48) w.push("全角48字超（自動改ページで文が割れる）");
+  if (/。(……|…)(?![^。]*。)(?=[^。」』）]{1,8}[」』）]?$)/.test(t)) w.push("「。……＋短い続き」→「、……」を検討");
+  if (/^[「（]?(え|あ|お|わ|うわ|ん)。/.test(t)) w.push("冒頭の間投詞のあとは「、」");
+  if (sp && /。[」』）]?$/.test(t)) w.push("台詞の末尾「。」は取る");
+  if (sp && (t.match(/。/g) || []).length >= 3) w.push("台詞に「。」3個以上（分割を検討）");
+  if (t.includes("\n")) w.push("手動改行を含む（崩れ報告が出たら撤去方針）");
   return w;
-};
+}
 
-async function loadFiles() {
+/* ---- トースト ---- */
+let toastTimer = 0;
+function toast(msg, ms = 2600) {
+  const el = $("#toast"); el.textContent = msg; el.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove("show"), ms);
+}
+
+/* ---- 起動 ---- */
+async function boot() {
   const files = await (await fetch("/api/files")).json();
   $("#file").innerHTML = files.map((f) => `<option>${f}</option>`).join("");
+  await refreshBranch();
   loadLines();
+}
+async function refreshBranch() {
+  try {
+    const g = await (await fetch("/api/git/status")).json();
+    const b = $("#branch");
+    b.textContent = "branch: " + g.branch;
+    b.classList.toggle("protected", !!g.protected);
+    $("#btn-commit").disabled = !!g.protected;
+    if (g.protected) $("#btn-commit").title = "main/master では直接コミットしません（PR運用）";
+  } catch (e) { $("#branch").textContent = "branch: ?"; }
 }
 async function loadLines() {
   curFile = $("#file").value;
   lines = await (await fetch(`/api/lines?file=${encodeURIComponent(curFile)}`)).json();
-  sel = -1;
+  sel = -1; dirty = new Set();
   renderList();
   $("#edit").innerHTML = '<div class="empty">左の一覧から行を選ぶと、ここで編集できます</div>';
 }
-function renderList() {
+
+/* ---- 行リスト ---- */
+function visibleIndices() {
   const q = $("#search").value.trim();
-  const box = $("#list");
-  box.innerHTML = "";
+  const warnOnly = $("#warnonly").classList.contains("on");
+  const idx = [];
   lines.forEach((ln, i) => {
-    if (q && !ln.text.includes(q) && !ln.speaker.includes(q)) return;
+    if (q && !ln.text.includes(q) && !ln.speaker.includes(q) && !(ln.did || "").includes(q)) return;
+    if (warnOnly && warnsOf(ln.text, ln.speaker).length === 0) return;
+    idx.push(i);
+  });
+  return idx;
+}
+function renderList() {
+  const box = $("#list"); box.innerHTML = "";
+  const idx = visibleIndices();
+  $("#filecount").textContent = `${idx.length}/${lines.length} 行`;
+  idx.forEach((i) => {
+    const ln = lines[i];
     const div = document.createElement("div");
-    div.className = "row" + (i === sel ? " sel" : "");
-    const w = warnsOf(ln.text);
-    div.innerHTML = `<span class="sp">${ln.speaker || "ナレ"}</span>${ln.text.slice(0, 42).replace(/</g, "&lt;")}` +
+    div.className = "row" + (i === sel ? " sel" : "") + (dirty.has(i) ? " dirty" : "");
+    div.dataset.i = i;
+    const w = warnsOf(ln.text, ln.speaker);
+    div.innerHTML = `<span class="did">${(ln.did || "").slice(0, 18)}</span>` +
+      `<span class="sp">${ln.speaker || "ナレ"}</span>${ln.text.slice(0, 40).replace(/</g, "&lt;")}` +
       (w.length ? `<span class="warn-mark">⚠${w.length}</span>` : "");
-    div.onclick = () => { sel = i; renderList(); renderEdit(); };
+    div.onclick = () => selectLine(i);
     box.appendChild(div);
   });
 }
+function selectLine(i) {
+  if (i === sel) return;
+  if (sel >= 0 && draft !== lines[sel].text) {
+    if (!confirm("保存していない変更があります。破棄して移動しますか？（キャンセルで留まる）")) return;
+  }
+  sel = i; renderList(); renderEdit();
+  const r = $(`.row[data-i="${i}"]`); if (r) r.scrollIntoView({ block: "nearest" });
+}
+
+/* ---- エディタ ---- */
 function renderEdit() {
   const ln = lines[sel];
-  const ed = $("#edit");
-  ed.innerHTML = `
-    <div class="stat">話者: <b>${ln.speaker || "（ナレーション）"}</b> ／ ${curFile} ${ln.path}</div>
-    <h3>本文（実改行＝手動改行として保存される）</h3>
+  $("#edit").innerHTML = `
+    <div class="meta">話者: <b>${ln.speaker || "（ナレーション）"}</b> ／ ID: <b>${ln.did || "-"}</b> ／ ${curFile} ${ln.path}</div>
     <textarea id="src" spellcheck="false"></textarea>
     <div class="controls">
-      <button class="primary" id="save">保存</button>
-      <button id="reset">元に戻す</button>
+      <button class="act primary" id="save">保存 <span class="stat">(Ctrl+S)</span></button>
+      <button class="act" id="savenext">保存して次へ <span class="stat">(Ctrl+↵)</span></button>
+      <button class="act" id="reset">元に戻す</button>
+      <span class="dirtyflag" id="dirtyflag"></span>
       <span class="stat" id="stat"></span>
-      <span id="savemsg"></span>
     </div>
     <h3>本編プレビュー（autoWrap 実物・点線＝改ページ）</h3>
     <div class="vnbox"><div class="vntext" id="pv"></div></div>
-    <h3>文字をクリックすると、その直前で手動改行（もう一度クリックで解除）</h3>
+    <h3>文字をクリックで手動改行を挿入／⏎をクリックで解除</h3>
     <div class="grid" id="grid"></div>`;
   const src = $("#src");
-  src.value = ln.text;
+  src.value = ln.text; draft = ln.text;
+  src.focus();
   src.addEventListener("input", refresh);
-  $("#save").onclick = save;
-  $("#reset").onclick = () => { src.value = ln.text; refresh(); };
+  $("#save").onclick = () => save(false);
+  $("#savenext").onclick = () => save(true);
+  $("#reset").onclick = () => { src.value = lines[sel].text; refresh(); };
   refresh();
 }
 function refresh() {
-  const t = $("#src").value;
-  const wrapped = autoWrap(t);
-  const rows = wrapped.split("\n");
-  // 本編と同じ改ページ（2行ごと・孤立ページ回避は engine 側と同等の見え方確認用に点線のみ）
-  const pv = $("#pv");
-  pv.innerHTML = "";
+  const t = $("#src").value; draft = t;
+  const rows = autoWrap(t).split("\n");
+  const pv = $("#pv"); pv.innerHTML = "";
   rows.forEach((r, i) => {
     if (i > 0 && i % 2 === 0) {
-      const sep = document.createElement("div");
-      sep.className = "page-sep";
-      sep.textContent = "▼ 改ページ";
+      const sep = document.createElement("div"); sep.className = "page-sep"; sep.textContent = "▼ 改ページ";
       pv.appendChild(sep);
     }
     pv.appendChild(document.createTextNode(r + "\n"));
   });
-  const w = warnsOf(t);
-  $("#stat").innerHTML = `全角換算 <b>${width(t)}</b> 字 / ${rows.length} 行` +
-    (w.length ? `<span class="warn"> ⚠ ${w.join(" ／ ")}</span>` : "");
+  const w = warnsOf(t, lines[sel].speaker);
+  $("#stat").innerHTML = `全角 <b>${width(t)}</b> 字 / ${rows.length} 行` +
+    (w.length ? `<span class="warn"> ⚠ ${w.join(" ／ ")}</span>` : " ✓");
+  const changed = t !== lines[sel].text;
+  $("#dirtyflag").textContent = changed ? "● 未保存" : "";
   // クリック改行グリッド
-  const grid = $("#grid");
-  grid.innerHTML = "";
+  const grid = $("#grid"); grid.innerHTML = "";
   [...t].forEach((ch, i) => {
     if (ch === "\n") {
       const br = document.createElement("span");
-      br.className = "br";
-      br.textContent = "⏎";
-      br.title = "クリックで手動改行を解除";
-      br.onclick = () => { $("#src").value = t.slice(0, i) + t.slice(i + 1); refresh(); };
+      br.className = "br"; br.textContent = "⏎"; br.title = "クリックで手動改行を解除";
+      br.onclick = () => { const s = $("#src"); s.value = t.slice(0, i) + t.slice(i + 1); refresh(); };
       grid.appendChild(br);
       grid.appendChild(Object.assign(document.createElement("span"), { className: "nl" }));
       return;
     }
     const s = document.createElement("span");
-    s.className = "ch";
-    s.textContent = ch;
-    s.title = "クリックでこの文字の直前に手動改行";
-    s.onclick = () => { $("#src").value = t.slice(0, i) + "\n" + t.slice(i); refresh(); };
+    s.className = "ch"; s.textContent = ch; s.title = "クリックでこの文字の直前に手動改行";
+    s.onclick = () => { const el = $("#src"); el.value = t.slice(0, i) + "\n" + t.slice(i); refresh(); };
     grid.appendChild(s);
   });
 }
-async function save() {
+async function save(goNext) {
   const ln = lines[sel];
   const text = $("#src").value;
+  if (text === ln.text) { if (goNext) gotoNext(); return; }
   const res = await (await fetch("/api/save", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method: "POST", headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ file: curFile, path: ln.path, text }),
   })).json();
   if (res.ok) {
-    ln.text = text;
-    renderList();
-    $("#savemsg").textContent = "保存しました（build_data.py の実行を忘れずに）";
-    setTimeout(() => { const m = $("#savemsg"); if (m) m.textContent = ""; }, 4000);
-  } else {
-    $("#savemsg").textContent = "保存に失敗: " + (res.error || "");
-  }
+    ln.text = text; draft = text; dirty.add(sel);
+    renderList(); refresh();
+    toast("保存しました（反映するには「ビルド反映」）");
+    if (goNext) gotoNext();
+  } else { toast("保存に失敗: " + (res.error || "")); }
 }
+function gotoNext() {
+  const idx = visibleIndices();
+  const pos = idx.indexOf(sel);
+  if (pos >= 0 && pos + 1 < idx.length) selectLine(idx[pos + 1]);
+}
+function gotoNextWarn() {
+  const start = sel + 1;
+  for (let k = 0; k < lines.length; k++) {
+    const i = (start + k) % lines.length;
+    if (warnsOf(lines[i].text, lines[i].speaker).length) { selectLine(i); return; }
+  }
+  toast("警告のある行はありません");
+}
+
+/* ---- ビルド ---- */
+$("#btn-build").onclick = () => openModal("build-modal");
+$("#build-run").onclick = async () => {
+  const busy = $("#build-busy"); busy.textContent = "実行中…";
+  const standalone = $("#build-standalone").checked;
+  const res = await (await fetch("/api/build", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ standalone }),
+  })).json();
+  busy.textContent = res.ok ? "完了 ✓" : "失敗 ✗";
+  const log = $("#build-log"); log.style.display = "block";
+  log.className = "log" + (res.ok ? "" : " err"); log.textContent = res.log || res.error || "";
+  toast(res.ok ? "ビルド完了（ゲームに反映されました）" : "ビルド失敗（ログ参照）");
+};
+
+/* ---- コミット ---- */
+$("#btn-commit").onclick = async () => {
+  openModal("commit-modal");
+  const g = await (await fetch("/api/git/status")).json();
+  $("#commit-status").innerHTML = g.protected
+    ? `<span class="warn">ブランチ '${g.branch}' は保護（PR運用）。作業ブランチへ切り替えてください。</span>`
+    : `branch: <b>${g.branch}</b> ／ 変更 ${g.changed.length} 件（${g.changed.slice(0, 6).join(", ") || "なし"}${g.changed.length > 6 ? " …" : ""}）`
+      + (g.dialogueDirty ? "" : `<br><span class="warn">※ data/dialogue に未コミットの変更がありません。保存してから実行してください。</span>`);
+  $("#commit-run").disabled = !!g.protected || !g.dialogueDirty;
+};
+$("#commit-run").onclick = async () => {
+  const busy = $("#commit-busy"); busy.textContent = "実行中…（ビルド→コミット）";
+  const res = await (await fetch("/api/git/commit", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      message: $("#commit-msg").value,
+      push: $("#commit-push").checked,
+      standalone: $("#commit-standalone").checked,
+    }),
+  })).json();
+  busy.textContent = res.ok ? "完了 ✓" : "失敗 ✗";
+  const log = $("#commit-log"); log.style.display = "block";
+  log.className = "log" + (res.ok ? "" : " err"); log.textContent = res.log || res.error || "";
+  if (res.ok) { toast("コミット" + ($("#commit-push").checked ? " & プッシュ" : "") + " 完了"); refreshBranch(); }
+  else toast("失敗（ログ参照）");
+};
+
+/* ---- ヘルプ ---- */
+$("#btn-help").onclick = async () => {
+  openModal("help-modal");
+  if ($("#help-body").dataset.loaded) return;
+  const md = await (await fetch("/manual")).text();
+  $("#help-body").innerHTML = renderMarkdown(md);
+  $("#help-body").dataset.loaded = "1";
+};
+function renderMarkdown(md) {
+  // 依存ゼロの最小Markdown（見出し・箇条書き・コード・強調）
+  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  const out = []; let inUl = false, inCode = false, code = [];
+  for (const raw of md.split("\n")) {
+    if (raw.startsWith("```")) {
+      if (inCode) { out.push("<pre><code>" + esc(code.join("\n")) + "</code></pre>"); code = []; inCode = false; }
+      else inCode = true;
+      continue;
+    }
+    if (inCode) { code.push(raw); continue; }
+    let line = esc(raw);
+    line = line.replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+    const m = line.match(/^(#{1,3})\s+(.*)/);
+    if (m) { if (inUl) { out.push("</ul>"); inUl = false; } out.push(`<h${m[1].length}>${m[2]}</h${m[1].length}>`); continue; }
+    if (/^[-*]\s+/.test(raw)) { if (!inUl) { out.push("<ul>"); inUl = true; } out.push("<li>" + line.replace(/^[-*]\s+/, "") + "</li>"); continue; }
+    if (inUl) { out.push("</ul>"); inUl = false; }
+    if (raw.trim() === "") out.push("<br>"); else out.push("<p>" + line + "</p>");
+  }
+  if (inUl) out.push("</ul>");
+  return out.join("\n");
+}
+
+/* ---- モーダル共通 ---- */
+function openModal(id) { $("#" + id).classList.add("show"); }
+document.querySelectorAll("[data-close]").forEach((b) => b.onclick = () => b.closest(".modal").classList.remove("show"));
+document.querySelectorAll(".modal").forEach((m) => m.onclick = (e) => { if (e.target === m) m.classList.remove("show"); });
+
+/* ---- キーボード ---- */
+document.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === "s") { e.preventDefault(); if (sel >= 0) save(false); }
+  else if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); if (sel >= 0) save(true); }
+  else if ((e.ctrlKey || e.metaKey) && e.key === "f") { e.preventDefault(); $("#search").focus(); }
+  else if (e.key === "Escape") document.querySelectorAll(".modal.show").forEach((m) => m.classList.remove("show"));
+});
 $("#file").addEventListener("change", loadLines);
 $("#search").addEventListener("input", renderList);
-loadFiles();
+$("#warnonly").onclick = () => { $("#warnonly").classList.toggle("on"); renderList(); };
+$("#nextwarn").onclick = gotoNextWarn;
+window.addEventListener("beforeunload", (e) => { if (sel >= 0 && draft !== lines[sel].text) { e.preventDefault(); e.returnValue = ""; } });
+boot();
 </script>
 </body>
 </html>
