@@ -121,16 +121,21 @@ function autoWrap(raw, limit = WRAP_LIMIT) {
       i++;
       if (line >= limit && i < seg.length) {
         // 現在行の直近の句読点で折れるなら、そこで先に折る。
+        // 文末（。！？）を読点より優先する（G2・2026-07-07: 「〜だよ。あと、」のように
+        // 文をまたいだ直後の読点で折れると、次の文の頭が前の行に取り残されて読みにくい）
         let backSplit = -1;
         const lineStart = out.lastIndexOf("\n") + 1;
-        for (let k = out.length - 1; k >= lineStart; k--) {
-          if (WRAP_BREAK_AFTER.includes(out[k])) {
-            let candidate = k + 1;
-            while (candidate < out.length && WRAP_NO_LINE_START.includes(out[candidate])) candidate++;
-            let firstW = 0;
-            for (let j = lineStart; j < candidate; j++) firstW += out.charCodeAt(j) <= 0xff ? 0.5 : 1;
-            if (firstW >= limit * 0.3) { backSplit = candidate; break; }
+        for (const breakSet of ["。！？", WRAP_BREAK_AFTER]) {
+          for (let k = out.length - 1; k >= lineStart; k--) {
+            if (breakSet.includes(out[k])) {
+              let candidate = k + 1;
+              while (candidate < out.length && WRAP_NO_LINE_START.includes(out[candidate])) candidate++;
+              let firstW = 0;
+              for (let j = lineStart; j < candidate; j++) firstW += out.charCodeAt(j) <= 0xff ? 0.5 : 1;
+              if (firstW >= limit * 0.3) { backSplit = candidate; break; }
+            }
           }
+          if (backSplit >= 0) break;
         }
         if (backSplit >= 0 && backSplit < out.length) {
           const tail = out.slice(backSplit);
@@ -521,7 +526,16 @@ class DialogueEngine {
     const MAX_PAGE_LINES = 2; // #30 大きめ文字＋最大2行で改ページ
     const allLines = autoWrap(String(raw)).split("\n");
     this.pages = [];
-    for (let k = 0; k < allLines.length; k += MAX_PAGE_LINES) {
+    let start = 0;
+    // 最終ページが数文字だけの「孤立ページ」（例:「ありがたい）」1行だけ）になりそうなら、
+    // 先頭ページを1行にして残りを2行ずつへ寄せ替える（G2・2026-07-07）
+    const w = (s) => { let n = 0; for (const ch of s) n += ch.charCodeAt(0) <= 0xff ? 0.5 : 1; return n; };
+    if (allLines.length > MAX_PAGE_LINES && allLines.length % MAX_PAGE_LINES === 1 &&
+        w(allLines[allLines.length - 1]) <= WRAP_LIMIT * 0.4) {
+      this.pages.push(allLines[0]);
+      start = 1;
+    }
+    for (let k = start; k < allLines.length; k += MAX_PAGE_LINES) {
       this.pages.push(allLines.slice(k, k + MAX_PAGE_LINES).join("\n"));
     }
     if (this.pages.length === 0) this.pages = [""];

@@ -91,12 +91,15 @@ await page.evaluate(() => { if (typeof tt !== "undefined" && tt && tt.step === "
 await page.locator("#tn-body button", { hasText: "練習を終える" }).click().catch(() => {});
 await page.waitForSelector("#screen-map.active", { timeout: 5000 }).catch(() => {});
 
-// 敗北ルート確認: 大会に低ステータスで突入する
+// 敗北ルート確認: 大会に低ステータスで突入する。
+// __craftBias（craftScore のテスト用の重し）で敗北を保証する＝
+// 採点境界の乱数で「わざと下手に作ったのに勝ってしまう」既知フレークの解消（2026-07-07）
 await page.evaluate(() => {
   state.day = 7;
   state.ap = 0;
   state.flags._ev_day7 = true;
   state.stats = { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 };
+  window.__craftBias = -20;
   startTournament();
 });
 for (let i = 0; i < 2500; i++) {

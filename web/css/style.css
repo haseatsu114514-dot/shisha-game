@@ -219,7 +219,8 @@ body {
   35% { transform: scale(1.22); }
   100% { transform: scale(1); }
 }
-/* ステータスバナー→五角形へ飛ぶ光（N20） */
+/* ステータスバナー→五角形へ飛ぶ光（N20）。
+   z はバナー(75)と同層＝暗転(76)や煙ワイプの下に隠れる（F12: 暗転中に光だけ抜ける事故防止） */
 .stat-bolt {
   position: absolute;
   width: 10px; height: 10px;
@@ -227,7 +228,7 @@ body {
   border-radius: 50%;
   background: var(--bolt-color, #ffd35e);
   box-shadow: 0 0 10px 3px var(--bolt-color, #ffd35e);
-  z-index: 90;
+  z-index: 75;
   pointer-events: none;
   opacity: 0.95;
   transition: left 0.55s cubic-bezier(.3,.05,.25,1), top 0.55s cubic-bezier(.3,.05,.25,1),
@@ -1189,16 +1190,16 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 .pin-baito    { --pin-from: #c47845; --pin-to: #602f16; }
 .pin-mentor   { --pin-from: #6c4eaa; --pin-to: #2c1e50; }
 
-/* マップ右下の情報パネル */
+/* マップ右下の情報パネル（F4: 「家」ピンと被らないよう一回り小型化・2026-07-07） */
 #map-info {
   position: absolute;
-  right: 18px; bottom: 18px;
+  right: 16px; bottom: 16px;
   z-index: 3;
-  width: 360px;
+  width: 290px;
   background: linear-gradient(180deg, rgba(10,6,16,0.94), rgba(20,12,28,0.94));
   border: 1px solid var(--panel-border);
   border-radius: 8px;
-  padding: 12px 16px 16px;
+  padding: 9px 12px 11px;
   color: var(--text);
   box-shadow: 0 8px 28px rgba(0,0,0,0.7);
 }
@@ -1212,9 +1213,9 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   display: inline-block;
   background: linear-gradient(180deg, #d4b66a, #a07e2e);
   color: #2a1810;
-  padding: 4px 18px;
-  margin-bottom: 8px;
-  font-size: 14px;
+  padding: 3px 14px;
+  margin-bottom: 6px;
+  font-size: 13px;
   font-weight: bold;
   letter-spacing: 0.1em;
   border-radius: 3px;
@@ -1233,13 +1234,16 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   box-shadow: 0 4px 14px rgba(0,0,0,0.55), inset 0 0 18px rgba(0,0,0,0.35);
 }
 #map-info .info-preview.show { display: block; }
-#map-info .info-desc { font-size: 13.5px; line-height: 1.6; color: var(--text-dim); }
-#map-info .info-cost { margin-top: 8px; font-size: 13px; color: var(--accent); }
+#map-info .info-desc { font-size: 12.5px; line-height: 1.55; color: var(--text-dim); }
+#map-info .info-cost { margin-top: 6px; font-size: 12px; color: var(--accent); }
+#map-info .info-cost:empty { display: none; margin: 0; }
 #map-info .info-hint {
-  margin-top: 10px; font-size: 11.5px;
+  margin-top: 8px; font-size: 11px;
   color: var(--text-dim); opacity: 0.7;
   letter-spacing: 0.06em;
 }
+/* 「タップして移動」の定型文は廃止（F4）。定休・訪問済み等の注意があるときだけ出す */
+#map-info .info-hint:empty { display: none; margin: 0; }
 
 /* マップ左下の切替ボタン（飾り） */
 #map-time-toggle {
@@ -1405,6 +1409,10 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 .dodge-timer-label { font-size: 14px; color: var(--accent); min-width: 130px; font-variant-numeric: tabular-nums; }
 .dodge-timer-bar { flex: 1; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
 .dodge-timer-fill { height: 100%; width: 100%; background: linear-gradient(to right, #8fd3a7, #f4d27a); transition: width 0.2s linear; }
+/* 蒸らし（雑念弾幕）はスクロール無しで全操作が見える高さに収める（G3・2026-07-07） */
+.making-controls-steam { display: flex; flex-direction: column; }
+.making-controls-steam .steam-wait, .making-controls-steam .practice-result { flex: none; }
+.making-controls-steam .dodge-arena { flex: 1 1 auto; height: auto; min-height: 150px; }
 .dodge-arena {
   position: relative;
   height: 240px;
@@ -4208,6 +4216,9 @@ body:has(#screen-tournament.active.making-workbench) #gain-banner {
 /* 店内サブメニュー（tonari統合#9 / Dr.fookah選択T28） */
 #tonari-menu, #fookah-menu { position: absolute; inset: 0; z-index: 9; display: flex; align-items: center; justify-content: center; background: rgba(8,6,14,0.55); opacity: 0; transition: opacity 0.2s; }
 #tonari-menu.show, #fookah-menu.show { opacity: 1; }
+/* F1: つなぎの一拍の間は「自由行動の番」に見せない——ピンは減光・情報パネルは隠す */
+#screen-map.beat-hold #map-pins { pointer-events: none; filter: grayscale(0.55) brightness(0.55); }
+#screen-map.beat-hold #map-info, #screen-map.beat-hold #map-time-toggle { visibility: hidden; }
 /* #16: 強制イベント前の「つなぎ」一拍（マップ→スロット→自動でイベント）の非操作オーバーレイ */
 #map-beat {
   position: absolute; inset: 0; z-index: 30;
