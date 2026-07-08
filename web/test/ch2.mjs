@@ -233,6 +233,9 @@ while (guard++ < 8000) {
   if (screen === "screen-dialogue") {
     const id = await page.evaluate(() => engine && engine.dialogueId);
     if (id && (id.startsWith("ch2_") || id === "home_shisha_night")) nightDialogues.add(id);
+    // 体力警告は「構わず続ける」で前進（先頭選択のやめておく＝cancelだと行動を消費せず日が進まない）
+    const push = page.locator("#vn-choices .choice-btn", { hasText: "構わず続ける" });
+    if (await push.count()) { await push.first().click().catch(() => {}); await page.waitForTimeout(15); continue; }
     const c = page.locator("#vn-choices .choice-btn").first();
     if (await c.count()) await c.click();
     else await page.click("#vn-click-layer").catch(() => {});
@@ -256,6 +259,17 @@ while (guard++ < 8000) {
     continue;
   }
   if (screen === "screen-map") {
+    // 体力が低い日はまず家で休む（実プレイと同じ判断）。低体力でシーシャ行動を選ぶと警告が
+    // 出て、cancel だと行動を消費せず日が進まない＝プラン足踏み（sleep14の新バランス対応）
+    const lowStam = await page.evaluate(() => typeof state !== "undefined" && state && (state.stamina ?? 100) < 30);
+    if (lowStam) {
+      const rest = page.locator(".spot-btn", { hasText: "家に帰る" }).first();
+      if (await rest.count() && !(await rest.isDisabled())) {
+        await rest.click({ timeout: 3000 }).catch(() => {});
+        await page.waitForTimeout(30);
+        continue;
+      }
+    }
     const label = plan[planIdx % plan.length];
     planIdx++;
     // tonari統合(O16): 「お客さんとして利用/バイト」の2択は tonari ピン → サブメニューの2段

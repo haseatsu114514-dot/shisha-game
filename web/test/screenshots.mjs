@@ -229,9 +229,13 @@ log("end:", endTitle);
 await page.screenshot({ path: `${OUT}/10_end.png` });
 if (!endTitle.includes("GAME OVER")) throw new Error("expected GAME OVER, got " + endTitle);
 
-// 再挑戦でテーマ選択に戻ること
+// 再挑戦でテーマ選択に戻ること。作りパート突入は素材読み込みゲート（withLoadingGate）を
+// 挟むため即時ではない＝ポーリングで待つ（固定100msだと初回ロード分だけ足りずに落ちる）
 await page.locator("#screen-end button", { hasText: "もう一度挑戦する" }).click();
-await page.waitForTimeout(100);
+await page.waitForFunction(
+  () => (document.querySelector("#tn-title")?.textContent || "").includes("機材選択"),
+  { timeout: 5000 },
+);
 const t2 = await page.locator("#tn-title").textContent();
 if (!t2.includes("機材選択")) throw new Error("retry did not restart tournament");
 log("defeat → retry OK");

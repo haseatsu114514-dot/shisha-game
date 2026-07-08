@@ -54,7 +54,12 @@ function displayName(id) {
 // 内部ポイント（隠し数値）が閾値を超えると段階（state.affinity = ランク0..5）が上がる。
 // 選択肢をそこそこ当てて7〜8回会うと最大段階に届くバランス
 const AFFINITY_RANK_PTS = [0, 9, 20, 33, 48, 66]; // ランク1..5 の必要ポイント
-const AFFINITY_PTS = { visit: 6, repeat: 3, lime: 3, event: 5, invite: 9, date: 10, quick: 3 };
+// repeat 3→4（2026-07-08 オーナー報告「しっかりした会話イベントがない訪問が2回連続で
+// たまにある」への対応）: doVisit() は次の訪問で段階が上がる見込みのときだけ固有会話を
+// 出す（willRankUp）。ランク境界の間隔がAFFINITY_PTS.repeatの倍数からズレていると、
+// 埋めの定型訪問（テンプレ）が2回連続する隙間ができる。repeatを4に上げて隙間を縮める
+// （大きく変えたくないとの指定に合わせ最小限の調整。完全解消ではなく「もう少し」の緩和）
+const AFFINITY_PTS = { visit: 6, repeat: 4, lime: 3, event: 5, invite: 9, date: 10, quick: 3 };
 function rankFromPts(pts) {
   let r = 0;
   for (let i = 1; i < AFFINITY_RANK_PTS.length; i++) if (pts >= AFFINITY_RANK_PTS[i]) r = i;
@@ -73,9 +78,10 @@ const STAMINA_COST = { baito: 24, visit: 16, talk: 10, practice: 18, rin: 14, da
 // 訪問だけなら章に1回。毎日休まないと詰む厳しさにはしない（休憩1回で立て直せる曲線）。
 // 変えるときは web/test/balance.mjs A3 の曲線検証（検討1〜3回・素直に休めば
 // 警告ライン未満に落ちない）を必ず通すこと。
-// sleep 26→19（F8・2026-07-07）: 訪問+会話(26)で±0＝「一生減らない」の穴を塞ぐ。
-// どの2行動でも毎日すこしずつ削れ、章の間に3〜4回は「家で休むか」を考えるカーブ
-const STAMINA_GAIN = { rest: 55, cafe: 12, kannon: 12, sleep: 19 };
+// sleep 26→19→14（F8/H3・訪問+会話(26)で±0＝「一生減らない」の穴を塞いだ後も
+// 「まだ余る」との再報告でさらに絞った）。根性★で体力の器(maxStamina)が増えると
+// なおさら余りやすいので、就寝回復は低めのまま。どの2行動でも毎日はっきり削れる
+const STAMINA_GAIN = { rest: 55, cafe: 12, kannon: 12, sleep: 14 };
 function stamina() { return state.stamina ?? maxStamina(); }
 function addStamina(n) {
   // 根性の恩恵は「体力の最大値が増える」に一本化（オーナー指定・2026-07-09）。
@@ -5166,21 +5172,42 @@ function beginMaking(mode) {
   stopRigEffects();
   buildRig();
   resetBroadcast(); // 体感スコア・ニコ動コメントを初期化（本番のみ実体が出る）
-  // 作業台素材の先読み: 直後に使う下地・ボウルを先頭に、残りを低優先度で温める
+  // 作りパートの画面には「今すぐ・同期で」切り替える（H1改）。読み込みゲートを挟むと
+  // 画面切替が非同期になり、直前の会話→作業台の遷移に隙間ができて、そこで速いタップや
+  // 自動テストが会話クリック層(vn-click-layer)を掴んで固まる競合が出た。先に作業台画面へ
+  // 移り、古いパネル表示（会話の名残やドリル結果のボタン）を消してからゲートで覆う
+  showScreen("#screen-tournament");
+  $("#screen-tournament").classList.remove("making-workbench");
+  for (const sel of ["#tn-body", "#tn-title", "#tn-hint", "#tn-progress"]) {
+    const el = $(sel); if (el) el.innerHTML = "";
+  }
+  // 最初の工程を出す（tournamentStep→tnPanel が画面内容を描画する）
+  const enter = () => {
+    if (mode === "baito") {
+      // お客さんのリクエスト（テーマ）は日替わり。大会同様のフル工程で作る
+      tt.theme = dailyTheme();
+      return tournamentStep("mix");
+    }
+    // リハーサル・チュートリアルも大会と全く同じ流れ＝SETUP（ハガル選び等）から（N14）
+    tournamentStep("setup_bowl");
+  };
+  // シーシャ作りパートは「重い」ため読み込み表示を出すが、ゲートで待つのは最初の画面が使う
+  // 数枚だけ（H1改）。全45枚を待つと、その間ずっと中央ゲート(z:200)が被さって速いタップや
+  // 自動テストと競合しうる。残りは低優先度の裏読み(queuePreload)でキャッシュを温め、各工程は
+  // 必要な絵が来ていなくてもCSSアートで描けるので破綻しない。速ければゲートは出ずに即開始
+  const firstAssets = ["bench_base.png", "bench_note.png", "vignette_focus.png",
+    "bowl_empty_silicone.png", "bowl_empty_clay.png", "bowl_empty_phunnel.png",
+    "mix_scale.png", "jar_open.png", "jar_pour.png"];
   if (typeof queuePreload === "function") {
-    const head = ["bench_base.png", "bench_note.png", "vignette_focus.png",
-      "bowl_empty_silicone.png", "bowl_empty_clay.png", "bowl_empty_phunnel.png",
-      "mix_scale.png", "jar_pour.png"];
-    const rest = (D.making_assets || []).filter((n) => !head.includes(n));
-    queuePreload(head.concat(rest).map((n) => `assets/ui/making/${n}`));
+    const rest = (D.making_assets || []).filter((n) => !firstAssets.includes(n));
+    queuePreload(rest.map((n) => `assets/ui/making/${n}`)); // 残りは裏で先読み
   }
-  if (mode === "baito") {
-    // お客さんのリクエスト（テーマ）は日替わり。大会同様のフル工程で作る
-    tt.theme = dailyTheme();
-    return tournamentStep("mix");
+  if (typeof withLoadingGate === "function") {
+    withLoadingGate(firstAssets.filter((n) => (D.making_assets || []).includes(n))
+      .map((n) => `assets/ui/making/${n}`), enter);
+  } else {
+    enter();
   }
-  // リハーサル・チュートリアルも大会と全く同じ流れ＝SETUP（ハガル選び等）から（N14）
-  tournamentStep("setup_bowl");
 }
 
 // 練習ドリル: 本番のミニゲームを1種だけ回す

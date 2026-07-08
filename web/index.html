@@ -6,11 +6,12 @@
 <title>水煙前線 -EN:CODE- 第1章</title>
 <link rel="stylesheet" href="css/style.css?v=20260702-nightfade">
 <!-- タイトルBGMをHTML解析の段階から取得開始（映像より遅れて鳴り出す問題の緩和。
-     スタンドアロン版は BGM_DATA 埋め込みのため build_standalone.py がこの行を除去してよい） -->
-<link rel="preload" href="../assets/audio/bgm/title.mp3" as="audio">
+     スタンドアロン版は BGM_DATA 埋め込みのため build_standalone.py がこの行を除去してよい）。
+     fetchpriority=high で他の先読み（CSS等）より先に帯域を確保する（2026-07-08 再発報告への追加対策） -->
+<link rel="preload" href="../assets/audio/bgm/title.mp3" as="audio" fetchpriority="high">
 <!-- タイトル右のキービジュアル。表示が遅れて見えるため最優先で取得する（O1）。
      title_arts に画像を追加したらここも見直す（現状1枚なので直指定でよい） -->
-<link rel="preload" href="../assets/ui/title_arts/title_art_keyvisual_01.png" as="image">
+<link rel="preload" href="../assets/ui/title_arts/title_art_keyvisual_01.png" as="image" fetchpriority="high">
 </head>
 <body>
 <div id="rotate-hint">スマホを横向きにすると<br>遊びやすくなります</div>

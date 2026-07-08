@@ -285,7 +285,7 @@ node web/test/portraits.mjs       # 立ち絵の身長スケール回帰（ス�
 - `main` へ直push禁止＝PR。`--force`/`--allow-unrelated-histories` 禁止（Git Safety）。
 
 ### 参照（巨大docは本体に詰めず参照）
-`docs/web_version_plan.md`（方針/引き継ぎ）・`docs/owner_requests.md`（要望台帳）・`docs/master_spec.md` 第2部（大会仕様）・`brand/story_and_structure.md`（章別・必要章のみ）
+`docs/web_version_plan.md`（方針/引き継ぎ）・`docs/owner_requests.md`（要望台帳）・`docs/master_spec.md` 第2部（大会仕様）・`brand/story_and_structure.md`（章別・必要章のみ）・`docs/portrait_prompts_pending.md`（未生成キャラの立ち絵プロンプト控え。生成依頼が来たらここから使う）
 
 ---
 

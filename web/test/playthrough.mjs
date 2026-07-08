@@ -96,6 +96,10 @@ while (guard++ < 5000) {
   }
   if (screen === "screen-gameover") throw new Error("unexpected game over");
   if (screen === "screen-dialogue") {
+    // 体力警告（stamina_warning）は「構わず続ける」を選んで前へ進める。既定の先頭選択
+    // （やめておく＝cancel）だと行動を消費せず日が進まないため（低体力日の足踏み防止）
+    const pushBtn = page.locator("#vn-choices .choice-btn", { hasText: "構わず続ける" });
+    if (await pushBtn.count()) { await pushBtn.first().click().catch(() => {}); await page.waitForTimeout(15); continue; }
     const choice = page.locator("#vn-choices .choice-btn").first();
     if (await choice.count()) await choice.click();
     else await page.click("#vn-click-layer");
@@ -129,6 +133,18 @@ while (guard++ < 5000) {
       if (await target.count()) await target.click().catch(() => {});
       await page.waitForTimeout(120);
       continue;
+    }
+    // 体力が低い日はまず家で休む（実プレイと同じ判断）。低体力でシーシャ行動を選ぶと
+    // 警告ダイアログが出て、cancel だと行動を消費せず日が進まない＝プラン足踏みになる。
+    // 就寝回復を絞った新バランス（sleep14）だと中盤で低体力に入るので、素直に休ませる
+    const lowStam = await page.evaluate(() => typeof state !== "undefined" && state && (state.stamina ?? 100) < 30);
+    if (lowStam) {
+      const rest = page.locator(".spot-btn", { hasText: "家に帰る" }).first();
+      if (await rest.count() && !(await rest.isDisabled())) {
+        await rest.click({ timeout: 3000 }).catch(() => {});
+        await page.waitForTimeout(30);
+        continue;
+      }
     }
     const label = plan[planIdx % plan.length];
     planIdx++;

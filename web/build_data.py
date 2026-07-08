@@ -374,6 +374,7 @@ def main() -> None:
         "lime_messages": load_json(DATA_DIR / "lime_messages.json")["messages"],
         "glossary": load_json(DATA_DIR / "glossary.json")["groups"],
         "kuji": load_json(DATA_DIR / "kuji.json"),
+        "loading_tips": load_json(DATA_DIR / "loading_tips.json")["tips"],
     }
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
