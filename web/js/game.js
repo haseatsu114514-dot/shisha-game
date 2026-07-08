@@ -6678,6 +6678,10 @@ function craftScore() {
     score -= p.ngHits.length * 15;
     detail.push("相性の悪いフレーバー同士がぶつかっている。");
   }
+  // テスト用フック（screenshots.mjs の敗北ルート保証）: 採点が境界に近く、炭・穴あけ・
+  // 吸い出し温度の乱数で「わざと下手に作ったのに勝ってしまう」フレークが出るため、
+  // テストだけが重しを掛けられる。通常プレイでは未定義＝無効（台帳の既知課題を解消）
+  if (typeof window !== "undefined" && typeof window.__craftBias === "number") score += window.__craftBias;
   return { score, detail };
 }
 
