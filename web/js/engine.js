@@ -221,6 +221,9 @@ function escapeHtml(s) {
 // [imp] 等の装飾タグは幅0として数え、タグの途中では改行しない。
 // 半角文字は0.5文字として数える（英字交じりの行が早く折れすぎないように）。
 const WRAP_LIMIT = 24;
+// 自動演出（J7）を一度出したあと、次の自動発火まで空ける行数。
+// 短すぎると鬱陶しく、長すぎると「飽きない味付け」にならない。手置きfxの直後も同じ間を置く
+const AUTO_FX_COOLDOWN = 6;
 const WRAP_BREAK_AFTER = "、。，．！？…‥」』）】〉》";  // ここで切ると区切りが良い
 // 行頭禁則: 小書きかな・長音・閉じ括弧に加え、「ん」と小書きカタカナも巻き取り、
 // 「なるさ｜ん」のように名前（〜さん/〜くん）が割れるのを防ぐ
@@ -319,6 +322,25 @@ class DialogueEngine {
     this.fullHtml = "";
     this.pages = null;   // 長文の改ページ（1本文を複数ページに分割表示）
     this.pageIdx = 0;
+    this.autoFxGap = 0;  // 自動演出（J7）のクールダウン残り行数
+  }
+
+  // 会話の自動演出（J7・2026-07-09）: 手置きの fx が無い行でも、驚き顔や
+  // 「！！」「！？」の衝撃行で小さな光（imp）・画面揺れ（shake）を自動発火し、
+  // 長い会話の単調さを崩す（アゲハ遭遇の揺れのような演出を全編に薄く配る）。
+  // 乱発すると鬱陶しいので、一度出したら AUTO_FX_COOLDOWN 行はお休みする。
+  // 手置きの {"type":"fx"} / 行付き "fx" は従来どおり最優先（自動はその隙間を埋めるだけ）
+  autoFxFor(line) {
+    if (this.autoFxGap > 0) { this.autoFxGap -= 1; return null; }
+    const text = String(line.text || "");
+    // [imp]タグ行は typeText 側が既に光らせる（#25）＝ここでは重ねず、間だけ空ける
+    if (text.includes("[imp]")) { this.autoFxGap = AUTO_FX_COOLDOWN; return null; }
+    let id = null;
+    if (/[！!][！!]|[！!][？?]|[？?][！!]/.test(text)) id = "shake";          // 叫び・衝撃＝揺れ
+    else if (String(line.face || "") === "surprise") id = "imp";               // 驚き顔＝控えめな光
+    else if (/[…—][！!]/.test(text)) id = "imp";                               // 「……！」＝息を呑む光
+    if (id) this.autoFxGap = AUTO_FX_COOLDOWN;
+    return id;
   }
 
   start(dialogue, onFinish) {
@@ -329,6 +351,7 @@ class DialogueEngine {
     this.waitingChoice = false;
     this.finished = false;
     this.slots = {};
+    this.autoFxGap = 0; // 会話ごとに自動演出のクールダウンをリセット（J7）
     this.el.portraits.innerHTML = "";
     this.prefetchPortraits(dialogue);
     const meta = dialogue.metadata || {};
@@ -588,7 +611,14 @@ class DialogueEngine {
     const face = String(line.face || "");
     this.curSpeaker = speaker; // 文字送りボイス（#22）のピッチ決定に使う
     // 行付きの感情エフェクト（#26）: {"speaker":..., "fx":"flash"} で行表示と同時に発火
-    if (line.fx && this.ctx.onFx) this.ctx.onFx({ id: String(line.fx) });
+    if (line.fx && this.ctx.onFx) {
+      this.ctx.onFx({ id: String(line.fx) });
+      this.autoFxGap = AUTO_FX_COOLDOWN; // 手置きの直後は自動演出を重ねない
+    } else if (this.ctx.onFx) {
+      // 自動の軽演出（J7）: 手置きが無くても、驚き・衝撃の行で小さな光や揺れを出す
+      const auto = this.autoFxFor(line);
+      if (auto) this.ctx.onFx({ id: auto });
+    }
     // 名前ラベル
     if (speaker) {
       const name = this.resolveName(speaker);
