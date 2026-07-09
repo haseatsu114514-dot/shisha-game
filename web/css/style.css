@@ -4952,3 +4952,72 @@ body:has(#screen-tournament.active.making-workbench) #gain-banner {
 #tn-feel { top: 68px; }
 /* 吸い出しのスタンプをゲージ側に出すための基準位置（#36） */
 .gauge-wrap { position: relative; }
+
+/* ================= ローディング表示 =================
+   軽い読み込み（背景・立ち絵の差し替え）は右下の小さいインジケータのみ。
+   重い読み込み（シーシャ作りパート突入）は画面中央に豆知識/ヒントカードも出す（ソウルライク）。 */
+#load-indicator {
+  position: absolute;
+  right: 16px; bottom: 16px;
+  z-index: 96; /* 煙ワイプ(95)より上＝どんな画面遷移中でも見える */
+  display: flex; align-items: center; gap: 8px;
+  background: linear-gradient(180deg, rgba(20,14,28,0.92), rgba(10,7,15,0.94));
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-size: 12px; letter-spacing: 0.08em; color: var(--text-dim);
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  pointer-events: none; /* 操作は邪魔しない */
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+}
+#load-indicator.show { opacity: 1; transform: translateY(0); }
+.li-spin {
+  width: 12px; height: 12px; border-radius: 50%;
+  border: 2px solid rgba(244,210,122,0.25);
+  border-top-color: var(--accent);
+  animation: li-spin-rotate 0.8s linear infinite;
+}
+@keyframes li-spin-rotate { to { transform: rotate(360deg); } }
+
+/* 重い読み込み専用の中央ゲート。読み込み完了までタップを吸い込む（作業台突入等） */
+#loading-gate {
+  position: absolute; inset: 0;
+  z-index: 200; /* 何より手前＝これ自体が「今の画面」 */
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+  background: radial-gradient(ellipse at center, rgba(20,14,30,0.92), rgba(6,4,10,0.98));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+#loading-gate.show { opacity: 1; }
+/* 表示中（.show）だけタップを吸い込む＝読み込み中の突き抜けタップを防ぐ。
+   フェードアウト中（.show無し）はクリックを通す＝直後の作業台の初回タップを奪わない */
+#loading-gate:not(.show) { pointer-events: none; }
+.lg-spin {
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 3px solid rgba(244,210,122,0.22);
+  border-top-color: var(--accent);
+  animation: li-spin-rotate 0.9s linear infinite;
+}
+.lg-label {
+  font-size: 13px; letter-spacing: 0.22em; color: var(--text-dim);
+}
+.lg-tip {
+  width: min(78%, 560px);
+  background: linear-gradient(180deg, rgba(28,21,38,0.9), rgba(15,12,23,0.94));
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  text-align: center;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+.lg-tip.in { opacity: 1; transform: translateY(0); }
+.lg-tip-badge {
+  display: inline-block;
+  font-size: 11px; letter-spacing: 0.14em; color: #2a1810;
+  background: linear-gradient(180deg, #d4b66a, #a07e2e);
+  padding: 3px 12px; border-radius: 3px; margin-bottom: 10px;
+  font-weight: bold;
+}
+.lg-tip p { margin: 0; font-size: 14px; line-height: 1.7; color: var(--text); }

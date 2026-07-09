@@ -72,6 +72,22 @@
 - jsDelivr / statically.io は HTML を text/plain で返すため使えない（検証済み）
 - スマホは横向き推奨（縦だと回転ヒントが出る）。PC/スマホどちらも同じURLでOK
 
+## 2026-07-08 セッション（同ブランチ・第3便: ロード演出／バランス再調整／立ち絵プロンプト控え）
+
+詳細は `docs/owner_requests.md` の 2026-07-08 表（H1〜H5）。要点:
+
+- **ローディング表示（H1）**: engine.js に `withLoadingGate(rels, onReady)`（重い読み込みを
+  ブロックし遅い時だけ中央に豆知識カード）と `loadIndicatorShow/Hide`（背景・立ち絵差し替え中の
+  右下インジケータ）。作りパート突入 `beginMaking()` が全 making_assets の読み込みを待つ。
+  豆知識は `data/loading_tips.json`（build_data が D.loading_tips へ束ねる・今後追加していく）。
+  ⚠️ `beginMaking` は showScreen とパネル空化を**同期で先に**やってから gate に入る
+  （古いボタンが読み込み待ちの間に掴まれるのを防ぐ）。テストは作りパート突入を固定waitでなく
+  「機材選択」表示のポーリングで待つこと（screenshots.mjs 修正済み）
+- **体力再調整（H3）**: sleep 14（F8で19→今回14）。balance.mjs 許容も検討≤5回に緩めた
+- **好感度（H4）**: AFFINITY_PTS.repeat 3→4（テンプレ訪問2連続の隙間を縮める最小調整）
+- **立ち絵プロンプト控え（H5）**: `docs/portrait_prompts_pending.md` に未生成キャラ13体分の
+  Codex発注プロンプトを完成品で常備。りゅうじは **chr_kumicho_*** で追加する運用（旧 ryuji_ は廃止済み）
+
 ## 2026-07-07 セッション（ブランチ claude/game-balance-ui-fixes-1saylu・プレイ感想12件＋テキスト品質5件）
 
 詳細は `docs/owner_requests.md` の 2026-07-07 の2表（F1〜F12・G1〜G5）。構造的に大きいもの:

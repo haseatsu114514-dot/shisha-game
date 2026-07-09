@@ -92,6 +92,127 @@ function queuePreload(rels) {
   next();
 }
 
+// ============ ローディング表示（読み込みの体感改善） ============
+// 背景・立ち絵・作業台パーツの初回取得で表示が固まって見える問題への対策。
+// 短い読み込みでは何も出さず（チラつき防止）、右下の小さい「読み込み中」を基本とし、
+// 作業台突入のような重い読み込みだけ画面中央に豆知識/ヒントカード（ソウルライク）も出す。
+const LOAD_INDICATOR_DELAY = 220; // これより速く終われば右下インジケータも出さない
+const LOAD_TIP_ROTATE_MS = 4200;
+
+// 右下インジケータはref countで管理＝背景と立ち絵が同時に読み込み中でも1個だけ出す
+let _loadRefCount = 0;
+let _loadIndicatorTimer = null;
+let _loadIndicatorEl = null;
+function loadIndicatorShow() {
+  _loadRefCount++;
+  if (_loadIndicatorEl || _loadIndicatorTimer) return;
+  _loadIndicatorTimer = setTimeout(() => {
+    _loadIndicatorTimer = null;
+    if (_loadRefCount <= 0) return;
+    const host = document.querySelector("#game");
+    if (!host) return;
+    const el = document.createElement("div");
+    el.id = "load-indicator";
+    el.innerHTML = `<span class="li-spin"></span>読み込み中…`;
+    host.appendChild(el);
+    requestAnimationFrame(() => el.classList.add("show"));
+    _loadIndicatorEl = el;
+  }, LOAD_INDICATOR_DELAY);
+}
+function loadIndicatorHide() {
+  _loadRefCount = Math.max(0, _loadRefCount - 1);
+  if (_loadRefCount > 0) return;
+  if (_loadIndicatorTimer) { clearTimeout(_loadIndicatorTimer); _loadIndicatorTimer = null; }
+  if (_loadIndicatorEl) {
+    const el = _loadIndicatorEl;
+    _loadIndicatorEl = null;
+    el.classList.remove("show");
+    setTimeout(() => el.remove(), 200);
+  }
+}
+// 処理の流れは止めずに、その裏で読み込み中の間だけ右下インジケータを見せる
+// （背景・立ち絵の差し替え用）
+function peekLoading(url) {
+  if (!url || url.startsWith("data:")) return;
+  loadIndicatorShow();
+  const img = new Image();
+  const done = () => loadIndicatorHide();
+  img.onload = done;
+  img.onerror = done;
+  img.src = url;
+}
+
+function loadOneImage(url) {
+  return new Promise((resolve) => {
+    if (!url) return resolve();
+    const img = new Image();
+    img.decoding = "async";
+    const done = () => resolve();
+    img.onload = done;
+    img.onerror = done;
+    img.src = url;
+    if (img.complete) done();
+  });
+}
+
+// 画面中央の豆知識/ヒントカード（重い読み込み専用・ソウルライク）。
+// data/loading_tips.json → D.loading_tips（今後どんどん増える想定）からランダム表示、
+// 複数件あれば長い待ちの間だけ数秒おきにローテーションする
+let _loadGateEl = null;
+let _loadGateTipTimer = null;
+function loadingGateShow() {
+  if (_loadGateEl) return;
+  const host = document.querySelector("#game");
+  if (!host) return;
+  const tips = (window.GAME_DATA && window.GAME_DATA.loading_tips) || [];
+  const pick = () => (tips.length ? tips[Math.floor(Math.random() * tips.length)] : null);
+  const t0 = pick();
+  const el = document.createElement("div");
+  el.id = "loading-gate";
+  el.innerHTML =
+    `<div class="lg-spin"></div>` +
+    `<div class="lg-label">読み込み中…</div>` +
+    (t0 ? `<div class="lg-tip in"><span class="lg-tip-badge">${t0.type === "trivia" ? "豆知識" : "TIPS"}</span><p>${escapeHtml(t0.text)}</p></div>` : "");
+  host.appendChild(el);
+  requestAnimationFrame(() => el.classList.add("show"));
+  if (tips.length > 1) {
+    _loadGateTipTimer = setInterval(() => {
+      const tip = pick();
+      const box = el.querySelector(".lg-tip");
+      if (!box || !tip) return;
+      box.classList.remove("in");
+      setTimeout(() => {
+        box.querySelector(".lg-tip-badge").textContent = tip.type === "trivia" ? "豆知識" : "TIPS";
+        box.querySelector("p").textContent = tip.text;
+        box.classList.add("in");
+      }, 220);
+    }, LOAD_TIP_ROTATE_MS);
+  }
+  _loadGateEl = el;
+}
+function loadingGateHide() {
+  if (_loadGateTipTimer) { clearInterval(_loadGateTipTimer); _loadGateTipTimer = null; }
+  if (!_loadGateEl) return;
+  const el = _loadGateEl;
+  _loadGateEl = null;
+  el.classList.remove("show");
+  setTimeout(() => el.remove(), 260);
+}
+// rels（"assets/..." 形式の相対パス）が全部読み込み終わるまで待ってから onReady を呼ぶ。
+// 一定時間で終わらない場合だけ画面中央に豆知識カードを出す（速ければ何も出ずに進む）。
+// シーシャ作りパート突入など、重い読み込みをブロッキングで待たせたい箇所用
+function withLoadingGate(rels, onReady) {
+  const urls = (rels || []).map((r) => assetUrl(r)).filter((u) => !u.startsWith("data:"));
+  if (!urls.length) return onReady();
+  let shown = false;
+  const showTimer = setTimeout(() => { shown = true; loadingGateShow(); }, LOAD_INDICATOR_DELAY);
+  Promise.all(urls.map(loadOneImage)).then(() => {
+    clearTimeout(showTimer);
+    if (shown) loadingGateHide();
+    onReady();
+  });
+}
+
 function escapeHtml(s) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
@@ -253,9 +374,12 @@ class DialogueEngine {
       const probe = new Image();
       this._bgReady = false;
       this._bgProbe = probe;
-      probe.onload = probe.onerror = () => { if (this._bgProbe === probe) this._bgReady = true; };
+      loadIndicatorShow(); // 読み込み中は右下に小さく表示（速ければ表示前に消える）
+      let indicatorDone = false;
+      const clearIndicator = () => { if (!indicatorDone) { indicatorDone = true; loadIndicatorHide(); } };
+      probe.onload = probe.onerror = () => { if (this._bgProbe === probe) this._bgReady = true; clearIndicator(); };
       probe.src = url;
-      if (probe.complete) this._bgReady = true; // キャッシュ済みなら同期で立つ
+      if (probe.complete) { this._bgReady = true; clearIndicator(); } // キャッシュ済みなら同期で立つ
     }
     if (this.ctx.onBackgroundChange) this.ctx.onBackgroundChange(rel);
   }
@@ -499,7 +623,17 @@ class DialogueEngine {
       }
       const img = this.el.portraits.querySelector(`img[data-speaker="${speaker}"]`);
       if (img) {
-        img.src = this.portraitSrc(speaker, face);
+        const src = this.portraitSrc(speaker, face);
+        // 表情差分の初回取得中だけ右下に表示。同じURLの再割り当てでは二重に数えない
+        // （src代入だけだと再読み込みイベントが発火せずインジケータが消えなくなるため独自にガード）
+        if (src && src !== img.dataset.loadedSrc && !src.startsWith("data:")) {
+          img.dataset.loadedSrc = src;
+          loadIndicatorShow();
+          const clear = () => loadIndicatorHide();
+          img.addEventListener("load", clear, { once: true });
+          img.addEventListener("error", clear, { once: true });
+        }
+        img.src = src;
         this.applyPortraitTrim(img, speaker, face);
       }
     }

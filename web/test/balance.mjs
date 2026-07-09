@@ -19,7 +19,7 @@ log("stamina cost:", JSON.stringify(c.cost), "gain:", JSON.stringify(c.gain), "l
 // ゾーン（警告ライン+15）まで落ちること。かつ、落ちたら1回休む素直な
 // プレイで警告ライン未満（酸欠リスク）には入らない＝詰まないこと。
 // 2026-07-07（F8）: 就寝回復をさらに下げた（26→19。訪問+会話=26で±0だった穴を塞ぐ）。
-// オーナー指定「体力がまだ全然減らない」に合わせ、休憩検討は最大4回まで許容に仕様更新
+// 2026-07-08: 「まだ全然余る」との再報告で19→14へ再調整。休憩検討は最大5回まで許容に仕様更新
 const CONSIDER = c.low + 15; // 休憩を検討し始めるゲージ
 let sta = 100, considered = 0, sickNormal = false;
 for (let d = 0; d < 14; d++) {
@@ -35,7 +35,7 @@ for (let d = 0; d < 14; d++) {
 }
 log(`通常プレイ14日: 最終体力${sta} 休憩検討${considered}回 警告未満=${sickNormal}`);
 if (considered < 1) throw new Error("A3: 14日間で一度も休憩を考える場面が来ない（減りが緩すぎ）");
-if (considered > 4) throw new Error("A3: 休憩の検討が4回を超える（厳しすぎ）");
+if (considered > 5) throw new Error("A3: 休憩の検討が5回を超える（厳しすぎ）");
 if (sickNormal) throw new Error("A3: 素直に休んでも警告ラインを割る（厳しすぎ）");
 
 // (A3-1b) 店巡りだけ（訪問×2/日）でも体力は減っていき、章内に一度は休憩を考える
