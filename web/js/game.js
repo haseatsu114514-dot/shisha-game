@@ -894,7 +894,11 @@ function updateHud() {
   const stFill = $("#hud-stamina-fill");
   if (stFill) {
     const st = stamina();
-    stFill.style.width = `${Math.round(st / maxStamina() * 100)}%`; // バーは現max比（根性で器が増える）
+    // 器（maxStamina）が根性★で増えたら、バーそのものも物理的に長くする（J6）。
+    // 基準は 92px＝器100。伸びても flex レイアウトが左隣（五角形）を押し出すだけで他と被らない
+    const bar = stFill.parentElement;
+    if (bar) bar.style.width = `${Math.round(92 * maxStamina() / 100)}px`;
+    stFill.style.width = `${Math.round(st / maxStamina() * 100)}%`; // 塗りは現max比
     stFill.classList.toggle("warn", st < 50 && st >= STAMINA_LOW);
     stFill.classList.toggle("danger", st < STAMINA_LOW);
   }
@@ -1546,9 +1550,9 @@ const SPOTS = [
   { id: "cafe", label: "カフェ", desc: "なるおすすめのスパイスラテ", cost: 800, requiresMet: "naru" },
   { id: "c_station", label: "C.STATION", desc: "大会会場のチェーン店。噂や大会情報が集まる", cost: 2500 },
   { id: "shop", label: "Dr.fookah", desc: "卸直営のショップ。機材・フレーバーが揃い、1階の試飲席で一応吸える（時間はかからない）", cost: 0 },
-  // 路上占い師（F11・2026-07-07）: 週2日だけ現れる。相性占い5,000円・コマ消費なし・1日1回。
+  // 路上占い師（F11・2026-07-07 / J2-J3で3,000円・タロットの老婆に改定）: 週2日だけ現れる。コマ消費なし・1日1回。
   // 正体を知るまでは「？」のスポット（SPOT_UNKNOWN.fortune）
-  { id: "fortune", label: "路上占い師", desc: "相性占いをしてくれる。誰かとの縁を見てもらえるらしい（5,000円・時間はかからない）", cost: 0, charId: "uranaishi", chapter: 1 },
+  { id: "fortune", label: "路上占い師", desc: "タロットで相性を見てくれる。誰かとの縁を見てもらえるらしい（3,000円・時間はかからない）", cost: 0, charId: "uranaishi", chapter: 1 },
   { id: "rest", label: "家に帰る", desc: "1行動使って体を休め、体力を半分ほど戻す", cost: 0 },
 ];
 
@@ -2812,11 +2816,13 @@ function doCStation() {
   }, "res://assets/backgrounds/bg_c_station_day.png");
 }
 
-// ============ 路上占い師（F11・2026-07-07） ============
+// ============ 路上占い師（F11・2026-07-07 / J2-J3・2026-07-09改定） ============
 // 週2日（DAYを7日週に見立てて3・6日目）だけアーケード脇に現れる。
-// 相性占い5,000円・1日1回・コマ消費なし。指名した相手と「次に会ったとき」だけ
+// 深いローブを被った魔女のような老婆のタロット占い師（顔はフードの陰でよく見えない）。
+// だいぶ怪しいが実力は本物、という佇まい。
+// 相性占い3,000円・1日1回・コマ消費なし。指名した相手と「次に会ったとき」だけ
 // 好感度の伸びが1.5倍になる（消費型。gainAffinity 側の fortunePts で発火）
-const FORTUNE_FEE = 5000;
+const FORTUNE_FEE = 3000;
 function fortuneTellerToday() {
   return !!state && state.chapter === 1 && (state.day % 7 === 3 || state.day % 7 === 6);
 }
@@ -2830,9 +2836,10 @@ function doFortune() {
   const done = () => { save(); showMap(); }; // コマは消費しない
   const intro = first
     ? [
-        { speaker: "", face: "", text: "アーケードの外れ。折りたたみの机に紫の布、小さな水晶玉が鈍く光っている。" },
-        { speaker: "uranaishi", face: "normal", text: "……おや。いい煙の匂いを連れて歩く子だね。座っていきな" },
-        { speaker: "hajime", face: "surprise", text: "（占い師……？ こんなところに出てたっけ）" },
+        { speaker: "", face: "", text: "アーケードの外れ。折りたたみの机に、紫の布と使い込まれたタロットの束。" },
+        { speaker: "", face: "", text: "深いローブを被った老婆が座っている。フードの陰で、顔はよく見えない。" },
+        { speaker: "uranaishi", face: "normal", text: "……ヒヒ。いい煙の匂いを連れて歩く子だ。お座り" },
+        { speaker: "hajime", face: "surprise", text: "（占い師……？ 怪しい。怪しいけど、なんだろう、この目を逸らせない感じ）" },
         { speaker: "uranaishi", face: "smile", text: "アタシは出たり出なかったりさ。縁があれば、また会える" },
       ]
     : [{ speaker: "uranaishi", face: "smile", text: "……また来たね。今日は誰との縁が気になるんだい？" }];
@@ -2845,7 +2852,7 @@ function doFortune() {
   }
   if (state.money < FORTUNE_FEE) {
     return playCustom({ dialogue_id: "fortune_broke", metadata: { bg }, lines: intro.concat([
-      { speaker: "uranaishi", face: "normal", text: "相性占いは、ひとつ5,000円、……お代が足りないね" },
+      { speaker: "uranaishi", face: "normal", text: "相性占いは、ひとつ3,000円、……お代が足りないね" },
       { speaker: "uranaishi", face: "smile", text: "縁は逃げやしない。稼いでから、また来な" },
     ]) }, done);
   }
@@ -2853,9 +2860,9 @@ function doFortune() {
     dialogue_id: "fortune_offer",
     metadata: { bg },
     lines: intro.concat([
-      { speaker: "uranaishi", face: "normal", text: "相性占い、ひとつ5,000円。気になる相手との縁を見てあげるよ" },
+      { speaker: "uranaishi", face: "normal", text: "相性占い、ひとつ3,000円。カードが、アンタと相手の縁を教えてくれる" },
       { type: "choice", choices: [
-        { text: "相性占いをお願いする（5,000円）", next: "go" },
+        { text: "相性占いをお願いする（3,000円）", next: "go" },
         { text: "やめておく", next: "no" },
       ] },
     ]),
@@ -2894,10 +2901,12 @@ function doFortune() {
         dialogue_id: "fortune_result",
         metadata: { bg },
         lines: [
-          { speaker: "", face: "", text: "占い師は水晶玉に手をかざし、目を閉じた。……長い沈黙。" },
-          { speaker: "uranaishi", face: "smile", text: `いい糸だ。${displayName(picked)}との縁は、いま撚りどきに入ってる` },
+          { speaker: "", face: "", text: "皺だらけの指がカードを三枚、布の上に滑らせる。……長い沈黙。" },
+          { type: "fx", id: "imp" },
+          { speaker: "", face: "", text: "一枚めくった瞬間、フードの奥で笑った気配がした。" },
+          { speaker: "uranaishi", face: "smile", text: `……ヒヒ、いい札だ。${displayName(picked)}との縁は、いま撚りどきに入ってる` },
           { speaker: "uranaishi", face: "normal", text: "次に会ったとき、いつもより素直に話せるだろうさ。……効き目は一度きりだよ" },
-          { speaker: "hajime", face: "normal", text: "（信じるかどうかは別として……次に会うのが、少し楽しみになった）" },
+          { speaker: "hajime", face: "normal", text: "（怪しい……のに、妙な説得力がある。次に会うのが、少し楽しみになった）" },
         ],
       }, done);
     });
@@ -7689,7 +7698,7 @@ function mainStatusHtml() {
   const stCls = st >= 70 ? "" : st >= STAMINA_LOW ? "warn" : "danger";
   // 体力バーは現max比（根性★で器が増える）。器が広がっていれば一言添える
   const stMaxNote = maxStamina() > 100 ? "　（根性で器UP）" : "";
-  const cond = `<div class="status-row"><span>体力</span><span class="stamina-cell"><i class="st-bar"><i class="${stCls}" style="width:${Math.round(st / maxStamina() * 100)}%"></i></i> ${stLabel}${stMaxNote}</span></div>`;
+  const cond = `<div class="status-row"><span>体力</span><span class="stamina-cell"><i class="st-bar" style="width:${Math.round(90 * maxStamina() / 100)}px"><i class="${stCls}" style="width:${Math.round(st / maxStamina() * 100)}%"></i></i> ${stLabel}${stMaxNote}</span></div>`;
   // 大会の歩み（既存データから導出。新パラメータは作らない）
   const chapName = { 1: "SMOKE CROWN CUP（地方）", 2: "HAZE: OPEN CLOUD（地区）" }[state.chapter] || `第${state.chapter}章`;
   const progress = state.phase === "cleared" ? "優勝・クリア" : state.phase === "tournament" ? "大会本番" : `DAY ${state.day} / 準備中`;

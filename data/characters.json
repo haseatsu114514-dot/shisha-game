@@ -601,8 +601,8 @@
     "nationality": "Japan",
     "affiliation": "アーケード脇の路上（週2日だけ出店）",
     "play_style": "N/A",
-    "description": "アーケードの外れに週2日だけ現れる路上占い師。折りたたみの机に紫の布、小さな水晶玉。年齢不詳の女性で、一人称は「アタシ」。相性占い（5,000円）で「次に会う相手との縁」を見てくれる。\n※システム上は好感度を持たないちょい役。占いの効果は「指名した相手と次に会ったとき、好感度の伸びが1.5倍」。",
-    "background_secret": "夜はどこかの店で煙を吸っているらしいが、誰も店にいるところを見たことがない。",
+    "description": "アーケードの外れに週2日だけ現れる路上のタロット占い師。折りたたみの机に紫の布、使い込まれたタロットの束。魔女のような深いローブを被った老婆で、フードの陰で顔はよく見えない。だいぶ怪しい佇まいだが、占いの腕は本物らしい。一人称は「アタシ」、笑い声は「ヒヒ」。相性占い（3,000円）で「次に会う相手との縁」を見てくれる。\n※システム上は好感度を持たないちょい役。占いの効果は「指名した相手と次に会ったとき、好感度の伸びが1.5倍」。",
+    "background_secret": "夜はどこかの店で煙を吸っているらしいが、誰も店にいるところを見たことがない。フードの下の素顔を見た者もいない。",
     "favorite_flavor": "不明",
     "specialty_flavor": "不明",
     "growth_stats": {
@@ -611,7 +611,7 @@
       "notes": "占いを信じたわけではない。ただ、占ってもらった日は、相手の話を聞く姿勢がいつの間にか少し丁寧になっていた。"
     },
     "visual_concepts": [
-      "mysterious street fortune teller woman of unknown age, purple cloth over a folding table, small crystal ball, japanese shopping arcade back alley at dusk, knowing smile"
+      "elderly female tarot fortune teller like a witch, deep hooded dark robe, face mostly hidden in the hood's shadow with only a wrinkled chin and a knowing smile visible, wrinkled hands spreading worn tarot cards on purple cloth over a folding table, japanese shopping arcade back alley at dusk, suspicious yet strangely convincing aura"
     ]
   },
   {

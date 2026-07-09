@@ -3827,7 +3827,7 @@ body:has(#screen-tournament.active.making-workbench) #gain-banner {
 /* ===== 体力（スタミナ）HUD ===== */
 #hud-stamina { display: flex; align-items: center; gap: 8px; margin-left: 14px; }
 #hud-stamina .main { font-size: 11px; letter-spacing: 0.14em; color: var(--text-dim); }
-.stamina-bar { width: 92px; }
+.stamina-bar { width: 92px; transition: width 0.6s ease; } /* 器が根性★で増えるとバー自体が伸びる（J6） */
 .stamina-bar .lv-fill { background: linear-gradient(90deg, #69d98e, #b7e98a); transition: width 0.4s ease, background 0.3s; }
 .stamina-bar .lv-fill.warn { background: linear-gradient(90deg, #e9c46a, #f4a261); }
 .stamina-bar .lv-fill.danger { background: linear-gradient(90deg, #e76f51, #d62828); animation: stamina-blink 1.1s ease-in-out infinite; }

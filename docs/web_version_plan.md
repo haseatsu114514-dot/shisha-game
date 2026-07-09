@@ -432,6 +432,35 @@
 - **⚠️ 発見: `ch1_interval.json` は全編未接続**（interval_day1_morning等5本。game.jsから一切呼ばれない）。ch1→ch2にインターバルパートを作る場合はここを配線する。当面は `ch1_naru_promise` が実質のインターバルを担う。
 - **なるの大会遍歴の正史**は `brand/story_and_structure.md`「なる（鳴切亮太）のルート」に一本化（敗者復活戦は廃止済み・別ラインの地元大会から勝ち直す）。
 
+## 次回への引き継ぎ（2026-07-09 J便・ブランチ claude/game-balance-fortune-teller-8ww0qx）★最新
+
+オーナー要望7件（J1〜J7）を実装してマージ。詳細は `docs/owner_requests.md` の J テーブルが正。
+**トークン都合でオーナー指示によりここでストップ**したため、以下を次セッションで拾うこと。
+
+### テスト状況（重要）
+- 緑: lint ERROR 0／build両方／reel・kuji・portraits・balance・**playthrough**
+- **未実行: `ch2.mjs`・`screenshots.mjs`**（ストップ指示のため）。engine.js の自動演出（J7）は
+  全章の会話に効くので、**次セッション冒頭でこの2本を先に回して全緑を確認**する。
+  万一 fx 起因で落ちたら `AUTO_FX_COOLDOWN`（engine.js）や `autoFxFor` の条件を見る。
+
+### 今回入れたものの場所（触るときの手がかり）
+- **占い師（3,000円・タロットの老婆）**: game.js `FORTUNE_FEE`／`doFortune()` の台詞
+  ／characters.json `uranaishi`。口調は「だいぶ怪しいが実力は本物」（笑い声ヒヒ・一人称アタシ）。
+- **会話の自動演出（J7）**: engine.js `autoFxFor()`＝「！！」「！？」→shake／驚き顔・「……！」→imp。
+  1回出したら6行休み（`AUTO_FX_COOLDOWN`）。手置き `type:"fx"`・`[imp]` タグは従来優先で二重発火なし。
+  演出の体感頻度はオーナーのプレイ感想を聞いて調整する。
+- **体力バー伸長（J6）**: game.js `updateHud()`（HUD・92px基準）と `mainStatusHtml()`（STATUS画面・90px基準）。
+  根性★で器が増えるとバー自体が物理的に伸びる。flex なので他HUDと被らない。
+- **ステ制度点検（J1）**: 5ステ全部に★刻みの恩恵が配線済みを確認、修正不要と判断
+  （洞察には雑念弾幕の湧き抑制という説明外のおまけ効果もある＝害なしで存置）。
+
+### 次にやること（立ち絵の発注待ち）
+1. `docs/portrait_prompts_pending.md` を更新済み: **uranaishi は新デザイン**（ローブの老婆・タロット・
+   顔はフードの陰）に書き直し、**「tonari のお客さん」節を新設**（salaryman＋モブ客5種）。
+   オーナーから画像が来たら pixelize→組み込み（コマンドは各項目に記載）。
+2. **salaryman は生成すれば即立ち絵が出る**（既存speaker）。モブ客5種（mob_occhan 等）は
+   組み込み時に characters.json へ登録＋バイトイベントに客の立ち絵を出す配線が必要（現状は地の文のみ）。
+
 ## 次回への引き継ぎ（2026-06-14 → Codexへ）★まずここを読む
 
 **この引き継ぎは Codex がリポジトリと一緒に受け取る前提でまとめた、自己完結の作業ガイド。**
