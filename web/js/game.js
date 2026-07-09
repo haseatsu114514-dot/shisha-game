@@ -1581,84 +1581,114 @@ const REPEAT_VISIT = {
 // 「そのキャラの価値観がちらっと見える小会話」を混ぜる（F5・2026-07-07 オーナー要望
 // 「行った甲斐を増やしたい。ちょっとした会話でキャラの価値観がわかるように」）。
 // 報酬は従来のテンプレ訪問と同一（rep.stats + repeat好感度）＝バランス不変
+// 各回は「一緒にシーシャを吸う → 少し話す → いい時間を過ごした」の三拍子（GG2・2026-07-09
+// オーナー要望「会話だけで味気ない。シーシャを吸いに行った要素＋少しの会話＋一時を過ごした感じに」）。
+// 先頭/末尾の地の文が“一服の場”を作り、中の会話でキャラの価値観がちらっと見える。報酬は従来と不変。
 const REPEAT_TALKS = {
   sumi: [
     [
+      { speaker: "", face: "", text: "スミさんが黙って一台を回してくれた。二人で同じ煙を分ける。" },
       { speaker: "sumi", face: "normal", text: "道具はな、嘘をつかねえ。手を抜いた日は煙が教えてくる" },
       { speaker: "hajime", face: "normal", text: "煙が、ですか？" },
       { speaker: "sumi", face: "smile", text: "ああ。だから俺は、煙に恥ずかしくねえ仕事をする。それだけだ" },
+      { speaker: "", face: "", text: "とりとめのない話のまま、一台を吸い切った。いい時間だった。" },
     ],
     [
-      { speaker: "", face: "", text: "常連さんの帰り際、スミさんは必ず店の外まで見送りに出る。" },
+      { speaker: "", face: "", text: "看板を下ろした店で、スミさんと一台を分けた。灰皿がひとつ。" },
       { speaker: "sumi", face: "normal", text: "客はな、味を忘れても「どう扱われたか」は忘れねえんだよ" },
       { speaker: "hajime", face: "normal", text: "（……煙の外側にも、味があるのか）" },
+      { speaker: "", face: "", text: "炭が落ちるまで、ぽつぽつと話した。静かな夜だった。" },
     ],
   ],
   tsumugi: [
     [
+      { speaker: "", face: "", text: "つむぎに一台出して、隣で煙を眺めながら話した。" },
       { speaker: "tsumugi", face: "normal", text: "煙って、消えるから綺麗なんだと思う" },
       { speaker: "hajime", face: "normal", text: "消えるから？" },
       { speaker: "tsumugi", face: "smile", text: "うん。残らないものこそ、ちゃんと見ていたいの" },
+      { speaker: "", face: "", text: "煙が細くなるまで、二人で見ていた。穏やかな時間。" },
     ],
     [
+      { speaker: "", face: "", text: "つむぎの席に一台を運んで、向かいに座った。" },
       { speaker: "tsumugi", face: "normal", text: "はじめくんの煙、今日はちょっと急いでる形してた" },
       { speaker: "hajime", face: "surprise", text: "（……見抜かれてる。つむぎちゃんには、煙が表情に見えるらしい）" },
+      { speaker: "", face: "", text: "他愛のない話をしながら、ゆっくり一台を吸った。" },
     ],
   ],
   naru: [
     [
+      { speaker: "", face: "", text: "なるの店で一台もらって、カウンター越しに話した。" },
       { speaker: "naru", face: "smile", text: "技はどんどん見て盗んでいいよ。俺も誰かの煙で育ったから" },
       { speaker: "naru", face: "normal", text: "その代わり、いつか誰かに返してね。この業界は、そうやって回ってる" },
       { speaker: "hajime", face: "normal", text: "（……強いのに、囲い込まない。この人の強さは、それ込みなんだ）" },
+      { speaker: "", face: "", text: "混む前のひととき、いい煙を分けてもらった。" },
     ],
     [
+      { speaker: "", face: "", text: "忙しい合間に、なるが一台を回してくれた。" },
       { speaker: "naru", face: "normal", text: "忙しい日ほど、一杯目の水音を聞くんだ。焦ってる時は音が濁る" },
       { speaker: "hajime", face: "normal", text: "（音で自分を測る……そういう物差しを、いくつ持ってるんだろう）" },
+      { speaker: "", face: "", text: "短い時間だったけど、濃い一服だった。" },
     ],
   ],
   adam: [
     [
+      { speaker: "", face: "", text: "アダムがダブルアップルを一台、無言で出してくれた。" },
       { speaker: "adam", face: "serious", text: "一つを極めるのは、逃げじゃない。……毎日、選び直してるんだ" },
       { speaker: "hajime", face: "normal", text: "（毎日、ダブルアップルを選び直す。惰性と一途は、外からは同じに見えるのに）" },
+      { speaker: "", face: "", text: "甘い煙に包まれて、しばらく黙って過ごした。" },
     ],
     [
+      { speaker: "", face: "", text: "店の隅で、アダムと一台を分けた。今日もダブルアップル。" },
       { speaker: "", face: "", text: "常連さんが「たまには別のも吸えば」と笑った。アダムは静かに首を振る。" },
       { speaker: "adam", face: "normal", text: "浮気しないから、深くなる。……煙も、たぶん人もだ" },
+      { speaker: "", face: "", text: "同じ味を、二人でゆっくり吸い切った。" },
     ],
   ],
   minto: [
     [
+      { speaker: "", face: "", text: "みんとの店で一台もらって、賑わいの隅で話した。" },
       { speaker: "minto", face: "smile", text: "かわいいは武器だけど、武器だけじゃお店は続かないんだよね〜" },
       { speaker: "minto", face: "wink", text: "常連さんの「いつもの」を覚えてるかどうか。結局そこ！" },
       { speaker: "hajime", face: "normal", text: "（にぎやかさの下に、ちゃんと商売人の顔がある）" },
+      { speaker: "", face: "", text: "気づけば一台吸い切って、少し元気をもらっていた。" },
     ],
     [
+      { speaker: "", face: "", text: "みんとが「特別ね」と一台巻いて、隣に座った。" },
       { speaker: "minto", face: "smile", text: "笑顔はサービスじゃなくて、こっちが楽しんでる証拠なの。伝染するから" },
       { speaker: "hajime", face: "normal", text: "（たしかに、この店を出るときはいつも少し元気になってる）" },
+      { speaker: "", face: "", text: "軽口を叩き合ううちに、一台が終わっていた。" },
     ],
   ],
   ageha: [
     [
+      { speaker: "", face: "", text: "アゲハの店で一台もらって、テンション高めの雑談。" },
       { speaker: "ageha", face: "normal", text: "映える煙と美味い煙、両方作れなきゃSNSの人気なんて三日で終わるよ" },
       { speaker: "hajime", face: "normal", text: "（派手さの裏で、ちゃんと二正面作戦をやってるんだ）" },
+      { speaker: "", face: "", text: "笑い声のなか、一台をぱーっと吸い切った。" },
     ],
   ],
   kumicho: [
     [
+      { speaker: "", face: "", text: "組長が黙って一台を回してくれた。同じ煙を吸う。" },
       { speaker: "kumicho", face: "normal", text: "煙ってのはな、急かすと逃げる。人間と同じだ" },
       { speaker: "hajime", face: "normal", text: "（……この店の時間だけ、ゆっくり流れてる気がする）" },
+      { speaker: "", face: "", text: "言葉少なに、ひとつの煙を分け合った。" },
     ],
   ],
   rei: [
     [
+      { speaker: "", face: "", text: "爆音の店で、REIが一台を差し出してくれた。" },
       { speaker: "rei", face: "normal", text: "……音がデカいのは、静かに吸いたい客のためだ。誰の会話も、誰にも聞こえない" },
       { speaker: "hajime", face: "normal", text: "（爆音が、この店のついたてなのか）" },
+      { speaker: "", face: "", text: "轟音のなか、言葉はなくても、いい時間だった。" },
     ],
   ],
   volk: [
     [
+      { speaker: "", face: "", text: "ヴォルクが精密に組んだ一台を、二人で回した。" },
       { speaker: "volk", face: "serious", text: "計器は嘘をつかない。だが、最後の0.5度は指で覚えるしかない" },
       { speaker: "hajime", face: "normal", text: "（数字の人だと思ってた。……数字の先の話だった）" },
+      { speaker: "", face: "", text: "きっちり整った煙を、最後まで味わった。" },
     ],
   ],
 };
@@ -6320,12 +6350,20 @@ function stepPull() {
   // 上がるほど1吸いの効きとジャスト帯が広がり、少ない手数で適温に寄せられる（＝上達の実感）。
   // ※ PULL_DELTA / PULL_JUST はここでモジュール定数を上書き（__pullDebug もこの値を参照）
   const PULL_DELTA = 0.05 + ((state.stats.technique || 10) / 100) * 0.07; // 0.05(低ステ)〜0.12(満) ／ 1吸いで動かせる最大温度＝技術
-  const _jhw = 0.01 + ((state.stats.sense || 10) / 100) * 0.016;          // ジャスト帯の半幅: センスで広がる
-  const PULL_JUST = {
-    up:   [0.1725 - _jhw, 0.1725 + _jhw],
-    keep: [0.5 - _jhw, 0.5 + _jhw],
-    down: [0.8275 - _jhw, 0.8275 + _jhw],
+  // ジャスト帯（＝ゲージを止める判定窓）は「成功するたびに狭くなる」（オーナー指定・2026-07-09）。
+  // 最初は判定が甘く、JUSTを決めるたびに段階的にシビアへ（1回目=甘い→2回目=やや難→3回目以降=かなりシビア）。
+  // 半幅の底はセンスで広げつつ、この吸い出しで決めたJUST数（tt.pullJust）に応じた倍率をかける。
+  const _jhwBase = 0.01 + ((state.stats.sense || 10) / 100) * 0.016;      // ジャスト帯の半幅の底: センスで広がる
+  const PULL_TIGHTEN = [2.6, 1.6, 1.0, 0.8];                             // JUST 0/1/2/3回目以降の帯倍率（甘→シビア）
+  const pullJustBands = (n) => {
+    const h = _jhwBase * PULL_TIGHTEN[Math.min(n, PULL_TIGHTEN.length - 1)];
+    return {
+      up:   [0.1725 - h, 0.1725 + h],
+      keep: [0.5 - h, 0.5 + h],
+      down: [0.8275 - h, 0.8275 + h],
+    };
   };
+  let PULL_JUST = pullJustBands(0); // 最初は甘い帯から。JUSTのたびに pullJustBands(tt.pullJust) で更新
   const tempNote = (tt && tt.theme) ? ({
     relax: "　今日はリラックス系——高温にしすぎないのが適温だ。",
     high_heat: "　今日は高火力系——しっかり高温まで上げろ。",
@@ -6339,6 +6377,7 @@ function stepPull() {
   );
   tt.temp = pullStartTemp();
   tt.pullCount = 0;
+  tt.pullJust = 0; // この吸い出しで決めたJUST数（帯の狭まり段階＝GG1）。毎回甘い帯から始める
 
   const tempWrap = document.createElement("div");
   tempWrap.className = "temp-wrap";
@@ -6357,12 +6396,12 @@ function stepPull() {
       <div class="pull-zone up"><span>上げ吸い</span></div>
       <div class="pull-zone keep"><span>キープ</span></div>
       <div class="pull-zone down"><span>下げ吸い</span></div>
-      <div class="pull-just" style="left:${PULL_JUST.up[0] * 100}%;width:${(PULL_JUST.up[1] - PULL_JUST.up[0]) * 100}%"></div>
-      <div class="pull-just" style="left:${PULL_JUST.keep[0] * 100}%;width:${(PULL_JUST.keep[1] - PULL_JUST.keep[0]) * 100}%"></div>
-      <div class="pull-just" style="left:${PULL_JUST.down[0] * 100}%;width:${(PULL_JUST.down[1] - PULL_JUST.down[0]) * 100}%"></div>
+      <div class="pull-just" id="pj-up" style="left:${PULL_JUST.up[0] * 100}%;width:${(PULL_JUST.up[1] - PULL_JUST.up[0]) * 100}%"></div>
+      <div class="pull-just" id="pj-keep" style="left:${PULL_JUST.keep[0] * 100}%;width:${(PULL_JUST.keep[1] - PULL_JUST.keep[0]) * 100}%"></div>
+      <div class="pull-just" id="pj-down" style="left:${PULL_JUST.down[0] * 100}%;width:${(PULL_JUST.down[1] - PULL_JUST.down[0]) * 100}%"></div>
       <div class="gauge-needle" id="tn-pull-needle"></div>
     </div>
-    <p class="tn-hint">細い光の帯で止めると<span class="tx-hint">ジャスト</span>——上げ下げは強く効き、キープはブレがほぼ消える。狙わない自由もある。</p>
+    <p class="tn-hint">細い光の帯で止めると<span class="tx-hint">ジャスト</span>——上げ下げは強く効き、キープはブレがほぼ消える。<span class="tx-hint">決めるたびに帯は少し狭くなる</span>。狙わない自由もある。</p>
     <p class="tn-hint" id="tn-pull-count"></p>
     <button class="primary-btn" id="tn-pull-go">吸う！</button>
     <button class="primary-btn ghost" id="tn-pull-serve" disabled></button>
@@ -6374,6 +6413,15 @@ function stepPull() {
   const goBtn = wrap.querySelector("#tn-pull-go");
   const serveBtn = wrap.querySelector("#tn-pull-serve");
   const result = wrap.querySelector("#tn-pull-result");
+  // ジャスト帯の見た目を今の狭まり段階（tt.pullJust）に合わせて描き直す（GG1）
+  const pjEls = { up: wrap.querySelector("#pj-up"), keep: wrap.querySelector("#pj-keep"), down: wrap.querySelector("#pj-down") };
+  const drawJustBands = () => {
+    for (const k of ["up", "keep", "down"]) {
+      const b = PULL_JUST[k];
+      pjEls[k].style.left = `${b[0] * 100}%`;
+      pjEls[k].style.width = `${(b[1] - b[0]) * 100}%`;
+    }
+  };
   serveBtn.textContent =
     { tutorial: "スミさんに出す", rehearsal: "スミさんに出す", baito: "お客さんに出す", drill: "結果を見る" }[tt.mode] || "提供する";
 
@@ -6443,6 +6491,9 @@ function stepPull() {
     }
     if (just) {
       tt.pullJust = (tt.pullJust || 0) + 1;
+      // 成功のたびにジャスト帯を狭める（GG1）: 次の吸いから判定がシビアになる
+      PULL_JUST = pullJustBands(tt.pullJust);
+      drawJustBands();
       showStamp(wrap, "just"); // ゲージ側に出す（#36: 説明文に被らない）
       feelPop(8, "JUST"); nicoBurst("perfect", 1);
       if (window.SFX) SFX.perfect && SFX.perfect();
@@ -6451,6 +6502,8 @@ function stepPull() {
     updateTemp();
     updateCount();
     result.textContent = `──${label}`;
+    // 帯が狭まった合図（成功して次がまだシビアになるとき・GG1）
+    if (just && tt.pullJust < PULL_TIGHTEN.length - 1) result.textContent += "　（帯が締まった──次のジャストは、もっと狭い）";
     // 4回目以降は吸いすぎ: 提供前に葉が痩せていく（craftScore で減点）
     if (tt.pullCount > PULL_SAFE) result.textContent += "　（……吸いすぎだ。味の厚みが、少しずつ逃げていく）";
     playMakingMotion(`pull-${pullKind}`, motionMs);
