@@ -1400,6 +1400,7 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 .mix-price.free { color: #8fd3a7; }
 /* 洞察ヒント（#53）: テーマに噛み合うフレーバーのバッジ・審査員の好み開示 */
 .mix-fit { font-size: 11px; color: #ffd479; margin-left: 6px; text-shadow: 0 0 6px rgba(255,212,121,0.4); }
+.mix-fit.off { color: #9aa0aa; text-shadow: none; opacity: 0.85; }
 .tn-tutor.insight-hint { color: #b9c8ff; font-style: italic; }
 /* 根性リトライ（#53）: 大会中1回のやり直し */
 .guts-retry { margin-top: 8px; border-color: rgba(255,140,90,0.5); color: #ffb08a; }

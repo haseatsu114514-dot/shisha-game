@@ -398,18 +398,18 @@ const STAT_BADGE = { technique: "技", sense: "感", guts: "根", charm: "魅", 
 // STAT_PURPOSE = ステ画面に常時出す「何に効くか」の一行（ドメイン説明）。
 const STAT_PURPOSE = {
   technique: "作りのゲージ系（吸い出し・穴あけ・炭起こし）が狙いやすくなる",
-  sense: "ジャスト判定の帯が広がり、味が一気に伸びやすくなる",
+  sense: "ジャスト帯と、提供の“適温の当たり”が広がり、味が上振れしやすい",
   guts: "動ける体力の最大値が増える",
-  charm: "バイトで指名が増え、売上ボーナスが弾む",
-  insight: "お題や配合の“相性”が見えるようになる",
+  charm: "バイトの指名ボーナスに加え、ほんの少し好感度が上がりやすくなる",
+  insight: "★を上げるほど、お題や配合の“相性”が細かく見えるようになる",
 };
 // STAT_TIER_FX = ★1..★5 の恩恵一行。★が上がった瞬間にトーストで説明する。
 const STAT_TIER_FX = {
   technique: ["まだゲージは速い", "ゲージが少しゆっくりに", "ゲージがゆっくりに", "ゲージがかなりゆっくりに", "ゲージが最もゆっくりに"],
   sense: ["ジャスト帯は狭め", "ジャスト帯が少し広くなった", "ジャスト帯が広くなった", "ジャスト帯がかなり広くなった", "ジャスト帯が最も広くなった"],
   guts: ["体力はふつう", "動ける体力が増えた", "体力がさらに増えた", "体力が大きく増えた", "体力が最大まで増えた"],
-  charm: ["指名ボーナスはまだなし", "指名ボーナスが付くように", "指名ボーナスが増えた", "指名ボーナスが大きくなった", "指名ボーナスが最大に"],
-  insight: ["相性はまだ勘だのみ", "テーマの相性が見えるように", "配合の相性バッジも見える", "相性の強い弱いまで見える", "狙いどころをほぼ見通せる"],
+  charm: ["指名ボーナスはまだなし", "指名ボーナス＋少し好かれやすく", "指名ボーナス増・少し好かれやすい", "指名ボーナス大・好かれやすい", "指名ボーナス最大・好かれやすい"],
+  insight: ["相性はまだ勘だのみ", "テーマの相性が見えるように", "配合の相性バッジも見える", "相性の強い弱いまで見える(◎○)", "外れ(△)も見えて狙いを外さない"],
 };
 // ★（1..5）: 値0-100 → ceil(v/20)。stars() の見た目と一致。★境界でだけ効果が変わる
 function statStar(en) { return Math.max(1, Math.min(5, Math.ceil((state.stats[en] || 0) / 20))); }
@@ -421,6 +421,10 @@ function maxStamina() {
   const g = (state && state.stats) ? statStar("guts") : 1;
   return 100 + GUTS_STAMINA_BONUS[g - 1];
 }
+// 魅力の★段階ごとの「好感度／絆の伸び」倍率（★1..★5＝1.0〜1.2）。
+// 魅力はお金だけだと余りがちで弱かったので、人に好かれる力＝関係の伸びも少しだけ担当。
+// ⚠ やりすぎると恋愛の進行が崩壊するので「ちょっとだけ」に留める（オーナー指定・2026-07-09）
+function charmAffinityMult() { return 1 + 0.2 * statTier01("charm"); }
 
 // 章ごとのステータス育成ソフトキャップ（#42）。ch1で上限に張り付かないよう抑え、
 // 5章で全100＝完全攻略を狙えるカーブにする。数値は非表示なので体感は「★がゆっくり伸びる」
@@ -528,7 +532,8 @@ function gainAffinity(charId, kind = "visit") {
   markMet(charId); // ポイントが動く＝面識がある
   const name = displayName(charId);
   const badge = faceIconHtml(charId) || (name.match(/[一-龯ぁ-んァ-ヴa-zA-Z]/) || ["♡"])[0];
-  const pts = AFFINITY_PTS[kind] ?? AFFINITY_PTS.visit;
+  // 魅力★で好感度/絆の伸びが上がる（人に好かれる力・均し）
+  const pts = Math.round((AFFINITY_PTS[kind] ?? AFFINITY_PTS.visit) * charmAffinityMult());
   // ---- 恋人: プライベート（デート/ちょい会い）でだけ恋人Lvポイントが動く
   if ((state.lovers || []).includes(charId)) {
     if (!dateContext) return false; // 店で会っても絆は深まらない（master_spec #24）
@@ -4162,8 +4167,8 @@ function runPracticeGauge(item) {
   const stopBtn = $("#gauge-stop");
   stopBtn.disabled = false;
   stopBtn.textContent = "止める！";
-  // 技術★が上がるほど針がゆっくり（★刻み・★1=1.0〜★5=0.75）
-  const speed = Math.max(0.65, 1.0 - 0.25 * statTier01("technique"));
+  // 技術★が上がるほど針がゆっくり（★刻み・★1=1.0〜★5=0.82・均しで抑制）
+  const speed = Math.max(0.65, 1.0 - 0.18 * statTier01("technique"));
   startGauge([0.56, 0.78], speed, null);
   stopBtn.onclick = () => {
     const result = stopGauge();
@@ -5569,8 +5574,8 @@ function stepFoil() {
   const ringData = HOLE_RINGS.map((r) => ({ ...r, angles: [] }));
   let ringIdx = 0;
   let angle = -90;            // 現在のカーソル角（度）
-  // 技術★が上がるほどカーソルがゆっくり=狙いやすい（deg/s・★刻み・★1=155〜★5=70）
-  const speed = (155 - 85 * statTier01("technique")) * lastNightGaugeCalm();
+  // 技術★が上がるほどカーソルがゆっくり=狙いやすい（deg/s・★刻み・★1=155〜★5=95・均しで抑制）
+  const speed = (155 - 60 * statTier01("technique")) * lastNightGaugeCalm();
   let raf = 0, last = performance.now(), running = true;
 
   const callout = (text, cls) => {
@@ -5761,13 +5766,14 @@ const HEAT_GRADE = {
 };
 
 // ============================================================================
-// ステータス→ゲームへの反映（★刻み・見える化 2026-07-09 オーナー指定）
-// 効果は連続値ではなく★段階でだけ変わる（statStar/statTier01）。★アップ時に恩恵を説明する:
-//   技術 = ゲージ系（穴あけカーソル・炭の熱入り・吸い出しの針）の速度を★段階で減速＝狙いやすい
-//   センス = ジャスト/PERFECT帯の幅を★段階で拡大＝上振れしやすい
-//   洞察 = ★2でテーマ相性ヒント／★3で配合の相性バッジを開示
+// ステータス→ゲームへの反映（★刻み・見える化・恩恵の均し 2026-07-09 オーナー指定）
+// 効果は連続値ではなく★段階でだけ変わる（statStar/statTier01）。★アップ時に恩恵を説明する。
+// 各ステの恩恵量が同じぐらいになるよう、技術は突出を抑え、弱い側は守備範囲を広げた:
+//   技術 = ゲージ系（穴あけ・炭の熱入り・吸い出し・提供）の速度を★段階で減速（均しで抑制）
+//   センス = ジャスト帯＋提供の適温(perfect)窓を★段階で拡大＝上振れしやすい
+//   洞察 = ★2テーマ相性ヒント／★3相性バッジ／★4強弱(◎○)／★5外れ(△)まで見える
 //   根性 = 体力の最大値が★段階で増える（消耗軽減・大会やり直しは廃止＝オーナー指定）
-//   魅力 = バイトの指名ボーナスが★段階で増える
+//   魅力 = バイトの指名ボーナス＋好感度/絆の伸びが★段階で増える（お金が余っても価値が出る）
 // ============================================================================
 // 前夜「早く寝る」の恩恵: 大会当日だけゲージ系がわずかに減速（手元が落ち着く）
 function lastNightGaugeCalm() {
@@ -5826,9 +5832,9 @@ function stepCoalFire() {
 
   // 炭の数は前工程「炭をコンロにセット」での選択に従う（2個/トライアングル3個/4個）
   const count = tt.coal === "two" ? 2 : tt.coal === "four" ? 4 : 3;
-  // センス★でジャスト窓が広く、技術★で熱の入りが緩やか（★刻み・数値は見せない）
+  // センス★でジャスト窓が広く、技術★で熱の入りが緩やか（★刻み・技術は均しで抑制・数値は見せない）
   const justHi = 0.96 + 0.12 * statTier01("sense");
-  const baseRate = (0.2475 - 0.0875 * statTier01("technique")) * lastNightGaugeCalm();
+  const baseRate = (0.2475 - 0.06 * statTier01("technique")) * lastNightGaugeCalm();
 
   const coals = [];
   for (let i = 0; i < count; i++) {
@@ -6069,12 +6075,13 @@ function stepMix() {
     (!f.leaf || f.leaf === "blond") &&
     !(compMode && f.competition_legal === false) &&
     !(serveMode && f.serve_legal === false));
-  // 洞察★3で、テーマ（審査員の好み）に噛み合うフレーバーの相性バッジが見える
-  const mixInsight = statStar("insight") >= 3 && tt.theme && tt.theme.best;
-  const themeFit = (f) => {
-    if (!mixInsight) return false;
+  // 洞察★で相性が段階的に見える: ★3=相性バッジ／★4=相性の強弱(◎○)／★5=外れ(△)も見える
+  const insightStar = statStar("insight");
+  const mixInsight = insightStar >= 3 && tt.theme && tt.theme.best;
+  const themeFitScore = (f) => {
+    if (!mixInsight) return 0;
     const fCats = Array.isArray(f.category) ? f.category : [f.category];
-    return fCats.some((c) => tt.theme.best.includes(c));
+    return fCats.filter((c) => tt.theme.best.includes(c)).length;
   };
   for (const f of flavors) {
     const row = document.createElement("div");
@@ -6082,7 +6089,12 @@ function stepMix() {
     row.dataset.flavorId = f.id;
     const info = document.createElement("div");
     info.className = "mix-info";
-    const fitTag = themeFit(f) ? ` <span class="mix-fit">◎コンセプト向き</span>` : "";
+    const _fs = themeFitScore(f);
+    const fitTag = _fs >= 1
+      ? (insightStar >= 4
+          ? ` <span class="mix-fit">${_fs >= 2 ? "◎ドンピシャ" : "○向いてる"}</span>`
+          : ` <span class="mix-fit">◎コンセプト向き</span>`)
+      : (mixInsight && insightStar >= 5 ? ` <span class="mix-fit off">△別方向</span>` : "");
     const stockTag = consumesStock
       ? (supplied(f.id) ? ` <span class="mix-price free">主催支給</span>` : ` <span class="mix-price">残り${flavorStock(f)}g</span>`)
       : "";
@@ -6373,7 +6385,7 @@ function stepPull() {
   // ステが低いうちは1吸いで動く温度が小さい＝手数がかかり、ジャストを狙う価値が高い。
   // 上がるほど1吸いの効きとジャスト帯が広がり、少ない手数で適温に寄せられる（＝上達の実感）。
   // ※ PULL_DELTA / PULL_JUST はここでモジュール定数を上書き（__pullDebug もこの値を参照）
-  const PULL_DELTA = 0.05 + 0.07 * statTier01("technique"); // 技術★で段階（★1=0.05〜★5=0.12）／1吸いで動かせる最大温度
+  const PULL_DELTA = 0.05 + 0.055 * statTier01("technique"); // 技術★で段階（★1=0.05〜★5=0.105・均しで抑制）／1吸いで動かせる最大温度
   // ジャスト帯（＝ゲージを止める判定窓）は「成功するたびに狭くなる」（オーナー指定・2026-07-09）。
   // 最初は判定が甘く、JUSTを決めるたびに段階的にシビアへ（1回目=甘い→2回目=やや難→3回目以降=かなりシビア）。
   // 半幅の底はセンスで広げつつ、この吸い出しで決めたJUST数（tt.pullJust）に応じた倍率をかける。
@@ -6462,8 +6474,8 @@ function stepPull() {
 
   // ゲージは左→右に走り、右端まで行ったらまた左から（折り返さない）
   let pos = 0, running = true, raf = 0, last = performance.now();
-  // 針速度: 技術★が上がるほどゆっくり＝狙いやすい（★刻み・★1=0.56〜★5=0.38）
-  const speed = (0.56 - 0.18 * statTier01("technique")) * lastNightGaugeCalm();
+  // 針速度: 技術★が上がるほどゆっくり＝狙いやすい（★刻み・★1=0.56〜★5=0.43・均しで抑制）
+  const speed = (0.56 - 0.13 * statTier01("technique")) * lastNightGaugeCalm();
   const tick = (now) => {
     if (!running) return;
     const dt = (now - last) / 1000;
@@ -6548,7 +6560,9 @@ function stepPull() {
     serveBtn.disabled = true;
     const [a, b] = PULL_TARGET;
     const center = (a + b) / 2, half = (b - a) / 2;
-    tt.pull = Math.abs(tt.temp - center) <= half * 0.45 ? "perfect" : tt.temp >= a && tt.temp <= b ? "good" : "miss";
+    // センス★で「適温ど真ん中(perfect)」の当たり判定が広がる（均し・★1=0.45〜★5=0.67）
+    const perfectWin = 0.45 + 0.22 * statTier01("sense");
+    tt.pull = Math.abs(tt.temp - center) <= half * perfectWin ? "perfect" : tt.temp >= a && tt.temp <= b ? "good" : "miss";
     if (window.SFX) SFX.bubble();
     spawnBubbles(tt.pull === "perfect" ? 14 : tt.pull === "good" ? 9 : 4);
     startRigSmoke(tt.pull === "miss" ? 900 : 320);
