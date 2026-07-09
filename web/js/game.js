@@ -76,16 +76,11 @@ const STAMINA_COST = { baito: 24, visit: 16, talk: 10, practice: 18, rin: 14, da
 // sleep 26→19（F8・2026-07-07）: 訪問+会話(26)で±0＝「一生減らない」の穴を塞ぐ。
 // どの2行動でも毎日すこしずつ削れ、章の間に3〜4回は「家で休むか」を考えるカーブ
 const STAMINA_GAIN = { rest: 55, cafe: 12, kannon: 12, sleep: 19 };
-function stamina() { return state.stamina ?? 100; }
+function stamina() { return state.stamina ?? maxStamina(); }
 function addStamina(n) {
-  // 根性が高いと消耗がすこし軽くなる（F10: 作りパート以外のステ活用。
-  // 「そこそこ有利」の範囲＝★2後半で-15%・★4で-30%。回復量には効かない）
-  if (n < 0 && state && state.stats) {
-    const guts = state.stats.guts || 10;
-    if (guts >= 70) n = Math.round(n * 0.7);
-    else if (guts >= 40) n = Math.round(n * 0.85);
-  }
-  state.stamina = Math.max(0, Math.min(100, stamina() + n));
+  // 根性の恩恵は「体力の最大値が増える」に一本化（オーナー指定・2026-07-09）。
+  // 消耗軽減・大会やり直しは廃止。上限は maxStamina()（★段階で 100〜160）
+  state.stamina = Math.max(0, Math.min(maxStamina(), stamina() + n));
   updateHud();
 }
 function staminaLow() { return stamina() < STAMINA_LOW; }
@@ -396,6 +391,37 @@ function stars(value) {
 // バッジには漢字一字、サブには「少し上がった」等の抽象表現を出す
 const STAT_BADGE = { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "観" };
 
+// ============ ステータスの恩恵（★刻み・見える化）2026-07-09 オーナー指定 ============
+// 効果は連続値ではなく「★（スター）段階」で変わる。★1→1.5では何も変わらず、
+// ★が上がった時（1→2, 2→3…）に恩恵がステップで増え、その瞬間に説明を出す。
+// 数値は非表示のまま（★と言葉だけ）。
+// STAT_PURPOSE = ステ画面に常時出す「何に効くか」の一行（ドメイン説明）。
+const STAT_PURPOSE = {
+  technique: "作りのゲージ系（吸い出し・穴あけ・炭起こし）が狙いやすくなる",
+  sense: "ジャスト判定の帯が広がり、味が一気に伸びやすくなる",
+  guts: "動ける体力の最大値が増える",
+  charm: "バイトで指名が増え、売上ボーナスが弾む",
+  insight: "お題や配合の“相性”が見えるようになる",
+};
+// STAT_TIER_FX = ★1..★5 の恩恵一行。★が上がった瞬間にトーストで説明する。
+const STAT_TIER_FX = {
+  technique: ["まだゲージは速い", "ゲージが少しゆっくりに", "ゲージがゆっくりに", "ゲージがかなりゆっくりに", "ゲージが最もゆっくりに"],
+  sense: ["ジャスト帯は狭め", "ジャスト帯が少し広くなった", "ジャスト帯が広くなった", "ジャスト帯がかなり広くなった", "ジャスト帯が最も広くなった"],
+  guts: ["体力はふつう", "動ける体力が増えた", "体力がさらに増えた", "体力が大きく増えた", "体力が最大まで増えた"],
+  charm: ["指名ボーナスはまだなし", "指名ボーナスが付くように", "指名ボーナスが増えた", "指名ボーナスが大きくなった", "指名ボーナスが最大に"],
+  insight: ["相性はまだ勘だのみ", "テーマの相性が見えるように", "配合の相性バッジも見える", "相性の強い弱いまで見える", "狙いどころをほぼ見通せる"],
+};
+// ★（1..5）: 値0-100 → ceil(v/20)。stars() の見た目と一致。★境界でだけ効果が変わる
+function statStar(en) { return Math.max(1, Math.min(5, Math.ceil((state.stats[en] || 0) / 20))); }
+// 0(★1)..1(★5) の正規化。効果量はこれを掛けて★刻みにする（連続値にしない）
+function statTier01(en) { return (statStar(en) - 1) / 4; }
+// 根性の★段階ごとの「体力の最大値」ボーナス（★1..★5）。基準100に上乗せ
+const GUTS_STAMINA_BONUS = [0, 10, 25, 40, 60];
+function maxStamina() {
+  const g = (state && state.stats) ? statStar("guts") : 1;
+  return 100 + GUTS_STAMINA_BONUS[g - 1];
+}
+
 // 章ごとのステータス育成ソフトキャップ（#42）。ch1で上限に張り付かないよう抑え、
 // 5章で全100＝完全攻略を狙えるカーブにする。数値は非表示なので体感は「★がゆっくり伸びる」
 function statSoftCap() {
@@ -411,6 +437,7 @@ function statSoftCap() {
 const STAT_GAIN_MERGE_MS = 700;
 let statGainBatch = {};      // en -> 今の窓で溜まった実際の増分
 let statGainBatchTimer = null;
+let pendingStarUp = {};      // en -> 今の窓で到達した新しい★（アップ時に恩恵を説明する）
 // 必要経験値の段階制（F10・2026-07-07）: ★が上がるほど内部値+1に必要な経験値が増える。
 // ★1→★2 は等倍、★2→★3 は1.5倍……と重くなる＝1章で伸びすぎない。
 // 台詞キューや type:"apply" の加算量はそのまま「経験値」として扱い、
@@ -436,6 +463,17 @@ function gainStat(en, amount) {
   state.stats[en] = Math.max(0, Math.min(cap, v));
   const actual = state.stats[en] - before;
   if (actual <= 0) return; // 実際に増えなかったら通知しない
+  // ★アップ検出（オーナー指定・恩恵は★境界で変わる/★アップ時に説明）
+  const prevStar = Math.max(1, Math.min(5, Math.ceil(before / 20)));
+  const newStar = Math.max(1, Math.min(5, Math.ceil(state.stats[en] / 20)));
+  if (newStar > prevStar) {
+    pendingStarUp[en] = Math.max(pendingStarUp[en] || 0, newStar);
+    // 根性の★アップ＝体力の器が増える。増えた分を今の体力に足す（バーが下がらない＝ごほうび感）
+    if (en === "guts") {
+      const add = GUTS_STAMINA_BONUS[newStar - 1] - GUTS_STAMINA_BONUS[prevStar - 1];
+      if (add > 0) { state.stamina = Math.min(maxStamina(), stamina() + add); updateHud(); }
+    }
+  }
   if (typeof REEL !== "undefined") REEL.noteStat(en, actual); // 直近の伸びをスロットのアンコール抽選に記録
   statGainBatch[en] = (statGainBatch[en] || 0) + actual;
   if (statGainBatchTimer) clearTimeout(statGainBatchTimer);
@@ -451,6 +489,8 @@ function flushStatGainBatch() {
   statGainBatchTimer = null;
   const batch = statGainBatch;
   statGainBatch = {};
+  const starUps = pendingStarUp;
+  pendingStarUp = {};
   for (const [en, total] of Object.entries(batch)) {
     gainBanner({
       kind: "stat",
@@ -460,6 +500,12 @@ function flushStatGainBatch() {
       labelMain: STAT_KEYS[en],
       labelSub: statGainLabel(total),
     });
+    // ★が上がったら、少し遅らせて「新しい恩恵」を言葉で説明する（オーナー指定）
+    const ns = starUps[en];
+    if (ns) {
+      const fx = (STAT_TIER_FX[en] || [])[ns - 1] || "";
+      setTimeout(() => toast(`【${STAT_KEYS[en]}】★${ns}に！　${fx}`), 720);
+    }
   }
 }
 
@@ -837,7 +883,7 @@ function updateHud() {
   const stFill = $("#hud-stamina-fill");
   if (stFill) {
     const st = stamina();
-    stFill.style.width = `${st}%`;
+    stFill.style.width = `${Math.round(st / maxStamina() * 100)}%`; // バーは現max比（根性で器が増える）
     stFill.classList.toggle("warn", st < 50 && st >= STAMINA_LOW);
     stFill.classList.toggle("danger", st < STAMINA_LOW);
   }
@@ -1428,7 +1474,7 @@ function handleDialogueChoice(dialogueId, choiceId, branchKey, nextId) {
   //   sleep_early=体力全快＋当日ゲージ微減速（lastNightGaugeCalm）
   if (dialogueId === "ch1_day7_last_night") {
     state.flags._last_night = branchKey;
-    if (branchKey === "sleep_early") state.stamina = 100;
+    if (branchKey === "sleep_early") state.stamina = maxStamina(); // 全快（根性★で増えた器いっぱいまで）
   }
   // 家シーシャ: 吸った夜を記録（連夜は効果が落ちる）
   if (dialogueId === "home_shisha_night" && branchKey === "puff") {
@@ -4116,8 +4162,8 @@ function runPracticeGauge(item) {
   const stopBtn = $("#gauge-stop");
   stopBtn.disabled = false;
   stopBtn.textContent = "止める！";
-  // 技術が高いほど針がわずかに遅くなる（そこそこ有利、程度）
-  const speed = Math.max(0.65, 1.0 - state.stats.technique / 400);
+  // 技術★が上がるほど針がゆっくり（★刻み・★1=1.0〜★5=0.75）
+  const speed = Math.max(0.65, 1.0 - 0.25 * statTier01("technique"));
   startGauge([0.56, 0.78], speed, null);
   stopBtn.onclick = () => {
     const result = stopGauge();
@@ -5231,8 +5277,8 @@ function tournamentStep(step) {
   if (step === "setup_bowl" || step === "setup_hms" || step === "setup_charcoal") return stepSetup(step);
   if (step === "theme") {
     const body = tnPanel("テーマ選択", "今日の一台のコンセプトを決めろ。フレーバー選びの軸になる。");
-    // 洞察: 審査員（テーマ）の好みが読める＝各テーマに刺さるカテゴリを開示
-    const insightful = (state.stats.insight || 0) >= INSIGHT_HINT_BAR;
+    // 洞察★2で審査員（テーマ）の好みが読める＝各テーマに刺さるカテゴリを開示
+    const insightful = statStar("insight") >= 2;
     if (insightful) {
       const hint = document.createElement("p");
       hint.className = "tn-tutor insight-hint";
@@ -5523,8 +5569,8 @@ function stepFoil() {
   const ringData = HOLE_RINGS.map((r) => ({ ...r, angles: [] }));
   let ringIdx = 0;
   let angle = -90;            // 現在のカーソル角（度）
-  // 技術が高いほどカーソルがゆっくり=狙いやすい（deg/s）。序盤は速く、育成で体感できる差にする
-  const speed = (165 - Math.min(95, state.stats.technique * 0.95)) * lastNightGaugeCalm();
+  // 技術★が上がるほどカーソルがゆっくり=狙いやすい（deg/s・★刻み・★1=155〜★5=70）
+  const speed = (155 - 85 * statTier01("technique")) * lastNightGaugeCalm();
   let raf = 0, last = performance.now(), running = true;
 
   const callout = (text, cls) => {
@@ -5660,8 +5706,6 @@ function stepFoil() {
     next.textContent = isDrill ? "結果を見る" : "次へ";
     next.addEventListener("click", () => tnNext("foil"));
     result.appendChild(next);
-    // 根性: 穴が乱れたときだけ、大会中1回のやり直しを差し出す
-    if (quality < 0.6) offerGutsRetry(result, "foil", () => { tt.foilHits = 0; tt.foilDone = false; tt.holeResult = null; });
   }
 
   setRingUI();
@@ -5717,35 +5761,17 @@ const HEAT_GRADE = {
 };
 
 // ============================================================================
-// ステータス→ミニゲーム入力反映（#53確定版・2026-07-02）
-// 結果への加点ではなく「操作が楽になる」方向でステを効かせる:
-//   技術 = ゲージ系（穴あけカーソル・炭の熱入り・吸い出しの針）の速度を減速
-//   センス = ジャスト/PERFECT帯の幅を拡大
-//   洞察 = ミックス/テーマ選択で審査員（テーマ）の好みヒントを開示
-//   根性 = 大会本番中1回だけ、しくじった工程をやり直せる（リハーサル・練習は無効）
+// ステータス→ゲームへの反映（★刻み・見える化 2026-07-09 オーナー指定）
+// 効果は連続値ではなく★段階でだけ変わる（statStar/statTier01）。★アップ時に恩恵を説明する:
+//   技術 = ゲージ系（穴あけカーソル・炭の熱入り・吸い出しの針）の速度を★段階で減速＝狙いやすい
+//   センス = ジャスト/PERFECT帯の幅を★段階で拡大＝上振れしやすい
+//   洞察 = ★2でテーマ相性ヒント／★3で配合の相性バッジを開示
+//   根性 = 体力の最大値が★段階で増える（消耗軽減・大会やり直しは廃止＝オーナー指定）
+//   魅力 = バイトの指名ボーナスが★段階で増える
 // ============================================================================
-const INSIGHT_HINT_BAR = 25;      // テーマ相性ヒントが見え始める洞察
-const INSIGHT_MIX_BAR = 40;       // ミックス画面の相性バッジが見える洞察
-const GUTS_RETRY_BAR = 30;        // 大会中のやり直しが解放される根性
 // 前夜「早く寝る」の恩恵: 大会当日だけゲージ系がわずかに減速（手元が落ち着く）
 function lastNightGaugeCalm() {
   return tt && tt.mode === "tournament" && state.flags._last_night === "sleep_early" ? 0.93 : 1;
-}
-// 根性リトライ: 大会本番でしくじった工程を、1大会に1度だけやり直せる
-function offerGutsRetry(container, step, resetFn) {
-  if (!tt || tt.mode !== "tournament" || tt.gutsRetryUsed) return;
-  if ((state.stats.guts || 0) < GUTS_RETRY_BAR) return;
-  const btn = document.createElement("button");
-  btn.className = "primary-btn ghost guts-retry";
-  btn.textContent = "──歯を食いしばって、やり直す（根性・大会中1回）";
-  btn.addEventListener("click", () => {
-    tt.gutsRetryUsed = true;
-    if (window.SFX) SFX.select();
-    toast("根性で踏みとどまった。もう一度だけ──");
-    if (resetFn) resetFn();
-    tournamentStep(step);
-  });
-  container.appendChild(btn);
 }
 
 // タイミング系ミニゲームの開始前カウントダウン（3・2・1・スタート）。
@@ -5800,9 +5826,9 @@ function stepCoalFire() {
 
   // 炭の数は前工程「炭をコンロにセット」での選択に従う（2個/トライアングル3個/4個）
   const count = tt.coal === "two" ? 2 : tt.coal === "four" ? 4 : 3;
-  // センスが高いほどジャスト窓が広く、技術が高いほど熱の入りが緩やか（数値は見せない）
-  const justHi = 0.96 + Math.min(0.12, state.stats.sense * 0.0015);
-  const baseRate = (0.26 - Math.min(0.1, state.stats.technique * 0.00125)) * lastNightGaugeCalm();
+  // センス★でジャスト窓が広く、技術★で熱の入りが緩やか（★刻み・数値は見せない）
+  const justHi = 0.96 + 0.12 * statTier01("sense");
+  const baseRate = (0.2475 - 0.0875 * statTier01("technique")) * lastNightGaugeCalm();
 
   const coals = [];
   for (let i = 0; i < count; i++) {
@@ -5920,8 +5946,6 @@ function stepCoalFire() {
     next.textContent = isDrill ? "結果を見る" : "次へ";
     next.addEventListener("click", () => tnNext("coalfire"));
     result.appendChild(next);
-    // 根性: 熾きをしくじったときだけ、大会中1回のやり直しを差し出す
-    if (tt.coalFire === "miss") offerGutsRetry(result, "coalfire", () => { tt.coalFire = null; tt.coalResult = null; });
   }
 
   // テスト用フック: 各炭の温度・取り頃を読む（自動プレイ用）
@@ -6045,8 +6069,8 @@ function stepMix() {
     (!f.leaf || f.leaf === "blond") &&
     !(compMode && f.competition_legal === false) &&
     !(serveMode && f.serve_legal === false));
-  // 洞察: テーマ（審査員の好み）に噛み合うフレーバーが見える（#53）
-  const mixInsight = (state.stats.insight || 0) >= INSIGHT_MIX_BAR && tt.theme && tt.theme.best;
+  // 洞察★3で、テーマ（審査員の好み）に噛み合うフレーバーの相性バッジが見える
+  const mixInsight = statStar("insight") >= 3 && tt.theme && tt.theme.best;
   const themeFit = (f) => {
     if (!mixInsight) return false;
     const fCats = Array.isArray(f.category) ? f.category : [f.category];
@@ -6166,8 +6190,8 @@ function runSteamDodge(steamOpt, onDone) {
   let spawnIn = 0.6, raf = 0, ended = false;
   const bullets = [];
   const keys = {};
-  // 洞察が高いほど雑念の湧きがわずかに穏やか（そこそこ有利、程度）
-  const spawnEvery = (slump ? 0.42 : 0.54) + Math.min(0.14, state.stats.insight / 500);
+  // 洞察★が上がるほど雑念の湧きがわずかに穏やか（★刻み・そこそこ有利、程度）
+  const spawnEvery = (slump ? 0.42 : 0.54) + 0.14 * statTier01("insight");
   const bulletSpeed = slump ? 130 : 110;
 
   const measure = () => { W = arena.clientWidth || W; H = arena.clientHeight || H; sx = Math.min(sx, W - 12); sy = Math.min(sy, H - 12); };
@@ -6349,11 +6373,11 @@ function stepPull() {
   // ステが低いうちは1吸いで動く温度が小さい＝手数がかかり、ジャストを狙う価値が高い。
   // 上がるほど1吸いの効きとジャスト帯が広がり、少ない手数で適温に寄せられる（＝上達の実感）。
   // ※ PULL_DELTA / PULL_JUST はここでモジュール定数を上書き（__pullDebug もこの値を参照）
-  const PULL_DELTA = 0.05 + ((state.stats.technique || 10) / 100) * 0.07; // 0.05(低ステ)〜0.12(満) ／ 1吸いで動かせる最大温度＝技術
+  const PULL_DELTA = 0.05 + 0.07 * statTier01("technique"); // 技術★で段階（★1=0.05〜★5=0.12）／1吸いで動かせる最大温度
   // ジャスト帯（＝ゲージを止める判定窓）は「成功するたびに狭くなる」（オーナー指定・2026-07-09）。
   // 最初は判定が甘く、JUSTを決めるたびに段階的にシビアへ（1回目=甘い→2回目=やや難→3回目以降=かなりシビア）。
   // 半幅の底はセンスで広げつつ、この吸い出しで決めたJUST数（tt.pullJust）に応じた倍率をかける。
-  const _jhwBase = 0.01 + ((state.stats.sense || 10) / 100) * 0.016;      // ジャスト帯の半幅の底: センスで広がる
+  const _jhwBase = 0.01 + 0.016 * statTier01("sense");                   // ジャスト帯の半幅の底: センス★で段階（★1=0.01〜★5=0.026）
   const PULL_TIGHTEN = [2.6, 1.6, 1.0, 0.8];                             // JUST 0/1/2/3回目以降の帯倍率（甘→シビア）
   const pullJustBands = (n) => {
     const h = _jhwBase * PULL_TIGHTEN[Math.min(n, PULL_TIGHTEN.length - 1)];
@@ -6438,8 +6462,8 @@ function stepPull() {
 
   // ゲージは左→右に走り、右端まで行ったらまた左から（折り返さない）
   let pos = 0, running = true, raf = 0, last = performance.now();
-  // 針速度: 技術が高いほどゆっくり＝狙いやすい（#53確定・序盤は速くてシビア）
-  const speed = (0.56 - Math.min(0.18, (state.stats.technique || 10) * 0.002)) * lastNightGaugeCalm();
+  // 針速度: 技術★が上がるほどゆっくり＝狙いやすい（★刻み・★1=0.56〜★5=0.38）
+  const speed = (0.56 - 0.18 * statTier01("technique")) * lastNightGaugeCalm();
   const tick = (now) => {
     if (!running) return;
     const dt = (now - last) / 1000;
@@ -6551,8 +6575,6 @@ function stepPull() {
       tnNext("pull"); // ch2の試合・練習系も次工程＝調整へ
     });
     wrap.appendChild(nextBtn);
-    // 根性: 温度を外した提供のときだけ、大会中1回のやり直しを差し出す
-    if (tt.pull === "miss") offerGutsRetry(wrap, "pull", () => { tt.pull = null; tt.pullJust = 0; });
   });
 }
 
@@ -7614,15 +7636,19 @@ function buildRadarSVG() {
 // メインのステータスタブ（数値は出さず★とランク呼称・体力・大会の歩み）
 function mainStatusHtml() {
   const radar = `<div class="radar-wrap">${buildRadarSVG()}<p class="radar-legend">明るい面＝今／暗い面＝章のはじめ。広がったぶんが成長。</p></div>`;
+  // 各ステに「何に効くか」の一行（STAT_PURPOSE）を添えて恩恵を見える化（オーナー指定）
   const statRows = Object.entries(STAT_KEYS)
-    .map(([en, ja]) => `<div class="status-row stat-row"><span class="stat-name stat-c-${en}">${ja}</span>` +
+    .map(([en, ja]) => `<div class="stat-item"><div class="status-row stat-row"><span class="stat-name stat-c-${en}">${ja}</span>` +
       `<span class="stars stat-c-${en}">${stars(state.stats[en])}</span>` +
-      `<span class="stat-rank">${statRankLabel(en)}</span></div>`)
+      `<span class="stat-rank">${statRankLabel(en)}</span></div>` +
+      `<div class="stat-purpose">${STAT_PURPOSE[en] || ""}</div></div>`)
     .join("");
   const st = stamina();
   const stLabel = st >= 70 ? "好調" : st >= STAMINA_LOW ? "疲れ気味" : "限界が近い";
   const stCls = st >= 70 ? "" : st >= STAMINA_LOW ? "warn" : "danger";
-  const cond = `<div class="status-row"><span>体力</span><span class="stamina-cell"><i class="st-bar"><i class="${stCls}" style="width:${st}%"></i></i> ${stLabel}</span></div>`;
+  // 体力バーは現max比（根性★で器が増える）。器が広がっていれば一言添える
+  const stMaxNote = maxStamina() > 100 ? "　（根性で器UP）" : "";
+  const cond = `<div class="status-row"><span>体力</span><span class="stamina-cell"><i class="st-bar"><i class="${stCls}" style="width:${Math.round(st / maxStamina() * 100)}%"></i></i> ${stLabel}${stMaxNote}</span></div>`;
   // 大会の歩み（既存データから導出。新パラメータは作らない）
   const chapName = { 1: "SMOKE CROWN CUP（地方）", 2: "HAZE: OPEN CLOUD（地区）" }[state.chapter] || `第${state.chapter}章`;
   const progress = state.phase === "cleared" ? "優勝・クリア" : state.phase === "tournament" ? "大会本番" : `DAY ${state.day} / 準備中`;
@@ -7961,8 +7987,9 @@ function finishBaitoOrder() {
   const tier = craft.score >= 92 ? "great" : craft.score >= 72 ? "good" : "rough";
   // リクエスト（指名・苦手抜き）に応えた日は店からのボーナスが増える
   const reqBonus = baitoRequest() ? 500 : 0;
-  // 魅力が高いと指名・リピートが増えて売上ボーナスに乗る（F10: 作りパート以外のステ活用）
-  const charmBonus = Math.round((Math.max(0, (state.stats.charm || 10) - 10) * 30) / 100) * 100;
+  // 魅力★で指名・リピートが増えて売上ボーナスに乗る（★刻み・★1=0〜★5=3000円）
+  const CHARM_TIP_BONUS = [0, 500, 1200, 2000, 3000];
+  const charmBonus = CHARM_TIP_BONUS[statStar("charm") - 1];
   const tip = { great: 5000, good: 2500, rough: 500 }[tier] + reqBonus + charmBonus;
   const reaction = {
     great: "「……うわ、何これ。雲みたい」お客さんは目を丸くして、ゆっくり煙を吐いた。常連になってくれそうな顔だ。",
@@ -7980,9 +8007,9 @@ function finishBaitoOrder() {
         ? [{ speaker: "hajime", face: "normal", text: "（……あれ。いま帰ったお客さんの顔、もう思い出せない。出来は悪くなかった、はずなのに）" }]
         : []),
       { speaker: "", face: "", text: tier === "great" ? "閉店後、スミさんが黙って親指を立てて、その日の給料に売上ボーナスを乗せてくれた。" : tier === "good" ? "スミさんが「上出来だ」と、給料に少し色をつけてくれた。" : "スミさんは何も言わなかったが、まかないがいつもより少しだけ豪華だった。" },
-      // 魅力ボーナスが目に見える額のときだけ、理由をさりげなく一行（F10）
-      ...(charmBonus >= 500
-        ? [{ speaker: "", face: "", text: "帰り際、「君がいる日に、また来るよ」と常連さんに言われた。指名が増えると、店のボーナスも少し弾む。" }]
+      // 魅力★の指名ボーナスが乗ったときは、額を見せて恩恵を可視化（見える化・GG）
+      ...(charmBonus > 0
+        ? [{ speaker: "", face: "", text: `帰り際、「君がいる日に、また来るよ」と常連さんに言われた。指名ボーナス ＋${charmBonus.toLocaleString()}円が売上に乗った。` }]
         : []),
       { type: "apply", stats: { technique: 2 }, money: tip },
     ],
