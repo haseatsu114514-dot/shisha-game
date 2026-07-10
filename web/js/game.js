@@ -5205,21 +5205,16 @@ function beginMaking(mode) {
     // リハーサル・チュートリアルも大会と全く同じ流れ＝SETUP（ハガル選び等）から（N14）
     tournamentStep("setup_bowl");
   };
-  // シーシャ作りパートは「重い」ため読み込み表示を出すが、ゲートで待つのは最初の画面が使う
-  // 数枚だけ（H1改）。全45枚を待つと、その間ずっと中央ゲート(z:200)が被さって速いタップや
-  // 自動テストと競合しうる。残りは低優先度の裏読み(queuePreload)でキャッシュを温め、各工程は
-  // 必要な絵が来ていなくてもCSSアートで描けるので破綻しない。速ければゲートは出ずに即開始
-  const firstAssets = ["bench_base.png", "bench_note.png", "vignette_focus.png",
-    "bowl_empty_silicone.png", "bowl_empty_clay.png", "bowl_empty_phunnel.png",
-    "mix_scale.png", "jar_open.png", "jar_pour.png"];
-  if (typeof queuePreload === "function") {
-    const rest = (D.making_assets || []).filter((n) => !firstAssets.includes(n));
-    queuePreload(rest.map((n) => `assets/ui/making/${n}`)); // 残りは裏で先読み
-  }
+  // シーシャ作りパートのアセットは、突入ゲート（豆知識カード）で全て読み切ってから始める
+  // （オーナー指定・2026-07-10。以前は最初の画面の数枚だけ待って残りを裏読みしていたが、
+  //   工程の途中で絵がポップインするため全読みに変更）。
+  // loadOneImage は onerror でも resolve するので、欠けた画像があっても詰まらない。
+  // 2回目以降の突入はキャッシュ済みで一瞬＝ゲート自体が出ない（220msルール）
+  const makingAssets = (D.making_assets || []).map((n) => `assets/ui/making/${n}`);
   if (typeof withLoadingGate === "function") {
-    withLoadingGate(firstAssets.filter((n) => (D.making_assets || []).includes(n))
-      .map((n) => `assets/ui/making/${n}`), enter);
+    withLoadingGate(makingAssets, enter);
   } else {
+    if (typeof queuePreload === "function") queuePreload(makingAssets);
     enter();
   }
 }

@@ -201,17 +201,26 @@ function loadingGateHide() {
 }
 // rels（"assets/..." 形式の相対パス）が全部読み込み終わるまで待ってから onReady を呼ぶ。
 // 一定時間で終わらない場合だけ画面中央に豆知識カードを出す（速ければ何も出ずに進む）。
-// シーシャ作りパート突入など、重い読み込みをブロッキングで待たせたい箇所用
+// シーシャ作りパート突入など、重い読み込みをブロッキングで待たせたい箇所用。
+// 保険: 読み込みが GATE_MAX_WAIT_MS までに終わらなくても必ず開く（残りは裏で読み続く）＝
+// 回線やブラウザの都合でゲートが永遠に開かない事故を構造的に防ぐ
+const GATE_MAX_WAIT_MS = 10000;
 function withLoadingGate(rels, onReady) {
   const urls = (rels || []).map((r) => assetUrl(r)).filter((u) => !u.startsWith("data:"));
   if (!urls.length) return onReady();
   let shown = false;
+  let done = false;
   const showTimer = setTimeout(() => { shown = true; loadingGateShow(); }, LOAD_INDICATOR_DELAY);
-  Promise.all(urls.map(loadOneImage)).then(() => {
+  const finish = () => {
+    if (done) return;
+    done = true;
     clearTimeout(showTimer);
+    clearTimeout(capTimer);
     if (shown) loadingGateHide();
     onReady();
-  });
+  };
+  const capTimer = setTimeout(finish, GATE_MAX_WAIT_MS);
+  Promise.all(urls.map(loadOneImage)).then(finish);
 }
 
 function escapeHtml(s) {
