@@ -558,7 +558,12 @@
         {
           "speaker": "minto",
           "face": "normal",
-          "text": "……はじめくんなら、少しだけ本音、話してもいいかな。ここ、昔は私の実家の『喫茶店』だったんだ"
+          "text": "……はじめくんなら、少しだけ本音、話してもいいかな"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "駅の向こうにね。昔、私の実家の『喫茶店』があったんだ"
         },
         {
           "speaker": "hajime",
@@ -583,22 +588,27 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "そういう由来だったんだ……。じゃあ、今のこのお店は……？"
+          "text": "そういう由来だったんだ……。その場所、今はどうなってるの？"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "精肉店もね、何年か前に畳んだの。今あの場所、空っぽのまま貸しに出てる"
         },
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "それからずーっと、必死にお金貯めて、あの精肉店の物件を取り返したの！"
+          "text": "だから私、ずーっとお金貯めてるんだ。あの物件は、絶対に私が買い戻すって決めてるから"
         },
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "……何年かかったかは秘密だけど♡ で、改装して今のシーシャ屋にしたってわけ！"
+          "text": "……何年目かは秘密だけど♡ 買い戻したらどうするかも決めてるの"
         },
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "ふふっ、まぁ、どのみち『肉の匂いを消す』って言ったら、ミントが一番でしょ？"
+          "text": "ふふっ、『肉の匂いを消す』って言ったら、ミントが一番でしょ？"
         },
         {
           "speaker": "hajime",
@@ -613,7 +623,7 @@
         {
           "speaker": "minto",
           "face": "normal",
-          "text": "私の人生と、思い出が全部詰まってるお店だから"
+          "text": "この仕事に、私の人生と思い出が全部懸かってるから"
         },
         {
           "speaker": "hajime",
@@ -623,7 +633,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "彼女のビジネスライクな強かさも、すべてはこの場所を守るためだったんだ）"
+          "text": "彼女のビジネスライクな強かさも、すべてはあの場所を取り戻すためだったんだ）"
         },
         {
           "speaker": "minto",
@@ -681,7 +691,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい、いいですよ"
+          "text": "うん、いいよ"
         },
         {
           "speaker": "",
@@ -696,7 +706,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "みんとさん……？"
+          "text": "みんと……？"
         },
         {
           "speaker": "minto",
@@ -761,7 +771,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……忘れません"
+          "text": "……忘れないよ"
         },
         {
           "speaker": "minto",
@@ -771,7 +781,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "みんとさんのシーシャが強いのは、そういうことだったんですね"
+          "text": "みんとのシーシャが強いのは、そういうことだったんだ"
         },
         {
           "speaker": "minto",
@@ -803,7 +813,22 @@
         {
           "speaker": "",
           "face": "",
-          "text": "休日の昼下がり。みんとに誘われて、駅前で待ち合わせをしている。"
+          "text": "ぺぱーみんとに顔を出すと、みんとが待ち構えていたように駆け寄ってきた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくんっ♡ ナイスタイミング！ みんと、今日はこのあと上がりなの"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "ね、ちょっとだけ付き合ってよ。30分後、駅前で待ち合わせねっ♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──駅前。行き交う人を眺めながら、そわそわと待つ。"
         },
         {
           "speaker": "",
@@ -953,24 +978,129 @@
           "text": "──その仕草に、また、あの既視感。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "店員が注文を取りに来た。みんとはメニューを閉じて、いたずらっぽく笑う。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "私はカフェラテ。……で、もう一杯は、はじめくんが選んで"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "──じゃ、お任せで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……っ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──お任せで、一台。きみの好きに作って、いいよ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "記憶の奥で、声が重なる。tonariのカウンター。デビューの夜。名前も知らない、綺麗なお姉さん。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……あ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（──あの人だ。俺のデビューの一台を、最初に飲んでくれた……）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "顔を上げる。みんとがじっとこちらを見ていた。もう、ごまかす顔じゃない。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……気づいた？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、いや、その……"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "ふふ、顔に全部出てるよ。──新人くん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──新人くん。あの夜と、同じ呼び方だった。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "そ。たまにtonariに行ってた『お姉さん』は、私"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "言っとくけど、偵察じゃないからね。あそこの煙が素の私にちょうどいいの。それだけ"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……気になる。でも今は、目の前のみんとを楽しもう）"
+          "text": "じゃあ、あのとき『いいシーシャ屋さんになるよ』って言ってくれたのも……"
         },
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "今日は特別に、いろいろ……教えて、あげる……"
+          "text": "うん、私。……ね、私の目、ちゃんと当たったでしょ？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとが、少しだけ居住まいを正した。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……名前、教えとく。栞──緑川 栞。それが素の私"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "栞さん……"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_surprise",
+          "text": "っ……。い、いきなり呼ばないで。心の準備ってものがあるの"
+        },
+        {
+          "type": "condition",
+          "flag": "_oneesan_id_checked",
+          "next_true": "mf_id"
         },
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "私の知ってる美味しいフレーバーの組み合わせとか、ね"
+          "text": "……ふふ。じゃ、あらためて。今日は特別に、いろいろ教えてあげる"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "私の知ってる、美味しいフレーバーの組み合わせとか、ね"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "ほんとに？ ありがとう"
+          "text": "ほんとに？ ありがとう、栞さん"
         },
         {
           "speaker": "minto",
@@ -983,6 +1113,45 @@
           "text": "……【洞察】が少し上がった。【魅力】が上がった。"
         }
       ],
+      "branches": {
+        "mf_id": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ふいに、記憶がもう一段、奥へ繋がりかける。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "あの夜、差し出された身分証。生年月日の欄。──平成……"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（…………）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（やめておこう。お客さんの秘密は、店に置いていく──tonariで教わった、暗黙のルールだ）"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……ねえ。いま、思い出しちゃいけないこと、思い出してない？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "……いえ、何も"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_surprise",
+            "text": "その敬語、逆に怪しいんだけど！？"
+          }
+        ]
+      },
       "growth_stats": {
         "insight": 2,
         "charm": 3
@@ -1001,7 +1170,7 @@
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "お待たせ。……ふふ、もう驚かないんだね"
         },
         {
@@ -1011,7 +1180,7 @@
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "……ねえ、はじめくん。こうやって二人で会う時、私のこと何て呼ぶか決めた？"
         },
         {
@@ -1021,7 +1190,7 @@
         },
         {
           "speaker": "minto",
-          "face": "surprise",
+          "face": "ura_surprise",
           "text": "っ……！ まだそれ使うの……！？ そ、それはお店の外だけだからねっ！？"
         },
         {
@@ -1031,22 +1200,22 @@
         },
         {
           "speaker": "minto",
-          "face": "normal",
-          "text": "……ていうか、マイナス9歳してるから、みんとの方が年下なんだからね。お姉さん扱い、禁止"
+          "face": "ura_normal",
+          "text": "……ていうか、みんとはハタチ。はじめくんより年下なんだからね。お姉さん扱い、禁止"
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "……しょうがないなぁ、もう"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（マイナス9歳……？）……でも、こうして会ってると、すごく落ち着いてて頼りになるし、つい……"
+          "text": "（年下、なんだよな……？）でも、こうして会ってると、すごく落ち着いてて頼りになるし、つい……"
         },
         {
           "speaker": "minto",
-          "face": "surprise",
+          "face": "ura_surprise",
           "text": "わわわっ、笑わないでよぉ！ みんとは『ピチピチのハタチ』！ わ・か・っ・た？"
         },
         {
@@ -1056,17 +1225,17 @@
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "もーっ……"
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "じゃ、じゃあ今日は、はじめくんの『ちょっと生意気な妹分』として、甘えちゃおー……っと"
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "……でも風邪引かないようにちゃんと上着持ってきた？"
         },
         {
@@ -1078,6 +1247,11 @@
           "speaker": "",
           "face": "",
           "text": "お店の『みんと』と、素の『栞さん』。そのどちらも彼女なのだと、今はもうちゃんと分かっている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【魅力】が上がった。"
         }
       ]
     },
@@ -1160,7 +1334,7 @@
         {
           "speaker": "minto",
           "face": "normal",
-          "text": "みんとはね、大会より自分のお店かな。自分のやり方で、もっといい一台を出せるように磨くよ"
+          "text": "みんとはね、大会よりお店かな。自分のやり方で、もっといい一台を出せるように磨くよ"
         },
         {
           "speaker": "minto",

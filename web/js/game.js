@@ -1761,6 +1761,11 @@ const SPECIAL_REPEAT_VISITS = {
     { id: "ch1_adam_group_soutoku", flag: "_ev_adam_soutoku", minStory: 2 },
     { id: "ch1_adam_outing_dagurikura", flag: "_ev_adam_dagurikura", minStory: 3 },
   ],
+  // 幻臭回は実家バレ（4回目）以降、二度目の私服回は正体判明（5回目）以降にだけ挟む
+  minto: [
+    { id: "ch1_minto_phantom_smell", flag: "_ev_minto_phantom", minStory: 4 },
+    { id: "ch1_minto_private_1", flag: "_ev_minto_private1", minStory: 5 },
+  ],
 };
 
 // ============ LIME（朝のスマホ演出） ============
@@ -2495,7 +2500,7 @@ function showMap(opts = {}) {
     g.className = `map-guide-bubble${gl.y < 26 ? " below" : ""}`;
     g.textContent = guideTarget === "shop"
       ? "スミさんに頼まれた仕入れへ。Dr.fookahをタップ！"
-      : "偵察に行こう。KEMURIKUSAをタップ！";
+      : "スミさんに言われた偵察先。KEMURIKUSAをタップ！";
     g.style.left = `${gl.x}%`;
     g.style.top = `${gl.y}%`;
     pins.appendChild(g);
@@ -7604,9 +7609,9 @@ const CUSTOMER_ENTRIES = {
   baito_trouble_02: { name: "注文違いの女性客", memo: "ブルーベリーとグレープを間違えた。ミスの後のリカバリーが大事" },
   baito_trouble_03: { name: "ボトル転倒の客", memo: "赤い炭が床を転がった。安全第一。炭→水→復旧の優先順位を学んだ" },
   baito_trouble_04: { name: "焦げ臭い苦情の客", memo: "ヒートマネジメントの失敗。炭の位置ひとつで味が変わる" },
-  baito_regular_02: { name: "サラリーマン田中さん", memo: "毎週来る。ネクタイを緩める仕草が来店の合図" },
+  baito_regular_02: { name: "サラリーマン木村さん", memo: "毎週来る。ネクタイを緩める仕草が来店の合図" },
   baito_regular_03: { name: "フリーランスのお兄さん", memo: "いつもはMacで仕事。たまに本を読んでいる日がある" },
-  baito_regular_04: { name: "常連3人の同時来店", memo: "おっちゃん、田中さん、フリーランスのお兄さん。同時は珍しい" },
+  baito_regular_04: { name: "常連3人の同時来店", memo: "おっちゃん、木村さん、フリーランスのお兄さん。同時は珍しい" },
   baito_rush_02: { name: "土曜夜の行列", memo: "入口に2組。待ち時間の案内も大事な仕事" },
   baito_rush_03: { name: "3卓同時リクエスト", memo: "フレーバー変更、灰掃除、追加注文が同時に来た" },
   baito_rush_04: { name: "退勤ラッシュの4組", memo: "10分で4組。ボウルの在庫が足りなくなりかけた" },
@@ -7954,7 +7959,7 @@ function startTutorial() {
     dialogue_id: "tutorial_intro",
     metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" },
     lines: [
-      { speaker: "sumi", face: "normal", text: "おい、始。大会に出るって決めたなら、まず一回、通しで作ってみろ" },
+      { speaker: "sumi", face: "normal", text: "おい、はじめ。大会に出るって決めたなら、まず一回、通しで作ってみろ" },
       { speaker: "sumi", face: "smile", text: "ウチの作業台を貸してやる。テーマ決めから引きまで、本番と同じ流れだ" },
       { speaker: "hajime", face: "smile", text: "はい。（……ふふ、ちょっと腕の見せどころかも）" },
     ],
@@ -8110,7 +8115,7 @@ function startDay1TutorialErrands() {
     dialogue_id: "day1_sumi_shop_errand",
     metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" },
     lines: [
-      { speaker: "sumi", face: "normal", text: "始。お前の道具、まだ揃ってないだろ" },
+      { speaker: "sumi", face: "normal", text: "はじめ。お前の道具、まだ揃ってないだろ" },
       { speaker: "sumi", face: "normal", text: "Dr.fookahに行って、ミントを仕入れてこい。大会の課題フレーバーだ" },
       { speaker: "hajime", face: "normal", text: "はい、行ってきます" },
     ],
@@ -8153,9 +8158,11 @@ function startDay1RivalScouting() {
     dialogue_id: "day1_sumi_scouting_intro",
     metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" },
     lines: [
-      { speaker: "sumi", face: "normal", text: "……ついでに、隣町の店も覗いてこい" },
-      { speaker: "sumi", face: "serious", text: "『ケムリクサ』ってとこだ。同業の煙も知っとけ" },
-      { speaker: "hajime", face: "normal", text: "分かりました。行ってきます" },
+      { speaker: "sumi", face: "normal", text: "ミントは買えたな。──次だ。SMOKE CROWN CUPでお前が当たる相手、まだ煙も知らねえだろ" },
+      { speaker: "sumi", face: "normal", text: "商店街の外れに『ケムリクサ』って店がある。なる──この街でいちばん煙に真面目な男だ" },
+      { speaker: "sumi", face: "serious", text: "客として行って、一服してこい。シーシャ代は勉強代だ。──対戦相手ってのはな、吸えば分かる" },
+      { speaker: "hajime", face: "normal", text: "偵察、ってことですか。（……ちょっとプロっぽいな、それ）" },
+      { speaker: "sumi", face: "normal", text: "コソコソ覗くんじゃねえぞ。堂々と一杯頼んで、舌で覚えてこい" },
     ],
   }, () => {
     // こちらも自動遷移せず、マップで KEMURIKUSA のピンをタップしてもらう（A3）

@@ -17,7 +17,8 @@ const SPEAKER_NAMES = {
   minto: "みんと", mashiro: "ましろ", tsumugi: "つむぎ", tumugi: "つむぎ",
   hazime: "はじめ", pakki: "パッキー", salaryman: "サラリーマン",
   nagumo: "南雲修二", maezono: "前園壮一郎",
-  staff_choizap: "チョイザップスタッフ", kako: "かこ", rira: "りら",
+  // staff_choizap は characters.json の name（スタッフ）に委ねる（C.STATION の場面でも流用されるため）
+  kako: "かこ", rira: "りら",
   oneesan: "お姉さん", // みんとの私服（素）の姿。正体はみんと訪問5回目（ch1_minto_fifth）で判明するまで伏せる
   rin: "凛",
   ageha: "あげは", rei: "零-REI-", kumicho: "神崎竜二",
