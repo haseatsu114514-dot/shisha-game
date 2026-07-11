@@ -38,11 +38,34 @@ while (guard++ < 2000) {
     continue;
   }
   const screen = await page.evaluate(() => document.querySelector(".screen.active")?.id || "none");
-  if (screen === "screen-map") break;
+  if (screen === "screen-map") {
+    // Day1ガイド（A3）: 買い出し・偵察の吹き出しが出ている間は目的地ピンをタップして進める
+    if (await page.locator(".map-guide-bubble").count()) {
+      const target = page.locator("#map-pins .spot-pin.tut-pulse").first();
+      if (await target.count()) await target.click().catch(() => {});
+      await page.waitForTimeout(120);
+      continue;
+    }
+    break;
+  }
   if (screen === "screen-tournament") {
     // チュートリアル: tournament画面のボタンを順次クリック
     const { playTnStep } = await import("./steps.mjs");
     await playTnStep(page);
+    continue;
+  }
+  if (screen === "screen-shop") {
+    // Day1強制の買い出し（N18）: ミントを仕入れてから店を出る
+    const errandPending = await page.evaluate(() => !!(state && state.flags._shop_errand_pending));
+    if (errandPending) {
+      const mintRow = page.locator('.shop-row[data-shop-id="mint"]');
+      if (await mintRow.count()) await mintRow.click().catch(() => {});
+      const buyBtn = page.locator("#shop-buy-btn:not([disabled])");
+      if (await buyBtn.count()) await buyBtn.click().catch(() => {});
+      await page.waitForTimeout(50);
+    }
+    await page.click("#shop-close").catch(() => {});
+    await page.waitForTimeout(30);
     continue;
   }
   if (screen === "screen-dialogue") {
@@ -55,6 +78,10 @@ while (guard++ < 2000) {
   await page.waitForTimeout(50);
 }
 log("reached map");
+// このファイルはDr.fookah/凛UIの検証が目的。Day1強制チュートリアル（N18/N19）が
+// 行動を1つ使うため、以降のテスト用に行動と所持金を余裕のある値へ戻しておく
+// （行動0で凛訪問すると endDay の夜間フローに入ってしまい、この後のテストと無関係な分岐を踏む）
+await page.evaluate(() => { state.ap = 2; state.money = Math.max(state.money, 10000); save(); });
 
 // ---- テスト1: マップからDr.fookahピン → サブメニュー表示 ----
 const fookahPin = page.locator("#map-pins .spot-pin", { hasText: "Dr.fookah" }).first();

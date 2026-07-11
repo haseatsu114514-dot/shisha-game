@@ -16,9 +16,9 @@ const SPEAKER_NAMES = {
   hajime: "はじめ", sumi: "スミさん", naru: "なる", adam: "アダム",
   minto: "みんと", mashiro: "ましろ", tsumugi: "つむぎ", tumugi: "つむぎ",
   hazime: "はじめ", pakki: "パッキー", salaryman: "サラリーマン",
-  nagumo: "南雲修二", maezono: "前園壮一郎", kirishima: "霧島レン",
-  staff_choizap: "チョイザップスタッフ", kako: "かこ", rira: "りら",
-  oneesan: "お姉さん", // みんとの私服（素）の姿。正体は ch1 では明かさない
+  nagumo: "南雲修二", maezono: "前園壮一郎",
+  kako: "かこ", rira: "りら", // staff_choizap は characters.json の「スタッフ」表示に委譲（K16: C.STATION流用時に店名違いの表示が出ていた）
+  oneesan: "お姉さん", // みんとの私服（素）の姿。正体はみんと訪問5回目（ch1_minto_fifth）で判明するまで伏せる
   rin: "凛",
   ageha: "あげは", rei: "零-REI-", kumicho: "神崎竜二",
   dr_kemuri: "チャコール博士",
@@ -26,7 +26,8 @@ const SPEAKER_NAMES = {
   shop_clerk: "店員", old_man: "老人", customer: "お客さん", everyone: "全員",
 };
 window.SPEAKER_NAMES = SPEAKER_NAMES;
-const SPEAKER_ID_ALIASES = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki", oneesan: "minto", kumicho: "ryuji" };
+// kumicho の立ち絵は廃止（2026-07-05 オーナー指定・旧 ryuji 画像は設定不一致のため撤去。新画像が出来たら chr_kumicho_* で追加）
+const SPEAKER_ID_ALIASES = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki", oneesan: "minto" };
 const FACE_ALIASES = {
   hajime: { excited: "smile" },
   naru: { excited: "smile", smug: "serious", fired_up: "serious" },
@@ -51,6 +52,7 @@ const ASSET_ALIASES = {
   "assets/backgrounds/tonari_night.png": "assets/backgrounds/bg_tonari_inside_night.png",
   "assets/backgrounds/eden.png": "assets/backgrounds/bg_eden_shop.png",
   "assets/backgrounds/bg_adam_shop.png": "assets/backgrounds/bg_eden_shop.png",
+  "assets/backgrounds/bg_naru_shop.png": "assets/backgrounds/kemurikusa.png",
 };
 
 // アセット解決: スタンドアロン版では window.ASSET_DATA に data URI が入る
@@ -58,6 +60,157 @@ function assetUrl(rel) {
   rel = ASSET_ALIASES[rel] || rel;
   if (window.ASSET_DATA && window.ASSET_DATA[rel]) return window.ASSET_DATA[rel];
   return "../" + rel;
+}
+
+// ---- 先読み（分割ファイル版のシーン切替・作業台のもたつき対策）----
+// 画像は初回参照時にネットワーク取得が走り、背景や作業台素材（数百KB〜2MB）で
+// 表示の待ちが見える。低優先度の直列キューで先にキャッシュへ温めておく。
+// スタンドアロン版（data URI）は対象外。多重登録は無視する。
+const _preloadedUrls = new Set();
+const _preloadQueue = [];
+let _preloadRunning = false;
+function queuePreload(rels) {
+  for (const rel of rels || []) {
+    if (!rel) continue;
+    const url = assetUrl(rel);
+    if (url.startsWith("data:") || _preloadedUrls.has(url)) continue;
+    _preloadedUrls.add(url);
+    _preloadQueue.push(url);
+  }
+  if (_preloadRunning) return;
+  _preloadRunning = true;
+  const next = () => {
+    const url = _preloadQueue.shift();
+    if (!url) { _preloadRunning = false; return; }
+    const img = new Image();
+    img.decoding = "async";
+    const go = () => setTimeout(next, 40); // 1枚ずつ・描画を邪魔しない間隔で
+    img.onload = go;
+    img.onerror = go;
+    img.src = url;
+  };
+  next();
+}
+
+// ============ ローディング表示（読み込みの体感改善） ============
+// 背景・立ち絵・作業台パーツの初回取得で表示が固まって見える問題への対策。
+// 短い読み込みでは何も出さず（チラつき防止）、右下の小さい「読み込み中」を基本とし、
+// 作業台突入のような重い読み込みだけ画面中央に豆知識/ヒントカード（ソウルライク）も出す。
+const LOAD_INDICATOR_DELAY = 220; // これより速く終われば右下インジケータも出さない
+const LOAD_TIP_ROTATE_MS = 4200;
+
+// 右下インジケータはref countで管理＝背景と立ち絵が同時に読み込み中でも1個だけ出す
+let _loadRefCount = 0;
+let _loadIndicatorTimer = null;
+let _loadIndicatorEl = null;
+function loadIndicatorShow() {
+  _loadRefCount++;
+  if (_loadIndicatorEl || _loadIndicatorTimer) return;
+  _loadIndicatorTimer = setTimeout(() => {
+    _loadIndicatorTimer = null;
+    if (_loadRefCount <= 0) return;
+    const host = document.querySelector("#game");
+    if (!host) return;
+    const el = document.createElement("div");
+    el.id = "load-indicator";
+    el.innerHTML = `<span class="li-spin"></span>読み込み中…`;
+    host.appendChild(el);
+    requestAnimationFrame(() => el.classList.add("show"));
+    _loadIndicatorEl = el;
+  }, LOAD_INDICATOR_DELAY);
+}
+function loadIndicatorHide() {
+  _loadRefCount = Math.max(0, _loadRefCount - 1);
+  if (_loadRefCount > 0) return;
+  if (_loadIndicatorTimer) { clearTimeout(_loadIndicatorTimer); _loadIndicatorTimer = null; }
+  if (_loadIndicatorEl) {
+    const el = _loadIndicatorEl;
+    _loadIndicatorEl = null;
+    el.classList.remove("show");
+    setTimeout(() => el.remove(), 200);
+  }
+}
+// 処理の流れは止めずに、その裏で読み込み中の間だけ右下インジケータを見せる
+// （背景・立ち絵の差し替え用）
+function peekLoading(url) {
+  if (!url || url.startsWith("data:")) return;
+  loadIndicatorShow();
+  const img = new Image();
+  const done = () => loadIndicatorHide();
+  img.onload = done;
+  img.onerror = done;
+  img.src = url;
+}
+
+function loadOneImage(url) {
+  return new Promise((resolve) => {
+    if (!url) return resolve();
+    const img = new Image();
+    img.decoding = "async";
+    const done = () => resolve();
+    img.onload = done;
+    img.onerror = done;
+    img.src = url;
+    if (img.complete) done();
+  });
+}
+
+// 画面中央の豆知識/ヒントカード（重い読み込み専用・ソウルライク）。
+// data/loading_tips.json → D.loading_tips（今後どんどん増える想定）からランダム表示、
+// 複数件あれば長い待ちの間だけ数秒おきにローテーションする
+let _loadGateEl = null;
+let _loadGateTipTimer = null;
+function loadingGateShow() {
+  if (_loadGateEl) return;
+  const host = document.querySelector("#game");
+  if (!host) return;
+  const tips = (window.GAME_DATA && window.GAME_DATA.loading_tips) || [];
+  const pick = () => (tips.length ? tips[Math.floor(Math.random() * tips.length)] : null);
+  const t0 = pick();
+  const el = document.createElement("div");
+  el.id = "loading-gate";
+  el.innerHTML =
+    `<div class="lg-spin"></div>` +
+    `<div class="lg-label">読み込み中…</div>` +
+    (t0 ? `<div class="lg-tip in"><span class="lg-tip-badge">${t0.type === "trivia" ? "豆知識" : "TIPS"}</span><p>${escapeHtml(t0.text)}</p></div>` : "");
+  host.appendChild(el);
+  requestAnimationFrame(() => el.classList.add("show"));
+  if (tips.length > 1) {
+    _loadGateTipTimer = setInterval(() => {
+      const tip = pick();
+      const box = el.querySelector(".lg-tip");
+      if (!box || !tip) return;
+      box.classList.remove("in");
+      setTimeout(() => {
+        box.querySelector(".lg-tip-badge").textContent = tip.type === "trivia" ? "豆知識" : "TIPS";
+        box.querySelector("p").textContent = tip.text;
+        box.classList.add("in");
+      }, 220);
+    }, LOAD_TIP_ROTATE_MS);
+  }
+  _loadGateEl = el;
+}
+function loadingGateHide() {
+  if (_loadGateTipTimer) { clearInterval(_loadGateTipTimer); _loadGateTipTimer = null; }
+  if (!_loadGateEl) return;
+  const el = _loadGateEl;
+  _loadGateEl = null;
+  el.classList.remove("show");
+  setTimeout(() => el.remove(), 260);
+}
+// rels（"assets/..." 形式の相対パス）が全部読み込み終わるまで待ってから onReady を呼ぶ。
+// 一定時間で終わらない場合だけ画面中央に豆知識カードを出す（速ければ何も出ずに進む）。
+// シーシャ作りパート突入など、重い読み込みをブロッキングで待たせたい箇所用
+function withLoadingGate(rels, onReady) {
+  const urls = (rels || []).map((r) => assetUrl(r)).filter((u) => !u.startsWith("data:"));
+  if (!urls.length) return onReady();
+  let shown = false;
+  const showTimer = setTimeout(() => { shown = true; loadingGateShow(); }, LOAD_INDICATOR_DELAY);
+  Promise.all(urls.map(loadOneImage)).then(() => {
+    clearTimeout(showTimer);
+    if (shown) loadingGateHide();
+    onReady();
+  });
 }
 
 function escapeHtml(s) {
@@ -68,6 +221,9 @@ function escapeHtml(s) {
 // [imp] 等の装飾タグは幅0として数え、タグの途中では改行しない。
 // 半角文字は0.5文字として数える（英字交じりの行が早く折れすぎないように）。
 const WRAP_LIMIT = 24;
+// 自動演出（J7）を一度出したあと、次の自動発火まで空ける行数。
+// 短すぎると鬱陶しく、長すぎると「飽きない味付け」にならない。手置きfxの直後も同じ間を置く
+const AUTO_FX_COOLDOWN = 6;
 const WRAP_BREAK_AFTER = "、。，．！？…‥」』）】〉》";  // ここで切ると区切りが良い
 // 行頭禁則: 小書きかな・長音・閉じ括弧に加え、「ん」と小書きカタカナも巻き取り、
 // 「なるさ｜ん」のように名前（〜さん/〜くん）が割れるのを防ぐ
@@ -89,16 +245,21 @@ function autoWrap(raw, limit = WRAP_LIMIT) {
       i++;
       if (line >= limit && i < seg.length) {
         // 現在行の直近の句読点で折れるなら、そこで先に折る。
+        // 文末（。！？）を読点より優先する（G2・2026-07-07: 「〜だよ。あと、」のように
+        // 文をまたいだ直後の読点で折れると、次の文の頭が前の行に取り残されて読みにくい）
         let backSplit = -1;
         const lineStart = out.lastIndexOf("\n") + 1;
-        for (let k = out.length - 1; k >= lineStart; k--) {
-          if (WRAP_BREAK_AFTER.includes(out[k])) {
-            let candidate = k + 1;
-            while (candidate < out.length && WRAP_NO_LINE_START.includes(out[candidate])) candidate++;
-            let firstW = 0;
-            for (let j = lineStart; j < candidate; j++) firstW += out.charCodeAt(j) <= 0xff ? 0.5 : 1;
-            if (firstW >= limit * 0.3) { backSplit = candidate; break; }
+        for (const breakSet of ["。！？", WRAP_BREAK_AFTER]) {
+          for (let k = out.length - 1; k >= lineStart; k--) {
+            if (breakSet.includes(out[k])) {
+              let candidate = k + 1;
+              while (candidate < out.length && WRAP_NO_LINE_START.includes(out[candidate])) candidate++;
+              let firstW = 0;
+              for (let j = lineStart; j < candidate; j++) firstW += out.charCodeAt(j) <= 0xff ? 0.5 : 1;
+              if (firstW >= limit * 0.3) { backSplit = candidate; break; }
+            }
           }
+          if (backSplit >= 0) break;
         }
         if (backSplit >= 0 && backSplit < out.length) {
           const tail = out.slice(backSplit);
@@ -161,6 +322,25 @@ class DialogueEngine {
     this.fullHtml = "";
     this.pages = null;   // 長文の改ページ（1本文を複数ページに分割表示）
     this.pageIdx = 0;
+    this.autoFxGap = 0;  // 自動演出（J7）のクールダウン残り行数
+  }
+
+  // 会話の自動演出（J7・2026-07-09）: 手置きの fx が無い行でも、驚き顔や
+  // 「！！」「！？」の衝撃行で小さな光（imp）・画面揺れ（shake）を自動発火し、
+  // 長い会話の単調さを崩す（アゲハ遭遇の揺れのような演出を全編に薄く配る）。
+  // 乱発すると鬱陶しいので、一度出したら AUTO_FX_COOLDOWN 行はお休みする。
+  // 手置きの {"type":"fx"} / 行付き "fx" は従来どおり最優先（自動はその隙間を埋めるだけ）
+  autoFxFor(line) {
+    if (this.autoFxGap > 0) { this.autoFxGap -= 1; return null; }
+    const text = String(line.text || "");
+    // [imp]タグ行は typeText 側が既に光らせる（#25）＝ここでは重ねず、間だけ空ける
+    if (text.includes("[imp]")) { this.autoFxGap = AUTO_FX_COOLDOWN; return null; }
+    let id = null;
+    if (/[！!][！!]|[！!][？?]|[？?][！!]/.test(text)) id = "shake";          // 叫び・衝撃＝揺れ
+    else if (String(line.face || "") === "surprise") id = "imp";               // 驚き顔＝控えめな光
+    else if (/[…—][！!]/.test(text)) id = "imp";                               // 「……！」＝息を呑む光
+    if (id) this.autoFxGap = AUTO_FX_COOLDOWN;
+    return id;
   }
 
   start(dialogue, onFinish) {
@@ -171,18 +351,69 @@ class DialogueEngine {
     this.waitingChoice = false;
     this.finished = false;
     this.slots = {};
+    this.autoFxGap = 0; // 会話ごとに自動演出のクールダウンをリセット（J7）
     this.el.portraits.innerHTML = "";
+    this.prefetchPortraits(dialogue);
     const meta = dialogue.metadata || {};
     if (meta.bg) this.setBackground(meta.bg);
     this.next();
+  }
+
+  // この会話に登場する立ち絵（speaker×face）を開幕で温める。
+  // 分割ファイル版は表情差分が初回参照時に取得され、表示に間が空くため
+  //（O3・2026-07-04）。スタンドアロン版（data URI）は対象外
+  prefetchPortraits(dialogue) {
+    const seen = new Set();
+    const urls = [];
+    const collect = (lines) => {
+      for (const ln of lines || []) {
+        if (!ln || !ln.speaker || NO_PORTRAIT_SPEAKERS.has(ln.speaker)) continue;
+        const key = `${ln.speaker}|${ln.face || ""}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        const src = this.portraitSrc(ln.speaker, ln.face);
+        if (src && !src.startsWith("data:")) urls.push(src);
+      }
+    };
+    collect(dialogue.lines);
+    for (const k of Object.keys(dialogue.branches || {})) collect(dialogue.branches[k]);
+    // 会話1本ぶんの差分は数枚なので即時・並列で取得してよい
+    for (const u of urls.slice(0, 16)) {
+      const im = new Image();
+      im.decoding = "async";
+      im.src = u;
+    }
   }
 
   setBackground(path) {
     let rel = String(path).replace(/^res:\/\//, "");
     // 昼夜つき背景の自動差し替え（ゲーム側が時間帯を知っているので委譲する）
     if (this.ctx.resolveBg) rel = this.ctx.resolveBg(rel);
-    this.el.bg.style.backgroundImage = `url('${assetUrl(rel)}')`;
+    const url = assetUrl(rel);
+    this.el.bg.style.backgroundImage = `url('${url}')`;
+    // SKIP送りの取得待ち判定（N7）。data URI（スタンドアロン版）は即時扱い
+    this._bgReady = true;
+    if (!url.startsWith("data:")) {
+      const probe = new Image();
+      this._bgReady = false;
+      this._bgProbe = probe;
+      loadIndicatorShow(); // 読み込み中は右下に小さく表示（速ければ表示前に消える）
+      let indicatorDone = false;
+      const clearIndicator = () => { if (!indicatorDone) { indicatorDone = true; loadIndicatorHide(); } };
+      probe.onload = probe.onerror = () => { if (this._bgProbe === probe) this._bgReady = true; clearIndicator(); };
+      probe.src = url;
+      if (probe.complete) { this._bgReady = true; clearIndicator(); } // キャッシュ済みなら同期で立つ
+    }
     if (this.ctx.onBackgroundChange) this.ctx.onBackgroundChange(rel);
+  }
+
+  // SKIP/AUTOが画像の取得より先に進まないようにするための「読み込み待ちがあるか」（N7）
+  assetsPending() {
+    if (this._bgReady === false) return true;
+    for (const img of this.el.portraits.querySelectorAll("img.active")) {
+      if (img.src && !img.complete) return true;
+    }
+    return false;
   }
 
   next() {
@@ -380,7 +611,14 @@ class DialogueEngine {
     const face = String(line.face || "");
     this.curSpeaker = speaker; // 文字送りボイス（#22）のピッチ決定に使う
     // 行付きの感情エフェクト（#26）: {"speaker":..., "fx":"flash"} で行表示と同時に発火
-    if (line.fx && this.ctx.onFx) this.ctx.onFx({ id: String(line.fx) });
+    if (line.fx && this.ctx.onFx) {
+      this.ctx.onFx({ id: String(line.fx) });
+      this.autoFxGap = AUTO_FX_COOLDOWN; // 手置きの直後は自動演出を重ねない
+    } else if (this.ctx.onFx) {
+      // 自動の軽演出（J7）: 手置きが無くても、驚き・衝撃の行で小さな光や揺れを出す
+      const auto = this.autoFxFor(line);
+      if (auto) this.ctx.onFx({ id: auto });
+    }
     // 名前ラベル
     if (speaker) {
       const name = this.resolveName(speaker);
@@ -415,7 +653,17 @@ class DialogueEngine {
       }
       const img = this.el.portraits.querySelector(`img[data-speaker="${speaker}"]`);
       if (img) {
-        img.src = this.portraitSrc(speaker, face);
+        const src = this.portraitSrc(speaker, face);
+        // 表情差分の初回取得中だけ右下に表示。同じURLの再割り当てでは二重に数えない
+        // （src代入だけだと再読み込みイベントが発火せずインジケータが消えなくなるため独自にガード）
+        if (src && src !== img.dataset.loadedSrc && !src.startsWith("data:")) {
+          img.dataset.loadedSrc = src;
+          loadIndicatorShow();
+          const clear = () => loadIndicatorHide();
+          img.addEventListener("load", clear, { once: true });
+          img.addEventListener("error", clear, { once: true });
+        }
+        img.src = src;
         this.applyPortraitTrim(img, speaker, face);
       }
     }
@@ -442,7 +690,16 @@ class DialogueEngine {
     const MAX_PAGE_LINES = 2; // #30 大きめ文字＋最大2行で改ページ
     const allLines = autoWrap(String(raw)).split("\n");
     this.pages = [];
-    for (let k = 0; k < allLines.length; k += MAX_PAGE_LINES) {
+    let start = 0;
+    // 最終ページが数文字だけの「孤立ページ」（例:「ありがたい）」1行だけ）になりそうなら、
+    // 先頭ページを1行にして残りを2行ずつへ寄せ替える（G2・2026-07-07）
+    const w = (s) => { let n = 0; for (const ch of s) n += ch.charCodeAt(0) <= 0xff ? 0.5 : 1; return n; };
+    if (allLines.length > MAX_PAGE_LINES && allLines.length % MAX_PAGE_LINES === 1 &&
+        w(allLines[allLines.length - 1]) <= WRAP_LIMIT * 0.4) {
+      this.pages.push(allLines[0]);
+      start = 1;
+    }
+    for (let k = start; k < allLines.length; k += MAX_PAGE_LINES) {
       this.pages.push(allLines.slice(k, k + MAX_PAGE_LINES).join("\n"));
     }
     if (this.pages.length === 0) this.pages = [""];

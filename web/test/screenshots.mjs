@@ -49,16 +49,29 @@ for (let i = 0; i < 2000; i++) {
     await playTnStep(page);
     continue;
   }
+  if (s === "screen-shop") {
+    // Day1強制の買い出し（N18）: ミントを仕入れてから店を出る
+    const errandPending = await page.evaluate(() => !!(state && state.flags._shop_errand_pending));
+    if (errandPending) {
+      const mintRow = page.locator('.shop-row[data-shop-id="mint"]');
+      if (await mintRow.count()) await mintRow.click().catch(() => {});
+      const buyBtn = page.locator("#shop-buy-btn:not([disabled])");
+      if (await buyBtn.count()) await buyBtn.click().catch(() => {});
+      await page.waitForTimeout(50);
+    }
+    await page.click("#shop-close").catch(() => {});
+    await page.waitForTimeout(30);
+    continue;
+  }
   const c = page.locator("#vn-choices .choice-btn").first();
   if (await c.count()) await c.click(); else await page.click("#vn-click-layer");
   await page.waitForTimeout(15);
 }
 await page.screenshot({ path: `${OUT}/04_map.png` });
 
-// 練習画面（ドリル選択 → 本番と同じミニゲーム）。tonari統合(#9): tonari → 練習 の2段
-await page.locator("#map-pins .spot-pin", { hasText: "tonari" }).first().click();
-await page.waitForSelector("#tonari-menu.show");
-await page.locator("#tonari-menu .spot-btn", { hasText: "シーシャの練習" }).click();
+// 練習画面（ドリル選択 → 本番と同じミニゲーム）。
+// O16でメニューからは撤去（バイトのシフト後導線に統合）のため、スクショ用に直接開く
+await page.evaluate(() => { state.flags._baito_drill_free = true; startPractice(); });
 await page.waitForSelector("#practice-menu .spot-btn");
 await page.screenshot({ path: `${OUT}/05_practice_menu.png` });
 await page.locator("#practice-menu .spot-btn").first().click();
@@ -78,12 +91,15 @@ await page.evaluate(() => { if (typeof tt !== "undefined" && tt && tt.step === "
 await page.locator("#tn-body button", { hasText: "練習を終える" }).click().catch(() => {});
 await page.waitForSelector("#screen-map.active", { timeout: 5000 }).catch(() => {});
 
-// 敗北ルート確認: 大会に低ステータスで突入する
+// 敗北ルート確認: 大会に低ステータスで突入する。
+// __craftBias（craftScore のテスト用の重し）で敗北を保証する＝
+// 採点境界の乱数で「わざと下手に作ったのに勝ってしまう」既知フレークの解消（2026-07-07）
 await page.evaluate(() => {
   state.day = 7;
   state.ap = 0;
   state.flags._ev_day7 = true;
   state.stats = { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 };
+  window.__craftBias = -20;
   startTournament();
 });
 for (let i = 0; i < 2500; i++) {
@@ -139,19 +155,6 @@ for (let i = 0; i < 2500; i++) {
       const nb = page.locator("#tn-body button", { hasText: /次へ|結果を見る/ });
       if (await nb.count()) await nb.click().catch(() => {});
       else await page.evaluate(() => { if (typeof tnNext === "function" && tt && tt.step === "coalfire") tnNext("coalfire"); });
-    }
-    else if (t.includes("集中")) {
-      // わざと雑念を払わない（敗北ルート用）
-      let shot = false;
-      for (let k = 0; k < 90; k++) {
-        if (!shot && (await page.locator(".focus-word").count())) {
-          await page.screenshot({ path: `${OUT}/08c_focus.png` });
-          shot = true;
-        }
-        const fin = page.locator("#tn-body button", { hasText: "仕上げに入る" });
-        if (await fin.count()) { await fin.click(); break; }
-        await page.waitForTimeout(200);
-      }
     }
     else if (t.includes("炭替え・調整")) await page.locator(".spot-btn", { hasText: "このままでいく" }).click();
     else if (t.includes("テーマ選択")) await page.locator(".spot-btn", { hasText: "高火力" }).click();
@@ -226,9 +229,13 @@ log("end:", endTitle);
 await page.screenshot({ path: `${OUT}/10_end.png` });
 if (!endTitle.includes("GAME OVER")) throw new Error("expected GAME OVER, got " + endTitle);
 
-// 再挑戦でテーマ選択に戻ること
+// 再挑戦でテーマ選択に戻ること。作りパート突入は素材読み込みゲート（withLoadingGate）を
+// 挟むため即時ではない＝ポーリングで待つ（固定100msだと初回ロード分だけ足りずに落ちる）
 await page.locator("#screen-end button", { hasText: "もう一度挑戦する" }).click();
-await page.waitForTimeout(100);
+await page.waitForFunction(
+  () => (document.querySelector("#tn-title")?.textContent || "").includes("機材選択"),
+  { timeout: 5000 },
+);
 const t2 = await page.locator("#tn-title").textContent();
 if (!t2.includes("機材選択")) throw new Error("retry did not restart tournament");
 log("defeat → retry OK");

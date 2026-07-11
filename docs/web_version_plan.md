@@ -72,6 +72,39 @@
 - jsDelivr / statically.io は HTML を text/plain で返すため使えない（検証済み）
 - スマホは横向き推奨（縦だと回転ヒントが出る）。PC/スマホどちらも同じURLでOK
 
+## 2026-07-08 セッション（同ブランチ・第3便: ロード演出／バランス再調整／立ち絵プロンプト控え）
+
+詳細は `docs/owner_requests.md` の 2026-07-08 表（H1〜H5）。要点:
+
+- **ローディング表示（H1）**: engine.js に `withLoadingGate(rels, onReady)`（重い読み込みを
+  ブロックし遅い時だけ中央に豆知識カード）と `loadIndicatorShow/Hide`（背景・立ち絵差し替え中の
+  右下インジケータ）。作りパート突入 `beginMaking()` が全 making_assets の読み込みを待つ。
+  豆知識は `data/loading_tips.json`（build_data が D.loading_tips へ束ねる・今後追加していく）。
+  ⚠️ `beginMaking` は showScreen とパネル空化を**同期で先に**やってから gate に入る
+  （古いボタンが読み込み待ちの間に掴まれるのを防ぐ）。テストは作りパート突入を固定waitでなく
+  「機材選択」表示のポーリングで待つこと（screenshots.mjs 修正済み）
+- **体力再調整（H3）**: sleep 14（F8で19→今回14）。balance.mjs 許容も検討≤5回に緩めた
+- **好感度（H4）**: AFFINITY_PTS.repeat 3→4（テンプレ訪問2連続の隙間を縮める最小調整）
+- **立ち絵プロンプト控え（H5）**: `docs/portrait_prompts_pending.md` に未生成キャラ13体分の
+  Codex発注プロンプトを完成品で常備。りゅうじは **chr_kumicho_*** で追加する運用（旧 ryuji_ は廃止済み）
+
+## 2026-07-07 セッション（ブランチ claude/game-balance-ui-fixes-1saylu・プレイ感想12件＋テキスト品質5件）
+
+詳細は `docs/owner_requests.md` の 2026-07-07 の2表（F1〜F12・G1〜G5）。構造的に大きいもの:
+
+- **工程順の変更（F2）**: 調整は「提供後の熱管理」として吸い出し・提供の後ろへ移設。
+  R1=組み立て → R2=吸い出し・提供 → R3=調整。tt.care が craftScore とリザルト内訳に乗る
+- **ステ育成の段階制（F10）**: gainStat が経験値制に（★帯ごとに+1のコストが1/1.5/2/3/4倍。
+  端数は state.statXp）。魅力=バイト売上ボーナス・根性=体力消耗軽減 も追加
+- **路上占い師（F11）**: ch1 の DAY3/6/10/13 のみ出現する「？」スポット。
+  相性占い5,000円→指名相手の次の好感度1.5倍（gainAffinity の fortunePts で消費）
+- **テキスト規範（G1〜G5）**: 句読点・改行の正本は `.claude/skills/text-style/SKILL.md`。
+  自動整形 `tools/tidy_dialogue_text.py`／台詞エディタ `tools/text_editor_server.py`（:8321）。
+  engine.js autoWrap は文末優先折り＋孤立ページ回避になった
+- **立ち絵**: 凛の赤フリンジ除去 `tools/defringe_sprite.py`（⚠️一括適用禁止・1キャラずつ目視）。
+  みんとは頭部重心で水平整列（⚠️ `characters_backup/` は過去セッションの古い座標系が混ざって
+  いるので**一括コピーで復元しない**。復元は git から）
+
 ## 2026-07-03 第1章ブラッシュアップ（レビュー反映・全部盛り #1〜#37）★全フェーズ実装済み
 
 **開発ブランチ: `claude/exciting-pascal-nkvwhs`（旧 `claude/adoring-franklin-nzt0k8` の
@@ -387,6 +420,46 @@
 - **吸い出しのペナルティ調整（オーナー指示）**: 最低2回・**3回までは無傷**・4回目以降は
   1回ごとに craft -3（「葉が痩せる」）。やめ時は自分で選ぶ。UI に⚠警告、用語集・CLAUDE.mdも更新
 - 正典化: story doc（香りの識別子=アゲハはホワイトグミベア、Ch1の引き#7〜9）・CLAUDE.md ID表
+
+## 2026-07-04 ストーリー添削反映（ch1添削＋なる強化・レポート全採用）
+
+`docs/story_review_report_20260704.md` のB1〜B9・C-1〜C-5・D1〜D5を実装（詳細はレポート）。実装上の要点と**将来の配線メモ**:
+
+- **flag条件を追加**: dialogue の `{"type":"condition","condition_type":"flag","flag":"..."}` が使えるようになった（game.js `evalCondition`）。`ch1_meet_rivals` の既知/初対面分岐と `ch1_naru_promise` のインタビュー回収で使用中。
+- **ch1優勝フロー変更**: `ch1_tournament_after` → 採点表LIME（`postClearPhone`）→ **`ch1_naru_promise`（新規・勝った方が作る回収）** → クリア画面。
+- **ch2予選通過の夜**: `ch2_adam_distance`（冷）→ **`ch2_naru_warm`（新規・温）** の順で再生（stage設定の `after2` フィールド）。
+- **⚠️ ch3エンジン実装時の配線（忘れずに）**: ①全国優勝の夜に **`ch3_naru_reconcile`**（和解LIME・ch3_main.json先頭）を再生 ②以後ケムリクサ訪問で **`ch1_naru_after_return`**（ch1でなる訪問済み）/ **`ch1_naru_after_return_firstshop`**（未訪問）を発火。この2本は現在**未接続**（dialogueのcommentにも記載）。③これ以降はじめ→なるは**タメ口**。
+- **⚠️ 発見: `ch1_interval.json` は全編未接続**（interval_day1_morning等5本。game.jsから一切呼ばれない）。ch1→ch2にインターバルパートを作る場合はここを配線する。当面は `ch1_naru_promise` が実質のインターバルを担う。
+- **なるの大会遍歴の正史**は `brand/story_and_structure.md`「なる（鳴切亮太）のルート」に一本化（敗者復活戦は廃止済み・別ラインの地元大会から勝ち直す）。
+
+## 次回への引き継ぎ（2026-07-09 J便・ブランチ claude/game-balance-fortune-teller-8ww0qx）★最新
+
+オーナー要望7件（J1〜J7）を実装してマージ。詳細は `docs/owner_requests.md` の J テーブルが正。
+**トークン都合でオーナー指示によりここでストップ**したため、以下を次セッションで拾うこと。
+
+### テスト状況（重要）
+- 緑: lint ERROR 0／build両方／reel・kuji・portraits・balance・**playthrough**
+- **未実行: `ch2.mjs`・`screenshots.mjs`**（ストップ指示のため）。engine.js の自動演出（J7）は
+  全章の会話に効くので、**次セッション冒頭でこの2本を先に回して全緑を確認**する。
+  万一 fx 起因で落ちたら `AUTO_FX_COOLDOWN`（engine.js）や `autoFxFor` の条件を見る。
+
+### 今回入れたものの場所（触るときの手がかり）
+- **占い師（3,000円・タロットの老婆）**: game.js `FORTUNE_FEE`／`doFortune()` の台詞
+  ／characters.json `uranaishi`。口調は「だいぶ怪しいが実力は本物」（笑い声ヒヒ・一人称アタシ）。
+- **会話の自動演出（J7）**: engine.js `autoFxFor()`＝「！！」「！？」→shake／驚き顔・「……！」→imp。
+  1回出したら6行休み（`AUTO_FX_COOLDOWN`）。手置き `type:"fx"`・`[imp]` タグは従来優先で二重発火なし。
+  演出の体感頻度はオーナーのプレイ感想を聞いて調整する。
+- **体力バー伸長（J6）**: game.js `updateHud()`（HUD・92px基準）と `mainStatusHtml()`（STATUS画面・90px基準）。
+  根性★で器が増えるとバー自体が物理的に伸びる。flex なので他HUDと被らない。
+- **ステ制度点検（J1）**: 5ステ全部に★刻みの恩恵が配線済みを確認、修正不要と判断
+  （洞察には雑念弾幕の湧き抑制という説明外のおまけ効果もある＝害なしで存置）。
+
+### 次にやること（立ち絵の発注待ち）
+1. `docs/portrait_prompts_pending.md` を更新済み: **uranaishi は新デザイン**（ローブの老婆・タロット・
+   顔はフードの陰）に書き直し、**「tonari のお客さん」節を新設**（salaryman＋モブ客5種）。
+   オーナーから画像が来たら pixelize→組み込み（コマンドは各項目に記載）。
+2. **salaryman は生成すれば即立ち絵が出る**（既存speaker）。モブ客5種（mob_occhan 等）は
+   組み込み時に characters.json へ登録＋バイトイベントに客の立ち絵を出す配線が必要（現状は地の文のみ）。
 
 ## 次回への引き継ぎ（2026-06-14 → Codexへ）★まずここを読む
 

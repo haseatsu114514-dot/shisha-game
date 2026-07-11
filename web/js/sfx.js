@@ -212,9 +212,12 @@ const SFX = (() => {
       const f = p.mod
         ? p.freq * (0.7 + Math.random() * 0.9)      // パッキー: ピッチが暴れる変調ボイス
         : p.freq * (0.95 + Math.random() * 0.1);    // 通常: わずかな揺らぎだけ
+      // 等ラウドネス補正（A8）: 低音キャラ（スミ・組長）と高音キャラ（みんと等）は
+      // 同じ音量だと耳に残りにくい。中音域(700Hz)から離れるほど持ち上げ、全体も気持ち増し
+      const loud = 1 + Math.min(0.6, Math.abs(Math.log2(f / 700)) * 0.3);
       blip({
         freq: f, type: p.type || "sine",
-        a: 0.001, d: 0.02, r: 0.03, peak: p.peak || 0.05,
+        a: 0.001, d: 0.02, r: 0.03, peak: Math.min(0.12, (p.peak || 0.05) * 1.2 * loud),
         filterFreq: p.filterFreq || 4200, q: 1.2, wet: 0.06,
       });
     },

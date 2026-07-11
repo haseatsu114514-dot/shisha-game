@@ -1,6 +1,72 @@
 {
   "dialogues": [
     {
+      "dialogue_id": "ch3_naru_reconcile",
+      "comment": "ch2絶縁（ch2_naru_confrontation）の和解。ch3エンジン実装時: 全国優勝の夜（ましろ回復後）に再生→以後ケムリクサ訪問で ch1_naru_after_return（訪問済み）/ ch1_naru_after_return_firstshop（未訪問）を発火する。これ以降はじめ→なるはタメ口（ch4「ありがとう、なる」への接続）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "全国優勝の夜。ホテルに戻ると、スマホが震えた。──なるさんからだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あの夜から、ずっと止まっていた名前。指が、一瞬だけ迷った。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "全国優勝、見てた。客席から"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "言ってなかったけど、俺も全国に来てたんだ。別ブロック。──負けた"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "地元から勝ち直して、また負けて。それでもまだ、答え探しの途中でさ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "今日の煙、ちゃんとお前だった"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "──それだけ言いたくてさ。おかえり"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……なるさん。俺、あの時"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "あー、いい。全部いい。今度、店で聞く"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "あと、返信でさん付けすんな。負けた男に敬語使うな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "既読をつけたまま、しばらく画面が滲んで見えなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【根性】が上がった。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch3_opening",
       "lines": [
         {
@@ -11,12 +77,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "再びの東京……。全国から強豪が集まるシーシャの激戦区。"
+          "text": "再びの東京……。全国から強豪が集まるシーシャの激戦区"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "この雑多でせわしない空気の匂いにも、少しだけ慣れてきた気がする。"
+          "text": "この雑多でせわしない空気の匂いにも、少しだけ慣れてきた気がする"
         },
         {
           "speaker": "hajime",
@@ -54,7 +120,7 @@
         {
           "speaker": "hajime",
           "face": "sad",
-          "text": "（俺は……ここまで勝ち抜いてきたけど、やっぱり「これ」がない。"
+          "text": "（俺は……ここまで勝ち抜いてきたけど、やっぱり「これ」がない"
         },
         {
           "speaker": "hajime",
@@ -74,7 +140,7 @@
         {
           "speaker": "hajime",
           "face": "sad",
-          "text": "（あの時のあげはさんと同じだ。今作れてるクオリティが、いつ崩れるか分からない。"
+          "text": "（あの時のあげはさんと同じだ。今作れてるクオリティが、いつ崩れるか分からない"
         },
         {
           "speaker": "hajime",
@@ -84,7 +150,7 @@
         {
           "speaker": "hajime",
           "face": "sad",
-          "text": "（みんなには戻る場所がある。「自分のスタイル」がある。俺にはそれがない。"
+          "text": "（みんなには戻る場所がある。「自分のスタイル」がある。俺にはそれがない"
         },
         {
           "speaker": "hajime",
@@ -142,7 +208,7 @@
         {
           "speaker": "hajime",
           "face": "sad",
-          "text": "（技術の差。環境の差。フレーバーの質の差。"
+          "text": "（技術の差。環境の差。フレーバーの質の差"
         },
         {
           "speaker": "hajime",
@@ -238,7 +304,7 @@
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "（明日の大会。自分のシーシャが何なのか、まだ分からない。"
+          "text": "（明日の大会。自分のシーシャが何なのか、まだ分からない"
         },
         {
           "speaker": "hajime",
@@ -396,7 +462,7 @@
         {
           "speaker": "minto",
           "face": "normal",
-          "text": "「ううん、私の方こそ。大好きなだんな様の晴れ舞台だもん♡ 絶対見たいよ。"
+          "text": "「ううん、私の方こそ。大好きなだんな様の晴れ舞台だもん♡ 絶対見たいよ"
         },
         {
           "speaker": "minto",
@@ -496,7 +562,7 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "「明日勝てたら……ホテルの最上階で、ガチ最高の『ご褒美』……用意しといてあげるから。"
+          "text": "「明日勝てたら……ホテルの最上階で、ガチ最高の『ご褒美』……用意しといてあげるから"
         },
         {
           "speaker": "ageha",
@@ -596,7 +662,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（いよいよだ……。"
+          "text": "（いよいよだ……"
         },
         {
           "speaker": "hajime",
@@ -611,7 +677,7 @@
         {
           "speaker": "nandi",
           "face": "smile",
-          "text": "ナマステ。君もしや日本のチャレンジャー？ 私のチャイ・シーシャ、あとで吸わせてあげるヨ。"
+          "text": "ナマステ。君もしや日本のチャレンジャー？ 私のチャイ・シーシャ、あとで吸わせてあげるヨ"
         },
         {
           "speaker": "hajime",
@@ -636,7 +702,7 @@
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "（零-REI-さん……。ほとんど喋らない。けど、所作に一切の無駄がない。"
+          "text": "（零-REI-さん……。ほとんど喋らない。けど、所作に一切の無駄がない"
         },
         {
           "speaker": "hajime",
@@ -1096,7 +1162,7 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "（いよいよだ……！って、待て。"
+          "text": "（いよいよだ……！って、待て"
         },
         {
           "speaker": "hajime",
@@ -1429,7 +1495,7 @@
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "うんぅ。正解がないから、その日のわたしの気持ちで作るの。"
+          "text": "うんぅ。正解がないから、その日のわたしの気持ちで作るの"
         },
         {
           "speaker": "mashiro",

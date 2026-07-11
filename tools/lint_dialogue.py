@@ -113,12 +113,24 @@ def main() -> int:
                 if "\\n" in text or "\n" in text:
                     warns.append(f"{where}: 手動改行を含む（autoWrap に任せたい）")
 
+                # 句読点規範（G1・2026-07-07 オーナー指定。正本: .claude/skills/text-style）
+                # 「。……＋短い続き」だけ警告（続きが独立文なら「。……」のままで良い＝tidyと同じ判定）
+                if re.search(r"。(……|…)(?![^。]*。)(?=[^。」』）]{1,8}[」』）]?$)", text):
+                    warns.append(f"{where}: 「。……＋短い続き」→「、……」に（tidy_dialogue_text.py で自動整形可）")
+                if re.match(r"^[「（]?(え|あ|お|わ|うわ|ん)。", text):
+                    warns.append(f"{where}: 冒頭の間投詞のあとは「。」でなく「、」（例: 「え、俺が〜」）")
+                if sp and text.rstrip("」』）").endswith("。"):
+                    warns.append(f"{where}: 台詞の末尾「。」は取る（本作の台詞は末尾句点なしで統一）")
+                if sp and text.count("。") >= 3:
+                    warns.append(f"{where}: 台詞に「。」が3個以上。行の分割を検討（。の多すぎ対策）")
+
                 flen = fullwidth_len(text)
                 if flen > MAX_PAGE_FULLWIDTH:
                     warns.append(f"{where}: 1台詞が全角{flen:.0f}字（>48）。改ページで割れやすい → 台詞を分ける")
 
                 if "上がった" in text and CUE_RE.search(text):
                     phrase = "大きく上がった" if "大きく上がった" in text else \
+                             "かなり上がった" if "かなり上がった" in text else \
                              "少し上がった" if "少し上がった" in text else "上がった"
                     stats = "/".join(s for s in (STAT_WORDS + ["好感度"]) if s in text)
                     warns.append(f"{where}: 報酬キュー検出（{stats}・{phrase}）→ 意図通りか確認")

@@ -2,6 +2,64 @@
   "comment": "第2章後半『外側の崩壊』── 勝ち続けるはじめから、仲間が一人ずつ離れていく。テイルズオブジアビス型の孤立アーク。味覚スランプ（内側の崩壊）と並走する。ch2エンジン実装時に組み込む。",
   "dialogues": [
     {
+      "dialogue_id": "ch2_naru_warm",
+      "metadata": {
+        "bg": "res://assets/backgrounds/kemurikusa.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その足で、ケムリクサに寄った。──ドアを開けた瞬間、なるさんが両手を上げた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "excited",
+          "text": "見てたぞ、予選！ おいライバル、ちょっと強くなりすぎじゃね？"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "ほら座れ。祝いの一台……は、勝った方が作るんだったな"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "カウンター、貸してやるよ。俺の店の葉、好きに使え"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "笑いながら、二人で一台ずつ作った。なるさんは吸うたび、大げさに悔しがってみせた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "県の連中の癖、まとめといた。あとでノートの写真送るわ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……いいんですか、そこまで"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "いいんだよ。お前が勝ち上がるほど、俺の負けの価値も上がるんでね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──この頃はまだ、二人で笑っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【根性】が少し上がった。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch2_naru_confrontation",
       "metadata": {
         "bg": "res://assets/backgrounds/kemurikusa.png"
@@ -65,7 +123,7 @@
         {
           "speaker": "naru",
           "face": "serious",
-          "text": "ヴォルクの精度に、チャコール博士のデータに、あげはのバイブス。"
+          "text": "ヴォルクの精度に、チャコール博士のデータに、あげはのバイブス"
         },
         {
           "speaker": "naru",
@@ -80,12 +138,12 @@
         {
           "speaker": "naru",
           "face": "serious",
-          "text": "それは吸収じゃねえ。借り物で着飾ってるだけだ。"
+          "text": "それは吸収じゃねえ。借り物で着飾ってるだけだ"
         },
         {
           "speaker": "naru",
           "face": "serious",
-          "text": "──吸収ってのは、リスペクトして自分のものにすることだろ。"
+          "text": "──吸収ってのは、リスペクトして自分のものにすることだろ"
         },
         {
           "speaker": "naru",
@@ -269,7 +327,7 @@
         {
           "speaker": "tsumugi",
           "face": "sad",
-          "text": "……色が、見えないんです。はじめさんの煙、前は淡いオレンジ色だったのに。"
+          "text": "……色が、見えないんです。はじめさんの煙、前は淡いオレンジ色だったのに"
         },
         {
           "speaker": "tsumugi",
@@ -284,7 +342,7 @@
         {
           "speaker": "tsumugi",
           "face": "sad",
-          "text": "それに……前は、お店に入った瞬間に分かったんです。あ、はじめさんの煙だ、って。"
+          "text": "それに……前は、お店に入った瞬間に分かったんです。あ、はじめさんの煙だ、って"
         },
         {
           "speaker": "tsumugi",
@@ -294,7 +352,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（共感覚のつむぎさんに、俺の煙の色が見えない。──味のしない俺と、色の見えない彼女。"
+          "text": "（共感覚のつむぎさんに、俺の煙の色が見えない。──味のしない俺と、色の見えない彼女"
         },
         {
           "speaker": "hajime",

@@ -35,13 +35,13 @@ log("disclaimer acknowledged");
 // 行動計画（マップで上から順に消費する）
 // キャラ訪問でスポットが解禁される順序も兼ねて検証する
 const plan = [
-  "tonariでバイト", "Dr.fookah", "スミさんと話す",
+  "tonariでバイト", "Dr.fookah", "お客さんとして利用",
   "KEMURIKUSA", "EDEN",
   "PEPPERMINT", "Dr.fookah", "カフェ",
   "観音堂", "Dr.fookah", "チョイザップ",
-  "シーシャの練習", "常連席",
+  "tonariでバイト", "お客さんとして利用",
   "tonariでバイト", "C.STATION",
-  "シーシャの練習", "家に帰る",
+  "tonariでバイト", "家に帰る",
 ];
 let planIdx = 0;
 let guard = 0;
@@ -61,6 +61,12 @@ while (guard++ < 5000) {
     if (tr !== lastTrace || guard % 500 === 0) { log(`[g${guard}]`, tr); lastTrace = tr; }
   }
   // LIME（朝のスマホ）が開いていたら返信して進める（先頭の返信＝招待は受ける）
+  // 初回お誘いのシステムヒント（O12）が出ていたらOKで閉じる
+  if (await page.locator("#hint-overlay .hint-ok").count()) {
+    await page.locator("#hint-overlay .hint-ok").click().catch(() => {});
+    await page.waitForTimeout(80);
+    continue;
+  }
   if (await page.locator("#phone-overlay.show").count()) {
     if (!limeSeen) { limeSeen = true; log("LIME morning phone shown"); }
     const reply = page.locator("#phone-overlay .lime-reply").first();
@@ -90,6 +96,10 @@ while (guard++ < 5000) {
   }
   if (screen === "screen-gameover") throw new Error("unexpected game over");
   if (screen === "screen-dialogue") {
+    // 体力警告（stamina_warning）は「構わず続ける」を選んで前へ進める。既定の先頭選択
+    // （やめておく＝cancel）だと行動を消費せず日が進まないため（低体力日の足踏み防止）
+    const pushBtn = page.locator("#vn-choices .choice-btn", { hasText: "構わず続ける" });
+    if (await pushBtn.count()) { await pushBtn.first().click().catch(() => {}); await page.waitForTimeout(15); continue; }
     const choice = page.locator("#vn-choices .choice-btn").first();
     if (await choice.count()) await choice.click();
     else await page.click("#vn-click-layer");
@@ -97,6 +107,18 @@ while (guard++ < 5000) {
     continue;
   }
   if (screen === "screen-shop") {
+    // Day1強制の買い出し（N18）: ミントを選んで詳細パネルの「仕入れる」を押すまで店を出られない
+    const errandPending = await page.evaluate(() => !!(state && state.flags._shop_errand_pending));
+    if (errandPending) {
+      const mintRow = page.locator('.shop-row[data-shop-id="mint"]');
+      if (await mintRow.count()) await mintRow.click().catch(() => {});
+      const buyBtn = page.locator("#shop-buy-btn:not([disabled])");
+      if (await buyBtn.count()) await buyBtn.click().catch(() => {});
+      await page.waitForTimeout(50);
+      await page.click("#shop-close").catch(() => {});
+      await page.waitForTimeout(30);
+      continue;
+    }
     // 凛さんのショールーム（1日1回）→ なければ店を出る
     const rin = page.locator("#shop-rin:not([disabled])");
     if (await rin.count()) { await rin.click(); await page.waitForTimeout(50); continue; }
@@ -105,6 +127,25 @@ while (guard++ < 5000) {
     continue;
   }
   if (screen === "screen-map") {
+    // Day1ガイド（A3）: 買い出し・偵察は目的地ピンだけ有効＝吹き出しが出ていたら目的地をタップ
+    if (await page.locator(".map-guide-bubble").count()) {
+      const target = page.locator("#map-pins .spot-pin.tut-pulse").first();
+      if (await target.count()) await target.click().catch(() => {});
+      await page.waitForTimeout(120);
+      continue;
+    }
+    // 体力が低い日はまず家で休む（実プレイと同じ判断）。低体力でシーシャ行動を選ぶと
+    // 警告ダイアログが出て、cancel だと行動を消費せず日が進まない＝プラン足踏みになる。
+    // 就寝回復を絞った新バランス（sleep14）だと中盤で低体力に入るので、素直に休ませる
+    const lowStam = await page.evaluate(() => typeof state !== "undefined" && state && (state.stamina ?? 100) < 30);
+    if (lowStam) {
+      const rest = page.locator(".spot-btn", { hasText: "家に帰る" }).first();
+      if (await rest.count() && !(await rest.isDisabled())) {
+        await rest.click({ timeout: 3000 }).catch(() => {});
+        await page.waitForTimeout(30);
+        continue;
+      }
+    }
     const label = plan[planIdx % plan.length];
     planIdx++;
     // Dr.fookah(T28): ピン→サブメニュー[物販/凛]。テストは物販を選んで screen-shop へ（その先で #shop-rin が凛）
@@ -118,8 +159,8 @@ while (guard++ < 5000) {
       await page.waitForTimeout(30);
       continue;
     }
-    // tonari統合(#9): バイト/練習/スミさん/常連席 は tonari ピン → サブメニューの2段
-    const isTonariSub = ["tonariでバイト", "シーシャの練習", "スミさんと話す", "常連席"].some((s) => label.includes(s));
+    // tonari統合(O16): 「お客さんとして利用/バイト」の2択は tonari ピン → サブメニューの2段
+    const isTonariSub = ["tonariでバイト", "お客さんとして利用"].some((s) => label.includes(s));
     if (isTonariSub) {
       try {
         const pin = page.locator("#map-pins .spot-pin", { hasText: "tonari" }).first();
@@ -184,11 +225,17 @@ await page.evaluate(() => {
 });
 
 // 大会: 機材 → テーマ → ミックス → パック → 穴あけ → 炭起こし → 配置 →
-//       蒸らし(待ちビート) → 会話 → 集中 → 吸い出し → 結果
+//       蒸らし(待ちビート) → 会話 → 調整 → 吸い出し → 結果
 guard = 0;
 let postPhoneSeen = false;
 while (guard++ < 3000) {
   // 優勝の夜のスマホ（なるの採点表 →「？？？」通知）も読み進める
+  // 初回お誘いのシステムヒント（O12）が出ていたらOKで閉じる
+  if (await page.locator("#hint-overlay .hint-ok").count()) {
+    await page.locator("#hint-overlay .hint-ok").click().catch(() => {});
+    await page.waitForTimeout(80);
+    continue;
+  }
   if (await page.locator("#phone-overlay.show").count()) {
     if (!postPhoneSeen) { postPhoneSeen = true; log("post-victory LIME shown"); }
     const reply = page.locator("#phone-overlay .lime-reply").first();

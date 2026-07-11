@@ -27,14 +27,6 @@ export async function playTnStep(page, opts = {}) {
       await page.waitForTimeout(40);
     }
     await page.locator("#tn-body button", { hasText: /次へ|結果を見る/ }).click();
-  } else if (title.includes("集中")) {
-    for (let k = 0; k < 60; k++) {
-      const fin = page.locator("#tn-body button", { hasText: "仕上げに入る" });
-      if (await fin.count()) { await fin.click(); break; }
-      const w = page.locator(".focus-word");
-      if (await w.count()) await w.first().click().catch(() => {});
-      await page.waitForTimeout(150);
-    }
   } else if (title.includes("炭替え・調整")) {
     // 調整ラウンド: 勝ちルートでは現状維持
     await page.locator(".spot-btn", { hasText: "このままでいく" }).click();

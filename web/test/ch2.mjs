@@ -32,6 +32,9 @@ await page.evaluate(() => {
 });
 await page.evaluate(() => maybeStartConfession(() => {}));
 for (let i = 0; i < 200; i++) {
+  // 告白前の一拍（P9・2026-07-04）: マップの #map-beat をタップして本編へ
+  const mb = page.locator("#map-beat");
+  if (await mb.count()) { await mb.click().catch(() => {}); await page.waitForTimeout(30); continue; }
   const c = page.locator("#vn-choices .choice-btn").first();
   if (await c.count()) {
     const t = await c.textContent();
@@ -54,6 +57,8 @@ await page.evaluate(() => {
 await page.waitForTimeout(400);
 let warned = false;
 for (let i = 0; i < 300; i++) {
+  const mb2 = page.locator("#map-beat");
+  if (await mb2.count()) { await mb2.click().catch(() => {}); await page.waitForTimeout(30); continue; }
   const c = page.locator("#vn-choices .choice-btn").first();
   if (await c.count()) {
     const texts = await page.locator("#vn-choices .choice-btn").allTextContents();
@@ -137,8 +142,21 @@ await page.evaluate(() => {
   morningPhone(() => {});
 });
 await page.waitForSelector("#phone-overlay.show");
-await page.locator("#phone-overlay .lime-reply", { hasText: "行く" }).click();
+// 初回お誘いヒント（O12）が被っていたら閉じてから「行く」
+for (let i = 0; i < 100; i++) {
+  const ok = page.locator("#hint-overlay .hint-ok");
+  if (await ok.count()) { await ok.click().catch(() => {}); await page.waitForTimeout(80); continue; }
+  const go = page.locator("#phone-overlay .lime-reply", { hasText: "行く" });
+  if (await go.count()) { await go.click().catch(() => {}); break; }
+  await page.waitForTimeout(100);
+}
 for (let i = 0; i < 400; i++) {
+  // 初回お誘いのシステムヒント（O12）が出ていたらOKで閉じる
+  if (await page.locator("#hint-overlay .hint-ok").count()) {
+    await page.locator("#hint-overlay .hint-ok").click().catch(() => {});
+    await page.waitForTimeout(80);
+    continue;
+  }
   if (await page.locator("#phone-overlay.show").count()) {
     const r = page.locator("#phone-overlay .lime-reply").first();
     if (await r.count()) await r.click().catch(() => {});
@@ -175,7 +193,7 @@ await page.evaluate(() => {
   startChapter2();
 });
 
-const plan = ["シーシャの練習", "tonariでバイト", "シーシャの練習", "家に帰る"];
+const plan = ["tonariでバイト", "お客さんとして利用", "tonariでバイト", "家に帰る"];
 let planIdx = 0;
 let stagesSeen = [];
 let slumpSeen = false;
@@ -186,6 +204,12 @@ async function active() { return page.evaluate(() => document.querySelector(".sc
 let guard = 0;
 while (guard++ < 8000) {
   // LIME
+  // 初回お誘いのシステムヒント（O12）が出ていたらOKで閉じる
+  if (await page.locator("#hint-overlay .hint-ok").count()) {
+    await page.locator("#hint-overlay .hint-ok").click().catch(() => {});
+    await page.waitForTimeout(80);
+    continue;
+  }
   if (await page.locator("#phone-overlay.show").count()) {
     const reply = page.locator("#phone-overlay .lime-reply").first();
     if (await reply.count()) await reply.click();
@@ -209,6 +233,9 @@ while (guard++ < 8000) {
   if (screen === "screen-dialogue") {
     const id = await page.evaluate(() => engine && engine.dialogueId);
     if (id && (id.startsWith("ch2_") || id === "home_shisha_night")) nightDialogues.add(id);
+    // 体力警告は「構わず続ける」で前進（先頭選択のやめておく＝cancelだと行動を消費せず日が進まない）
+    const push = page.locator("#vn-choices .choice-btn", { hasText: "構わず続ける" });
+    if (await push.count()) { await push.first().click().catch(() => {}); await page.waitForTimeout(15); continue; }
     const c = page.locator("#vn-choices .choice-btn").first();
     if (await c.count()) await c.click();
     else await page.click("#vn-click-layer").catch(() => {});
@@ -232,10 +259,21 @@ while (guard++ < 8000) {
     continue;
   }
   if (screen === "screen-map") {
+    // 体力が低い日はまず家で休む（実プレイと同じ判断）。低体力でシーシャ行動を選ぶと警告が
+    // 出て、cancel だと行動を消費せず日が進まない＝プラン足踏み（sleep14の新バランス対応）
+    const lowStam = await page.evaluate(() => typeof state !== "undefined" && state && (state.stamina ?? 100) < 30);
+    if (lowStam) {
+      const rest = page.locator(".spot-btn", { hasText: "家に帰る" }).first();
+      if (await rest.count() && !(await rest.isDisabled())) {
+        await rest.click({ timeout: 3000 }).catch(() => {});
+        await page.waitForTimeout(30);
+        continue;
+      }
+    }
     const label = plan[planIdx % plan.length];
     planIdx++;
-    // tonari統合(#9): バイト/練習/スミさん/常連席 は tonari ピン → サブメニューの2段
-    const isTonariSub = ["tonariでバイト", "シーシャの練習", "スミさんと話す", "常連席"].some((s) => label.includes(s));
+    // tonari統合(O16): 「お客さんとして利用/バイト」の2択は tonari ピン → サブメニューの2段
+    const isTonariSub = ["tonariでバイト", "お客さんとして利用"].some((s) => label.includes(s));
     if (isTonariSub) {
       try {
         const pin = page.locator("#map-pins .spot-pin", { hasText: "tonari" }).first();
