@@ -913,6 +913,485 @@
           "text": "……【魅力】が少し上がった。"
         }
       ]
+    },
+    {
+      "dialogue_id": "kannon_adam",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "観音堂の石段に、見覚えのある背中があった。アダムだ。"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "はじめよ。……驚くことはない。俺とこの堂は、旧知の仲だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "アダムさんも、お参りですか？"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "果実は、静けさの中で熟す。俺の舌も、同じだ"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "騒がしい日ほど、ここで舌を鎮める、……覚えておけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "並んで手を合わせた。帰り道、妙に心が静かだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【根性】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "kannon_oldman",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "観音堂に着くと、箒の音がした。作務衣の老人が砂利を掃いている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつかの箒の跡は、この人のものだったらしい。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "おや。若いのに、よく来るね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ここ、落ち着くんです。……毎朝、掃いてるんですか？"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "もう五十年ね。掃くというより、場を整えてるんだよ"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "場が整うと、心も整う。あんたの仕事も、同じだろう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（場を整える……。開店前の仕込みと、同じだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手を合わせて帰る頃には、頭の中まで掃き清められた気がした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【根性】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "kannon_rain",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "観音堂に着いたところで、雨がぱらつき始めた。軒下に入る。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "屋根を叩く雨の音。線香の匂いが、湿気で少し濃くなる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "足元に、いつかの白い猫がするりと入ってきた。同じ雨宿りらしい。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（……おまえも来たか。やむまで、一緒だな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨音を聞きながら、ただ座る。急がない時間が、体に沁みた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【根性】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cafe_naru_break",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カフェのカウンターに、見覚えのある背中。なるだ。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "あれ、はじめ。……そっか、この店教えたの俺だっけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい、通ってます。なるさんは、休憩ですか？"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "鼻のリセット。営業中、鼻はどんどん鈍るからさ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "コーヒー豆の香りで、鼻の物差しがゼロに戻る。香水屋と同じ理屈ね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（戻し方まで持ってるのか……。プロの引き出しだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "少し話して、なるは店へ戻っていった。真似したい習慣がまた増えた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【センス】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cafe_master_quiz",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カフェのカウンターで一息。マスターがいたずらっぽく笑った。"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "今日のブレンド、隠し味がひとつ。当てられたら大したものです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "え、……じゃあ、挑戦します"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口。苦味の奥に、ほんのり丸い甘さの香りが残る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……カルダモン、ですか？"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "惜しい。オレンジピールの蜂蜜漬けです。香りの層は読めてますよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（香りを層で分けて当てる……配合の訓練と同じだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【センス】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cafe_window_rain",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "小雨の日のカフェは静かだった。窓際の席で、温かいラテを頼む。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "湿った空気のせいか、カップから立つ香りがいつもより長く残る。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（湿度で香りの立ち方が変わる……。煙も、きっと同じだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓の水滴を眺めながら、最後の一口までゆっくり味わった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【センス】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "choizap_oldman",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_choizap.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "チョイザップで、ベンチの使い方に迷っていると、年配の常連さんが笑った。"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "兄ちゃん、重さはそれでいい。惜しいのは姿勢だ。胸張って、顎引いて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あ、……ほんとだ。軽く感じる"
+        },
+        {
+          "speaker": "old_man",
+          "face": "",
+          "text": "姿勢ってのは、それだけで説得力が出るんだよ。仕事でもな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（カウンターに立つ姿勢……明日から意識してみよう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、鏡の前で背筋を伸ばした。ちょっとだけ、様になっていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【魅力】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "choizap_minto",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_choizap.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "チョイザップのランニングマシンに、見覚えのある姿があった。みんとだ。"
+        },
+        {
+          "speaker": "minto",
+          "face": "surprise",
+          "text": "わっ、はじめくん！？ ……いまの真剣な顔はナシで！ 見なかったことにして？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "来てたんですね。教えてもらったジム、ちゃんと通ってますよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "えらい！ かわいいも接客も、維持してこそなんだよ？"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "楽してるように見せるのが、いちばん体力使うの。企業秘密ね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（軽やかさは才能じゃなくて、積み重ねなんだ……）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣のマシンで並んで走った。いつもより、いい汗だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【魅力】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cs_maezono_taste",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "C.STATIONの窓際に、見覚えのある男性。審査員の前園壮一郎さんだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口吸って、目を細める。それだけで、こっちまで美味そうに見えてくる。"
+        },
+        {
+          "speaker": "maezono",
+          "face": "smile",
+          "text": "うん、うまい。シーシャはおいしいねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（本当に美味しそうに吸う人だ……。見てるだけで一口ほしくなる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手元のノートに何か書きつけている。コラムの取材だろうか。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（審査員に「もう一口」と思わせるって、ああいう顔にさせることか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吸う人の顔まで含めて一台なんだと、なんとなく分かった気がした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cs_pakki_rehearsal",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "C.STATIONの奥のステージで、二頭身のマスコットがマイクを握っていた。"
+        },
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "泣いても笑っても、勝者はたった一人ッ！ ……うーん、もう一声ほしいなあ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会MCのパッキーだ。誰もいない客席に向かって、リハーサルをしている。"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "おっと、そこの君ィ！ その顔は出場者だねッ？"
+        },
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "MCはね、4台ぜんぶの見せ場を拾うのが仕事！ ぷぷぷっ！"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "つまり君の手元は、ぜーんぶ実況されると思ってねッ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（手元は全部見られてる……。ごまかしは、きかないわけだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "妙な気合いの入る、リハーサル見学だった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cs_prep_line",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今日のC.STATIONは、奥の作業場で仕込みの流れ作業が進んでいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "並んだボウルに、計量済みのフレーバーが次々と詰められていく。"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "うち、詰めは全部グラム管理なんです。誰が作っても同じ味になるように"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すごい、徹底してますね"
+        },
+        {
+          "speaker": "staff_choizap",
+          "face": "",
+          "text": "ふふ。うちに来て「自分の店の意味」を考え始めた人は、強くなりますよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（揃える強さと、揃えない強さ。……tonariの一台は、どっちだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "チェーンの作業場から、思わぬ宿題をもらってしまった。"
+        }
+      ]
     }
   ]
 }

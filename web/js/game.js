@@ -1647,6 +1647,7 @@ const REPEAT_VISIT = {
   naru: { text: [
     "なるの店で一服。スピード勝負の段取りを盗み見る。鼻の良さに毎回気づかされる。",
     "なるは今日も忙しそうだ。合間の一言二言で、それでも十分伝わる。",
+    "黒板の試作メニューがまた増えていた。手の速さに、こっちが焦る。",
   ], stats: { insight: 2 } },
   adam: { text: [
     "アダムの店で一服。ダブルアップル一筋の頑固さに、芯の強さを感じる。",
@@ -1657,6 +1658,7 @@ const REPEAT_VISIT = {
   minto: { text: [
     "みんとの店で一服。客あしらいの軽やかさは、やっぱり真似できない。",
     "みんとの店は今日もにぎやか。隅の席で一服して帰った。",
+    "満席気味の店内で、みんとは全テーブルの客の名前を覚えていた。",
   ], stats: { charm: 2 } },
   ageha: { text: "アゲハの店で一服。明るさに当てられて、こっちまで肩の力が抜ける。", stats: { sense: 2 } },
   kumicho: { text: "神崎煙草店で一服。組長と黙って同じ煙を吸うだけで、不思議と腹が据わる。", stats: { guts: 2 } },
@@ -1673,6 +1675,10 @@ const REPEAT_OPENERS = [
   "カウンターの端で、常連らしき人が舟を漕いでいた。",
   "換気扇の音がいつもより大きい。風の強い日だ。",
   "棚の隅に、見慣れない箱がいくつか積まれていた。",
+  "開店直後らしく、店の空気がまだ澄んでいた。",
+  "夕方の光が窓から差して、煙の層がくっきり見えた。",
+  "店の前で、常連らしき人とすれ違って会釈された。",
+  "今日は湿気が強い。煙が低く、ゆっくり漂っている。",
 ];
 
 // 好感度が育ち始めた相手（♥1以上）のテンプレ訪問は、地の文だけでなく
@@ -1697,6 +1703,20 @@ const REPEAT_TALKS = {
       { speaker: "hajime", face: "normal", text: "（……煙の外側にも、味があるのか）" },
       { speaker: "", face: "", text: "炭が落ちるまで、ぽつぽつと話した。静かな夜だった。" },
     ],
+    [
+      { speaker: "", face: "", text: "スミさんの隣で一服。カウンターの中の動きを目で追う。" },
+      { speaker: "sumi", face: "normal", text: "客の煙が細くなってから動くんじゃ遅え。細くなる前に、気配で動け" },
+      { speaker: "hajime", face: "normal", text: "気配、ですか" },
+      { speaker: "sumi", face: "smile", text: "ああ。皿の上の炭が、ちゃんと教えてる。……そのうち見えるようになるさ" },
+      { speaker: "", face: "", text: "炭の白くなり方を、いつもより長く見つめた。" },
+    ],
+    [
+      { speaker: "", face: "", text: "暇な時間帯、スミさんと一台を挟んで昔話になった。" },
+      { speaker: "sumi", face: "normal", text: "俺も若い頃は火が強くてな。強い煙は、作ってる本人が酔ってるだけだ" },
+      { speaker: "hajime", face: "normal", text: "スミさんにも、そんな頃があったんですね" },
+      { speaker: "sumi", face: "smile", text: "あったから言ってんだ。……ま、お前は自分で気づけ" },
+      { speaker: "", face: "", text: "そう言って笑う顔が、少しだけ若く見えた。" },
+    ],
   ],
   tsumugi: [
     [
@@ -1711,6 +1731,20 @@ const REPEAT_TALKS = {
       { speaker: "tsumugi", face: "normal", text: "はじめくんの煙、今日はちょっと急いでる形してた" },
       { speaker: "hajime", face: "surprise", text: "（……見抜かれてる。つむぎちゃんには、煙が表情に見えるらしい）" },
       { speaker: "", face: "", text: "他愛のない話をしながら、ゆっくり一台を吸った。" },
+    ],
+    [
+      { speaker: "", face: "", text: "つむぎの隣の席で、スケッチブックを少しだけ見せてもらった。" },
+      { speaker: "tsumugi", face: "normal", text: "同じ煙は、二度と出ないから。描き逃したら、それっきり" },
+      { speaker: "hajime", face: "normal", text: "（だから彼女は、いつも今日の煙を真剣に見てるんだ）" },
+      { speaker: "tsumugi", face: "smile", text: "はじめくんの煙のページ、実はもう何枚もあるよ" },
+      { speaker: "", face: "", text: "ページの中に、自分の知らない自分の煙があった。" },
+    ],
+    [
+      { speaker: "", face: "", text: "静かな午後、つむぎと同じテーブルで煙を挟んだ。" },
+      { speaker: "tsumugi", face: "normal", text: "この店、水の音がゆっくりだよね。せかされない音" },
+      { speaker: "hajime", face: "normal", text: "音、ですか？ ……ほんとだ、低い" },
+      { speaker: "tsumugi", face: "smile", text: "うん。私はこの音で、今日も大丈夫って思うの" },
+      { speaker: "", face: "", text: "いつもの水音の聞こえ方が、少しだけ変わった気がした。" },
     ],
   ],
   naru: [
@@ -1727,6 +1761,20 @@ const REPEAT_TALKS = {
       { speaker: "hajime", face: "normal", text: "（音で自分を測る……そういう物差しを、いくつ持ってるんだろう）" },
       { speaker: "", face: "", text: "短い時間だったけど、濃い一服だった。" },
     ],
+    [
+      { speaker: "", face: "", text: "なるの店のカウンター席。ちょうど、隣の客への提供の瞬間だった。" },
+      { speaker: "naru", face: "smile", text: "今の手の順番、見てた？ うまくなりたいなら全部見てけ" },
+      { speaker: "hajime", face: "normal", text: "いいんですか、そんなに見せて" },
+      { speaker: "naru", face: "normal", text: "隠して勝っても、俺が強くなんないでしょ" },
+      { speaker: "", face: "", text: "帰り道、見たばかりの手順を頭の中で三回なぞった。" },
+    ],
+    [
+      { speaker: "", face: "", text: "客が引けた店で、なるが昔の大会の話をしてくれた。" },
+      { speaker: "naru", face: "smile", text: "俺、最初の大会は最下位。悔しくて一週間寝れなかった" },
+      { speaker: "naru", face: "normal", text: "でも悔しさって燃料なんだよ。腐らせると毒になるけど" },
+      { speaker: "hajime", face: "normal", text: "（この人は、負けの使い方まで知ってるんだ）" },
+      { speaker: "", face: "", text: "笑いながら話す横顔に、積んできた場数が透けて見えた。" },
+    ],
   ],
   adam: [
     [
@@ -1740,6 +1788,20 @@ const REPEAT_TALKS = {
       { speaker: "", face: "", text: "常連さんが「たまには別のも吸えば」と笑った。アダムは静かに首を振る。" },
       { speaker: "adam", face: "normal", text: "浮気しないから、深くなる。……煙も、たぶん人もだ" },
       { speaker: "", face: "", text: "同じ味を、二人でゆっくり吸い切った。" },
+    ],
+    [
+      { speaker: "", face: "", text: "EDENの奥の席で、アダムと同じ煙を分けた。" },
+      { speaker: "adam", face: "smug", text: "はじめよ。世界には二種類の煙しかない。ダブルアップルと、それ以外だ" },
+      { speaker: "hajime", face: "normal", text: "（出た……。でも、ここまで言い切れるのは少し羨ましい）" },
+      { speaker: "adam", face: "normal", text: "言い切れるまで掘った。それだけの話だ" },
+      { speaker: "", face: "", text: "断言の裏の積み重ねを思って、甘い煙を深く吸った。" },
+    ],
+    [
+      { speaker: "", face: "", text: "アダムが目を閉じて、自分の一台を検分していた。" },
+      { speaker: "adam", face: "serious", text: "……今日のは92点だ" },
+      { speaker: "hajime", face: "normal", text: "厳しいんですね。お客さんは、あんなに喜んでたのに" },
+      { speaker: "adam", face: "normal", text: "満点を出せば、明日の俺が楽をする。だから出さない" },
+      { speaker: "", face: "", text: "毎日同じ味を作る人の、毎日違う戦いを見た。" },
     ],
   ],
   minto: [
@@ -1755,6 +1817,20 @@ const REPEAT_TALKS = {
       { speaker: "minto", face: "smile", text: "笑顔はサービスじゃなくて、こっちが楽しんでる証拠なの。伝染するから" },
       { speaker: "hajime", face: "normal", text: "（たしかに、この店を出るときはいつも少し元気になってる）" },
       { speaker: "", face: "", text: "軽口を叩き合ううちに、一台が終わっていた。" },
+    ],
+    [
+      { speaker: "", face: "", text: "ぺぱーみんとの隅で一服。みんとが常連さんと盛り上がっている。" },
+      { speaker: "minto", face: "smile", text: "はーい、今日お誕生日の人がいまーす！ ろうそく一本だけのケーキ、どうぞ！" },
+      { speaker: "", face: "", text: "客席がわっと沸く。祝われた本人は、照れながらも嬉しそうだ。" },
+      { speaker: "minto", face: "wink", text: "（小声）誕生日はメモっておくの。喜ばれるかどうかは、準備が九割" },
+      { speaker: "", face: "", text: "にぎやかさの裏の段取りを、少しだけ見せてもらった。" },
+    ],
+    [
+      { speaker: "", face: "", text: "閉店間際のぺぱーみんと。客はもう、自分だけだった。" },
+      { speaker: "minto", face: "normal", text: "はじめくんはもうちょっといていいよ。……はぁ、今日もよく働いた！" },
+      { speaker: "hajime", face: "normal", text: "お疲れさまです。……素の声、初めて聞いたかも" },
+      { speaker: "minto", face: "smile", text: "あ、いまのナシ！ みんと、いつでもかわいいので♡" },
+      { speaker: "", face: "", text: "慌てて営業モードに戻る横顔に、少し笑ってしまった。" },
     ],
   ],
   ageha: [
@@ -2865,9 +2941,9 @@ function maybeVisitWarning(charId, proceed, cancel) {
 // 2回目以降の施設訪問はテキストをローテーション（毎回同じで飽きる対策・O10）。
 // C.STATION の CS_VISIT_POOL と同じ流儀。プールを一周したら繰り返しでよい（オーナー了承）
 const SPOT_VISIT_POOLS = {
-  kannon: ["kannon_cat", "kannon_sweep"],
-  cafe: ["cafe_herb_tea", "cafe_counter_watch", "cafe_crowd"],
-  choizap: ["choizap_lesson", "choizap_mirror"],
+  kannon: ["kannon_cat", "kannon_sweep", "kannon_adam", "kannon_oldman", "kannon_rain"],
+  cafe: ["cafe_herb_tea", "cafe_counter_watch", "cafe_crowd", "cafe_naru_break", "cafe_master_quiz", "cafe_window_rain"],
+  choizap: ["choizap_lesson", "choizap_mirror", "choizap_oldman", "choizap_minto"],
 };
 
 function doSpotDialogue(spotId, dialogueId, bg) {
@@ -2889,6 +2965,7 @@ function doSpotDialogue(spotId, dialogueId, bg) {
 const CS_VISIT_POOL = [
   "cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup",
   "cs_regular_chat", "cs_nagumo_glimpse", "cs_kemuri_solo",
+  "cs_maezono_taste", "cs_pakki_rehearsal", "cs_prep_line",
 ];
 
 function doCStation() {
@@ -4083,6 +4160,9 @@ function revealKuji(prize, extras, done) {
 
 // 凛さんのショールーム（会いに行くと1コマ消費。買い物だけなら消費なし。1日1回）
 const RIN_SEQUENCE = ["ch1_rin_first", "ch1_rin_second", "ch1_rin_third"];
+// 固有会話を消化したあとの繰り返し訪問もローテーション（毎回同じで飽きる対策。
+// スポットの SPOT_VISIT_POOLS と同じ流儀。回数は専用カウンタ state.rinRepeats で数える）
+const RIN_REPEAT_POOL = ["ch1_rin_repeat", "ch1_rin_repeat_b", "ch1_rin_repeat_c"];
 const FOOKAH_BOOTH_FEE = 2500; // ブース利用料（物販もやってる分、他店3,000円より少し安い）(T28)
 function doRinVisit() {
   if (state.flags[`_rin_d${state.day}`]) return;
@@ -4108,7 +4188,9 @@ function doRinVisit() {
         after();
       }, "res://assets/backgrounds/bg_fookah_showroom.png");
     } else {
-      playDialogue("ch1_rin_repeat", () => { gainAffinity("rin", "repeat"); after(); }, "res://assets/backgrounds/bg_fookah_showroom.png");
+      const rid = RIN_REPEAT_POOL[(state.rinRepeats || 0) % RIN_REPEAT_POOL.length];
+      state.rinRepeats = (state.rinRepeats || 0) + 1;
+      playDialogue(rid, () => { gainAffinity("rin", "repeat"); after(); }, "res://assets/backgrounds/bg_fookah_showroom.png");
     }
   }, () => showShop());
   maybeVisitWarning("rin", play, () => showShop());
