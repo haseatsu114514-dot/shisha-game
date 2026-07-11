@@ -399,6 +399,10 @@
           "text": "（それって、バイトで毎日やってることと……同じじゃないか）"
         },
         {
+          "type": "note",
+          "note_id": "nagumo_story"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "……【洞察】が上がった。"
@@ -445,6 +449,10 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（ミントで差がつく……か。覚えておこう）"
+        },
+        {
+          "type": "note",
+          "note_id": "mint_regulation"
         },
         {
           "speaker": "",
@@ -577,6 +585,10 @@
           "text": "（心に残るシーシャ……。技術だけじゃないんだな）"
         },
         {
+          "type": "note",
+          "note_id": "last_year_winner"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "知らない人の言葉が、意外と深く刺さった。"
@@ -670,6 +682,10 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（0.5秒……。覚えておこう）"
+        },
+        {
+          "type": "note",
+          "note_id": "kemuri_style"
         },
         {
           "speaker": "",
@@ -1302,6 +1318,10 @@
           "text": "（審査員に「もう一口」と思わせるって、ああいう顔にさせることか）"
         },
         {
+          "type": "note",
+          "note_id": "maezono_style"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "吸う人の顔まで含めて一台なんだと、なんとなく分かった気がした。"
@@ -1345,6 +1365,10 @@
           "speaker": "hajime",
           "face": "surprise",
           "text": "（手元は全部見られてる……。ごまかしは、きかないわけだ）"
+        },
+        {
+          "type": "note",
+          "note_id": "pakki_watch"
         },
         {
           "speaker": "",

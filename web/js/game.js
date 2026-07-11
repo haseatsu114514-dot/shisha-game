@@ -1460,7 +1460,9 @@ function initEngine() {
         if (!state.knowledge) state.knowledge = {};
         if (state.knowledge[id]) return;
         state.knowledge[id] = 1;
-        toast(`📖 ノートに書き加えた 「${line.label || ""}」`);
+        // 見出しの正本は KNOWLEDGE_ENTRIES（dialogue 側の label は省略してよい＝二重管理しない）
+        const label = line.label || (KNOWLEDGE_ENTRIES[id] || {}).label || "";
+        toast(`📖 ノートに書き加えた 「${label}」`);
       },
       resolveBg: (rel) => resolveSceneBg(rel),
       onChoice: handleDialogueChoice,
@@ -5601,13 +5603,20 @@ function showStandings(round, next) {
   judges.textContent = round === 1
     ? "実況パネル: 前園、R1でなるに持ち点3を投入。──南雲の持ち点は、まだ動かない（残10）。"
     : "実況パネル: 前園、残り持ち点をアダムとみんとへ。──南雲、依然ゼロ投入。持ち点10、まるごと温存。";
+  // 知識の実利（V3・表示のみ）: 前園の流儀をノートに書いた人は、序盤の点の動きが「読める」
+  if (round === 1 && state.knowledge && state.knowledge.maezono_style) {
+    judges.textContent += "（前園さんは量と個性で早めに動く──ノートのとおりだ）";
+  }
   const comment = document.createElement("p");
   comment.className = "tn-hint";
   comment.textContent = round === 1
     ? (myRank <= 2
         ? "前園「悪くないんだけどねぇ……決め手がもう一声、かなぁ」。──評価は渋い。でも、食らいついてはいる。"
         : "前園「うーん、まだ硬いねえ」。──思ったより、点が伸びない。会場の空気が遠い。")
-    : (myRank <= 2
+    : (state.knowledge && state.knowledge.nagumo_style
+        // 南雲の流儀をノートに書いた人は、囁きではなく自分の言葉で「読める」（V3・表示のみ）
+        ? "ノートに書いたとおりだ──南雲会長は「もう一口吸いたい一台」へ、最後に全部入れる。まだ終わってない。"
+        : myRank <= 2
         ? "あの人が最後まで持ち点を残すのは「もう一口吸いたい一台」に全部入れるためだ──と、誰かが囁いた。"
         : "順位は重い。でも、南雲の持ち点10はまだ誰のものでもない。最後の吸い出しと提供で全部が変わる。");
   const btn = document.createElement("button");
@@ -7233,6 +7242,9 @@ function finishTournament() {
   if (state.knowledge && state.knowledge.nagumo_style) {
     craft.detail.push("（南雲会長は持ち点を最後まで温存する流儀──ノートに書いたとおりなら、勝負は最終発表で決まる）");
   }
+  if (state.knowledge && state.knowledge.kemuri_style) {
+    craft.detail.push("（チャコール博士は『揺らぎ』を記録する──ノートのとおり、工程の一貫性まで見られていた）");
+  }
   let playerScore = base;
   if (craft.score >= NAGUMO_CRAFT_BAR) {
     // 南雲カットイン演出（#4）用: 南雲票が入る前の暫定順位（はじめ=最下位付近）を保存
@@ -7898,6 +7910,66 @@ const CUSTOMER_ENTRIES = {
   baito_rush_04: { name: "退勤ラッシュの4組", memo: "10分で4組。ボウルの在庫が足りなくなりかけた" },
 };
 
+// 知識ノート（S2の完成形・2026-07-11 V3）: type:"note" 行で書き留めた知識の正本。
+// dialogue JSON の note 行は note_id だけ持てばよい（label はここから引く＝二重管理しない）。
+// label=一覧の見出し、memo=ノートに残る本文、src=どこで知ったか。
+// 実利（「読める」行）は showStandings / finishTournament 側で state.knowledge を見る
+const KNOWLEDGE_ENTRIES = {
+  nagumo_story: {
+    label: "煙は嘘をつけない",
+    memo: "南雲会長が見るのは技術の正確さではなく『作り手の物語』が煙ににじむかどうか",
+    src: "C.STATIONで聞いた審査員の打ち合わせ",
+  },
+  nagumo_style: {
+    label: "南雲会長は持ち点を最後まで温存する",
+    memo: "「もう一口吸いたい一台」に一括投入する流儀。勝負は最終発表まで分からない",
+    src: "C.STATIONの設営現場",
+  },
+  mint_regulation: {
+    label: "今大会のレギュはミント2g以上",
+    memo: "ミントの扱い方で差がつく、と常連の噂。課題を義務ではなく武器にする",
+    src: "C.STATIONのスタッフ",
+  },
+  last_year_winner: {
+    label: "去年の優勝は「もう一口」で決まった",
+    memo: "技術はそこそこでも、審査員に「もう一口吸いたい」と思わせた一台が勝った",
+    src: "C.STATIONの常連",
+  },
+  maezono_style: {
+    label: "前園さんは煙の量・個性・インパクト",
+    memo: "美味しそうに吸う顔まで含めて一台。見て楽しい煙に、早めに点が動く",
+    src: "C.STATIONで見た取材姿",
+  },
+  kemuri_style: {
+    label: "チャコール博士はデータで見る",
+    memo: "『揺らぎ』の分布を記録している。炭の火入れは見た目より0.5秒長く",
+    src: "C.STATIONのカウンター",
+  },
+  pakki_watch: {
+    label: "手元は全部実況される",
+    memo: "MCパッキーは4台ぜんぶの見せ場を拾う。ごまかしはきかない",
+    src: "パッキーのMCリハーサル",
+  },
+};
+
+function knowledgeNotesHtml() {
+  const known = state.knowledge || {};
+  const total = Object.keys(KNOWLEDGE_ENTRIES).length;
+  const found = Object.keys(known).filter((id) => KNOWLEDGE_ENTRIES[id]).length;
+  let html = `<div class="status-block"><h3>知識ノート</h3>` +
+    `<p class="note-progress">${found} / ${total} 件</p>`;
+  for (const [id, e] of Object.entries(KNOWLEDGE_ENTRIES)) {
+    if (known[id]) {
+      html += `<div class="note-entry found"><span class="note-name">${e.label}</span>` +
+        `<p class="note-memo">${e.memo}${e.src ? `　──${e.src}` : ""}</p></div>`;
+    } else {
+      html += `<div class="note-entry locked"><span class="note-name">？？？</span></div>`;
+    }
+  }
+  html += `</div>`;
+  return html;
+}
+
 function customerNotesHtml() {
   const notes = state.customerNotes || {};
   const total = Object.keys(CUSTOMER_ENTRIES).length;
@@ -8008,7 +8080,7 @@ function renderStatusInto(el, opts = {}) {
     { id: "main", label: "ステータス", html: mainStatusHtml },
     { id: "rel", label: "人間関係", html: () => `<div class="status-block"><h3>人間関係</h3>${relationsHtml()}</div>` },
     { id: "inv", label: "持ち物", html: inventoryHtml },
-    { id: "note", label: "常連ノート", html: customerNotesHtml },
+    { id: "note", label: "ノート", html: () => knowledgeNotesHtml() + customerNotesHtml() },
   ];
   const bar = document.createElement("div");
   bar.className = "status-tabs";
