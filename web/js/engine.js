@@ -444,6 +444,12 @@ class DialogueEngine {
     if (type === "hide_cg") { this.hideCg(); return this.next(); }
     if (type === "game_over") { this.finished = true; if (this.ctx.onGameOver) this.ctx.onGameOver(); return; }
     if (type === "apply") { if (this.ctx.onApply) this.ctx.onApply(line); return this.next(); }
+    // 知識登録行（S2・2026-07-11）: {"type":"note","note_id":"...","label":"..."}。
+    // 会話で出た情報を「ノートに書いた」トーストで見せる（処理はゲーム側）
+    if (type === "note") { if (this.ctx.onNote) this.ctx.onNote(line); return this.next(); }
+    // 背景転換行（2026-07-11）: {"type":"bg","bg":"res://..."}。
+    // 1本の会話の中の場面転換（会場→夜の店 等）をデータ側から指定できるようにする
+    if (type === "bg") { if (line.bg) this.setBackground(line.bg); return this.next(); }
     // SE行（#21）: {"type":"sfx","id":"coal_snip"}。id は sfx.js のAPI名（snake_case可）
     if (type === "sfx") { this.playSfx(line.id); return this.next(); }
     // 演出行（#25/#26）: {"type":"fx","id":"flash|shake|sepia|sepia_off|cutin|scent"}
@@ -712,20 +718,32 @@ class DialogueEngine {
     const label = this.el.textLabel;
     clearInterval(this.typeTimer);
     this.fullHtml = formatText(text);
-    // 装飾タグ入りの行はフェード表示、それ以外は一文字ずつタイプ表示
-    if (text.includes("[")) {
-      this.typing = false;
-      label.innerHTML = this.fullHtml;
-      label.classList.remove("typing");
-      void label.offsetWidth;
-      label.classList.add("typing");
-      // [imp]付き台詞は軽い自動演出（#25: 一瞬のフラッシュ＋テキスト強調）
-      if (text.includes("[imp]") && this.ctx.onFx) this.ctx.onFx({ id: "imp" });
-      this.setAdvanceHint(true);
-      return;
-    }
     // CONFIGのテキスト速度（1=遅い 2=普通 3=速い 4=瞬間表示）
     const speed = (this.ctx.getTextSpeed && this.ctx.getTextSpeed()) || 2;
+    // 装飾タグ入りの行はフェード表示、それ以外は一文字ずつタイプ表示
+    if (text.includes("[")) {
+      const reveal = () => {
+        this.typing = false;
+        label.innerHTML = this.fullHtml;
+        label.classList.remove("typing");
+        void label.offsetWidth;
+        label.classList.add("typing");
+        // [imp]付き台詞は軽い自動演出（#25: 一瞬のフラッシュ＋テキスト強調）
+        if (text.includes("[imp]") && this.ctx.onFx) this.ctx.onFx({ id: "imp" });
+        this.setAdvanceHint(true);
+      };
+      // 重要行（[imp]）は表示前に短い「溜め」を置いて重みを出す（B3・2026-07-11）。
+      // クリック＝completeTyping で即表示に化ける。瞬間表示設定では溜めない
+      if (text.includes("[imp]") && idx === 0 && speed < 4) {
+        this.typing = true;
+        label.innerHTML = "";
+        this.setAdvanceHint(false);
+        this.typeTimer = setTimeout(reveal, 420);
+        return;
+      }
+      reveal();
+      return;
+    }
     if (speed >= 4) {
       this.typing = false;
       label.innerHTML = this.fullHtml;

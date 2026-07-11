@@ -102,19 +102,18 @@
           "text": "はい、これ同意書。ペンこっちね。──こういうのは、考えてる時間がいちばんもったいないの"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（怪しい。圧倒的に怪しい。なのに気づいたらペンを握らされてる。この人、ペースが速すぎる……！）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（でも──棚の缶のロット管理、ものすごく丁寧だ。雑な仕事の人じゃない"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "それに、日本にまだ無い煙って……正直、めちゃくちゃ気になる）"
+          "type": "choice",
+          "id": "rin_first_pen",
+          "choices": [
+            {
+              "text": "（流されるな、俺……！）",
+              "next": "pen_rush"
+            },
+            {
+              "text": "（……棚を見ろ。仕事ぶりが出る）",
+              "next": "pen_watch"
+            }
+          ]
         },
         {
           "speaker": "rin",
@@ -151,7 +150,33 @@
           "face": "",
           "text": "……【センス】が少し上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "pen_rush": [
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（怪しい。圧倒的に怪しい。なのに気づいたらペンを握らされてる。この人、速すぎる……！）"
+          }
+        ],
+        "pen_watch": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（棚の缶のロット管理、ものすごく丁寧だ。……雑な仕事の人じゃない）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（それに、日本にまだ無い煙って……正直、めちゃくちゃ気になる）"
+          },
+          {
+            "speaker": "rin",
+            "face": "smile",
+            "text": "……ふぅん。見るとこ見るんだ？ ますます気に入った"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_rin_second",

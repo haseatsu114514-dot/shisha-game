@@ -1073,8 +1073,10 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   text-shadow: 0 0 22px rgba(244,210,122,0.4);
 }
 .tn-hint { font-size: 14px; color: var(--text-dim); margin-bottom: 16px; line-height: 1.6; }
+/* チュートリアルのお手本ナレーションは「読ませる本文」なので大きく明るく（2026-07-11 オーナー指定） */
+.tn-hint.demo-line { font-size: 18px; color: var(--text); line-height: 1.8; margin-bottom: 10px; }
 .tn-tutor {
-  font-size: 14px;
+  font-size: 16px;
   color: #ffd9a0;
   background: rgba(244, 210, 122, 0.08);
   border-left: 3px solid var(--accent);
@@ -1691,6 +1693,10 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   cursor: pointer;
 }
 #hint-overlay .hint-ok:hover { background: rgba(244,210,122,0.26); }
+/* 未読SKIP確認（C1）: 2ボタン並び。ghost=消極ボタン */
+#hint-overlay .hint-btns { display: flex; gap: 10px; justify-content: center; }
+#hint-overlay .hint-ok.ghost { background: transparent; border-color: rgba(244,210,122,0.3); color: var(--text-dim); }
+#hint-overlay .hint-ok.ghost:hover { background: rgba(244,210,122,0.1); }
 
 /* focus minigame（雑念タップ）は廃止（2026-07-06 A2） */
 
@@ -4931,6 +4937,25 @@ body:has(#screen-tournament.active.making-workbench) #gain-banner {
   pointer-events: none;
 }
 @keyframes evt-badge-pulse { 50% { transform: scale(1.18); box-shadow: 0 0 16px rgba(255,211,94,1); } }
+/* スミさんの宿題バナー（2026-07-11）: マップ左下・押せない飾り＝ホバーや操作を邪魔しない */
+#hw-banner {
+  position: absolute; left: 14px; bottom: 12px; z-index: 5;
+  max-width: 460px;
+  padding: 7px 14px;
+  background: rgba(12, 9, 4, 0.78);
+  border: 1px solid rgba(244, 210, 122, 0.45);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  color: #ffd9a0; font-size: 14px; line-height: 1.5;
+  pointer-events: none;
+}
+/* 「新しい固有会話がある」印（2026-07-11）: 「!」より控えめな水色・波動なし */
+.spot-pin .evt-badge.story {
+  font-size: 11px; font-weight: 700;
+  color: #06222c; background: #9fd8e8; border-color: #d9f2f9;
+  box-shadow: 0 0 8px rgba(159, 216, 232, 0.7);
+  animation: none;
+}
 /* Dr.fookah 2階の解禁進捗（#31） */
 .spot-progress { display: block; margin-top: 3px; font-size: 12px; color: #ffd35e; }
 /* 自己ベストスタンプ（#33） */
