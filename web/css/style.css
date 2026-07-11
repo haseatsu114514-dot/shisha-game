@@ -1693,10 +1693,6 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   cursor: pointer;
 }
 #hint-overlay .hint-ok:hover { background: rgba(244,210,122,0.26); }
-/* 未読SKIP確認（C1）: 2ボタン並び。ghost=消極ボタン */
-#hint-overlay .hint-btns { display: flex; gap: 10px; justify-content: center; }
-#hint-overlay .hint-ok.ghost { background: transparent; border-color: rgba(244,210,122,0.3); color: var(--text-dim); }
-#hint-overlay .hint-ok.ghost:hover { background: rgba(244,210,122,0.1); }
 
 /* focus minigame（雑念タップ）は廃止（2026-07-06 A2） */
 

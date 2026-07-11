@@ -230,7 +230,6 @@ function newState() {
     gymMember: false,
     owned: STARTER_EQUIPMENT.slice(),
     limeDone: [],          // 既読のLIMEメッセージID
-    read: {},              // 既読シーン（dialogue_id→1）。未読SKIPのワンクッション判定に使う（C1）
     limeContacts: [],      // 連絡先を交換済みのキャラ（LIME配信のゲート）
     kuji: {},              // くじのボックス状態（grade別: box順・drawn・空にした日）
     goods: [],             // くじ等で得た売却可グッズ [{name, sell}]
@@ -1372,35 +1371,7 @@ function toggleAuto() {
 
 function toggleSkip() {
   if (skipMode) { stopAutoSkip(); return; }
-  // 未読シーンのSKIPはワンクッション（誤タップでストーリーが飛ぶのを防ぐ・C1）。
-  // 敗北→再挑戦などで一度見たシーンは従来どおり即スキップ
-  const did = engine && !engine.finished ? engine.dialogueId : "";
-  if (did && state && !(state.read || {})[did]) return showSkipConfirm();
-  startSkip();
-}
-
-// 未読シーンでSKIPを押したときの確認カード（C1）。既読なら出ない
-function showSkipConfirm() {
-  if (document.querySelector("#hint-overlay")) return;
-  const el = document.createElement("div");
-  el.id = "hint-overlay";
-  el.innerHTML =
-    `<div class="hint-card">` +
-    `<div class="hint-title">まだ読んでいないシーンです</div>` +
-    `<p class="hint-text">このシーンを早送りしますか？（選択肢では止まります）</p>` +
-    `<div class="hint-btns">` +
-    `<button class="hint-ok skip-go" type="button">早送りする</button>` +
-    `<button class="hint-ok ghost skip-stay" type="button">やめておく</button>` +
-    `</div></div>`;
-  $("#game").appendChild(el);
-  requestAnimationFrame(() => el.classList.add("show"));
-  const close = () => { el.classList.remove("show"); setTimeout(() => el.remove(), 260); };
-  el.querySelector(".skip-go").addEventListener("click", () => { if (window.SFX) SFX.select(); close(); startSkip(); });
-  el.querySelector(".skip-stay").addEventListener("click", () => { if (window.SFX) SFX.select(); close(); });
-  el.addEventListener("click", (e) => { if (e.target === el) close(); });
-}
-
-function startSkip() {
+  // 未読SKIPの確認カード（C1）は2026-07-11にオーナー指定で撤去済み。復活させない
   stopAutoSkip();
   skipMode = true;
   $("#vn-skip").classList.add("on");
@@ -1452,12 +1423,7 @@ function initEngine() {
     {
       getStat: (en) => state.stats[en] || 0,
       interpolate: (t) => interpolate(t),
-      onSceneEnd: () => {
-        // シーンを見終えたら既読化（SKIP経由でも既読＝周回の再スキップは素通り・C1）
-        if (engine && engine.dialogueId && state) (state.read || (state.read = {}))[engine.dialogueId] = 1;
-        if (skipMode) stopAutoSkip();
-        clearSceneFx(); // SKIP解除＋残留エフェクト掃除
-      },
+      onSceneEnd: () => { if (skipMode) stopAutoSkip(); clearSceneFx(); }, // SKIP解除＋残留エフェクト掃除
       portraitFaces: D.portraits,
       portraitTrims: D.portrait_trims,
       portraitScales: D.portrait_scales,
