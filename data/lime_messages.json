@@ -128,6 +128,29 @@
       }
     },
     {
+      "id": "lime_outing_minto_2",
+      "sender": "minto",
+      "trigger_condition": "flag",
+      "trigger_flag": "_minto_identity_revealed",
+      "type": "invitation",
+      "time_slot": "noon",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "……はじめくん。今度の昼、また会えたりする？"
+        },
+        {
+          "sender": "minto",
+          "text": "お店のみんとじゃない方の、私で。……変な意味じゃないからねっ"
+        }
+      ],
+      "accept_event": "ch1_minto_private_1",
+      "decline_response": {
+        "sender": "minto",
+        "text": "そっか、忙しいよね、……また誘う、かも"
+      }
+    },
+    {
       "id": "lime_naru_day6",
       "sender": "naru",
       "trigger_day": 6,
@@ -231,7 +254,7 @@
         },
         {
           "sender": "tsumugi",
-          "text": "あなたのシーシャが一番だって、みんなに証明してきてね。ずっと応援してるから……！"
+          "text": "……緊張したら、深呼吸。あなたの煙が一番きれいって、わたしが知ってるから"
         }
       ]
     },
@@ -545,15 +568,15 @@
         },
         {
           "sender": "minto",
-          "text": "今日、実家の前通ったの。もう精肉店も閉まったはずなのに"
+          "text": "今日、店を閉めたあとにね。ふっと、あの匂いがした気がしたの"
         },
         {
           "sender": "minto",
-          "text": "あの匂いがした。生肉の、あの匂い"
+          "text": "生肉の、あの匂い。……ここが私の店になって、もう何年も経つのに"
         },
         {
           "sender": "minto",
-          "text": "もう何年も前にクリーニングされて、匂いなんか残ってるわけないのに"
+          "text": "クリーニングも改装もとっくに済んでて、匂いなんか残ってるわけないのに"
         },
         {
           "sender": "minto",

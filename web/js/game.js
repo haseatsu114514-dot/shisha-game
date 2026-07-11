@@ -1558,7 +1558,7 @@ const SPOTS = [
 
 // まだ会っていない店主・常連は名前を出さない（店名は看板で分かる）
 const SPOT_UNKNOWN = {
-  naru: { label: "KEMURIKUSAを覗く", desc: "隣町の人気店。若い店主が一人で回しているらしい" },
+  naru: { label: "KEMURIKUSAを覗く", desc: "商店街の外れの人気店。若い店主が一人で回しているらしい" },
   adam: { label: "EDENを覗く", desc: "下町の店。焼き林檎みたいな甘い匂いが漏れている" },
   minto: { label: "PEPPERMINTを覗く", desc: "繁華街のポップな店。SNSで人気らしい" },
   tsumugi: { label: "常連の子と話す", desc: "カウンターの奥、いつも同じ席にいる女の子" },
@@ -1597,7 +1597,7 @@ const VISIT_SEQUENCES = {
   tsumugi: ["ch1_tsumugi_first", "ch1_tsumugi_second", "ch1_tsumugi_third", "ch1_tsumugi_fourth", "ch1_tsumugi_fifth", "ch1_tsumugi_smoke_color"],
   naru: ["ch1_naru_first", "ch1_naru_second", "ch1_naru_third", "ch1_naru_fourth", "ch1_naru_fifth"],
   adam: ["ch1_adam_first", "ch1_adam_second", "ch1_adam_third", "ch1_adam_fourth", "ch1_adam_fifth"],
-  minto: ["ch1_minto_first", "ch1_minto_second", "ch1_minto_third", "ch1_minto_fourth", "ch1_minto_fifth"],
+  minto: ["ch1_minto_first", "ch1_minto_second", "ch1_minto_third", "ch1_minto_fourth", "ch1_minto_fifth", "ch1_minto_phantom_smell"],
   // 第2章ライバル店（通うと交流が進む。神崎は2回目=ch2_kumicho_second で0分立ち上げ解放）
   ageha: ["ch2_ageha_first", "ch2_ageha_second", "ch2_ageha_third", "ch2_ageha_fourth", "ch2_ageha_fifth"],
   kumicho: ["ch2_kumicho_first", "ch2_kumicho_second", "ch2_kumicho_third", "ch2_kumicho_fourth"],
@@ -4351,7 +4351,7 @@ const NICO_STEP = {
   foil:     ["アルミぴっちり張るの気持ちいい", "穴のリズム、音楽みたい", "穴あけASMR", "ここ地味に難しいらしい"],
   coalfire: ["炭の香ばしい匂いした", "熾きの色きれい", "炭は赤くなってからが本番", "火の管理＝味の管理"],
   steam:    ["蒸らしの待ち時間も演出", "今フレーバーが目を覚ましてる", "待てるやつが勝つ", "会場が静かになった"],
-  adjust:   ["温度の読み合い、渋い", "攻めるか守るか", "炭を少しずらすだけで味が変わるらしい", "二口目の調整が肝"],
+  adjust:   ["温度の読み合い、渋い", "攻めるか守るか", "焼きたての炭で立て直すのか", "二口目の調整が肝"],
   pull:     ["吸い出しキタ", "審査員より先に吸うのな", "立ち上げの白さ見ろ", "煙の色でわかるらしい"],
 };
 
@@ -4472,6 +4472,8 @@ function mcBlockIntro(step) {
 // 大会は3ラウンド制: R1=組み立て（setup〜steam）→ R2=提供（吸い出し）→ R3=調整（提供後の熱管理）。
 // 調整は「一通り完成して提供した後」の工程（F2・2026-07-07 オーナー指定。
 // 旧: 炭焼き→蒸らしの直後に調整があり「なぜ完成前に調整？」と不自然だった）。
+// さらに提供→調整の間には「相手が楽しんで火力が落ちてくる」時間経過を挟み、
+// 炭替えは「新しい炭を焼いてから」入る（Q1/Q2・2026-07-11 オーナー指定）。
 // ラウンドの切れ目で ch1_tournament_r1〜r3_end の会話が挟まる。
 // プレゼン工程は廃止（2026-06-12 オーナー決定）。提供の佇まいは魅力としてスコアに残る。
 // 集中（雑念タップ）工程は廃止（2026-07-06 オーナー指定 A2）
@@ -4936,12 +4938,18 @@ function renderMakingWorkbench(step, opts = {}) {
     pulse.className = "heartbeat-focus";
     stage.appendChild(pulse);
   } else if (scene === "adjust") {
-    stage.appendChild(buildHookahArt({ smoke: false }));
-    stage.appendChild(makingLayer("heat_glow.png", "heat-glow soft"));
-    const tongs = artDiv("art-tongs adjust", stage);
-    if (!artAsset(tongs, "hand_tongs_closed.png")) {
-      artDiv("art-tongs-arm a1", tongs);
-      artDiv("art-tongs-arm a2", tongs);
+    if (tt && tt.adjustPhase === "watch") {
+      // 提供のあと: 相手の手元で煙を吐き続ける一台。炭は少しずつ痩せていく（Q1）
+      stage.appendChild(buildHookahArt({ smoke: true }));
+      stage.appendChild(makingLayer("heat_glow.png", "heat-glow soft"));
+    } else {
+      stage.appendChild(buildHookahArt({ smoke: false }));
+      stage.appendChild(makingLayer("heat_glow.png", "heat-glow soft"));
+      const tongs = artDiv("art-tongs adjust", stage);
+      if (!artAsset(tongs, "hand_tongs_closed.png")) {
+        artDiv("art-tongs-arm a1", tongs);
+        artDiv("art-tongs-arm a2", tongs);
+      }
     }
   } else if (scene === "pull") {
     // 吸い出し: 一人称。左に一台、右手前にマウスピース、煙が立ちはじめる
@@ -5314,6 +5322,7 @@ function optionButton(label, desc, onClick) {
 
 function tournamentStep(step) {
   if (tt) tt.step = step;
+  if (tt && tt.mode === "tutorial") return tutorialDemoStep(step); // K2: チュートリアルはスミさんの自動実演
   mcBlockIntro(step); // #20 工程ブロックの頭でMC実況（本番のみ・対象ブロックのみ）
   if (step === "setup_bowl" || step === "setup_hms" || step === "setup_charcoal") return stepSetup(step);
   if (step === "theme") {
@@ -5415,22 +5424,62 @@ function showStandings(round, next) {
 }
 
 // --- 調整（提供後の熱管理）。動かせるのは炭だけ＝詰め直し・蒸らし直しは物理的に無理 #15
-// 提供後の炭の焼け進みで動く温度（F2）。提供時の温度(tt.temp)を起点に、
-// 炭が多いほど熱が乗り、少ないと痩せていく。炭を替えれば行き先が変わる
-function afterServeDrift(coalId) {
-  let d = { triangle: 0.05, four: 0.13 }[coalId] ?? 0.05;
+// 時間が経つと炭は痩せて、火力は落ちていく（Q1・2026-07-11 オーナー指定。
+// 旧: 「焼け進んで熱が乗る」方向だったが、燃え尽きていく炭の熱は落ちるのが実際）。
+// 炭が多いほど熱は残り、フラット炭は燃え尽きが早く、キューブ炭は熱が持つ
+function afterServeFade() {
+  let d = { triangle: 0.07, four: 0.04 }[tt.coal] ?? 0.07;
+  d += { flat_charcoal: 0.02, cube_charcoal: -0.02 }[tt.charcoal] ?? 0;
+  return d;
+}
+// 焼きたての炭に乗せ替えたときの熱の立ち上がり（Q2: 炭替えは「焼く」から入る）
+function freshCoalBoost(coalId) {
+  let d = { triangle: 0.09, four: 0.16 }[coalId] ?? 0.09;
   d += { flat_charcoal: -0.02, cube_charcoal: 0.03 }[tt.charcoal] ?? 0;
   return d;
 }
 
-// 調整＝提供後の熱管理（F2・2026-07-07 オーナー指定「調整は一通り完成した後・提供後」）。
-// 出した一台は審査員（お客さん）が吸っている間も炭が焼け進んで熱が動く。
-// それを見て炭を替えるか、このまま守り切るかを選ぶ
+// 調整＝提供後の熱管理。F2（2026-07-07「調整は完成・提供の後」）に加え、
+// Q1（2026-07-11）で提供→調整の間に「相手が楽しむ時間」を挟む:
+// 完成した一台をしばらく楽しんでもらい、炭が痩せて火力が落ちてきたところで調整に入る
 function stepAdjust() {
+  tt.adjustPhase = "watch"; // 作業台の絵: 相手の手元で煙を吐き続ける一台
+  const body = tnPanel("提供のあと", "出した一台は、もう相手の時間だ。");
+  const lines = [
+    tt.mode === "tournament"
+      ? "審査員たちが、ゆっくりと煙を回している。……悪くない顔だ。"
+      : (tt.mode === "tutorial" || tt.mode === "rehearsal")
+        ? "スミさんが、ゆっくりと煙を吐いた。……悪くない顔だ。"
+        : "お客さんが、ゆっくりと煙を吐いた。……悪くない顔だ。",
+    "──しばらくして。",
+    "炭が痩せて、煙が少し細くなってきた。火力が落ちてくる頃合いだ。",
+  ];
+  // 一行ずつ間を置いて出す＝「楽しんでもらっている時間」の演出。最後にボタンを出す
+  lines.forEach((text, i) => setTimeout(() => {
+    const p = document.createElement("p");
+    p.className = "tn-hint adjust-watch";
+    p.textContent = text;
+    body.appendChild(p);
+  }, i * 650));
+  setTimeout(() => {
+    const btn = document.createElement("button");
+    btn.className = "primary-btn";
+    btn.textContent = "炭の様子を見る";
+    btn.addEventListener("click", () => { if (window.SFX) SFX.select(); stepAdjustWork(); });
+    body.appendChild(btn);
+  }, lines.length * 650 + 250);
+}
+
+// 調整パネル本体。落ちてきた火力を、新しい炭を焼いて立て直すか、
+// 炭を外して逃がすか、この熱のまま守り切るかを選ぶ（Q2: 炭替えは必ず「焼き」から）
+function stepAdjustWork() {
+  tt.adjustPhase = "work";
   const body = tnPanel("提供後の熱管理（炭替え・調整）",
-    "出したら終わりじゃない。吸われている間も炭は焼け進み、熱が動く。行き先の温度を見て、炭で寄せろ。");
+    "吸われている間に炭は痩せて、熱は落ちていく。新しい炭を焼いて立て直すか、この熱のまま守り切るか。");
   const target = pullTargetZone();
+  const clampT = (t) => Math.max(0.16, Math.min(0.9, t));
   const baseTemp = typeof tt.temp === "number" ? tt.temp : projectedTemp();
+  let temp = clampT(baseTemp - afterServeFade()); // 楽しんでもらっている間に落ちた、今の熱
   const tw = document.createElement("div");
   tw.className = "temp-wrap";
   tw.innerHTML =
@@ -5441,39 +5490,75 @@ function stepAdjust() {
   tw.querySelector(".temp-zone").style.width = `${(target[1] - target[0]) * 100}%`;
   const marker = tw.querySelector(".temp-marker");
   const read = tw.querySelector("#adjust-read");
-  const current = () => Math.max(0.16, Math.min(0.9, baseTemp + afterServeDrift(tt.coal)));
+  const reading = (t) => (t >= target[0] && t <= target[1] ? "ok" : t < target[0] ? "low" : "high");
   const refresh = () => {
-    const t = current();
-    marker.style.left = `${Math.round(t * 100)}%`;
-    const inZone = t >= target[0] && t <= target[1];
-    read.textContent = inZone
+    marker.style.left = `${Math.round(temp * 100)}%`;
+    const r = reading(temp);
+    read.textContent = r === "ok"
       ? "◎ この熱なら、最後の一口まで味が守れそうだ。"
-      : t < target[0] ? "▽ 炭が痩せて、後半ぬるくなりそうだ。炭を足すと持ち直す。"
-      : "△ 焼け進んで熱が乗りすぎる。炭を減らして落ち着かせたい。";
-    read.className = `adjust-read ${inZone ? "ok" : "warn"}`;
+      : r === "low" ? "▽ 炭が痩せて、後半ぬるくなりそうだ。焼きたての炭なら持ち直せる。"
+      : "△ まだ熱が乗りすぎている。炭を外して落ち着かせたい。";
+    read.className = `adjust-read ${r === "ok" ? "ok" : "warn"}`;
   };
   body.appendChild(tw);
   refresh();
-  const coalRow = document.createElement("div");
-  coalRow.className = "adjust-coals";
-  const mark = (sel) => [...coalRow.children].forEach((x) => x.classList.toggle("sel", x === sel));
-  for (const c of COALS) {
-    const b = optionButton(`炭を${c.label}に替える`, c.desc, () => {
-      tt.coal = c.id; if (window.SFX) SFX.select(); updateRig(); refresh(); mark(b);
-    });
-    if (tt.coal === c.id) b.classList.add("sel");
-    coalRow.appendChild(b);
-  }
-  body.appendChild(coalRow);
-  // 確定（炭を替えないのも手）。テスト互換のため「このままでいく」を残す
-  body.appendChild(optionButton("このままでいく", "この熱で最後まで守り切る", () => {
-    if (window.SFX) SFX.select();
-    const t = current();
-    const [a, b] = pullTargetZone();
+  const finish = () => {
+    const [a, b] = target;
     const center = (a + b) / 2, half = (b - a) / 2;
-    tt.care = Math.abs(t - center) <= half * 0.45 ? "perfect" : t >= a && t <= b ? "good" : "miss";
+    tt.care = Math.abs(temp - center) <= half * 0.45 ? "perfect" : temp >= a && temp <= b ? "good" : "miss";
     endAdjust();
-  }));
+  };
+  const choices = document.createElement("div");
+  choices.className = "adjust-coals";
+  const note = document.createElement("p");
+  note.className = "tn-hint adjust-note";
+  // 乗せ替え・外しの結果（マーカーの動き）を見てから締める
+  const confirmThen = (text) => {
+    choices.innerHTML = "";
+    note.textContent = text;
+    const btn = document.createElement("button");
+    btn.className = "primary-btn";
+    btn.textContent = "この熱でいく";
+    btn.addEventListener("click", finish);
+    choices.appendChild(btn);
+  };
+  // Q2: 炭替えは「コンロで焼く」→「焼けた炭を組む」の順。即時の乗せ替えはしない
+  const bake = optionButton("新しい炭を焼く", "コンロで芯まで焼いてから、組み直す", () => {
+    if (window.SFX) SFX.select();
+    [...choices.children].forEach((x) => (x.disabled = true));
+    note.textContent = "コンロに新しい炭を置く。……芯まで赤くなるのを待つ。";
+    setTimeout(() => {
+      if (window.SFX && SFX.perfect) SFX.perfect();
+      note.textContent = "焼けた。真っ赤な炭を、どう組む？";
+      choices.innerHTML = "";
+      for (const c of COALS) {
+        const after = clampT(temp + freshCoalBoost(c.id));
+        const r = reading(after);
+        const fx = r === "ok" ? "◎ 適温に戻る" : r === "low" ? "▽ まだ熱が足りない" : "△ 熱が乗りすぎる";
+        choices.appendChild(optionButton(`${c.label}に組み直す`, `${c.desc}　→ ${fx}`, () => {
+          tt.coal = c.id;
+          if (window.SFX) SFX.select();
+          temp = after;
+          updateRig();
+          refresh();
+          confirmThen("焼けた炭に乗せ替えた。熱が、また立ち上がる。");
+        }));
+      }
+    }, 1100);
+  });
+  const vent = optionButton("炭をひとつ外す", "熱を逃して落ち着かせる", () => {
+    if (window.SFX) SFX.select();
+    temp = clampT(temp - 0.08);
+    refresh();
+    confirmThen("炭をひとつ外した。熱が、すっと落ち着いていく。");
+  });
+  // 確定（何もしないのも手）。テスト互換のため「このままでいく」を残す
+  const keep = optionButton("このままでいく", "この熱で最後まで守り切る", () => {
+    if (window.SFX) SFX.select();
+    finish();
+  });
+  choices.append(bake, vent, keep);
+  body.append(choices, note);
 }
 
 // R3（調整＝提供後の熱管理）の締め。ch1大会はここから最終会話→審査（FLAVOR TRIAL）へ
@@ -7086,7 +7171,7 @@ function tournamentBreakdown() {
   if (typeof tt.steamHits === "number") add("蒸らし", tt.steamHits === 0 ? 2 : tt.steamHits <= 2 ? 1 : 0, "蒸らし中の雑念を躱しきると煙の芯が立つ");
   add("吸い出し", tt.pull === "perfect" ? 2 : tt.pull === "good" ? 1 : 0, "適温の窓でJUSTを重ねると一気に伸びる");
   // 提供後の熱管理（F2で調整を提供後へ移設）
-  if (tt.care) add("熱管理", tt.care === "perfect" ? 2 : tt.care === "good" ? 1 : 0, "提供後の炭の焼け進みを読んで、最後の一口まで守る");
+  if (tt.care) add("熱管理", tt.care === "perfect" ? 2 : tt.care === "good" ? 1 : 0, "提供後、落ちていく熱を読んで、最後の一口まで守る");
   const p = mixProfile();
   const matched = tt.theme && tt.theme.best ? tt.theme.best.filter((c) => p.cats.has(c)).length : 0;
   add("テーマ相性", matched >= 2 ? 2 : matched === 1 ? 1 : 0, "コンセプトに合うカテゴリを2つ以上揃える");
@@ -7604,9 +7689,9 @@ const CUSTOMER_ENTRIES = {
   baito_trouble_02: { name: "注文違いの女性客", memo: "ブルーベリーとグレープを間違えた。ミスの後のリカバリーが大事" },
   baito_trouble_03: { name: "ボトル転倒の客", memo: "赤い炭が床を転がった。安全第一。炭→水→復旧の優先順位を学んだ" },
   baito_trouble_04: { name: "焦げ臭い苦情の客", memo: "ヒートマネジメントの失敗。炭の位置ひとつで味が変わる" },
-  baito_regular_02: { name: "サラリーマン田中さん", memo: "毎週来る。ネクタイを緩める仕草が来店の合図" },
+  baito_regular_02: { name: "サラリーマン高橋さん", memo: "毎週来る。ネクタイを緩める仕草が来店の合図" },
   baito_regular_03: { name: "フリーランスのお兄さん", memo: "いつもはMacで仕事。たまに本を読んでいる日がある" },
-  baito_regular_04: { name: "常連3人の同時来店", memo: "おっちゃん、田中さん、フリーランスのお兄さん。同時は珍しい" },
+  baito_regular_04: { name: "常連3人の同時来店", memo: "おっちゃん、高橋さん、フリーランスのお兄さん。同時は珍しい" },
   baito_rush_02: { name: "土曜夜の行列", memo: "入口に2組。待ち時間の案内も大事な仕事" },
   baito_rush_03: { name: "3卓同時リクエスト", memo: "フレーバー変更、灰掃除、追加注文が同時に来た" },
   baito_rush_04: { name: "退勤ラッシュの4組", memo: "10分で4組。ボウルの在庫が足りなくなりかけた" },
@@ -7930,16 +8015,80 @@ const BAITO_FLOW = [
   ["coalfire", "HEAT"], ["steam", "STEAM"], ["pull", "PULL"],
 ];
 const TUTORIAL_TIPS = {
-  theme: "スミさん「まずは一台のコンセプトだ。今日は好きに選んでいい」",
+  theme: "スミさん「まずは一台のコンセプトを決める。今日はリラックスでいく」",
   mix: "スミさん「基本は12g。ボウルの容量までは盛れるが、多く詰む分は熱を食うぞ」",
   pack: "スミさん「迷ったらノーマル。フレーバーの重さで変えるんだ」",
   foil: "スミさん「穴は均等に。リズムで開けると揃う」",
   coalfire: "スミさん「炭の芯が一瞬ピカッと閃く。その瞬間に取り上げろ。早すぎりゃ生焼け、遅けりゃ灰だ」",
   coal: "スミさん「基本はトライアングル。熱が均等に回る」",
   steam: "スミさん「蒸らしは0/3/5/8/10分から選ぶ。基本は5〜8分、0分は神崎の型だ」",
-  pull: "スミさん「提供前の吸い出しで温度を作る。左で止めれば上げ、右なら下げだ。最低2回」",
-  adjust: "スミさん「出したら終わりじゃない。吸われてる間も炭は焼け進む。熱の行き先を読んで、炭で整えろ」",
+  pull: "スミさん「提供前の吸い出しで温度を作る。吸い方の強弱で、熱は上げ下げできる。最低2回だ」",
+  adjust: "スミさん「出したら終わりじゃない。吸われてる間に炭は痩せて、熱が落ちてくる。新しい炭を焼いて、立て直すんだ」",
 };
+
+// K2: チュートリアルは「スミさんの実演を見る」自動進行（2026-07-09 オーナー指定
+// 「操作が自動で動き、説明を見ながら進む形に」）。工程列は大会と同一（N14）＝
+// 本番で初見の工程が無い。act() はお手本の結果を tt に固定でセットする（採点には使わない）。
+// タイトルは実操作パネルの文言（機材選択/ミックス/吸い出し等）と重ねない＝
+// 自動テストの工程分岐（steps.mjs / screenshots.mjs）と衝突させないため
+const TUTORIAL_DEMO = {
+  setup_bowl: { title: "お手本 — ボウル選び",
+    act() { tt.bowl = "silicone_bowl"; },
+    lines: ["スミさんが棚からシリコンボウルを下ろした。", "「機材は味の土台だ。最初は素直なやつがいい」"] },
+  setup_hms: { title: "お手本 — 熱の通り道",
+    act() { tt.hms = "lotos_hagal"; },
+    lines: ["ボウルの上にヒートマネジメントを乗せて、収まりを確かめている。", "「熱の伝わり方はここで決まる。ボウルとの相性も見ろ」"] },
+  setup_charcoal: { title: "お手本 — 炭選び",
+    act() { tt.charcoal = "flat_charcoal"; },
+    lines: ["炭の箱を開けて、形の揃ったものだけを選び出していく。", "「炭の種類で熱の性格が変わる。今日はフラットでいく」"] },
+  theme: { title: "お手本 — コンセプト決め",
+    act() { tt.theme = THEMES[0]; },
+    lines: ["スミさんは腕を組んで少し考え、今日の一台の方向を決めた。", "リラックス──ゆったり吸える、落ち着いた一台だ。"] },
+  mix: { title: "お手本 — 葉の配合",
+    act() { tt.mix = { double_apple: 8, mint: 4 }; },
+    lines: ["ジャーから葉を取り、スケールで測りながら混ぜていく。", "ダブルアップルを軸に、ミントをひとつまみ。手つきに迷いがない。"] },
+  pack: { title: "お手本 — 詰め",
+    act() { tt.pack = "normal"; },
+    lines: ["ふんわり、それでいて均一に。ボウルに葉が収まっていく。"] },
+  foil: { title: "お手本 — 穴あけ",
+    act() { tt.foilHits = 5; tt.foilDone = true; tt.holeResult = { totalHoles: 18, evenness: 68, heatSpread: 62, innerHoles: 3, score: 72 }; },
+    lines: ["アルミをピンと張って、外周から順に穴を開けていく。リズムがいい。"] },
+  coal: { title: "お手本 — 炭の置き方",
+    act() { tt.coal = "triangle"; },
+    lines: ["スミさんが指で三点を差す。置き方は、基本のトライアングルだ。"] },
+  coalfire: { title: "お手本 — 炭焼き",
+    act() { tt.coalFire = "good"; tt.coalResult = { justCount: 1, coalFlashSuccess: false, heatStability: 62, burnRisk: 45 }; },
+    lines: ["コンロの上で炭が赤く染まっていく。スミさんは目を離さない。", "芯が一瞬、ピカッと閃いた──その瞬間に、迷わず取り上げた。"] },
+  steam: { title: "お手本 — 蒸らし",
+    act() { tt.steam = 8; tt.steamHits = 1; },
+    lines: ["炭を乗せたら、すぐには吸わない。時計を見て、静かに8分。", "煙が細く立ちはじめる。店の空気が、甘く変わっていく。"] },
+  pull: { title: "お手本 — 温度合わせ",
+    act() { const [a, b] = pullTargetZone(); tt.temp = (a + b) / 2; tt.pull = "good"; tt.pullCount = 2; },
+    lines: ["提供前に二度、三度。スミさんが吸うたび、煙の白が濃くなっていく。", "──重く、甘く、まとまった。この温度で出す、という顔だ。"] },
+  adjust: { title: "お手本 — 提供後の熱管理",
+    act() { tt.care = "good"; },
+    lines: ["出した一台は、しばらく客の時間。炭が痩せてきた頃合いで、スミさんが動いた。", "新しい炭をコンロで焼き、真っ赤になったところで乗せ替える。熱が、また立ち上がった。"] },
+};
+
+function tutorialDemoStep(step) {
+  const demo = TUTORIAL_DEMO[step];
+  if (!demo) return tnNext(step);
+  demo.act();
+  const body = tnPanel(demo.title, "スミさんの手元を見て、流れを覚える。");
+  demo.lines.forEach((text, i) => setTimeout(() => {
+    const p = document.createElement("p");
+    p.className = "tn-hint demo-line";
+    p.textContent = text;
+    body.appendChild(p);
+  }, i * 550));
+  setTimeout(() => {
+    const btn = document.createElement("button");
+    btn.className = "primary-btn";
+    btn.textContent = step === "adjust" ? "実演を見届けた" : "次へ";
+    btn.addEventListener("click", () => { if (window.SFX) SFX.select(); tnNext(step); });
+    body.appendChild(btn);
+  }, demo.lines.length * 550 + 200);
+}
 const DRILL_TIPS = {
   foil: "💡 アルミホイルに穴を開ける工程。穴の数と配置で熱の通り方が決まる。均等に開けるほど味がブレにくい",
   coalfire: "💡 専用の炭を火で炙って使う。外は赤いのに中が黒い「生焼け」だと嫌な味が出る。芯まで火を通すのが大事",
@@ -7954,9 +8103,9 @@ function startTutorial() {
     dialogue_id: "tutorial_intro",
     metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" },
     lines: [
-      { speaker: "sumi", face: "normal", text: "おい、始。大会に出るって決めたなら、まず一回、通しで作ってみろ" },
-      { speaker: "sumi", face: "smile", text: "ウチの作業台を貸してやる。テーマ決めから引きまで、本番と同じ流れだ" },
-      { speaker: "hajime", face: "smile", text: "はい。（……ふふ、ちょっと腕の見せどころかも）" },
+      { speaker: "sumi", face: "normal", text: "おい、はじめ。大会に出るって決めたなら、まず一回、通しで作るのを見とけ" },
+      { speaker: "sumi", face: "smile", text: "俺が一台、通しで作ってみせる。テーマ決めから提供後まで、本番と同じ流れだ" },
+      { speaker: "hajime", face: "smile", text: "はい！ （スミさんの通しを最初から見られるのって、実は貴重かも）" },
     ],
   }, () => beginMaking("tutorial"));
 }
@@ -8069,19 +8218,14 @@ function finishBaitoOrder() {
 function finishTutorial() {
   state.flags._tutorial_done = true;
   stopRigEffects();
-  const craft = craftScore();
-  const grade = craft.score >= 90 ? "great" : craft.score >= 70 ? "good" : "rough";
-  const comment = {
-    great: { face: "surprise", text: "……驚いたな。バイト3ヶ月でこの煙か。お前、本当に筋がいいぞ。" },
-    good: { face: "smile", text: "悪くない。3ヶ月ならむしろ上出来だ。あとは数をこなすだけだな。" },
-    rough: { face: "normal", text: "まあ、こんなもんだ。どこで味が決まるか、体で覚えただろう。" },
-  }[grade];
+  // K2: チュートリアル＝スミさんの実演。採点はせず、通しの流れを見届けた締めにする
   playCustom({
     dialogue_id: "tutorial_result",
     metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" },
     lines: [
-      { speaker: "", face: "", text: "──煙を一口、スミさんに渡す。ゆっくりと吐き出して、しばらく目を閉じた。" },
-      { speaker: "sumi", face: comment.face, text: comment.text },
+      { speaker: "", face: "", text: "──スミさんが煙をゆっくり吐き出して、道具を置いた。一連の流れが、目に焼き付いている。" },
+      { speaker: "sumi", face: "smile", text: "──と、まあ、これで一台だ。工程は全部繋がってる。どれか一つ雑にやると、全部に響く" },
+      { speaker: "hajime", face: "smile", text: "（テーマ決めから提供後まで……思ってたより、やることが多いんだな）" },
       { speaker: "sumi", face: "normal", text: "それと、ひとつだけ覚えとけ。──技は盗め。ただし、誰から盗んだかは忘れるな" },
       { speaker: "sumi", face: "serious", text: `本番までの${MAX_DAYS}日間、店も練習台も好きに使え。……優勝してこい。` },
       { speaker: "", face: "", text: "……【技術】と【センス】が上がった。" },
@@ -8153,9 +8297,10 @@ function startDay1RivalScouting() {
     dialogue_id: "day1_sumi_scouting_intro",
     metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" },
     lines: [
-      { speaker: "sumi", face: "normal", text: "……ついでに、隣町の店も覗いてこい" },
-      { speaker: "sumi", face: "serious", text: "『ケムリクサ』ってとこだ。同業の煙も知っとけ" },
-      { speaker: "hajime", face: "normal", text: "分かりました。行ってきます" },
+      { speaker: "sumi", face: "normal", text: "それと、もうひとつ。買い出しのついでだ──『ケムリクサ』を覗いてこい" },
+      { speaker: "sumi", face: "serious", text: "商店街の外れの店だ。大会で当日いきなり当たるより、先に相手の煙を知っとけ" },
+      { speaker: "sumi", face: "normal", text: "偵察っつっても身構えるな。客として行って、客として一服してこい。それが一番よく分かる" },
+      { speaker: "hajime", face: "smile", text: "分かりました。……客として、ですね。行ってきます" },
     ],
   }, () => {
     // こちらも自動遷移せず、マップで KEMURIKUSA のピンをタップしてもらう（A3）
