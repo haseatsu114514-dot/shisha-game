@@ -236,6 +236,7 @@ function newState() {
     pendingLimeNight: null, // 夜に約束したLIMEイベント {event, sender}
     practiceBest: {},      // 練習ドリルの自己ベスト（0〜2）。大会本番のボーナスになる
     customerNotes: {},     // 常連ノート: {event_id: {first, count}} バイトで会った客の記録
+    knowledge: {},         // 会話から書き留めた知識（note_id→1）。審査の読み等に効く（S2）
     csVisits: 0,           // C.STATION訪問回数（初回は特別イベント、以降はローテーション）
     // 日常スロット（パッキー＝理由は語られない謎のマスコット兼司会）。アプリ演出は出さない
     reel: (typeof REEL !== "undefined" ? Object.assign(REEL.newReelState(), { introDone: true }) : null),
@@ -1345,17 +1346,32 @@ function toggleAuto() {
   $("#vn-auto").classList.add("on");
   $("#tp-auto").classList.add("on");
   $("#touch-pad").classList.add("lit");
+  // 送り待ちは固定間隔でなく「基本値＋表示文字数×係数」の可変（B4・2026-07-11）。
+  // 短い相槌はテンポよく、長い説明はゆっくり＝AUTOを読書モードとして成立させる
+  let readyAt = 0;
+  let pageKey = null;
   autoTimer = setInterval(() => {
     if (!engine || !$("#screen-dialogue").classList.contains("active")) return stopAutoSkip();
     if (engine.waitingChoice) return; // 選択肢で停止
-    if (engine.typing) return; // タイプ中は待つ
+    if (engine.typing) { pageKey = null; return; } // タイプ完了後から読了待ちを数える
     if (engine.assetsPending && engine.assetsPending()) return; // 画像の取得待ち（N7）
-    engine.next();
-  }, { 1: 2200, 2: 1400, 3: 800 }[config.autoSpeed] || 1400);
+    const pageText = (engine.pages && engine.pages[engine.pageIdx]) || "";
+    const cur = `${engine.dialogueId}#${engine.pageIdx}#${pageText}`;
+    if (cur !== pageKey) {
+      pageKey = cur;
+      const chars = pageText.replace(/\s|\[[^\]]*\]/g, "").length;
+      const base = { 1: 1500, 2: 950, 3: 550 }[config.autoSpeed] || 950;
+      const per = { 1: 72, 2: 45, 3: 26 }[config.autoSpeed] || 45;
+      readyAt = Date.now() + base + chars * per;
+      return;
+    }
+    if (Date.now() >= readyAt) { pageKey = null; engine.next(); }
+  }, 100);
 }
 
 function toggleSkip() {
   if (skipMode) { stopAutoSkip(); return; }
+  // 未読SKIPの確認カード（C1）は2026-07-11にオーナー指定で撤去済み。復活させない
   stopAutoSkip();
   skipMode = true;
   $("#vn-skip").classList.add("on");
@@ -1436,6 +1452,16 @@ function initEngine() {
       onCg: galleryRecord,
       onLine: pushLog,
       onTextCue: parseTextCue,
+      // 知識登録（2026-07-11）: 会話で出た情報を「ノートに書いた」瞬間として見せる。
+      // 「読んだ行が武器になる」の入り口。同じ note_id は一度だけ（再訪・周回で二重通知しない）
+      onNote: (line) => {
+        const id = String(line.note_id || "");
+        if (!id || !state) return;
+        if (!state.knowledge) state.knowledge = {};
+        if (state.knowledge[id]) return;
+        state.knowledge[id] = 1;
+        toast(`📖 ノートに書き加えた 「${line.label || ""}」`);
+      },
       resolveBg: (rel) => resolveSceneBg(rel),
       onChoice: handleDialogueChoice,
       onFx: dialogueFx,
@@ -1637,6 +1663,17 @@ const REPEAT_VISIT = {
   rei: { text: "零-ZERO-で一服。爆音の中、REIは何も言わない。でも、煙はやさしい。", stats: { charm: 2 } },
   volk: { text: "鉄の煙で一服。ヴォルクの精密な手つきを盗み見る。数字の裏に、職人の勘がある。", stats: { guts: 2 } },
 };
+
+// 差分ファースト（2026-07-11）: テンプレ訪問の頭に差す「今日はどこが違うか」の1行プール。
+// どの店でも成立する観察に限定する（固有名・報酬語（ステ名＋上がった）は入れない）
+const REPEAT_OPENERS = [
+  "今日は店が空いていて、煙の流れがよく見えた。",
+  "ドアを開けた瞬間、先客の笑い声が耳に入った。",
+  "雨上がりのせいか、今日は店の香りが濃く感じる。",
+  "カウンターの端で、常連らしき人が舟を漕いでいた。",
+  "換気扇の音がいつもより大きい。風の強い日だ。",
+  "棚の隅に、見慣れない箱がいくつか積まれていた。",
+];
 
 // 好感度が育ち始めた相手（♥1以上）のテンプレ訪問は、地の文だけでなく
 // 「そのキャラの価値観がちらっと見える小会話」を混ぜる（F5・2026-07-07 オーナー要望
@@ -2414,6 +2451,52 @@ function spotBg(spotId, night) {
   return map[spotId] || null;
 }
 
+// スミさんの宿題（ミニ目標・2026-07-11）: 日常パートに「今なにをすると良いか」の小さな矢印を
+// 出す。達成チェックは既存カウンタ/フラグを読むだけ＝進行やバランスには干渉しない
+const CH1_HOMEWORK = [
+  { id: "drill", fromDay: 2, text: "練習台でドリルをどれか1本やってみろ",
+    done: () => !!state.flags._did_drill, stat: "guts",
+    praise: "宿題クリア！ スミ「体で覚えるのが一番早え」" },
+  { id: "notes", fromDay: 4, text: "バイトでお客さんの好みを3人ぶん覚えろ",
+    done: () => Object.keys(state.customerNotes || {}).length >= 3, stat: "insight",
+    praise: "宿題クリア！ スミ「顔と好みで覚えろ。それが店の財産だ」" },
+  { id: "just", fromDay: 8, text: "吸い出しでJUSTを2回続けて決めてこい",
+    done: () => !!state.flags._pull_just2, stat: "technique",
+    praise: "宿題クリア！ スミ「その感覚、忘れんな」" },
+];
+function currentHomework() {
+  if (!state || state.chapter !== 1 || state.phase !== "daily") return null;
+  if (!state.flags._tutorial_done) return null; // チュートリアル前は出さない
+  return CH1_HOMEWORK.find((h) => !state.flags[`_hwdone_${h.id}`] && state.day >= h.fromDay) || null;
+}
+// 行動の締めに達成チェック。達成していたらスミさんの一言＋ささやかな報酬（1回だけ）
+function checkHomework() {
+  const hw = currentHomework();
+  if (!hw || !hw.done()) return;
+  state.flags[`_hwdone_${hw.id}`] = true;
+  toast(hw.praise);
+  gainStat(hw.stat, 3);
+  save();
+}
+// マップ下部の宿題表示（押せない・ホバー等の邪魔をしない）
+function updateHomeworkBanner() {
+  const screen = $("#screen-map");
+  if (!screen) return;
+  let el = screen.querySelector("#hw-banner");
+  const hw = currentHomework();
+  if (!hw) { if (el) el.remove(); return; }
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "hw-banner";
+    screen.appendChild(el);
+  }
+  el.textContent = `スミさんの宿題 「${hw.text}」`;
+  if (!state.flags[`_hwseen_${hw.id}`]) {
+    state.flags[`_hwseen_${hw.id}`] = true;
+    toast(`スミさんから宿題が出た 「${hw.text}」`);
+  }
+}
+
 function showMap(opts = {}) {
   state.phase = "daily";
   if (window.SFX) SFX.bgm("daily_part");
@@ -2423,6 +2506,7 @@ function showMap(opts = {}) {
     `url('${assetUrl(`assets/backgrounds/bg_osu_map_${night ? "night" : "day"}.png`)}')`;
   $("#map-time-toggle").textContent = night ? "夜 / 栄" : "昼 / 栄";
   updateHud();
+  updateHomeworkBanner(); // スミさんの宿題（2026-07-11）
   // 入場した瞬間に背景が出るよう、マップに出た時点で行き先候補の背景を先読み（A7）
   queuePreload(
     SPOTS.filter((s) => !s.chapter || s.chapter === state.chapter)
@@ -2465,8 +2549,12 @@ function showMap(opts = {}) {
       // 今夜の固定イベント地には「!」バッジ（#28。イベント自体は夜に自動で起きる＝予感の演出）
       const nightEv = state.chapter === 1 && CH1_NIGHT_EVENTS[state.day];
       const evBadge = nightEv && nightEv.pin === spot.id ? `<i class="evt-badge">!</i>` : "";
+      // 「新しい固有会話がある」印（2026-07-11）。抑制: 面識のある相手・今日まだ行けて・
+      // 「!」と重ならない時だけ＝全ピンが光る攻略ゲー化を避ける
+      const storyBadge = !evBadge && known && spot.charId && !visited && !closed && !tooPoor &&
+        visitHasNewStory(spot.charId) ? `<i class="evt-badge story">話</i>` : "";
       btn.innerHTML =
-        `<div class="shield">${evBadge}` +
+        `<div class="shield">${evBadge}${storyBadge}` +
           `<div class="ico">${face || (un ? (un.icon || "煙") : SPOT_ICONS[spot.id] || "")}</div>` +
           `<div class="label">${un && un.short ? un.short : layout.short}</div>` +
         `</div>` +
@@ -2914,6 +3002,7 @@ function doFortune() {
 }
 
 function endAction() {
+  checkHomework(); // スミさんの宿題の達成チェック（2026-07-11。未達成なら何もしない）
   // 1行動=1回転（パッキーの謎スロット）。結果はこの場で確定し、直後の save() に乗る＝引き直し不可（#12）
   if (typeof REEL !== "undefined") REEL.onAction();
   state.ap -= 1;
@@ -3338,6 +3427,21 @@ function visitStoryCount(charId) {
   return Math.min(state.visits[charId] || 0, (VISIT_SEQUENCES[charId] || []).length);
 }
 
+// 「行けば新しい固有会話がある」訪問先か（マップの吹き出し印用・2026-07-11）。
+// doVisit の playUnique / SPECIAL_REPEAT_VISITS と同じ条件を訪問前に読むだけ（状態は変えない）
+function visitHasNewStory(charId) {
+  const seq = VISIT_SEQUENCES[charId];
+  if (!seq || !state) return false;
+  const storyIdx = visitStoryCount(charId);
+  const hasAff = charId in state.affinity;
+  const rank = hasAff ? state.affinity[charId] || 0 : 0;
+  const pts = hasAff ? state.affinityPts[charId] || 0 : 0;
+  const willRankUp = hasAff && rank < AFFINITY_CAP && rankFromPts(pts + AFFINITY_PTS.repeat) > rank;
+  if (storyIdx < seq.length && (!hasAff || storyIdx === 0 || willRankUp)) return true;
+  const specials = SPECIAL_REPEAT_VISITS[charId] || [];
+  return specials.some((x) => !state.flags[x.flag] && storyIdx >= (x.minStory || 0) && D.dialogues[x.id]);
+}
+
 // キャラ訪問（O21・2026-07-04 再編）:
 // 固有会話は「初回」と「好感度メーターが次の段階に上がる訪問」でだけ再生し、
 // それ以外はテンプレ訪問（REPEAT_VISIT のローテ文＋報酬）。
@@ -3392,11 +3496,15 @@ function doVisit(charId, opts = {}) {
     // 「通った甲斐」＝そのキャラの価値観がちらっと見える数行。報酬は従来と同じ
     const talks = rank >= 1 ? REPEAT_TALKS[charId] : null;
     const talk = talks && talks.length ? talks[(state.visits[charId] || 0) % talks.length] : null;
+    // 差分ファースト（2026-07-11）: 頭に「今日はどう違うか」を1行だけ差して入りの既視感を崩す。
+    // 三拍子の体裁・報酬は従来のまま。日と訪問回数でローテ＝連日同じ文にならない
+    const opener = REPEAT_OPENERS[(state.day + (state.visits[charId] || 0)) % REPEAT_OPENERS.length];
     playCustom(
       {
         dialogue_id: `repeat_${charId}`,
         metadata: { bg: `res://assets/backgrounds/${bg}` },
         lines: [
+          { speaker: "", face: "", text: opener },
           ...(talk || [{ speaker: "", face: "", text: texts[(state.visits[charId] || 0) % texts.length] }]),
           { type: "apply", stats: rep.stats },
         ],
@@ -5322,7 +5430,13 @@ function optionButton(label, desc, onClick) {
 
 function tournamentStep(step) {
   if (tt) tt.step = step;
-  if (tt && tt.mode === "tutorial") return tutorialDemoStep(step); // K2: チュートリアルはスミさんの自動実演
+  // K2改（2026-07-11 オーナー指定）: チュートリアルは工程ごとに
+  // 「スミさんのお手本（説明）→ 同じ工程を自分の手で（実践）」の2拍で進む。
+  // お手本の無い工程はそのまま飛ばす（従来どおり）
+  if (tt && tt.mode === "tutorial") {
+    if (!TUTORIAL_DEMO[step]) return tnNext(step);
+    if (tt.tutTried !== step) return tutorialDemoStep(step);
+  }
   mcBlockIntro(step); // #20 工程ブロックの頭でMC実況（本番のみ・対象ブロックのみ）
   if (step === "setup_bowl" || step === "setup_hms" || step === "setup_charcoal") return stepSetup(step);
   if (step === "theme") {
@@ -6648,6 +6762,7 @@ function stepPull() {
     }
     if (just) {
       tt.pullJust = (tt.pullJust || 0) + 1;
+      if (tt.pullJust >= 2 && state) state.flags._pull_just2 = true; // スミさんの宿題③（2026-07-11）
       // 成功のたびにジャスト帯を狭める（GG1）: 次の吸いから判定がシビアになる
       PULL_JUST = pullJustBands(tt.pullJust);
       drawJustBands();
@@ -7032,6 +7147,10 @@ function finishTournament() {
   // 基準未達なら持ち点は動かず、暫定順位のまま＝普通に敗北する
   const NAGUMO_CRAFT_BAR = 80;
   window.__craftDebug = craft.score; // テスト・バランス検証用（UIには出さない）
+  // 知識の実利（2026-07-11）: 南雲の流儀をノートに書いた人は、結果の見え方が「読める」
+  if (state.knowledge && state.knowledge.nagumo_style) {
+    craft.detail.push("（南雲会長は持ち点を最後まで温存する流儀──ノートに書いたとおりなら、勝負は最終発表で決まる）");
+  }
   let playerScore = base;
   if (craft.score >= NAGUMO_CRAFT_BAR) {
     // 南雲カットイン演出（#4）用: 南雲票が入る前の暫定順位（はじめ=最下位付近）を保存
@@ -8026,9 +8145,10 @@ const TUTORIAL_TIPS = {
   adjust: "スミさん「出したら終わりじゃない。吸われてる間に炭は痩せて、熱が落ちてくる。新しい炭を焼いて、立て直すんだ」",
 };
 
-// K2: チュートリアルは「スミさんの実演を見る」自動進行（2026-07-09 オーナー指定
-// 「操作が自動で動き、説明を見ながら進む形に」）。工程列は大会と同一（N14）＝
-// 本番で初見の工程が無い。act() はお手本の結果を tt に固定でセットする（採点には使わない）。
+// K2改（2026-07-11 オーナー指定「1個説明→実践→説明」）: 各工程は「スミさんのお手本
+// （この表）→ 同じ工程をプレイヤーが実UIでやる」の2拍で進む。工程列は大会と同一（N14）＝
+// 本番で初見の工程が無い。act() はお手本の内容をリグ表示に反映するための仮セット
+// （実践でプレイヤーの操作が全て上書きする。採点はしない）。
 // タイトルは実操作パネルの文言（機材選択/ミックス/吸い出し等）と重ねない＝
 // 自動テストの工程分岐（steps.mjs / screenshots.mjs）と衝突させないため
 const TUTORIAL_DEMO = {
@@ -8074,7 +8194,7 @@ function tutorialDemoStep(step) {
   const demo = TUTORIAL_DEMO[step];
   if (!demo) return tnNext(step);
   demo.act();
-  const body = tnPanel(demo.title, "スミさんの手元を見て、流れを覚える。");
+  const body = tnPanel(demo.title, "スミさんの手元を見る。次は、同じ工程を自分の手でやる。");
   demo.lines.forEach((text, i) => setTimeout(() => {
     const p = document.createElement("p");
     p.className = "tn-hint demo-line";
@@ -8084,8 +8204,12 @@ function tutorialDemoStep(step) {
   setTimeout(() => {
     const btn = document.createElement("button");
     btn.className = "primary-btn";
-    btn.textContent = step === "adjust" ? "実演を見届けた" : "次へ";
-    btn.addEventListener("click", () => { if (window.SFX) SFX.select(); tnNext(step); });
+    btn.textContent = "自分でやってみる";
+    btn.addEventListener("click", () => {
+      if (window.SFX) SFX.select();
+      tt.tutTried = step; // 説明→実践の2拍目（tournamentStep が実UIへ通す）
+      tournamentStep(step);
+    });
     body.appendChild(btn);
   }, demo.lines.length * 550 + 200);
 }
@@ -8103,9 +8227,9 @@ function startTutorial() {
     dialogue_id: "tutorial_intro",
     metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" },
     lines: [
-      { speaker: "sumi", face: "normal", text: "おい、はじめ。大会に出るって決めたなら、まず一回、通しで作るのを見とけ" },
-      { speaker: "sumi", face: "smile", text: "俺が一台、通しで作ってみせる。テーマ決めから提供後まで、本番と同じ流れだ" },
-      { speaker: "hajime", face: "smile", text: "はい！ （スミさんの通しを最初から見られるのって、実は貴重かも）" },
+      { speaker: "sumi", face: "normal", text: "おい、はじめ。大会に出るって決めたなら、一台の作り方を最初から仕込んでやる" },
+      { speaker: "sumi", face: "smile", text: "俺が一工程ずつやって見せる。見たら、すぐ同じことをお前の手でやれ" },
+      { speaker: "hajime", face: "smile", text: "見て、すぐやる……分かりました！ （体で覚えろってことだな）" },
     ],
   }, () => beginMaking("tutorial"));
 }
@@ -8113,6 +8237,7 @@ function startTutorial() {
 // 練習ドリルの結果。出来でステータス＋自己ベスト更新（本番ボーナス）
 function finishDrill() {
   stopRigEffects();
+  state.flags._did_drill = true; // スミさんの宿題①の達成記録（2026-07-11）
   const kind = tt.drill;
   let tier;
   if (kind === "foil") tier = tt.foilHits >= 6 ? 2 : tt.foilHits >= 4 ? 1 : 0;
@@ -8218,16 +8343,17 @@ function finishBaitoOrder() {
 function finishTutorial() {
   state.flags._tutorial_done = true;
   stopRigEffects();
-  // K2: チュートリアル＝スミさんの実演。採点はせず、通しの流れを見届けた締めにする
+  // K2改: チュートリアル＝説明→実践の通し稽古。採点はせず、自分の手で作り切った締めにする
   playCustom({
     dialogue_id: "tutorial_result",
     metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" },
     lines: [
-      { speaker: "", face: "", text: "──スミさんが煙をゆっくり吐き出して、道具を置いた。一連の流れが、目に焼き付いている。" },
-      { speaker: "sumi", face: "smile", text: "──と、まあ、これで一台だ。工程は全部繋がってる。どれか一つ雑にやると、全部に響く" },
-      { speaker: "hajime", face: "smile", text: "（テーマ決めから提供後まで……思ってたより、やることが多いんだな）" },
+      { speaker: "", face: "", text: "──最後の一服を吐き出して、顔を上げる。カウンターの向こうで、スミさんが頷いた。" },
+      { speaker: "sumi", face: "smile", text: "──それで一台だ。いまの全部、お前の手でやったんだぞ" },
+      { speaker: "sumi", face: "normal", text: "工程は繋がってる。どれか一つ雑にやると、全部に響く" },
+      { speaker: "hajime", face: "smile", text: "（見てすぐやると、手が覚えてる……思ってたより、やることが多いんだな）" },
       { speaker: "sumi", face: "normal", text: "それと、ひとつだけ覚えとけ。──技は盗め。ただし、誰から盗んだかは忘れるな" },
-      { speaker: "sumi", face: "serious", text: `本番までの${MAX_DAYS}日間、店も練習台も好きに使え。……優勝してこい。` },
+      { speaker: "sumi", face: "serious", text: `本番までの${MAX_DAYS}日間、店も練習台も好きに使え。……優勝してこい` },
       { speaker: "", face: "", text: "……【技術】と【センス】が上がった。" },
     ],
   }, () => {

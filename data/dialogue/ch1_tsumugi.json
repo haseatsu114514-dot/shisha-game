@@ -69,34 +69,63 @@
         {
           "speaker": "",
           "face": "",
-          "text": "彼女の周りだけ、まるで時間が止まっているかのような静かでひんやりとした空気が漂っていて、"
+          "text": "彼女の周りだけ、時間が止まったような静かな空気が漂っている。"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "そこへラベンダーの落ち着く香りが溶け込んでいく。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "お待たせしました。ラベンダーです"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……どうも"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "小さな声。目を合わせず、iPadを胸の前に抱えるようにした。──まるで、画面を見られたくないように。"
+          "type": "choice",
+          "id": "tsumugi_first_serve",
+          "choices": [
+            {
+              "text": "静かに、そっと置く",
+              "next": "serve_quiet"
+            },
+            {
+              "text": "一声かけて置く",
+              "next": "serve_call"
+            }
+          ]
         },
         {
           "speaker": "",
           "face": "",
           "text": "傷のあるiPadを抱える、寡黙な常連客。それが、つむぎとの出会いだった。"
         }
-      ]
+      ],
+      "branches": {
+        "serve_quiet": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "音を立てないように、湯気ごとそっとテーブルの端に置いた。彼女の集中は、途切れない。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "しばらくして香りに気づいたのか、彼女がほんの少しだけこちらを見た。……小さく、頭を下げた気がする。"
+          },
+          {
+            "type": "set_flag",
+            "flag": "tsumugi_first_quiet"
+          }
+        ],
+        "serve_call": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "お待たせしました。ラベンダーです"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……どうも"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "小さな声。目を合わせず、iPadを胸の前に抱えるようにした。──まるで、画面を見られたくないように。"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_tsumugi_second",
@@ -276,6 +305,13 @@
           "text": "シフト中、つむぎの炭を替えに行った。いつもの席、いつものラベンダー、いつものiPad。"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "tsumugi_first_quiet",
+          "next_true": "cb_quiet",
+          "next_false": "cb_none"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "──iPadの傷が、照明の光を反射して光った。画面を斜めに横切る、深い亀裂。"
@@ -415,7 +451,27 @@
           "face": "",
           "text": "その瞬間、iPadを抱える腕の力が、わずかに緩んだのが見えた。"
         }
-      ]
+      ],
+      "branches": {
+        "cb_quiet": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……あなた、最初の日……そっと置いてくれた人"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "え、覚えてたの？"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……ああいうの、初めてだったから"
+          }
+        ],
+        "cb_none": []
+      }
     },
     {
       "dialogue_id": "ch1_tsumugi_fourth",
@@ -431,9 +487,18 @@
           "text": "描いていない。"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "つむぎちゃん、今日は描いてないんだ"
+          "type": "choice",
+          "id": "tsumugi_fourth_open",
+          "choices": [
+            {
+              "text": "声をかける",
+              "next": "open_call"
+            },
+            {
+              "text": "そっとしておく",
+              "next": "open_wait"
+            }
+          ]
         },
         {
           "speaker": "tsumugi",
@@ -516,9 +581,18 @@
           "text": "……ごめんなさい。気持ち悪いですよね"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "いや、そうじゃなくて……でも、なんで俺の……？"
+          "type": "choice",
+          "id": "tsumugi_fourth_memo",
+          "choices": [
+            {
+              "text": "気持ち悪くなんかないよ",
+              "next": "memo_warm"
+            },
+            {
+              "text": "正直、びっくりした",
+              "next": "memo_honest"
+            }
+          ]
         },
         {
           "speaker": "tsumugi",
@@ -600,7 +674,47 @@
           "face": "",
           "text": "つむぎが慌ててiPadを胸に抱えた。いつもの防御姿勢。でも──その目が、ほんの少しだけ潤んでいた。"
         }
-      ]
+      ],
+      "branches": {
+        "open_call": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "つむぎちゃん、今日は描いてないんだ"
+          }
+        ],
+        "open_wait": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "何かある気がして、少し離れたところでグラスを拭いていた。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "──先に沈黙を破ったのは、彼女の方だった。"
+          }
+        ],
+        "memo_warm": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "気持ち悪くなんかないよ。……でも、なんで俺の……？"
+          }
+        ],
+        "memo_honest": [
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "正直、びっくりした。……けど、嫌じゃない。なんで俺の……？"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……ですよね。びっくり、しますよね"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_tsumugi_fifth",
@@ -675,9 +789,18 @@
           "text": "まるで、煙が傷に沿って流れているように見える。"
         },
         {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "……すごい"
+          "type": "choice",
+          "id": "tsumugi_fifth_art",
+          "choices": [
+            {
+              "text": "……すごい",
+              "next": "art_word"
+            },
+            {
+              "text": "（言葉が出ない）",
+              "next": "art_silent"
+            }
+          ]
         },
         {
           "speaker": "hajime",
@@ -730,9 +853,18 @@
           "text": "……これは、「心がある」絵かもしれないって"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……"
+          "type": "choice",
+          "id": "tsumugi_fifth_heart",
+          "choices": [
+            {
+              "text": "あるよ。断言できる",
+              "next": "heart_word"
+            },
+            {
+              "text": "黙って、深くうなずく",
+              "next": "heart_nod"
+            }
+          ]
         },
         {
           "speaker": "tsumugi",
@@ -822,7 +954,47 @@
           "face": "",
           "text": "……【魅力】が少し上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "art_word": [
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "……すごい"
+          }
+        ],
+        "art_silent": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "言葉が出なかった。ただ、画面から目が離せない。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……後ろ姿でも、わかる。これ、俺だ）"
+          }
+        ],
+        "heart_word": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あるよ。……ちゃんと、心がある。俺には分かる"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "surprise",
+            "text": "……っ"
+          }
+        ],
+        "heart_nod": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "言葉の代わりに、深くうなずいた。それで十分、伝わった気がした。"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_tsumugi_smoke_color",

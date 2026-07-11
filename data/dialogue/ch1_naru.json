@@ -16,12 +16,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ドアを開けると、tonariの落ち着いた香りとは違う、"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "焼き菓子のような甘い匂いがふわりと鼻をくすぐった。"
+          "text": "ドアを開けると、焼き菓子のような甘い匂いがふわりと鼻をくすぐった。tonariとは違う香りだ。"
         },
         {
           "speaker": "",
@@ -35,7 +30,7 @@
         },
         {
           "speaker": "naru",
-          "face": "normal",
+          "face": "smile",
           "text": "あ、熱かったら遠慮なく言って。炭、すぐ調整するから"
         },
         {
@@ -65,17 +60,26 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "あ、蒸野はじめです。tonariでバイトしてて……大会に出るので、その、挨拶というか"
+          "text": "あ、蒸野はじめです。tonariでバイトしてて……"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "正直に言うと偵察です"
+          "type": "choice",
+          "id": "naru_first_scout",
+          "choices": [
+            {
+              "text": "正直に言うと、偵察です",
+              "next": "scout_honest"
+            },
+            {
+              "text": "きゃ、客です",
+              "next": "scout_bluff"
+            }
+          ]
         },
         {
           "speaker": "naru",
-          "face": "smile",
-          "text": "正直でよろしい。俺は鳴切。なるでいい。SMOKE CROWN CUP、俺も出る"
+          "face": "normal",
+          "text": "俺は鳴切。なるでいい。SMOKE CROWN CUP、俺も出る"
         },
         {
           "type": "set_flag",
@@ -83,8 +87,8 @@
         },
         {
           "speaker": "naru",
-          "face": "normal",
-          "text": "偵察か。いいねえ、その素直さ。──ほら、つっ立ってないで座れよ。ちょうど一台立ち上げるとこだ"
+          "face": "smile",
+          "text": "偵察するのはいい心がけだ。──ほら、つっ立ってないで座れよ。ちょうど一台立ち上げるとこだ"
         },
         {
           "speaker": "naru",
@@ -103,7 +107,7 @@
         },
         {
           "speaker": "naru",
-          "face": "smile",
+          "face": "normal",
           "text": "性分でな、昔から放っとけねえんだよ"
         },
         {
@@ -138,18 +142,27 @@
         },
         {
           "speaker": "naru",
-          "face": "smug",
+          "face": "normal",
           "text": "お前のとこの今日の一台……ミントが効いてたな。2g前後"
         },
         {
           "speaker": "naru",
-          "face": "smug",
+          "face": "smile",
           "text": "ブルーベリーで下を支えて、バニラはほんのひとつまみ。どうだ、外してるか？"
         },
         {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "（……匂いだけで、グラム数まで。当たってる……！）"
+          "type": "choice",
+          "id": "naru_first_nose",
+          "choices": [
+            {
+              "text": "当たってます……！",
+              "next": "nose_wow"
+            },
+            {
+              "text": "（当たってるのが、悔しい）",
+              "next": "nose_bitter"
+            }
+          ]
         },
         {
           "speaker": "naru",
@@ -187,7 +200,69 @@
           "text": "『tonariの』って名乗ると、相手の目の色が少し変わる。……この感じ、嫌いじゃない）"
         }
       ],
-      "branches": {}
+      "branches": {
+        "scout_honest": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "正直に言うと……偵察です。大会、出るので"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "正直でよろしい"
+          },
+          {
+            "type": "set_flag",
+            "flag": "naru_first_honest"
+          }
+        ],
+        "scout_bluff": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "きゃ、客です。ふつうに一服しに来ました"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "ふーん？ ……その前掛けの匂い、仕事帰りだろ。偵察の顔してるよ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……バレてる）"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "いいよ、隠さなくて。大会前だしな"
+          },
+          {
+            "type": "set_flag",
+            "flag": "naru_first_bluff"
+          }
+        ],
+        "nose_wow": [
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "当たってます……！ 匂いだけで、グラム数まで……"
+          }
+        ],
+        "nose_bitter": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（当たってる。ぜんぶ。……すごいと思うのと同じくらい、悔しい）"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "顔に出てるぞ、それ、……いい顔だ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_naru_second",
@@ -196,6 +271,13 @@
           "speaker": "naru",
           "face": "smile",
           "text": "おう、また来たか。今日は客側? 偵察側?"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "naru_first_bluff",
+          "next_true": "cb_bluff",
+          "next_false": "cb_check_honest"
         },
         {
           "speaker": "hajime",
@@ -277,7 +359,42 @@
           "flag": "_lime_contact_naru"
         }
       ],
-      "branches": {}
+      "branches": {
+        "cb_bluff": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "あ、今日は『客です』はナシな。もうバレてんだから"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……根に持ってる）"
+          }
+        ],
+        "cb_check_honest": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "naru_first_honest",
+            "next_true": "cb_honest",
+            "next_false": "cb_none"
+          }
+        ],
+        "cb_honest": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "──って、お前はどうせ正直に言うんだよな。知ってる"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……信頼されてるのか、これは）"
+          }
+        ],
+        "cb_none": []
+      }
     },
     {
       "dialogue_id": "ch1_naru_third",

@@ -564,6 +564,20 @@
           "text": "あ、でもパッキーは祈りが通じたの見たことないんですよね〜♪ ぷぷぷっ！"
         },
         {
+          "type": "choice",
+          "id": "judging_wait",
+          "choices": [
+            {
+              "text": "なるに話しかける",
+              "next": "wait_talk"
+            },
+            {
+              "text": "黙って結果を待つ",
+              "next": "wait_silent"
+            }
+          ]
+        },
+        {
           "speaker": "naru",
           "face": "normal",
           "text": "……お前のシーシャ、見てたよ。地味だったけど、熱管理が正確だった。あれ、結構やばいと思う"
@@ -651,7 +665,28 @@
           "face": "evil",
           "text": "まだ持ち点を投入していない審査員がいますよッ！ 南雲審査員長──10点まるまる温存ッ！"
         }
-      ]
+      ],
+      "branches": {
+        "wait_talk": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……なるさんは、緊張しないんですか"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "するよ。……するに決まってんだろ、こんなの"
+          }
+        ],
+        "wait_silent": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "膝の上で、自分の拳をじっと見ていた。隣で、なるが小さく息を吐く。"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_tournament_reveal",
@@ -890,9 +925,18 @@
           "text": "……懐かしい味だ。実に、懐かしい"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "それだけ言って、南雲は何も説明せずに立ち去った。"
+          "type": "choice",
+          "id": "after_natsukashii",
+          "choices": [
+            {
+              "text": "あの、懐かしいって……？",
+              "next": "nat_ask"
+            },
+            {
+              "text": "（懐かしい……？）",
+              "next": "nat_think"
+            }
+          ]
         },
         {
           "speaker": "naru",
@@ -970,6 +1014,10 @@
           ]
         },
         {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "──その夜。閉店後のtonari。"
@@ -1015,9 +1063,18 @@
           "text": "『もう一口吸いたい』と思わせたかどうか。あいつの基準はそれだけだ"
         },
         {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "じゃあ、俺の一台の何が、そう思わせたんですか？"
+          "type": "choice",
+          "id": "after_hitokuchi",
+          "choices": [
+            {
+              "text": "俺の一台の、何がですか？",
+              "next": "hk_ask"
+            },
+            {
+              "text": "（そういう審査だったのか）",
+              "next": "hk_think"
+            }
+          ]
         },
         {
           "speaker": "sumi",
@@ -1057,12 +1114,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "祝いに、自分用の一台を作って吸った。──うまい。馬鹿みたいに、うまい。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "今日の煙は、いままで吸ったどの一服よりも濃い。"
+          "text": "祝いに、自分用の一台を作って吸った。──馬鹿みたいに、うまい。どの一服よりも濃い。"
         },
         {
           "speaker": "hajime",
@@ -1222,6 +1274,49 @@
             "speaker": "",
             "face": "",
             "text": "──数日後、tonariに「配信で見ました」という新規のお客さんが二人来た。"
+          }
+        ],
+        "nat_ask": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの、懐かしいって……？"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "だが南雲は答えず、軽く手を上げただけで立ち去った。"
+          }
+        ],
+        "nat_think": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（懐かしい……？ 俺の一台が？）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "それだけ言って、南雲は何も説明せずに立ち去った。"
+          }
+        ],
+        "hk_ask": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "じゃあ、俺の一台の何が、そう思わせたんですか？"
+          }
+        ],
+        "hk_think": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（もう一口吸いたい、か。……そういう審査だったのか）"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "顔に書いてあるぞ。『俺の何が刺さったんだ』ってな"
           }
         ]
       }

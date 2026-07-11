@@ -6,7 +6,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "「ぺぱーみんと」。パステルカラーの外装で、一見するとコンセプトカフェのように見えるシーシャ店だ。"
+          "text": "「ぺぱーみんと」。パステルカラーの外装で、一見コンセプトカフェのようなシーシャ店だ。"
         },
         {
           "type": "set_flag",
@@ -31,6 +31,20 @@
           "speaker": "hajime",
           "face": "surprise",
           "text": "（……うわ。なんだ、この熱気。チェキ？　推し？　tonariとは何もかも違う……完全に場違いだ）"
+        },
+        {
+          "type": "choice",
+          "id": "minto_first_air",
+          "choices": [
+            {
+              "text": "帰りたくなってきた",
+              "next": "air_shy"
+            },
+            {
+              "text": "ノリを観察してみる",
+              "next": "air_watch"
+            }
+          ]
         },
         {
           "speaker": "minto",
@@ -79,7 +93,7 @@
         },
         {
           "speaker": "minto",
-          "face": "smile",
+          "face": "wink",
           "text": "ご指名ありがとうございますっ♡ ……あ、もうウチの推しメンに認定しちゃうからねっ？"
         },
         {
@@ -89,46 +103,40 @@
         {
           "speaker": "",
           "face": "",
-          "text": "（彼女が顔を近づけてウィンクした瞬間、"
+          "text": "彼女が顔を近づけてウィンクした瞬間、バニラとミントの甘い香りが鼻をくすぐった。"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "ふわりとバニラとミントの甘くて清涼感のある香りが鼻をくすぐった。"
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……これが彼女の『匂い』なんだろうか）"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "……これが彼女の『匂い』なんだろうか）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "（……推しとかチェキとか、正直ノリが分からない。落ち着かないな……。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "でも──笑顔の奥の目が、どこか冷静に客を値踏みしてる気がする。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ただ可愛いだけの子じゃない、のかも）"
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（でも──笑顔の奥の目が、客を冷静に値踏みしてる。ただ可愛いだけの子じゃない、のかも）"
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "smile",
           "text": "はじめくん、どんなシーシャが好き？"
         },
         {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "tonariみたいな渋いのもいいけどー、"
+          "type": "choice",
+          "id": "minto_first_taste",
+          "choices": [
+            {
+              "text": "渋いの派です",
+              "next": "taste_shibui"
+            },
+            {
+              "text": "甘いのも、気になってます",
+              "next": "taste_amai"
+            }
+          ]
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "wink",
           "text": "初めてのお客様にはみんと的イチ推し『フラミンゴ・ピーチ』がオススメっ♡ 甘くてカワイイの！"
         },
         {
@@ -157,58 +165,38 @@
           "text": "吸ってみると、ピーチとフローラルの華やかな香りが口いっぱいに広がった。"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "見た目だけじゃなく、味もすごくしっかりして美味しい。"
-        },
-        {
           "speaker": "hajime",
           "face": "smile",
           "text": "美味しい！ 甘いのに全然くどくない"
         },
         {
           "speaker": "minto",
-          "face": "smile",
+          "face": "excited",
           "text": "ほんとっ！？ やったぁー！ ……あ、でもはじめくん、ちゃんと今日ご飯食べた？"
         },
         {
           "speaker": "minto",
-          "face": "smile",
+          "face": "wink",
           "text": "空きっ腹で吸うと酔うからね？ ……って、同業者に言うのもヘンだけど♡ 偵察ならお手柔らかにね？"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "（甘い接客の裏で、シーシャを淹れる腕前はひどく真っ当で確かだ。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "しかも、あの熱狂的なファンたち……）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "（この実力に加えて『圧倒的な可愛さと人気』が評価に直結したら、"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "下手をすれば彼女が大会で優勝してしまうんじゃないか？）"
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（甘い接客の裏で、淹れる腕はひどく真っ当だ。しかも、あの熱狂的なファンたち……）"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……真面目に煙と向き合っているのが馬鹿らしくなるというか、同業者として、"
+          "text": "（実力に『圧倒的な人気』が乗ったら……下手すれば、彼女が優勝するんじゃないか？）"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "なんだか少し複雑な気分だな……）"
+          "text": "（……真面目に煙と向き合ってるのが馬鹿らしくなるというか、少し複雑な気分だな）"
         },
         {
           "speaker": "minto",
-          "face": "smile",
+          "face": "normal",
           "text": "ねえ、はじめくん。キミのお店のシーシャ、評判いいよね。……ちゃんと、煙で勝負してる感じ"
         },
         {
@@ -228,13 +216,13 @@
         },
         {
           "speaker": "minto",
-          "face": "smile",
+          "face": "wink",
           "text": "だからたまーに、煙の話に付き合ってよ。──連絡先、交換しよ？"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……『こう見えて』。なんだろう、今の言い方、ほんの少しだけ素っぽかった）あ、はい。よろこんで"
+          "text": "（……『こう見えて』。今の言い方、ほんの少しだけ素っぽかった）あ、はい。よろこんで"
         },
         {
           "speaker": "",
@@ -250,7 +238,65 @@
           "type": "set_flag",
           "flag": "_lime_contact_minto"
         }
-      ]
+      ],
+      "branches": {
+        "air_shy": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……回れ右したくなってきた。いや、偵察に来たんだろ、俺）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "深呼吸ひとつ。カウンター側の席に、そっと腰を下ろした。"
+          }
+        ],
+        "air_watch": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（チェキに指名、推しメン……。システムが完成されてる。これも一つの“店”の形か）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "観察しているうちに、少しだけ場の空気に慣れてきた。"
+          }
+        ],
+        "taste_shibui": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "渋いの……ですかね。tonari育ちなので"
+          },
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "ふふっ、出た〜tonari育ち！ じゃあ今日は逆側、行ってみよっか♡"
+          },
+          {
+            "type": "set_flag",
+            "flag": "minto_taste_shibui"
+          }
+        ],
+        "taste_amai": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "実は、甘いのも気になってて"
+          },
+          {
+            "speaker": "minto",
+            "face": "excited",
+            "text": "素直でよろしいっ♡ みんとに任せて！"
+          },
+          {
+            "type": "set_flag",
+            "flag": "minto_taste_amai"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_minto_second",
@@ -269,6 +315,13 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "こんにちは、みんと。今日も明るいね"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "minto_taste_shibui",
+          "next_true": "cb_shibui",
+          "next_false": "cb_check_amai"
         },
         {
           "speaker": "minto",
@@ -296,9 +349,18 @@
           "text": "あとねっ♡ みんとのチャームポイント、教えてあげよっか？"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "チャームポイント？"
+          "type": "choice",
+          "id": "minto_second_charm",
+          "choices": [
+            {
+              "text": "チャームポイント？",
+              "next": "charm_ride"
+            },
+            {
+              "text": "（話の展開が早い……！）",
+              "next": "charm_dizzy"
+            }
+          ]
         },
         {
           "speaker": "minto",
@@ -400,7 +462,62 @@
           "face": "",
           "text": "……【魅力】が少し上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "cb_shibui": [
+          {
+            "speaker": "minto",
+            "face": "wink",
+            "text": "今日はねー、『渋いの派』のはじめくんに、みんとが甘いのを布教する日でーす♡"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……この前の雑談、覚えてたんだ）"
+          }
+        ],
+        "cb_check_amai": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "minto_taste_amai",
+            "next_true": "cb_amai",
+            "next_false": "cb_none"
+          }
+        ],
+        "cb_amai": [
+          {
+            "speaker": "minto",
+            "face": "wink",
+            "text": "『甘いの気になる』って言ってたキミに、今日もとっておき用意してるよ〜♡"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……この前の雑談、覚えてたんだ）"
+          }
+        ],
+        "cb_none": [],
+        "charm_ride": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "チャームポイント……？"
+          }
+        ],
+        "charm_dizzy": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（話の展開が早い……！ でも、乗るしかないんだろうな）"
+          },
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "はいそこ、ちゃんとついてきて♡"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_minto_third",
