@@ -209,7 +209,7 @@
       "time_slot": "night",
       "flag": "interval_day1_naru_lime_done",
       "title": "なるからのLIME",
-      "description": "なるから「大会お疲れ！」と連絡が来た。",
+      "description": "なるから労いのLIMEが来た。",
       "dialogue_file": "res://data/dialogue/ch1_interval.json",
       "dialogue_id": "interval_day1_naru_lime",
       "stat_changes": {},
