@@ -706,6 +706,12 @@
     "description": "ショップスタッフ"
   },
   {
+    "id": "master_cafe",
+    "name": "マスター",
+    "role": "mob",
+    "description": "商店街のカフェのマスター。ハンドドリップの所作が美しい。なるの行きつけ。"
+  },
+  {
     "id": "everyone",
     "name": "みんな",
     "role": "mob",

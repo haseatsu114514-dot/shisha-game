@@ -438,6 +438,114 @@
           }
         }
       ]
+    },
+    {
+      "dialogue_id": "ch1_rin_repeat_b",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
+      },
+      "lines": [
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "お、いいところに来たね、モルモットくん"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "ロットB-12。税関から出たばかりの新入りだよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "銀色の缶。日本語表記はどこにもない。凛さんが先に、確かめるように一口吸う。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……うん、線は越えてない。はい、感想。考えるのは吐いてから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吸い込むと、冷たい花のような香りが鼻に抜けた。言葉を探す。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "花っぽいのに、後味はちょっと苦い……。緑茶、みたいな？"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "ふうん、緑茶ね。その表現、本国のやつらは絶対に出せない、……もらった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "メモを取る凛さんの横顔は、少し楽しそうだった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 1
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_rin_repeat_c",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "2階に上がると、凛さんは電話中だった。目で「座ってて」と合図される。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "——だから、ロットが違うと言ってるの。控えの書類と突き合わせて"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……ええ。そこが揃わないうちは、一箱も店には流さない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "電話を切って、凛さんは小さく息を吐いた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "お待たせ、モルモットくん。……ごめんね、かっこ悪いとこ見せた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いえ。……なんというか、筋が通ってるんですね"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "グレーに見える商売ほど、線引きは白黒はっきりさせるの。それだけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "気だるげな横顔の奥に、プロの顔を見た気がした。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 1
+          }
+        }
+      ]
     }
   ]
 }
