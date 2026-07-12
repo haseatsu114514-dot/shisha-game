@@ -11,6 +11,16 @@
 
 ---
 
+## 2026-07-12 セッション（ブランチ claude/game-audio-assets-7d1cdv）
+
+| # | 状態 | 内容 |
+|---|---|---|
+| M1 | ✅ 8683720 | **BGM追加4曲の採用＋Sunoプロンプト作成**（immersion_report B1の続き・オーナー採用）: 敗北/ゲームオーバー `bgm_defeat`・恋愛デート `bgm_date`・シリアス会話 `bgm_serious`・凛の店 `bgm_rin_shop`。発注プロンプトは `docs/bgm_suno_prompts.md` の #6〜#9（コピペ可・配線先も各セクション末尾に明記）。0バイトプレースホルダ配置済み。**曲受領後の配線が残タスク**（defeat=`showDefeat()`/gameover画面、date=`playLoverDate()`+私服デート系、serious=`type:"bgm"`行をengineに追加、rin_shop=`doVisit("rin")`） |
+| M2 | ✅ 決定事項 | **スロットにBGMは付けない**（オーナー決定「日常の一部なので」）。くじ等ミニゲーム系も日常曲のままとし、専用曲の再提案はしない |
+| — | ⏸ 発注待ち | 初回5曲（bgm_map/tournament_wait/tournament_edm/result_emotional/rival_shop）＋追加4曲の計9曲がオーナーのSuno生成待ち |
+
+---
+
 ## 2026-07-11 セッション（ブランチ claude/chapter-1-event-text-variety-jzpphd）
 
 | # | 状態 | 内容 |
