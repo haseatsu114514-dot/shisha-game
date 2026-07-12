@@ -1,6 +1,7 @@
-# Suno AI用 BGM発注プロンプト集（曲待ちプレースホルダ5曲・2026-07-04）
+# Suno AI用 BGM発注プロンプト集（曲待ちプレースホルダ9曲・2026-07-04／07-12追加）
 
-`assets/audio/bgm/` の0バイトプレースホルダ5曲ぶん。**各ブロックをそのままSunoに貼れる**。
+`assets/audio/bgm/` の0バイトプレースホルダぶん（初回5曲＋2026-07-12採用の追加4曲）。
+**各ブロックをそのままSunoに貼れる**。
 すべて **Instrumental（歌なし）** 指定。ループ端のフェードはコード側（sfx.js）が
 処理するので、曲側にフェードアウトを入れないこと。
 
@@ -9,9 +10,10 @@
 2. 1ファイル配布版に載せる曲だけ `web/build_standalone.py` の `BGM_FILES` に追加
    （埋め込みは先頭約75秒で切ってループ＋起動時間が延びるので厳選。
    推奨: **bgm_map のみ埋め込み**、大会系3曲とrival_shopは分割版専用でよい）
-3. 未配線の2曲は配置後に鳴らす場所を配線する:
+3. 未配線の曲は配置後に鳴らす場所を配線する:
    - `bgm_map` → `showMap()` の `SFX.bgm("daily_part")` を差し替え
    - `bgm_rival_shop` → `doVisit()` のライバル店（naru/adam/minto/ch2勢）で `SFX.bgm`
+   - 追加4曲（#6〜#9）の配線先は各セクション末尾の「配線」を参照
 4. `python3 web/build_standalone.py` → ブラウザで切替・ループ継ぎ目・音量（BGM_BASE=0.35）を耳で確認
 
 ---
@@ -97,6 +99,98 @@ that is not your home turf. 92 BPM. 2-bar intro, steady groove with small
 variations, no build-ups, no drops, no sudden loud hits. Seamless loop ending.
 About 2 minutes.
 ```
+
+---
+
+## 追加4曲（2026-07-12 オーナー採用。スロット/くじ/ミニゲーム曲は不採用＝日常の一部なので日常曲のまま）
+
+## 6. bgm_defeat.mp3 — 敗北・ゲームオーバー画面
+
+機能: 大会敗北（`showDefeat()`）と章途中のゲームオーバー（`#screen-gameover`）。
+結果発表前の無音（`bgmStop`）→敗北コール→この曲、という流れで入る。
+優勝側の bgm_result_emotional と対になる曲だが、**再挑戦ボタンがある画面**なので
+絶望一辺倒にしない＝「悔しさの中に、もう一回やるかという火種」を残す。
+
+```
+Instrumental only, no vocals. Quiet defeat-screen music for a shisha crafting
+tournament game. Sparse melancholic piano with long decays over soft low strings,
+gentle tape hiss, a faint warm pad underneath that keeps a small ember of hope.
+Sad and frustrated but not hopeless — sitting alone after losing, then deciding
+to try one more time. 68 BPM. Solo piano intro of 2 bars, main theme within the
+first 30 seconds, stays calm and subdued throughout — no drum kit, no build-ups,
+no sudden loud hits, no full-stop ending. Seamless loop where the final chord
+resolves back into the opening. About 1 minute 30 seconds.
+```
+
+配線: `showDefeat()` の冒頭に `if (window.SFX) SFX.bgm("bgm_defeat")`、
+`onGameOver` の `showScreen("#screen-gameover")` 側にも同様に。埋め込み不要（分割版専用）。
+
+## 7. bgm_date.mp3 — 恋愛・デートイベント
+
+機能: 恋人とのデート（`playLoverDate()`）・告白/恋人成立・私服デート系イベント
+（`ch1_minto_fifth` 等）の特別曲。日常曲/店曲から切り替わることで「特別な時間」を作る。
+会話を読ませる場面なので甘いが控えめに。tonari曲（アコースティックの温かさ）と
+姉妹になりすぎないよう、キラキラ成分（グロッケン）で「ときめき」側へ寄せる。
+
+```
+Instrumental only, no vocals. Sweet romantic date theme for a visual-novel style
+adventure game set around cozy shisha lounges. Warm nylon guitar arpeggios, soft
+Rhodes piano chords, gentle glockenspiel sparkles, light brushed percussion, round
+quiet bass. Tender, a little shy, quietly happy — an evening walk with someone
+special under amber street lights. 90 BPM. 2-bar intro, melody blooms softly within
+the first 30 seconds, then stays gentle with small variations — no drum fills,
+no build-ups, no sudden loud hits. Seamless loop ending that resolves back into
+the opening chord. About 2 minutes.
+```
+
+テイスト違い予備案: 「glockenspiel sparkles」を「music-box melody」にすると
+より少女漫画的な甘さになる（つむぎ・みんと寄り）。
+
+配線: `playLoverDate()` の冒頭＋恋人マイルストーンイベント再生時＋私服デート系
+dialogue の再生呼び出し前。イベント終了後は元の場面の曲へ戻す。埋め込み不要（分割版専用）。
+
+## 8. bgm_serious.mp3 — シリアス・緊張の会話（物語の重い場面）
+
+機能: 優勝の夜にスミさんが採点表を突きつけるLIME後の対峙、ライバルとの因縁、
+不穏な前フリなど「物語の影」の場面。bgm_tournament_wait（イベント前の高揚を含む
+「まだ始まらない」圧・脈打つ系）とは別物で、こちらは**静止した重さ**。
+ch2以降（神崎・チャコール博士など）でも使い回す汎用アンダースコア。
+
+```
+Instrumental only, no vocals. Dark, still underscore for heavy story conversations
+in a shisha adventure game. Low sustained cello and double-bass drones, sparse
+single low piano notes with long decay, airy dark pad, very subtle smoky room
+ambience, an occasional distant clock-like tick. Heavy, quiet and intimate — hard
+truths being spoken late at night. 62 BPM feel, almost beatless. Starts directly
+on the drone with no intro build, keeps an even low intensity with only slight
+swells — no percussion kit, no melody hooks, no build-ups, no sudden loud hits.
+Seamless ambient loop. About 2 minutes.
+```
+
+配線: シーン個別（該当 dialogue の再生呼び出し前後で `SFX.bgm`／終了時に元の曲へ）。
+本命は `type:"bg"` 行と同様の **`type:"bgm"` 行を engine に追加**して台詞データ側から
+切り替えられるようにすること（曲が届いた組み込み時に実装）。埋め込み不要（分割版専用）。
+
+## 9. bgm_rin_shop.mp3 — 凛の店（問屋街 Dr.fookah）
+
+機能: Dr.fookah 来訪〜凛との会話（`bg_fookah_showroom`）。海外メーカー
+NIGHTSIDE 代理店のショールーム＝**輸入物のオリエンタルな空気＋年上の余裕**で、
+bgm_rival_shop（都会的チルホップ）とも bgm_tournament_edm（中東風でも祭りのEDM）
+とも差別化する。会話と仕入れ選択の画面なので控えめに。
+
+```
+Instrumental only, no vocals. Exotic oriental lounge track for a hookah wholesale
+showroom run by a stylish older woman in an adventure game. Downtempo groove with
+soft darbuka hand percussion, warm oud and kanun phrases in short tasteful licks,
+airy breathy flute pad, deep relaxed bass, subtle incense-smoke ambience.
+Sophisticated, mysterious, a little playful and teasing — imported goods and
+grown-up confidence. 88 BPM. 2-bar intro, steady hypnotic groove with small
+variations — no build-ups, no drops, no sudden loud hits. Seamless loop ending.
+About 2 minutes.
+```
+
+配線: `doVisit("rin")` ／ Dr.fookah 来訪フローの会話開始前で `SFX.bgm`、
+退店時に `daily_part`（将来は bgm_map）へ戻す。埋め込み不要（分割版専用）。
 
 ---
 
