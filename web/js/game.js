@@ -237,6 +237,8 @@ function newState() {
     practiceBest: {},      // 練習ドリルの自己ベスト（0〜2）。大会本番のボーナスになる
     customerNotes: {},     // 常連ノート: {event_id: {first, count}} バイトで会った客の記録
     knowledge: {},         // 会話から書き留めた知識（note_id→1）。審査の読み等に効く（S2）
+    recipes: {},           // 配合レシピ帳: {recipe_id: {day}} ミックスで発見した組み合わせ（W2）
+    weatherSeed: Math.floor(Math.random() * 100000), // 天気の抽選種（雨の日はセーブごとに違う・W4）
     csVisits: 0,           // C.STATION訪問回数（初回は特別イベント、以降はローテーション）
     // 日常スロット（パッキー＝理由は語られない謎のマスコット兼司会）。アプリ演出は出さない
     reel: (typeof REEL !== "undefined" ? Object.assign(REEL.newReelState(), { introDone: true }) : null),
@@ -1668,6 +1670,66 @@ const REPEAT_VISIT = {
 
 // 差分ファースト（2026-07-11）: テンプレ訪問の頭に差す「今日はどこが違うか」の1行プール。
 // どの店でも成立する観察に限定する（固有名・報酬語（ステ名＋上がった）は入れない）
+// ============ 配合レシピ帳（S1/W2・2026-07-16） ============
+// 「相性のいい組み合わせ」を初めて詰むと発見＝レシピ帳（マップの本ボタン／STATUSのタブ）に載る。
+// 判定はフレーバーIDの完全一致セット（余計な葉が混ざると成立しない）。正本は data/recipes.json
+function discoveredRecipes() {
+  if (!state.recipes) state.recipes = {}; // 旧セーブの移行
+  return state.recipes;
+}
+function matchRecipe(mix) {
+  const key = Object.keys(mix || {}).filter((k) => mix[k] > 0).sort().join("+");
+  if (!key) return null;
+  return (D.recipes || []).find((r) => r.flavors.slice().sort().join("+") === key) || null;
+}
+// ミックス確定時に呼ぶ。新発見ならトーストで登録を見せる（読んだヒント・実験が実る瞬間）
+function checkRecipeDiscovery() {
+  if (!tt || !tt.mix) return;
+  const r = matchRecipe(tt.mix);
+  if (!r) return;
+  const known = discoveredRecipes();
+  if (known[r.id]) return;
+  known[r.id] = { day: state.day || 1 };
+  save();
+  toast(`📖 レシピ帳に書き加えた 「${r.name}」`);
+  if (tt.mode !== "tournament") gainStat("sense", 1); // 発見の実感。本番中はステ変動を挟まない
+}
+// フレーバーIDを短い表示名に（メーカー接頭辞を落とす）
+function flavorShortName(fid) {
+  const f = (D.flavors || []).find((x) => x.id === fid);
+  return f ? (f.short_name || f.name).replace(/^AF |^dobaj |^アブサル |^NS /, "") : fid;
+}
+
+// 常連ノートへの記録（バイトの客・お忍び客で共通）
+function recordCustomerNote(id) {
+  if (!state.customerNotes) state.customerNotes = {};
+  if (!state.customerNotes[id]) state.customerNotes[id] = { first: state.day || 1, count: 0 };
+  state.customerNotes[id].count++;
+}
+
+// ============ 天気（A8/W4・2026-07-16） ============
+// 日ごとに晴れ/雨をセーブ固有の種から決める（約3割・DAY1は晴れ固定）。
+// 雨の日はマップに雨、観音堂・カフェは雨の回、つむぎは長居、バイトは長居客の追加注文が出る
+function isRainy(day = state && state.day) {
+  if (!state || !day || day < 2) return false;
+  if (state.weatherSeed == null) state.weatherSeed = Math.floor(Math.random() * 100000); // 旧セーブの移行
+  const h = Math.imul(state.weatherSeed + day * 7919, 2654435761) >>> 0;
+  return h % 100 < 30;
+}
+// 雨の日のテンプレ訪問の入り1行（REPEAT_OPENERS の差し替え）
+const RAIN_OPENER = "外は雨。傘の水滴を払って、店の扉を開けた。";
+// 雨の日限定の小会話（テンプレ訪問の差分。つむぎ=雨の日は長居）
+const RAIN_TALKS = {
+  tsumugi: [
+    { speaker: "", face: "", text: "常連席のつむぎは、窓の雨を眺めながらゆっくり煙を吐いていた。" },
+    { speaker: "tsumugi", face: "smile", text: "雨の日って、お店が静かでいいよね。煙も少しだけ重たく落ちるの" },
+    { speaker: "tsumugi", face: "normal", text: "……今日は、もうちょっとだけ居ようかな" },
+    { speaker: "", face: "", text: "雨音と水の音だけの店内で、いつもより長く、隣に座っていた。" },
+  ],
+};
+// 雨の日はこの回を出す／晴れの日はローテから外す（天気と食い違う文を出さないため）
+const RAIN_SPOT_TEXTS = { kannon: "kannon_rain", cafe: "cafe_window_rain" };
+
 const REPEAT_OPENERS = [
   "今日は店が空いていて、煙の流れがよく見えた。",
   "ドアを開けた瞬間、先客の笑い声が耳に入った。",
@@ -2580,7 +2642,10 @@ function showMap(opts = {}) {
   const night = state.ap <= 1;
   $("#map-image").style.backgroundImage =
     `url('${assetUrl(`assets/backgrounds/bg_osu_map_${night ? "night" : "day"}.png`)}')`;
-  $("#map-time-toggle").textContent = night ? "夜 / 栄" : "昼 / 栄";
+  // 雨の日（A8/W4）: マップに雨のオーバーレイ＋表記。効果は各所（観音堂・カフェ・つむぎ・バイト）
+  const rainy = isRainy();
+  $("#screen-map").classList.toggle("rainy", rainy);
+  $("#map-time-toggle").textContent = (night ? "夜 / 栄" : "昼 / 栄") + (rainy ? "・雨" : "");
   updateHud();
   updateHomeworkBanner(); // スミさんの宿題（2026-07-11）
   // 入場した瞬間に背景が出るよう、マップに出た時点で行き先候補の背景を先読み（A7）
@@ -2953,7 +3018,15 @@ function doSpotDialogue(spotId, dialogueId, bg) {
   if (!state.spotVisits) state.spotVisits = {};
   const n = (state.spotVisits[spotId] = (state.spotVisits[spotId] || 0) + 1);
   const pool = SPOT_VISIT_POOLS[spotId];
-  const id = (n <= 1 || !pool) ? dialogueId : pool[(n - 2) % pool.length];
+  // 雨の日（A8/W4）は雨の回を出す。晴れの日はローテから外す（天気と文が食い違わないように）
+  const rainId = RAIN_SPOT_TEXTS[spotId];
+  let id;
+  if (n <= 1 || !pool) id = dialogueId;
+  else if (rainId && isRainy() && D.dialogues[rainId]) id = rainId;
+  else {
+    const rot = rainId ? pool.filter((x) => x !== rainId) : pool;
+    id = rot[(n - 2) % rot.length];
+  }
   playDialogue(D.dialogues[id] ? id : dialogueId, () => {
     if (!cueFiredInDialogue) gainStat(spotStat(spotId), 2);
     // 施設スポット＝一人の時間: 好感度は付かない代わりに、人に会うより伸びが大きい（#23）
@@ -2973,7 +3046,14 @@ function doCStation() {
   if (!state.csVisits) state.csVisits = 0;
   const first = state.csVisits === 0;
   state.csVisits++;
-  const dialogueId = first ? "ch1_c_station_visit" : CS_VISIT_POOL[(state.csVisits - 2) % CS_VISIT_POOL.length];
+  // お忍び客の回収（S2/W3）: 覆面レビュアーを接客済みなら、2回目以降の来店で記事の噂を聞く
+  let dialogueId;
+  if (!first && !state.flags._ev_reviewer_payoff && (state.customerNotes || {}).baito_incognito_reviewer && D.dialogues.ch1_reviewer_payoff) {
+    state.flags._ev_reviewer_payoff = true;
+    dialogueId = "ch1_reviewer_payoff";
+  } else {
+    dialogueId = first ? "ch1_c_station_visit" : CS_VISIT_POOL[(state.csVisits - 2) % CS_VISIT_POOL.length];
+  }
   playDialogue(dialogueId, () => {
     if (!cueFiredInDialogue) gainStat("insight", 2);
     gainStat(spotStat("c_station"), 3);
@@ -3424,22 +3504,43 @@ function doBaito(afterCameo) {
     state.flags._ev_rei_cameo = true;
     return playDialogue("ch1_rei_cameo", () => doBaito(true), "res://assets/backgrounds/bg_tonari_inside.png");
   }
+  // お忍び客（S2/W3・2026-07-16）: 正体を伏せた大物がバイトに一度だけ混ざる。
+  // その場では正体不明のまま常連ノートに残り、後日回収される（レビュアー=C.STATIONの記事、
+  // 紳士=大会当日の審査員紹介）。rei カメオと同じ「1シフト1割り込み」方式
+  if (state.chapter === 1 && !state.flags._ev_reviewer_cameo && state.day >= 4 && (state.usedBaito || []).length >= 2) {
+    state.flags._ev_reviewer_cameo = true;
+    recordCustomerNote("baito_incognito_reviewer");
+    return playDialogue("ch1_reviewer_cameo", () => doBaito(true), "res://assets/backgrounds/bg_tonari_inside.png");
+  }
+  if (state.chapter === 1 && !state.flags._ev_maezono_cameo && state.day >= 7 && (state.usedBaito || []).length >= 4) {
+    state.flags._ev_maezono_cameo = true;
+    recordCustomerNote("baito_incognito_maezono");
+    return playDialogue("ch1_maezono_cameo", () => doBaito(true), "res://assets/backgrounds/bg_tonari_inside.png");
+  }
   let pool = D.baito_events.filter((e) => !state.usedBaito.includes(e.id));
   if (pool.length === 0) { state.usedBaito = []; pool = D.baito_events.slice(); }
+  // 雨の日（A8/W4）: 雨の回（baito_rainy_day）は雨の日に出す。晴れの日はプールから外す
+  if (isRainy()) {
+    const rainEv = pool.find((e) => e.id === "baito_rainy_day");
+    if (rainEv) pool = [rainEv];
+  } else if (pool.length > 1) {
+    pool = pool.filter((e) => e.id !== "baito_rainy_day");
+  }
   const ev = pool[Math.floor(Math.random() * pool.length)];
   state.usedBaito.push(ev.id);
-  if (!state.customerNotes) state.customerNotes = {};
-  if (!state.customerNotes[ev.id]) state.customerNotes[ev.id] = { first: state.day || 1, count: 0 };
-  state.customerNotes[ev.id].count++;
+  recordCustomerNote(ev.id);
   // スミさんの誘い（N13）で来た日は給料に特別ボーナスが乗る
   const inviteBonus = state.flags._baito_bonus ? 5000 : 0;
   delete state.flags._baito_bonus;
-  const basePay = Math.max(8000, ev.base_pay || D.baito_settings.base_pay || 8000) + inviteBonus; // 給料は最低8,000円（master_spec #21）
+  // 雨の日（A8/W4）: 客足はまばらでも一人あたりが長い＝追加注文ぶんが給料に乗る
+  const rainBonus = isRainy() ? 500 : 0;
+  const basePay = Math.max(8000, ev.base_pay || D.baito_settings.base_pay || 8000) + inviteBonus + rainBonus; // 給料は最低8,000円（master_spec #21）
 
   const lines = [
     afterCameo
       ? { speaker: "", face: "", text: "──不思議な客を見送って、シフトに戻る。" }
       : { speaker: "", face: "", text: "今日はtonariでバイト。エプロンを締めて、カウンターに立つ。" },
+    ...(rainBonus ? [{ speaker: "", face: "", text: "外は雨。こういう日は客足がまばらな代わりに、一人ひとりが長い。追加注文が続いた。" }] : []),
     ...(inviteBonus ? [{ speaker: "sumi", face: "smile", text: "急に悪いな、助かる。今日の分は色をつけとくぞ" }] : []),
     { speaker: "", face: "", text: ev.text },
   ];
@@ -3572,10 +3673,13 @@ function doVisit(charId, opts = {}) {
     // 好感度が育ち始めた相手（♥1以上）は、地の文の代わりに小会話をローテーション（F5）。
     // 「通った甲斐」＝そのキャラの価値観がちらっと見える数行。報酬は従来と同じ
     const talks = rank >= 1 ? REPEAT_TALKS[charId] : null;
-    const talk = talks && talks.length ? talks[(state.visits[charId] || 0) % talks.length] : null;
+    // 雨の日（A8/W4）: 雨限定の小会話があるキャラ（つむぎ=長居）はそちらを優先
+    const rainTalk = isRainy() && rank >= 1 ? RAIN_TALKS[charId] : null;
+    const talk = rainTalk || (talks && talks.length ? talks[(state.visits[charId] || 0) % talks.length] : null);
     // 差分ファースト（2026-07-11）: 頭に「今日はどう違うか」を1行だけ差して入りの既視感を崩す。
     // 三拍子の体裁・報酬は従来のまま。日と訪問回数でローテ＝連日同じ文にならない
-    const opener = REPEAT_OPENERS[(state.day + (state.visits[charId] || 0)) % REPEAT_OPENERS.length];
+    const opener = isRainy() ? RAIN_OPENER
+      : REPEAT_OPENERS[(state.day + (state.visits[charId] || 0)) % REPEAT_OPENERS.length];
     playCustom(
       {
         dialogue_id: `repeat_${charId}`,
@@ -5393,6 +5497,13 @@ function beginMaking(mode) {
     if (mode === "baito") {
       // お客さんのリクエスト（テーマ）は日替わり。大会同様のフル工程で作る
       tt.theme = dailyTheme();
+      // レシピの指名注文（S1/W2）: リクエストの無い日は、発見済みレシピを常連が頼んでくる。
+      // 応えなくても普通に提供できる（応えたら追加ボーナス）＝縛りにしない・テストも詰まらない
+      const rids = Object.keys(discoveredRecipes());
+      if (!baitoRequest() && rids.length) {
+        const rid = rids[state.day % rids.length];
+        tt.recipeOrder = (D.recipes || []).find((r) => r.id === rid) || null;
+      }
       return tournamentStep("mix");
     }
     // リハーサル・チュートリアルも大会と全く同じ流れ＝SETUP（ハガル選び等）から（N14）
@@ -6329,6 +6440,13 @@ function stepMix() {
       : `パッキー「今大会の課題フレーバーは${regFlavorName}！ 入ってない一台は審査対象外ですよ〜♪」`;
     body.appendChild(note);
   }
+  // レシピの指名注文（S1/W2）: 縛りではなくお願い＝応えると finishBaitoOrder で追加ボーナス
+  if (tt.recipeOrder) {
+    const note = document.createElement("p");
+    note.className = "tn-tutor";
+    note.textContent = `お客さん「この前の『${tt.recipeOrder.name}』って配合ができるって聞いて。あれ、お願いできる？」`;
+    body.appendChild(note);
+  }
   // 味覚スランプ（ch2）: 味の記憶がノイズ混じりになり、説明文が霞む
   const tasteSlump = state.chapter === 2 && state.flags._taste_slump && tt.mode !== "drill";
   if (tasteSlump) {
@@ -6363,6 +6481,7 @@ function stepMix() {
       }
       save();
     }
+    checkRecipeDiscovery(); // 配合レシピ帳（S1/W2）: 相性のいい組み合わせを初めて詰んだ瞬間に発見
     tnNext("mix");
   });
 
@@ -6370,7 +6489,10 @@ function stepMix() {
   const refresh = () => {
     let regText = "";
     if (reg) regText = reg.max === 0 ? `　${regName}: 入れない約束` : `　${regName} ${regGrams()}/${reg.min}g`;
-    totalLabel.textContent = `合計 ${total()}g / ${cap}g` + regText;
+    // 発見済みレシピと一致したら名前を灯す（S1/W2。未発見の組み合わせはネタバレしない）
+    const rc = matchRecipe(tt.mix);
+    const recipeText = rc && discoveredRecipes()[rc.id] ? `　📖「${rc.name}」` : "";
+    totalLabel.textContent = `合計 ${total()}g / ${cap}g` + regText + recipeText;
     totalLabel.classList.toggle("ok", valid());
     goBtn.disabled = !valid();
     goBtn.textContent =
@@ -7890,6 +8012,8 @@ const CUSTOMER_ENTRIES = {
   baito_trouble_02: { name: "注文違いの女性客", memo: "ブルーベリーとグレープを間違えた。ミスの後のリカバリーが大事" },
   baito_trouble_03: { name: "ボトル転倒の客", memo: "赤い炭が床を転がった。安全第一。炭→水→復旧の優先順位を学んだ" },
   baito_trouble_04: { name: "焦げ臭い苦情の客", memo: "ヒートマネジメントの失敗。炭の位置ひとつで味が変わる" },
+  baito_incognito_reviewer: { name: "ハンチング帽の一人客", memo: "おまかせ注文で、配合の狙いだけ聞いてきた。テーブルに「またくる」のメモ" },
+  baito_incognito_maezono: { name: "よく味わう紳士", memo: "一口ごとに目を閉じて味わう。帰り際の「おいしいねえ」が耳に残る" },
   baito_regular_02: { name: "サラリーマン高橋さん", memo: "毎週来る。ネクタイを緩める仕草が来店の合図" },
   baito_regular_03: { name: "フリーランスのお兄さん", memo: "いつもはMacで仕事。たまに本を読んでいる日がある" },
   baito_regular_04: { name: "常連3人の同時来店", memo: "おっちゃん、高橋さん、フリーランスのお兄さん。同時は珍しい" },
@@ -7911,6 +8035,32 @@ function customerNotesHtml() {
       html += `<div class="note-entry found"><span class="note-name">${entry.name}</span>` +
         `<span class="note-count">×${count}</span>` +
         `<p class="note-memo">${entry.memo}</p></div>`;
+    } else {
+      html += `<div class="note-entry locked"><span class="note-name">？？？</span></div>`;
+    }
+  }
+  html += `</div>`;
+  return html;
+}
+
+// 配合レシピ帳（S1/W2）: 発見済みは名前と配合、未発見は？？？。
+// 会話でヒントを聞いた（type:"note" 登録済み）ものは、聞いた話だけ見える
+function recipesHtml() {
+  const known = discoveredRecipes();
+  const list = D.recipes || [];
+  const found = list.filter((r) => known[r.id]).length;
+  let html = `<div class="status-block"><h3>レシピ帳</h3>` +
+    `<p class="note-progress">${found} / ${list.length} 品</p>` +
+    `<p class="note-guide">気になる組み合わせを詰むと、閃きがレシピになる。店の葉が全部使えるバイト中が試しどき。</p>`;
+  for (const r of list) {
+    if (known[r.id]) {
+      const names = r.flavors.map(flavorShortName).join(" × ");
+      html += `<div class="note-entry found"><span class="note-name">${r.name}</span>` +
+        `<span class="note-count">${names}</span>` +
+        `<p class="note-memo">${r.memo}</p></div>`;
+    } else if (r.hint_note && state.knowledge && state.knowledge[r.hint_note]) {
+      html += `<div class="note-entry locked hinted"><span class="note-name">？？？</span>` +
+        `<p class="note-memo">${r.hint_text}</p></div>`;
     } else {
       html += `<div class="note-entry locked"><span class="note-name">？？？</span></div>`;
     }
@@ -8009,6 +8159,7 @@ function renderStatusInto(el, opts = {}) {
     { id: "rel", label: "人間関係", html: () => `<div class="status-block"><h3>人間関係</h3>${relationsHtml()}</div>` },
     { id: "inv", label: "持ち物", html: inventoryHtml },
     { id: "note", label: "常連ノート", html: customerNotesHtml },
+    { id: "recipe", label: "レシピ帳", html: recipesHtml },
   ];
   const bar = document.createElement("div");
   bar.className = "status-tabs";
@@ -8028,12 +8179,12 @@ function renderStatusInto(el, opts = {}) {
     bar.appendChild(b);
   }
   el.append(bar, body);
-  show("main");
+  show(opts.tab || "main");
 }
 
-function toggleStatus(show) {
+function toggleStatus(show, tab) {
   const ov = $("#status-overlay");
-  if (show) { renderStatusInto($("#status-body"), { tabbed: true }); ov.classList.add("visible"); }
+  if (show) { renderStatusInto($("#status-body"), { tabbed: true, tab }); ov.classList.add("visible"); }
   else ov.classList.remove("visible");
 }
 
@@ -8391,8 +8542,11 @@ function finishBaitoOrder() {
   stopRigEffects();
   const craft = craftScore();
   const tier = craft.score >= 92 ? "great" : craft.score >= 72 ? "good" : "rough";
-  // リクエスト（指名・苦手抜き）に応えた日は店からのボーナスが増える
-  const reqBonus = baitoRequest() ? 500 : 0;
+  // レシピの指名注文（S1/W2）に応えたか。応えなくてもペナルティは無い
+  const rcMatch = matchRecipe(tt.mix);
+  const recipeHit = !!(tt.recipeOrder && rcMatch && rcMatch.id === tt.recipeOrder.id);
+  // リクエスト（指名・苦手抜き・レシピ）に応えた日は店からのボーナスが増える
+  const reqBonus = recipeHit ? 1000 : baitoRequest() ? 500 : 0;
   // 魅力★で指名・リピートが増えて売上ボーナスに乗る（★刻み・★1=0〜★5=3000円）
   const CHARM_TIP_BONUS = [0, 500, 1200, 2000, 3000];
   const charmBonus = CHARM_TIP_BONUS[statStar("charm") - 1];
@@ -8407,6 +8561,12 @@ function finishBaitoOrder() {
     metadata: { bg: "res://assets/backgrounds/bg_tonari_inside.png" },
     lines: [
       { speaker: "", face: "", text: "──完成。トレイに乗せて、お客さんの席へ運ぶ。" },
+      // レシピの指名注文（S1/W2）: 応えたときは常連の喜びを先に、応えなかったときは小さな余韻を
+      ...(recipeHit
+        ? [{ speaker: "", face: "", text: `「そうそう、これこれ！」お客さんは一口で顔をほころばせた。『${tt.recipeOrder.name}』、覚えてもらえてる。` }]
+        : tt.recipeOrder
+          ? [{ speaker: "", face: "", text: "（結局、別の配合で出した。……今度は、あの注文に応えたいな）" }]
+          : []),
       { speaker: "", face: "", text: reaction },
       // ch2: 慢心と転落の可視化——出来は良くても、客の顔が頭に残らなくなっていく
       ...(state.chapter === 2
@@ -8720,6 +8880,9 @@ function init() {
   $("#menu-config").addEventListener("click", () => showConfig());
   $("#menu-glossary").addEventListener("click", () => { toggleStatus(false); showGlossary(); });
   $("#btn-status").addEventListener("click", () => toggleStatus(true));
+  // マップの本ボタン（W2・オーナー指定「マップとかで本のボタンを押すと見れるように」）
+  const recipesBtn = $("#btn-recipes");
+  if (recipesBtn) recipesBtn.addEventListener("click", () => { if (window.SFX) SFX.select(); toggleStatus(true, "recipe"); });
   $("#status-close").addEventListener("click", () => toggleStatus(false));
   $("#shop-close").addEventListener("click", closeShop);
   $("#btn-gameover-title").addEventListener("click", () => location.reload());

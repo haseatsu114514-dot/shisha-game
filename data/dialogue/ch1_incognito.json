@@ -1,0 +1,63 @@
+{
+  "_comment": "お忍び客システム（S2/W3・2026-07-16）。正体を伏せた大物がバイトに一度だけ混ざり、常連ノートに残って後日回収される。ch1_reviewer_cameo/ch1_maezono_cameo は doBaito のカメオ割り込み（rei カメオと同方式）、ch1_reviewer_payoff は C.STATION 訪問で回収。前園の大会当日の回収は ch1_tournament.json 側の condition 分岐。南雲のお忍びは正史保護（ch1優勝は南雲の1票のみ）のため使わない",
+  "dialogues": [
+    {
+      "dialogue_id": "ch1_reviewer_cameo",
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "昼下がりのシフト。ハンチング帽を目深にかぶった男の人が、一人で入ってきた。" },
+        { "speaker": "", "face": "", "text": "「おまかせで」とだけ言って、窓際の席へ。……注文の仕方が、妙に慣れている。" },
+        { "speaker": "hajime", "face": "normal", "text": "（おまかせ、か。……よし、今日の自信作でいこう）" },
+        { "speaker": "", "face": "", "text": "一台を作って運ぶ。男の人は一口吸って、少しだけ眉を動かした。" },
+        { "speaker": "???", "face": "normal", "text": "……ふうん。ねえ君、この一台、狙いは？" },
+        { "type": "choice", "id": "reviewer_ask", "choices": [
+          { "text": "素直に狙いを話す", "next": "honest" },
+          { "text": "ちょっと盛って話す", "next": "brag" }
+        ] },
+        { "speaker": "", "face": "", "text": "男の人は静かに吸い終えて、帽子を直して出ていった。結局、名乗らなかった。" },
+        { "speaker": "", "face": "", "text": "会計のトレーに、小さな走り書きが残っていた。「またくる」……何者だったんだろう。" }
+      ],
+      "branches": {
+        "honest": [
+          { "speaker": "hajime", "face": "normal", "text": "甘さの輪郭をはっきりさせたくて。熱は、少し控えめにしてます" },
+          { "speaker": "???", "face": "smile", "text": "……なるほどね。言ったとおりの味がする。それ、ちゃんとすごいことだよ" },
+          { "speaker": "", "face": "", "text": "……【洞察】が上がった。" }
+        ],
+        "brag": [
+          { "speaker": "hajime", "face": "smug", "text": "全部計算です。……ま、うちの若手だと、俺が一番うまいんで" },
+          { "speaker": "", "face": "", "text": "言った瞬間、男の人の手が止まった。「ふうん」……それきり、何も聞かれなかった。" },
+          { "speaker": "hajime", "face": "normal", "text": "（……なんで盛ったんだろう、俺。別に、嘘じゃないけど）" },
+          { "speaker": "", "face": "", "text": "……【根性】が少し上がった。" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch1_maezono_cameo",
+      "metadata": { "bg": "res://assets/backgrounds/bg_tonari_inside.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "夕方前の、店がいちばん静かな時間。上品なジャケットの年配の男性が、ふらりと入ってきた。" },
+        { "speaker": "???", "face": "normal", "text": "若いの、一台お願いできるかな。甘すぎないのがいい" },
+        { "speaker": "hajime", "face": "normal", "text": "はい、少々お待ちください" },
+        { "speaker": "", "face": "", "text": "一台を出す。男性は一口ごとに目を閉じて、ゆっくり、ゆっくり味わっている。" },
+        { "speaker": "", "face": "", "text": "急かさず、話しかけず。気づけば、こっちまで呼吸が深くなっていた。" },
+        { "speaker": "???", "face": "smile", "text": "……うん。おいしいねえ" },
+        { "speaker": "hajime", "face": "smile", "text": "（……なんだろう。今のひとこと、やけに染みるな）" },
+        { "speaker": "", "face": "", "text": "男性は丁寧に頭を下げて、静かに店を出ていった。" },
+        { "speaker": "", "face": "", "text": "……【センス】が上がった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_reviewer_payoff",
+      "metadata": { "bg": "res://assets/backgrounds/bg_c_station_day.png" },
+      "lines": [
+        { "speaker": "", "face": "", "text": "C.STATIONの待合が、なにやらざわついている。" },
+        { "speaker": "", "face": "", "text": "スタッフが壁に、記事のコピーを貼り出していた。覆面レビューサイトの商店街特集らしい。" },
+        { "speaker": "customer", "face": "normal", "text": "見た？ 『tonari──路地裏の名店。若い作り手の一台が、店の空気ごとうまい』だって" },
+        { "speaker": "hajime", "face": "surprise", "text": "（うちの店だ……！ 若い作り手って、俺のこと、か……？）" },
+        { "speaker": "", "face": "", "text": "あの日のハンチング帽を思い出す。……そうか、あの人だったんだ。" },
+        { "speaker": "", "face": "", "text": "その夜。記事を読んだスミさんが、黙って給料に売上ボーナスを乗せてくれた。" },
+        { "type": "apply", "stats": { "charm": 3 }, "money": 5000 }
+      ]
+    }
+  ]
+}

@@ -50,6 +50,7 @@ CH1_DIALOGUE_FILES = [
     "ch1_ageha.json",
     "ch1_spots.json",
     "ch1_events.json",
+    "ch1_incognito.json",
     "ch2_main.json",
     "ch2_isolation.json",
     "ch2_kumicho.json",
@@ -375,6 +376,7 @@ def main() -> None:
         "glossary": load_json(DATA_DIR / "glossary.json")["groups"],
         "kuji": load_json(DATA_DIR / "kuji.json"),
         "loading_tips": load_json(DATA_DIR / "loading_tips.json")["tips"],
+        "recipes": load_json(DATA_DIR / "recipes.json")["recipes"],
     }
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)

@@ -3913,6 +3913,45 @@ body:has(#screen-tournament.active.making-workbench) #gain-banner {
 .note-name { font-weight: bold; font-size: 14px; }
 .note-count { float: right; color: var(--text-dim); font-size: 12px; }
 .note-memo { color: var(--text-dim); font-size: 12px; margin-top: 4px; line-height: 1.5; }
+/* レシピ帳（S1/W2）: ヒントだけ聞いた未発見レシピは、うっすら読める */
+.note-entry.locked.hinted { opacity: 0.65; border-left: 3px dashed rgba(244,210,122,0.4); }
+.note-guide { color: var(--text-dim); font-size: 12px; margin-bottom: 10px; line-height: 1.5; }
+
+/* マップの本ボタン（W2）: レシピ帳をワンタップで開く。マップ左下の時刻表示の上に置く */
+#btn-recipes {
+  /* #map-pins（z-index:4・全面レイヤー）より上に置かないとクリックが吸われる。
+     左下はパッキースロット（#reel-widget・幅132px）の定位置なので、その右隣に置く */
+  position: absolute; bottom: 18px; left: 158px; z-index: 5;
+  background: linear-gradient(160deg, rgba(16,10,24,0.95), rgba(28,18,38,0.95));
+  color: var(--accent);
+  border: 1px solid var(--panel-border);
+  border-radius: 4px;
+  padding: 9px 14px;
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+#btn-recipes:hover { border-color: var(--accent); }
+#screen-map.beat-hold #btn-recipes { visibility: hidden; }
+
+/* 雨の日（A8/W4）: マップの雨オーバーレイ。ピンより下・操作を邪魔しない */
+#map-weather { position: absolute; inset: 0; z-index: 1; pointer-events: none; display: none; }
+#screen-map.rainy #map-weather {
+  display: block;
+  background-image:
+    linear-gradient(rgba(70, 90, 140, 0.14), rgba(70, 90, 140, 0.14)),
+    repeating-linear-gradient(
+      115deg,
+      rgba(200, 218, 255, 0.28) 0px, rgba(200, 218, 255, 0.28) 2px,
+      transparent 2px, transparent 26px
+    );
+  background-size: auto, 52px 52px;
+  animation: map-rainfall 0.55s linear infinite;
+}
+#screen-map.rainy #map-image { filter: brightness(0.78) saturate(0.8); }
+@keyframes map-rainfall { from { background-position: 0 0; } to { background-position: -24px 52px; } }
 .st-bar > i.warn { background: linear-gradient(90deg, #e9c46a, #f4a261); }
 .st-bar > i.danger { background: linear-gradient(90deg, #e76f51, #d62828); }
 

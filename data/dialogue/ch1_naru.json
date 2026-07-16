@@ -345,6 +345,21 @@
           "text": "ライバルだからだよ。中途半端な相手に勝っても、なんも残らねえ"
         },
         {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "手始めに一個やるよ。ミントにレモンをひとつまみ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "酸味でキレが締まって、別モンになる。試してみ"
+        },
+        {
+          "type": "note",
+          "note_id": "recipe_hint_ice_lemonade",
+          "label": "なる直伝 ミント×レモン"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "（……強いだけじゃない。この人は、強くなり方がまっすぐだ）"
