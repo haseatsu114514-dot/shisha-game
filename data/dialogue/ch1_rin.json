@@ -244,6 +244,21 @@
           "text": "怖いでしょ、海外デビュー"
         },
         {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "モニター料の代わりに、いい組み合わせを教えてあげる。ローズにライチ"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "香水みたいに残るよ。……どっちも1階で売ってる。買っていきなよ"
+        },
+        {
+          "type": "note",
+          "note_id": "recipe_hint_perfume",
+          "label": "凛さん仕込み ローズ×ライチ"
+        },
+        {
           "type": "set_flag",
           "flag": "_ev_rin_monitor"
         },

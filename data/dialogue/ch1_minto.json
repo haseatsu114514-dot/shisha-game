@@ -448,6 +448,21 @@
           "text": "みんとの永久指名、してくれたら嬉しいなー♡"
         },
         {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "指名してくれた子には、ひみつのレシピ教えちゃう♡"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "ピーチにミントをちょっとだけ。甘いのに、すーって抜けるの"
+        },
+        {
+          "type": "note",
+          "note_id": "recipe_hint_peach_sorbet",
+          "label": "みんと仕込み ピーチ×ミント"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（……彼女のスタイルは、俺のように黙々と美味しいシーシャを目指すやり方とは対極にある"

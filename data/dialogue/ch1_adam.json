@@ -207,6 +207,21 @@
           "text": "それこそが俺の道だ……！"
         },
         {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "……一つ、覚えておくといい。ダブルアップルにシナモンをひとつまみ"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "林檎が“パイ”になる。邪道と呼ぶ者もいるが……うまい"
+        },
+        {
+          "type": "note",
+          "note_id": "recipe_hint_apple_pie",
+          "label": "アダム直伝 ダブルアップル×シナモン"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "（……だめだ、この人、ダブルアップルのことしか考えてない。"

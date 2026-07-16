@@ -21,6 +21,9 @@ async function shownFlavors(mode, flags = {}) {
     state.phase = "daily";
     Object.assign(state.flags, selectedFlags);
     beginMaking(selectedMode);
+    // K2改（2026-07-11）: チュートリアルは「お手本→自分でやってみる」の2拍。
+    // 実践側（tutTried）に入れてから工程を呼ばないと実UIの .mix-row が出ない
+    if (tt) tt.tutTried = "mix";
     tournamentStep("mix");
     return Array.from(document.querySelectorAll(".mix-row"), (row) => row.dataset.flavorId);
   }, { selectedMode: mode, selectedFlags: flags });
@@ -45,6 +48,7 @@ const tutorialMixReady = await page.evaluate(() => {
   state = newState();
   state.phase = "daily";
   beginMaking("tutorial");
+  if (tt) tt.tutTried = "mix"; // K2改: 実践側に入れてから（上と同じ）
   tournamentStep("mix");
   const plus = document.querySelector('.mix-row[data-flavor-id="double_apple"] button:last-child');
   for (let i = 0; i < 12; i++) plus.click();

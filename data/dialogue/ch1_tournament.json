@@ -244,6 +244,14 @@
           "text": "どうも。いや〜、若い子たちの熱気がビシビシ伝わってくるねえ！ シーシャはおいしいねえ"
         },
         {
+          "type": "condition",
+          "condition_type": "customer_note",
+          "note_id": "baito_incognito_maezono",
+          "threshold": 1,
+          "next_true": "maezono_recall",
+          "next_false": ""
+        },
+        {
           "speaker": "pakki",
           "face": "normal",
           "text": "ここで大事なルール説明ですッ！ 審査員は各自、持ち点10ポイントを持っています！"
@@ -268,7 +276,26 @@
           "face": "excited",
           "text": "SMOKE CROWN CUP──[warn]開始ィィィッ！！[/warn]"
         }
-      ]
+      ],
+      "branches": {
+        "maezono_recall": [
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（……あっ。あの人、うちの店に来た「よく味わう紳士」だ）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ステージの前園と目が合う。にこりと笑って、小さく頷かれた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（『おいしいねえ』って、そういうことか。……知ってる顔がいると、少し落ち着く）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_tournament_match",
