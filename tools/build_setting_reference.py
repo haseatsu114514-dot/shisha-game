@@ -233,7 +233,7 @@ CANON_ROWS = [
     ("キャラ設定の読み物", "brand/character_profiles.md（数値・年齢は書かない）"),
 ]
 CANON_NOTES = [
-    "旧タイトル「煙の向こう側」が brand/docs に残存 → 正式タイトルは<strong>「水煙前線 -EN:CODE-」</strong>（ch5の章題演出としてのみ「煙の向こう側」を残置）。",
+    "旧タイトル「煙の向こう側」は不使用 → 正式タイトルは<strong>「水煙前線 -EN:CODE-」</strong>、第5章の章題は「機械仕掛けの神（Deus Ex Machina）」（2026-07-18確定）。",
     "<code>brand/brand</code>・<code>brand/chapter1（character）</code> は旧設定の残骸。参照・引用しない（旧名「ドクター・ケムリ」等）。",
     "旧審査員 <strong>DJ SMOKE・白峰恒一郎・霧島レン</strong> は廃止済み（2026-07-05・オーナー指定）。データ・台詞に再登場させない。",
     "神崎竜二の立ち絵は<strong>未実装</strong>（旧ネオンバー画像は設定不一致のため廃止）。新規作成時は <code>chr_kumicho_*</code> で追加する。",

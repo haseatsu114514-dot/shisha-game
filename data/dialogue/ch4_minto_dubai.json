@@ -1,0 +1,103 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_minto_dubai_girlfriend",
+      "metadata": {
+        "condition": "minto_is_girlfriend",
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会前夜。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ホテルのロビーに戻ると、ソファから勢いよく立ち上がる影があった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大きなサングラスに、つばの広い帽子。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はっけーん♡ はじめくんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……みんとさん！？ なんでドバイに！？"
+        },
+        {
+          "speaker": "minto",
+          "face": "smug",
+          "text": "ふっふーん、市場調査でーす☆ 世界のシーシャ店、この目で見ておかないとね"
+        },
+        {
+          "speaker": "minto",
+          "face": "smug",
+          "text": "私も店を持つ身ですから！ 立派な出張ですっ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……本当に？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サングラスの奥の目が、少し泳いだ。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……うそ。半分だけ、うそ"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "会いたかったの。世界で戦う彼氏を、いちばん近くで見たかった、……それだけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の『みんとちゃん』でも、営業の声でもない。栞さんの声だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……栞さん"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "明日、会場のどこかで手を振るから。ちゃんと見つけてよね"
+        },
+        {
+          "speaker": "minto",
+          "face": "smug",
+          "text": "あ、でも優勝インタビューで彼女の話はしなくていいから。……私だけが知ってればいいの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（独占欲まで、まっすぐだ。……この人には、かなわない）"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "じゃ、おやすみ。……明日の煙、世界一にしてきて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【魅力】が上がった。"
+        }
+      ]
+    }
+  ]
+}
