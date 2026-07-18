@@ -1,0 +1,98 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_tsumugi_dubai_girlfriend",
+      "metadata": {
+        "condition": "tsumugi_is_girlfriend",
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会前夜。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "会場の下見を終えた、ホテルのロビー。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "行き交う人の隙間に、ヘッドフォンを首にかけた小さな姿を見つけた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……つむぎちゃん！？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "surprise",
+          "text": "……あ、……見つかっちゃった"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……来ちゃいました。飛行機、初めて乗りました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "来てくれたんだ。……ドバイだよ？ 遠かったでしょ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさんの、いちばん大事な日の煙。その色を、この目で見たくて"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……画面越しだと、色は、見えないので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "首のヘッドフォンに、抱えたiPad。tonariの隅の席が、そのまま砂漠の国まで来たみたいだった。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……一年前、わたし、生意気なこと言いました。濁らせちゃ、だめですよ、って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "覚えてるよ。初めての、命令"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……明日は、言いません"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "今のはじめさんの色、すごくきれいだから。……何色になっても、ぜんぶ描きます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（彼女の目に、明日の煙はどう映るんだろう。……見せたい、と素直に思った）"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……明日、いちばん前で、見てます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【根性】が上がった。"
+        }
+      ]
+    }
+  ]
+}

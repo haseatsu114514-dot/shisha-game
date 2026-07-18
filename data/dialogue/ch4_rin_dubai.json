@@ -1,0 +1,93 @@
+{
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_rin_dubai_girlfriend",
+      "metadata": {
+        "condition": "rin_is_girlfriend",
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大会前夜。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "会場ロビーの一角には、海外メーカーの出展ブースが並ぶ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その端に、書類の束を抱えた見覚えのある人がいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……凛さん！？ 本国出張は！？"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "おや。奇遇だね、モルモットくん"
+        },
+        {
+          "speaker": "rin",
+          "face": "smug",
+          "text": "出張の行き先を、少し曲げてもらった。仕事だよ、これでも"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "名目はね、『最重要サンプルの品質管理』。……ちゃんと稟議も通した"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "サンプル……？ 俺、もう契約は終わってるはず……"
+        },
+        {
+          "speaker": "rin",
+          "face": "smug",
+          "text": "君だよ、モルモットくん。うちの、最重要サンプル"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……っ"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……ねえ。私は今まで、香りを卸すだけの側だった"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "自分の扱う煙が、誰かに吸われる瞬間を見たことがない、……ずっとね"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "だから明日は、初めて客席で見るよ。君の煙が世界に吸われるところを、特等席で"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（いつも実験室の側にいた人が、明日は客席にいる。……それが、こんなに心強いなんて）"
+        },
+        {
+          "speaker": "rin",
+          "face": "smug",
+          "text": "感想はあとで、たっぷり聞かせてもらう。同意書はもう、いらないけどね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【洞察】が上がった。"
+        }
+      ]
+    }
+  ]
+}

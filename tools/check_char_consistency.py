@@ -71,7 +71,7 @@ NAME_TO_ID = {
     "零-REI-": "rei",
     "チャコール博士": "dr_kemuri",
     "チャコール博士 / 炭場 創": "dr_kemuri",
-    "真白 ましろ": "mashiro",
+    "水瀬 ましろ": "mashiro",
     "ましろ": "mashiro",
     "ムカイさん / 向井": "mukai_master",
     "ムカイさん": "mukai_master",

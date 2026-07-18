@@ -221,7 +221,7 @@ border・背景を消して枠PNGを `border-image`（9スライス）で重ね�
 | `adam` | 吾妻 大夢（DA職人・大仰）| 同上 | normal / smile / smug / serious / excited |
 | `minto` | 緑川 栞（店モードのギャル）| 同上（素はura_*別途）| smile / wink / normal / surprise / sad |
 | `ageha` | 宵野 葉子（ヒョウ柄ギャル）| 同上 | smile / excited / normal / serious / wink |
-| `mashiro` | 真白 ましろ（シガーマン）| 同上 | normal / smile / serious / sad / surprise |
+| `mashiro` | 水瀬 ましろ（シガーマン）| 同上 | normal / smile / serious / sad / surprise |
 | `rei` | 田中 健太（V系カリスマ）| 同上 | serious / smug / normal / evil / sad |
 ```
 立ち絵 共通: 一人称ゲームなので主人公hajimeは不要。胸〜頭の半身、正面〜やや斜め。
