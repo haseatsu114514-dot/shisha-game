@@ -160,6 +160,21 @@
           "text": "それだけで、言葉のいらない縁ができる"
         },
         {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "兄弟の盃、親子の盃。うちの業界じゃ、盃の重さで──"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……いや、映画の話だ。忘れな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（いま『うちの業界』って言いかけたよな……？）"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（……そういう話として言ってたのか）"
@@ -307,6 +322,26 @@
           "text": "（……店番が二人、直立不動で立ってるのが普通の店ってある？）"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "店番の一人が、音もなく湯呑みを二つ置いた。所作が完璧に揃っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "去り際、小さく「アニキのお客人、ごゆっくり」と聞こえた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "……おい。客の前でアニキ言うな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（アニキって言った。いま絶対アニキって言った）"
+        },
+        {
           "speaker": "kumicho",
           "face": "normal",
           "text": "で、今日は何にする"
@@ -423,6 +458,46 @@
           "speaker": "kumicho",
           "face": "normal",
           "text": "強さの中に、繊細さがある。俺には、これしか吸えねえ気がしてな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "組長が、自分のホースを無言でこちらに差し出した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、いいんですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "回し飲みだ。──同じ一台に、口をつけて回す"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口吸う。重くて、静かで、深い味だった。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "盃と同じよ。これで俺とお前は、兄弟分だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（え!? いつの間に盃事になってたんだ!?）"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smug",
+          "text": "安心しな、五分とは言わねえ、……五厘だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（五厘。……ちっちゃ。でも、悪い気はしないな）"
         },
         {
           "speaker": "",
@@ -556,6 +631,21 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（……この人から、そういう言葉をもらえるとは思っていなかった）"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "それとな、小僧。お前はもう俺の五厘の兄弟だ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "困り事があったら言え。──カタギの範囲でな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（カタギの範囲。……じゃあ普段は何の範囲なんだ）"
         },
         {
           "speaker": "kumicho",
