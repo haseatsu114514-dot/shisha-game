@@ -1910,6 +1910,18 @@ const REPEAT_TALKS = {
       { speaker: "hajime", face: "normal", text: "（……この店の時間だけ、ゆっくり流れてる気がする）" },
       { speaker: "", face: "", text: "言葉少なに、ひとつの煙を分け合った。" },
     ],
+    [
+      { speaker: "", face: "", text: "組長が自分の一台を、無言で差し出してくる。回し飲みだ。" },
+      { speaker: "kumicho", face: "normal", text: "何度も盃を重ねりゃ、縁は太くなる。……煙の話だぞ" },
+      { speaker: "hajime", face: "normal", text: "（わかってます。……たぶん煙の話ですよね？）" },
+      { speaker: "", face: "", text: "太くなった縁のぶんだけ、煙も深い気がした。" },
+    ],
+    [
+      { speaker: "", face: "", text: "神崎煙草店。今日も組長の手つきは、拍子抜けするほど優しい。" },
+      { speaker: "kumicho", face: "normal", text: "炭にも顔ってもんがある。筋のいい炭は、面構えが違う" },
+      { speaker: "hajime", face: "normal", text: "（炭の面構えを見る人、初めて見た）" },
+      { speaker: "", face: "", text: "炭の目利きを、ひとつ教わった。" },
+    ],
   ],
   rei: [
     [
