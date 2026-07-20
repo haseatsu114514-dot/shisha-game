@@ -1107,7 +1107,7 @@ GitHub Pages有効化
   - `data/dialogue/ch2_isolation.json` — なるの直言・アダム/みんと/つむぎの離反・
     誰もいない優勝
   - `data/dialogue/ch3_double_apple.json` — mukai到着・**ダブルアップル事件**
-    （シトラスミントをダブルアップルと言われて同調→嘘がバレる）・毎日の一杯・味覚回復
+    （シナモンをダブルアップルと言われて同調→嘘がバレる。シトラスミントは旧設定・2026-07-20変更）・毎日の一杯・味覚回復
 - characters.json の hajime/naru 人格記述を更新、CLAUDE.md に新設定を明記
 
 ## 次回セッションの修正タスク

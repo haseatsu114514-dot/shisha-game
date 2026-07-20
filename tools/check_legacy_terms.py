@@ -55,6 +55,8 @@ LEGACY_STAT_ERROR = {
 LEGACY_WARN = {
     "地方予選": "SMOKE CROWN CUP に統一",
     "第12回": "旧大会名",
+    "シトラスミント": "ch3 DA事件でましろが出すのはシナモンが正（2026-07-20変更）。ミックス名としての使用は可",
+    "林檎飴": "DAは林檎そのものではなくアニス＝スパイスで林檎を再現した味（2026-07-20確定）。果実の林檎味として描写しない",
 }
 
 ALLOWED_CONTEXTS = {
@@ -74,6 +76,8 @@ DOC_FILES = {
     "story_review_prompt.md",
     "web_version_plan.md",
     "build_setting_reference.py",
+    "story_and_structure.md",
+    "story_review_report_20260616.md",
 }
 
 EXTENSIONS = {".json", ".js", ".md", ".py", ".gd", ".txt", ".csv", ".sh"}
