@@ -313,7 +313,8 @@ while (guard++ < 8000) {
 const endTitle = await page.locator("#end-title").textContent();
 log("end screen:", endTitle);
 if (!endTitle.includes("第2章クリア")) throw new Error("expected ch2 clear, got " + endTitle);
-if (stagesSeen.join(",") !== "qual,semi,final") throw new Error("stages wrong: " + stagesSeen.join(","));
+// 1大会1試合（2026-07-20）: DAY14の4人一斉一発勝負のみ。多段ステージは廃止
+if (stagesSeen.join(",") !== "final") throw new Error("stages wrong: " + stagesSeen.join(","));
 if (!slumpSeen) throw new Error("taste slump UI not seen");
 if (!guiltSmokeSeen) throw new Error("guilt smoke tint (rig .guilt-2) not seen");
 // 噂LIME（クロスオーバー噂システム）がch2で配信されること
@@ -321,7 +322,8 @@ const rumors = await page.evaluate(() => ["rumor_kemuri_experiments", "rumor_kum
 if (rumors.length !== 2) throw new Error("rumor LIMEs not delivered: " + rumors.join(","));
 for (const id of [
   "ch2_slump_taste", "ch2_lingering_smell", "ch2_pre_tournament_realisation",
-  "ch2_sumi_silence", "ch2_naru_confrontation", "ch2_empty_victory_post",
+  "ch2_sumi_silence", "ch2_naru_warm", "ch2_adam_distance", "ch2_naru_confrontation",
+  "ch2_tsumugi_color", "ch2_empty_victory_post",
   "home_shisha_night",
 ]) {
   if (!nightDialogues.has(id)) throw new Error("missing ch2 dialogue: " + id);
