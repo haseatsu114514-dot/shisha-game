@@ -150,12 +150,12 @@ function closureInfo(spotId) {
   return null;
 }
 
-// 章ごとの大会情報。stageDays は大会の試合日（14日制の中に予選〜決勝を配置）
+// 章ごとの大会情報。stageDays は大会の試合日。
+// 各章の大会は1大会1試合（4人一斉の一発勝負・最終日）。多段戦は存在しない（ch5だけ例外）
 const CHAPTERS = {
   1: { cup: "SMOKE CROWN CUP", stageDays: { 14: "final" } },
-  2: { cup: "HAZE: OPEN CLOUD", stageDays: { 8: "qual", 11: "semi", 14: "final" } },
+  2: { cup: "HAZE: OPEN CLOUD", stageDays: { 14: "final" } },
 };
-const CH2_STAGE_LABEL = { qual: "予選ブロック", semi: "準決勝", final: "決勝" };
 
 function chapterInfo() { return CHAPTERS[(state && state.chapter) || 1]; }
 function cupName() { return chapterInfo().cup; }
@@ -709,7 +709,7 @@ function addMoney(amount) {
 }
 
 // 大会賞金は章が上がるほど桁が増える（世界に近づくほど一台の価値が跳ねる）。
-// ch2は予選/準決の進出ボーナス（小額）＋決勝＝CHAPTER_PRIZE[2]。ch3/ch4は実装時に自動で効く
+// 各章1大会1試合＝優勝賞金一本。ch3/ch4は実装時に自動で効く
 const CHAPTER_PRIZE = { 1: 30000, 2: 50000, 3: 100000, 4: 500000, 5: 0 };
 
 // ---------- HUD ----------
@@ -889,14 +889,11 @@ function updateHud() {
   // 行動回数の表示（旧 hud-day の場所）
   const hudDay = $("#hud-day");
   if (state.phase === "tournament") {
-    const stage = state.chapter === 2 ? `・${CH2_STAGE_LABEL[state.ch2Stage] || ""}` : "";
-    hudDay.textContent = `${cupName()} 当日${stage}`;
+    hudDay.textContent = `${cupName()} 当日`;
     hudDay.classList.remove("hidden");
   } else {
-    const stageDay = nextStageDay();
     const left = daysUntilTournament();
-    const what = state.chapter === 2 ? CH2_STAGE_LABEL[chapterInfo().stageDays[stageDay]] : "大会";
-    hudDay.textContent = `DAY ${state.day} ／ ${what}まであと${left}日`;
+    hudDay.textContent = `DAY ${state.day} ／ 大会まであと${left}日`;
     // ダイアログ中だけ薄く出す（マップでは大きな day-card に任せる）
     const isMap = document.querySelector("#screen-map.active");
     hudDay.classList.toggle("hidden", !!isMap);
@@ -3554,18 +3551,16 @@ function advanceDay() {
       endDay();
     });
   }
-  // ch2: 試合日（予選・準決勝・決勝）は行動なしでそのまま会場へ
+  // ch2: 大会当日（1大会1試合・4人一斉の一発勝負）は行動なしでそのまま会場へ
   const stage = state.chapter === 2 ? chapterInfo().stageDays[state.day] : null;
   if (stage) {
     // すぐ会場の会話へ移る（マップを操作可能なまま放置しない）。DAYカードは上に重なる
-    showDayCard(`DAY ${state.day}`, `${cupName()} ${CH2_STAGE_LABEL[stage]} 当日`);
-    return startCh2Stage(stage);
+    showDayCard(`DAY ${state.day}`, `${cupName()} 当日`);
+    return startCh2Stage();
   }
-  const stageDay = nextStageDay();
   // ch2の試合はその日のうちに行われる（行動なし）ので残日数は前日基準
   const left = daysUntilTournament();
-  const what = state.chapter === 2 ? CH2_STAGE_LABEL[chapterInfo().stageDays[stageDay]] : cupName();
-  showDayCard(`DAY ${state.day}`, left === 1 ? `${what} 前日` : `${what}まで あと${left}日`);
+  showDayCard(`DAY ${state.day}`, left === 1 ? `${cupName()} 前日` : `${cupName()}まで あと${left}日`);
   // 昨日の行動のスロットは、DAYカード→朝のLIMEを消化してから回す（被って見えない問題の解消 #34/#23）
   showMap({ skipReel: true });
   morningPhone(showMap); // 朝のLIME（無ければ即 showMap がスロットを精算）
@@ -3687,6 +3682,11 @@ function endDay() {
       state.flags._ev2_abyss = true;
       return pd("ch2_abyss_baito", goHome, TONARI);
     }
+    // DAY3: なるの祝福（温）。「この頃はまだ、二人で笑っていた」の起点
+    if (state.day === 3 && !state.flags._ev2_naru_warm) {
+      state.flags._ev2_naru_warm = true;
+      return pd("ch2_naru_warm", goHome);
+    }
     if (state.day === 4 && !state.flags._ev2_sofa) {
       state.flags._ev2_sofa = true;
       return pd("ch2_sofa_burn", goHome, TONARI);
@@ -3701,27 +3701,36 @@ function endDay() {
       state.flags._ev2_smell = true;
       return pd("ch2_lingering_smell", goHome);
     }
-    if (state.day === 7 && !state.flags._ev2_ageha) {
-      state.flags._ev2_ageha = true;
-      return pd("ch2_pre_tournament_realisation", goHome, "res://assets/backgrounds/bg_tournament_stage.png");
+    // DAY7: アダムの距離（冷）。DAY3のなるの祝福との対比で孤立アークを立てる
+    if (state.day === 7 && !state.flags._ev2_adam) {
+      state.flags._ev2_adam = true;
+      return pd("ch2_adam_distance", goHome);
     }
-    // DAY9: あげはの「逆ずるい」（眠っていたデータの配線・Y4。準決勝のバイブス不調の前振り）
+    // DAY9: あげはの「逆ずるい」（眠っていたデータの配線・Y4。当日のバイブス不調の前振り）
     if (state.day === 9 && !state.flags._ev2_ageha_unfair && D.dialogues.ch2_ageha_reverse_unfair) {
       state.flags._ev2_ageha_unfair = true;
       return pd("ch2_ageha_reverse_unfair", () => { gainAffinity("ageha", "event"); goHome(); }, TONARI);
     }
-    // DAY10: スミさんの沈黙（連勝が始まった頃。ch4特訓「同じ顔をさせたくなかった」の前振り）
+    // DAY10: スミさんの沈黙（ch4特訓「同じ顔をさせたくなかった」の前振り）
     if (state.day === 10 && !state.flags._ev2_sumi) {
       state.flags._ev2_sumi = true;
       return pd("ch2_sumi_silence", goHome);
+    }
+    // DAY11: なるの直言（孤立アークの最大の一撃）
+    if (state.day === 11 && !state.flags._ev2_naru_conf) {
+      state.flags._ev2_naru_conf = true;
+      return pd("ch2_naru_confrontation", goHome);
     }
     if (state.day === 12 && !state.flags._ev2_minto) {
       state.flags._ev2_minto = true;
       return pd("ch2_minto_warning", goHome);
     }
+    // DAY13（前日）: つむぎ「色が見えない」→ 会場下見のベンチであげはの言語化
     if (state.day === 13 && !state.flags._ev2_tsumugi) {
       state.flags._ev2_tsumugi = true;
-      return pd("ch2_tsumugi_color", goHome, TONARI);
+      state.flags._ev2_ageha = true;
+      return pd("ch2_tsumugi_color", () =>
+        pd("ch2_pre_tournament_realisation", goHome, "res://assets/backgrounds/bg_tournament_stage.png"), TONARI);
     }
     return closeDay();
   }
@@ -8079,7 +8088,7 @@ function showDefeat(rank) {
   $("#screen-end").classList.add("gameover");
   $("#end-title").textContent = "GAME OVER";
   $("#end-sub").textContent = state.chapter === 2
-    ? `結果は${rank}位。${CH2_STAGE_LABEL[state.ch2Stage] || ""}敗退──1位だけが、先へ進める。ここで終わりだ。`
+    ? `結果は${rank}位。敗退──1位だけが、先へ進める。ここで終わりだ。`
     : `結果は${rank}位。優勝だけが次への切符だった。ここで、終わってしまった。`;
   renderStatusInto($("#end-status"));
   const btns = document.createElement("div");
@@ -8101,45 +8110,19 @@ function showDefeat(rank) {
 }
 
 // ---------------------------------------------------------------- 第2章 HAZE: OPEN CLOUD
-// 14日制の中に予選(DAY8)→準決勝(DAY11)→決勝(DAY14)を配置。
-// 1位のみ通過。名前付きライバルは別ブロックを勝ち上がって決勝で当たる
-const CH2_STAGES = {
-  qual: {
-    rivals: [
-      { id: "q1", name: "東部エリア代表", base: 56 },
-      { id: "q2", name: "湾岸エリア代表", base: 61 },
-      { id: "q3", name: "港町の老舗代表", base: 53 },
-    ],
-    bar: 58,
-    prize: 5000,
-    after: "ch2_adam_distance",
-    after2: "ch2_naru_warm", // アダムの距離（冷）→ なるの祝福（温）。「この頃はまだ」の対比で孤立アークを立てる
-    winDetail: "──予選通過。審査席の端で、白衣の男が小さくペンを走らせた。",
-    loseDetail: "……札は伸びなかった。地区上位の「普通」は、地元の「上出来」より上にある。",
-  },
-  semi: {
-    rivals: [
-      { id: "ageha", name: "あげは", base: 69 },
-      { id: "s1", name: "北部ブロック覇者", base: 64 },
-      { id: "s2", name: "南部ブロック覇者", base: 66 },
-    ],
-    bar: 70,
-    prize: 10000,
-    after: "ch2_naru_confrontation",
-    winDetail: "──審査席のチャコール博士が、はじめの欄に何かを長く書き込んでいる。「データに入らない強さ」、と。",
-    loseDetail: "……あと一歩、届かない。借り物の理屈では、ここから先の壁は破れない。",
-  },
-  final: {
-    rivals: [
-      { id: "rei", name: "零-REI-", base: 76 },
-      { id: "kumicho", name: "神崎竜二", base: 73 },
-      { id: "f1", name: "西地区ブロック覇者", base: 70 },
-    ],
-    bar: 80,
-    prize: CHAPTER_PRIZE[2], // 決勝＝章別優勝賞金
-    winDetail: "──最終発表。審査員たちの残り持ち点が、音を立ててこの一台に注がれていく。自分史上、もっとも綺麗にまとまった煙だった。",
-    loseDetail: "……持ち点は動かなかった。綺麗なだけの煙では、頂点の「もう一口」は引き出せない。",
-  },
+// 1大会1試合（オーナー指定・2026-07-20）: DAY14に4人一斉の一発勝負のみ。
+// 予選・準決勝の多段戦は存在しない。対戦相手は名前付きライバル3人（あげは・神崎・零-REI-）
+const CH2_FINAL = {
+  rivals: [
+    { id: "rei", name: "零-REI-", base: 76 },
+    { id: "kumicho", name: "神崎竜二", base: 73 },
+    { id: "ageha", name: "あげは", base: 70 },
+  ],
+  bar: 80,
+  prize: CHAPTER_PRIZE[2], // 章別優勝賞金
+  winDetail: "──最終発表。審査員たちの残り持ち点が、音を立ててこの一台に注がれていく。自分史上、もっとも綺麗にまとまった煙だった。",
+  winDetail2: "──審査席の端で、チャコール博士が何かを長く書き込んでいる。「データに入らない強さ」、と。",
+  loseDetail: "……持ち点は動かなかった。綺麗なだけの煙では、頂点の「もう一口」は引き出せない。",
 };
 
 function startChapter2() {
@@ -8159,7 +8142,7 @@ function startChapter2() {
         playDialogue("ch2_opening", () =>
           playDialogue("ch2_rivals_first_sight", () => {
             save();
-            showDayCard("DAY 1", "HAZE: OPEN CLOUD 予選まで あと7日");
+            showDayCard("DAY 1", "HAZE: OPEN CLOUD 大会まで あと13日");
             showMap();
           })
         );
@@ -8168,46 +8151,38 @@ function startChapter2() {
   });
 }
 
-// 試合日の開始。stage: "qual" | "semi" | "final"
-function startCh2Stage(stage) {
+// 大会当日の開始（1大会1試合・4人一斉の一発勝負）
+function startCh2Stage() {
   state.phase = "tournament";
-  // 県大会の組み合わせ発表で対戦相手の名前が判明する
-  if (stage === "semi") markMet("ageha");
-  if (stage === "final") { markMet("rei"); markMet("kumicho"); }
-  state.ch2Stage = stage;
+  // 組み合わせ発表で対戦相手3人の名前が判明する
+  markMet("ageha");
+  markMet("rei");
+  markMet("kumicho");
+  state.ch2Stage = "final";
   updateHud();
   save();
   const BG = "res://assets/backgrounds/bg_tournament_stage.png";
-  if (stage === "final") {
-    // 決勝の朝（スミさんのLIME〜返信を打てない）は ch2_empty_victory の前半を使う
-    const ev = D.dialogues.ch2_empty_victory || { lines: [] };
-    return playCustom({
-      dialogue_id: "ch2_final_morning",
-      metadata: { bg: BG },
-      lines: ev.lines.slice(0, 4),
-    }, () => beginMaking());
-  }
-  const intro = stage === "qual"
-    ? [
-        { speaker: "", face: "", text: "──HAZE: OPEN CLOUD、予選ブロック当日。C.STATIONの天井は、地方会場の倍も高い。" },
-        { speaker: "pakki", face: "normal", text: "ぷぷぷっ！　地区の煙自慢が勢ぞろい！　今大会の課題フレーバーは──ストロベリー！　県特産の苺を2g以上、しっかり使ってね♪" },
-        { speaker: "hajime", face: "serious", text: "（苺……シーシャのストロベリーは、想像する甘さと違う。輪郭の見えにくい、いちばん難しい果実だ）" },
-      ]
-    : [
-        { speaker: "", face: "", text: "──準決勝。客席が、予選の倍に膨らんでいる。" },
-        { speaker: "pakki", face: "normal", text: "勝ち残ったのは各ブロックの猛者だけ！　課題は変わらずストロベリー！　それじゃあ──火を入れて！" },
-        { speaker: "hajime", face: "normal", text: "（……勝ってる。勝ててしまっている。借り物の理屈で）" },
-      ];
-  // 準決勝の控室ビート: あげはのバイブス不調（決勝空席の前フリ。眠っていたデータの配線・Y4）
-  const afterIntro = stage === "semi" && !state.flags._ev_ageha_bad_vibes && D.dialogues.ch2_ageha_bad_vibes
-    ? () => { state.flags._ev_ageha_bad_vibes = true; playDialogue("ch2_ageha_bad_vibes", () => beginMaking(), BG); }
-    : () => beginMaking();
-  playCustom({ dialogue_id: `ch2_${stage}_intro`, metadata: { bg: BG }, lines: intro }, afterIntro);
+  // 当日の朝（スミさんのLIME〜返信を打てない）は ch2_empty_victory の前半を使う
+  const ev = D.dialogues.ch2_empty_victory || { lines: [] };
+  const intro = [
+    { speaker: "", face: "", text: "──会場入り。C.STATIONの天井は、地方会場の倍も高い。" },
+    { speaker: "pakki", face: "normal", text: "ぷぷぷっ！　県の煙自慢が勢ぞろい！　4人一斉、一発勝負！　今大会の課題フレーバーは──ストロベリー！　県特産の苺を2g以上、しっかり使ってね♪" },
+    { speaker: "hajime", face: "serious", text: "（苺……シーシャのストロベリーは、想像する甘さと違う。輪郭の見えにくい、いちばん難しい果実だ）" },
+  ];
+  playCustom({ dialogue_id: "ch2_final_morning", metadata: { bg: BG }, lines: ev.lines.slice(0, 4) }, () =>
+    playCustom({ dialogue_id: "ch2_final_intro", metadata: { bg: BG }, lines: intro }, () => {
+      // 控室ビート: あげはのバイブス不調（敗退後に消える伏線。眠っていたデータの配線・Y4）
+      if (!state.flags._ev_ageha_bad_vibes && D.dialogues.ch2_ageha_bad_vibes) {
+        state.flags._ev_ageha_bad_vibes = true;
+        return playDialogue("ch2_ageha_bad_vibes", () => beginMaking(), BG);
+      }
+      beginMaking();
+    })
+  );
 }
 
 function finishCh2Stage() {
-  const stage = state.ch2Stage || "qual";
-  const cfg = CH2_STAGES[stage];
+  const cfg = CH2_FINAL;
   const s = state.stats;
   const statScore = (s.technique * 1.2 + s.sense * 1.0 + s.guts * 0.6 + s.charm * 0.8 + s.insight * 1.0) / 4.6;
   const craft = craftScore();
@@ -8219,6 +8194,7 @@ function finishCh2Stage() {
   if (craft.score >= cfg.bar) {
     playerScore = Math.max(base + 10, topRival + 1.0);
     craft.detail.push(cfg.winDetail);
+    craft.detail.push(cfg.winDetail2);
   } else {
     craft.detail.push(cfg.loseDetail);
   }
@@ -8226,23 +8202,19 @@ function finishCh2Stage() {
   results.sort((a, b) => b.score - a.score);
   const rank = results.findIndex((r) => r.id === "hajime") + 1;
   showResult(results, rank, craft.detail, {
-    title: `HAZE: OPEN CLOUD ${CH2_STAGE_LABEL[stage]} — 審査結果`,
+    title: "HAZE: OPEN CLOUD — 審査結果",
     onWin: () => {
       addMoney(cfg.prize);
       stopRigEffects();
       state.phase = "daily";
       save();
-      if (stage === "final") {
-        // 誰もいない優勝（ch2_empty_victory の後半）→ 章クリア
-        const ev = D.dialogues.ch2_empty_victory || { lines: [] };
-        return playCustom({
-          dialogue_id: "ch2_empty_victory_post",
-          metadata: { bg: "res://assets/backgrounds/bg_tournament_stage.png" },
-          lines: ev.lines.slice(4),
-        }, () => showCh2Clear());
-      }
-      // 勝った夜に、仲間がひとり離れていく（after2 は同じ夜の対比シーン）
-      playDialogue(cfg.after, () => (cfg.after2 ? playDialogue(cfg.after2, () => advanceDay()) : advanceDay()));
+      // 誰もいない優勝（ch2_empty_victory の後半）→ 章クリア
+      const ev = D.dialogues.ch2_empty_victory || { lines: [] };
+      playCustom({
+        dialogue_id: "ch2_empty_victory_post",
+        metadata: { bg: "res://assets/backgrounds/bg_tournament_stage.png" },
+        lines: ev.lines.slice(4),
+      }, () => showCh2Clear());
     },
     onLose: () => {
       tt.rank = rank;
@@ -9119,7 +9091,7 @@ function continueGame(saved) {
   }
   updateHud();
   if (state.phase === "tournament") {
-    if (state.chapter === 2) startCh2Stage(state.ch2Stage || "qual");
+    if (state.chapter === 2) startCh2Stage();
     else startTournament();
   } else if (state.phase === "cleared") {
     if (state.chapter === 2) showCh2Clear();

@@ -45,6 +45,7 @@ LEGACY_ERROR = {
     "シーシャステーション": "C.STATION に統一",
     "蒸野 はじめ": "蒸野 始 に統一",
     "ましろさん": "ましろちゃん に統一",
+    "筋肉の記憶": "「体で覚えた手つき」等に言い換え（2026-07-20オーナー指定・禁止）",
 }
 
 LEGACY_STAT_ERROR = {
@@ -55,6 +56,8 @@ LEGACY_STAT_ERROR = {
 LEGACY_WARN = {
     "地方予選": "SMOKE CROWN CUP に統一",
     "第12回": "旧大会名",
+    "シトラスミント": "ch3ダブルアップル事件でましろが出すのはグレープが正（2026-07-20変更・シナモンも旧設定）。ミックス名としての使用は可",
+    "林檎飴": "ダブルアップルは林檎そのものではなくアニスとリコリスで林檎を再現した味（2026-07-20確定）。果実の林檎味として描写しない",
 }
 
 ALLOWED_CONTEXTS = {
@@ -74,6 +77,9 @@ DOC_FILES = {
     "story_review_prompt.md",
     "web_version_plan.md",
     "build_setting_reference.py",
+    "story_and_structure.md",
+    "story_review_report_20260616.md",
+    "owner_requests.md",
 }
 
 EXTENSIONS = {".json", ".js", ".md", ".py", ".gd", ".txt", ".csv", ".sh"}
