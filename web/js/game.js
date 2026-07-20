@@ -546,7 +546,12 @@ function gainAffinity(charId, kind = "visit") {
   // ---- 恋人: プライベート（デート/ちょい会い）でだけ恋人Lvポイントが動く
   if ((state.lovers || []).includes(charId)) {
     if (!dateContext) return false; // 店で会っても絆は深まらない（master_spec #24）
-    if ((state.loveLevel[charId] || 0) >= AFFINITY_CAP) return false;
+    if ((state.loveLevel[charId] || 0) >= AFFINITY_CAP) {
+      // Lv MAX後、あふれた絆は小さなご褒美に変わる（Y6-A3: 積み重ねを打ち止めにしない）
+      gainBanner({ kind: "affinity", badge, labelTop: "BOND MAX", labelMain: name, labelSub: "満たされた時間が、明日の力になる" });
+      addStamina(8);
+      return true;
+    }
     const prevLovePts = state.lovePts[charId] || 0;
     state.lovePts[charId] = prevLovePts + fortunePts(charId, pts);
     const hearts = affinityHearts(prevLovePts, state.lovePts[charId]);
@@ -587,6 +592,9 @@ function gainAffinity(charId, kind = "visit") {
 function becomeLovers(charId) {
   if (!state.lovers.includes(charId)) state.lovers.push(charId);
   state.loveLevel[charId] = state.loveLevel[charId] || 1;
+  // 付き合い始めた日を記録（記念日LIMEの起点・Y6-B1。章をまたいでも通算で数える）
+  state.loverSince = state.loverSince || {};
+  if (state.loverSince[charId] == null) state.loverSince[charId] = ((state.chapter || 1) - 1) * 14 + state.day;
   state.lovePts[charId] = Math.max(state.lovePts[charId] || 0, AFFINITY_RANK_PTS[1]);
   markMet(charId);
   gainBanner({
@@ -2105,6 +2113,99 @@ const LOVER_MORNING_LIMES = {
            { text: "その報告が来る朝、好きだよ", response: "……っ……朝から、それは、ずるい……", affinity: 1 } ] },
   ],
 };
+
+// Lv MAX後のデートの誘い（Y6-A1）: 「関係を進める」ではなく「関係を味わう」誘い文
+const DATE_INVITE_LINES_MAX = {
+  tsumugi: ["あの……", "用事は、ないんですけど", "……会いたく、なりました。だめ、ですか"],
+  minto: ["はじめくーん", "……理由はないけど、会いたい日ってあるでしょ", "今日は、それ。……だめ？"],
+  rin: ["モルモットくん", "実験も口実も、今日は無し", "……ただのデートの誘い。……受けなさい"],
+  ageha: ["ハジメっち！！", "理由？ないわ！！", "会いたいから会う！それがバイブス！きて！"],
+  mashiro: ["……はじめくん……", "とくに用は、ないんだけど……", "……会いたくなっちゃった……だめ？"],
+};
+
+// 記念日LIME（Y6-B1）: 付き合って10日ごとの節目に届く。nは経過日数
+const LOVER_ANNIV_LIMES = {
+  tsumugi: (n) => ({
+    m: [`……きょうで、付き合って${n}日です`, "……ノートに、ちゃんと描いてあります", "……これからも、よろしくお願いします"],
+    r: [ { text: "こちらこそ、よろしく", response: "……はい。……ふふ", affinity: 1 },
+         { text: "よく数えてたね", response: "……大事な数字、なので", affinity: 1 } ] }),
+  minto: (n) => ({
+    m: [`はじめくん、今日で${n}日目です`, "……数えてるの私だけだったら、恥ずかしいんだけど", "……お祝いに、閉店後どう？"],
+    r: [ { text: "俺も数えてた", response: "……っ、よかった。……じゃあ今夜、ふたりでお祝いね", affinity: 1 },
+         { text: "行きます、絶対", response: "ん。……とっておきのミント、仕込んでおくから", affinity: 1 } ] }),
+  rin: (n) => ({
+    m: [`……記録によると、今日で${n}日`, "だから何、ってわけじゃないけど", "……いえ。だから何、はある。……おめでと、私たち"],
+    r: [ { text: "おめでとう、俺たち", response: "……ん。……この記録は、ずっと更新する予定", affinity: 1 },
+         { text: "記録してたんですね", response: "……大事なデータは、欠かさない主義なの", affinity: 1 } ] }),
+  ageha: (n) => ({
+    m: [`ハジメっち！記念日！！${n}日目！！`, "SNSには載せてない！アタシたちだけの記録！", "夜、お祝いしよ！！"],
+    r: [ { text: "お祝いしよう", response: "即答！！好（ハオ）！！ケーキ買っとく！！", affinity: 1 },
+         { text: "載せてないんだ、意外", response: "……大事なもんは見せびらかさないの。ガチのやつはね", affinity: 1 } ] }),
+  mashiro: (n) => ({
+    m: [`……${n}日目、らしい……`, "カレンダーに、まるがついてた……僕がつけたやつ……", "……えへへ……"],
+    r: [ { text: "俺のカレンダーにも付いてるよ", response: "……おそろい……えへへ……", affinity: 1 },
+         { text: "次のまるも楽しみだね", response: "……ん……ずっと、まるつける……", affinity: 1 } ] }),
+};
+
+// 試合の朝の勝負前LIME（Y6-B4）: 恋人だけの特別文面
+const LOVER_GAMEDAY_LIMES = {
+  tsumugi: [
+    { m: ["……今日の煙", "濁らせちゃ、だめですよ", "……いってらっしゃい"],
+      r: [ { text: "ああ、約束する", response: "……はい。……大丈夫。はじめさんは、勝てます", affinity: 1 },
+           { text: "見てて", response: "……ずっと、見てます。いちばん近くで", affinity: 1 } ] },
+    { m: ["……緊張、してますか", "……わたしの分まで、深呼吸してください", "……すー、はー、です"],
+      r: [ { text: "すー、はー。……よし", response: "……ふふ。……いい色に、なりました", affinity: 1 },
+           { text: "君を思い出したら落ち着いた", response: "……っ。……それ、ずるい、です。……がんばって", affinity: 1 } ] },
+  ],
+  minto: [
+    { m: ["今日は営業スマイル無しで言うね", "いってらっしゃい。私の彼氏は世界一です", "……なんてね。でも、本気だよ"],
+      r: [ { text: "行ってきます", response: "ん。……終わったら、いちばんに顔見せて", affinity: 1 },
+           { text: "世界一、もらいました", response: "……ふふ。じゃあ世界一の煙、見せてきて", affinity: 1 } ] },
+    { m: ["お守りがわりに、ミントガムを一枚あげます", "……勝ったら、ご褒美考えとくから", "いってらっしゃい！"],
+      r: [ { text: "ご褒美、楽しみにしてる", response: "期待してていいよ。……私も、緊張してきちゃった", affinity: 1 },
+           { text: "ガム、噛んでから行く", response: "ん、それで勝てる。……ミントの女が保証します", affinity: 1 } ] },
+  ],
+  rin: [
+    { m: ["業務連絡。本日の最重要サンプルへ", "……いつも通りにやりなさい。それで勝てる", "……勝って。私のために"],
+      r: [ { text: "勝ってきます", response: "……ん。いい返事。……見てるから", affinity: 1 },
+           { text: "私のために、って", response: "……言ったわね。……忘れなさい。でも、勝って", affinity: 1 } ] },
+    { m: ["……昨日は眠れた？", "君の煙は私が一番知ってる。……世界レベルよ", "……データがそう言ってる。行ってきなさい"],
+      r: [ { text: "そのデータ、信じます", response: "……信じていいのよ。私が集めたんだから", affinity: 1 },
+           { text: "ちゃんと寝ました", response: "……えらい。……じゃ、あとは勝つだけね", affinity: 1 } ] },
+  ],
+  ageha: [
+    { m: ["すきぴ！！今日は勝つ日！！", "アタシのバイブスが勝ち確って言ってる！", "ぶちかませ！！！"],
+      r: [ { text: "ぶちかます！", response: "それでこそすきぴ！！会場で叫ぶから覚悟して！", affinity: 1 },
+           { text: "バイブス、借りるね", response: "全部持ってけ！！アタシの分まで！！", affinity: 1 } ] },
+    { m: ["緊張してる？してても、いいよ", "ハジメっちの煙、アタシが世界で一番好きだから", "……それだけ！いってら！！"],
+      r: [ { text: "……効いた。ありがとう", response: "でしょ！朝のアタシ、たまに天才だから", affinity: 1 },
+           { text: "世界一のファンがいれば勝てる", response: "ファン兼彼女な！！そこ大事！！", affinity: 1 } ] },
+  ],
+  mashiro: [
+    { m: ["……きょう、だね", "はじめくんの煙、ちゃんとおいしいよ", "……僕が保証する……いってらっしゃい"],
+      r: [ { text: "ましろちゃんの保証は最強だ", response: "……えへへ……じゃあ、無敵だね……", affinity: 1 },
+           { text: "行ってきます", response: "……ん……いちばん、応援してる……", affinity: 1 } ] },
+  ],
+};
+
+// 勝ち上がりの翌朝の祝勝LIME（Y6-B4）
+const LOVER_WIN_LIMES = {
+  tsumugi: { m: ["……見てました。ぜんぶ", "……きれいな色、でした", "……おめでとうございます、はじめさん"],
+    r: [ { text: "君のおかげだ", response: "……ちがいます。はじめさんの煙です。……でも、うれしい", affinity: 1 },
+         { text: "次も見てて", response: "……はい。……ずっと", affinity: 1 } ] },
+  minto: { m: ["勝ったね！！店内で小さくガッツポーズしました", "お客さんに変な顔されたけど、後悔してません", "……今夜、お祝いする？"],
+    r: [ { text: "する", response: "ん、決まり。……次も勝ってもらうからね？", affinity: 1 },
+         { text: "ガッツポーズ見たかった", response: "……レア映像だよ。彼氏限定で、今度またやってあげる", affinity: 1 } ] },
+  rin: { m: ["結果、確認した", "……当然の結果ね。私のサンプルだもの", "……よくやりました。えらい"],
+    r: [ { text: "えらい、いただきました", response: "……ふふ。次はもっと大きいのをあげる。……楽しみにしてて", affinity: 1 },
+         { text: "次も見ててください", response: "……当然。最重要サンプルの経過観察だから", affinity: 1 } ] },
+  ageha: { m: ["みたよ！！！ガチ痺れた！！", "アタシのすきぴが一番ってバイブスが確定した", "祝勝会！！うちの店集合！！"],
+    r: [ { text: "行く！", response: "よっしゃ！！とっておきの一台つくって待ってる！！", affinity: 1 },
+         { text: "痺れさせてごめん", response: "うざ！！好（ハオ）！！はやくきて！！", affinity: 1 } ] },
+  mashiro: { m: ["……かった、ね……", "……じぶんのことみたいに、うれしい……", "……えへへ……"],
+    r: [ { text: "ましろちゃんのおかげ", response: "……ちがうよぉ……はじめくんの煙だよ……", affinity: 1 },
+         { text: "一緒に喜んでくれてありがとう", response: "……ん……お祝いの一杯、つくるね……", affinity: 1 } ] },
+};
 // その日の夜に固定イベントが入っているか（夜の約束と固定イベントで
 // 1晩に外出が2回続くのを防ぐ・P8）。ch2 の日付は endDay の固定イベント分岐と一致させること
 function hasFixedNightEvent(day) {
@@ -2114,7 +2215,7 @@ function hasFixedNightEvent(day) {
   return false;
 }
 
-function makeDateInvite(charId, id) {
+function makeDateInvite(charId, id, maxed) {
   return {
     id,
     sender: charId,
@@ -2122,7 +2223,8 @@ function makeDateInvite(charId, id) {
     // 固定イベントの夜はデートを昼に回す（P8）
     time_slot: state.day % 2 === 0 && !hasFixedNightEvent(state.day) ? "night" : "noon",
     accept_event: `date_${charId}`,
-    messages: DATE_INVITE_LINES[charId] || ["今日、少し会えない？"],
+    // Lv MAX後は「関係を味わう」誘い文に変わる（Y6-A1）
+    messages: (maxed && DATE_INVITE_LINES_MAX[charId]) || DATE_INVITE_LINES[charId] || ["今日、少し会えない？"],
     decline_response: { text: DATE_DECLINE_LINES[charId] || "また今度ね" },
   };
 }
@@ -2167,16 +2269,57 @@ function limeDueMessages(tournamentDay) {
     if (m.type === "invitation" && m.time_slot === "night" && hasFixedNightEvent(state.day)) continue;
     due.push(m);
   }
-  // 恋人からのデートの誘い（試合の朝には来ない）
+  // 恋人からのデートの誘い（試合の朝には来ない）。
+  // Lv MAX後も打ち止めにせず、頻度を落として誘いが続く（Y6-A1: 関係を「味わう」デート）
   if (!tournamentDay) {
     for (const id of state.lovers || []) {
-      if ((state.loveLevel[id] || 0) >= AFFINITY_CAP) continue;
+      const maxed = (state.loveLevel[id] || 0) >= AFFINITY_CAP;
       const last = state.lastDate[id] ?? -9;
-      if (state.day - last < 3) continue; // 数日おき
+      if (state.day - last < (maxed ? 5 : 3)) continue; // 数日おき（MAX後は少しゆっくり）
       if (chapterInfo().stageDays[state.day]) continue;
       const inviteId = `_date_inv_${id}_d${state.day}`;
       if (state.limeDone.includes(inviteId)) continue;
-      due.push(makeDateInvite(id, inviteId));
+      due.push(makeDateInvite(id, inviteId, maxed));
+    }
+  }
+  // 記念日LIME（Y6-B1）: 付き合って10日ごとの節目。デートの誘いより先に並べて優先させる
+  if (!tournamentDay) {
+    state.loverSince = state.loverSince || {};
+    const total = ((state.chapter || 1) - 1) * 14 + state.day;
+    for (const id of state.lovers || []) {
+      if (state.loverSince[id] == null) { state.loverSince[id] = total; continue; } // 旧セーブは今日から数え始める
+      const n = total - state.loverSince[id];
+      if (n <= 0 || n % 10 !== 0) continue;
+      const msgId = `_lover_anniv_${id}_n${n}`;
+      if (state.limeDone.includes(msgId)) continue;
+      const mk = LOVER_ANNIV_LIMES[id];
+      if (!mk) continue;
+      const v = mk(n);
+      due.unshift({ id: msgId, sender: id, type: "chat", messages: v.m.map((t) => ({ sender: id, text: t })), replies: v.r });
+    }
+  }
+  // 試合の朝の勝負前LIME（Y6-B4）: 恋人だけの特別文面
+  if (tournamentDay) {
+    for (const id of state.lovers || []) {
+      const pool = LOVER_GAMEDAY_LIMES[id];
+      if (!pool || !pool.length) continue;
+      const msgId = `_lover_gameday_${id}_c${state.chapter || 1}d${state.day}`;
+      if (state.limeDone.includes(msgId)) continue;
+      const v = pool[(state.day + (LOVER_LIME_PHASE[id] || 0)) % pool.length];
+      due.push({ id: msgId, sender: id, type: "chat", messages: v.m.map((t) => ({ sender: id, text: t })), replies: v.r });
+    }
+  }
+  // 勝ち上がりの翌朝の祝勝LIME（Y6-B4）: 昨日が決勝以外の試合日＝勝って生き残っている
+  if (!tournamentDay && state.chapter === 2) {
+    const prevStage = chapterInfo().stageDays[state.day - 1];
+    if (prevStage && prevStage !== "final") {
+      for (const id of state.lovers || []) {
+        const v = LOVER_WIN_LIMES[id];
+        if (!v) continue;
+        const msgId = `_lover_win_${id}_c${state.chapter}d${state.day}`;
+        if (state.limeDone.includes(msgId)) continue;
+        due.unshift({ id: msgId, sender: id, type: "chat", messages: v.m.map((t) => ({ sender: id, text: t })), replies: v.r });
+      }
     }
   }
   // 恋人からの朝LIME（Y5）。デートの誘いと同じ朝は、末尾の「同一キャラ1日1話題」制限で誘いが優先される
@@ -2607,7 +2750,9 @@ function playLoverDate(charId, after) {
         { text: sc.optB.text, next: "b" },
       ] },
       { speaker: charId, face: sc.close.face, text: sc.close.text },
-      { speaker: "", face: "", text: "（よその店の煙も、隣にこの人がいると、ぜんぶ思い出の味になる。）" },
+      { speaker: "", face: "", text: (state.loveLevel[charId] || 0) >= AFFINITY_CAP
+          ? "（もう何も進めなくていい。ただ隣にいる——それだけの時間が、いちばん贅沢だ。）"
+          : "（よその店の煙も、隣にこの人がいると、ぜんぶ思い出の味になる。）" },
     ],
     branches: {
       a: [
@@ -3136,15 +3281,16 @@ function maybeVisitWarning(charId, proceed, cancel) {
   const maxed = (state.affinity[charId] || 0) >= AFFINITY_CAP;
   if (!isLover && !maxed) return proceed();
   const name = displayName(charId);
+  // 「これ以上上がらない」という打ち止め宣言はしない（Y6-A2）。会いに行くこと自体を肯定する文面に
   const msg = isLover
-    ? `（${name}は恋人だ。でも店では、店員と客。ここで会っても絆は深まらない——\n絆を深めるなら、プライベートの時間だ。それでも顔を見たい気持ちはあるけど。）`
-    : `（${name}との仲は、もう十分に深い。ここから先、通っても好感度はこれ以上上がらない。）`;
+    ? `（${name}は恋人だ。店では、店員と客。絆はプライベートで深めるもの——それでも、顔を見れば今日が少し軽くなる。）`
+    : `（${name}との仲は、もう十分に深い。ここから先は数字じゃなく、ただ会いたいかどうか、だ。）`;
   playCustom({
     dialogue_id: `visit_warning_${charId}`,
     lines: [
       { speaker: "", face: "", text: msg },
       { type: "choice", choices: [
-        { text: "それでも顔を見に行く（学びはある）", next: "go" },
+        { text: "顔を見に行く（学びはある）", next: "go" },
         { text: "やめておく", next: "stay" },
       ] },
     ],
