@@ -2,6 +2,9 @@
   "dialogues": [
     {
       "dialogue_id": "ch2_ageha_first",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ageha_shop.png"
+      },
       "lines": [
         {
           "speaker": "",
@@ -11,37 +14,37 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "「いらっしゃいっ！ ……って、あれ？」"
+          "text": "いらっしゃいっ！ ……って、あれ？"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "「あ！ 君は……あの時の！？」"
+          "text": "あ！ 君は……あの時の！？"
         },
         {
           "speaker": "ageha",
           "face": "surprise",
-          "text": "「やっぱりー！ 前に道で荷物落としてた人じゃん！ えっ、ガチ？ なんでこんなとこいんのー！？」"
+          "text": "やっぱりー！ 前に道で荷物落としてた人じゃん！ えっ、ガチ？ なんでこんなとこいんのー！？"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "「俺は少し離れた地域で『tonari』っていうシーシャ屋の手伝いをしてるんだ"
+          "text": "俺は少し離れた地域で『tonari』っていうシーシャ屋の手伝いをしてるんだ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はじめ、って言うんだけど……」"
+          "text": "はじめ、って言うんだけど……"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "「へーっ！ うちはアゲハ！ じゃあキミのことはハジメっちって呼ぶし！ シーシャ屋さんやってんの！？"
+          "text": "へーっ！ うちはアゲハ！ じゃあキミのことはハジメっちって呼ぶし！ シーシャ屋さんやってんの！？"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "ガチ好（ハオ）じゃん！ うちもシーシャ大好きだからさ〜、なんか親近感ハンパないんだけど！」"
+          "text": "ガチ好（ハオ）じゃん！ うちもシーシャ大好きだからさ〜、なんか親近感ハンパないんだけど！"
         },
         {
           "speaker": "",
@@ -51,42 +54,42 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "「……ようこ？」"
+          "text": "……ようこ？"
         },
         {
           "speaker": "ageha",
           "face": "surprise",
-          "text": "「あっ、ばか！ 店ではアゲハって呼べって……！！」"
+          "text": "あっ、ばか！ 店ではアゲハって呼べって……！！"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "「……コホン。ねーえハジメっち？ 今のダサい本名、ガチで聞かなかったことにしてよねっ？"
+          "text": "……コホン。ねーえハジメっち？ 今のダサい本名、ガチで聞かなかったことにしてよねっ？"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "忘れなかったら一生恨むからっ」"
+          "text": "忘れなかったら一生恨むからっ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "「別にダサくないと思うけど。葉子、とかだろ？"
+          "text": "別にダサくないと思うけど。葉子さん、とかだよね"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺からすれば、君みたいな派手なギャルから、"
+          "text": "俺からすれば、君みたいな派手なギャルから"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "あんなホワイトグミベアみたいな甘い香りがした方がよっぽど驚いたよ」"
+          "text": "あんなホワイトグミベアみたいな甘い香りがした方がよっぽど驚いたよ"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "「あははっ！ しごできじゃん、匂いで分かんの！？ うち、甘いフレーバーしか勝たんのよ"
+          "text": "あははっ！ しごできじゃん、匂いで分かんの！？ うち、甘いフレーバーしか勝たんのよ"
         },
         {
           "speaker": "ageha",
@@ -96,82 +99,100 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "そのギャップがエモくない？」"
+          "text": "そのギャップがエモくない？"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "（明るく屈託のない可愛い笑顔だが、"
+          "text": "（明るく屈託のない笑顔なのに、セッティングは相当な玄人好みらしい"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "どうやらシーシャに関しては相当な玄人好みなセッティングをしてくるらしい……"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "これは手軽な相手じゃないな）"
+          "text": "……これは、手軽な相手じゃないな）"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "「ま、これも何かの縁っしょ！ これからよろしくね、ハジメっちっ♡ ワンチャンすきぴになれるかも〜？"
+          "text": "ま、これも何かの縁っしょ！ これからよろしくね、ハジメっちっ♡ ワンチャンすきぴになれるかも〜？"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "お手並み、拝見させてもらうし！」"
+          "text": "お手並み、拝見させてもらうし！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【センス】が少し上がった。"
         }
       ]
     },
     {
-      "dialogue_id": "ch2_ageha_cant_teach",
+      "dialogue_id": "ch2_ageha_second",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ageha_shop.png"
+      },
       "lines": [
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "よっ、ハジメっち！ 今日もうちの特注頼むし♡ ガチで待ちきれなかったんだけどっ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いつもの甘くて重いやつだね。任せてよ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "さすが〜！ もうすっかりうちの好みに染まっちゃって、かわちいんですけど"
+        },
         {
           "speaker": "",
           "face": "",
-          "text": "アゲハが手際よくセットを組み上げるのをぼんやりと眺めていた。"
+          "text": "作り終えると、今度はアゲハが常連客のセットを組み始めた。その手元を、ぼんやりと眺める。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "「……フレーバーの量ってどうやって決めてるの？ 毎回目測で変えてるよね」"
+          "text": "……フレーバーの量って、どうやって決めてるの？ 毎回目測で変えてるよね"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "「あー、なんか……こう、その日の感じで？」"
+          "text": "あー、なんか……こう、その日の感じで？"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "「その日の感じって？」"
+          "text": "その日の感じって？"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "「うーんとね……空気？ 今日はなんか重い感じがするから少なめにしようかなー、みたいな"
+          "text": "うーんとね……空気？ 今日はなんか重い感じがするから少なめにしようかなー、みたいな"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "……うまく言えないけど」"
+          "text": "……うまく言えないけど"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "「空気で分かるの……？」"
+          "face": "surprise",
+          "text": "空気で分かるの……？"
         },
         {
           "speaker": "ageha",
           "face": "sad",
-          "text": "「分かるんだよ。でも説明できない。バイトに教えようとしたら『なんでですか？"
+          "text": "分かるんだよ。でも説明できない。バイトに教えようとしたら『なんでですか？』って聞かれて"
         },
         {
           "speaker": "ageha",
           "face": "sad",
-          "text": "』って聞かれて、答えられなかったんだよね。……ぴえんじゃん、うち」"
+          "text": "答えられなかったんだよね。……ぴえんじゃん、うち"
         },
         {
           "speaker": "hajime",
@@ -186,52 +207,25 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "「まあ別にいっかなって思ってたけど"
+          "text": "まあ別にいっかなって思ってたけど"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "……ハジメっちに聞かれると、なんかちょっとだけ、きゅんっとくる。……ってうわ、今のナシ！」"
-        }
-      ]
-    },
-    {
-      "dialogue_id": "ch2_ageha_second",
-      "lines": [
-        {
-          "speaker": "ageha",
-          "face": "smile",
-          "text": "「よっ、ハジメっち！ 今日もうちの特注頼むし♡ ガチで待ちきれなかったんだけどっ」"
+          "text": "……ハジメっちに聞かれると、なんかちょっとだけ、きゅんっとくる。……ってうわ、今のナシ！"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "「いつもの甘くて重いやつだね。任せてよ」"
-        },
-        {
-          "speaker": "ageha",
-          "face": "smile",
-          "text": "「さすが〜！ もうすっかりうちの好みに染まっちゃって、かわちいんですけど"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "……ねぇ、このままうちの専属になっちゃえば？ とりま毎日通うからさっ♡"
-        },
-        {
-          "speaker": "ageha",
-          "face": "smile",
-          "text": "ガチのすきぴ枠、空いてるよ？」"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（冗談っぽく笑っているが、相変わらず距離が近い……）"
+          "speaker": "",
+          "face": "",
+          "text": "……【洞察】が少し上がった。"
         }
       ]
     },
     {
       "dialogue_id": "ch2_ageha_reverse_unfair",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
       "lines": [
         {
           "speaker": "",
@@ -246,7 +240,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "「最近どんな気分でした？ 甘いものより、しょっぱいもの食べたくなる感じはありますか？」"
+          "text": "最近どんな気分でした？ 甘いものより、しょっぱいもの食べたくなる感じはありますか？"
         },
         {
           "speaker": "",
@@ -256,12 +250,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "「じゃあちょっと試してみましょうか"
+          "text": "じゃあちょっと試してみましょうか"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "チェリーとミントを合わせると、甘いのにスッとするやつができるので」"
+          "text": "チェリーとミントを合わせると、甘いのにスッとするやつができるので"
         },
         {
           "speaker": "",
@@ -271,17 +265,17 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "「……ねぇ。今の、どうやったの」"
+          "text": "……ねぇ。今の、どうやったの"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "「え？ 普通に話しかけただけだけど」"
+          "text": "え？ 普通に話しかけただけだけど"
         },
         {
           "speaker": "ageha",
           "face": "sad",
-          "text": "「あんた、なんでそんなにすぐ切り替えられんの。ガチしごできじゃん"
+          "text": "あんた、なんでそんなにすぐ切り替えられんの。ガチしごできじゃん"
         },
         {
           "speaker": "ageha",
@@ -291,97 +285,181 @@
         {
           "speaker": "ageha",
           "face": "sad",
-          "text": "お客さんが何求めてるか分かんない時、どうすればいいか分かんなくて……つらみ」"
+          "text": "お客さんが何求めてるか分かんない時、どうすればいいか分かんなくて……つらみ"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "「……意外だよ。アゲハさんって、人のこと分かる人だと思ってた」"
+          "text": "……意外だよ。アゲハさんって、人のこと分かる人だと思ってた"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "「バイブスは分かる。でも言葉で掘り下げるの、苦手なんだよ。……ずるくない？ ハジメっち」"
+          "text": "バイブスは分かる。でも言葉で掘り下げるの、苦手なんだよ。……ずるくない？ ハジメっち"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……ずるい。その言葉がじわっと染みた。俺が彼女に感じていたのと、同じ言葉だった）"
+          "text": "（……ずるい、か。その言葉がじわっと染みた。俺が彼女に感じていたのと、同じ言葉だ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【洞察】が少し上がった。"
         }
       ]
     },
     {
       "dialogue_id": "ch2_ageha_third",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ageha_shop.png"
+      },
       "lines": [
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "「ねーハジメっち。うち、最近キミの煙じゃないと全然アガんないんだけど。ガチ沼ってやつ？"
+          "text": "ねーハジメっち。うち、最近キミの煙じゃないと全然アガんないんだけど。ガチ沼ってやつ？"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "マジで責任取ってほしいわ」"
+          "text": "マジで責任取ってほしいわ"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "「責任って言われても……」"
+          "text": "責任って言われても……"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "「ほーんとに鈍感！ ほんっとそういうとこムカつくし……でも好（ハオ）"
+          "text": "ほーんとに鈍感！ ほんっとそういうとこムカつくし……でも好（ハオ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そのとき、新しいお客さんが二人入ってきた。アゲハがちらりと見て、小声で言う。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……あの二人、たぶん仕事帰りの愚痴会。甘いの重めで、ゆっくり系だね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "聞こえたの……？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ううん。歩き方と、座る席の選び方、……あと、なんとなく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "数分後、二人の注文は本当に「甘めでまったりできるやつ」だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……いまのが、バイブス。観察と記憶が速すぎて、本人にも過程が見えてないんだ）"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "ほら、もっとこっち来て、近くで煙の様子見てよ……♡ 手、触れてもいいし？ ワンチャン、ね？」"
+          "text": "ほら、もっとこっち来て、近くで煙の様子見てよ……♡ 手、触れてもいいし？ ワンチャン、ね？"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
           "text": "（完全にからかわれている……でも、これって脈あり、なのか……？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【センス】が少し上がった。"
         }
       ]
     },
     {
       "dialogue_id": "ch2_ageha_fourth",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ageha_shop.png"
+      },
       "lines": [
         {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "「ハジメっちはさー、やっぱウチみたいなギャルはお手上げなの？"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "うちのこと、ワンチャン無理だったりする？」"
+          "speaker": "",
+          "face": "",
+          "text": "店に入ると、雑誌を持ったお客さんがアゲハに何か話しかけ、アゲハが笑って首を振っていた。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "「そんなことないよ。話していて楽しいし、シーシャの好みもハッキリしてるから作りがいがある」"
+          "text": "いまの、何の話だったの？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "あー……「読モのアゲハちゃんですよね」って。人違いってことにしといた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、人違いなの？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……本人だけど。ここではシーシャ屋のアゲハなの。読モの顔で煙を褒められても、嬉しくないじゃん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（SNSの人気で客を呼んでるんだと思ってた。……逆だ。この店では、それを隠してる）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ハジメっちはさー、やっぱウチみたいなギャルはお手上げなの？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "うちのこと、ワンチャン無理だったりする？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そんなことないよ。話していて楽しいし、シーシャの好みもハッキリしてるから作りがいがある"
         },
         {
           "speaker": "ageha",
           "face": "surprise",
-          "text": "「……っ！！ え、ちょ、なにそれ……きゅんなんだけど……！」"
+          "text": "……っ！！ え、ちょ、なにそれ……きゅんなんだけど……！"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "「……ふーん？ ならガチで落としにいってもいいってこと？"
+          "text": "……ふーん？ ならガチで落としにいってもいいってこと？"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "覚悟しときなよ、ウチが本気出したらマジでヤバいからっ♡ すきぴにしてあげるっ」"
+          "text": "覚悟しときなよ、ウチが本気出したらマジでヤバいからっ♡ すきぴにしてあげるっ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【魅力】が少し上がった。"
         }
       ]
     },
     {
       "dialogue_id": "ch2_ageha_bad_vibes",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
       "lines": [
         {
           "speaker": "",
@@ -396,27 +474,27 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "「……調子、悪い？」"
+          "text": "……調子、悪い？"
         },
         {
           "speaker": "ageha",
           "face": "sad",
-          "text": "「……乗んない。今日、全然バイブスが来ない。ガチでぴえん超えてぱおん」"
+          "text": "……乗んない。今日、全然バイブスが来ない。ガチでぴえん超えてぱおん"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "「そういう日もあるよ」"
+          "text": "そういう日もあるよ"
         },
         {
           "speaker": "ageha",
           "face": "sad",
-          "text": "「うちには、そういう日あっちゃいけないんだよ。うちには理論も知識もないから"
+          "text": "うちには、そういう日あっちゃいけないんだよ。うちには理論も知識もないから"
         },
         {
           "speaker": "ageha",
           "face": "sad",
-          "text": "バイブスがなくなったら、うち、なにもなくなるじゃん」"
+          "text": "バイブスがなくなったら、うち、なにもなくなるじゃん"
         },
         {
           "speaker": "hajime",
@@ -431,57 +509,80 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "「……バイブスが来ない日のアゲハさんを、見てみたい気がする」"
+          "text": "……バイブスが来ない日のアゲハさんを、見てみたい気がする"
         },
         {
           "speaker": "ageha",
           "face": "surprise",
-          "text": "「はぁ？ そんなもん見ても面白くないよ」"
+          "text": "はぁ？ そんなもん見ても面白くないよ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "「面白いよ。バイブスがある時しか知らないから。……今日のセット、見ててあげるよ」"
+          "text": "面白いよ。バイブスがある時しか知らないから。……今日のセット、見ててあげるよ"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "「……なにそれ。全然慰めになってないし。意味わかんないし」"
+          "text": "……なにそれ。全然慰めになってないし。意味わかんないし"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "「……でも、ちょっとだけ、ましかも。……ハジメっちってガチでずるいわ」"
+          "text": "……でも、ちょっとだけ、ましかも。……ハジメっちってガチでずるいわ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【洞察】が少し上がった。"
         }
       ]
     },
     {
       "dialogue_id": "ch2_ageha_fifth",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ageha_shop.png"
+      },
       "lines": [
         {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "「……あーあ。なんかもう、限界オブ限界かも"
+          "speaker": "",
+          "face": "",
+          "text": "閉店間際のパラパラ。アゲハが珍しく、静かに自分の一台を作っていた。"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "キミ見てると気持ちあげみざわすぎて、逆になんも手につかないし」"
+          "text": "……あーあ。なんかもう、限界オブ限界かも"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "キミ見てると気持ちあげみざわすぎて、逆になんも手につかないし"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "「どうかしたの？ 煙、強すぎた？」"
+          "text": "どうかしたの？ 煙、強すぎた？"
         },
         {
           "speaker": "ageha",
           "face": "surprise",
-          "text": "「ちーがーうっっ！ 煙じゃなくて、キミのこと！！ ガチで鈍感すぎて無理なんだけど！！」"
+          "text": "ちーがーうっっ！ 煙じゃなくて、キミのこと！！ ガチで鈍感すぎて無理なんだけど！！"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……大会もさ、近いじゃん。キミの煙、どんどん強くなってくじゃん"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "追いかけられてるみたいで、ちょっとコワイの。……でも、それだけじゃなくて"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "「あのさあ、そろそろウチのこと……どう思ってるか教えてよ？"
+          "text": "あのさあ、そろそろウチのこと……どう思ってるか教えてよ？"
         },
         {
           "speaker": "ageha",
@@ -491,12 +592,17 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "すきぴなのかそうじゃないのかガチで教えて……なんてねっ♡」"
+          "text": "すきぴなのかそうじゃないのかガチで教えて……なんてねっ♡"
         },
         {
           "speaker": "hajime",
           "face": "normal",
           "text": "（彼女の目は、いつになく真剣だった。……何か答えないといけない気がする）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "……【根性】が少し上がった。"
         }
       ]
     },
@@ -816,7 +922,7 @@
     {
       "dialogue_id": "ch2_ageha_outing_shisha",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+        "bg": "res://assets/backgrounds/bg_ageha_shop.png"
       },
       "lines": [
         {
