@@ -1662,7 +1662,11 @@ const REPEAT_VISIT = {
     "みんとの店は今日もにぎやか。隅の席で一服して帰った。",
     "満席気味の店内で、みんとは全テーブルの客の名前を覚えていた。",
   ], stats: { charm: 2 } },
-  ageha: { text: "アゲハの店で一服。明るさに当てられて、こっちまで肩の力が抜ける。", stats: { sense: 2 } },
+  ageha: { text: [
+    "アゲハの店で一服。明るさに当てられて、こっちまで肩の力が抜ける。",
+    "パラパラは今日もにぎやか。アゲハの笑い声が、店のBGMみたいに響いている。",
+    "アゲハが新作の試作を一口くれた。流行の半歩先を、彼女は感覚だけで歩いている。",
+  ], stats: { sense: 2 } },
   kumicho: { text: "神崎煙草店で一服。組長と黙って同じ煙を吸うだけで、不思議と腹が据わる。", stats: { guts: 2 } },
   rei: { text: "零-ZERO-で一服。爆音の中、REIは何も言わない。でも、煙はやさしい。", stats: { charm: 2 } },
   volk: { text: "鉄の煙で一服。ヴォルクの精密な手つきを盗み見る。数字の裏に、職人の勘がある。", stats: { guts: 2 } },
@@ -1902,6 +1906,18 @@ const REPEAT_TALKS = {
       { speaker: "hajime", face: "normal", text: "（派手さの裏で、ちゃんと二正面作戦をやってるんだ）" },
       { speaker: "", face: "", text: "笑い声のなか、一台をぱーっと吸い切った。" },
     ],
+    [
+      { speaker: "", face: "", text: "パラパラは今日も満席気味。アゲハがカウンター越しに手招きしてくる。" },
+      { speaker: "ageha", face: "smile", text: "ハジメっち、この新作吸ってみ？ 甘さのケツにしょっぱさをちょい足ししたの" },
+      { speaker: "hajime", face: "normal", text: "（甘じょっぱい……。理屈より先に、正解に手が届いてる）" },
+      { speaker: "", face: "", text: "流行の半歩先を、彼女は感覚だけで歩いている。" },
+    ],
+    [
+      { speaker: "", face: "", text: "閉店間際のパラパラ。アゲハが片付けをしながら鼻歌を歌っている。" },
+      { speaker: "ageha", face: "normal", text: "客がゼロでも音楽は止めないの。空気が死ぬと、次の日の煙も死ぬから" },
+      { speaker: "hajime", face: "normal", text: "（……感覚の言葉だけど、たぶん本質だ）" },
+      { speaker: "", face: "", text: "帰り際、明日のフレーバーを一緒に選ばせてもらった。" },
+    ],
   ],
   kumicho: [
     [
@@ -1930,6 +1946,18 @@ const REPEAT_TALKS = {
       { speaker: "hajime", face: "normal", text: "（爆音が、この店のついたてなのか）" },
       { speaker: "", face: "", text: "轟音のなか、言葉はなくても、いい時間だった。" },
     ],
+    [
+      { speaker: "", face: "", text: "零-ZERO-。REIが新作ミックスの名前をノートに書いては消している。" },
+      { speaker: "rei", face: "normal", text: "……『壊れた鏡と月』。……長いか" },
+      { speaker: "hajime", face: "normal", text: "（……いいと思う。吸う前から、味の景色が浮かぶのがすごい）" },
+      { speaker: "", face: "", text: "結局、名前は明日も考え直すらしい。" },
+    ],
+    [
+      { speaker: "", face: "", text: "今日の零-ZERO-は静かだ。REIが黙ってホースを差し出してくる。" },
+      { speaker: "rei", face: "normal", text: "……新作。感想は、一言でいい" },
+      { speaker: "hajime", face: "normal", text: "……夜明け前、みたいな味です" },
+      { speaker: "", face: "", text: "REIが小さく頷いて、メモに「夜明け前」と書き足していた。" },
+    ],
   ],
   volk: [
     [
@@ -1937,6 +1965,18 @@ const REPEAT_TALKS = {
       { speaker: "volk", face: "serious", text: "計器は嘘をつかない。だが、最後の0.5度は指で覚えるしかない" },
       { speaker: "hajime", face: "normal", text: "（数字の人だと思ってた。……数字の先の話だった）" },
       { speaker: "", face: "", text: "きっちり整った煙を、最後まで味わった。" },
+    ],
+    [
+      { speaker: "", face: "", text: "鉄の煙。ヴォルクが計器の一つを分解して磨いている。" },
+      { speaker: "volk", face: "serious", text: "道具は毎日校正する。狂った計器は、嘘の数字を正直な顔で出す" },
+      { speaker: "hajime", face: "normal", text: "（数字を信じるために、数字を疑ってるんだ）" },
+      { speaker: "", face: "", text: "校正の手順を、少しだけ見学させてもらった。" },
+    ],
+    [
+      { speaker: "", face: "", text: "鉄の煙の隅で一服。ヴォルクは今日も記録を付けている。" },
+      { speaker: "volk", face: "normal", text: "今日のお前は、先週より吸い方が落ち着いている。データに出ている" },
+      { speaker: "hajime", face: "normal", text: "（……自分より先に、この人が俺の変化に気づいてる）" },
+      { speaker: "", face: "", text: "7年分のノートの厚みが、静かに答えてくる。" },
     ],
   ],
 };
@@ -1947,6 +1987,21 @@ const SPECIAL_REPEAT_VISITS = {
   adam: [
     { id: "ch1_adam_group_soutoku", flag: "_ev_adam_soutoku", minStory: 2 },
     { id: "ch1_adam_outing_dagurikura", flag: "_ev_adam_dagurikura", minStory: 3 },
+  ],
+  // 眠っていた小イベントの配線（Y4・2026-07-19）。ch1の常連回2本＋ch2のあげは/REI回
+  naru: [
+    { id: "ch1_naru_group_regulars", flag: "_ev_naru_regulars", minStory: 3 },
+  ],
+  minto: [
+    { id: "ch1_minto_group_regulars", flag: "_ev_minto_regulars", minStory: 3 },
+  ],
+  ageha: [
+    { id: "ch2_ageha_group_gyarufriend", flag: "_ev_ageha_gyarufriend", minStory: 2 },
+    { id: "ch2_ageha_group_new_customer", flag: "_ev_ageha_new_customer", minStory: 3 },
+    { id: "ch2_ageha_outing_shisha", flag: "_ev_ageha_outing", minStory: 4 },
+  ],
+  rei: [
+    { id: "ch2_rei_group_concert_prep", flag: "_ev_rei_concert", minStory: 3 },
   ],
 };
 
@@ -3409,6 +3464,11 @@ function endDay() {
       state.flags._ev2_ageha = true;
       return pd("ch2_pre_tournament_realisation", goHome, "res://assets/backgrounds/bg_tournament_stage.png");
     }
+    // DAY9: あげはの「逆ずるい」（眠っていたデータの配線・Y4。準決勝のバイブス不調の前振り）
+    if (state.day === 9 && !state.flags._ev2_ageha_unfair && D.dialogues.ch2_ageha_reverse_unfair) {
+      state.flags._ev2_ageha_unfair = true;
+      return pd("ch2_ageha_reverse_unfair", () => { gainAffinity("ageha", "event"); goHome(); }, TONARI);
+    }
     // DAY10: スミさんの沈黙（連勝が始まった頃。ch4特訓「同じ顔をさせたくなかった」の前振り）
     if (state.day === 10 && !state.flags._ev2_sumi) {
       state.flags._ev2_sumi = true;
@@ -3684,7 +3744,8 @@ function doVisit(charId, opts = {}) {
     const texts = Array.isArray(rep.text) ? rep.text : [rep.text];
     // 好感度が育ち始めた相手（♥1以上）は、地の文の代わりに小会話をローテーション（F5）。
     // 「通った甲斐」＝そのキャラの価値観がちらっと見える数行。報酬は従来と同じ
-    const talks = rank >= 1 ? REPEAT_TALKS[charId] : null;
+    // 好感度メーターの無い相手（ch2ライバル）は♥条件なしで小会話を回す（rank>=1だと一生出ない）
+    const talks = (!hasAff || rank >= 1) ? REPEAT_TALKS[charId] : null;
     // 雨の日（A8/W4）: 雨限定の小会話があるキャラ（つむぎ=長居）はそちらを優先
     const rainTalk = isRainy() && rank >= 1 ? RAIN_TALKS[charId] : null;
     const talk = rainTalk || (talks && talks.length ? talks[(state.visits[charId] || 0) % talks.length] : null);
@@ -7896,7 +7957,11 @@ function startCh2Stage(stage) {
         { speaker: "pakki", face: "normal", text: "勝ち残ったのは各ブロックの猛者だけ！　課題は変わらずストロベリー！　それじゃあ──火を入れて！" },
         { speaker: "hajime", face: "normal", text: "（……勝ってる。勝ててしまっている。借り物の理屈で）" },
       ];
-  playCustom({ dialogue_id: `ch2_${stage}_intro`, metadata: { bg: BG }, lines: intro }, () => beginMaking());
+  // 準決勝の控室ビート: あげはのバイブス不調（決勝空席の前フリ。眠っていたデータの配線・Y4）
+  const afterIntro = stage === "semi" && !state.flags._ev_ageha_bad_vibes && D.dialogues.ch2_ageha_bad_vibes
+    ? () => { state.flags._ev_ageha_bad_vibes = true; playDialogue("ch2_ageha_bad_vibes", () => beginMaking(), BG); }
+    : () => beginMaking();
+  playCustom({ dialogue_id: `ch2_${stage}_intro`, metadata: { bg: BG }, lines: intro }, afterIntro);
 }
 
 function finishCh2Stage() {
