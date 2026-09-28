@@ -346,8 +346,9 @@ export function mountReel(host) {
   host.append(widget);
   setStops(state.reel.shown || [1, 1, 2]); // 前回見せた出目のまま（未消化の結果は出目に出さない）
   const queue = state.reel.pending;
-  if (!queue.length || busy) return Promise.resolve();
-  return (async () => {
+  if (busy) return current; // 前の演出がまだ途中（マップ等を素早く進めた）→ それが終わるのを待てるように
+  if (!queue.length) return Promise.resolve();
+  current = (async () => {
     if (!state.reel.introDone) await showIntro();
     // 取り出してから保存（演出の途中でリロードしても二重に適用しない。報酬は適用済み）
     const items = queue.splice(0, queue.length);
@@ -367,11 +368,14 @@ export function mountReel(host) {
       busy = false;
     }
   })();
+  return current;
 }
+let current = Promise.resolve();
 
 /** 夜の行動のあと: その場でスロットを見せてから一日を終える（翌朝まで持ち越さない） */
 export async function presentNow() {
-  if (!state?.reel?.pending?.length || busy) return;
+  await current; // 昼の分の演出が途中なら、終わってから今夜の分を回す
+  if (!state?.reel?.pending?.length) return;
   const host = el("div.reel-night", [el("div.rn-label", { text: "今夜のスロット" })]);
   layers.fx.append(host);
   requestAnimationFrame(() => host.classList.add("show"));

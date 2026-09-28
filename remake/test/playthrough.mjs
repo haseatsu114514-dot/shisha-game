@@ -211,6 +211,8 @@ if (s.tournament.attempts < 2) throw new Error("expected a defeat before the win
 log(`slot: spins=${s.reel.count} note=${JSON.stringify(s.reel.note)} pending=${s.reel.pending.length}`);
 if (s.reel.count < 20) throw new Error(`slot should spin once per action (count=${s.reel.count})`);
 if (!s.reel.introDone) throw new Error("slot intro not shown");
+// 夜の行動の分もその夜のうちに回し切る＝章の終わりに見せていない回転が残らない
+if (s.reel.pending.length) throw new Error(`slot spins left unshown: ${s.reel.pending.length}`);
 // くじ: 1枚引いて箱が減っている
 if (!(s.kuji.g500 && s.kuji.g500.drawn === 1)) throw new Error(`kuji not drawn: ${JSON.stringify(s.kuji)}`);
 // ch1 のソフトキャップ（48）を超えていない
