@@ -2,6 +2,8 @@
 import { $, el, sleep, nextFrame } from "./util.js";
 import { on } from "./bus.js";
 import { SE } from "./audio.js";
+import { state } from "./state.js";
+import { displayName, faceIconUrl } from "./data.js";
 
 export const layers = {};
 
@@ -9,8 +11,21 @@ export function initLayers() {
   for (const id of ["bg", "screen", "vn", "hud", "fx", "toasts", "banners", "wipe", "modal"]) {
     layers[id] = $(`#${id}`);
   }
-  on("stat-gain", ({ name, word, starUp, rank }) => {
-    banner(`【${name}】が${word}`, starUp ? `★が増えた ──「${rank}」` : null);
+  // 報酬カード（旧版の Persona 風カードを踏襲）。ステはステ色の漢字バッジ、好感度は顔＋ハート
+  on("stat-gain", ({ key, name, word, starUp, rank }) => {
+    gainCard({ kind: "stat", stat: key, badge: STAT_BADGE[key], top: starUp ? "RANK UP" : "STATUS UP", main: name, sub: starUp ? `${word} ──「${rank}」` : word });
+  });
+  on("affinity-gain", ({ id, level, levelUp, prevPts, pts }) => {
+    if (!id || id === "???" || !state?.met?.[id]) return;
+    gainCard({
+      kind: "affinity",
+      face: faceIconUrl(id),
+      badge: [...displayName(id, state)][0],
+      top: levelUp ? "AFFINITY UP" : "AFFINITY",
+      main: displayName(id, state),
+      sub: levelUp ? `好感度が ♥${level} に上がった！` : "少し打ち解けた気がする",
+      hearts: { from: heartState(prevPts), to: heartState(pts) },
+    });
   });
 }
 
@@ -92,24 +107,57 @@ export function toast(text, { ms = 2600, kind = "" } = {}) {
 }
 
 // ステ上昇などのバナー（右上から順に積む・同時に出すのは数枚まで）
+const STAT_BADGE = { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "観" };
+const AFF_PTS = [0, 9, 20, 33, 48, 66]; // stats.js の AFFINITY_RANK_PTS と同じ段階
+/** 好感度ポイント → 5つのハートそれぞれの塗り率（%） */
+function heartState(pts = 0) {
+  let lv = 0;
+  for (let i = 1; i < AFF_PTS.length; i++) if (pts >= AFF_PTS[i]) lv = i;
+  const frac = lv >= 5 ? 1 : (pts - AFF_PTS[lv]) / (AFF_PTS[lv + 1] - AFF_PTS[lv]);
+  return [0, 1, 2, 3, 4].map((i) => (i < lv ? 100 : i === lv ? Math.round(frac * 100) : 0));
+}
+
 const bannerQueue = [];
 let bannerBusy = 0;
+/** 汎用の短い通知（見出し＋補足） */
 export function banner(title, sub = null) {
-  bannerQueue.push({ title, sub });
+  gainCard({ kind: "info", badge: "!", top: "NOTICE", main: title, sub });
+}
+/**
+ * 報酬カード。kind: stat | affinity | info
+ * @param o.badge 丸バッジの一字 / o.face 顔ドット絵（あればバッジの代わり）/ o.hearts {from:[%×5], to:[%×5]}
+ */
+export function gainCard(o) {
+  bannerQueue.push(o);
   pumpBanners();
 }
 function pumpBanners() {
   while (bannerBusy < 3 && bannerQueue.length) {
-    const { title, sub } = bannerQueue.shift();
+    const o = bannerQueue.shift();
     bannerBusy++;
-    const b = el("div.banner", [el("b", { text: title }), sub ? el("small", { text: sub }) : null]);
+    const hearts = o.hearts ? el("div.gc-hearts", o.hearts.from.map((f) => el("i", { style: { "--fill": `${f}%` } }))) : null;
+    const b = el(`div.gain-card.${o.kind}${o.stat ? `.st-${o.stat}` : ""}`, [
+      o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : el("div.gc-badge", { text: o.badge || "+" }),
+      el("div.gc-meta", [
+        el("span.gc-top", { text: o.top }),
+        el("span.gc-main", { text: o.main }),
+        o.sub ? el("span.gc-sub", { text: o.sub }) : null,
+        hearts,
+      ]),
+    ]);
     layers.banners.append(b);
-    SE.select();
-    requestAnimationFrame(() => b.classList.add("show"));
+    if (o.kind === "stat") SE.select();
+    requestAnimationFrame(() => {
+      b.classList.add("show");
+      // 1拍おいてから今の値へ → ハートの中身が「ぐいーん」と伸びる
+      if (hearts) setTimeout(() => hearts.querySelectorAll("i").forEach((h, i) => h.style.setProperty("--fill", `${o.hearts.to[i]}%`)), 260);
+    });
+    const hold = o.hearts && o.hearts.to.join() !== o.hearts.from.join() ? 2600 : 2200;
     setTimeout(() => {
       b.classList.remove("show");
-      setTimeout(() => { b.remove(); bannerBusy--; pumpBanners(); }, 400);
-    }, sub ? 2600 : 2000);
+      b.classList.add("out");
+      setTimeout(() => { b.remove(); bannerBusy--; pumpBanners(); }, 420);
+    }, hold);
   }
 }
 /** バナーが全部はけるまで待つ（暗転の前などに呼ぶ） */

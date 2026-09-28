@@ -97,140 +97,313 @@
   left: 0;
   right: 0;
   top: 0;
-  height: 64px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 0 20px;
-  background: linear-gradient(180deg, rgba(6, 4, 12, 0.85), rgba(6, 4, 12, 0));
+  align-items: flex-start;
+  padding: 12px 16px;
 }
 body.in-vn .hud { opacity: 0; }
 body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen="result"] .hud { opacity: 0; }
-.hud-date { display: flex; align-items: baseline; gap: 14px; }
-.hud-day { font-family: var(--font-serif); font-size: 30px; font-weight: 800; letter-spacing: 0.08em; color: #fff; }
-.hud-slot { padding: 2px 12px; border-radius: 999px; font-size: 14px; letter-spacing: 0.2em; background: #f2d27a; color: #2b1d08; }
-.hud-slot[data-slot="night"] { background: #3d3a7a; color: #e4e2ff; }
-.hud-left { font-size: 14px; color: var(--gold); letter-spacing: 0.1em; }
-.hud-right { display: flex; align-items: center; gap: 12px; pointer-events: auto; }
-.hud-money { position: relative; font-family: var(--font-dot); font-size: 20px; color: var(--gold-hi); min-width: 110px; text-align: right; }
-.money-pop { position: absolute; right: 0; top: 24px; font-size: 16px; color: var(--good); animation: money-pop 1.4s ease-out forwards; white-space: nowrap; }
+
+/* 左上の DAY カード（墨×金・角飾り） */
+.hud-card, .hud-level, .hud-menu, .hud-stamina {
+  position: relative;
+  color: var(--text);
+  background: linear-gradient(160deg, rgba(16, 10, 24, 0.95), rgba(28, 18, 38, 0.95));
+  border: 1px solid rgba(244, 210, 122, 0.55);
+  border-radius: 6px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
+}
+.hud-card { display: flex; align-items: stretch; padding: 9px 14px 9px 14px; font-family: var(--font-serif); }
+.hud-card::before, .hud-card::after, .hud-level::before, .hud-level::after {
+  content: "";
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  border: 1px solid var(--gold);
+}
+.hud-card::before, .hud-level::before { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+.hud-card::after, .hud-level::after { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+.dc-main { display: flex; flex-direction: column; justify-content: center; min-width: 70px; }
+.dc-area { font-family: "Times New Roman", serif; font-size: 10px; letter-spacing: 0.34em; color: var(--gold); line-height: 1; margin-bottom: 3px; }
+.dc-day { line-height: 1; }
+.dc-day b { font-size: 34px; font-weight: 800; }
+.dc-day small { margin-left: 2px; font-size: 13px; color: var(--text-dim); }
+.dc-slot { margin-top: 4px; font-family: "Times New Roman", var(--font-serif); font-size: 10px; letter-spacing: 0.2em; color: var(--gold); white-space: nowrap; }
+.dc-slot[data-slot="night"] { color: #b8b4ff; }
+.dc-meta { display: flex; flex-direction: column; justify-content: center; gap: 5px; margin-left: 14px; font-family: var(--font-sans); }
+.dc-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 132px;
+  padding: 3px 9px;
+  font-size: 12px;
+  background: rgba(244, 210, 122, 0.08);
+  border: 1px solid rgba(244, 210, 122, 0.2);
+  border-radius: 4px;
+}
+.dc-row span { font-size: 10px; letter-spacing: 0.1em; color: var(--text-dim); }
+.dc-row b { font-weight: 700; color: var(--gold-hi); }
+.money-pop { position: absolute; right: 4px; top: 22px; font-size: 14px; font-weight: 700; color: var(--good); text-shadow: 0 1px 3px #000; animation: money-pop 1.4s ease-out forwards; white-space: nowrap; }
 .money-pop.minus { color: #ff9b9b; }
 @keyframes money-pop { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(18px); } }
-.hud-stamina { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-dim); }
-.hud-bar { display: block; height: 9px; border-radius: 5px; background: rgba(255, 255, 255, 0.12); overflow: hidden; transition: width 0.4s; }
-.hud-bar b { display: block; height: 100%; background: linear-gradient(90deg, #7be0a0, #c9f07a); transition: width 0.5s var(--ease-out); }
+
+/* 右上: 体力・ステータスの五角形・LIME・MENU */
+.hud-right { display: flex; align-items: center; gap: 8px; pointer-events: auto; }
+.hud-stamina { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; font-size: 11px; letter-spacing: 0.1em; color: var(--text-dim); }
+.hud-bar { display: block; height: 8px; border-radius: 4px; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(199, 154, 60, 0.7); overflow: hidden; transition: width 0.4s; }
+.hud-bar b { display: block; height: 100%; background: linear-gradient(90deg, #6fcf8f, #c9f07a); transition: width 0.5s var(--ease-out); }
 .hud-stamina.low .hud-bar b { background: linear-gradient(90deg, #ff6b6b, #ffae6b); animation: blink 1s infinite; }
 @keyframes blink { 50% { opacity: 0.5; } }
-.hud-btn {
+.hud-level { display: grid; place-items: center; width: 52px; height: 52px; padding: 0; cursor: pointer; }
+.hud-level:hover { border-color: var(--gold); box-shadow: 0 0 12px rgba(244, 210, 122, 0.4); }
+.hud-radar { width: 44px; height: 44px; display: block; }
+.hr-grid { fill: none; stroke: rgba(244, 210, 122, 0.3); stroke-width: 0.8; }
+.hr-fill { fill: rgba(255, 158, 109, 0.45); stroke: #ffd35e; stroke-width: 1.2; stroke-linejoin: round; transition: all 0.4s; }
+/* LIME はアプリのアイコン風（緑の角丸＋白抜き文字） */
+.hud-lime {
   position: relative;
-  padding: 6px 12px;
-  font-size: 13px;
-  letter-spacing: 0.14em;
-  background: rgba(12, 9, 20, 0.78);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 5px;
-  color: var(--text);
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 13px;
+  background: linear-gradient(180deg, #2cc75c, #169a3e);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.35);
   cursor: pointer;
+  transition: transform 0.12s;
 }
-.hud-btn:hover { border-color: var(--gold); color: var(--gold-hi); }
-.hud-phone .badge { position: absolute; right: -6px; top: -6px; min-width: 18px; height: 18px; border-radius: 9px; background: var(--danger); color: #fff; font-size: 11px; font-style: normal; display: none; place-items: center; }
-.hud-phone.has .badge { display: grid; }
+.hud-lime span {
+  padding: 1px 4px;
+  font-family: "Times New Roman", serif;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: #169a3e;
+  background: #fff;
+  border-radius: 5px;
+}
+.hud-lime:hover { transform: translateY(-2px); }
+.hud-lime .badge { position: absolute; right: -7px; top: -7px; min-width: 19px; height: 19px; padding: 0 5px; border-radius: 10px; background: var(--danger); border: 2px solid #fff; color: #fff; font-size: 11px; font-weight: 700; font-style: normal; display: none; place-items: center; }
+.hud-lime.has .badge { display: grid; }
+.hud-menu { display: flex; align-items: center; gap: 7px; height: 34px; padding: 0 12px; font-size: 11px; letter-spacing: 0.16em; color: var(--text-dim); cursor: pointer; }
+.hud-menu i { width: 13px; height: 9px; border-top: 2px solid currentColor; border-bottom: 2px solid currentColor; position: relative; }
+.hud-menu i::after { content: ""; position: absolute; left: 0; right: 0; top: 1.5px; border-top: 2px solid currentColor; }
+.hud-menu:hover { color: var(--gold-hi); border-color: var(--gold); }
 
 /* ---------------------------------------------------------------- マップ */
+/* 旧版を踏襲: 看板型のピン（テーマ色のグラデ・白縁・しっぽ）＋下の白い札／右下の墨×金パネル */
 .map { position: absolute; inset: 0; }
-.map[data-night="true"]::before { content: ""; position: absolute; inset: 0; background: rgba(10, 8, 40, 0.25); pointer-events: none; }
-.map-head { position: absolute; left: 24px; top: 74px; display: flex; flex-direction: column; gap: 6px; }
-.map-when {
-  padding: 8px 20px;
-  font-family: var(--font-serif);
-  font-size: 22px;
-  letter-spacing: 0.12em;
-  background: rgba(8, 6, 14, 0.82);
-  border-left: 4px solid var(--gold);
-}
-.map-notice { padding: 6px 16px; font-size: 15px; background: rgba(8, 6, 14, 0.8); color: var(--gold-hi); }
-.map-pins { position: absolute; inset: 0; }
-.pin {
+.map::before {
+  content: "";
   position: absolute;
-  transform: translate(-50%, -50%);
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.28) 0%, transparent 22%, transparent 70%, rgba(0, 0, 0, 0.35) 100%);
+  pointer-events: none;
+}
+/* ピンは右下パネルより前面（重なっても必ず押せる）。層そのものはクリックを素通しさせる */
+.map-pins { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.spot-pin {
+  position: absolute;
+  /* しっぽの先が (x, y) を指す。拡縮は .shield 側だけで行う（外側を動かすと hover が暴れる） */
+  transform: translate(-50%, -100%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
   padding: 0;
   background: none;
   border: none;
   cursor: pointer;
-  z-index: 1;
+  pointer-events: auto;
+  font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", var(--font-sans);
 }
-.pin-dot {
+.spot-pin:hover, .spot-pin.sel { z-index: 5; }
+.spot-pin .shield {
+  position: relative;
+  min-width: 112px;
+  padding: 8px 14px 10px;
+  color: #fff;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: linear-gradient(180deg, var(--pin-from, #b04a8a) 0%, var(--pin-to, #5e2452) 100%);
+  border: 2px solid #fff;
+  border-radius: 14px 14px 14px 14px / 14px 14px 8px 8px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.45);
+  transform-origin: 50% 100%;
+  transition: transform 0.16s ease-out, box-shadow 0.16s;
+}
+.spot-pin .shield::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 14px;
+  height: 14px;
+  transform: translateX(-50%) rotate(45deg);
+  background: linear-gradient(135deg, var(--pin-from, #b04a8a), var(--pin-to, #5e2452));
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+}
+.spot-pin:hover .shield { transform: scale(1.07); box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5), 0 0 18px rgba(244, 210, 122, 0.45); }
+.spot-pin:active .shield { transform: scale(0.97); }
+.spot-pin.sel .shield { transform: scale(1.1); border-color: #ffe9a8; box-shadow: 0 8px 18px rgba(0, 0, 0, 0.55), 0 0 0 3px rgba(244, 210, 122, 0.75), 0 0 26px rgba(244, 210, 122, 0.6); }
+.spot-pin .ico { display: grid; place-items: center; height: 30px; margin-bottom: 3px; font-family: var(--font-serif); font-size: 23px; line-height: 1; }
+.pin-face {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  image-rendering: pixelated;
+  background: #1a1422;
+  border: 2px solid rgba(255, 255, 255, 0.88);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+.spot-pin .label { font-size: 12px; line-height: 1.2; white-space: nowrap; }
+.spot-pin .lock { margin-left: 6px; padding: 1px 6px; font-size: 9px; font-style: normal; letter-spacing: 0.12em; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 3px; }
+.spot-pin .sub-label {
+  margin-top: 10px;
+  padding: 2px 9px;
+  font-size: 11px;
+  color: #2a1a2a;
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 8px;
+  white-space: nowrap;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+}
+.spot-pin .sub-label.closed-tag { background: rgba(40, 18, 24, 0.92); color: #f0b9b9; border: 1px solid rgba(240, 185, 185, 0.4); }
+/* 行けない場所は「消えた」ではなく「無効化」に見せる（旧版 #6） */
+.spot-pin.off .shield { filter: grayscale(0.5) brightness(0.74); }
+.spot-pin.off { opacity: 0.9; }
+.evt-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  z-index: 2;
   display: grid;
   place-items: center;
-  width: 52px;
-  height: 52px;
+  width: 21px;
+  height: 21px;
   border-radius: 50%;
-  font-family: var(--font-serif);
-  font-size: 22px;
-  font-weight: 800;
-  color: #1b1208;
-  background: radial-gradient(circle at 35% 30%, #fff1c8, var(--gold) 60%, #a77a33);
-  box-shadow: 0 0 0 3px rgba(8, 6, 14, 0.85), 0 6px 18px rgba(0, 0, 0, 0.55), 0 0 22px rgba(255, 200, 100, 0.35);
-  transition: transform 0.2s var(--ease-out), box-shadow 0.2s;
+  font-style: normal;
+  font-weight: 900;
+  font-size: 14px;
+  color: #2a1a00;
+  background: #ffd35e;
+  border: 2px solid #fff2cc;
+  box-shadow: 0 0 10px rgba(255, 211, 94, 0.8);
+  animation: evt-pulse 1.4s ease-in-out infinite;
+  pointer-events: none;
 }
-.pin.k-rival .pin-dot { background: radial-gradient(circle at 35% 30%, #ffd1e0, #e46a8e 60%, #8f2f4f); color: #fff; }
-.pin.k-shop .pin-dot { background: radial-gradient(circle at 35% 30%, #d6f4ff, #58b8d8 60%, #2a6a85); color: #06202a; }
-.pin.k-spot .pin-dot { background: radial-gradient(circle at 35% 30%, #e6ffe0, #7cc98a 60%, #3a7545); color: #0b2410; }
-.pin.k-rest .pin-dot { background: radial-gradient(circle at 35% 30%, #eee, #9a9ab0 60%, #55556a); color: #111; }
-.pin-label {
-  padding: 3px 10px;
+@keyframes evt-pulse { 50% { transform: scale(1.18); box-shadow: 0 0 16px rgba(255, 211, 94, 1); } }
+/* 「新しい話がある」印: 「!」より控えめな水色・波動なし */
+.evt-badge.story { font-size: 11px; font-weight: 700; color: #06222c; background: #9fd8e8; border-color: #d9f2f9; box-shadow: 0 0 8px rgba(159, 216, 232, 0.7); animation: none; }
+
+/* 看板の色テーマ */
+.pin-baito   { --pin-from: #c47845; --pin-to: #602f16; }
+.pin-rival   { --pin-from: #c44a3a; --pin-to: #6c1818; }
+.pin-shop    { --pin-from: #c4a040; --pin-to: #6c5018; }
+.pin-cafe    { --pin-from: #4a7ad8; --pin-to: #1c3478; }
+.pin-park    { --pin-from: #2f88c4; --pin-to: #14486c; }
+.pin-gym     { --pin-from: #2fa888; --pin-to: #145648; }
+.pin-stadium { --pin-from: #d4b430; --pin-to: #685818; }
+.pin-rest    { --pin-from: #4a4d6c; --pin-to: #1d1f30; }
+.pin-locked  { --pin-from: #4a4a52; --pin-to: #2a2a32; }
+.pin-locked .shield { color: #d8d8e0; }
+
+/* 墨×金のパネル（角飾りつき）。HUD の日付カードと同じ語彙 */
+.ink-panel, .map-info, .map-notice, .map-time {
+  position: absolute;
+  color: var(--text);
+  background: linear-gradient(160deg, rgba(14, 9, 22, 0.95), rgba(28, 18, 38, 0.94));
+  border: 1px solid rgba(244, 210, 122, 0.55);
+  border-radius: 6px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.65);
+}
+.map-info::before, .map-info::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--gold);
+}
+.map-info::before { top: -3px; left: -3px; border-right: none; border-bottom: none; }
+.map-info::after { bottom: -3px; right: -3px; border-left: none; border-top: none; }
+.map-info { right: 16px; bottom: 16px; z-index: 3; width: 300px; padding: 11px 14px 13px; transition: opacity 0.2s, transform 0.2s; }
+.map-info.leaving { opacity: 0; transform: translateY(8px); }
+.mi-banner {
+  display: inline-block;
+  margin-bottom: 7px;
+  padding: 3px 14px;
   font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  background: rgba(8, 6, 14, 0.86);
-  border-radius: 4px;
-  white-space: nowrap;
+  letter-spacing: 0.1em;
+  color: #2a1810;
+  background: linear-gradient(180deg, #d4b66a, #a07e2e);
+  border-radius: 3px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
-.pin:hover .pin-dot, .pin.sel .pin-dot { transform: scale(1.14); box-shadow: 0 0 0 3px var(--gold-hi), 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 34px rgba(255, 200, 100, 0.6); }
-.pin.sel .pin-label { background: var(--gold); color: #1b1208; }
-.pin.off { opacity: 0.45; filter: grayscale(0.7); }
-.pin-badge {
-  position: absolute;
-  right: -8px;
-  top: -8px;
-  min-width: 24px;
-  height: 24px;
-  padding: 0 6px;
-  border-radius: 12px;
-  font-style: normal;
-  font-weight: 800;
-  font-size: 15px;
-  color: #fff;
-  background: var(--neon-pink);
-  box-shadow: 0 0 12px var(--neon-pink);
-  animation: bob 1.1s ease-in-out infinite;
+.mi-preview {
+  width: 100%;
+  aspect-ratio: 16 / 6;
+  margin: 2px 0 8px;
+  background: center 40% / cover no-repeat;
+  border: 2px solid rgba(212, 182, 106, 0.75);
+  border-radius: 6px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55), inset 0 0 18px rgba(0, 0, 0, 0.35);
 }
-.map-info {
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
-  width: 420px;
-  min-height: 150px;
-  padding: 18px 22px;
-}
-.mi-hint { margin: 0; font-size: 15px; color: var(--text-dim); line-height: 1.7; }
-.mi-head { display: flex; align-items: center; gap: 14px; }
-.mi-face { width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--gold); image-rendering: pixelated; background: #000; }
-.mi-icon { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 50%; background: var(--gold); color: #1b1208; font-family: var(--font-serif); font-size: 24px; font-weight: 800; }
-.mi-name { font-family: var(--font-serif); font-size: 24px; font-weight: 700; color: var(--gold-hi); }
-.mi-area { font-size: 13px; color: var(--text-dim); letter-spacing: 0.1em; }
-.mi-desc { margin: 10px 0; font-size: 15px; line-height: 1.7; }
-.mi-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-.tag { padding: 3px 10px; font-size: 12px; border-radius: 999px; border: 1px solid var(--panel-edge); color: var(--text); }
+.mi-preview[data-tint="night"] { filter: brightness(0.7) saturate(0.7); }
+.mi-area { font-size: 11px; letter-spacing: 0.12em; color: var(--gold); }
+.mi-desc { margin: 4px 0 8px; font-size: 13px; line-height: 1.6; color: var(--text-dim); }
+.mi-foot { font-size: 11px; letter-spacing: 0.06em; color: var(--text-dim); opacity: 0.8; }
+.mi-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.tag { padding: 2px 9px; font-size: 11px; border-radius: 999px; border: 1px solid rgba(244, 210, 122, 0.4); color: var(--gold-hi); }
 .tag.free { border-color: rgba(142, 230, 168, 0.5); color: var(--good); }
 .tag.warn { border-color: var(--danger); color: #ffb3b3; }
-.tag.new { border-color: var(--neon-pink); color: #ffc2de; }
-.mi-go { width: 100%; align-items: center; }
-.mi-no { padding: 10px; text-align: center; font-size: 15px; color: var(--text-dim); border: 1px dashed rgba(255, 255, 255, 0.2); border-radius: 6px; }
+.tag.new { border-color: #9fd8e8; color: #cdeef7; }
+.mi-go {
+  width: 100%;
+  padding: 9px 0;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #2a1810;
+  background: linear-gradient(180deg, #f4d27a, #c79a3c);
+  border: 1px solid #ffe9a8;
+  border-radius: 4px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+}
+.mi-go:hover { filter: brightness(1.08); }
+.mi-go:active { transform: scale(0.98); }
+.mi-no { padding: 8px; text-align: center; font-size: 13px; color: #f0b9b9; background: rgba(40, 18, 24, 0.6); border: 1px dashed rgba(240, 185, 185, 0.35); border-radius: 4px; }
+.map-notice {
+  top: 92px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  padding: 7px 20px;
+  font-size: 14px;
+  color: #ffd9a0;
+  border-left: 3px solid var(--gold);
+  white-space: nowrap;
+}
+.map-time {
+  left: 16px;
+  bottom: 16px;
+  z-index: 3;
+  padding: 9px 18px;
+  font-family: var(--font-serif);
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  color: var(--gold);
+}
 
 /* ---------------------------------------------------------------- サブメニュー（tonari 等） */
 .sub-menu {
@@ -293,35 +466,158 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 .shop-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; gap: 12px; }
 
 /* ---------------------------------------------------------------- LIME */
-.phone-overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.55); display: grid; place-items: center; opacity: 0; transition: opacity 0.25s; }
+/* 旧版の LIME を踏襲: ノッチ付きの端末・くすんだ青の壁紙・緑のヘッダー・明るい返信欄 */
+.phone-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(5, 4, 10, 0.62);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity 0.35s;
+}
 .phone-overlay.show { opacity: 1; }
 .phone {
-  width: 400px;
+  --lime: #169a3e;
+  width: 340px;
   height: 640px;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  background: #8da3bd;
+  border: 7px solid #14101c;
   border-radius: 34px;
-  padding: 16px 16px 20px;
-  background: #0e0d14;
-  border: 3px solid #2d2a3a;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), inset 0 0 0 2px #000;
-  transform: translateY(30px);
-  transition: transform 0.35s var(--ease-out);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.14), inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+  font-family: "Hiragino Kaku Gothic ProN", "Noto Sans JP", var(--font-sans);
+  transform: translateY(46px) scale(0.97);
+  transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.1);
 }
 .phone-overlay.show .phone { transform: none; }
-.phone-top { display: flex; justify-content: space-between; font-size: 12px; color: #aaa; padding: 2px 12px 8px; font-family: var(--font-dot); }
-.phone-who { padding: 10px 14px; font-weight: 700; font-size: 17px; background: #1f8b4c; color: #fff; border-radius: 12px 12px 0 0; }
-.phone-thread { flex: 1; overflow-y: auto; padding: 14px 10px; background: #8aa3c2 linear-gradient(180deg, #7f98b8, #92aac8); display: flex; flex-direction: column; gap: 10px; }
-.bubble { display: flex; align-items: flex-end; gap: 6px; max-width: 86%; animation: bubble-in 0.25s var(--ease-out); }
-.bubble span { padding: 9px 13px; border-radius: 16px 16px 16px 4px; background: #fff; color: #111; font-size: 15px; line-height: 1.55; }
-.bubble.mine { align-self: flex-end; }
-.bubble.mine span { background: #8de055; border-radius: 16px 16px 4px 16px; }
-.bubble-face { width: 30px; height: 30px; border-radius: 50%; image-rendering: pixelated; background: #000; flex: none; }
-@keyframes bubble-in { from { opacity: 0; transform: translateY(8px) scale(0.96); } }
-.phone-actions { display: flex; flex-direction: column; gap: 6px; padding: 10px 4px 0; min-height: 52px; }
-.phone-reply { padding: 10px 14px; border-radius: 10px; border: 1px solid #3a3a48; background: #1c1b26; color: #eee; font-size: 15px; text-align: left; cursor: pointer; }
-.phone-reply:hover { border-color: #8de055; }
-.phone-reply.close { text-align: center; background: #2a2838; }
+.phone-notch { flex: none; width: 110px; height: 15px; margin: 0 auto; background: #14101c; border-radius: 0 0 11px 11px; }
+.phone-status {
+  flex: none;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 3px 18px 5px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1d2433;
+  letter-spacing: 0.08em;
+}
+.phone-status span:last-child { text-align: right; letter-spacing: 1px; }
+.lime-header {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: linear-gradient(180deg, #21b24e, var(--lime));
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  z-index: 1;
+}
+.lime-logo {
+  flex: none;
+  padding: 2px 7px;
+  font-family: "Times New Roman", serif;
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  color: var(--lime);
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 6px;
+}
+.lime-peer { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.lime-name { font-size: 16px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25); }
+.lime-unread { margin-left: auto; flex: none; font-size: 11px; padding: 2px 8px; border-radius: 999px; background: rgba(0, 0, 0, 0.25); }
+.lime-unread:empty { display: none; }
+.lime-face {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  image-rendering: pixelated;
+  background: #1a1422;
+  border: 2px solid rgba(255, 255, 255, 0.88);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+}
+.lime-face.blank { background: linear-gradient(160deg, #5d6f86, #394559); }
+.lime-face.sm { width: 28px; height: 28px; border-width: 1px; font-size: 12px; }
+.lime-face.gap { visibility: hidden; }
+.lime-chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  scrollbar-width: none;
+}
+.lime-row { display: flex; align-items: flex-end; gap: 6px; animation: lime-pop 0.22s ease-out both; }
+.lime-row.me { justify-content: flex-end; }
+.lime-bubble {
+  max-width: 78%;
+  padding: 8px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.55;
+  word-break: break-word;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+}
+.lime-row.peer .lime-bubble { background: #fff; color: #222; border-bottom-left-radius: 4px; }
+.lime-row.me .lime-bubble { background: #8de055; color: #173311; border-bottom-right-radius: 4px; }
+.lime-row.typing .lime-bubble { display: flex; gap: 4px; padding: 12px 14px; }
+.lime-row.typing i { width: 6px; height: 6px; border-radius: 50%; background: #9aa4b2; animation: lime-dot 0.9s infinite; }
+.lime-row.typing i:nth-child(2) { animation-delay: 0.15s; }
+.lime-row.typing i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes lime-dot { 30% { transform: translateY(-3px); background: #5d6878; } }
+.lime-note {
+  align-self: center;
+  margin: 4px 0;
+  padding: 3px 12px;
+  font-size: 11px;
+  color: #f4f7fb;
+  background: rgba(29, 36, 51, 0.55);
+  border-radius: 999px;
+  animation: lime-pop 0.22s ease-out both;
+}
+@keyframes lime-pop { from { opacity: 0; transform: translateY(8px) scale(0.96); } }
+.lime-actions {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 62px;
+  padding: 10px 12px 14px;
+  background: #f4f6f8;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+.lime-hint { font-size: 11px; line-height: 1.5; color: #56606e; padding: 0 4px; }
+.lime-reply {
+  appearance: none;
+  padding: 9px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  color: #17813a;
+  background: #fff;
+  border: 1.5px solid #1f9a45;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+  animation: lime-pop 0.22s ease-out both;
+}
+.lime-reply:hover { background: #e8f8ec; }
+.lime-reply:active { transform: scale(0.97); }
+.lime-reply.ghost { color: #fff; background: linear-gradient(180deg, #21b24e, var(--lime)); border-color: transparent; }
+.lime-reply.ghost:hover { filter: brightness(1.08); }
 
 /* ---------------------------------------------------------------- ステータス */
 .status-modal { width: 980px; max-width: 980px; }
@@ -333,15 +629,26 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 .radar { width: 360px; height: 360px; overflow: visible; }
 .radar-grid { fill: none; stroke: rgba(255, 255, 255, 0.12); stroke-width: 1; }
 .radar-axis { stroke: rgba(255, 255, 255, 0.12); }
+.radar-star.rs-technique { fill: var(--stat-technique); }
+.radar-star.rs-sense { fill: var(--stat-sense); }
+.radar-star.rs-guts { fill: var(--stat-guts); }
+.radar-star.rs-charm { fill: var(--stat-charm); }
+.radar-star.rs-insight { fill: var(--stat-insight); }
 .radar-base { fill: rgba(140, 150, 220, 0.18); stroke: rgba(160, 170, 240, 0.45); stroke-dasharray: 4 4; }
 .radar-now { fill: rgba(240, 180, 90, 0.45); stroke: var(--gold-hi); stroke-width: 2; transform-origin: center; animation: radar-grow 0.9s var(--ease-out); }
 @keyframes radar-grow { from { transform: scale(0.1); opacity: 0; } }
 .radar-label { fill: var(--text); font-size: 15px; font-weight: 700; font-family: var(--font-sans); }
 .radar-star { fill: var(--gold); font-size: 11px; }
 .st-side { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-.st-row { display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: rgba(255, 255, 255, 0.04); border-radius: 6px; }
+.st-row { --sc: var(--gold); display: flex; align-items: center; gap: 12px; padding: 7px 12px 7px 8px; background: linear-gradient(90deg, color-mix(in srgb, var(--sc) 12%, transparent), rgba(255, 255, 255, 0.03) 60%); border-left: 3px solid var(--sc); border-radius: 4px; }
+.st-row.st-technique { --sc: var(--stat-technique); }
+.st-row.st-sense { --sc: var(--stat-sense); }
+.st-row.st-guts { --sc: var(--stat-guts); }
+.st-row.st-charm { --sc: var(--stat-charm); }
+.st-row.st-insight { --sc: var(--stat-insight); }
+.st-badge { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; font-family: "Times New Roman", var(--font-serif); font-weight: 800; font-size: 15px; color: #1a1018; background: linear-gradient(135deg, var(--sc), color-mix(in srgb, var(--sc) 55%, #201408)); box-shadow: inset 0 -2px 3px rgba(0, 0, 0, 0.3); }
 .st-name { width: 56px; font-weight: 700; }
-.st-stars { font-size: 18px; color: var(--gold); letter-spacing: 0.08em; }
+.st-stars { font-size: 18px; color: var(--sc); letter-spacing: 0.08em; }
 .st-rank { color: var(--text-dim); font-size: 14px; }
 .st-up { margin-left: auto; color: var(--good); font-weight: 800; }
 .st-misc { display: flex; gap: 24px; margin-top: 8px; font-size: 15px; color: var(--text); }

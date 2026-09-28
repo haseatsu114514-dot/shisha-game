@@ -39,7 +39,7 @@ export function radar(stats, baseline, size = 340) {
     const t = svgEl("text", { x, y: y - 8, class: "radar-label", "text-anchor": "middle", "dominant-baseline": "middle" });
     t.textContent = STAT_JA[k];
     svg.append(t);
-    const s = svgEl("text", { x, y: y + 11, class: "radar-star", "text-anchor": "middle", "dominant-baseline": "middle" });
+    const s = svgEl("text", { x, y: y + 11, class: `radar-star rs-${k}`, "text-anchor": "middle", "dominant-baseline": "middle" });
     s.textContent = "★".repeat(star(k));
     svg.append(s);
   });
@@ -60,8 +60,11 @@ export function openStatus() {
   return modal({ title: "STATUS", body: el("div.status", [tabs, body]), className: "status-modal", options: [{ label: "閉じる", value: true, primary: true, test: "status-close" }] });
 }
 
+const STAT_BADGE = { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "観" };
+
 function meTab() {
-  const rows = STAT_KEYS.map((k) => el("div.st-row", [
+  const rows = STAT_KEYS.map((k) => el(`div.st-row.st-${k}`, [
+    el("span.st-badge", { text: STAT_BADGE[k] }),
     el("span.st-name", { text: STAT_JA[k] }),
     el("span.st-stars", { text: starText(k) }),
     el("span.st-rank", { text: `「${rankLabel(k)}」` }),

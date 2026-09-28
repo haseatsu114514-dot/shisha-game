@@ -27,6 +27,12 @@
   --neon-pink: #ff3fa4;
   --neon-amber: #ffc24a;
   --neon-lime: #a6ff5c;
+  /* ステータスの共通色（旧版と同じ。色だけに頼らず名前・漢字と併記して使う） */
+  --stat-technique: #f2c34c;
+  --stat-sense: #6cc6e8;
+  --stat-guts: #ef7a5e;
+  --stat-charm: #f292c6;
+  --stat-insight: #93cf7d;
   --font-serif: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
   --font-sans: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
   --font-dot: "DotGothic16", "Zen Kaku Gothic New", monospace;
@@ -193,21 +199,100 @@ button { font: inherit; color: inherit; }
 .toast.warn { border-color: var(--danger); color: #ffd6d6; }
 .toast.good { border-color: var(--good); }
 
-#banners { display: flex; flex-direction: column; align-items: flex-end; padding: 96px 22px 0 0; gap: 8px; }
-.banner {
-  position: relative;
-  min-width: 300px;
-  padding: 12px 20px 12px 22px;
-  background: linear-gradient(100deg, rgba(232, 194, 122, 0.95), rgba(240, 166, 74, 0.92));
-  color: #1b1208;
-  clip-path: polygon(14px 0, 100% 0, 100% 100%, 0 100%);
-  transform: translateX(120%);
-  transition: transform 0.4s var(--ease-out);
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.4);
+/* 報酬カード（旧版の Persona 風カード）。ステ色は旧版の --stat-* と同じ */
+#banners {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 150px 34px 0 0;
 }
-.banner.show { transform: none; }
-.banner b { display: block; font-size: 18px; letter-spacing: 0.05em; }
-.banner small { display: block; font-size: 13px; margin-top: 2px; }
+.gain-card {
+  --gc: var(--gold);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 270px;
+  padding: 12px 24px 12px 16px;
+  overflow: hidden;
+  color: var(--text);
+  font-family: var(--font-serif);
+  letter-spacing: 0.04em;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--gc) 18%, #140b1e) 0%, #0a0612 100%);
+  border: 1px solid var(--gc);
+  border-left-width: 6px;
+  border-radius: 4px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), 0 0 24px color-mix(in srgb, var(--gc) 28%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  opacity: 0;
+  transform: translateX(120%) rotate(-2deg);
+}
+.gain-card.show { animation: gain-in 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards; }
+.gain-card.out { animation: gain-out 0.42s cubic-bezier(0.4, 0, 0.7, 0.2) forwards; opacity: 1; transform: none; }
+.gain-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, color-mix(in srgb, var(--gc) 22%, transparent) 50%, transparent 70%);
+  transform: translateX(-100%);
+  animation: gain-shine 1.6s ease-out 0.25s;
+  pointer-events: none;
+}
+@keyframes gain-in {
+  0% { transform: translateX(120%) rotate(-2deg); opacity: 0; }
+  60% { transform: translateX(-6%) rotate(-1deg); opacity: 1; }
+  100% { transform: none; opacity: 1; }
+}
+@keyframes gain-out { to { transform: translateX(140%) rotate(2deg); opacity: 0; } }
+@keyframes gain-shine { to { transform: translateX(100%); } }
+/* 作業台では右側が操作パネル＝カードが操作を隠さないよう、左の一台の側から出す */
+body[data-screen="bench"] #banners { align-items: flex-start; padding: 120px 0 0 24px; }
+body[data-screen="bench"] .gain-card { transform: translateX(-120%) rotate(2deg); }
+body[data-screen="bench"] .gain-card.show { animation-name: gain-in-l; }
+body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
+@keyframes gain-in-l {
+  0% { transform: translateX(-120%) rotate(2deg); opacity: 0; }
+  60% { transform: translateX(6%) rotate(1deg); opacity: 1; }
+  100% { transform: none; opacity: 1; }
+}
+@keyframes gain-out-l { to { transform: translateX(-140%) rotate(-2deg); opacity: 0; } }
+.gc-badge {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  font-family: "Times New Roman", var(--font-serif);
+  font-weight: 800;
+  font-size: 22px;
+  line-height: 1;
+  color: #1a1018;
+  background: linear-gradient(135deg, var(--gc), color-mix(in srgb, var(--gc) 55%, #201408));
+  box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.3), 0 0 14px color-mix(in srgb, var(--gc) 60%, transparent);
+}
+.gc-badge.face { object-fit: cover; image-rendering: pixelated; background: #1a1422; border: 2px solid var(--gc); padding: 0; }
+.gc-meta { display: flex; flex-direction: column; gap: 2px; }
+.gc-top { font-family: "Times New Roman", serif; font-size: 11px; letter-spacing: 0.28em; color: var(--gc); }
+.gc-main { font-size: 21px; font-weight: 700; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8); }
+.gc-sub { font-size: 12px; letter-spacing: 0.06em; color: var(--text-dim); }
+.gain-card.st-technique { --gc: var(--stat-technique); }
+.gain-card.st-sense { --gc: var(--stat-sense); }
+.gain-card.st-guts { --gc: var(--stat-guts); }
+.gain-card.st-charm { --gc: var(--stat-charm); }
+.gain-card.st-insight { --gc: var(--stat-insight); }
+.gain-card.affinity { --gc: #f48fb1; }
+.gain-card.affinity .gc-badge:not(.face) { color: #fff; }
+.gc-hearts { display: flex; gap: 3px; margin-top: 3px; }
+.gc-hearts i { position: relative; width: 14px; height: 14px; }
+.gc-hearts i::before, .gc-hearts i::after { content: "♥"; position: absolute; inset: 0; font-size: 13px; line-height: 14px; text-align: center; font-style: normal; }
+.gc-hearts i::before { color: rgba(255, 255, 255, 0.22); }
+.gc-hearts i::after {
+  color: #ff6b8d;
+  text-shadow: 0 0 6px rgba(255, 107, 141, 0.75);
+  clip-path: inset(calc(100% - var(--fill, 0%)) 0 0 0);
+  transition: clip-path 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
 
 /* ---------------------------------------------------------------- モーダル */
 .modal-backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(3px); }

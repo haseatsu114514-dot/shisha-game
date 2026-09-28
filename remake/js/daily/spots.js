@@ -33,36 +33,48 @@ export const VISIT_BG = {
 };
 
 /**
- * マップのスポット。x/y はマップ上の位置（%）。
+ * マップのスポット。x/y はマップ（bg_osu_map）上の位置（%）で、看板ピンのしっぽの先が指す地点。
+ * 配置は旧版の SPOT_LAYOUT（O19/F4 で押しやすさと情報パネルとの被りを調整済み）を踏襲する。
  * kind: tonari（サブメニュー）/ rival（店主に会う）/ shop / spot（施設）/ rest
+ * theme: 看板の色 / glyph: 顔ドット絵が無いときの一文字 / face: 看板に出す顔（面識があれば）
+ * sub: 看板の下の札（店主に会う前は unknownSub）
  * closedOn: day % 7 がこの値の日は定休日
  */
 export const SPOTS = [
-  { id: "tonari", kind: "tonari", label: "tonari", area: "バイト先", x: 84, y: 30, icon: "灯",
+  { id: "tonari", kind: "tonari", label: "tonari", area: "バイト先", x: 86, y: 36, theme: "baito", glyph: "店", face: "sumi", sub: "tonari（お店）",
     desc: "バイト先のシーシャラウンジ。客として一服するか、シフトに入るか。" },
-  { id: "naru", kind: "rival", charId: "naru", label: "KEMURIKUSA", area: "商店街の外れ", x: 67, y: 20, icon: "菓", cost: VISIT_COST, closedOn: 3,
+  { id: "naru", kind: "rival", charId: "naru", label: "KEMURIKUSA", area: "商店街の外れ", x: 70, y: 24, theme: "rival", glyph: "煙", face: "naru", cost: VISIT_COST, closedOn: 3,
+    sub: "なるの店へ行く", unknownSub: "KEMURIKUSAを覗く",
     desc: "焼き菓子みたいな甘い匂いの人気店。若い店主が一人で回しているらしい。", stamina: -16 },
-  { id: "adam", kind: "rival", charId: "adam", label: "EDEN", area: "下町", x: 45, y: 46, icon: "林", cost: VISIT_COST, closedOn: 5,
+  { id: "adam", kind: "rival", charId: "adam", label: "EDEN", area: "下町", x: 46, y: 48, theme: "rival", glyph: "煙", face: "adam", cost: VISIT_COST, closedOn: 5,
+    sub: "アダムの店へ行く", unknownSub: "EDENを覗く",
     desc: "焼き林檎みたいな匂いが漏れてくる店。注文はなぜかいつも一種類。", stamina: -16 },
-  { id: "minto", kind: "rival", charId: "minto", label: "PEPPERMINT", area: "繁華街", x: 26, y: 60, icon: "♡", cost: VISIT_COST, closedOn: 6,
+  { id: "minto", kind: "rival", charId: "minto", label: "PEPPERMINT", area: "繁華街", x: 28, y: 62, theme: "rival", glyph: "煙", face: "minto", cost: VISIT_COST, closedOn: 6,
+    sub: "みんとの店へ行く", unknownSub: "PEPPERMINTを覗く",
     desc: "SNSで人気のポップな店。コンカフェ風の接客らしい。", stamina: -16 },
-  { id: "shop", kind: "shop", label: "Dr.fookah", area: "問屋街", x: 36, y: 26, icon: "卸",
+  { id: "shop", kind: "shop", label: "Dr.fookah", area: "問屋街", x: 36, y: 30, theme: "shop", glyph: "卸", sub: "機材・フレーバー",
     desc: "卸直営のショップ。フレーバーや機材の売り買いは時間を使わない。2階はショールーム。" },
-  { id: "cafe", kind: "spot", label: "カフェ", area: "繁華街", x: 71, y: 54, icon: "珈", cost: 800, requiresMet: "naru", stat: "sense", stamina: 12,
+  { id: "cafe", kind: "spot", label: "カフェ", area: "繁華街", x: 72, y: 54, theme: "cafe", glyph: "珈", sub: "スパイスラテで一息", cost: 800, requiresMet: "naru", stat: "sense", stamina: 12,
     first: "ch1_cafe_visit", pool: ["cafe_herb_tea", "cafe_counter_watch", "cafe_crowd", "cafe_naru_break", "cafe_master_quiz"], bg: "bg_cafe",
     desc: "なるおすすめの喫茶。スパイスラテでひと息つける。" },
-  { id: "kannon", kind: "spot", label: "観音堂", area: "古町", x: 12, y: 80, icon: "寺", requiresMet: "adam", stat: "guts", stamina: 12,
+  { id: "kannon", kind: "spot", label: "観音堂", area: "古町", x: 12, y: 56, theme: "park", glyph: "観", sub: "静かな境内", requiresMet: "adam", stat: "guts", stamina: 12,
     first: "ch1_kannon_visit", pool: ["kannon_cat", "kannon_sweep", "kannon_adam", "kannon_oldman"], bg: "bg_kannon_day",
     desc: "アダムに教えてもらった静かな場所。頭が空っぽになる。" },
-  { id: "choizap", kind: "spot", label: "チョイザップ", area: "ジム", x: 17, y: 30, icon: "筋", requiresMet: "minto", stat: "charm", stamina: -8,
+  { id: "choizap", kind: "spot", label: "チョイザップ", area: "ジム", x: 20, y: 36, theme: "gym", glyph: "筋", sub: "体を動かす", requiresMet: "minto", stat: "charm", stamina: -8,
     first: "ch1_choizap_first", pool: ["choizap_lesson", "choizap_mirror", "choizap_oldman", "choizap_minto"], bg: "bg_choizap",
     desc: "みんとに教えてもらったジム。「見た目も武器だよ」とのこと。" },
-  { id: "c_station", kind: "spot", label: "C.STATION", area: "大会会場", x: 53, y: 70, icon: "C", cost: 2500, stat: "insight", stamina: -10,
+  { id: "c_station", kind: "spot", label: "C.STATION", area: "大会会場", x: 54, y: 66, theme: "stadium", glyph: "C", sub: "大会会場", cost: 2500, stat: "insight", stamina: -10,
     first: "ch1_c_station_visit", pool: ["cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup", "cs_regular_chat", "cs_nagumo_glimpse", "cs_kemuri_solo", "cs_maezono_taste", "cs_pakki_rehearsal", "cs_prep_line"], bg: "bg_c_station",
     desc: "大会会場になる大型チェーン店。噂や大会情報が集まる。" },
-  { id: "rest", kind: "rest", label: "家に帰る", area: "自宅", x: 93, y: 47, icon: "家", stamina: 55,
+  { id: "rest", kind: "rest", label: "家", area: "自宅", x: 89, y: 52, theme: "rest", glyph: "休", sub: "家に帰る", stamina: 55,
     desc: "1行動使って体を休める。体力が大きく戻る。" },
 ];
+/** 行き先の中の様子（マップ右下のプレビュー）。入ったときの背景と同じ絵を指す */
+export const SPOT_PREVIEW = {
+  tonari: "bg_tonari_inside", naru: "kemurikusa", adam: "bg_eden_shop", minto: "peppermint",
+  shop: "bg_fookah_showroom", cafe: "bg_cafe", kannon: "bg_kannon_day", choizap: "bg_choizap",
+  c_station: "bg_c_station", rest: "bg_home",
+};
 export const spotById = (id) => SPOTS.find((s) => s.id === id);
 
 // ---------------------------------------------------------------- 状態の読み取り

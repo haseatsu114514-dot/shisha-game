@@ -101,10 +101,11 @@ export function affinityLevel(id) {
 export function gainAffinity(id, pts) {
   if (!id || !(pts > 0)) return;
   const before = affinityLevel(id);
+  const prevPts = state.affinity[id] || 0;
   const mult = 1 + 0.2 * tier01("charm");
-  state.affinity[id] = (state.affinity[id] || 0) + Math.round(pts * mult);
+  state.affinity[id] = prevPts + Math.round(pts * mult);
   const after = affinityLevel(id);
-  emit("affinity-gain", { id, level: after, levelUp: after > before });
+  emit("affinity-gain", { id, level: after, levelUp: after > before, prevPts, pts: state.affinity[id] });
 }
 
 // ---------------------------------------------------------------- 体力
