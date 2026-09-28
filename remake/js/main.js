@@ -10,14 +10,16 @@ import { showTitle } from "./scenes/title.js";
 
 function fitStage() {
   const stage = $("#stage");
-  const k = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
-  stage.style.transform = `scale(${k})`;
+  const w = window.visualViewport?.width || window.innerWidth;
+  const h = window.visualViewport?.height || window.innerHeight;
+  stage.style.setProperty("--k", String(Math.min(w / 1280, h / 720)));
 }
 
 async function boot() {
   fitStage();
   window.addEventListener("resize", fitStage);
   window.addEventListener("orientationchange", () => setTimeout(fitStage, 200));
+  window.visualViewport?.addEventListener("resize", fitStage);
   initLayers();
   loadConfig();
   // 自動再生制限: 最初の操作で音を解禁（以後も操作のたびに保険で呼ぶ・軽い）
