@@ -60,7 +60,8 @@ export async function openPhone(messages, { title = "LIME", time = "AM 8:12" } =
   requestAnimationFrame(() => overlay.classList.add("show"));
 
   const bubble = async (text, mine = false, sender = null) => {
-    const face = !mine && sender ? faceIconUrl(sender) : null;
+    // 名乗る前の相手はアイコンでも正体を明かさない
+    const face = !mine && sender && (state.met[sender] || sender === "sumi") ? faceIconUrl(sender) : null;
     const b = el(`div.bubble${mine ? ".mine" : ""}`, [
       face ? el("img.bubble-face", { src: face, alt: "" }) : null,
       el("span", { text }),

@@ -51,7 +51,7 @@ export const SPOTS = [
   { id: "cafe", kind: "spot", label: "カフェ", area: "繁華街", x: 71, y: 54, icon: "珈", cost: 800, requiresMet: "naru", stat: "sense", stamina: 12,
     first: "ch1_cafe_visit", pool: ["cafe_herb_tea", "cafe_counter_watch", "cafe_crowd", "cafe_naru_break", "cafe_master_quiz"], bg: "bg_cafe",
     desc: "なるおすすめの喫茶。スパイスラテでひと息つける。" },
-  { id: "kannon", kind: "spot", label: "観音堂", area: "古町", x: 11, y: 50, icon: "寺", requiresMet: "adam", stat: "guts", stamina: 12,
+  { id: "kannon", kind: "spot", label: "観音堂", area: "古町", x: 12, y: 80, icon: "寺", requiresMet: "adam", stat: "guts", stamina: 12,
     first: "ch1_kannon_visit", pool: ["kannon_cat", "kannon_sweep", "kannon_adam", "kannon_oldman"], bg: "bg_kannon_day",
     desc: "アダムに教えてもらった静かな場所。頭が空っぽになる。" },
   { id: "choizap", kind: "spot", label: "チョイザップ", area: "ジム", x: 17, y: 30, icon: "筋", requiresMet: "minto", stat: "charm", stamina: -8,
@@ -60,7 +60,7 @@ export const SPOTS = [
   { id: "c_station", kind: "spot", label: "C.STATION", area: "大会会場", x: 53, y: 70, icon: "C", cost: 2500, stat: "insight", stamina: -10,
     first: "ch1_c_station_visit", pool: ["cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup", "cs_regular_chat", "cs_nagumo_glimpse", "cs_kemuri_solo", "cs_maezono_taste", "cs_pakki_rehearsal", "cs_prep_line"], bg: "bg_c_station",
     desc: "大会会場になる大型チェーン店。噂や大会情報が集まる。" },
-  { id: "rest", kind: "rest", label: "家に帰る", area: "自宅", x: 90, y: 60, icon: "家", stamina: 55,
+  { id: "rest", kind: "rest", label: "家に帰る", area: "自宅", x: 93, y: 47, icon: "家", stamina: 55,
     desc: "1行動使って体を休める。体力が大きく戻る。" },
 ];
 export const spotById = (id) => SPOTS.find((s) => s.id === id);

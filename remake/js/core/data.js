@@ -118,21 +118,36 @@ const BG_ALIASES = {
   "bg_fookah_showroom.png": "bg_fookah_showroom.png",
 };
 
-/** "res://assets/backgrounds/x.png" / "x.png" / "bg_x" → 実URL。時間帯差分（_day/_night）があれば選ぶ */
-export function bgUrl(ref, timeOfDay = "day") {
-  if (!ref) return null;
+// 昼夜の差分がある場所（無印・_day は時間帯で切り替える。明示の _night は演出なのでそのまま）
+const BG_TIME_BASE = new Set(["bg_tonari_inside", "bg_tonari_outside", "bg_home", "bg_c_station", "bg_cafe", "bg_street", "bg_map_local"]);
+// 窓の無い店内は外光が入らない＝夜も昼の絵のまま（オーナー指定・旧版と同じ）
+const BG_NO_NIGHT_TINT = new Set([
+  "bg_eden_shop.png", "bg_ageha_shop.png", "bg_ryuji_shop.png", "bg_shop.png", "bg_fookah_showroom.png",
+  "bg_hideaway.png", "kemurikusa.png", "peppermint.png", "bg_tournament_stage.png", "bg_c_station_lobby.png",
+]);
+
+/**
+ * 背景の参照（"res://assets/backgrounds/x.png" / "x.png" / "bg_x"）→ { url, tint }。
+ * 昼夜差分があれば時間帯で選び、差分の無い外光のある場所だけ夜に色調補正（tint="night"）を掛ける
+ */
+export function sceneBg(ref, timeOfDay = "day") {
+  if (!ref) return { url: null, tint: null };
   let name = String(ref).split("/").pop();
   if (!name.endsWith(".png")) name += ".png";
   name = BG_ALIASES[name] || name;
   const list = DB.manifest.backgrounds || [];
-  const base = name.replace(/\.png$/, "");
-  if (!/_(day|night)$/.test(base)) {
+  const m = /^(.+?)(_day|_night)?\.png$/.exec(name);
+  const base = m[1];
+  if (BG_TIME_BASE.has(base) && !(m[2] === "_night" && timeOfDay === "day")) {
     const variant = `${base}_${timeOfDay}.png`;
     if (list.includes(variant)) name = variant;
   }
-  if (!list.includes(name)) return null;
-  return `${ROOT}assets/backgrounds/${name}`;
+  if (!list.includes(name)) return { url: null, tint: null };
+  const tint = timeOfDay === "night" && !name.endsWith("_night.png") && !BG_NO_NIGHT_TINT.has(name) ? "night" : null;
+  return { url: `${ROOT}assets/backgrounds/${name}`, tint };
 }
+
+export const bgUrl = (ref, timeOfDay = "day") => sceneBg(ref, timeOfDay).url;
 
 export function portraitInfo(speaker, face) {
   const folder = SPEAKER_ALIAS[speaker] || speaker;

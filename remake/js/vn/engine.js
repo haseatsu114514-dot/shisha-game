@@ -2,7 +2,7 @@
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
 import { el } from "../core/util.js";
-import { DB, displayName, portraitInfo, bgUrl, cgUrl, preload } from "../core/data.js";
+import { DB, displayName, portraitInfo, sceneBg, cgUrl, preload } from "../core/data.js";
 import { state, markMet, STAT_EN, timeOfDay, config } from "../core/state.js";
 import { applyStats, gainAffinity, addMoney, affinityLevel } from "../core/stats.js";
 import { setBg, layers, toast, flash, shake, modal } from "../core/ui.js";
@@ -125,13 +125,19 @@ export function play(idOrDlg, opts = {}) {
     dom.name.classList.remove("show");
     const meta = dlg.metadata || {};
     const bg = opts.bg || meta.bg;
-    if (bg) setBg(bgUrl(bg, timeOfDay()));
+    if (bg) sceneSetBg(bg);
     dom.effect.dataset.effect = meta.effect || "";
     layers.vn.classList.add("active");
     document.body.classList.add("in-vn");
     prefetch(dlg);
     next();
   });
+}
+
+/** 会話の背景（昼夜の差分・夜の色調補正つき） */
+function sceneSetBg(ref) {
+  const { url, tint } = sceneBg(ref, timeOfDay());
+  if (url) setBg(url, { tint });
 }
 
 function prefetch(dlg) {
@@ -205,7 +211,7 @@ function next() {
     if (type === "hide_cg") { dom.cg.classList.remove("show"); continue; }
     if (type === "apply") { applyLine(line); continue; }
     if (type === "note") { onNote(line); continue; }
-    if (type === "bg") { if (line.bg) setBg(bgUrl(line.bg, timeOfDay())); continue; }
+    if (type === "bg") { if (line.bg) sceneSetBg(line.bg); continue; }
     if (type === "sfx") { playSe(line.id); continue; }
     if (type === "fx") { runFx(line); continue; }
     if (type === "customer_note") { state.notes[line.note_id] = (state.notes[line.note_id] || 0) + 1; continue; }
@@ -218,7 +224,7 @@ function jumpTo(id) {
   if (!target) return;
   running.queue = (target.lines || []).slice();
   running.branches = target.branches || {};
-  if (target.metadata?.bg) setBg(bgUrl(target.metadata.bg, timeOfDay()));
+  if (target.metadata?.bg) sceneSetBg(target.metadata.bg);
 }
 
 function handleCondition(line) {

@@ -39,8 +39,32 @@
 .art-missing { background: rgba(255, 255, 255, 0.06); border-radius: 8px; }
 .rig { position: relative; width: 320px; height: 600px; }
 .rig > * { position: absolute; left: 50%; transform: translateX(-50%); }
-.rig-base { bottom: 0; }
-.rig-water { bottom: 30px; width: 170px; height: 90px; border-radius: 0 0 80px 80px; overflow: hidden; pointer-events: none; }
+/* 重なり順: ステム（首に差し込む）→ 水 → ガラス台（ステムの差し込み部分はガラス越しに見える）→ トレイ → ボウル → 葉/アルミ → 炭 → 煙 */
+.rig-stem { z-index: 1; }
+.rig-water { z-index: 2; border-radius: 0 0 50% 50% / 0 0 38% 38%; overflow: hidden; pointer-events: none; }
+.rig-base { z-index: 3; }
+.rig-tray { z-index: 4; }
+.rig-bowl { z-index: 5; }
+/* 配合した葉（詰める前）: 湿った刻み葉の粒感をグラデーションで。色は配合の平均色 */
+.rig-leaf {
+  z-index: 6;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.25) 0 1.5px, transparent 2px) 0 0 / 7px 5px,
+    radial-gradient(circle at 70% 60%, rgba(0, 0, 0, 0.35) 0 1.5px, transparent 2px) 0 0 / 6px 4px,
+    radial-gradient(ellipse at 50% 35%, color-mix(in srgb, var(--leaf, #a44) 85%, #fff), color-mix(in srgb, var(--leaf, #a44) 70%, #200) 75%);
+  box-shadow: inset 0 -3px 6px rgba(0, 0, 0, 0.5), 0 0 0 2px rgba(0, 0, 0, 0.25);
+}
+.rig-leaf.show { opacity: 0.95; }
+.rig-foil { z-index: 7; opacity: 0; transition: opacity 0.3s; }
+.rig-foil.show { opacity: 1; }
+.rig-foil-img { position: absolute; left: 0; top: 0; }
+.rig-foil-dots { position: absolute; left: 50%; top: 4%; transform: translateX(-50%); }
+.rig-foil-dots i { position: absolute; width: 3px; height: 2px; margin: -1px 0 0 -1.5px; border-radius: 50%; background: #1a1a1a; }
+.rig-coals { z-index: 8; width: 0; height: 0; }
+.rig-coal { position: absolute; transform: translateX(-50%); filter: drop-shadow(0 0 8px rgba(255, 120, 40, 0.9)); animation: ember 1.6s ease-in-out infinite alternate; }
 .rig-water i { position: absolute; bottom: -10px; width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, 0.55); opacity: 0; }
 .rig-water.bubbling i { animation: bubble-up 1.2s ease-in infinite; }
 .rig-water i:nth-child(1) { left: 40%; animation-delay: 0s; }
@@ -48,18 +72,8 @@
 .rig-water i:nth-child(3) { left: 48%; animation-delay: 0.6s; }
 .rig-water i:nth-child(4) { left: 60%; animation-delay: 0.9s; }
 @keyframes bubble-up { 0% { opacity: 0; transform: translateY(0) scale(0.6); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(-80px) scale(1.2); } }
-.rig-stem { bottom: 180px; }
-.rig-bowl { bottom: 352px; width: 150px; }
-.rig-bowl-img { position: relative; }
-.rig-leaf { position: absolute; left: 22%; right: 22%; top: 6%; height: 12%; border-radius: 50%; opacity: 0; transition: opacity 0.3s, background 0.4s; filter: saturate(0.8); }
-.rig-leaf.show { opacity: 0.9; }
-.rig-foil { position: absolute; left: 12%; right: 12%; top: -2%; height: 24%; border-radius: 50%; background: linear-gradient(180deg, #f2f2f6, #b8b8c4 70%, #8a8a98); box-shadow: inset 0 -3px 6px rgba(0, 0, 0, 0.3); opacity: 0; transition: opacity 0.3s; }
-.rig-foil.show { opacity: 1; }
-.rig-foil i { position: absolute; width: 3px; height: 2px; margin: -1px 0 0 -1.5px; border-radius: 50%; background: #111; }
-.rig-coals { position: absolute; left: 0; right: 0; top: -24px; height: 36px; }
-.rig-coal { position: absolute; bottom: 0; left: calc(24% + var(--i) * 17%); filter: drop-shadow(0 0 8px rgba(255, 120, 40, 0.9)); animation: ember 1.6s ease-in-out infinite alternate; }
 @keyframes ember { from { filter: drop-shadow(0 0 6px rgba(255, 110, 30, 0.7)) brightness(0.95); } to { filter: drop-shadow(0 0 14px rgba(255, 150, 60, 1)) brightness(1.15); } }
-.rig-smoke { position: absolute; left: 0 !important; right: 0; top: 0; height: 280px; transform: none !important; pointer-events: none; }
+.rig-smoke { position: absolute; z-index: 9; left: 0 !important; right: 0; height: 300px; transform: none !important; pointer-events: none; }
 .rig-smoke i {
   position: absolute;
   bottom: 0;
@@ -168,14 +182,14 @@
 .stove-img { margin: 0 auto; filter: brightness(0.85); }
 .coal {
   position: absolute;
-  top: 26%;
-  left: calc(10% + var(--i) * 28%);
   width: 118px;
   height: 118px;
+  margin: -70px 0 0 -59px;
   padding: 0;
   border: none;
   background: none;
   cursor: pointer;
+  transform: scale(var(--k, 1));
   transition: transform 0.3s var(--ease-out), opacity 0.4s;
 }
 .coal > .art { position: absolute; left: 0; bottom: 0; }
@@ -185,14 +199,14 @@
 .coal[data-phase="pre"] { filter: drop-shadow(0 0 14px rgba(255, 100, 30, 0.85)); }
 .coal[data-phase="hot"] { filter: drop-shadow(0 0 20px rgba(255, 230, 190, 0.9)); }
 .coal.soon { animation: soon 0.5s ease-in-out infinite; }
-@keyframes soon { 50% { transform: translateY(-2px); filter: drop-shadow(0 0 22px rgba(255, 140, 40, 1)); } }
+@keyframes soon { 50% { transform: translateY(-2px) scale(var(--k, 1)); filter: drop-shadow(0 0 22px rgba(255, 140, 40, 1)); } }
 .c-core { position: absolute; left: 50%; top: 55%; width: 10px; height: 10px; margin: -5px; border-radius: 50%; opacity: 0; background: #fff; box-shadow: 0 0 20px 10px #fff, 0 0 60px 30px rgba(255, 200, 120, 0.9); }
 .c-burst { position: absolute; inset: -30px; opacity: 0; background: conic-gradient(from 0deg, transparent 0 10deg, rgba(255, 240, 200, 0.9) 12deg, transparent 14deg 40deg, rgba(255, 240, 200, 0.9) 42deg, transparent 44deg 80deg, rgba(255, 240, 200, 0.9) 82deg, transparent 84deg 130deg, rgba(255, 240, 200, 0.9) 132deg, transparent 134deg 190deg, rgba(255, 240, 200, 0.9) 192deg, transparent 194deg 250deg, rgba(255, 240, 200, 0.9) 252deg, transparent 254deg 310deg, rgba(255, 240, 200, 0.9) 312deg, transparent 314deg); -webkit-mask-image: radial-gradient(circle, #000 20%, transparent 70%); mask-image: radial-gradient(circle, #000 20%, transparent 70%); }
 .coal.pikan .c-core { animation: pikan 0.5s ease-out infinite; }
 .coal.pikan .c-burst { animation: burst 0.5s ease-out infinite; }
 @keyframes pikan { 0% { opacity: 1; transform: scale(0.6); } 100% { opacity: 0.2; transform: scale(1.6); } }
 @keyframes burst { 0% { opacity: 1; transform: rotate(0) scale(0.7); } 100% { opacity: 0; transform: rotate(40deg) scale(1.3); } }
-.coal.picked { transform: translateY(-60px) scale(0.8); opacity: 0.25; pointer-events: none; }
+.coal.picked { transform: translateY(-60px) scale(calc(var(--k, 1) * 0.8)); opacity: 0.25; pointer-events: none; }
 .heat-info { width: 100%; font-size: 14px; color: var(--text-dim); }
 .hi-row { display: flex; gap: 12px; }
 .hi-row b { color: var(--accent); flex: none; }

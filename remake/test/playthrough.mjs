@@ -56,6 +56,7 @@ let tournamentAttempt = 0;
 let lastProgress = Date.now();
 let lastKey = "";
 let lastDay = null;
+let resumed = false;
 const seenShots = new Set();
 const deadline = Date.now() + 12 * 60 * 1000;
 
@@ -129,6 +130,21 @@ for (;;) {
     // 1回目の本番は下手に作って、敗北ルートを通す
     await page.evaluate(() => { window.__remake.craftTest.auto = "bad"; });
     log(`大会当日（DAY ${snap.day}）── 1回目は下手に挑む`);
+  }
+
+  // セーブ→つづきから の確認: DAY2 の最初のマップで一度リロードし、同じ日・同じ時間帯から再開できること
+  if (snap.screen === "map" && snap.day === 2 && snap.slot === 0 && !resumed) {
+    resumed = true;
+    const before = { day: snap.day, slot: snap.slot, money: snap.money };
+    await page.reload({ waitUntil: "load" });
+    await page.waitForSelector('[data-test="title-continue"]:not([disabled])', { timeout: 20000 });
+    await page.evaluate(() => { window.__remake.vnTest.turbo = true; window.__remake.craftTest.auto = "good"; });
+    await page.click('[data-test="title-continue"]');
+    await page.waitForFunction(() => document.querySelector(".map:not(.done)"), null, { timeout: 20000 });
+    const after = await page.evaluate(() => { const s = window.__remake.state; return { day: s.day, slot: s.slot, money: s.money }; });
+    if (JSON.stringify(before) !== JSON.stringify(after)) throw new Error(`resume mismatch ${JSON.stringify(before)} -> ${JSON.stringify(after)}`);
+    log("つづきから OK", JSON.stringify(after));
+    continue;
   }
 
   if (snap.screen === "map") {

@@ -37,8 +37,14 @@ export async function runHeat(cs) {
   const clarity = skill.clarity();
 
   const stove = el("div.stove", [artImg("stove_coil.png", 520, "stove-img")]);
+  // コイルの上に三角に並べる（中心座標はコンロ素材の中身に対する比。奥の炭ほど少し小さい）
+  const SPOTS = [[0.35, 0.45, 1], [0.62, 0.34, 0.9], [0.6, 0.62, 1.06]];
   const coals = [0, 1, 2].map((i) => {
-    const node = el("button.coal", { dataset: { test: `coal-${i}` }, style: { "--i": String(i) } }, [
+    const [cx, cy, k] = SPOTS[i];
+    const node = el("button.coal", {
+      dataset: { test: `coal-${i}` },
+      style: { left: `${cx * 100}%`, top: `${cy * 100}%`, "--k": String(k), zIndex: String(Math.round(cy * 10)) },
+    }, [
       artImg(img("cold"), 118, "c-cold"),
       artImg(img("red"), 118, "c-red"),
       artImg(img("just"), 118, "c-hot"),

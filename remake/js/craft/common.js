@@ -17,7 +17,16 @@ export const skill = {
 /** 工程の結果カード。自動操作中は少し待って勝手に閉じる */
 export function resultCard(panel, { title, grade, lines = [], button = "次へ" }) {
   return new Promise((resolve) => {
-    const btn = el("button.btn.primary.rc-next", { dataset: { test: "step-next" }, onclick: () => { SE.select(); resolve(); } }, [el("span.btn-label", { text: button })]);
+    const btn = el("button.btn.primary.rc-next", {
+      dataset: { test: "step-next" },
+      onclick: () => {
+        SE.select();
+        card.classList.remove("show");
+        card.classList.add("done");
+        setTimeout(() => card.remove(), 300);
+        resolve();
+      },
+    }, [el("span.btn-label", { text: button })]);
     const card = el("div.result-card", [
       el("div.rc-title", { text: title }),
       grade ? el(`div.rc-grade.g-${grade}`, { text: grade }) : null,

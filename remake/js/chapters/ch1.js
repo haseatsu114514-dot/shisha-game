@@ -333,3 +333,9 @@ async function showDefeat(rank) {
   ]);
   showScreen("end", root);
 }
+
+/** 開発用: 大会当日から始める（__remake.dev.tournament()） */
+export function devTournament() {
+  setupHooks();
+  return tournamentDay();
+}

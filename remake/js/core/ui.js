@@ -16,11 +16,12 @@ export function initLayers() {
 
 // ---------------------------------------------------------------- 背景（クロスフェード）
 
-let bgUrlNow = null;
+let bgNow = "";
 export function setBg(url, { instant = false, tint = null } = {}) {
   const host = layers.bg;
-  if (url === bgUrlNow && !tint) return;
-  bgUrlNow = url;
+  const key = `${url}|${tint || ""}`;
+  if (key === bgNow) return;
+  bgNow = key;
   const next = el("div.bg-img", { style: { backgroundImage: url ? `url("${url}")` : "none" } });
   if (tint) next.dataset.tint = tint;
   host.append(next);

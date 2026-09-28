@@ -90,7 +90,8 @@ button { font: inherit; color: inherit; }
   image-rendering: auto;
 }
 .bg-img.show { opacity: 1; }
-.bg-img[data-tint="night"] { filter: brightness(0.62) saturate(0.85) hue-rotate(-8deg); }
+/* 夜の色調補正（昼の絵しかない屋外・窓のある場所）: 暗く・青く・街の灯りは残す */
+.bg-img[data-tint="night"] { filter: brightness(0.7) saturate(0.7) contrast(1.05); box-shadow: inset 0 0 0 2000px rgba(12, 14, 48, 0.5); }
 .bg-img[data-tint="dim"] { filter: brightness(0.45) blur(2px); }
 
 /* ---------------------------------------------------------------- ボタン */

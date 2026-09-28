@@ -42,6 +42,23 @@ window.__remake = {
   DB,
   vnTest,
   craftTest,
+  // 開発用ジャンプ（コンソールから: __remake.dev.tournament() など）。※今のセーブを上書きする
+  dev: {
+    async tournament() {
+      const { newGame } = await import("./core/state.js");
+      const ch1 = await import("./chapters/ch1.js");
+      newGame();
+      window.__remake.state.phase = "daily";
+      window.__remake.state.day = 15;
+      return ch1.devTournament();
+    },
+    async drill(kind = "heat") {
+      const { newGame } = await import("./core/state.js");
+      const { runDrill } = await import("./craft/session.js");
+      newGame();
+      return runDrill(kind);
+    },
+  },
 };
 
 boot();
