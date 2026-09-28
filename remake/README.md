@@ -54,8 +54,10 @@ remake/
   test/playthrough.mjs   第1章の通しテスト（優勝ルート／敗北ルート）
 ```
 
-立ち絵を追加・差し替えたら `python3 remake/tools/build_manifest.py` を1回実行する
-（Pillow・numpy・scipy が必要）。それ以外の変更にビルドは要らない。
+立ち絵・背景・作業台の素材（`assets/ui/making/`）を追加・差し替えたら `python3 remake/tools/build_manifest.py` を1回実行する
+（Pillow・numpy・scipy が必要）。立ち絵の余白と足元位置、作業台素材の中身の範囲（bbox）を測って
+`remake/data/manifest.json` に書き出す。作業台の一台（ガラス台→ステム→トレイ→ボウル→アルミ→炭）は
+この実測値から位置を計算して組むので、素材を差し替えても配置がずれない。それ以外の変更にビルドは要らない。
 
 ## 第1章の流れ（実装済み）
 
@@ -82,7 +84,8 @@ python3 -m http.server 8123 &
 node remake/test/playthrough.mjs            # 優勝ルート＋敗北ルート
 ```
 
-テスト用フック: `window.__remake`（state参照・ミニゲーム自動解決）。UIの見た目を変えても壊れないよう、
+テスト用フック: `window.__remake`（state参照・ミニゲーム自動解決）。
+開発用ジャンプ: ブラウザのコンソールで `__remake.dev.tournament()`（大会当日から）／`__remake.dev.drill("heat")`（ドリル単体）。※今のセーブを上書きする。UIの見た目を変えても壊れないよう、
 テストはこのフックと `data-test` 属性だけに依存する。
 
 ## まだ無いもの（次の作業候補）

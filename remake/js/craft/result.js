@@ -67,14 +67,18 @@ export async function showStandings(round, mine) {
     ]))),
     el("div.sd-feed", feed.map((t) => el("div", { text: `▶ ${t}` }))),
   ]);
-  layers.fx.append(board);
+  const dim = el("div.fx-dim");
+  layers.fx.append(dim, board);
   SE.crowd(1.6);
   await sleep(40);
+  dim.classList.add("show");
   board.classList.add("show");
   await sleep(autoSkill() ? 300 : 3600);
   board.classList.add("out");
+  dim.classList.remove("show");
   await sleep(400);
   board.remove();
+  dim.remove();
 }
 
 // ---------------------------------------------------------------- RESULT 10 COUNT

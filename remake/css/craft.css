@@ -309,6 +309,8 @@
 .rc-next { width: 100%; align-items: center; }
 
 /* ---------------------------------------------------------------- 中間発表 */
+.fx-dim { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.72); opacity: 0; transition: opacity 0.35s; pointer-events: none; }
+.fx-dim.show { opacity: 1; }
 .standings { position: absolute; left: 50%; top: 50%; width: 640px; padding: 24px 30px; transform: translate(-50%, -50%) scale(0.9); opacity: 0; background: rgba(0, 0, 0, 0.92); border: 2px solid var(--neon-cyan); box-shadow: 0 0 40px rgba(56, 240, 255, 0.3); transition: transform 0.4s var(--ease-out), opacity 0.3s; pointer-events: none; }
 .standings.show { opacity: 1; transform: translate(-50%, -50%); }
 .standings.out { opacity: 0; }
