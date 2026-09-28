@@ -1,11 +1,11 @@
 // 会話エンジン。data/dialogue/*.json のスキーマをそのまま解釈する。
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
-import { el } from "../core/util.js";
+import { el, sleep } from "../core/util.js";
 import { DB, displayName, portraitInfo, sceneBg, cgUrl, preload } from "../core/data.js";
 import { state, markMet, STAT_EN, timeOfDay, config } from "../core/state.js";
 import { applyStats, gainAffinity, addMoney, affinityLevel } from "../core/stats.js";
-import { setBg, layers, toast, flash, shake, modal } from "../core/ui.js";
+import { setBg, layers, toast, flash, shake, modal, dropRetired, imageReady } from "../core/ui.js";
 import { SE, playSe } from "../core/audio.js";
 import { paginate, formatHtml, sliceHtml, visibleLength, stripTags } from "./text.js";
 import { glossaryPanel } from "./glossary.js";
@@ -119,6 +119,7 @@ export function play(idOrDlg, opts = {}) {
       speaker: "",
       openLockUntil: performance.now() + 320,
       visited: [dlg.dialogue_id || ""],
+      ready: false, // 背景・立ち絵の読み込み待ちの間は送らない
     };
     autoFxGap = 0;
     dom.portraits.replaceChildren();
@@ -128,20 +129,40 @@ export function play(idOrDlg, opts = {}) {
     dom.name.classList.remove("show");
     const meta = dlg.metadata || {};
     const bg = opts.bg || meta.bg;
-    if (bg) sceneSetBg(bg);
+    const bgReady = bg ? sceneSetBg(bg) : Promise.resolve();
     dom.effect.dataset.effect = meta.effect || "";
     if (hooks.onEnter) hooks.onEnter(dlg.dialogue_id || "", dlg);
-    layers.vn.classList.add("active");
-    document.body.classList.add("in-vn");
+    dropRetired(); // 選び終えた前の画面（マップ等）を会話の後ろに残さない
+    const me = running;
     prefetch(dlg);
-    next();
+    // 背景と最初に出る立ち絵が読み込めてから始める（遅い回線で「絵が後から出る」のを防ぐ。最大1.5秒）
+    Promise.race([Promise.all([bgReady, ...firstPortraits(dlg).map((u) => imageReady(u))]), sleep(1500)]).then(() => {
+      if (running !== me) return;
+      me.ready = true;
+      layers.vn.classList.add("active");
+      document.body.classList.add("in-vn");
+      next();
+    });
   });
+}
+
+/** 最初の数行で出る立ち絵の URL */
+function firstPortraits(dlg) {
+  const out = [];
+  for (const l of dlg.lines || []) {
+    if (out.length >= 2) break;
+    if (l.speaker && !NO_PORTRAIT.has(l.speaker)) {
+      const p = portraitInfo(l.speaker, l.face);
+      if (p && !out.includes(p.src)) out.push(p.src);
+    }
+  }
+  return out;
 }
 
 /** 会話の背景（昼夜の差分・夜の色調補正つき） */
 function sceneSetBg(ref) {
   const { url, tint } = sceneBg(ref, timeOfDay());
-  if (url) setBg(url, { tint });
+  return url ? setBg(url, { tint }) : Promise.resolve();
 }
 
 function prefetch(dlg) {
@@ -180,7 +201,7 @@ function finish() {
 }
 
 function advance() {
-  if (!running || running.waitingChoice) return;
+  if (!running || !running.ready || running.waitingChoice) return;
   if (running.typing) return completeTyping();
   if (running.pages && running.pageIdx < running.pages.length - 1) {
     running.pageIdx++;

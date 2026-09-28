@@ -1,7 +1,7 @@
 // 起動: ステージの拡縮 → データ読込 → タイトル。
-import { $ } from "./core/util.js";
-import { loadAll, DB } from "./core/data.js";
-import { initLayers } from "./core/ui.js";
+import { $, sleep } from "./core/util.js";
+import { loadAll, DB, assetUrl, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
+import { initLayers, imageReady } from "./core/ui.js";
 import { loadConfig, state } from "./core/state.js";
 import { unlockAudio } from "./core/audio.js";
 import { vnTest } from "./vn/engine.js";
@@ -38,9 +38,26 @@ async function boot() {
     $("#boot .boot-msg").textContent = `読み込みに失敗しました（${e.message}）。ローカルサーバー越しに開いているか確認してください。`;
     throw e;
   }
+  // タイトルの絵とロゴが読めてから幕を開ける（最大3秒）
+  await Promise.race([Promise.all(TITLE_IMAGES.map((r) => imageReady(assetUrl(r), 3000))), sleep(3000)]);
   $("#boot").classList.add("done");
   setTimeout(() => $("#boot").remove(), 700);
   showTitle();
+  warmUp();
+}
+
+const TITLE_IMAGES = ["assets/ui/title_arts/title_art_keyvisual_01.png", "assets/ui/ui_title_logo.png"];
+
+/** タイトルを見ている間に、日常でよく出る絵を1枚ずつ裏で読んでおく（初めて出る場面で絵が遅れないように） */
+async function warmUp() {
+  const bgs = ["bg_osu_map_day", "bg_osu_map_night", "bg_tonari_inside_day", "bg_tonari_inside_night", "bg_home_day", "bg_home_night", "bg_shop", "bg_tournament_stage"];
+  const faces = [["sumi", "normal"], ["tsumugi", "normal"], ["naru", "normal"], ["adam", "normal"], ["minto", "normal"], ["rin", "normal"], ["pakki", "normal"]];
+  const urls = [
+    ...bgs.map((b) => bgUrl(b)),
+    ...faces.map(([c, f]) => portraitInfo(c, f)?.src),
+    ...["bench_base.png", "stove_coil.png", "hookah_base.png"].map((m) => makingUrl(m)),
+  ].filter(Boolean);
+  for (const u of urls) await imageReady(u, 8000);
 }
 
 // テスト・デバッグ用フック（見た目を変えてもテストが壊れないよう、ここだけに依存させる）

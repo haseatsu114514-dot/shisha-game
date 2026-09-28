@@ -37,22 +37,47 @@ export function initLayers() {
 // ---------------------------------------------------------------- 背景（クロスフェード）
 
 let bgNow = "";
+const bgReady = new Map(); // url -> Promise（一度読んだ絵は即座に出す）
+
+/** 画像を読み込み＋デコードし終えるまで待つ（最大 ms）。失敗しても先へ進む */
+export function imageReady(url, ms = 1500) {
+  if (!url) return Promise.resolve();
+  let p = bgReady.get(url);
+  if (!p) {
+    p = new Promise((resolve) => {
+      const i = new Image();
+      i.onload = () => (i.decode ? i.decode().catch(() => {}) : Promise.resolve()).then(resolve);
+      i.onerror = resolve;
+      i.src = url;
+    });
+    bgReady.set(url, p);
+  }
+  return Promise.race([p, sleep(ms)]);
+}
+
+/**
+ * 背景を差し替える。新しい絵が読み込めてからクロスフェードする（読み込み中に黒や前の絵のまま
+ * 新しい場面が始まって見えるのを防ぐ）。戻り値の Promise で「絵が出た」を待てる
+ */
 export function setBg(url, { instant = false, tint = null } = {}) {
   const host = layers.bg;
   const key = `${url}|${tint || ""}`;
-  if (key === bgNow) return;
+  if (key === bgNow) return Promise.resolve();
   bgNow = key;
-  const next = el("div.bg-img", { style: { backgroundImage: url ? `url("${url}")` : "none" } });
-  if (tint) next.dataset.tint = tint;
-  host.append(next);
-  const olds = [...host.children].slice(0, -1);
-  if (instant) {
-    next.classList.add("show");
-    olds.forEach((o) => o.remove());
-    return;
-  }
-  requestAnimationFrame(() => next.classList.add("show"));
-  setTimeout(() => olds.forEach((o) => o.remove()), 700);
+  return imageReady(url).then(() => {
+    if (bgNow !== key) return; // 待っている間に別の背景が指定された
+    const next = el("div.bg-img", { style: { backgroundImage: url ? `url("${url}")` : "none" } });
+    if (tint) next.dataset.tint = tint;
+    host.append(next);
+    const olds = [...host.children].slice(0, -1);
+    if (instant) {
+      next.classList.add("show");
+      olds.forEach((o) => o.remove());
+      return;
+    }
+    requestAnimationFrame(() => next.classList.add("show"));
+    setTimeout(() => olds.forEach((o) => o.remove()), 700);
+  });
 }
 
 // ---------------------------------------------------------------- 画面
@@ -69,6 +94,11 @@ export function showScreen(name, node) {
 /** 選択が済んだ画面を操作不能にする（次の画面が出るまでの間に古いボタンを押せないように） */
 export function retire(node) {
   node?.classList.add("done");
+}
+
+/** 選択が済んだ（retire した）画面を片付ける。会話が始まるときに呼ぶ＝前の画面が会話の後ろに残らない */
+export function dropRetired() {
+  layers.screen.querySelectorAll(":scope > .done").forEach((n) => n.remove());
 }
 
 export function clearScreen() {

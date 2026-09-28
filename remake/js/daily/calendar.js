@@ -13,7 +13,7 @@ import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { openShop, visitRin } from "./shop.js";
 import { morningMessages, openPhone } from "./phone.js";
 import { openStatus } from "./status.js";
-import { onAction as spinReel } from "./reel.js";
+import { onAction as spinReel, presentNow as showReelNow } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
 
 const SLEEP_RECOVERY = 14;
@@ -148,10 +148,12 @@ async function takeAction() {
   await afterAction();
 }
 
-/** 行動を1回使ったあと: スロットが1回転（結果は次にマップを開いたとき見せる）→ 告白の予約があれば */
+/** 行動を1回使ったあと: スロットが1回転（昼は次のマップで・夜はその場で見せる）→ 告白の予約があれば */
 async function afterAction() {
   spinReel();
   save();
+  // 昼の行動の分は次のマップで回る。夜の行動の分は、その夜のうちにここで回す
+  if (state.slot >= 2) await showReelNow();
   await bannersIdle();
   if (await maybeConfession(beat)) await bannersIdle();
 }

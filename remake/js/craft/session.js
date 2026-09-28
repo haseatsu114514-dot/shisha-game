@@ -3,7 +3,7 @@
 // 大会では章の台本（chapters/ch1.js）が工程の間に実況や会話を挟むので、
 // ここは「工程を1つずつ呼べる部品」を提供するだけにしている。
 import { el } from "../core/util.js";
-import { showScreen, setBg } from "../core/ui.js";
+import { showScreen, setBg, retire, layers } from "../core/ui.js";
 import { bgUrl } from "../core/data.js";
 import { state, timeOfDay } from "../core/state.js";
 import { buildRig } from "./art.js";
@@ -108,6 +108,14 @@ export function tickerSay(text) {
 
 /** ドリルを1本。戻り値は出来の段階 0〜2 */
 export async function runDrill(kind) {
+  try {
+    return await drill(kind);
+  } finally {
+    retire(layers.screen.querySelector(":scope > .bench")); // 終わった作業台は次の会話で片付く
+  }
+}
+
+async function drill(kind) {
   const cs = newSession("drill");
   const labels = { holes: "FOIL", heat: "HEAT", steam: "STEAM", pull: "PULL" };
   openBench(cs, { steps: [[kind, labels[kind]]] });

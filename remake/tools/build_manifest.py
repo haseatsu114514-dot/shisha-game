@@ -145,6 +145,9 @@ def main():
     OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print(f"wrote {OUT.relative_to(ROOT)}: {len(manifest['portraits'])} characters, "
           f"{len(manifest['backgrounds'])} backgrounds, {len(manifest['cgs'])} cgs")
+    # 表示用の軽い WebP（remake/img/）も作る。変換済みで新しいものは飛ばすので2回目以降は速い
+    import build_images
+    build_images.main()
 
 
 if __name__ == "__main__":

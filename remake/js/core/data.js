@@ -76,6 +76,7 @@ export async function loadAll(onProgress = () => {}) {
   DB.kuji = raw.kuji;
   DB.lover = raw.lover;
   DB.manifest = raw.manifest;
+  WEBP = new Set(DB.manifest.webp || []);
   for (const [key, v] of Object.entries(raw)) {
     if (!key.startsWith("dlg:")) continue;
     for (const d of v.dialogues || []) DB.dialogues[d.dialogue_id] = d;
@@ -115,6 +116,13 @@ export function displayName(id, state) {
 
 // ---------------------------------------------------------------- アセット
 
+// 表示用の軽い WebP（remake/img/・tools/build_images.py が作る）。一覧に無い画像は assets/ の PNG を読む
+let WEBP = new Set();
+/** assets/ からの相対パス（例 "backgrounds/bg_x.png"）→ 実際に読む URL */
+export function img(rel) {
+  return WEBP.has(rel) ? `img/${rel.replace(/\.png$/, ".webp")}` : `${ROOT}assets/${rel}`;
+}
+
 // 旧ファイル名 → 最新版（参照だけ差し替える）
 const BG_ALIASES = {
   "tonari_day.png": "bg_tonari_inside_day.png",
@@ -151,7 +159,7 @@ export function sceneBg(ref, timeOfDay = "day") {
   }
   if (!list.includes(name)) return { url: null, tint: null };
   const tint = timeOfDay === "night" && !name.endsWith("_night.png") && !BG_NO_NIGHT_TINT.has(name) ? "night" : null;
-  return { url: `${ROOT}assets/backgrounds/${name}`, tint };
+  return { url: img(`backgrounds/${name}`), tint };
 }
 
 export const bgUrl = (ref, timeOfDay = "day") => sceneBg(ref, timeOfDay).url;
@@ -172,14 +180,14 @@ export function portraitInfo(speaker, face) {
   }
   return {
     folder, face: f,
-    src: `${ROOT}assets/sprites/characters/${folder}/chr_${folder}_${f}.png`,
+    src: img(`sprites/characters/${folder}/chr_${folder}_${f}.png`),
     h: p.h || 0.85, b: p.b || 0.02, ax: p.ax ?? 0.5, aspect: p.aspect || 0.75,
     scale: DB.characters[folder]?.spriteScale || DB.characters[speaker]?.spriteScale || 1,
   };
 }
 
 export function cgUrl(id) {
-  return (DB.manifest.cgs || []).includes(`${id}.png`) ? `${ROOT}assets/cgs/${id}.png` : null;
+  return (DB.manifest.cgs || []).includes(`${id}.png`) ? img(`cgs/${id}.png`) : null;
 }
 
 export function faceIconUrl(id) {
@@ -188,7 +196,7 @@ export function faceIconUrl(id) {
 }
 
 export function makingUrl(name) {
-  return (DB.manifest.making || []).includes(name) ? `${ROOT}assets/ui/making/${name}` : null;
+  return (DB.manifest.making || []).includes(name) ? img(`ui/making/${name}`) : null;
 }
 
 export function bgmUrl(key) {
@@ -197,7 +205,7 @@ export function bgmUrl(key) {
 }
 
 export function assetUrl(rel) {
-  return `${ROOT}${rel.replace(/^res:\/\//, "")}`;
+  return img(rel.replace(/^res:\/\//, "").replace(/^assets\//, ""));
 }
 
 /** 画像を先読みする（遷移の前に読み込み待ちを挟んで、白飛び・ちらつきを防ぐ） */

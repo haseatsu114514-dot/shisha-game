@@ -336,15 +336,18 @@ function lampOff() {
   widget.classList.remove("lamp-lit", "lamp-premium", "win-flash");
 }
 
-/** マップを開いたら呼ぶ（host=マップの root）。溜まった結果を順に見せる */
+/**
+ * 筐体を host に置き、溜まった結果を順に見せる。戻り値=見せ終わったら解決する Promise
+ * （マップでは待たずに操作できる。夜の行動のあとは calendar が待ってから一日を終える）
+ */
 export function mountReel(host) {
-  if (!state?.reel) return;
+  if (!state?.reel) return Promise.resolve();
   widget = buildWidget();
   host.append(widget);
-  setStops([1, 1, 2]);
+  setStops(state.reel.shown || [1, 1, 2]); // 前回見せた出目のまま（未消化の結果は出目に出さない）
   const queue = state.reel.pending;
-  if (!queue.length || busy) return;
-  (async () => {
+  if (!queue.length || busy) return Promise.resolve();
+  return (async () => {
     if (!state.reel.introDone) await showIntro();
     // 取り出してから保存（演出の途中でリロードしても二重に適用しない。報酬は適用済み）
     const items = queue.splice(0, queue.length);
@@ -364,6 +367,19 @@ export function mountReel(host) {
       busy = false;
     }
   })();
+}
+
+/** 夜の行動のあと: その場でスロットを見せてから一日を終える（翌朝まで持ち越さない） */
+export async function presentNow() {
+  if (!state?.reel?.pending?.length || busy) return;
+  const host = el("div.reel-night", [el("div.rn-label", { text: "今夜のスロット" })]);
+  layers.fx.append(host);
+  requestAnimationFrame(() => host.classList.add("show"));
+  await mountReel(host);
+  await sleep(900);
+  host.classList.remove("show");
+  await sleep(300);
+  host.remove();
 }
 
 async function presentSpin(r, fast) {
@@ -399,6 +415,7 @@ async function presentSpin(r, fast) {
   }
   await sleep(fast ? 60 : 200);
   if (alive()) widget.classList.remove("tension");
+  state.reel.shown = r.stops;
   await afterStop(r, fast);
 }
 
@@ -525,7 +542,7 @@ function settleBonus(b, fast, mode = "post") {
     if (b.done) { const d = b.done; b.done = null; d(); }
   };
   const lineUp = bonusLine(isBig);
-  if (fast || !alive()) { if (alive()) setStops(lineUp); SE.fanfare(); return finish(); }
+  if (fast || !alive()) { if (alive()) setStops(lineUp); state.reel.shown = lineUp; SE.fanfare(); return finish(); }
   alignBonus(isBig, lineUp, b.zone, mode).then(finish);
 }
 
@@ -593,6 +610,7 @@ async function alignBonus(isBig, line, zone, mode = "post") {
   if (isBig) SE.fanfare(); else SE.jingle();
   if (zone) bubble("パッキータイム！", 2600);
   if (alive()) setStops(line);
+  state.reel.shown = line;
   await sleep(1600);
   cut.classList.add("out");
   await sleep(250);
