@@ -1,27 +1,7 @@
 /* ============================================================
-   恋人（ちょい会いボタン）・シーシャくじ・ギャラリー
+   恋人（ステータスの行）・シーシャくじ・ギャラリー
    日常パートの墨×金の語彙に合わせる
    ============================================================ */
-
-/* ---- マップ: 恋人に会いに行く（行動を使わない・1日1回） ---- */
-.lover-quick {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 7px 16px 7px 10px;
-  color: #fff;
-  text-align: left;
-  background: linear-gradient(135deg, #e06a92, #a33a64);
-  border: 2px solid #ffd3e2;
-  border-radius: 999px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5), 0 0 16px rgba(244, 143, 177, 0.45);
-  cursor: pointer;
-}
-.lover-quick:hover { filter: brightness(1.08); }
-.lover-quick b { display: block; font-size: 14px; letter-spacing: 0.06em; }
-.lover-quick small { display: block; font-size: 10px; opacity: 0.85; }
-.lq-heart { display: grid; place-items: center; width: 28px; height: 28px; font-size: 16px; color: #e06a92; background: #fff; border-radius: 50%; animation: lq-beat 1.6s ease-in-out infinite; }
-@keyframes lq-beat { 12%, 36% { transform: scale(1.18); } 24%, 48% { transform: scale(1); } }
 
 /* ---- ステータス: 恋人の行 ---- */
 .pp-row.lover { background: linear-gradient(90deg, rgba(244, 143, 177, 0.16), rgba(255, 255, 255, 0.03) 70%); border-left: 3px solid #f48fb1; }
@@ -57,7 +37,7 @@
 .kuji-label { font-size: 14px; letter-spacing: 0.1em; color: var(--text-dim); }
 .kuji-card.reveal { animation: kj-pop 0.45s cubic-bezier(0.2, 1.6, 0.4, 1); }
 @keyframes kj-pop { from { transform: scale(0.8); opacity: 0; } }
-.kuji-rank { font-family: var(--font-serif); font-size: 64px; font-weight: 800; line-height: 1.1; color: var(--gold-hi); text-shadow: 0 0 20px rgba(244, 210, 122, 0.6); }
+.kuji-rank { font-family: var(--font); font-size: 64px; font-weight: 800; line-height: 1.1; color: var(--gold-hi); text-shadow: 0 0 20px rgba(244, 210, 122, 0.6); }
 .kuji-name { margin-top: 8px; font-size: 22px; font-weight: 700; }
 .kuji-desc { margin-top: 8px; font-size: 14px; line-height: 1.6; color: var(--text-dim); }
 .kuji-tap { margin-top: 16px; font-size: 11px; letter-spacing: 0.2em; color: var(--text-dim); opacity: 0.7; }
@@ -87,7 +67,7 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
 }
 .gal-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 14px; }
-.gal-head h2 { margin: 0; font-family: "Times New Roman", var(--font-serif); font-size: 28px; letter-spacing: 0.3em; color: var(--gold-hi); }
+.gal-head h2 { margin: 0; font-family: var(--font); font-size: 28px; letter-spacing: 0.3em; color: var(--gold-hi); }
 .gal-count { font-size: 14px; color: var(--text-dim); }
 .gal-close { margin-left: auto; padding: 6px 18px; color: var(--text); background: transparent; border: 1px solid rgba(244, 210, 122, 0.5); border-radius: 4px; cursor: pointer; }
 .gal-close:hover { color: var(--gold-hi); border-color: var(--gold); }

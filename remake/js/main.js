@@ -26,7 +26,12 @@ async function boot() {
 
   const bar = $("#boot .boot-bar i");
   try {
-    await loadAll((p) => { bar.style.width = `${Math.round(p * 100)}%`; });
+    // データと一緒に書体も待つ（読み込み前の代わりの字で一瞬崩れて見えないように）。遅い回線では4秒で先へ
+    const fonts = Promise.race([
+      Promise.all(["500", "700", "900"].map((w) => document.fonts.load(`${w} 20px "Suien Gothic"`, "水煙前線あA7"))),
+      new Promise((r) => setTimeout(r, 4000)),
+    ]).catch(() => {});
+    await Promise.all([loadAll((p) => { bar.style.width = `${Math.round(p * 100)}%`; }), fonts]);
   } catch (e) {
     $("#boot .boot-msg").textContent = `読み込みに失敗しました（${e.message}）。ローカルサーバー越しに開いているか確認してください。`;
     throw e;
@@ -42,10 +47,10 @@ window.__remake = {
   DB,
   vnTest,
   craftTest,
-  // MOKUMOKUパッキー: 分布確認 __remake.reel.simulate(100000) ／演出だけ見る __remake.reel.force("big")
+  // MOKUMOKUパッキー: 分布確認 __remake.reel.simulate(100000) ／演出だけ見る __remake.reel.force("big", "before"|"after")
   reel: {
     async simulate(n = 100000) { return (await import("./daily/reel.js")).simulate(n); },
-    async force(role = "big") { return (await import("./daily/reel.js")).force(role); },
+    async force(role = "big", variant = "after") { return (await import("./daily/reel.js")).force(role, variant); },
   },
   // 開発用ジャンプ（コンソールから: __remake.dev.tournament() など）。※今のセーブを上書きする
   dev: {

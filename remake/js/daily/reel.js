@@ -104,18 +104,22 @@ function rollRole(rng, st) {
   return role;
 }
 
+// 告知のタイミング（オーナー指定・2026-09-28: ジャグラーと同じく先告知・後告知を半々）
+//   before=先告知: レバーを叩いた瞬間にランプが光り、その回転でそのまま赤7を狙って揃える
+//   after =後告知: リールがハズレ目で止まってからランプが光り、もう1回転して揃える
 const VARIANTS = [
-  { id: "after", weight: 64 },
-  { id: "before", weight: 14 },
-  { id: "okure", weight: 12 },  // 遅れ「……プゴッ」
-  { id: "silent", weight: 10 }, // 無音回転（プレミア告知）
+  { id: "before", weight: 50 },
+  { id: "after", weight: 50 },
 ];
 
-// リール図柄: seven=赤7 / bar=BAR / bell=ベル / cherry=チェリー / replay=リプレイ(水の青) / smoke=煙ブランク / pakki=パッキー柄
+// リール図柄: seven=赤7 / bar=BAR / bell=ベル / cherry=チェリー / replay=リプレイ(水の青) / smoke=煙（ジャグラーのぶどうの位置）/ pakki=パッキー柄（ピエロの位置）
+// 配列はジャグラー準拠（オーナー指定・2026-09-28）。上から下へ並べた順＝窓に上から見える順（リールは下向きに回る）
+//   左: BAR の真下にチェリー（BARを狙うと角にチェリーが見える）。7 の下にもチェリー
+//   右: 7 の真下に BAR（ボーナスの最後の1リールで「7か、BARか」がギリギリまで分からない）
 const STRIPS = [
-  ["seven", "smoke", "replay", "cherry", "smoke", "bar", "replay", "smoke", "bell", "cherry", "smoke", "replay", "pakki", "smoke", "cherry", "replay"],
-  ["smoke", "seven", "replay", "smoke", "cherry", "bar", "smoke", "replay", "bell", "smoke", "cherry", "replay", "smoke", "pakki", "replay", "smoke"],
-  ["replay", "smoke", "seven", "cherry", "replay", "bar", "smoke", "bell", "replay", "smoke", "cherry", "smoke", "replay", "bar", "smoke", "pakki"],
+  ["seven", "cherry", "smoke", "replay", "smoke", "bar", "cherry", "smoke", "replay", "smoke", "bell", "smoke", "replay", "smoke", "pakki", "smoke", "replay", "smoke", "bar", "cherry", "replay"],
+  ["seven", "replay", "smoke", "cherry", "smoke", "replay", "bell", "smoke", "replay", "bar", "smoke", "replay", "smoke", "pakki", "replay", "smoke", "cherry", "smoke", "replay", "smoke", "smoke"],
+  ["replay", "smoke", "seven", "bar", "smoke", "replay", "cherry", "smoke", "replay", "bell", "smoke", "replay", "smoke", "seven", "smoke", "replay", "pakki", "smoke", "replay", "bar", "smoke"],
 ];
 function stripIdx(strip, sym, rng) {
   const cands = [];
@@ -285,7 +289,7 @@ function buildWidget() {
   const lamp = el("button.rw-lamp", { title: "MOKUMOKUパッキー", dataset: { test: "reel-lamp" }, onclick: () => { if (bonusWait) settleBonus(bonusWait, false); } }, [pakkiFace()]);
   const machine = el("div.rw-machine");
   machine.innerHTML = STRIPS.map((strip) =>
-    `<div class="rw-reel"><div class="rw-strip">${strip.concat(strip, strip).map((s) => `<div class="rw-cell">${SYM[s]()}</div>`).join("")}</div></div>`).join("");
+    `<div class="rw-reel"><div class="rw-strip" style="--loop:${-CELL * strip.length}px">${strip.concat(strip, strip).map((s) => `<div class="rw-cell">${SYM[s]()}</div>`).join("")}</div></div>`).join("");
   const w = el("div.reel-widget", [
     el("div.rw-lamp-wrap", [el("span.rw-lamp-rays"), lamp]),
     el("span.rw-lever-arm"),
@@ -365,18 +369,17 @@ export function mountReel(host) {
 async function presentSpin(r, fast) {
   if (!alive()) { announce(r); return; }
   if (bonusWait) settleBonus(bonusWait, true);
-  const silent = r.variant === "silent" && !fast;
   lampOff();
   if (!fast) { widget.classList.add("lever-pull"); setTimeout(() => widget?.classList.remove("lever-pull"), 380); }
   if (r.gakkun) { widget.classList.add("gakkun"); setTimeout(() => widget?.classList.remove("gakkun"), 500); }
-  if (!silent) SE.reelLever();
-  if (r.variant === "okure" && !fast) setTimeout(() => SE.pugo(), 420);
+  SE.reelLever();
   const ss = strips();
   ss.forEach((s) => { s.style.transform = ""; s.classList.add("spinning"); });
-  if (silent) widget.classList.add("silent-spin");
   if (r.role === "freeze" && !fast) return presentFreeze(r);
+  // 先告知: レバーオンで光ったら、ハズレ目を見せずにこの回転で揃えにいく
+  if (!fast && (r.role === "reg" || r.role === "big") && !r.overlap && r.variant === "before") return presentPreAnnounce(r);
 
-  const spinMs = fast ? 120 : silent ? 1600 : r.role === "miss" ? 240 : 420;
+  const spinMs = fast ? 120 : r.role === "miss" ? 240 : 420;
   const gap = fast ? 40 : 130;
   const willPeka = PEKA.includes(r.role) || !!r.overlap;
   const tension = willPeka && !fast;
@@ -390,12 +393,12 @@ async function presentSpin(r, fast) {
     s.style.transform = `translateY(${tyFor(r.stops[i])}px)`;
     s.classList.add("land");
     setTimeout(() => s.classList.remove("land"), 240);
-    if (!silent && !fast) SE.reelStop();
+    if (!fast) SE.reelStop();
     if (tension && i === 1) widget.classList.add("tension");
     if (i === 2) widget.classList.remove("tension");
   }
-  await sleep((fast ? 60 : 200) + (silent ? 500 : 0));
-  if (alive()) widget.classList.remove("silent-spin", "tension");
+  await sleep(fast ? 60 : 200);
+  if (alive()) widget.classList.remove("tension");
   await afterStop(r, fast);
 }
 
@@ -471,11 +474,21 @@ async function afterStop(r, fast) {
       return peka(r, fast, true, "ぷぷぷぷぷ！！");
     case "reg":
     case "big":
-      await sleep(r.variant === "after" || r.variant === "silent" ? (fast ? 0 : 320) : 0);
-      return peka(r, fast, r.variant === "silent" || r.ceiling === "main", r.ceiling === "main" ? "おたすけパッキー！" : "ぷぷぷっ！");
+      // 後告知: 止まったリールを一拍見せてから、ペカッ
+      await sleep(fast ? 0 : 420);
+      return peka(r, fast, r.ceiling === "main", r.ceiling === "main" ? "おたすけパッキー！" : "ぷぷぷっ！ 光った！");
     default:
       announce(r);
   }
+}
+
+// 先告知: レバーを叩いた瞬間にランプが光る → 小筐体は回したまま、大きなリールでこの回転を赤7に止める
+async function presentPreAnnounce(r) {
+  lampOn(r.ceiling === "main");
+  SE.puka();
+  bubble(r.ceiling === "main" ? "おたすけパッキー！" : "先ペカッ！ このまま7を狙って！", 0);
+  await sleep(900);
+  await new Promise((resolve) => settleBonus({ ...r, done: resolve }, false, "pre"));
 }
 
 // プカッ（完全告知）。光ったら少し見せてから自動で揃える（タップは早送り）
@@ -490,7 +503,8 @@ function peka(r, fast, premium, line) {
   });
 }
 
-function settleBonus(b, fast) {
+/** ボーナスを揃える。mode: "post"=後告知（もう1回転して揃える）／"pre"=先告知（この回転で揃える） */
+function settleBonus(b, fast, mode = "post") {
   bonusWait = null;
   lampOff();
   bubble("", 1);
@@ -510,20 +524,80 @@ function settleBonus(b, fast) {
     }
     if (b.done) { const d = b.done; b.done = null; d(); }
   };
-  if (fast || !alive()) { SE.fanfare(); return finish(); }
-  // BIG=赤7赤7赤7 / バケ(REG)=赤7赤7BAR。1コマずつ点いて揃う
-  const cells = isBig ? ["seven", "seven", "seven"] : ["seven", "seven", "bar"];
-  const cut = el("div.reel-cutin.bonus");
-  cut.innerHTML =
-    `<div class="rc-board"><div class="rc-aim">${isBig ? "ボーナス確定！　赤7──" : "赤7…赤7…からの──！？"}</div>` +
-    `<div class="rc-cells">${cells.map((s) => `<div class="rc-cell">${SYM[s]()}</div>`).join("")}</div>` +
-    `<div class="rc-label">${isBig ? "BIG BONUS" : "BONUS"}</div></div>`;
-  layers.fx.append(cut);
-  [...cut.querySelectorAll(".rc-cell")].forEach((c, i) => setTimeout(() => { c.classList.add("on"); SE.reelStop(); }, 380 + i * 330));
-  setTimeout(() => { cut.querySelector(".rc-board").classList.add("done"); SE.fanfare(); if (b.zone) bubble("パッキータイム！", 2600); }, 380 + 3 * 330);
-  setTimeout(() => { cut.remove(); finish(); }, 2500);
+  const lineUp = bonusLine(isBig);
+  if (fast || !alive()) { if (alive()) setStops(lineUp); SE.fanfare(); return finish(); }
+  alignBonus(isBig, lineUp, b.zone, mode).then(finish);
 }
 
+// ボーナスの揃い目: 赤7・赤7 ＋ 右リールは「7の真下にBAR」の並びから BIG=7／REG=BAR
+function bonusLine(isBig) {
+  const r = STRIPS[2];
+  const s7 = r.findIndex((x, i) => x === "seven" && r[(i + 1) % r.length] === "bar");
+  return [STRIPS[0].indexOf("seven"), STRIPS[1].indexOf("seven"), isBig ? s7 : (s7 + 1) % r.length];
+}
+
+// 揃え演出: 大きなリール3本で左・中を赤7に止め、右だけ回したまま溜めてから、じわっと止める。
+// 右は 7 の真下に BAR があるので、BIG は BAR が中段を通り過ぎてから 7、REG は 7 が上段に見えたまま BAR で止まる
+const BCELL = 66;
+const bty = (strip, idx) => -BCELL * (idx + strip.length - 1);
+async function alignBonus(isBig, line, zone, mode = "post") {
+  // 後告知は「もう1回転」: 小筐体のレバーをもう一度叩いて回し直す
+  if (mode === "post" && alive()) {
+    widget.classList.add("lever-pull");
+    setTimeout(() => widget?.classList.remove("lever-pull"), 380);
+    strips().forEach((st) => { st.style.transform = ""; st.classList.add("spinning"); });
+  }
+  SE.reelLever();
+  const reels = STRIPS.map((strip) => {
+    const st = el("div.rc-strip", { style: { "--loop": `${-BCELL * strip.length}px` } });
+    st.innerHTML = strip.concat(strip, strip).map((x) => `<div class="rc-cellr">${SYM[x]()}</div>`).join("");
+    return el("div.rc-reel", [st]);
+  });
+  const strips3 = reels.map((r) => r.firstChild);
+  const aim = el("div.rc-aim", { text: mode === "pre" ? "先ペカ！　このまま赤7を狙え──" : "ペカッ！　もう1回転、赤7を狙え──" });
+  const label = el("div.rc-label", { text: "BONUS" });
+  const lamp = el("div.rc-lamp.lit", [pakkiFace()]);
+  const board = el(`div.rc-board.${mode}`, [lamp, aim, el("div.rc-reels", reels), label]);
+  const cut = el("div.reel-cutin.bonus", [board]);
+  layers.fx.append(cut);
+  strips3.forEach((st) => st.classList.add("spinning"));
+  const stop = (i) => {
+    const st = strips3[i];
+    st.classList.remove("spinning");
+    st.style.transform = `translateY(${bty(STRIPS[i], line[i])}px)`;
+    st.classList.add("land");
+    SE.reelStop();
+  };
+  await sleep(650); stop(0);
+  await sleep(420); stop(1);
+  aim.textContent = "赤7・赤7……";
+  board.classList.add("reach");
+  SE.heartbeat();
+  await sleep(750); SE.heartbeat();
+  await sleep(750);
+  // 最後の右リール: 4コマ手前から、減速しながら止める
+  const r3 = strips3[2];
+  const r = STRIPS[2];
+  r3.classList.remove("spinning");
+  r3.style.transition = "none";
+  r3.style.transform = `translateY(${bty(r, line[2] + 4)}px)`;
+  void r3.offsetWidth;
+  r3.style.transition = "transform 1.25s cubic-bezier(0.1, 0.62, 0.16, 1)";
+  r3.style.transform = `translateY(${bty(r, line[2])}px)`;
+  await sleep(1280);
+  SE.reelStop();
+  board.classList.remove("reach");
+  board.classList.add("done", isBig ? "big" : "reg");
+  aim.textContent = isBig ? "赤7・赤7・赤7！！" : "赤7・赤7・BAR";
+  label.textContent = isBig ? "BIG BONUS" : "REGULAR BONUS";
+  if (isBig) SE.fanfare(); else SE.jingle();
+  if (zone) bubble("パッキータイム！", 2600);
+  if (alive()) setStops(line);
+  await sleep(1600);
+  cut.classList.add("out");
+  await sleep(250);
+  cut.remove();
+}
 // ロングフリーズ（プレミア: 回転が止まる → EN:CODE のグリッチ → 7揃い）
 async function presentFreeze(r) {
   await sleep(700);
@@ -594,13 +668,13 @@ function showIntro() {
   });
 }
 
-/** 演出確認用: 役を偽造して演出だけ再生（カウンタ・報酬は動かさない）。__remake.reel.force("big") */
-export function force(role) {
+/** 演出確認用: 役を偽造して演出だけ再生（カウンタ・報酬は動かさない）。__remake.reel.force("big", "before") */
+export function force(role, variant = "after") {
   if (!alive()) return "マップを開いてから呼んでください";
   const r = {
     n: -1, role, overlap: null, premium: role === "rare" || role === "freeze",
     stops: stopsFor(role, mulberry32(Date.now() & 0xffff)),
-    variant: PEKA.includes(role) && role !== "freeze" ? (role === "rare" ? "premium" : "after") : "none",
+    variant: PEKA.includes(role) && role !== "freeze" ? (role === "rare" ? "premium" : variant) : "none",
     exp: 0, quiet: true, zone: false, gakkun: false, ceiling: "", target: null, got: 0,
   };
   presentSpin(r, false);

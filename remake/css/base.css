@@ -2,11 +2,11 @@
    水煙前線 リメイク版 — 土台（トークン・ステージ・共通UI）
    論理解像度 1280×720 の固定ステージを画面に合わせて拡縮する。
    ============================================================ */
-@font-face {
-  font-family: "DotGothic16";
-  src: url("../../assets/fonts/DotGothic16-Regular.ttf") format("truetype");
-  font-display: swap;
-}
+/* 文字は1書体に統一（オーナー指定・2026-09-28）: Zen Kaku Gothic New（SIL OFL・remake/fonts/ に同梱）。
+   端末やネットワークで見た目が変わらないよう、外部フォントは読まない。太さは 500 / 700 / 900 の3段 */
+@font-face { font-family: "Suien Gothic"; src: url("../fonts/ZenKakuGothicNew-Medium.woff2") format("woff2"); font-weight: 100 599; font-display: block; }
+@font-face { font-family: "Suien Gothic"; src: url("../fonts/ZenKakuGothicNew-Bold.woff2") format("woff2"); font-weight: 600 799; font-display: block; }
+@font-face { font-family: "Suien Gothic"; src: url("../fonts/ZenKakuGothicNew-Black.woff2") format("woff2"); font-weight: 800 900; font-display: block; }
 
 :root {
   /* 日常パート: 閉店後のtonariの色（夜の藍・琥珀の灯り） */
@@ -33,9 +33,7 @@
   --stat-guts: #ef7a5e;
   --stat-charm: #f292c6;
   --stat-insight: #93cf7d;
-  --font-serif: "Shippori Mincho B1", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
-  --font-sans: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
-  --font-dot: "DotGothic16", "Zen Kaku Gothic New", monospace;
+  --font: "Suien Gothic", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", sans-serif;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-snap: cubic-bezier(0.7, 0, 0.2, 1);
 }
@@ -46,7 +44,11 @@ html, body {
   height: 100%;
   background: #000;
   color: var(--text);
-  font-family: var(--font-sans);
+  font-family: var(--font);
+  /* 日本語を文節で折り返す（「所持｜金」のような泣き別れを防ぐ。未対応ブラウザは通常の折り返し）。
+     会話の本文は autoWrap が行を決めるので対象外（vn.css） */
+  word-break: auto-phrase;
+  line-break: strict;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none;
@@ -217,7 +219,7 @@ button { font: inherit; color: inherit; }
   padding: 12px 24px 12px 16px;
   overflow: hidden;
   color: var(--text);
-  font-family: var(--font-serif);
+  font-family: var(--font);
   letter-spacing: 0.04em;
   background: linear-gradient(135deg, color-mix(in srgb, var(--gc) 18%, #140b1e) 0%, #0a0612 100%);
   border: 1px solid var(--gc);
@@ -263,7 +265,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  font-family: "Times New Roman", var(--font-serif);
+  font-family: var(--font);
   font-weight: 800;
   font-size: 22px;
   line-height: 1;
@@ -273,7 +275,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 }
 .gc-badge.face { object-fit: cover; image-rendering: pixelated; background: #1a1422; border: 2px solid var(--gc); padding: 0; }
 .gc-meta { display: flex; flex-direction: column; gap: 2px; }
-.gc-top { font-family: "Times New Roman", serif; font-size: 11px; letter-spacing: 0.28em; color: var(--gc); }
+.gc-top { font-family: var(--font); font-size: 11px; letter-spacing: 0.28em; color: var(--gc); }
 .gc-main { font-size: 21px; font-weight: 700; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8); }
 .gc-sub { font-size: 12px; letter-spacing: 0.06em; color: var(--text-dim); }
 .gain-card.st-technique { --gc: var(--stat-technique); }
@@ -311,7 +313,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
   border-radius: 12px;
   animation: pop-in 0.3s var(--ease-out);
 }
-.modal-box h3 { margin: 0 0 14px; font-family: var(--font-serif); font-size: 24px; color: var(--gold-hi); letter-spacing: 0.06em; }
+.modal-box h3 { margin: 0 0 14px; font-family: var(--font); font-size: 24px; color: var(--gold-hi); letter-spacing: 0.06em; }
 .modal-body { font-size: 17px; line-height: 1.8; color: var(--text); }
 .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 22px; flex-wrap: wrap; }
 @keyframes pop-in { from { opacity: 0; transform: translate(-50%, -46%) scale(0.96); } }
@@ -322,7 +324,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
   left: 50%;
   top: 44%;
   transform: translate(-50%, -50%);
-  font-family: var(--font-serif);
+  font-family: var(--font);
   font-size: 150px;
   font-weight: 800;
   color: #fff;
@@ -336,7 +338,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .stamp {
   position: absolute;
   transform: translate(-50%, -50%) rotate(-6deg);
-  font-family: var(--font-sans);
+  font-family: var(--font);
   font-weight: 700;
   font-size: 44px;
   letter-spacing: 0.06em;
@@ -388,9 +390,9 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 }
 .chapter-card.show { opacity: 1; }
 .chapter-card.out { opacity: 0; }
-.cc-no { font-family: var(--font-serif); font-size: 24px; letter-spacing: 0.5em; color: var(--text-dim); }
+.cc-no { font-family: var(--font); font-size: 24px; letter-spacing: 0.5em; color: var(--text-dim); }
 .cc-name {
-  font-family: var(--font-serif);
+  font-family: var(--font);
   font-size: 96px;
   font-weight: 800;
   letter-spacing: 0.18em;
@@ -419,7 +421,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 }
 .day-card.show { transform: none; }
 .day-card.out { opacity: 0; transform: translateX(30%); }
-.dc-title { font-family: var(--font-serif); font-size: 76px; font-weight: 800; letter-spacing: 0.12em; color: #fff; }
+.dc-title { font-family: var(--font); font-size: 76px; font-weight: 800; letter-spacing: 0.12em; color: #fff; }
 .dc-sub { font-size: 20px; color: var(--gold); letter-spacing: 0.2em; margin-top: 4px; }
 
 .round-cut {
@@ -440,7 +442,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 }
 .round-cut.show { transform: scaleY(1); }
 .round-cut.out { opacity: 0; }
-.round-cut b { font-family: var(--font-sans); font-size: 64px; font-weight: 700; letter-spacing: 0.2em; color: #fff; text-shadow: 0 0 20px var(--neon-pink); }
+.round-cut b { font-family: var(--font); font-size: 64px; font-weight: 700; letter-spacing: 0.2em; color: #fff; text-shadow: 0 0 20px var(--neon-pink); }
 .round-cut small { font-size: 18px; letter-spacing: 0.3em; color: var(--neon-cyan); }
 
 /* ---------------------------------------------------------------- 起動 */
@@ -454,7 +456,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
   transition: opacity 0.6s ease;
 }
 #boot.done { opacity: 0; pointer-events: none; }
-.boot-logo { font-family: var(--font-serif); font-size: 64px; font-weight: 800; letter-spacing: 0.2em; color: #efe9f4; opacity: 0.85; }
+.boot-logo { font-family: var(--font); font-size: 64px; font-weight: 800; letter-spacing: 0.2em; color: #efe9f4; opacity: 0.85; }
 .boot-bar { width: 360px; height: 3px; background: rgba(255, 255, 255, 0.12); border-radius: 2px; overflow: hidden; }
 .boot-bar i { display: block; height: 100%; width: 0; background: var(--gold); transition: width 0.2s; }
 .boot-msg { font-size: 14px; color: var(--text-dim); letter-spacing: 0.2em; }

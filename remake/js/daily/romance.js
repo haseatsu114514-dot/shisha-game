@@ -1,6 +1,7 @@
 // 恋人システム（master_spec #11 / #24・CLAUDE.md「ヒロイン・好感度・修羅場システム」）。
 // 好感度MAX → 告白（あげは以外は主人公が踏み出すかどうかから）→ 付き合う／友達のまま。
-// 恋人の絆（Lv1〜5）はデート・恋愛イベント・ちょい会いのようなプライベートでだけ深まる。
+// 恋人の絆（Lv1〜5）はプライベート（LIMEの誘いで行くデート・恋人とのLIME・恋愛イベント）でだけ深まる。
+// 恋人に自分から会いに行くボタンは置かない（オーナー指定: 恋人とは LIME の誘いや連絡でつながる）。
 // 2人以上と付き合うと、うしろめたさが積もり、大会当日に修羅場が起きる。
 // 文面の正本: 告白=data/dialogue/confession.json、節目=lover_events.json、LIME・デート=remake/data/lover.json
 import { DB, displayName } from "../core/data.js";
@@ -107,7 +108,7 @@ export async function maybeConfession(beat) {
   return true;
 }
 
-// ---------------------------------------------------------------- デート・ちょい会い
+// ---------------------------------------------------------------- デート
 
 /** 恋人の節目（絆Lvが上がった）ごとの恋愛イベント。lover_events.json の lover_{id}_lv{n} */
 async function maybeMilestone(id, beforeLv) {
@@ -155,43 +156,6 @@ export async function playDate(id) {
   gainAffinity(id, 10);
   bond.private = false;
   addStamina(-10);
-  save();
-  await maybeMilestone(id, before);
-}
-
-/** 恋人とちょい会い（1日1回・行動を使わない）。恋人が複数なら誰に会うか選ぶ */
-export async function quickMeet() {
-  const lovers = state.lovers.slice();
-  let id = lovers[0];
-  if (lovers.length > 1) {
-    for (const x of lovers) delete state.flags[`_lq_${x}`];
-    await play({
-      dialogue_id: "remake_lover_quick_pick",
-      lines: [
-        { speaker: "", text: "（……少しだけ顔を見に行こう。誰のところへ？）" },
-        { type: "choice", choices: lovers.map((x, i) => ({ text: displayName(x, state), next: `l${i}` })) },
-      ],
-      branches: Object.fromEntries(lovers.map((x, i) => [`l${i}`, [{ type: "set_flag", flag: `_lq_${x}` }]])),
-    });
-    id = lovers.find((x) => state.flags[`_lq_${x}`]) || lovers[0];
-    for (const x of lovers) delete state.flags[`_lq_${x}`];
-  }
-  state.loverQuickDay = state.day;
-  const pool = (L().quick || {})[id];
-  const pair = pool ? pool[(state.day + (state.visits[id] || 0)) % pool.length] : ["少しだけ、顔を見て話した。"];
-  const before = state.loveLevel[id] || 1;
-  bond.private = true;
-  await play({
-    dialogue_id: `remake_lover_quick_${id}`,
-    lines: [
-      { speaker: "", text: "（少しだけ、恋人の顔を見に行く。行動の合間の、ささやかな時間）" },
-      { speaker: id, face: "smile", text: pair[0] },
-      { speaker: "", text: pair[1] || "短い時間でも、会えるとぜんぜん違う。" },
-    ],
-  });
-  gainAffinity(id, 3);
-  bond.private = false;
-  addStamina(12 + (state.loveLevel[id] || 1) * 5); // 会うと元気が出る
   save();
   await maybeMilestone(id, before);
 }

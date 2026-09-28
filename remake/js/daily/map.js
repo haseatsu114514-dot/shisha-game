@@ -44,7 +44,7 @@ export function chooseSpot({ notice = "", eventPin = null } = {}) {
     const idleInfo = () => {
       info.replaceChildren(
         el("div.mi-banner", { text: "今日はどうする？" }),
-        el("p.mi-desc", { text: "気になる場所をタップ。残りの行動と所持金、体力に注意。" }),
+        el("p.mi-desc", [el("span", { text: "気になる場所をタップしよう。" }), el("br"), el("span", { text: "行動・所持金・体力に気をつけて。" })]),
         el("div.mi-foot", { text: movesLeft() }),
       );
     };
@@ -119,20 +119,11 @@ export function chooseSpot({ notice = "", eventPin = null } = {}) {
       pins.append(btn);
     }
 
-    // 恋人とのちょい会い（1日1回・行動を使わない）
-    const lovers = state.lovers || [];
-    const quick = lovers.length && state.loverQuickDay !== state.day
-      ? el("button.lover-quick", { dataset: { test: "lover-quick" }, onclick: () => { SE.select(); retire(root); resolve("__lover_quick"); } }, [
-        el("span.lq-heart", { text: "♥" }),
-        el("span", [el("b", { text: "恋人に会いに行く" }), el("small", { text: "行動を使わない・1日1回" })]),
-      ])
-      : null;
-
     idleInfo();
     const root = el("div.map", { dataset: { night: String(night) } }, [
       pins,
       notice ? el("div.map-notice", { text: notice }) : null,
-      el("div.map-side", [quick, el("div.map-time", { text: `${night ? "夜" : "昼"} / 栄` })]),
+      el("div.map-side", [el("div.map-time", { text: `${night ? "夜" : "昼"} / 栄` })]),
       info,
     ]);
     showScreen("map", root);

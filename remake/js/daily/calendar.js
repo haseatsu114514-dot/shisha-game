@@ -14,7 +14,7 @@ import { openShop, visitRin } from "./shop.js";
 import { morningMessages, openPhone } from "./phone.js";
 import { openStatus } from "./status.js";
 import { onAction as spinReel } from "./reel.js";
-import { maybeConfession, playDate, quickMeet } from "./romance.js";
+import { maybeConfession, playDate } from "./romance.js";
 
 const SLEEP_RECOVERY = 14;
 
@@ -115,7 +115,6 @@ async function takeAction() {
     eventPin: ev && !ev.done?.() ? ev.pin : null,
     notice: state.slot === 1 && inv ? "今夜は約束がある" : "",
   });
-  if (spotId === "__lover_quick") { await quickMeet(); return; } // 行動は使わない
   const spot = spotById(spotId);
   let used = true;
   if (spot.kind === "tonari") {

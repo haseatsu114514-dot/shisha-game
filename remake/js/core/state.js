@@ -62,7 +62,6 @@ export function newState() {
     lovePts: {},               // 恋人 -> 絆ポイント
     loverSince: {},            // 恋人 -> 付き合い始めた日（記念日LIMEの起点）
     lastDate: {},              // 恋人 -> 最後にデートした日
-    loverQuickDay: 0,          // 恋人とちょい会いした日（1日1回）
     loverEventsSeen: [],       // 見た恋愛イベント（lover_events.json）
     guilt: 0,                  // うしろめたさ（非表示）。2人以上と付き合うと積もる
     seed: Math.floor(Math.random() * 1e6),

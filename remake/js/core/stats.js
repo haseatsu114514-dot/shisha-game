@@ -110,7 +110,7 @@ const rankOf = (pts) => {
   return lv;
 };
 
-/** 恋人の絆はプライベート（デート・恋愛イベント・ちょい会い）でだけ深まる（master_spec #24） */
+/** 恋人の絆はプライベート（デート・恋愛イベント・恋人とのLIME）でだけ深まる（master_spec #24） */
 export const bond = { private: false };
 
 /**
