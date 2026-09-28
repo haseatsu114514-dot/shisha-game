@@ -2,15 +2,16 @@
 import { el, sleep } from "../core/util.js";
 import { layers, dayCard, modal, toast, fadeBlack, bannersIdle } from "../core/ui.js";
 import { state, save } from "../core/state.js";
-import { addStamina, gainAffinity, STAMINA_LOW, maxStamina } from "../core/stats.js";
+import { addStamina, gainAffinity, gainStat, STAMINA_LOW, maxStamina } from "../core/stats.js";
+import { DB } from "../core/data.js";
 import { SE, playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { initHud, showHud, updateHud, daysLeft, MAX_DAYS, setPhoneBadge } from "./hud.js";
 import { chooseSpot } from "./map.js";
-import { spotById, visitRival, visitSpot, restAtHome } from "./spots.js";
+import { spotById, visitRival, visitSpot, restAtHome, isClosed } from "./spots.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
-import { openShop, visitRin } from "./shop.js";
+import { openShop, visitRin, ownsFlavor } from "./shop.js";
 import { morningMessages, openPhone } from "./phone.js";
 import { openStatus } from "./status.js";
 import { onAction as spinReel, presentNow as showReelNow } from "./reel.js";
@@ -35,6 +36,10 @@ export async function runDaily(def) {
     if (!state.flags[`_morning_${state.day}`]) {
       state.flags[`_morning_${state.day}`] = true;
       await morning();
+      save();
+    }
+    if (state.day === 1 && state.slot === 0 && !state.flags._errand_scout_done) {
+      await day1Errands();
       save();
     }
     while (state.slot < 2) {
@@ -79,6 +84,48 @@ async function openMenu() {
   if (v === "title") { save(); location.reload(); }
 }
 
+// ---------------------------------------------------------------- 1日目の案内
+
+const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
+
+/**
+ * 1日目だけ、自由行動の前にスミさんのおつかいを2つ実地でやる（旧版 N18/N19）。
+ * ① Dr.fookah でミントを仕入れる（買い物は時間を使わない）→ ② KEMURIKUSA を客として偵察（行動1回＋交通費）。
+ * マップは行き先の1か所だけ選べる案内つき。DAY1 の夜からが本当の自由行動
+ */
+async function day1Errands() {
+  const f = state.flags;
+  const mint = DB.flavorById.mint;
+  if (!f._errand_shop_done && (!mint || ownsFlavor("mint") || state.money < mint.price)) f._errand_shop_done = true;
+  if (!f._errand_shop_done) {
+    if (!f._errand_shop_told) {
+      await play("remake_day1_errand_shop", { bg: TONARI_BG });
+      f._errand_shop_told = true;
+      save();
+    }
+    await chooseSpot({ guide: { pin: "shop", text: "スミさんに頼まれた仕入れへ。Dr.fookah をタップ！" } });
+    await openShop({ errand: "mint" });
+    f._errand_shop_done = true;
+    gainStat("insight", 2); // 仕入れの感覚を掴んだ
+    toast("スミ「上出来だ。……この調子で、ちゃんと店を回せ」", { ms: 3200 });
+    save();
+    await bannersIdle();
+  }
+  const naru = spotById("naru");
+  if (!naru || isClosed(naru) || state.money < (naru.cost || 0)) { f._errand_scout_done = true; return; }
+  if (!f._errand_scout_told) {
+    await play("remake_day1_errand_scout", { bg: TONARI_BG });
+    f._errand_scout_told = true;
+    save();
+  }
+  await chooseSpot({ guide: { pin: "naru", text: "ケムリクサへ偵察に。KEMURIKUSA をタップ！" } });
+  f._errand_scout_done = true;
+  await visitRival(naru);
+  state.visitedDay.naru = state.day;
+  state.slot++;
+  await afterAction();
+}
+
 // ---------------------------------------------------------------- 行動
 
 async function staminaGuard(cost) {
@@ -98,7 +145,12 @@ async function takeAction() {
   if (inv && inv.slot === state.slot) {
     state.pendingInvite = null;
     await fadeBlack(null, 300);
-    if (/^date_/.test(inv.event)) {
+    if (inv.event === "__sumi_baito__") {
+      // スミさんのLIMEで急に呼ばれたシフト。そのまま tonari で働く（給料に上乗せ）
+      state.visitedDay.tonari_baito = state.day;
+      state.visitedDay.tonari = state.day;
+      await doBaito({ called: true });
+    } else if (/^date_/.test(inv.event)) {
       await playDate(inv.sender); // 恋人とのデート（絆・ステ・体力はデート側で）
     } else {
       await play(inv.event);

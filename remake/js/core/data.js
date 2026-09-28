@@ -21,6 +21,7 @@ export const DB = {
   tips: [],
   kuji: { meta: {}, grades: {} },
   lover: {},          // 恋人まわりの文面（remake/data/lover.json）
+  statusTexts: { statPurpose: {}, statTierFx: {}, customerNotes: [] }, // ステの説明・★効果・常連ノート
   manifest: { portraits: {}, backgrounds: [], cgs: [], faceIcons: [], making: [], bgm: [] },
 };
 
@@ -51,6 +52,7 @@ export async function loadAll(onProgress = () => {}) {
     ["tips", `${ROOT}data/loading_tips.json`],
     ["kuji", `${ROOT}data/kuji.json`],
     ["lover", "data/lover.json"],
+    ["statusTexts", "data/status_texts.json"],
     ["manifest", "data/manifest.json"],
     ...DIALOGUE_FILES.map((f) => [`dlg:${f}`, `${ROOT}data/dialogue/${f}.json`]),
   ];
@@ -75,6 +77,7 @@ export async function loadAll(onProgress = () => {}) {
   DB.tips = raw.tips.tips;
   DB.kuji = raw.kuji;
   DB.lover = raw.lover;
+  DB.statusTexts = raw.statusTexts;
   DB.manifest = raw.manifest;
   WEBP = new Set(DB.manifest.webp || []);
   for (const [key, v] of Object.entries(raw)) {

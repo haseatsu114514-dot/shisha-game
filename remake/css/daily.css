@@ -280,6 +280,36 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 /* 行けない場所は「消えた」ではなく「無効化」に見せる（旧版 #6） */
 .spot-pin.off .shield { filter: grayscale(0.5) brightness(0.74); }
 .spot-pin.off { opacity: 0.9; }
+/* 1日目の案内: 行き先の1か所だけ光らせ、ほかは沈める */
+.spot-pin.guided-off { opacity: 0.45; }
+.spot-pin.guided-off .shield { filter: grayscale(0.7) brightness(0.7); }
+.spot-pin.guide { z-index: 6; }
+.spot-pin.guide .shield { animation: pin-guide 1.3s ease-in-out infinite; }
+@keyframes pin-guide {
+  0%, 100% { box-shadow: 0 8px 18px rgba(0, 0, 0, 0.55), 0 0 0 0 rgba(244, 210, 122, 0.8); }
+  50% { box-shadow: 0 8px 18px rgba(0, 0, 0, 0.55), 0 0 0 8px rgba(244, 210, 122, 0), 0 0 30px rgba(244, 210, 122, 0.7); }
+}
+.map-guide {
+  position: absolute;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 22px 9px 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff4d6;
+  white-space: nowrap;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(60, 38, 8, 0.94), rgba(22, 14, 30, 0.94));
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 18px rgba(244, 210, 122, 0.35);
+}
+.map-guide b { padding: 2px 10px; font-size: 11px; letter-spacing: 0.2em; color: #1a1018; background: var(--gold); border-radius: 999px; }
 .evt-badge {
   position: absolute;
   top: -8px;
@@ -447,6 +477,12 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 .shop-sub { font-size: 14px; color: var(--text-dim); }
 .shop-money { margin-left: auto; font-family: var(--font); font-size: 20px; color: var(--gold-hi); }
 .shop-tabs { display: flex; gap: 6px; margin: 14px 0 10px; }
+.shop-errand { margin-top: 12px; padding: 8px 14px; font-size: 15px; font-weight: 700; color: #fff4d6; background: linear-gradient(90deg, rgba(120, 84, 18, 0.55), rgba(255, 255, 255, 0.03)); border-left: 4px solid var(--gold); border-radius: 4px; }
+.shop-errand::before { content: "!"; display: inline-grid; place-items: center; width: 20px; height: 20px; margin-right: 10px; font-size: 13px; color: #1a1018; background: var(--gold); border-radius: 50%; }
+.shop-errand.done { color: #cdeccd; background: linear-gradient(90deg, rgba(40, 110, 60, 0.45), rgba(255, 255, 255, 0.03)); border-left-color: #7fd49a; }
+.shop-errand.done::before { display: none; }
+.shop-row.errand { outline: 2px solid var(--gold); background: rgba(244, 210, 122, 0.12); animation: errand-row 1.3s ease-in-out infinite; }
+@keyframes errand-row { 50% { box-shadow: 0 0 18px rgba(244, 210, 122, 0.45); } }
 .shop-tab { padding: 7px 20px; border-radius: 999px; border: 1px solid var(--panel-edge); background: transparent; color: var(--text-dim); cursor: pointer; font-size: 15px; }
 .shop-tab.on { background: var(--gold); color: #1b1208; border-color: var(--gold); font-weight: 700; }
 .shop-body { flex: 1; overflow-y: auto; padding-right: 8px; display: flex; flex-direction: column; gap: 6px; }
@@ -638,8 +674,8 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 @keyframes radar-grow { from { transform: scale(0.1); opacity: 0; } }
 .radar-label { fill: var(--text); font-size: 15px; font-weight: 700; font-family: var(--font); }
 .radar-star { fill: var(--gold); font-size: 11px; }
-.st-side { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-.st-row { --sc: var(--gold); display: flex; align-items: center; gap: 12px; padding: 7px 12px 7px 8px; background: linear-gradient(90deg, color-mix(in srgb, var(--sc) 12%, transparent), rgba(255, 255, 255, 0.03) 60%); border-left: 3px solid var(--sc); border-radius: 4px; }
+.st-side { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+.st-row { --sc: var(--gold); display: flex; align-items: center; gap: 12px; padding: 4px 12px 4px 8px; background: linear-gradient(90deg, color-mix(in srgb, var(--sc) 12%, transparent), rgba(255, 255, 255, 0.03) 60%); border-left: 3px solid var(--sc); border-radius: 4px; }
 .st-row.st-technique { --sc: var(--stat-technique); }
 .st-row.st-sense { --sc: var(--stat-sense); }
 .st-row.st-guts { --sc: var(--stat-guts); }
@@ -649,10 +685,26 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 .st-name { width: 56px; font-weight: 700; }
 .st-stars { font-size: 18px; color: var(--sc); letter-spacing: 0.08em; }
 .st-rank { color: var(--text-dim); font-size: 14px; }
+.st-row { cursor: pointer; }
+.st-row.sel { outline: 1px solid color-mix(in srgb, var(--sc) 70%, transparent); }
+.st-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.st-line { display: flex; align-items: center; gap: 12px; }
+.st-fx { font-size: 12px; color: color-mix(in srgb, var(--sc) 55%, #ddd); letter-spacing: 0.04em; }
+.st-fx::before { content: "▸ "; }
 .st-up { margin-left: auto; color: var(--good); font-weight: 800; }
-.st-misc { display: flex; gap: 24px; margin-top: 8px; font-size: 15px; color: var(--text); }
+.st-misc { display: flex; gap: 24px; margin-top: 4px; font-size: 15px; color: var(--text); }
 .st-note { font-size: 12px; color: var(--text-dim); margin: 4px 0 0; }
 .st-people { display: flex; flex-direction: column; gap: 8px; }
+.st-notes { display: flex; flex-direction: column; gap: 8px; }
+.note-progress { margin: 0; font-size: 14px; color: var(--gold); letter-spacing: 0.1em; }
+.note-list { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; max-height: 360px; overflow-y: auto; padding-right: 6px; align-content: start; }
+.note-entry { padding: 7px 12px; border-radius: 6px; background: rgba(255, 255, 255, 0.04); border-left: 3px solid rgba(255, 255, 255, 0.12); }
+.note-entry.found { border-left-color: var(--gold); background: linear-gradient(90deg, rgba(212, 175, 55, 0.1), rgba(255, 255, 255, 0.03) 70%); }
+.note-entry.locked .note-name { color: rgba(255, 255, 255, 0.3); letter-spacing: 0.3em; }
+.note-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.note-name { font-size: 14px; font-weight: 700; }
+.note-count { font-size: 12px; color: var(--gold); }
+.note-memo { margin: 3px 0 0; font-size: 12px; line-height: 1.5; color: var(--text-dim); }
 .pp-row { display: flex; align-items: center; gap: 14px; padding: 8px 14px; background: rgba(255, 255, 255, 0.04); border-radius: 8px; }
 .pp-face { width: 40px; height: 40px; border-radius: 50%; image-rendering: pixelated; background: #000; }
 .pp-face.ph { display: grid; place-items: center; background: var(--gold); color: #1b1208; font-weight: 800; }

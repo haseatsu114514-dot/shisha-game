@@ -21,8 +21,9 @@ const knowsOwner = (s) => !s.charId || !!state.met[s.charId];
 /**
  * @param opts.notice   上部に出す一言（「今夜は約束がある」など）
  * @param opts.eventPin 今夜イベントがある場所のピン id（! バッジ）
+ * @param opts.guide    { pin, title, text } 1日目の案内用。その1か所だけ選べるようにして光らせる
  */
-export function chooseSpot({ notice = "", eventPin = null } = {}) {
+export function chooseSpot({ notice = "", eventPin = null, guide = null } = {}) {
   return new Promise((resolve) => {
     const night = timeOfDay() === "night";
     const tod = night ? "night" : "day";
@@ -34,6 +35,7 @@ export function chooseSpot({ notice = "", eventPin = null } = {}) {
 
     const availability = (s) => {
       if (!isUnlocked(s)) return { ok: false, why: "locked" };
+      if (guide && s.id !== guide.pin) return { ok: false, why: "今はスミさんの頼みが先", guided: true };
       if (isClosed(s)) return { ok: false, why: "本日定休日", tag: "本日定休日" };
       if (s.kind !== "shop" && s.kind !== "rest" && s.kind !== "tonari" && visitedToday(s.id)) return { ok: false, why: "今日はもう行った", tag: "今日はもう行った" };
       if (s.cost && state.money < s.cost) return { ok: false, why: `お金が足りない（${yen(s.cost)}）`, tag: "お金が足りない" };
@@ -42,6 +44,14 @@ export function chooseSpot({ notice = "", eventPin = null } = {}) {
 
     const movesLeft = () => (state.slot >= 1 ? "夜 ── 今日はあと1回動ける" : "昼 ── 今日はあと2回動ける");
     const idleInfo = () => {
+      if (guide) {
+        info.replaceChildren(
+          el("div.mi-banner", { text: guide.title || "スミさんの頼み" }),
+          el("p.mi-desc", { text: guide.text }),
+          el("div.mi-foot", { text: movesLeft() }),
+        );
+        return;
+      }
       info.replaceChildren(
         el("div.mi-banner", { text: "今日はどうする？" }),
         el("p.mi-desc", [el("span", { text: "気になる場所をタップしよう。" }), el("br"), el("span", { text: "行動・所持金・体力に気をつけて。" })]),
@@ -100,11 +110,12 @@ export function chooseSpot({ notice = "", eventPin = null } = {}) {
       const known = knowsOwner(s);
       const face = locked ? null : spotFace(s);
       const badge = locked ? null
-        : eventPin === s.id ? el("i.evt-badge", { text: "!" })
+        : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
         : s.charId && known && av.ok && hasNewStory(s.charId) ? el("i.evt-badge.story", { text: "話" })
         : null;
       const sub = locked ? null : av.tag || (known ? s.sub : s.unknownSub || s.sub);
-      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok ? "" : ".off"}`, {
+      const guideCls = guide ? (guide.pin === s.id ? ".guide" : ".guided-off") : "";
+      const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
         onclick: () => (selected === s && av.ok ? go(s) : select(s, btn)),
@@ -123,6 +134,7 @@ export function chooseSpot({ notice = "", eventPin = null } = {}) {
     const root = el("div.map", { dataset: { night: String(night) } }, [
       pins,
       notice ? el("div.map-notice", { text: notice }) : null,
+      guide ? el("div.map-guide", { dataset: { test: "map-guide" } }, [el("b", { text: "GUIDE" }), el("span", { text: guide.text })]) : null,
       el("div.map-side", [el("div.map-time", { text: `${night ? "夜" : "昼"} / 栄` })]),
       info,
     ]);

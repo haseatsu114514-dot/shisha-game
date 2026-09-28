@@ -42,11 +42,14 @@ export async function tonariCustomer() {
 // ---------------------------------------------------------------- バイト
 
 const CHARM_BONUS = [0, 500, 1200, 2000, 3000]; // 魅力★で指名・リピートが増える
+const CALLED_BONUS = 5000; // スミさんに急に呼ばれた日の上乗せ（店からの給料。チップではない）
 
-export async function doBaito() {
+/** @param opts.called スミさんのLIMEで急に呼ばれたシフト（給料に上乗せ） */
+export async function doBaito({ called = false } = {}) {
   addStamina(-24);
   playBgm("tonari");
   state.baitoCount = (state.baitoCount || 0) + 1;
+  state.lastBaitoDay = state.day;
   await play("remake_baito_start", { bg: TONARI_BG });
   const n = state.baitoCount;
   // 正体を伏せた客が一度だけ混ざる（後の章・大会当日で回収される伏線）
@@ -55,18 +58,23 @@ export async function doBaito() {
     await play("ch1_rei_cameo", { bg: TONARI_BG });
   } else if (n >= 3 && state.day >= 4 && !state.flags._ev_reviewer_cameo) {
     state.flags._ev_reviewer_cameo = true;
+    state.notes.baito_incognito_reviewer = (state.notes.baito_incognito_reviewer || 0) + 1; // 常連ノート（C.STATIONで回収）
     await play("ch1_reviewer_cameo", { bg: TONARI_BG });
   } else if (n >= 4 && state.day >= 6 && !state.flags._ev_maezono_cameo) {
     state.flags._ev_maezono_cameo = true;
+    state.notes.baito_incognito_maezono = (state.notes.baito_incognito_maezono || 0) + 1; // 常連ノート（大会当日に回収）
     await play("ch1_maezono_cameo", { bg: TONARI_BG });
   } else {
     await customerEvent();
   }
   const bonus = CHARM_BONUS[star("charm") - 1];
-  const pay = 8000 + bonus;
+  const extra = called ? CALLED_BONUS : 0;
+  const pay = 8000 + bonus + extra;
   await play("remake_baito_end", { bg: TONARI_BG });
+  if (called) await play("remake_sumi_call_thanks", { bg: TONARI_BG });
   addMoney(pay);
   if (bonus) toast(`常連さんの指名が増えてきた。売上ボーナス +${bonus.toLocaleString()}円`, { kind: "good" });
+  if (extra) toast(`急なシフトの上乗せ +${extra.toLocaleString()}円`, { kind: "good" });
   await afterShift();
 }
 

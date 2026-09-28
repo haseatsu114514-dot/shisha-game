@@ -160,6 +160,11 @@ export async function visitSpot(spot) {
   } else if (n > 1 && spot.pool) {
     id = spot.pool[(n - 2) % spot.pool.length];
   }
+  // お忍び客の回収: tonari で覆面レビュアーを接客していたら、2回目以降の来店で記事の噂を聞く
+  if (spot.id === "c_station" && n > 1 && state.notes?.baito_incognito_reviewer && !state.flags._ev_reviewer_payoff && DB.dialogues.ch1_reviewer_payoff) {
+    state.flags._ev_reviewer_payoff = true;
+    id = "ch1_reviewer_payoff";
+  }
   await play(id, { bg: bgRef(spot.bg) }); // bgUrl が昼夜差分（_day/_night）を選ぶ
   gainStat(spot.stat, 3);
 }

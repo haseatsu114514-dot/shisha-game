@@ -10,8 +10,8 @@ import { el, sleep } from "../core/util.js";
 import { layers, gainCard } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { state, save, STAT_KEYS, STAT_JA } from "../core/state.js";
-import { gainStat } from "../core/stats.js";
-import { faceIconUrl } from "../core/data.js";
+import { gainStat, star, rankLabel } from "../core/stats.js";
+import { DB, faceIconUrl } from "../core/data.js";
 import { SE } from "../core/audio.js";
 
 // ================================================================ 純粋コア（旧版と同一）
@@ -246,10 +246,14 @@ export function onAction() {
   for (const r of spinSeries(reel, { chapterFirst })) {
     // 経験値として足す（章の上限・★段階の伸びにくさはふつうの伸びと同じ扱い）。通知は演出のときに出す
     selfGain = true;
+    const before = { ...state.stats };
     const got = gainStat(target, r.exp, { silent: true });
     selfGain = false;
-    r.target = target;
+    // 上限に届いた項目は gainStat が別の項目へ振り替えるので、実際に伸びた方を記録する
+    const key = STAT_KEYS.find((k) => state.stats[k] > before[k]) || target;
+    r.target = key;
     r.got = got;
+    if (star(key) > Math.max(1, Math.ceil(before[key] / 20))) r.starTo = star(key);
     const note = reel.note || (reel.note = {});
     note[r.role] = (note[r.role] || 0) + 1;
     if (r.overlap) note.cherryOverlap = (note.cherryOverlap || 0) + 1;
@@ -652,7 +656,12 @@ async function presentFreeze(r) {
 function announce(r) {
   if (!(r.got > 0) || r.quiet || !r.target) return;
   const word = r.exp >= 5 ? "大きく上がった" : r.exp >= 3 ? "上がった" : "少し上がった";
-  gainCard({ kind: "stat", stat: r.target, badge: { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "観" }[r.target], top: "PAKKI SLOT", main: STAT_JA[r.target], sub: word });
+  const fx = r.starTo ? DB.statusTexts?.statTierFx?.[r.target]?.[r.starTo - 1] : "";
+  gainCard({
+    kind: "stat", stat: r.target, badge: { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "観" }[r.target],
+    top: r.starTo ? `PAKKI SLOT ★${r.starTo}` : "PAKKI SLOT", main: STAT_JA[r.target],
+    sub: r.starTo ? `${word} ──「${rankLabel(r.target)}」` : word, fx,
+  });
 }
 
 // 初回のみ: パッキーのアプリ説明（4行・タップ送り）

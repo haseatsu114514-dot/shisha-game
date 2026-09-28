@@ -15,9 +15,10 @@ const SHOTS = process.env.SHOTS || "";
 const log = (...a) => console.log("[remake]", ...a);
 
 // 行動計画（上から順に消費）。shop:* は時間を使わない買い物、after:* はバイト後の過ごし方
+// DAY1 の昼は案内つきのおつかい（Dr.fookah でミント→KEMURIKUSA 偵察）で埋まる
 const PLAN = [
   "baito:sumi", "naru",
-  "shop:mint", "baito:holes",
+  "baito:holes",
   "adam", "customer",
   "minto", "baito:sumi",
   "naru", "rest",
@@ -58,6 +59,8 @@ let lastProgress = Date.now();
 let lastKey = "";
 let lastDay = null;
 let resumed = false;
+let guided = 0;
+let errandBlocked = false;
 const seenShots = new Set();
 const deadline = Date.now() + 12 * 60 * 1000;
 
@@ -151,6 +154,12 @@ for (;;) {
     continue;
   }
 
+  // 1日目の案内: 光っている1か所だけ選べる。計画は進めない
+  if (snap.screen === "map" && (await page.$('[data-test="map-guide"]'))) {
+    guided++;
+    await click(".spot-pin.guide"); await click('[data-test="map-go"]');
+    continue;
+  }
   if (snap.screen === "map") {
     const item = PLAN[planIdx] || "rest";
     const [kind, arg] = item.split(":");
@@ -175,6 +184,11 @@ for (;;) {
     continue;
   }
   if (snap.screen === "shop") {
+    // スミさんの頼み（ミント）を買うまでは店を出られない
+    if (await page.$(".shop-errand:not(.done)")) {
+      if (await click('[data-test="shop-leave"]')) { await page.waitForTimeout(200); errandBlocked ||= !!(await page.$(".shop-errand:not(.done)")); }
+      await click('[data-test="buy-mint"]');
+    }
     if (pendingShopBuy && pendingShopBuy !== "__upstairs") await click(`[data-test="buy-${pendingShopBuy}"]`);
     // くじを1回だけ引く（箱の並びが保存され、景品が手元に入ること）
     if (!kujiDrawn) {
@@ -213,6 +227,15 @@ if (s.reel.count < 20) throw new Error(`slot should spin once per action (count=
 if (!s.reel.introDone) throw new Error("slot intro not shown");
 // 夜の行動の分もその夜のうちに回し切る＝章の終わりに見せていない回転が残らない
 if (s.reel.pending.length) throw new Error(`slot spins left unshown: ${s.reel.pending.length}`);
+// 1日目の案内: 仕入れ→偵察の2回、案内マップを通った／ミントを買う前は店を出られない
+log(`day1 errands: guided=${guided} errandBlocked=${errandBlocked} scout=${!!s.flags._errand_scout_done} mint=${s.flavors.includes("mint")}`);
+if (guided !== 2 || !errandBlocked || !s.flags._errand_scout_done || !s.flavors.includes("mint")) throw new Error("day1 errands not completed as guided");
+// スミさんのバイト誘い（DAY3/8 は固定で届く。テストは誘いに乗る）
+log(`sumi baito invites: ${s.limeRead.filter((id) => id.startsWith("_sumi_baito_inv_")).join(",")} lastBaitoDay=${s.lastBaitoDay}`);
+if (!s.limeRead.includes("_sumi_baito_inv_d3")) throw new Error("sumi baito invite (DAY3) not delivered");
+// 常連ノート: バイトで接客した客が記録されている
+log(`notes: ${Object.keys(s.notes).length}`);
+if (!Object.keys(s.notes).length) throw new Error("customer notes empty");
 // くじ: 1枚引いて箱が減っている
 if (!(s.kuji.g500 && s.kuji.g500.drawn === 1)) throw new Error(`kuji not drawn: ${JSON.stringify(s.kuji)}`);
 // ch1 のソフトキャップ（48）を超えていない

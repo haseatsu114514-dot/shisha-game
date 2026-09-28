@@ -281,6 +281,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .gc-top { font-family: var(--font); font-size: 11px; letter-spacing: 0.28em; color: var(--gc); }
 .gc-main { font-size: 21px; font-weight: 700; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8); }
 .gc-sub { font-size: 12px; letter-spacing: 0.06em; color: var(--text-dim); }
+.gc-fx { margin-top: 3px; padding: 2px 8px; font-size: 12px; font-weight: 700; color: #1a1018; background: var(--gc); border-radius: 3px; align-self: flex-start; }
 .gain-card.st-technique { --gc: var(--stat-technique); }
 .gain-card.st-sense { --gc: var(--stat-sense); }
 .gain-card.st-guts { --gc: var(--stat-guts); }

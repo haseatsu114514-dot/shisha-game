@@ -42,6 +42,12 @@ export function morningMessages(opts = {}) {
     out.push(m);
     senders.add(m.sender);
   }
+  // スミさんのバイト誘い（旧版 N13）。誘いは1朝1件まで
+  const sumi = sumiBaitoInvite(opts);
+  if (sumi && out.length < 3 && !senders.has("sumi") && !state.pendingInvite && !out.some((x) => x.type === "invitation")) {
+    out.push(sumi);
+    senders.add("sumi");
+  }
   for (const m of DB.lime) {
     if (out.length >= 3) break;
     if (senders.has(m.sender) || !eligible(m, opts)) continue;
@@ -51,6 +57,34 @@ export function morningMessages(opts = {}) {
     senders.add(m.sender);
   }
   return out;
+}
+
+/**
+ * スミさんからの「急で悪い、昼のシフト入れるか？」。序盤の固定2回（DAY3/8）＋4日以上バイトに出ていない朝。
+ * 乗るとそのまま昼のシフトへ（行動1回・給料に上乗せ）。最終日の朝は来ない
+ */
+function sumiBaitoInvite({ tournamentDay = false } = {}) {
+  if (tournamentDay || state.chapter !== 1 || state.day >= 14) return null;
+  const id = `_sumi_baito_inv_d${state.day}`;
+  if (state.limeRead.includes(id)) return null;
+  const fixed = state.day === 3 || state.day === 8;
+  const slacking = state.day >= 5 && state.day - (state.lastBaitoDay || 0) >= 4;
+  if (!fixed && !slacking) return null;
+  return {
+    id,
+    sender: "sumi",
+    type: "invitation",
+    time_slot: "noon",
+    accept_event: "__sumi_baito__",
+    accept_text: "入ります！",
+    hint: "乗るとそのまま昼のシフトへ（行動を1回使う）。いつもの給料に上乗せがつく",
+    messages: [
+      "急で悪い。今日、昼のシフト入れるか？",
+      "常連の団体が入ってな。人手が足りん",
+      "……代わりと言っちゃなんだが、給料は弾むぞ",
+    ],
+    decline_response: { text: "おう、わかった。無理はするな" },
+  };
 }
 
 /** 顔ドット絵のアイコン。名乗る前の相手・絵の無い相手は頭文字の丸にする（正体を明かさない） */
@@ -138,20 +172,21 @@ export async function openPhone(messages, { title = null, time = "AM 8:12" } = {
 
     if (m.type === "invitation" && m.accept_event) {
       const polite = POLITE.has(m.sender);
-      const go = polite ? "行きます！" : "行く！";
+      const go = m.accept_text || (polite ? "行きます！" : "行く！");
       const no = polite ? "すみません、今日は難しいです……" : "ごめん、今日は難しい";
-      const first = !state.flags._hint_invite;
-      state.flags._hint_invite = true;
+      const hintKey = m.hint ? "_hint_sumi_baito" : "_hint_invite";
+      const first = !state.flags[hintKey];
+      state.flags[hintKey] = true;
       const pick = await choose(
         [{ label: `${go}（行動を1回使う）`, text: go, go: true }, { text: no, go: false }],
-        first ? "誘いに乗ると行動を1回使う。そのぶん、ふつうに会いに行くより仲が深まりやすい。断っても嫌われたりはしない" : null,
+        first ? m.hint || "誘いに乗ると行動を1回使う。そのぶん、ふつうに会いに行くより仲が深まりやすい。断っても嫌われたりはしない" : null,
       );
       await bubble(pick.text, true);
       state.flags[`_invited_${m.id}`] = true;
       if (pick.go) {
         const night = m.time_slot === "night";
         accepted.push({ event: m.accept_event, sender: m.sender, slot: night ? 1 : 0 });
-        note(night ? "今夜の約束ができた" : "このあと向かうことにした");
+        note(m.accept_event === "__sumi_baito__" ? "このあと tonari のシフトに入る" : night ? "今夜の約束ができた" : "このあと向かうことにした");
       } else {
         if (m.decline_response) await bubble(m.decline_response.text, false, m.sender);
         gainAffinity(m.sender, 1);

@@ -37,6 +37,7 @@ export function newState() {
     equip: { bowl: "silicone_bowl", hms: "lotos_hagal", charcoal: "flat_charcoal" },
     flavors: ["double_apple"], // 手持ちのフレーバー（1箱買えば章の間は使える）。本番用は Dr.fookah で仕入れる
     baitoCount: 0,
+    lastBaitoDay: 0,           // 最後にシフトに入った日（スミさんのバイト誘いの判定）
     usedBaito: [],
     contacts: [],              // LIME を交換した相手
     limeRead: [],              // 既読の LIME id

@@ -51,9 +51,9 @@ export function openStatus() {
   const body = el("div.st-body");
   const show = (id) => {
     tabs.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.tab === id));
-    body.replaceChildren(id === "me" ? meTab() : id === "people" ? peopleTab() : itemsTab());
+    body.replaceChildren(id === "me" ? meTab() : id === "people" ? peopleTab() : id === "notes" ? notesTab() : itemsTab());
   };
-  for (const [id, label] of [["me", "ステータス"], ["people", "人間関係"], ["items", "持ち物"]]) {
+  for (const [id, label] of [["me", "ステータス"], ["people", "人間関係"], ["notes", "常連ノート"], ["items", "持ち物"]]) {
     tabs.append(el("button.st-tab", { text: label, dataset: { tab: id }, onclick: () => show(id) }));
   }
   show("me");
@@ -62,13 +62,30 @@ export function openStatus() {
 
 const STAT_BADGE = { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "観" };
 
+/** 今の★で効いていること（★が上がるたびに変わる一言） */
+export function tierFx(k) {
+  return DB.statusTexts?.statTierFx?.[k]?.[star(k) - 1] || "";
+}
+
 function meTab() {
-  const rows = STAT_KEYS.map((k) => el(`div.st-row.st-${k}`, [
+  const note = el("p.st-note", { text: "項目をタップすると、何に効くかが分かる。淡い面は章のはじめ、明るい面が今の自分。" });
+  const rows = STAT_KEYS.map((k) => el(`div.st-row.st-${k}`, {
+    dataset: { test: `st-${k}` },
+    onclick: (e) => {
+      e.currentTarget.parentNode.querySelectorAll(".st-row").forEach((r) => r.classList.toggle("sel", r === e.currentTarget));
+      note.textContent = `【${STAT_JA[k]}】${DB.statusTexts?.statPurpose?.[k] || ""}`;
+    },
+  }, [
     el("span.st-badge", { text: STAT_BADGE[k] }),
-    el("span.st-name", { text: STAT_JA[k] }),
-    el("span.st-stars", { text: starText(k) }),
-    el("span.st-rank", { text: `「${rankLabel(k)}」` }),
-    state.stats[k] > (state.statsAtChapterStart[k] || 0) ? el("span.st-up", { text: "↑" }) : null,
+    el("div.st-info", [
+      el("div.st-line", [
+        el("span.st-name", { text: STAT_JA[k] }),
+        el("span.st-stars", { text: starText(k) }),
+        el("span.st-rank", { text: `「${rankLabel(k)}」` }),
+        state.stats[k] > (state.statsAtChapterStart[k] || 0) ? el("span.st-up", { text: "↑" }) : null,
+      ]),
+      el("span.st-fx", { text: tierFx(k) }),
+    ]),
   ]));
   const r = state.stamina / maxStamina();
   return el("div.st-me", [
@@ -79,7 +96,7 @@ function meTab() {
         el("div", { text: `所持金 ${yen(state.money)}` }),
         el("div", { text: `体力 ${r > 0.7 ? "元気" : r > 0.4 ? "ふつう" : r > 0.2 ? "疲れ気味" : "限界が近い"}` }),
       ]),
-      el("p.st-note", { text: "淡い面は章のはじめ。明るい面が今の自分。" }),
+      note,
     ]),
   ]);
 }
@@ -101,6 +118,22 @@ function peopleTab() {
     ]);
   });
   return el("div.st-people", rows.length ? rows : [el("p", { text: "まだ誰とも親しくなっていない。" })]);
+}
+
+/** 常連ノート: バイトで接客した客の記録（会った客は名前・回数・メモ、未接客は？？？） */
+function notesTab() {
+  const entries = Object.entries(DB.statusTexts?.customerNotes || {});
+  const notes = state.notes || {};
+  const found = entries.filter(([id]) => notes[id]).length;
+  return el("div.st-notes", [
+    el("p.note-progress", { text: `${found} / ${entries.length} 人` }),
+    el("div.note-list", entries.map(([id, e]) => notes[id]
+      ? el("div.note-entry.found", [
+        el("div.note-head", [el("span.note-name", { text: e.name }), el("span.note-count", { text: `×${notes[id]}` })]),
+        el("p.note-memo", { text: e.memo }),
+      ])
+      : el("div.note-entry.locked", [el("span.note-name", { text: "？？？" })]))),
+  ]);
 }
 
 function itemsTab() {

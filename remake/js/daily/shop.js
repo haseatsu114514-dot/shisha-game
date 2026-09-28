@@ -22,7 +22,11 @@ export const RIN_AWAY_DAY = 2; // day % 7 === 2 は凛が出張で不在
 export const ownsFlavor = (id) => (state.flavors || []).includes(id) || (id === "nightside_earlgrey" && state.flags._rin_sample);
 
 /** 店に入る。戻り値: "rin"（2階へ＝行動を使う）/ null（買い物だけで出る） */
-export function openShop() {
+/**
+ * Dr.fookah（1階物販）。戻り値: "rin"（2階へ）/ null（店を出た）
+ * @param opts.errand 1日目の案内: このフレーバーを買うまで店を出られない（スミさんの頼み）
+ */
+export function openShop({ errand = null } = {}) {
   return new Promise((resolve) => {
     setBg(bgUrl("bg_shop"));
     playBgm("daily_part");
@@ -31,8 +35,16 @@ export function openShop() {
     const tabs = el("div.shop-tabs");
     const money = el("div.shop-money");
 
+    const errandFlavor = errand ? DB.flavorById[errand] : null;
+    const errandName = errandFlavor ? errandFlavor.short_name || errandFlavor.name : "";
+    const errandBox = errand ? el("div.shop-errand") : null;
     const render = () => {
       money.textContent = `所持金 ${yen(state.money)}`;
+      if (errandBox) {
+        const done = ownsFlavor(errand);
+        errandBox.classList.toggle("done", done);
+        errandBox.textContent = done ? `✓ ${errandName}を仕入れた。店を出てスミさんに報告しよう` : `スミさんの頼み：${errandName}を仕入れる`;
+      }
       tabs.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
       body.replaceChildren(...(tab === "flavor" ? flavorRows() : tab === "equip" ? equipRows() : tab === "kuji" ? kujiRows(render) : sellRows()));
     };
@@ -48,7 +60,7 @@ export function openShop() {
 
     const flavorRows = () => SHOP_FLAVORS.map((id) => DB.flavorById[id]).filter(Boolean).map((f) => {
       const owned = ownsFlavor(f.id);
-      return el("div.shop-row", [
+      return el(`div.shop-row${errand === f.id && !owned ? ".errand" : ""}`, [
         el("span.shop-cat", { text: CAT_LABEL[f.category] || "", dataset: { cat: f.category } }),
         el("div.shop-main", [el("b", { text: f.short_name || f.name }), el("small", { text: f.description })]),
         owned
@@ -91,12 +103,12 @@ export function openShop() {
 
     const rinAway = state.day % 7 === RIN_AWAY_DAY;
     const upstairs = el("button.btn.primary", {
-      disabled: rinAway || state.visitedDay.rin === state.day || null,
+      disabled: errand || rinAway || state.visitedDay.rin === state.day || null,
       dataset: { test: "shop-upstairs" },
       onclick: () => { SE.select(); retire(root); resolve("rin"); },
     }, [
       el("span.btn-label", { text: "2階のショールームへ" }),
-      el("small.btn-desc", { text: rinAway ? "今日は担当者が出張中らしい" : state.met.rin ? "凛に会う（1行動使う）" : "上の階に誰かいる……？（1行動使う）" }),
+      el("small.btn-desc", { text: errand ? "今は仕入れの途中" : rinAway ? "今日は担当者が出張中らしい" : state.met.rin ? "凛に会う（1行動使う）" : "上の階に誰かいる……？（1行動使う）" }),
     ]);
 
     for (const [id, label] of [["flavor", "フレーバー"], ["equip", "機材"], ["kuji", "シーシャくじ"], ["sell", "売る"]]) {
@@ -104,11 +116,26 @@ export function openShop() {
     }
     const root = showScreen("shop", el("div.shop.panel", [
       el("div.shop-head", [el("h2", { text: "Dr.fookah" }), el("span.shop-sub", { text: "卸直営・1階物販" }), money]),
+      errandBox,
       tabs,
       body,
       el("div.shop-foot", [
         upstairs,
-        el("button.btn.ghost", { text: "店を出る", dataset: { test: "shop-leave" }, onclick: () => { SE.cancel(); retire(root); resolve(null); } }),
+        el("button.btn.ghost", {
+          text: "店を出る",
+          dataset: { test: "shop-leave" },
+          onclick: () => {
+            // 買い出し中は、頼まれた物を仕入れるまで出られない（詰みにはしない軽い押し戻し）
+            if (errand && !ownsFlavor(errand)) {
+              SE.error();
+              tab = "flavor";
+              render();
+              toast(`スミ「おい、${errandName}を仕入れてから戻ってこい」`, { kind: "warn" });
+              return;
+            }
+            SE.cancel(); retire(root); resolve(null);
+          },
+        }),
       ]),
     ]));
     render();

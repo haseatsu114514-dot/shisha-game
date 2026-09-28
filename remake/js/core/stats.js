@@ -82,7 +82,7 @@ function flushBatch() {
   const b = batch;
   batch = {};
   for (const [key, { total, starUp }] of Object.entries(b)) {
-    emit("stat-gain", { key, name: STAT_JA[key], word: gainWord(total), starUp, rank: rankLabel(key) });
+    emit("stat-gain", { key, name: STAT_JA[key], word: gainWord(total), starUp, rank: rankLabel(key), star: star(key) });
   }
 }
 

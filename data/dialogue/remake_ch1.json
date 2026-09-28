@@ -1309,6 +1309,75 @@
       ]
     },
     {
+      "dialogue_id": "remake_day1_errand_shop",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "始。お前の道具、まだ揃ってないだろ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "Dr.fookahに行って、ミントを仕入れてこい。大会の課題フレーバーだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい、行ってきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_day1_errand_scout",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "それと、もうひとつ。買い出しのついでだ──『ケムリクサ』を覗いてこい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "商店街の外れの店だ。大会で当日いきなり当たるより、先に相手の煙を知っとけ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "偵察っつっても身構えるな。客として行って、客として一服してこい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "それが一番よく分かる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "分かりました。……客として、ですね。行ってきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_sumi_call_thanks",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "急に悪いな、助かる。今日の分は色をつけとくぞ"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_round1_intro",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tournament_stage.png"
