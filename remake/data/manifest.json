@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-09-28 08:05 UTC",
+ "generated": "2026-09-28 11:51 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -217,11 +217,8 @@
  "cgs": [
   "cg_ch1_dr_kemuri_hook.png",
   "cg_ch1_minto_casual_reveal.png",
-  "cg_ch1_nagumo_smile.png",
-  "cg_ch1_sumi_secret.png",
   "cg_ch1_sumi_training.png",
   "cg_ch1_tournament_battle.png",
-  "cg_ch1_tournament_tension.png",
   "cg_ch1_tsumugi_heart_art.png"
  ],
  "faceIcons": [

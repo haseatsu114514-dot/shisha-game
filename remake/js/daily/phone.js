@@ -5,11 +5,12 @@ import { el, sleep } from "../core/util.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
 import { layers } from "../core/ui.js";
 import { state } from "../core/state.js";
-import { gainAffinity, affinityLevel, applyStats } from "../core/stats.js";
+import { gainAffinity, affinityLevel, applyStats, bond } from "../core/stats.js";
 import { SE } from "../core/audio.js";
 import { hooks } from "../vn/engine.js";
 import { formatHtml } from "../vn/text.js";
 import { hasContact } from "./spots.js";
+import { loverMessages, isLover } from "./romance.js";
 
 const HEROINES_ENCOURAGE = ["tsumugi", "minto", "rin"];
 // 目上の相手への返信は敬語（旧版 F6）。友達口調は同世代の相手だけ
@@ -29,15 +30,23 @@ function eligible(m, { tournamentDay = false } = {}) {
   return false;
 }
 
-/** 今朝届くメッセージ（1人1話題・最大3通） */
+/**
+ * 今朝届くメッセージ（1人1話題・最大3通）。恋人からの LIME（記念日・デートの誘い・朝のひとこと）を優先する
+ * @param opts.tournamentDay 大会当日の朝か / opts.fixedNight (day) => 夜の固定イベントがあるか
+ */
 export function morningMessages(opts = {}) {
   const out = [];
   const senders = new Set();
+  for (const m of loverMessages(opts)) {
+    if (out.length >= 3 || senders.has(m.sender)) continue;
+    out.push(m);
+    senders.add(m.sender);
+  }
   for (const m of DB.lime) {
     if (out.length >= 3) break;
     if (senders.has(m.sender) || !eligible(m, opts)) continue;
     // 夜の誘いは前日にもう約束がある日は来ない
-    if (m.type === "invitation" && state.pendingInvite) continue;
+    if (m.type === "invitation" && (state.pendingInvite || out.some((x) => x.type === "invitation"))) continue;
     out.push(m);
     senders.add(m.sender);
   }
@@ -151,7 +160,9 @@ export async function openPhone(messages, { title = null, time = "AM 8:12" } = {
       const r = await choose(m.replies);
       await bubble(r.text, true);
       if (r.response) await bubble(r.response, false, m.sender);
+      bond.private = isLover(m.sender); // 恋人とのやりとりは絆として積もる
       gainAffinity(m.sender, (r.affinity || 1) * 3);
+      bond.private = false;
     } else if (m.type === "rumor") {
       applyStats({ insight: 2 }); // 噂は読むだけで洞察が伸びる
     } else if (m.sender !== "???" && m.sender !== "sumi") {

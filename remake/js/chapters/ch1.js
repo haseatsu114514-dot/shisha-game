@@ -12,6 +12,8 @@ import { initHud, showHud, daysLeft, MAX_DAYS } from "../daily/hud.js";
 import { openPhone, morningMessages } from "../daily/phone.js";
 import { ownsFlavor } from "../daily/shop.js";
 import { radar } from "../daily/status.js";
+import { onDialogueEnter, maybeShuraba } from "../daily/romance.js";
+import { recordCg } from "../scenes/gallery.js";
 import { newSession, openBench, tickerSay } from "../craft/session.js";
 import { stepSetup, stepConcept, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
 import { runHoles } from "../craft/holes.js";
@@ -32,6 +34,8 @@ const PRIZE = 30000;
 // ---------------------------------------------------------------- 会話フック
 
 function setupHooks() {
+  hooks.onEnter = onDialogueEnter; // 告白の返事（accept/reject）・set_romance
+  hooks.onCg = recordCg;           // 見たCGはギャラリーで見返せる
   hooks.interpolate = (t) => t.replace(/\{daysLeft\}/g, String(daysLeft())).replace(/\{day\}/g, String(state.day));
   hooks.onChoice = (dialogueId, choiceId, branch) => {
     // チョイザップ入会（月額4,000円）
@@ -168,6 +172,7 @@ async function tournamentDay() {
   for (const id of ["naru", "adam", "minto", "nagumo", "maezono", "dr_kemuri"]) markMet(id);
   await smokeWipe(() => playBgm("bgm_tournament_wait"), { color: "dark" });
   await play("ch1_tournament_arrival");
+  await maybeShuraba(); // 恋人が2人以上いたら、ロビーで鉢合わせる
   await play("ch1_tournament_opening", { bg: STAGE });
   playBgm("bgm_tournament_edm");
   await entrance();

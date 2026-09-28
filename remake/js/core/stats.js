@@ -46,7 +46,11 @@ export function gainWord(total) {
   return total >= 8 ? "大きく上がった" : total >= 5 ? "かなり上がった" : total >= 3 ? "上がった" : "少し上がった";
 }
 
-export function gainStat(key, amount) {
+/**
+ * ステを伸ばす（経験値として足し、★段階ごとの伸びにくさと章の上限を通す）。戻り値=実際に伸びたポイント
+ * @param opts.silent 通知カードを出さない（スロットのように自前で見せるとき）
+ */
+export function gainStat(key, amount, { silent = false } = {}) {
   if (!STAT_KEYS.includes(key) || !(amount > 0)) return 0;
   const cap = statCap();
   // 上限に届いた項目は、まだ伸びる項目へ振り替える（伸びている実感を保つ）
@@ -63,6 +67,8 @@ export function gainStat(key, amount) {
   state.stats[key] = v;
   const got = v - before;
   if (got <= 0) return 0;
+  emit("stat-raw", { key, got }); // スロットの「直前の行動で伸びたステ」の記録用
+  if (silent) return got;
   const starUp = Math.ceil(v / 20) > Math.ceil(before / 20);
   batch[key] = batch[key] || { total: 0, starUp: false };
   batch[key].total += got;
@@ -91,21 +97,48 @@ export const AFFINITY_RANK_PTS = [0, 9, 20, 33, 48, 66];
 export const ROMANCEABLE = ["tsumugi", "minto", "rin", "ageha"];
 
 export function affinityLevel(id) {
+  if ((state.lovers || []).includes(id)) return 5; // 恋人は好感度MAX扱い（段階は絆Lvで別に持つ）
   const pts = state.affinity[id] || 0;
   let lv = 0;
   for (let i = 1; i < AFFINITY_RANK_PTS.length; i++) if (pts >= AFFINITY_RANK_PTS[i]) lv = i;
   return lv;
 }
 
-/** 好感度を足す。魅力★で少しだけ伸びやすい（×1.0〜1.2） */
+const rankOf = (pts) => {
+  let lv = 0;
+  for (let i = 1; i < AFFINITY_RANK_PTS.length; i++) if (pts >= AFFINITY_RANK_PTS[i]) lv = i;
+  return lv;
+};
+
+/** 恋人の絆はプライベート（デート・恋愛イベント・ちょい会い）でだけ深まる（master_spec #24） */
+export const bond = { private: false };
+
+/**
+ * 好感度を足す。魅力★で少しだけ伸びやすい（×1.0〜1.2）。
+ * 恋人は店で会っても深まらず、bond.private の間だけ絆ポイントに入る。
+ * ロマンス対象が5段階目に届いたら告白イベントを予約する（_confession_due）。
+ */
 export function gainAffinity(id, pts) {
   if (!id || !(pts > 0)) return;
+  const mult = 1 + 0.2 * tier01("charm");
+  if ((state.lovers || []).includes(id)) {
+    if (!bond.private) return;
+    const prevPts = state.lovePts[id] || 0;
+    state.lovePts[id] = prevPts + Math.round(pts * mult);
+    const before = state.loveLevel[id] || 1;
+    const after = Math.max(before, rankOf(state.lovePts[id]));
+    state.loveLevel[id] = after;
+    emit("affinity-gain", { id, level: after, levelUp: after > before, prevPts, pts: state.lovePts[id], bond: true });
+    return;
+  }
   const before = affinityLevel(id);
   const prevPts = state.affinity[id] || 0;
-  const mult = 1 + 0.2 * tier01("charm");
   state.affinity[id] = prevPts + Math.round(pts * mult);
   const after = affinityLevel(id);
   emit("affinity-gain", { id, level: after, levelUp: after > before, prevPts, pts: state.affinity[id] });
+  if (after >= 5 && ROMANCEABLE.includes(id) && !state.flags[`_friend_${id}`] && !state.flags._confession_due) {
+    state.flags._confession_due = id;
+  }
 }
 
 // ---------------------------------------------------------------- 体力

@@ -394,10 +394,9 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
   border-left: 3px solid var(--gold);
   white-space: nowrap;
 }
+.map-side { position: absolute; left: 176px; bottom: 16px; z-index: 5; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
 .map-time {
-  left: 16px;
-  bottom: 16px;
-  z-index: 3;
+  position: relative;
   padding: 9px 18px;
   font-family: var(--font-serif);
   font-size: 13px;

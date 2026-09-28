@@ -4,7 +4,7 @@
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 1;
+export const SCHEMA = 2; // 2: スロット・くじ・恋人を追加
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -45,6 +45,26 @@ export function newState() {
     best: {},                  // 練習ドリルの自己ベスト（0..2）
     rehearsal: null,           // 前日リハーサルの出来（great/good/rough）
     tournament: { attempts: 0, lastRank: null },
+    // MOKUMOKUパッキー（日常スロット）。抽選は seed＋総回転数の決定論＝ロードしても結果は変わらない
+    reel: {
+      seed: (Math.random() * 0x100000000) >>> 0,
+      count: 0, missRun: 0, bonusGap: 0, zoneLeft: 0, bonusCount: 0, freezeCount: 0,
+      pending: [],             // 演出待ちの結果（報酬は確定・適用済み）
+      introDone: false,
+      lastChapter: 0,
+      note: {},                // スロノート（役ごとの回数）
+    },
+    kuji: {},                  // くじの箱（grade -> {order, drawn, emptyDay}）
+    goods: [],                 // くじ等で得た売れる小物 [{name, sell}]
+    // 恋人（master_spec #24）: 好感度MAX→告白→付き合う/友達のまま。恋人の絆はデート等でだけ深まる
+    lovers: [],
+    loveLevel: {},             // 恋人 -> 絆Lv（1..5）
+    lovePts: {},               // 恋人 -> 絆ポイント
+    loverSince: {},            // 恋人 -> 付き合い始めた日（記念日LIMEの起点）
+    lastDate: {},              // 恋人 -> 最後にデートした日
+    loverQuickDay: 0,          // 恋人とちょい会いした日（1日1回）
+    loverEventsSeen: [],       // 見た恋愛イベント（lover_events.json）
+    guilt: 0,                  // うしろめたさ（非表示）。2人以上と付き合うと積もる
     seed: Math.floor(Math.random() * 1e6),
     playMs: 0,
   };

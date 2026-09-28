@@ -42,6 +42,11 @@ window.__remake = {
   DB,
   vnTest,
   craftTest,
+  // MOKUMOKUパッキー: 分布確認 __remake.reel.simulate(100000) ／演出だけ見る __remake.reel.force("big")
+  reel: {
+    async simulate(n = 100000) { return (await import("./daily/reel.js")).simulate(n); },
+    async force(role = "big") { return (await import("./daily/reel.js")).force(role); },
+  },
   // 開発用ジャンプ（コンソールから: __remake.dev.tournament() など）。※今のセーブを上書きする
   dev: {
     async tournament() {

@@ -7,6 +7,7 @@ import { state } from "../core/state.js";
 import { addMoney, addStamina } from "../core/stats.js";
 import { SE, playBgm } from "../core/audio.js";
 import { visitChar } from "./spots.js";
+import { kujiRows, goodsSellRows } from "./kuji.js";
 
 // 店頭に並ぶフレーバー（ch1）。定番＋レシピ帳のヒントで出てくる組み合わせの材料
 export const SHOP_FLAVORS = [
@@ -33,7 +34,7 @@ export function openShop() {
     const render = () => {
       money.textContent = `所持金 ${yen(state.money)}`;
       tabs.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.tab === tab));
-      body.replaceChildren(...(tab === "flavor" ? flavorRows() : tab === "equip" ? equipRows() : sellRows()));
+      body.replaceChildren(...(tab === "flavor" ? flavorRows() : tab === "equip" ? equipRows() : tab === "kuji" ? kujiRows(render) : sellRows()));
     };
 
     const buy = async (label, price, apply) => {
@@ -67,7 +68,7 @@ export function openShop() {
       ]);
     });
 
-    // 売れるのは機材だけ（フレーバーは開封済み扱いで中古に流せない）。装備中の物は売れない
+    // 売れるのは機材とくじの小物だけ（フレーバーは開封済み扱いで中古に流せない）。装備中の機材は売れない
     const sellRows = () => {
       const rows = state.owned.map((id) => DB.equipById[id]).filter((e) => e && !Object.values(state.equip).includes(e.id)).map((e) =>
         el("div.shop-row", [
@@ -84,7 +85,8 @@ export function openShop() {
             },
           }),
         ]));
-      return rows.length ? rows : [el("p.shop-empty", { text: "売れる機材がない（装備中の物は売れない）" })];
+      rows.push(...goodsSellRows(render));
+      return rows.length ? rows : [el("p.shop-empty", { text: "売れる物がない（装備中の機材は売れない）" })];
     };
 
     const rinAway = state.day % 7 === RIN_AWAY_DAY;
@@ -97,7 +99,7 @@ export function openShop() {
       el("small.btn-desc", { text: rinAway ? "今日は担当者が出張中らしい" : state.met.rin ? "凛に会う（1行動使う）" : "上の階に誰かいる……？（1行動使う）" }),
     ]);
 
-    for (const [id, label] of [["flavor", "フレーバー"], ["equip", "機材"], ["sell", "売る"]]) {
+    for (const [id, label] of [["flavor", "フレーバー"], ["equip", "機材"], ["kuji", "シーシャくじ"], ["sell", "売る"]]) {
       tabs.append(el("button.shop-tab", { text: label, dataset: { tab: id }, onclick: () => { tab = id; SE.click(); render(); } }));
     }
     const root = showScreen("shop", el("div.shop.panel", [

@@ -6,6 +6,7 @@ import { peekSave, load, newGame, wipeSave, config, saveConfig } from "../core/s
 import { playBgm, SE, applyVolumes } from "../core/audio.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { startNewGame, resumeGame } from "../chapters/ch1.js";
+import { openGallery } from "./gallery.js";
 
 const PHASE_LABEL = { opening: "プロローグ", daily: "日常", tournament: "SMOKE CROWN CUP 当日", cleared: "第1章クリア" };
 
@@ -35,6 +36,7 @@ export function showTitle() {
       if (!load()) return;
       smokeWipe(() => { resumeGame(); }, { color: "dark" });
     }, "title-continue", !saved),
+    item("GALLERY", "ギャラリー", openGallery, "title-gallery"),
     item("GLOSSARY", "用語集", () => modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] }), "title-glossary"),
     item("CONFIG", "設定", openConfig, "title-config"),
   );

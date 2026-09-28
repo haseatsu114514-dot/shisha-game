@@ -19,12 +19,15 @@ export const DB = {
   recipes: [],
   ngMixes: [],
   tips: [],
+  kuji: { meta: {}, grades: {} },
+  lover: {},          // 恋人まわりの文面（remake/data/lover.json）
   manifest: { portraits: {}, backgrounds: [], cgs: [], faceIcons: [], making: [], bgm: [] },
 };
 
 const DIALOGUE_FILES = [
   "ch1_main", "ch1_tournament", "ch1_sumi", "ch1_naru", "ch1_adam", "ch1_minto",
   "ch1_tsumugi", "ch1_rin", "ch1_ageha", "ch1_spots", "ch1_events", "ch1_incognito",
+  "confession", "lover_events", // 告白・恋人の節目イベント（正本は旧版と共通）
   "remake_ch1", // リメイク版の進行で使う短い場面（旧版 web/ は読まない）
 ];
 const BAITO_CATEGORIES = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);
@@ -46,6 +49,8 @@ export async function loadAll(onProgress = () => {}) {
     ["recipes", `${ROOT}data/recipes.json`],
     ["ngMixes", `${ROOT}data/ng_mixes.json`],
     ["tips", `${ROOT}data/loading_tips.json`],
+    ["kuji", `${ROOT}data/kuji.json`],
+    ["lover", "data/lover.json"],
     ["manifest", "data/manifest.json"],
     ...DIALOGUE_FILES.map((f) => [`dlg:${f}`, `${ROOT}data/dialogue/${f}.json`]),
   ];
@@ -68,6 +73,8 @@ export async function loadAll(onProgress = () => {}) {
   DB.recipes = raw.recipes.recipes;
   DB.ngMixes = raw.ngMixes.ng_mixes;
   DB.tips = raw.tips.tips;
+  DB.kuji = raw.kuji;
+  DB.lover = raw.lover;
   DB.manifest = raw.manifest;
   for (const [key, v] of Object.entries(raw)) {
     if (!key.startsWith("dlg:")) continue;

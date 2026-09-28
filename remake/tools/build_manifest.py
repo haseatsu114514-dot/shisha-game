@@ -120,13 +120,22 @@ def listing(sub: str, pattern: str = "*.png"):
     return sorted(p.name for p in d.glob(pattern) if p.stat().st_size > 0) if d.exists() else []
 
 
+def is_placeholder(path: Path) -> bool:
+    """文字だけの仮置き画像（無地の背景に説明文）を見分ける。ほぼ1色で埋まっていれば仮置きとみなす"""
+    im = Image.open(path).convert("RGB").resize((160, 90))
+    a = np.asarray(im).reshape(-1, 3).astype(int)
+    vals, counts = np.unique(a // 8, axis=0, return_counts=True)
+    return counts.max() / len(a) > 0.8
+
+
 def main():
     manifest = {
         "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
         "generated": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
         "portraits": portraits(),
         "backgrounds": listing("backgrounds"),
-        "cgs": listing("cgs"),
+        # 仮置きCG（文字だけの画像）は載せない＝場面では飛ばし、ギャラリーにも出さない
+        "cgs": [f for f in listing("cgs") if not is_placeholder(ASSETS / "cgs" / f)],
         "faceIcons": listing("ui/face_icons"),
         "making": listing("ui/making"),
         "makingBox": making_boxes(),

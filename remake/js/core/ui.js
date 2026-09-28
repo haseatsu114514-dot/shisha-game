@@ -15,17 +15,22 @@ export function initLayers() {
   on("stat-gain", ({ key, name, word, starUp, rank }) => {
     gainCard({ kind: "stat", stat: key, badge: STAT_BADGE[key], top: starUp ? "RANK UP" : "STATUS UP", main: name, sub: starUp ? `${word} ──「${rank}」` : word });
   });
-  on("affinity-gain", ({ id, level, levelUp, prevPts, pts }) => {
+  on("affinity-gain", ({ id, level, levelUp, prevPts, pts, bond }) => {
     if (!id || id === "???" || !state?.met?.[id]) return;
     gainCard({
       kind: "affinity",
       face: faceIconUrl(id),
       badge: [...displayName(id, state)][0],
-      top: levelUp ? "AFFINITY UP" : "AFFINITY",
+      top: bond ? (levelUp ? "BOND UP" : "BOND") : levelUp ? "AFFINITY UP" : "AFFINITY",
       main: displayName(id, state),
-      sub: levelUp ? `好感度が ♥${level} に上がった！` : "少し打ち解けた気がする",
+      sub: bond
+        ? (levelUp ? `恋人との絆が深まった（Lv.${level}）` : "心の距離が少し近づいた")
+        : levelUp ? `好感度が ♥${level} に上がった！` : "少し打ち解けた気がする",
       hearts: { from: heartState(prevPts), to: heartState(pts) },
     });
+  });
+  on("lovers", ({ id }) => {
+    gainCard({ kind: "affinity", face: faceIconUrl(id), badge: "♥", top: "NEW RELATIONSHIP", main: displayName(id, state), sub: "恋人になった" });
   });
 }
 

@@ -8,6 +8,7 @@ import { SE } from "../core/audio.js";
 import { STAMINA_LOW } from "../core/stats.js";
 import { SPOTS, SPOT_PREVIEW, isClosed, visitedToday, isUnlocked, hasNewStory } from "./spots.js";
 import { updateHud } from "./hud.js";
+import { mountReel } from "./reel.js";
 
 /** 看板に出す顔（面識のある相手だけ。tonari はスミさん） */
 function spotFace(s) {
@@ -118,13 +119,23 @@ export function chooseSpot({ notice = "", eventPin = null } = {}) {
       pins.append(btn);
     }
 
+    // 恋人とのちょい会い（1日1回・行動を使わない）
+    const lovers = state.lovers || [];
+    const quick = lovers.length && state.loverQuickDay !== state.day
+      ? el("button.lover-quick", { dataset: { test: "lover-quick" }, onclick: () => { SE.select(); retire(root); resolve("__lover_quick"); } }, [
+        el("span.lq-heart", { text: "♥" }),
+        el("span", [el("b", { text: "恋人に会いに行く" }), el("small", { text: "行動を使わない・1日1回" })]),
+      ])
+      : null;
+
     idleInfo();
     const root = el("div.map", { dataset: { night: String(night) } }, [
       pins,
       notice ? el("div.map-notice", { text: notice }) : null,
-      el("div.map-time", { text: `${night ? "夜" : "昼"} / 栄` }),
+      el("div.map-side", [quick, el("div.map-time", { text: `${night ? "夜" : "昼"} / 栄` })]),
       info,
     ]);
     showScreen("map", root);
+    mountReel(root); // 溜まったスロットの結果をここで見せる（報酬は行動時に確定済み）
   });
 }

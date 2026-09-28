@@ -13,6 +13,8 @@ import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { openShop, visitRin } from "./shop.js";
 import { morningMessages, openPhone } from "./phone.js";
 import { openStatus } from "./status.js";
+import { onAction as spinReel } from "./reel.js";
+import { maybeConfession, playDate, quickMeet } from "./romance.js";
 
 const SLEEP_RECOVERY = 14;
 
@@ -48,7 +50,7 @@ export async function runDaily(def) {
 async function morning() {
   playBgm("daily_part");
   await dayCard(`DAY ${state.day}`, `SMOKE CROWN CUP まで あと${daysLeft()}日`);
-  const msgs = morningMessages();
+  const msgs = morningMessages({ fixedNight: (d) => !!chapterDef.nightEvents[d] });
   if (msgs.length) {
     SE.phone();
     const accepted = await openPhone(msgs, { time: "AM 8:12" });
@@ -96,11 +98,16 @@ async function takeAction() {
   if (inv && inv.slot === state.slot) {
     state.pendingInvite = null;
     await fadeBlack(null, 300);
-    await play(inv.event);
-    state.flags[`_outing_done_${inv.sender}`] = true;
-    gainAffinity(inv.sender, 10);
-    addStamina(-10);
+    if (/^date_/.test(inv.event)) {
+      await playDate(inv.sender); // 恋人とのデート（絆・ステ・体力はデート側で）
+    } else {
+      await play(inv.event);
+      state.flags[`_outing_done_${inv.sender}`] = true;
+      gainAffinity(inv.sender, 10);
+      addStamina(-10);
+    }
     state.slot++;
+    await afterAction();
     return;
   }
   const ev = chapterDef.nightEvents[state.day];
@@ -108,6 +115,7 @@ async function takeAction() {
     eventPin: ev && !ev.done?.() ? ev.pin : null,
     notice: state.slot === 1 && inv ? "今夜は約束がある" : "",
   });
+  if (spotId === "__lover_quick") { await quickMeet(); return; } // 行動は使わない
   const spot = spotById(spotId);
   let used = true;
   if (spot.kind === "tonari") {
@@ -138,7 +146,15 @@ async function takeAction() {
   if (!used) return;
   state.visitedDay[spot.id] = state.day;
   state.slot++;
+  await afterAction();
+}
+
+/** 行動を1回使ったあと: スロットが1回転（結果は次にマップを開いたとき見せる）→ 告白の予約があれば */
+async function afterAction() {
+  spinReel();
+  save();
   await bannersIdle();
+  if (await maybeConfession(beat)) await bannersIdle();
 }
 
 // ---------------------------------------------------------------- 夜・翌朝

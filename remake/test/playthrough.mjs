@@ -52,6 +52,7 @@ await page.click('[data-test="title-new"]');
 let planIdx = 0;
 let pendingAfter = null;
 let pendingShopBuy = null;
+let kujiDrawn = false;
 let tournamentAttempt = 0;
 let lastProgress = Date.now();
 let lastKey = "";
@@ -99,6 +100,9 @@ for (;;) {
   if (snap.phone) { (await click('[data-test="reply-0"]')) || (await click('[data-test="phone-next"]')); continue; }
   // 体力の警告は素直に引き返す
   if (snap.modal) {
+    // スロットの初回説明（タップ送り）・くじの開封（タップで閉じる）
+    if (await click('[data-test="reel-intro"]')) continue;
+    if (await click('[data-test="kuji-reveal"]')) continue;
     if (await click('[data-test="status-close"]')) continue;
     const btns = await page.$$("#modal .modal-actions button");
     if (btns.length) { await btns[0].click().catch(() => {}); continue; }
@@ -172,6 +176,14 @@ for (;;) {
   }
   if (snap.screen === "shop") {
     if (pendingShopBuy && pendingShopBuy !== "__upstairs") await click(`[data-test="buy-${pendingShopBuy}"]`);
+    // くじを1回だけ引く（箱の並びが保存され、景品が手元に入ること）
+    if (!kujiDrawn) {
+      kujiDrawn = true;
+      await click('.shop-tab[data-tab="kuji"]');
+      await click('[data-test="kuji-g500"]');
+      await page.waitForSelector('.kuji-card.reveal', { timeout: 5000 });
+      await click('[data-test="kuji-reveal"]');
+    }
     const up = pendingShopBuy === "__upstairs" && (await page.$('[data-test="shop-upstairs"]:not([disabled])'));
     pendingShopBuy = null;
     await click(up ? '[data-test="shop-upstairs"]' : '[data-test="shop-leave"]');
@@ -195,6 +207,12 @@ const s = await page.evaluate(() => window.__remake.state);
 log(`attempts=${s.tournament.attempts} lastRank=${s.tournament.lastRank} total=${s.tournament.lastTotal}`);
 if (s.phase !== "cleared") throw new Error(`expected cleared, got ${s.phase}`);
 if (s.tournament.attempts < 2) throw new Error("expected a defeat before the win");
+// スロット: 日常の行動ごとに1回転（リプレイの追加回転を含む）。結果は全部演出まで消化されている
+log(`slot: spins=${s.reel.count} note=${JSON.stringify(s.reel.note)} pending=${s.reel.pending.length}`);
+if (s.reel.count < 20) throw new Error(`slot should spin once per action (count=${s.reel.count})`);
+if (!s.reel.introDone) throw new Error("slot intro not shown");
+// くじ: 1枚引いて箱が減っている
+if (!(s.kuji.g500 && s.kuji.g500.drawn === 1)) throw new Error(`kuji not drawn: ${JSON.stringify(s.kuji)}`);
 // ch1 のソフトキャップ（48）を超えていない
 for (const [k, v] of Object.entries(s.stats)) if (v > 48) throw new Error(`stat ${k}=${v} exceeds ch1 soft cap`);
 if (errors.length) { console.error(errors.join("\n")); throw new Error(`${errors.length} page errors`); }

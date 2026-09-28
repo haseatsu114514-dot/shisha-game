@@ -50,16 +50,18 @@ python3 -m http.server 8123
 ```
 remake/
   index.html
-  css/            base.css（トークン・共通UI）/ vn.css / daily.css / craft.css（大会＝黒×ネオン）
+  css/            base.css（トークン・共通UI）/ vn.css / daily.css / craft.css（大会＝黒×ネオン）/ reel.css（スロット）/ extras.css（恋人・くじ・ギャラリー）
   js/
     main.js       起動（データ読込→タイトル）
     core/         util / data（ローダ・アセット解決）/ state（状態・セーブ）/ stats / audio / ui / stage
     vn/           会話エンジン（dialogue JSON 互換・autoWrap・立ち絵）
-    daily/        日常パート（マップ・スポット・バイト・ショップ・ステータス・LIME）
+    daily/        日常パート（マップ・スポット・バイト・ショップ・くじ・スロット・恋人・ステータス・LIME）
     craft/        シーシャ作り（工程ミニゲーム・採点・FLAVOR TRIAL・結果発表）
     chapters/     章の台本（ch1.js）
+    scenes/       タイトル・ギャラリー（見たCGは端末単位で記録＝はじめからやり直しても消えない）
   data/
     manifest.json    立ち絵の余白計測・アセット一覧（tools/build_manifest.py で生成）
+    lover.json       恋人のLIME・デート・ちょい会いの文面
   tools/build_manifest.py
   test/playthrough.mjs   第1章の通しテスト（優勝ルート／敗北ルート）
 ```
@@ -68,6 +70,7 @@ remake/
 （Pillow・numpy・scipy が必要）。立ち絵の余白と足元位置、作業台素材の中身の範囲（bbox）を測って
 `remake/data/manifest.json` に書き出す。作業台の一台（ガラス台→ステム→トレイ→ボウル→アルミ→炭）は
 この実測値から位置を計算して組むので、素材を差し替えても配置がずれない。それ以外の変更にビルドは要らない。
+文字だけの仮置きCG（無地に説明文の画像）は一覧に載せない＝場面では飛ばし、ギャラリーにも出さない。本物の絵に差し替えて再実行すれば出る。
 
 ## 第1章の流れ（実装済み）
 
@@ -79,6 +82,15 @@ remake/
    - Dr.fookah（フレーバー・機材の売買／2階＝凛）・カフェ・観音堂・チョイザップ・C.STATION・家に帰る
    - 体力・所持金・ステ（★表示のみ・章ソフトキャップ）・好感度（5段階）・LIME
    - 夜の固定イベント（DAY2/4/5/7/9/10/12/13/14）。DAY13は前日リハーサル（通し）
+   - **MOKUMOKUパッキー**（日常スロット・`daily/reel.js`）: 行動を1回使うたびに1回転。結果と報酬（直前の行動で伸びたステへの上乗せ）は
+     行動した瞬間に確定し、演出は次にマップを開いたときマップ左下の筐体で見せる。抽選（役・確率・天井・裏確変）は旧版 `web/js/reel.js` と同一、
+     仕様の正典は `docs/pakki_slot_spec.md`。初回だけパッキーのアプリ説明
+   - **シーシャくじ**（Dr.fookah の「シーシャくじ」タブ・`daily/kuji.js`）: `data/kuji.json` のボックス制。箱の並びは作った時点で保存＝ロードで変わらない。
+     景品の小物は「売る」タブで換金できる
+   - **恋人**（`daily/romance.js`）: 好感度MAX（つむぎ・みんと・凛）→ 告白するか選ぶ → `confession.json` で付き合う／友達のまま。
+     恋人の絆（Lv1〜5）はデート（LIMEの誘い）・ちょい会い（マップの「恋人に会いに行く」＝行動を使わない・1日1回）・恋人のLIMEでだけ深まり、
+     Lvが上がると `lover_events.json` の節目イベント。恋人のLIME・デートの文面は `remake/data/lover.json`（旧版の定数から抽出）
+   - **修羅場**: 恋人が2人以上いると、大会当日の会場ロビーで鉢合わせる（`remake_shuraba_*`）
 4. DAY15 SMOKE CROWN CUP（4人一斉・1試合）
    - R1 組み立て: 機材 → コンセプト2つ → 配合（ミント2g以上）→ 詰め → HOLE RHYTHM → HEAT IGNITION → 炭配置 → 蒸らし（雑念弾幕）
    - R2 吸い出し・提供（温度合わせ）／R3 熱管理
@@ -101,5 +113,6 @@ node remake/test/playthrough.mjs            # 優勝ルート＋敗北ルート
 ## まだ無いもの（次の作業候補）
 
 - 第2章以降（章の台本 `chapters/ch2.js` を足す形で拡張できる構造にしてある）
-- 恋人システム・修羅場・くじ・日常スロット・ギャラリー（旧版にはある）
+- 恋人になってからの章をまたぐ要素（ch4 ドバイに来る／来ない・エンディングの修羅場）は第2章以降と一緒に
+- 占い師（旧版の路上占い）・家シーシャ・レシピ帳の画面
 - BGMの細かい出し分け（現状は場面ごとの基本曲のみ）

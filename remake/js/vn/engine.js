@@ -21,6 +21,8 @@ export const hooks = {
   interpolate: null,   // (text) => text（{daysLeft} など）
   evalCondition: null, // (line) => boolean | undefined（未知の条件タイプ）
   contextChar: null,   // 「【好感度】が上がった」の宛先（いま会っている相手）
+  onEnter: null,       // (dialogueId, dlg) => void … 会話に入った瞬間（jump 先も含む）。metadata.set_romance 等を拾う
+  onCg: null,          // (cgId) => void … CG を見た（ギャラリーの解放）
 };
 
 const log = [];
@@ -116,6 +118,7 @@ export function play(idOrDlg, opts = {}) {
       slots: {},
       speaker: "",
       openLockUntil: performance.now() + 320,
+      visited: [dlg.dialogue_id || ""],
     };
     autoFxGap = 0;
     dom.portraits.replaceChildren();
@@ -127,6 +130,7 @@ export function play(idOrDlg, opts = {}) {
     const bg = opts.bg || meta.bg;
     if (bg) sceneSetBg(bg);
     dom.effect.dataset.effect = meta.effect || "";
+    if (hooks.onEnter) hooks.onEnter(dlg.dialogue_id || "", dlg);
     layers.vn.classList.add("active");
     document.body.classList.add("in-vn");
     prefetch(dlg);
@@ -172,7 +176,7 @@ function finish() {
   dom.effect.dataset.effect = "";
   layers.vn.classList.remove("sepia");
   setSkip(false);
-  r.resolve({ id: r.id });
+  r.resolve({ id: r.id, visited: r.visited });
 }
 
 function advance() {
@@ -224,7 +228,9 @@ function jumpTo(id) {
   if (!target) return;
   running.queue = (target.lines || []).slice();
   running.branches = target.branches || {};
+  running.visited.push(id);
   if (target.metadata?.bg) sceneSetBg(target.metadata.bg);
+  if (hooks.onEnter) hooks.onEnter(id, target);
 }
 
 function handleCondition(line) {
@@ -280,6 +286,7 @@ function showCg(id) {
   if (!url) return; // 素材待ちのCGは黙って飛ばす
   dom.cg.style.backgroundImage = `url("${url}")`;
   dom.cg.classList.add("show");
+  if (hooks.onCg) hooks.onCg(id);
 }
 
 // ---------------------------------------------------------------- 台詞行

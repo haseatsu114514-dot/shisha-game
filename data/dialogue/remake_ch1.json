@@ -1325,6 +1325,362 @@
           "text": "（いつも通りだ。炭を切って、詰めて、出す。それだけだ）"
         }
       ]
+    },
+    {
+      "dialogue_id": "remake_shuraba_minto_tsumugi",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付を済ませてロビーに戻ると、見知った顔がふたつ、同じベンチに並んでいた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん。応援、来ました"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくーん！ みんと、最前列の席とってあるからね♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ふたりの視線が、俺を通り越して、ゆっくりと互いに向いた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……えっと。tonariの常連さん、だよね？ はじめくんのお友達？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……お友達、では。……はじめさんとは、その"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（待て待て待て。どっちの話も、この先を聞いたら終わる）"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "「その」？ ……ふうん。みんともね、はじめくんとは「その」なんだ♡"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "……はじめさんの顔。いま、すごく濁った色、です"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "ぷぷぷっ！ 出場者のみなさーん、控室に集合だよ〜！ 遅れたら失格〜♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "い、行ってきます！"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "……うん、いってらっしゃい。お話は、終わってからゆっくりね♡"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。……ちゃんと、見てます、……ぜんぶ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "背中に刺さる視線がある。どれも、たぶん本気だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（炭より先に、俺が焼かれそうだ。……集中しろ、今は一台に）"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_shuraba_rin_tsumugi",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付を済ませてロビーに戻ると、見知った顔がふたつ、同じ柱の前に立っていた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "おはよう、モルモットくん。最重要サンプルの品質管理に来たわ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん、……応援、来ました"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……あら。tonariの常連の子よね。いつも奥の席で描いてる"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。……あなたは、問屋街の。……はじめさんの、なんですか"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "私？ ……そうね。彼の、いちばん大事なサンプルの管理者、かな"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "……サンプル。……わたしは、はじめさんの、その……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（やめてくれ、その「その」の続きは今じゃない！）"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "……なるほど。データが一件、合わないわね、……モルモットくん？"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "ぷぷぷっ！ 出場者のみなさーん、控室に集合だよ〜！ 遅れたら失格〜♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "は、はい！ 今行きます！"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……逃げたわね。いいわ、検証は結果が出てからにしてあげる"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……がんばって、ください。……それから、あとで、お話を"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "背中に刺さる視線がある。どれも、たぶん本気だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（炭より先に、俺が焼かれそうだ。……集中しろ、今は一台に）"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_shuraba_minto_rin",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付を済ませてロビーに戻ると、見知った顔がふたつ、同じ自販機の前にいた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくーん！ 応援にきたよっ♡ 今日のみんと、全力で推し活です！"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "おはよう、モルモットくん。……今日は品質管理の立ち会いよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……品質管理？ ……あ、Dr.fookahの2階のお姉さん、ですよね"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "ええ。そちらはPEPPERMINTの店長さん。……ずいぶん親しげね、彼と"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "えへへ、みんとの大事な人なので♡ ……そちらこそ、朝からご熱心で"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "大事なサンプルなの。……あら、奇遇。私にとっても「大事」みたい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（ふたりとも笑ってる。笑ってるのに、ロビーの気温が下がっていく）"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "ぷぷぷっ！ 出場者のみなさーん、控室に集合だよ〜！ 遅れたら失格〜♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "い、行ってきます！"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "いってらっしゃい♡ ……終わったら、ちゃんと説明してね？"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "結果が出たら、次は君の検証の番、……逃げないように"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "背中に刺さる視線がある。どれも、たぶん本気だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（炭より先に、俺が焼かれそうだ。……集中しろ、今は一台に）"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_shuraba_all",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付を済ませてロビーに戻ると、見知った顔が三つ、ひとつのベンチに並んでいた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくーん！ 応援にきたよ♡ ……って、あれ？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん。……応援、来ました、……みなさんも？"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "おはよう、モルモットくん。……ずいぶん賑やかな応援団ね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "三人の視線が、俺を通り越して、ゆっくりと互いに向いた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……ねえ。もしかして三人とも、はじめくんの「その」だったり……する？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "……その、です"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "……その、ね。……データが三件、きれいに衝突してるわ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（終わった。大会より先に、俺の人生の決勝が始まってる）"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "ぷぷぷっ！ 出場者のみなさーん、控室に集合だよ〜！ 遅れたら失格〜♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "い、行ってきます！！"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "……うん。いってらっしゃい♡ お話は、あとで。三人で、ゆっくりね"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "結果を出してきなさい。……言い訳は、そのあとで聞く"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……がんばって、ください。……それは、本当、です"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "背中に刺さる視線がある。どれも、たぶん本気だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（炭より先に、俺が焼かれそうだ。……集中しろ、今は一台に）"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
     }
   ]
 }

@@ -89,10 +89,14 @@ function peopleTab() {
   const rows = PEOPLE.filter((id) => state.met[id] || id === "sumi").map((id) => {
     const lv = affinityLevel(id);
     const face = faceIconUrl(id);
-    return el("div.pp-row", [
+    const lover = (state.lovers || []).includes(id);
+    const bondLv = state.loveLevel?.[id] || 1;
+    return el(`div.pp-row${lover ? ".lover" : ""}`, [
       face ? el("img.pp-face", { src: face, alt: "" }) : el("span.pp-face.ph", { text: displayName(id, state)[0] }),
       el("span.pp-name", { text: displayName(id, state) }),
-      el("span.pp-hearts", { text: "♥".repeat(lv) + "♡".repeat(5 - lv) }),
+      lover
+        ? el("span.pp-hearts", { text: `恋人　絆 ${"♥".repeat(bondLv)}${"♡".repeat(5 - bondLv)}` })
+        : el("span.pp-hearts", { text: "♥".repeat(lv) + "♡".repeat(5 - lv) + (state.flags[`_friend_${id}`] ? "　友達" : "") }),
       state.contacts.includes(id) ? el("span.pp-lime", { text: "LIME" }) : null,
     ]);
   });
