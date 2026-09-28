@@ -300,6 +300,7 @@
   {
     "id": "rin",
     "name": "匂坂 凛（さぎさか りん）",
+    "display_name": "凛",
     "role": "heroine_ch1",
     "age": 27,
     "nationality": "Japan",
@@ -324,6 +325,7 @@
   {
     "id": "ageha",
     "name": "アゲハ / 宵野 葉子（よいの ようこ）",
+    "display_name": "あげは",
     "role": "rival_ch2",
     "age": 22,
     "nationality": "Japan",
@@ -369,6 +371,7 @@
   {
     "id": "kumicho",
     "name": "シーシャ組長 / 神崎 竜二（かんざき りゅうじ）",
+    "display_name": "神崎竜二",
     "role": "rival_ch2",
     "age": 39,
     "nationality": "Japan",
@@ -690,6 +693,7 @@
   {
     "id": "customer",
     "name": "客",
+    "display_name": "お客さん",
     "role": "mob",
     "description": "mukai の一般客"
   },

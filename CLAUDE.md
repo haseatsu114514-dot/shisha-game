@@ -53,6 +53,17 @@ normal PR. Stop and fix the Git layout first.
 ゲームの正式タイトルは **「水煙前線 -EN:CODE-」**。
 本作は一人称視点で、主人公はじめの立ち絵は基本表示しない。
 
+### リメイク版（remake/）── 別バージョンとして作り直し中（2026-09-28 着手）
+
+オーナー指示で、ブラウザ版を**別バージョンとして作り直している**。**旧版 `web/` はそのまま残す**（削除・改変しない）。
+
+- 場所: `remake/`（ESモジュール・ビルド不要。`data/*.json` と `assets/` を実行時に直接読む）。設計・進捗は `remake/README.md`
+- セーブは別キー（`suien_remake_save`）。旧版と干渉しない
+- リメイク版の進行だけで使う短い場面は `data/dialogue/remake_ch1.json`（旧版は読まない・`lint_dialogue.py` の対象）
+- テスト: `node remake/test/playthrough.mjs`（第1章通し：大会で一度負けて GAME OVER → 再挑戦 → 南雲票で優勝 → クリア）
+- 立ち絵・背景・CG を追加/差し替えたら `python3 remake/tools/build_manifest.py`（`remake/data/manifest.json` を再生成）
+- 正史・仕様の正本は旧版と共通（本ファイル・`docs/master_spec.md`・`brand/story_and_structure.md`・`data/*.json`）
+
 ### Godot版は削除済み（web/ が唯一の正史・2026-06-15）
 
 Godot版（`scripts/*.gd` / `scenes/` / `*.tscn` / `*.import` / `*.uid` / `project.godot`）は
