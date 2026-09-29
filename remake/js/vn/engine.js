@@ -23,6 +23,7 @@ export const hooks = {
   contextChar: null,   // 「【好感度】が上がった」の宛先（いま会っている相手）
   onEnter: null,       // (dialogueId, dlg) => void … 会話に入った瞬間（jump 先も含む）。metadata.set_romance 等を拾う
   onCg: null,          // (cgId) => void … CG を見た（ギャラリーの解放）
+  onLine: null,        // (dialogueId, line) => void … 台詞を1行出すたび（場面演出を台詞に合わせる用）
 };
 
 const log = [];
@@ -316,6 +317,7 @@ function showCg(id) {
 
 function showLine(line) {
   const r = running;
+  if (hooks.onLine) hooks.onLine(r.id, line);
   const speaker = String(line.speaker || "");
   const face = String(line.face || "");
   r.speaker = speaker;

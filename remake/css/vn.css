@@ -178,7 +178,7 @@ body.in-vn #bg { transition: filter 0.4s; }
   position: absolute;
   left: 0;
   right: 0;
-  top: 120px;
+  bottom: 226px; /* テキスト枠（下から22px＋高さ178px）のすぐ上に並べる */
   z-index: 7;
   display: none;
   flex-direction: column;

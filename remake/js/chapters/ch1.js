@@ -1,7 +1,8 @@
 // 第1章「一吸目（ファーストドロー）」── SMOKE CROWN CUP 編 の台本。
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
-import { bgUrl, faceIconUrl, realName, displayName } from "../core/data.js";
+import { DB, bgUrl, faceIconUrl, realName, displayName } from "../core/data.js";
+import { mountColdOpen } from "../scenes/coldopen.js";
 import { layers, showScreen, clearScreen, setBg, smokeWipe, chapterTitle, dayCard, roundCut, toast, bannersIdle, retire, retireScreen } from "../core/ui.js";
 import { state, save, markMet, setFlag, flag } from "../core/state.js";
 import { addMoney, maxStamina, gainStat } from "../core/stats.js";
@@ -59,12 +60,14 @@ export async function startNewGame() {
   setupHooks();
   clearScreen();
   stopBgm();
-  setBg(null, { instant: true });
-  // コールドオープン: 1年後のドバイ決勝の一瞬（顔は見せない）
-  layers.fx.append(el("div.cold-open", [el("i.co-l"), el("i.co-r"), el("i.co-crowd")]));
-  SE.crowd(3);
-  await play("ch1_cold_open");
-  document.querySelector(".cold-open")?.remove();
+  await setBg(null, { instant: true }); // 先に暗転を置いてから場面を重ねる（後から来た暗転に場面が隠れないように）
+  // コールドオープン: 1年後の世界大会の決勝の一瞬（顔も会場の全景も見せない）。
+  // 場面は背景レイヤーに置く＝会話の文字より奥（手前に置くと文字が隠れて真っ暗に見えていた）
+  const scene = mountColdOpen();
+  const co = DB.dialogues.ch1_cold_open;
+  await play(co ? { ...co, metadata: { ...(co.metadata || {}), effect: "" } } : "ch1_cold_open"); // 下の煙もやは場面側で描く
+  scene.stop();
+  await sleep(600);
   await chapterTitle({ no: "第一章", name: "一吸目", read: "ファーストドロー ── FIRST DRAW", sub: "SMOKE CROWN CUP 編" });
   playBgm("tonari");
   await play("ch1_opening", { bg: TONARI });
