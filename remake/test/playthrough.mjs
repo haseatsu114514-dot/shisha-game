@@ -60,6 +60,8 @@ let lastKey = "";
 let lastDay = null;
 let resumed = false;
 let guided = 0;
+let limeCoach = 0;
+let limeOpened = 0;
 let errandBlocked = false;
 const seenShots = new Set();
 const deadline = Date.now() + 12 * 60 * 1000;
@@ -99,8 +101,14 @@ for (;;) {
     throw new Error(`stuck: ${key}`);
   }
 
-  // LIME: 返信は先頭の選択肢、読み終えたら閉じる
-  if (snap.phone) { (await click('[data-test="reply-0"]')) || (await click('[data-test="phone-next"]')); continue; }
+  // LIME: 返信は押せる先頭の選択肢（誘いには乗る）→ 未読のトークを順に開く → 一覧へ戻る → 閉じる
+  if (snap.phone) {
+    (await click('.lime-reply[data-test^="reply-"]:not([disabled])'))
+      || (await click(".lime-chat-row.unread"))
+      || (await click('[data-test="phone-next"]'))
+      || (await click('[data-test="phone-close"]'));
+    continue;
+  }
   // 体力の警告は素直に引き返す
   if (snap.modal) {
     // スロットの初回説明（タップ送り）・くじの開封（タップで閉じる）
@@ -160,6 +168,9 @@ for (;;) {
     await click(".spot-pin.guide"); await click('[data-test="map-go"]');
     continue;
   }
+  // LIME: 朝は通知だけ。はじめて届いた日はアイコンが照らされる（案内）→ 以後は赤丸があれば自分で開く
+  if (snap.screen === "map" && (await click('[data-test="coach-lime"]'))) { limeCoach++; continue; }
+  if (snap.screen === "map" && (await page.$(".hud-lime.has")) && (await click('[data-test="hud-phone"]'))) { limeOpened++; continue; }
   if (snap.screen === "map") {
     const item = PLAN[planIdx] || "rest";
     const [kind, arg] = item.split(":");
@@ -233,6 +244,12 @@ if (guided !== 2 || !errandBlocked || !s.flags._errand_scout_done || !s.flavors.
 // スミさんのバイト誘い（DAY3/8 は固定で届く。テストは誘いに乗る）
 log(`sumi baito invites: ${s.limeRead.filter((id) => id.startsWith("_sumi_baito_inv_")).join(",")} lastBaitoDay=${s.lastBaitoDay}`);
 if (!s.limeRead.includes("_sumi_baito_inv_d3")) throw new Error("sumi baito invite (DAY3) not delivered");
+// LIME: 朝は受信箱に届くだけ。初回は案内で開き、以後は赤丸を見て開く。誘いには当日のうちに乗れる
+const inbox = s.inbox || [];
+log(`lime: coach=${limeCoach} opened=${limeOpened} inbox=${inbox.length} read=${inbox.filter((i) => i.read).length} accepted=${inbox.filter((i) => i.result === "accepted").length}`);
+if (limeCoach !== 1) throw new Error("LIME tutorial (coach) should appear exactly once");
+if (!inbox.length || inbox.some((i) => !i.read && i.day < 14)) throw new Error("LIME inbox: messages left unread");
+if (!inbox.some((i) => i.result === "accepted")) throw new Error("LIME: no invitation accepted from the inbox");
 // 常連ノート: バイトで接客した客が記録されている
 log(`notes: ${Object.keys(s.notes).length}`);
 if (!Object.keys(s.notes).length) throw new Error("customer notes empty");

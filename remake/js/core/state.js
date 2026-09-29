@@ -4,7 +4,7 @@
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 2; // 2: スロット・くじ・恋人を追加
+export const SCHEMA = 3; // 2: スロット・くじ・恋人を追加 / 3: LIME の受信箱
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -41,6 +41,7 @@ export function newState() {
     usedBaito: [],
     contacts: [],              // LIME を交換した相手
     limeRead: [],              // 既読の LIME id
+    inbox: [],                 // LIME の受信箱 [{id, day, msg, read, done, log}]（朝に届き、好きなときに読む）
     notes: {},                 // 常連ノート（接客した客 -> 回数）
     recipes: {},               // 発見したレシピ
     best: {},                  // 練習ドリルの自己ベスト（0..2）

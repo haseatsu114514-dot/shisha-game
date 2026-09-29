@@ -1,5 +1,7 @@
 // LIME（スマホ）。朝に届くメッセージ・返信の選択肢・誘い。
 // ルール: 同じ相手からは1日1話題まで（小分けの連投はOK）／連絡先を交換した相手だけ（master_spec #7/#26）
+// 朝は通知だけ出して受信箱に積み、プレイヤーが好きなときにアプリを開いて読む（オーナー指定）。
+// 物語の節目（大会の朝・優勝の夜）だけは openPhone で必ず読ませる。
 // 見た目は旧版の LIME（ノッチ付きの端末・緑のヘッダー・白と黄緑の吹き出し・明るい返信欄）を踏襲する。
 import { el, sleep } from "../core/util.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
@@ -36,21 +38,24 @@ function eligible(m, { tournamentDay = false } = {}) {
  */
 export function morningMessages(opts = {}) {
   const out = [];
-  const senders = new Set();
+  const inbox = state.inbox || [];
+  const delivered = new Set(inbox.map((i) => i.id));
+  // 未読が残っている相手からは重ねて届かない（読むまで溜まっていく一方にしない）
+  const senders = new Set(opts.tournamentDay ? [] : inbox.filter((i) => !i.read).map((i) => i.msg.sender));
   for (const m of loverMessages(opts)) {
-    if (out.length >= 3 || senders.has(m.sender)) continue;
+    if (out.length >= 3 || senders.has(m.sender) || delivered.has(m.id)) continue;
     out.push(m);
     senders.add(m.sender);
   }
   // スミさんのバイト誘い（旧版 N13）。誘いは1朝1件まで
   const sumi = sumiBaitoInvite(opts);
-  if (sumi && out.length < 3 && !senders.has("sumi") && !state.pendingInvite && !out.some((x) => x.type === "invitation")) {
+  if (sumi && out.length < 3 && !senders.has("sumi") && !delivered.has(sumi.id) && !state.pendingInvite && !out.some((x) => x.type === "invitation")) {
     out.push(sumi);
     senders.add("sumi");
   }
   for (const m of DB.lime) {
     if (out.length >= 3) break;
-    if (senders.has(m.sender) || !eligible(m, opts)) continue;
+    if (senders.has(m.sender) || delivered.has(m.id) || !eligible(m, opts)) continue;
     // 夜の誘いは前日にもう約束がある日は来ない
     if (m.type === "invitation" && (state.pendingInvite || out.some((x) => x.type === "invitation"))) continue;
     out.push(m);
@@ -99,24 +104,69 @@ function avatar(sender, small = false) {
 
 const text = (raw) => formatHtml(hooks.interpolate ? hooks.interpolate(String(raw)) : String(raw));
 
+// ================================================================ 受信箱（オーナー指定: 朝は通知だけ・読みたい時に開く）
+// 朝に届いたメッセージは state.inbox に積むだけ。HUD の LIME アイコンに未読の赤丸（数字なし）を出し、
+// プレイヤーが好きなときにアプリを開いて、トーク一覧から読みたい相手を選ぶ。
+// 誘いは「当日・その時間帯のうち」なら返事ができる（昼の誘い＝昼の行動の前まで／夜の誘い＝夜の行動の前まで）。
+
+/** 未読があるか（HUD の赤丸） */
+export const hasUnread = () => (state.inbox || []).some((i) => !i.read);
+
+/** 今朝のメッセージを受信箱に積む。戻り値=届いた件数 */
+export function deliverMorning(opts = {}) {
+  const msgs = morningMessages(opts);
+  // {daysLeft} などは届いた日の値で固定する（数日後に読んでも「あと◯日」がずれない）
+  const freeze = (t) => (hooks.interpolate ? hooks.interpolate(String(t)) : t);
+  for (const m of msgs) {
+    const msg = { ...m, messages: (m.messages || []).map((x) => (typeof x === "string" ? freeze(x) : { ...x, text: freeze(x.text) })) };
+    state.inbox.push({ id: m.id, day: state.day, msg, read: false, done: false, log: [] });
+  }
+  return msgs.length;
+}
+
+/** 朝の通知（スマホのプッシュ通知風）。件数と送り主の顔だけ見せ、中身は開くまで分からない */
+export function pushNotice(count) {
+  const senders = [...new Set(state.inbox.filter((i) => !i.read).map((i) => i.msg.sender))].slice(0, 4);
+  const card = el("div.lime-push", [
+    el("div.lp-icon", [el("span", { text: "LIME" })]),
+    el("div.lp-body", [
+      el("div.lp-top", [el("b", { text: "LIME" }), el("small", { text: "いま" })]),
+      el("div.lp-text", { text: `新着メッセージが${count}件あります` }),
+    ]),
+    el("div.lp-faces", senders.map((s) => avatar(s, true))),
+  ]);
+  layers.toasts.append(card);
+  SE.phone();
+  requestAnimationFrame(() => card.classList.add("show"));
+  setTimeout(() => { card.classList.remove("show"); setTimeout(() => card.remove(), 500); }, 3200);
+}
+
 /**
- * スマホを開いてメッセージを順に読ませる。
- * 戻り値: 受けた誘い [{event, sender, slot}]
+ * 誘いに今から返事できるか。open=乗れる / expired=時間切れ / busy=別の約束がある
+ * （昼の誘いは昼の行動の前まで、夜の誘いは夜の行動の前まで。日をまたいだら時間切れ）
  */
-export async function openPhone(messages, { title = null, time = "AM 8:12" } = {}) {
-  const accepted = [];
+function inviteState(item) {
+  const m = item.msg;
+  const slot = m.time_slot === "night" ? 1 : 0;
+  if (state.phase !== "daily" || item.day !== state.day || state.slot > slot) return "expired";
+  if (state.pendingInvite) return "busy";
+  return "open";
+}
+
+const thread = (sender) => state.inbox.filter((i) => i.msg.sender === sender);
+const plain = (raw) => String(hooks.interpolate ? hooks.interpolate(String(raw)) : raw).replace(/\[\/?[a-z]+[^\]]*\]/gi, "").replace(/<[^>]+>/g, "");
+const dayLabel = (d) => (d === state.day ? "今日" : d === state.day - 1 ? "昨日" : `DAY ${d}`);
+const clockNow = () => (state.phase === "tournament" ? "AM 7:40" : state.slot >= 1 ? "PM 7:42" : "PM 1:05");
+
+/** 端末の枠（ノッチ・ステータスバー・ヘッダー・本文・返信欄）。openLime と openPhone で共用 */
+function phoneShell({ time, title }) {
+  const header = el("div.lime-header");
   const chat = el("div.lime-chat");
-  const peer = el("div.lime-peer");
-  const unread = el("span.lime-unread");
   const actions = el("div.lime-actions");
   const phone = el("div.phone", [
     el("div.phone-notch"),
-    el("div.phone-status", [
-      el("span", { text: time }),
-      el("span", { text: title || (state.phase === "tournament" ? "大会当日" : `DAY ${state.day}`) }),
-      el("span.phone-batt", { text: "●●●▱" }),
-    ]),
-    el("div.lime-header", [el("span.lime-logo", { text: "LIME" }), peer, unread]),
+    el("div.phone-status", [el("span", { text: time }), el("span", { text: title }), el("span.phone-batt", { text: "●●●▱" })]),
+    header,
     chat,
     actions,
   ]);
@@ -124,97 +174,323 @@ export async function openPhone(messages, { title = null, time = "AM 8:12" } = {
   layers.modal.replaceChildren(overlay);
   layers.modal.classList.add("show");
   requestAnimationFrame(() => overlay.classList.add("show"));
-  await sleep(420);
 
-  let lastSide = null;
-  const scroll = () => { chat.scrollTop = chat.scrollHeight; };
-  const bubble = async (raw, mine = false, sender = null) => {
-    if (!mine) {
+  // gen: 画面（一覧⇄トーク）を切り替えるたびに進める。古い画面の続き（吹き出し）が新しい画面に混ざらないように
+  const ui = { header, chat, actions, phone, open: true, gen: 0, lastSide: null, cancel: null };
+  ui.live = (g) => ui.open && ui.gen === g;
+  ui.scroll = () => { chat.scrollTop = chat.scrollHeight; };
+  /** 吹き出し。animate=false は履歴（既読）をまとめて描くとき */
+  ui.bubble = async (raw, mine = false, sender = null, animate = true) => {
+    const g = ui.gen;
+    if (!ui.live(g)) return;
+    if (!mine && animate) {
       // 相手が打っている気配（…）を一瞬見せてから吹き出しにする
-      const typing = el("div.lime-row.peer.typing", [lastSide === "peer" ? el("span.lime-face.sm.gap") : avatar(sender, true), el("div.lime-bubble", [el("i"), el("i"), el("i")])]);
+      const typing = el("div.lime-row.peer.typing", [ui.lastSide === "peer" ? el("span.lime-face.sm.gap") : avatar(sender, true), el("div.lime-bubble", [el("i"), el("i"), el("i")])]);
       chat.append(typing);
-      scroll();
+      ui.scroll();
       await sleep(300);
       typing.remove();
+      if (!ui.live(g)) return;
     }
     const side = mine ? "me" : "peer";
-    const face = mine ? null : lastSide === "peer" ? el("span.lime-face.sm.gap") : avatar(sender, true);
+    const face = mine ? null : ui.lastSide === "peer" ? el("span.lime-face.sm.gap") : avatar(sender, true);
     const b = el("div.lime-bubble");
     b.innerHTML = text(raw);
-    chat.append(el(`div.lime-row.${side}`, [face, b]));
-    lastSide = side;
-    scroll();
-    SE.phone();
-    await sleep(mine ? 260 : 380);
+    chat.append(el(`div.lime-row.${side}${animate ? "" : ".past"}`, [face, b]));
+    ui.lastSide = side;
+    ui.scroll();
+    if (animate) { SE.phone(); await sleep(mine ? 260 : 380); }
   };
-  const note = (t) => {
-    chat.append(el("div.lime-note", { text: t }));
-    lastSide = null;
-    scroll();
+  ui.note = (t, cls = "") => {
+    chat.append(el(`div.lime-note${cls}`, { text: t }));
+    ui.lastSide = null;
+    ui.scroll();
   };
-  const choose = (options, hint = null) => new Promise((resolve) => {
+  /** 返信の選択肢。戻る・閉じるで抜けたら null */
+  ui.choose = (options, hint = null) => new Promise((resolve) => {
+    ui.cancel = () => resolve(null);
     actions.replaceChildren(...[
       hint ? el("div.lime-hint", { text: hint }) : null,
       ...options.map((o, i) =>
-        el("button.lime-reply", { text: o.label || o.text, dataset: { test: `reply-${i}` }, onclick: () => { SE.select(); actions.replaceChildren(); resolve(o); } })),
+        el(`button.lime-reply${o.disabled ? ".disabled" : ""}`, {
+          text: o.label || o.text,
+          disabled: o.disabled || null,
+          dataset: { test: `reply-${i}` },
+          onclick: () => { SE.select(); actions.replaceChildren(); ui.cancel = null; resolve(o); },
+        })),
     ].filter(Boolean));
   });
+  ui.close = async () => {
+    ui.open = false;
+    ui.cancel?.();
+    overlay.classList.remove("show");
+    await sleep(300);
+    layers.modal.classList.remove("show");
+    layers.modal.replaceChildren();
+  };
+  return ui;
+}
 
-  for (const m of messages) {
-    state.limeRead.push(m.id);
-    chat.replaceChildren();
-    actions.replaceChildren();
-    lastSide = null;
-    const left = messages.length - 1 - messages.indexOf(m);
-    peer.replaceChildren(avatar(m.sender), el("span.lime-name", { text: m.sender === "???" ? "？？？" : displayName(m.sender, state) }));
-    unread.textContent = left ? `未読 ${left}` : "";
-    for (const msg of m.messages || []) await bubble(typeof msg === "string" ? msg : msg.text, false, m.sender);
+/** 読み終えたときの報酬（返信の無いメッセージ）。噂は洞察、ふつうの連絡は少しだけ好感度 */
+function readReward(m) {
+  if (m.type === "rumor") applyStats({ insight: 2 });
+  else if (m.type !== "invitation" && !(m.replies && m.replies.length) && m.sender !== "???" && m.sender !== "sumi") gainAffinity(m.sender, 2);
+}
 
-    if (m.type === "invitation" && m.accept_event) {
-      const polite = POLITE.has(m.sender);
-      const go = m.accept_text || (polite ? "行きます！" : "行く！");
-      const no = polite ? "すみません、今日は難しいです……" : "ごめん、今日は難しい";
-      const hintKey = m.hint ? "_hint_sumi_baito" : "_hint_invite";
-      const first = !state.flags[hintKey];
-      state.flags[hintKey] = true;
-      const pick = await choose(
-        [{ label: `${go}（行動を1回使う）`, text: go, go: true }, { text: no, go: false }],
-        first ? m.hint || "誘いに乗ると行動を1回使う。そのぶん、ふつうに会いに行くより仲が深まりやすい。断っても嫌われたりはしない" : null,
-      );
-      await bubble(pick.text, true);
-      state.flags[`_invited_${m.id}`] = true;
-      if (pick.go) {
-        const night = m.time_slot === "night";
-        accepted.push({ event: m.accept_event, sender: m.sender, slot: night ? 1 : 0 });
-        note(m.accept_event === "__sumi_baito__" ? "このあと tonari のシフトに入る" : night ? "今夜の約束ができた" : "このあと向かうことにした");
-      } else {
-        if (m.decline_response) await bubble(m.decline_response.text, false, m.sender);
-        gainAffinity(m.sender, 1);
-      }
-    } else if (m.replies && m.replies.length) {
-      const r = await choose(m.replies);
-      await bubble(r.text, true);
-      if (r.response) await bubble(r.response, false, m.sender);
-      bond.private = isLover(m.sender); // 恋人とのやりとりは絆として積もる
-      gainAffinity(m.sender, (r.affinity || 1) * 3);
-      bond.private = false;
-    } else if (m.type === "rumor") {
-      applyStats({ insight: 2 }); // 噂は読むだけで洞察が伸びる
-    } else if (m.sender !== "???" && m.sender !== "sumi") {
-      gainAffinity(m.sender, 2);
+/**
+ * 1件ぶんのやりとり（未読なら吹き出しを流す→返信・誘いの返事）。
+ * 戻る/閉じるで途中で抜けたら、返事は次に開いたときに続きから
+ */
+async function runItem(item, ui, accepted, { forced = false } = {}) {
+  const m = item.msg;
+  const g = ui.gen;
+  const alive = () => ui.live(g);
+  const mine = async (t) => { item.log.push({ me: true, text: t }); await ui.bubble(t, true); };
+  const theirs = async (t) => { item.log.push({ me: false, text: t }); await ui.bubble(t, false, m.sender); };
+  if (!item.read) {
+    for (const msg of m.messages || []) {
+      await ui.bubble(typeof msg === "string" ? msg : msg.text, false, m.sender);
+      if (!alive()) break;
     }
+    item.read = true;
+    if (!state.limeRead.includes(m.id)) state.limeRead.push(m.id);
+    readReward(m);
+  }
+  if (item.done || !alive()) return;
+
+  if (m.type === "invitation" && m.accept_event) {
+    const st = forced ? "open" : inviteState(item);
+    if (st === "expired") {
+      item.done = true;
+      item.result = "expired";
+      item.log.push({ note: "返事をしそびれた……" });
+      ui.note("返事をしそびれた……");
+      return;
+    }
+    const polite = POLITE.has(m.sender);
+    const go = m.accept_text || (polite ? "行きます！" : "行く！");
+    const no = polite ? "すみません、今日は難しいです……" : "ごめん、今日は難しい";
+    const hintKey = m.hint ? "_hint_sumi_baito" : "_hint_invite";
+    const first = !state.flags[hintKey];
+    const night = m.time_slot === "night";
+    const deadline = night ? "夜の行動の前まで" : "昼の行動の前まで";
+    const pick = await ui.choose(
+      [
+        st === "busy"
+          ? { label: "（今日はもう別の約束がある）", disabled: true }
+          : { label: `${go}（行動を1回使う）`, text: go, go: true },
+        { text: no, go: false },
+      ],
+      st === "busy" ? null : first ? m.hint || `誘いに乗ると行動を1回使う。返事は今日の${deadline}ならできる。断っても嫌われたりはしない` : `返事は今日の${deadline}`,
+    );
+    if (!pick || !alive()) return; // 返事をせずに抜けた（期限内ならまた返事できる）
+    state.flags[hintKey] = true;
+    await mine(pick.text);
+    state.flags[`_invited_${m.id}`] = true;
+    item.done = true;
+    if (pick.go) {
+      item.result = "accepted";
+      const inv = { event: m.accept_event, sender: m.sender, slot: night ? 1 : 0 };
+      accepted.push(inv);
+      if (!forced) state.pendingInvite = inv;
+      const t = m.accept_event === "__sumi_baito__" ? "このあと tonari のシフトに入る" : night ? "今夜の約束ができた" : "このあと向かうことにした";
+      item.log.push({ note: t });
+      ui.note(t);
+    } else {
+      item.result = "declined";
+      if (m.decline_response) await theirs(m.decline_response.text);
+      gainAffinity(m.sender, 1);
+    }
+    return;
+  }
+  if (m.replies && m.replies.length) {
+    const r = await ui.choose(m.replies);
+    if (!r || !alive()) return;
+    await mine(r.text);
+    if (r.response) await theirs(r.response);
+    bond.private = isLover(m.sender); // 恋人とのやりとりは絆として積もる
+    gainAffinity(m.sender, (r.affinity || 1) * 3);
+    bond.private = false;
+  }
+  item.done = true;
+}
+
+/** 既読ぶんを履歴として一気に描く（日付の区切りつき） */
+function drawHistory(items, ui) {
+  let lastDay = null;
+  for (const it of items) {
+    if (it.day !== lastDay) { ui.note(dayLabel(it.day), ".day"); lastDay = it.day; }
+    if (!it.read) continue;
+    for (const msg of it.msg.messages || []) ui.bubble(typeof msg === "string" ? msg : msg.text, false, it.msg.sender, false);
+    for (const l of it.log || []) {
+      if (l.note) ui.note(l.note);
+      else ui.bubble(l.text, l.me, it.msg.sender, false);
+    }
+  }
+}
+
+/**
+ * LIME アプリを開く（トーク一覧 → 相手を選んで読む）。閉じるまで待つ。
+ * 戻り値: この間に乗った誘い [{event, sender, slot}]（state.pendingInvite にも入る）
+ * @param opts.tutorial 初回の説明を一覧の上に出す
+ */
+export async function openLime({ tutorial = false } = {}) {
+  const accepted = [];
+  const ui = phoneShell({ time: clockNow(), title: `DAY ${state.day}` });
+  let resolveClose;
+  const closed = new Promise((r) => { resolveClose = r; });
+
+  const showList = () => {
+    ui.gen++;
+    ui.cancel?.();
+    ui.cancel = null;
+    ui.lastSide = null;
+    const senders = [];
+    for (const it of [...state.inbox].reverse()) if (!senders.includes(it.msg.sender)) senders.push(it.msg.sender);
+    ui.header.replaceChildren(el("span.lime-logo", { text: "LIME" }), el("span.lime-title", { text: "トーク" }));
+    ui.chat.replaceChildren();
+    ui.chat.classList.add("list");
+    if (tutorial) {
+      ui.chat.append(el("div.lime-tip", [
+        el("b", { text: "LIMEの使い方" }),
+        el("span", { text: "読みたいトークをタップ。赤い丸は未読のしるし。" }),
+        el("span", { text: "誘いには、その日のうちなら返事ができる（昼の誘いは昼の行動の前まで・夜の誘いは夜の行動の前まで）。" }),
+      ]));
+    }
+    if (!senders.length) ui.chat.append(el("p.lime-empty", { text: "まだトークはない" }));
+    for (const sender of senders) {
+      const items = thread(sender);
+      const last = items.at(-1);
+      const unread = items.some((i) => !i.read);
+      const openInv = items.some((i) => i.msg.type === "invitation" && !i.done && inviteState(i) !== "expired");
+      const lastText = last.read
+        ? (last.log.filter((l) => l.text).at(-1)?.text || [].concat(last.msg.messages || []).at(-1))
+        : [].concat(last.msg.messages || [])[0];
+      const preview = plain(typeof lastText === "string" ? lastText : lastText?.text || "");
+      ui.chat.append(el(`button.lime-chat-row${unread ? ".unread" : ""}`, {
+        dataset: { test: `lime-chat-${sender === "???" ? "unknown" : sender}` },
+        onclick: () => { SE.click(); showThread(sender); },
+      }, [
+        el("div.lcr-face", [avatar(sender), unread ? el("i.lcr-dot") : null]),
+        el("div.lcr-main", [
+          el("div.lcr-name", { text: sender === "???" ? "？？？" : displayName(sender, state) }),
+          el("div.lcr-preview", { text: preview }),
+        ]),
+        el("div.lcr-side", [
+          el("small", { text: dayLabel(last.day) }),
+          openInv ? el("span.lcr-tag", { text: "誘い" }) : null,
+        ]),
+      ]));
+    }
+    ui.actions.replaceChildren(el("button.lime-reply.ghost", {
+      text: "スマホを閉じる",
+      dataset: { test: "phone-close" },
+      onclick: () => { SE.cancel(); resolveClose(); },
+    }));
+  };
+
+  const showThread = async (sender) => {
+    ui.gen++;
+    const g = ui.gen;
+    ui.chat.classList.remove("list");
+    ui.chat.replaceChildren();
+    ui.actions.replaceChildren();
+    ui.lastSide = null;
+    ui.header.replaceChildren(
+      el("button.lime-back", { text: "‹", dataset: { test: "lime-back" }, onclick: () => { SE.cancel(); showList(); } }),
+      avatar(sender),
+      el("span.lime-name", { text: sender === "???" ? "？？？" : displayName(sender, state) }),
+    );
+    const items = thread(sender);
+    // 既読ぶんは履歴としてすぐ出し、未読・返事待ちを順に流す
+    drawHistory(items.filter((i) => i.read), ui);
+    for (const it of items) {
+      if (!ui.live(g)) return;
+      if (it.read && it.done) continue;
+      if (!it.read && it.day !== (items[items.indexOf(it) - 1]?.day)) ui.note(dayLabel(it.day), ".day");
+      await runItem(it, ui, accepted);
+    }
+    if (!ui.live(g)) return;
+    ui.actions.replaceChildren(el("button.lime-reply.ghost", {
+      text: "‹ トーク一覧へ",
+      dataset: { test: "phone-next" },
+      onclick: () => { SE.click(); showList(); },
+    }));
+  };
+
+  showList();
+  await closed;
+  await ui.close();
+  return accepted;
+}
+
+/**
+ * 物語の節目で必ず読ませる LIME（大会の朝の応援・優勝の夜など）。メッセージを順に流す。
+ * 読んだものは受信箱にも履歴として残る。戻り値: 受けた誘い
+ */
+export async function openPhone(messages, { title = null, time = "AM 8:12" } = {}) {
+  const accepted = [];
+  const ui = phoneShell({ time, title: title || (state.phase === "tournament" ? "大会当日" : `DAY ${state.day}`) });
+  await sleep(420);
+  for (const m of messages) {
+    const item = { id: m.id, day: state.day, msg: m, read: false, done: false, log: [] };
+    state.inbox.push(item);
+    ui.chat.replaceChildren();
+    ui.actions.replaceChildren();
+    ui.lastSide = null;
+    const left = messages.length - 1 - messages.indexOf(m);
+    ui.header.replaceChildren(
+      el("span.lime-logo", { text: "LIME" }),
+      el("div.lime-peer", [avatar(m.sender), el("span.lime-name", { text: m.sender === "???" ? "？？？" : displayName(m.sender, state) })]),
+      el("span.lime-unread", { text: left ? `未読 ${left}` : "" }),
+    );
+    await runItem(item, ui, accepted, { forced: true });
+    item.done = true;
     await new Promise((resolve) => {
       const last = messages.at(-1) === m;
-      actions.replaceChildren(el("button.lime-reply.ghost", {
+      ui.actions.replaceChildren(el("button.lime-reply.ghost", {
         text: m.close_label || (last ? "スマホを閉じる" : "次のトーク ▸"),
         dataset: { test: "phone-next" },
         onclick: () => { SE.click(); resolve(); },
       }));
     });
   }
-  overlay.classList.remove("show");
-  await sleep(300);
-  layers.modal.classList.remove("show");
-  layers.modal.replaceChildren();
+  await ui.close();
   return accepted;
+}
+
+// ================================================================ 初回チュートリアル
+
+/**
+ * はじめて LIME が届いたとき、マップの上でアイコンを照らして開かせる（オーナー指定）。
+ * 照らした穴だけ押せる。押したら onOpen（＝ふつうに LIME を開く処理）へ
+ */
+export function limeCoach(onOpen) {
+  if (state.flags._lime_tut || !hasUnread()) return false;
+  const icon = document.querySelector(".hud-lime");
+  const stage = document.getElementById("stage");
+  if (!icon || !stage) return false;
+  state.flags._lime_tut = 1;
+  const k = stage.getBoundingClientRect().width / stage.offsetWidth || 1;
+  const sr = stage.getBoundingClientRect();
+  const ir = icon.getBoundingClientRect();
+  const x = (ir.left - sr.left) / k;
+  const y = (ir.top - sr.top) / k;
+  const w = ir.width / k;
+  const h = ir.height / k;
+  const coach = el("div.lime-coach", [
+    el("button.lc-hole", {
+      style: { left: `${x - 8}px`, top: `${y - 8}px`, width: `${w + 16}px`, height: `${h + 16}px` },
+      dataset: { test: "coach-lime" },
+      onclick: () => { SE.select(); coach.remove(); onOpen(); },
+    }),
+    el("div.lc-bubble", { style: { right: `${stage.offsetWidth - x - w - 4}px`, top: `${y + h + 22}px` } }, [
+      el("b", { text: "LIMEにメッセージが届いた！" }),
+      el("span", { text: "右上のLIMEをタップして開いてみよう。" }),
+      el("span", { text: "未読があるとアイコンに赤い丸がつく。好きなときに開いて読めばいい。" }),
+    ]),
+  ]);
+  layers.fx.append(coach);
+  SE.phone();
+  return true;
 }

@@ -86,9 +86,9 @@ export function updateHud() {
   dom.radar.querySelector(".hr-fill").setAttribute("points", STAT_KEYS.map((k, i) => pt(i, 4 + 3.2 * star(k))).join(" "));
 }
 
-export function setPhoneBadge(n) {
+/** 未読の赤丸（数字は出さない・通知バッジ風） */
+export function setPhoneBadge(unread) {
   if (!dom) return;
-  const b = dom.phone.querySelector(".badge");
-  b.textContent = n ? String(n) : "";
-  dom.phone.classList.toggle("has", !!n);
+  dom.phone.classList.toggle("has", !!unread);
+  dom.phone.title = unread ? "LIME（未読あり）" : "LIME";
 }

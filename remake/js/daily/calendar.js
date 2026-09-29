@@ -8,11 +8,11 @@ import { SE, playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { initHud, showHud, updateHud, daysLeft, MAX_DAYS, setPhoneBadge } from "./hud.js";
-import { chooseSpot } from "./map.js";
+import { chooseSpot, interruptMap } from "./map.js";
 import { spotById, visitRival, visitSpot, restAtHome, isClosed } from "./spots.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
-import { morningMessages, openPhone } from "./phone.js";
+import { deliverMorning, pushNotice, hasUnread, openLime, limeCoach } from "./phone.js";
 import { openStatus } from "./status.js";
 import { onAction as spinReel, presentNow as showReelNow } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
@@ -32,6 +32,7 @@ export async function runDaily(def) {
   onQuit = def.onQuit;
   initHud({ phone: phoneButton, status: openStatus, menu: openMenu });
   showHud(true);
+  setPhoneBadge(hasUnread()); // つづきから再開したときも未読の赤丸を出す
   while (state.day <= MAX_DAYS) {
     if (!state.flags[`_morning_${state.day}`]) {
       state.flags[`_morning_${state.day}`] = true;
@@ -55,18 +56,29 @@ export async function runDaily(def) {
 async function morning() {
   playBgm("daily_part");
   await dayCard(`DAY ${state.day}`, `SMOKE CROWN CUP まで あと${daysLeft()}日`);
-  const msgs = morningMessages({ fixedNight: (d) => !!chapterDef.nightEvents[d] });
-  if (msgs.length) {
-    SE.phone();
-    const accepted = await openPhone(msgs, { time: "AM 8:12" });
-    for (const a of accepted) state.pendingInvite = a;
-  }
-  setPhoneBadge(0);
+  // LIME は通知だけ（中身は好きなときにアプリを開いて読む）
+  const n = deliverMorning({ fixedNight: (d) => !!chapterDef.nightEvents[d] });
+  if (n) pushNotice(n);
+  setPhoneBadge(hasUnread());
 }
 
+/** HUD の LIME。街に出ているとき（マップ）だけ開ける。誘いに乗ったらマップを閉じてそのまま向かう */
 async function phoneButton() {
+  if (!document.querySelector("#screen .map:not(.done)") || layers.modal.classList.contains("show")) {
+    SE.cancel();
+    toast("LIME は街に出ているとき（マップ）に開ける");
+    return;
+  }
   SE.select();
-  toast("新しいメッセージはない");
+  const first = !state.flags._lime_opened;
+  state.flags._lime_opened = true;
+  state.flags._lime_tut = 1; // 自分で開けたなら案内はいらない
+  const before = state.pendingInvite;
+  await openLime({ tutorial: first });
+  setPhoneBadge(hasUnread());
+  save();
+  // 乗った誘い: 今の時間帯ならすぐ向かう／今夜の約束ならマップを出し直して「約束がある」を見せる
+  if (state.pendingInvite && state.pendingInvite !== before) interruptMap("__lime__");
 }
 
 async function openMenu() {
@@ -165,8 +177,10 @@ async function takeAction() {
   const ev = chapterDef.nightEvents[state.day];
   const spotId = await chooseSpot({
     eventPin: ev && !ev.done?.() ? ev.pin : null,
-    notice: state.slot === 1 && inv ? "今夜は約束がある" : "",
+    notice: inv && inv.slot > state.slot ? "今夜は約束がある" : "",
+    onShown: () => limeCoach(phoneButton), // はじめて LIME が届いたら、アイコンを照らして開かせる
   });
+  if (spotId === "__lime__") return; // LIME で誘いに乗った → 次の takeAction で約束へ
   const spot = spotById(spotId);
   let used = true;
   if (spot.kind === "tonari") {

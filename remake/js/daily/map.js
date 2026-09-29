@@ -18,12 +18,22 @@ function spotFace(s) {
 }
 const knowsOwner = (s) => !s.charId || !!state.met[s.charId];
 
+let interrupt = null;
+/** 表示中のマップを外から閉じる（LIME で誘いに乗ったときなど）。マップが無ければ何もしない */
+export function interruptMap(value) {
+  if (!interrupt) return false;
+  interrupt(value);
+  return true;
+}
+
 /**
  * @param opts.notice   上部に出す一言（「今夜は約束がある」など）
  * @param opts.eventPin 今夜イベントがある場所のピン id（! バッジ）
  * @param opts.guide    { pin, title, text } 1日目の案内用。その1か所だけ選べるようにして光らせる
+ * @param opts.onShown  マップを出し終えたとき（LIME の初回案内など）
+ * 戻り値: スポットID。interruptMap(v) で外から閉じたときは v
  */
-export function chooseSpot({ notice = "", eventPin = null, guide = null } = {}) {
+export function chooseSpot({ notice = "", eventPin = null, guide = null, onShown = null } = {}) {
   return new Promise((resolve) => {
     const night = timeOfDay() === "night";
     const tod = night ? "night" : "day";
@@ -101,6 +111,7 @@ export function chooseSpot({ notice = "", eventPin = null, guide = null } = {}) 
       SE.select();
       retire(root);
       info.classList.add("leaving");
+      interrupt = null;
       resolve(s.id);
     };
 
@@ -139,6 +150,8 @@ export function chooseSpot({ notice = "", eventPin = null, guide = null } = {}) 
       info,
     ]);
     showScreen("map", root);
+    interrupt = (v) => { interrupt = null; retire(root); resolve(v); };
     mountReel(root); // 溜まったスロットの結果をここで見せる（報酬は行動時に確定済み）
+    onShown?.();
   });
 }

@@ -653,6 +653,140 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 .lime-reply:active { transform: scale(0.97); }
 .lime-reply.ghost { color: #fff; background: linear-gradient(180deg, #21b24e, var(--lime)); border-color: transparent; }
 .lime-reply.ghost:hover { filter: brightness(1.08); }
+/* ---- LIME 受信箱（トーク一覧・スレッド・朝のプッシュ通知・初回の案内） */
+.lime-title { font-size: 16px; font-weight: 700; letter-spacing: 0.08em; }
+.lime-back {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  font-family: inherit;
+  font-size: 26px;
+  line-height: 26px;
+  color: #fff;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.lime-chat.list { gap: 0; padding: 0; background: #fff; }
+.lime-chat-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  text-align: left;
+  font-family: inherit;
+  color: #1d2433;
+  background: #fff;
+  border: 0;
+  border-bottom: 1px solid #eef0f3;
+  cursor: pointer;
+  animation: lime-pop 0.2s ease-out both;
+}
+.lime-chat-row:hover { background: #f1faf3; }
+.lcr-face { position: relative; flex: none; }
+.lcr-face .lime-face { width: 42px; height: 42px; border-color: #e3e7ec; }
+.lcr-dot {
+  position: absolute;
+  right: -2px;
+  top: -2px;
+  width: 12px;
+  height: 12px;
+  background: #ff3b4e;
+  border: 2px solid #fff;
+  border-radius: 50%;
+}
+.lcr-main { flex: 1; min-width: 0; }
+.lcr-name { font-size: 14px; font-weight: 700; }
+.lcr-preview { margin-top: 2px; font-size: 12px; color: #6b7482; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lime-chat-row.unread .lcr-preview { color: #1d2433; font-weight: 700; }
+.lcr-side { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.lcr-side small { font-size: 10px; color: #8a93a0; }
+.lcr-tag { padding: 1px 7px; font-size: 10px; font-weight: 700; color: #fff; background: #f08a24; border-radius: 999px; }
+.lime-empty { margin: 40px 0; text-align: center; font-size: 13px; color: #8a93a0; }
+.lime-tip {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 10px 10px 6px;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.55;
+  color: #173311;
+  background: #eafbe0;
+  border: 1.5px solid #8de055;
+  border-radius: 10px;
+}
+.lime-tip b { font-size: 12px; color: #17813a; letter-spacing: 0.08em; }
+.lime-row.past { animation: none; }
+.lime-note.day { background: rgba(29, 36, 51, 0.32); }
+.lime-reply.disabled, .lime-reply:disabled { color: #9aa4b2; border-color: #cfd5dc; background: #f4f6f8; cursor: default; }
+
+/* HUD の LIME: 未読は数字を出さず赤丸だけ（通知バッジ風） */
+.hud-lime .badge { right: -4px; top: -4px; min-width: 0; width: 14px; height: 14px; padding: 0; border-radius: 50%; }
+.hud-lime.has .badge { animation: lime-badge 1.8s ease-in-out infinite; }
+@keyframes lime-badge { 50% { box-shadow: 0 0 0 5px rgba(255, 59, 78, 0.25); } }
+
+/* 朝のプッシュ通知（スマホの通知バナー風に上から降りてくる） */
+.lime-push {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 400px;
+  padding: 10px 14px;
+  color: #1d2433;
+  font-family: var(--font);
+  background: rgba(246, 248, 250, 0.96);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  transform: translate(-50%, -140%);
+  transition: transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.1);
+}
+.lime-push.show { transform: translate(-50%, 0); }
+.lp-icon { flex: none; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; background: linear-gradient(180deg, #2cc75c, #169a3e); }
+.lp-icon span { padding: 1px 3px; font-size: 9px; font-weight: 900; letter-spacing: 0.08em; color: #169a3e; background: #fff; border-radius: 4px; }
+.lp-body { flex: 1; min-width: 0; }
+.lp-top { display: flex; justify-content: space-between; font-size: 11px; color: #6b7482; }
+.lp-top b { color: #1d2433; letter-spacing: 0.08em; }
+.lp-text { margin-top: 2px; font-size: 14px; font-weight: 700; }
+.lp-faces { flex: none; display: flex; }
+.lp-faces > * { margin-left: -6px; border: 2px solid #fff; }
+
+/* 初回の案内: LIME のアイコンだけを照らして押させる */
+.lime-coach { position: absolute; inset: 0; pointer-events: auto; }
+.lc-hole {
+  position: absolute;
+  padding: 0;
+  background: transparent;
+  border: 2px solid #ffe9a8;
+  border-radius: 18px;
+  box-shadow: 0 0 0 4000px rgba(4, 3, 8, 0.66), 0 0 24px rgba(255, 233, 168, 0.8);
+  cursor: pointer;
+  animation: lc-pulse 1.3s ease-in-out infinite;
+}
+@keyframes lc-pulse { 50% { border-color: #fff; box-shadow: 0 0 0 4000px rgba(4, 3, 8, 0.66), 0 0 36px rgba(255, 233, 168, 1); } }
+.lc-bubble {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 330px;
+  padding: 14px 18px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #fff4d6;
+  background: linear-gradient(160deg, rgba(40, 26, 8, 0.97), rgba(22, 14, 30, 0.97));
+  border: 1px solid var(--gold);
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+.lc-bubble::before { content: ""; position: absolute; right: 20px; top: -9px; border: 9px solid transparent; border-top: 0; border-bottom-color: var(--gold); }
+.lc-bubble b { font-size: 16px; color: #ffe9a8; }
 
 /* ---------------------------------------------------------------- ステータス */
 .status-modal { width: 980px; max-width: 980px; }
