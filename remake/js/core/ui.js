@@ -62,7 +62,7 @@ export function imageReady(url, ms = 1500) {
  * 背景を差し替える。新しい絵が読み込めてからクロスフェードする（読み込み中に黒や前の絵のまま
  * 新しい場面が始まって見えるのを防ぐ）。戻り値の Promise で「絵が出た」を待てる
  */
-export function setBg(url, { instant = false, tint = null } = {}) {
+export function setBg(url, { instant = false, tint = null, fast = false } = {}) {
   const host = layers.bg;
   const key = `${url}|${tint || ""}`;
   if (key === bgNow) return Promise.resolve();
@@ -70,6 +70,8 @@ export function setBg(url, { instant = false, tint = null } = {}) {
   return imageReady(url).then(() => {
     if (bgNow !== key) return; // 待っている間に別の背景が指定された
     const next = el("div.bg-img", { style: { backgroundImage: url ? `url("${url}")` : "none" } });
+    if (!url) next.classList.add("black");
+    if (fast) next.classList.add("fast");
     if (tint) next.dataset.tint = tint;
     host.append(next);
     const olds = [...host.children].slice(0, -1);
@@ -79,7 +81,7 @@ export function setBg(url, { instant = false, tint = null } = {}) {
       return;
     }
     requestAnimationFrame(() => next.classList.add("show"));
-    setTimeout(() => olds.forEach((o) => o.remove()), 700);
+    setTimeout(() => olds.forEach((o) => o.remove()), fast ? 260 : 700);
   });
 }
 
@@ -97,6 +99,11 @@ export function showScreen(name, node) {
 /** 選択が済んだ画面を操作不能にする（次の画面が出るまでの間に古いボタンを押せないように） */
 export function retire(node) {
   node?.classList.add("done");
+}
+
+/** 今出ている画面を「済み」にする（次の会話・画面で片付く） */
+export function retireScreen() {
+  layers.screen.querySelectorAll(":scope > :not(.done)").forEach((n) => n.classList.add("done"));
 }
 
 /** 選択が済んだ（retire した）画面を片付ける。会話が始まるときに呼ぶ＝前の画面が会話の後ろに残らない */

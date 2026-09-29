@@ -133,6 +133,8 @@ export function play(idOrDlg, opts = {}) {
     dom.effect.dataset.effect = meta.effect || "";
     if (hooks.onEnter) hooks.onEnter(dlg.dialogue_id || "", dlg);
     dropRetired(); // 選び終えた前の画面（マップ等）を会話の後ろに残さない
+    // 会話の間は、まだ片付いていない画面（大会の作業台・結果表など）も後ろに見せない（会話が終われば戻る）
+    document.body.classList.add("vn-open");
     const me = running;
     prefetch(dlg);
     // 背景と最初に出る立ち絵が読み込めてから始める（遅い回線で「絵が後から出る」のを防ぐ。最大1.5秒）
@@ -191,7 +193,7 @@ function finish() {
   if (meta.add_affinity) for (const [id, n] of Object.entries(meta.add_affinity)) gainAffinity(id, n * 6);
   if (r.dlg.growth_stats) applyStats(r.dlg.growth_stats);
   layers.vn.classList.remove("active");
-  document.body.classList.remove("in-vn");
+  document.body.classList.remove("in-vn", "vn-open");
   dom.cg.classList.remove("show");
   dom.portraits.replaceChildren();
   dom.effect.dataset.effect = "";

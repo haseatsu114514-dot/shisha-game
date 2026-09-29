@@ -39,7 +39,7 @@ export function chooseSpot({ notice = "", eventPin = null, guide = null, onShown
   return new Promise((resolve) => {
     const night = timeOfDay() === "night";
     const tod = night ? "night" : "day";
-    setBg(bgUrl(`bg_osu_map_${tod}`));
+    setBg(bgUrl(`bg_osu_map_${tod}`), { fast: true });
     updateHud();
     const info = el("div.map-info");
     const pins = el("div.map-pins");

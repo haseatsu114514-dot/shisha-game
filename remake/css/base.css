@@ -80,6 +80,7 @@ button { font: inherit; color: inherit; }
 #stage > div { position: absolute; inset: 0; }
 #bg { z-index: 0; }
 #screen { z-index: 10; }
+body.vn-open #screen { visibility: hidden; } /* 会話中は前の画面を後ろに残さない */
 #vn { z-index: 20; pointer-events: none; }
 #vn.active { pointer-events: auto; }
 #hud { z-index: 30; pointer-events: none; }
@@ -101,6 +102,8 @@ button { font: inherit; color: inherit; }
   image-rendering: auto;
 }
 .bg-img.show { opacity: 1; }
+.bg-img.fast { transition-duration: 0.2s; } /* 画面の切り替え（マップ・店など）は素早く＝前の場面の絵が残って見えない */
+.bg-img.black { background-color: #07050b; } /* 場面転換の暗転 */
 /* 夜の色調補正（昼の絵しかない屋外・窓のある場所）: 暗く・青く・街の灯りは残す */
 .bg-img[data-tint="night"] { filter: brightness(0.7) saturate(0.7) contrast(1.05); box-shadow: inset 0 0 0 2000px rgba(12, 14, 48, 0.5); }
 .bg-img[data-tint="dim"] { filter: brightness(0.45) blur(2px); }

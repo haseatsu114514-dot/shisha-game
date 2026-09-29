@@ -35,7 +35,7 @@ export const ownsFlavor = (id) => flavorStock(id) > 0;
  */
 export function openShop({ errand = null } = {}) {
   return new Promise((resolve) => {
-    setBg(bgUrl("bg_shop"));
+    setBg(bgUrl("bg_shop"), { fast: true });
     playBgm("daily_part");
     let tab = "flavor";
     const body = el("div.shop-body");

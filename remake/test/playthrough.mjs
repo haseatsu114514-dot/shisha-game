@@ -63,6 +63,8 @@ let lastDay = null;
 let resumed = false;
 let guided = 0;
 let rainMaps = 0;
+let screenLeaks = 0;
+let resultUnderPhone = false;
 let feelSeen = false;
 let nicoSeen = false;
 let rtFeelSeen = false;
@@ -99,6 +101,10 @@ for (;;) {
       feel: !!document.querySelector(".bc-feel.show"),
       nico: !!document.querySelector(".nico"),
       rtFeel: !!document.querySelector(".rt-part.feel"),
+      // 会話中に前の画面（作業台・結果表・マップ等）が後ろに見えていないか
+      leak: document.querySelector("#vn")?.classList.contains("active") && !!document.querySelector("#screen > *") && getComputedStyle(document.querySelector("#screen")).visibility !== "hidden",
+      // 優勝の夜の LIME の後ろに結果表が残っていないか
+      resultUnderPhone: !!document.querySelector(".phone-overlay") && !!document.querySelector("#screen .result-table"),
       sub: document.querySelector(".sub-title")?.textContent || "",
       // 選択済み（.done）の画面は次の画面待ち。触らない
       live: !!document.querySelector("#screen > *:not(.done)"),
@@ -114,6 +120,8 @@ for (;;) {
     throw new Error(`stuck: ${key}`);
   }
 
+  if (snap.leak) screenLeaks++;
+  if (snap.resultUnderPhone) resultUnderPhone = true;
   if (snap.feel) feelSeen = true;
   if (snap.nico) nicoSeen = true;
   if (snap.rtFeel) rtFeelSeen = true;
@@ -295,6 +303,10 @@ log(`lime: coach=${limeCoach} opened=${limeOpened} inbox=${inbox.length} read=${
 if (limeCoach !== 1) throw new Error("LIME tutorial (coach) should appear exactly once");
 if (!inbox.length || inbox.some((i) => !i.read && i.day < 14)) throw new Error("LIME inbox: messages left unread");
 if (!inbox.some((i) => i.result === "accepted")) throw new Error("LIME: no invitation accepted from the inbox");
+// 前の画面が残らない: 会話の後ろに画面が透けない／優勝の夜の LIME の後ろに結果表が残らない
+log(`screen leaks during VN=${screenLeaks} resultUnderPhone=${resultUnderPhone}`);
+if (screenLeaks) throw new Error(`previous screen visible behind a scene (${screenLeaks} samples)`);
+if (resultUnderPhone) throw new Error("result table left behind the LIME");
 // 雨の日: 種を固定したので雨のマップを必ず通る
 log(`rain maps=${rainMaps} / slot load=${slotLoaded} / fortune day=${s.fortuneDay} met=${!!s.flags._fortune_met}`);
 if (!rainMaps) throw new Error("no rainy map shown");

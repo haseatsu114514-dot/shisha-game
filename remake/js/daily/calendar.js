@@ -1,10 +1,10 @@
 // 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の行動 → 夜の固定イベント → 帰宅 → 翌朝。
 import { el, sleep } from "../core/util.js";
-import { layers, dayCard, modal, toast, fadeBlack, bannersIdle } from "../core/ui.js";
+import { layers, dayCard, modal, toast, fadeBlack, bannersIdle, setBg } from "../core/ui.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { addStamina, gainAffinity, gainStat, STAMINA_LOW, maxStamina } from "../core/stats.js";
-import { DB } from "../core/data.js";
+import { DB, bgUrl } from "../core/data.js";
 import { SE, playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
 import { glossaryPanel } from "../vn/glossary.js";
@@ -244,7 +244,9 @@ async function afterAction() {
 
 // ---------------------------------------------------------------- 夜・翌朝
 
+/** 場面のつなぎの一行（「夜、tonariに顔を出す──」など）。前の場面の絵はここで暗転させる */
 async function beat(text) {
+  setBg(null);
   const b = el("div.beat", { text });
   layers.fx.append(b);
   await sleep(20);
@@ -281,6 +283,7 @@ async function advanceDay() {
     state.day += 1;
     state.slot = 0;
     updateHud();
+    setBg(bgUrl("bg_home", "day"), { instant: true }); // 朝は家で目を覚ます（前の夜の場面の絵を持ち越さない）
   }, 500);
   if (!exhausted || state.day > MAX_DAYS) return;
   state.flags._overwork = 0;

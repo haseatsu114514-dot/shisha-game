@@ -15,7 +15,7 @@ const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
 /** tonari に入ったときのサブメニュー。戻るなら null */
 export function tonariMenu() {
   return new Promise((resolve) => {
-    setBg(bgUrl(TONARI_BG, timeOfDay()));
+    setBg(bgUrl(TONARI_BG, timeOfDay()), { fast: true });
     playBgm("tonari");
     const tsumugiKnown = !!state.met.tsumugi;
     const pickIt = (value) => { retire(root); resolve(value); };

@@ -10,6 +10,9 @@ import { gainAffinity, addStamina, bond, AFFINITY_RANK_PTS } from "../core/stats
 import { emit } from "../core/bus.js";
 import { play } from "../vn/engine.js";
 
+// 告白は「帰り道」の場面。背景を持たない台本は通りの絵で（前の場面の背景を引き継がない）
+const STREET = "res://assets/backgrounds/bg_street.png";
+
 const L = () => DB.lover || {};
 const dayTotal = () => ((state.chapter || 1) - 1) * 14 + state.day;
 export const isLover = (id) => (state.lovers || []).includes(id);
@@ -87,14 +90,14 @@ export async function maybeConfession(beat) {
   // すでに恋人がいるなら、応える前に一度立ち止まる
   if (state.lovers.length) {
     delete state.flags._cheat_go;
-    await play(cheatScene(id));
+    await play(cheatScene(id), { bg: STREET });
     if (!state.flags._cheat_go) { state.flags._confession_wait = state.day + 3; save(); return true; }
     delete state.flags._cheat_go;
     state.guilt = (state.guilt || 0) + 1;
   } else if (id !== "ageha") {
     // あげは以外は、主人公が踏み出すかどうかから（あげはだけは向こうから来る）
     delete state.flags._confession_go;
-    await play(gateScene(id));
+    await play(gateScene(id), { bg: STREET });
     if (!state.flags._confession_go) {
       state.flags._confession_due = id;
       state.flags._confession_wait = state.day + 2;
@@ -103,7 +106,7 @@ export async function maybeConfession(beat) {
     }
     delete state.flags._confession_go;
   }
-  await play(`confession_${id}`);
+  await play(`confession_${id}`, DB.dialogues[`confession_${id}`]?.metadata?.bg ? {} : { bg: STREET });
   save();
   return true;
 }

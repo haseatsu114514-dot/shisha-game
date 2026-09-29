@@ -2,7 +2,7 @@
 // 南雲の持ち点一括投入カットイン／最終順位表。master_spec 第2部 §4〜5・story ch1【転】
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { faceIconUrl, displayName } from "../core/data.js";
-import { layers, showScreen, flash, shake } from "../core/ui.js";
+import { layers, showScreen, flash, shake, retireScreen } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { SE, stopBgm } from "../core/audio.js";
 import { autoSkill } from "./common.js";
@@ -232,7 +232,7 @@ export function resultTable(cs, rank) {
       cs.bonusNotes?.length ? el("small", { text: `効いたもの: ${cs.bonusNotes.join("・")}` }) : null,
       el("small.rt-bar-note", { text: rank === 1 ? "技術点も個性点も、4人の中では下位だった。" : "南雲審査員長の持ち点は、動かなかった。" }),
     ]);
-    const btn = el("button.btn.primary", { dataset: { test: "result-next" }, onclick: () => { SE.select(); resolve(); } }, [
+    const btn = el("button.btn.primary", { dataset: { test: "result-next" }, onclick: () => { SE.select(); retireScreen(); resolve(); } }, [
       el("span.btn-label", { text: rank === 1 ? "──表彰のあとへ" : "……結果を受け止める" }),
     ]);
     showScreen("result", el("div.result-table", [el("div.rt-title", { text: "SMOKE CROWN CUP ── FINAL RESULT" }), el("div.rt-rows", rows), detail, btn]));

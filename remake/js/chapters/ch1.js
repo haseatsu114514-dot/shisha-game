@@ -2,7 +2,7 @@
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
 import { bgUrl, faceIconUrl, realName, displayName } from "../core/data.js";
-import { layers, showScreen, clearScreen, setBg, smokeWipe, chapterTitle, dayCard, roundCut, toast, bannersIdle, retire } from "../core/ui.js";
+import { layers, showScreen, clearScreen, setBg, smokeWipe, chapterTitle, dayCard, roundCut, toast, bannersIdle, retire, retireScreen } from "../core/ui.js";
 import { state, save, markMet, setFlag, flag } from "../core/state.js";
 import { addMoney, maxStamina, gainStat } from "../core/stats.js";
 import { playBgm, stopBgm, SE } from "../core/audio.js";
@@ -254,6 +254,7 @@ async function tournamentDay() {
     // 南雲の二口 →「もうだめだ」→ 10カウント → プチュン → 南雲の持ち点10一括投入 → 優勝
     await play("ch1_tournament_judging", { bg: STAGE });
     await resultCountdown(cs, out.kind);
+    retireScreen(); // カウント画面は次の場面で片付く
     playBgm("bgm_result_emotional");
     await nagumoCutin(1);
     await play("ch1_tournament_reveal", { bg: STAGE });
@@ -261,6 +262,7 @@ async function tournamentDay() {
     await victory();
   } else {
     await resultCountdown(cs, out.kind);
+    retireScreen();
     await nagumoCutin(out.rank);
     await resultTable(cs, out.rank);
     await play("ch1_tournament_defeat", { bg: STAGE });

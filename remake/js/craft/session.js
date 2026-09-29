@@ -57,7 +57,9 @@ let bench = null;
  * 戻り値の panel に各工程が中身を描き、rig は左の一台。
  */
 export function openBench(cs, { steps = [] } = {}) {
-  if (bench && bench.cs === cs && bench.root.isConnected) return bench;
+  // 会話のあとに作業台へ戻るときも、作業台の背景（暗めの会場／店）に戻す
+  const bg = () => (cs.mode === "tournament" ? setBg(bgUrl("bg_tournament_stage"), { tint: "dim", fast: true }) : setBg(bgUrl("bg_tonari_inside", timeOfDay()), { tint: "dim", fast: true }));
+  if (bench && bench.cs === cs && bench.root.isConnected) { bg(); return bench; }
   bench?.rig.destroy();
   const rig = buildRig();
   const title = el("div.bench-title");
@@ -71,8 +73,7 @@ export function openBench(cs, { steps = [] } = {}) {
     el("div.bench-right", [el("div.bench-head", [title, hint]), panel]),
     ticker,
   ]);
-  if (cs.mode === "tournament") setBg(bgUrl("bg_tournament_stage"), { tint: "dim" });
-  else setBg(bgUrl("bg_tonari_inside", timeOfDay()), { tint: "dim" });
+  bg();
   showScreen("bench", root);
   bench = { cs, root, rig, panel, title, hint, progress, ticker };
   rig.update(cs);

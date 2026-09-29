@@ -102,7 +102,7 @@
   align-items: flex-start;
   padding: 12px 16px;
 }
-body.in-vn .hud { opacity: 0; }
+body.in-vn .hud, body.vn-open .hud { opacity: 0; }
 body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen="result"] .hud { opacity: 0; }
 
 /* 左上の DAY カード（墨×金・角飾り） */
