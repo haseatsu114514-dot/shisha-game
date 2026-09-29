@@ -1,7 +1,7 @@
 // 第1章「一吸目（ファーストドロー）」── SMOKE CROWN CUP 編 の台本。
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
-import { bgUrl, faceIconUrl, realName } from "../core/data.js";
+import { bgUrl, faceIconUrl, realName, displayName } from "../core/data.js";
 import { layers, showScreen, clearScreen, setBg, smokeWipe, chapterTitle, dayCard, roundCut, toast, bannersIdle, retire } from "../core/ui.js";
 import { state, save, markMet, setFlag, flag } from "../core/state.js";
 import { addMoney, maxStamina, gainStat } from "../core/stats.js";
@@ -10,11 +10,12 @@ import { play, hooks } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
 import { initHud, showHud, daysLeft, MAX_DAYS } from "../daily/hud.js";
 import { openPhone, morningMessages } from "../daily/phone.js";
-import { ownsFlavor } from "../daily/shop.js";
+import { ownsFlavor, flavorStock, addFlavorStock, SHOP_FLAVORS } from "../daily/shop.js";
 import { radar } from "../daily/status.js";
 import { onDialogueEnter, maybeShuraba } from "../daily/romance.js";
 import { recordCg } from "../scenes/gallery.js";
 import { newSession, openBench, tickerSay } from "../craft/session.js";
+import * as bc from "../craft/broadcast.js";
 import { stepSetup, stepConcept, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
 import { runHoles } from "../craft/holes.js";
 import { runHeat } from "../craft/heat.js";
@@ -36,7 +37,8 @@ const PRIZE = 30000;
 function setupHooks() {
   hooks.onEnter = onDialogueEnter; // 告白の返事（accept/reject）・set_romance
   hooks.onCg = recordCg;           // 見たCGはギャラリーで見返せる
-  hooks.interpolate = (t) => t.replace(/\{daysLeft\}/g, String(daysLeft())).replace(/\{day\}/g, String(state.day));
+  hooks.interpolate = (t) => t.replace(/\{daysLeft\}/g, String(daysLeft())).replace(/\{day\}/g, String(state.day))
+    .replace(/\{fortuneName\}/g, state.fortune ? displayName(state.fortune.char, state) : "その人"); // 占い師の結果
   hooks.onChoice = (dialogueId, choiceId, branch) => {
     // チョイザップ入会（月額4,000円）
     if (dialogueId === "ch1_choizap_first" && branch === "register") {
@@ -104,6 +106,7 @@ async function tutorial() {
   await runPull(cs);
   state.flags._tutorial_done = true;
   await play("remake_tutorial_result", { bg: TONARI });
+  retire(layers.screen.querySelector(":scope > .bench")); // 次の会話（お姉さん）の後ろに作業台を残さない
 }
 
 // ---------------------------------------------------------------- 夜の固定イベント
@@ -162,12 +165,15 @@ async function tournamentDay() {
     const cheers = morningMessages({ tournamentDay: true });
     if (cheers.length) await openPhone(cheers, { time: "AM 7:40" });
     // 本番用フレーバーを仕入れていなければ、スミさんのお情け（強制購入はしない）
-    const stocked = state.flavors.some((id) => id !== "double_apple") || ownsFlavor("mint");
+    const stocked = SHOP_FLAVORS.some((id) => id !== "double_apple" && ownsFlavor(id));
     await play(stocked ? "remake_flavor_brought" : "remake_flavor_rescue", { bg: TONARI });
+    if (!stocked && flavorStock("double_apple") < 12) addFlavorStock("double_apple", 12 - flavorStock("double_apple")); // スミさんの「一回分」
+    state.tournament.stockSnap = { ...state.flavorStock }; // 再挑戦は大会の頭から＝持ち込み在庫も会場入り前に戻す
     save();
     toast("大会直前のデータをセーブした");
   }
   showHud(false);
+  if (state.tournament.stockSnap) state.flavorStock = { ...state.tournament.stockSnap };
   state.tournament.attempts++;
   for (const id of ["naru", "adam", "minto", "nagumo", "maezono", "dr_kemuri"]) markMet(id);
   await smokeWipe(() => playBgm("bgm_tournament_wait"), { color: "dark" });
@@ -183,15 +189,29 @@ async function tournamentDay() {
   await play("remake_round1_intro", { bg: STAGE });
   openBench(cs, { steps: STEPS_ALL });
   tickerSay("パッキー「さあ4人一斉にスタート！ 制限時間は60分ッ！」");
+  // 工程の頭でパッキーが前振り、出来に応じて観客のコメントと体感スコアが流れる（生放送レイヤー）
   await stepSetup(cs);
+  bc.block(cs, "theme");
   await stepConcept(cs);
+  bc.block(cs, "mix");
   await stepMix(cs);
+  bc.judge(cs, bc.judgeOf(cs.mixInfo.score), "配合");
+  bc.block(cs, "pack");
   await stepPack(cs);
+  bc.burst(cs, "good", 1);
+  bc.block(cs, "foil");
   await runHoles(cs);
+  bc.judge(cs, bc.judgeOf(cs.holes.score), "穴あけ");
+  bc.block(cs, "coalfire");
   await runHeat(cs);
+  bc.judge(cs, bc.judgeOf(cs.heat.score), "炭");
   await stepPlace(cs);
   await stepSteamTime(cs);
+  bc.block(cs, "steam");
   await runSteamDodge(cs);
+  bc.judge(cs, bc.judgeOf(cs.steam.score), "蒸らし");
+  await sleep(900);
+  bc.clearComments();
   await play("ch1_tournament_match", { bg: STAGE });
   await play("ch1_tournament_r1_end", { bg: STAGE });
   await showStandings(1, (cs.holes.score + cs.heat.score) / 2);
@@ -199,7 +219,12 @@ async function tournamentDay() {
   // ROUND 2 ── 吸い出し・提供
   await roundCut("ROUND 2", "吸い出し・提供");
   openBench(cs, { steps: STEPS_ALL });
+  bc.block(cs, "pull");
   await runPull(cs);
+  bc.judge(cs, bc.judgeOf(cs.pull.score), "提供");
+  bc.burst(cs, "serve", 1);
+  await sleep(900);
+  bc.clearComments();
   await play("ch1_tournament_r2_end", { bg: STAGE });
   cs.stats = computeShisha(cs);
   await showStandings(2, (cs.holes.score + cs.heat.score + cs.stats.craftQuality) / 3);
@@ -207,7 +232,11 @@ async function tournamentDay() {
   // ROUND 3 ── 熱管理
   await roundCut("ROUND 3", "熱管理");
   openBench(cs, { steps: STEPS_ALL });
+  bc.block(cs, "adjust");
   await runCare(cs);
+  bc.judge(cs, bc.judgeOf(cs.care.score), "熱管理");
+  await sleep(900);
+  bc.clearComments();
   cs.stats = null;
   await play("ch1_tournament_r3_end", { bg: STAGE });
 
@@ -273,6 +302,7 @@ async function entrance() {
 
 async function victory() {
   addMoney(PRIZE);
+  delete state.tournament.stockSnap;
   await play("ch1_tournament_after", { bg: STAGE });
   // 優勝の夜: 師匠の採点表 → 未知の送信者
   await openPhone([

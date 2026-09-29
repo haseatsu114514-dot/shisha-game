@@ -4,7 +4,7 @@
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 3; // 2: スロット・くじ・恋人を追加 / 3: LIME の受信箱
+export const SCHEMA = 4; // 2: スロット・くじ・恋人を追加 / 3: LIME の受信箱 / 4: フレーバーのグラム在庫・天気
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -35,7 +35,9 @@ export function newState() {
     visitedDay: {},            // スポット -> 最後に訪れた日（同じ店は1日1回）
     owned: STARTER_EQUIPMENT.slice(),
     equip: { bowl: "silicone_bowl", hms: "lotos_hagal", charcoal: "flat_charcoal" },
-    flavors: ["double_apple"], // 手持ちのフレーバー（1箱買えば章の間は使える）。本番用は Dr.fookah で仕入れる
+    flavors: ["double_apple"], // 一度でも手に入れたフレーバー（図鑑的な記録）。使えるかどうかは flavorStock で決まる
+    flavorStock: { double_apple: 50 }, // フレーバーの在庫（g）。1箱50g。大会で詰んだ分だけ減る（課題フレーバーは主催支給）
+    weatherSeed: Math.floor(Math.random() * 100000), // 雨の日の抽選種（セーブごとに違う）
     baitoCount: 0,
     lastBaitoDay: 0,           // 最後にシフトに入った日（スミさんのバイト誘いの判定）
     usedBaito: [],
@@ -73,6 +75,11 @@ export function newState() {
 
 /** 旧スキーマのセーブを現行の形にそろえる（互換処理はここに集約） */
 function migrate(s) {
+  // グラム在庫の導入前のセーブ: 持っていたフレーバーは1箱（50g）ぶんとして引き継ぐ
+  if (!s.flavorStock) {
+    s.flavorStock = Object.fromEntries((s.flavors || ["double_apple"]).map((id) => [id, 50]));
+    if (s.flags?._rin_sample) s.flavorStock.nightside_earlgrey = 50;
+  }
   const fresh = newState();
   for (const k of Object.keys(fresh)) if (!(k in s)) s[k] = fresh[k];
   s.schema = SCHEMA;
@@ -112,6 +119,61 @@ export function peekSave() {
 export function load() {
   const s = peekSave();
   return s ? setState(migrate(s)) : null;
+}
+
+// ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に3枠）
+
+export const SAVE_SLOTS = [
+  { key: SAVE_KEY, label: "オートセーブ", auto: true },
+  { key: "suien_remake_slot1", label: "スロット 1" },
+  { key: "suien_remake_slot2", label: "スロット 2" },
+  { key: "suien_remake_slot3", label: "スロット 3" },
+];
+const BOOT_LOAD_KEY = "suien_remake_boot_load";
+
+/** 枠の中身（無い・壊れている→null） */
+export function readSlot(key) {
+  try {
+    const s = JSON.parse(localStorage.getItem(key) || "null");
+    return s && typeof s === "object" && s.day ? s : null;
+  } catch {
+    return null;
+  }
+}
+export const anySlotSaved = () => SAVE_SLOTS.some((s) => readSlot(s.key));
+
+/** 今の状態を手動の枠に書く（オートセーブも同時に更新） */
+export function saveToSlot(key) {
+  save();
+  try {
+    localStorage.setItem(key, JSON.stringify(state));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** 枠から読み込んで今の状態にする。以後のオートセーブもこのデータから続く */
+export function loadFromSlot(key) {
+  const s = readSlot(key);
+  if (!s) return null;
+  setState(migrate(s));
+  save();
+  return state;
+}
+
+/** ゲーム中にロードしたとき: いったん読み直して、タイトルを飛ばしてそのまま再開する */
+export function requestResumeOnBoot() {
+  try { sessionStorage.setItem(BOOT_LOAD_KEY, "1"); } catch { /* noop */ }
+}
+export function consumeResumeOnBoot() {
+  try {
+    const v = sessionStorage.getItem(BOOT_LOAD_KEY);
+    sessionStorage.removeItem(BOOT_LOAD_KEY);
+    return v === "1";
+  } catch {
+    return false;
+  }
 }
 
 export function wipeSave() {

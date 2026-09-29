@@ -22,6 +22,7 @@ export const DB = {
   kuji: { meta: {}, grades: {} },
   lover: {},          // 恋人まわりの文面（remake/data/lover.json）
   statusTexts: { statPurpose: {}, statTierFx: {}, customerNotes: [] }, // ステの説明・★効果・常連ノート
+  broadcast: { nico: {}, step: {}, mc: {}, rivalFeed: [], ticker: {} }, // 大会の実況コメント（remake/data/broadcast.json）
   manifest: { portraits: {}, backgrounds: [], cgs: [], faceIcons: [], making: [], bgm: [] },
 };
 
@@ -53,6 +54,7 @@ export async function loadAll(onProgress = () => {}) {
     ["kuji", `${ROOT}data/kuji.json`],
     ["lover", "data/lover.json"],
     ["statusTexts", "data/status_texts.json"],
+    ["broadcast", "data/broadcast.json"],
     ["manifest", "data/manifest.json"],
     ...DIALOGUE_FILES.map((f) => [`dlg:${f}`, `${ROOT}data/dialogue/${f}.json`]),
   ];
@@ -78,6 +80,7 @@ export async function loadAll(onProgress = () => {}) {
   DB.kuji = raw.kuji;
   DB.lover = raw.lover;
   DB.statusTexts = raw.statusTexts;
+  DB.broadcast = raw.broadcast;
   DB.manifest = raw.manifest;
   WEBP = new Set(DB.manifest.webp || []);
   for (const [key, v] of Object.entries(raw)) {

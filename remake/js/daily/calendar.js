@@ -1,7 +1,8 @@
 // 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の行動 → 夜の固定イベント → 帰宅 → 翌朝。
 import { el, sleep } from "../core/util.js";
 import { layers, dayCard, modal, toast, fadeBlack, bannersIdle } from "../core/ui.js";
-import { state, save } from "../core/state.js";
+import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
+import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { addStamina, gainAffinity, gainStat, STAMINA_LOW, maxStamina } from "../core/stats.js";
 import { DB } from "../core/data.js";
 import { SE, playBgm } from "../core/audio.js";
@@ -9,7 +10,9 @@ import { play } from "../vn/engine.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { initHud, showHud, updateHud, daysLeft, MAX_DAYS, setPhoneBadge } from "./hud.js";
 import { chooseSpot, interruptMap } from "./map.js";
+import { isRainy } from "./weather.js";
 import { spotById, visitRival, visitSpot, restAtHome, isClosed } from "./spots.js";
+import { doFortune } from "./fortune.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
 import { deliverMorning, pushNotice, hasUnread, openLime, limeCoach } from "./phone.js";
@@ -55,7 +58,7 @@ export async function runDaily(def) {
 
 async function morning() {
   playBgm("daily_part");
-  await dayCard(`DAY ${state.day}`, `SMOKE CROWN CUP まで あと${daysLeft()}日`);
+  await dayCard(`DAY ${state.day}`, `SMOKE CROWN CUP まで あと${daysLeft()}日${isRainy() ? "　☂ 雨" : ""}`);
   // LIME は通知だけ（中身は好きなときにアプリを開いて読む）
   const n = deliverMorning({ fixedNight: (d) => !!chapterDef.nightEvents[d] });
   if (n) pushNotice(n);
@@ -87,11 +90,22 @@ async function openMenu() {
     title: "MENU",
     body: `DAY ${state.day}・${state.slot >= 1 ? "夜" : "昼"}　／　行動のたびに自動でセーブされています。`,
     options: [
+      { label: "セーブ", value: "save", test: "menu-save" },
+      { label: "ロード", value: "load", test: "menu-load" },
       { label: "用語集", value: "glossary" },
       { label: "タイトルへ戻る", value: "title", test: "menu-title" },
       { label: "閉じる", value: null, primary: true },
     ],
   });
+  if (v === "save") {
+    // 手動セーブは街に出ているとき（マップ）だけ。会話や作業の途中の状態は残さない
+    if (!document.querySelector("#screen .map:not(.done)")) { toast("セーブは街に出ているとき（マップ）にできる"); return; }
+    await saveFlow();
+  }
+  if (v === "load") {
+    const key = await loadFlow({ inGame: true });
+    if (key && loadFromSlot(key)) { requestResumeOnBoot(); location.reload(); }
+  }
   if (v === "glossary") await modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] });
   if (v === "title") { save(); location.reload(); }
 }
@@ -207,6 +221,10 @@ async function takeAction() {
     await visitSpot(spot);
   } else if (spot.kind === "rest") {
     await restAtHome(spot);
+  } else if (spot.kind === "fortune") {
+    await doFortune(); // 時間は使わない（占ってもらったら今日はもう寄れない）
+    save();
+    return;
   }
   if (!used) return;
   state.visitedDay[spot.id] = state.day;

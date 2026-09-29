@@ -8,7 +8,7 @@ import { SE } from "../core/audio.js";
 import { stepPanel, refreshRig } from "./session.js";
 import { autoSkill } from "./common.js";
 import { flavorColor } from "./art.js";
-import { ownsFlavor, SHOP_FLAVORS } from "../daily/shop.js";
+import { ownsFlavor, flavorStock, addFlavorStock, SHOP_FLAVORS } from "../daily/shop.js";
 
 // 章ごとのレギュレーション（CLAUDE.md が正本: ch1 = ミント2g以上）
 export const REGULATION = { 1: { flavor: "mint", min: 2, label: "課題フレーバー「ミント」を2g以上" } };
@@ -150,10 +150,14 @@ export async function stepMix(cs) {
   const reg = regulationFor(cs);
   const cap = capacity(cs);
   const panel = stepPanel("mix", "配合 ── MIX", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + "が今日の課題。" : ""}合計12g以上で決める`));
-  // 使えるフレーバー: 手持ち＋課題フレーバー（主催者支給）。チュートリアルは店の基本形
-  let ids = [...new Set(["double_apple", ...SHOP_FLAVORS.filter(ownsFlavor), ...(ownsFlavor("nightside_earlgrey") ? ["nightside_earlgrey"] : [])])];
+  // 使えるフレーバー: 在庫のあるもの＋課題フレーバー（主催者支給）。チュートリアルは店の基本形。
+  // 大会は持ち込んだ在庫から詰む（詰んだ分だけ減る・旧版 N3）。練習・リハーサルは店の葉なので減らない
+  const consumes = cs.mode === "tournament";
+  const supplied = (id) => !!reg && id === reg.flavor;
+  let ids = [...new Set([...SHOP_FLAVORS, "nightside_earlgrey"].filter(ownsFlavor))];
   if (reg && !ids.includes(reg.flavor)) ids.unshift(reg.flavor);
   if (cs.mode === "tutorial") ids = ["double_apple", "mint"];
+  const limit = (id) => (consumes && !supplied(id) ? flavorStock(id) : Infinity);
   cs.mix = {};
   const lcd = el("div.lcd");
   const layers = el("div.bowl-layers");
@@ -184,13 +188,19 @@ export async function stepMix(cs) {
       const cur = cs.mix[id] || 0;
       const next = clamp(cur + d, 0, cap);
       if (d > 0 && totalOf() + d > cap) { SE.error(); return; }
+      if (d > 0 && cur + d > limit(id)) { SE.error(); toast(`${f?.short_name || f?.name || id}の持ち込みは残り${flavorStock(id)}gまで`, { kind: "warn" }); return; }
       cs.mix[id] = next;
       if (d > 0) SE.pour(); else SE.click();
       redraw();
     };
     const row = el("div.flavor-row", { dataset: { flavor: id } }, [
       el("i.fr-swatch", { style: { background: flavorColor(id) } }),
-      el("div.fr-name", [el("b", { text: f?.short_name || f?.name || id }), reg && id === reg.flavor ? el("small.fr-reg", { text: "課題（支給）" }) : el("small", { text: f?.description?.slice(0, 22) || "" })]),
+      el("div.fr-name", [
+        el("b", { text: f?.short_name || f?.name || id }),
+        supplied(id) ? el("small.fr-reg", { text: "課題（支給）" })
+          : consumes ? el("small.fr-stock", { text: `持ち込み 残り${flavorStock(id)}g` })
+          : el("small", { text: f?.description?.slice(0, 22) || "" }),
+      ]),
       el("button.fr-btn", { text: "−", dataset: { test: `mix-minus-${id}` }, onclick: () => change(-1) }),
       g,
       el("button.fr-btn", { text: "＋", dataset: { test: `mix-plus-${id}` }, onclick: () => change(1) }),
@@ -224,6 +234,7 @@ export async function stepMix(cs) {
     }
   });
   cs.mix = Object.fromEntries(Object.entries(cs.mix).filter(([, g]) => g > 0));
+  if (consumes) for (const [id, g] of Object.entries(cs.mix)) if (!supplied(id)) addFlavorStock(id, -g);
   cs.mixInfo = evaluateMix(cs);
   // レシピ帳への登録（新発見のときだけ）
   const r = cs.mixInfo.recipe;

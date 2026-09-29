@@ -19,9 +19,16 @@ const CAT_LABEL = { cooling: "清涼", sweet: "スイート", fruit: "フルー�
 const TYPE_LABEL = { bowl: "ボウル", hms: "ヒートマネジメント", charcoal: "炭" };
 export const RIN_AWAY_DAY = 2; // day % 7 === 2 は凛が出張で不在
 
-export const ownsFlavor = (id) => (state.flavors || []).includes(id) || (id === "nightside_earlgrey" && state.flags._rin_sample);
+// フレーバーは1箱50g（旧版 N3）。買う＝在庫+50g、大会で詰んだ分だけ減る（課題フレーバーは主催支給＝減らない）
+export const FLAVOR_BOX_GRAMS = 50;
+export const flavorStock = (id) => Math.max(0, state.flavorStock?.[id] || 0);
+export function addFlavorStock(id, grams) {
+  state.flavorStock = state.flavorStock || {};
+  state.flavorStock[id] = Math.max(0, (state.flavorStock[id] || 0) + grams);
+  if (grams > 0 && !state.flavors.includes(id)) state.flavors.push(id);
+}
+export const ownsFlavor = (id) => flavorStock(id) > 0;
 
-/** 店に入る。戻り値: "rin"（2階へ＝行動を使う）/ null（買い物だけで出る） */
 /**
  * Dr.fookah（1階物販）。戻り値: "rin"（2階へ）/ null（店を出た）
  * @param opts.errand 1日目の案内: このフレーバーを買うまで店を出られない（スミさんの頼み）
@@ -60,12 +67,18 @@ export function openShop({ errand = null } = {}) {
 
     const flavorRows = () => SHOP_FLAVORS.map((id) => DB.flavorById[id]).filter(Boolean).map((f) => {
       const owned = ownsFlavor(f.id);
+      const stock = flavorStock(f.id);
       return el(`div.shop-row${errand === f.id && !owned ? ".errand" : ""}`, [
         el("span.shop-cat", { text: CAT_LABEL[f.category] || "", dataset: { cat: f.category } }),
         el("div.shop-main", [el("b", { text: f.short_name || f.name }), el("small", { text: f.description })]),
-        owned
-          ? el("span.shop-owned", { text: "在庫あり" })
-          : el("button.btn.small", { text: yen(f.price), dataset: { test: `buy-${f.id}` }, onclick: () => buy(f.short_name || f.name, f.price, () => state.flavors.push(f.id)) }),
+        el("div.shop-buy", [
+          el(`span.shop-stock${stock ? "" : ".none"}`, { text: stock ? `在庫 ${stock}g` : "在庫なし" }),
+          el("button.btn.small", {
+            text: `${yen(f.price)}／${FLAVOR_BOX_GRAMS}g`,
+            dataset: { test: `buy-${f.id}` },
+            onclick: () => buy(`${f.short_name || f.name}（${FLAVOR_BOX_GRAMS}g）`, f.price, () => addFlavorStock(f.id, FLAVOR_BOX_GRAMS)),
+          }),
+        ]),
       ]);
     });
 
@@ -149,6 +162,7 @@ export async function visitRin() {
   // 3回目で限定フレーバー（NIGHTSIDE アールグレイ試作）を分けてもらえる
   if ((state.story.rin || 0) >= 3 && !state.flags._rin_sample) {
     state.flags._rin_sample = true;
+    addFlavorStock("nightside_earlgrey", FLAVOR_BOX_GRAMS);
     toast("限定フレーバー「NS アールグレイ（試作）」を手に入れた", { kind: "good" });
   }
 }

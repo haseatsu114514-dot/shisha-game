@@ -9,6 +9,8 @@ import { STAMINA_LOW } from "../core/stats.js";
 import { SPOTS, SPOT_PREVIEW, isClosed, visitedToday, isUnlocked, hasNewStory } from "./spots.js";
 import { updateHud } from "./hud.js";
 import { mountReel } from "./reel.js";
+import { isRainy } from "./weather.js";
+import { fortuneToday } from "./fortune.js";
 
 /** 看板に出す顔（面識のある相手だけ。tonari はスミさん） */
 function spotFace(s) {
@@ -45,6 +47,7 @@ export function chooseSpot({ notice = "", eventPin = null, guide = null, onShown
 
     const availability = (s) => {
       if (!isUnlocked(s)) return { ok: false, why: "locked" };
+      if (s.kind === "fortune" && state.fortuneDay === state.day) return { ok: false, why: "今日はもう占ってもらった", tag: "今日はもう占った" };
       if (guide && s.id !== guide.pin) return { ok: false, why: "今はスミさんの頼みが先", guided: true };
       if (isClosed(s)) return { ok: false, why: "本日定休日", tag: "本日定休日" };
       if (s.kind !== "shop" && s.kind !== "rest" && s.kind !== "tonari" && visitedToday(s.id)) return { ok: false, why: "今日はもう行った", tag: "今日はもう行った" };
@@ -85,12 +88,12 @@ export function chooseSpot({ notice = "", eventPin = null, guide = null, onShown
       const warn = s.stamina < 0 && state.stamina + s.stamina < STAMINA_LOW;
       const pv = SPOT_PREVIEW[s.id] ? sceneBg(SPOT_PREVIEW[s.id], tod) : null;
       info.replaceChildren(
-        el("div.mi-banner", { text: s.label }),
+        el("div.mi-banner", { text: known ? s.label : s.unknownLabel || s.label }),
         pv?.url ? el("div.mi-preview", { style: { backgroundImage: `url("${pv.url}")` }, dataset: { tint: pv.tint || "" } }) : null,
         el("div.mi-area", { text: s.area + (charName ? ` ・ ${charName}` : s.charId ? " ・ ？？？" : "") }),
-        el("p.mi-desc", { text: s.desc }),
+        el("p.mi-desc", { text: known ? s.desc : s.unknownDesc || s.desc }),
         el("div.mi-tags", [
-          s.cost ? el("span.tag", { text: yen(s.cost) }) : el("span.tag.free", { text: s.kind === "shop" ? "買い物は時間を使わない" : "無料" }),
+          s.cost ? el("span.tag", { text: yen(s.cost) }) : el("span.tag.free", { text: s.kind === "shop" ? "買い物は時間を使わない" : s.kind === "fortune" ? "時間を使わない" : "無料" }),
           staminaNote ? el(`span.tag${warn ? ".warn" : ""}`, { text: warn ? "体力が心配" : staminaNote }) : null,
           s.charId && known && hasNewStory(s.charId) ? el("span.tag.new", { text: "新しい話がありそう" }) : null,
         ]),
@@ -116,6 +119,7 @@ export function chooseSpot({ notice = "", eventPin = null, guide = null, onShown
     };
 
     for (const s of SPOTS) {
+      if (s.kind === "fortune" && !fortuneToday()) continue; // 占い師は週2日だけ出店
       const av = availability(s);
       const locked = av.why === "locked";
       const known = knowsOwner(s);
@@ -133,8 +137,8 @@ export function chooseSpot({ notice = "", eventPin = null, guide = null, onShown
       }, [
         el("div.shield", [
           badge,
-          el("div.ico", [face ? el("img.pin-face", { src: face, alt: "" }) : el("span", { text: locked ? "？" : s.glyph })]),
-          el("div.label", [el("span", { text: locked ? "？？？" : s.label }), locked ? el("em.lock", { text: "LOCK" }) : null]),
+          el("div.ico", [face ? el("img.pin-face", { src: face, alt: "" }) : el("span", { text: locked ? "？" : known ? s.glyph : s.unknownGlyph || s.glyph })]),
+          el("div.label", [el("span", { text: locked ? "？？？" : known ? s.label : s.unknownLabel || s.label }), locked ? el("em.lock", { text: "LOCK" }) : null]),
         ]),
         sub ? el(`div.sub-label${av.tag ? ".closed-tag" : ""}`, { text: sub }) : null,
       ]);
@@ -142,11 +146,13 @@ export function chooseSpot({ notice = "", eventPin = null, guide = null, onShown
     }
 
     idleInfo();
-    const root = el("div.map", { dataset: { night: String(night) } }, [
+    const rainy = isRainy();
+    const root = el("div.map", { dataset: { night: String(night), rain: String(rainy) } }, [
+      rainy ? el("div.map-weather") : null, // 雨の日のオーバーレイ（ピンより下・操作を邪魔しない）
       pins,
       notice ? el("div.map-notice", { text: notice }) : null,
       guide ? el("div.map-guide", { dataset: { test: "map-guide" } }, [el("b", { text: "GUIDE" }), el("span", { text: guide.text })]) : null,
-      el("div.map-side", [el("div.map-time", { text: `${night ? "夜" : "昼"} / 栄` })]),
+      el("div.map-side", [el("div.map-time", { text: `${night ? "夜" : "昼"} / 栄${rainy ? "・雨" : ""}` })]),
       info,
     ]);
     showScreen("map", root);

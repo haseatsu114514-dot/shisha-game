@@ -2,11 +2,12 @@
 import { $, sleep } from "./core/util.js";
 import { loadAll, DB, assetUrl, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
 import { initLayers, imageReady } from "./core/ui.js";
-import { loadConfig, state } from "./core/state.js";
+import { loadConfig, state, load, consumeResumeOnBoot } from "./core/state.js";
 import { unlockAudio } from "./core/audio.js";
 import { vnTest } from "./vn/engine.js";
 import { craftTest } from "./craft/session.js";
 import { showTitle } from "./scenes/title.js";
+import { resumeGame } from "./chapters/ch1.js";
 
 function fitStage() {
   const stage = $("#stage");
@@ -42,6 +43,8 @@ async function boot() {
   await Promise.race([Promise.all(TITLE_IMAGES.map((r) => imageReady(assetUrl(r), 3000))), sleep(3000)]);
   $("#boot").classList.add("done");
   setTimeout(() => $("#boot").remove(), 700);
+  // ゲーム中にロードした直後は、タイトルを飛ばしてそのデータから再開する
+  if (consumeResumeOnBoot() && load()) { resumeGame(); warmUp(); return; }
   showTitle();
   warmUp();
 }

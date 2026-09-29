@@ -5,6 +5,7 @@ import { layers } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { state, STAT_KEYS } from "../core/state.js";
 import { staminaRatio, STAMINA_LOW, maxStamina, star } from "../core/stats.js";
+import { isRainy } from "./weather.js";
 
 export const MAX_DAYS = 14;
 /** 大会（DAY15）まであと何日か。台詞の {daysLeft} もこれに一本化する */
@@ -74,7 +75,8 @@ export function updateHud() {
   if (!dom || !state) return;
   dom.day.replaceChildren(el("b", { text: String(state.day) }), el("small", { text: `/${MAX_DAYS}` }));
   const night = state.slot >= 1;
-  dom.slot.textContent = state.phase === "tournament" ? "大会当日" : state.slot >= 2 ? "DAY ・ 帰宅" : night ? "DAY ・ 夜" : "DAY ・ 昼";
+  const rain = isRainy() ? "・雨" : "";
+  dom.slot.textContent = state.phase === "tournament" ? "大会当日" : state.slot >= 2 ? "DAY ・ 帰宅" : night ? `DAY ・ 夜${rain}` : `DAY ・ 昼${rain}`;
   dom.slot.dataset.slot = night ? "night" : "day";
   dom.money.textContent = yen(state.money);
   dom.left.textContent = state.phase === "tournament" ? "本日" : `あと${daysLeft()}日`;

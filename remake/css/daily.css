@@ -280,6 +280,19 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 /* 行けない場所は「消えた」ではなく「無効化」に見せる（旧版 #6） */
 .spot-pin.off .shield { filter: grayscale(0.5) brightness(0.74); }
 .spot-pin.off { opacity: 0.9; }
+/* 雨の日（旧版 A8/W4）: マップの雨オーバーレイ。ピンより下・操作を邪魔しない */
+.map-weather {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(70, 90, 140, 0.22), rgba(70, 90, 140, 0.22)),
+    repeating-linear-gradient(115deg, rgba(200, 218, 255, 0.28) 0px, rgba(200, 218, 255, 0.28) 2px, transparent 2px, transparent 26px);
+  background-size: auto, 52px 52px;
+  animation: map-rainfall 0.55s linear infinite;
+}
+@keyframes map-rainfall { from { background-position: 0 0, 0 0; } to { background-position: 0 0, -24px 52px; } }
 /* 1日目の案内: 行き先の1か所だけ光らせ、ほかは沈める */
 .spot-pin.guided-off { opacity: 0.45; }
 .spot-pin.guided-off .shield { filter: grayscale(0.7) brightness(0.7); }
@@ -497,6 +510,9 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 .shop-main b { font-size: 17px; }
 .shop-main small { font-size: 13px; color: var(--text-dim); line-height: 1.5; }
 .shop-owned { font-size: 13px; color: var(--good); min-width: 90px; text-align: center; }
+.shop-buy { flex: none; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; min-width: 120px; }
+.shop-stock { font-size: 12px; color: var(--good); letter-spacing: 0.04em; }
+.shop-stock.none { color: var(--text-dim); }
 .shop-empty { color: var(--text-dim); text-align: center; margin-top: 40px; }
 .shop-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; gap: 12px; }
 
@@ -849,6 +865,7 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { padding: 4px 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.07); font-size: 13px; }
 .chip.on { background: rgba(232, 194, 122, 0.25); border: 1px solid var(--gold); }
+.chip-g { margin-left: 6px; font-size: 11px; color: var(--good); }
 .chip.gold { background: var(--gold); color: #1b1208; }
 .chip.dim { color: var(--text-dim); }
 

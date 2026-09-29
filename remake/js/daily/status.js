@@ -4,7 +4,7 @@ import { DB, displayName, faceIconUrl } from "../core/data.js";
 import { modal } from "../core/ui.js";
 import { state, STAT_KEYS, STAT_JA } from "../core/state.js";
 import { star, starText, rankLabel, affinityLevel, maxStamina } from "../core/stats.js";
-import { ownsFlavor, SHOP_FLAVORS } from "./shop.js";
+import { ownsFlavor, flavorStock, SHOP_FLAVORS } from "./shop.js";
 
 const SVG = "http://www.w3.org/2000/svg";
 const svgEl = (tag, attrs = {}) => {
@@ -139,12 +139,14 @@ function notesTab() {
 function itemsTab() {
   const eq = state.owned.map((id) => DB.equipById[id]).filter(Boolean);
   const fl = [...SHOP_FLAVORS, "nightside_earlgrey"].filter(ownsFlavor).map((id) => DB.flavorById[id]).filter(Boolean);
+  const grams = (id) => `${flavorStock(id)}g`;
   const inUse = new Set(Object.values(state.equip));
   return el("div.st-items", [
     el("h4", { text: "機材" }),
     el("div.chips", eq.map((e) => el(`span.chip${inUse.has(e.id) ? ".on" : ""}`, { text: e.name }))),
     el("h4", { text: "フレーバー" }),
-    el("div.chips", fl.map((f) => el("span.chip", { text: f.short_name || f.name }))),
+    el("div.chips", fl.length ? fl.map((f) => el("span.chip", [f.short_name || f.name, el("small.chip-g", { text: grams(f.id) })])) : [el("span.chip.dim", { text: "在庫なし" })]),
+    el("p.st-note", { text: "フレーバーは1箱50g。大会では持ち込んだ在庫から詰み、使った分だけ減る（課題フレーバーは主催支給）。" }),
     el("h4", { text: "レシピ帳" }),
     el("div.chips", DB.recipes.filter((r) => state.recipes[r.id]).map((r) => el("span.chip.gold", { text: r.name })).concat(
       Object.keys(state.recipes).length ? [] : [el("span.chip.dim", { text: "まだ白紙" })])),

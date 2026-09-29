@@ -7,6 +7,7 @@ import { layers, toast } from "../core/ui.js";
 import { state, save } from "../core/state.js";
 import { addMoney } from "../core/stats.js";
 import { SE } from "../core/audio.js";
+import { addFlavorStock, FLAVOR_BOX_GRAMS } from "./shop.js";
 
 const grades = () => Object.entries(DB.kuji?.grades || {})
   .filter(([, g]) => (g.chapterMin || 1) <= (state.chapter || 1))
@@ -35,7 +36,7 @@ function grant(prize) {
     return;
   }
   if (prize.type === "flavor" && prize.flavorId) {
-    if (!state.flavors.includes(prize.flavorId)) state.flavors.push(prize.flavorId);
+    addFlavorStock(prize.flavorId, FLAVOR_BOX_GRAMS); // 1箱（50g）ぶん在庫に入る
     return;
   }
   if ((prize.type === "goods" || prize.type === "stand") && prize.sell) state.goods.push({ name: prize.name, sell: prize.sell });

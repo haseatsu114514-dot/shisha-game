@@ -2,11 +2,12 @@
 import { el, yen } from "../core/util.js";
 import { bgUrl, assetUrl } from "../core/data.js";
 import { showScreen, setBg, smokeWipe, modal } from "../core/ui.js";
-import { peekSave, load, newGame, wipeSave, config, saveConfig } from "../core/state.js";
+import { peekSave, load, newGame, wipeSave, config, saveConfig, anySlotSaved, loadFromSlot } from "../core/state.js";
 import { playBgm, SE, applyVolumes } from "../core/audio.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { startNewGame, resumeGame } from "../chapters/ch1.js";
 import { openGallery } from "./gallery.js";
+import { loadFlow } from "./saves.js";
 
 const PHASE_LABEL = { opening: "プロローグ", daily: "日常", tournament: "SMOKE CROWN CUP 当日", cleared: "第1章クリア" };
 
@@ -36,6 +37,11 @@ export function showTitle() {
       if (!load()) return;
       smokeWipe(() => { resumeGame(); }, { color: "dark" });
     }, "title-continue", !saved),
+    item("LOAD", "ロード", async () => {
+      const key = await loadFlow();
+      if (!key || !loadFromSlot(key)) return;
+      smokeWipe(() => { resumeGame(); }, { color: "dark" });
+    }, "title-load", !anySlotSaved()),
     item("GALLERY", "ギャラリー", openGallery, "title-gallery"),
     item("GLOSSARY", "用語集", () => modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] }), "title-glossary"),
     item("CONFIG", "設定", openConfig, "title-config"),

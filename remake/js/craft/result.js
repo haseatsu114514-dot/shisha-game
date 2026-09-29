@@ -228,6 +228,7 @@ export function resultTable(cs, rank) {
       ...[["穴あけ", P.holes], ["炭焼き", P.heat], ["完成品", P.shisha], ["FLAVOR TRIAL", P.trial]].map(([k, v]) =>
         el("div.rt-part", [el("span", { text: k }), el(`b.g-${grade(v || 0)}`, { text: grade(v || 0) })])),
       el("div.rt-part.total", [el("span", { text: "総合" }), el(`b.g-${cs.rank}`, { text: cs.rank })]),
+      cs.feel ? el("div.rt-part.feel", [el("span", { text: "観客の体感スコア" }), el("b", { text: `${cs.feel} P` })]) : null,
       cs.bonusNotes?.length ? el("small", { text: `効いたもの: ${cs.bonusNotes.join("・")}` }) : null,
       el("small.rt-bar-note", { text: rank === 1 ? "技術点も個性点も、4人の中では下位だった。" : "南雲審査員長の持ち点は、動かなかった。" }),
     ]);

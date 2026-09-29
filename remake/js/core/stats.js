@@ -118,11 +118,20 @@ export const bond = { private: false };
  * 恋人は店で会っても深まらず、bond.private の間だけ絆ポイントに入る。
  * ロマンス対象が5段階目に届いたら告白イベントを予約する（_confession_due）。
  */
+/** 占い師に見てもらった相手と次に会ったときだけ ×1.5（一度きり） */
+function fortuneMult(id) {
+  if (state.fortune?.char !== id) return 1;
+  delete state.fortune;
+  setTimeout(() => emit("notice", { text: "（占いの効果もあってか、いつもより仲良くなれた気がする）" }), 1400);
+  return 1.5;
+}
+
 export function gainAffinity(id, pts) {
   if (!id || !(pts > 0)) return;
-  const mult = 1 + 0.2 * tier01("charm");
+  let mult = 1 + 0.2 * tier01("charm");
   if ((state.lovers || []).includes(id)) {
     if (!bond.private) return;
+    mult *= fortuneMult(id);
     const prevPts = state.lovePts[id] || 0;
     state.lovePts[id] = prevPts + Math.round(pts * mult);
     const before = state.loveLevel[id] || 1;
@@ -131,6 +140,7 @@ export function gainAffinity(id, pts) {
     emit("affinity-gain", { id, level: after, levelUp: after > before, prevPts, pts: state.lovePts[id], bond: true });
     return;
   }
+  mult *= fortuneMult(id);
   const before = affinityLevel(id);
   const prevPts = state.affinity[id] || 0;
   state.affinity[id] = prevPts + Math.round(pts * mult);

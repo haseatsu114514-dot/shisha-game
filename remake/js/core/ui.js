@@ -31,6 +31,7 @@ export function initLayers() {
       hearts: { from: heartState(prevPts), to: heartState(pts) },
     });
   });
+  on("notice", ({ text }) => toast(text, { ms: 3000 }));
   on("lovers", ({ id }) => {
     gainCard({ kind: "affinity", face: faceIconUrl(id), badge: "♥", top: "NEW RELATIONSHIP", main: displayName(id, state), sub: "恋人になった" });
   });

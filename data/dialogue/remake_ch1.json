@@ -1378,6 +1378,239 @@
       ]
     },
     {
+      "dialogue_id": "remake_rain_opener",
+      "metadata": {},
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "外は雨。傘の水滴を払って、店の扉を開けた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_tsumugi_rain",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "常連席のつむぎは、窓の雨を眺めながらゆっくり煙を吐いていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "雨の日って、お店が静かでいいよね。煙も少しだけ重たく落ちるの"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今日は、もうちょっとだけ居ようかな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨音と水の音だけの店内で、いつもより長く、隣に座っていた。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_baito_rain",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "外は雨。こういう日は客足がまばらな代わりに、一人ひとりが長い。追加注文が続いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_fortune_first",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アーケードの外れ。折りたたみの机に、紫の布と使い込まれたタロットの束。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "深いローブを被った老婆が座っている。フードの陰で、顔はよく見えない。"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "normal",
+          "text": "……ヒヒ。いい煙の匂いを連れて歩く子だ。お座り"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（占い師……？ 怪しい。怪しいけど、この目を逸らせない感じは何だろう）"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "smile",
+          "text": "アタシは出たり出なかったりさ。縁があれば、また会える"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 1
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_fortune_again",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "uranaishi",
+          "face": "smile",
+          "text": "……また来たね。今日は誰との縁が気になるんだい？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_fortune_offer",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "uranaishi",
+          "face": "normal",
+          "text": "相性占い、ひとつ3,000円。カードが、アンタと相手の縁を教えてくれる"
+        },
+        {
+          "type": "choice",
+          "id": "fortune_offer",
+          "choices": [
+            {
+              "text": "相性占いをお願いする（3,000円）",
+              "next": "go"
+            },
+            {
+              "text": "やめておく",
+              "next": "no"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "go": [
+          {
+            "type": "set_flag",
+            "flag": "_fortune_go"
+          }
+        ],
+        "no": [
+          {
+            "speaker": "uranaishi",
+            "face": "normal",
+            "text": "そうかい。縁が呼んだら、また来な"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "remake_fortune_broke",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "uranaishi",
+          "face": "normal",
+          "text": "相性占いは、ひとつ3,000円、……お代が足りないね"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "smile",
+          "text": "縁は逃げやしない。稼いでから、また来な"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_fortune_no_target",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "uranaishi",
+          "face": "normal",
+          "text": "……おや、まだ縁の糸が細いね。誰かと知り合ってから、また来な"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_fortune_pick",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "uranaishi",
+          "face": "normal",
+          "text": "……で、誰との縁を見るんだい？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_fortune_result",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "皺だらけの指がカードを三枚、布の上に滑らせる。……長い沈黙。"
+        },
+        {
+          "type": "fx",
+          "id": "imp"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一枚めくった瞬間、フードの奥で笑った気配がした。"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "smile",
+          "text": "……ヒヒ、いい札だ。{fortuneName}との縁は、いま撚りどきに入ってる"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "normal",
+          "text": "次に会ったとき、いつもより素直に話せるだろうさ。……効き目は一度きりだよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（怪しい……のに、妙な説得力がある。次に会うのが、少し楽しみになった）"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_round1_intro",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tournament_stage.png"

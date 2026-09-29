@@ -5,6 +5,7 @@ import { DB } from "../core/data.js";
 import { gainStat, gainAffinity, addStamina, addMoney, affinityLevel } from "../core/stats.js";
 import { play } from "../vn/engine.js";
 import { playBgm } from "../core/audio.js";
+import { isRainy, RAIN_SPOT_TEXTS } from "./weather.js";
 
 export const VISIT_COST = 3000;
 
@@ -66,6 +67,12 @@ export const SPOTS = [
   { id: "c_station", kind: "spot", label: "C.STATION", area: "大会会場", x: 54, y: 66, theme: "stadium", glyph: "C", sub: "大会会場", cost: 2500, stat: "insight", stamina: -10,
     first: "ch1_c_station_visit", pool: ["cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup", "cs_regular_chat", "cs_nagumo_glimpse", "cs_kemuri_solo", "cs_maezono_taste", "cs_pakki_rehearsal", "cs_prep_line"], bg: "bg_c_station",
     desc: "大会会場になる大型チェーン店。噂や大会情報が集まる。" },
+  // 路上占い師（旧版 F11）: 週2日だけアーケード脇に出る。時間を使わない・1日1回・相性占い3,000円。
+  // 会うまでは正体の分からない「？」の出店
+  { id: "fortune", kind: "fortune", charId: "uranaishi", label: "路上占い", unknownLabel: "？？？", area: "アーケード脇", x: 63, y: 78, theme: "park", glyph: "占", unknownGlyph: "？",
+    sub: "相性を占ってもらう", unknownSub: "様子を見に行く",
+    desc: "タロットで相性を見てくれる。誰かとの縁を見てもらえるらしい（3,000円・時間はかからない）。",
+    unknownDesc: "路地の隅に、見慣れない小さな出店がある。……誰か座っている？" },
   { id: "rest", kind: "rest", label: "家", area: "自宅", x: 89, y: 52, theme: "rest", glyph: "休", sub: "家に帰る", stamina: 55,
     desc: "1行動使って体を休める。体力が大きく戻る。" },
 ];
@@ -73,7 +80,7 @@ export const SPOTS = [
 export const SPOT_PREVIEW = {
   tonari: "bg_tonari_inside", naru: "kemurikusa", adam: "bg_eden_shop", minto: "peppermint",
   shop: "bg_fookah_showroom", cafe: "bg_cafe", kannon: "bg_kannon_day", choizap: "bg_choizap",
-  c_station: "bg_c_station", rest: "bg_home",
+  c_station: "bg_c_station", rest: "bg_home", fortune: "bg_street",
 };
 export const spotById = (id) => SPOTS.find((s) => s.id === id);
 
@@ -113,7 +120,7 @@ export function hasContact(id) {
 
 // ---------------------------------------------------------------- 訪問
 
-const bgRef = (name) => `res://assets/backgrounds/${name}.png`;
+export const bgRef = (name) => `res://assets/backgrounds/${name}.png`;
 
 /**
  * キャラに会う。固有会話が残っていれば次の1本、尽きたら通い訪問の小会話。
@@ -132,8 +139,13 @@ export async function visitChar(charId) {
   } else {
     const pool = REPEAT_POOL[charId] || [0, 1, 2, 3].map((i) => `remake_repeat_${charId}_${i}`);
     const n = (state.visits[charId] || 1) - 1;
-    const id = pool[n % pool.length];
-    await play(id, { bg });
+    const rainy = isRainy();
+    // 雨の日: つむぎは長居する（仲良くなってから）。ほかの相手も入りの1行が雨になる
+    const rainTalk = rainy && affinityLevel(charId) >= 1 && DB.dialogues[`remake_repeat_${charId}_rain`] ? `remake_repeat_${charId}_rain` : null;
+    const id = rainTalk || pool[n % pool.length];
+    const dlg = DB.dialogues[id];
+    const opener = rainy && dlg ? DB.dialogues.remake_rain_opener?.lines || [] : [];
+    await play(opener.length ? { ...dlg, lines: [...opener, ...dlg.lines] } : id, { bg });
     gainAffinity(charId, 5);
     if (!DB.dialogues[id]?.lines?.some((l) => l.type === "apply")) gainStat(CHAR_STAT[charId], 2);
   }
@@ -160,6 +172,9 @@ export async function visitSpot(spot) {
   } else if (n > 1 && spot.pool) {
     id = spot.pool[(n - 2) % spot.pool.length];
   }
+  // 雨の日（2回目以降）は雨の回を出す
+  const rainId = RAIN_SPOT_TEXTS[spot.id];
+  if (rainId && n > 1 && isRainy() && DB.dialogues[rainId]) id = rainId;
   // お忍び客の回収: tonari で覆面レビュアーを接客していたら、2回目以降の来店で記事の噂を聞く
   if (spot.id === "c_station" && n > 1 && state.notes?.baito_incognito_reviewer && !state.flags._ev_reviewer_payoff && DB.dialogues.ch1_reviewer_payoff) {
     state.flags._ev_reviewer_payoff = true;

@@ -49,6 +49,8 @@ await page.evaluate(() => { localStorage.clear(); window.__remake.vnTest.turbo =
 log("title OK");
 if (SHOTS) await page.screenshot({ path: `${SHOTS}/title.png` });
 await page.click('[data-test="title-new"]');
+// 天気の種を固定（雨の日 = DAY2/7/10/13）。雨の日のマップ・バイトを必ず通す
+await page.evaluate(() => { window.__remake.state.weatherSeed = 4; });
 
 let planIdx = 0;
 let pendingAfter = null;
@@ -60,6 +62,13 @@ let lastKey = "";
 let lastDay = null;
 let resumed = false;
 let guided = 0;
+let rainMaps = 0;
+let feelSeen = false;
+let nicoSeen = false;
+let rtFeelSeen = false;
+let fortuneTried = false;
+let slotLoaded = false;
+let stock0 = null;
 let limeCoach = 0;
 let limeOpened = 0;
 let errandBlocked = false;
@@ -86,6 +95,10 @@ for (;;) {
       stats: s?.stats,
       lastRank: s?.tournament?.lastRank,
       endTitle: document.querySelector(".end-title")?.textContent || "",
+      rain: document.querySelector("#screen .map:not(.done)")?.dataset.rain === "true",
+      feel: !!document.querySelector(".bc-feel.show"),
+      nico: !!document.querySelector(".nico"),
+      rtFeel: !!document.querySelector(".rt-part.feel"),
       sub: document.querySelector(".sub-title")?.textContent || "",
       // 選択済み（.done）の画面は次の画面待ち。触らない
       live: !!document.querySelector("#screen > *:not(.done)"),
@@ -101,6 +114,9 @@ for (;;) {
     throw new Error(`stuck: ${key}`);
   }
 
+  if (snap.feel) feelSeen = true;
+  if (snap.nico) nicoSeen = true;
+  if (snap.rtFeel) rtFeelSeen = true;
   // LIME: 返信は押せる先頭の選択肢（誘いには乗る）→ 未読のトークを順に開く → 一覧へ戻る → 閉じる
   if (snap.phone) {
     (await click('.lime-reply[data-test^="reply-"]:not([disabled])'))
@@ -145,12 +161,22 @@ for (;;) {
     // 1回目の本番は下手に作って、敗北ルートを通す
     await page.evaluate(() => { window.__remake.craftTest.auto = "bad"; });
     log(`大会当日（DAY ${snap.day}）── 1回目は下手に挑む`);
+    stock0 = await page.evaluate(() => ({ ...window.__remake.state.flavorStock }));
   }
 
   // セーブ→つづきから の確認: DAY2 の最初のマップで一度リロードし、同じ日・同じ時間帯から再開できること
   if (snap.screen === "map" && snap.day === 2 && snap.slot === 0 && !resumed) {
     resumed = true;
     const before = { day: snap.day, slot: snap.slot, money: snap.money };
+    // 手動セーブ: MENU → セーブ → スロット1
+    await click('[data-test="hud-menu"]');
+    await page.waitForSelector('[data-test="menu-save"]', { timeout: 5000 });
+    await click('[data-test="menu-save"]');
+    await page.waitForSelector('[data-test="slot-1"]', { timeout: 5000 });
+    await click('[data-test="slot-1"]');
+    await page.waitForTimeout(300);
+    const slot1 = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_slot1") || "null"));
+    if (!slot1 || slot1.day !== 2) throw new Error("manual save to slot 1 failed");
     await page.reload({ waitUntil: "load" });
     await page.waitForSelector('[data-test="title-continue"]:not([disabled])', { timeout: 20000 });
     await page.evaluate(() => { window.__remake.vnTest.turbo = true; window.__remake.craftTest.auto = "good"; });
@@ -159,6 +185,18 @@ for (;;) {
     const after = await page.evaluate(() => { const s = window.__remake.state; return { day: s.day, slot: s.slot, money: s.money }; });
     if (JSON.stringify(before) !== JSON.stringify(after)) throw new Error(`resume mismatch ${JSON.stringify(before)} -> ${JSON.stringify(after)}`);
     log("つづきから OK", JSON.stringify(after));
+    // タイトルの「ロード」→ スロット1 からも同じところへ戻れる
+    await page.reload({ waitUntil: "load" });
+    await page.waitForSelector('[data-test="title-load"]:not([disabled])', { timeout: 20000 });
+    await page.evaluate(() => { window.__remake.vnTest.turbo = true; window.__remake.craftTest.auto = "good"; });
+    await page.click('[data-test="title-load"]');
+    await page.waitForSelector('[data-test="slot-1"]:not([disabled])', { timeout: 5000 });
+    await page.click('[data-test="slot-1"]');
+    await page.waitForFunction(() => document.querySelector(".map:not(.done)"), null, { timeout: 20000 });
+    const loaded = await page.evaluate(() => { const s = window.__remake.state; return { day: s.day, slot: s.slot, money: s.money }; });
+    if (JSON.stringify(before) !== JSON.stringify(loaded)) throw new Error(`slot load mismatch ${JSON.stringify(before)} -> ${JSON.stringify(loaded)}`);
+    slotLoaded = true;
+    log("ロード（スロット1）OK", JSON.stringify(loaded));
     continue;
   }
 
@@ -170,6 +208,13 @@ for (;;) {
   }
   // LIME: 朝は通知だけ。はじめて届いた日はアイコンが照らされる（案内）→ 以後は赤丸があれば自分で開く
   if (snap.screen === "map" && (await click('[data-test="coach-lime"]'))) { limeCoach++; continue; }
+  if (snap.screen === "map" && snap.rain) rainMaps++;
+  // 路上占い師（週2日だけ出る）: 見かけたら一度だけ占ってもらう（時間は使わない）
+  if (snap.screen === "map" && !fortuneTried && snap.money >= 3000 && (await page.$('[data-test="pin-fortune"]:not(.off)'))) {
+    fortuneTried = true;
+    await click('[data-test="pin-fortune"]'); await click('[data-test="map-go"]');
+    continue;
+  }
   if (snap.screen === "map" && (await page.$(".hud-lime.has")) && (await click('[data-test="hud-phone"]'))) { limeOpened++; continue; }
   if (snap.screen === "map") {
     const item = PLAN[planIdx] || "rest";
@@ -250,6 +295,18 @@ log(`lime: coach=${limeCoach} opened=${limeOpened} inbox=${inbox.length} read=${
 if (limeCoach !== 1) throw new Error("LIME tutorial (coach) should appear exactly once");
 if (!inbox.length || inbox.some((i) => !i.read && i.day < 14)) throw new Error("LIME inbox: messages left unread");
 if (!inbox.some((i) => i.result === "accepted")) throw new Error("LIME: no invitation accepted from the inbox");
+// 雨の日: 種を固定したので雨のマップを必ず通る
+log(`rain maps=${rainMaps} / slot load=${slotLoaded} / fortune day=${s.fortuneDay} met=${!!s.flags._fortune_met}`);
+if (!rainMaps) throw new Error("no rainy map shown");
+if (!slotLoaded) throw new Error("manual save/load not verified");
+if (!s.flags._fortune_met || !s.fortuneDay) throw new Error("fortune teller not visited");
+// 実況: 大会中に体感スコアと流れるコメントが出て、結果表に体感スコアが載る
+log(`broadcast: feel=${feelSeen} nico=${nicoSeen} resultFeel=${rtFeelSeen}`);
+if (!feelSeen || !nicoSeen || !rtFeelSeen) throw new Error("tournament broadcast layer missing");
+// グラム在庫: 大会では詰んだ分だけ減る（再挑戦は会場入り前に戻す）。課題のミントは主催支給で減らない
+log(`stock: before=${JSON.stringify(stock0)} after=${JSON.stringify(s.flavorStock)}`);
+if (!stock0 || s.flavorStock.double_apple !== stock0.double_apple - 9) throw new Error("flavor stock not consumed as expected");
+if ((s.flavorStock.mint || 0) !== (stock0.mint || 0)) throw new Error("supplied mint should not be consumed");
 // 常連ノート: バイトで接客した客が記録されている
 log(`notes: ${Object.keys(s.notes).length}`);
 if (!Object.keys(s.notes).length) throw new Error("customer notes empty");

@@ -485,3 +485,34 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .done, .done * { pointer-events: none !important; }
 
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* ---------------------------------------------------------------- セーブ／ロード（オート＋手動3枠） */
+.saveload-modal { width: 620px; }
+.ss-note { margin: -4px 0 14px; font-size: 13px; color: var(--text-dim); }
+.ss-list { display: flex; flex-direction: column; gap: 10px; }
+.save-slot {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  padding: 14px 18px;
+  text-align: left;
+  font-family: var(--font);
+  color: var(--text);
+  background: linear-gradient(90deg, rgba(232, 194, 122, 0.12), rgba(255, 255, 255, 0.03) 70%);
+  border: 1px solid rgba(232, 194, 122, 0.45);
+  border-left: 4px solid var(--gold);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+}
+.save-slot:hover:not(:disabled) { filter: brightness(1.15); }
+.save-slot:active:not(:disabled) { transform: scale(0.99); }
+.save-slot.off { opacity: 0.45; cursor: default; }
+.save-slot.auto { border-left-color: #7fb8d4; }
+.ss-label { flex: none; width: 120px; font-size: 15px; font-weight: 700; letter-spacing: 0.08em; color: var(--gold-hi); }
+.save-slot.auto .ss-label { color: #a9d6ec; }
+.ss-info { display: flex; flex-direction: column; gap: 2px; }
+.ss-info b { font-size: 16px; }
+.ss-info small { font-size: 12px; color: var(--text-dim); }
+.ss-info.empty { color: var(--text-dim); letter-spacing: 0.2em; }

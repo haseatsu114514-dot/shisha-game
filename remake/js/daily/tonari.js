@@ -8,6 +8,7 @@ import { SE, playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
 import { visitChar, storyCount, VISIT_SEQ } from "./spots.js";
 import { runDrill, DRILLS } from "../craft/session.js";
+import { isRainy, RAIN_BAITO, RAIN_BAITO_BONUS } from "./weather.js";
 
 const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
 
@@ -51,6 +52,8 @@ export async function doBaito({ called = false } = {}) {
   state.baitoCount = (state.baitoCount || 0) + 1;
   state.lastBaitoDay = state.day;
   await play("remake_baito_start", { bg: TONARI_BG });
+  const rainy = isRainy();
+  if (rainy) await play("remake_baito_rain", { bg: TONARI_BG });
   const n = state.baitoCount;
   // 正体を伏せた客が一度だけ混ざる（後の章・大会当日で回収される伏線）
   if (n === 2 && !state.flags._ev_rei_cameo) {
@@ -69,20 +72,27 @@ export async function doBaito({ called = false } = {}) {
   }
   const bonus = CHARM_BONUS[star("charm") - 1];
   const extra = called ? CALLED_BONUS : 0;
-  const pay = 8000 + bonus + extra;
+  const rainPay = rainy ? RAIN_BAITO_BONUS : 0; // 雨の日は長居客の追加注文ぶん
+  const pay = 8000 + bonus + extra + rainPay;
   await play("remake_baito_end", { bg: TONARI_BG });
   if (called) await play("remake_sumi_call_thanks", { bg: TONARI_BG });
   addMoney(pay);
   if (bonus) toast(`常連さんの指名が増えてきた。売上ボーナス +${bonus.toLocaleString()}円`, { kind: "good" });
   if (extra) toast(`急なシフトの上乗せ +${extra.toLocaleString()}円`, { kind: "good" });
+  if (rainPay) toast(`雨の日の追加注文 +${rainPay.toLocaleString()}円`, { kind: "good" });
   await afterShift();
 }
 
 /** baito_events.json の接客イベントを会話に変換して再生 */
 async function customerEvent() {
   const used = (state.usedBaito = state.usedBaito || []);
-  const pool = DB.baito.filter((e) => !used.includes(e.id));
-  const ev = pick(pool.length ? pool : DB.baito);
+  // 雨の回は雨の日にだけ出す（雨の日は、まだ見ていない雨の回を優先）
+  const rainy = isRainy();
+  const fresh = DB.baito.filter((e) => !used.includes(e.id));
+  const rainFresh = fresh.filter((e) => RAIN_BAITO.includes(e.id));
+  let pool = rainy && rainFresh.length ? rainFresh : fresh.filter((e) => !RAIN_BAITO.includes(e.id));
+  if (!pool.length) pool = DB.baito.filter((e) => !RAIN_BAITO.includes(e.id));
+  const ev = pick(pool);
   used.push(ev.id);
   state.notes[ev.id] = (state.notes[ev.id] || 0) + 1;
   const narr = (t) => String(t || "").split("\n").filter(Boolean).map((text) => ({ speaker: "", face: "", text }));
