@@ -107,6 +107,20 @@
           "text": "Точность（トーチナスチ）。精度。それが全て"
         },
         {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "数値を覚えるだけでは足りない。次に来た日の条件も確かめろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（正確さって、同じ動きを続けることだけじゃないんだ）"
+        },
+        {
+          "type": "remember",
+          "memory_id": "volk_measure"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "……【技術】が少し上がった。"
@@ -143,6 +157,16 @@
           "speaker": "volk",
           "face": "normal",
           "text": "3度違えば、最適な炭量は変わる。今日は少し下げる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ヴォルクさんでも、昨日の手順を変えるんですね"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "昨日は、昨日の条件だった。同じにする理由がない"
         },
         {
           "speaker": "hajime",
@@ -198,6 +222,10 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（……思ってたのと全然違う人だ）"
+        },
+        {
+          "type": "remember",
+          "memory_id": "volk_conditions"
         },
         {
           "speaker": "",
@@ -363,7 +391,7 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "お前の煙は、ブレているようで、ブレていない。それが計算式に入らない"
+          "text": "お前と話していると、俺の式に足りない条件が見つかる"
         },
         {
           "speaker": "hajime",
@@ -374,6 +402,11 @@
           "speaker": "volk",
           "face": "normal",
           "text": "わからない。だから、もっとデータが必要だ。また来い"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "俺の式も、ここへ来た客と作ってきたものだ。完成ではない"
         },
         {
           "speaker": "",
@@ -399,6 +432,10 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "（……この人なりの、また来てくれということだと思う）"
+        },
+        {
+          "type": "remember",
+          "memory_id": "volk_update"
         },
         {
           "speaker": "",

@@ -198,6 +198,20 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "『tonariの』って名乗ると、相手の目の色が少し変わる。……この感じ、嫌いじゃない）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（見せてもらったトングの動きを、自分の指でなぞってみる）"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "それ、店に帰ったら試せよ。お前の台だとまた違うから"
+        },
+        {
+          "type": "remember",
+          "memory_id": "naru_hands"
         }
       ],
       "branches": {
@@ -485,9 +499,28 @@
           "text": "（なるは悔しそうに、でもどこか嬉しそうに、ノートに何かを書き込んだ。"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それ、俺が言った炭の位置ですか"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "ああ。お前が吸わなきゃ、気づかなかったかもしれない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（教わりに来た俺の言葉も、次の一台に入るんだ）"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "強い人は、負けを拾うのも速い）"
+        },
+        {
+          "type": "remember",
+          "memory_id": "naru_together"
         },
         {
           "speaker": "",
@@ -644,12 +677,17 @@
         {
           "speaker": "naru",
           "face": "smile",
-          "text": "それが礼儀ってもんだろ。お前は俺が教える価値があると思った相手なんだから"
+          "text": "教わった技も使えよ。俺の許可なんて、いちいち要らねえから"
         },
         {
           "speaker": "hajime",
           "face": "serious",
           "text": "──望むところです。俺も、全部出します"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "そうこなくちゃ。お前の手で、どうなるか見たいんだ"
         },
         {
           "speaker": "naru",
@@ -665,6 +703,10 @@
           "speaker": "",
           "face": "",
           "text": "今は、この人に勝ちたいと心から思う）"
+        },
+        {
+          "type": "remember",
+          "memory_id": "naru_inherit"
         },
         {
           "speaker": "",

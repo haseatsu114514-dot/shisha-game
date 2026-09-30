@@ -355,6 +355,7 @@ def main() -> None:
     bundle = {
         "build": build_info(),
         "dialogues": collect_dialogues(),
+        "relationship_memories": {m["id"]: m for m in load_json(DATA_DIR / "relationship_memories.json")["memories"]},
         "flavors": flavors,
         "equipment": equipment,
         "baito_settings": baito.get("baito_settings", {}),
@@ -362,6 +363,7 @@ def main() -> None:
             e for e in baito.get("events", []) if e.get("category") in BAITO_CATEGORIES
         ],
         "char_names": char_names,
+        "character_facts": {c["id"]: {"art_sns": c["art_sns"]} for c in char_list if c.get("art_sns")},
         "portraits": portraits,
         "portrait_trims": portrait_trims,
         "portrait_scales": portrait_scales,

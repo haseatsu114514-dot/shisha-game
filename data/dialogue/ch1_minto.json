@@ -237,6 +237,20 @@
         {
           "type": "set_flag",
           "flag": "_lime_contact_minto"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "はじめくん、来た時より、話しやすそうな顔してるっ♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（笑われると思ってたけど、ここだと俺もつい喋ってしまう）"
+        },
+        {
+          "type": "remember",
+          "memory_id": "minto_welcome"
         }
       ],
       "branches": {
@@ -1027,7 +1041,7 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "お店の外で『みんと』やるの、思ったより……キツいものがあるね……"
+          "text": "お店の外まで、同じ調子で喋ろうとすると……ちょっと疲れるね"
         },
         {
           "speaker": "",
@@ -1097,7 +1111,22 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "このことは、お店のみんなにはナイショ。……素の私を知ってるの、はじめくんだけなんだから"
+          "text": "こうやって二人で話せるの、ちょっと嬉しいんだから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お店にいる時は、ずっと無理してたの？"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "ずっとじゃないよ。あそこで笑ってる私も、けっこう好き"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "でも今日は、はじめくんとお茶してる時の私でいたいな"
         },
         {
           "type": "set_flag",
@@ -1106,7 +1135,7 @@
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "……はぁ。変に気合い入れて、損しちゃった。素でいいなら、素でいく"
+          "text": "……はぁ。今日は、ゆっくり話してもいい？"
         },
         {
           "speaker": "minto",
@@ -1127,6 +1156,10 @@
           "speaker": "minto",
           "face": "ura_surprise",
           "text": "……もーっ。素直にお礼言われると、調子狂うんだから……"
+        },
+        {
+          "type": "remember",
+          "memory_id": "minto_faces"
         },
         {
           "speaker": "",
@@ -1233,7 +1266,11 @@
         {
           "speaker": "",
           "face": "",
-          "text": "お店の『みんと』と、素の『栞さん』。そのどちらも彼女なのだと、今はもうちゃんと分かっている。"
+          "text": "店のみんとと、二人でいる時の栞さん。どちらも彼女だった。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "minto_rest"
         },
         {
           "speaker": "",

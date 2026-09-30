@@ -1,0 +1,214 @@
+{
+  "memories": [
+    {
+      "id": "sumi_heat",
+      "char_id": "sumi",
+      "dialogue_id": "ch1_sumi_basics",
+      "echo": "（スミさんの「今の一台を見ろ」で、炭に目が戻る）"
+    },
+    {
+      "id": "sumi_quiet",
+      "char_id": "sumi",
+      "dialogue_id": "ch1_sumi_closing",
+      "echo": "（スミさんと閉店後に吸う時の、ゆっくりした息を思い出す）"
+    },
+    {
+      "id": "sumi_return",
+      "char_id": "sumi",
+      "dialogue_id": "ch1_sumi_eve",
+      "echo": "（スミさんは、勝っても負けても帰って来いと言った）"
+    },
+    {
+      "id": "naru_hands",
+      "char_id": "naru",
+      "dialogue_id": "ch1_naru_first",
+      "echo": "（なるさんのトングの動きが、俺の指にも少し残っている）"
+    },
+    {
+      "id": "naru_together",
+      "char_id": "naru",
+      "dialogue_id": "ch1_naru_third",
+      "echo": "（なるさんのノートには、俺が吸って気づいたことも残った）"
+    },
+    {
+      "id": "naru_inherit",
+      "char_id": "naru",
+      "dialogue_id": "ch1_naru_fifth",
+      "echo": "（教わった技も使えと、なるさんは笑っていた）"
+    },
+    {
+      "id": "adam_origin",
+      "char_id": "adam",
+      "dialogue_id": "ch1_adam_first",
+      "echo": "（アダムさんの大げさな声まで、ダブルアップルと一緒に残った）"
+    },
+    {
+      "id": "adam_blend",
+      "char_id": "adam",
+      "dialogue_id": "ch1_adam_second",
+      "echo": "（アニスとリコリスが合わさって、あの林檎の香りになる）"
+    },
+    {
+      "id": "adam_practice",
+      "char_id": "adam",
+      "dialogue_id": "ch1_adam_fourth",
+      "echo": "（アダムさんに教わった待ち方を、俺のボウルで試してきた）"
+    },
+    {
+      "id": "minto_welcome",
+      "char_id": "minto",
+      "dialogue_id": "ch1_minto_first",
+      "echo": "（みんとの店で、緊張した俺の声が少しほどけた）"
+    },
+    {
+      "id": "minto_faces",
+      "char_id": "minto",
+      "dialogue_id": "ch1_minto_fifth",
+      "echo": "（店で笑うみんとも、二人でお茶するみんとも、彼女だった）"
+    },
+    {
+      "id": "minto_rest",
+      "char_id": "minto",
+      "dialogue_id": "ch1_minto_private_1",
+      "echo": "（みんととお茶する時、俺も急いで話さなくなった）"
+    },
+    {
+      "id": "tsumugi_creature",
+      "char_id": "tsumugi",
+      "dialogue_id": "ch1_tsumugi_first",
+      "echo": "（つむぎちゃんの葉の耳と煙の尾の猫は、あの姿で一匹だった）"
+    },
+    {
+      "id": "tsumugi_smoke",
+      "char_id": "tsumugi",
+      "dialogue_id": "ch1_tsumugi_second",
+      "echo": "（つむぎちゃんと煙を見ていると、消えるまでの形を追いたくなる）"
+    },
+    {
+      "id": "tsumugi_shared",
+      "char_id": "tsumugi",
+      "dialogue_id": "ch1_tsumugi_third",
+      "echo": "（つむぎちゃんが見せてくれた絵。数字より、眠そうな顔を覚えている）"
+    },
+    {
+      "id": "tsumugi_unbloomed",
+      "char_id": "tsumugi",
+      "dialogue_id": "ch1_tsumugi_fourth",
+      "echo": "（葉っぱがない日の猫も、つむぎちゃんはそのまま描いていた）"
+    },
+    {
+      "id": "tsumugi_change",
+      "char_id": "tsumugi",
+      "dialogue_id": "ch1_tsumugi_fifth",
+      "echo": "（つむぎちゃんは、見てきたものが混ざって、今の自分の絵になると言った）"
+    },
+    {
+      "id": "rin_feedback",
+      "char_id": "rin",
+      "dialogue_id": "ch1_rin_first",
+      "echo": "（凛さんは、俺が試した感想も次の仕事に持っていく）"
+    },
+    {
+      "id": "rin_sample",
+      "char_id": "rin",
+      "dialogue_id": "ch1_rin_third",
+      "echo": "（凛さんから受け取った袋に、まだ会ったことのない人の仕事もある）"
+    },
+    {
+      "id": "ageha_today",
+      "char_id": "ageha",
+      "dialogue_id": "ch2_ageha_first",
+      "echo": "（アゲハの「今日の感じ」に、俺が来たことも入っていた）"
+    },
+    {
+      "id": "ageha_words",
+      "char_id": "ageha",
+      "dialogue_id": "ch2_ageha_second",
+      "echo": "（アゲハと話していると、感じていたことに言葉が追いつく）"
+    },
+    {
+      "id": "ageha_roles",
+      "char_id": "ageha",
+      "dialogue_id": "ch2_ageha_fourth",
+      "echo": "（撮影のアゲハも、客の顔を見るアゲハも、同じ彼女だった）"
+    },
+    {
+      "id": "kumicho_hands",
+      "char_id": "kumicho",
+      "dialogue_id": "ch2_kumicho_first",
+      "echo": "（神崎さんの丁寧な手を見てから、俺もホースをそっと渡す）"
+    },
+    {
+      "id": "kumicho_welcome",
+      "char_id": "kumicho",
+      "dialogue_id": "ch2_kumicho_second",
+      "echo": "（神崎さんは、次に来た時も顔を覚えていたいと言った）"
+    },
+    {
+      "id": "kumicho_time",
+      "char_id": "kumicho",
+      "dialogue_id": "ch2_kumicho_fourth",
+      "echo": "（神崎さんと黙って吸った時間が、客を急かさない間になった）"
+    },
+    {
+      "id": "rei_listen",
+      "char_id": "rei",
+      "dialogue_id": "ch2_rei_first",
+      "echo": "（REIさんの沈黙を、俺もすぐに言葉で埋めなくなった）"
+    },
+    {
+      "id": "rei_smile",
+      "char_id": "rei",
+      "dialogue_id": "ch2_rei_fourth",
+      "echo": "（REIさんの小さな笑顔は、二人で話した時に出てきた）"
+    },
+    {
+      "id": "rei_voice",
+      "char_id": "rei",
+      "dialogue_id": "ch2_rei_fifth",
+      "echo": "（REIさんの話を待つうちに、俺も自分の感想を急がなくなった）"
+    },
+    {
+      "id": "volk_measure",
+      "char_id": "volk",
+      "dialogue_id": "ch2_volk_first",
+      "echo": "（ヴォルクさんに言われて、昨日のままの炭を疑うようになった）"
+    },
+    {
+      "id": "volk_conditions",
+      "char_id": "volk",
+      "dialogue_id": "ch2_volk_second",
+      "echo": "（ヴォルクさんは、昨日と今日の違いを確かめてから炭を置いた）"
+    },
+    {
+      "id": "volk_update",
+      "char_id": "volk",
+      "dialogue_id": "ch2_volk_fourth",
+      "echo": "（ヴォルクさんの式も、客が来るたびに確かめ直されていた）"
+    },
+    {
+      "id": "mashiro_pace",
+      "char_id": "mashiro",
+      "dialogue_id": "ch3_mashiro_encounter",
+      "echo": "（ましろちゃんの隣では、答えを急がずに座っていられた）"
+    },
+    {
+      "id": "mashiro_practice",
+      "char_id": "mashiro",
+      "dialogue_id": "ch3_mashiro_practice",
+      "echo": "（ましろちゃんと試した失敗も、次に確かめる手つきになった）"
+    },
+    {
+      "id": "mukai_master_seat",
+      "char_id": "mukai_master",
+      "dialogue_id": "ch3_mukai_intro",
+      "echo": "（ムカイさんが水を注いでくれた、何もしない時間も覚えている）"
+    },
+    {
+      "id": "mashiro_living",
+      "char_id": "mashiro",
+      "dialogue_id": "ch3_mashiro_recovery",
+      "echo": "（会った人も、今日の気持ちも入った「生きてる煙」だと、ましろちゃんは言った）"
+    }
+  ]
+}
