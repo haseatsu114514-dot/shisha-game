@@ -66,7 +66,7 @@
   display: flex;
   align-items: baseline;
   gap: 16px;
-  padding: 8px 18px 8px 0;
+  padding: 4px 18px 4px 0;
   background: none;
   border: none;
   cursor: pointer;
@@ -75,7 +75,7 @@
   transition: transform 0.2s var(--ease-out), color 0.2s;
 }
 .title-item:disabled { opacity: 0.35; cursor: default; }
-.ti-en { font-family: var(--font); font-size: 30px; letter-spacing: 0.16em; }
+.ti-en { font-family: var(--font); font-size: 26px; line-height: 1.25; letter-spacing: 0.16em; }
 .ti-ja { font-size: 15px; color: var(--text-dim); letter-spacing: 0.2em; }
 .title-item:hover:not(:disabled), .title-item:focus-visible { color: var(--gold-hi); transform: translateX(10px); outline: none; }
 .title-item:hover:not(:disabled) .ti-en::before { content: "◆ "; font-size: 18px; color: var(--gold); }
