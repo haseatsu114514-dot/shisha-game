@@ -9,117 +9,84 @@
         {
           "speaker": "",
           "face": "",
-          "text": "東京・mukaiの裏口。大会を数日後に控え、俺は一人でシーシャの試作を繰り返していた。"
+          "text": "東京。試作を繰り返す俺のそばに、つむぎが立っていた。"
         },
         {
           "speaker": "hajime",
-          "face": "serious",
-          "text": "（ダメだ……どれを作っても『正解』の形が見えない"
-        },
-        {
-          "speaker": "hajime",
-          "face": "serious",
-          "text": "東京のレベルが高すぎて、自分の煙の輪郭を見失いそうになる……）"
+          "face": "normal",
+          "text": "つむぎちゃん、どうして東京に？"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "「……焦げてる」"
+          "text": "……美術館を見に来て。少し、寄りました"
         },
         {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "えっ……つ、つむぎさん！？ どうして東京に！？"
+          "speaker": "",
+          "face": "",
+          "text": "一口吸ったつむぎが、スケッチブックを開いた。"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "「……こっちの美術館で展示があって。……ついでに、様子を見に来たの」"
+          "text": "……今日は、いつもと違う色ですね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……やっぱり、変なのかな"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "「一口、吸ってもいい？」"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "つむぎは俺の作った失敗作のホースを受け取り、ゆっくりと煙を吸い込んだ。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "そして、持っていたスケッチブックを開く。"
+          "text": "変わるのは、いつものことです"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "「……いまのあなたの煙、こんな『色』になってる」"
+          "text": "でも今日は、ずっと息を止めてるみたい"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "彼女が見せてくれたスケッチには、黒ずんだ灰色の中に、小さなあたたかいオレンジ色が、"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "息苦しそうに埋もれているような……そんな絵が描かれていた。"
+          "text": "煙の線の横に、葉のない耳の猫が寝ていた。"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "「……迷ってる色"
+          "text": "……この絵、描き終わりました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日も、窓辺で寝てるね"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "無理に周りの強豪に合わせようとして、あなたの本当の『オレンジ』が隠れちゃってる」"
+          "text": "……はい。前に見た景色も、今日の景色も入ってます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（誰かの手つきも、残ったままでいいのか）"
         },
         {
           "speaker": "tsumugi",
-          "face": "smile",
-          "text": "「私は、あなたのあのあたたかい煙の『色』が、好きだから……"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "smile",
-          "text": "誰の真似もしないで、そのままを作ってほしい」"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "（俺の、本当の色……"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "そうか……東京の強豪たちに勝たなきゃって焦って、自分の良さを殺して、"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "無理に重い煙を作ろうとしていたんだ）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "「……ありがとう、つむぎさん。おかげで目が覚めたよ」"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "smile",
-          "text": "「……うん。大会、がんばって。……私、あなたの煙の『一番のファン』だから」"
+          "face": "normal",
+          "text": "……今日は、少し休みませんか"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎの言葉とスケッチのおかげで、スランプから完全に脱出した！"
+          "text": "トングを置く。考えるのは、それからでもよかった。"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "……【根性】と【センス】が大きく上がった！"
+          "type": "apply",
+          "stats": {
+            "guts": 3,
+            "sense": 3
+          }
         }
       ]
     }

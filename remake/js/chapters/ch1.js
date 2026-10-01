@@ -35,10 +35,11 @@ const PRIZE = 30000;
 
 // ---------------------------------------------------------------- 会話フック
 
-function setupHooks() {
+export function setupHooks() {
   hooks.onEnter = onDialogueEnter; // 告白の返事（accept/reject）・set_romance
   hooks.onCg = recordCg;           // 見たCGはギャラリーで見返せる
   hooks.interpolate = (t) => t.replace(/\{daysLeft\}/g, String(daysLeft())).replace(/\{day\}/g, String(state.day))
+    .replace(/\{tsumugiFollowers\}/g, typeof DB.characters.tsumugi?.art_sns?.followers === "number" ? `${DB.characters.tsumugi.art_sns.followers / 10000}万` : "たくさん")
     .replace(/\{fortuneName\}/g, state.fortune ? displayName(state.fortune.char, state) : "その人"); // 占い師の結果
   hooks.onChoice = (dialogueId, choiceId, branch) => {
     // チョイザップ入会（月額4,000円）

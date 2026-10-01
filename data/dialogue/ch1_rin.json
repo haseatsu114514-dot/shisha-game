@@ -146,6 +146,20 @@
           "text": "──でも不思議と、嫌な感じはしない。むしろ、ちょっとわくわくしている自分がいる。"
         },
         {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "次は感想を聞かせてよ。売る側だけじゃ気づかないこともあるから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（俺が試した感想も、凛さんの仕事に戻っていくんだ）"
+        },
+        {
+          "type": "remember",
+          "memory_id": "rin_feedback"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "……【センス】が少し上がった。"
@@ -355,6 +369,21 @@
           "text": "使うかどうかは君の判断でいい"
         },
         {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "作った人、運んだ人、試した人。ひと袋にも、案外いろいろ入ってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ここから先は、俺が試して返すんですね"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "そう。私の好きな味に、合わせなくていいからね"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "缶を受け取るとき、凛さんがふと、こちらに少しだけ顔を寄せた。"
@@ -397,6 +426,10 @@
           "speaker": "",
           "face": "",
           "text": "未発売サンプルだから、大会や店では出せない——練習で確かめておこう）"
+        },
+        {
+          "type": "remember",
+          "memory_id": "rin_sample"
         },
         {
           "speaker": "",

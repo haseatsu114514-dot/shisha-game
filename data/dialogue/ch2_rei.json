@@ -180,6 +180,15 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "でもあの煙は、本物だった）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（派手な顔より、煙の感想を待っている横顔が残った）"
+        },
+        {
+          "type": "remember",
+          "memory_id": "rei_listen"
         }
       ]
     },
@@ -591,6 +600,25 @@
           "text": "長い沈黙の後、REIがほんの少しだけ、口の端を上げた。それはたぶん、笑顔の練習の成果だった。"
         },
         {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……今のは、練習じゃなかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……そうですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言葉を探さずに、一緒に煙の行方を見た。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "rei_smile"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "……【魅力】が上がった。"
@@ -766,12 +794,21 @@
         {
           "speaker": "rei",
           "face": "normal",
+          "text": "……こうやって待たれると、少し、続きが出てくる"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
           "text": "……その、今のは、忘れてくれ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（全然忘れない）（……これだ。REIさんはこういう人だったんだ）"
+          "text": "（全然忘れない。……俺には、こういう話もしてくれるようになったんだ）"
+        },
+        {
+          "type": "remember",
+          "memory_id": "rei_voice"
         },
         {
           "speaker": "",

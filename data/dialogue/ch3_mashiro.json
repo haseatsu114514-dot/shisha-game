@@ -241,7 +241,7 @@
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "はい、どうぞぉ……。わたしの煙、吸ってみてぇ"
+          "text": "はい、どうぞぉ……。僕の煙、吸ってみてぇ"
         },
         {
           "speaker": "",
@@ -252,6 +252,20 @@
           "speaker": "",
           "face": "",
           "text": "ましろとの出会い。mukaiという場所が、はじめの新しい居場所になるかもしれない。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……急がなくていいよぉ。僕も、今日はのんびり吸うから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（この人の隣だと、何か答えようとしなくても座っていられる）"
+        },
+        {
+          "type": "remember",
+          "memory_id": "mashiro_pace"
         },
         {
           "speaker": "",
@@ -327,7 +341,7 @@
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "……ねぇ、はじめくん。はじめくんの煙、わたし好きだよぉ。力抜いた時の方が、ずっと良い煙出てる"
+          "text": "……ねぇ、はじめくん。はじめくんの煙、僕好きだよぉ。力抜いた時の方が、ずっと良い煙出てる"
         },
         {
           "speaker": "hajime",
@@ -348,6 +362,30 @@
           "speaker": "",
           "face": "",
           "text": "mukaiでの練習が、少しずつ何かを修復していく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺の作り方、誰かに教わったことばっかりですね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "僕もだよぉ。教わったことと、失敗したことばっかり"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ましろちゃんも？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。今日も、はじめくんと吸った分が増えたねぇ"
+        },
+        {
+          "type": "remember",
+          "memory_id": "mashiro_practice"
         },
         {
           "speaker": "",

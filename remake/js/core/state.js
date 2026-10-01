@@ -4,7 +4,7 @@
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 4; // 2: スロット・くじ・恋人を追加 / 3: LIME の受信箱 / 4: フレーバーのグラム在庫・天気
+export const SCHEMA = 5; // 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -45,6 +45,7 @@ export function newState() {
     limeRead: [],              // 既読の LIME id
     inbox: [],                 // LIME の受信箱 [{id, day, msg, read, done, log}]（朝に届き、好きなときに読む）
     notes: {},                 // 常連ノート（接客した客 -> 回数）
+    relationshipMemories: [],   // 読んだ交流だけを残す。人数・恋愛・大会の加点には使わない
     recipes: {},               // 発見したレシピ
     best: {},                  // 練習ドリルの自己ベスト（0..2）
     rehearsal: null,           // 前日リハーサルの出来（great/good/rough）
@@ -75,6 +76,10 @@ export function newState() {
 
 /** 旧スキーマのセーブを現行の形にそろえる（互換処理はここに集約） */
 function migrate(s) {
+  // 訪問・好感度から、新しい台詞を読んだと推測しない。オート・手動枠に同じ処理を使う。
+  s.relationshipMemories = Array.isArray(s.relationshipMemories)
+    ? [...new Set(s.relationshipMemories.filter((id) => typeof id === "string"))]
+    : [];
   // グラム在庫の導入前のセーブ: 持っていたフレーバーは1箱（50g）ぶんとして引き継ぐ
   if (!s.flavorStock) {
     s.flavorStock = Object.fromEntries((s.flavors || ["double_apple"]).map((id) => [id, 50]));

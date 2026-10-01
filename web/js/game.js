@@ -237,6 +237,7 @@ function newState() {
     practiceBest: {},      // 練習ドリルの自己ベスト（0〜2）。大会本番のボーナスになる
     customerNotes: {},     // 常連ノート: {event_id: {first, count}} バイトで会った客の記録
     knowledge: {},         // 会話から書き留めた知識（note_id→1）。審査の読み等に効く（S2）
+    relationshipMemories: [], // 実際に見た交流の記憶ID。人数・恋愛・勝利への加点はしない
     recipes: {},           // 配合レシピ帳: {recipe_id: {day}} ミックスで発見した組み合わせ（W2）
     weatherSeed: Math.floor(Math.random() * 100000), // 天気の抽選種（雨の日はセーブごとに違う・W4）
     csVisits: 0,           // C.STATION訪問回数（初回は特別イベント、以降はローテーション）
@@ -931,6 +932,11 @@ function interpolate(text) {
   if (text == null) return text;
   let t = String(text);
   if (t.indexOf("{daysLeft}") !== -1) t = t.split("{daysLeft}").join(String(daysUntilTournament()));
+  if (t.indexOf("{tsumugiFollowers}") !== -1) {
+    const followers = D.character_facts?.tsumugi?.art_sns?.followers;
+    const label = typeof followers === "number" ? `${followers / 10000}万` : "たくさん";
+    t = t.split("{tsumugiFollowers}").join(label);
+  }
   return t;
 }
 
@@ -1459,6 +1465,8 @@ function initEngine() {
       onCg: galleryRecord,
       onLine: pushLog,
       onTextCue: parseTextCue,
+      onRemember: rememberRelationship,
+      getReflectionLines: relationshipReflectionLines,
       // 知識登録（2026-07-11）: 会話で出た情報を「ノートに書いた」瞬間として見せる。
       // 「読んだ行が武器になる」の入り口。同じ note_id は一度だけ（再訪・周回で二重通知しない）
       onNote: (line) => {
@@ -1541,6 +1549,38 @@ function playDialogue(id, onDone, bgOverride) {
   const d = D.dialogues[id];
   if (!d) { console.warn("dialogue not found:", id); if (onDone) onDone(); return; }
   playCustom(d, onDone, bgOverride);
+}
+
+// remember 行に到達した時だけ残す。訪問回数から未読の会話を推測しない。
+function rememberRelationship(id) {
+  if (!state || !(D.relationship_memories || {})[id]) return;
+  if (!Array.isArray(state.relationshipMemories)) state.relationshipMemories = [];
+  if (!state.relationshipMemories.includes(id)) state.relationshipMemories.push(id);
+}
+
+function relationshipReflectionLines() {
+  const records = D.relationship_memories || {};
+  const remembered = (state.relationshipMemories || []).map((id) => records[id]).filter(Boolean);
+  const characters = new Set();
+  const selected = [];
+  // 一人を選んだプレイでも、複数の人と会ったプレイでも、その時間を返す。
+  // 同じ相手の記憶は最新のもの。長い一覧やコンプリート課題にはしない。
+  for (let i = remembered.length - 1; i >= 0 && selected.length < 3; i--) {
+    const memory = remembered[i];
+    if (characters.has(memory.char_id)) continue;
+    characters.add(memory.char_id);
+    selected.unshift(memory);
+  }
+  if (!selected.length) return [
+    { speaker: "hajime", face: "normal", text: "（まず、今の一台を確かめよう。急がなくていい）" },
+  ];
+  return [
+    { speaker: "", face: "", text: "トングを持つ。誰かと過ごした時間が、ふとよみがえった。" },
+    ...selected.map((memory) => ({ speaker: "hajime", face: "normal", text: memory.echo })),
+    { speaker: "hajime", face: "normal", text: state.chapter === 1
+      ? "（一緒に過ごした時間も、今の俺に残っている）"
+      : "（誰かにもらったものまで、消さなくていい）" },
+  ];
 }
 
 // 会話の開幕直後は前画面からの持ち越しタップを無視する（1行目の見逃し防止）
@@ -1899,7 +1939,7 @@ const REPEAT_TALKS = {
     [
       { speaker: "", face: "", text: "閉店間際のぺぱーみんと。客はもう、自分だけだった。" },
       { speaker: "minto", face: "normal", text: "はじめくんはもうちょっといていいよ。……はぁ、今日もよく働いた！" },
-      { speaker: "hajime", face: "normal", text: "お疲れさまです。……素の声、初めて聞いたかも" },
+      { speaker: "hajime", face: "normal", text: "お疲れさまです。……ゆっくり話す声、初めて聞いたかも" },
       { speaker: "minto", face: "smile", text: "あ、いまのナシ！ みんと、いつでもかわいいので♡" },
       { speaker: "", face: "", text: "慌てて営業モードに戻る横顔に、少し笑ってしまった。" },
     ],
@@ -2078,9 +2118,9 @@ const LOVER_MORNING_LIMES = {
     { m: ["開店前に、試作パフェの仕込みしてます", "……味見係、募集中。応募資格は、彼氏であること"],
       r: [ { text: "応募します", response: "採用。……閉店後に、こっそり来てね", affinity: 1 },
            { text: "一号から食べたい", response: "一号は失敗作！ ……でも、はじめくんなら、いっか", affinity: 1 } ] },
-    { m: ["今日もお店がんばるぞー、って顔を作る前に", "……はじめくんにだけ、素の声で言っとこうと思って", "おはよ。今日も、私の彼氏でいてね"],
+    { m: ["今日もお店がんばるぞー、って顔を作る前に", "……はじめくんにだけ、いつもよりゆっくり、言っとこうと思って", "おはよ。今日も、私の彼氏でいてね"],
       r: [ { text: "もちろん", response: "ん。……よし、営業モード入ります♪", affinity: 1 },
-           { text: "素の声、得した気分", response: "……レアだからね？ 大事にしてよね", affinity: 1 } ] },
+           { text: "その声でのおはよう、嬉しい", response: "……レアだからね？ 大事にしてよね", affinity: 1 } ] },
   ],
   rin: [
     { m: ["モルモットくん、おはよう", "今朝のコーヒー、君の煙に合いそうな豆だった", "……それだけ。仕事に戻る"],
@@ -2706,7 +2746,7 @@ const DATE_SCENES = {
     arrive: { face: "ura_normal", text: "……き、来ちゃった。えへへ……今日は、その、栞の方で……いい？" },
     mid: { face: "ura_normal", text: "（小さな声で）……お店のみんとだと、こういうの、できないから……。普通にデートって、初めてかも……" },
     choiceQ: "（隣の彼女は、店のテンションが嘘みたいに静かだ。）",
-    optA: { text: "「素の栞さんの方が、好きだよ」と伝える", line: "～～っ。……そういうの、ほんとに、心臓に悪い……っ", stat: "charm" },
+    optA: { text: "「店のみんとも、今の栞さんも好きだよ」と伝える", line: "～～っ。……そういうの、ほんとに、心臓に悪い……っ", stat: "charm" },
     optB: { text: "「店のみんとも栞さんも、どっちも本物でしょ」と言う", line: "……っ、う。……うん。……ありがと。……どっちも、私……", stat: "insight" },
     close: { face: "ura_smile", text: "……今日、誘ってよかった。……また、誘っても、いい……？" },
   },
@@ -3745,7 +3785,7 @@ function endDay() {
     state.flags._ev_ageha_cameo = true;
     return pd("ch1_ageha_encounter", goHome, "res://assets/backgrounds/bg_street_night.png");
   }
-  // DAY7夜（折り返し）: 中間チェック。スミさんが「素の一台」を講評し、残り日数に目的を作る
+  // DAY7夜（折り返し）: 今の一台を講評。実際の交流を振り返り、残り日数に目的を作る
   if (state.day === 7 && !state.flags._ev_day3_check) {
     state.flags._ev_day3_check = true;
     return pc({
@@ -3753,11 +3793,15 @@ function endDay() {
       metadata: { bg: TONARI },
       lines: [
         { speaker: "", face: "", text: "夜、tonariに顔を出すと、スミさんが作業台を顎で指した。" },
-        { speaker: "sumi", face: "normal", text: "一台作ってみろ。練習でも本番でもない、今のお前の素の一台だ" },
-        { speaker: "", face: "", text: "黙って組む。詰めて、熾して、置いて、待つ。スミさんは何も言わずに見ている。──完成。ホースを渡す。スミさんは目を閉じて、長い一服。" },
+        { speaker: "sumi", face: "normal", text: "一台作ってみろ。練習でも本番でもない、今のお前の一台だ" },
+        { type: "reflection" },
+        { speaker: "", face: "", text: "黙って組む。詰めて、熾して、置いて、待つ。スミさんは何も言わずに見ている。" },
+        { speaker: "", face: "", text: "完成。ホースを渡す。スミさんは目を閉じて、長い一服。" },
         { type: "condition", stat: "技術", threshold: 22, next_true: "mid_good", next_false: "mid_rough" },
-        { speaker: "sumi", face: "serious", text: "大会まで、ちょうど折り返しだ。どこを磨くかは、お前が決めろ。──ただし、寝ること。それも仕込みのうちだ" },
+        { speaker: "sumi", face: "serious", text: "大会まで、ちょうど折り返しだ。どこを磨くかは、お前が決めろ" },
+        { speaker: "sumi", face: "normal", text: "──ただし、寝ること。それも仕込みのうちだ" },
         { speaker: "hajime", face: "normal", text: "はい。（あと{daysLeft}日。……何を、どこまで持っていけるか）" },
+        { speaker: "sumi", face: "normal", text: "終わったら店に来い。結果の話は、一服してからだ" },
         { type: "apply", stats: { insight: 2 } },
       ],
       branches: {
@@ -9027,6 +9071,8 @@ function startNewGame() {
 
 function continueGame(saved) {
   state = saved;
+  // 訪問回数から、読んでいない新しい台詞の記憶を作らない。
+  if (!Array.isArray(state.relationshipMemories)) state.relationshipMemories = [];
   // 旧セーブの互換: ショップ導入前のセーブには owned が無い
   if (!Array.isArray(state.owned)) state.owned = STARTER_EQUIPMENT.slice();
   // 旧セーブの互換: LIME導入前のセーブ

@@ -138,6 +138,7 @@ def main():
         "cgs": [f for f in listing("cgs") if not is_placeholder(ASSETS / "cgs" / f)],
         "faceIcons": listing("ui/face_icons"),
         "making": listing("ui/making"),
+        "sceneProps": listing("ui/scene_props"),
         "makingBox": making_boxes(),
         "bgm": listing("audio/bgm", "*.mp3"),
     }

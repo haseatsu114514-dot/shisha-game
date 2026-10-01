@@ -392,6 +392,8 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 .mi-preview {
+  position: relative;
+  overflow: hidden;
   width: 100%;
   aspect-ratio: 16 / 6;
   margin: 2px 0 8px;

@@ -122,6 +122,25 @@
           "text": "お手並み、拝見させてもらうし！"
         },
         {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "同じ甘いやつでもさ、ハジメっちが来るとちょい違うんだよね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "え、どう違うの？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "うまく言えん！ でも、来る前から決められない感じ"
+        },
+        {
+          "type": "remember",
+          "memory_id": "ageha_today"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "……【センス】が少し上がった。"
@@ -210,9 +229,28 @@
           "text": "まあ別にいっかなって思ってたけど"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は、お客さんがゆっくり吸ってるから、ってことかな"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "あ、それ！ そう言えばいいのか。なんか、話すと分かるじゃん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（彼女の感じてることが、二人で話すうちに言葉になる）"
+        },
+        {
           "speaker": "ageha",
           "face": "smile",
           "text": "……ハジメっちに聞かれると、なんかちょっとだけ、きゅんっとくる。……ってうわ、今のナシ！"
+        },
+        {
+          "type": "remember",
+          "memory_id": "ageha_words"
         },
         {
           "speaker": "",
@@ -411,12 +449,27 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "……本人だけど。ここではシーシャ屋のアゲハなの。読モの顔で煙を褒められても、嬉しくないじゃん"
+          "text": "……本人だけど。ここでは、今日の煙の話がしたいんだよね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "撮影でキメるのも好きだよ。でも店だと、客の顔ばっか見ちゃう"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（SNSの人気で客を呼んでるんだと思ってた。……逆だ。この店では、それを隠してる）"
+          "text": "場所が変わると、気になることも変わるんだね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "そうそう。どっちもウチなんだけどさ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（モデルのアゲハも、店にいるアゲハもいる。俺の前では、また少し違う）"
         },
         {
           "speaker": "ageha",
@@ -447,6 +500,10 @@
           "speaker": "ageha",
           "face": "smile",
           "text": "覚悟しときなよ、ウチが本気出したらマジでヤバいからっ♡ すきぴにしてあげるっ"
+        },
+        {
+          "type": "remember",
+          "memory_id": "ageha_roles"
         },
         {
           "speaker": "",

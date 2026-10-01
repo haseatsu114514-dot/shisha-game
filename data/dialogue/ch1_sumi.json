@@ -141,6 +141,21 @@
         {
           "speaker": "sumi",
           "face": "normal",
+          "text": "葉っぱだけじゃ煙にならねえ。炭も、水も、吸うやつもいる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "同じ配合でも、それだけじゃ決まらないんですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ああ。まず、今ここにある一台を見ろ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
           "text": "ただ煙を出すだけなら誰でもできる"
         },
         {
@@ -157,6 +172,10 @@
           "speaker": "",
           "face": "",
           "text": "構造を理解したことで、ほんの少しだけシーシャの奥深さに触れた気がした。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "sumi_heat"
         },
         {
           "speaker": "",
@@ -474,6 +493,21 @@
           "text": "……確かに。この時間、俺も好きです"
         },
         {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "お前が片付けるの、待ってた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……一人で吸う時とは、違いますか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "違うな。お前も、少しゆっくり吸うようになった"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "ゴボゴボ、と水面が揺れる音。それ以外は、何も聞こえない夜だ。"
@@ -517,6 +551,10 @@
           "speaker": "",
           "face": "",
           "text": "この時間があるから、tonariのバイトを続けている気がする。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "sumi_quiet"
         },
         {
           "speaker": "",
@@ -736,7 +774,7 @@
         {
           "speaker": "sumi",
           "face": "smile",
-          "text": "帰る場所があるやつは強い"
+          "text": "勝ち負けの話は、そのあとで聞く"
         },
         {
           "speaker": "hajime",
@@ -752,6 +790,10 @@
           "speaker": "",
           "face": "",
           "text": "師匠が、弟子のシーシャを吸っている。その光景だけで──もう、十分だった。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "sumi_return"
         },
         {
           "speaker": "",

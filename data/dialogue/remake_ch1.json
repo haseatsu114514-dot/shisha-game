@@ -731,7 +731,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "お疲れさまです。……素の声、初めて聞いたかも"
+          "text": "お疲れさまです。……ゆっくり話す声、初めて聞いたかも"
         },
         {
           "speaker": "minto",
@@ -838,7 +838,11 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "一台作ってみろ。練習でも本番でもない、今のお前の素の一台だ"
+          "text": "一台作ってみろ。練習でも本番でもない、今日までのお前が作る一台だ"
+        },
+        {
+          "type": "reflection",
+          "context": "midcheck"
         },
         {
           "speaker": "",
@@ -1124,19 +1128,9 @@
       },
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "その夜。閉店後のtonari。スミさんは何も聞かず、自分用の一台に火を入れていた。"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "……で、どうする？"
-        },
-        {
           "speaker": "hajime",
           "face": "serious",
-          "text": "（──もう一回だ。もう一回、あの舞台で）"
+          "text": "（……今日は届かなかった。でも、帰ってこられた。もう一回、あの舞台で）"
         },
         {
           "type": "apply",

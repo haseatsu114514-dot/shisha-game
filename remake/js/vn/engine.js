@@ -9,6 +9,7 @@ import { setBg, layers, toast, flash, shake, modal, dropRetired, imageReady } fr
 import { SE, playSe } from "../core/audio.js";
 import { paginate, formatHtml, sliceHtml, visibleLength, stripTags } from "./text.js";
 import { glossaryPanel } from "./glossary.js";
+import { rememberRelationship, relationshipReflectionLines } from "../core/relationships.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
 const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man"]);
@@ -239,6 +240,8 @@ function next() {
     if (type === "hide_cg") { dom.cg.classList.remove("show"); continue; }
     if (type === "apply") { applyLine(line); continue; }
     if (type === "note") { onNote(line); continue; }
+    if (type === "remember") { rememberRelationship(line.memory_id); continue; }
+    if (type === "reflection") { r.queue.unshift(...relationshipReflectionLines()); continue; }
     if (type === "bg") { if (line.bg) sceneSetBg(line.bg); continue; }
     if (type === "sfx") { playSe(line.id); continue; }
     if (type === "fx") { runFx(line); continue; }

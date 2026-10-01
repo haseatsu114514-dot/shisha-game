@@ -3,6 +3,7 @@
 import { el, yen } from "../core/util.js";
 import { bgUrl, sceneBg, faceIconUrl, displayName } from "../core/data.js";
 import { showScreen, setBg, retire } from "../core/ui.js";
+import { renderSceneArt } from "../core/scene-art.js";
 import { state, timeOfDay } from "../core/state.js";
 import { SE } from "../core/audio.js";
 import { STAMINA_LOW } from "../core/stats.js";
@@ -58,13 +59,17 @@ export function chooseSpot({ notice = "", eventPin = null, guide = null, onShown
     const movesLeft = () => (state.slot >= 1 ? "夜 ── 今日はあと1回動ける" : "昼 ── 今日はあと2回動ける");
     const idleInfo = () => {
       if (guide) {
-        info.replaceChildren(
+        const preview = pv?.url ? el("div.mi-preview", { dataset: { tint: pv.tint || "" } }) : null;
+      if (preview) renderSceneArt(preview, pv.url);
+      info.replaceChildren(
           el("div.mi-banner", { text: guide.title || "スミさんの頼み" }),
           el("p.mi-desc", { text: guide.text }),
           el("div.mi-foot", { text: movesLeft() }),
         );
         return;
       }
+      const preview = pv?.url ? el("div.mi-preview", { dataset: { tint: pv.tint || "" } }) : null;
+      if (preview) renderSceneArt(preview, pv.url);
       info.replaceChildren(
         el("div.mi-banner", { text: "今日はどうする？" }),
         el("p.mi-desc", [el("span", { text: "気になる場所をタップしよう。" }), el("br"), el("span", { text: "行動・所持金・体力に気をつけて。" })]),
@@ -75,7 +80,9 @@ export function chooseSpot({ notice = "", eventPin = null, guide = null, onShown
     const renderInfo = (s) => {
       const av = availability(s);
       if (av.why === "locked") {
-        info.replaceChildren(
+        const preview = pv?.url ? el("div.mi-preview", { dataset: { tint: pv.tint || "" } }) : null;
+      if (preview) renderSceneArt(preview, pv.url);
+      info.replaceChildren(
           el("div.mi-banner", { text: "？？？" }),
           el("p.mi-desc", { text: "まだ知らない場所。誰かと知り合えば、教えてもらえるかもしれない。" }),
           el("div.mi-foot", { text: movesLeft() }),
@@ -87,9 +94,11 @@ export function chooseSpot({ notice = "", eventPin = null, guide = null, onShown
       const staminaNote = s.stamina ? (s.stamina > 0 ? "体力が回復する" : "体力を使う") : s.kind === "tonari" ? "体力を使う" : "";
       const warn = s.stamina < 0 && state.stamina + s.stamina < STAMINA_LOW;
       const pv = SPOT_PREVIEW[s.id] ? sceneBg(SPOT_PREVIEW[s.id], tod) : null;
+      const preview = pv?.url ? el("div.mi-preview", { dataset: { tint: pv.tint || "" } }) : null;
+      if (preview) renderSceneArt(preview, pv.url);
       info.replaceChildren(
         el("div.mi-banner", { text: known ? s.label : s.unknownLabel || s.label }),
-        pv?.url ? el("div.mi-preview", { style: { backgroundImage: `url("${pv.url}")` }, dataset: { tint: pv.tint || "" } }) : null,
+        preview,
         el("div.mi-area", { text: s.area + (charName ? ` ・ ${charName}` : s.charId ? " ・ ？？？" : "") }),
         el("p.mi-desc", { text: known ? s.desc : s.unknownDesc || s.desc }),
         el("div.mi-tags", [

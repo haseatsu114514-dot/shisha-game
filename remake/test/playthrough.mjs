@@ -34,7 +34,7 @@ const PLAN = [
   "minto", "customer", "rest", "rest",
 ];
 
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_BIN ? { executablePath: process.env.CHROME_BIN } : {}) });
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
 const errors = [];
 page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));

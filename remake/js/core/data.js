@@ -14,6 +14,7 @@ export const DB = {
   equipById: {},
   baito: [],          // バイトの接客イベント（ch1 で使うカテゴリのみ）
   dialogues: {},      // dialogue_id -> dialogue
+  relationshipMemories: {}, // 実際に読んだ交流の記憶（id -> 記録）
   glossary: [],
   lime: [],
   recipes: [],
@@ -43,6 +44,7 @@ async function getJSON(path) {
 export async function loadAll(onProgress = () => {}) {
   const jobs = [
     ["characters", `${ROOT}data/characters.json`],
+    ["relationshipMemories", `${ROOT}data/relationship_memories.json`],
     ["flavors", `${ROOT}data/flavors.json`],
     ["equipment", `${ROOT}data/equipment.json`],
     ["baito", `${ROOT}data/baito_events.json`],
@@ -67,6 +69,7 @@ export async function loadAll(onProgress = () => {}) {
   const raw = Object.fromEntries(results);
 
   for (const c of raw.characters) DB.characters[c.id] = c;
+  DB.relationshipMemories = Object.fromEntries(raw.relationshipMemories.memories.map((m) => [m.id, m]));
   DB.flavors = raw.flavors.flavors.filter((f) => (f.leaf || "blond") === "blond"); // はじめはブロンドのみ（正史）
   DB.flavorById = Object.fromEntries(raw.flavors.flavors.map((f) => [f.id, f]));
   DB.equipment = raw.equipment.equipment;

@@ -102,6 +102,20 @@
           "text": "（……仁義。この人、本当に何者なんだ）"
         },
         {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "肩書きは後でいい。熱かったら言えよ、小僧"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（怖い顔なのに、ホースを渡す手は妙に丁寧だ）"
+        },
+        {
+          "type": "remember",
+          "memory_id": "kumicho_hands"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "……【技術】が少し上がった。"
@@ -187,12 +201,12 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "ただ──その縁は、一生、大事にする"
+          "text": "ただ──また来た時に、顔を覚えていたいだけだ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "一生……"
+          "text": "……また、来てもいいんですね"
         },
         {
           "speaker": "kumicho",
@@ -272,6 +286,10 @@
           "speaker": "",
           "face": "",
           "text": "──神崎竜二の「0分立ち上げ」を教わった。これから、蒸らし時間に「0分」を選べる。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "kumicho_welcome"
         },
         {
           "speaker": "",
@@ -545,14 +563,28 @@
           "text": "……それだけが、俺には大事なんだ"
         },
         {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "兄弟分だの何だの言っても、来るかはお前が決めりゃいい"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……本当に怖い人なのか、それとも怖そうなシーシャ屋なのか。どっちでもいい気がしてきた）"
+          "text": "……また、吸いに来ます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（肩書きだけでは分からない。この人と吸った時間も、覚えておこう）"
         },
         {
           "speaker": "",
           "face": "",
           "text": "二筋の煙が、暗い天井で混ざって、消えた。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "kumicho_time"
         },
         {
           "speaker": "",

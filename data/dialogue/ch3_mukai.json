@@ -161,7 +161,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "あ、新人さん……？ はじめましてぇ……わたし、ましろって言います……よろしくねぇ……"
+          "text": "あ、新人さん……？ はじめましてぇ……僕、ましろって言います……よろしくねぇ……"
         },
         {
           "speaker": "hajime",
@@ -352,6 +352,25 @@
           "speaker": "",
           "face": "",
           "text": "「ニャア」と短く鳴いたテツコに見送られ、波乱に満ちた東京での初日が終わった。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "今日は何も作らなくても、その席に座っていていい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ありがとうございます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは返事の代わりに、空いたコップへ水を注いだ。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "mukai_master_seat"
         }
       ]
     }

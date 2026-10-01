@@ -4,6 +4,7 @@ import { on } from "./bus.js";
 import { SE } from "./audio.js";
 import { state } from "./state.js";
 import { DB, displayName, faceIconUrl } from "./data.js";
+import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 
 export const layers = {};
 
@@ -67,9 +68,10 @@ export function setBg(url, { instant = false, tint = null, fast = false } = {}) 
   const key = `${url}|${tint || ""}`;
   if (key === bgNow) return Promise.resolve();
   bgNow = key;
-  return imageReady(url).then(() => {
+  return Promise.all(sceneArtUrls(url).map((u) => imageReady(u))).then(() => {
     if (bgNow !== key) return; // 待っている間に別の背景が指定された
-    const next = el("div.bg-img", { style: { backgroundImage: url ? `url("${url}")` : "none" } });
+    const next = el("div.bg-img");
+    renderSceneArt(next, url);
     if (!url) next.classList.add("black");
     if (fast) next.classList.add("fast");
     if (tint) next.dataset.tint = tint;
