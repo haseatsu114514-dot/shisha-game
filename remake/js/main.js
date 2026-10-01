@@ -16,7 +16,7 @@ function fitStage() {
   stage.style.setProperty("--k", String(Math.min(w / 1280, h / 720)));
 }
 
-async function boot() {
+export async function boot() {
   fitStage();
   window.addEventListener("resize", fitStage);
   window.addEventListener("orientationchange", () => setTimeout(fitStage, 200));
@@ -28,24 +28,20 @@ async function boot() {
   window.addEventListener("keydown", unlockAudio);
 
   const bar = $("#boot .boot-bar i");
-  try {
-    // データと一緒に書体も待つ（読み込み前の代わりの字で一瞬崩れて見えないように）。遅い回線では4秒で先へ
-    const fonts = Promise.race([
-      Promise.all(["500", "700", "900"].map((w) => document.fonts.load(`${w} 20px "Suien Gothic"`, "水煙前線あA7"))),
-      new Promise((r) => setTimeout(r, 4000)),
-    ]).catch(() => {});
-    await Promise.all([loadAll((p) => { bar.style.width = `${Math.round(p * 100)}%`; }), fonts]);
-  } catch (e) {
-    $("#boot .boot-msg").textContent = `読み込みに失敗しました（${e.message}）。ローカルサーバー越しに開いているか確認してください。`;
-    throw e;
-  }
+  // データと一緒に書体も待つ（読み込み前の代わりの字で一瞬崩れて見えないように）。遅い回線では4秒で先へ
+  const fonts = Promise.race([
+    Promise.all(["500", "700", "900"].map((w) => document.fonts.load(`${w} 20px "Suien Gothic"`, "水煙前線あA7"))),
+    new Promise((r) => setTimeout(r, 4000)),
+  ]).catch(() => {});
+  await Promise.all([loadAll((p) => { bar.style.width = `${Math.round(p * 100)}%`; }), fonts]);
   // タイトルの絵とロゴが読めてから幕を開ける（最大3秒）
   await Promise.race([Promise.all(TITLE_IMAGES.map((r) => imageReady(assetUrl(r), 3000))), sleep(3000)]);
-  $("#boot").classList.add("done");
-  setTimeout(() => $("#boot").remove(), 700);
   // ゲーム中にロードした直後は、タイトルを飛ばしてそのデータから再開する
-  if (consumeResumeOnBoot() && load()) { resumeGame(); warmUp(); return; }
-  showTitle();
+  if (consumeResumeOnBoot() && load()) resumeGame();
+  else showTitle();
+  // タイトルを描けたことを確認してから、読み込み画面を閉じる。
+  $("#boot").classList.add("done");
+  setTimeout(() => $("#boot")?.remove(), 700);
   warmUp();
 }
 
@@ -92,5 +88,3 @@ window.__remake = {
     },
   },
 };
-
-boot();

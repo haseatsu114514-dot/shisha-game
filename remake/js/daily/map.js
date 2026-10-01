@@ -59,17 +59,13 @@ export function chooseSpot({ notice = "", eventPin = null, guide = null, onShown
     const movesLeft = () => (state.slot >= 1 ? "夜 ── 今日はあと1回動ける" : "昼 ── 今日はあと2回動ける");
     const idleInfo = () => {
       if (guide) {
-        const preview = pv?.url ? el("div.mi-preview", { dataset: { tint: pv.tint || "" } }) : null;
-      if (preview) renderSceneArt(preview, pv.url);
-      info.replaceChildren(
+        info.replaceChildren(
           el("div.mi-banner", { text: guide.title || "スミさんの頼み" }),
           el("p.mi-desc", { text: guide.text }),
           el("div.mi-foot", { text: movesLeft() }),
         );
         return;
       }
-      const preview = pv?.url ? el("div.mi-preview", { dataset: { tint: pv.tint || "" } }) : null;
-      if (preview) renderSceneArt(preview, pv.url);
       info.replaceChildren(
         el("div.mi-banner", { text: "今日はどうする？" }),
         el("p.mi-desc", [el("span", { text: "気になる場所をタップしよう。" }), el("br"), el("span", { text: "行動・所持金・体力に気をつけて。" })]),
@@ -80,9 +76,7 @@ export function chooseSpot({ notice = "", eventPin = null, guide = null, onShown
     const renderInfo = (s) => {
       const av = availability(s);
       if (av.why === "locked") {
-        const preview = pv?.url ? el("div.mi-preview", { dataset: { tint: pv.tint || "" } }) : null;
-      if (preview) renderSceneArt(preview, pv.url);
-      info.replaceChildren(
+        info.replaceChildren(
           el("div.mi-banner", { text: "？？？" }),
           el("p.mi-desc", { text: "まだ知らない場所。誰かと知り合えば、教えてもらえるかもしれない。" }),
           el("div.mi-foot", { text: movesLeft() }),

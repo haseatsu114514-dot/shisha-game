@@ -10,7 +10,7 @@
 
 ```bash
 # リポジトリのルートで
-python3 -m http.server 8123
+python3 remake/tools/serve_preview.py --port 8123
 # → http://127.0.0.1:8123/remake/ を開く
 ```
 
@@ -18,6 +18,10 @@ python3 -m http.server 8123
 **ビルド不要**。file:// では fetch が通らないため、必ずローカルサーバー越しに開く。
 開発ブランチの確認は raw.githack でも可:
 `https://raw.githack.com/haseatsu114514-dot/shisha-game/<ブランチ名>/remake/index.html`
+
+同梱サーバーは同時接続の待ち数を増やし、HTML・JS・CSS・JSONの古いキャッシュが
+更新後のファイルに混ざらないようにする。データは4件ずつ読み、各通信は15秒で中断する。
+起動に失敗した場合は読み込み画面に再試行ボタンを表示する。
 
 ## 作り直しの方針（旧版との違い）
 
@@ -144,8 +148,9 @@ remake/
 ## テスト
 
 ```bash
-python3 -m http.server 8123 &
+python3 remake/tools/serve_preview.py --port 8123 &
 node remake/test/playthrough.mjs            # 優勝ルート＋敗北ルート
+node --experimental-vm-modules remake/test/data_loading.mjs # 接続数・通信失敗・タイムアウト
 ```
 
 テスト用フック: `window.__remake`（state参照・ミニゲーム自動解決）。

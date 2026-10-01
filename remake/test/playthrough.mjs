@@ -112,11 +112,12 @@ for (;;) {
       mode: document.querySelector(".bench")?.dataset.mode || "",
     };
   });
-  const key = JSON.stringify([snap.screen, snap.day, snap.slot, snap.phase, planIdx, snap.vn, snap.phone, snap.modal, snap.sub]);
+  const key = JSON.stringify([snap.screen, snap.day, snap.slot, snap.phase, planIdx, snap.vn, snap.phone, snap.modal, snap.sub, snap.mode, snap.step]);
   if (snap.day !== lastDay) { lastDay = snap.day; log(`DAY ${snap.day} (${snap.phase}) money=${snap.money} stamina=${snap.stamina}`); }
   if (key !== lastKey) { lastKey = key; lastProgress = Date.now(); }
   if (Date.now() - lastProgress > 30000) {
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/stuck.png` });
+    if (errors.length) log("errors before stall:", JSON.stringify(errors));
     throw new Error(`stuck: ${key}`);
   }
 

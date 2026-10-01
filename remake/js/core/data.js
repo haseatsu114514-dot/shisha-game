@@ -34,11 +34,24 @@ const DIALOGUE_FILES = [
   "remake_ch1", // リメイク版の進行で使う短い場面（旧版 web/ は読まない）
 ];
 const BAITO_CATEGORIES = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);
+const JSON_TIMEOUT_MS = 15000;
+const JSON_CONCURRENCY = 4;
 
 async function getJSON(path) {
-  const res = await fetch(path, { cache: "no-cache" });
-  if (!res.ok) throw new Error(`${path}: ${res.status}`);
-  return res.json();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), JSON_TIMEOUT_MS);
+  try {
+    const res = await fetch(path, { cache: "no-cache", signal: controller.signal });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json(); // 本文の受信もタイムアウトの対象にする
+  } catch (e) {
+    const reason = controller.signal.aborted
+      ? "読み込みが15秒でタイムアウトしました"
+      : e?.message || String(e);
+    throw new Error(`${path}: ${reason}`);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export async function loadAll(onProgress = () => {}) {
@@ -61,11 +74,16 @@ export async function loadAll(onProgress = () => {}) {
     ...DIALOGUE_FILES.map((f) => [`dlg:${f}`, `${ROOT}data/dialogue/${f}.json`]),
   ];
   let done = 0;
-  const results = await Promise.all(jobs.map(async ([key, path]) => {
-    const v = await getJSON(path);
-    onProgress(++done / jobs.length);
-    return [key, v];
-  }));
+  const results = [];
+  // ローカルサーバーの接続待ちを溢れさせない。失敗したら次の組は開始しない。
+  for (let start = 0; start < jobs.length; start += JSON_CONCURRENCY) {
+    const batch = await Promise.all(jobs.slice(start, start + JSON_CONCURRENCY).map(async ([key, path]) => {
+      const v = await getJSON(path);
+      onProgress(++done / jobs.length);
+      return [key, v];
+    }));
+    results.push(...batch);
+  }
   const raw = Object.fromEntries(results);
 
   for (const c of raw.characters) DB.characters[c.id] = c;
