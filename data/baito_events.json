@@ -3,6 +3,7 @@
     {
       "id": "baito_beginner_01",
       "category": "beginner",
+      "portrait": "mob_firsttimer",
       "text": "ドアベルが鳴って、若い女性客が入ってきた。キョロキョロと店内を見回している。シーシャのボトルに興味津々だが、どうしていいか分からないようだ。\n「あの、初めてなんですけど……何がおすすめですか？」",
       "choices": [
         {
@@ -112,6 +113,7 @@
     {
       "id": "baito_mob_flavor_police",
       "category": "mob",
+      "portrait": "mob_megane",
       "trigger_flag": "!ch1_flavor_police_event",
       "set_flag": "ch1_flavor_police_event",
       "text": "眼鏡のおじさんが入ってきた。カウンターに座るなり、棚のフレーバーをじーっと見ている。\n「このフレーバー、認可取れてる？ 成分表見せて」\n他の客がチラッとこちらを見た。店内の空気が少し緊張する。",
@@ -143,6 +145,7 @@
     {
       "id": "baito_mob_insta",
       "category": "mob",
+      "portrait": "mob_insta",
       "text": "派手なネイルの女性客がシーシャの写真を撮り続けている。ボトルの角度を変えたり、煙に光を当てたり。一口も吸っていない。\n炭がもったいない……でも、楽しそうではある。",
       "choices": [
         {
@@ -169,6 +172,7 @@
     {
       "id": "baito_regular_01",
       "category": "regular",
+      "portrait": "mob_occhan",
       "text": "カランッ──ドアベルが鳴って、いつもの靴音。常連のおっちゃんが入ってきた。定位置に座って、メニューも見ずにこっちを向く。\n「おう、いつもの」",
       "choices": [
         {
@@ -475,6 +479,7 @@
     {
       "id": "baito_foreign_tourist",
       "category": "mob",
+      "portrait": "mob_tourist",
       "text": "外国人の男性が入ってきた。英語で何か言っているが、よく聞き取れない。ジェスチャーでシーシャを指している。吸いたいらしい。\n言葉の壁は高いが、シーシャのことならなんとかなる……はず。",
       "choices": [
         {

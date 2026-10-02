@@ -3269,13 +3269,14 @@ function doBaito(afterCameo) {
   const inviteBonus = state.flags._baito_bonus ? 5000 : 0;
   delete state.flags._baito_bonus;
   const basePay = Math.max(8000, ev.base_pay || D.baito_settings.base_pay || 8000) + inviteBonus; // 給料は最低8,000円（master_spec #21）
+  const evPortrait = String(ev.portrait || "");
 
   const lines = [
     afterCameo
       ? { speaker: "", face: "", text: "──不思議な客を見送って、シフトに戻る。" }
       : { speaker: "", face: "", text: "今日はtonariでバイト。エプロンを締めて、カウンターに立つ。" },
     ...(inviteBonus ? [{ speaker: "sumi", face: "smile", text: "急に悪いな、助かる。今日の分は色をつけとくぞ" }] : []),
-    { speaker: "", face: "", text: ev.text },
+    { speaker: "", portrait: evPortrait, face: evPortrait ? "normal" : "", text: ev.text },
   ];
   const branches = {};
   const choices = [];
@@ -4516,7 +4517,53 @@ const MAKING_SCENE = {
   coal: "coal", coalfire: "coalfire", steam: "steam",
   adjust: "adjust", pull: "pull",
 };
+const MAKING_BOWL_ASSETS = [
+  "bowl_empty_silicone.png", "bowl_empty_silicone_v2.png", "bowl_empty_clay.png",
+  "bowl_empty_phunnel.png", "bowl_empty_iran.png",
+];
+const MAKING_COAL_ASSETS = [
+  "coal_cold.png", "coal_red.png", "coal_just.png", "coal_white.png",
+  "coal_flat_cold.png", "coal_flat_red.png", "coal_flat_just.png", "coal_flat_white.png",
+];
+// 各工程で使う素材だけを先読みする。タイトル直後に全45枚を読むと、背景と合わせて
+// 50MB超の通信・200MB超の画像展開が走るため、現在工程＋次工程へ限定する。
+const MAKING_ASSETS_BY_SCENE = {
+  setup: ["bench_base.png", "bench_note.png", ...MAKING_BOWL_ASSETS, "coal_cold.png", "coal_flat_cold.png"],
+  theme: ["bench_base.png", "bench_note.png", "bowl_empty_silicone.png"],
+  mix: ["bench_base.png", "mix_scale.png", "jar_open.png", "hand_fork.png", "leaf_grain.png",
+    "leaf_pile_1.png", "leaf_pile_2.png", "leaf_pile_3.png", "leaf_pile_4.png", ...MAKING_BOWL_ASSETS],
+  pack: ["bench_base.png", "hand_fork.png", "hand_press.png", ...MAKING_BOWL_ASSETS],
+  foil: ["bench_base.png", ...MAKING_BOWL_ASSETS, "foil_surface.png", "hand_pin.png", "hole_punched.png"],
+  coal: ["bench_base.png", "stove_coil.png", "hand_tongs_open.png", "coal_cold.png", "coal_flat_cold.png"],
+  coalfire: ["bench_base.png", "stove_coil.png", "hand_tongs_open.png", ...MAKING_COAL_ASSETS],
+  steam: ["bench_base.png", "vignette_focus.png", "hookah_base.png", "hookah_stem.png", "hookah_tray.png",
+    ...MAKING_BOWL_ASSETS, "foil_surface.png", ...MAKING_COAL_ASSETS, "heat_glow.png"],
+  pull: ["bench_base.png", "vignette_focus.png", "hookah_base.png", "hookah_stem.png", "hookah_tray.png",
+    ...MAKING_BOWL_ASSETS, "foil_surface.png", ...MAKING_COAL_ASSETS, "hose_line.png", "hose_tip.png", "smoke_thick.png"],
+  adjust: ["bench_base.png", "hookah_base.png", "hookah_stem.png", "hookah_tray.png",
+    ...MAKING_BOWL_ASSETS, "foil_surface.png", ...MAKING_COAL_ASSETS, "hand_tongs_closed.png", "heat_glow.png"],
+};
 const MAKING_PANEL_SKIP = /審査|中間発表|FLAVOR TRIAL|講評|結果|練習結果/;
+
+function preloadMakingStep(step) {
+  if (typeof queuePreload !== "function" || !tt) return;
+  const flow = makingFlow();
+  const idx = flow.findIndex(([key]) => key === step);
+  const steps = [step, idx >= 0 && idx + 1 < flow.length ? flow[idx + 1][0] : null];
+  const names = new Set();
+  for (const key of steps) {
+    const scene = MAKING_SCENE[key] || key;
+    for (const name of MAKING_ASSETS_BY_SCENE[scene] || []) names.add(name);
+  }
+  // jar_open が無い古い素材セットだけ、一枚絵のフォールバックを読む。
+  if (names.has("jar_open.png") && !hasMakingAsset("jar_open.png")) {
+    names.delete("jar_open.png");
+    names.add("jar_pour.png");
+  }
+  queuePreload([...names]
+    .filter((name) => hasMakingAsset(name))
+    .map((name) => `assets/ui/making/${name}`));
+}
 
 function hasMakingAsset(name) {
   return !!(name && (D.making_assets || []).includes(name));
@@ -4544,8 +4591,9 @@ function normalizeMakingAsset(el, name, fitBox) {
 function setMakingAsset(el, name) {
   if (!el || !name) return;
   el.dataset.asset = name.replace(/\.png$/, "");
-  if (hasMakingAsset(name)) {
-    el.style.backgroundImage = `url('${assetUrl(`assets/ui/making/${name}`)}')`;
+  const rel = `assets/ui/making/${name}`;
+  if (hasMakingAsset(name) && !(typeof assetLoadFailed === "function" && assetLoadFailed(rel))) {
+    el.style.backgroundImage = `url('${assetUrl(rel)}')`;
     el.classList.remove("missing");
   } else {
     el.classList.add("missing");
@@ -4587,7 +4635,8 @@ function artDiv(cls, parent) {
 // 置かれていなければ false を返し、呼び出し側が従来のCSSアートを組み立てる。
 // 対応ファイル名と構図は docs/asset_gen_prompts.md §1（Codex向け）を正とする
 function artAsset(el, name) {
-  if (!hasMakingAsset(name)) return false;
+  const rel = `assets/ui/making/${name}`;
+  if (!hasMakingAsset(name) || (typeof assetLoadFailed === "function" && assetLoadFailed(rel))) return false;
   setMakingAsset(el, name);
   el.classList.add("has-asset");
   return true;
@@ -4597,6 +4646,14 @@ function flavorColor(id) {
   const f = (D.flavors || []).find((x) => x.id === id);
   const cat = f && (Array.isArray(f.category) ? f.category[0] : f.category);
   return CATEGORY_COLORS[cat] || "#8a6a45";
+}
+// 実際のシーシャ葉は香料ごとのテーマ色ではなく、蜜を含んだ赤茶色が基本。
+// V2の作業台だけは商品識別色を持ち込まず、赤系の僅かな濃淡で配合層を見せる。
+function makingLeafColor(id, index = 0) {
+  if (!document.body.classList.contains("making-v2")) return flavorColor(id);
+  const reds = ["#a83d34", "#8f302b", "#bc4b3e", "#772824"];
+  const seed = [...String(id || "")].reduce((n, ch) => n + ch.charCodeAt(0), index);
+  return reds[seed % reds.length];
 }
 function flavorShortName(id) {
   const f = (D.flavors || []).find((x) => x.id === id);
@@ -4623,7 +4680,7 @@ function buildLeafFill(compact = false) {
   let acc = 0;
   const stops = [];
   for (const [id, g] of entries) {
-    const c = flavorColor(id);
+    const c = makingLeafColor(id, stops.length);
     stops.push(`${c} ${(acc / total) * 100}%`);
     acc += g;
     stops.push(`${c} ${(acc / total) * 100}%`);
@@ -4687,58 +4744,60 @@ function buildCoalArt(lit) {
 }
 function coalLitState() {
   if (!tt || tt.step === "coal") return "off";
-  if (tt.coalFire === "perfect") return "on";
+  if (tt.coalFire === "perfect" ||
+      (document.body.classList.contains("making-v2") && tt.coalFire === "good")) return "on";
   if (tt.coalFire === "good") return "ash";
   return "heating";
 }
 function coalCount() {
   return (tt && tt.coal) === "two" ? 2 : (tt && tt.coal) === "four" ? 4 : 3;
 }
-// ボウルの見た目カテゴリ（クレイ/シリコン/ファンネル）を機材IDから判定。
+// ボウルの見た目カテゴリを機材IDから判定。ファイル名のカテゴリと共通にして、
+// ショップ・作業台のどちらでも選んだ実機の画像を使う。
 // 作業台描画とショップの商品サムネ（N17）で共有するヘルパー
 function bowlArtKind(bowlId) {
-  return String(bowlId || "").includes("suyaki") ? "clay"
-    : bowlId === "hagal_80beat" ? "phunnel" : "silicone";
+  const id = String(bowlId || "");
+  if (id.includes("suyaki")) return "clay";
+  return { hagal_80beat: "phunnel", iran_bowl: "iran" }[id] || "silicone";
 }
-// ボウル（クレイ/シリコン/ファンネル）。fill=葉、foil=アルミ、coals=炭を上に乗せる。
+function bowlArtAsset(bowlId) {
+  return `bowl_empty_${bowlArtKind(bowlId)}.png`;
+}
+// ボウル。fill=葉、foil=アルミ、coals=炭を上に乗せる。
 // 生成画像 bowl_empty_*.png があれば器の絵はPNG、葉の色層・穴・炭はコードで重ねる。
 // PNGは normalizeMakingAsset で箱に正着させ、リム楕円の実測値（meta.rim）を基準に
 // アルミ・炭・葉の重なり位置を決める＝生成画像の余白や構図が変わってもズレない
 function buildBowlArt(opts = {}) {
-  const kind = bowlArtKind(tt && tt.bowl);
+  const bowlId = tt && tt.bowl;
+  const kind = bowlArtKind(bowlId);
   const bowl = artDiv(`art-bowl ${opts.cls || ""}`);
   bowl.dataset.kind = kind;
-  const bowlAsset = { clay: "bowl_empty_clay.png", phunnel: "bowl_empty_phunnel.png", silicone: "bowl_empty_silicone.png" }[kind];
+  const useCompleteMixBowl = document.body.classList.contains("making-v2") &&
+    tt && tt.step === "mix" && kind === "silicone" && hasMakingAsset("bowl_empty_silicone_v2.png");
+  const bowlAsset = useCompleteMixBowl
+    ? "bowl_empty_silicone_v2.png"
+    : bowlArtAsset(bowlId);
+  if (useCompleteMixBowl) bowl.classList.add("complete-hagal");
   const total = mixTotalGrams();
-  const density = tt && tt.pack
-    ? (({ fluffy: "airy", normal: "normal", firm: "firm" })[tt.pack] || "normal")
-    : "airy";
-  const packedAsset = kind === "phunnel" ? `bowl_packed_phunnel_${density}.png` : `bowl_packed_${density}.png`;
-  // 詰め工程を経たら実葉の画像へ。計量中（compactでない間）は空ボウル＋量に応じて
-  // 育つ葉レイヤーで「入れた分だけ盛られていく」を見せる（最初から山盛りにしない）。
-  // アルミを張ったら葉は見せない（覆われているのが正しい・オーナー指定 2026-07-03）
-  const usePackedAsset = !!(opts.fill && opts.compact && !opts.foil && total > 0 && hasMakingAsset(packedAsset));
-  const usedAsset = usePackedAsset ? packedAsset : bowlAsset;
-  const hasBowlImg = artAsset(bowl, usedAsset);
-  const meta = hasBowlImg ? normalizeMakingAsset(bowl, usedAsset, true) : null;
+  // 葉は選んだ実機の開口部へコードで重ねる。共通の詰め済み画像へ差し替えると
+  // 工程途中で別のボウルに見えるため、器の画像は最初から最後まで固定する。
+  const hasBowlImg = artAsset(bowl, bowlAsset);
+  const meta = hasBowlImg ? normalizeMakingAsset(bowl, bowlAsset, true) : null;
   if (meta) bowl.style.top = "auto"; // on-rig の inset:0 を下辺アンカーへ倒す
   const rim = meta && meta.rim ? meta.rim * 100 : null; // リム楕円の高さ（箱%）
-  if (usePackedAsset) bowl.classList.add("packed-asset");
   if (!hasBowlImg) artDiv("art-bowl-body", bowl);
-  if (!usePackedAsset) {
-    const cavity = artDiv("art-bowl-cavity", bowl);
-    if (rim) {
-      // 開口部＝リム楕円を器の壁ぶんだけ内側へ寄せた楕円。
-      // リムの縁の輪に葉が乗り上げないよう、少しタイトに収める（A1）
-      cavity.style.left = "17%";
-      cavity.style.right = "17%";
-      cavity.style.top = `${(rim * 0.2).toFixed(1)}%`;
-      cavity.style.height = `${(rim * 0.56).toFixed(1)}%`;
-    }
-    if (hasBowlImg && kind === "phunnel") cavity.classList.add("phunnel-hole"); // 中央スパイアを葉で塞がない
-    // アルミ張り後は開口部が覆われる＝葉レイヤーは重ねない
-    if (opts.fill && !opts.foil) cavity.appendChild(buildLeafFill(opts.compact));
+  const cavity = artDiv("art-bowl-cavity", bowl);
+  if (rim) {
+    // 開口部＝リム楕円を器の壁ぶんだけ内側へ寄せた楕円。
+    // リムの縁の輪に葉が乗り上げないよう、少しタイトに収める（A1）
+    cavity.style.left = "17%";
+    cavity.style.right = "17%";
+    cavity.style.top = `${(rim * 0.2).toFixed(1)}%`;
+    cavity.style.height = `${(rim * 0.56).toFixed(1)}%`;
   }
+  if (hasBowlImg && kind === "phunnel") cavity.classList.add("phunnel-hole"); // 中央スパイアを葉で塞がない
+  // アルミ張り後は開口部が覆われる＝葉レイヤーは重ねない
+  if (opts.fill && !opts.foil && total > 0) cavity.appendChild(buildLeafFill(opts.compact));
   if (!hasBowlImg && kind === "phunnel") artDiv("art-bowl-spire", bowl);
   if (!hasBowlImg) artDiv("art-bowl-rim", bowl);
   if (opts.foil) {
@@ -4843,7 +4902,7 @@ function spawnBaseBubbles(count = 8) {
 function spawnPourGrains(stage, flavorId) {
   const zone = stage.querySelector(".art-pour-zone");
   if (!zone) return;
-  const color = flavorColor(flavorId);
+  const color = makingLeafColor(flavorId);
   for (let i = 0; i < 9; i++) {
     const g = document.createElement("i");
     g.className = "art-grain";
@@ -4858,21 +4917,72 @@ function spawnPourGrains(stage, flavorId) {
 
 function renderMakingWorkbench(step, opts = {}) {
   const scene = MAKING_SCENE[step] || "setup";
+  const v2 = document.body.classList.contains("making-v2");
   const stage = document.createElement("div");
   stage.className = `making-stage making-${scene}`;
   stage.dataset.step = scene;
-  stage.appendChild(makingLayer("bench_base.png", "bench-base"));
-  artDiv("bench-board", stage); // 木の作業台の天板
+  stage.dataset.makingStep = step;
+  const bench = makingLayer("bench_base.png", "bench-base");
+  stage.appendChild(bench);
+  // 完成背景には天板まで描かれている。CSS天板は素材未着時だけのフォールバック。
+  if (bench.classList.contains("missing")) artDiv("bench-board", stage);
   if (["steam", "pull"].includes(scene)) stage.appendChild(makingLayer("vignette_focus.png", "bench-vignette"));
 
-  if (scene === "theme" || scene === "setup") {
-    // 開店前の作業台: メモ・空のボウル・棚のジャー
+  if (scene === "setup") {
     stage.appendChild(makingLayer("bench_note.png", "bench-note"));
-    const shelf = artDiv("art-shelf", stage);
-    for (const id of ["mint", "double_apple", "blueberry"]) shelf.appendChild(buildJarArt(id, { cls: "on-shelf" }));
-    const b = buildBowlArt({ fill: false, cls: "art-bowl-mid" });
-    b.classList.add("on-bench");
-    stage.appendChild(b);
+    if (!v2 || step === "setup_bowl") {
+      // ボウル選択: 器を主役にし、棚は作業場の文脈として後景へ置く。
+      const shelf = artDiv("art-shelf", stage);
+      for (const id of ["mint", "double_apple", "blueberry"]) shelf.appendChild(buildJarArt(id, { cls: "on-shelf" }));
+      const b = buildBowlArt({ fill: false, cls: "art-bowl-mid" });
+      b.classList.add("on-bench");
+      stage.appendChild(b);
+    } else if (step === "setup_hms") {
+      // V2: 選択対象が見えない状態をやめ、HMSの径・高さ・通気の違いを並べる。
+      const showcase = artDiv("m2-tool-showcase m2-hms-showcase", stage);
+      [
+        ["ロートス", "立ち上がり"], ["タヌキッシュ", "標準"],
+        ["アマバースト", "高火力"], ["winkwink", "熱持ち"],
+      ].forEach(([name, sub], i) => {
+        const card = artDiv(`m2-tool-card hms-${i + 1}`, showcase);
+        artDiv("m2-hms-disc", card);
+        const copy = artDiv("m2-tool-copy", card);
+        copy.innerHTML = `<b>${name}</b><small>${sub}</small>`;
+      });
+      const b = buildBowlArt({ fill: false, cls: "art-bowl-mid m2-demo-bowl" });
+      stage.appendChild(b);
+    } else {
+      // V2: 炭種は名称だけでなく、平型とキューブの輪郭を実物素材で比較する。
+      const showcase = artDiv("m2-tool-showcase m2-charcoal-showcase", stage);
+      [["coal_flat_cold.png", "フラット炭", "広く安定"], ["coal_cold.png", "キューブ炭", "高火力・長持ち"]]
+        .forEach(([asset, name, sub], i) => {
+          const card = artDiv(`m2-tool-card coal-${i + 1}`, showcase);
+          const sample = artDiv("m2-coal-sample", card);
+          artAsset(sample, asset);
+          const copy = artDiv("m2-tool-copy", card);
+          copy.innerHTML = `<b>${name}</b><small>${sub}</small>`;
+        });
+    }
+  } else if (scene === "theme") {
+    stage.appendChild(makingLayer("bench_note.png", "bench-note"));
+    if (v2) {
+      // V2: 機材棚の流用ではなく、今日の方向性を並べたレシピボードにする。
+      const board = artDiv("m2-theme-board", stage);
+      const cap = artDiv("m2-theme-cap", board);
+      cap.innerHTML = "TODAY'S DIRECTION<small>香りの設計図</small>";
+      THEMES.slice(0, 4).forEach((theme, i) => {
+        const card = artDiv(`m2-theme-card theme-${i + 1}`, board);
+        card.innerHTML = `<i></i><b>${theme.label}</b><small>${theme.desc}</small>`;
+      });
+      const b = buildBowlArt({ fill: false, cls: "art-bowl-mid m2-theme-bowl" });
+      stage.appendChild(b);
+    } else {
+      const shelf = artDiv("art-shelf", stage);
+      for (const id of ["mint", "double_apple", "blueberry"]) shelf.appendChild(buildJarArt(id, { cls: "on-shelf" }));
+      const b = buildBowlArt({ fill: false, cls: "art-bowl-mid" });
+      b.classList.add("on-bench");
+      stage.appendChild(b);
+    }
   } else if (scene === "mix") {
     // 計量: スケールの上のボウルへ、ジャーから葉を注ぐ
     const scale = artDiv("art-scale", stage);
@@ -4898,10 +5008,11 @@ function renderMakingWorkbench(step, opts = {}) {
     stage.appendChild(display);
     if (opts.pour) spawnPourGrains(stage, opts.flavor);
   } else if (scene === "pack") {
-    // 詰め: ボウルのドアップ。フォークでほぐし入れる手元
+    // 詰め: ボウルのドアップ。V2では密度を決める指先そのものを見せる。
     stage.appendChild(buildBowlArt({ fill: true, compact: !!(tt && tt.pack), cls: "art-bowl-big" }));
     const tool = artDiv("art-fork", stage);
-    const toolAsset = tt && tt.pack === "firm" ? "hand_press.png" : "hand_fork.png";
+    const toolAsset = v2 || (tt && tt.pack === "firm") ? "hand_press.png" : "hand_fork.png";
+    if (v2) tool.classList.add("m2-pack-hand");
     if (!artAsset(tool, toolAsset)) artDiv("art-fork-tines", tool);
   } else if (scene === "foil") {
     // アルミ張り: 張ったアルミの上に、ミニゲームと同じ位置へ穴が増えていく
@@ -4930,6 +5041,10 @@ function renderMakingWorkbench(step, opts = {}) {
       artDiv("art-tongs-arm a1", tongs);
       artDiv("art-tongs-arm a2", tongs);
     }
+    if (v2 && scene === "coal") {
+      const stateLabel = artDiv("m2-stove-state", stage);
+      stateLabel.innerHTML = `<b>STOVE OFF</b><span>炭数を決めてから着火</span>`;
+    }
   } else if (scene === "steam") {
     // 蒸らし: 組み上がった一台。炭の熱がゆっくり乗るのを待つ
     stage.appendChild(buildHookahArt({ smoke: true }));
@@ -4951,6 +5066,12 @@ function renderMakingWorkbench(step, opts = {}) {
         artDiv("art-tongs-arm a2", tongs);
       }
     }
+    if (v2) {
+      const service = artDiv(`m2-service-state ${tt && tt.adjustPhase === "watch" ? "watch" : "work"}`, stage);
+      service.innerHTML = tt && tt.adjustPhase === "watch"
+        ? `<b>SERVING</b><span>煙量を観察中</span><i><em></em></i>`
+        : `<b>HEAT CARE</b><span>炭の位置と残熱を調整</span><i><em></em></i>`;
+    }
   } else if (scene === "pull") {
     // 吸い出し: 一人称。左に一台、右手前にマウスピース、煙が立ちはじめる
     stage.appendChild(buildHookahArt({ smoke: true, cls: "at-left" }));
@@ -4960,6 +5081,7 @@ function renderMakingWorkbench(step, opts = {}) {
     if (artAsset(hoseLine, "hose_line.png")) normalizeMakingAsset(hoseLine, "hose_line.png", true);
     const mouth = artDiv("art-mouthpiece", hose);
     if (!artAsset(mouth, "hose_tip.png")) artDiv("art-mouthpiece-tip", mouth);
+    artDiv("art-hose-coupler", stage);
     artAsset(artDiv("art-pull-smoke", stage), "smoke_thick.png");
   }
   return stage;
@@ -5209,16 +5331,9 @@ function beginMaking(mode) {
     tournamentStep("setup_bowl");
   };
   // シーシャ作りパートは「重い」ため読み込み表示を出すが、ゲートで待つのは最初の画面が使う
-  // 数枚だけ（H1改）。全45枚を待つと、その間ずっと中央ゲート(z:200)が被さって速いタップや
-  // 自動テストと競合しうる。残りは低優先度の裏読み(queuePreload)でキャッシュを温め、各工程は
-  // 必要な絵が来ていなくてもCSSアートで描けるので破綻しない。速ければゲートは出ずに即開始
-  const firstAssets = ["bench_base.png", "bench_note.png", "vignette_focus.png",
-    "bowl_empty_silicone.png", "bowl_empty_clay.png", "bowl_empty_phunnel.png",
-    "mix_scale.png", "jar_open.png", "jar_pour.png"];
-  if (typeof queuePreload === "function") {
-    const rest = (D.making_assets || []).filter((n) => !firstAssets.includes(n));
-    queuePreload(rest.map((n) => `assets/ui/making/${n}`)); // 残りは裏で先読み
-  }
+  // 最初のSETUP画面が実際に使う3枚だけ待つ。以降は tournamentStep が
+  // 「現在工程＋次工程」を先読みするため、未使用素材や全45枚の一括取得は行わない。
+  const firstAssets = ["bench_base.png", "bench_note.png", "bowl_empty_silicone.png"];
   if (typeof withLoadingGate === "function") {
     withLoadingGate(firstAssets.filter((n) => (D.making_assets || []).includes(n))
       .map((n) => `assets/ui/making/${n}`), enter);
@@ -5284,30 +5399,32 @@ function tnPanel(title, hint) {
   $("#tn-hint").textContent = hint || "";
   const oldTutor = document.querySelector("#tn-layout .tn-tutor");
   if (oldTutor) oldTutor.remove();
+  let tutor = null;
   // チュートリアルはスミさんのアドバイス、バイトはお客さんのリクエストを添える
   if (tt && tt.mode === "tutorial" && TUTORIAL_TIPS[tt.step]) {
-    const tip = document.createElement("p");
-    tip.className = "tn-tutor";
-    tip.textContent = TUTORIAL_TIPS[tt.step];
-    $("#tn-hint").after(tip);
+    tutor = document.createElement("p");
+    tutor.className = "tn-tutor";
+    tutor.textContent = TUTORIAL_TIPS[tt.step];
   } else if (tt && tt.mode === "drill" && DRILL_TIPS[tt.step]) {
-    const tip = document.createElement("p");
-    tip.className = "tn-tutor";
-    tip.textContent = DRILL_TIPS[tt.step];
-    $("#tn-hint").after(tip);
+    tutor = document.createElement("p");
+    tutor.className = "tn-tutor";
+    tutor.textContent = DRILL_TIPS[tt.step];
   } else if (tt && tt.mode === "baito" && tt.theme) {
-    const tip = document.createElement("p");
-    tip.className = "tn-tutor";
-    tip.textContent = `お客さん「${tt.theme.label}な感じでお任せします」`;
-    $("#tn-hint").after(tip);
+    tutor = document.createElement("p");
+    tutor.className = "tn-tutor";
+    tutor.textContent = `お客さん「${tt.theme.label}な感じでお任せします」`;
   }
   const body = $("#tn-body");
   body.innerHTML = "";
   updateRig();
-  if (!workbench) return body;
+  if (!workbench) {
+    if (tutor) $("#tn-hint").after(tutor);
+    return body;
+  }
   body.appendChild(renderMakingWorkbench(tt.step));
   const controls = document.createElement("div");
   controls.className = `making-controls making-controls-${MAKING_SCENE[tt.step] || tt.step}`;
+  if (tutor) controls.appendChild(tutor);
   body.appendChild(controls);
   return controls;
 }
@@ -5322,6 +5439,7 @@ function optionButton(label, desc, onClick) {
 
 function tournamentStep(step) {
   if (tt) tt.step = step;
+  preloadMakingStep(step);
   if (tt && tt.mode === "tutorial") return tutorialDemoStep(step); // K2: チュートリアルはスミさんの自動実演
   mcBlockIntro(step); // #20 工程ブロックの頭でMC実況（本番のみ・対象ブロックのみ）
   if (step === "setup_bowl" || step === "setup_hms" || step === "setup_charcoal") return stepSetup(step);
@@ -5445,6 +5563,12 @@ function freshCoalBoost(coalId) {
 function stepAdjust() {
   tt.adjustPhase = "watch"; // 作業台の絵: 相手の手元で煙を吐き続ける一台
   const body = tnPanel("提供のあと", "出した一台は、もう相手の時間だ。");
+  if (document.body.classList.contains("making-v2")) {
+    const meter = document.createElement("div");
+    meter.className = "m2-service-meter";
+    meter.innerHTML = `<span>提供</span><i></i><b>観察中</b><i></i><span>熱管理</span>`;
+    body.appendChild(meter);
+  }
   const lines = [
     tt.mode === "tournament"
       ? "審査員たちが、ゆっくりと煙を回している。……悪くない顔だ。"
@@ -5583,6 +5707,12 @@ function stepSetup(step) {
   const owned = Array.isArray(state.owned) ? state.owned : STARTER_EQUIPMENT;
   for (const e of D.equipment.filter((x) => x.type === type && owned.includes(x.id))) {
     const btn = optionButton(e.name, e.description, () => { tt[type] = e.id; tournamentStep(nextStep); });
+    if (type === "bowl") {
+      const thumb = productThumb("equip", e);
+      thumb.classList.add("setup-equipment-thumb");
+      btn.classList.add("equipment-choice-bowl");
+      btn.prepend(thumb);
+    }
     // タヌキッシュリッドは素焼きサイズには使えない
     if (e.id === "tanukish_lid" && tt.bowl === "suyaki_hagal") {
       btn.disabled = true;
@@ -5636,6 +5766,10 @@ const HOLE_RINGS = [
   { key: "middle", label: "中周", r: 0.55, target: 6, role: "ドロー・煙量", hue: 200 },
   { key: "inner", label: "内周", r: 0.30, target: 4, role: "抜け・攻め", hue: 330 },
 ];
+// 0°/360°をまたぐときも、円周上の短い方の角度差を返す。
+function circularAngleDistance(a, b) {
+  return Math.abs(((a - b + 540) % 360) - 180);
+}
 // 角度ギャップの均等度（0..1）。穴が円周に均等なら1に近い
 function ringEvenness(angles) {
   if (angles.length < 2) return angles.length === 1 ? 0.5 : 0;
@@ -5755,7 +5889,7 @@ function stepFoil() {
     if (r.angles.length >= 16) { callout("もう十分だ", "warn"); return; } // 物理上限のみ
     if (r.angles.length >= r.target + 2) callout("TOO MANY", "warn"); // 開けすぎは均等度・焦げリスクに響く（開けるのは自由）
     // 近すぎる穴チェック（過密ペナルティの気づき）
-    const tooClose = r.angles.some((x) => { const d = Math.abs(((x - angle + 540) % 360) - 180); return (180 - d) < 14; });
+    const tooClose = r.angles.some((x) => circularAngleDistance(x, angle) < 14);
     r.angles.push(angle);
     placeDot(r.r, angle, r.hue);
     stageFoilPunch(r.r, angle); // 作業台のアルミにも同じ場所に穴が開く
@@ -6251,7 +6385,6 @@ function stepMix() {
       update();
       updateRig();
       refreshMakingWorkbench({ pour: true, flavor: f.id });
-      setTimeout(() => refreshMakingWorkbench({ flavor: f.id }), 620);
     });
     ctrl.append(minus, grams, plus);
     row.append(info, ctrl);
@@ -6481,6 +6614,19 @@ function pullTargetZone() {
 }
 const PULL_DELTA = 0.13; // 1回の吸いで動かせる最大温度
 
+function pullJustBandsForLevels(baseHalfWidth, tighten, levels) {
+  const band = (center, key) => {
+    const n = levels[key] || 0;
+    const h = baseHalfWidth * tighten[Math.min(n, tighten.length - 1)];
+    return [center - h, center + h];
+  };
+  return {
+    up: band(0.1725, "up"),
+    keep: band(0.5, "keep"),
+    down: band(0.8275, "down"),
+  };
+}
+
 // 今の仕込み（炭/炭起こし/蒸らし/葉量）から決まる温度。吸い出しの起点温度に使う（#45）
 function projectedTemp() {
   const totalG = Object.values(tt.mix).reduce((a, b) => a + b, 0) || 12;
@@ -6507,20 +6653,13 @@ function stepPull() {
   // 上がるほど1吸いの効きとジャスト帯が広がり、少ない手数で適温に寄せられる（＝上達の実感）。
   // ※ PULL_DELTA / PULL_JUST はここでモジュール定数を上書き（__pullDebug もこの値を参照）
   const PULL_DELTA = 0.05 + 0.055 * statTier01("technique"); // 技術★で段階（★1=0.05〜★5=0.105・均しで抑制）／1吸いで動かせる最大温度
-  // ジャスト帯（＝ゲージを止める判定窓）は「成功するたびに狭くなる」（オーナー指定・2026-07-09）。
-  // 最初は判定が甘く、JUSTを決めるたびに段階的にシビアへ（1回目=甘い→2回目=やや難→3回目以降=かなりシビア）。
-  // 半幅の底はセンスで広げつつ、この吸い出しで決めたJUST数（tt.pullJust）に応じた倍率をかける。
+  // ジャスト帯は、成功した種類だけが次から狭くなる。
+  // 例: 上げJUSTを決めても、キープ／下げの初回判定幅はそのまま残す。
   const _jhwBase = 0.01 + 0.016 * statTier01("sense");                   // ジャスト帯の半幅の底: センス★で段階（★1=0.01〜★5=0.026）
   const PULL_TIGHTEN = [2.6, 1.6, 1.0, 0.8];                             // JUST 0/1/2/3回目以降の帯倍率（甘→シビア）
-  const pullJustBands = (n) => {
-    const h = _jhwBase * PULL_TIGHTEN[Math.min(n, PULL_TIGHTEN.length - 1)];
-    return {
-      up:   [0.1725 - h, 0.1725 + h],
-      keep: [0.5 - h, 0.5 + h],
-      down: [0.8275 - h, 0.8275 + h],
-    };
-  };
-  let PULL_JUST = pullJustBands(0); // 最初は甘い帯から。JUSTのたびに pullJustBands(tt.pullJust) で更新
+  const pullJustBands = (levels) => pullJustBandsForLevels(_jhwBase, PULL_TIGHTEN, levels);
+  const pullJustLevels = { up: 0, keep: 0, down: 0 };
+  let PULL_JUST = pullJustBands(pullJustLevels);
   const tempNote = (tt && tt.theme) ? ({
     relax: "　今日はリラックス系——高温にしすぎないのが適温だ。",
     high_heat: "　今日は高火力系——しっかり高温まで上げろ。",
@@ -6534,7 +6673,7 @@ function stepPull() {
   );
   tt.temp = pullStartTemp();
   tt.pullCount = 0;
-  tt.pullJust = 0; // この吸い出しで決めたJUST数（帯の狭まり段階＝GG1）。毎回甘い帯から始める
+  tt.pullJust = 0; // 合計成功数。判定幅は pullJustLevels で種類別に管理する
 
   const tempWrap = document.createElement("div");
   tempWrap.className = "temp-wrap";
@@ -6558,7 +6697,7 @@ function stepPull() {
       <div class="pull-just" id="pj-down" style="left:${PULL_JUST.down[0] * 100}%;width:${(PULL_JUST.down[1] - PULL_JUST.down[0]) * 100}%"></div>
       <div class="gauge-needle" id="tn-pull-needle"></div>
     </div>
-    <p class="tn-hint">細い光の帯で止めると<span class="tx-hint">ジャスト</span>——上げ下げは強く効き、キープはブレがほぼ消える。<span class="tx-hint">決めるたびに帯は少し狭くなる</span>。狙わない自由もある。</p>
+    <p class="tn-hint">細い光の帯で止めると<span class="tx-hint">ジャスト</span>——上げ下げは強く効き、キープはブレがほぼ消える。<span class="tx-hint">決めた種類の帯だけが少し狭くなる</span>。狙わない自由もある。</p>
     <p class="tn-hint" id="tn-pull-count"></p>
     <button class="primary-btn" id="tn-pull-go">吸う！</button>
     <button class="primary-btn ghost" id="tn-pull-serve" disabled></button>
@@ -6570,7 +6709,7 @@ function stepPull() {
   const goBtn = wrap.querySelector("#tn-pull-go");
   const serveBtn = wrap.querySelector("#tn-pull-serve");
   const result = wrap.querySelector("#tn-pull-result");
-  // ジャスト帯の見た目を今の狭まり段階（tt.pullJust）に合わせて描き直す（GG1）
+  // ジャスト帯の見た目を種類別の狭まり段階に合わせて描き直す。
   const pjEls = { up: wrap.querySelector("#pj-up"), keep: wrap.querySelector("#pj-keep"), down: wrap.querySelector("#pj-down") };
   const drawJustBands = () => {
     for (const k of ["up", "keep", "down"]) {
@@ -6618,9 +6757,12 @@ function stepPull() {
     else want = 0.5;
     return {
       pos, temp: tt.temp, count: tt.pullCount,
+      speed,
       canServe: tt.pullCount >= PULL_MIN,
       tempOk: tt.temp >= PULL_TARGET[0] && tt.temp <= PULL_TARGET[1],
       wantZone: [Math.max(0, want - 0.08), Math.min(1, want + 0.08)],
+      justLevels: { ...pullJustLevels },
+      justBands: Object.fromEntries(Object.entries(PULL_JUST).map(([k, b]) => [k, [...b]])),
     };
   };
 
@@ -6648,8 +6790,9 @@ function stepPull() {
     }
     if (just) {
       tt.pullJust = (tt.pullJust || 0) + 1;
-      // 成功のたびにジャスト帯を狭める（GG1）: 次の吸いから判定がシビアになる
-      PULL_JUST = pullJustBands(tt.pullJust);
+      // 成功した種類だけを狭める。未成功の2帯は初回幅のまま残る。
+      pullJustLevels[pullKind] = (pullJustLevels[pullKind] || 0) + 1;
+      PULL_JUST = pullJustBands(pullJustLevels);
       drawJustBands();
       showStamp(wrap, "just"); // ゲージ側に出す（#36: 説明文に被らない）
       feelPop(8, "JUST"); nicoBurst("perfect", 1);
@@ -6660,7 +6803,10 @@ function stepPull() {
     updateCount();
     result.textContent = `──${label}`;
     // 帯が狭まった合図（成功して次がまだシビアになるとき・GG1）
-    if (just && tt.pullJust < PULL_TIGHTEN.length - 1) result.textContent += "　（帯が締まった──次のジャストは、もっと狭い）";
+    if (just && pullJustLevels[pullKind] < PULL_TIGHTEN.length - 1) {
+      const kindLabel = { up: "上げ", keep: "キープ", down: "下げ" }[pullKind];
+      result.textContent += `　（${kindLabel}帯だけが締まった──次は、もう少し狭い）`;
+    }
     // 4回目以降は吸いすぎ: 提供前に葉が痩せていく（craftScore で減点）
     if (tt.pullCount > PULL_SAFE) result.textContent += "　（……吸いすぎだ。味の厚みが、少しずつ逃げていく）";
     playMakingMotion(`pull-${pullKind}`, motionMs);
@@ -6752,9 +6898,15 @@ function craftScore() {
   const detail = [];
   const kinds = Object.keys(tt.mix).length;
   // 機材の相性
-  const bowlBonus = { silicone_bowl: 2, hagal_80beat: 4, suyaki_hagal: kinds === 1 ? 5 : 1 };
+  const bowlBonus = {
+    silicone_bowl: 2,
+    hagal_80beat: 4,
+    suyaki_hagal: kinds === 1 ? 5 : 1,
+    iran_bowl: kinds >= 2 ? 5 : 2,
+  };
   score += bowlBonus[tt.bowl] || 0;
   if (tt.bowl === "suyaki_hagal" && kinds === 1) detail.push("素焼きハガルが、一途なフレーバーの輪郭を太くした。");
+  if (tt.bowl === "iran_bowl" && kinds >= 2) detail.push("イランボウルの穏やかな熱が、複数の香りをひとつにまとめた。");
   if (tt.hms === "lotos_hagal") score += 2;
   else if (tt.hms === "tanukish_lid") score += 3;
   else if (tt.hms === "amaburst_hms") {
@@ -8580,14 +8732,12 @@ function warmMapImages() {
 // 順序は「最初に目にする画面」優先（マップ・tonari・自宅・大会ステージ）
 function startIdlePrefetch() {
   if (typeof queuePreload !== "function") return;
-  const bgs = (D.backgrounds || []).slice();
   const first = ["bg_osu_map_day.png", "bg_osu_map_night.png", "bg_tonari_inside_night.png", "bg_tonari_inside_day.png", "bg_home.png", "bg_tournament_stage.png"];
-  bgs.sort((a, b) => {
-    const ia = first.indexOf(a), ib = first.indexOf(b);
-    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
-  });
-  queuePreload(bgs.map((n) => `assets/backgrounds/${n}`));
-  queuePreload((D.making_assets || []).map((n) => `assets/ui/making/${n}`));
+  queuePreload(first.filter((n) => (D.backgrounds || []).includes(n))
+    .map((n) => `assets/backgrounds/${n}`));
+  queuePreload(["bench_base.png", "bench_note.png", "bowl_empty_silicone.png"]
+    .filter((n) => (D.making_assets || []).includes(n))
+    .map((n) => `assets/ui/making/${n}`));
 }
 
 document.addEventListener("DOMContentLoaded", init);

@@ -24,17 +24,17 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "ようこそ、いらっしゃいませ。遠いところを、わざわざ"
+          "text": "おう。客か。遠いとこまで、よう来たな"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "（……丁寧すぎる。それに──腕。見えてる。インクが）"
+          "text": "（声、でか……。それに──腕。見えてる。インクが）"
         },
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "お初にお目にかかります。神崎、と申します。大会のご参加者でございますか"
+          "text": "神崎だ。お前、大会に出てる坊主か"
         },
         {
           "speaker": "hajime",
@@ -43,18 +43,18 @@
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "……ほう。大会、でございますか"
+          "face": "smile",
+          "text": "……ほう。大会か。面白ぇ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "目が、一瞬だけ細くなった。値踏みするような、でも品のある目だ。すぐに柔らかくなる。"
+          "text": "目が、一瞬だけ細くなった。値踏みするような鋭い目だ。次の瞬間、口の端が上がった。"
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "よろしければ、一服いかがでしょう。ドラゴンフルーツを、ぜひ"
+          "face": "smile",
+          "text": "せっかくだ。吸ってけ。ドラゴンフルーツ、嫌いじゃねえだろ"
         },
         {
           "speaker": "",
@@ -83,8 +83,8 @@
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "スジを通すと、そうなります"
+          "face": "serious",
+          "text": "スジ通して作りゃ、こうなる"
         },
         {
           "speaker": "hajime",
@@ -93,8 +93,8 @@
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "フレーバーにも、仁義がある。持って生まれた声を、殺さず引き出す。それだけのことでございます"
+          "face": "serious",
+          "text": "フレーバーにも仁義があんだよ。生まれ持った声を殺さず、真正面から引っ張り出す。それだけだ"
         },
         {
           "speaker": "hajime",
@@ -116,8 +116,8 @@
       "lines": [
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "……またいらっしゃいましたか。ありがたいことです"
+          "face": "smile",
+          "text": "おう、また来たか。気に入ったなら座れ"
         },
         {
           "speaker": "hajime",
@@ -126,8 +126,8 @@
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "（口角が、わずかに上がった）そうでございますか"
+          "face": "smile",
+          "text": "（口角を上げて）そうかよ。悪くねえ舌だ"
         },
         {
           "speaker": "hajime",
@@ -137,7 +137,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "……盃の話をご存知ですか"
+          "text": "お前、盃って知ってるか"
         },
         {
           "speaker": "hajime",
@@ -147,17 +147,17 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "盃を交わすというのは。同じ酒を、同じ時間に、共に飲む。それだけで、縁が生まれる"
+          "text": "盃を交わすってのはな、同じ酒を同じ時間に飲むってことだ。それだけで縁ができる"
         },
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "シーシャも、同じだと俺は思っています。同じ煙を、同じ場所で、黙って吸う"
+          "text": "シーシャも同じだと俺は思ってる。同じ煙を、同じ場所で回す。"
         },
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "それだけで、言葉のいらない縁ができる"
+          "text": "ごちゃごちゃ喋らなくても、分かることがある"
         },
         {
           "speaker": "hajime",
@@ -167,12 +167,12 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "俺の煙を吸ってくれた人は、全員、俺の客でございます。それ以上でも以下でもない"
+          "text": "俺の煙を吸った奴は、みんな客だ。それ以上でも以下でもねえ。"
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "ただ──その縁は、一生、大事にする"
+          "face": "serious",
+          "text": "だが、できた縁は最後まで雑に扱わねえ"
         },
         {
           "speaker": "hajime",
@@ -181,8 +181,8 @@
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "今日は何をご所望で。重いのがよろしいですか、軽いのがよろしいですか"
+          "face": "serious",
+          "text": "今日はどうする。重いのか、軽いのか。腹決めろ"
         },
         {
           "speaker": "hajime",
@@ -222,22 +222,22 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "……見ていましたか。待つだけが蒸らしではありません"
+          "text": "見てたか。待つだけが蒸らしじゃねえ"
         },
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "吸いながら、腹を決めて一気に立ち上げるやり方もある"
+          "text": "吸って、熱入れて、一気に起こすやり方もあんだよ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "surprise",
+          "text": "半端にやりゃ葉が死ぬ。やるなら最後まで吸い切れ"
         },
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "ただし、半端な覚悟でやると葉が焦げます。やると決めたら、最後まで吸い切る"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "……それだけのことでございます"
+          "text": "それだけだ"
         },
         {
           "speaker": "hajime",
@@ -250,8 +250,8 @@
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "よろしければ、お前さんも一度やってみるといい。……覚えておいて、損はありません"
+          "face": "smile",
+          "text": "お前も一度やれ。焦がしそうなら俺が止める"
         },
         {
           "speaker": "",
@@ -284,7 +284,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "ようこそ。今日は少し手狭で、申し訳ない"
+          "text": "おう。今日はちと狭ぇ。そこ通れ"
         },
         {
           "speaker": "",
@@ -299,7 +299,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "あの者たちは、気にしないでください。ただの店番です"
+          "text": "あいつらは気にすんな。突っ立ってるだけだ"
         },
         {
           "speaker": "hajime",
@@ -309,7 +309,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "本日は何を"
+          "text": "で、今日は何吸う"
         },
         {
           "speaker": "hajime",
@@ -318,28 +318,28 @@
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "（少し嬉しそうに）ありがとうございます"
+          "face": "smile",
+          "text": "（豪快に笑って）おう。分かってきたじゃねえか"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "組長がフレーバーを丁寧に用意する。隅の男たちは微動だにしない。"
+          "text": "組長が豪快に袋を開ける。だが計量とパッキングだけは、驚くほど正確だ。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "でも、組長だけが柔らかく動いている。"
+          "text": "でかい手が迷いなく動き、若い衆へ短く指示を飛ばす。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "不思議な空間だ。怖いのに、シーシャを吸っていると全部忘れてしまう。"
+          "text": "声も見た目も怖いのに、煙を吸っていると妙に息苦しくない。"
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "……昔ね。若い衆を何人か、失ったことがある"
+          "face": "sad",
+          "text": "昔な。若い衆を何人か死なせた"
         },
         {
           "speaker": "hajime",
@@ -348,13 +348,13 @@
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "俺のせいで。俺の判断が間違っていたから"
+          "face": "sad",
+          "text": "俺の判断ミスだ。言い訳はねえ"
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "……それ以来、人に穏やかな時間を作ることだけが、俺の仕事だと決めた"
+          "face": "serious",
+          "text": "そっからだ。せめてここにいる間くらい、誰も傷つかねえ時間を作るって決めた"
         },
         {
           "speaker": "hajime",
@@ -363,13 +363,13 @@
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "こうして煙を出しているうちは、誰も傷つかない。それだけのことです"
+          "face": "smile",
+          "text": "煙出して、くだらねえ話して、腹いっぱい笑って帰る。それでいい"
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "……お前みたいに、最初から素直な気持ちだけで来られる奴が。たまに、うらやましいと思うことがある"
+          "face": "smile",
+          "text": "お前みてえに、まっすぐ店へ入ってくる奴は、見てて気持ちいい"
         },
         {
           "speaker": "hajime",
@@ -378,8 +378,8 @@
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "余計なことを言った。煙でも吸え"
+          "face": "sad",
+          "text": "湿っぽくなったな。ほら、吸え"
         },
         {
           "speaker": "",
@@ -412,7 +412,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "閉店後だけ、……いつもこれです"
+          "text": "閉店後だけな。俺はいつもこれだ"
         },
         {
           "speaker": "hajime",
@@ -422,7 +422,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "強さの中に、繊細さがある。俺には、このフレーバーしか吸えない気がして"
+          "text": "強ぇのに雑じゃねえ。俺はこいつが一番、性に合う"
         },
         {
           "speaker": "",
@@ -442,12 +442,12 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "……（煙をゆっくり吐いて）こうして煙を吸っている間は"
+          "text": "（煙をゆっくり吐いて）こうして煙を吸ってる間くらいはよ"
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "そういう話は、野暮というものです"
+          "face": "serious",
+          "text": "肩書きの話は野暮だ。煙がまずくなる"
         },
         {
           "speaker": "hajime",
@@ -456,18 +456,18 @@
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "あなたと俺は、今こうして同じ煙を吸っている。それで十分じゃないですか"
+          "face": "smile",
+          "text": "お前と俺はいま、同じ煙吸ってる。それで十分だろ"
         },
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "俺は、あなたに穏やかな時間を作ることができた。あなたは、俺の煙を吸ってくれた"
+          "text": "俺は一台作った。お前は吸った"
         },
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "……それだけが、俺には大事なんです"
+          "text": "それが大事なんだよ"
         },
         {
           "speaker": "hajime",
@@ -499,8 +499,8 @@
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "……おめでとうございます"
+          "face": "smile",
+          "text": "おう。優勝おめでとう"
         },
         {
           "speaker": "hajime",
@@ -510,7 +510,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "大会でのあなたの煙。拝見しました。スジが通っていた"
+          "text": "大会の煙、見たぞ。ちゃんとスジ通ってた"
         },
         {
           "speaker": "hajime",
@@ -519,8 +519,8 @@
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "負けた側がこう言うのも、おかしな話ですが"
+          "face": "sad",
+          "text": "負けた俺が言うのも妙だがな"
         },
         {
           "speaker": "",
@@ -530,12 +530,12 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "俺はね、かつて『勝つことがスジだ』と思っていた時期がある"
+          "text": "昔は、勝つことがスジだと思ってた"
         },
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "だが……あなたの煙を見て、違うと思いました"
+          "text": "だが、お前の煙見て違うと分かった"
         },
         {
           "speaker": "hajime",
@@ -544,13 +544,13 @@
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "スジを通すというのは、勝ち負けではなく、相手に対する誠実さのことだった"
+          "face": "serious",
+          "text": "スジってのは勝ち負けじゃねえ。相手にごまかしなしで向き合うことだ"
         },
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "あなたは、ちゃんとそれを出していた"
+          "text": "お前はそれをやった"
         },
         {
           "speaker": "hajime",
@@ -559,8 +559,8 @@
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "また来てください。縁は、大事にしますので"
+          "face": "smile",
+          "text": "また来い。次は俺がもっと重いの作って待ってる"
         },
         {
           "speaker": "",
@@ -587,7 +587,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "ようこそ、いらっしゃいませ。……大会でお見かけした方でございますね"
+          "text": "おう。大会で見た顔だな。入れ"
         },
         {
           "speaker": "hajime",
@@ -596,8 +596,8 @@
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "……ほう。負かした相手の店に来る。なかなか肝の据わったお方だ"
+          "face": "smile",
+          "text": "俺を負かした店に来るたぁ、肝据わってんな"
         },
         {
           "speaker": "hajime",
@@ -607,7 +607,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "おめでとうございます。大会の結果は、結果です、……受け止めなさい"
+          "text": "優勝は優勝だ。胸張れ。変に縮こまるな"
         },
         {
           "speaker": "hajime",
@@ -616,8 +616,8 @@
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "（少し間を置いて）……ありがとうございます。では、一服いかがでしょう。うちのドラゴンフルーツを"
+          "face": "smile",
+          "text": "（豪快に笑って）いいこと言うじゃねえか。座れ。うちのドラゴンフルーツ吸ってけ"
         },
         {
           "speaker": "",
@@ -636,8 +636,8 @@
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "縁があれば、またどうぞ"
+          "face": "serious",
+          "text": "気が向いたらまた来い。次は手加減しねえ"
         },
         {
           "speaker": "",

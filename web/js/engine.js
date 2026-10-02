@@ -16,7 +16,7 @@ const SPEAKER_NAMES = {
   hajime: "はじめ", sumi: "スミさん", naru: "なる", adam: "アダム",
   minto: "みんと", mashiro: "ましろ", tsumugi: "つむぎ", tumugi: "つむぎ",
   hazime: "はじめ", pakki: "パッキー", salaryman: "サラリーマン",
-  nagumo: "南雲修二", maezono: "前園壮一郎",
+  nagumo: "南雲修二", maezono: "前園壮一郎", kirishima: "霧島レン",
   kako: "かこ", rira: "りら", // staff_choizap は characters.json の「スタッフ」表示に委譲（K16: C.STATION流用時に店名違いの表示が出ていた）
   oneesan: "お姉さん", // みんとの私服（素）の姿。正体はみんと訪問5回目（ch1_minto_fifth）で判明するまで伏せる
   rin: "凛",
@@ -26,7 +26,7 @@ const SPEAKER_NAMES = {
   shop_clerk: "店員", old_man: "老人", customer: "お客さん", everyone: "全員",
 };
 window.SPEAKER_NAMES = SPEAKER_NAMES;
-// kumicho の立ち絵は廃止（2026-07-05 オーナー指定・旧 ryuji 画像は設定不一致のため撤去。新画像が出来たら chr_kumicho_* で追加）
+// 神崎竜二は正式 speaker ID / 画像フォルダとも kumicho を使う。
 const SPEAKER_ID_ALIASES = { tumugi: "tsumugi", hazime: "hajime", takiguchi: "pakki", oneesan: "minto" };
 const FACE_ALIASES = {
   hajime: { excited: "smile" },
@@ -59,37 +59,89 @@ const ASSET_ALIASES = {
 function assetUrl(rel) {
   rel = ASSET_ALIASES[rel] || rel;
   if (window.ASSET_DATA && window.ASSET_DATA[rel]) return window.ASSET_DATA[rel];
-  return "../" + rel;
+  const token = window.GAME_DATA && window.GAME_DATA.build && window.GAME_DATA.build.commit;
+  return "../" + rel + (token ? `?v=${encodeURIComponent(token)}` : "");
 }
 
 // ---- 先読み（分割ファイル版のシーン切替・作業台のもたつき対策）----
 // 画像は初回参照時にネットワーク取得が走り、背景や作業台素材（数百KB〜2MB）で
 // 表示の待ちが見える。低優先度の直列キューで先にキャッシュへ温めておく。
-// スタンドアロン版（data URI）は対象外。多重登録は無視する。
-const _preloadedUrls = new Set();
+// URLをキュー投入時点で「読込済み」にせず、実際のロードPromiseを共有する。
+// これにより、ゲート側が待ち行列の奥にある画像を即座に優先取得できる。
+// スタンドアロン版（data URI）は対象外。多重登録はPromise単位でまとめる。
+const ASSET_LOAD_TIMEOUT_MS = 8000;
+const _assetLoads = new Map(); // url -> { status, promise, image }
 const _preloadQueue = [];
 let _preloadRunning = false;
+
+function loadOneImage(url, opts = {}) {
+  if (!url || url.startsWith("data:")) return Promise.resolve({ ok: true, url });
+  const existing = _assetLoads.get(url);
+  if (existing) return existing.promise;
+
+  const record = { status: "loading", promise: null, image: null };
+  record.promise = new Promise((resolve) => {
+    const img = new Image();
+    record.image = img;
+    img.decoding = "async";
+    if ("fetchPriority" in img) img.fetchPriority = opts.priority || "auto";
+    let settled = false;
+    const timer = setTimeout(() => finish(false), opts.timeoutMs || ASSET_LOAD_TIMEOUT_MS);
+    const finish = async (ok) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      img.onload = null;
+      img.onerror = null;
+      if (ok && img.decode) {
+        try { await img.decode(); } catch (e) { ok = false; }
+      }
+      record.status = ok ? "ready" : "error";
+      resolve({ ok, url });
+    };
+    img.onload = () => finish(true);
+    img.onerror = () => finish(false);
+    img.src = url;
+    if (img.complete) queueMicrotask(() => finish(img.naturalWidth > 0));
+  });
+  _assetLoads.set(url, record);
+  return record.promise;
+}
+
+function assetLoadFailed(rel) {
+  const record = _assetLoads.get(assetUrl(rel));
+  return !!record && record.status === "error";
+}
+
+function schedulePreloadNext() {
+  const schedule = window.requestIdleCallback
+    ? (fn) => window.requestIdleCallback(fn, { timeout: 600 })
+    : (fn) => setTimeout(fn, 40);
+  schedule(runPreloadQueue);
+}
+
+function runPreloadQueue() {
+  if (_preloadRunning) return;
+  let url = _preloadQueue.shift();
+  while (url && _assetLoads.has(url)) url = _preloadQueue.shift();
+  if (!url) return;
+  _preloadRunning = true;
+  loadOneImage(url, { priority: "low" }).finally(() => {
+    _preloadRunning = false;
+    schedulePreloadNext();
+  });
+}
+
 function queuePreload(rels) {
+  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  if (connection && (connection.saveData || /(^|-)2g$/.test(connection.effectiveType || ""))) return;
   for (const rel of rels || []) {
     if (!rel) continue;
     const url = assetUrl(rel);
-    if (url.startsWith("data:") || _preloadedUrls.has(url)) continue;
-    _preloadedUrls.add(url);
+    if (url.startsWith("data:") || _assetLoads.has(url) || _preloadQueue.includes(url)) continue;
     _preloadQueue.push(url);
   }
-  if (_preloadRunning) return;
-  _preloadRunning = true;
-  const next = () => {
-    const url = _preloadQueue.shift();
-    if (!url) { _preloadRunning = false; return; }
-    const img = new Image();
-    img.decoding = "async";
-    const go = () => setTimeout(next, 40); // 1枚ずつ・描画を邪魔しない間隔で
-    img.onload = go;
-    img.onerror = go;
-    img.src = url;
-  };
-  next();
+  schedulePreloadNext();
 }
 
 // ============ ローディング表示（読み込みの体感改善） ============
@@ -135,24 +187,7 @@ function loadIndicatorHide() {
 function peekLoading(url) {
   if (!url || url.startsWith("data:")) return;
   loadIndicatorShow();
-  const img = new Image();
-  const done = () => loadIndicatorHide();
-  img.onload = done;
-  img.onerror = done;
-  img.src = url;
-}
-
-function loadOneImage(url) {
-  return new Promise((resolve) => {
-    if (!url) return resolve();
-    const img = new Image();
-    img.decoding = "async";
-    const done = () => resolve();
-    img.onload = done;
-    img.onerror = done;
-    img.src = url;
-    if (img.complete) done();
-  });
+  loadOneImage(url, { priority: "high" }).finally(loadIndicatorHide);
 }
 
 // 画面中央の豆知識/ヒントカード（重い読み込み専用・ソウルライク）。
@@ -206,7 +241,7 @@ function withLoadingGate(rels, onReady) {
   if (!urls.length) return onReady();
   let shown = false;
   const showTimer = setTimeout(() => { shown = true; loadingGateShow(); }, LOAD_INDICATOR_DELAY);
-  Promise.all(urls.map(loadOneImage)).then(() => {
+  Promise.all(urls.map((url) => loadOneImage(url, { priority: "high" }))).then(() => {
     clearTimeout(showTimer);
     if (shown) loadingGateHide();
     onReady();
@@ -608,6 +643,9 @@ class DialogueEngine {
 
   showLine(line) {
     const speaker = String(line.speaker || "");
+    // 地の文の名前欄は空のまま、指定した人物だけ画面へ出したい場合に使う。
+    // バイト客の導入文など、ナレーション主体の行で立ち絵を添える用途。
+    const portraitSpeaker = String(line.portrait || speaker);
     const face = String(line.face || "");
     this.curSpeaker = speaker; // 文字送りボイス（#22）のピッチ決定に使う
     // 行付きの感情エフェクト（#26）: {"speaker":..., "fx":"flash"} で行表示と同時に発火
@@ -629,8 +667,8 @@ class DialogueEngine {
       this.el.nameLabel.style.display = "none";
     }
     // 立ち絵（最大2スロット、発言者を明るく）。主人公は一人称視点なので出さない
-    if (speaker && !NO_PORTRAIT_SPEAKERS.has(speaker) && this.portraitSrc(speaker, face)) {
-      if (!(speaker in this.slots)) {
+    if (portraitSpeaker && !NO_PORTRAIT_SPEAKERS.has(portraitSpeaker) && this.portraitSrc(portraitSpeaker, face)) {
+      if (!(portraitSpeaker in this.slots)) {
         const used = Object.values(this.slots);
         let slot = [0, 1].find((s) => !used.includes(s));
         if (slot === undefined) {
@@ -641,19 +679,19 @@ class DialogueEngine {
           const oldImg = this.el.portraits.querySelector(`img[data-speaker="${oldest}"]`);
           if (oldImg) oldImg.remove();
         }
-        this.slots[speaker] = slot;
+        this.slots[portraitSpeaker] = slot;
         const img = document.createElement("img");
-        img.dataset.speaker = speaker;
-        const folder2 = SPEAKER_ID_ALIASES[speaker] || speaker;
+        img.dataset.speaker = portraitSpeaker;
+        const folder2 = SPEAKER_ID_ALIASES[portraitSpeaker] || portraitSpeaker;
         const bgfull = BG_FULL_PORTRAITS.has(folder2) ? " bgfull" : "";
         img.className = `portrait slot-${slot} enter${bgfull}`;
         img.onerror = () => { img.remove(); this.layoutPortraits(); };
         this.el.portraits.appendChild(img);
         requestAnimationFrame(() => requestAnimationFrame(() => img.classList.remove("enter")));
       }
-      const img = this.el.portraits.querySelector(`img[data-speaker="${speaker}"]`);
+      const img = this.el.portraits.querySelector(`img[data-speaker="${portraitSpeaker}"]`);
       if (img) {
-        const src = this.portraitSrc(speaker, face);
+        const src = this.portraitSrc(portraitSpeaker, face);
         // 表情差分の初回取得中だけ右下に表示。同じURLの再割り当てでは二重に数えない
         // （src代入だけだと再読み込みイベントが発火せずインジケータが消えなくなるため独自にガード）
         if (src && src !== img.dataset.loadedSrc && !src.startsWith("data:")) {
@@ -664,11 +702,11 @@ class DialogueEngine {
           img.addEventListener("error", clear, { once: true });
         }
         img.src = src;
-        this.applyPortraitTrim(img, speaker, face);
+        this.applyPortraitTrim(img, portraitSpeaker, face);
       }
     }
     for (const img of this.el.portraits.querySelectorAll("img")) {
-      img.classList.toggle("active", img.dataset.speaker === speaker);
+      img.classList.toggle("active", img.dataset.speaker === portraitSpeaker);
     }
     this.layoutPortraits();
     // {daysLeft} 等のトークンを実数へ（カレンダー連動で台詞の日数が矛盾しないように）

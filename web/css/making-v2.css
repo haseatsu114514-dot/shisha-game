@@ -1,0 +1,848 @@
+/*
+ * Shisha-making V2 comparison skin.
+ * Every game selector is scoped behind body.making-v2 so normal play remains
+ * pixel-identical.  The preview dock is available in both comparison modes.
+ */
+
+#making-preview-dock {
+  position: fixed;
+  z-index: 10000;
+  top: 8px;
+  right: 8px;
+  width: 438px;
+  padding: 10px;
+  color: #f7f0dc;
+  background: rgba(10, 9, 13, 0.94);
+  border: 1px solid rgba(244, 210, 122, 0.54);
+  border-radius: 12px;
+  box-shadow: 0 12px 42px rgba(0, 0, 0, 0.62);
+  font-family: "Hiragino Sans", "Yu Gothic", sans-serif;
+  backdrop-filter: blur(12px);
+}
+#making-preview-dock .mpd-title { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+#making-preview-dock .mpd-title b { color: #f4d27a; font-size: 13px; letter-spacing: 0.08em; }
+#making-preview-dock .mpd-title span { color: rgba(247, 240, 220, 0.55); font-size: 10px; }
+#making-preview-dock .mpd-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 7px; }
+#making-preview-dock .mpd-switch a {
+  padding: 6px 8px;
+  color: rgba(247, 240, 220, 0.66);
+  border: 1px solid rgba(247, 240, 220, 0.12);
+  border-radius: 7px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 11px;
+}
+#making-preview-dock .mpd-switch a.active { color: #17120b; background: #f4d27a; border-color: #f4d27a; font-weight: 800; }
+#making-preview-dock .mpd-steps { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
+#making-preview-dock .mpd-steps button,
+#making-preview-dock .mpd-hide {
+  padding: 6px 3px;
+  color: #ede4cd;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  font: inherit;
+  font-size: 10px;
+  cursor: pointer;
+}
+#making-preview-dock .mpd-steps button:hover { color: #fff; border-color: rgba(244, 210, 122, 0.55); background: rgba(244, 210, 122, 0.12); }
+#making-preview-dock .mpd-hide { width: 100%; margin-top: 6px; color: rgba(237, 228, 205, 0.5); }
+#making-preview-dock.collapsed { width: 146px; }
+#making-preview-dock.collapsed .mpd-switch,
+#making-preview-dock.collapsed .mpd-steps,
+#making-preview-dock.collapsed .mpd-title span { display: none; }
+#making-preview-dock.collapsed .mpd-title { margin: 0; }
+
+/* ---- Workbench shell --------------------------------------------------- */
+body.making-v2 #screen-tournament.making-workbench {
+  background:
+    linear-gradient(90deg, rgba(9, 8, 12, 0.93) 0%, rgba(9, 8, 12, 0.22) 43%, rgba(9, 8, 12, 0.74) 100%),
+    radial-gradient(circle at 42% 55%, rgba(255, 181, 77, 0.16), transparent 42%),
+    url("../../assets/backgrounds/bg_tournament_stage.png") center / cover no-repeat,
+    #09080c;
+}
+body.making-v2 #screen-tournament.making-workbench::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 79px, rgba(255,255,255,0.012) 80px),
+    linear-gradient(180deg, rgba(255, 207, 123, 0.025), transparent 28%, rgba(0,0,0,0.3));
+}
+body.making-v2 #screen-tournament.making-workbench #tn-layout {
+  inset: 61px 18px 14px;
+  z-index: 1;
+}
+body.making-v2 #screen-tournament.making-workbench #tn-layout .panel { overflow: visible; }
+
+/* ---- Header and four-phase navigation -------------------------------- */
+body.making-v2 #screen-tournament.making-workbench #tn-progress {
+  top: 0;
+  height: 48px;
+  display: grid;
+  grid-template-columns: 158px minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  padding: 0 14px;
+  background: rgba(10, 9, 13, 0.83);
+  border: 1px solid rgba(244, 210, 122, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.28), inset 0 1px rgba(255,255,255,0.035);
+  backdrop-filter: blur(12px);
+}
+.making-v2 .m2-progress-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.making-v2 .m2-mode { color: #f4d27a; font-size: 10px; font-weight: 900; letter-spacing: 0.16em; }
+.making-v2 .m2-step-count { color: rgba(255,255,255,0.42); font: 700 10px/1 ui-monospace, monospace; }
+.making-v2 .m2-phase-rail { display: grid; grid-template-columns: repeat(4, 1fr); align-items: center; min-width: 0; }
+.making-v2 .m2-phase { position: relative; display: flex; align-items: center; gap: 9px; min-width: 0; color: rgba(238, 231, 214, 0.34); }
+.making-v2 .m2-phase:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 31px;
+  right: 8px;
+  top: 50%;
+  height: 1px;
+  background: rgba(255,255,255,0.12);
+}
+.making-v2 .m2-phase.done:not(:last-child)::after { background: rgba(244,210,122,0.58); }
+.making-v2 .m2-phase-dot {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+  flex: none;
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 50%;
+  background: #121016;
+  font: 800 9px/1 ui-monospace, monospace;
+}
+.making-v2 .m2-phase-copy { position: relative; z-index: 1; display: flex; flex-direction: column; min-width: 0; padding-right: 9px; background: rgba(10,9,13,0.84); }
+.making-v2 .m2-phase-copy b { overflow: hidden; font-size: 11px; white-space: nowrap; text-overflow: ellipsis; }
+.making-v2 .m2-phase-copy small { margin-top: 1px; font-size: 7px; letter-spacing: 0.16em; }
+.making-v2 .m2-phase.done { color: rgba(244,210,122,0.62); }
+.making-v2 .m2-phase.active { color: #fff7df; }
+.making-v2 .m2-phase.active .m2-phase-dot {
+  color: #151008;
+  background: #f4d27a;
+  border-color: #f4d27a;
+  box-shadow: 0 0 0 4px rgba(244,210,122,0.11), 0 0 22px rgba(244,210,122,0.22);
+}
+
+body.making-v2 #screen-tournament.making-workbench #tn-title {
+  top: 60px;
+  left: 4px;
+  right: 450px;
+  font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+  font-size: 25px;
+  letter-spacing: 0.06em;
+}
+body.making-v2 #screen-tournament.making-workbench #tn-title::before {
+  content: "CRAFT / ";
+  color: #f4d27a;
+  font-family: ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  vertical-align: 5px;
+}
+body.making-v2 #screen-tournament.making-workbench #tn-hint {
+  top: 93px;
+  left: 5px;
+  max-width: 770px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(247, 241, 225, 0.64);
+}
+
+/* ---- Main stage ------------------------------------------------------- */
+body.making-v2 #screen-tournament.making-workbench #tn-body {
+  inset: 127px 0 0;
+  grid-template-columns: minmax(0, 1fr) 424px;
+  gap: 11px;
+}
+body.making-v2 .making-stage {
+  border: 1px solid rgba(255, 231, 180, 0.17);
+  border-radius: 18px;
+  background-color: #181217;
+  box-shadow: inset 0 0 110px rgba(0,0,0,0.46), 0 22px 52px rgba(0,0,0,0.48);
+  isolation: isolate;
+}
+.making-v2 .m2-scene-canvas {
+  position: absolute;
+  inset: 0;
+  transform-origin: top left;
+}
+body.making-v2 .making-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,0.32), transparent 19%, transparent 78%, rgba(0,0,0,0.22)),
+    linear-gradient(180deg, rgba(255,240,207,0.045), transparent 26%, rgba(0,0,0,0.18));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.025);
+}
+body.making-v2 .making-stage::after {
+  content: "LIVE";
+  position: absolute;
+  z-index: 10;
+  top: 16px;
+  right: 17px;
+  padding-left: 12px;
+  color: rgba(255,255,255,0.48);
+  font: 800 8px/1 ui-monospace, monospace;
+  letter-spacing: 0.15em;
+}
+body.making-v2 .making-stage::after { text-shadow: -9px 0 #d95c48; }
+.making-v2 .m2-stage-badge {
+  position: absolute;
+  z-index: 11;
+  left: 16px;
+  top: 14px;
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-areas: "num name" "num feed";
+  column-gap: 9px;
+  align-items: center;
+  color: #fff6df;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.9);
+  pointer-events: none;
+}
+.making-v2 .m2-stage-badge span { grid-area: num; color: #f4d27a; font: 300 28px/1 ui-monospace, monospace; }
+.making-v2 .m2-stage-badge b { grid-area: name; font-size: 11px; letter-spacing: 0.08em; }
+.making-v2 .m2-stage-badge small { grid-area: feed; color: rgba(255,255,255,0.42); font: 700 7px/1 ui-monospace, monospace; letter-spacing: 0.16em; }
+.making-v2 .m2-stage-focus {
+  position: absolute;
+  z-index: 11;
+  left: 17px;
+  bottom: 14px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 10px;
+  color: rgba(255,255,255,0.56);
+  background: rgba(10,9,13,0.53);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  backdrop-filter: blur(5px);
+  pointer-events: none;
+}
+.making-v2 .m2-stage-focus span { font: 700 7px/1 ui-monospace, monospace; letter-spacing: 0.15em; }
+.making-v2 .m2-stage-focus b { color: #f4d27a; font: 800 9px/1 ui-monospace, monospace; letter-spacing: 0.16em; }
+
+/* ---- Step-specific visual storytelling -------------------------------
+ * The legacy scene renderer reused the same shelf for most setup choices.
+ * V2 gives every decision a visible subject, so the image explains the
+ * action before the player reads the option list. */
+body.making-v2 .making-stage[data-making-step="setup_bowl"] .art-shelf {
+  opacity: 0.42;
+  filter: saturate(0.55) brightness(0.72);
+}
+body.making-v2 .making-stage[data-making-step="setup_bowl"] .art-bowl-mid.on-bench {
+  left: 49%;
+  bottom: 7%;
+  width: 238px;
+  height: 202px;
+}
+
+.making-v2 .m2-tool-showcase {
+  position: absolute;
+  z-index: 5;
+  display: grid;
+  gap: 14px;
+  pointer-events: none;
+}
+.making-v2 .m2-tool-card {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid rgba(244,226,184,0.18);
+  border-radius: 14px;
+  background: linear-gradient(160deg, rgba(54,48,48,0.88), rgba(19,17,20,0.94));
+  box-shadow: 0 18px 32px rgba(0,0,0,0.34), inset 0 1px rgba(255,255,255,0.04);
+}
+.making-v2 .m2-tool-copy {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  left: 8px;
+  padding: 7px 8px;
+  border-radius: 7px;
+  background: rgba(7,7,10,0.72);
+  text-align: center;
+}
+.making-v2 .m2-tool-copy b,
+.making-v2 .m2-tool-copy small { display: block; }
+.making-v2 .m2-tool-copy b { color: #fff3d5; font-size: 10px; }
+.making-v2 .m2-tool-copy small { margin-top: 2px; color: rgba(255,255,255,0.45); font-size: 7px; letter-spacing: 0.06em; }
+
+.making-v2 .m2-hms-showcase {
+  top: 17%;
+  right: 7%;
+  bottom: 16%;
+  left: 12%;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: center;
+}
+.making-v2 .m2-hms-showcase .m2-tool-card { height: 196px; }
+.making-v2 .m2-hms-disc {
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  width: 112px;
+  height: 76px;
+  transform: translateX(-50%);
+  border: 3px solid #756c61;
+  border-radius: 50% 50% 45% 45% / 32% 32% 58% 58%;
+  background:
+    radial-gradient(ellipse at 50% 24%, #5a5b5d 0 18%, #c5c3bd 20% 25%, #49494a 27% 44%, #aaa69d 47% 57%, #343335 60% 100%);
+  box-shadow: inset 0 8px 12px rgba(255,255,255,0.18), inset 0 -14px 18px rgba(0,0,0,0.45), 0 18px 22px rgba(0,0,0,0.42);
+}
+.making-v2 .m2-hms-disc::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 34px;
+  height: 24px;
+  transform: translateX(-50%);
+  border-radius: 50% 50% 35% 35%;
+  background: linear-gradient(90deg, #454547, #c8c5be 52%, #474649);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.45);
+}
+.making-v2 .hms-2 .m2-hms-disc { height: 58px; filter: brightness(0.88); }
+.making-v2 .hms-3 .m2-hms-disc { height: 88px; border-color: #9d714b; filter: sepia(0.18) saturate(1.3); }
+.making-v2 .hms-4 .m2-hms-disc { width: 124px; filter: brightness(1.05); }
+.making-v2 .m2-demo-bowl { left: 50%; bottom: 0; width: 168px; height: 142px; opacity: 0.5; transform: translateX(-50%) scale(0.82); }
+
+.making-v2 .m2-charcoal-showcase {
+  top: 21%;
+  right: 16%;
+  bottom: 14%;
+  left: 20%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.making-v2 .m2-charcoal-showcase .m2-tool-card { min-height: 254px; }
+.making-v2 .m2-coal-sample {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  bottom: 62px;
+  left: 24px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  filter: drop-shadow(0 20px 18px rgba(0,0,0,0.48));
+}
+
+.making-v2 .m2-theme-board {
+  position: absolute;
+  z-index: 5;
+  top: 15%;
+  left: 13%;
+  width: 59%;
+  padding: 16px;
+  border: 1px solid rgba(244,226,184,0.22);
+  border-radius: 14px;
+  background: linear-gradient(145deg, rgba(32,27,27,0.93), rgba(12,11,15,0.94));
+  box-shadow: 0 22px 38px rgba(0,0,0,0.42);
+}
+.making-v2 .m2-theme-cap { margin-bottom: 11px; color: #f4d27a; font: 900 10px/1 ui-monospace, monospace; letter-spacing: 0.15em; }
+.making-v2 .m2-theme-cap small { margin-left: 10px; color: rgba(255,255,255,0.34); font: 500 8px/1 sans-serif; letter-spacing: 0.05em; }
+.making-v2 .m2-theme-card {
+  display: grid;
+  grid-template-columns: 9px 76px 1fr;
+  gap: 8px;
+  align-items: center;
+  margin-top: 7px;
+  padding: 8px 9px;
+  border-radius: 7px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.055);
+}
+.making-v2 .m2-theme-card i { width: 7px; height: 28px; border-radius: 7px; background: #74c7a1; box-shadow: 0 0 14px currentColor; }
+.making-v2 .m2-theme-card b { color: #fff4da; font-size: 10px; }
+.making-v2 .m2-theme-card small { overflow: hidden; color: rgba(255,255,255,0.44); font-size: 8px; white-space: nowrap; text-overflow: ellipsis; }
+.making-v2 .m2-theme-card.theme-2 i { background: #e06c4f; }
+.making-v2 .m2-theme-card.theme-3 i { background: #d8a04e; }
+.making-v2 .m2-theme-card.theme-4 i { background: #a886d7; }
+.making-v2 .m2-theme-bowl { right: 2%; bottom: 5%; left: auto; width: 190px; height: 162px; opacity: 0.7; transform: none; }
+body.making-v2 .making-theme .bench-note { opacity: 0.25; }
+
+/* Bring the physical action into one readable cluster. */
+body.making-v2 .making-mix .art-jar-open {
+  top: 16%;
+  right: 7%;
+  width: 205px;
+  height: 164px;
+  filter: drop-shadow(0 16px 18px rgba(0,0,0,0.42));
+}
+body.making-v2 .making-mix .art-scoop {
+  top: 8%;
+  right: 24%;
+  width: 205px;
+  height: 172px;
+  transform: rotate(-3deg);
+}
+body.making-v2 .making-mix .art-pour-zone { left: 46%; top: 23%; height: 43%; }
+/* 03: 実寸の首と接続脚まで入ったハガルを、計量皿へ底面で接地させる。 */
+body.making-v2 .making-mix .art-bowl-mid.on-scale.complete-hagal {
+  left: 45%;
+  bottom: 158px;
+  width: 176px;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 13px 15px rgba(0,0,0,0.42));
+}
+body.making-v2 .making-mix .art-scale,
+body.making-v2 .making-mix .scale-display { left: 45%; }
+body.making-v2 .making-pack .art-fork.m2-pack-hand {
+  top: 20%;
+  right: 11%;
+  width: 34%;
+  aspect-ratio: 1 / 1;
+  transform: none;
+}
+body.making-v2 .making-foil .art-pick.has-asset {
+  top: 22%;
+  right: 14%;
+  width: 36%;
+}
+
+/* Coal count is a cold setup decision; ignition becomes bright only next. */
+body.making-v2 .making-stage[data-making-step="coal"] .art-stove.has-asset {
+  filter: brightness(0.46) saturate(0.3) contrast(1.08);
+}
+/* 蒸らし中は炭が熱源として読める実物比へ。三個でもボウル径に収まる。 */
+body.making-v2 .making-steam .art-bowl-coals { gap: 5px; }
+body.making-v2 .making-steam .art-bowl-coals .art-coal {
+  width: 34px;
+  height: 30px;
+}
+.making-v2 .m2-stove-state {
+  position: absolute;
+  z-index: 6;
+  top: 17%;
+  left: 50%;
+  min-width: 176px;
+  padding: 8px 12px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(140,168,195,0.22);
+  border-radius: 8px;
+  background: rgba(8,12,17,0.78);
+  text-align: center;
+}
+.making-v2 .m2-stove-state b,
+.making-v2 .m2-stove-state span { display: block; }
+.making-v2 .m2-stove-state b { color: #91adc5; font: 900 10px/1 ui-monospace, monospace; letter-spacing: 0.14em; }
+.making-v2 .m2-stove-state span { margin-top: 4px; color: rgba(255,255,255,0.42); font-size: 8px; }
+
+/* The hose socket remains visible with generated stem art; without it the
+ * hose endpoint reads as a floating ring. The thick generic smoke layer is
+ * removed, leaving the bowl-anchored wisps as the source of smoke. */
+body.making-v2 .making-pull .art-hookah-stem.has-asset ~ .art-hookah-hoseport {
+  display: none;
+}
+body.making-v2 .making-pull .art-hose-line.has-asset {
+  filter: drop-shadow(0 12px 16px rgba(0,0,0,0.48));
+}
+/* ホースは台の後ろを回し、口金だけをステム差し込み口の前へ出す。 */
+body.making-v2 .making-pull .art-hose { z-index: 2; }
+body.making-v2 .making-pull .art-mouthpiece { z-index: 5; }
+body.making-v2 .making-pull .art-hose-coupler {
+  position: absolute;
+  z-index: 5;
+  left: 26%;
+  top: 41.5%;
+  width: 42px;
+  height: 14px;
+  transform: rotate(55deg);
+  transform-origin: left center;
+  border-radius: 4px 10px 10px 4px;
+  background: linear-gradient(90deg, #b39762 0 35%, #66513a 36% 53%, #262230 54%);
+  box-shadow: 0 0 0 2px rgba(28,20,25,0.78), 0 6px 9px rgba(0,0,0,0.45);
+  pointer-events: none;
+}
+body.making-v2 .making-pull .art-pull-smoke { display: none; }
+
+.making-v2 .m2-service-state {
+  position: absolute;
+  z-index: 6;
+  top: 16%;
+  right: 7%;
+  width: 176px;
+  padding: 11px 12px;
+  border: 1px solid rgba(244,210,122,0.22);
+  border-radius: 10px;
+  background: rgba(10,9,13,0.78);
+}
+.making-v2 .m2-service-state b,
+.making-v2 .m2-service-state span { display: block; }
+.making-v2 .m2-service-state b { color: #f4d27a; font: 900 10px/1 ui-monospace, monospace; letter-spacing: 0.13em; }
+.making-v2 .m2-service-state span { margin-top: 5px; color: rgba(255,255,255,0.48); font-size: 8px; }
+.making-v2 .m2-service-state i { display: block; overflow: hidden; height: 5px; margin-top: 9px; border-radius: 5px; background: rgba(255,255,255,0.08); }
+.making-v2 .m2-service-state em { display: block; width: 62%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #d37f46, #f4d27a); box-shadow: 0 0 10px rgba(244,210,122,0.35); }
+.making-v2 .m2-service-state.work em { width: 78%; }
+.making-v2 .m2-service-meter {
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 9px 10px;
+  border: 1px solid rgba(244,210,122,0.14);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.025);
+  color: rgba(255,255,255,0.38);
+  font-size: 8px;
+}
+.making-v2 .m2-service-meter b { color: #f4d27a; }
+.making-v2 .m2-service-meter i { height: 1px; background: linear-gradient(90deg, rgba(244,210,122,0.22), rgba(244,210,122,0.62)); }
+
+/* ---- Action console --------------------------------------------------- */
+body.making-v2 .making-controls {
+  padding: 12px;
+  border: 1px solid rgba(244,210,122,0.2);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(16,14,19,0.94), rgba(10,9,13,0.96));
+  box-shadow: 0 22px 48px rgba(0,0,0,0.48), inset 0 1px rgba(255,255,255,0.035);
+  backdrop-filter: blur(13px);
+  scrollbar-color: rgba(244,210,122,0.35) transparent;
+}
+.making-v2 .m2-context {
+  flex: none;
+  margin-bottom: 10px;
+  padding: 10px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+}
+.making-v2 .m2-context-title { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 8px; }
+.making-v2 .m2-context-title span { color: #f4d27a; font: 800 8px/1 ui-monospace, monospace; letter-spacing: 0.17em; }
+.making-v2 .m2-context-title small { color: rgba(255,255,255,0.32); font-size: 8px; }
+.making-v2 .m2-context-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.making-v2 .m2-context-item {
+  min-width: 0;
+  padding: 6px 7px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 6px;
+}
+.making-v2 .m2-context-item span { display: block; margin-bottom: 2px; color: rgba(255,255,255,0.34); font-size: 7px; }
+.making-v2 .m2-context-item b { display: block; overflow: hidden; color: rgba(255,250,236,0.85); font-size: 9px; white-space: nowrap; text-overflow: ellipsis; }
+.making-v2 .m2-mix-note { overflow: hidden; margin-top: 6px; color: rgba(255,255,255,0.42); font-size: 8px; white-space: nowrap; text-overflow: ellipsis; }
+.making-v2 .m2-action-head { display: flex; align-items: baseline; gap: 8px; margin: 0 2px 8px; }
+.making-v2 .m2-action-head span { color: rgba(255,255,255,0.38); font: 800 7px/1 ui-monospace, monospace; letter-spacing: 0.18em; }
+.making-v2 .m2-action-head small { color: rgba(255,255,255,0.68); font-size: 9px; }
+
+body.making-v2 .making-controls > .spot-btn,
+body.making-v2 .making-controls > .spot-list .spot-btn,
+body.making-v2 .making-controls .adjust-coals > .spot-btn {
+  position: relative;
+  min-height: 52px;
+  margin: 0 0 6px;
+  padding: 9px 36px 9px 11px;
+  color: rgba(248,243,229,0.82);
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.085);
+  border-radius: 9px;
+  text-align: left;
+  box-shadow: none;
+  transition: border-color 120ms ease, background 120ms ease, transform 120ms ease;
+}
+body.making-v2 .making-controls > .spot-btn::after,
+body.making-v2 .making-controls > .spot-list .spot-btn::after,
+body.making-v2 .making-controls .adjust-coals > .spot-btn::after {
+  content: "→";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  color: rgba(244,210,122,0.54);
+  font: 700 13px/1 ui-monospace, monospace;
+  transform: translateY(-50%);
+}
+body.making-v2 .making-controls > .spot-btn:hover:not(:disabled),
+body.making-v2 .making-controls > .spot-list .spot-btn:hover:not(:disabled),
+body.making-v2 .making-controls .adjust-coals > .spot-btn:hover:not(:disabled) {
+  z-index: 1;
+  background: rgba(244,210,122,0.08);
+  border-color: rgba(244,210,122,0.44);
+  transform: translateX(-2px);
+}
+body.making-v2 .making-controls .spot-name { color: #fff8e8; font-size: 11px; }
+body.making-v2 .making-controls .spot-desc { margin-top: 3px; color: rgba(236,230,214,0.5); font-size: 9px; line-height: 1.35; }
+body.making-v2 .making-controls > .primary-btn,
+body.making-v2 .making-controls .mix-footer > .primary-btn {
+  min-height: 42px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #f4d27a, #c79b46);
+  color: #171108;
+  border-color: #f4d27a;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  box-shadow: 0 9px 22px rgba(185,132,45,0.18);
+}
+body.making-v2 .making-controls > .primary-btn.ghost { color: rgba(244,210,122,0.75); background: rgba(244,210,122,0.06); border-color: rgba(244,210,122,0.2); box-shadow: none; }
+body.making-v2 .making-controls .tn-tutor {
+  margin: 0 0 8px;
+  padding: 8px 9px;
+  color: rgba(244,234,207,0.7);
+  background: rgba(94,79,48,0.15);
+  border-left: 2px solid rgba(244,210,122,0.46);
+  border-radius: 0 7px 7px 0;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+/* Dense controls retain their mechanics but gain a calmer, ledger-like skin. */
+body.making-v2 .making-controls .mix-list { padding-right: 3px; }
+body.making-v2 .making-controls .mix-row {
+  min-height: 48px;
+  margin-bottom: 5px;
+  padding: 7px 8px;
+  background: rgba(255,255,255,0.026);
+  border: 1px solid rgba(255,255,255,0.065);
+  border-radius: 8px;
+}
+body.making-v2 .making-controls .mix-info { min-width: 0; }
+body.making-v2 .making-controls .mix-ctrl { gap: 5px; }
+body.making-v2 .making-controls .mix-ctrl button { width: 29px; height: 29px; border-radius: 7px; }
+body.making-v2 .making-controls .mix-grams { min-width: 30px; font: 800 10px/1 ui-monospace, monospace; }
+body.making-v2 .making-controls .mix-footer {
+  margin-top: 6px;
+  padding-top: 8px;
+  background: linear-gradient(180deg, transparent, rgba(10,9,13,0.98) 18%);
+}
+body.making-v2 .making-controls .mix-total { font: 800 10px/1.3 ui-monospace, monospace; }
+body.making-v2 .making-controls .heat-arena,
+body.making-v2 .making-controls .dodge-arena,
+body.making-v2 .making-controls .hole-arena {
+  border-radius: 10px;
+  border-color: rgba(244,210,122,0.18);
+  box-shadow: inset 0 0 26px rgba(0,0,0,0.3);
+}
+
+/* The hole-punching board is already a top-down interaction.  Use a true
+ * overhead foil face here instead of reusing the perspective bowl artwork
+ * from the workbench scene.  This remains V2-only so legacy comparison stays
+ * visually untouched. */
+body.making-v2 .making-controls .hole-board {
+  background:
+    radial-gradient(circle at 48% 42%, rgba(255,255,255,0.12), transparent 58%),
+    url("../../assets/ui/making/foil_topdown_v2.png") center / cover no-repeat,
+    #aeb3ba;
+  border: 1px solid rgba(244,234,210,0.34);
+  box-shadow:
+    0 0 0 3px rgba(71,60,48,0.62),
+    0 14px 30px rgba(0,0,0,0.42),
+    inset 0 0 24px rgba(18,20,24,0.2);
+}
+body.making-v2 .making-controls .hole-board::before {
+  background: radial-gradient(circle at 50% 45%, transparent 42%, rgba(7,8,12,0.28) 100%);
+  mix-blend-mode: multiply;
+}
+body.making-v2 .making-controls .heat-burner {
+  width: 268px;
+  min-height: 180px;
+  padding: 26px 14px 24px;
+}
+body.making-v2 .making-controls .heat-arena { position: relative; }
+body.making-v2 .making-controls .heat-coals { gap: 14px; }
+body.making-v2 .making-controls .heat-burner > .heat-coals { transform: translateY(34px); }
+body.making-v2 .making-controls .heat-coal { width: 58px; height: 58px; }
+body.making-v2 .making-controls .heat-arena > .mini-countdown {
+  inset: 8px auto auto 110px;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,226,176,0.3);
+  border-radius: 50%;
+  background: rgba(8,8,12,0.78);
+  font-size: 30px;
+  line-height: 1;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.35);
+}
+body.making-v2 .making-controls .heat-arena > .mini-countdown.go {
+  width: 78px;
+  border-radius: 30px;
+  color: #ffe79a;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+body.making-v2 .making-controls .temp-wrap,
+body.making-v2 .making-controls .pull-bar,
+body.making-v2 .making-controls .steam-wait {
+  border-radius: 9px;
+}
+
+/* A clean keyboard focus treatment for the new action console and dock. */
+body.making-v2 .making-controls button:focus-visible,
+#making-preview-dock button:focus-visible,
+#making-preview-dock a:focus-visible {
+  outline: 2px solid #fff1bf;
+  outline-offset: 2px;
+}
+
+/* ---- Portrait phone comparison ---------------------------------------
+ * Only the opt-in V2 making screen becomes a portrait canvas. Other screens
+ * and the normal game keep the existing 1280x720 fitStage behavior.
+ */
+@media (orientation: portrait) and (max-width: 700px) {
+  body.making-v2 #rotate-hint { display: none; }
+
+  body.making-v2:has(#screen-tournament.active.making-workbench) #game {
+    width: 100vw;
+    height: 100dvh;
+    transform: none !important;
+    transform-origin: top left;
+  }
+  body.making-v2:has(#screen-tournament.active.making-workbench) #hud { display: none; }
+
+  #making-preview-dock {
+    top: auto;
+    right: 8px;
+    bottom: 8px;
+    left: 8px;
+    width: auto;
+    max-height: calc(100dvh - 16px);
+    overflow-y: auto;
+  }
+  #making-preview-dock .mpd-steps { grid-template-columns: repeat(4, 1fr); }
+  #making-preview-dock .mpd-steps button,
+  #making-preview-dock .mpd-hide { min-height: 42px; font-size: 11px; }
+  #making-preview-dock.collapsed {
+    top: 58px;
+    right: 8px;
+    bottom: auto;
+    left: auto;
+    width: auto;
+    padding: 6px;
+  }
+  #making-preview-dock.collapsed .mpd-title { display: none; }
+  #making-preview-dock.collapsed .mpd-hide {
+    width: 54px;
+    min-height: 42px;
+    margin: 0;
+    overflow: hidden;
+    color: #f4d27a;
+    background: rgba(244, 210, 122, 0.1);
+    border-color: rgba(244, 210, 122, 0.45);
+    font-weight: 800;
+    white-space: nowrap;
+  }
+
+  body.making-v2 #screen-tournament.making-workbench #tn-layout {
+    inset: 8px;
+  }
+  body.making-v2 #screen-tournament.making-workbench #tn-progress {
+    top: 0;
+    height: 43px;
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 0 9px;
+    border-radius: 10px;
+  }
+  .making-v2 .m2-progress-head { display: none; }
+  .making-v2 .m2-phase { gap: 5px; }
+  .making-v2 .m2-phase-dot { width: 21px; height: 21px; font-size: 8px; }
+  .making-v2 .m2-phase:not(:last-child)::after { left: 25px; right: 5px; }
+  .making-v2 .m2-phase-copy { padding-right: 5px; }
+  .making-v2 .m2-phase-copy b { font-size: 9px; }
+  .making-v2 .m2-phase-copy small { display: none; }
+
+  body.making-v2 #screen-tournament.making-workbench #tn-title {
+    top: 50px;
+    left: 2px;
+    right: 70px;
+    overflow: hidden;
+    font-size: 18px;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  body.making-v2 #screen-tournament.making-workbench #tn-title::before { display: none; }
+  body.making-v2 #screen-tournament.making-workbench #tn-hint {
+    top: 76px;
+    left: 2px;
+    right: 70px;
+    display: -webkit-box;
+    max-width: none;
+    max-height: 31px;
+    overflow: hidden;
+    font-size: 10px;
+    line-height: 1.45;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  body.making-v2 #screen-tournament.making-workbench #tn-body {
+    inset: 114px 0 0;
+    grid-template-columns: 1fr;
+    grid-template-rows: clamp(170px, 28dvh, 230px) minmax(0, 1fr);
+    gap: 8px;
+    overflow: hidden;
+  }
+  body.making-v2 .making-stage {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    border-radius: 13px;
+  }
+  .making-v2 .m2-stage-badge { left: 10px; top: 9px; }
+  .making-v2 .m2-stage-badge span { font-size: 21px; }
+  .making-v2 .m2-stage-badge b { font-size: 9px; }
+  .making-v2 .m2-stage-badge small { font-size: 6px; }
+  .making-v2 .m2-stage-focus { left: 9px; bottom: 8px; padding: 5px 7px; }
+  body.making-v2 .making-stage::after { top: 10px; right: 10px; }
+
+  body.making-v2 .making-controls {
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    padding: 10px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-radius: 13px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .making-v2 .m2-context { margin-bottom: 8px; padding: 8px; }
+  .making-v2 .m2-context-title { margin-bottom: 6px; }
+  .making-v2 .m2-context-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+  .making-v2 .m2-context-item { padding: 5px; }
+  .making-v2 .m2-context-item span { font-size: 7px; }
+  .making-v2 .m2-context-item b { font-size: 8px; }
+  .making-v2 .m2-mix-note { margin-top: 5px; font-size: 8px; }
+  .making-v2 .m2-action-head { margin-bottom: 7px; }
+
+  body.making-v2 .making-controls > .spot-btn,
+  body.making-v2 .making-controls > .spot-list .spot-btn,
+  body.making-v2 .making-controls .adjust-coals > .spot-btn {
+    min-height: 56px;
+    padding: 10px 36px 10px 11px;
+  }
+  body.making-v2 .making-controls .spot-name { font-size: 13px; }
+  body.making-v2 .making-controls .spot-desc { font-size: 10px; }
+  body.making-v2 .making-controls > .primary-btn,
+  body.making-v2 .making-controls .mix-footer > .primary-btn {
+    min-height: 48px;
+    font-size: 13px;
+  }
+  body.making-v2 .making-controls .mix-row { min-height: 62px; }
+  body.making-v2 .making-controls .mix-footer { gap: 8px; padding: 9px; }
+  body.making-v2 .making-controls .mix-total { min-width: 0; padding: 7px 8px; }
+  body.making-v2 .making-controls .mix-footer > .primary-btn {
+    flex: 0 0 146px;
+    width: 146px;
+    padding-inline: 7px;
+    white-space: nowrap;
+  }
+  body.making-v2 .making-controls .mix-ctrl button { width: 44px; height: 44px; font-size: 19px; }
+  body.making-v2 .making-controls .mix-grams { min-width: 36px; font-size: 11px; }
+  body.making-v2 .making-controls .hole-board { width: 220px; height: 220px; }
+  body.making-v2 .making-controls .heat-burner { width: min(280px, 100%); }
+  body.making-v2 .making-controls .heat-arena > .mini-countdown { left: calc(50% - 24px); }
+  body.making-v2 .making-controls .pull-bar { min-height: 78px; }
+}

@@ -48,14 +48,37 @@ def encode_portrait(path: Path) -> str:
     return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
 
 
-def encode_png_asset(path: Path, max_w: int = BG_MAX_W) -> str:
-    """作業台UIなど透過があり得るPNG素材を埋め込む。"""
+def encode_png_asset(
+    path: Path,
+    max_w: int = BG_MAX_W,
+    *,
+    webp_lossless: bool = True,
+    webp_quality: int = 86,
+) -> str:
+    """透過UIを縮小し、PNGとWebPの小さい方を埋め込む。
+
+    キー名は元のPNGパスのままなので、ゲーム側の参照やメタデータは変えない。
+    単体HTML内のdata URIだけをWebP化し、巨大なbase64解析コストを抑える。
+    """
     im = Image.open(path).convert("RGBA")
     if im.width > max_w:
         im = im.resize((max_w, round(im.height * max_w / im.width)), Image.LANCZOS)
-    buf = io.BytesIO()
-    im.save(buf, "PNG", optimize=True)
-    return "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
+    png_buf = io.BytesIO()
+    im.save(png_buf, "PNG", optimize=True)
+    webp_buf = io.BytesIO()
+    im.save(
+        webp_buf,
+        "WEBP",
+        lossless=webp_lossless,
+        quality=webp_quality,
+        method=6,
+        exact=True,
+    )
+    png_data = png_buf.getvalue()
+    webp_data = webp_buf.getvalue()
+    if len(webp_data) < len(png_data):
+        return "data:image/webp;base64," + base64.b64encode(webp_data).decode()
+    return "data:image/png;base64," + base64.b64encode(png_data).decode()
 
 
 def collect_assets() -> dict:
@@ -95,13 +118,22 @@ def collect_assets() -> dict:
         for png in sorted(making_dir.glob("*.png")):
             if png.stat().st_size == 0:
                 continue
-            assets[f"assets/ui/making/{png.name}"] = encode_png_asset(png)
+            # 大判の写真調・ピクセルアート調パーツはq88 WebPでも輪郭を保てる。
+            # 炭・穴・単粒などの小物だけlossless/PNGを選び、にじみを防ぐ。
+            tiny = png.stat().st_size < 120_000 or png.name.startswith(("coal_", "hole_", "leaf_grain"))
+            assets[f"assets/ui/making/{png.name}"] = encode_png_asset(
+                png, webp_lossless=tiny, webp_quality=88
+            )
     shop_dir = REPO_ROOT / "assets" / "ui" / "shop"
     if shop_dir.exists():
         for png in sorted(shop_dir.glob("*.png")):
             if png.stat().st_size == 0:
                 continue
-            assets[f"assets/ui/shop/{png.name}"] = encode_png_asset(png)
+            # 商品カードは最大でも約220 CSS px。DPR2相当を残し、写真調パッケージは
+            # lossy WebPを許容して20MB級の初期HTML肥大を防ぐ。
+            assets[f"assets/ui/shop/{png.name}"] = encode_png_asset(
+                png, max_w=480, webp_lossless=False, webp_quality=84
+            )
     for png in sorted((REPO_ROOT / "assets" / "backgrounds").glob("*.png")):
         assets[f"assets/backgrounds/{png.name}"] = encode_background(png)
     # CG: show_cg 対象（恋愛・日常スチル含む全部。素材が増えたらそのまま乗る）

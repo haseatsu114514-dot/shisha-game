@@ -244,7 +244,7 @@ stern measured expression buried warmth, demanding not cruel
 
 ---
 
-### 前園 壮一郎 - ゲスト審査員 ch1　39歳
+### 前園 宗次郎 - ゲスト審査員 ch1　39歳
 
 ```
 pixel art anime character sprite, full body standing, facing viewer,

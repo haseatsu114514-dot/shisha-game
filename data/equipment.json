@@ -3,7 +3,7 @@
     {
       "id": "silicone_bowl",
       "type": "bowl",
-      "name": "シリコンボウル",
+      "name": "シリコンハガル",
       "chapter_min": 1,
       "buy_price": 1000,
       "sell_price": 500,
@@ -35,6 +35,18 @@
       "value": "suyaki",
       "description": "同じ味を使うほど育つ。最初は土の味が少しする。大容量20g。",
       "capacity": 20
+    },
+    {
+      "id": "iran_bowl",
+      "type": "bowl",
+      "name": "イランボウル",
+      "chapter_min": 1,
+      "buy_price": 6000,
+      "sell_price": 3000,
+      "price": 6000,
+      "value": "iran_bowl",
+      "description": "伝統的な絵付けの陶器ボウル。熱が穏やかに回り、複数の香りをまとめやすい。容量18g。",
+      "capacity": 18
     },
     {
       "id": "lotos_hagal",

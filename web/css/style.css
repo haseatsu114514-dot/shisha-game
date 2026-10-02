@@ -1295,6 +1295,26 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 .spot-desc { font-size: 12.5px; color: var(--text-dim); line-height: 1.5; }
 .spot-cost { font-size: 12px; color: var(--accent); }
 
+/* ボウル選択は名称だけでなく実機画像を並べ、形状と素材を選ぶ前に比較できるようにする。 */
+.equipment-choice-bowl {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  grid-template-areas: "thumb name" "thumb desc";
+  column-gap: 11px;
+  align-items: center;
+}
+.equipment-choice-bowl .setup-equipment-thumb {
+  grid-area: thumb;
+  width: 44px;
+  min-height: 54px;
+  overflow: visible;
+  align-self: center;
+  background-color: transparent;
+  border: 0;
+}
+.equipment-choice-bowl .spot-name { grid-area: name; align-self: end; }
+.equipment-choice-bowl .spot-desc { grid-area: desc; align-self: start; }
+
 /* ---------------- gauge minigame ----------------
    計器は「琥珀ネオンの計器盤」で統一（世界観: 黒〜濃紫の闇＋金の暖色ネオン）。
    ガラスの奥に目盛りが沈み、狙いゾーンが琥珀に灯り、針は白熱して走る */
@@ -1998,6 +2018,7 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
   overflow-y: auto;
 }
 .making-controls > .mix-footer { flex: none; }
+.making-controls > .tn-tutor { flex: none; margin: 0 0 12px; }
 .making-layer {
   position: absolute;
   background-repeat: no-repeat;
@@ -2398,7 +2419,7 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 /* トング（金属の火ばさみ） */
 .art-tongs { position: absolute; right: 14%; bottom: 32%; width: 240px; height: 190px; z-index: 4; transform: rotate(-14deg); }
 /* 調整の手は画面上から差し込み、トングの先がボウル（炭）へ届く（A1） */
-.art-tongs.adjust { right: 18%; bottom: auto; top: -9%; }
+.art-tongs.adjust { right: 26%; bottom: auto; top: -9%; }
 .art-tongs-arm {
   position: absolute; right: 0; top: 46%; width: 100%; height: 9px;
   background: linear-gradient(90deg, #c9ced4, #82898f 60%, #b9bfc5);
@@ -2542,8 +2563,8 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 /* 生成PNG（右手前に構えた斜めのマウスピース）は縦長なので箱を差し替える。
    z-index はホース（z1）より上＝ホースの右端が手元の陰に沈んで繋がって見える（A1） */
 .art-mouthpiece.has-asset {
-  right: 3%; bottom: 2%;
-  width: 300px; height: 300px;
+  right: 4%; bottom: 18%;
+  width: 240px; height: 240px;
   transform: none;
   border-radius: 0;
   z-index: 2;
@@ -2589,12 +2610,16 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 @keyframes pull-short { 38% { transform: rotate(-22deg) translateX(-28px) scale(0.98); } }
 @keyframes pull-keep { 45% { transform: rotate(-22deg) translateX(-42px) scale(0.98); } }
 @keyframes pull-long { 55% { transform: rotate(-22deg) translateX(-68px) scale(0.97); } }
+/* PNG自体がすでに斜めなので、吸い出し時は回転を足さず水平移動だけにする。 */
+.making-stage.pull-up .art-mouthpiece.has-asset { animation-name: pull-short-asset; }
+.making-stage.pull-keep .art-mouthpiece.has-asset { animation-name: pull-keep-asset; }
+.making-stage.pull-down .art-mouthpiece.has-asset { animation-name: pull-long-asset; }
+@keyframes pull-short-asset { 38% { transform: translateX(-28px) scale(0.98); } }
+@keyframes pull-keep-asset { 45% { transform: translateX(-42px) scale(0.98); } }
+@keyframes pull-long-asset { 55% { transform: translateX(-68px) scale(0.97); } }
 
-@media (max-width: 900px) {
-  #screen-tournament.making-workbench #tn-body { grid-template-columns: 1fr; }
-  .making-stage { min-height: 260px; }
-  .making-controls { max-height: 260px; }
-}
+/* #game は常に1280x720を fitStage() で縮小する。物理viewport幅のmedia queryで
+   内部レイアウトまで1列化するとlandscape端末だけ縦に溢れるため、2列を維持する。 */
 
 /* ===== シーシャリグ ===== */
 #tn-rig {
@@ -2993,6 +3018,28 @@ body:not(.booted) .title-menu-item { animation-play-state: paused; }
 }
 #shop-list { margin-bottom: 16px; }
 #shop-list .spot-list { margin-bottom: 10px; }
+#shop-list .shop-product-row {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  grid-template-areas:
+    "thumb name"
+    "thumb cost"
+    "thumb desc";
+  column-gap: 12px;
+  align-items: start;
+}
+#shop-list .shop-product-thumb {
+  grid-area: thumb;
+  width: 64px;
+  height: 88px;
+  border-radius: 3px;
+  background-position: center;
+  background-size: cover;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.55);
+}
+#shop-list .shop-product-row .spot-name { grid-area: name; }
+#shop-list .shop-product-row .spot-cost { grid-area: cost; }
+#shop-list .shop-product-row .spot-desc { grid-area: desc; }
 /* ショップは品目が多く縦に伸びる。「店を出る」ボタンが画面外に沈まないよう、
    パネルをflex化して品目リストだけを内側スクロールにする */
 #screen-shop .panel {

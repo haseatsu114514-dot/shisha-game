@@ -279,7 +279,7 @@ demanding rather than cruel, the look of a man who still cares enough to keep ju
 
 ---
 
-### 前園 壮一郎 - ゲスト審査員 ch1　39歳
+### 前園 宗次郎 - ゲスト審査員 ch1　39歳
 
 **設定**: シーシャメディア・ライター系。口癖「シーシャはおいしいねえ」。どんな場でもいつも嬉しそう。
 

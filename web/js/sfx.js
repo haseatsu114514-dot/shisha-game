@@ -31,6 +31,13 @@ const SFX = (() => {
   let bgmVolume = 1.0;
   let sfxVolume = 1.0;
   let currentBgm = "";
+  const BGM_FALLBACKS = {
+    bgm_map: "daily_part",
+    bgm_rival_shop: "tonari",
+    bgm_tournament_wait: "tonari",
+    bgm_tournament_edm: "daily_part",
+    bgm_result_emotional: "title",
+  };
   let masterDry = null;
   let masterWet = null;
   let reverb = null;
@@ -434,7 +441,13 @@ const SFX = (() => {
         return;
       }
       currentBgm = key;
-      const src = (window.BGM_DATA && window.BGM_DATA[key]) || `../assets/audio/bgm/${key}.mp3`;
+      const embedded = window.BGM_DATA && window.BGM_DATA[key];
+      const available = embedded || ((window.GAME_DATA && window.GAME_DATA.bgm_assets) || []).includes(key);
+      const playbackKey = available ? key : (BGM_FALLBACKS[key] || key);
+      const src = (window.BGM_DATA && window.BGM_DATA[playbackKey]) ||
+        (typeof assetUrl === "function"
+          ? assetUrl(`assets/audio/bgm/${playbackKey}.mp3`)
+          : `../assets/audio/bgm/${playbackKey}.mp3`);
       if (!bgmEl) {
         bgmEl = new Audio();
         bgmEl.loop = true;

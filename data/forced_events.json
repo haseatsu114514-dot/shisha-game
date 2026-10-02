@@ -275,7 +275,7 @@
       "time_slot": "noon",
       "flag": "ch2_forced_rivals_firstsight_done",
       "title": "C.STATION──ライバルたちの初姿",
-      "description": "大会会場に足を踏み入れる。組長の丁寧な挨拶、ヴォルクの計測、あげはの自然体。みんな、違う種類の強さを持っている。",
+      "description": "大会会場に足を踏み入れる。組長の豪快な挨拶、ヴォルクの計測、あげはの自然体。みんな、違う種類の強さを持っている。",
       "dialogue_file": "res://data/dialogue/ch2_main.json",
       "dialogue_id": "ch2_rivals_first_sight",
       "stat_changes": {},

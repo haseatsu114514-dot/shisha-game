@@ -36,7 +36,9 @@ except ImportError:
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "data"
-OUT_PATH = Path(__file__).resolve().parent / "js" / "data.js"
+WEB_DIR = Path(__file__).resolve().parent
+OUT_PATH = WEB_DIR / "js" / "data.js"
+INDEX_PATH = WEB_DIR / "index.html"
 
 CH1_DIALOGUE_FILES = [
     "ch1_main.json",
@@ -259,6 +261,15 @@ def collect_shop_assets() -> list:
     return sorted(p.name for p in shop_dir.glob("*.png") if p.stat().st_size > 0)
 
 
+def collect_bgm_assets() -> list:
+    """実データがあるBGMキーだけを返す。0 byteの仮置きファイルは除外し、
+    web側が既存曲へ安全にフォールバックできるようにする。"""
+    bgm_dir = REPO_ROOT / "assets" / "audio" / "bgm"
+    if not bgm_dir.exists():
+        return []
+    return sorted(p.stem for p in bgm_dir.glob("*.mp3") if p.stat().st_size > 0)
+
+
 def collect_making_asset_meta() -> dict:
     """作業台素材の「実コンテンツ」計測値。生成画像はキャンバス余白・アスペクトが
     まちまちで、CSSの contain 配置では絵が箱の中で浮く（アルミがボウルに乗らない等）。
@@ -326,6 +337,24 @@ def build_info() -> dict:
     return {"commit": commit, "built_at": built_at}
 
 
+def update_entrypoint_cache_token(token: str) -> None:
+    """CSS/JSの固定クエリをビルドごとの値に揃える。
+
+    GitHub Pages側に古いURLが残っても、data.jsと描画コード・CSSが同じ世代で
+    読み込まれるようにする。単体HTMLビルドのインライン化正規表現もこの形式に対応済み。
+    """
+    if not token or not INDEX_PATH.exists():
+        return
+    html = INDEX_PATH.read_text(encoding="utf-8")
+    updated = re.sub(
+        r'((?:href|src)="(?:css|js)/[^"?]+)(?:\?v=[^"]*)?(")',
+        lambda m: f"{m.group(1)}?v={token}{m.group(2)}",
+        html,
+    )
+    if updated != html:
+        INDEX_PATH.write_text(updated, encoding="utf-8")
+
+
 def main() -> None:
     flavors = load_json(DATA_DIR / "flavors.json")["flavors"]
     baito = load_json(DATA_DIR / "baito_events.json")
@@ -351,8 +380,9 @@ def main() -> None:
     for c in (characters if isinstance(characters, list) else []):
         if isinstance(c, dict) and "id" in c and c.get("spriteScale"):
             portrait_scales[SPRITE_FOLDER_ALIASES.get(c["id"], c["id"])] = c["spriteScale"]
+    build = build_info()
     bundle = {
-        "build": build_info(),
+        "build": build,
         "dialogues": collect_dialogues(),
         "flavors": flavors,
         "equipment": equipment,
@@ -370,6 +400,7 @@ def main() -> None:
         "making_assets": collect_making_assets(),
         "making_asset_meta": collect_making_asset_meta(),
         "shop_assets": collect_shop_assets(),
+        "bgm_assets": collect_bgm_assets(),
         "face_icons": collect_face_icons(),
         "lime_messages": load_json(DATA_DIR / "lime_messages.json")["messages"],
         "glossary": load_json(DATA_DIR / "glossary.json")["groups"],
@@ -383,6 +414,7 @@ def main() -> None:
     js += json.dumps(bundle, ensure_ascii=False, separators=(",", ":"))
     js += ";\n"
     OUT_PATH.write_text(js, encoding="utf-8")
+    update_entrypoint_cache_token(build.get("commit") or re.sub(r"\W+", "", build["built_at"]))
     print(f"wrote {OUT_PATH} ({OUT_PATH.stat().st_size:,} bytes)")
     print(f"  dialogues: {len(bundle['dialogues'])}")
     print(f"  baito_events: {len(bundle['baito_events'])}")

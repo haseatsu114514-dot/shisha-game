@@ -5,7 +5,7 @@
 # 配備レイアウト（2026-07-02 改定・起動高速化）:
 #   /            … /web/ へ即リダイレクト（既存ブックマークを生かす）
 #   /web/        … 分割ファイル版（アセット遅延読み込み・起動が速い、こちらが本線）
-#   /shisha_ch1.html … 1ファイル配布版（約22MB・ダウンロードして持ち歩く用）
+#   /shisha_ch1.html … 1ファイル配布版（約31MB・ダウンロードして持ち歩く用）
 #   /tools/flavor_stats_editor.html … フレーバー調整ツール
 name: Deploy web build to GitHub Pages
 

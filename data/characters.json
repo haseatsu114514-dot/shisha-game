@@ -374,14 +374,14 @@
     "nationality": "Japan",
     "affiliation": "神崎煙草店（表向き）",
     "play_style": "「スジを通す煙」",
-    "description": "非常に丁寧な接客で知られる地元シーシャ屋の店主。その正体はヤクザの組長だが、現在はシノギで店を営んでいることを隠している。",
-    "background_secret": "かつて抗争で若衆を失った後悔から、穏やかな時間を提供するシーシャに救いを見出した。ヤクザであることを隠し、一人の職人として生きようとしているが、後にその素性が暴かれる劇的な展開が待っている。",
+    "description": "口も態度も荒く、笑い声も怒鳴り声もでかいヤクザの組長。神崎煙草店では初対面の客にも『おう、座れ。吸ってけ』と遠慮なく声をかける。がさつに見えるが、客の顔色と葉の状態は誰よりよく見ており、シーシャの技術と面倒見は確か。情に厚く、筋の通った仕事を見ると豪快に笑い、感動すれば人目もはばからず泣く。荒々しいが、弱い相手を萎縮させるために威圧する人物ではない。",
+    "background_secret": "抗争で若衆を失った後悔から、煙を囲んで誰も傷つかずに腹を割れる時間に救いを見出した。組長という素性は表向き伏せているつもりだが、言動にも店にも隠しきれていない。荒っぽいまま一人の職人として客と向き合い、できた縁は最後まで雑に扱わない。",
     "favorite_flavor": "ドラゴンフルーツ",
     "specialty_flavor": "ドラゴンフルーツ",
     "growth_stats": {
       "primary": "根性",
       "secondary": "技術",
-      "notes": "力と威圧感で自分を保っていたが、はじめの『相手を否定しない』姿勢に触れ、いつの間にか若衆の失敗を怒鳴るのではなく、静かに煙を分かち合って諭すような度量を持っていた。"
+      "notes": "若い衆の失敗には今でもでかい声で一喝するが、その後は必ず同じ煙を回して腹を割って話す。はじめとの出会いを経て、荒々しさを消すのではなく、相手を置いていかない面倒見のよさが強くなる。"
     },
     "visual_concepts": [
       "39s japanese yakuza boss, intimidating sharp face with a small scar, slicked back hair, wearing a tailored dark suit without a tie showing traditional irezumi tattoos on his chest, very delicate and precise hands handling hot charcoal",
@@ -397,8 +397,8 @@
     "nationality": "Japan",
     "affiliation": "審査員兼研究者 / SMOKE LAB",
     "play_style": "「全てをデータで最適化する研究者」",
-    "description": "多種のヒートマネジメントシステムなど数々の画期的な機材を開発した研究者。「シーシャ業界のさらなる発展」を本気で信じており、南雲会長（旧知の仲）と協力して審査員を務める。普段は温和で紳士的だが、業界の発展のためなら人体実験まがいのことも厭わないという噂が密かに囁かれており、「やっていそうでもあり、やっていなさそうでもある」という危うい二面性を持つ。穏やかな笑顔の奥にサイコパス的な気配を感じさせる瞬間があるが、真相は誰にも分からない。一方でシーシャへの愛情は本物であり、機材やヒートマネジメントへのこだわりは尋常ではない。自分が開発した機材の話になると子供のように目を輝かせ、「そいつの開発者俺だもん」と得意げに言ってしまう無邪気さがある（『サマーウォーズ』パロディ）。不思議な魅力と危険さが同居するキャラクター。\n第5章の裏ボス戦の仕掛け人。SHISHA-9000戦の敗北後、はじめに促されて十数年ぶりに自分の舌で一台を作り、「賭けて差し出す煙」を取り戻す（9000は破壊されず、名職人の煙を学ぶ教材として稼働を続ける）。",
-    "background_secret": "かつては自分の舌で作る職人だった。自分の感覚で作ったシーシャを『不味い』と全否定されたことを引き金に味覚を失い（何を吸っても砂の味）、誰にも言えないまま職人を辞めた過去を持つ。『否定不可能なデータ』は二度と賭けて傷つかないための盾。はじめのch2の味覚喪失は彼の過去の鏡像であり、ch5で「君は戻れたのか」と問う。SMOKE LABの廊下には選手時代（眼鏡なし）の写真が残っている。",
+    "description": "画期的なヒートマネジメントシステム、パイプ、シーシャ用の炭まで開発し、日本のシーシャ業界を裏側から支えてきた研究者。特に炭の匂いが煙へ乗りにくいチャコールは全国の店舗で使われており、店側が意識せず彼の技術に支えられていることも多い。『シーシャ業界のさらなる発展』を本気で信じ、南雲会長と協力して審査員を務める。普段は温和で紳士的だが、業界の発展のためなら人体実験まがいのことも厭わないという噂があり、『やっていそうでもあり、やっていなさそうでもある』危うさを持つ。一方でシーシャへの愛情は本物。自分が開発した機材や炭の話になると子供のように目を輝かせ、『そいつの開発者俺だもん』と得意げに言ってしまう。\n第5章の裏ボス戦の仕掛け人。SHISHA-9000戦の敗北後、はじめに促されて十数年ぶりに自分の舌で一台を作り、『賭けて差し出す煙』を取り戻す（9000は破壊されず、名職人の煙を学ぶ教材として稼働を続ける）。",
+    "background_secret": "かつては自分の舌で作る職人だった。自分の感覚で作ったシーシャを『不味い』と全否定されたことを引き金に味覚を失い、何を吸っても炭の味ばかりが残るようになった。炭の匂いが気になりにくいチャコールの開発は、その感覚から逃げずに原因を分解しようとした結果でもある。発明は全国の店を助けたが、本人は誰にも言えないまま職人を辞め、『否定不可能なデータ』を二度と傷つかないための盾にした。はじめのch2の味覚喪失は彼の過去の鏡像であり、ch5で『君は戻れたのか』と問う。SMOKE LABの廊下には選手時代（眼鏡なし）の写真が残っている。",
     "favorite_flavor": "コーラ",
     "specialty_flavor": "酸味・シトラス系の変わり種",
     "growth_stats": {
@@ -445,7 +445,7 @@
     "play_style": "N/A",
     "description": "大手シーシャチェーン「シーステーション」（誰でも入りやすい大衆向け店舗）の会長であり大会審査員長。SMOKE CROWN CUPの会場であるC.STATION旗艦店の生みの親でもある。\n自社の店舗は「ファミレスのような手軽さ」を売りにして割り切っているが、プロの大会審査においては味や技術の正確さではなく「作り手の生き様が煙ににじみ出ているか」──つまりその人間がどんな人生を歩み、何を背負い、誰のために煙を作っているのかを最重要基準にするという恐ろしいほどの二面性を持つ。\n自社の煙はあくまで入り口であり、若者たちが自社チェーンを踏み台にして本物の煙へ至ることを望んでいる。だからこそ、プロの大会では容赦のない採点を行う。\nスミさんとは旧知の仲で、「真逆の道を選んだ」ライバルでもある。酒の席でだけ、若い頃の話をする。",
     "background_secret": "根底にあるのは『かつて自分が救われたあの小さな古びたシーシャ屋のような空間を、全国どこでも味わえるようにしたい』という泥臭く熱い理念。スミさんとは旧知の仲で、真逆の道を歩んだライバル関係でもある。お忍びで自社チェーンの若手の煙を吸いに行きひっそり評価する「不器用だが泥臭い親父」の側面を持つ。",
-    "favorite_flavor": "シーガ（葉巻系）",
+    "favorite_flavor": "シガー（葉巻系）",
     "specialty_flavor": "N/A（審査のため作らない）",
     "growth_stats": {
       "primary": "洞察",
@@ -530,21 +530,23 @@
     "name": "ましろ / 水瀬 ましろ",
     "role": "sub_character",
     "age": 22,
+    "height_cm": 154,
+    "first_person": "私（柔らかい場面では『わたし』）",
     "nationality": "Japan",
     "affiliation": "mukai（tonari姉妹店）",
     "play_style": "N/A",
-    "description": "第3章 東京の溜まり場（tonari姉妹店）「mukai」の同僚。一人称は「僕」。いつも眠たげで、どこか浮世離れした雰囲気を持つ。主人公とほぼ同い年で、お姉さんというよりゆるっとした同期のような存在感。\nもともとは想いの乗った煙だけを繊細に感じ取れる心の持ち主だった。しかし過去に周囲の煙から想いを感じ取れない時期があり、何も味がしない虚しさから、味の濃いダークリーフやシガーリーフばかり吸うようになった。その結果、舌の感覚が完全にバグってしまい、普通のシーシャを吸うと「お水ですか？」と本気で聞いてしまうほど何も感じなくなった。\nしかし今でも、作り手の想いや感情が本気で乗った煙だけは鮮明に感じ取ることができ、味も香りも全て言語化して感想を伝えられる。彼女にとって「美味しい」は技術や配合ではなく「その人の魂が煙に宿っているかどうか」で決まる。\n巷で噂の凄腕職人『シガーマン』の正体だといかつい男だと勘違いされているが、実は彼女のことである。本人はシガーマンを「怖いいかつい男」だと思い込んで怯えている（アンジャッシュ状態）。\nブロンドも普通に作れるが、シガーリーフとダークリーフを好んで使う（『シガーマン』の由来）。",
-    "background_secret": "【公式隠し設定】巷で噂される凄腕「シガーマン」の正体。性別すら知られておらず「確実にいかつい男」だと勘違いされているが、実はこのゆるふわな女の子。\nもともとは繊細で、煙から人の想いを感じ取れる稀有な感性の持ち主だった。だがある時期、周囲の人間の煙から何も感じ取れなくなり、虚しさから味の濃いダークリーフ・シガーリーフばかり吸うようになった。その結果、極太の煙を平然と燻らせる感覚バグが定着してしまった。\n普通のシーシャには「お水ですか？」と真顔で聞いてしまうが、想いの乗った煙だけは今でも完全に感じ取れる。はじめの深淵期には彼の煙にも何も感じなかった──まだ人となりもよく知らず、はじめ自身も空虚だったから。しかし回復してからは「はじめくんの煙、今日はすごくあったかい」と自然に言えるようになった。この変化こそが、はじめが深淵を抜けた証拠でもある。",
+    "description": "第3章 東京の溜まり場（tonari姉妹店）『mukai』の同僚。身長154cmで、つむぎとみんとの中間ほどの小柄な体格。いつも眠たげで、どこか浮世離れした雰囲気を持つ。主人公とほぼ同い年で、お姉さんというよりゆるっとした同期のような存在感。\nもともとは想いの乗った煙だけを繊細に感じ取れる心の持ち主だった。しかし過去に周囲の煙から想いを感じ取れない時期があり、何も味がしない虚しさから、味の濃いダークリーフやシガーリーフばかり吸うようになった。その結果、舌の感覚が完全にバグり、普通のシーシャを吸うと『お水ですか？』と本気で聞くほど何も感じなくなった。本人は今の感覚を治したいとは思っておらず、シガーリーフ全般を好み、自分の通常として付き合っている。\n今でも、作り手の想いや感情が本気で乗った煙だけは鮮明に感じ取り、味も香りもすべて言語化できる。彼女にとって『美味しい』は技術や配合ではなく『その人の魂が煙に宿っているか』で決まる。\n巷で噂の凄腕職人『シガーマン』の正体だといかつい男だと勘違いされているが、実は彼女のこと。本人はシガーマンを『怖いいかつい男』だと思い込んで怯えている。ブロンドも普通に作れるが、特にシガーリーフを好んで使う。",
+    "background_secret": "【公式隠し設定】巷で噂される凄腕『シガーマン』の正体。性別すら知られておらず『確実にいかつい男』だと勘違いされているが、実際は小柄でゆるい雰囲気の女の子。\n煙から人の想いを感じ取れる稀有な感性の持ち主だが、重い葉へ慣れすぎて通常の味覚は完全にバグっている。本人は元へ戻すことを目標にせず、シガーリーフ全般を楽しみながら今の感覚で暮らしている。\n味覚を失いかけたはじめに対しても、治療や正論を押しつけない。何も聞かずに毎日一杯を作る、煙のせいにして泣ける場所を渡す、感じ取れた小さな変化だけを言葉にするなど、自分なりの方法でそばにいる。はじめの煙に再び想いを感じたとき『今日はすごくあったかい』と伝え、その変化が彼自身の回復の証になる。",
     "favorite_flavor": "シガーリーフ全般",
     "specialty_flavor": "シガーリーフ全般（重厚なシガーリーフミックス）",
     "growth_stats": {
       "primary": "技術",
       "secondary": "魅力",
-      "notes": "はじめの影響を受け、重すぎるシガーリーフの煙の中に「吸いやすさ」を同居させる神業を身につける。"
+      "notes": "はじめへ寄り添う中で、重いシガーリーフを一方的に押しつけず、その日に彼が受け取れる強さへ調整するようになる。自分の味覚を元へ戻すのではなく、今の感覚のまま他人へ届く一杯を作る。"
     },
     "visual_concepts": [
-      "22s japanese female, relaxed and sleepy expression, messy soft light brown hair in a loose braid, wearing a loose oversized knit cardigan over an apron, puffing a massive cloud of heavy cigar-scented smoke effortlessly, cozy and slightly chaotic cafe atmosphere, same-age peer vibe rather than older-sister type",
-      "young chill cafe worker female, droopy eyes, holding a large shisha hose, surrounded by dark heavy smoke but looking completely unbothered and sweet, contrasting gap moe, boku-pronoun casual energy, peer-friend rather than older-sister"
+      "petite 154cm 22-year-old japanese female, relaxed and sleepy expression, pale hair in two loose braids, wearing an oversized beige knit cardigan and a muted green long skirt, puffing a massive cloud of heavy cigar-leaf smoke effortlessly, cozy and slightly chaotic cafe atmosphere, same-age peer vibe rather than older-sister type",
+      "petite young chill cafe worker female, droopy eyes, holding a large shisha hose, surrounded by dark heavy smoke but looking completely unbothered and sweet, contrasting gap moe, peer-friend rather than older-sister"
     ],
     "spriteScale": 0.9
   },
@@ -591,6 +593,111 @@
     "visual_concepts": [
       "28s japanese female, cute baby face with black bob hair and brown eyes, wearing a tough leather riders jacket over a simple white inner shirt, sitting at a counter smoking shisha, looking slightly annoyed venting about boyfriend",
       "attractive young woman complaining while smoking hookah, tomboyish yet girly, dark bob haircut, biker jacket fashion, expressive face"
+    ]
+  },
+  {
+    "id": "mob_occhan",
+    "name": "常連のおっちゃん",
+    "role": "mob_customer",
+    "age": "50代",
+    "nationality": "Japan",
+    "affiliation": "tonari常連",
+    "play_style": "N/A",
+    "description": "tonariのいつもの席でくつろぐ、人の好い下町の常連客。ダブルアップルに少しミントを足した一台を好み、煙の輪っかを作るのが得意。",
+    "background_secret": "店の新人が慣れるまでは、失敗した一台でも文句を言わず最後まで吸って見守る。",
+    "favorite_flavor": "ダブルアップル＋ミント",
+    "specialty_flavor": "N/A",
+    "growth_stats": {
+      "primary": "魅力",
+      "secondary": "洞察",
+      "notes": "常連との日々の会話が、相手の好みを覚える接客の基本を教えてくれる。"
+    },
+    "visual_concepts": [
+      "50s japanese male neighborhood regular, stocky build, friendly sun-tanned face with light stubble, relaxed open-collar shirt and slacks, easygoing familiar presence, skilled at making smoke rings"
+    ]
+  },
+  {
+    "id": "mob_firsttimer",
+    "name": "初心者のお客さん",
+    "role": "mob_customer",
+    "age": "20代前半",
+    "nationality": "Japan",
+    "affiliation": "tonari来店客",
+    "play_style": "N/A",
+    "description": "初めてシーシャを吸いに来た若い女性客。店内を興味深そうに見回しているが、何を頼めばよいか分からず少し緊張している。",
+    "background_secret": "その日の気分まで聞いて選んでもらった一台をきっかけに、香りで気持ちを切り替える楽しさを知る。",
+    "favorite_flavor": "甘いフルーツ系",
+    "specialty_flavor": "N/A",
+    "growth_stats": {
+      "primary": "洞察",
+      "secondary": "センス",
+      "notes": "初心者への聞き取りが、相手の言葉にならない好みを拾う練習になる。"
+    },
+    "visual_concepts": [
+      "early-20s japanese female first-time shisha customer, shoulder-length natural hair, clean casual blouse and skirt, curious but slightly nervous expression"
+    ]
+  },
+  {
+    "id": "mob_insta",
+    "name": "映え狙いの女性客",
+    "role": "mob_customer",
+    "age": "20代",
+    "nationality": "Japan",
+    "affiliation": "tonari来店客",
+    "play_style": "N/A",
+    "description": "シーシャの写真をSNS映えする角度で撮ることに夢中な女性客。派手なネイルと巻き髪で、スマホを構えたまま最高の一枚を狙っている。",
+    "background_secret": "撮影をきっかけに初めて吸った一台が気に入り、写真だけでなく味も楽しむようになる。",
+    "favorite_flavor": "華やかなフルーツ系",
+    "specialty_flavor": "N/A",
+    "growth_stats": {
+      "primary": "魅力",
+      "secondary": "センス",
+      "notes": "見せ方も接客の一部だが、最後に残るのは味だと気づかせてくれる。"
+    },
+    "visual_concepts": [
+      "20s fashionable japanese female social-media customer, styled wavy hair, bright nails, trendy clothes, holding a smartphone and searching for the perfect shisha photo angle"
+    ]
+  },
+  {
+    "id": "mob_megane",
+    "name": "フレーバーポリス",
+    "role": "mob_customer",
+    "age": "40代",
+    "nationality": "Japan",
+    "affiliation": "tonari来店客",
+    "play_style": "N/A",
+    "description": "銀縁眼鏡をかけた、うんちく好きの常連客。フレーバーの成分や輸入経路まで細かく確認する批評家気質だが、根は悪くない。",
+    "background_secret": "安心して吸える店を増やしたい気持ちが強すぎて、つい尋問のような聞き方になってしまう。",
+    "favorite_flavor": "正規流通の定番フレーバー",
+    "specialty_flavor": "N/A",
+    "growth_stats": {
+      "primary": "洞察",
+      "secondary": "技術",
+      "notes": "商品知識と説明責任も職人の技術だと教えてくれる。"
+    },
+    "visual_concepts": [
+      "40s japanese male shisha enthusiast, thin silver-rim glasses, meticulously combed hair, neatly buttoned plaid shirt, analytical critic-like demeanor but fundamentally good-natured"
+    ]
+  },
+  {
+    "id": "mob_tourist",
+    "name": "外国人観光客",
+    "role": "mob_customer",
+    "age": "30代",
+    "nationality": "Unknown",
+    "affiliation": "tonari来店客",
+    "play_style": "N/A",
+    "description": "言葉が十分に通じなくても、身振り手振りでシーシャを注文しようとする陽気な外国人観光客。小さなバックパックとガイドブックを持っている。",
+    "background_secret": "帰国後も旅の思い出としてtonariの一台を友人に語っている。",
+    "favorite_flavor": "マンゴー",
+    "specialty_flavor": "N/A",
+    "growth_stats": {
+      "primary": "魅力",
+      "secondary": "センス",
+      "notes": "言葉が通じなくても、香りと表情から好みを一緒に探せる。"
+    },
+    "visual_concepts": [
+      "30s cheerful western male tourist, broad friendly build, bright t-shirt, shorts and small backpack, holding a blank guidebook and ordering shisha with enthusiastic gestures"
     ]
   },
   {
@@ -660,16 +767,16 @@
   },
   {
     "id": "maezono",
-    "name": "前園 壮一郎",
+    "name": "前園 宗次郎",
     "role": "judge",
     "age": 39,
     "nationality": "Japan",
     "affiliation": "大会審査員",
-    "play_style": "N/A",
+    "play_style": "「煙量・個性・楽しさを評価する審査」",
     "description": "大会審査員の一人。口癖は「シーシャはおいしいねえ」。どんな一杯も本当に美味しそうに吸うため、出場者全員が彼に吸ってもらいたがる。\n煙の量・個性・インパクトを重視するスタイルで、見ていて「楽しい」「美味しそう」を感じさせる煙に対して特に高い評価を与える。\nシーシャ業界の有名ライター兼コラムニストで、日本最大のシーシャ情報サイト「HOOKAH PRESS」の編集長を務める。彼の記事やレビューはシーシャファンへの影響力が絶大。大会後の総評コラムはシーシャ界隈で毎回話題になる。",
     "background_secret": "新しい物好きで、常に刺激的なシーシャ体験を求めている。\n実は超がつく平和主義者で、誰かが負けるシーンが見ていられないため、大会後は必ず全出場者を「それぞれに良さがあった」とフォローするコラムを書く。\nシーシャ以外にも「美味しいもの全般」が大好きで、大会の隙間に地元グルメを開拓するのが趣味。出張大会のたびにご当地グルメレポートをSNSにあげており、料理系フォロワーの方が多いのが悩み。",
     "favorite_flavor": "ミント、ダブルアップル",
-    "specialty_flavor": "N/A",
+    "specialty_flavor": "審査員のため提供なし",
     "growth_stats": {
       "primary": "洞察",
       "secondary": "魅力",
