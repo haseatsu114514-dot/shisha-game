@@ -1,14 +1,21 @@
 // 画面の土台: 背景・画面切替・煙ワイプ・トースト・ステ通知・モーダル・カウントダウン・スタンプ。
 import { $, el, sleep, nextFrame } from "./util.js";
 import { on } from "./bus.js";
-import { SE } from "./audio.js";
+import { SE, setRainAmbience } from "./audio.js";
 import { state } from "./state.js";
 import { DB, displayName, faceIconUrl } from "./data.js";
+import { AFFINITY_RANK_PTS } from "./stats.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
+import { rainScene } from "../daily/weather.js";
 
 export const layers = {};
 
 export function initLayers() {
+  if (!$("#weather")) $("#stage").insertBefore(el("div#weather", { "aria-hidden": "true" }), $("#screen"));
+  layers.weather = $("#weather");
+  document.addEventListener("visibilitychange", refreshWeather);
+  window.addEventListener("pagehide", () => setRainAmbience(null));
+  window.addEventListener("pageshow", refreshWeather);
   for (const id of ["bg", "screen", "vn", "hud", "fx", "toasts", "banners", "wipe", "modal"]) {
     layers[id] = $(`#${id}`);
   }
@@ -22,6 +29,7 @@ export function initLayers() {
     if (!id || id === "???" || !state?.met?.[id]) return;
     gainCard({
       kind: "affinity",
+      bond: !!bond,
       face: faceIconUrl(id),
       badge: [...displayName(id, state)][0],
       top: bond ? (levelUp ? "BOND UP" : "BOND") : levelUp ? "AFFINITY UP" : "AFFINITY",
@@ -32,15 +40,22 @@ export function initLayers() {
       hearts: { from: heartState(prevPts), to: heartState(pts) },
     });
   });
+  on("stamina-change", ({ before, after, maximum }) => {
+    if (after <= before) return;
+    gainCard({ kind: "stamina", badge: "体", top: "RECOVERY", main: after >= maximum ? "元気が戻った" : "体力が回復した",
+      meter: { from: before / maximum, to: after / maximum } });
+  });
   on("notice", ({ text }) => toast(text, { ms: 3000 }));
   on("lovers", ({ id }) => {
-    gainCard({ kind: "affinity", face: faceIconUrl(id), badge: "♥", top: "NEW RELATIONSHIP", main: displayName(id, state), sub: "恋人になった" });
+    gainCard({ kind: "affinity", bond: true, face: faceIconUrl(id), badge: "♥", top: "NEW RELATIONSHIP", main: displayName(id, state), sub: "恋人になった" });
   });
 }
 
 // ---------------------------------------------------------------- 背景（クロスフェード）
 
 let bgNow = "";
+let weatherBg = "";
+let weatherKey = "";
 const bgReady = new Map(); // url -> Promise（一度読んだ絵は即座に出す）
 
 /** 画像を読み込み＋デコードし終えるまで待つ（最大 ms）。失敗しても先へ進む */
@@ -66,7 +81,7 @@ export function imageReady(url, ms = 1500) {
 export function setBg(url, { instant = false, tint = null, fast = false } = {}) {
   const host = layers.bg;
   const key = `${url}|${tint || ""}`;
-  if (key === bgNow) return Promise.resolve();
+  if (key === bgNow) { refreshWeather(); return Promise.resolve(); }
   bgNow = key;
   return Promise.all(sceneArtUrls(url).map((u) => imageReady(u))).then(() => {
     if (bgNow !== key) return; // 待っている間に別の背景が指定された
@@ -76,6 +91,8 @@ export function setBg(url, { instant = false, tint = null, fast = false } = {}) 
     if (fast) next.classList.add("fast");
     if (tint) next.dataset.tint = tint;
     host.append(next);
+    weatherBg = url || "";
+    refreshWeather();
     const olds = [...host.children].slice(0, -1);
     if (instant) {
       next.classList.add("show");
@@ -87,6 +104,35 @@ export function setBg(url, { instant = false, tint = null, fast = false } = {}) 
   });
 }
 
+/** 背景だけに雨を重ねる。窓は1280×720の背景座標に限定する。 */
+function refreshWeather() {
+  if (!layers.weather) return;
+  const scene = document.hidden ? null : rainScene(weatherBg, document.body.dataset.screen);
+  document.body.dataset.weather = scene?.mode || "none";
+  setRainAmbience(scene?.mode || null);
+  const key = scene ? JSON.stringify(scene) : "";
+  if (key === weatherKey) return;
+  weatherKey = key;
+  const host = layers.weather;
+  host.replaceChildren();
+  host.dataset.mode = scene?.mode || "none";
+  host.hidden = !scene;
+  if (!scene) return;
+  const sheet = (windowRect = null) => {
+    const count = windowRect ? 5 : 34;
+    const node = el("div.weather-sheet", {
+      class: windowRect ? "window" : "outdoor",
+      style: windowRect ? { left: `${windowRect[0]}px`, top: `${windowRect[1]}px`, width: `${windowRect[2]}px`, height: `${windowRect[3]}px`, "--rain-travel": `${windowRect[3] + 60}px` } : { "--rain-travel": "780px" },
+    });
+    for (let i = 0; i < count; i++) node.append(el("i.weather-drop", {
+      style: { left: `${(i * 37 + 13) % 100}%`, animationDuration: `${0.65 + (i % 5) * 0.09}s`, animationDelay: `${-((i * 7) % 17) * 0.08}s` },
+    }));
+    host.append(node);
+  };
+  if (scene.mode === "outdoor") sheet();
+  else scene.windows.forEach(sheet);
+}
+
 // ---------------------------------------------------------------- 画面
 
 /** 画面を差し替える。name は CSS の data-screen（見た目の切替）とテスト用 */
@@ -95,6 +141,7 @@ export function showScreen(name, node) {
   host.dataset.screen = name;
   host.replaceChildren(node || el("div"));
   document.body.dataset.screen = name;
+  refreshWeather();
   return node;
 }
 
@@ -155,7 +202,7 @@ export function toast(text, { ms = 2600, kind = "" } = {}) {
 
 // ステ上昇などのバナー（右上から順に積む・同時に出すのは数枚まで）
 const STAT_BADGE = { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "観" };
-const AFF_PTS = [0, 9, 20, 33, 48, 66]; // stats.js の AFFINITY_RANK_PTS と同じ段階
+const AFF_PTS = AFFINITY_RANK_PTS; // stats.js の AFFINITY_RANK_PTS と同じ段階
 /** 好感度ポイント → 5つのハートそれぞれの塗り率（%） */
 function heartState(pts = 0) {
   let lv = 0;
@@ -183,7 +230,8 @@ function pumpBanners() {
     const o = bannerQueue.shift();
     bannerBusy++;
     const hearts = o.hearts ? el("div.gc-hearts", o.hearts.from.map((f) => el("i", { style: { "--fill": `${f}%` } }))) : null;
-    const b = el(`div.gain-card.${o.kind}${o.stat ? `.st-${o.stat}` : ""}`, [
+    const meter = o.meter ? el("div.gc-meter", { "aria-label": "体力が回復" }, [el("i", { style: { width: `${o.meter.from * 100}%` } })]) : null;
+    const b = el(`div.gain-card.${o.kind}${o.bond ? ".bond" : ""}${o.stat ? `.st-${o.stat}` : ""}`, [
       o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : el("div.gc-badge", { text: o.badge || "+" }),
       el("div.gc-meta", [
         el("span.gc-top", { text: o.top }),
@@ -191,6 +239,7 @@ function pumpBanners() {
         o.sub ? el("span.gc-sub", { text: o.sub }) : null,
         o.fx ? el("span.gc-fx", { text: o.fx }) : null,
         hearts,
+        meter,
       ]),
     ]);
     layers.banners.append(b);
@@ -199,6 +248,7 @@ function pumpBanners() {
       b.classList.add("show");
       // 1拍おいてから今の値へ → ハートの中身が「ぐいーん」と伸びる
       if (hearts) setTimeout(() => hearts.querySelectorAll("i").forEach((h, i) => h.style.setProperty("--fill", `${o.hearts.to[i]}%`)), 260);
+      if (meter) setTimeout(() => { meter.querySelector("i").style.width = `${o.meter.to * 100}%`; }, 260);
     });
     const hold = o.fx ? 3200 : o.hearts && o.hearts.to.join() !== o.hearts.from.join() ? 2600 : 2200;
     setTimeout(() => {

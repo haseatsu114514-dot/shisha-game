@@ -625,7 +625,7 @@
     {
       "dialogue_id": "ch1_adam_outing_dagurikura",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_day.png"
+        "bg": "res://assets/backgrounds/bg_street_night.png"
       },
       "lines": [
         {

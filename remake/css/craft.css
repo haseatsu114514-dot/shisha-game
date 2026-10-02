@@ -19,7 +19,7 @@
 .bench-top { position: absolute; left: 0; right: 0; top: 0; height: 52px; display: flex; align-items: center; gap: 18px; padding: 0 22px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); background: rgba(0, 0, 0, 0.4); }
 .bench-mode { font-family: var(--font); font-weight: 700; font-size: 14px; letter-spacing: 0.3em; color: var(--accent); text-shadow: 0 0 12px var(--accent); }
 .bench-progress { display: flex; gap: 4px; }
-.bench-progress span { padding: 3px 10px; font-size: 11px; letter-spacing: 0.14em; color: rgba(255, 255, 255, 0.35); border: 1px solid rgba(255, 255, 255, 0.1); clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%); }
+.bench-progress span { padding: 3px 10px; font-size: 13px; letter-spacing: 0.14em; color: rgba(255, 255, 255, 0.35); border: 1px solid rgba(255, 255, 255, 0.1); clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%); }
 .bench-progress span.seen { color: rgba(255, 255, 255, 0.7); }
 .bench-progress span.now { color: #000; background: var(--accent); border-color: var(--accent); box-shadow: 0 0 14px var(--accent); }
 .bench-left { position: absolute; left: 0; top: 52px; bottom: 0; width: 420px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 20px; }
@@ -27,7 +27,7 @@
 .bench-head { margin-bottom: 12px; }
 .bench-title { font-family: var(--font); font-weight: 700; font-size: 28px; letter-spacing: 0.08em; color: #fff; }
 .bench[data-mode="tournament"] .bench-title { text-shadow: 0 0 18px rgba(56, 240, 255, 0.6); }
-.bench-hint { margin-top: 4px; font-size: 15px; color: var(--text-dim); line-height: 1.6; min-height: 24px; }
+.bench-hint { margin-top: 4px; font-size: 16px; color: var(--text-dim); line-height: 1.6; min-height: 24px; }
 .bench-panel { position: relative; flex: 1; }
 .bench-ticker { position: absolute; left: 0; right: 0; bottom: 0; height: 40px; display: flex; align-items: center; padding: 0 22px; background: rgba(0, 0, 0, 0.6); border-top: 1px solid rgba(255, 63, 164, 0.4); overflow: hidden; }
 .bench:not([data-mode="tournament"]) .bench-ticker { display: none; }
@@ -111,7 +111,7 @@
   transition: border-color 0.2s, transform 0.15s var(--ease-out), background 0.2s;
 }
 .opt b { font-size: 20px; letter-spacing: 0.04em; }
-.opt small { font-size: 14px; color: var(--text-dim); line-height: 1.55; }
+.opt small { font-size: 15px; color: var(--text-dim); line-height: 1.55; }
 .opt:hover:not(:disabled) { border-color: var(--accent); transform: translateY(-2px); background: rgba(255, 255, 255, 0.07); }
 .opt.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 16%, transparent); box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 30%, transparent); }
 .opt.off, .opt:disabled { opacity: 0.35; cursor: not-allowed; }
@@ -125,7 +125,7 @@
 .fr-swatch { flex: none; width: 26px; height: 26px; border-radius: 50%; box-shadow: inset 0 -3px 6px rgba(0, 0, 0, 0.35), 0 0 10px rgba(0, 0, 0, 0.3); }
 .fr-name { flex: 1; display: flex; flex-direction: column; }
 .fr-name b { font-size: 16px; }
-.fr-name small { font-size: 12px; color: var(--text-dim); }
+.fr-name small { font-size: 14px; color: var(--text-dim); }
 .fr-name .fr-reg { color: var(--accent); }
 .fr-name .fr-stock { color: #cfe6b8; }
 .fr-btn { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.25); background: rgba(0, 0, 0, 0.35); color: var(--text); font-size: 20px; cursor: pointer; }
@@ -140,7 +140,7 @@
 .reg-line { font-size: 15px; color: #ff9b9b; }
 .reg-line.ok { color: var(--good); }
 .recipe-line { font-size: 15px; color: var(--gold-hi); min-height: 22px; }
-.mix-hint { font-size: 13px; color: #9fe3ff; line-height: 1.5; padding: 8px 10px; border: 1px dashed rgba(159, 227, 255, 0.4); border-radius: 6px; }
+.mix-hint { font-size: 14px; color: #9fe3ff; line-height: 1.5; padding: 8px 10px; border: 1px dashed rgba(159, 227, 255, 0.4); border-radius: 6px; }
 
 /* ---------------------------------------------------------------- 穴あけ */
 .holes { display: flex; gap: 24px; align-items: center; height: 100%; }
@@ -169,13 +169,16 @@
 .hr-side { flex: 1; display: flex; flex-direction: column; gap: 10px; }
 .hr-ring { font-size: 26px; font-weight: 700; color: var(--accent); letter-spacing: 0.06em; }
 .hr-role { font-size: 14px; color: var(--text-dim); }
-.hr-time { display: flex; align-items: center; gap: 10px; font-size: 12px; letter-spacing: 0.2em; color: var(--text-dim); }
+.hr-time { display: flex; align-items: center; gap: 10px; font-size: 14px; letter-spacing: 0.2em; color: var(--text-dim); }
 .hr-time-bar { flex: 1; height: 8px; border-radius: 4px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
 .hr-time-bar b { display: block; height: 100%; background: linear-gradient(90deg, var(--accent-2), var(--accent)); }
-.hr-score { font-family: var(--font); font-size: 30px; color: #fff; }
+.hr-score { font-family: var(--font); font-size: 20px; color: #fff; }
 .hr-combo { font-size: 22px; font-weight: 800; color: var(--neon-amber); min-height: 30px; text-shadow: 0 0 12px rgba(255, 194, 74, 0.8); }
 .hr-punch { width: 100%; align-items: center; padding: 18px; font-size: 22px; }
 .hr-row { display: flex; gap: 8px; }
+.hr-plan { color: var(--text); font-size: 14px; line-height: 1.6; min-height: 3.2em; }
+.hr-row .btn { flex: 1; }
+.hr-row .btn:disabled, .hr-punch:disabled { opacity: 0.45; cursor: default; }
 
 /* ---------------------------------------------------------------- 炭焼き */
 .heat { display: flex; flex-direction: column; align-items: center; gap: 8px; }
@@ -208,7 +211,7 @@
 @keyframes pikan { 0% { opacity: 1; transform: scale(0.6); } 100% { opacity: 0.2; transform: scale(1.6); } }
 @keyframes burst { 0% { opacity: 1; transform: rotate(0) scale(0.7); } 100% { opacity: 0; transform: rotate(40deg) scale(1.3); } }
 .coal.picked { transform: translateY(-60px) scale(calc(var(--k, 1) * 0.8)); opacity: 0.25; pointer-events: none; }
-.heat-info { width: 100%; font-size: 14px; color: var(--text-dim); }
+.heat-info { width: 100%; font-size: 15px; color: var(--text-dim); }
 .hi-row { display: flex; gap: 12px; }
 .hi-row b { color: var(--accent); flex: none; }
 
@@ -231,11 +234,11 @@
 .thermo-zone { position: absolute; left: 0; right: 0; background: rgba(142, 230, 168, 0.35); border-top: 2px solid var(--good); border-bottom: 2px solid var(--good); z-index: 1; }
 .thermo-mark { position: absolute; left: -4px; right: -4px; height: 4px; margin-bottom: -2px; background: #fff; box-shadow: 0 0 10px #fff; z-index: 2; transition: bottom 0.4s var(--ease-out); }
 .thermo.ok .thermo-tube { box-shadow: 0 0 24px rgba(142, 230, 168, 0.6); }
-.thermo-labels { display: flex; flex-direction: column; justify-content: space-between; font-size: 13px; color: var(--text-dim); }
+.thermo-labels { display: flex; flex-direction: column; justify-content: space-between; font-size: 15px; color: var(--text-dim); }
 .pull-main { flex: 1; display: flex; flex-direction: column; gap: 16px; }
 .pull-read { font-size: 20px; color: #fff; min-height: 30px; }
 .pull-gauge { position: relative; height: 70px; display: flex; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 8px; overflow: hidden; }
-.pg-zone { position: absolute; top: 0; bottom: 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; font-size: 13px; color: rgba(255, 255, 255, 0.8); }
+.pg-zone { position: absolute; top: 0; bottom: 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; font-size: 14px; color: rgba(255, 255, 255, 0.8); }
 .pg-zone.z-up { background: linear-gradient(90deg, rgba(255, 90, 60, 0.35), rgba(255, 90, 60, 0.15)); }
 .pg-zone.z-keep { background: rgba(142, 230, 168, 0.18); }
 .pg-zone.z-down { background: linear-gradient(90deg, rgba(80, 140, 255, 0.15), rgba(80, 140, 255, 0.35)); }
@@ -392,7 +395,7 @@
 .rt-part { display: flex; align-items: baseline; gap: 8px; font-size: 15px; }
 .rt-part b { font-size: 26px; font-weight: 800; }
 .rt-part.total { margin-left: auto; }
-.rt-detail small { width: 100%; color: var(--text-dim); font-size: 13px; }
+.rt-detail small { width: 100%; color: var(--text-dim); font-size: 14px; }
 
 /* ---------------------------------------------------------------- 入場 */
 .entrance { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.82); pointer-events: none; }
@@ -442,11 +445,11 @@
   transition: opacity 0.3s, transform 0.3s;
 }
 .bc-feel.show { opacity: 1; transform: none; }
-.bf-label { font-size: 11px; letter-spacing: 0.1em; color: #c9b78a; }
+.bf-label { font-size: 13px; letter-spacing: 0.1em; color: #c9b78a; }
 .bf-num { font-size: 24px; font-weight: 900; line-height: 1; color: #ffe79a; text-shadow: 0 0 12px rgba(255, 200, 90, 0.55); }
 .bf-num.bump { animation: bf-bump 0.4s ease-out; }
 @keyframes bf-bump { 40% { transform: scale(1.4); } }
-.bf-p { font-size: 12px; color: #c9b78a; }
+.bf-p { font-size: 13px; color: #c9b78a; }
 .feel-pop {
   position: absolute;
   right: 8px;
@@ -462,10 +465,28 @@
   animation: feel-pop-rise 1.1s ease-out forwards;
 }
 .feel-pop span { font-size: 13px; margin-left: 1px; }
-.feel-pop small { font-size: 11px; color: #d8e0ff; margin-left: 5px; font-weight: 700; }
+.feel-pop small { font-size: 13px; color: #d8e0ff; margin-left: 5px; font-weight: 700; }
 @keyframes feel-pop-rise {
   0% { opacity: 0; transform: translateY(8px) scale(0.8); }
   25% { opacity: 1; transform: translateY(0) scale(1.12); }
   100% { opacity: 0; transform: translateY(-18px) scale(1); }
 }
 .rt-part.feel b { font-size: 20px; color: #ffe79a; }
+
+
+/* 温度判定の細い高得点帯。実温度と見える針を同期し、遅れた表示で外れないようにする。 */
+.thermo-edge { position: absolute; left: 0; right: 0; background: #ffd06b; box-shadow: 0 0 8px #ffd06b; z-index: 2; pointer-events: none; }
+.thermo-tube b, .thermo-mark { transition: none; }
+.thermo-mark { z-index: 3; }
+.thermo.edge .thermo-mark { background: #ffdf88; box-shadow: 0 0 12px #ffd06b; }
+
+/* 長い評価・雨/少穴の案内も固定ステージ内で折り返す。温度帯と入力座標は変えない。 */
+.hr-side, .pull-main { min-width: 0; }
+.hr-score { line-height: 1.4; overflow-wrap: anywhere; }
+.hr-row .btn { min-width: 0; min-height: 44px; line-height: 1.4; white-space: normal; text-align: center; align-items: center; }
+.pull-read { line-height: 1.45; overflow-wrap: anywhere; }
+.pull-count { line-height: 1.5; min-height: 3em; overflow-wrap: anywhere; }
+.pull-btns .btn { min-width: 0; }
+.result-card { width: min(760px, calc(100% - 24px)); min-width: 0; max-height: calc(100% - 24px); overflow: auto; }
+/* 共通名 rc-title の大会カウント用 absolute 指定を工程カード内だけ解除する。 */
+.result-card .rc-title { position: static; font-size: 18px; line-height: 1.4; letter-spacing: 0.14em; text-align: left; color: var(--text-dim); }

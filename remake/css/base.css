@@ -57,6 +57,9 @@ html, body {
 }
 button { font: inherit; color: inherit; }
 
+/* 連打はゲーム入力として扱う。ピンチとスクロールは保ち、ドラッグ面の none は上書きしない。 */
+:where(#viewport, #viewport *, #rotate-hint, #rotate-hint *) { touch-action: manipulation; }
+
 #viewport {
   position: fixed;
   inset: 0;
@@ -91,6 +94,28 @@ body.vn-open #screen { visibility: hidden; } /* 会話中は前の画面を後�
 #modal { z-index: 90; display: none; }
 #modal.show { display: block; }
 #boot { z-index: 100; }
+
+/* ---------------------------------------------------------------- 雨（背景より上、操作・立ち絵より下） */
+#weather { z-index: 5; pointer-events: none; }
+#weather[hidden] { display: none; }
+#weather[data-mode="outdoor"] { background: rgba(48, 66, 100, 0.09); }
+.weather-sheet { position: absolute; overflow: hidden; pointer-events: none; }
+.weather-sheet.outdoor { inset: 0; }
+.weather-sheet.window { opacity: 0.32; background: rgba(71, 95, 130, 0.07); }
+.weather-drop {
+  position: absolute;
+  top: -30px;
+  width: 1px;
+  height: 21px;
+  background: linear-gradient(transparent, rgba(211, 228, 250, 0.48));
+  animation: scene-rainfall 0.8s linear infinite;
+  pointer-events: none;
+}
+@keyframes scene-rainfall {
+  from { transform: translate3d(18px, 0, 0) rotate(12deg); }
+  to { transform: translate3d(-26px, var(--rain-travel), 0) rotate(12deg); }
+}
+@media (prefers-reduced-motion: reduce) { .weather-drop { animation: none; display: none; } }
 
 /* ---------------------------------------------------------------- 背景 */
 .bg-img {
@@ -145,7 +170,7 @@ body.vn-open #screen { visibility: hidden; } /* 会話中は前の画面を後�
 .btn.primary:hover:not(:disabled) { background: linear-gradient(180deg, #e2bb74, #b08440); }
 .btn.ghost { background: transparent; }
 .btn.small { min-width: 0; padding: 7px 14px; font-size: 15px; }
-.btn-desc { font-size: 13px; color: var(--text-dim); letter-spacing: 0; line-height: 1.4; }
+.btn-desc { font-size: 15px; color: var(--text-dim); letter-spacing: 0; line-height: 1.4; }
 .btn.primary .btn-desc { color: rgba(27, 18, 8, 0.75); }
 
 /* ---------------------------------------------------------------- パネル */
@@ -282,16 +307,22 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 }
 .gc-badge.face { object-fit: cover; image-rendering: pixelated; background: #1a1422; border: 2px solid var(--gc); padding: 0; }
 .gc-meta { display: flex; flex-direction: column; gap: 2px; }
-.gc-top { font-family: var(--font); font-size: 11px; letter-spacing: 0.28em; color: var(--gc); }
+.gc-top { font-family: var(--font); font-size: 12px; letter-spacing: 0.28em; color: var(--gc); }
 .gc-main { font-size: 21px; font-weight: 700; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8); }
-.gc-sub { font-size: 12px; letter-spacing: 0.06em; color: var(--text-dim); }
-.gc-fx { margin-top: 3px; padding: 2px 8px; font-size: 12px; font-weight: 700; color: #1a1018; background: var(--gc); border-radius: 3px; align-self: flex-start; }
+.gc-sub { font-size: 13px; letter-spacing: 0.06em; color: var(--text-dim); }
+.gc-fx { margin-top: 3px; padding: 2px 8px; font-size: 14px; font-weight: 700; color: #1a1018; background: var(--gc); border-radius: 3px; align-self: flex-start; }
 .gain-card.st-technique { --gc: var(--stat-technique); }
 .gain-card.st-sense { --gc: var(--stat-sense); }
 .gain-card.st-guts { --gc: var(--stat-guts); }
 .gain-card.st-charm { --gc: var(--stat-charm); }
 .gain-card.st-insight { --gc: var(--stat-insight); }
 .gain-card.affinity { --gc: #f48fb1; }
+.gain-card.affinity.bond { --gc: #ffd080; }
+.gain-card.affinity.bond .gc-hearts i::after { color: #ffd080; text-shadow: 0 0 6px rgba(255, 208, 128, 0.45); }
+.gain-card.stamina { --gc: #a6e69b; }
+.gc-meter { width: 220px; height: 8px; margin-top: 7px; overflow: hidden; border-radius: 5px; background: rgba(255, 255, 255, 0.12); }
+.gc-meter i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #6fcf8f, #c9f07a); transition: width 1s var(--ease-out); }
+@media (prefers-reduced-motion: reduce) { .gc-meter i { transition: none; } }
 .gain-card.affinity .gc-badge:not(.face) { color: #fff; }
 .gc-hearts { display: flex; gap: 3px; margin-top: 3px; }
 .gc-hearts i { position: relative; width: 14px; height: 14px; }
@@ -469,7 +500,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .boot-subtitle { font-size: 20px; font-weight: 500; letter-spacing: 0.3em; color: var(--text-dim); }
 .boot-bar { width: 360px; height: 3px; background: rgba(255, 255, 255, 0.12); border-radius: 2px; overflow: hidden; }
 .boot-bar i { display: block; height: 100%; width: 0; background: var(--gold); transition: width 0.2s; }
-.boot-msg { max-width: 900px; font-size: 14px; color: var(--text-dim); letter-spacing: 0.2em; text-align: center; line-height: 1.8; }
+.boot-msg { max-width: 900px; font-size: 15px; color: var(--text-dim); letter-spacing: 0.2em; text-align: center; line-height: 1.8; }
 .boot-retry[hidden] { display: none; }
 
 #rotate-hint {
@@ -495,7 +526,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 
 /* ---------------------------------------------------------------- セーブ／ロード（オート＋手動3枠） */
 .saveload-modal { width: 620px; }
-.ss-note { margin: -4px 0 14px; font-size: 13px; color: var(--text-dim); }
+.ss-note { margin: -4px 0 14px; font-size: 14px; color: var(--text-dim); }
 .ss-list { display: flex; flex-direction: column; gap: 10px; }
 .save-slot {
   display: flex;
@@ -521,5 +552,5 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .save-slot.auto .ss-label { color: #a9d6ec; }
 .ss-info { display: flex; flex-direction: column; gap: 2px; }
 .ss-info b { font-size: 16px; }
-.ss-info small { font-size: 12px; color: var(--text-dim); }
+.ss-info small { font-size: 14px; color: var(--text-dim); }
 .ss-info.empty { color: var(--text-dim); letter-spacing: 0.2em; }

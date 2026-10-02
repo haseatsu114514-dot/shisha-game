@@ -26,7 +26,7 @@ function realJSON(url) {
 }
 const fixtureFetch = async (url) => ({ ok: true, status: 200, json: async () => realJSON(url) });
 
-// 30ファイルを読み、本文の受信中も同時接続が4本を超えない。
+// 31ファイルを読み、本文の受信中も同時接続が4本を超えない。
 const requests = [];
 let active = 0, maximum = 0;
 const all = await loader(async (url, options) => {
@@ -42,11 +42,11 @@ const all = await loader(async (url, options) => {
 });
 const progress = [];
 await all.loadAll((p) => progress.push(p));
-assert.equal(requests.length, 30);
-assert.equal(new Set(requests).size, 30);
+assert.equal(requests.length, 31);
+assert.equal(new Set(requests).size, 31);
 assert.equal(maximum, 4);
 assert.equal(active, 0);
-assert.equal(progress.length, 30);
+assert.equal(progress.length, 31);
 assert.equal(progress.at(-1), 1);
 assert(progress.every((p, i) => p > (progress[i - 1] || 0)));
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
@@ -107,4 +107,4 @@ for (const phase of ["headers", "body"]) {
   assert.equal(started.length, 4);
 }
 
-console.log("[remake data] 30 JSON files, max 4 requests, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
+console.log("[remake data] 31 JSON files, max 4 requests, progress, HTTP/network/JSON errors, headers/body timeout: PASS");

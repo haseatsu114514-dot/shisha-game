@@ -8,7 +8,7 @@
 .pp-row.lover .pp-hearts { color: #ff8fb0; }
 
 /* ---- シーシャくじ ---- */
-.kuji-note { margin: 0 0 6px; padding: 8px 12px; font-size: 13px; color: var(--gold-hi); background: rgba(244, 210, 122, 0.08); border-left: 3px solid var(--gold); border-radius: 4px; }
+.kuji-note { margin: 0 0 6px; padding: 8px 12px; font-size: 14px; color: var(--gold-hi); background: rgba(244, 210, 122, 0.08); border-left: 3px solid var(--gold); border-radius: 4px; }
 .kuji-cat { border-color: #ff9ec4 !important; color: #ffc2da !important; }
 .kuji-overlay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(5, 4, 10, 0.72); backdrop-filter: blur(3px); cursor: pointer; animation: kj-fade 0.25s; }
 @keyframes kj-fade { from { opacity: 0; } }
@@ -40,7 +40,7 @@
 .kuji-rank { font-family: var(--font); font-size: 64px; font-weight: 800; line-height: 1.1; color: var(--gold-hi); text-shadow: 0 0 20px rgba(244, 210, 122, 0.6); }
 .kuji-name { margin-top: 8px; font-size: 22px; font-weight: 700; }
 .kuji-desc { margin-top: 8px; font-size: 14px; line-height: 1.6; color: var(--text-dim); }
-.kuji-tap { margin-top: 16px; font-size: 11px; letter-spacing: 0.2em; color: var(--text-dim); opacity: 0.7; }
+.kuji-tap { margin-top: 16px; font-size: 13px; letter-spacing: 0.2em; color: var(--text-dim); opacity: 0.7; }
 .kuji-card.rank-S, .kuji-card.rank-LAST { border-color: #ffe9a8; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(255, 210, 90, 0.55); }
 .kuji-card.rank-S .kuji-rank, .kuji-card.rank-LAST .kuji-rank {
   background: linear-gradient(90deg, #ff9ec4, #ffe27a, #8fe0ff, #ff9ec4);
@@ -86,6 +86,6 @@
 .gal-cell:hover img { transform: scale(1.05); }
 .gal-cell.locked { display: grid; place-items: center; cursor: default; background: repeating-linear-gradient(45deg, #120d1a 0 10px, #17111f 10px 20px); }
 .gal-cell.locked span { font-size: 18px; letter-spacing: 0.3em; color: rgba(244, 210, 122, 0.4); }
-.gal-empty, .gal-note { margin: 12px 0 0; font-size: 13px; color: var(--text-dim); }
+.gal-empty, .gal-note { margin: 12px 0 0; font-size: 14px; color: var(--text-dim); }
 .gal-viewer { position: absolute; inset: 0; display: none; background: #000 center / contain no-repeat; cursor: zoom-out; }
 .gal-viewer.show { display: block; animation: kj-fade 0.25s; }

@@ -89,6 +89,10 @@ def main() -> int:
             errors.append(f"{rel}: JSON parse error: {e}")
             continue
 
+        profile = data.get("profile") or {}
+        local_id = profile.get("id") if isinstance(profile, dict) else None
+        file_whitelist = whitelist | ({local_id} if isinstance(local_id, str) and local_id else set())
+
         for dlg in data.get("dialogues", []) or []:
             did = dlg.get("dialogue_id", "?")
             for loc, ln in iter_lines(dlg):
@@ -97,7 +101,7 @@ def main() -> int:
                 where = f"{rel} [{did} / {loc}]"
 
                 sp = ln.get("speaker")
-                if sp is not None and sp not in whitelist:
+                if sp is not None and sp not in file_whitelist:
                     errors.append(f"{where}: 未登録の speaker '{sp}'（characters.json に無い）")
 
                 text = ln.get("text")

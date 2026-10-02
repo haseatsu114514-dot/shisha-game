@@ -5,7 +5,7 @@ import { DB, bgUrl, faceIconUrl, realName, displayName } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
 import { layers, showScreen, clearScreen, setBg, smokeWipe, chapterTitle, dayCard, roundCut, toast, bannersIdle, retire, retireScreen } from "../core/ui.js";
 import { state, save, markMet, setFlag, flag } from "../core/state.js";
-import { addMoney, maxStamina, gainStat } from "../core/stats.js";
+import { addMoney, maxStamina, gainStat, addStamina } from "../core/stats.js";
 import { playBgm, stopBgm, SE } from "../core/audio.js";
 import { play, hooks } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
@@ -50,7 +50,7 @@ export function setupHooks() {
     // 大会前夜の過ごし方（練習=本番に小ボーナス／スミさん=根性／早寝=体力全快）
     if (dialogueId === "ch1_day7_last_night") {
       state.flags._last_night = branch;
-      if (branch === "sleep_early") state.stamina = maxStamina();
+      if (branch === "sleep_early") addStamina(maxStamina() - state.stamina);
     }
   };
 }
@@ -318,7 +318,7 @@ async function victory() {
         "……で、だ。開示された採点表、もう見たか",
         "技術点も個性点も、お前は4人の中で下位だ。なるにも負けてる",
         "お前を勝たせたのは、南雲さんの「総合印象点」ひとつ。あの人が、お前にだけ満点をつけた",
-        "勝ちは勝ちだ。今日のお前の煙が美味かったのも、嘘じゃない。──だが「実力で勝った」とは思うな",
+        "勝ちは勝ちだ。今日のお前の煙が美味かったのも、嘘じゃない。──だが、これで覚えることがなくなったとは思うな",
         "あの一票が何だったのか。次の舞台までに、自分で答えを出せ",
       ], close_label: "……はい。ありがとうございます、スミさん",
     },

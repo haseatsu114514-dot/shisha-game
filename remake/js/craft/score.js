@@ -22,7 +22,9 @@ export function computeShisha(cs) {
   const four = cs.place === "four";
   const hms = { lotos_hagal: 2, tanukish_lid: 5, amaburst_hms: 0 }[cs.equip?.hms] || 0;
 
-  const draw = clamp(42 + (h.total - 14) * 3 + packDraw + (h.inner >= 3 ? 6 : 0), 0, 100);
+  // 最低1周を満たせば、少ない穴数を煙量や総合点の直接の減点にしない。
+  const holeDraw = h.minimumComplete ? 36 : (h.total - 14) * 3 + (h.inner >= 3 ? 6 : 0);
+  const draw = clamp(42 + holeDraw + packDraw, 0, 100);
   const smoke = clamp(draw * 0.45 + c.heatPower * 0.35 + (four ? 14 : 0) + (st.min >= 8 ? 6 : 0) + (cs.equip?.charcoal === "cube_charcoal" ? 5 : 0), 0, 100);
   const heatStability = clamp(h.outerEven * 45 + c.heatStability * 0.38 + care.score * 0.12 + hms, 0, 100);
   const burnRisk = clamp(8 + h.innerExcess * 9 + c.burnRisk * 0.55 + (four ? 16 : 0) + (st.min >= 10 ? 9 : 0) + (p.over ? 12 : 0) + (cs.pack === "fluffy" ? 5 : 0) + Math.max(0, (p.pulls || 3) - 3) * 5, 0, 100);

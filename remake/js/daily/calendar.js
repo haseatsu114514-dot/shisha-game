@@ -15,15 +15,17 @@ import { spotById, visitRival, visitSpot, restAtHome, isClosed } from "./spots.j
 import { doFortune } from "./fortune.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
-import { deliverMorning, pushNotice, hasUnread, openLime, limeCoach } from "./phone.js";
+import { deliverMorning, pushNotice, hasUnread, openLime, limeCoach, expireInvitations } from "./phone.js";
 import { openStatus } from "./status.js";
 import { onAction as spinReel, presentNow as showReelNow } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
+import { syncKafukaKnowledge, maybeKafukaEncounter, visitKafuka } from "./kafuka.js";
 
 const SLEEP_RECOVERY = 14;
 
 let chapterDef = null;
 let onQuit = null;
+let queuedLimeSender = null;
 
 /**
  * 日常パートを DAY1〜MAX_DAYS まで回す。大会当日の朝の手前で返る。
@@ -33,6 +35,9 @@ let onQuit = null;
 export async function runDaily(def) {
   chapterDef = def;
   onQuit = def.onQuit;
+  queuedLimeSender = null;
+  syncKafukaKnowledge();
+  expireInvitations({ fixedNight: (d) => !!chapterDef.nightEvents[d] });
   initHud({ phone: phoneButton, status: openStatus, menu: openMenu });
   showHud(true);
   setPhoneBadge(hasUnread()); // つづきから再開したときも未読の赤丸を出す
@@ -61,12 +66,15 @@ async function morning() {
   await dayCard(`DAY ${state.day}`, `SMOKE CROWN CUP まで あと${daysLeft()}日${isRainy() ? "　☂ 雨" : ""}`);
   // LIME は通知だけ（中身は好きなときにアプリを開いて読む）
   const n = deliverMorning({ fixedNight: (d) => !!chapterDef.nightEvents[d] });
-  if (n) pushNotice(n);
+  if (n) pushNotice(n, { onOpen: (sender) => {
+    if (document.querySelector("#screen .map:not(.done)") && !layers.modal.classList.contains("show")) phoneButton({ sender });
+    else queuedLimeSender = sender;
+  } });
   setPhoneBadge(hasUnread());
 }
 
 /** HUD の LIME。街に出ているとき（マップ）だけ開ける。誘いに乗ったらマップを閉じてそのまま向かう */
-async function phoneButton() {
+async function phoneButton({ sender = null } = {}) {
   if (!document.querySelector("#screen .map:not(.done)") || layers.modal.classList.contains("show")) {
     SE.cancel();
     toast("LIME は街に出ているとき（マップ）に開ける");
@@ -77,7 +85,8 @@ async function phoneButton() {
   state.flags._lime_opened = true;
   state.flags._lime_tut = 1; // 自分で開けたなら案内はいらない
   const before = state.pendingInvite;
-  await openLime({ tutorial: first });
+  await openLime({ tutorial: first, sender });
+  syncKafukaKnowledge();
   setPhoneBadge(hasUnread());
   save();
   // 乗った誘い: 今の時間帯ならすぐ向かう／今夜の約束ならマップを出し直して「約束がある」を見せる
@@ -166,33 +175,32 @@ async function staminaGuard(cost) {
 }
 
 async function takeAction() {
+  expireInvitations({ fixedNight: (d) => !!chapterDef.nightEvents[d] });
   // 約束（LIMEの誘い）がこの時間帯にあれば、そのまま向かう
   const inv = state.pendingInvite;
-  if (inv && inv.slot === state.slot) {
-    state.pendingInvite = null;
-    await fadeBlack(null, 300);
-    if (inv.event === "__sumi_baito__") {
-      // スミさんのLIMEで急に呼ばれたシフト。そのまま tonari で働く（給料に上乗せ）
-      state.visitedDay.tonari_baito = state.day;
-      state.visitedDay.tonari = state.day;
-      await doBaito({ called: true });
-    } else if (/^date_/.test(inv.event)) {
-      await playDate(inv.sender); // 恋人とのデート（絆・ステ・体力はデート側で）
-    } else {
-      await play(inv.event);
-      state.flags[`_outing_done_${inv.sender}`] = true;
-      gainAffinity(inv.sender, 10);
-      addStamina(-10);
+  if (inv && (inv.day ?? state.day) === state.day && inv.slot === state.slot) {
+    if (inv.afterClose) {
+      // 夜の行動枠を予約し、会う場面は営業イベント後・帰宅前まで待つ。
+      inv.queuedAfterClose = true;
+      state.slot++;
+      return;
     }
+    state.pendingInvite = null;
+    if (state.slot === 1) state.flags._private_night_day = state.day;
+    await meetInvitation(inv);
     state.slot++;
     await afterAction();
     return;
   }
   const ev = chapterDef.nightEvents[state.day];
+  syncKafukaKnowledge();
   const spotId = await chooseSpot({
     eventPin: ev && !ev.done?.() ? ev.pin : null,
-    notice: inv && inv.slot > state.slot ? "今夜は約束がある" : "",
-    onShown: () => limeCoach(phoneButton), // はじめて LIME が届いたら、アイコンを照らして開かせる
+    notice: inv && (inv.day ?? state.day) > state.day ? `DAY ${inv.day}に約束がある` : inv && inv.slot > state.slot ? "今夜は約束がある" : "",
+    onShown: () => {
+      if (queuedLimeSender) { const sender = queuedLimeSender; queuedLimeSender = null; phoneButton({ sender }); }
+      else limeCoach(phoneButton);
+    }, // 通知を先にタップした場合は、マップが開いたところで目的のトークへ
   });
   if (spotId === "__lime__") return; // LIME で誘いに乗った → 次の takeAction で約束へ
   const spot = spotById(spotId);
@@ -208,6 +216,9 @@ async function takeAction() {
     state.visitedDay[`tonari_${sub}`] = state.day;
     if (sub === "baito") await doBaito();
     else await tonariCustomer();
+  } else if (spot.kind === "kafuka") {
+    if (!(await staminaGuard(spot.stamina))) return;
+    used = await visitKafuka(spot);
   } else if (spot.kind === "rival") {
     if (!(await staminaGuard(spot.stamina))) return;
     await visitRival(spot);
@@ -232,14 +243,33 @@ async function takeAction() {
   await afterAction();
 }
 
-/** 行動を1回使ったあと: スロットが1回転（昼は次のマップで・夜はその場で見せる）→ 告白の予約があれば */
+
+async function meetInvitation(inv) {
+  await fadeBlack(null, 300);
+  if (inv.event === "__sumi_baito__") {
+    // スミさんのLIMEで急に呼ばれたシフト。そのまま tonari で働く（給料に上乗せ）
+    state.visitedDay.tonari_baito = state.day;
+    state.visitedDay.tonari = state.day;
+    await doBaito({ called: true });
+  } else if (/^date_/.test(inv.event)) {
+    await playDate(inv.sender); // 恋人とのデート（絆・ステ・体力はデート側で）
+  } else {
+    await play(inv.event);
+    if (inv.event === `outing_${inv.sender}_1`) state.flags[`_outing_done_${inv.sender}`] = true;
+    if (inv.event === "ch1_minto_fifth") state.flags._minto_fifth_done = true;
+    if (inv.event === "ch1_adam_outing_dagurikura") state.flags._adam_arcade_done = true;
+    gainAffinity(inv.sender, 10);
+    addStamina(-10);
+  }
+}
+
+/** 行動を1回使ったあと: スロットが1回転（昼は次のマップで・夜はその場で見せる）。告白は営業後に endDay で扱う */
 async function afterAction() {
   spinReel();
   save();
   // 昼の行動の分は次のマップで回る。夜の行動の分は、その夜のうちにここで回す
   if (state.slot >= 2) await showReelNow();
   await bannersIdle();
-  if (await maybeConfession(beat)) await bannersIdle();
 }
 
 // ---------------------------------------------------------------- 夜・翌朝
@@ -265,10 +295,21 @@ async function endDay() {
     await ev.run();
     await bannersIdle();
   }
+  const appointment = state.pendingInvite;
+  if (appointment?.afterClose && appointment.queuedAfterClose && (appointment.day ?? state.day) === state.day) {
+    state.pendingInvite = null;
+    await beat("——店の営業が終わってから、約束の場所へ。");
+    await meetInvitation(appointment);
+    await afterAction();
+  }
+  const confessed = await maybeConfession(beat);
+  if (confessed) await bannersIdle();
   const athome = !!state.flags._home_tonight;
   delete state.flags._home_tonight;
   const next = chapterDef.nightEvents[state.day + 1];
   if (!athome) {
+    await maybeKafukaEncounter({ hasNightEvent: !!ev,
+      hasAppointment: !!appointment && (appointment.day ?? state.day) === state.day, hadConfession: confessed, athome });
     await play(`remake_homecoming_${state.day % 3}`);
   }
   if (next && next.teaser && state.day < MAX_DAYS) toast(`（明日、${next.teaser}で何かありそうな気がする）`, { ms: 2400 });
@@ -279,7 +320,7 @@ async function endDay() {
 async function advanceDay() {
   const exhausted = state.stamina <= 0 || (state.flags._overwork || 0) >= 2;
   await fadeBlack(async () => {
-    state.stamina = Math.min(maxStamina(), state.stamina + SLEEP_RECOVERY);
+    addStamina(SLEEP_RECOVERY);
     state.day += 1;
     state.slot = 0;
     updateHud();
@@ -293,11 +334,11 @@ async function advanceDay() {
   await dayCard(`DAY ${state.day}`, "……熱っぽい");
   if (first) {
     await play("remake_sick_half");
-    state.stamina = Math.max(state.stamina, 60);
+    addStamina(Math.max(0, 60 - state.stamina));
     state.slot = 1; // 初回だけは半日で回復（夜の1行動は残る）
   } else {
     await play("remake_sick_full");
-    state.stamina = Math.max(state.stamina, 80);
+    addStamina(Math.max(0, 80 - state.stamina));
     state.slot = 2;
     state.flags._home_tonight = true;
   }

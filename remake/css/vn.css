@@ -127,13 +127,18 @@ body.in-vn #bg { transition: filter 0.4s; }
 }
 .vn-name.show { opacity: 1; transform: none; }
 .vn-text {
-  font-size: 33px;
-  line-height: 1.62;
-  letter-spacing: 0.05em;
+  font-family: var(--font);
+  font-size: 32px;
+  font-weight: 500;
+  line-height: 1.48;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
   color: var(--text);
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
   font-feature-settings: "palt" 0;
-  min-height: 108px;
+  min-height: 96px;
 }
 .tx-imp { color: var(--gold-hi); font-weight: 700; text-shadow: 0 0 16px rgba(255, 210, 120, 0.6); }
 .tx-warn { color: #ff8f8f; font-weight: 700; }
@@ -158,19 +163,24 @@ body.in-vn #bg { transition: filter 0.4s; }
   bottom: 206px;
   z-index: 6;
   display: flex;
-  gap: 6px;
+  gap: 8px;
 }
 .vn-ctl {
-  padding: 5px 12px;
-  font-size: 13px;
-  letter-spacing: 0.12em;
-  color: var(--text-dim);
+  min-width: 72px;
+  min-height: 44px;
+  padding: 9px 16px;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  color: var(--text);
   background: rgba(10, 8, 16, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 4px;
   cursor: pointer;
 }
-.vn-ctl:hover { color: var(--text); border-color: var(--gold); }
+.vn-ctl:hover, .vn-ctl:focus-visible { color: var(--text); border-color: var(--gold); }
+.vn-ctl:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
 .vn-ctl.on { color: #1a1206; background: var(--gold); border-color: var(--gold); }
 
 /* ---------------------------------------------------------------- 選択肢 */
@@ -178,7 +188,7 @@ body.in-vn #bg { transition: filter 0.4s; }
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 226px; /* テキスト枠（下から22px＋高さ178px）のすぐ上に並べる */
+  bottom: 262px; /* 大きくした操作ボタンの上に12pxの間隔を取る */
   z-index: 7;
   display: none;
   flex-direction: column;
@@ -186,7 +196,7 @@ body.in-vn #bg { transition: filter 0.4s; }
   gap: 14px;
 }
 .vn-choices.show { display: flex; }
-/* 2択だけ64px上へ。初期版のtop:120pxまで上げず、本文との間に余白を取る。 */
+/* 2択は前回指定の下から290pxで固定。本文枠の位置・高さも変えない。 */
 .vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: 290px; }
 .vn-choice {
   width: 720px;
