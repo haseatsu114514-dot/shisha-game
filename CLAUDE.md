@@ -1,6 +1,6 @@
 # shisha-game — CLAUDE.md
 
-Godot 4 製シーシャ屋アドベンチャー＆シミュレーションゲーム。
+ブラウザ（HTML/JS）製のシーシャ屋アドベンチャー＆シミュレーションゲーム（Godot版は2026-06-15に削除済み）。
 プレイヤーはシーシャバイト青年「蒸野 始（むしの はじめ）」として、地元大会→県大会→全国大会→世界大会を目指す。
 
 ---
@@ -19,7 +19,10 @@ and updates the local config.
 Before any code edit or Git operation:
 
 - verify the repo root with `git rev-parse --show-toplevel`
-- confirm that the same directory contains `project.godot`
+- confirm that the same directory contains `data/`, `assets/` and `remake/`.
+  `project.godot` must NOT exist: the Godot version was deleted on
+  2026-06-15, so a folder that still has it is a stale copy. Ignore any
+  older rule (in any AGENTS.md or notes) that requires `project.godot`
 - run `./tools/check_git_safety.sh`
 - if `git config --get core.hooksPath` is not `.githooks`, run
   `./tools/enable_git_hooks.sh`
@@ -28,6 +31,9 @@ Before any code edit or Git operation:
 
 If any check fails, stop. Do not create branches, do not commit, do not
 push, and do not try to merge unrelated histories.
+
+A worktree made from the canonical checkout (`git worktree add`) is
+allowed; `check_git_safety.sh` accepts it.
 
 ### Hard rules
 
@@ -40,6 +46,21 @@ push, and do not try to merge unrelated histories.
 If `git merge-base HEAD origin/main` fails, the branch is not safe for a
 normal PR. Stop and fix the Git layout first.
 
+### GitHub が唯一の正本（PCに作業を残さない・2026-10-03）
+
+2026-09-30〜10-02 に、Codex がPC上のフォルダで作業を進め、push できないまま差分ファイル・画像が
+PCにだけ溜まる事故が起きた（PR #173 で回収）。再発防止として以下を守る。
+
+- 正本は GitHub の `origin`（main と作業ブランチ）だけ。PCのフォルダ・`outputs/`・stash・
+  チャットの添付・画像生成サービスのライブラリは正本ではない。「ローカル正本」として扱わない。
+- 作業を始めるときは `git fetch origin` し、**最新の `origin/main` から新しいブランチ**を切る。
+  未コミットの変更が残った古いフォルダや、古い作業ブランチの上で続きをしない。
+- 作業の区切りごと・セッションの終わりに、必ず commit して作業ブランチへ push する。
+  push できないときは、差分ファイルを作って終わらせず、止まってオーナーに報告する。
+- 生成した画像・音声もその場で `assets/`（使う素材）か `asset_sources/`（元データ）に置いて commit する。
+  デスクトップや外部のライブラリに置いたままにしない。
+- 終える前に `git status`（未コミットが無い）と `git log @{u}..HEAD`（未pushが無い）を確認する。
+
 ---
 
 ## ブラウザ版（web/）
@@ -47,9 +68,8 @@ normal PR. Stop and fix the Git layout first.
 第1章・第2章はHTML/JS版が `web/` にあり、**ブラウザ版がメインの開発トラック**。
 ブラウザ版の作業前に必ず `docs/web_version_plan.md`
 （開発方針・ロードマップ・次回タスク・引き継ぎ）を読むこと。
-開発ブランチ: `claude/great-galileo-omzoob`
-（mainに未マージの場合はチェックアウトして続きを行う。
-旧ブランチ `claude/hopeful-ride-5rg3zg` はマージ済み）
+開発ブランチ: 作業ごとに最新の `origin/main` から新しいブランチを切る
+（旧ブランチ `claude/great-galileo-omzoob` 等の上で続きをしない＝先祖返りの原因になる）
 ゲームの正式タイトルは **「水煙前線 -EN:CODE-」**。
 本作は一人称視点で、主人公はじめの立ち絵は基本表示しない。
 
