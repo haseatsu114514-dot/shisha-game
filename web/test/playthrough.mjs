@@ -70,7 +70,12 @@ while (guard++ < 5000) {
   if (await page.locator("#phone-overlay.show").count()) {
     if (!limeSeen) { limeSeen = true; log("LIME morning phone shown"); }
     const reply = page.locator("#phone-overlay .lime-reply").first();
-    if (await reply.count()) await reply.click();
+    if (await reply.count()) {
+      // 初回お誘いのヒントは返信ボタンと同時に出る。上の確認の直後に出た場合はここで閉じてから押す
+      const hintOk = page.locator("#hint-overlay .hint-ok");
+      if (await hintOk.count()) { await hintOk.click().catch(() => {}); await page.waitForTimeout(80); continue; }
+      await reply.click({ timeout: 5000 }).catch(() => {});
+    }
     await page.waitForTimeout(250);
     continue;
   }
@@ -239,7 +244,12 @@ while (guard++ < 3000) {
   if (await page.locator("#phone-overlay.show").count()) {
     if (!postPhoneSeen) { postPhoneSeen = true; log("post-victory LIME shown"); }
     const reply = page.locator("#phone-overlay .lime-reply").first();
-    if (await reply.count()) await reply.click();
+    if (await reply.count()) {
+      // 初回お誘いのヒントは返信ボタンと同時に出る。上の確認の直後に出た場合はここで閉じてから押す
+      const hintOk = page.locator("#hint-overlay .hint-ok");
+      if (await hintOk.count()) { await hintOk.click().catch(() => {}); await page.waitForTimeout(80); continue; }
+      await reply.click({ timeout: 5000 }).catch(() => {});
+    }
     await page.waitForTimeout(250);
     continue;
   }
