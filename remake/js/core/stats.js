@@ -133,22 +133,35 @@ export function gainAffinity(id, pts) {
     if (!bond.private) return;
     mult *= fortuneMult(id);
     const prevPts = state.lovePts[id] || 0;
-    state.lovePts[id] = prevPts + Math.round(pts * mult);
+    // 元の加算量の半分。1ポイントの会話も2回で1となり、切り捨てて失わない。
+    state.loveCarry ||= {};
+    const value = Math.round(pts * mult) * 0.5 + (state.loveCarry[id] || 0);
+    const got = Math.floor(value + 1e-9);
+    state.loveCarry[id] = Math.max(0, value - got);
+    state.lovePts[id] = prevPts + got;
+    if (!got) return 0;
     const before = state.loveLevel[id] || 1;
     const after = Math.max(before, rankOf(state.lovePts[id]));
     state.loveLevel[id] = after;
     emit("affinity-gain", { id, level: after, levelUp: after > before, prevPts, pts: state.lovePts[id], bond: true });
-    return;
+    return got;
   }
   mult *= fortuneMult(id);
   const before = affinityLevel(id);
   const prevPts = state.affinity[id] || 0;
-  state.affinity[id] = prevPts + Math.round(pts * mult);
+  // 新しい加算だけ15%緩やかに。小さい報酬も小数分を次へ持ち越す。
+  state.affinityCarry ||= {};
+  const value = pts * mult * 0.85 + (state.affinityCarry[id] || 0);
+  const got = Math.floor(value + 1e-9);
+  state.affinityCarry[id] = Math.max(0, value - got);
+  state.affinity[id] = prevPts + got;
+  if (!got) return 0;
   const after = affinityLevel(id);
   emit("affinity-gain", { id, level: after, levelUp: after > before, prevPts, pts: state.affinity[id] });
   if (after >= 5 && ROMANCEABLE.includes(id) && !state.flags[`_friend_${id}`] && !state.flags._confession_due) {
     state.flags._confession_due = id;
   }
+  return got;
 }
 
 // ---------------------------------------------------------------- 体力
@@ -163,8 +176,12 @@ export function maxStamina() {
 export function addStamina(n) {
   // 根性★で消耗が少し軽くなる（最大 -25%）
   const d = n < 0 ? n * (1 - 0.25 * tier01("guts")) : n;
-  state.stamina = clamp(Math.round(state.stamina + d), 0, maxStamina());
+  const before = state.stamina;
+  const maximum = maxStamina();
+  state.stamina = clamp(Math.round(state.stamina + d), 0, maximum);
+  if (state.stamina !== before) emit("stamina-change", { before, after: state.stamina, maximum });
   emit("hud");
+  return state.stamina - before;
 }
 
 export const staminaRatio = () => state.stamina / maxStamina();

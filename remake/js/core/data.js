@@ -8,6 +8,7 @@ const ROOT = "../";
 /** 読み込んだ全データ。起動時に loadAll() が埋める */
 export const DB = {
   characters: {},     // id -> キャラ定義（characters.json）
+  kafuka: {},         // シーシャークのprofile・会話・LIME・店（独立overlay）
   flavors: [],
   flavorById: {},
   equipment: [],
@@ -32,6 +33,7 @@ const DIALOGUE_FILES = [
   "ch1_tsumugi", "ch1_rin", "ch1_ageha", "ch1_spots", "ch1_events", "ch1_incognito",
   "confession", "lover_events", // 告白・恋人の節目イベント（正本は旧版と共通）
   "remake_ch1", // リメイク版の進行で使う短い場面（旧版 web/ は読まない）
+  "kafuka", // 帰り道の出会いと、章2からのシーシャーク
 ];
 const BAITO_CATEGORIES = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);
 const JSON_TIMEOUT_MS = 15000;
@@ -87,6 +89,8 @@ export async function loadAll(onProgress = () => {}) {
   const raw = Object.fromEntries(results);
 
   for (const c of raw.characters) DB.characters[c.id] = c;
+  DB.kafuka = raw["dlg:kafuka"] || {};
+  if (DB.kafuka.profile?.id) DB.characters[DB.kafuka.profile.id] = DB.kafuka.profile;
   DB.relationshipMemories = Object.fromEntries(raw.relationshipMemories.memories.map((m) => [m.id, m]));
   DB.flavors = raw.flavors.flavors.filter((f) => (f.leaf || "blond") === "blond"); // はじめはブロンドのみ（正史）
   DB.flavorById = Object.fromEntries(raw.flavors.flavors.map((f) => [f.id, f]));
@@ -94,7 +98,7 @@ export async function loadAll(onProgress = () => {}) {
   DB.equipById = Object.fromEntries(DB.equipment.map((e) => [e.id, e]));
   DB.baito = raw.baito.events.filter((e) => BAITO_CATEGORIES.has(e.category));
   DB.glossary = raw.glossary.groups;
-  DB.lime = raw.lime.messages;
+  DB.lime = [...raw.lime.messages, ...(DB.kafuka.lime || [])];
   DB.recipes = raw.recipes.recipes;
   DB.ngMixes = raw.ngMixes.ng_mixes;
   DB.tips = raw.tips.tips;
@@ -137,6 +141,11 @@ export function realName(id) {
 export function displayName(id, state) {
   if (!id) return "";
   if (id === "???") return "？？？";
+  if (id === "kafuka") {
+    if (state?.flags?._kafuka_name_known) return DB.characters.kafuka?.full_name || "波多野かふか";
+    if (state?.flags?._kafuka_nickname_known || state?.limeRead?.includes("lime_naru_kafuka_nickname")) return "サメちゃん";
+    return "？？？";
+  }
   if (ALWAYS_KNOWN.has(id) || !state || state.met[id]) return realName(id);
   return "？？？";
 }
@@ -198,7 +207,7 @@ export function portraitInfo(speaker, face) {
   let f = face || "normal";
   if (speaker === "oneesan") {
     // 私服のみんと＝ura_* 差分。通常差分で代用すると正体が見た目でバレるので、無ければ出さない
-    f = `ura_${f}`;
+    f = f.startsWith("ura_") ? f : `ura_${f}`;
     if (!p.faces.includes(f)) f = "ura_normal";
     if (!p.faces.includes(f)) return null;
   } else if (!p.faces.includes(f)) {

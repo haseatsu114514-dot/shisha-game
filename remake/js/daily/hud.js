@@ -13,6 +13,14 @@ export const daysLeft = () => Math.max(0, MAX_DAYS + 1 - (state?.day || 1));
 
 let dom = null;
 let handlers = { phone: null, status: null, menu: null };
+let recoveryTimer = null;
+function showRecovery({ before, after }) {
+  if (!dom || after <= before) return;
+  clearTimeout(recoveryTimer);
+  dom.stamina.classList.add("recovering");
+  recoveryTimer = setTimeout(() => dom?.stamina.classList.remove("recovering"), 1600);
+}
+on("stamina-change", showRecovery);
 
 const SVG = "http://www.w3.org/2000/svg";
 const svgEl = (tag, attrs = {}) => {

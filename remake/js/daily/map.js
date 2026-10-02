@@ -7,7 +7,7 @@ import { renderSceneArt } from "../core/scene-art.js";
 import { state, timeOfDay } from "../core/state.js";
 import { SE } from "../core/audio.js";
 import { STAMINA_LOW } from "../core/stats.js";
-import { SPOTS, SPOT_PREVIEW, isClosed, visitedToday, isUnlocked, hasNewStory } from "./spots.js";
+import { allSpots, SPOT_PREVIEW, isClosed, visitedToday, isUnlocked, hasNewStory } from "./spots.js";
 import { updateHud } from "./hud.js";
 import { mountReel } from "./reel.js";
 import { isRainy } from "./weather.js";
@@ -48,6 +48,7 @@ export function chooseSpot({ notice = "", eventPin = null, guide = null, onShown
 
     const availability = (s) => {
       if (!isUnlocked(s)) return { ok: false, why: "locked" };
+      if (s.unavailable) return { ok: false, why: s.unavailable, tag: s.unavailableTag || s.unavailable };
       if (s.kind === "fortune" && state.fortuneDay === state.day) return { ok: false, why: "今日はもう占ってもらった", tag: "今日はもう占った" };
       if (guide && s.id !== guide.pin) return { ok: false, why: "今はスミさんの頼みが先", guided: true };
       if (isClosed(s)) return { ok: false, why: "本日定休日", tag: "本日定休日" };
@@ -87,7 +88,8 @@ export function chooseSpot({ notice = "", eventPin = null, guide = null, onShown
       const charName = s.charId && known ? displayName(s.charId, state) : null;
       const staminaNote = s.stamina ? (s.stamina > 0 ? "体力が回復する" : "体力を使う") : s.kind === "tonari" ? "体力を使う" : "";
       const warn = s.stamina < 0 && state.stamina + s.stamina < STAMINA_LOW;
-      const pv = SPOT_PREVIEW[s.id] ? sceneBg(SPOT_PREVIEW[s.id], tod) : null;
+      const previewId = s.preview || SPOT_PREVIEW[s.id];
+      const pv = previewId ? sceneBg(previewId, tod) : null;
       const preview = pv?.url ? el("div.mi-preview", { dataset: { tint: pv.tint || "" } }) : null;
       if (preview) renderSceneArt(preview, pv.url);
       info.replaceChildren(
@@ -121,7 +123,7 @@ export function chooseSpot({ notice = "", eventPin = null, guide = null, onShown
       resolve(s.id);
     };
 
-    for (const s of SPOTS) {
+    for (const s of allSpots()) {
       if (s.kind === "fortune" && !fortuneToday()) continue; // 占い師は週2日だけ出店
       const av = availability(s);
       const locked = av.why === "locked";

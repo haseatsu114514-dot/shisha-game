@@ -7,6 +7,10 @@ let ctx = null;
 let master = null;
 let seBus = null;
 let bgmBus = null;
+let audioUnlocked = false;
+let rainMode = null;
+let rainLoop = null;
+let rainBuffer = null;
 
 function ensureCtx() {
   if (ctx) return ctx;
@@ -26,8 +30,10 @@ function ensureCtx() {
 
 /** 最初のユーザー操作で音を解禁する（ブラウザの自動再生制限） */
 export function unlockAudio() {
+  audioUnlocked = true;
   const c = ensureCtx();
-  if (c && c.state === "suspended") c.resume();
+  if (c && c.state === "suspended") c.resume().then(syncRain, () => {});
+  else syncRain();
   if (pendingBgm) { const k = pendingBgm; pendingBgm = null; playBgm(k); }
 }
 
@@ -35,6 +41,57 @@ export function applyVolumes() {
   if (seBus) seBus.gain.value = config.seVolume;
   if (bgmBus) bgmBus.gain.value = config.bgmVolume;
   if (currentEl) currentEl.volume = config.bgmVolume;
+  syncRain();
+}
+
+// 雨はユーザー操作で解放された既存の AudioContext / 効果音バスだけを使う。
+export function setRainAmbience(mode = null) {
+  rainMode = mode === "outdoor" || mode === "indoor" ? mode : null;
+  syncRain();
+}
+
+function stopRain() {
+  if (!rainLoop) return;
+  rainLoop.gain.gain.setValueAtTime(0, ctx.currentTime);
+  rainLoop.source.stop();
+  rainLoop.source.disconnect();
+  rainLoop.filter.disconnect();
+  rainLoop.gain.disconnect();
+  rainLoop = null;
+}
+
+function syncRain() {
+  if (!rainMode || !audioUnlocked || !ctx || ctx.state !== "running"
+    || !(Number(config.seVolume) > 0) || config.mute || config.muted || document.hidden) {
+    stopRain();
+    return;
+  }
+  if (!rainLoop) {
+    if (!rainBuffer) {
+      rainBuffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 3), ctx.sampleRate);
+      const samples = rainBuffer.getChannelData(0);
+      let low = 0;
+      for (let i = 0; i < samples.length; i++) {
+        const white = Math.random() * 2 - 1;
+        low = (low + white * 0.025) / 1.025;
+        samples[i] = white * 0.22 + low * 2.4;
+      }
+    }
+    const source = ctx.createBufferSource();
+    source.buffer = rainBuffer;
+    source.loop = true;
+    const filter = ctx.createBiquadFilter();
+    filter.type = "lowpass";
+    filter.Q.value = 0.35;
+    const gain = ctx.createGain();
+    gain.gain.value = 0;
+    source.connect(filter).connect(gain).connect(seBus);
+    source.start();
+    rainLoop = { source, filter, gain };
+  }
+  const outside = rainMode === "outdoor";
+  rainLoop.filter.frequency.setTargetAtTime(outside ? 1800 : 650, ctx.currentTime, 0.18);
+  rainLoop.gain.gain.setTargetAtTime(outside ? 0.055 : 0.018, ctx.currentTime, 0.2);
 }
 
 // ---------------------------------------------------------------- SE（合成）

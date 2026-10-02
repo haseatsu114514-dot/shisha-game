@@ -5,6 +5,7 @@ import { SE } from "../core/audio.js";
 import { stepPanel, tickerSay } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, popStamp } from "./common.js";
 import { IDEAL } from "./pull.js";
+import { heatDelta } from "./conditions.js";
 
 const ACTIONS = [
   { id: "remove", label: "炭をひとつ外す", effect: -0.12, desc: "熱を落とす" },
@@ -37,7 +38,7 @@ export async function runCare(cs) {
 
   for (let r = 0; r < ROUNDS; r++) {
     // この先の熱の流れ（審査員の吸い方・炭の減り）
-    const drift = rand(-0.12, 0.14);
+    const drift = heatDelta(cs, rand(-0.12, 0.14));
     const noise = rand(-0.08, 0.08) * (1 - 0.75 * clarity); // 洞察★で読み違いが減る
     const seen = drift + noise;
     roundEl.textContent = `${r + 1} / ${ROUNDS} 口目`;
@@ -58,8 +59,8 @@ export async function runCare(cs) {
     });
     btns.replaceChildren();
     const before = T;
-    T = clamp(T + drift + choice.effect, 0, 1);
-    if (choice.steady) T = T + (CENTER - T) * 0.35; // 位置を回すと熱がならされる
+    T = clamp(T + drift + heatDelta(cs, choice.effect), 0, 1);
+    if (choice.steady) T = clamp(T + heatDelta(cs, (CENTER - T) * 0.35), 0, 1); // 位置を回すと熱がならされる
     history.push((before + T) / 2, T);
     const ok = T >= IDEAL[0] && T <= IDEAL[1];
     if (ok) good++;

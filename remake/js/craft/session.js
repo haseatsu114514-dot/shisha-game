@@ -7,6 +7,7 @@ import { showScreen, setBg, retire, layers } from "../core/ui.js";
 import { bgUrl } from "../core/data.js";
 import { state, timeOfDay } from "../core/state.js";
 import { buildRig } from "./art.js";
+import { isRainy } from "../daily/weather.js";
 import { runHoles } from "./holes.js";
 import { runHeat } from "./heat.js";
 import { runSteamDodge } from "./steam.js";
@@ -31,6 +32,7 @@ export const DRILLS = {
 export function newSession(mode) {
   return {
     mode,
+    environment: { rainy: isRainy(), day: state.day },
     equip: { ...state.equip },
     concepts: [],
     mix: {},

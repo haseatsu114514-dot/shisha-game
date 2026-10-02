@@ -4,7 +4,7 @@
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 5; // 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶
+export const SCHEMA = 7; // 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -29,6 +29,9 @@ export function newState() {
     statsAtChapterStart: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 },
     flags: {},
     met: {},                   // 名乗りを受けたキャラ（名前表示の解禁）
+    affinityCarry: {}, // 普通の好感度の小数分。既存ポイントは減らさない
+    loveCarry: {}, // 恋人の絆の半ポイントを持ち越す
+    baitoRecent: [], // 直近4回の接客の客・日付
     affinity: {},              // キャラ -> 好感度ポイント（段階は stats.js で換算）
     story: {},                 // キャラ -> 固有会話の消化数
     visits: {},                // スポット -> 訪問回数
@@ -43,6 +46,7 @@ export function newState() {
     usedBaito: [],
     contacts: [],              // LIME を交換した相手
     limeRead: [],              // 既読の LIME id
+    pendingInvite: null, // day/slot/originIdつきの予約
     inbox: [],                 // LIME の受信箱 [{id, day, msg, read, done, log}]（朝に届き、好きなときに読む）
     notes: {},                 // 常連ノート（接客した客 -> 回数）
     relationshipMemories: [],   // 読んだ交流だけを残す。人数・恋愛・大会の加点には使わない
@@ -76,6 +80,51 @@ export function newState() {
 
 /** 旧スキーマのセーブを現行の形にそろえる（互換処理はここに集約） */
 function migrate(s) {
+  const oldSchema = Number(s.schema) || 0;
+  s.flags ||= {};
+  s.loveCarry = Object.fromEntries(Object.entries(s.loveCarry && typeof s.loveCarry === "object" ? s.loveCarry : {})
+    .filter(([, v]) => Number.isFinite(v) && v >= 0 && v < 1));
+  s.baitoRecent = (Array.isArray(s.baitoRecent) ? s.baitoRecent : [])
+    .filter((entry) => entry && typeof entry.id === "string" && entry.id && Number.isInteger(entry.chapter) && entry.chapter > 0
+      && Number.isInteger(entry.day) && entry.day > 0)
+    .map((entry) => ({ id: entry.id, chapter: entry.chapter, day: entry.day,
+      customers: [...new Set((Array.isArray(entry.customers) ? entry.customers : []).filter((id) => typeof id === "string" && id))] }))
+    .slice(-4);
+  s.affinityCarry = Object.fromEntries(Object.entries(s.affinityCarry && typeof s.affinityCarry === "object" ? s.affinityCarry : {})
+    .filter(([, v]) => Number.isFinite(v) && v >= 0 && v < 1));
+  // 旧版は私服デートを店舗訪問の6回目で再生していた。読んだ保存を重ねて再生しない。
+  if (oldSchema < 6 && (s.story?.minto || 0) >= 6) {
+    s.story.minto -= 1;
+    s.flags._minto_fifth_done = true;
+  }
+  if (oldSchema < 6 && (s.story?.adam || 0) >= 5) {
+    s.story.adam -= 1;
+    s.flags._adam_arcade_done = true;
+  }
+  s.inbox = (Array.isArray(s.inbox) ? s.inbox : []).filter((i) => i && typeof i.id === "string" && i.msg && typeof i.msg === "object");
+  for (const item of s.inbox) {
+    item.originId ||= item.id;
+    if (!["waiting", "replied", "expired", "none"].includes(item.replyState)) {
+      const replyable = item.msg.type === "invitation" || !!item.msg.replies?.length;
+      item.replyState = !replyable ? "none" : !item.done ? "waiting"
+        : item.result === "expired" || item.expired ? "expired" : "replied";
+    }
+  }
+  if (oldSchema < 6) {
+    // 旧版の店舗招待で誤って付いた外出完了は、実際の外出の承諾と完了が残る場合だけ引き継ぐ。
+    for (const id of ["minto", "naru", "adam", "tsumugi", "ageha"]) {
+      if (s.flags[`_outing_done_${id}`] && !s.inbox.some((i) => i.result === "accepted" && i.msg.accept_event === `outing_${id}_1`)) {
+        delete s.flags[`_outing_done_${id}`];
+      }
+    }
+  }
+  if (s.pendingInvite && typeof s.pendingInvite === "object") {
+    const inv = s.pendingInvite;
+    const item = [...s.inbox].reverse().find((i) => i.msg.sender === inv.sender && i.msg.accept_event === inv.event);
+    inv.day ??= s.day;
+    inv.originId ||= item?.originId || null;
+    inv.afterClose ??= !!item?.msg.after_close;
+  }
   // 訪問・好感度から、新しい台詞を読んだと推測しない。オート・手動枠に同じ処理を使う。
   s.relationshipMemories = Array.isArray(s.relationshipMemories)
     ? [...new Set(s.relationshipMemories.filter((id) => typeof id === "string"))]

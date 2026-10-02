@@ -50,9 +50,17 @@ export function keys(map) {
   return () => window.removeEventListener("keydown", h);
 }
 
+/** 表示名だけを統一する。内部の判定種別・点数・成功幅はそのまま使う。 */
+export function timingLabel(kind, fallback = "") {
+  if (kind === "perfect" || kind === "just") return "EXCELLENT";
+  if (kind === "good") return "GOOD";
+  if (kind === "bad" || kind === "miss") return "MISS";
+  return fallback;
+}
+
 /** 画面内の座標で判定スタンプを出す（パネル基準） */
 export function popStamp(host, text, kind = "", x = "50%", y = "40%") {
-  const s = el(`div.stamp${kind ? "." + kind : ""}`, { text, style: { left: x, top: y } });
+  const s = el(`div.stamp${kind ? "." + kind : ""}`, { text: timingLabel(kind, text), style: { left: x, top: y } });
   host.append(s);
   setTimeout(() => s.remove(), 1100);
 }

@@ -141,7 +141,7 @@ export function buildRig() {
         Object.assign(foil.style, { bottom: `${rimMid - fh * 0.62}px`, width: `${fw}px`, height: `${fh}px` });
       }
       foil.classList.toggle("show", !!cs.holes);
-      // 炭: アルミの上面に三角（4個なら菱形）に並べる。奥の炭ほど上・小さく
+      // 炭: アルミの上面に三角（4個なら菱形）に並べる。位置だけ中心へ20%寄せ、寸法は保つ
       const n = cs.place === "four" ? 4 : cs.place ? 3 : 0;
       const cw = rimW * 0.27;
       const slots = n === 4
@@ -149,7 +149,7 @@ export function buildRig() {
         : [[-0.24, 0.1], [0.24, 0.1], [0, -0.12]];
       coals.replaceChildren(...slots.slice(0, n).sort((a, b) => a[1] - b[1]).map(([dx, dy]) => {
         const c = artImg(coalName(cs.equip?.charcoal, cs.heat?.just ? "just" : "red"), cw * (1 - dy * 0.4), "rig-coal");
-        Object.assign(c.style, { left: `calc(50% + ${dx * rimW}px)`, bottom: `${-dy * rimW * 0.5}px` });
+        Object.assign(c.style, { left: `calc(50% + ${dx * rimW * 0.8}px)`, bottom: `${-dy * rimW * 0.5 * 0.8}px` });
         return c;
       }));
       Object.assign(coals.style, { bottom: `${rimMid + 2}px` });

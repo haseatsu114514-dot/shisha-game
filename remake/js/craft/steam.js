@@ -6,6 +6,7 @@ import { SE } from "../core/audio.js";
 import { tier01 } from "../core/stats.js";
 import { stepPanel, refreshRig, benchRig } from "./session.js";
 import { autoSkill, resultCard, keys, popStamp } from "./common.js";
+import { craftConditions } from "./conditions.js";
 
 export const DODGE_WORDS = [
   "手元、見られてる……", "時間が足りないかも", "隣の煙、もう上がってる",
@@ -20,7 +21,8 @@ const DURATION = { 3: 7, 5: 10, 8: 13, 10: 16 };
 export async function runSteamDodge(cs) {
   const tutorial = cs.mode === "tutorial";
   const min = cs.steamMin || 5;
-  const panel = stepPanel("steam", `蒸らし ── ${min}分`, "ドラッグ（または矢印キー）で心を動かして、雑念を躱す。待つのも仕事のうち");
+  const rainy = craftConditions(cs).rainy;
+  const panel = stepPanel("steam", `蒸らし ── ${min}分${rainy ? "（雨：熱が入りづらい）" : ""}`, "ドラッグ（または矢印キー）で心を動かして、雑念を躱す。待つのも仕事のうち");
   const W = 620, H = 380;
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge" } });
   const heart = el("div.dodge-heart", { text: "♥" });
@@ -125,13 +127,14 @@ export async function runSteamDodge(cs) {
   window.removeEventListener("keyup", up);
   bullets.forEach((b) => b.node.remove());
   const score = clamp(100 - hits * 14, 0, 100);
-  cs.steam = { min, hits, score };
+  cs.steam = { min, hits, score, warmingFactor: rainy ? 0.85 : 1 };
   refreshRig();
   popStamp(panel, hits === 0 ? "無心" : hits <= 2 ? "持ちこたえた" : "雑念まみれ", hits === 0 ? "just" : hits <= 2 ? "good" : "bad", "50%", "40%");
   await sleep(400);
   await resultCard(panel, {
     title: "蒸らし 結果",
     lines: [
+      rainy ? "雨の日は熱の立ち上がりが少し遅い。吸い出しで温度を確かめよう" : "",
       `${min}分蒸らした。${hits === 0 ? "最後まで一度も揺れなかった" : `雑念に${hits}回つかまった`}`,
       min >= 8 ? "じっくり待った分、甘さと余韻が開きそうだ" : min <= 3 ? "早めの立ち上げ。温度合わせは忙しくなる" : "基本の蒸らし。香りの輪郭は残りやすい",
     ],

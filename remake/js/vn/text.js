@@ -1,79 +1,112 @@
-// 台詞テキストの組版: 自動改行（全角24字・禁則つき）→ 最大2行で改ページ、装飾タグ、トークン置換。
-// 改行はコード側で決める（CLAUDE.md「改行はautoWrapに一本化」）。データの手動 \n は尊重する。
-
+// 台詞の組版: 全角24字と実際の表示幅を上限に折り、最大2行で改ページする。
+// データの改行と装飾を保ち、ブラウザの再折り返しで行数が増えないようにする。
 export const WRAP_LIMIT = 24;
 export const MAX_PAGE_LINES = 2;
 const BREAK_AFTER = "、。，．！？…‥」』）】〉》";
-// 行頭禁則。「ん」と小書きカタカナも巻き取り、「なるさ｜ん」のように呼び名が割れるのを防ぐ
 const NO_LINE_START = "、。，．！？…‥ー〜ぁぃぅぇぉっゃゅょんゎ々ァィゥェォッャュョ」』）】〉》・";
 const OPENERS = "「『（【〈《";
+const TAG_PATTERN = /^\[\/?(imp|warn|hint|red|blue|sub)\]/;
+const graphemes = typeof Intl?.Segmenter === "function"
+  ? new Intl.Segmenter("ja", { granularity: "grapheme" }) : null;
 
-const w = (ch) => (ch.charCodeAt(0) <= 0xff ? 0.5 : 1);
-const widthOf = (s) => { let n = 0; for (const ch of s) n += w(ch); return n; };
+function tokensOf(raw) {
+  const indexed = graphemes
+    ? new Map([...graphemes.segment(raw)].map((s) => [s.index, s.segment])) : null;
+  const tokens = [];
+  for (let i = 0; i < raw.length;) {
+    const tag = TAG_PATTERN.exec(raw.slice(i));
+    const value = tag ? tag[0] : indexed?.get(i) || String.fromCodePoint(raw.codePointAt(i));
+    tokens.push({ value, tag: tag?.[1] || "", width: tag ? 0 : value.codePointAt(0) <= 0xff ? 0.5 : 1 });
+    i += value.length;
+  }
+  return tokens;
+}
+const widthOf = (raw) => tokensOf(raw).reduce((n, t) => n + t.width, 0);
+function previousVisible(tokens, end) {
+  while (--end >= 0) if (!tokens[end].tag) return end;
+  return -1;
+}
+function nextVisible(tokens, start) {
+  while (start < tokens.length && tokens[start].tag) start++;
+  return start;
+}
+function safeBoundary(tokens, end) {
+  const previous = previousVisible(tokens, end), next = nextVisible(tokens, end);
+  return !OPENERS.includes(tokens[previous]?.value || "\0") &&
+    !NO_LINE_START.includes(tokens[next]?.value || "\0");
+}
 
-/** 装飾タグ（[imp] 等）は幅0。句読点・文末を優先して折る */
-export function autoWrap(raw, limit = WRAP_LIMIT) {
-  return String(raw).split("\n").map((seg) => {
-    let out = "";
-    let line = 0;
-    let i = 0;
-    while (i < seg.length) {
-      if (seg[i] === "[") {
-        const close = seg.indexOf("]", i);
-        if (close !== -1) { out += seg.slice(i, close + 1); i = close + 1; continue; }
+/** 文末優先・禁則は上限の内側で処理する。句読点まで先読みして行を延ばさない。 */
+export function autoWrap(raw, limit = WRAP_LIMIT, layout = {}) {
+  return String(raw).split("\n").map((segment) => {
+    const tokens = tokensOf(segment), lines = [];
+    let start = 0;
+    while (start < tokens.length) {
+      let end = start, units = 0, text = "";
+      while (end < tokens.length) {
+        const token = tokens[end];
+        const nextText = text + (token.tag ? "" : token.value);
+        const tooWide = layout.measure && layout.maxWidth > 0 && layout.measure(nextText) > layout.maxWidth;
+        if (!token.tag && units > 0 && (units + token.width > limit || tooWide)) break;
+        units += token.width;
+        text = nextText;
+        end++;
       }
-      out += seg[i];
-      line += w(seg[i]);
-      i++;
-      if (line < limit || i >= seg.length) continue;
-      // いまの行の中で、文末（。！？）→句読点の順に一番後ろの折り目を探す
-      const lineStart = out.lastIndexOf("\n") + 1;
-      let back = -1;
-      for (const set of ["。！？", BREAK_AFTER]) {
-        for (let k = out.length - 1; k >= lineStart && back < 0; k--) {
-          if (!set.includes(out[k])) continue;
-          let c = k + 1;
-          while (c < out.length && NO_LINE_START.includes(out[c])) c++;
-          if (widthOf(out.slice(lineStart, c)) >= limit * 0.3) back = c;
+      let cut = end;
+      if (end < tokens.length) {
+        let preferred = -1;
+        for (const punctuation of ["。！？", BREAK_AFTER]) {
+          for (let k = end - 1; k >= start; k--) {
+            if (tokens[k].tag || !punctuation.includes(tokens[k].value) || !safeBoundary(tokens, k + 1)) continue;
+            if (tokens.slice(start, k + 1).reduce((n, t) => n + t.width, 0) >= limit * 0.3) {
+              preferred = k + 1; break;
+            }
+          }
+          if (preferred >= 0) break;
         }
-        if (back >= 0) break;
+        if (preferred >= 0) cut = preferred;
+        else {
+          while (!safeBoundary(tokens, cut)) {
+            const earlier = previousVisible(tokens, cut);
+            if (earlier <= start || !tokens.slice(start, earlier).some((t) => !t.tag)) break;
+            cut = earlier;
+          }
+        }
       }
-      if (back >= 0 && back < out.length) {
-        const tail = out.slice(back);
-        out = out.slice(0, back) + "\n" + tail;
-        line = widthOf(tail);
-        continue;
-      }
-      // 少し先に句読点があれば、そこまで引っ張ってから折る
-      for (let k = 0; k < 8 && i + k < seg.length; k++) {
-        if (BREAK_AFTER.includes(seg[i + k])) { out += seg.slice(i, i + k + 1); i += k + 1; break; }
-      }
-      while (i < seg.length && NO_LINE_START.includes(seg[i])) out += seg[i++];
-      if (i < seg.length && OPENERS.includes(out[out.length - 1])) {
-        const open = out[out.length - 1];
-        out = out.slice(0, -1) + "\n" + open;
-        line = 1;
-        continue;
-      }
-      // 残りが2文字以下なら折らない（末尾1文字の孤立を防ぐ）
-      if (i < seg.length && widthOf(seg.slice(i)) > 2) { out += "\n"; line = 0; }
+      lines.push(tokens.slice(start, cut).map((t) => t.value).join(""));
+      start = cut;
     }
-    return out;
+    return lines.join("\n");
   }).join("\n");
 }
 
-/** 自動改行した行を MAX_PAGE_LINES ずつのページに分ける（孤立ページは前へ寄せる） */
-export function paginate(raw) {
-  const lines = autoWrap(raw).split("\n");
+/** 各ページ内で装飾を閉じ、続くページでは同じ装飾を開き直す。 */
+function balancePages(pages) {
+  const active = [];
+  return pages.map((page) => {
+    const prefix = active.map((tag) => `[${tag}]`).join("");
+    for (const token of tokensOf(page)) {
+      if (!token.tag) continue;
+      if (token.value.startsWith("[/")) {
+        const at = active.lastIndexOf(token.tag);
+        if (at >= 0) active.splice(at, 1);
+      } else active.push(token.tag);
+    }
+    return prefix + page + [...active].reverse().map((tag) => `[/${tag}]`).join("");
+  });
+}
+
+/** 短い末尾だけのページは避けつつ、常にMAX_PAGE_LINES以内に収める。 */
+export function paginate(raw, layout = {}) {
+  const lines = autoWrap(raw, WRAP_LIMIT, layout).split("\n");
   const pages = [];
   let start = 0;
   if (lines.length > MAX_PAGE_LINES && lines.length % MAX_PAGE_LINES === 1 &&
-      widthOf(lines[lines.length - 1]) <= WRAP_LIMIT * 0.4) {
-    pages.push(lines[0]);
-    start = 1;
+      widthOf(lines.at(-1)) <= WRAP_LIMIT * 0.4) {
+    pages.push(lines[0]); start = 1;
   }
   for (let k = start; k < lines.length; k += MAX_PAGE_LINES) pages.push(lines.slice(k, k + MAX_PAGE_LINES).join("\n"));
-  return pages.length ? pages : [""];
+  return balancePages(pages.length ? pages : [""]);
 }
 
 const escapeHtml = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");

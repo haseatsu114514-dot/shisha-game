@@ -82,7 +82,8 @@ const cheatScene = (id) => ({
  */
 export async function maybeConfession(beat) {
   const id = state.flags._confession_due;
-  if (!id || state.phase !== "daily") return false;
+  if (!id || state.phase !== "daily" || state.slot < 2) return false; // 昼の行動から仕事後の夜へ飛ばない
+  if (id === "minto" && !state.flags._minto_identity_revealed) return false; // 私服の初めての約束で本名を知ってから
   if ((state.flags._confession_wait || 0) > state.day) return false;
   delete state.flags._confession_due;
   if (isLover(id) || state.flags[`_friend_${id}`] || !DB.dialogues[`confession_${id}`]) return false;
@@ -105,6 +106,22 @@ export async function maybeConfession(beat) {
       return true;
     }
     delete state.flags._confession_go;
+  }
+  // 旧セーブは私服の交流済みでも、本名を聞いた記録だけがないことがある。
+  // 告白する意思を示した後で名乗りを補い、未知の名前を主人公が先に呼ばない。
+  if (id === "minto" && !state.flags._minto_name_known) {
+    await play({
+      dialogue_id: "remake_minto_name_before_confession",
+      metadata: { bg: "res://assets/backgrounds/bg_street_night.png" },
+      lines: [
+        { speaker: "", text: "仕事を終えて、私服の彼女と待ち合わせた。話し始める前に、彼女が小さく息を吸った。" },
+        { speaker: "minto", face: "ura_normal", text: "……改めて、ちゃんと名乗るね。緑川栞。お店では『みんと』だけど、二人の時は、栞って呼んでくれたら嬉しい。" },
+        { speaker: "hajime", face: "normal", text: "栞さん。……教えてくれて、ありがとう。" },
+        { speaker: "minto", face: "ura_smile", text: "……うん。その呼び方、ちょっと照れるけど。ちゃんと、私に話しかけてくれてる感じがする。" },
+      ],
+    });
+    state.flags._minto_name_known = true;
+    save();
   }
   await play(`confession_${id}`, DB.dialogues[`confession_${id}`]?.metadata?.bg ? {} : { bg: STREET });
   save();
@@ -140,7 +157,7 @@ export async function playDate(id) {
     dialogue_id: `remake_date_${id}`,
     metadata: { bg: `res://assets/backgrounds/${venue.bg}` },
     lines: [
-      { speaker: "", text: `約束の店——『${venue.name}』。${venue.note}。店先で、${name}が待っていた。` },
+      { speaker: "", text: `${state.slot === 0 ? "定休日の午後。" : "それぞれの仕事を終えてから。"}約束の店——『${venue.name}』。${venue.note}。店先で、${name}が待っていた。` },
       { speaker: id, face: sc.arrive.face, text: sc.arrive.text },
       { speaker: "", text: "二人で一台を頼んで、向かい合う。よその店の煙を、よその客として吸う時間。" },
       { speaker: id, face: sc.mid.face, text: sc.mid.text },
@@ -170,6 +187,14 @@ const chat = (id, msgId, v) => ({
   messages: v.m.map((t) => String(t)), replies: v.r,
 });
 
+/** 営業を抜けて昼デートには行かない。定休日の午後か、固定イベントのない仕事後の夜 */
+export function dateSchedule(id, { day = state.day, fixedNight = () => false } = {}) {
+  const closedOn = { minto: 6, naru: 3, adam: 5 }[id];
+  if (closedOn != null && day % 7 === closedOn) return { time_slot: "noon", closed_on: closedOn };
+  if (fixedNight(day)) return null;
+  return { time_slot: "night", after_close: true };
+}
+
 /**
  * 今朝届く恋人からの LIME（記念日・デートの誘い・朝のひとこと・試合の朝）。
  * @param opts.tournamentDay 大会当日の朝か
@@ -198,12 +223,14 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false 
     const maxed = (state.loveLevel[id] || 0) >= 5;
     const last = state.lastDate[id] ?? -9;
     const invId = `_date_inv_${id}_d${state.day}`;
-    if (state.day - last >= (maxed ? 5 : 3) && state.day < 14 && !read(invId) && !state.pendingInvite) {
+    const schedule = dateSchedule(id, { fixedNight });
+    if (schedule && state.day - last >= (maxed ? 5 : 3) && state.day < 14 && !read(invId)) {
       out.push({
         id: invId, sender: id, type: "invitation", lover: true,
-        time_slot: state.day % 2 === 0 && !fixedNight(state.day) ? "night" : "noon",
+        ...schedule,
         accept_event: `date_${id}`,
-        messages: ((maxed && (L().inviteLinesMax || {})[id]) || (L().inviteLines || {})[id] || ["今日、少し会えない？"]).slice(),
+        messages: [schedule.time_slot === "noon" ? "今日はお休み。午後に会えたらうれしいな。" : "今日は仕事を終えてから、少し会える？",
+          ...((maxed && (L().inviteLinesMax || {})[id]) || (L().inviteLines || {})[id] || []).slice()],
         decline_response: { text: (L().declineLines || {})[id] || "また今度ね" },
       });
       continue;

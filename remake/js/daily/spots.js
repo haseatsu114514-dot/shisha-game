@@ -6,6 +6,7 @@ import { gainStat, gainAffinity, addStamina, addMoney, affinityLevel } from "../
 import { play } from "../vn/engine.js";
 import { playBgm } from "../core/audio.js";
 import { isRainy, RAIN_SPOT_TEXTS } from "./weather.js";
+import { kafukaSpot } from "./kafuka.js";
 
 export const VISIT_COST = 3000;
 
@@ -17,8 +18,8 @@ export const VISIT_SEQ = {
   sumi: ["ch1_sumi_tutorial", "ch1_sumi_basics", "ch1_sumi_training", "ch1_sumi_secret", "ch1_sumi_closing", "ch1_sumi_final"],
   tsumugi: ["ch1_tsumugi_first", "ch1_tsumugi_second", "ch1_tsumugi_third", "ch1_tsumugi_fourth", "ch1_tsumugi_fifth", "ch1_tsumugi_smoke_color"],
   naru: ["ch1_naru_first", "ch1_naru_second", "ch1_naru_third", "ch1_naru_group_regulars", "ch1_naru_fourth", "ch1_naru_fifth"],
-  adam: ["ch1_adam_first", "ch1_adam_second", "ch1_adam_group_soutoku", "ch1_adam_third", "ch1_adam_outing_dagurikura", "ch1_adam_fourth", "ch1_adam_fifth"],
-  minto: ["ch1_minto_first", "ch1_minto_second", "ch1_minto_third", "ch1_minto_group_regulars", "ch1_minto_fourth", "ch1_minto_fifth", "ch1_minto_phantom_smell"],
+  adam: ["ch1_adam_first", "ch1_adam_second", "ch1_adam_group_soutoku", "ch1_adam_third", "ch1_adam_fourth", "ch1_adam_fifth"],
+  minto: ["ch1_minto_first", "ch1_minto_second", "ch1_minto_third", "ch1_minto_group_regulars", "ch1_minto_fourth", "ch1_minto_phantom_smell"],
   rin: ["ch1_rin_first", "ch1_rin_second", "ch1_rin_third"],
 };
 const REPEAT_POOL = {
@@ -82,14 +83,22 @@ export const SPOT_PREVIEW = {
   shop: "bg_fookah_showroom", cafe: "bg_cafe", kannon: "bg_kannon_day", choizap: "bg_choizap",
   c_station: "bg_c_station", rest: "bg_home", fortune: "bg_street",
 };
-export const spotById = (id) => SPOTS.find((s) => s.id === id);
+/** 交換後だけ準備中の店を追加。保存を切り替えても古いピンを残さない。 */
+export const allSpots = () => { const extra = kafukaSpot(); return extra ? [...SPOTS, extra] : SPOTS; };
+export const spotById = (id) => allSpots().find((s) => s.id === id);
 
 // ---------------------------------------------------------------- 状態の読み取り
 
 export const storyCount = (id) => state.story[id] || 0;
 
+const NIGHT_STORIES = new Set([
+  "ch1_sumi_training", "ch1_sumi_secret", "ch1_sumi_closing", "ch1_sumi_final",
+  "ch1_tsumugi_fifth", "ch1_tsumugi_smoke_color", "ch1_minto_phantom_smell",
+]);
+const storyAvailable = (id) => !NIGHT_STORIES.has(id) || state.slot >= 1;
 export function hasNewStory(charId) {
-  return storyCount(charId) < (VISIT_SEQ[charId] || []).length;
+  const id = (VISIT_SEQ[charId] || [])[storyCount(charId)];
+  return !!id && storyAvailable(id);
 }
 
 export function isClosed(spot) {
@@ -131,9 +140,9 @@ export async function visitChar(charId) {
   const seq = VISIT_SEQ[charId] || [];
   const idx = storyCount(charId);
   const bg = bgRef(VISIT_BG[charId] || "bg_tonari_inside");
-  if (idx < seq.length && DB.dialogues[seq[idx]]) {
+  if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx])) {
     state.story[charId] = idx + 1;
-    await play(seq[idx], { bg });
+    await play(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg });
     gainAffinity(charId, 10);
     gainStat(CHAR_STAT[charId], 2);
   } else {

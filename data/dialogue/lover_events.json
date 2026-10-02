@@ -308,13 +308,13 @@
     {
       "dialogue_id": "lover_minto_lv1",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png"
+        "bg": "res://assets/backgrounds/bg_street.png"
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "付き合い始めて最初のデートの帰り。素の栞は、店の「みんと」とは別人みたいに、ずっと静かだった。"
+          "text": "付き合い始めて最初のデートの帰り。栞さんは小さな声で話しながら、隣を歩いていた。"
         },
         {
           "speaker": "minto",
@@ -354,8 +354,8 @@
         },
         {
           "speaker": "minto",
-          "face": "smile",
-          "text": "……でも、次のデートも、その次も、……もう決めてるから。覚悟してよね"
+          "face": "ura_smile",
+          "text": "……次のお休みも、また会えたらうれしい。……ゆっくり、予定を合わせようね"
         },
         {
           "speaker": "",
@@ -372,18 +372,18 @@
     {
       "dialogue_id": "lover_minto_lv2",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_day.png"
+        "bg": "res://assets/backgrounds/peppermint.png"
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "休日。栞に連れられて、古い商店街の外れまで来た。"
+          "text": "デートの帰り、栞さんに連れられて、ぺぱーみんとの前まで来た。"
         },
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "……ここ。昔、うちの実家の喫茶店だったとこ。……今は、精肉店だけど"
+          "text": "……この場所、昔はうちの喫茶店だったの。一度は手放したけど、買い戻して……今は、ぺぱーみんと"
         },
         {
           "speaker": "minto",
@@ -415,7 +415,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "精肉店の前で、栞は少しだけ長く立ち止まった。もう、匂いの話はしなかった。"
+          "text": "静かなお店の前で、栞さんは少しだけ長く立ち止まった。自分で掛け直した看板を、そっと見上げた。"
         },
         {
           "speaker": "",
@@ -464,7 +464,7 @@
         },
         {
           "speaker": "minto",
-          "face": "normal",
+          "face": "ura_normal",
           "text": "……ね、トングのほうは、お店で使ってるの、……見ても、笑わないでよ"
         },
         {
@@ -482,13 +482,13 @@
     {
       "dialogue_id": "lover_minto_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png"
+        "bg": "res://assets/backgrounds/bg_street.png"
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "夜。栞が、めずらしくお酒を少しだけ飲んで、頬を赤くしていた。"
+          "text": "二人でゆっくり過ごす時間。栞さんが、めずらしくお酒を少しだけ飲んで、頬を赤くしていた。"
         },
         {
           "speaker": "minto",
@@ -538,17 +538,17 @@
         {
           "speaker": "",
           "face": "",
-          "text": "穏やかな休日の朝。栞は、化粧もしないで、素のまま、となりで笑っていた。"
+          "text": "家でゆっくり過ごす時間。栞さんは、化粧もしないで、となりで笑っていた。"
         },
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "……ねえ、見て。すっぴんだよ。……『みんと』、どこにもいないでしょ"
+          "text": "……今日は、お化粧もしてないの。はじめくんとなら、このままでも落ち着くね"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……うん。こっちの栞さんが、一番好きだ"
+          "text": "……うん。こうして二人で過ごせる時間、好きだな"
         },
         {
           "speaker": "minto",
@@ -569,11 +569,11 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……朝ごはん、作ろうか"
+          "text": "……何か、作ろうか"
         },
         {
           "speaker": "minto",
-          "face": "smile",
+          "face": "ura_smile",
           "text": "ん、……ふたりで作ろ"
         },
         {

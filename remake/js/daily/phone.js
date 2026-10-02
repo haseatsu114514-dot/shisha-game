@@ -12,21 +12,102 @@ import { SE } from "../core/audio.js";
 import { hooks } from "../vn/engine.js";
 import { formatHtml } from "../vn/text.js";
 import { hasContact } from "./spots.js";
-import { loverMessages, isLover } from "./romance.js";
+import { loverMessages, isLover, dateSchedule } from "./romance.js";
 
 const HEROINES_ENCOURAGE = ["tsumugi", "minto", "rin"];
 // 目上の相手への返信は敬語（旧版 F6）。友達口調は同世代の相手だけ
 const POLITE = new Set(["sumi", "nagumo", "maezono"]);
+const originId = (item) => item.originId || item.msg?.origin_id || item.id;
+const importantInvite = (m) => m.type === "invitation" && !!m.important;
+const needsResend = (id) => (state.inbox || []).some((item) => originId(item) === id && item.needsResend);
+const canRetry = (item) => item.result === "expired"
+  || item.result === "conflict_declined" && item.needsResend && item.day < state.day;
+
+/** 営業中の私的な約束や、固定イベントとの重複を避ける。時刻を持たない誘いは従来どおり */
+function invitationAvailable(m, { fixedNight = () => false } = {}) {
+  if (m.closed_on != null && state.day % 7 !== m.closed_on) return false;
+  if (m.exclude_closed_on != null && state.day % 7 === m.exclude_closed_on) return false;
+  if (m.time_slot === "night" && fixedNight(state.day)) return false;
+  return true;
+}
+
+/** 私的な待ち合わせは、配信日に休日午後か営業後夜へ確定する。受信後は本文も時刻も固定 */
+function scheduledInvitation(m, opts = {}) {
+  if (m.private_schedule !== "holiday_or_after_close") return m;
+  const schedule = dateSchedule(m.sender, opts);
+  if (!schedule) return null;
+  const daytime = schedule.time_slot === "noon";
+  const context = daytime ? "今日はお店がお休みだから、午後" : "今日、仕事を終えたあと";
+  const when = daytime ? "午後" : "仕事を終えたあと";
+  const render = (value) => String(value).replaceAll("{privateContext}", context).replaceAll("{privateWhen}", when);
+  // DBの雛形を変更せず、その日の受信トークへ解決済みの時刻を保存する。
+  const resolved = { ...m, ...schedule, after_close: !!schedule.after_close };
+  if (schedule.closed_on == null) delete resolved.closed_on;
+  resolved.messages = (m.messages || []).map((line) => typeof line === "string" ? render(line) : { ...line, text: render(line.text) });
+  if (m.reminder_text) resolved.reminder_text = render(m.reminder_text);
+  if (m.accept_text) resolved.accept_text = render(m.accept_text);
+  return resolved;
+}
+
+/** 期限切れは既読とは別。未読のままでも、重要な誘いの再案内を止めない */
+export function expireInvitations(opts = {}) {
+  const pending = state.pendingInvite;
+  if (pending) {
+    let booked = [...(state.inbox || [])].reverse().find((item) => item.result === "accepted"
+      && (pending.originId ? originId(item) === pending.originId : item.msg?.accept_event === pending.event && item.msg?.sender === pending.sender));
+    const source = DB.lime.find((m) => m.id === (pending.originId || (booked && originId(booked)))) || booked?.msg;
+    const dueDay = pending.day ?? booked?.day ?? state.day;
+    const schedule = /^date_/.test(pending.event) ? dateSchedule(pending.sender, { ...opts, day: dueDay })
+      : source ? scheduledInvitation(source, { ...opts, day: dueDay }) : source;
+    // 夜の行動枠で受け付けた仕事後の約束は、閉店イベントが済むまでslot2で待つ。
+    const waitingForClose = pending.afterClose && pending.queuedAfterClose && dueDay === state.day && state.slot >= 2;
+    const past = dueDay < state.day || dueDay === state.day && pending.slot < state.slot && !waitingForClose;
+    const conflict = dueDay === state.day && !waitingForClose && (pending.slot === 1 && opts.fixedNight?.(dueDay) || schedule === null
+      || schedule && (!invitationAvailable(schedule, opts) || pending.slot !== (schedule.time_slot === "night" ? 1 : 0)));
+    if (past || conflict) {
+      // 旧セーブに残った予約も、消す前に経緯をトークへ残す。既読記録は戻さない。
+      if (!booked) {
+        const id = pending.originId || source?.id || `_rescheduled_${pending.event}_d${dueDay}`;
+        booked = { id, originId: id, day: dueDay, msg: source || { id, sender: pending.sender, type: "invitation",
+          accept_event: pending.event, time_slot: pending.slot ? "night" : "noon", messages: ["会う約束をしていた"] },
+          read: true, done: true, log: [] };
+        state.inbox.push(booked);
+      }
+      booked.done = true;
+      booked.result = "expired";
+      booked.replyState = "expired";
+      booked.needsResend = true;
+      (booked.log ||= []).push({ note: conflict
+        ? "仕事や別の予定と重なったため、約束を別の日に改めることにした"
+        : "約束の時間を過ぎてしまった。また都合の合う日に会うことにした" });
+      delete state.flags[`_invited_${originId(booked)}`];
+      state.pendingInvite = null;
+    } else if (schedule?.after_close) pending.afterClose = true;
+  }
+  for (const item of state.inbox || []) {
+    if (item.done || item.msg?.type !== "invitation" || inviteState(item) !== "expired") continue;
+    item.done = true;
+    item.result = "expired";
+    item.replyState = "expired";
+    const source = DB.lime.find((m) => m.id === originId(item)) || item.msg;
+    (item.log ||= []).push({ note: importantInvite(source)
+      ? "返事をしそびれた……。また都合の合う日に誘ってくれるそうだ"
+      : "返事をしそびれた……" });
+  }
+}
 
 function eligible(m, { tournamentDay = false } = {}) {
-  if (state.limeRead.includes(m.id)) return false;
+  if (state.limeRead.includes(m.id) && !importantInvite(m) && !needsResend(m.id)) return false;
   if (m.chapter && m.chapter !== state.chapter) return false;
   if (["ageha"].includes(m.sender)) return false; // ch1 ではまだ連絡先を知らない
   const cond = m.trigger_condition;
   if (cond === "tournament_day") return tournamentDay && HEROINES_ENCOURAGE.includes(m.sender) && hasContact(m.sender);
   if (tournamentDay) return false;
   if (!hasContact(m.sender)) return false;
-  if (cond === "lime_exchanged") return m.trigger_day <= state.day && state.day - m.trigger_day <= 1;
+  if (m.type === "invitation" && state.flags[`_invited_${m.id}`]) return false;
+  if (m.exclude_flag && state.flags[m.exclude_flag]) return false;
+  if (cond === "story_count") return (state.story[m.sender] || 0) >= (m.trigger_value || 1);
+  if (cond === "lime_exchanged") return needsResend(m.id) || m.trigger_day <= state.day && state.day - m.trigger_day <= 1;
   if (cond === "affinity_level") return affinityLevel(m.sender) >= (m.trigger_value || 3) && !state.flags[`_invited_${m.id}`];
   if (cond === "flag") return !!state.flags[m.trigger_flag];
   return false;
@@ -37,28 +118,42 @@ function eligible(m, { tournamentDay = false } = {}) {
  * @param opts.tournamentDay 大会当日の朝か / opts.fixedNight (day) => 夜の固定イベントがあるか
  */
 export function morningMessages(opts = {}) {
+  expireInvitations(opts);
   const out = [];
   const inbox = state.inbox || [];
   const delivered = new Set(inbox.map((i) => i.id));
   // 未読が残っている相手からは重ねて届かない（読むまで溜まっていく一方にしない）
-  const senders = new Set(opts.tournamentDay ? [] : inbox.filter((i) => !i.read).map((i) => i.msg.sender));
+  const senders = new Set(opts.tournamentDay ? [] : inbox.filter((i) => !i.read && !canRetry(i)).map((i) => i.msg.sender));
   for (const m of loverMessages(opts)) {
-    if (out.length >= 3 || senders.has(m.sender) || delivered.has(m.id)) continue;
+    // 初めての私服の約束など、まだ見ていない大事な話題を同じ相手の定期LIMEで押し流さない。
+    const storyInvite = DB.lime.some((candidate) => candidate.sender === m.sender && candidate.priority > 0
+      && eligible(candidate, opts) && scheduledInvitation(candidate, opts) && invitationAvailable(scheduledInvitation(candidate, opts), opts)
+      && !inbox.some((i) => originId(i) === candidate.id && !canRetry(i)));
+    if (storyInvite) continue;
+    if (out.length >= 3 || senders.has(m.sender) || delivered.has(m.id) || !invitationAvailable(m, opts)) continue;
     out.push(m);
     senders.add(m.sender);
   }
-  // スミさんのバイト誘い（旧版 N13）。誘いは1朝1件まで
+  // スミさんのバイト誘い（旧版 N13）。他の相手の誘いと並べ、返事で予定を選べる
   const sumi = sumiBaitoInvite(opts);
-  if (sumi && out.length < 3 && !senders.has("sumi") && !delivered.has(sumi.id) && !state.pendingInvite && !out.some((x) => x.type === "invitation")) {
+  if (sumi && out.length < 3 && !senders.has("sumi") && !delivered.has(sumi.id)) {
     out.push(sumi);
     senders.add("sumi");
   }
-  for (const m of DB.lime) {
+  // 大事な外出の誘いは、通常の雑談より先に届ける。同じ相手からは1朝1話題。
+  const messages = [...DB.lime].sort((a, b) => (Number(importantInvite(b)) + (b.priority || 0)) - (Number(importantInvite(a)) + (a.priority || 0)));
+  for (const template of messages) {
     if (out.length >= 3) break;
-    if (senders.has(m.sender) || delivered.has(m.id) || !eligible(m, opts)) continue;
-    // 夜の誘いは前日にもう約束がある日は来ない
-    if (m.type === "invitation" && (state.pendingInvite || out.some((x) => x.type === "invitation"))) continue;
-    out.push(m);
+    if (senders.has(template.sender) || !eligible(template, opts)) continue;
+    const m = scheduledInvitation(template, opts);
+    if (!m || !invitationAvailable(m, opts)) continue;
+    const previous = inbox.filter((i) => originId(i) === m.id);
+    if (previous.length && ((!importantInvite(m) && !needsResend(m.id)) || previous.some((i) => !canRetry(i)))) continue;
+    const again = previous.length > 0;
+    const id = again ? `${m.id}_retry_c${state.chapter}_d${state.day}` : m.id;
+    if (delivered.has(id)) continue;
+    out.push(again ? { ...m, id, origin_id: m.id, important: importantInvite(m) || needsResend(m.id),
+      messages: [m.reminder_text || "この前のお誘い、また都合が合えば。", ...(m.messages || [])] } : m);
     senders.add(m.sender);
   }
   return out;
@@ -119,15 +214,27 @@ export function deliverMorning(opts = {}) {
   const freeze = (t) => (hooks.interpolate ? hooks.interpolate(String(t)) : t);
   for (const m of msgs) {
     const msg = { ...m, messages: (m.messages || []).map((x) => (typeof x === "string" ? freeze(x) : { ...x, text: freeze(x.text) })) };
-    state.inbox.push({ id: m.id, day: state.day, msg, read: false, done: false, log: [] });
+    state.inbox.push({ id: m.id, originId: m.origin_id || m.id, day: state.day, msg,
+      read: false, done: false, replyState: m.type === "invitation" || m.replies?.length ? "waiting" : "none", log: [] });
   }
   return msgs.length;
 }
 
 /** 朝の通知（スマホのプッシュ通知風）。件数と送り主の顔だけ見せ、中身は開くまで分からない */
-export function pushNotice(count) {
+export function pushNotice(count, { onOpen = null } = {}) {
   const senders = [...new Set(state.inbox.filter((i) => !i.read).map((i) => i.msg.sender))].slice(0, 4);
-  const card = el("div.lime-push", [
+  const newest = [...state.inbox].reverse().find((i) => !i.read);
+  let opened = false;
+  const card = el(onOpen ? "button.lime-push" : "div.lime-push", onOpen ? {
+    type: "button", dataset: { test: "lime-notice" },
+    "aria-label": "新着メッセージのトークを開く",
+    onclick: () => {
+      if (opened) return;
+      opened = true;
+      card.remove();
+      onOpen(newest?.msg.sender || null);
+    },
+  } : {}, [
     el("div.lp-icon", [el("span", { text: "LIME" })]),
     el("div.lp-body", [
       el("div.lp-top", [el("b", { text: "LIME" }), el("small", { text: "いま" })]),
@@ -156,7 +263,7 @@ function inviteState(item) {
 const thread = (sender) => state.inbox.filter((i) => i.msg.sender === sender);
 const plain = (raw) => String(hooks.interpolate ? hooks.interpolate(String(raw)) : raw).replace(/\[\/?[a-z]+[^\]]*\]/gi, "").replace(/<[^>]+>/g, "");
 const dayLabel = (d) => (d === state.day ? "今日" : d === state.day - 1 ? "昨日" : `DAY ${d}`);
-const clockNow = () => (state.phase === "tournament" ? "AM 7:40" : state.slot >= 1 ? "PM 7:42" : "PM 1:05");
+const clockNow = () => (state.phase === "tournament" ? "大会の朝" : state.slot >= 1 ? "夜" : "昼");
 
 /** 端末の枠（ノッチ・ステータスバー・ヘッダー・本文・返信欄）。openLime と openPhone で共用 */
 function phoneShell({ time, title }) {
@@ -237,6 +344,27 @@ function readReward(m) {
   else if (m.type !== "invitation" && !(m.replies && m.replies.length) && m.sender !== "???" && m.sender !== "sumi") gainAffinity(m.sender, 2);
 }
 
+/** 一方の約束を承諾したら、その日に競合する誘いには先の約束を理由に返事を残す */
+function declineConflictingInvites(acceptedItem) {
+  for (const other of state.inbox || []) {
+    if (other === acceptedItem || other.done || other.msg?.type !== "invitation" || inviteState(other) === "expired") continue;
+    const m = other.msg;
+    const source = DB.lime.find((message) => message.id === originId(other)) || m;
+    const text = POLITE.has(m.sender) ? "すみません、先に別の約束をしてしまいました" : "ごめん、先に別の約束をしてしまった";
+    other.done = true;
+    other.result = "conflict_declined";
+    other.replyState = "replied";
+    other.needsResend = importantInvite(source);
+    // 相手の文面をまだ読んでいなければ未読のまま。返信と理由は後からトークで確認できる。
+    (other.log ||= []).push({ me: true, text });
+    if (m.decline_response?.text) other.log.push({ me: false, text: m.decline_response.text });
+    other.log.push({ note: other.needsResend
+      ? "先にした約束と重なったため、今回は断った。また都合の合う日に誘ってくれるそうだ"
+      : "先にした約束と重なったため、今回は断った" });
+    if (!other.needsResend) state.flags[`_invited_${originId(other)}`] = true;
+  }
+}
+
 /**
  * 1件ぶんのやりとり（未読なら吹き出しを流す→返信・誘いの返事）。
  * 戻る/閉じるで途中で抜けたら、返事は次に開いたときに続きから
@@ -252,24 +380,36 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
       await ui.bubble(typeof msg === "string" ? msg : msg.text, false, m.sender);
       if (!alive()) break;
     }
+    if (!alive()) return; // 読み終える前に戻ったら、既読・報酬を付けない
     item.read = true;
     if (!state.limeRead.includes(m.id)) state.limeRead.push(m.id);
     readReward(m);
   }
-  if (item.done || !alive()) return;
+  if (!alive()) return;
+  if (item.done) {
+    for (const entry of item.log || []) {
+      if (entry.note) ui.note(entry.note);
+      else await ui.bubble(entry.text, entry.me, m.sender, false);
+    }
+    return;
+  }
 
   if (m.type === "invitation" && m.accept_event) {
     const st = forced ? "open" : inviteState(item);
     if (st === "expired") {
       item.done = true;
       item.result = "expired";
-      item.log.push({ note: "返事をしそびれた……" });
-      ui.note("返事をしそびれた……");
+      item.replyState = "expired";
+      const note = importantInvite(m) ? "返事をしそびれた……。また都合の合う日に誘ってくれるそうだ" : "返事をしそびれた……";
+      item.log.push({ note });
+      ui.note(note);
       return;
     }
     const polite = POLITE.has(m.sender);
     const go = m.accept_text || (polite ? "行きます！" : "行く！");
-    const no = polite ? "すみません、今日は難しいです……" : "ごめん、今日は難しい";
+    const no = st === "busy"
+      ? polite ? "すみません、先に別の約束をしてしまいました" : "ごめん、先に別の約束をしてしまった"
+      : polite ? "すみません、今日は難しいです……" : "ごめん、今日は難しい";
     const hintKey = m.hint ? "_hint_sumi_baito" : "_hint_invite";
     const first = !state.flags[hintKey];
     const night = m.time_slot === "night";
@@ -280,20 +420,30 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
           ? { label: "（今日はもう別の約束がある）", disabled: true }
           : { label: `${go}（行動を1回使う）`, text: go, go: true },
         { text: no, go: false },
+        ...(!forced ? [{ text: "あとで返事する（トーク一覧へ）", later: true }] : []),
       ],
       st === "busy" ? null : first ? m.hint || `誘いに乗ると行動を1回使う。返事は今日の${deadline}ならできる。断っても嫌われたりはしない` : `返事は今日の${deadline}`,
     );
     if (!pick || !alive()) return; // 返事をせずに抜けた（期限内ならまた返事できる）
+    if (pick.later) { item.replyState = "waiting"; return "deferred"; }
     state.flags[hintKey] = true;
     await mine(pick.text);
-    state.flags[`_invited_${m.id}`] = true;
+    state.flags[`_invited_${originId(item)}`] = true;
     item.done = true;
+    item.replyState = "replied";
     if (pick.go) {
       item.result = "accepted";
-      const inv = { event: m.accept_event, sender: m.sender, slot: night ? 1 : 0 };
+      const inv = { event: m.accept_event, sender: m.sender, slot: night ? 1 : 0,
+        day: state.day, originId: originId(item), afterClose: !!m.after_close };
       accepted.push(inv);
-      if (!forced) state.pendingInvite = inv;
-      const t = m.accept_event === "__sumi_baito__" ? "このあと tonari のシフトに入る" : night ? "今夜の約束ができた" : "このあと向かうことにした";
+      if (!forced) {
+        state.pendingInvite = inv;
+        declineConflictingInvites(item);
+      }
+      const t = m.accept_event === "__sumi_baito__" ? "このあと tonari のシフトに入る"
+        : m.after_close ? "仕事を終えたあとに会う約束ができた"
+        : m.closed_on != null ? "定休日の午後に会う約束ができた"
+        : night ? "今夜の約束ができた" : "このあと向かうことにした";
       item.log.push({ note: t });
       ui.note(t);
     } else {
@@ -309,10 +459,13 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     await mine(r.text);
     if (r.response) await theirs(r.response);
     bond.private = isLover(m.sender); // 恋人とのやりとりは絆として積もる
-    gainAffinity(m.sender, (r.affinity || 1) * 3);
+    // 雑談は選んだ返事に応じて1〜2点。0点も尊重し、恋人の絆の倍率は従来どおり。
+    const points = Number.isFinite(r.affinity) ? Math.max(0, Math.min(2, r.affinity)) : 1;
+    gainAffinity(m.sender, points * (isLover(m.sender) ? 3 : 1));
     bond.private = false;
   }
   item.done = true;
+  item.replyState = m.replies?.length ? "replied" : "none";
 }
 
 /** 既読ぶんを履歴として一気に描く（日付の区切りつき） */
@@ -334,7 +487,8 @@ function drawHistory(items, ui) {
  * 戻り値: この間に乗った誘い [{event, sender, slot}]（state.pendingInvite にも入る）
  * @param opts.tutorial 初回の説明を一覧の上に出す
  */
-export async function openLime({ tutorial = false } = {}) {
+export async function openLime({ tutorial = false, sender = null } = {}) {
+  expireInvitations();
   const accepted = [];
   const ui = phoneShell({ time: clockNow(), title: `DAY ${state.day}` });
   let resolveClose;
@@ -408,7 +562,8 @@ export async function openLime({ tutorial = false } = {}) {
       if (!ui.live(g)) return;
       if (it.read && it.done) continue;
       if (!it.read && it.day !== (items[items.indexOf(it) - 1]?.day)) ui.note(dayLabel(it.day), ".day");
-      await runItem(it, ui, accepted);
+      const result = await runItem(it, ui, accepted);
+      if (result === "deferred" && ui.live(g)) { showList(); return; }
     }
     if (!ui.live(g)) return;
     ui.actions.replaceChildren(el("button.lime-reply.ghost", {
@@ -418,7 +573,8 @@ export async function openLime({ tutorial = false } = {}) {
     }));
   };
 
-  showList();
+  if (sender && thread(sender).length) showThread(sender);
+  else showList();
   await closed;
   await ui.close();
   return accepted;
@@ -428,12 +584,13 @@ export async function openLime({ tutorial = false } = {}) {
  * 物語の節目で必ず読ませる LIME（大会の朝の応援・優勝の夜など）。メッセージを順に流す。
  * 読んだものは受信箱にも履歴として残る。戻り値: 受けた誘い
  */
-export async function openPhone(messages, { title = null, time = "AM 8:12" } = {}) {
+export async function openPhone(messages, { title = null, time = "朝" } = {}) {
   const accepted = [];
   const ui = phoneShell({ time, title: title || (state.phase === "tournament" ? "大会当日" : `DAY ${state.day}`) });
   await sleep(420);
   for (const m of messages) {
-    const item = { id: m.id, day: state.day, msg: m, read: false, done: false, log: [] };
+    const item = { id: m.id, originId: m.origin_id || m.id, day: state.day, msg: m,
+      read: false, done: false, replyState: m.type === "invitation" || m.replies?.length ? "waiting" : "none", log: [] };
     state.inbox.push(item);
     ui.chat.replaceChildren();
     ui.actions.replaceChildren();

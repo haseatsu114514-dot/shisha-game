@@ -255,6 +255,10 @@ function jumpTo(id) {
   if (!target) return;
   running.queue = (target.lines || []).slice();
   running.branches = target.branches || {};
+  if (target.metadata?.clear_portraits) {
+    dom.portraits.replaceChildren();
+    running.slots = {};
+  }
   running.visited.push(id);
   if (target.metadata?.bg) sceneSetBg(target.metadata.bg);
   if (hooks.onEnter) hooks.onEnter(id, target);
@@ -343,9 +347,30 @@ function showLine(line) {
   if (cue) applyCue(cue);
   log.push({ name: speaker ? displayName(speaker, state) : "", text: stripTags(text) });
   if (log.length > 300) log.shift();
-  r.pages = paginate(text);
+  r.pages = paginateForBox(text);
   r.pageIdx = 0;
   renderPage();
+}
+
+// 文字数だけでなく、読み込み済み書体と本文の内幅でも折り返しを決める。
+let measurementContext = null;
+function paginateForBox(text) {
+  measurementContext ||= document.createElement("canvas").getContext("2d");
+  if (!measurementContext || !dom.text.clientWidth) return paginate(text);
+  const style = getComputedStyle(dom.text);
+  const normal = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  const emphasis = `${style.fontStyle} 700 ${style.fontSize} ${style.fontFamily}`;
+  const tracking = parseFloat(style.letterSpacing) || 0;
+  return paginate(text, {
+    maxWidth: dom.text.clientWidth - 4,
+    measure(value) {
+      measurementContext.font = normal;
+      const regularWidth = measurementContext.measureText(value).width;
+      measurementContext.font = emphasis; // [imp]も本文からはみ出さない幅に収める
+      return Math.max(regularWidth, measurementContext.measureText(value).width) +
+        Math.max(0, Array.from(value).length - 1) * tracking;
+    },
+  });
 }
 
 // 報酬キュー: 「……【技術】と【センス】が少し上がった。」の規定フレーズを読んで加算する

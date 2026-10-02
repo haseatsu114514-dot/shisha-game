@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-09-28 17:18 UTC",
+ "generated": "2026-10-02 20:41 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -53,6 +53,18 @@
    "b": 0.0208,
    "ax": 0.554,
    "aspect": 0.7467
+  },
+  "kafuka": {
+   "faces": [
+    "normal",
+    "serious",
+    "smile",
+    "surprise"
+   ],
+   "h": 0.9974,
+   "b": 0.0007,
+   "ax": 0.4911,
+   "aspect": 0.6667
   },
   "maezono": {
    "faces": [
@@ -198,6 +210,8 @@
   "bg_osu_map_day.png",
   "bg_osu_map_night.png",
   "bg_ryuji_shop.png",
+  "bg_shishark.png",
+  "bg_shishark_preparing_night.png",
   "bg_shop.png",
   "bg_street_day.png",
   "bg_street_night.png",
@@ -284,6 +298,7 @@
   "stove_coil.png",
   "vignette_focus.png"
  ],
+ "sceneProps": [],
  "makingBox": {
   "bench_base.png": [
    0.0,
@@ -627,6 +642,8 @@
   "backgrounds/bg_osu_map_day.png",
   "backgrounds/bg_osu_map_night.png",
   "backgrounds/bg_ryuji_shop.png",
+  "backgrounds/bg_shishark.png",
+  "backgrounds/bg_shishark_preparing_night.png",
   "backgrounds/bg_shop.png",
   "backgrounds/bg_street_day.png",
   "backgrounds/bg_street_night.png",
@@ -667,6 +684,10 @@
   "sprites/characters/hajime/chr_hajime_serious.png",
   "sprites/characters/hajime/chr_hajime_smile.png",
   "sprites/characters/hajime/chr_hajime_surprise.png",
+  "sprites/characters/kafuka/chr_kafuka_normal.png",
+  "sprites/characters/kafuka/chr_kafuka_serious.png",
+  "sprites/characters/kafuka/chr_kafuka_smile.png",
+  "sprites/characters/kafuka/chr_kafuka_surprise.png",
   "sprites/characters/maezono/chr_maezono_excited.png",
   "sprites/characters/maezono/chr_maezono_normal.png",
   "sprites/characters/maezono/chr_maezono_serious.png",

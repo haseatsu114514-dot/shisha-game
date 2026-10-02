@@ -1,5 +1,5 @@
 // アルミ穴あけ ── HOLE RHYTHM BATTLE（master_spec 第2部 §1）
-// 円周を回るカーソルがリング上の「理想の位置」に重なった瞬間に打つと PERFECT。
+// 円周を回るカーソルが目印に重なった瞬間に打つと EXCELLENT。外周一周の後は穴数を選べる。
 // メイン評価は均等度。穴数・リング配置は後工程の性能（抜け・熱の広がり・焦げ）に効く。
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown } from "../core/ui.js";
@@ -8,17 +8,14 @@ import { stepPanel, refreshRig, tickerSay } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 
 // 外周=熱拡散・安定／中周=ドロー・煙量／内周=抜け・攻め（焦げリスク）
-export const RINGS = [
-  { id: "outer", label: "外周", r: 0.8, targets: 12, period: 6.4, weight: 0.5, role: "熱の広がり・安定感" },
-  { id: "middle", label: "中周", r: 0.54, targets: 8, period: 5.2, weight: 0.3, role: "ドロー・煙量" },
-  { id: "inner", label: "内周", r: 0.28, targets: 4, period: 3.8, weight: 0.2, role: "抜け感（開けすぎ注意）" },
-];
+import { RINGS, circularAngleDistance, minimumRingComplete, evaluateFoil } from "./holes_logic.js";
+export { RINGS } from "./holes_logic.js";
 const TIME_LIMIT = 32;
 const DEG = Math.PI / 180;
 
 export async function runHoles(cs) {
   const tutorial = cs.mode === "tutorial";
-  const panel = stepPanel("holes", "アルミ穴あけ ── HOLE RHYTHM", "カーソルが光る目印に重なった瞬間にタップ（Space）。均等に並ぶほど高評価");
+  const panel = stepPanel("holes", "アルミ穴あけ ── HOLE RHYTHM", "まず外周を一周。光る目印でタップ（Space）。その後は好きな穴数で仕上げられる");
   const slow = skill.slow() * (tutorial ? 1.3 : 1);
   const perfWin = 4.2 * skill.window() * (tutorial ? 1.5 : 1);
   const goodWin = 11 * (tutorial ? 1.3 : 1);
@@ -37,12 +34,13 @@ export async function runHoles(cs) {
   const scoreEl = el("div.hr-score");
   const comboEl = el("div.hr-combo");
   const role = el("div.hr-role");
+  const plan = el("div.hr-plan", { dataset: { test: "hole-plan" } });
   const punchBtn = el("button.btn.primary.hr-punch", { dataset: { test: "hole-punch" } }, [el("span.btn-label", { text: "穴を開ける" })]);
   const nextBtn = el("button.btn.small", { text: "次のリングへ", dataset: { test: "hole-next" } });
-  const doneBtn = el("button.btn.small.ghost", { text: "完成", dataset: { test: "hole-done" } });
+  const doneBtn = el("button.btn.small.ghost", { text: "この穴数で仕上げる", dataset: { test: "hole-done" } });
   panel.append(el("div.holes", [
     el("div.hr-stage", [disc]),
-    el("div.hr-side", [ringLabel, role, el("div.hr-time", [el("span", { text: "TIME" }), timeBar]), scoreEl, comboEl, punchBtn, el("div.hr-row", [nextBtn, doneBtn])]),
+    el("div.hr-side", [ringLabel, role, el("div.hr-time", [el("span", { text: "TIME" }), timeBar]), scoreEl, comboEl, plan, punchBtn, el("div.hr-row", [nextBtn, doneBtn])]),
   ]));
 
   // ---- 状態
@@ -54,9 +52,8 @@ export async function runHoles(cs) {
     extra: 0,
   }));
   let ri = 0;
-  let t0 = 0;
+  let t0 = null;
   let elapsed = 0;
-  let score = 0;
   let combo = 0;
   const tally = { perfect: 0, good: 0, miss: 0, tooClose: 0, blank: 0, tooMany: 0 };
   let finished = false;
@@ -73,7 +70,8 @@ export async function runHoles(cs) {
     node.style.left = `${50 + x * 50}%`;
     node.style.top = `${50 + y * 50}%`;
   };
-  const angDiff = (a, b) => Math.abs(((a - b + Math.PI * 3) % (Math.PI * 2)) - Math.PI);
+  const angDiff = circularAngleDistance;
+  const minimumComplete = () => minimumRingComplete(state);
 
   const drawMarkers = () => {
     markers.replaceChildren();
@@ -95,8 +93,14 @@ export async function runHoles(cs) {
     holesLayer.append(h);
   };
   const hud = () => {
-    scoreEl.textContent = `SCORE ${score}`;
+    scoreEl.textContent = `EXCELLENT ${tally.perfect} · GOOD ${tally.good} · MISS ${tally.miss + tally.tooClose}`;
     comboEl.textContent = combo >= 2 ? `${combo} COMBO` : "";
+    const ready = minimumComplete();
+    punchBtn.disabled = finished || state[ri].taken.every(Boolean);
+    nextBtn.disabled = finished || !ready || ri === state.length - 1;
+    doneBtn.disabled = finished || !ready;
+    plan.textContent = !ready ? elapsed >= limit ? "時間0｜外周の1周を完成させよう" : "外周の12か所を開けて、まず1周を完成させよう"
+      : "外周1周が完成。次のリングを開けるか、この穴数で仕上げられる";
   };
 
   const closeRing = (ring) => {
@@ -107,15 +111,16 @@ export async function runHoles(cs) {
     return left;
   };
   const advanceRing = () => {
-    if (finished) return;
-    if (closeRing(state[ri])) popStamp(panel, "BLANK SPACE", "miss", "36%", "30%");
-    if (ri < state.length - 1) { ri++; drawMarkers(); SE.whoosh(); }
+    if (finished || !minimumComplete()) return;
+    closeRing(state[ri]);
+    if (ri < state.length - 1) { ri++; drawMarkers(); hud(); place(cursor, cursorAngle(), state[ri].r); SE.whoosh(); }
     else finish();
   };
 
   const punch = () => {
-    if (finished || !t0) return;
+    if (finished || t0 === null) return;
     const ring = state[ri];
+    if (ring.closed || ring.taken.every(Boolean)) return;
     const a = cursorAngle();
     SE.punch();
     // 一番近い「まだ開けていない目印」
@@ -137,8 +142,7 @@ export async function runHoles(cs) {
       ring.holes.push({ a, d: dDeg });
       tally[kind]++;
       combo++;
-      score += kind === "perfect" ? 120 + combo * 10 : 60;
-      popStamp(panel, kind === "perfect" ? "PERFECT" : "GOOD", kind, "36%", "18%");
+      popStamp(panel, kind === "perfect" ? "EXCELLENT" : "GOOD", kind, "36%", "18%");
       kind === "perfect" ? SE.perfect() : SE.good();
     } else {
       ring.holes.push({ a, d: goodWin * 1.5 });
@@ -156,7 +160,7 @@ export async function runHoles(cs) {
       if (ring.id === "middle") popStamp(panel, "AIR FLOW UP", "good", "36%", "56%");
       SE.just();
       tickerSay(clean ? "パッキー「きれいに揃ったーッ！ 見てくださいこの輪！」" : "パッキー「リング完成！ 手が止まりませんね〜♪」");
-      setTimeout(advanceRing, 350);
+      // 自動送りはしない。完成したリングは入力を止め、次のリングか仕上げを選んでもらう。
     }
     drawMarkers();
     hud();
@@ -168,14 +172,15 @@ export async function runHoles(cs) {
     const a = cursorAngle();
     place(cursor, a, state[ri].r);
     timeBar.querySelector("b").style.width = `${clamp(100 - (elapsed / limit) * 100, 0, 100)}%`;
-    if (elapsed >= limit) return finish();
+    if (elapsed >= limit && minimumComplete()) return finish();
+    hud();
     raf = requestAnimationFrame(loop);
   };
 
   let done;
   const finishedP = new Promise((r) => { done = r; });
   const finish = () => {
-    if (finished) return;
+    if (finished || !minimumComplete()) return;
     finished = true;
     cancelAnimationFrame(raf);
     unkey();
@@ -201,7 +206,7 @@ export async function runHoles(cs) {
   if (auto) simulate(auto);
   await finishedP;
 
-  // ---- 採点（均等度50/円形精度20/穴サイズ15/リング完成10/残り時間5）
+  // ---- 採点（実穴の均等度50/タイミング精度30/穴サイズ15/残り時間5。穴数そのものは減点しない）
   const res = evaluate(state, tally, Math.max(0, limit - elapsed) / limit, goodWin);
   cs.holes = res;
   refreshRig();
@@ -213,7 +218,7 @@ export async function runHoles(cs) {
       `均等度 ${Math.round(res.evenness * 100)}%　／　円形精度 ${Math.round(res.precision * 100)}%`,
       `外周 ${res.outer}・中周 ${res.middle}・内周 ${res.inner}（計 ${res.total} 穴）`,
       res.innerExcess ? "内周を開けすぎた。焦げやすくなるかもしれない" : res.outerEven > 0.8 ? "外周がきれいに揃った。熱が全体に回りそうだ" : "",
-      tally.blank ? `開け残し ${tally.blank} か所（BLANK SPACE）` : "",
+      res.total < 24 ? "穴を控えめに仕上げた。吸い出しでは温度の動きをよく見よう" : "",
     ],
   });
 
@@ -223,8 +228,8 @@ export async function runHoles(cs) {
       await sleep(80);
       while (!finished) {
         const ring = state[ri];
-        if (ring.taken.every(Boolean) || (level === "bad" && ring.taken.filter(Boolean).length >= Math.ceil(ring.targets * 0.55))) {
-          if (!ring.taken.every(Boolean)) advanceRing();
+        if (ring.taken.every(Boolean) || (level === "bad" && ri > 0 && ring.taken.filter(Boolean).length >= Math.ceil(ring.targets * 0.55))) {
+          advanceRing();
           await sleep(level === "bad" ? 30 : 400);
           continue;
         }
@@ -247,33 +252,6 @@ export async function runHoles(cs) {
 }
 
 export function evaluate(rings, tally, timeRatio, goodWin) {
-  const per = rings.map((ring) => {
-    const angles = ring.holes.map((h) => h.a).sort((a, b) => a - b);
-    const n = angles.length;
-    let even = 0;
-    if (n >= 2) {
-      const gaps = angles.map((a, i) => (i === n - 1 ? angles[0] + 2 * Math.PI - a : angles[i + 1] - a));
-      const ideal = (2 * Math.PI) / ring.targets;
-      const dev = Math.sqrt(gaps.reduce((s, g) => s + (g - ideal) ** 2, 0) / n) / ideal;
-      even = clamp(1 - dev * 1.1, 0, 1);
-    }
-    const acc = ring.holes.length ? ring.holes.reduce((s, h) => s + clamp(1 - h.d / goodWin, 0, 1), 0) / ring.holes.length : 0;
-    return { id: ring.id, count: n, even, acc, taken: ring.taken.filter(Boolean).length, targets: ring.targets, extra: ring.extra };
-  });
-  const w = Object.fromEntries(rings.map((r) => [r.id, r.weight]));
-  const evenness = per.reduce((s, p) => s + p.even * w[p.id], 0);
-  const precision = per.reduce((s, p) => s + p.acc * w[p.id], 0);
-  const completion = per.reduce((s, p) => s + p.taken, 0) / per.reduce((s, p) => s + p.targets, 0);
-  const sizeStab = clamp(0.92 - tally.tooClose * 0.08 - tally.miss * 0.03, 0.4, 1);
-  const score = Math.round(100 * (evenness * 0.5 + precision * 0.2 + sizeStab * 0.15 + completion * 0.1 + clamp(timeRatio * 2.5, 0, 1) * 0.05));
-  const get = (id) => per.find((p) => p.id === id);
-  const total = per.reduce((s, p) => s + p.count, 0);
-  const innerExcess = Math.max(0, get("inner").count - 4);
-  // リグの絵に使う穴の位置（アルミを斜めから見た楕円に落とす）
-  const dots = rings.flatMap((ring) => ring.holes.map((h) => [Math.cos(h.a) * ring.r, Math.sin(h.a) * ring.r * 0.34]));
-  return {
-    score, grade: gradeOf(score), evenness, precision, completion, sizeStab, timeRatio,
-    outer: get("outer").count, middle: get("middle").count, inner: get("inner").count, total, innerExcess,
-    outerEven: get("outer").even, tally: { ...tally }, dots,
-  };
+  const result = evaluateFoil(rings, tally, timeRatio, goodWin);
+  return { ...result, grade: gradeOf(result.score) };
 }
