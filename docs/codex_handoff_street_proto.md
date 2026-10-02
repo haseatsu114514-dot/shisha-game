@@ -1,5 +1,9 @@
 # Codex 引き継ぎ: 「横長の通りを歩く」日常マップの試作（街並み・キャラのドット絵・実装）
 
+> ⚠️ **2026-10-02 分担変更**: Codex の担当は**画像生成だけ**になった（→ `docs/codex_handoff_street_images.md`）。
+> 変換・実装・組み込みは Claude が行う。本書の実装仕様（§4）・変換（§5「変換」）・完了条件（§6）は
+> Claude 側の設計メモとして残す。Codex はこのファイルの手順で作業しないこと。
+
 作成: 2026-10-02（Claude）／ 対象ブランチ: `claude/admiring-goodall-m9bdg3`
 台帳: `docs/owner_requests.md` の 2026-10-02 セッション（AA1〜AA4）
 
