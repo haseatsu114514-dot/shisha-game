@@ -10,11 +10,11 @@
       "messages": [
         {
           "sender": "naru",
-          "text": "よう。今夜って暇？"
+          "text": "よう。今夜、仕事が終わってからって暇？"
         },
         {
           "sender": "naru",
-          "text": "新しいミックスのテストランやるんだけど、お前の舌も借りたい"
+          "text": "営業時間外の店で新しいミックスのテストランやるんだけど、お前の舌も借りたい"
         },
         {
           "sender": "naru",
@@ -25,7 +25,9 @@
       "decline_response": {
         "sender": "naru",
         "text": "おけ、また今度な。大会前に一回見せたかったんだけど、まあ無理すんな"
-      }
+      },
+      "after_close": true,
+      "accept_text": "仕事のあと、行くよ"
     },
     {
       "id": "lime_minto_day4",
@@ -60,6 +62,7 @@
     },
     {
       "id": "lime_outing_naru_1",
+      "important": true,
       "sender": "naru",
       "trigger_condition": "affinity_level",
       "trigger_value": 3,
@@ -68,7 +71,7 @@
       "messages": [
         {
           "sender": "naru",
-          "text": "新作の機材、見に行くんだけど"
+          "text": "今日はKEMURIKUSAの定休日。午後、新作の機材を見に行くんだけど"
         },
         {
           "sender": "naru",
@@ -79,10 +82,44 @@
       "decline_response": {
         "sender": "naru",
         "text": "りょ。気が向いたらいつでも声かけて"
+      },
+      "closed_on": 3,
+      "reminder_text": "この前の機材探し、今日は店が休みだから午後に行こうと思ってる。都合が合えば来いよ"
+    },
+    {
+      "id": "lime_adam_arcade_after_close",
+      "sender": "adam",
+      "chapter": 1,
+      "trigger_condition": "story_count",
+      "trigger_value": 4,
+      "exclude_flag": "_adam_arcade_done",
+      "type": "invitation",
+      "important": true,
+      "priority": 9,
+      "time_slot": "night",
+      "after_close": true,
+      "exclude_closed_on": 5,
+      "messages": [
+        {
+          "sender": "adam",
+          "text": "はじめよ。今夜、店を閉めたあとに共に行くべき場所がある。"
+        },
+        {
+          "sender": "adam",
+          "text": "観音商店街のゲームセンターに、限定のリンゴのマスコットが入った。……お前の手も借りたい。"
+        }
+      ],
+      "accept_event": "ch1_adam_outing_dagurikura",
+      "accept_text": "仕事のあと、行きます",
+      "reminder_text": "先日のリンゴの探求、まだ道は開かれている。今夜、閉店後ならどうだ。",
+      "decline_response": {
+        "sender": "adam",
+        "text": "そうか。無理に店を空けることはない。……また日を改めよう。"
       }
     },
     {
       "id": "lime_outing_adam_1",
+      "important": true,
       "sender": "adam",
       "trigger_condition": "affinity_level",
       "trigger_value": 3,
@@ -95,17 +132,23 @@
         },
         {
           "sender": "adam",
-          "text": "今宵、観音で新たな『導き』を見つけに行く、……同行するか？"
+          "text": "今宵、それぞれの仕事を終えてから観音で新たな『導き』を見つけに行く。……同行するか？"
         }
       ],
       "accept_event": "outing_adam_1",
       "decline_response": {
         "sender": "adam",
         "text": "そうか……ならば、一人で歩もう"
-      }
+      },
+      "after_close": true,
+      "accept_text": "仕事のあと、行きます",
+      "reminder_text": "先日の散策、今夜も道は開かれている。それぞれの仕事を終えたあとなら、どうだ。"
     },
     {
       "id": "lime_outing_minto_1",
+      "important": true,
+      "closed_on": 6,
+      "reminder_text": "この前はタイミングが合わなかったね。今日はお店がお休みだから、もし空いていたら。",
       "sender": "minto",
       "trigger_condition": "affinity_level",
       "trigger_value": 3,
@@ -114,41 +157,74 @@
       "messages": [
         {
           "sender": "minto",
-          "text": "はじめくんっ♡ 今日の昼間、ちょっとお買い物付き合ってくれない？"
+          "text": "はじめくん、おはよう。今日はお店がお休みだから、午後のお買い物、付き合ってくれる？"
         },
         {
           "sender": "minto",
-          "text": "みんと、一人じゃ選べないからさっ♪"
+          "text": "フレーバーを買い足したくて。はじめくんの意見も聞けたら、嬉しいな"
         }
       ],
       "accept_event": "outing_minto_1",
       "decline_response": {
         "sender": "minto",
-        "text": "ちぇーっ、わかった！ またねーっ♡"
+        "text": "うん、わかった。今日は無理しないでね"
       }
     },
     {
-      "id": "lime_outing_minto_2",
+      "id": "lime_minto_first_holiday",
+      "priority": 10,
       "sender": "minto",
-      "trigger_condition": "flag",
-      "trigger_flag": "_minto_identity_revealed",
+      "chapter": 1,
+      "trigger_condition": "story_count",
+      "trigger_value": 5,
+      "exclude_flag": "_minto_fifth_done",
       "type": "invitation",
+      "important": true,
+      "closed_on": 6,
       "time_slot": "noon",
       "messages": [
         {
           "sender": "minto",
-          "text": "……はじめくん。今度の昼、また会えたりする？"
+          "text": "はじめくん、おはよう。今日はPEPPERMINTの定休日なんだ。"
         },
         {
           "sender": "minto",
-          "text": "お店のみんとじゃない方の、私で。……変な意味じゃないからねっ"
+          "text": "午後、外で少し会わない？ お店のことを気にせず、ゆっくり話してみたくて。"
+        }
+      ],
+      "accept_event": "ch1_minto_fifth",
+      "accept_text": "午後、会おう",
+      "reminder_text": "この前のお誘い、返事は気にしないでね。今日もお休みだから、空いていたら。",
+      "decline_response": {
+        "sender": "minto",
+        "text": "うん、わかった。無理しないでね。お店では、またいつでも。"
+      }
+    },
+    {
+      "id": "lime_outing_minto_2",
+      "important": true,
+      "reminder_text": "この前はタイミングが合わなかったね。{privateContext}、もし空いていたら。",
+      "sender": "minto",
+      "trigger_condition": "flag",
+      "trigger_flag": "_minto_identity_revealed",
+      "type": "invitation",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "……はじめくん。{privateContext}、また会えたりする？"
+        },
+        {
+          "sender": "minto",
+          "text": "お店では話せないようなことも、ゆっくり話せたらなって。……少し、緊張はするけど"
         }
       ],
       "accept_event": "ch1_minto_private_1",
       "decline_response": {
         "sender": "minto",
         "text": "そっか、忙しいよね、……また誘う、かも"
-      }
+      },
+      "private_schedule": "holiday_or_after_close",
+      "accept_text": "{privateWhen}、会おう"
     },
     {
       "id": "lime_naru_day6",
@@ -205,7 +281,7 @@
         },
         {
           "sender": "minto",
-          "text": "私はバッチリだけどね♪"
+          "text": "私も、少しずつ準備してる。一緒に、いい煙を出せたらいいね"
         }
       ],
       "replies": [
@@ -238,7 +314,7 @@
         },
         {
           "sender": "minto",
-          "text": "優勝して、みんととこにお祝いのアフターしに来てねっ♡ 応援してるよ！"
+          "text": "優勝したら、お祝いの一台はわたしに任せて。……なんて、少し気が早いね。ちゃんと応援してるよ"
         }
       ]
     },
@@ -340,19 +416,20 @@
     },
     {
       "id": "lime_outing_ageha_1",
+      "important": true,
       "sender": "ageha",
       "trigger_condition": "affinity_level",
       "trigger_value": 3,
       "type": "invitation",
-      "time_slot": "noon",
+      "time_slot": "night",
       "messages": [
         {
           "sender": "ageha",
-          "text": "ハジメっち、今日のお昼あいてる？"
+          "text": "ハジメっち、今日、仕事終わったあとあいてる？"
         },
         {
           "sender": "ageha",
-          "text": "ギャル友と集まるんだけど、一緒にシーシャ吸いに行かない？"
+          "text": "うちも店の営業終わってからギャル友と集まるんだけど、一緒にシーシャ吸いに行かない？"
         },
         {
           "sender": "ageha",
@@ -363,7 +440,10 @@
       "decline_response": {
         "sender": "ageha",
         "text": "えー残念！ また今度ね。うちの友達には次会わせるから覚悟しといて笑"
-      }
+      },
+      "after_close": true,
+      "accept_text": "仕事が終わってから行くよ",
+      "reminder_text": "この前のお誘い、今日も仕事終わりに集まるんだけど、あいてたら一緒にどう？"
     },
     {
       "id": "lime_ageha_day5",
@@ -486,7 +566,19 @@
         }
       ],
       "trigger_day": 6,
-      "chapter": 2
+      "chapter": 2,
+      "replies": [
+        {
+          "text": "実際の煙、見てみたいです",
+          "response": "……肝が据わっとるな。見たらまず、何が違うか自分の舌で確かめろよ",
+          "affinity": 1
+        },
+        {
+          "text": "まずは噂として聞いておきます",
+          "response": "おう。聞いた話だけで決めつけるな。……それでいい",
+          "affinity": 0
+        }
+      ]
     },
     {
       "id": "rumor_nagumo_cigarman",
@@ -517,7 +609,24 @@
         }
       ],
       "trigger_day": 4,
-      "chapter": 3
+      "chapter": 3,
+      "replies": [
+        {
+          "text": "会長も、怖いと感じるんですね",
+          "response": "未知のものを怖いと感じるのは、悪いことではないよ。目を閉じないことだ",
+          "affinity": 1
+        },
+        {
+          "text": "まず、自分の一台を仕上げます",
+          "response": "うむ。噂に気を取られて手元を疎かにせんことだ。君の煙を楽しみにしている",
+          "affinity": 2
+        },
+        {
+          "text": "教えてくださってありがとうございます",
+          "response": "ああ。また確かなことが分かれば、君にも伝えよう",
+          "affinity": 0
+        }
+      ]
     },
     {
       "id": "rumor_kemuri_experiments",
@@ -548,7 +657,24 @@
         }
       ],
       "trigger_day": 3,
-      "chapter": 2
+      "chapter": 2,
+      "replies": [
+        {
+          "text": "ちょっと気になる。確かな話があれば教えて",
+          "response": "おう。俺も噂のまま広める気はねえし、もう少し聞いてみる",
+          "affinity": 1
+        },
+        {
+          "text": "噂だけで決めつけない方がいいな",
+          "response": "だな。……あの笑顔は気になるけど、まずは自分の目で見てからか",
+          "affinity": 2
+        },
+        {
+          "text": "話は覚えておくよ",
+          "response": "おけ。気にしすぎるなよ。俺らは俺らの一台を作ろうぜ",
+          "affinity": 0
+        }
+      ]
     },
     {
       "id": "rumor_minto_late_night",
@@ -560,15 +686,15 @@
       "messages": [
         {
           "sender": "minto",
-          "text": "……はじめくん、まだ起きてる？"
+          "text": "……はじめくん、おはよう。昨夜、話したいことがあって"
         },
         {
           "sender": "minto",
-          "text": "ごめんね、こんな時間に"
+          "text": "朝からごめんね。少しだけ、聞いてもらえる？"
         },
         {
           "sender": "minto",
-          "text": "今日、店を閉めたあとにね。ふっと、あの匂いがした気がしたの"
+          "text": "昨日、店を閉めたあとにね。ふっと、あの匂いがした気がしたの"
         },
         {
           "sender": "minto",
@@ -588,7 +714,24 @@
         },
         {
           "sender": "minto",
-          "text": "……ごめん、こんな重い話。忘れて♡ おやすみっ"
+          "text": "……朝から重い話、ごめんね。聞いてくれてありがと。今日も、無理しないでね"
+        }
+      ],
+      "replies": [
+        {
+          "text": "忘れなくていいよ。話してくれてありがとう",
+          "response": "……うん。そんなふうに返してもらえると、少し息がしやすい。聞いてくれて、ありがと",
+          "affinity": 2
+        },
+        {
+          "text": "今日は無理しないで。落ち着いたらまた話そう",
+          "response": "うん。今日はゆっくり準備するね。……また話せると思うと、ちょっと安心した",
+          "affinity": 1
+        },
+        {
+          "text": "今は仕事前だから、落ち着いてから聞くね",
+          "response": "うん、わかった。急がなくて大丈夫。返してくれてありがと。お仕事、気をつけてね",
+          "affinity": 0
         }
       ]
     },
@@ -617,7 +760,24 @@
         }
       ],
       "trigger_day": 6,
-      "chapter": 3
+      "chapter": 3,
+      "replies": [
+        {
+          "text": "会えたら、その煙を見てみたい",
+          "response": "でしょ！ あの煙が何でできてるか、一緒に見てみたいね",
+          "affinity": 1
+        },
+        {
+          "text": "あげはの煙も好きだよ",
+          "response": "……急にそれはずるくね？ ふふ、ありがと。うちも、自分の煙で勝ちたいし",
+          "affinity": 2
+        },
+        {
+          "text": "教えてくれてありがとう",
+          "response": "うん。また面白い話聞いたら送るね。今日も煙、楽しも！",
+          "affinity": 0
+        }
+      ]
     },
     {
       "id": "lime_after_outing_minto",
@@ -628,31 +788,31 @@
       "messages": [
         {
           "sender": "minto",
-          "text": "おはよっ。昨日はお買い物付き合ってくれてありがとね♡"
+          "text": "おはよう。この前はお買い物に付き合ってくれて、ありがとう"
         },
         {
           "sender": "minto",
-          "text": "……はじめくんといると、お店の声、忘れちゃいそうになる"
+          "text": "……一緒にいると、お店のことを少し忘れて、ゆっくり話せる気がする"
         },
         {
           "sender": "minto",
-          "text": "…………今のナシ！ 忘れて！ おやすみっ……じゃなくて、おはようっ！"
+          "text": "……今の、ちょっと照れるね。今日もよろしく、はじめくん"
         }
       ],
       "replies": [
         {
           "text": "忘れない",
-          "response": "〜〜〜っ！ きみ、ほんとそういうとこだからね！？ ……ばか、……ありがと",
+          "response": "……うん。ちょっと恥ずかしいけど、覚えていてくれるなら、嬉しい",
           "affinity": 2
         },
         {
-          "text": "おはよう、栞さん",
-          "response": "！！ 朝からその名前は心臓に悪いんですけど！？ ……ふふ。うん、おはよ",
+          "text": "おはよう、みんとさん",
+          "response": "……うん、おはよう。朝から返してくれて、ちょっと嬉しい",
           "affinity": 2
         },
         {
           "text": "お店の声も好きだよ",
-          "response": "あはは、なにそれ♡ じゃあ今度、どっちのみんとが好きか聞かせてもらおっかな〜？",
+          "response": "……どちらも私ではあるけど。ここでは、少し静かな方でもいいかな",
           "affinity": 1
         }
       ]
@@ -666,7 +826,7 @@
       "messages": [
         {
           "sender": "naru",
-          "text": "おう。昨日渡した炭、もう試した？"
+          "text": "おう。この前渡した炭、もう試した？"
         },
         {
           "sender": "naru",
@@ -699,7 +859,7 @@
         },
         {
           "sender": "adam",
-          "text": "昨夜の月だ、……良い夜だった"
+          "text": "この前、一緒に見た月だ、……良い夜だった"
         }
       ],
       "replies": [
@@ -717,6 +877,7 @@
     },
     {
       "id": "lime_outing_tsumugi_1",
+      "important": true,
       "sender": "tsumugi",
       "trigger_condition": "affinity_level",
       "trigger_value": 3,
@@ -751,7 +912,7 @@
       "messages": [
         {
           "sender": "tsumugi",
-          "text": "おはようございます。昨日の取材の絵、夜のうちに3枚描けました"
+          "text": "おはようございます。この前の取材の絵、あの晩に3枚描けました"
         },
         {
           "sender": "tsumugi",
@@ -899,7 +1060,7 @@
       "messages": [
         {
           "sender": "minto",
-          "text": "はじめく〜ん、生きてる〜？♡"
+          "text": "はじめくん、おはよう。準備、無理しすぎてない？"
         },
         {
           "sender": "minto",
@@ -913,17 +1074,17 @@
       "replies": [
         {
           "text": "食べてます",
-          "response": "えらい！　じゃあ睡眠もね。……ふふ、つい世話焼いちゃうな。本番、客席から見てるからね♡",
+          "response": "うん、よかった。睡眠も大事にしてね。……つい世話を焼いちゃうけど、本番は客席から見てるから",
           "affinity": 1
         },
         {
           "text": "正直カップ麺ばかり",
-          "response": "め！　……もう、しょうがないなあ。今度なにか作ってあげる。だから本番までは、ちゃんとしたの食べること。約束ね",
+          "response": "そっか。忙しくても体が資本だよ。手のかからないものでも、栄養があるものを食べてね。……心配だから",
           "affinity": 1
         },
         {
           "text": "みんとさんこそ大丈夫？",
-          "response": "……っ。う、うん、平気平気！　わたしの心配より自分の心配！　……でも、ありがと。ちょっと嬉しかった",
+          "response": "……うん、大丈夫。自分のことはつい後回しになるから。ありがと、ちょっと嬉しい",
           "affinity": 1
         }
       ]
@@ -952,6 +1113,23 @@
         {
           "sender": "naru",
           "text": "まあ都市伝説だけどな。でも思ったよ。地方で勝った負けたって言ってる間も、世界はとんでもなく広い。……お互い、行けるとこまで行こうぜ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "俺たちも、もっと上を見よう",
+          "response": "おう。目の前の大会も、その先も。……まずは隣でちゃんと勝負しようぜ",
+          "affinity": 2
+        },
+        {
+          "text": "まず大会までの一台を詰める",
+          "response": "だな。遠くを見るのもいいけど、今日の手元が雑になったら意味ねえし",
+          "affinity": 1
+        },
+        {
+          "text": "噂だけじゃ、まだ分からないな",
+          "response": "それもそうだ。俺もいつか、自分の舌で確かめたいってだけだよ",
+          "affinity": 0
         }
       ]
     },

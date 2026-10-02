@@ -3,10 +3,11 @@
 # https://haseatsu114514-dot.github.io/shisha-game/ が更新される。
 #
 # 配備レイアウト（2026-07-02 改定・起動高速化）:
-#   /            … /web/ へ即リダイレクト（既存ブックマークを生かす）
-#   /web/        … 分割ファイル版（アセット遅延読み込み・起動が速い、こちらが本線）
+#   /            … /remake/ へ即リダイレクト（既存ブックマークを生かす）
+#   /web/        … 従来の分割ファイル版（保存用）
 #   /shisha_ch1.html … 1ファイル配布版（約22MB・ダウンロードして持ち歩く用）
 #   /tools/flavor_stats_editor.html … フレーバー調整ツール
+#   /remake/     … リメイク版（remake/。data/ と assets/ を実行時に直接読む＝ビルド不要）
 name: Deploy web build to GitHub Pages
 
 on:
@@ -22,6 +23,7 @@ on:
       - "web/tools/**"
       - "web/build_data.py"
       - "web/build_standalone.py"
+      - "remake/**"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -61,24 +63,27 @@ jobs:
           cp -r web/css _site/web/css
           cp -r web/js _site/web/js
           cp -r assets _site/assets
-          # ルートは分割版へ転送（旧URLのブックマークでも速い方が開く）
+          # ルートはユーザー指定のメインであるリメイク版へ転送
           cat > _site/index.html <<'HTML'
           <!DOCTYPE html>
           <html lang="ja">
           <head>
           <meta charset="UTF-8">
-          <meta http-equiv="refresh" content="0; url=./web/">
+          <meta http-equiv="refresh" content="0; url=./remake/">
           <title>水煙前線 -EN:CODE-</title>
-          <script>location.replace("./web/" + location.search + location.hash);</script>
+          <script>location.replace("./remake/" + location.search + location.hash);</script>
           </head>
           <body style="background:#0a0612;color:#c5b896;font-family:serif;text-align:center;padding-top:20vh">
-          <p>ゲームへ移動中……<br><a href="./web/" style="color:#f4d27a">開かない場合はこちら</a></p>
+          <p>ゲームへ移動中……<br><a href="./remake/" style="color:#f4d27a">開かない場合はこちら</a></p>
           </body>
           </html>
           HTML
           # 1ファイル配布版はダウンロード用に残す
           cp web/dist/shisha_ch1.html _site/shisha_ch1.html
           cp web/tools/flavor_stats_editor.html _site/tools/flavor_stats_editor.html
+          # リメイク版: remake/ はビルド不要。../data/ と ../assets/ を相対で読むので data も置く
+          cp -r remake _site/remake
+          cp -r data _site/data
       - uses: actions/configure-pages@v5
         with:
           enablement: true

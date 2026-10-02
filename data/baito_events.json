@@ -38,7 +38,9 @@
         "offers_practice": true,
         "practice_consumes_flavor": false
       },
-      "customer_chat_snippet": "作ったシーシャを渡した後、お客さんが「また来ます！」と笑顔で帰っていった。"
+      "customer_chat_snippet": "作ったシーシャを渡した後、お客さんが「また来ます！」と笑顔で帰っていった。",
+      "customers": ["baito_beginner_01"],
+      "once": true
     },
     {
       "id": "baito_trouble_01",
@@ -64,7 +66,7 @@
         },
         {
           "text": "スミさんに聞く",
-          "result": "振り返ると、スミさんはカウンターの向こうで腕を組んでこちらを見ていた。\n「スミさん、あの……」\nスミさんが黙ってテーブルに来て、一瞬でヒートマネジメントの蓋を外し、炭の位置を変え、パッキングを軽く押した。\nゴボゴボ──煙が復活。\n閉店後、一言だけ。「自分で判断できるようになれ」\n……次は自分で解決しよう。",
+          "result": "振り返ると、スミさんはカウンターの向こうで腕を組んでこちらを見ていた。\n「スミさん、あの……」\nスミさんが黙ってテーブルに来て、一瞬でヒートマネジメントの蓋を外し、炭の位置を変え、パッキングを軽く押した。\nゴボゴボ──煙が復活。\nシフトのあと、一言だけ。「自分で判断できるようになれ」\n……次は自分で解決しよう。",
           "stats": {
             "technique": 1
           },
@@ -76,12 +78,13 @@
         "offers_practice": true,
         "practice_consumes_flavor": false
       },
-      "customer_chat_snippet": "直し終わったらサラリーマンが「気が利くね」と頷いてくれた。"
+      "customer_chat_snippet": "直し終わったらサラリーマンが「気が利くね」と頷いてくれた。",
+      "customers": ["baito_trouble_01"]
     },
     {
       "id": "baito_rush_01",
       "category": "rush",
-      "text": "夕方のピーク。客の笑い声と注文のコールが飛び交う。\n3卓同時に「炭替えてください！」のコール。コンロの上には赤く焼けた炭が3セット。トングを握る手に力が入る。",
+      "text": "注文が重なる時間帯。客の笑い声と注文のコールが飛び交う。\n3卓同時に「炭替えてください！」のコール。コンロの上には赤く焼けた炭が3セット。トングを握る手に力が入る。",
       "choices": [
         {
           "text": "落ち着いて1卓ずつ対応",
@@ -107,7 +110,8 @@
         "offers_practice": true,
         "practice_consumes_flavor": false
       },
-      "customer_chat_snippet": "炭替えが一通り終わると、常連のおじさんが「お疲れ！」とグータッチしてくれた。"
+      "customer_chat_snippet": "炭替えが一通り終わると、常連のおじさんが「お疲れ！」とグータッチしてくれた。",
+      "customers": ["baito_rush_01"]
     },
     {
       "id": "baito_mob_flavor_police",
@@ -126,7 +130,7 @@
         },
         {
           "text": "「スミさーん！！」（店長に丸投げ）",
-          "result": "スミさんが無言でファイルを持ってきた。書類を見せて、おじさんは「ちゃんとしてるね」と帰った。\n閉店後、スミさんから一言。「自分で対応できるようになれ」\n……ファイルの場所を覚えておこう。",
+          "result": "スミさんが無言でファイルを持ってきた。書類を見せて、おじさんは「ちゃんとしてるね」と帰った。\nシフトのあと、スミさんから一言。「自分で対応できるようになれ」\n……ファイルの場所を覚えておこう。",
           "stats": {
             "insight": 1
           },
@@ -138,7 +142,8 @@
         "offers_practice": true,
         "practice_consumes_flavor": false
       },
-      "customer_chat_snippet": "その後、眼鏡のおじさんはちゃんとシーシャを注文して帰っていった。"
+      "customer_chat_snippet": "その後、眼鏡のおじさんはちゃんとシーシャを注文して帰っていった。",
+      "customers": ["baito_mob_flavor_police"]
     },
     {
       "id": "baito_mob_insta",
@@ -164,7 +169,8 @@
       "post_work": {
         "offers_practice": true,
         "practice_consumes_flavor": false
-      }
+      },
+      "customers": ["baito_mob_insta"]
     },
     {
       "id": "baito_regular_01",
@@ -193,7 +199,8 @@
       "post_work": {
         "offers_practice": true,
         "practice_consumes_flavor": false
-      }
+      },
+      "customers": ["occhan"]
     },
     {
       "id": "baito_tsumugi_01",
@@ -234,7 +241,7 @@
       "choices": [
         {
           "text": "「お客様、こちらは……」と丁寧に断る",
-          "result": "「つまんねえな……」と言いつつ、椅子にドサッと座った。おとなしくシーシャを待ってくれるようだ。\nダブルアップルを作って出す。おじさんは黙って吸い始めた。白い煙がゆらゆらと天井に昇っていく。\nしばらくして、眠るように静かになった。シーシャの効果なのか、酔いが回ったのか。\n閉店後、スミさんが小さく頷いてくれた。「よく対応した」の意味だと思う。たぶん。",
+          "result": "「つまんねえな……」と言いつつ、椅子にドサッと座った。おとなしくシーシャを待ってくれるようだ。\nダブルアップルを作って出す。おじさんは黙って吸い始めた。白い煙がゆらゆらと天井に昇っていく。\nしばらくして、眠るように静かになった。シーシャの効果なのか、酔いが回ったのか。\nシフトのあと、スミさんが小さく頷いてくれた。「よく対応した」の意味だと思う。たぶん。",
           "stats": {
             "guts": 3,
             "charm": 2
@@ -263,7 +270,8 @@
       "post_work": {
         "offers_practice": true,
         "practice_consumes_flavor": false
-      }
+      },
+      "customers": ["baito_drunk_01"]
     },
     {
       "id": "baito_body_bad_01",
@@ -293,7 +301,8 @@
       "post_work": {
         "offers_practice": true,
         "practice_consumes_flavor": false
-      }
+      },
+      "customers": ["baito_body_bad_01"]
     },
     {
       "id": "baito_closing_smoke",
@@ -302,7 +311,7 @@
       "choices": [
         {
           "text": "ダブルアップルを作る",
-          "result": "バイト中に何十回も作ったフレーバー。でも、自分のために作るのは初めてだった。\n丁寧にボウルに詰める。いつもより少しだけ、時間をかけて。炭を置いて、蒸らしの蒸気を待つ。\n完成したシーシャのホースに口をつける。ゆっくり吸い込む。\nゴボゴボ──水面が穏やかに揺れる。白い煙が口から出て、閉店後の薄暗い店内にゆっくり広がっていく。喉を通る冷たい煙の感覚と、吐き出した後の温かいスパイスの香りがたまらない。\nダブルアップルの甘さの中に、スパイスの温かみ。吐き出した煙が天井のファンに巻かれて、ゆるやかに消えていく。\n「（……これが、tonariの味なんだな）」\nスミさんがカウンターの向こうで、自分のシーシャを吸っている。二人の煙がゆっくり混ざって、天井に昇っていく。\nこの時間が、好きだ。",
+          "result": "バイト中に何十回も作ったフレーバー。今は、自分のために少しゆっくり作ってみる。\n丁寧にボウルに詰める。いつもより少しだけ、時間をかけて。炭を置いて、蒸らしの蒸気を待つ。\n完成したシーシャのホースに口をつける。ゆっくり吸い込む。\nゴボゴボ──水面が穏やかに揺れる。白い煙が口から出て、閉店後の薄暗い店内にゆっくり広がっていく。喉を通る冷たい煙の感覚と、吐き出した後の温かいスパイスの香りがたまらない。\nダブルアップルの甘さの中に、スパイスの温かみ。吐き出した煙が天井のファンに巻かれて、ゆるやかに消えていく。\n「（……これが、tonariの味なんだな）」\nスミさんがカウンターの向こうで、自分のシーシャを吸っている。二人の煙がゆっくり混ざって、天井に昇っていく。\nこの時間が、好きだ。",
           "stats": {
             "sense": 2,
             "insight": 2
@@ -322,7 +331,9 @@
       "post_work": {
         "offers_practice": true,
         "practice_consumes_flavor": false
-      }
+      },
+      "customers": [],
+      "time_slot": "night"
     },
     {
       "id": "baito_smoke_ring",
@@ -351,7 +362,8 @@
       "post_work": {
         "offers_practice": true,
         "practice_consumes_flavor": false
-      }
+      },
+      "customers": ["occhan"]
     },
     {
       "id": "baito_couple_time",
@@ -380,7 +392,9 @@
       "post_work": {
         "offers_practice": true,
         "practice_consumes_flavor": false
-      }
+      },
+      "customers": ["baito_couple_time"],
+      "once": true
     },
     {
       "id": "baito_tsumugi_art",
@@ -441,7 +455,8 @@
       "post_work": {
         "offers_practice": true,
         "practice_consumes_flavor": false
-      }
+      },
+      "customers": ["tsumugi"]
     },
     {
       "id": "baito_tsumugi_closing",
@@ -470,7 +485,9 @@
       "post_work": {
         "offers_practice": true,
         "practice_consumes_flavor": false
-      }
+      },
+      "customers": ["tsumugi"],
+      "time_slot": "night"
     },
     {
       "id": "baito_foreign_tourist",
@@ -499,7 +516,8 @@
       "post_work": {
         "offers_practice": true,
         "practice_consumes_flavor": false
-      }
+      },
+      "customers": ["baito_foreign_tourist"]
     },
     {
       "id": "baito_regulars_chat",
@@ -530,7 +548,8 @@
         "offers_practice": true,
         "practice_consumes_flavor": false
       },
-      "customer_chat_snippet": "常連たちがそれぞれ帰り際に「ありがとね」と声をかけてくれた。"
+      "customer_chat_snippet": "常連たちがそれぞれ帰り際に「ありがとね」と声をかけてくれた。",
+      "customers": ["occhan", "freelancer", "reading_regular"]
     },
     {
       "id": "baito_rainy_day",
@@ -562,7 +581,8 @@
         "offers_practice": true,
         "practice_consumes_flavor": false
       },
-      "customer_chat_snippet": "帰りがけに窓際の常連さんが「雨の日のシーシャって格別だよね」と言って帰った。"
+      "customer_chat_snippet": "帰りがけに窓際の常連さんが「雨の日のシーシャって格別だよね」と言って帰った。",
+      "customers": ["baito_rainy_day"]
     },
     {
       "id": "baito_closing_late",
@@ -592,7 +612,9 @@
         "offers_practice": true,
         "practice_consumes_flavor": false
       },
-      "customer_chat_snippet": "扉が閉まった後、静かな店内が一段と落ち着いた空気になった。"
+      "customer_chat_snippet": "扉が閉まった後、静かな店内が一段と落ち着いた空気になった。",
+      "customers": ["baito_closing_late"],
+      "time_slot": "night"
     },
     {
       "id": "baito_mysterious_customer",
@@ -622,7 +644,8 @@
       "post_work": {
         "offers_practice": true,
         "practice_consumes_flavor": false
-      }
+      },
+      "customers": ["baito_mysterious_customer"]
     },
     {
       "id": "baito_minto_romance",
@@ -720,7 +743,9 @@
       "post_work": {
         "offers_practice": true,
         "practice_consumes_flavor": false
-      }
+      },
+      "customers": ["baito_jiro_call"],
+      "once": true
     },
     {
       "id": "baito_mob_01",
@@ -742,7 +767,9 @@
       ],
       "base_pay": 8000,
       "post_work": { "offers_practice": true, "practice_consumes_flavor": false },
-      "customer_chat_snippet": "大学生たちのSNSに「tonari最高」の投稿が上がっていた。"
+      "customer_chat_snippet": "大学生たちのSNSに「tonari最高」の投稿が上がっていた。",
+      "customers": ["baito_mob_01"],
+      "once": true
     },
     {
       "id": "baito_mob_02",
@@ -770,7 +797,9 @@
       ],
       "base_pay": 8000,
       "post_work": { "offers_practice": true, "practice_consumes_flavor": false },
-      "customer_chat_snippet": "幹事から「来年もここでやりたい」とLIMEの友達申請が来た。"
+      "customer_chat_snippet": "幹事から「来年もここでやりたい」とLIMEの友達申請が来た。",
+      "customers": ["baito_mob_02"],
+      "once": true
     },
     {
       "id": "baito_mob_03",
@@ -792,16 +821,17 @@
       ],
       "base_pay": 8000,
       "post_work": { "offers_practice": true, "practice_consumes_flavor": false },
-      "customer_chat_snippet": "友達2人とも「また来るわ」と言って帰った。おっちゃんの鼻が高い。"
+      "customer_chat_snippet": "友達2人とも「また来るわ」と言って帰った。おっちゃんの鼻が高い。",
+      "customers": ["occhan"]
     },
     {
       "id": "baito_atmosphere_01",
       "category": "atmosphere",
-      "text": "金曜の夜。tonariは満席。笑い声と注文が飛び交い、煙が天井を覆っている。\nカウンターの中は戦場だ。フレーバーの瓶を掴み、ボウルを詰め、炭を運ぶ。その繰り返し。\nスミさんは黙々とカウンターの向こうで動いている。背中で「ついてこい」と言っている。",
+      "text": "客足が増えてきた。tonariは満席。笑い声と注文が飛び交い、煙が天井を覆っている。\nカウンターの中は戦場だ。フレーバーの瓶を掴み、ボウルを詰め、炭を運ぶ。その繰り返し。\nスミさんは黙々とカウンターの向こうで動いている。背中で「ついてこい」と言っている。",
       "choices": [
         {
           "text": "スミさんの動きを盗みながら、同じペースで回す",
-          "result": "スミさんの手元を目で追う。無駄がない。フレーバーを取る、詰める、炭を置く。一連の動作が流れるように繋がっている。\n真似してみる。最初はぎこちなかったけど、3卓目あたりから手が自然に動き始めた。\nスミさんがちらっとこちらを見た。何も言わないけど、目が「悪くない」と言っていた気がする。\n閉店後、カウンターに並んだボウルを数えた。今日だけで12台。自己最多記録。",
+          "result": "スミさんの手元を目で追う。無駄がない。フレーバーを取る、詰める、炭を置く。一連の動作が流れるように繋がっている。\n真似してみる。最初はぎこちなかったけど、3卓目あたりから手が自然に動き始めた。\nスミさんがちらっとこちらを見た。何も言わないけど、目が「悪くない」と言っていた気がする。\nシフトのあと、カウンターに並んだボウルを数えた。今日だけで12台。自己最多記録。",
           "stats": { "technique": 4, "guts": 2 },
           "money_bonus": 500
         },
@@ -820,12 +850,13 @@
       ],
       "base_pay": 8000,
       "post_work": { "offers_practice": true, "practice_consumes_flavor": false },
-      "customer_chat_snippet": "閉店後、スミさんが缶コーヒーを無言で投げてよこした。「お疲れ」の代わりらしい。"
+      "customer_chat_snippet": "シフトのあと、スミさんが缶コーヒーを無言で投げてよこした。「お疲れ」の代わりらしい。",
+      "customers": ["baito_atmosphere_01"]
     },
     {
       "id": "baito_atmosphere_02",
       "category": "atmosphere",
-      "text": "平日の昼下がり。客は奥のソファに一人だけ。窓から差し込む午後の光が、煙を金色に染めている。\nゴボゴボ……という水面の音だけが、静かな店内に響いている。\nスミさんは裏で発注作業中。カウンターには俺一人。",
+      "text": "穏やかな昼下がり。客は奥のソファに一人だけ。窓から差し込む午後の光が、煙を金色に染めている。\nゴボゴボ……という水面の音だけが、静かな店内に響いている。\nスミさんは裏で発注作業中。カウンターには俺一人。",
       "choices": [
         {
           "text": "この静けさを味わいながら、グラスを磨く",
@@ -842,7 +873,9 @@
       ],
       "base_pay": 8000,
       "post_work": { "offers_practice": true, "practice_consumes_flavor": false },
-      "customer_chat_snippet": "奥の客が帰り際に「いい店だね、静かで」と小さく微笑んだ。"
+      "customer_chat_snippet": "奥の客が帰り際に「いい店だね、静かで」と小さく微笑んだ。",
+      "customers": ["baito_atmosphere_02"],
+      "time_slot": "noon"
     },
     {
       "id": "baito_atmosphere_03",
@@ -863,7 +896,9 @@
         }
       ],
       "base_pay": 8000,
-      "post_work": { "offers_practice": true, "practice_consumes_flavor": false }
+      "post_work": { "offers_practice": true, "practice_consumes_flavor": false },
+      "customers": [],
+      "time_slot": "night"
     },
     {
       "id": "baito_trouble_02",
@@ -891,7 +926,8 @@
       ],
       "base_pay": 8000,
       "post_work": { "offers_practice": true, "practice_consumes_flavor": false },
-      "customer_chat_snippet": "女性客は帰り際に「グレープも美味しかったです」と笑ってくれた。"
+      "customer_chat_snippet": "女性客は帰り際に「グレープも美味しかったです」と笑ってくれた。",
+      "customers": ["baito_trouble_02"]
     },
     {
       "id": "baito_trouble_03",
@@ -913,7 +949,8 @@
       ],
       "base_pay": 8000,
       "post_work": { "offers_practice": true, "practice_consumes_flavor": false },
-      "customer_chat_snippet": "その客は最後まで申し訳なさそうにしていたけど、帰り際に「対応が早くて助かった」と言ってくれた。"
+      "customer_chat_snippet": "その客は最後まで申し訳なさそうにしていたけど、帰り際に「対応が早くて助かった」と言ってくれた。",
+      "customers": ["baito_trouble_03"]
     },
     {
       "id": "baito_trouble_04",
@@ -935,16 +972,17 @@
       ],
       "base_pay": 8000,
       "post_work": { "offers_practice": true, "practice_consumes_flavor": false },
-      "customer_chat_snippet": "その客は2杯目を追加注文した。「今度のは最高」と親指を立ててくれた。"
+      "customer_chat_snippet": "その客は2杯目を追加注文した。「今度のは最高」と親指を立ててくれた。",
+      "customers": ["baito_trouble_04"]
     },
     {
       "id": "baito_regular_02",
       "category": "regular",
-      "text": "カランッ──いつもの革靴の音。サラリーマンの高橋さんが、今日もネクタイを緩めながら入ってきた。\n「よう。今日も長かったわ……」\n定位置に座って、メニューは見ない。毎週木曜、同じ時間、同じ席。",
+      "text": "カランッ──いつもの革靴の音。サラリーマンの高橋さんが、今日もネクタイを緩めながら入ってきた。\n「よう。今日も長かったわ……」\n定位置に座って、メニューは見ない。いつもの時間に、いつもの席。",
       "choices": [
         {
           "text": "「お疲れさまです。今日はいつもと違うの、試してみませんか？」",
-          "result": "「え、いいの？ じゃあ任せるよ」\nいつものダブルアップルの代わりに、少しスパイシーな配合にしてみた。シナモンを効かせて、温かみのある味に。\n高橋さんが一口吸って、目を丸くした。\n「……お前、いつの間にこんなの作れるようになったんだ」\n「3ヶ月いますからね」\n「はは、そうだった。俺より長いかもな、木曜の常連歴」\n二人で笑った。常連との距離がまた少し縮まった気がする。",
+          "result": "「え、いいの？ じゃあ任せるよ」\nいつものダブルアップルの代わりに、少しスパイシーな配合にしてみた。シナモンを効かせて、温かみのある味に。\n高橋さんが一口吸って、目を丸くした。\n「……お前、いつの間にこんなの作れるようになったんだ」\n「3ヶ月いますからね」\n「はは、そうだった。俺より長いかもな、ここの常連歴」\n二人で笑った。常連との距離がまた少し縮まった気がする。",
           "stats": { "sense": 4, "charm": 2 },
           "money_bonus": 500
         },
@@ -957,7 +995,8 @@
       ],
       "base_pay": 8000,
       "post_work": { "offers_practice": true, "practice_consumes_flavor": false },
-      "customer_chat_snippet": "高橋さんが「木曜の楽しみ」と言いながら帰っていった。"
+      "customer_chat_snippet": "高橋さんが「いつもの楽しみ」と言いながら帰っていった。",
+      "customers": ["takahashi"]
     },
     {
       "id": "baito_regular_03",
@@ -979,7 +1018,8 @@
       ],
       "base_pay": 8000,
       "post_work": { "offers_practice": true, "practice_consumes_flavor": false },
-      "customer_chat_snippet": "「ここ、仕事の日も休みの日も居心地いいんだよな」と帰り際にぽつりと言ってくれた。"
+      "customer_chat_snippet": "「ここ、仕事の日も休みの日も居心地いいんだよな」と帰り際にぽつりと言ってくれた。",
+      "customers": ["freelancer"]
     },
     {
       "id": "baito_regular_04",
@@ -1001,12 +1041,13 @@
       ],
       "base_pay": 8000,
       "post_work": { "offers_practice": true, "practice_consumes_flavor": false },
-      "customer_chat_snippet": "3人で「tonariの若いのは覚えがいい」と話しているのが聞こえた。"
+      "customer_chat_snippet": "3人で「tonariの若いのは覚えがいい」と話しているのが聞こえた。",
+      "customers": ["occhan", "takahashi", "freelancer"]
     },
     {
       "id": "baito_rush_02",
       "category": "rush",
-      "text": "土曜の夜。入口に2組の客が並んでいる。店内は満席寸前。\n「すみません、あと何分くらい待ちますか？」と聞かれた。奥では「炭替えて！」のコール。カウンターには新しい注文が3枚。\nスミさんが「始、回せ」と一言。",
+      "text": "混み合うtonari。入口に2組の客が並んでいる。店内は満席寸前。\n「すみません、あと何分くらい待ちますか？」と聞かれた。奥では「炭替えて！」のコール。カウンターには新しい注文が3枚。\nスミさんが「始、回せ」と一言。",
       "choices": [
         {
           "text": "待ちの客に時間を伝えつつ、炭替えと新規注文を同時に回す",
@@ -1023,7 +1064,8 @@
       ],
       "base_pay": 8000,
       "post_work": { "offers_practice": true, "practice_consumes_flavor": false },
-      "customer_chat_snippet": "待って入った客が「待った甲斐があった」と笑ってくれた。"
+      "customer_chat_snippet": "待って入った客が「待った甲斐があった」と笑ってくれた。",
+      "customers": ["baito_rush_02"]
     },
     {
       "id": "baito_rush_03",
@@ -1051,12 +1093,13 @@
       ],
       "base_pay": 8000,
       "post_work": { "offers_practice": true, "practice_consumes_flavor": false },
-      "customer_chat_snippet": "閉店後、スミさんが「ピークの捌き方、覚えたな」と短く言った。"
+      "customer_chat_snippet": "シフトのあと、スミさんが「ピークの捌き方、覚えたな」と短く言った。",
+      "customers": ["baito_rush_03"]
     },
     {
       "id": "baito_rush_04",
       "category": "rush",
-      "text": "夕方6時。仕事帰りの客が一気に押し寄せた。10分で4組。全員が「早めにお願い」と急いでいる。\n炭は焼けているが、ボウルが足りない。洗い場に使い終わったボウルが溜まっている。\n（洗うのが先か、ある分で回すのが先か──）",
+      "text": "客が一気に押し寄せた。10分で4組。全員が「早めにお願い」と急いでいる。\n炭は焼けているが、ボウルが足りない。洗い場に使い終わったボウルが溜まっている。\n（洗うのが先か、ある分で回すのが先か──）",
       "choices": [
         {
           "text": "手持ちのボウルで2台作りながら、合間に洗う",
@@ -1073,7 +1116,8 @@
       ],
       "base_pay": 8000,
       "post_work": { "offers_practice": true, "practice_consumes_flavor": false },
-      "customer_chat_snippet": "最後に来た客が「この店、回転早くていいね」と感心していた。"
+      "customer_chat_snippet": "最後に来た客が「この店、回転早くていいね」と感心していた。",
+      "customers": ["baito_rush_04"]
     }
   ],
   "baito_settings": {

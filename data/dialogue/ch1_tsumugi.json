@@ -21,7 +21,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "それでも構わず、傷の上からApple Pencilを走らせている。"
+          "text": "亀裂をよけるように、Apple Pencilを走らせている。"
         },
         {
           "speaker": "",
@@ -89,6 +89,60 @@
           "speaker": "",
           "face": "",
           "text": "傷のあるiPadを抱える、寡黙な常連客。それが、つむぎとの出会いだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、つむぎが画面を傾けた。葉の耳と煙の尾を持つ猫が、窓辺で寝ている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この子、猫なの？ 煙なの？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……どっちも、この子なので"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "最初から、この子です"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "耳の葉っぱは、友達が育ててた木です"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "寝方は、うちにいた猫が少し。……尾は、ここの煙です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……いろんなものが、ここにいるんだね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はい。描いてると、自然にこうなります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……そうか。なんか、気持ちよさそうに寝てるね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは、小さくうなずいてペンを持ち直した。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "tsumugi_creature"
         }
       ],
       "branches": {
@@ -290,6 +344,10 @@
           "flag": "_lime_contact_tsumugi"
         },
         {
+          "type": "remember",
+          "memory_id": "tsumugi_smoke"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "……【洞察】が少し上がった。"
@@ -302,7 +360,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "シフト中、つむぎの炭を替えに行った。いつもの席、いつものラベンダー、いつものiPad。"
+          "text": "シフト中、炭を替えに行った。つむぎは、いつもの席でiPadを傾けている。"
         },
         {
           "type": "condition",
@@ -314,142 +372,146 @@
         {
           "speaker": "",
           "face": "",
-          "text": "──iPadの傷が、照明の光を反射して光った。画面を斜めに横切る、深い亀裂。"
+          "text": "画面を斜めに横切る亀裂が、照明を反射した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そのiPad……描きにくくない？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……少し。でも、今はこのままがいいです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "その傷、どうしたの？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "前に、絵のサークルで。……尊敬してた先輩がいて"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "見せた絵に「心がない」って言われたんです"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "その人が机を叩いた時に、落ちて"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "普通なら買い替えるレベルの傷だ。"
+          "text": "つむぎは指を止めた。炭を替える音だけがした。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "つむぎちゃん、そのiPad……結構大きな傷だよね。描きにくくない？"
+          "text": "……それは、怖かったね"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "…………"
+          "text": "……はい。絵の話を、続けられなくて"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……慣れました"
+          "text": "でも、この線は、昔好きだった絵の描き方で"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "花も、動物も。見てきたものが、残ってるんです"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "でも、線を引く時に引っかかったりしない？"
+          "text": "先輩に言われても、そのまま描いてるんだ"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……します。でも……変えたくない"
+          "text": "……はい。どれも、私が見てきたものなので"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "混ざって、今の私の絵になる。それでいいと思ってます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……そうか"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "少し間があった。つむぎがiPadの傷を指でなぞる。まるで、古い傷跡を確かめるように。"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "sad",
-          "text": "……この傷、自分でつけたんじゃないんです"
+          "text": "いつもの猫を拡大する。煙の尾に、見慣れた曲がり方があった。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……"
+          "text": "この尾、ちょっとここの煙みたいだね"
         },
         {
           "speaker": "tsumugi",
-          "face": "sad",
-          "text": "前に、絵のサークルにいて。……尊敬してた先輩がいました"
+          "face": "normal",
+          "text": "……ここで描いてるので。いつの間にか、少し"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ほかの絵も、見ていい？"
         },
         {
           "speaker": "tsumugi",
-          "face": "sad",
-          "text": "ある日、描きかけの絵を見せたら……「心がない」って言われて"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "sad",
-          "text": "「ただ見たものをそのまま描いてるだけだ」って"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "sad",
-          "text": "それで……その人がテーブルを叩いた時に、iPadが落ちて"
+          "face": "normal",
+          "text": "……はい。よかったら、こっちに"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎの声は淡々としていた。でも、iPadを抱える手に力が入っているのが分かった。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……ひどいな、それ"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……でも、言ってることは……当たってたと思います"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "上手に描ける。でも、それだけ。私の絵には……何か、足りない"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "だから、買い替えないんです。……「心のある絵」が描けるまでは、この傷を忘れたくないから"
+          "text": "自分の投稿画面を開く。葉の耳の猫、苔の羽の鳥、角に森のある鹿。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎが今まで聞いた中で、一番長い言葉だった。"
+          "text": "プロフィールには、約{tsumugiFollowers}のフォロワー数が表示されていた。"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "……俺も、似てるかも"
+          "face": "surprise",
+          "text": "え、こんなに見てる人が……！？"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……え？"
+          "text": "……急に、そんな顔しないでください"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "さっきみたいに、寝てる顔の話をしてほしいです"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "シーシャ、始めたばかりで。技術もセンスも全然足りない"
+          "text": "あ、うん。……この鳥、雨が嫌そうな顔してる"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "でも……何か「自分にしかできないシーシャ」を見つけたくて"
-        },
-        {
-          "speaker": "hajime",
+          "speaker": "tsumugi",
           "face": "smile",
-          "text": "つむぎちゃんが「心のある絵」を探してるみたいに、俺も「心のあるシーシャ」を探してるのかもしれない"
+          "text": "……それは、わりと好きな顔です"
         },
         {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "…………"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "つむぎが、少しだけ──ほんの少しだけ──顔を上げた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "その瞬間、iPadを抱える腕の力が、わずかに緩んだのが見えた。"
+          "type": "remember",
+          "memory_id": "tsumugi_shared"
         }
       ],
       "branches": {
@@ -627,7 +689,12 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "描くことより……はじめさんのシーシャを記録することの方が、大事になってて"
+          "text": "絵を描いてても……はじめさんの手つきを、思い出すようになって"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はじめさんの動きも、私の描くものに混ざってきました"
         },
         {
           "speaker": "",
@@ -657,7 +724,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "「心がない」と言われた子が、誰かの「心」を記録し続けていた。"
+          "text": "絵の隣に、俺が吸う人を見ていた時間も残っている。"
         },
         {
           "speaker": "hajime",
@@ -673,6 +740,50 @@
           "speaker": "",
           "face": "",
           "text": "つむぎが慌ててiPadを胸に抱えた。いつもの防御姿勢。でも──その目が、ほんの少しだけ潤んでいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎが別のページを開いた。耳に葉のない猫が、窓辺で寝ている。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今日は、この子を描いてました"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "葉っぱが落ちた日も、こうやって寝てるので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "葉っぱがなくても、あの子だって分かるね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。私には、同じ子です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日も、窓辺で寝てるんだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは眠る猫の横に、今日の煙の線を引いた。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "tsumugi_unbloomed"
         }
       ],
       "branches": {
@@ -722,7 +833,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "大会の前日。閉店作業をしていると、つむぎが立っていた。"
+          "text": "閉店作業をしていると、つむぎが立っていた。"
         },
         {
           "speaker": "",
@@ -840,24 +951,24 @@
         {
           "speaker": "tsumugi",
           "face": "sad",
-          "text": "「心がない」って言われました。私の絵には心がないって"
+          "text": "……ここに来る前に見ていたものも、入ってます"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "でも……この絵を描いた時、初めて思ったんです"
+          "text": "いつも見てるものも、前に見てたものも、自然に混ざって"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……これは、「心がある」絵かもしれないって"
+          "text": "これも、私の絵です、……前の猫も"
         },
         {
           "type": "choice",
           "id": "tsumugi_fifth_heart",
           "choices": [
             {
-              "text": "あるよ。断言できる",
+              "text": "俺、この絵も好きだよ",
               "next": "heart_word"
             },
             {
@@ -869,17 +980,17 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "はじめさんが、お客さんの顔を見て、フレーバーを選んで、丁寧に作って、そっと出す"
+          "text": "はじめさんが、お客さんの顔を見てから、フレーバーを選ぶでしょう"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "あの一連の動きが……全部、心がこもってて"
+          "text": "あの手つきが、ここの煙を描く時に混ざるんです"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "それを見てたら、私も……心を込めて描けた気がします"
+          "text": "……窓のそばには、あの猫もいます"
         },
         {
           "speaker": "",
@@ -927,7 +1038,7 @@
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "明日……つむぎちゃんが見ててくれたシーシャ、ちゃんと大会でも出してくるよ"
+          "text": "大会でも、ちゃんと一台ずつ作ってくるよ、……ありがとう"
         },
         {
           "speaker": "tsumugi",
@@ -942,12 +1053,16 @@
         {
           "speaker": "",
           "face": "",
-          "text": "傷の上に描かれた「心のある絵」。壊れたものでも、美しいものを生み出せる──。"
+          "text": "窓辺には、いつもの煙の尾の猫がいる。今日は耳の葉っぱがない。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎが教えてくれたのは、きっとそういうことだ。"
+          "text": "昔好きだった絵も、ここで過ごした時間も、同じ画面の中にあった。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "tsumugi_change"
         },
         {
           "speaker": "",
@@ -979,7 +1094,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "あるよ。……ちゃんと、心がある。俺には分かる"
+            "text": "俺、これも好きだよ。……いつもの絵も、これも"
           },
           {
             "speaker": "tsumugi",

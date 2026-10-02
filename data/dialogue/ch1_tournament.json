@@ -411,7 +411,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……これが、今の俺の全力だ）"
+          "text": "（教わったことを、一つずつここまで練習した。……これが、今の俺の全力だ）"
         },
         {
           "type": "hide_cg"
@@ -1617,6 +1617,45 @@
           "speaker": "pakki",
           "face": "evil",
           "text": "あ〜今日も楽しかった〜！！"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜。tonariの扉を開けると、スミさんが片付けの手を止めた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……負けました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "見てた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "tonariの名前で出たのに"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "帰って来ていい。勝った日だけじゃねえよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "結果は変わらない。それでも、いつもの席は空いていた。"
         },
         {
           "speaker": "",

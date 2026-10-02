@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0812">
+<title>水煙前線 -EN:CODE- リメイク版</title>
+<link rel="icon" href="../icon.svg">
+<!-- 文字は同梱の1書体（remake/fonts/）。外部フォントは読まない＝端末で見た目が変わらない -->
+<link rel="preload" href="fonts/ZenKakuGothicNew-Medium.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/ZenKakuGothicNew-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/vn.css">
+<link rel="stylesheet" href="css/daily.css">
+<link rel="stylesheet" href="css/craft.css">
+<link rel="stylesheet" href="css/reel.css">
+<link rel="stylesheet" href="css/extras.css">
+</head>
+<body data-screen="boot">
+<div id="viewport">
+  <div id="stage">
+    <div id="bg"></div>
+    <div id="screen"></div>
+    <div id="vn"></div>
+    <div id="hud"></div>
+    <div id="fx"></div>
+    <div id="toasts"></div>
+    <div id="banners"></div>
+    <div id="wipe"><i></i><i></i><i></i><i></i><i></i></div>
+    <div id="modal"></div>
+    <div id="boot">
+      <div class="boot-brand">
+        <div class="boot-logo">水煙前線</div>
+        <div class="boot-subtitle">-EN:CODE-</div>
+      </div>
+      <div class="boot-bar"><i></i></div>
+      <div class="boot-msg">読み込み中……</div>
+      <button class="btn boot-retry" type="button" hidden>もう一度読み込む</button>
+    </div>
+  </div>
+</div>
+<div id="rotate-hint"><div>📱 スマホは横向きでお楽しみください</div></div>
+<noscript>このゲームは JavaScript が必要です。</noscript>
+<script>
+// 本体のimport自体が通信・キャッシュで失敗しても、読み込み画面を放置しない。
+(() => {
+  const bootScreen = document.getElementById("boot");
+  const message = bootScreen.querySelector(".boot-msg");
+  const retry = bootScreen.querySelector(".boot-retry");
+  const isLoading = () => bootScreen.isConnected && !bootScreen.classList.contains("done");
+  const fail = (error, slow = false) => {
+    if (!isLoading()) return;
+    clearTimeout(watchdog);
+    message.textContent = slow
+      ? "読み込みに時間がかかっています。通信を確認して、もう一度お試しください。"
+      : "読み込みに失敗しました。通信を確認して、もう一度お試しください。";
+    retry.hidden = false;
+    console.error("ゲームの起動に失敗しました", error);
+  };
+  retry.addEventListener("click", () => location.reload());
+  const watchdog = setTimeout(() => fail(new Error("Boot timeout"), true), 30000);
+  window.addEventListener("error", (event) => fail(event.error || new Error(event.message)));
+  window.addEventListener("unhandledrejection", (event) => fail(event.reason));
+  import("./js/main.js")
+    .then(({ boot }) => boot())
+    .then(() => clearTimeout(watchdog), fail);
+})();
+</script>
+</body>
+</html>

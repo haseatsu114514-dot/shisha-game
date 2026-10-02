@@ -1233,8 +1233,8 @@
         },
         {
           "speaker": "minto",
-          "face": "surprise",
-          "text": "わっ、はじめくん！？ ……いまの真剣な顔はナシで！ 見なかったことにして？"
+          "face": "ura_surprise",
+          "text": "……あ、はじめくん。来てたんだね。……走ってるところを見られるの、ちょっと恥ずかしい"
         },
         {
           "speaker": "hajime",
@@ -1243,12 +1243,12 @@
         },
         {
           "speaker": "minto",
-          "face": "wink",
-          "text": "えらい！ かわいいも接客も、維持してこそなんだよ？"
+          "face": "ura_smile",
+          "text": "……ふふ。私も、少しずつ続けてるの。お店で一日立ってると、体力がいるから"
         },
         {
           "speaker": "minto",
-          "face": "smile",
+          "face": "ura_smile",
           "text": "楽してるように見せるのが、いちばん体力使うの。企業秘密ね"
         },
         {

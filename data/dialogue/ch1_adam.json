@@ -120,6 +120,15 @@
           "speaker": "",
           "face": "",
           "text": "（ヤバい人だけど、シーシャ職人としての腕は本物だ……）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（店の匂いも、この人の声も、一服と一緒に覚えてしまった）"
+        },
+        {
+          "type": "remember",
+          "memory_id": "adam_origin"
         }
       ]
     },
@@ -164,12 +173,22 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "その核心はアニスとリコリス。りんごの蜜に二つが重なって、あの奥深い甘みが立つ……"
+          "text": "アニスとリコリス。その香りで、林檎を描いているのだ"
         },
         {
           "speaker": "adam",
           "face": "normal",
           "text": "これ自体がすでに最高の調和だ。なぜ更に混ぜる必要がある？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一つの味だと思ってたけど、中でいろんなものが合わさってるんだ"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "そうだ。偽物の林檎ではない。これがダブルアップルなのだ"
         },
         {
           "speaker": "adam",
@@ -230,6 +249,10 @@
           "speaker": "",
           "face": "",
           "text": "でも、その異常なこだわりがあるからあの深みが生まれるんだな）"
+        },
+        {
+          "type": "remember",
+          "memory_id": "adam_blend"
         }
       ]
     },
@@ -367,6 +390,21 @@
         },
         {
           "speaker": "hajime",
+          "face": "normal",
+          "text": "このやり方、最初からアダムさんが考えたんですか"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "先人に教わった。そこへ、俺の失敗を山ほど足した"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "そして今日、お前の手にも渡った。林檎の旅は続くのだ！"
+        },
+        {
+          "speaker": "hajime",
           "face": "smile",
           "text": "すごい……。ダブルアップルだけを研究し続けたからこそ、こんな境地に……。ありがとう、アダムさん"
         },
@@ -424,6 +462,10 @@
           "speaker": "",
           "face": "",
           "text": "（行動は奇抜だけど、シーシャに対しては誰よりも真面目で、妙にまっすぐな人なんだ）"
+        },
+        {
+          "type": "remember",
+          "memory_id": "adam_practice"
         },
         {
           "speaker": "",
@@ -583,7 +625,7 @@
     {
       "dialogue_id": "ch1_adam_outing_dagurikura",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_day.png"
+        "bg": "res://assets/backgrounds/bg_street_night.png"
       },
       "lines": [
         {

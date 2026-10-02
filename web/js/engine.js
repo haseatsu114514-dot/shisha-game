@@ -447,6 +447,13 @@ class DialogueEngine {
     // 知識登録行（S2・2026-07-11）: {"type":"note","note_id":"...","label":"..."}。
     // 会話で出た情報を「ノートに書いた」トーストで見せる（処理はゲーム側）
     if (type === "note") { if (this.ctx.onNote) this.ctx.onNote(line); return this.next(); }
+    // 交流で実際に聞いた言葉・見た手つきを残す。数値の報酬や知識ノートとは独立。
+    if (type === "remember") { if (this.ctx.onRemember) this.ctx.onRemember(line.memory_id); return this.next(); }
+    // 未読の相手を登場させず、プレイヤーが選んだ交流を短い内心として返す。
+    if (type === "reflection") {
+      if (this.ctx.getReflectionLines) this.queue.unshift(...this.ctx.getReflectionLines());
+      return this.next();
+    }
     // 背景転換行（2026-07-11）: {"type":"bg","bg":"res://..."}。
     // 1本の会話の中の場面転換（会場→夜の店 等）をデータ側から指定できるようにする
     if (type === "bg") { if (line.bg) this.setBackground(line.bg); return this.next(); }

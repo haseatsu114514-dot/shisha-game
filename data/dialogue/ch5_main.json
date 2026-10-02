@@ -6,112 +6,92 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "今日もいい天気だ。春になってから、お客さんも増えてきた気がする"
+          "text": "春になって、お客さんも増えてきたな"
         },
         {
           "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "——素晴らしい"
-        },
-        {
-          "speaker": "dr_kemuri",
-          "face": "normal",
-          "text": "やあ、はじめ君。世界王者の祝杯には、少々早いお越しですね"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "うわっ！？……誰かと思ったら、Dr.チャコール博士"
+          "text": "──素晴らしい。やあ、はじめ君"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（相変わらずしわくちゃの白衣を着て、目の下には深いクマができてる"
+          "text": "うわっ！？ チャコール博士。いつからそこに"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "しわくちゃの白衣。博士はカウンターの一台を、目を輝かせて見ていた。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "君の大会記録を、すべて学習させました"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "配合、詰め方、火の管理。迷ってから直した動きまで"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "それに、どこか……焦点が合ってないような）"
+          "text": "……俺の作り方を、全部？"
         },
         {
           "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "世界大会の君のシーシャ、審査員席の裏から存分に『解剖』させていただきましたよ"
+          "text": "ええ。過去の君が作った煙は、再現できる"
         },
         {
           "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "フフ……ヒッハハ！実に、実に愛おしい！君のその『気まぐれな優しさ』！『相手に合わせる揺らぎ』！"
+          "text": "そして、今日の温度や湿度、吸う人の様子にも対応する"
         },
         {
           "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "計算を狂わせる致命的なバグ……それこそが、究極の最適解への扉を開く鍵だったとは！！"
+          "text": "誰でも、失敗を怖がらずに煙を楽しめる。素晴らしいでしょう"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……バグってなんですか。俺はお客さんの好みに合わせただけですよ"
+          "text": "……それは、助かる人も多いと思います"
         },
         {
           "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "ええ、ええ！その通りだ！ですが、人間の手によるゆらぎは所詮『不完全』"
+          "text": "だからこそ、君と比べてみたい"
         },
         {
           "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "その日に体調が悪ければ味は落ちる。気分で炭の置き場が変わる！"
+          "text": "SHISHA-9000。私の最高傑作と、二本勝負です"
         },
         {
           "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "そんな悲劇は、シーシャの未来において許されない"
-        },
-        {
-          "speaker": "dr_kemuri",
-          "face": "normal",
-          "text": "私はシーシャを愛しているからこそ、誰も失敗しない……誰も哀しまない世界を創る義務がある！"
-        },
-        {
-          "speaker": "dr_kemuri",
-          "face": "normal",
-          "text": "だからこそ……君のデータという『最後の生贄』を組み込んで、"
-        },
-        {
-          "speaker": "dr_kemuri",
-          "face": "normal",
-          "text": "ついに私の最高傑作『SHISHA-9000』が産声を上げたのですよ！！"
+          "text": "葉は双方、ダブルアップルだけ。量も同じ12グラム"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（この人、言ってることが完全にヤバいマッドサイエンティストだけど……本気で、"
+          "text": "フレーバーを変えて勝つことも、できないんですね"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "ええ。猶予は30日。君の今の手を、見せてください"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "誰よりもシーシャの未来を信じてるんだな）"
-        },
-        {
-          "speaker": "dr_kemuri",
-          "face": "normal",
-          "text": "さあ……どうでしょう？私の、いや『彼』の完璧な慈愛のアルゴリズムと、勝負していただけませんか？"
-        },
-        {
-          "speaker": "dr_kemuri",
-          "face": "normal",
-          "text": "猶予は30日差し上げましょう"
-        },
-        {
-          "speaker": "dr_kemuri",
-          "face": "normal",
-          "text": "君のその不完全で愛おしい指先で、究極の命を超えられるか……どうか、私に見せてください"
+          "text": "（過去の俺を、そっくり作れる機械か）"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……博士の最高傑作か。30日以内に、あの人に……いや機械に、答えを出しに行かないと）"
+          "text": "（じゃあ、今の俺は何を作ろう）"
         }
       ]
     },
@@ -132,6 +112,356 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "俺には、AIと戦うより、今目の前にいるお客さんに美味しいシーシャを作ることの方がずっと大事だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_copy_first_cup",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "同じ葉、同じ量。9000のアームが、見慣れた順番で炭を置く。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（俺が試して、覚えてきた動きだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一口吸う。自分が出した煙の、好きだった部分まで残っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……うまいです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席から咳が聞こえた。9000はすぐに火力を調整した。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "気温も湿度も、吸う速さも見ています"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "記録を繰り返すだけの機械ではないんです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一本目の挙手は、9000がわずかに上回った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（あの頃は、俺だけの作り方だと思ってた。……誰かから覚えて、俺が試してきた動きが、あっちでも動いてる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_relationship_before_second_cup",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二本目を前に、トングを持つ指が震えた。客席に、知った顔がある。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "はじめ。終わったら、店で一服するぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "さっきまで聞こえなかった、小さな笑い声が届いた。"
+        },
+        {
+          "type": "reflection"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（トングの動きも、待つ呼吸も、俺も誰かを見て覚えたんだった。覚えてから、何度も作って直してきた）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（それを消して、俺だけのものを探さなくていい）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "酸っぱい顔の客が、ホースを膝に置いて待っている。あの東京の夜の人だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（あの人、今度は急いでない。俺も、急がなくていい）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭を寄せかけて、止めた。立ち上がりを、もう一息だけ待つ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（今の熱を見よう。今、ここで吸う人を見よう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_second_cup_result",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "9000も温度を見て調整している。俺は、自分の台の煙を確かめた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手が落ち着いた分、小さな変化が見える。吸う速さを見て、炭を離した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……どうぞ。もう一口、ゆっくり"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "同じ葉の香りが、さっきとは違う間で届く。客の肩が少し下がった。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "あっちも、うまかったよ"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "今日は、こっちをもう一回吸いたい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二本目の挙手は、僅差ではじめ。勝敗はついた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（俺だけの何かを見せようとしてた時より、あの人がもう一口吸ってくれたのが、ずっと嬉しい）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（俺一人でできた一台、とは思えない）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_doctor_after_match",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "……気温も湿度も、対応できていたはずなのに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、さっきは火を急いでました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "知った顔を見たら、負けても帰っていいんだと思えて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それで、手を止めて待てたんです"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "……同じ手でも、記録した日とは違っていたのか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "記録に残った俺も、誰かに会ってできた俺です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "9000の中にも、いろんな人の仕事が入ってるんですよね"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "ええ、……私の仕事も"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は、それぞれ違う続きを作ったんだと思います"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "博士は眼鏡を外した。廊下の古い写真と、同じ目をしていた。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "昔はね。私も、自分の舌で作っていたんです"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "否定された一台が忘れられなくて。何を吸っても、砂の味がした"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "君も、東京で……。どうやって、戻ったんですか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "作れない日にも、座ってていい場所がありました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "少しずつです。今も迷うけど、話せる人がいます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "博士。よかったら、一緒に一台作りませんか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "データも使っていいです。分かるところから、二人で"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "博士はうなずいた。震える手の横に、自分のトングを置いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "9000のログに、新しい調整が一つ残った。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_return_to_tonari",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariの閉店後。ホースを渡して、いつもの椅子に座った。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……いろんな匂い、つけて帰ってきたな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なくさないと、俺の匂いにならないと思ってました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "今、お前からしてるだろ。……で、今日はどんなのを吸わせてくれるんだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "上着に鼻を寄せる。炭、店の煙、今日の会場。少しずつ混ざっている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（誰にも会わなかった俺を、探さなくてよかった）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（混ざったままで、俺だった。明日はまた、少し変わる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "外の扉が鳴る。残っていたグラスを、もう一つ出した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は、いつものより少し軽めに。ゆっくり話しながら吸えるように作ります"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "見慣れた袋を開けて、葉をほぐす。教わった詰め方を、今夜のボウルと相手の呼吸に合わせて使った。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……うまいな。もう一口、もらうぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ホースを受け取るその手を見て、はじめは笑った。明日も、もう少しうまく作りたくなった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 2
+          }
         }
       ]
     }

@@ -1,5 +1,15 @@
 # shisha-game
 
+水煙前線 -EN:CODE-（シーシャ屋アドベンチャー＆シミュレーション）。
+
+| バージョン | 場所 | 状態 |
+|---|---|---|
+| 旧ブラウザ版 | `web/` | 第1章・第2章。これまでの版をそのまま残している |
+| **リメイク版** | `remake/` | 仕様書から作り直し中。第1章を通しで遊べる（詳細は `remake/README.md`） |
+
+ローカルで遊ぶ: リポジトリ直下で `python3 -m http.server 8123` →
+旧版 `http://127.0.0.1:8123/web/` ／ リメイク版 `http://127.0.0.1:8123/remake/`
+
 ## Git Safety
 
 This project has extra guardrails to reduce unrelated-history PRs and
