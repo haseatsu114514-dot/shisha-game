@@ -1223,38 +1223,16 @@
     {
       "dialogue_id": "choizap_minto",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_choizap.png"
+        "bg": "res://assets/backgrounds/bg_choizap.png",
+        "private_scene": true
       },
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "チョイザップのランニングマシンに、見覚えのある姿があった。みんとだ。"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_surprise",
-          "text": "……あ、はじめくん。来てたんだね。……走ってるところを見られるの、ちょっと恥ずかしい"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "来てたんですね。教えてもらったジム、ちゃんと通ってますよ"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_smile",
-          "text": "……ふふ。私も、少しずつ続けてるの。お店で一日立ってると、体力がいるから"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_smile",
-          "text": "楽してるように見せるのが、いちばん体力使うの。企業秘密ね"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（軽やかさは才能じゃなくて、積み重ねなんだ……）"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_minto_name_known",
+          "next_true": "known",
+          "next_false": "unknown"
         },
         {
           "speaker": "",
@@ -1266,7 +1244,73 @@
           "face": "",
           "text": "……【魅力】が少し上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "known": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "チョイザップのランニングマシンに、見覚えのある姿があった。栞さんだ。"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_surprise",
+            "text": "……あ、はじめくん。来てたんだね。走ってるところ、見られちゃった"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "栞さんも通ってたんだ。教えてもらったジム、ちゃんと続けてるよ"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "……ふふ。私も、少しずつね。お店で一日立ってると、体力がいるから"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "楽してるように見せるのが、いちばん体力使うの。企業秘密ね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（軽やかさは才能じゃなくて、積み重ねなんだ……）"
+          }
+        ],
+        "unknown": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "チョイザップのランニングマシンに、見覚えのある姿があった。みんとだ。"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_surprise",
+            "text": "……あ、はじめくん。来てたんだね。……走ってるところを見られるの、ちょっと恥ずかしい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "来てたんですね。教えてもらったジム、ちゃんと通ってますよ"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "……ふふ。私も、少しずつ続けてるの。お店で一日立ってると、体力がいるから"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "楽してるように見せるのが、いちばん体力使うの。企業秘密ね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（軽やかさは才能じゃなくて、積み重ねなんだ……）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "cs_maezono_taste",

@@ -152,6 +152,7 @@
       "sender": "minto",
       "trigger_condition": "affinity_level",
       "trigger_value": 3,
+      "exclude_flag": "_minto_identity_revealed",
       "type": "invitation",
       "time_slot": "noon",
       "messages": [
@@ -225,6 +226,33 @@
       },
       "private_schedule": "holiday_or_after_close",
       "accept_text": "{privateWhen}、会おう"
+    },
+    {
+      "id": "lime_minto_bond_finale",
+      "delivery": "bond_finale",
+      "important": true,
+      "sender": "minto",
+      "chapter": 1,
+      "trigger_condition": "bond_finale",
+      "type": "invitation",
+      "private_schedule": "holiday_or_after_close",
+      "messages": [
+        {
+          "sender": "minto",
+          "text": "……はじめくん。{privateContext}、少しだけ会えない？"
+        },
+        {
+          "sender": "minto",
+          "text": "渡したいものがあるの。お店じゃなくて、外で渡したくて"
+        }
+      ],
+      "accept_event": "ch1_minto_bond_finale",
+      "accept_text": "{privateWhen}、会おう",
+      "reminder_text": "この前は都合が合わなかったね。{privateContext}、もし空いていたら",
+      "decline_response": {
+        "sender": "minto",
+        "text": "うん、わかった。また誘うね"
+      }
     },
     {
       "id": "lime_naru_day6",

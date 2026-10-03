@@ -4,7 +4,8 @@
     {
       "dialogue_id": "lover_tsumugi_lv1",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png"
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -68,7 +69,8 @@
     {
       "dialogue_id": "lover_tsumugi_lv2",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_home.png"
+        "bg": "res://assets/backgrounds/bg_home.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -128,7 +130,8 @@
     {
       "dialogue_id": "lover_tsumugi_lv3",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -193,7 +196,8 @@
     {
       "dialogue_id": "lover_tsumugi_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_day.png"
+        "bg": "res://assets/backgrounds/bg_street_day.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -248,7 +252,8 @@
     {
       "dialogue_id": "lover_tsumugi_lv5",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png"
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -308,7 +313,8 @@
     {
       "dialogue_id": "lover_minto_lv1",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street.png"
+        "bg": "res://assets/backgrounds/bg_street.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -372,7 +378,8 @@
     {
       "dialogue_id": "lover_minto_lv2",
       "metadata": {
-        "bg": "res://assets/backgrounds/peppermint.png"
+        "bg": "res://assets/backgrounds/peppermint.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -427,7 +434,8 @@
     {
       "dialogue_id": "lover_minto_lv3",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_home.png"
+        "bg": "res://assets/backgrounds/bg_home.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -482,7 +490,8 @@
     {
       "dialogue_id": "lover_minto_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street.png"
+        "bg": "res://assets/backgrounds/bg_street.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -532,7 +541,8 @@
     {
       "dialogue_id": "lover_minto_lv5",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_home.png"
+        "bg": "res://assets/backgrounds/bg_home.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -586,7 +596,8 @@
     {
       "dialogue_id": "lover_rin_lv1",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_shop.png"
+        "bg": "res://assets/backgrounds/bg_shop.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -640,7 +651,8 @@
     {
       "dialogue_id": "lover_rin_lv2",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_shop.png"
+        "bg": "res://assets/backgrounds/bg_shop.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -695,7 +707,8 @@
     {
       "dialogue_id": "lover_rin_lv3",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png"
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -750,7 +763,8 @@
     {
       "dialogue_id": "lover_rin_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_shop.png"
+        "bg": "res://assets/backgrounds/bg_shop.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -805,7 +819,8 @@
     {
       "dialogue_id": "lover_rin_lv5",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png"
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -865,7 +880,8 @@
     {
       "dialogue_id": "lover_ageha_lv1",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png"
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -919,7 +935,8 @@
     {
       "dialogue_id": "lover_ageha_lv2",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_day.png"
+        "bg": "res://assets/backgrounds/bg_street_day.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -974,7 +991,8 @@
     {
       "dialogue_id": "lover_ageha_lv3",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png"
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -1029,7 +1047,8 @@
     {
       "dialogue_id": "lover_ageha_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_day.png"
+        "bg": "res://assets/backgrounds/bg_street_day.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -1084,7 +1103,8 @@
     {
       "dialogue_id": "lover_ageha_lv5",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png"
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -1134,7 +1154,8 @@
     {
       "dialogue_id": "lover_mashiro_lv1",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_home_night.png"
+        "bg": "res://assets/backgrounds/bg_home_night.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -1192,7 +1213,8 @@
     {
       "dialogue_id": "lover_mashiro_lv2",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -1260,7 +1282,8 @@
     {
       "dialogue_id": "lover_mashiro_lv3",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png"
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -1333,7 +1356,8 @@
     {
       "dialogue_id": "lover_mashiro_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -1406,7 +1430,8 @@
     {
       "dialogue_id": "lover_mashiro_lv5",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png",
+        "private_scene": true
       },
       "lines": [
         {

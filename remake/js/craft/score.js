@@ -10,6 +10,19 @@ export const WEIGHTS = { holes: 0.25, heat: 0.25, shisha: 0.25, trial: 0.25 };
 /** 南雲が持ち点を動かす基準（これ未満なら南雲票は入らず、普通に負ける） */
 export const NAGUMO_BAR = 72;
 
+/**
+ * 贈られた専用ハガル（equipment.json の gift）の効き。この一台の機材（cs.equip）で所持していて、
+ * 染み付いた香りのフレーバーを min_grams 以上詰めたときだけ、香りが少し開き総合に小さく乗る。
+ * 対象外の配合・未所持・装備していない一台には何もしない（一律の強化にしない）
+ */
+export function giftBowlEffect(cs) {
+  const bowl = DB.equipById[cs?.equip?.bowl];
+  const gift = bowl?.gift;
+  if (!gift || !state.owned.includes(bowl.id)) return null;
+  if ((cs.mix?.[gift.flavor] || 0) < (gift.min_grams || 1)) return null;
+  return { aroma: gift.aroma || 0, bonus: gift.bonus || 0, note: `${bowl.name}に染みた香り` };
+}
+
 export function computeShisha(cs) {
   const h = cs.holes || { total: 22, evenness: 0.6, outerEven: 0.6, innerExcess: 0, score: 60 };
   const c = cs.heat || { heatPower: 50, heatStability: 50, burnRisk: 30, aromaRetention: 55, score: 60 };
@@ -28,7 +41,8 @@ export function computeShisha(cs) {
   const smoke = clamp(draw * 0.45 + c.heatPower * 0.35 + (four ? 14 : 0) + (st.min >= 8 ? 6 : 0) + (cs.equip?.charcoal === "cube_charcoal" ? 5 : 0), 0, 100);
   const heatStability = clamp(h.outerEven * 45 + c.heatStability * 0.38 + care.score * 0.12 + hms, 0, 100);
   const burnRisk = clamp(8 + h.innerExcess * 9 + c.burnRisk * 0.55 + (four ? 16 : 0) + (st.min >= 10 ? 9 : 0) + (p.over ? 12 : 0) + (cs.pack === "fluffy" ? 5 : 0) + Math.max(0, (p.pulls || 3) - 3) * 5, 0, 100);
-  const aroma = clamp(m.score * 0.38 + c.aromaRetention * 0.28 + p.score * 0.22 + st.score * 0.12 - burnRisk * 0.2 + 10, 0, 100);
+  const gift = giftBowlEffect(cs);
+  const aroma = clamp(m.score * 0.38 + c.aromaRetention * 0.28 + p.score * 0.22 + st.score * 0.12 - burnRisk * 0.2 + 10 + (gift?.aroma || 0), 0, 100);
   const taste = clamp(38 + (grams - 12) * 4 + (cs.pack === "firm" ? 14 : cs.pack === "fluffy" ? -6 : 0) + (st.min >= 8 ? 8 : 0) + (m.intensity - 5) * 3, 0, 100);
   const duration = clamp(heatStability * 0.55 + (grams - 12) * 3 + (cs.pack === "firm" ? 10 : 0) + care.score * 0.25, 0, 100);
   const craftQuality = Math.round(clamp(aroma * 0.3 + heatStability * 0.2 + (100 - burnRisk) * 0.2 + m.score * 0.15 + p.score * 0.15, 0, 100));
@@ -77,8 +91,8 @@ export const CONCEPT_NEED = {
   original: { cat: "original", stat: (s, cs) => (cs.mixInfo?.recipe && cs.mixInfo.recipe.id !== "sumi_basic" ? 80 : cs.mixInfo?.count >= 2 ? 65 : 35) },
 };
 
-/** 章のボーナス（前日リハーサル・前夜の過ごし方・練習の自己ベスト・機材） */
-export function bonusOf() {
+/** 章のボーナス（前日リハーサル・前夜の過ごし方・練習の自己ベスト・機材・贈られたハガル） */
+export function bonusOf(cs = null) {
   let b = 0;
   const notes = [];
   if (state.rehearsal === "great") { b += 3; notes.push("前日リハーサルの手応え"); }
@@ -87,12 +101,14 @@ export function bonusOf() {
   const bests = Object.values(state.best || {}).filter((t) => t >= 2).length;
   if (bests) { b += bests * 0.5; notes.push("練習の自己ベスト"); }
   if (state.equip.bowl === "hagal_80beat") b += 1;
+  const gift = cs && giftBowlEffect(cs);
+  if (gift?.bonus) { b += gift.bonus; notes.push(gift.note); }
   return { bonus: b, notes };
 }
 
 export function finalize(cs) {
   cs.stats = cs.stats || computeShisha(cs);
-  const { bonus, notes } = bonusOf();
+  const { bonus, notes } = bonusOf(cs);
   const parts = {
     holes: cs.holes?.score ?? 0,
     heat: cs.heat?.score ?? 0,

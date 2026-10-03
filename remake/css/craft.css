@@ -45,6 +45,8 @@
 .rig-base { z-index: 3; }
 .rig-tray { z-index: 4; }
 .rig-bowl { z-index: 5; }
+/* 贈られた専用ハガル: 染み付いた香りの色が素焼きの縁にうっすら残る */
+.rig-bowl.infused .rig-bowl-img { filter: drop-shadow(0 0 5px color-mix(in srgb, var(--infuse, #c9a070) 70%, transparent)); }
 /* 配合した葉（詰める前）: 湿った刻み葉の粒感をグラデーションで。色は配合の平均色 */
 .rig-leaf {
   z-index: 6;

@@ -113,11 +113,10 @@ const rankOf = (pts) => {
 /** 恋人の絆はプライベート（デート・恋愛イベント・恋人とのLIME）でだけ深まる（master_spec #24） */
 export const bond = { private: false };
 
-/**
- * 好感度を足す。魅力★で少しだけ伸びやすい（×1.0〜1.2）。
- * 恋人は店で会っても深まらず、bond.private の間だけ絆ポイントに入る。
- * ロマンス対象が5段階目に届いたら告白イベントを予約する（_confession_due）。
- */
+/** 普通の好感度は従来の加算量の85%（HF01）。恋人の絆は従来の半分 */
+export const AFFINITY_PACE = 0.85;
+export const BOND_PACE = 0.5;
+
 /** 占い師に見てもらった相手と次に会ったときだけ ×1.5（一度きり） */
 function fortuneMult(id) {
   if (state.fortune?.char !== id) return 1;
@@ -126,6 +125,13 @@ function fortuneMult(id) {
   return 1.5;
 }
 
+/**
+ * 好感度を足す。魅力★で少しだけ伸びやすい（×1.0〜1.2）。
+ * 加算量は従来どおり倍率込みで四捨五入してから緩める。端数は相手ごとに持ち越すので、
+ * 小さい報酬を何度足しても従来の合計を超えず、取りこぼしもしない。
+ * 恋人は店で会っても深まらず、bond.private の間だけ絆ポイントに入る。
+ * 告白はMAXだけでは予約しない（交友の締めくくりで恋愛を選んだ相手だけ・daily/bonds.js）。
+ */
 export function gainAffinity(id, pts) {
   if (!id || !(pts > 0)) return;
   let mult = 1 + 0.2 * tier01("charm");
@@ -135,7 +141,7 @@ export function gainAffinity(id, pts) {
     const prevPts = state.lovePts[id] || 0;
     // 元の加算量の半分。1ポイントの会話も2回で1となり、切り捨てて失わない。
     state.loveCarry ||= {};
-    const value = Math.round(pts * mult) * 0.5 + (state.loveCarry[id] || 0);
+    const value = Math.round(pts * mult) * BOND_PACE + (state.loveCarry[id] || 0);
     const got = Math.floor(value + 1e-9);
     state.loveCarry[id] = Math.max(0, value - got);
     state.lovePts[id] = prevPts + got;
@@ -149,18 +155,15 @@ export function gainAffinity(id, pts) {
   mult *= fortuneMult(id);
   const before = affinityLevel(id);
   const prevPts = state.affinity[id] || 0;
-  // 新しい加算だけ15%緩やかに。小さい報酬も小数分を次へ持ち越す。
+  // 従来の加算量（倍率込みで四捨五入）の85%。旧式（pts×倍率×0.85）は1〜2ptの報酬で従来より増えていた
   state.affinityCarry ||= {};
-  const value = pts * mult * 0.85 + (state.affinityCarry[id] || 0);
+  const value = Math.round(pts * mult) * AFFINITY_PACE + (state.affinityCarry[id] || 0);
   const got = Math.floor(value + 1e-9);
   state.affinityCarry[id] = Math.max(0, value - got);
   state.affinity[id] = prevPts + got;
   if (!got) return 0;
   const after = affinityLevel(id);
   emit("affinity-gain", { id, level: after, levelUp: after > before, prevPts, pts: state.affinity[id] });
-  if (after >= 5 && ROMANCEABLE.includes(id) && !state.flags[`_friend_${id}`] && !state.flags._confession_due) {
-    state.flags._confession_due = id;
-  }
   return got;
 }
 

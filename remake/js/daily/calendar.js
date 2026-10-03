@@ -19,6 +19,7 @@ import { deliverMorning, pushNotice, hasUnread, openLime, limeCoach, expireInvit
 import { openStatus } from "./status.js";
 import { onAction as spinReel, presentNow as showReelNow } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
+import { afterStory, isFinaleEvent, playFinale, isFriendEvent, playFriendHangout } from "./bonds.js";
 import { syncKafukaKnowledge, maybeKafukaEncounter, visitKafuka } from "./kafuka.js";
 
 const SLEEP_RECOVERY = 14;
@@ -253,6 +254,16 @@ async function meetInvitation(inv) {
     await doBaito({ called: true });
   } else if (/^date_/.test(inv.event)) {
     await playDate(inv.sender); // 恋人とのデート（絆・ステ・体力はデート側で）
+  } else if (isFriendEvent(inv.event)) {
+    // 友人からのシーシャのお誘い（HF09）。ステは場面側の apply
+    await playFriendHangout(inv.sender);
+    gainAffinity(inv.sender, 5);
+    addStamina(-10);
+  } else if (isFinaleEvent(inv.event)) {
+    // 私的な約束で会う締めくくり（みんと）。専用ハガルの贈呈・ルートの記録は bonds.js
+    await playFinale(inv.sender);
+    gainAffinity(inv.sender, 10);
+    addStamina(-10);
   } else {
     await play(inv.event);
     if (inv.event === `outing_${inv.sender}_1`) state.flags[`_outing_done_${inv.sender}`] = true;
@@ -260,6 +271,7 @@ async function meetInvitation(inv) {
     if (inv.event === "ch1_adam_outing_dagurikura") state.flags._adam_arcade_done = true;
     gainAffinity(inv.sender, 10);
     addStamina(-10);
+    await afterStory(inv.event); // 私服の約束のあとの、途中の質問（みんと）
   }
 }
 
@@ -296,13 +308,16 @@ async function endDay() {
     await bannersIdle();
   }
   const appointment = state.pendingInvite;
+  let metTonight = state.flags._private_night_day === state.day; // 夜の行動枠で約束の相手に会った
   if (appointment?.afterClose && appointment.queuedAfterClose && (appointment.day ?? state.day) === state.day) {
     state.pendingInvite = null;
     await beat("——店の営業が終わってから、約束の場所へ。");
     await meetInvitation(appointment);
     await afterAction();
+    metTonight = true;
   }
-  const confessed = await maybeConfession(beat);
+  // 別の約束で人と会った夜に告白は重ねない（予約は残り、落ち着いた夜に回る）
+  const confessed = await maybeConfession(beat, { busyNight: metTonight });
   if (confessed) await bannersIdle();
   const athome = !!state.flags._home_tonight;
   delete state.flags._home_tonight;

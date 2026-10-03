@@ -13,6 +13,7 @@ import { hooks } from "../vn/engine.js";
 import { formatHtml } from "../vn/text.js";
 import { hasContact } from "./spots.js";
 import { loverMessages, isLover, dateSchedule } from "./romance.js";
+import { bondInvites, friendMessages } from "./bonds.js";
 
 const HEROINES_ENCOURAGE = ["tsumugi", "minto", "rin"];
 // 目上の相手への返信は敬語（旧版 F6）。友達口調は同世代の相手だけ
@@ -134,6 +135,14 @@ export function morningMessages(opts = {}) {
     out.push(m);
     senders.add(m.sender);
   }
+  // 交友の締めくくりを私的な約束で受け取る誘い（みんと）。休日の午後か仕事後に決め、断っても日を改めて届く
+  for (const template of bondInvites(opts)) {
+    if (out.length >= 3 || senders.has(template.sender) || delivered.has(template.id)) continue;
+    const m = scheduledInvitation(template, opts);
+    if (!m || !invitationAvailable(m, opts)) continue;
+    out.push(m);
+    senders.add(m.sender);
+  }
   // スミさんのバイト誘い（旧版 N13）。他の相手の誘いと並べ、返事で予定を選べる
   const sumi = sumiBaitoInvite(opts);
   if (sumi && out.length < 3 && !senders.has("sumi") && !delivered.has(sumi.id)) {
@@ -155,6 +164,16 @@ export function morningMessages(opts = {}) {
     out.push(again ? { ...m, id, origin_id: m.id, important: importantInvite(m) || needsResend(m.id),
       messages: [m.reminder_text || "この前のお誘い、また都合が合えば。", ...(m.messages || [])] } : m);
     senders.add(m.sender);
+  }
+  // 友人になった相手から、たまのLIME（雑談かシーシャのお誘い）。物語のLIMEの後に、朝1通まで（HF09）
+  for (const template of friendMessages(opts)) {
+    if (out.length >= 3) break;
+    if (senders.has(template.sender) || delivered.has(template.id)) continue;
+    const m = scheduledInvitation(template, opts); // お誘いは休日の午後か仕事後。合わない日は同じ相手の雑談へ
+    if (!m || !invitationAvailable(m, opts)) continue;
+    out.push(m);
+    senders.add(m.sender);
+    break;
   }
   return out;
 }
@@ -187,13 +206,16 @@ function sumiBaitoInvite({ tournamentDay = false } = {}) {
   };
 }
 
+/** LIME は個人どうしの連絡＝私的な場面の呼び名（みんとは本名を聞いた後なら「栞」） */
+const limeName = (sender) => (sender === "???" ? "？？？" : displayName(sender, state, { context: "private" }));
+
 /** 顔ドット絵のアイコン。名乗る前の相手・絵の無い相手は頭文字の丸にする（正体を明かさない） */
 function avatar(sender, small = false) {
   const cls = `lime-face${small ? ".sm" : ""}`;
   const known = sender && sender !== "???" && (state.met[sender] || sender === "sumi");
   const url = known ? faceIconUrl(sender) : null;
   if (url) return el(`img.${cls}`, { src: url, alt: "" });
-  const name = known ? displayName(sender, state) : "？";
+  const name = known ? limeName(sender) : "？";
   return el(`span.${cls}.blank`, { text: [...name][0] || "？" });
 }
 
@@ -527,7 +549,7 @@ export async function openLime({ tutorial = false, sender = null } = {}) {
       }, [
         el("div.lcr-face", [avatar(sender), unread ? el("i.lcr-dot") : null]),
         el("div.lcr-main", [
-          el("div.lcr-name", { text: sender === "???" ? "？？？" : displayName(sender, state) }),
+          el("div.lcr-name", { text: limeName(sender) }),
           el("div.lcr-preview", { text: preview }),
         ]),
         el("div.lcr-side", [
@@ -553,7 +575,7 @@ export async function openLime({ tutorial = false, sender = null } = {}) {
     ui.header.replaceChildren(
       el("button.lime-back", { text: "‹", dataset: { test: "lime-back" }, onclick: () => { SE.cancel(); showList(); } }),
       avatar(sender),
-      el("span.lime-name", { text: sender === "???" ? "？？？" : displayName(sender, state) }),
+      el("span.lime-name", { text: limeName(sender) }),
     );
     const items = thread(sender);
     // 既読ぶんは履歴としてすぐ出し、未読・返事待ちを順に流す
@@ -598,7 +620,7 @@ export async function openPhone(messages, { title = null, time = "朝" } = {}) {
     const left = messages.length - 1 - messages.indexOf(m);
     ui.header.replaceChildren(
       el("span.lime-logo", { text: "LIME" }),
-      el("div.lime-peer", [avatar(m.sender), el("span.lime-name", { text: m.sender === "???" ? "？？？" : displayName(m.sender, state) })]),
+      el("div.lime-peer", [avatar(m.sender), el("span.lime-name", { text: limeName(m.sender) })]),
       el("span.lime-unread", { text: left ? `未読 ${left}` : "" }),
     );
     await runItem(item, ui, accepted, { forced: true });

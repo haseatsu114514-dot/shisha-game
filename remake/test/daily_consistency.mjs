@@ -24,6 +24,7 @@ const values = {
   "engine.js": { play: async (scene) => plays.push(scene) },
   "session.js": { runDrill: async () => 0, DRILLS: {} },
   "kafuka.js": { kafukaSpot: () => null },
+  "bonds.js": { afterStory: async () => {}, questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false, playFinale: async () => false },
   "weather.js": { isRainy: () => rainy, RAIN_BAITO: ["baito_rainy_day", "baito_tsumugi_rain"], RAIN_BAITO_BONUS: 500, RAIN_SPOT_TEXTS: {} },
 };
 const context = vm.createContext({ Math, Set, Promise, console }); const mods = new Map();

@@ -28,12 +28,13 @@ const context = vm.createContext({ console, setTimeout: () => {}, requestAnimati
 const noop = () => {}, mods = new Map();
 const values = {
   "util.js": { el, sleep: async () => {} },
-  "data.js": { DB: db, displayName: (id) => id, faceIconUrl: () => null },
+  "data.js": { DB: db, displayName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
   "ui.js": { layers }, "state.js": { state, save: noop },
   "stats.js": { gainAffinity: (id, pts) => gains.push({ id, pts }), affinityLevel: () => 5, applyStats: (stats) => statGains.push(stats), bond: {}, addStamina: noop, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66] },
   "audio.js": { SE: { phone: noop, select: noop, click: noop, cancel: noop } },
   "engine.js": { hooks: { interpolate: (t) => t.replace("{daysLeft}", String(15 - state.day)) }, play: async (...a) => { plays.push(a); await playHook(...a); } },
   "text.js": { formatHtml: (t) => t }, "spots.js": { hasContact: (id) => state.contacts.includes(id) }, "bus.js": { emit: noop },
+  "bonds.js": { bondInvites: () => [], friendMessages: () => [] }, // 締めくくりの誘い・友人のLIMEは remake/test/bonds.mjs
 };
 async function load(name) {
   if (mods.has(name)) return mods.get(name);
@@ -177,12 +178,28 @@ reset({ lovers: ["minto", "rin", "tsumugi"], day: 5 }); assert.equal(romance.dat
 assert.equal(romance.dateSchedule("minto", { fixedNight: () => true }), null); assert(!romance.loverMessages({ fixedNight: () => true }).some((m) => m.type === "invitation"));
 state.day = 6; const date = romance.loverMessages({ fixedNight: () => true }).find((m) => m.sender === "minto"); assert.equal(date.time_slot, "noon"); assert.equal(date.closed_on, 6);
 
+// 告白は交友の締めくくりで恋愛ルートに入った相手だけ（HF05）。答えた質問がすべて恋愛寄りで、締めくくりの記録がある。
+const romanceRoute = (id) => ({ finales: { [id]: { day: 5, chapter: 1, route: "romance" } },
+  romanceChoices: { [`bond_q1_${id}`]: { char: id, value: 1, day: 3 }, [`bond_q2_${id}`]: { char: id, value: 1, day: 5 } }, romance: { [id]: 2 } });
 // 告白待ちを昼に消さず、仕事を終える夜の行動後まで保留する。
-reset({ slot: 1, flags: { _confession_due: "minto" } }); db.dialogues.confession_minto = {};
+reset({ slot: 1, flags: { _confession_due: "minto" }, ...romanceRoute("minto") }); db.dialogues.confession_minto = {};
 assert.equal(await romance.maybeConfession(async () => {}), false); assert.equal(state.flags._confession_due, "minto"); assert.equal(plays.length, 0);
 
-reset({ slot: 2, flags: { _confession_due: "minto" } }); db.dialogues.confession_minto = {};
+reset({ slot: 2, flags: { _confession_due: "minto" }, ...romanceRoute("minto") }); db.dialogues.confession_minto = {};
 assert.equal(await romance.maybeConfession(async () => {}), false); assert.equal(state.flags._confession_due, "minto"); assert.equal(plays.length, 0);
+// 旧セーブに残った自動予約（好感度MAXだけ）では告白しない。予約は消え、場面も出ない。
+reset({ slot: 2, flags: { _confession_due: "minto", _minto_identity_revealed: true, _minto_name_known: true } }); db.dialogues.confession_minto = {};
+assert.equal(await romance.maybeConfession(async () => {}), false); assert.equal(state.flags._confession_due, undefined); assert.equal(plays.length, 0);
+// 友情寄りの答えが一つでもあれば、締めくくりの記録が恋愛でも告白しない。
+reset({ slot: 2, flags: { _confession_due: "rin" }, ...romanceRoute("rin") }); db.dialogues.confession_rin = {};
+state.romanceChoices.bond_q1_rin.value = 0;
+assert.equal(await romance.maybeConfession(async () => {}), false); assert.equal(plays.length, 0); assert.equal(state.flags._confession_due, undefined);
+// 予約が無くても、恋愛ルートの相手は夜の帰り道で拾う。別の約束で会った夜は重ねず、予約を残して後日へ。
+reset({ slot: 2, ...romanceRoute("rin") }); db.dialogues.confession_rin = {};
+assert.equal(await romance.maybeConfession(async () => {}, { busyNight: true }), false); assert.equal(state.flags._confession_due, "rin"); assert.equal(plays.length, 0);
+playHook = async (dialogue) => { if (dialogue?.dialogue_id === "remake_confession_gate_rin") state.flags._confession_go = true; };
+assert.equal(await romance.maybeConfession(async () => {}), true); assert.deepEqual(plays.map(([d]) => d?.dialogue_id || d), ["remake_confession_gate_rin", "confession_rin"]);
+assert.equal(state.flags._confession_due, undefined);
 // 恋人デートの到着でも、午後の休みか仕事後かを明示する。
 for (const slot of [0, 1]) {
   reset({ slot, lovers: ["minto"], loveLevel: { minto: 1 } });
@@ -194,7 +211,7 @@ for (const slot of [0, 1]) {
 
 // 私服交流済みの旧セーブは、告白を選んでから本名紹介を補完し、紹介済みなら繰り返さない。
 for (const known of [false, true]) {
-  reset({ slot: 2, flags: { _confession_due: "minto", _minto_identity_revealed: true, _minto_name_known: known } }); db.dialogues.confession_minto = {};
+  reset({ slot: 2, flags: { _confession_due: "minto", _minto_identity_revealed: true, _minto_name_known: known }, ...romanceRoute("minto") }); db.dialogues.confession_minto = {};
   playHook = async (dialogue) => { if (dialogue?.dialogue_id === "remake_confession_gate_minto") state.flags._confession_go = true; };
   assert.equal(await romance.maybeConfession(async () => {}), true);
   const introIndex = plays.findIndex(([dialogue]) => dialogue?.dialogue_id === "remake_minto_name_before_confession");
@@ -206,7 +223,7 @@ for (const known of [false, true]) {
     assert(lines.some((line) => line.speaker === "hajime" && line.text.startsWith("栞さん")));
   }
 }
-reset({ slot: 2, flags: { _confession_due: "minto", _minto_identity_revealed: true } }); db.dialogues.confession_minto = {};
+reset({ slot: 2, flags: { _confession_due: "minto", _minto_identity_revealed: true }, ...romanceRoute("minto") }); db.dialogues.confession_minto = {};
 assert.equal(await romance.maybeConfession(async () => {}), true); assert.equal(plays.length, 1); assert(!state.flags._minto_name_known); assert.equal(state.flags._confession_due, "minto");
 
 // 外出後の話は後日読んでも時間が食い違わない。私的LIMEに店の呼び込み口調を持ち込まない。

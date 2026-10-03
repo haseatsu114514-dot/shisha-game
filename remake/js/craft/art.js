@@ -85,6 +85,8 @@ const RIG = { baseW: 190, stemW: 25, stemShow: 112, stemInside: 30, trayW: 150 }
  */
 export function buildRig() {
   const coalName = (charcoal, st) => (charcoal === "cube_charcoal" ? `coal_${st}.png` : `coal_flat_${st}.png`);
+  // 贈られた専用ハガルは equipment.json の art（素焼き）で描き、染み付いた香りの色をうっすら縁に乗せる
+  const bowlSpec = (id) => BOWL_ART[id] || BOWL_ART[DB.equipById[id]?.art] || BOWL_ART.silicone_bowl;
   const root = el("div.rig");
   const smoke = el("div.rig-smoke");
   const baseH = artHeight("hookah_base.png", RIG.baseW);
@@ -113,12 +115,15 @@ export function buildRig() {
   const api = {
     root,
     update(cs) {
-      const spec = BOWL_ART[cs.equip?.bowl] || BOWL_ART.silicone_bowl;
+      const spec = bowlSpec(cs.equip?.bowl);
+      const infused = DB.equipById[cs.equip?.bowl]?.gift?.flavor;
       const packed = !!cs.pack;
       const name = packed && spec.packed ? spec.packed(PACK_ART[cs.pack] || "normal") : spec.empty;
       const bw = spec.w;
       const bh = artHeight(name, bw);
       bowl.replaceChildren(artImg(name, bw, "rig-bowl-img"));
+      bowl.classList.toggle("infused", !!infused);
+      if (infused) bowl.style.setProperty("--infuse", flavorColor(infused));
       // 口（リム）の楕円の中心の高さ。ここにアルミ・葉・炭を合わせる
       const rimTop = bowlBottom + bh;
       const rimMid = rimTop - bh * spec.rim;

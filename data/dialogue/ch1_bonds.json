@@ -1,0 +1,1279 @@
+{
+  "_comment": "第1章の交友の締めくくり（好感度MAXイベント・専用ハガルの贈呈）と、途中の恋愛／友情の質問。再生と状態の管理は remake/js/daily/bonds.js。choice.romance は隠し恋愛値（id ごとに一度だけ数える）。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch1_tsumugi_bond_question",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png",
+        "bond_question": "tsumugi"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、つむぎはiPadを胸に抱えたまま、少しだけこちらを見た。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今日は、見せられる絵がなくて。すみません"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "描けない日は、ここに来ても、何も渡せないので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（絵がない日のつむぎちゃんに、俺は何て言いたいんだろう）"
+        },
+        {
+          "type": "choice",
+          "id": "bond_q1_tsumugi",
+          "romance_char": "tsumugi",
+          "choices": [
+            {
+              "text": "「絵がなくても、つむぎちゃんに会いたいよ」",
+              "next": "meet",
+              "romance": 1
+            },
+            {
+              "text": "「描けない日も、ここでゆっくりしていって」",
+              "next": "seat",
+              "romance": 0
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "meet": [
+          {
+            "speaker": "tsumugi",
+            "face": "surprise",
+            "text": "……え"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……絵じゃなくて、私に、ですか"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "うん。描いてない日のつむぎちゃんとも、話したい"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "……そう言われたの、初めてです。少し、困ります"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "困ると言いながら、彼女は胸に抱えていたiPadを、そっと膝に下ろした。"
+          }
+        ],
+        "seat": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……はい。この席は、描かなくても落ち着くので"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "煙だけ吸いに来る日があってもいいよ"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "……はい。そういう日も、来ます"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "彼女は眠る猫の絵を閉じて、もう一口だけゆっくり吸った。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch1_rin_bond_question",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
+        "bond_question": "rin"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ショールームに上がると、凛さんは試飲席の隅で、私物の一台を吸っていた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "ん、モルモットくん。今日はサンプル便、なし"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……一応、聞いとく。ここに来るのは、試香の感想を言いに？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（仕事の用事がなくても、俺はここに来たいんだろうか）"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 1
+          }
+        },
+        {
+          "type": "choice",
+          "id": "bond_q1_rin",
+          "romance_char": "rin",
+          "choices": [
+            {
+              "text": "「用事がなくても、凛さんに会いに来ます」",
+              "next": "personal",
+              "romance": 1
+            },
+            {
+              "text": "「次の試香も、俺に手伝わせてください」",
+              "next": "work",
+              "romance": 0
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "personal": [
+          {
+            "speaker": "rin",
+            "face": "surprise",
+            "text": "……へえ"
+          },
+          {
+            "speaker": "rin",
+            "face": "smile",
+            "text": "口実なしで上がってくる人、ここには少ないんだけどね"
+          },
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "……いいよ。そういう日は、私物のブルーベリーを出してあげる"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "凛さんは自分の一台のホースを、こちらへ差し出した。仕事の顔より、少しだけ眠そうな笑い方だった。"
+          }
+        ],
+        "work": [
+          {
+            "speaker": "rin",
+            "face": "smile",
+            "text": "言ったね。じゃあ次のロットも、君の舌を当てにしてる"
+          },
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "頼りにしてるよ、……仕事仲間として"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "凛さんはもうクリップボードに目を戻していた。口の端だけが、まだ笑っていた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch1_minto_bond_question",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street.png",
+        "private_scene": true,
+        "bond_question": "minto"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り道の分かれ角で、栞さんが足を止めた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……ね、はじめくん。ひとつだけ、聞いてもいい？"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "お店じゃない私と、これからどんなふうに会いたい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（店のみんとじゃなくて、栞さんと。……俺は、どうしたいんだろう）"
+        },
+        {
+          "type": "choice",
+          "id": "bond_q1_minto",
+          "romance_char": "minto",
+          "choices": [
+            {
+              "text": "「栞さんと、二人でもっと会いたい」",
+              "next": "close",
+              "romance": 1
+            },
+            {
+              "text": "「気楽に話せる友達でいたい」",
+              "next": "friend",
+              "romance": 0
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "close": [
+          {
+            "speaker": "minto",
+            "face": "ura_surprise",
+            "text": "……っ"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "二人で、って言った。……ちゃんと、聞こえたからね"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "……うん。私も、そうしたい。照れるから、今日はここまで"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "小さく手を振って、栞さんは駅の方へ歩いていった。何度か、振り返りながら。"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "……うん。友達、いいね。お店の外で話せる人、少ないから"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "また、こうやって歩こうね、……気楽に"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "栞さんは軽く手を振った。店で見る笑顔より、ずっと肩の力が抜けていた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch1_sumi_bond_finale",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png",
+        "bond_finale": "sumi"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後。最後の客を見送って、ドアの鍵を閉めた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつもなら、スミさんが自分の一台を作り始める時間だ。今日はカウンターの奥で腕を組んでいる。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "はじめ。今日はお前が作れ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、俺がですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "客は俺だ。注文は「お任せ」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（スミさんに、お任せで一台……。トングを持つ手が少し震える）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "棚の前で、スミさんの顔を見る。少し下がった肩。閉店後に吸う時の、ゆっくりした息。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カルダモンをひとつまみ。いつもより軽く詰めて、熱は低めに。炭はトライアングル。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ホースを渡す。スミさんは黙って一口吸い、長く煙を吐いた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "……詰めが半歩ゆるい。炭を置くのも、一拍遅い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……はい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "だが、俺が疲れてるのは見えてたな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "軽くして、熱を抑えた。客の顔を見て作った一台だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんはもう一口吸ってから、棚の下の古い箱を開けた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "出てきたのは、角の丸くなった素焼きのボウルだった。縁が、うっすら茶色く焼けている。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "閉店後に俺が使ってるやつだ。カルダモンしか詰めてねえ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "何年も吸ってりゃ、土に香りが残る"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……持ってけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "そんな、スミさんの大事な道具を"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "道具は使うためにある。棚で眠らせる方が、よっぽど失礼だ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "カルダモンも一箱つけとく。問屋の1階には並んでねえ葉だからな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ありがとうございます。大事に使います"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "大事にしすぎるな。割れたら、また土から育てりゃいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんはそう言って、作業台の灰を払った。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "……それと、今日の一台。金を取るなら半額だな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "半額、取ってもらえるんですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "閉店後の客は気前がいいんだ。覚えとけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人分の煙が、天井のファンに巻かれて、ゆっくり消えていった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "technique": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_naru_bond_finale",
+      "metadata": {
+        "bg": "res://assets/backgrounds/kemurikusa.png",
+        "bond_finale": "naru"
+      },
+      "lines": [
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "お、来たな。……大会前の最後の一服って言ったの、誰だっけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "すみません。また吸いたくなって"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "いいよ。そういう客がいるから、店は潰れねえんだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるさんはカウンターの下から、古い素焼きのボウルを出した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "縁が、焼き菓子みたいな色に焼けている。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "店を開けた頃から使ってた一台。バニラばっか詰めてたら、土まで甘くなった"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "ノートは見せた。技も教えた。……あとは、これかなって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、俺に？"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "勘違いすんなよ。弟子に譲るんじゃねえ"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "教える側と教わる側は、今日でおしまいだ"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "次はお前の煙を吸わせろ。こいつで作った、お前の一台をな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "……はい。なるさんの煙も、また確かめに来ます"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "おう。お互い、確かめ合う仲ってことで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "拳を合わせる。教わってきた手が、今日は対等な重さで返ってきた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "あ、手入れは水洗いだけな。洗剤使ったら、二度と口きかねえから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "それ、冗談ですよね"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "半分な"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_adam_bond_finale",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_eden_shop.png",
+        "bond_finale": "adam"
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "……来たか、同志よ。今日はお前に、エデンの秘宝を継承する"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "秘宝、ですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムさんは奥の棚から、布に包まれた何かを両手で運んできた。"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "聞け。これは我がダブルアップルの、全ての夜を吸い込んだ聖杯"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "アニスとリコリスの残り香が、千の夜を越えて土に宿った一台だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "布がほどける。出てきたのは、縁の欠けた素焼きのボウルだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（聖杯……というか、だいぶ使い込まれた素焼きだ）"
+        },
+        {
+          "speaker": "adam",
+          "face": "smug",
+          "text": "ふっ……見た目に騙されるな。真の価値は内側にある"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鼻を近づけると、確かに香る。アニスとリコリス、二つのスパイスが重なった、あの独特な匂い。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "そして、これを授ける"
+        },
+        {
+          "speaker": "adam",
+          "face": "smug",
+          "text": "……取扱説明書である"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "渡されたのは紙の束だった。表紙に「エデン素焼き 手入れ大全」とある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……分厚い"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "全十二頁。洗い方、乾かし方、炭の距離、湿気の日の構え"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "めくると、細かい字がびっしり並んでいる。「洗剤は使うな」「水で洗い、逆さで一晩」。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「欠けた縁は削るな。そこが一番よく香る」。最後の頁だけ、日付と小さな失敗談だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……継承って、手入れのことだったんですね"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "年月は、手入れの積み重ねでしか宿らぬ。それが継承の正体よ"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "俺は一点を掘る。お前は全方向を受け入れる。だが、土を育てる手間は同じだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "……大事に育てます。アダムさん、ありがとうございます"
+        },
+        {
+          "speaker": "adam",
+          "face": "smug",
+          "text": "礼には及ばぬ。……ただし、十二頁は暗唱できるようにしておけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "暗唱するんですか！？"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "冗談だ、……七頁目まででいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙の束と素焼きを抱えて、店を出た。腕の中から、ずっとあの匂いがしていた。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_tsumugi_bond_finale",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png",
+        "bond_finale": "tsumugi"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店間際のtonari。最後の客席に、つむぎだけが残っていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん。少しだけ、時間ありますか"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "描き終わった絵、最初に見てほしくて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "傷のある画面に、一枚の絵が開かれた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "葉の耳と煙の尾を持つ猫が、tonariのカウンターで丸くなっている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓辺の植物も、昔の猫の寝方も、今日の煙の線も、同じ毛並みの中に混ざっていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……まだ、誰にも見せてません。SNSに上げる前です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "最初に、俺に？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。ここで描いたので。ここの人に、最初に"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……いい絵だね。この子、ここで寝てるのが一番似合う"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……はい。私も、そう思います"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎはiPadを置いて、鞄から小さな包みを出した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "中から出てきたのは、うっすら紫がかった素焼きのボウルだった。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……これ、私の一台です。スミさんに預けてました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、これ……いつも、つむぎちゃんに出してた素焼き？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。ずっと、これでラベンダーを吸ってきたので"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "香りが、土に残ってます。……持って帰れる香り、です"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "葉も、少しだけ。スミさんに分けてもらいました"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "tsumugi",
+          "next_true": "lover",
+          "next_false": "check"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "包みからは、閉店後の店内と同じ、やわらかいラベンダーの匂いがした。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 2
+          }
+        }
+      ],
+      "branches": {
+        "check": [
+          {
+            "type": "condition",
+            "condition_type": "romance_open",
+            "char_id": "tsumugi",
+            "next_true": "ask",
+            "next_false": "friend"
+          }
+        ],
+        "lover": [
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "……家でもこの匂いがしたら、会えない日も少し近い気がして"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "うん。毎日使うよ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "包みを受け取ると、彼女は少しだけ肩を寄せてきた。"
+          }
+        ],
+        "ask": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……はじめさんの家に、ここの匂いがあったら、いいなって"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（つむぎちゃんの一台。受け取るなら、ちゃんと気持ちも返したい）"
+          },
+          {
+            "type": "choice",
+            "id": "bond_q2_tsumugi",
+            "romance_char": "tsumugi",
+            "choices": [
+              {
+                "text": "「今度は二人で、この香りを吸いたい」",
+                "next": "close",
+                "romance": 1
+              },
+              {
+                "text": "「大事に使うよ。tonariの思い出ごと」",
+                "next": "ask_friend",
+                "romance": 0
+              }
+            ]
+          }
+        ],
+        "close": [
+          {
+            "speaker": "tsumugi",
+            "face": "surprise",
+            "text": "……っ"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……二人で、ですか"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "……はい。絵がない日でも、いいですか"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "うん。描いてない日のつむぎちゃんとも"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "彼女は耳まで赤くなって、iPadで顔を半分隠した。……でも、目は逸らさなかった。"
+          }
+        ],
+        "ask_friend": [
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "……はい。tonariのことも、一緒に持っていってください"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "私は、明日もここで描きます、……いつもの席で"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "包みを受け取ると、彼女は小さくお辞儀をした。いつもの席に、いつもの煙が残っていた。"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "ありがとう。大事に使うよ。この席の匂いごと"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "smile",
+            "text": "……はい。私は、明日もここで描きます。いつもの席で"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "包みを受け取ると、彼女は小さくお辞儀をした。いつもの席に、いつもの煙が残っていた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch1_minto_bond_finale",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street.png",
+        "private_scene": true,
+        "bond_finale": "minto"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "約束の場所に、栞さんが先に来ていた。今日も、落ち着いた私服だった。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……来てくれた。今日は、渡したいものがあって"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は鞄から、布にくるんだ素焼きのボウルを取り出した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "縁に、うっすらと緑の色が染みている。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "家で使ってた一台。……ミントしか、詰めたことないの"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "お店のとは別。一人の時に、ずっとこれで吸ってた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "そんな大事なもの、いいの？"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_sad",
+          "text": "あの匂いは、まだ時々するよ。たぶん、すぐには消えない"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "でもね。ミントを吸う理由が、上書きだけじゃなくなってきたの"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "きみの一台を待つ時間とか。こうして外で話す時間とか"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "だから、これは預けるんじゃなくて、あげる、……お礼、かな"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "minto",
+          "next_true": "lover",
+          "next_false": "check"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "布の中から、すっとしたミントの匂いがした。店で嗅ぐより、少しだけやわらかい匂いだった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "charm": 2
+          }
+        }
+      ],
+      "branches": {
+        "check": [
+          {
+            "type": "condition",
+            "condition_type": "romance_open",
+            "char_id": "minto",
+            "next_true": "ask",
+            "next_false": "friend"
+          }
+        ],
+        "lover": [
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "……恋人に渡すの、ちょっと照れるね。でも、きみに持っててほしい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "うん。二人で吸う時も、これで作るよ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "栞さんは小さく笑って、俺の袖を一度だけ引いた。"
+          }
+        ],
+        "ask": [
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……ね。お店のみんとじゃない私と、これからも会ってくれる？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（隠さないで、ここにいてくれる栞さんに。俺は、何を返したいんだろう）"
+          },
+          {
+            "type": "choice",
+            "id": "bond_q2_minto",
+            "romance_char": "minto",
+            "choices": [
+              {
+                "text": "「栞さんのことを、もっと知りたい。二人で」",
+                "next": "close",
+                "romance": 1
+              },
+              {
+                "text": "「うん。いつでも話せる友達でいるよ」",
+                "next": "ask_friend",
+                "romance": 0
+              }
+            ]
+          }
+        ],
+        "close": [
+          {
+            "speaker": "minto",
+            "face": "ura_surprise",
+            "text": "……っ"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……そういうの、ずるい。でも、うれしい"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "私も。……もう少しだけ、隣を歩いてもいい？"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "並んで歩く。店の灯りから離れても、彼女は口数を減らさなかった。"
+          }
+        ],
+        "ask_friend": [
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "……うん。友達、いい言葉だね"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "お店では『みんと』で、外では栞。どっちでも、気楽に会えたらいいな"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "栞さんは軽く手を振った。私服の背中は、来た時より少しだけまっすぐだった。"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "ありがとう、栞さん。大事に使うよ"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "お店では『みんと』で、外では栞。どっちでも、気楽に会えたらいいな"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "栞さんは軽く手を振った。私服の背中は、来た時より少しだけまっすぐだった。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch1_rin_bond_finale",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
+        "bond_finale": "rin"
+      },
+      "lines": [
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "来たね、モルモットくん。今日は試香じゃないよ"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "代わりに、これ。ラベルも同意書もないやつ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "放られた包みを、慌てて受け止める。中身は、使い込まれた素焼きのボウルだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "縁から、濃い果実の香りがした。ショールームの隅で、凛さんがいつも吸っていた匂いだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "これ、凛さんの私物のブルーベリー……"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "そう。試験品じゃないよ。レポートも要らない"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "仕事柄、預かり物ばかり人に渡してるからさ。たまには自分のを渡したくて"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……個人から、君へのプレゼント。それだけ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "rin",
+          "next_true": "lover",
+          "next_false": "check"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "包みを抱えて階段を降りる。夜の側の匂いの中に、ひとつだけ甘い香りが混ざっていた。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 2
+          }
+        }
+      ],
+      "branches": {
+        "check": [
+          {
+            "type": "condition",
+            "condition_type": "romance_open",
+            "char_id": "rin",
+            "next_true": "ask",
+            "next_false": "friend"
+          }
+        ],
+        "lover": [
+          {
+            "speaker": "rin",
+            "face": "smile",
+            "text": "恋人に私物を渡すの、なんか照れるね。業務連絡じゃ、ごまかせないや"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "大事にします。凛さんの匂いごと"
+          },
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "……そういうとこだよ、君"
+          }
+        ],
+        "ask": [
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "君がこれで作った一台、いつか吸わせてね、……仕事じゃない日に"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（仕事じゃない日に、凛さんと。……俺は、どう答えたいんだろう）"
+          },
+          {
+            "type": "choice",
+            "id": "bond_q2_rin",
+            "romance_char": "rin",
+            "choices": [
+              {
+                "text": "「仕事じゃない日に、二人で吸いましょう」",
+                "next": "close",
+                "romance": 1
+              },
+              {
+                "text": "「次の試香の日に、作って持ってきます」",
+                "next": "ask_friend",
+                "romance": 0
+              }
+            ]
+          }
+        ],
+        "close": [
+          {
+            "speaker": "rin",
+            "face": "surprise",
+            "text": "……二人で、ね"
+          },
+          {
+            "speaker": "rin",
+            "face": "smile",
+            "text": "いいよ。その日は、私も仕事の顔を置いてくる"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "凛さんはそれだけ言って、珍しく先に目を逸らした。"
+          }
+        ],
+        "ask_friend": [
+          {
+            "speaker": "rin",
+            "face": "smile",
+            "text": "試香の日に、ね。君らしい、……楽しみにしてる"
+          },
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "仕事仲間からのプレゼントってことで。大事に使って"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "凛さんはクリップボードを抱えて、口の端だけで笑った。"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "ありがとうございます。大事に使います"
+          },
+          {
+            "speaker": "rin",
+            "face": "normal",
+            "text": "うん。仕事仲間からのプレゼントってことで。大事に使って"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "凛さんはクリップボードを抱えて、口の端だけで笑った。"
+          }
+        ]
+      }
+    }
+  ]
+}
