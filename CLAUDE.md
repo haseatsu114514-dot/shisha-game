@@ -1,6 +1,6 @@
 # shisha-game — CLAUDE.md
 
-Godot 4 製シーシャ屋アドベンチャー＆シミュレーションゲーム。
+HTML/JS 製シーシャ屋アドベンチャー＆シミュレーションゲーム（Godot版は削除済み）。
 プレイヤーはシーシャバイト青年「蒸野 始（むしの はじめ）」として、地元大会→県大会→全国大会→世界大会を目指す。
 
 ---
@@ -19,7 +19,7 @@ and updates the local config.
 Before any code edit or Git operation:
 
 - verify the repo root with `git rev-parse --show-toplevel`
-- confirm that the same directory contains `project.godot`
+- confirm that the same directory contains `web/`, `data/`, and `assets/` (the Godot version, including `project.godot`, has been deleted)
 - run `./tools/check_git_safety.sh`
 - if `git config --get core.hooksPath` is not `.githooks`, run
   `./tools/enable_git_hooks.sh`
