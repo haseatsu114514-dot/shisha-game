@@ -1,5 +1,8 @@
 # Codex 依頼: 歩行テスト・通りの試作用の画像生成（画像だけ）
 
+> ✅ **2026-10-03 完了**: Codex が 21b468e で7枚（＋比較用 `_try`）を納品 → Claude が変換・組み込み済み
+> （6141ee6・3bfebb6）。結果と注意点への対応は `web/proto/street/README.md`。
+
 作成: 2026-10-02（Claude）／ 対象ブランチ: `claude/admiring-goodall-m9bdg3`
 台帳: `docs/owner_requests.md` の 2026-10-02 セッション（AA5）
 
