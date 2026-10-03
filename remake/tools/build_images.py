@@ -40,8 +40,10 @@ def encode(src: Path, rel: str) -> bytes:
         if rel.startswith(prefix) and max(im.size) > edge:
             k = edge / max(im.size)
             im = im.resize((round(im.width * k), round(im.height * k)), Image.LANCZOS)
-    # かふかの清書版は、再生成しても原画の線・塗り・アルファを劣化させない。
-    if rel.startswith("sprites/characters/kafuka/"):
+    # 清書版の細かなドット・輪郭・アルファは、再ビルド時も可逆で保つ。
+    if (rel.startswith("sprites/characters/kafuka/")
+            or rel.startswith("sprites/characters/ageha/")
+            or rel.startswith("sprites/characters/minto/")):
         b = io.BytesIO()
         im.save(b, "WEBP", lossless=True, quality=100, method=6, exact=True)
         return b.getvalue()

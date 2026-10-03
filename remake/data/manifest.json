@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-03 03:03 UTC",
+ "generated": "2026-10-03 13:21 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -23,9 +23,9 @@
     "smile",
     "surprise"
    ],
-   "h": 0.81,
+   "h": 0.8108,
    "b": 0.02,
-   "ax": 0.5789,
+   "ax": 0.5784,
    "aspect": 0.7467
   },
   "dr_kemuri": {
@@ -105,9 +105,9 @@
     "ura_surprise",
     "wink"
    ],
-   "h": 0.7883,
+   "h": 0.7867,
    "b": 0.02,
-   "ax": 0.5758,
+   "ax": 0.5762,
    "aspect": 0.7467
   },
   "nagumo": {
