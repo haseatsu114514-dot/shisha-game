@@ -1,0 +1,152 @@
+{
+  "version": 1,
+  "baselineCommit": "cd76b8cf640bca11bf3b6afe2420484823247505",
+  "pathBase": "This references directory",
+  "groups": [
+    {
+      "id": "minto-service-v2",
+      "title": "みんと営業姿 v2",
+      "status": "approved",
+      "role": "画質・質感の基準",
+      "sourceCommit": "cd76b8cf640bca11bf3b6afe2420484823247505",
+      "images": [
+        {
+          "label": "通常",
+          "expression": "normal",
+          "path": "../../../../assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "label": "笑顔",
+          "expression": "smile",
+          "path": "../../../../assets/sprites/characters/minto/chr_minto_smile.png",
+          "sha256": "214c5436f483f01dfa33a445833fe75992deddf736fe568107428d26181c74fc"
+        },
+        {
+          "label": "ウインク・てへぺろ",
+          "expression": "wink",
+          "path": "../../../../assets/sprites/characters/minto/chr_minto_wink.png",
+          "sha256": "2c97ce12f4b6773af39d32f682d23e45bde81e726d560015b8f71d1730bc3646"
+        },
+        {
+          "label": "驚き",
+          "expression": "surprise",
+          "path": "../../../../assets/sprites/characters/minto/chr_minto_surprise.png",
+          "sha256": "7a57ebb1c6a4c3d43338c08390684cfddc81f9e89d31586656283cf180e02f22"
+        },
+        {
+          "label": "悲しみ",
+          "expression": "sad",
+          "path": "../../../../assets/sprites/characters/minto/chr_minto_sad.png",
+          "sha256": "668e9d3309e33db3c3e6623348ca0845124a3f4711da7409db6625378b1b281a"
+        }
+      ]
+    },
+    {
+      "id": "ageha-v1",
+      "title": "あげは v1",
+      "status": "approved",
+      "role": "画質・質感の基準",
+      "sourceCommit": "cd76b8cf640bca11bf3b6afe2420484823247505",
+      "images": [
+        {
+          "label": "通常",
+          "expression": "normal",
+          "path": "../../../../assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        },
+        {
+          "label": "笑顔",
+          "expression": "smile",
+          "path": "../../../../assets/sprites/characters/ageha/chr_ageha_smile.png",
+          "sha256": "91f2f98000a1b7e79c102bf4db031fb5bc48f5cc2b330d808d3f419bc249bc84"
+        },
+        {
+          "label": "真剣",
+          "expression": "serious",
+          "path": "../../../../assets/sprites/characters/ageha/chr_ageha_serious.png",
+          "sha256": "3ec64d194055ce85278e6d386c2e380abe5a0a62f13cc5f0217bfcebde8c5932"
+        },
+        {
+          "label": "驚き",
+          "expression": "surprise",
+          "path": "../../../../assets/sprites/characters/ageha/chr_ageha_surprise.png",
+          "sha256": "b588b070319fb22d3414914b22bd3b52268fee5081bbbbf17d5be59647cd68bd"
+        },
+        {
+          "label": "悲しみ",
+          "expression": "sad",
+          "path": "../../../../assets/sprites/characters/ageha/chr_ageha_sad.png",
+          "sha256": "5578256ad245ad13c110ae79ef9b3909abda08ba4bfd900c9899d8e47a3648b3"
+        }
+      ]
+    },
+    {
+      "id": "minto-private-v1",
+      "title": "みんと私服 v1",
+      "status": "approved",
+      "role": "画質・質感の基準",
+      "sourceCommit": "cd76b8cf640bca11bf3b6afe2420484823247505",
+      "images": [
+        {
+          "label": "通常",
+          "expression": "ura_normal",
+          "path": "../../../../assets/sprites/characters/minto/chr_minto_ura_normal.png",
+          "sha256": "c9a603a9c9c9b0438781573180d8c6e0ecac6c425a17c116623b0ba4b6d48bf2"
+        },
+        {
+          "label": "笑顔",
+          "expression": "ura_smile",
+          "path": "../../../../assets/sprites/characters/minto/chr_minto_ura_smile.png",
+          "sha256": "5579265d2e1db6088afe2ffe279f934cdae15f1b121cd065b60e878f383839f5"
+        },
+        {
+          "label": "照れた含み笑い",
+          "expression": "ura_smug",
+          "path": "../../../../assets/sprites/characters/minto/chr_minto_ura_smug.png",
+          "sha256": "75429d0d0a6237440cecb300dabaf05e773e9a1966b980ca8e3fa4beccc6724c"
+        },
+        {
+          "label": "驚き",
+          "expression": "ura_surprise",
+          "path": "../../../../assets/sprites/characters/minto/chr_minto_ura_surprise.png",
+          "sha256": "7a25a023b178c4f40c299bb0b49ac6cce8af02c97990b794e7e3ccf3418926a5"
+        },
+        {
+          "label": "悲しみ",
+          "expression": "ura_sad",
+          "path": "../../../../assets/sprites/characters/minto/chr_minto_ura_sad.png",
+          "sha256": "2b01f25db493b7198df8f2f90ac4d601c9fcbef55adfdac425726bd0f92c9a6d"
+        }
+      ]
+    },
+    {
+      "id": "tsumugi-v1",
+      "title": "つむぎ 基本5差分 v1",
+      "status": "pending",
+      "role": "直近の制作例・採用確認待ち",
+      "sourceCommit": "cd76b8cf640bca11bf3b6afe2420484823247505",
+      "images": [
+        {
+          "label": "通常／笑顔／真剣／驚き／悲しみ",
+          "path": "tsumugi-v1-sheet.png",
+          "sha256": "08bea5a17305277d65e6cc48297259a5456c1cffac760c9bb2fb3ff0da649f7a"
+        }
+      ]
+    },
+    {
+      "id": "tsumugi-yami-v2",
+      "title": "つむぎ 病み可愛い追加差分 v2",
+      "status": "pending",
+      "role": "直近の制作例・採用確認待ち",
+      "sourceCommit": "cd76b8cf640bca11bf3b6afe2420484823247505",
+      "images": [
+        {
+          "label": "虚ろな目・ハイライトなし・小さな無表情の口",
+          "path": "tsumugi-yami-v2.png",
+          "sha256": "d6e8ee73b339acfb23ff01cb89a812253f3f8fbd480d7370d5daf1ad7df885fe"
+        }
+      ]
+    }
+  ]
+}
