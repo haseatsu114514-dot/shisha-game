@@ -1,5 +1,8 @@
 # Codex 依頼: 通りの試作「ハリボテ背景版」の画像（画像だけ・8枚）
 
+> ✅ **2026-10-03 納品・組み込み済み**: Codex が cc0ab49 で8枚（＋比較用 `_try`）を納品 → Claude が `?stage=set` に組み込んだ。
+> 結果と既知の問題は `web/proto/street/README.md` の「ハリボテ背景版」の節。
+
 作成: 2026-10-03（Claude）／ 対象ブランチ: `claude/admiring-goodall-m9bdg3`
 台帳: `docs/owner_requests.md` の AA11
 これまでの依頼: `docs/codex_handoff_street_images.md`（納品済み）／`docs/codex_handoff_street_hd_images.md`（**取り下げ・この依頼に統合**）

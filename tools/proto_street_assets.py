@@ -70,11 +70,20 @@ GROUND_DASH_PERIOD = 197.5   # 車道の白線の横周期（元画像px）
 GROUND_TILES = 20            # 出力の帯にタイル20枚 = 白線10本ぶん（左右の端が継ぎ目なくつながる）
 GROUND_DASHES = 10
 
-# 出力の種類。base = 320×180 の試作（web/proto/street の標準）、hd = 640×360 の高解像度2.5D版（AA9）
+# ハリボテ背景版（AA11）: 画面1枚分の背景パネル×3（昼・夜）をつないで1本の通りにする
+SET_DIR = REPO_ROOT / "asset_sources" / "images" / "proto_street_set"
+SET_H = 360               # パネルの高さ（ゲーム画面の高さ。640×360を2倍表示）
+SET_OVERLAPS = (32, 48)   # パネル1-2・2-3を重ねる幅（各パネルの端の「建物の隙間」より狭く。ここで切れ目を探す）
+SET_CHAR = 72             # キャラの身長（ドット）。小物の大きさはこれに対する比率で決める
+SET_PROPS = [("vending", 1.15), ("bench", 0.55), ("aboard", 0.6), ("plant", 0.6), ("lamp", 2.2), ("bicycle", 0.6)]
+
+# 出力の種類。base = 320×180 の試作（web/proto/street の標準）、hd = 640×360 の高解像度2.5D版（AA9）、
+# set = ハリボテ背景版（AA11。背景は一枚絵のパネル・キャラ72ドット）
 PROFILES = {
     "base": {"out": "proto_street", "door_h": 36, "facade_max_h": 110, "ground_h": 68, "ground_w": 200, "prop_scale": 1.0},
     "hd": {"out": "proto_street_hd", "door_h": 56, "facade_max_h": 172, "ground_h": 150, "ground_w": 400, "prop_scale": 1.6,
            "depth": True, "far_h": 210, "pole_h": 380},
+    "set": {"out": "proto_street_set", "door_h": 0, "facade_max_h": 0, "ground_h": 0, "ground_w": 0, "prop_scale": 0},
 }
 
 
@@ -242,6 +251,89 @@ def build_depth(args, report):
     return meta
 
 
+def min_error_cut(a: np.ndarray, b: np.ndarray) -> np.ndarray:
+    """重なり部分 a・b（同じ大きさ）の、色の差がいちばん小さい上→下の切れ目（各行の x）を返す（画像キルティングの最小誤差境界）。"""
+    diff = ((a.astype(np.float32) - b.astype(np.float32)) ** 2).sum(axis=2)
+    h, w = diff.shape
+    cost = diff.copy()
+    for y in range(1, h):
+        prev = cost[y - 1]
+        left = np.r_[np.inf, prev[:-1]]
+        right = np.r_[prev[1:], np.inf]
+        cost[y] += np.minimum(np.minimum(left, prev), right)
+    path = np.zeros(h, dtype=int)
+    path[-1] = int(np.argmin(cost[-1]))
+    for y in range(h - 2, -1, -1):
+        x = path[y + 1]
+        lo, hi = max(0, x - 1), min(w, x + 2)
+        path[y] = lo + int(np.argmin(cost[y, lo:hi]))
+    return path
+
+
+def stitch_panels(panels, height: int, overlaps, feather: int = 3) -> Image.Image:
+    """パネルを高さ height に縮めて横につなぐ。
+
+    重ねる幅は継ぎ目ごとに overlaps で指定（パネルの端の「建物の隙間」より狭くする）。重なりの中で、
+    左右のパネルの色が一番そろう上→下の切れ目を探してそこで切り替える（全体を半透明で混ぜると、
+    塀の柱や木が二重に見えるため）。切れ目の両側 feather ドットだけなじませる。
+    """
+    scaled = [np.asarray(p.convert("RGB").resize((round(p.width * height / p.height), height), Image.LANCZOS)) for p in panels]
+    out = scaled[0].astype(np.float32)
+    for i, p in enumerate(scaled[1:]):
+        o = overlaps[i]
+        a = out[:, -o:]
+        b = p[:, :o].astype(np.float32)
+        path = min_error_cut(a, b)
+        xs = np.arange(o)[None, :]
+        # 切れ目より左は a、右は b。切れ目の前後 feather ドットで線形に切り替える
+        t = np.clip((xs - path[:, None] + feather) / (2 * feather), 0, 1)[..., None]
+        blend = a * (1 - t) + b * t
+        out = np.concatenate([out[:, :-o], blend, p[:, o:].astype(np.float32)], axis=1)
+    return Image.fromarray(np.clip(out, 0, 255).round().astype(np.uint8), "RGB")
+
+
+def build_set(args, report):
+    """ハリボテ背景版: パネル3枚（昼・夜）→ 1本の通り、小物シート、手前の電柱。"""
+    meta = {"set": {}, "props": {}}
+    for tod in ("day", "night"):
+        paths = [SET_DIR / f"street_panel_{i}_{tod}.png" for i in (1, 2, 3)]
+        if not all(p.exists() for p in paths):
+            print(f"street_{tod}: パネルがそろっていない（{', '.join(p.name for p in paths if not p.exists())}）")
+            continue
+        strip = stitch_panels([Image.open(p) for p in paths], SET_H, SET_OVERLAPS)
+        if args.colors_set:
+            strip = strip.quantize(colors=args.colors_set, method=Image.MEDIANCUT).convert("RGB")
+        strip.save(OUT_DIR / f"street_{tod}.png")
+        meta["set"][tod] = {"w": strip.width, "h": strip.height}
+        report.append((f"street_{tod}", strip, []))
+        print(f"street_{tod}: {strip.width}x{strip.height}")
+    sheet = SET_DIR / "props_sheet.png"
+    if sheet.exists():
+        keyed, blobs = cut_sheet(sheet, 3, 2)
+        for (name, rel), (x0, y0, x1, y1, _) in zip(SET_PROPS, blobs):
+            crop = keyed.crop((x0, y0, x1, y1))
+            height = round(SET_CHAR * rel)
+            w = max(1, round(crop.width * height / crop.height))
+            out = shrink(crop, (w, height), args.colors)
+            out.save(OUT_DIR / f"prop_{name}.png")
+            meta["props"][name] = {"w": w, "h": height}
+            report.append((f"prop_{name}", out, []))
+            print(f"prop_{name}: {w}x{height}")
+    pole = SET_DIR / "fg_utility_pole.png"
+    if pole.exists():
+        im = Image.open(pole).convert("RGBA")
+        keyed = key_background(im, detect_key_color(im))
+        bbox = keyed.getchannel("A").point(lambda v: 255 if v >= ALPHA_SOLID else 0).getbbox()
+        crop = keyed.crop(bbox)
+        h = 420
+        crop = crop.resize((max(1, round(crop.width * h / crop.height)), h), Image.LANCZOS)
+        crop.save(OUT_DIR / "fg_utility_pole.png")
+        meta["fg_utility_pole"] = {"w": crop.width, "h": crop.height}
+        report.append(("fg_utility_pole", crop, []))
+        print(f"fg_utility_pole: {crop.width}x{crop.height}")
+    return meta
+
+
 def write_preview(report, path: Path, zoom: int = 3):
     pad = 12
     items = []
@@ -281,6 +373,7 @@ def main() -> None:
     ap.add_argument("--ground-w", type=int, help="地面の帯の幅（ドット。タイル20枚ぶん）")
     ap.add_argument("--prop-scale", type=float, help="小物の高さの倍率（base の高さが基準）")
     ap.add_argument("--colors", type=int, default=48)
+    ap.add_argument("--colors-set", type=int, default=0, help="ハリボテ背景の減色数（0=減色しない）")
     ap.add_argument("--ground-colors", type=int, default=24)
     ap.add_argument("--no-preview", action="store_true")
     args = ap.parse_args()
@@ -292,9 +385,16 @@ def main() -> None:
             setattr(args, key, prof[key])
     OUT_DIR = REPO_ROOT / "assets" / prof["out"]
     if args.profile != "base":
-        PREVIEW_PATH = SRC_DIR / f"preview_street_{args.profile}.png"
+        PREVIEW_PATH = (SET_DIR if args.profile == "set" else SRC_DIR) / f"preview_street_{args.profile}.png"
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     report = []
+    if args.profile == "set":
+        meta = {"note": "tools/proto_street_assets.py --profile set が生成。手で編集しない", **build_set(args, report)}
+        (OUT_DIR / "street_assets.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(f"wrote {OUT_DIR / 'street_assets.json'}")
+        if not args.no_preview:
+            write_preview(report, PREVIEW_PATH, zoom=1)
+        return
     meta = {
         "note": "tools/proto_street_assets.py が生成。手で編集しない",
         "facades": build_facades(args, report),

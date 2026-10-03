@@ -1,7 +1,7 @@
 // 通りの試作（web/proto/street/）のスモークテスト。本編のテスト一覧には入れない（試作専用）。
 //   python3 -m http.server 8123   # リポジトリルートで
 //   node web/proto/street/smoke.mjs
-// 標準版（320×180）と高解像度2.5D版（640×360・?stage=hd）のそれぞれで、生成画像と
+// 標準版（320×180）・高解像度2.5D版（640×360・?stage=hd）・ハリボテ背景版（?stage=set）のそれぞれで、生成画像と
 // 画像を全部404にした仮素材の両方について、同じ流れを最後まで通す（座標は __street.layout() から読む）。
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
@@ -20,15 +20,16 @@ const ok = (cond, label, detail = "") => {
 
 const browser = await chromium.launch({ headless: true });
 
-async function run(label, { blockImages, hd }) {
+async function run(label, { blockImages, stage = "base" }) {
+  const hd = stage === "hd";
   console.log(`\n== ${label}`);
   const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e)));
   if (blockImages) {
-    await page.route(/assets\/proto_(street|street_hd|walk)\//, (route) => route.fulfill({ status: 404, body: "" }));
+    await page.route(/assets\/proto_(street|street_hd|street_set|walk)\//, (route) => route.fulfill({ status: 404, body: "" }));
   }
-  const Q = hd ? "stage=hd&" : "";
+  const Q = stage === "base" ? "" : `stage=${stage}&`;
   const st = () => page.evaluate(() => window.__street.state());
   const until = (fn, arg) => page.waitForFunction(fn, arg, { timeout: 8000 });
   const idle = () => until(() => !window.__street.state().busy);
@@ -67,8 +68,9 @@ async function run(label, { blockImages, hd }) {
   const U = L.unit, Z = L.view[2];
   const obj = (id) => L.objects.find((o) => o.id === id);
   const door = (id) => L.doors.find((d) => d.id === id);
-  ok(L.hd === !!hd && L.view[0] === (hd ? 640 : 320), "画質", `${L.view[0]}×${L.view[1]} unit ${U}`);
-  if (hd) ok(L.foreground, "高解像度版: 手前の電柱・電線のレイヤーがある", `遠景=${L.farSource}`);
+  ok(L.kind === stage && L.view[0] === (stage === "base" ? 320 : 640), "画質", `${L.kind} ${L.view[0]}×${L.view[1]} unit ${U}`);
+  if (stage !== "base") ok(L.foreground, "手前の電柱・電線のレイヤーがある", `遠景=${L.farSource} 電柱=${L.fgSource}`);
+  if (stage === "set") ok(L.setSource === (blockImages ? "placeholder" : "image"), "ハリボテの一枚絵", L.setSource);
   s = await st();
   ok(s.x < L.spawn.x + 15 * U, "通りの左端に降り立つ", `x=${s.x}`);
 
@@ -78,8 +80,19 @@ async function run(label, { blockImages, hd }) {
   ok(s.camX > 0 && s.x > L.spawn.x + 100 * U, "右へ歩くとカメラが横に追従", `x=${s.x} camX=${s.camX}`);
 
   // 2b) 速さとダッシュ（AA7・AA8）: 歩き80、Shift で140（標準版のドット/秒。高解像度版は unit 倍）
-  const laneY = L.walk.y1 - 6 * U;                          // 縁石寄りの、何も置いていない列
   const startX = L.spawn.x + 120 * U;
+  // 速さを測る列: 縁石側から探して、小物の足元にも往復する通行人の列にもかからない高さ
+  const laneY = (() => {
+    const x0 = L.spawn.x, x1 = startX + 320 * U;
+    const maxY = Math.min(L.walk.y1 - 2 * U, 620 / Z);        // 右下のボタン（画面の y≈636〜）より上をタップする
+    for (let y = Math.floor(maxY); y > L.walk.y0 + L.footH; y--) {
+      const hitsObj = L.objects.some((o) => o.solid && o.x + o.solid[0] / 2 > x0 && o.x - o.solid[0] / 2 < x1
+        && y - L.footH < o.y && y > o.y - o.solid[1] - 2);
+      const hitsNpc = L.npcRows.some((n) => Math.abs(n.y - y) < L.footH + 2);
+      if (!hitsObj && !hitsNpc) return y;
+    }
+    return L.walk.y1 - 6 * U;
+  })();
   const run1s = async (withShift) => {
     await place(startX, laneY, "right");
     const x0 = (await st()).x;
@@ -223,11 +236,12 @@ async function run(label, { blockImages, hd }) {
   await until(() => window.__street && window.__street.state().ready);
   ok(!(await st()).visited.kemurikusa, "?reset=1 で訪問記録が消える");
 
-  // 12) エリアマップの「画質」切り替え（標準 ⇔ 高解像度）
-  await page.click(`#res-toggle button[data-res='${hd ? "base" : "hd"}']`);
+  // 12) エリアマップの「画質」切り替え（標準 / 高解像度 / ハリボテ）
+  const target = stage === "base" ? "set" : "base";
+  await page.click(`#res-toggle button[data-res='${target}']`);
   await page.waitForFunction((want) => window.__street && window.__street.state().ready
-    && new URLSearchParams(location.search).get("stage") === want, hd ? null : "hd", { timeout: 8000 });
-  ok(true, "エリアマップの「画質」で標準と高解像度を切り替えられる");
+    && new URLSearchParams(location.search).get("stage") === want, target === "base" ? null : target, { timeout: 8000 });
+  ok(true, `エリアマップの「画質」で ${stage} → ${target} に切り替えられる`);
 
   // 13) 夜
   await page.goto(`${PAGE}?${Q}night=1&area=hankagai`);
@@ -241,8 +255,10 @@ async function run(label, { blockImages, hd }) {
 
 await run("標準・生成画像", { blockImages: false });
 await run("標準・仮素材（画像なし）", { blockImages: true });
-await run("高解像度2.5D・生成画像", { blockImages: false, hd: true });
-await run("高解像度2.5D・仮素材（画像なし）", { blockImages: true, hd: true });
+await run("高解像度2.5D・生成画像", { blockImages: false, stage: "hd" });
+await run("高解像度2.5D・仮素材（画像なし）", { blockImages: true, stage: "hd" });
+await run("ハリボテ背景版・生成画像", { blockImages: false, stage: "set" });
+await run("ハリボテ背景版・仮素材（画像なし）", { blockImages: true, stage: "set" });
 
 // 歩行テストのページも動く（生成画像に切り替わっている）
 {
