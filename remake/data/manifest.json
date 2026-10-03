@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-03 13:21 UTC",
+ "generated": "2026-10-03 21:16 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -177,15 +177,16 @@
   },
   "tsumugi": {
    "faces": [
+    "evil",
     "normal",
     "sad",
     "serious",
     "smile",
     "surprise"
    ],
-   "h": 0.715,
-   "b": 0.02,
-   "ax": 0.5525,
+   "h": 0.7267,
+   "b": 0.0217,
+   "ax": 0.5005,
    "aspect": 0.7467
   }
  },
@@ -733,6 +734,7 @@
   "sprites/characters/sumi/chr_sumi_smile.png",
   "sprites/characters/sumi/chr_sumi_surprise.png",
   "sprites/characters/sumi/chr_sumi_thinking.png",
+  "sprites/characters/tsumugi/chr_tsumugi_evil.png",
   "sprites/characters/tsumugi/chr_tsumugi_normal.png",
   "sprites/characters/tsumugi/chr_tsumugi_sad.png",
   "sprites/characters/tsumugi/chr_tsumugi_serious.png",

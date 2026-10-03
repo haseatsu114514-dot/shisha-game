@@ -1,0 +1,76 @@
+{
+  "character": "kafuka",
+  "status": "pending",
+  "expressions": [
+    "normal",
+    "smile",
+    "serious",
+    "surprise"
+  ],
+  "renderingBaselineCommit": "cd76b8cf640bca11bf3b6afe2420484823247505",
+  "review": "全制作セットを目視し、各代表の原寸と出力の原寸／2倍・補間なしで比較。v2は4本体の連結成分が分離し、キャンバス四辺にalpha>=24の画素なし。ゲーム素材は採用前のまま。",
+  "generations": [
+    {
+      "version": 1,
+      "prompt": "kafuka-v1-prompt.txt",
+      "output": "kafuka-v1-sheet.png",
+      "status": "superseded",
+      "reason": "横間隔が狭く、右端の袖が見切れたためv2へ修正",
+      "references": [
+        {
+          "path": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+          "role": "デザイン・通常の表情",
+          "sha256": "7919d4f9bd4b29ceece405bafaecaa2b815d2c018b55b28190c5c15f982aad74"
+        },
+        {
+          "path": "assets/sprites/characters/kafuka/chr_kafuka_smile.png",
+          "role": "笑顔の表情",
+          "sha256": "80c06e4218e4240b2d874565252eacc8ee445bb6110278f200744283f13d2576"
+        },
+        {
+          "path": "assets/sprites/characters/kafuka/chr_kafuka_surprise.png",
+          "role": "驚きの表情",
+          "sha256": "5eb2f5fb82752d6a5e0874de4aeb0a48ed80f318e2e97b9a80eb80f7196da6c1"
+        },
+        {
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "role": "採用済みの画質・質感",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "role": "採用済みの画質・質感",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ]
+    },
+    {
+      "version": 2,
+      "prompt": "kafuka-v2-prompt.txt",
+      "output": "kafuka-v2-sheet.png",
+      "status": "pending",
+      "references": [
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/kafuka-v1-sheet.png",
+          "role": "修正する生成元シート",
+          "sha256": "738edc6972de00e049311ff7733254ee28bd7563dda3f941a17acd40e6be2d4d"
+        },
+        {
+          "path": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+          "role": "本人の顔・衣装・ぬいぐるみ",
+          "sha256": "7919d4f9bd4b29ceece405bafaecaa2b815d2c018b55b28190c5c15f982aad74"
+        },
+        {
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "role": "採用済みの画質・質感",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "role": "採用済みの画質・質感",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ]
+    }
+  ]
+}

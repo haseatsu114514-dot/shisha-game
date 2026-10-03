@@ -123,8 +123,8 @@
     {
       "id": "tsumugi-v1",
       "title": "つむぎ 基本5差分 v1",
-      "status": "pending",
-      "role": "直近の制作例・採用確認待ち",
+      "status": "approved",
+      "role": "採用済み生成元・画質と質感の参照",
       "sourceCommit": "cd76b8cf640bca11bf3b6afe2420484823247505",
       "images": [
         {
@@ -132,19 +132,81 @@
           "path": "tsumugi-v1-sheet.png",
           "sha256": "08bea5a17305277d65e6cc48297259a5456c1cffac760c9bb2fb3ff0da649f7a"
         }
-      ]
+      ],
+      "approval": "2026-10-03: 保存済み6枚の採用・組み込み確認にオーナー「はい」"
     },
     {
       "id": "tsumugi-yami-v2",
       "title": "つむぎ 病み可愛い追加差分 v2",
-      "status": "pending",
-      "role": "直近の制作例・採用確認待ち",
+      "status": "approved",
+      "role": "採用済み生成元・画質と質感の参照",
       "sourceCommit": "cd76b8cf640bca11bf3b6afe2420484823247505",
       "images": [
         {
           "label": "虚ろな目・ハイライトなし・小さな無表情の口",
           "path": "tsumugi-yami-v2.png",
           "sha256": "d6e8ee73b339acfb23ff01cb89a812253f3f8fbd480d7370d5daf1ad7df885fe"
+        }
+      ],
+      "approval": "2026-10-03: 保存済み6枚の採用・組み込み確認にオーナー「はい」"
+    },
+    {
+      "id": "tsumugi-game-v1",
+      "title": "つむぎ 採用済みゲーム用6差分",
+      "status": "approved",
+      "role": "画質・質感とゲーム内表示の基準",
+      "sourceBranch": "codex/tsumugi-portrait-remaster-20261003",
+      "approval": "2026-10-03: オーナー「はい」",
+      "images": [
+        {
+          "label": "通常",
+          "expression": "normal",
+          "path": "../../../../assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        },
+        {
+          "label": "笑顔",
+          "expression": "smile",
+          "path": "../../../../assets/sprites/characters/tsumugi/chr_tsumugi_smile.png",
+          "sha256": "952ba0b09909936641b6c9a138c312852c8990ae5b82c879866bee64bf49203f"
+        },
+        {
+          "label": "真剣",
+          "expression": "serious",
+          "path": "../../../../assets/sprites/characters/tsumugi/chr_tsumugi_serious.png",
+          "sha256": "6b9daaf0ee59aae1b56c625e8c12b1b539738c8533e6af5205a4d600f8dd0d75"
+        },
+        {
+          "label": "驚き",
+          "expression": "surprise",
+          "path": "../../../../assets/sprites/characters/tsumugi/chr_tsumugi_surprise.png",
+          "sha256": "4945c68cd9b6f465ddbbd7e1a6f92b9d9d81b4723db0a8a82ab6efe6dc562f6a"
+        },
+        {
+          "label": "悲しみ",
+          "expression": "sad",
+          "path": "../../../../assets/sprites/characters/tsumugi/chr_tsumugi_sad.png",
+          "sha256": "ca93874e7e114a1a52194b227033cd8821ebd93c421d62a5bbe0e9ed1a051087"
+        },
+        {
+          "label": "病み可愛い",
+          "expression": "evil",
+          "path": "../../../../assets/sprites/characters/tsumugi/chr_tsumugi_evil.png",
+          "sha256": "ec97dc3373eccff61088f0760d54404fa79596c8b404d5d5d089fefd388840e8"
+        }
+      ]
+    },
+    {
+      "id": "kafuka-v2",
+      "title": "サメちゃん 基本4差分 v2",
+      "status": "pending",
+      "role": "次の制作案・採用確認待ち",
+      "sourceBranch": "codex/tsumugi-portrait-remaster-20261003",
+      "images": [
+        {
+          "label": "通常／笑顔／真剣／驚き",
+          "path": "kafuka-v2-sheet.png",
+          "sha256": "0eb46541c420ec71c4781ad54eac769652683550e123c9f8fe15c9d534748e4b"
         }
       ]
     }
