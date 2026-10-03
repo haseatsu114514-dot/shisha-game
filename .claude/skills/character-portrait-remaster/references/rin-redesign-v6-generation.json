@@ -3,7 +3,7 @@
   "age": 27,
   "version": 6,
   "expression": "normal",
-  "status": "pending",
+  "status": "superseded",
   "ownerRequest": "凛を次は作りたいけど結構デザイン一新したい\nこんな感じの髪型ととろんとした目がいい　ただ目は涼しさと可愛さや色気な感じで小さくはしすぎず　半目でちょっとセクシーなだけ",
   "priority": "最新指示で次の制作対象を凛へ変更。サメちゃん追加5表情目は採用確認待ちのまま保留。",
   "designAssumptions": [
@@ -405,5 +405,7 @@
     "baselineImagesUnchanged": 15,
     "sourceAlpha24EdgePixelCount": 0,
     "gameFilesChanged": false
-  }
+  },
+  "supersededBy": "rin-redesign-v7.png",
+  "reason": "オーナーの最新指示で少し年上の顔立ち、さらに少し細めた目、参考1枚目のクールな微笑みへ修正。"
 }

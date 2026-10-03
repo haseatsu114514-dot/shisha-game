@@ -246,29 +246,30 @@
       ]
     },
     {
-      "id": "kafuka-excited-v2",
-      "title": "サメちゃん 追加5表情目・大げさな熱弁 v2",
+      "id": "kafuka-excited-v3",
+      "title": "サメちゃん 追加5表情目・可愛く息切れする熱弁 v3",
       "status": "pending",
       "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187",
       "note": "オーナー「もっと大げさでコミカルにする」を反映。大きな星の瞳・開いたギザ歯の口・赤面と汗・前のめりと強く抱えるぬいぐるみ。採用確認待ち。v1は旧案として生成記録に保存し、画風基準へ加えない。",
       "images": [
         {
-          "label": "生成元・大げさでコミカルな熱弁",
+          "label": "生成元・可愛く息切れしながら熱弁",
           "expression": "excited",
-          "path": "kafuka-excited-v2.png",
-          "sha256": "ed8385ec5b0465bcae4853ec81a718af3f21915fb0ab1ab0b1c686580da3d7af"
+          "path": "kafuka-excited-v3.png",
+          "sha256": "4dedda89c2ac559015366b4ef12aa4e20d47fc0ff643dc0543e6dbdfc1e810bd"
         },
         {
           "label": "基本4枚と全身高を揃えた確認用",
           "expression": "excited",
-          "path": "kafuka-excited-v2-preview.png",
-          "sha256": "c3048cfac32c7c40bccfa14a147be3e5bac222139814fd06c54120f68798ae5e"
+          "path": "kafuka-excited-v3-preview.png",
+          "sha256": "28ca4634e2ab3a8b7346ac1de83bdaac650c5a831de4723aa7cf5bcbc4f8472a"
         }
-      ]
+      ],
+      "ownerRequest": "さめちゃんは5枚目はちょっとオーバーすぎ　可愛さも残しつつ大袈裟なのがいい　あもはぁはぁ息切らしながら語ってる感じ"
     },
     {
-      "id": "rin-redesign-v6",
-      "title": "凛・写真寄りの目と青みのある髪 v6",
+      "id": "rin-redesign-v7",
+      "title": "凛・少し年上の半目とクールな微笑み v7",
       "status": "pending",
       "role": "通常表情の新デザイン確認・未採用",
       "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187",
@@ -277,16 +278,17 @@
         {
           "label": "生成元・通常表情の最新デザイン",
           "expression": "normal",
-          "path": "rin-redesign-v6.png",
-          "sha256": "86c2679f96a638952a8f96485d4d828a72a5639f84d1c1a8f9b0b7dcc5dfd71b"
+          "path": "rin-redesign-v7.png",
+          "sha256": "8fde84eec1f47610eb054cbf46b89ac65179d531adba16a27a3addbe8a1cb860"
         },
         {
           "label": "旧凛と全身高を揃えた確認用",
           "expression": "normal",
-          "path": "rin-redesign-v6-preview.png",
-          "sha256": "c8f2522c53ba8be354875113816023d96f32201ad30f203d514c17f55260d01b"
+          "path": "rin-redesign-v7-preview.png",
+          "sha256": "4898d4da83922274af08fb8b86d69d15afd8589b3776a790227731df45c5e6be"
         }
-      ]
+      ],
+      "ownerRequest": "凛はもう少しだけ年上に見せたい　主人公たちよりも　あと目をもうちょっとだけ細めて　あと口元も参考一枚目みたいな　基本クールに微笑む系　ギャップが可愛いの一枚あってもいいけど"
     }
   ]
 }
