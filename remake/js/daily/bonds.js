@@ -11,7 +11,7 @@
 // - 友情ルートでも締めくくりの場面と贈り物は同じだけ受け取れる。
 // - 友人になった後（友情の締めくくり・告白で友達のまま）は、たまにシーシャのお誘いか雑談のLIMEが届く（HF09）。
 //   文面と間隔は remake/data/friends.json。友人のLIMEは全員あわせて数日に1通、お誘いは全員あわせて週に1回ほど、
-//   ほかの誘いと同じ朝には重ねない。恋人と告白待ちの相手には届かない。
+//   物語・恋人の誘いと同じ朝には重ねない（スミさんのバイトの誘いとは重なってよい）。恋人と告白待ちの相手には届かない。
 import { DB, callName } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { affinityLevel } from "../core/stats.js";
@@ -215,7 +215,7 @@ const lastDay = (items) => Math.max(-99, ...items.map((i) => i.day ?? -99));
  * 何人と友人になっても重ならないよう、全員で間隔を分け合う（data: remake/data/friends.json）:
  * - 友人のLIMEは全員あわせて globalGapDays 日に1通まで。いちばん長く連絡のない相手から順（同じ相手は gapDays 日以上あける）
  * - お誘いは全員あわせて inviteGapDays 日に1回まで。その相手との雑談のあとだけ（最初の連絡は雑談・お誘いは続けない）。
- *   約束のある日は出さず同じ相手の雑談に（ほかの誘いが届く朝と、時刻の合わない日の切り替えは phone.js）。大会前日まで
+ *   約束のある日は出さず同じ相手の雑談に（物語・恋人の誘いが届く朝と、時刻の合わない日の切り替えは phone.js。バイトの誘いとは重なってよい）。大会前日まで
  */
 export function friendMessages({ tournamentDay = false } = {}) {
   if (tournamentDay || state.phase !== "daily" || (state.chapter || 1) !== 1) return [];
