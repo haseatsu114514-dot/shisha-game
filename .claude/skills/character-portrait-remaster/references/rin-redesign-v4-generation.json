@@ -1,76 +1,80 @@
 {
   "character": "rin",
   "age": 27,
-  "version": 6,
+  "version": 4,
   "expression": "normal",
-  "status": "pending",
+  "status": "superseded",
   "ownerRequest": "凛を次は作りたいけど結構デザイン一新したい\nこんな感じの髪型ととろんとした目がいい　ただ目は涼しさと可愛さや色気な感じで小さくはしすぎず　半目でちょっとセクシーなだけ",
   "priority": "最新指示で次の制作対象を凛へ変更。サメちゃん追加5表情目は採用確認待ちのまま保留。",
   "designAssumptions": [
-    "少し青みがある暗い髪色へ戻す。茶髪案は採用しない",
-    "胸下〜ウエスト上までの短めのロング、頬を包む厚めのレイヤー",
-    "写真3の大きな虹彩・丸い下まぶた・重めの上まぶた・まつ毛へ寄せたとろんとした目",
-    "胸元の試香紙は全て除去し、白シャツの襟をすっきりさせる",
-    "女性らしい胸元・ウエスト・腰の曲線、黒スラックス、クリップボードを保持"
+    "参考写真に寄せた暗いチョコレートブラウンのロングウルフ",
+    "胸下〜ウエスト上までの長さ。後ろの髪も短くし、頬を包むレイヤーを維持",
+    "写真寄りの柔らかな頬と顎、少しふっくらした唇、大きさを残したとろんとした半目",
+    "胸元・ウエスト・腰の曲線を増やした成人の体格",
+    "既存の白シャツ・黒スラックス・クリップボードを基準にした通常表情1枚の確認案"
   ],
-  "prompt": "rin-redesign-v6-prompt.txt",
-  "output": "rin-redesign-v6.png",
-  "sha256": "86c2679f96a638952a8f96485d4d828a72a5639f84d1c1a8f9b0b7dcc5dfd71b",
+  "prompt": "rin-redesign-v4-prompt.txt",
+  "output": "rin-redesign-v4.png",
+  "sha256": "416dabcf72e4a80998c28f9b92e13db59922aac8007ad1ae0dde42dcf8e059d2",
   "outputDimensions": [
     1024,
     1536
   ],
   "sourceAlpha24Bounds": [
-    300,
-    9,
-    851,
-    1513
+    323,
+    79,
+    810,
+    1484
   ],
-  "approvalPreview": "rin-redesign-v6-preview.png",
-  "previewSha256": "c8f2522c53ba8be354875113816023d96f32201ad30f203d514c17f55260d01b",
+  "approvalPreview": "rin-redesign-v4-preview.png",
+  "previewSha256": "e37d0d330b7bca275f4176b884255be4644d226e04715c664a4a2af902395bbc",
   "previewNormalization": {
     "purpose": "確認用のみ。ゲーム素材へ未採用",
-    "scale": 0.6648936170212766,
+    "scale": 0.7117437722419929,
     "canvas": [
       896,
       1200
     ],
     "placement": [
-      71,
-      167
+      56,
+      117
     ],
     "bodyHeight": 1000,
     "feetBottom": 1173,
     "oldFeetX": 496.65384556123365,
-    "previewFeetX": 496.8594890765942,
+    "previewFeetX": 496.6741452489756,
     "alphaPolicy": "全体の拡縮とRGBA直接配置のみ。alpha>=16の画素のキャンバス外切れなし。"
   },
   "references": [
     {
-      "path": ".claude/skills/character-portrait-remaster/references/rin-redesign-v5.png",
-      "role": "旧案・目元を写真寄りへ修正する対象",
-      "sha256": "80c4e39cfc64ed106655c689d0a7fce3dc42cb1e05cce72932d459a70288e643"
+      "path": ".claude/skills/character-portrait-remaster/references/rin-redesign-v3.png",
+      "role": "旧デザイン案・写真寄りの顔／髪色／長さ／体格へ修正する対象",
+      "sha256": "57ef5d4ce5e2d6a527643f57930816dac862274dc6a6272e64e7a2d7636a6fea",
+      "sourceCommit": "d6ed06a"
     },
     {
-      "path": ".claude/skills/character-portrait-remaster/references/rin-redesign-v4.png",
-      "role": "短めのロングと体格のみ。茶髪・試香紙・旧目元は戻さない",
-      "sha256": "416dabcf72e4a80998c28f9b92e13db59922aac8007ad1ae0dde42dcf8e059d2"
+      "path": "/workspace/library-files/rin-redesign-20261003/reference-photo-1.jpg",
+      "role": "オーナー添付・顔の柔らかさ、暗い茶髪、髪型と半目の参照",
+      "sha256": "f46a4fe12793bd10f7068e0f2c4de7c8c533a297cf679c124f2f8d2a0a4e20dd",
+      "storage": "local-only user attachment"
     },
     {
-      "path": "/workspace/library-files/rin-redesign-20261003/reference-photo-3-face.png",
-      "role": "オーナー写真3・瞳、上／下まぶた、まつ毛と顔の主要参照",
-      "sha256": "dd26bd7f82cf2bf22bf91c94349a6f93342bf441937e069eaeb5498c64e3d4c3",
+      "path": "/workspace/library-files/rin-redesign-20261003/reference-photo-3.jpg",
+      "role": "オーナー添付・顔の主要参照。頬と顎の輪郭、目と唇、髪色とレイヤー",
+      "sha256": "487e9a025a53cf6629ce255f31472cce96f3a87bb3342d12e5c8df310d42546e",
       "storage": "local-only user attachment"
     },
     {
       "path": "assets/sprites/characters/minto/chr_minto_normal.png",
       "role": "初期採用済み・画質と質感のみ",
-      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+      "sourceCommit": "327dea33ed7db94dfbcb1f233e06e7c9f44f9c80"
     },
     {
       "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
       "role": "初期採用済み・画質と質感のみ",
-      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+      "sourceCommit": "327dea33ed7db94dfbcb1f233e06e7c9f44f9c80"
     }
   ],
   "ownerPhotosReviewed": [
@@ -93,7 +97,7 @@
       "storage": "local-only user attachment"
     }
   ],
-  "photoUse": "写真3を目と顔の主要参照として添付。最新v6は元の写真の画素を変えない顔の切り抜きPNGを使い、上／下まぶた・虹彩・まつ毛・唇・頬まわりを詳しく参照。衣装やSNS画面は写さない。写真原本と切り抜きは公開リポジトリへ追加せずローカルに保持。",
+  "photoUse": "3枚とも目視。最新v4へ写真1・3を顔・髪色・髪型の実画像として添付。写真3を顔の主要参照とし、写真1で暗い茶髪の光沢と顔の柔らかさを補完。写真2は形状確認のみ。衣装・SNS画面は写さず、顔の特徴を成人27歳のゲーム立ち絵へ描き直す。添付原本は公開リポジトリへ追加せずローカルに保持。",
   "reviewedOriginalExpressions": [
     {
       "path": "assets/sprites/characters/rin/chr_rin_normal.png",
@@ -136,9 +140,9 @@
     "kafuka-v2",
     "kafuka-game-v2",
     "kafuka-excited-v2",
-    "rin-redesign-v5"
+    "rin-redesign-v3"
   ],
-  "review": "過去の全制作セットと代表の原寸を再確認。本人の旧案・写真3・初期採用済みみんととあげはを実画像で添付。試香紙除去、少し青みがある暗い髪、写真寄りの大きな瞳と半目、短めのロングと女性らしい体格を最新v6へ反映。原寸／2倍と明暗背景の比較は最新ページを参照。",
+  "review": "全制作セットと代表の原寸を再確認し、旧案v3・オーナー写真1と3・初期採用済みみんととあげはを実画像で添付。顔、茶髪、少し短いロング、体格の追加指示をまとめて反映したv4。生成元は無加工で保存し、旧凛の全身高と足元を基準にした確認用配置と原寸／2倍・明暗背景の比較を用意。",
   "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187",
   "gameIntegration": "not adopted; assets, WebP, manifest, data and spriteScale remain unchanged",
   "supersededDrafts": [
@@ -271,138 +275,28 @@
         "凛は髪色も参考画像のに寄せたい　あと髪ちょっと長すぎかも　ロングなのはいいんだけど　あと体格ももう少しセクシーがいい",
         "凛の顔はもっと参考画像に寄せて"
       ]
-    },
-    {
-      "version": 4,
-      "status": "superseded",
-      "output": "rin-redesign-v4.png",
-      "sha256": "416dabcf72e4a80998c28f9b92e13db59922aac8007ad1ae0dde42dcf8e059d2",
-      "prompt": "rin-redesign-v4-prompt.txt",
-      "promptSha256": "e700881df1732a5a7632aff5a3b98be36162581cd936cf730f965e2588f488f0",
-      "references": [
-        {
-          "path": ".claude/skills/character-portrait-remaster/references/rin-redesign-v3.png",
-          "role": "旧デザイン案・写真寄りの顔／髪色／長さ／体格へ修正する対象",
-          "sha256": "57ef5d4ce5e2d6a527643f57930816dac862274dc6a6272e64e7a2d7636a6fea",
-          "sourceCommit": "d6ed06a"
-        },
-        {
-          "path": "/workspace/library-files/rin-redesign-20261003/reference-photo-1.jpg",
-          "role": "オーナー添付・顔の柔らかさ、暗い茶髪、髪型と半目の参照",
-          "sha256": "f46a4fe12793bd10f7068e0f2c4de7c8c533a297cf679c124f2f8d2a0a4e20dd",
-          "storage": "local-only user attachment"
-        },
-        {
-          "path": "/workspace/library-files/rin-redesign-20261003/reference-photo-3.jpg",
-          "role": "オーナー添付・顔の主要参照。頬と顎の輪郭、目と唇、髪色とレイヤー",
-          "sha256": "487e9a025a53cf6629ce255f31472cce96f3a87bb3342d12e5c8df310d42546e",
-          "storage": "local-only user attachment"
-        },
-        {
-          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
-          "role": "初期採用済み・画質と質感のみ",
-          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
-          "sourceCommit": "327dea33ed7db94dfbcb1f233e06e7c9f44f9c80"
-        },
-        {
-          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
-          "role": "初期採用済み・画質と質感のみ",
-          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
-          "sourceCommit": "327dea33ed7db94dfbcb1f233e06e7c9f44f9c80"
-        }
-      ],
-      "generatedSourcePath": "/workspace/generated_images/exec-57e2570d-588a-4567-983c-4c178caf91a4.png",
-      "approvalPreview": "rin-redesign-v4-preview.png",
-      "generationRecord": "rin-redesign-v4-generation.json",
-      "reason": "胸元の試香紙を外し、少し青みのある髪へ戻す。写真寄りの目へさらに修正。"
-    },
-    {
-      "version": 5,
-      "status": "superseded",
-      "output": "rin-redesign-v5.png",
-      "sha256": "80c4e39cfc64ed106655c689d0a7fce3dc42cb1e05cce72932d459a70288e643",
-      "prompt": "rin-redesign-v5-prompt.txt",
-      "promptSha256": "81c9c1b3c36ef6d1a5968f0186971f45e16c22a46de432b9c6c4cd0a433b6ab7",
-      "references": [
-        {
-          "path": ".claude/skills/character-portrait-remaster/references/rin-redesign-v4.png",
-          "role": "旧案・目元を写真寄りへ修正する対象",
-          "sha256": "416dabcf72e4a80998c28f9b92e13db59922aac8007ad1ae0dde42dcf8e059d2"
-        },
-        {
-          "path": ".claude/skills/character-portrait-remaster/references/rin-redesign-v3.png",
-          "role": "青みのある暗い髪色のみ",
-          "sha256": "57ef5d4ce5e2d6a527643f57930816dac862274dc6a6272e64e7a2d7636a6fea"
-        },
-        {
-          "path": "/workspace/library-files/rin-redesign-20261003/reference-photo-3.jpg",
-          "role": "オーナー写真3・瞳、上／下まぶた、まつ毛と顔の主要参照",
-          "sha256": "487e9a025a53cf6629ce255f31472cce96f3a87bb3342d12e5c8df310d42546e",
-          "storage": "local-only user attachment"
-        },
-        {
-          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
-          "role": "初期採用済み・画質と質感のみ",
-          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
-        },
-        {
-          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
-          "role": "初期採用済み・画質と質感のみ",
-          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
-        }
-      ],
-      "generatedSourcePath": "/workspace/generated_images/exec-4793c6e5-8744-4748-bc00-e719765409eb.png",
-      "approvalPreview": "rin-redesign-v5-preview.png",
-      "generationRecord": "rin-redesign-v5-generation.json",
-      "reason": "v5の試香紙除去と青髪は保持。目元に旧案の顔立ちが残り、後ろの髪も再び長くなったため、写真3の顔の無加工切り抜きを添付して目を作り直し、v4の短めのロングへ揃える。"
     }
   ],
-  "generatedSourcePath": "/workspace/generated_images/exec-084c861c-ff81-4c96-9451-582b015cdbb1.png",
-  "promptSha256": "d3e3bccfa9685112c6fd4e814d093eebb50bdecd1a9bc4958403c104b3478274",
+  "generatedSourcePath": "/workspace/generated_images/exec-57e2570d-588a-4567-983c-4c178caf91a4.png",
+  "promptSha256": "e700881df1732a5a7632aff5a3b98be36162581cd936cf730f965e2588f488f0",
   "ownerRevisionRequests": [
     "凛は髪色も参考画像のに寄せたい　あと髪ちょっと長すぎかも　ロングなのはいいんだけど　あと体格ももう少しセクシーがいい",
-    "凛の顔はもっと参考画像に寄せて",
-    "凛は胸元に変なリトマスみたいなのあるの無くして　あともっと写真に近いような目で　今なんか無個性お姉さんみたい　あと髪色はやっぱ一つ前の青っぽさも少しあるやつがいい"
+    "凛の顔はもっと参考画像に寄せて"
   ],
-  "previousRevisionRecord": "rin-redesign-v5-generation.json",
+  "previousRevisionRecord": "rin-redesign-v3-generation.json",
+  "supersededBy": "rin-redesign-v5.png",
   "currentRevisionRequest": "凛は胸元に変なリトマスみたいなのあるの無くして　あともっと写真に近いような目で　今なんか無個性お姉さんみたい　あと髪色はやっぱ一つ前の青っぽさも少しあるやつがいい",
-  "faceReferenceCrop": {
-    "path": "/workspace/library-files/rin-redesign-20261003/reference-photo-3-face.png",
-    "sha256": "dd26bd7f82cf2bf22bf91c94349a6f93342bf441937e069eaeb5498c64e3d4c3",
-    "source": "/workspace/library-files/rin-redesign-20261003/reference-photo-3.jpg",
-    "sourceSha256": "487e9a025a53cf6629ce255f31472cce96f3a87bb3342d12e5c8df310d42546e",
-    "crop": [
-      110,
-      270,
-      515,
-      690
-    ],
-    "decodedPixelsUnchanged": true,
-    "storage": "local-only user attachment"
-  },
+  "reason": "胸元の試香紙を外し、少し青みのある髪へ戻す。写真寄りの目へさらに修正。",
   "reviewChecks": {
-    "zoom2": {
-      "width": 2048,
-      "naturalWidth": 1024,
-      "rendering": "pixelated"
-    },
-    "native": {
-      "width": 1024,
-      "naturalWidth": 1024
-    },
-    "mobile": {
-      "documentWidth": 390,
-      "viewport": 390
-    },
-    "groups": {
-      "sections": 10,
-      "images": 32,
-      "approved": 8,
-      "pending": 2
-    },
-    "errors": [],
     "catalogImages": 32,
-    "baselineImagesUnchanged": 15,
+    "approvedGroups": 8,
+    "pendingGroups": 2,
+    "nativeWidth": 1024,
+    "zoom2Width": 2048,
+    "imageRendering": "pixelated",
+    "mobileViewportWidth": 390,
+    "mobileDocumentWidth": 390,
+    "browserErrors": [],
     "sourceAlpha24EdgePixelCount": 0,
     "gameFilesChanged": false
   }

@@ -267,24 +267,24 @@
       ]
     },
     {
-      "id": "rin-redesign-v3",
-      "title": "凛・髪型と半目の新デザイン v3",
+      "id": "rin-redesign-v6",
+      "title": "凛・写真寄りの目と青みのある髪 v6",
       "status": "pending",
       "role": "通常表情の新デザイン確認・未採用",
       "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187",
-      "note": "オーナーの最新指示で髪型と目を大きく刷新。暗い青みのロングウルフと、瞳の大きさを残したとろんとした半目。通常表情1枚のデザイン確認待ち。旧案v1/v2は制作記録に保持し、画風基準には加えない。",
+      "note": "胸元の試香紙を除去し、少し青みがある暗い髪へ戻す。写真3の大きな虹彩・上／下まぶた・まつ毛を参照した半目、短めのロング、女性らしい体格。過去の旧案は生成記録へ保持し、採用基準へ加えない。",
       "images": [
         {
-          "label": "生成元・通常表情の新デザイン",
+          "label": "生成元・通常表情の最新デザイン",
           "expression": "normal",
-          "path": "rin-redesign-v3.png",
-          "sha256": "57ef5d4ce5e2d6a527643f57930816dac862274dc6a6272e64e7a2d7636a6fea"
+          "path": "rin-redesign-v6.png",
+          "sha256": "86c2679f96a638952a8f96485d4d828a72a5639f84d1c1a8f9b0b7dcc5dfd71b"
         },
         {
           "label": "旧凛と全身高を揃えた確認用",
           "expression": "normal",
-          "path": "rin-redesign-v3-preview.png",
-          "sha256": "d4780efe407dadabaf210194397ea02cfc8c62147dcf4536bd25a097a39fabb4"
+          "path": "rin-redesign-v6-preview.png",
+          "sha256": "c8f2522c53ba8be354875113816023d96f32201ad30f203d514c17f55260d01b"
         }
       ]
     }
