@@ -164,8 +164,9 @@ Deep blue night sky, a streetlight down the narrow sidewalk. Inviting neighborho
 against the cool night. No crushed blacks.
 
 ==========================================================================
-試作（本編未接続）: 通りの「高解像度2.5D版」の遠景・前景（2026-10-03）
+試作（本編未接続）: 通りの「ハリボテ背景版」の背景パネル・小物・前景（2026-10-03）
 ==========================================================================
-web/proto/street/index.html?stage=hd 用の遠景パノラマ（far_day.png / far_night.png）と前景の電柱
-（fg_utility_pole.png）。プロンプト本文・サイズ・保存先・受け取り後の変換は
-docs/codex_handoff_street_hd_images.md が正（ここには書き写さない）。
+画面1枚分の背景パネル×3（昼・夜）をつないだ通り＋小物シート＋前景の電柱。キャラ72ドットと同じドットの細かさで描く。
+プロンプト本文・サイズ・地面の位置の決まり・保存先・受け取り後の変換は
+docs/codex_handoff_street_set_images.md が正（ここには書き写さない）。
+（旧: docs/codex_handoff_street_hd_images.md の遠景・電柱は取り下げてこちらに統合）

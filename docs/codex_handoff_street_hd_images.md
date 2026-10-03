@@ -1,5 +1,9 @@
 # Codex 依頼: 通りの試作「高解像度2.5D版」の奥行き素材（画像だけ・3枚）
 
+> ⛔ **2026-10-03 取り下げ**: オーナーの方針変更（AA11・背景を一枚絵の「ハリボテ」で生成し、キャラは72ドットで歩かせる）により、
+> `docs/codex_handoff_street_set_images.md` に統合した。**Codex はこの指示書で作業しないこと。**
+> 遠景はハリボテのパネルの中に含め、電柱は新しい指示書の 8/8 に移した。
+
 作成: 2026-10-03（Claude）／ 対象ブランチ: `claude/admiring-goodall-m9bdg3`
 台帳: `docs/owner_requests.md` の AA9・AA10
 前回の依頼（街並み・キャラ7枚・納品済み）: `docs/codex_handoff_street_images.md`

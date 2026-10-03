@@ -36,9 +36,11 @@ push 済みのブランチなら raw.githack でも開ける:
 | 素材 | `assets/proto_street/` | `assets/proto_street_hd/`（`python3 tools/proto_street_assets.py --profile hd`） |
 
 - キャラは建物に対して標準版より小さく見える（ドア56ドット／キャラ48ドット）。街並みの細かさが主役の見え方
-- 遠景と前景の電柱は、今はコードで描いた仮のもの。画像は Codex に発注中（`docs/codex_handoff_street_hd_images.md`）。
-  `asset_sources/images/proto_street/` に `far_day.png`・`far_night.png`・`fg_utility_pole.png` が届いたら、
-  `--profile hd` の変換を流すだけで差し替わる（届かなくても今の見た目で動く）
+- 遠景と前景の電柱は、今はコードで描いた仮のもの。`asset_sources/images/proto_street/` に `far_day.png`・`far_night.png`・
+  `fg_utility_pole.png` を置けば `--profile hd` の変換で差し替わる（この発注は AA11 に統合して取り下げ）
+
+**次の段階（AA11・Codex待ち）**: 背景を画面1枚分の一枚絵パネル（ハリボテ）×3枚で描き、キャラを元シートの細かさ＝約72ドットで歩かせる
+「ハリボテ背景版」へ。発注書 `docs/codex_handoff_street_set_images.md`
 - 柵・道しるべ・「！」・砂ぼこりなどコードで描く小物は、標準版の絵を1.5倍で描いているので、画像よりドットが粗い
 
 ## 操作
