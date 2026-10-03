@@ -56,12 +56,10 @@ export function showTitle() {
     el("div.title-smoke", [el("i"), el("i"), el("i")]),
     el("div.title-left", [
       el("img.title-logo", { src: assetUrl("assets/ui/ui_title_logo.png"), alt: "水煙前線 -EN:CODE-" }),
-      el("div.title-badge", { text: "REMAKE EDITION" }),
       menu,
       saveInfo,
     ]),
     el("div.title-foot", { text: "TAP / CLICK / ENTER ── CH.01 SMOKE CROWN CUP" }),
-    el("div.title-old", [el("a", { href: "../web/", text: "旧バージョンはこちら →" })]),
   ]);
   showScreen("title", root);
 }

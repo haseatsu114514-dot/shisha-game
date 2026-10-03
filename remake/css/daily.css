@@ -52,15 +52,6 @@
 }
 .title-logo { width: 520px; filter: drop-shadow(0 6px 24px rgba(0, 0, 0, 0.7)); animation: logo-in 1.6s var(--ease-out); }
 @keyframes logo-in { from { opacity: 0; filter: blur(12px); transform: translateY(12px); } }
-.title-badge {
-  margin: -30px 0 26px 180px;
-  padding: 4px 14px;
-  font-size: 13px;
-  letter-spacing: 0.4em;
-  color: #1b1208;
-  background: var(--gold);
-  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
-}
 .title-menu { display: flex; flex-direction: column; gap: 6px; }
 .title-item {
   display: flex;
@@ -81,9 +72,6 @@
 .title-item:hover:not(:disabled) .ti-en::before { content: "◆ "; font-size: 18px; color: var(--gold); }
 .title-save { margin-top: 14px; font-size: 14px; color: var(--text-dim); letter-spacing: 0.06em; }
 .title-foot { position: absolute; left: 0; right: 0; bottom: 22px; text-align: center; font-size: 12px; letter-spacing: 0.35em; color: rgba(255, 255, 255, 0.4); pointer-events: none; }
-.title-old { position: absolute; right: 22px; bottom: 18px; font-size: 13px; }
-.title-old a { display: inline-block; padding: 4px 12px; border-radius: 999px; background: rgba(7, 5, 12, 0.78); color: var(--text-dim); text-decoration: none; border: 1px solid rgba(255, 255, 255, 0.15); }
-.title-old a:hover { color: var(--gold); }
 .cfg { display: flex; flex-direction: column; gap: 14px; min-width: 420px; }
 .cfg-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
 .cfg-row input[type="range"] { width: 220px; accent-color: var(--gold); }

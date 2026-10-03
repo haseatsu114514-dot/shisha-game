@@ -354,7 +354,7 @@ export async function showClear() {
       el("div.end-radar", [radar(state.stats, state.statsAtChapterStart, 300)]),
       el("div.end-notes", [
         el("p", { text: "この章で伸びたもの ── 淡い面が章のはじめ、明るい面がいまの自分。" }),
-        el("p", { text: "第2章は、リメイク版ではまだ準備中です。" }),
+        el("p", { text: "第2章は、まだ準備中です。" }),
         el("div.next-teaser", [el("small", { text: "NEXT ──" }), el("b", { text: "県大会『HAZE: OPEN CLOUD』" }), el("span", { text: "県中の煙自慢が、この称号を狙っている。" })]),
       ]),
     ]),
