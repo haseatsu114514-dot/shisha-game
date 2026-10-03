@@ -1,6 +1,6 @@
 {
   "character": "kafuka",
-  "status": "pending",
+  "status": "approved",
   "expressions": [
     "normal",
     "smile",
@@ -8,7 +8,7 @@
     "surprise"
   ],
   "renderingBaselineCommit": "cd76b8cf640bca11bf3b6afe2420484823247505",
-  "review": "全制作セットを目視し、各代表の原寸と出力の原寸／2倍・補間なしで比較。v2は4本体の連結成分が分離し、キャンバス四辺にalpha>=24の画素なし。ゲーム素材は採用前のまま。",
+  "review": "全制作セットと各代表の原寸を比較。4差分v2はオーナー採用済み。連結成分と近傍で分離し原寸1:1のまま896×1200へ配置、足元下端1174・横差1px未満。追加5表情目は別に制作・採用確認。",
   "generations": [
     {
       "version": 1,
@@ -20,27 +20,32 @@
         {
           "path": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
           "role": "デザイン・通常の表情",
-          "sha256": "7919d4f9bd4b29ceece405bafaecaa2b815d2c018b55b28190c5c15f982aad74"
+          "sha256": "7919d4f9bd4b29ceece405bafaecaa2b815d2c018b55b28190c5c15f982aad74",
+          "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
         },
         {
           "path": "assets/sprites/characters/kafuka/chr_kafuka_smile.png",
           "role": "笑顔の表情",
-          "sha256": "80c06e4218e4240b2d874565252eacc8ee445bb6110278f200744283f13d2576"
+          "sha256": "80c06e4218e4240b2d874565252eacc8ee445bb6110278f200744283f13d2576",
+          "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
         },
         {
           "path": "assets/sprites/characters/kafuka/chr_kafuka_surprise.png",
           "role": "驚きの表情",
-          "sha256": "5eb2f5fb82752d6a5e0874de4aeb0a48ed80f318e2e97b9a80eb80f7196da6c1"
+          "sha256": "5eb2f5fb82752d6a5e0874de4aeb0a48ed80f318e2e97b9a80eb80f7196da6c1",
+          "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
         },
         {
           "path": "assets/sprites/characters/minto/chr_minto_normal.png",
           "role": "採用済みの画質・質感",
-          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+          "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
         },
         {
           "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
           "role": "採用済みの画質・質感",
-          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+          "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
         }
       ]
     },
@@ -48,29 +53,36 @@
       "version": 2,
       "prompt": "kafuka-v2-prompt.txt",
       "output": "kafuka-v2-sheet.png",
-      "status": "pending",
+      "status": "approved",
       "references": [
         {
           "path": ".claude/skills/character-portrait-remaster/references/kafuka-v1-sheet.png",
           "role": "修正する生成元シート",
-          "sha256": "738edc6972de00e049311ff7733254ee28bd7563dda3f941a17acd40e6be2d4d"
+          "sha256": "738edc6972de00e049311ff7733254ee28bd7563dda3f941a17acd40e6be2d4d",
+          "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
         },
         {
           "path": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
           "role": "本人の顔・衣装・ぬいぐるみ",
-          "sha256": "7919d4f9bd4b29ceece405bafaecaa2b815d2c018b55b28190c5c15f982aad74"
+          "sha256": "7919d4f9bd4b29ceece405bafaecaa2b815d2c018b55b28190c5c15f982aad74",
+          "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
         },
         {
           "path": "assets/sprites/characters/minto/chr_minto_normal.png",
           "role": "採用済みの画質・質感",
-          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+          "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
         },
         {
           "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
           "role": "採用済みの画質・質感",
-          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+          "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
         }
       ]
     }
-  ]
+  ],
+  "approvedOn": "2026-10-03",
+  "approvedByOwner": "はい",
+  "integration": "kafuka-v2-integration.json"
 }

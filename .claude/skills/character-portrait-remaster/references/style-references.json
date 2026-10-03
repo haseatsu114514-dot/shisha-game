@@ -199,7 +199,7 @@
     {
       "id": "kafuka-v2",
       "title": "サメちゃん 基本4差分 v2",
-      "status": "pending",
+      "status": "approved",
       "role": "次の制作案・採用確認待ち",
       "sourceBranch": "codex/tsumugi-portrait-remaster-20261003",
       "images": [
@@ -207,6 +207,62 @@
           "label": "通常／笑顔／真剣／驚き",
           "path": "kafuka-v2-sheet.png",
           "sha256": "0eb46541c420ec71c4781ad54eac769652683550e123c9f8fe15c9d534748e4b"
+        }
+      ],
+      "note": "2026-10-03 オーナー「はい」で基本4表情v2を採用。原寸で分離しゲーム用4枚へ組み込み。追加5枚目は別に採用確認。",
+      "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187"
+    },
+    {
+      "id": "kafuka-game-v2",
+      "title": "サメちゃん 採用済み基本4表情",
+      "status": "approved",
+      "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187",
+      "note": "採用済みシートの本体と透過輪郭を分離。全表情を原寸1:1で896×1200へ配置し足元を統一。",
+      "images": [
+        {
+          "label": "通常",
+          "expression": "normal",
+          "path": "../../../../assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+          "sha256": "58af955b5b8ed62169d32f267e33221dc4738746f3dbe6fd729f6c8855817277"
+        },
+        {
+          "label": "笑顔",
+          "expression": "smile",
+          "path": "../../../../assets/sprites/characters/kafuka/chr_kafuka_smile.png",
+          "sha256": "d07efdbc5af7c8ddf6e9e1b2188caeb94718720fdb1825c98e1e6dd8c2e8040c"
+        },
+        {
+          "label": "真剣",
+          "expression": "serious",
+          "path": "../../../../assets/sprites/characters/kafuka/chr_kafuka_serious.png",
+          "sha256": "2a50ac21ca5ece8f2c4c666d30d625e2bb84bdb8e3bd51c3cd8ad5cb7fdf3262"
+        },
+        {
+          "label": "驚き",
+          "expression": "surprise",
+          "path": "../../../../assets/sprites/characters/kafuka/chr_kafuka_surprise.png",
+          "sha256": "9e8f146bce256d2128f4b5dc4c4d3cc0b09a4d24e0f93b5422a44fa1de04ea62"
+        }
+      ]
+    },
+    {
+      "id": "kafuka-excited-v2",
+      "title": "サメちゃん 追加5表情目・大げさな熱弁 v2",
+      "status": "pending",
+      "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187",
+      "note": "オーナー「もっと大げさでコミカルにする」を反映。大きな星の瞳・開いたギザ歯の口・赤面と汗・前のめりと強く抱えるぬいぐるみ。採用確認待ち。v1は旧案として生成記録に保存し、画風基準へ加えない。",
+      "images": [
+        {
+          "label": "生成元・大げさでコミカルな熱弁",
+          "expression": "excited",
+          "path": "kafuka-excited-v2.png",
+          "sha256": "ed8385ec5b0465bcae4853ec81a718af3f21915fb0ab1ab0b1c686580da3d7af"
+        },
+        {
+          "label": "基本4枚と全身高を揃えた確認用",
+          "expression": "excited",
+          "path": "kafuka-excited-v2-preview.png",
+          "sha256": "c3048cfac32c7c40bccfa14a147be3e5bac222139814fd06c54120f68798ae5e"
         }
       ]
     }

@@ -1,0 +1,82 @@
+{
+  "source": "kafuka-v2-sheet.png",
+  "canvas": [
+    896,
+    1200
+  ],
+  "remote_faint_pixels_cleared": 8542,
+  "poses": [
+    {
+      "face": "normal",
+      "bbox": [
+        273,
+        267,
+        673,
+        1174
+      ],
+      "feet_x": 448.3085318283675,
+      "source_bbox": [
+        17,
+        76,
+        423,
+        991
+      ],
+      "scale": 1.0,
+      "retained_pixels": 207115
+    },
+    {
+      "face": "smile",
+      "bbox": [
+        283,
+        266,
+        656,
+        1174
+      ],
+      "feet_x": 447.7653585370865,
+      "source_bbox": [
+        404,
+        73,
+        788,
+        992
+      ],
+      "scale": 1.0,
+      "retained_pixels": 201885
+    },
+    {
+      "face": "serious",
+      "bbox": [
+        281,
+        266,
+        645,
+        1174
+      ],
+      "feet_x": 448.09889657444006,
+      "source_bbox": [
+        780,
+        75,
+        1153,
+        992
+      ],
+      "scale": 1.0,
+      "retained_pixels": 201084
+    },
+    {
+      "face": "surprise",
+      "bbox": [
+        285,
+        266,
+        640,
+        1174
+      ],
+      "feet_x": 447.5954795711388,
+      "source_bbox": [
+        1156,
+        76,
+        1521,
+        992
+      ],
+      "scale": 1.0,
+      "retained_pixels": 199254
+    }
+  ]
+}

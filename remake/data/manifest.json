@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-03 21:16 UTC",
+ "generated": "2026-10-03 22:06 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -61,10 +61,10 @@
     "smile",
     "surprise"
    ],
-   "h": 0.987,
-   "b": 0.0104,
-   "ax": 0.4855,
-   "aspect": 0.6667
+   "h": 0.7567,
+   "b": 0.0217,
+   "ax": 0.5003,
+   "aspect": 0.7467
   },
   "maezono": {
    "faces": [
