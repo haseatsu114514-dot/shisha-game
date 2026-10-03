@@ -4,8 +4,10 @@
 実験ページ web/proto/walk/index.html 用（本編には未接続）。
 
 やること:
-  1. シート全体をクロマキー（tools/pixelize.py の chroma_key を再利用）
-  2. 横5×縦2のグリッドに分割し、各コマから小さなゴミ（離れた点・飛沫）を除く
+  1. シート全体をクロマキー（key_background。背景の色むらに強い。下の説明を参照）
+  2. キャラの塊を10個見つけて、位置から 横5×縦2 のどのマスかを決める
+     （生成AIのシートは寸法が列数・行数で割り切れず、グリッドで切ると端がずれるため）。
+     小さなゴミ（離れた点・飛沫）は除く
   3. **全コマ共通の縮小率**を決める（一番背の高いコマが指定の高さになるように）
   4. 各コマを固定サイズのセルに、**足元を下端中央に揃えて**貼る
      （1コマずつトリム＆拡縮すると、歩くたびに足元や頭身がブレるため）
@@ -33,10 +35,12 @@ import json
 import sys
 from pathlib import Path
 
+import numpy as np
 from PIL import Image
+from scipy import ndimage
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from pixelize import chroma_key, detect_key_color, parse_color  # noqa: E402
+from pixelize import detect_key_color, parse_color  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DIRS = ["down", "down_right", "right", "up_right", "up"]
@@ -48,6 +52,81 @@ PREVIEW_PATH = REPO_ROOT / "asset_sources" / "images" / "proto_walk" / "preview_
 CELL_FOR = {32: (24, 36), 48: (36, 52)}
 ALPHA_SOLID = 90       # これ未満の半透明は捨てる（ドット絵はパキッとさせる）
 NOISE_RATIO = 0.02     # 最大の塊の2%未満の塊はゴミとして捨てる
+OUTLINE_COLOR = (36, 26, 42, 255)  # 外周の輪郭（web/proto/walk の仮スプライトの輪郭色と同じ）
+KEY_CORE = 75          # 背景色からの距離がこれ以下＝背景候補（生成AIの背景は ±40 程度むらがある）
+KEY_EDGE = 182         # 背景に接した画素で距離がこれ未満＝背景色が混ざった縁（半透明にして色を戻す）
+
+
+def key_background(src: Image.Image, key, core=KEY_CORE, edge=KEY_EDGE, edge_px=3, erode=2) -> Image.Image:
+    """背景の色むらに強いクロマキー。
+
+    pixelize.chroma_key は「背景色に近い色」を画像全体で一律に抜くため、
+    (a) 背景のむらを拾おうと許容値を上げると、建物のピンクのネオンなど絵の中の色まで半透明になる、
+    (b) 下げるとむらが残る、の板挟みになる。ここでは
+      - 距離 <= core ＝背景（外周の背景も、自転車のスポークの間・ツタの隙間に見える背景も同じ扱い。
+        近マゼンタ色は絵の中にまず出てこない。今回の建物のピンクは距離 100 以上）
+      - 背景に edge_px 以内で接し、距離 < edge の画素＝縁。背景色の混ざりを逆算して戻し、半透明にする
+      - それ以外（絵の内側）は距離に関係なく不透明のまま
+    最後に輪郭を erode px 侵食して、背景色の残る縁のリングを落とす（高解像度段階なので見た目は変わらない）。
+    """
+    rgb = np.asarray(src.convert("RGB")).astype(np.float32)
+    k = np.array(key, np.float32)
+    dist = np.sqrt(((rgb - k) ** 2).sum(axis=2))
+    bg = dist <= core
+    edge_zone = ndimage.binary_dilation(bg, iterations=edge_px) & ~bg & (dist < edge)
+    alpha = np.ones(dist.shape, np.float32)
+    alpha[bg] = 0.0
+    a = np.clip((dist - core) / (edge - core), 0.05, 1.0)
+    alpha[edge_zone] = a[edge_zone]
+    # 縁の色を戻す: 観測色 = 描画色*α + 背景色*(1-α) → 描画色 = (観測色 - 背景色*(1-α)) / α
+    unmixed = (rgb - k[None, None, :] * (1 - alpha[..., None])) / np.maximum(alpha[..., None], 0.05)
+    out_rgb = np.where(edge_zone[..., None], np.clip(unmixed, 0, 255), rgb)
+    alpha8 = (alpha * 255).round().astype(np.uint8)
+    if erode:
+        solid = ndimage.binary_erosion(alpha8 > 0, iterations=erode)
+        alpha8[~solid] = 0
+    rgba = np.dstack([out_rgb.round().astype(np.uint8), alpha8])
+    return Image.fromarray(rgba, "RGBA")
+
+
+def find_blobs(keyed: Image.Image, count: int, join_px: int = 6, min_ratio: float = 0.004):
+    """不透明部分の塊を大きい順に count 個返す（近い小片は join_px で同じ塊にまとめる）。
+
+    戻り値: [(x0, y0, x1, y1, 面積), ...]。count 個に満たなければ見つかった分だけ返す。
+    """
+    alpha = np.asarray(keyed.getchannel("A")) >= ALPHA_SOLID
+    grown = ndimage.binary_dilation(alpha, iterations=join_px) if join_px else alpha
+    labels, n = ndimage.label(grown)
+    if n == 0:
+        return []
+    areas = ndimage.sum(alpha, labels, index=range(1, n + 1))
+    objs = ndimage.find_objects(labels)
+    total = alpha.size
+    blobs = []
+    for i, sl in enumerate(objs):
+        if areas[i] < total * min_ratio:
+            continue
+        sub = alpha[sl] & (labels[sl] == i + 1)
+        ys, xs = np.nonzero(sub)
+        blobs.append((sl[1].start + xs.min(), sl[0].start + ys.min(), sl[1].start + xs.max() + 1, sl[0].start + ys.max() + 1, int(areas[i])))
+    blobs.sort(key=lambda b: -b[4])
+    return blobs[:count]
+
+
+def order_in_grid(blobs, cols: int, rows: int):
+    """塊を中心座標で 行→列 の順に並べる。各行に cols 個ずつ入らなければ None。"""
+    if len(blobs) != cols * rows:
+        return None
+    by_y = sorted(blobs, key=lambda b: (b[1] + b[3]) / 2)
+    grid = []
+    for r in range(rows):
+        row = sorted(by_y[r * cols:(r + 1) * cols], key=lambda b: (b[0] + b[2]) / 2)
+        grid.append(row)
+    # 行どうしが縦に重なっていたら並びの推定を信用しない
+    for r in range(rows - 1):
+        if max(b[3] for b in grid[r]) > min(b[1] for b in grid[r + 1]) + 8:
+            return None
+    return grid
 
 
 def cell_size(height: int):
@@ -57,12 +136,7 @@ def cell_size(height: int):
 
 
 def keep_main_blobs(cell: Image.Image) -> Image.Image:
-    """離れた小さな点（生成AIのゴミ・飛沫）を消す。scipy が無ければそのまま返す。"""
-    try:
-        import numpy as np
-        from scipy import ndimage
-    except ImportError:
-        return cell
+    """離れた小さな点（生成AIのゴミ・飛沫）を消す。"""
     arr = np.array(cell)
     mask = arr[:, :, 3] >= ALPHA_SOLID
     labels, n = ndimage.label(mask)
@@ -94,12 +168,21 @@ def foot_center_x(cell: Image.Image) -> float:
 
 
 def extract_frames(sheet: Image.Image, cols: int, rows: int):
+    # まず塊の位置で各コマを切り出す。数や並びが合わない時だけ、等分グリッドで切る
+    grid = order_in_grid(find_blobs(sheet, cols * rows), cols, rows)
+    if grid is None:
+        print(f"  塊の数・並びが {cols}x{rows} と合わないので、等分グリッドで切ります")
     cw, ch = sheet.width // cols, sheet.height // rows
     frames = []
     for r in range(rows):
         for c in range(cols):
-            cell = sheet.crop((c * cw, r * ch, (c + 1) * cw, (r + 1) * ch))
-            cell = keep_main_blobs(cell)
+            if grid:
+                x0, y0, x1, y1, _ = grid[r][c]
+                m = 4
+                box = (max(0, x0 - m), max(0, y0 - m), min(sheet.width, x1 + m), min(sheet.height, y1 + m))
+            else:
+                box = (c * cw, r * ch, (c + 1) * cw, (r + 1) * ch)
+            cell = keep_main_blobs(sheet.crop(box))
             bbox = cell.getchannel("A").point(lambda v: 255 if v >= ALPHA_SOLID else 0).getbbox()
             if not bbox:
                 sys.exit(f"マス (列{c + 1}, 行{r + 1}) にキャラが見つかりません。シートの並び（横{cols}×縦{rows}）を確認してください")
@@ -108,7 +191,16 @@ def extract_frames(sheet: Image.Image, cols: int, rows: int):
     return frames
 
 
-def build_sheet(frames, cols: int, rows: int, height: int, colors: int, per_frame_fit: bool = False):
+def add_outline(img: Image.Image, color=OUTLINE_COLOR) -> Image.Image:
+    """不透明部分の外側1ドットに輪郭を足す（縮小で元絵の黒い輪郭がぼやけ、歩道の上で埋もれるため）。"""
+    arr = np.array(img)
+    solid = arr[:, :, 3] >= ALPHA_SOLID
+    ring = ndimage.binary_dilation(solid, structure=[[0, 1, 0], [1, 1, 1], [0, 1, 0]]) & ~solid
+    arr[ring] = color
+    return Image.fromarray(arr, "RGBA")
+
+
+def build_sheet(frames, cols: int, rows: int, height: int, colors: int, per_frame_fit: bool = False, outline: bool = True):
     cw, ch = cell_size(height)
     anchor = (cw // 2, ch - 2)          # 足元の基準点（セル内座標）。足の最下段がこの行に来る
     tallest = max(f["img"].height for f in frames)
@@ -136,6 +228,8 @@ def build_sheet(frames, cols: int, rows: int, height: int, colors: int, per_fram
     rgb = out.convert("RGB").quantize(colors=colors, method=Image.MEDIANCUT).convert("RGB")
     final = rgb.convert("RGBA")
     final.putalpha(alpha)
+    if outline:
+        final = add_outline(final)
     meta = {
         "cell": [cw, ch],
         "cols": cols,
@@ -181,9 +275,11 @@ def main() -> None:
     ap.add_argument("--rows", type=int, default=2)
     ap.add_argument("--colors", type=int, default=48)
     ap.add_argument("--key", default="auto", help="auto / #RRGGBB（既定は四隅から自動検出）")
-    ap.add_argument("--tolerance", type=int, default=70)
+    ap.add_argument("--core", type=int, default=KEY_CORE, help="背景とみなす背景色からの距離（色むらが残るなら上げる）")
     ap.add_argument("--per-frame-fit", action="store_true", help="全コマを同じ高さに揃える（生成AIの大きさブレ対策）")
+    ap.add_argument("--no-outline", action="store_true", help="外周1ドットの輪郭を足さない")
     ap.add_argument("--no-preview", action="store_true")
+    ap.add_argument("--preview", default=str(PREVIEW_PATH), help="確認用プレビューの出力先")
     args = ap.parse_args()
 
     src_path = Path(args.input)
@@ -191,15 +287,15 @@ def main() -> None:
         sys.exit(f"入力が見つかりません: {src_path}")
     src = Image.open(src_path).convert("RGBA")
     key = detect_key_color(src) if args.key == "auto" else parse_color(args.key)
-    print(f"クロマキー: 背景色 {key} / {src.width}x{src.height}（大きい画像は数秒かかります）")
-    keyed = chroma_key(src, key, tolerance=args.tolerance)
+    print(f"クロマキー: 背景色 {key} / {src.width}x{src.height}")
+    keyed = key_background(src, key, core=args.core)
 
     frames = extract_frames(keyed, args.cols, args.rows)
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     built = []
     for height in [int(v) for v in args.sizes.split(",") if v.strip()]:
-        sheet, meta, warnings = build_sheet(frames, args.cols, args.rows, height, args.colors, args.per_frame_fit)
+        sheet, meta, warnings = build_sheet(frames, args.cols, args.rows, height, args.colors, args.per_frame_fit, not args.no_outline)
         png = out_dir / f"{args.name}_{height}.png"
         sheet.save(png)
         (out_dir / f"{args.name}_{height}.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -208,8 +304,8 @@ def main() -> None:
             print(f"  WARN {w}")
         built.append(sheet)
     if not args.no_preview and built:
-        write_preview(built, PREVIEW_PATH)
-        print(f"wrote {PREVIEW_PATH}（確認用）")
+        write_preview(built, Path(args.preview))
+        print(f"wrote {args.preview}（確認用）")
 
 
 if __name__ == "__main__":

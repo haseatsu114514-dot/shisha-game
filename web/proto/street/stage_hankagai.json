@@ -1,0 +1,69 @@
+{
+  "id": "hankagai",
+  "name": "繁華街",
+  "width": 920,
+  "height": 180,
+  "groundTop": 112,
+  "walk": { "x0": 2, "x1": 878, "y0": 117, "y1": 152 },
+  "spawn": { "x": 26, "y": 132, "dir": "right" },
+  "exit": { "x": 0, "w": 8, "label": "エリアマップへ" },
+  "barricade": { "x": 890, "text": ["この先は試作範囲外。"] },
+  "walls": [
+    { "x0": 595, "x1": 716, "h": 26 },
+    { "x0": 816, "x1": 920, "h": 26 }
+  ],
+  "facades": [
+    { "id": "filler_a", "x": 14, "sign": "古着" },
+    { "id": "cafe", "x": 114, "sign": "CAFE" },
+    { "id": "peppermint", "x": 298, "sign": "PEPPERMINT" },
+    { "id": "filler_c", "x": 400, "sign": "たい焼き" },
+    { "id": "filler_b", "x": 503, "sign": "" },
+    { "id": "kemurikusa", "x": 716, "sign": "KEMURIKUSA" }
+  ],
+  "doors": [
+    {
+      "id": "cafe", "facade": "cafe", "label": "カフェ",
+      "interior": { "day": "assets/backgrounds/bg_cafe_day.png", "night": "assets/backgrounds/bg_cafe_night.png" },
+      "enterText": ["カフェに入った。スパイスの香りがふわりと広がる。", "（試作）本編ではここで会話シーンが始まる。"]
+    },
+    {
+      "id": "peppermint", "facade": "peppermint", "label": "PEPPERMINT",
+      "interior": { "day": "assets/backgrounds/peppermint.png", "night": "assets/backgrounds/peppermint.png" },
+      "enterText": ["PEPPERMINTに入った。明るい声が店内に響いている。", "（試作）本編ではここで会話シーンが始まる。"]
+    },
+    {
+      "id": "kemurikusa", "facade": "kemurikusa", "label": "KEMURIKUSA",
+      "interior": { "day": "assets/backgrounds/kemurikusa.png", "night": "assets/backgrounds/kemurikusa.png" },
+      "enterText": ["KEMURIKUSAに入った。落ち着いた照明に、煙がゆっくり漂っている。", "（試作）本編ではここで会話シーンが始まる。"]
+    }
+  ],
+  "objects": [
+    { "id": "lamp_1", "img": "lamp", "x": 112, "y": 144, "solid": [6, 3] },
+    { "id": "aboard", "img": "aboard", "x": 168, "y": 124, "solid": [14, 4],
+      "text": ["黒板の立て看板。今日のおすすめは、スパイスラテらしい。"] },
+    { "id": "vending", "img": "vending", "x": 236, "y": 118, "solid": [22, 5],
+      "text": ["自販機だ。端のミルクティーだけ、売り切れのランプが点いている。"] },
+    { "id": "bench", "img": "bench", "x": 268, "y": 126, "solid": [22, 5],
+      "text": ["木のベンチ。座面がほんのり温かい。さっきまで誰か座っていたらしい。"] },
+    { "id": "lamp_2", "img": "lamp", "x": 398, "y": 144, "solid": [6, 3] },
+    { "id": "bicycle", "img": "bicycle", "x": 540, "y": 127, "solid": [26, 4],
+      "text": ["誰かの自転車。カゴに、くしゃくしゃのチラシが一枚入っている。"] },
+    { "id": "lamp_3", "img": "lamp", "x": 650, "y": 144, "solid": [6, 3] },
+    { "id": "plant", "img": "plant", "x": 826, "y": 119, "solid": [12, 4],
+      "text": ["よく手入れされた植木。土がまだ湿っている。"] }
+  ],
+  "npcs": [
+    {
+      "id": "mob_obasan", "sheet": "mob_obasan", "name": "おばさん",
+      "x": 420, "y": 139, "dir": "left", "patrol": [150, 650], "speed": 26,
+      "text": ["この通り、夜になると若い子でいっぱいになるのよ。"],
+      "textAgain": ["お昼のうちは静かでいいわねえ。"]
+    },
+    {
+      "id": "mob_student", "sheet": "mob_student", "name": "大学生",
+      "x": 334, "y": 125, "dir": "up",
+      "text": ["ここ、SNSで見て来たんです。入るの、ちょっと勇気いりますね。"],
+      "textAgain": ["パステルすぎて、写真映えはすごいんですよ。"]
+    }
+  ]
+}
