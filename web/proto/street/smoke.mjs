@@ -67,6 +67,44 @@ async function run(label, { blockImages }) {
   s = await st();
   ok(s.camX > 0 && s.x > 100, "右へ歩くとカメラが横に追従", `x=${s.x} camX=${s.camX}`);
 
+  // 2b) 速さとダッシュ（AA7・AA8）: 歩き約80ドット/秒、Shift で約140、遠くをタップしても走る、ボタンで常に走る
+  const run1s = async (withShift) => {
+    await page.evaluate(() => window.__street.place(160, 146, "right"));
+    const x0 = (await st()).x;
+    if (withShift) await page.keyboard.down("Shift");
+    await press("ArrowRight", 1000);
+    if (withShift) await page.keyboard.up("Shift");
+    return (await st()).x - x0;
+  };
+  const walkDx = await run1s(false);
+  const dashDx = await run1s(true);
+  ok(walkDx > 70 && walkDx < 95, "歩く速さ（1秒）", `${walkDx.toFixed(1)}ドット`);
+  ok(dashDx > 120, "Shift でダッシュ（1秒）", `${dashDx.toFixed(1)}ドット`);
+  await page.evaluate(() => window.__street.place(60, 146, "right"));
+  await page.waitForTimeout(400);
+  const camNow = (await st()).camX;
+  await page.mouse.click((250 - camNow) * 4, 146 * 4);          // 190ドット先をタップ
+  await page.waitForTimeout(150);
+  ok((await st()).running, "遠くをタップすると走る");
+  await page.waitForTimeout(1600);
+  await page.evaluate(() => window.__street.place(60, 146, "right"));
+  await page.waitForTimeout(400);
+  const camNear = (await st()).camX;
+  await page.mouse.click((100 - camNear) * 4, 146 * 4);         // 40ドット先をタップ
+  await page.waitForTimeout(150);
+  s = await st();
+  ok(s.moving && !s.running, "近くをタップすると歩く");
+  await page.waitForTimeout(700);
+  await page.click("#btn-run");
+  await page.evaluate(() => window.__street.place(160, 146, "right"));
+  await page.keyboard.down("ArrowRight");
+  await page.waitForTimeout(200);
+  s = await st();
+  await page.keyboard.up("ArrowRight");
+  ok(s.alwaysRun && s.running, "「ダッシュ」ボタンONで常に走る");
+  await page.click("#btn-run");
+  ok(!(await st()).alwaysRun, "もう一度押すとOFF");
+
   // 3) 歩ける帯から出られない（上下に押し続ける）
   await press("ArrowUp", 900);
   const top = (await st()).y;

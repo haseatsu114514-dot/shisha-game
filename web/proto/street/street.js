@@ -17,7 +17,9 @@
     right: [1, 0], down_right: [R2, R2], down: [0, 1], down_left: [-R2, R2],
     left: [-1, 0], up_left: [-R2, -R2], up: [0, -1], up_right: [R2, -R2],
   };
-  const SPEED = 64, DASH_MULT = 1.6, ANIM_SEC = 0.18;   // ドット/秒・1コマの長さ（歩行テストの「普通」）
+  const SPEED = 80, DASH_MULT = 1.75, ANIM_SEC = 0.16;  // 歩く速さ（ドット/秒）・ダッシュ倍率・1コマの長さ（AA7: 64→80）
+  const RUN_TAP_DIST = 72;                               // これより遠くをタップしたら走って向かう（AA8）
+  const DUST_EVERY = 0.09;                               // 走っている間に足元へ砂ぼこりを出す間隔（秒）
   const FOOT_HALF_W = 5, FOOT_H = 4;                     // 足元の当たり判定（約10×4）
   const REACH = 20;                                      // 決定できる距離（足元から）
   const TYPE_MS = 30;                                    // 1文字の表示間隔
@@ -325,7 +327,8 @@
   let stage = null;
   const assets = { meta: null, facades: {}, props: {}, glows: {}, ground: null, backdrop: null, sheets: {}, missing: [] };
   let facades = [], doors = [], objects = [], npcs = [];
-  const player = { x: 0, y: 0, dir: "down", frame: 0, animT: 0, moving: false, target: null, pending: null };
+  const player = { x: 0, y: 0, dir: "down", frame: 0, animT: 0, moving: false, target: null, pending: null, tapRun: false, running: false, dustT: 0 };
+  const dust = [];                 // 走った時の砂ぼこり { x, y, t }
   const cam = { x: 0, lead: 0 };     // lead: 歩く向きの先を少し多めに見せる（横スクロールの先読み）
   const keys = { up: false, down: false, left: false, right: false, dash: false };
   let mode = "loading";            // loading / map / walk / menu / interior
@@ -522,12 +525,16 @@
     const now = performance.now();
     const frozen = mode !== "walk" || busy || msg.active;
     if (!frozen) updatePlayer(dt);
-    else if (player.moving) { player.moving = false; player.frame = 0; player.animT = 0; }
+    else if (player.moving) { player.moving = false; player.running = false; player.frame = 0; player.animT = 0; }
     if (mode === "walk" || mode === "menu") updateNpcs(dt, now);
+    for (let i = dust.length - 1; i >= 0; i--) {
+      dust[i].t += dt;
+      if (dust[i].t > 0.4) dust.splice(i, 1);
+    }
     focus = !frozen ? findFocus() : null;
     // カメラ（横方向だけ追従）
     const dirX = player.moving ? DIR_VEC[player.dir][0] : 0;
-    cam.lead += (dirX * CAM_LEAD - cam.lead) * (1 - Math.exp(-dt * 2.5));
+    cam.lead += (dirX * CAM_LEAD * (player.running ? 1.4 : 1) - cam.lead) * (1 - Math.exp(-dt * 2.5));
     const tx = clamp(player.x + cam.lead - VIEW_W / 2, 0, stage.width - VIEW_W);
     cam.x += (tx - cam.x) * (1 - Math.exp(-dt * 10));
   }
@@ -539,6 +546,7 @@
     if (vx || vy) {
       player.target = null;
       player.pending = null;
+      player.tapRun = false;
     } else if (player.target) {
       const tx = player.target.x - player.x, ty = player.target.y - player.y;
       const d = Math.hypot(tx, ty);
@@ -554,7 +562,9 @@
     if (len > 0) {
       vx /= len;
       vy /= len;
-      const step = Math.min(remain, SPEED * (keys.dash ? DASH_MULT : 1) * dt);
+      // 走る: Shift を押している／「ダッシュ」ボタンがON／遠くをタップした
+      player.running = keys.dash || !!save.alwaysRun || (player.tapRun && !!player.target);
+      const step = Math.min(remain, SPEED * (player.running ? DASH_MULT : 1) * dt);
       const bx = player.x, by = player.y;
       const nx = player.x + vx * step, ny = player.y + vy * step;
       if (!blocked(nx, player.y, player)) player.x = nx;    // 軸ごとに動かして壁沿いに滑る
@@ -567,16 +577,25 @@
         player.frame = 1;                                    // 歩き出しで一歩目を出す
         player.animT = 0;
       }
-      player.animT += dt * (keys.dash ? 1.35 : 1);
+      player.animT += dt * (player.running ? 1.5 : 1);
       while (player.animT >= ANIM_SEC) {
         player.animT -= ANIM_SEC;
         player.frame ^= 1;
+      }
+      if (player.running && moved > 0.01) {
+        player.dustT -= dt;
+        if (player.dustT <= 0) {
+          player.dustT = DUST_EVERY;
+          dust.push({ x: player.x - vx * 4 + (Math.random() - 0.5) * 3, y: player.y, t: 0 });
+        }
       }
       // 左端（通りの入口）へ歩くとエリアマップへ
       const ex = stage.exit;
       if (ex && vx < 0 && player.x <= ex.x + ex.w + FOOT_HALF_W) goAreaMap();
     } else if (player.moving) {
       player.moving = false;
+      player.running = false;
+      player.tapRun = false;
       player.frame = 0;
       player.animT = 0;
     }
@@ -734,6 +753,16 @@
     const gw = assets.ground.width;
     for (let x = Math.floor(camX / gw) * gw; x < camX + VIEW_W; x += gw) ctx.drawImage(assets.ground, x, gt);
     if (stage.exit && visible(0, 46)) drawExitPost();
+
+    // 走った時の砂ぼこり（地面の上・人や物より奥）
+    for (const p of dust) {
+      const k = p.t / 0.4;
+      const r = 1 + Math.round(k * 2);
+      const x = Math.round(p.x), y = Math.round(p.y - k * 4);
+      ctx.fillStyle = `rgba(250, 246, 236, ${(0.9 * (1 - k)).toFixed(2)})`;
+      ctx.fillRect(x - r, y - r, r * 2, r);
+      ctx.fillRect(x - r + 1, y - r - 1, Math.max(1, r * 2 - 2), 1);
+    }
 
     // 足元のyで前後を決めて描く
     const items = [];
@@ -947,6 +976,9 @@
     player.moving = false;
     player.target = null;
     player.pending = null;
+    player.tapRun = false;
+    player.running = false;
+    dust.length = 0;
     cam.lead = 0;
     cam.x = clamp(player.x - VIEW_W / 2, 0, stage.width - VIEW_W);
   }
@@ -1140,6 +1172,11 @@
   });
   window.addEventListener("blur", () => { for (const k of Object.keys(keys)) keys[k] = false; });
 
+  // 遠くをタップしたら走って向かう（スマホでもダッシュできるように・AA8）
+  function farTarget() {
+    const t = player.target;
+    return !!t && Math.hypot(t.x - player.x, t.y - player.y) > RUN_TAP_DIST;
+  }
   function pointerToWorld(e) {
     const r = canvas.getBoundingClientRect();
     const sx = ((e.clientX - r.left) / r.width) * VIEW_W;
@@ -1156,17 +1193,20 @@
     if (hit) {
       player.pending = { kind: hit.kind, id: hit.id };
       player.target = approachPoint(hit);
+      player.tapRun = farTarget();
       return;
     }
     pointerHeld = true;
     canvas.setPointerCapture(e.pointerId);
     player.pending = null;
     player.target = { x: clamp(p.x, stage.walk.x0 + FOOT_HALF_W, stage.walk.x1 - FOOT_HALF_W), y: clampWalkY(p.y) };
+    player.tapRun = farTarget();
   });
   canvas.addEventListener("pointermove", (e) => {
     if (!pointerHeld || mode !== "walk" || msg.active) return;
     const p = pointerToWorld(e);
     player.target = { x: clamp(p.x, stage.walk.x0 + FOOT_HALF_W, stage.walk.x1 - FOOT_HALF_W), y: clampWalkY(p.y) };
+    player.tapRun = farTarget();                             // 押したまま遠くへ引っぱると走る
   });
   const release = () => { pointerHeld = false; };
   canvas.addEventListener("pointerup", release);
@@ -1178,6 +1218,18 @@
   });
   $("#btn-out").addEventListener("click", (e) => { e.currentTarget.blur(); leaveShop(); });
   $("#btn-act").addEventListener("click", (e) => { e.currentTarget.blur(); act(); });
+  function syncRunButton() {
+    const b = $("#btn-run");
+    b.setAttribute("aria-pressed", String(!!save.alwaysRun));
+    b.textContent = save.alwaysRun ? "ダッシュ ON" : "ダッシュ";
+  }
+  $("#btn-run").addEventListener("click", (e) => {
+    e.currentTarget.blur();
+    save.alwaysRun = !save.alwaysRun;
+    persist();
+    syncRunButton();
+  });
+  syncRunButton();
   $("#btn-map").addEventListener("click", (e) => {
     e.currentTarget.blur();
     if (mode === "menu") closeTravel();
@@ -1212,6 +1264,7 @@
       ready: mode !== "loading",
       mode, busy,
       x: Math.round(player.x * 10) / 10, y: Math.round(player.y * 10) / 10, dir: player.dir, moving: player.moving,
+      running: player.running, alwaysRun: !!save.alwaysRun,
       camX: Math.round(cam.x),
       focus: focus ? `${focus.kind}:${focus.id}` : null,
       msg: msg.active ? (msg.lines[msg.idx] || []).join("").replace(/\n/g, "") : null,
