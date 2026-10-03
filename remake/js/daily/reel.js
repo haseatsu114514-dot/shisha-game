@@ -278,16 +278,23 @@ function pakkiFace(cls = "") {
   return f ? el(`img.rw-face${cls}`, { src: f, alt: "" }) : el(`span.rw-face.txt${cls}`, { text: "ぷ" });
 }
 
+// 小筐体と拡大筐体は同じ部品を使い、CSSの倍率だけで大きさを変える。
+function cabinetParts(lamp, machine) {
+  return [
+    el("div.rw-lamp-wrap", [el("span.rw-lamp-rays"), lamp]),
+    el("span.rw-lever-arm", { "aria-hidden": "true" }, [el("span.rw-lever-pivot")]),
+    machine,
+    el("div.rw-plate", { html: "MOKUMOKU<b>パッキー</b>" }),
+  ];
+}
+
 function buildWidget() {
   const lamp = el("button.rw-lamp", { title: "MOKUMOKUパッキー", dataset: { test: "reel-lamp" }, onclick: () => { if (bonusWait) settleBonus(bonusWait, false); } }, [pakkiFace()]);
   const machine = el("div.rw-machine");
   machine.innerHTML = STRIPS.map((strip) =>
     `<div class="rw-reel"><div class="rw-strip" style="--loop:${-CELL * strip.length}px">${strip.concat(strip, strip).map((s) => `<div class="rw-cell">${SYM[s]()}</div>`).join("")}</div></div>`).join("");
   const w = el("div.reel-widget", [
-    el("div.rw-lamp-wrap", [el("span.rw-lamp-rays"), lamp]),
-    el("span.rw-lever-arm"),
-    machine,
-    el("div.rw-plate", { html: "MOKUMOKU<b>パッキー</b>" }),
+    ...cabinetParts(lamp, machine),
     el("div.rw-bubble"),
   ]);
   return w;
@@ -601,10 +608,16 @@ async function alignBonus(isBig, line, zone, mode = "post") {
   const strips3 = reels.map((r) => r.firstChild);
   const aim = el("div.rc-aim", { text: mode === "pre" ? "先ペカ！　このまま赤7を狙え──" : "ペカッ！　もう1回転、赤7を狙え──" });
   const label = el("div.rc-label", { text: "BONUS" });
-  const lamp = el("div.rc-lamp.lit", [pakkiFace()]);
-  const board = el(`div.rc-board.${mode}`, [lamp, aim, el("div.rc-reels", reels), label]);
+  const lamp = el("div.rw-lamp.rc-lamp.lit", [pakkiFace()]);
+  const machine = el("div.rc-machine.lamp-lit", { style: { "--slot-scale": BCELL / CELL } },
+    cabinetParts(lamp, el("div.rw-machine.rc-reels", reels)));
+  const board = el(`div.rc-board.${mode}`, [aim, machine, label]);
   const cut = el("div.reel-cutin.bonus", [board]);
   layers.fx.append(cut);
+  if (mode === "post") {
+    machine.classList.add("lever-pull");
+    setTimeout(() => machine.classList.remove("lever-pull"), 380);
+  }
   strips3.forEach((st) => st.classList.add("spinning"));
   const stopMirroring = mirrorBonusReels(strips3);
   try {
