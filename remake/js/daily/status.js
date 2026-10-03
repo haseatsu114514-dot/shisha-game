@@ -4,7 +4,8 @@ import { DB, displayName, faceIconUrl } from "../core/data.js";
 import { modal } from "../core/ui.js";
 import { state, STAT_KEYS, STAT_JA } from "../core/state.js";
 import { star, starText, rankLabel, affinityLevel, maxStamina } from "../core/stats.js";
-import { ownsFlavor, flavorStock, SHOP_FLAVORS } from "./shop.js";
+import { flavorStock, ownedFlavorIds } from "./shop.js";
+import { BOND_FINALES } from "./bonds.js";
 
 const SVG = "http://www.w3.org/2000/svg";
 const svgEl = (tag, attrs = {}) => {
@@ -102,6 +103,8 @@ function meTab() {
 }
 
 const PEOPLE = ["sumi", "tsumugi", "naru", "adam", "minto", "rin"];
+// 「友達」: 告白で友達のままを選んだか、恋愛対象と友情の締めくくりを迎えた
+const friendClosed = (id) => !!state.flags[`_friend_${id}`] || (!!BOND_FINALES[id]?.question && state.finales?.[id]?.route === "friend");
 function peopleTab() {
   const rows = PEOPLE.filter((id) => state.met[id] || id === "sumi").map((id) => {
     const lv = affinityLevel(id);
@@ -113,7 +116,7 @@ function peopleTab() {
       el("span.pp-name", { text: displayName(id, state) }),
       lover
         ? el("span.pp-hearts", { text: `恋人　絆 ${"♥".repeat(bondLv)}${"♡".repeat(5 - bondLv)}` })
-        : el("span.pp-hearts", { text: "♥".repeat(lv) + "♡".repeat(5 - lv) + (state.flags[`_friend_${id}`] ? "　友達" : "") }),
+        : el("span.pp-hearts", { text: "♥".repeat(lv) + "♡".repeat(5 - lv) + (friendClosed(id) ? "　友達" : "") }),
       state.contacts.includes(id) ? el("span.pp-lime", { text: "LIME" }) : null,
     ]);
   });
@@ -136,14 +139,26 @@ function notesTab() {
   ]);
 }
 
+/** 贈られた機材の札（贈り主・染み付いた香り・効き・売却不可）。1行に収める */
+function giftNote(e) {
+  const flavor = DB.flavorById[e.gift.flavor];
+  const leaf = flavor?.short_name || flavor?.name || e.gift.flavor;
+  return el("div.gift-note", { dataset: { test: `gift-${e.id}` } }, [
+    el("b", { text: e.name }),
+    el("small", { text: `${displayName(e.gift.from, state)}から（${e.gift.reason}）・染み付いた香り：${leaf}（${e.gift.min_grams}g以上で香りが開く）・売却不可` }),
+  ]);
+}
+
 function itemsTab() {
   const eq = state.owned.map((id) => DB.equipById[id]).filter(Boolean);
-  const fl = [...SHOP_FLAVORS, "nightside_earlgrey"].filter(ownsFlavor).map((id) => DB.flavorById[id]).filter(Boolean);
+  const fl = ownedFlavorIds().map((id) => DB.flavorById[id]);
   const grams = (id) => `${flavorStock(id)}g`;
   const inUse = new Set(Object.values(state.equip));
+  const gifts = eq.filter((e) => e.gift);
   return el("div.st-items", [
     el("h4", { text: "機材" }),
-    el("div.chips", eq.map((e) => el(`span.chip${inUse.has(e.id) ? ".on" : ""}`, { text: e.name }))),
+    el("div.chips", eq.map((e) => el(`span.chip${inUse.has(e.id) ? ".on" : ""}${e.gift ? ".gift" : ""}`, { text: e.name }))),
+    gifts.length ? el("div.gift-notes", gifts.map(giftNote)) : null,
     el("h4", { text: "フレーバー" }),
     el("div.chips", fl.length ? fl.map((f) => el("span.chip", [f.short_name || f.name, el("small.chip-g", { text: grams(f.id) })])) : [el("span.chip.dim", { text: "在庫なし" })]),
     el("p.st-note", { text: "フレーバーは1箱50g。大会では持ち込んだ在庫から詰み、使った分だけ減る（課題フレーバーは主催支給）。" }),

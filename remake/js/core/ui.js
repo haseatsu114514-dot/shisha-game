@@ -31,9 +31,9 @@ export function initLayers() {
       kind: "affinity",
       bond: !!bond,
       face: faceIconUrl(id),
-      badge: [...displayName(id, state)][0],
+      badge: [...displayName(id, state, { context: bond ? "private" : null })][0],
       top: bond ? (levelUp ? "BOND UP" : "BOND") : levelUp ? "AFFINITY UP" : "AFFINITY",
-      main: displayName(id, state),
+      main: displayName(id, state, { context: bond ? "private" : null }), // 恋人の絆は私的な場面でだけ深まる
       sub: bond
         ? (levelUp ? `恋人との絆が深まった（Lv.${level}）` : "心の距離が少し近づいた")
         : levelUp ? `好感度が ♥${level} に上がった！` : "少し打ち解けた気がする",
@@ -47,7 +47,7 @@ export function initLayers() {
   });
   on("notice", ({ text }) => toast(text, { ms: 3000 }));
   on("lovers", ({ id }) => {
-    gainCard({ kind: "affinity", bond: true, face: faceIconUrl(id), badge: "♥", top: "NEW RELATIONSHIP", main: displayName(id, state), sub: "恋人になった" });
+    gainCard({ kind: "affinity", bond: true, face: faceIconUrl(id), badge: "♥", top: "NEW RELATIONSHIP", main: displayName(id, state, { context: "private" }), sub: "恋人になった" });
   });
 }
 

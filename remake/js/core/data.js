@@ -23,6 +23,7 @@ export const DB = {
   tips: [],
   kuji: { meta: {}, grades: {} },
   lover: {},          // 恋人まわりの文面（remake/data/lover.json）
+  friends: { friends: {} }, // 友人になった相手からの、たまのLIME・一服の場面（remake/data/friends.json）
   statusTexts: { statPurpose: {}, statTierFx: {}, customerNotes: [] }, // ステの説明・★効果・常連ノート
   broadcast: { nico: {}, step: {}, mc: {}, rivalFeed: [], ticker: {} }, // 大会の実況コメント（remake/data/broadcast.json）
   manifest: { portraits: {}, backgrounds: [], cgs: [], faceIcons: [], making: [], bgm: [] },
@@ -33,6 +34,7 @@ const DIALOGUE_FILES = [
   "ch1_tsumugi", "ch1_rin", "ch1_ageha", "ch1_spots", "ch1_events", "ch1_incognito",
   "confession", "lover_events", // 告白・恋人の節目イベント（正本は旧版と共通）
   "remake_ch1", // リメイク版の進行で使う短い場面（旧版 web/ は読まない）
+  "ch1_bonds", // 交友の締めくくり（好感度MAX）と途中の恋愛／友情の質問（daily/bonds.js）
   "kafuka", // 帰り道の出会いと、章2からのシーシャーク
 ];
 const BAITO_CATEGORIES = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);
@@ -70,6 +72,7 @@ export async function loadAll(onProgress = () => {}) {
     ["tips", `${ROOT}data/loading_tips.json`],
     ["kuji", `${ROOT}data/kuji.json`],
     ["lover", "data/lover.json"],
+    ["friends", "data/friends.json"],
     ["statusTexts", "data/status_texts.json"],
     ["broadcast", "data/broadcast.json"],
     ["manifest", "data/manifest.json"],
@@ -104,6 +107,7 @@ export async function loadAll(onProgress = () => {}) {
   DB.tips = raw.tips.tips;
   DB.kuji = raw.kuji;
   DB.lover = raw.lover;
+  DB.friends = raw.friends;
   DB.statusTexts = raw.statusTexts;
   DB.broadcast = raw.broadcast;
   DB.manifest = raw.manifest;
@@ -138,7 +142,13 @@ export function realName(id) {
   return outer.replace(/\s+/g, "").trim();
 }
 
-export function displayName(id, state) {
+/**
+ * 名前欄・ログ・LIME などに出す名前。
+ * @param opts.context "private"＝仕事を離れた私的な場面（会話の metadata.private_scene・LIME）。
+ *   みんとは本人から本名を聞いた後（_minto_name_known）の私的な場面だけ private_name（栞）。
+ *   店・大会など営業の場面と、名乗る前は「みんと」のまま（私服を見ただけで本名を出さない）
+ */
+export function displayName(id, state, { context = null } = {}) {
   if (!id) return "";
   if (id === "???") return "？？？";
   if (id === "kafuka") {
@@ -146,8 +156,17 @@ export function displayName(id, state) {
     if (state?.flags?._kafuka_nickname_known || state?.limeRead?.includes("lime_naru_kafuka_nickname")) return "サメちゃん";
     return "？？？";
   }
+  if (id === "minto" && context === "private" && state?.flags?._minto_name_known && DB.characters.minto?.private_name) {
+    return DB.characters.minto.private_name;
+  }
   if (ALWAYS_KNOWN.has(id) || !state || state.met[id]) return realName(id);
   return "？？？";
+}
+
+/** 地の文・内心で呼ぶときの名前（私的な場面のみんとは「栞さん」）。それ以外は表示名と同じ */
+export function callName(id, state, opts = {}) {
+  const name = displayName(id, state, opts);
+  return id === "minto" && name === DB.characters.minto?.private_name ? `${name}さん` : name;
 }
 
 // ---------------------------------------------------------------- アセット

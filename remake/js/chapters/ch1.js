@@ -14,6 +14,7 @@ import { openPhone, morningMessages } from "../daily/phone.js";
 import { ownsFlavor, flavorStock, addFlavorStock, SHOP_FLAVORS } from "../daily/shop.js";
 import { radar } from "../daily/status.js";
 import { onDialogueEnter, maybeShuraba } from "../daily/romance.js";
+import { recordRomanceChoice, bondCondition } from "../daily/bonds.js";
 import { recordCg } from "../scenes/gallery.js";
 import { newSession, openBench, tickerSay } from "../craft/session.js";
 import * as bc from "../craft/broadcast.js";
@@ -41,7 +42,10 @@ export function setupHooks() {
   hooks.interpolate = (t) => t.replace(/\{daysLeft\}/g, String(daysLeft())).replace(/\{day\}/g, String(state.day))
     .replace(/\{tsumugiFollowers\}/g, typeof DB.characters.tsumugi?.art_sns?.followers === "number" ? `${DB.characters.tsumugi.art_sns.followers / 10000}万` : "たくさん")
     .replace(/\{fortuneName\}/g, state.fortune ? displayName(state.fortune.char, state) : "その人"); // 占い師の結果
-  hooks.onChoice = (dialogueId, choiceId, branch) => {
+  hooks.evalCondition = bondCondition; // 交友の締めくくり: lover / romance_open
+  hooks.onChoice = (dialogueId, choiceId, branch, nextId, choice, line) => {
+    // 途中の質問・締めくくりの最後の質問（choice.romance＝隠し恋愛値。選択肢 id ごとに一度だけ）
+    recordRomanceChoice(line, choice);
     // チョイザップ入会（月額4,000円）
     if (dialogueId === "ch1_choizap_first" && branch === "register") {
       addMoney(-4000);

@@ -8,7 +8,7 @@ import { SE } from "../core/audio.js";
 import { stepPanel, refreshRig } from "./session.js";
 import { autoSkill } from "./common.js";
 import { flavorColor } from "./art.js";
-import { ownsFlavor, flavorStock, addFlavorStock, SHOP_FLAVORS } from "../daily/shop.js";
+import { flavorStock, addFlavorStock, ownedFlavorIds } from "../daily/shop.js";
 
 // 章ごとのレギュレーション（CLAUDE.md が正本: ch1 = ミント2g以上）
 export const REGULATION = { 1: { flavor: "mint", min: 2, label: "課題フレーバー「ミント」を2g以上" } };
@@ -154,7 +154,7 @@ export async function stepMix(cs) {
   // 大会は持ち込んだ在庫から詰む（詰んだ分だけ減る・旧版 N3）。練習・リハーサルは店の葉なので減らない
   const consumes = cs.mode === "tournament";
   const supplied = (id) => !!reg && id === reg.flavor;
-  let ids = [...new Set([...SHOP_FLAVORS, "nightside_earlgrey"].filter(ownsFlavor))];
+  let ids = ownedFlavorIds(); // 店の品＋限定サンプル＋もらった葉（贈られたハガルに添えられたカルダモン等）
   if (reg && !ids.includes(reg.flavor)) ids.unshift(reg.flavor);
   if (cs.mode === "tutorial") ids = ["double_apple", "mint"];
   const limit = (id) => (consumes && !supplied(id) ? flavorStock(id) : Infinity);

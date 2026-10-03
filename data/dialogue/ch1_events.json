@@ -210,7 +210,8 @@
         "add_stat": {
           "charm": 2
         },
-        "topic": "フレーバー買い出しの案内"
+        "topic": "フレーバー買い出しの案内",
+        "private_scene": true
       },
       "lines": [
         {

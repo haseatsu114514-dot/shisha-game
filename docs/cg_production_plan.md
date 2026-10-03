@@ -27,7 +27,7 @@
 | 8 | `cg_ageha_confession` | 告白 | confession_ageha_accept | いつも強気なアゲハが目を逸らして頬を掻く |
 | 9 | `cg_mashiro_confession` | 告白 | confession_mashiro_accept | ふにゃっと崩れた満面の笑み（ダウナーが解ける瞬間） |
 | 10 | `cg_tsumugi_epilogue` | 結 | epilogue_tsumugi | 夜の公園。絡めた指、肩に頭。吐息が白い |
-| 11 | `cg_minto_epilogue` | 結 | epilogue_minto | バックヤードで飛びつき抱きつき |
+| 11 | `cg_minto_epilogue` | 結 | epilogue_minto | 仕事終わりの裏口で、私服（ura）の栞が胸に飛び込む。素の照れ笑い。コンカフェ衣装・ツインテールは描かない |
 | 12 | `cg_ageha_epilogue` | 結 | epilogue_ageha | ホテル最上階ラウンジ、ドレスで振り返る |
 | 13 | `cg_mashiro_epilogue` | 結 | epilogue_mashiro | 膝の上で「充電」。煙がゆっくり天井へ |
 | 14 | `cg_shuraba` | 結 | ending_shuraba | ギャグスチル。無言で隣の席をアピールする4人の圧と、固まるはじめ視点 |

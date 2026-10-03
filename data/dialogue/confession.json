@@ -3,7 +3,8 @@
     {
       "dialogue_id": "confession_minto",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png"
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -75,7 +76,8 @@
       "dialogue_id": "confession_minto_accept",
       "metadata": {
         "set_romance": "minto",
-        "bg": "res://assets/backgrounds/bg_street_night.png"
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -150,7 +152,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "（このドキドキ、みんとにバレてないかな……いや、この距離だと絶対聞こえてる……！）"
+          "text": "（このドキドキ、栞さんにバレてないかな……いや、この距離だと絶対聞こえてる……！）"
         },
         {
           "speaker": "minto",
@@ -174,6 +176,9 @@
     },
     {
       "dialogue_id": "confession_minto_reject",
+      "metadata": {
+        "private_scene": true
+      },
       "lines": [
         {
           "speaker": "minto",

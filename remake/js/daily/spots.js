@@ -7,6 +7,7 @@ import { play } from "../vn/engine.js";
 import { playBgm } from "../core/audio.js";
 import { isRainy, RAIN_SPOT_TEXTS } from "./weather.js";
 import { kafukaSpot } from "./kafuka.js";
+import { afterStory, questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "./bonds.js";
 
 export const VISIT_COST = 3000;
 
@@ -96,9 +97,11 @@ const NIGHT_STORIES = new Set([
   "ch1_tsumugi_fifth", "ch1_tsumugi_smoke_color", "ch1_minto_phantom_smell",
 ]);
 const storyAvailable = (id) => !NIGHT_STORIES.has(id) || state.slot >= 1;
+/** 次に会うと新しい話があるか（固有会話・途中の質問・好感度MAXの締めくくり）。マップの「話」バッジ */
 export function hasNewStory(charId) {
   const id = (VISIT_SEQ[charId] || [])[storyCount(charId)];
-  return !!id && storyAvailable(id);
+  if (id) return storyAvailable(id);
+  return questionVisitDue(charId) || finaleAtVisit(charId);
 }
 
 export function isClosed(spot) {
@@ -132,8 +135,9 @@ export function hasContact(id) {
 export const bgRef = (name) => `res://assets/backgrounds/${name}.png`;
 
 /**
- * キャラに会う。固有会話が残っていれば次の1本、尽きたら通い訪問の小会話。
- * 報酬: 固有会話=好感度+10・主要ステ+2 / 通い=好感度+5（ステは小会話側の apply）
+ * キャラに会う。固有会話が残っていれば次の1本（読んだ直後に途中の質問があれば続けて）。
+ * 尽きたら、途中の質問の訪問 → 好感度MAXの締めくくり（一度だけ・専用ハガル）→ 通い訪問の小会話の順。
+ * 報酬: 固有会話・締めくくり=好感度+10（締めくくりのステは場面側の apply）・固有会話は主要ステ+2 / 通い=好感度+5
  */
 export async function visitChar(charId) {
   state.visits[charId] = (state.visits[charId] || 0) + 1;
@@ -145,6 +149,13 @@ export async function visitChar(charId) {
     await play(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg });
     gainAffinity(charId, 10);
     gainStat(CHAR_STAT[charId], 2);
+    await afterStory(seq[idx], { bg });
+  } else if (questionVisitDue(charId)) {
+    await playQuestionVisit(charId, { bg });
+    gainAffinity(charId, 5);
+  } else if (finaleAtVisit(charId)) {
+    await playFinale(charId, { bg });
+    gainAffinity(charId, 10);
   } else {
     const pool = REPEAT_POOL[charId] || [0, 1, 2, 3].map((i) => `remake_repeat_${charId}_${i}`);
     const n = (state.visits[charId] || 1) - 1;

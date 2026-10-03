@@ -28,6 +28,25 @@ export function addFlavorStock(id, grams) {
   if (grams > 0 && !state.flavors.includes(id)) state.flavors.push(id);
 }
 export const ownsFlavor = (id) => flavorStock(id) > 0;
+/** 持っているフレーバー（店の品＋限定サンプル・もらった葉）。はじめはブロンドリーフのみ */
+export function ownedFlavorIds() {
+  return [...new Set([...SHOP_FLAVORS, "nightside_earlgrey", ...Object.keys(state.flavorStock || {})])]
+    .filter((id) => ownsFlavor(id) && DB.flavorById[id] && (DB.flavorById[id].leaf || "blond") === "blond");
+}
+
+/** 店に並べる機材か（第1章の品揃え。贈り物などの非売品は並べない） */
+export const forSale = (e) => !!e && SHOP_EQUIP_TYPES.includes(e.type) && (e.chapter_min || 1) <= 1 && !e.not_for_sale;
+/** 売れる機材か（贈り物は売れない・装備中も売れない） */
+export const sellable = (e) => !!e && !e.unsellable && !Object.values(state.equip || {}).includes(e.id);
+
+/** 機材を売る。贈り物（unsellable）・装備中・未所持は、ボタンの出し分けに関係なくここで断る */
+export function sellEquipment(id) {
+  const e = DB.equipById[id];
+  if (!e || !state.owned.includes(id) || !sellable(e)) return false;
+  state.owned = state.owned.filter((x) => x !== id);
+  addMoney(e.sell_price);
+  return true;
+}
 
 /**
  * Dr.fookah（1階物販）。戻り値: "rin"（2階へ）/ null（店を出た）
@@ -82,7 +101,7 @@ export function openShop({ errand = null } = {}) {
       ]);
     });
 
-    const equipRows = () => DB.equipment.filter((e) => SHOP_EQUIP_TYPES.includes(e.type) && (e.chapter_min || 1) <= 1).map((e) => {
+    const equipRows = () => DB.equipment.filter(forSale).map((e) => {
       const owned = state.owned.includes(e.id);
       return el("div.shop-row", [
         el("span.shop-cat", { text: TYPE_LABEL[e.type] }),
@@ -93,22 +112,24 @@ export function openShop({ errand = null } = {}) {
       ]);
     });
 
-    // 売れるのは機材とくじの小物だけ（フレーバーは開封済み扱いで中古に流せない）。装備中の機材は売れない
+    // 売れるのは機材とくじの小物だけ（フレーバーは開封済み扱いで中古に流せない）。装備中の機材と贈り物は売れない
     const sellRows = () => {
       const rows = state.owned.map((id) => DB.equipById[id]).filter((e) => e && !Object.values(state.equip).includes(e.id)).map((e) =>
         el("div.shop-row", [
           el("span.shop-cat", { text: TYPE_LABEL[e.type] || "" }),
-          el("div.shop-main", [el("b", { text: e.name }), el("small", { text: "中古買い取り" })]),
-          el("button.btn.small", {
-            text: `${yen(e.sell_price)}で売る`,
-            onclick: async () => {
-              const ok = await modal({ title: "売却", body: `${e.name} を ${yen(e.sell_price)} で売りますか？`, options: [{ label: "やめる", value: false }, { label: "売る", value: true, primary: true }] });
-              if (!ok) return;
-              state.owned = state.owned.filter((x) => x !== e.id);
-              addMoney(e.sell_price);
-              render();
-            },
-          }),
+          el("div.shop-main", [el("b", { text: e.name }), el("small", { text: e.unsellable ? "贈り物なので売れない" : "中古買い取り" })]),
+          e.unsellable
+            ? el("span.shop-owned", { text: "売却不可", dataset: { test: `sell-locked-${e.id}` } })
+            : el("button.btn.small", {
+              text: `${yen(e.sell_price)}で売る`,
+              dataset: { test: `sell-${e.id}` },
+              onclick: async () => {
+                const ok = await modal({ title: "売却", body: `${e.name} を ${yen(e.sell_price)} で売りますか？`, options: [{ label: "やめる", value: false }, { label: "売る", value: true, primary: true }] });
+                if (!ok) return;
+                if (!sellEquipment(e.id)) { SE.error(); toast("これは売れない", { kind: "warn" }); }
+                render();
+              },
+            }),
         ]));
       rows.push(...goodsSellRows(render));
       return rows.length ? rows : [el("p.shop-empty", { text: "売れる物がない（装備中の機材は売れない）" })];

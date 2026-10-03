@@ -4,7 +4,7 @@
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 7; // 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴
+export const SCHEMA = 8; // 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -73,6 +73,11 @@ export function newState() {
     lastDate: {},              // 恋人 -> 最後にデートした日
     loverEventsSeen: [],       // 見た恋愛イベント（lover_events.json）
     guilt: 0,                  // うしろめたさ（非表示）。2人以上と付き合うと積もる
+    // 交友の締めくくり（daily/bonds.js）。恋愛の答えは実際に選んだものだけ。好感度・訪問回数から推測しない
+    romance: {},               // 隠し恋愛値（キャラ -> 恋愛寄りに答えた数）。プレイヤーには見せない
+    romanceChoices: {},        // 答えた質問（選択肢 id -> {char, value, day}）。同じ id は一度だけ数える
+    finales: {},               // 読んだ好感度MAXの締めくくり（キャラ -> {day, chapter, route: lover|romance|friend}）
+    friendHangouts: {},        // 友人とのシーシャのお誘いに乗った回数（キャラ -> 回数）
     seed: Math.floor(Math.random() * 1e6),
     playMs: 0,
   };
@@ -124,6 +129,18 @@ function migrate(s) {
     inv.day ??= s.day;
     inv.originId ||= item?.originId || null;
     inv.afterClose ??= !!item?.msg.after_close;
+  }
+  // 隠し恋愛値・締めくくり（スキーマ8）。壊れた値は捨て、無いものは空から始める（読んでいない質問を埋めない）
+  const record = (v) => v && typeof v === "object" && !Array.isArray(v) ? v : {};
+  s.romance = Object.fromEntries(Object.entries(record(s.romance)).filter(([, v]) => Number.isInteger(v) && v > 0));
+  s.romanceChoices = Object.fromEntries(Object.entries(record(s.romanceChoices))
+    .filter(([, a]) => a && typeof a.char === "string" && Number.isInteger(a.value) && a.value >= 0));
+  s.finales = Object.fromEntries(Object.entries(record(s.finales))
+    .filter(([, f]) => f && ["lover", "romance", "friend"].includes(f.route)));
+  if (oldSchema < 8) {
+    // 旧版は好感度MAXだけで告白を自動予約していた。恋愛の答えが無い予約は残さない（既存の恋人関係はそのまま）
+    delete s.flags._confession_due;
+    delete s.flags._confession_wait;
   }
   // 訪問・好感度から、新しい台詞を読んだと推測しない。オート・手動枠に同じ処理を使う。
   s.relationshipMemories = Array.isArray(s.relationshipMemories)

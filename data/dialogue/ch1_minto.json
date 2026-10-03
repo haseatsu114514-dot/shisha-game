@@ -943,7 +943,8 @@
     {
       "dialogue_id": "ch1_minto_fifth",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_day.png"
+        "bg": "res://assets/backgrounds/bg_street_day.png",
+        "private_scene": true
       },
       "lines": [
         {
@@ -1189,7 +1190,8 @@
     {
       "dialogue_id": "ch1_minto_private_1",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street.png"
+        "bg": "res://assets/backgrounds/bg_street.png",
+        "private_scene": true
       },
       "lines": [
         {

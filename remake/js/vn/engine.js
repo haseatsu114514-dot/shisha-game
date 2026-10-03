@@ -18,7 +18,7 @@ const FRAMING = { target: 1.36, sink: 0.4, pakkiTarget: 0.94, pakkiSink: 0.08 };
 
 /** 章の台本側が差し込むフック（特定の会話の選択肢で状態を変える等） */
 export const hooks = {
-  onChoice: null,      // (dialogueId, choiceId, branchKey, nextId) => void
+  onChoice: null,      // (dialogueId, choiceId, branchKey, nextId, choice, line) => void（choice=選んだ項目・line=選択肢の行）
   interpolate: null,   // (text) => text（{daysLeft} など）
   evalCondition: null, // (line) => boolean | undefined（未知の条件タイプ）
   contextChar: null,   // 「【好感度】が上がった」の宛先（いま会っている相手）
@@ -122,6 +122,7 @@ export function play(idOrDlg, opts = {}) {
       openLockUntil: performance.now() + 320,
       visited: [dlg.dialogue_id || ""],
       ready: false, // 背景・立ち絵の読み込み待ちの間は送らない
+      context: sceneContext(dlg), // 公私の文脈（名前欄・ログの呼び名）。jump 先の metadata で切り替わる
     };
     autoFxGap = 0;
     dom.portraits.replaceChildren();
@@ -149,6 +150,9 @@ export function play(idOrDlg, opts = {}) {
     });
   });
 }
+
+/** 仕事を離れた私的な場面か（metadata.private_scene）。名前欄の呼び名に使う */
+const sceneContext = (dlg) => (dlg?.metadata?.private_scene ? "private" : null);
 
 /** 最初の数行で出る立ち絵の URL */
 function firstPortraits(dlg) {
@@ -255,6 +259,7 @@ function jumpTo(id) {
   if (!target) return;
   running.queue = (target.lines || []).slice();
   running.branches = target.branches || {};
+  running.context = sceneContext(target);
   if (target.metadata?.clear_portraits) {
     dom.portraits.replaceChildren();
     running.slots = {};
@@ -328,8 +333,9 @@ function showLine(line) {
   const speaker = String(line.speaker || "");
   const face = String(line.face || "");
   r.speaker = speaker;
+  const name = speaker ? displayName(speaker, state, { context: r.context }) : "";
   if (speaker) {
-    dom.name.textContent = displayName(speaker, state);
+    dom.name.textContent = name;
     dom.name.classList.add("show");
   } else {
     dom.name.classList.remove("show");
@@ -345,7 +351,7 @@ function showLine(line) {
   const cue = parseCue(text);
   dom.box.classList.toggle("reward", !!cue);
   if (cue) applyCue(cue);
-  log.push({ name: speaker ? displayName(speaker, state) : "", text: stripTags(text) });
+  log.push({ name, text: stripTags(text) });
   if (log.length > 300) log.shift();
   r.pages = paginateForBox(text);
   r.pageIdx = 0;
@@ -540,7 +546,7 @@ function pickChoice(line, c) {
   if (key && r.branches[key]) r.queue.unshift(...r.branches[key]);
   else if (c.next_id) jumpTo(String(c.next_id));
   log.push({ name: "▶", text: stripTags(c.text || "") });
-  if (hooks.onChoice) hooks.onChoice(r.id, String(line.id || ""), key, String(c.next_id || ""));
+  if (hooks.onChoice) hooks.onChoice(r.id, String(line.id || ""), key, String(c.next_id || ""), c, line);
   next();
 }
 
