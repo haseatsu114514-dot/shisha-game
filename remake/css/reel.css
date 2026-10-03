@@ -70,6 +70,7 @@
 @keyframes rw-warm { 50% { box-shadow: 0 0 15px rgba(255, 175, 65, 0.5); } }
 
 .rw-machine {
+  position: relative;
   display: flex;
   justify-content: center;
   gap: 3px;
@@ -83,7 +84,7 @@
   width: 36px;
   height: 78px; /* 3コマ窓 */
   overflow: hidden;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.55), rgba(20, 16, 26, 0.2) 30%, rgba(20, 16, 26, 0.2) 70%, rgba(0, 0, 0, 0.55));
+  background: linear-gradient(180deg, #d9d4cc, #fbf8f2 30%, #fbf8f2 70%, #d9d4cc);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 4px;
 }
@@ -101,19 +102,39 @@
 .reel-widget.win-flash .rw-reel::after { border-color: rgba(255, 232, 140, 0.95); box-shadow: 0 0 10px rgba(255, 212, 90, 0.6); }
 .rw-strip { will-change: transform; }
 .rw-strip.spinning { animation: rw-spin 0.28s linear infinite; filter: blur(1.2px); }
+/* ボーナス中は拡大盤を描画元にする。小筐体自身の回転・着地補間は重ねない。 */
+.rw-strip.mirrored { transition: none; }
+.rw-strip.mirrored.spinning { animation: none; }
 .reel-widget.silent-spin .rw-strip.spinning { animation-duration: 0.55s; filter: blur(0.6px); }
 .rw-strip.frozen { animation-play-state: paused; filter: blur(0.8px) brightness(1.4); }
 .rw-strip.land { transition: transform 0.12s cubic-bezier(0.2, 1.6, 0.4, 1); }
 /* 下向きに回る（実機と同じ）。--loop＝1周ぶんの高さ（JS がコマ数から入れる） */
 @keyframes rw-spin { from { transform: translateY(var(--loop)); } to { transform: translateY(0); } }
 .rw-cell { height: 26px; display: grid; place-items: center; }
-.sym { display: grid; place-items: center; line-height: 1; }
-.sym svg { width: 20px; height: 20px; display: block; }
-.sym-seven { color: #ff5a4e; font-weight: 900; font-size: 21px; font-family: var(--font); text-shadow: 0 0 6px rgba(255, 90, 78, 0.6); }
-.sym-bar { padding: 2px 3px; font-size: 9px; font-weight: 900; letter-spacing: 0.05em; color: #fff; background: #111; border: 1px solid #888; border-radius: 2px; }
-.sym-smoke svg { opacity: 0.85; }
-.sym-pakki img { width: 20px; height: 20px; image-rendering: pixelated; }
-.sym-pakki.txt { width: 20px; height: 20px; color: var(--gold); font-weight: 900; font-size: 13px; border: 1px dashed rgba(244, 210, 122, 0.6); border-radius: 50%; }
+.sym {
+  display: block;
+  width: 26px;
+  height: 26px;
+  background-image: url("../img/ui/pakki-slot/symbols.png");
+  background-size: 300% 300%;
+  background-repeat: no-repeat;
+}
+.sym-seven { background-position: 0% 0%; }
+.sym-bar { background-position: 50% 0%; }
+.sym-bell { background-position: 100% 0%; }
+.sym-cherry { background-position: 0% 50%; }
+.sym-replay { background-position: 50% 50%; }
+.sym-smoke { background-position: 100% 50%; }
+.sym-pakki { background-position: 0% 100%; }
+/* 生成した透過ベゼルを、小筐体と拡大盤のどちらにも同じ比率で重ねる。 */
+.rw-machine::before, .rc-reels::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: 2;
+  background: url("../img/ui/pakki-slot/bezel.png") center / 100% 100% no-repeat;
+  pointer-events: none;
+}
 .reel-widget.flash-blue .rw-machine { animation: rw-flash-blue 0.35s; }
 @keyframes rw-flash-blue { 40% { box-shadow: 0 0 18px 6px rgba(80, 170, 255, 0.8) inset, 0 0 14px 4px rgba(80, 170, 255, 0.6); } }
 .rw-plate {
@@ -200,7 +221,7 @@
 .rc-board.pre .rc-lamp { animation: rw-peka 0.55s infinite alternate, rw-peka-pop 0.5s cubic-bezier(0.2, 2.4, 0.4, 1); }
 .rc-aim { margin-bottom: 12px; font-size: 18px; font-weight: 700; letter-spacing: 0.12em; color: #ffd95e; }
 /* 揃え用の大きなリール（窓は3コマ・中段にライン） */
-.rc-reels { display: flex; justify-content: center; gap: 10px; padding: 8px; background: #0c0912; border-radius: 10px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); }
+.rc-reels { position: relative; display: flex; justify-content: center; gap: 10px; padding: 12px; background: #0c0912; border-radius: 10px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); }
 .rc-reel {
   position: relative;
   width: 92px;
@@ -225,11 +246,7 @@
 .rc-strip.spinning { animation: rw-spin 0.32s linear infinite; filter: blur(1.6px); }
 .rc-strip.land { transition: transform 0.14s cubic-bezier(0.2, 1.6, 0.4, 1); }
 .rc-cellr { height: 66px; display: grid; place-items: center; }
-.rc-cellr .sym svg { width: 46px; height: 46px; }
-.rc-cellr .sym-seven { font-size: 54px; }
-.rc-cellr .sym-bar { font-size: 17px; padding: 6px 9px; border-width: 2px; }
-.rc-cellr .sym-pakki img { width: 44px; height: 44px; }
-.rc-cellr .sym-smoke svg { opacity: 0.55; }
+.rc-cellr .sym { width: 60px; height: 60px; }
 /* 7・7 と止まって、最後の1リールを待つ間 */
 .rc-board.reach { border-color: #ffe27a; animation: rc-reach 0.5s ease-in-out infinite alternate; }
 @keyframes rc-reach { from { box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 10px rgba(255, 210, 90, 0.35); } to { box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 34px rgba(255, 210, 90, 0.85); } }

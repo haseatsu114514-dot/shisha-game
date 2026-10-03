@@ -265,20 +265,9 @@ export function onAction() {
 
 const CELL = 26;
 const LEN = STRIPS[0].length;
-const svg = (body, vb = "0 0 20 20") => `<svg viewBox="${vb}" aria-hidden="true">${body}</svg>`;
-// 絵文字は端末で見た目が変わるので、図柄は SVG で描く
-const SYM = {
-  seven: () => `<span class="sym sym-seven">7</span>`,
-  bar: () => `<span class="sym sym-bar">BAR</span>`,
-  bell: () => `<span class="sym sym-bell">${svg('<path d="M10 2.5c-3.6 0-5.6 3-5.6 6.8v3.2L2.6 15h14.8l-1.8-2.5V9.3C15.6 5.5 13.6 2.5 10 2.5z" fill="#ffd24a" stroke="#a87412" stroke-width="1"/><circle cx="10" cy="16.6" r="1.8" fill="#a87412"/><path d="M7 6.5c.6-1.2 1.6-1.8 2.6-1.9" stroke="#fff6c8" stroke-width="1.2" fill="none" stroke-linecap="round"/>')}</span>`,
-  cherry: () => `<span class="sym sym-cherry">${svg('<path d="M10 3c-1.5 3-3.4 6-5 8.5M10 3c.8 3.2 2.4 6 4.6 8" stroke="#3f8f3a" stroke-width="1.4" fill="none" stroke-linecap="round"/><path d="M10 3c1.8-.8 3.6-.6 5 .4-1.8.9-3.4 1-5-.4z" fill="#5bbf52"/><circle cx="5.4" cy="13.6" r="3.6" fill="#e0283c"/><circle cx="14.4" cy="13.2" r="3.6" fill="#e0283c"/><circle cx="4.3" cy="12.4" r="1" fill="#ff9aa5"/><circle cx="13.3" cy="12" r="1" fill="#ff9aa5"/>')}</span>`,
-  replay: () => `<span class="sym sym-replay">${svg('<path d="M10 2.2C7.4 6 5 8.6 5 12a5 5 0 0 0 10 0c0-3.4-2.4-6-5-9.8z" fill="#3ea8ff" stroke="#1d6fb8" stroke-width="1"/><path d="M7.6 11.6c0 1.6.9 2.8 2.2 3.2" stroke="#d6efff" stroke-width="1.3" fill="none" stroke-linecap="round"/>')}</span>`,
-  smoke: () => `<span class="sym sym-smoke">${svg('<path d="M5.5 14.5h9.2a3.2 3.2 0 0 0 .2-6.4A4.4 4.4 0 0 0 6.6 8a3.3 3.3 0 0 0-1.1 6.5z" fill="#aeb4c2" opacity=".8"/>')}</span>`,
-  pakki: () => {
-    const f = faceIconUrl("pakki");
-    return f ? `<span class="sym sym-pakki"><img src="${f}" alt=""></span>` : `<span class="sym sym-pakki txt">ぷ</span>`;
-  },
-};
+// 小筐体と拡大盤で同じ生成画像のアトラスを使う（配置は reel.css）。
+const SYM = Object.fromEntries(["seven", "bar", "bell", "cherry", "replay", "smoke", "pakki"]
+  .map((id) => [id, () => `<span class="sym sym-${id}" aria-hidden="true"></span>`]));
 
 let widget = null;
 let busy = false;
@@ -565,6 +554,37 @@ function bonusLine(isBig) {
 // 右は 7 の真下に BAR があるので、BIG は BAR が中段を通り過ぎてから 7、REG は 7 が上段に見えたまま BAR で止まる
 const BCELL = 66;
 const bty = (strip, idx) => -BCELL * (idx + strip.length - 1);
+
+// 拡大盤の実際の位置をコマ単位で小筐体へ写す。CSS回転・停止バウンド・右の減速まで
+// 同じフレームを描くので、独立したアニメーションの時計がずれない。再マウントにも追従する。
+function mirrorBonusReels(largeStrips) {
+  let frame;
+  const sync = () => {
+    if (alive()) {
+      // 読み取りをまとめてから書き込む（リールごとの強制レイアウトを避ける）。
+      const positions = largeStrips.map((st) => ({
+        y: new DOMMatrixReadOnly(getComputedStyle(st).transform).m42 * CELL / BCELL,
+        spinning: st.classList.contains("spinning"),
+      }));
+      strips().forEach((st, i) => {
+        st.classList.add("mirrored");
+        st.classList.toggle("spinning", positions[i].spinning);
+        st.style.transition = "none";
+        st.style.transform = `translateY(${positions[i].y}px)`;
+      });
+    }
+    frame = requestAnimationFrame(sync);
+  };
+  sync();
+  return () => {
+    cancelAnimationFrame(frame);
+    if (alive()) strips().forEach((st) => {
+      st.classList.remove("mirrored");
+      st.style.transition = "";
+    });
+  };
+}
+
 async function alignBonus(isBig, line, zone, mode = "post") {
   // 後告知は「もう1回転」: 小筐体のレバーをもう一度叩いて回し直す
   if (mode === "post" && alive()) {
@@ -586,43 +606,48 @@ async function alignBonus(isBig, line, zone, mode = "post") {
   const cut = el("div.reel-cutin.bonus", [board]);
   layers.fx.append(cut);
   strips3.forEach((st) => st.classList.add("spinning"));
-  const stop = (i) => {
-    const st = strips3[i];
-    st.classList.remove("spinning");
-    st.style.transform = `translateY(${bty(STRIPS[i], line[i])}px)`;
-    st.classList.add("land");
+  const stopMirroring = mirrorBonusReels(strips3);
+  try {
+    const stop = (i) => {
+      const st = strips3[i];
+      st.classList.remove("spinning");
+      st.style.transform = `translateY(${bty(STRIPS[i], line[i])}px)`;
+      st.classList.add("land");
+      SE.reelStop();
+    };
+    await sleep(650); stop(0);
+    await sleep(420); stop(1);
+    aim.textContent = "赤7・赤7……";
+    board.classList.add("reach");
+    SE.heartbeat();
+    await sleep(750); SE.heartbeat();
+    await sleep(750);
+    // 最後の右リール: 4コマ手前から、減速しながら止める
+    const r3 = strips3[2];
+    const r = STRIPS[2];
+    r3.classList.remove("spinning");
+    r3.style.transition = "none";
+    r3.style.transform = `translateY(${bty(r, line[2] + 4)}px)`;
+    void r3.offsetWidth;
+    r3.style.transition = "transform 1.25s cubic-bezier(0.1, 0.62, 0.16, 1)";
+    r3.style.transform = `translateY(${bty(r, line[2])}px)`;
+    await sleep(1280);
     SE.reelStop();
-  };
-  await sleep(650); stop(0);
-  await sleep(420); stop(1);
-  aim.textContent = "赤7・赤7……";
-  board.classList.add("reach");
-  SE.heartbeat();
-  await sleep(750); SE.heartbeat();
-  await sleep(750);
-  // 最後の右リール: 4コマ手前から、減速しながら止める
-  const r3 = strips3[2];
-  const r = STRIPS[2];
-  r3.classList.remove("spinning");
-  r3.style.transition = "none";
-  r3.style.transform = `translateY(${bty(r, line[2] + 4)}px)`;
-  void r3.offsetWidth;
-  r3.style.transition = "transform 1.25s cubic-bezier(0.1, 0.62, 0.16, 1)";
-  r3.style.transform = `translateY(${bty(r, line[2])}px)`;
-  await sleep(1280);
-  SE.reelStop();
-  board.classList.remove("reach");
-  board.classList.add("done", isBig ? "big" : "reg");
-  aim.textContent = isBig ? "赤7・赤7・赤7！！" : "赤7・赤7・BAR";
-  label.textContent = isBig ? "BIG BONUS" : "REGULAR BONUS";
-  if (isBig) SE.fanfare(); else SE.jingle();
-  if (zone) bubble("パッキータイム！", 2600);
-  if (alive()) setStops(line);
-  state.reel.shown = line;
-  await sleep(1600);
-  cut.classList.add("out");
-  await sleep(250);
-  cut.remove();
+    board.classList.remove("reach");
+    board.classList.add("done", isBig ? "big" : "reg");
+    aim.textContent = isBig ? "赤7・赤7・赤7！！" : "赤7・赤7・BAR";
+    label.textContent = isBig ? "BIG BONUS" : "REGULAR BONUS";
+    if (isBig) SE.fanfare(); else SE.jingle();
+    if (zone) bubble("パッキータイム！", 2600);
+    if (alive()) setStops(line);
+    state.reel.shown = line;
+    await sleep(1600);
+    cut.classList.add("out");
+    await sleep(250);
+  } finally {
+    stopMirroring();
+    cut.remove();
+  }
 }
 // ロングフリーズ（プレミア: 回転が止まる → EN:CODE のグリッチ → 7揃い）
 async function presentFreeze(r) {
