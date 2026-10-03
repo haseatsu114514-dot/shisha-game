@@ -166,8 +166,10 @@ export function morningMessages(opts = {}) {
     senders.add(m.sender);
   }
   // 友人になった相手から、たまのLIME（雑談かシーシャのお誘い）。物語のLIMEの後に、朝1通まで（HF09）。
-  // お誘いは、ほかの誘い（物語・恋人・バイト）が今朝届く日・返事待ちの誘いがある日には重ねず、同じ相手の雑談にする
-  const otherInvite = out.some((m) => m.type === "invitation") || inbox.some((i) => !i.done && i.msg?.type === "invitation");
+  // お誘いは、人と会うほかの誘い（物語・恋人）が今朝届く日・返事待ちの日には重ねず、同じ相手の雑談にする。
+  // スミさんの急なバイトの誘いは仕事の連絡なので、重なってもよい（オーナー指定。どちらを受けるかはプレイヤーが選ぶ）
+  const meetInvite = (m) => m?.type === "invitation" && m.accept_event !== "__sumi_baito__";
+  const otherInvite = out.some(meetInvite) || inbox.some((i) => !i.done && meetInvite(i.msg));
   for (const template of friendMessages(opts)) {
     if (out.length >= 3) break;
     if (senders.has(template.sender) || delivered.has(template.id)) continue;

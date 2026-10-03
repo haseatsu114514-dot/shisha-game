@@ -591,11 +591,19 @@ try {
       const trio = fresh({ met: { naru: true, adam: true }, contacts: ["sumi", "naru", "adam"], day: 1,
         finales: { sumi: { day: 1, chapter: 1, route: "friend" }, naru: { day: 1, chapter: 1, route: "friend" }, adam: { day: 1, chapter: 1, route: "friend" } } });
       const rotation = run(trio, 2, 13);
-      // ほかの誘い（スミさんの急なバイト誘い＝8日目）が届く朝は、友人のお誘いを重ねず雑談に。翌朝ならお誘い（仕事後）
+      // スミさんの急なバイト誘い（8日目）は仕事の連絡なので、友人のお誘いと同じ朝に重なってよい（オーナー指定）
       const clash = fresh({ met: { naru: true }, contacts: ["naru"], day: 8, slot: 0, lastBaitoDay: 8, finales: { naru: { day: 1, chapter: 1, route: "friend" } } });
       clash.inbox.push(friendNote(4, "naru"));
       const withBaito = phone.morningMessages({ fixedNight: () => false }).map((m) => `${m.sender}:${m.type}`);
-      Object.assign(clash, { day: 9, lastBaitoDay: 9 });
+      // 人と会う物語の誘い（ここでは試験用の誘い）が届く朝は、友人のお誘いを重ねず雑談に。翌朝ならお誘い（仕事後）
+      Object.assign(clash, { day: 9, lastBaitoDay: 9, contacts: ["naru", "tsumugi"], met: { naru: true, tsumugi: true } });
+      const plain = DB.lime;
+      DB.lime = [...plain, { id: "_test_story_invite", sender: "tsumugi", type: "invitation", chapter: 1, trigger_condition: "flag",
+        trigger_flag: "_test_story_invite", time_slot: "night", accept_event: "test_story_event", messages: ["……今夜、少しだけ会えますか"] }];
+      clash.flags._test_story_invite = true;
+      const withStory = phone.morningMessages({ fixedNight: () => false }).map((m) => `${m.sender}:${m.type}`);
+      DB.lime = plain;
+      delete clash.flags._test_story_invite;
       const calm = friendIds(phone.morningMessages({ fixedNight: () => false }));
       // 固定イベントの夜（仕事後の約束が組めない日）は、同じ相手の雑談に切り替える
       const fallback = fresh({ met: { naru: true }, contacts: ["naru"], finales: { naru: { day: 1, chapter: 1, route: "friend" } }, day: 9, lastBaitoDay: 9 });
@@ -626,7 +634,7 @@ try {
       vn.backlog().length = 0;
       await bonds.playFriendHangout("minto");
       const second = vn.backlog().map((l) => l.text);
-      return { timeline, inviteText, rotation, withBaito, calm, fixedNight, oneMorning, quiet, first, second, charmUp: s.stats.charm > charm, count: s.friendHangouts.minto };
+      return { timeline, inviteText, rotation, withBaito, withStory, calm, fixedNight, oneMorning, quiet, first, second, charmUp: s.stats.charm > charm, count: s.friendHangouts.minto };
     } finally {
       DB.lime = original;
     }
@@ -638,8 +646,11 @@ try {
   assert.deepEqual(friendsLime.rotation, {
     5: ["sumi:chat:-"], 7: ["naru:chat:-"], 9: ["adam:chat:-"], 11: ["sumi:invitation:night"], 13: ["naru:chat:-"],
   }, JSON.stringify(friendsLime.rotation));
-  assert(friendsLime.withBaito.includes("sumi:invitation") && friendsLime.withBaito.includes("naru:chat")
-    && !friendsLime.withBaito.includes("naru:invitation"), friendsLime.withBaito.join("|"));
+  // バイトの誘いとは重なってよい／人と会う物語の誘いとは重ねない（雑談に切り替える）
+  assert(friendsLime.withBaito.includes("sumi:invitation") && friendsLime.withBaito.includes("naru:invitation")
+    && !friendsLime.withBaito.includes("naru:chat"), friendsLime.withBaito.join("|"));
+  assert(friendsLime.withStory.includes("tsumugi:invitation") && friendsLime.withStory.includes("naru:chat")
+    && !friendsLime.withStory.includes("naru:invitation"), friendsLime.withStory.join("|"));
   assert.deepEqual(friendsLime.calm, ["naru:invitation:night"]);
   assert.deepEqual(friendsLime.fixedNight, ["naru:chat:-"]);
   assert.deepEqual(friendsLime.oneMorning, ["adam:chat:-"]);
@@ -648,7 +659,7 @@ try {
   assert(friendsLime.first.some((l) => l.includes("栞さんと一服した")), friendsLime.first.join("|"));
   assert(friendsLime.second.some((l) => l.includes("仕事の話はなし")) && !friendsLime.first.some((l) => l.includes("仕事の話はなし")));
   assert(friendsLime.charmUp); assert.equal(friendsLime.count, 2);
-  log("HF09 friends: shared cadence (1 friend LIME per 2 days, oldest contact first, 4+ days per person), invites 6+ days apart after a chat, never with another invitation, holiday/after-close, none for lovers/pending romance/tournament");
+  log("HF09 friends: shared cadence (1 friend LIME per 2 days, oldest contact first, 4+ days per person), invites 6+ days apart after a chat, never with a story/lover invitation (Sumi's shift call may overlap), holiday/after-close, none for lovers/pending romance/tournament");
 
   assert.deepEqual(errors, []);
   log("PASS");
