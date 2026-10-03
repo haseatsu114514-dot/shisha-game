@@ -1,0 +1,29 @@
+{
+  "cell": [
+    36,
+    52
+  ],
+  "cols": 5,
+  "rows": 2,
+  "dirs": [
+    "down",
+    "down_right",
+    "right",
+    "up_right",
+    "up"
+  ],
+  "frames": [
+    "A",
+    "B"
+  ],
+  "anchor": [
+    18,
+    50
+  ],
+  "charHeight": 48,
+  "mirror": {
+    "down_left": "down_right",
+    "left": "right",
+    "up_left": "up_right"
+  }
+}

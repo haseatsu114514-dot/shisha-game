@@ -1,0 +1,50 @@
+{
+  "extends": "stage_hankagai.json",
+  "note": "ハリボテ背景版（AA11）。背景は Codex のパネル3枚をつないだ一枚絵（tools/proto_street_assets.py --profile set）。キャラ72ドット。テキストと入口の中身は stage_hankagai.json から引き継ぎ、ここでは配置だけを書く。ドア・看板の矩形は street_day.png（1840×360）上で測った値なので、パネルを作り直したら測り直す",
+  "view": { "w": 640, "h": 360, "scale": 2 },
+  "unit": 2.25,
+  "drawUnit": 2,
+  "charSize": 72,
+  "assets": "assets/proto_street_set/",
+  "set": { "img": "street_day.png", "imgNight": "street_night.png" },
+  "width": 1840,
+  "height": 360,
+  "groundTop": 250,
+  "walk": { "x0": 4, "x1": 1796, "y0": 256, "y1": 334 },
+  "spawn": { "x": 60, "y": 292, "dir": "right" },
+  "exit": { "x": 0, "w": 16 },
+  "barricade": { "x": 1806 },
+  "walls": [],
+  "facades": [],
+  "doors": [
+    { "id": "cafe", "rect": [513, 161, 42, 86] },
+    { "id": "peppermint", "rect": [885, 170, 42, 81] },
+    { "id": "kemurikusa", "rect": [1757, 159, 42, 88] }
+  ],
+  "signs": [
+    { "rect": [113, 115, 126, 23], "text": "古着" },
+    { "rect": [406, 112, 133, 24], "text": "CAFE" },
+    { "rect": [799, 117, 111, 30], "text": "PEPPERMINT", "style": "peppermint" },
+    { "rect": [1000, 113, 143, 27], "text": "たい焼き" },
+    { "rect": [1658, 109, 128, 28], "text": "KEMURIKUSA", "style": "kemurikusa" }
+  ],
+  "objects": [
+    { "id": "lamp_1", "x": 322, "y": 320, "solid": [12, 6] },
+    { "id": "aboard", "x": 484, "y": 268, "solid": [30, 8] },
+    { "id": "vending", "x": 656, "y": 258, "solid": [48, 10] },
+    { "id": "bench", "x": 716, "y": 274, "solid": [56, 10] },
+    { "id": "lamp_2", "x": 958, "y": 320, "solid": [12, 6] },
+    { "id": "bicycle", "x": 1360, "y": 282, "solid": [56, 8] },
+    { "id": "lamp_3", "x": 1550, "y": 320, "solid": [12, 6] },
+    { "id": "plant", "x": 1734, "y": 262, "solid": [26, 8] }
+  ],
+  "npcs": [
+    { "id": "mob_obasan", "x": 1000, "y": 296, "patrol": [200, 1500], "speed": 58 },
+    { "id": "mob_student", "x": 838, "y": 276 }
+  ],
+  "foreground": { "img": "fg_utility_pole.png", "parallax": 1.35, "blur": 2.5, "start": 380, "spacing": 700, "count": 4,
+                  "wires": [[19, 14], [21, 16], [24, 12]] },
+  "bloom": 3,
+  "nightTint": "#8d93c9",
+  "post": { "sun": 0.06, "vignette": 0.22 }
+}

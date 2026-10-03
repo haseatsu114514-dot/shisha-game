@@ -1,0 +1,43 @@
+{
+  "note": "tools/proto_street_assets.py --profile set が生成。手で編集しない",
+  "set": {
+    "day": {
+      "w": 1840,
+      "h": 360
+    },
+    "night": {
+      "w": 1840,
+      "h": 360
+    }
+  },
+  "props": {
+    "vending": {
+      "w": 55,
+      "h": 83
+    },
+    "bench": {
+      "w": 68,
+      "h": 40
+    },
+    "aboard": {
+      "w": 42,
+      "h": 43
+    },
+    "plant": {
+      "w": 35,
+      "h": 43
+    },
+    "lamp": {
+      "w": 28,
+      "h": 158
+    },
+    "bicycle": {
+      "w": 63,
+      "h": 43
+    }
+  },
+  "fg_utility_pole": {
+    "w": 88,
+    "h": 420
+  }
+}

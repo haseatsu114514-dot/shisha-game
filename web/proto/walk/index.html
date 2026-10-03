@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>歩行テスト（実験）</title>
+<link rel="icon" href="data:,">
+<!--
+  8方向に歩くちびキャラの簡易実験（本編には接続しない独立ページ）。
+  確認したいのは「斜め移動」「歩いている様子」「歩行グラフィックの絵の質」だけ。
+
+  歩行シート: assets/proto_walk/tsumugi_walk_32.png / _48.png（＋同名 .json）
+    5列×2行。列= down, down_right, right, up_right, up ／ 行= コマA, コマB。
+    左向き3方向は右向きの絵を左右反転して使う。
+    画像が無いあいだは、コードで描いた仮スプライトで動く（画像を置けばコード変更なしで差し替わる）。
+  変換: tools/proto_walk_sheet.py（AI生成のマゼンタ背景シート → 足元を揃えたシート）
+-->
+<style>
+@font-face {
+  font-family: "DotGothic16";
+  src: url("../../../assets/fonts/DotGothic16-Regular.ttf") format("truetype");
+  font-display: swap;
+}
+:root {
+  --ui-bg: rgba(18, 13, 26, 0.88);
+  --ui-line: #f4d27a;
+  --ui-text: #f3ecff;
+  --ui-dim: #a497bd;
+  --ui-on: #f4d27a;
+  --ui-on-text: #1d1426;
+}
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+  touch-action: none;
+}
+body {
+  font-family: "DotGothic16", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+  color: var(--ui-text);
+  -webkit-user-select: none;
+  user-select: none;
+}
+#stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1280px;
+  height: 720px;
+  transform-origin: center center;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  background: #1d1824;
+}
+#view {
+  display: block;
+  width: 1280px;
+  height: 720px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  cursor: crosshair;
+}
+.ui {
+  position: absolute;
+  background: var(--ui-bg);
+  border: 2px solid var(--ui-line);
+  border-radius: 6px;
+  box-shadow: 0 0 0 2px #000;
+}
+#panel {
+  top: 16px;
+  right: 16px;
+  width: 330px;
+  padding: 10px 12px;
+  font-size: 17px;
+}
+#panel .head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  color: var(--ui-line);
+}
+#panel.collapsed #panel-body { display: none; }
+#panel-body { margin-top: 8px; }
+.row { margin: 7px 0; }
+.lbl { display: block; color: var(--ui-dim); font-size: 15px; margin-bottom: 3px; }
+.seg { display: flex; gap: 4px; }
+button {
+  font: inherit;
+  color: var(--ui-text);
+  background: #2c2238;
+  border: 1px solid #5d4d74;
+  border-radius: 4px;
+  padding: 5px 8px;
+  cursor: pointer;
+}
+.seg button { flex: 1; }
+button[aria-pressed="true"] {
+  background: var(--ui-on);
+  border-color: var(--ui-on);
+  color: var(--ui-on-text);
+}
+#panel .head-btns { display: flex; gap: 6px; }
+#panel .head button { padding: 3px 10px; }
+#status {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ui-dim);
+}
+#status b { color: var(--ui-text); font-weight: normal; }
+#hud {
+  left: 16px;
+  top: 16px;
+  padding: 6px 12px;
+  font-size: 20px;
+}
+#hud b { color: var(--ui-line); font-weight: normal; }
+#help {
+  left: 16px;
+  bottom: 16px;
+  padding: 6px 12px;
+  font-size: 15px;
+  color: var(--ui-dim);
+}
+body.gallery #hud,
+body.gallery #help { display: none; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="view" width="1280" height="720"></canvas>
+  <div id="hud" class="ui">向き: <b id="hud-dir">↓ 下</b></div>
+  <div id="help" class="ui">移動: 矢印キー / WASD ・ クリック / タップした場所へ歩く ・ Shift: 速歩き</div>
+  <div id="panel" class="ui">
+    <div class="head"><span>設定</span><span class="head-btns"><button id="btn-gallery" type="button">一覧</button><button id="toggle-panel" type="button">－</button></span></div>
+    <div id="panel-body">
+      <div class="row"><span class="lbl">キャラの大きさ</span>
+        <div class="seg" data-key="size"><button data-v="32" type="button">32px</button><button data-v="48" type="button">48px</button></div></div>
+      <div class="row"><span class="lbl">表示倍率</span>
+        <div class="seg" data-key="zoom"><button data-v="2" type="button">×2</button><button data-v="3" type="button">×3</button><button data-v="4" type="button">×4</button></div></div>
+      <div class="row"><span class="lbl">向きの絵</span>
+        <div class="seg" data-key="dirs"><button data-v="8" type="button">8方向</button><button data-v="4" type="button">4方向</button></div></div>
+      <div class="row"><span class="lbl">コマ送りの速さ</span>
+        <div class="seg" data-key="anim"><button data-v="slow" type="button">遅い</button><button data-v="normal" type="button">普通</button><button data-v="fast" type="button">速い</button></div></div>
+      <div class="row"><span class="lbl">移動速度</span>
+        <div class="seg" data-key="speed"><button data-v="slow" type="button">遅い</button><button data-v="normal" type="button">普通</button><button data-v="fast" type="button">速い</button></div></div>
+      <div id="status"></div>
+    </div>
+  </div>
+</div>
+<script>
+"use strict";
+(() => {
+  // ---------------------------------------------------------------- 定数
+  const STAGE_W = 1280, STAGE_H = 720;
+  const WORLD_W = 800, WORLD_H = 480;          // 歩ける広場（ワールド座標＝ドット単位）
+  const WALK_TOP = 34, WALK_BOTTOM = WORLD_H - 6; // 足元が動ける縦範囲（上は植え込み）
+  const ASSET_BASE = "../../../assets/proto_walk/";
+  const SHEET_NAME = "tsumugi_walk";
+  const SHEET_DIRS = ["down", "down_right", "right", "up_right", "up"]; // シートの列順
+  const DIR8 = ["right", "down_right", "down", "down_left", "left", "up_left", "up", "up_right"]; // atan2順（y下向き）
+  const MIRROR = { down_left: "down_right", left: "right", up_left: "up_right" };
+  const TO_4DIR = { down_right: "right", up_right: "right", down_left: "left", up_left: "left" };
+  const DIR_LABEL = {
+    down: "↓ 下", down_right: "↘ 右下", right: "→ 右", up_right: "↗ 右上",
+    up: "↑ 上", up_left: "↖ 左上", left: "← 左", down_left: "↙ 左下",
+  };
+  const DIR_VEC = {
+    down: [0, 1], down_right: [Math.SQRT1_2, Math.SQRT1_2], right: [1, 0],
+    up_right: [Math.SQRT1_2, -Math.SQRT1_2], up: [0, -1],
+  };
+  const SIZE_CELL = { 32: [24, 36], 48: [36, 52] };   // tools/proto_walk_sheet.py と同じ
+  const SPEEDS = { slow: 48, normal: 64, fast: 88 };   // ドット/秒
+  const ANIM_SEC = { slow: 0.26, normal: 0.18, fast: 0.12 }; // 1コマの長さ
+  const DASH_MULT = 1.6;
+  const FOOT_HALF_W = 5, FOOT_H = 4;                  // 足元の当たり判定
+  const SETTINGS_KEY = "shisha_proto_walk_v1";
+  const DEFAULTS = { size: "32", zoom: "4", dirs: "8", anim: "normal", speed: "normal" };
+
+  const $ = (s) => document.querySelector(s);
+  const canvas = $("#view");
+  const ctx = canvas.getContext("2d");
+
+  // ---------------------------------------------------------------- 設定（このブラウザだけの好み）
+  const settings = (() => {
+    try {
+      const raw = localStorage.getItem(SETTINGS_KEY);
+      if (raw) return { ...DEFAULTS, ...JSON.parse(raw) };
+    } catch (e) { /* 読めない環境では既定値 */ }
+    return { ...DEFAULTS };
+  })();
+  function saveSettings() {
+    try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch (e) { /* 保存できなくても動く */ }
+  }
+
+  // ---------------------------------------------------------------- 乱数（見た目を毎回同じにする）
+  function mulberry32(seed) {
+    let a = seed >>> 0;
+    return () => {
+      a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // ---------------------------------------------------------------- 仮スプライト（コード描画のちびつむぎ）
+  // 画像生成が届くまでの代役。茶色のボブ・紫のパーカー・黒スカート・タブレットを抱えた姿を、
+  // 向きベクトルからドット単位で描く（どの向き・どの大きさでも同じ設計で描ける）。
+  const PAL = {
+    O: "#241a2a",                                    // 輪郭
+    H: "#5e3b28", Hh: "#80543a", Hs: "#45291c",      // 髪
+    S: "#f6cfb4", Ss: "#e2ab8f",                     // 肌
+    E: "#2b1b1f", B: "#f09aa0",                      // 目・頬
+    P: "#4a2d63", Ps: "#351f49", Pl: "#62407f",      // パーカー
+    Z: "#c9bfd6", F: "#ee8fb3", Fg: "#9fc07a",       // ジッパー・花の刺繍
+    T: "#18181f", Te: "#4a4c60",                     // タブレット
+    K: "#20202a", Ks: "#30303e",                     // スカート
+    L: "#1c1c24", Ld: "#14141a",                     // ハイソックス
+    Sh: "#4e3024", Shl: "#6d4434",                   // 靴
+  };
+
+  function drawChibi(cw, ch, u, vec, frame) {
+    const buf = new Array(cw * ch).fill(null);
+    const [dx, dy] = vec;
+    const side = Math.abs(dx);
+    const sx = dx < 0 ? -1 : 1;
+    const cx = cw / 2;
+    const footY = ch - 2;                       // 靴の最下段の行
+    const Y = (v) => footY + 1 - v * u;          // 足元からの高さ v（32px基準）→ y
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const set = (x, y, c) => { if (c && x >= 0 && y >= 0 && x < cw && y < ch) buf[y * cw + x] = c; };
+    const get = (x, y) => (x >= 0 && y >= 0 && x < cw && y < ch ? buf[y * cw + x] : null);
+    const rect = (x0, y0, x1, y1, color) => {
+      for (let y = Math.floor(y0); y < Math.ceil(y1); y++) {
+        for (let x = Math.floor(x0); x < Math.ceil(x1); x++) {
+          const px = x + 0.5, py = y + 0.5;
+          if (px >= x0 && px < x1 && py >= y0 && py < y1) set(x, y, typeof color === "function" ? color(x, y) : color);
+        }
+      }
+    };
+    const inEllipse = (x, y, ex, ey, rx, ry) => {
+      const nx = (x + 0.5 - ex) / rx, ny = (y + 0.5 - ey) / ry;
+      return nx * nx + ny * ny <= 1;
+    };
+    const ellipse = (ex, ey, rx, ry, color) => {
+      for (let y = Math.floor(ey - ry); y <= Math.ceil(ey + ry); y++) {
+        for (let x = Math.floor(ex - rx); x <= Math.ceil(ex + rx); x++) {
+          if (inEllipse(x, y, ex, ey, rx, ry)) set(x, y, typeof color === "function" ? color(x, y) : color);
+        }
+      }
+    };
+
+    // --- 脚と靴（2コマで交互に一歩）
+    const stride = frame === 0 ? 1 : -1;
+    const legW = Math.max(2, Math.round(2.4 * u));
+    const spread = 2.2 * u * (1 - side * 0.75);
+    const strideX = 2.2 * u * side * stride * sx;
+    const legs = [
+      { x: cx - spread + strideX },
+      { x: cx + spread - strideX },
+    ];
+    // 上げる脚: 横向きは後ろ足（蹴り出し）、正面寄りはコマごとに左右交互
+    const raised = side > 0.5 ? (frame === 0 ? 1 : 0) : (frame === 0 ? 0 : 1);
+    const order = side > 0.5 ? [raised, 1 - raised] : [0, 1]; // 横向きは奥の脚を先に描く
+    for (const i of order) {
+      const leg = legs[i];
+      const lift = i === raised ? Math.max(1, Math.round(1.1 * u)) : 0;
+      const far = side > 0.5 && i === raised;
+      const x0 = Math.round(leg.x - legW / 2), x1 = x0 + legW;
+      rect(x0, Y(8) - lift, x1, Y(1.6) - lift, far ? PAL.Ld : PAL.L);
+      const toe = Math.round(1.2 * u * side) * sx;
+      rect(Math.min(x0, x0 + toe), Y(1.6) - lift, Math.max(x1, x1 + toe), Y(0) - lift + 0.01,
+        (x, y) => (y === Math.floor(Y(1.6) - lift) ? PAL.Shl : PAL.Sh));
+    }
+
+    // --- スカート（台形・裾にプリーツの影）
+    const sTop = Y(12.6), sBot = Y(7.4);
+    const skCx = cx + dx * 0.3 * u;
+    for (let y = Math.floor(sTop); y < Math.ceil(sBot); y++) {
+      const t = (y + 0.5 - sTop) / (sBot - sTop);
+      const half = lerp(lerp(10.5, 7.5, side), lerp(13, 10, side), t) * u / 2;
+      rect(skCx - half, y, skCx + half, y + 1, (x) =>
+        (t > 0.45 && Math.floor((x - skCx + 40) / Math.max(2, Math.round(2 * u))) % 2 ? PAL.Ks : PAL.K));
+    }
+
+    // --- 胴（パーカー）
+    const tTop = Y(19.6), tBot = Y(12.2);
+    const tw = lerp(11, 7.5, side) * u;
+    const tcx = cx + dx * 0.4 * u;
+    rect(tcx - tw / 2, tTop, tcx + tw / 2, tBot, (x, y) => {
+      const top = y === Math.floor(tTop);
+      if (top && (x === Math.floor(tcx - tw / 2) || x === Math.ceil(tcx + tw / 2) - 1)) return null; // 肩の角を丸める
+      if (y === Math.ceil(tBot) - 1) return PAL.Ps;                     // 裾のリブ
+      if (x >= Math.ceil(tcx + tw / 2) - Math.max(1, Math.round(u))) return PAL.Ps; // 右側に影
+      if (x === Math.floor(tcx - tw / 2) + (top ? 1 : 0)) return PAL.Pl;
+      return PAL.P;
+    });
+    if (dy < -0.35) {
+      // 背中: フード
+      const hw = 7 * u;
+      rect(tcx - hw / 2, Y(20.6), tcx + hw / 2, Y(17.2), (x, y) => (y === Math.floor(Y(20.6)) ? PAL.Pl : PAL.Ps));
+    } else if (side > 0.5) {
+      // 横向き: 首の後ろにフードのふくらみ
+      rect(tcx - sx * 3.6 * u - 1.4 * u, Y(20.4), tcx - sx * 3.6 * u + 1.4 * u, Y(18), PAL.Ps);
+    }
+    if (dy > 0.3) {
+      // ジッパー
+      const zx = Math.floor(tcx + dx * 1.2 * u);
+      rect(zx, Y(18.6), zx + 1, Y(12.6), PAL.Z);
+    }
+
+    // --- タブレットを抱えた腕（正面〜横。背中側からは見えない）
+    if (dy > -0.35) {
+      const tbw = lerp(7, 2.6, side) * u;
+      const tbx = tcx + sx * side * 3.6 * u + dx * 0.6 * u;
+      rect(tbx - tbw / 2, Y(18.6), tbx + tbw / 2, Y(13.4), (x, y) => (y === Math.floor(Y(18.6)) ? PAL.Te : PAL.T));
+      if (tbw >= 5) set(Math.floor(tbx + tbw / 2 - 2 * u), Math.floor(Y(17.6)), PAL.Te); // 画面のひび
+      const armW = tbw + 2.4 * u;
+      const ay0 = Y(16.4), ay1 = Y(14.6);
+      rect(tbx - armW / 2, ay0, tbx + armW / 2, ay1, (x, y) => {
+        if (x === Math.floor(tbx - armW / 2) || x === Math.ceil(tbx + armW / 2) - 1) return PAL.Ps;
+        return y === Math.floor(ay0) ? PAL.Pl : PAL.P;
+      });
+      if (side < 0.6) {
+        // 袖の花の刺繍
+        const fy = Math.floor(Y(18));
+        set(Math.floor(tcx - tw / 2 + 1), fy, PAL.F);
+        set(Math.floor(tcx - tw / 2 + 1), fy + 1, PAL.Fg);
+        set(Math.ceil(tcx + tw / 2) - 2, fy, PAL.F);
+      }
+    }
+
+    // --- 頭（ボブヘア＋顔）
+    const hx = cx + dx * 0.6 * u, hy = Y(25);
+    const hr = 7 * u;
+    ellipse(hx, hy, hr, hr * 0.96, (x, y) => {
+      const nx = (x + 0.5 - hx) / hr, ny = (y + 0.5 - hy) / hr;
+      const d = Math.hypot(nx, ny);
+      if (d > 0.55 && d < 0.85 && nx < -0.1 && ny < -0.3) return PAL.Hh; // 天使の輪
+      if (nx > 0.62) return PAL.Hs;
+      return PAL.H;
+    });
+    // ボブの裾（あご下まで）
+    const bobTop = hy, bobBot = Y(19.4);
+    const backX = side > 0.5 ? -sx * 1.2 * u : 0;
+    rect(hx - hr + backX * (sx < 0 ? 0 : 1), bobTop, hx + hr + backX * (sx < 0 ? 1 : 0), bobBot, (x, y) => {
+      const last = y === Math.ceil(bobBot) - 1;
+      if (last && (x === Math.floor(hx - hr + backX) || x === Math.ceil(hx + hr) - 1)) return null;
+      return x >= Math.ceil(hx + hr) - Math.max(1, Math.round(u)) ? PAL.Hs : PAL.H;
+    });
+
+    // 顔（上向きは無し・右上は頬だけ少し見える）
+    if (dy > -0.9) {
+      const back = dy < -0.3;
+      const fx = back ? hx + dx * 5.2 * u : hx + dx * (side > 0.9 ? 3.0 : 2.0) * u;
+      const frx = back ? 1.6 * u : lerp(5.0, 3.6, side) * u;
+      const fry = back ? 3.0 * u : 4.6 * u;
+      const fcy = Y(22.2);
+      const bangs = Y(25.2);
+      ellipse(fx, fcy, frx, fry, (x, y) => {
+        if (y + 0.5 < bangs) return get(x, y);                // ぱっつん前髪
+        // 顔の両脇にかかる髪（横向きは後ろ側だけ）
+        const rel = x + 0.5 - fx;
+        if (side > 0.5) { if (rel * sx < -frx + 1.2 * u) return get(x, y) || PAL.H; }
+        else if (!back && Math.abs(rel) > frx - 1.0 * u) return get(x, y) || PAL.H;
+        return y + 0.5 > fcy + fry - 1 ? PAL.Ss : PAL.S;
+      });
+      if (dy > -0.3) {
+        const ey = Math.floor(Y(23.8));
+        const eh = Math.max(1, Math.round(1.6 * u));
+        const ew = Math.max(1, Math.round(1.1 * u));
+        let eyes;
+        if (side < 0.3) eyes = [fx - 2.2 * u, fx + 2.2 * u - ew];
+        else if (side < 0.9) eyes = [fx + sx * -1.4 * u, fx + sx * 2.0 * u];
+        else eyes = [fx + sx * 1.3 * u];
+        for (const exf of eyes) {
+          const ex = Math.floor(exf);
+          rect(ex, ey, ex + ew, ey + eh, PAL.E);
+          if (side < 0.9) set(ex, ey + eh + Math.max(1, Math.round(0.6 * u)), PAL.B); // 頬
+        }
+      }
+    }
+
+    // --- 輪郭（外側1ドット）
+    const out = buf.slice();
+    for (let y = 0; y < ch; y++) {
+      for (let x = 0; x < cw; x++) {
+        if (buf[y * cw + x]) continue;
+        if (get(x - 1, y) || get(x + 1, y) || get(x, y - 1) || get(x, y + 1)) out[y * cw + x] = PAL.O;
+      }
+    }
+    return out;
+  }
+
+  function makePlaceholderSheet(size) {
+    const [cw, ch] = SIZE_CELL[size];
+    const cv = document.createElement("canvas");
+    cv.width = cw * SHEET_DIRS.length;
+    cv.height = ch * 2;
+    const g = cv.getContext("2d");
+    SHEET_DIRS.forEach((dir, col) => {
+      for (let f = 0; f < 2; f++) {
+        const px = drawChibi(cw, ch, Number(size) / 32, DIR_VEC[dir], f);
+        for (let y = 0; y < ch; y++) {
+          for (let x = 0; x < cw; x++) {
+            const c = px[y * cw + x];
+            if (!c) continue;
+            g.fillStyle = c;
+            g.fillRect(col * cw + x, f * ch + y, 1, 1);
+          }
+        }
+      }
+    });
+    return { img: cv, cell: [cw, ch], anchor: [Math.floor(cw / 2), ch - 2], source: "placeholder" };
+  }
+
+  // ---------------------------------------------------------------- 歩行シートの読み込み
+  const sheets = { 32: makePlaceholderSheet("32"), 48: makePlaceholderSheet("48") };
+  function loadSheet(size) {
+    const img = new Image();
+    img.onload = async () => {
+      let meta = null;
+      try {
+        const res = await fetch(`${ASSET_BASE}${SHEET_NAME}_${size}.json`, { cache: "no-store" });
+        if (res.ok) meta = await res.json();
+      } catch (e) { /* JSON が無くても画像サイズから推定する */ }
+      const cell = (meta && meta.cell) || [Math.floor(img.width / SHEET_DIRS.length), Math.floor(img.height / 2)];
+      const anchor = (meta && meta.anchor) || [Math.floor(cell[0] / 2), cell[1] - 2];
+      sheets[size] = { img, cell, anchor, source: "image" };
+      updateStatus();
+    };
+    img.onerror = () => updateStatus();
+    img.src = `${ASSET_BASE}${SHEET_NAME}_${size}.png?t=${Date.now()}`;
+  }
+
+  // ---------------------------------------------------------------- 地面（石畳の広場）
+  const ground = (() => {
+    const cv = document.createElement("canvas");
+    cv.width = WORLD_W;
+    cv.height = WORLD_H;
+    const g = cv.getContext("2d");
+    const rnd = mulberry32(20261002);
+    const shade = (hex, k) => {
+      const n = parseInt(hex.slice(1), 16);
+      const c = (v) => Math.max(0, Math.min(255, Math.round(v * k)));
+      return `rgb(${c(n >> 16)},${c((n >> 8) & 255)},${c(n & 255)})`;
+    };
+    g.fillStyle = "#5f584f";
+    g.fillRect(0, 0, WORLD_W, WORLD_H);
+    const TW = 16, TH = 10; // 少し見下ろした石畳（横長の敷石）
+    for (let row = 0; row * TH < WORLD_H; row++) {
+      const off = row % 2 ? TW / 2 : 0;
+      for (let x = -TW; x < WORLD_W + TW; x += TW) {
+        const tx = x + off, ty = row * TH;
+        const k = 0.9 + rnd() * 0.18;
+        g.fillStyle = shade("#8e867a", k);
+        g.fillRect(tx + 1, ty + 1, TW - 1, TH - 1);
+        g.fillStyle = shade("#8e867a", k * 1.1);
+        g.fillRect(tx + 1, ty + 1, TW - 2, 1);           // 上の縁に光
+        g.fillStyle = shade("#8e867a", k * 0.84);
+        g.fillRect(tx + 1, ty + TH - 1, TW - 1, 1);      // 下の縁に影
+        if (rnd() < 0.35) {                               // 小さな汚れ・欠け
+          g.fillStyle = shade("#8e867a", k * 0.78);
+          g.fillRect(tx + 2 + Math.floor(rnd() * (TW - 5)), ty + 2 + Math.floor(rnd() * (TH - 4)), 1 + Math.floor(rnd() * 2), 1);
+        }
+        if (rnd() < 0.06) {                               // 目地の苔
+          g.fillStyle = "#6f8a4e";
+          g.fillRect(tx + Math.floor(rnd() * TW), ty + TH - 1, 2, 1);
+        }
+      }
+    }
+    // 奥の植え込み（ここより上には行けない＝奥行きの目安）
+    for (let x = 0; x < WORLD_W; x++) {
+      const h = 22 + Math.round(Math.sin(x * 0.21) * 2 + Math.sin(x * 0.07) * 3);
+      g.fillStyle = "#2f4a2a";
+      g.fillRect(x, 0, 1, h + 4);
+      g.fillStyle = "#3f6436";
+      g.fillRect(x, 0, 1, h);
+      if ((x * 7) % 11 < 3) { g.fillStyle = "#5a8a48"; g.fillRect(x, h - 6 - (x % 4), 1, 2); }
+    }
+    g.fillStyle = "#4a4239";
+    g.fillRect(0, 26, WORLD_W, 3);                        // 植え込みの縁石
+    g.fillStyle = "#a69c8c";
+    g.fillRect(0, 26, WORLD_W, 1);
+    return cv;
+  })();
+
+  // ---------------------------------------------------------------- 木箱（回り込みの確認用）
+  const CRATE_W = 20, CRATE_FRONT = 14, CRATE_TOP = 7;
+  const crateArt = (() => {
+    const cv = document.createElement("canvas");
+    cv.width = CRATE_W + 2;
+    cv.height = CRATE_FRONT + CRATE_TOP + 2;
+    const g = cv.getContext("2d");
+    g.fillStyle = "#3a2618";
+    g.fillRect(0, 0, cv.width, cv.height);                // 輪郭
+    g.fillStyle = "#c48d55";
+    g.fillRect(1, 1, CRATE_W, CRATE_TOP);                 // 天板
+    g.fillStyle = "#a87444";
+    for (let y = 3; y < CRATE_TOP; y += 3) g.fillRect(1, 1 + y, CRATE_W, 1);
+    g.fillStyle = "#9a6a3c";
+    g.fillRect(1, 1 + CRATE_TOP, CRATE_W, CRATE_FRONT);   // 前面
+    g.fillStyle = "#7a5230";
+    for (let y = 4; y < CRATE_FRONT; y += 5) g.fillRect(1, 1 + CRATE_TOP + y, CRATE_W, 1);
+    g.fillRect(1, 1 + CRATE_TOP, 2, CRATE_FRONT);
+    g.fillRect(CRATE_W - 1, 1 + CRATE_TOP, 2, CRATE_FRONT);
+    g.fillStyle = "#b8804a";
+    g.fillRect(1, 1 + CRATE_TOP, CRATE_W, 1);
+    return cv;
+  })();
+  const crates = [
+    { x: 300, y: 200 }, { x: 322, y: 200 }, { x: 520, y: 150 }, { x: 470, y: 330 }, { x: 200, y: 360 },
+  ];
+  const solids = crates.map((c) => ({ x0: c.x - CRATE_W / 2, x1: c.x + CRATE_W / 2, y0: c.y - 7, y1: c.y }));
+
+  // ---------------------------------------------------------------- プレイヤー
+  const player = { x: 400, y: 260, dir: "down", frame: 0, animT: 0, moving: false, target: null };
+  const cam = { x: 0, y: 0 };
+  const keys = { up: false, down: false, left: false, right: false, dash: false };
+  let pointerHeld = false;
+  let galleryOn = false;
+  let galleryT = 0;
+
+  function footHits(x, y) {
+    if (x - FOOT_HALF_W < 4 || x + FOOT_HALF_W > WORLD_W - 4) return true;
+    if (y < WALK_TOP || y > WALK_BOTTOM) return true;
+    const fx0 = x - FOOT_HALF_W, fx1 = x + FOOT_HALF_W, fy0 = y - FOOT_H, fy1 = y;
+    return solids.some((s) => fx0 < s.x1 && fx1 > s.x0 && fy0 < s.y1 && fy1 > s.y0);
+  }
+
+  function quantizeDir(vx, vy) {
+    const i = ((Math.round(Math.atan2(vy, vx) / (Math.PI / 4)) % 8) + 8) % 8;
+    return DIR8[i];
+  }
+
+  function update(dt) {
+    let vx = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+    let vy = (keys.down ? 1 : 0) - (keys.up ? 1 : 0);
+    let remain = Infinity;
+    if (vx || vy) {
+      player.target = null;
+    } else if (player.target) {
+      const tx = player.target.x - player.x, ty = player.target.y - player.y;
+      const d = Math.hypot(tx, ty);
+      if (d < 1) {
+        if (!pointerHeld) player.target = null;
+      } else {
+        vx = tx / d;
+        vy = ty / d;
+        remain = d;
+      }
+    }
+    const len = Math.hypot(vx, vy);
+    if (len > 0) {
+      vx /= len;
+      vy /= len;
+      const dash = keys.dash;
+      const step = Math.min(remain, SPEEDS[settings.speed] * (dash ? DASH_MULT : 1) * dt);
+      const bx = player.x, by = player.y;
+      const nx = player.x + vx * step, ny = player.y + vy * step;
+      if (!footHits(nx, player.y)) player.x = nx;     // 軸ごとに動かして壁沿いに滑る
+      if (!footHits(player.x, ny)) player.y = ny;
+      const moved = Math.hypot(player.x - bx, player.y - by);
+      player.dir = quantizeDir(vx, vy);
+      if (player.target && moved < step * 0.2 && !pointerHeld) player.target = null; // 行き止まり
+      if (!player.moving) {
+        player.moving = true;
+        player.frame = 1;                               // 歩き出しで一歩目を出す
+        player.animT = 0;
+      }
+      player.animT += dt * (dash ? 1.35 : 1);
+      const iv = ANIM_SEC[settings.anim];
+      while (player.animT >= iv) {
+        player.animT -= iv;
+        player.frame ^= 1;
+      }
+    } else if (player.moving) {
+      player.moving = false;
+      player.frame = 0;
+      player.animT = 0;
+    }
+
+    // カメラ（キャラを少し上寄りの中心に、なめらかに追従）
+    const z = Number(settings.zoom);
+    const vw = STAGE_W / z, vh = STAGE_H / z;
+    const tx = player.x - vw / 2, ty = player.y - 14 - vh / 2;
+    const k = 1 - Math.exp(-dt * 10);
+    cam.x += (tx - cam.x) * k;
+    cam.y += (ty - cam.y) * k;
+    cam.x = vw >= WORLD_W ? (WORLD_W - vw) / 2 : Math.max(0, Math.min(WORLD_W - vw, cam.x));
+    cam.y = vh >= WORLD_H ? (WORLD_H - vh) / 2 : Math.max(0, Math.min(WORLD_H - vh, cam.y));
+  }
+
+  // ---------------------------------------------------------------- 描画
+  function spriteFor(dir) {
+    const shown = settings.dirs === "4" && TO_4DIR[dir] ? TO_4DIR[dir] : dir;
+    const base = MIRROR[shown] || shown;
+    return { col: SHEET_DIRS.indexOf(base), flip: !!MIRROR[shown] };
+  }
+
+  function drawSprite(sheet, dir, frame, x, y) {
+    const { col, flip } = spriteFor(dir);
+    const [cw, ch] = sheet.cell;
+    const [ax, ay] = sheet.anchor;
+    const sx = col * cw, sy = frame * ch;
+    const top = Math.round(y) - ay;
+    if (flip) {
+      const left = Math.round(x) - (cw - 1 - ax);
+      ctx.save();
+      ctx.translate(left + cw, top);
+      ctx.scale(-1, 1);
+      ctx.drawImage(sheet.img, sx, sy, cw, ch, 0, 0, cw, ch);
+      ctx.restore();
+    } else {
+      ctx.drawImage(sheet.img, sx, sy, cw, ch, Math.round(x) - ax, top, cw, ch);
+    }
+  }
+
+  function drawShadow(x, y, w) {
+    ctx.fillStyle = "rgba(20, 12, 24, 0.32)";
+    const rx = Math.round(w / 2), cxp = Math.round(x), cyp = Math.round(y);
+    for (let r = -1; r <= 1; r++) {
+      const half = Math.round(rx * Math.sqrt(1 - (r / 2) * (r / 2)));
+      ctx.fillRect(cxp - half, cyp + r, half * 2, 1);
+    }
+  }
+
+  function drawWorld() {
+    const z = Number(settings.zoom);
+    const camX = Math.round(cam.x), camY = Math.round(cam.y);
+    ctx.setTransform(z, 0, 0, z, -camX * z, -camY * z);
+    ctx.drawImage(ground, 0, 0);
+
+    const sheet = sheets[settings.size];
+    const items = crates.map((c) => ({ y: c.y, draw: () => ctx.drawImage(crateArt, c.x - CRATE_W / 2 - 1, c.y - CRATE_FRONT - CRATE_TOP - 1) }));
+    items.push({
+      y: player.y,
+      draw: () => {
+        drawShadow(player.x, player.y, sheet.cell[0] * 0.55);
+        drawSprite(sheet, player.dir, player.frame, player.x, player.y);
+      },
+    });
+    items.sort((a, b) => a.y - b.y);
+    for (const it of items) it.draw();
+
+    if (player.target && !(player.target.x === player.x && player.target.y === player.y)) {
+      // タップ先の目印（点滅する小さな十字）
+      if (Math.floor(performance.now() / 180) % 2 === 0) {
+        const tx = Math.round(player.target.x), ty = Math.round(player.target.y);
+        ctx.fillStyle = "#f4d27a";
+        ctx.fillRect(tx - 2, ty, 5, 1);
+        ctx.fillRect(tx, ty - 2, 1, 5);
+      }
+    }
+  }
+
+  const GALLERY_ORDER = ["up_left", "up", "up_right", "left", "right", "down_left", "down", "down_right"];
+  function drawGallery(dt) {
+    galleryT += dt;
+    const sheet = sheets[settings.size];
+    const [cw, ch] = sheet.cell;
+    const cols = 8, gap = 14, labelH = 30;
+    const z = Math.max(1, Math.min(Number(settings.zoom),
+      Math.floor((STAGE_W - 80 - gap * (cols - 1)) / (cols * cw)),
+      Math.floor((STAGE_H - 150 - labelH * 3) / (3 * ch))));
+    const cellW = cw * z, cellH = ch * z;
+    const totalW = cols * cellW + (cols - 1) * gap;
+    const x0 = Math.round((STAGE_W - totalW) / 2);
+    const animFrame = Math.floor(galleryT / ANIM_SEC[settings.anim]) % 2;
+    const rows = [
+      { label: "歩行アニメ（コマA⇔B）", frame: animFrame },
+      { label: "コマA", frame: 0 },
+      { label: "コマB", frame: 1 },
+    ];
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.fillStyle = "#1d1824";
+    ctx.fillRect(0, 0, STAGE_W, STAGE_H);
+    ctx.fillStyle = "#f4d27a";
+    ctx.font = '22px "DotGothic16", sans-serif';
+    ctx.textBaseline = "top";
+    const src = sheet.source === "image" ? "生成画像" : "仮スプライト（コード描画）";
+    ctx.fillText(`一覧 — ${settings.size}px・×${z}・${src}${settings.dirs === "4" ? "・4方向モード" : ""}`, 40, 24);
+    let y = 70;
+    for (const row of rows) {
+      ctx.fillStyle = "#a497bd";
+      ctx.font = '17px "DotGothic16", sans-serif';
+      ctx.fillText(row.label, x0, y);
+      y += labelH - 4;
+      GALLERY_ORDER.forEach((dir, i) => {
+        const cx0 = x0 + i * (cellW + gap);
+        // 透過の縁が見えるように市松の床
+        for (let ty = 0; ty < ch; ty += 4) {
+          for (let tx = 0; tx < cw; tx += 4) {
+            ctx.fillStyle = ((tx + ty) / 4) % 2 ? "#3b3346" : "#463d53";
+            ctx.fillRect(cx0 + tx * z, y + ty * z, Math.min(4, cw - tx) * z, Math.min(4, ch - ty) * z);
+          }
+        }
+        ctx.save();
+        ctx.setTransform(z, 0, 0, z, cx0, y);
+        const [ax, ay] = sheet.anchor;
+        drawSprite(sheet, dir, row.frame, ax, ay);
+        ctx.restore();
+        if (row === rows[0]) {
+          ctx.fillStyle = "#f3ecff";
+          ctx.font = '16px "DotGothic16", sans-serif';
+          ctx.fillText(DIR_LABEL[dir], cx0, y + cellH + 4);
+        }
+      });
+      y += cellH + (row === rows[0] ? 30 : 12);
+    }
+  }
+
+  // ---------------------------------------------------------------- 入力
+  const KEYMAP = {
+    ArrowUp: "up", KeyW: "up", ArrowDown: "down", KeyS: "down",
+    ArrowLeft: "left", KeyA: "left", ArrowRight: "right", KeyD: "right",
+    ShiftLeft: "dash", ShiftRight: "dash",
+  };
+  window.addEventListener("keydown", (e) => {
+    const k = KEYMAP[e.code];
+    if (!k) return;
+    keys[k] = true;
+    if (k !== "dash") e.preventDefault();
+  });
+  window.addEventListener("keyup", (e) => {
+    const k = KEYMAP[e.code];
+    if (k) keys[k] = false;
+  });
+  window.addEventListener("blur", () => { for (const k of Object.keys(keys)) keys[k] = false; });
+
+  function pointerToWorld(e) {
+    const r = canvas.getBoundingClientRect();
+    const sx = ((e.clientX - r.left) / r.width) * STAGE_W;
+    const sy = ((e.clientY - r.top) / r.height) * STAGE_H;
+    const z = Number(settings.zoom);
+    return { x: Math.round(cam.x) + sx / z, y: Math.round(cam.y) + sy / z };
+  }
+  canvas.addEventListener("pointerdown", (e) => {
+    if (galleryOn) return;
+    pointerHeld = true;
+    canvas.setPointerCapture(e.pointerId);
+    player.target = pointerToWorld(e);
+  });
+  canvas.addEventListener("pointermove", (e) => {
+    if (pointerHeld && !galleryOn) player.target = pointerToWorld(e);
+  });
+  const release = () => { pointerHeld = false; };
+  canvas.addEventListener("pointerup", release);
+  canvas.addEventListener("pointercancel", release);
+
+  // ---------------------------------------------------------------- 設定パネル
+  function syncPanel() {
+    document.querySelectorAll(".seg").forEach((seg) => {
+      const key = seg.dataset.key;
+      seg.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.v === settings[key])));
+    });
+    $("#btn-gallery").textContent = galleryOn ? "歩く画面へ" : "一覧（8方向）";
+    document.body.classList.toggle("gallery", galleryOn);
+  }
+  document.querySelectorAll(".seg").forEach((seg) => {
+    seg.addEventListener("click", (e) => {
+      const b = e.target.closest("button");
+      if (!b) return;
+      settings[seg.dataset.key] = b.dataset.v;
+      saveSettings();
+      syncPanel();
+      updateStatus();
+    });
+  });
+  function setPanelCollapsed(on) {
+    $("#panel").classList.toggle("collapsed", on);
+    $("#toggle-panel").textContent = on ? "＋" : "－";
+  }
+  let panelWasCollapsed = false;
+  $("#btn-gallery").addEventListener("click", () => {
+    galleryOn = !galleryOn;
+    galleryT = 0;
+    // 一覧は横幅いっぱいに並べるので、開いている間はパネルを畳む（閉じたら元に戻す）
+    if (galleryOn) {
+      panelWasCollapsed = $("#panel").classList.contains("collapsed");
+      setPanelCollapsed(true);
+    } else {
+      setPanelCollapsed(panelWasCollapsed);
+    }
+    syncPanel();
+  });
+  $("#toggle-panel").addEventListener("click", () => {
+    setPanelCollapsed(!$("#panel").classList.contains("collapsed"));
+  });
+
+  function updateStatus() {
+    const label = (s) => (sheets[s].source === "image" ? "<b>生成画像</b>" : "仮スプライト（コード描画）");
+    const anyPlaceholder = sheets[32].source !== "image" || sheets[48].source !== "image";
+    $("#status").innerHTML =
+      `32px: ${label(32)}<br>48px: ${label(48)}` +
+      (anyPlaceholder ? "<br>※ assets/proto_walk/ に生成画像を置くと自動で差し替わります" : "");
+  }
+
+  // ---------------------------------------------------------------- 画面フィット
+  function fit() {
+    const s = Math.min(window.innerWidth / STAGE_W, window.innerHeight / STAGE_H);
+    $("#stage").style.transform = `translate(-50%, -50%) scale(${s})`;
+  }
+  window.addEventListener("resize", fit);
+  fit();
+
+  // ---------------------------------------------------------------- ループ
+  let last = performance.now();
+  document.addEventListener("visibilitychange", () => { last = performance.now(); });
+  function loop(now) {
+    const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
+    last = now;
+    ctx.imageSmoothingEnabled = false;
+    if (galleryOn) {
+      drawGallery(dt);
+    } else {
+      update(dt);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.fillStyle = "#1d1824";
+      ctx.fillRect(0, 0, STAGE_W, STAGE_H);
+      drawWorld();
+      $("#hud-dir").textContent = DIR_LABEL[player.dir];
+    }
+    requestAnimationFrame(loop);
+  }
+
+  // テスト・デバッグ用
+  window.__walk = {
+    state: () => ({
+      x: player.x, y: player.y, dir: player.dir, frame: player.frame, moving: player.moving,
+      sprite: spriteFor(player.dir), source: { 32: sheets[32].source, 48: sheets[48].source }, ...settings, gallery: galleryOn,
+    }),
+    set: (patch) => { Object.assign(settings, patch); syncPanel(); updateStatus(); },
+    // 仮スプライトのシートを拡大して書き出す（画像生成AIへ渡す「向きの並び・足の位置」の参照用）
+    exportPlaceholder: (size = "48", scale = 8, bg = "#FF00FF") => {
+      const ph = makePlaceholderSheet(String(size));
+      const cv = document.createElement("canvas");
+      cv.width = ph.img.width * scale;
+      cv.height = ph.img.height * scale;
+      const g = cv.getContext("2d");
+      g.imageSmoothingEnabled = false;
+      if (bg) { g.fillStyle = bg; g.fillRect(0, 0, cv.width, cv.height); }
+      g.drawImage(ph.img, 0, 0, cv.width, cv.height);
+      return cv.toDataURL("image/png");
+    },
+  };
+
+  syncPanel();
+  updateStatus();
+  loadSheet(32);
+  loadSheet(48);
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
