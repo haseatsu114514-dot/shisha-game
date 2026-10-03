@@ -109,7 +109,7 @@ body {
   left: 50%;
   bottom: 28px;
   transform: translateX(-50%);
-  width: 940px;
+  width: 1060px;               /* 禁則で行末に「。」」が付いて全角26字になっても収まる幅 */
   min-height: 150px;
   box-sizing: border-box;
   padding: 26px 38px 22px;
@@ -117,10 +117,7 @@ body {
   line-height: 1.55;
 }
 #msg-text {
-  width: 24em;
-  white-space: pre-wrap;
-  word-break: break-all;
-  line-break: strict;
+  white-space: pre;             /* 折り返しは street.js の wrapLine（本編の autoWrap と同じ規則）で決める */
 }
 #msg-name {
   position: absolute;

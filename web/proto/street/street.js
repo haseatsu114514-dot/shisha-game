@@ -804,10 +804,55 @@
   }
 
   // ---------------------------------------------------------------- メッセージ（1回の表示は全角24字×2行以内）
+  // 折り返しは本編 web/js/engine.js の autoWrap() と同じ規則（全角24字・半角は0.5字・
+  // 文末「。！？」→読点の順で手前の区切りを優先・行頭禁則）。ブラウザ任せだと語の途中で折れるため
+  const WRAP_LIMIT = 24;
+  const WRAP_BREAK_AFTER = "、。，．！？…‥」』）】〉》";
+  const WRAP_NO_LINE_START = "、。，．！？…‥ー〜ぁぃぅぇぉっゃゅょんゎ々ァィゥェォッャュョ」』）】〉》・";
+  const charW = (ch) => (ch.charCodeAt(0) <= 0xff ? 0.5 : 1);
+  function wrapLine(text) {
+    const seg = Array.from(text);
+    let out = [];
+    let width = 0;
+    let lineStart = 0;
+    for (let i = 0; i < seg.length; i++) {
+      out.push(seg[i]);
+      width += charW(seg[i]);
+      if (width < WRAP_LIMIT || i === seg.length - 1) continue;
+      let cut = -1;
+      for (const set of ["。！？", WRAP_BREAK_AFTER]) {
+        for (let k = out.length - 1; k >= lineStart && cut < 0; k--) {
+          if (!set.includes(out[k])) continue;
+          let c = k + 1;
+          while (c < out.length && WRAP_NO_LINE_START.includes(out[c])) c++;
+          let w = 0;
+          for (let j = lineStart; j < c; j++) w += charW(out[j]);
+          if (w >= WRAP_LIMIT * 0.3) cut = c;
+        }
+        if (cut >= 0) break;
+      }
+      if (cut < 0 || cut >= out.length) {
+        while (i + 1 < seg.length && WRAP_NO_LINE_START.includes(seg[i + 1])) out.push(seg[++i]);
+        // 残りが2文字以下なら折らずに今の行へ吸収（末尾だけが次の行に孤立しないように）
+        let rem = 0;
+        for (let k = i + 1; k < seg.length; k++) rem += charW(seg[k]);
+        if (rem <= 2) {
+          for (let k = i + 1; k < seg.length; k++) out.push(seg[k]);
+          break;
+        }
+        cut = out.length;
+      }
+      out.splice(cut, 0, "\n");
+      lineStart = cut + 1;
+      width = 0;
+      for (let j = lineStart; j < out.length; j++) width += charW(out[j]);
+    }
+    return out;
+  }
   const msg = { active: false, lines: [], idx: 0, shown: 0, acc: 0, done: null };
   function say(lines, opts = {}) {
     msg.active = true;
-    msg.lines = lines.map((l) => Array.from(l));
+    msg.lines = lines.map(wrapLine);
     msg.idx = 0;
     msg.shown = 0;
     msg.acc = 0;
@@ -1169,7 +1214,7 @@
       x: Math.round(player.x * 10) / 10, y: Math.round(player.y * 10) / 10, dir: player.dir, moving: player.moving,
       camX: Math.round(cam.x),
       focus: focus ? `${focus.kind}:${focus.id}` : null,
-      msg: msg.active ? (msg.lines[msg.idx] || []).join("") : null,
+      msg: msg.active ? (msg.lines[msg.idx] || []).join("").replace(/\n/g, "") : null,
       interior: currentDoor ? currentDoor.id : null,
       visited: { ...save.visited },
       travel: mode === "menu" ? travelItems.map((t) => ({ label: t.label, off: !!t.off })) : null,

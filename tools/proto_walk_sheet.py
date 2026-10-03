@@ -8,10 +8,12 @@
   2. キャラの塊を10個見つけて、位置から 横5×縦2 のどのマスかを決める
      （生成AIのシートは寸法が列数・行数で割り切れず、グリッドで切ると端がずれるため）。
      小さなゴミ（離れた点・飛沫）は除く
-  3. **全コマ共通の縮小率**を決める（一番背の高いコマが指定の高さになるように）
-  4. 各コマを固定サイズのセルに、**足元を下端中央に揃えて**貼る
+  3. 背中向き（上向き）のコマBを「コマAの脚だけ左右反転」で作り直す（--mirror-step。
+     生成AIの背中向きはA・Bとも同じ足を上げていて、交互に歩いて見えないことが多い）
+  4. **全コマ共通の縮小率**を決める（一番背の高いコマが指定の高さになるように）
+  5. 各コマを固定サイズのセルに、**足元を下端中央に揃えて**貼る
      （1コマずつトリム＆拡縮すると、歩くたびに足元や頭身がブレるため）
-  5. シート全体を1回で減色して、全コマのパレットを共通にする
+  6. シート全体を1回で減色して、全コマのパレットを共通にし、外周1ドットの輪郭を足す
 
 入力シートの並び（画像生成プロンプトと同じ）:
   列 = 下向き / 右下向き / 右向き / 右上向き / 上向き（背中）
@@ -191,6 +193,77 @@ def extract_frames(sheet: Image.Image, cols: int, rows: int):
     return frames
 
 
+def leg_region_top(mask: np.ndarray) -> int:
+    """脚の部分が始まる行（スカート・パーカーの裾の下）。見つからなければ -1。
+
+    胴の幅（高さ45〜65%の行の幅の中央値）の75%より細くなった最初の行を、脚の始まりとみなす。
+    （「脚が2本に分かれる行」で探すと、靴下がくっついている絵や、体から離れた手に惑わされる）
+    """
+    h = mask.shape[0]
+    widths = np.zeros(h)
+    for y in range(h):
+        xs = np.nonzero(mask[y])[0]
+        if len(xs):
+            widths[y] = xs.max() - xs.min() + 1
+    torso = np.median(widths[int(h * 0.45):int(h * 0.65)])
+    for y in range(int(h * 0.6), h - 2):
+        if 0 < widths[y] < torso * 0.75:
+            return y
+    return -1
+
+
+def mirror_legs(img: Image.Image) -> Image.Image:
+    """脚の部分だけを体の中心線で左右反転したコマを作る（上半身はそのまま）。
+
+    生成AIの背中向き（上向き）の歩行コマは、コマA・Bとも同じ足を上げていることが多く、
+    交互に歩いて見えない。背中から見た脚は左右対称なので、Aの脚だけを反転すれば
+    「逆の足を上げたコマ」になる。カバンやスマホは上半身にあるので左右が入れ替わらない。
+    """
+    arr = np.array(img)
+    mask = arr[:, :, 3] >= ALPHA_SOLID
+    h, w = mask.shape
+    y0 = leg_region_top(mask)
+    if y0 < 0:
+        return img
+    # 中心線: 脚の始まりのすぐ下（腰まわり）の行で、いちばん長い連続部分（＝体。離れた手は除く）の真ん中
+    xs = np.nonzero(mask[min(h - 1, y0 + 2)])[0]
+    runs = np.split(xs, np.nonzero(np.diff(xs) > 1)[0] + 1)
+    body = max(runs, key=len)
+    axis2 = int(body.min() + body.max())  # 中心線×2（0.5px単位）
+    # 反転するのは脚の塊だけ。裾の線より下に少しかかった手などはその場に残す
+    region = arr[y0:]
+    labels, n = ndimage.label(mask[y0:])
+    if n == 0:
+        return img
+    sizes = ndimage.sum(mask[y0:], labels, index=range(1, n + 1))
+    legs = labels == (int(np.argmax(sizes)) + 1)
+    merged = np.where(legs[..., None], 0, region)
+    for x in range(w):
+        src = axis2 - x
+        if 0 <= src < w:
+            col = legs[:, src]
+            merged[col, x] = region[col, src]
+    out = arr.copy()
+    out[y0:] = merged
+    return Image.fromarray(out, "RGBA")
+
+
+def apply_mirror_step(frames, dirs_to_fix):
+    """指定した向きのコマBを「コマAの脚だけ左右反転」に置き換える。"""
+    for name in dirs_to_fix:
+        if name not in DIRS:
+            sys.exit(f"--mirror-step: 向き {name} はありません（{', '.join(DIRS)}）")
+        col = DIRS.index(name)
+        a = next((f for f in frames if f["col"] == col and f["row"] == 0), None)
+        b = next((f for f in frames if f["col"] == col and f["row"] == 1), None)
+        if not a or not b:
+            continue
+        img = mirror_legs(a["img"])
+        b["img"] = img
+        b["foot_x"] = foot_center_x(img)
+        print(f"  {name}: コマBをコマAの脚の左右反転で作りました")
+
+
 def add_outline(img: Image.Image, color=OUTLINE_COLOR) -> Image.Image:
     """不透明部分の外側1ドットに輪郭を足す（縮小で元絵の黒い輪郭がぼやけ、歩道の上で埋もれるため）。"""
     arr = np.array(img)
@@ -278,6 +351,9 @@ def main() -> None:
     ap.add_argument("--core", type=int, default=KEY_CORE, help="背景とみなす背景色からの距離（色むらが残るなら上げる）")
     ap.add_argument("--per-frame-fit", action="store_true", help="全コマを同じ高さに揃える（生成AIの大きさブレ対策）")
     ap.add_argument("--no-outline", action="store_true", help="外周1ドットの輪郭を足さない")
+    ap.add_argument("--mirror-step", default="up",
+                    help="コマBを『コマAの脚だけ左右反転』で作り直す向き（カンマ区切り。既定 up＝背中向き。"
+                         "生成AIの背中向きはA・Bとも同じ足を上げがちなため）。空文字で無効")
     ap.add_argument("--no-preview", action="store_true")
     ap.add_argument("--preview", default=str(PREVIEW_PATH), help="確認用プレビューの出力先")
     args = ap.parse_args()
@@ -291,6 +367,7 @@ def main() -> None:
     keyed = key_background(src, key, core=args.core)
 
     frames = extract_frames(keyed, args.cols, args.rows)
+    apply_mirror_step(frames, [d.strip() for d in args.mirror_step.split(",") if d.strip()])
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     built = []
