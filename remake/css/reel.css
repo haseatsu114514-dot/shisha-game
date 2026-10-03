@@ -127,13 +127,18 @@
   background-position: calc(-1 * var(--sprite-x) * var(--art-scale)) calc(-1 * var(--sprite-y) * var(--art-scale));
   background-repeat: no-repeat;
 }
-.sym-seven { --sprite-x: 47; --sprite-y: 93; --sprite-width: 375; --sprite-height: 316; --sprite-max: 375; }
-.sym-bar { --symbol-size: 24px; --sprite-x: 432; --sprite-y: 155; --sprite-width: 395; --sprite-height: 234; --sprite-max: 395; }
+.sym-seven, .sym-bar, .sym-smoke, .sym-pakki {
+  background-image: url("../img/ui/pakki-slot/symbols-premium.png");
+}
+/* 横長の7とBARも、輪郭＋透過余白の縦横比を保ってコマ内へ置く。 */
+.sym-seven { --symbol-size: 28px; --sprite-x: 73; --sprite-y: 241; --sprite-width: 508; --sprite-height: 287; --sprite-max: 508; }
+.sym-bar { --symbol-size: 26px; --sprite-x: 677; --sprite-y: 270; --sprite-width: 518; --sprite-height: 245; --sprite-max: 518; }
 .sym-bell { --sprite-x: 856; --sprite-y: 51; --sprite-width: 349; --sprite-height: 368; --sprite-max: 368; }
 .sym-cherry { --symbol-size: 21px; --sprite-x: 46; --sprite-y: 478; --sprite-width: 375; --sprite-height: 349; --sprite-max: 375; }
 .sym-replay { --sprite-x: 484; --sprite-y: 469; --sprite-width: 283; --sprite-height: 361; --sprite-max: 361; }
-.sym-smoke { --sprite-x: 867; --sprite-y: 462; --sprite-width: 343; --sprite-height: 364; --sprite-max: 364; }
-.sym-pakki { --sprite-x: 57; --sprite-y: 849; --sprite-width: 360; --sprite-height: 365; --sprite-max: 365; }
+/* 抽選・リール配列のsmoke（ブランク）は、生成した炭3個の絵で表示する。 */
+.sym-smoke { --sprite-x: 95; --sprite-y: 787; --sprite-width: 454; --sprite-height: 346; --sprite-max: 454; }
+.sym-pakki { --symbol-size: 23px; --sprite-x: 706; --sprite-y: 729; --sprite-width: 473; --sprite-height: 430; --sprite-max: 473; }
 /* 生成した透過ベゼルを、小筐体と拡大盤のどちらにも同じ比率で重ねる。 */
 .rw-machine::before {
   content: "";
