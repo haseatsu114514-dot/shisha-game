@@ -3,11 +3,15 @@
 // 歩行（移動・向きの量子化・2コマ歩行・左右反転・足元yソート・タップ移動）は web/proto/walk/index.html と同じ挙動。
 (() => {
   // ---------------------------------------------------------------- 定数
-  const VIEW_W = 320, VIEW_H = 180, SCALE = 4;           // 内部解像度 320×180 を4倍（1280×720）
-  const STAGE_W = VIEW_W * SCALE, STAGE_H = VIEW_H * SCALE;
+  const STAGE_W = 1280, STAGE_H = 720;                   // 画面（キャンバス）の大きさ
+  // 内部解像度と「1ドットの大きさ」はステージJSONの view / unit で決まる（applyProfile）。
+  //   標準: 320×180 を4倍・unit 1 ／ 高解像度2.5D（stage_hankagai_hd.json）: 640×360 を2倍・unit 1.5
+  let VIEW_W = 320, VIEW_H = 180, SCALE = 4;
+  let U = 1;                                             // 標準版を1とした、長さ・速さの倍率
   const ROOT = "../../../";
-  const STREET_DIR = ROOT + "assets/proto_street/";
+  let STREET_DIR = ROOT + "assets/proto_street/";
   const WALK_DIR = ROOT + "assets/proto_walk/";
+  let CHAR_SIZE = 32;                                    // 歩行シートの高さ（tsumugi_walk_32 など）
   const SAVE_KEY = "shisha_proto_street_v1";
   const SHEET_DIRS = ["down", "down_right", "right", "up_right", "up"]; // 歩行シートの列順
   const DIR8 = ["right", "down_right", "down", "down_left", "left", "up_left", "up", "up_right"]; // atan2順（y下向き）
@@ -17,18 +21,51 @@
     right: [1, 0], down_right: [R2, R2], down: [0, 1], down_left: [-R2, R2],
     left: [-1, 0], up_left: [-R2, -R2], up: [0, -1], up_right: [R2, -R2],
   };
-  const SPEED = 80, DASH_MULT = 1.75, ANIM_SEC = 0.16;  // 歩く速さ（ドット/秒）・ダッシュ倍率・1コマの長さ（AA7: 64→80）
-  const RUN_TAP_DIST = 72;                               // これより遠くをタップしたら走って向かう（AA8）
+  // 以下の長さ・速さは標準版のドット単位。applyProfile で unit 倍する
+  const BASE = {
+    speed: 80,          // 歩く速さ（ドット/秒。AA7: 64→80）
+    runTapDist: 72,     // これより遠くをタップしたら走って向かう（AA8）
+    footHalfW: 5,       // 足元の当たり判定（約10×4）
+    footH: 4,
+    reach: 20,          // 決定できる距離（足元から）
+    camLead: 32,        // カメラの先読み
+  };
+  let SPEED, RUN_TAP_DIST, FOOT_HALF_W, FOOT_H, REACH, CAM_LEAD;
+  const DASH_MULT = 1.75, ANIM_SEC = 0.16;               // ダッシュ倍率・1コマの長さ
   const DUST_EVERY = 0.09;                               // 走っている間に足元へ砂ぼこりを出す間隔（秒）
-  const FOOT_HALF_W = 5, FOOT_H = 4;                     // 足元の当たり判定（約10×4）
-  const REACH = 20;                                      // 決定できる距離（足元から）
   const TYPE_MS = 30;                                    // 1文字の表示間隔
   const FADE_MS = 260;
-  const BACKDROP_PARALLAX = 0.5;
-  const CAM_LEAD = 32;                                   // カメラの先読み（ドット）
+  const BACKDROP_PARALLAX = 0.5;                         // 遠景の視差（ステージの far.parallax で上書き）
   const params = new URLSearchParams(location.search);
   const NIGHT = params.get("night") === "1";
+  const HD = params.get("stage") === "hd";               // 高解像度2.5D版（AA9）
+  const STAGE_FILE = HD ? "stage_hankagai_hd.json" : "stage_hankagai.json";
   const BUST = `?t=${Date.now()}`;
+  const S = (v) => Math.round(v * U);                    // 標準版のドット数 → 今のステージのドット数
+
+  function applyProfile(st) {
+    const v = st.view || {};
+    VIEW_W = v.w || 320;
+    VIEW_H = v.h || 180;
+    SCALE = v.scale || 4;
+    U = st.unit || 1;
+    STREET_DIR = ROOT + (st.assets || "assets/proto_street/");
+    CHAR_SIZE = st.charSize || 32;
+    SPEED = BASE.speed * U;
+    RUN_TAP_DIST = BASE.runTapDist * U;
+    FOOT_HALF_W = S(BASE.footHalfW);
+    FOOT_H = S(BASE.footH);
+    REACH = BASE.reach * U;
+    CAM_LEAD = BASE.camLead * U;
+  }
+  // 標準版のドット単位で描く小物（柵・道しるべ・「！」・砂ぼこりなど）を、今のステージの大きさに拡大して描く
+  function withUnit(x, y, draw) {
+    ctx.save();
+    ctx.translate(Math.round(x), Math.round(y));
+    ctx.scale(U, U);
+    draw();
+    ctx.restore();
+  }
 
   // エリアマップのピン（%）。歩けるのは繁華街だけ
   const AREAS = [
@@ -137,8 +174,8 @@
   function facadeGeo(id, img) {
     const m = assets.meta && assets.meta.facades && assets.meta.facades[id];
     if (m) return m;
-    const w = img ? img.width : 96, h = img ? img.height : 100;
-    return { w, h, door: [Math.round(w * 0.68), h - 38, 16, 36], sign: [Math.round(w * 0.16), Math.round(h * 0.4), Math.round(w * 0.56), 12] };
+    const w = img ? img.width : S(96), h = img ? img.height : S(100);
+    return { w, h, door: [Math.round(w * 0.68), h - S(38), S(16), S(36)], sign: [Math.round(w * 0.16), Math.round(h * 0.4), Math.round(w * 0.56), S(12)] };
   }
   function makeFacadePlaceholder(id, geo) {
     const c = FACADE_PH[id] || FACADE_PH.filler_b;
@@ -170,7 +207,7 @@
   const PROP_PH_SIZE = { vending: [23, 34], bench: [23, 16], aboard: [16, 19], plant: [16, 18], lamp: [13, 56], bicycle: [29, 19] };
   function makePropPlaceholder(name) {
     const m = assets.meta && assets.meta.props && assets.meta.props[name];
-    const [w, h] = m ? [m.w, m.h] : (PROP_PH_SIZE[name] || [16, 16]);
+    const [w, h] = m ? [m.w, m.h] : (PROP_PH_SIZE[name] || [16, 16]).map(S);
     const cv = makeCanvas(w, h);
     const g = cv.getContext("2d");
     const box = (x, y, bw, bh, col) => { g.fillStyle = col; g.fillRect(x, y, bw, bh); };
@@ -274,7 +311,12 @@
     for (let x = 2; x < meta.w; x += 20) g.fillRect(x, r0 + Math.round((r1 - r0) * 0.48), 10, 2);
     return cv;
   }
-  const GROUND_DEFAULT = { w: 200, h: 68, sidewalk: [0, 38], curb: [38, 42], road: [42, 68] };
+  // 地面の画像も street_assets.json も無い時の帯の割り付け（地面の上端から画面の下まで）
+  function groundDefault() {
+    const h = VIEW_H - stage.groundTop;
+    const s1 = Math.round(h * 0.56), c1 = s1 + Math.max(2, Math.round(h * 0.06));
+    return { w: S(200), h, sidewalk: [0, s1], curb: [s1, c1], road: [c1, h] };
+  }
 
   // 奥の街並み（建物の隙間から見える空と遠景。コード描画・視差で少し遅れて動く）
   function makeBackdrop(width, height) {
@@ -307,25 +349,28 @@
     return cv;
   }
   function drawWall(w) {
-    // コンクリートブロック塀（商店街の外れ・空き地の前）
+    // コンクリートブロック塀（商店街の外れ・空き地の前）。模様は標準版のドット単位で描いて拡大する
     const top = stage.groundTop - w.h;
-    ctx.fillStyle = "#9d988f";
-    ctx.fillRect(w.x0, top, w.x1 - w.x0, w.h);
-    ctx.fillStyle = "#857f76";
-    for (let y = top + 2; y < stage.groundTop; y += 5) {
-      ctx.fillRect(w.x0, y, w.x1 - w.x0, 1);
-      const off = ((y - top) / 5) % 2 ? 6 : 0;
-      for (let x = w.x0 + off; x < w.x1; x += 12) ctx.fillRect(x, y, 1, 5);
-    }
-    ctx.fillStyle = "#b8b3aa";
-    ctx.fillRect(w.x0, top, w.x1 - w.x0, 2);
-    ctx.fillStyle = "#5f5a53";
-    ctx.fillRect(w.x0, top + 2, w.x1 - w.x0, 1);
+    withUnit(w.x0, top, () => {
+      const ww = (w.x1 - w.x0) / U, wh = w.h / U;
+      ctx.fillStyle = "#9d988f";
+      ctx.fillRect(0, 0, ww, wh);
+      ctx.fillStyle = "#857f76";
+      for (let y = 2; y < wh; y += 5) {
+        ctx.fillRect(0, y, ww, 1);
+        const off = ((y - 2) / 5) % 2 ? 6 : 0;
+        for (let x = off; x < ww; x += 12) ctx.fillRect(x, y, 1, Math.min(5, wh - y));
+      }
+      ctx.fillStyle = "#b8b3aa";
+      ctx.fillRect(0, 0, ww, 2);
+      ctx.fillStyle = "#5f5a53";
+      ctx.fillRect(0, 2, ww, 1);
+    });
   }
 
   // ---------------------------------------------------------------- 世界
   let stage = null;
-  const assets = { meta: null, facades: {}, props: {}, glows: {}, ground: null, backdrop: null, sheets: {}, missing: [] };
+  const assets = { meta: null, facades: {}, props: {}, glows: {}, blooms: {}, ground: null, backdrop: null, poleTile: null, farSource: "code", sheets: {}, missing: [] };
   let facades = [], doors = [], objects = [], npcs = [];
   const player = { x: 0, y: 0, dir: "down", frame: 0, animT: 0, moving: false, target: null, pending: null, tapRun: false, running: false, dustT: 0 };
   const dust = [];                 // 走った時の砂ぼこり { x, y, t }
@@ -339,11 +384,17 @@
   const rnd = mulberry32(1003);
 
   async function init() {
-    stage = await loadJSON("stage_hankagai.json" + BUST);
+    stage = await loadJSON(STAGE_FILE + BUST);
+    if (stage && stage.extends) {
+      // 高解像度版は標準版のステージを土台にして、配置と大きさだけ上書きする（テキストは標準版の1か所だけ）
+      const base = await loadJSON(stage.extends + BUST);
+      stage = base ? mergeStage(base, stage) : null;
+    }
     if (!stage) {
-      showFatal("stage_hankagai.json を読めませんでした。リポジトリのルートで python3 -m http.server 8123 を起動して開いてください。");
+      showFatal(`${STAGE_FILE} を読めませんでした。リポジトリのルートで python3 -m http.server 8123 を起動して開いてください。`);
       return;
     }
+    applyProfile(stage);
     assets.meta = await loadJSON(STREET_DIR + "street_assets.json" + BUST);
     if (!assets.meta) assets.missing.push("street_assets.json");
 
@@ -360,16 +411,30 @@
       const geo = facadeGeo(id, img);
       assets.facades[id] = { art: img || makeFacadePlaceholder(id, geo), geo };
       if (NIGHT) assets.glows[id] = makeGlow(assets.facades[id].art);
+      if (NIGHT && stage.bloom) assets.blooms[id] = makeBloom(assets.glows[id], stage.bloom);
     });
     propNames.forEach((n, i) => {
       if (!propImgs[i]) assets.missing.push(`prop_${n}.png`);
       assets.props[n] = propImgs[i] || makePropPlaceholder(n);
-      if (NIGHT && n === "lamp") assets.glows.prop_lamp = makeGlow(assets.props[n]);
+      if (NIGHT && n === "lamp") {
+        assets.glows.prop_lamp = makeGlow(assets.props[n]);
+        if (stage.bloom) assets.blooms.prop_lamp = makeBloom(assets.glows.prop_lamp, stage.bloom);
+      }
     });
-    const groundMeta = (assets.meta && assets.meta.ground) || GROUND_DEFAULT;
+    const groundMeta = (assets.meta && assets.meta.ground) || groundDefault();
     if (!groundImg) assets.missing.push("ground.png");
     assets.ground = groundImg || makeGroundPlaceholder(groundMeta);
-    assets.backdrop = makeBackdrop(Math.ceil(stage.width * BACKDROP_PARALLAX) + VIEW_W + 4, stage.groundTop);
+    // 遠景: far.img（夜は far.imgNight）があれば使う。無ければコード描画の街並み（標準版の大きさで描いて拡大）
+    const farCfg = stage.far || {};
+    const farW = Math.ceil(stage.width * (farCfg.parallax || BACKDROP_PARALLAX)) + VIEW_W + 4;
+    const farName = NIGHT ? (farCfg.imgNight || farCfg.img) : farCfg.img;
+    const farImg = farName ? await loadImage(`${STREET_DIR}${farName}${BUST}`) : null;
+    assets.farSource = farImg ? "image" : "code";
+    const farSrc = farImg || makeBackdrop(Math.ceil(farW / U), Math.ceil(stage.groundTop / U));
+    assets.backdrop = (farImg || U !== 1 || farCfg.blur || farCfg.haze)
+      ? makeFarLayer(farSrc, farW, stage.groundTop, farCfg)
+      : farSrc;
+    if (stage.foreground) assets.poleTile = makePoleTile(stage.foreground);
 
     const sheetSpecs = [["tsumugi", WALK_DIR, "tsumugi_walk"], ...stage.npcs.map((n) => [n.sheet, STREET_DIR, n.sheet])];
     await Promise.all(sheetSpecs.map(async ([key, dir, file]) => {
@@ -398,13 +463,25 @@
     else showAreaMap(true);
   }
 
+  function mergeStage(base, over) {
+    const out = { ...base, ...over };
+    for (const key of ["facades", "doors", "objects", "npcs"]) {
+      if (!over[key]) continue;
+      const byId = Object.fromEntries((base[key] || []).map((x) => [x.id, x]));
+      out[key] = over[key].map((x) => ({ ...(byId[x.id] || {}), ...x }));
+    }
+    for (const key of ["exit", "barricade", "spawn"]) if (base[key] && over[key]) out[key] = { ...base[key], ...over[key] };
+    delete out.extends;
+    return out;
+  }
+
   async function loadSheet(dir, name, colors) {
-    const img = await loadImage(`${dir}${name}_32.png${BUST}`);
+    const img = await loadImage(`${dir}${name}_${CHAR_SIZE}.png${BUST}`);
     if (!img) {
-      assets.missing.push(`${name}_32.png`);
+      assets.missing.push(`${name}_${CHAR_SIZE}.png`);
       return makeCapsuleSheet(colors);
     }
-    const meta = await loadJSON(`${dir}${name}_32.json${BUST}`);
+    const meta = await loadJSON(`${dir}${name}_${CHAR_SIZE}.json${BUST}`);
     const cell = (meta && meta.cell) || [Math.floor(img.width / SHEET_DIRS.length), Math.floor(img.height / 2)];
     const anchor = (meta && meta.anchor) || [Math.floor(cell[0] / 2), cell[1] - 2];
     return { img, cell, anchor, source: "image" };
@@ -450,15 +527,15 @@
 
   // ---------------------------------------------------------------- 決定対象（入口・しらべる・人）
   function interactables() {
-    const list = doors.map((d) => ({ kind: "door", id: d.id, x: d.cx, y: stage.groundTop + 2, halfW: d.w / 2, ref: d }));
+    const list = doors.map((d) => ({ kind: "door", id: d.id, x: d.cx, y: stage.groundTop + S(2), halfW: d.w / 2, ref: d }));
     for (const o of objects) {
       if (!o.text) continue;
       const h = o.solid ? o.solid[1] : 0;
       list.push({ kind: "object", id: o.id, x: o.x, y: o.y - h / 2, halfW: o.solid ? o.solid[0] / 2 : 4, ref: o });
     }
-    for (const n of npcs) list.push({ kind: "npc", id: n.id, x: n.x, y: n.y - 2, halfW: 4, ref: n });
+    for (const n of npcs) list.push({ kind: "npc", id: n.id, x: n.x, y: n.y - S(2), halfW: S(4), ref: n });
     if (stage.barricade) {
-      list.push({ kind: "barricade", id: "barricade", x: stage.barricade.x - 6, y: clampWalkY(player.y), halfW: 0, ref: stage.barricade });
+      list.push({ kind: "barricade", id: "barricade", x: stage.barricade.x - S(6), y: clampWalkY(player.y), halfW: 0, ref: stage.barricade });
     }
     return list;
   }
@@ -486,26 +563,29 @@
   }
   // タップした所にあるもの（人 → 物 → 入口 の順に優先）
   function hitTest(wx, wy) {
-    for (const n of npcs) if (Math.abs(wx - n.x) <= 8 && wy >= n.y - 34 && wy <= n.y + 2) return { kind: "npc", id: n.id, ref: n };
+    for (const n of npcs) {
+      const sh = assets.sheets[n.sheet];
+      if (Math.abs(wx - n.x) <= sh.cell[0] / 3 && wy >= n.y - sh.anchor[1] && wy <= n.y + S(2)) return { kind: "npc", id: n.id, ref: n };
+    }
     for (const o of objects) {
       if (!o.text) continue;
       const w = o.art.width, h = o.art.height;
-      if (wx >= o.x - w / 2 && wx <= o.x + w / 2 && wy >= o.y - h && wy <= o.y + 2) return { kind: "object", id: o.id, ref: o };
+      if (wx >= o.x - w / 2 && wx <= o.x + w / 2 && wy >= o.y - h && wy <= o.y + S(2)) return { kind: "object", id: o.id, ref: o };
     }
-    for (const d of doors) if (wx >= d.x - 2 && wx <= d.x + d.w + 2 && wy >= d.top - 2 && wy <= stage.groundTop + 4) return { kind: "door", id: d.id, ref: d };
+    for (const d of doors) if (wx >= d.x - S(2) && wx <= d.x + d.w + S(2) && wy >= d.top - S(2) && wy <= stage.groundTop + S(4)) return { kind: "door", id: d.id, ref: d };
     const b = stage.barricade;
-    if (b && wx >= b.x - 10 && wx <= b.x + 16 && wy >= stage.groundTop - 8) return { kind: "barricade", id: "barricade", ref: b };
+    if (b && wx >= b.x - S(10) && wx <= b.x + S(16) && wy >= stage.groundTop - S(8)) return { kind: "barricade", id: "barricade", ref: b };
     return null;
   }
   function approachPoint(hit) {
     const w = stage.walk;
-    if (hit.kind === "door") return { x: hit.ref.cx, y: w.y0 + 3 };
+    if (hit.kind === "door") return { x: hit.ref.cx, y: w.y0 + S(3) };
     if (hit.kind === "npc") {
       const n = hit.ref;
-      return { x: n.x + (player.x < n.x ? -13 : 13), y: clampWalkY(n.y) };
+      return { x: n.x + (player.x < n.x ? -S(13) : S(13)), y: clampWalkY(n.y) };
     }
-    if (hit.kind === "barricade") return { x: hit.ref.x - 14, y: clampWalkY(player.y) };
-    return { x: hit.ref.x, y: clampWalkY(hit.ref.y + 6) };
+    if (hit.kind === "barricade") return { x: hit.ref.x - S(14), y: clampWalkY(player.y) };
+    return { x: hit.ref.x, y: clampWalkY(hit.ref.y + S(6)) };
   }
   function arrive() {
     player.target = null;
@@ -515,7 +595,7 @@
     const it = interactables().find((i) => i.kind === p.kind && i.id === p.id);
     if (!it) return;
     const { d, vx, vy } = reachOf(it);
-    if (d > REACH + 6) return;
+    if (d > REACH + S(6)) return;
     player.dir = quantizeDir(vx, vy, "up");
     interact(it);
   }
@@ -586,7 +666,7 @@
         player.dustT -= dt;
         if (player.dustT <= 0) {
           player.dustT = DUST_EVERY;
-          dust.push({ x: player.x - vx * 4 + (Math.random() - 0.5) * 3, y: player.y, t: 0 });
+          dust.push({ x: player.x - vx * S(4) + (Math.random() - 0.5) * S(3), y: player.y, t: 0 });
         }
       }
       // 左端（通りの入口）へ歩くとエリアマップへ
@@ -659,36 +739,41 @@
     }
   }
   function drawShadow(x, y, w) {
-    ctx.fillStyle = "rgba(20, 12, 24, 0.32)";
-    const rx = Math.round(w / 2), cxp = Math.round(x), cyp = Math.round(y);
-    for (let r = -1; r <= 1; r++) {
-      const half = Math.round(rx * Math.sqrt(1 - (r / 2) * (r / 2)));
-      ctx.fillRect(cxp - half, cyp + r, half * 2, 1);
-    }
+    withUnit(x, y, () => {
+      ctx.fillStyle = "rgba(20, 12, 24, 0.32)";
+      const rx = Math.round(w / U / 2);
+      for (let r = -1; r <= 1; r++) {
+        const half = Math.round(rx * Math.sqrt(1 - (r / 2) * (r / 2)));
+        ctx.fillRect(-half, r, half * 2, 1);
+      }
+    });
   }
   function drawBarricade(b, y) {
-    // 工事用の柵（黄と黒の縞の板＋脚）。通りを縦に塞ぐように3つ並べる
-    const x = b.x;
-    ctx.fillStyle = "#2a2a2a";
-    ctx.fillRect(x + 1, y - 9, 1, 9);
-    ctx.fillRect(x + 14, y - 9, 1, 9);
-    ctx.fillStyle = "#1e1e1e";
-    ctx.fillRect(x, y - 13, 16, 6);
-    for (let i = 0; i < 16; i += 4) {
-      ctx.fillStyle = "#f2c230";
-      ctx.fillRect(x + i + 1, y - 12, 2, 4);
-    }
+    // 工事用の柵（黄と黒の縞の板＋脚）。通りを縦に塞ぐように並べる
+    withUnit(b.x, y, () => {
+      ctx.fillStyle = "#2a2a2a";
+      ctx.fillRect(1, -9, 1, 9);
+      ctx.fillRect(14, -9, 1, 9);
+      ctx.fillStyle = "#1e1e1e";
+      ctx.fillRect(0, -13, 16, 6);
+      for (let i = 0; i < 16; i += 4) {
+        ctx.fillStyle = "#f2c230";
+        ctx.fillRect(i + 1, -12, 2, 4);
+      }
+    });
   }
   function drawCone(x, y) {
-    ctx.fillStyle = "#e0602a";
-    ctx.fillRect(x - 1, y - 9, 3, 2);
-    ctx.fillRect(x - 2, y - 7, 5, 2);
-    ctx.fillStyle = "#f3f0e8";
-    ctx.fillRect(x - 2, y - 5, 5, 1);
-    ctx.fillStyle = "#e0602a";
-    ctx.fillRect(x - 3, y - 4, 7, 3);
-    ctx.fillStyle = "#3a3a3a";
-    ctx.fillRect(x - 4, y - 1, 9, 1);
+    withUnit(x, y, () => {
+      ctx.fillStyle = "#e0602a";
+      ctx.fillRect(-1, -9, 3, 2);
+      ctx.fillRect(-2, -7, 5, 2);
+      ctx.fillStyle = "#f3f0e8";
+      ctx.fillRect(-2, -5, 5, 1);
+      ctx.fillStyle = "#e0602a";
+      ctx.fillRect(-3, -4, 7, 3);
+      ctx.fillStyle = "#3a3a3a";
+      ctx.fillRect(-4, -1, 9, 1);
+    });
   }
   function drawSignText(f) {
     if (!f.sign) return;
@@ -698,7 +783,7 @@
       kemurikusa: ["#f1dfb2", "rgba(0,0,0,0.8)"],
     }[f.id] || ["#fbe9c6", "rgba(40,24,10,0.85)"];
     const x = f.x + sx + sw / 2, y = stage.groundTop - f.geo.h + sy + sh / 2 + 0.5;
-    let size = Math.min(sh * 0.72, 8);
+    let size = Math.min(sh * 0.72, 8 * U);
     ctx.font = `${size}px "DotGothic16", sans-serif`;
     const tw = ctx.measureText(f.sign).width;
     if (tw > sw * 0.88) {
@@ -707,8 +792,9 @@
     }
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
+    const off = 0.5 * U;
     ctx.fillStyle = style[1];
-    ctx.fillText(f.sign, x + 0.5, y + 0.5);
+    ctx.fillText(f.sign, x + off, y + off);
     ctx.fillStyle = style[0];
     ctx.fillText(f.sign, x, y);
   }
@@ -723,14 +809,89 @@
   }
   function drawExitPost() {
     // 通りの入口の道しるべ
-    const gt = stage.groundTop;
-    ctx.fillStyle = "#3a2e24";
-    ctx.fillRect(5, gt - 14, 2, 30);
-    ctx.fillStyle = "#2a5a8a";
-    ctx.fillRect(1, gt - 22, 44, 9);
-    ctx.fillStyle = "#e8eef6";
-    ctx.fillRect(1, gt - 22, 44, 1);
-    drawWorldText(`◀ ${stage.exit.label}`, 23, gt - 17.5, 4.5, "#ffffff");
+    withUnit(0, stage.groundTop, () => {
+      ctx.fillStyle = "#3a2e24";
+      ctx.fillRect(5, -14, 2, 30);
+      ctx.fillStyle = "#2a5a8a";
+      ctx.fillRect(1, -22, 44, 9);
+      ctx.fillStyle = "#e8eef6";
+      ctx.fillRect(1, -22, 44, 1);
+      drawWorldText(`◀ ${stage.exit.label}`, 23, -17.5, 4.5, "#ffffff");
+    });
+  }
+
+  // ---------------------------------------------------------------- 奥行き（高解像度2.5D版のレイヤー・AA9）
+  // 遠景: 画像（far.img）があれば使い、無ければコード描画の街並み。ぼかして、霞を重ねて、ゆっくり動かす
+  function makeFarLayer(src, width, height, cfg) {
+    const cv = makeCanvas(width, height);
+    const g = cv.getContext("2d");
+    g.imageSmoothingEnabled = !!cfg.blur;
+    const sw = Math.max(1, Math.round(src.width * height / src.height));
+    for (let x = 0; x < width; x += sw) g.drawImage(src, x, 0, sw, height);
+    if (cfg.haze) {
+      const h = g.createLinearGradient(0, 0, 0, height);
+      const c = NIGHT ? "18, 22, 58" : "226, 232, 244";
+      h.addColorStop(0, `rgba(${c}, 0)`);
+      h.addColorStop(1, `rgba(${c}, ${cfg.haze})`);
+      g.fillStyle = h;
+      g.fillRect(0, 0, width, height);
+    }
+    if (!cfg.blur) return cv;
+    const out = makeCanvas(width, height);
+    const og = out.getContext("2d");
+    og.filter = `blur(${cfg.blur}px)`;
+    og.drawImage(cv, 0, 0);
+    return out;
+  }
+  // 手前: カメラのすぐ前を横切る電柱と電線（通りより速く動き、ピントが合っていないのでぼける）
+  function makePoleTile(cfg) {
+    const spacing = cfg.spacing, w = spacing + S(12), h = VIEW_H + S(20);
+    const cv = makeCanvas(w, h);
+    const g = cv.getContext("2d");
+    const col = NIGHT ? "#0b0a12" : "#2b2732";
+    const pw = S(7), px = S(3);
+    g.fillStyle = col;
+    g.fillRect(px, 0, pw, h);                                          // 柱
+    g.fillRect(px - S(10), S(34), pw + S(20), S(3));                  // 腕木
+    g.fillRect(px - S(6), S(48), pw + S(12), S(2));
+    g.fillStyle = NIGHT ? "#1a1824" : "#4a4552";
+    g.fillRect(px + pw - S(2), 0, S(2), h);                           // 柱の陰
+    g.strokeStyle = col;
+    g.lineWidth = Math.max(1, U);
+    for (const [y0, sag] of [[S(35), S(26)], [S(41), S(30)], [S(49), S(22)]]) {   // 電線（次の柱までたるませる）
+      g.beginPath();
+      g.moveTo(px + pw / 2, y0);
+      g.quadraticCurveTo(px + pw / 2 + spacing / 2, y0 + sag, px + pw / 2 + spacing, y0);
+      g.stroke();
+    }
+    if (!cfg.blur) return cv;
+    const out = makeCanvas(w, h);
+    const og = out.getContext("2d");
+    og.filter = `blur(${cfg.blur}px)`;
+    og.drawImage(cv, 0, 0);
+    return out;
+  }
+  // 灯りのにじみ: 灯りの中でも特に明るい芯（電球・窓の一番明るいところ）だけをぼかして重ねる
+  //（灯り全体をにじませると、PEPPERMINT のピンクの壁まで白く飛ぶ）
+  function makeBloom(glow, radius) {
+    if (!glow) return null;
+    const core = makeCanvas(glow.width, glow.height);
+    const cg = core.getContext("2d");
+    cg.drawImage(glow, 0, 0);
+    let data;
+    try { data = cg.getImageData(0, 0, core.width, core.height); } catch (e) { return null; }
+    const p = data.data;
+    for (let i = 0; i < p.length; i += 4) {
+      if ((p[i] * 0.3 + p[i + 1] * 0.59 + p[i + 2] * 0.11) < 190) p[i + 3] = 0;
+    }
+    cg.putImageData(data, 0, 0);
+    const pad = Math.ceil(radius * 3);
+    const cv = makeCanvas(glow.width + pad * 2, glow.height + pad * 2);
+    const g = cv.getContext("2d");
+    g.filter = `blur(${radius}px)`;
+    g.drawImage(core, pad, pad);
+    cv.pad = pad;
+    return cv;
   }
 
   function render() {
@@ -741,27 +902,29 @@
     if (!stage || mode === "loading" || mode === "map" || mode === "interior") return;
     const camX = Math.round(cam.x);
     const gt = stage.groundTop;
+    const farP = (stage.far && stage.far.parallax) || BACKDROP_PARALLAX;
 
     // 遠景（視差）
     ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0);
-    ctx.drawImage(assets.backdrop, Math.round(camX * BACKDROP_PARALLAX), 0, VIEW_W, gt, 0, 0, VIEW_W, gt);
+    ctx.drawImage(assets.backdrop, Math.round(camX * farP), 0, VIEW_W, gt, 0, 0, VIEW_W, gt);
 
     ctx.setTransform(SCALE, 0, 0, SCALE, -camX * SCALE, 0);
-    const visible = (x0, x1) => x1 >= camX - 4 && x0 <= camX + VIEW_W + 4;
+    const visible = (x0, x1) => x1 >= camX - S(4) && x0 <= camX + VIEW_W + S(4);
     for (const w of stage.walls || []) if (visible(w.x0, w.x1)) drawWall(w);
     for (const f of facades) if (visible(f.x, f.x + f.geo.w)) ctx.drawImage(f.art, f.x, gt - f.geo.h);
     const gw = assets.ground.width;
     for (let x = Math.floor(camX / gw) * gw; x < camX + VIEW_W; x += gw) ctx.drawImage(assets.ground, x, gt);
-    if (stage.exit && visible(0, 46)) drawExitPost();
+    if (stage.exit && visible(0, S(46))) drawExitPost();
 
     // 走った時の砂ぼこり（地面の上・人や物より奥）
     for (const p of dust) {
       const k = p.t / 0.4;
-      const r = 1 + Math.round(k * 2);
-      const x = Math.round(p.x), y = Math.round(p.y - k * 4);
-      ctx.fillStyle = `rgba(250, 246, 236, ${(0.9 * (1 - k)).toFixed(2)})`;
-      ctx.fillRect(x - r, y - r, r * 2, r);
-      ctx.fillRect(x - r + 1, y - r - 1, Math.max(1, r * 2 - 2), 1);
+      withUnit(p.x, p.y - k * 4 * U, () => {
+        const r = 1 + Math.round(k * 2);
+        ctx.fillStyle = `rgba(250, 246, 236, ${(0.9 * (1 - k)).toFixed(2)})`;
+        ctx.fillRect(-r, -r, r * 2, r);
+        ctx.fillRect(-r + 1, -r - 1, Math.max(1, r * 2 - 2), 1);
+      });
     }
 
     // 足元のyで前後を決めて描く
@@ -777,10 +940,14 @@
     const ps = assets.sheets.tsumugi;
     items.push({ y: player.y + 0.01, draw: () => { drawShadow(player.x, player.y, ps.cell[0] * 0.55); drawSprite(ps, player.dir, player.frame, player.x, player.y); } });
     const b = stage.barricade;
-    if (b && visible(b.x - 8, b.x + 20)) {
+    if (b && visible(b.x - S(8), b.x + S(20))) {
       const w = stage.walk;
-      for (const by of [w.y0 + 4, Math.round((w.y0 + w.y1) / 2) + 2, w.y1]) items.push({ y: by, draw: () => drawBarricade(b, by) });
-      items.push({ y: w.y1 + 2, draw: () => drawCone(b.x + 22, w.y1 + 2) });
+      const rows = Math.max(3, Math.round((w.y1 - w.y0) / S(14)));
+      for (let i = 0; i < rows; i++) {
+        const by = Math.round(w.y0 + S(4) + (w.y1 - w.y0 - S(4)) * (i / (rows - 1)));
+        items.push({ y: by, draw: () => drawBarricade(b, by) });
+      }
+      items.push({ y: w.y1 + S(2), draw: () => drawCone(b.x + S(22), w.y1 + S(2)) });
     }
     items.sort((a, c) => a.y - c.y);
     for (const it of items) it.draw();
@@ -791,44 +958,97 @@
       ctx.fillRect(camX, 0, VIEW_W, VIEW_H);
       ctx.globalCompositeOperation = "source-over";
       for (const f of facades) {
+        if (!visible(f.x, f.x + f.geo.w)) continue;
         const glow = assets.glows[f.id];
-        if (glow && visible(f.x, f.x + f.geo.w)) ctx.drawImage(glow, f.x, gt - f.geo.h);
+        if (glow) ctx.drawImage(glow, f.x, gt - f.geo.h);
+        const bloom = assets.blooms[f.id];
+        if (bloom) {                                         // 灯りのにじみ（高解像度版）
+          ctx.globalCompositeOperation = "lighter";
+          ctx.globalAlpha = 0.5;
+          ctx.drawImage(bloom, f.x - bloom.pad, gt - f.geo.h - bloom.pad);
+          ctx.globalAlpha = 1;
+          ctx.globalCompositeOperation = "source-over";
+        }
       }
-      const lampGlow = assets.glows.prop_lamp;
+      const lampGlow = assets.glows.prop_lamp, lampBloom = assets.blooms.prop_lamp;
       for (const o of objects) {
-        if (o.img !== "lamp" || !visible(o.x - 30, o.x + 30)) continue;
-        if (lampGlow) ctx.drawImage(lampGlow, Math.round(o.x - o.art.width / 2), o.y - o.art.height);
+        if (o.img !== "lamp" || !visible(o.x - S(30), o.x + S(30))) continue;
+        const lx = Math.round(o.x - o.art.width / 2), ly = o.y - o.art.height;
+        if (lampGlow) ctx.drawImage(lampGlow, lx, ly);
         ctx.globalCompositeOperation = "lighter";
+        if (lampBloom) ctx.drawImage(lampBloom, lx - lampBloom.pad, ly - lampBloom.pad);
         ctx.fillStyle = "rgba(255, 196, 120, 0.10)";
         for (let r = 0; r < 3; r++) {
           ctx.beginPath();
-          ctx.ellipse(o.x, o.y - 2, 26 - r * 7, 7 - r * 2, 0, 0, Math.PI * 2);
+          ctx.ellipse(o.x, o.y - S(2), S(26 - r * 7), S(7 - r * 2), 0, 0, Math.PI * 2);
           ctx.fill();
         }
         ctx.globalCompositeOperation = "source-over";
       }
     }
     for (const f of facades) if (visible(f.x, f.x + f.geo.w)) drawSignText(f);
-    if (b && visible(b.x - 8, b.x + 20)) drawWorldText("試作範囲外", b.x + 8, stage.walk.y0 - 12, 4.5, "#f2c230");
+    if (b && visible(b.x - S(8), b.x + S(20))) drawWorldText("試作範囲外", b.x + S(8), stage.walk.y0 - S(12), 4.5 * U, "#f2c230");
+
+    // 手前の電柱と電線（通りより速く動く・プレイヤーに重なる時は薄く）
+    const fg = stage.foreground;
+    if (fg && assets.poleTile) {
+      const tile = assets.poleTile;
+      const pScreenX = player.x - camX;
+      ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0);
+      ctx.imageSmoothingEnabled = true;
+      for (let i = 0; i < fg.count; i++) {
+        const x = Math.round(fg.start + i * fg.spacing - camX * fg.parallax);
+        if (x > VIEW_W || x + tile.width < 0) continue;
+        const poleX = x + S(6);
+        const near = Math.abs(poleX - pScreenX) < S(14);
+        ctx.globalAlpha = near ? 0.35 : 0.92;
+        ctx.drawImage(tile, x, -S(10));
+      }
+      ctx.globalAlpha = 1;
+      ctx.imageSmoothingEnabled = false;
+    }
+    // 画面全体の光と周辺減光（高解像度版）
+    const post = stage.post;
+    if (post) {
+      ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0);
+      if (post.sun && !NIGHT) {
+        const g = ctx.createLinearGradient(0, 0, VIEW_W * 0.7, VIEW_H);
+        g.addColorStop(0, `rgba(255, 226, 170, ${post.sun})`);
+        g.addColorStop(1, "rgba(255, 226, 170, 0)");
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+      }
+      if (post.vignette) {
+        const g = ctx.createRadialGradient(VIEW_W / 2, VIEW_H * 0.55, VIEW_H * 0.35, VIEW_W / 2, VIEW_H * 0.55, VIEW_W * 0.62);
+        g.addColorStop(0, "rgba(10, 6, 20, 0)");
+        g.addColorStop(1, `rgba(10, 6, 20, ${post.vignette})`);
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+      }
+      ctx.setTransform(SCALE, 0, 0, SCALE, -camX * SCALE, 0);
+    }
 
     // 決定できる相手がいる時は頭上に「！」
     if (focus && !busy && !msg.active) {
       const bob = Math.floor(performance.now() / 300) % 2;
-      const x = Math.round(player.x), y = Math.round(player.y) - ps.anchor[1] - 6 - bob;
-      ctx.fillStyle = "#241a2a";
-      ctx.fillRect(x - 3, y - 1, 7, 10);
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(x - 2, y, 5, 8);
-      ctx.fillStyle = "#d8402a";
-      ctx.fillRect(x, y + 1, 1, 4);
-      ctx.fillRect(x, y + 6, 1, 1);
+      withUnit(player.x, Math.round(player.y) - ps.anchor[1] - S(6), () => {
+        const y = -bob;
+        ctx.fillStyle = "#241a2a";
+        ctx.fillRect(-3, y - 1, 7, 10);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(-2, y, 5, 8);
+        ctx.fillStyle = "#d8402a";
+        ctx.fillRect(0, y + 1, 1, 4);
+        ctx.fillRect(0, y + 6, 1, 1);
+      });
     }
     // タップ先の目印
     if (player.target && Math.floor(performance.now() / 180) % 2 === 0) {
-      const tx = Math.round(player.target.x), ty = Math.round(player.target.y);
-      ctx.fillStyle = "#f4d27a";
-      ctx.fillRect(tx - 2, ty, 5, 1);
-      ctx.fillRect(tx, ty - 2, 1, 5);
+      withUnit(player.target.x, player.target.y, () => {
+        ctx.fillStyle = "#f4d27a";
+        ctx.fillRect(-2, 0, 5, 1);
+        ctx.fillRect(0, -2, 1, 5);
+      });
     }
   }
 
@@ -983,10 +1203,28 @@
     cam.x = clamp(player.x - VIEW_W / 2, 0, stage.width - VIEW_W);
   }
   function placeAtDoor(d, dir) {
-    placePlayer(d.cx, stage.walk.y0 + 6, dir);
+    placePlayer(d.cx, stage.walk.y0 + S(6), dir);
   }
 
+  // エリアマップ右上の「標準 / 高解像度」切り替え（URL の ?stage=hd を付け外しして読み直す）
+  function buildResToggle() {
+    const box = $("#res-toggle");
+    for (const b of box.querySelectorAll("button")) {
+      const on = (b.dataset.res === "hd") === HD;
+      b.setAttribute("aria-pressed", String(on));
+      b.onclick = () => {
+        if (on) return;
+        const q = new URLSearchParams(location.search);
+        q.delete("reset");
+        if (b.dataset.res === "hd") q.set("stage", "hd");
+        else q.delete("stage");
+        const qs = q.toString();
+        location.search = qs ? `?${qs}` : "";
+      };
+    }
+  }
   function buildPins() {
+    buildResToggle();
     const box = $("#pins");
     box.innerHTML = "";
     for (const a of AREAS) {
@@ -1274,6 +1512,16 @@
       npcs: npcs.map((n) => ({ id: n.id, x: Math.round(n.x), y: n.y, dir: n.dir, talking: n.talking })),
       missing: assets.missing.slice(),
       night: NIGHT,
+    }),
+    // ステージの配置（スモークテストが座標を決めるのに使う。標準版・高解像度版どちらでも同じテストを回せる）
+    layout: () => ({
+      id: stage.id, hd: HD, unit: U, view: [VIEW_W, VIEW_H, SCALE], width: stage.width, groundTop: stage.groundTop,
+      walk: { ...stage.walk }, spawn: { ...stage.spawn }, exit: stage.exit && { ...stage.exit },
+      speed: SPEED, dashMult: DASH_MULT, runTapDist: RUN_TAP_DIST, footHalfW: FOOT_HALF_W,
+      doors: doors.map((d) => ({ id: d.id, cx: d.cx })),
+      objects: objects.map((o) => ({ id: o.id, x: o.x, y: o.y, solid: o.solid || null, w: o.art.width, h: o.art.height })),
+      npcs: npcs.map((n) => ({ id: n.id, x: n.x, y: n.y })),
+      farSource: assets.farSource, foreground: !!assets.poleTile,
     }),
     place: (x, y, dir = "down") => {
       if (mode !== "walk") return false;

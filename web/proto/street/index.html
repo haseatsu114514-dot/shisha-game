@@ -242,6 +242,17 @@ body {
 .pin.off::after { border-top-color: #8c8698; }
 .pin small { display: block; font-size: 15px; color: #8c8698; text-align: center; }
 @keyframes bob { 50% { transform: translateY(6px); } }
+#res-toggle {
+  right: 20px;
+  top: 20px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+}
+#res-toggle span { color: var(--dim); margin-right: 2px; }
+#res-toggle .btn { padding: 6px 14px; font-size: 20px; box-shadow: none; border-width: 3px; }
 #toast {
   left: 50%;
   bottom: 40px;
@@ -284,6 +295,7 @@ body {
   <div id="areamap" class="hidden">
     <img id="areamap-bg" alt="">
     <div id="areamap-title" class="win">エリアを選ぶ<small>試作で歩けるのは「繁華街」だけ</small></div>
+    <div id="res-toggle" class="win"><span>画質</span><button class="btn" type="button" data-res="base" aria-pressed="true">標準</button><button class="btn" type="button" data-res="hd" aria-pressed="false">高解像度 2.5D</button></div>
     <div id="pins"></div>
     <div id="toast" class="win hidden"></div>
   </div>

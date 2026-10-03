@@ -28,7 +28,8 @@
    --preview の確認画像（水色の枠）を見て測り直すこと。
 
 使い方:
-  python3 tools/proto_street_assets.py
+  python3 tools/proto_street_assets.py                 # 320×180 の試作用 → assets/proto_street/
+  python3 tools/proto_street_assets.py --profile hd    # 640×360 の高解像度2.5D版 → assets/proto_street_hd/
   python3 tools/proto_street_assets.py --door-h 38 --facade-max-h 112
 """
 
@@ -46,7 +47,7 @@ from proto_walk_sheet import ALPHA_SOLID, find_blobs, key_background, order_in_g
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SRC_DIR = REPO_ROOT / "asset_sources" / "images" / "proto_street"
-OUT_DIR = REPO_ROOT / "assets" / "proto_street"
+OUT_DIR = REPO_ROOT / "assets" / "proto_street"   # main() で --profile に合わせて差し替える
 PREVIEW_PATH = SRC_DIR / "preview_street.png"
 
 # 建物（シートの左上から順）と、元画像でのドア・無地の看板の矩形 (x0, y0, x1, y1)。
@@ -66,9 +67,14 @@ PROPS = [("vending", 34), ("bench", 16), ("aboard", 19), ("plant", 18), ("lamp",
 GROUND_CURB_Y = (405, 445)
 GROUND_TILE_PERIOD = 100.5   # 歩道タイルの横周期（元画像px）
 GROUND_DASH_PERIOD = 197.5   # 車道の白線の横周期（元画像px）
-GROUND_W = 200               # 出力の幅（タイル20枚 = 白線10本）
-GROUND_TILES = 20
+GROUND_TILES = 20            # 出力の帯にタイル20枚 = 白線10本ぶん（左右の端が継ぎ目なくつながる）
 GROUND_DASHES = 10
+
+# 出力の種類。base = 320×180 の試作（web/proto/street の標準）、hd = 640×360 の高解像度2.5D版（AA9）
+PROFILES = {
+    "base": {"out": "proto_street", "door_h": 36, "facade_max_h": 110, "ground_h": 68, "ground_w": 200, "prop_scale": 1.0},
+    "hd": {"out": "proto_street_hd", "door_h": 56, "facade_max_h": 172, "ground_h": 150, "ground_w": 400, "prop_scale": 1.6},
+}
 
 
 def shrink(img: Image.Image, size, colors: int) -> Image.Image:
@@ -114,7 +120,8 @@ def build_facades(args, report):
 def build_props(args, report):
     keyed, blobs = cut_sheet(SRC_DIR / "props_sheet.png", 3, 2)
     meta = {}
-    for (name, height), (x0, y0, x1, y1, _) in zip(PROPS, blobs):
+    for (name, base_h), (x0, y0, x1, y1, _) in zip(PROPS, blobs):
+        height = round(base_h * args.prop_scale)
         crop = keyed.crop((x0, y0, x1, y1))
         scale = height / crop.height
         w = max(1, round(crop.width * scale))
@@ -156,31 +163,32 @@ def build_ground(args, report):
     total_h = args.ground_h
     sy = total_h / src.height
     top_h = round(curb1 * sy)
-    top = src.crop((tx, 0, round(tx + tw), curb1)).resize((GROUND_W, top_h), Image.LANCZOS)
-    road = src.crop((rx, curb1, round(rx + rw), src.height)).resize((GROUND_W, total_h - top_h), Image.LANCZOS)
-    strip = Image.new("RGB", (GROUND_W, total_h))
+    gw = args.ground_w
+    top = src.crop((tx, 0, round(tx + tw), curb1)).resize((gw, top_h), Image.LANCZOS)
+    road = src.crop((rx, curb1, round(rx + rw), src.height)).resize((gw, total_h - top_h), Image.LANCZOS)
+    strip = Image.new("RGB", (gw, total_h))
     strip.paste(top, (0, 0))
     strip.paste(road, (0, top_h))
     # 歩道と車道は別々に減色する（一緒にすると、少ない白線の白が点字ブロックの黄色に吸われる）
-    q_top = strip.crop((0, 0, GROUND_W, top_h)).quantize(colors=args.ground_colors, method=Image.MEDIANCUT)
-    q_road = strip.crop((0, top_h, GROUND_W, total_h)).quantize(colors=max(4, args.ground_colors // 2), method=Image.MEDIANCUT)
-    strip = Image.new("RGBA", (GROUND_W, total_h))
+    q_top = strip.crop((0, 0, gw, top_h)).quantize(colors=args.ground_colors, method=Image.MEDIANCUT)
+    q_road = strip.crop((0, top_h, gw, total_h)).quantize(colors=max(4, args.ground_colors // 2), method=Image.MEDIANCUT)
+    strip = Image.new("RGBA", (gw, total_h))
     strip.paste(q_top.convert("RGBA"), (0, 0))
     strip.paste(q_road.convert("RGBA"), (0, top_h))
     strip.save(OUT_DIR / "ground.png")
     meta = {
-        "w": GROUND_W,
+        "w": gw,
         "h": total_h,
         "sidewalk": [0, round(curb0 * sy)],
         "curb": [round(curb0 * sy), top_h],
         "road": [top_h, total_h],
     }
     # 継ぎ目の確認用に2枚つなげたものを出す
-    twice = Image.new("RGBA", (GROUND_W * 2, total_h))
+    twice = Image.new("RGBA", (gw * 2, total_h))
     twice.paste(strip, (0, 0))
-    twice.paste(strip, (GROUND_W, 0))
+    twice.paste(strip, (gw, 0))
     report.append(("ground x2 (seam check)", twice, []))
-    print(f"ground: {GROUND_W}x{total_h}  歩道 {meta['sidewalk']} / 縁石 {meta['curb']} / 車道 {meta['road']}")
+    print(f"ground: {gw}x{total_h}  歩道 {meta['sidewalk']} / 縁石 {meta['curb']} / 車道 {meta['road']}")
     return meta
 
 
@@ -215,14 +223,26 @@ def write_preview(report, path: Path, zoom: int = 3):
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--door-h", type=int, default=36, help="ドアの高さ（ドット）。キャラは32")
-    ap.add_argument("--facade-max-h", type=int, default=110, help="建物の高さの上限（ドット）")
-    ap.add_argument("--ground-h", type=int, default=68, help="地面の帯の高さ（ドット）")
+    ap.add_argument("--profile", choices=sorted(PROFILES), default="base",
+                    help="base = 320×180 の試作（assets/proto_street/）／ hd = 640×360 の高解像度2.5D版（assets/proto_street_hd/）")
+    ap.add_argument("--door-h", type=int, help="ドアの高さ（ドット）。既定は base 36（キャラ32）／hd 56（キャラ48）")
+    ap.add_argument("--facade-max-h", type=int, help="建物の高さの上限（ドット）")
+    ap.add_argument("--ground-h", type=int, help="地面の帯の高さ（ドット）")
+    ap.add_argument("--ground-w", type=int, help="地面の帯の幅（ドット。タイル20枚ぶん）")
+    ap.add_argument("--prop-scale", type=float, help="小物の高さの倍率（base の高さが基準）")
     ap.add_argument("--colors", type=int, default=48)
     ap.add_argument("--ground-colors", type=int, default=24)
     ap.add_argument("--no-preview", action="store_true")
     args = ap.parse_args()
 
+    global OUT_DIR, PREVIEW_PATH
+    prof = PROFILES[args.profile]
+    for key in ("door_h", "facade_max_h", "ground_h", "ground_w", "prop_scale"):
+        if getattr(args, key) is None:
+            setattr(args, key, prof[key])
+    OUT_DIR = REPO_ROOT / "assets" / prof["out"]
+    if args.profile != "base":
+        PREVIEW_PATH = SRC_DIR / f"preview_street_{args.profile}.png"
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     report = []
     meta = {

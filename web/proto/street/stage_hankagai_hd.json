@@ -1,0 +1,45 @@
+{
+  "extends": "stage_hankagai.json",
+  "note": "高解像度2.5D版（AA9）。テキストと入口は stage_hankagai.json から引き継ぎ、ここでは配置・大きさ・奥行きだけを書く",
+  "view": { "w": 640, "h": 360, "scale": 2 },
+  "unit": 1.5,
+  "charSize": 48,
+  "assets": "assets/proto_street_hd/",
+  "width": 1420,
+  "height": 360,
+  "groundTop": 210,
+  "walk": { "x0": 3, "x1": 1362, "y0": 218, "y1": 298 },
+  "spawn": { "x": 40, "y": 255, "dir": "right" },
+  "exit": { "x": 0, "w": 12 },
+  "barricade": { "x": 1380 },
+  "walls": [
+    { "x0": 928, "x1": 1110, "h": 40 },
+    { "x0": 1266, "x1": 1420, "h": 40 }
+  ],
+  "facades": [
+    { "id": "filler_a", "x": 22 },
+    { "id": "cafe", "x": 177 },
+    { "id": "peppermint", "x": 470 },
+    { "id": "filler_c", "x": 627 },
+    { "id": "filler_b", "x": 785 },
+    { "id": "kemurikusa", "x": 1110 }
+  ],
+  "objects": [
+    { "id": "lamp_1", "x": 174, "y": 282, "solid": [9, 4] },
+    { "id": "aboard", "x": 258, "y": 234, "solid": [21, 6] },
+    { "id": "vending", "x": 370, "y": 220, "solid": [33, 7] },
+    { "id": "bench", "x": 425, "y": 240, "solid": [33, 7] },
+    { "id": "lamp_2", "x": 623, "y": 282, "solid": [9, 4] },
+    { "id": "bicycle", "x": 850, "y": 244, "solid": [39, 6] },
+    { "id": "lamp_3", "x": 1015, "y": 282, "solid": [9, 4] },
+    { "id": "plant", "x": 1286, "y": 223, "solid": [18, 6] }
+  ],
+  "npcs": [
+    { "id": "mob_obasan", "x": 700, "y": 262, "patrol": [230, 1010], "speed": 39 },
+    { "id": "mob_student", "x": 520, "y": 238 }
+  ],
+  "far": { "img": "far_day.png", "imgNight": "far_night.png", "parallax": 0.35, "blur": 1.2, "haze": 0.35 },
+  "foreground": { "parallax": 1.35, "blur": 2.2, "start": 300, "spacing": 520, "count": 4 },
+  "bloom": 2.5,
+  "post": { "sun": 0.1, "vignette": 0.28 }
+}
