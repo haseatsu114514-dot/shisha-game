@@ -323,6 +323,7 @@ node web/test/portraits.mjs       # 立ち絵の身長スケール回帰（ス�
 | `web-build-test` | web/・data/ 変更後のビルドとヘッドレステスト（変更→テスト対応表・直列実行ルール） |
 | `canon-check` | 矛盾・設定齟齬・旧名残存の点検、設定に関わる文章を書く前の正本確認 |
 | `portrait-fix` | 立ち絵のズレ・表情切替ジャンプ・見切れ・髪欠け・身長バランス・立ち絵追加（症状別診断フロー） |
+| [`character-portrait-remaster`](.claude/skills/character-portrait-remaster/SKILL.md) | 既存キャラの立ち絵を1人ずつ再制作。元の顔・高密度ドット絵調・別衣装の頭身を保ち、確認後に採用する。制作記録・確認待ち画像も同スキル内に保存 |
 | `story-review` | ストーリー・台詞の添削、質の改善提案（矛盾探しではなく磨き。提案止まり・採用分はdialogue-editで実装） |
 | `playtest-feedback` | 初見プレイヤーになりきったプレイ感想（退屈ポイント・ゲーム性・テンポ。修正はしない） |
 | `codex-image-prompt` | 画像の新規生成・修正をCodexに頼むためのプロンプト作成（種類別正本の参照・焼き込み禁止・組み込み手順） |
