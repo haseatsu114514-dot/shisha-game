@@ -39,7 +39,7 @@
     { "id": "mob_student", "x": 520, "y": 238 }
   ],
   "far": { "img": "far_day.png", "imgNight": "far_night.png", "parallax": 0.35, "blur": 1.2, "haze": 0.35 },
-  "foreground": { "parallax": 1.35, "blur": 2.2, "start": 300, "spacing": 520, "count": 4 },
+  "foreground": { "img": "fg_utility_pole.png", "parallax": 1.35, "blur": 2.2, "start": 300, "spacing": 520, "count": 4 },
   "bloom": 2.5,
   "post": { "sun": 0.1, "vignette": 0.28 }
 }

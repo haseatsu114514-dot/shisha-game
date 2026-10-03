@@ -162,3 +162,10 @@ Warm light glowing through the frosted glass door and small windows, the lowerca
 wooden sign lit by a small lamp, chalkboard sign readable, potted plants catching the glow.
 Deep blue night sky, a streetlight down the narrow sidewalk. Inviting neighborhood warmth
 against the cool night. No crushed blacks.
+
+==========================================================================
+試作（本編未接続）: 通りの「高解像度2.5D版」の遠景・前景（2026-10-03）
+==========================================================================
+web/proto/street/index.html?stage=hd 用の遠景パノラマ（far_day.png / far_night.png）と前景の電柱
+（fg_utility_pole.png）。プロンプト本文・サイズ・保存先・受け取り後の変換は
+docs/codex_handoff_street_hd_images.md が正（ここには書き写さない）。

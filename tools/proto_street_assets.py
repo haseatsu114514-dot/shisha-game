@@ -73,7 +73,8 @@ GROUND_DASHES = 10
 # 出力の種類。base = 320×180 の試作（web/proto/street の標準）、hd = 640×360 の高解像度2.5D版（AA9）
 PROFILES = {
     "base": {"out": "proto_street", "door_h": 36, "facade_max_h": 110, "ground_h": 68, "ground_w": 200, "prop_scale": 1.0},
-    "hd": {"out": "proto_street_hd", "door_h": 56, "facade_max_h": 172, "ground_h": 150, "ground_w": 400, "prop_scale": 1.6},
+    "hd": {"out": "proto_street_hd", "door_h": 56, "facade_max_h": 172, "ground_h": 150, "ground_w": 400, "prop_scale": 1.6,
+           "depth": True, "far_h": 210, "pole_h": 380},
 }
 
 
@@ -192,6 +193,55 @@ def build_ground(args, report):
     return meta
 
 
+def seamless(img: Image.Image, overlap: float = 0.08) -> Image.Image:
+    """左右の端を重ねてなじませ、横に並べても継ぎ目が見えない画像にする（幅は overlap ぶん縮む）。"""
+    w, h = img.size
+    k = max(2, int(w * overlap))
+    body = img.crop((0, 0, w - k, h)).convert("RGBA")
+    tail = img.crop((w - k, 0, w, h)).convert("RGBA")
+    head = body.crop((0, 0, k, h))
+    mask = Image.linear_gradient("L").rotate(90, expand=True).resize((k, h))   # 左=255 → 右=0
+    body.paste(Image.composite(tail, head, mask), (0, 0))
+    return body
+
+
+def build_depth(args, report):
+    """高解像度2.5D版の奥行き素材（Codexに発注中・届いていれば変換する）。
+
+    far_day.png / far_night.png … 遠景のパノラマ（横長・左右がつながる）。地面の上端までの高さに縮めて継ぎ目をなじませる
+    fg_utility_pole.png         … 手前を横切る電柱（マゼンタ背景）。透過して画面の高さ＋αに縮める（ゲーム側でぼかす）
+    """
+    meta = {}
+    for name in ("far_day", "far_night"):
+        src = SRC_DIR / f"{name}.png"
+        if not src.exists():
+            print(f"{name}: 元画像なし（{src.name} が届いたら変換する）")
+            continue
+        im = Image.open(src).convert("RGB")
+        h = args.far_h
+        im = im.resize((max(1, round(im.width * h / im.height)), h), Image.LANCZOS)
+        out = seamless(im)
+        out.save(OUT_DIR / f"{name}.png")
+        meta[name] = {"w": out.width, "h": out.height}
+        report.append((name, out, []))
+        print(f"{name}: {out.width}x{out.height}")
+    src = SRC_DIR / "fg_utility_pole.png"
+    if src.exists():
+        im = Image.open(src).convert("RGBA")
+        keyed = key_background(im, detect_key_color(im))
+        bbox = keyed.getchannel("A").point(lambda v: 255 if v >= ALPHA_SOLID else 0).getbbox()
+        pole = keyed.crop(bbox)
+        h = args.pole_h
+        pole = pole.resize((max(1, round(pole.width * h / pole.height)), h), Image.LANCZOS)
+        pole.save(OUT_DIR / "fg_utility_pole.png")
+        meta["fg_utility_pole"] = {"w": pole.width, "h": pole.height}
+        report.append(("fg_utility_pole", pole, []))
+        print(f"fg_utility_pole: {pole.width}x{pole.height}")
+    else:
+        print("fg_utility_pole: 元画像なし（届いたら変換する）")
+    return meta
+
+
 def write_preview(report, path: Path, zoom: int = 3):
     pad = 12
     items = []
@@ -251,6 +301,9 @@ def main() -> None:
         "props": build_props(args, report),
         "ground": build_ground(args, report),
     }
+    if prof.get("depth"):
+        args.far_h, args.pole_h = prof["far_h"], prof["pole_h"]
+        meta["depth"] = build_depth(args, report)
     (OUT_DIR / "street_assets.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"wrote {OUT_DIR / 'street_assets.json'}")
     if not args.no_preview:

@@ -22,6 +22,25 @@ push 済みのブランチなら raw.githack でも開ける:
 | `?night=1` | 夜の通り（全体を暗く・窓とランプだけ灯る・カフェの店内は夜の絵） |
 | `?area=hankagai` | エリアマップを飛ばして通りから始める |
 
+## 高解像度2.5D版（`?stage=hd`・AA9）
+
+エリアマップ右上の「画質: 標準 / 高解像度 2.5D」で切り替えられる（URLに `?stage=hd` を付けても同じ）。標準版はそのまま残している。
+
+| | 標準 | 高解像度2.5D |
+|---|---|---|
+| 内部解像度 | 320×180 を4倍 | 640×360 を2倍（1ドットが半分の細かさ） |
+| キャラ | 32px | 48px（5方向＋左右反転・2コマは同じ。オーナー選択） |
+| 建物・小物・地面 | 元画像の約0.22倍 | 同じ元画像から約0.35倍（ドア56ドット・建物は最大172ドット）。追加の生成なし |
+| 奥行き | 遠景（コード描画）が少し遅れて動く | 遠景をぼかして霞を重ね、ゆっくり動かす／手前を電柱と電線がぼけたまま速く横切る（プレイヤーに重なると薄く）／夜は灯りの明るい芯だけにじむ／日差しと周辺減光 |
+| ステージ | `stage_hankagai.json` | `stage_hankagai_hd.json`（標準版を `extends` して配置と大きさだけ上書き。テキストは標準版の1か所だけ） |
+| 素材 | `assets/proto_street/` | `assets/proto_street_hd/`（`python3 tools/proto_street_assets.py --profile hd`） |
+
+- キャラは建物に対して標準版より小さく見える（ドア56ドット／キャラ48ドット）。街並みの細かさが主役の見え方
+- 遠景と前景の電柱は、今はコードで描いた仮のもの。画像は Codex に発注中（`docs/codex_handoff_street_hd_images.md`）。
+  `asset_sources/images/proto_street/` に `far_day.png`・`far_night.png`・`fg_utility_pole.png` が届いたら、
+  `--profile hd` の変換を流すだけで差し替わる（届かなくても今の見た目で動く）
+- 柵・道しるべ・「！」・砂ぼこりなどコードで描く小物は、標準版の絵を1.5倍で描いているので、画像よりドットが粗い
+
 ## 操作
 
 - 移動: 矢印 / WASD（8方向）。地面をタップ（押したままドラッグ）でそこへ歩く。歩く速さは80ドット/秒
@@ -54,14 +73,16 @@ push 済みのブランチなら raw.githack でも開ける:
 | `web/proto/street/index.html` | 画面（キャンバス＋ウィンドウ類の HTML/CSS） |
 | `web/proto/street/street.js` | 本体（移動・描画・入店・しらべる・通行人・ファストトラベル・仮素材） |
 | `web/proto/street/stage_hankagai.json` | 通りの配置・入口・小物・通行人・テキスト |
-| `web/proto/street/smoke.mjs` | スモークテスト（生成画像と仮素材の両方で全項目） |
+| `web/proto/street/stage_hankagai_hd.json` | 高解像度2.5D版の配置・大きさ・奥行き（テキストは上を引き継ぐ） |
+| `web/proto/street/smoke.mjs` | スモークテスト（標準・高解像度 × 生成画像・仮素材の4通りで全項目） |
 | `assets/proto_street/` | 変換済みの建物・小物・地面・通行人の歩行シート・`street_assets.json`（ドアと看板の位置） |
+| `assets/proto_street_hd/` | 同じものの高解像度版（通行人は48px） |
 | `assets/proto_walk/tsumugi_walk_{32,48}.png/.json` | つむぎの歩行シート（歩行テストと共用） |
 | `tools/proto_street_assets.py` | 建物・小物・地面の変換 |
 | `tools/proto_walk_sheet.py` | 歩行シートの変換（つむぎ・通行人） |
 | `asset_sources/images/proto_street/`・`proto_walk/` | 生成AIの元画像（`_try` 付きは比較用）と確認用プレビュー |
 
-`window.__street` … `state()`・`warp(doorId)`・`place(x, y, dir)`（テスト・デバッグ用）
+`window.__street` … `state()`・`layout()`（ステージの配置）・`warp(doorId)`・`place(x, y, dir)`（テスト・デバッグ用）
 
 ## 画像の変換
 
@@ -73,6 +94,9 @@ python3 tools/proto_walk_sheet.py asset_sources/images/proto_street/mob_obasan_w
 python3 tools/proto_walk_sheet.py asset_sources/images/proto_street/mob_student_walk_sheet.png \
     --name mob_student --out-dir assets/proto_street --sizes 32 --preview asset_sources/images/proto_street/preview_mob_student.png
 python3 tools/proto_street_assets.py                 # 建物6・小物6・地面 → assets/proto_street/
+python3 tools/proto_street_assets.py --profile hd    # 高解像度2.5D版 → assets/proto_street_hd/（遠景・電柱も届いていれば）
+python3 tools/proto_walk_sheet.py asset_sources/images/proto_street/mob_obasan_walk_sheet.png \
+    --name mob_obasan --out-dir assets/proto_street_hd --sizes 48 --no-preview   # 大学生も同様
 ```
 
 Codex から届いた注意点への対応:

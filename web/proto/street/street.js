@@ -434,7 +434,11 @@
     assets.backdrop = (farImg || U !== 1 || farCfg.blur || farCfg.haze)
       ? makeFarLayer(farSrc, farW, stage.groundTop, farCfg)
       : farSrc;
-    if (stage.foreground) assets.poleTile = makePoleTile(stage.foreground);
+    if (stage.foreground) {
+      const fgImg = stage.foreground.img ? await loadImage(`${STREET_DIR}${stage.foreground.img}${BUST}`) : null;
+      assets.poleTile = makePoleTile(stage.foreground, fgImg);
+      assets.fgSource = fgImg ? "image" : "code";
+    }
 
     const sheetSpecs = [["tsumugi", WALK_DIR, "tsumugi_walk"], ...stage.npcs.map((n) => [n.sheet, STREET_DIR, n.sheet])];
     await Promise.all(sheetSpecs.map(async ([key, dir, file]) => {
@@ -843,32 +847,47 @@
     og.drawImage(cv, 0, 0);
     return out;
   }
-  // 手前: カメラのすぐ前を横切る電柱と電線（通りより速く動き、ピントが合っていないのでぼける）
-  function makePoleTile(cfg) {
-    const spacing = cfg.spacing, w = spacing + S(12), h = VIEW_H + S(20);
+  // 手前: カメラのすぐ前を横切る電柱と電線（通りより速く動き、ピントが合っていないのでぼける）。
+  // 電柱は fg_utility_pole.png があればそれを、無ければコードで描く。電線は次の柱まで必ずつながるようにコードで描く
+  function makePoleTile(cfg, img) {
+    const spacing = cfg.spacing, h = VIEW_H + S(20);
+    const col = NIGHT ? "#0b0a12" : "#2b2732";
+    const iw = img ? Math.round(img.width * h / img.height) : 0;
+    const poleW = img ? iw : S(13);
+    const w = spacing + poleW;
     const cv = makeCanvas(w, h);
     const g = cv.getContext("2d");
-    const col = NIGHT ? "#0b0a12" : "#2b2732";
-    const pw = S(7), px = S(3);
-    g.fillStyle = col;
-    g.fillRect(px, 0, pw, h);                                          // 柱
-    g.fillRect(px - S(10), S(34), pw + S(20), S(3));                  // 腕木
-    g.fillRect(px - S(6), S(48), pw + S(12), S(2));
-    g.fillStyle = NIGHT ? "#1a1824" : "#4a4552";
-    g.fillRect(px + pw - S(2), 0, S(2), h);                           // 柱の陰
+    let cx;
+    if (img) {
+      g.imageSmoothingEnabled = true;
+      g.drawImage(img, 0, 0, iw, h);
+      cx = iw / 2;
+    } else {
+      const pw = S(7), px = S(3);
+      g.fillStyle = col;
+      g.fillRect(px, 0, pw, h);                                        // 柱
+      g.fillRect(px - S(10), S(34), pw + S(20), S(3));                // 腕木
+      g.fillRect(px - S(6), S(48), pw + S(12), S(2));
+      g.fillStyle = NIGHT ? "#1a1824" : "#4a4552";
+      g.fillRect(px + pw - S(2), 0, S(2), h);                         // 柱の陰
+      cx = px + pw / 2;
+    }
     g.strokeStyle = col;
     g.lineWidth = Math.max(1, U);
-    for (const [y0, sag] of [[S(35), S(26)], [S(41), S(30)], [S(49), S(22)]]) {   // 電線（次の柱までたるませる）
+    const wires = cfg.wires || [[34, 26], [40, 30], [48, 22]];         // [高さ, たるみ]（標準版のドット）
+    for (const [y, sag] of wires) {
       g.beginPath();
-      g.moveTo(px + pw / 2, y0);
-      g.quadraticCurveTo(px + pw / 2 + spacing / 2, y0 + sag, px + pw / 2 + spacing, y0);
+      g.moveTo(cx, S(y));
+      g.quadraticCurveTo(cx + spacing / 2, S(y + sag), cx + spacing, S(y));
       g.stroke();
     }
+    cv.poleCx = cx;
     if (!cfg.blur) return cv;
     const out = makeCanvas(w, h);
     const og = out.getContext("2d");
     og.filter = `blur(${cfg.blur}px)`;
     og.drawImage(cv, 0, 0);
+    out.poleCx = cx;
     return out;
   }
   // 灯りのにじみ: 灯りの中でも特に明るい芯（電球・窓の一番明るいところ）だけをぼかして重ねる
@@ -999,7 +1018,7 @@
       for (let i = 0; i < fg.count; i++) {
         const x = Math.round(fg.start + i * fg.spacing - camX * fg.parallax);
         if (x > VIEW_W || x + tile.width < 0) continue;
-        const poleX = x + S(6);
+        const poleX = x + tile.poleCx;
         const near = Math.abs(poleX - pScreenX) < S(14);
         ctx.globalAlpha = near ? 0.35 : 0.92;
         ctx.drawImage(tile, x, -S(10));
@@ -1521,7 +1540,7 @@
       doors: doors.map((d) => ({ id: d.id, cx: d.cx })),
       objects: objects.map((o) => ({ id: o.id, x: o.x, y: o.y, solid: o.solid || null, w: o.art.width, h: o.art.height })),
       npcs: npcs.map((n) => ({ id: n.id, x: n.x, y: n.y })),
-      farSource: assets.farSource, foreground: !!assets.poleTile,
+      farSource: assets.farSource, foreground: !!assets.poleTile, fgSource: assets.fgSource || null,
     }),
     place: (x, y, dir = "down") => {
       if (mode !== "walk") return false;
