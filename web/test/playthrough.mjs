@@ -70,7 +70,12 @@ while (guard++ < 5000) {
   if (await page.locator("#phone-overlay.show").count()) {
     if (!limeSeen) { limeSeen = true; log("LIME morning phone shown"); }
     const reply = page.locator("#phone-overlay .lime-reply").first();
-    if (await reply.count()) await reply.click();
+    if (await reply.count()) {
+      // 初回お誘いのヒントは返信ボタンと同時に出る。上の確認の直後に出た場合はここで閉じてから押す
+      const hintOk = page.locator("#hint-overlay .hint-ok");
+      if (await hintOk.count()) { await hintOk.click().catch(() => {}); await page.waitForTimeout(80); continue; }
+      await reply.click({ timeout: 5000 }).catch(() => {});
+    }
     await page.waitForTimeout(250);
     continue;
   }
@@ -152,7 +157,8 @@ while (guard++ < 5000) {
     if (label === "Dr.fookah") {
       try {
         const pin = page.locator("#map-pins .spot-pin", { hasText: "Dr.fookah" }).first();
-        if (await pin.count() && !(await pin.isDisabled())) await pin.click({ timeout: 3000 });
+        // メニューが残った再試行では、背後のピンを押し直さず物販ボタンへ進む。
+        if (!(await page.locator("#fookah-menu.show").count()) && await pin.count() && !(await pin.isDisabled())) await pin.click({ timeout: 3000 });
         await page.waitForSelector("#fookah-menu.show", { timeout: 3000 });
         await page.locator("#fookah-menu #fookah-shop").click({ timeout: 3000 });
       } catch { planIdx--; }
@@ -239,7 +245,12 @@ while (guard++ < 3000) {
   if (await page.locator("#phone-overlay.show").count()) {
     if (!postPhoneSeen) { postPhoneSeen = true; log("post-victory LIME shown"); }
     const reply = page.locator("#phone-overlay .lime-reply").first();
-    if (await reply.count()) await reply.click();
+    if (await reply.count()) {
+      // 初回お誘いのヒントは返信ボタンと同時に出る。上の確認の直後に出た場合はここで閉じてから押す
+      const hintOk = page.locator("#hint-overlay .hint-ok");
+      if (await hintOk.count()) { await hintOk.click().catch(() => {}); await page.waitForTimeout(80); continue; }
+      await reply.click({ timeout: 5000 }).catch(() => {});
+    }
     await page.waitForTimeout(250);
     continue;
   }

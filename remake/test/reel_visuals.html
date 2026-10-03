@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<base href="../">
+<title>パッキースロット表示の回帰検証</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/reel.css">
+<style>
+  #checks { position:fixed; left:12px; top:8px; z-index:100; font:14px sans-serif; color:#fff; background:#171221; padding:8px; white-space:pre-line; }
+  #preview { position:fixed; right:12px; top:8px; z-index:100; }
+  #screen { background:radial-gradient(ellipse at 50% 55%,#33223d,#0b0812); }
+</style>
+<div id="viewport"><div id="stage">
+  <div id="bg"></div><div id="screen"></div><div id="vn"></div><div id="hud"></div>
+  <div id="fx"></div><div id="toasts"></div><div id="banners"></div>
+  <div id="wipe"></div><div id="modal"></div>
+</div></div>
+<output id="checks">検証準備中</output>
+<button id="preview" hidden>新しい枠・図柄と通知色をプレビュー</button>
+<script type="module" src="test/reel_visuals.mjs"></script>
+</html>

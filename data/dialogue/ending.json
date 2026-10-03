@@ -211,7 +211,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "誰かと特別な恋人関係になることはなかったが、俺たちには『シーシャ』という揺るぎない絆がある。"
+          "text": "tonariに集まって、いつもの話をした。今夜も、俺たちは一緒にいる。"
         },
         {
           "speaker": "naru",
@@ -261,12 +261,16 @@
         {
           "speaker": "",
           "face": "",
-          "text": "恋人がいなくたって寂しくない。最高の仲間と、最高の煙がある限り――"
+          "text": "帰る席があって、話したい相手がいる。今日は、それでよかった。"
         },
         {
           "speaker": "",
           "face": "",
           "text": "俺のシーシャ探求の日々は、これからもずっと続いていく。"
+        },
+        {
+          "type": "jump",
+          "next_id": "ending_daily_smoke"
         }
       ]
     },
@@ -501,103 +505,90 @@
     },
     {
       "dialogue_id": "epilogue_minto",
+      "metadata": {
+        "private_scene": true
+      },
       "lines": [
         {
           "type": "show_cg",
           "cg_id": "cg_minto_epilogue"
         },
         {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "「はじめく〜〜んっ♡ おかえりなさーいっ！"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "おつかれさま〜っ♡ みんとのだんな様、今日もカッコよかったよーっ♡」"
-        },
-        {
           "speaker": "",
           "face": "",
-          "text": "バイトが終わり、バックヤードで着替えていると、みんとが勢いよく胸に飛び込んできた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "「うわっ！」と声が漏れる。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ドンッとぶつかってきた彼女の華奢な体は、羽のように軽くて、"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "けれど確かな温もりと柔らかさを持っていた。"
+          "text": "バイトを終えて裏口を出ると、私服の栞さんが待っていた。"
         },
         {
           "speaker": "minto",
-          "face": "smile",
-          "text": "「えへへ〜、はじめくん成分が足りなくて死にそうだったの♡ ほら、もっとぎゅってして？"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "……お腹空いてない？ 帰ったらご飯作ってあげるからねっ♡」"
+          "face": "ura_smile",
+          "text": "……おかえり、はじめくん。お疲れさま"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "彼女が俺を見上げて、甘えるように頬を擦り寄せてくる。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "そのたびに彼女の彼女に染み付いたチョコミントの甘く爽やかな匂いが広がり、"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "俺の鼓動はあっさりと跳ね上がった。"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "「ねえ、今日は私のおうちだよね♡ ……この後、いっぱいイチャイチャしよ？"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "みんとがぜーんぶ癒してあげるからね……♡ 準備、できてるから……ね？」"
+          "text": "小走りに近づいてきた彼女が、そのまま胸に飛び込んできた。"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "「準備って……っ！」"
+          "text": "わっ……栞さん？"
         },
         {
           "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……ごめん。今日は、ちょっとだけ甘えたい日"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "華奢な体は羽のように軽くて、けれど確かな温もりがあった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "髪から、彼女に染みついたチョコミントの甘く爽やかな匂いが、ふわりと広がる。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "今日のきみの一台、お店の外まで匂ってた、……いい匂いだったよ"
+        },
+        {
+          "speaker": "hajime",
           "face": "smile",
-          "text": "「内緒っ♡ さあ、おうち帰ろっ♡ みんとがぜんぶお世話してあげるっ！」"
+          "text": "ありがとう。……栞さんに言われるのが、一番うれしい"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "ねえ、今日はうちでご飯にしよ。簡単なのでよければ、私が作るから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "うん。じゃあ、食後の一台は俺が作るよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……ふふ。それ、すごく楽しみ、……帰ろっか"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "みんとは俺の手をぎゅっと握り、指を絡ませながら引っ張っていく。"
+          "text": "栞さんは俺の手を取って、指を絡めて歩き出した。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "手のひらから伝わる彼女の熱と、少し小悪魔な笑顔。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "俺の毎日に、とびきり甘くてドキドキする時間が加わった。"
+          "text": "店の外でだけ見せる、少し照れた素の笑顔。俺の毎日に、穏やかで甘い時間が加わった。"
         },
         {
           "type": "hide_cg"
+        },
+        {
+          "type": "jump",
+          "next_id": "ending_daily_smoke"
         }
       ]
     },
@@ -665,6 +656,30 @@
         },
         {
           "type": "hide_cg"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今日、また別の子を描いたんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの猫じゃなくて？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。でも、あの子もまだ描きます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "並んで歩く足音に、二人の話す速さが合っていった。"
+        },
+        {
+          "type": "jump",
+          "next_id": "ending_daily_smoke"
         }
       ]
     },
@@ -742,6 +757,10 @@
         },
         {
           "type": "hide_cg"
+        },
+        {
+          "type": "jump",
+          "next_id": "ending_daily_smoke"
         }
       ]
     },
@@ -922,6 +941,10 @@
         },
         {
           "type": "hide_cg"
+        },
+        {
+          "type": "jump",
+          "next_id": "ending_daily_smoke"
         }
       ]
     },
@@ -1043,12 +1066,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "試香紙の森を抜けた先の、素の彼女の匂い。"
+          "text": "仕事を離れて二人でいる、凛さんの匂い。"
         },
         {
           "speaker": "rin",
           "face": "normal",
-          "text": "……私さ、匂いで大体のことが分かるんだよね。嘘も、無理も、隠しごとも"
+          "text": "匂いで気づくことは多いよ。でも、聞かないと分からないこともある"
         },
         {
           "speaker": "rin",
@@ -1072,6 +1095,97 @@
         },
         {
           "type": "hide_cg"
+        },
+        {
+          "type": "jump",
+          "next_id": "ending_daily_smoke"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ending_daily_smoke",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png",
+        "clear_portraits": true
+      },
+      "lines": [
+        {
+          "type": "hide_cg"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "数日後のtonari。ドアベルが鳴り、いつもの客がカウンターに腰を下ろした。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "あ、世界大会の人だ。今日はいるかなって、思ってたんだよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いらっしゃいませ。いますよ。今日は、どんな感じがいいですか？"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "いつものやつ。……でも、ちょっと疲れてるから、軽めにできる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。ゆっくり吸える感じで作りますね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "教わった詰め方で葉をほぐす。何度も練習してきた火加減を確かめ、相手の吸う間に合わせて、炭をひとつ離した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "特別な新しいレシピはない。いつもの袋と、使い慣れた道具で、今日の注文に応えた一台だった。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……ああ、これ。やっぱり、ここ来ると落ち着く"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ホースを膝に置いた客の肩が、少し下がる。もう一口吸って、笑った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（また、この顔が見たい。そのためなら、明日も練習したい）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "優勝の写真は、カウンターの端に飾ってある。あの日のことも、うれしいままだった。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "はじめくん、あとで友達が来るんだけど、もう一台お願いしてもいい？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「世界大会の人」と呼ばれることが増えた。今、向かいの人が呼んだのは「はじめくん」だった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "もちろんです。その人、甘いのは好きですか？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "返事を聞きながら、もう一つボウルを出す。手には、ここまで覚えてきたものが残っていた。"
         }
       ]
     }

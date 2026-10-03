@@ -39,6 +39,9 @@ def encode_background(path: Path) -> str:
 
 def encode_portrait(path: Path) -> str:
     """立ち絵は透過が必要なので減色PNGにする。"""
+    # かふかの清書版は原寸・フルカラーのPNGをそのまま埋め込む。
+    if path.parent.name == "kafuka":
+        return "data:image/png;base64," + base64.b64encode(path.read_bytes()).decode()
     im = Image.open(path).convert("RGBA")
     if im.height > PORTRAIT_MAX_H:
         im = im.resize((round(im.width * PORTRAIT_MAX_H / im.height), PORTRAIT_MAX_H), Image.LANCZOS)

@@ -1,0 +1,789 @@
+{
+ "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
+ "generated": "2026-10-03 13:21 UTC",
+ "portraits": {
+  "adam": {
+   "faces": [
+    "intense",
+    "normal",
+    "serious",
+    "smile",
+    "surprise"
+   ],
+   "h": 0.8742,
+   "b": 0.0258,
+   "ax": 0.5055,
+   "aspect": 0.7467
+  },
+  "ageha": {
+   "faces": [
+    "normal",
+    "sad",
+    "serious",
+    "smile",
+    "surprise"
+   ],
+   "h": 0.8108,
+   "b": 0.02,
+   "ax": 0.5784,
+   "aspect": 0.7467
+  },
+  "dr_kemuri": {
+   "faces": [
+    "evil",
+    "normal",
+    "serious",
+    "smile",
+    "surprise"
+   ],
+   "h": 0.91,
+   "b": 0.0225,
+   "ax": 0.5254,
+   "aspect": 0.7467
+  },
+  "hajime": {
+   "faces": [
+    "normal",
+    "sad",
+    "serious",
+    "smile",
+    "surprise"
+   ],
+   "h": 0.845,
+   "b": 0.0208,
+   "ax": 0.554,
+   "aspect": 0.7467
+  },
+  "kafuka": {
+   "faces": [
+    "normal",
+    "serious",
+    "smile",
+    "surprise"
+   ],
+   "h": 0.987,
+   "b": 0.0104,
+   "ax": 0.4855,
+   "aspect": 0.6667
+  },
+  "maezono": {
+   "faces": [
+    "excited",
+    "normal",
+    "serious",
+    "smile",
+    "surprise"
+   ],
+   "h": 0.8358,
+   "b": 0.0208,
+   "ax": 0.5362,
+   "aspect": 0.7467
+  },
+  "mashiro": {
+   "faces": [
+    "normal",
+    "sad",
+    "serious",
+    "smile",
+    "surprise"
+   ],
+   "h": 0.7317,
+   "b": 0.02,
+   "ax": 0.5004,
+   "aspect": 0.7467
+  },
+  "minto": {
+   "faces": [
+    "normal",
+    "sad",
+    "smile",
+    "surprise",
+    "ura_normal",
+    "ura_sad",
+    "ura_smile",
+    "ura_smug",
+    "ura_surprise",
+    "wink"
+   ],
+   "h": 0.7867,
+   "b": 0.02,
+   "ax": 0.5762,
+   "aspect": 0.7467
+  },
+  "nagumo": {
+   "faces": [
+    "normal",
+    "serious",
+    "smile",
+    "surprise",
+    "thinking"
+   ],
+   "h": 0.8742,
+   "b": 0.0217,
+   "ax": 0.5239,
+   "aspect": 0.7467
+  },
+  "naru": {
+   "faces": [
+    "normal",
+    "sad",
+    "serious",
+    "smile",
+    "surprise"
+   ],
+   "h": 0.8625,
+   "b": 0.0225,
+   "ax": 0.5446,
+   "aspect": 0.7467
+  },
+  "pakki": {
+   "faces": [
+    "angry",
+    "normal",
+    "smile",
+    "smoke",
+    "surprise"
+   ],
+   "h": 0.4333,
+   "b": 0.0267,
+   "ax": 0.5255,
+   "aspect": 0.7467
+  },
+  "rin": {
+   "faces": [
+    "normal",
+    "sad",
+    "serious",
+    "smile",
+    "surprise"
+   ],
+   "h": 0.835,
+   "b": 0.0217,
+   "ax": 0.5544,
+   "aspect": 0.7467
+  },
+  "sumi": {
+   "faces": [
+    "normal",
+    "serious",
+    "smile",
+    "surprise",
+    "thinking"
+   ],
+   "h": 0.8942,
+   "b": 0.0208,
+   "ax": 0.5226,
+   "aspect": 0.7467
+  },
+  "tsumugi": {
+   "faces": [
+    "normal",
+    "sad",
+    "serious",
+    "smile",
+    "surprise"
+   ],
+   "h": 0.715,
+   "b": 0.02,
+   "ax": 0.5525,
+   "aspect": 0.7467
+  }
+ },
+ "backgrounds": [
+  "bg_ageha_shop.png",
+  "bg_c_station_day.png",
+  "bg_c_station_lobby.png",
+  "bg_c_station_night.png",
+  "bg_cafe_day.png",
+  "bg_cafe_night.png",
+  "bg_choizap.png",
+  "bg_eden_shop.png",
+  "bg_fookah_showroom.png",
+  "bg_hideaway.png",
+  "bg_home.png",
+  "bg_home_day.png",
+  "bg_home_night.png",
+  "bg_kannon_day.png",
+  "bg_map_local.png",
+  "bg_map_local_day.png",
+  "bg_map_local_night.png",
+  "bg_osu_map_day.png",
+  "bg_osu_map_night.png",
+  "bg_ryuji_shop.png",
+  "bg_shishark.png",
+  "bg_shishark_preparing_night.png",
+  "bg_shop.png",
+  "bg_street_day.png",
+  "bg_street_night.png",
+  "bg_title.png",
+  "bg_tonari_inside.png",
+  "bg_tonari_inside_day.png",
+  "bg_tonari_inside_night.png",
+  "bg_tonari_outside.png",
+  "bg_tonari_outside_day.png",
+  "bg_tonari_outside_night.png",
+  "bg_tournament_stage.png",
+  "dr.hookah.png",
+  "eden.png",
+  "kemurikusa.png",
+  "peppermint.png"
+ ],
+ "cgs": [
+  "cg_ch1_dr_kemuri_hook.png",
+  "cg_ch1_minto_casual_reveal.png",
+  "cg_ch1_sumi_training.png",
+  "cg_ch1_tournament_battle.png",
+  "cg_ch1_tsumugi_heart_art.png"
+ ],
+ "faceIcons": [
+  "face_adam.png",
+  "face_ageha.png",
+  "face_dr_kemuri.png",
+  "face_hajime.png",
+  "face_maezono.png",
+  "face_mashiro.png",
+  "face_minto.png",
+  "face_nagumo.png",
+  "face_naru.png",
+  "face_pakki.png",
+  "face_rin.png",
+  "face_ryuji.png",
+  "face_sumi.png",
+  "face_tsumugi.png"
+ ],
+ "making": [
+  "bench_base.png",
+  "bench_note.png",
+  "bowl_empty_clay.png",
+  "bowl_empty_phunnel.png",
+  "bowl_empty_silicone.png",
+  "bowl_packed_airy.png",
+  "bowl_packed_firm.png",
+  "bowl_packed_normal.png",
+  "bowl_packed_phunnel_airy.png",
+  "bowl_packed_phunnel_firm.png",
+  "bowl_packed_phunnel_normal.png",
+  "coal_cold.png",
+  "coal_flat_cold.png",
+  "coal_flat_just.png",
+  "coal_flat_red.png",
+  "coal_flat_white.png",
+  "coal_just.png",
+  "coal_red.png",
+  "coal_white.png",
+  "foil_surface.png",
+  "hand_fork.png",
+  "hand_pin.png",
+  "hand_press.png",
+  "hand_tongs_closed.png",
+  "hand_tongs_open.png",
+  "heat_glow.png",
+  "hole_punched.png",
+  "hookah_base.png",
+  "hookah_stem.png",
+  "hookah_tray.png",
+  "hose_line.png",
+  "hose_tip.png",
+  "jar_open.png",
+  "jar_pour.png",
+  "leaf_grain.png",
+  "leaf_pile_1.png",
+  "leaf_pile_2.png",
+  "leaf_pile_3.png",
+  "leaf_pile_4.png",
+  "mix_scale.png",
+  "serve_hose.png",
+  "smoke_thick.png",
+  "steam_wait_bg.png",
+  "stove_coil.png",
+  "vignette_focus.png"
+ ],
+ "sceneProps": [],
+ "makingBox": {
+  "bench_base.png": [
+   0.0,
+   0.0,
+   1.0,
+   1.0,
+   1.7768
+  ],
+  "bench_note.png": [
+   0.1406,
+   0.0986,
+   0.9479,
+   0.8633,
+   1.5
+  ],
+  "bowl_empty_clay.png": [
+   0.0757,
+   0.1166,
+   0.9243,
+   0.8927,
+   1.3685
+  ],
+  "bowl_empty_phunnel.png": [
+   0.1497,
+   0.1191,
+   0.8529,
+   0.8867,
+   1.5
+  ],
+  "bowl_empty_silicone.png": [
+   0.2018,
+   0.0463,
+   0.8222,
+   0.9378,
+   1.0
+  ],
+  "bowl_packed_airy.png": [
+   0.2026,
+   0.047,
+   0.8214,
+   0.9378,
+   1.0
+  ],
+  "bowl_packed_firm.png": [
+   0.2026,
+   0.047,
+   0.8206,
+   0.937,
+   1.0
+  ],
+  "bowl_packed_normal.png": [
+   0.2033,
+   0.047,
+   0.8198,
+   0.937,
+   1.0
+  ],
+  "bowl_packed_phunnel_airy.png": [
+   0.1504,
+   0.1211,
+   0.8509,
+   0.8857,
+   1.5
+  ],
+  "bowl_packed_phunnel_firm.png": [
+   0.1504,
+   0.1211,
+   0.8503,
+   0.8867,
+   1.5
+  ],
+  "bowl_packed_phunnel_normal.png": [
+   0.1504,
+   0.1211,
+   0.8509,
+   0.8857,
+   1.5
+  ],
+  "coal_cold.png": [
+   0.0813,
+   0.0875,
+   0.925,
+   0.9313,
+   1.0
+  ],
+  "coal_flat_cold.png": [
+   0.0813,
+   0.0875,
+   0.925,
+   0.7438,
+   1.0
+  ],
+  "coal_flat_just.png": [
+   0.0813,
+   0.0875,
+   0.925,
+   0.7438,
+   1.0
+  ],
+  "coal_flat_red.png": [
+   0.0813,
+   0.0875,
+   0.925,
+   0.7438,
+   1.0
+  ],
+  "coal_flat_white.png": [
+   0.0813,
+   0.0875,
+   0.925,
+   0.7438,
+   1.0
+  ],
+  "coal_just.png": [
+   0.0813,
+   0.0875,
+   0.925,
+   0.9313,
+   1.0
+  ],
+  "coal_red.png": [
+   0.0813,
+   0.0875,
+   0.925,
+   0.9313,
+   1.0
+  ],
+  "coal_white.png": [
+   0.0813,
+   0.0875,
+   0.925,
+   0.9313,
+   1.0
+  ],
+  "foil_surface.png": [
+   0.0846,
+   0.1748,
+   0.9154,
+   0.8164,
+   1.5
+  ],
+  "hand_fork.png": [
+   0.1021,
+   0.055,
+   0.9769,
+   0.9274,
+   1.0
+  ],
+  "hand_pin.png": [
+   0.2004,
+   0.0,
+   1.0,
+   0.9465,
+   1.2496
+  ],
+  "hand_press.png": [
+   0.1722,
+   0.0,
+   1.0,
+   0.8836,
+   1.0
+  ],
+  "hand_tongs_closed.png": [
+   0.3405,
+   0.0247,
+   0.9968,
+   0.6579,
+   1.0
+  ],
+  "hand_tongs_open.png": [
+   0.3126,
+   0.0239,
+   0.9976,
+   0.681,
+   1.0
+  ],
+  "heat_glow.png": [
+   0.1733,
+   0.3353,
+   0.8283,
+   0.9088,
+   1.7647
+  ],
+  "hole_punched.png": [
+   0.2375,
+   0.2375,
+   0.775,
+   0.775,
+   1.0
+  ],
+  "hookah_base.png": [
+   0.1898,
+   0.0441,
+   0.8072,
+   0.9449,
+   1.1297
+  ],
+  "hookah_stem.png": [
+   0.4446,
+   0.0776,
+   0.5534,
+   0.9218,
+   0.6255
+  ],
+  "hookah_tray.png": [
+   0.0657,
+   0.3046,
+   0.9297,
+   0.6916,
+   2.4494
+  ],
+  "hose_line.png": [
+   0.0569,
+   0.1912,
+   0.9352,
+   0.8453,
+   2.3325
+  ],
+  "hose_tip.png": [
+   0.1643,
+   0.1029,
+   0.8397,
+   0.9019,
+   1.0
+  ],
+  "jar_open.png": [
+   0.1467,
+   0.1786,
+   0.89,
+   0.811,
+   1.0
+  ],
+  "jar_pour.png": [
+   0.1459,
+   0.0,
+   1.0,
+   0.7783,
+   1.0
+  ],
+  "leaf_grain.png": [
+   0.4171,
+   0.0949,
+   0.5829,
+   0.8692,
+   1.0
+  ],
+  "leaf_pile_1.png": [
+   0.2663,
+   0.3046,
+   0.7392,
+   0.6715,
+   1.0
+  ],
+  "leaf_pile_2.png": [
+   0.0877,
+   0.2193,
+   0.9094,
+   0.7798,
+   1.2299
+  ],
+  "leaf_pile_3.png": [
+   0.0591,
+   0.1543,
+   0.9395,
+   0.8282,
+   1.1953
+  ],
+  "leaf_pile_4.png": [
+   0.0521,
+   0.1096,
+   0.9579,
+   0.8886,
+   1.2496
+  ],
+  "mix_scale.png": [
+   0.0854,
+   0.0579,
+   0.9146,
+   0.9301,
+   1.5669
+  ],
+  "serve_hose.png": [
+   0.0,
+   0.084,
+   0.8796,
+   1.0,
+   1.5
+  ],
+  "smoke_thick.png": [
+   0.2273,
+   0.0138,
+   0.7937,
+   1.0,
+   1.7768
+  ],
+  "steam_wait_bg.png": [
+   0.25,
+   0.0208,
+   0.744,
+   0.9861,
+   0.6255
+  ],
+  "stove_coil.png": [
+   0.127,
+   0.1266,
+   0.873,
+   0.877,
+   1.2496
+  ],
+  "vignette_focus.png": [
+   0.0,
+   0.0,
+   1.0,
+   1.0,
+   1.7778
+  ]
+ },
+ "bgm": [
+  "daily_part.mp3",
+  "title.mp3",
+  "tonari.mp3"
+ ],
+ "webp": [
+  "backgrounds/bg_ageha_shop.png",
+  "backgrounds/bg_c_station_day.png",
+  "backgrounds/bg_c_station_lobby.png",
+  "backgrounds/bg_c_station_night.png",
+  "backgrounds/bg_cafe_day.png",
+  "backgrounds/bg_cafe_night.png",
+  "backgrounds/bg_choizap.png",
+  "backgrounds/bg_eden_shop.png",
+  "backgrounds/bg_fookah_showroom.png",
+  "backgrounds/bg_hideaway.png",
+  "backgrounds/bg_home.png",
+  "backgrounds/bg_home_day.png",
+  "backgrounds/bg_home_night.png",
+  "backgrounds/bg_kannon_day.png",
+  "backgrounds/bg_map_local.png",
+  "backgrounds/bg_map_local_day.png",
+  "backgrounds/bg_map_local_night.png",
+  "backgrounds/bg_osu_map_day.png",
+  "backgrounds/bg_osu_map_night.png",
+  "backgrounds/bg_ryuji_shop.png",
+  "backgrounds/bg_shishark.png",
+  "backgrounds/bg_shishark_preparing_night.png",
+  "backgrounds/bg_shop.png",
+  "backgrounds/bg_street_day.png",
+  "backgrounds/bg_street_night.png",
+  "backgrounds/bg_title.png",
+  "backgrounds/bg_tonari_inside.png",
+  "backgrounds/bg_tonari_inside_day.png",
+  "backgrounds/bg_tonari_inside_night.png",
+  "backgrounds/bg_tonari_outside.png",
+  "backgrounds/bg_tonari_outside_day.png",
+  "backgrounds/bg_tonari_outside_night.png",
+  "backgrounds/bg_tournament_stage.png",
+  "backgrounds/dr.hookah.png",
+  "backgrounds/eden.png",
+  "backgrounds/kemurikusa.png",
+  "backgrounds/peppermint.png",
+  "cgs/cg_ch1_dr_kemuri_hook.png",
+  "cgs/cg_ch1_minto_casual_reveal.png",
+  "cgs/cg_ch1_sumi_training.png",
+  "cgs/cg_ch1_tournament_battle.png",
+  "cgs/cg_ch1_tsumugi_heart_art.png",
+  "sprites/characters/adam/chr_adam_intense.png",
+  "sprites/characters/adam/chr_adam_normal.png",
+  "sprites/characters/adam/chr_adam_serious.png",
+  "sprites/characters/adam/chr_adam_smile.png",
+  "sprites/characters/adam/chr_adam_surprise.png",
+  "sprites/characters/ageha/chr_ageha_normal.png",
+  "sprites/characters/ageha/chr_ageha_sad.png",
+  "sprites/characters/ageha/chr_ageha_serious.png",
+  "sprites/characters/ageha/chr_ageha_smile.png",
+  "sprites/characters/ageha/chr_ageha_surprise.png",
+  "sprites/characters/dr_kemuri/chr_dr_kemuri_evil.png",
+  "sprites/characters/dr_kemuri/chr_dr_kemuri_normal.png",
+  "sprites/characters/dr_kemuri/chr_dr_kemuri_serious.png",
+  "sprites/characters/dr_kemuri/chr_dr_kemuri_smile.png",
+  "sprites/characters/dr_kemuri/chr_dr_kemuri_surprise.png",
+  "sprites/characters/hajime/chr_hajime_normal.png",
+  "sprites/characters/hajime/chr_hajime_sad.png",
+  "sprites/characters/hajime/chr_hajime_serious.png",
+  "sprites/characters/hajime/chr_hajime_smile.png",
+  "sprites/characters/hajime/chr_hajime_surprise.png",
+  "sprites/characters/kafuka/chr_kafuka_normal.png",
+  "sprites/characters/kafuka/chr_kafuka_serious.png",
+  "sprites/characters/kafuka/chr_kafuka_smile.png",
+  "sprites/characters/kafuka/chr_kafuka_surprise.png",
+  "sprites/characters/maezono/chr_maezono_excited.png",
+  "sprites/characters/maezono/chr_maezono_normal.png",
+  "sprites/characters/maezono/chr_maezono_serious.png",
+  "sprites/characters/maezono/chr_maezono_smile.png",
+  "sprites/characters/maezono/chr_maezono_surprise.png",
+  "sprites/characters/mashiro/chr_mashiro_normal.png",
+  "sprites/characters/mashiro/chr_mashiro_sad.png",
+  "sprites/characters/mashiro/chr_mashiro_serious.png",
+  "sprites/characters/mashiro/chr_mashiro_smile.png",
+  "sprites/characters/mashiro/chr_mashiro_surprise.png",
+  "sprites/characters/minto/chr_minto_normal.png",
+  "sprites/characters/minto/chr_minto_sad.png",
+  "sprites/characters/minto/chr_minto_smile.png",
+  "sprites/characters/minto/chr_minto_surprise.png",
+  "sprites/characters/minto/chr_minto_ura_normal.png",
+  "sprites/characters/minto/chr_minto_ura_sad.png",
+  "sprites/characters/minto/chr_minto_ura_smile.png",
+  "sprites/characters/minto/chr_minto_ura_smug.png",
+  "sprites/characters/minto/chr_minto_ura_surprise.png",
+  "sprites/characters/minto/chr_minto_wink.png",
+  "sprites/characters/nagumo/chr_nagumo_normal.png",
+  "sprites/characters/nagumo/chr_nagumo_serious.png",
+  "sprites/characters/nagumo/chr_nagumo_smile.png",
+  "sprites/characters/nagumo/chr_nagumo_surprise.png",
+  "sprites/characters/nagumo/chr_nagumo_thinking.png",
+  "sprites/characters/naru/chr_naru_normal.png",
+  "sprites/characters/naru/chr_naru_sad.png",
+  "sprites/characters/naru/chr_naru_serious.png",
+  "sprites/characters/naru/chr_naru_smile.png",
+  "sprites/characters/naru/chr_naru_surprise.png",
+  "sprites/characters/pakki/chr_pakki_angry.png",
+  "sprites/characters/pakki/chr_pakki_normal.png",
+  "sprites/characters/pakki/chr_pakki_smile.png",
+  "sprites/characters/pakki/chr_pakki_smoke.png",
+  "sprites/characters/pakki/chr_pakki_surprise.png",
+  "sprites/characters/rin/chr_rin_normal.png",
+  "sprites/characters/rin/chr_rin_sad.png",
+  "sprites/characters/rin/chr_rin_serious.png",
+  "sprites/characters/rin/chr_rin_smile.png",
+  "sprites/characters/rin/chr_rin_surprise.png",
+  "sprites/characters/sumi/chr_sumi_normal.png",
+  "sprites/characters/sumi/chr_sumi_serious.png",
+  "sprites/characters/sumi/chr_sumi_smile.png",
+  "sprites/characters/sumi/chr_sumi_surprise.png",
+  "sprites/characters/sumi/chr_sumi_thinking.png",
+  "sprites/characters/tsumugi/chr_tsumugi_normal.png",
+  "sprites/characters/tsumugi/chr_tsumugi_sad.png",
+  "sprites/characters/tsumugi/chr_tsumugi_serious.png",
+  "sprites/characters/tsumugi/chr_tsumugi_smile.png",
+  "sprites/characters/tsumugi/chr_tsumugi_surprise.png",
+  "ui/making/bench_base.png",
+  "ui/making/bench_note.png",
+  "ui/making/bowl_empty_clay.png",
+  "ui/making/bowl_empty_phunnel.png",
+  "ui/making/bowl_empty_silicone.png",
+  "ui/making/bowl_packed_airy.png",
+  "ui/making/bowl_packed_firm.png",
+  "ui/making/bowl_packed_normal.png",
+  "ui/making/bowl_packed_phunnel_airy.png",
+  "ui/making/bowl_packed_phunnel_firm.png",
+  "ui/making/bowl_packed_phunnel_normal.png",
+  "ui/making/coal_cold.png",
+  "ui/making/coal_flat_cold.png",
+  "ui/making/coal_flat_just.png",
+  "ui/making/coal_flat_red.png",
+  "ui/making/coal_flat_white.png",
+  "ui/making/coal_just.png",
+  "ui/making/coal_red.png",
+  "ui/making/coal_white.png",
+  "ui/making/foil_surface.png",
+  "ui/making/hand_fork.png",
+  "ui/making/hand_pin.png",
+  "ui/making/hand_press.png",
+  "ui/making/hand_tongs_closed.png",
+  "ui/making/hand_tongs_open.png",
+  "ui/making/heat_glow.png",
+  "ui/making/hole_punched.png",
+  "ui/making/hookah_base.png",
+  "ui/making/hookah_stem.png",
+  "ui/making/hookah_tray.png",
+  "ui/making/hose_line.png",
+  "ui/making/hose_tip.png",
+  "ui/making/jar_open.png",
+  "ui/making/jar_pour.png",
+  "ui/making/leaf_grain.png",
+  "ui/making/leaf_pile_1.png",
+  "ui/making/leaf_pile_2.png",
+  "ui/making/leaf_pile_3.png",
+  "ui/making/leaf_pile_4.png",
+  "ui/making/mix_scale.png",
+  "ui/making/serve_hose.png",
+  "ui/making/smoke_thick.png",
+  "ui/making/steam_wait_bg.png",
+  "ui/making/stove_coil.png",
+  "ui/making/vignette_focus.png",
+  "ui/title_arts/title_art_keyvisual_01.png",
+  "ui/ui_title_logo.png"
+ ]
+}

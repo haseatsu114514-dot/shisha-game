@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>立ち絵制作・画質と質感の参照</title>
+<style>
+  :root { color-scheme: dark; font: 15px/1.6 system-ui, sans-serif; --stage: #20242c; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 24px; background: #11151b; color: #ecedf1; }
+  main { max-width: 1280px; margin: auto; }
+  h1 { font-size: 24px; margin: 0 0 8px; }
+  h2 { font-size: 19px; margin: 0 0 4px; }
+  p { margin: 0 0 14px; }
+  a { color: #a7d9ff; }
+  button, select { font: inherit; color: inherit; background: #303946; border: 1px solid #617083; border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+  button:focus-visible, a:focus-visible { outline: 3px solid #85cfec; outline-offset: 3px; }
+  .toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+  section { margin-top: 30px; }
+  .status { display: inline-block; padding: 2px 9px; font-size: 13px; border-radius: 5px; background: #245045; }
+  .pending { background: #755525; }
+  .grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+  .grid.sheet { grid-template-columns: minmax(0, 1fr); max-width: 1000px; }
+  figure { margin: 0; min-width: 0; }
+  .preview { display: block; width: 100%; padding: 0; background: var(--stage); border: 1px solid #566474; border-radius: 6px; overflow: hidden; }
+  .preview img { display: block; width: 100%; height: auto; }
+  figcaption { margin-top: 6px; }
+  figcaption a { font-size: 12px; }
+  dialog { width: min(1200px, 96vw); max-width: none; height: 94vh; padding: 18px; border: 1px solid #77899e; background: #151b24; color: #ecedf1; }
+  dialog::backdrop { background: #000b; }
+  #detail-title { margin: 0; font-size: 18px; }
+  #detail-scroll { height: calc(100% - 155px); overflow: auto; background: var(--stage); }
+  #detail-image { display: block; max-width: none; height: auto; image-rendering: pixelated; }
+  #error { color: #ffbcaa; }
+  @media (max-width: 700px) { body { padding: 14px; } .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+</style>
+<main>
+  <h1>立ち絵制作・画質と質感の参照</h1>
+  <p>過去の全制作セットを見てから生成する。画像を押すと原寸表示。顔・髪・服・透過の縁を1倍と2倍で確認する。</p>
+  <p><a href="style-references.md">参照手順</a> · <a href="review-status.md">制作記録</a> · <a href="style-references.json">画像一覧</a></p>
+  <div class="toolbar"><span>透過の背景：</span><button type="button" data-background="#20242c">暗い背景</button><button type="button" data-background="#ffffff">白い背景</button></div>
+  <div id="gallery" aria-live="polite"></div>
+  <p id="error" role="alert"></p>
+</main>
+<dialog id="detail">
+  <h2 id="detail-title"></h2>
+  <div class="toolbar">
+    <label>表示倍率 <select id="zoom"><option value="1">1倍・原寸</option><option value="2">2倍・補間なし</option></select></label>
+    <button type="button" data-background="#20242c">暗い背景</button><button type="button" data-background="#ffffff">白い背景</button>
+    <a id="source-link" target="_blank" rel="noopener">元のPNGを開く</a>
+    <button type="button" id="close-detail">閉じる</button>
+  </div>
+  <p id="dimensions"></p>
+  <div id="detail-scroll"><img id="detail-image" alt=""></div>
+</dialog>
+<script>
+  const gallery = document.getElementById('gallery');
+  const detail = document.getElementById('detail');
+  const detailImage = document.getElementById('detail-image');
+  const scroll = document.getElementById('detail-scroll');
+  const zoom = document.getElementById('zoom');
+  const error = document.getElementById('error');
+  function showError(message) { error.textContent = message; }
+  function applyZoom() {
+    detailImage.style.width = `${detailImage.naturalWidth * Number(zoom.value)}px`;
+    document.getElementById('dimensions').textContent = `元画像 ${detailImage.naturalWidth} × ${detailImage.naturalHeight}px · ${zoom.value}倍表示。スクロールして顔・髪・服・縁を確認。`;
+  }
+  function openImage(image, group, item) {
+    document.getElementById('detail-title').textContent = `${group.title} — ${item.label}（${group.status === 'approved' ? '採用済み' : '確認待ち'}）`;
+    detailImage.alt = `${group.title} ${item.label}`;
+    detailImage.onload = applyZoom;
+    detailImage.src = image.src;
+    document.getElementById('source-link').href = image.src;
+    zoom.value = '1';
+    if (detailImage.complete) applyZoom();
+    detail.showModal();
+    scroll.scrollTo(0, 0);
+  }
+  document.querySelectorAll('[data-background]').forEach(button => button.addEventListener('click', () => {
+    document.documentElement.style.setProperty('--stage', button.dataset.background);
+  }));
+  document.getElementById('close-detail').addEventListener('click', () => detail.close());
+  zoom.addEventListener('change', applyZoom);
+  async function render() {
+    const response = await fetch('style-references.json');
+    if (!response.ok) throw new Error(`画像一覧の読み込みに失敗しました (${response.status})`);
+    const catalog = await response.json();
+    for (const group of catalog.groups) {
+      const section = document.createElement('section');
+      section.dataset.status = group.status;
+      const title = document.createElement('h2');
+      title.textContent = group.title;
+      const status = document.createElement('span');
+      status.className = `status ${group.status === 'approved' ? '' : 'pending'}`;
+      status.textContent = group.status === 'approved' ? '採用済み・画風の基準' : '確認待ち・直近の制作例';
+      const description = document.createElement('p');
+      description.append(status);
+      const grid = document.createElement('div');
+      grid.className = `grid ${group.images.length === 1 ? 'sheet' : ''}`;
+      for (const item of group.images) {
+        const figure = document.createElement('figure');
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'preview';
+        button.setAttribute('aria-label', `${group.title} ${item.label}を原寸で見る`);
+        const img = document.createElement('img');
+        img.alt = `${group.title} ${item.label}`;
+        img.src = item.path;
+        img.addEventListener('error', () => showError(`画像を読み込めませんでした：${item.path}`));
+        button.append(img);
+        button.addEventListener('click', () => openImage(img, group, item));
+        const caption = document.createElement('figcaption');
+        caption.append(document.createTextNode(item.label), document.createElement('br'));
+        const link = document.createElement('a');
+        link.href = item.path;
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.textContent = '元のPNG';
+        caption.append(link);
+        figure.append(button, caption);
+        grid.append(figure);
+      }
+      section.append(title, description, grid);
+      gallery.append(section);
+    }
+  }
+  render().catch(err => showError(`${err.message}。リポジトリのルートをHTTPサーバーで開いてください。`));
+</script>
+</html>

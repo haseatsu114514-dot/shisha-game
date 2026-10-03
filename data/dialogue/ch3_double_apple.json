@@ -1,5 +1,5 @@
 {
-  "comment": "第3章前半『ダブルアップル事件』── 味覚を失ったはじめが、ましろの出した一台を『ダブルアップル』と言われて同調してしまう。シーシャで最も分かりやすい味すら分からない絶望と、嘘がバレた瞬間。ましろだけが、何も聞かずに救う。ch3エンジン実装時に組み込む。",
+  "comment": "第3章前半のダブルアップル事件。味が分からないまま同調したはじめが、ましろに分からないことを話す。吸う日も、作らず座る日もあり、休息と生活・仲間との連絡から回復を支える。第3章のブラウザ進行は未接続。",
   "dialogues": [
     {
       "dialogue_id": "ch3_mukai_arrival",
@@ -83,7 +83,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "私が作るから。座ってて"
+          "text": "僕が作るから。座ってて"
         },
         {
           "speaker": "",
@@ -240,7 +240,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "……ううん。いい。私、何も聞かない"
+          "text": "……ううん。いい。僕、何も聞かない"
         },
         {
           "speaker": "hajime",
@@ -265,7 +265,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "──ましろだけが、何も問わなかった。"
+          "text": "今夜は、答えを急がずにいてくれた。"
         },
         {
           "speaker": "",
@@ -490,12 +490,56 @@
         {
           "speaker": "",
           "face": "",
-          "text": "「tonariのはじめ」でも「県大会覇者」でもない、ただの蒸野はじめに戻る場所があるということ。"
+          "text": "味が分からなかった日にも、ここには席があった。明日また迷っても、帰っていい。"
         },
         {
           "speaker": "",
           "face": "",
           "text": "──ここから、本当の第3章が始まる。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_rest_before_recovery",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後。味はまだ分からない。今日は作業台へ向かう気にもなれなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……今日は、うまく作れる気がしません"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "じゃあ、今日は作らなくていいよぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それでも、ここにいていいんですか"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。お茶、飲む？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カップを受け取って座る。時計が進む音を、二人で聞いていた。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 2
+          }
         }
       ]
     }

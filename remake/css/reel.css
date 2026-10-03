@@ -1,0 +1,299 @@
+/* ============================================================
+   MOKUMOKUパッキー（日常スロット）— マップ左下のミニ筐体
+   見た目は旧版 web/css/reel.css を踏襲（ランプ・光条・レバー・溜め・カットイン）
+   ============================================================ */
+.reel-widget {
+  --slot-scale: 1;
+  position: absolute;
+  left: 16px;
+  bottom: 14px;
+  width: 136px;
+  z-index: 5;
+  pointer-events: none; /* 普段は飾り。ランプだけ押せる */
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.55));
+  transition: transform 0.25s;
+}
+.reel-widget.lamp-lit { transform: scale(1.06); }
+.reel-widget.gakkun .rw-machine { animation: rw-gakkun 0.4s; }
+@keyframes rw-gakkun {
+  30% { transform: translateY(3px) rotate(-0.8deg); }
+  55% { transform: translateY(-2px) rotate(0.6deg); }
+}
+/* ランプ・枠・レバー・プレートは共通寸法。拡大時はコマの高さと同じ倍率で描く。 */
+.rw-lamp-wrap { position: relative; width: calc(50px * var(--slot-scale)); margin: 0 auto calc(-8px * var(--slot-scale)); z-index: 2; }
+.rw-lamp {
+  position: relative;
+  display: block;
+  width: calc(50px * var(--slot-scale));
+  height: calc(50px * var(--slot-scale));
+  padding: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  border: calc(2px * var(--slot-scale)) solid rgba(244, 210, 122, 0.55);
+  background: radial-gradient(circle at 35% 30%, #3a3242, #17131d 70%);
+  pointer-events: auto;
+  cursor: pointer;
+}
+.rw-face { display: block; width: 100%; height: 100%; object-fit: contain; image-rendering: pixelated; }
+.rw-face.txt { display: grid; place-items: center; color: var(--gold); font-weight: 800; font-size: calc(20px * var(--slot-scale, 1)); }
+.rw-lamp .rw-face { opacity: 0.5; transition: opacity 0.2s; }
+.rw-lamp.lit { border-color: #ffe27a; animation: rw-peka 0.55s infinite alternate, rw-peka-pop 0.5s cubic-bezier(0.2, 2.4, 0.4, 1); }
+.rw-lamp.lit .rw-face { opacity: 1; }
+.reel-widget.lamp-premium .rw-lamp.lit { animation: rw-peka-rainbow 0.7s infinite; }
+@keyframes rw-peka {
+  from { box-shadow: 0 0 8px 2px rgba(255, 220, 90, 0.75), 0 0 30px 8px rgba(255, 160, 60, 0.45); background: radial-gradient(circle at 35% 30%, #ffdf7e, #c98a2a 75%); }
+  to { box-shadow: 0 0 16px 6px rgba(255, 235, 140, 0.95), 0 0 46px 16px rgba(255, 170, 70, 0.6); background: radial-gradient(circle at 35% 30%, #fff3c0, #e8a93e 75%); }
+}
+@keyframes rw-peka-rainbow {
+  0%, 100% { box-shadow: 0 0 14px 5px rgba(255, 110, 110, 0.9); background: radial-gradient(circle at 35% 30%, #ffd2d2, #d2604f 75%); }
+  33% { box-shadow: 0 0 14px 5px rgba(120, 200, 255, 0.9); background: radial-gradient(circle at 35% 30%, #d3ecff, #4f86d2 75%); }
+  66% { box-shadow: 0 0 14px 5px rgba(160, 255, 150, 0.9); background: radial-gradient(circle at 35% 30%, #e0ffd8, #58b35a 75%); }
+}
+@keyframes rw-peka-pop { 0% { transform: scale(0.72); } 55% { transform: scale(1.22); } 100% { transform: scale(1); } }
+/* GOGOランプ風の光条 */
+.rw-lamp-rays {
+  position: absolute;
+  inset: calc(-15px * var(--slot-scale));
+  border-radius: 50%;
+  background: repeating-conic-gradient(rgba(255, 226, 122, 0.9) 0deg 7deg, transparent 7deg 30deg);
+  -webkit-mask: radial-gradient(circle, transparent 44%, #000 45%, #000 72%, transparent 73%);
+  mask: radial-gradient(circle, transparent 44%, #000 45%, #000 72%, transparent 73%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+.reel-widget.lamp-lit .rw-lamp-rays, .rc-machine.lamp-lit .rw-lamp-rays { opacity: 1; animation: rw-rays 1.7s linear infinite; }
+.reel-widget.lamp-premium .rw-lamp-rays {
+  background: repeating-conic-gradient(rgba(255, 140, 200, 0.9) 0deg 7deg, rgba(120, 205, 255, 0.9) 7deg 14deg, rgba(160, 255, 150, 0.9) 14deg 21deg, transparent 21deg 30deg);
+}
+@keyframes rw-rays { to { transform: rotate(360deg); } }
+/* 天井が近いときのほんのり予熱（数値は出さない・気配だけ） */
+.reel-widget.warm .rw-lamp { border-color: rgba(255, 196, 100, 0.85); animation: rw-warm 2.4s ease-in-out infinite; }
+@keyframes rw-warm { 50% { box-shadow: 0 0 15px rgba(255, 175, 65, 0.5); } }
+
+.rw-machine {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: calc(3px * var(--slot-scale));
+  padding: calc(10px * var(--slot-scale)) calc(6px * var(--slot-scale)) calc(6px * var(--slot-scale));
+  background: linear-gradient(180deg, #2c2433, #16121c);
+  border: calc(2px * var(--slot-scale)) solid rgba(244, 210, 122, 0.5);
+  border-radius: calc(10px * var(--slot-scale));
+}
+.rw-reel, .rc-reel {
+  position: relative;
+  width: calc(36px * var(--slot-scale));
+  height: calc(78px * var(--slot-scale)); /* 3コマ窓 */
+  overflow: hidden;
+  background: linear-gradient(180deg, #d9d4cc, #fbf8f2 30%, #fbf8f2 70%, #d9d4cc);
+  /* 3コマの高さを枠線で削らない。下段も上段と同じ余白を保つ。 */
+  border: 0;
+  box-shadow: inset 0 0 0 calc(1px * var(--slot-scale)) rgba(255, 255, 255, 0.12);
+  border-radius: calc(4px * var(--slot-scale));
+}
+.rw-reel::after, .rc-reel::after { /* 中段ライン */
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(26px * var(--slot-scale));
+  height: calc(26px * var(--slot-scale));
+  border-top: calc(1px * var(--slot-scale)) solid rgba(244, 210, 122, 0.25);
+  border-bottom: calc(1px * var(--slot-scale)) solid rgba(244, 210, 122, 0.25);
+  pointer-events: none;
+}
+.reel-widget.win-flash .rw-reel::after, .rc-machine.lamp-lit .rc-reel::after { border-color: rgba(255, 232, 140, 0.95); box-shadow: 0 0 10px rgba(255, 212, 90, 0.6); }
+.rw-strip { will-change: transform; }
+.rw-strip.spinning { animation: rw-spin 0.28s linear infinite; filter: blur(1.2px); }
+/* ボーナス中は拡大盤を描画元にする。小筐体自身の回転・着地補間は重ねない。 */
+.rw-strip.mirrored { transition: none; }
+.rw-strip.mirrored.spinning { animation: none; }
+.reel-widget.silent-spin .rw-strip.spinning { animation-duration: 0.55s; filter: blur(0.6px); }
+.rw-strip.frozen { animation-play-state: paused; filter: blur(0.8px) brightness(1.4); }
+.rw-strip.land { transition: transform 0.12s cubic-bezier(0.2, 1.6, 0.4, 1); }
+/* 下向きに回る（実機と同じ）。--loop＝1周ぶんの高さ（JS がコマ数から入れる） */
+@keyframes rw-spin { from { transform: translateY(var(--loop)); } to { transform: translateY(0); } }
+.rw-cell, .rc-cellr { height: calc(26px * var(--slot-scale)); display: grid; place-items: center; }
+.sym {
+  /* 等分セルの中心ではなく、絵の輪郭＋4pxの透過余白を中心に置く。 */
+  --symbol-size: 22px;
+  --art-scale: calc(var(--symbol-size) * var(--slot-scale) / var(--sprite-max));
+  display: block;
+  width: calc(var(--sprite-width) * var(--art-scale));
+  height: calc(var(--sprite-height) * var(--art-scale));
+  background-image: url("../img/ui/pakki-slot/symbols.png");
+  background-size: calc(1254 * var(--art-scale)) calc(1254 * var(--art-scale));
+  background-position: calc(-1 * var(--sprite-x) * var(--art-scale)) calc(-1 * var(--sprite-y) * var(--art-scale));
+  background-repeat: no-repeat;
+}
+.sym-seven, .sym-bar, .sym-smoke, .sym-pakki {
+  background-image: url("../img/ui/pakki-slot/symbols-premium.png");
+}
+/* 横長の7とBARも、輪郭＋透過余白の縦横比を保ってコマ内へ置く。 */
+.sym-seven { --symbol-size: 28px; --sprite-x: 73; --sprite-y: 241; --sprite-width: 508; --sprite-height: 287; --sprite-max: 508; }
+.sym-bar { --symbol-size: 26px; --sprite-x: 677; --sprite-y: 270; --sprite-width: 518; --sprite-height: 245; --sprite-max: 518; }
+.sym-bell { --sprite-x: 856; --sprite-y: 51; --sprite-width: 349; --sprite-height: 368; --sprite-max: 368; }
+.sym-cherry { --symbol-size: 21px; --sprite-x: 46; --sprite-y: 478; --sprite-width: 375; --sprite-height: 349; --sprite-max: 375; }
+.sym-replay { --sprite-x: 484; --sprite-y: 469; --sprite-width: 283; --sprite-height: 361; --sprite-max: 361; }
+/* 抽選・リール配列のsmoke（ブランク）は、生成した炭3個の絵で表示する。 */
+.sym-smoke { --sprite-x: 95; --sprite-y: 787; --sprite-width: 454; --sprite-height: 346; --sprite-max: 454; }
+.sym-pakki { --symbol-size: 23px; --sprite-x: 706; --sprite-y: 729; --sprite-width: 473; --sprite-height: 430; --sprite-max: 473; }
+/* 生成した透過ベゼルを、小筐体と拡大盤のどちらにも同じ比率で重ねる。 */
+.rw-machine::before {
+  content: "";
+  position: absolute;
+  inset: calc(-2px * var(--slot-scale));
+  z-index: 2;
+  background: url("../img/ui/pakki-slot/bezel.png") center / 100% 100% no-repeat;
+  pointer-events: none;
+}
+.reel-widget.flash-blue .rw-machine { animation: rw-flash-blue 0.35s; }
+@keyframes rw-flash-blue { 40% { box-shadow: 0 0 18px 6px rgba(80, 170, 255, 0.8) inset, 0 0 14px 4px rgba(80, 170, 255, 0.6); } }
+.rw-plate {
+  margin-top: calc(3px * var(--slot-scale));
+  padding: calc(2px * var(--slot-scale)) 0;
+  text-align: center;
+  font-size: calc(9px * var(--slot-scale));
+  letter-spacing: 0.12em;
+  color: #cdb8e6;
+  background: linear-gradient(180deg, #241d2e, #171221);
+  border: calc(1px * var(--slot-scale)) solid rgba(205, 184, 230, 0.35);
+  border-radius: calc(6px * var(--slot-scale));
+}
+.rw-plate b { color: var(--gold); }
+/* レバーアーム（回すたびにカチッと倒れる） */
+.rw-lever-arm { position: absolute; right: calc(-10px * var(--slot-scale)); bottom: calc(34px * var(--slot-scale)); width: calc(12px * var(--slot-scale)); height: calc(32px * var(--slot-scale)); transform-origin: 15% 92%; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5)); }
+.rw-lever-arm::before { content: ""; position: absolute; left: calc(3px * var(--slot-scale)); top: calc(7px * var(--slot-scale)); width: calc(4px * var(--slot-scale)); height: calc(24px * var(--slot-scale)); border-radius: calc(2px * var(--slot-scale)); background: linear-gradient(180deg, #969cb0, #4c5060); }
+.rw-lever-arm::after { content: ""; position: absolute; left: 0; top: 0; width: calc(12px * var(--slot-scale)); height: calc(12px * var(--slot-scale)); border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ff9d9d, #b02222 72%); box-shadow: inset 0 -2px 3px rgba(0, 0, 0, 0.45); }
+.rw-lever-pivot { position: absolute; left: calc(-1px * var(--slot-scale)); bottom: calc(-1px * var(--slot-scale)); width: calc(8px * var(--slot-scale)); height: calc(8px * var(--slot-scale)); border: calc(1px * var(--slot-scale)) solid #b5a578; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #c2bbce, #484050 75%); }
+.reel-widget.lever-pull .rw-lever-arm, .rc-machine.lever-pull .rw-lever-arm { animation: rw-lever 0.36s ease-out; }
+@keyframes rw-lever { 35% { transform: rotate(44deg); } }
+/* 第3リールの溜め（2つ止まって、残り1つ……） */
+.reel-widget.tension .rw-machine { border-color: rgba(255, 222, 120, 0.9); animation: rw-tension 0.12s linear infinite; }
+@keyframes rw-tension { 25% { transform: translate(0.7px, -0.4px); } 75% { transform: translate(-0.7px, 0.4px); } }
+.reel-widget.bonus-pop .rw-machine { animation: rw-bonus-pop 0.6s cubic-bezier(0.2, 2, 0.4, 1); }
+@keyframes rw-bonus-pop { 40% { transform: scale(1.09); } }
+
+/* パッキーの吹き出し */
+.rw-bubble {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  width: max-content;
+  max-width: 240px;
+  padding: 4px 10px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+  color: #221a2c;
+  background: #fff;
+  border-radius: 10px;
+  opacity: 0;
+  transform: scale(0.7);
+  transform-origin: 60px 100%;
+  transition: opacity 0.18s, transform 0.18s;
+}
+.rw-bubble::after { content: ""; position: absolute; left: 60px; bottom: -5px; margin-left: -4px; border: 5px solid transparent; border-top-color: #fff; border-bottom: none; }
+.rw-bubble.show { opacity: 1; transform: scale(1); }
+.rw-bubble.hot { color: #fff; background: #ff3d3d; box-shadow: 0 0 12px rgba(255, 90, 90, 0.85); }
+.rw-bubble.hot::after { border-top-color: #ff3d3d; }
+.rw-bubble.rare { color: #2a1530; background: linear-gradient(120deg, #ffd24a, #ff7ae0); box-shadow: 0 0 14px rgba(255, 170, 90, 0.9); }
+.rw-bubble.rare::after { border-top-color: #ff7ae0; }
+
+/* ---- カットイン（ボーナス揃え／フリーズ）。操作を邪魔しない自走演出 ---- */
+.reel-cutin { position: absolute; inset: 0; pointer-events: none; animation: rc-fade 0.25s; }
+.reel-cutin.bonus { background: rgba(8, 4, 12, 0.5); }
+.reel-cutin.freeze { background: rgba(2, 2, 6, 0.92); }
+@keyframes rc-fade { from { opacity: 0; } }
+.reel-cutin.out { opacity: 0; transition: opacity 0.25s; }
+.rc-board {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.rc-machine { position: relative; width: calc(136px * var(--slot-scale)); filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.65)); }
+.rc-lamp { pointer-events: none; cursor: default; }
+.rc-aim { min-height: 24px; margin-bottom: 48px; font-size: 16px; line-height: 1.5; font-weight: 700; letter-spacing: 0.06em; color: #ffd95e; }
+/* 揃え用の大きなリール（窓は3コマ・中段にライン） */
+.rc-reels { transition: box-shadow 0.3s, border-color 0.3s; }
+.rc-strip { will-change: transform; }
+.rc-strip.spinning { animation: rw-spin 0.32s linear infinite; filter: blur(1.6px); }
+.rc-strip.land { transition: transform 0.14s cubic-bezier(0.2, 1.6, 0.4, 1); }
+/* 7・7 と止まって、最後の1リールを待つ間 */
+.rc-board.reach .rc-reels { border-color: #ffe27a; animation: rc-reach 0.5s ease-in-out infinite alternate; }
+@keyframes rc-reach { from { box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 10px rgba(255, 210, 90, 0.35); } to { box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 34px rgba(255, 210, 90, 0.85); } }
+.rc-label { margin-top: 12px; font-size: 30px; font-weight: 900; letter-spacing: 0.14em; color: rgba(255, 255, 255, 0.22); transition: color 0.2s, text-shadow 0.2s; }
+.rc-board.done.big .rc-reels { border-color: #ffe27a; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 50px rgba(255, 200, 80, 0.8); }
+.rc-board.done.big .rc-label { color: #ffd95e; text-shadow: 0 0 18px rgba(255, 170, 60, 0.9); animation: rc-title 0.35s cubic-bezier(0.2, 1.6, 0.4, 1); }
+.rc-board.done.reg .rc-reels { border-color: #9fd8ff; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7), 0 0 36px rgba(110, 190, 255, 0.6); }
+.rc-board.done.reg .rc-label { color: #bfe6ff; text-shadow: 0 0 14px rgba(110, 190, 255, 0.8); animation: rc-title 0.35s cubic-bezier(0.2, 1.6, 0.4, 1); }
+.rc-board.done.reg .rc-aim { color: #bfe6ff; }
+.rc-freeze { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; overflow: hidden; }
+.rc-glitch {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent 0 7px, rgba(90, 220, 255, 0.16) 7px 9px, transparent 9px 13px, rgba(255, 80, 200, 0.12) 13px 14px);
+  mix-blend-mode: screen;
+  animation: rc-glitch 0.18s steps(2) infinite;
+}
+@keyframes rc-glitch { 50% { transform: translate(3px, -6px); filter: hue-rotate(80deg); } 100% { transform: translate(-2px, 4px); } }
+.rc-freeze-text { text-align: center; font-family: var(--font); color: #7de8ff; animation: rc-flicker 0.6s steps(3) infinite; }
+.rc-freeze-text b { display: block; font-size: 54px; letter-spacing: 0.3em; text-shadow: 0 0 18px rgba(80, 210, 255, 0.9); }
+.rc-freeze-text span { display: block; margin-top: 8px; font-size: 15px; letter-spacing: 0.2em; color: #b9f3ff; }
+@keyframes rc-flicker { 45% { opacity: 0.45; } 55% { opacity: 0.9; } }
+.rc-freeze.boom { animation: rc-shake 0.5s; }
+@keyframes rc-shake { 20% { transform: translate(-7px, 4px); } 40% { transform: translate(6px, -5px); } 60% { transform: translate(-4px, -3px); } 80% { transform: translate(3px, 5px); } }
+.rc-freeze-label { font-family: var(--font); font-size: 72px; letter-spacing: 0.1em; color: #fff; text-shadow: 0 0 26px rgba(255, 210, 90, 1), 0 0 70px rgba(255, 120, 40, 0.8); animation: rc-title 0.35s cubic-bezier(0.2, 1.6, 0.4, 1); }
+@keyframes rc-title { from { transform: scale(2.4); opacity: 0; } }
+.rc-dance { display: flex; gap: 18px; }
+.rc-dance .rw-face.big { width: 64px; height: 64px; animation: rc-dance 0.45s infinite alternate; }
+.rc-dance .rw-face.big:nth-child(2) { animation-delay: 0.15s; }
+.rc-dance .rw-face.big:nth-child(3) { animation-delay: 0.3s; }
+@keyframes rc-dance { from { transform: translateY(0) rotate(-8deg); } to { transform: translateY(-16px) rotate(8deg); } }
+.rc-freeze-sub { font-size: 22px; font-weight: 700; letter-spacing: 0.15em; color: #ffd95e; }
+
+/* ---- 初回のみ: パッキーのアプリ説明 ---- */
+.reel-intro { position: absolute; inset: 0; background: rgba(6, 4, 10, 0.72); cursor: pointer; animation: rc-fade 0.25s; }
+.ri-panel {
+  position: absolute;
+  left: 50%;
+  bottom: 12%;
+  transform: translateX(-50%);
+  width: 640px;
+  padding: 18px 22px 14px;
+  background: linear-gradient(180deg, rgba(42, 32, 56, 0.97), rgba(20, 15, 30, 0.97));
+  border: 2px solid rgba(244, 210, 122, 0.6);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7);
+}
+.ri-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.ri-head .rw-face.big { width: 46px; height: 46px; }
+.ri-app { font-size: 15px; font-weight: 700; letter-spacing: 0.1em; color: var(--gold); }
+.ri-text { min-height: 58px; margin: 0; font-size: 16px; line-height: 1.8; color: #f2ecdf; }
+.ri-next { display: block; text-align: right; font-size: 14px; color: #cdb8e6; animation: rc-flicker 1.4s infinite; }
+
+/* ---- 夜の行動のあと: その場でスロットを見せる（翌朝に持ち越さない） ---- */
+.reel-night {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(4, 3, 10, 0.72), rgba(4, 3, 10, 0.2) 55%, transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.reel-night.show { opacity: 1; }
+.rn-label {
+  position: absolute;
+  left: 176px;
+  bottom: 30px;
+  padding: 7px 16px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #cdb8e6;
+  background: linear-gradient(160deg, rgba(16, 10, 24, 0.95), rgba(28, 18, 38, 0.95));
+  border: 1px solid rgba(205, 184, 230, 0.45);
+  border-radius: 4px;
+}

@@ -3,13 +3,14 @@
     {
       "dialogue_id": "confession_minto",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png"
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "店の外で待ち合わせて、川沿いの遊歩道を二人で歩いた。"
+          "text": "それぞれの仕事を終えてから待ち合わせた。川沿いの遊歩道を、二人でゆっくり歩く。"
         },
         {
           "speaker": "",
@@ -44,12 +45,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（——店の『みんと』じゃない"
+          "text": "（打ち明けてくれたことを、ちゃんと受け止めたい。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "目の前にいるのは、年齢をひとつ打ち明けるだけで震えてる、素の栞さんだ）"
+          "text": "目の前にいる栞さんが好きだ。その気持ちは、何も変わらない）"
         },
         {
           "speaker": "hajime",
@@ -60,7 +61,7 @@
           "type": "choice",
           "choices": [
             {
-              "text": "「年齢ごと、栞さんが好きだ」と伝える",
+              "text": "「栞さんが好きです。俺と付き合ってください」と伝える",
               "next_id": "confession_minto_accept"
             },
             {
@@ -74,27 +75,34 @@
     {
       "dialogue_id": "confession_minto_accept",
       "metadata": {
-        "set_romance": "minto"
+        "set_romance": "minto",
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true
       },
       "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "話してくれてありがとう。栞さんが好きです。……俺と、付き合ってください"
+        },
         {
           "type": "show_cg",
           "cg_id": "cg_minto_confession"
         },
         {
           "speaker": "minto",
-          "face": "smile",
-          "text": "「……っ！ よかったぁ……！"
+          "face": "ura_smile",
+          "text": "……っ。……うん。うれしい。……私も、はじめくんが好き"
         },
         {
           "speaker": "minto",
-          "face": "smile",
-          "text": "えへへ、年下のだんな様みたい……♡"
+          "face": "ura_smile",
+          "text": "……言えた。ずっと、言いたかったの"
         },
         {
           "speaker": "minto",
-          "face": "smile",
-          "text": "今まで一人で頑張ってきたけど、これからは……甘えても、いい？」"
+          "face": "ura_smile",
+          "text": "これからは……たまには、甘えてもいい？"
         },
         {
           "speaker": "",
@@ -123,13 +131,13 @@
         },
         {
           "speaker": "minto",
-          "face": "smile",
-          "text": "「映画の続き、見よっか。……今度は、もっとくっついててもいいでしょ？」"
+          "face": "ura_smile",
+          "text": "……もう少しだけ、ここを歩かない？　……手、つないでもいい？"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "みんとは俺の肩にちょこんと頭を乗せ、繋いだ手の指をゆっくりと絡めてくる。いわゆる『恋人繋ぎ』だ。"
+          "text": "栞さんが隣に並び、つないだ手の指をゆっくりと絡めてくる。街灯の下に、二人の影が伸びた。"
         },
         {
           "speaker": "",
@@ -144,22 +152,22 @@
         {
           "speaker": "",
           "face": "",
-          "text": "（このドキドキ、みんとにバレてないかな……いや、この距離だと絶対聞こえてる……！）"
+          "text": "（このドキドキ、栞さんにバレてないかな……いや、この距離だと絶対聞こえてる……！）"
         },
         {
           "speaker": "minto",
-          "face": "smile",
-          "text": "「ねえ、はじめくん……なんか、鼓動すっごい早いけど……？"
+          "face": "ura_smile",
+          "text": "……はじめくん、手、あったかいね。……私まで、どきどきしてきた"
         },
         {
           "speaker": "minto",
-          "face": "smile",
-          "text": "えへへ、カワイイ♡ ……しょうがないなぁ、もう。お姉さんがぎゅってしててあげるからね」"
+          "face": "ura_smile",
+          "text": "……急がなくていいよ。もう少しだけ、こうしていたい"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "画面の映画には全く集中できなかったが、俺の腕の中には、世界で一番甘くて愛おしい熱があった。"
+          "text": "川沿いの道を、二人でゆっくり歩いた。つないだ手には、今までよりずっと近い温かさがあった。"
         },
         {
           "type": "hide_cg"
@@ -168,6 +176,9 @@
     },
     {
       "dialogue_id": "confession_minto_reject",
+      "metadata": {
+        "private_scene": true
+      },
       "lines": [
         {
           "speaker": "minto",

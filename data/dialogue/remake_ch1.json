@@ -1,0 +1,1982 @@
+{
+  "_comment": "リメイク版（remake/）の進行で使う場面。スキーマは他の dialogue と同じ。旧版 web/ はこのファイルを読まない。",
+  "dialogues": [
+    {
+      "dialogue_id": "remake_repeat_sumi_0",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが黙って一台を回してくれた。二人で同じ煙を分ける。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "道具はな、嘘をつかねえ。手を抜いた日は煙が教えてくる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "煙が、ですか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "ああ。だから俺は、煙に恥ずかしくねえ仕事をする。それだけだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "とりとめのない話のまま、一台を吸い切った。いい時間だった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "technique": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_sumi_1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "看板を下ろした店で、スミさんと一台を分けた。灰皿がひとつ。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "客はな、味を忘れても「どう扱われたか」は忘れねえんだよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……煙の外側にも、味があるのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭が落ちるまで、ぽつぽつと話した。静かな時間だった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "technique": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_sumi_2",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんの隣で一服。カウンターの中の動きを目で追う。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "客の煙が細くなってから動くんじゃ遅え。細くなる前に、気配で動け"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "気配、ですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "ああ。皿の上の炭が、ちゃんと教えてる。……そのうち見えるようになるさ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭の白くなり方を、いつもより長く見つめた。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "technique": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_sumi_3",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "暇な時間帯、スミさんと一台を挟んで昔話になった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "俺も若い頃は火が強くてな。強い煙は、作ってる本人が酔ってるだけだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさんにも、そんな頃があったんですね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "あったから言ってんだ。……ま、お前は自分で気づけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そう言って笑う顔が、少しだけ若く見えた。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "technique": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_tsumugi_0",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎに一台出して、隣で煙を眺めながら話した。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "煙って、消えるから綺麗なんだと思う"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "消えるから？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "うん。残らないものこそ、ちゃんと見ていたいの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙が細くなるまで、二人で見ていた。穏やかな時間。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_tsumugi_1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎの席に一台を運んで、向かいに座った。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はじめさんの煙、今日はちょっと急いでる形してた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……見抜かれてる。つむぎちゃんには、煙が表情に見えるらしい）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "他愛のない話をしながら、ゆっくり一台を吸った。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_tsumugi_2",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎの隣の席で、スケッチブックを少しだけ見せてもらった。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "同じ煙は、二度と出ないから。描き逃したら、それっきり"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（だから彼女は、いつも今日の煙を真剣に見てるんだ）"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "はじめさんの煙のページ、実はもう何枚もあるよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ページの中に、自分の知らない自分の煙があった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_tsumugi_3",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "静かな午後、つむぎと同じテーブルで煙を挟んだ。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "この店、水の音がゆっくりだよね。せかされない音"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "音、ですか？ ……ほんとだ、低い"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "うん。私はこの音で、今日も大丈夫って思うの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつもの水音の聞こえ方が、少しだけ変わった気がした。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_naru_0",
+      "metadata": {
+        "bg": "res://assets/backgrounds/kemurikusa.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるの店で一台もらって、カウンター越しに話した。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "技はどんどん見て盗んでいいよ。俺も誰かの煙で育ったから"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "その代わり、いつか誰かに返してね。この業界は、そうやって回ってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……強いのに、囲い込まない。この人の強さは、それ込みなんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "混む前のひととき、いい煙を分けてもらった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_naru_1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/kemurikusa.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "忙しい合間に、なるが一台を回してくれた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "忙しい日ほど、一杯目の水音を聞くんだ。焦ってる時は音が濁る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（音で自分を測る……そういう物差しを、いくつ持ってるんだろう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "短い時間だったけど、濃い一服だった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_naru_2",
+      "metadata": {
+        "bg": "res://assets/backgrounds/kemurikusa.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるの店のカウンター席。ちょうど、隣の客への提供の瞬間だった。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "今の手の順番、見てた？ うまくなりたいなら全部見てけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いいんですか、そんなに見せて"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "隠して勝っても、俺が強くなんないでしょ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り道、見たばかりの手順を頭の中で三回なぞった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_naru_3",
+      "metadata": {
+        "bg": "res://assets/backgrounds/kemurikusa.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客が引けた店で、なるが昔の大会の話をしてくれた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "俺、最初の大会は最下位。悔しくて一週間寝れなかった"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "でも悔しさって燃料なんだよ。腐らせると毒になるけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（この人は、負けの使い方まで知ってるんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "笑いながら話す横顔に、積んできた場数が透けて見えた。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_adam_0",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_eden_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムがダブルアップルを一台、無言で出してくれた。"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "一つを極めるのは、逃げじゃない。……毎日、選び直してるんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（毎日、ダブルアップルを選び直す。惰性と一途は、外からは同じに見えるのに）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "甘い煙に包まれて、しばらく黙って過ごした。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_adam_1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_eden_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の隅で、アダムと一台を分けた。今日もダブルアップル。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "常連さんが「たまには別のも吸えば」と笑った。アダムは静かに首を振る。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "浮気しないから、深くなる。……煙も、たぶん人もだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "同じ味を、二人でゆっくり吸い切った。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_adam_2",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_eden_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "EDENの奥の席で、アダムと同じ煙を分けた。"
+        },
+        {
+          "speaker": "adam",
+          "face": "smug",
+          "text": "はじめよ。世界には二種類の煙しかない。ダブルアップルと、それ以外だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（出た……。でも、ここまで言い切れるのは少し羨ましい）"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "言い切れるまで掘った。それだけの話だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "断言の裏の積み重ねを思って、甘い煙を深く吸った。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_adam_3",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_eden_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムが目を閉じて、自分の一台を検分していた。"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "……今日のは92点だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "厳しいんですね。お客さんは、あんなに喜んでたのに"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "満点を出せば、明日の俺が楽をする。だから出さない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "毎日同じ味を作る人の、毎日違う戦いを見た。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_minto_0",
+      "metadata": {
+        "bg": "res://assets/backgrounds/peppermint.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとの店で一台もらって、賑わいの隅で話した。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "かわいいは武器だけど、武器だけじゃお店は続かないんだよね〜"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "常連さんの「いつもの」を覚えてるかどうか。結局そこ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（にぎやかさの下に、ちゃんと商売人の顔がある）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "気づけば一台吸い切って、少し元気をもらっていた。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "charm": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_minto_1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/peppermint.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとが「特別ね」と一台巻いて、隣に座った。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "笑顔はサービスじゃなくて、こっちが楽しんでる証拠なの。伝染するから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（たしかに、この店を出るときはいつも少し元気になってる）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "軽口を叩き合ううちに、一台が終わっていた。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "charm": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_minto_2",
+      "metadata": {
+        "bg": "res://assets/backgrounds/peppermint.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ぺぱーみんとの隅で一服。みんとが常連さんと盛り上がっている。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はーい、今日お誕生日の人がいまーす！ ろうそく一本だけのケーキ、どうぞ！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席がわっと沸く。祝われた本人は、照れながらも嬉しそうだ。"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "（小声）誕生日はメモっておくの。喜ばれるかどうかは、準備が九割"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "にぎやかさの裏の段取りを、少しだけ見せてもらった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "charm": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_minto_3",
+      "metadata": {
+        "bg": "res://assets/backgrounds/peppermint.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客足の落ち着いたぺぱーみんと。今は、自分のほかに客はいなかった。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "はじめくんはもうちょっといていいよ。……はぁ、今日もよく働いた！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お疲れさまです。……ゆっくり話す声、初めて聞いたかも"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "あ、いまのナシ！ みんと、いつでもかわいいので♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "慌てて営業モードに戻る横顔に、少し笑ってしまった。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "charm": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_tutorial_intro",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "おい、はじめ。大会に出るって決めたなら、一台の作り方を最初から仕込んでやる"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "俺が一工程ずつやって見せる。見たら、すぐ同じことをお前の手でやれ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "見て、すぐやる……分かりました！ （体で覚えろってことだな）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_tutorial_result",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──最後の一服を吐き出して、顔を上げる。カウンターの向こうで、スミさんが頷いた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "──それで一台だ。いまの全部、お前の手でやったんだぞ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "工程は繋がってる。どれか一つ雑にやると、全部に響く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（見てすぐやると、手が覚えてる……思ってたより、やることが多いんだな）"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "それと、ひとつだけ覚えとけ。──技は盗め。ただし、誰から盗んだかは忘れるな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "本番までの{daysLeft}日間、店も練習台も好きに使え"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……優勝してこい"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "technique": 2,
+            "sense": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_midcheck",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜、tonariに顔を出すと、スミさんが作業台を顎で指した。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "一台作ってみろ。練習でも本番でもない、今日までのお前が作る一台だ"
+        },
+        {
+          "type": "reflection",
+          "context": "midcheck"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "黙って組む。詰めて、熾して、置いて、待つ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──完成。ホースを渡す。スミさんは目を閉じて、長い一服。"
+        },
+        {
+          "type": "condition",
+          "stat": "技術",
+          "threshold": 22,
+          "next_true": "mid_good",
+          "next_false": "mid_rough"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "大会まで、ちょうど折り返しだ。どこを磨くかは、お前が決めろ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "──ただし、寝ること。それも仕込みのうちだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。（あと{daysLeft}日。……何を、どこまで持っていけるか）"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 2
+          }
+        }
+      ],
+      "branches": {
+        "mid_good": [
+          {
+            "speaker": "sumi",
+            "face": "smile",
+            "text": "……腕、上げたな。初日のお前の煙じゃない"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "ここからは弱点を潰せ。引きか、熱か、詰めか。自分で分かってるだろ"
+          }
+        ],
+        "mid_rough": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "……悪くない。けど、本番でこれだと埋もれるな"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "焦るな。まだ{daysLeft}日ある。基礎の反復が一番効く時期だ"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "remake_rehearsal_intro",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "明後日が本番だ。今夜は通しでやるぞ。店の作業台を本番だと思え"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "リハーサルってのはな、失敗するためにやるんだ。今夜失敗した分だけ、本番で落ち着ける"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "それと、これだけは持っていけ。──見せるんじゃなくて、届けるんだよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（見せるんじゃなくて、届ける……）はい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_rehearsal_great",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──通し、終了。スミさんに一服出す。長い沈黙。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "surprise",
+          "text": "……完璧だ。今夜のこれが本番で出せたら、誰にも文句は言わせない"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "リハーサルの出来は、本番の落ち着きになる。──明日はよく食って、よく寝ろ"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_rehearsal_good",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──通し、終了。スミさんに一服出す。長い沈黙。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "上出来だ。流れは体に入ってる。本番は、今夜の手順だけ思い出せ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "リハーサルの出来は、本番の落ち着きになる。──明日はよく食って、よく寝ろ"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_rehearsal_rough",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──通し、終了。スミさんに一服出す。長い沈黙。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……硬いな。手順を追うのに精一杯で、煙を見てない。でもいい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "リハーサルの出来は、本番の落ち着きになる。──明日はよく食って、よく寝ろ"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_flavor_brought",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "会場へ向かう前に、仕入れておいた本番用のフレーバーをケースに並べていく。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……準備は、できてる）"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 1
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_flavor_rescue",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "会場へ向かおうとして、気づく。……本番用のフレーバーを、仕入れ忘れていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（やってしまった……手持ちが、ほとんどない）"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……持ってきてねえのか。しょうがねえ奴だな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが棚の奥から小さな缶を出して、ぽんと寄越した。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ダブルアップル、一回分だ。足りる範囲でやりくりしろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……すみません。ありがとうございます"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 1
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_trial_intro",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "さあさあ！ ここで恒例、FLAVOR TRIALの時間ですッ！"
+        },
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "作る前に掲げたコンセプトと、出来上がった一台。ちゃんと一致してますか〜？"
+        },
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "審査員のザワザワに、アピールポイントをぶつけてくださいッ！"
+        },
+        {
+          "speaker": "pakki",
+          "face": "evil",
+          "text": "ズレてたら「香ってない！」って言われちゃいますよ〜♪ ぷぷぷっ！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_defeat_follow",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（……今日は届かなかった。でも、帰ってこられた。もう一回、あの舞台で）"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_sick_half",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "朝。喉の奥が痛い。額に手を当てると、じんわり熱い。──風邪だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（……無理が祟った。午前中は、休むしかない）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "水だけ飲んで、布団に戻る。……昼過ぎ。汗と一緒に、熱が抜けていった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（今回は軽く済んだ。……次に無理をしたら、丸一日寝込む気がする）"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 1
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_sick_full",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "朝。喉の奥が痛い。額に手を当てると、じんわり熱い。──風邪だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（……無理が祟った。今日は、休むしかない）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "水だけ飲んで、布団に戻る。一日、ゆっくり眠った。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 1
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_rest",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "今日は早めに家へ帰った。窓を開けて、少しだけ横になる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "天井を眺めているうちに、うとうとしていた。……体が、軽い。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 1
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_homecoming_0",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店明かりの落ちた商店街を抜けて、家に帰る。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "熱いシャワーを浴びると、今日一日の煙の匂いが流れていった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_homecoming_1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り道、夜風が少しだけ煙の匂いを連れていく。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "布団に入ると、すぐに眠気がやってきた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_homecoming_2",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_home_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "家に着く頃には、日付が変わりかけていた。スマホを枕元に置いて、目を閉じる。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_baito_start",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "エプロンの紐を締めて、今日のシフトに入る。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_baito_end",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──シフト終了。片付けを済ませて、スミさんから今日の給料を受け取った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_day1_errand_shop",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "始。お前の道具、まだ揃ってないだろ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "Dr.fookahに行って、ミントを仕入れてこい。大会の課題フレーバーだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい、行ってきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_day1_errand_scout",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "それと、もうひとつ。買い出しのついでだ──『ケムリクサ』を覗いてこい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "商店街の外れの店だ。大会で当日いきなり当たるより、先に相手の煙を知っとけ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "偵察っつっても身構えるな。客として行って、客として一服してこい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "それが一番よく分かる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "分かりました。……客として、ですね。行ってきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_sumi_call_thanks",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "急に悪いな、助かる。今日の分は色をつけとくぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_rain_opener",
+      "metadata": {},
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "外は雨。傘の水滴を払って、店の扉を開けた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_repeat_tsumugi_rain",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "常連席のつむぎは、窓の雨を眺めながらゆっくり煙を吐いていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "雨の日って、お店が静かでいいよね。煙も少しだけ重たく落ちるの"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今日は、もうちょっとだけ居ようかな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨音と水の音だけの店内で、いつもより長く、隣に座っていた。"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_baito_rain",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "外は雨。こういう日は客足がまばらな代わりに、一人ひとりが長い。追加注文が続いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_fortune_first",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アーケードの外れ。折りたたみの机に、紫の布と使い込まれたタロットの束。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "深いローブを被った老婆が座っている。フードの陰で、顔はよく見えない。"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "normal",
+          "text": "……ヒヒ。いい煙の匂いを連れて歩く子だ。お座り"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（占い師……？ 怪しい。怪しいけど、この目を逸らせない感じは何だろう）"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "smile",
+          "text": "アタシは出たり出なかったりさ。縁があれば、また会える"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "insight": 1
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_fortune_again",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "uranaishi",
+          "face": "smile",
+          "text": "……また来たね。今日は誰との縁が気になるんだい？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_fortune_offer",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "uranaishi",
+          "face": "normal",
+          "text": "相性占い、ひとつ3,000円。カードが、アンタと相手の縁を教えてくれる"
+        },
+        {
+          "type": "choice",
+          "id": "fortune_offer",
+          "choices": [
+            {
+              "text": "相性占いをお願いする（3,000円）",
+              "next": "go"
+            },
+            {
+              "text": "やめておく",
+              "next": "no"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "go": [
+          {
+            "type": "set_flag",
+            "flag": "_fortune_go"
+          }
+        ],
+        "no": [
+          {
+            "speaker": "uranaishi",
+            "face": "normal",
+            "text": "そうかい。縁が呼んだら、また来な"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "remake_fortune_broke",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "uranaishi",
+          "face": "normal",
+          "text": "相性占いは、ひとつ3,000円、……お代が足りないね"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "smile",
+          "text": "縁は逃げやしない。稼いでから、また来な"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_fortune_no_target",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "uranaishi",
+          "face": "normal",
+          "text": "……おや、まだ縁の糸が細いね。誰かと知り合ってから、また来な"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_fortune_pick",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "uranaishi",
+          "face": "normal",
+          "text": "……で、誰との縁を見るんだい？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_fortune_result",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "皺だらけの指がカードを三枚、布の上に滑らせる。……長い沈黙。"
+        },
+        {
+          "type": "fx",
+          "id": "imp"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一枚めくった瞬間、フードの奥で笑った気配がした。"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "smile",
+          "text": "……ヒヒ、いい札だ。{fortuneName}との縁は、いま撚りどきに入ってる"
+        },
+        {
+          "speaker": "uranaishi",
+          "face": "normal",
+          "text": "次に会ったとき、いつもより素直に話せるだろうさ。……効き目は一度きりだよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（怪しい……のに、妙な説得力がある。次に会うのが、少し楽しみになった）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_round1_intro",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "smile",
+          "text": "ROUND 1は『組み立て』！ 機材選びから蒸らしまで、一気にいきますよ〜ッ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（いつも通りだ。炭を切って、詰めて、出す。それだけだ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_shuraba_minto_tsumugi",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付を済ませてロビーに戻ると、見知った顔がふたつ、同じベンチに並んでいた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん。応援、来ました"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくーん！ みんと、最前列の席とってあるからね♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ふたりの視線が、俺を通り越して、ゆっくりと互いに向いた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……えっと。tonariの常連さん、だよね？ はじめくんのお友達？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……お友達、では。……はじめさんとは、その"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（待て待て待て。どっちの話も、この先を聞いたら終わる）"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "「その」？ ……ふうん。みんともね、はじめくんとは「その」なんだ♡"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "……はじめさんの顔。いま、すごく濁った色、です"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "ぷぷぷっ！ 出場者のみなさーん、控室に集合だよ〜！ 遅れたら失格〜♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "い、行ってきます！"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "……うん、いってらっしゃい。お話は、終わってからゆっくりね♡"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。……ちゃんと、見てます、……ぜんぶ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "背中に刺さる視線がある。どれも、たぶん本気だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（炭より先に、俺が焼かれそうだ。……集中しろ、今は一台に）"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_shuraba_rin_tsumugi",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付を済ませてロビーに戻ると、見知った顔がふたつ、同じ柱の前に立っていた。"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "おはよう、モルモットくん。最重要サンプルの品質管理に来たわ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん、……応援、来ました"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……あら。tonariの常連の子よね。いつも奥の席で描いてる"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。……あなたは、問屋街の。……はじめさんの、なんですか"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "私？ ……そうね。彼の、いちばん大事なサンプルの管理者、かな"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "……サンプル。……わたしは、はじめさんの、その……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（やめてくれ、その「その」の続きは今じゃない！）"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "……なるほど。データが一件、合わないわね、……モルモットくん？"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "ぷぷぷっ！ 出場者のみなさーん、控室に集合だよ〜！ 遅れたら失格〜♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "は、はい！ 今行きます！"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "……逃げたわね。いいわ、検証は結果が出てからにしてあげる"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……がんばって、ください。……それから、あとで、お話を"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "背中に刺さる視線がある。どれも、たぶん本気だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（炭より先に、俺が焼かれそうだ。……集中しろ、今は一台に）"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_shuraba_minto_rin",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付を済ませてロビーに戻ると、見知った顔がふたつ、同じ自販機の前にいた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくーん！ 応援にきたよっ♡ 今日のみんと、全力で推し活です！"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "おはよう、モルモットくん。……今日は品質管理の立ち会いよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……品質管理？ ……あ、Dr.fookahの2階のお姉さん、ですよね"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "ええ。そちらはPEPPERMINTの店長さん。……ずいぶん親しげね、彼と"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "えへへ、みんとの大事な人なので♡ ……そちらこそ、朝からご熱心で"
+        },
+        {
+          "speaker": "rin",
+          "face": "smile",
+          "text": "大事なサンプルなの。……あら、奇遇。私にとっても「大事」みたい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（ふたりとも笑ってる。笑ってるのに、ロビーの気温が下がっていく）"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "ぷぷぷっ！ 出場者のみなさーん、控室に集合だよ〜！ 遅れたら失格〜♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "い、行ってきます！"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "いってらっしゃい♡ ……終わったら、ちゃんと説明してね？"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "結果が出たら、次は君の検証の番、……逃げないように"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "背中に刺さる視線がある。どれも、たぶん本気だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（炭より先に、俺が焼かれそうだ。……集中しろ、今は一台に）"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_shuraba_all",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_c_station_lobby.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付を済ませてロビーに戻ると、見知った顔が三つ、ひとつのベンチに並んでいた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はじめくーん！ 応援にきたよ♡ ……って、あれ？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はじめさん。……応援、来ました、……みなさんも？"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "おはよう、モルモットくん。……ずいぶん賑やかな応援団ね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "三人の視線が、俺を通り越して、ゆっくりと互いに向いた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……ねえ。もしかして三人とも、はじめくんの「その」だったり……する？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "sad",
+          "text": "……その、です"
+        },
+        {
+          "speaker": "rin",
+          "face": "serious",
+          "text": "……その、ね。……データが三件、きれいに衝突してるわ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（終わった。大会より先に、俺の人生の決勝が始まってる）"
+        },
+        {
+          "speaker": "pakki",
+          "face": "excited",
+          "text": "ぷぷぷっ！ 出場者のみなさーん、控室に集合だよ〜！ 遅れたら失格〜♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "い、行ってきます！！"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "……うん。いってらっしゃい♡ お話は、あとで。三人で、ゆっくりね"
+        },
+        {
+          "speaker": "rin",
+          "face": "normal",
+          "text": "結果を出してきなさい。……言い訳は、そのあとで聞く"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……がんばって、ください。……それは、本当、です"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "背中に刺さる視線がある。どれも、たぶん本気だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（炭より先に、俺が焼かれそうだ。……集中しろ、今は一台に）"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "guts": 2
+          }
+        }
+      ]
+    }
+  ]
+}

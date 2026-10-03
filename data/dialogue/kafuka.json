@@ -1,0 +1,449 @@
+{
+  "profile": {
+    "id": "kafuka",
+    "name": "波多野かふか",
+    "full_name": "波多野かふか",
+    "display_name": "サメちゃん",
+    "role": "heroine_candidate",
+    "adult": true,
+    "nationality": "Japan",
+    "affiliation": "SHISHARK",
+    "romance_available": false,
+    "description": "シーシャークの開店を準備している成人女性。普通の成人女性の身長で、サメのフードを被り、笑うとギザ歯が見える。古風な「じゃ」「じゃぞ」の口調。サメのぬいぐるみコロンブレ（コロちゃん）をサメの王として扱い、腹話術で自分にツッコミを入れる。店作りには真面目で、通路や居心地を細かく確かめる。大会には興味がなく、はじめを競争相手として扱わない。手伝ってもらってから、少しずつはじめに懐く。",
+    "background_secret": "サメ映画の話を始めると長くなる。スピルバーグを尊敬している。グロい場面は目をそらして怖がるが、平気だと強がる。実は泳ぎが苦手。泳ぎの話と本名の紹介は後の私的会話で扱い、初回の説明には並べない。",
+    "favorite_flavor": null,
+    "specialty_flavor": null,
+    "spriteScale": 1,
+    "growth_stats": {
+      "primary": "洞察",
+      "secondary": "センス",
+      "notes": "競技の評価ではなく、客が過ごしやすい店を作るために試し、直す。大会のライバル枠へは追加しない。"
+    },
+    "visual_notes": "若々しく可愛らしい顔立ち。柔らかな半目、青い瞳のハイライト、笑うと目立つギザ歯。サメのフードと、王冠をつけたサメのぬいぐるみコロンブレ。",
+    "future_romance_id": "kafuka",
+    "age": 20,
+    "height_cm": 156
+  },
+  "nickname_message_id": "lime_naru_kafuka_nickname",
+  "spot": {
+    "id": "shishark",
+    "kind": "kafuka",
+    "charId": "kafuka",
+    "label": "SHISHARK",
+    "area": "商店街の路地",
+    "x": 58,
+    "y": 38,
+    "theme": "shop",
+    "glyph": "鮫",
+    "face": "kafuka",
+    "sub": "店へ顔を出す",
+    "unknownSub": "店へ顔を出す",
+    "cost": 3000,
+    "stamina": -12,
+    "minChapter": 2,
+    "desc": "シーシャーク。海とサメがモチーフの店。店主は大会より、客の居心地を大事にしている。",
+    "bg": "bg_shishark",
+    "preview": "bg_shishark"
+  },
+  "dialogues": [
+    {
+      "dialogue_id": "kafuka_first_encounter",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark_preparing_night.png",
+        "setting": "仕事や外出を終えた帰り道。LIME交換まで本名も通称も名乗らない。"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り道。路地を曲がると、大きなサメの看板が目に入った。足場と養生の残る店先に、「開店準備中」の紙が貼られている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……こんなところに、店ができるんだ。SHISHARK？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメのフードを被った女の子が、入口の箱と通り道を見比べている。目が合うと、サメのぬいぐるみを抱え直した。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "normal",
+          "text": "お主、サメは好きか？"
+        },
+        {
+          "type": "choice",
+          "choices": [
+            {
+              "text": "好きです。サメ映画も少し見ます",
+              "next": "shark_yes"
+            },
+            {
+              "text": "少し怖いです。でもその子はかわいいですね",
+              "next": "shark_scary"
+            }
+          ]
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "こっちはコロンブレ。コロちゃんじゃ。サメの王なのじゃぞ。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "normal",
+          "text": "「王の玉座にふさわしい店を作るがよい」……分かっておる。まず箱が通路をふさいでおるのじゃ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この小さい箱、壁際に動かしましょうか。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "助かるのじゃ。椅子を置いたら、通れる幅が思ったより狭くての。落ち着く店にしたいのに、入口でつまずかせては困る。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "箱を寄せると、彼女は入口から椅子まで歩いて幅を確かめた。ぬいぐるみに向けて、小さくうなずく。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "normal",
+          "text": "店はSHISHARK。シーシャとシャークで、シーシャークと読むのじゃ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なるほど。俺、tonariで働いてる、はじめです。今度の大会にも出る予定で。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "はじめ。覚えたのじゃ。わしは大会には興味がないが、お主の一杯はちょっと気になるのう。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥で工具が、かたん、と鳴る。彼女の肩が跳ねた。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "surprise",
+          "text": "……コロちゃんがびっくりしただけじゃ。わしは平気じゃぞ。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "開店は、その大会が終わってからの予定じゃ。LIMEを交換せんか？ オープンしたら教えるから、来るのじゃぞ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ぜひ。大会が終わったら、遊びに来ます。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "うむ！ 「はじめの席も用意しておこう」……コロちゃんも、そう申しておる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "連絡先を交換した。名前を聞くより先に、彼女はまた箱と椅子の話に戻ってしまった。"
+        }
+      ],
+      "branches": {
+        "shark_yes": [
+          {
+            "speaker": "kafuka",
+            "face": "smile",
+            "text": "おお！ スピルバーグを尊敬しておるのじゃ。見えそうで見えん、あの間がの……最初から話すと――"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "normal",
+            "text": "「店が開く前に夜が明けるぞ、主よ」……コロちゃん、まだそこまでは話しておらん。"
+          }
+        ],
+        "shark_scary": [
+          {
+            "speaker": "kafuka",
+            "face": "surprise",
+            "text": "怖ければ目をそらせばよいのじゃ。……わしは、たまに画面の外の演出を確かめておるだけじゃぞ。"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "surprise",
+            "text": "「怖い場面で顔を伏せておるのは誰じゃ？」……コロちゃん、人聞きの悪いことを言うでない。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "kafuka_shop_first",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "SHISHARKの工事は終わり、入口にはOPENの札が掛かっている。扉の前で、彼女がコロちゃんを抱えてこちらに手を振った。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "はじめ！ よく来たのじゃ。お主にも見せたかったのじゃぞ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "開店、おめでとうございます。箱のあったところ、すっきりしましたね。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "椅子をひとつ減らしたのじゃ。人数より、落ち着いて歩ける方を取った。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "「はじめの席は空いておるぞ」……コロちゃん、客を急かしてはならん。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、今日はゆっくりさせてもらいます。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "うむ。さあ、入るのじゃ。どんな一杯にするか、中で聞かせておくれ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "kafuka_shop_repeat_0",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店先のコロちゃんの指定席が、少し低い位置に変わっていた。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "上に置くと、こちらを見るたび首を上げるじゃろう。王でも、客の首を疲れさせてはならん。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そっちの方が、目が合いますね。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "「苦しゅうない、はじめ」……うむ。今日はここから見ておるそうじゃ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "kafuka_shop_repeat_1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2
+      },
+      "lines": [
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "はじめ、映画の話をしてもよいか？ ひとつだけなのじゃ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ひとつなら、ぜひ。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "スピルバーグのサメは、出ていない時もそこにおると思わせるじゃろう。あの――"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は店先で話し込みかけて、扉へ目をやった。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "……先に中へ入ろう。立たせたまま長話をしては、落ち着く店にならん。続きは座ってからじゃな。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "kafuka_future_private_swimming",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street.png",
+        "future_only": true,
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "……海で泳ぐのは、あまり得意ではないのじゃ。サメ好きと泳ぎは、別の話じゃぞ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、足のつくところでゆっくりしましょうか。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "うむ。笑わんでくれて、助かる。……コロちゃんも、岸から海を見るのが好きじゃと言っておる。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "kafuka_future_private_name",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street.png",
+        "future_only": true,
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "そういえば、ちゃんと名乗っておらんかったな。波多野かふかじゃ。サメちゃんでも、かふかでも、好きに呼んでよい。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_kafuka_name_known"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "かふかさん。教えてくれて、ありがとうございます。"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "……うむ。そっちで呼ばれると、少し照れるのじゃ。"
+        }
+      ]
+    }
+  ],
+  "lime": [
+    {
+      "id": "lime_naru_kafuka_nickname",
+      "sender": "naru",
+      "trigger_condition": "flag",
+      "trigger_flag": "_kafuka_first_encounter",
+      "exclude_flag": "_kafuka_nickname_known",
+      "priority": 3,
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "naru",
+          "text": "路地のSHISHARK、見かけた？ サメのフード被ってぬいぐるみ連れてる店主、俺はサメちゃんって呼んでる。"
+        },
+        {
+          "sender": "naru",
+          "text": "映画の話になると長いけど、店のことは本当に真面目に考えてる。"
+        },
+        {
+          "sender": "naru",
+          "text": "大会の勝ち負けには興味ないってさ。俺も客として遊びに行きたい。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "荷物を運ぶのを少し手伝ったんだ",
+          "response": "そうか。助かったと思う。サメちゃん、一人で抱え込みがちだからな。",
+          "affinity": 0
+        },
+        {
+          "text": "コロちゃんにも、また来ていいって言われた",
+          "response": "王様にも気に入られたか。じゃあ、もう顔なじみだな。",
+          "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_kafuka_preparing_thanks",
+      "sender": "kafuka",
+      "trigger_condition": "flag",
+      "trigger_flag": "_kafuka_first_encounter",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "kafuka",
+          "text": "先日は箱を運んでくれて、ありがとうなのじゃ。あれから椅子の位置を決め直した。"
+        },
+        {
+          "sender": "kafuka",
+          "text": "コロちゃんの玉座は、客の通り道をふさがぬ場所になったぞ。開店の日が決まったら、また知らせるのじゃ。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "通りやすくなってよかったです",
+          "response": "うむ。座る前から疲れさせては、落ち着く店にならんからの。",
+          "affinity": 1
+        },
+        {
+          "text": "準備、無理しすぎないでくださいね",
+          "response": "ありがとうなのじゃ。……箱を持つ時は、はじめの言葉を思い出しておる。",
+          "affinity": 1
+        }
+      ],
+      "chapter": 1
+    },
+    {
+      "id": "lime_kafuka_opening",
+      "sender": "kafuka",
+      "chapter": 2,
+      "trigger_condition": "flag",
+      "trigger_flag": "_shishark_opened",
+      "priority": 4,
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "kafuka",
+          "text": "SHISHARK、いよいよオープンじゃ！ 大会おつかれさま。コロちゃんと、はじめが来るのを待っておるぞ。"
+        }
+      ],
+      "replies": [
+        {
+          "text": "開店おめでとう。遊びに行きます！",
+          "response": "うむ、嬉しいのじゃ。お主がゆっくりできる席を用意しておく。",
+          "affinity": 1
+        },
+        {
+          "text": "コロちゃんにもお祝いを伝えてください",
+          "response": "「苦しゅうない。主も喜んでおる」……こ、コロちゃん！",
+          "affinity": 1
+        }
+      ]
+    }
+  ],
+  "implementation_notes": {
+    "first_encounter": "第1章DAY8以降の固定イベント・当夜予約・告白・在宅がない帰り道。重なった時は次の空いた帰り道へ繰り越す。",
+    "chapter2_boundary": "現行リメイクは第1章まで。章2用の店訪問とminChapter条件は準備するだけで、章2を遊べる状態にはしない。",
+    "future_private": "本名と泳ぎの私的会話は未接続の原稿。恋愛対象リストや告白条件にはまだ追加しない。",
+    "assets": "通常・笑顔・びっくり・真剣の4表情。第1章の工事中は bg_shishark_preparing_night、第2章の開店後は bg_shishark。"
+  }
+}

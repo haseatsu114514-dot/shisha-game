@@ -1,0 +1,27 @@
+#!/bin/zsh
+set -euo pipefail
+preview_root="${0:A:h}"
+preview_port=8767
+preview_url="http://127.0.0.1:${preview_port}/play-remake-updated.html"
+preview_game_url="http://127.0.0.1:${preview_port}/@GAME_DIRECTORY@/remake/index.html"
+preview_log="$preview_root/remake-server.log"
+preview_ready() {
+  curl --silent --fail --max-time 2 "$preview_url" >/dev/null &&
+    curl --silent --fail --max-time 2 "$preview_game_url" >/dev/null
+}
+if ! preview_ready; then
+  preview_python="$(command -v python3)"
+  nohup "$preview_python" "$preview_root/serve-remake-preview.py" \
+    --port "$preview_port" --directory "$preview_root" \
+    >>"$preview_log" 2>&1 </dev/null &
+  for preview_attempt in {1..50}; do
+    if preview_ready; then break; fi
+    sleep 0.1
+  done
+fi
+if ! preview_ready; then
+  print -u2 "ゲームのサーバーを起動できませんでした。ログ: $preview_log"
+  tail -n 8 "$preview_log"
+  exit 1
+fi
+open "$preview_url"
