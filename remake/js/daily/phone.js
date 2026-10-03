@@ -165,10 +165,13 @@ export function morningMessages(opts = {}) {
       messages: [m.reminder_text || "この前のお誘い、また都合が合えば。", ...(m.messages || [])] } : m);
     senders.add(m.sender);
   }
-  // 友人になった相手から、たまのLIME（雑談かシーシャのお誘い）。物語のLIMEの後に、朝1通まで（HF09）
+  // 友人になった相手から、たまのLIME（雑談かシーシャのお誘い）。物語のLIMEの後に、朝1通まで（HF09）。
+  // お誘いは、ほかの誘い（物語・恋人・バイト）が今朝届く日・返事待ちの誘いがある日には重ねず、同じ相手の雑談にする
+  const otherInvite = out.some((m) => m.type === "invitation") || inbox.some((i) => !i.done && i.msg?.type === "invitation");
   for (const template of friendMessages(opts)) {
     if (out.length >= 3) break;
     if (senders.has(template.sender) || delivered.has(template.id)) continue;
+    if (template.type === "invitation" && otherInvite) continue;
     const m = scheduledInvitation(template, opts); // お誘いは休日の午後か仕事後。合わない日は同じ相手の雑談へ
     if (!m || !invitationAvailable(m, opts)) continue;
     out.push(m);

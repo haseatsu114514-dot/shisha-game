@@ -562,33 +562,47 @@ try {
   const friendsLime = await page.evaluate(async () => {
     const { fresh, spots, phone, bonds, vn, DB = window.__remake.DB } = window.T;
     const original = DB.lime;
-    DB.lime = original.filter((m) => !["naru", "adam", "tsumugi", "minto"].includes(m.sender)); // 物語のLIMEと切り分けて数える
+    DB.lime = original.filter((m) => !["sumi", "naru", "adam", "tsumugi", "minto"].includes(m.sender)); // 物語のLIMEと切り分けて数える
     const friendIds = (list) => list.filter((m) => String(m.id).startsWith("_friend_")).map((m) => `${m.sender}:${m.type}:${m.time_slot || "-"}`);
-    try {
-      // なる: 締めくくり（友情）→ 4日あけて雑談 → 4日あけてシーシャのお誘い（定休日は午後）
-      const state = fresh({ met: { naru: true, adam: true }, contacts: ["naru", "adam"], story: { naru: 6 }, affinity: { naru: 80 }, slot: 0, day: 2 });
-      await spots.visitChar("naru");
+    /** from〜to日の朝を流す。届いたLIMEは読み、誘いは断る。毎日シフトに入る＝スミさんの急なバイト誘いは固定の3日目・8日目だけ */
+    const run = (state, from, to) => {
       const timeline = {};
-      for (let day = 3; day <= 10; day++) {
-        state.day = day;
-        state.slot = 0;
+      for (let day = from; day <= to; day++) {
+        Object.assign(state, { day, slot: 0, lastBaitoDay: day });
         const got = friendIds(phone.morningMessages({ fixedNight: () => false }));
-        timeline[day] = got;
-        if (got.length) {
-          phone.deliverMorning({ fixedNight: () => false });
-          const item = state.inbox.at(-1);
+        if (got.length) timeline[day] = got;
+        phone.deliverMorning({ fixedNight: () => false });
+        for (const item of state.inbox.filter((i) => !i.read)) {
           Object.assign(item, { read: true, done: true, replyState: "replied", result: item.msg.type === "invitation" ? "declined" : undefined });
           state.limeRead.push(item.id);
         }
       }
-      const inviteText = JSON.stringify(state.inbox.at(-1).msg.messages);
+      return timeline;
+    };
+    const friendNote = (day, sender, type = "chat") => ({ id: `_friend_${type === "chat" ? "chat" : "inv"}_${sender}_d${day}`, originId: `_friend_${type === "chat" ? "chat" : "inv"}_${sender}_d${day}`,
+      day, read: true, done: true, replyState: "replied", log: [], msg: { id: `_friend_x_${sender}_d${day}`, sender, type, messages: ["……"] } });
+    try {
+      // なる: 締めくくり（友情）→ 4日あけて雑談 → 4日あけてシーシャのお誘い（定休日は午後）
+      const state = fresh({ met: { naru: true, adam: true }, contacts: ["naru", "adam"], story: { naru: 6 }, affinity: { naru: 80 }, slot: 0, day: 2 });
+      await spots.visitChar("naru");
+      const timeline = run(state, 3, 11);
+      const inviteText = JSON.stringify(state.inbox.find((i) => i.msg.type === "invitation" && i.msg.sender === "naru").msg.messages);
+      // 3人と友人になっても重ならない: 友人のLIMEは全員で2日に1通・長く連絡のない相手から順。お誘いは全員で6日に1回・雑談のあとだけ
+      const trio = fresh({ met: { naru: true, adam: true }, contacts: ["sumi", "naru", "adam"], day: 1,
+        finales: { sumi: { day: 1, chapter: 1, route: "friend" }, naru: { day: 1, chapter: 1, route: "friend" }, adam: { day: 1, chapter: 1, route: "friend" } } });
+      const rotation = run(trio, 2, 13);
+      // ほかの誘い（スミさんの急なバイト誘い＝8日目）が届く朝は、友人のお誘いを重ねず雑談に。翌朝ならお誘い（仕事後）
+      const clash = fresh({ met: { naru: true }, contacts: ["naru"], day: 8, slot: 0, lastBaitoDay: 8, finales: { naru: { day: 1, chapter: 1, route: "friend" } } });
+      clash.inbox.push(friendNote(4, "naru"));
+      const withBaito = phone.morningMessages({ fixedNight: () => false }).map((m) => `${m.sender}:${m.type}`);
+      Object.assign(clash, { day: 9, lastBaitoDay: 9 });
+      const calm = friendIds(phone.morningMessages({ fixedNight: () => false }));
       // 固定イベントの夜（仕事後の約束が組めない日）は、同じ相手の雑談に切り替える
-      const fallback = fresh({ met: { naru: true }, contacts: ["naru"], finales: { naru: { day: 1, chapter: 1, route: "friend" } }, day: 9 });
-      fallback.inbox.push({ id: "_friend_chat_naru_d5", originId: "_friend_chat_naru_d5", day: 5, read: true, done: true, replyState: "replied", log: [],
-        msg: { id: "_friend_chat_naru_d5", sender: "naru", type: "chat", messages: ["……"] } });
+      const fallback = fresh({ met: { naru: true }, contacts: ["naru"], finales: { naru: { day: 1, chapter: 1, route: "friend" } }, day: 9, lastBaitoDay: 9 });
+      fallback.inbox.push(friendNote(5, "naru"));
       const fixedNight = friendIds(phone.morningMessages({ fixedNight: () => true }));
-      // 朝に届く友人のLIMEは1通まで（なる・アダムが同時に当番でも）
-      const two = fresh({ met: { naru: true, adam: true }, contacts: ["naru", "adam"], day: 9,
+      // 朝に届く友人のLIMEは1通まで（なる・アダムが同時に当番なら、長く連絡のないアダムから）
+      fresh({ met: { naru: true, adam: true }, contacts: ["naru", "adam"], day: 9, lastBaitoDay: 9,
         finales: { naru: { day: 2, chapter: 1, route: "friend" }, adam: { day: 1, chapter: 1, route: "friend" } } });
       const oneMorning = friendIds(phone.morningMessages({ fixedNight: () => false }));
       // 恋人・告白待ち・連絡先なし・大会当日には届かない。告白で「友達のまま」なら届く
@@ -612,25 +626,29 @@ try {
       vn.backlog().length = 0;
       await bonds.playFriendHangout("minto");
       const second = vn.backlog().map((l) => l.text);
-      return { timeline, inviteText, fixedNight, oneMorning, quiet, first, second, charmUp: s.stats.charm > charm, count: s.friendHangouts.minto };
+      return { timeline, inviteText, rotation, withBaito, calm, fixedNight, oneMorning, quiet, first, second, charmUp: s.stats.charm > charm, count: s.friendHangouts.minto };
     } finally {
       DB.lime = original;
     }
   });
-  const t = friendsLime.timeline;
-  assert.deepEqual([t[3], t[4], t[5]], [[], [], []], "too early after the finale");
-  assert.deepEqual(t[6], ["naru:chat:-"]);
-  assert.deepEqual([t[7], t[8], t[9]], [[], [], []], "friend LIME must stay occasional");
-  assert.deepEqual(t[10], ["naru:invitation:noon"]); // 10 % 7 === 3 はKEMURIKUSAの定休日
+  // 1人なら: 締めくくりの4日後に雑談、さらに4日後にお誘い（10 % 7 === 3 はKEMURIKUSAの定休日＝午後）
+  assert.deepEqual(friendsLime.timeline, { 6: ["naru:chat:-"], 10: ["naru:invitation:noon"] });
   assert(friendsLime.inviteText.includes("お店がお休み") && friendsLime.inviteText.includes("一服しようぜ"), friendsLime.inviteText);
+  // 3人: 2日に1通・連日や同じ朝に重ならない・同じ相手は4日以上あく・お誘いは雑談のあとで全員で6日に1回
+  assert.deepEqual(friendsLime.rotation, {
+    5: ["sumi:chat:-"], 7: ["naru:chat:-"], 9: ["adam:chat:-"], 11: ["sumi:invitation:night"], 13: ["naru:chat:-"],
+  }, JSON.stringify(friendsLime.rotation));
+  assert(friendsLime.withBaito.includes("sumi:invitation") && friendsLime.withBaito.includes("naru:chat")
+    && !friendsLime.withBaito.includes("naru:invitation"), friendsLime.withBaito.join("|"));
+  assert.deepEqual(friendsLime.calm, ["naru:invitation:night"]);
   assert.deepEqual(friendsLime.fixedNight, ["naru:chat:-"]);
-  assert.equal(friendsLime.oneMorning.length, 1);
+  assert.deepEqual(friendsLime.oneMorning, ["adam:chat:-"]);
   assert.deepEqual(friendsLime.quiet, { lover: 0, romance: 0, rejected: ["tsumugi:chat:-"], noContact: 0, tournament: 0 });
   assert(friendsLime.first.some((l) => l.startsWith("栞:")), friendsLime.first.join("|"));
   assert(friendsLime.first.some((l) => l.includes("栞さんと一服した")), friendsLime.first.join("|"));
   assert(friendsLime.second.some((l) => l.includes("仕事の話はなし")) && !friendsLime.first.some((l) => l.includes("仕事の話はなし")));
   assert(friendsLime.charmUp); assert.equal(friendsLime.count, 2);
-  log("HF09 friends: occasional chat/invite after the friendship finale (4-day gap, 1 per morning), holiday/after-close invites, none for lovers/pending romance/tournament");
+  log("HF09 friends: shared cadence (1 friend LIME per 2 days, oldest contact first, 4+ days per person), invites 6+ days apart after a chat, never with another invitation, holiday/after-close, none for lovers/pending romance/tournament");
 
   assert.deepEqual(errors, []);
   log("PASS");

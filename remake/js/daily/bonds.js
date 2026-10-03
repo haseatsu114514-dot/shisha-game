@@ -10,7 +10,8 @@
 //   旧セーブで読み終えていた質問は推測で埋めない（答えていない質問は数えないだけ）。
 // - 友情ルートでも締めくくりの場面と贈り物は同じだけ受け取れる。
 // - 友人になった後（友情の締めくくり・告白で友達のまま）は、たまにシーシャのお誘いか雑談のLIMEが届く（HF09）。
-//   文面は remake/data/friends.json。朝に届く友人のLIMEは1通まで・同じ相手は数日おき。恋人と告白待ちの相手には届かない。
+//   文面と間隔は remake/data/friends.json。友人のLIMEは全員あわせて数日に1通、お誘いは全員あわせて週に1回ほど、
+//   ほかの誘いと同じ朝には重ねない。恋人と告白待ちの相手には届かない。
 import { DB, callName } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { affinityLevel } from "../core/stats.js";
@@ -204,23 +205,32 @@ export function settledFriend(id) {
   return !!f && !!friendData(id) && !isLover(id) && (f.route === "friend" || !!state.flags[`_friend_${id}`]);
 }
 
-/** この相手から届いた友人のLIME（雑談・お誘い）の履歴 */
-const friendSent = (id) => (state.inbox || []).filter((i) => i.msg?.sender === id && String(i.originId || i.id).startsWith(FRIEND_PREFIX));
+/** 届いた友人のLIME（雑談・お誘い）の履歴。id を渡すとその相手の分だけ */
+const friendSent = (id = null) => (state.inbox || [])
+  .filter((i) => String(i.originId || i.id).startsWith(FRIEND_PREFIX) && (!id || i.msg?.sender === id));
+const lastDay = (items) => Math.max(-99, ...items.map((i) => i.day ?? -99));
 
 /**
- * 今朝の友人のLIMEの候補（雑談かシーシャのお誘い）。長く連絡のない相手から順。phone.js が1通だけ採る。
- * 締めくくりの日と前の連絡から gapDays 日あけ、雑談→お誘い→雑談…と交互。お誘いの時刻（休日午後／仕事後）は phone.js が決め、
- * 合わない日は同じ相手の雑談に切り替える。お誘いは大会前日まで
+ * 今朝の友人のLIMEの候補（雑談かシーシャのお誘い）。phone.js が1通だけ採る。
+ * 何人と友人になっても重ならないよう、全員で間隔を分け合う（data: remake/data/friends.json）:
+ * - 友人のLIMEは全員あわせて globalGapDays 日に1通まで。いちばん長く連絡のない相手から順（同じ相手は gapDays 日以上あける）
+ * - お誘いは全員あわせて inviteGapDays 日に1回まで。その相手との雑談のあとだけ（最初の連絡は雑談・お誘いは続けない）。
+ *   約束のある日は出さず同じ相手の雑談に（ほかの誘いが届く朝と、時刻の合わない日の切り替えは phone.js）。大会前日まで
  */
 export function friendMessages({ tournamentDay = false } = {}) {
   if (tournamentDay || state.phase !== "daily" || (state.chapter || 1) !== 1) return [];
-  const gap = DB.friends?.gapDays || 4;
+  const cfg = DB.friends || {};
+  const gap = cfg.gapDays || 4;
+  const all = friendSent();
+  if (state.day - lastDay(all) < (cfg.globalGapDays || 2)) return [];
+  const inviteOk = state.day < 14 && !state.pendingInvite
+    && state.day - lastDay(all.filter((i) => i.msg?.type === "invitation")) >= (cfg.inviteGapDays || 6);
   const out = [];
   const due = Object.keys(BOND_FINALES)
     .filter((id) => settledFriend(id) && hasContact(id))
     .map((id) => {
       const sent = friendSent(id);
-      return { id, sent, last: Math.max(state.finales[id].day || 0, ...sent.map((i) => i.day || 0)) };
+      return { id, sent, last: Math.max(state.finales[id].day || 0, lastDay(sent)) };
     })
     .filter((c) => state.day - c.last >= gap && !c.sent.some((i) => !i.read))
     .sort((a, b) => a.last - b.last);
@@ -232,7 +242,7 @@ export function friendMessages({ tournamentDay = false } = {}) {
     const invite = f.invite && state.day < 14 ? { id: `${FRIEND_PREFIX}inv_${id}_d${state.day}`, sender: id, type: "invitation", friend: true,
       private_schedule: "holiday_or_after_close", accept_event: `friend_${id}`, accept_text: f.invite.accept_text,
       messages: f.invite.messages.slice(), decline_response: { text: f.invite.decline } } : null;
-    const inviteTurn = sent.length % 2 === 1; // 雑談→お誘い→雑談…
+    const inviteTurn = inviteOk && sent.at(-1)?.msg?.type === "chat"; // 雑談→お誘い→雑談…（見送った回は雑談のまま次へ）
     for (const m of inviteTurn ? [invite, chat] : [chat]) if (m && !state.limeRead.includes(m.id)) out.push(m);
   }
   return out;
