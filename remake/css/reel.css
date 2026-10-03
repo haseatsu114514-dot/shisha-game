@@ -87,7 +87,9 @@
   height: calc(78px * var(--slot-scale)); /* 3コマ窓 */
   overflow: hidden;
   background: linear-gradient(180deg, #d9d4cc, #fbf8f2 30%, #fbf8f2 70%, #d9d4cc);
-  border: calc(1px * var(--slot-scale)) solid rgba(255, 255, 255, 0.12);
+  /* 3コマの高さを枠線で削らない。下段も上段と同じ余白を保つ。 */
+  border: 0;
+  box-shadow: inset 0 0 0 calc(1px * var(--slot-scale)) rgba(255, 255, 255, 0.12);
   border-radius: calc(4px * var(--slot-scale));
 }
 .rw-reel::after, .rc-reel::after { /* 中段ライン */
@@ -114,20 +116,24 @@
 @keyframes rw-spin { from { transform: translateY(var(--loop)); } to { transform: translateY(0); } }
 .rw-cell, .rc-cellr { height: calc(26px * var(--slot-scale)); display: grid; place-items: center; }
 .sym {
+  /* 等分セルの中心ではなく、絵の輪郭＋4pxの透過余白を中心に置く。 */
+  --symbol-size: 22px;
+  --art-scale: calc(var(--symbol-size) * var(--slot-scale) / var(--sprite-max));
   display: block;
-  width: calc(26px * var(--slot-scale));
-  height: calc(26px * var(--slot-scale));
+  width: calc(var(--sprite-width) * var(--art-scale));
+  height: calc(var(--sprite-height) * var(--art-scale));
   background-image: url("../img/ui/pakki-slot/symbols.png");
-  background-size: 300% 300%;
+  background-size: calc(1254 * var(--art-scale)) calc(1254 * var(--art-scale));
+  background-position: calc(-1 * var(--sprite-x) * var(--art-scale)) calc(-1 * var(--sprite-y) * var(--art-scale));
   background-repeat: no-repeat;
 }
-.sym-seven { background-position: 0% 0%; }
-.sym-bar { background-position: 50% 0%; }
-.sym-bell { background-position: 100% 0%; }
-.sym-cherry { background-position: 0% 50%; }
-.sym-replay { background-position: 50% 50%; }
-.sym-smoke { background-position: 100% 50%; }
-.sym-pakki { background-position: 0% 100%; }
+.sym-seven { --sprite-x: 47; --sprite-y: 93; --sprite-width: 375; --sprite-height: 316; --sprite-max: 375; }
+.sym-bar { --symbol-size: 24px; --sprite-x: 432; --sprite-y: 155; --sprite-width: 395; --sprite-height: 234; --sprite-max: 395; }
+.sym-bell { --sprite-x: 856; --sprite-y: 51; --sprite-width: 349; --sprite-height: 368; --sprite-max: 368; }
+.sym-cherry { --symbol-size: 21px; --sprite-x: 46; --sprite-y: 478; --sprite-width: 375; --sprite-height: 349; --sprite-max: 375; }
+.sym-replay { --sprite-x: 484; --sprite-y: 469; --sprite-width: 283; --sprite-height: 361; --sprite-max: 361; }
+.sym-smoke { --sprite-x: 867; --sprite-y: 462; --sprite-width: 343; --sprite-height: 364; --sprite-max: 364; }
+.sym-pakki { --sprite-x: 57; --sprite-y: 849; --sprite-width: 360; --sprite-height: 365; --sprite-max: 365; }
 /* 生成した透過ベゼルを、小筐体と拡大盤のどちらにも同じ比率で重ねる。 */
 .rw-machine::before {
   content: "";
