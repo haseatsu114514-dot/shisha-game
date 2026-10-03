@@ -340,22 +340,27 @@ function lampOff() {
  * 筐体を host に置き、溜まった結果を順に見せる。戻り値=見せ終わったら解決する Promise
  * （マップでは待たずに操作できる。夜の行動のあとは calendar が待ってから一日を終える）
  */
-export function mountReel(host) {
+export function mountReel(host, { delay = 500 } = {}) {
   if (!state?.reel) return Promise.resolve();
+  // 演出中は、停止処理が参照している同じリールを新しいマップへ移す。
+  // 筐体だけ作り直すと、古いリールが止まり、新しい方には前回の出目が残る。
+  if (busy) {
+    host.append(widget);
+    return current;
+  }
   widget = buildWidget();
   host.append(widget);
   setStops(state.reel.shown || [1, 1, 2]); // 前回見せた出目のまま（未消化の結果は出目に出さない）
   const queue = state.reel.pending;
-  if (busy) return current; // 前の演出がまだ途中（マップ等を素早く進めた）→ それが終わるのを待てるように
   if (!queue.length) return Promise.resolve();
+  busy = true; // 初回説明の待機中も、再マウントで別の演出を始めない。
   current = (async () => {
-    if (!state.reel.introDone) await showIntro();
-    // 取り出してから保存（演出の途中でリロードしても二重に適用しない。報酬は適用済み）
-    const items = queue.splice(0, queue.length);
-    save();
-    busy = true;
     try {
-      await sleep(500);
+      if (!state.reel.introDone) await showIntro();
+      // 取り出してから保存（演出の途中でリロードしても二重に適用しない。報酬は適用済み）
+      const items = queue.splice(0, queue.length);
+      save();
+      if (delay) await sleep(delay);
       while (items.length) {
         const r = items.shift();
         // 積み残しが複数なら最後の1件だけフル演出。リプレイ連鎖は何が起きたか分かるようにフルで見せる
@@ -379,7 +384,8 @@ export async function presentNow() {
   const host = el("div.reel-night", [el("div.rn-label", { text: "今夜のスロット" })]);
   layers.fx.append(host);
   requestAnimationFrame(() => host.classList.add("show"));
-  await mountReel(host);
+  // フェードインした時点で今夜の回転を始めておく。前回の停止出目を見せて待たない。
+  await mountReel(host, { delay: 0 });
   await sleep(900);
   host.classList.remove("show");
   await sleep(300);
