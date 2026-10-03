@@ -157,7 +157,8 @@ while (guard++ < 5000) {
     if (label === "Dr.fookah") {
       try {
         const pin = page.locator("#map-pins .spot-pin", { hasText: "Dr.fookah" }).first();
-        if (await pin.count() && !(await pin.isDisabled())) await pin.click({ timeout: 3000 });
+        // メニューが残った再試行では、背後のピンを押し直さず物販ボタンへ進む。
+        if (!(await page.locator("#fookah-menu.show").count()) && await pin.count() && !(await pin.isDisabled())) await pin.click({ timeout: 3000 });
         await page.waitForSelector("#fookah-menu.show", { timeout: 3000 });
         await page.locator("#fookah-menu #fookah-shop").click({ timeout: 3000 });
       } catch { planIdx--; }
