@@ -185,7 +185,8 @@ node web/test/portraits.mjs
 
 「character-portrait-remasterスキルを使って、次は○○を作って。まず1キャラ分を見せて」
 
-**最新の対象はすみさん（`sumi`）の5表情v1。** オーナー「次のキャラへ」で保存済み制作順から再開し、通常／笑顔／真剣／驚き／考えるを制作・確認用に保存。[5表情比較](references/sumi-five-review.png)、[生成元と実参照・配置記録](references/sumi-generation.json)を読む。5枚とも採用前で、ゲーム素材は差し替えていない。保存先は `codex/sumi-portrait-remaster-20261004`、要望台帳はPRT39。
+**最新の対象はすみさん（`sumi`）の5表情v1。** オーナー「次のキャラへ」で保存済み制作順から再開し、通常／笑顔／真剣／驚き／考えるを制作・確認用に保存。[5表情比較](references/sumi-five-review.png)、[生成元と実参照・配置記録](references/sumi-generation.json)を読む。5枚とも採用前で、ゲーム素材は差し替えていない。保存先は `codex/sumi-portrait-remaster-20261004`、要望台帳はPRT43。
+**2026-10-04 追記：すみさんv1の5表情、ましろv1の5表情＋立ち寝 `sleep` は、オーナー「さっき新しいの作ったので」で採用・ゲームへ組み込み済み（要望台帳PRT44）。** ましろの `sad` キーは元の絵どおりのあくび。
 
 凛（`rin`）は2026-10-04の明示指示で通常v11を採用し、同じ顔・髪・画風・衣装の笑顔／真剣／驚き／悲しみを制作済み。全5枚を896×1200 RGBA、共通倍率と足元で指定ブランチの立ち絵へ差し替えた。[5表情比較](references/rin-v11-five-review.png)、[生成記録](references/rin-v11-expressions-generation.json)、[配置・検証](references/rin-v11-integration.json)、[引き継ぎメモ](../../../docs/rin_portrait_handoff.md)を読む。
 **丸アイコン・台詞の表情・設定資料集・mainへのマージはClaude側。** `codex/rin-hair-texture-20261004`へ先にmainを取り込み、画像と制作記録を保存。PRT26〜30が今回の台帳。mainで使用済みのPRT16〜25を保持し、分岐中の8件はPRT31〜38へ整理した。旧保留指示と以前のマージ許可より今回の分担を優先する。

@@ -7,7 +7,7 @@
 
 最新の明示指示で凛の通常v11を採用。Codexは同じデザインの残り4表情を制作し、896×1200 RGBA・共通倍率・足元で5枚を差し替え、最新mainを取り込んだ `codex/rin-hair-texture-20261004` へ保存する。**丸アイコン・台詞の表情・設定資料集・mainへのマージはClaude側。** [引き継ぎメモ](rin_portrait_handoff.md)と要望台帳PRT26〜30を参照。ましろ6表情は確認資料を保持。
 
-オーナー「次のキャラへ」で、すみさんの通常／笑顔／真剣／驚き／考えるの5表情v1を確認用に制作・保存。[5表情の比較](../.claude/skills/character-portrait-remaster/references/sumi-five-review.png)と[生成元・実参照・配置記録](../.claude/skills/character-portrait-remaster/references/sumi-generation.json)、PRT39を参照。保存先 `codex/sumi-portrait-remaster-20261004`。採用前のため、すみさんのゲーム用画像・アイコン・設定は差し替えていない。
+オーナー「次のキャラへ」で、すみさんの通常／笑顔／真剣／驚き／考えるの5表情v1を確認用に制作・保存。[5表情の比較](../.claude/skills/character-portrait-remaster/references/sumi-five-review.png)と[生成元・実参照・配置記録](../.claude/skills/character-portrait-remaster/references/sumi-generation.json)、PRT43を参照。保存先 `codex/sumi-portrait-remaster-20261004`。採用前のため、すみさんのゲーム用画像・アイコン・設定は差し替えていない。
 
 ## 開発の原則
 
