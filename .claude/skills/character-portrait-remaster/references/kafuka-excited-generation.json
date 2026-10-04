@@ -1,0 +1,222 @@
+{
+  "character": "kafuka",
+  "expression": "excited",
+  "status": "approved",
+  "ownerRequest": "はい　サメちゃんも5表情欲しくて最後はコミカルな感じで面白いの欲しい　サメの話を無我夢中で一生懸命してるやつとか",
+  "prompt": "kafuka-excited-v3-prompt.txt",
+  "references": [
+    {
+      "path": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+      "role": "採用済み本人・可愛い顔と青い瞳、衣装と人物の最優先参照",
+      "sha256": "58af955b5b8ed62169d32f267e33221dc4738746f3dbe6fd729f6c8855817277"
+    },
+    {
+      "path": ".claude/skills/character-portrait-remaster/references/kafuka-excited-v2.png",
+      "role": "大げさすぎる旧5枚目・修正対象のみ",
+      "sha256": "ed8385ec5b0465bcae4853ec81a718af3f21915fb0ab1ab0b1c686580da3d7af"
+    },
+    {
+      "path": ".claude/skills/character-portrait-remaster/references/kafuka-v2-sheet.png",
+      "role": "採用済み本人の基本4表情・衣装と小物",
+      "sha256": "0eb46541c420ec71c4781ad54eac769652683550e123c9f8fe15c9d534748e4b"
+    },
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "初期採用済み・画質と質感のみ",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "初期採用済み・画質と質感のみ",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    }
+  ],
+  "version": 3,
+  "output": "kafuka-excited-v3.png",
+  "sha256": "4dedda89c2ac559015366b4ef12aa4e20d47fc0ff643dc0543e6dbdfc1e810bd",
+  "approvalPreview": "kafuka-excited-v3-preview.png",
+  "previewNormalization": {
+    "source": "/workspace/generated_images/exec-92e1c901-34eb-4ef3-88a2-64a4a99f4887.png",
+    "dimensions": [
+      1024,
+      1536
+    ],
+    "alpha24Bounds": [
+      177,
+      5,
+      879,
+      1522
+    ],
+    "alpha24BorderPixels": 0,
+    "scale": 0.5978905735003296,
+    "canvas": [
+      896,
+      1200
+    ],
+    "placement": [
+      167,
+      264
+    ],
+    "bodyHeight": 907,
+    "feetBottom": 1174,
+    "feetX": 447.61121457914555,
+    "alphaPolicy": "全体の拡縮とRGBA直接配置のみ。髪の半透過と意図した吐息を保持。alpha>=16の画素のキャンバス外切れなし。"
+  },
+  "review": "過去10セット32画像と各代表の原寸を確認。採用済み本人の可愛い青い虹彩と瞳孔を戻し、前のめりでぬいぐるみを抱えた熱弁、赤面、小さな汗と吐息で、息切れしながら夢中に話す表情へ修正。2026-10-04の指示で追加v3を採用し、excitedとして組み込み。",
+  "revisionRequest": "さめちゃんは5枚目はちょっとオーバーすぎ　可愛さも残しつつ大袈裟なのがいい　あもはぁはぁ息切らしながら語ってる感じ",
+  "previewSha256": "28ca4634e2ab3a8b7346ac1de83bdaac650c5a831de4723aa7cf5bcbc4f8472a",
+  "promptSha256": "12d5a2dc0b8b2011e6f07c82366da2c128ee7ab7329f34371c961910e0acb3bd",
+  "generatedSourcePath": "/workspace/generated_images/exec-92e1c901-34eb-4ef3-88a2-64a4a99f4887.png",
+  "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187",
+  "gameIntegration": {
+    "status": "integrated",
+    "asset": "assets/sprites/characters/kafuka/chr_kafuka_excited.png",
+    "webp": "remake/img/sprites/characters/kafuka/chr_kafuka_excited.webp",
+    "pngSha256": "0499b48c271dc776d25dfaa40b64370ae829c88114d237e21dcae2543fc981c2",
+    "webpSha256": "2c485386ca680882a8b2ed2117b67e9ae4cbf15c179e1c0b0820f3e678bd6c24",
+    "canvas": [
+      896,
+      1200
+    ],
+    "rgbaPixelExact": true,
+    "record": "rin-kafuka-final-integration.json"
+  },
+  "reviewedStyleGroups": [
+    "minto-service-v2",
+    "ageha-v1",
+    "minto-private-v1",
+    "tsumugi-v1",
+    "tsumugi-yami-v2",
+    "tsumugi-game-v1",
+    "kafuka-v2",
+    "kafuka-game-v2",
+    "kafuka-excited-v2",
+    "rin-redesign-v6"
+  ],
+  "supersededDrafts": [
+    {
+      "version": 1,
+      "output": "kafuka-excited-v1.png",
+      "sha256": "109e2b9951ff7bdff65c62933902724226c079982840375e7702c77f1627dd3f",
+      "prompt": "kafuka-excited-v1-prompt.txt",
+      "references": [
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/kafuka-v2-sheet.png",
+          "role": "採用済みの本人4表情・人物と衣装の最優先参照",
+          "sha256": "0eb46541c420ec71c4781ad54eac769652683550e123c9f8fe15c9d534748e4b",
+          "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
+        },
+        {
+          "path": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+          "role": "再制作前の本人原画・衣装とぬいぐるみの細部",
+          "sha256": "7919d4f9bd4b29ceece405bafaecaa2b815d2c018b55b28190c5c15f982aad74",
+          "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
+        },
+        {
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "role": "初期採用済み・画質と質感のみ",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+          "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
+        },
+        {
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "role": "初期採用済み・画質と質感のみ",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+          "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
+        }
+      ],
+      "approvalPreview": "kafuka-excited-v1-preview.png",
+      "previewNormalization": {
+        "scale": 0.6103633916554508,
+        "canvas": [
+          896,
+          1200
+        ],
+        "feetBottom": 1174,
+        "remoteFaintPixelsCleared": 2911
+      },
+      "status": "superseded",
+      "reason": "オーナー「もっと大げさでコミカルにする」で修正。v1は採用しない。"
+    },
+    {
+      "character": "kafuka",
+      "expression": "excited",
+      "status": "superseded",
+      "ownerRequest": "はい　サメちゃんも5表情欲しくて最後はコミカルな感じで面白いの欲しい　サメの話を無我夢中で一生懸命してるやつとか",
+      "prompt": "kafuka-excited-v2-prompt.txt",
+      "references": [
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/kafuka-excited-v1.png",
+          "role": "コミカルさ不足の修正対象",
+          "sha256": "109e2b9951ff7bdff65c62933902724226c079982840375e7702c77f1627dd3f"
+        },
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/kafuka-v2-sheet.png",
+          "role": "採用済みの本人4表情・衣装と人物の最優先参照",
+          "sha256": "0eb46541c420ec71c4781ad54eac769652683550e123c9f8fe15c9d534748e4b",
+          "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
+        },
+        {
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "role": "初期採用済み・画質と質感のみ",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+          "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
+        },
+        {
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "role": "初期採用済み・画質と質感のみ",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+          "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
+        }
+      ],
+      "version": 2,
+      "output": "kafuka-excited-v2.png",
+      "sha256": "ed8385ec5b0465bcae4853ec81a718af3f21915fb0ab1ab0b1c686580da3d7af",
+      "approvalPreview": "kafuka-excited-v2-preview.png",
+      "previewNormalization": {
+        "scale": 0.5982849604221636,
+        "canvas": [
+          896,
+          1200
+        ],
+        "feetBottom": 1174,
+        "remoteFaintPixelsCleared": 1978
+      },
+      "review": "大げさでコミカルに修正したv2。瞳全体の大きな星・大きく開いたギザ歯の口・漫画的な赤面と汗・前のめりの説明・ぬいぐるみをぎゅっと抱える仕草。本人の採用済み基本4枚とみんと・あげはを実画像で参照。既存4枚と同じ全身高で原寸／2倍・明暗背景を比較。原画は透過でキャンバス四辺のalpha>=24画素なし。追加1枚は採用確認待ち。",
+      "revisionRequest": "もっと大げさでコミカルにする",
+      "supersededBy": "kafuka-excited-v3.png",
+      "reason": "オーナーの最新指示でv2はオーバーすぎ。可愛さを残し、はぁはぁ息切れしながら熱弁するv3へ修正。"
+    }
+  ],
+  "outputDimensions": [
+    1024,
+    1536
+  ],
+  "sourceAlpha24Bounds": [
+    177,
+    5,
+    879,
+    1522
+  ],
+  "approval": "2026-10-04: 直前の凛v7・サメちゃん追加v3の採用確認に対してオーナー「全て完了したらマージ」。制作・組み込み・検証・マージを承認。",
+  "proposalVerification": {
+    "sourceMargins": "四辺にalpha>=24の画素なし",
+    "previewClipping": "alpha>=16の画素のキャンバス外切れなし",
+    "backgrounds": [
+      "white",
+      "dark"
+    ],
+    "nativeAndPixelExactZoom": true,
+    "mobileWidth": 390,
+    "browserErrors": [],
+    "catalogGroups": {
+      "sections": 10,
+      "images": 32,
+      "approved": 8,
+      "pending": 2
+    },
+    "initialApproved15Unchanged": true,
+    "gameAssetsUnchanged": true
+  },
+  "verificationRecord": "rin-kafuka-final-integration.json"
+}

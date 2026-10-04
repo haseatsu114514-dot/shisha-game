@@ -1,0 +1,93 @@
+{
+  "character": "kafuka",
+  "expression": "excited",
+  "status": "superseded",
+  "ownerRequest": "はい　サメちゃんも5表情欲しくて最後はコミカルな感じで面白いの欲しい　サメの話を無我夢中で一生懸命してるやつとか",
+  "prompt": "kafuka-excited-v2-prompt.txt",
+  "references": [
+    {
+      "path": ".claude/skills/character-portrait-remaster/references/kafuka-excited-v1.png",
+      "role": "コミカルさ不足の修正対象",
+      "sha256": "109e2b9951ff7bdff65c62933902724226c079982840375e7702c77f1627dd3f"
+    },
+    {
+      "path": ".claude/skills/character-portrait-remaster/references/kafuka-v2-sheet.png",
+      "role": "採用済みの本人4表情・衣装と人物の最優先参照",
+      "sha256": "0eb46541c420ec71c4781ad54eac769652683550e123c9f8fe15c9d534748e4b",
+      "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
+    },
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "初期採用済み・画質と質感のみ",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+      "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "初期採用済み・画質と質感のみ",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+      "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
+    }
+  ],
+  "version": 2,
+  "output": "kafuka-excited-v2.png",
+  "sha256": "ed8385ec5b0465bcae4853ec81a718af3f21915fb0ab1ab0b1c686580da3d7af",
+  "approvalPreview": "kafuka-excited-v2-preview.png",
+  "previewNormalization": {
+    "scale": 0.5982849604221636,
+    "canvas": [
+      896,
+      1200
+    ],
+    "feetBottom": 1174,
+    "remoteFaintPixelsCleared": 1978
+  },
+  "review": "大げさでコミカルに修正したv2。瞳全体の大きな星・大きく開いたギザ歯の口・漫画的な赤面と汗・前のめりの説明・ぬいぐるみをぎゅっと抱える仕草。本人の採用済み基本4枚とみんと・あげはを実画像で参照。既存4枚と同じ全身高で原寸／2倍・明暗背景を比較。原画は透過でキャンバス四辺のalpha>=24画素なし。追加1枚は採用確認待ち。",
+  "revisionRequest": "もっと大げさでコミカルにする",
+  "supersededDraft": {
+    "version": 1,
+    "output": "kafuka-excited-v1.png",
+    "sha256": "109e2b9951ff7bdff65c62933902724226c079982840375e7702c77f1627dd3f",
+    "prompt": "kafuka-excited-v1-prompt.txt",
+    "references": [
+      {
+        "path": ".claude/skills/character-portrait-remaster/references/kafuka-v2-sheet.png",
+        "role": "採用済みの本人4表情・人物と衣装の最優先参照",
+        "sha256": "0eb46541c420ec71c4781ad54eac769652683550e123c9f8fe15c9d534748e4b",
+        "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
+      },
+      {
+        "path": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+        "role": "再制作前の本人原画・衣装とぬいぐるみの細部",
+        "sha256": "7919d4f9bd4b29ceece405bafaecaa2b815d2c018b55b28190c5c15f982aad74",
+        "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
+      },
+      {
+        "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+        "role": "初期採用済み・画質と質感のみ",
+        "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+        "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
+      },
+      {
+        "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "role": "初期採用済み・画質と質感のみ",
+        "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+        "sourceCommit": "89288fd9b0dfd62250ade1cc580d789bcd91a891"
+      }
+    ],
+    "approvalPreview": "kafuka-excited-v1-preview.png",
+    "previewNormalization": {
+      "scale": 0.6103633916554508,
+      "canvas": [
+        896,
+        1200
+      ],
+      "feetBottom": 1174,
+      "remoteFaintPixelsCleared": 2911
+    },
+    "status": "superseded",
+    "reason": "オーナー「もっと大げさでコミカルにする」で修正。v1は採用しない。"
+  },
+  "supersededBy": "kafuka-excited-v3.png",
+  "reason": "オーナーの最新指示でv2はオーバーすぎ。可愛さを残し、はぁはぁ息切れしながら熱弁するv3へ修正。"
+}

@@ -1,0 +1,137 @@
+{
+  "character": "rin",
+  "age": 27,
+  "version": 1,
+  "status": "approved",
+  "ownerRequest": "凛はもう少しだけ年上に見せたい　主人公たちよりも　あと目をもうちょっとだけ細めて　あと口元も参考一枚目みたいな　基本クールに微笑む系　ギャップが可愛いの一枚あってもいいけど",
+  "approval": "2026-10-04: オーナー「全て完了したらマージ」。凛v7のデザインで5表情を制作・採用・組み込み、検証後のマージを指示。",
+  "referencesForNewVariants": [
+    {
+      "path": ".claude/skills/character-portrait-remaster/references/rin-redesign-v7.png",
+      "role": "採用済み本人・顔、髪、体格、衣装、全身フレーミング",
+      "inputPath": "/workspace/shisha-game/.claude/skills/character-portrait-remaster/references/rin-redesign-v7.png",
+      "sha256": "8fde84eec1f47610eb054cbf46b89ac65179d531adba16a27a3addbe8a1cb860"
+    },
+    {
+      "path": ".claude/skills/character-portrait-remaster/references/rin-v7-face-reference.png",
+      "role": "v7原寸顔の無加工切り抜き・瞳とまぶた、唇、27歳の顔立ち",
+      "inputPath": "/workspace/scratch/portrait-review/rin-v7-reference-face.png",
+      "sourceCrop": [
+        300,
+        30,
+        730,
+        460
+      ],
+      "sha256": "83090ac194c9f6f15880695c091b0e2d7a458bb19b0a6fdb923c2c70054410c7"
+    },
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "初期採用済み・画質と質感のみ",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "初期採用済み・画質と質感のみ",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    }
+  ],
+  "reviewedStyleGroups": [
+    "minto-service-v2",
+    "ageha-v1",
+    "minto-private-v1",
+    "tsumugi-v1",
+    "tsumugi-yami-v2",
+    "tsumugi-game-v1",
+    "kafuka-v2",
+    "kafuka-game-v2",
+    "kafuka-excited-v3",
+    "rin-redesign-v7"
+  ],
+  "expressions": [
+    {
+      "expression": "normal",
+      "description": "クールな微笑み",
+      "source": "rin-redesign-v7.png",
+      "sha256": "8fde84eec1f47610eb054cbf46b89ac65179d531adba16a27a3addbe8a1cb860",
+      "sourceDimensions": [
+        1024,
+        1536
+      ],
+      "prompt": "rin-redesign-v7-prompt.txt",
+      "promptSha256": "6dbf11208761a605bac2be2748defa8fe9a2768fbdfb2975e5fa0f56f9681cea",
+      "generatedSourcePath": "/workspace/generated_images/exec-e1713d91-9a19-43da-ba8d-79c0b587190b.png",
+      "gameAsset": "assets/sprites/characters/rin/chr_rin_normal.png",
+      "gameSha256": "48ea068760774eb000e04325dc85c11107b54cae74bf981d055b98529d38bf12",
+      "referencesRecord": "rin-redesign-v7-generation.json"
+    },
+    {
+      "expression": "smile",
+      "description": "目を閉じて頬に手を添える、可愛いギャップの笑顔",
+      "source": "rin-expressions-v1-smile.png",
+      "sha256": "3a6982bc4727ca969559ddd317a5814502901449b0697241bf12bd0a8712397f",
+      "sourceDimensions": [
+        1024,
+        1536
+      ],
+      "prompt": "rin-expressions-v1-smile-prompt.txt",
+      "promptSha256": "bd808d155f0fa4dddec663ce8f72d5c4584aab739e1f1cf92929e99de9c27a34",
+      "generatedSourcePath": "/workspace/generated_images/exec-22591f9f-ed53-445d-982f-1538468f9e68.png",
+      "gameAsset": "assets/sprites/characters/rin/chr_rin_smile.png",
+      "gameSha256": "a4065f0d74c6c52135120dfa5b93c9ec90ad1003273cbfe41f96098310897b88",
+      "referencesRecord": "referencesForNewVariants"
+    },
+    {
+      "expression": "serious",
+      "description": "指で説明する真剣な表情",
+      "source": "rin-expressions-v1-serious.png",
+      "sha256": "c245c573d52b7dfcf913d88e4854c26ea31af723cc861abdd03f43f4f79e4eab",
+      "sourceDimensions": [
+        1024,
+        1536
+      ],
+      "prompt": "rin-expressions-v1-serious-prompt.txt",
+      "promptSha256": "e6a8c03b86354ef561a4930a90ecb627d530d66d1a347e676acfa664eec3ad69",
+      "generatedSourcePath": "/workspace/generated_images/exec-c51901fa-2feb-4d0e-b7c5-f00b1eb779e3.png",
+      "gameAsset": "assets/sprites/characters/rin/chr_rin_serious.png",
+      "gameSha256": "6e2d7b7dfe14ff72ea416cbe3735f75b870360cc5b60a5f5cce369c858d49440",
+      "referencesRecord": "referencesForNewVariants"
+    },
+    {
+      "expression": "surprise",
+      "description": "胸元に手を添える控えめな驚き",
+      "source": "rin-expressions-v1-surprise.png",
+      "sha256": "4989691ae8e0812831c851291d22b37bc3aec086afefa2e3633f3ca96fc9a708",
+      "sourceDimensions": [
+        1024,
+        1536
+      ],
+      "prompt": "rin-expressions-v1-surprise-prompt.txt",
+      "promptSha256": "1b89db1919550f406ac8fd753d1aa7d8bef803dab04c58d8fbf05eb83b745f07",
+      "generatedSourcePath": "/workspace/generated_images/exec-32e8bb3c-24e2-4ed9-9a66-9a358dbc3b19.png",
+      "gameAsset": "assets/sprites/characters/rin/chr_rin_surprise.png",
+      "gameSha256": "a59ec4e9d200f0f7643d34d21b5aaae897c3e39a2f280c5248a6eccbb2718293",
+      "referencesRecord": "referencesForNewVariants"
+    },
+    {
+      "expression": "sad",
+      "description": "袖を軽く握る静かな悲しみ",
+      "source": "rin-expressions-v1-sad.png",
+      "sha256": "855777d5486e079b1da37ed4e4c09104e4a2fea408fb870a365ad6612694bed8",
+      "sourceDimensions": [
+        1024,
+        1536
+      ],
+      "prompt": "rin-expressions-v1-sad-prompt.txt",
+      "promptSha256": "fdf32367427d5a3fc1b2f9a8f516cfa5b849f5cb61e01b622dada26ada6c03b2",
+      "generatedSourcePath": "/workspace/generated_images/exec-8fafa56e-5cda-4a5b-8cd4-81c55e6958b7.png",
+      "gameAsset": "assets/sprites/characters/rin/chr_rin_sad.png",
+      "gameSha256": "af21eb95da8781874404ef900e42d3bc9cdc881b6c85de9c96fb7512483f3d0c",
+      "referencesRecord": "referencesForNewVariants"
+    }
+  ],
+  "integrationRecord": "rin-kafuka-final-integration.json",
+  "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187",
+  "generationPolicy": "各差分を1枚ずつ画像生成で制作。原画を保持し、顔の貼り替え・描画加工を行わない。全5枚へ同一倍率と足元基準を適用。",
+  "verificationRecord": "rin-kafuka-final-integration.json",
+  "gameIntegration": "integrated: five 896x1200 RGBA PNGs and pixel-exact lossless WebPs"
+}
