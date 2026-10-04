@@ -19,7 +19,10 @@ and updates the local config.
 Before any code edit or Git operation:
 
 - verify the repo root with `git rev-parse --show-toplevel`
-- confirm that the same directory contains `web/`, `data/`, and `assets/` (the Godot version, including `project.godot`, has been deleted)
+- confirm that the same directory contains `data/`, `assets/` and `remake/`.
+  `project.godot` must NOT exist: the Godot version was deleted on
+  2026-06-15, so a folder that still has it is a stale copy. Ignore any
+  older rule (in any AGENTS.md or notes) that requires `project.godot`
 - run `./tools/check_git_safety.sh`
 - if `git config --get core.hooksPath` is not `.githooks`, run
   `./tools/enable_git_hooks.sh`
@@ -28,6 +31,9 @@ Before any code edit or Git operation:
 
 If any check fails, stop. Do not create branches, do not commit, do not
 push, and do not try to merge unrelated histories.
+
+A worktree made from the canonical checkout (`git worktree add`) is
+allowed; `check_git_safety.sh` accepts it.
 
 ### Hard rules
 
@@ -40,6 +46,21 @@ push, and do not try to merge unrelated histories.
 If `git merge-base HEAD origin/main` fails, the branch is not safe for a
 normal PR. Stop and fix the Git layout first.
 
+### GitHub が唯一の正本（PCに作業を残さない・2026-10-03）
+
+2026-09-30〜10-02 に、Codex がPC上のフォルダで作業を進め、push できないまま差分ファイル・画像が
+PCにだけ溜まる事故が起きた（PR #173 で回収）。再発防止として以下を守る。
+
+- 正本は GitHub の `origin`（main と作業ブランチ）だけ。PCのフォルダ・`outputs/`・stash・
+  チャットの添付・画像生成サービスのライブラリは正本ではない。「ローカル正本」として扱わない。
+- 作業を始めるときは `git fetch origin` し、**最新の `origin/main` から新しいブランチ**を切る。
+  未コミットの変更が残った古いフォルダや、古い作業ブランチの上で続きをしない。
+- 作業の区切りごと・セッションの終わりに、必ず commit して作業ブランチへ push する。
+  push できないときは、差分ファイルを作って終わらせず、止まってオーナーに報告する。
+- 生成した画像・音声もその場で `assets/`（使う素材）か `asset_sources/`（元データ）に置いて commit する。
+  デスクトップや外部のライブラリに置いたままにしない。
+- 終える前に `git status`（未コミットが無い）と `git log @{u}..HEAD`（未pushが無い）を確認する。
+
 ---
 
 ## ブラウザ版（web/）
@@ -47,9 +68,8 @@ normal PR. Stop and fix the Git layout first.
 第1章・第2章はHTML/JS版が `web/` にあり、**ブラウザ版がメインの開発トラック**。
 ブラウザ版の作業前に必ず `docs/web_version_plan.md`
 （開発方針・ロードマップ・次回タスク・引き継ぎ）を読むこと。
-開発ブランチ: `claude/great-galileo-omzoob`
-（mainに未マージの場合はチェックアウトして続きを行う。
-旧ブランチ `claude/hopeful-ride-5rg3zg` はマージ済み）
+開発ブランチ: 作業ごとに最新の `origin/main` から新しいブランチを切る
+（旧ブランチ `claude/great-galileo-omzoob` 等の上で続きをしない＝先祖返りの原因になる）
 ゲームの正式タイトルは **「水煙前線 -EN:CODE-」**。
 本作は一人称視点で、主人公はじめの立ち絵は基本表示しない。
 
@@ -129,14 +149,14 @@ Godot版（`scripts/*.gd` / `scenes/` / `*.tscn` / `*.import` / `*.uid` / `proje
 
 ### ステータス表示ルール
 
-- **数値は絶対にプレイヤーに見せない**（内部値0〜100は非公開）
-- メニュー・サマリーでは **★1〜5** で表示（★★★☆☆ のようなビジュアル）
-- 上昇通知は**抽象表現のみ**（2026-07-05 4段階に改定・N20）:
+- **今の強さ（内部値0〜100の合計）はプレイヤーに見せない**。メニュー・サマリー・HUDは **★1〜5** とレーダーで表す（★★★☆☆ のようなビジュアル）
+- 上昇通知は**抽象語（4段階）＋実際に増えたポイント `+Npt`**（`+Npt` は2026-10-04 オーナー指定・#193／台帳GUI16。リメイク版の能力アップカード）。
+  `+Npt` は章上限 `statSoftCap()` などで調整された後の実増加量で、経験値の投入量ではない。今の合計値は出さない（`docs/master_spec.md` 第2部も参照）:
   - 1〜2ポイント → 「少し上がった」
   - 3〜4ポイント → 「上がった」
   - 5〜7ポイント → 「かなり上がった」
   - 8ポイント以上 → 「大きく上がった」
-- セリフ内の表記例: `……【技術】と【センス】が上がった。`
+- セリフ内の表記例: `……【技術】と【センス】が上がった。`（台詞に `+Npt` は書かない。数字は通知カードが自動で出す）
 - **同じステータスへの複数回の加算は1つの通知バナーへ自動で合算される**（`web/js/game.js` の
   `gainStat()`→`statGainBatch`。短い時間窓に入った同一項目の増分を合計してから上の4段階で表示）。
   違うステータス（例: 技術と魅力が同時に伸びる）は従来どおりそれぞれ別バナーで良い。
@@ -302,7 +322,7 @@ node web/test/portraits.mjs       # 立ち絵の身長スケール回帰（ス�
 ### やらない（テスト・正史を壊す）
 - テストフックを壊さない: `__pullDebug` / `__heatDebug` / `__steamDebug().end()`（蒸らし弾幕の即終了） / 調整(R2)の「このままでいく」 / 審査の `.trial-appeal[data-backed][data-cat]`＋`#trial-doubt[data-need]` / 結果カウントの `pointer-events:none`。
 - **蒸らしミニゲームは雑念弾幕（`runSteamDodge`）**。「覚悟＋締め」(`runSteamWait`) は2026-06-14にオーナー指定で差し戻し済み。復活させない。0分は神崎交友で解放＝弾幕スキップ。
-- ステの生数値をUIに出さない（★と抽象語のみ）。旧ステ名（技術力/洞察力/メンタル/度胸/味覚/集中力）禁止。
+- ステの今の強さ（0〜100の合計値）をUIに出さない（★・レーダー・抽象語。能力アップ通知の実増加量 `+Npt` だけは表示する＝2026-10-04 オーナー指定）。旧ステ名（技術力/洞察力/メンタル/度胸/味覚/集中力）禁止。
 - タイミング系ミニゲームは必ず `miniCountdown()` で 3・2・1 を挟む。
 - `main` へ直push禁止＝PR。`--force`/`--allow-unrelated-histories` 禁止（Git Safety）。
 
