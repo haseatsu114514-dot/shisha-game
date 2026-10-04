@@ -6,10 +6,10 @@ import { on } from "../core/bus.js";
 import { state, STAT_KEYS } from "../core/state.js";
 import { staminaRatio, STAMINA_LOW, maxStamina, star } from "../core/stats.js";
 import { isRainy } from "./weather.js";
+import { TOURNAMENT_DAY } from "../core/rules.js";
 
-export const MAX_DAYS = 14;
-/** 大会（DAY15）まであと何日か。台詞の {daysLeft} もこれに一本化する */
-export const daysLeft = () => Math.max(0, MAX_DAYS + 1 - (state?.day || 1));
+/** 大会（DAY14）まであと何日か。台詞の {daysLeft} もこれに一本化する */
+export const daysLeft = () => Math.max(0, TOURNAMENT_DAY - (state?.day || 1));
 
 let dom = null;
 let handlers = { phone: null, status: null, menu: null };
@@ -48,7 +48,7 @@ export function initHud(h) {
     slot: el("div.dc-slot"),
     money: el("b"),
     left: el("b"),
-    stamina: el("div.hud-stamina", [el("span", { text: "体力" }), el("i.hud-bar", [el("b")])]),
+    stamina: el("div.hud-stamina", [el("span", { text: "体力" }), el("i.hud-bar", [el("span.gauge-track", [el("b")])])]),
     radar: miniRadar(),
     phone: el("button.hud-lime", { title: "LIME", dataset: { test: "hud-phone" }, onclick: () => handlers.phone?.() }, [el("span", { text: "LIME" }), el("em.badge")]),
     status: el("button.hud-level", { title: "ステータス", dataset: { test: "hud-status" }, onclick: () => handlers.status?.() }),
@@ -59,7 +59,7 @@ export function initHud(h) {
   const root = el("div.hud", [
     el("div.hud-card", [
       el("div.dc-main", [dom.area, dom.day, dom.slot]),
-      el("div.dc-meta", [moneyRow, el("div.dc-row", [el("span", { text: "大会まで" }), dom.left])]),
+      el("div.dc-meta", [moneyRow, el("div.dc-row", [el("span", { text: "次の大会まで" }), dom.left])]),
     ]),
     el("div.hud-right", [dom.stamina, dom.status, dom.phone, dom.menu]),
   ]);
@@ -81,14 +81,16 @@ export function showHud(v = true) {
 
 export function updateHud() {
   if (!dom || !state) return;
-  dom.day.replaceChildren(el("b", { text: String(state.day) }), el("small", { text: `/${MAX_DAYS}` }));
+  dom.day.replaceChildren(el("b", { text: String(state.day) }), el("small", { text: `/${TOURNAMENT_DAY}` }));
   const night = state.slot >= 1;
   const rain = isRainy() ? "・雨" : "";
-  dom.slot.textContent = state.phase === "tournament" ? "大会当日" : state.slot >= 2 ? "DAY ・ 帰宅" : night ? `DAY ・ 夜${rain}` : `DAY ・ 昼${rain}`;
+  dom.slot.textContent = state.phase === "tournament" ? "大会当日" : state.slot >= 2 ? "帰宅" : night ? `夜${rain}` : `昼${rain}`;
   dom.slot.dataset.slot = night ? "night" : "day";
   dom.money.textContent = yen(state.money);
-  dom.left.textContent = state.phase === "tournament" ? "本日" : `あと${daysLeft()}日`;
+  dom.left.textContent = `あと${daysLeft()}日`;
   const r = staminaRatio();
+  dom.stamina.dataset.health = r > 0.5 ? "green" : r > 0.25 ? "yellow" : "red";
+  dom.stamina.querySelector(".hud-bar").setAttribute("aria-label", `体力：${r > 0.5 ? "余裕がある" : r > 0.25 ? "減ってきた" : "残りわずか"}`);
   dom.stamina.querySelector("b").style.width = `${Math.round(r * 100)}%`;
   dom.stamina.classList.toggle("low", state.stamina < STAMINA_LOW);
   // 根性★で体力の器が増えると、バー自体が伸びる

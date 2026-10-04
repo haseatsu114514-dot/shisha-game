@@ -157,7 +157,6 @@ export function chooseSpot({ notice = "", eventPin = null, guide = null, onShown
       pins,
       notice ? el("div.map-notice", { text: notice }) : null,
       guide ? el("div.map-guide", { dataset: { test: "map-guide" } }, [el("b", { text: "GUIDE" }), el("span", { text: guide.text })]) : null,
-      el("div.map-side", [el("div.map-time", { text: `${night ? "夜" : "昼"} / 栄${rainy ? "・雨" : ""}` })]),
       info,
     ]);
     showScreen("map", root);

@@ -1,7 +1,7 @@
 // ステータス画面（master_spec #19 / #19-a）。数値は見せず、★・呼称・レーダーの形で伸びを見せる。
 import { el, yen } from "../core/util.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
-import { modal } from "../core/ui.js";
+import { modal, heartRow, statBadge } from "../core/ui.js";
 import { state, STAT_KEYS, STAT_JA } from "../core/state.js";
 import { star, starText, rankLabel, affinityLevel, maxStamina } from "../core/stats.js";
 import { flavorStock, ownedFlavorIds } from "./shop.js";
@@ -61,7 +61,6 @@ export function openStatus() {
   return modal({ title: "STATUS", body: el("div.status", [tabs, body]), className: "status-modal", options: [{ label: "閉じる", value: true, primary: true, test: "status-close" }] });
 }
 
-const STAT_BADGE = { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "観" };
 
 /** 今の★で効いていること（★が上がるたびに変わる一言） */
 export function tierFx(k) {
@@ -77,7 +76,7 @@ function meTab() {
       note.textContent = `【${STAT_JA[k]}】${DB.statusTexts?.statPurpose?.[k] || ""}`;
     },
   }, [
-    el("span.st-badge", { text: STAT_BADGE[k] }),
+    statBadge(k, "st-badge"),
     el("div.st-info", [
       el("div.st-line", [
         el("span.st-name", { text: STAT_JA[k] }),
@@ -111,12 +110,17 @@ function peopleTab() {
     const face = faceIconUrl(id);
     const lover = (state.lovers || []).includes(id);
     const bondLv = state.loveLevel?.[id] || 1;
+    const hearts = heartRow(Array.from({ length: 5 }, (_, i) => i < (lover ? bondLv : lv) ? 100 : 0), {
+      className: "heart-row", bond: lover, label: lover ? "恋人との絆" : "好感度",
+    });
     return el(`div.pp-row${lover ? ".lover" : ""}`, [
       face ? el("img.pp-face", { src: face, alt: "" }) : el("span.pp-face.ph", { text: displayName(id, state)[0] }),
       el("span.pp-name", { text: displayName(id, state) }),
-      lover
-        ? el("span.pp-hearts", { text: `恋人　絆 ${"♥".repeat(bondLv)}${"♡".repeat(5 - bondLv)}` })
-        : el("span.pp-hearts", { text: "♥".repeat(lv) + "♡".repeat(5 - lv) + (friendClosed(id) ? "　友達" : "") }),
+      el("span.pp-hearts", [
+        lover ? el("span.pp-relation", { text: "恋人　絆" }) : null,
+        hearts,
+        !lover && friendClosed(id) ? el("span.pp-relation", { text: "友達" }) : null,
+      ]),
       state.contacts.includes(id) ? el("span.pp-lime", { text: "LIME" }) : null,
     ]);
   });

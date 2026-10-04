@@ -2,7 +2,7 @@
 import { $, el, sleep, nextFrame } from "./util.js";
 import { on } from "./bus.js";
 import { SE, setRainAmbience } from "./audio.js";
-import { state } from "./state.js";
+import { state, STAT_KEYS } from "./state.js";
 import { DB, displayName, faceIconUrl } from "./data.js";
 import { AFFINITY_RANK_PTS } from "./stats.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
@@ -20,10 +20,10 @@ export function initLayers() {
     layers[id] = $(`#${id}`);
   }
   // 報酬カード（旧版の Persona 風カードを踏襲）。ステはステ色の漢字バッジ、好感度は顔＋ハート
-  on("stat-gain", ({ key, name, word, starUp, rank, star }) => {
+  on("stat-gain", ({ key, total, name, word, starUp, rank, star }) => {
     // ★が上がったら、何が楽になったかを一言添える（旧版の★UP効果トースト）
     const fx = starUp ? DB.statusTexts?.statTierFx?.[key]?.[star - 1] : "";
-    gainCard({ kind: "stat", stat: key, badge: STAT_BADGE[key], top: starUp ? `RANK UP ★${star}` : "STATUS UP", main: name, sub: starUp ? `${word} ──「${rank}」` : word, fx });
+    gainCard({ kind: "stat", stat: key, points: total, badge: STAT_BADGE[key], top: starUp ? `RANK UP ★${star}` : "STATUS UP", main: name, sub: starUp ? `${word} ──「${rank}」` : word, fx });
   });
   on("affinity-gain", ({ id, level, levelUp, prevPts, pts, bond }) => {
     if (!id || id === "???" || !state?.met?.[id]) return;
@@ -36,7 +36,7 @@ export function initLayers() {
       main: displayName(id, state, { context: bond ? "private" : null }), // 恋人の絆は私的な場面でだけ深まる
       sub: bond
         ? (levelUp ? `恋人との絆が深まった（Lv.${level}）` : "心の距離が少し近づいた")
-        : levelUp ? `好感度が ♥${level} に上がった！` : "少し打ち解けた気がする",
+        : levelUp ? `好感度が ${level} 段階に上がった！` : "少し打ち解けた気がする",
       hearts: { from: heartState(prevPts), to: heartState(pts) },
     });
   });
@@ -201,7 +201,7 @@ export function toast(text, { ms = 2600, kind = "" } = {}) {
 }
 
 // ステ上昇などのバナー（右上から順に積む・同時に出すのは数枚まで）
-const STAT_BADGE = { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "観" };
+const STAT_BADGE = { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "察" };
 const AFF_PTS = AFFINITY_RANK_PTS; // stats.js の AFFINITY_RANK_PTS と同じ段階
 /** 好感度ポイント → 5つのハートそれぞれの塗り率（%） */
 function heartState(pts = 0) {
@@ -225,17 +225,29 @@ export function gainCard(o) {
   bannerQueue.push(o);
   pumpBanners();
 }
+
+/** 同じ生成ハートを報酬通知と交友一覧で使う。中身の進み具合だけをDOMで変える。 */
+export function heartRow(values, { className = "gc-hearts", label = "好感度", bond = false } = {}) {
+  return el(`span.${className}${bond ? ".bond" : ""}`, { role: "img", "aria-label": label },
+    values.map((fill) => el("i.ui-heart", { "aria-hidden": "true", style: { "--fill": `${fill}%` } })));
+}
+
+export function statBadge(key, className = "gc-badge") {
+  return el(`div.${className}`, { text: STAT_BADGE[key], "aria-hidden": "true" });
+}
+
 function pumpBanners() {
   while (bannerBusy < 3 && bannerQueue.length) {
     const o = bannerQueue.shift();
     bannerBusy++;
-    const hearts = o.hearts ? el("div.gc-hearts", o.hearts.from.map((f) => el("i", { style: { "--fill": `${f}%` } }))) : null;
-    const meter = o.meter ? el("div.gc-meter", { "aria-label": "体力が回復" }, [el("i", { style: { width: `${o.meter.from * 100}%` } })]) : null;
+    const hearts = o.hearts ? heartRow(o.hearts.from, { bond: !!o.bond, label: o.bond ? "恋人との絆" : "好感度" }) : null;
+    const meter = o.meter ? el("div.gc-meter", { "aria-label": "体力が回復" }, [el("span.gauge-track", [el("i", { style: { width: `${o.meter.from * 100}%` } })])]) : null;
     const b = el(`div.gain-card.${o.kind}${o.bond ? ".bond" : ""}${o.stat ? `.st-${o.stat}` : ""}`, [
-      o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : el("div.gc-badge", { text: o.badge || "+" }),
+      o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : o.stat ? statBadge(o.stat) : el("div.gc-badge", { text: o.badge || "+" }),
       el("div.gc-meta", [
         el("span.gc-top", { text: o.top }),
-        el("span.gc-main", { text: o.main }),
+        el("div.gc-title", [el("span.gc-main", { text: o.main }),
+          o.points > 0 ? el("span.gc-points", { text: `+${o.points}pt` }) : null]),
         o.sub ? el("span.gc-sub", { text: o.sub }) : null,
         o.fx ? el("span.gc-fx", { text: o.fx }) : null,
         hearts,
@@ -243,6 +255,10 @@ function pumpBanners() {
       ]),
     ]);
     layers.banners.append(b);
+    const owner = state;
+    if (o.kind === "stat" && o.points > 0) setTimeout(() => {
+      if (b.isConnected && owner === state) flyStatGain(b, o);
+    }, 650);
     if (o.kind === "stat") SE.select();
     requestAnimationFrame(() => {
       b.classList.add("show");
@@ -256,6 +272,48 @@ function pumpBanners() {
       b.classList.add("out");
       setTimeout(() => { b.remove(); bannerBusy--; pumpBanners(); }, 420);
     }, hold);
+  }
+}
+
+/** 通知の光を、増えた能力に対応するHUDグラフの頂点へ運ぶ。拡縮後もステージ座標で計算する。 */
+function flyStatGain(card, { stat, points }) {
+  const index = STAT_KEYS.indexOf(stat);
+  const radar = document.querySelector(".hud-radar");
+  const hud = radar?.closest("#hud");
+  if (index < 0 || !hud || Number(getComputedStyle(hud).opacity) < 0.1) return;
+  const stage = document.querySelector("#stage").getBoundingClientRect();
+  const target = radar.getBoundingClientRect();
+  const source = card.querySelector(".gc-badge").getBoundingClientRect();
+  if (!stage.width || !target.width) return;
+  const vertices = radar.querySelector(".hr-fill")?.points;
+  if (!vertices || vertices.numberOfItems <= index) return;
+  const { x: tx, y: ty } = vertices.getItem(index);
+  const scaleX = stage.width / 1280, scaleY = stage.height / 720;
+  const from = [(source.x + source.width / 2 - stage.x) / scaleX, (source.y + source.height / 2 - stage.y) / scaleY];
+  const to = [(target.x + target.width * tx / 48 - stage.x) / scaleX, (target.y + target.height * ty / 48 - stage.y) / scaleY];
+  const color = getComputedStyle(card).getPropertyValue("--gc").trim();
+  const pulse = () => {
+    if (!radar.isConnected) return;
+    const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    for (const [key, value] of Object.entries({ class: "hr-gain", cx: tx, cy: ty, r: 3, fill: color })) dot.setAttribute(key, value);
+    radar.append(dot);
+    dot.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 650 }).finished.finally(() => dot.remove());
+    radar.animate([{ filter: "brightness(1)" }, { filter: `brightness(1.8) drop-shadow(0 0 4px ${color})`, offset: 0.3 }, { filter: "brightness(1)" }], { duration: 650 });
+  };
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { pulse(); return; }
+  const control = [(from[0] + to[0]) / 2 + 46, Math.max(8, Math.min(from[1], to[1]) - 28)];
+  const count = 2 + Math.min(points, 4);
+  for (let i = 0; i < count; i++) {
+    const spark = el("i.stat-flight", { "aria-hidden": "true", dataset: { stat }, style: { "--gain-color": color } });
+    layers.fx.append(spark);
+    const frames = Array.from({ length: 9 }, (_, step) => {
+      const t = step / 8, u = 1 - t;
+      const x = u * u * from[0] + 2 * u * t * control[0] + t * t * to[0];
+      const y = u * u * from[1] + 2 * u * t * control[1] + t * t * to[1];
+      return { transform: `translate(${x}px, ${y}px) scale(${1 - i * 0.1})`, opacity: step === 0 || step === 8 ? 0 : 1 };
+    });
+    const animation = spark.animate(frames, { duration: 650, delay: i * 65, easing: "ease-in-out", fill: "both" });
+    animation.finished.then(() => { if (i === count - 1) pulse(); }).finally(() => spark.remove());
   }
 }
 /** バナーが全部はけるまで待つ（暗転の前などに呼ぶ） */

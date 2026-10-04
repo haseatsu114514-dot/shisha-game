@@ -2,6 +2,8 @@
 // 旧版と localStorage を共有しないよう、キーはリメイク専用。
 // 状態の形を変えたら SCHEMA を上げ、migrate() に1段足す（互換コードはここだけに置く）。
 
+import { MAX_MONEY, TOURNAMENT_DAY } from "./rules.js";
+
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
 export const SCHEMA = 8; // 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり
@@ -153,6 +155,9 @@ function migrate(s) {
   }
   const fresh = newState();
   for (const k of Object.keys(fresh)) if (!(k in s)) s[k] = fresh[k];
+  s.money = Math.min(MAX_MONEY, Math.max(0, Math.round(s.money)));
+  // 以前のDAY15大会セーブも、進行状況を保って正しい大会日に揃える。
+  if (s.chapter === 1 && s.day > TOURNAMENT_DAY) s.day = TOURNAMENT_DAY;
   s.schema = SCHEMA;
   return s;
 }

@@ -25,7 +25,7 @@ export async function runSteamDodge(cs) {
   const panel = stepPanel("steam", `蒸らし ── ${min}分${rainy ? "（雨：熱が入りづらい）" : ""}`, "ドラッグ（または矢印キー）で心を動かして、雑念を躱す。待つのも仕事のうち");
   const W = 620, H = 380;
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge" } });
-  const heart = el("div.dodge-heart", { text: "♥" });
+  const heart = el("div.dodge-heart", { role: "img", "aria-label": "心" });
   const timer = el("div.dodge-timer");
   const hitsEl = el("div.dodge-hits");
   box.append(heart);

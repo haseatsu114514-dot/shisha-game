@@ -1,4 +1,5 @@
 // 起動: ステージの拡縮 → データ読込 → タイトル。
+import { TOURNAMENT_DAY } from "./core/rules.js";
 import { $, sleep } from "./core/util.js";
 import { loadAll, DB, assetUrl, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
 import { initLayers, imageReady } from "./core/ui.js";
@@ -77,7 +78,7 @@ window.__remake = {
       const ch1 = await import("./chapters/ch1.js");
       newGame();
       window.__remake.state.phase = "daily";
-      window.__remake.state.day = 15;
+      window.__remake.state.day = TOURNAMENT_DAY;
       return ch1.devTournament();
     },
     async drill(kind = "heat") {

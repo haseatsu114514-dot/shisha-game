@@ -30,7 +30,7 @@ function rngFor(seed, count) {
   return mulberry32((seed ^ Math.imul(count + 1, 2654435761)) >>> 0);
 }
 
-// 役テーブル（weight 合計 1000）。1章 ≒ 14日×2行動 = 28回転 前提で逆算
+// 役テーブル（weight 合計 1000）。準備期間は13日×2行動。役と確率は旧版の仕様を維持する
 const ROLES = [
   { id: "miss", weight: 666 },
   { id: "replay", weight: 137 },
@@ -284,7 +284,6 @@ function cabinetParts(lamp, machine) {
     el("div.rw-lamp-wrap", [el("span.rw-lamp-rays"), lamp]),
     el("span.rw-lever-arm", { "aria-hidden": "true" }, [el("span.rw-lever-pivot")]),
     machine,
-    el("div.rw-plate", { html: "MOKUMOKU<b>パッキー</b>" }),
   ];
 }
 
@@ -702,7 +701,7 @@ function announce(r) {
   const word = r.exp >= 5 ? "大きく上がった" : r.exp >= 3 ? "上がった" : "少し上がった";
   const fx = r.starTo ? DB.statusTexts?.statTierFx?.[r.target]?.[r.starTo - 1] : "";
   gainCard({
-    kind: "stat", stat: r.target, badge: { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "観" }[r.target],
+    kind: "stat", stat: r.target, points: r.got, badge: { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "察" }[r.target],
     top: r.starTo ? `PAKKI SLOT ★${r.starTo}` : "PAKKI SLOT", main: STAT_JA[r.target],
     sub: r.starTo ? `${word} ──「${rankLabel(r.target)}」` : word, fx,
   });

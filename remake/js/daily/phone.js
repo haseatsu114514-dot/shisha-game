@@ -7,6 +7,7 @@ import { el, sleep } from "../core/util.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
 import { layers } from "../core/ui.js";
 import { state } from "../core/state.js";
+import { TOURNAMENT_DAY } from "../core/rules.js";
 import { gainAffinity, affinityLevel, applyStats, bond } from "../core/stats.js";
 import { SE } from "../core/audio.js";
 import { hooks } from "../vn/engine.js";
@@ -188,7 +189,7 @@ export function morningMessages(opts = {}) {
  * 乗るとそのまま昼のシフトへ（行動1回・給料に上乗せ）。最終日の朝は来ない
  */
 function sumiBaitoInvite({ tournamentDay = false } = {}) {
-  if (tournamentDay || state.chapter !== 1 || state.day >= 14) return null;
+  if (tournamentDay || state.chapter !== 1 || state.day >= TOURNAMENT_DAY) return null;
   const id = `_sumi_baito_inv_d${state.day}`;
   if (state.limeRead.includes(id)) return null;
   const fixed = state.day === 3 || state.day === 8;

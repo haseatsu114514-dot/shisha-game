@@ -150,20 +150,8 @@
 }
 .reel-widget.flash-blue .rw-machine { animation: rw-flash-blue 0.35s; }
 @keyframes rw-flash-blue { 40% { box-shadow: 0 0 18px 6px rgba(80, 170, 255, 0.8) inset, 0 0 14px 4px rgba(80, 170, 255, 0.6); } }
-.rw-plate {
-  margin-top: calc(3px * var(--slot-scale));
-  padding: calc(2px * var(--slot-scale)) 0;
-  text-align: center;
-  font-size: calc(9px * var(--slot-scale));
-  letter-spacing: 0.12em;
-  color: #cdb8e6;
-  background: linear-gradient(180deg, #241d2e, #171221);
-  border: calc(1px * var(--slot-scale)) solid rgba(205, 184, 230, 0.35);
-  border-radius: calc(6px * var(--slot-scale));
-}
-.rw-plate b { color: var(--gold); }
 /* レバーアーム（回すたびにカチッと倒れる） */
-.rw-lever-arm { position: absolute; right: calc(-10px * var(--slot-scale)); bottom: calc(34px * var(--slot-scale)); width: calc(12px * var(--slot-scale)); height: calc(32px * var(--slot-scale)); transform-origin: 15% 92%; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5)); }
+.rw-lever-arm { position: absolute; right: calc(-10px * var(--slot-scale)); bottom: calc(14px * var(--slot-scale)); width: calc(12px * var(--slot-scale)); height: calc(32px * var(--slot-scale)); transform-origin: 15% 92%; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5)); }
 .rw-lever-arm::before { content: ""; position: absolute; left: calc(3px * var(--slot-scale)); top: calc(7px * var(--slot-scale)); width: calc(4px * var(--slot-scale)); height: calc(24px * var(--slot-scale)); border-radius: calc(2px * var(--slot-scale)); background: linear-gradient(180deg, #969cb0, #4c5060); }
 .rw-lever-arm::after { content: ""; position: absolute; left: 0; top: 0; width: calc(12px * var(--slot-scale)); height: calc(12px * var(--slot-scale)); border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ff9d9d, #b02222 72%); box-shadow: inset 0 -2px 3px rgba(0, 0, 0, 0.45); }
 .rw-lever-pivot { position: absolute; left: calc(-1px * var(--slot-scale)); bottom: calc(-1px * var(--slot-scale)); width: calc(8px * var(--slot-scale)); height: calc(8px * var(--slot-scale)); border: calc(1px * var(--slot-scale)) solid #b5a578; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #c2bbce, #484050 75%); }
