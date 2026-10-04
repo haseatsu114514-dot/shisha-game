@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-04 08:17 UTC",
+ "generated": "2026-10-04 08:56 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -251,7 +251,6 @@
   "face_naru.png",
   "face_pakki.png",
   "face_rin.png",
-  "face_ryuji.png",
   "face_sumi.png",
   "face_tsumugi.png"
  ],
