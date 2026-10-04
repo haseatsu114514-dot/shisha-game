@@ -3,7 +3,9 @@
   "ownerRequests": [
     "PRT43",
     "PRT44",
-    "PRT45"
+    "PRT45",
+    "PRT46",
+    "PRT47"
   ],
   "commonScale": 0.7132667617689016,
   "normalContentHeight": 1000,
@@ -1180,6 +1182,13 @@
     "legacyFullPlaythrough": "Attempted; stopped after prolonged retries in old seven-day route, without a completion result. A read-only main baseline advanced through the same tutorial/LIME/visit flow to day 5 under a 240s diagnostic limit. Not recorded as passing. No old game/UI logic changed. Current remake full playthrough is the relevant progression gate.",
     "legacyScreenshots": "Not run after stopping the old long-running playthrough; no completion claimed",
     "primaryProgressionGate": "remake/test/playthrough.mjs",
-    "centeringRegression": "PASS: remake/test/rin_portraits.mjs; pixels of actual WebP, all 5 expressions × PC/phone, offset < 1.5% stage width, same frames, no clipping or browser errors"
-  }
+    "centeringRegression": "PASS: remake/test/rin_portraits.mjs; pixels of actual WebP, all 5 expressions × PC/phone, offset < 1.5% stage width, same frames, no clipping or browser errors",
+    "primaryFullPlaythrough": "Attempted; the additional long run was interrupted at the owner request to save and create a PR (PRT46/47). No full-playthrough completion is claimed. Portrait-specific regression and actual VN checks passed."
+  },
+  "workflowStatus": "saved_for_pull_request_main_merge_on_hold",
+  "latestOwnerInstructions": [
+    "そこまでしなくていい一旦保存して",
+    "prを作って"
+  ],
+  "latestExecutionScope": "Save the completed correction and create a PR. Stop additional long full-playthrough testing. Main merge is on hold; PRT45 visual adoption remains approved."
 }

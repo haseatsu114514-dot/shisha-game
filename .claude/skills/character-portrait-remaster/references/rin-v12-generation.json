@@ -6,13 +6,15 @@
   "ownerRequests": [
     "PRT43",
     "PRT44",
-    "PRT45"
+    "PRT45",
+    "PRT46",
+    "PRT47"
   ],
   "ownerCorrection": "くびれというか腰が横に出過ぎてて変",
   "branch": "codex/rin-hair-texture-20261004",
   "mainIncludedBeforeGeneration": "634efcfae0d4296bfe6f20026f03089f7fd95b6b",
   "mainMergeCommit": "58c56f2d9b05b3bb6ea1f9b67ac44981e4d34572",
-  "status": "owner_approved_correction_ready_for_main_pr",
+  "status": "owner_approved_correction_saved_for_pr_main_merge_on_hold",
   "ownerVisualFeedback": "Owner explicitly requested adoption and main merge of the displayed correction with マージして",
   "styleReview": {
     "groups": 17,
@@ -539,5 +541,11 @@
     "role": "whole-sprite scale-only review of all five former game PNGs; not attached to image generation",
     "sha256": "1369d20bbc438a17c6f8644de6a64b199fd5c86c45b52b3d432246f4f3d69898"
   },
-  "ownerMainMergeAuthority": "マージして（2026-10-04、修正版を表示・会話比較後）"
+  "ownerMainMergeAuthority": "マージして（2026-10-04、修正版を表示・会話比較後）",
+  "workflowStatus": "saved_for_pull_request_main_merge_on_hold",
+  "latestOwnerInstructions": [
+    "そこまでしなくていい一旦保存して",
+    "prを作って"
+  ],
+  "latestExecutionScope": "Save the completed correction and create a PR. Stop additional long full-playthrough testing. Main merge is on hold; PRT45 visual adoption remains approved."
 }
