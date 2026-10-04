@@ -30,6 +30,7 @@ COLORS = 32        # パレット色数
 # ツインテール・広げた腕などで拡大率がキャラごとにバラつくため・2026-07-02）。
 #   f:  辺 = ch * f（大きいほど引き＝顔が小さく写る）
 #   dx/dy: 辺に対する比での微調整（+で右/下）
+#   size: そのキャラだけ解像度を上げる（半目・前髪の影で目が数pxに潰れるキャラ用。既定は SIZE）
 # 背景込み一枚絵のキャラは abs 指定（画像全体に対する顔中心 cx/cy と辺 side の比）。
 DEFAULT = {"f": 0.20, "dx": 0.0, "dy": 0.0}
 TUNE = {
@@ -44,7 +45,7 @@ TUNE = {
     "tsumugi": {"f": 0.24, "dx": 0.03, "dy": 0.08},
     "hajime":  {"f": 0.19, "dx": -0.05, "dy": 0.07},  # キャップの分
     "dr_kemuri": {"f": 0.17, "dx": -0.06, "dy": 0.05},
-    "rin":     {"f": 0.20, "dx": 0.01, "dy": 0.12},  # 2026-10-04 v11（自然な毛束・みんと/つむぎ寄りの画風）に再調整
+    "rin":     {"f": 0.20, "dx": 0.01, "dy": 0.12, "size": 96},  # 2026-10-04 v11に再調整。48pxだと半目が前髪の影に潰れて目が無く見えた（オーナー指摘）ので96px
     "kafuka":  {"f": 0.26, "dx": -0.08, "dy": 0.20},
     "minto_private": {"f": 0.21, "dy": 0.10},  # 私服は角の髪飾りが無い分、営業姿より上へ
 }
@@ -91,7 +92,8 @@ def make_icon(char_id: str, src: Path) -> Image.Image | None:
         y0 = int(top - side * (HEADROOM - p["dy"]))
     crop = im.crop((x0, y0, x0 + side, y0 + side))
     # 縮小 → 減色（αは別管理: quantizeで半透明が荒れるのを防ぐ）
-    small = crop.resize((SIZE, SIZE), Image.LANCZOS)
+    size = p.get("size", SIZE)
+    small = crop.resize((size, size), Image.LANCZOS)
     alpha = small.getchannel("A").point(lambda a: 255 if a >= 128 else 0)
     rgb = small.convert("RGB").quantize(colors=COLORS, method=Image.MEDIANCUT)
     out = rgb.convert("RGBA")
