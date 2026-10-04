@@ -16,7 +16,7 @@
 
 横断確認: 立ち絵は会話・ギャラリー等すべて表情キーで共通の画像を読むため差し替え済み。タイトルのキービジュアルは別人物の一枚絵、CG（つむぎの絵・みんとの私服）は新デザインと矛盾しないため変更なし。あげは・みんと営業姿は表情の意味が旧画像と同じため指定変更なし。台詞の文面はPRT22の地の文1行のみ変更。
 
-検証: 台詞リンタERROR 0 / WARN 254（変更前と同数）、manifest・旧版データの再生成、`web/test/portraits.mjs`、リメイクの `bonds` `data_loading` `lime_consistency` `kafuka_story` `daily_consistency` `relationship_memories` 合格。実ブラウザでLIMEの一覧（栞＝私服・サメちゃん・つむぎ・凛・あげは）と大会当日ロビーのつむぎ `evil`・凛 `serious` の表示を確認（ブラウザエラー0）。配布HTMLはローカルで再生成を確認し、PR #187 と同じくPages CIの再構築に任せる。
+検証: 台詞リンタERROR 0 / WARN 254（変更前と同数）、manifest・旧版データの再生成、`web/test/portraits.mjs`、リメイクの `bonds` `data_loading` `lime_consistency` `kafuka_story` `daily_consistency` `relationship_memories` 合格。リメイク第1章の通し（セーブ／ロード・初回4位で敗北→再挑戦1位100点でクリア・VN表示中の画面漏れ0）合格。旧語チェック `tools/check_legacy_terms.py` OK。実ブラウザでLIMEの一覧（栞＝私服・サメちゃん・つむぎ・凛・あげは）と大会当日ロビーのつむぎ `evil`・凛 `serious` の表示を確認（ブラウザエラー0）。配布HTMLはローカルで再生成を確認し、PR #187 と同じくPages CIの再構築に任せる。
 
 ---
 
