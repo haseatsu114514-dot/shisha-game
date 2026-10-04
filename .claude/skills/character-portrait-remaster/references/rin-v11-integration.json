@@ -1,0 +1,250 @@
+{
+  "character": "rin",
+  "adoptedDesign": "rin-style-v11.png",
+  "canvas": [
+    896,
+    1200
+  ],
+  "commonScale": 0.7137758743754461,
+  "baseMain": "764211c",
+  "mainMerge": "b02ffc1b34fbe82ab32e103b37ac52200b02e882",
+  "referenceFeetX": 497.1512883842666,
+  "feetBottom": 1173,
+  "feetSpread": 0.8118521579614253,
+  "poses": [
+    {
+      "expression": "normal",
+      "source": "rin-style-v11.png",
+      "sourceSha256": "2554e4bade64eb3fa4cd17033b2c9717e7e8014c7333a0bf186d071a926ecf57",
+      "sourceSize": [
+        1085,
+        1450
+      ],
+      "sourceBounds": [
+        329,
+        35,
+        860,
+        1436
+      ],
+      "commonScale": 0.7137758743754461,
+      "placement": [
+        27,
+        148
+      ],
+      "gameAsset": "assets/sprites/characters/rin/chr_rin_normal.png",
+      "gameSha256": "46bf9ec18d99388934b6fa87b34bb0eb3c2c24651b0d3995c9258621f40632b5",
+      "bounds": [
+        261,
+        173,
+        640,
+        1173
+      ],
+      "feetX": 497.5408965444953,
+      "alpha24SourceBorderPixels": 0,
+      "alpha16Clipping": false,
+      "webpAsset": "remake/img/sprites/characters/rin/chr_rin_normal.webp",
+      "webpSha256": "44454f1ddda05aab9926605d3e399fe46a1affc4b84f197ef2bf1d49087e1876",
+      "pngWebpPixelExact": true
+    },
+    {
+      "expression": "smile",
+      "source": "rin-v11-smile.png",
+      "sourceSha256": "d080379f059eda3b157d4f64a35b515c9156017671a4e24e508b149693f22f23",
+      "sourceSize": [
+        1085,
+        1450
+      ],
+      "sourceBounds": [
+        334,
+        35,
+        863,
+        1427
+      ],
+      "commonScale": 0.7137758743754461,
+      "placement": [
+        25,
+        154
+      ],
+      "gameAsset": "assets/sprites/characters/rin/chr_rin_smile.png",
+      "gameSha256": "2efb94a5d21ab7f672bdcf9b39b53143d7d2f4cf1dd258597cc592d0cc2a3d00",
+      "bounds": [
+        263,
+        179,
+        640,
+        1173
+      ],
+      "feetX": 497.06858624071737,
+      "alpha24SourceBorderPixels": 0,
+      "alpha16Clipping": false,
+      "webpAsset": "remake/img/sprites/characters/rin/chr_rin_smile.webp",
+      "webpSha256": "f0a54ef4a3586cf309020db5d1017dd036dc53aa76a4856ffb93d1ccc02a296b",
+      "pngWebpPixelExact": true
+    },
+    {
+      "expression": "serious",
+      "source": "rin-v11-serious.png",
+      "sourceSha256": "d9f31536381c3409a58ebf2172445052c9ac86f3d2b8d3e9989707ffb70eb68f",
+      "sourceSize": [
+        1029,
+        1528
+      ],
+      "sourceBounds": [
+        254,
+        38,
+        830,
+        1425
+      ],
+      "commonScale": 0.7137758743754461,
+      "placement": [
+        52,
+        156
+      ],
+      "gameAsset": "assets/sprites/characters/rin/chr_rin_serious.png",
+      "gameSha256": "139bf29d1a39e51854f2323df4a3c8137362d932e16d959933131b14d6c23fcb",
+      "bounds": [
+        233,
+        183,
+        644,
+        1173
+      ],
+      "feetX": 497.6391723533463,
+      "alpha24SourceBorderPixels": 0,
+      "alpha16Clipping": false,
+      "webpAsset": "remake/img/sprites/characters/rin/chr_rin_serious.webp",
+      "webpSha256": "b2f261464d5076dcf7d81ea3a662288e988e66789426950bccd3ebfff3abfcf4",
+      "pngWebpPixelExact": true
+    },
+    {
+      "expression": "surprise",
+      "source": "rin-v11-surprise.png",
+      "sourceSha256": "b4c9c636723feaf41c56b78073e7aca832b1a5bd2b6395b911606c03be42f31b",
+      "sourceSize": [
+        1059,
+        1485
+      ],
+      "sourceBounds": [
+        319,
+        34,
+        849,
+        1428
+      ],
+      "commonScale": 0.7137758743754461,
+      "placement": [
+        36,
+        153
+      ],
+      "gameAsset": "assets/sprites/characters/rin/chr_rin_surprise.png",
+      "gameSha256": "612731bf7aedc0ab8f8afd35283908cc0b74ed331613111bef4c93926bf45269",
+      "bounds": [
+        264,
+        177,
+        642,
+        1173
+      ],
+      "feetX": 497.42862582208375,
+      "alpha24SourceBorderPixels": 0,
+      "alpha16Clipping": false,
+      "webpAsset": "remake/img/sprites/characters/rin/chr_rin_surprise.webp",
+      "webpSha256": "9c0656dbd86b16909927104837c2262561f3361559fc952e3ed7f4fabae1ed7f",
+      "pngWebpPixelExact": true
+    },
+    {
+      "expression": "sad",
+      "source": "rin-v11-sad.png",
+      "sourceSha256": "61e6cc279285a3294a845539a81cb8edb99499db41678f3018ca35d41285f382",
+      "sourceSize": [
+        1059,
+        1485
+      ],
+      "sourceBounds": [
+        321,
+        32,
+        864,
+        1451
+      ],
+      "commonScale": 0.7137758743754461,
+      "placement": [
+        27,
+        137
+      ],
+      "gameAsset": "assets/sprites/characters/rin/chr_rin_sad.png",
+      "gameSha256": "e5927cdf1ff331155b3ba78b5b0a46b559339a2992c85d5a6e75e2dbac4e97d9",
+      "bounds": [
+        256,
+        160,
+        644,
+        1173
+      ],
+      "feetX": 496.82732019538486,
+      "alpha24SourceBorderPixels": 0,
+      "alpha16Clipping": false,
+      "webpAsset": "remake/img/sprites/characters/rin/chr_rin_sad.webp",
+      "webpSha256": "f31bd0ffa5e685ad2a0c08e4dd06b70084839f7ca043154a739c3eaee220e99d",
+      "pngWebpPixelExact": true
+    }
+  ],
+  "alphaPolicy": "Whole-image common resize and direct RGBA paste only; no alpha threshold or creative painting.",
+  "normalMatchesSavedV11PreviewRGBA": true,
+  "gameIntegration": "replaced five PNGs on feature branch; main merge belongs to Claude",
+  "claudeRemaining": [
+    "round face icon",
+    "dialogue expression assignment",
+    "setting reference",
+    "main merge"
+  ],
+  "ownerRequests": [
+    "PRT26",
+    "PRT27",
+    "PRT28",
+    "PRT29",
+    "PRT30"
+  ],
+  "review": "rin-v11-five-review.png",
+  "reviewSha256": "8c37ee7092a5d58b62ee306430ce55b6436a8ceb2b449ca4b5a3d4aa090a5a6b",
+  "verification": {
+    "fivePNGWebPPixelExact": true,
+    "allCatalogueHashesMatch": true,
+    "referenceGroups": 16,
+    "referenceImages": 56,
+    "normalRawSHA256Unchanged": true,
+    "otherManifestCharactersUnchanged": true,
+    "otherAssetsUnchanged": true,
+    "claudeScopeUnchanged": true,
+    "spriteScaleUnchanged": true,
+    "anchorDryRunChangedFiles": 0,
+    "webPortraitsRegression": "passed",
+    "actualVNExpressions": 5,
+    "identicalVNFraming": true,
+    "noHeadClipping": true,
+    "browserErrors": [],
+    "manifestRin": {
+      "faces": [
+        "normal",
+        "sad",
+        "serious",
+        "smile",
+        "surprise"
+      ],
+      "h": 0.8442,
+      "b": 0.0225,
+      "ax": 0.5553,
+      "aspect": 0.7467
+    },
+    "playthrough": {
+      "status": "passed",
+      "saveLoad": "passed",
+      "firstAttemptRank": 4,
+      "retryRank": 1,
+      "retryTotal": 100,
+      "chapter1Clear": true,
+      "screenLeaksDuringVN": 0,
+      "resultUnderPhone": false
+    },
+    "standaloneOriginalPngsByteExact": 5,
+    "standaloneBytes": 61724177,
+    "standalonePolicy": "local build verified; tracked large HTML retained, Pages CI rebuilds",
+    "documentationLinksValid": true,
+    "ledgerIDsUnique": true,
+    "initialApproved15Unchanged": true
+  }
+}

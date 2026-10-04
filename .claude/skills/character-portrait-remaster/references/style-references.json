@@ -280,7 +280,7 @@
       "id": "rin-redesign-v7",
       "title": "凛・少し年上の半目とクールな微笑み v7",
       "status": "approved",
-      "role": "採用済みの本人デザイン・表情の参照。画風は追加修正中",
+      "role": "過去の採用履歴：現行の本人参照はv11。v7の光沢と毛束を新画像へ戻さない",
       "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187",
       "note": "胸元の試香紙を除去し、少し青みがある暗い髪へ戻す。写真3の大きな虹彩・上／下まぶた・まつ毛を参照した半目、短めのロング、女性らしい体格。過去の旧案は生成記録へ保持し、採用基準へ加えない。",
       "images": [
@@ -299,13 +299,14 @@
       ],
       "ownerRequest": "凛はもう少しだけ年上に見せたい　主人公たちよりも　あと目をもうちょっとだけ細めて　あと口元も参考一枚目みたいな　基本クールに微笑む系　ギャップが可愛いの一枚あってもいいけど",
       "approval": "2026-10-04: 直前の凛v7・サメちゃん追加v3の採用確認に対してオーナー「全て完了したらマージ」。制作・組み込み・検証・マージを承認。",
-      "ownerFeedback": "2026-10-04：AI感と、みんと・つむぎとの画風の差、v9の毛束の誇張に追加指摘。本人のデザイン参照に使い、最新の通常v11で自然な毛束と描線・陰影を修正中。"
+      "ownerFeedback": "2026-10-04：AI感と、みんと・つむぎとの画風の差、v9の毛束の誇張に追加指摘。本人のデザイン参照に使い、最新の通常v11で自然な毛束と描線・陰影を修正中。",
+      "historical": true
     },
     {
       "id": "rin-expressions-v1",
       "title": "凛 新デザイン追加4表情の生成元 v1",
       "status": "approved",
-      "role": "採用済みの本人デザイン・表情の参照。画風は追加修正中",
+      "role": "過去の採用履歴：現行の本人参照はv11。v7の光沢と毛束を新画像へ戻さない",
       "approval": "2026-10-04: オーナー「全て完了したらマージ」。凛v7のデザインで5表情を制作・採用・組み込み、検証後のマージを指示。",
       "images": [
         {
@@ -333,54 +334,58 @@
           "sha256": "855777d5486e079b1da37ed4e4c09104e4a2fea408fb870a365ad6612694bed8"
         }
       ],
-      "ownerFeedback": "2026-10-04：AI感と、みんと・つむぎとの画風の差、v9の毛束の誇張に追加指摘。本人のデザイン参照に使い、最新の通常v11で自然な毛束と描線・陰影を修正中。"
+      "ownerFeedback": "2026-10-04：AI感と、みんと・つむぎとの画風の差、v9の毛束の誇張に追加指摘。本人のデザイン参照に使い、最新の通常v11で自然な毛束と描線・陰影を修正中。",
+      "historical": true
     },
     {
-      "id": "rin-game-v1",
-      "title": "凛 採用済みゲーム用5表情",
+      "id": "rin-game-v11",
+      "title": "凛 v11採用版のゲーム用5表情",
       "status": "approved",
-      "role": "採用済みの本人デザイン・表情の参照。画風は追加修正中",
+      "role": "最新採用版の本人参照：896×1200 RGBA、共通倍率と足元",
       "approval": "2026-10-04: オーナー「全て完了したらマージ」。凛v7のデザインで5表情を制作・採用・組み込み、検証後のマージを指示。",
       "images": [
         {
-          "label": "クールな微笑み",
+          "label": "クールな微笑み。採用されたv11を再生成せず使用",
           "expression": "normal",
           "path": "../../../../assets/sprites/characters/rin/chr_rin_normal.png",
-          "sha256": "48ea068760774eb000e04325dc85c11107b54cae74bf981d055b98529d38bf12"
+          "sha256": "46bf9ec18d99388934b6fa87b34bb0eb3c2c24651b0d3995c9258621f40632b5"
         },
         {
-          "label": "目を閉じて頬に手を添える、可愛いギャップの笑顔",
+          "label": "目を閉じて頬に手を添える、可愛いギャップ",
           "expression": "smile",
           "path": "../../../../assets/sprites/characters/rin/chr_rin_smile.png",
-          "sha256": "a4065f0d74c6c52135120dfa5b93c9ec90ad1003273cbfe41f96098310897b88"
+          "sha256": "2efb94a5d21ab7f672bdcf9b39b53143d7d2f4cf1dd258597cc592d0cc2a3d00"
         },
         {
-          "label": "指で説明する真剣な表情",
+          "label": "指を一本立てて説明する",
           "expression": "serious",
           "path": "../../../../assets/sprites/characters/rin/chr_rin_serious.png",
-          "sha256": "6e2d7b7dfe14ff72ea416cbe3735f75b870360cc5b60a5f5cce369c858d49440"
+          "sha256": "139bf29d1a39e51854f2323df4a3c8137362d932e16d959933131b14d6c23fcb"
         },
         {
-          "label": "胸元に手を添える控えめな驚き",
+          "label": "控えめな「へえ」、胸元へ軽く手",
           "expression": "surprise",
           "path": "../../../../assets/sprites/characters/rin/chr_rin_surprise.png",
-          "sha256": "a59ec4e9d200f0f7643d34d21b5aaae897c3e39a2f280c5248a6eccbb2718293"
+          "sha256": "612731bf7aedc0ab8f8afd35283908cc0b74ed331613111bef4c93926bf45269"
         },
         {
-          "label": "袖を軽く握る静かな悲しみ",
+          "label": "視線を少し落とし、袖を軽く握る静かな弱さ",
           "expression": "sad",
           "path": "../../../../assets/sprites/characters/rin/chr_rin_sad.png",
-          "sha256": "af21eb95da8781874404ef900e42d3bc9cdc881b6c85de9c96fb7512483f3d0c"
+          "sha256": "e5927cdf1ff331155b3ba78b5b0a46b559339a2992c85d5a6e75e2dbac4e97d9"
         }
       ],
-      "ownerFeedback": "2026-10-04：AI感と、みんと・つむぎとの画風の差、v9の毛束の誇張に追加指摘。本人のデザイン参照に使い、最新の通常v11で自然な毛束と描線・陰影を修正中。"
+      "ownerFeedback": "2026-10-04：AI感と、みんと・つむぎとの画風の差、v9の毛束の誇張に追加指摘。本人のデザイン参照に使い、最新の通常v11で自然な毛束と描線・陰影を修正中。",
+      "note": "通常v11採用の明示指示により4表情を制作し5枚を差し替え。丸アイコン等とmainマージはClaude側。",
+      "generationRecord": "rin-v11-expressions-generation.json",
+      "integrationRecord": "rin-v11-integration.json"
     },
     {
       "id": "rin-style-v11",
       "title": "凛 通常・自然な毛束と共通画風の修正案 v11",
-      "status": "pending",
-      "role": "本人の描き方を確認する修正案。採用済み画風の基準ではない",
-      "note": "太く分離した束を写真程度に戻し、みんと・つむぎを主要画風参照にした通常1枚。v8〜v10は修正履歴。採用と5表情への展開は未確定。",
+      "status": "approved",
+      "role": "最新採用版：凛の通常v11の顔・髪・衣装と共通画風",
+      "note": "2026-10-04の明示指示で通常v11のデザインを採用。残り4表情を同じデザインから制作し、5枚の立ち絵を差し替える。丸アイコン・台詞の表情・設定資料集・mainへのマージはClaude側。",
       "ownerRequests": [
         "あと絵のテイストがつむぎとかみんととなんか違う",
         "束感がやりすぎなのかも　確かに元のモデルの人のも束感は少しあるけどここまでではない"
@@ -399,7 +404,8 @@
           "path": "rin-style-v11-preview.png",
           "sha256": "46bf9ec18d99388934b6fa87b34bb0eb3c2c24651b0d3995c9258621f40632b5"
         }
-      ]
+      ],
+      "adoptionRequest": "最新の通常v11（rin-style-v11.png）のデザインを採用版にする"
     },
     {
       "id": "mashiro-v1",
@@ -467,6 +473,40 @@
           "expression": "sleep",
           "path": "mashiro-sleep-v1-preview.png",
           "sha256": "352cc2f09a3719659fb872735ea44a6c95feb5ad1b4bf8961633acb8b73d89d2"
+        }
+      ]
+    },
+    {
+      "id": "rin-v11-expressions",
+      "title": "凛 v11デザインの追加4表情生成元",
+      "status": "approved",
+      "role": "採用デザインから依頼どおり生成・差し替えた4表情の本人参照",
+      "ownerRequest": "v11と同じ顔・髪・画風・衣装で残り4表情を作り、ゲーム用5枚を差し替える",
+      "generationRecord": "rin-v11-expressions-generation.json",
+      "images": [
+        {
+          "label": "目を閉じて頬に手を添える、可愛いギャップ",
+          "expression": "smile",
+          "path": "rin-v11-smile.png",
+          "sha256": "d080379f059eda3b157d4f64a35b515c9156017671a4e24e508b149693f22f23"
+        },
+        {
+          "label": "指を一本立てて説明する",
+          "expression": "serious",
+          "path": "rin-v11-serious.png",
+          "sha256": "d9f31536381c3409a58ebf2172445052c9ac86f3d2b8d3e9989707ffb70eb68f"
+        },
+        {
+          "label": "控えめな「へえ」、胸元へ軽く手",
+          "expression": "surprise",
+          "path": "rin-v11-surprise.png",
+          "sha256": "b4c9c636723feaf41c56b78073e7aca832b1a5bd2b6395b911606c03be42f31b"
+        },
+        {
+          "label": "視線を少し落とし、袖を軽く握る静かな弱さ",
+          "expression": "sad",
+          "path": "rin-v11-sad.png",
+          "sha256": "61e6cc279285a3294a845539a81cb8edb99499db41678f3018ca35d41285f382"
         }
       ]
     }

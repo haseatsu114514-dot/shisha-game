@@ -1,0 +1,229 @@
+{
+  "character": "rin",
+  "age": 27,
+  "designVersion": 11,
+  "status": "integrated_on_requested_feature_branch",
+  "ownerDesignAdoption": "最新の通常v11（rin-style-v11.png）のデザインを採用版にする",
+  "ownerImplementation": "v11の残り4表情を作り、5枚を896×1200 RGBA・共通倍率・足元で差し替えて指定ブランチへプッシュ",
+  "branch": "codex/rin-hair-texture-20261004",
+  "mainIncludedBeforeGeneration": "764211c",
+  "mainMergeCommit": "b02ffc1b34fbe82ab32e103b37ac52200b02e882",
+  "reviewedStyleGroups": 15,
+  "reviewedStyleImages": 52,
+  "reviewedStyleStatus": {
+    "approvedGroups": 13,
+    "pendingGroups": 2
+  },
+  "referencesForNewVariants": [
+    {
+      "path": ".claude/skills/character-portrait-remaster/references/rin-style-v11.png",
+      "role": "authoritative adopted v11 identity, hair, proportions, costume, rendering, geometry",
+      "sha256": "2554e4bade64eb3fa4cd17033b2c9717e7e8014c7333a0bf186d071a926ecf57"
+    },
+    {
+      "path": ".claude/skills/character-portrait-remaster/references/rin-style-v11-face-reference.png",
+      "role": "native unscaled face/upper-body crop of the same v11, crop bounds [410,35,785,405]",
+      "sha256": "3b1b70c13e1ecdca8c98271e7133a99976aaa7027944276259b4d2f97a5d1d0f"
+    },
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "primary approved baseline game style only, no identity transfer",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+      "role": "primary approved shared game skin and fabric style only, no identity transfer",
+      "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+    }
+  ],
+  "variants": [
+    {
+      "expression": "normal",
+      "source": "rin-style-v11.png",
+      "sourceSha256": "2554e4bade64eb3fa4cd17033b2c9717e7e8014c7333a0bf186d071a926ecf57",
+      "sourceSize": [
+        1085,
+        1450
+      ],
+      "gameAsset": "assets/sprites/characters/rin/chr_rin_normal.png",
+      "gameSha256": "46bf9ec18d99388934b6fa87b34bb0eb3c2c24651b0d3995c9258621f40632b5",
+      "description": "クールな微笑み。採用されたv11を再生成せず使用",
+      "generatedSourcePath": "/workspace/generated_images/exec-e8caec3f-7b7c-49eb-a13c-3f5d2a15976c.png",
+      "sourceGenerationRecord": "rin-style-v11-generation.json"
+    },
+    {
+      "expression": "smile",
+      "source": "rin-v11-smile.png",
+      "sourceSha256": "d080379f059eda3b157d4f64a35b515c9156017671a4e24e508b149693f22f23",
+      "sourceSize": [
+        1085,
+        1450
+      ],
+      "gameAsset": "assets/sprites/characters/rin/chr_rin_smile.png",
+      "gameSha256": "2efb94a5d21ab7f672bdcf9b39b53143d7d2f4cf1dd258597cc592d0cc2a3d00",
+      "description": "目を閉じて頬に手を添える、可愛いギャップ",
+      "generatedSourcePath": "/workspace/generated_images/exec-2212e070-65dd-4935-a958-75ec3318d76c.png",
+      "prompt": "rin-v11-smile-prompt.txt",
+      "promptSha256": "d5b5e043a181c385111e13daf8f7f96cac5f85464d1b30ec0b54d05fe3c043c6",
+      "references": [
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-style-v11.png",
+          "role": "authoritative adopted v11 identity, hair, proportions, costume, rendering, geometry",
+          "sha256": "2554e4bade64eb3fa4cd17033b2c9717e7e8014c7333a0bf186d071a926ecf57"
+        },
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-style-v11-face-reference.png",
+          "role": "native unscaled face/upper-body crop of the same v11, crop bounds [410,35,785,405]",
+          "sha256": "3b1b70c13e1ecdca8c98271e7133a99976aaa7027944276259b4d2f97a5d1d0f"
+        },
+        {
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "role": "primary approved baseline game style only, no identity transfer",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "role": "primary approved shared game skin and fabric style only, no identity transfer",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        }
+      ]
+    },
+    {
+      "expression": "serious",
+      "source": "rin-v11-serious.png",
+      "sourceSha256": "d9f31536381c3409a58ebf2172445052c9ac86f3d2b8d3e9989707ffb70eb68f",
+      "sourceSize": [
+        1029,
+        1528
+      ],
+      "gameAsset": "assets/sprites/characters/rin/chr_rin_serious.png",
+      "gameSha256": "139bf29d1a39e51854f2323df4a3c8137362d932e16d959933131b14d6c23fcb",
+      "description": "指を一本立てて説明する",
+      "generatedSourcePath": "/workspace/generated_images/exec-31de355b-a66c-47c3-a297-c85e9844ec81.png",
+      "prompt": "rin-v11-serious-padding-prompt.txt",
+      "promptSha256": "67d7064804527ab79ae4b54caf31976800533990e63912f506ebfd7de4983b2a",
+      "references": [
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-v11-serious-clipped.png",
+          "calledPath": ".claude/skills/character-portrait-remaster/references/rin-v11-serious.png",
+          "sha256": "cf14dfce030509e69b0e49c5219b4173e1f5fa66e201d23053a3c47d5a601b31",
+          "role": "initial v11 pointing gesture; bottom shoe edge against border, preserved under historical name after repair"
+        },
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-style-v11.png",
+          "role": "authoritative adopted v11 identity, hair, proportions, costume, rendering, geometry",
+          "sha256": "2554e4bade64eb3fa4cd17033b2c9717e7e8014c7333a0bf186d071a926ecf57"
+        },
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-style-v11-face-reference.png",
+          "role": "native unscaled face/upper-body crop of the same v11, crop bounds [410,35,785,405]",
+          "sha256": "3b1b70c13e1ecdca8c98271e7133a99976aaa7027944276259b4d2f97a5d1d0f"
+        },
+        {
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "role": "primary approved baseline game style only, no identity transfer",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "role": "primary approved shared game skin and fabric style only, no identity transfer",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        }
+      ]
+    },
+    {
+      "expression": "surprise",
+      "source": "rin-v11-surprise.png",
+      "sourceSha256": "b4c9c636723feaf41c56b78073e7aca832b1a5bd2b6395b911606c03be42f31b",
+      "sourceSize": [
+        1059,
+        1485
+      ],
+      "gameAsset": "assets/sprites/characters/rin/chr_rin_surprise.png",
+      "gameSha256": "612731bf7aedc0ab8f8afd35283908cc0b74ed331613111bef4c93926bf45269",
+      "description": "控えめな「へえ」、胸元へ軽く手",
+      "generatedSourcePath": "/workspace/generated_images/exec-f6b51bef-2adb-45ba-bd59-1905076207c1.png",
+      "prompt": "rin-v11-surprise-prompt.txt",
+      "promptSha256": "dea74d3d54b6ae08a1e8a9e539b521a6ad4be956aadd4cc31d8b7f44f59760d0",
+      "references": [
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-style-v11.png",
+          "role": "authoritative adopted v11 identity, hair, proportions, costume, rendering, geometry",
+          "sha256": "2554e4bade64eb3fa4cd17033b2c9717e7e8014c7333a0bf186d071a926ecf57"
+        },
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-style-v11-face-reference.png",
+          "role": "native unscaled face/upper-body crop of the same v11, crop bounds [410,35,785,405]",
+          "sha256": "3b1b70c13e1ecdca8c98271e7133a99976aaa7027944276259b4d2f97a5d1d0f"
+        },
+        {
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "role": "primary approved baseline game style only, no identity transfer",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "role": "primary approved shared game skin and fabric style only, no identity transfer",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        }
+      ]
+    },
+    {
+      "expression": "sad",
+      "source": "rin-v11-sad.png",
+      "sourceSha256": "61e6cc279285a3294a845539a81cb8edb99499db41678f3018ca35d41285f382",
+      "sourceSize": [
+        1059,
+        1485
+      ],
+      "gameAsset": "assets/sprites/characters/rin/chr_rin_sad.png",
+      "gameSha256": "e5927cdf1ff331155b3ba78b5b0a46b559339a2992c85d5a6e75e2dbac4e97d9",
+      "description": "視線を少し落とし、袖を軽く握る静かな弱さ",
+      "generatedSourcePath": "/workspace/generated_images/exec-32d2f1c6-fca2-419e-b42e-00fee1281787.png",
+      "prompt": "rin-v11-sad-prompt.txt",
+      "promptSha256": "1e3391d3b724e01d5c04d939631856c53b7cbc463a34a4267f382b1c8ddba55d",
+      "references": [
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-style-v11.png",
+          "role": "authoritative adopted v11 identity, hair, proportions, costume, rendering, geometry",
+          "sha256": "2554e4bade64eb3fa4cd17033b2c9717e7e8014c7333a0bf186d071a926ecf57"
+        },
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-style-v11-face-reference.png",
+          "role": "native unscaled face/upper-body crop of the same v11, crop bounds [410,35,785,405]",
+          "sha256": "3b1b70c13e1ecdca8c98271e7133a99976aaa7027944276259b4d2f97a5d1d0f"
+        },
+        {
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "role": "primary approved baseline game style only, no identity transfer",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "role": "primary approved shared game skin and fabric style only, no identity transfer",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        }
+      ]
+    }
+  ],
+  "internalRepair": {
+    "expression": "serious",
+    "initialSource": "rin-v11-serious-clipped.png",
+    "initialSourceSha256": "cf14dfce030509e69b0e49c5219b4173e1f5fa66e201d23053a3c47d5a601b31",
+    "initialGeneratedPath": "/workspace/generated_images/exec-a8b1990e-f6fb-4259-a455-90fdd96f5e54.png",
+    "initialPrompt": "rin-v11-serious-prompt.txt",
+    "initialPromptSha256": "c53860019587422b484a07e2153c93026f955c16417e31a35143f6c4f0a3aa24",
+    "reason": "source bottom border contains 16 alpha>=24 shoe-edge pixels; regenerated with transparent room below soles",
+    "ownerRejected": false
+  },
+  "integrationRecord": "rin-v11-integration.json",
+  "review": "rin-v11-five-review.png",
+  "gameIntegration": "five PNGs plus pixel-exact lossless WebP and regenerated framing on feature branch",
+  "claudeRemaining": [
+    "round face icon",
+    "dialogue expressions and external descriptions",
+    "setting reference",
+    "main merge"
+  ],
+  "generationPolicy": "Four full-body variants generated with image_gen from adopted v11. Normal raw remains byte-exact. Common whole-image scale and direct RGBA placement only; no face replacement, painting or global alpha threshold."
+}

@@ -1,3 +1,22 @@
+## 2026-10-04 凛v11を採用し、残り4表情と立ち絵5枚を揃える
+
+| ID | 状態 | オーナー要望 |
+|---|---|---|
+| PRT26 | ✅ v11のデザイン採用を受領 | 表情は最低5種。最新の通常v11（rin-style-v11.png）を採用版にする。通常はクールな微笑み |
+| PRT27 | ✅ v11の残り4表情を制作・保存 | v11と同じ顔・髪・画風・衣装。笑顔＝目を閉じて頬に手を添える可愛いギャップ、真剣＝指で説明、驚き＝控えめな「へえ」、悲しみ＝静かに弱さを見せる。手元の4枚はv7用なので流用せず、v11から作る |
+| PRT28 | ✅ 5枚を差し替え・表示を検証 | 896×1200 RGBA、全5枚へ共通倍率・足元を揃え、assets/sprites/characters/rin/chr_rin_{normal,smile,serious,surprise,sad}.pngを差し替える。5枚を並べた確認用画像を保存 |
+| PRT29 | ✅ main取り込み・指定ブランチへ保存 | 指定ブランチcodex/rin-hair-texture-20261004へ先にmainを取り込んでからプッシュ。mainのPR #188（764211c）をb02ffc1で取り込み済み。mainのPRT16〜25を維持し、分岐中の重複8件はPRT31〜38に整理 |
+| PRT30 | ✅ Claude側の担当分を保持・引き継ぎ | 丸アイコン・台詞の表情・設定資料集・mainへのマージはClaude側。今回の差し替え後もこれらは更新せず、最新版の変更を保持して引き継ぐ |
+
+ましろの基本5表情＋立ち寝1枚は確認資料として保存済み（PRT36〜38）。凛のこの依頼をましろの採用回答には扱わない。後日保留だった凛の立ち絵制作・差し替えは今回の明示指示で再開し、アイコン等とmainへのマージはClaude側へ引き継ぐ。
+
+[凛v11の5表情比較](../.claude/skills/character-portrait-remaster/references/rin-v11-five-review.png)、[生成元・プロンプト・実参照とSHA-256](../.claude/skills/character-portrait-remaster/references/rin-v11-expressions-generation.json)、[共通倍率・配置と検証](../.claude/skills/character-portrait-remaster/references/rin-v11-integration.json)、[Claude側の引き継ぎ](rin_portrait_handoff.md)を保存。通常は保存済みv11を再生成せず使用。
+5枚へ共通倍率0.7137758743754461、896×1200 RGBA、足元下端1173px・横差0.812px未満。PNG/WebPの全RGBA画素一致、alpha>=16見切れなし、足元整列dry-run変更0。実会話の全5表情は同一表示位置・頭の見切れなし・ブラウザエラー0、身長回帰合格。manifest・旧版データ・配布HTMLをビルドし、配布HTMLの凛5PNGは元ファイルとバイト一致。約58.9MBの追跡HTMLはローカル確認後に元へ戻し、Pages CIの再構築に任せる。
+現行第1章の通しはセーブ／ロード、初回4位で敗北→再挑戦1位100点でクリア、VN表示中の画面漏れ0で合格。全16グループ56画像のパス・SHA-256と初期採用済み15枚の不変、記録の参照・プロンプト、Markdownリンク、台帳IDの重複なしを確認。丸アイコン・台詞・設定資料集は取り込んだmainとバイト一致、他キャラの画像・設定・manifest値も保持。mainへのマージはClaude側へ引き継ぐ。
+
+
+---
+
 ## 2026-10-04 ましろの確認と、立ったまま眠る追加表情
 
 | ID | 状態 | オーナー要望 |

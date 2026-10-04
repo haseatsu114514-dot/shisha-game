@@ -3,7 +3,7 @@
   "age": 27,
   "version": 11,
   "expression": "normal",
-  "status": "pending_review",
+  "status": "adopted",
   "ownerRequests": [
     "なんかAI感が強い　毛束のある髪型とか質感？",
     "あと絵のテイストがつむぎとかみんととなんか違う",
@@ -93,7 +93,13 @@
   },
   "nativeComparison": "rin-style-v11-comparison-native.png",
   "nativeComparisonSha256": "c2c1eaf6d59a5dff267df2f0b54a5d9f0a055fb837d89c300dd1aa1766236462",
-  "gameIntegration": false,
-  "review": "通常1枚の描き方の修正案。v9との全身比較、みんと・つむぎとの原寸比較、生成元の2倍表示・白／暗背景で確認。採用と5表情への展開は未確定。",
-  "createdAt": "2026-10-04"
+  "gameIntegration": "normal used in five v11 portraits on codex/rin-hair-texture-20261004",
+  "review": "通常v11のデザインをオーナーが明示採用。通常原画を再生成せず4表情へ展開し、指定ブランチの5枚へ差し替え。丸アイコン等とmainマージはClaude側。",
+  "createdAt": "2026-10-04",
+  "adoptedAt": "2026-10-04",
+  "ownerAdoption": "最新の通常v11（rin-style-v11.png）のデザインを採用版にする",
+  "previousStatus": "pending_review",
+  "subsequentIntegration": "rin-v11-integration.json",
+  "initialReview": "通常1枚の描き方の修正案。v9との全身比較、みんと・つむぎとの原寸比較、生成元の2倍表示・白／暗背景で確認。採用と5表情への展開は未確定。",
+  "initialGameIntegration": false
 }
