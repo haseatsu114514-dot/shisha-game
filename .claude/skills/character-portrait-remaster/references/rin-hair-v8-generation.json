@@ -1,0 +1,42 @@
+{
+  "character": "rin",
+  "version": 8,
+  "status": "superseded",
+  "ownerRequest": "なんかAI感が強い　毛束のある髪型とか質感？",
+  "output": "rin-hair-v8.png",
+  "generatedSourcePath": "/workspace/generated_images/exec-882bf944-0c5d-47ef-9d8f-9fcfb32cc8f0.png",
+  "sha256": "16eb60e09dc786e60dd062e9db819630ef8b3a1a5e7d887b55b2d6b011dd8531",
+  "prompt": "rin-hair-v8-prompt.txt",
+  "promptSha256": "269a58707d8fb97e015b7046e837e75841901331f34f3cb1a95e5c3de9a32ea8",
+  "references": [
+    {
+      "path": ".claude/skills/character-portrait-remaster/references/rin-redesign-v7.png",
+      "role": "本人・全身デザイン",
+      "sha256": "8fde84eec1f47610eb054cbf46b89ac65179d531adba16a27a3addbe8a1cb860"
+    },
+    {
+      "path": ".claude/skills/character-portrait-remaster/references/rin-v7-face-reference.png",
+      "role": "本人・顔の形のみ",
+      "sha256": "83090ac194c9f6f15880695c091b0e2d7a458bb19b0a6fdb923c2c70054410c7"
+    },
+    {
+      "path": "/workspace/library-files/rin-redesign-20261003/reference-photo-3-hair.png",
+      "role": "オーナー写真3の毛束・レイヤー。原本から無加工切り抜き、ローカルのみ",
+      "sha256": "e9abf0dcf1ac7874f4e4e5f396fda56ce4fa41fe154846db7ee40bb178dfdbbd"
+    },
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "採用済み・画風と質感のみ",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "採用済み・画風と質感のみ",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    }
+  ],
+  "review": "ツヤを抑えたが描き方と毛束の変化が小さいため、より明確な描線と面での陰影へ追加修正する。",
+  "gameIntegration": false,
+  "reviewedStyleGroups": 12,
+  "reviewedStyleImages": 42
+}

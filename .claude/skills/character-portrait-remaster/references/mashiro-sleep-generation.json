@@ -1,0 +1,110 @@
+{
+  "character": "mashiro",
+  "age": 22,
+  "version": 1,
+  "expression": "sleep",
+  "expressionKeyStatus": "proposed_for_future_integration",
+  "status": "pending_review",
+  "ownerRequest": "確認したい　あとあくび以上に立ちながら可愛く寝てるのも欲しい",
+  "additionalTo": "mashiro-v1-basic-five",
+  "output": "mashiro-sleep-v1.png",
+  "generatedSourcePath": "/workspace/generated_images/exec-94a5fbbb-e812-4536-86e5-6849a545645a.png",
+  "sha256": "6712da6fa1a2db10f50f430bbe436aa2d6e266c4cf6c8ee32ecc5cbc1ce73c3b",
+  "dimensions": [
+    1084,
+    1451
+  ],
+  "prompt": "mashiro-sleep-v1-prompt.txt",
+  "promptSha256": "0e7dc62b2b97926f95debc5634e157e88f0c2ed71616dae5b403b3ad78325eb3",
+  "references": [
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "主要画風：初期採用済みみんとの描線・細かな質感・陰影",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+      "role": "主要画風：採用済みつむぎの肌と布の落ち着いた塗り",
+      "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+    },
+    {
+      "path": ".claude/skills/character-portrait-remaster/references/mashiro-v1-normal-preview.png",
+      "role": "本人の最新デザイン・衣装・体格・表示サイズ",
+      "sha256": "d9a9ae63c2b0bfaae9f88fc139bf3ca7deb22fd719b9286f5c383668cf495f8d"
+    },
+    {
+      "path": ".claude/skills/character-portrait-remaster/references/mashiro-v1-sad-preview.png",
+      "role": "同じ本人の閉じた目とあくび差分。新しい寝姿ではあくびの口と口元への手を使わない",
+      "sha256": "9c8870e96e7d73fd7c9b9aca89d9d6b07c0072e7517a7b09322e622848889e10"
+    },
+    {
+      "path": ".claude/skills/character-portrait-remaster/references/mashiro-v1-faces-preview.png",
+      "role": "最新5表情の顔を原寸で確認する参照。ラベル・背景を写さない",
+      "sha256": "4e3150d28d6fe5feab40960558cb158514dc6f66e32470937eea1d10dc383683"
+    }
+  ],
+  "reviewedStyleGroups": 14,
+  "reviewedStyleImages": 50,
+  "reviewedStyleStatus": {
+    "approvedGroups": 12,
+    "pendingGroups": 2
+  },
+  "preservedDesign": [
+    "淡い灰金髪の二つの三つ編み",
+    "本人の小柄な頭身と22歳のゆるい雰囲気",
+    "ベージュのケーブル編みカーディガンと白ブラウス",
+    "緑の足首丈スカートと茶色の靴"
+  ],
+  "expressionNotes": [
+    "立ったまま本当に眠っている、両目を閉じた寝顔",
+    "頭が画面左へこてんと傾き、肩と両手の力が抜ける",
+    "小さくぽかんと開いた口と、ごく小さなよだれの粒・Zz",
+    "あくびの口と口を隠す手とは別の追加6枚目"
+  ],
+  "preview": "mashiro-sleep-v1-preview.png",
+  "previewSha256": "352cc2f09a3719659fb872735ea44a6c95feb5ad1b4bf8961633acb8b73d89d2",
+  "previewNormalization": {
+    "scale": 0.696513470681458,
+    "canvas": [
+      896,
+      1200
+    ],
+    "placement": [
+      65,
+      202
+    ],
+    "sourceBounds": [
+      339,
+      136,
+      768,
+      1398
+    ],
+    "previewBounds": [
+      301,
+      297,
+      600,
+      1176
+    ],
+    "normalFeetX": 448.1300569121646,
+    "previewFeetX": 448.79114706212783,
+    "feetBottom": 1176,
+    "sourceAlpha24BorderPixels": 0,
+    "alpha16Clipping": false,
+    "policy": "個別生成の全身を既存通常の全身高・足元へ合わせる拡縮とRGBA直接配置のみ。顔・ポーズへの創作加工やアルファ閾値処理なし。",
+    "sixExpressionFeetX": [
+      448.1300569121646,
+      448.84349840390973,
+      448.098477586693,
+      448.2822710684885,
+      448.69925686407987,
+      448.79114706212783
+    ],
+    "sixExpressionFeetSpread": 0.745020817216755
+  },
+  "sixExpressionReview": "mashiro-six-review.png",
+  "sixExpressionReviewSha256": "abc97c65ead5dd443403caf39d30fe0f545cbeea2b214a603129ff97580333cc",
+  "yawnComparison": "mashiro-sleep-yawn-comparison.png",
+  "yawnComparisonSha256": "29c937da4ab2e48c2311291d431ffae681b7a679087e51e2f47e8518cb61336a",
+  "gameIntegration": false,
+  "review": "既存5表情を日本語ラベル付きで再表示。追加立ち寝とあくびを同じ全身サイズと896×1200確認用画像の原寸の顔で比較し、明暗背景・2倍・見切れを確認。6枚の足元下端1176px、足元横差0.746px未満。採用前の確認資料として保存。"
+}

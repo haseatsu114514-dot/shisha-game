@@ -1,0 +1,100 @@
+{
+  "character": "rin",
+  "age": 27,
+  "version": 10,
+  "expression": "normal",
+  "status": "superseded",
+  "ownerRequests": [
+    "なんかAI感が強い　毛束のある髪型とか質感？",
+    "あと絵のテイストがつむぎとかみんととなんか違う",
+    "束感がやりすぎなのかも　確かに元のモデルの人のも束感は少しあるけどここまでではない"
+  ],
+  "output": "rin-style-v10.png",
+  "generatedSourcePath": "/workspace/generated_images/exec-98e90217-55a4-4a12-934d-9b85abf9909d.png",
+  "sha256": "401dc99126b618ecbaa2345405390f09d87c4b0ad0fc68aa826fa17c94762821",
+  "dimensions": [
+    1084,
+    1451
+  ],
+  "prompt": "rin-style-v10-prompt.txt",
+  "promptSha256": "374f1aaf94fe66cfceb66771dc98b2e53bad2b85590752c927484f819a05c746",
+  "references": [
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "主要画風：採用済みみんとの描線・肌・髪・服の陰影と質感",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+      "role": "主要画風：採用済みつむぎ。最新指示でみんとと併用",
+      "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+    },
+    {
+      "path": ".claude/skills/character-portrait-remaster/references/minto-tsumugi-style-reference.png",
+      "role": "同じ2枚の顔と上半身の原寸1:1無加工切り抜き。拡縮や描き足しなし",
+      "sha256": "b6972f3ef395716e18bc54a43ed70132470ad415e9e467ad723418a7e8fa2b44",
+      "submittedPath": "/workspace/scratch/portrait-review/minto-tsumugi-native-style.png"
+    },
+    {
+      "path": "assets/sprites/characters/rin/chr_rin_normal.png",
+      "role": "本人の顔・体格・衣装・ポーズのみ。v7の塗りと光沢は修正対象",
+      "sha256": "48ea068760774eb000e04325dc85c11107b54cae74bf981d055b98529d38bf12"
+    },
+    {
+      "path": "/workspace/library-files/rin-redesign-20261003/reference-photo-3-hair.png",
+      "role": "写真3の自然な前髪・顔まわりのレイヤー・控えめな束感のみ。写真はローカルのみ",
+      "sha256": "e9abf0dcf1ac7874f4e4e5f396fda56ce4fa41fe154846db7ee40bb178dfdbbd"
+    }
+  ],
+  "reviewedStyleGroups": 12,
+  "reviewedStyleImages": 42,
+  "previousTrial": "rin-hair-v9-generation.json",
+  "currentGameCommit": "3424391d37389184c05c4a7b4d3146f58e93de56",
+  "changes": [
+    "v9の太く分離した毛束を弱め、写真程度の自然なつながりと控えめなレイヤーへ修正",
+    "みんと・つむぎの実画像と原寸の質感を主要な画風参照にする",
+    "髪だけでなく顔・肌・服の描線と陰影も再生成"
+  ],
+  "preservedDesign": [
+    "青みの暗い髪",
+    "胸下〜ウエスト上のロングウルフ",
+    "少し年上の半目と小さなクールな微笑み",
+    "白シャツ・黒スラックス・胸元の紙なし・女性らしい体格"
+  ],
+  "preview": "rin-style-v10-preview.png",
+  "previewSha256": "d7e8772109e9a3ecf5bc0916f14047d3bd80ce030387e8c0f52ca5efa3c5c955",
+  "previewNormalization": {
+    "scale": 0.7326007326007326,
+    "canvas": [
+      896,
+      1200
+    ],
+    "placement": [
+      27,
+      121
+    ],
+    "sourceBounds": [
+      323,
+      71,
+      833,
+      1436
+    ],
+    "previewBounds": [
+      264,
+      173,
+      637,
+      1173
+    ],
+    "currentFeetX": 497.1512883842666,
+    "previewFeetX": 497.57234034924164,
+    "feetBottom": 1173,
+    "sourceAlpha24BorderPixels": 0,
+    "alpha16Clipping": false,
+    "policy": "全画像の拡縮とRGBA直接配置のみ。創作上の加工・アルファ閾値処理なし。"
+  },
+  "nativeComparison": "rin-style-v10-comparison-native.png",
+  "nativeComparisonSha256": "40168baa01446c84166ab2e25b8095a9d2e1d0df804a7458ca72a744da16e291",
+  "gameIntegration": false,
+  "review": "通常1枚の描き方の修正案。旧v7・旧v9との全身比較、みんと・つむぎとの原寸比較、白／暗背景・2倍表示で確認。採用と5表情への展開は未確定。",
+  "reason": "内部比較で肌と白シャツの光沢が残ると判断。自然な毛束を保持してv11で描線・塗りを追加修正。オーナーがv10を不採用と回答した記録ではない。"
+}

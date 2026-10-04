@@ -1,0 +1,97 @@
+{
+  "character": "rin",
+  "age": 27,
+  "version": 9,
+  "expression": "normal",
+  "status": "superseded",
+  "ownerRequest": "なんかAI感が強い　毛束のある髪型とか質感？",
+  "output": "rin-hair-v9.png",
+  "generatedSourcePath": "/workspace/generated_images/exec-52fcdae4-e8a4-4a89-a2a0-3bd716bd0006.png",
+  "sha256": "dc8067775cca128427a2799602366700974d5f33594f1613d8d54da7fb34fde2",
+  "dimensions": [
+    1024,
+    1536
+  ],
+  "prompt": "rin-hair-v9-prompt.txt",
+  "promptSha256": "8b1cd96a058bab89f2b2943a2bc97960aaad0c4733d828c1675073557595d9c0",
+  "references": [
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "主要画風・毛束の面と描線",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "主要画風・陰影と微細な質感",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    },
+    {
+      "path": ".claude/skills/character-portrait-remaster/references/rin-v7-face-reference.png",
+      "role": "本人の顔の形と半目・微笑み。v7の光沢は引き継がない",
+      "sha256": "83090ac194c9f6f15880695c091b0e2d7a458bb19b0a6fdb923c2c70054410c7"
+    },
+    {
+      "path": "/workspace/library-files/rin-redesign-20261003/reference-photo-3-hair.png",
+      "role": "写真3の大きな前髪と顔まわりの毛束のみ。無加工切り抜き・ローカルのみ",
+      "sha256": "e9abf0dcf1ac7874f4e4e5f396fda56ce4fa41fe154846db7ee40bb178dfdbbd"
+    },
+    {
+      "path": "assets/sprites/characters/rin/chr_rin_normal.png",
+      "role": "本人の体格・衣装・ポーズ。描線と塗りは修正対象",
+      "sha256": "48ea068760774eb000e04325dc85c11107b54cae74bf981d055b98529d38bf12"
+    }
+  ],
+  "reviewedStyleGroups": 12,
+  "reviewedStyleImages": 42,
+  "previousTrial": "rin-hair-v8-generation.json",
+  "currentGameCommit": "3424391d37389184c05c4a7b4d3146f58e93de56",
+  "changes": [
+    "幅の異なる前髪と頬のレイヤーを大きな毛束で描く",
+    "繰り返す細い毛線と光沢線を減らす",
+    "面での陰影と落ち着いた肌・服の描線へ整理"
+  ],
+  "preservedDesign": [
+    "青みの暗い髪",
+    "胸下〜ウエスト上のロングウルフ",
+    "少し年上の半目と小さなクールな微笑み",
+    "白シャツ・黒スラックス・胸元の紙なし・女性らしい体格"
+  ],
+  "preview": "rin-hair-v9-preview.png",
+  "previewSha256": "d3ce34c0f16e5ff953de8c64e72f9f77d7f8bdc8a57a72bdc431036d86fb25e2",
+  "previewNormalization": {
+    "scale": 0.6644518272425249,
+    "canvas": [
+      896,
+      1200
+    ],
+    "placement": [
+      86,
+      158
+    ],
+    "sourceBounds": [
+      271,
+      21,
+      833,
+      1526
+    ],
+    "previewBounds": [
+      266,
+      172,
+      640,
+      1173
+    ],
+    "currentFeetX": 497.1512883842666,
+    "previewFeetX": 496.93054631477787,
+    "feetBottom": 1173,
+    "sourceAlpha24BorderPixels": 0,
+    "alpha16Clipping": false,
+    "policy": "全画像の拡縮とRGBA直接配置のみ。顔や毛束への手描き加工・アルファ閾値処理なし。"
+  },
+  "gameIntegration": false,
+  "review": "通常1枚の髪・質感の修正案。原寸比較と全身比較を用意。v8より毛束と塗りの違いが明確。5表情への展開はこの描き方を確認してから。",
+  "ownerRevisionRequests": [
+    "あと絵のテイストがつむぎとかみんととなんか違う",
+    "束感がやりすぎなのかも　確かに元のモデルの人のも束感は少しあるけどここまでではない"
+  ],
+  "reason": "毛束が太く誇張されすぎた。みんと・つむぎの画風に揃え、写真程度の控えめな束感へ再修正する。"
+}
