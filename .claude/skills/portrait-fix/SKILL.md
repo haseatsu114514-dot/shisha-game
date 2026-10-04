@@ -25,6 +25,7 @@ web/js/engine.js applyPortraitTrim() が描画位置・スケールを決定
   ビルド前に `pip install Pillow numpy scipy` を確認。CIにも入っている前提。
 - ax・bottom はキャラ単位で共通化済みなので、「表情でジャンプする」場合は
   共通化が効かないほど**原画側の描かれ方がバラバラ**なのが原因。
+- `data/characters.json` の `spriteAnchor: "head"` を持つ凛は、通常の本体上端20%の横重心を全表情共通の表示アンカーにする。画像の足元整列は従来どおり足元で行う。両ビルドが同じ指定を読み、未指定の他キャラは足元基準のまま。
 
 ## 症状別の診断フロー
 
@@ -67,6 +68,10 @@ web/js/engine.js applyPortraitTrim() が描画位置・スケールを決定
 3. `python3 web/build_data.py && python3 web/build_standalone.py` で trim を再計測。
 
 ## 直した後の確認（必須）
+
+### 足元を整列しても、上半身が画面中央に来ない場合
+
+凛v11では頭部が足元重心より約100px左にあり、足元を中央へ置くと顔が左へ寄った。PNG全体を左右へ動かすだけでは、ビルドが足元を再計測するので解消しない。オーナー指示に沿って不自然な腰・脚の姿勢を画像生成で直し、凛だけ `spriteAnchor: "head"` を採用した。通常の頭部基準を全表情で共通化し、実会話のPC／スマホで見た目の中央と切り替え時の配置枠を確認する。[凛の最新引き継ぎ](../../../docs/rin_portrait_handoff.md)を参照。
 
 ```bash
 python3 web/build_data.py && python3 web/build_standalone.py

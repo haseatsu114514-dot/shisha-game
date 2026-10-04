@@ -10,6 +10,8 @@ description: shisha-gameの既存キャラの立ち絵・表情差分を、元�
 対象キャラと過去の制作画像を実際に見てから進める。プロンプトの文章だけで画風を引き継がない。
 オーナーの最新指示がこの記録に優先する。作るキャラが変更されたら、変更前の依頼を勝手に続けない。
 
+**最新の実行範囲（2026-10-04、PRT46／47）：凛v12の修正を保存してPRを作成する。オーナー「そこまでしなくていい一旦保存して」「prを作って」により、追加の長い通しテストを停止し、mainへのマージは保留。PRT45の採用は維持する。**
+
 ## 確定した画風と制作単位
 
 - 既存デザインのほぼ再現が基本。顔立ち・髪型・配色・衣装・小物・元の表情の魅力を保つ。
@@ -109,9 +111,10 @@ description: shisha-gameの既存キャラの立ち絵・表情差分を、元�
   27歳の落ち着きが伝わる顔立ちへ小さく調整。瞳を細い線にせず、虹彩の大きさと可愛さを保つ。写真1の顔の無加工切り抜きを口元の主要参照にする。
   基本はクールに微笑む系。2026-10-04の制作・組み込み・マージ指示で5表情を採用し、**笑顔1枚だけ目を閉じて頬に手を添える可愛いギャップ**を加えた。
   **最新の明示指示で通常v11（rin-style-v11.png）のデザインを採用。** 同じ顔・髪・画風・白シャツと黒スラックスで残り4表情を制作し、指定ブランチのゲーム用5枚へ差し替えた。
-  [v11の5表情比較](references/rin-v11-five-review.png)、[生成元・プロンプト・実参照](references/rin-v11-expressions-generation.json)、[配置・検証記録](references/rin-v11-integration.json)を次回の本人参照にする。通常の原画は再生成せず使用。
-  **刷新前の旧デザイン（青いポニーテール・胸元の試香紙）は、2026-10-04 オーナー「凛の旧デザインはもう使わない」で廃止。** 最新の本人参照は採用v11とその5表情（`assets/sprites/characters/rin/`）。v7と追加4表情v1、刷新前との比較は制作履歴として保持し、旧画風を戻さない。
+  [v11の5表情比較](references/rin-v11-five-review.png)、[生成元・プロンプト・実参照](references/rin-v11-expressions-generation.json)、[配置・検証記録](references/rin-v11-integration.json)は採用デザインの履歴。v11制作時は通常の原画を再生成せず使用した。現在は下記の追加指摘による姿勢修正v12を参照。
+  **刷新前の旧デザイン（青いポニーテール・胸元の試香紙）は、2026-10-04 オーナー「凛の旧デザインはもう使わない」で廃止。** 顔・髪・衣装は採用v11を引き継ぎ、最新の5表情の立ち姿はv12（指定ブランチの`assets/sprites/characters/rin/`）。v7と追加4表情v1、刷新前との比較は制作履歴として保持し、旧画風を戻さない。
   年齢27歳・白シャツと黒スラックス・クリップボードと銀の小物は採用済みv11を参照。写真の衣装・SNS画面は写さない。
+  **最新の姿勢修正はv12（PRT43／44）。** オーナー「くびれというか腰が横に出過ぎてて変」で、腰を横へ突き出す姿勢と右へ傾く脚を全5表情で修正。[v12の5表情](references/rin-v12-five-review.png)、[生成元・実参照](references/rin-v12-generation.json)、[配置・検証](references/rin-v12-integration.json)、[スマホの会話比較](references/rin-v12-game-before-after-591.png)。指定ブランチへ修正用の5枚を反映。提示後にオーナー「マージして」（PRT45）で採用とmainへのPRマージを明示指示。mainマージはCodexへ変更し、丸アイコン・台詞・設定資料はClaude側を維持。
   旧案v1〜v6は制作履歴に保持し、採用基準へ加えない。ゲーム用PNG/WebP・設定は採用前に差し替えない。
 
 ## 2. 生成
@@ -185,8 +188,10 @@ node web/test/portraits.mjs
 
 「character-portrait-remasterスキルを使って、次は○○を作って。まず1キャラ分を見せて」
 
-**最新の対象はすみさん（`sumi`）の5表情v1。** オーナー「次のキャラへ」で保存済み制作順から再開し、通常／笑顔／真剣／驚き／考えるを制作・確認用に保存。[5表情比較](references/sumi-five-review.png)、[生成元と実参照・配置記録](references/sumi-generation.json)を読む。5枚とも採用前で、ゲーム素材は差し替えていない。保存先は `codex/sumi-portrait-remaster-20261004`、要望台帳はPRT43。
-**2026-10-04 追記：すみさんv1の5表情、ましろv1の5表情＋立ち寝 `sleep` は、オーナー「さっき新しいの作ったので」で採用・ゲームへ組み込み済み（要望台帳PRT44）。** ましろの `sad` キーは元の絵どおりのあくび。
+**最新の対象は凛（`rin`）の腰の横張りと中央配置の修正v12。** オーナーの追加指摘を優先し、v11の顔・髪・画風・衣装と5表情の意味を保持して腰と脚の姿勢を修正した。[5表情](references/rin-v12-five-review.png)、[修正前後の姿勢](references/rin-v12-stance-comparison.png)、[スマホの実会話比較](references/rin-v12-game-before-after-591.png)、[生成元と実参照](references/rin-v12-generation.json)、[検証](references/rin-v12-integration.json)、[Claude側の引き継ぎ](../../../docs/rin_portrait_handoff.md)を読む。PRT43／44／45、保存先はcodex/rin-hair-texture-20261004。修正版提示後のオーナー「マージして」で採用・mainへのPRマージを承認。最新main634efcfを先に58c56f2で取り込み、全員96pxアイコン等を保持。丸アイコン・台詞の表情・設定資料集はClaude側を継続。mainマージは最新指示PRT45でCodexが担当。凛だけspriteAnchor=headで頭部を共通横基準にし、全5表情をPC／スマホの実会話で確認。すみさん・ましろの確認資料は保持し、採用回答には扱わない。
+
+**直前の対象はすみさん（`sumi`）の5表情v1。** オーナー「次のキャラへ」で保存済み制作順から再開し、通常／笑顔／真剣／驚き／考えるを制作・確認用に保存。[5表情比較](references/sumi-five-review.png)、[生成元と実参照・配置記録](references/sumi-generation.json)を読む。5枚とも採用前で、ゲーム素材は差し替えていない。保存先は `codex/sumi-portrait-remaster-20261004`、要望台帳はPRT42。
+**2026-10-04 追記：すみさんv1の5表情、ましろv1の5表情＋立ち寝 `sleep` は、オーナー「さっき新しいの作ったので」で採用・ゲームへ組み込み済み（要望台帳PRT49）。** ましろの `sad` キーは元の絵どおりのあくび。
 
 凛（`rin`）は2026-10-04の明示指示で通常v11を採用し、同じ顔・髪・画風・衣装の笑顔／真剣／驚き／悲しみを制作済み。全5枚を896×1200 RGBA、共通倍率と足元で指定ブランチの立ち絵へ差し替えた。[5表情比較](references/rin-v11-five-review.png)、[生成記録](references/rin-v11-expressions-generation.json)、[配置・検証](references/rin-v11-integration.json)、[引き継ぎメモ](../../../docs/rin_portrait_handoff.md)を読む。
 **丸アイコン・台詞の表情・設定資料集・mainへのマージはClaude側。** `codex/rin-hair-texture-20261004`へ先にmainを取り込み、画像と制作記録を保存。PRT26〜30が今回の台帳。mainで使用済みのPRT16〜25を保持し、分岐中の8件はPRT31〜38へ整理した。旧保留指示と以前のマージ許可より今回の分担を優先する。

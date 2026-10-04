@@ -79,12 +79,12 @@ def collect_dialogues() -> dict:
     return dialogues
 
 
-def portrait_trim(png: Path):
+def portrait_trim(png: Path, anchor="feet"):
     """透過余白を測り、立ち絵の実体サイズを正規化するための値を返す。
 
     h: 画像高さに対する実コンテンツの高さ比 / b: 下端の余白比
     l: 左端の余白比 / w: 実コンテンツの幅比
-    ax: 横アンカー比（本体下部＝足元の重心x）。表情差分で腕の出し方が
+    ax: 横アンカー比（通常は足元、spriteAnchor=head は本体上部の重心x）。表情差分で腕の出し方が
         変わっても bbox 中心のように引っ張られないので、engine.js は
         これを使って立ち絵の横位置を固定する
     （キャラごとの余白差で見かけサイズがズレるのを補正する。
@@ -98,7 +98,7 @@ def portrait_trim(png: Path):
     try:
         im = Image.open(png).convert("RGBA")
         if np is not None and ndimage is not None:
-            bbox, feet_cx = _measure_main_content(im)
+            bbox, feet_cx = _measure_main_content(im, anchor=anchor)
         else:
             bbox, feet_cx = im.getbbox(), None
         if not bbox:
@@ -117,12 +117,14 @@ def portrait_trim(png: Path):
         return None
 
 
-def _measure_main_content(im):
-    """本体（最大連結成分＋その近傍/同規模の成分）の bbox と足元重心xを返す。
+def _measure_main_content(im, anchor="feet"):
+    """本体（最大連結成分＋その近傍/同規模の成分）の bbox と横アンカーを返す。
 
     alpha>=24 で二値化し、最大成分の1%未満かつ本体から12px超離れた
-    孤立ゴミを計測から除外する。足元重心はコンテンツ下端20%の重心x。
+    孤立ゴミを計測から除外する。既定は下端20%、head は上端20%の重心x。
     """
+    if anchor not in ("feet", "head"):
+        raise ValueError(f"Unknown spriteAnchor: {anchor}")
     alpha = np.asarray(im)[..., 3]
     visible = alpha >= 24
     if not visible.any():
@@ -145,8 +147,9 @@ def _measure_main_content(im):
     ys, xs = np.where(mask)
     x0, x1 = int(xs.min()), int(xs.max()) + 1
     y0, y1 = int(ys.min()), int(ys.max()) + 1
-    feet_top = y1 - max(1, int((y1 - y0) * 0.2))
-    fys, fxs = np.where(mask[feet_top:y1])
+    band = max(1, int((y1 - y0) * 0.2))
+    anchor_top, anchor_bottom = (y0, y0 + band) if anchor == "head" else (y1 - band, y1)
+    fys, fxs = np.where(mask[anchor_top:anchor_bottom])
     feet_cx = float(fxs.mean()) if len(fxs) else (x0 + x1) / 2
     return (x0, y0, x1, y1), feet_cx
 
@@ -162,6 +165,10 @@ def collect_portraits() -> tuple[dict, dict]:
     portraits = {}
     trims = {}
     chars_dir = REPO_ROOT / "assets" / "sprites" / "characters"
+    # 凛のように上半身を中心に見せる立ち絵は、normal の頭部を横基準にする。
+    # 画像自体は従来どおり足元で整列し、表示アンカーだけを全表情で共通化する。
+    anchor_modes = {c["id"]: c.get("spriteAnchor", "feet")
+                    for c in load_json(DATA_DIR / "characters.json")}
     for char_dir in sorted(chars_dir.iterdir()):
         if not char_dir.is_dir():
             continue
@@ -172,7 +179,7 @@ def collect_portraits() -> tuple[dict, dict]:
             m = re.match(re.escape(prefix) + r"(.+)\.png$", png.name)
             if m:
                 faces.append(m.group(1))
-                t = portrait_trim(png)
+                t = portrait_trim(png, anchor=anchor_modes.get(char_dir.name, "feet"))
                 if t:
                     face_trims[m.group(1)] = t
         if faces:

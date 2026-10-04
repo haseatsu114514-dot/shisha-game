@@ -5,7 +5,7 @@
   "version": 1,
   "status": "pending_review",
   "ownerRequest": "次のキャラへ",
-  "ownerRequestId": "PRT43",
+  "ownerRequestId": "PRT42",
   "interpretation": "保存済み制作順からすみさんへ進む。既存5表情の意味と実画像のデザインを保持して確認用に制作する。",
   "branch": "codex/sumi-portrait-remaster-20261004",
   "baseCommit": "1906b45fe562818aaa93937fe0f92d49cd869580",

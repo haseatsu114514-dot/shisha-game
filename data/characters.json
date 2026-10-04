@@ -332,7 +332,8 @@
       "same woman at midnight, loose dark slate-blue long wolf-cut hair ending above the waist, black-framed glasses, leaning on a counter with a jar of coffee beans, blueberry shisha bowl beside her, neon glow leaking through black-filmed windows, relaxed private mood, refined high-resolution fine pixel-art style"
     ],
     "appearance": "少し青みのある暗い髪のロングウルフ。厚めに流れる前髪と頬を包むレイヤー、胸下〜ウエスト上までの長さ。主人公たちより少し年上に見える落ち着いた顔立ち、とろんとした細めの半目、控えめでクールな微笑み。白シャツの袖まくり＋黒スラックス。胸元に試香紙は付けない。銀のフープピアス。ネイルは常に無色（商材の香りを邪魔しないため＝職業的な色気）。普段はコンタクトで、深夜の2階では黒縁眼鏡＝眼鏡の凛はルート進行者だけが見られる姿。低めの声でゆっくり喋り、笑うと目尻が緩むのを本人は少し気にしている。",
-    "spriteScale": 0.97
+    "spriteScale": 0.97,
+    "spriteAnchor": "head"
   },
   {
     "id": "ageha",

@@ -341,42 +341,42 @@
       "id": "rin-game-v11",
       "title": "凛 v11採用版のゲーム用5表情",
       "status": "approved",
-      "role": "最新採用版の本人参照：896×1200 RGBA、共通倍率と足元",
+      "role": "採用履歴・v11の本人参照（腰と立ち姿はPRT43で修正）",
       "approval": "2026-10-04: オーナー「全て完了したらマージ」。凛v7のデザインで5表情を制作・採用・組み込み、検証後のマージを指示。",
       "images": [
         {
           "label": "クールな微笑み。採用されたv11を再生成せず使用",
           "expression": "normal",
-          "path": "../../../../assets/sprites/characters/rin/chr_rin_normal.png",
+          "path": "rin-v11-archived-normal.png",
           "sha256": "46bf9ec18d99388934b6fa87b34bb0eb3c2c24651b0d3995c9258621f40632b5"
         },
         {
           "label": "目を閉じて頬に手を添える、可愛いギャップ",
           "expression": "smile",
-          "path": "../../../../assets/sprites/characters/rin/chr_rin_smile.png",
+          "path": "rin-v11-archived-smile.png",
           "sha256": "2efb94a5d21ab7f672bdcf9b39b53143d7d2f4cf1dd258597cc592d0cc2a3d00"
         },
         {
           "label": "指を一本立てて説明する",
           "expression": "serious",
-          "path": "../../../../assets/sprites/characters/rin/chr_rin_serious.png",
+          "path": "rin-v11-archived-serious.png",
           "sha256": "139bf29d1a39e51854f2323df4a3c8137362d932e16d959933131b14d6c23fcb"
         },
         {
           "label": "控えめな「へえ」、胸元へ軽く手",
           "expression": "surprise",
-          "path": "../../../../assets/sprites/characters/rin/chr_rin_surprise.png",
+          "path": "rin-v11-archived-surprise.png",
           "sha256": "612731bf7aedc0ab8f8afd35283908cc0b74ed331613111bef4c93926bf45269"
         },
         {
           "label": "視線を少し落とし、袖を軽く握る静かな弱さ",
           "expression": "sad",
-          "path": "../../../../assets/sprites/characters/rin/chr_rin_sad.png",
+          "path": "rin-v11-archived-sad.png",
           "sha256": "e5927cdf1ff331155b3ba78b5b0a46b559339a2992c85d5a6e75e2dbac4e97d9"
         }
       ],
       "ownerFeedback": "2026-10-04：AI感と、みんと・つむぎとの画風の差、v9の毛束の誇張に追加指摘。本人のデザイン参照に使い、最新の通常v11で自然な毛束と描線・陰影を修正中。",
-      "note": "通常v11採用の明示指示により4表情を制作し5枚を差し替え。丸アイコン等とmainマージはClaude側。",
+      "note": "PR #190で採用された旧v11の5枚を無加工で凍結保存。顔・髪・衣装の履歴。横へ突き出した腰と右へ傾く脚はオーナー指摘によりv12へ修正し、この旧姿勢を戻さない。",
       "generationRecord": "rin-v11-expressions-generation.json",
       "integrationRecord": "rin-v11-integration.json"
     },
@@ -515,7 +515,7 @@
       "title": "すみさん 基本5表情の確認用 v1",
       "status": "pending",
       "role": "未採用の本人確認用。共通画風の確定基準にはしない。",
-      "ownerRequest": "次のキャラへ（2026-10-04、PRT43）",
+      "ownerRequest": "次のキャラへ（2026-10-04、PRT42）",
       "record": "sumi-generation.json",
       "images": [
         {
@@ -554,6 +554,88 @@
           "sha256": "bbf7156176dc421db91fecc2b9fc4e4195e2fc926e10188de0ea38a269681da1"
         }
       ]
+    },
+    {
+      "id": "rin-stance-v12",
+      "title": "凛 v12 腰と立ち姿の修正生成元",
+      "status": "approved",
+      "role": "オーナー承認済みのv12姿勢修正・本人参照",
+      "ownerRequest": "腰が横に出過ぎてて変／配置が中央に行かない（2026-10-04、PRT43/PRT44）",
+      "note": "v11の顔・髪・衣装・画風と5表情の意味を引き継ぎ、腰の横張りと傾く脚を修正。丸アイコン・台詞・設定資料の変更はClaude側の分担を保持。mainへのマージは最新のオーナー指示でCodexが担当。",
+      "images": [
+        {
+          "label": "通常・クールな微笑み",
+          "expression": "normal",
+          "path": "rin-v12-normal.png",
+          "sha256": "d721e4c6e780a0be1069f60a5f22fb567de50be949a631a492174903935eab8d"
+        },
+        {
+          "label": "笑顔・可愛いギャップ",
+          "expression": "smile",
+          "path": "rin-v12-smile.png",
+          "sha256": "407e21d9a1be56f9f09ec630e61e53b25aa269462264d20815efd4f8689cf66c"
+        },
+        {
+          "label": "真剣・指で説明",
+          "expression": "serious",
+          "path": "rin-v12-serious.png",
+          "sha256": "d819f1ae79dee04428d030a090a9f4b8d837c15b6a3b3dca5a79b01c51c885b8"
+        },
+        {
+          "label": "驚き・控えめな「へえ」",
+          "expression": "surprise",
+          "path": "rin-v12-surprise.png",
+          "sha256": "146bbe9bec40d490f082e9024e7fcfc9b059dff3c2aa325fd658313eeec9bceb"
+        },
+        {
+          "label": "悲しみ・静かな弱さ",
+          "expression": "sad",
+          "path": "rin-v12-sad.png",
+          "sha256": "0436f063b3fd871f1716fd3d0f1f2f99ac59041e5d434a76d65f8f637bbc88a6"
+        }
+      ],
+      "approval": "2026-10-04: 修正版5表情と会話比較の提示後、オーナー「マージして」で採用・mainへのマージを指示"
+    },
+    {
+      "id": "rin-game-v12",
+      "title": "凛 v12 腰と立ち姿の修正・指定ブランチの5表情",
+      "status": "approved",
+      "role": "オーナー承認済みのv12姿勢修正・本人参照",
+      "ownerRequest": "腰が横に出過ぎてて変／配置が中央に行かない（2026-10-04、PRT43/PRT44）",
+      "note": "v11の顔・髪・衣装・画風と5表情の意味を引き継ぎ、腰の横張りと傾く脚を修正。丸アイコン・台詞・設定資料の変更はClaude側の分担を保持。mainへのマージは最新のオーナー指示でCodexが担当。",
+      "images": [
+        {
+          "label": "通常・クールな微笑み",
+          "expression": "normal",
+          "path": "../../../../assets/sprites/characters/rin/chr_rin_normal.png",
+          "sha256": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09"
+        },
+        {
+          "label": "笑顔・可愛いギャップ",
+          "expression": "smile",
+          "path": "../../../../assets/sprites/characters/rin/chr_rin_smile.png",
+          "sha256": "f44c1306d2b6c7140b6eec8183fabe4813ea7507ed76f1b47c2b24e692d76466"
+        },
+        {
+          "label": "真剣・指で説明",
+          "expression": "serious",
+          "path": "../../../../assets/sprites/characters/rin/chr_rin_serious.png",
+          "sha256": "c30f36c5b44e8335ea3b5c77f105556a8084a48f0ccef90c4a756500f9840ee2"
+        },
+        {
+          "label": "驚き・控えめな「へえ」",
+          "expression": "surprise",
+          "path": "../../../../assets/sprites/characters/rin/chr_rin_surprise.png",
+          "sha256": "159a9c9ede06553ab1e4fe85647f1ea3fc8fdb94f6f315782bb8077c1c4bec1c"
+        },
+        {
+          "label": "悲しみ・静かな弱さ",
+          "expression": "sad",
+          "path": "../../../../assets/sprites/characters/rin/chr_rin_sad.png",
+          "sha256": "9343dc7df3668bf9f976cb3f5be771cd2205e2501b66f7532ee418592104cb79"
+        }
+      ],
+      "approval": "2026-10-04: 修正版5表情と会話比較の提示後、オーナー「マージして」で採用・mainへのマージを指示"
     }
   ]
 }
