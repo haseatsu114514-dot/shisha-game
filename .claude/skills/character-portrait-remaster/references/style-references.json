@@ -509,6 +509,51 @@
           "sha256": "61e6cc279285a3294a845539a81cb8edb99499db41678f3018ca35d41285f382"
         }
       ]
+    },
+    {
+      "id": "sumi-v1",
+      "title": "すみさん 基本5表情の確認用 v1",
+      "status": "pending",
+      "role": "未採用の本人確認用。共通画風の確定基準にはしない。",
+      "ownerRequest": "次のキャラへ（2026-10-04、PRT39）",
+      "record": "sumi-generation.json",
+      "images": [
+        {
+          "label": "生成元・通常／笑顔／真剣／驚き／考える",
+          "path": "sumi-v1-sheet.png",
+          "sha256": "96034ff5e350e6fce7ae4fd962741baed9eec92de44b1134bb49e0f4a8a0a73b"
+        },
+        {
+          "label": "通常",
+          "expression": "normal",
+          "path": "sumi-v1-normal-preview.png",
+          "sha256": "35cb31996f3275213b7e659d968d09fec62136d519324a93bb90f1afcf31627c"
+        },
+        {
+          "label": "笑顔",
+          "expression": "smile",
+          "path": "sumi-v1-smile-preview.png",
+          "sha256": "4fa7011b45471cc14f84146de14a83e4e5e582cbfdef903b9fcf563ee63508c6"
+        },
+        {
+          "label": "真剣",
+          "expression": "serious",
+          "path": "sumi-v1-serious-preview.png",
+          "sha256": "cedcfb6ec6e3357f10665fa384781c0079a509fd9b541d4ca3c507d465341416"
+        },
+        {
+          "label": "驚き",
+          "expression": "surprise",
+          "path": "sumi-v1-surprise-preview.png",
+          "sha256": "295353319a1759361636cbb50c797ed019fa774806483cae0a3609e0d24a3733"
+        },
+        {
+          "label": "考える",
+          "expression": "thinking",
+          "path": "sumi-v1-thinking-preview.png",
+          "sha256": "bbf7156176dc421db91fecc2b9fc4e4195e2fc926e10188de0ea38a269681da1"
+        }
+      ]
     }
   ]
 }
