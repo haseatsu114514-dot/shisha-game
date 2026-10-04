@@ -1,4 +1,42 @@
-# 凛（rin）v11の5表情と、Claude側への反映引き継ぎ
+# 凛（rin）v12：腰の横張り・中央配置の修正とClaude側への引き継ぎ
+
+## 最新：2026-10-04、PRT43／PRT44／PRT45
+
+**修正版の提示後、オーナー「マージして」でv12の採用・mainへのPRマージを明示指示。mainへのマージはCodexへ変更し、丸アイコン・台詞の表情・設定資料集は従来どおりClaude側。**
+
+オーナー「凛の立ち絵、やっぱりくびれが出過ぎててそこは変かも」「あと配置した時ずれる　真ん中に行かない」、続けて「くびれというか腰が横に出過ぎてて変」。意図は腰を横へ突き出す姿勢の不自然さ。採用済みv11の顔・髪・衣装・画風と表情の意味を引き継ぎ、骨盤と脚が胴体の下に来る自然な姿勢へ5枚とも修正した。
+
+保存先は引き続き `codex/rin-hair-texture-20261004`。制作前に最新mainのPR #190〜192（`634efcf`）を `58c56f2` で取り込み、Claude側で完了したv11のアイコン・設定資料と全員96pxのアイコンを保持した。分岐中のすみさんのPRT39は、mainで使用済みのPRT39〜41と衝突するためPRT42へ整理。すみさん5枚・ましろ6枚の確認資料は保持し、採用回答には扱っていない。
+
+- [修正前後の姿勢と原寸の顔](../.claude/skills/character-portrait-remaster/references/rin-v12-stance-comparison.png)
+- [修正版5表情と原寸の顔](../.claude/skills/character-portrait-remaster/references/rin-v12-five-review.png)
+- [添付と同じ会話場面・スマートフォンの修正前後](../.claude/skills/character-portrait-remaster/references/rin-v12-game-before-after-591.png)
+- [PCの修正前後](../.claude/skills/character-portrait-remaster/references/rin-v12-game-before-after-1280.png)
+- [みんと・つむぎとの原寸の質感比較](../.claude/skills/character-portrait-remaster/references/rin-v12-style-comparison.png)
+- [無加工の生成元・保存プロンプト・実参照・SHA-256](../.claude/skills/character-portrait-remaster/references/rin-v12-generation.json)
+- [共通倍率・足元・配布画素・実会話の検証](../.claude/skills/character-portrait-remaster/references/rin-v12-integration.json)
+
+5枚は `assets/sprites/characters/rin/chr_rin_{normal,smile,serious,surprise,sad}.png`。896×1200 RGBA、共通倍率 `0.7132667617689016`、足元下端1173px、横差0.683px未満。通常の初回修正案は脚の右への傾きが残ったため不採用とし、同じ顔を参照して脚を胴体の下へ戻した通常から4表情を制作。表情・仕草の意味はv11と同じ。創作上の修正は画像生成だけで行い、後処理は画像全体の同倍率拡縮と平行移動だけ。顔の貼り替え・体のワープ・アルファ閾値処理なし。
+
+### 中央配置の原因と修正
+
+v11は足元の横重心を画面中央へ配置する一方、頭部が足元より約100px左にある原画だった。PNGを左右へ平行移動するだけでは、ビルドで足元を再計測するため表示の左寄りは直らない。姿勢を修正し、`data/characters.json` の凛だけに `spriteAnchor: "head"` を追加。`remake/tools/build_manifest.py` と `web/build_data.py` が通常画像の頭部（本体の上端20%）を横アンカーとして計測し、全5表情で同じ値を使う。画像の足元整列と身長 `spriteScale: 0.97` は維持し、他キャラは従来の足元基準のまま。
+
+実会話エンジンで、添付の `lover_rin_lv3` の「……ん。……今の、データに記録しとく。『被験者、いい顔した』って」と同じ背景・台詞を使い、PC 1280×720／スマホ591×1280で全5表情を確認。笑顔の頭部中心のずれはスマホで約−43.98pxから−0.56pxへ改善。全5表情の最大ずれは5.82px（画面幅の約1%）。配置枠は全表情一致、頭の見切れなし、ブラウザエラー0。5枚のPNGとlossless WebPの全RGBA画素、旧版配布HTMLへ埋め込んだPNGも一致。他キャラのmanifest・キャラ属性は変更なし。足元整列dry-runは変更0。
+
+再発防止の実表示回帰を `remake/test/rin_portraits.mjs` に保存した。生成記録の座標を固定して読むのではなく、実会話で読み込んだWebPの画素から頭部中心を計測し、PC／スマホの全5枚で中央からのずれ・同じ配置枠・見切れを検証する。実行例は `BASE_URL=http://127.0.0.1:8765/remake/ CHROME_BIN=/usr/bin/chromium node remake/test/rin_portraits.mjs`（playwrightのパッケージ位置は環境に合わせる）。回帰は合格。
+
+### Claude側で続ける作業
+
+Codex側は修正版5表情・表示用WebP・計測ビルド・比較資料を指定ブランチへ反映。**丸アイコン・台詞の表情・設定資料集は引き続きClaude側。** 修正版の提示後、オーナー「マージして」でv12の採用とmain反映を指示。Codexが検証を終えてPRからmainへマージする。
+
+1. 指定ブランチと最新mainを確認し、既存の96pxアイコンと他チャットの変更を保って取り込む。
+2. 凛の丸アイコンを更新する場合は96pxを維持し、現在のv11用TUNEの切り抜き位置を修正版の顔へ合わせて確認する。Codex側ではアイコンを変更していない。
+3. 表情・仕草の意味は変わっていない。台詞のface指定は保持しているので、必要な確認を行う。
+4. 設定資料集へ新しい姿勢を載せる場合はv12を使う。旧v11の腰の横張りを復元しない。
+5. ビルドを再生成するときは `spriteAnchor: "head"` と共通アンカーを保持し、スマホの実会話で全5枚が中央に収まることを維持する。mainへのPRマージはPRT45によりCodexが担当。
+
+## 以下はv11採用時の記録（Claude側の反映はPRT39で完了済み）
 
 2026-10-04。**最新指示：通常v11のデザインを採用。Codexは残り4表情と立ち絵5枚を揃え、mainを取り込んだ指定ブランチへプッシュする。丸アイコン・台詞の表情・設定資料集・mainへのマージはClaude側。**
 

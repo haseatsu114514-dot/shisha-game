@@ -1,0 +1,543 @@
+{
+  "character": "rin",
+  "age": 27,
+  "version": 12,
+  "scope": "Correct v11 sideways-projecting hips and lower-body stance; preserve approved face, hair, rendering, clothes, all five expression meanings",
+  "ownerRequests": [
+    "PRT43",
+    "PRT44",
+    "PRT45"
+  ],
+  "ownerCorrection": "くびれというか腰が横に出過ぎてて変",
+  "branch": "codex/rin-hair-texture-20261004",
+  "mainIncludedBeforeGeneration": "634efcfae0d4296bfe6f20026f03089f7fd95b6b",
+  "mainMergeCommit": "58c56f2d9b05b3bb6ea1f9b67ac44981e4d34572",
+  "status": "owner_approved_correction_ready_for_main_pr",
+  "ownerVisualFeedback": "Owner explicitly requested adoption and main merge of the displayed correction with マージして",
+  "styleReview": {
+    "groups": 17,
+    "images": 62,
+    "groupsReviewed": [
+      {
+        "id": "minto-service-v2",
+        "status": "approved",
+        "images": 5
+      },
+      {
+        "id": "ageha-v1",
+        "status": "approved",
+        "images": 5
+      },
+      {
+        "id": "minto-private-v1",
+        "status": "approved",
+        "images": 5
+      },
+      {
+        "id": "tsumugi-v1",
+        "status": "approved",
+        "images": 1
+      },
+      {
+        "id": "tsumugi-yami-v2",
+        "status": "approved",
+        "images": 1
+      },
+      {
+        "id": "tsumugi-game-v1",
+        "status": "approved",
+        "images": 6
+      },
+      {
+        "id": "kafuka-v2",
+        "status": "approved",
+        "images": 1
+      },
+      {
+        "id": "kafuka-game-v2",
+        "status": "approved",
+        "images": 5
+      },
+      {
+        "id": "kafuka-excited-v3",
+        "status": "approved",
+        "images": 2
+      },
+      {
+        "id": "rin-redesign-v7",
+        "status": "approved",
+        "images": 2
+      },
+      {
+        "id": "rin-expressions-v1",
+        "status": "approved",
+        "images": 4
+      },
+      {
+        "id": "rin-game-v11",
+        "status": "approved",
+        "images": 5
+      },
+      {
+        "id": "rin-style-v11",
+        "status": "approved",
+        "images": 2
+      },
+      {
+        "id": "mashiro-v1",
+        "status": "pending",
+        "images": 6
+      },
+      {
+        "id": "mashiro-sleep-v1",
+        "status": "pending",
+        "images": 2
+      },
+      {
+        "id": "rin-v11-expressions",
+        "status": "approved",
+        "images": 4
+      },
+      {
+        "id": "sumi-v1",
+        "status": "pending",
+        "images": 6
+      }
+    ],
+    "nativeRepresentativeCrops": [
+      {
+        "group": "minto-service-v2",
+        "source": "/workspace/shisha-game/assets/sprites/characters/minto/chr_minto_normal.png",
+        "crop": [
+          381,
+          230,
+          631,
+          530
+        ]
+      },
+      {
+        "group": "ageha-v1",
+        "source": "/workspace/shisha-game/assets/sprites/characters/ageha/chr_ageha_normal.png",
+        "crop": [
+          371,
+          195,
+          621,
+          495
+        ]
+      },
+      {
+        "group": "minto-private-v1",
+        "source": "/workspace/shisha-game/assets/sprites/characters/minto/chr_minto_ura_normal.png",
+        "crop": [
+          392,
+          224,
+          642,
+          524
+        ]
+      },
+      {
+        "group": "tsumugi-v1",
+        "source": "/workspace/shisha-game/.claude/skills/character-portrait-remaster/references/tsumugi-v1-sheet.png",
+        "crop": [
+          86,
+          0,
+          336,
+          300
+        ]
+      },
+      {
+        "group": "tsumugi-yami-v2",
+        "source": "/workspace/shisha-game/.claude/skills/character-portrait-remaster/references/tsumugi-yami-v2.png",
+        "crop": [
+          401,
+          1,
+          651,
+          301
+        ]
+      },
+      {
+        "group": "tsumugi-game-v1",
+        "source": "/workspace/shisha-game/assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+        "crop": [
+          314,
+          297,
+          564,
+          597
+        ]
+      },
+      {
+        "group": "kafuka-v2",
+        "source": "/workspace/shisha-game/.claude/skills/character-portrait-remaster/references/kafuka-v2-sheet.png",
+        "crop": [
+          94,
+          70,
+          344,
+          370
+        ]
+      },
+      {
+        "group": "kafuka-game-v2",
+        "source": "/workspace/shisha-game/assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+        "crop": [
+          348,
+          259,
+          598,
+          559
+        ]
+      },
+      {
+        "group": "kafuka-excited-v3",
+        "source": "/workspace/shisha-game/.claude/skills/character-portrait-remaster/references/kafuka-excited-v3.png",
+        "crop": [
+          403,
+          0,
+          653,
+          300
+        ]
+      },
+      {
+        "group": "rin-redesign-v7",
+        "source": "/workspace/shisha-game/.claude/skills/character-portrait-remaster/references/rin-redesign-v7.png",
+        "crop": [
+          451,
+          3,
+          701,
+          303
+        ]
+      },
+      {
+        "group": "rin-expressions-v1",
+        "source": "/workspace/shisha-game/.claude/skills/character-portrait-remaster/references/rin-expressions-v1-smile.png",
+        "crop": [
+          452,
+          3,
+          702,
+          303
+        ]
+      },
+      {
+        "group": "rin-game-v11",
+        "source": "/workspace/shisha-game/assets/sprites/characters/rin/chr_rin_normal.png",
+        "crop": [
+          325,
+          165,
+          575,
+          465
+        ]
+      },
+      {
+        "group": "rin-style-v11",
+        "source": "/workspace/shisha-game/.claude/skills/character-portrait-remaster/references/rin-style-v11.png",
+        "crop": [
+          469,
+          27,
+          719,
+          327
+        ]
+      },
+      {
+        "group": "mashiro-v1",
+        "source": "/workspace/shisha-game/.claude/skills/character-portrait-remaster/references/mashiro-v1-sheet.png",
+        "crop": [
+          99,
+          4,
+          349,
+          304
+        ]
+      },
+      {
+        "group": "mashiro-sleep-v1",
+        "source": "/workspace/shisha-game/.claude/skills/character-portrait-remaster/references/mashiro-sleep-v1.png",
+        "crop": [
+          428,
+          128,
+          678,
+          428
+        ]
+      },
+      {
+        "group": "rin-v11-expressions",
+        "source": "/workspace/shisha-game/.claude/skills/character-portrait-remaster/references/rin-v11-smile.png",
+        "crop": [
+          473,
+          27,
+          723,
+          327
+        ]
+      },
+      {
+        "group": "sumi-v1",
+        "source": "/workspace/shisha-game/.claude/skills/character-portrait-remaster/references/sumi-v1-sheet.png",
+        "crop": [
+          63,
+          19,
+          313,
+          319
+        ]
+      }
+    ],
+    "fullTargetExpressionsReviewed": true,
+    "nativeTextureAndEdgesReviewed": true
+  },
+  "generations": [
+    {
+      "expression": "normal-first",
+      "status": "internal_unused_first_attempt",
+      "tool": "image_gen.imagegen",
+      "transparentBackground": true,
+      "sourcePath": "/workspace/generated_images/exec-47dc3398-0379-4bdb-a83d-4d16a1b8bf4b.png",
+      "path": ".claude/skills/character-portrait-remaster/references/rin-v12-normal-first.png",
+      "sha256": "f77cd33550c463ec94fee6ad53783d33c9f74c1ef426032377d610cb4fb03efd",
+      "sourceBytesPreserved": true,
+      "size": [
+        1085,
+        1450
+      ],
+      "promptPath": ".claude/skills/character-portrait-remaster/references/rin-v12-normal-prompt.txt",
+      "promptSha256": "7056dece5f90e741418bb179bb06a1478c461cb824e35dd257bd0b877b2fc850",
+      "references": [
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-style-v11.png",
+          "role": "adopted v11 face, hair, costume; sideways hip and legs must change",
+          "sha256": "2554e4bade64eb3fa4cd17033b2c9717e7e8014c7333a0bf186d071a926ecf57"
+        },
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-style-v11-face-reference.png",
+          "role": "native approved v11 face crop",
+          "sha256": "3b1b70c13e1ecdca8c98271e7133a99976aaa7027944276259b4d2f97a5d1d0f"
+        },
+        {
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "role": "approved initial Minto game-art texture and line/shading quality only",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "role": "approved Tsumugi game-art texture only; always paired with Minto",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        }
+      ]
+    },
+    {
+      "expression": "normal",
+      "status": "owner_approved_correction",
+      "tool": "image_gen.imagegen",
+      "transparentBackground": true,
+      "sourcePath": "/workspace/generated_images/exec-ecddb9f9-376f-4dea-a67e-a20c97098389.png",
+      "path": ".claude/skills/character-portrait-remaster/references/rin-v12-normal.png",
+      "sha256": "d721e4c6e780a0be1069f60a5f22fb567de50be949a631a492174903935eab8d",
+      "sourceBytesPreserved": true,
+      "size": [
+        1085,
+        1450
+      ],
+      "promptPath": ".claude/skills/character-portrait-remaster/references/rin-v12-normal-balanced-prompt.txt",
+      "promptSha256": "50845c9a482ff9670ae3f9d4aa456e4bd47bd2aaf7127bc12193518dbda38ea1",
+      "references": [
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-v12-normal-first.png",
+          "role": "internal first correction; preserve face and texture, correct remaining right-slanting legs",
+          "sha256": "f77cd33550c463ec94fee6ad53783d33c9f74c1ef426032377d610cb4fb03efd"
+        },
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-style-v11-face-reference.png",
+          "role": "native approved v11 face crop",
+          "sha256": "3b1b70c13e1ecdca8c98271e7133a99976aaa7027944276259b4d2f97a5d1d0f"
+        },
+        {
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "role": "approved initial Minto game-art texture and line/shading quality only",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "role": "approved Tsumugi game-art texture only; always paired with Minto",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        }
+      ]
+    },
+    {
+      "expression": "smile",
+      "status": "owner_approved_correction",
+      "tool": "image_gen.imagegen",
+      "transparentBackground": true,
+      "sourcePath": "/workspace/generated_images/exec-e4967e19-c582-4082-b6c5-be7de48cfe61.png",
+      "path": ".claude/skills/character-portrait-remaster/references/rin-v12-smile.png",
+      "sha256": "407e21d9a1be56f9f09ec630e61e53b25aa269462264d20815efd4f8689cf66c",
+      "sourceBytesPreserved": true,
+      "size": [
+        1085,
+        1450
+      ],
+      "promptPath": ".claude/skills/character-portrait-remaster/references/rin-v12-smile-prompt.txt",
+      "promptSha256": "447bb76087ac2c3d5b36f7b67f98b889c2006be8e1f5ea60e49027f8864f03d1",
+      "references": [
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-v12-normal.png",
+          "role": "authoritative corrected v12 upright body, identity, costume and rendering",
+          "sha256": "d721e4c6e780a0be1069f60a5f22fb567de50be949a631a492174903935eab8d"
+        },
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-v11-smile.png",
+          "role": "old v11 expression and upper-hand gesture only; rejected sideways hips/legs must not return",
+          "sha256": "d080379f059eda3b157d4f64a35b515c9156017671a4e24e508b149693f22f23"
+        },
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-style-v11-face-reference.png",
+          "role": "native approved v11 face crop",
+          "sha256": "3b1b70c13e1ecdca8c98271e7133a99976aaa7027944276259b4d2f97a5d1d0f"
+        },
+        {
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "role": "approved initial Minto game-art texture and line/shading quality only",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "role": "approved Tsumugi game-art texture only; always paired with Minto",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        }
+      ]
+    },
+    {
+      "expression": "serious",
+      "status": "owner_approved_correction",
+      "tool": "image_gen.imagegen",
+      "transparentBackground": true,
+      "sourcePath": "/workspace/generated_images/exec-e5500378-4a0a-4740-b0c7-aa484f7fb5cf.png",
+      "path": ".claude/skills/character-portrait-remaster/references/rin-v12-serious.png",
+      "sha256": "d819f1ae79dee04428d030a090a9f4b8d837c15b6a3b3dca5a79b01c51c885b8",
+      "sourceBytesPreserved": true,
+      "size": [
+        1085,
+        1450
+      ],
+      "promptPath": ".claude/skills/character-portrait-remaster/references/rin-v12-serious-prompt.txt",
+      "promptSha256": "d9e402404bc9269c312c583de266f2746e612db5fed485956c7a4c41e9740029",
+      "references": [
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-v12-normal.png",
+          "role": "authoritative corrected v12 upright body, identity, costume and rendering",
+          "sha256": "d721e4c6e780a0be1069f60a5f22fb567de50be949a631a492174903935eab8d"
+        },
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-v11-serious.png",
+          "role": "old v11 expression and upper-hand gesture only; rejected sideways hips/legs must not return",
+          "sha256": "d9f31536381c3409a58ebf2172445052c9ac86f3d2b8d3e9989707ffb70eb68f"
+        },
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-style-v11-face-reference.png",
+          "role": "native approved v11 face crop",
+          "sha256": "3b1b70c13e1ecdca8c98271e7133a99976aaa7027944276259b4d2f97a5d1d0f"
+        },
+        {
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "role": "approved initial Minto game-art texture and line/shading quality only",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "role": "approved Tsumugi game-art texture only; always paired with Minto",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        }
+      ]
+    },
+    {
+      "expression": "surprise",
+      "status": "owner_approved_correction",
+      "tool": "image_gen.imagegen",
+      "transparentBackground": true,
+      "sourcePath": "/workspace/generated_images/exec-50ec6116-7836-45b6-bdd5-dda01d71e336.png",
+      "path": ".claude/skills/character-portrait-remaster/references/rin-v12-surprise.png",
+      "sha256": "146bbe9bec40d490f082e9024e7fcfc9b059dff3c2aa325fd658313eeec9bceb",
+      "sourceBytesPreserved": true,
+      "size": [
+        1085,
+        1450
+      ],
+      "promptPath": ".claude/skills/character-portrait-remaster/references/rin-v12-surprise-prompt.txt",
+      "promptSha256": "48be638a4471f23042976d48833264a24448acb64cf8303886c3e16f9d24849f",
+      "references": [
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-v12-normal.png",
+          "role": "authoritative corrected v12 upright body, identity, costume and rendering",
+          "sha256": "d721e4c6e780a0be1069f60a5f22fb567de50be949a631a492174903935eab8d"
+        },
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-v11-surprise.png",
+          "role": "old v11 expression and upper-hand gesture only; rejected sideways hips/legs must not return",
+          "sha256": "b4c9c636723feaf41c56b78073e7aca832b1a5bd2b6395b911606c03be42f31b"
+        },
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-style-v11-face-reference.png",
+          "role": "native approved v11 face crop",
+          "sha256": "3b1b70c13e1ecdca8c98271e7133a99976aaa7027944276259b4d2f97a5d1d0f"
+        },
+        {
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "role": "approved initial Minto game-art texture and line/shading quality only",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "role": "approved Tsumugi game-art texture only; always paired with Minto",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        }
+      ]
+    },
+    {
+      "expression": "sad",
+      "status": "owner_approved_correction",
+      "tool": "image_gen.imagegen",
+      "transparentBackground": true,
+      "sourcePath": "/workspace/generated_images/exec-a518eda0-d75b-46bc-82b1-1fa91c605a33.png",
+      "path": ".claude/skills/character-portrait-remaster/references/rin-v12-sad.png",
+      "sha256": "0436f063b3fd871f1716fd3d0f1f2f99ac59041e5d434a76d65f8f637bbc88a6",
+      "sourceBytesPreserved": true,
+      "size": [
+        1085,
+        1450
+      ],
+      "promptPath": ".claude/skills/character-portrait-remaster/references/rin-v12-sad-prompt.txt",
+      "promptSha256": "18f72ea27b9624e4d07c8091120b20e9378b083089942e180ac5cb3afaa74c13",
+      "references": [
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-v12-normal.png",
+          "role": "authoritative corrected v12 upright body, identity, costume and rendering",
+          "sha256": "d721e4c6e780a0be1069f60a5f22fb567de50be949a631a492174903935eab8d"
+        },
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-v11-sad.png",
+          "role": "old v11 expression and upper-hand gesture only; rejected sideways hips/legs must not return",
+          "sha256": "61e6cc279285a3294a845539a81cb8edb99499db41678f3018ca35d41285f382"
+        },
+        {
+          "path": ".claude/skills/character-portrait-remaster/references/rin-style-v11-face-reference.png",
+          "role": "native approved v11 face crop",
+          "sha256": "3b1b70c13e1ecdca8c98271e7133a99976aaa7027944276259b4d2f97a5d1d0f"
+        },
+        {
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "role": "approved initial Minto game-art texture and line/shading quality only",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "role": "approved Tsumugi game-art texture only; always paired with Minto",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        }
+      ]
+    }
+  ],
+  "mechanicalFaceReference": {
+    "path": ".claude/skills/character-portrait-remaster/references/rin-v11-original-faces-reference.png",
+    "role": "unmodified native face crops of all five former game PNGs for expression review; not attached to image generation",
+    "sha256": "592d78dddb98b900d008226a0bf354357285e6a25df436a25573a2f926861a1e"
+  },
+  "mechanicalFullReference": {
+    "path": ".claude/skills/character-portrait-remaster/references/rin-v11-original-five-reference.png",
+    "role": "whole-sprite scale-only review of all five former game PNGs; not attached to image generation",
+    "sha256": "1369d20bbc438a17c6f8644de6a64b199fd5c86c45b52b3d432246f4f3d69898"
+  },
+  "ownerMainMergeAuthority": "マージして（2026-10-04、修正版を表示・会話比較後）"
+}

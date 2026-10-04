@@ -5,9 +5,11 @@
 
 ## 2026-10-04 凛の修正版の反映予定
 
+最新のオーナー指摘「くびれというか腰が横に出過ぎてて変」「真ん中に行かない」を受け、v11の顔・髪・衣装・画風を引き継いで腰の横張りと脚の傾きを5表情ともv12へ修正。凛だけ `spriteAnchor: "head"` をデータへ追加し、通常の頭部中心を共通横アンカーとして計測する。スマホの笑顔の左寄りは約44px→0.6px、全5表情で配置枠一致・見切れなし。[スマホの実会話比較](../.claude/skills/character-portrait-remaster/references/rin-v12-game-before-after-591.png)、[5表情](../.claude/skills/character-portrait-remaster/references/rin-v12-five-review.png)、[最新の引き継ぎ](rin_portrait_handoff.md)、PRT43／44を参照。最新mainのPR #190〜192（634efcf）を先に取り込み、Claude側の全員96pxアイコン・台詞・設定資料を保持。保存先と丸アイコン・台詞・設定資料の分担は従来どおり。修正版提示後のオーナー「マージして」（PRT45）で採用・mainへのPRマージを指示し、mainマージはCodexが行う。
+
 最新の明示指示で凛の通常v11を採用。Codexは同じデザインの残り4表情を制作し、896×1200 RGBA・共通倍率・足元で5枚を差し替え、最新mainを取り込んだ `codex/rin-hair-texture-20261004` へ保存する。**丸アイコン・台詞の表情・設定資料集・mainへのマージはClaude側。** [引き継ぎメモ](rin_portrait_handoff.md)と要望台帳PRT26〜30を参照。ましろ6表情は確認資料を保持。
 
-オーナー「次のキャラへ」で、すみさんの通常／笑顔／真剣／驚き／考えるの5表情v1を確認用に制作・保存。[5表情の比較](../.claude/skills/character-portrait-remaster/references/sumi-five-review.png)と[生成元・実参照・配置記録](../.claude/skills/character-portrait-remaster/references/sumi-generation.json)、PRT39を参照。保存先 `codex/sumi-portrait-remaster-20261004`。採用前のため、すみさんのゲーム用画像・アイコン・設定は差し替えていない。
+オーナー「次のキャラへ」で、すみさんの通常／笑顔／真剣／驚き／考えるの5表情v1を確認用に制作・保存。[5表情の比較](../.claude/skills/character-portrait-remaster/references/sumi-five-review.png)と[生成元・実参照・配置記録](../.claude/skills/character-portrait-remaster/references/sumi-generation.json)、PRT42を参照。保存先 `codex/sumi-portrait-remaster-20261004`。採用前のため、すみさんのゲーム用画像・アイコン・設定は差し替えていない。
 
 ## 開発の原則
 

@@ -1,0 +1,1185 @@
+{
+  "version": 12,
+  "ownerRequests": [
+    "PRT43",
+    "PRT44",
+    "PRT45"
+  ],
+  "commonScale": 0.7132667617689016,
+  "normalContentHeight": 1000,
+  "canvas": [
+    896,
+    1200
+  ],
+  "mode": "RGBA",
+  "footBottom": 1173,
+  "feetTargetX": 448,
+  "feetXSpread": 0.6825027764074321,
+  "method": "One common scale from normal; lossless raw preservation, LANCZOS resize and whole-sprite integer translation only. No alpha thresholding, creative repainting, body warp or face paste.",
+  "displayAnchor": "normal head centroid in upper 20% of main alpha>=24 component; one common anchor for all expressions (spriteAnchor=head)",
+  "records": [
+    {
+      "expression": "normal",
+      "rawPath": ".claude/skills/character-portrait-remaster/references/rin-v12-normal.png",
+      "rawSha256": "d721e4c6e780a0be1069f60a5f22fb567de50be949a631a492174903935eab8d",
+      "rawSize": [
+        1085,
+        1450
+      ],
+      "rawMetrics": {
+        "bounds": [
+          313,
+          28,
+          773,
+          1430
+        ],
+        "feetX": 549.8545145485451,
+        "headAlphaCenterX": 506.5902716576217,
+        "headMinusFeetX": -43.26424289092341,
+        "edgeAlpha24": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "resizeSize": [
+        774,
+        1034
+      ],
+      "translation": [
+        56,
+        153
+      ],
+      "path": "assets/sprites/characters/rin/chr_rin_normal.png",
+      "sha256": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09",
+      "metrics": {
+        "bounds": [
+          279,
+          173,
+          608,
+          1173
+        ],
+        "feetX": 448.09271808531474,
+        "headAlphaCenterX": 417.296004842615,
+        "headMinusFeetX": -30.796713242699752,
+        "edgeAlpha24": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "expression": "smile",
+      "rawPath": ".claude/skills/character-portrait-remaster/references/rin-v12-smile.png",
+      "rawSha256": "407e21d9a1be56f9f09ec630e61e53b25aa269462264d20815efd4f8689cf66c",
+      "rawSize": [
+        1085,
+        1450
+      ],
+      "rawMetrics": {
+        "bounds": [
+          323,
+          32,
+          790,
+          1432
+        ],
+        "feetX": 561.2239908606246,
+        "headAlphaCenterX": 516.1577595915609,
+        "headMinusFeetX": -45.06623126906368,
+        "edgeAlpha24": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "resizeSize": [
+        774,
+        1034
+      ],
+      "translation": [
+        48,
+        152
+      ],
+      "path": "assets/sprites/characters/rin/chr_rin_smile.png",
+      "sha256": "f44c1306d2b6c7140b6eec8183fabe4813ea7507ed76f1b47c2b24e692d76466",
+      "metrics": {
+        "bounds": [
+          278,
+          175,
+          611,
+          1173
+        ],
+        "feetX": 448.20685654403235,
+        "headAlphaCenterX": 415.9883118804557,
+        "headMinusFeetX": -32.218544663576665,
+        "edgeAlpha24": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "expression": "serious",
+      "rawPath": ".claude/skills/character-portrait-remaster/references/rin-v12-serious.png",
+      "rawSha256": "d819f1ae79dee04428d030a090a9f4b8d837c15b6a3b3dca5a79b01c51c885b8",
+      "rawSize": [
+        1085,
+        1450
+      ],
+      "rawMetrics": {
+        "bounds": [
+          305,
+          27,
+          801,
+          1437
+        ],
+        "feetX": 569.2256347026845,
+        "headAlphaCenterX": 519.6448576100888,
+        "headMinusFeetX": -49.58077709259567,
+        "edgeAlpha24": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "resizeSize": [
+        774,
+        1034
+      ],
+      "translation": [
+        42,
+        148
+      ],
+      "path": "assets/sprites/characters/rin/chr_rin_serious.png",
+      "sha256": "c30f36c5b44e8335ea3b5c77f105556a8084a48f0ccef90c4a756500f9840ee2",
+      "metrics": {
+        "bounds": [
+          259,
+          167,
+          614,
+          1173
+        ],
+        "feetX": 447.9079376718607,
+        "headAlphaCenterX": 412.5105032886159,
+        "headMinusFeetX": -35.397434383244786,
+        "edgeAlpha24": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "expression": "surprise",
+      "rawPath": ".claude/skills/character-portrait-remaster/references/rin-v12-surprise.png",
+      "rawSha256": "146bbe9bec40d490f082e9024e7fcfc9b059dff3c2aa325fd658313eeec9bceb",
+      "rawSize": [
+        1085,
+        1450
+      ],
+      "rawMetrics": {
+        "bounds": [
+          323,
+          31,
+          791,
+          1415
+        ],
+        "feetX": 561.9296692151662,
+        "headAlphaCenterX": 517.5429301820075,
+        "headMinusFeetX": -44.38673903315873,
+        "edgeAlpha24": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "resizeSize": [
+        774,
+        1034
+      ],
+      "translation": [
+        47,
+        164
+      ],
+      "path": "assets/sprites/characters/rin/chr_rin_surprise.png",
+      "sha256": "159a9c9ede06553ab1e4fe85647f1ea3fc8fdb94f6f315782bb8077c1c4bec1c",
+      "metrics": {
+        "bounds": [
+          278,
+          186,
+          611,
+          1173
+        ],
+        "feetX": 447.66138576064134,
+        "headAlphaCenterX": 416.1310993003633,
+        "headMinusFeetX": -31.530286460278035,
+        "edgeAlpha24": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "expression": "sad",
+      "rawPath": ".claude/skills/character-portrait-remaster/references/rin-v12-sad.png",
+      "rawSha256": "0436f063b3fd871f1716fd3d0f1f2f99ac59041e5d434a76d65f8f637bbc88a6",
+      "rawSize": [
+        1085,
+        1450
+      ],
+      "rawMetrics": {
+        "bounds": [
+          321,
+          30,
+          783,
+          1430
+        ],
+        "feetX": 574.1511751730433,
+        "headAlphaCenterX": 511.90484916201115,
+        "headMinusFeetX": -62.246326011032124,
+        "edgeAlpha24": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "resizeSize": [
+        774,
+        1034
+      ],
+      "translation": [
+        39,
+        154
+      ],
+      "path": "assets/sprites/characters/rin/chr_rin_sad.png",
+      "sha256": "9343dc7df3668bf9f976cb3f5be771cd2205e2501b66f7532ee418592104cb79",
+      "metrics": {
+        "bounds": [
+          268,
+          175,
+          597,
+          1173
+        ],
+        "feetX": 448.34388853704877,
+        "headAlphaCenterX": 403.92625099402113,
+        "headMinusFeetX": -44.41763754302764,
+        "edgeAlpha24": [
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    }
+  ],
+  "pixelAndBundleChecks": [
+    {
+      "expression": "normal",
+      "pngWebpRgbaExact": true,
+      "standaloneEmbedsExactPng": true,
+      "webpSha256": "8301d174169de088427b789e2c7974e581e4bdbbf2b63744326a96bc2e53858e"
+    },
+    {
+      "expression": "smile",
+      "pngWebpRgbaExact": true,
+      "standaloneEmbedsExactPng": true,
+      "webpSha256": "df422ac86b3c18b7b57eafa0073690bc8a1404b62788ac4f095d97af58478383"
+    },
+    {
+      "expression": "serious",
+      "pngWebpRgbaExact": true,
+      "standaloneEmbedsExactPng": true,
+      "webpSha256": "e692d65722f205bd6212042c786feea6d049fe17419cddb960d74ed32b527d49"
+    },
+    {
+      "expression": "surprise",
+      "pngWebpRgbaExact": true,
+      "standaloneEmbedsExactPng": true,
+      "webpSha256": "50e939f1a1a9a819bc9b22c17b067ff14902dc43597596f76aba158b2c1df8ec"
+    },
+    {
+      "expression": "sad",
+      "pngWebpRgbaExact": true,
+      "standaloneEmbedsExactPng": true,
+      "webpSha256": "3be9193307acbc04e056d8f6b735a86c470c8b79b1641df23d22c82e41d566f9"
+    }
+  ],
+  "nonRinManifestUnchanged": true,
+  "otherCharacterPropertiesUnchanged": true,
+  "standaloneHtmlBuiltAndVerified": "Built locally and preserved in scratch; tracked distribution artifact kept for CI rebuild",
+  "actualVnBefore": {
+    "phase": "before",
+    "scene": "lover_rin_lv3",
+    "line": {
+      "speaker": "rin",
+      "face": "smile",
+      "text": "……ん。……今の、データに記録しとく。『被験者、いい顔した』って"
+    },
+    "metrics": [
+      {
+        "face": "normal",
+        "src": "img/sprites/characters/rin/chr_rin_normal.webp",
+        "position": "center",
+        "image": {
+          "x": 173.50460815429688,
+          "y": -94.796875,
+          "width": 840.078125,
+          "height": 1125.109375
+        },
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8442,
+          "b": 0.0225,
+          "ax": 0.5553,
+          "aspect": 0.7467
+        },
+        "headCenterX": 546.3743909179855,
+        "stageCenterX": 640,
+        "offsetPixels": -93.62560908201453,
+        "offsetStageFraction": -0.07314500709532386,
+        "contentTop": 55.18020468750001,
+        "stageTop": 0,
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      {
+        "face": "smile",
+        "src": "img/sprites/characters/rin/chr_rin_smile.webp",
+        "position": "center",
+        "image": {
+          "x": 173.50460815429688,
+          "y": -94.796875,
+          "width": 840.078125,
+          "height": 1125.109375
+        },
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8442,
+          "b": 0.0225,
+          "ax": 0.5553,
+          "aspect": 0.7467
+        },
+        "headCenterX": 544.7457977915013,
+        "stageCenterX": 640,
+        "offsetPixels": -95.25420220849867,
+        "offsetStageFraction": -0.07441734547538958,
+        "contentTop": 55.18020468750001,
+        "stageTop": 0,
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      {
+        "face": "serious",
+        "src": "img/sprites/characters/rin/chr_rin_serious.webp",
+        "position": "center",
+        "image": {
+          "x": 173.50460815429688,
+          "y": -94.796875,
+          "width": 840.078125,
+          "height": 1125.109375
+        },
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8442,
+          "b": 0.0225,
+          "ax": 0.5553,
+          "aspect": 0.7467
+        },
+        "headCenterX": 543.3799593940722,
+        "stageCenterX": 640,
+        "offsetPixels": -96.62004060592778,
+        "offsetStageFraction": -0.07548440672338108,
+        "contentTop": 55.18020468750001,
+        "stageTop": 0,
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      {
+        "face": "surprise",
+        "src": "img/sprites/characters/rin/chr_rin_surprise.webp",
+        "position": "center",
+        "image": {
+          "x": 173.50460815429688,
+          "y": -94.796875,
+          "width": 840.078125,
+          "height": 1125.109375
+        },
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8442,
+          "b": 0.0225,
+          "ax": 0.5553,
+          "aspect": 0.7467
+        },
+        "headCenterX": 544.5132722064238,
+        "stageCenterX": 640,
+        "offsetPixels": -95.48672779357616,
+        "offsetStageFraction": -0.07459900608873138,
+        "contentTop": 55.18020468750001,
+        "stageTop": 0,
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      {
+        "face": "sad",
+        "src": "img/sprites/characters/rin/chr_rin_sad.webp",
+        "position": "center",
+        "image": {
+          "x": 173.50460815429688,
+          "y": -94.796875,
+          "width": 840.078125,
+          "height": 1125.109375
+        },
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8442,
+          "b": 0.0225,
+          "ax": 0.5553,
+          "aspect": 0.7467
+        },
+        "headCenterX": 533.9237133158385,
+        "stageCenterX": 640,
+        "offsetPixels": -106.07628668416146,
+        "offsetStageFraction": -0.08287209897200114,
+        "contentTop": 55.18020468750001,
+        "stageTop": 0,
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      {
+        "face": "normal",
+        "src": "img/sprites/characters/rin/chr_rin_normal.webp",
+        "position": "center",
+        "image": {
+          "x": 80.1103286743164,
+          "y": 430.0117492675781,
+          "width": 387.87982177734375,
+          "height": 519.484130859375
+        },
+        "stage": {
+          "x": 0,
+          "y": 473.78125,
+          "width": 591,
+          "height": 332.4375
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8442,
+          "b": 0.0225,
+          "ax": 0.5553,
+          "aspect": 0.7467
+        },
+        "headCenterX": 252.27129868473824,
+        "stageCenterX": 295.5,
+        "offsetPixels": -43.22870131526176,
+        "offsetStageFraction": -0.0731450106857221,
+        "contentTop": 499.2589839111328,
+        "stageTop": 473.78125,
+        "viewport": {
+          "width": 591,
+          "height": 1280
+        }
+      },
+      {
+        "face": "smile",
+        "src": "img/sprites/characters/rin/chr_rin_smile.webp",
+        "position": "center",
+        "image": {
+          "x": 80.1103286743164,
+          "y": 430.0117492675781,
+          "width": 387.87982177734375,
+          "height": 519.484130859375
+        },
+        "stage": {
+          "x": 0,
+          "y": 473.78125,
+          "width": 591,
+          "height": 332.4375
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8442,
+          "b": 0.0225,
+          "ax": 0.5553,
+          "aspect": 0.7467
+        },
+        "headCenterX": 251.5193467021194,
+        "stageCenterX": 295.5,
+        "offsetPixels": -43.98065329788059,
+        "offsetStageFraction": -0.0744173490657878,
+        "contentTop": 499.2589839111328,
+        "stageTop": 473.78125,
+        "viewport": {
+          "width": 591,
+          "height": 1280
+        }
+      },
+      {
+        "face": "serious",
+        "src": "img/sprites/characters/rin/chr_rin_serious.webp",
+        "position": "center",
+        "image": {
+          "x": 80.1103286743164,
+          "y": 430.0117492675781,
+          "width": 387.87982177734375,
+          "height": 519.484130859375
+        },
+        "stage": {
+          "x": 0,
+          "y": 473.78125,
+          "width": 591,
+          "height": 332.4375
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8442,
+          "b": 0.0225,
+          "ax": 0.5553,
+          "aspect": 0.7467
+        },
+        "headCenterX": 250.88871350455642,
+        "stageCenterX": 295.5,
+        "offsetPixels": -44.61128649544358,
+        "offsetStageFraction": -0.07548441031377932,
+        "contentTop": 499.2589839111328,
+        "stageTop": 473.78125,
+        "viewport": {
+          "width": 591,
+          "height": 1280
+        }
+      },
+      {
+        "face": "surprise",
+        "src": "img/sprites/characters/rin/chr_rin_surprise.webp",
+        "position": "center",
+        "image": {
+          "x": 80.1103286743164,
+          "y": 430.0117492675781,
+          "width": 387.87982177734375,
+          "height": 519.484130859375
+        },
+        "stage": {
+          "x": 0,
+          "y": 473.78125,
+          "width": 591,
+          "height": 332.4375
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8442,
+          "b": 0.0225,
+          "ax": 0.5553,
+          "aspect": 0.7467
+        },
+        "headCenterX": 251.41198527963437,
+        "stageCenterX": 295.5,
+        "offsetPixels": -44.088014720365635,
+        "offsetStageFraction": -0.07459900967912966,
+        "contentTop": 499.2589839111328,
+        "stageTop": 473.78125,
+        "viewport": {
+          "width": 591,
+          "height": 1280
+        }
+      },
+      {
+        "face": "sad",
+        "src": "img/sprites/characters/rin/chr_rin_sad.webp",
+        "position": "center",
+        "image": {
+          "x": 80.1103286743164,
+          "y": 430.0117492675781,
+          "width": 387.87982177734375,
+          "height": 519.484130859375
+        },
+        "stage": {
+          "x": 0,
+          "y": 473.78125,
+          "width": 591,
+          "height": 332.4375
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8442,
+          "b": 0.0225,
+          "ax": 0.5553,
+          "aspect": 0.7467
+        },
+        "headCenterX": 246.522587385622,
+        "stageCenterX": 295.5,
+        "offsetPixels": -48.97741261437801,
+        "offsetStageFraction": -0.08287210256239934,
+        "contentTop": 499.2589839111328,
+        "stageTop": 473.78125,
+        "viewport": {
+          "width": 591,
+          "height": 1280
+        }
+      }
+    ],
+    "errors": []
+  },
+  "actualVnAfter": {
+    "phase": "after",
+    "scene": "lover_rin_lv3",
+    "line": {
+      "speaker": "rin",
+      "face": "smile",
+      "text": "……ん。……今の、データに記録しとく。『被験者、いい顔した』って"
+    },
+    "metrics": [
+      {
+        "face": "normal",
+        "src": "img/sprites/characters/rin/chr_rin_normal.webp",
+        "position": "center",
+        "image": {
+          "x": 246.02508544921875,
+          "y": -102.546875,
+          "width": 845.9844360351562,
+          "height": 1133.03125
+        },
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8383,
+          "b": 0.0225,
+          "ax": 0.4657,
+          "aspect": 0.7467,
+          "anchor": "head"
+        },
+        "headCenterX": 640.0272342399592,
+        "stageCenterX": 640,
+        "offsetPixels": 0.027234239959170736,
+        "offsetStageFraction": 2.1276749968102138e-05,
+        "contentTop": 55.17107499999986,
+        "stageTop": 0,
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      {
+        "face": "smile",
+        "src": "img/sprites/characters/rin/chr_rin_smile.webp",
+        "position": "center",
+        "image": {
+          "x": 246.02508544921875,
+          "y": -102.546875,
+          "width": 845.9844360351562,
+          "height": 1133.03125
+        },
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8383,
+          "b": 0.0225,
+          "ax": 0.4657,
+          "aspect": 0.7467,
+          "anchor": "head"
+        },
+        "headCenterX": 638.7925379306964,
+        "stageCenterX": 640,
+        "offsetPixels": -1.207462069303574,
+        "offsetStageFraction": -0.0009433297416434172,
+        "contentTop": 55.17107499999986,
+        "stageTop": 0,
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      {
+        "face": "serious",
+        "src": "img/sprites/characters/rin/chr_rin_serious.webp",
+        "position": "center",
+        "image": {
+          "x": 246.02508544921875,
+          "y": -102.546875,
+          "width": 845.9844360351562,
+          "height": 1133.03125
+        },
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8383,
+          "b": 0.0225,
+          "ax": 0.4657,
+          "aspect": 0.7467,
+          "anchor": "head"
+        },
+        "headCenterX": 635.5088638902881,
+        "stageCenterX": 640,
+        "offsetPixels": -4.491136109711874,
+        "offsetStageFraction": -0.0035087000857124016,
+        "contentTop": 55.17107499999986,
+        "stageTop": 0,
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      {
+        "face": "surprise",
+        "src": "img/sprites/characters/rin/chr_rin_surprise.webp",
+        "position": "center",
+        "image": {
+          "x": 246.02508544921875,
+          "y": -102.546875,
+          "width": 845.9844360351562,
+          "height": 1133.03125
+        },
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8383,
+          "b": 0.0225,
+          "ax": 0.4657,
+          "aspect": 0.7467,
+          "anchor": "head"
+        },
+        "headCenterX": 638.9273548223298,
+        "stageCenterX": 640,
+        "offsetPixels": -1.0726451776702106,
+        "offsetStageFraction": -0.000838004045054852,
+        "contentTop": 55.17107499999986,
+        "stageTop": 0,
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      {
+        "face": "sad",
+        "src": "img/sprites/characters/rin/chr_rin_sad.webp",
+        "position": "center",
+        "image": {
+          "x": 246.02508544921875,
+          "y": -102.546875,
+          "width": 845.9844360351562,
+          "height": 1133.03125
+        },
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8383,
+          "b": 0.0225,
+          "ax": 0.4657,
+          "aspect": 0.7467,
+          "anchor": "head"
+        },
+        "headCenterX": 627.4037926444998,
+        "stageCenterX": 640,
+        "offsetPixels": -12.596207355500155,
+        "offsetStageFraction": -0.009840786996484496,
+        "contentTop": 55.17107499999986,
+        "stageTop": 0,
+        "viewport": {
+          "width": 1280,
+          "height": 720
+        }
+      },
+      {
+        "face": "normal",
+        "src": "img/sprites/characters/rin/chr_rin_normal.webp",
+        "position": "center",
+        "image": {
+          "x": 113.59439086914062,
+          "y": 426.4334411621094,
+          "width": 390.60687255859375,
+          "height": 523.1417236328125
+        },
+        "stage": {
+          "x": 0,
+          "y": 473.78125,
+          "width": 591,
+          "height": 332.4375
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8383,
+          "b": 0.0225,
+          "ax": 0.4657,
+          "aspect": 0.7467,
+          "anchor": "head"
+        },
+        "headCenterX": 295.512568751696,
+        "stageCenterX": 295.5,
+        "offsetPixels": 0.012568751695994251,
+        "offsetStageFraction": 2.126692334347589e-05,
+        "contentTop": 499.25476909179685,
+        "stageTop": 473.78125,
+        "viewport": {
+          "width": 591,
+          "height": 1280
+        }
+      },
+      {
+        "face": "smile",
+        "src": "img/sprites/characters/rin/chr_rin_smile.webp",
+        "position": "center",
+        "image": {
+          "x": 113.59439086914062,
+          "y": 426.4334411621094,
+          "width": 390.60687255859375,
+          "height": 523.1417236328125
+        },
+        "stage": {
+          "x": 0,
+          "y": 473.78125,
+          "width": 591,
+          "height": 332.4375
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8383,
+          "b": 0.0225,
+          "ax": 0.4657,
+          "aspect": 0.7467,
+          "anchor": "head"
+        },
+        "headCenterX": 294.9424863206515,
+        "stageCenterX": 295.5,
+        "offsetPixels": -0.5575136793485171,
+        "offsetStageFraction": -0.0009433395589653421,
+        "contentTop": 499.25476909179685,
+        "stageTop": 473.78125,
+        "viewport": {
+          "width": 591,
+          "height": 1280
+        }
+      },
+      {
+        "face": "serious",
+        "src": "img/sprites/characters/rin/chr_rin_serious.webp",
+        "position": "center",
+        "image": {
+          "x": 113.59439086914062,
+          "y": 426.4334411621094,
+          "width": 390.60687255859375,
+          "height": 523.1417236328125
+        },
+        "stage": {
+          "x": 0,
+          "y": 473.78125,
+          "width": 591,
+          "height": 332.4375
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8383,
+          "b": 0.0225,
+          "ax": 0.4657,
+          "aspect": 0.7467,
+          "anchor": "head"
+        },
+        "headCenterX": 293.42635246192833,
+        "stageCenterX": 295.5,
+        "offsetPixels": -2.0736475380716684,
+        "offsetStageFraction": -0.0035087098782938552,
+        "contentTop": 499.25476909179685,
+        "stageTop": 473.78125,
+        "viewport": {
+          "width": 591,
+          "height": 1280
+        }
+      },
+      {
+        "face": "surprise",
+        "src": "img/sprites/characters/rin/chr_rin_surprise.webp",
+        "position": "center",
+        "image": {
+          "x": 113.59439086914062,
+          "y": 426.4334411621094,
+          "width": 390.60687255859375,
+          "height": 523.1417236328125
+        },
+        "stage": {
+          "x": 0,
+          "y": 473.78125,
+          "width": 591,
+          "height": 332.4375
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8383,
+          "b": 0.0225,
+          "ax": 0.4657,
+          "aspect": 0.7467,
+          "anchor": "head"
+        },
+        "headCenterX": 295.004733806735,
+        "stageCenterX": 295.5,
+        "offsetPixels": -0.4952661932650244,
+        "offsetStageFraction": -0.0008380138633925963,
+        "contentTop": 499.25476909179685,
+        "stageTop": 473.78125,
+        "viewport": {
+          "width": 591,
+          "height": 1280
+        }
+      },
+      {
+        "face": "sad",
+        "src": "img/sprites/characters/rin/chr_rin_sad.webp",
+        "position": "center",
+        "image": {
+          "x": 113.59439086914062,
+          "y": 426.4334411621094,
+          "width": 390.60687255859375,
+          "height": 523.1417236328125
+        },
+        "stage": {
+          "x": 0,
+          "y": 473.78125,
+          "width": 591,
+          "height": 332.4375
+        },
+        "manifest": {
+          "faces": [
+            "normal",
+            "sad",
+            "serious",
+            "smile",
+            "surprise"
+          ],
+          "h": 0.8383,
+          "b": 0.0225,
+          "ax": 0.4657,
+          "aspect": 0.7467,
+          "anchor": "head"
+        },
+        "headCenterX": 289.6840891337524,
+        "stageCenterX": 295.5,
+        "offsetPixels": -5.815910866247577,
+        "offsetStageFraction": -0.009840796727999285,
+        "contentTop": 499.25476909179685,
+        "stageTop": 473.78125,
+        "viewport": {
+          "width": 591,
+          "height": 1280
+        }
+      }
+    ],
+    "errors": []
+  },
+  "centeringCheck": {
+    "scene": "lover_rin_lv3",
+    "smileOffsetBeforePhonePx": -43.98,
+    "smileOffsetAfterPhonePx": -0.56,
+    "maxAllFivePhoneOffsetPx": 5.82,
+    "perExpressionImageFrameIdentical": true,
+    "headClipping": false,
+    "browserErrors": 0,
+    "viewportSizes": [
+      [
+        1280,
+        720
+      ],
+      [
+        591,
+        1280
+      ]
+    ],
+    "toleranceStageFraction": 0.015
+  },
+  "ownerMainMergeAuthority": "マージして（2026-10-04）",
+  "regressionChecks": {
+    "portraitScale": "PASS: 15 scale values; rendered Sumi/Minto ratio 1.154 equals expected; other character framing unchanged",
+    "dialogueLint": "PASS: ERROR 0, WARN 254 (existing warning-level diagnostics)",
+    "legacyFullPlaythrough": "Attempted; stopped after prolonged retries in old seven-day route, without a completion result. A read-only main baseline advanced through the same tutorial/LIME/visit flow to day 5 under a 240s diagnostic limit. Not recorded as passing. No old game/UI logic changed. Current remake full playthrough is the relevant progression gate.",
+    "legacyScreenshots": "Not run after stopping the old long-running playthrough; no completion claimed",
+    "primaryProgressionGate": "remake/test/playthrough.mjs",
+    "centeringRegression": "PASS: remake/test/rin_portraits.mjs; pixels of actual WebP, all 5 expressions × PC/phone, offset < 1.5% stage width, same frames, no clipping or browser errors"
+  }
+}

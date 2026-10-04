@@ -1,8 +1,22 @@
+## 2026-10-04 凛の腰の張り出し・中央配置の修正とmainへのマージ
+
+| ID | 状態 | オーナー要望 |
+|---|---|---|
+| PRT43 | 5表情を修正・指定ブランチへ反映／比較資料を保存 | オーナー「凛の立ち絵、やっぱりくびれが出過ぎててそこは変かも」、続けて「くびれというか腰が横に出過ぎてて変」。最新の意図は腰が横へ突き出す体型・立ち姿の不自然さ。顔・髪・画風・衣装と5表情の意味を保ち、横への腰の張り出しを抑えて自然な骨盤・胸・脚の軸に直す |
+| PRT45 | 採用・マージ指示受領／PR経由でmainへ反映 | オーナー「マージして」。修正版5表情と実会話比較の提示後、凛v12の採用とmainへのマージを明示指示。以前のClaude側マージ担当だけを上書きし、Codexが検証後PRからmainへマージする。丸アイコン・台詞・設定資料の分担は保持 |
+| PRT44 | ✅ 中央配置を修正・全5表情の実会話確認済み | オーナー「配置した時ずれる　真ん中に行かない」。添付は凛の恋人イベント「……ん。……今の、データに記録しとく。『被験者、いい顔した』って」の笑顔。足元だけの整列に加え、実会話で上半身・顔が中央に来るか、全5表情・スマートフォン／PCで確認する |
+
+mainのPR #190〜192（634efcf）を先に取り込み、Claude側で完了した凛v11の丸アイコン・設定資料と全員96pxのアイコンを保持。mainのPRT39〜41を優先し、すみさんの分岐中のPRT39はPRT42へ整理した。すみさんの5表情・ましろの6表情は確認資料を保持。今回の修正も指定ブランチ `codex/rin-hair-texture-20261004` へ保存し、丸アイコン・台詞の表情・設定資料集はClaude側の分担を継続。mainへのマージは後続の明示指示PRT45でCodexへ変更した。
+
+[姿勢の修正前後](../.claude/skills/character-portrait-remaster/references/rin-v12-stance-comparison.png)、[5表情](../.claude/skills/character-portrait-remaster/references/rin-v12-five-review.png)、[添付と同じ場面・スマホの比較](../.claude/skills/character-portrait-remaster/references/rin-v12-game-before-after-591.png)、[生成元と実参照](../.claude/skills/character-portrait-remaster/references/rin-v12-generation.json)、[配置・検証](../.claude/skills/character-portrait-remaster/references/rin-v12-integration.json)、[Claude側の引き継ぎ](rin_portrait_handoff.md)。5枚は896×1200 RGBA、共通倍率0.7132667617689016、足元下端1173px、横差0.683px未満。凛だけspriteAnchor=headを設定し、通常の頭部中心を全表情の共通横基準に計測。スマホ笑顔の頭部中心ずれは約−43.98px→−0.56px、全5枚の最大5.82px。PC／スマホで同じ配置枠、頭の見切れなし、ブラウザエラー0。PNG／lossless WebPのRGBA画素と配布HTMLのPNGは一致。他キャラのmanifest・属性は維持。修正版の提示後にオーナー「マージして」で採用・mainへのPRマージを指示。PRT45に従い、mainへのマージはCodexが行う。
+
+---
+
 ## 2026-10-04 次のキャラ・すみさんの制作
 
 | ID | 状態 | オーナー要望 |
 |---|---|---|
-| PRT39 | 5表情の確認用を提示・保存 | オーナー「次のキャラへ」。保存済みの制作順からすみさん（sumi）へ進む。元の通常／笑顔／真剣／驚き／考えるの5枚と実画像のデザインを参照し、採用済みの共通画風で1キャラ分を制作して見せる。46歳・182cm、黒い帽子・四角い眼鏡・ひげ・黒シャツとパンツ・茶色の腰エプロン・黒い靴を保持する |
+| PRT42 | 5表情の確認用を提示・保存 | オーナー「次のキャラへ」。保存済みの制作順からすみさん（sumi）へ進む。元の通常／笑顔／真剣／驚き／考えるの5枚と実画像のデザインを参照し、採用済みの共通画風で1キャラ分を制作して見せる。46歳・182cm、黒い帽子・四角い眼鏡・ひげ・黒シャツとパンツ・茶色の腰エプロン・黒い靴を保持する |
 
 [5表情の全身と原寸の顔](../.claude/skills/character-portrait-remaster/references/sumi-five-review.png)、[生成元](../.claude/skills/character-portrait-remaster/references/sumi-v1-sheet.png)、[元画像と採用済み画風との比較](../.claude/skills/character-portrait-remaster/references/sumi-v1-style-comparison.png)、[プロンプト・実参照・SHA-256・配置記録](../.claude/skills/character-portrait-remaster/references/sumi-generation.json)を保存。通常＝両手をポケットへ、笑顔＝手のひらで歓迎、真剣＝指で説明、驚き＝小さく口を開いて胸元へ手、考える＝顎へ手を添える。5枚目は既存キー `thinking` の意味を保つ。
 生成前に全16グループ56画像と各代表の原寸を確認。みんと・つむぎの実PNGを主要画風参照、すみさんの通常・全5表情の原寸顔・考える元PNGを本人参照に使用。生成元1774×887 RGBAを無加工で保存し、完全透過の隙間で切り分け、共通倍率1.268957345971564で896×1200 RGBAへ配置。足元下端1175px・横差0.542px未満、生成元四辺／切り分け線に有効なアルファなし、alpha>=16の見切れなし。白／暗背景、同じ表示サイズの全身、原寸の顔・髪・布と2倍表示を比較。**5枚とも採用前の確認資料。** 保存先は `codex/sumi-portrait-remaster-20261004`。ゲーム用画像・アイコン・WebP・manifest・台詞・設定は変更していない。

@@ -36,8 +36,10 @@ ASSETS = ROOT / "assets"
 OUT = ROOT / "remake" / "data" / "manifest.json"
 
 
-def measure(png: Path):
-    """本体の bbox（画像比）と足元の重心x（画像比）を返す。"""
+def measure(png: Path, anchor="feet"):
+    """本体の bbox と横アンカー。通常は足元、指定時は頭部の重心を使う。"""
+    if anchor not in ("feet", "head"):
+        raise ValueError(f"Unknown spriteAnchor: {anchor}")
     im = Image.open(png).convert("RGBA")
     w, h = im.size
     if np is not None:
@@ -58,8 +60,9 @@ def measure(png: Path):
             mask = keep[labels]
         ys, xs = np.where(mask)
         x0, x1, y0, y1 = int(xs.min()), int(xs.max()) + 1, int(ys.min()), int(ys.max()) + 1
-        feet_top = y1 - max(1, int((y1 - y0) * 0.2))
-        _, fxs = np.where(mask[feet_top:y1])
+        band = max(1, int((y1 - y0) * 0.2))
+        anchor_top, anchor_bottom = (y0, y0 + band) if anchor == "head" else (y1 - band, y1)
+        _, fxs = np.where(mask[anchor_top:anchor_bottom])
         feet = float(fxs.mean()) if len(fxs) else (x0 + x1) / 2
     else:
         bbox = im.getbbox()
@@ -74,6 +77,8 @@ def portraits():
     """キャラごとに表情一覧と共通の framing 値（全表情で同じ＝表情を変えても絵が動かない）。"""
     out = {}
     base = ASSETS / "sprites" / "characters"
+    anchor_modes = {c["id"]: c.get("spriteAnchor", "feet")
+                    for c in json.loads((ROOT / "data" / "characters.json").read_text())}
     for d in sorted(p for p in base.iterdir() if p.is_dir()):
         faces, metrics = [], {}
         for png in sorted(d.glob(f"chr_{d.name}_*.png")):
@@ -81,7 +86,7 @@ def portraits():
             if not m:
                 continue
             faces.append(m.group(1))
-            r = measure(png)
+            r = measure(png, anchor=anchor_modes.get(d.name, "feet"))
             if r:
                 metrics[m.group(1)] = r
         if not faces:
@@ -94,9 +99,11 @@ def portraits():
             entry.update({
                 "h": round(bottom - top, 4),     # 本体の高さ（画像高さ比）
                 "b": round(1 - bottom, 4),       # 下端の余白（画像高さ比）
-                "ax": round(ref["ax"], 4),       # 足元の重心x（画像幅比）
+                "ax": round(ref["ax"], 4),       # normal の横アンカー（全表情共通）
                 "aspect": round(ref["aspect"], 4),
             })
+        if anchor_modes.get(d.name) == "head":
+            entry["anchor"] = "head"
         out[d.name] = entry
     return out
 
