@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-03 13:21 UTC",
+ "generated": "2026-10-04 02:49 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -56,15 +56,16 @@
   },
   "kafuka": {
    "faces": [
+    "excited",
     "normal",
     "serious",
     "smile",
     "surprise"
    ],
-   "h": 0.987,
-   "b": 0.0104,
-   "ax": 0.4855,
-   "aspect": 0.6667
+   "h": 0.7567,
+   "b": 0.0217,
+   "ax": 0.5003,
+   "aspect": 0.7467
   },
   "maezono": {
    "faces": [
@@ -157,9 +158,9 @@
     "smile",
     "surprise"
    ],
-   "h": 0.835,
-   "b": 0.0217,
-   "ax": 0.5544,
+   "h": 0.8367,
+   "b": 0.0225,
+   "ax": 0.5549,
    "aspect": 0.7467
   },
   "sumi": {
@@ -177,15 +178,16 @@
   },
   "tsumugi": {
    "faces": [
+    "evil",
     "normal",
     "sad",
     "serious",
     "smile",
     "surprise"
    ],
-   "h": 0.715,
-   "b": 0.02,
-   "ax": 0.5525,
+   "h": 0.7267,
+   "b": 0.0217,
+   "ax": 0.5005,
    "aspect": 0.7467
   }
  },
@@ -684,6 +686,7 @@
   "sprites/characters/hajime/chr_hajime_serious.png",
   "sprites/characters/hajime/chr_hajime_smile.png",
   "sprites/characters/hajime/chr_hajime_surprise.png",
+  "sprites/characters/kafuka/chr_kafuka_excited.png",
   "sprites/characters/kafuka/chr_kafuka_normal.png",
   "sprites/characters/kafuka/chr_kafuka_serious.png",
   "sprites/characters/kafuka/chr_kafuka_smile.png",
@@ -733,6 +736,7 @@
   "sprites/characters/sumi/chr_sumi_smile.png",
   "sprites/characters/sumi/chr_sumi_surprise.png",
   "sprites/characters/sumi/chr_sumi_thinking.png",
+  "sprites/characters/tsumugi/chr_tsumugi_evil.png",
   "sprites/characters/tsumugi/chr_tsumugi_normal.png",
   "sprites/characters/tsumugi/chr_tsumugi_sad.png",
   "sprites/characters/tsumugi/chr_tsumugi_serious.png",

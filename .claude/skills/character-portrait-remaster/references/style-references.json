@@ -123,8 +123,8 @@
     {
       "id": "tsumugi-v1",
       "title": "つむぎ 基本5差分 v1",
-      "status": "pending",
-      "role": "直近の制作例・採用確認待ち",
+      "status": "approved",
+      "role": "採用済み生成元・画質と質感の参照",
       "sourceCommit": "cd76b8cf640bca11bf3b6afe2420484823247505",
       "images": [
         {
@@ -132,19 +132,243 @@
           "path": "tsumugi-v1-sheet.png",
           "sha256": "08bea5a17305277d65e6cc48297259a5456c1cffac760c9bb2fb3ff0da649f7a"
         }
-      ]
+      ],
+      "approval": "2026-10-03: 保存済み6枚の採用・組み込み確認にオーナー「はい」"
     },
     {
       "id": "tsumugi-yami-v2",
       "title": "つむぎ 病み可愛い追加差分 v2",
-      "status": "pending",
-      "role": "直近の制作例・採用確認待ち",
+      "status": "approved",
+      "role": "採用済み生成元・画質と質感の参照",
       "sourceCommit": "cd76b8cf640bca11bf3b6afe2420484823247505",
       "images": [
         {
           "label": "虚ろな目・ハイライトなし・小さな無表情の口",
           "path": "tsumugi-yami-v2.png",
           "sha256": "d6e8ee73b339acfb23ff01cb89a812253f3f8fbd480d7370d5daf1ad7df885fe"
+        }
+      ],
+      "approval": "2026-10-03: 保存済み6枚の採用・組み込み確認にオーナー「はい」"
+    },
+    {
+      "id": "tsumugi-game-v1",
+      "title": "つむぎ 採用済みゲーム用6差分",
+      "status": "approved",
+      "role": "画質・質感とゲーム内表示の基準",
+      "sourceBranch": "codex/tsumugi-portrait-remaster-20261003",
+      "approval": "2026-10-03: オーナー「はい」",
+      "images": [
+        {
+          "label": "通常",
+          "expression": "normal",
+          "path": "../../../../assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        },
+        {
+          "label": "笑顔",
+          "expression": "smile",
+          "path": "../../../../assets/sprites/characters/tsumugi/chr_tsumugi_smile.png",
+          "sha256": "952ba0b09909936641b6c9a138c312852c8990ae5b82c879866bee64bf49203f"
+        },
+        {
+          "label": "真剣",
+          "expression": "serious",
+          "path": "../../../../assets/sprites/characters/tsumugi/chr_tsumugi_serious.png",
+          "sha256": "6b9daaf0ee59aae1b56c625e8c12b1b539738c8533e6af5205a4d600f8dd0d75"
+        },
+        {
+          "label": "驚き",
+          "expression": "surprise",
+          "path": "../../../../assets/sprites/characters/tsumugi/chr_tsumugi_surprise.png",
+          "sha256": "4945c68cd9b6f465ddbbd7e1a6f92b9d9d81b4723db0a8a82ab6efe6dc562f6a"
+        },
+        {
+          "label": "悲しみ",
+          "expression": "sad",
+          "path": "../../../../assets/sprites/characters/tsumugi/chr_tsumugi_sad.png",
+          "sha256": "ca93874e7e114a1a52194b227033cd8821ebd93c421d62a5bbe0e9ed1a051087"
+        },
+        {
+          "label": "病み可愛い",
+          "expression": "evil",
+          "path": "../../../../assets/sprites/characters/tsumugi/chr_tsumugi_evil.png",
+          "sha256": "ec97dc3373eccff61088f0760d54404fa79596c8b404d5d5d089fefd388840e8"
+        }
+      ]
+    },
+    {
+      "id": "kafuka-v2",
+      "title": "サメちゃん 基本4差分 v2",
+      "status": "approved",
+      "role": "採用済み生成元・画質と質感の参照",
+      "sourceBranch": "codex/tsumugi-portrait-remaster-20261003",
+      "images": [
+        {
+          "label": "通常／笑顔／真剣／驚き",
+          "path": "kafuka-v2-sheet.png",
+          "sha256": "0eb46541c420ec71c4781ad54eac769652683550e123c9f8fe15c9d534748e4b"
+        }
+      ],
+      "note": "2026-10-03 オーナー「はい」で基本4表情v2を採用。原寸で分離しゲーム用4枚へ組み込み。追加5枚目は別に採用確認。",
+      "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187"
+    },
+    {
+      "id": "kafuka-game-v2",
+      "title": "サメちゃん 採用済みゲーム用5表情",
+      "status": "approved",
+      "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187",
+      "note": "採用済みシートの本体と透過輪郭を分離。全表情を原寸1:1で896×1200へ配置し足元を統一。",
+      "images": [
+        {
+          "label": "通常",
+          "expression": "normal",
+          "path": "../../../../assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+          "sha256": "58af955b5b8ed62169d32f267e33221dc4738746f3dbe6fd729f6c8855817277"
+        },
+        {
+          "label": "笑顔",
+          "expression": "smile",
+          "path": "../../../../assets/sprites/characters/kafuka/chr_kafuka_smile.png",
+          "sha256": "d07efdbc5af7c8ddf6e9e1b2188caeb94718720fdb1825c98e1e6dd8c2e8040c"
+        },
+        {
+          "label": "真剣",
+          "expression": "serious",
+          "path": "../../../../assets/sprites/characters/kafuka/chr_kafuka_serious.png",
+          "sha256": "2a50ac21ca5ece8f2c4c666d30d625e2bb84bdb8e3bd51c3cd8ad5cb7fdf3262"
+        },
+        {
+          "label": "驚き",
+          "expression": "surprise",
+          "path": "../../../../assets/sprites/characters/kafuka/chr_kafuka_surprise.png",
+          "sha256": "9e8f146bce256d2128f4b5dc4c4d3cc0b09a4d24e0f93b5422a44fa1de04ea62"
+        },
+        {
+          "label": "息を弾ませてサメ語り",
+          "expression": "excited",
+          "path": "../../../../assets/sprites/characters/kafuka/chr_kafuka_excited.png",
+          "sha256": "0499b48c271dc776d25dfaa40b64370ae829c88114d237e21dcae2543fc981c2"
+        }
+      ],
+      "approval": "2026-10-04: オーナー「全て完了したらマージ」。サメちゃん追加v3の5枚目を制作・採用・組み込み、検証後のマージを指示。"
+    },
+    {
+      "id": "kafuka-excited-v3",
+      "title": "サメちゃん 追加5表情目・可愛く息切れする熱弁 v3",
+      "status": "approved",
+      "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187",
+      "note": "オーナー「もっと大げさでコミカルにする」を反映。大きな星の瞳・開いたギザ歯の口・赤面と汗・前のめりと強く抱えるぬいぐるみ。採用確認待ち。v1は旧案として生成記録に保存し、画風基準へ加えない。",
+      "images": [
+        {
+          "label": "生成元・可愛く息切れしながら熱弁",
+          "expression": "excited",
+          "path": "kafuka-excited-v3.png",
+          "sha256": "4dedda89c2ac559015366b4ef12aa4e20d47fc0ff643dc0543e6dbdfc1e810bd"
+        },
+        {
+          "label": "基本4枚と全身高を揃えた確認用",
+          "expression": "excited",
+          "path": "kafuka-excited-v3-preview.png",
+          "sha256": "28ca4634e2ab3a8b7346ac1de83bdaac650c5a831de4723aa7cf5bcbc4f8472a"
+        }
+      ],
+      "ownerRequest": "さめちゃんは5枚目はちょっとオーバーすぎ　可愛さも残しつつ大袈裟なのがいい　あもはぁはぁ息切らしながら語ってる感じ",
+      "approval": "2026-10-04: 直前の凛v7・サメちゃん追加v3の採用確認に対してオーナー「全て完了したらマージ」。制作・組み込み・検証・マージを承認。",
+      "role": "採用済み生成元・画質と質感の参照"
+    },
+    {
+      "id": "rin-redesign-v7",
+      "title": "凛・少し年上の半目とクールな微笑み v7",
+      "status": "approved",
+      "role": "採用済み生成元・画質と質感の参照",
+      "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187",
+      "note": "胸元の試香紙を除去し、少し青みがある暗い髪へ戻す。写真3の大きな虹彩・上／下まぶた・まつ毛を参照した半目、短めのロング、女性らしい体格。過去の旧案は生成記録へ保持し、採用基準へ加えない。",
+      "images": [
+        {
+          "label": "生成元・通常表情の最新デザイン",
+          "expression": "normal",
+          "path": "rin-redesign-v7.png",
+          "sha256": "8fde84eec1f47610eb054cbf46b89ac65179d531adba16a27a3addbe8a1cb860"
+        },
+        {
+          "label": "旧凛と全身高を揃えた確認用",
+          "expression": "normal",
+          "path": "rin-redesign-v7-preview.png",
+          "sha256": "4898d4da83922274af08fb8b86d69d15afd8589b3776a790227731df45c5e6be"
+        }
+      ],
+      "ownerRequest": "凛はもう少しだけ年上に見せたい　主人公たちよりも　あと目をもうちょっとだけ細めて　あと口元も参考一枚目みたいな　基本クールに微笑む系　ギャップが可愛いの一枚あってもいいけど",
+      "approval": "2026-10-04: 直前の凛v7・サメちゃん追加v3の採用確認に対してオーナー「全て完了したらマージ」。制作・組み込み・検証・マージを承認。"
+    },
+    {
+      "id": "rin-expressions-v1",
+      "title": "凛 新デザイン追加4表情の生成元 v1",
+      "status": "approved",
+      "role": "採用済み生成元・人物と画質の参照",
+      "approval": "2026-10-04: オーナー「全て完了したらマージ」。凛v7のデザインで5表情を制作・採用・組み込み、検証後のマージを指示。",
+      "images": [
+        {
+          "label": "目を閉じて頬に手を添える、可愛いギャップの笑顔",
+          "expression": "smile",
+          "path": "rin-expressions-v1-smile.png",
+          "sha256": "3a6982bc4727ca969559ddd317a5814502901449b0697241bf12bd0a8712397f"
+        },
+        {
+          "label": "指で説明する真剣な表情",
+          "expression": "serious",
+          "path": "rin-expressions-v1-serious.png",
+          "sha256": "c245c573d52b7dfcf913d88e4854c26ea31af723cc861abdd03f43f4f79e4eab"
+        },
+        {
+          "label": "胸元に手を添える控えめな驚き",
+          "expression": "surprise",
+          "path": "rin-expressions-v1-surprise.png",
+          "sha256": "4989691ae8e0812831c851291d22b37bc3aec086afefa2e3633f3ca96fc9a708"
+        },
+        {
+          "label": "袖を軽く握る静かな悲しみ",
+          "expression": "sad",
+          "path": "rin-expressions-v1-sad.png",
+          "sha256": "855777d5486e079b1da37ed4e4c09104e4a2fea408fb870a365ad6612694bed8"
+        }
+      ]
+    },
+    {
+      "id": "rin-game-v1",
+      "title": "凛 採用済みゲーム用5表情",
+      "status": "approved",
+      "role": "画質・質感とゲーム内表示の基準",
+      "approval": "2026-10-04: オーナー「全て完了したらマージ」。凛v7のデザインで5表情を制作・採用・組み込み、検証後のマージを指示。",
+      "images": [
+        {
+          "label": "クールな微笑み",
+          "expression": "normal",
+          "path": "../../../../assets/sprites/characters/rin/chr_rin_normal.png",
+          "sha256": "48ea068760774eb000e04325dc85c11107b54cae74bf981d055b98529d38bf12"
+        },
+        {
+          "label": "目を閉じて頬に手を添える、可愛いギャップの笑顔",
+          "expression": "smile",
+          "path": "../../../../assets/sprites/characters/rin/chr_rin_smile.png",
+          "sha256": "a4065f0d74c6c52135120dfa5b93c9ec90ad1003273cbfe41f96098310897b88"
+        },
+        {
+          "label": "指で説明する真剣な表情",
+          "expression": "serious",
+          "path": "../../../../assets/sprites/characters/rin/chr_rin_serious.png",
+          "sha256": "6e2d7b7dfe14ff72ea416cbe3735f75b870360cc5b60a5f5cce369c858d49440"
+        },
+        {
+          "label": "胸元に手を添える控えめな驚き",
+          "expression": "surprise",
+          "path": "../../../../assets/sprites/characters/rin/chr_rin_surprise.png",
+          "sha256": "a59ec4e9d200f0f7643d34d21b5aaae897c3e39a2f280c5248a6eccbb2718293"
+        },
+        {
+          "label": "袖を軽く握る静かな悲しみ",
+          "expression": "sad",
+          "path": "../../../../assets/sprites/characters/rin/chr_rin_sad.png",
+          "sha256": "af21eb95da8781874404ef900e42d3bc9cdc881b6c85de9c96fb7512483f3d0c"
         }
       ]
     }

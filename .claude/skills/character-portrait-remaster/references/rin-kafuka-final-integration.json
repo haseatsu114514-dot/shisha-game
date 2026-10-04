@@ -1,0 +1,593 @@
+{
+  "rin": {
+    "canvas": [
+      896,
+      1200
+    ],
+    "commonScale": 0.6640106241699867,
+    "oldFeetX": 496.71312,
+    "poses": [
+      {
+        "face": "normal",
+        "source": "rin-redesign-v7.png",
+        "sourceSize": [
+          1024,
+          1536
+        ],
+        "scale": 0.6640106241699867,
+        "placement": [
+          70,
+          166
+        ],
+        "bbox": [
+          266,
+          173,
+          638,
+          1173
+        ],
+        "feetX": 497.1512883842666
+      },
+      {
+        "face": "smile",
+        "source": "rin-expressions-v1-smile.png",
+        "sourceSize": [
+          1024,
+          1536
+        ],
+        "scale": 0.6640106241699867,
+        "placement": [
+          68,
+          164
+        ],
+        "bbox": [
+          266,
+          171,
+          637,
+          1173
+        ],
+        "feetX": 496.3914858096828
+      },
+      {
+        "face": "serious",
+        "source": "rin-expressions-v1-serious.png",
+        "sourceSize": [
+          1024,
+          1536
+        ],
+        "scale": 0.6640106241699867,
+        "placement": [
+          68,
+          166
+        ],
+        "bbox": [
+          225,
+          173,
+          638,
+          1173
+        ],
+        "feetX": 496.35932699341623
+      },
+      {
+        "face": "surprise",
+        "source": "rin-expressions-v1-surprise.png",
+        "sourceSize": [
+          1024,
+          1536
+        ],
+        "scale": 0.6640106241699867,
+        "placement": [
+          69,
+          163
+        ],
+        "bbox": [
+          260,
+          169,
+          641,
+          1173
+        ],
+        "feetX": 497.20761082492925
+      },
+      {
+        "face": "sad",
+        "source": "rin-expressions-v1-sad.png",
+        "sourceSize": [
+          1024,
+          1536
+        ],
+        "scale": 0.6640106241699867,
+        "placement": [
+          65,
+          164
+        ],
+        "bbox": [
+          272,
+          171,
+          638,
+          1173
+        ],
+        "feetX": 497.212023914969
+      }
+    ]
+  },
+  "kafuka": {
+    "source": "kafuka-excited-v3.png",
+    "preparedPreview": "kafuka-excited-v3-preview.png",
+    "canvas": [
+      896,
+      1200
+    ],
+    "placement": [
+      0,
+      0
+    ],
+    "bbox": [
+      273,
+      267,
+      692,
+      1174
+    ],
+    "feetX": 447.7441789681936,
+    "normalFeetX": 448.3085318283675,
+    "bodyHeight": 907,
+    "feetSpread": 0.7130522572286964
+  },
+  "alphaPolicy": "Common whole-image resize and direct RGBA placement only; no face paint, no global alpha threshold; alpha>=16 is not clipped.",
+  "ownerInstruction": {
+    "date": "2026-10-04",
+    "text": "全て完了したらマージ",
+    "scope": "凛5表情、サメちゃん追加v3を採用して制作・組み込み・検証後にPR #187をマージ"
+  },
+  "verification": {
+    "comparisonCommit": "f95a3bb504205ecf03c92eaf102176aa652e87a6",
+    "catalog": {
+      "groups": 12,
+      "images": 42,
+      "approved": 12,
+      "pending": 0,
+      "initialApproved15Unchanged": true
+    },
+    "assets": {
+      "rin": {
+        "faces": [
+          {
+            "face": "normal",
+            "pngSha256": "48ea068760774eb000e04325dc85c11107b54cae74bf981d055b98529d38bf12",
+            "webpSha256": "7a398054d9110731f71e96e205e3fcf7738f8af6d7f5b115b6bcee44f023eb0a",
+            "pngBytes": 419790,
+            "webpBytes": 265366,
+            "bbox": [
+              266,
+              173,
+              638,
+              1173
+            ],
+            "feetX": 497.1512883842666,
+            "alpha64to240": 5365
+          },
+          {
+            "face": "smile",
+            "pngSha256": "a4065f0d74c6c52135120dfa5b93c9ec90ad1003273cbfe41f96098310897b88",
+            "webpSha256": "c639fe00e75ec264e0667db2354d803b3ff891446ce4cfae00e327b36fe22529",
+            "pngBytes": 420056,
+            "webpBytes": 266130,
+            "bbox": [
+              266,
+              171,
+              637,
+              1173
+            ],
+            "feetX": 496.3914858096828,
+            "alpha64to240": 5149
+          },
+          {
+            "face": "serious",
+            "pngSha256": "6e2d7b7dfe14ff72ea416cbe3735f75b870360cc5b60a5f5cce369c858d49440",
+            "webpSha256": "2cab6c5b533c1be300f0c847eece7dbba0c0f8954df0908899617622ce41994d",
+            "pngBytes": 428442,
+            "webpBytes": 269402,
+            "bbox": [
+              225,
+              173,
+              638,
+              1173
+            ],
+            "feetX": 496.35932699341623,
+            "alpha64to240": 5105
+          },
+          {
+            "face": "surprise",
+            "pngSha256": "a59ec4e9d200f0f7643d34d21b5aaae897c3e39a2f280c5248a6eccbb2718293",
+            "webpSha256": "bff7d11b31c1bd40f7508df2a3e5ec7050b90dfaeb4bae6e28ec372f4410e9b2",
+            "pngBytes": 430010,
+            "webpBytes": 271972,
+            "bbox": [
+              260,
+              169,
+              641,
+              1173
+            ],
+            "feetX": 497.20761082492925,
+            "alpha64to240": 5440
+          },
+          {
+            "face": "sad",
+            "pngSha256": "af21eb95da8781874404ef900e42d3bc9cdc881b6c85de9c96fb7512483f3d0c",
+            "webpSha256": "09bd5337de0251e6b3c2f046f94838b897c6c365d49f0860ed77c65c7d7ebbcd",
+            "pngBytes": 410490,
+            "webpBytes": 258530,
+            "bbox": [
+              272,
+              171,
+              638,
+              1173
+            ],
+            "feetX": 497.212023914969,
+            "alpha64to240": 5087
+          }
+        ],
+        "feetSpread": 0.8526969215527629,
+        "feetBottom": 1173,
+        "webpBytes": 1331400
+      },
+      "kafuka": {
+        "faces": [
+          {
+            "face": "normal",
+            "pngSha256": "58af955b5b8ed62169d32f267e33221dc4738746f3dbe6fd729f6c8855817277",
+            "webpSha256": "2073ff1102537fb11a360e62687ade00153f14ebe0eea3f0d35d4ff839f5deb0",
+            "pngBytes": 476599,
+            "webpBytes": 342668,
+            "bbox": [
+              273,
+              267,
+              673,
+              1174
+            ],
+            "feetX": 448.3085318283675,
+            "alpha64to240": 4550
+          },
+          {
+            "face": "smile",
+            "pngSha256": "d07efdbc5af7c8ddf6e9e1b2188caeb94718720fdb1825c98e1e6dd8c2e8040c",
+            "webpSha256": "8f601bdc56e942e52fcac3d7fbc2a1648e5bc1c1daedccef4de43cb4976838ce",
+            "pngBytes": 465550,
+            "webpBytes": 333954,
+            "bbox": [
+              283,
+              266,
+              656,
+              1174
+            ],
+            "feetX": 447.7653585370865,
+            "alpha64to240": 4583
+          },
+          {
+            "face": "serious",
+            "pngSha256": "2a50ac21ca5ece8f2c4c666d30d625e2bb84bdb8e3bd51c3cd8ad5cb7fdf3262",
+            "webpSha256": "8fecb75eb31af771493e11f13246582a880c759a80c84328fc33fb311281697a",
+            "pngBytes": 464296,
+            "webpBytes": 332976,
+            "bbox": [
+              281,
+              266,
+              645,
+              1174
+            ],
+            "feetX": 448.09889657444006,
+            "alpha64to240": 4389
+          },
+          {
+            "face": "surprise",
+            "pngSha256": "9e8f146bce256d2128f4b5dc4c4d3cc0b09a4d24e0f93b5422a44fa1de04ea62",
+            "webpSha256": "03f11e7c77c2759a50c0f511e7145e300aecb80a22a30af605c8e6cf653e7012",
+            "pngBytes": 460748,
+            "webpBytes": 331124,
+            "bbox": [
+              285,
+              266,
+              640,
+              1174
+            ],
+            "feetX": 447.5954795711388,
+            "alpha64to240": 4636
+          },
+          {
+            "face": "excited",
+            "pngSha256": "0499b48c271dc776d25dfaa40b64370ae829c88114d237e21dcae2543fc981c2",
+            "webpSha256": "2c485386ca680882a8b2ed2117b67e9ae4cbf15c179e1c0b0820f3e678bd6c24",
+            "pngBytes": 510304,
+            "webpBytes": 364870,
+            "bbox": [
+              273,
+              267,
+              692,
+              1174
+            ],
+            "feetX": 447.7441789681936,
+            "alpha64to240": 3610
+          }
+        ],
+        "feetSpread": 0.7130522572286964,
+        "feetBottom": 1174,
+        "webpBytes": 1705592
+      },
+      "tsumugi": {
+        "faces": [
+          {
+            "face": "normal",
+            "pngSha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6",
+            "webpSha256": "4627857401b6ef7fe2b5b077188cec93914c770e880746066b73d02d1f82529e",
+            "pngBytes": 304222,
+            "webpBytes": 204520,
+            "bbox": [
+              319,
+              305,
+              559,
+              1174
+            ],
+            "feetX": 448.46173973717873,
+            "alpha64to240": 4061
+          },
+          {
+            "face": "smile",
+            "pngSha256": "952ba0b09909936641b6c9a138c312852c8990ae5b82c879866bee64bf49203f",
+            "webpSha256": "b428c0f9a21f156b94f7816551076c45a846e10229adb15c8621e339d4f9e966",
+            "pngBytes": 311938,
+            "webpBytes": 208338,
+            "bbox": [
+              301,
+              302,
+              545,
+              1174
+            ],
+            "feetX": 447.5671056167697,
+            "alpha64to240": 4179
+          },
+          {
+            "face": "serious",
+            "pngSha256": "6b9daaf0ee59aae1b56c625e8c12b1b539738c8533e6af5205a4d600f8dd0d75",
+            "webpSha256": "40e0c7c29ce7c3294df292e3e4ae22bcddf2afbc26dae0d718634e46451338df",
+            "pngBytes": 317053,
+            "webpBytes": 213216,
+            "bbox": [
+              303,
+              310,
+              587,
+              1174
+            ],
+            "feetX": 447.63822584347025,
+            "alpha64to240": 4127
+          },
+          {
+            "face": "surprise",
+            "pngSha256": "4945c68cd9b6f465ddbbd7e1a6f92b9d9d81b4723db0a8a82ab6efe6dc562f6a",
+            "webpSha256": "328772cf6f2e3cab8db85380d3b98259a1e96ecb1142f8f6a031c10b92ca8b5f",
+            "pngBytes": 307590,
+            "webpBytes": 206500,
+            "bbox": [
+              323,
+              307,
+              576,
+              1174
+            ],
+            "feetX": 447.6821842691495,
+            "alpha64to240": 4168
+          },
+          {
+            "face": "sad",
+            "pngSha256": "ca93874e7e114a1a52194b227033cd8821ebd93c421d62a5bbe0e9ed1a051087",
+            "webpSha256": "21f3b797abba02654c18622127efbb83b51d17bab5aaf7306f3cf334ca774246",
+            "pngBytes": 298480,
+            "webpBytes": 199736,
+            "bbox": [
+              318,
+              316,
+              555,
+              1174
+            ],
+            "feetX": 447.5991782698014,
+            "alpha64to240": 3999
+          },
+          {
+            "face": "evil",
+            "pngSha256": "ec97dc3373eccff61088f0760d54404fa79596c8b404d5d5d089fefd388840e8",
+            "webpSha256": "d0d93ad71ae7871709349f216139208dbb6f37f81ac68651c9392eb4b10eede5",
+            "pngBytes": 309581,
+            "webpBytes": 201882,
+            "bbox": [
+              311,
+              305,
+              556,
+              1174
+            ],
+            "feetX": 448.1767138193689,
+            "alpha64to240": 2752
+          }
+        ],
+        "feetSpread": 0.8946341204090231,
+        "feetBottom": 1174,
+        "webpBytes": 1234192
+      }
+    },
+    "mechanicalIntegration": {
+      "wholeImageResizeOnly": true,
+      "rinCommonScale": 0.6640106241699867,
+      "alphaPreserved": true,
+      "noFacePainting": true
+    },
+    "characterData": {
+      "onlyChangedFields": [
+        "rin.appearance",
+        "rin.visual_concepts"
+      ],
+      "appearance": "少し青みのある暗い髪のロングウルフ。厚めに流れる前髪と頬を包むレイヤー、胸下〜ウエスト上までの長さ。主人公たちより少し年上に見える落ち着いた顔立ち、とろんとした細めの半目、控えめでクールな微笑み。白シャツの袖まくり＋黒スラックス。胸元に試香紙は付けない。銀のフープピアス。ネイルは常に無色（商材の香りを邪魔しないため＝職業的な色気）。普段はコンタクトで、深夜の2階では黒縁眼鏡＝眼鏡の凛はルート進行者だけが見られる姿。低めの声でゆっくり喋り、笑うと目尻が緩むのを本人は少し気にしている。",
+      "visualConcepts": [
+        "27 year old japanese woman, very dark long wolf-cut hair with subtle slate-blue undertones ending below the bust and above the waist, thick sweeping bangs and cheek-hugging layers, mature languid half-lidded blue-gray eyes, a subtle cool smile, curvy adult figure, white shirt with rolled sleeves and a clean collar without paper scent strips, black slacks, silver hoop earrings, holding a clipboard, dim showroom shelves of unlabeled flavor tins, refined high-resolution fine pixel-art style",
+        "same woman at midnight, loose dark slate-blue long wolf-cut hair ending above the waist, black-framed glasses, leaning on a counter with a jar of coffee beans, blueberry shisha bowl beside her, neon glow leaking through black-filmed windows, relaxed private mood, refined high-resolution fine pixel-art style"
+      ],
+      "ageHeightSpriteScaleUnchanged": true
+    },
+    "dialogueData": {
+      "scene": "kafuka_shop_repeat_1",
+      "text": "スピルバーグのサメは、出ていない時もそこにおると思わせるじゃろう。あの――",
+      "onlyChangedField": "one existing line face: smile -> excited",
+      "textEventsUnlocksUnchanged": true
+    },
+    "manifest": {
+      "otherCharactersUnchanged": true,
+      "faces": {
+        "rin": [
+          "normal",
+          "sad",
+          "serious",
+          "smile",
+          "surprise"
+        ],
+        "kafuka": [
+          "excited",
+          "normal",
+          "serious",
+          "smile",
+          "surprise"
+        ],
+        "tsumugi": [
+          "evil",
+          "normal",
+          "sad",
+          "serious",
+          "smile",
+          "surprise"
+        ]
+      },
+      "onlyAddedWebp": "kafuka_excited"
+    },
+    "standalone": {
+      "bytes": 61830190,
+      "embeddedOriginalPngByteExact": [
+        "rin:5",
+        "kafuka:5"
+      ],
+      "trackedArtifact": "restored after local verification; Pages CI rebuilds from source"
+    },
+    "actualDialogueDisplay": {
+      "expressions": 16,
+      "framing": "identical within each character",
+      "headClipping": false,
+      "browserErrors": [],
+      "existingSharkDialogue": {
+        "id": "kafuka_shop_repeat_1",
+        "lineIndex": 2,
+        "text": "スピルバーグのサメは、出ていない時もそこにおると思わせるじゃろう。あの――",
+        "face": "excited"
+      },
+      "contentTop": {
+        "rin": 55.17815000000007,
+        "kafuka": 25.804199999999923,
+        "tsumugi": 143.29175625000005
+      }
+    },
+    "reviewBrowser": {
+      "metrics": {
+        "catalog": {
+          "groups": 12,
+          "images": 42,
+          "approved": 12,
+          "pending": 0,
+          "nativeAnd2xAllGroups": true
+        },
+        "rin-five-review.html": {
+          "imagesLoaded": true,
+          "whiteDark": true,
+          "mobileWidth": 390,
+          "nativeAnd2x": true
+        },
+        "kafuka-five-review.html": {
+          "imagesLoaded": true,
+          "whiteDark": true,
+          "mobileWidth": 390,
+          "nativeAnd2x": false
+        },
+        "rin-redesign-review.html": {
+          "imagesLoaded": true,
+          "whiteDark": true,
+          "mobileWidth": 390,
+          "nativeAnd2x": true
+        }
+      },
+      "errors": []
+    },
+    "anchorDryRun": {
+      "rin": 0,
+      "kafuka": 0
+    },
+    "legacyHeightRegression": "passed",
+    "targetedDialogueLint": {
+      "errors": 0,
+      "warnings": 46,
+      "warningsPreExisting": true
+    },
+    "chapter1Playthrough": {
+      "status": "passed",
+      "command": "CHROME_BIN=/usr/bin/chromium BASE_URL=http://127.0.0.1:8765/remake/ node remake/test/playthrough.mjs",
+      "attempts": 2,
+      "firstAttemptRank": 4,
+      "retryRank": 1,
+      "retryScore": 100,
+      "saveAndLoad": true,
+      "screenLeaksDuringVN": 0,
+      "resultUnderPhone": false
+    },
+    "fullDialogueLint": {
+      "files": 41,
+      "errors": 0,
+      "warnings": 254
+    }
+  },
+  "sourceMargins": {
+    "rin-redesign-v7.png": {
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alpha24BorderPixels": 0
+    },
+    "rin-expressions-v1-smile.png": {
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alpha24BorderPixels": 0
+    },
+    "rin-expressions-v1-serious.png": {
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alpha24BorderPixels": 0
+    },
+    "rin-expressions-v1-surprise.png": {
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alpha24BorderPixels": 0
+    },
+    "rin-expressions-v1-sad.png": {
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alpha24BorderPixels": 0
+    },
+    "kafuka-excited-v3.png": {
+      "dimensions": [
+        1024,
+        1536
+      ],
+      "alpha24BorderPixels": 0
+    }
+  },
+  "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187",
+  "mergePolicy": "Owner authorized merging after successful verification; PR history is the authoritative merge result.",
+  "verificationCompleted": "2026-10-04"
+}

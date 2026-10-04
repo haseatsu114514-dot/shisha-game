@@ -43,7 +43,9 @@ def encode(src: Path, rel: str) -> bytes:
     # 清書版の細かなドット・輪郭・アルファは、再ビルド時も可逆で保つ。
     if (rel.startswith("sprites/characters/kafuka/")
             or rel.startswith("sprites/characters/ageha/")
-            or rel.startswith("sprites/characters/minto/")):
+            or rel.startswith("sprites/characters/minto/")
+            or rel.startswith("sprites/characters/rin/")
+            or rel.startswith("sprites/characters/tsumugi/")):
         b = io.BytesIO()
         im.save(b, "WEBP", lossless=True, quality=100, method=6, exact=True)
         return b.getvalue()
