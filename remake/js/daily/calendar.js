@@ -8,7 +8,8 @@ import { DB, bgUrl } from "../core/data.js";
 import { SE, playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
 import { glossaryPanel } from "../vn/glossary.js";
-import { initHud, showHud, updateHud, daysLeft, MAX_DAYS, setPhoneBadge } from "./hud.js";
+import { initHud, showHud, updateHud, daysLeft, setPhoneBadge } from "./hud.js";
+import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chooseSpot, interruptMap } from "./map.js";
 import { isRainy } from "./weather.js";
 import { spotById, visitRival, visitSpot, restAtHome, isClosed } from "./spots.js";
@@ -29,7 +30,7 @@ let onQuit = null;
 let queuedLimeSender = null;
 
 /**
- * 日常パートを DAY1〜MAX_DAYS まで回す。大会当日の朝の手前で返る。
+ * 日常パートを DAY1〜13 まで回す。DAY14の大会当日の朝の手前で返る。
  * @param def.nightEvents { [day]: { pin, beat, run: async () => {} } }
  * @param def.onQuit タイトルへ戻る処理
  */
@@ -42,7 +43,7 @@ export async function runDaily(def) {
   initHud({ phone: phoneButton, status: openStatus, menu: openMenu });
   showHud(true);
   setPhoneBadge(hasUnread()); // つづきから再開したときも未読の赤丸を出す
-  while (state.day <= MAX_DAYS) {
+  while (state.day < TOURNAMENT_DAY) {
     if (!state.flags[`_morning_${state.day}`]) {
       state.flags[`_morning_${state.day}`] = true;
       await morning();
@@ -327,7 +328,7 @@ async function endDay() {
       hasAppointment: !!appointment && (appointment.day ?? state.day) === state.day, hadConfession: confessed, athome });
     await play(`remake_homecoming_${state.day % 3}`);
   }
-  if (next && next.teaser && state.day < MAX_DAYS) toast(`（明日、${next.teaser}で何かありそうな気がする）`, { ms: 2400 });
+  if (next && next.teaser && state.day + 1 < TOURNAMENT_DAY) toast(`（明日、${next.teaser}で何かありそうな気がする）`, { ms: 2400 });
   await bannersIdle();
   await advanceDay();
 }
@@ -341,7 +342,7 @@ async function advanceDay() {
     updateHud();
     setBg(bgUrl("bg_home", "day"), { instant: true }); // 朝は家で目を覚ます（前の夜の場面の絵を持ち越さない）
   }, 500);
-  if (!exhausted || state.day > MAX_DAYS) return;
+  if (!exhausted || state.day >= TOURNAMENT_DAY) return;
   state.flags._overwork = 0;
   const first = !state.flags._sick_once;
   state.flags._sick_once = true;
@@ -359,4 +360,3 @@ async function advanceDay() {
   }
   updateHud();
 }
-

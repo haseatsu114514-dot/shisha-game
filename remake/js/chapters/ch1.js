@@ -9,7 +9,8 @@ import { addMoney, maxStamina, gainStat, addStamina } from "../core/stats.js";
 import { playBgm, stopBgm, SE } from "../core/audio.js";
 import { play, hooks } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
-import { initHud, showHud, daysLeft, MAX_DAYS } from "../daily/hud.js";
+import { initHud, showHud, daysLeft } from "../daily/hud.js";
+import { TOURNAMENT_DAY } from "../core/rules.js";
 import { openPhone, morningMessages } from "../daily/phone.js";
 import { ownsFlavor, flavorStock, addFlavorStock, SHOP_FLAVORS } from "../daily/shop.js";
 import { radar } from "../daily/status.js";
@@ -131,9 +132,17 @@ const NIGHT_EVENTS = {
   9: { pin: "c_station", teaser: "C.STATION", beat: "夜。C.STATIONで出場者説明会──", ...once("_ev_meet_rivals", nightScene("ch1_meet_rivals", BG("bg_c_station_night"))) },
   10: { pin: "tonari", teaser: "tonari", beat: "帰り道、tonariに寄っていく──", ...once("_ev_salaryman_change", nightScene("ch1_salaryman_change", TONARI_N)) },
   12: { pin: "tonari", teaser: "tonari", beat: "閉店間際のtonari──", ...once("_ev_tsumugi_sketch", nightScene("ch1_tsumugi_sketch", TONARI_N)) },
-  13: { pin: "tonari", teaser: "tonari", beat: "夜。店の作業台で、前日リハーサル──", ...once("_ev_rehearsal", rehearsal) },
-  14: { pin: null, teaser: "", beat: "大会前夜──", ...once("_ev_last_night", nightScene("ch1_day7_last_night", BG("bg_home_night"))) },
+  [TOURNAMENT_DAY - 1]: { pin: "tonari", teaser: "tonari", beat: "夜。店の作業台で、前日リハーサル──",
+    done: () => flag("_ev_rehearsal") && flag("_ev_last_night"),
+    run: async () => {
+      if (!flag("_ev_rehearsal")) await once("_ev_rehearsal", rehearsal).run();
+      await lastNight();
+    } },
 };
+
+async function lastNight() {
+  if (!flag("_ev_last_night")) await once("_ev_last_night", nightScene("ch1_day7_last_night", BG("bg_home_night"))).run();
+}
 
 // 前日リハーサル: 本番と同じ工程を通す（コンセプトと審査は無し）。出来が本番の小ボーナスになる
 async function rehearsal() {
@@ -161,15 +170,17 @@ const STEPS_R1 = [["setup", "SETUP"], ["concept", "CONCEPT"], ["mix", "MIX"], ["
 const STEPS_ALL = [...STEPS_R1, ["pull", "PULL"], ["care", "CARE"], ["trial", "TRIAL"]];
 
 async function tournamentDay() {
+  // 旧セーブでDAY14の日常から再開しても、前夜の会話を落とさず大会へ進める。
+  if (state.phase !== "tournament") await lastNight();
   clearScreen();
   initHud({});
   if (state.phase !== "tournament") {
     state.phase = "tournament";
-    state.day = MAX_DAYS + 1;
+    state.day = TOURNAMENT_DAY;
     state.slot = 0;
     showHud(true);
     playBgm("daily_part");
-    await dayCard(`DAY ${MAX_DAYS + 1}`, "SMOKE CROWN CUP 当日");
+    await dayCard(`DAY ${TOURNAMENT_DAY}`, "SMOKE CROWN CUP 当日");
     const cheers = morningMessages({ tournamentDay: true });
     if (cheers.length) await openPhone(cheers, { time: "AM 7:40" });
     // 本番用フレーバーを仕入れていなければ、スミさんのお情け（強制購入はしない）

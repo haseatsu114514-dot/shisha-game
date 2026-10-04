@@ -1,4 +1,5 @@
 // 交友の締めくくり（好感度MAXイベント）・途中の恋愛／友情の質問・専用ハガルの贈呈（HF04〜HF06）。
+import { TOURNAMENT_DAY } from "../core/rules.js";
 // 文面の正本: data/dialogue/ch1_bonds.json（質問・締めくくり）、贈り物の性能: data/equipment.json（gift）、
 // 私的な約束の誘い: data/lime_messages.json（delivery: "bond_finale"・ここで日付つきに複製して届ける）。
 //
@@ -223,7 +224,7 @@ export function friendMessages({ tournamentDay = false } = {}) {
   const gap = cfg.gapDays || 4;
   const all = friendSent();
   if (state.day - lastDay(all) < (cfg.globalGapDays || 2)) return [];
-  const inviteOk = state.day < 14 && !state.pendingInvite
+  const inviteOk = state.day < TOURNAMENT_DAY && !state.pendingInvite
     && state.day - lastDay(all.filter((i) => i.msg?.type === "invitation")) >= (cfg.inviteGapDays || 6);
   const out = [];
   const due = Object.keys(BOND_FINALES)
@@ -239,7 +240,7 @@ export function friendMessages({ tournamentDay = false } = {}) {
     const chats = sent.filter((i) => i.msg.type === "chat").length;
     const chat = f.chats?.length ? { id: `${FRIEND_PREFIX}chat_${id}_d${state.day}`, sender: id, type: "chat", friend: true,
       messages: f.chats[chats % f.chats.length].m.slice(), replies: f.chats[chats % f.chats.length].r } : null;
-    const invite = f.invite && state.day < 14 ? { id: `${FRIEND_PREFIX}inv_${id}_d${state.day}`, sender: id, type: "invitation", friend: true,
+    const invite = f.invite && state.day < TOURNAMENT_DAY ? { id: `${FRIEND_PREFIX}inv_${id}_d${state.day}`, sender: id, type: "invitation", friend: true,
       private_schedule: "holiday_or_after_close", accept_event: `friend_${id}`, accept_text: f.invite.accept_text,
       messages: f.invite.messages.slice(), decline_response: { text: f.invite.decline } } : null;
     const inviteTurn = inviteOk && sent.at(-1)?.msg?.type === "chat"; // 雑談→お誘い→雑談…（見送った回は雑談のまま次へ）
