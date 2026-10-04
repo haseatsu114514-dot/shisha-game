@@ -2,7 +2,7 @@
 """立ち絵から顔ドット絵アイコンを生成する。
 
 assets/sprites/characters/{id}/chr_{id}_normal.png の頭部を切り出し、
-96x96 に縮小 → 減色してドット絵風の顔アイコンにする。
+160x160 に縮小 → 256色に減色した顔アイコンにする。
 出力: assets/ui/face_icons/face_{id}.png
 （UIの好感度バナー・マップピン・LIME画面のアバターに使う）
 
@@ -21,8 +21,8 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 CHARS_DIR = REPO_ROOT / "assets" / "sprites" / "characters"
 OUT_DIR = REPO_ROOT / "assets" / "ui" / "face_icons"
 
-SIZE = 96          # ドット絵の解像度（2026-10-04 オーナー指定で48→96。48では拡大・高密度表示で目が潰れた）
-COLORS = 32        # パレット色数
+SIZE = 160         # 解像度（2026-10-04 オーナー指定で48→96→160。顔の切り抜きは元絵で約180〜240pxなので、これ以上は拡大になる）
+COLORS = 256       # パレット色数（32色では瞳の色・肌の階調が潰れた）
 
 # 頭部クロップの調整値。
 # 立ち絵（透過スプライト）は「頭部スライスの重心」を顔の中心とみなし、
@@ -91,10 +91,10 @@ def make_icon(char_id: str, src: Path) -> Image.Image | None:
         x0 = int(cx - side / 2)
         y0 = int(top - side * (HEADROOM - p["dy"]))
     crop = im.crop((x0, y0, x0 + side, y0 + side))
-    # 縮小 → 減色（αは別管理: quantizeで半透明が荒れるのを防ぐ）
+    # 縮小 → 減色（αは別管理: quantizeで半透明が荒れるのを防ぐ。輪郭は二値化せず滑らかに残す）
     size = p.get("size", SIZE)
     small = crop.resize((size, size), Image.LANCZOS)
-    alpha = small.getchannel("A").point(lambda a: 255 if a >= 128 else 0)
+    alpha = small.getchannel("A")
     rgb = small.convert("RGB").quantize(colors=COLORS, method=Image.MEDIANCUT)
     out = rgb.convert("RGBA")
     out.putalpha(alpha)
