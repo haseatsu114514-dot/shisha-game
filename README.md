@@ -23,7 +23,9 @@ Run this once after cloning:
 ./tools/enable_git_hooks.sh
 ```
 
-This enables the repo-managed `pre-push` hook in `.githooks/`.
+This enables the repo-managed `pre-commit` / `pre-push` hooks in `.githooks/`
+and records this folder as the canonical checkout. Worktrees made from it
+(`git worktree add`) pass the checks too.
 
 ### Before creating a PR
 
@@ -35,14 +37,24 @@ Run:
 
 The check fails if:
 
-- the Git root is not the Godot project root
+- the folder is not the canonical checkout (or a worktree of it)
+- `project.godot` exists — the Godot version was deleted on 2026-06-15,
+  so such a folder is a stale copy
+- `data/`, `assets/` or `remake/` is missing
 - `origin/main` is missing or unrelated to the current branch
 - the working copy is pointed at the wrong repository by mistake
 
+It warns when the branch is behind `origin/main`.
+
 ### Workflow rules
 
-- Open the repository at the folder that contains `project.godot`.
-- Create feature branches from `origin/main`.
+- GitHub (`origin`) is the only source of truth. Do not leave work only
+  on a PC folder, in `outputs/`, in a stash, or in an image library.
+- Start each task with `git fetch origin` and a new branch from the latest
+  `origin/main`.
+- Commit and push to the work branch at every checkpoint. If a push is
+  blocked, stop and report instead of saving patch files locally.
+- Commit generated images/audio right away (`assets/` or `asset_sources/`).
 - Do not push directly to `main`.
 - Do not use `git push --force` on shared branches.
 - If `./tools/check_git_safety.sh` fails, stop and fix the Git layout first.

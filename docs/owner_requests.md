@@ -1,3 +1,28 @@
+## 2026-10-04 ルールの更新（能力アップの+Npt表示・Godot残骸の事故防止）
+
+| ID | 状態 | オーナー要望 |
+|---|---|---|
+| GUI19 | ✅ 本PR | オーナー「193は見せる方針にした　書き換えてルール」 → #193（GUI16）の能力アップ通知の実増加量 `+Npt` 表示に合わせ、「数値は見せない」の記述を「今の強さ（0〜100の合計）は★とレーダーだけで見せず、能力アップ通知の実増加量 `+Npt` だけ表示する」へ改める。CLAUDE.md（ステータス表示ルール・やらない）、`dialogue-edit` スキル、設定資料集の本文、`story_review_prompt.md`。`docs/master_spec.md` は #193 で更新済み。台詞に `+Npt` は書かない |
+| AB6 | ✅ 本PR | オーナー「ゴードットを消すのは採用、ただマージするのは怖いのでいいとこどりして最新のに反映がいい」 → 未PRのブランチ `claude/elegant-galileo-akim45`（aefd1cc）はマージせず、良い部分だけを最新mainへ移植。main側で変わっていなかった `check_git_safety.sh`（project.godot入りの古いコピーをERROR・worktreeを許可・mainより遅れるとWARN・origin URLの判定修正）、`enable_git_hooks.sh`、PRテンプレート、README はそのまま適用。CLAUDE.md は最新の本文へ手で反映（Git Safetyの project.godot 撤去、worktree可、「GitHub が唯一の正本」節、旧開発ブランチ指定の撤去）。`AGENTS.md` を新設し、台帳IDの重なりの注意を追記 |
+| AB7 | ✅ 取り込まない | オーナー「305このやつとか絵が戻るとかマージしない方がいいやつは無視」 → `codex/making-workbench-assets`（旧版 web/ の作業台の作業途中・305ファイル・ましろが旧立ち絵へ戻る）と、#171系の古い物語ブランチ（#172で新しい本文に置き換わり済み）は取り込まない |
+
+---
+
+## 2026-10-03 セッション（ブランチ claude/elegant-galileo-akim45・未マージ。2026-10-04 にAB6で必要な部分を移植）
+
+オーナー「Codexで3日作業したがローカルを参照していてリポジトリに反映されていないかも。先祖返りは避けたい」→ 状況確認・回収（PR #173 → #172 → main）。続けて「今後Godotやローカルで事故らなくしたい」。
+
+| # | 状態 | 内容 |
+|---|---|---|
+| AB1 | ✅ 回答のみ | **リポジトリ状況の確認**: 9/28〜10/2の作業は PR #171/#172（draft）にあり、10/2未明以降の修正（LIME・みんと・好感度・SHISHARK等）はPCにだけあった。#172 側に古い行の復活（先祖返り）は0件 |
+| AB2 | ✅ #173（31503f2）→ #172（9873a10） | **PCにだけあった作業の回収**: Codexが差分64ファイル＋画像12枚を回収（#173）。Claudeがテスト11本・リンタ・正史語の件数・競合を確認し、web通しテストのヒント競合だけテスト側で修正してマージ。7/16の修正は不要（オーナー指定）で対象外 |
+| AB3 | ✅ AB6で最新mainへ移植 | **Godot・ローカルの事故防止**: `check_git_safety.sh` が project.godot 入りの古いコピーをERRORにし、正規チェックアウトのworktreeは通す（回収時にworktreeで止まった件）。`enable_git_hooks.sh` はworktree内で実行しても正規フォルダを登録。CLAUDE.md・README・PRテンプレートの「project.godotがあること」を撤去し、「GitHubが唯一の正本・区切りごとにpush・画像もcommit」を追記。Codex用に `AGENTS.md` を新設 |
+| AB4 | 📥 | **かふかの人物データを正本へ**: かふかは `characters.json` ではなく `kafuka.json` の profile に置かれ、リンタもそれを許すよう緩められている（正本1か所のルールから外れる）。characters.json へ移してリンタを戻す |
+| AB5 | ⏸ オーナー判断待ち | **旧ブラウザ版 web/ の扱い**: オーナー「しばらく使わない・消すかも」。消す場合は Pages 配備・CLAUDE.md（web/ が唯一の正史 等の記述）・テスト一覧も合わせて直す |
+
+
+---
+
 ## 2026-10-04 最新：凛の修正を保存し、PRを作成
 
 | ID | 状態 | オーナー要望 |
@@ -311,7 +336,7 @@ PRT08・PRT09の検証：参照一覧の17ファイルとSHA-256、Markdown参�
 - セッション開始時・コンテキスト圧縮後は **必ずこのファイルを読み**、未完（📥/🔧/⏸）を拾い直す。
 - 「直したはず」を信用せず、✅にする前に該当箇所を grep して現物を確認する（例: アダムのカタコトは
   dialogue では消えていたが lime_messages.json に残っていた＝ファイル横断で確認する）。
-- 開発ブランチ: `claude/great-galileo-omzoob` → main へPR。ビルド: `web/build_data.py` + `web/build_standalone.py`。
+- 開発ブランチ: 作業ごとに最新の `origin/main` から新しいブランチを切る → main へPR。作業はPCに残さず必ず push（CLAUDE.md「GitHub が唯一の正本」）。ビルド: `remake/tools/build_manifest.py`（リメイク版）＋ `web/build_data.py`。
 
 ---
 
