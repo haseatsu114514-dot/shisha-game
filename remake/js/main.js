@@ -35,7 +35,7 @@ export async function boot() {
     new Promise((r) => setTimeout(r, 4000)),
   ]).catch(() => {});
   await Promise.all([loadAll((p) => { bar.style.width = `${Math.round(p * 100)}%`; }), fonts]);
-  // タイトルの絵とロゴ、メニューの枠とボタンが読めてから幕を開ける（最大3秒）
+  // タイトルの絵とロゴ、窓・会話の枠とボタンが読めてから幕を開ける（最大3秒）
   await Promise.race([Promise.all([
     ...TITLE_IMAGES.map((r) => imageReady(assetUrl(r), 3000)),
     ...FRAME_ART.map((u) => imageReady(u, 3000, { keep: true })),

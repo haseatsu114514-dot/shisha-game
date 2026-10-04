@@ -186,8 +186,25 @@ try {
     const session = phone.openLime({});
     await new Promise((r) => setTimeout(r, 300));
     const listName = document.querySelector('[data-test="lime-chat-minto"] .lcr-name')?.textContent;
+    const listFace = document.querySelector('[data-test="lime-chat-minto"] .lcr-face img')?.getAttribute("src") || "";
     document.querySelector('[data-test="phone-close"]').click();
     await session;
+    // 恋人になった後: 最初の朝に私用の「栞」から届き、お仕事用のトークは残る（HF11）
+    const lovers = state.lovers.slice();
+    state.lovers = ["minto"];
+    state.loverSince.minto = state.day;
+    const delivered = phone.deliverMorning({});
+    const intro = state.inbox.find((i) => i.id === "_lover_private_account_minto");
+    const loverSession = phone.openLime({});
+    await new Promise((r) => setTimeout(r, 300));
+    const rows = [...document.querySelectorAll(".lime-chat-row")].map((row) => ({
+      test: row.dataset.test, name: row.querySelector(".lcr-name").textContent, face: row.querySelector(".lcr-face img")?.getAttribute("src") || "" }));
+    document.querySelector('[data-test="phone-close"]').click();
+    await loverSession;
+    state.inbox = state.inbox.filter((i) => i !== intro);
+    state.limeRead = state.limeRead.filter((id) => id !== "_lover_private_account_minto");
+    state.lovers = lovers;
+    delete state.loverSince.minto;
     // 告白の前の一拍と、立ち止まる内心
     Object.assign(state, { slot: 2, finales: { minto: { day: 5, chapter: 1, route: "romance" } },
       romanceChoices: { bond_q1_minto: { char: "minto", value: 1 }, bond_q2_minto: { char: "minto", value: 1 } } });
@@ -196,13 +213,22 @@ try {
     await romance.maybeConfession(async (t) => { beat = t; });
     const gate = window.T.vn.backlog().map((l) => l.text).join("|");
     core.save();
-    return { listName, beat, gate, due: state.flags._confession_due };
+    return { listName, listFace, delivered, introAccount: intro?.account, introText: intro?.msg.messages.join("|"), rows, beat, gate, due: state.flags._confession_due };
   });
-  assert.equal(privateUi.listName, "栞");
+  // みんとのLIMEは店の『お仕事用』。本名を知った後も「みんと＠ぺぱーみんと」・営業姿のアイコン（HF10）
+  assert.equal(privateUi.listName, "みんと＠ぺぱーみんと");
+  assert(privateUi.listFace.endsWith("face_minto.png"), privateUi.listFace);
+  assert(privateUi.delivered >= 1 && privateUi.introAccount === "minto_private", JSON.stringify(privateUi));
+  assert(privateUi.introText.includes("栞です"), privateUi.introText);
+  const privateRow = privateUi.rows.find((r) => r.test === "lime-chat-minto_private");
+  const workRow = privateUi.rows.find((r) => r.test === "lime-chat-minto");
+  assert(privateRow && privateRow.name === "栞" && privateRow.face.endsWith("face_minto_private.png"), JSON.stringify(privateUi.rows));
+  assert(workRow && workRow.name === "みんと＠ぺぱーみんと", "the work thread stays after becoming lovers");
   assert(privateUi.beat.includes("栞さん"), privateUi.beat);
   assert(privateUi.gate.includes("栞さんのことを考えると"), privateUi.gate);
   assert.equal(privateUi.due, "minto", "deferring at the gate keeps the reservation");
-  log("HF02 LIME list name 栞, confession beat/gate use 栞さん, gate defer keeps reservation");
+  log("HF10/11 LIME: work account みんと＠ぺぱーみんと even after the name; as lovers a new 栞 thread (private face) and the work thread stays");
+  log("HF02 confession beat/gate use 栞さん, gate defer keeps reservation");
 
   // 共有データ: 私的な場面のみんとは ura_*、ura_* は私的な場面か「お姉さん」だけ。結末・設定の古い記述
   const shared = await page.evaluate(async () => {

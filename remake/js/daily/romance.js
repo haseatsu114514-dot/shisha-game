@@ -234,6 +234,13 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false 
       if (pool?.length && !read(msgId)) out.push(chat(id, msgId, pool[(state.day + (phase[id] || 0)) % pool.length]));
       continue;
     }
+    // 付き合って最初の朝: 私用のLIMEからの最初のひとこと（みんと＝お仕事用とは別の「栞」・HF11）
+    const intro = (L().privateAccount || {})[id];
+    const introId = `_lover_private_account_${id}`;
+    if (intro && !read(introId)) {
+      out.push(chat(id, introId, intro));
+      continue;
+    }
     // 記念日（付き合って10日ごと）
     const n = dayTotal() - (state.loverSince[id] ?? dayTotal());
     const anniv = (L().anniversary || {})[id];

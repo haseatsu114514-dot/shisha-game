@@ -66,7 +66,8 @@ try {
     const walk = (o) => {
       if (Array.isArray(o)) return o.forEach(walk);
       if (!o || typeof o !== "object") return;
-      if (Array.isArray(o.replies)) o.replies.forEach((r) => r && texts.add(r.label || r.text));
+      // replies＝LIMEの返信／r＝恋人・友人のLIMEの返信（remake/data/lover.json・friends.json）
+      for (const list of [o.replies, o.r]) if (Array.isArray(list)) list.forEach((r) => typeof r?.text === "string" && texts.add(r.label || r.text));
       // 誘いに乗る返事は「（行動を1回使う）」付き。{privateWhen} は phone.js が「午後」か「仕事のあと」に置き換える
       if (typeof o.accept_text === "string") texts.add(`${o.accept_text.replace("{privateWhen}", "仕事のあと")}（行動を1回使う）`);
       Object.values(o).forEach(walk);

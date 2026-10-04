@@ -171,6 +171,36 @@
         },
         {
           "type": "hide_cg"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……あ、そうだ。はじめくん、スマホ出して"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出された画面には、見覚えのないQRコード。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "これが、私のLIME……お店のじゃない方"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "読み取ると、アカウント名はただ『栞』とだけあった。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "お仕事用のは、みんなの『みんと』だから。……こっちは、はじめくんだけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（『みんと＠ぺぱーみんと』の、その奥。……登録する指が、少し震えた）"
         }
       ]
     },
