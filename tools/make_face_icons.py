@@ -9,6 +9,7 @@ assets/sprites/characters/{id}/chr_{id}_normal.png の頭部を切り出し、
 使い方:
     python3 tools/make_face_icons.py            # 全キャラ生成
     python3 tools/make_face_icons.py --sheet    # 確認用シートも出力
+    python3 tools/make_face_icons.py rin kafuka # 指定キャラだけ生成（立ち絵を差し替えたキャラだけ更新する）
 """
 
 import sys
@@ -38,11 +39,18 @@ TUNE = {
     "minto":   {"f": 0.18, "dy": 0.12},   # 角ツインテールの分、顔が下に沈む
     "ageha":   {"f": 0.215, "dy": 0.09},  # お団子ツインの分。顔が大きすぎたので少し引き（2026-07-04）
     "mashiro": {"f": 0.23, "dy": 0.04},   # コンテンツ高が低く相対ズーム過多だったので引き（2026-07-04）
-    "tsumugi": {"f": 0.19, "dy": 0.05},
+    # 2026-10-04 リマスター立ち絵に差し替え後の再調整（つむぎ=首をかしげる姿勢で頭が大きく写る／
+    # 凛=ロングウルフで髪の外形が広い／サメちゃん=フードのサメの背びれで頭部重心が右上へ寄る）
+    "tsumugi": {"f": 0.24, "dx": 0.02, "dy": 0.03},
     "hajime":  {"f": 0.19, "dx": -0.05, "dy": 0.07},  # キャップの分
     "dr_kemuri": {"f": 0.17, "dx": -0.06, "dy": 0.05},
-    "rin":     {"f": 0.18, "dy": 0.04},
+    "rin":     {"f": 0.21, "dy": 0.05},
+    "kafuka":  {"f": 0.27, "dx": -0.08, "dy": 0.18},
+    "minto_private": {"f": 0.20, "dy": 0.05},  # 私服は角の髪飾りが無い分、営業姿より上へ
 }
+# 別衣装のアイコン: 出力名 → (キャラのフォルダ, 表情)。
+# minto_private = 本名「栞」を聞いた後の私的な場面（LIME・恋人の絆）で使う私服の顔
+EXTRA = {"minto_private": ("minto", "ura_normal")}
 # 頭部重心を取るスライス（bbox上端からコンテンツ高さのこの比率まで）
 HEAD_SLICE = 0.14
 # 円形アイコンで頭が切れないよう、上に持たせる余白（辺に対する比）
@@ -94,6 +102,8 @@ def make_icon(char_id: str, src: Path) -> Image.Image | None:
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     icons = {}
+    only = {a for a in sys.argv[1:] if not a.startswith("--")}
+    jobs = []
     for char_dir in sorted(CHARS_DIR.iterdir()):
         if not char_dir.is_dir():
             continue
@@ -104,6 +114,12 @@ def main() -> None:
             if not cands:
                 continue
             src = cands[0]
+        jobs.append((cid, cid, src))
+        jobs += [(name, cid, char_dir / f"chr_{cid}_{face}.png")
+                 for name, (folder, face) in EXTRA.items() if folder == cid]
+    for cid, folder, src in jobs:
+        if only and cid not in only and folder not in only:
+            continue
         icon = make_icon(cid, src)
         if icon is None:
             print(f"skip {cid} (empty bbox)")

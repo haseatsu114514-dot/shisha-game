@@ -147,6 +147,7 @@ description: shisha-gameの既存キャラの立ち絵・表情差分を、元�
 ## 5. ビルド・表示確認・記録
 
 ```bash
+python3 tools/make_face_icons.py <id>   # 丸アイコン（LIME・看板・好感度カード等）も新しい立ち絵から作り直す
 python3 remake/tools/build_manifest.py
 python3 tools/align_sprite_anchor.py -c <id> --dry-run
 python3 web/build_data.py
@@ -154,6 +155,10 @@ python3 web/build_standalone.py
 node web/test/portraits.mjs
 ```
 
+- 丸アイコンは `tools/make_face_icons.py` の `TUNE` で切り抜きを調整し、他キャラと並べて顔の大きさ・目線の高さを揃える。
+  別衣装の顔は `EXTRA`（例: みんと私服＝`face_minto_private`）。
+- 表情の意味や仕草が旧画像と変わったら、そのキャラの全台詞の `face` 指定を場面に合わせて見直す
+  （2026-10-04 PRT18〜PRT21。旧つむぎ・旧凛は表情ファイルの中身が名前とずれていた）。立ち絵と矛盾する外見の地の文も確認する。
 - 修正対象は共有 `assets/` と現行 `remake/`。保存されている旧版のUIやゲームロジックを編集しない。
   旧版ビルドは回帰確認用。共有画像はCIでも配布HTMLに再ビルドされる。
 - ローカルHTTPサーバー経由で**全表情を実際の会話エンジンに出す**。別衣装との切り替え、左右・上下のずれ、頭／髪／手の欠けを目視する。
