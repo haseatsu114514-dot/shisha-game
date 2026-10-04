@@ -2,7 +2,7 @@
 """立ち絵から顔ドット絵アイコンを生成する。
 
 assets/sprites/characters/{id}/chr_{id}_normal.png の頭部を切り出し、
-32x32 に縮小 → 減色してドット絵風の顔アイコンにする。
+96x96 に縮小 → 減色してドット絵風の顔アイコンにする。
 出力: assets/ui/face_icons/face_{id}.png
 （UIの好感度バナー・マップピン・LIME画面のアバターに使う）
 
@@ -21,7 +21,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 CHARS_DIR = REPO_ROOT / "assets" / "sprites" / "characters"
 OUT_DIR = REPO_ROOT / "assets" / "ui" / "face_icons"
 
-SIZE = 48          # ドット絵の解像度
+SIZE = 96          # ドット絵の解像度（2026-10-04 オーナー指定で48→96。48では拡大・高密度表示で目が潰れた）
 COLORS = 32        # パレット色数
 
 # 頭部クロップの調整値。
@@ -30,6 +30,7 @@ COLORS = 32        # パレット色数
 # ツインテール・広げた腕などで拡大率がキャラごとにバラつくため・2026-07-02）。
 #   f:  辺 = ch * f（大きいほど引き＝顔が小さく写る）
 #   dx/dy: 辺に対する比での微調整（+で右/下）
+#   size: そのキャラだけ解像度を変える（既定は SIZE）
 # 背景込み一枚絵のキャラは abs 指定（画像全体に対する顔中心 cx/cy と辺 side の比）。
 DEFAULT = {"f": 0.20, "dx": 0.0, "dy": 0.0}
 TUNE = {
@@ -44,7 +45,7 @@ TUNE = {
     "tsumugi": {"f": 0.24, "dx": 0.03, "dy": 0.08},
     "hajime":  {"f": 0.19, "dx": -0.05, "dy": 0.07},  # キャップの分
     "dr_kemuri": {"f": 0.17, "dx": -0.06, "dy": 0.05},
-    "rin":     {"f": 0.19, "dx": 0.02, "dy": 0.08},
+    "rin":     {"f": 0.20, "dx": 0.01, "dy": 0.12},  # 2026-10-04 v11に再調整
     "kafuka":  {"f": 0.26, "dx": -0.08, "dy": 0.20},
     "minto_private": {"f": 0.21, "dy": 0.10},  # 私服は角の髪飾りが無い分、営業姿より上へ
 }
@@ -91,7 +92,8 @@ def make_icon(char_id: str, src: Path) -> Image.Image | None:
         y0 = int(top - side * (HEADROOM - p["dy"]))
     crop = im.crop((x0, y0, x0 + side, y0 + side))
     # 縮小 → 減色（αは別管理: quantizeで半透明が荒れるのを防ぐ）
-    small = crop.resize((SIZE, SIZE), Image.LANCZOS)
+    size = p.get("size", SIZE)
+    small = crop.resize((size, size), Image.LANCZOS)
     alpha = small.getchannel("A").point(lambda a: 255 if a >= 128 else 0)
     rgb = small.convert("RGB").quantize(colors=COLORS, method=Image.MEDIANCUT)
     out = rgb.convert("RGBA")
