@@ -27,7 +27,7 @@ const layers = Object.fromEntries(["modal", "toasts", "fx"].map((k) => [k, new E
 const context = vm.createContext({ console, setTimeout: () => {}, requestAnimationFrame: (fn) => fn(), document: { querySelector: () => null }, Math, Date, Set, Promise });
 const noop = () => {}, mods = new Map();
 const values = {
-  "util.js": { el, sleep: async () => {} },
+  "util.js": { el, sleep: async () => {}, fitOneLine: () => {} },
   "data.js": { DB: db, displayName: (id) => id, callName: (id) => id, faceIconUrl: () => null },
   "ui.js": { layers }, "state.js": { state, save: noop },
   "stats.js": { gainAffinity: (id, pts) => gains.push({ id, pts }), affinityLevel: () => 5, applyStats: (stats) => statGains.push(stats), bond: {}, addStamina: noop, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66] },

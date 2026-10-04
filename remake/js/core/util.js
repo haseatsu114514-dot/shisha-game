@@ -118,3 +118,25 @@ export function zenLength(s) {
   for (const ch of s) n += /[\x20-\x7e｡-ﾟ]/.test(ch) ? 0.5 : 1;
   return n;
 }
+
+/**
+ * 1行で見せるボタン（CSS で white-space: nowrap）の字がはみ出すときだけ、字を縮めて枠に収める（最小 minPx）。
+ * 文言は枠に収まる長さで書くのが本筋（選択肢は全角26字まで・tools/lint_dialogue.py）。これは差し込みの名前などで
+ * 長くなったときの保険。ステージ全体の拡縮に影響されないよう、文字幅と枠の幅を同じ座標で比べる
+ */
+export function fitOneLine(node, minPx = 16) {
+  node.style.fontSize = "";
+  const box = node.getBoundingClientRect();
+  if (!box.width || !node.offsetWidth) return; // 非表示のときは測れない
+  node.style.textOverflow = "clip"; // 省略記号で切った幅ではなく、本来の文字幅を測る
+  const range = document.createRange();
+  range.selectNodeContents(node);
+  const text = range.getBoundingClientRect().width;
+  node.style.textOverflow = "";
+  const cs = getComputedStyle(node);
+  const k = box.width / node.offsetWidth;
+  const inner = box.width - (parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth)) * k;
+  if (text <= inner) return;
+  const size = parseFloat(cs.fontSize);
+  node.style.fontSize = `${Math.max(minPx, Math.floor(size * (inner / text) * 10) / 10)}px`;
+}

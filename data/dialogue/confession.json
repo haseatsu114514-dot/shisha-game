@@ -65,7 +65,7 @@
               "next_id": "confession_minto_accept"
             },
             {
-              "text": "「……話してくれてありがとう」とだけ返す（ライバルのままでいる）",
+              "text": "「話してくれてありがとう」（ライバルのままでいる）",
               "next_id": "confession_minto_reject"
             }
           ]
@@ -243,7 +243,7 @@
               "next_id": "confession_tsumugi_accept"
             },
             {
-              "text": "「ごめん、……そういう気持ちじゃないと思う」と正直に言う",
+              "text": "「ごめん、そういう気持ちじゃないと思う」と正直に言う",
               "next_id": "confession_tsumugi_reject"
             }
           ]
@@ -600,7 +600,7 @@
           "type": "choice",
           "choices": [
             {
-              "text": "「好きだよ、ましろちゃん。そういう意味で」と正直に言う",
+              "text": "「好きだよ、ましろちゃん。そういう意味で」と伝える",
               "next_id": "confession_mashiro_accept"
             },
             {

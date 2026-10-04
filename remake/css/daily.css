@@ -648,6 +648,9 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
   appearance: none;
   padding: 9px 14px;
   font-size: 14px;
+  white-space: nowrap; /* 返信も1行（GUI22）。はみ出すときは phone.js の fitOneLine が字を縮める */
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-weight: 700;
   font-family: inherit;
   color: #17813a;

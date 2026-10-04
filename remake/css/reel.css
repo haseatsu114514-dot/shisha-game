@@ -122,13 +122,13 @@
   display: block;
   width: calc(var(--sprite-width) * var(--art-scale));
   height: calc(var(--sprite-height) * var(--art-scale));
-  background-image: url("../img/ui/pakki-slot/symbols.png");
+  background-image: url("../img/ui/pakki-slot/symbols.webp");
   background-size: calc(1254 * var(--art-scale)) calc(1254 * var(--art-scale));
   background-position: calc(-1 * var(--sprite-x) * var(--art-scale)) calc(-1 * var(--sprite-y) * var(--art-scale));
   background-repeat: no-repeat;
 }
 .sym-seven, .sym-bar, .sym-smoke, .sym-pakki {
-  background-image: url("../img/ui/pakki-slot/symbols-premium.png");
+  background-image: url("../img/ui/pakki-slot/symbols-premium.webp");
 }
 /* 横長の7とBARも、輪郭＋透過余白の縦横比を保ってコマ内へ置く。 */
 .sym-seven { --symbol-size: 28px; --sprite-x: 73; --sprite-y: 241; --sprite-width: 508; --sprite-height: 287; --sprite-max: 508; }
@@ -145,7 +145,7 @@
   position: absolute;
   inset: calc(-2px * var(--slot-scale));
   z-index: 2;
-  background: url("../img/ui/pakki-slot/bezel.png") center / 100% 100% no-repeat;
+  background: url("../img/ui/pakki-slot/bezel.webp") center / 100% 100% no-repeat;
   pointer-events: none;
 }
 .reel-widget.flash-blue .rw-machine { animation: rw-flash-blue 0.35s; }

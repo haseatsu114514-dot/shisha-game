@@ -9,6 +9,8 @@ data/dialogue/*.json を走査し、以下を検査:
     - speaker が data/characters.json の id にもモブ話者ホワイトリストにも無い
     - 旧名・旧設定・旧タイトルの混入（にしお / ましろさん / シーシャ・ステーション /
       地方予選 / ドクター・ケムリ / 煙の向こう側 / 技術力 / 洞察力 など）
+    - 選択肢が全角26字を超える（選択肢は1行・GUI22。バイトの対応 data/baito_events.json と
+      恋人の会話 remake/data/lover.json の選択肢も同じ枠に出るので一緒に見る）
 
   WARN（exit は 0 のまま。気付きのため列挙）:
     - 手動改行 \\n（改行はコード側 autoWrap に一本化したい）
@@ -47,6 +49,10 @@ TAG_RE = re.compile(r"\[/?[a-z]+\]")
 
 WRAP_LIMIT = 24          # engine.js と一致（全角換算）
 MAX_PAGE_FULLWIDTH = 48  # 24×2行。これを超えると改ページで割れやすい
+# リメイク版の選択肢の枠（.vn-choice: 幅720px・内幅658px・24px・字間0.04em）に1行で入る字数。
+# 1字24.96px なので26字（649px）まで。CSS を変えたら remake/test/choice_oneline.mjs で測り直す
+CHOICE_LIMIT = 26
+EXTRA_CHOICE_FILES = [REPO / "data" / "baito_events.json", REPO / "remake" / "data" / "lover.json"]
 
 
 def fullwidth_len(s: str) -> float:
@@ -69,6 +75,29 @@ def iter_lines(dialogue):
     for key, arr in (dialogue.get("branches") or {}).items():
         for ln in arr or []:
             yield f"branches.{key}", ln
+
+
+def choice_texts(o):
+    """選択肢の文言を全部返す（type:"choice" の choices／バイトの choices／恋人の会話の optA・optB）。"""
+    if isinstance(o, dict):
+        if isinstance(o.get("choices"), list):
+            for c in o["choices"]:
+                if isinstance(c, dict) and isinstance(c.get("text"), str):
+                    yield c["text"]
+        for k in ("optA", "optB"):
+            if isinstance(o.get(k), dict) and isinstance(o[k].get("text"), str):
+                yield o[k]["text"]
+        for v in o.values():
+            yield from choice_texts(v)
+    elif isinstance(o, list):
+        for v in o:
+            yield from choice_texts(v)
+
+
+def check_choice(where: str, text: str, errors: list) -> None:
+    flen = fullwidth_len(re.sub(r"<[^>]+>", "", text))
+    if flen > CHOICE_LIMIT:
+        errors.append(f"{where}: 選択肢が全角{flen:g}字（>{CHOICE_LIMIT}）。1行に収まらない → 文言を短く「{text}」")
 
 
 def main() -> int:
@@ -99,6 +128,10 @@ def main() -> int:
                 if not isinstance(ln, dict):
                     continue
                 where = f"{rel} [{did} / {loc}]"
+
+                if ln.get("type") == "choice":
+                    for t in choice_texts({"choices": ln.get("choices")}):
+                        check_choice(where, t, errors)
 
                 sp = ln.get("speaker")
                 if sp is not None and sp not in file_whitelist:
@@ -139,6 +172,18 @@ def main() -> int:
                              "少し上がった" if "少し上がった" in text else "上がった"
                     stats = "/".join(s for s in (STAT_WORDS + ["好感度"]) if s in text)
                     warns.append(f"{where}: 報酬キュー検出（{stats}・{phrase}）→ 意図通りか確認")
+
+    for path in EXTRA_CHOICE_FILES:
+        if filt and filt not in path.name:
+            continue
+        rel = path.relative_to(REPO)
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as e:
+            errors.append(f"{rel}: 読めない: {e}")
+            continue
+        for t in choice_texts(data):
+            check_choice(str(rel), t, errors)
 
     if warns:
         print(f"⚠️  WARN ({len(warns)})")

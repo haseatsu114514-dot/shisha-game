@@ -169,6 +169,7 @@ python3 remake/tools/serve_preview.py --port 8123 &
 node remake/test/playthrough.mjs            # 優勝ルート＋敗北ルート
 node remake/test/affinity_notifications.mjs # みんとの実イベント・通知の重複・好感度/絆の加算
 node remake/test/ui_skin.mjs                # 生成素材・固定幅HUD・体力の色・項目別の通知色
+node remake/test/choice_oneline.mjs         # 選択肢・LIMEの返信が1行に収まる（全角26字まで・GUI22）
 node remake/test/stat_rewards.mjs           # 実増加pt・上限時の振替・スロット・グラフへ飛ぶ光
 node remake/test/bonds.mjs                  # 好感度の伸び・みんとの公私・締めくくり・恋愛／友情・専用ハガル・友人のLIME
 node --experimental-vm-modules remake/test/data_loading.mjs # 接続数・通信失敗・タイムアウト

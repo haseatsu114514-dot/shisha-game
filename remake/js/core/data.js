@@ -257,6 +257,11 @@ export function faceIconUrl(id, state = null, { context = null } = {}) {
   return icons.includes(`face_${folder}.png`) ? `${ROOT}assets/ui/face_icons/face_${folder}.png` : null;
 }
 
+/** 顔アイコンの全URL（起動時の先読み用） */
+export function allFaceIconUrls() {
+  return (DB.manifest.faceIcons || []).map((f) => `${ROOT}assets/ui/face_icons/${f}`);
+}
+
 export function makingUrl(name) {
   return (DB.manifest.making || []).includes(name) ? img(`ui/making/${name}`) : null;
 }

@@ -2,7 +2,7 @@
 import { TOURNAMENT_DAY } from "./core/rules.js";
 import { $, sleep } from "./core/util.js";
 import { loadAll, DB, assetUrl, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
-import { initLayers, imageReady } from "./core/ui.js";
+import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
 import { loadConfig, state, load, consumeResumeOnBoot } from "./core/state.js";
 import { unlockAudio } from "./core/audio.js";
 import { vnTest } from "./vn/engine.js";
@@ -35,8 +35,11 @@ export async function boot() {
     new Promise((r) => setTimeout(r, 4000)),
   ]).catch(() => {});
   await Promise.all([loadAll((p) => { bar.style.width = `${Math.round(p * 100)}%`; }), fonts]);
-  // タイトルの絵とロゴが読めてから幕を開ける（最大3秒）
-  await Promise.race([Promise.all(TITLE_IMAGES.map((r) => imageReady(assetUrl(r), 3000))), sleep(3000)]);
+  // タイトルの絵とロゴ、メニューの枠とボタンが読めてから幕を開ける（最大3秒）
+  await Promise.race([Promise.all([
+    ...TITLE_IMAGES.map((r) => imageReady(assetUrl(r), 3000)),
+    ...FRAME_ART.map((u) => imageReady(u, 3000, { keep: true })),
+  ]), sleep(3000)]);
   // ゲーム中にロードした直後は、タイトルを飛ばしてそのデータから再開する
   if (consumeResumeOnBoot() && load()) resumeGame();
   else showTitle();
@@ -48,8 +51,10 @@ export async function boot() {
 
 const TITLE_IMAGES = ["assets/ui/title_arts/title_art_keyvisual_01.png", "assets/ui/ui_title_logo.png"];
 
-/** タイトルを見ている間に、日常でよく出る絵を1枚ずつ裏で読んでおく（初めて出る場面で絵が遅れないように） */
+/** タイトルを見ている間に、日常でよく出る絵を裏で読んでおく（初めて出る場面で絵が遅れないように） */
 async function warmUp() {
+  // 先に小さなUIの絵（枠・看板・顔アイコン・スロットの図柄）を並行で。背景・立ち絵はそのあと1枚ずつ
+  await warmUiArt();
   const bgs = ["bg_osu_map_day", "bg_osu_map_night", "bg_tonari_inside_day", "bg_tonari_inside_night", "bg_home_day", "bg_home_night", "bg_shop", "bg_tournament_stage"];
   const faces = [["sumi", "normal"], ["tsumugi", "normal"], ["naru", "normal"], ["adam", "normal"], ["minto", "normal"], ["rin", "normal"], ["pakki", "normal"]];
   const urls = [

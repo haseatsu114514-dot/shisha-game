@@ -82,12 +82,12 @@ try {
   await Promise.all(["500", "700"].map((w) => document.fonts.load(`${w} 20px "Suien Gothic"`)));
   newGame(); state.phase = "daily"; state.reel.introDone = true;
   await mountReel(layers.screen);
-  for (const file of ["symbols.png", "symbols-premium.png", "bezel.png"]) {
+  for (const file of ["symbols.webp", "symbols-premium.webp", "bezel.webp"]) {
     const img = new Image(); img.src = `img/ui/pakki-slot/${file}`;
     await img.decode(); check(img.naturalWidth > 0, `生成画像が読めない: ${file}`);
   }
   for (const id of ["seven", "bar", "smoke", "pakki"]) {
-    check(getComputedStyle(document.querySelector(`.sym-${id}`)).backgroundImage.includes("symbols-premium.png"), `${id}の新しい図柄が反映されていない`);
+    check(getComputedStyle(document.querySelector(`.sym-${id}`)).backgroundImage.includes("symbols-premium.webp"), `${id}の新しい図柄が反映されていない`);
   }
   for (const node of document.querySelectorAll(".sym")) {
     const art = node.getBoundingClientRect(), cell = node.parentElement.getBoundingClientRect();
@@ -96,7 +96,7 @@ try {
   }
   const seven = document.querySelector(".sym-seven").getBoundingClientRect();
   check(seven.width / seven.height > 1.6, "赤7が横長になっていない");
-  check(getComputedStyle(document.querySelector(".rw-machine"), "::before").backgroundImage.includes("bezel.png"), "枠の差し替えが反映されていない");
+  check(getComputedStyle(document.querySelector(".rw-machine"), "::before").backgroundImage.includes("bezel.webp"), "枠の差し替えが反映されていない");
   colorPreview();
   await nextFrame();
   const charm = document.querySelector(".gain-card.st-charm"), affinity = document.querySelector(".gain-card.affinity");

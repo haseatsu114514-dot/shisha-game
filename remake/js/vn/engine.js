@@ -1,7 +1,7 @@
 // 会話エンジン。data/dialogue/*.json のスキーマをそのまま解釈する。
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
-import { el, sleep } from "../core/util.js";
+import { el, sleep, fitOneLine } from "../core/util.js";
 import { DB, displayName, portraitInfo, sceneBg, cgUrl, preload } from "../core/data.js";
 import { state, markMet, STAT_EN, timeOfDay, config } from "../core/state.js";
 import { applyStats, gainAffinity, addMoney, affinityLevel } from "../core/stats.js";
@@ -514,17 +514,16 @@ function layoutPortraits() {
 function showChoices(line) {
   const r = running;
   r.waitingChoice = true;
-  dom.choices.replaceChildren();
-  (line.choices || []).forEach((c, i) => {
-    const b = el("button.vn-choice", {
-      html: formatHtml(c.text || "……"),
-      style: { animationDelay: `${i * 80}ms` },
-      dataset: { test: `choice-${i}` },
-      onclick: (e) => { e.stopPropagation(); pickChoice(line, c); },
-    });
-    dom.choices.append(b);
-  });
+  const buttons = (line.choices || []).map((c, i) => el("button.vn-choice", {
+    html: formatHtml(c.text || "……"),
+    style: { animationDelay: `${i * 80}ms` },
+    dataset: { test: `choice-${i}` },
+    onclick: (e) => { e.stopPropagation(); pickChoice(line, c); },
+  }));
+  dom.choices.replaceChildren(...buttons);
   dom.choices.classList.add("show");
+  // 選択肢は1行（GUI22）。文言は全角26字以内で書く。差し込みで長くなったときだけ字を縮める
+  buttons.forEach((b) => fitOneLine(b, 18));
   kickAuto();
 }
 
