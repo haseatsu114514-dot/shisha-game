@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-04 08:56 UTC",
+ "generated": "2026-10-04 10:51 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -85,12 +85,13 @@
     "normal",
     "sad",
     "serious",
+    "sleep",
     "smile",
     "surprise"
    ],
-   "h": 0.7317,
+   "h": 0.7325,
    "b": 0.02,
-   "ax": 0.5004,
+   "ax": 0.5001,
    "aspect": 0.7467
   },
   "minto": {
@@ -158,10 +159,11 @@
     "smile",
     "surprise"
    ],
-   "h": 0.8442,
+   "h": 0.8383,
    "b": 0.0225,
-   "ax": 0.5553,
-   "aspect": 0.7467
+   "ax": 0.4657,
+   "aspect": 0.7467,
+   "anchor": "head"
   },
   "sumi": {
    "faces": [
@@ -171,9 +173,9 @@
     "surprise",
     "thinking"
    ],
-   "h": 0.8942,
+   "h": 0.895,
    "b": 0.0208,
-   "ax": 0.5226,
+   "ax": 0.5225,
    "aspect": 0.7467
   },
   "tsumugi": {
@@ -700,6 +702,7 @@
   "sprites/characters/mashiro/chr_mashiro_normal.png",
   "sprites/characters/mashiro/chr_mashiro_sad.png",
   "sprites/characters/mashiro/chr_mashiro_serious.png",
+  "sprites/characters/mashiro/chr_mashiro_sleep.png",
   "sprites/characters/mashiro/chr_mashiro_smile.png",
   "sprites/characters/mashiro/chr_mashiro_surprise.png",
   "sprites/characters/minto/chr_minto_normal.png",

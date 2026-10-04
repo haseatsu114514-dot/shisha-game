@@ -1,0 +1,451 @@
+{
+  "character": "sumi",
+  "age": 46,
+  "heightCm": 182,
+  "version": 1,
+  "status": "pending_review",
+  "ownerRequest": "次のキャラへ",
+  "ownerRequestId": "PRT42",
+  "interpretation": "保存済み制作順からすみさんへ進む。既存5表情の意味と実画像のデザインを保持して確認用に制作する。",
+  "branch": "codex/sumi-portrait-remaster-20261004",
+  "baseCommit": "1906b45fe562818aaa93937fe0f92d49cd869580",
+  "mainIncludedAtStart": "436c0039cc5569c3823ccd06fb1af0de0ad2ac8d",
+  "output": "sumi-v1-sheet.png",
+  "generatedSourcePath": "/workspace/generated_images/exec-2d86af2d-7e70-4243-a0a3-24bd3379eeb0.png",
+  "sha256": "96034ff5e350e6fce7ae4fd962741baed9eec92de44b1134bb49e0f4a8a0a73b",
+  "rawByteExactCopy": true,
+  "dimensions": [
+    1774,
+    887
+  ],
+  "prompt": "sumi-v1-prompt.txt",
+  "promptSha256": "3873a59fe1b9dc2c5ad2b276d92da192a63af83819a8d356dababd8d1c014bb9",
+  "references": [
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "主要画風：初期採用済みのみんと。線・細かな質感・陰影",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+      "role": "主要画風：採用済みつむぎ。肌・布・落ち着いた塗り",
+      "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+    },
+    {
+      "path": "assets/sprites/characters/sumi/chr_sumi_normal.png",
+      "role": "本人の通常・顔・帽子・眼鏡・ひげ・配色・衣装・体格",
+      "sha256": "f120fd57ca1d9caa1ef15c1f67a53a5d6667fddfb8c45f0ed8d5ad4a8ab15435"
+    },
+    {
+      "path": ".claude/skills/character-portrait-remaster/references/sumi-original-face-reference.png",
+      "role": "既存5表情の顔を同じ原寸で切り抜いた参照。通常／笑顔／真剣／驚き／考える",
+      "sha256": "a1396b54283a3a290682d17acac05c08686b9bf0360a72d9b7f7906286e46ff3"
+    },
+    {
+      "path": "assets/sprites/characters/sumi/chr_sumi_thinking.png",
+      "role": "本人の考える表情と、顎に添える画面左の手・肘を支える画面右の腕",
+      "sha256": "19cd11a5af0c655bedde39edfdf86ee9972f524a2abb0e256562495342507f88"
+    }
+  ],
+  "originalExpressions": [
+    {
+      "expression": "normal",
+      "path": "assets/sprites/characters/sumi/chr_sumi_normal.png",
+      "sha256": "f120fd57ca1d9caa1ef15c1f67a53a5d6667fddfb8c45f0ed8d5ad4a8ab15435"
+    },
+    {
+      "expression": "smile",
+      "path": "assets/sprites/characters/sumi/chr_sumi_smile.png",
+      "sha256": "9601c6744753b23d1556e0b0a897e4ed8702a554ddaff42d022868675f2b06d5"
+    },
+    {
+      "expression": "serious",
+      "path": "assets/sprites/characters/sumi/chr_sumi_serious.png",
+      "sha256": "1dbf3a2106f90739a84a8351a9617e46d580eb7f14d38dd769b49dbed2dd858b"
+    },
+    {
+      "expression": "surprise",
+      "path": "assets/sprites/characters/sumi/chr_sumi_surprise.png",
+      "sha256": "99f570f4219bdc84817606fdf50c4130a1ab64fc36ea62cb060fffefeb9465b0"
+    },
+    {
+      "expression": "thinking",
+      "path": "assets/sprites/characters/sumi/chr_sumi_thinking.png",
+      "sha256": "19cd11a5af0c655bedde39edfdf86ee9972f524a2abb0e256562495342507f88"
+    }
+  ],
+  "reviewedStyleGroups": 16,
+  "reviewedStyleImages": 56,
+  "reviewedStyleStatus": {
+    "approvedAndHistoricalGroups": 14,
+    "pendingMashiroGroups": 2
+  },
+  "preservedDesign": [
+    "46歳・182cmの落ち着いた男性店主、元の頭身・四角い眼鏡・濃い眉・ひげ",
+    "黒いソフト帽と短い黒髪、健康的な肌",
+    "袖をまくったチャコールのシャツ、茶色の腰エプロン、黒いパンツと靴"
+  ],
+  "expressionOrder": [
+    "normal",
+    "smile",
+    "serious",
+    "surprise",
+    "thinking"
+  ],
+  "expressionNotes": {
+    "normal": "落ち着いた通常、両手をポケットへ",
+    "smile": "両目を優しく開いた笑顔、画面左の手のひらで歓迎",
+    "serious": "眉を寄せて指で説明する真剣",
+    "surprise": "眉と目を開いて小さく口を開く驚き。生成では画面右の手が胸元へ",
+    "thinking": "画面左の手を顎へ、画面右の腕で肘を支える考える表情"
+  },
+  "sourceEdgeAlpha24": {
+    "top": 0,
+    "bottom": 0,
+    "left": 0,
+    "right": 0
+  },
+  "splitStrategy": "本体のalpha>=24連結成分間から、列全体のalpha=0が続く隙間を選択。固定5等分ではない。",
+  "columnCuts": [
+    0,
+    340,
+    726,
+    1070,
+    1441,
+    1774
+  ],
+  "splitAlpha16Pixels": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "normalAnchorOriginal": {
+    "path": "assets/sprites/characters/sumi/chr_sumi_normal.png",
+    "mainBounds": [
+      291,
+      104,
+      634,
+      1175
+    ],
+    "feetX": 468.2788581790895,
+    "feetBottom": 1175
+  },
+  "commonScale": 1.268957345971564,
+  "previewCanvas": [
+    896,
+    1200
+  ],
+  "previewMode": "RGBA",
+  "feetBottom": 1175,
+  "feetXSpread": 0.5417643860612884,
+  "alphaThresholdProcessing": false,
+  "creativeEditingOutsideImagegen": false,
+  "compositing": "同一倍率の全体縮小／拡大と、canvas.paste(image, xy)によるRGBA直接配置のみ。顔・体の貼り替えなし。",
+  "expressions": [
+    {
+      "expression": "normal",
+      "label": "通常",
+      "crop": [
+        0,
+        0,
+        340,
+        887
+      ],
+      "source": "sumi-v1-normal-source.png",
+      "sourceSha256": "ae34e714478fe666f1d3f0afcc00c219c2a45c8b9a54229f63e0854d0e874807",
+      "sourceDimensions": [
+        340,
+        887
+      ],
+      "sourceMainBounds": [
+        47,
+        27,
+        330,
+        871
+      ],
+      "sourceEdgeAlpha16": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "scaledDimensions": [
+        431,
+        1126
+      ],
+      "placement": [
+        224,
+        69
+      ],
+      "preview": "sumi-v1-normal-preview.png",
+      "previewSha256": "35cb31996f3275213b7e659d968d09fec62136d519324a93bb90f1afcf31627c",
+      "previewMode": "RGBA",
+      "previewDimensions": [
+        896,
+        1200
+      ],
+      "previewMainBounds": [
+        283,
+        103,
+        643,
+        1175
+      ],
+      "previewFeetX": 468.1700755954928,
+      "previewFeetBottom": 1175,
+      "previewEdgeAlpha16": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "alpha16Clipped": false
+    },
+    {
+      "expression": "smile",
+      "label": "笑顔",
+      "crop": [
+        340,
+        0,
+        726,
+        887
+      ],
+      "source": "sumi-v1-smile-source.png",
+      "sourceSha256": "b21e0a03079cea7dd30d8a9e3d4d9ab16527f8d753bcbe01ee576862234e67f0",
+      "sourceDimensions": [
+        386,
+        887
+      ],
+      "sourceMainBounds": [
+        11,
+        27,
+        360,
+        871
+      ],
+      "sourceEdgeAlpha16": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "scaledDimensions": [
+        490,
+        1126
+      ],
+      "placement": [
+        187,
+        69
+      ],
+      "preview": "sumi-v1-smile-preview.png",
+      "previewSha256": "4fa7011b45471cc14f84146de14a83e4e5e582cbfdef903b9fcf563ee63508c6",
+      "previewMode": "RGBA",
+      "previewDimensions": [
+        896,
+        1200
+      ],
+      "previewMainBounds": [
+        200,
+        103,
+        644,
+        1175
+      ],
+      "previewFeetX": 468.7118399815541,
+      "previewFeetBottom": 1175,
+      "previewEdgeAlpha16": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "alpha16Clipped": false
+    },
+    {
+      "expression": "serious",
+      "label": "真剣",
+      "crop": [
+        726,
+        0,
+        1070,
+        887
+      ],
+      "source": "sumi-v1-serious-source.png",
+      "sourceSha256": "9662c1bf9bcdc40292c31305697c40872170923498a188b02e0d0baf6bb8d923",
+      "sourceDimensions": [
+        344,
+        887
+      ],
+      "sourceMainBounds": [
+        27,
+        26,
+        317,
+        871
+      ],
+      "sourceEdgeAlpha16": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "scaledDimensions": [
+        437,
+        1126
+      ],
+      "placement": [
+        228,
+        69
+      ],
+      "preview": "sumi-v1-serious-preview.png",
+      "previewSha256": "cedcfb6ec6e3357f10665fa384781c0079a509fd9b541d4ca3c507d465341416",
+      "previewMode": "RGBA",
+      "previewDimensions": [
+        896,
+        1200
+      ],
+      "previewMainBounds": [
+        262,
+        101,
+        631,
+        1175
+      ],
+      "previewFeetX": 468.2147516743498,
+      "previewFeetBottom": 1175,
+      "previewEdgeAlpha16": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "alpha16Clipped": false
+    },
+    {
+      "expression": "surprise",
+      "label": "驚き",
+      "crop": [
+        1070,
+        0,
+        1441,
+        887
+      ],
+      "source": "sumi-v1-surprise-source.png",
+      "sourceSha256": "6f85f413aedaa187663c4830df04fededc416e160ffb9eab8e8d381b4e86ffca",
+      "sourceDimensions": [
+        371,
+        887
+      ],
+      "sourceMainBounds": [
+        51,
+        27,
+        333,
+        871
+      ],
+      "sourceEdgeAlpha16": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "scaledDimensions": [
+        471,
+        1126
+      ],
+      "placement": [
+        218,
+        69
+      ],
+      "preview": "sumi-v1-surprise-preview.png",
+      "previewSha256": "295353319a1759361636cbb50c797ed019fa774806483cae0a3609e0d24a3733",
+      "previewMode": "RGBA",
+      "previewDimensions": [
+        896,
+        1200
+      ],
+      "previewMainBounds": [
+        283,
+        103,
+        641,
+        1175
+      ],
+      "previewFeetX": 468.26263305649786,
+      "previewFeetBottom": 1175,
+      "previewEdgeAlpha16": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "alpha16Clipped": false
+    },
+    {
+      "expression": "thinking",
+      "label": "考える",
+      "crop": [
+        1441,
+        0,
+        1774,
+        887
+      ],
+      "source": "sumi-v1-thinking-source.png",
+      "sourceSha256": "0182560f8da51958e6a01a6f4da1a7122f1414974d7ccc18722856f690d615a5",
+      "sourceDimensions": [
+        333,
+        887
+      ],
+      "sourceMainBounds": [
+        39,
+        27,
+        298,
+        871
+      ],
+      "sourceEdgeAlpha16": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "scaledDimensions": [
+        423,
+        1126
+      ],
+      "placement": [
+        232,
+        69
+      ],
+      "preview": "sumi-v1-thinking-preview.png",
+      "previewSha256": "bbf7156176dc421db91fecc2b9fc4e4195e2fc926e10188de0ea38a269681da1",
+      "previewMode": "RGBA",
+      "previewDimensions": [
+        896,
+        1200
+      ],
+      "previewMainBounds": [
+        282,
+        103,
+        611,
+        1175
+      ],
+      "previewFeetX": 468.1899790030776,
+      "previewFeetBottom": 1175,
+      "previewEdgeAlpha16": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "alpha16Clipped": false
+    }
+  ],
+  "reviewArtifacts": [
+    "sumi-five-review.png",
+    "sumi-v1-faces-preview.png",
+    "sumi-v1-style-comparison.png"
+  ],
+  "gameAssetsChanged": false,
+  "adoption": "未確認。確認用画像を保存し、ゲームへの差し替え・マージは行わない。",
+  "visualChecks": {
+    "sameDisplaySizeFullBodies": true,
+    "nativeFacesHairAndCloth": true,
+    "whiteAndDarkBackground": true,
+    "twoTimesNearestNeighbourFaceDetail": true,
+    "reviewImage": "sumi-five-review.png"
+  }
+}

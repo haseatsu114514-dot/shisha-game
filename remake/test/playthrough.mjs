@@ -1,5 +1,5 @@
 // リメイク版 第1章の通しテスト。
-//   1) 新規ゲーム → コールドオープン → チュートリアル → 14日間の日常（行動計画どおり）
+//   1) 新規ゲーム → コールドオープン → チュートリアル → DAY1〜13の日常 → DAY14の大会
 //   2) 大会1回目は「下手」で挑んで GAME OVER になること
 //   3) 「もう一度挑戦する」→「上手」で南雲票の逆転優勝 → 第1章クリアになること
 // 使い方: リポジトリのルートで `python3 -m http.server 8123` を起動してから
@@ -166,6 +166,7 @@ for (;;) {
   }
 
   if (snap.phase === "tournament" && tournamentAttempt === 0) {
+    if (snap.day !== 14) throw new Error(`Tournament must start on DAY14, got DAY${snap.day}`);
     tournamentAttempt = 1;
     // 1回目の本番は下手に作って、敗北ルートを通す
     await page.evaluate(() => { window.__remake.craftTest.auto = "bad"; });
@@ -283,6 +284,8 @@ for (;;) {
 }
 
 const s = await page.evaluate(() => window.__remake.state);
+if (s.day !== 14) throw new Error(`Tournament/clear day must remain DAY14, got DAY${s.day}`);
+if (!s.flags._ev_rehearsal || !s.flags._ev_last_night) throw new Error("DAY13 rehearsal or last-night conversation was lost");
 log(`attempts=${s.tournament.attempts} lastRank=${s.tournament.lastRank} total=${s.tournament.lastTotal}`);
 if (s.phase !== "cleared") throw new Error(`expected cleared, got ${s.phase}`);
 if (s.tournament.attempts < 2) throw new Error("expected a defeat before the win");

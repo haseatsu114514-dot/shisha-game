@@ -1,4 +1,5 @@
-// ステータス・好感度・体力・所持金。数値はプレイヤーに見せない（★と抽象語だけ）。
+// ステータス・好感度・体力・所持金。成長量は通知にptで出し、現在の強さは★で表す。
+import { MAX_MONEY } from "./rules.js";
 import { state, STAT_KEYS, STAT_JA } from "./state.js";
 import { emit } from "./bus.js";
 import { clamp } from "./util.js";
@@ -68,9 +69,10 @@ export function gainStat(key, amount, { silent = false } = {}) {
   const got = v - before;
   if (got <= 0) return 0;
   emit("stat-raw", { key, got }); // スロットの「直前の行動で伸びたステ」の記録用
+  emit("hud");
   if (silent) return got;
   const starUp = Math.ceil(v / 20) > Math.ceil(before / 20);
-  batch[key] = batch[key] || { total: 0, starUp: false };
+  if (batch[key]?.owner !== state) batch[key] = { owner: state, total: 0, starUp: false };
   batch[key].total += got;
   batch[key].starUp ||= starUp;
   clearTimeout(batchTimer);
@@ -81,8 +83,9 @@ export function gainStat(key, amount, { silent = false } = {}) {
 function flushBatch() {
   const b = batch;
   batch = {};
-  for (const [key, { total, starUp }] of Object.entries(b)) {
-    emit("stat-gain", { key, name: STAT_JA[key], word: gainWord(total), starUp, rank: rankLabel(key), star: star(key) });
+  for (const [key, { owner, total, starUp }] of Object.entries(b)) {
+    if (owner !== state) continue;
+    emit("stat-gain", { key, total, name: STAT_JA[key], word: gainWord(total), starUp, rank: rankLabel(key), star: star(key) });
   }
 }
 
@@ -117,6 +120,35 @@ export const bond = { private: false };
 export const AFFINITY_PACE = 0.85;
 export const BOND_PACE = 0.5;
 
+// 会話のmetadata報酬と訪問終了の報酬は別々に加算される。同じ相手の通知だけを
+// ステ通知と同じ時間窓で合算し、最初のハートから最後のハートまで一枚で見せる。
+const affinityBatch = new Map();
+let affinityBatchTimer = null;
+
+function queueAffinityGain(payload) {
+  const key = `${payload.id}:${!!payload.bond}`;
+  const pending = affinityBatch.get(key);
+  const previous = pending?.owner === state ? pending.payload : null;
+  affinityBatch.set(key, {
+    owner: state,
+    payload: {
+      ...payload,
+      prevPts: previous?.prevPts ?? payload.prevPts,
+      levelUp: !!(previous?.levelUp || payload.levelUp),
+    },
+  });
+  clearTimeout(affinityBatchTimer);
+  affinityBatchTimer = setTimeout(flushAffinityBatch, MERGE_MS);
+}
+
+function flushAffinityBatch() {
+  const pending = [...affinityBatch.values()];
+  affinityBatch.clear();
+  affinityBatchTimer = null;
+  // ロード・はじめからの直後に、前のセーブの通知を出さない。
+  for (const { owner, payload } of pending) if (owner === state) emit("affinity-gain", payload);
+}
+
 /** 占い師に見てもらった相手と次に会ったときだけ ×1.5（一度きり） */
 function fortuneMult(id) {
   if (state.fortune?.char !== id) return 1;
@@ -149,7 +181,7 @@ export function gainAffinity(id, pts) {
     const before = state.loveLevel[id] || 1;
     const after = Math.max(before, rankOf(state.lovePts[id]));
     state.loveLevel[id] = after;
-    emit("affinity-gain", { id, level: after, levelUp: after > before, prevPts, pts: state.lovePts[id], bond: true });
+    queueAffinityGain({ id, level: after, levelUp: after > before, prevPts, pts: state.lovePts[id], bond: true });
     return got;
   }
   mult *= fortuneMult(id);
@@ -163,7 +195,7 @@ export function gainAffinity(id, pts) {
   state.affinity[id] = prevPts + got;
   if (!got) return 0;
   const after = affinityLevel(id);
-  emit("affinity-gain", { id, level: after, levelUp: after > before, prevPts, pts: state.affinity[id] });
+  queueAffinityGain({ id, level: after, levelUp: after > before, prevPts, pts: state.affinity[id] });
   return got;
 }
 
@@ -192,7 +224,8 @@ export const staminaRatio = () => state.stamina / maxStamina();
 // ---------------------------------------------------------------- お金
 
 export function addMoney(n) {
-  state.money = Math.max(0, Math.round(state.money + n));
-  emit("money", { delta: n });
+  const before = state.money;
+  state.money = Math.min(MAX_MONEY, Math.max(0, Math.round(before + n)));
+  emit("money", { delta: state.money - before });
   emit("hud");
 }

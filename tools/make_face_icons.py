@@ -2,7 +2,7 @@
 """立ち絵から顔ドット絵アイコンを生成する。
 
 assets/sprites/characters/{id}/chr_{id}_normal.png の頭部を切り出し、
-96x96 に縮小 → 減色してドット絵風の顔アイコンにする。
+160x160 に縮小 → 256色に減色した顔アイコンにする。
 出力: assets/ui/face_icons/face_{id}.png
 （UIの好感度バナー・マップピン・LIME画面のアバターに使う）
 
@@ -21,8 +21,8 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 CHARS_DIR = REPO_ROOT / "assets" / "sprites" / "characters"
 OUT_DIR = REPO_ROOT / "assets" / "ui" / "face_icons"
 
-SIZE = 96          # ドット絵の解像度（2026-10-04 オーナー指定で48→96。48では拡大・高密度表示で目が潰れた）
-COLORS = 32        # パレット色数
+SIZE = 160         # 解像度（2026-10-04 オーナー指定で48→96→160。顔の切り抜きは元絵で約180〜240pxなので、これ以上は拡大になる）
+COLORS = 256       # パレット色数（32色では瞳の色・肌の階調が潰れた）
 
 # 頭部クロップの調整値。
 # 立ち絵（透過スプライト）は「頭部スライスの重心」を顔の中心とみなし、
@@ -35,19 +35,23 @@ COLORS = 32        # パレット色数
 DEFAULT = {"f": 0.20, "dx": 0.0, "dy": 0.0}
 TUNE = {
     "pakki":   {"f": 0.98, "dy": 0.02},  # マスコットは全身がほぼ顔（フォルダ改名 packii→pakki に追随）
-    # 顔の大きさ・目線の高さを全キャラで揃える微調整（丸アイコンでのズレ対策・2026-07-03）。
-    # 髪飾り・ツインテール・帽子で bbox 上端が実際の頭より高いキャラは dy+ で下へ寄せる
-    "minto":   {"f": 0.19, "dy": 0.17},   # 角ツインテールの分、顔が下に沈む（2026-10-04 新立ち絵で目線を他キャラに揃えて再調整）
-    "ageha":   {"f": 0.215, "dy": 0.09},  # お団子ツインの分。顔が大きすぎたので少し引き（2026-07-04）
-    "mashiro": {"f": 0.23, "dy": 0.04},   # コンテンツ高が低く相対ズーム過多だったので引き（2026-07-04）
-    # 2026-10-04 リマスター立ち絵に差し替え後の再調整（つむぎ=首をかしげる姿勢で頭が大きく写る／
-    # 凛=ロングウルフで髪の外形が広い／サメちゃん=フードのサメの背びれで頭部重心が右上へ寄る）
-    "tsumugi": {"f": 0.24, "dx": 0.03, "dy": 0.08},
-    "hajime":  {"f": 0.19, "dx": -0.05, "dy": 0.07},  # キャップの分
-    "dr_kemuri": {"f": 0.17, "dx": -0.06, "dy": 0.05},
-    "rin":     {"f": 0.20, "dx": 0.01, "dy": 0.12},  # 2026-10-04 v11に再調整
-    "kafuka":  {"f": 0.26, "dx": -0.08, "dy": 0.20},
-    "minto_private": {"f": 0.21, "dy": 0.10},  # 私服は角の髪飾りが無い分、営業姿より上へ
+    # 2026-10-04 顔の大きさを全キャラで揃える（オーナー「顔のサイズ近くなるように」）。
+    # 目の下の頬の幅がアイコン幅の約0.50になるよう、目線の位置（横0.5・縦0.55）を固定して拡大縮小した値。
+    # 立ち絵を差し替えたら、頬の幅を測り直して f を比例で直す（f_new = f_old × 測った幅 / 0.50）
+    "adam": {"f": 0.188, "dy": 0.03},
+    "ageha": {"f": 0.228, "dy": 0.058},
+    "dr_kemuri": {"f": 0.173, "dx": -0.059, "dy": 0.04},
+    "hajime": {"f": 0.186, "dx": -0.051, "dy": 0.081},
+    "kafuka": {"f": 0.192, "dx": -0.108, "dy": 0.435},
+    "maezono": {"f": 0.232, "dy": -0.065},
+    "mashiro": {"f": 0.244, "dy": 0.087},
+    "minto": {"f": 0.213, "dy": 0.101},
+    "minto_private": {"f": 0.214, "dy": 0.089},
+    "nagumo": {"f": 0.164, "dy": 0.103},
+    "naru": {"f": 0.18, "dy": 0.052},
+    "rin": {"f": 0.188, "dx": 0.011, "dy": 0.158},
+    "sumi": {"f": 0.212, "dy": -0.027},
+    "tsumugi": {"f": 0.259, "dx": 0.028, "dy": 0.039},
 }
 # 別衣装のアイコン: 出力名 → (キャラのフォルダ, 表情)。
 # minto_private = 本名「栞」を聞いた後の私的な場面（LIME・恋人の絆）で使う私服の顔
@@ -91,10 +95,10 @@ def make_icon(char_id: str, src: Path) -> Image.Image | None:
         x0 = int(cx - side / 2)
         y0 = int(top - side * (HEADROOM - p["dy"]))
     crop = im.crop((x0, y0, x0 + side, y0 + side))
-    # 縮小 → 減色（αは別管理: quantizeで半透明が荒れるのを防ぐ）
+    # 縮小 → 減色（αは別管理: quantizeで半透明が荒れるのを防ぐ。輪郭は二値化せず滑らかに残す）
     size = p.get("size", SIZE)
     small = crop.resize((size, size), Image.LANCZOS)
-    alpha = small.getchannel("A").point(lambda a: 255 if a >= 128 else 0)
+    alpha = small.getchannel("A")
     rgb = small.convert("RGB").quantize(colors=COLORS, method=Image.MEDIANCUT)
     out = rgb.convert("RGBA")
     out.putalpha(alpha)

@@ -39,8 +39,8 @@
       "notes": "はじめの成長を見守る中で、かつて彼自身が忘れていた『シーシャの楽しさ』をいつの間にか取り戻し、閉店後に作る自分用の煙が昔のように軽やかになっていた。"
     },
     "visual_concepts": [
-      "46s japanese man, shop owner, slightly long unkempt hair tied back, stubble beard, wearing a relaxed linen shirt and apron, holding tongs for charcoal, seasoned and calm aura, mature chill vibe",
-      "middle-aged japanese cafe master, silver-streaked black hair, round glasses, wearing a comfortable cardigan and an apron, holding a shisha hose with a nostalgic expression, vintage cafe background"
+      "46 year old japanese man, shisha shop owner, black newsboy cap over short messy black hair, square black-framed glasses, thick brows, full short beard, healthy tan skin, charcoal shirt with rolled sleeves, brown waist apron, black trousers and shoes, seasoned and calm aura, refined high-resolution fine pixel-art style",
+      "same man thinking at the counter, hand on chin under the square glasses, arm folded, warm low light of a small shisha bar, quiet mentor vibe"
     ],
     "spriteScale": 1.05
   },
@@ -332,7 +332,8 @@
       "same woman at midnight, loose dark slate-blue long wolf-cut hair ending above the waist, black-framed glasses, leaning on a counter with a jar of coffee beans, blueberry shisha bowl beside her, neon glow leaking through black-filmed windows, relaxed private mood, refined high-resolution fine pixel-art style"
     ],
     "appearance": "少し青みのある暗い髪のロングウルフ。厚めに流れる前髪と頬を包むレイヤー、胸下〜ウエスト上までの長さ。主人公たちより少し年上に見える落ち着いた顔立ち、とろんとした細めの半目、控えめでクールな微笑み。白シャツの袖まくり＋黒スラックス。胸元に試香紙は付けない。銀のフープピアス。ネイルは常に無色（商材の香りを邪魔しないため＝職業的な色気）。普段はコンタクトで、深夜の2階では黒縁眼鏡＝眼鏡の凛はルート進行者だけが見られる姿。低めの声でゆっくり喋り、笑うと目尻が緩むのを本人は少し気にしている。",
-    "spriteScale": 0.97
+    "spriteScale": 0.97,
+    "spriteAnchor": "head"
   },
   {
     "id": "ageha",
@@ -558,8 +559,8 @@
       "notes": "一緒に作り、吸った人の言葉を聞いているうち、いつの間にか重い煙にもゆっくり楽しめる間を残すようになる。"
     },
     "visual_concepts": [
-      "22s japanese female, relaxed and sleepy expression, messy soft light brown hair in a loose braid, wearing a loose oversized knit cardigan over an apron, puffing a massive cloud of heavy cigar-scented smoke effortlessly, cozy and slightly chaotic cafe atmosphere, same-age peer vibe rather than older-sister type",
-      "young chill cafe worker female, droopy eyes, holding a large shisha hose, surrounded by dark heavy smoke but looking completely unbothered and sweet, contrasting gap moe, boku-pronoun casual energy, peer-friend rather than older-sister"
+      "22 year old japanese woman, pale ash-blonde hair in two long braids with soft bangs, sleepy half-lidded golden eyes, beige oversized knit cardigan over a white blouse with a small ribbon, long sage-green skirt, brown shoes, relaxed and gently sleepy, same-age peer vibe rather than older-sister type, refined high-resolution fine pixel-art style",
+      "same young woman puffing a massive cloud of heavy cigar-scented smoke while looking completely unbothered and sweet, contrasting gap moe, boku-pronoun casual energy, peer-friend rather than older-sister"
     ],
     "spriteScale": 0.9
   },
