@@ -140,8 +140,11 @@ remake/
      間隔は全員で分け合う（友人のLIMEは全員あわせて2日に1通・長く連絡のない相手から順・同じ相手は4日以上あける／お誘いは全員あわせて6日に1回・
      雑談のあとだけ・物語や恋人の誘いが届く朝は雑談に（バイトの誘いとは重なってよい）・定休日の午後か仕事後）。乗ると短い一服の場面。文面と間隔は `remake/data/friends.json`
    - **好感度の伸び**（HF01）: 従来の加算量（倍率込みで四捨五入）の85%・端数は持ち越し。恋人の絆は半分で、私的な場面でだけ
-   - **みんとの公私**（HF02）: 本名を聞いた後の私的な場面（`metadata.private_scene`・LIME）では名前欄・ログ・LIMEが「栞」、
+   - **みんとの公私**（HF02）: 本名を聞いた後の私的な場面（`metadata.private_scene`）では名前欄・ログが「栞」、
      店・大会は「みんと」。私的な場面のみんとは私服の立ち絵（ura_*）で素の口調
+   - **みんとのLIMEは2つ**（HF10・HF11）: 初来店で交換するのは店の『お仕事用』（「みんと＠ぺぱーみんと」・営業姿のアイコン。
+     characters.json の `lime_name`）。恋人になった夜に私用の「栞」（私服のアイコン）を渡され、以後はそちらから届く
+     （最初の朝に `lover.json` の `privateAccount` のひとこと）。どちらから届いたかは受信時に決め、お仕事用のトークは残る（`daily/phone.js`）
    - **恋人**（`daily/romance.js`）: 締めくくりで恋愛ルートに入った相手（つむぎ・みんと・凛）→ 告白するか選ぶ → `confession.json` で付き合う／友達のまま。
      恋人とは LIME の誘いと連絡でつながる（自分から会いに行くボタンは置かない・オーナー指定）。絆（Lv1〜5）はデート（LIMEの誘い）・恋人のLIMEでだけ深まり、
      Lvが上がると `lover_events.json` の節目イベント。恋人のLIME・デートの文面は `remake/data/lover.json`（旧版の定数から抽出）
@@ -169,6 +172,7 @@ python3 remake/tools/serve_preview.py --port 8123 &
 node remake/test/playthrough.mjs            # 優勝ルート＋敗北ルート
 node remake/test/affinity_notifications.mjs # みんとの実イベント・通知の重複・好感度/絆の加算
 node remake/test/ui_skin.mjs                # 生成素材・固定幅HUD・体力の色・項目別の通知色
+node remake/test/choice_oneline.mjs         # 選択肢・LIMEの返信が1行に収まる（全角26字まで・GUI22）
 node remake/test/stat_rewards.mjs           # 実増加pt・上限時の振替・スロット・グラフへ飛ぶ光
 node remake/test/bonds.mjs                  # 好感度の伸び・みんとの公私・締めくくり・恋愛／友情・専用ハガル・友人のLIME
 node --experimental-vm-modules remake/test/data_loading.mjs # 接続数・通信失敗・タイムアウト

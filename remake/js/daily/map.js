@@ -2,7 +2,7 @@
 // 見た目は旧版を踏襲: 栄・大須の街マップ／看板型のピン（面識のある相手は顔ドット絵）／右下の墨×金パネル。
 import { el, yen } from "../core/util.js";
 import { bgUrl, sceneBg, faceIconUrl, displayName } from "../core/data.js";
-import { showScreen, setBg, retire } from "../core/ui.js";
+import { showScreen, setBg, retire, uiArtReady } from "../core/ui.js";
 import { renderSceneArt } from "../core/scene-art.js";
 import { state, timeOfDay } from "../core/state.js";
 import { SE } from "../core/audio.js";
@@ -36,7 +36,14 @@ export function interruptMap(value) {
  * @param opts.onShown  マップを出し終えたとき（LIME の初回案内など）
  * 戻り値: スポットID。interruptMap(v) で外から閉じたときは v
  */
-export function chooseSpot({ notice = "", eventPin = null, guide = null, onShown = null } = {}) {
+export async function chooseSpot(opts = {}) {
+  // 初回だけ: 看板の顔とスロットの図柄が読めてから地図を出す（遅い回線でも最大2秒・GUI20・21）
+  const wait = uiArtReady();
+  if (wait) await wait;
+  return openMap(opts);
+}
+
+function openMap({ notice = "", eventPin = null, guide = null, onShown = null }) {
   return new Promise((resolve) => {
     const night = timeOfDay() === "night";
     const tod = night ? "night" : "day";

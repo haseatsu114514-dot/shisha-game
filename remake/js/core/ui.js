@@ -3,7 +3,7 @@ import { $, el, sleep, nextFrame } from "./util.js";
 import { on } from "./bus.js";
 import { SE, setRainAmbience } from "./audio.js";
 import { state, STAT_KEYS } from "./state.js";
-import { DB, displayName, faceIconUrl } from "./data.js";
+import { DB, displayName, faceIconUrl, allFaceIconUrls } from "./data.js";
 import { AFFINITY_RANK_PTS } from "./stats.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene } from "../daily/weather.js";
@@ -58,13 +58,16 @@ let weatherBg = "";
 let weatherKey = "";
 const bgReady = new Map(); // url -> Promise（一度読んだ絵は即座に出す）
 
-/** 画像を読み込み＋デコードし終えるまで待つ（最大 ms）。失敗しても先へ進む */
-export function imageReady(url, ms = 1500) {
+const keptImages = []; // 何度も出るUIの小さな絵は Image を持ち続ける（デコード済みのまま置いておく）
+
+/** 画像を読み込み＋デコードし終えるまで待つ（最大 ms）。失敗しても先へ進む。keep: 読んだ絵を手放さない */
+export function imageReady(url, ms = 1500, { keep = false } = {}) {
   if (!url) return Promise.resolve();
   let p = bgReady.get(url);
   if (!p) {
     p = new Promise((resolve) => {
       const i = new Image();
+      if (keep) keptImages.push(i);
       i.onload = () => (i.decode ? i.decode().catch(() => {}) : Promise.resolve()).then(resolve);
       i.onerror = resolve;
       i.src = url;
@@ -72,6 +75,33 @@ export function imageReady(url, ms = 1500) {
     bgReady.set(url, p);
   }
   return Promise.race([p, sleep(ms)]);
+}
+
+// ---------------------------------------------------------------- UIの絵の先読み
+
+// 会話枠・ボタン・看板・ハート・ゲージ・通知の生成画像とスロットの図柄・枠は CSS の背景なので、
+// 画面に初めて出た瞬間に読み込みが始まり、枠や図柄が遅れて出ていた。顔アイコン（地図の看板・LIME・
+// スロットのランプ・通知）も同じ（GUI20・21）。起動時に並行して読み、手放さずに置いておく。
+const LOUNGE_ART = ["panel", "button", "map-pin", "heart", "reward", "gauge-frame", "gauge-fill"].map((n) => `img/ui/lounge/${n}.webp`);
+const SLOT_ART = ["symbols", "symbols-premium", "bezel"].map((n) => `img/ui/pakki-slot/${n}.webp`);
+/** 設定・ギャラリーの窓と最初の会話の枠・ボタン（タイトルの絵と一緒に、幕を開ける前に待つ） */
+export const FRAME_ART = LOUNGE_ART.slice(0, 2);
+let uiArt = null;
+let uiArtDone = false;
+
+/** UIの絵と顔アイコンをまとめて読む（一度だけ。全部そろうか、遅い回線では15秒で解決） */
+export function warmUiArt() {
+  if (!uiArt) {
+    const urls = [...LOUNGE_ART, ...SLOT_ART, ...allFaceIconUrls()];
+    uiArt = Promise.all(urls.map((u) => imageReady(u, 15000, { keep: true }))).then(() => { uiArtDone = true; });
+  }
+  return uiArt;
+}
+
+/** 顔アイコンやスロットが出る画面の前に呼ぶ。読み終わっていれば null（待たない）、まだなら最大 ms 待つ Promise */
+export function uiArtReady(ms = 2000) {
+  if (uiArtDone) return null;
+  return Promise.race([warmUiArt(), sleep(ms)]);
 }
 
 /**

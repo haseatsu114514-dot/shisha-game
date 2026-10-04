@@ -204,6 +204,10 @@ body.in-vn #bg { transition: filter 0.4s; }
   font-size: 24px;
   letter-spacing: 0.04em;
   text-align: center;
+  /* 選択肢は1行（GUI22）。文言は全角26字まで。はみ出すときは engine.js の fitOneLine が字を縮める */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: var(--text);
   background: linear-gradient(100deg, rgba(20, 14, 34, 0.94), rgba(34, 24, 50, 0.94));
   border: 1px solid rgba(232, 194, 122, 0.5);
