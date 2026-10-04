@@ -175,7 +175,7 @@
         "work": [
           {
             "speaker": "rin",
-            "face": "smile",
+            "face": "normal",
             "text": "言ったね。じゃあ次のロットも、君の舌を当てにしてる"
           },
           {
@@ -251,7 +251,7 @@
           },
           {
             "speaker": "minto",
-            "face": "ura_smile",
+            "face": "ura_smug",
             "text": "……うん。私も、そうしたい。照れるから、今日はここまで"
           },
           {
@@ -999,7 +999,7 @@
         "lover": [
           {
             "speaker": "minto",
-            "face": "ura_smile",
+            "face": "ura_smug",
             "text": "……恋人に渡すの、ちょっと照れるね。でも、きみに持っててほしい"
           },
           {
@@ -1050,7 +1050,7 @@
           },
           {
             "speaker": "minto",
-            "face": "ura_normal",
+            "face": "ura_smug",
             "text": "……そういうの、ずるい。でも、うれしい"
           },
           {
@@ -1134,7 +1134,7 @@
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "そう。試験品じゃないよ。レポートも要らない"
         },
         {
@@ -1242,7 +1242,7 @@
         "ask_friend": [
           {
             "speaker": "rin",
-            "face": "smile",
+            "face": "normal",
             "text": "試香の日に、ね。君らしい、……楽しみにしてる"
           },
           {

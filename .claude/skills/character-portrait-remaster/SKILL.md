@@ -101,7 +101,8 @@ description: shisha-gameの既存キャラの立ち絵・表情差分を、元�
   基本はクールに微笑む系。2026-10-04の制作・組み込み・マージ指示で5表情を採用し、**笑顔1枚だけ目を閉じて頬に手を添える可愛いギャップ**を加えた。
   衣装は既存の白シャツと黒スラックスを基準にした通常表情v7が採用済み。
   [凛の5表情比較](references/rin-five-review.html)、[刷新前との比較](references/rin-redesign-review.html)、[5表情の生成記録](references/rin-expressions-generation.json)を次回の本人参照にする。
-  年齢27歳と仕事の小物は元を参照。最新指示で写真の顔の特徴も取り入れ、ゲームの細かなドット絵調へ描き直す。写真の衣装・SNS画面は写さない。
+  **刷新前の旧デザイン（青いポニーテール・胸元の試香紙。`rin-before-redesign-normal.png` とPR #187 より前のゲーム素材）は、2026-10-04 オーナー「凛の旧デザインはもう使わない」で廃止。** 表情追加・別衣装・CG・アイコン・設定資料の参照に使わず、採用済みv7と5表情（`assets/sprites/characters/rin/`）を本人の唯一の参照にする。比較ページの旧画像は制作履歴としてだけ残す。
+  年齢27歳・白シャツと黒スラックス・クリップボードと銀の小物は採用済みv7を参照。最新指示で写真の顔の特徴も取り入れ、ゲームの細かなドット絵調へ描き直す。写真の衣装・SNS画面は写さない。
   旧案v1〜v6は制作履歴に保持し、採用基準へ加えない。ゲーム用PNG/WebP・設定は採用前に差し替えない。
 
 ## 2. 生成
@@ -147,6 +148,7 @@ description: shisha-gameの既存キャラの立ち絵・表情差分を、元�
 ## 5. ビルド・表示確認・記録
 
 ```bash
+python3 tools/make_face_icons.py <id>   # 丸アイコン（LIME・看板・好感度カード等）も新しい立ち絵から作り直す
 python3 remake/tools/build_manifest.py
 python3 tools/align_sprite_anchor.py -c <id> --dry-run
 python3 web/build_data.py
@@ -154,6 +156,10 @@ python3 web/build_standalone.py
 node web/test/portraits.mjs
 ```
 
+- 丸アイコンは `tools/make_face_icons.py` の `TUNE` で切り抜きを調整し、他キャラと並べて顔の大きさ・目線の高さを揃える。
+  別衣装の顔は `EXTRA`（例: みんと私服＝`face_minto_private`）。
+- 表情の意味や仕草が旧画像と変わったら、そのキャラの全台詞の `face` 指定を場面に合わせて見直す
+  （2026-10-04 PRT18〜PRT21。旧つむぎ・旧凛は表情ファイルの中身が名前とずれていた）。立ち絵と矛盾する外見の地の文も確認する。
 - 修正対象は共有 `assets/` と現行 `remake/`。保存されている旧版のUIやゲームロジックを編集しない。
   旧版ビルドは回帰確認用。共有画像はCIでも配布HTMLに再ビルドされる。
 - ローカルHTTPサーバー経由で**全表情を実際の会話エンジンに出す**。別衣装との切り替え、左右・上下のずれ、頭／髪／手の欠けを目視する。

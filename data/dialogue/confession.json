@@ -156,7 +156,7 @@
         },
         {
           "speaker": "minto",
-          "face": "ura_smile",
+          "face": "ura_smug",
           "text": "……はじめくん、手、あったかいね。……私まで、どきどきしてきた"
         },
         {
@@ -272,7 +272,7 @@
         },
         {
           "speaker": "tsumugi",
-          "face": "smile",
+          "face": "sad",
           "text": "「……わたしも……ずっと、ずっと……はじめさんのことが……」"
         },
         {
@@ -282,7 +282,7 @@
         },
         {
           "speaker": "tsumugi",
-          "face": "normal",
+          "face": "smile",
           "text": "「……言えなくて、ごめんなさい。でも……嬉しい、です。すごく……」"
         },
         {
@@ -317,7 +317,7 @@
         },
         {
           "speaker": "tsumugi",
-          "face": "surprise",
+          "face": "normal",
           "text": "「あ、あの……はじめくん……」"
         },
         {
@@ -794,7 +794,7 @@
         },
         {
           "speaker": "rin",
-          "face": "normal",
+          "face": "sad",
           "text": "だからさ。次に君があの階段を上がってくる理由、なくなるわけ。……それで、ちょっと困ってる"
         },
         {
@@ -879,12 +879,12 @@
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "今日から君は、モルモットじゃなくて……ん-……『匂坂凛の、いちばん大事なサンプル』。非売品"
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "門外不出"
         },
         {

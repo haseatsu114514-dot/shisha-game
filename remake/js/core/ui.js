@@ -30,7 +30,7 @@ export function initLayers() {
     gainCard({
       kind: "affinity",
       bond: !!bond,
-      face: faceIconUrl(id),
+      face: faceIconUrl(id, state, { context: bond ? "private" : null }),
       badge: [...displayName(id, state, { context: bond ? "private" : null })][0],
       top: bond ? (levelUp ? "BOND UP" : "BOND") : levelUp ? "AFFINITY UP" : "AFFINITY",
       main: displayName(id, state, { context: bond ? "private" : null }), // 恋人の絆は私的な場面でだけ深まる
@@ -47,7 +47,7 @@ export function initLayers() {
   });
   on("notice", ({ text }) => toast(text, { ms: 3000 }));
   on("lovers", ({ id }) => {
-    gainCard({ kind: "affinity", bond: true, face: faceIconUrl(id), badge: "♥", top: "NEW RELATIONSHIP", main: displayName(id, state, { context: "private" }), sub: "恋人になった" });
+    gainCard({ kind: "affinity", bond: true, face: faceIconUrl(id, state, { context: "private" }), badge: "♥", top: "NEW RELATIONSHIP", main: displayName(id, state, { context: "private" }), sub: "恋人になった" });
   });
 }
 

@@ -245,9 +245,16 @@ export function cgUrl(id) {
   return (DB.manifest.cgs || []).includes(`${id}.png`) ? img(`cgs/${id}.png`) : null;
 }
 
-export function faceIconUrl(id) {
+/**
+ * 顔ドット絵アイコン。名前欄と同じ条件で、本名を聞いた後の私的な場面のみんと（栞）は私服の顔
+ * （face_minto_private）。私服の「お姉さん」も、営業姿の顔で正体が見た目に出ないよう私服の顔にする
+ */
+export function faceIconUrl(id, state = null, { context = null } = {}) {
+  const icons = DB.manifest.faceIcons || [];
+  const privateMinto = id === "oneesan" || (id === "minto" && context === "private" && state?.flags?._minto_name_known);
+  if (privateMinto) return icons.includes("face_minto_private.png") ? `${ROOT}assets/ui/face_icons/face_minto_private.png` : null;
   const folder = SPEAKER_ALIAS[id] || id;
-  return (DB.manifest.faceIcons || []).includes(`face_${folder}.png`) ? `${ROOT}assets/ui/face_icons/face_${folder}.png` : null;
+  return icons.includes(`face_${folder}.png`) ? `${ROOT}assets/ui/face_icons/face_${folder}.png` : null;
 }
 
 export function makingUrl(name) {

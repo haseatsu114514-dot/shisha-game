@@ -156,12 +156,12 @@
         },
         {
           "speaker": "tsumugi",
-          "face": "serious",
+          "face": "normal",
           "text": "……ねえ。大会で、もし煙が濁ったら。わたしが、ちゃんと言います。……『濁ってる』って"
         },
         {
           "speaker": "tsumugi",
-          "face": "serious",
+          "face": "smile",
           "text": "だから、こわくないで"
         },
         {
@@ -349,7 +349,7 @@
         },
         {
           "speaker": "minto",
-          "face": "ura_smile",
+          "face": "ura_smug",
           "text": "……ばか、……ありがと"
         },
         {
@@ -472,7 +472,7 @@
         },
         {
           "speaker": "minto",
-          "face": "ura_normal",
+          "face": "ura_smug",
           "text": "……ね、トングのほうは、お店で使ってるの、……見ても、笑わないでよ"
         },
         {
@@ -638,7 +638,7 @@
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "……当たり前。私が淹れたんだから。……おかわりは、次に来たとき"
         },
         {
@@ -672,7 +672,7 @@
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "……いいの。君の感想が、私のいちばん信頼してるデータだから。……世界中のモニターの中で、ね"
         },
         {
@@ -718,17 +718,17 @@
         },
         {
           "speaker": "rin",
-          "face": "normal",
+          "face": "sad",
           "text": "……私さ、香りは何百種類も分かるのに。人の気持ちは、ぜんぜん読めないの"
         },
         {
           "speaker": "rin",
-          "face": "normal",
+          "face": "sad",
           "text": "……だから、データに逃げてた"
         },
         {
           "speaker": "rin",
-          "face": "serious",
+          "face": "normal",
           "text": "……でも君の前だと、読めないのが、こわくない。……分かんないまま、隣にいられる"
         },
         {
@@ -784,7 +784,7 @@
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "……断った。即で。……『最重要サンプルが日本にあるので』って書いて送った"
         },
         {
@@ -850,7 +850,7 @@
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "……非売品。門外不出。……世界で、私だけのもの"
         },
         {

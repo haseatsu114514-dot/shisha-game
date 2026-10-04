@@ -40,11 +40,11 @@
         {
           "speaker": "",
           "face": "",
-          "text": "首元に細い紙が何本も挿してあって、煙とは違う、複雑な香りがした。"
+          "text": "抱えたクリップボードに細い紙が何本も挟んであって、煙とは違う、複雑な香りがした。"
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "serious",
           "text": "毎日シーシャを吸ってる肺。それも、仕事で。……tonariの子でしょ。前掛けの折り目でわかる"
         },
         {
@@ -68,7 +68,7 @@
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "ねえ、君。ひとつ取引しない？──モルモットくん"
         },
         {
@@ -88,7 +88,7 @@
         },
         {
           "speaker": "rin",
-          "face": "normal",
+          "face": "serious",
           "text": "取引の中身はシンプル。未発売サンプルを吸って、感想を言う。それだけで報酬が出る"
         },
         {
@@ -98,7 +98,7 @@
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "はい、これ同意書。ペンこっちね。──こういうのは、考えてる時間がいちばんもったいないの"
         },
         {
@@ -117,7 +117,7 @@
         },
         {
           "speaker": "rin",
-          "face": "normal",
+          "face": "serious",
           "text": "言っとくけど、危ない橋は渡らせない。サンプルは全部、私が先に吸ってる"
         },
         {
@@ -132,7 +132,7 @@
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "凛でいいよ、モルモットくん。じゃ、契約成立。──ようこそ、夜の側へ"
         },
         {
@@ -186,7 +186,7 @@
           },
           {
             "speaker": "rin",
-            "face": "smile",
+            "face": "normal",
             "text": "……ふぅん。見るとこ見るんだ？ ますます気に入った"
           }
         ]
@@ -201,7 +201,7 @@
       "lines": [
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "お、来たね、モルモットくん。ちょうど今日の便でサンプルが届いたとこ"
         },
         {
@@ -211,7 +211,7 @@
         },
         {
           "speaker": "rin",
-          "face": "normal",
+          "face": "serious",
           "text": "ロットB-7。まず一口。考えるのは吐いてから"
         },
         {
@@ -249,22 +249,22 @@
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "本国に送るレポート、君の感想をそのまま訳して載せるよ。……名前は出さないであげる"
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "怖いでしょ、海外デビュー"
         },
         {
           "speaker": "rin",
-          "face": "normal",
+          "face": "serious",
           "text": "モニター料の代わりに、いい組み合わせを教えてあげる。ローズにライチ"
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "香水みたいに残るよ。……どっちも1階で売ってる。買っていきなよ"
         },
         {
@@ -310,7 +310,7 @@
         "r_more": [
           {
             "speaker": "rin",
-            "face": "smile",
+            "face": "normal",
             "text": "……ふふ。いいよ、どうぞ。確かめてから喋る奴は信用できる"
           }
         ]
@@ -345,12 +345,12 @@
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "だめだね。だから、あげるんじゃなくて『フィールドテストの委託』。書類は作っておいた"
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "……ね、悪い大人でしょ"
         },
         {
@@ -390,7 +390,7 @@
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "……君、いい匂いがするね。煙と、炭と、ちょっとスパイス。──tonariの匂いだ"
         },
         {
@@ -466,7 +466,7 @@
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "……推しは推せるうちに推せ、って言うでしょ"
         },
         {
@@ -525,7 +525,7 @@
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "ふうん、緑茶ね。その表現、本国のやつらは絶対に出せない、……もらった"
         },
         {
@@ -554,12 +554,12 @@
         },
         {
           "speaker": "rin",
-          "face": "normal",
+          "face": "serious",
           "text": "——だから、ロットが違うと言ってるの。控えの書類と突き合わせて"
         },
         {
           "speaker": "rin",
-          "face": "normal",
+          "face": "serious",
           "text": "……ええ。そこが揃わないうちは、一箱も店には流さない"
         },
         {
