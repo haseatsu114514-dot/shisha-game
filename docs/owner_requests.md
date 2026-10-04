@@ -1,3 +1,15 @@
+## 2026-10-04 ましろの確認と、立ったまま眠る追加表情
+
+| ID | 状態 | オーナー要望 |
+|---|---|---|
+| PRT22 | ✅ 既存5表情を見やすく再表示 | オーナー「確認したい」。ましろの通常／笑顔／真剣／驚き／あくびの全身と顔を日本語ラベル付きで並べて提示。採用の回答はまだ受けていない |
+| PRT23 | 追加6枚目の確認用を提示・保存 | オーナー「あくび以上に立ちながら可愛く寝てるのも欲しい」。既存のあくびを残し、6枚目として両目を閉じて本当に眠っている差分を追加。頭がこてんと傾き、口は小さくぽかん、肩と両手の力が抜けた可愛い立ち寝を表現。顔・髪・衣装・頭身と共通画風を揃える |
+
+[既存5表情の全身と顔](../.claude/skills/character-portrait-remaster/references/mashiro-five-review.png)、[追加の立ち寝生成元](../.claude/skills/character-portrait-remaster/references/mashiro-sleep-v1.png)、[6表情の比較](../.claude/skills/character-portrait-remaster/references/mashiro-six-review.png)、[あくびと立ち寝の比較](../.claude/skills/character-portrait-remaster/references/mashiro-sleep-yawn-comparison.png)、[プロンプト・参照・SHA-256・配置記録](../.claude/skills/character-portrait-remaster/references/mashiro-sleep-generation.json)を保存。
+みんと・つむぎの採用済みPNGを主要画風参照にし、ましろv1の本人画像を顔・髪・衣装の参照に使用。追加前の全14グループ50画像を確認し、追加後の一覧は15グループ52画像（採用済み12・確認用3）。6枚の足元下端1176px・横差0.746px未満、alpha>=16見切れなし。白／暗背景、全身と原寸の顔、生成元の2倍を確認。**6枚とも採用前の確認資料。** ゲーム用画像・アイコン・設定は変更せず、凛の後日反映メモを保持。
+
+---
+
 ## 2026-10-04 次のキャラ・ましろの制作再開
 
 | ID | 状態 | オーナー要望 |

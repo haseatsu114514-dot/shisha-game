@@ -446,6 +446,29 @@
           "sha256": "9c8870e96e7d73fd7c9b9aca89d9d6b07c0072e7517a7b09322e622848889e10"
         }
       ]
+    },
+    {
+      "id": "mashiro-sleep-v1",
+      "title": "ましろ 立ったまま眠る追加6枚目の確認用 v1",
+      "status": "pending",
+      "role": "本人の追加表情を確認する生成案。採用済み画風の基準ではない",
+      "ownerRequest": "確認したい　あとあくび以上に立ちながら可愛く寝てるのも欲しい",
+      "note": "基本5表情のあくびを残した追加の立ち寝。目を閉じ、首を傾け、肩と両手の力が抜けた姿。みんと・つむぎを主要画風、ましろv1を本人デザインの参照に使用。6枚とも採用・組み込み未確定。sleepは仮キー。",
+      "generationRecord": "mashiro-sleep-generation.json",
+      "images": [
+        {
+          "label": "生成元・無加工の立ち寝",
+          "expression": "sleep",
+          "path": "mashiro-sleep-v1.png",
+          "sha256": "6712da6fa1a2db10f50f430bbe436aa2d6e266c4cf6c8ee32ecc5cbc1ce73c3b"
+        },
+        {
+          "label": "基本5表情と全身高・足元を揃えた確認用",
+          "expression": "sleep",
+          "path": "mashiro-sleep-v1-preview.png",
+          "sha256": "352cc2f09a3719659fb872735ea44a6c95feb5ad1b4bf8961633acb8b73d89d2"
+        }
+      ]
     }
   ]
 }
