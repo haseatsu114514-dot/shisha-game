@@ -161,7 +161,7 @@
         "shark_yes": [
           {
             "speaker": "kafuka",
-            "face": "smile",
+            "face": "excited",
             "text": "おお！ スピルバーグを尊敬しておるのじゃ。見えそうで見えん、あの間がの……最初から話すと――"
           },
           {
@@ -340,7 +340,7 @@
         },
         {
           "speaker": "kafuka",
-          "face": "serious",
+          "face": "smile",
           "text": "……うむ。そっちで呼ばれると、少し照れるのじゃ。"
         }
       ]

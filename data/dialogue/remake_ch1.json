@@ -1670,7 +1670,7 @@
         },
         {
           "speaker": "tsumugi",
-          "face": "sad",
+          "face": "evil",
           "text": "……はじめさんの顔。いま、すごく濁った色、です"
         },
         {
@@ -1690,7 +1690,7 @@
         },
         {
           "speaker": "tsumugi",
-          "face": "normal",
+          "face": "evil",
           "text": "……はい。……ちゃんと、見てます、……ぜんぶ"
         },
         {
@@ -1739,12 +1739,12 @@
         },
         {
           "speaker": "tsumugi",
-          "face": "normal",
+          "face": "evil",
           "text": "……はい。……あなたは、問屋街の。……はじめさんの、なんですか"
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "私？ ……そうね。彼の、いちばん大事なサンプルの管理者、かな"
         },
         {
@@ -1779,7 +1779,7 @@
         },
         {
           "speaker": "tsumugi",
-          "face": "normal",
+          "face": "evil",
           "text": "……がんばって、ください。……それから、あとで、お話を"
         },
         {
@@ -1828,7 +1828,7 @@
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "ええ。そちらはPEPPERMINTの店長さん。……ずいぶん親しげね、彼と"
         },
         {
@@ -1838,7 +1838,7 @@
         },
         {
           "speaker": "rin",
-          "face": "smile",
+          "face": "normal",
           "text": "大事なサンプルなの。……あら、奇遇。私にとっても「大事」みたい"
         },
         {
@@ -1902,7 +1902,7 @@
         },
         {
           "speaker": "tsumugi",
-          "face": "normal",
+          "face": "evil",
           "text": "……はじめさん。……応援、来ました、……みなさんも？"
         },
         {

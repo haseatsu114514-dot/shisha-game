@@ -218,7 +218,7 @@ const limeName = (sender) => (sender === "???" ? "？？？" : displayName(sende
 function avatar(sender, small = false) {
   const cls = `lime-face${small ? ".sm" : ""}`;
   const known = sender && sender !== "???" && (state.met[sender] || sender === "sumi");
-  const url = known ? faceIconUrl(sender) : null;
+  const url = known ? faceIconUrl(sender, state, { context: "private" }) : null; // 名前（limeName）と同じ私的な場面の顔
   if (url) return el(`img.${cls}`, { src: url, alt: "" });
   const name = known ? limeName(sender) : "？";
   return el(`span.${cls}.blank`, { text: [...name][0] || "？" });
