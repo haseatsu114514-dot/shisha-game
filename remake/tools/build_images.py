@@ -44,6 +44,7 @@ def encode(src: Path, rel: str) -> bytes:
     if (rel.startswith("sprites/characters/kafuka/")
             or rel.startswith("sprites/characters/ageha/")
             or rel.startswith("sprites/characters/minto/")
+            or rel.startswith("sprites/characters/rin/")
             or rel.startswith("sprites/characters/tsumugi/")):
         b = io.BytesIO()
         im.save(b, "WEBP", lossless=True, quality=100, method=6, exact=True)

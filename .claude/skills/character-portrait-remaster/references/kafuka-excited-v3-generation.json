@@ -1,7 +1,7 @@
 {
   "character": "kafuka",
   "expression": "excited",
-  "status": "pending",
+  "status": "approved",
   "ownerRequest": "はい　サメちゃんも5表情欲しくて最後はコミカルな感じで面白いの欲しい　サメの話を無我夢中で一生懸命してるやつとか",
   "prompt": "kafuka-excited-v3-prompt.txt",
   "references": [
@@ -62,13 +62,25 @@
     "feetX": 447.61121457914555,
     "alphaPolicy": "全体の拡縮とRGBA直接配置のみ。髪の半透過と意図した吐息を保持。alpha>=16の画素のキャンバス外切れなし。"
   },
-  "review": "過去10セット32画像と各代表の原寸を確認。採用済み本人の可愛い青い虹彩と瞳孔を戻し、前のめりでぬいぐるみを抱えた熱弁、赤面、小さな汗と吐息で、息切れしながら夢中に話す表情へ修正。追加1枚は採用確認待ち。",
+  "review": "過去10セット32画像と各代表の原寸を確認。採用済み本人の可愛い青い虹彩と瞳孔を戻し、前のめりでぬいぐるみを抱えた熱弁、赤面、小さな汗と吐息で、息切れしながら夢中に話す表情へ修正。2026-10-04の指示で追加v3を採用し、excitedとして組み込み。",
   "revisionRequest": "さめちゃんは5枚目はちょっとオーバーすぎ　可愛さも残しつつ大袈裟なのがいい　あもはぁはぁ息切らしながら語ってる感じ",
   "previewSha256": "28ca4634e2ab3a8b7346ac1de83bdaac650c5a831de4723aa7cf5bcbc4f8472a",
   "promptSha256": "12d5a2dc0b8b2011e6f07c82366da2c128ee7ab7329f34371c961910e0acb3bd",
   "generatedSourcePath": "/workspace/generated_images/exec-92e1c901-34eb-4ef3-88a2-64a4a99f4887.png",
   "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187",
-  "gameIntegration": "not adopted; approved four game sprites, WebP, manifest, data and spriteScale remain unchanged",
+  "gameIntegration": {
+    "status": "integrated",
+    "asset": "assets/sprites/characters/kafuka/chr_kafuka_excited.png",
+    "webp": "remake/img/sprites/characters/kafuka/chr_kafuka_excited.webp",
+    "pngSha256": "0499b48c271dc776d25dfaa40b64370ae829c88114d237e21dcae2543fc981c2",
+    "webpSha256": "2c485386ca680882a8b2ed2117b67e9ae4cbf15c179e1c0b0820f3e678bd6c24",
+    "canvas": [
+      896,
+      1200
+    ],
+    "rgbaPixelExact": true,
+    "record": "rin-kafuka-final-integration.json"
+  },
   "reviewedStyleGroups": [
     "minto-service-v2",
     "ageha-v1",
@@ -176,7 +188,18 @@
       "reason": "オーナーの最新指示でv2はオーバーすぎ。可愛さを残し、はぁはぁ息切れしながら熱弁するv3へ修正。"
     }
   ],
-  "verification": {
+  "outputDimensions": [
+    1024,
+    1536
+  ],
+  "sourceAlpha24Bounds": [
+    177,
+    5,
+    879,
+    1522
+  ],
+  "approval": "2026-10-04: 直前の凛v7・サメちゃん追加v3の採用確認に対してオーナー「全て完了したらマージ」。制作・組み込み・検証・マージを承認。",
+  "proposalVerification": {
     "sourceMargins": "四辺にalpha>=24の画素なし",
     "previewClipping": "alpha>=16の画素のキャンバス外切れなし",
     "backgrounds": [
@@ -195,14 +218,5 @@
     "initialApproved15Unchanged": true,
     "gameAssetsUnchanged": true
   },
-  "outputDimensions": [
-    1024,
-    1536
-  ],
-  "sourceAlpha24Bounds": [
-    177,
-    5,
-    879,
-    1522
-  ]
+  "verificationRecord": "rin-kafuka-final-integration.json"
 }

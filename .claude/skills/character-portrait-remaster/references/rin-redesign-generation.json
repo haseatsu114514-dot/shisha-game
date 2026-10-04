@@ -3,9 +3,9 @@
   "age": 27,
   "version": 7,
   "expression": "normal",
-  "status": "pending",
+  "status": "approved",
   "ownerRequest": "凛を次は作りたいけど結構デザイン一新したい\nこんな感じの髪型ととろんとした目がいい　ただ目は涼しさと可愛さや色気な感じで小さくはしすぎず　半目でちょっとセクシーなだけ",
-  "priority": "サメちゃん5枚目v3の修正も受領。本人ごとに1枚ずつ生成し、最新は凛の通常表情v7を確認。どちらも採用前にゲームへ組み込まない。",
+  "priority": "2026-10-04「全て完了したらマージ」で凛v7とサメちゃんv3の制作・組み込み・検証後のマージを指示済み。",
   "designAssumptions": [
     "少し青みがある暗い髪色へ戻す。茶髪案は採用しない",
     "胸下〜ウエスト上までの短めのロング、頬を包む厚めのレイヤー",
@@ -44,7 +44,7 @@
       1517
     ],
     "alpha24BorderPixels": 0,
-    "purpose": "確認用のみ。ゲーム素材へ未採用",
+    "purpose": "採用前の確認用配置を履歴として保持。現在のゲーム素材はgameIntegration参照",
     "scale": 0.6640106241699867,
     "canvas": [
       896,
@@ -154,9 +154,21 @@
     "kafuka-excited-v3",
     "rin-redesign-v6"
   ],
-  "review": "過去10セット32画像と代表の原寸、本人の既存5表情、最新v6と参考写真を再確認。v6から少し年上に見える輪郭・少し細めた半目・写真1のクールな微笑みへ修正。髪色・長さ・体格・紙のない胸元を保持。通常表情1枚のみの採用確認待ち。",
+  "review": "過去10セット32画像と代表の原寸、本人の既存5表情、最新v6と参考写真を再確認。v6から少し年上に見える輪郭・少し細めた半目・写真1のクールな微笑みへ修正。髪色・長さ・体格・紙のない胸元を保持。2026-10-04の指示で通常v7を採用し、同じ人物で5表情へ展開・組み込み。",
   "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/187",
-  "gameIntegration": "not adopted; assets, WebP, manifest, data and spriteScale remain unchanged",
+  "gameIntegration": {
+    "status": "integrated",
+    "asset": "assets/sprites/characters/rin/chr_rin_normal.png",
+    "webp": "remake/img/sprites/characters/rin/chr_rin_normal.webp",
+    "pngSha256": "48ea068760774eb000e04325dc85c11107b54cae74bf981d055b98529d38bf12",
+    "webpSha256": "7a398054d9110731f71e96e205e3fcf7738f8af6d7f5b115b6bcee44f023eb0a",
+    "canvas": [
+      896,
+      1200
+    ],
+    "rgbaPixelExact": true,
+    "record": "rin-kafuka-final-integration.json"
+  },
   "supersededDrafts": [
     {
       "version": 1,
@@ -591,7 +603,40 @@
     "decodedPixelsUnchanged": true,
     "storage": "local-only user attachment"
   },
-  "reviewChecks": {
+  "revisionRequest": "凛はもう少しだけ年上に見せたい　主人公たちよりも　あと目をもうちょっとだけ細めて　あと口元も参考一枚目みたいな　基本クールに微笑む系　ギャップが可愛いの一枚あってもいいけど",
+  "futureExpressions": {
+    "status": "completed",
+    "faces": [
+      "normal",
+      "smile",
+      "serious",
+      "surprise",
+      "sad"
+    ],
+    "cuteGap": "smile: 目を閉じて頬に手を添える柔らかい笑顔",
+    "record": "rin-expressions-generation.json"
+  },
+  "approval": "2026-10-04: 直前の凛v7・サメちゃん追加v3の採用確認に対してオーナー「全て完了したらマージ」。制作・組み込み・検証・マージを承認。",
+  "proposalVerification": {
+    "sourceMargins": "四辺にalpha>=24の画素なし",
+    "previewClipping": "alpha>=16の画素のキャンバス外切れなし",
+    "backgrounds": [
+      "white",
+      "dark"
+    ],
+    "nativeAndPixelExactZoom": true,
+    "mobileWidth": 390,
+    "browserErrors": [],
+    "catalogGroups": {
+      "sections": 10,
+      "images": 32,
+      "approved": 8,
+      "pending": 2
+    },
+    "initialApproved15Unchanged": true,
+    "gameAssetsUnchanged": true
+  },
+  "proposalReviewChecks": {
     "zoom2": {
       "width": 2048,
       "naturalWidth": 1024,
@@ -617,25 +662,5 @@
     "sourceAlpha24EdgePixelCount": 0,
     "gameFilesChanged": false
   },
-  "revisionRequest": "凛はもう少しだけ年上に見せたい　主人公たちよりも　あと目をもうちょっとだけ細めて　あと口元も参考一枚目みたいな　基本クールに微笑む系　ギャップが可愛いの一枚あってもいいけど",
-  "futureExpressions": "基本をクールな微笑みとする5表情。1枚に照れ・無防備な笑顔など可愛いギャップを加える。通常表情のデザイン採用後に制作。",
-  "verification": {
-    "sourceMargins": "四辺にalpha>=24の画素なし",
-    "previewClipping": "alpha>=16の画素のキャンバス外切れなし",
-    "backgrounds": [
-      "white",
-      "dark"
-    ],
-    "nativeAndPixelExactZoom": true,
-    "mobileWidth": 390,
-    "browserErrors": [],
-    "catalogGroups": {
-      "sections": 10,
-      "images": 32,
-      "approved": 8,
-      "pending": 2
-    },
-    "initialApproved15Unchanged": true,
-    "gameAssetsUnchanged": true
-  }
+  "verificationRecord": "rin-kafuka-final-integration.json"
 }
