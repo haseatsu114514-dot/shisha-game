@@ -8,6 +8,24 @@
 
 設計メモ: `docs/codex_handoff_street_proto.md`（§4 実装仕様）／画像の発注書: `docs/codex_handoff_street_images.md`
 
+## ⏸ 休止中（2026-10-04・オーナー指示・AA13）
+
+試作としては**完成**。本番用の背景などができるまで**休止**する。オーナーの見込みでは、第1章がかなり仕上がってきた頃に再開する。
+休止中は手を入れない（本編・リメイク版にもつながないまま）。今の画像は試作用で、本番の絵ではない。
+
+**再開の条件**: リメイク版の第1章がかなり仕上がっていること。本番用の背景（通りのパネル昼夜・小物・電柱）がそろっていること。
+
+**再開するときの手順**
+
+1. 本番の背景は「ハリボテ背景版」と同じ形（画面1枚分のパネル×3枚・昼夜、小物シート、電柱）で発注する。
+   発注書の型は `docs/codex_handoff_street_set_images.md`。届いたら `python3 tools/proto_street_assets.py --profile set` で変換する。
+   パネルを作り直したらドア・看板の矩形を測り直す（`stage_hankagai_set.json` の `note`）
+2. 主人公はじめのデザインが決まっていれば、マスター＋歩行シートを約72ドットで発注する（AA12）。
+   変換は `python3 tools/proto_walk_sheet.py`（下の「画像の変換」）。つむぎは仮なので差し替える
+3. リメイク版 `remake/js/daily/map.js` の `chooseSpot()` へつなぐ（下の「本編に組み込む場合（見積もり）」）。
+   組み込む時に CLAUDE.md の主人公の節へ「フィールドの歩行キャラだけ例外」を追記する（AA12）
+4. 再開時はまず `python3 -m http.server 8123`（リポジトリルート）を起動し、`node web/proto/street/smoke.mjs` で今の6通りが通るか確かめてから始める
+
 ## 起動
 
 ```bash
@@ -93,7 +111,7 @@ push 済みのブランチなら raw.githack でも開ける:
 | `web/proto/street/street.js` | 本体（移動・描画・入店・しらべる・通行人・ファストトラベル・仮素材） |
 | `web/proto/street/stage_hankagai.json` | 通りの配置・入口・小物・通行人・テキスト |
 | `web/proto/street/stage_hankagai_hd.json` | 高解像度2.5D版の配置・大きさ・奥行き（テキストは上を引き継ぐ） |
-| `web/proto/street/smoke.mjs` | スモークテスト（標準・高解像度 × 生成画像・仮素材の4通りで全項目） |
+| `web/proto/street/smoke.mjs` | スモークテスト（標準・高解像度・ハリボテ × 生成画像・仮素材の6通りで全項目＋歩行ページ） |
 | `assets/proto_street/` | 変換済みの建物・小物・地面・通行人の歩行シート・`street_assets.json`（ドアと看板の位置） |
 | `assets/proto_street_hd/` | 同じものの高解像度版（通行人は48px） |
 | `assets/proto_walk/tsumugi_walk_{32,48}.png/.json` | つむぎの歩行シート（歩行テストと共用） |
