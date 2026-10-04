@@ -1,0 +1,273 @@
+{
+  "character": "mashiro",
+  "age": 22,
+  "version": 1,
+  "status": "pending_review",
+  "ownerRequest": "次のキャラ作りに進む",
+  "interpretation": "保存されたサメちゃん→ましろ→すみさんの制作順からましろを再開。凛の修正版の展開・ゲーム反映は後日の引き継ぎへ保持。",
+  "output": "mashiro-v1-sheet.png",
+  "generatedSourcePath": "/workspace/generated_images/exec-bdfdfd1d-ea1f-47c9-a792-3ab7db725a67.png",
+  "sha256": "30100e5c3880f6d9c9d70a9e87ee27804bc1b486a9d50510bae57cc16ada0d12",
+  "dimensions": [
+    1983,
+    793
+  ],
+  "prompt": "mashiro-v1-prompt.txt",
+  "promptSha256": "18e0d1d153040a0a4694bcdc8c0435a81d3b79ed58793262389d848d1a9f15b3",
+  "references": [
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "主要画風：初期採用済みみんとの線・細かな質感・陰影",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+      "role": "主要画風：採用済みつむぎの肌・布・落ち着いた塗り",
+      "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+    },
+    {
+      "path": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+      "role": "本人の顔・髪型・配色・衣装・体格・通常表情",
+      "sha256": "4caa2980b45cd6b881cdfc1fec2d3138620059c5fcf4e7e09b11f088a45f6ac5"
+    },
+    {
+      "path": ".claude/skills/character-portrait-remaster/references/mashiro-original-face-reference.png",
+      "role": "既存5表情の顔を原寸で切り抜いた参照。5枚目はsadキーだがあくび・眠そうな表情",
+      "sha256": "e2d31c7145f92ca908a562bc28c64fc6bfa938e1afbc6361e08518b8e94de39d"
+    },
+    {
+      "path": ".claude/skills/character-portrait-remaster/references/mashiro-original-five-reference.png",
+      "role": "既存5表情の全身を同じ倍率で縮小した参照。衣装と頭身を保持",
+      "sha256": "ca8283383ea5485bd7953178f88052855d2dedd70749ec0658373a49c901c62a"
+    }
+  ],
+  "originalExpressions": [
+    {
+      "expression": "normal",
+      "path": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+      "sha256": "4caa2980b45cd6b881cdfc1fec2d3138620059c5fcf4e7e09b11f088a45f6ac5"
+    },
+    {
+      "expression": "smile",
+      "path": "assets/sprites/characters/mashiro/chr_mashiro_smile.png",
+      "sha256": "3280997da380bbbd0b0add478e93bb4a2a16bcfc3f1aa1ec8a7943243e14ef77"
+    },
+    {
+      "expression": "serious",
+      "path": "assets/sprites/characters/mashiro/chr_mashiro_serious.png",
+      "sha256": "c90721f2223da94a845c92aa30d0025e531e6f623fb6cfb875c4fbc01f2812d4"
+    },
+    {
+      "expression": "surprise",
+      "path": "assets/sprites/characters/mashiro/chr_mashiro_surprise.png",
+      "sha256": "ff55d4c291e06bd8f74e3909581a603f8db6faa2fe723904a0b6f98168cea4a1"
+    },
+    {
+      "expression": "sad",
+      "path": "assets/sprites/characters/mashiro/chr_mashiro_sad.png",
+      "sha256": "3e80b353f096f9d5eba99fedb2e0e20ad2dc2fb9485ea0d9a1f2e4f4eaf053b5"
+    }
+  ],
+  "reviewedStyleGroups": 13,
+  "reviewedStyleImages": 44,
+  "reviewedStyleStatus": {
+    "approvedGroups": 12,
+    "pendingRinGroups": 1
+  },
+  "preservedDesign": [
+    "淡い灰金髪・二つの三つ編み・黄金色の眠たげな目",
+    "ベージュの大きなケーブル編みカーディガン・白いフリル首元とひも結びのブラウス",
+    "セージグリーンの足首丈ロングスカート・茶色の靴",
+    "22歳のゆるい同期らしさ・小柄な元の頭身"
+  ],
+  "expressionOrder": [
+    "normal",
+    "smile",
+    "serious",
+    "surprise",
+    "sad"
+  ],
+  "expressionNotes": {
+    "normal": "眠たげな半目と小さなほぼ無表情の口",
+    "smile": "半目の柔らかな笑顔と袖をつまむ仕草",
+    "serious": "少し集中した半目、手のひらを上へ向けて説明",
+    "surprise": "丸く開いた目と小さなO口、胸元へ手",
+    "sad": "元の絵どおり両目を閉じてあくび。手で口元を隠し、小さなZ。悲しみや涙へ改変しない"
+  },
+  "previewNormalization": {
+    "canvas": [
+      896,
+      1200
+    ],
+    "commonScale": 1.141742522756827,
+    "cuts": [
+      0,
+      427,
+      810,
+      1205,
+      1594,
+      1983
+    ],
+    "cutAlpha16Pixels": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "originalBodyBounds": [
+      306,
+      298,
+      591,
+      1176
+    ],
+    "originalFeetX": 448.35673228698215,
+    "feetBottom": 1176,
+    "feetSpreadPixels": 0.745020817216755,
+    "sourceAlpha24BorderPixels": 0,
+    "policy": "透過の隙間で列を分け、全5枚へ共通倍率。全画像の拡縮・切り抜き・RGBA直接配置のみ。創作上の加工・アルファ閾値処理なし。",
+    "expressions": [
+      {
+        "expression": "normal",
+        "label": "通常",
+        "source": "mashiro-v1-normal-source.png",
+        "sourceSha256": "3fe659dd5586edfcf94ae8922d89a89bac8982ff319d6755a7052512f62d068a",
+        "sourceCrop": [
+          0,
+          0,
+          427,
+          793
+        ],
+        "preview": "mashiro-v1-normal-preview.png",
+        "previewSha256": "d9a9ae63c2b0bfaae9f88fc139bf3ca7deb22fd719b9286f5c383668cf495f8d",
+        "placement": [
+          192,
+          284
+        ],
+        "bodyBounds": [
+          291,
+          297,
+          605,
+          1176
+        ],
+        "feetX": 448.1300569121646,
+        "feetBottom": 1176,
+        "alpha16Clipping": false
+      },
+      {
+        "expression": "smile",
+        "label": "笑顔",
+        "source": "mashiro-v1-smile-source.png",
+        "sourceSha256": "8130344bc3f74aef1d01ee8d3b335aa29daefe74e94fa5883ee65ae9ec9618ca",
+        "sourceCrop": [
+          427,
+          0,
+          810,
+          793
+        ],
+        "preview": "mashiro-v1-smile-preview.png",
+        "previewSha256": "7cdf2c8408b8dde27f05502cb8b6c501243cada676784be30fd0989abf8bdad2",
+        "placement": [
+          233,
+          286
+        ],
+        "bodyBounds": [
+          307,
+          298,
+          605,
+          1176
+        ],
+        "feetX": 448.84349840390973,
+        "feetBottom": 1176,
+        "alpha16Clipping": false
+      },
+      {
+        "expression": "serious",
+        "label": "真剣",
+        "source": "mashiro-v1-serious-source.png",
+        "sourceSha256": "107abb4ba6a55f77e4d32efc5be0415d7ca38e781e561befa3e862e00851ce6b",
+        "sourceCrop": [
+          810,
+          0,
+          1205,
+          793
+        ],
+        "preview": "mashiro-v1-serious-preview.png",
+        "previewSha256": "0ffccdded08add0754e7927f54d77bce6afa51a0ac7aecf24f49612c6c54c52d",
+        "placement": [
+          223,
+          284
+        ],
+        "bodyBounds": [
+          289,
+          298,
+          604,
+          1176
+        ],
+        "feetX": 448.098477586693,
+        "feetBottom": 1176,
+        "alpha16Clipping": false
+      },
+      {
+        "expression": "surprise",
+        "label": "驚き",
+        "source": "mashiro-v1-surprise-source.png",
+        "sourceSha256": "87be51516a46daf075f765e87b17e1369af235d121bc2674c29a0f45d1994e76",
+        "sourceCrop": [
+          1205,
+          0,
+          1594,
+          793
+        ],
+        "preview": "mashiro-v1-surprise-preview.png",
+        "previewSha256": "a2d2c4d73fee779f1dbb804779b9cc99fb729283650e82cc221a0c4d4bd24ab7",
+        "placement": [
+          235,
+          284
+        ],
+        "bodyBounds": [
+          306,
+          297,
+          602,
+          1176
+        ],
+        "feetX": 448.2822710684885,
+        "feetBottom": 1176,
+        "alpha16Clipping": false
+      },
+      {
+        "expression": "sad",
+        "label": "あくび・眠い",
+        "source": "mashiro-v1-sad-source.png",
+        "sourceSha256": "2200c9b8d382a27bb95e93d2de585372f6d5c90a5a15eba3c101bf3a2f053c27",
+        "sourceCrop": [
+          1594,
+          0,
+          1983,
+          793
+        ],
+        "preview": "mashiro-v1-sad-preview.png",
+        "previewSha256": "9c8870e96e7d73fd7c9b9aca89d9d6b07c0072e7517a7b09322e622848889e10",
+        "placement": [
+          231,
+          286
+        ],
+        "bodyBounds": [
+          307,
+          299,
+          595,
+          1176
+        ],
+        "feetX": 448.69925686407987,
+        "feetBottom": 1176,
+        "alpha16Clipping": false
+      }
+    ]
+  },
+  "reviewFiles": [
+    "mashiro-v1-five-preview.png",
+    "mashiro-v1-faces-preview.png",
+    "mashiro-v1-style-comparison.png"
+  ],
+  "gameIntegration": false,
+  "review": "全身5表情と生成元原寸の顔・肌・布を、採用済みみんと・つむぎと比較。白／暗背景、足元・見切れ・切り分けを確認。採用前の確認資料として保存。"
+}

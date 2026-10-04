@@ -400,6 +400,52 @@
           "sha256": "46bf9ec18d99388934b6fa87b34bb0eb3c2c24651b0d3995c9258621f40632b5"
         }
       ]
+    },
+    {
+      "id": "mashiro-v1",
+      "title": "ましろ 基本5表情の確認用 v1",
+      "status": "pending",
+      "role": "本人のデザインと共通画風を確認する生成案。採用前",
+      "ownerRequest": "次のキャラ作りに進む",
+      "note": "元の二つの三つ編み・眠たげな黄金色の目・大きなベージュのカーディガンと緑のロングスカートを維持。5枚目のsadは実画像に合わせてあくび・眠い表情。みんと・つむぎを主要画風参照に使用。採用・組み込みは未確定。",
+      "generationRecord": "mashiro-generation.json",
+      "images": [
+        {
+          "label": "生成元・通常／笑顔／真剣／驚き／あくび・眠い",
+          "path": "mashiro-v1-sheet.png",
+          "sha256": "30100e5c3880f6d9c9d70a9e87ee27804bc1b486a9d50510bae57cc16ada0d12"
+        },
+        {
+          "label": "通常",
+          "expression": "normal",
+          "path": "mashiro-v1-normal-preview.png",
+          "sha256": "d9a9ae63c2b0bfaae9f88fc139bf3ca7deb22fd719b9286f5c383668cf495f8d"
+        },
+        {
+          "label": "笑顔",
+          "expression": "smile",
+          "path": "mashiro-v1-smile-preview.png",
+          "sha256": "7cdf2c8408b8dde27f05502cb8b6c501243cada676784be30fd0989abf8bdad2"
+        },
+        {
+          "label": "真剣",
+          "expression": "serious",
+          "path": "mashiro-v1-serious-preview.png",
+          "sha256": "0ffccdded08add0754e7927f54d77bce6afa51a0ac7aecf24f49612c6c54c52d"
+        },
+        {
+          "label": "驚き",
+          "expression": "surprise",
+          "path": "mashiro-v1-surprise-preview.png",
+          "sha256": "a2d2c4d73fee779f1dbb804779b9cc99fb729283650e82cc221a0c4d4bd24ab7"
+        },
+        {
+          "label": "あくび・眠い",
+          "expression": "sad",
+          "path": "mashiro-v1-sad-preview.png",
+          "sha256": "9c8870e96e7d73fd7c9b9aca89d9d6b07c0072e7517a7b09322e622848889e10"
+        }
+      ]
     }
   ]
 }
