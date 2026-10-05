@@ -293,7 +293,7 @@ jq '[.dialogues[].dialogue_id]' data/dialogue/ch1_main.json
 ```bash
 pip install Pillow numpy scipy    # 立ち絵の透過余白計測＋足元アンカー(ax)計測（初回のみ。scipy欠落だと立ち絵の横位置がズレる）
 python3 web/build_data.py         # data/*.json → web/js/data.js に束ねる
-python3 web/build_standalone.py   # 1ファイル配布版 web/dist/shisha_ch1.html を生成
+python3 web/build_standalone.py   # 1ファイル配布版 web/dist/shisha_ch1.html を生成（確認用。コミットしない＝Pagesのデプロイがビルドする）
 ```
 - 追加した JSON は build_data.py の読み込み一覧に入れないと web に出ない（例: `sheesha_posts.json` はGodot専用で未バンドル）。
 
