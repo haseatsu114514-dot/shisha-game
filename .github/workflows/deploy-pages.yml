@@ -1,25 +1,25 @@
 # ソースから web ビルドを生成し、GitHub Pages に公開する。
-# main または開発ブランチ（claude/**）への push のたびに
-# https://haseatsu114514-dot.github.io/shisha-game/ が更新される。
+# main への push のたびに https://haseatsu114514-dot.github.io/shisha-game/ が更新される。
+# 作業ブランチ（claude/** 等）では動かさない（毎回失敗する実行が積もり、2026-10-04 にアカウントが
+# 自動の不正検知で一時停止された一因になった）。1ファイル配布版はここでビルドして置く＝リポジトリには入れない。
 #
 # 配備レイアウト（2026-07-02 改定・起動高速化）:
 #   /            … /remake/ へ即リダイレクト（既存ブックマークを生かす）
 #   /web/        … 従来の分割ファイル版（保存用）
-#   /shisha_ch1.html … 1ファイル配布版（約22MB・ダウンロードして持ち歩く用）
+#   /shisha_ch1.html … 1ファイル配布版（約65MB・ダウンロードして持ち歩く用。デプロイ時にビルド）
 #   /tools/flavor_stats_editor.html … フレーバー調整ツール
 #   /remake/     … リメイク版（remake/。data/ と assets/ を実行時に直接読む＝ビルド不要）
 name: Deploy web build to GitHub Pages
 
 on:
   push:
-    branches: [main, "claude/**"]
+    branches: [main]
     paths:
       - "assets/**"
       - "data/**"
       - "web/css/**"
       - "web/js/**"
       - "web/index.html"
-      - "web/dist/**"
       - "web/tools/**"
       - "web/build_data.py"
       - "web/build_standalone.py"

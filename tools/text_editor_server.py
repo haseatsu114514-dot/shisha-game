@@ -26,7 +26,7 @@ DIALOGUE_DIR = ROOT / "data" / "dialogue"
 PORT = 8321
 
 # コミットで巻き取る対象（台詞の正本＋生成物）。これ以外は触らない
-COMMIT_PATHS = ["data/dialogue", "web/js/data.js", "web/dist/shisha_ch1.html"]
+COMMIT_PATHS = ["data/dialogue", "web/js/data.js"]  # 1ファイル配布版はコミットしない（Pagesでビルド）
 PROTECTED_BRANCHES = {"main", "master"}
 
 
@@ -118,7 +118,7 @@ def git_status():
     changed = []
     for line in out.splitlines():
         path = line[3:].strip()
-        if path.startswith("data/dialogue/") or path in ("web/js/data.js", "web/dist/shisha_ch1.html"):
+        if path.startswith("data/dialogue/") or path == "web/js/data.js":
             changed.append(path)
     return {"branch": branch, "changed": changed, "protected": branch in PROTECTED_BRANCHES,
             "dialogueDirty": dialogue_dirty()}

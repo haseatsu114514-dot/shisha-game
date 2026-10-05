@@ -52,14 +52,14 @@ python3 tools/text_editor_server.py
 保存した内容は「ビルド反映」でゲーム本体（`web/js/data.js`）に束ね直して初めて反映されます。
 
 - ツールバー **🔨 ビルド反映** → `data.js を再生成`。
-  - 「配布版(dist)も再生成」にチェックすると `web/dist/shisha_ch1.html`（1ファイル配布版）も作り直します（遅い）。
+  - 「配布版(dist)も再生成」にチェックすると `web/dist/shisha_ch1.html`（1ファイル配布版）も作り直します（遅い）。手元で開く用で、コミットはされません。
   - 内部で `python3 web/build_data.py`（＋任意で `build_standalone.py`）を実行しています。
 
 ## リポジトリに反映する（コミット & プッシュ）
 
 ツールバー **⬆️ コミット & プッシュ** で、編集内容を現在のブランチへコミット（と push）できます。
 
-- 実行内容: **ビルド → `git add data/dialogue web/js/data.js web/dist` → `git commit` →（任意で）`git push`**。
+- 実行内容: **ビルド → `git add data/dialogue web/js/data.js` → `git commit` →（任意で）`git push`**。
   - コミット前に必ずビルドするので、`data.js` が古いままコミットされる事故が起きません。
   - `main` / `master` では**コミットしません**（PR運用を壊さないための安全装置）。作業ブランチに切り替えてから使ってください。
   - push はチェックを外せばローカルコミットだけにできます。

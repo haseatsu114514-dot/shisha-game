@@ -215,49 +215,99 @@
           "text": "お客さんは『みんとちゃん』目当てだしさ♪"
         },
         {
-          "speaker": "minto",
-          "face": "wink",
-          "text": "……ってことで！ はいっ、みんとのLIME♡ 出勤日とイベント、ここでお知らせするねっ"
-        },
-        {
           "speaker": "",
           "face": "",
-          "text": "差し出されたスマホに、QRコード。アカウント名は『みんと＠ぺぱーみんと』。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "（……え、LIME？ 初対面で？ こんな可愛い子と、こんなにあっさり？）"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "隣の席の常連さんが、自分のスマホを得意げに掲げてみせた。"
-        },
-        {
-          "speaker": "customer",
-          "face": "normal",
-          "text": "新人くん、それお仕事用のLIMEね。俺らもみんなもらってるよ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "（み、みんな……！？ これがコンカフェの『営業LIME』ってやつか……）"
+          "text": "会計を済ませると、みんとが一枚のチェキを差し出してきた。"
         },
         {
           "speaker": "minto",
           "face": "wink",
-          "text": "お仕事用だけどね♪ ……でも、煙の話ならちゃんと返すから。たまーに付き合って？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（……『こう見えて』。さっきの言い方は、ほんの少しだけ素っぽかった）あ、はい。よろこんで"
+          "text": "はいっ、初めましての記念チェキ♡ ……裏も、ちゃんと見てね？"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "──こうして、みんとの『お仕事用』のLIMEを交換した。"
+          "text": "裏には丸っこい字で『はじめくん また来てね♡』。その下に、LIMEのIDが書いてあった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……LIMEのID？ これ、いわゆる『営業LIME』ってやつじゃ……）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（いや、待て。こういう店って、客と連絡先を交換するのはNGなんじゃ……？）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "心臓が妙にうるさい。おそるおそるIDを打ち込むと、すぐに通知が鳴った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "『【ぺぱーみんと】ご登録ありがとうございます♡』"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "『出勤日や、お得なお知らせをお届けします！』"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "新作とか、お得なお知らせとか、そこに送るからね〜♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……なんだ、やっぱり営業LIMEか。……ちょっと、ほっとした）"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "あ、でもね。うち、キャストはみんとひとりだから♪"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "えっ、ひとり？ ……じゃあ、さっきの『ご指名』とか『推しメン』って"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "ぜーんぶ、みんとだよ♪ 人気No.1にして、ただひとりのキャストっ"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "だから『お店の公式』でも、中の人はみんとだけ。……実質、個人アカだね♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（……ほっとするの、早すぎたかもしれない）"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "煙の話なら、ちゃんと返すから。……たまーに、付き合って？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……『こう見えて』。さっきの言い方は、少しだけ素っぽかった）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ、はい。よろこんで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──こうして、チェキの裏のIDから、みんとのLIMEがつながった。"
         },
         {
           "type": "set_flag",
