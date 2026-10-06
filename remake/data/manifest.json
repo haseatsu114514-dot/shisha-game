@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-04 10:51 UTC",
+ "generated": "2026-10-06 14:08 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -622,7 +622,8 @@
   ]
  },
  "bgm": [
-  "daily_part.mp3",
+  "kansetsu_shomei_to_black_coffee.mp3",
+  "sweets_or_sweets.mp3",
   "title.mp3",
   "tonari.mp3"
  ],

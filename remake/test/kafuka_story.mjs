@@ -6,7 +6,8 @@ const read = path => fs.readFile(new URL('../'+path,import.meta.url),'utf8');
 const story = JSON.parse(await fs.readFile(new URL('../../data/dialogue/kafuka.json',import.meta.url),'utf8'));
 const manifest = JSON.parse(await read('data/manifest.json'));
 const state = {chapter:1,day:8,phase:'daily',slot:2,flags:{},contacts:[],met:{},story:{},limeRead:[]};
-const played=[], rewards=[];
+const played=[], rewards=[], bgm=[];
+let nowBgm='kansetsu_shomei_to_black_coffee';
 const context=vm.createContext({AbortController,setTimeout,clearTimeout,Promise,Set,
   fetch:async path=>({ok:true,json:async()=>{
     if(path==='data/manifest.json')return manifest;
@@ -37,6 +38,7 @@ const deps={
  '../core/state.js':{state,save:()=>saves++,markMet:id=>state.met[id]=true},
  '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),gainStat:()=>{},addMoney:()=>{},addStamina:()=>{}},
  '../vn/engine.js':{play:async id=>played.push(id)},
+ '../core/audio.js':{playBgm:key=>{bgm.push(key);nowBgm=key;},currentBgm:()=>nowBgm},
 };
 const kafukaModule=new vm.SourceTextModule(await read('js/daily/kafuka.js'),{context});
 await kafukaModule.link(spec=>{const d=deps[spec];assert(d);return new vm.SyntheticModule(Object.keys(d),function(){for(const[k,v]of Object.entries(d))this.setExport(k,v);},{context});});await kafukaModule.evaluate();
@@ -47,7 +49,8 @@ for(const flag of ['hasNightEvent','hasAppointment','hadConfession','athome'])as
 state.flags._private_night_day=8;assert.equal(k.kafukaEncounterDue(),false);delete state.flags._private_night_day;
 state.chapter=2;assert.equal(k.kafukaEncounterDue(),false,'do not play construction scene after opening');state.chapter=1;
 assert.equal(k.kafukaEncounterDue(),true);
-await k.maybeKafukaEncounter();assert.deepEqual(played,['kafuka_first_encounter']);assert.equal(saves,1);
+await k.maybeKafukaEncounter();assert.deepEqual(played,['kafuka_first_encounter']);
+assert.deepEqual(bgm,['sweets_or_sweets','kansetsu_shomei_to_black_coffee'],'theme plays only during the scene');assert(manifest.bgm.includes('sweets_or_sweets.mp3'));assert.equal(saves,1);
 assert(state.contacts.includes('kafuka'));assert.equal(state.met.kafuka,undefined);assert.equal(data.displayName('kafuka',state),'？？？');
 assert.equal(await k.maybeKafukaEncounter(),false);assert.equal(played.length,1);assert.equal(rewards.length,1);
 const prep=k.kafukaSpot();assert.equal(prep.label,'SHISHARK');assert.equal(prep.kind,'kafuka');assert.equal(prep.unavailable,'開店準備中');assert.equal(prep.cost,0);assert.equal(prep.stamina,0);assert.equal(prep.preview,'bg_shishark_preparing_night');

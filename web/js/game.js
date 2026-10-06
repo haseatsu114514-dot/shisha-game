@@ -1324,7 +1324,7 @@ function showSaveLoad(mode) {
         toggleStatus(false);
         if (window.SFX) SFX.select();
         engulfInSmoke(() => {
-          if (window.SFX) SFX.bgm("daily_part");
+          if (window.SFX) SFX.bgm("kansetsu_shomei_to_black_coffee");
           continueGame(data);
         });
       });
@@ -2981,7 +2981,7 @@ function updateHomeworkBanner() {
 
 function showMap(opts = {}) {
   state.phase = "daily";
-  if (window.SFX) SFX.bgm("daily_part");
+  if (window.SFX) SFX.bgm("kansetsu_shomei_to_black_coffee");
   showScreen("#screen-map");
   const night = state.ap <= 1;
   $("#map-image").style.backgroundImage =
@@ -8182,7 +8182,7 @@ function startChapter2() {
     showChapterTitle(
       { no: "第二章", num: "Ⅱ", name: "才能の壁", read: "ジェラシー・ヘイズ ── JEALOUSY HAZE", sub: "HAZE: OPEN CLOUD 編" },
       () => {
-        if (window.SFX) SFX.bgm("daily_part");
+        if (window.SFX) SFX.bgm("kansetsu_shomei_to_black_coffee");
         playDialogue("ch2_opening", () =>
           playDialogue("ch2_rivals_first_sight", () => {
             save();

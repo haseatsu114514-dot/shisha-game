@@ -55,7 +55,7 @@ export function sellEquipment(id) {
 export function openShop({ errand = null } = {}) {
   return new Promise((resolve) => {
     setBg(bgUrl("bg_shop"), { fast: true });
-    playBgm("daily_part");
+    playBgm("kansetsu_shomei_to_black_coffee");
     let tab = "flavor";
     const body = el("div.shop-body");
     const tabs = el("div.shop-tabs");

@@ -119,7 +119,7 @@ def collect_assets() -> dict:
     return assets
 
 
-BGM_FILES = {"daily_part": "daily_part.mp3", "tonari": "tonari.mp3", "title": "title.mp3"}
+BGM_FILES = {"kansetsu_shomei_to_black_coffee": "kansetsu_shomei_to_black_coffee.mp3", "tonari": "tonari.mp3", "title": "title.mp3"}
 BGM_MAX_BYTES = 1_200_000  # 1曲あたり約75秒で切ってループさせる
 
 

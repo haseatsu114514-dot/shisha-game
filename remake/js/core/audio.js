@@ -216,6 +216,9 @@ const SYNTH_FALLBACK = {
   bgm_rival_shop: "calm",
 };
 
+/** 今鳴っている曲のキー（自動再生待ちの間は null） */
+export const currentBgm = () => currentKey;
+
 export function playBgm(key) {
   if (key === currentKey) return;
   stopBgm(0.6);

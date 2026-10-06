@@ -3,8 +3,17 @@ import { DB } from "../core/data.js";
 import { state, save, markMet } from "../core/state.js";
 import { gainAffinity, gainStat, addMoney, addStamina } from "../core/stats.js";
 import { play } from "../vn/engine.js";
+import { playBgm, currentBgm } from "../core/audio.js";
 
 export const KAFUKA_NICKNAME_TOPIC = "lime_naru_kafuka_nickname";
+const KAFUKA_BGM = "sweets_or_sweets"; // サメちゃんのテーマ（M-ART「おいしいお菓子を捧げよ！」）
+
+/** サメちゃんの場面だけテーマに切り替え、終わったら元の曲へ戻す */
+async function withKafukaTheme(scene) {
+  const prev = currentBgm();
+  playBgm(KAFUKA_BGM);
+  try { return await scene(); } finally { if (prev) playBgm(prev); }
+}
 
 /** 既存flags/contactsを使う。旧セーブの未読から名乗りを推測しない。 */
 export function syncKafukaKnowledge() {
@@ -26,7 +35,7 @@ export function kafukaEncounterDue({ hasNightEvent = false, hasAppointment = fal
 
 export async function maybeKafukaEncounter(context = {}) {
   if (!kafukaEncounterDue(context) || !DB.dialogues.kafuka_first_encounter) return false;
-  await play("kafuka_first_encounter");
+  await withKafukaTheme(() => play("kafuka_first_encounter"));
   state.flags._kafuka_first_encounter = true;
   state.flags._lime_contact_kafuka = true;
   // 名前はまだ？？？。連絡先交換だけでは名乗りを受けた扱いにしない。
@@ -54,7 +63,7 @@ export async function visitKafuka(spot) {
   if (!DB.dialogues[dialogue]) return false;
   addMoney(-(spot.cost || 0));
   addStamina(spot.stamina || 0);
-  await play(dialogue);
+  await withKafukaTheme(() => play(dialogue));
   state.story.kafuka = count + 1;
   gainAffinity("kafuka", count === 0 ? 2 : 1);
   gainStat("insight", 1);

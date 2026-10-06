@@ -64,7 +64,7 @@ export async function runDaily(def) {
 }
 
 async function morning() {
-  playBgm("daily_part");
+  playBgm("kansetsu_shomei_to_black_coffee");
   await dayCard(`DAY ${state.day}`, `SMOKE CROWN CUP まで あと${daysLeft()}日${isRainy() ? "　☂ 雨" : ""}`);
   // LIME は通知だけ（中身は好きなときにアプリを開いて読む）
   const n = deliverMorning({ fixedNight: (d) => !!chapterDef.nightEvents[d] });

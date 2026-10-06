@@ -64,8 +64,8 @@
         "category": "audio"
       },
       {
-        "path": "assets/audio/bgm/daily_part.mp3",
-        "filename": "daily_part.mp3",
+        "path": "assets/audio/bgm/kansetsu_shomei_to_black_coffee.mp3",
+        "filename": "kansetsu_shomei_to_black_coffee.mp3",
         "category": "audio"
       },
       {
@@ -1639,7 +1639,7 @@
       "bgm_rival_shop": "assets/audio/bgm/bgm_rival_shop.mp3",
       "bgm_tournament_edm": "assets/audio/bgm/bgm_tournament_edm.mp3",
       "bgm_tournament_wait": "assets/audio/bgm/bgm_tournament_wait.mp3",
-      "daily_part": "assets/audio/bgm/daily_part.mp3",
+      "kansetsu_shomei_to_black_coffee": "assets/audio/bgm/kansetsu_shomei_to_black_coffee.mp3",
       "title": "assets/audio/bgm/title.mp3",
       "tonari": "assets/audio/bgm/tonari.mp3"
     }
@@ -1761,12 +1761,12 @@
       }
     },
     {
-      "asset_id": "assets.audio.bgm.daily_part",
-      "path": "assets/audio/bgm/daily_part.mp3",
-      "filename": "daily_part.mp3",
+      "asset_id": "assets.audio.bgm.kansetsu_shomei_to_black_coffee",
+      "path": "assets/audio/bgm/kansetsu_shomei_to_black_coffee.mp3",
+      "filename": "kansetsu_shomei_to_black_coffee.mp3",
       "category": "audio",
       "subcategory": "bgm",
-      "logical_name": "daily_part",
+      "logical_name": "kansetsu_shomei_to_black_coffee",
       "character": null,
       "expression": null,
       "file_size_bytes": 7377948,
