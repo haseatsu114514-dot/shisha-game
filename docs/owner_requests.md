@@ -1,3 +1,14 @@
+## 2026-10-06 BGMの改名・サメちゃんのテーマ・保留曲
+
+| ID | 状態 | オーナー要望 |
+|---|---|---|
+| BGM01 | ✅ 本PR | オーナー「間接照明とブラックコーヒー　ってフリーbgmだった　改名しといて」 → 日常曲 `daily_part.mp3` を曲名に合わせて `kansetsu_shomei_to_black_coffee.mp3` に改名（元音源 `asset_sources/music/daily_bgm_source.mp3` も同名へ）。リメイク版・旧版・配布版の `BGM_FILES`・manifest・assets_index の参照を新キーへ置き換え（鳴る場面は不変）。出典は `asset_sources/music/README.md` に記録（配布元・作曲者は未記入） |
+| BGM02 | ✅ 本PR | オーナー「サメちゃんのbgmこれでいいや」（M-ART「おいしいお菓子を捧げよ！」作曲 Napi・`m-art_SweetsOrSweets.ogg`） → リメイク版はmp3だけを読むので変換して `assets/audio/bgm/sweets_or_sweets.mp3`。元のoggは `asset_sources/music/` に保存。続けて「サメちゃんの店では流さない」 → 鳴らすのはサメちゃんの初対面（DAY8以降の帰り道）と、店の外の私的な場面（`kafuka.json` の `metadata.bgm`）。SHISHARK訪問（`kafuka_shop_*`）は直前の曲のまま。Suno用プロンプト案は不採用 |
+| BGM04 | ✅ 本PR | オーナー「美味しいお菓子のやつはサメちゃん以外にもギャグシーンとかコミカルなときにたまに使いたい　でも基本はサメちゃんのテーマとして使う」 → 会話の `metadata.bgm` にキーを書けば、その会話の間だけ曲を替えて終わったら元へ戻す仕組みをリメイク版の会話エンジンに追加（旧版は metadata を無視するので影響なし）。どのギャグ場面で使うかは未定（オーナーの指定待ち） |
+| BGM03 | ⏸ 保留 | オーナー「これも何かで使いたい　保留ではあるけど」（`morning-cafe.MP3`） → 使い道が決まるまで `asset_sources/music/morning_cafe.mp3` に保存のみ。ゲームでは鳴らさない |
+
+---
+
 ## 2026-10-04 みんととのLIME交換の建てつけを作り直す（HF10の続き）
 
 建てつけの案を7つ出した（営業LIME・チェキの裏にQR・見張り・同業者の相談・ライバル偵察・店どうしの窓口・お姉さんの別アカ）うえでのオーナー回答。

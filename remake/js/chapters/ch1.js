@@ -179,7 +179,7 @@ async function tournamentDay() {
     state.day = TOURNAMENT_DAY;
     state.slot = 0;
     showHud(true);
-    playBgm("daily_part");
+    playBgm("kansetsu_shomei_to_black_coffee");
     await dayCard(`DAY ${TOURNAMENT_DAY}`, "SMOKE CROWN CUP 当日");
     const cheers = morningMessages({ tournamentDay: true });
     if (cheers.length) await openPhone(cheers, { time: "AM 7:40" });
