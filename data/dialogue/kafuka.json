@@ -50,7 +50,8 @@
       "dialogue_id": "kafuka_first_encounter",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_shishark_preparing_night.png",
-        "setting": "仕事や外出を終えた帰り道。LIME交換まで本名も通称も名乗らない。"
+        "setting": "仕事や外出を終えた帰り道。LIME交換まで本名も通称も名乗らない。",
+        "bgm": "sweets_or_sweets"
       },
       "lines": [
         {
@@ -296,7 +297,8 @@
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street.png",
         "future_only": true,
-        "private_scene": true
+        "private_scene": true,
+        "bgm": "sweets_or_sweets"
       },
       "lines": [
         {
@@ -321,7 +323,8 @@
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street.png",
         "future_only": true,
-        "private_scene": true
+        "private_scene": true,
+        "bgm": "sweets_or_sweets"
       },
       "lines": [
         {

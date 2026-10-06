@@ -6,7 +6,7 @@ import { DB, displayName, portraitInfo, sceneBg, cgUrl, preload } from "../core/
 import { state, markMet, STAT_EN, timeOfDay, config } from "../core/state.js";
 import { applyStats, gainAffinity, addMoney, affinityLevel } from "../core/stats.js";
 import { setBg, layers, toast, flash, shake, modal, dropRetired, imageReady } from "../core/ui.js";
-import { SE, playSe } from "../core/audio.js";
+import { SE, playSe, playBgm, currentBgm } from "../core/audio.js";
 import { paginate, formatHtml, sliceHtml, visibleLength, stripTags } from "./text.js";
 import { glossaryPanel } from "./glossary.js";
 import { rememberRelationship, relationshipReflectionLines } from "../core/relationships.js";
@@ -123,6 +123,8 @@ export function play(idOrDlg, opts = {}) {
       visited: [dlg.dialogue_id || ""],
       ready: false, // 背景・立ち絵の読み込み待ちの間は送らない
       context: sceneContext(dlg), // 公私の文脈（名前欄・ログの呼び名）。jump 先の metadata で切り替わる
+      bgmBefore: currentBgm(), // metadata.bgm で曲を替えた会話は、終わったらこの曲へ戻す
+      bgmSwitched: false,
     };
     autoFxGap = 0;
     dom.portraits.replaceChildren();
@@ -134,6 +136,7 @@ export function play(idOrDlg, opts = {}) {
     const bg = opts.bg || meta.bg;
     const bgReady = bg ? sceneSetBg(bg) : Promise.resolve();
     dom.effect.dataset.effect = meta.effect || "";
+    sceneBgm(meta);
     if (hooks.onEnter) hooks.onEnter(dlg.dialogue_id || "", dlg);
     dropRetired(); // 選び終えた前の画面（マップ等）を会話の後ろに残さない
     // 会話の間は、まだ片付いていない画面（大会の作業台・結果表など）も後ろに見せない（会話が終われば戻る）
@@ -149,6 +152,13 @@ export function play(idOrDlg, opts = {}) {
       next();
     });
   });
+}
+
+/** metadata.bgm: その会話の間だけ鳴らす曲（jump 先でも切り替わる。会話が終われば元の曲へ） */
+function sceneBgm(meta) {
+  if (!meta?.bgm) return;
+  running.bgmSwitched = true;
+  playBgm(meta.bgm);
 }
 
 /** 仕事を離れた私的な場面か（metadata.private_scene）。名前欄の呼び名に使う */
@@ -205,6 +215,7 @@ function finish() {
   dom.effect.dataset.effect = "";
   layers.vn.classList.remove("sepia");
   setSkip(false);
+  if (r.bgmSwitched && r.bgmBefore) playBgm(r.bgmBefore);
   r.resolve({ id: r.id, visited: r.visited });
 }
 
@@ -266,6 +277,7 @@ function jumpTo(id) {
   }
   running.visited.push(id);
   if (target.metadata?.bg) sceneSetBg(target.metadata.bg);
+  sceneBgm(target.metadata);
   if (hooks.onEnter) hooks.onEnter(id, target);
 }
 
