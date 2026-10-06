@@ -1,0 +1,100 @@
+{
+  "id": "kannon",
+  "name": "観音堂",
+  "note": "古町の観音堂（大須観音がモデル・AA14）。ハリボテ背景版と同じ作り（640×360を2倍・キャラ72ドット）。背景は Codex のパネル3枚をつないだ一枚絵（tools/proto_street_assets.py --profile kannon）。画像が届くまでは ph の配置でコードが仮の境内を描く。perches（鳩が止まる屋根）・石段（walkExtra）・賽銭箱の位置は仮の絵に合わせた値なので、パネルが届いたら測り直す",
+  "view": { "w": 640, "h": 360, "scale": 2 },
+  "unit": 2.25,
+  "drawUnit": 2,
+  "charSize": 72,
+  "assets": "assets/proto_kannon/",
+  "set": { "img": "kannon_day.png", "imgNight": "kannon_night.png" },
+  "width": 1840,
+  "height": 360,
+  "groundTop": 250,
+  "walk": { "x0": 4, "x1": 1790, "y0": 256, "y1": 334 },
+  "walkExtra": [{ "x0": 872, "x1": 968, "y0": 200, "y1": 260 }],
+  "spawn": { "x": 60, "y": 296, "dir": "right" },
+  "spawnLabel": "境内の入口",
+  "exit": { "x": 0, "w": 16, "label": "エリアマップへ" },
+  "travelHint": "お参りした場所へ移動できます（X: 閉じる）",
+  "travel": [{ "id": "pray", "label": "本堂の前", "needs": "kannon_pray", "x": 920, "y": 268, "dir": "up" }],
+  "ph": {
+    "gate": [190, 450, 118],
+    "hall": [690, 1150, 44, 200],
+    "stairs": [872, 968],
+    "ema": [1236, 1316],
+    "bell": [1440, 1580, 120],
+    "wallFrom": 1792
+  },
+  "facades": [],
+  "doors": [],
+  "signs": [],
+  "objects": [
+    { "id": "nobori_1", "img": "nobori", "x": 150, "y": 262, "solid": [8, 6] },
+    { "id": "toro_1", "img": "toro", "x": 520, "y": 266, "solid": [30, 8], "glow": true,
+      "text": ["石灯籠。苔の間に、小さなクモの巣が光っている。"] },
+    { "id": "nobori_2", "img": "nobori", "x": 600, "y": 262, "solid": [8, 6] },
+    { "id": "cat", "creature": "cat", "x": 850, "y": 266, "solid": [22, 6],
+      "text": ["石段の下で、白い猫が寝ている。近づいても逃げない。"],
+      "textAgain": ["鳩が飛び立っても、猫は片目を開けただけだった。"] },
+    { "id": "koro", "img": "koro", "x": 920, "y": 306, "solid": [52, 12], "smoke": true, "action": "smoke",
+      "text": ["常香炉の煙を、手で招いて頭にかけた。", "煙を浴びたところが良くなる、という言い伝えらしい。"],
+      "textAgain": ["もう一度、煙を肩にかけた。線香の匂いが服に残る。"] },
+    { "id": "saisen", "img": "saisen", "x": 920, "y": 206, "solid": [60, 6], "action": "pray" },
+    { "id": "ema", "hit": [80, 44], "x": 1276, "y": 258,
+      "text": ["絵馬がびっしり掛かっている。「合格」「健康」……「推しに会えますように」。"] },
+    { "id": "omikuji", "img": "omikuji", "x": 1360, "y": 266, "solid": [30, 8], "action": "omikuji" },
+    { "id": "endai", "img": "endai", "x": 1520, "y": 286, "solid": [62, 10],
+      "text": ["赤い毛氈の縁台。座ると、境内がひと回り広く見える。"] },
+    { "id": "toro_2", "img": "toro", "x": 1700, "y": 266, "solid": [30, 8], "glow": true,
+      "text": ["石灯籠。火袋の中に、誰かが置いた十円玉がある。"] },
+    { "id": "nobori_3", "img": "nobori", "x": 1250, "y": 330, "solid": [8, 6] }
+  ],
+  "npcs": [
+    { "id": "mob_oldman", "sheet": "mob_oldman", "name": "作務衣のおじいさん", "x": 1450, "y": 316, "dir": "left",
+      "patrol": [1080, 1740], "speed": 20,
+      "text": ["おはよう。鳩かい？ 追いかけなきゃ、すぐ戻ってくるよ。"],
+      "textAgain": ["掃き終わった所から、鳩が散らかしていくんだ。……まあ、いいさ。"] },
+    { "id": "mob_obasan", "sheet": "mob_obasan", "sheetDir": "assets/proto_street_set/", "name": "おばさん",
+      "x": 1004, "y": 300, "dir": "left",
+      "text": ["お参りしたら、香炉の煙もかけていきなさいな。", "頭にかけたら、頭が良くなるんだって。"],
+      "textAgain": ["うちの孫は、鳩を追いかけてばっかりでねえ。"] },
+    { "id": "mob_student", "sheet": "mob_student", "sheetDir": "assets/proto_street_set/", "name": "大学生",
+      "x": 668, "y": 284, "dir": "right",
+      "text": ["鳩、撮りたいんですけど……近づくと全部飛んでっちゃうんですよ。", "走らずに、そーっと行けばいけるのかな。"],
+      "textAgain": ["じっと待ってると、向こうから寄ってくるらしいです。"] }
+  ],
+  "pigeons": {
+    "flocks": [
+      { "x0": 700, "x1": 860, "y0": 274, "y1": 330, "count": 7 },
+      { "x0": 1010, "x1": 1180, "y0": 272, "y1": 330, "count": 5 },
+      { "x0": 1560, "x1": 1690, "y0": 270, "y1": 328, "count": 5 }
+    ],
+    "perches": [
+      { "x0": 236, "x1": 404, "y": 116 },
+      { "x0": 760, "x1": 880, "y": 76 },
+      { "x0": 960, "x1": 1080, "y": 76 },
+      { "x0": 1460, "x1": 1560, "y": 118 }
+    ],
+    "perchChance": 0.5,
+    "returnSec": [7, 13]
+  },
+  "prayLines": [
+    "（……今日も、いい一台が作れますように）",
+    "（……みんなが元気でいられますように）",
+    "（……焦らず、一台ずつ）",
+    "（……次に来る時も、ちゃんと笑っていられますように）"
+  ],
+  "omikuji": [
+    { "name": "大吉", "word": "願い事、思いのままに叶う。" },
+    { "name": "吉", "word": "急がずに進めば、道は開ける。" },
+    { "name": "中吉", "word": "人の話をよく聞けば、なお良し。" },
+    { "name": "小吉", "word": "待ち人、遅れて来る。" },
+    { "name": "末吉", "word": "今は種をまく時。" },
+    { "name": "凶", "word": "足元に気をつけよ。" }
+  ],
+  "omikujiAgain": ["さっき引いたおみくじは、もう枝に結んできた。"],
+  "bloom": 3,
+  "nightTint": "#8d93c9",
+  "post": { "sun": 0.06, "vignette": 0.22 }
+}

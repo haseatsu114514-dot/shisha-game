@@ -31,6 +31,8 @@
   python3 tools/proto_street_assets.py                 # 320×180 の試作用 → assets/proto_street/
   python3 tools/proto_street_assets.py --profile hd    # 640×360 の高解像度2.5D版 → assets/proto_street_hd/
   python3 tools/proto_street_assets.py --door-h 38 --facade-max-h 112
+  python3 tools/proto_street_assets.py --profile set     # ハリボテ背景版の繁華街（AA11）→ assets/proto_street_set/
+  python3 tools/proto_street_assets.py --profile kannon  # 古町の観音堂（AA14）→ assets/proto_kannon/
 """
 
 import argparse
@@ -77,6 +79,15 @@ SET_OVERLAPS = (32, 48)   # パネル1-2・2-3を重ねる幅（各パネルの�
 SET_CHAR = 72             # キャラの身長（ドット）。小物の大きさはこれに対する比率で決める
 SET_PROPS = [("vending", 1.15), ("bench", 0.55), ("aboard", 0.6), ("plant", 0.6), ("lamp", 2.2), ("bicycle", 0.6)]
 
+# 古町の観音堂（AA14）: 境内のパネル×3（昼・夜）・寺の小物・鳩・白い猫。発注書 docs/codex_handoff_kannon_images.md
+KANNON_DIR = REPO_ROOT / "asset_sources" / "images" / "proto_kannon"
+KANNON_PROPS = [("koro", 1.0), ("saisen", 0.5), ("toro", 1.3), ("omikuji", 0.85), ("endai", 0.42), ("nobori", 2.6)]
+# 鳩（横4×縦2）と猫（横2×縦1）のコマ。大きさは基準のコマの高さ（キャラ72ドットに対する比率）で全コマ同じ倍率に縮める
+PIGEON_FRAMES = ["stand", "walk", "peck1", "peck2", "fly1", "fly2", "fly3", "fly4"]
+PIGEON_BASE_H = 0.2       # 立っている鳩の高さ（チビキャラの横に置くので実物の比率より少し大きめ）
+CAT_FRAMES = ["sleep", "sit"]
+CAT_BASE_H = 0.3          # 座った猫の高さ
+
 # 出力の種類。base = 320×180 の試作（web/proto/street の標準）、hd = 640×360 の高解像度2.5D版（AA9）、
 # set = ハリボテ背景版（AA11。背景は一枚絵のパネル・キャラ72ドット）
 PROFILES = {
@@ -84,6 +95,7 @@ PROFILES = {
     "hd": {"out": "proto_street_hd", "door_h": 56, "facade_max_h": 172, "ground_h": 150, "ground_w": 400, "prop_scale": 1.6,
            "depth": True, "far_h": 210, "pole_h": 380},
     "set": {"out": "proto_street_set", "door_h": 0, "facade_max_h": 0, "ground_h": 0, "ground_w": 0, "prop_scale": 0},
+    "kannon": {"out": "proto_kannon", "door_h": 0, "facade_max_h": 0, "ground_h": 0, "ground_w": 0, "prop_scale": 0},
 }
 
 
@@ -334,11 +346,71 @@ def build_set(args, report):
     return meta
 
 
+def build_critter(path: Path, cols: int, rows: int, names, base: str, base_h: int, colors: int):
+    """鳩・猫のシート → コマを横1列に並べた1枚（全コマ同じ倍率・同じセル・足元をそろえる）と、そのメタ。"""
+    keyed, blobs = cut_sheet(path, cols, rows)
+    crops = [keyed.crop((x0, y0, x1, y1)) for (x0, y0, x1, y1, _) in blobs]
+    k = base_h / crops[names.index(base)].height
+    small = [shrink(c, (max(1, round(c.width * k)), max(1, round(c.height * k))), colors) for c in crops]
+    cw = max(im.width for im in small) + 2
+    ch = max(im.height for im in small) + 2
+    sheet = Image.new("RGBA", (cw * len(small), ch), (0, 0, 0, 0))
+    for i, im in enumerate(small):
+        sheet.alpha_composite(im, (i * cw + (cw - im.width) // 2, ch - 1 - im.height))   # 下端（足元）をそろえる
+    meta = {"cell": [cw, ch], "anchor": [cw // 2, ch - 1], "frames": {n: i for i, n in enumerate(names)}}
+    return sheet, meta
+
+
+def build_kannon(args, report):
+    """観音堂: パネル3枚（昼・夜）→ 境内の一枚絵、寺の小物、鳩、白い猫。作務衣のおじいさんの歩行シートは proto_walk_sheet.py。"""
+    meta = {"set": {}, "props": {}}
+    for tod in ("day", "night"):
+        paths = [KANNON_DIR / f"kannon_panel_{i}_{tod}.png" for i in (1, 2, 3)]
+        if not all(p.exists() for p in paths):
+            print(f"kannon_{tod}: パネルがそろっていない（{', '.join(p.name for p in paths if not p.exists())}）")
+            continue
+        strip = stitch_panels([Image.open(p) for p in paths], SET_H, SET_OVERLAPS)
+        if args.colors_set:
+            strip = strip.quantize(colors=args.colors_set, method=Image.MEDIANCUT).convert("RGB")
+        strip.save(OUT_DIR / f"kannon_{tod}.png")
+        meta["set"][tod] = {"w": strip.width, "h": strip.height}
+        report.append((f"kannon_{tod}", strip, []))
+        print(f"kannon_{tod}: {strip.width}x{strip.height}")
+    sheet = KANNON_DIR / "kannon_props_sheet.png"
+    if sheet.exists():
+        keyed, blobs = cut_sheet(sheet, 3, 2)
+        for (name, rel), (x0, y0, x1, y1, _) in zip(KANNON_PROPS, blobs):
+            crop = keyed.crop((x0, y0, x1, y1))
+            height = round(SET_CHAR * rel)
+            w = max(1, round(crop.width * height / crop.height))
+            out = shrink(crop, (w, height), args.colors)
+            out.save(OUT_DIR / f"prop_{name}.png")
+            meta["props"][name] = {"w": w, "h": height}
+            report.append((f"prop_{name}", out, []))
+            print(f"prop_{name}: {w}x{height}")
+    else:
+        print("kannon_props_sheet: 元画像なし（届いたら変換する）")
+    for name, cols, rows, frames, base, rel in (
+        ("pigeon", 4, 2, PIGEON_FRAMES, "stand", PIGEON_BASE_H),
+        ("cat", 2, 1, CAT_FRAMES, "sit", CAT_BASE_H),
+    ):
+        src = KANNON_DIR / f"{name}_sheet.png"
+        if not src.exists():
+            print(f"{name}_sheet: 元画像なし（届いたら変換する）")
+            continue
+        img, m = build_critter(src, cols, rows, frames, base, round(SET_CHAR * rel), args.colors)
+        img.save(OUT_DIR / f"{name}.png")
+        meta[name] = m
+        report.append((name, img, []))
+        print(f"{name}: {img.width}x{img.height}（{len(frames)}コマ・セル{m['cell'][0]}x{m['cell'][1]}）")
+    return meta
+
+
 def write_preview(report, path: Path, zoom: int = 3):
     pad = 12
     items = []
     for label, img, rects in report:
-        big = img.resize((img.width * zoom, img.height * zoom), Image.NEAREST)
+        big = img.convert("RGBA").resize((img.width * zoom, img.height * zoom), Image.NEAREST)   # 一枚絵は RGB
         items.append((label, big, rects))
     width = 1600
     x, y, row_h = pad, pad, 0
@@ -385,9 +457,16 @@ def main() -> None:
             setattr(args, key, prof[key])
     OUT_DIR = REPO_ROOT / "assets" / prof["out"]
     if args.profile != "base":
-        PREVIEW_PATH = (SET_DIR if args.profile == "set" else SRC_DIR) / f"preview_street_{args.profile}.png"
+        PREVIEW_PATH = {"set": SET_DIR, "kannon": KANNON_DIR}.get(args.profile, SRC_DIR) / f"preview_street_{args.profile}.png"
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     report = []
+    if args.profile == "kannon":
+        meta = {"note": "tools/proto_street_assets.py --profile kannon が生成。手で編集しない", **build_kannon(args, report)}
+        (OUT_DIR / "street_assets.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(f"wrote {OUT_DIR / 'street_assets.json'}")
+        if not args.no_preview and report:
+            write_preview(report, PREVIEW_PATH, zoom=1)
+        return
     if args.profile == "set":
         meta = {"note": "tools/proto_street_assets.py --profile set が生成。手で編集しない", **build_set(args, report)}
         (OUT_DIR / "street_assets.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

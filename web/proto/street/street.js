@@ -1,5 +1,6 @@
 "use strict";
 // 通りの試作（本編未接続）。エリアマップ → 繁華街の通りを8方向で歩く → 店に入る／しらべる／話す／ファストトラベル。
+// 古町の観音堂（?area=kannon・AA14）: 石段を上がってお参り・常香炉の煙・おみくじ・近づくと飛び立つ鳩・寝ている白い猫。
 // 歩行（移動・向きの量子化・2コマ歩行・左右反転・足元yソート・タップ移動）は web/proto/walk/index.html と同じ挙動。
 (() => {
   // ---------------------------------------------------------------- 定数
@@ -42,7 +43,13 @@
   // ?stage=hd … 高解像度2.5D版（AA9）／ ?stage=set … ハリボテ背景版（AA11。背景は一枚絵・キャラ72ドット）
   const STAGE_KIND = ["hd", "set"].includes(params.get("stage")) ? params.get("stage") : "base";
   const HD = STAGE_KIND === "hd";
-  const STAGE_FILE = { base: "stage_hankagai.json", hd: "stage_hankagai_hd.json", set: "stage_hankagai_set.json" }[STAGE_KIND];
+  // エリアごとのステージ。観音堂はハリボテ背景版だけ（「画質」の切り替えは繁華街だけに効く）
+  const STAGE_FILES = {
+    hankagai: { base: "stage_hankagai.json", hd: "stage_hankagai_hd.json", set: "stage_hankagai_set.json" },
+    kannon: { set: "stage_kannon_set.json" },
+  };
+  const AREA_ID = STAGE_FILES[params.get("area")] ? params.get("area") : "hankagai";
+  const STAGE_FILE = STAGE_FILES[AREA_ID][STAGE_KIND] || STAGE_FILES[AREA_ID].set;
   const BUST = `?t=${Date.now()}`;
   const S = (v) => Math.round(v * U);                    // 標準版のドット数 → 今のステージのドット数
 
@@ -71,13 +78,13 @@
     ctx.restore();
   }
 
-  // エリアマップのピン（%）。歩けるのは繁華街だけ
+  // エリアマップのピン（%）。歩けるのは繁華街と古町（観音堂）
   const AREAS = [
     { id: "hankagai", label: "繁華街", x: 58, y: 36, open: true },
     { id: "tonari", label: "tonari", x: 86, y: 36 },
     { id: "tonya", label: "問屋街", x: 34, y: 24 },
     { id: "shitamachi", label: "下町", x: 44, y: 62 },
-    { id: "furumachi", label: "古町", x: 17, y: 56 },
+    { id: "kannon", label: "古町", sub: "観音堂", x: 17, y: 56, open: true },
     { id: "home", label: "自宅", x: 88, y: 62 },
   ];
 
@@ -209,7 +216,11 @@
     g.fillRect(dx + 3, dy + 4, dw - 6, Math.round(dh * 0.35));
     return outline(cv);
   }
-  const PROP_PH_SIZE = { vending: [23, 34], bench: [23, 16], aboard: [16, 19], plant: [16, 18], lamp: [13, 56], bicycle: [29, 19] };
+  const PROP_PH_SIZE = {
+    vending: [23, 34], bench: [23, 16], aboard: [16, 19], plant: [16, 18], lamp: [13, 56], bicycle: [29, 19],
+    // 観音堂（AA14）。キャラの身長32に対する大きさ
+    koro: [30, 30], saisen: [30, 16], toro: [15, 40], omikuji: [14, 28], endai: [32, 14], nobori: [10, 82],
+  };
   function makePropPlaceholder(name) {
     const m = assets.meta && assets.meta.props && assets.meta.props[name];
     const [w, h] = m ? [m.w, m.h] : (PROP_PH_SIZE[name] || [16, 16]).map(S);
@@ -245,6 +256,56 @@
         box(2, 1, w - 4, 9, "#f3c45a");
         box(1, 0, w - 2, 2, "#4a3e30");
         box(Math.floor(w / 2) - 3, h - 3, 7, 3, "#4a3e30");
+        break;
+      case "koro": {                                         // 常香炉: 3本脚の青銅の香炉と、反った屋根
+        const bronze = "#5d6b5a", dark = "#3b4639";
+        box(Math.round(w * 0.08), Math.round(h * 0.06), Math.round(w * 0.84), Math.round(h * 0.12), dark);  // 屋根
+        box(Math.round(w * 0.42), 0, Math.round(w * 0.16), Math.round(h * 0.08), dark);
+        box(Math.round(w * 0.3), Math.round(h * 0.18), Math.round(w * 0.4), Math.round(h * 0.16), bronze);  // 柱
+        box(Math.round(w * 0.06), Math.round(h * 0.34), Math.round(w * 0.88), Math.round(h * 0.3), bronze); // 炉
+        box(Math.round(w * 0.06), Math.round(h * 0.34), Math.round(w * 0.88), 2, "#8a9a82");
+        box(Math.round(w * 0.14), Math.round(h * 0.42), Math.round(w * 0.72), 2, "#c9a24a");                // 縁の金
+        box(Math.round(w * 0.12), Math.round(h * 0.64), 3, h - Math.round(h * 0.64), dark);                // 脚
+        box(Math.round(w * 0.5) - 1, Math.round(h * 0.64), 3, h - Math.round(h * 0.64), dark);
+        box(Math.round(w * 0.85) - 2, Math.round(h * 0.64), 3, h - Math.round(h * 0.64), dark);
+        break;
+      }
+      case "saisen":                                         // 賽銭箱: 木の箱と、上の格子
+        box(0, Math.round(h * 0.2), w, h - Math.round(h * 0.2), "#7a4a26");
+        box(0, Math.round(h * 0.2), w, 2, "#a8743e");
+        for (let x = 2; x < w - 2; x += 4) box(x, 0, 2, Math.round(h * 0.34), "#5a361c");
+        box(0, Math.round(h * 0.3), w, 1, "#3b2414");
+        box(Math.round(w * 0.3), Math.round(h * 0.55), Math.round(w * 0.4), Math.round(h * 0.18), "#c9a24a");
+        break;
+      case "toro": {                                         // 石灯籠: 宝珠・笠・火袋・竿・台
+        const st = "#a39e94", sd = "#7c776e";
+        box(Math.round(w / 2) - 2, 0, 4, 4, st);
+        box(1, 4, w - 2, Math.round(h * 0.12), sd);
+        box(Math.round(w * 0.2), Math.round(h * 0.22), Math.round(w * 0.6), Math.round(h * 0.2), st);
+        box(Math.round(w * 0.32), Math.round(h * 0.26), Math.round(w * 0.36), Math.round(h * 0.12), "#f3c45a");  // 火袋の灯り
+        box(Math.round(w * 0.1), Math.round(h * 0.42), Math.round(w * 0.8), 3, sd);
+        box(Math.round(w * 0.34), Math.round(h * 0.42) + 3, Math.round(w * 0.32), Math.round(h * 0.4), st);
+        box(Math.round(w * 0.12), h - Math.round(h * 0.14), Math.round(w * 0.76), Math.round(h * 0.14), sd);
+        break;
+      }
+      case "omikuji":                                        // おみくじ: 木の台に六角の筒
+        box(Math.round(w * 0.1), Math.round(h * 0.4), Math.round(w * 0.8), h - Math.round(h * 0.4), "#8b5a2e");
+        box(Math.round(w * 0.1), Math.round(h * 0.4), Math.round(w * 0.8), 2, "#b07a44");
+        box(Math.round(w * 0.3), 0, Math.round(w * 0.4), Math.round(h * 0.4), "#c23b2a");
+        box(Math.round(w * 0.3), 0, Math.round(w * 0.4), 2, "#e8d6a6");
+        break;
+      case "endai":                                          // 縁台: 赤い毛氈をかけた木の台
+        box(0, 0, w, Math.round(h * 0.45), "#c8352a");
+        box(0, 0, w, 2, "#e25a44");
+        box(2, Math.round(h * 0.45), 3, h - Math.round(h * 0.45), "#5a3a22");
+        box(w - 5, Math.round(h * 0.45), 3, h - Math.round(h * 0.45), "#5a3a22");
+        break;
+      case "nobori":                                         // 幟: 細い竿に、白地に色の模様だけの旗（文字なし）
+        box(1, 0, 2, h, "#6a5a48");
+        box(3, 2, w - 3, Math.round(h * 0.78), "#f1ece0");
+        box(5, Math.round(h * 0.12), w - 7, Math.round(h * 0.08), "#c23b2a");
+        box(5, Math.round(h * 0.34), w - 7, Math.round(h * 0.14), "#3a3a44");
+        box(5, Math.round(h * 0.58), w - 7, Math.round(h * 0.06), "#c23b2a");
         break;
       case "bicycle":
         g.strokeStyle = "#2c2c2c";
@@ -292,6 +353,7 @@
     tsumugi: { body: "#4a2d63", hair: "#5e3b28", skin: "#f6cfb4", leg: "#1c1c24" },
     mob_obasan: { body: "#c8a97e", hair: "#6a4a32", skin: "#f1c9a8", leg: "#2b3150" },
     mob_student: { body: "#3f6b66", hair: "#33405f", skin: "#f1c9a8", leg: "#3a4a78" },
+    mob_oldman: { body: "#3b4566", hair: "#d8d4cc", skin: "#e9bf9c", leg: "#2c3350" },   // 作務衣のおじいさん（観音堂）
   };
   function makeGroundPlaceholder(meta) {
     const cv = makeCanvas(meta.w, meta.h);
@@ -349,6 +411,157 @@
     g.fillStyle = "#2a1a12";
     for (const d of stage.doors) if (d.rect) g.fillRect(...d.rect);
     return cv;
+  }
+
+  // 観音堂（AA14）の仮の境内: 空・遠くの木立・仁王門・本堂（石段・大提灯）・絵馬掛け・鐘楼・白壁・石畳・玉垣。
+  // 配置は stage.ph（Codex のパネルが届いたら使わなくなる）
+  function makeKannonPlaceholder() {
+    const cv = makeCanvas(stage.width, VIEW_H);
+    const g = cv.getContext("2d");
+    const ph = stage.ph, gt = stage.groundTop, W = stage.width;
+    const box = (x, y, w, h, col) => { g.fillStyle = col; g.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h)); };
+    const sky = g.createLinearGradient(0, 0, 0, gt);
+    sky.addColorStop(0, NIGHT ? "#0b1030" : "#7fb6ea");
+    sky.addColorStop(1, NIGHT ? "#2b2350" : "#e6e2d0");
+    g.fillStyle = sky;
+    g.fillRect(0, 0, W, gt);
+    const r = mulberry32(1818);
+    for (let x = -20; x < W + 20; x += 18 + r() * 22) {                 // 遠くの木立
+      const rad = 22 + r() * 26;
+      g.fillStyle = NIGHT ? "#141c26" : (r() < 0.5 ? "#4f7a4a" : "#5e8a52");
+      g.beginPath();
+      g.ellipse(x, gt - 40 - r() * 30, rad, rad * 0.8, 0, 0, Math.PI * 2);
+      g.fill();
+    }
+    box(0, gt - 52, W, 52, NIGHT ? "#1a2230" : "#557f4c");
+    const red = NIGHT ? "#7a2a24" : "#c8402e", redD = NIGHT ? "#561c18" : "#96301f";
+    const roof = NIGHT ? "#262a36" : "#3e4452", roofL = NIGHT ? "#363b4a" : "#5a6272";
+    const lit = NIGHT ? "#ffcf6a" : "#e8a040";
+    if (ph.gate) {                                                      // 仁王門
+      const [x0, x1, top] = ph.gate, w = x1 - x0;
+      box(x0 - 12, top, w + 24, 16, roof);
+      box(x0 - 4, top - 4, w + 8, 4, roofL);
+      box(x0 + 6, top + 16, w - 12, 28, redD);
+      box(x0 - 6, top + 44, w + 12, 12, roof);
+      box(x0 + 4, top + 56, w - 8, gt - top - 56, red);
+      for (let i = 0; i < 4; i++) box(x0 + 8 + i * (w - 24) / 3, top + 56, 8, gt - top - 56, redD);
+      box(x0 + w * 0.4, top + 70, w * 0.2, gt - top - 70, "#2a1a16");   // 門の奥（通れない）
+      box(x0 + 22, top + 74, w * 0.18, gt - top - 90, "#4a2a22");       // 仁王の籠
+      box(x1 - 22 - w * 0.18, top + 74, w * 0.18, gt - top - 90, "#4a2a22");
+    }
+    if (ph.bell) {                                                      // 鐘楼
+      const [x0, x1, top] = ph.bell, w = x1 - x0;
+      box(x0 - 10, top, w + 20, 14, roof);
+      box(x0 - 2, top - 4, w + 4, 4, roofL);
+      box(x0 + 6, top + 14, 6, gt - top - 14, redD);
+      box(x1 - 12, top + 14, 6, gt - top - 14, redD);
+      box(x0 + w / 2 - 12, top + 22, 24, 30, NIGHT ? "#2c3a32" : "#4c6450");
+      box(x0 - 4, gt - 26, w + 8, 26, "#9a948a");
+    }
+    if (ph.hall) {                                                      // 本堂
+      const [x0, x1, roofTop, floor] = ph.hall, w = x1 - x0;
+      const [s0, s1] = ph.stairs || [x0 + w * 0.4, x1 - w * 0.4];
+      box(x0 - 10, floor, w + 20, gt - floor, "#9a948a");               // 石の基壇
+      box(x0 - 10, floor, w + 20, 3, "#b8b2a6");
+      box(x0 + 10, roofTop + 70, w - 20, floor - roofTop - 70, red);     // 堂
+      for (let x = x0 + 16; x < x1 - 20; x += 44) box(x, roofTop + 70, 8, floor - roofTop - 70, redD);
+      box(x0 + 10, roofTop + 90, w - 20, 6, NIGHT ? "#bdb6a4" : "#efe6d2");
+      box(x0 + 40, roofTop + 104, w - 80, floor - roofTop - 108, NIGHT ? "#2e2224" : "#4a2f26");
+      box(x0 - 34, roofTop + 14, w + 68, 40, roof);                     // 大屋根
+      box(x0 - 18, roofTop, w + 36, 16, roofL);
+      box(x0 + w * 0.3, roofTop - 6, w * 0.4, 8, roof);
+      box(x0 - 14, roofTop + 54, w + 28, 16, redD);
+      const lx = (s0 + s1) / 2;                                         // 大提灯
+      box(lx - 18, roofTop + 76, 36, 44, NIGHT ? "#e0603a" : "#d04a30");
+      box(lx - 18, roofTop + 76, 36, 4, "#2a2020");
+      box(lx - 18, roofTop + 116, 36, 4, "#2a2020");
+      box(lx - 10, roofTop + 86, 20, 24, lit);
+      for (let y = floor, i = 0; y < gt; y += 6, i++) {                   // 石段
+        box(s0, y, s1 - s0, 6, i % 2 ? "#a9a397" : "#bdb7ab");
+        box(s0, y + 5, s1 - s0, 1, "#7c776e");
+      }
+      box(s0 - 4, floor - 2, 4, gt - floor + 2, "#7c776e");
+      box(s1, floor - 2, 4, gt - floor + 2, "#7c776e");
+    }
+    if (ph.ema) {                                                       // 絵馬掛け
+      const [x0, x1] = ph.ema;
+      box(x0, gt - 44, x1 - x0, 6, "#5a3a22");
+      box(x0 + 2, gt - 38, 4, 38, "#5a3a22");
+      box(x1 - 6, gt - 38, 4, 38, "#5a3a22");
+      for (let y = gt - 36; y < gt - 8; y += 9) {
+        for (let x = x0 + 8; x < x1 - 10; x += 7) box(x, y, 6, 6, r() < 0.15 ? "#e8d6a6" : "#d8b47a");
+      }
+    }
+    if (ph.wallFrom != null) {                                          // 白壁（境内の端）
+      box(ph.wallFrom, gt - 70, W - ph.wallFrom, 70, NIGHT ? "#8a8a94" : "#efe9dc");
+      box(ph.wallFrom - 4, gt - 78, W - ph.wallFrom + 4, 10, roof);
+      box(ph.wallFrom, gt - 14, W - ph.wallFrom, 14, "#9a948a");
+    }
+    const front = stage.walk.y1 + S(4);
+    for (let y = gt; y < front; y += 12) {                              // 石畳
+      const off = ((y - gt) / 12) % 2 ? 11 : 0;
+      for (let x = -off; x < W; x += 22) {
+        const k = 160 + Math.floor(r() * 26);
+        box(x, y, 22, 12, NIGHT ? `rgb(${k * 0.45},${k * 0.45},${k * 0.55})` : `rgb(${k},${k - 6},${k - 14})`);
+        box(x, y, 22, 1, "rgba(40,36,32,0.35)");
+        box(x, y, 1, 12, "rgba(40,36,32,0.35)");
+      }
+    }
+    box(0, front, W, VIEW_H - front, NIGHT ? "#3a3a44" : "#b8b0a0");    // 手前の砂利と玉垣
+    for (let x = 4; x < W; x += 26) box(x, front + 2, 8, 18, NIGHT ? "#55555f" : "#8e897f");
+    box(0, front + 4, W, 4, NIGHT ? "#55555f" : "#8e897f");
+    return cv;
+  }
+
+  // 鳩と猫（AA14）。画像（pigeon.png / cat.png）が無い時の仮のドット絵。1文字＝1ドット・右向き
+  const PIX_PAL = {
+    h: "#7c8494", e: "#1c1820", k: "#e8dcc0", n: "#4f8a6e", p: "#7a5a8c", b: "#a3a9b6", B: "#c0c5cf",
+    w: "#8a919f", d: "#3f4350", t: "#5c6270", f: "#d0706a",
+  };
+  const PIGEON_FRAMES = {
+    stand: ["..............", "........hh....", ".......hhhe...", ".......hhhhk..", "........np....", "...bbbbbnpb...",
+      ".ttbwwwwwbbB..", "tttbwdwdwbBB..", "...bbbbbbBB...", ".....f..f....."],
+    walk: ["..............", ".........hh...", "........hhhe..", "........hhhhk.", ".........np...", "...bbbbbbnpb..",
+      ".ttbwwwwwbbB..", "tttbwdwdwbBB..", "...bbbbbbBB...", "....f....f...."],
+    peck1: ["..............", "..............", "..............", "..............", "...bbbbbb.....", ".ttbwwwwwbn...",
+      "tttbwdwdwbnp..", "...bbbbbbBhhe.", "....bbbbB.hhhk", ".....f..f....."],
+    peck2: ["..............", "..............", "..............", "..............", "...bbbbbb.....", ".ttbwwwwwbn...",
+      "tttbwdwdwbBnp.", "...bbbbbbB.hhe", "....bbbbB..hhh", ".....f..f...hk"],
+    fly1: ["...w....w.....", "...ww..ww.....", "....wwwww..hh.", ".....wwww.hhhe", "...bbbbbbnphhk", ".ttbbbbbbbB...",
+      "tt..bBBBB.....", "..............", "..............", ".............."],
+    fly2: ["..............", "..............", "...........hh.", "..wwwwwww.hhhe", "...bbbbbbnphhk", ".ttbwwwwwbB...",
+      "tt..bBBBB.....", "..............", "..............", ".............."],
+    fly3: ["..............", "..............", "...........hh.", "..........hhhe", "...bbbbbbnphhk", ".ttbwwwwwbB...",
+      "tt..wwwwB.....", "....www.......", ".....w........", ".............."],
+  };
+  PIGEON_FRAMES.fly4 = PIGEON_FRAMES.fly2;
+  const CAT_PAL = { w: "#f2efe8", s: "#cfc9bd", i: "#e8a0a0", e: "#3a3236" };
+  const CAT_FRAMES = {
+    sleep: ["................", "................", "................", "....wwwwwww.w.w.", "..wwwwwwwwwwwww.",
+      ".wwwwwwwwwwwewe.", ".wwwwwwwwwwwwwi.", "swwsssswwwwwww..", ".sssssssssss...."],
+    sit: ["...........w.w..", "...........wwww.", "..........wewew.", "..........wwiww.", "....wwwwwwwwww..",
+      "..wwwwwwwwwwww..", ".w.wwwwwwwwwww..", "ww.wwwwwwwswws..", ".s..wsssssw.ws.."],
+  };
+  // 文字のドット絵 → 1枚のシート（コマを横に並べ、外側1ドットに輪郭）。{ img, cell, anchor, frames: {名前: 列} }
+  function makePixSheet(frames, pal) {
+    const names = Object.keys(frames);
+    const fw = frames[names[0]][0].length + 2, fh = frames[names[0]].length + 2;
+    const sheet = makeCanvas(fw * names.length, fh);
+    const sg = sheet.getContext("2d");
+    names.forEach((name, i) => {
+      const cv = makeCanvas(fw, fh);
+      const g = cv.getContext("2d");
+      frames[name].forEach((row, y) => {
+        for (let x = 0; x < row.length; x++) {
+          const col = pal[row[x]];
+          if (!col) continue;
+          g.fillStyle = col;
+          g.fillRect(x + 1, y + 1, 1, 1);
+        }
+      });
+      sg.drawImage(outline(cv), i * fw, 0);
+    });
+    return { img: sheet, cell: [fw, fh], anchor: [Math.floor(fw / 2), fh - 1], frames: Object.fromEntries(names.map((n, i) => [n, i])), source: "placeholder" };
   }
 
   // 奥の街並み（建物の隙間から見える空と遠景。コード描画・視差で少し遅れて動く）
@@ -432,7 +645,8 @@
     if (!assets.meta) assets.missing.push("street_assets.json");
 
     const facadeIds = [...new Set(stage.facades.map((f) => f.id))];
-    const propNames = [...new Set(stage.objects.map((o) => o.img))];
+    const propNames = [...new Set(stage.objects.map((o) => o.img).filter(Boolean))];   // 猫・見えない「しらべる」場所は画像なし
+    const glowProps = new Set(stage.objects.filter((o) => o.img === "lamp" || o.glow).map((o) => o.img));
     const [facadeImgs, propImgs, groundImg] = await Promise.all([
       Promise.all(facadeIds.map((id) => loadImage(`${STREET_DIR}facade_${id}.png${BUST}`))),
       Promise.all(propNames.map((n) => loadImage(`${STREET_DIR}prop_${n}.png${BUST}`))),
@@ -449,9 +663,9 @@
     propNames.forEach((n, i) => {
       if (!propImgs[i]) assets.missing.push(`prop_${n}.png`);
       assets.props[n] = propImgs[i] || makePropPlaceholder(n);
-      if (NIGHT && n === "lamp") {
-        assets.glows.prop_lamp = makeGlow(assets.props[n]);
-        if (stage.bloom) assets.blooms.prop_lamp = makeBloom(assets.glows.prop_lamp, stage.bloom);
+      if (NIGHT && glowProps.has(n)) {                       // 街灯・石灯籠の灯り
+        assets.glows[`prop_${n}`] = makeGlow(assets.props[n]);
+        if (stage.bloom) assets.blooms[`prop_${n}`] = makeBloom(assets.glows[`prop_${n}`], stage.bloom);
       }
     });
     if (!stage.set) {
@@ -464,7 +678,7 @@
       const name = NIGHT ? (stage.set.imgNight || stage.set.img) : stage.set.img;
       const img = await loadImage(`${STREET_DIR}${name}${BUST}`);
       if (!img) assets.missing.push(name);
-      assets.set = img || makeSetPlaceholder();
+      assets.set = img || (stage.ph ? makeKannonPlaceholder() : makeSetPlaceholder());
       if (NIGHT && img) {
         assets.glows.set = makeGlow(img);
         if (stage.bloom) assets.blooms.set = makeBloom(assets.glows.set, stage.bloom);
@@ -486,7 +700,7 @@
       assets.fgSource = fgImg ? "image" : "code";
     }
 
-    const sheetSpecs = [["tsumugi", WALK_DIR, "tsumugi_walk"], ...stage.npcs.map((n) => [n.sheet, STREET_DIR, n.sheet])];
+    const sheetSpecs = [["tsumugi", WALK_DIR, "tsumugi_walk"], ...stage.npcs.map((n) => [n.sheet, n.sheetDir ? ROOT + n.sheetDir : STREET_DIR, n.sheet])];
     await Promise.all(sheetSpecs.map(async ([key, dir, file]) => {
       assets.sheets[key] = await loadSheet(dir, file, CAPSULE[key] || CAPSULE.mob_obasan);
     }));
@@ -503,11 +717,21 @@
       const top = stage.groundTop - f.geo.h + dy;
       return { ...d, x: f.x + dx, w: dw, top, h: dh, cx: f.x + dx + dw / 2 };
     });
-    objects = stage.objects.map((o) => ({ ...o, art: assets.props[o.img] }));
+    // 鳩・猫（観音堂）: pigeon.png / cat.png（コマの並びは street_assets.json）。無ければ仮のドット絵
+    if (stage.pigeons) assets.pigeon = await loadCritter("pigeon", PIGEON_FRAMES, PIX_PAL);
+    if (stage.objects.some((o) => o.creature === "cat")) assets.cat = await loadCritter("cat", CAT_FRAMES, CAT_PAL);
+    objects = stage.objects.map((o) => {
+      let art = assets.props[o.img];
+      if (o.creature === "cat") art = makeCanvas(...assets.cat.cell);
+      else if (!o.img) art = makeCanvas(...(o.hit || [S(16), S(16)]));   // 背景に描かれた物を「しらべる」だけの場所
+      return { ...o, art, seen: 0 };
+    });
     npcs = stage.npcs.map((n) => ({
       ...n, homeDir: n.dir, heading: n.dir === "left" ? -1 : 1, frame: 0, animT: 0, moving: false,
       talking: false, talked: 0, pauseUntil: 0, nextPause: 3 + rnd() * 4, waitT: 0, restoreAt: 0,
     }));
+    initPigeons();
+    $("#travel-hint").textContent = stage.travelHint || "入ったことのある店の前へ移動できます（X: 閉じる）";
 
     $("#hud-ph").classList.toggle("hidden", assets.missing.length === 0);
     $("#hud-ph").title = assets.missing.join(", ");
@@ -541,6 +765,16 @@
     return { img, cell, anchor, source: "image" };
   }
 
+  async function loadCritter(name, frames, pal) {
+    const meta = assets.meta && assets.meta[name];
+    const img = meta ? await loadImage(`${STREET_DIR}${name}.png${BUST}`) : null;
+    if (!img) {
+      assets.missing.push(`${name}.png`);
+      return makePixSheet(frames, pal);
+    }
+    return { img, cell: meta.cell, anchor: meta.anchor, frames: meta.frames, source: "image" };
+  }
+
   function showFatal(text) {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.fillStyle = "#000";
@@ -565,9 +799,25 @@
     for (const n of npcs) if (n !== except) list.push(footRect(n.x, n.y));
     return list;
   }
+  // 歩ける範囲: 歩道の帯（walk）＋ 本堂の石段のような追加の矩形（walkExtra・観音堂）
+  const walkRects = () => [stage.walk, ...(stage.walkExtra || [])];
+  const inRect = (r, x, y) => x >= r.x0 && x <= r.x1 && y >= r.y0 && y <= r.y1;
+  function onWalk(x, y) {
+    const rs = walkRects();
+    return [x - FOOT_HALF_W, x + FOOT_HALF_W].every((px) => rs.some((r) => inRect(r, px, y)));
+  }
+  // いちばん近い歩ける位置（タップ先・近づく先）
+  function clampWalk(x, y) {
+    let best = null, bestD = Infinity;
+    for (const r of walkRects()) {
+      const cx = clamp(x, r.x0 + FOOT_HALF_W, r.x1 - FOOT_HALF_W), cy = clamp(y, r.y0, r.y1);
+      const d = Math.hypot(cx - x, cy - y);
+      if (d < bestD) { bestD = d; best = { x: cx, y: cy }; }
+    }
+    return best;
+  }
   function blocked(x, y, who) {
-    const w = stage.walk;
-    if (x - FOOT_HALF_W < w.x0 || x + FOOT_HALF_W > w.x1 || y < w.y0 || y > w.y1) return true;
+    if (!onWalk(x, y)) return true;
     const r = footRect(x, y);
     if (who !== player && overlap(r, footRect(player.x, player.y))) return true;
     return solidRects(who).some((s) => overlap(r, s));
@@ -583,7 +833,7 @@
   function interactables() {
     const list = doors.map((d) => ({ kind: "door", id: d.id, x: d.cx, y: stage.groundTop + S(2), halfW: d.w / 2, ref: d }));
     for (const o of objects) {
-      if (!o.text) continue;
+      if (!o.text && !o.action) continue;
       const h = o.solid ? o.solid[1] : 0;
       list.push({ kind: "object", id: o.id, x: o.x, y: o.y - h / 2, halfW: o.solid ? o.solid[0] / 2 : 4, ref: o });
     }
@@ -613,7 +863,13 @@
     if (!it) return;
     if (it.kind === "door") enterShop(it.ref);
     else if (it.kind === "npc") talkTo(it.ref);
-    else say(it.ref.text);
+    else if (it.ref.action) doAction(it.ref);
+    else look(it.ref);
+  }
+  function look(o) {
+    const lines = o.seen > 0 && o.textAgain ? o.textAgain : o.text;
+    o.seen++;
+    say(lines);
   }
   // タップした所にあるもの（人 → 物 → 入口 の順に優先）
   function hitTest(wx, wy) {
@@ -622,7 +878,7 @@
       if (Math.abs(wx - n.x) <= sh.cell[0] / 3 && wy >= n.y - sh.anchor[1] && wy <= n.y + S(2)) return { kind: "npc", id: n.id, ref: n };
     }
     for (const o of objects) {
-      if (!o.text) continue;
+      if (!o.text && !o.action) continue;
       const w = o.art.width, h = o.art.height;
       if (wx >= o.x - w / 2 && wx <= o.x + w / 2 && wy >= o.y - h && wy <= o.y + S(2)) return { kind: "object", id: o.id, ref: o };
     }
@@ -639,7 +895,7 @@
       return { x: n.x + (player.x < n.x ? -S(13) : S(13)), y: clampWalkY(n.y) };
     }
     if (hit.kind === "barricade") return { x: hit.ref.x - S(14), y: clampWalkY(player.y) };
-    return { x: hit.ref.x, y: clampWalkY(hit.ref.y + S(6)) };
+    return clampWalk(hit.ref.x, hit.ref.y + S(6));
   }
   function arrive() {
     player.target = null;
@@ -660,7 +916,11 @@
     const frozen = mode !== "walk" || busy || msg.active;
     if (!frozen) updatePlayer(dt);
     else if (player.moving) { player.moving = false; player.running = false; player.frame = 0; player.animT = 0; }
-    if (mode === "walk" || mode === "menu") updateNpcs(dt, now);
+    if (mode === "walk" || mode === "menu") {
+      updateNpcs(dt, now);
+      updatePigeons(dt);
+      updateSmoke(dt);
+    }
     for (let i = dust.length - 1; i >= 0; i--) {
       dust[i].t += dt;
       if (dust[i].t > 0.4) dust.splice(i, 1);
@@ -770,6 +1030,266 @@
     }
   }
 
+  // ---------------------------------------------------------------- 鳩（観音堂・AA14）
+  // 地面では立つ・歩く・ついばむを繰り返す。人が近づくと飛び立つ（走ると遠くから逃げ、じっとしていると足元まで寄ってくる）。
+  // 一羽が飛ぶと近くの鳩もつられて飛ぶ。屋根（perches）に止まるか、画面の外へ飛んでいき、しばらくして人がいなければ舞い戻る
+  const pigeons = [];
+  const PG = { walk: 9, fly: 120, rise: 60, near: 40 };     // 標準版のドット/秒・ドット
+  function initPigeons() {
+    pigeons.length = 0;
+    const cfg = stage.pigeons;
+    if (!cfg) return;
+    for (const f of cfg.flocks) {
+      for (let i = 0; i < f.count; i++) {
+        pigeons.push({
+          flock: f, x: f.x0 + rnd() * (f.x1 - f.x0), y: f.y0 + rnd() * (f.y1 - f.y0), z: 0, vx: 0, vy: 0, vz: 0,
+          state: "ground", face: rnd() < 0.5 ? -1 : 1, act: "stand", actT: rnd() * 1.5, frame: "stand", frameT: 0,
+          drift: 0, scareIn: -1, scareFrom: null, timer: 0, path: null, flaps: 0,
+        });
+      }
+    }
+    // 夜は屋根で休んでいて降りてこない（近づいても飛ばない）
+    if (NIGHT && cfg.perches && cfg.perches.length) {
+      pigeons.forEach((pg, i) => {
+        const p = cfg.perches[i % cfg.perches.length];
+        pg.state = "perch";
+        pg.timer = Infinity;
+        pg.x = p.x0 + rnd() * (p.x1 - p.x0);
+        pg.z = pg.y - p.y;
+      });
+    }
+  }
+  const randIn = ([a, b]) => a + rnd() * (b - a);
+  // 鳩が怖がる相手と距離。走る人 70・歩く人 34・立ち止まった人 12（標準版のドット）。歩いている通行人も少し
+  function threatNear(pg) {
+    const list = [];
+    if (mode === "walk" || mode === "menu") {
+      list.push({ x: player.x, y: player.y, r: S(player.running ? 70 : player.moving ? 34 : 12) });
+    }
+    for (const n of npcs) if (n.moving) list.push({ x: n.x, y: n.y, r: S(24) });
+    let best = null;
+    for (const t of list) {
+      const d = Math.hypot(pg.x - t.x, (pg.y - t.y) * 1.5);
+      if (d < t.r * 1.8 && (!best || d / t.r < best.k)) best = { ...t, d, k: d / t.r };
+    }
+    return best;
+  }
+  function flyPath(pg, sx, sy, ex, ey, gy, to, lift) {
+    const dist = Math.hypot(ex - sx, ey - sy);
+    pg.path = { sx, sy, ex, ey, cx: (sx + ex) / 2, cy: Math.min(sy, ey) - lift, gy, to, t: 0, dur: clamp(dist / (PG.fly * U), 0.7, 2.6) };
+    pg.state = "fly";
+    if (Math.abs(ex - sx) > 1) pg.face = ex > sx ? 1 : -1;
+  }
+  function takeOff(pg, from) {
+    const cfg = stage.pigeons;
+    const dir = Math.sign(pg.x - from.x) || (rnd() < 0.5 ? -1 : 1);
+    pg.face = dir;
+    pg.scareIn = -1;
+    pg.flaps = 0;
+    // 近くの鳩もつられて飛ぶ（少し遅れて）
+    for (const q of pigeons) {
+      if (q === pg || q.state !== "ground" || q.scareIn >= 0) continue;
+      if (Math.hypot(q.x - pg.x, q.y - pg.y) < S(PG.near)) { q.scareIn = 0.06 + rnd() * 0.3; q.scareFrom = from; }
+    }
+    const perches = (cfg.perches || []).filter((p) => Math.sign((p.x0 + p.x1) / 2 - pg.x) === dir || rnd() < 0.3);
+    if (perches.length && rnd() < (cfg.perchChance ?? 0.5)) {
+      const p = perches[Math.floor(rnd() * perches.length)];
+      flyPath(pg, pg.x, pg.y, p.x0 + rnd() * (p.x1 - p.x0), p.y, pg.y, "perch", S(26));
+      return;
+    }
+    pg.state = "fly";
+    pg.path = null;
+    pg.vx = dir * PG.fly * U * (0.8 + rnd() * 0.4);
+    pg.vy = -S(10) * rnd();
+    pg.vz = PG.rise * U * (0.7 + rnd() * 0.5);
+  }
+  // 舞い戻る先: 群れの場所のうち、人から離れた所
+  function landingSpot(f) {
+    for (let i = 0; i < 8; i++) {
+      const x = f.x0 + rnd() * (f.x1 - f.x0), y = f.y0 + rnd() * (f.y1 - f.y0);
+      if (Math.hypot(x - player.x, (y - player.y) * 1.5) > S(60)) return { x, y };
+    }
+    return null;
+  }
+  const playerFarFrom = (x) => mode !== "walk" || Math.abs(player.x - x) > S(90);
+  function updatePigeons(dt) {
+    const cfg = stage.pigeons;
+    if (!cfg) return;
+    for (const pg of pigeons) {
+      pg.frameT += dt;
+      if (pg.state === "ground") {
+        const th = threatNear(pg);
+        if (th && th.k < 1 && pg.scareIn < 0) { pg.scareIn = rnd() * 0.12; pg.scareFrom = th; }
+        if (pg.scareIn >= 0) {
+          pg.scareIn -= dt;
+          if (pg.scareIn < 0) takeOff(pg, pg.scareFrom);
+          continue;
+        }
+        if (th && pg.act !== "walk") {                       // まだ遠いけど気になる → 歩いて離れる
+          pg.act = "walk";
+          pg.actT = 0.5 + rnd() * 0.6;
+          pg.face = Math.sign(pg.x - th.x) || pg.face;
+        }
+        pg.actT -= dt;
+        if (pg.actT <= 0) {
+          const r = rnd();
+          if (r < 0.45) { pg.act = "peck"; pg.actT = 0.8 + rnd(); }
+          else if (r < 0.8) {
+            pg.act = "walk";
+            pg.actT = 0.4 + rnd();
+            if (rnd() < 0.3) pg.face *= -1;
+            pg.drift = (rnd() - 0.5) * S(6);
+          } else { pg.act = "stand"; pg.actT = 0.5 + rnd() * 1.1; }
+        }
+        if (pg.act === "walk") {
+          const f = pg.flock;
+          pg.x += pg.face * PG.walk * U * dt;
+          pg.y = clamp(pg.y + pg.drift * dt, f.y0, f.y1);
+          if (pg.x < f.x0 - S(20)) pg.face = 1;
+          if (pg.x > f.x1 + S(20)) pg.face = -1;
+          pg.frame = Math.floor(pg.frameT / 0.14) % 2 ? "walk" : "stand";
+        } else if (pg.act === "peck") {
+          pg.frame = Math.floor(pg.frameT / 0.18) % 2 ? "peck2" : "peck1";
+        } else pg.frame = "stand";
+      } else if (pg.state === "fly") {
+        const P = pg.path;
+        if (P) {
+          P.t = Math.min(1, P.t + dt / P.dur);
+          const t = P.t, u = 1 - t;
+          const bx = u * u * P.sx + 2 * u * t * P.cx + t * t * P.ex;
+          const by = u * u * P.sy + 2 * u * t * P.cy + t * t * P.ey;
+          pg.x = bx;
+          pg.y = P.gy;
+          pg.z = P.gy - by;
+          const gliding = P.to === "ground" && t > 0.25 && t < 0.8;
+          pg.frame = gliding ? "fly2" : ["fly1", "fly2", "fly3", "fly4"][Math.floor(pg.frameT / 0.07) % 4];
+          if (t >= 1) {
+            pg.path = null;
+            if (P.to === "perch") { pg.state = "perch"; pg.timer = randIn(cfg.returnSec || [7, 13]); pg.frame = "stand"; }
+            else { pg.state = "ground"; pg.z = 0; pg.act = "stand"; pg.actT = 0.4 + rnd() * 0.6; pg.frame = "stand"; }
+          }
+        } else {
+          pg.x += pg.vx * dt;
+          pg.y += pg.vy * dt;
+          pg.z += pg.vz * dt;
+          pg.vz += S(30) * dt;
+          pg.frame = ["fly1", "fly2", "fly3", "fly4"][Math.floor(pg.frameT / 0.07) % 4];
+          if (pg.y - pg.z < -S(24) || pg.x < -S(30) || pg.x > stage.width + S(30)) {
+            pg.state = "away";
+            pg.timer = randIn(cfg.returnSec || [7, 13]);
+          }
+        }
+      } else if (pg.state === "perch") {
+        pg.timer -= dt;
+        pg.frame = Math.floor(pg.frameT / 1.3) % 3 === 2 ? "peck1" : "stand";
+        if (pg.frameT % 4 < dt) pg.face *= -1;
+        if (pg.timer <= 0) {
+          const spot = landingSpot(pg.flock);
+          if (spot && playerFarFrom(spot.x)) flyPath(pg, pg.x, pg.y - pg.z, spot.x, spot.y, spot.y, "ground", S(8));
+          else pg.timer = 1 + rnd();
+        }
+      } else if (pg.state === "away") {
+        pg.timer -= dt;
+        if (pg.timer <= 0) {
+          const spot = landingSpot(pg.flock);
+          if (spot && playerFarFrom(spot.x)) {
+            const from = rnd() < 0.5 ? -1 : 1;
+            flyPath(pg, spot.x + from * S(150), -S(20), spot.x, spot.y, spot.y, "ground", -S(30));
+          } else pg.timer = 1 + rnd();
+        }
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------- 煙・小さな演出（観音堂）
+  const smoke = [];                 // 常香炉の煙 { x, y, t, life, vx, vy, seed }
+  const effects = [];               // 賽銭の放物線・「チャリン」など { kind, t, dur, ... }
+  let prayDim = null;               // 手を合わせている間、画面を少し暗くする { t, dur }
+  let smokeT = 0;
+  function updateSmoke(dt) {
+    smokeT -= dt;
+    if (smokeT <= 0) {
+      smokeT = 0.16;
+      for (const o of objects) {
+        if (!o.smoke) continue;
+        smoke.push({ x: o.x + (rnd() - 0.5) * S(8), y: o.y - o.art.height + S(3), t: 0, life: 2.4 + rnd() * 1.2,
+          vx: (rnd() - 0.5) * S(3), vy: -S(9), seed: rnd() * 6 });
+      }
+    }
+    for (let i = smoke.length - 1; i >= 0; i--) {
+      const p = smoke[i];
+      p.t += dt;
+      p.x += (p.vx + Math.sin(p.t * 1.7 + p.seed) * S(3)) * dt;
+      p.y += p.vy * dt;
+      if (p.t > p.life) smoke.splice(i, 1);
+    }
+    for (let i = effects.length - 1; i >= 0; i--) {
+      effects[i].t += dt;
+      if (effects[i].t > effects[i].dur) effects.splice(i, 1);
+    }
+    if (prayDim) {
+      prayDim.t += dt;
+      if (prayDim.t > prayDim.dur) prayDim = null;
+    }
+  }
+  const later = (ms, fn) => setTimeout(fn, ms);
+  const headY = () => player.y - assets.sheets.tsumugi.anchor[1] * 0.7;
+  function doAction(o) {
+    if (o.action === "pray") pray(o);
+    else if (o.action === "smoke") waftSmoke(o);
+    else if (o.action === "omikuji") drawOmikuji(o);
+    else look(o);
+  }
+  // お参り: 賽銭を投げる → チャリン → 手を合わせる（画面が少し暗くなる）→ ひとこと。お寺なので拍手はしない
+  let lastPray = -1;
+  function pray(o) {
+    busy = true;
+    player.dir = "up";
+    effects.push({ kind: "coin", t: 0, dur: 0.45, x0: player.x, y0: headY(), x1: o.x, y1: o.y - o.art.height + S(2) });
+    later(450, () => effects.push({ kind: "pop", t: 0, dur: 1.0, text: "チャリン", x: o.x, y: o.y - o.art.height - S(6) }));
+    later(800, () => { prayDim = { t: 0, dur: 1.7 }; });
+    later(2300, () => {
+      busy = false;
+      save.visited[`${stage.id}_pray`] = true;
+      persist();
+      const lines = stage.prayLines || ["（……）"];
+      let i = Math.floor(rnd() * lines.length);
+      if (i === lastPray && lines.length > 1) i = (i + 1) % lines.length;
+      lastPray = i;
+      say(["お賽銭を入れて、手を合わせた。", lines[i]]);
+    });
+  }
+  // 常香炉: 煙を手で招いて浴びる
+  function waftSmoke(o) {
+    busy = true;
+    player.dir = quantizeDir(o.x - player.x, o.y - player.y, player.dir);
+    const top = o.y - o.art.height + S(3);
+    for (let i = 0; i < 14; i++) {
+      later(i * 50, () => {
+        const k = 0.9 + rnd() * 0.5;
+        smoke.push({ x: o.x + (rnd() - 0.5) * S(8), y: top, t: 0, life: 1.1 * k, seed: rnd() * 6,
+          vx: (player.x - o.x) / (1.1 * k) * 0.9, vy: (headY() - top) / (1.1 * k) * 0.9 });
+      });
+    }
+    later(1000, () => { busy = false; look(o); });
+  }
+  // おみくじ: 筒を振って1本引く（引くのはページを開いている間に1回）
+  function drawOmikuji(o) {
+    if (o.seen > 0) { say(stage.omikujiAgain || ["もう引いた。"]); return; }
+    busy = true;
+    player.dir = quantizeDir(o.x - player.x, o.y - player.y, player.dir);
+    effects.push({ kind: "shake", t: 0, dur: 0.7, ref: o });
+    effects.push({ kind: "pop", t: 0, dur: 0.9, text: "ガラガラ", x: o.x, y: o.y - o.art.height - S(6) });
+    later(800, () => {
+      busy = false;
+      o.seen++;
+      const list = stage.omikuji || [{ name: "吉", word: "" }];
+      const r = list[Math.floor(rnd() * list.length)];
+      o.result = r.name;
+      say(["百円を入れて、おみくじを引いた。", `……${r.name}。「${r.word}」`]);
+    });
+  }
+
   // ---------------------------------------------------------------- 描画
   function spriteFor(dir) {
     const base = MIRROR[dir] || dir;
@@ -790,6 +1310,22 @@
       ctx.restore();
     } else {
       ctx.drawImage(sheet.img, sx, sy, cw, ch, Math.round(x) - ax, top, cw, ch);
+    }
+  }
+  // 鳩・猫のシート（コマ名 → 列）。右向きの絵なので face < 0 で左右反転
+  function drawCritter(sheet, frame, x, y, flip) {
+    const col = sheet.frames[frame] ?? 0;
+    const [cw, ch] = sheet.cell;
+    const [ax, ay] = sheet.anchor;
+    const top = Math.round(y) - ay;
+    if (flip) {
+      ctx.save();
+      ctx.translate(Math.round(x) - (cw - 1 - ax) + cw, top);
+      ctx.scale(-1, 1);
+      ctx.drawImage(sheet.img, col * cw, 0, cw, ch, 0, 0, cw, ch);
+      ctx.restore();
+    } else {
+      ctx.drawImage(sheet.img, col * cw, 0, cw, ch, Math.round(x) - ax, top, cw, ch);
     }
   }
   function drawShadow(x, y, w) {
@@ -1044,11 +1580,36 @@
       });
     }
 
+    // 飛んでいる鳩の影（高く上がるほど薄く）
+    for (const pg of pigeons) {
+      if (pg.state !== "fly" || !visible(pg.x - S(6), pg.x + S(6))) continue;
+      const a = clamp(1 - pg.z / S(50), 0, 1) * 0.3;
+      if (a <= 0.02) continue;
+      ctx.fillStyle = `rgba(20, 12, 24, ${a.toFixed(2)})`;
+      ctx.fillRect(Math.round(pg.x) - S(3), Math.round(pg.y) - 1, S(6), 2);
+    }
+
     // 足元のyで前後を決めて描く
     const items = [];
+    const now = performance.now();
     for (const o of objects) {
       if (!visible(o.x - o.art.width / 2, o.x + o.art.width / 2)) continue;
-      items.push({ y: o.y, draw: () => ctx.drawImage(o.art, Math.round(o.x - o.art.width / 2), o.y - o.art.height) });
+      if (o.creature === "cat") {                              // 白い猫: ふだんは寝ていて、近づくと起き上がってこちらを見る
+        const near = mode === "walk" && Math.hypot(player.x - o.x, (player.y - o.y) * 1.5) < S(40);
+        const breath = !near && Math.floor(now / 1400) % 2 ? 1 : 0;
+        items.push({ y: o.y, draw: () => drawCritter(assets.cat, near ? "sit" : "sleep", o.x, o.y + breath, player.x < o.x) });
+        continue;
+      }
+      if (!o.img) continue;                                    // 背景に描かれた物（絵馬掛けなど）
+      const shake = effects.find((e) => e.kind === "shake" && e.ref === o);
+      const dx = shake ? Math.round(Math.sin(shake.t * 40) * S(1)) : 0;
+      items.push({ y: o.y, draw: () => ctx.drawImage(o.art, Math.round(o.x - o.art.width / 2) + dx, o.y - o.art.height) });
+    }
+    for (const pg of pigeons) {
+      if (pg.state === "away" || !visible(pg.x - S(8), pg.x + S(8))) continue;
+      // 屋根の鳩は一番奥、高く飛んでいる鳩は一番手前
+      const sortY = pg.state === "perch" ? -1 : (pg.state === "fly" && pg.z > S(14) ? 1e9 : pg.y);
+      items.push({ y: sortY, draw: () => drawCritter(assets.pigeon, pg.frame, pg.x, pg.y - pg.z, pg.face < 0) });
     }
     for (const n of npcs) {
       const sheet = assets.sheets[n.sheet];
@@ -1090,9 +1651,9 @@
           ctx.globalCompositeOperation = "source-over";
         }
       }
-      const lampGlow = assets.glows.prop_lamp, lampBloom = assets.blooms.prop_lamp;
       for (const o of objects) {
-        if (o.img !== "lamp" || !visible(o.x - S(30), o.x + S(30))) continue;
+        if (!(o.img === "lamp" || o.glow) || !visible(o.x - S(30), o.x + S(30))) continue;
+        const lampGlow = assets.glows[`prop_${o.img}`], lampBloom = assets.blooms[`prop_${o.img}`];
         const lx = Math.round(o.x - o.art.width / 2), ly = o.y - o.art.height;
         if (lampGlow) ctx.drawImage(lampGlow, lx, ly);
         ctx.globalCompositeOperation = "lighter";
@@ -1104,6 +1665,30 @@
           ctx.fill();
         }
         ctx.globalCompositeOperation = "source-over";
+      }
+    }
+    // 常香炉の煙（ふわっと広がりながら薄くなる）
+    for (const p of smoke) {
+      if (!visible(p.x - S(8), p.x + S(8))) continue;
+      const k = p.t / p.life;
+      const r = Math.round(S(1.2) + k * S(3));
+      ctx.fillStyle = NIGHT ? `rgba(200, 204, 228, ${(0.32 * (1 - k)).toFixed(3)})` : `rgba(246, 244, 240, ${(0.42 * (1 - k)).toFixed(3)})`;
+      ctx.fillRect(Math.round(p.x) - r, Math.round(p.y) - r, r * 2, r * 2);
+    }
+    for (const e of effects) {
+      const k = e.t / e.dur;
+      if (e.kind === "coin") {                                 // お賽銭の放物線
+        const x = e.x0 + (e.x1 - e.x0) * k, y = e.y0 + (e.y1 - e.y0) * k - Math.sin(Math.PI * k) * S(16);
+        withUnit(x, y, () => {
+          ctx.fillStyle = "#6a4a12";
+          ctx.fillRect(-2, -2, 4, 4);
+          ctx.fillStyle = "#f2c94a";
+          ctx.fillRect(-1, -2, 2, 3);
+        });
+      } else if (e.kind === "pop") {
+        ctx.globalAlpha = clamp(1.6 - k * 1.6, 0, 1);
+        drawWorldText(e.text, e.x, e.y - k * S(6), 5 * U, "#ffe9a0");
+        ctx.globalAlpha = 1;
       }
     }
     for (const f of facades) if (visible(f.x, f.x + f.geo.w)) drawSignText(f);
@@ -1153,6 +1738,14 @@
       ctx.setTransform(SCALE, 0, 0, SCALE, -camX * SCALE, 0);
     }
 
+    if (prayDim) {
+      const k = prayDim.t / prayDim.dur;
+      const a = 0.38 * Math.min(1, k * 4, (1 - k) * 4);
+      ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0);
+      ctx.fillStyle = `rgba(16, 10, 24, ${a.toFixed(3)})`;
+      ctx.fillRect(0, 0, VIEW_W, VIEW_H);
+      ctx.setTransform(SCALE, 0, 0, SCALE, -camX * SCALE, 0);
+    }
     // 決定できる相手がいる時は頭上に「！」
     if (focus && !busy && !msg.active) {
       const bob = Math.floor(performance.now() / 300) % 2;
@@ -1359,12 +1952,18 @@
       b.style.left = `${a.x}%`;
       b.style.top = `${a.y}%`;
       b.dataset.area = a.id;
-      b.innerHTML = a.open ? a.label : `${a.label}<small>準備中</small>`;
+      b.innerHTML = a.open ? `${a.label}${a.sub ? `<small>${a.sub}</small>` : ""}` : `${a.label}<small>準備中</small>`;
       b.addEventListener("click", (e) => {
         e.currentTarget.blur();
         if (busy || mode !== "map") return;
-        if (a.open) enterStreet();
-        else toast("このエリアは準備中です。試作で歩けるのは繁華街だけ。");
+        if (!a.open) toast("このエリアは準備中です。試作で歩けるのは繁華街と古町だけ。");
+        else if (a.id === stage.id) enterStreet();
+        else {                                               // 別のエリア: そのステージで読み直す（?area=）
+          const q = new URLSearchParams(location.search);
+          q.delete("reset");
+          q.set("area", a.id);
+          location.search = `?${q}`;
+        }
       });
       box.appendChild(b);
     }
@@ -1438,12 +2037,18 @@
   function openTravel() {
     if (busy || mode !== "walk" || msg.active) return;
     travelItems = [
-      { label: "通りの入口", go: () => placePlayer(stage.spawn.x, stage.spawn.y, stage.spawn.dir) },
+      { label: stage.spawnLabel || "通りの入口", go: () => placePlayer(stage.spawn.x, stage.spawn.y, stage.spawn.dir) },
       ...doors.map((d) => ({
         label: save.visited[d.id] ? `${d.label}の前` : "？？？",
         off: !save.visited[d.id],
         door: d.id,
         go: () => placeAtDoor(d, "down"),
+      })),
+      ...(stage.travel || []).map((t) => ({                  // 入口のない場所（観音堂の本堂の前など）。一度行ったら選べる
+        label: save.visited[t.needs] ? t.label : "？？？",
+        off: !save.visited[t.needs],
+        door: t.id,
+        go: () => placePlayer(t.x, t.y, t.dir),
       })),
       { label: "エリアマップへ", map: true },
     ];
@@ -1562,13 +2167,13 @@
     pointerHeld = true;
     canvas.setPointerCapture(e.pointerId);
     player.pending = null;
-    player.target = { x: clamp(p.x, stage.walk.x0 + FOOT_HALF_W, stage.walk.x1 - FOOT_HALF_W), y: clampWalkY(p.y) };
+    player.target = clampWalk(p.x, p.y);
     player.tapRun = farTarget();
   });
   canvas.addEventListener("pointermove", (e) => {
     if (!pointerHeld || mode !== "walk" || msg.active) return;
     const p = pointerToWorld(e);
-    player.target = { x: clamp(p.x, stage.walk.x0 + FOOT_HALF_W, stage.walk.x1 - FOOT_HALF_W), y: clampWalkY(p.y) };
+    player.target = clampWalk(p.x, p.y);
     player.tapRun = farTarget();                             // 押したまま遠くへ引っぱると走る
   });
   const release = () => { pointerHeld = false; };
@@ -1635,6 +2240,8 @@
       visited: { ...save.visited },
       travel: mode === "menu" ? travelItems.map((t) => ({ label: t.label, off: !!t.off })) : null,
       npcs: npcs.map((n) => ({ id: n.id, x: Math.round(n.x), y: n.y, dir: n.dir, talking: n.talking })),
+      pigeons: pigeons.reduce((c, pg) => ({ ...c, [pg.state]: (c[pg.state] || 0) + 1 }), {}),
+      prayDim: !!prayDim,
       missing: assets.missing.slice(),
       night: NIGHT,
     }),
@@ -1645,16 +2252,21 @@
       speed: SPEED, dashMult: DASH_MULT, runTapDist: RUN_TAP_DIST, footHalfW: FOOT_HALF_W, footH: FOOT_H,
       npcRows: npcs.map((n) => ({ id: n.id, y: n.y, patrol: n.patrol || null })),
       doors: doors.map((d) => ({ id: d.id, cx: d.cx })),
-      objects: objects.map((o) => ({ id: o.id, x: o.x, y: o.y, solid: o.solid || null, w: o.art.width, h: o.art.height })),
+      objects: objects.map((o) => ({ id: o.id, x: o.x, y: o.y, solid: o.solid || null, w: o.art.width, h: o.art.height, action: o.action || null })),
+      walkExtra: (stage.walkExtra || []).map((r) => ({ ...r })),
+      pigeons: pigeons.map((pg) => ({ x: Math.round(pg.x), y: Math.round(pg.y), z: Math.round(pg.z), state: pg.state })),
+      critters: { pigeon: assets.pigeon ? assets.pigeon.source : null, cat: assets.cat ? assets.cat.source : null },
       npcs: npcs.map((n) => ({ id: n.id, x: n.x, y: n.y })),
       farSource: assets.farSource, foreground: !!assets.poleTile, fgSource: assets.fgSource || null,
-      setSource: stage.set ? (assets.missing.some((m) => m.startsWith("street_")) ? "placeholder" : "image") : null,
+      setSource: stage.set ? (assets.missing.includes(NIGHT ? (stage.set.imgNight || stage.set.img) : stage.set.img) ? "placeholder" : "image") : null,
     }),
     place: (x, y, dir = "down") => {
       if (mode !== "walk") return false;
       placePlayer(x, y, dir);
       return true;
     },
+    // 屋根・画面の外にいる鳩の「戻るまでの時間」を0にする（スモークテストで戻ってくるのを待たないため）
+    pigeonsReturnNow: () => { for (const pg of pigeons) if (pg.state === "perch" || pg.state === "away") pg.timer = 0; },
     warp: (doorId) => {
       const d = doors.find((x) => x.id === doorId);
       if (!d) return false;

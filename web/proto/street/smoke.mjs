@@ -3,6 +3,7 @@
 //   node web/proto/street/smoke.mjs
 // 標準版（320×180）・高解像度2.5D版（640×360・?stage=hd）・ハリボテ背景版（?stage=set）のそれぞれで、生成画像と
 // 画像を全部404にした仮素材の両方について、同じ流れを最後まで通す（座標は __street.layout() から読む）。
+// 古町の観音堂（?area=kannon・AA14）は、お参り・常香炉・おみくじ・猫・通行人・鳩が飛び立って戻る・ファストトラベルを確かめる。
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
 const { chromium } = (() => {
@@ -27,7 +28,7 @@ async function run(label, { blockImages, stage = "base" }) {
   const errors = [];
   page.on("pageerror", (e) => errors.push(String(e)));
   if (blockImages) {
-    await page.route(/assets\/proto_(street|street_hd|street_set|walk)\//, (route) => route.fulfill({ status: 404, body: "" }));
+    await page.route(/assets\/proto_(street|street_hd|street_set|walk|kannon)\//, (route) => route.fulfill({ status: 404, body: "" }));
   }
   const Q = stage === "base" ? "" : `stage=${stage}&`;
   const st = () => page.evaluate(() => window.__street.state());
@@ -60,7 +61,7 @@ async function run(label, { blockImages, stage = "base" }) {
   ok(await page.locator(".pin.off").count() >= 3, "他のエリアは準備中");
 
   // 1) エリアマップ → 繁華街
-  await page.click(".pin.on");
+  await page.click(".pin.on[data-area='hankagai']");
   await until(() => window.__street.state().mode === "walk");
   await idle();
   // 配置はステージから読む（標準版と高解像度版で同じテストを回す）
@@ -259,6 +260,171 @@ await run("高解像度2.5D・生成画像", { blockImages: false, stage: "hd" }
 await run("高解像度2.5D・仮素材（画像なし）", { blockImages: true, stage: "hd" });
 await run("ハリボテ背景版・生成画像", { blockImages: false, stage: "set" });
 await run("ハリボテ背景版・仮素材（画像なし）", { blockImages: true, stage: "set" });
+
+// ---------------------------------------------------------------- 古町の観音堂（AA14）
+async function runKannon(label, { blockImages }) {
+  console.log(`\n== ${label}`);
+  const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(String(e)));
+  if (blockImages) {
+    await page.route(/assets\/proto_(street|street_hd|street_set|walk|kannon)\//, (route) => route.fulfill({ status: 404, body: "" }));
+  }
+  const st = () => page.evaluate(() => window.__street.state());
+  const until = (fn, arg, timeout = 8000) => page.waitForFunction(fn, arg, { timeout });
+  const place = (x, y, dir) => page.evaluate(([a, b, c]) => window.__street.place(a, b, c), [x, y, dir]);
+  const press = async (key, ms = 0) => {
+    await page.keyboard.down(key);
+    if (ms) await page.waitForTimeout(ms);
+    await page.keyboard.up(key);
+  };
+  const readAll = async () => {
+    const seen = [];
+    for (let i = 0; i < 10 && (await st()).msg; i++) {
+      seen.push((await st()).msg);
+      await press("KeyZ");
+      await page.waitForTimeout(40);
+      if ((await st()).msg === seen[seen.length - 1]) await press("KeyZ");
+      await page.waitForTimeout(40);
+    }
+    return seen;
+  };
+  const actOn = async (want) => {
+    await page.waitForTimeout(60);
+    const f = (await st()).focus;
+    ok(f === want, `${want} が対象になる`, String(f));
+    await press("KeyZ");
+    await until(() => !!window.__street.state().msg);
+    return readAll();
+  };
+
+  // エリアマップの「古町」から観音堂へ（繁華街のページから読み直す）
+  await page.goto(`${PAGE}?reset=1`);
+  await until(() => window.__street && window.__street.state().ready);
+  await page.click(".pin.on[data-area='kannon']");
+  await page.waitForFunction(() => new URLSearchParams(location.search).get("area") === "kannon"
+    && window.__street && window.__street.state().mode === "walk", null, { timeout: 8000 });
+  const L = await page.evaluate(() => window.__street.layout());
+  const U = L.unit;
+  const obj = (id) => L.objects.find((o) => o.id === id);
+  let s = await st();
+  ok(L.id === "kannon" && L.view[0] === 640, "エリアマップの古町→観音堂", `${L.id} ${L.view.join("×")}`);
+  // 生成画像は Codex の納品待ち（docs/codex_handoff_kannon_images.md）。届くまでは「生成画像」の回も仮素材で動く
+  ok(blockImages ? L.setSource === "placeholder" : !!L.setSource, "境内の一枚絵", `${L.setSource}（${s.missing.join(",") || "全部あり"}）`);
+  ok(L.critters.pigeon && L.critters.cat && (!blockImages || L.critters.pigeon === "placeholder"), "鳩と猫のシート", JSON.stringify(L.critters));
+  ok(L.pigeons.length >= 10 && L.pigeons.every((p) => p.state === "ground"), "鳩が境内にいる", `${L.pigeons.length}羽`);
+
+  // 鳩: 立ち止まっていれば飛ばない → 走って近づくと飛び立つ（近くの鳩もつられる）→ 離れると戻る
+  const flock = L.pigeons.filter((p) => p.x > 680 && p.x < 880);
+  const fx = Math.min(...flock.map((p) => p.x));
+  await place(fx - 20 * U, 300, "right");
+  await page.waitForTimeout(700);
+  s = await st();
+  ok(!s.pigeons.fly && !s.pigeons.away && !s.pigeons.perch, "立ち止まっていれば鳩は逃げない", JSON.stringify(s.pigeons));
+  await place(fx - 90 * U, 300, "right");
+  await page.keyboard.down("ShiftLeft");
+  await press("ArrowRight", 900);
+  await page.keyboard.up("ShiftLeft");
+  await page.waitForTimeout(500);
+  s = await st();
+  const gone = (s.pigeons.fly || 0) + (s.pigeons.away || 0) + (s.pigeons.perch || 0);
+  ok(gone >= 3, "走って近づくと鳩が飛び立つ（つられて何羽も）", JSON.stringify(s.pigeons));
+  await page.waitForTimeout(2600);
+  s = await st();
+  ok((s.pigeons.perch || 0) + (s.pigeons.away || 0) >= 3, "屋根に止まる・飛び去る", JSON.stringify(s.pigeons));
+  await place(1750, 300, "left");                          // 遠くへ離れる
+  await until(() => !window.__street.state().pigeons.fly);  // 飛んでいる途中の鳩が止まり終わってから
+  await page.evaluate(() => window.__street.pigeonsReturnNow());
+  await page.waitForTimeout(3600);
+  s = await st();
+  ok((s.pigeons.ground || 0) >= L.pigeons.length - 4, "離れると鳩が舞い戻る", JSON.stringify(s.pigeons));
+
+  // 猫
+  const cat = obj("cat");
+  await place(cat.x - 18 * U, cat.y + 4 * U, "right");
+  let lines = await actOn("object:cat");
+  ok(lines[0] && lines[0].includes("白い猫"), "白い猫をしらべる", lines[0]);
+  await press("KeyZ");
+  await until(() => !!window.__street.state().msg);
+  lines = await readAll();
+  ok(lines[0] && lines[0].includes("片目"), "猫の2回目", lines[0]);
+
+  // 常香炉: 煙を浴びる
+  const koro = obj("koro");
+  await place(koro.x, koro.y + 10 * U, "up");
+  lines = await actOn("object:koro");
+  ok(lines[0] && lines[0].startsWith("常香炉の煙"), "常香炉の煙を浴びる", lines.join(" / "));
+
+  // お参り: 石段を上がって賽銭箱の前で決定
+  const box = obj("saisen");
+  await place(box.x, L.walk.y0 + 3 * U, "up");
+  await press("ArrowUp", 900);
+  s = await st();
+  ok(s.y < L.walk.y0 - 10 * U, "本堂の石段を上がれる", `y=${s.y}`);
+  await page.waitForTimeout(60);
+  ok((await st()).focus === "object:saisen", "賽銭箱が対象になる", (await st()).focus);
+  await press("KeyZ");
+  await until(() => window.__street.state().prayDim, null, 4000);
+  ok(true, "手を合わせる間、画面が少し暗くなる");
+  await until(() => !!window.__street.state().msg, null, 5000);
+  lines = await readAll();
+  ok(lines[0] === "お賽銭を入れて、手を合わせた。" && /^（……/.test(lines[1] || ""), "お参りのひとこと", lines.join(" / "));
+  ok((await st()).visited.kannon_pray, "お参りした記録");
+  const stairs = L.walkExtra[0];
+  await place(stairs.x0 + L.footHalfW + 2, stairs.y0 + 12 * U, "left");
+  await press("ArrowLeft", 400);
+  s = await st();
+  ok(s.x - L.footHalfW >= stairs.x0 - 0.5, "石段の外（基壇の上）へははみ出せない", `x=${s.x} 石段の左端=${stairs.x0}`);
+
+  // おみくじ（1回だけ引ける）
+  const omi = obj("omikuji");
+  await place(omi.x, omi.y + 14 * U, "up");
+  lines = await actOn("object:omikuji");
+  ok(lines[0] === "百円を入れて、おみくじを引いた。" && /^……(大吉|吉|中吉|小吉|末吉|凶)。/.test(lines[1] || ""), "おみくじを引く", lines.join(" / "));
+  lines = await actOn("object:omikuji");
+  ok(lines[0] && lines[0].includes("結んできた"), "おみくじは1回だけ", lines[0]);
+
+  // 通行人（立ち止まっているおばさん・大学生）
+  for (const id of ["mob_obasan", "mob_student"]) {
+    const n = L.npcs.find((x) => x.id === id);
+    await place(n.x + (id === "mob_obasan" ? -16 : 16) * U, n.y, id === "mob_obasan" ? "right" : "left");
+    lines = await actOn(`npc:${id}`);
+    ok(lines.length >= 1 && lines[0].startsWith("「"), `${id} と話す`, lines[0]);
+  }
+
+  // ファストトラベル: お参りした後は「本堂の前」へ行ける
+  await place(L.spawn.x, L.spawn.y, "right");
+  await press("KeyM");
+  await until(() => window.__street.state().mode === "menu");
+  s = await st();
+  const labels = s.travel.map((t) => `${t.label}${t.off ? "(×)" : ""}`).join(" / ");
+  ok(s.travel[0].label === "境内の入口" && s.travel.some((t) => t.label === "本堂の前" && !t.off), "本堂の前へ移動できる", labels);
+  await page.click("#travel li[data-door='pray']");
+  await until(() => window.__street.state().mode === "walk" && !window.__street.state().busy);
+  s = await st();
+  ok(Math.abs(s.x - box.x) < 2 * U && s.dir === "up", "本堂の前へ移動", `x=${s.x} dir=${s.dir}`);
+
+  // 左端からエリアマップ→繁華街のピンで繁華街へ
+  await place(L.spawn.x + 4 * U, L.spawn.y, "left");
+  await press("ArrowLeft", 800);
+  await until(() => window.__street.state().mode === "map");
+  await page.waitForFunction(() => !window.__street.state().busy);
+  await page.click(".pin.on[data-area='hankagai']");
+  await page.waitForFunction(() => new URLSearchParams(location.search).get("area") === "hankagai"
+    && window.__street && window.__street.state().mode === "walk", null, { timeout: 8000 });
+  ok(true, "観音堂→エリアマップ→繁華街");
+
+  // 夜
+  await page.goto(`${PAGE}?area=kannon&night=1`);
+  await until(() => window.__street && window.__street.state().mode === "walk");
+  await page.waitForTimeout(300);
+  ok((await st()).night, "?night=1 で夜の境内");
+
+  ok(errors.length === 0, "ページのエラーなし", errors.join(" | "));
+  await page.close();
+}
+await runKannon("観音堂・生成画像", { blockImages: false });
+await runKannon("観音堂・仮素材（画像なし）", { blockImages: true });
 
 // 歩行テストのページも動く（生成画像に切り替わっている）
 {
