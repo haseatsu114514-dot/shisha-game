@@ -1,0 +1,239 @@
+{
+  "canvas": [
+    1280,
+    720
+  ],
+  "characters": [
+    {
+      "character": "hajime",
+      "text": {
+        "title": {
+          "text": "tonariの新人",
+          "x": 650,
+          "y": 185,
+          "width": 580,
+          "height": 42,
+          "overflow": false
+        },
+        "name": {
+          "text": "はじめ",
+          "x": 645,
+          "y": 276,
+          "width": 580,
+          "height": 128,
+          "overflow": false
+        },
+        "full": {
+          "text": "（蒸野 始）",
+          "x": 651,
+          "y": 407,
+          "width": 135.375,
+          "height": 31.1875,
+          "overflow": false
+        },
+        "quote": {
+          "text": "「いつか自分の店を持ちたい」",
+          "x": 650,
+          "y": 579,
+          "width": 575,
+          "height": 43.5,
+          "overflow": false
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "motif": 598,
+      "animations": 14
+    },
+    {
+      "character": "adam",
+      "text": {
+        "title": {
+          "text": "ダブルアップルの伝道師",
+          "x": 650,
+          "y": 185,
+          "width": 580,
+          "height": 42,
+          "overflow": false
+        },
+        "name": {
+          "text": "アダム",
+          "x": 645,
+          "y": 276,
+          "width": 580,
+          "height": 128,
+          "overflow": false
+        },
+        "full": {
+          "text": "（吾妻 大夢）",
+          "x": 651,
+          "y": 407,
+          "width": 160.8125,
+          "height": 31.1875,
+          "overflow": false
+        },
+        "quote": {
+          "text": "「煙は二種類。ダブルアップルと、それ以外だ」",
+          "x": 650,
+          "y": 579,
+          "width": 575,
+          "height": 36.25,
+          "overflow": false
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "motif": 611,
+      "animations": 14
+    },
+    {
+      "character": "naru",
+      "text": {
+        "title": {
+          "text": "地元最強の好敵手",
+          "x": 650,
+          "y": 185,
+          "width": 580,
+          "height": 42,
+          "overflow": false
+        },
+        "name": {
+          "text": "なる",
+          "x": 645,
+          "y": 276,
+          "width": 580,
+          "height": 128,
+          "overflow": false
+        },
+        "full": {
+          "text": "（鳴切 亮太）",
+          "x": 651,
+          "y": 407,
+          "width": 160.8125,
+          "height": 31.1875,
+          "overflow": false
+        },
+        "quote": {
+          "text": "「うまくなりたいなら全部見てけ」",
+          "x": 650,
+          "y": 579,
+          "width": 575,
+          "height": 43.5,
+          "overflow": false
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "motif": 407,
+      "animations": 14
+    },
+    {
+      "character": "dr_kemuri",
+      "text": {
+        "title": {
+          "text": "データの鬼",
+          "x": 650,
+          "y": 185,
+          "width": 580,
+          "height": 42,
+          "overflow": false
+        },
+        "name": {
+          "text": "チャコール博士",
+          "x": 645,
+          "y": 276,
+          "width": 580,
+          "height": 128,
+          "overflow": false
+        },
+        "full": {
+          "text": "（炭場 創）",
+          "x": 651,
+          "y": 407,
+          "width": 135.375,
+          "height": 31.1875,
+          "overflow": false
+        },
+        "quote": {
+          "text": "「データは嘘をつきません」",
+          "x": 650,
+          "y": 579,
+          "width": 575,
+          "height": 43.5,
+          "overflow": false
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "motif": 799,
+      "animations": 14
+    },
+    {
+      "character": "kafuka",
+      "text": {
+        "title": {
+          "text": "サメの王の側近",
+          "x": 650,
+          "y": 185,
+          "width": 580,
+          "height": 42,
+          "overflow": false
+        },
+        "name": {
+          "text": "サメちゃん",
+          "x": 645,
+          "y": 276,
+          "width": 580,
+          "height": 128,
+          "overflow": false
+        },
+        "full": {
+          "text": "",
+          "x": 651,
+          "y": 407,
+          "width": 0,
+          "height": 0,
+          "overflow": false
+        },
+        "quote": {
+          "text": "「お主、サメは好きか？」",
+          "x": 650,
+          "y": 579,
+          "width": 575,
+          "height": 43.5,
+          "overflow": false
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "motif": 663,
+      "animations": 14
+    }
+  ],
+  "animationPhases": [
+    {
+      "ms": 0,
+      "portraitOpacity": "0",
+      "nameOpacity": "0",
+      "nameTransform": "matrix(1, 0, 0, 1, 45, 0)"
+    },
+    {
+      "ms": 400,
+      "portraitOpacity": "1",
+      "nameOpacity": "0",
+      "nameTransform": "matrix(1, 0, 0, 1, 45, 0)"
+    },
+    {
+      "ms": 1600,
+      "portraitOpacity": "1",
+      "nameOpacity": "1",
+      "nameTransform": "matrix(1, 0, 0, 1, 0, 0)"
+    }
+  ],
+  "standaloneButtons": true,
+  "mobileControlsFit": true,
+  "reducedMotionRespected": true,
+  "browserErrors": [],
+  "videoGenerated": true,
+  "runtimeFilesChanged": false
+}

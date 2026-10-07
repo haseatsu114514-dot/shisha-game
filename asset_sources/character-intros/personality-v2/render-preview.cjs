@@ -37,8 +37,14 @@ function checkRects(){
   await page.evaluate(()=>window.introPreview.showCharacter('kafuka'));
   const phases=[];for(const ms of [0,400,1600]){await page.evaluate(t=>window.introPreview.seek(t),ms);phases.push(await page.evaluate(t=>({ms:t,portraitOpacity:getComputedStyle(document.querySelector('#portrait')).opacity,nameOpacity:getComputedStyle(document.querySelector('#name')).opacity,nameTransform:getComputedStyle(document.querySelector('#name')).transform}),ms));await page.screenshot({path:path.join(base,`animation-${ms}.png`)});}
   if(phases[0].nameOpacity!=='0'||Number(phases[1].portraitOpacity)<=0||phases[2].nameOpacity!=='1')throw new Error('animation timing');
-  // Buttons work on the standalone artifact without a server or network.
-  await page.goto('file://'+path.join(base,'mockup.html'));await page.waitForFunction(()=>window.previewReady===true);
+  // Managed Chromium blocks file://. Serve the self-contained file and reject any
+  // external requests: it must use only the document and its embedded assets.
+  const external=[];await page.route('**/*',route=>{
+   const u=route.request().url();
+   if(u.startsWith('data:')||u===url+'mockup.html'){route.continue();return;}
+   external.push(u);route.abort();
+  });
+  await page.goto(url+'mockup.html');await page.waitForFunction(()=>window.previewReady===true);
   await page.locator('[data-select="adam"]').click();await page.waitForFunction(()=>window.previewReady&&document.querySelector('#stage').dataset.character==='adam');
   await page.locator('#pause').click();await page.waitForFunction(()=>window.introPreview.animations.every(a=>a.playState==='paused'));
   await page.locator('#pause').click();await page.locator('#replay').click();await page.locator('#loop').click();await page.waitForFunction(()=>document.querySelector('#loop').getAttribute('aria-pressed')==='true');
@@ -46,6 +52,8 @@ function checkRects(){
   await page.setViewportSize({width:390,height:844});await page.screenshot({path:path.join(base,'mobile-preview.png')});
   const controlsFit=await page.locator('#controls').evaluate(el=>el.scrollWidth<=innerWidth);if(!controlsFit)throw new Error('mobile controls overflow');
   await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>window.introPreview.showCharacter('kafuka'));if(await page.evaluate(()=>window.introPreview.animations.length)!==0)throw new Error('reduced motion');
+  if(external.length)throw new Error('standalone external requests '+external.join(','));
+  await page.unroute('**/*');
   if(video){
    await page.emulateMedia({reducedMotion:'no-preference'});await page.setViewportSize({width:1280,height:720});await page.goto(url+'?video=1');await page.waitForFunction(()=>window.previewReady===true);
    const dir=fs.mkdtempSync(path.join(os.tmpdir(),'suien-intro-frames-'));let frame=0;
