@@ -40,7 +40,7 @@ export const BOND_FINALES = {
  */
 export const BOND_QUESTIONS = {
   tsumugi: { dialogue: "ch1_tsumugi_bond_question", choice: "bond_q1_tsumugi", host: "ch1_tsumugi_fourth", when: "after" },
-  minto: { dialogue: "ch1_minto_bond_question", choice: "bond_q1_minto", host: "ch1_minto_private_1", when: "after" },
+  minto: { dialogue: "ch1_minto_bond_question", choice: "bond_q1_minto", host: "ch1_minto_private_1", alsoAfter: ["ch1_minto_fifth"], when: "after" },
   rin: { dialogue: "ch1_rin_bond_question", choice: "bond_q1_rin", host: "ch1_rin_third", when: "visit" },
 };
 
@@ -89,7 +89,7 @@ export function bondCondition(line) {
 /** 固有会話（host）を読んだ直後に呼ぶ。対応する質問が残っていれば続けて出す */
 export async function afterStory(dialogueId, { bg = null } = {}) {
   for (const [id, q] of Object.entries(BOND_QUESTIONS)) {
-    if (q.when !== "after" || q.host !== dialogueId || !questionOpen(id)) continue;
+    if (q.when !== "after" || !(q.host === dialogueId || q.alsoAfter?.includes(dialogueId)) || !questionOpen(id)) continue;
     await play(q.dialogue, bg && !DB.dialogues[q.dialogue]?.metadata?.bg ? { bg } : {});
     save();
   }
@@ -97,7 +97,7 @@ export async function afterStory(dialogueId, { bg = null } = {}) {
 
 const questionOpen = (id) => {
   const q = BOND_QUESTIONS[id];
-  return !!q && !!DB.dialogues[q.dialogue] && !answered(q.choice) && !isLover(id) && !state.flags[`_friend_${id}`];
+  return !!q && !!DB.dialogues[q.dialogue] && !answered(q.choice) && !state.finales?.[id] && !isLover(id) && !state.flags[`_friend_${id}`];
 };
 const hostSeen = (id) => {
   const q = BOND_QUESTIONS[id];

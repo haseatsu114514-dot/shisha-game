@@ -27,7 +27,7 @@ try {
     for (const id of ["minto", "naru", "adam", "tsumugi", "rin"]) core.state.met[id] = true;
     hud.initHud({}); hud.showHud();
     window.previewMap = map.chooseSpot();
-    await Promise.all(["panel", "button", "map-pin", "heart", "reward", "gauge-frame", "gauge-fill"].map(async (name) => {
+    await Promise.all(["panel", "button", "map-pin", "heart", "reward-clean", "gauge-frame", "gauge-fill"].map(async (name) => {
       const image = new Image(); image.src = `img/ui/lounge/${name}.webp`;
       await image.decode();
       if (!image.naturalWidth) throw new Error(`Failed to decode ${name}`);
@@ -176,12 +176,13 @@ try {
       card.querySelector(".gc-main").textContent = name;
       preview.append(card);
       const skin = getComputedStyle(card, "::after");
-      out.push({ key, color: skin.backgroundColor, smoke: skin.backgroundImage.includes("reward.webp"), mask: skin.maskImage, rim: skin.borderLeftColor });
+      out.push({ key, color: skin.backgroundColor, art: skin.backgroundImage, mask: skin.maskImage,
+        badge: getComputedStyle(card.querySelector(".gc-badge")).borderImageSource });
     }
     return out;
   });
   assert.deepEqual(colors.map((c) => c.color), ["rgb(242, 195, 76)", "rgb(108, 198, 232)", "rgb(239, 122, 94)", "rgb(180, 154, 239)", "rgb(101, 201, 187)"]);
-  assert(colors.every((c) => !c.smoke && c.mask === "none" && c.rim === c.color));
+  assert(colors.every((c) => c.art.includes("reward-clean.webp") && c.mask.includes("reward-clean.webp") && c.badge.includes("panel.webp")), "Original notification frame/badge were not restored with the clean image");
   if (shots) await page.screenshot({ path: `${shots}/stat-colors.png` });
   assert.deepEqual(errors, []);
   console.log("[ui skin] PASS: all five status colors remain, without the background smoke mark");

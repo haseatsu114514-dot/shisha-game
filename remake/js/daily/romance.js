@@ -95,10 +95,11 @@ const cheatScene = (id) => ({
  * 予約（_confession_due）は締めくくりの直後に入るが、再生の前にもルートを確かめ直す。
  * 旧セーブに残った予約だけ（好感度MAXの自動予約）では告白しない。
  * @param beat 「（……○○の顔が、ふと浮かんだ）」のような一拍を出す関数（前触れなくシーンへ飛ばない）
- * @param opts.busyNight 今夜すでに別の約束（誘い・締めくくり）で人と会った。告白は重ねず後日に回す
+ * @param opts.busyNight 今夜すでに約束（誘い・締めくくり）で人と会った
+ * @param opts.companion 今夜会った相手。同じ相手への告白は帰り道に続け、別の相手なら後日に回す
  * @returns 何か起きたか
  */
-export async function maybeConfession(beat, { busyNight = false } = {}) {
+export async function maybeConfession(beat, { busyNight = false, companion = null } = {}) {
   if (state.phase !== "daily" || state.slot < 2) return false; // 昼の行動から仕事後の夜へ飛ばない
   let id = state.flags._confession_due;
   if (id && !romanceRouteOpen(id)) { delete state.flags._confession_due; id = null; }
@@ -106,10 +107,10 @@ export async function maybeConfession(beat, { busyNight = false } = {}) {
   if (!id) id = Object.keys(state.finales || {}).find(romanceRouteOpen) || null;
   if (!id) return false;
   state.flags._confession_due = id;
-  if (id === "minto" && !state.flags._minto_identity_revealed) return false; // 私服の初めての約束で本名を知ってから
-  if ((state.flags._confession_wait || 0) > state.day || busyNight) return false;
+  if (id === "minto" && !state.flags._minto_name_known) return false; // 本名を聞いた私的な約束の後
+  if ((state.flags._confession_wait || 0) > state.day || busyNight && companion !== id) return false;
   delete state.flags._confession_due;
-  await beat(id === "ageha" ? "——と、そのとき。" : `（……${privateCall(id)}の顔が、ふと浮かんだ）`);
+  await beat(companion === id ? "——別れ際、もう少しだけ話したくなった。" : id === "ageha" ? "——と、そのとき。" : `（……${privateCall(id)}の顔が、ふと浮かんだ）`);
   // すでに恋人がいるなら、応える前に一度立ち止まる
   if (state.lovers.length) {
     delete state.flags._cheat_go;

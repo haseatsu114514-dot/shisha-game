@@ -5,7 +5,7 @@ import { showScreen, setBg, toast, retire } from "../core/ui.js";
 import { state, timeOfDay } from "../core/state.js";
 import { addMoney, addStamina, applyStats, star, currentCondition } from "../core/stats.js";
 import { SE, playBgm } from "../core/audio.js";
-import { play } from "../vn/engine.js";
+import { play, dialogueSequence } from "../vn/engine.js";
 import { visitChar, hasNewStory } from "./spots.js";
 import { runDrill, DRILLS } from "../craft/session.js";
 import { isRainy, RAIN_BAITO, RAIN_BAITO_BONUS } from "./weather.js";
@@ -47,6 +47,10 @@ const CALLED_BONUS = 5000; // スミさんに急に呼ばれた日の上乗せ�
 
 /** @param opts.called スミさんのLIMEで急に呼ばれたシフト（給料に上乗せ） */
 export async function doBaito({ called = false } = {}) {
+  return dialogueSequence(() => baitoShift({ called }));
+}
+
+async function baitoShift({ called }) {
   addStamina(-24);
   const condition = currentCondition(); // 消耗を反映した制作時の体力で、そのシフト中は固定
   playBgm("tonari");

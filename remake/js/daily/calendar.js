@@ -3,7 +3,8 @@ import { el, sleep } from "../core/util.js";
 import { layers, dayCard, modal, toast, fadeBlack, bannersIdle, setBg } from "../core/ui.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
-import { addStamina, gainAffinity, gainStat, STAMINA_LOW, maxStamina } from "../core/stats.js";
+import { addStamina, gainAffinity, gainStat, staminaAfter, staminaRatio, maxStamina } from "../core/stats.js";
+import { coldRisk, catchesCold } from "../core/illness.js";
 import { DB, bgUrl } from "../core/data.js";
 import { SE, playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
@@ -161,19 +162,18 @@ async function day1Errands() {
   await visitRival(naru);
   state.visitedDay.naru = state.day;
   state.slot++;
-  await afterAction();
+  await afterAction({ exerted: true });
 }
 
 // ---------------------------------------------------------------- 行動
 
 async function staminaGuard(cost) {
-  if (!(cost < 0) || state.stamina + cost >= STAMINA_LOW) return true;
+  if (!(cost < 0) || !coldRisk(staminaAfter(cost) / maxStamina())) return true;
   const go = await modal({
     title: "体が重い……",
-    body: "体力が残り少ない。このまま無理をすると、寝込むかもしれない。<br>「家に帰る」で休むこともできる。",
+    body: "体力が赤い状態での行動だ。残りが少ないほど、翌朝に風邪で寝込む危険が高くなる。<br>無事に済むこともあるけど、今は「家に帰る」で休める。",
     options: [{ label: "やめておく", value: false }, { label: "それでも行く", value: true, test: "stamina-go" }],
   });
-  if (go) state.flags._overwork = (state.flags._overwork || 0) + 1;
   return go;
 }
 
@@ -190,9 +190,10 @@ async function takeAction() {
     }
     state.pendingInvite = null;
     if (state.slot === 1) state.flags._private_night_day = state.day;
+    if (state.slot === 1) state.flags._private_night_char = inv.sender;
     await meetInvitation(inv);
     state.slot++;
-    await afterAction();
+    await afterAction({ exerted: true });
     return;
   }
   const ev = chapterDef.nightEvents[state.day];
@@ -208,6 +209,7 @@ async function takeAction() {
   if (spotId === "__lime__") return; // LIME で誘いに乗った → 次の takeAction で約束へ
   const spot = spotById(spotId);
   let used = true;
+  let exerted = false;
   if (spot.kind === "tonari") {
     const sub = await tonariMenu();
     if (!sub) return;
@@ -216,23 +218,27 @@ async function takeAction() {
       return;
     }
     if (!(await staminaGuard(sub === "baito" ? -24 : -10))) return;
+    exerted = true;
     state.visitedDay[`tonari_${sub}`] = state.day;
     if (sub === "baito") await doBaito();
     else await tonariCustomer();
   } else if (spot.kind === "kafuka") {
     if (!(await staminaGuard(spot.stamina))) return;
     used = await visitKafuka(spot);
+    exerted = spot.stamina < 0;
   } else if (spot.kind === "rival") {
     if (!(await staminaGuard(spot.stamina))) return;
     await visitRival(spot);
+    exerted = true;
   } else if (spot.kind === "shop") {
     const r = await openShop();
     if (r !== "rin") used = false;
-    else if (await staminaGuard(-14)) await visitRin();
+    else if (await staminaGuard(-14)) { await visitRin(); exerted = true; }
     else used = false;
   } else if (spot.kind === "spot") {
     if (!(await staminaGuard(spot.stamina))) return;
     await visitSpot(spot);
+    exerted = spot.stamina < 0;
   } else if (spot.kind === "rest") {
     await restAtHome(spot);
   } else if (spot.kind === "fortune") {
@@ -243,7 +249,7 @@ async function takeAction() {
   if (!used) return;
   state.visitedDay[spot.id] = state.day;
   state.slot++;
-  await afterAction();
+  await afterAction({ exerted });
 }
 
 
@@ -278,7 +284,9 @@ async function meetInvitation(inv) {
 }
 
 /** 行動を1回使ったあと: スロットが1回転（昼は次のマップで・夜はその場で見せる）。告白は営業後に endDay で扱う */
-async function afterAction() {
+async function afterAction({ exerted = false } = {}) {
+  // 警告の承諾回数ではなく、実際に消耗した行動の終了時に一度だけ抽選する。
+  if (exerted && !state.flags._cold_pending && catchesCold(staminaRatio())) state.flags._cold_pending = true;
   spinReel();
   save();
   // 昼の行動の分は次のマップで回る。夜の行動の分は、その夜のうちにここで回す
@@ -311,15 +319,17 @@ async function endDay() {
   }
   const appointment = state.pendingInvite;
   let metTonight = state.flags._private_night_day === state.day; // 夜の行動枠で約束の相手に会った
+  let companion = metTonight ? state.flags._private_night_char : null;
   if (appointment?.afterClose && appointment.queuedAfterClose && (appointment.day ?? state.day) === state.day) {
     state.pendingInvite = null;
     await beat("——店の営業が終わってから、約束の場所へ。");
     await meetInvitation(appointment);
-    await afterAction();
+    await afterAction({ exerted: true });
     metTonight = true;
+    companion = appointment.sender;
   }
   // 別の約束で人と会った夜に告白は重ねない（予約は残り、落ち着いた夜に回る）
-  const confessed = await maybeConfession(beat, { busyNight: metTonight });
+  const confessed = await maybeConfession(beat, { busyNight: metTonight, companion });
   if (confessed) await bannersIdle();
   const athome = !!state.flags._home_tonight;
   delete state.flags._home_tonight;
@@ -335,15 +345,23 @@ async function endDay() {
 }
 
 async function advanceDay() {
-  const exhausted = state.stamina <= 0 || (state.flags._overwork || 0) >= 2;
+  const exhausted = !!state.flags._cold_pending;
+  delete state.flags._cold_pending;
+  delete state.flags._overwork; // 旧セーブの固定発病カウンターは使わない。
   await fadeBlack(async () => {
-    addStamina(SLEEP_RECOVERY);
+    // 大会の朝に発病しても大会日を飛ばさない。その夜は回復せず、不調の残量で本番へ。
+    addStamina(exhausted && state.day + 1 >= TOURNAMENT_DAY ? 0 : SLEEP_RECOVERY);
     state.day += 1;
     state.slot = 0;
     updateHud();
     setBg(bgUrl("bg_home", "day"), { instant: true }); // 朝は家で目を覚ます（前の夜の場面の絵を持ち越さない）
   }, 500);
-  if (!exhausted || state.day >= TOURNAMENT_DAY) return;
+  if (!exhausted) return;
+  if (state.day >= TOURNAMENT_DAY) {
+    await play("remake_sick_tournament");
+    updateHud();
+    return;
+  }
   state.flags._overwork = 0;
   const first = !state.flags._sick_once;
   state.flags._sick_once = true;
