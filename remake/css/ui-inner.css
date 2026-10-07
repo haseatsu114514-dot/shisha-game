@@ -69,7 +69,7 @@
   border-radius: 3px;
   color: var(--gold-hi);
 }
-.st-badge, .gc-badge:not(.face) {
+.st-badge {
   background: color-mix(in srgb, var(--sc, var(--gc)) 12%, var(--ink-2));
   border: 1px solid color-mix(in srgb, var(--sc, var(--gc)) 55%, transparent);
   border-image: none;

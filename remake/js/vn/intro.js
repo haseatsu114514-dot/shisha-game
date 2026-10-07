@@ -64,10 +64,10 @@ function framePortrait(img, p) {
 }
 
 /**
- * カットインを再生する（クリック／Enter で閉じる。放っておいても数秒で閉じる）
- * @param opts.quick スキップ中など、短く見せる
+ * 初登場は最後まで見せる。クリック・Enter・SKIPでも表示時間を短くしない。
+ * @param opts.onAppear 画像が出た時の場面処理（本人の登場に合わせるBGMなど）
  */
-export async function playIntro(id, { quick = false } = {}) {
+export async function playIntro(id, { onAppear = null } = {}) {
   const intro = introOf(id);
   if (!intro) return;
   markIntroSeen(id);
@@ -92,33 +92,23 @@ export async function playIntro(id, { quick = false } = {}) {
     intro.line ? el("div.ci-line", { text: `「${intro.line}」`, style: `font-size: ${fitSize(`「${intro.line}」`, 640, 34)}px` }) : null,
   ].filter(Boolean));
   layers.fx.append(host);
+  onAppear?.();
   SE.select();
   await sleep(30);
   host.classList.add("in");
-  const hold = quick ? 900 : 3600;
-  await new Promise((resolve) => {
-    const start = performance.now();
-    let done = false;
-    const close = () => {
-      if (done) return;
-      done = true;
-      clearTimeout(timer);
-      window.removeEventListener("keydown", onKey, true);
-      host.removeEventListener("pointerup", onTap);
-      resolve();
-    };
-    const early = () => performance.now() - start > 500; // 送りの連打で見逃さないよう、最初の0.5秒は閉じない
-    const onTap = (e) => { e.stopPropagation(); if (early()) close(); };
-    const onKey = (e) => {
-      if (e.key !== "Enter" && e.key !== " ") return;
-      e.preventDefault(); e.stopPropagation();
-      if (early()) close();
-    };
-    const timer = setTimeout(close, hold);
-    host.addEventListener("pointerup", onTap);
-    window.addEventListener("keydown", onKey, true);
-  });
-  host.classList.add("out");
-  await sleep(280);
-  host.remove();
+  const onTap = (e) => { e.preventDefault(); e.stopPropagation(); };
+  const onKey = (e) => {
+    if (!["Enter", " ", "Control"].includes(e.key)) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+  };
+  host.addEventListener("pointerup", onTap);
+  window.addEventListener("keydown", onKey, true);
+  try {
+    await sleep(3600);
+    host.classList.add("out");
+    await sleep(280);
+  } finally {
+    window.removeEventListener("keydown", onKey, true);
+    host.remove();
+  }
 }

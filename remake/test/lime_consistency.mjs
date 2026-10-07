@@ -17,6 +17,7 @@ class Element {
   append(...children) { for (const node of children.flat(Infinity).filter(Boolean)) { node.parent = this; this.children.push(node); } }
   replaceChildren(...children) { this.children.forEach((n) => n.parent = null); this.children = []; this.append(...children); }
   remove() { if (this.parent) { this.parent.children = this.parent.children.filter((n) => n !== this); this.parent = null; } }
+  querySelectorAll(selector) { return this.children.flatMap((n) => [...(n.classList.contains(selector.slice(1)) ? [n] : []), ...n.querySelectorAll(selector)]); }
   get scrollHeight() { return this.children.length * 20; }
 }
 function el(spec, attrs = {}, children = []) {
@@ -36,6 +37,7 @@ const values = {
   "rules.js": { TOURNAMENT_DAY: 14 },
   "text.js": { formatHtml: (t) => t }, "spots.js": { hasContact: (id) => state.contacts.includes(id) }, "bus.js": { emit: noop },
   "bonds.js": { bondInvites: () => [], friendMessages: () => [] }, // 締めくくりの誘い・友人のLIMEは remake/test/bonds.mjs
+  "story-knowledge.js": { syncMintoKnowledge: () => {} },
 };
 async function load(name) {
   if (mods.has(name)) return mods.get(name);
@@ -158,8 +160,11 @@ for (const rumor of rumors) {
   }
 }
 
-// 初私服デートは店の第五会話後、定休日の午後。移行済みセーブでは再配信しない。
-reset({ day: 5, story: { minto: 5 } }); assert(!phone.morningMessages().some((m) => m.id === "lime_minto_first_holiday"));
+// 初私服の約束は店の第五会話後、休日午後か営業後。週一の定休日を待って進行不能にしない。
+reset({ day: 5, story: { minto: 4 } }); assert(!phone.morningMessages().some((m) => m.id === "lime_minto_first_holiday"));
+state.story.minto = 5; const firstWorkday = phone.morningMessages().find((m) => m.id === "lime_minto_first_holiday");
+assert.equal(firstWorkday.time_slot, "night"); assert(firstWorkday.after_close);
+assert(!phone.morningMessages({ fixedNight: () => true }).some((m) => m.id === "lime_minto_first_holiday"));
 state.day = 6; const firstHoliday = phone.morningMessages().find((m) => m.sender === "minto"); assert.equal(firstHoliday.id, "lime_minto_first_holiday"); assert.equal(firstHoliday.time_slot, "noon"); assert.equal(firstHoliday.accept_event, "ch1_minto_fifth");
 state.lovers.push("minto"); assert.equal(phone.morningMessages().find((m) => m.sender === "minto").id, "lime_minto_first_holiday");
 state.flags._minto_fifth_done = true; assert(!phone.morningMessages().some((m) => m.id === "lime_minto_first_holiday"));
@@ -235,7 +240,10 @@ for (const message of privateMinto) assert(!/♡|生きてる〜|おはよっ|�
 assert(JSON.stringify(allMessages.find((m) => m.id === "lime_minto_day4")).includes("チェキ"));
 
 // 朝文面と本名の先行表示。通知の親layerはpointer-events:noneでもボタン自身を操作可能にする。
-const rumor = allMessages.find((m) => m.id === "rumor_minto_late_night"); assert(rumor.messages.some((m) => /昨日、店を閉めたあと/.test(m.text))); assert(!rumor.messages.some((m) => /まだ起きてる|おやすみ|こんな時間/.test(m.text)));
+const rumor = allMessages.find((m) => m.id === "rumor_minto_late_night");
+assert.equal(rumor.trigger_flag, "_minto_phantom_shared", "既に話した後の続報として届ける");
+assert(rumor.messages.some((m) => /聞いてくれてありがとう/.test(m.text)));
+assert(!rumor.messages.some((m) => /まだ起きてる|おやすみ|こんな時間/.test(m.text)));
 assert(!JSON.stringify(allMessages.find((m) => m.id === "lime_after_outing_minto")).match(/おやすみ|栞さん/));
 const css = await fs.readFile(new URL("css/daily.css", root), "utf8"); assert(css.match(/\.lime-push\s*\{[^}]*pointer-events:\s*auto/s));
 // 店の私的な用事は営業中の訪問から分離する。買い物の昼は店休日、夜は仕事後。
@@ -250,7 +258,7 @@ reset({ day: 3, contacts: ["naru"] }); const naruDayOff = phone.morningMessages(
 state.day = 4; assert(!phone.morningMessages().some((m) => m.id === "lime_outing_naru_1"));
 // 次の私服の約束を定休日だけに縛らない。配信した時点で本文と予約時刻を一緒に確定。
 for (const day of [6, 11]) {
-  reset({ day, lastBaitoDay: day, flags: { _minto_identity_revealed: true }, contacts: ["minto"] }); db.lime = [invitationById.lime_outing_minto_2];
+  reset({ day, lastBaitoDay: day, flags: { _minto_identity_revealed: true, _minto_fifth_done: true }, contacts: ["minto"] }); db.lime = [invitationById.lime_outing_minto_2];
   const flexible = phone.morningMessages({ fixedNight: () => false })[0]; assert(flexible); assert.equal(flexible.time_slot, day === 6 ? "noon" : "night");
   assert.equal(flexible.after_close, day !== 6); assert.equal(flexible.closed_on, day === 6 ? 6 : undefined);
   const text = JSON.stringify(flexible); assert(!text.includes("{private")); assert.match(text, day === 6 ? /お店がお休み.*午後/ : /仕事を終えたあと/);
@@ -260,15 +268,15 @@ for (const day of [6, 11]) {
   assert.equal(state.pendingInvite.slot, day === 6 ? 0 : 1); assert.equal(state.pendingInvite.afterClose, day !== 6);
   phone.expireInvitations({ fixedNight: () => false }); assert(state.pendingInvite, "resolved night slot must survive reopening LIME");
 }
-reset({ day: 11, lastBaitoDay: 11, flags: { _minto_identity_revealed: true }, contacts: ["minto"] }); db.lime = [invitationById.lime_outing_minto_2]; assert.equal(phone.deliverMorning({ fixedNight: () => true }), 0);
+reset({ day: 11, lastBaitoDay: 11, flags: { _minto_identity_revealed: true, _minto_fifth_done: true }, contacts: ["minto"] }); db.lime = [invitationById.lime_outing_minto_2]; assert.equal(phone.deliverMorning({ fixedNight: () => true }), 0);
 // 返事を忘れた休日の約束を、次の適合する仕事後の夜に再案内。本文に古い休日を残さない。
-reset({ day: 11, lastBaitoDay: 11, flags: { _minto_identity_revealed: true }, contacts: ["minto"] }); db.lime = [invitationById.lime_outing_minto_2];
+reset({ day: 11, lastBaitoDay: 11, flags: { _minto_identity_revealed: true, _minto_fifth_done: true }, contacts: ["minto"] }); db.lime = [invitationById.lime_outing_minto_2];
 const oldHoliday = { ...invitationById.lime_outing_minto_2, time_slot: "noon", closed_on: 6, after_close: false, messages: ["午後、会える？"] };
 state.inbox.push(item(oldHoliday, { day: 6, read: true })); state.limeRead.push(oldHoliday.id);
 assert.equal(phone.deliverMorning({ fixedNight: () => false }), 1); const laterPrivate = state.inbox.at(-1).msg;
 assert(laterPrivate.origin_id === oldHoliday.id && laterPrivate.id.includes("_retry_c1_d11")); assert.equal(laterPrivate.time_slot, "night"); assert(laterPrivate.after_close); assert(!/お店がお休み|\{private/.test(JSON.stringify(laterPrivate)));
 // 既存予約が古い休日枠だった場合も、営業時間外でない昼の約束を履歴付きで再案内へ。
-reset({ day: 11, lastBaitoDay: 11, flags: { _minto_identity_revealed: true }, contacts: ["minto"] }); db.lime = [invitationById.lime_outing_minto_2];
+reset({ day: 11, lastBaitoDay: 11, flags: { _minto_identity_revealed: true, _minto_fifth_done: true }, contacts: ["minto"] }); db.lime = [invitationById.lime_outing_minto_2];
 const oldWrongDay = item(oldHoliday, { read: true, done: true, result: "accepted" }); state.inbox.push(oldWrongDay);
 state.pendingInvite = { day: 11, originId: oldHoliday.id, event: oldHoliday.accept_event, sender: "minto", slot: 0 };
 phone.expireInvitations({ fixedNight: () => false }); assert.equal(state.pendingInvite, null); assert(oldWrongDay.needsResend); assert(oldWrongDay.log.some((l) => /別の日/.test(l.note || "")));
