@@ -1,0 +1,22 @@
+[
+  {
+    "expression": "smile",
+    "request_id": "PRT70",
+    "status": "planned"
+  },
+  {
+    "expression": "serious",
+    "request_id": "PRT71",
+    "status": "planned"
+  },
+  {
+    "expression": "surprise",
+    "request_id": "PRT72",
+    "status": "planned"
+  },
+  {
+    "expression": "excited",
+    "request_id": "PRT73",
+    "status": "planned"
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "approved_source_pr": "https://github.com/haseatsu114514-dot/shisha-game/pull/208",
+  "approved_source_commit": "89e256a",
+  "user_approval": [
+    "さめちゃんは１個目の青インナーが濃いめなやつがいい感じ　これを採用しよう",
+    "サメちゃんのデザインは一枚目の青のグラデのやつ採用　これで必要なパーツを作っていって"
+  ],
+  "normal_sha256": "d1777a3276e1519e8f9bb2f3dcb6e2456650b1e6f8856fde19828cfab333cd4e",
+  "ventriloquism_sha256": "19dd66bce1726708a704fa6131ce85b8ac10a8ca361ee06762406ce1bc7a8a5a",
+  "latest_main": "87462f4",
+  "source_normal_not_regenerated": true,
+  "current_scope": "Generate remaining game-ready expressions and icon as a parts kit. Maps are new review proposals; runtime files stay unchanged until full set reviewed."
+}
