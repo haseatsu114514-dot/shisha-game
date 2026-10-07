@@ -1,0 +1,290 @@
+{
+  "date": "2026-10-07",
+  "character": "naru",
+  "version": "v1",
+  "status": "pending",
+  "scope": "review-only generation; no runtime adoption",
+  "requestIds": [
+    "PRT53"
+  ],
+  "baseCommit": "e1494b4bf2d8f5ff783d9b4f0d6b67be18cc05bc",
+  "tool": "image_gen.imagegen",
+  "source": "sheet.png",
+  "prompt": "prompt.txt",
+  "size": [
+    1774,
+    887
+  ],
+  "sourceSha256": "6fc9c21b3fea68d2a3fc2ebc7d1b9c9493fcafd316b830793e5100c3ff64686c",
+  "copyByteIdentical": true,
+  "expressions": [
+    "normal",
+    "smile",
+    "serious",
+    "surprise",
+    "sad"
+  ],
+  "references": [
+    {
+      "path": "assets/sprites/characters/naru/chr_naru_normal.png",
+      "role": "identity and full-body design",
+      "sha256": "b5878780784f0f9e8615d5b34e47d405634d13f2f930f8634c073f9af803d1b1",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/naru/chr_naru_normal.png"
+    },
+    {
+      "path": "asset_sources/portraits/naru-remaster-v1/existing-faces.png",
+      "role": "existing five facial expressions, unretouched native face crops",
+      "sha256": "8874d70710cbb7e2c574d34b5406d18684f2012accf658998da71c97a615db4a",
+      "actualToolInput": "/workspace/shisha-game/asset_sources/portraits/naru-remaster-v1/existing-faces.png"
+    },
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "previously approved rendering style",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/minto/chr_minto_normal.png"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "previously approved rendering style",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/ageha/chr_ageha_normal.png"
+    }
+  ],
+  "inspection": {
+    "existingExpressions": 5,
+    "priorStyleGroups": 21,
+    "priorStyleImages": 84,
+    "priorShaMismatches": 0,
+    "sourceBorderAlphaCounts": {
+      "1": 364,
+      "16": 0,
+      "24": 0,
+      "64": 0,
+      "128": 0
+    },
+    "sourceBorderAlphaAtLeast16": 0,
+    "sourceBorderAlphaAtLeast24": 0,
+    "splitColumnAlphaAtLeast16": 0,
+    "compositeBackgrounds": [
+      "white",
+      "dark"
+    ],
+    "previewClipping": false,
+    "visualReview": {
+      "fullBodies": "matched display size",
+      "facesHairFabricEdges": "native 1:1 against original and approved Minto/Ageha",
+      "backgrounds": [
+        "white",
+        "dark"
+      ],
+      "approvedStyleReferencesUsed": 2,
+      "approval": "pending"
+    }
+  },
+  "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/201",
+  "sourceBranch": "codex/hajime-adam-portrait-remaster-20261007",
+  "notes": [
+    "Authoritative current silver hair, amber eyes, black/white jacket, chains, black cargo trousers and white sneakers retained.",
+    "Raw sheet preserved unchanged. Transparent-gutter extraction, a single shared resize factor and whole-sprite alignment only."
+  ],
+  "previews": [
+    {
+      "key": "normal",
+      "label": "通常",
+      "path": "normal-preview.png",
+      "sha256": "60fbb3008e2ca60f78ca414620857e13ae368ff32c4f771b0f24cf18ab67e577",
+      "crop": [
+        0,
+        0,
+        362,
+        887
+      ],
+      "resized": [
+        432,
+        1058
+      ],
+      "paste": [
+        248,
+        124
+      ],
+      "bounds": [
+        303,
+        139,
+        654,
+        1172
+      ],
+      "footAnchor": 487.5104589528119,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "smile",
+      "label": "笑顔",
+      "path": "smile-preview.png",
+      "sha256": "a4ba1b117f50291a1d4fd7cecf8c1519a87dad5d70da8b0f1eea44fad7f1cc23",
+      "crop": [
+        362,
+        0,
+        718,
+        887
+      ],
+      "resized": [
+        425,
+        1058
+      ],
+      "paste": [
+        266,
+        123
+      ],
+      "bounds": [
+        294,
+        136,
+        656,
+        1172
+      ],
+      "footAnchor": 487.82865811328514,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "serious",
+      "label": "真剣",
+      "path": "serious-preview.png",
+      "sha256": "3fcc7a55a64c4e2959f1db92adf142ce32df2960e62e8767fe6d4da568c20135",
+      "crop": [
+        718,
+        0,
+        1082,
+        887
+      ],
+      "resized": [
+        434,
+        1058
+      ],
+      "paste": [
+        250,
+        123
+      ],
+      "bounds": [
+        285,
+        136,
+        649,
+        1172
+      ],
+      "footAnchor": 487.8176871790942,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "surprise",
+      "label": "驚き",
+      "path": "surprise-preview.png",
+      "sha256": "3f84e7fbce2ea148bf3ceab51e4d4f410fdfdb23c21b2e2fc964858d0ef1c70a",
+      "crop": [
+        1082,
+        0,
+        1444,
+        887
+      ],
+      "resized": [
+        432,
+        1058
+      ],
+      "paste": [
+        255,
+        123
+      ],
+      "bounds": [
+        291,
+        135,
+        651,
+        1172
+      ],
+      "footAnchor": 488.2410995589162,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "sad",
+      "label": "悲しみ",
+      "path": "sad-preview.png",
+      "sha256": "0423da55f6aef27866a5929a7abdf6b487fa4035bcd34b38387594eb537e506c",
+      "crop": [
+        1444,
+        0,
+        1774,
+        887
+      ],
+      "resized": [
+        394,
+        1058
+      ],
+      "paste": [
+        268,
+        123
+      ],
+      "bounds": [
+        305,
+        142,
+        644,
+        1172
+      ],
+      "footAnchor": 487.5204105435036,
+      "borderAlphaAtLeast16": 0
+    }
+  ],
+  "processing": {
+    "canvas": [
+      896,
+      1200
+    ],
+    "splitColumns": [
+      0,
+      362,
+      718,
+      1082,
+      1444,
+      1774
+    ],
+    "splitMethod": "midpoints of full-height transparent gutters (alpha<16 for measurement only)",
+    "commonScale": 1.193063583815029,
+    "resampling": "Lanczos for whole sprite only; raw sheet unmodified",
+    "normalReferenceBounds": [
+      315,
+      140,
+      646,
+      1172
+    ],
+    "normalFootAnchor": 487.94665412523517,
+    "footBottom": 1172,
+    "maxFootAnchorDeviation": 0.436195172423254,
+    "alphaThresholdApplied": false,
+    "pasteMethod": "RGBA direct paste without alpha mask",
+    "creativeImageChangesAfterGeneration": false
+  },
+  "review": "review.png",
+  "styleComparison": "style-comparison-native.png",
+  "existingExpressionSources": [
+    {
+      "path": "assets/sprites/characters/naru/chr_naru_normal.png",
+      "expression": "normal",
+      "sha256": "b5878780784f0f9e8615d5b34e47d405634d13f2f930f8634c073f9af803d1b1"
+    },
+    {
+      "path": "assets/sprites/characters/naru/chr_naru_smile.png",
+      "expression": "smile",
+      "sha256": "e407bbe4ec3f74c022d3eb75bf00b56419646ec961517e08abc704f41c272c51"
+    },
+    {
+      "path": "assets/sprites/characters/naru/chr_naru_serious.png",
+      "expression": "serious",
+      "sha256": "73fae91a309ea893df95d1a0eb21dc33ff9ef03c7f076cc7ad52dbf3e22fd944"
+    },
+    {
+      "path": "assets/sprites/characters/naru/chr_naru_surprise.png",
+      "expression": "surprise",
+      "sha256": "f25ddfeaced3f29dc71d2d9e81719274df68bf0663b18c724310e1a1a5687054"
+    },
+    {
+      "path": "assets/sprites/characters/naru/chr_naru_sad.png",
+      "expression": "sad",
+      "sha256": "8647e80042c2aadd88d650c41accecfb1d879258c65bf548446251b0b100916e"
+    }
+  ]
+}

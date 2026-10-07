@@ -3,6 +3,7 @@ import { MAX_MONEY } from "./rules.js";
 import { state, STAT_KEYS, STAT_JA } from "./state.js";
 import { emit } from "./bus.js";
 import { clamp } from "./util.js";
+import { conditionForRatio } from "./condition.js";
 
 // ---------------------------------------------------------------- 成長ステ（5種）
 
@@ -220,6 +221,7 @@ export function addStamina(n) {
 }
 
 export const staminaRatio = () => state.stamina / maxStamina();
+export const currentCondition = () => conditionForRatio(staminaRatio());
 
 // ---------------------------------------------------------------- お金
 

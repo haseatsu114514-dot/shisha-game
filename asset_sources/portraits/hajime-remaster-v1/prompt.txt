@@ -1,0 +1,24 @@
+Remaster the provided game character HAJIME (蒸野 始), making ONE clean wide landscape RGBA expression sheet containing EXACTLY FIVE complete full-body sprites of the SAME man in ONE horizontal row, left to right normal / smile / serious / surprise / sad.
+
+REFERENCE ROLES:
+1. chr_hajime_normal.png is the authoritative identity, face, outfit, proportions and complete full-body design.
+2. hajime-existing-faces.png shows his five existing facial expressions in that same order; preserve their individual eye and mouth shapes.
+3. chr_minto_normal.png and 4. chr_ageha_normal.png are the previously approved rendering STYLE references only.
+The target character references define this character's identity, face, hair, clothes, accessories and expressions. The attached previously approved Minto and Ageha artwork defines the shared rendering quality and texture: refined, high-resolution fine pixel-art grain, crisp delicate outlines, carefully stepped shading, detailed hair and fabric, and a premium finish. Match those actual images closely in rendering style. Preserve the target character's own design. Do not transfer those women's features or costumes.
+
+HAJIME'S ACTUAL CURRENT DESIGN:
+A friendly ordinary Japanese man aged 22, youthful slim adult proportions, short tousled BLACK hair under a black baseball cap with the existing tiny subtle gray steam-shaped decorative stitch, warm dark eyes, clean shaven. Black open zipped hooded jacket over a simple black crew-neck T-shirt, black cargo trousers with flap thigh pockets and the existing hanging dark strap at the screen-right thigh, black lace-up ankle boots. A black cord necklace with a small silver cylindrical shisha mouthpiece pendant at the upper chest. Carefully retain his face shape, hair fringe, cap silhouette, hoodie seams/drawstrings/zipper, pockets, necklace and boots. Use his actual BLACK streetwear from reference 1; keep the outfit and accessories identical across all five. His personality is approachable and sincere, with an interest in learning from other people. Keep the original understated character.
+
+FIVE EXPRESSIONS AND SUBTLE GESTURES:
+1 normal: neutral approachable small relaxed closed mouth, both dark eyes open, slight existing head tilt; both hands resting in the hoodie pockets, as in his original.
+2 smile: the existing gentle open-eyed friendly closed-mouth smile, softer brows; take the screen-left hand slightly out of the pocket in a small natural friendly gesture, the other remains in its pocket.
+3 serious: the existing focused eyes, slightly lowered brows and small firm closed mouth; small earnest explaining gesture by the screen-left hand at lower-chest level. Determined, still warm.
+4 surprise: widened dark eyes, raised brows and small open mouth matching the reference, screen-right hand rises modestly toward the chest while the other stays relaxed.
+5 sad: the existing quiet downward gaze, subtle inner-brow lift and small downturned closed mouth, slightly lowered chin and shoulders, fingers lightly catching the hoodie hem. A quiet vulnerable moment.
+Keep the expressions visibly different and consistent with the actual existing face sheet. Gesture changes should be small and anatomically natural. Preserve his original adult body build, approximately seven-head adult proportions, stable feet, head size, outfit colors and silhouette across the set.
+
+RENDERING:
+Draw a polished premium JRPG/visual-novel full-body asset with intentionally retained VERY FINE high-resolution pixel-art texture, delicate dark outlines, sharp tiny hair details, carefully stepped fabric shading and subdued cloth sheen, matching the approved Minto and Ageha images. Black fabrics must remain legible with distinct material and fold tones. Keep faces and clothes rendered at the same quality. Maintain character charm and actual identity, improve messy old cutout edges and inconsistent detail. Avoid smooth airbrushed anime painting, photorealism, 3D plastic skin, heavy glossy highlights, blurry edges, artificial noise or large chunky retro pixels.
+
+LAYOUT AND ALPHA:
+Use a wide landscape canvas at the highest available resolution. FIVE equally scaled head-to-boot figures in ONE row, a common foot baseline and a consistent head scale, all facing almost front with his original slight three-quarter angle. Leave ample completely transparent gutters between every figure so each entire body, hands, necklace, hair and shoes can be separated cleanly; keep fingers within their own zone. Keep a clear fully transparent margin above every cap, below both boots, and at both outer ends. Every figure fully visible from cap to boot soles. True transparent background (alpha zero), clean fine hair edges. No checkerboard painted into the image, no floor, cast shadow, background glow, colored halo, scenery, border, labels, captions, watermarks or written text. The existing tiny abstract cap decoration is not lettering.

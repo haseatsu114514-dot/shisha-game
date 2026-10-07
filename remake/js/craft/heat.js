@@ -33,8 +33,8 @@ export async function runHeat(cs) {
   const panel = stepPanel("heat", "炭焼き ── HEAT IGNITION", "炭の色をよく見て。芯が一瞬ピカッと光ったら、その炭をタップして取り上げる");
   const cube = cs.equip?.charcoal === "cube_charcoal";
   const img = (st) => (cube ? `coal_${st}.png` : `coal_flat_${st}.png`);
-  const justSec = 0.5 * skill.window() * (tutorial ? 1.5 : 1);
-  const clarity = skill.clarity();
+  const justSec = 0.5 * skill.window(cs) * (tutorial ? 1.5 : 1);
+  const clarity = skill.clarity(cs);
 
   const stove = el("div.stove", [artImg("stove_coil.png", 520, "stove-img")]);
   // コイルの上に三角に並べる（中心座標はコンロ素材の中身に対する比。奥の炭ほど少し小さい）

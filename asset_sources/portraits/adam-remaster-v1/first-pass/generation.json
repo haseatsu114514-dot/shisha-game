@@ -1,0 +1,250 @@
+{
+  "date": "2026-10-07",
+  "character": "adam",
+  "status": "internal superseded",
+  "requestIds": [
+    "PRT52"
+  ],
+  "baseCommit": "e1494b4",
+  "tool": "image_gen.imagegen",
+  "source": "sheet.png",
+  "prompt": "prompt.txt",
+  "sourceSha256": "1135a327644b803c983d31db7ba2bd66b08fe4b07ae4dc0ff1501b5cb8040b21",
+  "expressions": [
+    "normal",
+    "smile",
+    "serious",
+    "surprise",
+    "intense"
+  ],
+  "references": [
+    {
+      "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+      "role": "identity/full body",
+      "sha256": "9b31f347a71eaa50482617b0b4830c7b8372af1c869a62ffd5c04bad24b8dc12",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/adam/chr_adam_normal.png"
+    },
+    {
+      "path": "asset_sources/portraits/adam-remaster-v1/first-pass/existing-faces.png",
+      "role": "all five existing expressions",
+      "sha256": "1927e7f93a5df7e0c081be1ddc077192f606f091d5ad780feccf8411842642f3",
+      "actualToolInput": "/workspace/scratch/portrait-targets/adam-existing-faces.png"
+    },
+    {
+      "path": "assets/sprites/characters/adam/chr_adam_intense.png",
+      "role": "crossed arms pose",
+      "sha256": "405341bdeeae9901c81bc3a1a583103db1ca8f630325d50504b21a20ae3b6d26",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/adam/chr_adam_intense.png"
+    },
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "approved rendering style",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/minto/chr_minto_normal.png"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "approved rendering style",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/ageha/chr_ageha_normal.png"
+    }
+  ],
+  "priorStyleGroups": 20,
+  "priorStyleImages": 73,
+  "version": "v1",
+  "scope": "review-only generation; no runtime adoption",
+  "size": [
+    2172,
+    724
+  ],
+  "copyByteIdentical": true,
+  "previews": [
+    {
+      "key": "normal",
+      "label": "通常",
+      "path": "normal-preview.png",
+      "sha256": "b0c3c84a2574d27d8f7f5aee3c3a96ef0d3fe29217beedf8c87fdc7531e7b6ea",
+      "crop": [
+        0,
+        0,
+        435,
+        724
+      ],
+      "resized": [
+        643,
+        1071
+      ],
+      "paste": [
+        117,
+        107
+      ],
+      "bounds": [
+        243,
+        125,
+        634,
+        1169
+      ],
+      "footAnchor": 452.84031836836215,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "smile",
+      "label": "笑顔",
+      "path": "smile-preview.png",
+      "sha256": "b3b2e852d25b44b03007d496eadad7cef40f0a7681497a85aa30fe56f00ab08b",
+      "crop": [
+        435,
+        0,
+        897,
+        724
+      ],
+      "resized": [
+        683,
+        1071
+      ],
+      "paste": [
+        114,
+        108
+      ],
+      "bounds": [
+        243,
+        124,
+        715,
+        1169
+      ],
+      "footAnchor": 452.9214737625605,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "serious",
+      "label": "真剣",
+      "path": "serious-preview.png",
+      "sha256": "0bf80a4b6fc5a5c1c581e089d126d8889355f0308e0fd67644c38a98000716c4",
+      "crop": [
+        897,
+        0,
+        1297,
+        724
+      ],
+      "resized": [
+        592,
+        1071
+      ],
+      "paste": [
+        183,
+        107
+      ],
+      "bounds": [
+        266,
+        124,
+        658,
+        1169
+      ],
+      "footAnchor": 453.3902287031844,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "surprise",
+      "label": "驚き",
+      "path": "surprise-preview.png",
+      "sha256": "d74091814b7835a7bf4c214628e741c3149d500db8194f8994509f47b26d518d",
+      "crop": [
+        1297,
+        0,
+        1722,
+        724
+      ],
+      "resized": [
+        628,
+        1071
+      ],
+      "paste": [
+        118,
+        107
+      ],
+      "bounds": [
+        238,
+        123,
+        631,
+        1169
+      ],
+      "footAnchor": 453.3678641047062,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "intense",
+      "label": "熱の入った表情",
+      "path": "intense-preview.png",
+      "sha256": "1c086b7166ab32e17bd362a9323dd656116d3a92fd6fd78fcdeb1eff6e1d334f",
+      "crop": [
+        1722,
+        0,
+        2172,
+        724
+      ],
+      "resized": [
+        665,
+        1071
+      ],
+      "paste": [
+        118,
+        107
+      ],
+      "bounds": [
+        236,
+        125,
+        635,
+        1169
+      ],
+      "footAnchor": 453.2391171060699,
+      "borderAlphaAtLeast16": 0
+    }
+  ],
+  "processing": {
+    "canvas": [
+      896,
+      1200
+    ],
+    "splitColumns": [
+      0,
+      435,
+      897,
+      1297,
+      1722,
+      2172
+    ],
+    "splitMethod": "midpoints of full-height transparent gutters (alpha<16 for measurement only)",
+    "commonScale": 1.4787535410764872,
+    "resampling": "Lanczos for whole sprite only; raw sheet unmodified",
+    "normalReferenceBounds": [
+      268,
+      125,
+      628,
+      1169
+    ],
+    "normalFootAnchor": 452.943869911905,
+    "footBottom": 1169,
+    "maxFootAnchorDeviation": 0.44635879127940825,
+    "alphaThresholdApplied": false,
+    "pasteMethod": "RGBA direct paste without alpha mask",
+    "creativeImageChangesAfterGeneration": false
+  },
+  "review": "review.png",
+  "styleComparison": "style-comparison-native.png",
+  "inspection": {
+    "sourceBorderAlphaAtLeast24": 0,
+    "sourceBorderAlphaAtLeast16": 0,
+    "splitColumnAlphaAtLeast16": 0,
+    "compositeBackgrounds": [
+      "white",
+      "dark"
+    ],
+    "previewClipping": false,
+    "qualityIssue": "The 2172x724 source requires 1.47875x enlargement; fine face and fabric details look softer than approved style references. Requesting taller high-detail redraw."
+  },
+  "notes": [
+    "Green on screen-left and red on screen-right preserved.",
+    "Normal relaxed; smile has slightly visible teeth and a presenting hand; serious gestures at the chest; surprise has a hand to chest; intense preserves crossed arms.",
+    "Colored specks visible in raw RGB display are low-alpha background residues and invisible on actual white/dark composites; no alpha threshold or paint applied."
+  ]
+}

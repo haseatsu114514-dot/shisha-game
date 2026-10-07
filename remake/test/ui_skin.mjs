@@ -1,4 +1,4 @@
-// 生成素材・項目別の通知色・所持金の桁が変わっても動かないHUDを実ブラウザで確認。
+// 通知色・煙なしの背景・所持金の桁・体力に応じて伸びるHUDを実ブラウザで確認。
 // サーバーを8123で起動後: node remake/test/ui_skin.mjs（SHOTSで確認画像の保存先）
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -36,6 +36,7 @@ try {
   for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }]) {
     await page.setViewportSize(viewport);
     const geometry = await page.evaluate(() => {
+      document.querySelector(".hud-bar").style.transition = "none";
       const snapshot = () => [".hud-card", ".hud-stamina", ".hud-level", ".hud-lime", ".hud-menu"].map((selector) => {
         const rect = document.querySelector(selector).getBoundingClientRect();
         return [rect.x, rect.y, rect.width, rect.height];
@@ -57,15 +58,18 @@ try {
       return result;
     });
     for (const result of geometry) {
-      assert.deepEqual(result.rects, geometry[0].rects, `HUD moved: money=${result.money}, day=${result.day}`);
+      const sameCapacity = geometry.find((value) => value.day === result.day);
+      assert.deepEqual(result.rects, sameCapacity.rects, `HUD moved: money=${result.money}, day=${result.day}`);
+      assert.deepEqual([result.rects[0], ...result.rects.slice(2)], [geometry[0].rects[0], ...geometry[0].rects.slice(2)], "Capacity change moved the other HUD controls");
       assert(result.visible, `Money was clipped: ${result.money}`);
       assert(result.timeFits, "Time/weather label overlapped the money column");
       assert(result.countdownFits, "Next tournament countdown was clipped");
       assert.equal(result.countdown, `次の大会まであと${14 - result.day}日`);
     }
+    assert(geometry[1].rects[1][2] > geometry[0].rects[1][2], "Stamina window did not grow with maximum capacity");
     if (shots) await page.screenshot({ path: `${shots}/fixed-hud-${viewport.width}.png` });
   }
-  console.log("[ui skin] PASS: 7 generated images, 28 money/day/stamina cases at desktop and mobile sizes");
+  console.log("[ui skin] PASS: 7 generated images, stable money/controls and growing stamina window at desktop and mobile sizes");
   await page.setViewportSize({ width: 1280, height: 720 });
   const moneyAndSave = await page.evaluate(() => {
     T.core.state.money = 999990;
@@ -111,8 +115,10 @@ try {
         T.core.state.stamina = Math.round(ratio * maximum);
         T.hud.updateHud();
         const holder = document.querySelector(".hud-stamina");
+        const bar = holder.querySelector(".hud-bar"), label = holder.querySelector(":scope > span"), style = getComputedStyle(holder);
         out.push({ ratio, maximum, health: holder.dataset.health, color: getComputedStyle(holder.querySelector("b")).backgroundColor,
-          width: holder.querySelector("b").style.width });
+          width: holder.querySelector("b").style.width, windowWidth: holder.clientWidth, barWidth: bar.clientWidth,
+          extra: holder.clientWidth - label.offsetWidth - bar.offsetWidth - parseFloat(style.gap) - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight) });
       }
     }
     return out;
@@ -121,8 +127,38 @@ try {
     const expected = value.ratio > .5 ? ["green", "rgb(142, 230, 168)"] : value.ratio > .25 ? ["yellow", "rgb(255, 212, 92)"] : ["red", "rgb(255, 105, 105)"];
     assert.deepEqual([value.health, value.color], expected);
     assert.equal(value.width, `${Math.round(value.ratio * 100)}%`);
+    assert(Math.abs(value.extra) <= 1, `Unused horizontal stamina space: ${value.extra}px`);
   }
+  for (const maximum of [100, 160]) {
+    assert.equal(new Set(stamina.filter((value) => value.maximum === maximum).map((value) => value.windowWidth)).size, 1, "Losing stamina changed the capacity window");
+  }
+  assert.equal(stamina[0].barWidth, 92);
+  assert.equal(stamina[7].barWidth, 147);
   console.log("[ui skin] PASS: green/yellow/red, exact boundaries, zero/full, expanded stamina capacity");
+  const sessions = await page.evaluate(async () => {
+    const { newSession } = await import("./js/craft/session.js"), { skill } = await import("./js/craft/common.js");
+    const out = [];
+    for (const guts of [10, 90]) {
+      T.core.state.stats.guts = guts;
+      for (const ratio of [.51, .5, .25]) {
+        T.core.state.stamina = Math.round(T.stats.maxStamina() * ratio);
+        const cs = newSession("tournament"), tutorial = newSession("tutorial");
+        T.core.state.stamina = T.stats.maxStamina(); // 始めた後の回復で同じ一台の判定は変えない
+        out.push({ guts, ratio, health: cs.condition.health, now: T.stats.currentCondition().health,
+          slow: skill.slow(cs), window: skill.window(cs), tutorialSlow: skill.slow(tutorial), tutorialWindow: skill.window(tutorial) });
+      }
+    }
+    return out;
+  });
+  for (const guts of [10, 90]) {
+    const [green, yellow, red] = sessions.filter((value) => value.guts === guts);
+    assert.deepEqual([green.health, yellow.health, red.health], ["green", "yellow", "red"]);
+    assert(sessions.every((value) => value.now === "green"));
+    assert(green.slow > yellow.slow && red.slow < yellow.slow);
+    assert(green.window > yellow.window && red.window < yellow.window);
+    assert.deepEqual([red.tutorialSlow, red.tutorialWindow], [yellow.slow, yellow.window]);
+  }
+  console.log("[ui skin] PASS: real session captures HUD condition at both capacities, recovery cannot change the current craft, lessons remain neutral");
   const colors = await page.evaluate(() => {
     const stats = [["technique", "技", "技術"], ["sense", "感", "センス"], ["guts", "根", "根性"], ["charm", "魅", "魅力"], ["insight", "察", "洞察"]];
     T.ui.gainCard({ kind: "stat", stat: "technique", points: 3, badge: "技", top: "STATUS UP", main: "技術", sub: "上がった" });
@@ -140,15 +176,15 @@ try {
       card.querySelector(".gc-main").textContent = name;
       preview.append(card);
       const skin = getComputedStyle(card, "::after");
-      out.push({ key, color: skin.backgroundColor, generated: skin.backgroundImage.includes("reward.webp"), blend: skin.backgroundBlendMode });
+      out.push({ key, color: skin.backgroundColor, smoke: skin.backgroundImage.includes("reward.webp"), mask: skin.maskImage, rim: skin.borderLeftColor });
     }
     return out;
   });
   assert.deepEqual(colors.map((c) => c.color), ["rgb(242, 195, 76)", "rgb(108, 198, 232)", "rgb(239, 122, 94)", "rgb(180, 154, 239)", "rgb(101, 201, 187)"]);
-  assert(colors.every((c) => c.generated && c.blend === "luminosity"));
+  assert(colors.every((c) => !c.smoke && c.mask === "none" && c.rim === c.color));
   if (shots) await page.screenshot({ path: `${shots}/stat-colors.png` });
   assert.deepEqual(errors, []);
-  console.log("[ui skin] PASS: all five status colors tint the generated window face and rim");
+  console.log("[ui skin] PASS: all five status colors remain, without the background smoke mark");
 } finally {
   await browser.close();
 }

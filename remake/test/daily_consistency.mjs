@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import vm from "node:vm";
+import { conditionForRatio } from "../js/core/condition.js";
 const root = new URL("../", import.meta.url), dataRoot = new URL("../../", import.meta.url);
 const baitoData = JSON.parse(await fs.readFile(new URL("data/baito_events.json", dataRoot), "utf8"));
 const categories = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);
@@ -10,7 +11,7 @@ const events = baitoData.events.filter((e) => categories.has(e.category));
 const scenes = JSON.parse(await fs.readFile(new URL("data/dialogue/remake_ch1.json", dataRoot), "utf8")).dialogues;
 const sumi = JSON.parse(await fs.readFile(new URL("data/dialogue/ch1_sumi.json", dataRoot), "utf8")).dialogues;
 const state = {}, db = { baito: events, dialogues: {} }, plays = [], money = [], menus = [];
-let rainy = false, selectedPools = [];
+let rainy = false, selectedPools = [], charmStar = 1;
 class Element { constructor(spec) { this.spec = spec; this.children = []; this.dataset = {}; } append(...nodes) { this.children.push(...nodes.flat().filter(Boolean)); } }
 function el(spec, attrs = {}, children = []) { if (Array.isArray(attrs)) { children = attrs; attrs = {}; } const node = new Element(spec); Object.assign(node, attrs); node.append(children); return node; }
 function find(node, id) { if (node.dataset?.test === id) return node; return node.children?.map((child) => find(child, id)).find(Boolean); }
@@ -19,7 +20,8 @@ const values = {
   "data.js": { DB: db, bgUrl: () => "bg" },
   "ui.js": { showScreen: (_, node) => { menus.push(node); Promise.resolve().then(() => find(node, "after-none")?.onclick()); return node; }, setBg() {}, toast() {}, retire() {} },
   "state.js": { state, timeOfDay: () => state.slot === 0 ? "day" : "night", markMet() {} },
-  "stats.js": { addMoney: (value) => money.push(value), addStamina() {}, applyStats() {}, star: () => 1, gainAffinity() {}, gainStat() {}, affinityLevel: () => 0 },
+  "stats.js": { addMoney: (value) => money.push(value), addStamina: (value) => { state.stamina = Math.max(0, state.stamina + value); }, applyStats() {}, star: () => charmStar,
+    currentCondition: () => conditionForRatio(state.stamina / 100), gainAffinity() {}, gainStat() {}, affinityLevel: () => 0 },
   "audio.js": { SE: { select() {}, cancel() {} }, playBgm() {} },
   "engine.js": { play: async (scene) => plays.push(scene) },
   "session.js": { runDrill: async () => 0, DRILLS: {} },
@@ -34,8 +36,8 @@ async function load(name) { if (mods.has(name)) return mods.get(name); const mod
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod; }
 const module = await load("tonari.js"); await module.evaluate(); const tonari = module.namespace;
 const byid = Object.fromEntries(events.map((e) => [e.id, e]));
-function reset(overrides = {}) { Object.keys(state).forEach((key) => delete state[key]); Object.assign(state, { chapter: 1, day: 8, slot: 0, flags: { _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true }, notes: {}, met: {}, story: {}, usedBaito: [], baitoRecent: [], baitoCount: 10, best: {} }, overrides);
-  db.baito = events; rainy = false; plays.length = 0; money.length = 0; menus.length = 0; selectedPools = []; }
+function reset(overrides = {}) { Object.keys(state).forEach((key) => delete state[key]); Object.assign(state, { chapter: 1, day: 8, slot: 0, stamina: 74, flags: { _ev_rei_cameo: true, _ev_reviewer_cameo: true, _ev_maezono_cameo: true }, notes: {}, met: {}, story: {}, usedBaito: [], baitoRecent: [], baitoCount: 10, best: {} }, overrides);
+  db.baito = events; rainy = false; charmStar = 1; plays.length = 0; money.length = 0; menus.length = 0; selectedPools = []; }
 function selected() { return plays.find((scene) => typeof scene === "object" && scene.dialogue_id?.startsWith("baito_"))?.dialogue_id; }
 const custom = (id, fields = {}) => ({ id, category: "regular", text: "注文を受けた", choices: [], customers: [id], ...fields });
 // 未対面つむぎは雨でも閉店でも選ばない。旧進行とmet/flagの各記録なら永久封鎖しない。
@@ -81,6 +83,17 @@ for (const scene of ["ch1_rei_cameo", "ch1_reviewer_cameo", "ch1_maezono_cameo"]
 reset({ chapter: 2, baitoCount: 1, flags: {} }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(!plays.includes("ch1_rei_cameo"));
 // 報酬/choicesは保持。昼シフト後のUIと台本にレジ締めや閉店を持ち込まない。
 reset(); db.baito = [byid.baito_regular_01]; await tonari.doBaito({ called: true }); assert.equal(money[0], 13000); assert(!JSON.stringify(menus).includes("閉店"));
+// 体力の消耗後の色で制作の売上上乗せを決める。基本給・急なシフト・雨の手当は維持。
+for (const [stamina, expectedPay, expectedChoice] of [[75, 15075, 2300], [74, 14000, 2000], [49, 13750, 1000], [24, 13750, 1000]]) {
+  reset({ stamina }); charmStar = 2; rainy = true;
+  db.baito = [custom("condition", { choices: [{ text: "作る", result: "一台を仕上げた", stats: { technique: 3 }, money_bonus: 2000 }] })];
+  await tonari.doBaito({ called: true });
+  assert.equal(money[0], expectedPay, `Shift condition at stamina=${stamina}`);
+  const reward = plays.find((scene) => scene.dialogue_id === "baito_condition").branches.c0.at(-1);
+  assert.equal(reward.money, expectedChoice);
+  assert.equal(reward.stats.technique, 3);
+}
+reset({ stamina: 24 }); db.baito = []; await tonari.doBaito(); assert.equal(money[0], 8000, "Exhaustion cut the guaranteed base wage");
 // 統合spots.jsの夜限定gateをそのまま使い、昼のシフト上がりで夜限定固有会話を案内しない。
 reset({ story: { sumi: 2 } }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(JSON.stringify(menus).includes("落ち着いた一台")); assert(!JSON.stringify(menus).includes("今日は何か教えて"));
 reset({ slot: 1, story: { sumi: 2 } }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(JSON.stringify(menus).includes("今日は何か教えて"));
