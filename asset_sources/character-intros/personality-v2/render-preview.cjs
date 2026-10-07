@@ -49,7 +49,7 @@ function checkRects(){
   await page.locator('#pause').click();await page.waitForFunction(()=>window.introPreview.animations.every(a=>a.playState==='paused'));
   await page.locator('#pause').click();await page.locator('#replay').click();await page.locator('#loop').click();await page.waitForFunction(()=>document.querySelector('#loop').getAttribute('aria-pressed')==='true');
   await page.waitForFunction(()=>window.previewReady&&document.querySelector('#stage').dataset.character==='naru',{},{timeout:6000});await page.locator('#loop').click();
-  await page.setViewportSize({width:390,height:844});await page.screenshot({path:path.join(base,'mobile-preview.png')});
+  await page.setViewportSize({width:390,height:844});await page.evaluate(()=>window.introPreview.seek(1600));await page.screenshot({path:path.join(base,'mobile-preview.png')});
   const controlsFit=await page.locator('#controls').evaluate(el=>el.scrollWidth<=innerWidth);if(!controlsFit)throw new Error('mobile controls overflow');
   await page.emulateMedia({reducedMotion:'reduce'});await page.evaluate(()=>window.introPreview.showCharacter('kafuka'));if(await page.evaluate(()=>window.introPreview.animations.length)!==0)throw new Error('reduced motion');
   if(external.length)throw new Error('standalone external requests '+external.join(','));

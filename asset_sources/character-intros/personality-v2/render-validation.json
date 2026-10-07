@@ -235,5 +235,13 @@
   "reducedMotionRespected": true,
   "browserErrors": [],
   "videoGenerated": true,
-  "runtimeFilesChanged": false
+  "runtimeFilesChanged": false,
+  "videoVerification": {
+    "width": 1280,
+    "height": 720,
+    "fps": 24,
+    "durationSeconds": 16.458333,
+    "file": "animation-preview.mp4",
+    "provenance": "previous --video run of unchanged visual and animation code"
+  }
 }
