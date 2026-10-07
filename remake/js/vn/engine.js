@@ -10,6 +10,7 @@ import { SE, playSe, playBgm, currentBgm } from "../core/audio.js";
 import { paginate, formatHtml, sliceHtml, visibleLength, stripTags } from "./text.js";
 import { glossaryPanel } from "./glossary.js";
 import { rememberRelationship, relationshipReflectionLines } from "../core/relationships.js";
+import { needsIntro, playIntro, markIntroSeen } from "./intro.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
 const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man"]);
@@ -125,6 +126,7 @@ export function play(idOrDlg, opts = {}) {
       context: sceneContext(dlg), // 公私の文脈（名前欄・ログの呼び名）。jump 先の metadata で切り替わる
       bgmBefore: currentBgm(), // metadata.bgm で曲を替えた会話は、終わったらこの曲へ戻す
       bgmSwitched: false,
+      pendingIntros: [], // 名乗りを受けて、次の台詞の前に出す初登場カットイン
     };
     autoFxGap = 0;
     dom.portraits.replaceChildren();
@@ -240,7 +242,7 @@ function next() {
     const line = r.queue.shift();
     if (line === undefined) return finish();
     const type = line.type || "";
-    if (!type) return showLine(line);
+    if (!type) return introThenShow(line);
     if (type === "choice") return showChoices(line);
     if (type === "game_over") return finish();
     if (type === "condition") { handleCondition(line); continue; }
@@ -248,7 +250,10 @@ function next() {
     if (type === "set_flag") {
       state.flags[line.flag] = true;
       const m = /^_met_(.+)$/.exec(line.flag || "");
-      if (m) markMet(m[1]);
+      if (m) {
+        markMet(m[1]);
+        if (needsIntro(m[1])) r.pendingIntros.push(m[1]); // 名乗った直後の台詞の前にカットイン
+      }
       continue;
     }
     if (type === "show_cg") { showCg(line.cg_id); continue; }
@@ -338,6 +343,27 @@ function showCg(id) {
 }
 
 // ---------------------------------------------------------------- 台詞行
+
+// 初登場カットイン（vn/intro.js）: 名乗った相手・名前が出て初めて喋る相手を、台詞の前に一度だけ出す
+function introThenShow(line) {
+  const r = running;
+  const ids = r.pendingIntros.splice(0);
+  const speaker = String(line.speaker || "");
+  if (!ids.includes(speaker)) ids.push(speaker);
+  const due = ids.filter(needsIntro);
+  if (!due.length) return showLine(line);
+  if (vnTest.turbo) {
+    due.forEach(markIntroSeen);
+    return showLine(line);
+  }
+  r.ready = false;
+  (async () => {
+    for (const id of due) await playIntro(id, { quick: skipMode });
+    if (running !== r) return;
+    r.ready = true;
+    showLine(line);
+  })();
+}
 
 function showLine(line) {
   const r = running;
