@@ -67,6 +67,24 @@
       "24": 0,
       "64": 0,
       "128": 0
+    },
+    "sourceBorderAlphaAtLeast16": 0,
+    "sourceBorderAlphaAtLeast24": 0,
+    "splitColumnAlphaAtLeast16": 0,
+    "compositeBackgrounds": [
+      "white",
+      "dark"
+    ],
+    "previewClipping": false,
+    "visualReview": {
+      "fullBodies": "matched display size",
+      "facesHairFabricEdges": "native 1:1 against original and approved Minto/Ageha",
+      "backgrounds": [
+        "white",
+        "dark"
+      ],
+      "approvedStyleReferencesUsed": 2,
+      "approval": "pending"
     }
   },
   "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/201",
@@ -74,6 +92,206 @@
   "notes": [
     "Actual messy brown hair, black rectangular glasses, white shirt, stained lab coat, beige chinos, sandals, pen group and wrist accessories retained instead of stale blue-shirt/tie appearance text.",
     "Happy closed eyes, sly serious face, startled green eyes and opaque white/pink evil glasses kept distinct.",
-    "Raw image preserved unchanged; extraction and review remain to be checked."
+    "Raw sheet preserved unchanged. Transparent-gutter extraction, a single shared resize factor and whole-sprite alignment only."
+  ],
+  "previews": [
+    {
+      "key": "normal",
+      "label": "通常",
+      "path": "normal-preview.png",
+      "sha256": "ae7627d22c4461657afdbacab04e39c0d49e9e98e5b53c424bfc18f182f15e38",
+      "crop": [
+        0,
+        0,
+        360,
+        887
+      ],
+      "resized": [
+        452,
+        1113
+      ],
+      "paste": [
+        216,
+        76
+      ],
+      "bounds": [
+        275,
+        86,
+        659,
+        1172
+      ],
+      "footAnchor": 470.43072754090485,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "smile",
+      "label": "笑顔",
+      "path": "smile-preview.png",
+      "sha256": "df71fa86213f88328e0b5808fc666ea9cd84284ab2ac2e624188b9ae6b484518",
+      "crop": [
+        360,
+        0,
+        719,
+        887
+      ],
+      "resized": [
+        450,
+        1113
+      ],
+      "paste": [
+        229,
+        76
+      ],
+      "bounds": [
+        237,
+        86,
+        660,
+        1172
+      ],
+      "footAnchor": 470.81992205015,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "serious",
+      "label": "真剣",
+      "path": "serious-preview.png",
+      "sha256": "b5f808c647d9d13b4addfad8125da5f60a29314eab05baf002500abbbf095bf3",
+      "crop": [
+        719,
+        0,
+        1077,
+        887
+      ],
+      "resized": [
+        449,
+        1113
+      ],
+      "paste": [
+        239,
+        78
+      ],
+      "bounds": [
+        258,
+        87,
+        665,
+        1172
+      ],
+      "footAnchor": 470.65936739659367,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "surprise",
+      "label": "驚き",
+      "path": "surprise-preview.png",
+      "sha256": "f078b051bf041431503dcc81f1e416f071ef9f639e4795ecdd10cf1838a9fc5f",
+      "crop": [
+        1077,
+        0,
+        1427,
+        887
+      ],
+      "resized": [
+        439,
+        1113
+      ],
+      "paste": [
+        239,
+        78
+      ],
+      "bounds": [
+        263,
+        89,
+        654,
+        1172
+      ],
+      "footAnchor": 470.3041645244216,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "evil",
+      "label": "邪悪",
+      "path": "evil-preview.png",
+      "sha256": "da763c17f531a3bd65c28d97f1f03138a4180cdea89e4af35ac07ed3bf175ca0",
+      "crop": [
+        1427,
+        0,
+        1774,
+        887
+      ],
+      "resized": [
+        435,
+        1113
+      ],
+      "paste": [
+        231,
+        77
+      ],
+      "bounds": [
+        255,
+        85,
+        657,
+        1172
+      ],
+      "footAnchor": 471.0666991236611,
+      "borderAlphaAtLeast16": 0
+    }
+  ],
+  "processing": {
+    "canvas": [
+      896,
+      1200
+    ],
+    "splitColumns": [
+      0,
+      360,
+      719,
+      1077,
+      1427,
+      1774
+    ],
+    "splitMethod": "midpoints of full-height transparent gutters (alpha<16 for measurement only)",
+    "commonScale": 1.254335260115607,
+    "resampling": "Lanczos for whole sprite only; raw sheet unmodified",
+    "normalReferenceBounds": [
+      296,
+      87,
+      663,
+      1172
+    ],
+    "normalFootAnchor": 470.72958712062854,
+    "footBottom": 1172,
+    "maxFootAnchorDeviation": 0.42542259620694267,
+    "alphaThresholdApplied": false,
+    "pasteMethod": "RGBA direct paste without alpha mask",
+    "creativeImageChangesAfterGeneration": false
+  },
+  "review": "review.png",
+  "styleComparison": "style-comparison-native.png",
+  "existingExpressionSources": [
+    {
+      "path": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_normal.png",
+      "expression": "normal",
+      "sha256": "859d4296a27ac50d7042dba735ae30c28434e1fc26a6837a656b49d5c86ccdfe"
+    },
+    {
+      "path": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_smile.png",
+      "expression": "smile",
+      "sha256": "4b975c28c37870c558f7d4c595b0f49817d98595503e9b8f9a795204292b180e"
+    },
+    {
+      "path": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_serious.png",
+      "expression": "serious",
+      "sha256": "55fc9c0e28da869f545c9f0155457d6fabc3e3b2d35d5b46503f1b6e6a012a7e"
+    },
+    {
+      "path": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_surprise.png",
+      "expression": "surprise",
+      "sha256": "ace563431e8af5fac8d1603dbe891d3e7a6748ca72e4d95adfa364185d4a3a7a"
+    },
+    {
+      "path": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_evil.png",
+      "expression": "evil",
+      "sha256": "cbe6903aa4fdd2c0524a294b558b6ed9bea2e67ee33579b465b35746a1e993d1"
+    }
   ]
 }

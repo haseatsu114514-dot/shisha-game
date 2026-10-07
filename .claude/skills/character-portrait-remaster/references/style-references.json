@@ -726,6 +726,102 @@
         }
       ],
       "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/201"
+    },
+    {
+      "id": "naru-remaster-v1",
+      "title": "なる 基本5表情の確認用 v1",
+      "status": "pending",
+      "role": "確認用生成元と5表情。本人のデザイン参照・採用未確定",
+      "sourceBranch": "codex/hajime-adam-portrait-remaster-20261007",
+      "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/201",
+      "requestIds": [
+        "PRT53"
+      ],
+      "images": [
+        {
+          "label": "5表情の生成元",
+          "path": "../../../../asset_sources/portraits/naru-remaster-v1/sheet.png",
+          "sha256": "6fc9c21b3fea68d2a3fc2ebc7d1b9c9493fcafd316b830793e5100c3ff64686c"
+        },
+        {
+          "label": "通常",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/naru-remaster-v1/normal-preview.png",
+          "sha256": "60fbb3008e2ca60f78ca414620857e13ae368ff32c4f771b0f24cf18ab67e577"
+        },
+        {
+          "label": "笑顔",
+          "expression": "smile",
+          "path": "../../../../asset_sources/portraits/naru-remaster-v1/smile-preview.png",
+          "sha256": "a4ba1b117f50291a1d4fd7cecf8c1519a87dad5d70da8b0f1eea44fad7f1cc23"
+        },
+        {
+          "label": "真剣",
+          "expression": "serious",
+          "path": "../../../../asset_sources/portraits/naru-remaster-v1/serious-preview.png",
+          "sha256": "3fcc7a55a64c4e2959f1db92adf142ce32df2960e62e8767fe6d4da568c20135"
+        },
+        {
+          "label": "驚き",
+          "expression": "surprise",
+          "path": "../../../../asset_sources/portraits/naru-remaster-v1/surprise-preview.png",
+          "sha256": "3f84e7fbce2ea148bf3ceab51e4d4f410fdfdb23c21b2e2fc964858d0ef1c70a"
+        },
+        {
+          "label": "悲しみ",
+          "expression": "sad",
+          "path": "../../../../asset_sources/portraits/naru-remaster-v1/sad-preview.png",
+          "sha256": "0423da55f6aef27866a5929a7abdf6b487fa4035bcd34b38387594eb537e506c"
+        }
+      ]
+    },
+    {
+      "id": "dr_kemuri-remaster-v1",
+      "title": "チャコール博士 基本5表情の確認用 v1",
+      "status": "pending",
+      "role": "確認用生成元と5表情。本人のデザイン参照・採用未確定",
+      "sourceBranch": "codex/hajime-adam-portrait-remaster-20261007",
+      "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/201",
+      "requestIds": [
+        "PRT54"
+      ],
+      "images": [
+        {
+          "label": "5表情の生成元",
+          "path": "../../../../asset_sources/portraits/dr_kemuri-remaster-v1/sheet.png",
+          "sha256": "974e25ba9b62edc4e7b5e7cd84c8c6d9fe126e0bcdb7219b47d1885215271041"
+        },
+        {
+          "label": "通常",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/dr_kemuri-remaster-v1/normal-preview.png",
+          "sha256": "ae7627d22c4461657afdbacab04e39c0d49e9e98e5b53c424bfc18f182f15e38"
+        },
+        {
+          "label": "笑顔",
+          "expression": "smile",
+          "path": "../../../../asset_sources/portraits/dr_kemuri-remaster-v1/smile-preview.png",
+          "sha256": "df71fa86213f88328e0b5808fc666ea9cd84284ab2ac2e624188b9ae6b484518"
+        },
+        {
+          "label": "真剣",
+          "expression": "serious",
+          "path": "../../../../asset_sources/portraits/dr_kemuri-remaster-v1/serious-preview.png",
+          "sha256": "b5f808c647d9d13b4addfad8125da5f60a29314eab05baf002500abbbf095bf3"
+        },
+        {
+          "label": "驚き",
+          "expression": "surprise",
+          "path": "../../../../asset_sources/portraits/dr_kemuri-remaster-v1/surprise-preview.png",
+          "sha256": "f078b051bf041431503dcc81f1e416f071ef9f639e4795ecdd10cf1838a9fc5f"
+        },
+        {
+          "label": "邪悪",
+          "expression": "evil",
+          "path": "../../../../asset_sources/portraits/dr_kemuri-remaster-v1/evil-preview.png",
+          "sha256": "da763c17f531a3bd65c28d97f1f03138a4180cdea89e4af35ac07ed3bf175ca0"
+        }
+      ]
     }
   ]
 }
