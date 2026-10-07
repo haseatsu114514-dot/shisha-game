@@ -7,7 +7,7 @@ import { renderSceneArt } from "../core/scene-art.js";
 import { state, timeOfDay } from "../core/state.js";
 import { SE } from "../core/audio.js";
 import { STAMINA_LOW } from "../core/stats.js";
-import { allSpots, SPOT_PREVIEW, isClosed, visitedToday, isUnlocked, hasNewStory } from "./spots.js";
+import { allSpots, SPOT_PREVIEW, isClosed, isTemporaryClosed, visitedToday, isUnlocked, hasNewStory } from "./spots.js";
 import { updateHud } from "./hud.js";
 import { mountReel } from "./reel.js";
 import { isRainy } from "./weather.js";
@@ -58,7 +58,10 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
       if (s.unavailable) return { ok: false, why: s.unavailable, tag: s.unavailableTag || s.unavailable };
       if (s.kind === "fortune" && state.fortuneDay === state.day) return { ok: false, why: "今日はもう占ってもらった", tag: "今日はもう占った" };
       if (guide && s.id !== guide.pin) return { ok: false, why: "今はスミさんの頼みが先", guided: true };
-      if (isClosed(s)) return { ok: false, why: "本日定休日", tag: "本日定休日" };
+      if (isClosed(s)) {
+        const tag = isTemporaryClosed(s) ? "本日臨時休業" : "本日定休日";
+        return { ok: false, why: tag, tag };
+      }
       if (s.kind !== "shop" && s.kind !== "rest" && s.kind !== "tonari" && visitedToday(s.id)) return { ok: false, why: "今日はもう行った", tag: "今日はもう行った" };
       if (s.cost && state.money < s.cost) return { ok: false, why: `お金が足りない（${yen(s.cost)}）`, tag: "お金が足りない" };
       return { ok: true };
