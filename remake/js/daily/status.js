@@ -3,7 +3,7 @@ import { el, yen } from "../core/util.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
 import { modal, heartRow, statBadge } from "../core/ui.js";
 import { state, STAT_KEYS, STAT_JA } from "../core/state.js";
-import { star, starText, rankLabel, affinityLevel, maxStamina } from "../core/stats.js";
+import { star, starText, rankLabel, affinityLevel, currentCondition } from "../core/stats.js";
 import { flavorStock, ownedFlavorIds } from "./shop.js";
 import { BOND_FINALES } from "./bonds.js";
 
@@ -87,14 +87,14 @@ function meTab() {
       el("span.st-fx", { text: tierFx(k) }),
     ]),
   ]));
-  const r = state.stamina / maxStamina();
+  const condition = currentCondition();
   return el("div.st-me", [
     el("div.st-radar", [radar(state.stats, state.statsAtChapterStart)]),
     el("div.st-side", [
       ...rows,
       el("div.st-misc", [
         el("div", { text: `所持金 ${yen(state.money)}` }),
-        el("div", { text: `体力 ${r > 0.7 ? "元気" : r > 0.4 ? "ふつう" : r > 0.2 ? "疲れ気味" : "限界が近い"}` }),
+        el("div", { text: `体力 ${condition.label} ── ${condition.hint}` }),
       ]),
       note,
     ]),
