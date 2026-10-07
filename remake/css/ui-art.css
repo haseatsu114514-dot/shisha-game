@@ -14,7 +14,8 @@
 .ink-panel, .map-info, .map-notice, .map-time,
 .hud-card, .hud-level, .hud-menu, .hud-stamina,
 .gain-card {
-  background: none;
+  /* 拡縮時の9スライスの隙間から明るい背景が透けないよう、内側に墨色を敷く。 */
+  background: linear-gradient(#0e0913, #0e0913) center / calc(100% - 8px) calc(100% - 8px) no-repeat;
   border: 0 solid transparent;
   border-radius: 0;
   border-image: var(--art-panel) 110 fill / 24px / 0 stretch;

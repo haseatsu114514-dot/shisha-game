@@ -1,15 +1,12 @@
-// タイトル画面。はじめから／つづきから／用語集／設定。
-import { el, yen } from "../core/util.js";
+// タイトル画面。用語集は会話画面・ゲーム中のメニューから開く。
+import { el } from "../core/util.js";
 import { bgUrl, assetUrl } from "../core/data.js";
 import { showScreen, setBg, smokeWipe, modal } from "../core/ui.js";
 import { peekSave, load, newGame, wipeSave, config, saveConfig, anySlotSaved, loadFromSlot } from "../core/state.js";
 import { playBgm, SE, applyVolumes } from "../core/audio.js";
-import { glossaryPanel } from "../vn/glossary.js";
 import { startNewGame, resumeGame } from "../chapters/ch1.js";
 import { openGallery } from "./gallery.js";
 import { loadFlow } from "./saves.js";
-
-const PHASE_LABEL = { opening: "プロローグ", daily: "日常", tournament: "SMOKE CROWN CUP 当日", cleared: "第1章クリア" };
 
 export function showTitle() {
   setBg(bgUrl("bg_title"), { instant: true });
@@ -43,21 +40,18 @@ export function showTitle() {
       smokeWipe(() => { resumeGame(); }, { color: "dark" });
     }, "title-load", !anySlotSaved()),
     item("GALLERY", "ギャラリー", openGallery, "title-gallery"),
-    item("GLOSSARY", "用語集", () => modal({ title: "用語集", body: glossaryPanel(), className: "glossary-modal", options: [{ label: "閉じる", value: true, primary: true }] }), "title-glossary"),
     item("CONFIG", "設定", openConfig, "title-config"),
   );
-
-  const saveInfo = saved
-    ? el("div.title-save", { text: `つづき: DAY ${saved.day}・${PHASE_LABEL[saved.phase] || ""}・所持金 ${yen(saved.money || 0)}` })
-    : null;
 
   const root = el("div.title", [
     el("div.title-art", { style: { backgroundImage: `url("${assetUrl("assets/ui/title_arts/title_art_keyvisual_01.png")}")` } }),
     el("div.title-smoke", [el("i"), el("i"), el("i")]),
     el("div.title-left", [
-      el("img.title-logo", { src: assetUrl("assets/ui/ui_title_logo.png"), alt: "水煙前線 -EN:CODE-" }),
+      el("div.title-brand", [
+        el("div.title-logo-smoke", { "aria-hidden": "true" }, [el("i"), el("i"), el("i"), el("i")]),
+        el("img.title-logo", { src: "img/ui/ui_title_logo_rich.webp", alt: "水煙前線 -EN:CODE-" }),
+      ]),
       menu,
-      saveInfo,
     ]),
     el("div.title-foot", { text: "TAP / CLICK / ENTER ── CH.01 SMOKE CROWN CUP" }),
   ]);

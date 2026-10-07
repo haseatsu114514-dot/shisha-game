@@ -107,7 +107,8 @@ export async function maybeConfession(beat, { busyNight = false, companion = nul
   if (!id) id = Object.keys(state.finales || {}).find(romanceRouteOpen) || null;
   if (!id) return false;
   state.flags._confession_due = id;
-  if (id === "minto" && !state.flags._minto_name_known) return false; // 本名を聞いた私的な約束の後
+  // 新規進行は私的な約束の後。旧セーブの紹介済み・本名記録なしは、下の名乗り補完へ進める。
+  if (id === "minto" && !(state.flags._minto_name_known || state.flags._minto_identity_revealed)) return false;
   if ((state.flags._confession_wait || 0) > state.day || busyNight && companion !== id) return false;
   delete state.flags._confession_due;
   await beat(companion === id ? "——別れ際、もう少しだけ話したくなった。" : id === "ageha" ? "——と、そのとき。" : `（……${privateCall(id)}の顔が、ふと浮かんだ）`);

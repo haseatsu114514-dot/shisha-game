@@ -23,7 +23,8 @@ export function initLayers() {
   on("stat-gain", ({ key, total, name, word, starUp, rank, star }) => {
     // ★が上がったら、何が楽になったかを一言添える（旧版の★UP効果トースト）
     const fx = starUp ? DB.statusTexts?.statTierFx?.[key]?.[star - 1] : "";
-    gainCard({ kind: "stat", stat: key, points: total, badge: STAT_BADGE[key], top: starUp ? `RANK UP ★${star}` : "STATUS UP", main: name, sub: starUp ? `${word} ──「${rank}」` : word, fx });
+    gainCard({ kind: "stat", stat: key, points: total, badge: STAT_BADGE[key], top: starUp ? "LEVEL UP" : "STATUS UP", main: name,
+      evolution: starUp ? `レベル${star}に進化！` : "", sub: starUp ? `${word} ──「${rank}」` : word, fx });
   });
   on("affinity-gain", ({ id, level, levelUp, prevPts, pts, bond }) => {
     if (!id || id === "???" || !state?.met?.[id]) return;
@@ -298,6 +299,7 @@ function pumpBanners() {
         el("span.gc-top", { text: o.top }),
         el("div.gc-title", [el("span.gc-main", { text: o.main }),
           o.points > 0 ? el("span.gc-points", { text: `+${o.points}pt` }) : null]),
+        o.evolution ? el("strong.gc-evolution", { text: o.evolution }) : null,
         o.sub ? el("span.gc-sub", { text: o.sub }) : null,
         o.fx ? el("span.gc-fx", { text: o.fx }) : null,
         hearts,
@@ -325,7 +327,7 @@ function pumpBanners() {
         refreshStaminaMeters();
       }, 260);
     });
-    const hold = o.fx ? 3200 : o.hearts && o.hearts.to.join() !== o.hearts.from.join() ? 2600 : 2200;
+    const hold = o.evolution ? 4200 : o.fx ? 3200 : o.hearts && o.hearts.to.join() !== o.hearts.from.join() ? 2600 : 2200;
     setTimeout(() => {
       b.classList.remove("show");
       b.classList.add("out");

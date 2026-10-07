@@ -72,7 +72,7 @@ export function gainStat(key, amount, { silent = false } = {}) {
   emit("stat-raw", { key, got }); // スロットの「直前の行動で伸びたステ」の記録用
   emit("hud");
   if (silent) return got;
-  const starUp = Math.ceil(v / 20) > Math.ceil(before / 20);
+  const starUp = star(key) > clamp(Math.ceil(before / 20), 1, 5);
   if (batch[key]?.owner !== state) batch[key] = { owner: state, total: 0, starUp: false };
   batch[key].total += got;
   batch[key].starUp ||= starUp;
