@@ -2,8 +2,8 @@
   "character": "kafuka",
   "request_id": "PRT68",
   "variant": "ocean-blue-ventriloquism",
-  "status": "pending-review",
-  "expression": "normal",
+  "status": "matched-to-approved-design",
+  "expression": "ventriloquism",
   "raw_generation_path": "/workspace/generated_images/exec-806e78d2-0e12-4179-b83b-b32c3a134daf.png",
   "source_size": [
     1024,
@@ -67,7 +67,8 @@
   "checks": {
     "raw_border_alpha_ge_16": 0,
     "preview_border_alpha_ge_16": 0,
-    "source_rgba": true
+    "source_rgba": true,
+    "face_occlusion_reviewed": "Whole human face hidden behind Koro; only side hair, hood and coif visible."
   },
   "runtime_changed": false
 }

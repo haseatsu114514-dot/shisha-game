@@ -1,27 +1,76 @@
 {
-  "runtime_changed": false,
-  "variants": [
+  "checks": [
     {
       "slug": "ocean-blue",
-      "source_hash_matches": true,
+      "source_sha256": "d1777a3276e1519e8f9bb2f3dcb6e2456650b1e6f8856fde19828cfab333cd4e",
       "source_byte_identical": true,
-      "checks": {
-        "raw_border_alpha_ge_16": 0,
-        "preview_border_alpha_ge_16": 0,
-        "source_rgba": true
-      },
+      "source_rgba": true,
+      "border_alpha_ge_16": 0,
+      "feet": [
+        [
+          264,
+          266,
+          677,
+          1174
+        ],
+        447.9458439727124
+      ]
+    },
+    {
+      "slug": "blue-violet",
+      "source_sha256": "8d369613ec4110996393c383b0bf2d44894b517642bbe7dabc0aeebd7f5e0e6b",
+      "source_byte_identical": true,
+      "source_rgba": true,
+      "border_alpha_ge_16": 0,
       "feet": [
         [
           264,
           265,
-          677,
+          678,
           1173
         ],
-        447.9458439727124
-      ],
-      "shared_scale": 0.607095046854083
+        448.70560300256597
+      ]
+    },
+    {
+      "slug": "ash-gray",
+      "source_sha256": "e9ec3fd14bd84e6d49de0604747157d0ba917aad90198522827a419a401e0e3b",
+      "source_byte_identical": true,
+      "source_rgba": true,
+      "border_alpha_ge_16": 0,
+      "feet": [
+        [
+          260,
+          253,
+          683,
+          1174
+        ],
+        447.95082508250823
+      ]
+    },
+    {
+      "slug": "ocean-blue-ventriloquism",
+      "source_sha256": "19dd66bce1726708a704fa6131ce85b8ac10a8ca361ee06762406ce1bc7a8a5a",
+      "source_byte_identical": true,
+      "source_rgba": true,
+      "border_alpha_ge_16": 0,
+      "feet": [
+        [
+          262,
+          264,
+          648,
+          1174
+        ],
+        448.7025894049562
+      ]
     }
   ],
-  "contact_sheet_includes_original": true,
-  "review_operations": "Only cropping, uniform display scaling, labels and compositing against solid white/dark backgrounds; source pixels preserved."
+  "approved_normal_ventriloquism": {
+    "common_scale": 0.607095046854083,
+    "feet_bottom": 1174,
+    "feet_anchor_difference": 0.7567454322438039,
+    "face_occlusion": "visually reviewed, whole face hidden",
+    "white_and_dark_backgrounds": "visually reviewed"
+  },
+  "runtime_changed": false
 }
