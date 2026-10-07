@@ -1,0 +1,102 @@
+// 初登場カットイン（vn/intro.js）: 全キャラの見た目が画面に収まるか、名乗った直後に一度だけ出るかを確かめる。
+// サーバーを8123で起動後: node remake/test/intro_cutin.mjs   （SHOTS=<フォルダ> で各キャラの画像を保存）
+import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+const { chromium } = createRequire(import.meta.url)("playwright");
+const browser = await chromium.launch({ headless: true,
+  ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}),
+});
+try {
+  const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+  const errors = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto(process.env.BASE_URL || "http://127.0.0.1:8123/remake/");
+  await page.waitForSelector('[data-test="title-new"]');
+  const ids = await page.evaluate(async () => {
+    const core = await import("./js/core/state.js"), { DB } = await import("./js/core/data.js");
+    const intro = await import("./js/vn/intro.js"), vn = await import("./js/vn/engine.js");
+    core.newGame();
+    window.T = { core, DB, intro, vn };
+    return Object.keys(DB.characters).filter((id) => DB.characters[id].intro_cutin);
+  });
+  assert(ids.length >= 20, `カットインのデータが少ない（${ids.length}人）`);
+
+  // 1) 全員: 二つ名・名前・一言が画面（1280×720）の中に収まり、文字が空でない
+  for (const id of ids) {
+    await page.evaluate((id) => { T.core.state.met[id] = true; T.done = T.intro.playIntro(id); }, id);
+    await page.waitForSelector(`.cutin.in[data-char="${id}"]`);
+    await page.waitForTimeout(1300); // 一言が出そろうまで
+    const box = await page.evaluate(() => {
+      const stage = document.querySelector("#stage").getBoundingClientRect();
+      const k = stage.width / 1280;
+      const r = (sel) => {
+        const n = document.querySelector(`.cutin ${sel}`);
+        if (!n) return null;
+        const b = n.getBoundingClientRect();
+        return { text: n.textContent, left: (b.left - stage.left) / k, right: (b.right - stage.left) / k, top: (b.top - stage.top) / k, bottom: (b.bottom - stage.top) / k };
+      };
+      return { title: r(".ci-title"), name: r(".ci-name"), line: r(".ci-line"), portrait: !!document.querySelector(".cutin img.ci-portrait") };
+    });
+    for (const key of ["title", "name", "line"]) {
+      const b = box[key];
+      assert(b && b.text.trim(), `${id}: ${key} が空`);
+      assert(b.left >= 0 && b.right <= 1280 && b.top >= 0 && b.bottom <= 720, `${id}: ${key}「${b.text}」が画面からはみ出す ${JSON.stringify(b)}`);
+    }
+    assert(box.name.right <= 1280 - 40, `${id}: 名前「${box.name.text}」が右端に詰まりすぎ`);
+    if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/cutin_${id}.png` });
+    await page.locator(".cutin").click();
+    await page.evaluate(() => T.done);
+    assert.equal(await page.locator(".cutin").count(), 0, `${id}: クリックで閉じない`);
+  }
+
+  // 2) 本名を伏せるキャラは、本名を出さない（みんと＝栞・零＝田中健太）
+  const hidden = await page.evaluate(async () => {
+    const out = {};
+    for (const id of ["minto", "rei"]) {
+      T.core.state.met[id] = true;
+      const p = T.intro.playIntro(id);
+      await new Promise((r) => setTimeout(r, 400));
+      out[id] = document.querySelector(".cutin").textContent;
+      document.querySelector(".cutin").dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
+      await new Promise((r) => setTimeout(r, 200));
+      document.querySelector(".cutin")?.dispatchEvent(new PointerEvent("pointerup", { bubbles: true }));
+      await p;
+    }
+    return out;
+  });
+  assert(!/栞|緑川/.test(hidden.minto), `みんとのカットインに本名が出ている: ${hidden.minto}`);
+  assert(!/田中|健太/.test(hidden.rei), `零-REI-のカットインに本名が出ている: ${hidden.rei}`);
+
+  // 3) 会話の中: 「？？？」の間は出ず、名乗り（_met_）の直後の台詞の前に一度だけ出る
+  await page.evaluate(() => {
+    T.core.newGame();
+    T.seen = [];
+    new MutationObserver((rs) => rs.forEach((r) => r.addedNodes.forEach((n) => n.classList?.contains("cutin") && T.seen.push(n.dataset.char))))
+      .observe(document.querySelector("#fx"), { childList: true });
+    T.talk = T.vn.play({ dialogue_id: "__intro_test", lines: [
+      { speaker: "naru", face: "normal", text: "お、あんたが4人目？ 俺はなる" },
+      { type: "set_flag", flag: "_met_naru" },
+      { speaker: "hajime", face: "normal", text: "よろしくお願いします" },
+      { speaker: "naru", face: "smile", text: "おう" },
+    ] });
+  });
+  const advance = async () => { await page.waitForTimeout(450); await page.mouse.click(640, 600); };
+  await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent.includes("俺はなる"));
+  assert.deepEqual(await page.evaluate(() => T.seen), [], "名乗る前にカットインが出た");
+  await advance(); await advance();
+  await page.waitForSelector('.cutin[data-char="naru"]');
+  assert.equal(await page.evaluate(() => T.core.state.flags._intro_naru), true);
+  await page.waitForTimeout(600);
+  await page.locator(".cutin").click();
+  await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent.includes("よろしく"));
+  await advance(); await advance();
+  await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent.includes("おう"));
+  await advance(); await advance();
+  await page.evaluate(() => T.talk);
+  assert.deepEqual(await page.evaluate(() => T.seen), ["naru"], "カットインが一度だけになっていない");
+
+  assert.deepEqual(errors, []);
+  console.log(`OK intro_cutin: ${ids.length}人のカットインが画面内に収まり、名乗った直後に一度だけ出る`);
+} finally {
+  await browser.close();
+}

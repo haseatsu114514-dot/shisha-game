@@ -255,3 +255,82 @@ body.in-vn #bg { transition: filter 0.4s; }
 
 /* 報酬キューの行（……【技術】が上がった。）は控えめな金色で */
 .vn-box.reward .vn-text { color: var(--gold-hi); font-size: 28px; }
+
+/* ---------------------------------------------------------------- 初登場カットイン（vn/intro.js）
+   名前・二つ名・一言を全画面で一度だけ。差し色 --ci はキャラごと（characters.json の intro_cutin.color） */
+.cutin { position: absolute; inset: 0; overflow: hidden; pointer-events: auto; cursor: pointer; background: rgba(6, 4, 10, 0.97); backdrop-filter: blur(6px); opacity: 0; transition: opacity 0.18s; }
+.cutin.in { opacity: 1; }
+.cutin.out { opacity: 0; transition: opacity 0.26s; }
+.ci-smoke {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(60% 70% at 26% 62%, color-mix(in srgb, var(--ci) 32%, transparent), transparent 70%),
+    radial-gradient(40% 50% at 80% 20%, color-mix(in srgb, var(--ci) 14%, transparent), transparent 70%);
+}
+.ci-band {
+  position: absolute; left: -10%; top: 50%; width: 125%; height: 168px;
+  background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--ci) 85%, #000) 34%, var(--ci) 70%, color-mix(in srgb, var(--ci) 60%, #fff) 100%);
+  transform: rotate(-7deg) scaleX(0); transform-origin: left center;
+  transition: transform 0.42s var(--ease-snap);
+  box-shadow: 0 0 60px color-mix(in srgb, var(--ci) 45%, transparent);
+}
+.ci-band.b2 { top: calc(50% + 184px); height: 10px; background: rgba(255, 255, 255, 0.85); box-shadow: none; transition-delay: 0.08s; transform-origin: right center; }
+.cutin.in .ci-band { transform: rotate(-7deg) scaleX(1); }
+.ci-watermark {
+  position: absolute; right: -40px; top: 22px; white-space: nowrap;
+  font: 900 210px/1 var(--font); letter-spacing: 0.02em;
+  color: transparent; -webkit-text-stroke: 2px color-mix(in srgb, var(--ci) 40%, transparent);
+  transform: rotate(-7deg) translateX(120px); opacity: 0;
+  transition: transform 1.6s var(--ease-out), opacity 0.6s;
+}
+.cutin.in .ci-watermark { transform: rotate(-7deg) translateX(0); opacity: 1; }
+.ci-portrait {
+  position: absolute; left: 27%; translate: var(--ax, -50%) 0;
+  transform: translateX(-140px); opacity: 0;
+  transition: transform 0.5s var(--ease-out) 0.1s, opacity 0.3s 0.1s;
+  filter: drop-shadow(0 0 24px color-mix(in srgb, var(--ci) 55%, transparent)) drop-shadow(10px 0 0 color-mix(in srgb, var(--ci) 70%, transparent));
+  user-select: none; pointer-events: none;
+}
+/* 立ち絵がまだ無いキャラ: 名前の頭文字を大きな影文字で */
+.ci-portrait.none {
+  top: 10%; translate: -50% 0; filter: none;
+  font: 900 460px/1 var(--font); color: color-mix(in srgb, var(--ci) 22%, transparent);
+  -webkit-text-stroke: 3px color-mix(in srgb, var(--ci) 70%, transparent);
+}
+.cutin.in .ci-portrait { transform: none; opacity: 1; }
+.ci-meta {
+  position: absolute; left: 51%; right: 4%; top: 25%;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  font-family: var(--font); color: #fff;
+}
+.ci-title {
+  font-size: 28px; font-weight: 900; letter-spacing: 0.12em; white-space: nowrap;
+  padding: 6px 18px 6px 14px; color: #0b0812; background: var(--ci);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+  transform: translateX(40px); opacity: 0;
+  transition: transform 0.35s var(--ease-out) 0.3s, opacity 0.25s 0.3s;
+}
+.ci-name {
+  font-size: 96px; font-weight: 900; line-height: 1.12; white-space: nowrap; letter-spacing: 0.04em;
+  text-shadow: 0 0 2px #000, 5px 5px 0 color-mix(in srgb, var(--ci) 80%, #000), 0 0 30px color-mix(in srgb, var(--ci) 50%, transparent);
+  transform: scale(1.35); opacity: 0; transform-origin: left center;
+  transition: transform 0.28s var(--ease-snap) 0.42s, opacity 0.12s 0.42s;
+}
+.ci-reading, .ci-sub { font-size: 24px; font-weight: 700; letter-spacing: 0.18em; color: rgba(255, 255, 255, 0.85); opacity: 0; transition: opacity 0.3s 0.6s; }
+.ci-sub { color: color-mix(in srgb, var(--ci) 55%, #fff); }
+.cutin.in .ci-title { transform: none; opacity: 1; }
+.cutin.in .ci-name { transform: none; opacity: 1; }
+.cutin.in .ci-reading, .cutin.in .ci-sub { opacity: 1; }
+.ci-line {
+  position: absolute; left: 46%; right: 3%; bottom: 9%;
+  font: 700 34px/1.45 var(--font); color: #fff; white-space: nowrap;
+  padding: 12px 22px; background: rgba(6, 4, 10, 0.78);
+  border-left: 6px solid var(--ci);
+  transform: translateY(18px); opacity: 0;
+  transition: transform 0.4s var(--ease-out) 0.8s, opacity 0.3s 0.8s;
+}
+.cutin.in .ci-line { transform: none; opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .cutin *, .cutin.in * { transition: opacity 0.2s !important; transform: none !important; }
+  .cutin .ci-band, .cutin.in .ci-band { transform: rotate(-7deg) !important; }
+}

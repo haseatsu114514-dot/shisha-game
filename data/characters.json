@@ -42,7 +42,13 @@
       "46 year old japanese man, shisha shop owner, black newsboy cap over short messy black hair, square black-framed glasses, thick brows, full short beard, healthy tan skin, charcoal shirt with rolled sleeves, brown waist apron, black trousers and shoes, seasoned and calm aura, refined high-resolution fine pixel-art style",
       "same man thinking at the counter, hand on chin under the square glasses, arm folded, warm low light of a small shisha bar, quiet mentor vibe"
     ],
-    "spriteScale": 1.05
+    "spriteScale": 1.05,
+    "intro_cutin": {
+      "title": "表舞台を降りた名人",
+      "line": "客が満足したなら、それでいい",
+      "face": "normal",
+      "color": "#e0843e"
+    }
   },
   {
     "id": "naru",
@@ -65,7 +71,13 @@
       "23s japanese male, confident and slightly cocky expression, short dyed silver hair, wearing a stylish streetwear jacket and multiple silver rings, holding a digital thermometer, cyberpunk-lite cafe vibe",
       "young japanese competitive shisha player, sharp eyes, silver-ash hair, wearing an oversized graphic tee and dark necklace, working precisely with scales and foil, neon lit modern cafe setting"
     ],
-    "spriteScale": 1.02
+    "spriteScale": 1.02,
+    "intro_cutin": {
+      "title": "地元最強の好敵手",
+      "line": "うまくなりたいなら全部見てけ",
+      "face": "smile",
+      "color": "#f0d8a0"
+    }
   },
   {
     "id": "adam",
@@ -88,7 +100,14 @@
       "28s japanese male, eccentric but lovable expression, stylish Eden shop outfit, surrounded by red apples and anise props, performing grandly while preparing a shisha bowl",
       "japanese double apple specialist, dramatic self-styled Adam persona, playful confidence, slightly messy private-life vibe, modern shisha lounge Eden background"
     ],
-    "spriteScale": 1.03
+    "spriteScale": 1.03,
+    "intro_cutin": {
+      "title": "ダブルアップルの伝道師",
+      "line": "煙は二種類。ダブルアップルと、それ以外だ",
+      "face": "intense",
+      "color": "#c9463a",
+      "name": "alias"
+    }
   },
   {
     "id": "minto",
@@ -125,7 +144,14 @@
       "lime": "はじめは初来店の記念チェキの裏に手書きのLIME IDをもらい、『営業LIME』だと疑いつつ、こういう店で連絡先を交換していいのかとドキドキしながら登録する。届くのは店の公式アカウント風の事務的な自動メッセージ（アカウント名は lime_name の『みんと＠ぺぱーみんと』・営業姿のアイコン）。ただし店はみんとひとりなので中の人も彼女だけ＝実質みんとの個人アカウント、と本人が明かす（HF12〜HF14）。本名を知った後も、私的な誘いや素の文面はこのお仕事用から届く。恋人になった夜（confession_minto_accept）に『お店のじゃない方』の私用LIME（アカウント名『栞』・私服のアイコン）を渡され、以後はそちらから届く。お仕事用のトークはそのまま残る（2026-10-04 オーナー指定 HF10・HF11）。",
       "first_visit": "Ch1序盤の強制バイトイベントでtonariに『綺麗なお客さん』として私服姿で来店。名前も正体も明かさず『お任せで』と注文する。はじめはPEPPERMINTのみんとだとは知らない状態。"
     },
-    "spriteScale": 0.91
+    "spriteScale": 0.91,
+    "intro_cutin": {
+      "title": "ぺぱーみんと人気No.1キャスト",
+      "line": "みんとでーす♪ 全員まとめてライバルね？",
+      "face": "wink",
+      "color": "#7fe0c2",
+      "name": "alias"
+    }
   },
   {
     "id": "shisha_9000",
@@ -147,7 +173,13 @@
     "visual_concepts": [
       "futuristic AI shisha machine terminal, sleek white and metallic silver exterior, glowing blue LED sensors, robotic arms precisely handling glowing charcoal, clean cyber-tech environment",
       "sci-fi high-tech cafe interior, central glowing AI server core shaped like a modern shisha, holographic interface displaying heat levels and flavor combinations, cybernetic and sterile mood"
-    ]
+    ],
+    "intro_cutin": {
+      "title": "AIシーシャマシン",
+      "line": "環境データ、取得完了",
+      "face": "normal",
+      "color": "#9aa4b8"
+    }
   },
   {
     "id": "nandi",
@@ -169,7 +201,13 @@
     "visual_concepts": [
       "31s indian man, deep spiritual calm expression, long dark beard, wearing a beautifully patterned traditional kurta, manipulating smoke with graceful hand gestures, surrounding by ethnic spices and brass hookahs",
       "charismatic indian shisha master, mystical aura, wearing rich gold and deep red ethnic clothing, blowing vibrant thick smoke that seems alive, background filled with antique rugs and warm light"
-    ]
+    ],
+    "intro_cutin": {
+      "title": "インド流シーシャの継承者",
+      "line": "スパイスは、嘘をつかない",
+      "face": "normal",
+      "color": "#e0a030"
+    }
   },
   {
     "id": "steve",
@@ -191,7 +229,13 @@
     "visual_concepts": [
       "30s overweight american man, friendly but very focused, wearing a casual snapback cap and oversized graphic t-shirt, large hands delicately adjusting small charcoals with tweezers, eating a slice of pizza on the side",
       "large american guy with a beard, gentle giant vibe, wearing a zip-up hoodie, sitting in a laid-back western style lounge, expertly handling American flavor tobacco with surgical precision"
-    ]
+    ],
+    "intro_cutin": {
+      "title": "低温の巨匠",
+      "line": "火は小さく、ゆっくりね",
+      "face": "normal",
+      "color": "#f07a3a"
+    }
   },
   {
     "id": "volk",
@@ -213,7 +257,13 @@
     "visual_concepts": [
       "37s russian man, cold and sharp facial features, short blonde hair, wearing a sleek black turtleneck sweater, robotic precision in his posture, using an advanced high-tech metal hookah pipe",
       "steely-eyed russian shisha expert, pale skin, wearing a dark tailored overcoat, operating a modern minimalist shisha setup with digital thermal sensors, icy cool lighting"
-    ]
+    ],
+    "intro_cutin": {
+      "title": "誤差ゼロの職人",
+      "line": "ブレは、許さない",
+      "face": "normal",
+      "color": "#8fb4d8"
+    }
   },
   {
     "id": "rei",
@@ -253,7 +303,14 @@
     "visual_concepts": [
       "25s japanese visual-kei male, charismatic and mysterious, deep red and black asymmetrical styled hair with dramatic volume, visible tattoos on neck and hands mixing japanese traditional and gothic western motifs, heavy dramatic eyeliner and pale foundation, wearing a dark velvet embroidered coat with silver accents, holding an ornate hookah hose like a microphone on stage, moody spotlight behind",
       "visual kei cafe master, striking androgynous features, full body tattoo hints visible under rolled-up sleeves showing intricate floral and gothic patterns, wearing a form-fitting black high-neck top with chain decorations, intense gaze, performing shisha preparation as if conducting an orchestra, dark gothic lounge atmosphere with dim candlelight and rose petals"
-    ]
+    ],
+    "intro_cutin": {
+      "title": "煙のヴィジュアル系",
+      "line": "静かに。……開演だ",
+      "face": "normal",
+      "color": "#b0102a",
+      "name": "alias"
+    }
   },
   {
     "id": "master_hookah",
@@ -276,7 +333,13 @@
       "58s asian elderly man, wise hermit appearance, long white beard tied at the end, wearing traditional linen martial arts style clothing, holding a very old brass and wood engraved hookah pipe",
       "ancient asian shisha master, serene expression and closed eyes, long white hair, wearing a simple earthy-toned robe, mystical smoke forming Yin-Yang patterns around him, temple-like background"
     ],
-    "spriteScale": 0.96
+    "spriteScale": 0.96,
+    "intro_cutin": {
+      "title": "龍を吐く仙人",
+      "line": "お前の煙には『命』がある",
+      "face": "normal",
+      "color": "#3fbf7f"
+    }
   },
   {
     "id": "tsumugi",
@@ -309,6 +372,12 @@
         "角に森のある鹿"
       ],
       "daily_motif": "耳の葉っぱが落ちた日の猫"
+    },
+    "intro_cutin": {
+      "title": "tonariの常連イラストレーター",
+      "line": "……煙って、形がないから",
+      "face": "normal",
+      "color": "#b9a4e8"
     }
   },
   {
@@ -335,7 +404,13 @@
     ],
     "appearance": "少し青みのある暗い髪のロングウルフ。厚めに流れる前髪と頬を包むレイヤー、胸下〜ウエスト上までの長さ。主人公たちより少し年上に見える落ち着いた顔立ち、とろんとした細めの半目、控えめでクールな微笑み。白シャツの袖まくり＋黒スラックス。胸元に試香紙は付けない。銀のフープピアス。ネイルは常に無色（商材の香りを邪魔しないため＝職業的な色気）。普段はコンタクトで、深夜の2階では黒縁眼鏡＝眼鏡の凛はルート進行者だけが見られる姿。低めの声でゆっくり喋り、笑うと目尻が緩むのを本人は少し気にしている。",
     "spriteScale": 0.97,
-    "spriteAnchor": "head"
+    "spriteAnchor": "head",
+    "intro_cutin": {
+      "title": "問屋街の魔女",
+      "line": "ようこそ、夜の側へ",
+      "face": "smile",
+      "color": "#9b6cf2"
+    }
   },
   {
     "id": "ageha",
@@ -359,7 +434,13 @@
       "24s japanese gyaru female, classic heisei-era gyaru style mixed with modern fashion sense, honey-blonde hair with pink highlights and voluminous styling, dramatic makeup with long lashes and glossy lips, energetic and slightly chaotic vibe, wearing trendy off-shoulder top with platform shoes, holding a colorful hookah hose with blinged-out acrylic nails",
       "vibrant young gyaru-style shisha player turned magazine reader model, charismatic wide smile, dyed layered hair, wearing fashionable club-style outfit with choker and ankle bracelet, surrounded by regulars from all walks of life (otaku fans, gyaru friends, shisha enthusiasts), lively night lounge background with neon glints"
     ],
-    "spriteScale": 0.93
+    "spriteScale": 0.93,
+    "intro_cutin": {
+      "title": "バイブスの天才",
+      "line": "カワイイは最強っしょ",
+      "face": "smile",
+      "color": "#ff8fc8"
+    }
   },
   {
     "id": "salaryman",
@@ -405,7 +486,13 @@
       "39s japanese yakuza boss, intimidating sharp face with a small scar, slicked back hair, wearing a tailored dark suit without a tie showing traditional irezumi tattoos on his chest, very delicate and precise hands handling hot charcoal",
       "former bōsōzoku turned yakuza, stern expression, wearing a dark luxurious patterned silk shirt, intricate japanese tattoos visible on forearms, holding silver tongs with extreme care, cinematic lighting in a VIP room"
     ],
-    "spriteScale": 1.06
+    "spriteScale": 1.06,
+    "intro_cutin": {
+      "title": "シーシャ組長",
+      "line": "回し飲みはな、盃と同じだ",
+      "face": "normal",
+      "color": "#d23a3a"
+    }
   },
   {
     "id": "dr_kemuri",
@@ -429,7 +516,13 @@
       "38 year old japanese male researcher, neat side-parted hair, silver-framed glasses, light blue dress shirt with blue plaid tie, chino pants and white lab coat, slight stubble, wearing sandals without socks, gentle and slightly disheveled appearance, surrounded by shisha data equipment and clipboards",
       "analytical researcher character, warm intelligent eyes behind silver framed glasses, wearing a white lab coat over a light blue shirt and plaid tie, calm and approachable demeanor, shisha lab setting"
     ],
-    "spriteScale": 1.02
+    "spriteScale": 1.02,
+    "intro_cutin": {
+      "title": "データの鬼",
+      "line": "データは嘘をつきません",
+      "face": "smile",
+      "color": "#38f0ff"
+    }
   },
   {
     "id": "pakki",
@@ -451,7 +544,13 @@
     "visual_concepts": [
       "mysterious mascot character, wearing a cute but slightly weird fluffy colorful animal costume holding a microphone, very upbeat and energetic body language, festival stage lighting",
       "eccentric tournament MC, wearing an oversized flashy plush head mascot suit (perhaps a surreal tapir or cloud creature), holding a golden mic, standing in front of a cheering crowd, comic pop-art style"
-    ]
+    ],
+    "intro_cutin": {
+      "title": "大会名物MC兼マスコット",
+      "line": "ぷぷぷっ！ 会場は満席御礼ッ！",
+      "face": "smile",
+      "color": "#ff3fa4"
+    }
   },
   {
     "id": "nagumo",
@@ -474,7 +573,13 @@
       "45s japanese business man, sharp and authoritative, short cleanly cut hair, wearing a very expensive tailored three-piece navy suit, examining a shisha with a critical and intimidating eye",
       "corporate executive judge, mature alpha male, silver tie and luxury watch, sitting imposingly at a judge's table, looking analytical but with a hidden passionate glint in his eyes, upscale lounge aesthetic"
     ],
-    "spriteScale": 1.03
+    "spriteScale": 1.03,
+    "intro_cutin": {
+      "title": "C.STATION会長・審査員長",
+      "line": "吸えば分かる",
+      "face": "serious",
+      "color": "#cfd6e6"
+    }
   },
   {
     "id": "emil",
@@ -496,7 +601,13 @@
     "visual_concepts": [
       "48s turkish man, rugged and distinguished, thick mustache and short dark hair with greying temples, wearing a smart casual vest and rolled-up shirtsleeves, deep intense eyes evaluating smoke",
       "experienced turkish nargile craftsman, weathered face with lines of wisdom, wearing a simple collared shirt and suspenders, observing shisha smoke with profound concentration, traditional coffeehouse background hints"
-    ]
+    ],
+    "intro_cutin": {
+      "title": "トプハーネの元職人",
+      "line": "新しいだけでは、本物ではない",
+      "face": "normal",
+      "color": "#4a8be0"
+    }
   },
   {
     "id": "sheikh",
@@ -519,7 +630,13 @@
       "52s middle eastern royalty, regal and commanding presence, wearing an immaculate white kandura and a golden-trimmed ghutra, smoking from an extravagant pure gold hookah, luxurious palace surroundings",
       "wealthy arab sheikh, neatly trimmed beard, majestic and wealthy aura, adorned with subtle but incredibly expensive jewelry, standing confidently next to a jeweled masterpiece shisha pipe"
     ],
-    "spriteScale": 1.06
+    "spriteScale": 1.06,
+    "intro_cutin": {
+      "title": "黄金の王族",
+      "line": "あの煙を、もう一度",
+      "face": "normal",
+      "color": "#f5c542"
+    }
   },
   {
     "id": "da_silva",
@@ -541,7 +658,13 @@
     "visual_concepts": [
       "28s brazilian male, tanned skin, athletic build, sunny and overwhelmingly cheerful expression, wearing a vibrant tropical shirt open at the chest, surrounded by lively festival energy and colorful smoke",
       "passionate brazilian shisha player, dark curly hair, wide joyful smile, wearing colorful street carnival-inspired clothing, performing flashy smoke tricks while dancing, festive warm sunshine lighting"
-    ]
+    ],
+    "intro_cutin": {
+      "title": "祭りの審査員",
+      "line": "シーシャはフェスタ！ 楽しくなけりゃ意味がねぇ！",
+      "face": "normal",
+      "color": "#2fd27a"
+    }
   },
   {
     "id": "mashiro",
@@ -564,7 +687,13 @@
       "22 year old japanese woman, pale ash-blonde hair in two long braids with soft bangs, sleepy half-lidded golden eyes, beige oversized knit cardigan over a white blouse with a small ribbon, long sage-green skirt, brown shoes, relaxed and gently sleepy, same-age peer vibe rather than older-sister type, refined high-resolution fine pixel-art style",
       "same young woman puffing a massive cloud of heavy cigar-scented smoke while looking completely unbothered and sweet, contrasting gap moe, boku-pronoun casual energy, peer-friend rather than older-sister"
     ],
-    "spriteScale": 0.9
+    "spriteScale": 0.9,
+    "intro_cutin": {
+      "title": "mukaiの眠たげな同期",
+      "line": "……これ、お水ですか？",
+      "face": "normal",
+      "color": "#e8eef6"
+    }
   },
   {
     "id": "kako",
@@ -674,7 +803,13 @@
     "visual_concepts": [
       "48s japanese male, extreme dandy and hard-boiled style, similar to Daisuke Jigen, wearing a deep fedora hat covering his eyes, well-trimmed beard, dark tailored suit, holding a classic hookah hose elegantly",
       "mature cool middle-aged cafe master, smoking quietly in the shadows, deep voice aura, wearing a hat and vintage attire, actually very gentle despite his intimidatingly cool appearance"
-    ]
+    ],
+    "intro_cutin": {
+      "title": "mukaiの店長",
+      "line": "まあ、コーヒーでも飲んでいけ",
+      "face": "normal",
+      "color": "#b08a5e"
+    }
   },
   {
     "id": "maezono",
@@ -697,7 +832,13 @@
       "39s friendly japanese male journalist, round cheerful face with a warm welcoming smile, slightly pudgy build, wearing smart casual (shirt with blazer, no tie), always holding a notepad and a shisha hose, genuinely excited expression while tasting",
       "enthusiastic shisha media person, expressive happy face, wearing glasses and a press lanyard, leaning forward eagerly over the judge table, looking like he's about to declare something delicious at any moment"
     ],
-    "spriteScale": 0.98
+    "spriteScale": 0.98,
+    "intro_cutin": {
+      "title": "HOOKAH PRESS編集長",
+      "line": "シーシャはおいしいねえ",
+      "face": "excited",
+      "color": "#ffb84a"
+    }
   },
   {
     "id": "oneesan",
