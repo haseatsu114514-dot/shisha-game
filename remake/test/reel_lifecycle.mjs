@@ -23,7 +23,7 @@ try {
     core.state.reel.seed = 1;
     core.state.reel.introDone = true;
     layers.screen.replaceChildren();
-    reel.onAction();
+    reel.onAction({ spent: 10 });
     window.reelProbe = { core, reel, layers };
     window.daySpin = reel.mountReel(layers.screen);
   });
@@ -57,7 +57,7 @@ try {
     const { core, reel, layers } = window.reelProbe;
     layers.screen.replaceChildren();
     core.state.slot = 2;
-    reel.onAction();
+    reel.onAction({ spent: 10 });
     window.nightBefore = JSON.stringify({ count: core.state.reel.count, stats: core.state.stats });
     window.nightFirstFrame = null;
     const observer = new MutationObserver(() => {
@@ -91,7 +91,7 @@ try {
     const { core, reel, layers } = window.reelProbe;
     core.state.reel.introDone = false;
     core.state.slot = 1;
-    reel.onAction();
+    reel.onAction({ spent: 10 });
     layers.screen.replaceChildren();
     window.introSpin = reel.mountReel(layers.screen);
     window.introBox = document.querySelector('.reel-intro');

@@ -20,11 +20,11 @@ export function initLayers() {
     layers[id] = $(`#${id}`);
   }
   // 報酬カード（旧版の Persona 風カードを踏襲）。ステはステ色の漢字バッジ、好感度は顔＋ハート
-  on("stat-gain", ({ key, total, name, word, starUp, rank, star }) => {
+  on("stat-gain", ({ key, total, name, starUp, rank, star }) => {
     // ★が上がったら、何が楽になったかを一言添える（旧版の★UP効果トースト）
     const fx = starUp ? DB.statusTexts?.statTierFx?.[key]?.[star - 1] : "";
     gainCard({ kind: "stat", stat: key, points: total, badge: STAT_BADGE[key], top: starUp ? "LEVEL UP" : "STATUS UP", main: name,
-      evolution: starUp ? `レベル${star}に進化！` : "", sub: starUp ? `${word} ──「${rank}」` : word, fx });
+      evolution: starUp ? `レベル${star}に進化！` : "", sub: starUp ? `「${rank}」` : "", fx });
   });
   on("affinity-gain", ({ id, level, levelUp, prevPts, pts, bond }) => {
     if (!id || id === "???" || !state?.met?.[id]) return;

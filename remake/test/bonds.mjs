@@ -659,9 +659,13 @@ try {
       await bonds.playFriendHangout("minto");
       const first = vn.backlog().map((l) => `${l.name}:${l.text}`);
       vn.backlog().length = 0;
-      await bonds.playFriendHangout("minto");
+      const freeCharmUnchanged = s.stats.charm === charm;
+      await T.stats.paidAction(async () => {
+        await bonds.playFriendHangout("minto");
+        T.stats.addStamina(-10); // 実際の誘いも、会話の後で体力を支払う
+      });
       const second = vn.backlog().map((l) => l.text);
-      return { timeline, inviteText, rotation, withBaito, withStory, calm, fixedNight, oneMorning, quiet, first, second, charmUp: s.stats.charm > charm, count: s.friendHangouts.minto };
+      return { freeCharmUnchanged, timeline, inviteText, rotation, withBaito, withStory, calm, fixedNight, oneMorning, quiet, first, second, charmUp: s.stats.charm > charm, count: s.friendHangouts.minto };
     } finally {
       DB.lime = original;
     }
@@ -685,7 +689,7 @@ try {
   assert(friendsLime.first.some((l) => l.startsWith("栞:")), friendsLime.first.join("|"));
   assert(friendsLime.first.some((l) => l.includes("栞さんと一服した")), friendsLime.first.join("|"));
   assert(friendsLime.second.some((l) => l.includes("仕事の話はなし")) && !friendsLime.first.some((l) => l.includes("仕事の話はなし")));
-  assert(friendsLime.charmUp); assert.equal(friendsLime.count, 2);
+  assert(friendsLime.freeCharmUnchanged); assert(friendsLime.charmUp); assert.equal(friendsLime.count, 2);
   log("HF09 friends: shared cadence (1 friend LIME per 2 days, oldest contact first, 4+ days per person), invites 6+ days apart after a chat, never with a story/lover invitation (Sumi's shift call may overlap), holiday/after-close, none for lovers/pending romance/tournament");
 
   assert.deepEqual(errors, []);

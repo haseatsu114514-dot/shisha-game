@@ -35,7 +35,7 @@ let saves=0;
 const deps={
  '../core/data.js':data,
  '../core/state.js':{state,save:()=>saves++,markMet:id=>state.met[id]=true},
- '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),gainStat:()=>{},addMoney:()=>{},addStamina:()=>{}},
+ '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),earnStat:()=>{},addMoney:()=>{},addStamina:()=>{}},
  '../vn/engine.js':{play:async id=>played.push(id)},
 };
 const kafukaModule=new vm.SourceTextModule(await read('js/daily/kafuka.js'),{context});

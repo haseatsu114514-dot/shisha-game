@@ -51,7 +51,7 @@
   z-index: -1;
 }
 .title-brand { position: relative; isolation: isolate; width: 520px; height: 278px; }
-.title-logo { position: absolute; left: 0; top: 88px; z-index: 1; width: 520px; filter: drop-shadow(0 5px 14px rgba(0, 0, 0, 0.8)); animation: logo-in 1.6s var(--ease-out); }
+.title-logo { position: absolute; left: 0; top: 76px; z-index: 1; width: 520px; filter: drop-shadow(0 5px 14px rgba(0, 0, 0, 0.8)); animation: logo-in 1.6s var(--ease-out); }
 .title-logo-smoke { position: absolute; inset: -40px -35px -20px; z-index: 0; pointer-events: none; overflow: hidden; }
 .title-logo-smoke i {
   position: absolute;

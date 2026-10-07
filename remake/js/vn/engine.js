@@ -418,7 +418,19 @@ function showLine(line) {
   if (hooks.interpolate) text = hooks.interpolate(text);
   const cue = parseCue(text);
   dom.box.classList.toggle("reward", !!cue);
-  if (cue) applyCue(cue);
+  if (cue) {
+    applyCue(cue);
+    const clauses = text.slice(2).split("。").filter(Boolean).flatMap((clause) => {
+      if (!/【(技術|センス|根性|魅力|洞察)】/.test(clause) || !clause.includes("上がった")) return [clause];
+      if (clause.includes("【好感度】")) {
+        const word = CUE_AMOUNT.find(([w]) => clause.includes(w))?.[0] || "上がった";
+        return [`【好感度】が${word}`];
+      }
+      return [];
+    });
+    text = clauses.length ? `……${clauses.join("。")}。` : "";
+    if (!text) return next();
+  }
   log.push({ name, text: stripTags(text) });
   if (log.length > 300) log.shift();
   r.pages = paginateForBox(text);

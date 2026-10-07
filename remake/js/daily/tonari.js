@@ -3,7 +3,7 @@ import { el, pick } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
 import { showScreen, setBg, toast, retire } from "../core/ui.js";
 import { state, timeOfDay } from "../core/state.js";
-import { addMoney, addStamina, applyStats, star, currentCondition } from "../core/stats.js";
+import { addMoney, addStamina, applyStats, paidAction, DRILL_GROWTH_BUDGET, star, currentCondition } from "../core/stats.js";
 import { SE, playBgm } from "../core/audio.js";
 import { play, dialogueSequence } from "../vn/engine.js";
 import { visitChar, hasNewStory } from "./spots.js";
@@ -90,6 +90,8 @@ async function baitoShift({ called }) {
   if (rainPay) toast(`雨の日の追加注文 +${rainPay.toLocaleString()}円`, { kind: "good" });
   if (condition.shiftBonus) toast(`仕上げは好調。売上ボーナス +${condition.shiftBonus.toLocaleString()}円`, { kind: "good" });
   if (condition.health === "red") toast("疲れで仕上げが不安定。売上ボーナスが半分になった", { kind: "warn" });
+  // 基礎成長は訪問と同じ4。接客・片付けの両方を経験する。
+  applyStats({ technique: 2, charm: 2 });
   await afterShift();
 }
 
@@ -186,15 +188,17 @@ async function afterShift() {
     await visitChar("sumi");
   } else if (pickAfter === "drill") {
     const kind = await chooseDrill();
-    addStamina(-8);
-    const tier = await runDrill(kind);
-    const d = DRILLS[kind];
-    applyStats({ [d.stats[0]]: [1, 3, 4][tier], [d.stats[1]]: [0, 2, 3][tier] });
-    const prev = state.best[kind] ?? -1;
-    if (tier > prev) {
-      state.best[kind] = tier;
-      if (tier > 0) toast(`自己ベスト更新！ ${"★".repeat(tier)} この手応えは本番に乗る`, { kind: "good" });
-    }
+    await paidAction(async () => {
+      addStamina(-8);
+      const tier = await runDrill(kind);
+      const d = DRILLS[kind];
+      applyStats({ [d.stats[0]]: [1, 3, 4][tier], [d.stats[1]]: [0, 2, 3][tier] });
+      const prev = state.best[kind] ?? -1;
+      if (tier > prev) {
+        state.best[kind] = tier;
+        if (tier > 0) toast(`自己ベスト更新！ ${"★".repeat(tier)} この手応えは本番に乗る`, { kind: "good" });
+      }
+    }, { budget: DRILL_GROWTH_BUDGET });
   }
 }
 
