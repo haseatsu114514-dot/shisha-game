@@ -1,9 +1,9 @@
-// 吸い出し ── 温度合わせ（CLAUDE.md: 最低2回・3回までは無傷・それ以上は葉が痩せる。やめ時は自分で選ぶ）
+// 吸い出し（CLAUDE.md: 最低2回・3回までは無傷・それ以上は葉が痩せる。やめ時は自分で選ぶ）
 // 左右に振れる針を止めた位置で、上げ吸い／キープ／下げ吸い。中央の細い帯が「ジャスト」。
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown, flash } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshRig, tickerSay } from "./session.js";
+import { stepPanel, refreshBench, tickerSay } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 
 import { craftConditions, temperatureWave, heatDelta, pullResult, isTemperatureEdge, EDGE_WIDTH } from "./conditions.js";
@@ -20,11 +20,11 @@ const ZONES = [
 
 /** 炭・熱・蒸らし・穴・詰めから、吸い出し開始時の温度を決める */
 export function startTemp(cs) {
-  let t = 0.3;
+  let t = 0.22;
   t += ((cs.heat?.heatPower ?? 50) - 50) / 100 * 0.35;
   if (cs.place === "four") t += 0.12;
   const { rainy } = craftConditions(cs);
-  const steamHeat = { 3: -0.06, 5: 0, 8: 0.05, 10: 0.09 }[cs.steamMin || 5] || 0;
+  const steamHeat = { 3: -0.06, 5: 0, 8: 0.12, 10: 0.18 }[cs.steamMin || 5] || 0;
   t += steamHeat * (rainy && steamHeat > 0 ? 0.85 : 1);
   if (rainy) t -= 0.025;
   // 最低1周を満たしたレイアウトは同じ初期熱。少穴は変動量で難しくする。
@@ -36,7 +36,7 @@ export function startTemp(cs) {
 
 export async function runPull(cs) {
   const tutorial = cs.mode === "tutorial";
-  const panel = stepPanel("pull", "吸い出し ── 温度合わせ", "針を止めた位置で吸い方が変わる。適温帯に入れたら「提供する」。吸いすぎると葉が痩せる");
+  const panel = stepPanel("pull", "吸い出し", "針を止めた位置で吸い方が変わる。適温帯に入れたら「提供する」。吸いすぎると葉が痩せる");
   const slow = skill.slow(cs) * (tutorial ? 1.3 : 1);
   const widen = skill.window(cs) * (tutorial ? 1.4 : 1);
   let coreTemp = startTemp(cs), thermalSeconds = 0;
@@ -156,7 +156,7 @@ export async function runPull(cs) {
   const { score, inZone, edge } = pullResult(T, pulls, justs, IDEAL);
   cs.pull = { score, grade: gradeOf(score), temp: T, pulls, justs, inZone, edge, over: T > IDEAL[1], under: T < IDEAL[0] };
   cs.pullDone = true;
-  refreshRig();
+  refreshBench();
   tickerSay(inZone ? "パッキー「きた〜！ 煙の立ち方が変わりましたよ〜♪」" : "パッキー「おっと、ちょっと温度が怪しいか〜！？」");
   await resultCard(panel, {
     title: "吸い出し 結果",

@@ -63,57 +63,37 @@ PCにだけ溜まる事故が起きた（PR #173 で回収）。再発防止と�
 
 ---
 
-## ブラウザ版（web/）
+## 現行ブラウザ版（remake/）
 
-第1章・第2章はHTML/JS版が `web/` にあり、**ブラウザ版がメインの開発トラック**。
-ブラウザ版の作業前に必ず `docs/web_version_plan.md`
-（開発方針・ロードマップ・次回タスク・引き継ぎ）を読むこと。
-開発ブランチ: 作業ごとに最新の `origin/main` から新しいブランチを切る
-（旧ブランチ `claude/great-galileo-omzoob` 等の上で続きをしない＝先祖返りの原因になる）
-ゲームの正式タイトルは **「水煙前線 -EN:CODE-」**。
-本作は一人称視点で、主人公はじめの立ち絵は基本表示しない。
+**2026-10-07 オーナー指定: 旧 `web/` は使用しないため削除済み。現行の実装は `remake/`。**
+旧版を保持する以前のルール・旧版用のビルド/テスト手順は撤回。復活・二重実装しない。
+Godot版も2026-06-15に削除済みで、`project.godot` が無いのが正しい。
 
-### リメイク版（remake/）── 別バージョンとして作り直し中（2026-09-28 着手）
-
-オーナー指示で、ブラウザ版を**別バージョンとして作り直している**。**旧版 `web/` はそのまま残す**（削除・改変しない）。
-
-- 場所: `remake/`（ESモジュール・ビルド不要。`data/*.json` と `assets/` を実行時に直接読む）。設計・進捗は `remake/README.md`
-- セーブは別キー（`suien_remake_save`）。旧版と干渉しない
-- リメイク版の進行だけで使う短い場面は `data/dialogue/remake_ch1.json`（旧版は読まない・`lint_dialogue.py` の対象）
-- テスト: `node remake/test/playthrough.mjs`（第1章通し：大会で一度負けて GAME OVER → 再挑戦 → 南雲票で優勝 → クリア）
-- 立ち絵・背景・CG を追加/差し替えたら `python3 remake/tools/build_manifest.py`（`remake/data/manifest.json` を再生成）
-- 正史・仕様の正本は旧版と共通（本ファイル・`docs/master_spec.md`・`brand/story_and_structure.md`・`data/*.json`）
-
-### Godot版は削除済み（web/ が唯一の正史・2026-06-15）
-
-Godot版（`scripts/*.gd` / `scenes/` / `*.tscn` / `*.import` / `*.uid` / `project.godot`）は
-**リポジトリから削除済み**（オーナー指定・2026-06-15）。web と二重実装で約34,000行あり、
-旧設定・偽の矛盾・トークン浪費の温床だったため整理した。**ブラウザ版（`web/`）＋ `data/*.json` ＋ `brand/` が唯一の正史**。
-
-- バランス・大会フロー・UI文言・ロジックの変更は **`web/` と `data/` だけ** に入れる。
-- 台詞・キャラ・フレーバー等の `data/*.json` と `assets/`（立ち絵・背景・音声）は**残置**（web が使用）。
-- テストは web ヘッドレス（本ファイル下部の全7本）だけ緑にすればよい。
-- 復活が必要になったら git 履歴（削除コミット以前）から取り出せる。手で同期し直すのではなく、完成した `web/` ＋ `data/*.json` を仕様として**作り直す**前提。
-- AI で矛盾・改行・セリフを点検する際の**対象範囲は `docs/review_scope.md`** を参照（ビルド成果物・旧brandファイルを除外し、偽の矛盾とトークン浪費を防ぐ）。
-
----
+- 正式タイトルは **「水煙前線 -EN:CODE-」**。一人称視点で、主人公の立ち絵は通常の会話には表示しない
+- 現行コード・画面・バランスは `remake/`、台詞等の正本は `data/`、画像・音声は `assets/`
+- 進行・テスト・画面構成は `remake/README.md`。第1章を通しで遊べる。第2章以降は共有データが先行している
+- `data/*.json` を直接読むので台詞変更時のビルド不要。画像を追加/差し替えた場合のみ `python3 remake/tools/build_manifest.py`
+- 正史・仕様は本ファイル・`docs/master_spec.md`・`brand/story_and_structure.md`・`data/*.json`
+- セーブは `suien_remake_save`。手動3枠と移行処理は `remake/js/core/state.js`
+- 初回の作成練習はスミさんの誘いで任意（GP02）。日常のtonariでも工程を練習できる
+- 蒸らしは雑念弾幕。リフレッシュは基本2回・根性★4で3回・★5で4回。弾を消し、短時間無敵。移動パッドはフィールドの下（GP04〜08）
+- 体力回復は本来のHUDゲージで見せ、回復カードを出さない（GP01）
+- `.bench-worker-stage` は、はじめと台を収めた広い静止モックアップ。独立したシーシャ台の表示は廃止し、今後この枠へ作業動画を接続する。通常の会話への主人公表示とは別（GP12・15〜17）
+- 未接続の街歩き・歩行試作は `experiments/proto/` に分離。制作ツールのHTMLは `tools/browser/`
 
 ## ディレクトリ構成
 
 | パス | 内容 |
 |---|---|
-| `data/characters.json` | 全キャラクターのマスタデータ（ID・設定・ステータス） |
-| `data/dialogue/` | 会話データ JSON（ch1_main.json, ch1_tournament.json 等） |
-| `data/flavors.json` | フレーバーデータ |
-| `data/equipment.json` | 機材データ |
-| `data/baito_events.json` | バイトイベントデータ |
-| `brand/story_and_structure.md` | 全章ストーリー構成（読む場合は必要な章のみ） |
-| `brand/character_profiles.md` | キャラクター設定詳細（要部分読み取り） |
-| `web/js/game.js` | ブラウザ版ゲーム本体（状態管理・大会・報酬・UI） |
-| `web/js/engine.js` | 会話エンジン（改行 autoWrap・表示名・タイプ表示） |
-| `web/build_data.py` | `data/*.json` → `web/js/data.js` バンドル生成 |
-| `tools/lint_dialogue.py` | 台詞リンタ（禁止語・話者ID・改行・報酬キュー検査） |
-| `tools/` | dialogue_editor.py 等の開発支援スクリプト |
+| `data/characters.json` | 全キャラクターのマスタデータ |
+| `data/dialogue/` | 台詞の正本。現行固有の短い場面は `remake_ch1.json` |
+| `data/flavors.json` / `data/equipment.json` | フレーバー・機材 |
+| `brand/story_and_structure.md` | 全章のプロット（必要な章だけ読む） |
+| `remake/js/chapters/ch1.js` | 第1章の台本・大会の進行 |
+| `remake/js/core/` | 状態・能力・UI・データ・音声 |
+| `remake/js/vn/` | 会話エンジン・組版・初登場カットイン |
+| `remake/js/daily/` / `remake/js/craft/` | 日常・シーシャ作り |
+| `tools/lint_dialogue.py` | 台詞リンタ |
 
 ---
 
@@ -258,7 +238,7 @@ Godot版（`scripts/*.gd` / `scenes/` / `*.tscn` / `*.import` / `*.uid` / `proje
 
 | ファイル | 行数 | 推奨アクセス方法 |
 |---|---|---|
-| `web/js/game.js` | 約8,000行 | 関数名・定数名で Grep してから部分読み取り |
+| `remake/js/` | 責務別ESモジュール | 対象の工程・画面だけ読む |
 | `data/dialogue/ch1_main.json` | 926行 | `dialogue_id` で Grep して前後だけ読む |
 | `data/dialogue/ch1_tournament.json` | 838行 | 同上 |
 | `data/characters.json` | 656行 | `jq '.[] | select(.id == "xxx")'` で1件抽出 |
@@ -276,50 +256,23 @@ jq '[.dialogues[].dialogue_id]' data/dialogue/ch1_main.json
 
 ---
 
-## ブラウザ版 開発ワークフロー（ビルド・テスト・規約）
+## 現行版の開発ワークフロー
 
-**ブラウザ版（`web/`）がメインの開発トラック。Godot版は当面保留**（ブラウザ版優先・余裕が出たら移植）。
-作業前に `docs/web_version_plan.md`（方針）と `docs/owner_requests.md`（要望台帳＝反映漏れ防止）を読む。
+1. Git Safetyを確認し、最新 `origin/main` から作業ブランチを切る
+2. 台詞は `data/dialogue/*.json`、画面・進行は `remake/` を編集
+3. 台詞を触ったら `python3 tools/lint_dialogue.py`（ERROR=0）、`python3 tools/tidy_dialogue_text.py --dry-run`
+4. テストの対応表は `.claude/skills/web-build-test/SKILL.md`（名称は従来どおり、対象は現行版）
+5. commit・作業ブランチへのpush・PR。mainへの直push・forceは禁止
 
-### ビルド（data/ や web/ を変えたら必須・両方）
-```bash
-pip install Pillow numpy scipy    # 立ち絵の透過余白計測＋足元アンカー(ax)計測（初回のみ。scipy欠落だと立ち絵の横位置がズレる）
-python3 web/build_data.py         # data/*.json → web/js/data.js に束ねる
-python3 web/build_standalone.py   # 1ファイル配布版 web/dist/shisha_ch1.html を生成（確認用。コミットしない＝Pagesのデプロイがビルドする）
-```
-- 追加した JSON は build_data.py の読み込み一覧に入れないと web に出ない（例: `sheesha_posts.json` はGodot専用で未バンドル）。
+ローカル確認: `python3 remake/tools/serve_preview.py --port 8123` → `http://127.0.0.1:8123/remake/`。
+重いブラウザテストは直列で実行。PlaywrightのChrome指定はテスト冒頭または `remake/README.md` 参照。
 
-### ヘッドレステスト（全8本・全緑が基準）
-```bash
-python3 -m http.server 8123       # リポジトリルートで起動して放置
-node web/test/playthrough.mjs     # 1章優勝ルート通し（~6分・stats=80を強制して勝ちを検証）
-node web/test/ch2.mjs             # 2章通し
-node web/test/screenshots.mjs     # 敗北→再挑戦
-node web/test/reel.mjs            # スロット分布/天井/救済（純ロジック・速い）
-node web/test/kuji.mjs            # くじ収支
-node web/test/balance.mjs         # 経済（バイト最低8000円 等）
-node web/test/map_hover.mjs       # マップのホバー安定性
-node web/test/portraits.mjs       # 立ち絵の身長スケール回帰（スミさん=みんと等身に見えたらFAIL・速い）
-```
-- 重い3本(playthrough/ch2/screenshots)は**同時に走らせない**（CPU枯渇でタイムアウト）。1本ずつ。
-- playwright 依存（`require("playwright")` か `/opt/node22/lib/node_modules/playwright`）。
-- 会話編集 `python3 tools/dialogue_editor.py` ／ 台詞エディタ（検索・編集・保存・本編同一の改行プレビュー）`python3 tools/text_editor_server.py` ／ 簡易プレビュー `web/tools/linebreak_editor.html`。句読点・改行の規範は **text-style スキル**が正本。
-
-### 状態管理・流儀（別パターンを勝手に増やさない）
-- 状態は単一の `state`（`save()`/localStorage `shisha_ch1_save_v1`）、大会中の一時状態は `tt`。
-- 会話は dialogue JSON →`DialogueEngine`（`playDialogue`/`playCustom`）。報酬は「〜上がった」テキストキュー(`parseTextCue`)か `type:"apply"`/metadata で付ける。
-- 残り日数は `daysUntilTournament()`/`{daysLeft}` に一本化（台詞へ日数を直書きしない）。台詞は `interpolate()` を通る。
-- スロット文言は `bubble(text, ms, cls)`、連発防止は `pick()`、ステ伸びは `gainStat()`＋章上限 `statSoftCap()`。
-
-### やらない（テスト・正史を壊す）
-- テストフックを壊さない: `__pullDebug` / `__heatDebug` / `__steamDebug().end()`（蒸らし弾幕の即終了） / 調整(R2)の「このままでいく」 / 審査の `.trial-appeal[data-backed][data-cat]`＋`#trial-doubt[data-need]` / 結果カウントの `pointer-events:none`。
-- **蒸らしミニゲームは雑念弾幕（`runSteamDodge`）**。「覚悟＋締め」(`runSteamWait`) は2026-06-14にオーナー指定で差し戻し済み。復活させない。0分は神崎交友で解放＝弾幕スキップ。
-- ステの今の強さ（0〜100の合計値）をUIに出さない（★・レーダー・抽象語。能力アップ通知の実増加量 `+Npt` だけは表示する＝2026-10-04 オーナー指定）。旧ステ名（技術力/洞察力/メンタル/度胸/味覚/集中力）禁止。
-- タイミング系ミニゲームは必ず `miniCountdown()` で 3・2・1 を挟む。
-- `main` へ直push禁止＝PR。`--force`/`--allow-unrelated-histories` 禁止（Git Safety）。
-
-### 参照（巨大docは本体に詰めず参照）
-`docs/web_version_plan.md`（方針/引き継ぎ）・`docs/owner_requests.md`（要望台帳）・`docs/master_spec.md` 第2部（大会仕様）・`brand/story_and_structure.md`（章別・必要章のみ）・`docs/portrait_prompts_pending.md`（未生成キャラの立ち絵プロンプト控え。生成依頼が来たらここから使う）
+- テスト用フックは `window.__remake`（`vnTest`・`craftTest`・`dev`）。維持する
+- タイミング系は共通の `countdown()` で3・2・1を挟む
+- 状態は `core/state.js` の単一 `state`、報酬は `core/stats.js`、会話は `vn/engine.js` の `play()`
+- 残り日数は `daily/hud.js` の `daysLeft()` と `{daysLeft}`。台詞に直書きしない
+- ステの今の合計値（0〜100）はUIに出さない。★・レーダー・抽象語で示し、通知の実増加量 `+Npt` は表示する
+- 台詞エディタは `python3 tools/text_editor_server.py`（現行の `vn/text.js` を配信）。JSONを保存後、本編を再読み込みすれば反映
 
 ---
 
@@ -332,7 +285,7 @@ node web/test/portraits.mjs       # 立ち絵の身長スケール回帰（ス�
 | `owner-request` | オーナーの指摘・要望・バグ報告・プレイ感想への対応全般（受領→解釈確認→横断確認→台帳更新） |
 | `dialogue-edit` | 台詞・イベント・ゲーム内テキストの追加・編集（改行・報酬キュー・旧名・話者IDのチェックリスト） |
 | `text-style` | 句読点（。/、の使い分け・。の量）・改行・改ページの規範と自動整形/手動エディタ。テキストの見た目の違和感対応はまずこれ |
-| `web-build-test` | web/・data/ 変更後のビルドとヘッドレステスト（変更→テスト対応表・直列実行ルール） |
+| `web-build-test` | remake/・data/ 変更後の検証とヘッドレステスト（変更→テスト対応表・直列実行ルール） |
 | `canon-check` | 矛盾・設定齟齬・旧名残存の点検、設定に関わる文章を書く前の正本確認 |
 | `portrait-fix` | 立ち絵のズレ・表情切替ジャンプ・見切れ・髪欠け・身長バランス・立ち絵追加（症状別診断フロー） |
 | [`character-portrait-remaster`](.claude/skills/character-portrait-remaster/SKILL.md) | 既存キャラの立ち絵を1人ずつ再制作。元の顔・高密度ドット絵調・別衣装の頭身を保ち、確認後に採用する。制作記録・確認待ち画像も同スキル内に保存 |
@@ -351,7 +304,7 @@ node web/test/portraits.mjs       # 立ち絵の身長スケール回帰（ス�
 - **growth_stats.notes の書き方**: 「〇〇から学んだ」ではなく「いつの間にか△△が変わっていた」視点で書く
 - **大会スクリプト ch2〜ch4 はほぼ同じ構造**（ch1 を参考にすれば足りることが多い）
 - **主人公のステータス初期値に偏りはない**。テーマ上の強みは「素直さ」。
-- **キャラクター名と呼称**は `data/characters.json` と `web/js/data.js` の最新表示に合わせる
+- **キャラクター名と呼称**は `data/characters.json` と `remake/js/core/data.js` の表示処理に合わせる
 
 ---
 
@@ -439,11 +392,11 @@ node web/test/portraits.mjs       # 立ち絵の身長スケール回帰（ス�
 | 事実の種類 | 正本（ここだけを編集） | 二次（手で同期しない） |
 |---|---|---|
 | キャラのID・本名・年齢・ステータス | `data/characters.json` | brand/docs の人物表は説明用。数値・年齢を書かない |
-| 表示名（あだ名）・話者の別名 | `data/characters.json` の `name` | ⚠️ `web/js/engine.js` の `SPEAKER_NAMES` は**ハードコードの二重管理**。原則 characters.json 由来の `char_names` に寄せ、新キャラ名をここへ増やさない |
+| 表示名（あだ名）・話者の別名 | `data/characters.json` の `name` | ⚠️ `remake/js/core/data.js` の `displayName()` が正本を参照。名前をハードコードしない |
 | ステータス名（5種） | CLAUDE.md「ステータス」節 | コード定数 `STAT_KEYS`/`STAT_JA2EN`（engine.js）と一致必須 |
 | 大会名・章レギュレーション | CLAUDE.md「大会名・大会システム」節 | story_and_structure.md は説明、矛盾したらCLAUDEが正 |
 | 章ごとのストーリー（プロット） | `brand/story_and_structure.md` | docs/master_spec は仕様、brand のフィードバック系は履歴 |
-| 台詞 | `data/dialogue/*.json` | `web/js/data.js` は**生成物**。直接編集禁止（`build_data.py`で再生成） |
+| 台詞 | `data/dialogue/*.json` | 現行版は正本JSONを直接読み、複製・バンドルを作らない |
 
 - 同じ事実を2箇所に書かない。書くなら一方を「→ ○○を参照」にする。
 - ⚠️ **正本だが古い記述が残っている既知の地雷**:
@@ -452,17 +405,17 @@ node web/test/portraits.mjs       # 立ち絵の身長スケール回帰（ス�
 
 ### 2. 改行は「コード側（autoWrap）」に一本化する
 
-改行は **`web/js/engine.js` の `autoWrap()`（`WRAP_LIMIT=24` 全角換算・禁則処理つき）＋ 最大2行で改ページ（`MAX_PAGE_LINES`）** が決める。**データ側で決めるのではない**。
+改行は **`remake/js/vn/text.js` の `autoWrap()`（`WRAP_LIMIT=24` 全角換算・禁則処理つき）＋ 最大2行で改ページ（`MAX_PAGE_LINES`）** が決める。**データ側で決めるのではない**。
 
 - 台詞テキストに**手動改行 `\n` を入れない**。手動 `\n` は autoWrap の前段で分割されるため、(a) 旧フォント幅向けの改行が残って二度折れする、(b) 短い断片が孤立する、(c) 改ページ位置がぶつかる、という崩れの主因になる。
   - 例外: 演出上どうしても改行したい箇所のみ。その場合も**1行が全角24文字を超えない**ように書く。
   - 既存の手動 `\n`（`lover_events.json` に多数）は崩れ報告が出たら撤去方向で直す。
 - 1台詞は**全角24文字×2行＝48文字**を目安に収める。超えると自動で改ページされ、文の途中で切れて不自然になる。長い説明は台詞を分ける。
-- 改行確認は台詞エディタ（`python3 tools/text_editor_server.py`）か `web/tools/linebreak_editor.html`。句読点・改行の規範と自動整形は **text-style スキル**参照。日数は直書きせず `{daysLeft}`（`interpolate()`）を使う。
+- 改行確認は台詞エディタ（`python3 tools/text_editor_server.py`）（現行の組版を直接配信）。句読点・改行の規範と自動整形は **text-style スキル**参照。日数は直書きせず `{daysLeft}`（`interpolate()`）を使う。
 
 ### 3. 報酬を地の文に埋めない（埋めるなら厳密に）
 
-ステ上昇・好感度は `web/js/game.js` の `parseTextCue()` が**台詞テキストを正規表現で読んで**発火する（`/(技術|センス|根性|魅力|洞察|好感度)/` ＋「上がった／少し上がった／かなり上がった／大きく上がった」）。これは台詞を書き換えると報酬が黙って壊れる／重複する温床。
+ステ上昇・好感度は `remake/js/vn/engine.js` の `parseCue()` が**台詞テキストを正規表現で読んで**発火する（`/(技術|センス|根性|魅力|洞察|好感度)/` ＋「上がった／少し上がった／かなり上がった／大きく上がった」）。これは台詞を書き換えると報酬が黙って壊れる／重複する温床。
 
 - 報酬を確実にしたいイベントは、地の文頼みにせず `type:"apply"` か metadata で明示的に付ける。
 - 台詞で報酬を表すときは**規定の言い回しを厳守**: `……【技術】と【センス】が上がった。`（1〜2pt=少し上がった／3〜4pt=上がった／5〜7pt=かなり上がった／8pt〜=大きく上がった）。
@@ -476,8 +429,8 @@ node web/test/portraits.mjs       # 立ち絵の身長スケール回帰（ス�
 # 1) 構造リンタ（禁止語・話者ID実在・手動改行・行長・報酬キューを一括検査）
 python3 tools/lint_dialogue.py            # ERROR が出たら直す（exit 1）。WARN は気付き用
 python3 tools/lint_dialogue.py ch1_main   # 触ったファイルだけ部分一致で
-# 2) JSONが壊れていないか＆web再生成
-python3 -m json.tool data/dialogue/<触ったファイル> >/dev/null && python3 web/build_data.py
+# 2) JSONが壊れていないか（直接読むのでビルド不要）
+python3 -m json.tool data/dialogue/<触ったファイル> >/dev/null
 # 3) ヘッドレステスト（該当章）
 ```
 

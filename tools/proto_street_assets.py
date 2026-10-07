@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""通りの試作（web/proto/street/・本編未接続）用に、画像生成AIの街並みをゲーム用の小さなドット絵へ変換する。
+"""通りの試作（experiments/proto/street/・本編未接続）用に、画像生成AIの街並みをゲーム用の小さなドット絵へ変換する。
 
 入力（asset_sources/images/proto_street/）:
   facades_sheet.png  建物の正面 6棟（横3×縦2・マゼンタ背景）
@@ -77,7 +77,7 @@ SET_OVERLAPS = (32, 48)   # パネル1-2・2-3を重ねる幅（各パネルの�
 SET_CHAR = 72             # キャラの身長（ドット）。小物の大きさはこれに対する比率で決める
 SET_PROPS = [("vending", 1.15), ("bench", 0.55), ("aboard", 0.6), ("plant", 0.6), ("lamp", 2.2), ("bicycle", 0.6)]
 
-# 出力の種類。base = 320×180 の試作（web/proto/street の標準）、hd = 640×360 の高解像度2.5D版（AA9）、
+# 出力の種類。base = 320×180 の試作（experiments/proto/street の標準）、hd = 640×360 の高解像度2.5D版（AA9）、
 # set = ハリボテ背景版（AA11。背景は一枚絵のパネル・キャラ72ドット）
 PROFILES = {
     "base": {"out": "proto_street", "door_h": 36, "facade_max_h": 110, "ground_h": 68, "ground_w": 200, "prop_scale": 1.0},

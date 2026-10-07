@@ -37,8 +37,8 @@ description: オーナー（ユーザー）から指摘・要望・バグ報告�
 
 ## Step 3 — 実装
 
-- 直すのは**正本のみ**（`web/` のソース＋`data/*.json`）。
-  `web/js/data.js` と `web/dist/*.html` は生成物なので絶対に直接編集しない。
+- 直すのは**正本のみ**（`remake/` のソース＋`data/*.json`）。
+  現行版はJSONを直接読む。旧版は2026-10-07に削除済み。
 - 台詞・イベントを触る場合は **dialogue-edit スキル**のチェックリストに従う。
 - 着手した件は台帳を 🔧 に更新。
 
@@ -47,7 +47,7 @@ description: オーナー（ユーザー）から指摘・要望・バグ報告�
 ✅ にする前に、**修正したファイル以外にも同じ症状が残っていないか grep で現物確認**する。
 
 - 教訓: アダムのカタコトは dialogue では消えていたが `lime_messages.json` に残っていた。
-- 台詞・文言系: `grep -rn "<症状の文字列>" data/ web/js/ --include="*.json" --include="*.js"`
+- 台詞・文言系: `rg -n "<症状の文字列>" data/ remake/js/ --include="*.json" --include="*.js"`
 - 見た目・CSS系: reel.css→style.css のような**連結・複製先へのドリフト**がないか確認する。
 - 「オーナーの手元で古い」系の報告は、コードの先祖返りを疑う前に
   **配信物（GitHub Pages）が古い版のままの可能性**を先に確認する
@@ -56,7 +56,7 @@ description: オーナー（ユーザー）から指摘・要望・バグ報告�
 ## Step 5 — ビルド・テスト・完了報告
 
 1. `python3 tools/lint_dialogue.py`（台詞を触った場合。ERROR=0 必須）
-2. `python3 web/build_data.py && python3 web/build_standalone.py`
+2. ビルド不要。画像を触った場合だけ `python3 remake/tools/build_manifest.py`
 3. 変更に対応するヘッドレステスト（対応表は **web-build-test スキル**）
 4. 台帳を ✅＋コミットSHA に更新（判断待ちは ⏸＋理由）。
 5. 完了報告は**オーナーがゲーム内で確認できる形**で書く

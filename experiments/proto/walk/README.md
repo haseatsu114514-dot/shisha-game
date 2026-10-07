@@ -7,18 +7,18 @@
 - 歩行グラフィックの絵の質（生成AIのドット絵がどこまで使えるか）
 
 主人公の代わりに、仮でつむぎを歩かせている。2026-10-02 に Codex の生成画像へ差し替え済み（`assets/proto_walk/`）。
-同じ歩行の仕組みで「通りを歩く」試作も作った → `web/proto/street/README.md`本編（`web/index.html` / `web/js/*`）には一切つながっていない。
+同じ歩行の仕組みで「通りを歩く」試作も作った → `experiments/proto/street/README.md`本編（`web/index.html` / `web/js/*`）には一切つながっていない。
 ヘッドレステストの一覧にも含めない。
 
 ## 起動
 
 ```bash
 python3 -m http.server 8123   # リポジトリルートで
-# → http://localhost:8123/web/proto/walk/index.html
+# → http://localhost:8123/experiments/proto/walk/index.html
 ```
 
 push 済みのブランチなら raw.githack でも開ける:
-`https://raw.githack.com/haseatsu114514-dot/shisha-game/<ブランチ名>/web/proto/walk/index.html`
+`https://raw.githack.com/haseatsu114514-dot/shisha-game/<ブランチ名>/experiments/proto/walk/index.html`
 
 ## 操作
 
@@ -31,7 +31,7 @@ push 済みのブランチなら raw.githack でも開ける:
 
 | パス | 内容 |
 |---|---|
-| `web/proto/walk/index.html` | 実験ページ本体（JS・CSS埋め込み） |
+| `experiments/proto/walk/index.html` | 実験ページ本体（JS・CSS埋め込み） |
 | `tools/proto_walk_sheet.py` | 生成AIの歩行シート（マゼンタ背景）→ 足元を揃えたゲーム用シートに変換 |
 | `asset_sources/images/proto_walk/pose_reference_sheet.png` | 画像生成AIに渡す「向きの並び・足の位置」の参照（仮スプライトを8倍にしたもの） |
 | `asset_sources/images/proto_walk/` | 生成AIの元画像の置き場 |

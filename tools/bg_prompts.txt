@@ -54,7 +54,7 @@ Anime visual novel background, detailed digital painting, bright lighting, no pe
   4. 仕上げの強いノイズ除去・ソフト系アップスケーラは使わない（高周波が消える）。
   5. 画風はこのファイル冒頭の基準どおり（bg_eden_shop.png が第一基準・ドット感を残す）。
   6. assets/backgrounds/ へ同名で保存 →
-     python3 web/build_data.py && python3 web/build_standalone.py
+     python3 remake/tools/build_manifest.py
 
 ◆ 触らなくてよい重複・未参照ファイル（迷い防止）
   - bg_naru_shop.png（kemurikusa.png の複製・コード未参照）

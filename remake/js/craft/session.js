@@ -8,7 +8,7 @@ import { bgUrl } from "../core/data.js";
 import { state, timeOfDay } from "../core/state.js";
 import { currentCondition } from "../core/stats.js";
 import { craftCondition } from "../core/condition.js";
-import { buildRig } from "./art.js";
+import { buildWorkerScene, WORKER_STEPS } from "./worker.js";
 import { isRainy } from "../daily/weather.js";
 import { runHoles } from "./holes.js";
 import { runHeat } from "./heat.js";
@@ -25,10 +25,10 @@ export const MODE_LABEL = { tutorial: "LESSON", drill: "PRACTICE", rehearsal: "R
 
 // 自主練のメニュー（本番のミニゲームを単体で回す）
 export const DRILLS = {
-  holes: { label: "穴あけ ── HOLE RHYTHM", desc: "アルミに均等な穴を開ける", stats: ["technique", "sense"] },
-  heat: { label: "炭焼き ── HEAT IGNITION", desc: "炭の芯が光る瞬間を見極める", stats: ["sense", "insight"] },
-  steam: { label: "蒸らし ── 雑念を躱す", desc: "待つ間の雑念を避け続ける", stats: ["guts", "insight"] },
-  pull: { label: "吸い出し ── 温度合わせ", desc: "吸い方で熱を適温へ運ぶ", stats: ["technique", "sense"] },
+  holes: { label: "アルミ穴あけ", desc: "アルミに均等な穴を開ける", stats: ["technique", "sense"] },
+  heat: { label: "炭焼き", desc: "炭の芯が光る瞬間を見極める", stats: ["sense", "insight"] },
+  steam: { label: "蒸らし", desc: "待つ間の雑念を避け続ける", stats: ["guts", "insight"] },
+  pull: { label: "吸い出し", desc: "吸い方で熱を適温へ運ぶ", stats: ["technique", "sense"] },
 };
 
 export function newSession(mode) {
@@ -59,14 +59,13 @@ let bench = null;
 
 /**
  * 作業台画面を開く（すでに開いていれば再利用）。
- * 戻り値の panel に各工程が中身を描き、rig は左の一台。
+ * 戻り値の panel に各工程が中身を描き、左側は作業風景の静止モックアップ。
  */
 export function openBench(cs, { steps = [] } = {}) {
   // 会話のあとに作業台へ戻るときも、作業台の背景（暗めの会場／店）に戻す
   const bg = () => (cs.mode === "tournament" ? setBg(bgUrl("bg_tournament_stage"), { tint: "dim", fast: true }) : setBg(bgUrl("bg_tonari_inside", timeOfDay()), { tint: "dim", fast: true }));
   if (bench && bench.cs === cs && bench.root.isConnected) { bg(); return bench; }
-  bench?.rig.destroy();
-  const rig = buildRig();
+  const worker = buildWorkerScene();
   const title = el("div.bench-title");
   const hint = el("div.bench-hint");
   const progress = el("div.bench-progress", steps.map(([id, label]) => el("span", { text: label, dataset: { step: id } })));
@@ -75,17 +74,18 @@ export function openBench(cs, { steps = [] } = {}) {
   const condition = craftCondition(cs);
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
     el("div.bench-top", [el("span.bench-mode", { text: MODE_LABEL[cs.mode] || "" }), progress]),
-    cs.mode !== "tutorial" ? el("div.bench-condition", { dataset: { health: condition.health }, title: condition.hint }, [
-      el("b", { text: `体力：${condition.label}` }), el("small", { text: condition.hint }),
-    ]) : null,
-    el("div.bench-left", [rig.root]),
+    el("div.bench-left", [
+      worker.root,
+      cs.mode !== "tutorial" ? el("div.bench-condition", { dataset: { health: condition.health }, title: condition.hint }, [
+        el("b", { text: `体力：${condition.label}` }), el("small", { text: condition.hint }),
+      ]) : null,
+    ]),
     el("div.bench-right", [el("div.bench-head", [title, hint]), panel]),
     ticker,
   ]);
   bg();
   showScreen("bench", root);
-  bench = { cs, root, rig, panel, title, hint, progress, ticker };
-  rig.update(cs);
+  bench = { cs, root, worker, panel, title, hint, progress, ticker };
   return bench;
 }
 
@@ -100,11 +100,15 @@ export function stepPanel(id, titleText, hintText = "") {
   });
   b.panel.replaceChildren();
   b.panel.dataset.step = id;
+  b.worker.root.dataset.step = id; // 今後の工程別アニメーションの接続先
+  b.worker.caption.textContent = WORKER_STEPS[id] || titleText;
   return b.panel;
 }
 
-export function benchRig() { return bench?.rig; }
-export function refreshRig() { bench?.rig.update(bench.cs); }
+/** 左側の工程キャプションを更新。今後の作業アニメーションもここで同期する。 */
+export function refreshBench() {
+  if (bench) bench.worker.root.dataset.ready = String(!!bench.cs.pullDone);
+}
 
 /** 大会中だけ流れる実況テロップ（パッキー） */
 export function tickerSay(text) {

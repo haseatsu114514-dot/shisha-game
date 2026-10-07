@@ -1,3 +1,11 @@
+## 現行版の運用（2026-10-07）
+
+`python3 tools/text_editor_server.py` で起動する。編集画面は `tools/browser/text_editor.html`、組版は `remake/js/vn/text.js` の実物を配信する。
+「台詞の検査」でリンタを実行し、「検査 → コミット → プッシュ」で共有JSONの正本を保存する。現行版はJSONを直接読むので、ブラウザを再読み込みすれば反映する。
+旧 `web/`・`data.js`・単一HTML配布版は削除済み。以下の旧ビルド・配布操作の記述は過去の経緯であり、現在は不要。
+
+---
+
 # 台詞エディタ マニュアル
 
 ゲーム内の台詞（`data/dialogue/*.json` の `text`）を、ブラウザで検索・編集・保存し、

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""台詞テキストエディタ（G4）— ブラウザで dialogue JSON を編集し、ビルド反映・Git反映まで行う。
+"""台詞テキストエディタ（G4）— ブラウザで dialogue JSON を編集し、台詞の検査・Git反映まで行う。
 
 起動:
   python3 tools/text_editor_server.py        # http://127.0.0.1:8321/ を開く
@@ -7,10 +7,10 @@
 
 できること（画面上のボタン）:
   - 検索・編集・保存（本編と同じ autoWrap プレビュー／文字クリックで手動改行）
-  - 「ビルド反映」= web/build_data.py（＋任意で build_standalone.py）を実行して data.js/dist を再生成
-  - 「コミット & プッシュ」= data/ と生成物を現在のブランチへコミット、任意で push
+  - 「台詞の検査」= 台詞リンタを実行（現行版はJSONを直接読むためビルド不要）
+  - 「コミット & プッシュ」= data/ の正本を現在のブランチへコミット、任意で push
     （main/master へのコミット・pushは安全のため拒否＝PR運用を壊さない）
-    （data/dialogue に変更が無いときはコミットしない＝data.jsのタイムスタンプだけの空コミットを防ぐ）
+    （data/dialogue に変更が無いときはコミットしない＝空コミットを防ぐ）
 
 マニュアル: docs/text_editor_manual.md（アプリ内の「ヘルプ」ボタンからも読める）
 """
@@ -25,8 +25,8 @@ ROOT = Path(__file__).resolve().parent.parent
 DIALOGUE_DIR = ROOT / "data" / "dialogue"
 PORT = 8321
 
-# コミットで巻き取る対象（台詞の正本＋生成物）。これ以外は触らない
-COMMIT_PATHS = ["data/dialogue", "web/js/data.js"]  # 1ファイル配布版はコミットしない（Pagesでビルド）
+# コミットで巻き取る対象（台詞の正本）。これ以外は触らない
+COMMIT_PATHS = ["data/dialogue"]
 PROTECTED_BRANCHES = {"main", "master"}
 
 
@@ -46,11 +46,10 @@ def current_branch() -> str:
 
 
 def wrap_js() -> str:
-    """engine.js から autoWrap 一式（WRAP_* 定数含む）を切り出して配信。ミラーではなく実物。"""
-    src = (ROOT / "web" / "js" / "engine.js").read_text()
-    start = src.index("const WRAP_LIMIT")
-    end = src.index("// [imp]/[warn]/[hint]")
-    return src[start:end]
+    """現行の組版モジュールの実物を編集画面に配信。グローバル関数として利用。"""
+    src = (ROOT / "remake" / "js" / "vn" / "text.js").read_text()
+    return re.sub(r"^export ", "", src, flags=re.MULTILINE)
+
 
 
 def list_files():
@@ -93,23 +92,15 @@ def save_line(fname: str, path: str, text: str):
 
 
 def dialogue_dirty() -> bool:
-    """data/dialogue に未コミットの変更があるか。data.js のタイムスタンプだけの空コミットを防ぐ判定。"""
+    """data/dialogue に未コミットの変更があるか。空コミットを防ぐ判定。"""
     code, out = git("status", "--porcelain", "--", "data/dialogue")
     return bool(out.strip())
 
 
-def do_build(standalone: bool):
-    log = []
-    code, out = run(["python3", "web/build_data.py"])
-    log.append("$ python3 web/build_data.py\n" + out)
-    if code != 0:
-        return False, "\n".join(log)
-    if standalone:
-        code, out = run(["python3", "web/build_standalone.py"])
-        log.append("$ python3 web/build_standalone.py\n" + out)
-        if code != 0:
-            return False, "\n".join(log)
-    return True, "\n".join(log)
+def do_validate():
+    code, out = run(["python3", "tools/lint_dialogue.py"])
+    return code == 0, "$ python3 tools/lint_dialogue.py\n" + out + "\n現行版はJSONを直接読みます（ビルド不要）。"
+
 
 
 def git_status():
@@ -118,23 +109,23 @@ def git_status():
     changed = []
     for line in out.splitlines():
         path = line[3:].strip()
-        if path.startswith("data/dialogue/") or path == "web/js/data.js":
+        if path.startswith("data/dialogue/"):
             changed.append(path)
     return {"branch": branch, "changed": changed, "protected": branch in PROTECTED_BRANCHES,
             "dialogueDirty": dialogue_dirty()}
 
 
-def git_commit(message: str, push: bool, standalone: bool):
+def git_commit(message: str, push: bool):
     branch = current_branch()
     if branch in PROTECTED_BRANCHES:
         return False, f"ブランチ '{branch}' は保護されています（PR運用）。作業ブランチに切り替えてください。"
     if not dialogue_dirty():
         return False, "台詞（data/dialogue）に未コミットの変更がありません。保存してから実行してください。"
     log = []
-    ok, blog = do_build(standalone)  # コミット前に必ず生成物を最新化
+    ok, blog = do_validate()  # コミット前に台詞の正本を検査
     log.append(blog)
     if not ok:
-        return False, "ビルドに失敗したためコミットを中止しました。\n\n" + "\n".join(log)
+        return False, "台詞の検査に失敗したためコミットを中止しました。\n\n" + "\n".join(log)
     code, out = git("add", *COMMIT_PATHS)
     log.append("$ git add " + " ".join(COMMIT_PATHS) + "\n" + out)
     code, out = git("commit", "-m", message)
@@ -167,7 +158,7 @@ class Handler(BaseHTTPRequestHandler):
         q = urllib.parse.parse_qs(u.query)
         try:
             if u.path in ("/", "/index.html"):
-                return self._send((ROOT / "web" / "tools" / "text_editor.html").read_bytes(),
+                return self._send((ROOT / "tools" / "browser" / "text_editor.html").read_bytes(),
                                    "text/html; charset=utf-8")
             if u.path == "/manual":
                 md = (ROOT / "docs" / "text_editor_manual.md").read_text()
@@ -195,13 +186,13 @@ class Handler(BaseHTTPRequestHandler):
                 save_line(fname, body["path"], body["text"])
                 return self._send({"ok": True})
             if u.path == "/api/build":
-                ok, log = do_build(bool(body.get("standalone")))
+                ok, log = do_validate()
                 return self._send({"ok": ok, "log": log})
             if u.path == "/api/git/commit":
                 msg = (body.get("message") or "").strip()
                 if not msg:
                     return self._send({"ok": False, "log": "コミットメッセージを入力してください。"})
-                ok, log = git_commit(msg, bool(body.get("push")), bool(body.get("standalone")))
+                ok, log = git_commit(msg, bool(body.get("push")))
                 return self._send({"ok": ok, "log": log})
         except Exception as e:  # noqa: BLE001
             return self._send({"error": str(e)}, code=500)

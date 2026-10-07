@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """旧名・旧ステータス・旧設定の残存チェッカー。
 
-P2 CI/ローカル用: data/, web/js/, brand/story_and_structure.md, docs/ を走査し、
+P2 CI/ローカル用: data/, remake/js/, brand/story_and_structure.md, docs/ を走査し、
 旧名・旧ステータスが残っていたら失敗させる。
 lint_dialogue.py が対話 JSON だけを見るのに対し、こちらはソースコードと設定文書全般をカバーする。
 
@@ -18,7 +18,7 @@ REPO = Path(__file__).resolve().parent.parent
 
 SCAN_DIRS = [
     REPO / "data",
-    REPO / "web" / "js",
+    REPO / "remake" / "js",
     REPO / "brand",
     REPO / "docs",
     REPO / "tools",

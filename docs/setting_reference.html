@@ -198,7 +198,7 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: s
 
 <section class="block" id="about">
   <h2 class="sec disp">このゲームについて</h2>
-  <p class="sec-note">主人公・蒸野 始（むしの はじめ）は名店tonariのバイト青年。テーマは「素直さ」——他人の良さに素直に気づける力は、嫉妬にもなるが、吸収と継承の源にもなる。一人称視点で、主人公の立ち絵は基本表示しない。ブラウザ版（web/）がメインの開発トラック。</p>
+  <p class="sec-note">主人公・蒸野 始（むしの はじめ）は名店tonariのバイト青年。テーマは「素直さ」——他人の良さに素直に気づける力は、嫉妬にもなるが、吸収と継承の源にもなる。一人称視点で、主人公の立ち絵は基本表示しない。現行ブラウザ版（remake/）がメインの開発トラック。</p>
   <div class="facts">
     <div class="fact"><h4>ステータス（5種のみ）</h4><p><strong>技術／センス／根性／魅力／洞察</strong>。数値は非公開、表示は <span class="stars">★★★☆☆</span> と「少し上がった〜大きく上がった」の4段階の抽象語のみ。</p></div>
     <div class="fact"><h4>大会形式</h4><p><strong>4人一斉対決</strong>。1位のみ進出、2位以下はその場で敗退＝GAME OVER（敗者復活戦なし）。</p></div>
@@ -645,10 +645,10 @@ footer .wrap { display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: s
   <p class="sec-note">同じ事実は正本1箇所だけに書く。この資料集は<em>二次資料</em>——食い違いを見つけたら、必ず下の正本側を確認して直すこと。</p>
   <div class="tbl-wrap"><table>
     <thead><tr><th>事実の種類</th><th>正本（ここだけを編集）</th></tr></thead>
-    <tbody><tr><td>キャラのID・本名・年齢・ステータス</td><td><code>data/characters.json</code></td></tr><tr><td>大会名・章レギュレーション・ステータス名</td><td><code>CLAUDE.md（リポジトリ直下）</code></td></tr><tr><td>章ごとのプロット</td><td><code>brand/story_and_structure.md</code></td></tr><tr><td>台詞</td><td><code>data/dialogue/*.json（web/js/data.js は生成物・直接編集禁止）</code></td></tr><tr><td>キャラ設定の読み物</td><td><code>brand/character_profiles.md（数値・年齢は書かない）</code></td></tr></tbody>
+    <tbody><tr><td>キャラのID・本名・年齢・ステータス</td><td><code>data/characters.json</code></td></tr><tr><td>大会名・章レギュレーション・ステータス名</td><td><code>CLAUDE.md（リポジトリ直下）</code></td></tr><tr><td>章ごとのプロット</td><td><code>brand/story_and_structure.md</code></td></tr><tr><td>台詞</td><td><code>data/dialogue/*.json（現行版はJSONを直接読む）</code></td></tr><tr><td>キャラ設定の読み物</td><td><code>brand/character_profiles.md（数値・年齢は書かない）</code></td></tr></tbody>
   </table></div>
   <h3 class="grp disp">既知の注意点・表記ゆれ</h3>
-  <ul class="rules"><li>旧タイトル「煙の向こう側」は不使用 → 正式タイトルは<strong>「水煙前線 -EN:CODE-」</strong>、第5章の章題は「機械仕掛けの神（Deus Ex Machina）」（2026-07-18確定）。</li><li><code>brand/brand</code>・<code>brand/chapter1（character）</code> は旧設定の残骸。参照・引用しない（旧名「ドクター・ケムリ」等）。</li><li>旧審査員 <strong>DJ SMOKE・白峰恒一郎・霧島レン</strong> は廃止済み（2026-07-05・オーナー指定）。データ・台詞に再登場させない。</li><li>神崎竜二の立ち絵は<strong>未実装</strong>（旧ネオンバー画像は設定不一致のため廃止）。新規作成時は <code>chr_kumicho_*</code> で追加する。</li><li>Godot版は削除済み（2026-06-15）。web/ ＋ data/*.json ＋ brand/ が唯一の正史。</li></ul>
+  <ul class="rules"><li>旧タイトル「煙の向こう側」は不使用 → 正式タイトルは<strong>「水煙前線 -EN:CODE-」</strong>、第5章の章題は「機械仕掛けの神（Deus Ex Machina）」（2026-07-18確定）。</li><li><code>brand/brand</code>・<code>brand/chapter1（character）</code> は旧設定の残骸。参照・引用しない（旧名「ドクター・ケムリ」等）。</li><li>旧審査員 <strong>DJ SMOKE・白峰恒一郎・霧島レン</strong> は廃止済み（2026-07-05・オーナー指定）。データ・台詞に再登場させない。</li><li>神崎竜二の立ち絵は<strong>未実装</strong>（旧ネオンバー画像は設定不一致のため廃止）。新規作成時は <code>chr_kumicho_*</code> で追加する。</li><li>Godot版は削除済み（2026-06-15）。remake/ ＋ data/*.json ＋ brand/ が現行の参照元。旧web版は削除済み。</li></ul>
 </section>
 
 </main>

@@ -229,7 +229,7 @@ CANON_ROWS = [
     ("キャラのID・本名・年齢・ステータス", "data/characters.json"),
     ("大会名・章レギュレーション・ステータス名", "CLAUDE.md（リポジトリ直下）"),
     ("章ごとのプロット", "brand/story_and_structure.md"),
-    ("台詞", "data/dialogue/*.json（web/js/data.js は生成物・直接編集禁止）"),
+    ("台詞", "data/dialogue/*.json（現行版が直接読む正本）"),
     ("キャラ設定の読み物", "brand/character_profiles.md（数値・年齢は書かない）"),
 ]
 CANON_NOTES = [
@@ -237,7 +237,7 @@ CANON_NOTES = [
     "<code>brand/brand</code>・<code>brand/chapter1（character）</code> は旧設定の残骸。参照・引用しない（旧名「ドクター・ケムリ」等）。",
     "旧審査員 <strong>DJ SMOKE・白峰恒一郎・霧島レン</strong> は廃止済み（2026-07-05・オーナー指定）。データ・台詞に再登場させない。",
     "神崎竜二の立ち絵は<strong>未実装</strong>（旧ネオンバー画像は設定不一致のため廃止）。新規作成時は <code>chr_kumicho_*</code> で追加する。",
-    "Godot版は削除済み（2026-06-15）。web/ ＋ data/*.json ＋ brand/ が唯一の正史。",
+    "Godot版は削除済み（2026-06-15）。remake/ ＋ data/*.json ＋ brand/ が現行の参照元。旧web版は削除済み。",
 ]
 
 # ---------------------------------------------------------------- rendering
@@ -527,7 +527,7 @@ footer .wrap {{ display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: 
 
 <section class="block" id="about">
   <h2 class="sec disp">このゲームについて</h2>
-  <p class="sec-note">主人公・蒸野 始（むしの はじめ）は名店tonariのバイト青年。テーマは「素直さ」——他人の良さに素直に気づける力は、嫉妬にもなるが、吸収と継承の源にもなる。一人称視点で、主人公の立ち絵は基本表示しない。ブラウザ版（web/）がメインの開発トラック。</p>
+  <p class="sec-note">主人公・蒸野 始（むしの はじめ）は名店tonariのバイト青年。テーマは「素直さ」——他人の良さに素直に気づける力は、嫉妬にもなるが、吸収と継承の源にもなる。一人称視点で、主人公の立ち絵は基本表示しない。現行ブラウザ版（remake/）がメインの開発トラック。</p>
   <div class="facts">
     <div class="fact"><h4>ステータス（5種のみ）</h4><p><strong>技術／センス／根性／魅力／洞察</strong>。数値は非公開、表示は <span class="stars">★★★☆☆</span> と「少し上がった〜大きく上がった」の4段階の抽象語のみ。</p></div>
     <div class="fact"><h4>大会形式</h4><p><strong>4人一斉対決</strong>。1位のみ進出、2位以下はその場で敗退＝GAME OVER（敗者復活戦なし）。</p></div>

@@ -7,6 +7,5 @@ __pycache__/
 *.import
 **/.gdignore
 asset_sources/portrait_sync_backup_*/
-web/test/shots/
+remake/test/shots/
 # 1ファイル配布版（約65MB）は生成物。Pagesのデプロイでビルドする（コミットしない・2026-10-04）
-web/dist/shisha_ch1.html
