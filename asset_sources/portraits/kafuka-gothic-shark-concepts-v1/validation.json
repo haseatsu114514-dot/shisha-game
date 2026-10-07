@@ -1,0 +1,46 @@
+{
+  "unique_generations": 3,
+  "concepts": [
+    {
+      "concept": "deep-sea",
+      "source_sha256": "767f07542f3fcf4895099839c161a9908da62cdcda4c80a172810b9521656df8",
+      "source_byte_identical": true,
+      "preview_size": [
+        896,
+        1200
+      ],
+      "border_alpha_ge_16": 0,
+      "feet_anchor": 448.39891281622414,
+      "feet_bottom": 1174
+    },
+    {
+      "concept": "shark-cinema",
+      "source_sha256": "6b3613b5c2f7ec67ff246cef6c77ef79ff7247073e1bed56c2ac35fb9cd7b892",
+      "source_byte_identical": true,
+      "preview_size": [
+        896,
+        1200
+      ],
+      "border_alpha_ge_16": 0,
+      "feet_anchor": 448.19505725833613,
+      "feet_bottom": 1174
+    },
+    {
+      "concept": "skater",
+      "source_sha256": "dfd89eddd0191de79f1f84a2c001599ab30da19bc2bc5516ec593307dc263016",
+      "source_byte_identical": true,
+      "preview_size": [
+        896,
+        1200
+      ],
+      "border_alpha_ge_16": 0,
+      "feet_anchor": 448.55225977675434,
+      "feet_bottom": 1174
+    }
+  ],
+  "catalog_groups": 22,
+  "catalog_images": 78,
+  "existing_catalog_groups_unchanged": true,
+  "visual_review": "All three full-body sprites and native face crops viewed on white and dark backgrounds. No alpha threshold or image painting. Raw RGB haze of cinema/skater is in fully transparent pixels, and does not render in RGBA composites.",
+  "runtime_assets_changed": false
+}

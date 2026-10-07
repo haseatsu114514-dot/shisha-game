@@ -636,6 +636,69 @@
         }
       ],
       "approval": "2026-10-04: 修正版5表情と会話比較の提示後、オーナー「マージして」で採用・mainへのマージを指示"
+    },
+    {
+      "id": "kafuka-gothic-shark-deep-sea-v1",
+      "title": "① 深海シスター",
+      "status": "pending",
+      "role": "サメちゃんの衣装・髪・配色の比較案。採用待ち、画風の確定基準には使わない",
+      "sourceCommit": "working-branch:codex/kafuka-gothic-shark-concepts-20261007",
+      "images": [
+        {
+          "label": "無加工生成元",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/deep-sea/source.png",
+          "sha256": "767f07542f3fcf4895099839c161a9908da62cdcda4c80a172810b9521656df8"
+        },
+        {
+          "label": "通常・896×1200確認用",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/deep-sea/preview.png",
+          "sha256": "974b1c58229cfd380d7fd65b3ec06619ebff523f12c0af867f292c342230a16f"
+        }
+      ]
+    },
+    {
+      "id": "kafuka-gothic-shark-shark-cinema-v1",
+      "title": "② サメ映画好きのシスター",
+      "status": "pending",
+      "role": "サメちゃんの衣装・髪・配色の比較案。採用待ち、画風の確定基準には使わない",
+      "sourceCommit": "working-branch:codex/kafuka-gothic-shark-concepts-20261007",
+      "images": [
+        {
+          "label": "無加工生成元",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/shark-cinema/source.png",
+          "sha256": "6b3613b5c2f7ec67ff246cef6c77ef79ff7247073e1bed56c2ac35fb9cd7b892"
+        },
+        {
+          "label": "通常・896×1200確認用",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/shark-cinema/preview.png",
+          "sha256": "9371aeb96ec1462404e1a0180e65ab0f01e22ea05fe40d40debc544404d511d2"
+        }
+      ]
+    },
+    {
+      "id": "kafuka-gothic-shark-skater-v1",
+      "title": "③ スケーター風シスター",
+      "status": "pending",
+      "role": "サメちゃんの衣装・髪・配色の比較案。採用待ち、画風の確定基準には使わない",
+      "sourceCommit": "working-branch:codex/kafuka-gothic-shark-concepts-20261007",
+      "images": [
+        {
+          "label": "無加工生成元",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/skater/source.png",
+          "sha256": "dfd89eddd0191de79f1f84a2c001599ab30da19bc2bc5516ec593307dc263016"
+        },
+        {
+          "label": "通常・896×1200確認用",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/skater/preview.png",
+          "sha256": "883e89a58d25e4dd2e25912033c465daaa3517a4c7f3798f706b13fc76f37042"
+        }
+      ]
     }
   ]
 }
