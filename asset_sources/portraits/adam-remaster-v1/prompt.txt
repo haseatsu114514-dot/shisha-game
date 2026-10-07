@@ -1,0 +1,21 @@
+Correct the LAYOUT of the attached sharp ADAM five-expression artwork while keeping its faces, outfit, poses and refined rendering. Produce one finished game character expression sheet, TRUE RGBA TRANSPARENCY, wide landscape aspect 2:1 (approximately 1800 x 900 at the highest available resolution).
+
+The attached second-pass/reference-white.png defines the desired five sharp drawings, in order normal / smile / serious / surprise / intense. Its white background is only a comparison preview and must become transparent. The same man's face, hair, clothing and body should remain recognizable and his fine face/hair/fabric details remain crisp. The original chr_adam_normal.png confirms identity. Approved chr_minto_normal.png and chr_ageha_normal.png define the fine high-resolution pixel-art/JRPG texture and premium rendering; keep delicate dark lines and carefully stepped subtle shading comparable to them.
+
+LAYOUT REQUIREMENTS ARE ESSENTIAL:
+- Exactly FIVE complete standing full-body ADAM figures in ONE horizontal row, all equally scaled, aligned to a common foot baseline.
+- Give each man his own clearly separate vertical zone. Leave a completely empty full-height TRANSPARENT vertical gutter of at least 25 pixels between every man's furthest hand/arm/hair/apron/shoe and the next figure. Keep his gestures inside his zone; the presenting hand may move a little closer to his body to achieve separation.
+- Leave at least 45 transparent pixels at both the left and right canvas edge, at least 30 above every head and at least 35 below every shoe. Fit every single hand, hair tip, sleeve, apron tie and shoe INSIDE the canvas. The last man's right shoe and arm must be complete and well inside the right margin.
+- Keep the figures near full available height, with consistent approximately seven-head adult proportions. Preserve face detail rather than shrinking heads disproportionately.
+- No overlap, fingers touching neighbors, cropped limbs, edge-touching feet, labels, text, frame, scenery, floor, shadow, glow or painted checkerboard. True transparent alpha-zero background, clean delicate natural contours. Colored low-alpha edge specks from old cutouts are extraction residue rather than design features; do not redraw them.
+
+IDENTITY:
+Japanese man aged 28, broad adult shoulders, clean-shaven angular jaw, strong dark eyebrows, sharp brown-gold eyes. Swept short hair split GREEN on SCREEN LEFT and RED on SCREEN RIGHT. Fitted black long-sleeved Henley shirt, small button placket, sleeves rolled to the forearms. Black waist apron reaching about knee height with waist knot, hanging ties and two front rectangular pockets; black trousers and low black leather lace-up shoes. All five have the SAME exact face structure, hairstyle, outfit and body build.
+
+EXPRESSIONS left to right:
+1 Normal confident direct gaze with neutral closed mouth and relaxed arms down.
+2 Small self-assured smile with open eyes; modest presenting palm on screen right.
+3 Focused narrowed eyes, firm closed mouth; screen-left hand explaining at the lower chest.
+4 Raised brows, widened eyes, small surprised open mouth; screen-right hand at chest.
+5 Stern passionate focus and closed mouth with BOTH ARMS CROSSED across the chest.
+Keep these same five expressions and small personality-appropriate gestures. Draw crisp fine eye lines, tiny sharp hair strands and fabric details directly. Retain the finer high-density pixel-art texture, subdued fabric sheen and original charm, without blur, airbrush smoothing, plastic highlights, artificially added noise or large chunky pixels.
