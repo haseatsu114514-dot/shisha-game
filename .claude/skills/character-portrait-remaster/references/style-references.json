@@ -822,6 +822,156 @@
           "sha256": "da763c17f531a3bd65c28d97f1f03138a4180cdea89e4af35ac07ed3bf175ca0"
         }
       ]
+    },
+    {
+      "id": "kafuka-gothic-shark-deep-sea-v1",
+      "title": "① 深海シスター",
+      "status": "pending",
+      "role": "サメちゃんの衣装・髪・配色の比較案。採用待ち、画風の確定基準には使わない",
+      "sourceCommit": "working-branch:codex/kafuka-gothic-shark-concepts-20261007",
+      "images": [
+        {
+          "label": "無加工生成元",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/deep-sea/source.png",
+          "sha256": "767f07542f3fcf4895099839c161a9908da62cdcda4c80a172810b9521656df8"
+        },
+        {
+          "label": "通常・896×1200確認用",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/deep-sea/preview.png",
+          "sha256": "974b1c58229cfd380d7fd65b3ec06619ebff523f12c0af867f292c342230a16f"
+        }
+      ]
+    },
+    {
+      "id": "kafuka-gothic-shark-shark-cinema-v1",
+      "title": "② サメ映画好きのシスター",
+      "status": "pending",
+      "role": "サメちゃんの衣装・髪・配色の比較案。採用待ち、画風の確定基準には使わない",
+      "sourceCommit": "working-branch:codex/kafuka-gothic-shark-concepts-20261007",
+      "images": [
+        {
+          "label": "無加工生成元",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/shark-cinema/source.png",
+          "sha256": "6b3613b5c2f7ec67ff246cef6c77ef79ff7247073e1bed56c2ac35fb9cd7b892"
+        },
+        {
+          "label": "通常・896×1200確認用",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/shark-cinema/preview.png",
+          "sha256": "9371aeb96ec1462404e1a0180e65ab0f01e22ea05fe40d40debc544404d511d2"
+        }
+      ]
+    },
+    {
+      "id": "kafuka-gothic-shark-skater-v1",
+      "title": "③ スケーター風シスター",
+      "status": "pending",
+      "role": "サメちゃんの衣装・髪・配色の比較案。採用待ち、画風の確定基準には使わない",
+      "sourceCommit": "working-branch:codex/kafuka-gothic-shark-concepts-20261007",
+      "images": [
+        {
+          "label": "無加工生成元",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/skater/source.png",
+          "sha256": "dfd89eddd0191de79f1f84a2c001599ab30da19bc2bc5516ec593307dc263016"
+        },
+        {
+          "label": "通常・896×1200確認用",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/skater/preview.png",
+          "sha256": "883e89a58d25e4dd2e25912033c465daaa3517a4c7f3798f706b13fc76f37042"
+        }
+      ]
+    },
+    {
+      "id": "kafuka-blue-sister-v1",
+      "title": "サメちゃん・青ベースのストリートシスター 通常／腹話術",
+      "status": "pending",
+      "role": "3案目を選択した最新指示で主色を青へ修正。通常と顔をコロちゃんで隠した腹話術の確認用。画風の確定基準には使わない",
+      "sourceCommit": "working-branch:codex/kafuka-blue-sister-ventriloquism-20261007",
+      "images": [
+        {
+          "label": "通常・無加工生成元",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/normal/source.png",
+          "sha256": "9dd47dcd6aea5fa5b7f46c3a89f17ca86fa384cf74e0b85de21e26e3a937fdce"
+        },
+        {
+          "label": "通常・896×1200確認用",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/normal/preview.png",
+          "sha256": "498209e404092ee90513e82f34336e3a56b254a48ca94678b32b042c45ed0303"
+        },
+        {
+          "label": "腹話術・無加工生成元",
+          "expression": "ventriloquism",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/ventriloquism/source.png",
+          "sha256": "f08830ce7585ad2d5ae9b3ab0c9bcdafe108f55ea10b6f6c11a5bb70003ad8c8"
+        },
+        {
+          "label": "腹話術・896×1200確認用",
+          "expression": "ventriloquism",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/ventriloquism/preview.png",
+          "sha256": "5ca5eedda9e07e6b5b14fe1f311348238dec979f2dc65419cb7902f866bcbdb3"
+        }
+      ]
+    },
+    {
+      "id": "kafuka-blue-black-hair-v2",
+      "title": "サメちゃん・青衣装の黒髪試案（未使用履歴）",
+      "status": "pending",
+      "role": "添付の服装選択が生成中に来たため、この青衣装の黒髪案は未使用。髪色の参照のみ。画風基準にしない",
+      "sourceCommit": "working-branch:codex/blue-sister-and-character-intros-20261007",
+      "images": [
+        {
+          "label": "通常・無加工生成元",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-black-hair-v2/normal/source.png",
+          "sha256": "b0ac6119567aab6d1e5b2df83d513e09f3a82f3f6748555c3b06bc1bff8bc60c"
+        },
+        {
+          "label": "通常・896×1200確認用",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-black-hair-v2/normal/preview.png",
+          "sha256": "0db624a457c137b59e170860f9ceec3bef1d0fbab46a041c9886639fb54ce5a9"
+        }
+      ]
+    },
+    {
+      "id": "kafuka-selected-outfit-black-hair-v3",
+      "title": "サメちゃん・添付の服装と黒髪 通常／腹話術",
+      "status": "pending",
+      "role": "最新の添付画像で選んだ黒×淡い青の服装を保ち、黒髪＋少量の青メッシュへ修正。通常と顔をコロちゃんで隠した腹話術。確認用で、画風基準には使わない",
+      "sourceCommit": "working-branch:codex/blue-sister-and-character-intros-20261007",
+      "images": [
+        {
+          "label": "通常・無加工生成元",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/normal/source.png",
+          "sha256": "04781bc1691223aade5fdcc5cc0a9260ab0d8282b9291d4f999d07a18ff4d744"
+        },
+        {
+          "label": "通常・896×1200確認用",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/normal/preview.png",
+          "sha256": "7a70b2ee911c69f8b6e920d055d2795fadc9a17859d4573c7bfa3fbe250380c7"
+        },
+        {
+          "label": "腹話術・無加工生成元",
+          "expression": "ventriloquism",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/ventriloquism/source.png",
+          "sha256": "c67323acf0cdc11df71cb8fd7aa07495019a8f3cf70d5cbbddd281f7841de2ca"
+        },
+        {
+          "label": "腹話術・896×1200確認用",
+          "expression": "ventriloquism",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/ventriloquism/preview.png",
+          "sha256": "43bf31261b9f1193d33cdf6d2b1bee6a46bded3cc4ae8699f3277bdd55798921"
+        }
+      ]
     }
   ]
 }
