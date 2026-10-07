@@ -38,8 +38,7 @@ export async function runHeat(cs) {
 
   const stove = el("div.stove", [artImg("stove_coil.png", 520, "stove-img")]);
   // コイルの上に三角に並べる（中心座標はコンロ素材の中身に対する比。奥の炭ほど少し小さい）
-  const SPOTS = [[0.35, 0.45, 1], [0.62, 0.34, 0.9], [0.6, 0.62, 1.06]]
-    .map(([x, y, k]) => [0.5 + (x - 0.5) * 0.8, 0.45 + (y - 0.45) * 0.8, k]); // 寸法を保ち、コイルの中央へ20%寄せる
+  const SPOTS = [[0.5, 0.30, 0.90], [0.38, 0.45, 1], [0.62, 0.45, 1]];
   const coals = [0, 1, 2].map((i) => {
     const [cx, cy, k] = SPOTS[i];
     const node = el("button.coal", {

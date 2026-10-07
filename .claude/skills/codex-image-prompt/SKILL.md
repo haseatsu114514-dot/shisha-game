@@ -49,9 +49,9 @@ description: 画像（立ち絵・背景・CG・UIパーツ）の新規生成や
 # 立ち絵: 変換→正規化→ビルド（詳細は portrait-fix スキル E節）
 python3 tools/pixelize.py sheet.png --char <id> --slice 3x2 --names normal,smile,sad,serious,surprise
 # 背景: そのまま保存 or pixelize --key none --grid 360 --out assets/backgrounds/<name>.png
-python3 web/build_data.py && python3 web/build_standalone.py
+python3 remake/tools/build_manifest.py
 ```
 
-- 立ち絵を入れたら `node web/test/portraits.mjs`、UIパーツなら該当画面を目視確認。
+- 立ち絵を入れたら `node remake/test/rin_portraits.mjs`、UIパーツなら該当画面を目視確認。
 - **良いプロンプトができたら正本のプロンプト集（bg_prompts.txt / asset_gen_prompts.md）に
   追記して資産化**する。チャットに使い捨てにしない（プロンプトも一元管理）。

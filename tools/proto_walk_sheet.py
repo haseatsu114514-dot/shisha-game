@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """歩行スプライトシート（画像生成AIの出力・マゼンタ背景）を、ゲーム用の歩行シートに変換する。
 
-実験ページ web/proto/walk/index.html 用（本編には未接続）。
+実験ページ experiments/proto/walk/index.html 用（本編には未接続）。
 
 やること:
   1. シート全体をクロマキー（key_background。背景の色むらに強い。下の説明を参照）
@@ -50,11 +50,11 @@ FRAMES = ["A", "B"]
 DEFAULT_INPUT = REPO_ROOT / "asset_sources" / "images" / "proto_walk" / "tsumugi_walk_sheet.png"
 DEFAULT_OUT = REPO_ROOT / "assets" / "proto_walk"
 PREVIEW_PATH = REPO_ROOT / "asset_sources" / "images" / "proto_walk" / "preview_walk.png"
-# キャラの高さ → セル寸法（web/proto/walk/index.html の SIZE_CELL と一致させる）
+# キャラの高さ → セル寸法（experiments/proto/walk/index.html の SIZE_CELL と一致させる）
 CELL_FOR = {32: (24, 36), 48: (36, 52)}
 ALPHA_SOLID = 90       # これ未満の半透明は捨てる（ドット絵はパキッとさせる）
 NOISE_RATIO = 0.02     # 最大の塊の2%未満の塊はゴミとして捨てる
-OUTLINE_COLOR = (36, 26, 42, 255)  # 外周の輪郭（web/proto/walk の仮スプライトの輪郭色と同じ）
+OUTLINE_COLOR = (36, 26, 42, 255)  # 外周の輪郭（experiments/proto/walk の仮スプライトの輪郭色と同じ）
 KEY_CORE = 75          # 背景色からの距離がこれ以下＝背景候補（生成AIの背景は ±40 程度むらがある）
 KEY_EDGE = 182         # 背景に接した画素で距離がこれ未満＝背景色が混ざった縁（半透明にして色を戻す）
 

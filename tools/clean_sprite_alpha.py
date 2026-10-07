@@ -24,7 +24,7 @@
   python3 tools/clean_sprite_alpha.py --dry-run       # 変更内容の確認のみ
 
 処理後は必ず再ビルドする:
-  python3 web/build_data.py && python3 web/build_standalone.py
+  python3 remake/tools/build_manifest.py
 """
 
 import argparse
@@ -134,7 +134,7 @@ def main() -> None:
                 total += 1
     print(f"{'(dry-run) ' if args.dry_run else ''}{total} ファイルに変更")
     if total and not args.dry_run:
-        print("再ビルドを忘れずに: python3 web/build_data.py && python3 web/build_standalone.py")
+        print("再ビルドを忘れずに: python3 remake/tools/build_manifest.py")
 
 
 if __name__ == "__main__":

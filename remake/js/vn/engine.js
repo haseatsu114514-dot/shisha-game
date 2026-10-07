@@ -84,7 +84,7 @@ function kickAuto() {
     if (vnTest.turbo) autoTimer = setTimeout(() => autoChoose(), 10);
     return;
   }
-  const delay = vnTest.turbo ? 5 : skipMode ? 40 : running.typing ? 200 : 1200 + visibleLength(running.fullHtml || "") * 45;
+  const delay = vnTest.turbo ? 5 : skipMode ? 180 : running.typing ? 200 : 1200 + visibleLength(running.fullHtml || "") * 45;
   autoTimer = setTimeout(() => {
     if (!running) return;
     if (running.typing && !vnTest.turbo && !skipMode) return kickAuto();
@@ -171,8 +171,9 @@ function firstPortraits(dlg) {
   const out = [];
   for (const l of dlg.lines || []) {
     if (out.length >= 2) break;
-    if (l.speaker && !NO_PORTRAIT.has(l.speaker)) {
-      const p = portraitInfo(l.speaker, l.face);
+    const character = l.portrait || l.speaker;
+    if (character && !NO_PORTRAIT.has(character)) {
+      const p = portraitInfo(character, l.portrait_face || l.face);
       if (p && !out.includes(p.src)) out.push(p.src);
     }
   }
@@ -189,8 +190,9 @@ function prefetch(dlg) {
   const urls = new Set();
   const collect = (lines) => {
     for (const l of lines || []) {
-      if (l.speaker && !NO_PORTRAIT.has(l.speaker)) {
-        const p = portraitInfo(l.speaker, l.face);
+      const character = l.portrait || l.speaker;
+      if (character && !NO_PORTRAIT.has(character)) {
+        const p = portraitInfo(character, l.portrait_face || l.face);
         if (p) urls.add(p.src);
       }
       if (l.type === "show_cg") urls.add(cgUrl(l.cg_id));
@@ -381,6 +383,15 @@ function showLine(line) {
   dom.box.classList.toggle("narration", !speaker);
   dom.box.classList.toggle("thought", speaker === "hajime" && /^（/.test(line.text || ""));
   updatePortraits(speaker, face);
+  // 無言の常連も会釈だけで場面に参加できる。名乗り・好感度の処理は発話と独立。
+  if (line.portrait) {
+    updatePortraits(line.portrait, line.portrait_face || "normal");
+    if (line.gesture === "bow") {
+      const img = dom.portraits.querySelector(`img[data-speaker="${line.portrait}"]`);
+      img?.classList.remove("bow");
+      if (img) { void img.offsetWidth; img.classList.add("bow"); }
+    }
+  }
   // 行付き演出（"fx":"shake" 等）／自動の軽演出（驚き・叫び）
   if (line.fx) runFx({ id: line.fx });
   else autoFx(line);

@@ -17,7 +17,7 @@ pixelize.py と違い、ドット化・減色はせず**元解像度のまま**�
       --names normal,surprise,sad,serious,smile
 
   # 取り込み後はビルドで反映
-  python3 web/build_data.py && python3 web/build_standalone.py
+  python3 remake/tools/build_manifest.py
   # 顔アイコンも作り直す場合
   python3 tools/make_face_icons.py
 
@@ -121,7 +121,7 @@ def main() -> None:
         canvas.save(out_path)
         print(f"wrote {out_path} ({canvas.width}x{canvas.height})")
 
-    print("done. 反映: python3 web/build_data.py && python3 web/build_standalone.py")
+    print("done. 反映: python3 remake/tools/build_manifest.py")
 
 
 if __name__ == "__main__":

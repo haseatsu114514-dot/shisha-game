@@ -78,7 +78,13 @@ export function openBench(cs, { steps = [] } = {}) {
     cs.mode !== "tutorial" ? el("div.bench-condition", { dataset: { health: condition.health }, title: condition.hint }, [
       el("b", { text: `体力：${condition.label}` }), el("small", { text: condition.hint }),
     ]) : null,
-    el("div.bench-left", [rig.root]),
+    el("div.bench-left", [
+      el("div.bench-worker", { dataset: { test: "worker-window", step: "" }, "aria-label": "はじめの作業演出スペース" }, [
+        el("div.bench-worker-stage", { "aria-hidden": "true" }),
+        el("span.bench-worker-name", { text: "はじめの作業台" }),
+      ]),
+      rig.root,
+    ]),
     el("div.bench-right", [el("div.bench-head", [title, hint]), panel]),
     ticker,
   ]);
@@ -100,6 +106,7 @@ export function stepPanel(id, titleText, hintText = "") {
   });
   b.panel.replaceChildren();
   b.panel.dataset.step = id;
+  b.root.querySelector(".bench-worker").dataset.step = id; // 今後の工程別アニメーションの接続先
   return b.panel;
 }
 

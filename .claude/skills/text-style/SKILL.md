@@ -50,14 +50,13 @@ python3 tools/text_editor_server.py   # → http://127.0.0.1:8321/
 #   ・使い方の詳細は docs/text_editor_manual.md（アプリ内「❓ヘルプ」からも読める）
 
 # 4) 反映
-python3 web/build_data.py && python3 web/build_standalone.py
+# remake/ はJSONを直接読む。保存後、ブラウザを再読み込みする
 ```
 
 ## 注意（壊しやすい場所）
 
 - 報酬キュー行（`……【技術】と【センス】が上がった。`）は**規定フレーズを一字一句変えない**
   （CLAUDE.md「報酬を地の文に埋めない」参照）。tidy はナレーション末尾の「。」を触らないので安全。
-- `web/js/game.js` 内の playCustom 台詞（インライン文字列）にも同じ規範を適用する。
+- `remake/js/` 内のインライン台詞（インライン文字列）にも同じ規範を適用する。
   tidy は JSON しか見ないので、game.js に台詞を書くときは手で従うこと。
-- engine.js の autoWrap / typeText を変えたら `web/tools/linebreak_editor.html` のミラーは
-  古くなる（text_editor_server.py 経由の新エディタは実物配信なので影響なし）。
+- `remake/js/vn/text.js` を変更すると、台詞エディタも同じ実物を配信する。組版を複製しない。

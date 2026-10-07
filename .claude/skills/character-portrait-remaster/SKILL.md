@@ -171,9 +171,8 @@ description: shisha-gameの既存キャラの立ち絵・表情差分を、元�
 python3 tools/make_face_icons.py <id>   # 丸アイコン（LIME・看板・好感度カード等）も新しい立ち絵から作り直す
 python3 remake/tools/build_manifest.py
 python3 tools/align_sprite_anchor.py -c <id> --dry-run
-python3 web/build_data.py
-python3 web/build_standalone.py
-node web/test/portraits.mjs
+# 凛を変更した場合の回帰。他のキャラはそのキャラの実画面で確認
+node remake/test/rin_portraits.mjs
 ```
 
 - 丸アイコンは `tools/make_face_icons.py` の `TUNE` で切り抜きを調整し、他キャラと並べて顔の大きさ・目線の高さを揃える。

@@ -273,9 +273,8 @@ export async function stepSteamTime(cs) {
   const panel = stepPanel("steam", "蒸らし時間", lessonHint(cs, "steam", "炭を置いたら、吸える温度になるまで待つ。長いほど香りは開くが、焦げも近づく"));
   cs.steamMin = await choose(panel, [
     { value: 3, label: "3分", desc: "早めに立ち上げる。香りは軽く、温度合わせが忙しい", disabled: cs.mode === "tutorial" },
-    { value: 5, label: "5分", desc: "基本の蒸らし。香りの輪郭を残しやすい", auto: true },
-    { value: 8, label: "8分", desc: "じっくり待つ。甘さと余韻が開く" },
+    { value: 5, label: "5分", desc: "香りの輪郭を残す。まだ低めの温度から吸い出す", auto: true },
+    { value: 8, label: "8分", desc: "心配ならじっくり。熱が入り、吸い出しに余裕ができる" },
     { value: 10, label: "10分", desc: "攻めた長めの蒸らし。重い煙には効くが、焦げの気配も近い", disabled: cs.mode === "tutorial" },
   ], { cols: 2 });
 }
-

@@ -40,11 +40,6 @@ export function initLayers() {
       hearts: { from: heartState(prevPts), to: heartState(pts) },
     });
   });
-  on("stamina-change", ({ before, after, maximum }) => {
-    if (after <= before) return;
-    gainCard({ kind: "stamina", badge: "体", top: "RECOVERY", main: after >= maximum ? "元気が戻った" : "体力が回復した",
-      meter: { from: before / maximum, to: after / maximum } });
-  });
   on("notice", ({ text }) => toast(text, { ms: 3000 }));
   on("lovers", ({ id }) => {
     gainCard({ kind: "affinity", bond: true, face: faceIconUrl(id, state, { context: "private" }), badge: "♥", top: "NEW RELATIONSHIP", main: displayName(id, state, { context: "private" }), sub: "恋人になった" });

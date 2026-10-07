@@ -27,6 +27,10 @@
 .bench-progress span.seen { color: rgba(255, 255, 255, 0.7); }
 .bench-progress span.now { color: #000; background: var(--accent); border-color: var(--accent); box-shadow: 0 0 14px var(--accent); }
 .bench-left { position: absolute; left: 0; top: 52px; bottom: 0; width: 420px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 20px; }
+.bench-left > .rig { transform: scale(0.6); transform-origin: center bottom; }
+.bench-worker { position: absolute; left: 24px; right: 24px; top: 92px; height: 180px; overflow: hidden; border: 1px solid rgba(199, 154, 60, 0.28); border-radius: 8px; background: linear-gradient(150deg, rgba(40, 29, 20, 0.42), rgba(8, 6, 12, 0.6)); }
+.bench-worker-stage { position: absolute; inset: 0 0 28px; }
+.bench-worker-name { position: absolute; bottom: 0; left: 0; right: 0; height: 28px; text-align: center; line-height: 28px; font-size: 13px; letter-spacing: 0.12em; color: var(--text-dim); border-top: 1px solid rgba(199, 154, 60, 0.16); }
 .bench-right { position: absolute; left: 420px; right: 20px; top: 64px; bottom: 48px; display: flex; flex-direction: column; }
 .bench-head { margin-bottom: 12px; }
 .bench-title { font-family: var(--font); font-weight: 700; font-size: 28px; letter-spacing: 0.08em; color: #fff; }
@@ -180,6 +184,8 @@
 .hr-time-bar b { display: block; height: 100%; background: linear-gradient(90deg, var(--accent-2), var(--accent)); }
 .hr-score { font-family: var(--font); font-size: 20px; color: #fff; }
 .hr-combo { font-size: 22px; font-weight: 800; color: var(--neon-amber); min-height: 30px; text-shadow: 0 0 12px rgba(255, 194, 74, 0.8); }
+.hr-feedback { position: relative; height: 50px; flex: none; pointer-events: none; }
+.hr-feedback .stamp { font-size: 28px; letter-spacing: 0.03em; }
 .hr-punch { width: 100%; align-items: center; padding: 18px; font-size: 22px; }
 .hr-row { display: flex; gap: 8px; }
 .hr-plan { color: var(--text); font-size: 14px; line-height: 1.6; min-height: 3.2em; }
@@ -226,11 +232,46 @@
 .dodge-hud { width: 620px; display: flex; justify-content: space-between; font-size: 16px; }
 .dodge-timer { font-family: var(--font); font-size: 22px; color: var(--accent); }
 .dodge-hits { color: var(--text-dim); }
+.dodge-wave { font-size: 14px; color: #94e6e8; align-self: center; }
 .dodge { position: relative; overflow: hidden; border: 2px solid rgba(255, 255, 255, 0.5); background: rgba(0, 0, 0, 0.72); touch-action: none; cursor: none; }
-.dodge-heart { position: absolute; left: 0; top: 0; width: 28px; height: 28px; line-height: 28px; text-align: center; font-size: 26px; color: #ff3a6a; text-shadow: 0 0 12px rgba(255, 60, 100, 0.9); pointer-events: none; }
+.dodge.warning[data-side="left"] { border-left-color: #ffd45c; box-shadow: inset 22px 0 26px -20px #ffd45c; }
+.dodge.warning[data-side="right"] { border-right-color: #ffd45c; box-shadow: inset -22px 0 26px -20px #ffd45c; }
+.dodge-heart { position: absolute; left: 0; top: 0; width: 28px; height: 28px; line-height: 28px; text-align: center; font-size: 26px; color: #ff3a6a; text-shadow: 0 0 12px rgba(255, 60, 100, 0.9); pointer-events: none; z-index: 3; }
+.dodge-core { position: absolute; left: 11px; top: 11px; width: 6px; height: 6px; border-radius: 50%; background: white; box-shadow: 0 0 5px white; }
+.dodge-heart.shield::after { content: ""; position: absolute; inset: -7px; border: 2px solid #abf9ef; border-radius: 50%; box-shadow: 0 0 16px #85e9d8; }
 .dodge-heart.hit { animation: heart-hit 0.9s steps(6); }
 @keyframes heart-hit { 0%, 100% { opacity: 1; } 50% { opacity: 0.1; } }
 .dodge-word { position: absolute; left: 0; top: 0; padding: 2px 8px; font-size: 15px; white-space: nowrap; color: #fff; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.45); border-radius: 3px; pointer-events: none; }
+.dodge-object { position: absolute; left: 0; top: 0; width: 22px; height: 22px; pointer-events: none; transition: none; }
+.dodge-object.coal { margin: 0; padding: 0; background: linear-gradient(140deg, #ffc467, #ce4d27 45%, #39252b); border: 2px solid #ffbd74; border-radius: 4px; box-shadow: 0 0 10px #ff7148; }
+.dodge-object.clock { border: 2px solid #c7d3ed; border-radius: 50%; background: #2a3245; }
+.dodge-object.clock::after { content: ""; position: absolute; left: 8px; top: 3px; width: 6px; height: 7px; border-left: 2px solid #edf6ff; border-bottom: 2px solid #edf6ff; }
+.dodge-object.spark { background: #f8d485; clip-path: polygon(50% 0, 62% 37%, 100% 50%, 62% 63%, 50% 100%, 38% 63%, 0 50%, 38% 37%); }
+.dodge-object.smoke { width: 28px; height: 28px; background: radial-gradient(circle at 35% 35%, #e7e1ff, #8a78b3); border: 2px solid #b7a8d5; border-radius: 45% 60% 40% 60%; opacity: 0.9; }
+.dodge-controls { display: flex; width: 620px; justify-content: space-between; align-items: center; gap: 22px; }
+.dodge-pad { position: relative; width: 140px; height: 140px; flex: none; border-radius: 50%; border: 2px solid #a4b4b6; background: radial-gradient(circle, #36464b, #0f161b 70%); touch-action: none; cursor: grab; outline-offset: 3px; }
+.dodge-pad > span { position: absolute; inset: 0; display: grid; place-items: center; font-size: 100px; color: #72898e; line-height: 1; }
+.dodge-knob { position: absolute; left: 45px; top: 45px; width: 46px; height: 46px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #c8dadd, #667e86); border: 2px solid #def5f5; box-shadow: 0 4px 8px #0008; pointer-events: none; }
+.dodge-pad.held { border-color: #acfff0; box-shadow: 0 0 14px #acfff044; cursor: grabbing; }
+.dodge-actions { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.dodge-refresh { min-height: 70px; min-width: 330px; font-size: 22px; touch-action: none; }
+.dodge-refresh:disabled { opacity: 0.4; cursor: default; }
+.dodge-actions small { color: var(--text-dim); font-size: 14px; }
+.dodge-refresh-fx { position: absolute; inset: 0; pointer-events: none; z-index: 4; overflow: hidden; }
+.dr-flash { position: absolute; inset: 0; background: radial-gradient(circle at var(--x) var(--y), #d8fff8aa, #7ee9dc44 40%, transparent 80%); animation: refresh-flash 0.8s ease-out forwards; }
+.dr-ring { position: absolute; left: var(--x); top: var(--y); width: 100px; height: 100px; margin: -50px; border: 4px solid #c7fff4; border-radius: 50%; box-shadow: 0 0 30px #aaffee, inset 0 0 30px #aaffee; animation: refresh-ring 0.8s ease-out forwards; }
+.dr-ring.second { border-color: #e4d3ff; animation-delay: 0.12s; }
+.dr-ray { position: absolute; left: var(--x); top: var(--y); width: 80px; height: 3px; background: linear-gradient(90deg, transparent, #fff, #85efde); transform-origin: left center; animation: refresh-ray 0.8s ease-out forwards; }
+.dodge-refresh-fx b { position: absolute; left: 50%; top: 50%; color: #e9fffa; font-size: 32px; white-space: nowrap; text-shadow: 0 0 18px #69dabd, 0 2px 3px #000; animation: refresh-title 0.85s ease-out forwards; }
+@keyframes refresh-flash { from { opacity: 1; } to { opacity: 0; } }
+@keyframes refresh-ring { from { transform: scale(0.2); opacity: 1; } to { transform: scale(9); opacity: 0; } }
+@keyframes refresh-ray { from { transform: rotate(var(--angle)) translateX(20px); opacity: 1; } to { transform: rotate(var(--angle)) translateX(300px); opacity: 0; } }
+@keyframes refresh-title { 0% { transform: translate(-50%, -40%) scale(0.8); opacity: 0; } 20%, 65% { transform: translate(-50%, -50%); opacity: 1; } 100% { transform: translate(-50%, -70%); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .dodge-refresh-fx .dr-ring, .dodge-refresh-fx .dr-ray { display: none; }
+  .dodge-refresh-fx b { animation: none; transform: translate(-50%, -50%); }
+  .dodge-heart.hit { animation: none; }
+}
 
 /* ---------------------------------------------------------------- 吸い出し */
 .pull { display: flex; gap: 30px; align-items: center; height: 100%; }

@@ -24,17 +24,17 @@
    変換は `python3 tools/proto_walk_sheet.py`（下の「画像の変換」）。つむぎは仮なので差し替える
 3. リメイク版 `remake/js/daily/map.js` の `chooseSpot()` へつなぐ（下の「本編に組み込む場合（見積もり）」）。
    組み込む時に CLAUDE.md の主人公の節へ「フィールドの歩行キャラだけ例外」を追記する（AA12）
-4. 再開時はまず `python3 -m http.server 8123`（リポジトリルート）を起動し、`node web/proto/street/smoke.mjs` で今の6通りが通るか確かめてから始める
+4. 再開時はまず `python3 -m http.server 8123`（リポジトリルート）を起動し、`node experiments/proto/street/smoke.mjs` で今の6通りが通るか確かめてから始める
 
 ## 起動
 
 ```bash
 python3 -m http.server 8123   # リポジトリルートで
-# → http://localhost:8123/web/proto/street/index.html
+# → http://localhost:8123/experiments/proto/street/index.html
 ```
 
 push 済みのブランチなら raw.githack でも開ける:
-`https://raw.githack.com/haseatsu114514-dot/shisha-game/claude/admiring-goodall-m9bdg3/web/proto/street/index.html`
+`https://raw.githack.com/haseatsu114514-dot/shisha-game/claude/admiring-goodall-m9bdg3/experiments/proto/street/index.html`
 
 | URLの後ろに付けるもの | 効果 |
 |---|---|
@@ -107,11 +107,11 @@ push 済みのブランチなら raw.githack でも開ける:
 
 | パス | 内容 |
 |---|---|
-| `web/proto/street/index.html` | 画面（キャンバス＋ウィンドウ類の HTML/CSS） |
-| `web/proto/street/street.js` | 本体（移動・描画・入店・しらべる・通行人・ファストトラベル・仮素材） |
-| `web/proto/street/stage_hankagai.json` | 通りの配置・入口・小物・通行人・テキスト |
-| `web/proto/street/stage_hankagai_hd.json` | 高解像度2.5D版の配置・大きさ・奥行き（テキストは上を引き継ぐ） |
-| `web/proto/street/smoke.mjs` | スモークテスト（標準・高解像度・ハリボテ × 生成画像・仮素材の6通りで全項目＋歩行ページ） |
+| `experiments/proto/street/index.html` | 画面（キャンバス＋ウィンドウ類の HTML/CSS） |
+| `experiments/proto/street/street.js` | 本体（移動・描画・入店・しらべる・通行人・ファストトラベル・仮素材） |
+| `experiments/proto/street/stage_hankagai.json` | 通りの配置・入口・小物・通行人・テキスト |
+| `experiments/proto/street/stage_hankagai_hd.json` | 高解像度2.5D版の配置・大きさ・奥行き（テキストは上を引き継ぐ） |
+| `experiments/proto/street/smoke.mjs` | スモークテスト（標準・高解像度・ハリボテ × 生成画像・仮素材の6通りで全項目＋歩行ページ） |
 | `assets/proto_street/` | 変換済みの建物・小物・地面・通行人の歩行シート・`street_assets.json`（ドアと看板の位置） |
 | `assets/proto_street_hd/` | 同じものの高解像度版（通行人は48px） |
 | `assets/proto_walk/tsumugi_walk_{32,48}.png/.json` | つむぎの歩行シート（歩行テストと共用） |

@@ -20,11 +20,11 @@ const ZONES = [
 
 /** 炭・熱・蒸らし・穴・詰めから、吸い出し開始時の温度を決める */
 export function startTemp(cs) {
-  let t = 0.3;
+  let t = 0.22;
   t += ((cs.heat?.heatPower ?? 50) - 50) / 100 * 0.35;
   if (cs.place === "four") t += 0.12;
   const { rainy } = craftConditions(cs);
-  const steamHeat = { 3: -0.06, 5: 0, 8: 0.05, 10: 0.09 }[cs.steamMin || 5] || 0;
+  const steamHeat = { 3: -0.06, 5: 0, 8: 0.12, 10: 0.18 }[cs.steamMin || 5] || 0;
   t += steamHeat * (rainy && steamHeat > 0 ? 0.85 : 1);
   if (rainy) t -= 0.025;
   // 最低1周を満たしたレイアウトは同じ初期熱。少穴は変動量で難しくする。

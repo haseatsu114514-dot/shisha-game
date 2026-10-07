@@ -19,7 +19,7 @@ description: 台詞・会話イベント・dialogue JSON（data/dialogue/*.json�
 - `speaker` は characters.json の `id` と完全一致（モブは lint_dialogue.py の
   `MOB_SPEAKERS` ホワイトリストのみ）。`face` は9種のみ:
   normal / smile / surprise / sad / serious / smug / wink / evil / excited
-- ⚠️ `brand/brand`・`brand/chapter1（character）` 等の旧残骸や `web/js/data.js`（生成物）を
+- ⚠️ `brand/brand`・`brand/chapter1（character）` 等の旧残骸や生成物を
   設定の根拠として**読まない・引用しない**。
 - 既存イベントに文体を合わせる: 周囲の台詞と同じ短さ・同じテンションで書く。
   一文を長く・装飾的にしない（改ページ割れの主因）。
@@ -50,10 +50,10 @@ description: 台詞・会話イベント・dialogue JSON（data/dialogue/*.json�
 ```bash
 python3 tools/lint_dialogue.py <触ったファイル名の一部>   # ERROR=0 必須。WARNも新規では出さない
 python3 -m json.tool data/dialogue/<触ったファイル> >/dev/null
-python3 web/build_data.py && python3 web/build_standalone.py   # ビルドしないと web に反映されない
+# 現行版はJSONを直接読むため、保存後にブラウザを再読み込みすれば反映
 ```
 
-- 新規 JSON を追加した場合は `web/build_data.py` の読み込み一覧に登録しないとバンドルされない。
+- 新規 JSON を追加した場合は `remake/js/core/data.js` の読み込み一覧に登録する。
 - 台詞以外のファイル（`lime_messages.json` 等）に同じ症状・同じ旧表現が残っていないか
   横断 grep する（owner-request スキル Step 4）。
-- 表示確認が必要なら `web/tools/linebreak_editor.html`、通しは web-build-test スキルの対応表で。
+- 表示確認が必要なら `python3 tools/text_editor_server.py`、通しは web-build-test スキルの対応表で。

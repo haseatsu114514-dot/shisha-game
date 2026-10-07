@@ -488,6 +488,14 @@
         {
           "speaker": "",
           "face": "",
+          "text": "窓際の女の子が、iPadに描いていた。目が合うと、小さく会釈して、また紙に目を落とす。",
+          "portrait": "tsumugi",
+          "portrait_face": "normal",
+          "gesture": "bow"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "いつもの時間。いつもの足音。ドアが開くと、外の空気と一緒にコンビニコーヒーの匂いが入ってきた。"
         },
         {
@@ -1237,12 +1245,25 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんとの稽古の片付けをしていると、ドアベルが鳴った。"
+          "text": "カウンターを整えていると、ドアベルが鳴った。"
         },
         {
           "speaker": "sumi",
           "face": "normal",
           "text": "悪い、俺は仕込みがある。──はじめ、頼めるか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓際の女の子が、iPadに描く手を止めた。こちらに気づいて、ぺこりと会釈する。",
+          "portrait": "tsumugi",
+          "portrait_face": "smile",
+          "gesture": "bow"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（よく描いてる子だ。……会釈を返して、っと）"
         },
         {
           "speaker": "oneesan",

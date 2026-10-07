@@ -34,6 +34,11 @@ export async function runHoles(cs) {
   const timeBar = el("i.hr-time-bar", [el("b")]);
   const scoreEl = el("div.hr-score");
   const comboEl = el("div.hr-combo");
+  const feedback = el("div.hr-feedback", { "aria-live": "polite", dataset: { test: "hole-feedback" } });
+  const report = (text, kind) => {
+    feedback.replaceChildren();
+    popStamp(feedback, text, kind, "50%", "50%");
+  };
   const role = el("div.hr-role");
   const plan = el("div.hr-plan", { dataset: { test: "hole-plan" } });
   const punchBtn = el("button.btn.primary.hr-punch", { dataset: { test: "hole-punch" } }, [el("span.btn-label", { text: "穴を開ける" })]);
@@ -41,7 +46,7 @@ export async function runHoles(cs) {
   const doneBtn = el("button.btn.small.ghost", { text: "この穴数で仕上げる", dataset: { test: "hole-done" } });
   panel.append(el("div.holes", [
     el("div.hr-stage", [disc]),
-    el("div.hr-side", [ringLabel, role, el("div.hr-time", [el("span", { text: "TIME" }), timeBar]), scoreEl, comboEl, plan, punchBtn, el("div.hr-row", [nextBtn, doneBtn])]),
+    el("div.hr-side", [ringLabel, role, el("div.hr-time", [el("span", { text: "TIME" }), timeBar]), scoreEl, comboEl, feedback, plan, punchBtn, el("div.hr-row", [nextBtn, doneBtn])]),
   ]));
 
   // ---- 状態
@@ -143,22 +148,21 @@ export async function runHoles(cs) {
       ring.holes.push({ a, d: dDeg });
       tally[kind]++;
       combo++;
-      popStamp(panel, kind === "perfect" ? "EXCELLENT" : "GOOD", kind, "36%", "18%");
+      report(kind === "perfect" ? "EXCELLENT" : "GOOD", kind);
       kind === "perfect" ? SE.perfect() : SE.good();
     } else {
       ring.holes.push({ a, d: goodWin * 1.5 });
       ring.extra++;
       combo = 0;
-      if (kind === "close") { tally.tooClose++; popStamp(panel, "TOO CLOSE", "bad", "36%", "18%"); }
-      else { tally.miss++; popStamp(panel, "ズレた…", "miss", "36%", "18%"); }
-      if (ring.id === "inner") { tally.tooMany++; popStamp(panel, "RISKY", "bad", "36%", "30%"); }
+      if (kind === "close") { tally.tooClose++; report("TOO CLOSE", "bad"); }
+      else { tally.miss++; report("ズレた…", "miss"); }
+      if (ring.id === "inner") tally.tooMany++;
       SE.miss();
     }
     addHoleDot(a, ring.r, kind);
     if (ring.taken.every(Boolean)) {
       const clean = ring.holes.every((h) => h.d <= perfWin) && ring.extra === 0;
-      popStamp(panel, clean ? "BEAUTIFUL RING" : "RING COMPLETE", "just", "36%", "44%");
-      if (ring.id === "middle") popStamp(panel, "AIR FLOW UP", "good", "36%", "56%");
+      report(clean ? "BEAUTIFUL RING" : "RING COMPLETE", "just");
       SE.just();
       tickerSay(clean ? "パッキー「きれいに揃ったーッ！ 見てくださいこの輪！」" : "パッキー「リング完成！ 手が止まりませんね〜♪」");
       // 自動送りはしない。完成したリングは入力を止め、次のリングか仕上げを選んでもらう。
