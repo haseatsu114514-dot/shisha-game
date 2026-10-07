@@ -1,0 +1,27 @@
+{
+  "runtime_changed": false,
+  "variants": [
+    {
+      "slug": "ocean-blue",
+      "source_hash_matches": true,
+      "source_byte_identical": true,
+      "checks": {
+        "raw_border_alpha_ge_16": 0,
+        "preview_border_alpha_ge_16": 0,
+        "source_rgba": true
+      },
+      "feet": [
+        [
+          264,
+          265,
+          677,
+          1173
+        ],
+        447.9458439727124
+      ],
+      "shared_scale": 0.607095046854083
+    }
+  ],
+  "contact_sheet_includes_original": true,
+  "review_operations": "Only cropping, uniform display scaling, labels and compositing against solid white/dark backgrounds; source pixels preserved."
+}
