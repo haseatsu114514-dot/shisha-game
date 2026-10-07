@@ -680,6 +680,50 @@
           "sha256": "12f33b1faa8073af567a380c8d7d3fc11ead9d0a6f886bc8d79ba1901388e758"
         }
       ]
+    },
+    {
+      "id": "adam-remaster-v1",
+      "title": "アダム 基本5表情の確認用 v1",
+      "status": "pending",
+      "role": "確認用生成元と5表情。本人のデザイン参照・採用未確定",
+      "sourceBranch": "codex/hajime-adam-portrait-remaster-20261007",
+      "images": [
+        {
+          "label": "5表情の生成元",
+          "path": "../../../../asset_sources/portraits/adam-remaster-v1/sheet.png",
+          "sha256": "2cd94538d0bf1a7510309056fb670d2a74f4c39274078f5375a18e954e4f126c"
+        },
+        {
+          "label": "通常",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/adam-remaster-v1/normal-preview.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "label": "笑顔",
+          "expression": "smile",
+          "path": "../../../../asset_sources/portraits/adam-remaster-v1/smile-preview.png",
+          "sha256": "a66fef386a04e8d61938c90924a13b6e70265b608ff1c0e03b5b185484aec27f"
+        },
+        {
+          "label": "真剣",
+          "expression": "serious",
+          "path": "../../../../asset_sources/portraits/adam-remaster-v1/serious-preview.png",
+          "sha256": "8123f694c34837e2c605a1d119aadd62afa262f5b7dee1f32b0fa18abb14d1fd"
+        },
+        {
+          "label": "驚き",
+          "expression": "surprise",
+          "path": "../../../../asset_sources/portraits/adam-remaster-v1/surprise-preview.png",
+          "sha256": "338341ad64a9b9d2561d3bb82ff1730139afedd8a12e3e15fbd37013c3240577"
+        },
+        {
+          "label": "熱の入った表情",
+          "expression": "intense",
+          "path": "../../../../asset_sources/portraits/adam-remaster-v1/intense-preview.png",
+          "sha256": "ece87271c106a0eadc419e37fedbce03b1c9036daf7a9012e5e3d89aa52f8cdc"
+        }
+      ]
     }
   ]
 }
