@@ -885,6 +885,39 @@
           "sha256": "883e89a58d25e4dd2e25912033c465daaa3517a4c7f3798f706b13fc76f37042"
         }
       ]
+    },
+    {
+      "id": "kafuka-blue-sister-v1",
+      "title": "サメちゃん・青ベースのストリートシスター 通常／腹話術",
+      "status": "pending",
+      "role": "3案目を選択した最新指示で主色を青へ修正。通常と顔をコロちゃんで隠した腹話術の確認用。画風の確定基準には使わない",
+      "sourceCommit": "working-branch:codex/kafuka-blue-sister-ventriloquism-20261007",
+      "images": [
+        {
+          "label": "通常・無加工生成元",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/normal/source.png",
+          "sha256": "9dd47dcd6aea5fa5b7f46c3a89f17ca86fa384cf74e0b85de21e26e3a937fdce"
+        },
+        {
+          "label": "通常・896×1200確認用",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/normal/preview.png",
+          "sha256": "498209e404092ee90513e82f34336e3a56b254a48ca94678b32b042c45ed0303"
+        },
+        {
+          "label": "腹話術・無加工生成元",
+          "expression": "ventriloquism",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/ventriloquism/source.png",
+          "sha256": "f08830ce7585ad2d5ae9b3ab0c9bcdafe108f55ea10b6f6c11a5bb70003ad8c8"
+        },
+        {
+          "label": "腹話術・896×1200確認用",
+          "expression": "ventriloquism",
+          "path": "../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/ventriloquism/preview.png",
+          "sha256": "5ca5eedda9e07e6b5b14fe1f311348238dec979f2dc65419cb7902f866bcbdb3"
+        }
+      ]
     }
   ]
 }
