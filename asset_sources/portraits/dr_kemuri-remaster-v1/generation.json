@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-07",
+  "character": "dr_kemuri",
+  "version": "v1",
+  "status": "pending",
+  "scope": "review-only generation; no runtime adoption",
+  "requestIds": [
+    "PRT54"
+  ],
+  "baseCommit": "e1494b4bf2d8f5ff783d9b4f0d6b67be18cc05bc",
+  "tool": "image_gen.imagegen",
+  "source": "sheet.png",
+  "prompt": "prompt.txt",
+  "size": [
+    1774,
+    887
+  ],
+  "sourceSha256": "974e25ba9b62edc4e7b5e7cd84c8c6d9fe126e0bcdb7219b47d1885215271041",
+  "copyByteIdentical": true,
+  "expressions": [
+    "normal",
+    "smile",
+    "serious",
+    "surprise",
+    "evil"
+  ],
+  "references": [
+    {
+      "path": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_normal.png",
+      "role": "identity and full-body design",
+      "sha256": "859d4296a27ac50d7042dba735ae30c28434e1fc26a6837a656b49d5c86ccdfe",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/dr_kemuri/chr_dr_kemuri_normal.png"
+    },
+    {
+      "path": "asset_sources/portraits/dr_kemuri-remaster-v1/existing-faces.png",
+      "role": "existing five facial expressions, unretouched native face crops",
+      "sha256": "e900115526a1c30efc82a3b0c9a320b55572b43480a09c0c86932cd2e6473622",
+      "actualToolInput": "/workspace/shisha-game/asset_sources/portraits/dr_kemuri-remaster-v1/existing-faces.png"
+    },
+    {
+      "path": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_evil.png",
+      "role": "opaque shining glasses and toothy grin of fifth expression",
+      "sha256": "cbe6903aa4fdd2c0524a294b558b6ed9bea2e67ee33579b465b35746a1e993d1",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/dr_kemuri/chr_dr_kemuri_evil.png"
+    },
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "previously approved rendering style",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/minto/chr_minto_normal.png"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "previously approved rendering style",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/ageha/chr_ageha_normal.png"
+    }
+  ],
+  "inspection": {
+    "existingExpressions": 5,
+    "priorStyleGroups": 21,
+    "priorStyleImages": 84,
+    "priorShaMismatches": 0,
+    "sourceBorderAlphaCounts": {
+      "1": 58,
+      "16": 0,
+      "24": 0,
+      "64": 0,
+      "128": 0
+    }
+  },
+  "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/201",
+  "sourceBranch": "codex/hajime-adam-portrait-remaster-20261007",
+  "notes": [
+    "Actual messy brown hair, black rectangular glasses, white shirt, stained lab coat, beige chinos, sandals, pen group and wrist accessories retained instead of stale blue-shirt/tie appearance text.",
+    "Happy closed eyes, sly serious face, startled green eyes and opaque white/pink evil glasses kept distinct.",
+    "Raw image preserved unchanged; extraction and review remain to be checked."
+  ]
+}
