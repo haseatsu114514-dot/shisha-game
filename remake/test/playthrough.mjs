@@ -74,6 +74,7 @@ let stock0 = null;
 let limeCoach = 0;
 let limeOpened = 0;
 let errandBlocked = false;
+let checkedTutorialGrowth = false;
 const seenShots = new Set();
 const deadline = Date.now() + 12 * 60 * 1000;
 
@@ -113,6 +114,14 @@ for (;;) {
     };
   });
   const key = JSON.stringify([snap.screen, snap.day, snap.slot, snap.phase, planIdx, snap.vn, snap.phone, snap.modal, snap.sub, snap.mode, snap.step]);
+  if (!checkedTutorialGrowth && snap.day === 1 && snap.screen === "map") {
+    const result = await page.evaluate(() => { const s = window.__remake.state;
+      return { stats: s.stats, xp: s.statXp, spins: s.reel.count }; });
+    if (Object.values(result.stats).some(n => n !== 10) || Object.values(result.xp).some(n => n !== 0) || result.spins !== 0)
+      throw new Error(`Forced/tutorial growth: ${JSON.stringify(result)}`);
+    checkedTutorialGrowth = true;
+    log("tutorial/forced growth remains zero");
+  }
   if (snap.day !== lastDay) { lastDay = snap.day; log(`DAY ${snap.day} (${snap.phase}) money=${snap.money} stamina=${snap.stamina}`); }
   if (key !== lastKey) { lastKey = key; lastProgress = Date.now(); }
   if (Date.now() - lastProgress > 30000) {

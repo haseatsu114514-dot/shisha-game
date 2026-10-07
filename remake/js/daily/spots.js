@@ -2,7 +2,7 @@
 // どの行動にも必ず報酬（好感度・ステ・体力・お金のどれか）が付く。
 import { state, markMet } from "../core/state.js";
 import { DB } from "../core/data.js";
-import { gainStat, gainAffinity, addStamina, addMoney, affinityLevel } from "../core/stats.js";
+import { earnStat, gainAffinity, addStamina, addMoney, affinityLevel } from "../core/stats.js";
 import { play } from "../vn/engine.js";
 import { playBgm } from "../core/audio.js";
 import { isRainy, RAIN_SPOT_TEXTS } from "./weather.js";
@@ -155,7 +155,6 @@ export async function visitChar(charId) {
     state.story[charId] = idx + 1;
     await play(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg });
     gainAffinity(charId, 10);
-    gainStat(CHAR_STAT[charId], 2);
     await afterStory(seq[idx], { bg });
   } else if (questionVisitDue(charId)) {
     await playQuestionVisit(charId, { bg });
@@ -174,8 +173,9 @@ export async function visitChar(charId) {
     const opener = rainy && dlg ? DB.dialogues.remake_rain_opener?.lines || [] : [];
     await play(opener.length ? { ...dlg, lines: [...opener, ...dlg.lines] } : id, { bg });
     gainAffinity(charId, 5);
-    if (!DB.dialogues[id]?.lines?.some((l) => l.type === "apply")) gainStat(CHAR_STAT[charId], 2);
   }
+  // 話の初回・繰り返し・質問回でも、体力を使った訪問の基礎成長を揃える。
+  earnStat(CHAR_STAT[charId], 4);
   markMet(charId);
   hasContact(charId); // 交換済みの判定をこの場で記録
 }
@@ -208,7 +208,7 @@ export async function visitSpot(spot) {
     id = "ch1_reviewer_payoff";
   }
   await play(id, { bg: bgRef(spot.bg) }); // bgUrl が昼夜差分（_day/_night）を選ぶ
-  gainStat(spot.stat, 3);
+  earnStat(spot.stat, 4);
 }
 
 export async function restAtHome(spot) {
