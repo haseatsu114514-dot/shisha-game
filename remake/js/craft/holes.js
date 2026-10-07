@@ -6,6 +6,7 @@ import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, refreshRig, tickerSay } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
+import { craftCondition } from "../core/condition.js";
 
 // 外周=熱拡散・安定／中周=ドロー・煙量／内周=抜け・攻め（焦げリスク）
 import { RINGS, circularAngleDistance, minimumRingComplete, evaluateFoil } from "./holes_logic.js";
@@ -16,9 +17,9 @@ const DEG = Math.PI / 180;
 export async function runHoles(cs) {
   const tutorial = cs.mode === "tutorial";
   const panel = stepPanel("holes", "アルミ穴あけ ── HOLE RHYTHM", "まず外周を一周。光る目印でタップ（Space）。その後は好きな穴数で仕上げられる");
-  const slow = skill.slow() * (tutorial ? 1.3 : 1);
-  const perfWin = 4.2 * skill.window() * (tutorial ? 1.5 : 1);
-  const goodWin = 11 * (tutorial ? 1.3 : 1);
+  const slow = skill.slow(cs) * (tutorial ? 1.3 : 1);
+  const perfWin = 4.2 * skill.window(cs) * (tutorial ? 1.5 : 1);
+  const goodWin = 11 * craftCondition(cs).window * (tutorial ? 1.3 : 1);
   const limit = tutorial ? 48 : TIME_LIMIT;
 
   // ---- 画面

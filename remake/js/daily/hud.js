@@ -4,7 +4,7 @@ import { el, yen } from "../core/util.js";
 import { layers } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { state, STAT_KEYS } from "../core/state.js";
-import { staminaRatio, STAMINA_LOW, maxStamina, star } from "../core/stats.js";
+import { staminaRatio, currentCondition, maxStamina, star } from "../core/stats.js";
 import { isRainy } from "./weather.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 
@@ -89,10 +89,12 @@ export function updateHud() {
   dom.money.textContent = yen(state.money);
   dom.left.textContent = `あと${daysLeft()}日`;
   const r = staminaRatio();
-  dom.stamina.dataset.health = r > 0.5 ? "green" : r > 0.25 ? "yellow" : "red";
-  dom.stamina.querySelector(".hud-bar").setAttribute("aria-label", `体力：${r > 0.5 ? "余裕がある" : r > 0.25 ? "減ってきた" : "残りわずか"}`);
+  const condition = currentCondition();
+  dom.stamina.dataset.health = condition.health;
+  dom.stamina.title = `体力：${condition.label}。${condition.hint}`;
+  dom.stamina.querySelector(".hud-bar").setAttribute("aria-label", dom.stamina.title);
   dom.stamina.querySelector("b").style.width = `${Math.round(r * 100)}%`;
-  dom.stamina.classList.toggle("low", state.stamina < STAMINA_LOW);
+  dom.stamina.classList.toggle("low", condition.health === "red");
   // 根性★で体力の器が増えると、バー自体が伸びる
   dom.stamina.querySelector(".hud-bar").style.width = `${Math.round(92 * (maxStamina() / 100))}px`;
   dom.radar.querySelector(".hr-fill").setAttribute("points", STAT_KEYS.map((k, i) => pt(i, 4 + 3.2 * star(k))).join(" "));
