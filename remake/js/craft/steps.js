@@ -3,7 +3,7 @@ import { el, sleep, clamp } from "../core/util.js";
 import { DB } from "../core/data.js";
 import { toast } from "../core/ui.js";
 import { state } from "../core/state.js";
-import { star, gainStat } from "../core/stats.js";
+import { star, earnStat } from "../core/stats.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, refreshRig } from "./session.js";
 import { autoSkill } from "./common.js";
@@ -241,7 +241,7 @@ export async function stepMix(cs) {
   if (r && !state.recipes[r.id]) {
     state.recipes[r.id] = { day: state.day };
     toast(`📖 レシピ帳に書き加えた「${r.name}」`, { kind: "good" });
-    if (cs.mode !== "tournament") gainStat("sense");
+    if (cs.mode !== "tournament") earnStat("sense", 1);
   }
   await sleep(200);
 }

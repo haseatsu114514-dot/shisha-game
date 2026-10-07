@@ -25,7 +25,7 @@ export function newState() {
     phase: "opening",          // opening | daily | tournament | cleared
     day: 1,
     slot: 0,                   // 0=昼 1=夜 2=その日の行動は終了
-    money: 20000,
+    money: 30000,
     stamina: 100,
     stats: { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 },
     statXp: {},

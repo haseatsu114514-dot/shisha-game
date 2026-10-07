@@ -1,0 +1,130 @@
+{
+  "parts": [
+    {
+      "expression": "normal",
+      "png_sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b",
+      "png_byte_identical_to_preview": true,
+      "webp_exact_rgba": true,
+      "canvas": [
+        896,
+        1200
+      ],
+      "feet": [
+        [
+          264,
+          266,
+          677,
+          1174
+        ],
+        447.9458439727124
+      ],
+      "border_alpha_ge_16": 0
+    },
+    {
+      "expression": "smile",
+      "png_sha256": "d764d478d5ab2fa89b769853d9a66c1c2b57528d39faea277d4e17aa180827da",
+      "png_byte_identical_to_preview": true,
+      "webp_exact_rgba": true,
+      "canvas": [
+        896,
+        1200
+      ],
+      "feet": [
+        [
+          264,
+          265,
+          680,
+          1174
+        ],
+        447.79139273029546
+      ],
+      "border_alpha_ge_16": 0
+    },
+    {
+      "expression": "serious",
+      "png_sha256": "e08c8f2f12698ce897c52282463a63b3891cd9edad024d74de8f993c1761097d",
+      "png_byte_identical_to_preview": true,
+      "webp_exact_rgba": true,
+      "canvas": [
+        896,
+        1200
+      ],
+      "feet": [
+        [
+          262,
+          265,
+          676,
+          1174
+        ],
+        447.75416982562547
+      ],
+      "border_alpha_ge_16": 0
+    },
+    {
+      "expression": "surprise",
+      "png_sha256": "915c1b810117697e560a9546ba444e466a61a3eb31cc91f5ecd7eb30e0dcc1f2",
+      "png_byte_identical_to_preview": true,
+      "webp_exact_rgba": true,
+      "canvas": [
+        896,
+        1200
+      ],
+      "feet": [
+        [
+          264,
+          265,
+          675,
+          1174
+        ],
+        447.72323868812634
+      ],
+      "border_alpha_ge_16": 0
+    },
+    {
+      "expression": "excited",
+      "png_sha256": "bae030e12a6301ad7c42d7bdf36381a6f7949776b69004d9c60d7517a4a50f2e",
+      "png_byte_identical_to_preview": true,
+      "webp_exact_rgba": true,
+      "canvas": [
+        896,
+        1200
+      ],
+      "feet": [
+        [
+          257,
+          258,
+          678,
+          1174
+        ],
+        448.0378757587874
+      ],
+      "border_alpha_ge_16": 0
+    },
+    {
+      "expression": "ventriloquism",
+      "png_sha256": "dd8a6312ff5636c9e670b4cc79b5bd0e800ed0f9131ad4064511787745036f4c",
+      "png_byte_identical_to_preview": true,
+      "webp_exact_rgba": true,
+      "canvas": [
+        896,
+        1200
+      ],
+      "feet": [
+        [
+          262,
+          264,
+          648,
+          1174
+        ],
+        448.7025894049562
+      ],
+      "border_alpha_ge_16": 0
+    }
+  ],
+  "normal_reused_without_regeneration": true,
+  "canvas": [
+    896,
+    1200
+  ],
+  "runtime_changed": false
+}

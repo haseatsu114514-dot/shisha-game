@@ -3,7 +3,7 @@ import { el, sleep } from "../core/util.js";
 import { layers, dayCard, modal, toast, fadeBlack, bannersIdle, setBg } from "../core/ui.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
-import { addStamina, gainAffinity, gainStat, staminaAfter, staminaRatio, maxStamina } from "../core/stats.js";
+import { addStamina, gainAffinity, paidAction, staminaAfter, staminaRatio, maxStamina } from "../core/stats.js";
 import { coldRisk, catchesCold } from "../core/illness.js";
 import { DB, bgUrl } from "../core/data.js";
 import { SE, playBgm } from "../core/audio.js";
@@ -145,7 +145,6 @@ async function day1Errands() {
     await chooseSpot({ guide: { pin: "shop", text: "スミさんに頼まれた仕入れへ。Dr.fookah をタップ！" } });
     await openShop({ errand: "mint" });
     f._errand_shop_done = true;
-    gainStat("insight"); // 仕入れの感覚を掴んだ
     toast("スミ「上出来だ。……この調子で、ちゃんと店を回せ」", { ms: 3200 });
     save();
     await bannersIdle();
@@ -191,9 +190,9 @@ async function takeAction() {
     state.pendingInvite = null;
     if (state.slot === 1) state.flags._private_night_day = state.day;
     if (state.slot === 1) state.flags._private_night_char = inv.sender;
-    await meetInvitation(inv);
+    const { spent } = await paidAction(() => meetInvitation(inv));
     state.slot++;
-    await afterAction({ exerted: true });
+    await afterAction({ exerted: true, spent });
     return;
   }
   const ev = chapterDef.nightEvents[state.day];
@@ -208,26 +207,34 @@ async function takeAction() {
   });
   if (spotId === "__lime__") return; // LIME で誘いに乗った → 次の takeAction で約束へ
   const spot = spotById(spotId);
+  const { value: { used, exerted }, spent } = await paidAction(() => performSpotAction(spot));
+  if (!used) return;
+  state.visitedDay[spot.id] = state.day;
+  state.slot++;
+  await afterAction({ exerted, spent });
+}
+
+async function performSpotAction(spot) {
   let used = true;
   let exerted = false;
   if (spot.kind === "tonari") {
     const sub = await tonariMenu();
-    if (!sub) return;
+    if (!sub) return { used: false, exerted };
     if (state.visitedDay[`tonari_${sub}`] === state.day) {
       toast(sub === "baito" ? "今日のシフトはもう終わった" : "今日はもう客席で一服した");
-      return;
+      return { used: false, exerted };
     }
-    if (!(await staminaGuard(sub === "baito" ? -24 : -10))) return;
+    if (!(await staminaGuard(sub === "baito" ? -24 : -10))) return { used: false, exerted };
     exerted = true;
     state.visitedDay[`tonari_${sub}`] = state.day;
     if (sub === "baito") await doBaito();
     else await tonariCustomer();
   } else if (spot.kind === "kafuka") {
-    if (!(await staminaGuard(spot.stamina))) return;
+    if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
     used = await visitKafuka(spot);
     exerted = spot.stamina < 0;
   } else if (spot.kind === "rival") {
-    if (!(await staminaGuard(spot.stamina))) return;
+    if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
     await visitRival(spot);
     exerted = true;
   } else if (spot.kind === "shop") {
@@ -236,7 +243,7 @@ async function takeAction() {
     else if (await staminaGuard(-14)) { await visitRin(); exerted = true; }
     else used = false;
   } else if (spot.kind === "spot") {
-    if (!(await staminaGuard(spot.stamina))) return;
+    if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
     await visitSpot(spot);
     exerted = spot.stamina < 0;
   } else if (spot.kind === "rest") {
@@ -244,12 +251,9 @@ async function takeAction() {
   } else if (spot.kind === "fortune") {
     await doFortune(); // 時間は使わない（占ってもらったら今日はもう寄れない）
     save();
-    return;
+    return { used: false, exerted };
   }
-  if (!used) return;
-  state.visitedDay[spot.id] = state.day;
-  state.slot++;
-  await afterAction({ exerted });
+  return { used, exerted };
 }
 
 
@@ -284,10 +288,10 @@ async function meetInvitation(inv) {
 }
 
 /** 行動を1回使ったあと: スロットが1回転（昼は次のマップで・夜はその場で見せる）。告白は営業後に endDay で扱う */
-async function afterAction({ exerted = false } = {}) {
+async function afterAction({ exerted = false, spent = 0 } = {}) {
   // 警告の承諾回数ではなく、実際に消耗した行動の終了時に一度だけ抽選する。
   if (exerted && !state.flags._cold_pending && catchesCold(staminaRatio())) state.flags._cold_pending = true;
-  spinReel();
+  spinReel({ spent });
   save();
   // 昼の行動の分は次のマップで回る。夜の行動の分は、その夜のうちにここで回す
   if (state.slot >= 2) await showReelNow();
@@ -323,8 +327,8 @@ async function endDay() {
   if (appointment?.afterClose && appointment.queuedAfterClose && (appointment.day ?? state.day) === state.day) {
     state.pendingInvite = null;
     await beat("——店の営業が終わってから、約束の場所へ。");
-    await meetInvitation(appointment);
-    await afterAction({ exerted: true });
+    const { spent } = await paidAction(() => meetInvitation(appointment));
+    await afterAction({ exerted: true, spent });
     metTonight = true;
     companion = appointment.sender;
   }

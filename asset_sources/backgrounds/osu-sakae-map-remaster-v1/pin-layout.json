@@ -1,0 +1,65 @@
+{
+  "source": "remake/js/daily/spots.js",
+  "pin_positions_unchanged": true,
+  "spots": [
+    {
+      "id": "tonari",
+      "x_percent": 86.0,
+      "y_percent": 36.0
+    },
+    {
+      "id": "naru",
+      "x_percent": 70.0,
+      "y_percent": 24.0
+    },
+    {
+      "id": "adam",
+      "x_percent": 46.0,
+      "y_percent": 48.0
+    },
+    {
+      "id": "minto",
+      "x_percent": 28.0,
+      "y_percent": 62.0
+    },
+    {
+      "id": "shop",
+      "x_percent": 36.0,
+      "y_percent": 30.0
+    },
+    {
+      "id": "cafe",
+      "x_percent": 72.0,
+      "y_percent": 54.0
+    },
+    {
+      "id": "kannon",
+      "x_percent": 12.0,
+      "y_percent": 56.0
+    },
+    {
+      "id": "choizap",
+      "x_percent": 20.0,
+      "y_percent": 36.0
+    },
+    {
+      "id": "c_station",
+      "x_percent": 54.0,
+      "y_percent": 66.0
+    },
+    {
+      "id": "fortune",
+      "x_percent": 63.0,
+      "y_percent": 78.0
+    },
+    {
+      "id": "rest",
+      "x_percent": 89.0,
+      "y_percent": 52.0
+    }
+  ],
+  "scene_size": [
+    1280,
+    720
+  ]
+}

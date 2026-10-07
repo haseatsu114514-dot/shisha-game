@@ -50,12 +50,12 @@ export function gainWord(total) {
  * 戻り値=実際に伸びたポイント。
  * @param opts.silent 通知カードを出さない（スロットのように自前で見せるとき）
  */
-export function gainStat(key, amount = 1, { silent = false } = {}) {
+export function gainStat(key, amount = 1, { silent = false, excludedKeys = [] } = {}) {
   if (!STAT_KEYS.includes(key) || !(amount > 0)) return 0;
   const cap = statCap();
   // 上限に届いた項目は、まだ伸びる項目へ振り替える（伸びている実感を保つ）
-  if (state.stats[key] >= cap) {
-    const open = STAT_KEYS.filter((k) => state.stats[k] < cap);
+  if (state.stats[key] >= cap || excludedKeys.includes(key)) {
+    const open = STAT_KEYS.filter((k) => state.stats[k] < cap && !excludedKeys.includes(k));
     if (!open.length) return 0;
     key = open[Math.floor(Math.random() * open.length)];
   }
@@ -88,9 +88,45 @@ function flushBatch() {
   }
 }
 
-/** 通常の報酬オブジェクト。正の項目ごとに実増加1P（旧版向けの経験値量は正本に残す）。 */
+// 台本の報酬は、自由行動の終了まで預かる。先に報酬・後に消耗する誘いも同じ扱い。
+// 強制イベント、レッスン、LIME、休憩など、行動の外では能力を増やさない。
+export const ACTION_GROWTH_BUDGET = 2;
+export const DRILL_GROWTH_BUDGET = 2;
+let earningAction = null;
+
+/** 台本・訪問・制作の成長候補。確定済み報酬用の gainStat と分ける。 */
+export function earnStat(key, amount = 1) {
+  if (!earningAction || earningAction.owner !== state || !STAT_KEYS.includes(key) || !(amount > 0)) return;
+  // 数字は育成候補の優先度に使う。台本・訪問終了の同じ能力を重複加算しない。
+  earningAction.gains[key] = Math.max(earningAction.gains[key] || 0, amount);
+}
+
+/** 自分で選んだ行動だけを包む。追加の自主練は独立した小さな成長枠。 */
+export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET } = {}) {
+  const parent = earningAction;
+  const action = { owner: state, gains: {}, spent: 0 };
+  earningAction = action;
+  let value;
+  try { value = await run(); }
+  finally { earningAction = parent; }
+  if (action.owner !== state) return { value, spent: 0 };
+  if (parent?.owner === state) parent.spent += action.spent;
+  if (action.spent > 0) {
+    // 通常は1能力につき1P、最大2能力。成功した自主練は別枠で2能力、失敗は1能力。
+    const entries = Object.entries(action.gains).sort((a, b) => b[1] - a[1]).slice(0, Math.max(0, Math.floor(budget)));
+    const rewarded = [];
+    for (const [key] of entries) {
+      const before = { ...state.stats };
+      gainStat(key, 1, { excludedKeys: rewarded });
+      for (const k of STAT_KEYS) if (state.stats[k] > before[k]) rewarded.push(k);
+    }
+  }
+  return { value, spent: action.spent };
+}
+
+/** 正の項目は通常1Pの候補。旧版向けの報酬量は正本JSONに残す。 */
 export function applyStats(obj = {}) {
-  for (const [k, v] of Object.entries(obj)) if (v > 0) gainStat(k);
+  for (const [k, v] of Object.entries(obj)) earnStat(k, v);
 }
 
 // ---------------------------------------------------------------- 好感度（二層: ポイント→5段階）
@@ -211,6 +247,7 @@ export function addStamina(n) {
   const before = state.stamina;
   const maximum = maxStamina();
   state.stamina = staminaAfter(n);
+  if (earningAction?.owner === state && state.stamina < before) earningAction.spent += before - state.stamina;
   if (state.stamina !== before) emit("stamina-change", { before, after: state.stamina, maximum });
   emit("hud");
   return state.stamina - before;

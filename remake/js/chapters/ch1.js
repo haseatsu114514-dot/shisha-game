@@ -5,7 +5,7 @@ import { DB, bgUrl, faceIconUrl, realName, displayName } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
 import { layers, showScreen, clearScreen, setBg, smokeWipe, chapterTitle, dayCard, roundCut, toast, bannersIdle, retire, retireScreen } from "../core/ui.js";
 import { state, save, markMet, setFlag, flag } from "../core/state.js";
-import { addMoney, maxStamina, gainStat, addStamina } from "../core/stats.js";
+import { addMoney, maxStamina, addStamina } from "../core/stats.js";
 import { playBgm, stopBgm, SE } from "../core/audio.js";
 import { play, hooks } from "../vn/engine.js";
 import { runDaily } from "../daily/calendar.js";
@@ -347,7 +347,6 @@ async function victory() {
     },
   ], { time: "PM 11:47", title: "優勝の夜" });
   await play("ch1_naru_promise");
-  gainStat("insight");
   state.phase = "cleared";
   save();
   await bannersIdle();

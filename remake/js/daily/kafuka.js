@@ -1,7 +1,7 @@
 // シーシャークの出会い・第2章からの店。競技のライバル枠とは分ける。
 import { DB } from "../core/data.js";
 import { state, save, markMet } from "../core/state.js";
-import { gainAffinity, gainStat, addMoney, addStamina } from "../core/stats.js";
+import { gainAffinity, earnStat, addMoney, addStamina } from "../core/stats.js";
 import { play } from "../vn/engine.js";
 
 export const KAFUKA_NICKNAME_TOPIC = "lime_naru_kafuka_nickname";
@@ -56,7 +56,7 @@ export async function visitKafuka(spot) {
   await play(dialogue);
   state.story.kafuka = count + 1;
   gainAffinity("kafuka", count === 0 ? 2 : 1);
-  gainStat("insight");
+  earnStat("insight", 4);
   syncKafukaKnowledge();
   return true;
 }

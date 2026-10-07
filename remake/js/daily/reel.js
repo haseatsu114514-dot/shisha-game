@@ -237,9 +237,9 @@ function pickTarget() {
   return target || "guts";
 }
 
-/** 日常の行動を1回消費したら呼ぶ。結果と報酬はこの瞬間に確定する（演出は次のマップ表示で） */
-export function onAction() {
-  if (!state?.reel || state.phase !== "daily") { statBuffer = {}; return; }
+/** 自分で選び、実際に体力を消費した日常行動の終了後に呼ぶ。結果と報酬はこの瞬間に確定する（演出は次のマップ表示で） */
+export function onAction({ spent = 0 } = {}) {
+  if (!(spent > 0) || !state?.reel || state.phase !== "daily") { statBuffer = {}; return; }
   const reel = state.reel;
   const chapterFirst = reel.lastChapter !== state.chapter;
   reel.lastChapter = state.chapter;
