@@ -1,0 +1,73 @@
+{
+  "character": "kafuka",
+  "request_id": "PRT63",
+  "variant": "ocean-blue",
+  "status": "pending-review",
+  "expression": "normal",
+  "raw_generation_path": "/workspace/generated_images/exec-3393ef57-a93a-448d-9227-30c2a42fd87d.png",
+  "source_size": [
+    1024,
+    1536
+  ],
+  "source_mode": "RGBA",
+  "source_sha256": "d1777a3276e1519e8f9bb2f3dcb6e2456650b1e6f8856fde19828cfab333cd4e",
+  "source_byte_identical": true,
+  "prompt": "Create ONE full-body hair-colour EDIT of IMAGE 1, the latest Kafuka / Same-chan character sprite that the owner likes. Image 1 is the complete geometry, face, expression, hairstyle, clothing, prop and composition authority. Image 2 is the native face crop of that same character, for face fidelity only. Images 3 and 4 are previously approved Minto and Ageha sprites, for fine rendering quality only.\n\nONLY CHANGE THE HUMAN HAIR COLOUR / PIGMENT DISTRIBUTION. Keep approximately 75 percent of her visible hair soft ebony black. Increase the face-framing BLUE inner layers to approximately 25 percent: a clearly visible medium-light ocean/cobalt blue underlayer on BOTH sides of her face, continuing to the curled shoulder-length ends over the black collar. Add one broader cobalt face-framing streak in the fringe, while the central fringe and crown remain black. This is a deliberate dyed section, not glowing highlights. Blue panels must be visibly lighter than the charcoal-black hood and jacket, with clean strand boundaries and subtle natural shadows. Retain black outer locks and do not turn all the hair blue.\n\nPreserve her exact same shoulder-length softly layered hairstyle, fringe shape and parting, curled ends, same cute adult face, blue half-lidded eyes and lashes, tiny nose, blush, mischievous small sharp-tooth smile and skin tone. Preserve face angle, body proportions, crossed-leg stance and raised playful screen-right claw hand. Keep the crown-wearing medium-blue shark plush KORO in the screen-left arm, its white snout/belly, dark round eyes, gold crown, navy bow and gold star, and little black cape unchanged.\n\nKeep ALL CLOTHING COLOURS AND DESIGN IDENTICAL to image 1: charcoal-black hood and loose utility jacket, warm ivory forehead coif band, pale powder-blue hood lining and accents, fin and tail, tiny silver crosses and tooth hardware, ivory inner top and sleeve stripes, black pleated skort, charcoal tights, black/ivory/pale-blue chunky high-top skate shoes with broad ivory laces. Do not recolour the jacket to blue, do not change the ivory coif panel, eyes, nails, skin or plush colour. No change to jacket pockets, straps, jewellery, hem, boots, hands or feet. Keep full character scale and pose in exactly the same position. Both shoes, head, hood, hands and plush fully visible with margin.\n\nUse the same delicate controlled outlines, restrained fine shading and high-density anime/pixel-art-like sprite finish as the input. No heavier ink, dramatic glossy shading, new makeup, exaggerated anatomy or added props. Do not restyle the character. True RGBA transparent background, clean natural alpha edges. No background, glow, mist, floor, ground shadow, text, speech bubble, checkerboard or border. One complete sprite only.\n",
+  "references": [
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-hair/asset_sources/portraits/kafuka-hair-color-variants-v1/references/base-source.png",
+      "role": "Latest selected outfit, identity, hairstyle, composition and expression authority. Only human hair pigments may change. Pending design from PR #206, not an approved render baseline.",
+      "sha256": "04781bc1691223aade5fdcc5cc0a9260ab0d8282b9291d4f999d07a18ff4d744"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-hair/asset_sources/portraits/kafuka-hair-color-variants-v1/references/base-face-native.png",
+      "role": "Native face crop of the same base: preserve face and eyes, modify hair pigments only.",
+      "sha256": "716d2add183a5fba601bfd19576ac5fd471db385c5afea816f823b70aee93e26"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-hair/assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "Approved Minto rendering quality only. Do not copy her face, hairstyle, costume or pose.",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-hair/assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "Approved Ageha rendering quality only. Do not copy her face, hairstyle, costume or pose.",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    }
+  ],
+  "reference_review": "All earlier 29 portrait groups and 112 images reviewed in the same session. Current task reread latest identity source, native face, and approved Minto/Ageha. Every colour edit uses the same original base rather than the preceding edit.",
+  "normalization": {
+    "operations": "Whole-image uniform resize and RGBA placement only. Native crops are unretouched. No painting, face compositing, warping, alpha thresholding or colour postprocessing.",
+    "common_scale_per_1536px_source_height": 0.607095046854083,
+    "scale": 0.607095046854083,
+    "offset": [
+      142,
+      255
+    ],
+    "canvas_size": [
+      896,
+      1200
+    ],
+    "source_main_bbox": [
+      201,
+      17,
+      881,
+      1513
+    ],
+    "preview_main_content": [
+      [
+        264,
+        265,
+        677,
+        1173
+      ],
+      447.9458439727124
+    ]
+  },
+  "checks": {
+    "raw_border_alpha_ge_16": 0,
+    "preview_border_alpha_ge_16": 0,
+    "source_rgba": true
+  },
+  "runtime_changed": false
+}
