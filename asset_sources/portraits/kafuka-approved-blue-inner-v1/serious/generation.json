@@ -1,0 +1,77 @@
+{
+  "character": "kafuka",
+  "design": "adopted-black-hair-ocean-blue-inner-v1",
+  "expression": "serious",
+  "status": "generated-parts-review",
+  "request_id": "PRT71",
+  "raw_generation_path": "/workspace/generated_images/exec-bf880fe2-e872-44e3-a406-767c4348bbee.png",
+  "source_size": [
+    1024,
+    1536
+  ],
+  "source_mode": "RGBA",
+  "source_sha256": "4bff2bb217bac87ebdd1b79bf8b4c56145eeffb2a32959769c4888ad4e15623d",
+  "source_byte_identical": true,
+  "prompt": "Create ONE full-body serious expression sprite of the SAME adult Kafuka / Same-chan in IMAGE 1, whose new design the user explicitly ADOPTED. This is a faithful expression edit, not another clothing/hair redesign. Image 2 is her native approved face. Image 3 shows OLD expression meanings/gestures only: its silver hair and old blue shark-mouth hoodie are obsolete. Images 4 and 5 are approved Minto/Ageha, rendering quality only.\n\nEXPRESSION AND SMALL GESTURE: Eyes OPEN with recognisable large blue irises and restrained half-lidded focused look, brows slightly lowered, a small firm closed mouth with no grin and no blush overload. The screen-right hand raises ONE index finger modestly near shoulder level as she explains a shark fact. Keep the screen-left arm supporting Koro and same crossed legs. Not angry, threatening, crying or scowling.\n\nEXACT ADOPTED IDENTITY: same cute adult woman, same face shape, tiny nose, blue eyes/eyelashes, skin tone, head size, shoulder-length softly layered curled hairstyle. Keep soft ebony BLACK outer hair, black crown/fringe and the clearly visible stronger OCEAN/COBALT BLUE inner layers on both sides and curled ends, approximately one quarter of visible hair. Preserve image 1's natural dark-root to brighter blue-end colour transitions. No silver/white/grey hair, no different hairstyle, no blue all-over hair.\n\nEXACT ADOPTED CLOTHES: image 1's black/charcoal hood exterior and loose utility jacket, warm ivory coif forehead band and inner top/cuff stripes, pale powder-blue hood lining/pockets/straps/piping/fin and tail, black pleated skort and dark undershorts, charcoal sheer tights, black/ivory/powder-blue skate high-tops with wide ivory laces. Preserve every tiny cross/tooth silver hardware, zipper, chain, pocket and shoulder cape. Do not recolour the main clothing to the old all-blue outfit. Keep KORO in the screen-left arm: medium-blue friendly shark plush, white snout/belly, black round eyes, smiling open toothy mouth, gold king crown, navy bow with gold star and little black cape. One toy only, all unchanged.\n\nSame full-body scale, crossed-leg stance, both shoes in the same places. Slight expression-related wrist/shoulder gesture allowed as specified, not a different body pose. Full hood/crown, sleeves, hands, plush, tail/fins and BOTH shoes fully visible with empty margins, same canvas aspect and character scale/position as image 1.\n\nSame fine clean high-density anime/pixel-art-like sprite finish as the approved original: delicate controlled lines and restrained shading, no thicker ink, heavy glossy paint, coarse pixelation, blur or drama. True RGBA transparent background and natural clean edges. No background, gradient outside the character, glow, floor, shadow, text, speech bubbles, checkerboard or extra character. ONE complete sprite only.\n",
+  "references": [
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-parts-map/asset_sources/portraits/kafuka-approved-blue-inner-v1/normal/source.png",
+      "role": "Explicitly adopted same adult character, selected outfit, hairstyle and dark-root ocean/cobalt blue inner gradients. Design and face authority.",
+      "sha256": "d1777a3276e1519e8f9bb2f3dcb6e2456650b1e6f8856fde19828cfab333cd4e"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-parts-map/asset_sources/portraits/kafuka-approved-blue-inner-v1/normal/face-native.png",
+      "role": "Native approved face crop: preserve face size, eyes, lashes, nose and fine rendering, modify expression as instructed.",
+      "sha256": "27d3fccb8acf435e36b7fceaeefdb3ae5ad0d77537f7db8ad79dfcb4938d8015"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-parts-map/asset_sources/portraits/kafuka-approved-blue-inner-v1/references/existing-expressions.png",
+      "role": "Old five expressions, expression/gesture semantics ONLY. Never copy obsolete silver hair or shark-mouth hood clothes.",
+      "sha256": "8c8b3c6793b7d42187330fdf9abb495b078102efaf4f143a95e57d83bc8c2cd8"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-parts-map/assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "Approved Minto fine rendering only; no face/costume transfer.",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-parts-map/assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "Approved Ageha fine rendering only; no face/costume transfer.",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    }
+  ],
+  "normalization": {
+    "operations": "Whole-image uniform resize and integer RGBA placement only, using approved normal scale per source canvas height; native crops unretouched. No painting, face compositing, warping, alpha thresholding or colour postprocessing.",
+    "scale": 0.607095046854083,
+    "common_scale_per_1536px_source_height": 0.607095046854083,
+    "offset": [
+      141,
+      255
+    ],
+    "canvas_size": [
+      896,
+      1200
+    ],
+    "source_main_bbox": [
+      200,
+      16,
+      881,
+      1515
+    ],
+    "preview_main_content": [
+      [
+        262,
+        265,
+        676,
+        1174
+      ],
+      447.75416982562547
+    ]
+  },
+  "checks": {
+    "raw_border_alpha_ge_16": 0,
+    "preview_border_alpha_ge_16": 0,
+    "source_rgba": true
+  },
+  "runtime_changed": false
+}
