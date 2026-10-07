@@ -1,0 +1,79 @@
+{
+  "character": "kafuka",
+  "version": "blue-sister-v1",
+  "expression": "ventriloquism",
+  "status": "pending-review",
+  "request_id": "PRT60",
+  "source_size": [
+    1024,
+    1536
+  ],
+  "source_mode": "RGBA",
+  "raw_generation_path": "/workspace/generated_images/exec-ae3a0d53-7a3f-4b6c-bb02-2a8d08c347a0.png",
+  "source_sha256": "f08830ce7585ad2d5ae9b3ab0c9bcdafe108f55ea10b6f6c11a5bb70003ad8c8",
+  "source_byte_identical": true,
+  "prompt": "Edit image 1, the BLUE STREET-SISTER normal sprite, into exactly ONE FULL-BODY VENTRILOQUISM pose for the SAME character. Preserve this exact blue/ivory outfit, hoodie-coif structure, short nun-like shoulder cape and veil, skirt and straps, cross and shark-tooth charms, sheer charcoal tights, blue/ivory chunky shoes, same adult proportions and height. Preserve the SAME portrait canvas proportions and scale, head/body position and casually crossed legs, feet and shoes positions. Change the arms and placement of the existing shark plush only. Image 2 is the original character's face identity; images 3 and 4 are approved Minto/Ageha render-quality references only. Do not borrow their character designs.\n\nTHE REQUIRED POSE: she raises her existing blue shark plush KORO up directly IN FRONT OF HER FACE with BOTH HANDS. The plush must hide her WHOLE face: the viewer sees NO eyes, NO nose, and NO mouth of the woman. Her blue nun-coif hood, silver-grey hair at the sides and silhouette of the head remain visible around/behind the plush, so it reads as the same girl mischievously hiding behind her toy. Place the plush's face where her face normally is, near upper centre; its broad shark head and white snout should convincingly occlude her entire face. Do not leave a smiling girl visible next to the plush. Do not keep the toy at chest or hip height.\n\nThe plush is still Koro: medium blue rounded shark body, white belly and broad white snout, small glossy dark round eyes, friendly open toothy mouth, small distinctive golden KING CROWN, navy bow with gold star, and little black cape. The plush faces the viewer with its toothy mouth open as if it is speaking in her stead. Her two blue-nailed human hands naturally grip/support its sides and underside, her elbows slightly out; cute playful puppet/ventriloquism routine. One plush only. Do not enlarge it into a real animal or invent moving mechanical jaws. Cover the girl's face by repositioning this same plush, not by adding a mask. All parts of the woman's hood, crown, hands and BOTH SHOES must remain inside frame with empty margins.\n\nRender in exactly the same fine, clean high-density anime/pixel-art-like sprite quality as image 1 and the approved references. Do not thicken outlines or add dramatic glossy lighting, gritty texture or luminous rim light. Genuine RGBA transparent background with clean alpha, no ground, cast shadow, glow, mist, text, speech bubbles, effects, checkerboard or border. Keep garment construction and PRIMARY BLUE palette unchanged. Output just the one complete sprite, not a sheet or two figures.",
+  "references": [
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-concepts/asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/normal/source.png",
+      "role": "Blue sister normal sprite: preserve outfit, proportions and palette; raise existing Koro to fully cover the face",
+      "sha256": "9dd47dcd6aea5fa5b7f46c3a89f17ca86fa384cf74e0b85de21e26e3a937fdce"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-concepts/asset_sources/portraits/kafuka-gothic-shark-concepts-v1/existing-face.png",
+      "role": "Original character face: identity only; face must be hidden in this pose",
+      "sha256": "700fce2f25f57568f8ea253c8f2da1e72bbebc7eff5acce85a2103cf151a06c0"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-concepts/assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "Approved Minto: render quality only",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-concepts/assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "Approved Ageha: render quality only",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    }
+  ],
+  "reference_library_reviewed": "All previously reviewed portrait groups, including remasters merged in PR #204 and three concept renders merged in PR #205. Approved Minto and Ageha attached as render references.",
+  "normalization": {
+    "operations": "Only whole-image uniform resize and RGBA placement; common scale per source canvas height for both images. No redraw, face compositing, warping or alpha thresholding.",
+    "scale": 0.607095046854083,
+    "offset": [
+      142,
+      257
+    ],
+    "canvas_size": [
+      896,
+      1200
+    ],
+    "source_main_bbox": [
+      200,
+      16,
+      831,
+      1511
+    ],
+    "original_main_bbox": [
+      273,
+      267,
+      673,
+      1174
+    ],
+    "preview_main_content": [
+      [
+        263,
+        267,
+        647,
+        1174
+      ],
+      447.93926347351425
+    ]
+  },
+  "checks": {
+    "raw_border_alpha_ge_16": 0,
+    "preview_border_alpha_ge_16": 0,
+    "raw_border_alpha_ge_24": 0,
+    "preview_border_alpha_ge_24": 0
+  },
+  "runtime_changed": false
+}
