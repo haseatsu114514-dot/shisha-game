@@ -39,6 +39,14 @@ def assemble():
    full=im.crop((195,245,750,1195));full.thumbnail((460,825),Image.Resampling.LANCZOS);out.alpha_composite(full,(x+(500-full.width)//2,150));out.alpha_composite(im.crop((270,260,680,690)),(x+45,960))
   out.convert('RGB').save(BASE/('review-dark.png' if dark else 'review.png'))
  (BASE/'parts-validation.json').write_text(json.dumps({'parts':checks,'normal_reused_without_regeneration':True,'canvas':[896,1200],'runtime_changed':False},ensure_ascii=False,indent=2)+'\n')
+ # Crop from approved normal only; no generated redraw for an icon.
+ cropbox=(350,265,570,485);native=Image.open(BASE/'normal/preview.png').convert('RGBA').crop(cropbox)
+ native.save(BASE/'references/icon-native-crop.png')
+ small=native.resize((160,160),Image.Resampling.LANCZOS);alpha=small.getchannel('A')
+ icon=small.convert('RGB').quantize(colors=256,method=Image.Quantize.MEDIANCUT).convert('RGBA');icon.putalpha(alpha)
+ icon.save(kit/'face_kafuka.png');icon.save(kit/'face_kafuka.webp','WEBP',lossless=True,quality=100,method=6,exact=True)
+ assert np.array_equal(np.asarray(icon),np.asarray(Image.open(kit/'face_kafuka.webp').convert('RGBA')))
+ (kit/'manifest.json').write_text(json.dumps({'character':'kafuka','status':'parts-kit-review','portraits':[{'expression':c['expression'],'png':f'chr_kafuka_{c["expression"]}.png','webp':f'chr_kafuka_{c["expression"]}.webp','sha256':c['png_sha256']} for c in checks],'icon':{'png':'face_kafuka.png','webp':'face_kafuka.webp','size':[160,160],'colors':256,'native_source':'../normal/preview.png','crop_box':cropbox,'alpha_preserved':True,'webp_exact_rgba':True},'runtime_installed':False},ensure_ascii=False,indent=2)+'\n')
  print(json.dumps({'parts_exported':ready,'all_webp_exact_rgba':all(c['webp_exact_rgba'] for c in checks)},ensure_ascii=False))
 if __name__=='__main__':
  p=argparse.ArgumentParser();p.add_argument('--archive',nargs=2);p.add_argument('--assemble',action='store_true');a=p.parse_args()

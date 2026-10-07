@@ -6,10 +6,12 @@ BASE=Path(__file__).resolve().parent
 sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def archive(tod,source,refs):
  folder=BASE/tod;dst=folder/'source.png';shutil.copyfile(source,dst);im=Image.open(dst)
- if im.width*9!=im.height*16:
+ if abs(im.width*9-im.height*16)>16:
   raise ValueError(f'Aspect ratio {im.size} is not 16:9; review the raw composition before choosing a display crop. Raw saved, no stretch.')
- # Display copy keeps the whole generated frame and aspect ratio.
- preview=im.convert('RGB').resize((1280,720),Image.Resampling.LANCZOS);preview.save(folder/'preview.png')
+ # Display copy keeps the full frame; tolerate a one-pixel native aspect rounding.
+ display_size=(1280,round(im.height*1280/im.width))
+ assert display_size==(1280,720)
+ preview=im.convert('RGB').resize(display_size,Image.Resampling.LANCZOS);preview.save(folder/'preview.png')
  references=[{'actual_path':str(Path(p).resolve()),'sha256':sha(p)} for p in refs]
  meta={'request_id':'MAP01' if tod=='day' else 'MAP02','status':'proposal-review','time_of_day':tod,'raw_generation_path':source,'source_sha256':sha(dst),'source_byte_identical':dst.read_bytes()==Path(source).read_bytes(),'source_size':im.size,'preview_size':[1280,720],'prompt':(folder/'prompt.txt').read_text(),'references':references,'normalization':'Only uniform resize of the complete 16:9 frame. No paint, filter, sharpening, recolour or layout modifications after generation.','pin_layout_unchanged':True,'runtime_changed':False}
  (folder/'generation.json').write_text(json.dumps(meta,ensure_ascii=False,indent=2)+'\n');print(json.dumps({'time_of_day':tod,'source_size':im.size,'preview':[1280,720]},ensure_ascii=False))
