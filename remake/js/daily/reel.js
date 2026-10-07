@@ -236,9 +236,9 @@ function pickTarget() {
   return target || "guts";
 }
 
-/** 日常の行動を1回消費したら呼ぶ。結果と報酬はこの瞬間に確定する（演出は次のマップ表示で） */
-export function onAction() {
-  if (!state?.reel || state.phase !== "daily") { statBuffer = {}; return; }
+/** 自分で選び、実際に体力を消費した日常行動の終了後に呼ぶ。結果と報酬はこの瞬間に確定する（演出は次のマップ表示で） */
+export function onAction({ spent = 0 } = {}) {
+  if (!(spent > 0) || !state?.reel || state.phase !== "daily") { statBuffer = {}; return; }
   const reel = state.reel;
   const chapterFirst = reel.lastChapter !== state.chapter;
   reel.lastChapter = state.chapter;
@@ -698,12 +698,11 @@ async function presentFreeze(r) {
 // 報酬カード（報酬そのものは行動時に適用済み。ここは見せるだけ）
 function announce(r) {
   if (!(r.got > 0) || r.quiet || !r.target) return;
-  const word = r.exp >= 5 ? "大きく上がった" : r.exp >= 3 ? "上がった" : "少し上がった";
   const fx = r.starTo ? DB.statusTexts?.statTierFx?.[r.target]?.[r.starTo - 1] : "";
   gainCard({
     kind: "stat", stat: r.target, points: r.got, badge: { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "察" }[r.target],
     top: "PAKKI SLOT", main: STAT_JA[r.target], evolution: r.starTo ? `レベル${r.starTo}に進化！` : "",
-    sub: r.starTo ? `${word} ──「${rankLabel(r.target)}」` : word, fx,
+    sub: r.starTo ? `「${rankLabel(r.target)}」` : "", fx,
   });
 }
 

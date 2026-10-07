@@ -64,6 +64,16 @@ python3 remake/tools/serve_preview.py --port 8123
 リメイク版の進行だけで使う短い場面（チュートリアルの前後・リハーサル・通い訪問の小会話など）は
 `data/dialogue/remake_ch1.json` に置いてある（他の台詞と同じスキーマ・同じリンタで検査される。旧版は読まない）。
 
+## 自由行動の成長
+
+初期所持金は30,000円。能力は自分で選び実際に体力を消費した行動だけで育つ。
+`core/stats.js` の `paidAction()` が台本・訪問の `earnStat()` / `applyStats()` を預かり、行動終了時に最大6経験値で確定する。
+会話後に体力を使う約束も対象。強制イベント・チュートリアル・LIME・回復には加算しない。
+バイト後の無料会話は同じ成長枠、追加体力を使う自主練は最大2。確定済みの能力加算だけを `gainStat()` が担当し、通常のゲーム内報酬から直接呼ばない。
+訪問・施設・バイトの基礎成長は4経験値（バイトは技術2＋魅力2、ほかは対象能力4）。初回・繰り返し・質問回を同じ基準にし、台本の追加分を含め合計6まで。追加自主練の失敗報酬は底上げしない。
+スロットの `onAction({ spent })` には実際の消耗を渡す。回復や強制案内では回さない。
+成長表示は実増加の `+Npt` とレベル進化・恩恵にまとめる。
+
 ## フォルダ構成
 
 ```
@@ -197,6 +207,7 @@ node remake/test/affinity_notifications.mjs # みんとの実イベント・通�
 node remake/test/ui_skin.mjs                # 生成素材・固定幅HUD・体力の色・項目別の通知色
 node remake/test/choice_oneline.mjs         # 選択肢・LIMEの返信が1行に収まる（全角26字まで・GUI22）
 node remake/test/steam_refresh.mjs          # 弾消し・無敵演出・再出現猶予・根性で回数が増える
+node remake/test/paid_action_growth.mjs     # 実行動・無料成長ゼロ・4〜6の成長枠・後払い・セーブ
 node remake/test/stat_rewards.mjs           # 実増加pt・上限時の振替・スロット・グラフへ飛ぶ光
 node remake/test/bonds.mjs                  # 好感度の伸び・みんとの公私・締めくくり・恋愛／友情・専用ハガル・友人のLIME
 node remake/test/minto_progression.mjs      # 初対面・仕事後の約束・既知の話・DAY13の同じ夜の交際

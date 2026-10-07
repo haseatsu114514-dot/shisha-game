@@ -31,6 +31,7 @@ try {
   await page.waitForSelector(".gain-card.st-technique .gc-points");
   assert.equal(await page.locator(".gc-points").textContent(), "+3pt");
   assert.equal(await page.locator(".gain-card").count(), 1);
+  assert.equal(await page.locator(".gc-sub").count(), 0);
   await page.waitForFunction(() => T.impacts > 0);
   assert.deepEqual(await page.evaluate(() => ({ points: T.core.state.stats.technique, total: T.events[0].total,
     count: T.events.length, flown: [...new Set(T.flights)] })), { points: 13, total: 3, count: 1, flown: ["technique"] });
@@ -50,7 +51,7 @@ try {
 
   // 実スロットの抽選/コミット/演出を通す。経験値と実増加が異なる★帯でも二重加算しない。
   const reward = await page.evaluate(() => {
-    T.core.state.phase = "tournament"; T.reel.onAction(); // 前の行動の対象記録を区切る
+    T.core.state.phase = "tournament"; T.reel.onAction({ spent: 10 }); // 前の行動の対象記録を区切る
     T.core.state.phase = "daily";
     for (const key of T.core.STAT_KEYS) T.core.state.stats[key] = 21;
     T.core.state.statXp = {};
@@ -63,7 +64,7 @@ try {
       }
     }
     const before = { ...T.core.state.stats };
-    T.reel.onAction();
+    T.reel.onAction({ spent: 10 });
     const q = T.core.state.reel.pending[0];
     const actual = T.core.state.stats[q.target] - before[q.target];
     window.presenting = T.reel.presentNow();

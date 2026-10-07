@@ -64,7 +64,7 @@ export function gainStat(key, amount, { silent = false } = {}) {
   const before = state.stats[key];
   let xp = (state.statXp[key] || 0) + amount;
   let v = before;
-  while (v < cap && xp >= costAt(v)) { xp -= costAt(v); v += 1; }
+  while (v < cap && xp + 1e-9 >= costAt(v)) { xp = Math.max(0, xp - costAt(v)); v += 1; }
   state.statXp[key] = v >= cap ? 0 : xp;
   state.stats[key] = v;
   const got = v - before;
@@ -90,9 +90,47 @@ function flushBatch() {
   }
 }
 
+// 台本の報酬は、自由行動の終了まで預かる。先に報酬・後に消耗する誘いも同じ扱い。
+// 強制イベント、レッスン、LIME、休憩など、行動の外では経験値も加算しない。
+export const ACTION_GROWTH_BUDGET = 6;
+export const DRILL_GROWTH_BUDGET = 2;
+let earningAction = null;
+
+/** 台本・訪問・制作の成長候補。確定済み報酬用の gainStat と分ける。 */
+export function earnStat(key, amount) {
+  if (!earningAction || earningAction.owner !== state || !STAT_KEYS.includes(key) || !(amount > 0)) return;
+  earningAction.gains[key] = (earningAction.gains[key] || 0) + amount;
+}
+
+/** 自分で選んだ行動だけを包む。追加の自主練は独立した小さな成長枠。 */
+export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET } = {}) {
+  const parent = earningAction;
+  const action = { owner: state, gains: {}, spent: 0 };
+  earningAction = action;
+  let value;
+  try { value = await run(); }
+  finally { earningAction = parent; }
+  if (action.owner !== state) return { value, spent: 0 };
+  if (parent?.owner === state) parent.spent += action.spent;
+  if (action.spent > 0) {
+    const entries = Object.entries(action.gains);
+    const total = entries.reduce((sum, [, n]) => sum + n, 0);
+    // 小さい・失敗した報酬を底上げせず、重複分だけを同じ比率で抑える。
+    // 百分の一単位で配分し、丸め誤差で上限を超えない。端数は statXp に持ち越す。
+    const limit = Math.min(total, Math.max(0, budget));
+    const portions = entries.map(([key, n]) => ({ key, raw: total ? n * limit * 100 / total : 0 }));
+    let remaining = Math.round(limit * 100);
+    for (const p of portions) { p.units = Math.floor(p.raw); remaining -= p.units; }
+    portions.sort((a, b) => (b.raw - b.units) - (a.raw - a.units));
+    for (let i = 0; i < remaining; i++) portions[i % portions.length].units++;
+    for (const { key, units } of portions) gainStat(key, units / 100);
+  }
+  return { value, spent: action.spent };
+}
+
 /** 報酬オブジェクト {technique:2, ...} をまとめて適用 */
 export function applyStats(obj = {}) {
-  for (const [k, v] of Object.entries(obj)) gainStat(k, v);
+  for (const [k, v] of Object.entries(obj)) earnStat(k, v);
 }
 
 // ---------------------------------------------------------------- 好感度（二層: ポイント→5段階）
@@ -213,6 +251,7 @@ export function addStamina(n) {
   const before = state.stamina;
   const maximum = maxStamina();
   state.stamina = staminaAfter(n);
+  if (earningAction?.owner === state && state.stamina < before) earningAction.spent += before - state.stamina;
   if (state.stamina !== before) emit("stamina-change", { before, after: state.stamina, maximum });
   emit("hud");
   return state.stamina - before;

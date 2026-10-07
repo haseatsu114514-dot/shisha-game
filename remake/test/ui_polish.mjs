@@ -30,8 +30,9 @@ try {
     const layout = await page.evaluate(() => {
       const logo = document.querySelector(".title-logo"), menu = document.querySelector(".title-menu");
       const a = logo.getBoundingClientRect(), b = menu.getBoundingClientRect(), s = document.querySelector("#stage").getBoundingClientRect();
-      return { loaded: logo.complete && logo.naturalWidth > 0, gap: b.top - a.bottom, bottom: s.bottom - b.bottom };
+      return { logoTop: getComputedStyle(logo).top, loaded: logo.complete && logo.naturalWidth > 0, gap: b.top - a.bottom, bottom: s.bottom - b.bottom };
     });
+    assert.equal(layout.logoTop, "76px");
     assert(layout.loaded && layout.gap > 0 && layout.bottom > 0, JSON.stringify(layout));
     if (size.width === 1331) {
       const smoke = page.locator(".title-logo-smoke i").first();
@@ -89,11 +90,12 @@ try {
   });
   await page.waitForSelector(".gain-card.st-guts .gc-evolution");
   assert.equal(await page.locator(".gc-evolution").textContent(), "レベル4に進化！");
+  assert.doesNotMatch(await page.locator(".gain-card").textContent(), /少し上がった|かなり上がった|大きく上がった/);
   assert.match(await page.locator(".gc-fx").textContent(), /リフレッシュが3回/);
   assert.equal(await page.evaluate(() => T.steam.refreshStock()), 3);
   await page.evaluate(() => T.ui.bannersIdle());
   const reward = await page.evaluate(() => {
-    T.core.state.phase = "tournament"; T.reel.onAction();
+    T.core.state.phase = "tournament"; T.reel.onAction({ spent: 10 });
     T.core.newGame(); T.core.state.phase = "daily";
     for (const key of T.core.STAT_KEYS) T.core.state.stats[key] = 20;
     Object.assign(T.core.state.reel, { introDone: true, lastChapter: 1 });
@@ -103,7 +105,7 @@ try {
         T.core.state.reel.seed = seed; break;
       }
     }
-    T.reel.onAction(); const r = T.core.state.reel.pending[0];
+    T.reel.onAction({ spent: 10 }); const r = T.core.state.reel.pending[0];
     window.presenting = T.reel.presentNow();
     return { starTo: r.starTo, stats: { ...T.core.state.stats } };
   });
