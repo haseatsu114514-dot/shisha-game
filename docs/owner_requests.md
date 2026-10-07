@@ -1,5 +1,7 @@
 ## 2026-10-07 採用サメちゃんの必要パーツ・名古屋の街マップ再生成
 
+確認用PR：[#213](https://github.com/haseatsu114514-dot/shisha-game/pull/213)。[サメちゃん6ポーズと素材一式](../asset_sources/portraits/kafuka-approved-blue-inner-v1/README.md)、[昼夜マップと比較](../asset_sources/backgrounds/osu-sakae-map-remaster-v1/README.md)、[既存ゲームでの確認](../asset_sources/reviews/kafuka-map-20261007/README.md)。
+
 ユーザー「一枚目の青のグラデのやつ採用　これで必要なパーツを作っていって」「１章の街のマップ配置とかはいいんだけど画質がなんか悪く見えるからゲームっぽさは残した上で少し質を上げて欲しい　一応名古屋の大須や栄のランドマークを入れて作って」「それも生成して欲しい」「続けて」。最新main `87462f4` から作成。PR #208でPRT61〜68・CI11〜12を使用済みのため次のPRT69〜74を使う。髪色の採用基準はこの会話の①濃い青インナー（PR #208の `89e256a`）であり、過去の銀髪・全身青の試案へ戻さない。
 
 | ID | 状態 | オーナー要望 |
