@@ -2,7 +2,7 @@
   "character": "kafuka",
   "request_id": "PRT63",
   "variant": "ocean-blue",
-  "status": "pending-review",
+  "status": "design-approved",
   "expression": "normal",
   "raw_generation_path": "/workspace/generated_images/exec-3393ef57-a93a-448d-9227-30c2a42fd87d.png",
   "source_size": [
@@ -69,5 +69,10 @@
     "preview_border_alpha_ge_16": 0,
     "source_rgba": true
   },
-  "runtime_changed": false
+  "runtime_changed": false,
+  "adoption": {
+    "request_id": "PRT67",
+    "user_statement": "さめちゃんは１個目の青インナーが濃いめなやつがいい感じ　これを採用しよう",
+    "scope": "Hair palette and selected outfit design adopted; runtime sprite set and other expressions are not replaced in this mockup task."
+  }
 }
