@@ -1,0 +1,61 @@
+{
+  "date": "2026-10-07",
+  "character": "hajime",
+  "version": "v1",
+  "status": "pending",
+  "scope": "review-only generation; no runtime adoption",
+  "requestIds": [
+    "PRT51"
+  ],
+  "baseCommit": "e1494b4",
+  "tool": "image_gen.imagegen",
+  "source": "sheet.png",
+  "prompt": "prompt.txt",
+  "size": [
+    1746,
+    901
+  ],
+  "sourceSha256": "7abcbc74c203dd7434efab475908e3cbcee26366ae2daab60373559d98ec0643",
+  "copyByteIdentical": true,
+  "expressions": [
+    "normal",
+    "smile",
+    "serious",
+    "surprise",
+    "sad"
+  ],
+  "references": [
+    {
+      "path": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+      "role": "identity and full-body design",
+      "sha256": "b594fa025c35a924f04c37e357b8cc1918e302f05b98a8f59e4c98e7fd71068e"
+    },
+    {
+      "path": "asset_sources/portraits/hajime-remaster-v1/existing-faces.png",
+      "role": "existing five expressions, prepared from all five current PNGs",
+      "sha256": "24541deb72352e837be9772f373868dc7e4b350770870c13c1a55cdcf1683f74"
+    },
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "approved rendering style",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "approved rendering style",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    }
+  ],
+  "inspection": {
+    "existingExpressions": 5,
+    "priorStyleGroups": 19,
+    "priorStyleImages": 72,
+    "priorShaMismatches": 0,
+    "sourceBorderAlphaAtLeast24": 0
+  },
+  "notes": [
+    "Current black cap, hoodie, cargo trousers, boots and mouthpiece necklace retained instead of old white-shirt/apron visual_concepts.",
+    "Slight hand/shoulder/neck gestures vary with expression.",
+    "Generated sheet copied without editing; preview splitting and alignment will be recorded after both generations."
+  ]
+}
