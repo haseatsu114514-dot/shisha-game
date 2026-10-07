@@ -1,10 +1,10 @@
-// 炭焼き ── HEAT IGNITION（master_spec 第2部 §2）
+// 炭焼き（master_spec 第2部 §2）
 // ゲージ停止ではなく、炭の見た目（黒→赤→赤熱→ピカン→白熱→灰かぶり）を観察して取る。
 // ジャストの瞬間だけ、炭の芯そのものが一瞬光る。
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown, flash } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshRig, tickerSay } from "./session.js";
+import { stepPanel, refreshBench, tickerSay } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, popStamp } from "./common.js";
 import { artImg } from "./art.js";
 
@@ -30,7 +30,7 @@ function phaseOf(p, jw) {
 
 export async function runHeat(cs) {
   const tutorial = cs.mode === "tutorial";
-  const panel = stepPanel("heat", "炭焼き ── HEAT IGNITION", "炭の色をよく見て。芯が一瞬ピカッと光ったら、その炭をタップして取り上げる");
+  const panel = stepPanel("heat", "炭焼き", "炭の色をよく見て。芯が一瞬ピカッと光ったら、その炭をタップして取り上げる");
   const cube = cs.equip?.charcoal === "cube_charcoal";
   const img = (st) => (cube ? `coal_${st}.png` : `coal_flat_${st}.png`);
   const justSec = 0.5 * skill.window(cs) * (tutorial ? 1.5 : 1);
@@ -158,7 +158,7 @@ export async function runHeat(cs) {
     flash: picks.includes("just"),
   };
   cs.heat = res;
-  refreshRig();
+  refreshBench();
   await sleep(350);
   if (res.heatStability >= 70) popStamp(panel, "HEAT STABLE", "good", "50%", "60%");
   if (res.aromaRetention >= 68) popStamp(panel, "AROMA KEEP", "good", "50%", "70%");

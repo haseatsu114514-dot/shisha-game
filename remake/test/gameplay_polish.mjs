@@ -87,11 +87,11 @@ try {
   });
   const geometry = await page.evaluate(() => {
     const worker = document.querySelector('.bench-worker').getBoundingClientRect();
-    const rig = document.querySelector('.rig').getBoundingClientRect();
+    const panel = document.querySelector('.bench-right').getBoundingClientRect();
     const coals = [...document.querySelectorAll('.stove .coal')].map(n => [parseFloat(n.style.left), parseFloat(n.style.top)]);
-    return { overlaps: worker.bottom > rig.top, coals, step: document.querySelector('.bench-worker').dataset.step };
+    return { overlaps: worker.right > panel.left, height: worker.height, rigCount: document.querySelectorAll('.bench .rig').length, actor: !!document.querySelector('.worker-actor'), coals, step: document.querySelector('.bench-worker').dataset.step };
   });
-  assert(!geometry.overlaps); assert.equal(geometry.step, 'heat');
+  assert(!geometry.overlaps); assert(geometry.height > 350); assert.equal(geometry.rigCount, 0); assert(geometry.actor); assert.equal(geometry.step, 'heat');
   assert.deepEqual(geometry.coals, [[50, 30], [38, 45], [62, 45]]);
   if (shots) await page.screenshot({ path: `${shots}/centered-coals.png` });
   await page.evaluate(() => window.heatRun);
@@ -107,7 +107,7 @@ try {
   assert.equal(feedback.count, 1); assert(feedback.separate);
   if (shots) await page.screenshot({ path: `${shots}/foil-feedback.png` });
   await page.evaluate(() => window.holesRun);
-  console.log('[polish] PASS: reserved worker area clears the rig, coals form a centered triangle, foil feedback stays outside the targets');
+  console.log('[polish] PASS: large static worker scene replaces the separate rig, coals form a centered triangle, foil feedback stays outside the targets');
 
   const mobile = await browser.newContext({ viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
   const phone = await open(mobile);

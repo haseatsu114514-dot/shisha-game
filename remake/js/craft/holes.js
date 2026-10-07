@@ -1,10 +1,10 @@
-// アルミ穴あけ ── HOLE RHYTHM BATTLE（master_spec 第2部 §1）
+// アルミ穴あけ BATTLE（master_spec 第2部 §1）
 // 円周を回るカーソルが目印に重なった瞬間に打つと EXCELLENT。外周一周の後は穴数を選べる。
 // メイン評価は均等度。穴数・リング配置は後工程の性能（抜け・熱の広がり・焦げ）に効く。
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshRig, tickerSay } from "./session.js";
+import { stepPanel, refreshBench, tickerSay } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 import { craftCondition } from "../core/condition.js";
 
@@ -16,7 +16,7 @@ const DEG = Math.PI / 180;
 
 export async function runHoles(cs) {
   const tutorial = cs.mode === "tutorial";
-  const panel = stepPanel("holes", "アルミ穴あけ ── HOLE RHYTHM", "まず外周を一周。光る目印でタップ（Space）。その後は好きな穴数で仕上げられる");
+  const panel = stepPanel("holes", "アルミ穴あけ", "まず外周を一周。光る目印でタップ（Space）。その後は好きな穴数で仕上げられる");
   const slow = skill.slow(cs) * (tutorial ? 1.3 : 1);
   const perfWin = 4.2 * skill.window(cs) * (tutorial ? 1.5 : 1);
   const goodWin = 11 * craftCondition(cs).window * (tutorial ? 1.3 : 1);
@@ -214,7 +214,7 @@ export async function runHoles(cs) {
   // ---- 採点（実穴の均等度50/タイミング精度30/穴サイズ15/残り時間5。穴数そのものは減点しない）
   const res = evaluate(state, tally, Math.max(0, limit - elapsed) / limit, goodWin);
   cs.holes = res;
-  refreshRig();
+  refreshBench();
   await sleep(300);
   await resultCard(panel, {
     title: "穴あけ 結果",

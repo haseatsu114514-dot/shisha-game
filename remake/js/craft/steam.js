@@ -4,7 +4,7 @@ import { el, sleep, clamp, rand, pick } from "../core/util.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { tier01, star } from "../core/stats.js";
-import { stepPanel, refreshRig, benchRig } from "./session.js";
+import { stepPanel, refreshBench } from "./session.js";
 import { autoSkill, resultCard, keys, popStamp } from "./common.js";
 import { craftConditions } from "./conditions.js";
 import { craftCondition } from "../core/condition.js";
@@ -28,7 +28,7 @@ export async function runSteamDodge(cs) {
   const tutorial = cs.mode === "tutorial";
   const min = cs.steamMin || 5;
   const rainy = craftConditions(cs).rainy;
-  const panel = stepPanel("steam", `蒸らし ── ${min}分${rainy ? "（雨：熱が入りづらい）" : ""}`,
+  const panel = stepPanel("steam", `蒸らし ${min}分${rainy ? "（雨：熱が入りづらい）" : ""}`,
     `心を動かして雑念を躱す。下のパッド／矢印キーで移動。リフレッシュ（Space／X）で弾を一掃、${stock}回まで`);
   const W = 620, H = 300;
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge" } });
@@ -44,7 +44,6 @@ export async function runSteamDodge(cs) {
     el("div.dodge-hud", [timer, waveEl, hitsEl]), box,
     el("div.dodge-controls", [pad, el("div.dodge-actions", [refreshBtn, el("small", { text: "パッドで移動 ／ PCは矢印・WASD" })])]),
   ]));
-  benchRig()?.bubble(true);
 
   const dur = DURATION[min] * (tutorial ? 0.7 : 1);
   const focus = craftCondition(cs).focus;
@@ -197,7 +196,7 @@ export async function runSteamDodge(cs) {
   }
   const score = clamp(100 - hits * 14, 0, 100);
   cs.steam = { min, hits, score, refreshesUsed: stock - refreshes, warmingFactor: rainy ? 0.85 : 1 };
-  refreshRig();
+  refreshBench();
   popStamp(panel, hits === 0 ? "無心" : hits <= 2 ? "持ちこたえた" : "雑念まみれ", hits === 0 ? "just" : hits <= 2 ? "good" : "bad", "50%", "40%");
   await sleep(400);
   await resultCard(panel, {

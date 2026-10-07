@@ -35,7 +35,7 @@ const mocks = {
   "core/ui.js": { countdown: async () => {}, flash() {}, shake() {} },
   "core/audio.js": { SE: new Proxy({}, { get: () => () => {} }) },
   "core/stats.js": { tier01: () => 0, star: () => 1 },
-  "craft/session.js": { craftTest: { auto: null }, stepPanel: () => (panel = el("div.panel")), refreshRig() {}, tickerSay() {}, benchRig: () => null },
+  "craft/session.js": { craftTest: { auto: null }, stepPanel: () => (panel = el("div.panel")), refreshBench() {}, tickerSay() {} },
   "craft/art.js": { artImg: () => el("img") },
 };
 const context = vm.createContext({ Math, Promise, console, Set, AbortController, performance: { now: () => now },

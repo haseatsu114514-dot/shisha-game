@@ -5,7 +5,7 @@ import { toast } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { star, gainStat } from "../core/stats.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshRig } from "./session.js";
+import { stepPanel, refreshBench } from "./session.js";
 import { autoSkill } from "./common.js";
 import { flavorColor } from "./art.js";
 import { flavorStock, addFlavorStock, ownedFlavorIds } from "../daily/shop.js";
@@ -52,11 +52,11 @@ export async function stepSetup(cs) {
   for (const [type, label] of types) {
     const owned = state.owned.map((id) => DB.equipById[id]).filter((e) => e && e.type === type);
     if (owned.length <= 1) { cs.equip[type] = owned[0]?.id || cs.equip[type]; continue; }
-    const panel = stepPanel("setup", `機材 ── ${label}`, lessonHint(cs, "setup", "手持ちの機材から選ぶ"));
+    const panel = stepPanel("setup", `機材 ${label}`, lessonHint(cs, "setup", "手持ちの機材から選ぶ"));
     cs.equip[type] = await choose(panel, owned.map((e) => ({ value: e.id, label: e.name, desc: e.description, auto: e.id === state.equip[type] })));
   }
   state.equip = { ...cs.equip };
-  refreshRig();
+  refreshBench();
 }
 
 // ---------------------------------------------------------------- コンセプト（FLAVOR TRIAL の土台）
@@ -72,7 +72,7 @@ export const CONCEPTS = [
 ];
 
 export async function stepConcept(cs) {
-  const panel = stepPanel("concept", "コンセプト ── 今日の方針", "作る前に、この一台の方針を2つ掲げる。審査では「言ったこと」と「作ったもの」の一致が問われる");
+  const panel = stepPanel("concept", "今日のコンセプト", "作る前に、この一台の方針を2つ掲げる。審査では「言ったこと」と「作ったもの」の一致が問われる");
   const picked = [];
   const note = el("div.concept-note", { text: "あと2つ選ぶ" });
   const grid = el("div.opt-grid.cols-3");
@@ -149,7 +149,7 @@ export function evaluateMix(cs) {
 export async function stepMix(cs) {
   const reg = regulationFor(cs);
   const cap = capacity(cs);
-  const panel = stepPanel("mix", "配合 ── MIX", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + "が今日の課題。" : ""}合計12g以上で決める`));
+  const panel = stepPanel("mix", "フレーバーの配合", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + "が今日の課題。" : ""}合計12g以上で決める`));
   // 使えるフレーバー: 在庫のあるもの＋課題フレーバー（主催者支給）。チュートリアルは店の基本形。
   // 大会は持ち込んだ在庫から詰む（詰んだ分だけ減る・旧版 N3）。練習・リハーサルは店の葉なので減らない
   const consumes = cs.mode === "tournament";
@@ -178,7 +178,7 @@ export async function stepMix(cs) {
     recipeLine.textContent = info.recipe ? `📖 ${info.recipe.name}` : "";
     okBtn.disabled = !(total >= 12 && total <= cap && info.regOk);
     rows.forEach((r) => { r.g.textContent = `${cs.mix[r.id] || 0}g`; });
-    refreshRig();
+    refreshBench();
   };
 
   const rows = ids.map((id) => {
@@ -249,14 +249,14 @@ export async function stepMix(cs) {
 // ---------------------------------------------------------------- 詰め・配置・蒸らし時間
 
 export async function stepPack(cs) {
-  const panel = stepPanel("pack", "パッキング ── 詰め方", lessonHint(cs, "pack", "空気の通り道を作る。詰め方で抜けと熱の入り方が変わる"));
+  const panel = stepPanel("pack", "パッキング", lessonHint(cs, "pack", "空気の通り道を作る。詰め方で抜けと熱の入り方が変わる"));
   cs.pack = await choose(panel, [
     { value: "fluffy", label: "ふんわり", desc: "空気を含ませて軽く。抜けが良く煙が出やすいが、熱が早く回る" },
     { value: "normal", label: "ノーマル", desc: "基本に忠実。熱の入り方が素直で、崩れにくい", auto: true },
     { value: "firm", label: "かため", desc: "ぎゅっと密度を出す。味は濃く長持ちするが、熱が要る" },
   ], { cols: 3 });
   SE.stamp();
-  refreshRig();
+  refreshBench();
 }
 
 export async function stepPlace(cs) {
@@ -266,7 +266,7 @@ export async function stepPlace(cs) {
     { value: "four", label: "炭4個", desc: "かなり熱が上がる高火力。煙は増えるが、焦げと隣り合わせ", disabled: cs.mode === "tutorial" },
   ]);
   SE.crackle();
-  refreshRig();
+  refreshBench();
 }
 
 export async function stepSteamTime(cs) {
