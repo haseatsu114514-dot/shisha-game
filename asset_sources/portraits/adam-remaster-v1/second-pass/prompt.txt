@@ -1,0 +1,22 @@
+Create a sharper, taller, premium high-detail redraw of ADAM's five full-body expression sprites in ONE horizontal row. Use a landscape canvas with aspect ratio approximately 1.7:1 (about 1800 wide by 1060 high at highest available output resolution). Fill the available height with the complete standing men while keeping clear transparent margins. Preserve adult proportions, head scale, the existing five expressions and gestures.
+
+REFERENCE ROLES:
+- chr_adam_normal.png defines Adam's original identity, facial structure, green/red hair, black Henley shirt, rolled forearm sleeves, tied black knee-length waist apron with two pockets, black trousers and leather lace-up shoes.
+- adam-generated-white.png shows the first pass's EXACT FIVE intended expressions and gestures in their correct order. It is a pose and identity layout reference; its WHITE preview background must become true transparency. Redraw it with finer and crisper face, hair and fabric details.
+- chr_minto_normal.png and chr_ageha_normal.png are the approved STYLE and sharpness reference assets. Match their delicate crisp outlines, carefully stepped shading, tiny high-resolution pixel-art grain, refined hair strands and cloth, and premium finished texture.
+- adam-existing-faces.png shows Adam's original facial expressions to preserve their charm.
+Do not transfer the women's designs, body shapes, faces or clothes. Adam remains a masculine Japanese man aged 28 with broad shoulders, angular jaw, strong dark eyebrows, sharp brown-gold eyes and no beard. Green hair is on SCREEN LEFT and red hair is on SCREEN RIGHT, with the original central separation and swept shape.
+
+EXACT ORDER, all five the same man and outfit:
+1 normal: steady original confident direct gaze, neutral small closed mouth; arms naturally relaxed at the sides.
+2 smile: charming self-assured restrained smile, open eyes, presenting open palm on screen right as in the first-pass pose.
+3 serious: narrowed focused eyes and lowered brows, small firm closed mouth; screen-left hand close to lower chest in a precise explaining gesture.
+4 surprise: widened eyes, lifted brows and small open surprised mouth; screen-right hand at the chest.
+5 intense: stern passionate focus and closed mouth with BOTH ARMS CROSSED as in the original characteristic pose and the first pass.
+Keep gestures subtle, fingers anatomically natural, the adult proportions and original identity constant. Preserve the apron knot, two front pockets, sleeve roll, hair sides, shoes and body build.
+
+DRAWING QUALITY IS THE REASON FOR THIS REDRAW:
+Make the raw source itself contain sharper delicate details, clear individual tiny hair strands, fine fabric weave accents, well-resolved eyes and small crisp eyelids/mouths. Each man should occupy approximately 900 or more actual image pixels vertically. Render the fine detail directly, preserving a natural high-density pixel-art/JRPG texture comparable to the approved images. Carefully stepped matte cloth shading and restrained hair highlights. Distinguish the black shirt, apron and trousers through subtle fabric tones. Crisp fine contours and soft natural skin colors with small controlled stepped shading. No blur, digital smoothing, big chunky pixels, added noise, airbrush gradients, plastic skin or glossy oversized hair chunks. Clean the old colored cutout residues: any bright magenta/green edge flecks in the original input are extraction errors, not clothing or skin features. Output clean neutral character contours.
+
+LAYOUT:
+A taller landscape sheet around 1.7:1, FIVE equal-scale full-body head-to-shoe standing men across ONE row. Consistent head size and common foot baseline. Compact sensible gesture widths with generous transparent gutters and enough room for every finger, hair tip, apron tie and shoe. Clear transparent space above all heads, below every shoe sole and at both outer ends. No part may touch an edge or overlap the next man. True alpha-transparent background, no painted checkerboard, white paper, frame, text, labels, scenery, floor, floor shadow, glow, colored halo or watermark.

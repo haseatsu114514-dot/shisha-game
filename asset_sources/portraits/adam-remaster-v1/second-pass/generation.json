@@ -1,0 +1,47 @@
+{
+  "status": "internal superseded",
+  "reason": "The taller redraw improved detail but 49 alpha>=16 pixels touch the canvas border and the figures lack clean full-height gutters. Requesting layout correction.",
+  "sourceSha256": "05981cbcbc3e20b86646cbaed12ffaba2ead42684aaa4a2452a034755a947ed7",
+  "sourceSize": [
+    1633,
+    963
+  ],
+  "borderAlphaAtLeast16": 49,
+  "prompt": "prompt.txt",
+  "date": "2026-10-07",
+  "character": "adam",
+  "tool": "image_gen.imagegen",
+  "scope": "internal rendering pass, not adopted",
+  "references": [
+    {
+      "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+      "role": "original identity",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/adam/chr_adam_normal.png",
+      "sha256": "9b31f347a71eaa50482617b0b4830c7b8372af1c869a62ffd5c04bad24b8dc12"
+    },
+    {
+      "path": "asset_sources/portraits/adam-remaster-v1/first-pass/reference-white.png",
+      "role": "first-pass expressions and layout",
+      "actualToolInput": "/workspace/scratch/portrait-inspection/adam-generated-white.png",
+      "sha256": "6d95ce066b8dc8ca090b16b737b022fce2ecbf15227bb5f28f0132bef8de21c2"
+    },
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "approved style",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/minto/chr_minto_normal.png"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "approved style",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/ageha/chr_ageha_normal.png"
+    },
+    {
+      "path": "asset_sources/portraits/adam-remaster-v1/first-pass/existing-faces.png",
+      "role": "original expression detail",
+      "sha256": "1927e7f93a5df7e0c081be1ddc077192f606f091d5ad780feccf8411842642f3",
+      "actualToolInput": "/workspace/shisha-game/asset_sources/portraits/adam-remaster-v1/first-pass/existing-faces.png"
+    }
+  ]
+}
