@@ -7,6 +7,7 @@ import { tier01 } from "../core/stats.js";
 import { stepPanel, refreshRig, benchRig } from "./session.js";
 import { autoSkill, resultCard, keys, popStamp } from "./common.js";
 import { craftConditions } from "./conditions.js";
+import { craftCondition } from "../core/condition.js";
 
 export const DODGE_WORDS = [
   "手元、見られてる……", "時間が足りないかも", "隣の煙、もう上がってる",
@@ -33,8 +34,9 @@ export async function runSteamDodge(cs) {
   benchRig()?.bubble(true);
 
   const dur = DURATION[min] * (tutorial ? 0.7 : 1);
-  const hitR = 11 * (1 - 0.2 * tier01("guts"));
-  const spawnEvery = (tutorial ? 1.2 : 0.8) * (1 + 0.35 * tier01("insight")); // 洞察★で雑念が湧きにくい
+  const focus = craftCondition(cs).focus;
+  const hitR = 11 * (1 - 0.2 * tier01("guts")) / focus;
+  const spawnEvery = (tutorial ? 1.2 : 0.8) * (1 + 0.35 * tier01("insight")) * focus; // 洞察★と好調で雑念が湧きにくい
   let hx = W / 2, hy = H / 2;
   let hits = 0;
   let inv = 0;

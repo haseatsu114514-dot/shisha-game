@@ -37,8 +37,8 @@ export function startTemp(cs) {
 export async function runPull(cs) {
   const tutorial = cs.mode === "tutorial";
   const panel = stepPanel("pull", "吸い出し ── 温度合わせ", "針を止めた位置で吸い方が変わる。適温帯に入れたら「提供する」。吸いすぎると葉が痩せる");
-  const slow = skill.slow() * (tutorial ? 1.3 : 1);
-  const widen = skill.window() * (tutorial ? 1.4 : 1);
+  const slow = skill.slow(cs) * (tutorial ? 1.3 : 1);
+  const widen = skill.window(cs) * (tutorial ? 1.4 : 1);
   let coreTemp = startTemp(cs), thermalSeconds = 0;
   let T = coreTemp;
   const conditions = craftConditions(cs);

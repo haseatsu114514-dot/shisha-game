@@ -1,0 +1,247 @@
+{
+  "date": "2026-10-07",
+  "character": "adam",
+  "version": "v1",
+  "status": "pending",
+  "scope": "review-only generation; no runtime adoption",
+  "requestIds": [
+    "PRT52"
+  ],
+  "baseCommit": "e1494b4",
+  "tool": "image_gen.imagegen",
+  "source": "sheet.png",
+  "prompt": "prompt.txt",
+  "size": [
+    1774,
+    887
+  ],
+  "sourceSha256": "2cd94538d0bf1a7510309056fb670d2a74f4c39274078f5375a18e954e4f126c",
+  "copyByteIdentical": true,
+  "expressions": [
+    "normal",
+    "smile",
+    "serious",
+    "surprise",
+    "intense"
+  ],
+  "references": [
+    {
+      "path": "asset_sources/portraits/adam-remaster-v1/second-pass/reference-white.png",
+      "actualToolInput": "/workspace/shisha-game/asset_sources/portraits/adam-remaster-v1/second-pass/reference-white.png",
+      "role": "sharper five expressions and pose layout",
+      "sha256": "7acb85e616b47d20dccb5348910c67a2c902f2ea9b622c1bf8a7aca9785bc0b7"
+    },
+    {
+      "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/adam/chr_adam_normal.png",
+      "role": "original identity and design",
+      "sha256": "9b31f347a71eaa50482617b0b4830c7b8372af1c869a62ffd5c04bad24b8dc12"
+    },
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "approved rendering style",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "approved rendering style",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    }
+  ],
+  "previews": [
+    {
+      "key": "normal",
+      "label": "通常",
+      "path": "normal-preview.png",
+      "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b",
+      "crop": [
+        0,
+        0,
+        373,
+        887
+      ],
+      "resized": [
+        453,
+        1077
+      ],
+      "paste": [
+        195,
+        101
+      ],
+      "bounds": [
+        240,
+        126,
+        631,
+        1169
+      ],
+      "footAnchor": 452.74109693661075,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "smile",
+      "label": "笑顔",
+      "path": "smile-preview.png",
+      "sha256": "a66fef386a04e8d61938c90924a13b6e70265b608ff1c0e03b5b185484aec27f",
+      "crop": [
+        373,
+        0,
+        736,
+        887
+      ],
+      "resized": [
+        441,
+        1077
+      ],
+      "paste": [
+        229,
+        99
+      ],
+      "bounds": [
+        247,
+        123,
+        661,
+        1169
+      ],
+      "footAnchor": 452.6936210508193,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "serious",
+      "label": "真剣",
+      "path": "serious-preview.png",
+      "sha256": "8123f694c34837e2c605a1d119aadd62afa262f5b7dee1f32b0fa18abb14d1fd",
+      "crop": [
+        736,
+        0,
+        1078,
+        887
+      ],
+      "resized": [
+        415,
+        1077
+      ],
+      "paste": [
+        261,
+        101
+      ],
+      "bounds": [
+        272,
+        126,
+        662,
+        1169
+      ],
+      "footAnchor": 452.5120105486441,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "surprise",
+      "label": "驚き",
+      "path": "surprise-preview.png",
+      "sha256": "338341ad64a9b9d2561d3bb82ff1730139afedd8a12e3e15fbd37013c3240577",
+      "crop": [
+        1078,
+        0,
+        1423,
+        887
+      ],
+      "resized": [
+        419,
+        1077
+      ],
+      "paste": [
+        225,
+        99
+      ],
+      "bounds": [
+        241,
+        123,
+        630,
+        1169
+      ],
+      "footAnchor": 453.42262641379114,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "intense",
+      "label": "熱の入った表情",
+      "path": "intense-preview.png",
+      "sha256": "ece87271c106a0eadc419e37fedbce03b1c9036daf7a9012e5e3d89aa52f8cdc",
+      "crop": [
+        1423,
+        0,
+        1774,
+        887
+      ],
+      "resized": [
+        426,
+        1077
+      ],
+      "paste": [
+        224,
+        100
+      ],
+      "bounds": [
+        239,
+        123,
+        632,
+        1169
+      ],
+      "footAnchor": 452.6375060278558,
+      "borderAlphaAtLeast16": 0
+    }
+  ],
+  "processing": {
+    "canvas": [
+      896,
+      1200
+    ],
+    "splitColumns": [
+      0,
+      373,
+      736,
+      1078,
+      1423,
+      1774
+    ],
+    "splitMethod": "midpoints of full-height transparent gutters (alpha<16 for measurement only)",
+    "commonScale": 1.213953488372093,
+    "resampling": "Lanczos for whole sprite only; raw sheet unmodified",
+    "normalReferenceBounds": [
+      268,
+      125,
+      628,
+      1169
+    ],
+    "normalFootAnchor": 452.943869911905,
+    "footBottom": 1169,
+    "maxFootAnchorDeviation": 0.4787565018861528,
+    "alphaThresholdApplied": false,
+    "pasteMethod": "RGBA direct paste without alpha mask",
+    "creativeImageChangesAfterGeneration": false
+  },
+  "inspection": {
+    "sourceBorderAlphaAtLeast24": 0,
+    "sourceBorderAlphaAtLeast16": 0,
+    "splitColumnAlphaAtLeast16": 0,
+    "previewClipping": false,
+    "compositeBackgrounds": [
+      "white",
+      "dark"
+    ],
+    "existingExpressions": 5,
+    "priorStyleGroups": 20,
+    "priorStyleImages": 78,
+    "priorShaMismatches": 0
+  },
+  "review": "review.png",
+  "styleComparison": "style-comparison-native.png",
+  "notes": [
+    "Green on screen-left and red on screen-right preserved.",
+    "Normal relaxed; smile with a presenting hand; serious at the chest; surprise has a hand to chest; intense preserves crossed arms.",
+    "First pass retained for internal softness comparison; second pass retained for internal layout/clipping correction. Neither earlier pass is adopted or added as an approved style baseline.",
+    "Final generated raw source is unmodified; only whole-sprite cropping, shared scaling and direct RGBA placement were used for review previews."
+  ],
+  "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/201"
+}

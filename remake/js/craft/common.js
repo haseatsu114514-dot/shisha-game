@@ -1,17 +1,18 @@
 // ミニゲーム共通の部品（評価ランク・結果カード・自動操作・キー入力）。
-import { el, sleep } from "../core/util.js";
+import { el, sleep, clamp } from "../core/util.js";
 import { SE } from "../core/audio.js";
 import { tier01 } from "../core/stats.js";
 import { craftTest } from "./session.js";
+import { craftCondition } from "../core/condition.js";
 
 export const gradeOf = (s) => (s >= 90 ? "S" : s >= 80 ? "A" : s >= 65 ? "B" : s >= 50 ? "C" : "D");
 export const autoSkill = () => craftTest.auto; // "good" | "bad" | null
 
-/** 腕前（★）の効き。技術=ゲージ減速・センス=ジャスト幅・洞察=読みやすさ。どれも「そこそこ有利」まで */
+/** 腕前（★）に、その一台を作り始めたときの体力コンディションを重ねる。 */
 export const skill = {
-  slow: () => 1 + 0.18 * tier01("technique"),
-  window: () => 1 + 0.45 * tier01("sense"),
-  clarity: () => tier01("insight"),
+  slow: (cs) => (1 + 0.18 * tier01("technique")) * craftCondition(cs).slow,
+  window: (cs) => (1 + 0.45 * tier01("sense")) * craftCondition(cs).window,
+  clarity: (cs) => clamp(tier01("insight") + craftCondition(cs).focus - 1, 0, 1),
 };
 
 /** 工程の結果カード。自動操作中は少し待って勝手に閉じる */
