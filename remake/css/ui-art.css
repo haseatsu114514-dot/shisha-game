@@ -5,7 +5,7 @@
   --art-button: url("../img/ui/lounge/button.webp");
   --art-pin: url("../img/ui/lounge/map-pin.webp");
   --art-heart: url("../img/ui/lounge/heart.webp");
-  --art-reward: url("../img/ui/lounge/reward.webp");
+  --art-reward: url("../img/ui/lounge/reward-clean.webp");
   --art-gauge-frame: url("../img/ui/lounge/gauge-frame.webp");
   --art-gauge-fill: url("../img/ui/lounge/gauge-fill.webp");
 }
@@ -14,7 +14,8 @@
 .ink-panel, .map-info, .map-notice, .map-time,
 .hud-card, .hud-level, .hud-menu, .hud-stamina,
 .gain-card {
-  background: none;
+  /* 拡縮時の9スライスの隙間から明るい背景が透けないよう、内側に墨色を敷く。 */
+  background: linear-gradient(#0e0913, #0e0913) center / calc(100% - 8px) calc(100% - 8px) no-repeat;
   border: 0 solid transparent;
   border-radius: 0;
   border-image: var(--art-panel) 110 fill / 24px / 0 stretch;
@@ -182,16 +183,7 @@
   -webkit-mask: var(--art-reward) center / 100% 100% no-repeat;
   mask: var(--art-reward) center / 100% 100% no-repeat;
 }
-/* 能力アップの色は残し、面に焼き込まれた煙模様だけ外す。 */
-.gain-card.stat::after {
-  background-image: linear-gradient(135deg, color-mix(in srgb, var(--gc) 32%, #140b1e), color-mix(in srgb, var(--gc) 12%, #0a0612));
-  background-blend-mode: normal;
-  -webkit-mask: none;
-  mask: none;
-  border: 1px solid var(--gc);
-  border-left-width: 4px;
-  border-radius: 4px;
-}
+/* 元の縁・質感を保ち、煙だけ除いた reward-clean を全通知で使う。 */
 .gc-badge { font-family: var(--font); font-weight: 700; box-shadow: none; }
 .gc-badge:not(.face), .st-badge {
   background: none;
@@ -258,10 +250,10 @@
   border-radius: 0;
   background: var(--art-gauge-fill) left center / 100% 100% no-repeat;
 }
-.hud-stamina { --stamina-fill: #8ee6a8; }
-.hud-stamina[data-health="yellow"] { --stamina-fill: #ffd45c; }
-.hud-stamina[data-health="red"] { --stamina-fill: #ff6969; }
-.hud-stamina .hud-bar b, .hud-stamina.low .hud-bar b {
+:is(.hud-stamina, .gain-card.stamina) { --stamina-fill: #8ee6a8; }
+:is(.hud-stamina, .gain-card.stamina)[data-health="yellow"] { --stamina-fill: #ffd45c; }
+:is(.hud-stamina, .gain-card.stamina)[data-health="red"] { --stamina-fill: #ff6969; }
+.hud-stamina .hud-bar b, .hud-stamina.low .hud-bar b, .gain-card.stamina .gc-meter i {
   background-color: var(--stamina-fill);
   background-image: var(--art-gauge-fill);
   background-size: 100% 100%;

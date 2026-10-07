@@ -57,8 +57,9 @@
       "dialogue_id": "kafuka_first_encounter",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_shishark_preparing_night.png",
-        "setting": "仕事や外出を終えた帰り道。LIME交換まで本名も通称も名乗らない。",
-        "bgm": "sweets_or_sweets"
+        "setting": "仕事や外出を終えた帰り道。交換したアカウントで通称を知り、本名は後の名乗りまで伏せる。",
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "kafuka"
       },
       "lines": [
         {
@@ -97,22 +98,38 @@
         {
           "speaker": "kafuka",
           "face": "smile",
-          "text": "こっちはコロンブレ。コロちゃんじゃ。サメの王なのじゃぞ。"
+          "text": "こっちはコロンブレ。コロちゃんじゃ。サメの王なのじゃぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女がぬいぐるみを持ち上げ、低い声に変えた。口元だけが、かすかに動いている。"
         },
         {
           "speaker": "kafuka",
           "face": "normal",
-          "text": "「王の玉座にふさわしい店を作るがよい」……分かっておる。まず箱が通路をふさいでおるのじゃ。"
+          "text": "王の玉座にふさわしい店を作るがよい",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "normal",
+          "text": "分かっておる。まず箱が通路をふさいでおるのじゃ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "この小さい箱、壁際に動かしましょうか。"
+          "text": "この小さい箱、壁際に動かしましょうか"
         },
         {
           "speaker": "kafuka",
           "face": "serious",
-          "text": "助かるのじゃ。椅子を置いたら、通れる幅が思ったより狭くての。落ち着く店にしたいのに、入口でつまずかせては困る。"
+          "text": "助かるのじゃ。椅子を置いたら、通り道が狭くなっての"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "落ち着く店にしたいのに、入口でつまずかせては困る"
         },
         {
           "speaker": "",
@@ -122,17 +139,17 @@
         {
           "speaker": "kafuka",
           "face": "normal",
-          "text": "店はSHISHARK。シーシャとシャークで、シーシャークと読むのじゃ。"
+          "text": "店はSHISHARK。シーシャとシャークで、シーシャークと読むのじゃ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "なるほど。俺、tonariで働いてる、はじめです。今度の大会にも出る予定で。"
+          "text": "なるほど。俺、tonariで働いてる、はじめです。今度の大会にも出る予定で"
         },
         {
           "speaker": "kafuka",
           "face": "smile",
-          "text": "はじめ。覚えたのじゃ。わしは大会には興味がないが、お主の一杯はちょっと気になるのう。"
+          "text": "はじめ。覚えたのじゃ。わしは大会には興味がないが、お主の一杯はちょっと気になるのう"
         },
         {
           "speaker": "",
@@ -142,27 +159,65 @@
         {
           "speaker": "kafuka",
           "face": "surprise",
-          "text": "……コロちゃんがびっくりしただけじゃ。わしは平気じゃぞ。"
+          "text": "……コロちゃんがびっくりしただけじゃ。わしは平気じゃぞ"
         },
         {
           "speaker": "kafuka",
           "face": "smile",
-          "text": "開店は、その大会が終わってからの予定じゃ。LIMEを交換せんか？ オープンしたら教えるから、来るのじゃぞ。"
+          "text": "開店は、その大会が終わってからの予定じゃ"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "LIMEを交換せんか？ オープンしたら教えるから、来るのじゃぞ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ぜひ。大会が終わったら、遊びに来ます。"
+          "text": "ぜひ。大会が終わったら、遊びに来ます"
         },
         {
           "speaker": "kafuka",
           "face": "smile",
-          "text": "うむ！ 「はじめの席も用意しておこう」……コロちゃんも、そう申しておる。"
+          "text": "うむ！"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "はじめの席も用意しておこう",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "コロちゃんも、そう申しておる"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "連絡先を交換した。名前を聞くより先に、彼女はまた箱と椅子の話に戻ってしまった。"
+          "text": "連絡先を交換すると、アカウント名は『サメちゃん』と出ていた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_lime_contact_kafuka"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_kafuka_nickname_known"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_kafuka"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "smile",
+          "text": "サメちゃんでよいぞ。みんな、そう呼んでおる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "サメちゃん、ですね。開店のお知らせ、楽しみにしています"
         }
       ],
       "branches": {
@@ -175,19 +230,31 @@
           {
             "speaker": "kafuka",
             "face": "normal",
-            "text": "「店が開く前に夜が明けるぞ、主よ」……コロちゃん、まだそこまでは話しておらん。"
+            "text": "店が開く前に夜が明けるぞ、主よ",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "normal",
+            "text": "コロちゃん、まだそこまでは話しておらん"
           }
         ],
         "shark_scary": [
           {
             "speaker": "kafuka",
             "face": "surprise",
-            "text": "怖ければ目をそらせばよいのじゃ。……わしは、たまに画面の外の演出を確かめておるだけじゃぞ。"
+            "text": "怖ければ目をそらせばよいのじゃ。……わしは、たまに画面の外の演出を確かめておるだけじゃぞ"
           },
           {
             "speaker": "kafuka",
             "face": "surprise",
-            "text": "「怖い場面で顔を伏せておるのは誰じゃ？」……コロちゃん、人聞きの悪いことを言うでない。"
+            "text": "怖い場面で顔を伏せておるのは誰じゃ？",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "surprise",
+            "text": "コロちゃん、人聞きの悪いことを言うでない"
           }
         ]
       }
@@ -196,51 +263,109 @@
       "dialogue_id": "kafuka_shop_first",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_shishark.png",
-        "min_chapter": 2
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "kafuka"
       },
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "SHISHARKの工事は終わり、入口にはOPENの札が掛かっている。扉の前で、彼女がコロちゃんを抱えてこちらに手を振った。"
-        },
-        {
-          "speaker": "kafuka",
-          "face": "smile",
-          "text": "はじめ！ よく来たのじゃ。お主にも見せたかったのじゃぞ。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "開店、おめでとうございます。箱のあったところ、すっきりしましたね。"
-        },
-        {
-          "speaker": "kafuka",
-          "face": "serious",
-          "text": "椅子をひとつ減らしたのじゃ。人数より、落ち着いて歩ける方を取った。"
-        },
-        {
-          "speaker": "kafuka",
-          "face": "smile",
-          "text": "「はじめの席は空いておるぞ」……コロちゃん、客を急かしてはならん。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "じゃあ、今日はゆっくりさせてもらいます。"
-        },
-        {
-          "speaker": "kafuka",
-          "face": "smile",
-          "text": "うむ。さあ、入るのじゃ。どんな一杯にするか、中で聞かせておくれ。"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_kafuka_first_encounter",
+          "next_true": "familiar",
+          "next_false": "new_guest"
         }
-      ]
+      ],
+      "branches": {
+        "familiar": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "SHISHARKの工事は終わり、入口にはOPENの札が掛かっている。扉の前で、彼女がコロちゃんを抱えてこちらに手を振った。"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "smile",
+            "text": "はじめ！ よく来たのじゃ。お主にも見せたかったのじゃぞ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "開店、おめでとうございます。箱のあったところ、すっきりしましたね"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "serious",
+            "text": "椅子をひとつ減らしたのじゃ。人数より、落ち着いて歩ける方を取った"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "smile",
+            "text": "はじめの席は空いておるぞ",
+            "voice": "korochan"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "smile",
+            "text": "コロちゃん、客を急かしてはならん"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "じゃあ、今日はゆっくりさせてもらいます"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "smile",
+            "text": "うむ。さあ、入るのじゃ。どんな一杯にするか、中で聞かせておくれ"
+          }
+        ],
+        "new_guest": [
+          {
+            "speaker": "",
+            "text": "大きなサメの看板の下で、サメのフードを被った店主が手を振った。"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "smile",
+            "text": "ようこそ、SHISHARKへ。サメちゃんと呼んでよいぞ"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_kafuka_nickname_known"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_met_kafuka"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "tonariで働いてる、はじめです。今日はゆっくり、一服させてください"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "smile",
+            "text": "うむ！ コロちゃんも、待っておる。気に入ったら、また来るのじゃぞ"
+          },
+          {
+            "speaker": "",
+            "text": "一服を終えて、店のお知らせ用のLIMEを交換した。"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_lime_contact_kafuka"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "kafuka_shop_repeat_0",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_shishark.png",
-        "min_chapter": 2
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "kafuka"
       },
       "lines": [
         {
@@ -251,17 +376,23 @@
         {
           "speaker": "kafuka",
           "face": "serious",
-          "text": "上に置くと、こちらを見るたび首を上げるじゃろう。王でも、客の首を疲れさせてはならん。"
+          "text": "上に置くと、こちらを見るたび首を上げるじゃろう。王でも、客の首を疲れさせてはならん"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "そっちの方が、目が合いますね。"
+          "text": "そっちの方が、目が合いますね"
         },
         {
           "speaker": "kafuka",
           "face": "serious",
-          "text": "「苦しゅうない、はじめ」……うむ。今日はここから見ておるそうじゃ。"
+          "text": "苦しゅうない、はじめ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "うむ。今日はここから見ておるそうじゃ"
         }
       ]
     },
@@ -269,18 +400,20 @@
       "dialogue_id": "kafuka_shop_repeat_1",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_shishark.png",
-        "min_chapter": 2
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "kafuka"
       },
       "lines": [
         {
           "speaker": "kafuka",
           "face": "smile",
-          "text": "はじめ、映画の話をしてもよいか？ ひとつだけなのじゃ。"
+          "text": "はじめ、映画の話をしてもよいか？ ひとつだけなのじゃ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ひとつなら、ぜひ。"
+          "text": "ひとつなら、ぜひ"
         },
         {
           "speaker": "kafuka",
@@ -295,7 +428,7 @@
         {
           "speaker": "kafuka",
           "face": "serious",
-          "text": "……先に中へ入ろう。立たせたまま長話をしては、落ち着く店にならん。続きは座ってからじゃな。"
+          "text": "……先に中へ入ろう。立たせたまま長話をしては、落ち着く店にならん。続きは座ってからじゃな"
         }
       ]
     },
@@ -305,23 +438,24 @@
         "bg": "res://assets/backgrounds/bg_street.png",
         "future_only": true,
         "private_scene": true,
-        "bgm": "sweets_or_sweets"
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "kafuka"
       },
       "lines": [
         {
           "speaker": "kafuka",
           "face": "serious",
-          "text": "……海で泳ぐのは、あまり得意ではないのじゃ。サメ好きと泳ぎは、別の話じゃぞ。"
+          "text": "……海で泳ぐのは、あまり得意ではないのじゃ。サメ好きと泳ぎは、別の話じゃぞ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "じゃあ、足のつくところでゆっくりしましょうか。"
+          "text": "じゃあ、足のつくところでゆっくりしましょうか"
         },
         {
           "speaker": "kafuka",
           "face": "smile",
-          "text": "うむ。笑わんでくれて、助かる。……コロちゃんも、岸から海を見るのが好きじゃと言っておる。"
+          "text": "うむ。笑わんでくれて、助かる。……コロちゃんも、岸から海を見るのが好きじゃと言っておる"
         }
       ]
     },
@@ -331,13 +465,19 @@
         "bg": "res://assets/backgrounds/bg_street.png",
         "future_only": true,
         "private_scene": true,
-        "bgm": "sweets_or_sweets"
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "kafuka"
       },
       "lines": [
         {
           "speaker": "kafuka",
           "face": "serious",
-          "text": "そういえば、ちゃんと名乗っておらんかったな。波多野かふかじゃ。サメちゃんでも、かふかでも、好きに呼んでよい。"
+          "text": "そういえば、ちゃんと名乗っておらんかったな。波多野かふかじゃ"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "サメちゃんでも、かふかでも、好きに呼んでよい"
         },
         {
           "type": "set_flag",
@@ -346,12 +486,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "かふかさん。教えてくれて、ありがとうございます。"
+          "text": "かふかさん。教えてくれて、ありがとうございます"
         },
         {
           "speaker": "kafuka",
           "face": "smile",
-          "text": "……うむ。そっちで呼ばれると、少し照れるのじゃ。"
+          "text": "……うむ。そっちで呼ばれると、少し照れるのじゃ"
         }
       ]
     }

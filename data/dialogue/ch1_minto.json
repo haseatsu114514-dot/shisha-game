@@ -6,38 +6,90 @@
         {
           "speaker": "",
           "face": "",
-          "text": "「ぺぱーみんと」。パステルカラーの外装で、一見コンセプトカフェのようなシーシャ店だ。"
+          "text": "ぺぱーみんとへ向かう途中、店の前で見覚えのある横顔を見つけた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ミント色の髪と、フリルのついた制服。彼女もこちらに気づいて、足を止めた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……どうも。はじめくん、こんにちは"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あれ、いつものtonariのお姉さん……？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は制服の袖をつまんで、少しだけ目を伏せた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……みんと、です。このお店では、そう呼んでください"
+        },
+        {
+          "type": "set_flag",
+          "flag": "known_name_minto"
         },
         {
           "type": "set_flag",
           "flag": "_met_minto"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "店に入ると、彼女は男性の常連客たちに囲まれていた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "「みんと今日も一番可愛いよー！」「チェキ10枚追加で！」"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "と熱烈にチヤホヤされていた。"
+          "type": "set_flag",
+          "flag": "_minto_identity_revealed"
         },
         {
           "speaker": "hajime",
-          "face": "surprise",
-          "text": "（……うわ。なんだ、この熱気。チェキ？　推し？　tonariとは何もかも違う……完全に場違いだ）"
+          "face": "normal",
+          "text": "みんとさん。ここの人だったんですね"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "うん。……この格好、外で見られると、ちょっと照れるね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日はお店を見に来たんです。入ってもいいですか？"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "もちろん。……じゃあ、続きは中で"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/peppermint.png"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店に入ると、パステルカラーの内装と、常連客の声に包まれた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「みんと、今日も可愛いよー！」「あとでチェキお願い！」"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（チェキ？ 推し？……tonariとは、ずいぶん違うな）"
         },
         {
           "type": "choice",
           "id": "minto_first_air",
           "choices": [
             {
-              "text": "帰りたくなってきた",
+              "text": "ちょっと緊張してきた",
               "next": "air_shy"
             },
             {
@@ -49,56 +101,22 @@
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "あははっ、みんなありがと〜っ♡ みんとのこと推してくれるの、ほんっと嬉しいなぁ〜！ ……"
+          "text": "はーいっ♡ みんな、あとで順番にね〜！"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "振り向いた瞬間、彼女の表情が──ほんの一瞬、固まった。"
-        },
-        {
-          "speaker": "minto",
-          "face": "surprise",
-          "text": "っ……"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "──次の瞬間には、もう完全な笑顔に戻っていた。"
+          "text": "カウンターに立つと、みんとの声がぱっと明るくなった。"
         },
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "おかえりなさーいっ♡ ……あれっ、初めましてだよね？ もしかして……tonariの新人さん？"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "はじめくん、だっけ？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "えっ、なんで名前知ってるの……？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（……今、一瞬だけ変な顔をしたような……？ 気のせいかな）"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "えへへー、近所のウワサだよ！ 私、みんと！ みんとって呼んでねっ♡ 初ご来店、嬉しいなー！"
+          "text": "おかえりなさーいっ♡ はじめくん、初ご来店ありがとっ！"
         },
         {
           "speaker": "minto",
           "face": "wink",
-          "text": "ご指名ありがとうございますっ♡ ……あ、もうウチの推しメンに認定しちゃうからねっ？"
-        },
-        {
-          "type": "set_flag",
-          "flag": "known_name_minto"
+          "text": "ご指名ありがとうございますっ♡ 今日はみんとに任せてね？"
         },
         {
           "speaker": "",
@@ -326,6 +344,12 @@
         {
           "type": "remember",
           "memory_id": "minto_welcome"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "charm": 2
+          }
         }
       ],
       "branches": {
@@ -333,7 +357,7 @@
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（……回れ右したくなってきた。いや、偵察に来たんだろ、俺）"
+            "text": "（ちょっと圧倒されるけど……まずは、一服してみよう）"
           },
           {
             "speaker": "",
@@ -385,6 +409,9 @@
             "flag": "minto_taste_amai"
           }
         ]
+      },
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street.png"
       }
     },
     {
@@ -777,54 +804,11 @@
           "text": "えっ……"
         },
         {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "……はじめくんなら、少しだけ本音、話してもいいかな。ここ、昔は私の実家の『喫茶店』だったんだ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "えっ、実家の？"
-        },
-        {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "うん。親の都合で自己破産して、店を手放すことになって……跡地に建ったのは、ただの『精肉店』だった"
-        },
-        {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "大好きだった喫茶店の思い出が消えたのが、本当に悲しくて……"
-        },
-        {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "看板メニューのチョコミントデザートが好きで、だから私、今『みんと』って名乗ってるの"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "そういう由来だったんだ……。じゃあ、今のこのお店は……？"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "それからずーっと、必死にお金貯めて、あの精肉店の物件を取り返したの！"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "……何年かかったかは秘密だけど♡ で、改装して今のシーシャ屋にしたってわけ！"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "ふふっ、まぁ、どのみち『肉の匂いを消す』って言ったら、ミントが一番でしょ？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（……そんな風に明るく笑えるようになるまで、どれほどの苦労があったんだろう）"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_minto_history_shared",
+          "next_true": "history_known",
+          "next_false": "history_new"
         },
         {
           "speaker": "minto",
@@ -870,8 +854,93 @@
           "speaker": "",
           "face": "",
           "text": "……【洞察】が少し上がった。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_minto_history_shared"
         }
-      ]
+      ],
+      "branches": {
+        "history_new": [
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "……はじめくんなら、少しだけ本音、話してもいいかな。ここ、昔は私の実家の『喫茶店』だったんだ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "えっ、実家の？"
+          },
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "うん。親の都合で自己破産して、店を手放すことになって……跡地に建ったのは、ただの『精肉店』だった"
+          },
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "大好きだった喫茶店の思い出が消えたのが、本当に悲しくて……"
+          },
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "看板メニューのチョコミントデザートが好きで、だから私、今『みんと』って名乗ってるの"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "そういう由来だったんだ……。じゃあ、今のこのお店は……？"
+          },
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "それからずーっと、必死にお金貯めて、あの精肉店の物件を取り返したの！"
+          },
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "……何年かかったかは秘密だけど♡ で、改装して今のシーシャ屋にしたってわけ！"
+          },
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "ふふっ、まぁ、どのみち『肉の匂いを消す』って言ったら、ミントが一番でしょ？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……そんな風に明るく笑えるようになるまで、どれほどの苦労があったんだろう）"
+          }
+        ],
+        "history_known": [
+          {
+            "speaker": "minto",
+            "face": "normal",
+            "text": "前にLIMEで話した、実家の喫茶店のこと。覚えてる？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。ここを買い戻して、お店にしたって"
+          },
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "うん。看板のチョコミントから『みんと』って名乗ったの"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "思い出の味が、今の店にも続いてるんですね"
+          },
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "……そう言ってもらえると、ちょっとほっとする"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_minto_phantom_smell",
@@ -940,34 +1009,11 @@
           "text": "あはは、普通はそうだよね"
         },
         {
-          "speaker": "minto",
-          "face": "sad",
-          "text": "……私にとってはね、上書きなの"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "上書き……？"
-        },
-        {
-          "speaker": "minto",
-          "face": "sad",
-          "text": "前に話したでしょ、実家の喫茶店のこと。潰れて精肉店になったって"
-        },
-        {
-          "speaker": "minto",
-          "face": "sad",
-          "text": "もうとっくにクリーニングされてるの。匂いなんか残ってるわけない。でもね……"
-        },
-        {
-          "speaker": "minto",
-          "face": "sad",
-          "text": "鼻の奥に、まだあるの。あの匂い。血と、肉の匂い。頭では分かってるのに、体が忘れてくれない"
-        },
-        {
-          "speaker": "minto",
-          "face": "serious",
-          "text": "だから私、ミントで埋め尽くすの。この空間ごと、全部。あの幻の匂いが消えるまで"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_minto_phantom_shared",
+          "next_true": "smell_known",
+          "next_false": "smell_new"
         },
         {
           "speaker": "",
@@ -1008,24 +1054,84 @@
           "speaker": "",
           "face": "",
           "text": "……【洞察】が上がった。【魅力】が少し上がった。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_minto_phantom_shared"
         }
       ],
       "growth_stats": {
         "insight": 3,
         "charm": 2
+      },
+      "branches": {
+        "smell_new": [
+          {
+            "speaker": "minto",
+            "face": "sad",
+            "text": "……私にとってはね、上書きなの"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "上書き……？"
+          },
+          {
+            "speaker": "minto",
+            "face": "sad",
+            "text": "前に話したでしょ、実家の喫茶店のこと。潰れて精肉店になったって"
+          },
+          {
+            "speaker": "minto",
+            "face": "sad",
+            "text": "もうとっくにクリーニングされてるの。匂いなんか残ってるわけない。でもね……"
+          },
+          {
+            "speaker": "minto",
+            "face": "sad",
+            "text": "鼻の奥に、まだあるの。血と肉の匂いが。頭では分かってるのに、体が忘れてくれない"
+          },
+          {
+            "speaker": "minto",
+            "face": "serious",
+            "text": "だから私、ミントで埋め尽くすの。この空間ごと、全部。あの幻の匂いが消えるまで"
+          }
+        ],
+        "smell_known": [
+          {
+            "speaker": "minto",
+            "face": "sad",
+            "text": "この前LIMEで話した、あの匂い。……今、少しだけするの"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ミントで上書きしてたって話、覚えてます"
+          },
+          {
+            "speaker": "minto",
+            "face": "sad",
+            "text": "うん。頭ではもう残ってないって、分かってるんだけどね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "……在庫整理は俺がやります。少し、座っていてください"
+          }
+        ]
       }
     },
     {
       "dialogue_id": "ch1_minto_fifth",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_day.png",
+        "bg": "res://assets/backgrounds/bg_street.png",
         "private_scene": true
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "休みを合わせた午後。みんとに誘われて、駅前で待ち合わせをしている。"
+          "text": "約束の待ち合わせ。みんとが来るのを、駅前で待っている。"
         },
         {
           "speaker": "",
@@ -1117,72 +1223,14 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "お店の外だと、こういう話し方なの。……退屈じゃない？"
+          "text": "お店の外だと、こういう話し方なの、……退屈じゃない？"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "そう言って少し俯いた横顔に、見覚えがあった。店で会う時とは違う、静かな表情──"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "（……あれ。この横顔、知ってる。tonariのカウンターの隅で、静かに吸ってた──）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "……お姉、さん……？"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_surprise",
-          "text": "っ！？"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "弾かれたように顔を上げて、みるみる耳まで赤くなっていく。"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_sad",
-          "text": "……うぅ…………、……ばれた…………"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_normal",
-          "text": "……そうです。tonariの隅っこの『お姉さん』は、私です……"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "ええっ！？ じゃあ、初めてお姉さんに出した、あの一台って"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_normal",
-          "text": "……うん。私が飲んだの。あの日、初めてきみに作ってもらった。……年齢確認も、されたけど"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（言われてみれば……あの夜のお姉さんの静かな感じ、今の彼女そのままだ）"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_normal",
-          "text": "最初はただの偵察だったの。ライバル店の新人くんが、どんな煙を作るのかなって"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_smile",
-          "text": "……でも、あの一台が思ったより良くてさ。なんか、言いそびれちゃった"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "道理で、ずっと既視感があったわけだ……。びっくりしたけど、なんか、すっきりした"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_minto_identity_revealed",
+          "next_true": "identity_known",
+          "next_false": "identity_new"
         },
         {
           "speaker": "minto",
@@ -1255,11 +1303,111 @@
           "speaker": "",
           "face": "",
           "text": "……【洞察】が少し上がった。【魅力】が上がった。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_minto_fifth_done"
         }
       ],
       "growth_stats": {
         "insight": 2,
         "charm": 3
+      },
+      "branches": {
+        "identity_new": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "そう言って少し俯いた横顔に、見覚えがあった。店で会う時とは違う、静かな表情──"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（……あれ。この横顔、知ってる。tonariのカウンターの隅で、静かに吸ってた──）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "……お姉、さん……？"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_surprise",
+            "text": "っ！？"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "弾かれたように顔を上げて、みるみる耳まで赤くなっていく。"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_sad",
+            "text": "……うぅ…………、……ばれた…………"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……そうです。tonariの隅っこの『お姉さん』は、私です……"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "ええっ！？ じゃあ、初めてお姉さんに出した、あの一台って"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……うん。あの日、初めてきみに作ってもらった一台を、私が飲んだの。……年齢確認も、されたけど"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（言われてみれば……あの夜のお姉さんの静かな感じ、今の彼女そのままだ）"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "最初はただの偵察だったの。ライバル店の新人くんが、どんな煙を作るのかなって"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "……でも、あの一台が思ったより良くてさ。なんか、言いそびれちゃった"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "道理で、ずっと既視感があったわけだ……。びっくりしたけど、なんか、すっきりした"
+          }
+        ],
+        "identity_known": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "退屈じゃないよ。tonariで話す時みたいで、落ち着く"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……あの時、初めて作ってくれた一台、覚えてる？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "うん。『お任せで』って、頼んでくれましたね"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_smile",
+            "text": "最初は偵察のつもりだったけど。あの一台、うれしかったの"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "そう言ってもらえて、俺もうれしい"
+          }
+        ]
       }
     },
     {
@@ -1285,23 +1433,11 @@
           "text": "うん。でも、会うたびに思うよ。お店の時と全然違うなって"
         },
         {
-          "speaker": "minto",
-          "face": "ura_normal",
-          "text": "……あらためて。私、緑川栞っていうの。二人の時は、そっちで呼んでもらえたら、うれしいな"
-        },
-        {
-          "speaker": "minto",
-          "face": "ura_normal",
-          "text": "……お店では、『みんと』のままでお願いね"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "うん。栞さん、で"
-        },
-        {
-          "type": "set_flag",
-          "flag": "_minto_name_known"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_minto_name_known",
+          "next_true": "name_known",
+          "next_false": "name_new"
         },
         {
           "speaker": "minto",
@@ -1371,8 +1507,47 @@
           "speaker": "",
           "face": "",
           "text": "……【魅力】が上がった。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_minto_private_done"
         }
-      ]
+      ],
+      "branches": {
+        "name_new": [
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……あらためて。私、緑川栞っていうの。二人の時は、そっちで呼んでもらえたら、うれしいな"
+          },
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……お店では、『みんと』のままでお願いね"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "うん。栞さん、で"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_minto_name_known"
+          }
+        ],
+        "name_known": [
+          {
+            "speaker": "minto",
+            "face": "ura_normal",
+            "text": "……今日は、お店のことは少し置いておこうかな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "うん、栞さん。何も急がなくていいです"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_minto_after_ch1",

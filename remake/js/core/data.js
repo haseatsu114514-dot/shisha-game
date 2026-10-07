@@ -151,9 +151,13 @@ export function realName(id) {
 export function displayName(id, state, { context = null } = {}) {
   if (!id) return "";
   if (id === "???") return "？？？";
+  if (id === "oneesan" && state?.flags?._minto_identity_revealed) {
+    return state.flags._minto_name_known ? DB.characters.minto?.private_name || "栞" : "みんと";
+  }
   if (id === "kafuka") {
     if (state?.flags?._kafuka_name_known) return DB.characters.kafuka?.full_name || "波多野かふか";
-    if (state?.flags?._kafuka_nickname_known || state?.limeRead?.includes("lime_naru_kafuka_nickname")) return "サメちゃん";
+    if (state?.flags?._kafuka_nickname_known || state?.flags?._lime_contact_kafuka || state?.contacts?.includes("kafuka")
+      || state?.limeRead?.includes("lime_naru_kafuka_nickname")) return "サメちゃん";
     return "？？？";
   }
   if (id === "minto" && context === "private" && state?.flags?._minto_name_known && DB.characters.minto?.private_name) {

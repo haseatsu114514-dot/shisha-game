@@ -79,7 +79,7 @@
       "messages": [
         {
           "sender": "naru",
-          "text": "今日はKEMURIKUSAの定休日。午後、新作の機材を見に行くんだけど"
+          "text": "今日はKEMURIKUSAを休みにしたから、午後に新作の機材を見に行くんだけど"
         },
         {
           "sender": "naru",
@@ -92,7 +92,8 @@
         "text": "りょ。気が向いたらいつでも声かけて"
       },
       "closed_on": 3,
-      "reminder_text": "この前の機材探し、今日は店が休みだから午後に行こうと思ってる。都合が合えば来いよ"
+      "reminder_text": "この前の機材探し、今日は店を休みにして午後に行こうと思ってる。都合が合えば来いよ",
+      "private_schedule": "holiday_or_temporary"
     },
     {
       "id": "lime_adam_arcade_after_close",
@@ -160,7 +161,7 @@
       "sender": "minto",
       "trigger_condition": "affinity_level",
       "trigger_value": 3,
-      "exclude_flag": "_minto_identity_revealed",
+      "exclude_flag": "_minto_fifth_done",
       "type": "invitation",
       "time_slot": "noon",
       "messages": [
@@ -177,7 +178,8 @@
       "decline_response": {
         "sender": "minto",
         "text": "うん、わかった。今日は無理しないでね"
-      }
+      },
+      "private_schedule": "holiday_or_temporary"
     },
     {
       "id": "lime_minto_first_holiday",
@@ -189,25 +191,25 @@
       "exclude_flag": "_minto_fifth_done",
       "type": "invitation",
       "important": true,
-      "closed_on": 6,
-      "time_slot": "noon",
       "messages": [
         {
           "sender": "minto",
-          "text": "はじめくん、おはよう。今日はPEPPERMINTの定休日なんだ。"
+          "text": "はじめくん、おはよう。今日、外で少し会わない？"
         },
         {
           "sender": "minto",
-          "text": "午後、外で少し会わない？ お店のことを気にせず、ゆっくり話してみたくて。"
+          "text": "お店のことを気にせず、ゆっくり話してみたくて"
         }
       ],
       "accept_event": "ch1_minto_fifth",
-      "accept_text": "午後、会おう",
-      "reminder_text": "この前のお誘い、返事は気にしないでね。今日もお休みだから、空いていたら。",
+      "accept_text": "うん、会おう",
+      "reminder_text": "この前のお誘い、返事は気にしないでね。今日、空いていたら",
       "decline_response": {
         "sender": "minto",
-        "text": "うん、わかった。無理しないでね。お店では、またいつでも。"
-      }
+        "text": "うん、わかった。無理しないでね。お店では、またいつでも"
+      },
+      "private_schedule": "holiday_or_after_close",
+      "time_slot": "night"
     },
     {
       "id": "lime_outing_minto_2",
@@ -215,7 +217,7 @@
       "reminder_text": "この前はタイミングが合わなかったね。{privateContext}、もし空いていたら。",
       "sender": "minto",
       "trigger_condition": "flag",
-      "trigger_flag": "_minto_identity_revealed",
+      "trigger_flag": "_minto_fifth_done",
       "type": "invitation",
       "messages": [
         {
@@ -233,7 +235,8 @@
         "text": "そっか、忙しいよね、……また誘う、かも"
       },
       "private_schedule": "holiday_or_after_close",
-      "accept_text": "{privateWhen}、会おう"
+      "accept_text": "{privateWhen}、会おう",
+      "exclude_flag": "_minto_private_done"
     },
     {
       "id": "lime_minto_bond_finale",
@@ -715,42 +718,17 @@
     {
       "id": "rumor_minto_late_night",
       "sender": "minto",
-      "trigger_condition": "affinity_level",
-      "trigger_value": 4,
+      "trigger_condition": "flag",
       "type": "rumor",
       "rumor_about": "minto",
       "messages": [
         {
           "sender": "minto",
-          "text": "……はじめくん、おはよう。昨夜、話したいことがあって"
+          "text": "おはよう。昨日は、少しゆっくり準備できたよ"
         },
         {
           "sender": "minto",
-          "text": "朝からごめんね。少しだけ、聞いてもらえる？"
-        },
-        {
-          "sender": "minto",
-          "text": "昨日、店を閉めたあとにね。ふっと、あの匂いがした気がしたの"
-        },
-        {
-          "sender": "minto",
-          "text": "生肉の、あの匂い。……ここが私の店になって、もう何年も経つのに"
-        },
-        {
-          "sender": "minto",
-          "text": "クリーニングも改装もとっくに済んでて、匂いなんか残ってるわけないのに"
-        },
-        {
-          "sender": "minto",
-          "text": "……鼻の奥にこびりついてるの。頭では分かってるのに、体が覚えてるの"
-        },
-        {
-          "sender": "minto",
-          "text": "だから私、ミントの煙でいっぱいにするの。この空間ごと全部、上書きするために"
-        },
-        {
-          "sender": "minto",
-          "text": "……朝から重い話、ごめんね。聞いてくれてありがと。今日も、無理しないでね"
+          "text": "あの匂いのこと、聞いてくれてありがとう。今日はミントの香りも、ちょっと違って感じる"
         }
       ],
       "replies": [
@@ -769,7 +747,8 @@
           "response": "うん、わかった。急がなくて大丈夫。返してくれてありがと。お仕事、気をつけてね",
           "affinity": 0
         }
-      ]
+      ],
+      "trigger_flag": "_minto_phantom_shared"
     },
     {
       "id": "rumor_ageha_mashiro",

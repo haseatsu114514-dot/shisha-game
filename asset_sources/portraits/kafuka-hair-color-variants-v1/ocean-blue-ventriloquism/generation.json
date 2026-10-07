@@ -1,0 +1,74 @@
+{
+  "character": "kafuka",
+  "request_id": "PRT68",
+  "variant": "ocean-blue-ventriloquism",
+  "status": "matched-to-approved-design",
+  "expression": "ventriloquism",
+  "raw_generation_path": "/workspace/generated_images/exec-806e78d2-0e12-4179-b83b-b32c3a134daf.png",
+  "source_size": [
+    1024,
+    1536
+  ],
+  "source_mode": "RGBA",
+  "source_sha256": "19dd66bce1726708a704fa6131ce85b8ac10a8ca361ee06762406ce1bc7a8a5a",
+  "source_byte_identical": true,
+  "prompt": "Edit IMAGE 1, the latest face-hidden VENTRILOQUISM full-body sprite, to match ONLY the user-approved HUMAN HAIR COLOUR in image 2. Image 1 is the exact pose, face occlusion, clothing design and composition authority. Image 2 is the user's chosen black hair with visibly stronger ocean/cobalt-blue inner layers. Images 3 and 4 are approved Minto and Ageha render quality only.\n\nKeep roughly 75 percent of the visible human hair ebony black. Broaden the visible BLUE inner layers on BOTH sides of the raised plush and along the curled shoulder-length hair ends against the black collar, matching image 2's clearly visible medium-light ocean/cobalt-blue dyed sections, around 25 percent of hair. The central fringe and outer top remain black. Preserve the exact shoulder-length hair silhouette and strands. The blue must read as dyed hair, not rim lighting or glowing highlights. No silver or light grey hair.\n\nChange NOTHING ELSE. Preserve image 1's black/charcoal loose hooded utility jacket, ivory coif forehead band, pale powder-blue lining/straps/piping/pockets/fins and tail, ivory top and sleeve stripes, black pleated skort, charcoal tights, black/ivory/pale-blue skate high-tops and ivory laces, all silver crosses and tooth hardware. Exact same crossed-leg pose, body, hood, clothing folds and hands. Keep the original plush Koro's medium-blue body and white snout/belly, gold crown, dark round eyes, open smiling toothy mouth, navy bow with gold star and black cape. BOTH hands support the raised plush naturally. Only one plush.\n\nCRITICAL: the plush stays directly in front of the WHOLE human face. NO human eyes, nose, lips or cheek appearing beside, above or below the toy. She talks through the plush as if it speaks. Only hood, coif and black/blue side hair visible around it. Do not move the plush down to her chest or reveal her face.\n\nKeep exact same full-body scale and location, hood/crown, sleeves, hands, both shoes completely in frame with margins. Same fine clean high-density anime/pixel-art-like sprite finish, delicate lines and controlled shading, no thicker ink or glossy dramatic painting. True RGBA transparent background, clean natural alpha. No background, ground, floor shadow, mist, glow, text, speech bubble, checkerboard or other character. One complete sprite only.\n",
+  "references": [
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-hair/asset_sources/portraits/kafuka-hair-color-variants-v1/references/base-ventriloquism-source.png",
+      "role": "Exact previously requested pose: whole human face hidden by plush, hands and clothes unchanged.",
+      "sha256": "c67323acf0cdc11df71cb8fd7aa07495019a8f3cf70d5cbbddd281f7841de2ca"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-hair/asset_sources/portraits/kafuka-hair-color-variants-v1/ocean-blue/source.png",
+      "role": "User-approved black hair with stronger ocean-blue inner layers; hair colour authority and matching costume.",
+      "sha256": "d1777a3276e1519e8f9bb2f3dcb6e2456650b1e6f8856fde19828cfab333cd4e"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-hair/assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "Approved Minto quality only.",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-hair/assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "Approved Ageha quality only.",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    }
+  ],
+  "reference_review": "All earlier 29 portrait groups and 112 images reviewed in the same session. Current task reread latest identity source, native face, and approved Minto/Ageha. Every colour edit uses the same original base rather than the preceding edit.",
+  "normalization": {
+    "operations": "Whole-image uniform resize and RGBA placement only. Native crops are unretouched. No painting, face compositing, warping, alpha thresholding or colour postprocessing.",
+    "common_scale_per_1536px_source_height": 0.607095046854083,
+    "scale": 0.607095046854083,
+    "offset": [
+      142,
+      256
+    ],
+    "canvas_size": [
+      896,
+      1200
+    ],
+    "source_main_bbox": [
+      198,
+      14,
+      833,
+      1513
+    ],
+    "preview_main_content": [
+      [
+        262,
+        264,
+        648,
+        1174
+      ],
+      448.7025894049562
+    ]
+  },
+  "checks": {
+    "raw_border_alpha_ge_16": 0,
+    "preview_border_alpha_ge_16": 0,
+    "source_rgba": true,
+    "face_occlusion_reviewed": "Whole human face hidden behind Koro; only side hair, hood and coif visible."
+  },
+  "runtime_changed": false
+}

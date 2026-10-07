@@ -45,8 +45,10 @@ try {
     assert(box.name.right <= 1280 - 40, `${id}: 名前「${box.name.text}」が右端に詰まりすぎ`);
     if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/cutin_${id}.png` });
     await page.locator(".cutin").click();
+    await page.keyboard.press("Enter");
+    assert.equal(await page.locator(".cutin:not(.out)").count(), 1, `${id}: クリック/Enterで演出を飛ばせてしまう`);
     await page.evaluate(() => T.done);
-    assert.equal(await page.locator(".cutin").count(), 0, `${id}: クリックで閉じない`);
+    assert.equal(await page.locator(".cutin").count(), 0, `${id}: 自動で閉じない`);
   }
 
   // 2) 名前の出し方: 大きいのは名前欄と同じ呼び名、フルネームは下に小さく（）。伏せる相手（みんと＝栞・零＝田中健太）は出さない
@@ -94,6 +96,9 @@ try {
   assert.equal(await page.evaluate(() => T.core.state.flags._intro_naru), true);
   await page.waitForTimeout(600);
   await page.locator(".cutin").click();
+  await page.keyboard.press("Enter");
+  await page.keyboard.press("Control");
+  assert.equal(await page.locator('.cutin[data-char="naru"]:not(.out)').count(), 1, "登場中の操作で閉じた");
   await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent.includes("よろしく"));
   await advance(); await advance();
   await page.waitForFunction(() => document.querySelector(".vn-text")?.textContent.includes("おう"));

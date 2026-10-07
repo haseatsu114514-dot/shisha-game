@@ -1,0 +1,80 @@
+{
+  "character": "kafuka",
+  "version": "blue-black-hair-v2",
+  "expression": "normal",
+  "status": "superseded-clothing-reference-arrived-during-generation",
+  "request_id": "PRT61",
+  "source_size": [
+    1024,
+    1536
+  ],
+  "source_mode": "RGBA",
+  "raw_generation_path": "/workspace/generated_images/exec-0aa89e10-2b7e-43e1-90dd-e97ee299bb0c.png",
+  "source_sha256": "b0ac6119567aab6d1e5b2df83d513e09f3a82f3f6748555c3b06bc1bff8bc60c",
+  "source_byte_identical": true,
+  "prompt": "Edit ONLY the HAIR COLOR of the BLUE STREET-SISTER normal sprite in image 1. The owner's latest instruction is BLACK HAIR, with a few small blue highlight/mesh strands allowed. Output the same single complete full-body normal sprite, true RGBA transparent background, same canvas proportions, scale and positions.\n\nMake ALL her hair predominantly EBONY BLACK / soft charcoal black, including the fringe, crown, face-framing locks, inner strands, lower lengths, ends and locks draped over her shoulders. Remove the SILVER/WHITE hair completely; do not leave grey/silver side hair, silver inner sections or a pale lower-half gradient. Use restrained dark charcoal highlights for volume, still visibly BLACK. Keep just one or two narrow cobalt/azure-blue streaks near the face, about 3–5 percent of the hair, not large blue panels. The majority of the hair must read black, not blue or grey.\n\nPreserve the existing exact hairstyle, fine hair contours and length. Preserve the same cute adult face, blue eyes, sharp-tooth smile, skin tone, pose, hands and proportions. Keep the BLUE main outfit and ivory nun-coif/hood edge, short cape and veil, cross/shark-tooth hardware, utility pockets, skirt, sheer tights, shoes, and crown-wearing blue shark plush Koro EXACTLY as shown. Do not recolor the blue hood, blue plush or ivory coif band: only human hair changes. Do not alter facial features or add accessories.\n\nImage 2 is the selected blue version's native detail crop used for the SAME face and costume, but its old silver side hair is what must be recolored. Images 3 and 4 are approved Minto and Ageha used ONLY for rendering quality. Fine clean high-density anime/pixel-art-like sprite with delicate outlines and controlled shading; no heavier dramatic lighting or glossy rim light. No text, bubbles, ground, cast shadow, haze, background glow, floor or checkerboard. Clean genuine alpha outside all character edges. Exactly one sprite.",
+  "references": [
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-concepts/asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/normal/source.png",
+      "role": "Blue normal: same person and clothes, hair only changed to black",
+      "sha256": "9dd47dcd6aea5fa5b7f46c3a89f17ca86fa384cf74e0b85de21e26e3a937fdce"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-concepts/asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/normal/face-native.png",
+      "role": "Normal native detail: face identity; old silver hair replaced",
+      "sha256": "e4cc353c7d43547b22a22d2bd216b765de9c3721d7503061f17658c435ef856e"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-concepts/assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "Approved Minto: render quality only",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "actual_path": "/workspace/shisha-game-kafuka-concepts/assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "Approved Ageha: render quality only",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    }
+  ],
+  "reference_library_reviewed": "All previously reviewed portrait groups, including remasters merged in PR #204 and three concept renders merged in PR #205, followed by blue normal and ventriloquism variants and latest black-hair pass. Approved Minto and Ageha attached as render references.",
+  "normalization": {
+    "operations": "Only whole-image uniform resize and RGBA placement; common scale per source canvas height for both images. No redraw, face compositing, warping or alpha thresholding.",
+    "scale": 0.6062834224598931,
+    "offset": [
+      143,
+      257
+    ],
+    "canvas_size": [
+      896,
+      1200
+    ],
+    "source_main_bbox": [
+      202,
+      16,
+      881,
+      1512
+    ],
+    "original_main_bbox": [
+      273,
+      267,
+      673,
+      1174
+    ],
+    "preview_main_content": [
+      [
+        266,
+        267,
+        677,
+        1174
+      ],
+      448.574790110144
+    ]
+  },
+  "checks": {
+    "raw_border_alpha_ge_16": 0,
+    "preview_border_alpha_ge_16": 0,
+    "raw_border_alpha_ge_24": 0,
+    "preview_border_alpha_ge_24": 0
+  },
+  "runtime_changed": false,
+  "review_note": "Black-hair trial on previous full-blue outfit. Owner supplied preferred original third-concept outfit during generation; retain as history and use original black/pale-blue clothing for v3."
+}

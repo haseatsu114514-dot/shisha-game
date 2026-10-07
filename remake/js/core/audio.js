@@ -40,7 +40,7 @@ export function unlockAudio() {
 export function applyVolumes() {
   if (seBus) seBus.gain.value = config.seVolume;
   if (bgmBus) bgmBus.gain.value = config.bgmVolume;
-  if (currentEl) currentEl.volume = config.bgmVolume;
+  if (currentEl) currentEl.volume = bgmLevel(currentKey);
   syncRain();
 }
 
@@ -219,6 +219,10 @@ const SYNTH_FALLBACK = {
 /** 今鳴っている曲のキー（自動再生待ちの間は null） */
 export const currentBgm = () => currentKey;
 
+// 同じ設定音量でも突出していたサメちゃんの曲だけを整える（設定を変えても倍率を保つ）。
+const BGM_GAIN = { sweets_or_sweets: 0.55 };
+const bgmLevel = (key) => config.bgmVolume * (BGM_GAIN[key] ?? 1);
+
 export function playBgm(key) {
   if (key === currentKey) return;
   stopBgm(0.6);
@@ -233,7 +237,7 @@ export function playBgm(key) {
     a.volume = 0;
     a.play().catch(() => { pendingBgm = key; currentKey = null; });
     currentEl = a;
-    fadeEl(a, config.bgmVolume, 1200);
+    fadeEl(a, () => bgmLevel(key), 1200);
   } else if (SYNTH_FALLBACK[key]) {
     synthStop = startSynth(SYNTH_FALLBACK[key]);
   }
@@ -255,7 +259,8 @@ function fadeEl(a, to, ms) {
     const t0 = performance.now();
     const step = () => {
       const k = Math.min(1, (performance.now() - t0) / ms);
-      a.volume = Math.max(0, Math.min(1, from + (to - from) * k));
+      const target = typeof to === "function" ? to() : to;
+      a.volume = Math.max(0, Math.min(1, from + (target - from) * k));
       if (k < 1) requestAnimationFrame(step); else res();
     };
     step();

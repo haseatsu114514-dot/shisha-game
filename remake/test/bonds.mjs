@@ -261,7 +261,7 @@ try {
   assert(!shared.epiHeart, "epilogue still has the store tone or the doubled 彼女");
   assert.deepEqual(shared.epiJump, { type: "jump", next_id: "ending_daily_smoke" });
   assert(!shared.acceptOld); assert(!shared.rule.includes("恋人ルート確定後のデートシーンでのみ"));
-  assert.equal(shared.privateName, "栞"); assert.equal(shared.outingExclude, "_minto_identity_revealed");
+  assert.equal(shared.privateName, "栞"); assert.equal(shared.outingExclude, "_minto_fifth_done");
   log("HF02 data: ura faces <-> private scenes, epilogue private/calm, confession text, appearance rule, first outing before reveal");
   // HF03
   assert.equal(shared.kafuka, 156); assert.equal(shared.kafukaAge, 20); assert.equal(shared.kafukaRomance, false);
@@ -469,11 +469,12 @@ try {
   assert.deepEqual([minto.holiday.slot, minto.holiday.closed], ["noon", 6]); assert(minto.holiday.text.includes("お店がお休み"));
   assert.equal(minto.workday.slot, "night"); assert(minto.workday.after); assert(minto.workday.text.includes("仕事を終えたあと"));
   assert(!/\{private/.test(minto.holiday.text + minto.workday.text));
-  assert.equal(minto.fixedNight, null);
+  assert.equal(minto.fixedNight.time_slot, "noon");
+  assert(minto.fixedNight.temporary_closed); assert(minto.fixedNight.messages.some((m) => m.text.includes("臨時")));
   assert.equal(minto.nextDay, false);
   assert(minto.retry && minto.retry.origin === "lime_minto_bond_finale" && minto.retry.id.endsWith("_d10")); assert(minto.retry.first.includes("この前は都合が合わなかった"));
   assert.deepEqual(minto.scene, ["栞"]); assert.equal(minto.afterSeen, false); assert.equal(minto.noName, false);
-  log("HF04/05 minto: private invitation (holiday noon / after close), not on fixed nights, re-offered after decline, private 栞 scene");
+  log("HF04/05 minto: private invitation (holiday noon / after close / temporary holiday on fixed nights), re-offered after decline, private 栞 scene");
 
   // ================================================================ HF06 専用ハガル
   const gifts = await page.evaluate(async () => {

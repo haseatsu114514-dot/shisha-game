@@ -48,15 +48,16 @@ state.flags._private_night_day=8;assert.equal(k.kafukaEncounterDue(),false);dele
 state.chapter=2;assert.equal(k.kafukaEncounterDue(),false,'do not play construction scene after opening');state.chapter=1;
 assert.equal(k.kafukaEncounterDue(),true);
 await k.maybeKafukaEncounter();assert.deepEqual(played,['kafuka_first_encounter']);
-// サメちゃんのテーマは店の外の場面だけ（店の訪問では流さない）
-for(const scene of story.dialogues)assert.equal(scene.metadata?.bgm,scene.dialogue_id.startsWith('kafuka_shop_')?undefined:'sweets_or_sweets',scene.dialogue_id);
+// 場所によらず、本人が登場した時にテーマを鳴らす。
+for(const scene of story.dialogues){assert.equal(scene.metadata?.bgm,'sweets_or_sweets',scene.dialogue_id);assert.equal(scene.metadata?.bgm_on_speaker,'kafuka');}
 assert(manifest.bgm.includes('sweets_or_sweets.mp3'));assert.equal(saves,1);
-assert(state.contacts.includes('kafuka'));assert.equal(state.met.kafuka,undefined);assert.equal(data.displayName('kafuka',state),'？？？');
+assert(state.contacts.includes('kafuka'));assert(state.met.kafuka);assert.equal(data.displayName('kafuka',state),'サメちゃん');
 assert.equal(await k.maybeKafukaEncounter(),false);assert.equal(played.length,1);assert.equal(rewards.length,1);
-const prep=k.kafukaSpot();assert.equal(prep.label,'SHISHARK');assert.equal(prep.kind,'kafuka');assert.equal(prep.unavailable,'開店準備中');assert.equal(prep.cost,0);assert.equal(prep.stamina,0);assert.equal(prep.preview,'bg_shishark_preparing_night');
-assert.equal(await k.visitKafuka(prep),false);
+assert.equal(k.kafukaSpot(),null,'第1章では準備中のピンも出さない');
+assert.equal(await k.visitKafuka(null),false);
 state.limeRead.push(k.KAFUKA_NICKNAME_TOPIC);k.syncKafukaKnowledge();assert.equal(data.displayName('kafuka',state),'サメちゃん');assert(state.met.kafuka);
 state.chapter=2;k.syncKafukaKnowledge();const open=k.kafukaSpot();assert.equal(open.unavailable,undefined);assert.equal(open.preview,'bg_shishark');assert.equal(state.flags._shishark_opened,true);
+const contacts=state.contacts;state.contacts=[];delete state.flags._lime_contact_kafuka;assert(k.kafukaSpot(),'章2では未交換でも店が開く');state.contacts=contacts;
 await k.visitKafuka(open);assert.equal(played.at(-1),'kafuka_shop_first');assert.equal(state.story.kafuka,1);
 await k.visitKafuka(open);assert.equal(played.at(-1),'kafuka_shop_repeat_0');
 state.flags._kafuka_name_known=true;assert.equal(data.displayName('kafuka',state),'波多野かふか');

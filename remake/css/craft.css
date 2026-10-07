@@ -223,14 +223,21 @@
 
 /* ---------------------------------------------------------------- 蒸らし（雑念弾幕） */
 .steam { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-.dodge-hud { width: 620px; display: flex; justify-content: space-between; font-size: 16px; }
+.dodge-hud { width: 620px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; font-size: 16px; }
 .dodge-timer { font-family: var(--font); font-size: 22px; color: var(--accent); }
-.dodge-hits { color: var(--text-dim); }
+.dodge-hits { color: var(--text-dim); text-align: right; }
 .dodge { position: relative; overflow: hidden; border: 2px solid rgba(255, 255, 255, 0.5); background: rgba(0, 0, 0, 0.72); touch-action: none; cursor: none; }
 .dodge-heart { position: absolute; left: 0; top: 0; width: 28px; height: 28px; line-height: 28px; text-align: center; font-size: 26px; color: #ff3a6a; text-shadow: 0 0 12px rgba(255, 60, 100, 0.9); pointer-events: none; }
 .dodge-heart.hit { animation: heart-hit 0.9s steps(6); }
 @keyframes heart-hit { 0%, 100% { opacity: 1; } 50% { opacity: 0.1; } }
 .dodge-word { position: absolute; left: 0; top: 0; padding: 2px 8px; font-size: 15px; white-space: nowrap; color: #fff; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.45); border-radius: 3px; pointer-events: none; }
+.dodge-word.blown { transition: opacity 0.35s ease-out, filter 0.35s ease-out; opacity: 0; filter: blur(4px); }
+/* 深呼吸（ボム）: 心から広がる息の輪で雑念を吹き払う */
+.dodge-bomb { min-width: 0; padding: 4px 14px; font-size: 16px; letter-spacing: 0.04em; }
+.dodge-wave { position: absolute; width: 1300px; height: 1300px; margin: -650px 0 0 -650px; border-radius: 50%; border: 5px solid rgba(190, 240, 255, 0.9); box-shadow: 0 0 28px rgba(160, 230, 255, 0.8), inset 0 0 40px rgba(160, 230, 255, 0.45); pointer-events: none; animation: dodge-wave 0.7s ease-out forwards; }
+@keyframes dodge-wave { from { transform: scale(0.02); opacity: 1; } to { transform: scale(1); opacity: 0; } }
+.dodge-heart.calm { filter: drop-shadow(0 0 10px rgba(170, 235, 255, 0.95)); }
+@media (prefers-reduced-motion: reduce) { .dodge-wave { animation: none; opacity: 0; } }
 
 /* ---------------------------------------------------------------- 吸い出し */
 .pull { display: flex; gap: 30px; align-items: center; height: 100%; }

@@ -8,6 +8,7 @@ import { playBgm } from "../core/audio.js";
 import { isRainy, RAIN_SPOT_TEXTS } from "./weather.js";
 import { kafukaSpot } from "./kafuka.js";
 import { afterStory, questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "./bonds.js";
+import { syncMintoKnowledge } from "../core/story-knowledge.js";
 
 export const VISIT_COST = 3000;
 
@@ -84,7 +85,7 @@ export const SPOT_PREVIEW = {
   shop: "bg_fookah_showroom", cafe: "bg_cafe", kannon: "bg_kannon_day", choizap: "bg_choizap",
   c_station: "bg_c_station", rest: "bg_home", fortune: "bg_street",
 };
-/** 交換後だけ準備中の店を追加。保存を切り替えても古いピンを残さない。 */
+/** 第2章以降、SHISHARKを追加。保存を切り替えても古いピンを残さない。 */
 export const allSpots = () => { const extra = kafukaSpot(); return extra ? [...SPOTS, extra] : SPOTS; };
 export const spotById = (id) => allSpots().find((s) => s.id === id);
 
@@ -105,7 +106,12 @@ export function hasNewStory(charId) {
 }
 
 export function isClosed(spot) {
-  return spot.closedOn !== undefined && state.day % 7 === spot.closedOn;
+  return isTemporaryClosed(spot) || spot.closedOn !== undefined && state.day % 7 === spot.closedOn;
+}
+
+/** 届いたLIMEで知らせた臨時休暇は、その章・その日だけ店にも反映する。 */
+export function isTemporaryClosed(spot) {
+  return !!spot.charId && state.flags[`_temporary_closed_${spot.charId}`] === `${state.chapter || 1}:${state.day}`;
 }
 
 export function visitedToday(spotId) {
@@ -140,6 +146,7 @@ export const bgRef = (name) => `res://assets/backgrounds/${name}.png`;
  * 報酬: 固有会話・締めくくり=好感度+10（締めくくりのステは場面側の apply）・固有会話は主要ステ+2 / 通い=好感度+5
  */
 export async function visitChar(charId) {
+  syncMintoKnowledge();
   state.visits[charId] = (state.visits[charId] || 0) + 1;
   const seq = VISIT_SEQ[charId] || [];
   const idx = storyCount(charId);
@@ -206,6 +213,8 @@ export async function visitSpot(spot) {
 
 export async function restAtHome(spot) {
   addStamina(spot.stamina);
+  delete state.flags._cold_pending;
+  delete state.flags._overwork;
   state.flags._home_tonight = state.slot >= 1;
   await play("remake_rest");
 }
