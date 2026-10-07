@@ -1,0 +1,16 @@
+# サメちゃん：採用した青インナーのパーツ一式
+
+オーナー「一枚目の青のグラデのやつ採用」「これで必要なパーツを作っていって」に沿った6ポーズです。黒髪の内側に濃い青から明るい青への変化を入れ、添付で選ばれた黒／淡い水色／アイボリーのストリートシスター服を保持しています。
+
+- [全身と原寸の顔](review.png)／[暗背景](review-dark.png)
+- [透過PNG・可逆WebPと顔アイコン](game-ready/manifest.json)
+- [まとめてダウンロード](parts-kit.zip)
+- [実際の会話画面](../../reviews/kafuka-map-20261007/portraits-in-game.png)
+
+通常／笑顔／真剣／驚き／熱弁／腹話術。通常と腹話術はPR #208の採用デザイン `89e256a` の原画を再利用。笑顔・真剣・驚き・熱弁を1枚ずつ生成しました。腹話術では王冠のコロちゃんで本人の顔を全て隠しています。
+
+立ち絵は896×1200 RGBA、全6枚で同倍率0.607095046854083・足元下端1174px。足元の横基準の差は1px未満です。顔アイコンは採用通常からの切り抜きで160×160。PNGと可逆WebPの全RGBA画素が一致します。各原画は無加工・バイト一致で保存し、プロンプト・実添付画像・SHA-256を各generation.jsonへ記録。配置以外に顔や体の合成、描き足し、アルファ閾値処理をしていません。
+
+`game-ready/` は組み込み用の素材候補です。ゲーム本体の立ち絵・アイコン・manifest・表情指定は差し替えていません。追加4表情の仕上がりの採用や公開は別途。採用デザインの履歴は[provenance.json](provenance.json)、検証は[parts-validation.json](parts-validation.json)です。
+
+再出力：`python3 asset_sources/portraits/kafuka-approved-blue-inner-v1/build_parts.py --assemble`
