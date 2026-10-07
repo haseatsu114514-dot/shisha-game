@@ -79,16 +79,16 @@ export async function playIntro(id, { quick = false } = {}) {
     await imageReady(p.src, 1200);
   }
   const host = el("div.cutin", { dataset: { char: id }, style: `--ci: ${intro.color || "var(--gold)"}` }, [
+    el("div.ci-band"),
+    el("div.ci-band.b2"),
     el("div.ci-smoke"),
     el("div.ci-watermark", { text: main }),
     portrait,
-    el("div.ci-strip", [
+    el("div.ci-meta", [
       el("div.ci-title", { text: intro.title || "" }),
-      el("div.ci-names", [
-        el("div.ci-name", { text: main, style: `font-size: ${fitSize(main, 560, full ? 96 : 110)}px` }),
-        full ? el("div.ci-full", { text: `（${full}）` }) : null,
-      ].filter(Boolean)),
-    ]),
+      el("div.ci-name", { text: main, style: `font-size: ${fitSize(main, 570, 96)}px` }),
+      full ? el("div.ci-full", { text: `（${full}）` }) : null,
+    ].filter(Boolean)),
     intro.line ? el("div.ci-line", { text: `「${intro.line}」`, style: `font-size: ${fitSize(`「${intro.line}」`, 640, 34)}px` }) : null,
   ].filter(Boolean));
   layers.fx.append(host);

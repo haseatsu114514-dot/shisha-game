@@ -258,8 +258,8 @@ body.in-vn #bg { transition: filter 0.4s; }
 
 /* ---------------------------------------------------------------- 初登場カットイン（vn/intro.js）
    呼び名・二つ名・一言を全画面で一度だけ。差し色 --ci はキャラごと（characters.json の intro_cutin.color）。
-   帯と名前は同じ .ci-strip に入れて一緒に傾ける（名前が帯からずれない） */
-.cutin { position: absolute; inset: 0; overflow: hidden; pointer-events: auto; cursor: pointer; background: rgba(6, 4, 10, 0.97); backdrop-filter: blur(6px); opacity: 0; transition: opacity 0.18s; }
+   帯は画面いっぱいの斜め。名前の中心（画面の x=70%・y=288px）を軸に傾けるので、名前が帯の真ん中に乗る */
+.cutin { --name-y: 288px; position: absolute; inset: 0; overflow: hidden; pointer-events: auto; cursor: pointer; background: rgba(6, 4, 10, 0.97); backdrop-filter: blur(6px); opacity: 0; transition: opacity 0.18s; }
 .cutin.in { opacity: 1; }
 .cutin.out { opacity: 0; transition: opacity 0.26s; }
 .ci-smoke {
@@ -268,16 +268,25 @@ body.in-vn #bg { transition: filter 0.4s; }
     radial-gradient(60% 70% at 26% 62%, color-mix(in srgb, var(--ci) 32%, transparent), transparent 70%),
     radial-gradient(40% 50% at 80% 20%, color-mix(in srgb, var(--ci) 14%, transparent), transparent 70%);
 }
+.ci-band {
+  position: absolute; left: -10%; width: 125%; top: calc(var(--name-y) - 84px); height: 168px;
+  background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--ci) 85%, #000) 34%, var(--ci) 70%, color-mix(in srgb, var(--ci) 60%, #fff) 100%);
+  transform: rotate(-7deg); transform-origin: 64% 50%; /* 64% = 画面の x=70% */
+  clip-path: inset(0 100% 0 0); transition: clip-path 0.42s var(--ease-snap);
+  box-shadow: 0 0 60px color-mix(in srgb, var(--ci) 45%, transparent);
+}
+.ci-band.b2 { top: calc(var(--name-y) + 104px); height: 10px; background: rgba(255, 255, 255, 0.85); box-shadow: none; clip-path: inset(0 0 0 100%); transition-delay: 0.08s; }
+.cutin.in .ci-band { clip-path: inset(0 0 0 0); }
 .ci-watermark {
-  position: absolute; right: -40px; top: 8px; white-space: nowrap;
-  font: 900 200px/1 var(--font); letter-spacing: 0.02em;
-  color: transparent; -webkit-text-stroke: 2px color-mix(in srgb, var(--ci) 34%, transparent);
+  position: absolute; right: -40px; top: 22px; white-space: nowrap;
+  font: 900 210px/1 var(--font); letter-spacing: 0.02em;
+  color: transparent; -webkit-text-stroke: 2px color-mix(in srgb, var(--ci) 40%, transparent);
   transform: rotate(-7deg) translateX(120px); opacity: 0;
   transition: transform 1.6s var(--ease-out), opacity 0.6s;
 }
 .cutin.in .ci-watermark { transform: rotate(-7deg) translateX(0); opacity: 1; }
 .ci-portrait {
-  position: absolute; left: 25%; translate: var(--ax, -50%) 0;
+  position: absolute; left: 27%; translate: var(--ax, -50%) 0;
   transform: translateX(-140px); opacity: 0;
   transition: transform 0.5s var(--ease-out) 0.1s, opacity 0.3s 0.1s;
   filter: drop-shadow(0 0 24px color-mix(in srgb, var(--ci) 55%, transparent)) drop-shadow(10px 0 0 color-mix(in srgb, var(--ci) 70%, transparent));
@@ -290,54 +299,42 @@ body.in-vn #bg { transition: filter 0.4s; }
   -webkit-text-stroke: 3px color-mix(in srgb, var(--ci) 70%, transparent);
 }
 .cutin.in .ci-portrait { transform: none; opacity: 1; }
-/* 帯（右へ伸びる）。名前・二つ名・フルネームは帯の中の左寄せ＝立ち絵の右隣から始まる */
-.ci-strip { position: absolute; left: 44%; right: -6%; top: 27%; height: 176px; transform: rotate(-7deg); transform-origin: left center; font-family: var(--font); }
-.ci-strip::before {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(90deg, var(--ci) 0%, color-mix(in srgb, var(--ci) 70%, #fff) 100%);
-  clip-path: polygon(22px 0, 100% 0, 100% 100%, 0 100%);
-  box-shadow: 0 0 60px color-mix(in srgb, var(--ci) 45%, transparent);
-  transform: scaleX(0); transform-origin: left center; transition: transform 0.42s var(--ease-snap);
-}
-.ci-strip::after { /* 帯の下の細い白線 */
-  content: ""; position: absolute; left: 30px; right: 0; top: calc(100% + 12px); height: 6px; background: rgba(255, 255, 255, 0.85);
-  transform: scaleX(0); transform-origin: right center; transition: transform 0.42s var(--ease-snap) 0.08s;
-}
-.cutin.in .ci-strip::before, .cutin.in .ci-strip::after { transform: none; }
+/* 二つ名は名前の上・（フルネーム）は名前の下。名前の行の中心が --name-y に来る */
+.ci-meta { position: absolute; left: 51%; right: 4%; top: calc(var(--name-y) - 54px); height: 108px; font-family: var(--font); color: #fff; }
 .ci-title {
-  position: absolute; left: 34px; bottom: calc(100% + 10px);
-  font-size: 26px; font-weight: 900; letter-spacing: 0.12em; white-space: nowrap;
-  padding: 6px 20px 6px 14px; color: #0b0812; background: #fff;
+  position: absolute; left: 0; bottom: calc(100% + 4px);
+  font-size: 28px; font-weight: 900; letter-spacing: 0.12em; white-space: nowrap;
+  padding: 6px 18px 6px 14px; color: #0b0812; background: var(--ci);
   clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
-  box-shadow: inset 6px 0 0 var(--ci);
   transform: translateX(40px); opacity: 0;
   transition: transform 0.35s var(--ease-out) 0.3s, opacity 0.25s 0.3s;
 }
-.ci-names { position: absolute; left: 40px; right: 40px; top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
 .ci-name {
-  font-weight: 900; line-height: 1.05; white-space: nowrap; letter-spacing: 0.03em; color: #fff;
-  -webkit-text-stroke: 8px #0b0812; paint-order: stroke fill;
-  text-shadow: 6px 6px 0 #0b0812;
+  height: 108px; display: flex; align-items: center;
+  font-weight: 900; line-height: 1; white-space: nowrap; letter-spacing: 0.04em;
+  text-shadow: 0 0 2px #000, 5px 5px 0 color-mix(in srgb, var(--ci) 80%, #000), 0 0 30px color-mix(in srgb, var(--ci) 50%, transparent);
   transform: scale(1.35); opacity: 0; transform-origin: left center;
   transition: transform 0.28s var(--ease-snap) 0.42s, opacity 0.12s 0.42s;
 }
 .ci-full {
-  margin: 8px 0 0 4px; font-size: 28px; font-weight: 900; letter-spacing: 0.12em; white-space: nowrap;
-  color: #fff; -webkit-text-stroke: 6px #0b0812; paint-order: stroke fill;
+  position: absolute; left: 4px; top: calc(100% + 2px);
+  font-size: 24px; font-weight: 700; letter-spacing: 0.16em; white-space: nowrap;
+  color: rgba(255, 255, 255, 0.92); text-shadow: 0 0 2px #000, 2px 2px 0 rgba(0, 0, 0, 0.6);
   opacity: 0; transition: opacity 0.3s 0.6s;
 }
 .cutin.in .ci-title, .cutin.in .ci-name { transform: none; opacity: 1; }
 .cutin.in .ci-full { opacity: 1; }
 .ci-line {
-  position: absolute; left: 46%; right: 3%; bottom: 8%;
+  position: absolute; left: 46%; right: 3%; bottom: 9%;
   font: 700 34px/1.45 var(--font); color: #fff; white-space: nowrap;
-  padding: 12px 22px; background: rgba(6, 4, 10, 0.82);
+  padding: 12px 22px; background: rgba(6, 4, 10, 0.78);
   border-left: 6px solid var(--ci);
   transform: translateY(18px); opacity: 0;
   transition: transform 0.4s var(--ease-out) 0.8s, opacity 0.3s 0.8s;
 }
 .cutin.in .ci-line { transform: none; opacity: 1; }
 @media (prefers-reduced-motion: reduce) {
-  .cutin *, .cutin.in *, .cutin .ci-strip::before, .cutin .ci-strip::after { transition: opacity 0.2s !important; transform: none !important; }
-  .cutin .ci-strip, .cutin .ci-watermark { transform: rotate(-7deg) !important; }
+  .cutin *, .cutin.in * { transition: opacity 0.2s !important; }
+  .cutin .ci-title, .cutin .ci-name, .cutin .ci-portrait, .cutin .ci-line { transform: none !important; }
+  .cutin .ci-band { clip-path: none !important; }
 }
