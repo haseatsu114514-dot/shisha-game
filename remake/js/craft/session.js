@@ -6,6 +6,8 @@ import { el } from "../core/util.js";
 import { showScreen, setBg, retire, layers } from "../core/ui.js";
 import { bgUrl } from "../core/data.js";
 import { state, timeOfDay } from "../core/state.js";
+import { currentCondition } from "../core/stats.js";
+import { craftCondition } from "../core/condition.js";
 import { buildRig } from "./art.js";
 import { isRainy } from "../daily/weather.js";
 import { runHoles } from "./holes.js";
@@ -32,6 +34,7 @@ export const DRILLS = {
 export function newSession(mode) {
   return {
     mode,
+    condition: currentCondition(), // 作り始めの体力を一台の全工程で使う
     environment: { rainy: isRainy(), day: state.day },
     equip: { ...state.equip },
     concepts: [],
@@ -69,8 +72,12 @@ export function openBench(cs, { steps = [] } = {}) {
   const progress = el("div.bench-progress", steps.map(([id, label]) => el("span", { text: label, dataset: { step: id } })));
   const panel = el("div.bench-panel");
   const ticker = el("div.bench-ticker");
+  const condition = craftCondition(cs);
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
     el("div.bench-top", [el("span.bench-mode", { text: MODE_LABEL[cs.mode] || "" }), progress]),
+    cs.mode !== "tutorial" ? el("div.bench-condition", { dataset: { health: condition.health }, title: condition.hint }, [
+      el("b", { text: `体力：${condition.label}` }), el("small", { text: condition.hint }),
+    ]) : null,
     el("div.bench-left", [rig.root]),
     el("div.bench-right", [el("div.bench-head", [title, hint]), panel]),
     ticker,

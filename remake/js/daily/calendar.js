@@ -99,6 +99,7 @@ async function openMenu() {
   SE.select();
   const v = await modal({
     title: "MENU",
+    className: "menu-modal",
     body: `DAY ${state.day}・${state.slot >= 1 ? "夜" : "昼"}　／　行動のたびに自動でセーブされています。`,
     options: [
       { label: "セーブ", value: "save", test: "menu-save" },

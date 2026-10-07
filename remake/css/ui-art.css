@@ -97,7 +97,8 @@
   letter-spacing: 0;
   text-align: center;
 }
-.hud-stamina { width: 216px; flex: none; }
+.hud-stamina { width: max-content; flex: none; }
+.hud-stamina > span, .hud-stamina .hud-bar { flex: none; }
 .hud-stamina, .hud-menu, .hud-level { border-image-width: 14px; }
 .dc-row { padding: 4px 10px; border-image-width: 5px 12px; }
 .st-tab { padding: 7px 18px; border-image-width: 7px 14px; }
@@ -181,6 +182,16 @@
   -webkit-mask: var(--art-reward) center / 100% 100% no-repeat;
   mask: var(--art-reward) center / 100% 100% no-repeat;
 }
+/* 能力アップの色は残し、面に焼き込まれた煙模様だけ外す。 */
+.gain-card.stat::after {
+  background-image: linear-gradient(135deg, color-mix(in srgb, var(--gc) 32%, #140b1e), color-mix(in srgb, var(--gc) 12%, #0a0612));
+  background-blend-mode: normal;
+  -webkit-mask: none;
+  mask: none;
+  border: 1px solid var(--gc);
+  border-left-width: 4px;
+  border-radius: 4px;
+}
 .gc-badge { font-family: var(--font); font-weight: 700; box-shadow: none; }
 .gc-badge:not(.face), .st-badge {
   background: none;
@@ -260,4 +271,3 @@
   filter: none;
 }
 @media (prefers-reduced-motion: reduce) { .ui-heart::after { transition: none; } }
-

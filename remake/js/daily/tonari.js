@@ -3,7 +3,7 @@ import { el, pick } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
 import { showScreen, setBg, toast, retire } from "../core/ui.js";
 import { state, timeOfDay } from "../core/state.js";
-import { addMoney, addStamina, applyStats, star } from "../core/stats.js";
+import { addMoney, addStamina, applyStats, star, currentCondition } from "../core/stats.js";
 import { SE, playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
 import { visitChar, hasNewStory } from "./spots.js";
@@ -48,6 +48,7 @@ const CALLED_BONUS = 5000; // スミさんに急に呼ばれた日の上乗せ�
 /** @param opts.called スミさんのLIMEで急に呼ばれたシフト（給料に上乗せ） */
 export async function doBaito({ called = false } = {}) {
   addStamina(-24);
+  const condition = currentCondition(); // 消耗を反映した制作時の体力で、そのシフト中は固定
   playBgm("tonari");
   state.baitoCount = (state.baitoCount || 0) + 1;
   state.lastBaitoDay = state.day;
@@ -71,18 +72,20 @@ export async function doBaito({ called = false } = {}) {
     await play("ch1_maezono_cameo", { bg: TONARI_BG });
     rememberBaito("ch1_maezono_cameo", ["maezono"]);
   } else {
-    await customerEvent();
+    await customerEvent(condition);
   }
-  const bonus = CHARM_BONUS[star("charm") - 1];
+  const bonus = Math.round(CHARM_BONUS[star("charm") - 1] * condition.bonusRate);
   const extra = called ? CALLED_BONUS : 0;
   const rainPay = rainy ? RAIN_BAITO_BONUS : 0; // 雨の日は長居客の追加注文ぶん
-  const pay = 8000 + bonus + extra + rainPay;
+  const pay = 8000 + bonus + extra + rainPay + condition.shiftBonus;
   await play("remake_baito_end", { bg: TONARI_BG });
   if (called) await play("remake_sumi_call_thanks", { bg: TONARI_BG });
   addMoney(pay);
   if (bonus) toast(`常連さんの指名が増えてきた。売上ボーナス +${bonus.toLocaleString()}円`, { kind: "good" });
   if (extra) toast(`急なシフトの上乗せ +${extra.toLocaleString()}円`, { kind: "good" });
   if (rainPay) toast(`雨の日の追加注文 +${rainPay.toLocaleString()}円`, { kind: "good" });
+  if (condition.shiftBonus) toast(`仕上げは好調。売上ボーナス +${condition.shiftBonus.toLocaleString()}円`, { kind: "good" });
+  if (condition.health === "red") toast("疲れで仕上げが不安定。売上ボーナスが半分になった", { kind: "warn" });
   await afterShift();
 }
 
@@ -126,7 +129,7 @@ function chooseCustomerEvent(rainy) {
 }
 
 /** baito_events.json の接客イベントを会話に変換して再生 */
-async function customerEvent() {
+async function customerEvent(condition) {
   const used = (state.usedBaito = state.usedBaito || []);
   const ev = chooseCustomerEvent(isRainy());
   if (!ev) {
@@ -140,7 +143,7 @@ async function customerEvent() {
   const branches = {};
   const choices = (ev.choices || []).map((c, i) => {
     // 選んだ対応の売上ボーナス（店から）もここで乗せる。チップ文化は無い（CLAUDE.md）
-    branches[`c${i}`] = [...narr(c.result), { type: "apply", stats: c.stats || {}, money: c.money_bonus || 0 }];
+    branches[`c${i}`] = [...narr(c.result), { type: "apply", stats: c.stats || {}, money: Math.round((c.money_bonus || 0) * condition.bonusRate) }];
     return { text: c.text, next: `c${i}` };
   });
   const dlg = {
