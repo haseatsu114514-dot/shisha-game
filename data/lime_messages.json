@@ -79,7 +79,7 @@
       "messages": [
         {
           "sender": "naru",
-          "text": "今日はKEMURIKUSAの定休日。午後、新作の機材を見に行くんだけど"
+          "text": "今日はKEMURIKUSAを休みにしたから、午後に新作の機材を見に行くんだけど"
         },
         {
           "sender": "naru",
@@ -92,7 +92,8 @@
         "text": "りょ。気が向いたらいつでも声かけて"
       },
       "closed_on": 3,
-      "reminder_text": "この前の機材探し、今日は店が休みだから午後に行こうと思ってる。都合が合えば来いよ"
+      "reminder_text": "この前の機材探し、今日は店を休みにして午後に行こうと思ってる。都合が合えば来いよ",
+      "private_schedule": "holiday_or_temporary"
     },
     {
       "id": "lime_adam_arcade_after_close",
@@ -177,7 +178,8 @@
       "decline_response": {
         "sender": "minto",
         "text": "うん、わかった。今日は無理しないでね"
-      }
+      },
+      "private_schedule": "holiday_or_temporary"
     },
     {
       "id": "lime_minto_first_holiday",
@@ -192,7 +194,7 @@
       "messages": [
         {
           "sender": "minto",
-          "text": "はじめくん、おはよう。{privateContext}、外で少し会わない？"
+          "text": "はじめくん、おはよう。今日、外で少し会わない？"
         },
         {
           "sender": "minto",
@@ -200,13 +202,14 @@
         }
       ],
       "accept_event": "ch1_minto_fifth",
-      "accept_text": "{privateWhen}、会おう",
-      "reminder_text": "この前のお誘い、返事は気にしないでね。{privateContext}、空いていたら。",
+      "accept_text": "うん、会おう",
+      "reminder_text": "この前のお誘い、返事は気にしないでね。今日、空いていたら",
       "decline_response": {
         "sender": "minto",
         "text": "うん、わかった。無理しないでね。お店では、またいつでも"
       },
-      "private_schedule": "holiday_or_after_close"
+      "private_schedule": "holiday_or_after_close",
+      "time_slot": "night"
     },
     {
       "id": "lime_outing_minto_2",

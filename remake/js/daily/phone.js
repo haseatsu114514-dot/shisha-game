@@ -34,19 +34,31 @@ function invitationAvailable(m, { fixedNight = () => false } = {}) {
   return true;
 }
 
-/** 私的な待ち合わせは、配信日に休日午後か営業後夜へ確定する。受信後は本文も時刻も固定 */
+/** 私的な待ち合わせを配信時に確定。定休日を待つ物語は臨時休暇、仕事後が重なる大事な物語も臨時休暇にする。 */
 function scheduledInvitation(m, opts = {}) {
-  if (m.private_schedule !== "holiday_or_after_close") return m;
-  const schedule = dateSchedule(m.sender, opts);
+  const holidayOnly = m.private_schedule === "holiday_or_temporary";
+  if (!holidayOnly && m.private_schedule !== "holiday_or_after_close") return m;
+  const day = opts.day ?? state.day;
+  const schedule = holidayOnly
+    ? { time_slot: "noon", ...(day % 7 === m.closed_on ? { closed_on: m.closed_on } : { temporary_closed: true }) }
+    : dateSchedule(m.sender, { ...opts, allowTemporaryClosure: importantInvite(m) });
   if (!schedule) return null;
   const daytime = schedule.time_slot === "noon";
-  const context = daytime ? "今日はお店がお休みだから、午後" : "今日、仕事を終えたあと";
+  const context = schedule.temporary_closed ? "今日は臨時のお休みだから、午後"
+    : daytime ? "今日はお店がお休みだから、午後" : "今日、仕事を終えたあと";
   const when = daytime ? "午後" : "仕事のあと"; // 返事のボタン「{privateWhen}、会おう（行動を1回使う）」が1行に収まる長さ
   const render = (value) => String(value).replaceAll("{privateContext}", context).replaceAll("{privateWhen}", when);
   // DBの雛形を変更せず、その日の受信トークへ解決済みの時刻を保存する。
   const resolved = { ...m, ...schedule, after_close: !!schedule.after_close };
   if (schedule.closed_on == null) delete resolved.closed_on;
   resolved.messages = (m.messages || []).map((line) => typeof line === "string" ? render(line) : { ...line, text: render(line.text) });
+  if (schedule.temporary_closed && !JSON.stringify(m.messages).includes("{privateContext}")) {
+    const text = { naru: "今日は店を臨時で休みにした。午後、付き合ってくれないか？",
+      adam: "今日は店を臨時で休む。午後、共に出かけよう",
+      minto: "今日は臨時でお店を休みにしたの。午後、会えたらうれしいな" }[m.sender]
+      || "今日は臨時のお休み。午後、会えたらうれしいな";
+    resolved.messages.unshift({ sender: m.sender, text });
+  }
   if (m.reminder_text) resolved.reminder_text = render(m.reminder_text);
   if (m.accept_text) resolved.accept_text = render(m.accept_text);
   return resolved;
@@ -60,7 +72,8 @@ export function expireInvitations(opts = {}) {
       && (pending.originId ? originId(item) === pending.originId : item.msg?.accept_event === pending.event && item.msg?.sender === pending.sender));
     const source = DB.lime.find((m) => m.id === (pending.originId || (booked && originId(booked)))) || booked?.msg;
     const dueDay = pending.day ?? booked?.day ?? state.day;
-    const schedule = /^date_/.test(pending.event) ? dateSchedule(pending.sender, { ...opts, day: dueDay })
+    const schedule = pending.temporaryClosed ? { time_slot: "noon", temporary_closed: true }
+      : /^date_/.test(pending.event) ? dateSchedule(pending.sender, { ...opts, day: dueDay })
       : source ? scheduledInvitation(source, { ...opts, day: dueDay }) : source;
     // 夜の行動枠で受け付けた仕事後の約束は、閉店イベントが済むまでslot2で待つ。
     const waitingForClose = pending.afterClose && pending.queuedAfterClose && dueDay === state.day && state.slot >= 2;
@@ -268,6 +281,7 @@ export function deliverMorning(opts = {}) {
   // {daysLeft} などは届いた日の値で固定する（数日後に読んでも「あと◯日」がずれない）
   const freeze = (t) => (hooks.interpolate ? hooks.interpolate(String(t)) : t);
   for (const m of msgs) {
+    if (m.temporary_closed) state.flags[`_temporary_closed_${m.sender}`] = `${state.chapter || 1}:${state.day}`;
     const msg = { ...m, messages: (m.messages || []).map((x) => (typeof x === "string" ? freeze(x) : { ...x, text: freeze(x.text) })) };
     state.inbox.push(stampAccount({ id: m.id, originId: m.origin_id || m.id, day: state.day, msg,
       read: false, done: false, replyState: m.type === "invitation" || m.replies?.length ? "waiting" : "none", log: [] }));
@@ -490,13 +504,14 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     if (pick.go) {
       item.result = "accepted";
       const inv = { event: m.accept_event, sender: m.sender, slot: night ? 1 : 0,
-        day: state.day, originId: originId(item), afterClose: !!m.after_close };
+        day: state.day, originId: originId(item), afterClose: !!m.after_close, temporaryClosed: !!m.temporary_closed };
       accepted.push(inv);
       if (!forced) {
         state.pendingInvite = inv;
         declineConflictingInvites(item);
       }
       const t = m.accept_event === "__sumi_baito__" ? "このあと tonari のシフトに入る"
+        : m.temporary_closed ? "臨時休暇の午後に会う約束ができた"
         : m.after_close ? "仕事を終えたあとに会う約束ができた"
         : m.closed_on != null ? "定休日の午後に会う約束ができた"
         : night ? "今夜の約束ができた" : "このあと向かうことにした";

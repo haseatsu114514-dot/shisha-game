@@ -107,7 +107,8 @@ export async function maybeConfession(beat, { busyNight = false, companion = nul
   if (!id) id = Object.keys(state.finales || {}).find(romanceRouteOpen) || null;
   if (!id) return false;
   state.flags._confession_due = id;
-  if (id === "minto" && !state.flags._minto_name_known) return false; // 本名を聞いた私的な約束の後
+  if (id === "minto" && !state.flags._minto_identity_revealed) return false;
+  // 現行の締めくくりは本名を知ってから。旧セーブの本名紹介は、下の告白選択後に補完する。
   if ((state.flags._confession_wait || 0) > state.day || busyNight && companion !== id) return false;
   delete state.flags._confession_due;
   await beat(companion === id ? "——別れ際、もう少しだけ話したくなった。" : id === "ageha" ? "——と、そのとき。" : `（……${privateCall(id)}の顔が、ふと浮かんだ）`);
@@ -211,11 +212,11 @@ const chat = (id, msgId, v) => ({
   messages: v.m.map((t) => String(t)), replies: v.r,
 });
 
-/** 営業を抜けて昼デートには行かない。定休日の午後か、固定イベントのない仕事後の夜 */
-export function dateSchedule(id, { day = state.day, fixedNight = () => false } = {}) {
+/** 通常のデートは定休日の午後か仕事後。大事な物語は夜の予定と重なる日に臨時休暇を取れる。 */
+export function dateSchedule(id, { day = state.day, fixedNight = () => false, allowTemporaryClosure = false } = {}) {
   const closedOn = { minto: 6, naru: 3, adam: 5 }[id];
   if (closedOn != null && day % 7 === closedOn) return { time_slot: "noon", closed_on: closedOn };
-  if (fixedNight(day)) return null;
+  if (fixedNight(day)) return allowTemporaryClosure ? { time_slot: "noon", temporary_closed: true } : null;
   return { time_slot: "night", after_close: true };
 }
 
