@@ -158,6 +158,7 @@ remake/
    - **修羅場**: 恋人が2人以上いると、大会当日の会場ロビーで鉢合わせる（`remake_shuraba_*`）
 5. DAY14 SMOKE CROWN CUP（4人一斉・1試合）
    - R1 組み立て: 機材 → コンセプト2つ → 配合（ミント2g以上）→ 詰め → HOLE RHYTHM → HEAT IGNITION → 炭配置 → 蒸らし（雑念弾幕）
+     - 蒸らしの深呼吸（ボム）: X キーか「深呼吸」ボタンで、画面の雑念を一度に吹き払い約1.6秒無敵（直後約1秒は湧かない）。ストックは1回、根性★4で2回・★5で3回（`bombStock()`）。点数の減点なし
    - R2 吸い出し・提供（温度合わせ）／R3 熱管理
    - 生放送レイヤー（`craft/broadcast.js`・旧版 #24/#20/#26）: 工程の頭でパッキーが前振り＋ライバルの進行実況、
      出来に応じてニコ動風のコメントが流れ、観客の「体感スコア」が +N P で積もる（結果表にも載る）。文面は `remake/data/broadcast.json`
@@ -180,6 +181,7 @@ node remake/test/playthrough.mjs            # 優勝ルート＋敗北ルート
 node remake/test/affinity_notifications.mjs # みんとの実イベント・通知の重複・好感度/絆の加算
 node remake/test/ui_skin.mjs                # 生成素材・固定幅HUD・体力の色・項目別の通知色
 node remake/test/choice_oneline.mjs         # 選択肢・LIMEの返信が1行に収まる（全角26字まで・GUI22）
+node remake/test/steam_bomb.mjs             # 蒸らしの深呼吸（ボム）: 雑念が消える・ストック1・根性で増える
 node remake/test/stat_rewards.mjs           # 実増加pt・上限時の振替・スロット・グラフへ飛ぶ光
 node remake/test/bonds.mjs                  # 好感度の伸び・みんとの公私・締めくくり・恋愛／友情・専用ハガル・友人のLIME
 node --experimental-vm-modules remake/test/data_loading.mjs # 接続数・通信失敗・タイムアウト

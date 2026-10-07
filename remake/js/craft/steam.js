@@ -1,9 +1,10 @@
 // 蒸らし ── 雑念を躱す（CLAUDE.md: 蒸らしミニゲームは雑念弾幕。「覚悟＋締め」には戻さない）
 // 選んだ蒸らし時間のあいだ、飛んでくる雑念（言葉の弾）を心(♥)で避け続ける。被弾が少ないほど良い。
+// 深呼吸（ボム）: 画面の雑念を一度に吹き払い、少しのあいだ無敵。ストックは1。根性が育つと増える。
 import { el, sleep, clamp, rand, pick } from "../core/util.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { tier01 } from "../core/stats.js";
+import { tier01, star } from "../core/stats.js";
 import { stepPanel, refreshRig, benchRig } from "./session.js";
 import { autoSkill, resultCard, keys, popStamp } from "./common.js";
 import { craftConditions } from "./conditions.js";
@@ -17,19 +18,37 @@ export const DODGE_WORDS = [
 ];
 // 分数 → 実際に避ける秒数
 const DURATION = { 3: 7, 5: 10, 8: 13, 10: 16 };
+const BOMB_INV = 1.6; // 深呼吸のあとの無敵（秒）
+const BOMB_CALM = 1.0; // 深呼吸のあと雑念が湧かない間（秒）
+
+/** 深呼吸のストック。基本1回、根性★4で2回・★5で3回（第1章の上限では1回のまま） */
+export function bombStock() {
+  return 1 + (star("guts") >= 4 ? 1 : 0) + (star("guts") >= 5 ? 1 : 0);
+}
 
 export async function runSteamDodge(cs) {
   const tutorial = cs.mode === "tutorial";
   const min = cs.steamMin || 5;
   const rainy = craftConditions(cs).rainy;
-  const panel = stepPanel("steam", `蒸らし ── ${min}分${rainy ? "（雨：熱が入りづらい）" : ""}`, "ドラッグ（または矢印キー）で心を動かして、雑念を躱す。待つのも仕事のうち");
+  const panel = stepPanel("steam", `蒸らし ── ${min}分${rainy ? "（雨：熱が入りづらい）" : ""}`, "ドラッグ（または矢印キー）で心を動かして、雑念を躱す。危ないときは深呼吸（X）で吹き払える");
   const W = 620, H = 380;
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge" } });
   const heart = el("div.dodge-heart", { role: "img", "aria-label": "心" });
   const timer = el("div.dodge-timer");
   const hitsEl = el("div.dodge-hits");
+  let bombs = bombStock();
+  let bombsUsed = 0;
+  let playing = false;
+  let bomb = () => {};
+  const bombLabel = el("span.btn-label");
+  const bombBtn = el("button.btn.dodge-bomb", { type: "button", disabled: true, title: "深呼吸（X）", dataset: { test: "dodge-bomb" }, onclick: () => bomb() }, [bombLabel]);
+  const showBombs = () => {
+    bombLabel.textContent = `深呼吸 ${"●".repeat(bombs)}${"○".repeat(bombsUsed)}`;
+    bombBtn.disabled = !playing || bombs <= 0;
+  };
+  showBombs();
   box.append(heart);
-  panel.append(el("div.steam", [el("div.dodge-hud", [timer, hitsEl]), box]));
+  panel.append(el("div.steam", [el("div.dodge-hud", [timer, bombBtn, hitsEl]), box]));
   benchRig()?.bubble(true);
 
   const dur = DURATION[min] * (tutorial ? 0.7 : 1);
@@ -53,6 +72,7 @@ export async function runSteamDodge(cs) {
   box.addEventListener("pointerdown", (e) => { box.setPointerCapture(e.pointerId); moveTo(...toLocal(e)); });
   box.addEventListener("pointermove", (e) => { if (e.buttons || e.pointerType === "mouse") moveTo(...toLocal(e)); });
   const unkey = keys({
+    KeyX: () => bomb(),
     ArrowLeft: () => keysDown.add("l"), ArrowRight: () => keysDown.add("r"), ArrowUp: () => keysDown.add("u"), ArrowDown: () => keysDown.add("d"),
   });
   const up = (e) => keysDown.delete({ ArrowLeft: "l", ArrowRight: "r", ArrowUp: "u", ArrowDown: "d" }[e.key]);
@@ -86,10 +106,32 @@ export async function runSteamDodge(cs) {
       let last = performance.now();
       const t0 = last;
       let nextSpawn = 0.3;
+      let t = 0;
+      // 深呼吸: 画面の雑念を全部吹き払い、少しのあいだ無敵・湧きも止まる
+      bomb = () => {
+        if (!playing || bombs <= 0) return;
+        bombs--;
+        bombsUsed++;
+        showBombs();
+        inv = Math.max(inv, BOMB_INV);
+        nextSpawn = Math.max(nextSpawn, t + BOMB_CALM);
+        for (const b of bullets.splice(0)) {
+          b.node.classList.add("blown");
+          setTimeout(() => b.node.remove(), 400);
+        }
+        const wave = el("div.dodge-wave", { style: { left: `${hx}px`, top: `${hy}px` } });
+        box.append(wave);
+        setTimeout(() => wave.remove(), 700);
+        heart.classList.add("calm");
+        setTimeout(() => heart.classList.remove("calm"), BOMB_INV * 1000);
+        SE.whoosh();
+      };
+      playing = true;
+      showBombs();
       const loop = (now) => {
         const dt = Math.min(0.05, (now - last) / 1000);
         last = now;
-        const t = (now - t0) / 1000;
+        t = (now - t0) / 1000;
         if (keysDown.size) {
           const v = 260 * dt;
           moveTo(hx + (keysDown.has("r") ? v : 0) - (keysDown.has("l") ? v : 0), hy + (keysDown.has("d") ? v : 0) - (keysDown.has("u") ? v : 0));
@@ -117,7 +159,7 @@ export async function runSteamDodge(cs) {
         }
         timer.textContent = `残り ${Math.max(0, Math.ceil((dur - t) * (min / dur)))} 分`;
         hitsEl.textContent = hits ? `雑念に呑まれた ×${hits}` : "集中できている";
-        if (t >= dur) return resolve();
+        if (t >= dur) { playing = false; showBombs(); return resolve(); }
         requestAnimationFrame(loop);
       };
       requestAnimationFrame(loop);
@@ -127,7 +169,7 @@ export async function runSteamDodge(cs) {
   window.removeEventListener("keyup", up);
   bullets.forEach((b) => b.node.remove());
   const score = clamp(100 - hits * 14, 0, 100);
-  cs.steam = { min, hits, score, warmingFactor: rainy ? 0.85 : 1 };
+  cs.steam = { min, hits, score, bombs: bombsUsed, warmingFactor: rainy ? 0.85 : 1 };
   refreshRig();
   popStamp(panel, hits === 0 ? "無心" : hits <= 2 ? "持ちこたえた" : "雑念まみれ", hits === 0 ? "just" : hits <= 2 ? "good" : "bad", "50%", "40%");
   await sleep(400);
@@ -136,6 +178,7 @@ export async function runSteamDodge(cs) {
     lines: [
       rainy ? "雨の日は熱の立ち上がりが少し遅い。吸い出しで温度を確かめよう" : "",
       `${min}分蒸らした。${hits === 0 ? "最後まで一度も揺れなかった" : `雑念に${hits}回つかまった`}`,
+      bombsUsed ? `深呼吸で${bombsUsed}回、雑念を吹き払った` : "",
       min >= 8 ? "じっくり待った分、甘さと余韻が開きそうだ" : min <= 3 ? "早めの立ち上げ。温度合わせは忙しくなる" : "基本の蒸らし。香りの輪郭は残りやすい",
     ],
   });
