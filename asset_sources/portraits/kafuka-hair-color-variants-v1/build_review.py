@@ -14,6 +14,7 @@ def border(im,t=16):
  return int((a[0]>=t).sum()+(a[-1]>=t).sum()+(a[:,0]>=t).sum()+(a[:,-1]>=t).sum())
 def archive(slug,source):
  folder=BASE/slug;dst=folder/'source.png';shutil.copyfile(source,dst)
+ previous=json.loads((folder/'generation.json').read_text()) if (folder/'generation.json').exists() else {}
  im=Image.open(dst).convert('RGBA')
  bm=json.loads((BASE/'references/base-generation.json').read_text())
  scale=bm['normalization']['scale']*bm['source_size'][1]/im.height
@@ -23,14 +24,22 @@ def archive(slug,source):
  xy=[round(target_anchor-anchor*scale),round(target_bottom-box[3]*scale)]
  resized=im.resize((round(im.width*scale),round(im.height*scale)),Image.Resampling.LANCZOS)
  preview=Image.new('RGBA',(896,1200));preview.paste(resized,tuple(xy))
+ # Correct only integer placement after resampling so every feet baseline is exact.
+ measured_bottom=measure._measure_main_content(preview,anchor='feet')[0][3]
+ xy[1]+=target_bottom-measured_bottom
+ preview=Image.new('RGBA',(896,1200));preview.paste(resized,tuple(xy))
  preview.save(folder/'preview.png')
  # Native-size crops, no face compositing or painting.
  preview.crop((315,285,655,625)).save(folder/'face-native.png')
- refs=json.loads((BASE/'references/generation-references.json').read_text())
+ refs=json.loads(((folder/'references.json') if (folder/'references.json').exists() else (BASE/'references/generation-references.json')).read_text())
  assert all(sha(ref['actual_path'])==ref['sha256'] for ref in refs)
- rid=next(v['request_id'] for v in json.loads((BASE/'plan.json').read_text()) if v['slug']==slug)
+ rid='PRT68' if slug=='ocean-blue-ventriloquism' else next(v['request_id'] for v in json.loads((BASE/'plan.json').read_text()) if v['slug']==slug)
  metadata={'character':'kafuka','request_id':rid,'variant':slug,'status':'pending-review','expression':'normal','raw_generation_path':str(source),'source_size':im.size,'source_mode':Image.open(dst).mode,'source_sha256':sha(dst),'source_byte_identical':Path(source).read_bytes()==dst.read_bytes(),'prompt':(folder/'prompt.txt').read_text(),'references':refs,'reference_review':'All earlier 29 portrait groups and 112 images reviewed in the same session. Current task reread latest identity source, native face, and approved Minto/Ageha. Every colour edit uses the same original base rather than the preceding edit.','normalization':{'operations':'Whole-image uniform resize and RGBA placement only. Native crops are unretouched. No painting, face compositing, warping, alpha thresholding or colour postprocessing.','common_scale_per_1536px_source_height':bm['normalization']['scale'],'scale':scale,'offset':xy,'canvas_size':[896,1200],'source_main_bbox':box,'preview_main_content':measure._measure_main_content(preview,anchor='feet')},'checks':{'raw_border_alpha_ge_16':border(im),'preview_border_alpha_ge_16':border(preview),'source_rgba':Image.open(dst).mode=='RGBA'},'runtime_changed':False}
  (folder/'generation.json').write_text(json.dumps(metadata,ensure_ascii=False,indent=2)+'\n')
+ if previous:
+  metadata['status']=previous['status']
+  if 'adoption' in previous:metadata['adoption']=previous['adoption']
+  (folder/'generation.json').write_text(json.dumps(metadata,ensure_ascii=False,indent=2)+'\n')
  assert metadata['source_byte_identical'] and metadata['checks']['source_rgba']
  assert border(im)==0 and border(preview)==0
  print(json.dumps({'variant':slug,'source':im.size,'scale':scale,'feet':metadata['normalization']['preview_main_content'],'checks':metadata['checks']},ensure_ascii=False))
@@ -44,7 +53,7 @@ def assemble():
   bg=(26,29,36,255) if dark else (250,250,248,255);fg=(241,244,248) if dark else (30,35,43)
   col=500;plate=Image.new('RGBA',(col*len(entries),1410),bg);draw=ImageDraw.Draw(plate)
   draw.text((28,18),'サメちゃん｜髪色比較（服装・髪型は共通）',font=font(33),fill=fg)
-  draw.text((28,69),'現在＋4案 / 下段は原寸の顔・髪まわり',font=font(22),fill=fg)
+  draw.text((28,69),'①濃い青インナーを採用 / 下段は原寸の顔・髪まわり',font=font(22),fill=fg)
   for i,(title,path) in enumerate(entries):
    x=i*col;im=Image.open(path).convert('RGBA')
    draw.text((x+20,122),title,font=font(25),fill=fg)
