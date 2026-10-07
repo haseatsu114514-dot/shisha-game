@@ -242,5 +242,6 @@
     "Normal relaxed; smile with a presenting hand; serious at the chest; surprise has a hand to chest; intense preserves crossed arms.",
     "First pass retained for internal softness comparison; second pass retained for internal layout/clipping correction. Neither earlier pass is adopted or added as an approved style baseline.",
     "Final generated raw source is unmodified; only whole-sprite cropping, shared scaling and direct RGBA placement were used for review previews."
-  ]
+  ],
+  "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/201"
 }

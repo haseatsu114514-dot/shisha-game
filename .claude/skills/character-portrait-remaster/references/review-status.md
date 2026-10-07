@@ -2,7 +2,7 @@
 
 ## 最新：はじめ・アダムの5表情 v1（2026-10-07・確認用）
 
-オーナー「以前依頼してたキャラ生成タスクの続きを行いたい。まだできてないキャラクターの生成をはじめて。はじめ、アダム辺りをまず2人やって欲しい」で再開。今回の2人指定を優先し、両セットを制作・保存した。採用回答やゲームへの組み込み指示には扱わない。要望台帳PRT51／52、保存先 `codex/hajime-adam-portrait-remaster-20261007`。最新 `origin/main` のe1494b4から開始。
+オーナー「以前依頼してたキャラ生成タスクの続きを行いたい。まだできてないキャラクターの生成をはじめて。はじめ、アダム辺りをまず2人やって欲しい」で再開。今回の2人指定を優先し、両セットを制作・保存した。採用回答やゲームへの組み込み指示には扱わない。確認用PR：[#201](https://github.com/haseatsu114514-dot/shisha-game/pull/201)。要望台帳PRT51／52、保存先 `codex/hajime-adam-portrait-remaster-20261007`。最新 `origin/main` のe1494b4から開始。
 
 - **はじめ（hajime）**：[5表情と元の顔の比較](../../../../asset_sources/portraits/hajime-remaster-v1/review.png)、[生成元](../../../../asset_sources/portraits/hajime-remaster-v1/sheet.png)、[生成プロンプト・実参照・配置記録](../../../../asset_sources/portraits/hajime-remaster-v1/generation.json)、[画風の原寸比較](../../../../asset_sources/portraits/hajime-remaster-v1/style-comparison-native.png)。通常／笑顔／真剣／驚き／悲しみ。実画像の黒いキャップ・短い黒髪・黒パーカー・カーゴパンツ・ブーツ・銀のマウスピースの首飾りを保持。古い `visual_concepts` の白Tシャツとエプロンへ変えない。穏やかな青年らしく、小さな手・肩・首の動きを追加。生成元1746×901、共通倍率1.2057074910820451、足元下端1175px、足元横基準の最大差0.464px未満。
 - **アダム（adam）**：[5表情と元の顔の比較](../../../../asset_sources/portraits/adam-remaster-v1/review.png)、[最終生成元](../../../../asset_sources/portraits/adam-remaster-v1/sheet.png)、[生成プロンプト・実参照・配置記録](../../../../asset_sources/portraits/adam-remaster-v1/generation.json)、[画風の原寸比較](../../../../asset_sources/portraits/adam-remaster-v1/style-comparison-native.png)。通常／笑顔／真剣／驚き／熱の入った表情（intense・腕組み）。画面左が緑／右が赤の髪、黒いヘンリーネック・腰エプロン・パンツ・革靴と28歳の男性らしさを保持。笑顔に小さく歯が見え、手を差し出す仕草を追加。生成元1774×887、共通倍率1.213953488372093、足元下端1169px、足元横基準の最大差0.479px未満。

@@ -679,7 +679,8 @@
           "path": "../../../../asset_sources/portraits/hajime-remaster-v1/sad-preview.png",
           "sha256": "12f33b1faa8073af567a380c8d7d3fc11ead9d0a6f886bc8d79ba1901388e758"
         }
-      ]
+      ],
+      "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/201"
     },
     {
       "id": "adam-remaster-v1",
@@ -723,7 +724,8 @@
           "path": "../../../../asset_sources/portraits/adam-remaster-v1/intense-preview.png",
           "sha256": "ece87271c106a0eadc419e37fedbce03b1c9036daf7a9012e5e3d89aa52f8cdc"
         }
-      ]
+      ],
+      "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/201"
     }
   ]
 }

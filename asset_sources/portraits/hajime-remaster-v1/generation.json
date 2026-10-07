@@ -241,5 +241,6 @@
     "creativeImageChangesAfterGeneration": false
   },
   "review": "review.png",
-  "styleComparison": "style-comparison-native.png"
+  "styleComparison": "style-comparison-native.png",
+  "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/201"
 }
