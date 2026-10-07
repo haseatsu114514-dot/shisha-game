@@ -164,7 +164,11 @@ for (const rumor of rumors) {
 reset({ day: 5, story: { minto: 4 } }); assert(!phone.morningMessages().some((m) => m.id === "lime_minto_first_holiday"));
 state.story.minto = 5; const firstWorkday = phone.morningMessages().find((m) => m.id === "lime_minto_first_holiday");
 assert.equal(firstWorkday.time_slot, "night"); assert(firstWorkday.after_close);
-assert(!phone.morningMessages({ fixedNight: () => true }).some((m) => m.id === "lime_minto_first_holiday"));
+// 同じ雛形を読む旧版はprivateContext/privateWhenを置換しない。本文・返事は単独でも自然に表示できる。
+const firstTemplate = db.lime.find((m) => m.id === "lime_minto_first_holiday");
+assert.equal(firstTemplate.time_slot, "night");
+assert(!JSON.stringify(firstTemplate).includes("{private"));
+const firstTemporary = phone.morningMessages({ fixedNight: () => true }).find((m) => m.id === "lime_minto_first_holiday"); assert.equal(firstTemporary.time_slot, "noon"); assert(firstTemporary.temporary_closed);
 state.day = 6; const firstHoliday = phone.morningMessages().find((m) => m.sender === "minto"); assert.equal(firstHoliday.id, "lime_minto_first_holiday"); assert.equal(firstHoliday.time_slot, "noon"); assert.equal(firstHoliday.accept_event, "ch1_minto_fifth");
 state.lovers.push("minto"); assert.equal(phone.morningMessages().find((m) => m.sender === "minto").id, "lime_minto_first_holiday");
 state.flags._minto_fifth_done = true; assert(!phone.morningMessages().some((m) => m.id === "lime_minto_first_holiday"));
@@ -254,8 +258,8 @@ for (const id of ["lime_naru_day3", "lime_outing_adam_1", "lime_adam_arcade_afte
   assert.equal(invitationById[id].time_slot, "night"); assert(invitationById[id].after_close, id);
 }
 assert.equal(invitationById.lime_minto_day4.time_slot, "noon"); assert(!invitationById.lime_minto_day4.after_close); assert.equal(invitationById.lime_minto_day4.closed_on, undefined);
-reset({ day: 3, contacts: ["naru"] }); const naruDayOff = phone.morningMessages().find((m) => m.id === "lime_outing_naru_1"); assert(naruDayOff); assert(naruDayOff.messages[0].text.includes("定休日"));
-state.day = 4; assert(!phone.morningMessages().some((m) => m.id === "lime_outing_naru_1"));
+reset({ day: 3, contacts: ["naru"] }); const naruDayOff = phone.morningMessages().find((m) => m.id === "lime_outing_naru_1"); assert(naruDayOff); assert(naruDayOff.messages[0].text.includes("休みにした"));
+state.day = 4; const naruTemporary = phone.morningMessages().find((m) => m.id === "lime_outing_naru_1"); assert.equal(naruTemporary.time_slot, "noon"); assert(naruTemporary.temporary_closed);
 // 次の私服の約束を定休日だけに縛らない。配信した時点で本文と予約時刻を一緒に確定。
 for (const day of [6, 11]) {
   reset({ day, lastBaitoDay: day, flags: { _minto_identity_revealed: true, _minto_fifth_done: true }, contacts: ["minto"] }); db.lime = [invitationById.lime_outing_minto_2];
@@ -268,7 +272,11 @@ for (const day of [6, 11]) {
   assert.equal(state.pendingInvite.slot, day === 6 ? 0 : 1); assert.equal(state.pendingInvite.afterClose, day !== 6);
   phone.expireInvitations({ fixedNight: () => false }); assert(state.pendingInvite, "resolved night slot must survive reopening LIME");
 }
-reset({ day: 11, lastBaitoDay: 11, flags: { _minto_identity_revealed: true, _minto_fifth_done: true }, contacts: ["minto"] }); db.lime = [invitationById.lime_outing_minto_2]; assert.equal(phone.deliverMorning({ fixedNight: () => true }), 0);
+reset({ day: 11, lastBaitoDay: 11, flags: { _minto_identity_revealed: true, _minto_fifth_done: true }, contacts: ["minto"] }); db.lime = [invitationById.lime_outing_minto_2]; assert.equal(phone.deliverMorning({ fixedNight: () => true }), 1); assert(state.inbox[0].msg.temporary_closed);
+session = phone.openLime({ sender: "minto" }); await click("reply-0"); await closeThread(session);
+assert.equal(state.pendingInvite.slot, 0); assert(state.pendingInvite.temporaryClosed); assert(!state.pendingInvite.afterClose);
+assert.equal(state.flags._temporary_closed_minto, "1:11");
+phone.expireInvitations(); assert(state.pendingInvite, "temporary holiday must survive reopening LIME without fixed-night options");
 // 返事を忘れた休日の約束を、次の適合する仕事後の夜に再案内。本文に古い休日を残さない。
 reset({ day: 11, lastBaitoDay: 11, flags: { _minto_identity_revealed: true, _minto_fifth_done: true }, contacts: ["minto"] }); db.lime = [invitationById.lime_outing_minto_2];
 const oldHoliday = { ...invitationById.lime_outing_minto_2, time_slot: "noon", closed_on: 6, after_close: false, messages: ["午後、会える？"] };

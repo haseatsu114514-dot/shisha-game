@@ -106,7 +106,12 @@ export function hasNewStory(charId) {
 }
 
 export function isClosed(spot) {
-  return spot.closedOn !== undefined && state.day % 7 === spot.closedOn;
+  return isTemporaryClosed(spot) || spot.closedOn !== undefined && state.day % 7 === spot.closedOn;
+}
+
+/** 届いたLIMEで知らせた臨時休暇は、その章・その日だけ店にも反映する。 */
+export function isTemporaryClosed(spot) {
+  return !!spot.charId && state.flags[`_temporary_closed_${spot.charId}`] === `${state.chapter || 1}:${state.day}`;
 }
 
 export function visitedToday(spotId) {
