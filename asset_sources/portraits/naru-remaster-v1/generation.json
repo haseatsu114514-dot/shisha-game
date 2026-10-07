@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-07",
+  "character": "naru",
+  "version": "v1",
+  "status": "pending",
+  "scope": "review-only generation; no runtime adoption",
+  "requestIds": [
+    "PRT53"
+  ],
+  "baseCommit": "e1494b4bf2d8f5ff783d9b4f0d6b67be18cc05bc",
+  "tool": "image_gen.imagegen",
+  "source": "sheet.png",
+  "prompt": "prompt.txt",
+  "size": [
+    1774,
+    887
+  ],
+  "sourceSha256": "6fc9c21b3fea68d2a3fc2ebc7d1b9c9493fcafd316b830793e5100c3ff64686c",
+  "copyByteIdentical": true,
+  "expressions": [
+    "normal",
+    "smile",
+    "serious",
+    "surprise",
+    "sad"
+  ],
+  "references": [
+    {
+      "path": "assets/sprites/characters/naru/chr_naru_normal.png",
+      "role": "identity and full-body design",
+      "sha256": "b5878780784f0f9e8615d5b34e47d405634d13f2f930f8634c073f9af803d1b1",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/naru/chr_naru_normal.png"
+    },
+    {
+      "path": "asset_sources/portraits/naru-remaster-v1/existing-faces.png",
+      "role": "existing five facial expressions, unretouched native face crops",
+      "sha256": "8874d70710cbb7e2c574d34b5406d18684f2012accf658998da71c97a615db4a",
+      "actualToolInput": "/workspace/shisha-game/asset_sources/portraits/naru-remaster-v1/existing-faces.png"
+    },
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "role": "previously approved rendering style",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/minto/chr_minto_normal.png"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "role": "previously approved rendering style",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/ageha/chr_ageha_normal.png"
+    }
+  ],
+  "inspection": {
+    "existingExpressions": 5,
+    "priorStyleGroups": 21,
+    "priorStyleImages": 84,
+    "priorShaMismatches": 0,
+    "sourceBorderAlphaCounts": {
+      "1": 364,
+      "16": 0,
+      "24": 0,
+      "64": 0,
+      "128": 0
+    }
+  },
+  "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/201",
+  "sourceBranch": "codex/hajime-adam-portrait-remaster-20261007",
+  "notes": [
+    "Authoritative current silver hair, amber eyes, black/white jacket, chains, black cargo trousers and white sneakers retained.",
+    "Raw image preserved unchanged; extraction and review remain to be checked."
+  ]
+}
