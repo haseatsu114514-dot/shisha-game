@@ -1,4 +1,4 @@
-// シーシャークの出会い・準備中の店。競技のライバル枠とは分ける。
+// シーシャークの出会い・第2章からの店。競技のライバル枠とは分ける。
 import { DB } from "../core/data.js";
 import { state, save, markMet } from "../core/state.js";
 import { gainAffinity, gainStat, addMoney, addStamina } from "../core/stats.js";
@@ -12,6 +12,8 @@ export function syncKafukaKnowledge() {
   state.flags ||= {};
   state.contacts ||= [];
   state.met ||= {};
+  // 交換したアカウントに書かれた通称は分かる。本名は後の名乗りまで伏せる。
+  if (state.flags._lime_contact_kafuka || state.contacts.includes("kafuka")) state.flags._kafuka_nickname_known = true;
   if ((state.limeRead || []).includes(KAFUKA_NICKNAME_TOPIC)) state.flags._kafuka_nickname_known = true;
   if (state.flags._kafuka_nickname_known || state.flags._kafuka_name_known) markMet("kafuka");
   if (state.flags._lime_contact_kafuka && !state.contacts.includes("kafuka")) state.contacts.push("kafuka");
@@ -29,7 +31,7 @@ export async function maybeKafukaEncounter(context = {}) {
   await play("kafuka_first_encounter");
   state.flags._kafuka_first_encounter = true;
   state.flags._lime_contact_kafuka = true;
-  // 名前はまだ？？？。連絡先交換だけでは名乗りを受けた扱いにしない。
+  // アカウントの通称を知った後の名前・旧セーブも同じ処理で揃える。
   syncKafukaKnowledge();
   gainAffinity("kafuka", 1); // 好きでも少し怖くても、手伝ってもらった親近感は同じ。
   save();
@@ -37,12 +39,9 @@ export async function maybeKafukaEncounter(context = {}) {
 }
 
 export function kafukaSpot() {
-  if (!state || !(state.contacts?.includes("kafuka") || state.flags?._lime_contact_kafuka) || !DB.kafuka?.spot) return null;
+  if (!state || (state.chapter || 1) < (DB.kafuka?.spot?.minChapter || 2)
+    || !DB.kafuka?.spot) return null;
   const spot = { ...DB.kafuka.spot };
-  if ((state.chapter || 1) < spot.minChapter) {
-    Object.assign(spot, { sub: "開店準備中", unknownSub: "開店準備中", desc: "シーシャークはまだ開店準備中。第2章から訪ねられる。",
-      unknownDesc: "シーシャークはまだ開店準備中。第2章から訪ねられる。", cost: 0, stamina: 0, unavailable: "開店準備中", unavailableTag: "第2章から", preview: "bg_shishark_preparing_night", bg: "bg_shishark_preparing_night" });
-  }
   return spot;
 }
 

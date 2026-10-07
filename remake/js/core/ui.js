@@ -23,7 +23,8 @@ export function initLayers() {
   on("stat-gain", ({ key, total, name, word, starUp, rank, star }) => {
     // ★が上がったら、何が楽になったかを一言添える（旧版の★UP効果トースト）
     const fx = starUp ? DB.statusTexts?.statTierFx?.[key]?.[star - 1] : "";
-    gainCard({ kind: "stat", stat: key, points: total, badge: STAT_BADGE[key], top: starUp ? `RANK UP ★${star}` : "STATUS UP", main: name, sub: starUp ? `${word} ──「${rank}」` : word, fx });
+    gainCard({ kind: "stat", stat: key, points: total, badge: STAT_BADGE[key], top: starUp ? "LEVEL UP" : "STATUS UP", main: name,
+      evolution: starUp ? `レベル${star}に進化！` : "", sub: starUp ? `${word} ──「${rank}」` : word, fx });
   });
   on("affinity-gain", ({ id, level, levelUp, prevPts, pts, bond }) => {
     if (!id || id === "???" || !state?.met?.[id]) return;
@@ -77,7 +78,7 @@ export function imageReady(url, ms = 1500, { keep = false } = {}) {
 // 会話枠・ボタン・看板・ハート・ゲージ・通知の生成画像とスロットの図柄・枠は CSS の背景なので、
 // 画面に初めて出た瞬間に読み込みが始まり、枠や図柄が遅れて出ていた。顔アイコン（地図の看板・LIME・
 // スロットのランプ・通知）も同じ（GUI20・21）。起動時に並行して読み、手放さずに置いておく。
-const LOUNGE_ART = ["panel", "button", "map-pin", "heart", "reward", "gauge-frame", "gauge-fill"].map((n) => `img/ui/lounge/${n}.webp`);
+const LOUNGE_ART = ["panel", "button", "map-pin", "heart", "reward-clean", "gauge-frame", "gauge-fill"].map((n) => `img/ui/lounge/${n}.webp`);
 const SLOT_ART = ["symbols", "symbols-premium", "bezel"].map((n) => `img/ui/pakki-slot/${n}.webp`);
 /** 設定・ギャラリーの窓と最初の会話の枠・ボタン（タイトルの絵と一緒に、幕を開ける前に待つ） */
 export const FRAME_ART = LOUNGE_ART.slice(0, 2);
@@ -247,7 +248,7 @@ export function banner(title, sub = null) {
  * @param o.badge 丸バッジの一字 / o.face 顔ドット絵（あればバッジの代わり）/ o.hearts {from:[%×5], to:[%×5]}
  */
 export function gainCard(o) {
-  bannerQueue.push(o);
+  bannerQueue.push({ ...o, owner: state });
   pumpBanners();
 }
 
@@ -264,19 +265,19 @@ export function statBadge(key, className = "gc-badge") {
 function pumpBanners() {
   while (bannerBusy < 3 && bannerQueue.length) {
     const o = bannerQueue.shift();
+    if (o.owner !== state) continue;
     bannerBusy++;
     const hearts = o.hearts ? heartRow(o.hearts.from, { bond: !!o.bond, label: o.bond ? "恋人との絆" : "好感度" }) : null;
-    const meter = o.meter ? el("div.gc-meter", { "aria-label": "体力が回復" }, [el("span.gauge-track", [el("i", { style: { width: `${o.meter.from * 100}%` } })])]) : null;
     const b = el(`div.gain-card.${o.kind}${o.bond ? ".bond" : ""}${o.stat ? `.st-${o.stat}` : ""}`, [
       o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : o.stat ? statBadge(o.stat) : el("div.gc-badge", { text: o.badge || "+" }),
       el("div.gc-meta", [
         el("span.gc-top", { text: o.top }),
         el("div.gc-title", [el("span.gc-main", { text: o.main }),
           o.points > 0 ? el("span.gc-points", { text: `+${o.points}pt` }) : null]),
+        o.evolution ? el("strong.gc-evolution", { text: o.evolution }) : null,
         o.sub ? el("span.gc-sub", { text: o.sub }) : null,
         o.fx ? el("span.gc-fx", { text: o.fx }) : null,
         hearts,
-        meter,
       ]),
     ]);
     layers.banners.append(b);
@@ -289,9 +290,8 @@ function pumpBanners() {
       b.classList.add("show");
       // 1拍おいてから今の値へ → ハートの中身が「ぐいーん」と伸びる
       if (hearts) setTimeout(() => hearts.querySelectorAll("i").forEach((h, i) => h.style.setProperty("--fill", `${o.hearts.to[i]}%`)), 260);
-      if (meter) setTimeout(() => { meter.querySelector("i").style.width = `${o.meter.to * 100}%`; }, 260);
     });
-    const hold = o.fx ? 3200 : o.hearts && o.hearts.to.join() !== o.hearts.from.join() ? 2600 : 2200;
+    const hold = o.evolution ? 4200 : o.fx ? 3200 : o.hearts && o.hearts.to.join() !== o.hearts.from.join() ? 2600 : 2200;
     setTimeout(() => {
       b.classList.remove("show");
       b.classList.add("out");

@@ -34,7 +34,7 @@ const mocks = {
   "core/util.js": { el, sleep: async () => {}, clamp: (v, lo, hi) => Math.max(lo, Math.min(hi, v)), rand: (lo, hi) => (lo + hi) / 2, pick: (pool) => pool[0] },
   "core/ui.js": { countdown: async () => {}, flash() {}, shake() {} },
   "core/audio.js": { SE: new Proxy({}, { get: () => () => {} }) },
-  "core/stats.js": { tier01: () => 0 },
+  "core/stats.js": { tier01: () => 0, star: () => 1 },
   "craft/session.js": { craftTest: { auto: null }, stepPanel: () => (panel = el("div.panel")), refreshRig() {}, tickerSay() {}, benchRig: () => null },
   "craft/art.js": { artImg: () => el("img") },
 };

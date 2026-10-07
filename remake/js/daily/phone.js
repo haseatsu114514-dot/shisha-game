@@ -15,6 +15,7 @@ import { formatHtml } from "../vn/text.js";
 import { hasContact } from "./spots.js";
 import { loverMessages, isLover, dateSchedule } from "./romance.js";
 import { bondInvites, friendMessages } from "./bonds.js";
+import { syncMintoKnowledge } from "../core/story-knowledge.js";
 
 const HEROINES_ENCOURAGE = ["tsumugi", "minto", "rin"];
 // 目上の相手への返信は敬語（旧版 F6）。友達口調は同世代の相手だけ
@@ -120,6 +121,7 @@ function eligible(m, { tournamentDay = false } = {}) {
  * @param opts.tournamentDay 大会当日の朝か / opts.fixedNight (day) => 夜の固定イベントがあるか
  */
 export function morningMessages(opts = {}) {
+  syncMintoKnowledge();
   expireInvitations(opts);
   const out = [];
   const inbox = state.inbox || [];
@@ -436,6 +438,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
     if (!alive()) return; // 読み終える前に戻ったら、既読・報酬を付けない
     item.read = true;
     if (!state.limeRead.includes(m.id)) state.limeRead.push(m.id);
+    syncMintoKnowledge();
     readReward(m);
   }
   if (!alive()) return;
@@ -542,6 +545,9 @@ function drawHistory(items, ui) {
  * @param opts.sender   最初に開くトーク（アカウント。みんとの私用は "minto_private"）
  */
 export async function openLime({ tutorial = false, sender = null } = {}) {
+  // HUD・案内の穴・プッシュ通知のどこから開いても、地図の上の初回案内を片付ける。
+  layers.fx.querySelectorAll(".lime-coach").forEach((coach) => coach.remove());
+  state.flags._lime_tut = 1;
   expireInvitations();
   const accepted = [];
   const ui = phoneShell({ time: clockNow(), title: `DAY ${state.day}` });

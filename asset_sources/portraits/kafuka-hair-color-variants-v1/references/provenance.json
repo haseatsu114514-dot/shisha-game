@@ -1,0 +1,14 @@
+{
+  "source_pr": "https://github.com/haseatsu114514-dot/shisha-game/pull/206",
+  "source_commit": "9f913b9",
+  "source_directory": "/workspace/shisha-game-kafuka-concepts/asset_sources/portraits/kafuka-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/normal",
+  "copied_files": {
+    "base-generation.json": "45dc9c2dba5603994a49e419b4235c269e5e6ec4fe9fdef8fb7c633076b5e68a",
+    "generation-references.json": "348cabdccdb3fc0f91f66b51c70e90f71ebb28806b73bb3c6e198f5bab1edc77",
+    "base-face-native.png": "716d2add183a5fba601bfd19576ac5fd471db385c5afea816f823b70aee93e26",
+    "base-preview.png": "7a70b2ee911c69f8b6e920d055d2795fadc9a17859d4573c7bfa3fbe250380c7",
+    "base-source.png": "04781bc1691223aade5fdcc5cc0a9260ab0d8282b9291d4f999d07a18ff4d744"
+  },
+  "latest_user_request": "サメちゃんいい感じだけど服の色と髪色が近すぎるので工夫を加えていきたい　何パターンか髪色作って",
+  "runtime_adoption_authorized": false
+}

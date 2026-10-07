@@ -310,6 +310,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .gc-top { font-family: var(--font); font-size: 12px; letter-spacing: 0.28em; color: var(--gc); }
 .gc-main { font-size: 21px; font-weight: 700; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8); }
 .gc-sub { font-size: 13px; letter-spacing: 0.06em; color: var(--text-dim); }
+.gc-evolution { font-size: 20px; line-height: 1.5; color: var(--gold-hi); }
 .gc-fx { margin-top: 3px; padding: 2px 8px; font-size: 14px; font-weight: 700; color: #1a1018; background: var(--gc); border-radius: 3px; align-self: flex-start; }
 .gain-card.st-technique { --gc: var(--stat-technique); }
 .gain-card.st-sense { --gc: var(--stat-sense); }
@@ -354,7 +355,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 }
 .modal-box h3 { margin: 0 0 14px; font-family: var(--font); font-size: 24px; color: var(--gold-hi); letter-spacing: 0.06em; }
 .modal-body { font-size: 17px; line-height: 1.8; color: var(--text); }
-.modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 22px; flex-wrap: wrap; }
+.modal-actions { display: flex; gap: 12px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
 @keyframes pop-in { from { opacity: 0; transform: translate(-50%, -46%) scale(0.96); } }
 
 /* ---------------------------------------------------------------- 演出パーツ */

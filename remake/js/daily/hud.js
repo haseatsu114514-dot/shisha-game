@@ -16,9 +16,9 @@ let handlers = { phone: null, status: null, menu: null };
 let recoveryTimer = null;
 let pendingRecovery = null;
 let recoveryFrame = 0;
-function showRecovery({ before, after, maximum }) {
+function showRecovery({ before, after }) {
   if (!dom || after <= before) return;
-  pendingRecovery = { before: Math.min(pendingRecovery?.before ?? before, before), after, maximum };
+  pendingRecovery = { before: Math.min(pendingRecovery?.owner === state ? pendingRecovery.before : before, before), owner: state };
   scheduleRecovery();
 }
 on("stamina-change", showRecovery);
@@ -28,6 +28,7 @@ function scheduleRecovery() {
   if (recoveryFrame || !pendingRecovery) return;
   recoveryFrame = requestAnimationFrame(() => {
     recoveryFrame = 0;
+    if (pendingRecovery && pendingRecovery.owner !== state) pendingRecovery = null;
     if (!dom || !pendingRecovery || !layers.hud.classList.contains("show") ||
       document.body.dataset.screen !== "map" || document.body.classList.contains("vn-open") ||
       document.body.classList.contains("in-vn") || layers.modal.classList.contains("show") ||
@@ -37,6 +38,7 @@ function scheduleRecovery() {
     pendingRecovery = null;
     const fill = dom.stamina.querySelector("b");
     const target = `${Math.round(staminaRatio() * 100)}%`;
+    if (state.stamina <= recovery.before) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { fill.style.width = target; return; }
     fill.style.transition = "none";
     fill.style.width = `${Math.round(Math.min(recovery.before, state.stamina) / maxStamina() * 100)}%`;

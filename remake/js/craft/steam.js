@@ -1,9 +1,9 @@
 // 蒸らし ── 雑念を躱す（CLAUDE.md: 蒸らしミニゲームは雑念弾幕。「覚悟＋締め」には戻さない）
-// 選んだ蒸らし時間のあいだ、飛んでくる雑念（言葉の弾）を心(♥)で避け続ける。被弾が少ないほど良い。
+// 選んだ蒸らし時間のあいだ、飛んでくる雑念（言葉と物体）を心(♥)で避け続ける。被弾が少ないほど良い。
 import { el, sleep, clamp, rand, pick } from "../core/util.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { tier01 } from "../core/stats.js";
+import { tier01, star } from "../core/stats.js";
 import { stepPanel, refreshRig, benchRig } from "./session.js";
 import { autoSkill, resultCard, keys, popStamp } from "./common.js";
 import { craftConditions } from "./conditions.js";
@@ -20,12 +20,16 @@ export const DODGE_WORDS = [
 const DURATION = { 3: 9, 5: 12, 8: 16, 10: 20 };
 const OBJECTS = ["coal", "clock", "spark", "smoke"];
 
+// 根性の成長による回数アップは既存のレベル4・5の恩恵を引き継ぐ。
+export function refreshStock() { return 2 + (star("guts") >= 4 ? 1 : 0) + (star("guts") >= 5 ? 1 : 0); }
+
 export async function runSteamDodge(cs) {
+  const stock = refreshStock();
   const tutorial = cs.mode === "tutorial";
   const min = cs.steamMin || 5;
   const rainy = craftConditions(cs).rainy;
   const panel = stepPanel("steam", `蒸らし ── ${min}分${rainy ? "（雨：熱が入りづらい）" : ""}`,
-    "心を動かして雑念を躱す。下のパッド／矢印キーで移動。リフレッシュ（Space）で弾を一掃、2回まで");
+    `心を動かして雑念を躱す。下のパッド／矢印キーで移動。リフレッシュ（Space／X）で弾を一掃、${stock}回まで`);
   const W = 620, H = 300;
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge" } });
   const heart = el("div.dodge-heart", { role: "img", "aria-label": "心。中央の光が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("i.dodge-core")]);
@@ -46,7 +50,7 @@ export async function runSteamDodge(cs) {
   const focus = craftCondition(cs).focus;
   const hitR = 8 * (1 - 0.2 * tier01("guts")) / focus;
   const spawnEvery = (tutorial ? 0.85 : 0.46) * (1 + 0.25 * tier01("insight")) * focus;
-  let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = 2;
+  let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = stock;
   let running = false, time = 0, nextSpawn = 0.8, nextWave = tutorial ? 4 : 2.8;
   let warning = null, spawnCount = 0, raf = 0;
   const bullets = [], keysDown = new Set();
@@ -89,8 +93,8 @@ export async function runSteamDodge(cs) {
   const refreshLabel = () => { refreshBtn.textContent = `リフレッシュ ×${refreshes}（Space）`; refreshBtn.disabled = !running || refreshes === 0; };
   const refresh = () => {
     if (!running || refreshes === 0) return;
-    refreshes--; clearBullets(); warning = null; inv = 1.5;
-    nextSpawn = time + 0.8; nextWave = Math.max(nextWave, time + 1.5);
+    refreshes--; clearBullets(); warning = null; inv = 1.6;
+    nextSpawn = time + 1; nextWave = Math.max(nextWave, time + 1.5);
     box.classList.remove("warning"); waveEl.textContent = "深呼吸";
     const fx = el("div.dodge-refresh-fx", { "aria-hidden": "true", style: { "--x": `${hx}px`, "--y": `${hy}px` } }, [
       el("i.dr-flash"), el("i.dr-ring"), el("i.dr-ring.second"),
@@ -107,6 +111,8 @@ export async function runSteamDodge(cs) {
   const unkey = keys(Object.fromEntries([
     ...Object.entries(direction).map(([key, value]) => [key, () => { if (running) keysDown.add(value); }]),
     [" ", (e) => { if (!e.repeat) refresh(); }],
+    ["x", (e) => { if (!e.repeat) refresh(); }],
+    ["X", (e) => { if (!e.repeat) refresh(); }],
   ]));
   listen(window, "keyup", (e) => keysDown.delete(direction[e.key]));
 
@@ -190,7 +196,7 @@ export async function runSteamDodge(cs) {
     heart.classList.remove("shield"); box.classList.remove("warning");
   }
   const score = clamp(100 - hits * 14, 0, 100);
-  cs.steam = { min, hits, score, refreshesUsed: 2 - refreshes, warmingFactor: rainy ? 0.85 : 1 };
+  cs.steam = { min, hits, score, refreshesUsed: stock - refreshes, warmingFactor: rainy ? 0.85 : 1 };
   refreshRig();
   popStamp(panel, hits === 0 ? "無心" : hits <= 2 ? "持ちこたえた" : "雑念まみれ", hits === 0 ? "just" : hits <= 2 ? "good" : "bad", "50%", "40%");
   await sleep(400);
@@ -199,6 +205,7 @@ export async function runSteamDodge(cs) {
     lines: [
       rainy ? "雨の日は熱の立ち上がりが少し遅い。吸い出しで温度を確かめよう" : "",
       `${min}分蒸らした。${hits === 0 ? "最後まで一度も揺れなかった" : `雑念に${hits}回つかまった`}`,
+      cs.steam.refreshesUsed ? `リフレッシュで${cs.steam.refreshesUsed}回、雑念を吹き払った` : "",
       min >= 8 ? "じっくり待った分、熱が入り、吸い出しに余裕ができる" : min <= 3 ? "早めの立ち上げ。温度合わせは忙しくなる" : "香りの輪郭を残した。吸い出しでしっかり熱を入れよう",
     ],
   });

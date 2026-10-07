@@ -1,0 +1,35 @@
+{
+  "expressions": [
+    "normal",
+    "ventriloquism"
+  ],
+  "raw_byte_identical": true,
+  "source_sizes": [
+    [
+      1024,
+      1536
+    ],
+    [
+      1024,
+      1536
+    ]
+  ],
+  "preview_sizes": [
+    [
+      896,
+      1200
+    ],
+    [
+      896,
+      1200
+    ]
+  ],
+  "common_scale": 0.607095046854083,
+  "foot_bottom": 1174,
+  "foot_anchor_difference_px": 0.06096781772879467,
+  "all_borders_alpha_ge_16_zero": true,
+  "catalog_groups": 29,
+  "catalog_images": 112,
+  "visual_review": "Owner-selected black/pale-blue clothing retained in both, with ebony-black hair and small blue mesh strands; ventriloquism plush covers the full human face with both hands. Full body, same outfit/proportions, native detail and white/dark alpha composites reviewed.",
+  "runtime_changed": false
+}

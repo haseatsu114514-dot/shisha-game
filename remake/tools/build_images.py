@@ -28,7 +28,7 @@ def targets(m):
     rel += [f"ui/scene_props/{x}" for x in m.get("sceneProps", [])]
     for ch, p in m["portraits"].items():
         rel += [f"sprites/characters/{ch}/chr_{ch}_{f}.png" for f in p["faces"]]
-    rel += ["ui/title_arts/title_art_keyvisual_01.png", "ui/ui_title_logo.png"]
+    rel += ["ui/title_arts/title_art_keyvisual_01.png", "ui/ui_title_logo.png", "ui/ui_title_logo_rich.png"]
     return [r for r in rel if (ASSETS / r).exists()]
 
 

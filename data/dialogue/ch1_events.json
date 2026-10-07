@@ -234,9 +234,11 @@
           "text": "問屋街のほうへ行きたいんだけど、道がちょっと不安で"
         },
         {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "みんとさん……？ わ、私服だと雰囲気が、ぜんぜん違いますね"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_minto_identity_revealed",
+          "next_true": "familiar",
+          "next_false": "unfamiliar"
         },
         {
           "speaker": "minto",
@@ -291,7 +293,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……この感じ、前にもどこかで。気のせい、かな）"
+          "text": "（店の外だと、こんなふうにゆっくり買い物するんだな）"
         },
         {
           "speaker": "",
@@ -324,14 +326,30 @@
         {
           "speaker": "",
           "face": "",
-          "text": "私服のみんとは、少しだけ遠い人みたいで——でも、さっきの横顔は、ずっと近くにいた気もした。"
+          "text": "一緒に選んだラベルを思い返す。店で聞くおすすめとは、また違う時間だった。"
         },
         {
           "speaker": "",
           "face": "",
           "text": "……【魅力】が少し上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "familiar": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "tonariで会う時と同じ服ですね。……今日はよろしくお願いします"
+          }
+        ],
+        "unfamiliar": [
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "みんとさん……？ 私服だと、雰囲気が違いますね"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "interaction_naru_night_01",
