@@ -1,6 +1,8 @@
 // 初登場カットイン: キャラが名乗って名前が出たあと、最初に一度だけ「名前・二つ名・一言」を全画面で出す。
 // 文言の正本は data/characters.json の intro_cutin（かふかは kafuka.json の profile）。
-//   { title: 二つ名, line: 一言, face: 立ち絵の表情, color: 差し色, name: "alias"=本名を伏せて呼び名だけ }
+//   { title: 二つ名, line: 一言, face: 立ち絵の表情, color: 差し色, name: "alias"=フルネームを伏せる（ネタバレになる相手） }
+// 名前の出し方（オーナー指定・2026-10-07）: 大きく出すのは一番よく呼ばれる呼び名＝会話の名前欄と同じ表示名。
+// フルネームがあって呼び名と違うキャラだけ、その下に小さく（）で添える。ふりがなは出さない
 // 見たかどうかはセーブの flags._intro_<id>（会話の途中で出す・同じセーブでは二度と出さない）
 import { el, sleep } from "../core/util.js";
 import { DB, displayName, portraitInfo } from "../core/data.js";
@@ -37,13 +39,13 @@ export function nameParts(id) {
   return { full, reading: inner[0] || "", alias };
 }
 
-/** カットインに出す名前（大きい名前・ふりがな・添える呼び名） */
-function introName(id, intro) {
-  const shown = displayName(id, state);
-  if (intro.name === "alias") return { main: shown, reading: "", sub: "" };
-  const { full, reading } = nameParts(id);
+/** カットインに出す名前（大きい呼び名・下に小さく添えるフルネーム） */
+export function introName(id) {
+  const main = displayName(id, state);
+  const { full } = nameParts(id);
   const same = (a, b) => a.replace(/\s/g, "") === b.replace(/\s/g, "");
-  return { main: full, reading, sub: same(shown, full) ? "" : shown };
+  const hide = introOf(id)?.name === "alias" || !full || same(main, full);
+  return { main, full: hide ? "" : full };
 }
 
 /** 1行に収める字の大きさ（半角は約半分の幅で数える） */
@@ -69,7 +71,7 @@ export async function playIntro(id, { quick = false } = {}) {
   const intro = introOf(id);
   if (!intro) return;
   markIntroSeen(id);
-  const { main, reading, sub } = introName(id, intro);
+  const { main, full } = introName(id);
   const p = portraitInfo(id, intro.face || "normal");
   const portrait = p ? el("img.ci-portrait", { src: p.src, alt: "", draggable: "false" }) : el("div.ci-portrait.none", { text: [...main][0] || "？" });
   if (p) {
@@ -77,17 +79,16 @@ export async function playIntro(id, { quick = false } = {}) {
     await imageReady(p.src, 1200);
   }
   const host = el("div.cutin", { dataset: { char: id }, style: `--ci: ${intro.color || "var(--gold)"}` }, [
-    el("div.ci-band"),
-    el("div.ci-band.b2"),
     el("div.ci-smoke"),
-    el("div.ci-watermark", { text: String(nameParts(id).alias || main).toUpperCase() }),
+    el("div.ci-watermark", { text: main }),
     portrait,
-    el("div.ci-meta", [
+    el("div.ci-strip", [
       el("div.ci-title", { text: intro.title || "" }),
-      el("div.ci-name", { text: main, style: `font-size: ${fitSize(main, 570, 96)}px` }),
-      reading ? el("div.ci-reading", { text: reading }) : null,
-      sub ? el("div.ci-sub", { text: `「${sub}」` }) : null,
-    ].filter(Boolean)),
+      el("div.ci-names", [
+        el("div.ci-name", { text: main, style: `font-size: ${fitSize(main, 560, full ? 96 : 110)}px` }),
+        full ? el("div.ci-full", { text: `（${full}）` }) : null,
+      ].filter(Boolean)),
+    ]),
     intro.line ? el("div.ci-line", { text: `「${intro.line}」`, style: `font-size: ${fitSize(`「${intro.line}」`, 640, 34)}px` }) : null,
   ].filter(Boolean));
   layers.fx.append(host);

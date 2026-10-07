@@ -49,7 +49,13 @@ try {
     assert.equal(await page.locator(".cutin").count(), 0, `${id}: クリックで閉じない`);
   }
 
-  // 2) 本名を伏せるキャラは、本名を出さない（みんと＝栞・零＝田中健太）
+  // 2) 名前の出し方: 大きいのは名前欄と同じ呼び名、フルネームは下に小さく（）。伏せる相手（みんと＝栞・零＝田中健太）は出さない
+  const rule = await page.evaluate(() => Object.fromEntries(["naru", "sumi", "tsumugi", "nagumo", "minto"].map((id) => [id, T.intro.introName(id)])));
+  assert.deepEqual(rule.naru, { main: "なる", full: "鳴切 亮太" });
+  assert.deepEqual(rule.sumi, { main: "スミさん", full: "墨田 丈一郎" });
+  assert.deepEqual(rule.tsumugi, { main: "つむぎ", full: "" }, "フルネームの無いキャラに（）が付く");
+  assert.equal(rule.nagumo.full, "", "呼び名とフルネームが同じなら（）を付けない");
+  assert.deepEqual(rule.minto, { main: "みんと", full: "" });
   const hidden = await page.evaluate(async () => {
     const out = {};
     for (const id of ["minto", "rei"]) {
