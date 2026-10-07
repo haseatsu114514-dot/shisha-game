@@ -24,3 +24,5 @@
 [検証記録](validation.json)：原画RGBA・バイト一致、端にalpha>=16なし、通常と腹話術の共通倍率と足元下端1174px、横アンカー差1px未満。顔の遮蔽、顔・髪・服・透過端を原寸、白／暗背景で確認。
 
 採用した通常は[キャラ別アニメーションのモックアップ](../../character-intros/personality-v2/README.md)にもそのまま使用。今回の採用はデザインの確定で、ゲーム用5表情の置換・WebP・アイコン・manifest・台詞は未変更。
+
+保存用PR：[#208](https://github.com/haseatsu114514-dot/shisha-game/pull/208)。ゲーム本体へは未反映。
