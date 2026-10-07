@@ -45,8 +45,8 @@ python3 tools/lint_dialogue.py
 # 3) 手動で微調整したいとき（ブラウザの台詞エディタ。検索→編集→保存＋本編と同じ改行プレビュー）
 python3 tools/text_editor_server.py   # → http://127.0.0.1:8321/
 #   ・保存すると data/dialogue/*.json に直接書き戻る
-#   ・プレビューは engine.js の autoWrap 実物を配信＝本編とズレない
-#   ・画面の「🔨ビルド反映」「⬆️コミット&プッシュ」で 4) まで完結できる（main/masterでは拒否）
+#   ・プレビューは remake/js/vn/text.js の autoWrap 実物を配信＝本編とズレない
+#   ・画面の「台詞の検査」「⬆️コミット&プッシュ」で 4) まで完結できる（main/masterでは拒否）
 #   ・使い方の詳細は docs/text_editor_manual.md（アプリ内「❓ヘルプ」からも読める）
 
 # 4) 反映
@@ -58,5 +58,5 @@ python3 tools/text_editor_server.py   # → http://127.0.0.1:8321/
 - 報酬キュー行（`……【技術】と【センス】が上がった。`）は**規定フレーズを一字一句変えない**
   （CLAUDE.md「報酬を地の文に埋めない」参照）。tidy はナレーション末尾の「。」を触らないので安全。
 - `remake/js/` 内のインライン台詞（インライン文字列）にも同じ規範を適用する。
-  tidy は JSON しか見ないので、game.js に台詞を書くときは手で従うこと。
+  tidy は JSON しか見ないので、工程モジュールなどに台詞を書くときは手で従うこと。
 - `remake/js/vn/text.js` を変更すると、台詞エディタも同じ実物を配信する。組版を複製しない。

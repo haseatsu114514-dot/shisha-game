@@ -349,14 +349,13 @@ function gotoNextWarn() {
   toast("警告のある行はありません");
 }
 
-/* ---- ビルド ---- */
+/* ---- 台詞検査 ---- */
 $("#btn-build").onclick = () => openModal("build-modal");
 $("#build-run").onclick = async () => {
   const busy = $("#build-busy"); busy.textContent = "実行中…";
-  const standalone = false;
   const res = await (await fetch("/api/build", {
     method: "POST", headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ standalone }),
+    body: JSON.stringify({}),
   })).json();
   busy.textContent = res.ok ? "完了 ✓" : "失敗 ✗";
   const log = $("#build-log"); log.style.display = "block";
@@ -381,7 +380,6 @@ $("#commit-run").onclick = async () => {
     body: JSON.stringify({
       message: $("#commit-msg").value,
       push: $("#commit-push").checked,
-      standalone: false,
     }),
   })).json();
   busy.textContent = res.ok ? "完了 ✓" : "失敗 ✗";

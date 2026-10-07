@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""台詞テキストエディタ（G4）— ブラウザで dialogue JSON を編集し、ビルド反映・Git反映まで行う。
+"""台詞テキストエディタ（G4）— ブラウザで dialogue JSON を編集し、台詞の検査・Git反映まで行う。
 
 起動:
   python3 tools/text_editor_server.py        # http://127.0.0.1:8321/ を開く
@@ -97,7 +97,7 @@ def dialogue_dirty() -> bool:
     return bool(out.strip())
 
 
-def do_build(standalone: bool):
+def do_validate():
     code, out = run(["python3", "tools/lint_dialogue.py"])
     return code == 0, "$ python3 tools/lint_dialogue.py\n" + out + "\n現行版はJSONを直接読みます（ビルド不要）。"
 
@@ -115,14 +115,14 @@ def git_status():
             "dialogueDirty": dialogue_dirty()}
 
 
-def git_commit(message: str, push: bool, standalone: bool):
+def git_commit(message: str, push: bool):
     branch = current_branch()
     if branch in PROTECTED_BRANCHES:
         return False, f"ブランチ '{branch}' は保護されています（PR運用）。作業ブランチに切り替えてください。"
     if not dialogue_dirty():
         return False, "台詞（data/dialogue）に未コミットの変更がありません。保存してから実行してください。"
     log = []
-    ok, blog = do_build(standalone)  # コミット前に台詞の正本を検査
+    ok, blog = do_validate()  # コミット前に台詞の正本を検査
     log.append(blog)
     if not ok:
         return False, "台詞の検査に失敗したためコミットを中止しました。\n\n" + "\n".join(log)
@@ -186,13 +186,13 @@ class Handler(BaseHTTPRequestHandler):
                 save_line(fname, body["path"], body["text"])
                 return self._send({"ok": True})
             if u.path == "/api/build":
-                ok, log = do_build(bool(body.get("standalone")))
+                ok, log = do_validate()
                 return self._send({"ok": ok, "log": log})
             if u.path == "/api/git/commit":
                 msg = (body.get("message") or "").strip()
                 if not msg:
                     return self._send({"ok": False, "log": "コミットメッセージを入力してください。"})
-                ok, log = git_commit(msg, bool(body.get("push")), bool(body.get("standalone")))
+                ok, log = git_commit(msg, bool(body.get("push")))
                 return self._send({"ok": ok, "log": log})
         except Exception as e:  # noqa: BLE001
             return self._send({"error": str(e)}, code=500)

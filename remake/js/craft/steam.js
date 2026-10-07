@@ -95,7 +95,7 @@ export async function runSteamDodge(cs) {
     if (!running || refreshes === 0) return;
     refreshes--; clearBullets(); warning = null; inv = 1.6;
     nextSpawn = time + 1; nextWave = Math.max(nextWave, time + 1.5);
-    box.classList.remove("warning"); waveEl.textContent = "深呼吸";
+    box.classList.remove("warning"); waveEl.textContent = "リフレッシュ！";
     const fx = el("div.dodge-refresh-fx", { "aria-hidden": "true", style: { "--x": `${hx}px`, "--y": `${hy}px` } }, [
       el("i.dr-flash"), el("i.dr-ring"), el("i.dr-ring.second"),
       ...Array.from({ length: 8 }, (_, i) => el("i.dr-ray", { style: { "--angle": `${i * 45}deg` } })),

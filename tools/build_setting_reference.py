@@ -237,7 +237,7 @@ CANON_NOTES = [
     "<code>brand/brand</code>・<code>brand/chapter1（character）</code> は旧設定の残骸。参照・引用しない（旧名「ドクター・ケムリ」等）。",
     "旧審査員 <strong>DJ SMOKE・白峰恒一郎・霧島レン</strong> は廃止済み（2026-07-05・オーナー指定）。データ・台詞に再登場させない。",
     "神崎竜二の立ち絵は<strong>未実装</strong>（旧ネオンバー画像は設定不一致のため廃止）。新規作成時は <code>chr_kumicho_*</code> で追加する。",
-    "Godot版は削除済み（2026-06-15）。remake/ ＋ data/*.json ＋ brand/ が唯一の正史。",
+    "Godot版は削除済み（2026-06-15）。remake/ ＋ data/*.json ＋ brand/ が現行の参照元。旧web版は削除済み。",
 ]
 
 # ---------------------------------------------------------------- rendering
