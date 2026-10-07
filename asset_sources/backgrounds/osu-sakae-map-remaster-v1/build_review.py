@@ -2,6 +2,7 @@
 from pathlib import Path
 import argparse,hashlib,json,shutil
 from PIL import Image,ImageDraw,ImageFont
+import numpy as np
 BASE=Path(__file__).resolve().parent
 sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def archive(tod,source,refs):
@@ -22,7 +23,15 @@ def assemble():
  for j,t in enumerate(ready):
   for i,(label,path) in enumerate([('現在',BASE/f'references/original-{t}.png'),('大須・栄のランドマーク入り',BASE/t/'preview.png')]):
    d.text((i*1280+25,j*800+20),('昼' if t=='day' else '夜')+'｜'+label,font=font(30),fill=(242,244,249));out.paste(Image.open(path).convert('RGB'),(i*1280,j*800+70))
- out.save(BASE/'comparison.png');print({'comparison':str(BASE/'comparison.png')})
+ out.save(BASE/'comparison.png')
+ kit=BASE/'game-ready';kit.mkdir(exist_ok=True);checks=[]
+ for t in ready:
+  src=BASE/t/'preview.png';png=kit/f'bg_osu_map_{t}.png';webp=png.with_suffix('.webp')
+  shutil.copyfile(src,png);im=Image.open(png).convert('RGB');im.save(webp,'WEBP',lossless=True,quality=100,method=6,exact=True)
+  same=np.array_equal(np.asarray(im),np.asarray(Image.open(webp).convert('RGB')));assert same
+  checks.append({'time_of_day':t,'png':png.name,'webp':webp.name,'png_sha256':sha(png),'webp_sha256':sha(webp),'size':im.size,'webp_exact_rgb':same,'png_byte_identical_to_preview':png.read_bytes()==src.read_bytes()})
+ (kit/'manifest.json').write_text(json.dumps({'status':'map-review','maps':checks,'runtime_installed':False},ensure_ascii=False,indent=2)+'\n')
+ print({'comparison':str(BASE/'comparison.png'),'exports':checks})
 if __name__=='__main__':
  p=argparse.ArgumentParser();p.add_argument('--archive',nargs=2);p.add_argument('--reference',action='append',default=[]);p.add_argument('--assemble',action='store_true');a=p.parse_args()
  if a.archive:archive(*a.archive,a.reference)

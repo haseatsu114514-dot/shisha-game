@@ -1,0 +1,32 @@
+{
+  "status": "map-review",
+  "maps": [
+    {
+      "time_of_day": "day",
+      "png": "bg_osu_map_day.png",
+      "webp": "bg_osu_map_day.webp",
+      "png_sha256": "cebc00f8d51018bac821e3e15cffca73b7bf8372ea15cc01ffde0b92a35baaea",
+      "webp_sha256": "d522a4c40e4cdd61f3ef5ae72581635dd61ec258d524cf56864703057bd8890b",
+      "size": [
+        1280,
+        720
+      ],
+      "webp_exact_rgb": true,
+      "png_byte_identical_to_preview": true
+    },
+    {
+      "time_of_day": "night",
+      "png": "bg_osu_map_night.png",
+      "webp": "bg_osu_map_night.webp",
+      "png_sha256": "0c673d28ce0270d674eb59d33e77b80fcece98bb01aa9df3bfe8f5d9c15d371f",
+      "webp_sha256": "949f71b1f11163435e2b3d7c59c3a921c894d36433996a47cf40559a56807a66",
+      "size": [
+        1280,
+        720
+      ],
+      "webp_exact_rgb": true,
+      "png_byte_identical_to_preview": true
+    }
+  ],
+  "runtime_installed": false
+}
