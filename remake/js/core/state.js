@@ -3,6 +3,7 @@
 // 状態の形を変えたら SCHEMA を上げ、migrate() に1段足す（互換コードはここだけに置く）。
 
 import { MAX_MONEY, TOURNAMENT_DAY } from "./rules.js";
+import { emit } from "./bus.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
@@ -164,6 +165,7 @@ function migrate(s) {
 
 export function setState(s) {
   state = s;
+  emit("hud"); // ロード・はじめからでも、前の残量と通知を画面に持ち越さない。
   return state;
 }
 

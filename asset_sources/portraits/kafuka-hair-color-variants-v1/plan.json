@@ -1,0 +1,26 @@
+[
+  {
+    "slug": "ocean-blue",
+    "title": "① 黒 × 青インナー",
+    "request_id": "PRT63",
+    "status": "design-approved"
+  },
+  {
+    "slug": "blue-violet",
+    "title": "② 黒 × 青紫インナー",
+    "request_id": "PRT64",
+    "status": "unselected-history"
+  },
+  {
+    "slug": "ash-gray",
+    "title": "③ 黒 × 淡グレーインナー",
+    "request_id": "PRT65",
+    "status": "unselected-history"
+  },
+  {
+    "slug": "ash-brown",
+    "title": "④ アッシュブラウン",
+    "request_id": "PRT66",
+    "status": "not-generated-selection-stopped"
+  }
+]

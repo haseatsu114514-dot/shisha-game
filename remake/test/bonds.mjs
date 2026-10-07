@@ -261,7 +261,7 @@ try {
   assert(!shared.epiHeart, "epilogue still has the store tone or the doubled 彼女");
   assert.deepEqual(shared.epiJump, { type: "jump", next_id: "ending_daily_smoke" });
   assert(!shared.acceptOld); assert(!shared.rule.includes("恋人ルート確定後のデートシーンでのみ"));
-  assert.equal(shared.privateName, "栞"); assert.equal(shared.outingExclude, "_minto_identity_revealed");
+  assert.equal(shared.privateName, "栞"); assert.equal(shared.outingExclude, "_minto_fifth_done");
   log("HF02 data: ura faces <-> private scenes, epilogue private/calm, confession text, appearance rule, first outing before reveal");
   // HF03
   assert.equal(shared.kafuka, 156); assert.equal(shared.kafukaAge, 20); assert.equal(shared.kafukaRomance, false);

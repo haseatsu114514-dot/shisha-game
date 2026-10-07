@@ -34,6 +34,14 @@ let running = null;     // 再生中の会話の状態
 let autoMode = false;
 let skipMode = false;
 let autoFxGap = 0;
+let sequenceDepth = 0;
+
+/** 一続きの会話（バイト開始→接客→終了）の間だけSKIPを維持。選択肢は自分で選び、行動の終わりに解除する。 */
+export async function dialogueSequence(run) {
+  sequenceDepth++;
+  try { return await run(); }
+  finally { if (--sequenceDepth === 0) setSkip(false); }
+}
 
 export const vnTest = { turbo: false, choose: null }; // テスト用: 瞬時表示＋自動送り・選択肢の方針
 
@@ -126,6 +134,7 @@ export function play(idOrDlg, opts = {}) {
       context: sceneContext(dlg), // 公私の文脈（名前欄・ログの呼び名）。jump 先の metadata で切り替わる
       bgmBefore: currentBgm(), // metadata.bgm で曲を替えた会話は、終わったらこの曲へ戻す
       bgmSwitched: false,
+      bgmOnSpeaker: null,
       pendingIntros: [], // 名乗りを受けて、次の台詞の前に出す初登場カットイン
     };
     autoFxGap = 0;
@@ -159,8 +168,18 @@ export function play(idOrDlg, opts = {}) {
 /** metadata.bgm: その会話の間だけ鳴らす曲（jump 先でも切り替わる。会話が終われば元の曲へ） */
 function sceneBgm(meta) {
   if (!meta?.bgm) return;
+  running.bgmOnSpeaker = meta.bgm_on_speaker ? { id: meta.bgm_on_speaker, key: meta.bgm } : null;
+  if (running.bgmOnSpeaker) return;
   running.bgmSwitched = true;
   playBgm(meta.bgm);
+}
+
+function speakerBgm(id) {
+  const cue = running?.bgmOnSpeaker;
+  if (!cue || cue.id !== id) return;
+  running.bgmOnSpeaker = null;
+  running.bgmSwitched = true;
+  playBgm(cue.key);
 }
 
 /** 仕事を離れた私的な場面か（metadata.private_scene）。名前欄の呼び名に使う */
@@ -216,8 +235,8 @@ function finish() {
   dom.portraits.replaceChildren();
   dom.effect.dataset.effect = "";
   layers.vn.classList.remove("sepia");
-  setSkip(false);
-  if (r.bgmSwitched && r.bgmBefore) playBgm(r.bgmBefore);
+  if (!sequenceDepth) setSkip(false);
+  if (r.bgmSwitched) playBgm(r.bgmBefore);
   r.resolve({ id: r.id, visited: r.visited });
 }
 
@@ -262,7 +281,16 @@ function next() {
     if (type === "note") { onNote(line); continue; }
     if (type === "remember") { rememberRelationship(line.memory_id); continue; }
     if (type === "reflection") { r.queue.unshift(...relationshipReflectionLines()); continue; }
-    if (type === "bg") { if (line.bg) sceneSetBg(line.bg); continue; }
+    if (type === "bg") {
+      if (!line.bg) continue;
+      r.ready = false;
+      sceneSetBg(line.bg).then(() => {
+        if (running !== r) return;
+        r.ready = true;
+        next();
+      });
+      return;
+    }
     if (type === "sfx") { playSe(line.id); continue; }
     if (type === "fx") { runFx(line); continue; }
     if (type === "customer_note") { state.notes[line.note_id] = (state.notes[line.note_id] || 0) + 1; continue; }
@@ -358,7 +386,7 @@ function introThenShow(line) {
   }
   r.ready = false;
   (async () => {
-    for (const id of due) await playIntro(id, { quick: skipMode });
+    for (const id of due) await playIntro(id, { onAppear: () => speakerBgm(id) });
     if (running !== r) return;
     r.ready = true;
     showLine(line);
@@ -371,7 +399,8 @@ function showLine(line) {
   const speaker = String(line.speaker || "");
   const face = String(line.face || "");
   r.speaker = speaker;
-  const name = speaker ? displayName(speaker, state, { context: r.context }) : "";
+  const name = speaker === "kafuka" && line.voice === "korochan" ? "コロちゃん（腹話術）"
+    : speaker ? displayName(speaker, state, { context: r.context }) : "";
   if (speaker) {
     dom.name.textContent = name;
     dom.name.classList.add("show");
@@ -381,6 +410,7 @@ function showLine(line) {
   dom.box.classList.toggle("narration", !speaker);
   dom.box.classList.toggle("thought", speaker === "hajime" && /^（/.test(line.text || ""));
   updatePortraits(speaker, face);
+  speakerBgm(speaker);
   // 行付き演出（"fx":"shake" 等）／自動の軽演出（驚き・叫び）
   if (line.fx) runFx({ id: line.fx });
   else autoFx(line);

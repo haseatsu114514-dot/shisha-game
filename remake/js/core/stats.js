@@ -72,7 +72,7 @@ export function gainStat(key, amount, { silent = false } = {}) {
   emit("stat-raw", { key, got }); // スロットの「直前の行動で伸びたステ」の記録用
   emit("hud");
   if (silent) return got;
-  const starUp = Math.ceil(v / 20) > Math.ceil(before / 20);
+  const starUp = star(key) > clamp(Math.ceil(before / 20), 1, 5);
   if (batch[key]?.owner !== state) batch[key] = { owner: state, total: 0, starUp: false };
   batch[key].total += got;
   batch[key].starUp ||= starUp;
@@ -210,14 +210,18 @@ export function maxStamina() {
 }
 
 export function addStamina(n) {
-  // 根性★で消耗が少し軽くなる（最大 -25%）
-  const d = n < 0 ? n * (1 - 0.25 * tier01("guts")) : n;
   const before = state.stamina;
   const maximum = maxStamina();
-  state.stamina = clamp(Math.round(state.stamina + d), 0, maximum);
+  state.stamina = staminaAfter(n);
   if (state.stamina !== before) emit("stamina-change", { before, after: state.stamina, maximum });
   emit("hud");
   return state.stamina - before;
+}
+
+/** 行動前の警告にも、実際の消耗と同じ根性補正・丸め・最大値を使う。 */
+export function staminaAfter(n) {
+  const d = n < 0 ? n * (1 - 0.25 * tier01("guts")) : n;
+  return clamp(Math.round(state.stamina + d), 0, maxStamina());
 }
 
 export const staminaRatio = () => state.stamina / maxStamina();

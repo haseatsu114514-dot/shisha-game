@@ -66,6 +66,8 @@ Create a production-ready TWO-SPRITE gauge art sheet with TRANSPARENT background
 
 ## assets/ui/lounge/reward.png
 
+2026-10-07（PF01/PF16）: この原型の銀色の二重縁・細かな質感・形を保ったまま、内側の煙模様だけを除いた `assets/ui/lounge/reward-clean.png` を使用する。能力・体力回復とも `remake/img/ui/lounge/reward-clean.webp` を使い、従来の項目色による着色と漢字バッジを維持する。元の `reward.png` は制作履歴として残す。制作記録は `asset_sources/ui/playtest-20261007/README.md`。
+
 ```text
 スタイル: 薄暗いシーシャラウンジの空気。`assets/backgrounds/bg_eden_shop.png` 程度の2Dドット絵〜ピクセルペインター調で、輪郭・影・質感に細かいドット感を残す。リアル写真調や滑らかすぎる3D調は避ける。シーシャ台の先端は小さい凸型の金属ポストにし、凹んだカップ型・ボウル一体型・大きな先端パーツにしない。手・腕は細身で中性的、明るいピーチ系の同一肌色に統一する。
 配色: 黒〜濃紫の闇に、琥珀／金（#f4d27a系）の暖色ネオンが差す。煙のかすみ。
