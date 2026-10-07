@@ -1,0 +1,22 @@
+[
+  {
+    "expression": "smile",
+    "request_id": "PRT70",
+    "status": "generated-and-exported"
+  },
+  {
+    "expression": "serious",
+    "request_id": "PRT71",
+    "status": "generated-and-exported"
+  },
+  {
+    "expression": "surprise",
+    "request_id": "PRT72",
+    "status": "generated-and-exported"
+  },
+  {
+    "expression": "excited",
+    "request_id": "PRT73",
+    "status": "generated-and-exported"
+  }
+]
