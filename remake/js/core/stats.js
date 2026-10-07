@@ -1,4 +1,4 @@
-// ステータス・好感度・体力・所持金。成長量は通知にptで出し、現在の強さは★で表す。
+// ステータス・好感度・体力・所持金。成長量は通知にPで出し、現在の強さは★で表す。
 import { MAX_MONEY } from "./rules.js";
 import { state, STAT_KEYS, STAT_JA } from "./state.js";
 import { emit } from "./bus.js";
@@ -9,7 +9,7 @@ import { conditionForRatio } from "./condition.js";
 
 /** 章ごとのソフトキャップ（ch1で上限に張り付かない・ch5で全100を狙える） */
 export function statCap() {
-  return { 1: 48, 2: 66, 3: 82, 4: 96, 5: 100 }[state?.chapter || 1] || 100;
+  return { 1: 48, 2: 66, 3: 82, 4: 90, 5: 100 }[state?.chapter || 1] || 100;
 }
 
 /** ★1〜5（内部値 0〜100 を 20 刻み） */
@@ -24,10 +24,6 @@ export function starText(key) {
   const s = star(key);
   return "★".repeat(s) + "☆".repeat(5 - s);
 }
-
-// ★帯が上がるほど +1 に必要な経験値が重くなる（★1帯=1 … ★5帯=4）
-const TIER_COST = [1, 1.5, 2, 3, 4];
-const costAt = (v) => TIER_COST[clamp(Math.ceil(v / 20) - 1, 0, 4)];
 
 export const RANK_LABELS = {
   technique: ["見習い", "様になってきた", "一人前", "職人肌", "神業"],
@@ -49,10 +45,12 @@ export function gainWord(total) {
 }
 
 /**
- * ステを伸ばす（経験値として足し、★段階ごとの伸びにくさと章の上限を通す）。戻り値=実際に伸びたポイント
+ * 通常は実増加1P。スロットなどは明示したボーナスポイントを足す。
+ * ★帯による減衰は廃止。章の上限と振替、旧セーブの進捗の端数は維持する。
+ * 戻り値=実際に伸びたポイント。
  * @param opts.silent 通知カードを出さない（スロットのように自前で見せるとき）
  */
-export function gainStat(key, amount, { silent = false } = {}) {
+export function gainStat(key, amount = 1, { silent = false } = {}) {
   if (!STAT_KEYS.includes(key) || !(amount > 0)) return 0;
   const cap = statCap();
   // 上限に届いた項目は、まだ伸びる項目へ振り替える（伸びている実感を保つ）
@@ -64,7 +62,7 @@ export function gainStat(key, amount, { silent = false } = {}) {
   const before = state.stats[key];
   let xp = (state.statXp[key] || 0) + amount;
   let v = before;
-  while (v < cap && xp >= costAt(v)) { xp -= costAt(v); v += 1; }
+  while (v < cap && xp >= 1) { xp -= 1; v += 1; }
   state.statXp[key] = v >= cap ? 0 : xp;
   state.stats[key] = v;
   const got = v - before;
@@ -90,9 +88,9 @@ function flushBatch() {
   }
 }
 
-/** 報酬オブジェクト {technique:2, ...} をまとめて適用 */
+/** 通常の報酬オブジェクト。正の項目ごとに実増加1P（旧版向けの経験値量は正本に残す）。 */
 export function applyStats(obj = {}) {
-  for (const [k, v] of Object.entries(obj)) gainStat(k, v);
+  for (const [k, v] of Object.entries(obj)) if (v > 0) gainStat(k);
 }
 
 // ---------------------------------------------------------------- 好感度（二層: ポイント→5段階）

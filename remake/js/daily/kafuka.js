@@ -56,7 +56,7 @@ export async function visitKafuka(spot) {
   await play(dialogue);
   state.story.kafuka = count + 1;
   gainAffinity("kafuka", count === 0 ? 2 : 1);
-  gainStat("insight", 1);
+  gainStat("insight");
   syncKafukaKnowledge();
   return true;
 }

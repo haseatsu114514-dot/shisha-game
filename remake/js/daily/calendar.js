@@ -145,7 +145,7 @@ async function day1Errands() {
     await chooseSpot({ guide: { pin: "shop", text: "スミさんに頼まれた仕入れへ。Dr.fookah をタップ！" } });
     await openShop({ errand: "mint" });
     f._errand_shop_done = true;
-    gainStat("insight", 2); // 仕入れの感覚を掴んだ
+    gainStat("insight"); // 仕入れの感覚を掴んだ
     toast("スミ「上出来だ。……この調子で、ちゃんと店を回せ」", { ms: 3200 });
     save();
     await bannersIdle();

@@ -105,6 +105,14 @@ export function hasNewStory(charId) {
   return questionVisitDue(charId) || finaleAtVisit(charId);
 }
 
+/** 店主の固有イベントと、初めて訪れる施設のイベントを同じ印で案内する。 */
+export function hasNewEvent(spot) {
+  if (spot.charId === "kafuka") return !(state.story.kafuka || 0) && !!DB.dialogues.kafuka_shop_first;
+  if (spot.charId) return hasNewStory(spot.charId);
+  if (!spot.first || !DB.dialogues[spot.first]) return false;
+  return spot.id === "choizap" ? !state.flags._gym_member : !(state.spotVisits?.[spot.id] > 0);
+}
+
 export function isClosed(spot) {
   return isTemporaryClosed(spot) || spot.closedOn !== undefined && state.day % 7 === spot.closedOn;
 }
@@ -155,7 +163,7 @@ export async function visitChar(charId) {
     state.story[charId] = idx + 1;
     await play(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg });
     gainAffinity(charId, 10);
-    gainStat(CHAR_STAT[charId], 2);
+    gainStat(CHAR_STAT[charId]);
     await afterStory(seq[idx], { bg });
   } else if (questionVisitDue(charId)) {
     await playQuestionVisit(charId, { bg });
@@ -174,7 +182,7 @@ export async function visitChar(charId) {
     const opener = rainy && dlg ? DB.dialogues.remake_rain_opener?.lines || [] : [];
     await play(opener.length ? { ...dlg, lines: [...opener, ...dlg.lines] } : id, { bg });
     gainAffinity(charId, 5);
-    if (!DB.dialogues[id]?.lines?.some((l) => l.type === "apply")) gainStat(CHAR_STAT[charId], 2);
+    if (!DB.dialogues[id]?.lines?.some((l) => l.type === "apply")) gainStat(CHAR_STAT[charId]);
   }
   markMet(charId);
   hasContact(charId); // 交換済みの判定をこの場で記録
@@ -187,7 +195,7 @@ export async function visitRival(spot) {
   await visitChar(spot.charId);
 }
 
-/** 施設スポット（一人の時間）。好感度は付かない代わりに、人に会うより伸びが大きい */
+/** 施設スポット（一人の時間）。能力1Pに加え、場所ごとの体力の変化がある。 */
 export async function visitSpot(spot) {
   if (spot.cost) addMoney(-spot.cost);
   addStamina(spot.stamina || 0);
@@ -208,7 +216,7 @@ export async function visitSpot(spot) {
     id = "ch1_reviewer_payoff";
   }
   await play(id, { bg: bgRef(spot.bg) }); // bgUrl が昼夜差分（_day/_night）を選ぶ
-  gainStat(spot.stat, 3);
+  gainStat(spot.stat);
 }
 
 export async function restAtHome(spot) {

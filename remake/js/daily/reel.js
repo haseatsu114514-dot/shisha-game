@@ -1,5 +1,6 @@
 // MOKUMOKUパッキー — 謎のマスコット「パッキー」のスロット（日常リール）。
-// 仕様の正典は docs/pakki_slot_spec.md。抽選の中身（役・確率・天井・裏確変）は旧版 web/js/reel.js と同一。
+// 仕様の正典は docs/pakki_slot_spec.md。役・確率・天井・裏確変は旧版と同一。
+// リメイクの報酬は通常1Pの育成に合わせ、REG10/BIG16/フリーズ24P（2026-10-08 PF24）。
 //
 // Aタイプ＋天井。「1行動=1回転」でマップ隅のミニ筐体が回り、パッキーの顔が光ったら大当たり（完全告知）。
 // ・抽選は決定論RNG（シード＋総回転数）— ロードしても結果が変わらない＝リセマラ不可
@@ -10,11 +11,11 @@ import { el, sleep } from "../core/util.js";
 import { layers, gainCard } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { state, save, STAT_KEYS, STAT_JA } from "../core/state.js";
-import { gainStat, star, rankLabel } from "../core/stats.js";
+import { gainStat, star } from "../core/stats.js";
 import { DB, faceIconUrl } from "../core/data.js";
 import { SE } from "../core/audio.js";
 
-// ================================================================ 純粋コア（旧版と同一）
+// ================================================================ 純粋コア（抽選は旧版と同一）
 
 function mulberry32(seed) {
   let a = seed >>> 0;
@@ -48,16 +49,16 @@ const RESCUE = { minSpins: 30, ratio: 0.55, mult: 1.7, expectedRate: 0.075 };
 const CEILING = { zoneRun: 8, mainRun: 15 };
 const JUG_REN = { games: 5, mult: 1.5 };
 const REPLAY_CHAIN_MAX = 4;
-// 恩恵はステータスのみ。exp は直前の行動で伸びたステへの上乗せ量。quiet は通知なし
+// 恩恵はステータスのみ。exp は直前の行動で伸びたステへの上乗せP。quiet は通知なし
 const EFFECTS = {
   miss: { exp: 1, quiet: true },
   replay: { exp: 1, quiet: true },
   cherry: { exp: 2 },
   bell: { exp: 3 },
-  rare: { exp: 6, zone: true },
-  reg: { exp: 4 },
-  big: { exp: 6, zone: true },
-  freeze: { exp: 8, zone: true },
+  rare: { exp: 16, zone: true },
+  reg: { exp: 10 },
+  big: { exp: 16, zone: true },
+  freeze: { exp: 24, zone: true },
 };
 
 function pickWeighted(rng, entries) {
@@ -244,7 +245,7 @@ export function onAction() {
   reel.lastChapter = state.chapter;
   const target = pickTarget();
   for (const r of spinSeries(reel, { chapterFirst })) {
-    // 経験値として足す（章の上限・★段階の伸びにくさはふつうの伸びと同じ扱い）。通知は演出のときに出す
+    // 章の上限で調整した実増加を記録。通知は演出のときに出す（報酬はここで一度だけ）
     selfGain = true;
     const before = { ...state.stats };
     const got = gainStat(target, r.exp, { silent: true });
@@ -698,12 +699,11 @@ async function presentFreeze(r) {
 // 報酬カード（報酬そのものは行動時に適用済み。ここは見せるだけ）
 function announce(r) {
   if (!(r.got > 0) || r.quiet || !r.target) return;
-  const word = r.exp >= 5 ? "大きく上がった" : r.exp >= 3 ? "上がった" : "少し上がった";
   const fx = r.starTo ? DB.statusTexts?.statTierFx?.[r.target]?.[r.starTo - 1] : "";
   gainCard({
     kind: "stat", stat: r.target, points: r.got, badge: { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "察" }[r.target],
     top: "PAKKI SLOT", main: STAT_JA[r.target], evolution: r.starTo ? `レベル${r.starTo}に進化！` : "",
-    sub: r.starTo ? `${word} ──「${rankLabel(r.target)}」` : word, fx,
+    fx,
   });
 }
 

@@ -247,7 +247,7 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 .spot-pin:hover, .spot-pin.sel { z-index: 5; }
 .spot-pin .shield {
   position: relative;
-  min-width: 112px;
+  min-width: 96px;
   padding: 8px 14px 10px;
   color: #fff;
   text-align: center;
@@ -275,10 +275,10 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 .spot-pin:hover .shield { transform: scale(1.07); box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5), 0 0 18px rgba(244, 210, 122, 0.45); }
 .spot-pin:active .shield { transform: scale(0.97); }
 .spot-pin.sel .shield { transform: scale(1.1); border-color: #ffe9a8; box-shadow: 0 8px 18px rgba(0, 0, 0, 0.55), 0 0 0 3px rgba(244, 210, 122, 0.75), 0 0 26px rgba(244, 210, 122, 0.6); }
-.spot-pin .ico { display: grid; place-items: center; height: 30px; margin-bottom: 3px; font-family: var(--font); font-size: 23px; line-height: 1; }
+.spot-pin .ico { display: grid; place-items: center; height: 52px; font-family: var(--font); font-size: 34px; line-height: 1; }
 .pin-face {
-  width: 30px;
-  height: 30px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   object-fit: cover;
   image-rendering: pixelated;
@@ -286,12 +286,14 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
   border: 2px solid rgba(255, 255, 255, 0.88);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
+.pin-symbol { display: grid; place-items: center; width: 48px; height: 48px; color: #e6e3df; }
+.pin-symbol svg { display: block; width: 42px; height: 42px; }
 .spot-pin .label { font-size: 14px; line-height: 1.2; white-space: nowrap; }
 .spot-pin .lock { margin-left: 6px; padding: 1px 6px; font-size: 11px; font-style: normal; letter-spacing: 0.12em; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 3px; }
 .spot-pin .sub-label {
   margin-top: 10px;
   padding: 2px 9px;
-  font-size: 12px;
+  font-size: 13px;
   color: #2a1a2a;
   background: rgba(255, 255, 255, 0.88);
   border-radius: 8px;
@@ -299,6 +301,7 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
 }
 .spot-pin .sub-label.closed-tag { background: rgba(40, 18, 24, 0.92); color: #f0b9b9; border: 1px solid rgba(240, 185, 185, 0.4); }
+.pin-status { margin-top: 3px; padding: 2px 7px; color: #f0b9b9; background: rgba(20, 12, 20, 0.85); font-size: 11px; line-height: 1.25; white-space: nowrap; }
 /* 行けない場所は「消えた」ではなく「無効化」に見せる（旧版 #6） */
 .spot-pin.off .shield { filter: grayscale(0.5) brightness(0.74); }
 .spot-pin.off { opacity: 0.9; }
@@ -366,8 +369,8 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
   pointer-events: none;
 }
 @keyframes evt-pulse { 50% { transform: scale(1.18); box-shadow: 0 0 16px rgba(255, 211, 94, 1); } }
-/* 「新しい話がある」印: 「!」より控えめな水色・波動なし */
-.evt-badge.story { font-size: 11px; font-weight: 700; color: #06222c; background: #9fd8e8; border-color: #d9f2f9; box-shadow: 0 0 8px rgba(159, 216, 232, 0.7); animation: none; }
+/* 新しいイベントも丸い「!」。連続する点滅は増やさない。 */
+.evt-badge.story { animation: none; }
 
 /* 看板の色テーマ */
 .pin-baito   { --pin-from: #c47845; --pin-to: #602f16; }

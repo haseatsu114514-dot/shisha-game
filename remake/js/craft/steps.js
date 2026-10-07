@@ -241,7 +241,7 @@ export async function stepMix(cs) {
   if (r && !state.recipes[r.id]) {
     state.recipes[r.id] = { day: state.day };
     toast(`📖 レシピ帳に書き加えた「${r.name}」`, { kind: "good" });
-    if (cs.mode !== "tournament") gainStat("sense", 1);
+    if (cs.mode !== "tournament") gainStat("sense");
   }
   await sleep(200);
 }

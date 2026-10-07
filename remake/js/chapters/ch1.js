@@ -347,7 +347,7 @@ async function victory() {
     },
   ], { time: "PM 11:47", title: "優勝の夜" });
   await play("ch1_naru_promise");
-  gainStat("insight", 2);
+  gainStat("insight");
   state.phase = "cleared";
   save();
   await bannersIdle();

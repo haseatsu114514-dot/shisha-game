@@ -20,11 +20,11 @@ export function initLayers() {
     layers[id] = $(`#${id}`);
   }
   // 報酬カード（旧版の Persona 風カードを踏襲）。ステはステ色の漢字バッジ、好感度は顔＋ハート
-  on("stat-gain", ({ key, total, name, word, starUp, rank, star }) => {
+  on("stat-gain", ({ key, total, name, starUp, star }) => {
     // ★が上がったら、何が楽になったかを一言添える（旧版の★UP効果トースト）
     const fx = starUp ? DB.statusTexts?.statTierFx?.[key]?.[star - 1] : "";
-    gainCard({ kind: "stat", stat: key, points: total, badge: STAT_BADGE[key], top: starUp ? "LEVEL UP" : "STATUS UP", main: name,
-      evolution: starUp ? `レベル${star}に進化！` : "", sub: starUp ? `${word} ──「${rank}」` : word, fx });
+    gainCard({ kind: "stat", stat: key, points: total, badge: STAT_BADGE[key], top: starUp ? "LEVEL UP" : "", main: name,
+      evolution: starUp ? `レベル${star}に進化！` : "", fx });
   });
   on("affinity-gain", ({ id, level, levelUp, prevPts, pts, bond }) => {
     if (!id || id === "???" || !state?.met?.[id]) return;
@@ -296,11 +296,11 @@ function pumpBanners() {
     const b = el(`div.gain-card.${o.kind}${o.bond ? ".bond" : ""}${o.stat ? `.st-${o.stat}` : ""}`, [
       o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : o.stat ? statBadge(o.stat) : el("div.gc-badge", { text: o.badge || "+" }),
       el("div.gc-meta", [
-        el("span.gc-top", { text: o.top }),
+        o.top ? el("span.gc-top", { text: o.top }) : null,
         el("div.gc-title", [el("span.gc-main", { text: o.main }),
-          o.points > 0 ? el("span.gc-points", { text: `+${o.points}pt` }) : null]),
+          o.points > 0 ? el("span.gc-points", { text: `+${o.points}P` }) : null]),
         o.evolution ? el("strong.gc-evolution", { text: o.evolution }) : null,
-        o.sub ? el("span.gc-sub", { text: o.sub }) : null,
+        o.kind !== "stat" && o.sub ? el("span.gc-sub", { text: o.sub }) : null,
         o.fx ? el("span.gc-fx", { text: o.fx }) : null,
         hearts,
         meter,
