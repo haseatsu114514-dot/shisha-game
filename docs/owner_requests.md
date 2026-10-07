@@ -1,5 +1,7 @@
 ## 2026-10-07 プレイ感の改善・旧版の整理
 
+確認用PR：[#214](https://github.com/haseatsu114514-dot/shisha-game/pull/214)（実装・検証済み、mainへは未マージ）。
+
 | ID | 状態 | オーナー要望 |
 |---|---|---|
 | GP01 | ✅ 実装・検証済み | 家で休む・就寝での体力回復は通知カードを出さず、本来のHUDゲージを伸ばす |
@@ -22,7 +24,7 @@
 
 現行版 `remake/` を対象にする。旧版保持の以前の指示は今回の削除指示で更新。GP15〜17の追加指示により、制作窓は静止モックアップ付きの広い作業風景へ変更。独立した一台の表示は廃止し、作業アニメーション本体は今後追加する。
 
-検証：第1章通しプレイ（練習する経路・日常・セーブ／ロード・雨・大会敗北→再挑戦→優勝）、`gameplay_polish`（練習しない経路・会釈・回復・実際のタッチ操作・弾消し）、`steam_refresh`、`foil_holes`、`stamina_condition`、`stat_rewards` がPASS。統合時の `ui_polish`・`playtest_ui`・`ui_skin`・`intro_cutin`・`choice_oneline` と日常整合性もPASS。制作画面は1280×720・844×390・591×1280で、左枠・操作パッド・大会実況欄が重ならないことを確認。[表示確認画像](../asset_sources/ui/gameplay-polish-20261007/README.md)を保存。台詞lintはERROR 0（既存WARNを含む208）。Pagesの配布構成と台詞エディタも検証済み。
+検証：第1章通しプレイ（練習する経路・日常・セーブ／ロード・雨・大会敗北→再挑戦→優勝）、`gameplay_polish`（練習しない経路・会釈・回復・実際のタッチ操作・弾消し）、`steam_refresh`、`foil_holes`、`stamina_condition`、`stat_rewards` がPASS。統合時の `ui_polish`・`playtest_ui`・`ui_skin`・`intro_cutin`・`choice_oneline` と日常整合性もPASS。制作画面は1280×720・844×390・591×1280で、左枠・操作パッド・大会実況欄が重ならないことを確認。[表示確認画像](../asset_sources/ui/gameplay-polish-20261007/README.md)を保存。台詞lintはERROR 0（既存WARNを含む207）。Pagesの配布構成と台詞エディタも検証済み。
 
 リフレッシュは基本2回・根性レベル4で3回・5で4回。Space／Xと画面ボタンで使用できる。5分の開始温度を低め、8分を余裕のある選択に調整。過去のPF01・PF02の回復通知は、今回のGP01によりHUDでの回復表示へ集約する。
 
