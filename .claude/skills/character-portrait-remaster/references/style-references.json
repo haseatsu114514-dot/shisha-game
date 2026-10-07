@@ -636,6 +636,50 @@
         }
       ],
       "approval": "2026-10-04: 修正版5表情と会話比較の提示後、オーナー「マージして」で採用・mainへのマージを指示"
+    },
+    {
+      "id": "hajime-remaster-v1",
+      "title": "はじめ 基本5表情の確認用 v1",
+      "status": "pending",
+      "role": "確認用の生成元と5表情。本人のデザイン参照・採用未確定",
+      "sourceBranch": "codex/hajime-adam-portrait-remaster-20261007",
+      "images": [
+        {
+          "label": "5表情の生成元",
+          "path": "../../../../asset_sources/portraits/hajime-remaster-v1/sheet.png",
+          "sha256": "7abcbc74c203dd7434efab475908e3cbcee26366ae2daab60373559d98ec0643"
+        },
+        {
+          "label": "通常",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/hajime-remaster-v1/normal-preview.png",
+          "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409"
+        },
+        {
+          "label": "笑顔",
+          "expression": "smile",
+          "path": "../../../../asset_sources/portraits/hajime-remaster-v1/smile-preview.png",
+          "sha256": "bb2ab71d8c9f2b9292eeae5a2c2848398a9ce081853a20b4536678b31169d03a"
+        },
+        {
+          "label": "真剣",
+          "expression": "serious",
+          "path": "../../../../asset_sources/portraits/hajime-remaster-v1/serious-preview.png",
+          "sha256": "3a3cd8319e064ccd451a01cab0eac0d5248ce8b1f45e50cb9afff6a47e8884d7"
+        },
+        {
+          "label": "驚き",
+          "expression": "surprise",
+          "path": "../../../../asset_sources/portraits/hajime-remaster-v1/surprise-preview.png",
+          "sha256": "a7863be067099f788c3e4ae34ab52c795bc70b623d4872959a42c16c56cf212c"
+        },
+        {
+          "label": "悲しみ",
+          "expression": "sad",
+          "path": "../../../../asset_sources/portraits/hajime-remaster-v1/sad-preview.png",
+          "sha256": "12f33b1faa8073af567a380c8d7d3fc11ead9d0a6f886bc8d79ba1901388e758"
+        }
+      ]
     }
   ]
 }

@@ -28,22 +28,26 @@
     {
       "path": "assets/sprites/characters/hajime/chr_hajime_normal.png",
       "role": "identity and full-body design",
-      "sha256": "b594fa025c35a924f04c37e357b8cc1918e302f05b98a8f59e4c98e7fd71068e"
+      "sha256": "b594fa025c35a924f04c37e357b8cc1918e302f05b98a8f59e4c98e7fd71068e",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/hajime/chr_hajime_normal.png"
     },
     {
       "path": "asset_sources/portraits/hajime-remaster-v1/existing-faces.png",
       "role": "existing five expressions, prepared from all five current PNGs",
-      "sha256": "24541deb72352e837be9772f373868dc7e4b350770870c13c1a55cdcf1683f74"
+      "sha256": "24541deb72352e837be9772f373868dc7e4b350770870c13c1a55cdcf1683f74",
+      "actualToolInput": "/workspace/scratch/portrait-targets/hajime-existing-faces.png"
     },
     {
       "path": "assets/sprites/characters/minto/chr_minto_normal.png",
       "role": "approved rendering style",
-      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/minto/chr_minto_normal.png"
     },
     {
       "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
       "role": "approved rendering style",
-      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+      "actualToolInput": "/workspace/shisha-game/assets/sprites/characters/ageha/chr_ageha_normal.png"
     }
   ],
   "inspection": {
@@ -51,11 +55,191 @@
     "priorStyleGroups": 19,
     "priorStyleImages": 72,
     "priorShaMismatches": 0,
-    "sourceBorderAlphaAtLeast24": 0
+    "sourceBorderAlphaAtLeast24": 0,
+    "sourceBorderAlphaAtLeast16": 0,
+    "splitColumnAlphaAtLeast16": 0,
+    "compositeBackgrounds": [
+      "white",
+      "dark"
+    ],
+    "previewClipping": false
   },
   "notes": [
     "Current black cap, hoodie, cargo trousers, boots and mouthpiece necklace retained instead of old white-shirt/apron visual_concepts.",
     "Slight hand/shoulder/neck gestures vary with expression.",
     "Generated sheet copied without editing; preview splitting and alignment will be recorded after both generations."
-  ]
+  ],
+  "previews": [
+    {
+      "key": "normal",
+      "label": "通常",
+      "path": "normal-preview.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "crop": [
+        0,
+        0,
+        374,
+        901
+      ],
+      "resized": [
+        451,
+        1086
+      ],
+      "paste": [
+        262,
+        122
+      ],
+      "bounds": [
+        357,
+        161,
+        665,
+        1175
+      ],
+      "footAnchor": 496.0870467624768,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "smile",
+      "label": "笑顔",
+      "path": "smile-preview.png",
+      "sha256": "bb2ab71d8c9f2b9292eeae5a2c2848398a9ce081853a20b4536678b31169d03a",
+      "crop": [
+        374,
+        0,
+        720,
+        901
+      ],
+      "resized": [
+        417,
+        1086
+      ],
+      "paste": [
+        288,
+        119
+      ],
+      "bounds": [
+        338,
+        154,
+        664,
+        1175
+      ],
+      "footAnchor": 495.91512869953783,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "serious",
+      "label": "真剣",
+      "path": "serious-preview.png",
+      "sha256": "3a3cd8319e064ccd451a01cab0eac0d5248ce8b1f45e50cb9afff6a47e8884d7",
+      "crop": [
+        720,
+        0,
+        1065,
+        901
+      ],
+      "resized": [
+        416,
+        1086
+      ],
+      "paste": [
+        304,
+        119
+      ],
+      "bounds": [
+        347,
+        160,
+        681,
+        1175
+      ],
+      "footAnchor": 496.5044245068518,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "surprise",
+      "label": "驚き",
+      "path": "surprise-preview.png",
+      "sha256": "a7863be067099f788c3e4ae34ab52c795bc70b623d4872959a42c16c56cf212c",
+      "crop": [
+        1065,
+        0,
+        1410,
+        901
+      ],
+      "resized": [
+        416,
+        1086
+      ],
+      "paste": [
+        312,
+        119
+      ],
+      "bounds": [
+        352,
+        159,
+        666,
+        1175
+      ],
+      "footAnchor": 496.82549857549856,
+      "borderAlphaAtLeast16": 0
+    },
+    {
+      "key": "sad",
+      "label": "悲しみ",
+      "path": "sad-preview.png",
+      "sha256": "12f33b1faa8073af567a380c8d7d3fc11ead9d0a6f886bc8d79ba1901388e758",
+      "crop": [
+        1410,
+        0,
+        1746,
+        901
+      ],
+      "resized": [
+        405,
+        1086
+      ],
+      "paste": [
+        310,
+        120
+      ],
+      "bounds": [
+        373,
+        171,
+        646,
+        1175
+      ],
+      "footAnchor": 496.27884768931045,
+      "borderAlphaAtLeast16": 0
+    }
+  ],
+  "processing": {
+    "canvas": [
+      896,
+      1200
+    ],
+    "splitColumns": [
+      0,
+      374,
+      720,
+      1065,
+      1410,
+      1746
+    ],
+    "splitMethod": "midpoints of full-height transparent gutters (alpha<16 for measurement only)",
+    "commonScale": 1.2057074910820451,
+    "resampling": "Lanczos for whole sprite only; raw sheet unmodified",
+    "normalReferenceBounds": [
+      361,
+      161,
+      645,
+      1175
+    ],
+    "normalFootAnchor": 496.3618488888889,
+    "footBottom": 1175,
+    "maxFootAnchorDeviation": 0.46364968660964223,
+    "alphaThresholdApplied": false,
+    "pasteMethod": "RGBA direct paste without alpha mask",
+    "creativeImageChangesAfterGeneration": false
+  },
+  "review": "review.png",
+  "styleComparison": "style-comparison-native.png"
 }
