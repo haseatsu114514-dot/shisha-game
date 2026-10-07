@@ -20,7 +20,7 @@ export async function runCare(cs) {
   const panel = stepPanel("care", "熱管理 ── 最後の一口まで", "審査員が吸っている間も熱は動く。流れを読んで、一手ずつ打つ");
   let T = cs.pull?.temp ?? CENTER;
   const history = [T];
-  const clarity = skill.clarity();
+  const clarity = skill.clarity(cs);
   let good = 0;
 
   const chart = el("div.care-chart");

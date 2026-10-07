@@ -18,6 +18,10 @@
 }
 .bench-top { position: absolute; left: 0; right: 0; top: 0; height: 52px; display: flex; align-items: center; gap: 18px; padding: 0 22px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); background: rgba(0, 0, 0, 0.4); }
 .bench-mode { font-family: var(--font); font-weight: 700; font-size: 14px; letter-spacing: 0.3em; color: var(--accent); text-shadow: 0 0 12px var(--accent); }
+.bench-condition { position: absolute; left: 24px; top: 72px; z-index: 1; max-width: 370px; color: #ffd45c; font-size: 16px; }
+.bench-condition[data-health="green"] { color: #8ee6a8; }
+.bench-condition[data-health="red"] { color: #ff6969; }
+.bench-condition small { display: block; margin-top: 4px; color: var(--text-dim); font-size: 14px; }
 .bench-progress { display: flex; gap: 4px; }
 .bench-progress span { padding: 3px 10px; font-size: 13px; letter-spacing: 0.14em; color: rgba(255, 255, 255, 0.35); border: 1px solid rgba(255, 255, 255, 0.1); clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%); }
 .bench-progress span.seen { color: rgba(255, 255, 255, 0.7); }

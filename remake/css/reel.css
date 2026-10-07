@@ -136,8 +136,8 @@
 .sym-bell { --sprite-x: 856; --sprite-y: 51; --sprite-width: 349; --sprite-height: 368; --sprite-max: 368; }
 .sym-cherry { --symbol-size: 21px; --sprite-x: 46; --sprite-y: 478; --sprite-width: 375; --sprite-height: 349; --sprite-max: 375; }
 .sym-replay { --sprite-x: 484; --sprite-y: 469; --sprite-width: 283; --sprite-height: 361; --sprite-max: 361; }
-/* 抽選・リール配列のsmoke（ブランク）は、生成した炭3個の絵で表示する。 */
-.sym-smoke { --sprite-x: 95; --sprite-y: 787; --sprite-width: 454; --sprite-height: 346; --sprite-max: 454; }
+/* ブランクの炭は小さく薄く。小筐体・拡大盤とも当たり図柄を引き立てる。 */
+.sym-smoke { --symbol-size: 17px; --sprite-x: 95; --sprite-y: 787; --sprite-width: 454; --sprite-height: 346; --sprite-max: 454; opacity: 0.38; filter: grayscale(1); }
 .sym-pakki { --symbol-size: 23px; --sprite-x: 706; --sprite-y: 729; --sprite-width: 473; --sprite-height: 430; --sprite-max: 473; }
 /* 生成した透過ベゼルを、小筐体と拡大盤のどちらにも同じ比率で重ねる。 */
 .rw-machine::before {
