@@ -1,0 +1,11 @@
+{
+  "status": "internal superseded",
+  "reason": "The taller redraw improved detail but 49 alpha>=16 pixels touch the canvas border and the figures lack clean full-height gutters. Requesting layout correction.",
+  "sourceSha256": "05981cbcbc3e20b86646cbaed12ffaba2ead42684aaa4a2452a034755a947ed7",
+  "sourceSize": [
+    1633,
+    963
+  ],
+  "borderAlphaAtLeast16": 49,
+  "prompt": "prompt.txt"
+}
