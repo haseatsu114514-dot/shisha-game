@@ -1,3 +1,11 @@
+# 2026-10-07 最終更新：添付の服装と黒髪、通常／腹話術
+
+最新指示は、本人の髪を黒＋少量の青メッシュにし、添付で選んだ3案目の黒×淡い青の服装を保つこと（PRT61／62）。これを反映した通常と、王冠のコロちゃんを両手で顔の前へ上げて本人の顔を隠す腹話術を各1枚保存。[最新比較](../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/comparison.png)、[暗い背景](../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/comparison-dark.png)、[生成元・プロンプト・実参照・検証](../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/selected-outfit-black-hair-v3/README.md)。
+
+2枚の生成元は1024×1536 RGBA・無加工保存。確認用は896×1200・共通倍率0.607095046854083、足元下端1174px、足元横差0.061px未満。全身・原寸の顔／ぬいぐるみ・明暗背景を確認。従来の青衣装と銀髪の案は履歴として保持。参照一覧は29グループ112画像、既存のパスとSHA-256を保持。**衣装と髪色の方向は指定済み。仕上がりは確認用でゲーム内画像・設定は変更していない。** [PR #206](https://github.com/haseatsu114514-dot/shisha-game/pull/206) に4人の登場カットインと保存。
+
+---
+
 # 2026-10-07 最新：青ベースのシスターと腹話術
 
 オーナーが3案目を選び、主色を青へ直す指示と「サメのぬいぐるみで顔隠して喋ってる感じ」の追加ポーズを依頼。フード・ジャケット・スカートを青にした通常1枚と、コロちゃんを両手で顔の前へ持ち上げて本人の顔全体を隠した腹話術1枚を生成。[青版2枚の比較](../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/comparison.png)、[暗い背景](../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/comparison-dark.png)、[実参照・プロンプト・生成元・検証](../../../../asset_sources/portraits/kafuka-gothic-shark-concepts-v1/blue-sister-v1/README.md)。本人の青い瞳・ギザ歯・髪と成人の体格、王冠のコロちゃんを引き継ぐ。

@@ -1,5 +1,7 @@
 # サメちゃん：青ベースのストリートシスター
 
+**この版は履歴。最新の黒髪指定と添付の服装選択を反映した [通常／腹話術v3](../selected-outfit-black-hair-v3/README.md) を参照。**
+
 PRT59／60。オーナーは3案目を選び「青ベースのシスターがいい」と指定し、サメのぬいぐるみで顔を隠して喋る腹話術の立ち絵を追加依頼した。
 
 [通常と腹話術](comparison.png)／[暗い背景](comparison-dark.png)／[選択した3案目からの変更](selected-before-after.png)
