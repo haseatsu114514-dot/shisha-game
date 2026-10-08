@@ -201,6 +201,42 @@
 .st-badge { border-image-width: 5px; font-size: 17px; }
 .gc-title { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
 .gc-points { color: var(--gc); font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* 能力通知は数字を主役に。通常は1行、進化時だけ恩恵を添える。 */
+.gain-card.stat {
+  min-width: 190px;
+  max-width: 340px;
+  padding: 11px 14px;
+  gap: 10px;
+  align-items: flex-start;
+  background: #100b15;
+  border: 1px solid color-mix(in srgb, var(--gc) 45%, #302536);
+  border-left-width: 3px;
+  border-radius: 5px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.28);
+}
+.gain-card.stat::before, .gain-card.stat::after { content: none; }
+.gain-card.stat .gc-badge {
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-image: none;
+  color: var(--gc);
+  font-size: 18px;
+}
+.gain-card.stat .gc-meta { min-width: 0; gap: 3px; }
+.gain-card.stat .gc-title { gap: 14px; flex-wrap: nowrap; line-height: 26px; }
+.gain-card.stat .gc-main { font-size: 18px; text-shadow: none; }
+.gain-card.stat .gc-points { font-size: 20px; }
+.gain-card.stat .gc-evolution { font-size: 16px; line-height: 1.5; }
+.gain-card.stat .gc-fx {
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--text-dim);
+  background: none;
+}
 .stat-flight {
   position: absolute;
   left: -7px;
