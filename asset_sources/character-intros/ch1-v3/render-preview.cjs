@@ -15,12 +15,19 @@ function packageHTML(){
  const preview=fs.readFileSync(path.join(base,"preview.js"),"utf8").replace('import { motifs } from "./motifs.js";',fs.readFileSync(path.join(base,"motifs.js"),"utf8").replace("export const motifs","const motifs"));
  html=html.replace('<script type="module" src="preview.js"></script>',"<script>window.INTRO_CHARACTERS="+JSON.stringify(packed)+";</script><script type=\"module\">"+preview+"</script>");
  fs.writeFileSync(path.join(base,"mockup.html"),html);
- const cards=records.map(c=>'<a href="index.html?character='+c.id+'"><img src="'+c.id+'/preview.png" alt="'+c.name+'"></a>').join("");
+ const cards=records.map(c=>'<a href="index.html?character='+c.id+'" aria-label="'+(c.select_label||c.name)+'"><img src="'+c.id+'/preview.png" alt="'+(c.select_label||c.name)+'"></a>').join("");
  fs.writeFileSync(path.join(base,"gallery.html"),'<!doctype html><html lang="ja"><meta charset="utf-8"><title>一章 登場カット一覧</title><style>*{box-sizing:border-box}body{margin:0;background:#0b0f14}.grid{display:grid;grid-template-columns:repeat(3,640px);gap:0}a,img{display:block;width:640px;height:360px}</style><main class="grid">'+cards+"</main></html>");
  for(const style of ['geometric','illustrated']){
   const six=['adam','tsumugi','ageha','minto','kafuka','naru'].map(id=>'<img src="'+id+'/'+(style==='geometric'?'geometric':'illustrated')+'.png" alt="'+records.find(c=>c.id===id).name+'">').join('');
   fs.writeFileSync(path.join(base,style+'-six.html'),'<!doctype html><html lang="ja"><meta charset="utf-8"><title>6人の登場カット</title><style>body{margin:0;background:#0b0f14}.grid{display:grid;grid-template-columns:repeat(3,640px)}img{display:block;width:640px;height:360px}</style><main class="grid">'+six+'</main></html>');
  }
+ const comparisonCards=[
+  ['最初の初遭遇案（比較用）','first-unknown.png'],
+  ['今回の初遭遇版','../ageha_unknown/preview.png'],
+  ['最初の名乗り後案（比較用）','first-named.png'],
+  ['今回の第2章版・プロの顔','../ageha/preview.png']
+ ].map(([label,src])=>'<figure><figcaption>'+label+'</figcaption><img src="'+src+'" alt="'+label+'"></figure>').join('');
+ fs.writeFileSync(path.join(base,'ageha-comparison/index.html'),'<!doctype html><html lang="ja"><meta charset="utf-8"><title>アゲハの最初の案と今回の2版</title><style>*{box-sizing:border-box}body{margin:0;background:#0b0f14;color:#fff;font:700 18px sans-serif}.grid{display:grid;grid-template-columns:repeat(2,640px)}figure{margin:0}figcaption{height:48px;padding:12px 16px}img{display:block;width:640px;height:360px}</style><main class="grid">'+comparisonCards+'</main></html>');
 }
 function composition(){
  const out={};
@@ -32,6 +39,9 @@ function composition(){
 }
 (async()=>{
  packageHTML();
+ for(const old of JSON.parse(fs.readFileSync(path.join(base,'ageha-comparison/originals.json'),'utf8'))){
+  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(base,'ageha-comparison',old.file))).digest('hex'),old.sha256,'archived original changed: '+old.file);
+ }
  const server=spawn("python3",["-u","-m","http.server","8771","--bind","127.0.0.1"],{cwd:root,stdio:["ignore","pipe","pipe"]});
  await new Promise((resolve,reject)=>{server.stdout.on("data",b=>{if(b.toString().includes("Serving HTTP"))resolve()});server.on("exit",c=>reject(new Error("server exit "+c)))});
  const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_EXECUTABLE_PATH||"/usr/bin/chromium"});
@@ -43,6 +53,16 @@ function composition(){
   page.on("response",r=>{if(r.status()>=400&&!r.url().endsWith("favicon.ico"))errors.push(r.status()+" "+r.url())});
   await page.goto(url+"?video=1");await page.waitForFunction(()=>window.previewReady);
   for(const c of records){
+   assert.equal(c.full,'','parenthesized name is still in the current card: '+c.id);
+   if(c.id==='ageha_unknown'){
+    assert.equal(c.name,'？？？');assert.equal(c.expression,'normal');
+    assert.equal(c.line,'大丈夫？ ケガしてない？');
+    assert(!/バイブス|宵野|葉子/.test(c.name+c.full+c.title+c.line),'first encounter reveals identity');
+   }
+   if(c.id==='ageha'){
+    assert.equal(c.expression,'serious');assert.equal(c.line,'あたし超感覚派なんだよね〜');
+    assert.notEqual(c.portrait_sha256,records.find(v=>v.id==='ageha_unknown').portrait_sha256,'same expression in both versions');
+   }
    assert.equal(crypto.createHash("sha256").update(fs.readFileSync(path.join(root,c.portrait))).digest("hex"),c.portrait_sha256,"portrait changed: "+c.id);
    await page.evaluate(id=>window.introPreview.showCharacter(id,{play:false}),c.id);
    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
@@ -55,7 +75,7 @@ function composition(){
    assert.equal(check.text.name.text,c.name);assert.equal(check.text.title.text,c.title);
    assert.equal(check.text.quote.text,"「"+c.line+"」");
    assert.equal(check.text.quote.fontSize,'38px');assert(check.text.quote.height<=104,'quote exceeds two lines: '+c.id);
-   if(c.full){assert(check.text.full.x>=check.text.name.x+check.text.name.width,"full name before display name: "+c.id);assert(Math.abs(check.text.full.y+check.text.full.height-check.text.name.y-check.text.name.height)<35,"full name is not on same line: "+c.id)}
+   assert.equal(check.text.full.text,'','parenthesized name rendered: '+c.id);
    fs.mkdirSync(path.join(base,c.id),{recursive:true});
    await page.screenshot({path:path.join(base,c.id,"preview.png")});checks.push(check);
   }
@@ -96,6 +116,9 @@ function composition(){
   await page.goto(url+"gallery.html");await page.setViewportSize({width:1920,height:1800});
   await page.evaluate(()=>Promise.all([...document.images].map(i=>i.decode())));
   await page.screenshot({path:path.join(base,"comparison.png"),fullPage:true});
+  await page.setViewportSize({width:1280,height:816});await page.goto(url+'ageha-comparison/index.html');
+  await page.evaluate(()=>Promise.all([...document.images].map(i=>i.decode())));
+  await page.screenshot({path:path.join(base,'ageha-comparison/comparison.png'),fullPage:true});
   for(const style of ['geometric','illustrated']){
    await page.setViewportSize({width:1920,height:720});await page.goto(url+style+'-six.html');
    await page.evaluate(()=>Promise.all([...document.images].map(i=>i.decode())));
@@ -140,7 +163,7 @@ function composition(){
    assert.equal(encoded.status,0,encoded.stderr);fs.rmSync(dir,{recursive:true,force:true});
   }
   assert.deepEqual(errors,[]);
-  fs.writeFileSync(path.join(base,"render-validation.json"),JSON.stringify({canvas:[1280,720],characters:checks,illustratedComparisons:illustratedChecks,animationPhases,sourceHashesVerified:true,standaloneButtons:true,standaloneExternalRequests:external,mobileControlsFit:true,reducedMotionRespected:true,browserErrors:errors,videoGenerated:video,runtimeFilesChanged:false},null,2)+"\n");
+  fs.writeFileSync(path.join(base,"render-validation.json"),JSON.stringify({canvas:[1280,720],characters:checks,illustratedComparisons:illustratedChecks,animationPhases,sourceHashesVerified:true,standaloneButtons:true,standaloneExternalRequests:external,mobileControlsFit:true,reducedMotionRespected:true,browserErrors:errors,videoGenerated:video,runtimeFilesChanged:true,illustrationRuntimeConnected:false,allParenthesizedNamesRemoved:true,agehaExpressionsDiffer:true},null,2)+"\n");
   console.log("PASS: "+checks.length+" compositions, original portraits, Japanese copy, animation, standalone controls, mobile");
  }finally{await browser.close();server.kill()}
 })().catch(e=>{console.error(e);process.exitCode=1});

@@ -68,7 +68,7 @@ async function showCharacter(id,{play=true}={}){
  }
  // Keep the quote large; wrap naturally into at most two lines instead of shrinking.
  const quote=document.querySelector('#quote');quote.style.fontSize='38px';
- const preferredBreak={adam:c.line.indexOf('。')+1,minto:c.line.indexOf(' ')+1,sumi:c.line.indexOf('、')+1,naru:c.line.indexOf('全部'),pakki:c.line.indexOf(' ')+1}[c.id];
+ const preferredBreak={adam:c.line.indexOf('。')+1,minto:c.line.indexOf(' ')+1,sumi:c.line.indexOf('、')+1,naru:c.line.indexOf('全部'),pakki:c.line.indexOf(' ')+1,ageha_unknown:c.line.indexOf(' ')+1}[c.id];
  if(quote.offsetHeight>parseFloat(getComputedStyle(quote).lineHeight)+1&&preferredBreak>0){
   const first=document.createElement('span'),second=document.createElement('span');
   first.textContent='「'+c.line.slice(0,preferredBreak);second.textContent=c.line.slice(preferredBreak)+'」';
@@ -83,7 +83,7 @@ function scheduleLoop(){
  loopTimer=setTimeout(async()=>{if(!looping || paused)return;await showCharacter(records[(current+1)%records.length].id);scheduleLoop()},3900);
 }
 for(const c of records){
- const button=document.createElement("button");button.type="button";button.textContent=c.name;button.dataset.select=c.id;button.setAttribute("aria-pressed","false");
+ const button=document.createElement("button");button.type="button";button.textContent=c.select_label || c.name;button.dataset.select=c.id;button.setAttribute("aria-pressed","false");
  button.onclick=async()=>{await showCharacter(c.id);scheduleLoop()};document.querySelector("#character-buttons").append(button);
 }
 document.querySelector("#replay").onclick=()=>{startAnimation();scheduleLoop()};

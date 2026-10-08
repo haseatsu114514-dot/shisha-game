@@ -1,0 +1,73 @@
+[
+  {
+    "file": "first-named.png",
+    "label": "最初の名乗り後案（笑顔）",
+    "sha256": "0e9f9f00b01ea2e3ee2d886bd240d3dcbdef3dddb6332b4285e881b81ced22c0",
+    "original_record": {
+      "id": "ageha",
+      "name": "あげは",
+      "full": "宵野 葉子",
+      "title": "バイブスの天才",
+      "line": "カワイイは最強っしょ",
+      "expression": "smile",
+      "color": "#e956a5",
+      "secondary": "#ffd7eb",
+      "shadow": "#3b0829",
+      "motif": "butterfly",
+      "motif_label": "クマ・グミベア・肉球",
+      "portrait": "assets/sprites/characters/ageha/chr_ageha_smile.png",
+      "frame": {
+        "width": 1051.946,
+        "left": -273.631,
+        "top": -202.68
+      },
+      "portrait_sha256": "91f2f98000a1b7e79c102bf4db031fb5bc48f5cc2b330d808d3f419bc249bc84",
+      "portrait_authority": "採用済みゲーム立ち絵",
+      "caption_source": "data/characters.json: ageha.intro_cutin",
+      "name_layout": "呼び名の後ろに小さな括弧。本名は同じ行、別名非開示の人物は省略。",
+      "backgrounds": {
+        "illustrated": {
+          "src": "asset_sources/character-intros/ch1-v3/backgrounds/ageha/source.png",
+          "sha256": "96cc87c98884e12cc1cc81aa8272e47b8f0bb52cd6693f7d62097715b3c89046"
+        }
+      },
+      "scope_note": "DAY4は正体を伏せた顔見せ。本画像は名乗り後の紹介候補として保存し、DAY4へ接続しない。"
+    }
+  },
+  {
+    "file": "first-unknown.png",
+    "label": "最初の初遭遇案（笑顔・修正前の一言）",
+    "sha256": "2ff21a7008760f474f3907f3a40cd67ec3de6eb1de3d99fe9c10621805b72b34",
+    "original_record": {
+      "id": "ageha_unknown",
+      "name": "？？？",
+      "full": "",
+      "title": "実在したオタクに優しいギャル",
+      "line": "好きなものの話、もっと聞かせてよ",
+      "expression": "smile",
+      "color": "#e956a5",
+      "secondary": "#ffd7eb",
+      "shadow": "#3b0829",
+      "motif": "butterfly",
+      "motif_label": "クマ・グミベア・肉球",
+      "portrait": "assets/sprites/characters/ageha/chr_ageha_smile.png",
+      "frame": {
+        "width": 1051.946,
+        "left": -273.631,
+        "top": -202.68
+      },
+      "portrait_sha256": "91f2f98000a1b7e79c102bf4db031fb5bc48f5cc2b330d808d3f419bc249bc84",
+      "portrait_authority": "採用済みゲーム立ち絵",
+      "caption_source": "data/characters.json: ageha.intro_cutin_unknown",
+      "name_layout": "呼び名の後ろに小さな括弧。本名は同じ行、別名非開示の人物は省略。",
+      "backgrounds": {
+        "illustrated": {
+          "src": "asset_sources/character-intros/ch1-v3/backgrounds/ageha/source.png",
+          "sha256": "96cc87c98884e12cc1cc81aa8272e47b8f0bb52cd6693f7d62097715b3c89046"
+        }
+      },
+      "select_label": "？？？（初遭遇）",
+      "scope_note": "第1章DAY4の初遭遇用。名前・本名・バイブスの肩書きは開示しない。"
+    }
+  }
+]

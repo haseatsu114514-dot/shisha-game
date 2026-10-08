@@ -2,6 +2,7 @@
 import hashlib
 import json
 from pathlib import Path
+from copy import deepcopy
 from PIL import Image
 
 base = Path(__file__).resolve().parent
@@ -38,17 +39,10 @@ def names(c):
  paren = re.search("（([^）]*)）", raw)
  inner = paren[1].split(" / ") if paren else []
  outer = re.sub("（[^）]*）", "", raw).split(" / ")
- full = outer[1] if len(outer) > 1 else outer[0]
  main = c.get("display_name") or (outer[0] if len(outer) > 1 else inner[1] if len(inner) > 1 else outer[0].replace(" ", ""))
- hide = c.get("intro_cutin", {}).get("name") == "alias" or main.replace(" ", "") == full.replace(" ", "")
- return main.strip(), "" if hide else full.strip()
+ return main.strip(), ""
 
-records = []
-for cid, (accent, secondary, motif, label) in palette.items():
- c = master[cid]
- intro = c.get("intro_cutin") or previous[cid]
- name, full = names(c)
- face = intro.get("face", intro.get("expression", "normal"))
+def portrait_meta(cid, face):
  folder = "minto" if cid == "oneesan" else cid
  source = root / "assets/sprites/characters" / folder / ("chr_" + folder + "_" + face + ".png")
  authority = "採用済みゲーム立ち絵"
@@ -71,12 +65,20 @@ for cid, (accent, secondary, motif, label) in palette.items():
            "top": round((100 if cid == "pakki" else 38) - bounds[1] * scale, 3)}
   if cid in ("hajime", "sumi", "tsumugi"):
    frame["left"] = round(frame["left"] - 36, 3)
+ return {"portrait": str(source.relative_to(root)), "frame": frame,
+         "portrait_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+         "portrait_authority": authority}
+
+records = []
+for cid, (accent, secondary, motif, label) in palette.items():
+ c = master[cid]
+ intro = c.get("intro_cutin") or previous[cid]
+ name, full = names(c)
+ face = intro.get("face", intro.get("expression", "normal"))
  record = {"id": cid, "name": name, "full": full, "title": intro["title"], "line": intro["line"],
            "expression": face, "color": accent, "secondary": secondary, "shadow": shadows[cid], "motif": motif, "motif_label": label,
-           "portrait": str(source.relative_to(root)), "frame": frame,
-           "portrait_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
-           "portrait_authority": authority, "caption_source": "data/characters.json: " + cid + ".intro_cutin"}
- record["name_layout"] = "呼び名の後ろに小さな括弧。本名は同じ行、別名非開示の人物は省略。"
+           **portrait_meta(cid, face), "caption_source": "data/characters.json: " + cid + ".intro_cutin"}
+ record["name_layout"] = "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。"
  variants = {}
  for style, filename in (("geometric", "geometric.png"), ("illustrated", "source.png")):
   image_path = base / "backgrounds" / cid / filename
@@ -88,9 +90,16 @@ for cid, (accent, secondary, motif, label) in palette.items():
  if cid == "kafuka":
   record["caption_source"] = "data/dialogue/kafuka.json: profile.intro_cutin"
  if cid == "hajime":
-  record.update(name="はじめ", full="蒸野 始", caption_source="前回モックアップの提示案。ゲームの台詞・設定は変更しない")
+  record.update(name="はじめ", full="", caption_source="前回モックアップの提示案。ゲームの台詞・設定は変更しない")
  if cid == "ageha":
-  record["scope_note"] = "DAY4は正体を伏せた顔見せ。本画像は名乗り後の紹介候補として保存し、DAY4へ接続しない。"
+  first = c["intro_cutin_unknown"]
+  unknown = deepcopy(record)
+  unknown.update(id="ageha_unknown", name=first["display_name"], full="", title=first["title"], line=first["line"],
+                 expression=first["face"], **portrait_meta(cid, first["face"]),
+                 caption_source="data/characters.json: ageha.intro_cutin_unknown",
+                 select_label="？？？（初遭遇）", scope_note="第1章DAY4・買い出しの帰りに荷物を拾ってもらう初遭遇。名前・本名・バイブスは開示しない。")
+  records.append(unknown)
+  record.update(select_label="あげは（第2章）", scope_note="第2章の名乗り後。プロとしてのserious表情。初遭遇版とは別素材。")
  records.append(record)
 (base / "characters.json").write_text(json.dumps(records, ensure_ascii=False, indent=2) + "\n")
 print("Prepared " + str(len(records)) + " original-portrait compositions")
