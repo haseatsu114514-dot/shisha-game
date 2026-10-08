@@ -18,7 +18,7 @@ function packageHTML(){
  const cards=records.map(c=>'<a href="index.html?character='+c.id+'"><img src="'+c.id+'/preview.png" alt="'+c.name+'"></a>').join("");
  fs.writeFileSync(path.join(base,"gallery.html"),'<!doctype html><html lang="ja"><meta charset="utf-8"><title>一章 登場カット一覧</title><style>*{box-sizing:border-box}body{margin:0;background:#0b0f14}.grid{display:grid;grid-template-columns:repeat(3,640px);gap:0}a,img{display:block;width:640px;height:360px}</style><main class="grid">'+cards+"</main></html>");
  for(const style of ['geometric','illustrated']){
-  const six=['adam','tsumugi','ageha','minto','kafuka','naru'].map(id=>'<img src="'+id+'/'+(style==='geometric'?'preview':'illustrated')+'.png" alt="'+records.find(c=>c.id===id).name+'">').join('');
+  const six=['adam','tsumugi','ageha','minto','kafuka','naru'].map(id=>'<img src="'+id+'/'+(style==='geometric'?'geometric':'illustrated')+'.png" alt="'+records.find(c=>c.id===id).name+'">').join('');
   fs.writeFileSync(path.join(base,style+'-six.html'),'<!doctype html><html lang="ja"><meta charset="utf-8"><title>6人の登場カット</title><style>body{margin:0;background:#0b0f14}.grid{display:grid;grid-template-columns:repeat(3,640px)}img{display:block;width:640px;height:360px}</style><main class="grid">'+six+'</main></html>');
  }
 }
@@ -54,11 +54,18 @@ function composition(){
    assert(check.portraitLoaded&&check.portraitFilter==="none"&&!check.englishTagPresent,"portrait/tag: "+c.id);
    assert.equal(check.text.name.text,c.name);assert.equal(check.text.title.text,c.title);
    assert.equal(check.text.quote.text,"「"+c.line+"」");
+   assert.equal(check.text.quote.fontSize,'38px');assert(check.text.quote.height<=104,'quote exceeds two lines: '+c.id);
    if(c.full){assert(check.text.full.x>=check.text.name.x+check.text.name.width,"full name before display name: "+c.id);assert(Math.abs(check.text.full.y+check.text.full.height-check.text.name.y-check.text.name.height)<35,"full name is not on same line: "+c.id)}
    fs.mkdirSync(path.join(base,c.id),{recursive:true});
    await page.screenshot({path:path.join(base,c.id,"preview.png")});checks.push(check);
   }
   const illustrated = records.filter(c=>c.backgrounds?.illustrated);
+  await page.evaluate(()=>window.introPreview.setBackgroundStyle('geometric',{play:false}));
+  for(const c of illustrated){
+   await page.evaluate(id=>window.introPreview.showCharacter(id,{play:false}),c.id);
+   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+   await page.screenshot({path:path.join(base,c.id,'geometric.png')});
+  }
   for(const c of illustrated){
    assert.equal(crypto.createHash("sha256").update(fs.readFileSync(path.join(root,c.backgrounds.illustrated.src))).digest("hex"),c.backgrounds.illustrated.sha256,"background changed: "+c.id);
    await page.evaluate(id=>window.introPreview.showCharacter(id,{play:false}),c.id);
@@ -73,7 +80,7 @@ function composition(){
   }
   await page.evaluate(()=>window.introPreview.setBackgroundStyle("geometric",{play:false}));
   if(illustrated.length){
-   const rows=illustrated.map(c=>'<img src="'+c.id+'/preview.png" alt="'+c.name+' 幾何学"><img src="'+c.id+'/illustrated.png" alt="'+c.name+' イラスト">').join("");
+   const rows=illustrated.map(c=>'<img src="'+c.id+'/geometric.png" alt="'+c.name+' 幾何学"><img src="'+c.id+'/illustrated.png" alt="'+c.name+' イラスト">').join("");
    fs.writeFileSync(path.join(base,"styles.html"),'<!doctype html><html lang="ja"><meta charset="utf-8"><title>幾何学とイラストの比較</title><style>body{margin:0;background:#0b0f14}.grid{display:grid;grid-template-columns:repeat(2,640px)}img{width:640px;height:360px;display:block}</style><main class="grid">'+rows+"</main></html>");
   }
   for(const c of ["adam","kafuka"]){

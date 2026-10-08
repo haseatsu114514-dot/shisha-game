@@ -9,10 +9,10 @@
       "text": {
         "title": {
           "text": "tonariの新人",
-          "x": 635.5848999023438,
-          "y": 196.25746154785156,
-          "width": 162.7122802734375,
-          "height": 51.08540344238281,
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 190.20452880859375,
+          "height": 60.94932556152344,
           "font": "\"Intro Gothic\", sans-serif",
           "fontSize": "28px"
         },
@@ -37,11 +37,11 @@
         "quote": {
           "text": "「いつか自分の店を持ちたい」",
           "x": 634,
-          "y": 572,
+          "y": 556,
           "width": 580,
-          "height": 40.59375,
+          "height": 51.671875,
           "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
+          "fontSize": "38px"
         }
       },
       "portraitLoaded": true,
@@ -54,10 +54,10 @@
       "text": {
         "title": {
           "text": "表舞台を降りた名人",
-          "x": 635.5848999023438,
-          "y": 196.25746154785156,
-          "width": 246.64794921875,
-          "height": 56.95475769042969,
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 274.14013671875,
+          "height": 66.81867980957031,
           "font": "\"Intro Gothic\", sans-serif",
           "fontSize": "28px"
         },
@@ -82,11 +82,11 @@
         "quote": {
           "text": "「客が満足したなら、それでいい」",
           "x": 634,
-          "y": 572,
+          "y": 556,
           "width": 580,
-          "height": 40.59375,
+          "height": 51.671875,
           "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
+          "fontSize": "38px"
         }
       },
       "portraitLoaded": true,
@@ -94,548 +94,6 @@
       "englishTagPresent": false,
       "animations": 0
     },
-    {
-      "id": "tsumugi",
-      "text": {
-        "title": {
-          "text": "tonariの常連イラストレーター",
-          "x": 635.5848999023438,
-          "y": 196.25746154785156,
-          "width": 378.903076171875,
-          "height": 66.20292663574219,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        },
-        "name": {
-          "text": "つむぎ",
-          "x": 606.011962890625,
-          "y": 268.5735778808594,
-          "width": 402.7911376953125,
-          "height": 177.7352294921875,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "150px"
-        },
-        "full": {
-          "text": "",
-          "x": 0,
-          "y": 0,
-          "width": 0,
-          "height": 0,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "20px"
-        },
-        "quote": {
-          "text": "「……煙って、形がないから」",
-          "x": 634,
-          "y": 572,
-          "width": 580,
-          "height": 40.59375,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        }
-      },
-      "portraitLoaded": true,
-      "portraitFilter": "none",
-      "englishTagPresent": false,
-      "animations": 0
-    },
-    {
-      "id": "oneesan",
-      "text": {
-        "title": {
-          "text": "静かな煙を楽しむ常連",
-          "x": 635.5848999023438,
-          "y": 196.25746154785156,
-          "width": 273.738037109375,
-          "height": 58.84907531738281,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        },
-        "name": {
-          "text": "お姉さん",
-          "x": 606.011962890625,
-          "y": 268.5735778808594,
-          "width": 524.3990478515625,
-          "height": 186.2388916015625,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "150px"
-        },
-        "full": {
-          "text": "",
-          "x": 0,
-          "y": 0,
-          "width": 0,
-          "height": 0,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "20px"
-        },
-        "quote": {
-          "text": "「……お任せで、一台」",
-          "x": 634,
-          "y": 572,
-          "width": 580,
-          "height": 40.59375,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        }
-      },
-      "portraitLoaded": true,
-      "portraitFilter": "none",
-      "englishTagPresent": false,
-      "animations": 0
-    },
-    {
-      "id": "naru",
-      "text": {
-        "title": {
-          "text": "地元最強の好敵手",
-          "x": 635.5848999023438,
-          "y": 196.25746154785156,
-          "width": 219.542236328125,
-          "height": 55.05934143066406,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        },
-        "name": {
-          "text": "なる",
-          "x": 606.011962890625,
-          "y": 268.5735778808594,
-          "width": 281.18310546875,
-          "height": 169.2315673828125,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "150px"
-        },
-        "full": {
-          "text": "（鳴切 亮太）",
-          "x": 890.0711059570312,
-          "y": 401.19061279296875,
-          "width": 126.01043701171875,
-          "height": 34.621337890625,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "20px"
-        },
-        "quote": {
-          "text": "「うまくなりたいなら全部見てけ」",
-          "x": 634,
-          "y": 572,
-          "width": 580,
-          "height": 40.59375,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        }
-      },
-      "portraitLoaded": true,
-      "portraitFilter": "none",
-      "englishTagPresent": false,
-      "animations": 0
-    },
-    {
-      "id": "adam",
-      "text": {
-        "title": {
-          "text": "ダブルアップルの伝道師",
-          "x": 635.5848999023438,
-          "y": 196.25746154785156,
-          "width": 300.828125,
-          "height": 60.74339294433594,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        },
-        "name": {
-          "text": "アダム",
-          "x": 606.011962890625,
-          "y": 268.5735778808594,
-          "width": 402.7911376953125,
-          "height": 177.7352294921875,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "150px"
-        },
-        "full": {
-          "text": "（吾妻 大夢）",
-          "x": 1011.0257568359375,
-          "y": 409.6485900878906,
-          "width": 126.0103759765625,
-          "height": 34.621337890625,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "20px"
-        },
-        "quote": {
-          "text": "「煙は二種類。ダブルアップルと、それ以外だ」",
-          "x": 634,
-          "y": 572,
-          "width": 580,
-          "height": 37.6875,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "26px"
-        }
-      },
-      "portraitLoaded": true,
-      "portraitFilter": "none",
-      "englishTagPresent": false,
-      "animations": 0
-    },
-    {
-      "id": "minto",
-      "text": {
-        "title": {
-          "text": "ぺぱーみんと人気No.1キャスト",
-          "x": 635.5848999023438,
-          "y": 196.25746154785156,
-          "width": 388.0526123046875,
-          "height": 66.84272766113281,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        },
-        "name": {
-          "text": "みんと",
-          "x": 606.011962890625,
-          "y": 268.5735778808594,
-          "width": 402.7911376953125,
-          "height": 177.7352294921875,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "150px"
-        },
-        "full": {
-          "text": "",
-          "x": 0,
-          "y": 0,
-          "width": 0,
-          "height": 0,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "20px"
-        },
-        "quote": {
-          "text": "「みんとでーす♪ 全員まとめてライバルね？」",
-          "x": 634,
-          "y": 572,
-          "width": 580,
-          "height": 39.140625,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "27px"
-        }
-      },
-      "portraitLoaded": true,
-      "portraitFilter": "none",
-      "englishTagPresent": false,
-      "animations": 0
-    },
-    {
-      "id": "rin",
-      "text": {
-        "title": {
-          "text": "問屋街の魔女",
-          "x": 635.5848999023438,
-          "y": 196.25746154785156,
-          "width": 165.362060546875,
-          "height": 51.27069091796875,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        },
-        "name": {
-          "text": "凛",
-          "x": 606.011962890625,
-          "y": 268.5735778808594,
-          "width": 159.57501220703125,
-          "height": 160.7279052734375,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "150px"
-        },
-        "full": {
-          "text": "（匂坂 凛）",
-          "x": 768.24365234375,
-          "y": 392.6716003417969,
-          "width": 106.05908203125,
-          "height": 33.226226806640625,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "20px"
-        },
-        "quote": {
-          "text": "「ようこそ、夜の側へ」",
-          "x": 634,
-          "y": 572,
-          "width": 580,
-          "height": 40.59375,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        }
-      },
-      "portraitLoaded": true,
-      "portraitFilter": "none",
-      "englishTagPresent": false,
-      "animations": 0
-    },
-    {
-      "id": "kafuka",
-      "text": {
-        "title": {
-          "text": "サメの王の側近",
-          "x": 635.5848999023438,
-          "y": 196.25746154785156,
-          "width": 192.4521484375,
-          "height": 53.165008544921875,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        },
-        "name": {
-          "text": "サメちゃん",
-          "x": 606.5186767578125,
-          "y": 270.6056823730469,
-          "width": 628.7740478515625,
-          "height": 189.54415893554688,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "146px"
-        },
-        "full": {
-          "text": "",
-          "x": 0,
-          "y": 0,
-          "width": 0,
-          "height": 0,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "20px"
-        },
-        "quote": {
-          "text": "「お主、サメは好きか？」",
-          "x": 634,
-          "y": 572,
-          "width": 580,
-          "height": 40.59375,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        }
-      },
-      "portraitLoaded": true,
-      "portraitFilter": "none",
-      "englishTagPresent": false,
-      "animations": 0
-    },
-    {
-      "id": "nagumo",
-      "text": {
-        "title": {
-          "text": "C.STATION会長・審査員長",
-          "x": 635.5848999023438,
-          "y": 196.25746154785156,
-          "width": 329.710693359375,
-          "height": 62.76307678222656,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        },
-        "name": {
-          "text": "南雲修二",
-          "x": 606.011962890625,
-          "y": 268.5735778808594,
-          "width": 524.3990478515625,
-          "height": 186.2388916015625,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "150px"
-        },
-        "full": {
-          "text": "",
-          "x": 0,
-          "y": 0,
-          "width": 0,
-          "height": 0,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "20px"
-        },
-        "quote": {
-          "text": "「吸えば分かる」",
-          "x": 634,
-          "y": 572,
-          "width": 580,
-          "height": 40.59375,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        }
-      },
-      "portraitLoaded": true,
-      "portraitFilter": "none",
-      "englishTagPresent": false,
-      "animations": 0
-    },
-    {
-      "id": "maezono",
-      "text": {
-        "title": {
-          "text": "HOOKAH PRESS編集長",
-          "x": 635.5848999023438,
-          "y": 196.25746154785156,
-          "width": 291.2733154296875,
-          "height": 60.07527160644531,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        },
-        "name": {
-          "text": "前園壮一郎",
-          "x": 606.5186767578125,
-          "y": 270.6056823730469,
-          "width": 628.7740478515625,
-          "height": 189.54415893554688,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "146px"
-        },
-        "full": {
-          "text": "",
-          "x": 0,
-          "y": 0,
-          "width": 0,
-          "height": 0,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "20px"
-        },
-        "quote": {
-          "text": "「シーシャはおいしいねえ」",
-          "x": 634,
-          "y": 572,
-          "width": 580,
-          "height": 40.59375,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        }
-      },
-      "portraitLoaded": true,
-      "portraitFilter": "none",
-      "englishTagPresent": false,
-      "animations": 0
-    },
-    {
-      "id": "dr_kemuri",
-      "text": {
-        "title": {
-          "text": "データの鬼",
-          "x": 635.5848999023438,
-          "y": 196.25746154785156,
-          "width": 138.27197265625,
-          "height": 49.37635803222656,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        },
-        "name": {
-          "text": "チャコール博士",
-          "x": 614.489501953125,
-          "y": 302.5650939941406,
-          "width": 491.3193359375,
-          "height": 117.11264038085938,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "83px"
-        },
-        "full": {
-          "text": "（炭場 創）",
-          "x": 1112.32568359375,
-          "y": 387.1601257324219,
-          "width": 106.05908203125,
-          "height": 33.2261962890625,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "20px"
-        },
-        "quote": {
-          "text": "「データは嘘をつきません」",
-          "x": 634,
-          "y": 572,
-          "width": 580,
-          "height": 40.59375,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        }
-      },
-      "portraitLoaded": true,
-      "portraitFilter": "none",
-      "englishTagPresent": false,
-      "animations": 0
-    },
-    {
-      "id": "pakki",
-      "text": {
-        "title": {
-          "text": "大会名物MC兼マスコット",
-          "x": 635.5848999023438,
-          "y": 196.25746154785156,
-          "width": 314.21728515625,
-          "height": 61.67967224121094,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        },
-        "name": {
-          "text": "パッキー",
-          "x": 606.011962890625,
-          "y": 268.5735778808594,
-          "width": 524.3990478515625,
-          "height": 186.2388916015625,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "150px"
-        },
-        "full": {
-          "text": "",
-          "x": 0,
-          "y": 0,
-          "width": 0,
-          "height": 0,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "20px"
-        },
-        "quote": {
-          "text": "「ぷぷぷっ！ 会場は満席御礼ッ！」",
-          "x": 634,
-          "y": 572,
-          "width": 580,
-          "height": 40.59375,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        }
-      },
-      "portraitLoaded": true,
-      "portraitFilter": "none",
-      "englishTagPresent": false,
-      "animations": 0
-    },
-    {
-      "id": "ageha",
-      "text": {
-        "title": {
-          "text": "バイブスの天才",
-          "x": 635.5848999023438,
-          "y": 196.25746154785156,
-          "width": 192.4521484375,
-          "height": 53.165008544921875,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        },
-        "name": {
-          "text": "あげは",
-          "x": 606.011962890625,
-          "y": 268.5735778808594,
-          "width": 402.7911376953125,
-          "height": 177.7352294921875,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "150px"
-        },
-        "full": {
-          "text": "（宵野 葉子）",
-          "x": 1011.0257568359375,
-          "y": 409.6485900878906,
-          "width": 126.0103759765625,
-          "height": 34.621337890625,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "20px"
-        },
-        "quote": {
-          "text": "「カワイイは最強っしょ」",
-          "x": 634,
-          "y": 572,
-          "width": 580,
-          "height": 40.59375,
-          "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
-        }
-      },
-      "portraitLoaded": true,
-      "portraitFilter": "none",
-      "englishTagPresent": false,
-      "animations": 0
-    }
-  ],
-  "illustratedComparisons": [
     {
       "id": "tsumugi",
       "text": {
@@ -669,11 +127,703 @@
         "quote": {
           "text": "「……煙って、形がないから」",
           "x": 634,
-          "y": 572,
+          "y": 556,
           "width": 580,
-          "height": 40.59375,
+          "height": 51.671875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0
+    },
+    {
+      "id": "oneesan",
+      "text": {
+        "title": {
+          "text": "静かな煙を楽しむ常連",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 301.23028564453125,
+          "height": 68.71299743652344,
           "font": "\"Intro Gothic\", sans-serif",
           "fontSize": "28px"
+        },
+        "name": {
+          "text": "お姉さん",
+          "x": 606.011962890625,
+          "y": 268.5735778808594,
+          "width": 524.3990478515625,
+          "height": 186.2388916015625,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "150px"
+        },
+        "full": {
+          "text": "",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「……お任せで、一台」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 51.671875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0
+    },
+    {
+      "id": "naru",
+      "text": {
+        "title": {
+          "text": "地元最強の好敵手",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 247.03448486328125,
+          "height": 64.92326354980469,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "28px"
+        },
+        "name": {
+          "text": "なる",
+          "x": 606.011962890625,
+          "y": 268.5735778808594,
+          "width": 281.18310546875,
+          "height": 169.2315673828125,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "150px"
+        },
+        "full": {
+          "text": "（鳴切 亮太）",
+          "x": 890.0711059570312,
+          "y": 401.19061279296875,
+          "width": 126.01043701171875,
+          "height": 34.621337890625,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「うまくなりたいなら全部見てけ」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 51.671875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0
+    },
+    {
+      "id": "adam",
+      "text": {
+        "title": {
+          "text": "ダブルアップルの伝道師",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 328.32037353515625,
+          "height": 70.60731506347656,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "28px"
+        },
+        "name": {
+          "text": "アダム",
+          "x": 606.011962890625,
+          "y": 268.5735778808594,
+          "width": 402.7911376953125,
+          "height": 177.7352294921875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "150px"
+        },
+        "full": {
+          "text": "（吾妻 大夢）",
+          "x": 1011.0257568359375,
+          "y": 409.6485900878906,
+          "width": 126.0103759765625,
+          "height": 34.621337890625,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「煙は二種類。ダブルアップルと、それ以外だ」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 103.34375,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0
+    },
+    {
+      "id": "minto",
+      "text": {
+        "title": {
+          "text": "ぺぱーみんと人気No.1キャスト",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 415.544921875,
+          "height": 76.70664978027344,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "28px"
+        },
+        "name": {
+          "text": "みんと",
+          "x": 606.011962890625,
+          "y": 268.5735778808594,
+          "width": 402.7911376953125,
+          "height": 177.7352294921875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "150px"
+        },
+        "full": {
+          "text": "",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「みんとでーす♪ 全員まとめてライバルね？」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 103.34375,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0
+    },
+    {
+      "id": "rin",
+      "text": {
+        "title": {
+          "text": "問屋街の魔女",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 192.85430908203125,
+          "height": 61.134613037109375,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "28px"
+        },
+        "name": {
+          "text": "凛",
+          "x": 606.011962890625,
+          "y": 268.5735778808594,
+          "width": 159.57501220703125,
+          "height": 160.7279052734375,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "150px"
+        },
+        "full": {
+          "text": "（匂坂 凛）",
+          "x": 768.24365234375,
+          "y": 392.6716003417969,
+          "width": 106.05908203125,
+          "height": 33.226226806640625,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「ようこそ、夜の側へ」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 51.671875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0
+    },
+    {
+      "id": "kafuka",
+      "text": {
+        "title": {
+          "text": "サメの王の側近",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 219.94439697265625,
+          "height": 63.02894592285156,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "28px"
+        },
+        "name": {
+          "text": "サメちゃん",
+          "x": 606.5186767578125,
+          "y": 270.6056823730469,
+          "width": 628.7740478515625,
+          "height": 189.54415893554688,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "146px"
+        },
+        "full": {
+          "text": "",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「お主、サメは好きか？」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 51.671875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0
+    },
+    {
+      "id": "nagumo",
+      "text": {
+        "title": {
+          "text": "C.STATION会長・審査員長",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 357.20294189453125,
+          "height": 72.62699890136719,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "28px"
+        },
+        "name": {
+          "text": "南雲修二",
+          "x": 606.011962890625,
+          "y": 268.5735778808594,
+          "width": 524.3990478515625,
+          "height": 186.2388916015625,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "150px"
+        },
+        "full": {
+          "text": "",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「吸えば分かる」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 51.671875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0
+    },
+    {
+      "id": "maezono",
+      "text": {
+        "title": {
+          "text": "HOOKAH PRESS編集長",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 318.76556396484375,
+          "height": 69.93919372558594,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "28px"
+        },
+        "name": {
+          "text": "前園壮一郎",
+          "x": 606.5186767578125,
+          "y": 270.6056823730469,
+          "width": 628.7740478515625,
+          "height": 189.54415893554688,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "146px"
+        },
+        "full": {
+          "text": "",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「シーシャはおいしいねえ」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 51.671875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0
+    },
+    {
+      "id": "dr_kemuri",
+      "text": {
+        "title": {
+          "text": "データの鬼",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 165.76416015625,
+          "height": 59.24029541015625,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "28px"
+        },
+        "name": {
+          "text": "チャコール博士",
+          "x": 614.489501953125,
+          "y": 302.5650939941406,
+          "width": 491.3193359375,
+          "height": 117.11264038085938,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "83px"
+        },
+        "full": {
+          "text": "（炭場 創）",
+          "x": 1112.32568359375,
+          "y": 387.1601257324219,
+          "width": 106.05908203125,
+          "height": 33.2261962890625,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「データは嘘をつきません」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 51.671875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0
+    },
+    {
+      "id": "pakki",
+      "text": {
+        "title": {
+          "text": "大会名物MC兼マスコット",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 341.70953369140625,
+          "height": 71.54359436035156,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "28px"
+        },
+        "name": {
+          "text": "パッキー",
+          "x": 606.011962890625,
+          "y": 268.5735778808594,
+          "width": 524.3990478515625,
+          "height": 186.2388916015625,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "150px"
+        },
+        "full": {
+          "text": "",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「ぷぷぷっ！ 会場は満席御礼ッ！」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 103.34375,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0
+    },
+    {
+      "id": "ageha",
+      "text": {
+        "title": {
+          "text": "バイブスの天才",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 219.94439697265625,
+          "height": 63.02894592285156,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "28px"
+        },
+        "name": {
+          "text": "あげは",
+          "x": 606.011962890625,
+          "y": 268.5735778808594,
+          "width": 402.7911376953125,
+          "height": 177.7352294921875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "150px"
+        },
+        "full": {
+          "text": "（宵野 葉子）",
+          "x": 1011.0257568359375,
+          "y": 409.6485900878906,
+          "width": 126.0103759765625,
+          "height": 34.621337890625,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「カワイイは最強っしょ」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 51.671875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0
+    }
+  ],
+  "illustratedComparisons": [
+    {
+      "id": "hajime",
+      "text": {
+        "title": {
+          "text": "tonariの新人",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 190.20452880859375,
+          "height": 60.94932556152344,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "28px"
+        },
+        "name": {
+          "text": "はじめ",
+          "x": 606.011962890625,
+          "y": 268.5735778808594,
+          "width": 402.7911376953125,
+          "height": 177.7352294921875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "150px"
+        },
+        "full": {
+          "text": "（蒸野 始）",
+          "x": 1011.0257568359375,
+          "y": 409.6485900878906,
+          "width": 106.05908203125,
+          "height": 33.2261962890625,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「いつか自分の店を持ちたい」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 51.671875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0,
+      "legibility": {
+        "veil": "block",
+        "titleBackground": "rgba(16, 24, 32, 0.93)",
+        "portraitFilter": "none"
+      }
+    },
+    {
+      "id": "sumi",
+      "text": {
+        "title": {
+          "text": "表舞台を降りた名人",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 274.14013671875,
+          "height": 66.81867980957031,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "28px"
+        },
+        "name": {
+          "text": "スミさん",
+          "x": 608.417236328125,
+          "y": 278.2106018066406,
+          "width": 457.968017578125,
+          "height": 162.6402587890625,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "131px"
+        },
+        "full": {
+          "text": "（墨田 丈一郎）",
+          "x": 1069.863037109375,
+          "y": 405.5240783691406,
+          "width": 145.961669921875,
+          "height": 36.016448974609375,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「客が満足したなら、それでいい」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 51.671875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0,
+      "legibility": {
+        "veil": "block",
+        "titleBackground": "rgba(16, 24, 32, 0.93)",
+        "portraitFilter": "none"
+      }
+    },
+    {
+      "id": "tsumugi",
+      "text": {
+        "title": {
+          "text": "tonariの常連イラストレーター",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 406.3953857421875,
+          "height": 76.06684875488281,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "28px"
+        },
+        "name": {
+          "text": "つむぎ",
+          "x": 606.011962890625,
+          "y": 268.5735778808594,
+          "width": 402.7911376953125,
+          "height": 177.7352294921875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "150px"
+        },
+        "full": {
+          "text": "",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「……煙って、形がないから」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 51.671875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0,
+      "legibility": {
+        "veil": "block",
+        "titleBackground": "rgba(16, 24, 32, 0.93)",
+        "portraitFilter": "none"
+      }
+    },
+    {
+      "id": "oneesan",
+      "text": {
+        "title": {
+          "text": "静かな煙を楽しむ常連",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 301.23028564453125,
+          "height": 68.71299743652344,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "28px"
+        },
+        "name": {
+          "text": "お姉さん",
+          "x": 606.011962890625,
+          "y": 268.5735778808594,
+          "width": 524.3990478515625,
+          "height": 186.2388916015625,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "150px"
+        },
+        "full": {
+          "text": "",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「……お任せで、一台」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 51.671875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
         }
       },
       "portraitLoaded": true,
@@ -719,11 +869,11 @@
         "quote": {
           "text": "「うまくなりたいなら全部見てけ」",
           "x": 634,
-          "y": 572,
+          "y": 556,
           "width": 580,
-          "height": 40.59375,
+          "height": 51.671875,
           "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
+          "fontSize": "38px"
         }
       },
       "portraitLoaded": true,
@@ -769,11 +919,11 @@
         "quote": {
           "text": "「煙は二種類。ダブルアップルと、それ以外だ」",
           "x": 634,
-          "y": 572,
+          "y": 556,
           "width": 580,
-          "height": 37.6875,
+          "height": 103.34375,
           "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "26px"
+          "fontSize": "38px"
         }
       },
       "portraitLoaded": true,
@@ -819,11 +969,61 @@
         "quote": {
           "text": "「みんとでーす♪ 全員まとめてライバルね？」",
           "x": 634,
-          "y": 572,
+          "y": 556,
           "width": 580,
-          "height": 39.140625,
+          "height": 103.34375,
           "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "27px"
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0,
+      "legibility": {
+        "veil": "block",
+        "titleBackground": "rgba(16, 24, 32, 0.93)",
+        "portraitFilter": "none"
+      }
+    },
+    {
+      "id": "rin",
+      "text": {
+        "title": {
+          "text": "問屋街の魔女",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 192.85430908203125,
+          "height": 61.134613037109375,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "28px"
+        },
+        "name": {
+          "text": "凛",
+          "x": 606.011962890625,
+          "y": 268.5735778808594,
+          "width": 159.57501220703125,
+          "height": 160.7279052734375,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "150px"
+        },
+        "full": {
+          "text": "（匂坂 凛）",
+          "x": 768.24365234375,
+          "y": 392.6716003417969,
+          "width": 106.05908203125,
+          "height": 33.226226806640625,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「ようこそ、夜の側へ」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 51.671875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
         }
       },
       "portraitLoaded": true,
@@ -869,11 +1069,211 @@
         "quote": {
           "text": "「お主、サメは好きか？」",
           "x": 634,
-          "y": 572,
+          "y": 556,
           "width": 580,
-          "height": 40.59375,
+          "height": 51.671875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0,
+      "legibility": {
+        "veil": "block",
+        "titleBackground": "rgba(16, 24, 32, 0.93)",
+        "portraitFilter": "none"
+      }
+    },
+    {
+      "id": "nagumo",
+      "text": {
+        "title": {
+          "text": "C.STATION会長・審査員長",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 357.20294189453125,
+          "height": 72.62699890136719,
           "font": "\"Intro Gothic\", sans-serif",
           "fontSize": "28px"
+        },
+        "name": {
+          "text": "南雲修二",
+          "x": 606.011962890625,
+          "y": 268.5735778808594,
+          "width": 524.3990478515625,
+          "height": 186.2388916015625,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "150px"
+        },
+        "full": {
+          "text": "",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「吸えば分かる」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 51.671875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0,
+      "legibility": {
+        "veil": "block",
+        "titleBackground": "rgba(16, 24, 32, 0.93)",
+        "portraitFilter": "none"
+      }
+    },
+    {
+      "id": "maezono",
+      "text": {
+        "title": {
+          "text": "HOOKAH PRESS編集長",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 318.76556396484375,
+          "height": 69.93919372558594,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "28px"
+        },
+        "name": {
+          "text": "前園壮一郎",
+          "x": 606.5186767578125,
+          "y": 270.6056823730469,
+          "width": 628.7740478515625,
+          "height": 189.54415893554688,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "146px"
+        },
+        "full": {
+          "text": "",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「シーシャはおいしいねえ」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 51.671875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0,
+      "legibility": {
+        "veil": "block",
+        "titleBackground": "rgba(16, 24, 32, 0.93)",
+        "portraitFilter": "none"
+      }
+    },
+    {
+      "id": "dr_kemuri",
+      "text": {
+        "title": {
+          "text": "データの鬼",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 165.76416015625,
+          "height": 59.24029541015625,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "28px"
+        },
+        "name": {
+          "text": "チャコール博士",
+          "x": 614.489501953125,
+          "y": 302.5650939941406,
+          "width": 491.3193359375,
+          "height": 117.11264038085938,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "83px"
+        },
+        "full": {
+          "text": "（炭場 創）",
+          "x": 1112.32568359375,
+          "y": 387.1601257324219,
+          "width": 106.05908203125,
+          "height": 33.2261962890625,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「データは嘘をつきません」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 51.671875,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
+        }
+      },
+      "portraitLoaded": true,
+      "portraitFilter": "none",
+      "englishTagPresent": false,
+      "animations": 0,
+      "legibility": {
+        "veil": "block",
+        "titleBackground": "rgba(16, 24, 32, 0.93)",
+        "portraitFilter": "none"
+      }
+    },
+    {
+      "id": "pakki",
+      "text": {
+        "title": {
+          "text": "大会名物MC兼マスコット",
+          "x": 623.4049072265625,
+          "y": 190.4325714111328,
+          "width": 341.70953369140625,
+          "height": 71.54359436035156,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "28px"
+        },
+        "name": {
+          "text": "パッキー",
+          "x": 606.011962890625,
+          "y": 268.5735778808594,
+          "width": 524.3990478515625,
+          "height": 186.2388916015625,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "150px"
+        },
+        "full": {
+          "text": "",
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "20px"
+        },
+        "quote": {
+          "text": "「ぷぷぷっ！ 会場は満席御礼ッ！」",
+          "x": 634,
+          "y": 556,
+          "width": 580,
+          "height": 103.34375,
+          "font": "\"Intro Gothic\", sans-serif",
+          "fontSize": "38px"
         }
       },
       "portraitLoaded": true,
@@ -919,11 +1319,11 @@
         "quote": {
           "text": "「カワイイは最強っしょ」",
           "x": 634,
-          "y": 572,
+          "y": 556,
           "width": 580,
-          "height": 40.59375,
+          "height": 51.671875,
           "font": "\"Intro Gothic\", sans-serif",
-          "fontSize": "28px"
+          "fontSize": "38px"
         }
       },
       "portraitLoaded": true,

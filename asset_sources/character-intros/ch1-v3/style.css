@@ -6,16 +6,16 @@ body{font-family:"Intro Gothic",sans-serif;color:#f8f6ee}
 .color-field{position:absolute;inset:0;background:color-mix(in srgb,var(--accent) 8%,#101820)}
 .art-background{position:absolute;inset:0;width:1280px;height:720px;object-fit:cover;user-select:none;pointer-events:none}
 .art-background[hidden]{display:none}
-.art-veil{display:none;position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,color-mix(in srgb,var(--portrait-bg) 28%,#101820) 0%,color-mix(in srgb,var(--portrait-bg) 23%,#101820) 36%,transparent 62%),linear-gradient(0deg,#101820ed 0%,#101820d9 22%,transparent 43%)}
+.art-veil{display:none;position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,var(--portrait-bg) 0%,var(--portrait-bg) 32%,color-mix(in srgb,var(--portrait-bg) 91%,transparent) 41%,color-mix(in srgb,var(--portrait-bg) 10%,transparent) 62%,transparent 68%),linear-gradient(0deg,#0d1420bf 0%,#0d142080 23%,transparent 43%)}
 #stage.has-art-background .art-veil{display:block}
 #stage.has-art-background :is(.left-field,.halftone,.motif,.floor-lines){display:none}
 #stage.has-art-background .title{color:#f8f6ee;background:#101820ed;padding:3px 12px 5px;left:-9px;top:-62px;border-left:3px solid var(--accent)}
-#stage.has-art-background .art-background{opacity:.8}
+#stage.has-art-background .art-background{opacity:1}
 .left-field{position:absolute;inset:0;background:var(--accent);clip-path:polygon(0 0,535px 0,438px 720px,0 720px)}
 .halftone{position:absolute;inset:0;background:radial-gradient(circle,#142029 1.5px,transparent 1.9px) 0 0/12px 12px;opacity:.18;clip-path:polygon(0 0,535px 0,438px 720px,0 720px)}
 .motif{position:absolute;inset:0;color:var(--accent);overflow:hidden}
 .motif svg{width:1280px;height:720px;display:block}
-.floor-lines{position:absolute;left:0;right:0;bottom:30px;height:37px;background:linear-gradient(to bottom,var(--accent) 0 4px,transparent 4px 11px,var(--accent) 11px 20px,transparent 20px 27px,var(--accent) 27px 31px,transparent 31px);opacity:.68}
+.floor-lines{position:absolute;left:0;right:0;bottom:16px;height:8px;background:linear-gradient(to bottom,var(--accent) 0 2px,transparent 2px 7px,var(--secondary) 7px 8px);opacity:.68}
 .ribbon{position:absolute;left:-120px;top:275px;width:1520px;height:190px;background:#f6f3e9;transform:rotate(4deg);transform-origin:70% 50%;z-index:2}
 .accent-line{position:absolute;left:-120px;top:477px;width:1520px;height:10px;background:var(--accent);transform:rotate(4deg);transform-origin:70% 50%;z-index:2}
 .accent-line:after{content:"";position:absolute;top:17px;left:0;right:0;height:3px;background:var(--secondary)}
@@ -28,9 +28,9 @@ body{font-family:"Intro Gothic",sans-serif;color:#f8f6ee}
 .full{color:#29323b;font-size:20px;font-weight:500;letter-spacing:0;line-height:1.3;white-space:nowrap;transform:translateY(-6px)}
 .full:empty{display:none}
 .portrait{position:absolute;width:var(--portrait-width);height:auto;left:var(--portrait-left);top:var(--portrait-top);z-index:4;user-select:none;pointer-events:none}
-.quote-area{position:absolute;left:634px;top:548px;width:580px;z-index:5}
-.quote-rule{width:71px;height:4px;background:var(--accent);margin-bottom:20px}
-.quote{white-space:nowrap;font-size:28px;font-weight:700;letter-spacing:-.02em;line-height:1.45;color:#f8f6ee}
+.quote-area{position:absolute;left:634px;top:536px;width:580px;z-index:5}
+.quote-rule{width:71px;height:4px;background:var(--accent);margin-bottom:16px}
+.quote{white-space:normal;font-size:38px;font-weight:700;letter-spacing:-.02em;line-height:1.36;line-break:strict;overflow-wrap:anywhere;color:#f8f6ee}
 #stage[data-character="adam"] .left-field{background:linear-gradient(135deg,var(--secondary) 0 46%,var(--accent) 46%)}
 #stage[data-character="minto"] .left-field{background:linear-gradient(145deg,var(--accent) 0 67%,var(--secondary) 67%)}
 #stage[data-character="dr_kemuri"] .halftone{background:linear-gradient(#15252f22 1px,transparent 1px),linear-gradient(90deg,#15252f22 1px,transparent 1px);background-size:26px 26px;opacity:.7}
@@ -42,4 +42,4 @@ button[aria-pressed="true"]{background:#f6f3e9;border-color:#f6f3e9;color:#11182
 body.video-only #controls{display:none}
 @media(max-width:640px){#controls{padding:8px 6px;gap:7px}button{font-size:11px;padding:6px 8px}}
 
-#stage[data-character="adam"]{--portrait-bg:var(--secondary)}
+button:disabled{cursor:default;opacity:.5}

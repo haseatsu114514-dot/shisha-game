@@ -3,7 +3,7 @@ const query = new URLSearchParams(location.search);
 const stage = document.querySelector("#stage"), portrait = document.querySelector("#portrait");
 const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
 let current = 0, animations = [], paused = false, looping = false, loopTimer, renderToken = 0;
-let backgroundStyle = query.get("style") === "illustrated" ? "illustrated" : "geometric";
+let backgroundStyle = query.get("style") === "geometric" ? "geometric" : "illustrated";
 if(query.has("video")) document.body.classList.add("video-only");
 
 import { motifs } from "./motifs.js";
@@ -38,7 +38,7 @@ async function showCharacter(id,{play=true}={}){
  current = idx < 0 ? 0 : idx; const c = records[current];
  window.previewReady = false; animations.forEach(a => a.cancel()); animations = [];
  stage.dataset.character = c.id;
- for(const [key, value] of Object.entries({accent:c.color,secondary:c.secondary,"portrait-width":c.frame.width+"px","portrait-left":c.frame.left+"px","portrait-top":c.frame.top+"px"})) stage.style.setProperty("--"+key,value);
+ for(const [key, value] of Object.entries({accent:c.color,secondary:c.secondary,"portrait-bg":c.shadow,"portrait-width":c.frame.width+"px","portrait-left":c.frame.left+"px","portrait-top":c.frame.top+"px"})) stage.style.setProperty("--"+key,value);
  document.querySelector("#motif").innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720">' + motifs[c.motif] + "</svg>";
  for(const [key, text] of Object.entries({title:c.title,name:c.name,full:c.full ? "（"+c.full+"）" : "",quote:"「"+c.line+"」"})) document.getElementById(key).textContent = text;
  portrait.src = c.portrait.startsWith("data:") ? c.portrait : "../../../"+c.portrait;
@@ -48,8 +48,10 @@ async function showCharacter(id,{play=true}={}){
  art.hidden = !bg;
  stage.classList.toggle("has-art-background",!!bg);
  if(bg) art.src = bg.src.startsWith("data:") ? bg.src : "../../../"+bg.src;
- document.querySelector("#background-style").textContent = backgroundStyle === "illustrated" ? "背景：イラスト" : "背景：幾何学";
- document.querySelector("#background-style").setAttribute("aria-pressed",String(backgroundStyle === "illustrated"));
+ const styleButton=document.querySelector("#background-style");
+ styleButton.disabled=!c.backgrounds?.illustrated;
+ styleButton.textContent=bg&&backgroundStyle === "illustrated" ? "背景：イラスト" : "背景：幾何学";
+ styleButton.setAttribute("aria-pressed",String(!!bg&&backgroundStyle === "illustrated"));
  await Promise.all([document.fonts.ready,portrait.decode(),bg ? art.decode() : Promise.resolve()]); if(token !== renderToken) return;
  // Measure the final transformed glyph rectangle, not the uncondensed em width.
  stage.style.transform = "none";
@@ -60,9 +62,17 @@ async function showCharacter(id,{play=true}={}){
  while(group.offsetWidth > 596 && size > 60){
   name.style.fontSize = (--size)+"px";wrap.style.width = nameWidth()+"px";
  }
- for(const [selector, initial, min, max] of [["#title",28,20,580],["#quote",28,18,580]]){
+ for(const [selector, initial, min, max] of [["#title",28,20,580]]){
   const el = document.querySelector(selector); let s = initial; el.style.fontSize = s+"px";
   while(el.scrollWidth > max && s > min) el.style.fontSize = (--s)+"px";
+ }
+ // Keep the quote large; wrap naturally into at most two lines instead of shrinking.
+ const quote=document.querySelector('#quote');quote.style.fontSize='38px';
+ const preferredBreak={adam:c.line.indexOf('。')+1,minto:c.line.indexOf(' ')+1,sumi:c.line.indexOf('、')+1,naru:c.line.indexOf('全部'),pakki:c.line.indexOf(' ')+1}[c.id];
+ if(quote.offsetHeight>parseFloat(getComputedStyle(quote).lineHeight)+1&&preferredBreak>0){
+  const first=document.createElement('span'),second=document.createElement('span');
+  first.textContent='「'+c.line.slice(0,preferredBreak);second.textContent=c.line.slice(preferredBreak)+'」';
+  first.style.display=second.style.display='block';quote.replaceChildren(first,second);
  }
  document.querySelectorAll("[data-select]").forEach(b => b.setAttribute("aria-pressed",String(b.dataset.select === c.id)));
  fitStage(); if(play) startAnimation(); window.previewReady = true;

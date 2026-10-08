@@ -25,6 +25,12 @@ palette = {
  "pakki": ("#f58232", "#ffe0ac", "stage", "マイク・蝶ネクタイ・音の波"),
  "ageha": ("#e956a5", "#ffd7eb", "butterfly", "クマ・グミベア・肉球"),
 }
+shadows = {
+ "hajime":"#29251b", "sumi":"#351608", "tsumugi":"#251034", "oneesan":"#1a2a10",
+ "naru":"#292c05", "adam":"#092d18", "minto":"#042f22", "rin":"#131746",
+ "kafuka":"#082a48", "nagumo":"#152539", "maezono":"#062d30", "dr_kemuri":"#032d3a",
+ "pakki":"#3a1905", "ageha":"#3b0829"
+}
 
 def names(c):
  import re
@@ -66,7 +72,7 @@ for cid, (accent, secondary, motif, label) in palette.items():
   if cid in ("hajime", "sumi", "tsumugi"):
    frame["left"] = round(frame["left"] - 36, 3)
  record = {"id": cid, "name": name, "full": full, "title": intro["title"], "line": intro["line"],
-           "expression": face, "color": accent, "secondary": secondary, "motif": motif, "motif_label": label,
+           "expression": face, "color": accent, "secondary": secondary, "shadow": shadows[cid], "motif": motif, "motif_label": label,
            "portrait": str(source.relative_to(root)), "frame": frame,
            "portrait_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
            "portrait_authority": authority, "caption_source": "data/characters.json: " + cid + ".intro_cutin"}

@@ -8,6 +8,7 @@
     "expression": "normal",
     "color": "#eee0bd",
     "secondary": "#fff5dc",
+    "shadow": "#29251b",
     "motif": "smoke",
     "motif_label": "キャップ・マウスピース・煙",
     "portrait": "asset_sources/character-intros/personality-v2/references/hajime-normal.png",
@@ -19,7 +20,13 @@
     "portrait_sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
     "portrait_authority": "前回の登場モックアップに使用した制作済み立ち絵",
     "caption_source": "前回モックアップの提示案。ゲームの台詞・設定は変更しない",
-    "name_layout": "呼び名の後ろに小さな括弧。本名は同じ行、別名非開示の人物は省略。"
+    "name_layout": "呼び名の後ろに小さな括弧。本名は同じ行、別名非開示の人物は省略。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/hajime/source.png",
+        "sha256": "1955eab26f6f2ecd06e942f86acd7af2c17b853d31649890290b918c5a6ed743"
+      }
+    }
   },
   {
     "id": "sumi",
@@ -30,6 +37,7 @@
     "expression": "normal",
     "color": "#ad603b",
     "secondary": "#f0c79f",
+    "shadow": "#351608",
     "motif": "embers",
     "motif_label": "炭・トング・ハガル",
     "portrait": "assets/sprites/characters/sumi/chr_sumi_normal.png",
@@ -41,7 +49,13 @@
     "portrait_sha256": "35cb31996f3275213b7e659d968d09fec62136d519324a93bb90f1afcf31627c",
     "portrait_authority": "採用済みゲーム立ち絵",
     "caption_source": "data/characters.json: sumi.intro_cutin",
-    "name_layout": "呼び名の後ろに小さな括弧。本名は同じ行、別名非開示の人物は省略。"
+    "name_layout": "呼び名の後ろに小さな括弧。本名は同じ行、別名非開示の人物は省略。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/sumi/source.png",
+        "sha256": "c0e717fd26c4003230e02de8b143d551077d12c83fd62ff0b97803c5a4d8e8f0"
+      }
+    }
   },
   {
     "id": "tsumugi",
@@ -52,6 +66,7 @@
     "expression": "normal",
     "color": "#bd95d4",
     "secondary": "#eaddf4",
+    "shadow": "#251034",
     "motif": "sketch",
     "motif_label": "葉耳と煙の尾を持つ猫・ペン",
     "portrait": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
@@ -80,6 +95,7 @@
     "expression": "ura_normal",
     "color": "#929b77",
     "secondary": "#e6e9cf",
+    "shadow": "#1a2a10",
     "motif": "quiet",
     "motif_label": "カップ・静かな煙・波紋",
     "portrait": "assets/sprites/characters/minto/chr_minto_ura_normal.png",
@@ -91,7 +107,13 @@
     "portrait_sha256": "c9a603a9c9c9b0438781573180d8c6e0ecac6c425a17c116623b0ba4b6d48bf2",
     "portrait_authority": "採用済みゲーム立ち絵",
     "caption_source": "data/characters.json: oneesan.intro_cutin",
-    "name_layout": "呼び名の後ろに小さな括弧。本名は同じ行、別名非開示の人物は省略。"
+    "name_layout": "呼び名の後ろに小さな括弧。本名は同じ行、別名非開示の人物は省略。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/oneesan/source.png",
+        "sha256": "14565d73125cd03a617f616dbebff9f145907cdc46c2687245bba8c776644833"
+      }
+    }
   },
   {
     "id": "naru",
@@ -102,6 +124,7 @@
     "expression": "smile",
     "color": "#eada39",
     "secondary": "#fff5ad",
+    "shadow": "#292c05",
     "motif": "speed",
     "motif_label": "バニラの莢・斜線",
     "portrait": "asset_sources/character-intros/personality-v2/references/naru-smile.png",
@@ -130,6 +153,7 @@
     "expression": "intense",
     "color": "#ce3d40",
     "secondary": "#85c96d",
+    "shadow": "#092d18",
     "motif": "duality",
     "motif_label": "左の青りんご（緑）・右の赤りんご・対になる円",
     "portrait": "asset_sources/character-intros/personality-v2/references/adam-intense.png",
@@ -158,6 +182,7 @@
     "expression": "wink",
     "color": "#36c59c",
     "secondary": "#ffdbeb",
+    "shadow": "#042f22",
     "motif": "hearts",
     "motif_label": "ミントの葉・ハート・チェキ",
     "portrait": "assets/sprites/characters/minto/chr_minto_wink.png",
@@ -186,6 +211,7 @@
     "expression": "smile",
     "color": "#5a60b6",
     "secondary": "#cfd5ff",
+    "shadow": "#131746",
     "motif": "witch",
     "motif_label": "サンプル缶・試香紙・ブルーベリー",
     "portrait": "assets/sprites/characters/rin/chr_rin_smile.png",
@@ -197,7 +223,13 @@
     "portrait_sha256": "f44c1306d2b6c7140b6eec8183fabe4813ea7507ed76f1b47c2b24e692d76466",
     "portrait_authority": "採用済みゲーム立ち絵",
     "caption_source": "data/characters.json: rin.intro_cutin",
-    "name_layout": "呼び名の後ろに小さな括弧。本名は同じ行、別名非開示の人物は省略。"
+    "name_layout": "呼び名の後ろに小さな括弧。本名は同じ行、別名非開示の人物は省略。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/rin/source.png",
+        "sha256": "fcb3b6ad38c868e00ff2c87d3de52a863dab90c7ec570ea128bf03f6d8c50528"
+      }
+    }
   },
   {
     "id": "kafuka",
@@ -208,6 +240,7 @@
     "expression": "smile",
     "color": "#298bdb",
     "secondary": "#a6ddff",
+    "shadow": "#082a48",
     "motif": "shark",
     "motif_label": "王冠を被ったサメ・波",
     "portrait": "asset_sources/character-intros/personality-v2/references/kafuka-normal.png",
@@ -236,6 +269,7 @@
     "expression": "serious",
     "color": "#afbccc",
     "secondary": "#e7edf4",
+    "shadow": "#152539",
     "motif": "judgment",
     "motif_label": "ネクタイ・審査の円",
     "portrait": "assets/sprites/characters/nagumo/chr_nagumo_serious.png",
@@ -247,7 +281,13 @@
     "portrait_sha256": "589da38a726d6057f4536684554f9174ae7ea0890b2bd8bc87846088cea3c086",
     "portrait_authority": "採用済みゲーム立ち絵",
     "caption_source": "data/characters.json: nagumo.intro_cutin",
-    "name_layout": "呼び名の後ろに小さな括弧。本名は同じ行、別名非開示の人物は省略。"
+    "name_layout": "呼び名の後ろに小さな括弧。本名は同じ行、別名非開示の人物は省略。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/nagumo/source.png",
+        "sha256": "22c89669098b46a28deb591730d34369764c42e7235ee9cc0c09d543d26f2988"
+      }
+    }
   },
   {
     "id": "maezono",
@@ -258,6 +298,7 @@
     "expression": "excited",
     "color": "#398384",
     "secondary": "#bfe5df",
+    "shadow": "#062d30",
     "motif": "press",
     "motif_label": "誌面・眼鏡・ペン",
     "portrait": "asset_sources/portraits/maezono-remaster-v1/excited-preview.png",
@@ -269,7 +310,13 @@
     "portrait_sha256": "d64c9a86c9ef297200bb0a39bef5f3f15e1e0d0e03219881d99cd40aaeac22ca",
     "portrait_authority": "採用済み再制作立ち絵の確認用PNG（PR #225で本編採用済み）",
     "caption_source": "data/characters.json: maezono.intro_cutin",
-    "name_layout": "呼び名の後ろに小さな括弧。本名は同じ行、別名非開示の人物は省略。"
+    "name_layout": "呼び名の後ろに小さな括弧。本名は同じ行、別名非開示の人物は省略。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/maezono/source.png",
+        "sha256": "5a4c253221c3a055675391ab6b06b04ad2eb0576ee4e9f94abb5a94975241fd9"
+      }
+    }
   },
   {
     "id": "dr_kemuri",
@@ -280,6 +327,7 @@
     "expression": "smile",
     "color": "#39d7e7",
     "secondary": "#cafaff",
+    "shadow": "#032d3a",
     "motif": "science",
     "motif_label": "温度計・計測円・六角格子・グラフ",
     "portrait": "asset_sources/character-intros/personality-v2/references/dr_kemuri-smile.png",
@@ -291,7 +339,13 @@
     "portrait_sha256": "df71fa86213f88328e0b5808fc666ea9cd84284ab2ac2e624188b9ae6b484518",
     "portrait_authority": "前回の登場モックアップに使用した制作済み立ち絵",
     "caption_source": "data/characters.json: dr_kemuri.intro_cutin",
-    "name_layout": "呼び名の後ろに小さな括弧。本名は同じ行、別名非開示の人物は省略。"
+    "name_layout": "呼び名の後ろに小さな括弧。本名は同じ行、別名非開示の人物は省略。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/dr_kemuri/source.png",
+        "sha256": "9f1508e98a1d98c977c29637601536f8fc5dd2badaea54f6f379294817298d92"
+      }
+    }
   },
   {
     "id": "pakki",
@@ -302,6 +356,7 @@
     "expression": "smile",
     "color": "#f58232",
     "secondary": "#ffe0ac",
+    "shadow": "#3a1905",
     "motif": "stage",
     "motif_label": "マイク・蝶ネクタイ・音の波",
     "portrait": "asset_sources/portraits/pakki-remaster-v1/smile-preview.png",
@@ -313,7 +368,13 @@
     "portrait_sha256": "35aaaf42dc2a16e83ac480e23b3d8040908d9f4c81779ebe327df5766f54d8b8",
     "portrait_authority": "採用済み再制作立ち絵の確認用PNG（PR #225で本編採用済み）",
     "caption_source": "data/characters.json: pakki.intro_cutin",
-    "name_layout": "呼び名の後ろに小さな括弧。本名は同じ行、別名非開示の人物は省略。"
+    "name_layout": "呼び名の後ろに小さな括弧。本名は同じ行、別名非開示の人物は省略。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/pakki/source.png",
+        "sha256": "0e79f68ac4e3fcbda484f4de78e24107ffa697efabb4415539cdba2d0dc75b19"
+      }
+    }
   },
   {
     "id": "ageha",
@@ -324,6 +385,7 @@
     "expression": "smile",
     "color": "#e956a5",
     "secondary": "#ffd7eb",
+    "shadow": "#3b0829",
     "motif": "butterfly",
     "motif_label": "クマ・グミベア・肉球",
     "portrait": "assets/sprites/characters/ageha/chr_ageha_smile.png",
