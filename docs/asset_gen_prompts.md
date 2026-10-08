@@ -1,5 +1,7 @@
 # 画像生成プロンプト集（codex用）— シーシャ作りパート＋立ち絵
 
+> 2026-10-08 GP41: 現行remake/の温度計・操作ボタン・リフレッシュ・共通パネルは[4枚の生成指示](../asset_sources/ui/craft-luxury-20261008/prompts.json)と[素材・配線契約](../asset_sources/ui/craft-luxury-20261008/README.md)を参照。黒ガラス・真鍮・煙の刻印の静的素材。温度、最適温、予測、文字、使用回数はコードが表示する。
+
 > 2026-10-07: この資料は旧ブラウザ版向け制作手順の履歴。旧 `web/` は削除済み。現行版の画像取り込み・制作手順は `CLAUDE.md`、`.claude/skills/` の該当スキル、`remake/README.md` を参照する。
 >
 > 2026-10-08の採用タイマーは[最終プロンプト](../asset_sources/ui/craft-focus-20261008/kitchen-timer-final-prompt.txt)と[素材・配線契約](../asset_sources/ui/craft-focus-20261008/README.md)を参照。白い100均風の本体、空の液晶、分／秒／スタート＆ストップ／リセットの4ボタン。文字と7セグ数字は実際の状態をコードで重ねる。下記の旧「数字は出さない」リングタイマー案は採用していない。

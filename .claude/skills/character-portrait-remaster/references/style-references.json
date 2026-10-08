@@ -1183,9 +1183,9 @@
     },
     {
       "id": "maezono-remaster-v1",
-      "title": "前園 確認用 v1",
-      "status": "pending",
-      "role": "確認用・本編未採用",
+      "title": "前園 採用 v1",
+      "status": "approved",
+      "role": "採用済み・本編組み込み",
       "images": [
         {
           "label": "通常",
@@ -1217,13 +1217,14 @@
           "path": "../../../../asset_sources/portraits/maezono-remaster-v1/excited-preview.png",
           "sha256": "d64c9a86c9ef297200bb0a39bef5f3f15e1e0d0e03219881d99cd40aaeac22ca"
         }
-      ]
+      ],
+      "approval": "2026-10-08 オーナー「完成したらマージで」。直前に採用待ちとして提示した前園・パッキー・つむぎ会釈3組へのゲーム組み込み・マージ指示として受領。"
     },
     {
       "id": "pakki-remaster-v1",
-      "title": "パッキー 確認用 v1",
-      "status": "pending",
-      "role": "確認用・本編未採用",
+      "title": "パッキー 採用 v1",
+      "status": "approved",
+      "role": "採用済み・本編組み込み",
       "images": [
         {
           "label": "通常",
@@ -1255,13 +1256,14 @@
           "path": "../../../../asset_sources/portraits/pakki-remaster-v1/smoke-preview.png",
           "sha256": "ff3f8a8839107ffe4b026b972af408a4793af04acdf4553cb309586095449c0c"
         }
-      ]
+      ],
+      "approval": "2026-10-08 オーナー「完成したらマージで」。直前に採用待ちとして提示した前園・パッキー・つむぎ会釈3組へのゲーム組み込み・マージ指示として受領。"
     },
     {
       "id": "tsumugi-bow-v1",
-      "title": "つむぎ 確認用 v1",
-      "status": "pending",
-      "role": "確認用・本編未採用",
+      "title": "つむぎ 採用 v1",
+      "status": "approved",
+      "role": "採用済み・本編組み込み",
       "images": [
         {
           "label": "会釈",
@@ -1269,7 +1271,8 @@
           "path": "../../../../asset_sources/portraits/tsumugi-bow-v1/bow-preview.png",
           "sha256": "4ede1639c07fae8f5e696b5ca9334970cf1a14749bdc04918a9ef567dcbc9f95"
         }
-      ]
+      ],
+      "approval": "2026-10-08 オーナー「完成したらマージで」。直前に採用待ちとして提示した前園・パッキー・つむぎ会釈3組へのゲーム組み込み・マージ指示として受領。"
     }
   ]
 }

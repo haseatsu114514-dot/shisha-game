@@ -96,8 +96,12 @@ const NIGHT_STORIES = new Set([
   "ch1_tsumugi_fifth", "ch1_tsumugi_smoke_color", "ch1_minto_phantom_smell",
 ]);
 const storyAvailable = (id) => !NIGHT_STORIES.has(id) || state.slot >= 1;
+/** 店に通って親しくなってから、いつもの入店に代わる道端の一度だけの会話。 */
+export const mintoIdentityRevealDue = () => !state.flags._minto_identity_revealed
+  && storyCount("minto") >= 2 && affinityLevel("minto") >= 2;
 /** 次に会うと新しいイベントがあるか（固有会話・途中の質問・好感度MAXの締めくくり）。 */
 export function hasNewStory(charId) {
+  if (charId === "minto" && mintoIdentityRevealDue()) return true;
   const id = (VISIT_SEQ[charId] || [])[storyCount(charId)];
   if (id) return storyAvailable(id);
   return questionVisitDue(charId) || finaleAtVisit(charId);
@@ -160,7 +164,11 @@ export async function visitChar(charId) {
   const seq = VISIT_SEQ[charId] || [];
   const idx = storyCount(charId);
   const bg = bgRef(VISIT_BG[charId] || "bg_tonari_inside");
-  if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx])) {
+  if (charId === "minto" && mintoIdentityRevealDue() && DB.dialogues.ch1_minto_identity_reveal) {
+    // 正体がつながる日の照れた接客を最後まで見せ、通常回は次の来店へ残す。
+    await play("ch1_minto_identity_reveal");
+    gainAffinity(charId, 10);
+  } else if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx])) {
     state.story[charId] = idx + 1;
     await play(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg });
     gainAffinity(charId, 10);

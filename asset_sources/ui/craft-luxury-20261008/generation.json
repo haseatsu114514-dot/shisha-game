@@ -1,0 +1,49 @@
+{
+  "generated": "2026-10-08",
+  "tool": "image_gen.imagegen",
+  "mode": "builtin",
+  "references": [
+    {
+      "path": "assets/ui/lounge/button.png",
+      "sha256": "ec76d04760c325a9297434485c48d88c476dcb2f48b07be86d9dae3496d09aa5"
+    }
+  ],
+  "assets": [
+    {
+      "file": "ui_temperature_frame.png",
+      "size": [
+        887,
+        1774
+      ],
+      "mode": "RGBA",
+      "sha256": "f08291e2256bf5a76a6914b39f42ec0c5f002728bf255e0939b9f97cdffa1e7b"
+    },
+    {
+      "file": "ui_craft_button.png",
+      "size": [
+        2172,
+        724
+      ],
+      "mode": "RGBA",
+      "sha256": "62ecff3759afa9c584b953b90b651036cd5ef708c48f66dddd663ba07b950776"
+    },
+    {
+      "file": "ui_refresh_button.png",
+      "size": [
+        2172,
+        724
+      ],
+      "mode": "RGBA",
+      "sha256": "60d9e12687d937b04c647ee3f65468e1e2f3ca5ce496ea471cfbdc75d481747d"
+    },
+    {
+      "file": "ui_craft_panel.png",
+      "size": [
+        1774,
+        887
+      ],
+      "mode": "RGBA",
+      "sha256": "2d78fb847f3d535a9bda14d75d03a5297fca948141d9fbd06ba88643c8728e5a"
+    }
+  ]
+}

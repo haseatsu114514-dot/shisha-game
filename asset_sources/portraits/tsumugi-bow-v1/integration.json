@@ -1,0 +1,31 @@
+{
+  "approval": "2026-10-08 オーナー「完成したらマージで」。直前に採用待ちとして提示した前園・パッキー・つむぎ会釈3組へのゲーム組み込み・マージ指示として受領。",
+  "status": "integrated",
+  "runtime": [
+    {
+      "face": "bow",
+      "source": "asset_sources/portraits/tsumugi-bow-v1/bow-preview.png",
+      "source_sha256": "4ede1639c07fae8f5e696b5ca9334970cf1a14749bdc04918a9ef567dcbc9f95",
+      "path": "assets/sprites/characters/tsumugi/chr_tsumugi_bow.png",
+      "operation": "RGBA-preserving mechanical resize and feet alignment to existing normal; no pose redraw",
+      "scale": 0.7758928571428572,
+      "offset": [
+        101,
+        263
+      ],
+      "normal_sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6",
+      "sha256": "3f35f98c76dc8032e311f2c8a8dc9e9567b2f89b783813c1419e5185778d69b0",
+      "webp": "remake/img/sprites/characters/tsumugi/chr_tsumugi_bow.webp",
+      "webp_bytes": 192516,
+      "webp_sha256": "9fd3c913c1e83eb158fd1ac812bf0761ffa6cb2d53e330b1da20ba93cacdedd4",
+      "encoding": "lossless WebP, exact alpha"
+    }
+  ],
+  "local_playthrough": "skipped by owner request",
+  "build": {
+    "command": "python3 remake/tools/build_manifest.py",
+    "result": "success",
+    "images": 175,
+    "local_playthrough": "skipped by owner request"
+  }
+}

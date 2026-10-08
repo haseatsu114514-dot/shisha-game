@@ -699,51 +699,164 @@
       }
     },
     {
-      "dialogue_id": "ch1_minto_third",
+      "dialogue_id": "ch1_minto_identity_reveal",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street.png"
+      },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "何度か店に通ったある日。PEPPERMINTへ向かう途中、彼女に会った。"
+          "text": "PEPPERMINTへ向かう道。店の少し手前に、見覚えのある横顔があった。",
+          "portrait": "oneesan"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（tonariに来ていたお姉さんだ。挨拶しておこう）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "こんにちは。お姉さんもPEPPERMINTに来るんですね"
+        },
+        {
+          "speaker": "oneesan",
+          "face": "normal",
+          "text": "……あ、……こんにちは"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "黒い髪にミント色のリボン。出勤前の彼女は、いつもより静かだった。"
+          "text": "彼女は鞄の持ち手を握り直し、目を伏せた。"
         },
         {
-          "speaker": "minto",
+          "speaker": "oneesan",
           "face": "normal",
-          "text": "……こんにちは、はじめくん。今日も来てくれるの？"
+          "text": "……キャスト、です"
+        },
+        {
+          "speaker": "oneesan",
+          "face": "smile",
+          "text": "……はじめくん"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "うん。……あれ、tonariに来てたお姉さん？"
+          "text": "（はじめくん……？ その呼び方、その声）"
         },
         {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "ふふ。やっと気づいた？ お店では、みんとって呼んでね"
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……みんと？"
         },
         {
           "type": "set_flag",
           "flag": "_minto_identity_revealed"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "そっか。煙の話をしてる時の声、同じだったんだ"
+          "speaker": "oneesan",
+          "face": "smile",
+          "text": "……うん。バレちゃった"
         },
         {
-          "speaker": "minto",
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "tonariのお姉さんも、みんとだったんだ"
+        },
+        {
+          "speaker": "oneesan",
+          "face": "normal",
+          "text": "……あっちでは、静かに吸いたくて。なんだか、恥ずかしいね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "甘い営業声と、tonariの静かな声が、頭の中でつながった。"
+        },
+        {
+          "speaker": "oneesan",
           "face": "smile",
-          "text": "覚えててくれたんだ。……じゃあ、続きは中で"
+          "text": "先、入ってて。……着替えたら、行くから"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "oneesan"
         },
         {
           "type": "bg",
           "bg": "res://assets/backgrounds/peppermint.png"
         },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店に入って待つと、いつもの衣装のみんとが戻ってきた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "お、おかえりなさーいっ♡ ……はじめくん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "目が合うと、みんとはあわててメニューへ視線を落とした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……いつもので、お願いします"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はーいっ♡ いつも……あ、いつもの。うん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "返事の途中で、いつもの声に小さな声が混ざる。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……さっきの、あんまり思い出さないでね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "大丈夫。どっちも、いいと思います"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "……もう。そういうの、余計照れるから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シーシャを置く時も、いつもより少し遠くに手を伸ばしていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "ご、ごゆっくりっ♡ ……熱かったら、言ってね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その日は、近づくたびに目が泳いだ。営業スマイルも、少しぎこちない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（でも、こんな顔を見せてもらえるのは、なんだか嬉しい）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_minto_third",
+      "lines": [
         {
           "speaker": "minto",
           "face": "smile",
@@ -849,7 +962,10 @@
           "face": "",
           "text": "……【センス】が少し上がった。"
         }
-      ]
+      ],
+      "metadata": {
+        "bg": "res://assets/backgrounds/peppermint.png"
+      }
     },
     {
       "dialogue_id": "ch1_minto_fourth",
