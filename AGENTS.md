@@ -3,6 +3,8 @@
 このリポジトリのルールの正本は `CLAUDE.md`。作業前に必ず読むこと。
 ここには、過去に事故が起きた点だけを短くまとめる。
 
+シーシャ台を新たに画像生成する場合は、実物写真の一覧と創作上の自由度をまとめた [`asset_sources/shisha-hardware-reference/README.md`](asset_sources/shisha-hardware-reference/README.md) を必ず参照（写真の完コピではない）。
+
 ## Godot版は削除済み
 
 - Godot版は 2026-06-15 に削除済み。`project.godot` は**存在しないのが正しい**。
