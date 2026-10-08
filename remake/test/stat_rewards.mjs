@@ -31,7 +31,8 @@ try {
   await page.waitForSelector(".gain-card.st-technique .gc-points");
   assert.equal(await page.locator(".gc-points").textContent(), "+3P");
   assert.equal(await page.locator(".gain-card").count(), 1);
-  assert.equal(await page.locator(".gc-sub").count(), 0);
+  assert.equal(await page.locator(".gc-top, .gc-sub").count(), 0);
+  assert(await page.locator(".gain-card.stat").evaluate(e => e.getBoundingClientRect().height < 65), "通常通知がコンパクトな1行ではない");
   await page.waitForFunction(() => T.impacts > 0);
   assert.deepEqual(await page.evaluate(() => ({ points: T.core.state.stats.technique, total: T.events[0].total,
     count: T.events.length, flown: [...new Set(T.flights)] })), { points: 13, total: 3, count: 1, flown: ["technique"] });

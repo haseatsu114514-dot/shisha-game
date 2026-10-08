@@ -77,8 +77,28 @@ try {
   await page.waitForSelector(".gc-evolution");
   assert.equal(await page.locator(".gc-evolution").textContent(), "レベル2に進化！");
   assert.match(await page.locator(".gc-fx").textContent(), /ゲージ.*ゆっくり/);
+  assert.equal(await page.locator(".gain-card.stat .gc-top").textContent(), "LEVEL UP");
+  assert.equal(await page.locator(".gain-card.stat .gc-sub").count(), 0);
+  assert.doesNotMatch(await page.locator(".gain-card.stat").textContent(), /様になってきた|STATUS UP|LEVEL UP/);
+  await page.waitForTimeout(500); // 通知の出現アニメーションが止まってから配置を測る
+  for (const size of [{ width: 1331, height: 760 }, { width: 844, height: 390 }, { width: 591, height: 1280 }]) {
+    await page.setViewportSize(size);
+    await page.evaluate(() => new Promise(requestAnimationFrame));
+    const card = await page.locator(".gain-card.stat").evaluate(e => {
+      const b = e.getBoundingClientRect(), stage = document.querySelector("#stage").getBoundingClientRect();
+      return { inside: b.left >= stage.left && b.right <= stage.right + 1, unclipped: e.scrollHeight <= e.clientHeight + 2,
+        effectPlain: getComputedStyle(e.querySelector(".gc-fx")).backgroundColor === "rgba(0, 0, 0, 0)" };
+    });
+    assert(card.inside && card.unclipped && card.effectPlain, JSON.stringify(card));
+    if (shots) await page.screenshot({ path: `${shots}/compact-level-${size.width}.png` });
+  }
+  await page.setViewportSize({ width: 1331, height: 760 });
   if (shots) await page.screenshot({ path: `${shots}/level-event.png` });
   await page.evaluate(() => T.ui.bannersIdle());
+  await page.evaluate(async () => { (await import("./js/daily/status.js")).openStatus(); });
+  await page.waitForSelector('[data-test="st-technique"] .st-rank');
+  assert.equal(await page.locator('[data-test="st-technique"] .st-rank').textContent(), "「様になってきた」");
+  await page.locator('[data-test="status-close"]').click();
   // 内部値0→1は表示レベル1のまま。偽のレベルアップを出さない。
   await page.evaluate(() => { T.core.state.stats.insight = 0; T.stats.gainStat("insight", 1); });
   await page.waitForSelector(".gain-card.st-insight");
@@ -112,7 +132,8 @@ try {
   assert.equal(reward.starTo, 2);
   await page.waitForSelector(".gain-card .gc-evolution", { timeout: 15000 });
   assert.equal(await page.locator(".gc-evolution").textContent(), "レベル2に進化！");
-  assert.equal(await page.locator(".gc-top").textContent(), "PAKKI SLOT");
+  assert.equal(await page.locator(".gain-card.stat .gc-top").textContent(), "PAKKI SLOT");
+  assert.equal(await page.locator(".gain-card.stat .gc-sub").count(), 0);
   assert((await page.locator(".gc-fx").textContent()).length > 0);
   if (shots) await page.screenshot({ path: `${shots}/level-slot.png` });
   await page.evaluate(() => window.presenting);
