@@ -68,5 +68,24 @@
     "dodgeScoring": "avoided hits only",
     "carryover": "steam ending temperature without a new roll"
   },
-  "sumiGuidance": "game-system explanations in tutorial only; rehearsal and tournament remain diegetic"
+  "sumiGuidance": "game-system explanations in tutorial only; rehearsal and tournament remain diegetic",
+  "integratedMainCommit": "abc67b9",
+  "checks": {
+    "craft_focus": "PASS",
+    "steam_refresh": "PASS",
+    "gameplay_polish": "PASS",
+    "foil_holes": "PASS",
+    "stamina_condition": "PASS",
+    "stat_growth_balance": "PASS",
+    "playthrough": "PASS",
+    "stat_rewards": "PASS",
+    "ui_skin": "PASS",
+    "compact_gains_map": "PASS",
+    "ui_polish": "PASS",
+    "reel_lifecycle": "PASS"
+  },
+  "dialogueLint": {
+    "errors": 0,
+    "existingWarnings": 207
+  }
 }
