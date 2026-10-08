@@ -1,0 +1,35 @@
+{
+  "implementation_commits": [
+    "61b1bb770eb0213acf8f9a990e49a346afb558bf",
+    "118192c0c2f2d4ba29c7b8bcf05f9cadafd0f77d"
+  ],
+  "render_validation": "render-validation.json",
+  "current_cards": 15,
+  "geometric_comparisons": 15,
+  "video_seconds": 52.5,
+  "runtime_intro_test": {
+    "command": "CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/intro_cutin.mjs",
+    "result": "passed",
+    "characters": 25,
+    "no_full_name_nodes": true,
+    "intro_module_sha256": "b9f16b374345466ab64b6f6027265e088bb77e3e7ad8e5987b4ea577b697a759"
+  },
+  "final_ageha_runtime_smoke": {
+    "result": "passed",
+    "expression": "normal",
+    "quote": "あたし超感覚派なんだよね〜",
+    "full_name_nodes": 0
+  },
+  "initial_encounter_preview": {
+    "expression": "smile",
+    "quote": "大丈夫？ ケガしてない？",
+    "name": "？？？"
+  },
+  "archived_originals_sha_verified": true,
+  "dialogue_lint": {
+    "errors": 0,
+    "warnings": 207,
+    "warnings_inherited": true
+  },
+  "merge_performed": false
+}

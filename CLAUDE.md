@@ -274,6 +274,7 @@ jq '[.dialogues[].dialogue_id]' data/dialogue/ch1_main.json
 ローカル確認: `python3 remake/tools/serve_preview.py --port 8123` → `http://127.0.0.1:8123/remake/`。
 重いブラウザテストは直列で実行。PlaywrightのChrome指定はテスト冒頭または `remake/README.md` 参照。
 
+- 登場カットの名前は会話欄と同じ呼び名のみ。括弧付きの本名は全員で廃止し、本名はストーリーの名乗りで扱う（2026-10-08 CI48）。旧案の比較画像は修正前の状態で保存してよい。
 - テスト用フックは `window.__remake`（`vnTest`・`craftTest`・`dev`）。維持する
 - タイミング系は共通の `countdown()` で3・2・1を挟む
 - 状態は `core/state.js` の単一 `state`、報酬は `core/stats.js`、会話は `vn/engine.js` の `play()`

@@ -436,9 +436,17 @@
     "spriteScale": 0.93,
     "intro_cutin": {
       "title": "バイブスの天才",
-      "line": "カワイイは最強っしょ",
-      "face": "smile",
+      "line": "あたし超感覚派なんだよね〜",
+      "face": "normal",
       "color": "#ff8fc8"
+    },
+    "intro_cutin_unknown": {
+      "display_name": "？？？",
+      "title": "実在したオタクに優しいギャル",
+      "line": "大丈夫？ ケガしてない？",
+      "face": "smile",
+      "color": "#ff8fc8",
+      "name": "alias"
     }
   },
   {

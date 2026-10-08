@@ -1,0 +1,441 @@
+[
+  {
+    "id": "hajime",
+    "name": "はじめ",
+    "full": "",
+    "title": "tonariの新人",
+    "line": "いつか自分の店を持ちたい",
+    "expression": "normal",
+    "color": "#eee0bd",
+    "secondary": "#fff5dc",
+    "shadow": "#29251b",
+    "motif": "smoke",
+    "motif_label": "キャップ・マウスピース・煙",
+    "portrait": "asset_sources/character-intros/personality-v2/references/hajime-normal.png",
+    "frame": {
+      "width": 1006.345,
+      "left": -317.163,
+      "top": -142.828
+    },
+    "portrait_sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+    "portrait_authority": "前回の登場モックアップに使用した制作済み立ち絵",
+    "caption_source": "前回モックアップの提示案。ゲームの台詞・設定は変更しない",
+    "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/hajime/source.png",
+        "sha256": "1955eab26f6f2ecd06e942f86acd7af2c17b853d31649890290b918c5a6ed743"
+      }
+    }
+  },
+  {
+    "id": "sumi",
+    "name": "スミさん",
+    "full": "",
+    "title": "表舞台を降りた名人",
+    "line": "客が満足したなら、それでいい",
+    "expression": "normal",
+    "color": "#ad603b",
+    "secondary": "#f0c79f",
+    "shadow": "#351608",
+    "motif": "embers",
+    "motif_label": "炭・トング・ハガル",
+    "portrait": "assets/sprites/characters/sumi/chr_sumi_normal.png",
+    "frame": {
+      "width": 952.836,
+      "left": -224.369,
+      "top": -71.534
+    },
+    "portrait_sha256": "35cb31996f3275213b7e659d968d09fec62136d519324a93bb90f1afcf31627c",
+    "portrait_authority": "採用済みゲーム立ち絵",
+    "caption_source": "data/characters.json: sumi.intro_cutin",
+    "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/sumi/source.png",
+        "sha256": "c0e717fd26c4003230e02de8b143d551077d12c83fd62ff0b97803c5a4d8e8f0"
+      }
+    }
+  },
+  {
+    "id": "tsumugi",
+    "name": "つむぎ",
+    "full": "",
+    "title": "tonariの常連イラストレーター",
+    "line": "……煙って、形がないから",
+    "expression": "normal",
+    "color": "#bd95d4",
+    "secondary": "#eaddf4",
+    "shadow": "#251034",
+    "motif": "sketch",
+    "motif_label": "葉耳と煙の尾を持つ猫・ペン",
+    "portrait": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+    "frame": {
+      "width": 1175.42,
+      "left": -307.903,
+      "top": -362.115
+    },
+    "portrait_sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6",
+    "portrait_authority": "採用済みゲーム立ち絵",
+    "caption_source": "data/characters.json: tsumugi.intro_cutin",
+    "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/tsumugi/source.png",
+        "sha256": "cab5063c24b404e295bd03b25286de8b8692543689b6c16d1d394bdb04089247"
+      }
+    }
+  },
+  {
+    "id": "oneesan",
+    "name": "お姉さん",
+    "full": "",
+    "title": "静かな煙を楽しむ常連",
+    "line": "……お任せで、一台",
+    "expression": "ura_normal",
+    "color": "#929b77",
+    "secondary": "#e6e9cf",
+    "shadow": "#1a2a10",
+    "motif": "quiet",
+    "motif_label": "カップ・静かな煙・波紋",
+    "portrait": "assets/sprites/characters/minto/chr_minto_ura_normal.png",
+    "frame": {
+      "width": 1082.034,
+      "left": -320.947,
+      "top": -242.169
+    },
+    "portrait_sha256": "c9a603a9c9c9b0438781573180d8c6e0ecac6c425a17c116623b0ba4b6d48bf2",
+    "portrait_authority": "採用済みゲーム立ち絵",
+    "caption_source": "data/characters.json: oneesan.intro_cutin",
+    "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/oneesan/source.png",
+        "sha256": "14565d73125cd03a617f616dbebff9f145907cdc46c2687245bba8c776644833"
+      }
+    }
+  },
+  {
+    "id": "naru",
+    "name": "なる",
+    "full": "",
+    "title": "地元最強の好敵手",
+    "line": "うまくなりたいなら全部見てけ",
+    "expression": "smile",
+    "color": "#eada39",
+    "secondary": "#fff5ad",
+    "shadow": "#292c05",
+    "motif": "speed",
+    "motif_label": "バニラの莢・斜線",
+    "portrait": "asset_sources/character-intros/personality-v2/references/naru-smile.png",
+    "frame": {
+      "width": 985.946,
+      "left": -203.828,
+      "top": -111.653
+    },
+    "portrait_sha256": "a4ba1b117f50291a1d4fd7cecf8c1519a87dad5d70da8b0f1eea44fad7f1cc23",
+    "portrait_authority": "前回の登場モックアップに使用した制作済み立ち絵",
+    "caption_source": "data/characters.json: naru.intro_cutin",
+    "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/naru/source.png",
+        "sha256": "d2f8991eff9ef9b95d20aeb1422aa6cbec7c620b4f95b2f77f389c3132ba61c1"
+      }
+    }
+  },
+  {
+    "id": "adam",
+    "name": "アダム",
+    "full": "",
+    "title": "ダブルアップルの伝道師",
+    "line": "煙は二種類。ダブルアップルと、それ以外だ",
+    "expression": "intense",
+    "color": "#ce3d40",
+    "secondary": "#85c96d",
+    "shadow": "#092d18",
+    "motif": "duality",
+    "motif_label": "左の青りんご（緑）・右の赤りんご・対になる円",
+    "portrait": "asset_sources/character-intros/personality-v2/references/adam-intense.png",
+    "frame": {
+      "width": 976.52,
+      "left": -182.625,
+      "top": -96.054
+    },
+    "portrait_sha256": "ece87271c106a0eadc419e37fedbce03b1c9036daf7a9012e5e3d89aa52f8cdc",
+    "portrait_authority": "前回の登場モックアップに使用した制作済み立ち絵",
+    "caption_source": "data/characters.json: adam.intro_cutin",
+    "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/adam/source.png",
+        "sha256": "95501842a6a4e424501dd6c4d4f826f9ad51e5412e650e58b8bdac3ccee69868"
+      }
+    }
+  },
+  {
+    "id": "minto",
+    "name": "みんと",
+    "full": "",
+    "title": "ぺぱーみんと人気No.1キャスト",
+    "line": "みんとでーす♪ 全員まとめてライバルね？",
+    "expression": "wink",
+    "color": "#36c59c",
+    "secondary": "#ffdbeb",
+    "shadow": "#042f22",
+    "motif": "hearts",
+    "motif_label": "ミントの葉・ハート・チェキ",
+    "portrait": "assets/sprites/characters/minto/chr_minto_wink.png",
+    "frame": {
+      "width": 1091.282,
+      "left": -306.801,
+      "top": -254.308
+    },
+    "portrait_sha256": "2c97ce12f4b6773af39d32f682d23e45bde81e726d560015b8f71d1730bc3646",
+    "portrait_authority": "採用済みゲーム立ち絵",
+    "caption_source": "data/characters.json: minto.intro_cutin",
+    "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/minto/source.png",
+        "sha256": "2e854bcd76e578de532989a2957cae7716908adedacf46f18fcbe4d8c2c621f8"
+      }
+    }
+  },
+  {
+    "id": "rin",
+    "name": "凛",
+    "full": "",
+    "title": "問屋街の魔女",
+    "line": "ようこそ、夜の側へ",
+    "expression": "smile",
+    "color": "#5a60b6",
+    "secondary": "#cfd5ff",
+    "shadow": "#131746",
+    "motif": "witch",
+    "motif_label": "サンプル缶・試香紙・ブルーベリー",
+    "portrait": "assets/sprites/characters/rin/chr_rin_smile.png",
+    "frame": {
+      "width": 1023.487,
+      "left": -204.317,
+      "top": -161.9
+    },
+    "portrait_sha256": "f44c1306d2b6c7140b6eec8183fabe4813ea7507ed76f1b47c2b24e692d76466",
+    "portrait_authority": "採用済みゲーム立ち絵",
+    "caption_source": "data/characters.json: rin.intro_cutin",
+    "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/rin/source.png",
+        "sha256": "fcb3b6ad38c868e00ff2c87d3de52a863dab90c7ec570ea128bf03f6d8c50528"
+      }
+    }
+  },
+  {
+    "id": "kafuka",
+    "name": "サメちゃん",
+    "full": "",
+    "title": "サメの王の側近",
+    "line": "お主、サメは好きか？",
+    "expression": "smile",
+    "color": "#298bdb",
+    "secondary": "#a6ddff",
+    "shadow": "#082a48",
+    "motif": "shark",
+    "motif_label": "王冠を被ったサメ・波",
+    "portrait": "asset_sources/character-intros/personality-v2/references/kafuka-normal.png",
+    "frame": {
+      "width": 1124.934,
+      "left": -286.716,
+      "top": -295.965
+    },
+    "portrait_sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b",
+    "portrait_authority": "前回の登場モックアップに使用した制作済み立ち絵",
+    "caption_source": "data/dialogue/kafuka.json: profile.intro_cutin",
+    "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/kafuka/source.png",
+        "sha256": "f5c5872656a2eb7d344333a6dc66745a1372e979492230248490b9901c26b2c6"
+      }
+    }
+  },
+  {
+    "id": "nagumo",
+    "name": "南雲修二",
+    "full": "",
+    "title": "C.STATION会長・審査員長",
+    "line": "吸えば分かる",
+    "expression": "serious",
+    "color": "#afbccc",
+    "secondary": "#e7edf4",
+    "shadow": "#152539",
+    "motif": "judgment",
+    "motif_label": "ネクタイ・審査の円",
+    "portrait": "assets/sprites/characters/nagumo/chr_nagumo_serious.png",
+    "frame": {
+      "width": 921.046,
+      "left": -139.562,
+      "top": -25.733
+    },
+    "portrait_sha256": "589da38a726d6057f4536684554f9174ae7ea0890b2bd8bc87846088cea3c086",
+    "portrait_authority": "採用済みゲーム立ち絵",
+    "caption_source": "data/characters.json: nagumo.intro_cutin",
+    "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/nagumo/source.png",
+        "sha256": "22c89669098b46a28deb591730d34369764c42e7235ee9cc0c09d543d26f2988"
+      }
+    }
+  },
+  {
+    "id": "maezono",
+    "name": "前園壮一郎",
+    "full": "",
+    "title": "HOOKAH PRESS編集長",
+    "line": "シーシャはおいしいねえ",
+    "expression": "excited",
+    "color": "#398384",
+    "secondary": "#bfe5df",
+    "shadow": "#062d30",
+    "motif": "press",
+    "motif_label": "誌面・眼鏡・ペン",
+    "portrait": "asset_sources/portraits/maezono-remaster-v1/excited-preview.png",
+    "frame": {
+      "width": 931.971,
+      "left": -130.261,
+      "top": -43.131
+    },
+    "portrait_sha256": "d64c9a86c9ef297200bb0a39bef5f3f15e1e0d0e03219881d99cd40aaeac22ca",
+    "portrait_authority": "採用済み再制作立ち絵の確認用PNG（PR #225で本編採用済み）",
+    "caption_source": "data/characters.json: maezono.intro_cutin",
+    "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/maezono/source.png",
+        "sha256": "5a4c253221c3a055675391ab6b06b04ad2eb0576ee4e9f94abb5a94975241fd9"
+      }
+    }
+  },
+  {
+    "id": "dr_kemuri",
+    "name": "チャコール博士",
+    "full": "",
+    "title": "データの鬼",
+    "line": "データは嘘をつきません",
+    "expression": "smile",
+    "color": "#39d7e7",
+    "secondary": "#cafaff",
+    "shadow": "#032d3a",
+    "motif": "science",
+    "motif_label": "温度計・計測円・六角格子・グラフ",
+    "portrait": "asset_sources/character-intros/personality-v2/references/dr_kemuri-smile.png",
+    "frame": {
+      "width": 940.552,
+      "left": -136.884,
+      "top": -52.276
+    },
+    "portrait_sha256": "df71fa86213f88328e0b5808fc666ea9cd84284ab2ac2e624188b9ae6b484518",
+    "portrait_authority": "前回の登場モックアップに使用した制作済み立ち絵",
+    "caption_source": "data/characters.json: dr_kemuri.intro_cutin",
+    "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/dr_kemuri/source.png",
+        "sha256": "9f1508e98a1d98c977c29637601536f8fc5dd2badaea54f6f379294817298d92"
+      }
+    }
+  },
+  {
+    "id": "pakki",
+    "name": "パッキー",
+    "full": "",
+    "title": "大会名物MC兼マスコット",
+    "line": "ぷぷぷっ！ 会場は満席御礼ッ！",
+    "expression": "smile",
+    "color": "#f58232",
+    "secondary": "#ffe0ac",
+    "shadow": "#3a1905",
+    "motif": "stage",
+    "motif_label": "マイク・蝶ネクタイ・音の波",
+    "portrait": "asset_sources/portraits/pakki-remaster-v1/smile-preview.png",
+    "frame": {
+      "width": 518.347,
+      "left": 5.198,
+      "top": -19.174
+    },
+    "portrait_sha256": "35aaaf42dc2a16e83ac480e23b3d8040908d9f4c81779ebe327df5766f54d8b8",
+    "portrait_authority": "採用済み再制作立ち絵の確認用PNG（PR #225で本編採用済み）",
+    "caption_source": "data/characters.json: pakki.intro_cutin",
+    "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/pakki/source.png",
+        "sha256": "0e79f68ac4e3fcbda484f4de78e24107ffa697efabb4415539cdba2d0dc75b19"
+      }
+    }
+  },
+  {
+    "id": "ageha_unknown",
+    "name": "？？？",
+    "full": "",
+    "title": "実在したオタクに優しいギャル",
+    "line": "大丈夫？ ケガしてない？",
+    "expression": "smile",
+    "color": "#e956a5",
+    "secondary": "#ffd7eb",
+    "shadow": "#3b0829",
+    "motif": "butterfly",
+    "motif_label": "クマ・グミベア・肉球",
+    "portrait": "assets/sprites/characters/ageha/chr_ageha_smile.png",
+    "frame": {
+      "width": 1051.946,
+      "left": -273.631,
+      "top": -202.68
+    },
+    "portrait_sha256": "91f2f98000a1b7e79c102bf4db031fb5bc48f5cc2b330d808d3f419bc249bc84",
+    "portrait_authority": "採用済みゲーム立ち絵",
+    "caption_source": "data/characters.json: ageha.intro_cutin_unknown",
+    "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/ageha/source.png",
+        "sha256": "96cc87c98884e12cc1cc81aa8272e47b8f0bb52cd6693f7d62097715b3c89046"
+      }
+    },
+    "select_label": "？？？（初遭遇）",
+    "scope_note": "第1章DAY4・買い出しの帰りに荷物を拾ってもらう初遭遇。名前・本名・バイブスは開示しない。"
+  },
+  {
+    "id": "ageha",
+    "name": "あげは",
+    "full": "",
+    "title": "バイブスの天才",
+    "line": "あたし超感覚派なんだよね〜",
+    "expression": "normal",
+    "color": "#e956a5",
+    "secondary": "#ffd7eb",
+    "shadow": "#3b0829",
+    "motif": "butterfly",
+    "motif_label": "クマ・グミベア・肉球",
+    "portrait": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+    "frame": {
+      "width": 1049.784,
+      "left": -277.716,
+      "top": -199.842
+    },
+    "portrait_sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+    "portrait_authority": "採用済みゲーム立ち絵",
+    "caption_source": "data/characters.json: ageha.intro_cutin",
+    "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
+    "backgrounds": {
+      "illustrated": {
+        "src": "asset_sources/character-intros/ch1-v3/backgrounds/ageha/source.png",
+        "sha256": "96cc87c98884e12cc1cc81aa8272e47b8f0bb52cd6693f7d62097715b3c89046"
+      }
+    },
+    "select_label": "あげは（第2章）",
+    "scope_note": "第2章の名乗り後。プロとしての目を開いたnormal表情。初遭遇版とは別素材。"
+  }
+]

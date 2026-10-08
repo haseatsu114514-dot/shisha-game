@@ -43,6 +43,7 @@ try {
       assert(b.left >= 0 && b.right <= 1280 && b.top >= 0 && b.bottom <= 720, `${id}: ${key}「${b.text}」が画面からはみ出す ${JSON.stringify(b)}`);
     }
     assert(box.name.right <= 1280 - 40, `${id}: 名前「${box.name.text}」が右端に詰まりすぎ`);
+    assert.equal(await page.locator('.cutin .ci-full').count(), 0, `${id}: 括弧付きの本名が表示されている`);
     if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/cutin_${id}.png` });
     await page.locator(".cutin").click();
     await page.keyboard.press("Enter");
@@ -51,10 +52,10 @@ try {
     assert.equal(await page.locator(".cutin").count(), 0, `${id}: 自動で閉じない`);
   }
 
-  // 2) 名前の出し方: 大きいのは名前欄と同じ呼び名、フルネームは下に小さく（）。伏せる相手（みんと＝栞・零＝田中健太）は出さない
+  // 2) 名前の出し方: 全員で呼び名のみ、本名の括弧を廃止。物語の名乗りは残す
   const rule = await page.evaluate(() => Object.fromEntries(["naru", "sumi", "tsumugi", "nagumo", "minto"].map((id) => [id, T.intro.introName(id)])));
-  assert.deepEqual(rule.naru, { main: "なる", full: "鳴切 亮太" });
-  assert.deepEqual(rule.sumi, { main: "スミさん", full: "墨田 丈一郎" });
+  assert.deepEqual(rule.naru, { main: "なる", full: "" });
+  assert.deepEqual(rule.sumi, { main: "スミさん", full: "" });
   assert.deepEqual(rule.tsumugi, { main: "つむぎ", full: "" }, "フルネームの無いキャラに（）が付く");
   assert.equal(rule.nagumo.full, "", "呼び名とフルネームが同じなら（）を付けない");
   assert.deepEqual(rule.minto, { main: "みんと", full: "" });

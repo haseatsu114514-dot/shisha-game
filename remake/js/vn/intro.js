@@ -1,8 +1,8 @@
 // 初登場カットイン: キャラが名乗って名前が出たあと、最初に一度だけ「名前・二つ名・一言」を全画面で出す。
 // 文言の正本は data/characters.json の intro_cutin（かふかは kafuka.json の profile）。
 //   { title: 二つ名, line: 一言, face: 立ち絵の表情, color: 差し色, name: "alias"=フルネームを伏せる（ネタバレになる相手） }
-// 名前の出し方（オーナー指定・2026-10-07）: 大きく出すのは一番よく呼ばれる呼び名＝会話の名前欄と同じ表示名。
-// フルネームがあって呼び名と違うキャラだけ、その下に小さく（）で添える。ふりがなは出さない
+// 名前の出し方（オーナー指定・2026-10-08）: 会話の名前欄と同じ呼び名だけを表示する。
+// 括弧付きの本名は全員で廃止。本名はストーリーの名乗りで扱う
 // 見たかどうかはセーブの flags._intro_<id>（会話の途中で出す・同じセーブでは二度と出さない）
 import { el, sleep } from "../core/util.js";
 import { DB, displayName, portraitInfo } from "../core/data.js";
@@ -41,13 +41,9 @@ export function nameParts(id) {
   return { full, reading: inner[0] || "", alias };
 }
 
-/** カットインに出す名前（大きい呼び名・下に小さく添えるフルネーム） */
+/** カットインに出す名前。呼び名のみ、本名は表示しない */
 export function introName(id) {
-  const main = displayName(id, state);
-  const { full } = nameParts(id);
-  const same = (a, b) => a.replace(/\s/g, "") === b.replace(/\s/g, "");
-  const hide = introOf(id)?.name === "alias" || !full || same(main, full);
-  return { main, full: hide ? "" : full };
+  return { main: displayName(id, state), full: "" };
 }
 
 /** 1行に収める字の大きさ（半角は約半分の幅で数える） */
@@ -73,7 +69,7 @@ export async function playIntro(id, { onAppear = null, override = {} } = {}) {
   const intro = { ...introOf(id), ...override };
   if (!introOf(id)) return;
   markIntroSeen(id);
-  const { main, full } = override.display_name ? { main: override.display_name, full: "" } : introName(id);
+  const main = override.display_name || introName(id).main;
   const p = portraitInfo(id, intro.face || "normal");
   const portrait = p ? el("img.ci-portrait", { src: p.src, alt: "", draggable: "false" }) : el("div.ci-portrait.none", { text: [...main][0] || "？" });
   if (p) {
@@ -95,7 +91,6 @@ export async function playIntro(id, { onAppear = null, override = {} } = {}) {
     el("div.ci-meta", [
       el("div.ci-title", { text: intro.title || "" }),
       el("div.ci-name", { text: main, style: `font-size: ${fitSize(main, 570, 116)}px` }),
-      full ? el("div.ci-full", { text: `（${full}）` }) : null,
     ].filter(Boolean)),
     intro.line ? el("div.ci-line", { text: `「${intro.line}」`, style: `font-size: ${fitSize(`「${intro.line}」`, 575, 30)}px` }) : null,
   ].filter(Boolean));
