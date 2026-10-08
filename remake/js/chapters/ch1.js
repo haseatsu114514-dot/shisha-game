@@ -78,6 +78,7 @@ export async function startNewGame() {
   playBgm("tonari");
   await play("ch1_opening", { bg: TONARI });
   save();
+  await play("ch1_tsumugi_departure", { bg: TONARI });
   await play("remake_tutorial_offer", { bg: TONARI });
   if (flag("_tutorial_requested")) await tutorial();
   else setFlag("_tutorial_skipped");

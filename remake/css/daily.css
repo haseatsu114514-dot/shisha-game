@@ -1030,3 +1030,11 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .sleep-gauge {height:26px; border-radius:14px; padding:3px; background:#030e08; border:1px solid #9bd2a488; overflow:hidden;}
 .sleep-gauge b {display:block; height:100%; border-radius:10px; background:linear-gradient(90deg,#5ea87b,#abf0af); box-shadow:0 0 18px #95efa577; transition:width 1.05s cubic-bezier(.25,.65,.3,1);}
 @media(prefers-reduced-motion:reduce) {.sleep-recovery,.sleep-gauge b {transition:none; transform:none;}}
+.keepsake-list { display: flex; gap: 16px; margin-bottom: 20px; }
+.keepsake-card { display: flex; align-items: center; gap: 15px; background: #100b1b; border: 1px solid #e8c27a55; border-radius: 10px; padding: 10px; text-align: left; cursor: pointer; }
+.keepsake-card img { width: 140px; border-radius: 4px; }
+.keepsake-card span { display: flex; flex-direction: column; gap: 8px; }
+.keepsake-card small { color: var(--text-dim); }
+.keepsake-viewer { position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; border: 0; background: #080611f5; cursor: pointer; }
+.keepsake-viewer img { width: 90%; max-height: 610px; object-fit: contain; }
+.keepsake-viewer span { color: var(--gold); }

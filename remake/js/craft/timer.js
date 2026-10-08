@@ -5,23 +5,25 @@ import { stepPanel } from "./session.js";
 import { autoSkill } from "./common.js";
 import { artImg } from "./art.js";
 import { buildDigitalClock } from "./digital-clock.js";
+import { MAX_STEAM_SECONDS, normalizeSteamSeconds } from "./steam-time.js";
 
 export function runSteamTimer(cs, hint) {
   const panel = stepPanel("steam", "蒸らし時間", hint, { brief: "秒は10秒ずつ。5〜8分が目安" });
-  let seconds = cs.steamSeconds ?? 0;
+  let seconds = normalizeSteamSeconds(cs.steamSeconds ?? 0);
   const clock = buildDigitalClock("timer-display", { live: true, test: "timer-display" });
   const advice = el("p.timer-advice");
   let start;
   const render = () => {
     clock.update(seconds);
     start.disabled = seconds === 0;
+    panel.querySelectorAll("[data-test='timer-minute-up'], [data-test='timer-second-up']").forEach((b) => { b.disabled = seconds >= MAX_STEAM_SECONDS; });
     advice.textContent = !seconds ? "ボタンで時間を設定しよう" : seconds < 300 ? "短めの蒸らし。吸い出しで熱を入れる"
       : seconds < 450 ? "香りの輪郭を残す。吸い出しは低めの温度から"
-      : seconds < 600 ? "じっくり熱を入れる。吸い出しに余裕ができる" : "長めの蒸らし。焦げに気をつけたい";
+      : seconds < 600 ? "じっくり熱を入れる。吸い出しに余裕ができる" : "上限10分。特に熱を必要とする機材・フレーバー向け。通常は5〜8分を目安に";
   };
   return new Promise((resolve) => {
-    const addMinute = () => { SE.click(); seconds = ((Math.floor(seconds / 60) + 1) % 100) * 60 + seconds % 60; render(); };
-    const addSecond = () => { SE.click(); seconds = Math.floor(seconds / 60) * 60 + (seconds % 60 + 10) % 60; render(); };
+    const addMinute = () => { SE.click(); seconds = normalizeSteamSeconds(seconds + 60); render(); };
+    const addSecond = () => { SE.click(); seconds = normalizeSteamSeconds(seconds + 10); render(); };
     const button = (label, test, column, action) => el("button.timer-button", {
       text: label, dataset: { test }, style: { left: `${[15, 34, 60, 85][column - 1]}%` }, onclick: action,
     });

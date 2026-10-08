@@ -1,0 +1,65 @@
+{
+  "character": "pakki",
+  "status": "pending",
+  "generated": "2026-10-08",
+  "tool": "image_gen.imagegen",
+  "source_size": [
+    2172,
+    724
+  ],
+  "expressions": [
+    "normal",
+    "smile",
+    "angry",
+    "surprise",
+    "smoke"
+  ],
+  "normalization": {
+    "canvas": [
+      896,
+      1200
+    ],
+    "baseline": 1174,
+    "shared_scale": 2.109688386900725,
+    "operation": "RGBA-preserving crop and shared Lanczos resize; native original sheet and slices retained",
+    "foot_anchor_x": 448
+  },
+  "references": [
+    {
+      "path": "reference-originals.jpg",
+      "sha256": "11956561b9295e08f5eb8feae9d001a9d970d5880ab68ba91df5d462f8d0cbd7"
+    },
+    {
+      "path": "assets/sprites/characters/pakki/chr_pakki_normal.png",
+      "sha256": "dac4c29d856907b29b879b7ab2ebf92c5b38bc637f0714a5c9f61fb30e03f361"
+    },
+    {
+      "path": "assets/sprites/characters/pakki/chr_pakki_smoke.png",
+      "sha256": "89837aab38570e92f41a319d8b3dd902da87dfb01fa2b310b623a6ae6f6953c0"
+    },
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    }
+  ],
+  "runtime_adopted": false,
+  "files": {
+    "angry-preview.png": "6695ff4306c5b543549b2d53d7ecc5f52028feafc628889c14cee07f80e44f3f",
+    "surprise-source.png": "2785464e2b83242f678fd5b15316e631f13a03d743b4dd71e301b9466cfa2fab",
+    "smoke-source.png": "d86f08397191df4848da0b7b254e71bf8bdd9794d6045fcabd58358fc72a51d3",
+    "review.png": "3424bbfa863f71053ac21419a2bc1940656e614aca10a1b8412f06ac6eeae778",
+    "angry-source.png": "3edd236b36a807786efe8b1441a7fc666c3ea803349b327eba6fd83dab4eb657",
+    "smile-preview.png": "35aaaf42dc2a16e83ac480e23b3d8040908d9f4c81779ebe327df5766f54d8b8",
+    "surprise-preview.png": "9d8c093266dc758d64eb015de9587c53a66633bd97678fd7a6d033ddb9c7a567",
+    "normal-preview.png": "55453063da2f9957ebf78b3e64eab4489559b5acd85b4edfe285d57ad7632ede",
+    "sheet.png": "75d0c1ba7819c3f18ba02f4b2fd6cddf820570a336cbdef360358390300891ec",
+    "smoke-preview.png": "ff3f8a8839107ffe4b026b972af408a4793af04acdf4553cb309586095449c0c",
+    "review-dark.png": "19bed984824223bb7b332ab843ddb8ced0997c262d98899e9850668cbf8b6f22",
+    "normal-source.png": "4d9c7ad2fe4f037fb9951534c0c20a85ac2d5f601ac88e5cc9e9787cafb63c42",
+    "smile-source.png": "8877ef61346f97ceb486d85d4cc785bb48f450f2696a8950140bcce6346fb270"
+  }
+}

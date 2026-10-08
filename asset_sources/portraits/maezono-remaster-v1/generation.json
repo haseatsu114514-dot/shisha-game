@@ -1,0 +1,65 @@
+{
+  "character": "maezono",
+  "status": "pending",
+  "generated": "2026-10-08",
+  "tool": "image_gen.imagegen",
+  "source_size": [
+    1881,
+    836
+  ],
+  "expressions": [
+    "normal",
+    "smile",
+    "serious",
+    "surprise",
+    "excited"
+  ],
+  "normalization": {
+    "canvas": [
+      896,
+      1200
+    ],
+    "baseline": 1174,
+    "shared_scale": 1.4814814814814814,
+    "operation": "RGBA-preserving crop and shared Lanczos resize; native original sheet and slices retained",
+    "foot_anchor_x": 448
+  },
+  "references": [
+    {
+      "path": "reference-originals.jpg",
+      "sha256": "e9b09f54f657933f6ae9f204ecc142d99ee827b4775ed84f7f69a2a7894f6a9d"
+    },
+    {
+      "path": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+      "sha256": "624a1e5148e6fa7afd5b9933a2450460cb9244054413e0e89b96d0ab98e525bc"
+    },
+    {
+      "path": "assets/sprites/characters/maezono/chr_maezono_excited.png",
+      "sha256": "489b03c1e5170cb55c32d21ecd914738016b65a506b57c78f3e0068e7b9076f0"
+    },
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    }
+  ],
+  "runtime_adopted": false,
+  "files": {
+    "serious-source.png": "0b6f49f85b94b3b2a643eedfec89037503f08b1530b2be506e6dac9f09550dfe",
+    "serious-preview.png": "cec826901633084efb4ebf994d192a97d667795d10186a3704665dd27f6f8ba9",
+    "excited-source.png": "2ba8be93da846dbcb0da03bce027c88a8896bdb3a6e879147fefa9fdf7392f7e",
+    "surprise-source.png": "602507fd7849a8eb6d2aa672795b34ad1583864aa609d2b53461d7d438a7cb00",
+    "review.png": "8987d7fdb7faa4992399037cbd8db7fd561ed0453e9869022b47e761b861a8b7",
+    "smile-preview.png": "3ea917d40520d44e44f0608328800b1b46128d2bb6ad5508055aed4ad1ead1f1",
+    "surprise-preview.png": "9b7b257f499cd42c5161a5203815d06e659d2eb96e9879d135b4e97dc42bcceb",
+    "normal-preview.png": "487c0ee519326794d5d74cc52f7c4e3d6db7728304a26907eee1d729ad46fae5",
+    "sheet.png": "9f8e9569a3bea4d171345a9c3e163486f9f6d0161bd10290915e91c45d47032a",
+    "excited-preview.png": "d64c9a86c9ef297200bb0a39bef5f3f15e1e0d0e03219881d99cd40aaeac22ca",
+    "review-dark.png": "79fa59bf65d694b57fdf11c4115ed92cc82ec75d39bd6e1a861da03aa8c97f19",
+    "normal-source.png": "ee8e3c06eaacd378ddecf62fab9ecdf59a7f3de2f3145ac5a3f00f0503ef1d95",
+    "smile-source.png": "18abfcb27588f14747882351a65de0ac0ee74dcdac6a14faf6e0b284d60d4e5e"
+  }
+}

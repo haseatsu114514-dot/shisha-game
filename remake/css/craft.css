@@ -378,7 +378,7 @@
 
 /* ---------------------------------------------------------------- 吸い出し */
 .pull { display: flex; gap: 30px; align-items: center; height: 100%; }
-.thermo { display: flex; gap: 8px; height: 440px; }
+.thermo { position: relative; display: flex; gap: 8px; height: 440px; }
 .thermo-tube { position: relative; width: 44px; height: 100%; border-radius: 22px; background: rgba(255, 255, 255, 0.08); border: 2px solid rgba(255, 255, 255, 0.25); overflow: hidden; }
 .thermo-tube b { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(0deg, #4a7bff, #ffb04a 55%, #ff4a4a); transition: height 0.4s var(--ease-out); opacity: 0.85; }
 .thermo-zone { position: absolute; left: 0; right: 0; background: rgba(142, 230, 168, 0.35); border-top: 2px solid var(--good); border-bottom: 2px solid var(--good); z-index: 1; }
@@ -637,6 +637,9 @@
 .thermo-tube b, .thermo-mark { transition: none; }
 .thermo-mark { z-index: 3; }
 .thermo.optimal .thermo-mark { background: #ffdf88; box-shadow: 0 0 12px #ffd06b; }
+.thermo-projected { position: absolute; left: 0; right: 0; height: 8px; margin-bottom: -4px; border: 2px dashed #fff2c5; background: #fff4bd20; z-index: 4; }
+.thermo-projected-label { position: absolute; left: -4px; bottom: -32px; white-space: nowrap; font-size: 12px; color: #fff2c5; padding: 4px 7px; border: 1px dashed #e8c27a99; border-radius: 5px; background: #151024e8; }
+.thermo-projected[hidden], .thermo-projected-label[hidden] { display: none; }
 
 /* 長い評価・雨/少穴の案内も固定ステージ内で折り返す。温度帯と入力座標は変えない。 */
 .hr-side, .pull-main { min-width: 0; }

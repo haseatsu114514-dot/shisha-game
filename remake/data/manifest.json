@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-08 03:33 UTC",
+ "generated": "2026-10-08 07:55 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -237,7 +237,8 @@
   "cg_ch1_minto_casual_reveal.png",
   "cg_ch1_sumi_training.png",
   "cg_ch1_tournament_battle.png",
-  "cg_ch1_tsumugi_heart_art.png"
+  "cg_ch1_tsumugi_heart_art.png",
+  "cg_minto_first_cheki.png"
  ],
  "faceIcons": [
   "face_adam.png",
@@ -678,6 +679,7 @@
   "cgs/cg_ch1_sumi_training.png",
   "cgs/cg_ch1_tournament_battle.png",
   "cgs/cg_ch1_tsumugi_heart_art.png",
+  "cgs/cg_minto_first_cheki.png",
   "sprites/characters/adam/chr_adam_intense.png",
   "sprites/characters/adam/chr_adam_normal.png",
   "sprites/characters/adam/chr_adam_serious.png",
@@ -755,6 +757,7 @@
   "sprites/characters/tsumugi/chr_tsumugi_serious.png",
   "sprites/characters/tsumugi/chr_tsumugi_smile.png",
   "sprites/characters/tsumugi/chr_tsumugi_surprise.png",
+  "ui/chapters/ch1_keyart.png",
   "ui/making/bench_base.png",
   "ui/making/bench_note.png",
   "ui/making/bowl_empty_clay.png",

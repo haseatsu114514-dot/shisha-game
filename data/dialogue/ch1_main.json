@@ -113,7 +113,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "──閉店時間。最後の客が帰ると、店は急に広くなる。換気扇の音だけが、ぼんやりと鳴り続けている。"
+          "text": "──夕方の落ち着いた時間。片付けたテーブルが、少し広く見える。換気扇の音が、ぼんやりと鳴り続けている。"
         },
         {
           "speaker": "sumi",
@@ -284,12 +284,12 @@
           {
             "speaker": "",
             "face": "",
-            "text": "照明を落とす。店が暗くなる。フレーバーの残り香だけが、まだそこにいる。"
+            "text": "窓の外が少しずつ暗くなる。店の中には、フレーバーの残り香がまだ漂っていた。"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "帰り道。夜風が頬を撫でる。"
+            "text": "カウンターに戻りながら、窓の外へ目をやる。"
           },
           {
             "speaker": "hajime",
@@ -365,12 +365,12 @@
           {
             "speaker": "",
             "face": "",
-            "text": "照明を落とす。フレーバーの残り香だけが、暗い店内にまだ漂っている。"
+            "text": "窓の外が少しずつ暗くなる。店の中には、フレーバーの残り香がまだ漂っていた。"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "帰り道。手の中のフレーバーのパッケージを、街灯にかざしてみる。"
+            "text": "カウンターの灯りに、手の中のフレーバーのパッケージをかざしてみる。"
           },
           {
             "speaker": "hajime",
@@ -416,7 +416,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "帰り道。有名になった自分の姿は、やたらとリアルだった。大会まであと{daysLeft}日。"
+            "text": "有名になった自分の姿は、やたらとリアルだった。大会まであと{daysLeft}日。"
           }
         ],
         "of_rival": [
@@ -443,12 +443,12 @@
           {
             "speaker": "sumi",
             "face": "normal",
-            "text": "いい。帰れ"
+            "text": "いい。今は店に戻れ"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "言葉の意味はまだわからない。でも帰り道、なぜか引っかかっていた。大会まであと{daysLeft}日。"
+            "text": "言葉の意味はまだわからない。でもカウンターに戻ってからも、なぜか引っかかっていた。大会まであと{daysLeft}日。"
           }
         ],
         "hz_show": [
@@ -490,8 +490,11 @@
           "face": "",
           "text": "窓際の女の子が、iPadに描いていた。目が合うと、小さく会釈して、また画面に目を落とす。",
           "portrait": "tsumugi",
-          "portrait_face": "normal",
-          "gesture": "bow"
+          "portrait_face": "bow"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "tsumugi"
         },
         {
           "speaker": "",
@@ -1243,9 +1246,18 @@
       },
       "lines": [
         {
+          "type": "sfx",
+          "id": "doorbell"
+        },
+        {
           "speaker": "",
-          "face": "",
-          "text": "カウンターを整えていると、ドアベルが鳴った。"
+          "text": "ドアが開き、落ち着いた雰囲気のお姉さんが店に入ってきた。",
+          "portrait": "oneesan",
+          "portrait_face": "ura_normal"
+        },
+        {
+          "type": "intro",
+          "char_id": "oneesan"
         },
         {
           "speaker": "sumi",
@@ -1253,17 +1265,9 @@
           "text": "悪い、俺は仕込みがある。──はじめ、頼めるか"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "窓際の女の子が、iPadに描く手を止めた。こちらに気づいて、ぺこりと会釈する。",
-          "portrait": "tsumugi",
-          "portrait_face": "smile",
-          "gesture": "bow"
-        },
-        {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "（よく描いてる子だ。……会釈を返して、っと）"
+          "face": "smile",
+          "text": "いらっしゃいませ。お席にご案内しますね"
         },
         {
           "speaker": "oneesan",
@@ -1279,21 +1283,6 @@
           "speaker": "",
           "face": "",
           "text": "名前は知らない。"
-        },
-        {
-          "speaker": "oneesan",
-          "face": "ura_smile",
-          "text": "じゃあ……お任せで、一台。きみの好きに作って、いいよ"
-        },
-        {
-          "speaker": "oneesan",
-          "face": "ura_smile",
-          "text": "……あ。ミントは、平気。むしろ好き、だから……"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "かしこまりました。（お客さんの方から好みを言ってくれた、……ありがたい）"
         },
         {
           "speaker": "hajime",
@@ -1323,6 +1312,21 @@
           "speaker": "",
           "face": "",
           "text": "お姉さんはそそくさと身分証をしまうと、なんでもない顔でメニューに視線を戻した。"
+        },
+        {
+          "speaker": "oneesan",
+          "face": "ura_smile",
+          "text": "じゃあ……お任せで、一台。きみの好きに作って、いいよ"
+        },
+        {
+          "speaker": "oneesan",
+          "face": "ura_smile",
+          "text": "……あ。ミントは、平気。むしろ好き、だから……"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "かしこまりました。（お客さんの方から好みを言ってくれた、……ありがたい）"
         },
         {
           "speaker": "",
@@ -1361,15 +1365,19 @@
         {
           "speaker": "oneesan",
           "face": "ura_smile",
-          "text": "ふふ……。じゃ、ごちそうさま。……がんばってね。新人くん"
+          "text": "ふふ……。じゃあ、もう少しゆっくり吸っていくね。……がんばってね、新人くん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございます。ごゆっくりどうぞ"
         },
         {
           "type": "hide_cg"
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "お姉さんは会計を済ませると、「ごちそうさま」と小さく言って帰っていった。"
+          "text": "お姉さんはソファに深く腰を掛け、もう一口、ゆっくりと煙を味わった。"
         },
         {
           "speaker": "",
@@ -1722,6 +1730,51 @@
           "speaker": "",
           "face": "",
           "text": "……【センス】が少し上がった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_tsumugi_departure",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "窓際の女の子が、描いていたiPadをしまって席を立った。",
+          "portrait": "tsumugi",
+          "portrait_face": "normal"
+        },
+        {
+          "type": "intro",
+          "char_id": "tsumugi",
+          "intro": {
+            "display_name": "窓際の女の子",
+            "title": "tonariで煙を描く常連",
+            "line": "……",
+            "face": "normal"
+          }
+        },
+        {
+          "speaker": "",
+          "text": "会計を済ませると、こちらに小さく会釈した。",
+          "portrait": "tsumugi",
+          "portrait_face": "bow"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "tsumugi"
+        },
+        {
+          "type": "sfx",
+          "id": "doorbell"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "ありがとうございました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとうございました！"
         }
       ]
     }

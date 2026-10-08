@@ -1,0 +1,17 @@
+{
+  "generated": "2026-10-08",
+  "tool": "image_gen.imagegen",
+  "runtime_asset": "assets/cgs/cg_minto_first_cheki.png",
+  "original_sha256": "385546f266bed145b7c30964171137a460891bfa7c12e41d4afd06bbe1d14900",
+  "references": [
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "path": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+      "sha256": "b594fa025c35a924f04c37e357b8cc1918e302f05b98a8f59e4c98e7fd71068e"
+    }
+  ],
+  "purpose": "optional 1000 yen first visit keepsake; CG and gallery"
+}

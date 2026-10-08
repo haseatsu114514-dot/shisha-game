@@ -201,18 +201,37 @@
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "会計を済ませると、みんとが一枚のチェキを差し出してきた。"
+          "text": "しばらく煙を楽しんだあと、みんとがカウンターから小さなカメラを持ってきた。"
         },
         {
           "speaker": "minto",
           "face": "wink",
-          "text": "はいっ、初めましての記念チェキ♡ ……裏も、ちゃんと見てね？"
+          "text": "初ご来店の記念に、チェキ撮っていく？ 一枚1,000円だよっ♡"
+        },
+        {
+          "type": "choice",
+          "id": "minto_first_cheki",
+          "choices": [
+            {
+              "text": "一緒に撮る（1,000円）",
+              "next": "cheki_buy",
+              "condition_type": "money",
+              "threshold": 1000
+            },
+            {
+              "text": "今日は見送る",
+              "next": "cheki_decline"
+            }
+          ]
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "裏には丸っこい字で『はじめくん また来てね♡』。その下に、LIMEのIDが書いてあった。"
+          "text": "みんとが、お店の案内カードを手渡してくれた。LIMEのIDも載っている。"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "こっちも、よかったら登録してねっ♡"
         },
         {
           "speaker": "hajime",
@@ -291,8 +310,7 @@
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "──こうして、チェキの裏のIDから、みんとのLIMEがつながった。"
+          "text": "──こうして、お店の案内カードから、みんとのLIMEがつながった。"
         },
         {
           "type": "set_flag",
@@ -374,6 +392,65 @@
           {
             "type": "set_flag",
             "flag": "minto_taste_amai"
+          }
+        ],
+        "cheki_buy": [
+          {
+            "type": "buy_keepsake",
+            "item_id": "minto_first_cheki",
+            "next_success": "cheki_taken",
+            "next_failure": "cheki_short"
+          }
+        ],
+        "cheki_taken": [
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "ありがとっ♡ はじめくん、こっち！ ……はい、チーズっ♪"
+          },
+          {
+            "type": "fx",
+            "id": "flash"
+          },
+          {
+            "type": "show_cg",
+            "cg_id": "cg_minto_first_cheki"
+          },
+          {
+            "speaker": "",
+            "text": "撮れた写真の余白に、みんとが『はじめくん また来てね♡』と書いてくれた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "ありがとうございます。……なんか、ちょっと照れますね"
+          },
+          {
+            "speaker": "minto",
+            "face": "wink",
+            "text": "ふふっ、初めましては一回だけだもん。大事にしてね♡"
+          },
+          {
+            "type": "hide_cg"
+          }
+        ],
+        "cheki_decline": [
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "はーいっ♡ また撮りたくなったら言ってね♪"
+          }
+        ],
+        "cheki_short": [
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……すみません、今日は手持ちが足りなくて"
+          },
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "大丈夫っ♡ 今日は煙を楽しんでもらえたら、それで！"
           }
         ]
       },

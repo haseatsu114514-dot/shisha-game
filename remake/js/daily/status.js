@@ -1,11 +1,12 @@
 // ステータス画面（master_spec #19 / #19-a）。数値は見せず、★・呼称・レーダーの形で伸びを見せる。
 import { el, yen } from "../core/util.js";
-import { DB, displayName, faceIconUrl } from "../core/data.js";
-import { modal, heartRow, statBadge } from "../core/ui.js";
+import { DB, displayName, faceIconUrl, cgUrl } from "../core/data.js";
+import { modal, heartRow, statBadge, layers } from "../core/ui.js";
 import { state, STAT_KEYS, STAT_JA } from "../core/state.js";
 import { star, starText, rankLabel, affinityLevel, currentCondition } from "../core/stats.js";
 import { flavorStock, ownedFlavorIds } from "./shop.js";
 import { BOND_FINALES } from "./bonds.js";
+import { KEEPSAKES } from "../core/keepsakes.js";
 
 const SVG = "http://www.w3.org/2000/svg";
 const svgEl = (tag, attrs = {}) => {
@@ -160,6 +161,15 @@ function itemsTab() {
   const inUse = new Set(Object.values(state.equip));
   const gifts = eq.filter((e) => e.gift);
   return el("div.st-items", [
+    el("h4", { text: "記念品" }),
+    el("div.keepsake-list", state.keepsakes?.length ? state.keepsakes.map((id) => {
+      const item = KEEPSAKES[id];
+      if (!item) return null;
+      return el("button.keepsake-card", { dataset: { test: `keepsake-${id}` }, onclick: () => {
+        const viewer = el("button.keepsake-viewer", { "aria-label": "チェキを閉じる", onclick: () => viewer.remove() }, [el("img", { src: cgUrl(item.cg), alt: item.name }), el("span", { text: "タップで閉じる" })]);
+        layers.modal.append(viewer);
+      } }, [el("img", { src: cgUrl(item.cg), alt: "" }), el("span", [el("b", { text: item.name }), el("small", { text: item.description })])]);
+    }) : [el("span.chip.dim", { text: "まだ持っていない" })]),
     el("h4", { text: "機材" }),
     el("div.chips", eq.map((e) => el(`span.chip${inUse.has(e.id) ? ".on" : ""}${e.gift ? ".gift" : ""}`, { text: e.name }))),
     gifts.length ? el("div.gift-notes", gifts.map(giftNote)) : null,
