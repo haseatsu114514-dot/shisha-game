@@ -1,6 +1,6 @@
 {
   "character": "maezono",
-  "status": "pending",
+  "status": "approved",
   "generated": "2026-10-08",
   "tool": "image_gen.imagegen",
   "source_size": [
@@ -46,7 +46,7 @@
       "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
     }
   ],
-  "runtime_adopted": false,
+  "runtime_adopted": true,
   "files": {
     "serious-source.png": "0b6f49f85b94b3b2a643eedfec89037503f08b1530b2be506e6dac9f09550dfe",
     "serious-preview.png": "cec826901633084efb4ebf994d192a97d667795d10186a3704665dd27f6f8ba9",
@@ -61,5 +61,7 @@
     "review-dark.png": "79fa59bf65d694b57fdf11c4115ed92cc82ec75d39bd6e1a861da03aa8c97f19",
     "normal-source.png": "ee8e3c06eaacd378ddecf62fab9ecdf59a7f3de2f3145ac5a3f00f0503ef1d95",
     "smile-source.png": "18abfcb27588f14747882351a65de0ac0ee74dcdac6a14faf6e0b284d60d4e5e"
-  }
+  },
+  "approval": "2026-10-08 オーナー「完成したらマージで」。直前に採用待ちとして提示した前園・パッキー・つむぎ会釈3組へのゲーム組み込み・マージ指示として受領。",
+  "integration": "integration.json"
 }

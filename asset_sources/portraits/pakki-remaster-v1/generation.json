@@ -1,6 +1,6 @@
 {
   "character": "pakki",
-  "status": "pending",
+  "status": "approved",
   "generated": "2026-10-08",
   "tool": "image_gen.imagegen",
   "source_size": [
@@ -46,7 +46,7 @@
       "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
     }
   ],
-  "runtime_adopted": false,
+  "runtime_adopted": true,
   "files": {
     "angry-preview.png": "6695ff4306c5b543549b2d53d7ecc5f52028feafc628889c14cee07f80e44f3f",
     "surprise-source.png": "2785464e2b83242f678fd5b15316e631f13a03d743b4dd71e301b9466cfa2fab",
@@ -61,5 +61,7 @@
     "review-dark.png": "19bed984824223bb7b332ab843ddb8ced0997c262d98899e9850668cbf8b6f22",
     "normal-source.png": "4d9c7ad2fe4f037fb9951534c0c20a85ac2d5f601ac88e5cc9e9787cafb63c42",
     "smile-source.png": "8877ef61346f97ceb486d85d4cc785bb48f450f2696a8950140bcce6346fb270"
-  }
+  },
+  "approval": "2026-10-08 オーナー「完成したらマージで」。直前に採用待ちとして提示した前園・パッキー・つむぎ会釈3組へのゲーム組み込み・マージ指示として受領。",
+  "integration": "integration.json"
 }

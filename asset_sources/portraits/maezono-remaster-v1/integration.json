@@ -1,0 +1,78 @@
+{
+  "approval": "2026-10-08 オーナー「完成したらマージで」。直前に採用待ちとして提示した前園・パッキー・つむぎ会釈3組へのゲーム組み込み・マージ指示として受領。",
+  "status": "integrated",
+  "runtime": [
+    {
+      "face": "normal",
+      "source": "asset_sources/portraits/maezono-remaster-v1/normal-preview.png",
+      "source_sha256": "487c0ee519326794d5d74cc52f7c4e3d6db7728304a26907eee1d729ad46fae5",
+      "path": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+      "previous_sha256": "624a1e5148e6fa7afd5b9933a2450460cb9244054413e0e89b96d0ab98e525bc",
+      "operation": "approved 896x1200 preview copied without pixel changes",
+      "sha256": "487c0ee519326794d5d74cc52f7c4e3d6db7728304a26907eee1d729ad46fae5",
+      "webp": "remake/img/sprites/characters/maezono/chr_maezono_normal.webp",
+      "webp_bytes": 375750,
+      "webp_sha256": "98639829de7741a00d7f36b9961523489609a73608e69889b512ea927fa1ddbf",
+      "encoding": "lossless WebP, exact alpha"
+    },
+    {
+      "face": "smile",
+      "source": "asset_sources/portraits/maezono-remaster-v1/smile-preview.png",
+      "source_sha256": "3ea917d40520d44e44f0608328800b1b46128d2bb6ad5508055aed4ad1ead1f1",
+      "path": "assets/sprites/characters/maezono/chr_maezono_smile.png",
+      "previous_sha256": "ec86923c40f244d2aedb26e74ac6efe3cae42fdec5759115303a6e3ef3426cf8",
+      "operation": "approved 896x1200 preview copied without pixel changes",
+      "sha256": "3ea917d40520d44e44f0608328800b1b46128d2bb6ad5508055aed4ad1ead1f1",
+      "webp": "remake/img/sprites/characters/maezono/chr_maezono_smile.webp",
+      "webp_bytes": 379812,
+      "webp_sha256": "e083701894f934f237a1dd20c6ae6ffdbdfcb1ff1ccee76d0ec4251384bfcb40",
+      "encoding": "lossless WebP, exact alpha"
+    },
+    {
+      "face": "serious",
+      "source": "asset_sources/portraits/maezono-remaster-v1/serious-preview.png",
+      "source_sha256": "cec826901633084efb4ebf994d192a97d667795d10186a3704665dd27f6f8ba9",
+      "path": "assets/sprites/characters/maezono/chr_maezono_serious.png",
+      "previous_sha256": "cda30b305f26e6d4ab3f7d4700584e2ecad5f05e1f6d26890e9403557596cb50",
+      "operation": "approved 896x1200 preview copied without pixel changes",
+      "sha256": "cec826901633084efb4ebf994d192a97d667795d10186a3704665dd27f6f8ba9",
+      "webp": "remake/img/sprites/characters/maezono/chr_maezono_serious.webp",
+      "webp_bytes": 347344,
+      "webp_sha256": "adb5e20d2a5e852096ca9ddbc4135e8d45cf8ac43947c563186325b2dfef7e66",
+      "encoding": "lossless WebP, exact alpha"
+    },
+    {
+      "face": "surprise",
+      "source": "asset_sources/portraits/maezono-remaster-v1/surprise-preview.png",
+      "source_sha256": "9b7b257f499cd42c5161a5203815d06e659d2eb96e9879d135b4e97dc42bcceb",
+      "path": "assets/sprites/characters/maezono/chr_maezono_surprise.png",
+      "previous_sha256": "63b4dae3b553adc6af3e58376a53d060aae2b9c43520e323725dae8ab3e77dec",
+      "operation": "approved 896x1200 preview copied without pixel changes",
+      "sha256": "9b7b257f499cd42c5161a5203815d06e659d2eb96e9879d135b4e97dc42bcceb",
+      "webp": "remake/img/sprites/characters/maezono/chr_maezono_surprise.webp",
+      "webp_bytes": 379300,
+      "webp_sha256": "40bfe6bad80427f8e07870e799af085faca6a09e305db3c4c1e8304dc5ce2148",
+      "encoding": "lossless WebP, exact alpha"
+    },
+    {
+      "face": "excited",
+      "source": "asset_sources/portraits/maezono-remaster-v1/excited-preview.png",
+      "source_sha256": "d64c9a86c9ef297200bb0a39bef5f3f15e1e0d0e03219881d99cd40aaeac22ca",
+      "path": "assets/sprites/characters/maezono/chr_maezono_excited.png",
+      "previous_sha256": "489b03c1e5170cb55c32d21ecd914738016b65a506b57c78f3e0068e7b9076f0",
+      "operation": "approved 896x1200 preview copied without pixel changes",
+      "sha256": "d64c9a86c9ef297200bb0a39bef5f3f15e1e0d0e03219881d99cd40aaeac22ca",
+      "webp": "remake/img/sprites/characters/maezono/chr_maezono_excited.webp",
+      "webp_bytes": 373982,
+      "webp_sha256": "c2ce7da8fd9e50bf9106e9b2ea1ada5a45cee723e2cf2e4a39693d9056f93ed9",
+      "encoding": "lossless WebP, exact alpha"
+    }
+  ],
+  "local_playthrough": "skipped by owner request",
+  "build": {
+    "command": "python3 remake/tools/build_manifest.py",
+    "result": "success",
+    "images": 175,
+    "local_playthrough": "skipped by owner request"
+  }
+}

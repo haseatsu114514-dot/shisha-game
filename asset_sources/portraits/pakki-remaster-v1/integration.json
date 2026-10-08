@@ -1,0 +1,78 @@
+{
+  "approval": "2026-10-08 オーナー「完成したらマージで」。直前に採用待ちとして提示した前園・パッキー・つむぎ会釈3組へのゲーム組み込み・マージ指示として受領。",
+  "status": "integrated",
+  "runtime": [
+    {
+      "face": "normal",
+      "source": "asset_sources/portraits/pakki-remaster-v1/normal-preview.png",
+      "source_sha256": "55453063da2f9957ebf78b3e64eab4489559b5acd85b4edfe285d57ad7632ede",
+      "path": "assets/sprites/characters/pakki/chr_pakki_normal.png",
+      "previous_sha256": "dac4c29d856907b29b879b7ab2ebf92c5b38bc637f0714a5c9f61fb30e03f361",
+      "operation": "approved 896x1200 preview copied without pixel changes",
+      "sha256": "55453063da2f9957ebf78b3e64eab4489559b5acd85b4edfe285d57ad7632ede",
+      "webp": "remake/img/sprites/characters/pakki/chr_pakki_normal.webp",
+      "webp_bytes": 333126,
+      "webp_sha256": "37fcfa416a05774b93f2a4aef3fa79c5788122bb60053be8fac7d0829b95d928",
+      "encoding": "lossless WebP, exact alpha"
+    },
+    {
+      "face": "smile",
+      "source": "asset_sources/portraits/pakki-remaster-v1/smile-preview.png",
+      "source_sha256": "35aaaf42dc2a16e83ac480e23b3d8040908d9f4c81779ebe327df5766f54d8b8",
+      "path": "assets/sprites/characters/pakki/chr_pakki_smile.png",
+      "previous_sha256": "e571264a5378323df65663c73120af6a347d078bf2acc9dbc580a6dddbe1f46b",
+      "operation": "approved 896x1200 preview copied without pixel changes",
+      "sha256": "35aaaf42dc2a16e83ac480e23b3d8040908d9f4c81779ebe327df5766f54d8b8",
+      "webp": "remake/img/sprites/characters/pakki/chr_pakki_smile.webp",
+      "webp_bytes": 351700,
+      "webp_sha256": "5cd53deae88f829caa2561f3d30c51279c8c26399195466f564bcce438ac676d",
+      "encoding": "lossless WebP, exact alpha"
+    },
+    {
+      "face": "angry",
+      "source": "asset_sources/portraits/pakki-remaster-v1/angry-preview.png",
+      "source_sha256": "6695ff4306c5b543549b2d53d7ecc5f52028feafc628889c14cee07f80e44f3f",
+      "path": "assets/sprites/characters/pakki/chr_pakki_angry.png",
+      "previous_sha256": "a8ed9337e056121e6496af535fd7eedad9ac97aa6a0eb09a79d95fe1fea156e7",
+      "operation": "approved 896x1200 preview copied without pixel changes",
+      "sha256": "6695ff4306c5b543549b2d53d7ecc5f52028feafc628889c14cee07f80e44f3f",
+      "webp": "remake/img/sprites/characters/pakki/chr_pakki_angry.webp",
+      "webp_bytes": 338326,
+      "webp_sha256": "2adf482a40bea2ebc3b93b8fd7b5d80be5fc560ca6847b30f14984178be7784f",
+      "encoding": "lossless WebP, exact alpha"
+    },
+    {
+      "face": "surprise",
+      "source": "asset_sources/portraits/pakki-remaster-v1/surprise-preview.png",
+      "source_sha256": "9d8c093266dc758d64eb015de9587c53a66633bd97678fd7a6d033ddb9c7a567",
+      "path": "assets/sprites/characters/pakki/chr_pakki_surprise.png",
+      "previous_sha256": "673ea90e2a8b4eff86229c9e6e768781144fdc8180b9c5c772f6d6b995c77981",
+      "operation": "approved 896x1200 preview copied without pixel changes",
+      "sha256": "9d8c093266dc758d64eb015de9587c53a66633bd97678fd7a6d033ddb9c7a567",
+      "webp": "remake/img/sprites/characters/pakki/chr_pakki_surprise.webp",
+      "webp_bytes": 329226,
+      "webp_sha256": "ac8f17aa002b96fb160b8b887b8f26dd99721ebf87e8cbedc3a04b3f0f8e4b1d",
+      "encoding": "lossless WebP, exact alpha"
+    },
+    {
+      "face": "smoke",
+      "source": "asset_sources/portraits/pakki-remaster-v1/smoke-preview.png",
+      "source_sha256": "ff3f8a8839107ffe4b026b972af408a4793af04acdf4553cb309586095449c0c",
+      "path": "assets/sprites/characters/pakki/chr_pakki_smoke.png",
+      "previous_sha256": "89837aab38570e92f41a319d8b3dd902da87dfb01fa2b310b623a6ae6f6953c0",
+      "operation": "approved 896x1200 preview copied without pixel changes",
+      "sha256": "ff3f8a8839107ffe4b026b972af408a4793af04acdf4553cb309586095449c0c",
+      "webp": "remake/img/sprites/characters/pakki/chr_pakki_smoke.webp",
+      "webp_bytes": 347026,
+      "webp_sha256": "650951cec2481a958a46f90c4a3bd12a5a70350c4189ec9a39ef676326f18a70",
+      "encoding": "lossless WebP, exact alpha"
+    }
+  ],
+  "local_playthrough": "skipped by owner request",
+  "build": {
+    "command": "python3 remake/tools/build_manifest.py",
+    "result": "success",
+    "images": 175,
+    "local_playthrough": "skipped by owner request"
+  }
+}

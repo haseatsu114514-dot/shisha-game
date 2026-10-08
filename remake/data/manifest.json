@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-08 08:58 UTC",
+ "generated": "2026-10-08 09:30 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -75,9 +75,9 @@
     "smile",
     "surprise"
    ],
-   "h": 0.8358,
-   "b": 0.0208,
-   "ax": 0.5362,
+   "h": 0.9333,
+   "b": 0.0217,
+   "ax": 0.5001,
    "aspect": 0.7467
   },
   "mashiro": {
@@ -146,9 +146,9 @@
     "smoke",
     "surprise"
    ],
-   "h": 0.4333,
-   "b": 0.0267,
-   "ax": 0.5255,
+   "h": 0.8067,
+   "b": 0.0217,
+   "ax": 0.5007,
    "aspect": 0.7467
   },
   "rin": {
@@ -180,6 +180,7 @@
   },
   "tsumugi": {
    "faces": [
+    "bow",
     "evil",
     "normal",
     "sad",
@@ -783,6 +784,7 @@
   "sprites/characters/sumi/chr_sumi_smile.png",
   "sprites/characters/sumi/chr_sumi_surprise.png",
   "sprites/characters/sumi/chr_sumi_thinking.png",
+  "sprites/characters/tsumugi/chr_tsumugi_bow.png",
   "sprites/characters/tsumugi/chr_tsumugi_evil.png",
   "sprites/characters/tsumugi/chr_tsumugi_normal.png",
   "sprites/characters/tsumugi/chr_tsumugi_sad.png",
