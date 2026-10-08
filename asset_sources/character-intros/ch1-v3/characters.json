@@ -382,19 +382,19 @@
     "full": "",
     "title": "実在したオタクに優しいギャル",
     "line": "大丈夫？ ケガしてない？",
-    "expression": "normal",
+    "expression": "smile",
     "color": "#e956a5",
     "secondary": "#ffd7eb",
     "shadow": "#3b0829",
     "motif": "butterfly",
     "motif_label": "クマ・グミベア・肉球",
-    "portrait": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+    "portrait": "assets/sprites/characters/ageha/chr_ageha_smile.png",
     "frame": {
-      "width": 1049.784,
-      "left": -277.716,
-      "top": -199.842
+      "width": 1051.946,
+      "left": -273.631,
+      "top": -202.68
     },
-    "portrait_sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+    "portrait_sha256": "91f2f98000a1b7e79c102bf4db031fb5bc48f5cc2b330d808d3f419bc249bc84",
     "portrait_authority": "採用済みゲーム立ち絵",
     "caption_source": "data/characters.json: ageha.intro_cutin_unknown",
     "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
@@ -413,19 +413,19 @@
     "full": "",
     "title": "バイブスの天才",
     "line": "あたし超感覚派なんだよね〜",
-    "expression": "serious",
+    "expression": "normal",
     "color": "#e956a5",
     "secondary": "#ffd7eb",
     "shadow": "#3b0829",
     "motif": "butterfly",
     "motif_label": "クマ・グミベア・肉球",
-    "portrait": "assets/sprites/characters/ageha/chr_ageha_serious.png",
+    "portrait": "assets/sprites/characters/ageha/chr_ageha_normal.png",
     "frame": {
-      "width": 1051.946,
-      "left": -278.915,
-      "top": -202.68
+      "width": 1049.784,
+      "left": -277.716,
+      "top": -199.842
     },
-    "portrait_sha256": "3ec64d194055ce85278e6d386c2e380abe5a0a62f13cc5f0217bfcebde8c5932",
+    "portrait_sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
     "portrait_authority": "採用済みゲーム立ち絵",
     "caption_source": "data/characters.json: ageha.intro_cutin",
     "name_layout": "呼び名のみ。括弧付きの本名は表示せず、本名はストーリーの名乗りで扱う。",
@@ -436,6 +436,6 @@
       }
     },
     "select_label": "あげは（第2章）",
-    "scope_note": "第2章の名乗り後。プロとしてのserious表情。初遭遇版とは別素材。"
+    "scope_note": "第2章の名乗り後。プロとしての目を開いたnormal表情。初遭遇版とは別素材。"
   }
 ]

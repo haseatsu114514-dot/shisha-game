@@ -437,14 +437,14 @@
     "intro_cutin": {
       "title": "バイブスの天才",
       "line": "あたし超感覚派なんだよね〜",
-      "face": "serious",
+      "face": "normal",
       "color": "#ff8fc8"
     },
     "intro_cutin_unknown": {
       "display_name": "？？？",
       "title": "実在したオタクに優しいギャル",
       "line": "大丈夫？ ケガしてない？",
-      "face": "normal",
+      "face": "smile",
       "color": "#ff8fc8",
       "name": "alias"
     }

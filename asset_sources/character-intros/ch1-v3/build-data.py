@@ -99,7 +99,7 @@ for cid, (accent, secondary, motif, label) in palette.items():
                  caption_source="data/characters.json: ageha.intro_cutin_unknown",
                  select_label="？？？（初遭遇）", scope_note="第1章DAY4・買い出しの帰りに荷物を拾ってもらう初遭遇。名前・本名・バイブスは開示しない。")
   records.append(unknown)
-  record.update(select_label="あげは（第2章）", scope_note="第2章の名乗り後。プロとしてのserious表情。初遭遇版とは別素材。")
+  record.update(select_label="あげは（第2章）", scope_note="第2章の名乗り後。プロとしての目を開いたnormal表情。初遭遇版とは別素材。")
  records.append(record)
 (base / "characters.json").write_text(json.dumps(records, ensure_ascii=False, indent=2) + "\n")
 print("Prepared " + str(len(records)) + " original-portrait compositions")

@@ -55,12 +55,12 @@ function composition(){
   for(const c of records){
    assert.equal(c.full,'','parenthesized name is still in the current card: '+c.id);
    if(c.id==='ageha_unknown'){
-    assert.equal(c.name,'？？？');assert.equal(c.expression,'normal');
+    assert.equal(c.name,'？？？');assert.equal(c.expression,'smile');
     assert.equal(c.line,'大丈夫？ ケガしてない？');
     assert(!/バイブス|宵野|葉子/.test(c.name+c.full+c.title+c.line),'first encounter reveals identity');
    }
    if(c.id==='ageha'){
-    assert.equal(c.expression,'serious');assert.equal(c.line,'あたし超感覚派なんだよね〜');
+    assert.equal(c.expression,'normal');assert.equal(c.line,'あたし超感覚派なんだよね〜');
     assert.notEqual(c.portrait_sha256,records.find(v=>v.id==='ageha_unknown').portrait_sha256,'same expression in both versions');
    }
    assert.equal(crypto.createHash("sha256").update(fs.readFileSync(path.join(root,c.portrait))).digest("hex"),c.portrait_sha256,"portrait changed: "+c.id);

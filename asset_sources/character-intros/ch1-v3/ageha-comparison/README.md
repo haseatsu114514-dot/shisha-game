@@ -5,7 +5,7 @@
 - [4枚の比較PNG](comparison.png)・[比較HTML](index.html)
 - [最初の名乗り後案](first-named.png)：PR226の初版・笑顔・修正前の肩書きと一言
 - [最初の初遭遇案](first-unknown.png)：停止前に作った「？？？」の笑顔案・修正前の一言
-- [現在の初遭遇版](../ageha_unknown/preview.png)：normal表情・荷物を拾って本人を心配する一言
-- [現在の第2章版](../ageha/preview.png)：serious表情・プロの顔と指定の一言
+- [現在の初遭遇版](../ageha_unknown/preview.png)：ニコニコのsmile表情・荷物を拾って本人を心配する一言
+- [現在の第2章版](../ageha/preview.png)：最初の目を開いたnormal表情・プロの顔と指定の一言
 
 前2枚は比較用の履歴。現在は全員の紹介から括弧付き本名を外したが、最初の画像は当時の状態を保つ。保存時のメタデータとSHA-256は [originals.json](originals.json)。再描画時にはSHAを検査し、元の画像を上書きしない。
