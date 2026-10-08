@@ -1,0 +1,46 @@
+{
+  "baseMain": "fa3d7fd1f7c2e3e6be2815a9a7f9220390109b05",
+  "referenceScreenCommit": "4d1a935a02c77924e1a5de597a4b20a6f8a3c5f4",
+  "referenceScreenPR": 231,
+  "imageOnly": true,
+  "files": [
+    {
+      "file": "eyes.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "source": "/workspace/generated_images/exec-c08c7467-7b82-4535-bdf5-b2b00ad7a220.png",
+      "sha256": "a735d63fda9de54a1be847fd5e49b3ef68985de910f8f9076ba9b5926fccccb7",
+      "matchesGeneratorBytes": true
+    },
+    {
+      "file": "comic.png",
+      "dimensions": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "source": "/workspace/generated_images/exec-960eb1d9-b18e-40e9-9def-eed2fd89ef71.png",
+      "sha256": "6dc8037427877f06d7720b0880b9ec91f69b68163ab059c87eb13191f1d93d95",
+      "matchesGeneratorBytes": true
+    },
+    {
+      "file": "references/craft-success-screen.png",
+      "dimensions": [
+        1280,
+        720
+      ],
+      "sha256": "0727ea82c0c6d3518de0d7eab9ddcb56cd1c9d0c4f9b083cef0fe72e488c483e"
+    },
+    {
+      "file": "references/hajime-serious.png",
+      "dimensions": [
+        896,
+        1200
+      ],
+      "sha256": "3a3cd8319e064ccd451a01cab0eac0d5248ce8b1f45e50cb9afff6a47e8884d7"
+    }
+  ]
+}
