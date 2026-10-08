@@ -1,5 +1,7 @@
 # 画像生成プロンプト集（codex用）— シーシャ作りパート＋立ち絵
 
+> 2026-10-08 TA01〜07: [ヒロイン5人×3種類のタイトル用アート比較](../asset_sources/title-art/heroine-concepts-v1-20261008/README.md)と各 `.prompt.txt`。採用済み立ち絵を第一参照、現在のタイトル絵を画風のみの参照とする。シーシャ案はメーカー実物写真を併用し、ハガルの上に閉じたHMD・その内側に炭、台の側面から手元へ1本のホースを描く。残りは本人らしい日常や趣味。15枚を独立した縦2:3の原画で保存し、タイトルへの採用は別途扱う。
+
 > 2026-10-08 CI58〜61: 採用登場背景の修正は[アダム・はじめの修正版](../asset_sources/character-intros/adam-hajime-v4-20261008/README.md)を参照。[アダム](../asset_sources/character-intros/adam-hajime-v4-20261008/adam/prompt.txt)は葉・花を除いて二つのリンゴと蛇・古い書物風の装飾、[はじめ](../asset_sources/character-intros/adam-hajime-v4-20261008/hajime/prompt.txt)はシーシャ本体・ホース・マウスピースを除く。人物は再生成せず、文言は正本データを使う。
 
 > 2026-10-08 CI57: 最新の検討案は[紫系のシンプルで抽象的な3案](../asset_sources/transitions/concepts-v5-minimal-purple-20261008/README.md)と[保存済みプロンプト](../asset_sources/transitions/concepts-v5-minimal-purple-20261008/prompt.txt)。紫と淡いラベンダーを中心に少数の曲線・面・余白へ絞り、一筆の煙／丸い波／余白が開くを比較。網点や細かな装飾の多い前案は履歴。今回は静止モックアップのみ。

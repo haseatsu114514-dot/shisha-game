@@ -10,3 +10,5 @@ SCENE: IMPORTANT: Reference 1 is the adopted PRIVATE outfit portrait for this va
 No hookah equipment may appear in this non-shisha variant.
 
 Proposed preserved original destination: asset_sources/title-art/heroine-concepts-v1-20261008/minto/03-private-window.png
+
+All hardware surfaces are plain unmarked metal, silicone or glass: no embossed flower emblems, trademarks or other branding.

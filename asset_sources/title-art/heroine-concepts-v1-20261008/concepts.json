@@ -19,14 +19,14 @@
         "references/hmd-real-side.jpg"
       ],
       "runtime_installed": false,
-      "status": "hose-revision-needed",
+      "status": "reviewed",
       "size": [
         1024,
         1536
       ],
       "mode": "RGB",
-      "original_output": "/workspace/generated_images/exec-d3d269ff-aadd-450b-bf4a-ad41bb89f1e2.png",
-      "source_sha256": "830eb0f6052e446c7e2b9834637e019d84b79944c2d3e3775eac3f7947302b60",
+      "original_output": "/workspace/generated_images/exec-3e0818ed-d388-4819-8b15-6b4a4f8a8278.png",
+      "source_sha256": "a1da06a12de052f15c1a93ede43ff785925155b2562d050861437a0bf90e3e41",
       "history": [
         {
           "source": "tsumugi/01-smoke-colors-first.png",
@@ -42,9 +42,10 @@
           "reason": "White hose still has a break near the knee and meets the wrong high connection; retained before second geometry correction."
         }
       ],
-      "latest_prompt": "tsumugi/01-smoke-colors.revision1.prompt.txt",
+      "latest_prompt": "tsumugi/01-smoke-colors.revision2.prompt.txt",
       "latest_references": [
-        "tsumugi/01-smoke-colors-first.png"
+        "tsumugi/01-smoke-colors-revision1.png",
+        "mashiro/01-heavy-smoke.png"
       ]
     },
     {
@@ -66,7 +67,12 @@
       ],
       "mode": "RGB",
       "original_output": "/workspace/generated_images/exec-ba97fc1c-9130-42b6-a95e-b76e302c25b1.png",
-      "source_sha256": "4d1504f404e6ef250eb08cf2b7c8f35e3f5e5d4ef57f2bafd1588445c0c92e90"
+      "source_sha256": "4d1504f404e6ef250eb08cf2b7c8f35e3f5e5d4ef57f2bafd1588445c0c92e90",
+      "latest_prompt": "tsumugi/02-tablet-cat.prompt.txt",
+      "latest_references": [
+        "references/tsumugi-adopted-normal.png",
+        "references/title-style.png"
+      ]
     },
     {
       "id": "tsumugi-03-twilight-sketch",
@@ -87,7 +93,12 @@
       ],
       "mode": "RGB",
       "original_output": "/workspace/generated_images/exec-76987d41-63ac-470c-8a7a-110774e7f204.png",
-      "source_sha256": "7ee0cc7147bd7b49a32a49f38db8d2da5d69088e9e0804f04ffe409393f2feed"
+      "source_sha256": "7ee0cc7147bd7b49a32a49f38db8d2da5d69088e9e0804f04ffe409393f2feed",
+      "latest_prompt": "tsumugi/03-twilight-sketch.prompt.txt",
+      "latest_references": [
+        "references/tsumugi-adopted-normal.png",
+        "references/title-style.png"
+      ]
     },
     {
       "id": "mashiro-01-heavy-smoke",
@@ -188,7 +199,22 @@
         "references/hmd-real-side.jpg"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "reviewed",
+      "original_output": "/workspace/generated_images/exec-1d51ea7f-380e-4123-a851-8f19a3d23cf6.png",
+      "source_sha256": "f015b29230012a40839f8d8b423eee6f0534005b70e3fc18dfe17227abe5b3f8",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "latest_prompt": "minto/01-cafe-welcome.prompt.txt",
+      "latest_references": [
+        "references/minto-adopted-normal.png",
+        "references/title-style.png",
+        "references/hookah-real-body.jpg",
+        "references/hmd-real-assembled.jpg",
+        "references/hmd-real-side.jpg"
+      ]
     },
     {
       "id": "minto-02-instant-photo",
@@ -202,7 +228,19 @@
         "references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "reviewed",
+      "original_output": "/workspace/generated_images/exec-d52fcc64-29fc-40a9-a19d-48c745adefd3.png",
+      "source_sha256": "dd6643b0283371caf988a7b1f35684fc08eea78d755a0d3409ad70884d0a67c9",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "latest_prompt": "minto/02-instant-photo.prompt.txt",
+      "latest_references": [
+        "references/minto-adopted-normal.png",
+        "references/title-style.png"
+      ]
     },
     {
       "id": "minto-03-private-window",
@@ -216,7 +254,19 @@
         "references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "reviewed",
+      "original_output": "/workspace/generated_images/exec-f77e2639-4da5-4437-bc34-eecabdcd0433.png",
+      "source_sha256": "5aaaa75a10f97c1bb715552902f7f254a300b2f37c9c9aaec59a01f27fa2ed5a",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "latest_prompt": "minto/03-private-window.prompt.txt",
+      "latest_references": [
+        "references/minto-private.png",
+        "references/title-style.png"
+      ]
     },
     {
       "id": "ageha-01-professional-taste",

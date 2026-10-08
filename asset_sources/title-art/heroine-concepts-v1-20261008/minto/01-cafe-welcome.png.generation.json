@@ -1,0 +1,30 @@
+{
+  "id": "minto-01-cafe-welcome",
+  "path": "/workspace/generated_images/exec-1d51ea7f-380e-4123-a851-8f19a3d23cf6.png",
+  "source": "minto/01-cafe-welcome.png",
+  "prompt": "minto/01-cafe-welcome.prompt.txt",
+  "references": [
+    "references/minto-adopted-normal.png",
+    "references/title-style.png",
+    "references/hookah-real-body.jpg",
+    "references/hmd-real-assembled.jpg",
+    "references/hmd-real-side.jpg"
+  ],
+  "source_sha256": "f015b29230012a40839f8d8b423eee6f0534005b70e3fc18dfe17227abe5b3f8",
+  "prompt_sha256": "e38e916c6ef89c85eda03503a9ab91c47960cba3e205d657fbb460049c755c7a",
+  "reference_sha256": {
+    "references/minto-adopted-normal.png": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+    "references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+    "references/hookah-real-body.jpg": "2bdbb38c8ae19a6d21aadabe3be9bdec3af57754709ebdf89035d39d02702d8d",
+    "references/hmd-real-assembled.jpg": "c562580773c147f77f8ba8b86cb76fc43f8d71f9237d38fe2f4b0f717a292069",
+    "references/hmd-real-side.jpg": "a46cd683eb02c239513b22bfc937dffde5f3920f958a33ba00a1553fbe183cbc"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}
