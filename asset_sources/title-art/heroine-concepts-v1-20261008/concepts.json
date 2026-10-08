@@ -116,20 +116,25 @@
       ],
       "runtime_installed": false,
       "status": "reviewed",
-      "original_output": "/workspace/generated_images/exec-e4488d72-6040-4684-a81f-d319a8ca662d.png",
-      "source_sha256": "c90a5e5c3e0a128d24d8e1d63d87536f0b7f3828d674af25c8cc9ef17b4f9bd7",
+      "original_output": "/workspace/generated_images/exec-57a8a899-05dc-40e2-b6e2-852920c3f309.png",
+      "source_sha256": "8552ce5b9edb0d50b62436c5e1fcd0f3ddc58d8140a5c2d37c52ed20786904cd",
       "size": [
         1024,
         1536
       ],
       "mode": "RGB",
-      "latest_prompt": "mashiro/01-heavy-smoke.prompt.txt",
+      "latest_prompt": "mashiro/01-heavy-smoke.revision1.prompt.txt",
       "latest_references": [
-        "references/mashiro-adopted-normal.png",
-        "references/title-style.png",
-        "references/hookah-real-body.jpg",
-        "references/hmd-real-assembled.jpg",
-        "references/hmd-real-side.jpg"
+        "mashiro/01-heavy-smoke-first.png"
+      ],
+      "history": [
+        {
+          "source": "mashiro/01-heavy-smoke-first.png",
+          "original_output": "/workspace/generated_images/exec-e4488d72-6040-4684-a81f-d319a8ca662d.png",
+          "sha256": "c90a5e5c3e0a128d24d8e1d63d87536f0b7f3828d674af25c8cc9ef17b4f9bd7",
+          "prompt": "mashiro/01-heavy-smoke.prompt.txt",
+          "reason": "Equipment geometry is acceptable; a tiny manufacturer-like decorative emblem on HMD/bowl should be removed."
+        }
       ]
     },
     {
@@ -200,20 +205,25 @@
       ],
       "runtime_installed": false,
       "status": "reviewed",
-      "original_output": "/workspace/generated_images/exec-1d51ea7f-380e-4123-a851-8f19a3d23cf6.png",
-      "source_sha256": "f015b29230012a40839f8d8b423eee6f0534005b70e3fc18dfe17227abe5b3f8",
+      "original_output": "/workspace/generated_images/exec-9a96aa22-0fe6-4132-be16-1fcabcfe2e49.png",
+      "source_sha256": "0100d7dd7f82930472906a4cfa1233a8e1f446b739ba363909b2f6f21de7162d",
       "size": [
         1024,
         1536
       ],
       "mode": "RGB",
-      "latest_prompt": "minto/01-cafe-welcome.prompt.txt",
+      "latest_prompt": "minto/01-cafe-welcome.revision1.prompt.txt",
       "latest_references": [
-        "references/minto-adopted-normal.png",
-        "references/title-style.png",
-        "references/hookah-real-body.jpg",
-        "references/hmd-real-assembled.jpg",
-        "references/hmd-real-side.jpg"
+        "minto/01-cafe-welcome-first.png"
+      ],
+      "history": [
+        {
+          "source": "minto/01-cafe-welcome-first.png",
+          "original_output": "/workspace/generated_images/exec-1d51ea7f-380e-4123-a851-8f19a3d23cf6.png",
+          "sha256": "f015b29230012a40839f8d8b423eee6f0534005b70e3fc18dfe17227abe5b3f8",
+          "prompt": "minto/01-cafe-welcome.prompt.txt",
+          "reason": "Equipment geometry is acceptable; a tiny manufacturer-like decorative emblem on HMD/bowl should be removed."
+        }
       ]
     },
     {
@@ -283,7 +293,27 @@
         "references/hmd-real-side.jpg"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "reviewed",
+      "original_output": "/workspace/generated_images/exec-8ac56b23-2e89-43e0-8aef-93a45681015c.png",
+      "source_sha256": "da3f718474bd03f9846793b031f21b395804614f62fbf225f11d918e33c36dda",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "latest_prompt": "ageha/01-professional-taste.revision1.prompt.txt",
+      "latest_references": [
+        "ageha/01-professional-taste-first.png"
+      ],
+      "history": [
+        {
+          "source": "ageha/01-professional-taste-first.png",
+          "original_output": "/workspace/generated_images/exec-fa1fdd4e-aeff-42a5-9cdb-94ff79a66740.png",
+          "sha256": "036dd05adbea8dd07b871dba7e64b1ef0f7e9ada3c6938d39beb56a571c64001",
+          "prompt": "ageha/01-professional-taste.prompt.txt",
+          "reason": "Geometry accepted; remove small manufacturer-like decorative emblem on bowl/HMD."
+        }
+      ]
     },
     {
       "id": "ageha-02-grocery-smile",
@@ -297,7 +327,19 @@
         "references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "reviewed",
+      "original_output": "/workspace/generated_images/exec-be99cb16-be5e-4109-aa69-bea065bbddaa.png",
+      "source_sha256": "96a2696d7ebea0894d85287759886742cf7363b921a08b6e9ad2d7cb468f035e",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "latest_prompt": "ageha/02-grocery-smile.prompt.txt",
+      "latest_references": [
+        "references/ageha-adopted-normal.png",
+        "references/title-style.png"
+      ]
     },
     {
       "id": "ageha-03-model-moment",
@@ -311,7 +353,19 @@
         "references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "reviewed",
+      "original_output": "/workspace/generated_images/exec-7b349640-9b8d-426f-90cd-2bf92197a86f.png",
+      "source_sha256": "7b9bcc163fb0213c9ba57f6176e0d19e1740aa33baf1a6efbca2ceeaf33fbfde",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "latest_prompt": "ageha/03-model-moment.prompt.txt",
+      "latest_references": [
+        "references/ageha-adopted-normal.png",
+        "references/title-style.png"
+      ]
     },
     {
       "id": "rin-01-night-tasting",
@@ -328,7 +382,32 @@
         "references/hmd-real-side.jpg"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "equipment-revision-needed",
+      "original_output": "/workspace/generated_images/exec-a4097131-de94-4f0e-8a89-9558c87942fc.png",
+      "source_sha256": "9953652335cb661fceb0863e95871fde01777185d395d68d454b440844c8f0c0",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "latest_prompt": "rin/01-night-tasting.prompt.txt",
+      "latest_references": [
+        "references/rin-adopted-normal.png",
+        "references/title-style.png",
+        "references/hookah-real-body.jpg",
+        "references/hmd-real-assembled.jpg",
+        "references/hmd-real-side.jpg"
+      ],
+      "history": [
+        {
+          "source": "rin/01-night-tasting-first.png",
+          "original_output": "/workspace/generated_images/exec-a4097131-de94-4f0e-8a89-9558c87942fc.png",
+          "sha256": "9953652335cb661fceb0863e95871fde01777185d395d68d454b440844c8f0c0",
+          "prompt": "rin/01-night-tasting.prompt.txt",
+          "reason": "Final revision removes equipment emblems and makes the one hose circuit visible across the lap instead of hidden behind legs."
+        }
+      ],
+      "next_revision_prompt": "rin/01-night-tasting.revision1.prompt.txt"
     },
     {
       "id": "rin-02-flavor-samples",
@@ -342,7 +421,19 @@
         "references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "reviewed",
+      "original_output": "/workspace/generated_images/exec-eb205d08-84a3-480a-b294-88ab713bd21d.png",
+      "source_sha256": "0a21badd6f874ab8aeb3f7fb98c433ce7a466ecc54b0954d7e5ac07406de39db",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "latest_prompt": "rin/02-flavor-samples.prompt.txt",
+      "latest_references": [
+        "references/rin-adopted-normal.png",
+        "references/title-style.png"
+      ]
     },
     {
       "id": "rin-03-late-coffee",
@@ -356,7 +447,19 @@
         "references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "reviewed",
+      "original_output": "/workspace/generated_images/exec-6bc7f80e-c266-46da-a220-c7dea8ef579a.png",
+      "source_sha256": "a4a542ac461374247f54df7a71f8772b17b820cef8a7516df14124a65d03b553",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "latest_prompt": "rin/03-late-coffee.prompt.txt",
+      "latest_references": [
+        "references/rin-adopted-normal.png",
+        "references/title-style.png"
+      ]
     }
   ]
 }

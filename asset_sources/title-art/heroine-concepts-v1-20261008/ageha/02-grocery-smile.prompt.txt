@@ -10,3 +10,5 @@ SCENE: Her kind first-encounter side: on a Japanese shopping street at sunset sh
 No hookah equipment may appear in this non-shisha variant.
 
 Proposed preserved original destination: asset_sources/title-art/heroine-concepts-v1-20261008/ageha/02-grocery-smile.png
+
+No flower emblems or manufacturer marks on bowl/HMD. Plain smooth unmarked hardware.

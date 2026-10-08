@@ -1,0 +1,24 @@
+{
+  "id": "ageha-02-grocery-smile",
+  "path": "/workspace/generated_images/exec-be99cb16-be5e-4109-aa69-bea065bbddaa.png",
+  "source": "ageha/02-grocery-smile.png",
+  "prompt": "ageha/02-grocery-smile.prompt.txt",
+  "references": [
+    "references/ageha-adopted-normal.png",
+    "references/title-style.png"
+  ],
+  "source_sha256": "96a2696d7ebea0894d85287759886742cf7363b921a08b6e9ad2d7cb468f035e",
+  "prompt_sha256": "9cd4d765bd7322b881d70ca34b464ca68b102752686d35bcb534710a8b8a80f8",
+  "reference_sha256": {
+    "references/ageha-adopted-normal.png": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+    "references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}

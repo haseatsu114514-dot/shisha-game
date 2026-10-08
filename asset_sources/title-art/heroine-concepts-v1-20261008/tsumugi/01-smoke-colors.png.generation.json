@@ -20,5 +20,9 @@
   "mode": "RGB",
   "tool": "image_gen.imagegen",
   "transparent_background": false,
-  "runtime_installed": false
+  "runtime_installed": false,
+  "reference_snapshots": {
+    "mashiro/01-heavy-smoke.png": "mashiro/01-heavy-smoke-first.png"
+  },
+  "reference_note": "The original tool input path for the hose-geometry example was revised later. The unchanged byte-identical input is preserved at reference_snapshots."
 }
