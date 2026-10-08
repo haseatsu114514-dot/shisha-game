@@ -1,6 +1,7 @@
 // 第1章のスポット定義と「行く」の中身（訪問・施設・休む）。
 // どの行動にも必ず報酬（好感度・ステ・体力・お金のどれか）が付く。
 import { state, markMet } from "../core/state.js";
+import { RIN_AWAY_DAY } from "../core/rules.js";
 import { DB } from "../core/data.js";
 import { earnStat, gainAffinity, addStamina, addMoney, affinityLevel } from "../core/stats.js";
 import { play } from "../vn/engine.js";
@@ -105,7 +106,7 @@ export function hasNewStory(charId) {
 export function hasNewEvent(spot) {
   if (spot.kind === "tonari") return state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi")
     || state.visitedDay.tonari_customer !== state.day && hasNewStory("tsumugi");
-  if (spot.kind === "shop") return state.visitedDay.rin !== state.day && hasNewStory("rin");
+  if (spot.kind === "shop") return state.day % 7 !== RIN_AWAY_DAY && state.visitedDay.rin !== state.day && hasNewStory("rin");
   if (spot.charId === "kafuka") return !(state.story.kafuka || 0) && !!DB.dialogues.kafuka_shop_first;
   if (spot.charId) return hasNewStory(spot.charId);
   if (!spot.first || !DB.dialogues[spot.first]) return false;

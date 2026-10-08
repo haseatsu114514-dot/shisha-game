@@ -276,8 +276,7 @@ function pumpBanners() {
         el("div.gc-title", [el("span.gc-main", { text: o.main }),
           o.points > 0 ? el("span.gc-points", o.kind === "stat" ? [
             el("span.gc-count", { text: `+${o.points}` }), el("small.gc-unit", { text: "P" }),
-          ] : [el("span", { text: `+${o.points}P` })]) : null,
-          o.kind === "stat" && o.points > 0 && !o.evolution ? el("span.gc-change", { text: "上がった" }) : null]),
+          ] : [el("span", { text: `+${o.points}P` })]) : null]),
         o.evolution ? el("strong.gc-evolution", { text: o.evolution }) : null,
         o.kind !== "stat" && o.sub ? el("span.gc-sub", { text: o.sub }) : null,
         o.fx ? el("span.gc-fx", { text: o.fx }) : null,

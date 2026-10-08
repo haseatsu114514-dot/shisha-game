@@ -1,0 +1,49 @@
+{
+  "created": "2026-10-08",
+  "kind": "Playwright screenshots, no image generation or image editing",
+  "branch": "codex/compact-gains-and-map-20261008",
+  "source_assets": [
+    {
+      "path": "remake/img/ui/lounge/reward-clean.webp",
+      "sha256": "8f345241b0648e795ef419fc715f5b469e690ae0922e63f24d711005bfd601ad"
+    },
+    {
+      "path": "remake/img/ui/lounge/panel.webp",
+      "sha256": "677fb0abe2b82fe0dd9fb13d0aa98cbd8c93be970ceaf7b5728dda8c732b30e1"
+    }
+  ],
+  "files": [
+    {
+      "path": "balance.json",
+      "sha256": "efea5ee224985a4b1f135f181c323e32ff2d508333048ddc5ea1d1ce0be30c4c"
+    },
+    {
+      "path": "gain-1331.png",
+      "sha256": "b62b73041402dec095e8f3cf49fc47d4c6707e6042971845e07c281c62adcde4"
+    },
+    {
+      "path": "gain-591.png",
+      "sha256": "551298f8327b2c39268130d0b28618c8b979da54d087ae5545f3914ba4cf02f3"
+    },
+    {
+      "path": "gain-844.png",
+      "sha256": "28e4a13a01ae3f053bfd811dcb09ac059c25d6cd2be7855f01240a309f61610d"
+    },
+    {
+      "path": "map-1331.png",
+      "sha256": "96acd32c100c301ab5ede126f0d18081cc7d1742f2ac94041a1ab9afc21866d7"
+    },
+    {
+      "path": "map-591.png",
+      "sha256": "2cca310aead703f547d107a81a6eb15e0f9f3aa759e48fa6cec373993ace9713"
+    },
+    {
+      "path": "map-844.png",
+      "sha256": "7b576480af9e6fd0193ab7f302bdbd357c9cb55c84021dfd001ffbfe302c8fbd"
+    },
+    {
+      "path": "stat-colors.png",
+      "sha256": "746a29a639547549a3cb7ec61571137ab5153f786012f47d9c670dc2797dcdb8"
+    }
+  ]
+}

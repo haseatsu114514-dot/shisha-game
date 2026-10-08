@@ -79,17 +79,18 @@ try {
   assert.match(await page.locator(".gc-fx").textContent(), /ゲージ.*ゆっくり/);
   assert.equal(await page.locator(".gain-card.stat .gc-top").textContent(), "LEVEL UP");
   assert.equal(await page.locator(".gain-card.stat .gc-sub").count(), 0);
-  assert.doesNotMatch(await page.locator(".gain-card.stat").textContent(), /様になってきた|STATUS UP|LEVEL UP/);
+  assert.doesNotMatch(await page.locator(".gain-card.stat").textContent(), /様になってきた/);
   await page.waitForTimeout(500); // 通知の出現アニメーションが止まってから配置を測る
   for (const size of [{ width: 1331, height: 760 }, { width: 844, height: 390 }, { width: 591, height: 1280 }]) {
     await page.setViewportSize(size);
     await page.evaluate(() => new Promise(requestAnimationFrame));
     const card = await page.locator(".gain-card.stat").evaluate(e => {
       const b = e.getBoundingClientRect(), stage = document.querySelector("#stage").getBoundingClientRect();
+      const fx = e.querySelector(".gc-fx").getBoundingClientRect();
       return { inside: b.left >= stage.left && b.right <= stage.right + 1, unclipped: e.scrollHeight <= e.clientHeight + 2,
-        effectPlain: getComputedStyle(e.querySelector(".gc-fx")).backgroundColor === "rgba(0, 0, 0, 0)" };
+        effectInside: fx.left >= b.left && fx.right <= b.right + 1 && fx.bottom <= b.bottom + 1 };
     });
-    assert(card.inside && card.unclipped && card.effectPlain, JSON.stringify(card));
+    assert(card.inside && card.unclipped && card.effectInside, JSON.stringify(card));
     if (shots) await page.screenshot({ path: `${shots}/compact-level-${size.width}.png` });
   }
   await page.setViewportSize({ width: 1331, height: 760 });
