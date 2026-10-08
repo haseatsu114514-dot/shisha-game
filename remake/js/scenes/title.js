@@ -2,7 +2,7 @@
 import { el } from "../core/util.js";
 import { bgUrl, assetUrl } from "../core/data.js";
 import { showScreen, setBg, smokeWipe, modal } from "../core/ui.js";
-import { peekSave, load, newGame, wipeSave, config, saveConfig, anySlotSaved, loadFromSlot } from "../core/state.js";
+import { peekSave, newGame, wipeSave, config, saveConfig, anySlotSaved, loadFromSlot } from "../core/state.js";
 import { playBgm, SE, applyVolumes } from "../core/audio.js";
 import { startNewGame, resumeGame } from "../chapters/ch1.js";
 import { openGallery } from "./gallery.js";
@@ -24,17 +24,13 @@ export function showTitle() {
       if (saved && !(await modal({
         title: "はじめから",
         body: "今のセーブデータは上書きされます。よろしいですか？",
-        options: [{ label: "やめる", value: false }, { label: "はじめから遊ぶ", value: true, primary: true, test: "confirm-new" }],
+        options: [{ label: "はじめから遊ぶ", value: true, primary: true, test: "confirm-new" }, { label: "やめる", value: false, test: "cancel-new" }],
       }))) return;
       wipeSave();
       newGame();
       smokeWipe(() => { startNewGame(); }, { color: "dark" }); // 煙で覆った瞬間に開始（ゲーム本体の完了は待たない）
     }, "title-new"),
-    item("CONTINUE", "つづきから", () => {
-      if (!load()) return;
-      smokeWipe(() => { resumeGame(); }, { color: "dark" });
-    }, "title-continue", !saved),
-    item("LOAD", "ロード", async () => {
+    item("LOAD", "つづきから", async () => {
       const key = await loadFlow();
       if (!key || !loadFromSlot(key)) return;
       smokeWipe(() => { resumeGame(); }, { color: "dark" });

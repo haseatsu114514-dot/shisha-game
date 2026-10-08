@@ -212,6 +212,35 @@
         {
           "type": "remember",
           "memory_id": "naru_hands"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "そうだ、大会の参加登録はもう済んでるか？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "まだです。会場も、ちゃんと見てなくて"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "だったら、このあとC.STATIONを見てこいよ"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "受付で登録できる。会長も今日、会場にいるはずだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとうございます。帰りに寄ってみます"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_naru_venue_invited"
         }
       ],
       "branches": {

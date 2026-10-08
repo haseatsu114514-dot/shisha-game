@@ -9,6 +9,7 @@ import { playBgm } from "../core/audio.js";
 import { isRainy, RAIN_SPOT_TEXTS } from "./weather.js";
 import { kafukaSpot } from "./kafuka.js";
 import { afterStory, questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "./bonds.js";
+import { installReel } from "./reel.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
 
 export const VISIT_COST = 3000;
@@ -65,7 +66,7 @@ export const SPOTS = [
   { id: "choizap", kind: "spot", label: "チョイザップ", area: "ジム", x: 20, y: 36, theme: "gym", glyph: "筋", requiresMet: "minto", stat: "charm", stamina: -8,
     first: "ch1_choizap_first", pool: ["choizap_lesson", "choizap_mirror", "choizap_oldman", "choizap_minto"], bg: "bg_choizap",
     desc: "みんとに教えてもらったジム。「見た目も武器だよ」とのこと。" },
-  { id: "c_station", kind: "spot", label: "C.STATION", area: "大会会場", x: 54, y: 66, theme: "stadium", glyph: "C", cost: 2500, stat: "insight", stamina: -10,
+  { id: "c_station", kind: "spot", label: "C.STATION", area: "大会会場", x: 54, y: 66, theme: "stadium", glyph: "C", cost: 2500, requiresMet: "naru", stat: "insight", stamina: -10,
     first: "ch1_c_station_visit", pool: ["cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup", "cs_regular_chat", "cs_nagumo_glimpse", "cs_kemuri_solo", "cs_maezono_taste", "cs_pakki_rehearsal", "cs_prep_line"], bg: "bg_c_station",
     desc: "大会会場になる大型チェーン店。噂や大会情報が集まる。" },
   // 路上占い師（旧版 F11）: 週2日だけアーケード脇に出る。時間を使わない・1日1回・相性占い3,000円。
@@ -216,6 +217,10 @@ export async function visitSpot(spot) {
     id = "ch1_reviewer_payoff";
   }
   await play(id, { bg: bgRef(spot.bg) }); // bgUrl が昼夜差分（_day/_night）を選ぶ
+  if (spot.id === "c_station") {
+    state.flags._c_station_registered = true;
+    await installReel();
+  }
   earnStat(spot.stat, 4);
 }
 

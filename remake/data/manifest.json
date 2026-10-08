@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-08 01:51 UTC",
+ "generated": "2026-10-08 03:33 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -120,9 +120,9 @@
     "surprise",
     "thinking"
    ],
-   "h": 0.8742,
-   "b": 0.0217,
-   "ax": 0.5239,
+   "h": 0.9258,
+   "b": 0.0233,
+   "ax": 0.5005,
    "aspect": 0.7467
   },
   "naru": {

@@ -147,6 +147,7 @@ for (;;) {
   if (snap.modal) {
     // スロットの初回説明（タップ送り）・くじの開封（タップで閉じる）
     if (await click('[data-test="reel-intro"]')) continue;
+    if (await click('[data-test="drill-finish"]')) continue;
     if (await click('[data-test="kuji-reveal"]')) continue;
     if (await click('[data-test="status-close"]')) continue;
     const btns = await page.$$("#modal .modal-actions button");
@@ -197,9 +198,11 @@ for (;;) {
     const slot1 = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_slot1") || "null"));
     if (!slot1 || slot1.day !== 2) throw new Error("manual save to slot 1 failed");
     await page.reload({ waitUntil: "load" });
-    await page.waitForSelector('[data-test="title-continue"]:not([disabled])', { timeout: 20000 });
+    await page.waitForSelector('[data-test="title-load"]:not([disabled])', { timeout: 20000 });
     await page.evaluate(() => { window.__remake.vnTest.turbo = true; window.__remake.craftTest.auto = "good"; });
-    await page.click('[data-test="title-continue"]');
+    await page.click('[data-test="title-load"]');
+    await page.waitForSelector('[data-test="slot-0"]:not([disabled])');
+    await page.click('[data-test="slot-0"]');
     await page.waitForFunction(() => document.querySelector(".map:not(.done)"), null, { timeout: 20000 });
     const after = await page.evaluate(() => { const s = window.__remake.state; return { day: s.day, slot: s.slot, money: s.money }; });
     if (JSON.stringify(before) !== JSON.stringify(after)) throw new Error(`resume mismatch ${JSON.stringify(before)} -> ${JSON.stringify(after)}`);
@@ -306,7 +309,7 @@ if (!s.reel.introDone) throw new Error("slot intro not shown");
 if (s.reel.pending.length) throw new Error(`slot spins left unshown: ${s.reel.pending.length}`);
 // 1日目の案内: 仕入れ→偵察の2回、案内マップを通った／ミントを買う前は店を出られない
 log(`day1 errands: guided=${guided} errandBlocked=${errandBlocked} scout=${!!s.flags._errand_scout_done} mint=${s.flavors.includes("mint")}`);
-if (guided !== 2 || !errandBlocked || !s.flags._errand_scout_done || !s.flavors.includes("mint")) throw new Error("day1 errands not completed as guided");
+if (guided !== 3 || !errandBlocked || !s.flags._errand_scout_done || !s.flavors.includes("mint")) throw new Error("day1 errands not completed as guided");
 // スミさんのバイト誘い（DAY3/8 は固定で届く。テストは誘いに乗る）
 log(`sumi baito invites: ${s.limeRead.filter((id) => id.startsWith("_sumi_baito_inv_")).join(",")} lastBaitoDay=${s.lastBaitoDay}`);
 if (!s.limeRead.includes("_sumi_baito_inv_d3")) throw new Error("sumi baito invite (DAY3) not delivered");

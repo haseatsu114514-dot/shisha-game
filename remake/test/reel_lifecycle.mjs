@@ -21,7 +21,7 @@ try {
     core.newGame();
     core.state.phase = "daily";
     core.state.reel.seed = 1;
-    core.state.reel.introDone = true;
+    core.state.reel.installed = true; core.state.reel.introDone = true;
     layers.screen.replaceChildren();
     reel.onAction({ spent: 10 });
     window.reelProbe = { core, reel, layers };

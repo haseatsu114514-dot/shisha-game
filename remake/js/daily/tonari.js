@@ -1,9 +1,9 @@
 // tonari（バイト先）: 客として一服／シフトに入る（接客→シフト後にスミさん・自主練）。
 import { el, pick } from "../core/util.js";
 import { DB, bgUrl } from "../core/data.js";
-import { showScreen, setBg, toast, retire } from "../core/ui.js";
+import { showScreen, setBg, toast, modal, retire } from "../core/ui.js";
 import { state, timeOfDay } from "../core/state.js";
-import { addMoney, addStamina, applyStats, paidAction, DRILL_GROWTH_BUDGET, star, currentCondition } from "../core/stats.js";
+import { addMoney, addStamina, applyStats, star, currentCondition } from "../core/stats.js";
 import { SE, playBgm } from "../core/audio.js";
 import { play, dialogueSequence } from "../vn/engine.js";
 import { visitChar, hasNewStory } from "./spots.js";
@@ -188,17 +188,18 @@ async function afterShift() {
     await visitChar("sumi");
   } else if (pickAfter === "drill") {
     const kind = await chooseDrill();
-    await paidAction(async () => {
-      addStamina(-8);
+    addStamina(-8);
+    let again;
+    do {
       const tier = await runDrill(kind);
-      const d = DRILLS[kind];
-      applyStats({ [d.stats[0]]: [1, 3, 4][tier], [d.stats[1]]: [0, 2, 3][tier] });
-      const prev = state.best[kind] ?? -1;
-      if (tier > prev) {
-        state.best[kind] = tier;
-        if (tier > 0) toast(`自己ベスト更新！ ${"★".repeat(tier)} この手応えは本番に乗る`, { kind: "good" });
-      }
-    }, { budget: DRILL_GROWTH_BUDGET });
+      state.best[kind] = Math.max(state.best[kind] ?? -1, tier);
+      again = await modal({ title: "もう一回練習しますか？",
+        body: "同じ工程を繰り返せます。能力値は増えません。",
+        options: [
+          { label: "もう一回練習する", value: true, test: "drill-again" },
+          { label: "練習を終える", value: false, primary: true, test: "drill-finish" },
+        ] });
+    } while (again);
   }
 }
 
@@ -206,7 +207,7 @@ function chooseDrill() {
   return new Promise((resolve) => {
     const root = showScreen("tonari", el("div.sub-menu", [
       el("h2.sub-title", { text: "自主練" }),
-      el("p.sub-lead", { text: "どの工程を反復する？ 自己ベストは本番のスコアに少し乗る。" }),
+      el("p.sub-lead", { text: "苦手な工程を反復しよう。能力値は増えません。" }),
       el("div.sub-choices.grid", Object.entries(DRILLS).map(([id, d]) =>
         el("button.big-choice", { dataset: { test: `drill-${id}` }, onclick: () => { SE.select(); retire(root); resolve(id); } }, [
           el("b", { text: d.label }),

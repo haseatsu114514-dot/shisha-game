@@ -259,85 +259,53 @@ body.in-vn #bg { transition: filter 0.4s; }
 /* 報酬キューの行（……【技術】が上がった。）は控えめな金色で */
 .vn-box.reward .vn-text { color: var(--gold-hi); font-size: 28px; }
 
-/* ---------------------------------------------------------------- 初登場カットイン（vn/intro.js）
-   呼び名・二つ名・一言を全画面で一度だけ。差し色 --ci はキャラごと（characters.json の intro_cutin.color）。
-   帯は画面いっぱいの斜め。名前の中心（画面の x=70%・y=288px）を軸に傾けるので、名前が帯の真ん中に乗る */
-.cutin { --name-y: 288px; position: absolute; inset: 0; overflow: hidden; pointer-events: auto; cursor: pointer; background: rgba(6, 4, 10, 0.97); backdrop-filter: blur(6px); opacity: 0; transition: opacity 0.18s; }
-.cutin.in { opacity: 1; }
-.cutin.out { opacity: 0; transition: opacity 0.26s; }
-.ci-smoke {
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(60% 70% at 26% 62%, color-mix(in srgb, var(--ci) 32%, transparent), transparent 70%),
-    radial-gradient(40% 50% at 80% 20%, color-mix(in srgb, var(--ci) 14%, transparent), transparent 70%);
-}
-.ci-band {
-  position: absolute; left: -10%; width: 125%; top: calc(var(--name-y) - 84px); height: 168px;
-  background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--ci) 85%, #000) 34%, var(--ci) 70%, color-mix(in srgb, var(--ci) 60%, #fff) 100%);
-  transform: rotate(-7deg); transform-origin: 64% 50%; /* 64% = 画面の x=70% */
-  clip-path: inset(0 100% 0 0); transition: clip-path 0.42s var(--ease-snap);
-  box-shadow: 0 0 60px color-mix(in srgb, var(--ci) 45%, transparent);
-}
-.ci-band.b2 { top: calc(var(--name-y) + 104px); height: 10px; background: rgba(255, 255, 255, 0.85); box-shadow: none; clip-path: inset(0 0 0 100%); transition-delay: 0.08s; }
-.cutin.in .ci-band { clip-path: inset(0 0 0 0); }
-.ci-watermark {
-  position: absolute; right: -40px; top: 22px; white-space: nowrap;
-  font: 900 210px/1 var(--font); letter-spacing: 0.02em;
-  color: transparent; -webkit-text-stroke: 2px color-mix(in srgb, var(--ci) 40%, transparent);
-  transform: rotate(-7deg) translateX(120px); opacity: 0;
-  transition: transform 1.6s var(--ease-out), opacity 0.6s;
-}
-.cutin.in .ci-watermark { transform: rotate(-7deg) translateX(0); opacity: 1; }
-.ci-portrait {
-  position: absolute; left: 27%; translate: var(--ax, -50%) 0;
-  transform: translateX(-140px); opacity: 0;
-  transition: transform 0.5s var(--ease-out) 0.1s, opacity 0.3s 0.1s;
-  filter: drop-shadow(0 0 24px color-mix(in srgb, var(--ci) 55%, transparent)) drop-shadow(10px 0 0 color-mix(in srgb, var(--ci) 70%, transparent));
-  user-select: none; pointer-events: none;
-}
-/* 立ち絵がまだ無いキャラ: 呼び名の頭文字を大きな影文字で */
-.ci-portrait.none {
-  top: 10%; translate: -50% 0; filter: none;
-  font: 900 460px/1 var(--font); color: color-mix(in srgb, var(--ci) 22%, transparent);
-  -webkit-text-stroke: 3px color-mix(in srgb, var(--ci) 70%, transparent);
-}
-.cutin.in .ci-portrait { transform: none; opacity: 1; }
-/* 二つ名は名前の上・（フルネーム）は名前の下。名前の行の中心が --name-y に来る */
-.ci-meta { position: absolute; left: 51%; right: 4%; top: calc(var(--name-y) - 54px); height: 108px; font-family: var(--font); color: #fff; }
-.ci-title {
-  position: absolute; left: 0; bottom: calc(100% + 4px);
-  font-size: 28px; font-weight: 900; letter-spacing: 0.12em; white-space: nowrap;
-  padding: 6px 18px 6px 14px; color: #0b0812; background: var(--ci);
-  clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
-  transform: translateX(40px); opacity: 0;
-  transition: transform 0.35s var(--ease-out) 0.3s, opacity 0.25s 0.3s;
-}
-.ci-name {
-  height: 108px; display: flex; align-items: center;
-  font-weight: 900; line-height: 1; white-space: nowrap; letter-spacing: 0.04em;
-  text-shadow: 0 0 2px #000, 5px 5px 0 color-mix(in srgb, var(--ci) 80%, #000), 0 0 30px color-mix(in srgb, var(--ci) 50%, transparent);
-  transform: scale(1.35); opacity: 0; transform-origin: left center;
-  transition: transform 0.28s var(--ease-snap) 0.42s, opacity 0.12s 0.42s;
-}
-.ci-full {
-  position: absolute; left: 4px; top: calc(100% + 2px);
-  font-size: 24px; font-weight: 700; letter-spacing: 0.16em; white-space: nowrap;
-  color: rgba(255, 255, 255, 0.92); text-shadow: 0 0 2px #000, 2px 2px 0 rgba(0, 0, 0, 0.6);
-  opacity: 0; transition: opacity 0.3s 0.6s;
-}
-.cutin.in .ci-title, .cutin.in .ci-name { transform: none; opacity: 1; }
-.cutin.in .ci-full { opacity: 1; }
-.ci-line {
-  position: absolute; left: 46%; right: 3%; bottom: 9%;
-  font: 700 34px/1.45 var(--font); color: #fff; white-space: nowrap;
-  padding: 12px 22px; background: rgba(6, 4, 10, 0.78);
-  border-left: 6px solid var(--ci);
-  transform: translateY(18px); opacity: 0;
-  transition: transform 0.4s var(--ease-out) 0.8s, opacity 0.3s 0.8s;
-}
-.cutin.in .ci-line { transform: none; opacity: 1; }
-@media (prefers-reduced-motion: reduce) {
-  .cutin *, .cutin.in * { transition: opacity 0.2s !important; }
-  .cutin .ci-title, .cutin .ci-name, .cutin .ci-portrait, .cutin .ci-line { transform: none !important; }
-  .cutin .ci-band { clip-path: none !important; }
+/* 登場カットイン v2: キャラ色・模様・斜めの帯が順番に入る。1280×720の本編ステージと共に縮小。 */
+.cutin { --secondary:color-mix(in srgb,var(--ci) 30%,#fff); position:absolute; inset:0; overflow:hidden;
+  pointer-events:auto; background:linear-gradient(120deg,color-mix(in srgb,var(--ci) 20%,#101319),#101319 78%);
+  opacity:0; transition:opacity .18s; }
+.cutin.in {opacity:1;}
+.cutin.out {opacity:0; transition:opacity .26s;}
+.ci-left-field,.ci-halftone {position:absolute; inset:0; clip-path:polygon(0 0,558px 0,410px 720px,0 720px);}
+.ci-left-field {background:linear-gradient(140deg,var(--secondary),var(--ci)); clip-path:polygon(0 0,0 0,0 720px,0 720px); transition:clip-path .45s var(--ease-out);}
+.cutin.in .ci-left-field {clip-path:polygon(0 0,558px 0,410px 720px,0 720px);}
+.ci-halftone {background:radial-gradient(circle at 2px 2px,#111b25 1.8px,transparent 2.1px) 0 0/14px 14px; opacity:0; transition:opacity .45s .15s;}
+.cutin.in .ci-halftone {opacity:.12;}
+.ci-motif {position:absolute; inset:0; color:var(--ci); opacity:0; transform:scale(1.09); transition:opacity 1s .1s,transform 1s var(--ease-out) .1s;}
+.ci-motif svg {display:block;width:100%;height:100%;}
+.cutin.in .ci-motif {opacity:1;transform:none;}
+.ci-band {position:absolute; left:-100px; top:252px; width:1510px; height:203px; background:#f6f3ea;
+  transform-origin:64% 50%; transform:translateX(1450px) rotate(-7deg); transition:transform .54s var(--ease-out) .11s;}
+.ci-band.b2 {top:464px;height:17px;background:var(--ci);transform:translateX(-1500px) rotate(-7deg);transition-delay:.22s;}
+.ci-band.b3 {top:487px;height:4px;background:var(--secondary);transform:translateX(-1500px) rotate(-7deg);transition-delay:.3s;}
+.cutin.in .ci-band {transform:translateX(0) rotate(-7deg);}
+.ci-portrait {position:absolute;left:27%;translate:var(--ax,-50%) 0; transform:translateX(-110px);opacity:0;
+  transition:transform .67s var(--ease-out) .14s,opacity .45s .14s; user-select:none;pointer-events:none;
+  filter:drop-shadow(8px 2px 0 color-mix(in srgb,var(--ci) 70%,transparent));}
+.cutin.in .ci-portrait {transform:none;opacity:1;}
+.ci-portrait.none {top:10%;translate:-50% 0;font:900 460px/1 var(--font);color:color-mix(in srgb,var(--ci) 22%,transparent);}
+.ci-tag {position:absolute;left:655px;top:108px;font:900 16px/1 var(--font);letter-spacing:.32em;color:var(--secondary);}
+.ci-meta {position:absolute;left:650px;top:185px;width:580px;font-family:var(--font);color:#f6f5ef;}
+.ci-title {height:42px;font-size:30px;font-weight:700;letter-spacing:.1em;white-space:nowrap;}
+.ci-name {position:absolute;left:-5px;top:91px;width:580px;height:128px;display:flex;align-items:center;
+  color:#11151c;font-weight:900;line-height:1;letter-spacing:.035em;white-space:nowrap;}
+.ci-full {position:absolute;left:1px;top:222px;color:#343940;font-size:24px;font-weight:500;line-height:1.3;letter-spacing:.06em;white-space:nowrap;}
+.ci-line {position:absolute;left:650px;top:550px;width:575px;font:700 30px/1.45 var(--font);color:#f6f5ef;white-space:nowrap;}
+.ci-line::before {content:"";display:block;width:84px;height:5px;background:var(--ci);margin-bottom:24px;}
+.ci-tag,.ci-title,.ci-name,.ci-full,.ci-line {opacity:0;transform:translateX(45px);transition:opacity .51s,transform .51s var(--ease-out);}
+.ci-tag {transition-delay:.39s;}.ci-title {transition-delay:.5s;}.ci-name {transition-delay:.56s;transition-duration:.4s;}.ci-full {transition-delay:.72s;}.ci-line {transition-delay:.92s;}
+.cutin.in :is(.ci-tag,.ci-title,.ci-name,.ci-full,.ci-line) {opacity:1;transform:none;}
+.cutin[data-char="adam"] .ci-left-field {background:linear-gradient(137deg,#bcebc9 0%,#8ad9a5 45%,#df493e 45%,#7c2927 100%);}
+.cutin[data-char="adam"] .ci-band {transition-duration:.37s;}
+.cutin[data-char="adam"] .ci-portrait {transition-duration:.45s;}
+.cutin[data-char="naru"] .ci-left-field {background:repeating-linear-gradient(132deg,transparent 0 82px,#ffffff26 82px 99px),linear-gradient(135deg,#fff1bd,#ffcb45);}
+.cutin[data-char="naru"] .ci-motif {transform:translateX(80px);}
+.cutin.in[data-char="naru"] .ci-motif {transform:none;}
+.cutin[data-char="dr_kemuri"] .ci-halftone {background:linear-gradient(#142a3230 1px,transparent 1px),linear-gradient(90deg,#142a3230 1px,transparent 1px);background-size:32px 32px;}
+.cutin.in[data-char="dr_kemuri"] .ci-halftone {opacity:.5;}
+.cutin[data-char="kafuka"] .ci-left-field {background:linear-gradient(125deg,#d6f3ff,#77b8f5 65%,#367cf3);}
+@media(prefers-reduced-motion:reduce) {
+ .cutin,.cutin * {transition:none!important;}
+ .cutin :is(.ci-portrait,.ci-motif,.ci-tag,.ci-title,.ci-name,.ci-full,.ci-line) {transform:none!important;}
+ .cutin .ci-band {transform:rotate(-7deg)!important;}
+ .cutin .ci-left-field {clip-path:polygon(0 0,558px 0,410px 720px,0 720px)!important;}
 }

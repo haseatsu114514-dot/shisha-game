@@ -19,7 +19,7 @@ try {
     const reel = await import("./js/daily/reel.js"), craft = await import("./js/craft/session.js");
     vn.vnTest.turbo = true; craft.craftTest.auto = "good";
     function reset() { core.newGame(); core.state.phase = "daily"; core.state.day = 8;
-      core.state.slot = 1; core.state.weatherSeed = 4; }
+      core.state.reel.installed = true; core.state.reel.introDone = true; core.state.slot = 1; core.state.weatherSeed = 4; }
     const xp = () => Object.values(core.state.stats).reduce((sum, n) => sum + n - 10, 0);
     reset(); const money = core.state.money;
     stats.earnStat("guts", 8); stats.applyStats({ technique: 8 });
@@ -63,6 +63,7 @@ try {
       const timer = setInterval(() => {
         document.querySelector(`[data-test="after-${after}"]`)?.click();
         document.querySelector('[data-test="drill-heat"]')?.click();
+        document.querySelector('[data-test="drill-finish"]')?.click();
       }, 20);
       try {
         const before = core.state.money;
@@ -108,7 +109,7 @@ try {
     if (recovery) assert.equal(entry.earned, 0);
     else {
       assert(entry.spent > 0);
-      assert(entry.earned >= 1 && entry.earned <= (entry.name === "baito:drill" ? 4 : 2), JSON.stringify(entry));
+      assert(entry.earned >= 1 && entry.earned <= 2, JSON.stringify(entry));
       if (entry.perStat) assert(Object.values(entry.perStat).every(n => n === 0 || n === 1), JSON.stringify(entry));
     }
     if (entry.pay !== undefined) assert(entry.pay >= 8000);

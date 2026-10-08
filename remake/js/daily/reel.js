@@ -239,7 +239,7 @@ function pickTarget() {
 
 /** 自分で選び、実際に体力を消費した日常行動の終了後に呼ぶ。結果と報酬はこの瞬間に確定する（演出は次のマップ表示で） */
 export function onAction({ spent = 0 } = {}) {
-  if (!(spent > 0) || !state?.reel || state.phase !== "daily") { statBuffer = {}; return; }
+  if (!(spent > 0) || !state?.reel?.installed || state.phase !== "daily") { statBuffer = {}; return; }
   const reel = state.reel;
   const chapterFirst = reel.lastChapter !== state.chapter;
   reel.lastChapter = state.chapter;
@@ -341,7 +341,7 @@ function lampOff() {
  * （マップでは待たずに操作できる。夜の行動のあとは calendar が待ってから一日を終える）
  */
 export function mountReel(host, { delay = 500 } = {}) {
-  if (!state?.reel) return Promise.resolve();
+  if (!state?.reel?.installed) return Promise.resolve();
   // 演出中は、停止処理が参照している同じリールを新しいマップへ移す。
   // 筐体だけ作り直すと、古いリールが止まり、新しい方には前回の出目が残る。
   if (busy) {
@@ -380,7 +380,7 @@ let current = Promise.resolve();
 /** 夜の行動のあと: その場でスロットを見せてから一日を終える（翌朝まで持ち越さない） */
 export async function presentNow() {
   await current; // 昼の分の演出が途中なら、終わってから今夜の分を回す
-  if (!state?.reel?.pending?.length) return;
+  if (!state?.reel?.installed || !state.reel.pending?.length) return;
   const host = el("div.reel-night", [el("div.rn-label", { text: "今夜のスロット" })]);
   layers.fx.append(host);
   requestAnimationFrame(() => host.classList.add("show"));
@@ -710,10 +710,17 @@ function announce(r) {
 // 初回のみ: パッキーのアプリ説明（4行・タップ送り）
 const INTRO_LINES = [
   "ぷぷぷっ！ C.STATION公式アプリ『MOKUMOKUパッキー』、インストール完了〜！",
-  "キミが一日なにか行動するたび、ボクのスロットがかってに1回転するよ。回すんじゃない——回っちゃうんだ。",
+  "キミが体力を使って自由行動するたび、ボクのスロットがかってに1回転するよ。回すんじゃない——回っちゃうんだ。",
   "ルールはシンプル！ ボクの顔が光ったら——大当たりっ！ それだけ！",
   "外れても大丈夫。回したぶんだけ、その日がんばったことがちゃーんと積もるしくみ。それじゃ、今日もぷかぷかいこう！",
 ];
+/** 会場で参加登録した時にアプリを導入する。既存の回転・報酬は保持する。 */
+export async function installReel() {
+  state.reel.installed = true;
+  save();
+  if (!state.reel.introDone) await showIntro();
+}
+
 function showIntro() {
   return new Promise((resolve) => {
     let i = 0;

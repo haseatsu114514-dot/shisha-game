@@ -1,6 +1,6 @@
 // 日常パートの常時表示（日付・時間帯・大会までの日数・所持金・体力・スマホ・ステータス）。
 // 見た目は旧版の墨×金を踏襲: 左上に DAY カード、右上に体力・ステータスの五角形・LIME・MENU。
-import { el, yen } from "../core/util.js";
+import { el, yen, sleep } from "../core/util.js";
 import { layers } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { state, STAT_KEYS } from "../core/state.js";
@@ -145,4 +145,27 @@ export function setPhoneBadge(unread) {
   if (!dom) return;
   dom.phone.classList.toggle("has", !!unread);
   dom.phone.title = unread ? "LIME（未読あり）" : "LIME";
+}
+
+/** 朝の家の画面で、就寝前の残量から回復後までゲージを伸ばす。 */
+export async function presentSleepRecovery({ before, after }) {
+  if (after <= before) return;
+  pendingRecovery = null;
+  const maximum = maxStamina();
+  const fill = el("b", { style: `width:${Math.min(100, before / maximum * 100)}%` });
+  const panel = el("div.sleep-recovery", { dataset: { test: "sleep-recovery" }, role: "status" }, [
+    el("p", { text: "ぐっすり眠って、体力が回復した" }),
+    el("div.sleep-gauge", { role: "progressbar", "aria-label": "睡眠後の体力", "aria-valuemin": "0",
+      "aria-valuemax": String(maximum), "aria-valuenow": String(before) }, [fill]),
+  ]);
+  layers.fx.append(panel);
+  await sleep(30);
+  panel.classList.add("show");
+  await sleep(180);
+  fill.style.width = `${Math.min(100, after / maximum * 100)}%`;
+  panel.querySelector(".sleep-gauge").setAttribute("aria-valuenow", String(after));
+  await sleep(1250);
+  panel.classList.remove("show");
+  await sleep(220);
+  panel.remove();
 }

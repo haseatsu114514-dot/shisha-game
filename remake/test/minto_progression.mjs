@@ -35,7 +35,12 @@ try {
     await T.spots.visitChar("minto");
     const first = T.vn.backlog().map((l) => l.text);
     const identity = { known: !!state.flags._minto_identity_revealed, full: !!state.flags._minto_name_known };
-    for (let n = 1; n < 5; n++) await T.spots.visitChar("minto");
+    await T.spots.visitChar("minto");
+    const afterSecond = !!state.flags._minto_identity_revealed;
+    await T.spots.visitChar("minto");
+    const commute = T.vn.backlog().map(l => l.text);
+    const afterThird = !!state.flags._minto_identity_revealed;
+    for (let n = 3; n < 5; n++) await T.spots.visitChar("minto");
     const noSpoiler = !T.phone.morningMessages({ fixedNight: () => false }).some((m) => m.id === "rumor_minto_late_night");
     const invite = T.phone.morningMessages({ fixedNight: () => false }).find((m) => m.id === "lime_minto_first_holiday");
     T.vn.backlog().length = 0;
@@ -62,16 +67,17 @@ try {
     const beats = [];
     const postponed = await T.romance.maybeConfession(async (t) => beats.push(t), { busyNight: true, companion: "tsumugi" });
     const confessed = await T.romance.maybeConfession(async (t) => beats.push(t), { busyNight: true, companion: "minto" });
-    return { first, identity, noSpoiler, invite: invite && { slot: invite.time_slot, after: invite.after_close }, outing, q1,
+    return { first, identity, afterSecond, afterThird, commute, noSpoiler, invite: invite && { slot: invite.time_slot, after: invite.after_close }, outing, q1,
       secondOuting, answerCount, finaleInvite: workdayFinale,
       holidayFinale: holidayFinale && { slot: holidayFinale.time_slot, after: holidayFinale.after_close },
       before, postponed, confessed, lovers: state.lovers, gift: state.owned.includes("suyaki_minto"), beats };
   }, friend);
   const romance = await run(false);
-  const position = (part) => romance.first.findIndex((t) => t.includes(part));
-  assert(position("どうも") < position("いつものtonariのお姉さん"));
-  assert(position("いつものtonariのお姉さん") < position("みんと、です"));
-  assert.deepEqual(romance.identity, { known: true, full: false });
+  assert(!romance.first.some(t => t.includes("出勤前") || t.includes("tonariに来てた")));
+  assert.deepEqual(romance.identity, { known: false, full: false });
+  assert.equal(romance.afterSecond, false);
+  assert.equal(romance.afterThird, true);
+  assert(romance.commute.some(t => t.includes("出勤前")));
   assert(romance.noSpoiler);
   assert.deepEqual(romance.invite, { slot: "night", after: true });
   assert(!romance.outing.some((t) => t.includes("お姉、さん") || t.includes("ばれた")), "Already-known identity was revealed again");

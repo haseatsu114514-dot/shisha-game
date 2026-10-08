@@ -10,6 +10,8 @@ import { state } from "../core/state.js";
 import { layers, imageReady } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 
+import { motifs } from "./intro-motifs.js";
+
 const seenKey = (id) => `_intro_${id}`;
 const introOf = (id) => DB.characters[id]?.intro_cutin || null;
 
@@ -78,18 +80,24 @@ export async function playIntro(id, { onAppear = null } = {}) {
     framePortrait(portrait, p);
     await imageReady(p.src, 1200);
   }
+  const motif = { hajime: "smoke", adam: "duality", naru: "stripes", dr_kemuri: "science", kafuka: "shark", nagumo: "stripes", maezono: "duality", pakki: "duality" }[id] || "smoke";
+  const pattern = el("div.ci-motif", { "aria-hidden": "true" });
+  pattern.innerHTML = `<svg viewBox="0 0 1280 720" xmlns="http://www.w3.org/2000/svg">${motifs[motif]}</svg>`;
   const host = el("div.cutin", { dataset: { char: id }, style: `--ci: ${intro.color || "var(--gold)"}` }, [
+    el("div.ci-left-field"),
+    el("div.ci-halftone"),
+    pattern,
     el("div.ci-band"),
     el("div.ci-band.b2"),
-    el("div.ci-smoke"),
-    el("div.ci-watermark", { text: main }),
+    el("div.ci-band.b3"),
+    el("div.ci-tag", { text: "FIRST ENCOUNTER" }),
     portrait,
     el("div.ci-meta", [
       el("div.ci-title", { text: intro.title || "" }),
-      el("div.ci-name", { text: main, style: `font-size: ${fitSize(main, 570, 96)}px` }),
+      el("div.ci-name", { text: main, style: `font-size: ${fitSize(main, 570, 116)}px` }),
       full ? el("div.ci-full", { text: `（${full}）` }) : null,
     ].filter(Boolean)),
-    intro.line ? el("div.ci-line", { text: `「${intro.line}」`, style: `font-size: ${fitSize(`「${intro.line}」`, 640, 34)}px` }) : null,
+    intro.line ? el("div.ci-line", { text: `「${intro.line}」`, style: `font-size: ${fitSize(`「${intro.line}」`, 575, 30)}px` }) : null,
   ].filter(Boolean));
   layers.fx.append(host);
   onAppear?.();
