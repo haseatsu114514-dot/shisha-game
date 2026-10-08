@@ -248,6 +248,20 @@
 .hr-row .btn { flex: 1; }
 .hr-row .btn:disabled, .hr-punch:disabled { opacity: 0.45; cursor: default; }
 
+/* 同じアルミと作業パネルで、開始前だけ配置を選ぶ。 */
+.ht-preview { width: 430px; height: 430px; cursor: default; touch-action: auto; }
+.ht-preview .foil-hole { animation: none; }
+.ht-side { flex: 1; min-width: 0; max-height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; scrollbar-width: thin; }
+.ht-side > * { flex-shrink: 0; }
+.ht-title { font-size: 22px; color: var(--accent); }
+.bench .ht-option { width: 100%; min-height: 54px; justify-content: center; font-size: 16px; }
+.bench .ht-option[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 16%, #28252d); }
+.ht-counts { color: var(--accent); font-size: 15px; font-variant-numeric: tabular-nums; }
+.ht-description, .ht-note, .ht-help { margin: 0; font-size: 14px; line-height: 1.6; color: var(--text-dim); }
+.ht-help summary { cursor: pointer; color: var(--text); }
+.ht-help p { margin: 8px 0 0; }
+.ht-current { font-size: 14px; color: var(--text-dim); }
+
 /* ---------------------------------------------------------------- 炭焼き */
 .heat { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .stove { position: relative; width: 520px; }
@@ -265,6 +279,7 @@
   transition: transform 0.3s var(--ease-out), opacity 0.4s;
 }
 .coal > .art { position: absolute; left: 0; bottom: 0; }
+.coal > .art, .coal .c-core, .coal .c-burst, .heat ~ .stamp { pointer-events: none; }
 .coal .c-red { opacity: var(--red, 0); }
 .coal .c-hot { opacity: var(--hot, 0); }
 .coal .c-ash { opacity: var(--ash, 0); filter: grayscale(0.8) brightness(0.8); }
@@ -279,7 +294,16 @@
 @keyframes pikan { 0% { opacity: 1; transform: scale(0.6); } 100% { opacity: 0.2; transform: scale(1.6); } }
 @keyframes burst { 0% { opacity: 1; transform: rotate(0) scale(0.7); } 100% { opacity: 0; transform: rotate(40deg) scale(1.3); } }
 .coal.picked { transform: translateY(-60px) scale(calc(var(--k, 1) * 0.8)); opacity: 0.25; pointer-events: none; }
+.coal-number { position: absolute; left: 46px; bottom: 0; width: 26px; height: 26px; display: grid; place-items: center; border: 1px solid #ffffff44; border-radius: 50%; color: #f5ebdb; background: #17151bcc; font-size: 14px; pointer-events: none; }
 .heat-info { width: 100%; font-size: 15px; color: var(--text-dim); }
+.heat-picks { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; list-style: none; margin: 8px 0 0; padding: 0; font-variant-numeric: tabular-nums; }
+.heat-picks li { min-width: 0; padding: 9px 10px; border: 1px solid #ffffff1a; border-radius: 8px; background: #ffffff04; line-height: 1.5; }
+.heat-picks b, .heat-picks span { display: block; }
+.heat-picks b { font-size: 14px; font-weight: 500; }
+.heat-picks [data-rating="PERFECT"] b { color: var(--accent); }
+.heat-picks [data-rating="GOOD"] b { color: #b7d2bc; }
+.heat-picks [data-rating="MISS"] b { color: #d7a5a0; }
+.heat-finished .heat-picks { visibility: hidden; }
 .hi-row { display: flex; justify-content: center; align-items: center; gap: 16px; padding: 8px; font-size: 14px; }
 .hi-row b { color: var(--accent); flex: none; }
 .hi-row i { width: 18px; height: 1px; background: #ffffff2a; }
@@ -655,6 +679,10 @@
 .result-card.compact.show { transform: none; }
 .result-card.compact .rc-title { font-size: 15px; letter-spacing: 0.04em; }
 .result-card.compact .rc-next { width: 180px; min-height: 48px; margin-left: auto; }
+.result-card.compact.with-summary { flex-wrap: wrap; gap: 12px 18px; }
+.rc-summary { flex: 0 0 100%; font-size: 15px; line-height: 1.65; font-variant-numeric: tabular-nums; }
+.rc-summary p { margin: 0; }
+.rc-summary p:last-child { margin-top: 4px; color: var(--accent); }
 
 /* GP41：生成した真鍮・黒ガラスの素材を、全制作工程の実際の操作へ重ねる。 */
 .bench[data-art-skin] .bench-top { border-bottom-color: #e8c27a35; background: linear-gradient(180deg, #261c2c88, transparent); }

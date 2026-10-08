@@ -54,6 +54,7 @@ async function load(url) {
   mods.set(url.href, mod); await mod.link((specifier) => load(new URL(specifier, url))); return mod;
 }
 const heatModule = await load(new URL("craft/heat.js", jsRoot)); await heatModule.evaluate();
+const heatLogic = mods.get(new URL("craft/heat_logic.js", jsRoot).href).namespace;
 const steamModule = await load(new URL("craft/steam.js", jsRoot)); await steamModule.evaluate();
 const { conditionForRatio } = mods.get(new URL("core/condition.js", jsRoot).href).namespace;
 for (const [ratio, health] of [[1, "green"], [.5001, "green"], [.5, "yellow"], [.2501, "yellow"], [.25, "red"], [0, "red"]]) {
@@ -74,6 +75,53 @@ assert.equal(red.just, 0); assert.equal(red.score, 62); assert(red.burnRisk > ye
 const greenLate = await heat(.51, .55), yellowLate = await heat(.5, .55);
 assert.equal(greenLate.just, 3); assert.equal(yellowLate.just, 0); assert(greenLate.aromaRetention > yellowLate.aromaRetention);
 assert.equal((await heat(.25, .65, "tutorial")).just, 3, "Low stamina affected the introductory lesson");
+
+// 全6状態の閾値は従来どおり。新しい英字評価はその状態から派生する。
+for (const [time, phase, rating, score] of [[.349, "raw", "MISS", 15], [.35, "early", "MISS", 45],
+  [.7, "pre", "GOOD", 78], [1, "just", "PERFECT", 100], [1.5, "hot", "GOOD", 62], [1.8, "over", "MISS", 28]]) {
+  const result = heatLogic.evaluateCoalTiming(time, 1, .5);
+  assert.equal(result.phase, phase); assert.equal(result.rating, rating); assert.equal(result.score, score);
+}
+assert.equal(heatLogic.formatTimingError(-.08), "0.08秒早い");
+assert.equal(heatLogic.formatTimingError(.35), "0.35秒遅い");
+assert.equal(heatLogic.formatTimingError(-.0001), "0.00秒（ほぼ一致）");
+assert.equal(heatLogic.formatTimingError(0), "0.00秒（ほぼ一致）");
+
+// 最後の描画は適温前でも、実際の入力がジャストなら誤差・採点ともジャスト。
+now = 1000; frames.clear();
+const timingCs = { mode: "tournament", condition: conditionForRatio(1), equip: {} };
+const timingRun = heatModule.namespace.runHeat(timingCs); await settle();
+await frame(6700); // 経過5.7秒。炭のジャスト開始は5.8秒。
+assert.equal(find("coal-0").dataset.phase, "pre");
+const justWidth = .5 * conditionForRatio(1).window, ideal = 5.8 + justWidth / 2;
+const delays = [-.08, .35, -.35];
+for (let i = 0; i < 3; i++) {
+  now = 1000 + (ideal + delays[i]) * 1000; // RAFを挟まず入力時刻だけ変える。
+  for (const fn of find(`coal-${i}`).listeners.pointerdown) fn({ preventDefault() {} });
+  assert.match(find(`coal-timing-${i}`).children[1].text, /\d+\.\d{2}秒/);
+}
+await settle();
+assert.deepEqual(Array.from(timingCs.heat.picks), ["just", "hot", "pre"]);
+assert.equal(timingCs.heat.timings[0].rating, "PERFECT");
+assert(Math.abs(timingCs.heat.timings[0].errorSeconds + .08) < 1e-12);
+assert.equal(timingCs.heat.score, Math.round((100 + 62 + 78) / 3));
+assert.equal(timingCs.heat.timingAccuracy, timingCs.heat.score);
+assert(Math.abs(timingCs.heat.meanAbsoluteError - .26) < 1e-12);
+assert(find("step-summary").children.at(-1).text.includes("80%"));
+const frozen = JSON.stringify(timingCs.heat.timings);
+for (const fn of find("coal-0").listeners.pointerdown) fn({ preventDefault() {} });
+await frame(now + 2000); assert.equal(JSON.stringify(timingCs.heat.timings), frozen);
+nextButton().onclick(); await timingRun;
+
+// 灰になった炭の自動取り出しにも、遅れ・MISS・最終集計を残す。
+now = 1000; frames.clear();
+const expiredCs = { mode: "tournament", equip: {} };
+const expiredRun = heatModule.namespace.runHeat(expiredCs); await settle(); await frame(13000); await settle();
+assert.equal(expiredCs.heat.over, 3);
+assert(expiredCs.heat.timings.every((timing) => timing.automatic && timing.errorSeconds > 0 && timing.rating === "MISS"));
+assert.equal(expiredCs.heat.timingAccuracy, 28);
+nextButton().onclick(); await expiredRun;
+console.log("[coal timing] PASS: unchanged thresholds, ideal window center, live two-decimal early/late errors, input-time sampling, frozen per-coal results, score-aligned summary and auto removal");
 async function steam(ratio) {
   now = 1000; frames.clear(); spawned = 0;
   const cs = { mode: "tournament", condition: conditionForRatio(ratio), steamMin: 3 };
