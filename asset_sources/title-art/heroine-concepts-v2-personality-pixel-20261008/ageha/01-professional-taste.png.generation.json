@@ -1,0 +1,30 @@
+{
+  "id": "ageha-01-professional-taste",
+  "path": "/workspace/generated_images/exec-563b83ed-d278-4e05-b16f-95ac1baf24c8.png",
+  "source": "ageha/01-professional-taste.png",
+  "prompt": "ageha/01-professional-taste.prompt.txt",
+  "references": [
+    "../heroine-concepts-v1-20261008/references/ageha-adopted-normal.png",
+    "../heroine-concepts-v1-20261008/references/title-style.png",
+    "references/amy-diamond-pink.jpg",
+    "references/lerook-blue-black.png",
+    "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
+  ],
+  "source_sha256": "de5857d27aae1cb456e142720673f096075de3dcf06386779b617e55e25f2bde",
+  "prompt_sha256": "7041214c690974151b2fadfadc151e976317c1a71ab888e38b78e564f0f100a1",
+  "reference_sha256": {
+    "../heroine-concepts-v1-20261008/references/ageha-adopted-normal.png": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+    "../heroine-concepts-v1-20261008/references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+    "references/amy-diamond-pink.jpg": "03c802681606e5b2a103916abd0ce93be2ac103a795d48ff6eac05bb6a9dcafd",
+    "references/lerook-blue-black.png": "a12acde3d55e923be8a0baf6ba95bb2a7e6e837acaaa377769a6dacb4916eaae",
+    "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg": "a46cd683eb02c239513b22bfc937dffde5f3920f958a33ba00a1553fbe183cbc"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}

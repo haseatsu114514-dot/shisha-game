@@ -1,0 +1,29 @@
+{
+  "id": "minto-01-cafe-welcome",
+  "path": "/workspace/generated_images/exec-e929a461-8a3f-4996-8975-9f1cf9221232.png",
+  "source": "minto/01-cafe-welcome.png",
+  "prompt": "minto/01-cafe-welcome.prompt.txt",
+  "references": [
+    "../heroine-concepts-v1-20261008/references/minto-adopted-normal.png",
+    "../heroine-concepts-v1-20261008/references/title-style.png",
+    "../heroine-concepts-v1-20261008/references/hookah-real-body.jpg",
+    "../heroine-concepts-v1-20261008/references/hmd-real-assembled.jpg"
+  ],
+  "source_sha256": "927d5e13340e2f5c9c29542215301e6d79dcc532e1c89e2293bf5ab233a1915a",
+  "prompt_sha256": "e8854238bd573daf6266dfb2900035313f51c7bb5a3b65e922167393b745701d",
+  "reference_sha256": {
+    "../heroine-concepts-v1-20261008/references/minto-adopted-normal.png": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+    "../heroine-concepts-v1-20261008/references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+    "../heroine-concepts-v1-20261008/references/hookah-real-body.jpg": "2bdbb38c8ae19a6d21aadabe3be9bdec3af57754709ebdf89035d39d02702d8d",
+    "../heroine-concepts-v1-20261008/references/hmd-real-assembled.jpg": "c562580773c147f77f8ba8b86cb76fc43f8d71f9237d38fe2f4b0f717a292069"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false,
+  "preserved_source": "minto/01-cafe-welcome-first.png"
+}

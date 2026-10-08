@@ -1,0 +1,30 @@
+{
+  "id": "tsumugi-01-smoke-colors",
+  "path": "/workspace/generated_images/exec-365326ab-eae3-4f3c-bedc-befc46565fe2.png",
+  "source": "tsumugi/01-smoke-colors.png",
+  "prompt": "tsumugi/01-smoke-colors.prompt.txt",
+  "references": [
+    "../heroine-concepts-v1-20261008/references/tsumugi-adopted-normal.png",
+    "../heroine-concepts-v1-20261008/references/title-style.png",
+    "references/wookah-complete.jpg",
+    "references/lerook-blue-black.png",
+    "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
+  ],
+  "source_sha256": "5d8f7ab864bff38b7def9098a3fff42780bb9a67774ade0cbe4bb1f9c0f444ad",
+  "prompt_sha256": "4a01fbf47bbfd0d853b2e86242fe00d01ff23073acd4f12d20a0bec48374010f",
+  "reference_sha256": {
+    "../heroine-concepts-v1-20261008/references/tsumugi-adopted-normal.png": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6",
+    "../heroine-concepts-v1-20261008/references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+    "references/wookah-complete.jpg": "6c405d25a2ab50064f7bf30245c753416788dbde9ee6fbd828a22ffc458087d1",
+    "references/lerook-blue-black.png": "a12acde3d55e923be8a0baf6ba95bb2a7e6e837acaaa377769a6dacb4916eaae",
+    "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg": "a46cd683eb02c239513b22bfc937dffde5f3920f958a33ba00a1553fbe183cbc"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}

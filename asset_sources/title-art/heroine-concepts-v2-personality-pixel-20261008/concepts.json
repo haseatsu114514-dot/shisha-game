@@ -21,7 +21,13 @@
         "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "equipment-detail-review",
+      "original_output": "/workspace/generated_images/exec-365326ab-eae3-4f3c-bedc-befc46565fe2.png",
+      "source_sha256": "5d8f7ab864bff38b7def9098a3fff42780bb9a67774ade0cbe4bb1f9c0f444ad",
+      "size": [
+        1024,
+        1536
+      ]
     },
     {
       "id": "tsumugi-02-tablet-cat",
@@ -67,7 +73,13 @@
         "references/km-turkey-brass.png"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "equipment-detail-review",
+      "original_output": "/workspace/generated_images/exec-15328fb7-9f0a-4f3a-93a9-4d0e4ddc410b.png",
+      "source_sha256": "f633c63452b5882566f8f42a6b142f8f4c47c8e9d6c3abda7fdb8e1feb525d72",
+      "size": [
+        1024,
+        1536
+      ]
     },
     {
       "id": "mashiro-02-tea-break",
@@ -114,7 +126,13 @@
         "../heroine-concepts-v1-20261008/references/hmd-real-assembled.jpg"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "equipment-detail-review",
+      "original_output": "/workspace/generated_images/exec-e929a461-8a3f-4996-8975-9f1cf9221232.png",
+      "source_sha256": "927d5e13340e2f5c9c29542215301e6d79dcc532e1c89e2293bf5ab233a1915a",
+      "size": [
+        1024,
+        1536
+      ]
     },
     {
       "id": "minto-02-instant-photo",
@@ -179,7 +197,13 @@
         "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "reviewed",
+      "original_output": "/workspace/generated_images/exec-563b83ed-d278-4e05-b16f-95ac1baf24c8.png",
+      "source_sha256": "de5857d27aae1cb456e142720673f096075de3dcf06386779b617e55e25f2bde",
+      "size": [
+        1024,
+        1536
+      ]
     },
     {
       "id": "ageha-02-grocery-smile",
@@ -227,7 +251,13 @@
         "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "equipment-detail-review",
+      "original_output": "/workspace/generated_images/exec-82ef3d2d-cfdd-41dd-abdd-347d3ff69585.png",
+      "source_sha256": "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
+      "size": [
+        1024,
+        1536
+      ]
     },
     {
       "id": "rin-02-flavor-samples",
@@ -275,7 +305,13 @@
         "references/stratus-hmd.jpg"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "equipment-detail-review",
+      "original_output": "/workspace/generated_images/exec-df7a085b-7816-44aa-a9d8-3deb9895d19a.png",
+      "source_sha256": "02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea",
+      "size": [
+        1024,
+        1536
+      ]
     },
     {
       "id": "kafuka-02-shark-movie",
