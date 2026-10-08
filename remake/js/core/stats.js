@@ -91,7 +91,6 @@ function flushBatch() {
 // 台本の報酬は、自由行動の終了まで預かる。先に報酬・後に消耗する誘いも同じ扱い。
 // 強制イベント、レッスン、LIME、休憩など、行動の外では能力を増やさない。
 export const ACTION_GROWTH_BUDGET = 2;
-export const DRILL_GROWTH_BUDGET = 2;
 let earningAction = null;
 
 /** 台本・訪問・制作の成長候補。確定済み報酬用の gainStat と分ける。 */
@@ -101,8 +100,8 @@ export function earnStat(key, amount = 1) {
   earningAction.gains[key] = Math.max(earningAction.gains[key] || 0, amount);
 }
 
-/** 自分で選んだ行動だけを包む。追加の自主練は独立した小さな成長枠。 */
-export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET } = {}) {
+/** 自分で選んだ行動だけを包む。通常は1能力につき1P、誘いは主な1能力に2P。 */
+export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 1, primary = null } = {}) {
   const parent = earningAction;
   const action = { owner: state, gains: {}, spent: 0 };
   earningAction = action;
@@ -112,12 +111,12 @@ export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET } = {}) {
   if (action.owner !== state) return { value, spent: 0 };
   if (parent?.owner === state) parent.spent += action.spent;
   if (action.spent > 0) {
-    // 通常は1能力につき1P、最大2能力。成功した自主練は別枠で2能力、失敗は1能力。
-    const entries = Object.entries(action.gains).sort((a, b) => b[1] - a[1]).slice(0, Math.max(0, Math.floor(budget)));
+    // 通常は最大2能力各1P。誘いはbudget=1・points=2で主な能力だけを伸ばす。
+    const entries = Object.entries(action.gains).sort((a, b) => (b[0] === primary) - (a[0] === primary) || b[1] - a[1]).slice(0, Math.max(0, Math.floor(budget)));
     const rewarded = [];
     for (const [key] of entries) {
       const before = { ...state.stats };
-      gainStat(key, 1, { excludedKeys: rewarded });
+      gainStat(key, points, { excludedKeys: rewarded });
       for (const k of STAT_KEYS) if (state.stats[k] > before[k]) rewarded.push(k);
     }
   }

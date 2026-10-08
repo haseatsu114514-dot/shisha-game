@@ -35,7 +35,7 @@ const stats = modules.get(new URL("core/stats.js",root).href).namespace;
 const snapshot = () => ({ ...core.state.stats });
 function fresh(chapter = 5) {
   if (core.state) { core.state.phase = "cleared"; reel.onAction(); }
-  const s = core.newGame(); s.phase = "daily"; s.chapter = chapter; return s;
+  const s = core.newGame(); s.phase = "daily"; s.chapter = chapter; s.reel.installed = true; return s;
 }
 
 for (const key of core.STAT_KEYS) for (const before of [0,10,20,21,40,60,80,99]) {
@@ -81,17 +81,13 @@ const migrated = JSON.stringify({ stats: core.state.stats, xp: core.state.statXp
 core.save(); core.load();
 assert.equal(JSON.stringify({ stats: core.state.stats, xp: core.state.statXp, pending: core.state.reel.pending }), migrated);
 
-// 自主練は実消耗がある別枠。成功の2能力は各1P、失敗の0報酬は付かない。
+// 候補が複数ある誘いでも主な一能力だけに2P。通常との違いは倍率。
 s = fresh();
 await stats.paidAction(async () => {
-  stats.applyStats({ technique: 2, charm: 2 }); stats.addStamina(-24);
-  await stats.paidAction(async () => { stats.applyStats({ technique: 4, sense: 3 }); stats.addStamina(-8); }, { budget: stats.DRILL_GROWTH_BUDGET });
-});
-assert.deepEqual(snapshot(), { technique: 12, sense: 11, guts: 10, charm: 11, insight: 10 });
-s = fresh();
-await stats.paidAction(async () => { stats.applyStats({ technique: 1, sense: 0 }); stats.addStamina(-8); }, { budget: stats.DRILL_GROWTH_BUDGET });
-assert.equal(s.stats.technique, 11); assert.equal(s.stats.sense, 10);
-console.log("[growth] PASS: normal 1P at every tier, no duplicate/free/zero-stamina growth, capped redirects, old save progress, paid extra practice");
+  stats.applyStats({ sense: 9, charm: 2 }); stats.addStamina(-10);
+}, { budget: 1, points: 2, primary: "charm" });
+assert.deepEqual(snapshot(), { technique: 10, sense: 10, guts: 10, charm: 12, insight: 10 });
+console.log("[growth] PASS: 1P per normal ability / single 2P invitation, no duplicate/free/zero-stamina growth, capped redirects, old saves");
 
 const runs = Number(process.env.GROWTH_RUNS || 10000);
 const q = (a,p) => [...a].sort((x,y) => x-y)[Math.floor((a.length-1)*p)];

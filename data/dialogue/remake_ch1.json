@@ -1379,6 +1379,16 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "はい、行ってきます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "今回のミントは店の仕入れだ。経費で払っておく"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "お前の財布から出す必要はない。受け取ってこい"
         }
       ]
     },

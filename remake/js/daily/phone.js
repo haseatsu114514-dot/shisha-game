@@ -3,7 +3,7 @@
 // 朝は通知だけ出して受信箱に積み、プレイヤーが好きなときにアプリを開いて読む（オーナー指定）。
 // 物語の節目（大会の朝・優勝の夜）だけは openPhone で必ず読ませる。
 // 見た目は旧版の LIME（ノッチ付きの端末・緑のヘッダー・白と黄緑の吹き出し・明るい返信欄）を踏襲する。
-import { el, sleep, fitOneLine } from "../core/util.js";
+import { el, sleep, fitOneLine, yen } from "../core/util.js";
 import { DB, displayName, faceIconUrl } from "../core/data.js";
 import { layers } from "../core/ui.js";
 import { state } from "../core/state.js";
@@ -16,6 +16,8 @@ import { hasContact } from "./spots.js";
 import { loverMessages, isLover, dateSchedule } from "./romance.js";
 import { bondInvites, friendMessages } from "./bonds.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
+
+import { invitationCost } from "./invitations.js";
 
 const HEROINES_ENCOURAGE = ["tsumugi", "minto", "rin"];
 // 目上の相手への返信は敬語（旧版 F6）。友達口調は同世代の相手だけ
@@ -476,6 +478,8 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
       return;
     }
     const polite = POLITE.has(m.sender);
+    const cost = invitationCost(m.accept_event);
+    const affordable = state.money >= cost;
     const go = m.accept_text || (polite ? "行きます！" : "行く！");
     const no = st === "busy"
       ? polite ? "すみません、先に別の約束があって……" : "ごめん、先に別の約束をしてしまった"
@@ -488,7 +492,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
       [
         st === "busy"
           ? { label: "（今日はもう別の約束がある）", disabled: true }
-          : { label: `${go}（行動を1回使う）`, text: go, go: true },
+          : { label: `${go}（行動1回${cost ? `・${yen(cost)}必要${affordable ? "" : "・所持金不足"}` : ""}）`, text: go, go: true, disabled: !affordable },
         { text: no, go: false },
         ...(!forced ? [{ text: "あとで返事する（トーク一覧へ）", later: true }] : []),
       ],

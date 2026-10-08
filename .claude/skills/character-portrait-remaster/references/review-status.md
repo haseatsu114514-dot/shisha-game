@@ -1,3 +1,7 @@
+# 2026-10-08 南雲会長 v1
+
+PRT75: 第1章の未制作分から南雲の5表情を生成。`asset_sources/portraits/nagumo-remaster-v1/`。オーナー「この案を採用する」で採用。5表情・顔アイコン・可逆WebP・本編manifestへ反映。前園・パッキーは後回しの指示で今回保留。今回の登場演出は採用済みの現行立ち絵でv2を本編へ実装。
+
 # 2026-10-07 最新：採用青グラデの6ポーズと顔アイコン
 
 オーナー「一枚目の青のグラデのやつ採用」「これで必要なパーツを作っていって」により、採用通常・腹話術を再利用し、笑顔／真剣／驚き／熱弁を1枚ずつ生成。[6ポーズと原寸の顔](../../../../asset_sources/portraits/kafuka-approved-blue-inner-v1/review.png)、[暗背景](../../../../asset_sources/portraits/kafuka-approved-blue-inner-v1/review-dark.png)、[原画・プロンプト・素材一式](../../../../asset_sources/portraits/kafuka-approved-blue-inner-v1/README.md)、[実際の会話画面](../../../../asset_sources/reviews/kafuka-map-20261007/portraits-in-game.png)。衣装は選択済みの黒・淡い水色・アイボリー、髪は黒＋濃い青の内側グラデ。旧銀髪や全身青の案へ戻さない。デザイン採用と追加表情の仕上がり確認は区別する。

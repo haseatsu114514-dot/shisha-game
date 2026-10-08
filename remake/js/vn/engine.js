@@ -80,7 +80,13 @@ function buildDom() {
 }
 
 function setAuto(v) { autoMode = v; dom?.autoBtn.classList.toggle("on", v); if (v) kickAuto(); }
-function setSkip(v) { skipMode = v; dom?.skipBtn.classList.toggle("on", v); if (v) kickAuto(); }
+function setSkip(v) {
+  skipMode = v;
+  dom?.skipBtn.classList.toggle("on", v);
+  clearTimeout(autoTimer);
+  if (v && running?.typing) completeTyping();
+  if (v || autoMode) kickAuto();
+}
 
 let autoTimer = 0;
 function kickAuto() {
@@ -92,7 +98,7 @@ function kickAuto() {
     if (vnTest.turbo) autoTimer = setTimeout(() => autoChoose(), 10);
     return;
   }
-  const delay = vnTest.turbo ? 5 : skipMode ? 180 : running.typing ? 200 : 1200 + visibleLength(running.fullHtml || "") * 45;
+  const delay = vnTest.turbo ? 5 : skipMode ? 80 : running.typing ? 200 : 1200 + visibleLength(running.fullHtml || "") * 45;
   autoTimer = setTimeout(() => {
     if (!running) return;
     if (running.typing && !vnTest.turbo && !skipMode) return kickAuto();

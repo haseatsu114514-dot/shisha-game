@@ -101,8 +101,6 @@ export function bonusOf(cs = null) {
   if (state.rehearsal === "great") { b += 3; notes.push("前日リハーサルの手応え"); }
   else if (state.rehearsal === "good") { b += 1.5; notes.push("前日リハーサルの手応え"); }
   if (state.flags._last_night === "practice") { b += 2; notes.push("前夜の最終調整"); }
-  const bests = Object.values(state.best || {}).filter((t) => t >= 2).length;
-  if (bests) { b += bests * 0.5; notes.push("練習の自己ベスト"); }
   if (state.equip.bowl === "hagal_80beat") b += 1;
   const gift = cs && giftBowlEffect(cs);
   if (gift?.bonus) { b += gift.bonus; notes.push(gift.note); }

@@ -1020,3 +1020,13 @@ button.lime-push:focus-visible { outline: 3px solid var(--lime); outline-offset:
 
 /* 雨は共通の背景レイヤーで描き、従来のマップ雨と二重にしない。 */
 body[data-weather="outdoor"] .map-weather { display: none; }
+
+/* 暗転が終わった朝に、睡眠による回復を見せる。 */
+.sleep-recovery { position:absolute; left:50%; top:37%; translate:-50% 0; width:540px; padding:30px 38px;
+  border:1px solid #c8e8ca88; border-radius:12px; background:#101b17e8; color:#edf9ee; text-align:center;
+  opacity:0; transform:translateY(12px); transition:opacity .22s,transform .22s; box-shadow:0 12px 50px #0008; }
+.sleep-recovery.show {opacity:1; transform:none;}
+.sleep-recovery p {font-size:25px; margin:0 0 24px; font-weight:700;}
+.sleep-gauge {height:26px; border-radius:14px; padding:3px; background:#030e08; border:1px solid #9bd2a488; overflow:hidden;}
+.sleep-gauge b {display:block; height:100%; border-radius:10px; background:linear-gradient(90deg,#5ea87b,#abf0af); box-shadow:0 0 18px #95efa577; transition:width 1.05s cubic-bezier(.25,.65,.3,1);}
+@media(prefers-reduced-motion:reduce) {.sleep-recovery,.sleep-gauge b {transition:none; transform:none;}}

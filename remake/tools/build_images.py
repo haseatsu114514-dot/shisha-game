@@ -47,7 +47,8 @@ def encode(src: Path, rel: str) -> bytes:
             or rel.startswith("sprites/characters/rin/")
             or rel.startswith("sprites/characters/tsumugi/")
             or rel.startswith("sprites/characters/sumi/")
-            or rel.startswith("sprites/characters/mashiro/")):
+            or rel.startswith("sprites/characters/mashiro/")
+            or rel.startswith("sprites/characters/nagumo/")):
         b = io.BytesIO()
         im.save(b, "WEBP", lossless=True, quality=100, method=6, exact=True)
         return b.getvalue()

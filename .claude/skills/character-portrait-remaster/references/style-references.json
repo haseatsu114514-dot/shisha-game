@@ -1141,6 +1141,45 @@
           "sha256": "dd8a6312ff5636c9e670b4cc79b5bd0e800ed0f9131ad4064511787745036f4c"
         }
       ]
+    },
+    {
+      "id": "nagumo-remaster-v1",
+      "title": "南雲会長 再制作5表情 v1",
+      "status": "approved",
+      "role": "2026-10-08採用済み・本編反映",
+      "images": [
+        {
+          "label": "通常",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/nagumo-remaster-v1/normal-preview.png",
+          "sha256": "1f0cb8207f8709e01f9e9784d8abea81c3422956f000ac83a2970837ee562149"
+        },
+        {
+          "label": "笑顔",
+          "expression": "smile",
+          "path": "../../../../asset_sources/portraits/nagumo-remaster-v1/smile-preview.png",
+          "sha256": "81e004726d62d9280d04708351b27543759b8044e22edfbdd486a581640d6da9"
+        },
+        {
+          "label": "真剣",
+          "expression": "serious",
+          "path": "../../../../asset_sources/portraits/nagumo-remaster-v1/serious-preview.png",
+          "sha256": "413079b9bde1f82c782dbc57be462141eaf51394b3ec702ee4b220f1e1396bb3"
+        },
+        {
+          "label": "驚き",
+          "expression": "surprise",
+          "path": "../../../../asset_sources/portraits/nagumo-remaster-v1/surprise-preview.png",
+          "sha256": "3d183f16aed11040706195093cb64dd2dcb70dcaafaf190e0ee1fcc234bb04b2"
+        },
+        {
+          "label": "考え中",
+          "expression": "thinking",
+          "path": "../../../../asset_sources/portraits/nagumo-remaster-v1/thinking-preview.png",
+          "sha256": "8844214e026683f2b31ec72ee803a9475cde0786cf1b501374c7d4d2818eb97b"
+        }
+      ],
+      "approval": "2026-10-08 オーナー「この案を採用する」"
     }
   ]
 }

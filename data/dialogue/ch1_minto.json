@@ -6,32 +6,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ぺぱーみんとへ向かう途中、店の前で見覚えのある横顔を見つけた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ミント色の髪と、フリルのついた制服。彼女もこちらに気づいて、足を止めた。"
+          "text": "PEPPERMINTのドアを開けると、明るい声が飛んできた。"
         },
         {
           "speaker": "minto",
-          "face": "normal",
-          "text": "……どうも。はじめくん、こんにちは"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "あれ、いつものtonariのお姉さん……？"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "彼女は制服の袖をつまんで、少しだけ目を伏せた。"
-        },
-        {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "……みんと、です。このお店では、そう呼んでください"
+          "face": "smile",
+          "text": "おかえりなさーいっ♡ はじめまして、みんとです！"
         },
         {
           "type": "set_flag",
@@ -42,32 +22,14 @@
           "flag": "_met_minto"
         },
         {
-          "type": "set_flag",
-          "flag": "_minto_identity_revealed"
-        },
-        {
           "speaker": "hajime",
           "face": "normal",
-          "text": "みんとさん。ここの人だったんですね"
-        },
-        {
-          "speaker": "minto",
-          "face": "normal",
-          "text": "うん。……この格好、外で見られると、ちょっと照れるね"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "今日はお店を見に来たんです。入ってもいいですか？"
+          "text": "蒸野はじめです。tonariでバイトをしていて……"
         },
         {
           "speaker": "minto",
           "face": "smile",
-          "text": "もちろん。……じゃあ、続きは中で"
-        },
-        {
-          "type": "bg",
-          "bg": "res://assets/backgrounds/peppermint.png"
+          "text": "同業さんなんだねっ♡ どうぞ、こっちへ！"
         },
         {
           "speaker": "",
@@ -122,6 +84,11 @@
           "speaker": "",
           "face": "",
           "text": "彼女が顔を近づけてウィンクした瞬間、バニラとミントの甘い香りが鼻をくすぐった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（この声……どこかで聞いたような。店の音でよく分からない）"
         },
         {
           "speaker": "hajime",
@@ -653,6 +620,49 @@
     {
       "dialogue_id": "ch1_minto_third",
       "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "何度か店に通ったある日。PEPPERMINTへ向かう途中、彼女に会った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "黒い髪にミント色のリボン。出勤前の彼女は、いつもより静かだった。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "……こんにちは、はじめくん。今日も来てくれるの？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "うん。……あれ、tonariに来てたお姉さん？"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "ふふ。やっと気づいた？ お店では、みんとって呼んでね"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_minto_identity_revealed"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そっか。煙の話をしてる時の声、同じだったんだ"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "覚えててくれたんだ。……じゃあ、続きは中で"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/peppermint.png"
+        },
         {
           "speaker": "minto",
           "face": "smile",

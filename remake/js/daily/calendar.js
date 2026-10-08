@@ -1,19 +1,19 @@
 // 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の行動 → 夜の固定イベント → 帰宅 → 翌朝。
-import { el, sleep } from "../core/util.js";
+import { el, sleep, yen } from "../core/util.js";
 import { layers, dayCard, modal, toast, fadeBlack, bannersIdle, setBg } from "../core/ui.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
-import { addStamina, gainAffinity, paidAction, staminaAfter, staminaRatio, maxStamina } from "../core/stats.js";
+import { addMoney, addStamina, gainAffinity, paidAction, staminaAfter, staminaRatio, maxStamina } from "../core/stats.js";
 import { coldRisk, catchesCold } from "../core/illness.js";
 import { DB, bgUrl } from "../core/data.js";
 import { SE, playBgm } from "../core/audio.js";
 import { play } from "../vn/engine.js";
 import { glossaryPanel } from "../vn/glossary.js";
-import { initHud, showHud, updateHud, daysLeft, setPhoneBadge } from "./hud.js";
+import { initHud, showHud, updateHud, daysLeft, setPhoneBadge, presentSleepRecovery } from "./hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chooseSpot, interruptMap } from "./map.js";
 import { isRainy } from "./weather.js";
-import { spotById, visitRival, visitSpot, restAtHome, isClosed } from "./spots.js";
+import { spotById, visitRival, visitSpot, restAtHome, isClosed, CHAR_STAT } from "./spots.js";
 import { doFortune } from "./fortune.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
@@ -23,6 +23,8 @@ import { onAction as spinReel, presentNow as showReelNow } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
 import { afterStory, isFinaleEvent, playFinale, isFriendEvent, playFriendHangout } from "./bonds.js";
 import { syncKafukaKnowledge, maybeKafukaEncounter, visitKafuka } from "./kafuka.js";
+
+import { invitationCost, invitationGrowth } from "./invitations.js";
 
 const SLEEP_RECOVERY = 14;
 
@@ -135,7 +137,7 @@ const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
 async function day1Errands() {
   const f = state.flags;
   const mint = DB.flavorById.mint;
-  if (!f._errand_shop_done && (!mint || ownsFlavor("mint") || state.money < mint.price)) f._errand_shop_done = true;
+  if (!f._errand_shop_done && (!mint || ownsFlavor("mint"))) f._errand_shop_done = true;
   if (!f._errand_shop_done) {
     if (!f._errand_shop_told) {
       await play("remake_day1_errand_shop", { bg: TONARI_BG });
@@ -143,23 +145,32 @@ async function day1Errands() {
       save();
     }
     await chooseSpot({ guide: { pin: "shop", text: "スミさんに頼まれた仕入れへ。Dr.fookah をタップ！" } });
-    await openShop({ errand: "mint" });
+    await openShop({ errand: "mint", expense: true });
     f._errand_shop_done = true;
     toast("スミ「上出来だ。……この調子で、ちゃんと店を回せ」", { ms: 3200 });
     save();
     await bannersIdle();
   }
   const naru = spotById("naru");
-  if (!naru || isClosed(naru) || state.money < (naru.cost || 0)) { f._errand_scout_done = true; return; }
+  if (!naru || (!f._errand_naru_visited && (isClosed(naru) || state.money < (naru.cost || 0)))) { f._errand_scout_done = true; return; }
   if (!f._errand_scout_told) {
     await play("remake_day1_errand_scout", { bg: TONARI_BG });
     f._errand_scout_told = true;
     save();
   }
-  await chooseSpot({ guide: { pin: "naru", text: "ケムリクサへ偵察に。KEMURIKUSA をタップ！" } });
+  if (!f._errand_naru_visited) await chooseSpot({ guide: { pin: "naru", text: "ケムリクサへ偵察に。KEMURIKUSA をタップ！" } });
+  if (!f._errand_naru_visited) {
+    await visitRival(naru);
+    state.visitedDay.naru = state.day;
+    f._errand_naru_visited = true;
+    save();
+  }
+  await chooseSpot({ guide: { pin: "c_station", text: "なるに教わった大会会場へ。C.STATION で参加登録！" } });
+  // 初回は一服する来店ではなく、無料の会場見学・参加登録。
+  const venue = spotById("c_station");
+  await visitSpot({ ...venue, cost: 0, stamina: 0 });
+  state.visitedDay.c_station = state.day;
   f._errand_scout_done = true;
-  await visitRival(naru);
-  state.visitedDay.naru = state.day;
   state.slot++;
   await afterAction({ exerted: true });
 }
@@ -181,6 +192,12 @@ async function takeAction() {
   // 約束（LIMEの誘い）がこの時間帯にあれば、そのまま向かう
   const inv = state.pendingInvite;
   if (inv && (inv.day ?? state.day) === state.day && inv.slot === state.slot) {
+    if (state.money < invitationCost(inv.event)) {
+      state.pendingInvite = null;
+      toast(`約束の店には${yen(invitationCost(inv.event))}必要です。今日は見送ります`, { kind: "warn" });
+      save();
+      return;
+    }
     if (inv.afterClose) {
       // 夜の行動枠を予約し、会う場面は営業イベント後・帰宅前まで待つ。
       inv.queuedAfterClose = true;
@@ -190,7 +207,7 @@ async function takeAction() {
     state.pendingInvite = null;
     if (state.slot === 1) state.flags._private_night_day = state.day;
     if (state.slot === 1) state.flags._private_night_char = inv.sender;
-    const { spent } = await paidAction(() => meetInvitation(inv));
+    const { spent } = await paidAction(() => meetInvitation(inv), { ...invitationGrowth(inv.event), primary: CHAR_STAT[inv.sender] });
     state.slot++;
     await afterAction({ exerted: true, spent });
     return;
@@ -258,6 +275,12 @@ async function performSpotAction(spot) {
 
 
 async function meetInvitation(inv) {
+  const cost = invitationCost(inv.event);
+  if (state.money < cost) {
+    toast(`約束の店には${yen(cost)}必要です。所持金が足りません`, { kind: "warn" });
+    return;
+  }
+  addMoney(-cost);
   await fadeBlack(null, 300);
   if (inv.event === "__sumi_baito__") {
     // スミさんのLIMEで急に呼ばれたシフト。そのまま tonari で働く（給料に上乗せ）
@@ -284,6 +307,10 @@ async function meetInvitation(inv) {
     gainAffinity(inv.sender, 10);
     addStamina(-10);
     await afterStory(inv.event); // 私服の約束のあとの、途中の質問（みんと）
+  }
+  if (inv.event !== "__sumi_baito__" && CHAR_STAT[inv.sender]) {
+    const { earnStat } = await import("../core/stats.js");
+    earnStat(CHAR_STAT[inv.sender], 1);
   }
 }
 
@@ -327,7 +354,7 @@ async function endDay() {
   if (appointment?.afterClose && appointment.queuedAfterClose && (appointment.day ?? state.day) === state.day) {
     state.pendingInvite = null;
     await beat("——店の営業が終わってから、約束の場所へ。");
-    const { spent } = await paidAction(() => meetInvitation(appointment));
+    const { spent } = await paidAction(() => meetInvitation(appointment), { ...invitationGrowth(appointment.event), primary: CHAR_STAT[appointment.sender] });
     await afterAction({ exerted: true, spent });
     metTonight = true;
     companion = appointment.sender;
@@ -352,6 +379,7 @@ async function advanceDay() {
   const exhausted = !!state.flags._cold_pending;
   delete state.flags._cold_pending;
   delete state.flags._overwork; // 旧セーブの固定発病カウンターは使わない。
+  const sleepBefore = state.stamina;
   await fadeBlack(async () => {
     // 大会の朝に発病しても大会日を飛ばさない。その夜は回復せず、不調の残量で本番へ。
     addStamina(exhausted && state.day + 1 >= TOURNAMENT_DAY ? 0 : SLEEP_RECOVERY);
@@ -360,6 +388,7 @@ async function advanceDay() {
     updateHud();
     setBg(bgUrl("bg_home", "day"), { instant: true }); // 朝は家で目を覚ます（前の夜の場面の絵を持ち越さない）
   }, 500);
+  await presentSleepRecovery({ before: sleepBefore, after: state.stamina });
   if (!exhausted) return;
   if (state.day >= TOURNAMENT_DAY) {
     await play("remake_sick_tournament");

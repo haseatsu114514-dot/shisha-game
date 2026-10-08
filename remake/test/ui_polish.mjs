@@ -24,9 +24,9 @@ try {
   for (const size of [{ width: 1331, height: 760 }, { width: 844, height: 390 }, { width: 591, height: 1280 }]) {
     await page.setViewportSize(size);
     await page.waitForTimeout(1800);
-    assert.equal(await page.locator(".title-item").count(), 5);
+    assert.equal(await page.locator(".title-item").count(), 4);
     assert.equal(await page.locator('[data-test="title-glossary"], .title-save').count(), 0);
-    assert(await page.locator('[data-test="title-continue"]').isEnabled());
+    assert(await page.locator('[data-test="title-load"]').isEnabled());
     const layout = await page.evaluate(() => {
       const logo = document.querySelector(".title-logo"), menu = document.querySelector(".title-menu");
       const a = logo.getBoundingClientRect(), b = menu.getBoundingClientRect(), s = document.querySelector("#stage").getBoundingClientRect();
@@ -48,6 +48,7 @@ try {
       const buttons = [...document.querySelectorAll(".modal-actions > button")].map(e => e.getBoundingClientRect());
       return Math.abs((buttons[0].left + buttons.at(-1).right) / 2 - (box.left + box.right) / 2);
     });
+    assert((await page.locator(".modal-actions > button").first().innerText()).includes("はじめから"));
     assert(offset < 1, `確認ボタンが中央から${offset}pxずれる`);
     if (shots) await page.screenshot({ path: `${shots}/confirm-${size.width}.png` });
     await page.getByRole("button", { name: "やめる", exact: true }).click();

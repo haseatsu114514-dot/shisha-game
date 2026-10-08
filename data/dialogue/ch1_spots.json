@@ -386,22 +386,51 @@
         {
           "speaker": "",
           "face": "",
-          "text": "そこで声が少し小さくなり、聞き取れなくなった。はじめはそっとその場を離れた。"
+          "text": "打ち合わせが終わるのを待ち、受付へ向かった。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……技術だけじゃない。丁寧さ。自分らしさが、煙に出るかどうか——）"
+          "text": "SMOKE CROWN CUPに出たいんです。参加登録をお願いします"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "君がtonariの新人だね。スミさんから聞いているよ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（それって、バイトで毎日やってることと……同じじゃないか）"
+          "text": "蒸野はじめです。今日は、なるさんに教えてもらって"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "ようこそ。見学と参加登録には、お金はかからないよ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "……【洞察】が上がった。"
+          "text": "受付票に名前を書き、参加者の登録を済ませた。"
+        },
+        {
+          "speaker": "nagumo",
+          "face": "normal",
+          "text": "公式アプリも入れておいてね。会場の案内が届くから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "案内のコードを読み取ると、スマホにパッキーの顔が現れた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_c_station_registered"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ここで、俺も煙を出すんだ。少しだけ実感が湧いてきた）"
         }
       ],
       "metadata": {

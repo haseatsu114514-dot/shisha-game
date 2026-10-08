@@ -1,0 +1,59 @@
+{
+  "character": "nagumo",
+  "status": "approved",
+  "generated": "2026-10-08",
+  "tool": "image_gen.imagegen",
+  "source_size": [
+    1808,
+    870
+  ],
+  "sheet_sha256": "6f150e95998281bb5d2d5c4377d86f66c79193e341017628702525478dbe1d5e",
+  "expressions": [
+    "normal",
+    "smile",
+    "serious",
+    "surprise",
+    "thinking"
+  ],
+  "normalization": {
+    "canvas": [
+      896,
+      1200
+    ],
+    "baseline": 1174,
+    "shared_scale": 1.322314049586777,
+    "operation": "alpha-preserving crop and Lanczos presentation resize; original sheet and slices retained"
+  },
+  "references": [
+    {
+      "path": "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
+      "sha256": "bfe45532f39ea701db63143109a929c2af59e22bdfb39e5b90c6b41d31bbe893"
+    },
+    {
+      "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+    },
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+    }
+  ],
+  "files": {
+    "serious-source.png": "c0415551106538498f017802e7bfbe4780f557bd6c098839d89f4c050ca5b498",
+    "serious-preview.png": "413079b9bde1f82c782dbc57be462141eaf51394b3ec702ee4b220f1e1396bb3",
+    "thinking-source.png": "87cb0f2e75f83a082d18546f49707ceb47385ce659aba8057ecc72bc47c8e780",
+    "surprise-source.png": "be8f3fbbb3c753fe5319698b3951a119c9a36505e90e27eeaff53ecaacffeb09",
+    "style-comparison-native.png": "815863258bc6d382ad5c1a0b71c24a7ac412a386a07dc7de2b0384a5c245cfc9",
+    "review.png": "12795b83c3b08d581967f317f65f34b69e84111a20189c823ad01112404b1f14",
+    "smile-preview.png": "81e004726d62d9280d04708351b27543759b8044e22edfbdd486a581640d6da9",
+    "surprise-preview.png": "3d183f16aed11040706195093cb64dd2dcb70dcaafaf190e0ee1fcc234bb04b2",
+    "normal-preview.png": "1f0cb8207f8709e01f9e9784d8abea81c3422956f000ac83a2970837ee562149",
+    "sheet.png": "6f150e95998281bb5d2d5c4377d86f66c79193e341017628702525478dbe1d5e",
+    "thinking-preview.png": "8844214e026683f2b31ec72ee803a9475cde0786cf1b501374c7d4d2818eb97b",
+    "normal-source.png": "6b60829e6d4cedf4afcc9291c0403b5ee864d1249847e972aef4df379c22f11c",
+    "smile-source.png": "d6ab4bd62e962248be71304ebe295749d93f96b5a649a23042533c3626b637a4"
+  },
+  "runtime_adopted": true,
+  "approval": "2026-10-08 この案を採用する",
+  "runtime_alignment": "All expressions use shared foot centroid x=448 and baseline1174; source sheet and presentation PNGs retained"
+}
