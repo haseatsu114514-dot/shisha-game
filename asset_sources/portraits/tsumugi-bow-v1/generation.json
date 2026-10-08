@@ -1,6 +1,6 @@
 {
   "character": "tsumugi",
-  "status": "pending",
+  "status": "approved",
   "generated": "2026-10-08",
   "tool": "image_gen.imagegen",
   "source_size": [
@@ -30,12 +30,14 @@
       "sha256": "952ba0b09909936641b6c9a138c312852c8990ae5b82c879866bee64bf49203f"
     }
   ],
-  "runtime_adopted": false,
+  "runtime_adopted": true,
   "files": {
     "bow-source.png": "25a34be97de6d94088760d4934a9c1c9feeff3c5d417321a624240b0208d5c7e",
     "review.png": "7431959749014b28dbf6fe25bd653baffb8420e834388cb90d4e107db0b3ec3e",
     "sheet.png": "60581fe629135641c875c7dbb4c7aacdc14b9777528897249a9d8d14a189874b",
     "bow-preview.png": "4ede1639c07fae8f5e696b5ca9334970cf1a14749bdc04918a9ef567dcbc9f95",
     "review-dark.png": "ee929be4c063b9ab6eff41d850e71d831222b29e1bd42888bf308bb967ab5628"
-  }
+  },
+  "approval": "2026-10-08 オーナー「完成したらマージで」。直前に採用待ちとして提示した前園・パッキー・つむぎ会釈3組へのゲーム組み込み・マージ指示として受領。",
+  "integration": "integration.json"
 }
