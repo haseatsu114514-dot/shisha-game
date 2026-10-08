@@ -94,7 +94,7 @@ const NIGHT_STORIES = new Set([
   "ch1_tsumugi_fifth", "ch1_tsumugi_smoke_color", "ch1_minto_phantom_smell",
 ]);
 const storyAvailable = (id) => !NIGHT_STORIES.has(id) || state.slot >= 1;
-/** 次に会うと新しい話があるか（固有会話・途中の質問・好感度MAXの締めくくり）。マップの「話」バッジ */
+/** 次に会うと新しいイベントがあるか（固有会話・途中の質問・好感度MAXの締めくくり）。 */
 export function hasNewStory(charId) {
   const id = (VISIT_SEQ[charId] || [])[storyCount(charId)];
   if (id) return storyAvailable(id);
@@ -103,6 +103,9 @@ export function hasNewStory(charId) {
 
 /** 店主の固有イベントと、初めて訪れる施設のイベントを同じ印で案内する。 */
 export function hasNewEvent(spot) {
+  if (spot.kind === "tonari") return state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi")
+    || state.visitedDay.tonari_customer !== state.day && hasNewStory("tsumugi");
+  if (spot.kind === "shop") return state.visitedDay.rin !== state.day && hasNewStory("rin");
   if (spot.charId === "kafuka") return !(state.story.kafuka || 0) && !!DB.dialogues.kafuka_shop_first;
   if (spot.charId) return hasNewStory(spot.charId);
   if (!spot.first || !DB.dialogues[spot.first]) return false;

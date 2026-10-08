@@ -268,7 +268,6 @@ function pumpBanners() {
     if (o.owner !== state) continue;
     bannerBusy++;
     const hearts = o.hearts ? heartRow(o.hearts.from, { bond: !!o.bond, label: o.bond ? "恋人との絆" : "好感度" }) : null;
-    const meter = o.meter ? el("div.gc-meter", { "aria-label": "体力が回復" }, [el("span.gauge-track", [el("i", { style: { width: `${Math.round(o.meter.from * 100)}%` } })])]) : null;
     const heading = o.top || (o.kind === "stat" ? "STATUS UP" : "");
     const b = el(`div.gain-card.${o.kind}${o.bond ? ".bond" : ""}${o.stat ? `.st-${o.stat}` : ""}${o.evolution ? ".evolved" : ""}`, [
       o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : o.stat ? statBadge(o.stat) : el("div.gc-badge", { text: o.badge || "+" }),

@@ -213,7 +213,7 @@
 .gain-card.stat .gc-badge { width: 44px; height: 44px; font-size: 22px; }
 .gain-card.stat .gc-meta { flex: 1; min-width: 0; gap: 1px; }
 .gain-card.stat .gc-title { gap: 7px; flex-wrap: nowrap; }
-.gain-card.stat .gc-main { font-size: 19px; line-height: 1.5; letter-spacing: 0.06em; }
+.gain-card.stat .gc-main { font-size: 21px; line-height: 1.4; letter-spacing: 0.06em; }
 .gain-card.stat .gc-top { font-size: 10px; line-height: 1.2; letter-spacing: 0.24em; opacity: 0.9; }
 .gain-card.stat .gc-points { display: flex; align-items: baseline; gap: 2px; margin-left: auto; line-height: 1; }
 .gain-card.stat .gc-count { font-size: 27px; font-weight: 800; letter-spacing: -0.02em; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
