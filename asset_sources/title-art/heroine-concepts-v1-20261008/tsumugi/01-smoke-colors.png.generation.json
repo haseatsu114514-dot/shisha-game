@@ -1,0 +1,22 @@
+{
+  "id": "tsumugi-01-smoke-colors",
+  "path": "/workspace/generated_images/exec-d3d269ff-aadd-450b-bf4a-ad41bb89f1e2.png",
+  "source": "tsumugi/01-smoke-colors.png",
+  "prompt": "tsumugi/01-smoke-colors.revision1.prompt.txt",
+  "references": [
+    "tsumugi/01-smoke-colors-first.png"
+  ],
+  "source_sha256": "830eb0f6052e446c7e2b9834637e019d84b79944c2d3e3775eac3f7947302b60",
+  "prompt_sha256": "f98f7056a18af9487027caa9c1fa57c96627c348dd747addd2ed8768d5a7257c",
+  "reference_sha256": {
+    "tsumugi/01-smoke-colors-first.png": "ca362b651be43adfc60901d66c86242b96287ac73aac85fc744dfd4f569e852a"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}

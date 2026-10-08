@@ -1,0 +1,30 @@
+{
+  "id": "mashiro-01-heavy-smoke",
+  "path": "/workspace/generated_images/exec-e4488d72-6040-4684-a81f-d319a8ca662d.png",
+  "source": "mashiro/01-heavy-smoke.png",
+  "prompt": "mashiro/01-heavy-smoke.prompt.txt",
+  "references": [
+    "references/mashiro-adopted-normal.png",
+    "references/title-style.png",
+    "references/hookah-real-body.jpg",
+    "references/hmd-real-assembled.jpg",
+    "references/hmd-real-side.jpg"
+  ],
+  "source_sha256": "c90a5e5c3e0a128d24d8e1d63d87536f0b7f3828d674af25c8cc9ef17b4f9bd7",
+  "prompt_sha256": "e53f38ddb02ffda12f2b65ba1c7a5e95e535039f35f9b92db51b7cc984303607",
+  "reference_sha256": {
+    "references/mashiro-adopted-normal.png": "d9a9ae63c2b0bfaae9f88fc139bf3ca7deb22fd719b9286f5c383668cf495f8d",
+    "references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+    "references/hookah-real-body.jpg": "2bdbb38c8ae19a6d21aadabe3be9bdec3af57754709ebdf89035d39d02702d8d",
+    "references/hmd-real-assembled.jpg": "c562580773c147f77f8ba8b86cb76fc43f8d71f9237d38fe2f4b0f717a292069",
+    "references/hmd-real-side.jpg": "a46cd683eb02c239513b22bfc937dffde5f3920f958a33ba00a1553fbe183cbc"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}

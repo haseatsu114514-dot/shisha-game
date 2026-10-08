@@ -1,0 +1,24 @@
+{
+  "id": "mashiro-03-after-rain",
+  "path": "/workspace/generated_images/exec-2b9efc21-7c44-46e0-a85a-25f05815b9da.png",
+  "source": "mashiro/03-after-rain.png",
+  "prompt": "mashiro/03-after-rain.prompt.txt",
+  "references": [
+    "references/mashiro-adopted-normal.png",
+    "references/title-style.png"
+  ],
+  "source_sha256": "f36451c7b33218abcbe5413a862396183b3b11b00141621ded5243ff4370c4b7",
+  "prompt_sha256": "bdcc1c434b875e40265d85680679d5acfcbf29347db31b7c8e8b65a0649af04b",
+  "reference_sha256": {
+    "references/mashiro-adopted-normal.png": "d9a9ae63c2b0bfaae9f88fc139bf3ca7deb22fd719b9286f5c383668cf495f8d",
+    "references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}

@@ -1,0 +1,312 @@
+{
+  "tool": "image_gen.imagegen",
+  "base_sha": "fa3d7fd1f7c2e3e6be2815a9a7f9220390109b05",
+  "transparent_background": false,
+  "purpose": "TA01–07: fifteen independent title artwork comparisons, not adopted runtime art",
+  "concepts": [
+    {
+      "id": "tsumugi-01-smoke-colors",
+      "character": "tsumugi",
+      "label": "煙の色を眺めて",
+      "shisha": true,
+      "prompt": "tsumugi/01-smoke-colors.prompt.txt",
+      "source": "tsumugi/01-smoke-colors.png",
+      "references": [
+        "references/tsumugi-adopted-normal.png",
+        "references/title-style.png",
+        "references/hookah-real-body.jpg",
+        "references/hmd-real-assembled.jpg",
+        "references/hmd-real-side.jpg"
+      ],
+      "runtime_installed": false,
+      "status": "hose-revision-needed",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "original_output": "/workspace/generated_images/exec-d3d269ff-aadd-450b-bf4a-ad41bb89f1e2.png",
+      "source_sha256": "830eb0f6052e446c7e2b9834637e019d84b79944c2d3e3775eac3f7947302b60",
+      "history": [
+        {
+          "source": "tsumugi/01-smoke-colors-first.png",
+          "original_output": "/workspace/generated_images/exec-cd44c27a-0161-457e-8157-a7c5b45f6330.png",
+          "sha256": "ca362b651be43adfc60901d66c86242b96287ac73aac85fc744dfd4f569e852a",
+          "reason": "Hose colors/duplicate loose mouthpiece do not clearly form one connected circuit; retained for comparison."
+        },
+        {
+          "source": "tsumugi/01-smoke-colors-revision1.png",
+          "original_output": "/workspace/generated_images/exec-d3d269ff-aadd-450b-bf4a-ad41bb89f1e2.png",
+          "sha256": "830eb0f6052e446c7e2b9834637e019d84b79944c2d3e3775eac3f7947302b60",
+          "prompt": "tsumugi/01-smoke-colors.revision1.prompt.txt",
+          "reason": "White hose still has a break near the knee and meets the wrong high connection; retained before second geometry correction."
+        }
+      ],
+      "latest_prompt": "tsumugi/01-smoke-colors.revision1.prompt.txt",
+      "latest_references": [
+        "tsumugi/01-smoke-colors-first.png"
+      ]
+    },
+    {
+      "id": "tsumugi-02-tablet-cat",
+      "character": "tsumugi",
+      "label": "タブレットの猫",
+      "shisha": false,
+      "prompt": "tsumugi/02-tablet-cat.prompt.txt",
+      "source": "tsumugi/02-tablet-cat.png",
+      "references": [
+        "references/tsumugi-adopted-normal.png",
+        "references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "original_output": "/workspace/generated_images/exec-ba97fc1c-9130-42b6-a95e-b76e302c25b1.png",
+      "source_sha256": "4d1504f404e6ef250eb08cf2b7c8f35e3f5e5d4ef57f2bafd1588445c0c92e90"
+    },
+    {
+      "id": "tsumugi-03-twilight-sketch",
+      "character": "tsumugi",
+      "label": "夕暮れのスケッチ",
+      "shisha": false,
+      "prompt": "tsumugi/03-twilight-sketch.prompt.txt",
+      "source": "tsumugi/03-twilight-sketch.png",
+      "references": [
+        "references/tsumugi-adopted-normal.png",
+        "references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "original_output": "/workspace/generated_images/exec-76987d41-63ac-470c-8a7a-110774e7f204.png",
+      "source_sha256": "7ee0cc7147bd7b49a32a49f38db8d2da5d69088e9e0804f04ffe409393f2feed"
+    },
+    {
+      "id": "mashiro-01-heavy-smoke",
+      "character": "mashiro",
+      "label": "重い一服",
+      "shisha": true,
+      "prompt": "mashiro/01-heavy-smoke.prompt.txt",
+      "source": "mashiro/01-heavy-smoke.png",
+      "references": [
+        "references/mashiro-adopted-normal.png",
+        "references/title-style.png",
+        "references/hookah-real-body.jpg",
+        "references/hmd-real-assembled.jpg",
+        "references/hmd-real-side.jpg"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed",
+      "original_output": "/workspace/generated_images/exec-e4488d72-6040-4684-a81f-d319a8ca662d.png",
+      "source_sha256": "c90a5e5c3e0a128d24d8e1d63d87536f0b7f3828d674af25c8cc9ef17b4f9bd7",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "latest_prompt": "mashiro/01-heavy-smoke.prompt.txt",
+      "latest_references": [
+        "references/mashiro-adopted-normal.png",
+        "references/title-style.png",
+        "references/hookah-real-body.jpg",
+        "references/hmd-real-assembled.jpg",
+        "references/hmd-real-side.jpg"
+      ]
+    },
+    {
+      "id": "mashiro-02-tea-break",
+      "character": "mashiro",
+      "label": "お茶とひと息",
+      "shisha": false,
+      "prompt": "mashiro/02-tea-break.prompt.txt",
+      "source": "mashiro/02-tea-break.png",
+      "references": [
+        "references/mashiro-adopted-normal.png",
+        "references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed",
+      "original_output": "/workspace/generated_images/exec-817a840c-11cf-4264-80b4-0846983be660.png",
+      "source_sha256": "397733b03aeb2c63118c2d3d3c4d5795939a9471143e29f42e244e09f0ff4ff5",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "latest_prompt": "mashiro/02-tea-break.prompt.txt",
+      "latest_references": [
+        "references/mashiro-adopted-normal.png",
+        "references/title-style.png"
+      ]
+    },
+    {
+      "id": "mashiro-03-after-rain",
+      "character": "mashiro",
+      "label": "雨上がりの帰り道",
+      "shisha": false,
+      "prompt": "mashiro/03-after-rain.prompt.txt",
+      "source": "mashiro/03-after-rain.png",
+      "references": [
+        "references/mashiro-adopted-normal.png",
+        "references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed",
+      "original_output": "/workspace/generated_images/exec-2b9efc21-7c44-46e0-a85a-25f05815b9da.png",
+      "source_sha256": "f36451c7b33218abcbe5413a862396183b3b11b00141621ded5243ff4370c4b7",
+      "size": [
+        1024,
+        1536
+      ],
+      "mode": "RGB",
+      "latest_prompt": "mashiro/03-after-rain.prompt.txt",
+      "latest_references": [
+        "references/mashiro-adopted-normal.png",
+        "references/title-style.png"
+      ]
+    },
+    {
+      "id": "minto-01-cafe-welcome",
+      "character": "minto",
+      "label": "ぺぱーみんとのお出迎え",
+      "shisha": true,
+      "prompt": "minto/01-cafe-welcome.prompt.txt",
+      "source": "minto/01-cafe-welcome.png",
+      "references": [
+        "references/minto-adopted-normal.png",
+        "references/title-style.png",
+        "references/hookah-real-body.jpg",
+        "references/hmd-real-assembled.jpg",
+        "references/hmd-real-side.jpg"
+      ],
+      "runtime_installed": false,
+      "status": "planned"
+    },
+    {
+      "id": "minto-02-instant-photo",
+      "character": "minto",
+      "label": "チェキの瞬間",
+      "shisha": false,
+      "prompt": "minto/02-instant-photo.prompt.txt",
+      "source": "minto/02-instant-photo.png",
+      "references": [
+        "references/minto-adopted-normal.png",
+        "references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "planned"
+    },
+    {
+      "id": "minto-03-private-window",
+      "character": "minto",
+      "label": "私服の窓辺",
+      "shisha": false,
+      "prompt": "minto/03-private-window.prompt.txt",
+      "source": "minto/03-private-window.png",
+      "references": [
+        "references/minto-private.png",
+        "references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "planned"
+    },
+    {
+      "id": "ageha-01-professional-taste",
+      "character": "ageha",
+      "label": "プロの顔",
+      "shisha": true,
+      "prompt": "ageha/01-professional-taste.prompt.txt",
+      "source": "ageha/01-professional-taste.png",
+      "references": [
+        "references/ageha-adopted-normal.png",
+        "references/title-style.png",
+        "references/hookah-real-body.jpg",
+        "references/hmd-real-assembled.jpg",
+        "references/hmd-real-side.jpg"
+      ],
+      "runtime_installed": false,
+      "status": "planned"
+    },
+    {
+      "id": "ageha-02-grocery-smile",
+      "character": "ageha",
+      "label": "買い出しの笑顔",
+      "shisha": false,
+      "prompt": "ageha/02-grocery-smile.prompt.txt",
+      "source": "ageha/02-grocery-smile.png",
+      "references": [
+        "references/ageha-adopted-normal.png",
+        "references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "planned"
+    },
+    {
+      "id": "ageha-03-model-moment",
+      "character": "ageha",
+      "label": "モデルのひとコマ",
+      "shisha": false,
+      "prompt": "ageha/03-model-moment.prompt.txt",
+      "source": "ageha/03-model-moment.png",
+      "references": [
+        "references/ageha-adopted-normal.png",
+        "references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "planned"
+    },
+    {
+      "id": "rin-01-night-tasting",
+      "character": "rin",
+      "label": "試香のひととき",
+      "shisha": true,
+      "prompt": "rin/01-night-tasting.prompt.txt",
+      "source": "rin/01-night-tasting.png",
+      "references": [
+        "references/rin-adopted-normal.png",
+        "references/title-style.png",
+        "references/hookah-real-body.jpg",
+        "references/hmd-real-assembled.jpg",
+        "references/hmd-real-side.jpg"
+      ],
+      "runtime_installed": false,
+      "status": "planned"
+    },
+    {
+      "id": "rin-02-flavor-samples",
+      "character": "rin",
+      "label": "サンプルを選ぶ",
+      "shisha": false,
+      "prompt": "rin/02-flavor-samples.prompt.txt",
+      "source": "rin/02-flavor-samples.png",
+      "references": [
+        "references/rin-adopted-normal.png",
+        "references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "planned"
+    },
+    {
+      "id": "rin-03-late-coffee",
+      "character": "rin",
+      "label": "夜更けのコーヒー",
+      "shisha": false,
+      "prompt": "rin/03-late-coffee.prompt.txt",
+      "source": "rin/03-late-coffee.png",
+      "references": [
+        "references/rin-adopted-normal.png",
+        "references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "planned"
+    }
+  ]
+}
