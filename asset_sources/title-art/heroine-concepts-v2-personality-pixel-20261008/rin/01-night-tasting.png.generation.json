@@ -1,17 +1,15 @@
 {
   "id": "rin-01-night-tasting",
-  "path": "/workspace/generated_images/exec-d280300b-432e-4bcb-a958-1595465c31a3.png",
+  "path": "/workspace/generated_images/exec-948c738c-b3de-4de6-b5ac-e7bb8fde8d5f.png",
   "source": "rin/01-night-tasting.png",
-  "prompt": "rin/01-night-tasting.revision-1.prompt.txt",
+  "prompt": "rin/01-night-tasting.revision-2.prompt.txt",
   "references": [
-    "rin/01-night-tasting-first.png",
-    "references/steamulation-black.jpg"
+    "rin/01-night-tasting-revision-1.png"
   ],
-  "source_sha256": "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4",
-  "prompt_sha256": "f6ee7d279998631b3fcdc3634a5e8b0c4af009169b0717f0ecacad607e7d3d60",
+  "source_sha256": "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
+  "prompt_sha256": "eb69ea24c82e87721b3638dee4c3ed51964e0653948313fec815880af3a30c44",
   "reference_sha256": {
-    "rin/01-night-tasting-first.png": "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
-    "references/steamulation-black.jpg": "2a9be1e829d824ff1d570b43bdc569bee050e921ccc60d3e4af3cc0cddcd0158"
+    "rin/01-night-tasting-revision-1.png": "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4"
   },
   "size": [
     1024,

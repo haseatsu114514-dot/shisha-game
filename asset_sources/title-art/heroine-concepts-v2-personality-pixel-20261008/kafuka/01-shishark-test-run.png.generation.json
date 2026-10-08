@@ -1,16 +1,16 @@
 {
   "id": "kafuka-01-shishark-test-run",
-  "path": "/workspace/generated_images/exec-b240f119-4cba-4260-8592-5f1771a9a1d6.png",
+  "path": "/workspace/generated_images/exec-07ac3740-cc37-4088-ab6a-c269dfa9eb76.png",
   "source": "kafuka/01-shishark-test-run.png",
-  "prompt": "kafuka/01-shishark-test-run.revision-1.prompt.txt",
+  "prompt": "kafuka/01-shishark-test-run.revision-2.prompt.txt",
   "references": [
-    "kafuka/01-shishark-test-run-first.png",
+    "kafuka/01-shishark-test-run-revision-1.png",
     "references/cloud-micro-blue.jpg"
   ],
-  "source_sha256": "77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f",
-  "prompt_sha256": "177acf481f90cc769cbc7426f6ca89bf99e71653371fe6dd6fbd4795b3463951",
+  "source_sha256": "1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102",
+  "prompt_sha256": "b12c65d116b325ac7c77b83c960cd88ae1f14b423d5402a2eb590e6151cb570f",
   "reference_sha256": {
-    "kafuka/01-shishark-test-run-first.png": "02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea",
+    "kafuka/01-shishark-test-run-revision-1.png": "77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f",
     "references/cloud-micro-blue.jpg": "1d9c88a847a32474af8f41969f95b65ede9b538961757d82716b950c956c0fee"
   },
   "size": [

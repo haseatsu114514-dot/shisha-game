@@ -4,6 +4,8 @@ import json
 
 ROOT = Path(__file__).resolve().parent
 REPO = ROOT.parents[2]
+if any(ROOT.glob('*/*.png.generation.json')):
+    raise SystemExit('Artwork already exists. Keep its exact prompts and records; do not overwrite concepts.json.')
 OLD = ROOT.parent / 'heroine-concepts-v1-20261008'
 OLD_REL = '../heroine-concepts-v1-20261008/'
 old_concepts = json.loads((OLD / 'concepts.json').read_text())['concepts']
