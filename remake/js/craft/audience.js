@@ -2,7 +2,7 @@
 import { el } from "../core/util.js";
 import { displayName, portraitInfo, faceIconUrl } from "../core/data.js";
 import { state } from "../core/state.js";
-import { evaluationOf, feedbackLine, commentaryLine } from "./feedback.js";
+import { evaluationOf, feedbackLine, commentaryLine, tutorialGuide } from "./feedback.js";
 
 export function audienceFor(mode, chapter) {
   if (mode === "tournament") return chapter === 1 ? ["nagumo", "maezono", "dr_kemuri"] : [];
@@ -55,7 +55,9 @@ export function buildAudience(cs) {
       step = id;
       showPerson(ids.includes(STEP_JUDGE[id]) ? STEP_JUDGE[id] : ids[0], "watch");
       mark.hidden = true; caption.textContent = ""; delete root.dataset.tone;
-      note.textContent = cs.mode === "tutorial" && hint.startsWith("スミ「") ? hint.slice(3, -1) : "手元を見守っている";
+      note.textContent = cs.mode === "tutorial" && active === "sumi"
+        ? (hint.startsWith("スミ「") ? hint.slice(3, -1) : tutorialGuide(step) || "手元を見守っている")
+        : "手元を見守っている";
     },
     react(kind, { judge = null, force = false, score = null, text = "", title = "", final = false } = {}) {
       const id = ids.includes(judge) ? judge : active;
@@ -66,7 +68,7 @@ export function buildAudience(cs) {
       showPerson(id, mood, kind);
       if (!final) {
         mark.hidden = true; caption.textContent = ""; delete root.dataset.tone;
-        note.textContent = text || (kind === "watch" ? "手元を見守っている" : commentaryLine(id, step, positive));
+        note.textContent = text || (kind === "watch" ? "手元を見守っている" : commentaryLine(id, step, positive, { tutorial: cs.mode === "tutorial" }));
       } else {
         const evaluation = evaluationOf(score ?? (kind === "just" || kind === "perfect" ? 100 : positive ? 75 : 40));
         mark.hidden = false; mark.textContent = evaluation.mark;

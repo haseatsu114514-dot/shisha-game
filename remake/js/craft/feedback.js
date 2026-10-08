@@ -68,7 +68,24 @@ const LIVE = {
   },
 };
 
-export function commentaryLine(id, step, positive) {
+// 操作の説明を口にするのはチュートリアルのスミさんだけ。
+const TUTORIAL_GUIDES = {
+  holes: "光る目印で押せ。外周を一周開ければ、仕上げて先へ進めるぞ",
+  heat: "炭の芯が光ったら押せ。3つとも取り出したら完了だ",
+  steam: "下のパッドで心を動かせ。当たらず待つほど、吸い出しが楽になる",
+  pull: "針を止めて吸い方を決めろ。2回以上吸い、細い最適温で提供だ",
+  care: "熱の変化を見て手を選べ。煙を最後まで守るんだ",
+};
+const TUTORIAL_LIVE = {
+  holes: ["その調子だ。目印と重なる瞬間を狙え", "次の目印を見よう。焦らずタイミングを合わせろ"],
+  heat: ["その光だ。残りの炭も芯を見て押せ", "早すぎたか。芯が光る瞬間を待つんだ"],
+  steam: ["そのまま避けろ。リフレッシュは近くの弾を消せるぞ", "当たっても温度は下がらねえ。次の弾を避けていこう"],
+  pull: ["最適温が一番いい。キープの中央なら温度を保てるぞ", "まだ合わせられる。キープ左で微増、右で微減だ"],
+};
+export const tutorialGuide = step => TUTORIAL_GUIDES[step] || "";
+
+export function commentaryLine(id, step, positive, { tutorial = false } = {}) {
+  if (tutorial && id === "sumi" && TUTORIAL_LIVE[step]) return TUTORIAL_LIVE[step][positive ? 0 : 1];
   const voice = LIVE[id] || LIVE.sumi;
   return (voice[step] || voice.default)[positive ? 0 : 1];
 }

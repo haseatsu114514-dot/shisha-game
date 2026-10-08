@@ -28,7 +28,7 @@ const open = async (viewport, mobile = false) => {
   return page;
 };
 const loaded = page => page.waitForFunction(() => [...document.querySelectorAll('.audience-face img, .worker-actor')].every(i => i.complete && i.naturalWidth));
-const capture = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
+const capture = async (page, name) => { if (shots) { await page.waitForTimeout(220); await page.screenshot({ path: `${shots}/${name}.png` }); } };
 try {
   const page = await open({ width: 1280, height: 720 });
   await page.evaluate(() => {
@@ -61,6 +61,7 @@ try {
   // 表情は実際の炭焼き結果へ反応し、名前や審査点を勝手に開放しない。
   await page.evaluate(() => { __remake.craftTest.auto = 'good'; window.heatRun = T.heat.runHeat(cs); });
   assert(!(await page.locator('[data-test="craft-rating"]').isVisible()),'Rating appeared during active charcoal work');
+  assert.match(await page.locator('[data-test="craft-feedback"]').textContent(), /光ったら押せ/,'Tutorial Sumi did not explain the game controls');
   await page.waitForFunction(() => cs.heat?.score > 0);
   await page.evaluate(() => { __remake.craftTest.auto = null; });
   await page.waitForSelector('.result-card.show');
@@ -110,6 +111,20 @@ try {
   }
   await page.evaluate(() => T.session.reactAudience(cs,'just',{judge:'nagumo',force:true}));
   assert.match(await page.locator('[data-person="nagumo"] img').getAttribute('src'), /thinking/);
+  // 同じスミさんでも、システム説明はチュートリアル限定。成績記号はまだ出さない。
+  const modes=[];
+  for (const mode of ['tutorial','rehearsal']) {
+    modes.push(await page.evaluate(mode => {
+      window.cs=T.session.newSession(mode); T.session.openBench(cs);
+      T.session.stepPanel('pull','吸い出し','吸い方の説明');
+      const first=document.querySelector('[data-test="craft-feedback"]').textContent;
+      T.session.reactAudience(cs,'bad',{force:true});
+      return {first,live:document.querySelector('[data-test="craft-feedback"]').textContent,rating:document.querySelector('[data-test="craft-rating"]').hidden};
+    },mode));
+  }
+  assert.match(modes[0].first,/針を止め/); assert.match(modes[0].live,/キープ左/);
+  assert(!/針|ゲージ|ボタン|キープ左/.test(modes[1].first+modes[1].live));
+  assert(modes.every(m=>m.rating));
   console.log('[craft focus] PASS: one current speaker, real Sumi/judge success feedback, distinct ◎/○/△ scores and lines, optional result detail, hidden undiscovered names and reserved Nagumo');
 
   for (const [stamina, health] of [[80,'green'],[40,'yellow'],[20,'red']]) {
@@ -149,6 +164,52 @@ try {
   assert(focus[0].width > focus[1].width * 1.35, JSON.stringify(focus));
   assert(focus[0].speed < focus[1].speed * .85, JSON.stringify(focus));
   console.log('[craft focus] PASS: equal carried-over temperature, calmer steam widens the real success band and slows the actual moving needle');
+
+  // 同じ吸い方・回数で、提供温度だけを変える。細い最適温が最高評価となる。
+  const temperatures=[];
+  for (const temp of [.54,.49]) {
+    await page.evaluate(temp => {
+      __remake.craftTest.auto=null; window.cs=T.session.newSession('tournament');
+      cs.steam={score:100,temp,seconds:480}; cs.holes={total:24,minimumComplete:true};
+      T.session.openBench(cs); window.pullRun=T.pull.runPull(cs);
+    },temp);
+    const band=await page.locator('.thermo-optimal').evaluate(n=>n.getBoundingClientRect().height);
+    const safe=await page.locator('.thermo-zone').evaluate(n=>n.getBoundingClientRect().height);
+    assert(band < safe * .12,'Optimal temperature band is not sufficiently strict');
+    assert(!(await page.locator('[data-test="craft-rating"]').isVisible()));
+    await page.waitForFunction(()=>parseFloat(document.querySelector('.pg-needle').style.left)>0);
+    // 本物の針が中央へ来た瞬間に、通常の吸う操作を2回行う。温度や結果は書き換えない。
+    await page.evaluate(async()=>{
+      const needle=document.querySelector('.pg-needle'), button=document.querySelector('[data-test="pull-stop"]');
+      for(let i=0;i<2;i++) {
+        await new Promise(resolve=>{
+          const tick=()=>{
+            if(Math.abs(parseFloat(needle.style.left)-50)<1) {button.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));resolve();}
+            else requestAnimationFrame(tick);
+          }; tick();
+        });
+        if(i===0) await new Promise(resolve=>{
+          const leave=()=>Math.abs(parseFloat(needle.style.left)-50)>5?resolve():requestAnimationFrame(leave);leave();
+        });
+      }
+    });
+    await page.locator('[data-test="pull-serve"]').click();
+    await page.waitForSelector('.result-card.show');
+    temperatures.push(await page.evaluate(()=>({...cs.pull,mark:document.querySelector('[data-test="craft-rating"]').textContent})));
+    await loaded(page); await capture(page,temp===.54?'pull-optimal-desktop':'pull-ideal-desktop');
+    await page.locator('[data-test="step-next"]').click(); await page.evaluate(()=>window.pullRun);
+  }
+  assert(temperatures[0].optimal);assert.equal(temperatures[0].mark,'◎');
+  assert(!temperatures[1].optimal);assert.equal(temperatures[1].mark,'○');
+  assert(temperatures[0].score>temperatures[1].score,JSON.stringify(temperatures));
+  const scoring=await page.evaluate(async()=>{
+    const {pullResult}=await import('./js/craft/conditions.js');
+    return {atCenter:pullResult(.54,2,0).score,atOptimalEdge:pullResult(.532,2,0).score,atIdealEdge:pullResult(.46,2,3).score,cold:pullResult(.4,2,3).score,
+      same:pullResult(.51,2,0).score===pullResult(.51,2,3).score,over:pullResult(.54,5,3).score};
+  });
+  assert(scoring.atCenter>scoring.atOptimalEdge&&scoring.atOptimalEdge>scoring.atIdealEdge&&scoring.atIdealEdge>scoring.cold);
+  assert(scoring.same);assert(scoring.over<scoring.atCenter);
+  console.log('[craft focus] PASS: strict central optimal band, real keep controls retain temperature, final ◎ versus ○ follows offered temperature, timing stamps add no score, and tutorial-only Sumi system explanations');
 
   for (const [name, viewport, mobile] of [
     ['desktop',{width:1280,height:720},false], ['mobile',{width:844,height:390},true], ['portrait',{width:591,height:1280},false],
@@ -197,15 +258,16 @@ try {
     assert.equal(await p.locator('.bench-worker').getAttribute('data-mental'),'shaken');
     assert.match(await p.locator('.worker-actor').getAttribute('src'), /surprise/);
     await capture(p, `mental-${name}`);
-    const missesBefore = await p.locator('.dodge-hits').textContent();
-    const heatBefore = Number(await p.locator('[data-test="steam-temperature"]').getAttribute('aria-valuenow'));
-    await p.locator('.dodge-refresh').click();
-    assert.equal(await p.locator('[data-test="mental-trace"]').getAttribute('data-level'),'shaken','Base refresh must not heal mental state');
-    assert.equal(await p.locator('.bench-worker').getAttribute('data-mental'),'shaken');
+    // 無敵を付けないので操作前後の別フレームでは被弾し得る。同じ入力イベント内で比較する。
+    const refreshed=await p.evaluate(()=>{
+      const trace=document.querySelector('[data-test="mental-trace"]'),hits=document.querySelector('.dodge-hits'),heat=document.querySelector('[data-test="steam-temperature"]');
+      const before={level:trace.dataset.level,misses:hits.textContent,heat:heat.getAttribute('aria-valuenow')};
+      document.querySelector('.dodge-refresh').click();
+      return {before,after:{level:trace.dataset.level,misses:hits.textContent,heat:heat.getAttribute('aria-valuenow')}};
+    });
+    assert.deepEqual(refreshed.after,refreshed.before,'Base refresh must not heal or rewind hits/temperature');
     assert(!(await p.locator('[data-test="craft-rating"]').isVisible()),'A hit/refresh showed a mid-game rating');
     assert(!/針|ゲージ|ボタン|ミニゲーム|スコア/.test(await p.locator('[data-test="craft-feedback"]').textContent()));
-    assert.equal(await p.locator('.dodge-hits').textContent(),missesBefore);
-    assert(Number(await p.locator('[data-test="steam-temperature"]').getAttribute('aria-valuenow')) >= heatBefore);
     await p.waitForSelector('.result-card.show',{timeout:20000});
     assert((await p.evaluate(()=>cs.steam.hits))>0, `${name}: no collision was exercised`);
     await p.locator('[data-test="step-next"]').click(); await p.evaluate(()=>window.steamRun);

@@ -26,7 +26,7 @@ export function startTemp(cs) {
 
 export async function runPull(cs) {
   const tutorial = cs.mode === "tutorial";
-  const panel = stepPanel("pull", "吸い出し", "針を止めた位置で吸い方が変わる。適温帯に入れたら「提供する」。吸いすぎると葉が痩せる。蒸らしで集中できたほど成功帯が広がり、針もゆっくり動く");
+  const panel = stepPanel("pull", "吸い出し", "針を止めた位置で吸い方が変わる。適温の中央にある細い最適温を狙って「提供する」。キープ中央は維持、左で微増・右で微減。吸いすぎると葉が痩せる。蒸らしで集中できたほど成功帯が広がり、針もゆっくり動く");
   const concentration = pullFocusFromSteam(cs);
   const slow = skill.slow(cs) * (tutorial ? 1.3 : 1) * concentration.slow;
   const widen = skill.window(cs) * (tutorial ? 1.4 : 1) * concentration.window;

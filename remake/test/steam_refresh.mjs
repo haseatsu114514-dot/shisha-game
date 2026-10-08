@@ -1,75 +1,116 @@
-// 蒸らしのリフレッシュ: 全弾消し・演出・再出現猶予・根性による回数アップ。
-// サーバーを8123で起動後: node remake/test/steam_refresh.mjs   （SHOTS=<フォルダ> で画面を保存）
-import assert from "node:assert/strict";
-import { createRequire } from "node:module";
-const require = createRequire(import.meta.url);
-const { chromium } = (() => {
-  try { return require("playwright"); } catch { return require("/opt/node22/lib/node_modules/playwright"); }
-})();
-const browser = await chromium.launch({ headless: true,
-  ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}),
+// 実際の弾に対する範囲消去、初期の回復なし、成長による範囲・1段階回復・回数。
+// サーバー8123: node remake/test/steam_refresh.mjs （SHOTS=<フォルダ>）
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import { createRequire } from 'node:module';
+const { chromium } = createRequire(import.meta.url)('playwright');
+const browser = await chromium.launch({headless:true,
+  ...(process.env.CHROME_EXECUTABLE_PATH ? {executablePath:process.env.CHROME_EXECUTABLE_PATH}:{}),
 });
+const shots=process.env.SHOTS;
+if(shots) fs.mkdirSync(shots,{recursive:true});
 try {
-  const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
-  const errors = [];
-  page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto(process.env.BASE_URL || "http://127.0.0.1:8123/remake/");
+  const page=await browser.newPage({viewport:{width:1280,height:720}}),errors=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8123/remake/');
   await page.waitForSelector('[data-test="title-new"]');
-
-  // 1) ストック数: 基本2、根性★4で3、★5で4（第1章の上限48＝★3では2のまま）
-  const stocks = await page.evaluate(async () => {
-    const core = await import("./js/core/state.js"), steam = await import("./js/craft/steam.js");
-    core.newGame();
-    return [10, 48, 61, 81].map((v) => { core.state.stats.guts = v; return steam.refreshStock(); });
+  await page.evaluate(async()=>{
+    const core=await import('./js/core/state.js'), steam=await import('./js/craft/steam.js'),session=await import('./js/craft/session.js');
+    core.newGame(); window.T={core,steam,session};
+    // CSS内の移動量はフィールド座標なので、画面の縮尺に左右されない。
+    window.enemies=()=>{
+      const h=new DOMMatrix(document.querySelector('.dodge-heart').style.transform),hx=h.e+14,hy=h.f+14;
+      return [...document.querySelectorAll('.dodge-word,.dodge-object')].map(n=>{
+        const m=new DOMMatrix(n.style.transform),cx=Math.max(m.e,Math.min(hx,m.e+n.offsetWidth)),cy=Math.max(m.f,Math.min(hy,m.f+n.offsetHeight));
+        return {node:n,distance:Math.hypot(hx-cx,hy-cy)};
+      });
+    };
+    window.startSteam=guts=>{
+      T.core.state.stats.guts=guts; __remake.craftTest.auto=null;
+      window.cs=T.session.newSession('drill');cs.steamSeconds=300;
+      T.session.openBench(cs);window.running=T.steam.runSteamDodge(cs);
+    };
+    window.consume=key=>{
+      const radius=T.steam.refreshEffect().radius,before=enemies();
+      const mental=document.querySelector('[data-test="mental-trace"]'),hits=document.querySelector('.dodge-hits'),thermo=document.querySelector('[data-test="steam-temperature"]');
+      const level=mental.dataset.level,misses=hits.textContent,temp=thermo.getAttribute('aria-valuenow'),shieldBefore=document.querySelector('.dodge-heart').classList.contains('shield');
+      window.dispatchEvent(new KeyboardEvent('keydown',{key,bubbles:true}));
+      return {radius,near:before.filter(b=>b.distance<=radius).length,far:before.filter(b=>b.distance>radius).length,
+        correctlyRemoved:before.every(b=>b.node.isConnected===(b.distance>radius)),
+        remaining:enemies().length,shieldBefore,levelBefore:level,levelAfter:mental.dataset.level,missesUnchanged:misses===hits.textContent,tempUnchanged:temp===thermo.getAttribute('aria-valuenow')};
+    };
   });
-  assert.deepEqual(stocks, [2, 2, 3, 4], `ストック数が想定と違う ${stocks}`);
+  const perks=await page.evaluate(()=>[10,21,41,61,81].map(guts=>{
+    T.core.state.stats.guts=guts;const effect=T.steam.refreshEffect();
+    return {radius:Number.isFinite(effect.radius)?effect.radius:'all',recovery:effect.mentalRecovery,stock:T.steam.refreshStock()};
+  }));
+  assert.deepEqual(perks,[{radius:180,recovery:false,stock:2},{radius:220,recovery:false,stock:2},{radius:265,recovery:true,stock:2},{radius:310,recovery:true,stock:3},{radius:'all',recovery:true,stock:4}]);
+  const finish=async()=>{
+    await page.waitForSelector('.result-card.show',{timeout:20000});
+    await page.locator('[data-test="step-details"]').click();
+    const result=await page.locator('.rc-lines').textContent();
+    const stats=await page.evaluate(()=>({...cs.steam}));
+    assert.equal(stats.score,Math.max(0,100-stats.hits*14),'Dodge score must depend only on avoided hits');
+    assert.equal(await page.locator('.dodge-word,.dodge-object').count(),0,'End cleanup left active bullets');
+    await page.locator('[data-test="step-next"]').click();await page.evaluate(()=>window.running);
+    return {result,stats};
+  };
 
-  // 2) 自主練の蒸らしで、カウントダウン中は押せない → 始まったら押せる → Xで雑念が全部消える → Spaceで2回目 → 空なら効かない
-  await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.state.stats.guts = 10; window.__drill = window.__remake.dev.drill("steam"); });
-  const btn = page.locator('[data-test="dodge-refresh"]');
-  await btn.waitFor();
-  assert(await btn.isDisabled(), "カウントダウン中にリフレッシュが押せる");
-  assert.match(await btn.textContent(), /リフレッシュ ×2/);
-  await page.waitForFunction(() => !document.querySelector('[data-test="dodge-refresh"]').disabled, null, { timeout: 8000 });
-  await page.waitForFunction(() => document.querySelectorAll(".dodge-word, .dodge-object").length >= 2, null, { timeout: 8000 });
-  if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/steam_refresh_before.png` });
-  // 押した時刻と、そのあと最初に雑念が湧いた時刻をページ内で記録する（スクショの時間に左右されない）
-  await page.evaluate(() => {
-    const T = window.__refreshT = { at: 0, next: 0 };
-    window.addEventListener("keydown", () => { T.at ||= performance.now(); }, { capture: true, once: true });
-    new MutationObserver((list) => {
-      if (T.at && !T.next && list.some((m) => [...m.addedNodes].some((n) => (n.classList?.contains("dodge-word") || n.classList?.contains("dodge-object"))))) T.next = performance.now();
-    }).observe(document.querySelector('[data-test="dodge"]'), { childList: true });
+  await page.evaluate(()=>startSteam(10));
+  const button=page.locator('[data-test="dodge-refresh"]');await button.waitFor();
+  assert(await button.isDisabled());assert.match(await button.textContent(),/×2/);
+  await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-refresh"]').disabled);
+  await page.waitForFunction(()=>{
+    const b=enemies();return !document.querySelector('.dodge-heart').classList.contains('shield')&&b.some(b=>b.distance<175)&&b.some(b=>b.distance>185);
+  },null,{timeout:8000});
+  if(shots) await page.screenshot({path:`${shots}/refresh-medium-before.png`});
+  await page.evaluate(()=>{
+    const times=window.spawnTimes={at:performance.now(),next:0};
+    const observer=new MutationObserver(list=>{
+      if(list.some(m=>[...m.addedNodes].some(n=>n.classList?.contains('dodge-word')||n.classList?.contains('dodge-object')))) {
+        times.next=performance.now();observer.disconnect();
+      }
+    });observer.observe(document.querySelector('.dodge'),{childList:true});
   });
-  await page.keyboard.press("x");
-  assert.equal(await page.locator(".dodge-word, .dodge-object").count(), 0, "リフレッシュで雑念が消えない");
-  assert.equal(await page.locator(".dodge-refresh-fx").count(), 1, "息の輪が出ない");
-  assert(!(await btn.isDisabled()), "ストック1なのに押せない");
-  assert.match(await btn.textContent(), /リフレッシュ ×1/);
-  await page.waitForTimeout(150);
-  if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/steam_refresh_after.png` });
-  // 吹き払った直後は少しのあいだ（約1秒）湧かない
-  await page.waitForFunction(() => window.__refreshT.next, null, { timeout: 6000 });
-  const calm = await page.evaluate(() => window.__refreshT.next - window.__refreshT.at);
-  assert(calm >= 850, `リフレッシュの直後に雑念が湧いた（${Math.round(calm)}ms）`);
-  await page.keyboard.press("Space");
-  assert.equal(await page.locator(".dodge-word, .dodge-object").count(), 0);
-  assert(await btn.isDisabled(), "ストック0なのに押せる");
-  assert.match(await btn.textContent(), /リフレッシュ ×0/);
-  await page.waitForSelector(".dodge-word, .dodge-object");
-  await page.keyboard.press("x");
-  assert(await page.locator(".dodge-word, .dodge-object").count() >= 1, "ストック0でも雑念が消えた");
+  const medium=await page.evaluate(()=>consume('x'));
+  assert(medium.near>0&&medium.far>0,JSON.stringify(medium));assert(medium.correctlyRemoved);
+  assert.equal(medium.levelAfter,medium.levelBefore,'Base refresh healed mental state');
+  assert(medium.missesUnchanged&&medium.tempUnchanged);
+  assert.match(await button.textContent(),/×1/);assert.equal(await page.locator('.dodge-refresh-fx').count(),1);
+  const shield=await page.evaluate(async()=>{
+    const hit=document.querySelector('.dodge-hits').textContent;
+    await new Promise(requestAnimationFrame);
+    return {same:hit===document.querySelector('.dodge-hits').textContent,shield:document.querySelector('.dodge-heart').classList.contains('shield')};
+  });
+  if(shield.same&&!medium.shieldBefore) assert(!shield.shield,'Base refresh granted invulnerability');
+  if(shots) await page.screenshot({path:`${shots}/refresh-medium-after.png`});
+  await page.waitForFunction(()=>spawnTimes.next,null,{timeout:1500});
+  assert(await page.evaluate(()=>spawnTimes.next-spawnTimes.at)<800,'Refresh postponed the spawning schedule');
+  await page.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'x',repeat:true,bubbles:true})));
+  assert.match(await button.textContent(),/×1/);
+  await page.keyboard.press('Space');assert.match(await button.textContent(),/×0/);assert(await button.isDisabled());
+  await page.waitForSelector('.dodge-word,.dodge-object');
+  const empty=await page.evaluate(()=>{
+    const before=enemies().map(b=>b.node);window.dispatchEvent(new KeyboardEvent('keydown',{key:'x',bubbles:true}));
+    return before.every(n=>n.isConnected);
+  });assert(empty,'Empty stock still cleared bullets');
+  const baseResult=await finish();assert.equal(baseResult.stats.refreshesUsed,2);
+  assert.match(baseResult.result,/リフレッシュで2回/);
+  console.log('[refresh] PASS: medium range removes nearby real bullets and preserves distant bullets, no healing/invulnerability/spawn delay, repeat/empty guards, pure hit-based score');
 
-  // 3) 結果カードに使った回数が出る
-  const card = page.locator(".result-card .rc-lines");
-  await page.locator('[data-test="step-details"]').click();
-  await card.waitFor({ timeout: 15000 });
-  assert.match(await card.textContent(), /リフレッシュで2回、雑念を吹き払った/);
-  if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/steam_refresh_result.png` });
-  await page.locator('[data-test="step-next"]').click();
-  await page.evaluate(() => window.__drill);
-  assert.deepEqual(errors, [], errors.join("\n"));
-  console.log("steam_refresh: OK");
-} finally {
-  await browser.close();
-}
+  await page.evaluate(()=>startSteam(41));
+  await page.waitForFunction(()=>document.querySelector('[data-test="mental-trace"]').dataset.level==='shaken',null,{timeout:10000});
+  const recovered=await page.evaluate(()=>consume('x'));
+  assert.equal(recovered.levelBefore,'shaken');assert.equal(recovered.levelAfter,'unsteady','Growth refresh must recover exactly one mental level');
+  assert(recovered.missesUnchanged&&recovered.tempUnchanged&&recovered.correctlyRemoved);
+  if(shots) await page.screenshot({path:`${shots}/refresh-grown-recovery.png`});
+  await finish();
+
+  await page.evaluate(()=>startSteam(81));
+  await page.waitForFunction(()=>enemies().length>=3);
+  const full=await page.evaluate(()=>consume('x'));
+  assert(full.near>=3&&full.correctlyRemoved);assert.equal(full.remaining,0);
+  assert.match(await button.textContent(),/×3/);await finish();
+  assert.deepEqual(errors,[]);
+  console.log('[refresh] PASS: growth expands range, adds one-step mental recovery, and unlocks full-field clearing and extra stocks');
+} finally {await browser.close();}
