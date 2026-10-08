@@ -1,0 +1,49 @@
+{
+  "title": {
+    "filters": [
+      {
+        "ms": 0,
+        "filter": "drop-shadow(rgba(0, 0, 0, 0.8) 0px 5px 14px)",
+        "decoded": true
+      },
+      {
+        "ms": 160,
+        "filter": "drop-shadow(rgba(0, 0, 0, 0.8) 0px 5px 14px)",
+        "decoded": true
+      },
+      {
+        "ms": 300,
+        "filter": "drop-shadow(rgba(0, 0, 0, 0.8) 0px 5px 14px)",
+        "decoded": true
+      },
+      {
+        "ms": 800,
+        "filter": "drop-shadow(rgba(0, 0, 0, 0.8) 0px 5px 14px)",
+        "decoded": true
+      },
+      {
+        "ms": 1599,
+        "filter": "drop-shadow(rgba(0, 0, 0, 0.8) 0px 5px 14px)",
+        "decoded": true
+      }
+    ],
+    "viewport": "844x390",
+    "browserErrors": []
+  },
+  "hajime": {
+    "title": "この物語の主人公",
+    "line": "「いつか自分の店を持ちたい」",
+    "background": "http://127.0.0.1:8123/remake/img/ui/character_intros/hajime.webp",
+    "decoded": true,
+    "fits": true,
+    "fontLoaded": true
+  },
+  "adam": {
+    "title": "ダブルアップルの伝道師",
+    "line": "「煙は二種類。ダブルアップルと、それ以外だ」",
+    "background": "http://127.0.0.1:8123/remake/img/ui/character_intros/adam.webp",
+    "decoded": true,
+    "fits": true,
+    "fontLoaded": true
+  }
+}

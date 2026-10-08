@@ -1,0 +1,25 @@
+{
+  "source_byte_checks": "PASS: generated originals = saved PNGs = runtime PNGs; reference hashes match original main PNGs",
+  "character_data": "PASS: only hajime.intro_cutin.title changed; all other text/settings unchanged",
+  "intro_font": "PASS: all glyphs of requested title exist in regenerated font cmap",
+  "intro_cutin": "PASS: all 26 introductions fit, disclosure timing and unskippable behavior unchanged; no browser errors",
+  "visual_review": "PASS: two actual 1280x720 cutins reviewed; Adam has no botanical apple leaves, serpent and leafless green/red pair visible; Hajime background has no hookah/hose/mouthpiece and new title fits",
+  "lint_dialogue": {
+    "files": 41,
+    "errors": 0,
+    "inherited_warnings": 207
+  },
+  "tidy_dialogue": "dry-run only; six pre-existing suggested changes left unchanged",
+  "legacy_terms": "PASS: errors 0, one historical ledger warning unchanged",
+  "runtime_scope": [
+    "2 intro background PNGs",
+    "2 generated WebP files",
+    "hajime intro title",
+    "regenerated intro font",
+    "manifest generated timestamp",
+    "title logo entrance CSS (opacity and position only)"
+  ],
+  "other_portraits_and_dialogue": "unchanged",
+  "title_logo": "PASS: removed logo blur keyframe; actual decoded logo never blurred at animation 0/160/300/800/1599ms; 844x390 mobile screenshot reviewed",
+  "mobile_intros": "PASS: both revised WebP bytes match browser-loaded images; new title and all captions fit; font loaded; no HTTP/browser errors"
+}

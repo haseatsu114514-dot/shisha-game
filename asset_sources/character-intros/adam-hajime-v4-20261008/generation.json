@@ -1,0 +1,44 @@
+{
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "purpose": "CI58–61: adopted intro background revision; original character portraits unchanged",
+  "base_sha": "c93bf48686a1a109bf3bfdd4b9125c276466b285",
+  "images": [
+    {
+      "id": "adam",
+      "reference": "asset_sources/character-intros/adam-hajime-v4-20261008/adam/previous-background.png",
+      "reference_sha256": "95501842a6a4e424501dd6c4d4f826f9ad51e5412e650e58b8bdac3ccee69868",
+      "prompt": "asset_sources/character-intros/adam-hajime-v4-20261008/adam/prompt.txt",
+      "runtime_destination": "assets/ui/character_intros/adam.png",
+      "source": "asset_sources/character-intros/adam-hajime-v4-20261008/adam/source.png",
+      "original_output": "/workspace/generated_images/exec-c56e6b96-5ffc-4451-a1c3-ddc822f5f59b.png",
+      "source_sha256": "f80e8e102f034765f428a4e45626fafe61120e20db6ac32ac378bebe827bd08b",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "runtime_installed": true,
+      "webp_sha256": "ac491d6762149eb224ce229f27f9297747e6140dc0ee669a8ca7fb436676938f"
+    },
+    {
+      "id": "hajime",
+      "reference": "asset_sources/character-intros/adam-hajime-v4-20261008/hajime/previous-background.png",
+      "reference_sha256": "1955eab26f6f2ecd06e942f86acd7af2c17b853d31649890290b918c5a6ed743",
+      "prompt": "asset_sources/character-intros/adam-hajime-v4-20261008/hajime/prompt.txt",
+      "runtime_destination": "assets/ui/character_intros/hajime.png",
+      "source": "asset_sources/character-intros/adam-hajime-v4-20261008/hajime/source.png",
+      "original_output": "/workspace/generated_images/exec-8c8151fa-2540-42cb-9840-8c3aea311c6d.png",
+      "source_sha256": "208a2fb11bfe2c1f0d75d3abfd2c12a180dcb6c693b737b67efa8d18a458921a",
+      "size": [
+        1672,
+        941
+      ],
+      "mode": "RGB",
+      "runtime_installed": true,
+      "webp_sha256": "7800e3403a9091cfc7743c82cfc1e1edda45e46fc1b68ee92b0955ccab8e1023"
+    }
+  ],
+  "caption_source": "data/characters.json: hajime.intro_cutin.title; other intro text and character settings unchanged",
+  "validation": "validation.json"
+}
