@@ -5,6 +5,7 @@ import { clamp } from "../core/util.js";
 import { DB } from "../core/data.js";
 import { state } from "../core/state.js";
 import { gradeOf } from "./common.js";
+import { steamSecondsOf, steamOpening, steamBurnRisk } from "./steam-time.js";
 
 export const WEIGHTS = { holes: 0.25, heat: 0.25, shisha: 0.25, trial: 0.25 };
 /** 南雲が持ち点を動かす基準（これ未満なら南雲票は入らず、普通に負ける） */
@@ -34,16 +35,18 @@ export function computeShisha(cs) {
   const packDraw = { fluffy: 12, normal: 0, firm: -12 }[cs.pack] || 0;
   const four = cs.place === "four";
   const hms = { lotos_hagal: 2, tanukish_lid: 5, amaburst_hms: 0 }[cs.equip?.hms] || 0;
+  const steamSeconds = steamSecondsOf(cs);
+  const opening = steamOpening(steamSeconds);
 
   // 最低1周を満たせば、少ない穴数を煙量や総合点の直接の減点にしない。
   const holeDraw = h.minimumComplete ? 36 : (h.total - 14) * 3 + (h.inner >= 3 ? 6 : 0);
   const draw = clamp(42 + holeDraw + packDraw, 0, 100);
-  const smoke = clamp(draw * 0.45 + c.heatPower * 0.35 + (four ? 14 : 0) + (st.min >= 8 ? 6 : 0) + (cs.equip?.charcoal === "cube_charcoal" ? 5 : 0), 0, 100);
+  const smoke = clamp(draw * 0.45 + c.heatPower * 0.35 + (four ? 14 : 0) + opening * 6 + (cs.equip?.charcoal === "cube_charcoal" ? 5 : 0), 0, 100);
   const heatStability = clamp(h.outerEven * 45 + c.heatStability * 0.38 + care.score * 0.12 + hms, 0, 100);
-  const burnRisk = clamp(8 + h.innerExcess * 9 + c.burnRisk * 0.55 + (four ? 16 : 0) + (st.min >= 10 ? 9 : 0) + (p.over ? 12 : 0) + (cs.pack === "fluffy" ? 5 : 0) + Math.max(0, (p.pulls || 3) - 3) * 5, 0, 100);
+  const burnRisk = clamp(8 + h.innerExcess * 9 + c.burnRisk * 0.55 + (four ? 16 : 0) + steamBurnRisk(steamSeconds) + (p.over ? 12 : 0) + (cs.pack === "fluffy" ? 5 : 0) + Math.max(0, (p.pulls || 3) - 3) * 5, 0, 100);
   const gift = giftBowlEffect(cs);
   const aroma = clamp(m.score * 0.38 + c.aromaRetention * 0.28 + p.score * 0.22 + st.score * 0.12 - burnRisk * 0.2 + 10 + (gift?.aroma || 0), 0, 100);
-  const taste = clamp(38 + (grams - 12) * 4 + (cs.pack === "firm" ? 14 : cs.pack === "fluffy" ? -6 : 0) + (st.min >= 8 ? 8 : 0) + (m.intensity - 5) * 3, 0, 100);
+  const taste = clamp(38 + (grams - 12) * 4 + (cs.pack === "firm" ? 14 : cs.pack === "fluffy" ? -6 : 0) + opening * 8 + (m.intensity - 5) * 3, 0, 100);
   const duration = clamp(heatStability * 0.55 + (grams - 12) * 3 + (cs.pack === "firm" ? 10 : 0) + care.score * 0.25, 0, 100);
   const craftQuality = Math.round(clamp(aroma * 0.3 + heatStability * 0.2 + (100 - burnRisk) * 0.2 + m.score * 0.15 + p.score * 0.15, 0, 100));
   return {

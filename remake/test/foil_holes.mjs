@@ -24,7 +24,7 @@ const values = {
   "util.js": { el, sleep: async () => {}, clamp: (v, lo, hi) => Math.max(lo, Math.min(hi, v)), rand: (lo) => lo },
   "ui.js": { countdown: async () => {} },
   "audio.js": { SE: Object.fromEntries(["punch", "perfect", "good", "miss", "just", "whoosh"].map((name) => [name, () => {}])) },
-  "session.js": { stepPanel: () => (panel = new Element("div.panel")), refreshBench: () => {}, tickerSay: () => {} },
+  "session.js": { stepPanel: () => (panel = new Element("div.panel")), refreshBench: () => {}, tickerSay: () => {}, reactAudience: () => {} },
   "common.js": { gradeOf: (score) => score >= 90 ? "S" : score >= 80 ? "A" : score >= 65 ? "B" : score >= 50 ? "C" : "D", autoSkill: () => automated,
     skill: { slow: () => 1, window: () => 1 }, resultCard: async (_, data) => results.push(data), keys: (map) => { keymap = map; return () => { keymap = null; }; }, popStamp: (_, text, kind) => stamps.push({ text, kind }) },
 };

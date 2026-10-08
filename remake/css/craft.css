@@ -6,28 +6,39 @@
 .bench {
   position: absolute;
   inset: 0;
-  --accent: var(--gold);
+  --accent: #d8bb86;
   --accent-2: var(--amber);
-  --bench-bg: radial-gradient(ellipse at 20% 30%, rgba(137, 98, 44, 0.1), transparent 55%), linear-gradient(180deg, rgba(14, 10, 20, 0.75), rgba(8, 6, 12, 0.94));
+  --bench-bg: radial-gradient(ellipse at 15% 30%, #86613715, transparent 55%), linear-gradient(135deg, #17151bf2, #0a090dfc 70%);
   background: var(--bench-bg);
 }
 .bench[data-mode="tournament"] {
-  --accent: var(--neon-cyan);
+  --accent: #a7ddd7;
   --accent-2: var(--neon-pink);
   --bench-bg: radial-gradient(ellipse at 30% 20%, rgba(56, 240, 255, 0.08), transparent 50%), radial-gradient(ellipse at 80% 90%, rgba(255, 63, 164, 0.08), transparent 50%), rgba(4, 4, 8, 0.9);
 }
-.bench-top { position: absolute; left: 0; right: 0; top: 0; height: 56px; display: flex; align-items: center; gap: 24px; padding: 0 28px; border-bottom: 1px solid rgba(199, 154, 60, 0.2); background: rgba(0, 0, 0, 0.3); }
-.bench-mode { font-family: var(--font); font-weight: 700; font-size: 13px; letter-spacing: 0.2em; color: var(--accent); flex: none; }
-.bench-condition { color: #ffd45c; font-size: 15px; padding: 0 6px; }
-.bench-condition[data-health="green"] { color: #8ee6a8; }
-.bench-condition[data-health="red"] { color: #ff6969; }
-.bench-condition small { display: block; margin-top: 3px; color: var(--text-dim); font-size: 13px; }
-.bench-progress { display: flex; gap: 6px; min-width: 0; }
-.bench-progress span { padding: 5px 9px; font-size: 12px; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.35); border-bottom: 2px solid rgba(255, 255, 255, 0.1); }
-.bench-progress span.seen { color: rgba(255, 255, 255, 0.65); border-bottom-color: rgba(199, 154, 60, 0.45); }
-.bench-progress span.now { color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); border-bottom-color: var(--accent); }
-.bench-left { position: absolute; left: 28px; top: 80px; bottom: 28px; width: 448px; display: flex; flex-direction: column; gap: 14px; }
-.bench-worker { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; border: 1px solid rgba(199, 154, 60, 0.35); border-radius: 10px; background: #0c0a0e; box-shadow: 0 12px 32px #0004; }
+.bench-top { position: absolute; left: 0; right: 0; top: 0; height: 56px; display: flex; align-items: center; gap: 28px; padding: 0 28px; border-bottom: 1px solid #ffffff0d; }
+.bench-mode { width: 448px; font-family: var(--font); font-weight: 700; font-size: 12px; letter-spacing: 0.22em; color: var(--accent); flex: none; }
+.bench-condition { position: relative; color: #e6c984; margin-left: auto; z-index: 7; }
+.bench-condition[data-health="green"] { color: #95dbae; }
+.bench-condition[data-health="red"] { color: #ef9e98; }
+.bench-condition summary, .bench-guide summary { list-style: none; cursor: pointer; display: grid; place-items: center; border-radius: 50%; }
+.bench-condition summary::-webkit-details-marker, .bench-guide summary::-webkit-details-marker { display: none; }
+.bench-condition summary { width: 34px; height: 34px; background: color-mix(in srgb, currentColor 10%, transparent); }
+.bench-condition svg { display: block; width: 27px; height: 27px; }
+.bench-condition summary:focus-visible, .bench-guide summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.bench-condition-tip, .bench-guide-tip { position: absolute; padding: 16px 18px; border: 1px solid #ffffff26; border-radius: 12px; background: #242129; box-shadow: 0 16px 38px #0008; color: #ede6db; text-align: left; }
+.bench-condition-tip { width: 270px; bottom: calc(100% + 12px); right: 0; }
+.bench-condition-tip b, .bench-guide-tip b { font-size: 15px; }
+.bench-condition-tip p, .bench-guide-tip p { margin: 6px 0 0; font-size: 15px; line-height: 1.65; color: #c9c2b9; }
+.bench-progress { display: flex; align-items: center; gap: 16px; min-width: 0; flex: 1; }
+.bench-progress[hidden] { display: none; }
+.bench-progress-count { font-size: 12px; font-weight: 500; color: #d3cec5; font-variant-numeric: tabular-nums; letter-spacing: 0.08em; white-space: nowrap; }
+.bench-progress-track { display: flex; align-items: center; gap: 5px; flex: 1; }
+.bench-progress-track span { height: 3px; flex: 1; border-radius: 4px; background: #ffffff19; }
+.bench-progress-track span.seen { background: color-mix(in srgb, var(--accent) 45%, transparent); }
+.bench-progress-track span.now { height: 5px; background: var(--accent); }
+.bench-left { position: absolute; left: 28px; top: 80px; bottom: 28px; width: 448px; display: flex; flex-direction: column; gap: 12px; }
+.bench-worker { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #ffffff1a; border-radius: 14px; background: #0c0a0e; box-shadow: 0 12px 32px #0004; }
 .bench-worker-stage { flex: 1; min-height: 0; position: relative; overflow: hidden; isolation: isolate; background-size: cover; background-position: 35% center; }
 .bench-worker-stage::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, #17101b55, #110c15bb); }
 .worker-actor { position: absolute; height: calc(100% + 250px); width: auto; max-width: none; left: -110px; bottom: -205px; pointer-events: none; }
@@ -36,18 +47,46 @@
 .worker-equipment > * { position: absolute; left: 50%; transform: translateX(-50%); }
 .worker-vignette { position: absolute; inset: 0; background: linear-gradient(180deg, #05030b33, transparent 30%, transparent 65%, #08060ed9), linear-gradient(90deg, #100c1222, transparent 60%, #100c1255); pointer-events: none; }
 .worker-scene-tag { position: absolute; left: 20px; top: 18px; font-size: 11px; letter-spacing: 0.3em; color: #d8cbbb; }
-.bench-worker-name { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 48px; padding: 10px 18px; color: #dfd3c2; border-top: 1px solid rgba(199, 154, 60, 0.18); background: #100c13; }
-.bench-worker-name b { font-size: 16px; letter-spacing: 0.12em; }
-.bench-worker-caption { font-size: 13px; color: var(--text-dim); }
+.bench-worker-name { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 5px 16px; color: #dfd3c2; border-top: 1px solid #ffffff0d; background: #17151b; }
+.bench-worker-name > b { font-size: 14px; letter-spacing: 0.12em; }
+.bench-worker-caption { display: none; }
+.bench-audience { flex: none; height: 110px; min-height: 0; border: 1px solid #ffffff12; border-radius: 14px; background: #ffffff04; overflow: hidden; }
+.audience-people { display: grid; grid-template-columns: repeat(3, 1fr); height: 100%; padding: 6px 8px; gap: 8px; }
+.audience-person { margin: 0; min-width: 0; text-align: center; }
+.audience-face { position: relative; width: 100%; height: 76px; border-radius: 8px; overflow: hidden; background: radial-gradient(ellipse at 50% 85%, #d8bb8614, transparent 75%); }
+.audience-face img { position: absolute; max-width: none; height: auto; }
+.audience-face img.audience-icon { width: 72px !important; height: 72px; left: calc(50% - 36px) !important; top: 2px !important; object-fit: contain; }
+.audience-person figcaption { font-size: 12px; line-height: 20px; color: #bdb7ae; white-space: nowrap; }
+.audience-mood { position: absolute; right: 7px; top: 9px; width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; color: #b9b1a5; background: #252229; font-size: 12px; font-style: normal; }
+.audience-person[data-mood="nod"] .audience-mood { color: #a8dbb8; background: #213c31; }
+.audience-person[data-mood="concern"] .audience-mood { color: #e9c897; background: #43342c; }
+.audience-person[data-mood="nod"] img { animation: audience-nod 0.55s ease-in-out; }
+.audience-single { display: flex; align-items: center; gap: 8px; padding-right: 16px; }
+.audience-single .audience-people { grid-template-columns: 1fr; width: 110px; flex: none; padding: 6px; }
+.audience-note { margin: 0; font-size: 14px; color: #d1c7b6; line-height: 1.6; }
+@keyframes audience-nod { 45% { transform: translateY(3px); } }
 .bench-right { position: absolute; left: 504px; right: 28px; top: 80px; bottom: 28px; display: flex; flex-direction: column; }
 .bench[data-mode="tournament"] .bench-left, .bench[data-mode="tournament"] .bench-right { bottom: 56px; }
-.bench-head { margin-bottom: 12px; padding: 0 0 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-.bench-title { font-family: var(--font); font-weight: 700; font-size: 26px; line-height: 1.3; letter-spacing: 0.06em; color: #f4eee4; }
-.bench-hint { margin-top: 6px; font-size: 15px; color: var(--text-dim); line-height: 1.5; min-height: 23px; }
+.bench-head { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #ffffff10; }
+.bench-heading { min-width: 0; }
+.bench-title { font-family: var(--font); font-weight: 700; font-size: 28px; line-height: 1.2; letter-spacing: 0.06em; color: #f4eee4; }
+.bench-hint { margin-top: 4px; font-size: 14px; color: #c0b8aa; font-style: normal; line-height: 20px; min-height: 20px; }
+.bench-guide { position: relative; flex: none; z-index: 8; }
+.bench-guide[hidden] { display: none; }
+.bench-guide summary { width: 34px; height: 34px; color: #bcb4a8; background: #ffffff08; border: 1px solid #ffffff1a; font-size: 16px; font-weight: 500; }
+.bench-guide summary:hover { color: #f4eee4; border-color: var(--accent); }
+.bench-guide-tip { top: calc(100% + 12px); right: 0; width: 360px; }
 .bench-panel { position: relative; flex: 1; min-height: 0; }
-.bench-ticker { position: absolute; left: 0; right: 0; bottom: 0; height: 40px; display: flex; align-items: center; padding: 0 22px; background: rgba(0, 0, 0, 0.6); border-top: 1px solid rgba(255, 63, 164, 0.4); overflow: hidden; }
+.bench-ticker { position: absolute; left: 0; right: 0; bottom: 0; height: 40px; display: flex; align-items: center; padding: 0 28px; background: #080a0dcc; border-top: 1px solid #a7ddd72a; overflow: hidden; }
 .bench:not([data-mode="tournament"]) .bench-ticker { display: none; }
-.tick { font-size: 16px; color: #ffd6ec; white-space: nowrap; transform: translateX(60px); opacity: 0; transition: transform 0.5s var(--ease-out), opacity 0.4s; }
+.tick { font-size: 14px; color: #c4cfcc; white-space: nowrap; transform: translateX(30px); opacity: 0; transition: transform 0.5s var(--ease-out), opacity 0.4s; }
+
+/* 制作中の操作ボタンは、道具・表情より目立ちすぎない面と一色の縁で統一。 */
+.bench .btn { border-image: none; border: 1px solid #ffffff29; border-radius: 10px; background: #28252d; color: #e7e1d8; box-shadow: none; font-size: 17px; }
+.bench .btn.primary, .bench .btn.primary:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); color: #15151a; box-shadow: none; }
+.bench .btn.ghost { background: transparent; }
+.bench .btn:hover:not(:disabled), .bench .btn:focus-visible { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 18%, transparent); }
+.bench .btn:focus-visible, .bench .opt:focus-visible, .bench .fr-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .tick.show { transform: none; opacity: 1; }
 
 /* ---------------------------------------------------------------- 一台（リグ） */
@@ -111,27 +150,27 @@
 }
 
 /* ---------------------------------------------------------------- 選択肢の工程 */
-.opt-grid { display: grid; gap: 12px; }
+.opt-grid { display: grid; gap: 14px; }
 .opt-grid.cols-2 { grid-template-columns: 1fr 1fr; }
 .opt-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
 .opt {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 18px 20px;
+  gap: 9px;
+  padding: 22px;
   text-align: left;
   color: var(--text);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 8px;
+  background: linear-gradient(135deg, #ffffff08, #ffffff03);
+  border: 1px solid #ffffff1c;
+  border-radius: 12px;
   cursor: pointer;
   transition: border-color 0.2s, transform 0.15s var(--ease-out), background 0.2s;
 }
-.opt b { font-size: 20px; letter-spacing: 0.04em; }
-.opt small { font-size: 15px; color: var(--text-dim); line-height: 1.55; }
+.opt b { font-size: 19px; letter-spacing: 0.04em; }
+.opt small { font-size: 14px; color: #c0b8ad; line-height: 1.6; }
 .opt:hover:not(:disabled) { border-color: var(--accent); transform: translateY(-2px); background: rgba(255, 255, 255, 0.07); }
-.opt.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 16%, transparent); box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 30%, transparent); }
+.opt.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); box-shadow: inset 3px 0 var(--accent); }
 .opt.off, .opt:disabled { opacity: 0.35; cursor: not-allowed; }
 .step-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; }
 .concept-note { font-size: 16px; color: var(--accent); }
@@ -153,8 +192,8 @@
 .mix-bowl { width: 200px; height: 170px; border-radius: 10px 10px 90px 90px; border: 3px solid rgba(255, 255, 255, 0.25); overflow: hidden; display: flex; flex-direction: column-reverse; background: rgba(0, 0, 0, 0.35); box-shadow: inset 0 -20px 40px rgba(0, 0, 0, 0.5); }
 .bowl-layers { display: flex; flex-direction: column-reverse; width: 100%; height: 100%; }
 .bowl-layers i { display: block; width: 100%; transition: height 0.25s var(--ease-out); box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.15); }
-.lcd { width: 220px; padding: 8px; text-align: center; font-family: var(--font); font-size: 26px; color: #9dff9d; background: #0a140a; border: 2px solid #2d3b2d; border-radius: 6px; text-shadow: 0 0 8px rgba(120, 255, 120, 0.6); }
-.lcd:not(.ok) { color: #ffb86b; text-shadow: 0 0 8px rgba(255, 170, 80, 0.6); }
+.lcd { width: 220px; padding: 10px 8px; text-align: center; font-family: var(--font); font-size: 25px; font-variant-numeric: tabular-nums; color: #a8d9b6; background: #ffffff04; border: 1px solid #ffffff15; border-radius: 10px; }
+.lcd:not(.ok) { color: #e5c694; }
 .reg-line { font-size: 15px; color: #ff9b9b; }
 .reg-line.ok { color: var(--good); }
 .recipe-line { font-size: 15px; color: var(--gold-hi); min-height: 22px; }
@@ -233,14 +272,51 @@
 @keyframes burst { 0% { opacity: 1; transform: rotate(0) scale(0.7); } 100% { opacity: 0; transform: rotate(40deg) scale(1.3); } }
 .coal.picked { transform: translateY(-60px) scale(calc(var(--k, 1) * 0.8)); opacity: 0.25; pointer-events: none; }
 .heat-info { width: 100%; font-size: 15px; color: var(--text-dim); }
-.hi-row { display: flex; gap: 12px; }
+.hi-row { display: flex; justify-content: center; align-items: center; gap: 16px; padding: 8px; font-size: 14px; }
 .hi-row b { color: var(--accent); flex: none; }
+.hi-row i { width: 18px; height: 1px; background: #ffffff2a; }
+
+/* キッチンタイマー：液晶と四つのボタンだけをコードで重ねる。 */
+.steam-timer { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; height: 100%; padding-bottom: 24px; }
+.steam-clock { position: relative; width: 520px; height: 348px; flex: none; }
+.steam-clock-skin { position: absolute; inset: 0; pointer-events: none; }
+.timer-display { position: absolute; left: 12%; width: 76%; top: 17%; height: 38%; display: grid; place-items: center; color: #192e28; }
+.timer-button { position: absolute; top: 75%; transform: translate(-50%, -50%); width: 18%; height: 16%; padding: 0; border: 0; border-radius: 12px; background: transparent; color: #27342e; font-size: 18px; font-weight: 800; letter-spacing: 0.015em; line-height: 1.15; -webkit-text-stroke: 0.25px currentColor; text-shadow: none; mix-blend-mode: multiply; cursor: pointer; }
+.timer-button:hover:not(:disabled) { background: #ffffff14; }
+.timer-button:active:not(:disabled) { background: #0002; transform: translate(-50%, calc(-50% + 2px)); }
+.timer-button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.timer-button:disabled { opacity: 0.4; cursor: default; }
+.timer-start { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 29%; font-size: 15px; line-height: 1.2; }
+.timer-button[data-test="timer-reset"] { width: 15%; font-size: 14px; }
+.timer-advice { margin: 0; color: #c6bbab; font-size: 15px; }
+.digital-clock { display: block; }
+.digital-clock:not(.timer-display) { position: relative; }
+.steam-clock .timer-display { position: absolute; display: grid; place-items: center; }
+.timer-display .clock-art { width: 92%; height: 96%; }
+.timer-display .segment { stroke: currentColor; stroke-width: 1; stroke-linejoin: bevel; }
+.clock-value { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.clock-art { display: block; width: 100%; height: 100%; }
+.clock-art svg { display: block; width: 100%; height: 100%; fill: currentColor; }
+.clock-art .segment { opacity: 0.1; }
+.clock-art .segment.on { opacity: 0.94; }
+.clock-art .colon { opacity: 0.85; }
 
 /* ---------------------------------------------------------------- 蒸らし（雑念弾幕） */
 .steam { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.steam-play { width: 726px; display: flex; align-items: center; justify-content: space-between; }
+.steam .steam-temperature { height: 300px; flex: none; }
+.steam-temperature .thermo-tube { width: 32px; }
+.steam-temperature .thermo-labels { font-size: 12px; }
+.steam .dodge-hud, .steam .dodge-controls { align-self: flex-end; margin-right: 11px; }
 .dodge-hud { width: 620px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; font-size: 16px; }
-.dodge-timer { font-family: var(--font); font-size: 22px; line-height: 1.25; color: var(--accent); }
+.dodge-timer { width: 94px; height: 34px; color: var(--accent); }
 .dodge-hits { color: var(--text-dim); }
+.dodge-status { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+.dodge-status .dodge-hits { font-size: 13px; white-space: nowrap; }
+.timer-switch { height: 34px; min-width: 82px; padding: 0 10px; border: 1px solid #ffffff26; border-radius: 8px; color: #d2d8d3; background: #ffffff08; font-size: 13px; cursor: pointer; }
+.timer-switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.timer-switch:disabled { opacity: 0.35; cursor: default; }
+.dodge[data-paused="true"]::after { content: "タイマー停止中"; position: absolute; inset: 0; display: grid; place-items: center; background: #11151b99; color: #eee8dd; font-size: 22px; z-index: 4; pointer-events: none; }
 .dodge-wave { font-size: 14px; color: #94e6e8; align-self: center; }
 .dodge { position: relative; overflow: hidden; border: 2px solid rgba(255, 255, 255, 0.5); background: rgba(0, 0, 0, 0.72); touch-action: none; cursor: none; }
 .dodge.warning[data-side="left"] { border-left-color: #ffd45c; box-shadow: inset 22px 0 26px -20px #ffd45c; }
@@ -469,13 +545,13 @@
 
 /* ---------------------------------------------------------------- 大会の生放送レイヤー（ニコ動風コメント・体感スコア） */
 /* 上はヘッダー、下は実況テロップを避けて流す。操作の邪魔をしない */
-.bc-lane { position: absolute; left: 0; right: 0; top: 56px; bottom: 44px; z-index: 6; overflow: hidden; pointer-events: none; container-type: inline-size; }
+.bc-lane { position: absolute; left: 28px; width: 448px; top: 80px; bottom: 224px; z-index: 6; overflow: hidden; border-radius: 14px; pointer-events: none; container-type: inline-size; }
 .nico {
   position: absolute;
   left: 0;
   white-space: nowrap;
-  font-size: 19px;
-  font-weight: 800;
+  font-size: 16px;
+  font-weight: 600;
   color: #fff;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 7px rgba(0, 0, 0, 0.6);
   transform: translateX(100cqw);
@@ -492,17 +568,18 @@
   display: flex;
   align-items: baseline;
   gap: 5px;
-  padding: 4px 12px;
-  border-radius: 12px;
-  background: linear-gradient(180deg, rgba(24, 18, 34, 0.85), rgba(12, 10, 20, 0.92));
-  border: 1px solid rgba(255, 210, 120, 0.42);
+  padding: 4px 10px;
+  flex: none;
+  border-radius: 6px;
+  background: #ffffff06;
+  border: 1px solid #ffffff10;
   opacity: 0;
   transform: translateY(-6px);
   transition: opacity 0.3s, transform 0.3s;
 }
 .bc-feel.show { opacity: 1; transform: none; }
-.bf-label { font-size: 13px; letter-spacing: 0.1em; color: #c9b78a; }
-.bf-num { font-size: 24px; font-weight: 900; line-height: 1; color: #ffe79a; text-shadow: 0 0 12px rgba(255, 200, 90, 0.55); }
+.bf-label { font-size: 12px; color: #c6c2b8; }
+.bf-num { font-size: 18px; font-weight: 700; line-height: 1; color: var(--accent); }
 .bf-num.bump { animation: bf-bump 0.4s ease-out; }
 @keyframes bf-bump { 40% { transform: scale(1.4); } }
 .bf-p { font-size: 13px; color: #c9b78a; }
@@ -526,6 +603,10 @@
   0% { opacity: 0; transform: translateY(8px) scale(0.8); }
   25% { opacity: 1; transform: translateY(0) scale(1.12); }
   100% { opacity: 0; transform: translateY(-18px) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .audience-person[data-mood="nod"] img { animation: none; }
 }
 .rt-part.feel b { font-size: 20px; color: #ffe79a; }
 

@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-06 14:08 UTC",
+ "generated": "2026-10-08 01:51 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -291,6 +291,7 @@
   "hose_tip.png",
   "jar_open.png",
   "jar_pour.png",
+  "kitchen_timer.png",
   "leaf_grain.png",
   "leaf_pile_1.png",
   "leaf_pile_2.png",
@@ -543,6 +544,13 @@
    0.7783,
    1.0
   ],
+  "kitchen_timer.png": [
+   0.056,
+   0.1104,
+   0.9447,
+   0.9014,
+   1.5
+  ],
   "leaf_grain.png": [
    0.4171,
    0.0949,
@@ -781,6 +789,7 @@
   "ui/making/hose_tip.png",
   "ui/making/jar_open.png",
   "ui/making/jar_pour.png",
+  "ui/making/kitchen_timer.png",
   "ui/making/leaf_grain.png",
   "ui/making/leaf_pile_1.png",
   "ui/making/leaf_pile_2.png",

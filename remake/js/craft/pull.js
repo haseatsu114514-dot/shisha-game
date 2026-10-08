@@ -3,12 +3,13 @@
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown, flash } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay } from "./session.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 
-import { craftConditions, temperatureWave, heatDelta, pullResult, isTemperatureEdge, EDGE_WIDTH } from "./conditions.js";
+import { craftConditions, temperatureWave, heatDelta, pullResult, isTemperatureEdge, temperatureAfterSteam, pullFocusFromSteam, IDEAL } from "./conditions.js";
+import { buildThermometer } from "./thermometer.js";
 
-export const IDEAL = [0.46, 0.62];
+export { IDEAL } from "./conditions.js";
 const CENTER = 0.54;
 const PULL_MIN = 2, PULL_SAFE = 3, PULL_MAX = 5;
 // 針の位置の帯（0〜1）。上げ吸い=左、キープ=中、下げ吸い=右。ジャストはそれぞれの芯
@@ -20,38 +21,23 @@ const ZONES = [
 
 /** 炭・熱・蒸らし・穴・詰めから、吸い出し開始時の温度を決める */
 export function startTemp(cs) {
-  let t = 0.22;
-  t += ((cs.heat?.heatPower ?? 50) - 50) / 100 * 0.35;
-  if (cs.place === "four") t += 0.12;
-  const { rainy } = craftConditions(cs);
-  const steamHeat = { 3: -0.06, 5: 0, 8: 0.12, 10: 0.18 }[cs.steamMin || 5] || 0;
-  t += steamHeat * (rainy && steamHeat > 0 ? 0.85 : 1);
-  if (rainy) t -= 0.025;
-  // 最低1周を満たしたレイアウトは同じ初期熱。少穴は変動量で難しくする。
-  t += cs.holes?.minimumComplete ? 0.012 : ((cs.holes?.total ?? 22) - 22) * 0.006;
-  if (cs.pack === "fluffy") t += 0.03;
-  if (cs.pack === "firm") t -= 0.04;
-  return clamp(t + rand(-0.03, 0.03), 0.12, 0.88);
+  return Number.isFinite(cs.steam?.temp) ? cs.steam.temp : temperatureAfterSteam(cs, undefined, rand(-0.03, 0.03));
 }
 
 export async function runPull(cs) {
   const tutorial = cs.mode === "tutorial";
-  const panel = stepPanel("pull", "吸い出し", "針を止めた位置で吸い方が変わる。適温帯に入れたら「提供する」。吸いすぎると葉が痩せる");
-  const slow = skill.slow(cs) * (tutorial ? 1.3 : 1);
-  const widen = skill.window(cs) * (tutorial ? 1.4 : 1);
+  const panel = stepPanel("pull", "吸い出し", "針を止めた位置で吸い方が変わる。適温帯に入れたら「提供する」。吸いすぎると葉が痩せる。蒸らしで集中できたほど成功帯が広がり、針もゆっくり動く");
+  const concentration = pullFocusFromSteam(cs);
+  const slow = skill.slow(cs) * (tutorial ? 1.3 : 1) * concentration.slow;
+  const widen = skill.window(cs) * (tutorial ? 1.4 : 1) * concentration.window;
   let coreTemp = startTemp(cs), thermalSeconds = 0;
   let T = coreTemp;
   const conditions = craftConditions(cs);
   let pulls = 0, justs = 0;
 
   // ---- 画面
-  const thermoFill = el("b");
-  const thermoMark = el("i.thermo-mark");
-  const thermo = el(`div.thermo${conditions.sparsity ? ".unsteady" : ""}`, [
-    el("div.thermo-tube", [el("div.thermo-zone", { style: { bottom: `${IDEAL[0] * 100}%`, height: `${(IDEAL[1] - IDEAL[0]) * 100}%` } }),
-      ...[IDEAL[0], IDEAL[1] - EDGE_WIDTH].map((from) => el("div.thermo-edge", { style: { bottom: `${from * 100}%`, height: `${EDGE_WIDTH * 100}%` }, dataset: { test: "pull-edge" } })), thermoFill, thermoMark]),
-    el("div.thermo-labels", [el("span", { text: "熱い" }), el("span", { text: "適温" }), el("span", { text: "ぬるい" })]),
-  ]);
+  const thermometer = buildThermometer({ unsteady: !!conditions.sparsity });
+  const thermo = thermometer.root;
   const needle = el("i.pg-needle");
   const gauge = el("div.pull-gauge", [
     ...ZONES.map((z) => el(`div.pg-zone.z-${z.id}`, { style: { left: `${z.from * 100}%`, width: `${(z.to - z.from) * 100}%` } }, [
@@ -67,12 +53,9 @@ export async function runPull(cs) {
   panel.append(el("div.pull", [thermo, el("div.pull-main", [readout, gauge, counter, el("div.pull-btns", [pullBtn, serveBtn])])]));
 
   const render = () => {
-    thermoFill.style.height = `${T * 100}%`;
-    thermoMark.style.bottom = `${T * 100}%`;
+    thermometer.update(T);
     const inZone = T >= IDEAL[0] && T <= IDEAL[1];
-    thermo.classList.toggle("ok", inZone);
     const edge = isTemperatureEdge(T, IDEAL);
-    thermo.classList.toggle("edge", edge);
     readout.textContent = edge ? "適温の端！ 今出せば高得点。外れる前に提供しよう" : inZone ? "適温。安定して提供できる" : T > IDEAL[1] ? "熱い。下げ吸いで落ち着かせたい" : "まだぬるい。上げ吸いで熱を入れたい";
     counter.textContent = `吸った回数 ${pulls}${pulls >= PULL_SAFE ? "（これ以上は葉が痩せる）" : ""}`
       + (conditions.sparsity ? " ／ 少穴：温度の振れが大きい" : "") + (conditions.rainy ? " ／ 雨：熱が入りづらい" : "");
@@ -100,6 +83,7 @@ export async function runPull(cs) {
 
   const doPull = (at = pos) => {
     if (pulls >= PULL_MAX) return;
+    const before = T;
     const z = ZONES.find((zz) => at >= zz.from && at <= zz.to) || ZONES[1];
     const jw = (z.just[1] - z.just[0]) * widen;
     const isJust = at >= z.just[0] && at <= z.just[0] + jw;
@@ -108,6 +92,7 @@ export async function runPull(cs) {
     if (z.id === "keep") d = isJust ? rand(-0.006, 0.006) : rand(-0.03, 0.03);
     coreTemp = clamp(coreTemp + heatDelta(cs, d + 0.015), 0, 1);
     T = clamp(coreTemp + temperatureWave(cs, thermalSeconds), 0, 1);
+    reactAudience(cs, pulls > PULL_SAFE || Math.abs(T - CENTER) > Math.abs(before - CENTER) ? "bad" : isJust ? "just" : "good");
     if (isJust) { justs++; SE.just(); flash("gold"); popStamp(panel, `ジャスト${z.label}`, "just", "58%", "22%"); }
     else { SE.good(); popStamp(panel, z.label, "good", "58%", "22%"); }
     SE.bubbling();

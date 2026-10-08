@@ -4,7 +4,7 @@
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay } from "./session.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 import { craftCondition } from "../core/condition.js";
 
@@ -36,6 +36,7 @@ export async function runHoles(cs) {
   const comboEl = el("div.hr-combo");
   const feedback = el("div.hr-feedback", { "aria-live": "polite", dataset: { test: "hole-feedback" } });
   const report = (text, kind) => {
+    reactAudience(cs, kind);
     feedback.replaceChildren();
     popStamp(feedback, text, kind, "50%", "50%");
   };

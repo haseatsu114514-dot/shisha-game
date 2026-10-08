@@ -5,10 +5,11 @@ import { toast } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { star, earnStat } from "../core/stats.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench } from "./session.js";
+import { stepPanel, refreshBench, reactAudience } from "./session.js";
 import { autoSkill } from "./common.js";
 import { flavorColor } from "./art.js";
 import { flavorStock, addFlavorStock, ownedFlavorIds } from "../daily/shop.js";
+import { runSteamTimer } from "./timer.js";
 
 // 章ごとのレギュレーション（CLAUDE.md が正本: ch1 = ミント2g以上）
 export const REGULATION = { 1: { flavor: "mint", min: 2, label: "課題フレーバー「ミント」を2g以上" } };
@@ -78,7 +79,11 @@ export async function stepConcept(cs) {
   const grid = el("div.opt-grid.cols-3");
   const confirm = el("button.btn.primary", { disabled: true, dataset: { test: "concept-ok" } }, [el("span.btn-label", { text: "この方針で作る" })]);
   const redraw = () => {
-    grid.querySelectorAll(".opt").forEach((b) => b.classList.toggle("on", picked.includes(b.dataset.value)));
+    grid.querySelectorAll(".opt").forEach((b) => {
+      const on = picked.includes(b.dataset.value);
+      b.classList.toggle("on", on);
+      b.setAttribute("aria-pressed", String(on));
+    });
     note.textContent = picked.length < 2 ? `あと${2 - picked.length}つ選ぶ` : `「${picked.map((id) => CONCEPTS.find((c) => c.id === id).label).join("」×「")}」で行く`;
     confirm.disabled = picked.length !== 2;
   };
@@ -89,7 +94,7 @@ export async function stepConcept(cs) {
       if (i >= 0) picked.splice(i, 1);
       else { if (picked.length >= 2) picked.shift(); picked.push(c.id); }
       redraw();
-    } }, [el("b", { text: c.label }), el("small", { text: c.desc })]));
+    }, "aria-pressed": "false" }, [el("b", { text: c.label }), el("small", { text: c.desc })]));
   }
   panel.append(grid, el("div.step-foot", [note, confirm]));
   await new Promise((resolve) => {
@@ -201,9 +206,9 @@ export async function stepMix(cs) {
           : consumes ? el("small.fr-stock", { text: `持ち込み 残り${flavorStock(id)}g` })
           : el("small", { text: f?.description?.slice(0, 22) || "" }),
       ]),
-      el("button.fr-btn", { text: "−", dataset: { test: `mix-minus-${id}` }, onclick: () => change(-1) }),
+      el("button.fr-btn", { text: "−", "aria-label": `${f?.short_name || f?.name || id}を1g減らす`, dataset: { test: `mix-minus-${id}` }, onclick: () => change(-1) }),
       g,
-      el("button.fr-btn", { text: "＋", dataset: { test: `mix-plus-${id}` }, onclick: () => change(1) }),
+      el("button.fr-btn", { text: "＋", "aria-label": `${f?.short_name || f?.name || id}を1g足す`, dataset: { test: `mix-plus-${id}` }, onclick: () => change(1) }),
     ]);
     return { id, g, row };
   });
@@ -236,6 +241,7 @@ export async function stepMix(cs) {
   cs.mix = Object.fromEntries(Object.entries(cs.mix).filter(([, g]) => g > 0));
   if (consumes) for (const [id, g] of Object.entries(cs.mix)) if (!supplied(id)) addFlavorStock(id, -g);
   cs.mixInfo = evaluateMix(cs);
+  reactAudience(cs, cs.mixInfo.score >= 65 ? "good" : "bad", { force: true });
   // レシピ帳への登録（新発見のときだけ）
   const r = cs.mixInfo.recipe;
   if (r && !state.recipes[r.id]) {
@@ -251,9 +257,9 @@ export async function stepMix(cs) {
 export async function stepPack(cs) {
   const panel = stepPanel("pack", "パッキング", lessonHint(cs, "pack", "空気の通り道を作る。詰め方で抜けと熱の入り方が変わる"));
   cs.pack = await choose(panel, [
-    { value: "fluffy", label: "ふんわり", desc: "空気を含ませて軽く。抜けが良く煙が出やすいが、熱が早く回る" },
-    { value: "normal", label: "ノーマル", desc: "基本に忠実。熱の入り方が素直で、崩れにくい", auto: true },
-    { value: "firm", label: "かため", desc: "ぎゅっと密度を出す。味は濃く長持ちするが、熱が要る" },
+    { value: "fluffy", label: "ふんわり", desc: "抜けが軽く、煙が出やすい。熱は早く回る" },
+    { value: "normal", label: "ノーマル", desc: "熱が素直に入り、崩れにくい基本の詰め方", auto: true },
+    { value: "firm", label: "かため", desc: "味が濃く、長持ち。立ち上げには熱が要る" },
   ], { cols: 3 });
   SE.stamp();
   refreshBench();
@@ -262,19 +268,13 @@ export async function stepPack(cs) {
 export async function stepPlace(cs) {
   const panel = stepPanel("place", "炭の配置", lessonHint(cs, "place", "熾した炭をアルミの上に置く。基本はトライアングル"));
   cs.place = await choose(panel, [
-    { value: "triangle", label: "トライアングル（3個）", desc: "基本の三角配置。熱が均一に回る", auto: true },
-    { value: "four", label: "炭4個", desc: "かなり熱が上がる高火力。煙は増えるが、焦げと隣り合わせ", disabled: cs.mode === "tutorial" },
+    { value: "triangle", label: "トライアングル（3個）", desc: "三角に置いて、熱を均等に届ける", auto: true },
+    { value: "four", label: "炭4個", desc: "高火力で煙を増やす。焦げに気をつけたい", disabled: cs.mode === "tutorial" },
   ]);
   SE.crackle();
   refreshBench();
 }
 
 export async function stepSteamTime(cs) {
-  const panel = stepPanel("steam", "蒸らし時間", lessonHint(cs, "steam", "炭を置いたら、吸える温度になるまで待つ。長いほど香りは開くが、焦げも近づく"));
-  cs.steamMin = await choose(panel, [
-    { value: 3, label: "3分", desc: "早めに立ち上げる。香りは軽く、温度合わせが忙しい", disabled: cs.mode === "tutorial" },
-    { value: 5, label: "5分", desc: "香りの輪郭を残す。まだ低めの温度から吸い出す", auto: true },
-    { value: 8, label: "8分", desc: "心配ならじっくり。熱が入り、吸い出しに余裕ができる" },
-    { value: 10, label: "10分", desc: "攻めた長めの蒸らし。重い煙には効くが、焦げの気配も近い", disabled: cs.mode === "tutorial" },
-  ], { cols: 2 });
+  await runSteamTimer(cs, lessonHint(cs, "steam", "炭を置いたら、吸える温度になるまで待つ。10秒単位で設定できる。長いほど香りは開くが、焦げも近づく"));
 }

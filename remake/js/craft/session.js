@@ -9,6 +9,8 @@ import { state, timeOfDay } from "../core/state.js";
 import { currentCondition } from "../core/stats.js";
 import { craftCondition } from "../core/condition.js";
 import { buildWorkerScene, WORKER_STEPS } from "./worker.js";
+import { buildAudience, audienceFor } from "./audience.js";
+import { conditionBadge, buildGuide, STEP_BRIEFS } from "./bench-ui.js";
 import { isRainy } from "../daily/weather.js";
 import { runHoles } from "./holes.js";
 import { runHeat } from "./heat.js";
@@ -34,6 +36,7 @@ export const DRILLS = {
 export function newSession(mode) {
   return {
     mode,
+    audienceIds: audienceFor(mode, state.chapter),
     condition: currentCondition(), // 作り始めの体力を一台の全工程で使う
     environment: { rainy: isRainy(), day: state.day },
     equip: { ...state.equip },
@@ -44,6 +47,7 @@ export function newSession(mode) {
     holes: null,
     heat: null,
     place: null,
+    steamSeconds: null,
     steam: null,
     pull: null,
     pullDone: false,
@@ -65,39 +69,54 @@ export function openBench(cs, { steps = [] } = {}) {
   // 会話のあとに作業台へ戻るときも、作業台の背景（暗めの会場／店）に戻す
   const bg = () => (cs.mode === "tournament" ? setBg(bgUrl("bg_tournament_stage"), { tint: "dim", fast: true }) : setBg(bgUrl("bg_tonari_inside", timeOfDay()), { tint: "dim", fast: true }));
   if (bench && bench.cs === cs && bench.root.isConnected) { bg(); return bench; }
-  const worker = buildWorkerScene();
+  const worker = buildWorkerScene(cs);
+  const audience = buildAudience(cs);
   const title = el("div.bench-title");
   const hint = el("div.bench-hint");
-  const progress = el("div.bench-progress", steps.map(([id, label]) => el("span", { text: label, dataset: { step: id } })));
+  const progressCount = el("b.bench-progress-count");
+  const progress = el("div.bench-progress", { "aria-label": "制作の進み具合", hidden: !steps.length }, [
+    progressCount, el("div.bench-progress-track", steps.map(([id, label]) => el("span", { title: WORKER_STEPS[id] || label, dataset: { step: id } }))),
+  ]);
+  const guide = buildGuide();
   const panel = el("div.bench-panel");
   const ticker = el("div.bench-ticker");
   const condition = craftCondition(cs);
+  if (cs.mode !== "tutorial") worker.footer.append(conditionBadge(condition));
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
     el("div.bench-top", [el("span.bench-mode", { text: MODE_LABEL[cs.mode] || "" }), progress]),
     el("div.bench-left", [
       worker.root,
-      cs.mode !== "tutorial" ? el("div.bench-condition", { dataset: { health: condition.health }, title: condition.hint }, [
-        el("b", { text: `体力：${condition.label}` }), el("small", { text: condition.hint }),
-      ]) : null,
+      audience?.root,
     ]),
-    el("div.bench-right", [el("div.bench-head", [title, hint]), panel]),
+    el("div.bench-right", [el("div.bench-head", [el("div.bench-heading", [title, hint]), guide.root]), panel]),
     ticker,
   ]);
   bg();
   showScreen("bench", root);
-  bench = { cs, root, worker, panel, title, hint, progress, ticker };
+  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, ticker };
   return bench;
 }
 
 /** 工程の見出しを切り替え、パネルを空にして返す */
-export function stepPanel(id, titleText, hintText = "") {
+export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id] || hintText } = {}) {
   const b = bench;
   b.title.textContent = titleText;
-  b.hint.textContent = hintText;
-  b.progress.querySelectorAll("span").forEach((s) => {
+  b.hint.textContent = brief;
+  b.guide.root.open = false;
+  b.guide.root.hidden = !hintText;
+  b.guide.note.textContent = hintText;
+  b.root.querySelectorAll(".bench-condition").forEach((d) => { d.open = false; });
+  const steps = [...b.progress.querySelectorAll("[data-step]")];
+  steps.forEach((s, i) => {
     s.classList.toggle("now", s.dataset.step === id);
-    if (s.dataset.step === id) s.classList.add("seen");
+    if (s.dataset.step === id) {
+      s.classList.add("seen");
+      s.setAttribute("aria-current", "step");
+      b.progressCount.textContent = `${String(i + 1).padStart(2, "0")} / ${String(steps.length).padStart(2, "0")}`;
+      b.progress.setAttribute("aria-label", `制作の進み具合：${i + 1} / ${steps.length}工程`);
+    } else s.removeAttribute("aria-current");
   });
+  b.audience?.setStep(hintText);
   b.panel.replaceChildren();
   b.panel.dataset.step = id;
   b.worker.root.dataset.step = id; // 今後の工程別アニメーションの接続先
@@ -107,7 +126,15 @@ export function stepPanel(id, titleText, hintText = "") {
 
 /** 左側の工程キャプションを更新。今後の作業アニメーションもここで同期する。 */
 export function refreshBench() {
-  if (bench) bench.worker.root.dataset.ready = String(!!bench.cs.pullDone);
+  if (!bench) return;
+  bench.worker.root.dataset.ready = String(!!bench.cs.pullDone);
+  const result = bench.cs[bench.panel.dataset.step];
+  if (result && Number.isFinite(result.score)) reactAudience(bench.cs, result.score >= 90 ? "perfect" : result.score >= 65 ? "good" : "bad", { force: true });
+}
+
+/** その一台を見ている人だけが反応する。古い工程の非同期処理から次の画面へ漏らさない。 */
+export function reactAudience(cs, kind, options) {
+  if (bench?.cs === cs && bench.root.isConnected && !bench.root.classList.contains("done")) bench.audience?.react(kind, options);
 }
 
 /** 大会中だけ流れる実況テロップ（パッキー） */

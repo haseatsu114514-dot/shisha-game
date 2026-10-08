@@ -4,7 +4,7 @@
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown, flash } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay } from "./session.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, popStamp } from "./common.js";
 import { artImg } from "./art.js";
 
@@ -61,7 +61,7 @@ export async function runHeat(cs) {
     };
   });
   const info = el("div.heat-info", [
-    el("div.hi-row", [el("b", { text: "見極め" }), el("span", { text: "黒い芯 → 端から赤 → 全体が赤熱 → 芯が光る（ここ）→ 白っぽく → 灰かぶり" })]),
+    el("div.hi-row", [el("span", { text: "黒い芯" }), el("i"), el("span", { text: "赤熱" }), el("i"), el("b", { text: "芯が光る" }), el("i"), el("span", { text: "白熱" }), el("i"), el("span", { text: "灰かぶり" })]),
   ]);
   panel.append(el("div.heat", [stove, info]));
 
@@ -77,6 +77,7 @@ export async function runHeat(cs) {
     const g = phaseOf(c.p, jw);
     c.picked = g;
     const G = HEAT_GRADES[g];
+    reactAudience(cs, G.kind);
     c.node.classList.add("picked", `g-${g}`);
     popStamp(panel, G.stamp, G.kind, `${22 + coals.indexOf(c) * 22}%`, "28%");
     if (g === "just") { SE.just(); flash("gold"); tickerSay("パッキー「出たーッ！ EXCELLENT！ 芯まで焼けたーッ！」"); }
