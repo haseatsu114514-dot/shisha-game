@@ -1,0 +1,72 @@
+{
+  "implementationCommit": "7ba174d",
+  "generation": "image_gen; final source saved unchanged",
+  "timerPrompt": "kitchen-timer-final-prompt.txt",
+  "runtimePipeline": "python3 remake/tools/build_manifest.py; lossless WebP",
+  "assets": {
+    "assets/ui/making/kitchen_timer.png": "d4f7888b37090fde2b835dc032130818182cf75d4b7ebb8714587fe8512d3d91",
+    "remake/img/ui/making/kitchen_timer.webp": "4a1b9e1c2bd43eee401b5cc591163f5501141f479ed8379501c4ec40083b503b"
+  },
+  "screenshots": [
+    "judges-heat-desktop.png",
+    "mental-desktop.png",
+    "mental-mobile.png",
+    "pull-optimal-desktop.png",
+    "refresh-medium-after.png",
+    "steam-desktop.png",
+    "steam-mobile.png",
+    "steam-portrait.png",
+    "sumi-heat-desktop.png",
+    "timer-tutorial-desktop.png"
+  ],
+  "viewports": [
+    {
+      "width": 1280,
+      "height": 720,
+      "kind": "desktop"
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "kind": "mobile landscape"
+    },
+    {
+      "width": 591,
+      "height": 1280,
+      "kind": "desktop portrait"
+    }
+  ],
+  "refresh": {
+    "baseline": "medium range bullet clearing only",
+    "rangeByGutsStar": [
+      180,
+      220,
+      265,
+      310,
+      "whole field"
+    ],
+    "mentalRecoveryFromStar": 3,
+    "mentalRecovery": "one level; hits/score/temperature remain",
+    "stocksByGutsStar": [
+      2,
+      2,
+      2,
+      3,
+      4
+    ]
+  },
+  "temperature": {
+    "ideal": [
+      0.46,
+      0.62
+    ],
+    "optimal": [
+      0.532,
+      0.548
+    ],
+    "pullScoring": "closeness of offered temperature; no timing-stamp bonus; leaf damage after 3 pulls retained",
+    "dodgeScoring": "avoided hits only",
+    "carryover": "steam ending temperature without a new roll"
+  },
+  "sumiGuidance": "game-system explanations in tutorial only; rehearsal and tournament remain diegetic"
+}
