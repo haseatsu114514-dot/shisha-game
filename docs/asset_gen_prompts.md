@@ -1,5 +1,7 @@
 # 画像生成プロンプト集（codex用）— シーシャ作りパート＋立ち絵
 
+> 2026-10-09 CI65: [実際の喫煙シーンとヒートマネジメントの参考10点](../asset_sources/shisha-hardware-reference/smoking-and-heat-management-20261009.md)。人物の使い方・比率・ホース・煙の描写、ボウルとHMDの違い、炭をトングで扱う位置関係を参考にする。写真の人物・製品は完コピしない。
+
 > 2026-10-09 CI64: シーシャ台を描く際は[実物写真9種の縮小一覧と生成ルール](../asset_sources/shisha-hardware-reference/README.md)を必ず参照。形と材質の理解が目的で、メーカー商品の模写は禁止。色・装飾・比率の創作は自由。描かない指定は優先。
 
 > 2026-10-08 CI62／63: 制作成功カットインの[目元／漫画コマの2案](../asset_sources/craft-success-cutins/concepts-v1-20261008/README.md)。同じ炭焼き画面とはじめを参照した比較モックアップ。[目元の生成指示](../asset_sources/craft-success-cutins/concepts-v1-20261008/eyes-prompt.txt)は工程共通の斜め帯、[漫画コマの生成指示](../asset_sources/craft-success-cutins/concepts-v1-20261008/comic-prompt.txt)は成功した手元と笑顔。本編接続・演出頻度・採用案は未決定。
