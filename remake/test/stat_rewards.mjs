@@ -29,10 +29,11 @@ try {
     T.stats.gainStat("technique", 2); T.stats.gainStat("technique", 1);
   });
   await page.waitForSelector(".gain-card.st-technique .gc-points");
-  assert.equal(await page.locator(".gc-points").textContent(), "+3pt");
+  assert.equal(await page.locator(".gc-points").textContent(), "+3P");
   assert.equal(await page.locator(".gain-card").count(), 1);
-  assert.equal(await page.locator(".gc-top, .gc-sub").count(), 0);
-  assert(await page.locator(".gain-card.stat").evaluate(e => e.getBoundingClientRect().height < 65), "通常通知がコンパクトな1行ではない");
+  assert.equal(await page.locator(".gc-top").textContent(), "STATUS UP");
+  assert.equal(await page.locator(".gc-sub").count(), 0);
+  assert.equal(await page.locator(".gain-card.stat").evaluate(e => e.clientHeight), 68);
   await page.waitForFunction(() => T.impacts > 0);
   assert.deepEqual(await page.evaluate(() => ({ points: T.core.state.stats.technique, total: T.events[0].total,
     count: T.events.length, flown: [...new Set(T.flights)] })), { points: 13, total: 3, count: 1, flown: ["technique"] });
@@ -46,21 +47,22 @@ try {
   });
   await page.waitForSelector(".gain-card.st-sense .gc-points");
   assert.equal(await page.locator(".gc-main").textContent(), "センス");
-  assert.equal(await page.locator(".gc-points").textContent(), "+2pt");
+  assert.equal(await page.locator(".gc-points").textContent(), "+2P");
   assert.deepEqual(await page.evaluate(() => [T.core.state.stats.sense, T.events[0].key, T.events[0].total]), [48, "sense", 2]);
   await page.evaluate(() => T.ui.bannersIdle());
 
-  // 実スロットの抽選/コミット/演出を通す。経験値と実増加が異なる★帯でも二重加算しない。
+  // 実スロットの抽選/コミット/演出を通す。上限適用後の実増加だけを表示し二重加算しない。
   const reward = await page.evaluate(() => {
     T.core.state.phase = "tournament"; T.reel.onAction({ spent: 10 }); // 前の行動の対象記録を区切る
     T.core.state.phase = "daily";
-    for (const key of T.core.STAT_KEYS) T.core.state.stats[key] = 21;
+    for (const key of T.core.STAT_KEYS) T.core.state.stats[key] = 48;
+    T.core.state.stats.technique = 47;
     T.core.state.statXp = {};
     T.core.state.reel = T.core.newState().reel;
     Object.assign(T.core.state.reel, { introDone: true, lastChapter: 1 });
     for (let seed = 1; seed < 10000; seed++) {
       const sample = T.reel.core.spinSeries({ ...T.core.state.reel, seed }, { chapterFirst: false });
-      if (sample.length === 1 && sample[0].exp >= 2 && !T.reel.core.PEKA.includes(sample[0].role)) {
+      if (sample.length === 1 && sample[0].exp >= 2 && !sample[0].overlap && !T.reel.core.PEKA.includes(sample[0].role)) {
         T.core.state.reel.seed = seed; break;
       }
     }
@@ -74,8 +76,8 @@ try {
   assert(reward.got > 0 && reward.got < reward.xp);
   assert.equal(reward.got, reward.actual);
   await page.waitForSelector(".gain-card .gc-points", { timeout: 15000 });
-  assert.equal(await page.locator(".gc-points").textContent(), `+${reward.got}pt`);
-  assert.equal(await page.locator(".gain-card.stat .gc-top, .gain-card.stat .gc-sub").count(), 0);
+  assert.equal(await page.locator(".gc-points").textContent(), `+${reward.got}P`);
+  assert.equal(await page.locator(".gc-top").textContent(), "PAKKI SLOT");
   await page.evaluate(() => window.presenting);
   assert.deepEqual(await page.evaluate(() => ({ ...T.core.state.stats })), reward.after);
   await page.evaluate(() => T.ui.bannersIdle());
@@ -89,7 +91,7 @@ try {
     T.stats.gainStat("insight", 3);
   });
   await page.waitForSelector(".gain-card.st-insight .gc-points");
-  assert.equal(await page.locator(".gc-points").textContent(), "+3pt");
+  assert.equal(await page.locator(".gc-points").textContent(), "+3P");
   assert.deepEqual(await page.evaluate(() => T.events.map(e => e.key)), ["insight"]);
   await page.waitForTimeout(900);
   assert.deepEqual(await page.evaluate(() => T.flights), []);

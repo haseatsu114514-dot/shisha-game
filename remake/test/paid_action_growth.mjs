@@ -20,10 +20,7 @@ try {
     vn.vnTest.turbo = true; craft.craftTest.auto = "good";
     function reset() { core.newGame(); core.state.phase = "daily"; core.state.day = 8;
       core.state.slot = 1; core.state.weatherSeed = 4; }
-    const xp = () => Object.values(core.state.stats).reduce((sum, n) => {
-      for (let before = 10; before < n; before++) sum += [1, 1.5, 2, 3, 4][Math.max(0, Math.ceil(before / 20) - 1)];
-      return sum;
-    }, 0) + Object.values(core.state.statXp).reduce((sum, n) => sum + n, 0);
+    const xp = () => Object.values(core.state.stats).reduce((sum, n) => sum + n - 10, 0);
     reset(); const money = core.state.money;
     stats.earnStat("guts", 8); stats.applyStats({ technique: 8 });
     await vn.play("remake_tutorial_result");
@@ -45,15 +42,19 @@ try {
       ["rest", () => spots.restAtHome(spots.spotById("rest"))],
     ]) {
       reset(); core.state.stamina = 80;
+      const previous = { ...core.state.stats };
       const { spent } = await stats.paidAction(run);
+      const perStat = Object.fromEntries(core.STAT_KEYS.map(k => [k, core.state.stats[k] - previous[k]]));
       const earned = xp(); reel.onAction({ spent });
-      cases.push({ name, spent, earned, spins: core.state.reel.count });
+      cases.push({ name, spent, earned, perStat, spins: core.state.reel.count });
       if (spent > 0) {
         const before = xp();
+        const previous = { ...core.state.stats };
         const repeat = await stats.paidAction(run);
+        const perStat = Object.fromEntries(core.STAT_KEYS.map(k => [k, core.state.stats[k] - previous[k]]));
         const repeatEarned = xp() - before, count = core.state.reel.count;
         reel.onAction({ spent: repeat.spent });
-        cases.push({ name: `repeat:${name}`, spent: repeat.spent, earned: repeatEarned, spins: core.state.reel.count - count });
+        cases.push({ name: `repeat:${name}`, spent: repeat.spent, earned: repeatEarned, perStat, spins: core.state.reel.count - count });
       }
     }
     // 給料・物語を維持し、無料のシフト後会話はシフトと同じ成長枠。
@@ -105,10 +106,14 @@ try {
     const recovery = ["cafe", "kannon", "rest"].includes(entry.name);
     assert.equal(entry.spins > 0, !recovery, JSON.stringify(entry));
     if (recovery) assert.equal(entry.earned, 0);
-    else { assert(entry.spent > 0); assert(entry.earned >= 4 && entry.earned <= (entry.name === "baito:drill" ? 8 : 6) + 1e-9, JSON.stringify(entry)); }
+    else {
+      assert(entry.spent > 0);
+      assert(entry.earned >= 1 && entry.earned <= (entry.name === "baito:drill" ? 4 : 2), JSON.stringify(entry));
+      if (entry.perStat) assert(Object.values(entry.perStat).every(n => n === 0 || n === 1), JSON.stringify(entry));
+    }
     if (entry.pay !== undefined) assert(entry.pay >= 8000);
   }
-  assert(report.carrySaved); assert.equal(report.invitationSpent, 10); assert.equal(report.invitationXp, 6);
+  assert(report.carrySaved); assert.equal(report.invitationSpent, 10); assert.equal(report.invitationXp, 2);
   assert.equal(report.zeroXp, 0); assert.equal(report.zeroSpins, 0); assert.equal(report.smallXp, 1);
   assert.equal(report.mixed.xp, 0); assert(report.mixed.affinity > 0);
   assert.match(report.mixed.text, /【好感度】が少し上がった。/);
