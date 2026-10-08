@@ -86,6 +86,7 @@ try {
     const cs = session.newSession('drill'); session.openBench(cs); __remake.craftTest.auto = 'good';
     window.heatRun = heat.runHeat(cs);
   });
+  await page.waitForSelector('.bench-worker[data-step="heat"]');
   const geometry = await page.evaluate(() => {
     const worker = document.querySelector('.bench-worker').getBoundingClientRect();
     const panel = document.querySelector('.bench-right').getBoundingClientRect();
@@ -118,6 +119,7 @@ try {
     window.cs = session.newSession('drill'); cs.steamMin = 3; session.openBench(cs);
     window.steamRun = steam.runSteamDodge(cs);
   });
+  await phone.waitForSelector('.dodge');
   const initial = await phone.evaluate(() => {
     const box = document.querySelector('.dodge').getBoundingClientRect(), heart = document.querySelector('.dodge-heart').getBoundingClientRect();
     const pad = document.querySelector('.dodge-pad').getBoundingClientRect();

@@ -1,6 +1,6 @@
 // アルミ穴あけ BATTLE（master_spec 第2部 §1）
-// 円周を回るカーソルが目印に重なった瞬間に打つと EXCELLENT。外周一周の後は穴数を選べる。
-// メイン評価は均等度。穴数・リング配置は後工程の性能（抜け・熱の広がり・焦げ）に効く。
+// テンプレートの配置を選び、円周を回るカーソルが目印に重なった瞬間に打つ。
+// メイン評価は均等度。実際の穴数・リング配置を後工程の熱へ渡す。
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
@@ -8,15 +8,76 @@ import { stepPanel, refreshBench, tickerSay, reactAudience } from "./session.js"
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 import { craftCondition } from "../core/condition.js";
 
-// 外周=熱拡散・安定／中周=ドロー・煙量／内周=抜け・攻め（焦げリスク）
-import { RINGS, circularAngleDistance, minimumRingComplete, evaluateFoil } from "./holes_logic.js";
+import { RINGS, circularAngleDistance, templateComplete, evaluateFoil } from "./holes_logic.js";
+import { HOLE_TEMPLATES, DEFAULT_HOLE_TEMPLATE, ringsForTemplate, templateCountsLabel } from "./holes_templates.js";
 export { RINGS } from "./holes_logic.js";
 const TIME_LIMIT = 32;
 const DEG = Math.PI / 180;
 
+async function chooseTemplate(panel, cs) {
+  const templates = HOLE_TEMPLATES.filter((template) => cs.availableHoleTemplateIds
+    ? cs.availableHoleTemplateIds.includes(template.id) : !template.unlockFlag);
+  let selected = templates.find((template) => template.id === cs.holeTemplateId)
+    || templates.find((template) => template.id === DEFAULT_HOLE_TEMPLATE) || templates[0];
+  const preview = el("div.foil.ht-preview", { role: "img", dataset: { test: "hole-preview" } });
+  const counts = el("div.ht-counts", { dataset: { test: "hole-template-counts" } });
+  const note = el("small.ht-note");
+  const description = el("p.ht-description", { "aria-live": "polite" });
+  const choices = templates.map((template) => {
+    const button = el("button.btn.ht-option", { dataset: { test: `hole-template-${template.id}` } }, [
+      el("span.btn-label", { text: template.label }),
+    ]);
+    button.addEventListener("click", () => { selected = template; SE.good(); draw(); });
+    return button;
+  });
+  const start = el("button.btn.primary", { dataset: { test: "hole-start" } }, [el("span.btn-label", { text: "この配置で穴あけを始める" })]);
+  panel.append(el("div.holes", [
+    el("div.hr-stage", [preview]),
+    el("div.ht-side", [
+      el("b.ht-title", { text: "穴あけテンプレート" }), ...choices, counts, description,
+      el("details.ht-help", [
+        el("summary", { text: "穴数と熱の回り方" }),
+        el("p", { text: "多い穴は熱が早く回り、安定しやすい。穴あけでズレる機会も増える" }),
+        el("p", { text: "少ない穴は穴あけが楽。熱はゆっくり入り、吸い方で温度が動きやすい" }),
+      ]),
+      note, start,
+    ]),
+  ]));
+  function draw() {
+    preview.replaceChildren();
+    preview.setAttribute("aria-label", `${selected.label}：${templateCountsLabel(selected)}`);
+    RINGS.forEach((ring) => preview.append(el("div.foil-ring", {
+      style: { width: `${ring.r * 100}%`, height: `${ring.r * 100}%`, opacity: selected.counts[ring.id] ? "1" : ".2" },
+    })));
+    for (const ring of ringsForTemplate(selected)) {
+      for (let k = 0; k < ring.targets; k++) {
+        const a = -Math.PI / 2 + k * 2 * Math.PI / ring.targets;
+        preview.append(el("i.foil-hole", { style: {
+          left: `${50 + Math.cos(a) * ring.r * 50}%`, top: `${50 + Math.sin(a) * ring.r * 50}%`,
+        }, dataset: { ring: ring.id } }));
+      }
+    }
+    choices.forEach((button, i) => button.setAttribute("aria-pressed", String(templates[i] === selected)));
+    counts.textContent = templateCountsLabel(selected);
+    note.textContent = `計${Object.values(selected.counts).reduce((sum, count) => sum + count, 0)}穴。熱の広がりは配置でも変わる`;
+    description.textContent = selected.description;
+  }
+  draw();
+  await new Promise((resolve) => {
+    start.addEventListener("click", resolve, { once: true });
+    if (autoSkill()) start.click();
+  });
+  SE.good();
+  cs.holeTemplateId = selected.id;
+  return selected;
+}
+
 export async function runHoles(cs) {
   const tutorial = cs.mode === "tutorial";
-  const panel = stepPanel("holes", "アルミ穴あけ", "まず外周を一周。光る目印でタップ（Space）。その後は好きな穴数で仕上げられる");
+  const panel = stepPanel("holes", "アルミ穴あけ", "配置図を見てテンプレートを選ぶ。開始してから、光が目印に重なった瞬間にタップ（Space）", { brief: "穴の配置を選んでから、穴あけを始める" });
+  const template = await chooseTemplate(panel, cs);
+  stepPanel("holes", "アルミ穴あけ", "光が目印に重なった瞬間にタップ（Space）。リングが完成したら「次のリングへ」。選んだ配置を開け終えて仕上げる");
+  const rings = ringsForTemplate(template);
   const slow = skill.slow(cs) * (tutorial ? 1.3 : 1);
   const perfWin = 4.2 * skill.window(cs) * (tutorial ? 1.5 : 1);
   const goodWin = 11 * craftCondition(cs).window * (tutorial ? 1.3 : 1);
@@ -25,7 +86,7 @@ export async function runHoles(cs) {
   // ---- 画面
   const D = 430;
   const disc = el("div.foil", { style: { width: `${D}px`, height: `${D}px` }, dataset: { test: "foil" } });
-  const ringEls = RINGS.map((rg) => el("div.foil-ring", { style: { width: `${rg.r * 100}%`, height: `${rg.r * 100}%` }, dataset: { ring: rg.id } }));
+  const ringEls = rings.map((rg) => el("div.foil-ring", { style: { width: `${rg.r * 100}%`, height: `${rg.r * 100}%` }, dataset: { ring: rg.id } }));
   const markers = el("div.foil-markers");
   const holesLayer = el("div.foil-holes");
   const cursor = el("div.foil-cursor");
@@ -44,14 +105,14 @@ export async function runHoles(cs) {
   const plan = el("div.hr-plan", { dataset: { test: "hole-plan" } });
   const punchBtn = el("button.btn.primary.hr-punch", { dataset: { test: "hole-punch" } }, [el("span.btn-label", { text: "穴を開ける" })]);
   const nextBtn = el("button.btn.small", { text: "次のリングへ", dataset: { test: "hole-next" } });
-  const doneBtn = el("button.btn.small.ghost", { text: "この穴数で仕上げる", dataset: { test: "hole-done" } });
+  const doneBtn = el("button.btn.small.ghost", { text: "この配置で仕上げる", dataset: { test: "hole-done" } });
   panel.append(el("div.holes", [
     el("div.hr-stage", [disc]),
-    el("div.hr-side", [ringLabel, role, el("div.hr-time", [el("span", { text: "TIME" }), timeBar]), scoreEl, comboEl, feedback, plan, punchBtn, el("div.hr-row", [nextBtn, doneBtn])]),
+    el("div.hr-side", [el("small.ht-current", { text: template.label }), ringLabel, role, el("div.hr-time", [el("span", { text: "TIME" }), timeBar]), scoreEl, comboEl, feedback, plan, punchBtn, el("div.hr-row", [nextBtn, doneBtn])]),
   ]));
 
   // ---- 状態
-  const state = RINGS.map((rg) => ({
+  const state = rings.map((rg) => ({
     ...rg,
     phase: rand(0, Math.PI * 2),
     taken: new Array(rg.targets).fill(false),
@@ -78,7 +139,8 @@ export async function runHoles(cs) {
     node.style.top = `${50 + y * 50}%`;
   };
   const angDiff = circularAngleDistance;
-  const minimumComplete = () => minimumRingComplete(state);
+  const complete = () => templateComplete(state);
+  const ringComplete = () => state[ri].taken.every(Boolean);
 
   const drawMarkers = () => {
     markers.replaceChildren();
@@ -102,12 +164,13 @@ export async function runHoles(cs) {
   const hud = () => {
     scoreEl.textContent = `EXCELLENT ${tally.perfect} · GOOD ${tally.good} · MISS ${tally.miss + tally.tooClose}`;
     comboEl.textContent = combo >= 2 ? `${combo} COMBO` : "";
-    const ready = minimumComplete();
-    punchBtn.disabled = finished || state[ri].taken.every(Boolean);
-    nextBtn.disabled = finished || !ready || ri === state.length - 1;
+    const ready = complete();
+    punchBtn.disabled = finished || ringComplete();
+    nextBtn.disabled = finished || !ringComplete() || ri === state.length - 1;
     doneBtn.disabled = finished || !ready;
-    plan.textContent = !ready ? elapsed >= limit ? "時間0｜外周の1周を完成させよう" : "外周の12か所を開けて、まず1周を完成させよう"
-      : "外周1周が完成。次のリングを開けるか、この穴数で仕上げられる";
+    plan.textContent = `${elapsed >= limit ? "時間0｜" : ""}${ready ? "選んだ配置が完成。仕上げて次へ進める"
+      : ringComplete() ? "リング完成。「次のリングへ」で残りの目印を開けよう"
+      : `${state[ri].label}の${state[ri].targets}か所を、目印に沿って開けよう`}`;
   };
 
   const closeRing = (ring) => {
@@ -118,7 +181,7 @@ export async function runHoles(cs) {
     return left;
   };
   const advanceRing = () => {
-    if (finished || !minimumComplete()) return;
+    if (finished || !ringComplete()) return;
     closeRing(state[ri]);
     if (ri < state.length - 1) { ri++; drawMarkers(); hud(); place(cursor, cursorAngle(), state[ri].r); SE.whoosh(); }
     else finish();
@@ -178,7 +241,7 @@ export async function runHoles(cs) {
     const a = cursorAngle();
     place(cursor, a, state[ri].r);
     timeBar.querySelector("b").style.width = `${clamp(100 - (elapsed / limit) * 100, 0, 100)}%`;
-    if (elapsed >= limit && minimumComplete()) return finish();
+    if (elapsed >= limit && complete()) return finish();
     hud();
     raf = requestAnimationFrame(loop);
   };
@@ -186,7 +249,7 @@ export async function runHoles(cs) {
   let done;
   const finishedP = new Promise((r) => { done = r; });
   const finish = () => {
-    if (finished || !minimumComplete()) return;
+    if (finished || !complete()) return;
     finished = true;
     cancelAnimationFrame(raf);
     unkey();
@@ -214,6 +277,9 @@ export async function runHoles(cs) {
 
   // ---- 採点（実穴の均等度50/タイミング精度30/穴サイズ15/残り時間5。穴数そのものは減点しない）
   const res = evaluate(state, tally, Math.max(0, limit - elapsed) / limit, goodWin);
+  res.templateId = template.id;
+  res.templateLabel = template.label;
+  res.plannedCounts = { ...template.counts };
   cs.holes = res;
   refreshBench();
   await sleep(300);
@@ -221,6 +287,7 @@ export async function runHoles(cs) {
     title: "穴あけ 結果",
     grade: res.grade,
     lines: [
+      `テンプレート：${template.label}`,
       `均等度 ${Math.round(res.evenness * 100)}%　／　円形精度 ${Math.round(res.precision * 100)}%`,
       `外周 ${res.outer}・中周 ${res.middle}・内周 ${res.inner}（計 ${res.total} 穴）`,
       res.innerExcess ? "内周を開けすぎた。焦げやすくなるかもしれない" : res.outerEven > 0.8 ? "外周がきれいに揃った。熱が全体に回りそうだ" : "",
@@ -234,7 +301,7 @@ export async function runHoles(cs) {
       await sleep(80);
       while (!finished) {
         const ring = state[ri];
-        if (ring.taken.every(Boolean) || (level === "bad" && ri > 0 && ring.taken.filter(Boolean).length >= Math.ceil(ring.targets * 0.55))) {
+        if (ring.taken.every(Boolean)) {
           advanceRing();
           await sleep(level === "bad" ? 30 : 400);
           continue;

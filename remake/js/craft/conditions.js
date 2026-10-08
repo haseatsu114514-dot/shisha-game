@@ -1,6 +1,7 @@
 // 穴の数・天候は採点の直減点ではなく、実際の温度の動きへつなぐ。
 import { clamp } from "../core/util.js";
 import { steamSecondsOf, steamHeatFor } from "./steam-time.js";
+import { foilHeatProfile } from "./holes_logic.js";
 
 export const IDEAL = [0.46, 0.62];
 export const OPTIMAL = [0.532, 0.548];
@@ -16,9 +17,10 @@ export function temperatureAfterSteam(cs, seconds, jitter = 0) {
   if (cs.pack === "fluffy") t += 0.03;
   if (cs.pack === "firm") t -= 0.04;
   const chosen = steamSecondsOf(cs), elapsed = clamp(seconds ?? chosen, 0, chosen);
+  const { warmup } = foilHeatProfile(cs.holes);
   const warmth = (at) => {
     const heat = steamHeatFor(at);
-    return heat * (rainy && heat > 0 ? 0.85 : 1);
+    return heat * (heat > 0 ? warmup : 1) * (rainy && heat > 0 ? 0.85 : 1);
   };
   const cold = warmth(0), hot = warmth(chosen);
   const start = clamp(t + jitter + cold, 0.04, 0.88);
@@ -36,8 +38,7 @@ export function pullFocusFromSteam(cs) {
 }
 
 export function craftConditions(cs) {
-  const count = Number.isFinite(cs.holes?.total) ? cs.holes.total : 24;
-  const sparsity = cs.holes ? clamp((24 - count) / 12, 0, 1) : 0;
+  const { sparsity } = foilHeatProfile(cs.holes);
   return { rainy: !!cs.environment?.rainy, sparsity };
 }
 
@@ -48,8 +49,8 @@ export function temperatureWave(cs, seconds) {
 
 /** 少穴は上下の調整が大きく、雨は熱が入る側だけ少し鈍い。 */
 export function heatDelta(cs, delta) {
-  const { rainy, sparsity } = craftConditions(cs);
-  return delta * (1 + sparsity * 0.25) * (rainy && delta > 0 ? 0.9 : 1);
+  const { rainy } = craftConditions(cs);
+  return delta * foilHeatProfile(cs.holes).response * (rainy && delta > 0 ? 0.9 : 1);
 }
 
 /** 吸い方の判定数ではなく、提供した温度が最適温にどれだけ近いかを評価する。 */

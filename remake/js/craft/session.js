@@ -14,6 +14,7 @@ import { conditionBadge, buildGuide, STEP_BRIEFS } from "./bench-ui.js";
 import { evaluationOf } from "./feedback.js";
 import { isRainy } from "../daily/weather.js";
 import { runHoles } from "./holes.js";
+import { availableHoleTemplates } from "./holes_templates.js";
 import { runHeat } from "./heat.js";
 import { runSteamDodge } from "./steam.js";
 import { runPull } from "./pull.js";
@@ -46,6 +47,8 @@ export function newSession(mode) {
     mix: {},
     mixInfo: null,
     pack: null,
+    availableHoleTemplateIds: availableHoleTemplates(state.flags).map((template) => template.id),
+    holeTemplateId: null,
     holes: null,
     heat: null,
     place: null,
