@@ -1,0 +1,43 @@
+/* 比較ツールだけが読む。ゲーム本編へは接続しない。 */
+.craft-cutin-preview {
+  position: absolute; inset: 0; z-index: 40; overflow: hidden;
+  pointer-events: none; isolation: isolate; container-type: size;
+}
+.craft-cutin-preview .cc-visual { position: absolute; opacity: 1; }
+.craft-cutin-preview .cc-art { display: block; width: 100%; height: 100%; object-fit: contain; }
+.craft-cutin-preview .cc-label {
+  position: absolute; left: 3%; bottom: 0; padding: .12em .45em .2em;
+  font: italic 900 clamp(12px, 5cqw, 28px)/1.15 sans-serif; letter-spacing: -.035em;
+  color: #19101f; background: #f5deb1; border: 2px solid #24152e;
+  clip-path: polygon(5% 0, 100% 4%, 95% 96%, 0 100%);
+  transform: rotate(-4deg); white-space: nowrap;
+  text-shadow: none; box-shadow: none;
+}
+.craft-cutin-preview[data-variant="pair"] .cc-visual {
+  width: 94%; height: 47%; left: 3%; bottom: 4%;
+}
+.craft-cutin-preview[data-variant="peek"] .cc-visual {
+  width: 47%; height: 48%; left: -5%; top: 38%;
+}
+.craft-cutin-preview[data-variant="peek"] .cc-label {
+  left: 14%; bottom: 6%; font-size: clamp(11px, 3.5cqw, 20px);
+}
+.craft-cutin-preview[data-variant="window"] {
+  background: radial-gradient(ellipse at 45% 40%, #67468488, #15101ee8 75%);
+}
+.craft-cutin-preview[data-variant="window"] .cc-visual {
+  width: 98%; height: 76%; left: 1%; top: 12%;
+}
+.craft-cutin-preview[data-variant="window"] .cc-label {
+  left: 13%; bottom: 6%; font-size: clamp(16px, 6cqw, 34px);
+}
+.craft-cutin-preview[data-variant="full"] {
+  background: #09060e9c; pointer-events: auto;
+}
+.craft-cutin-preview[data-variant="full"] .cc-visual {
+  width: 104%; height: 105%; left: -2%; top: -2.5%;
+}
+.craft-cutin-preview[data-variant="full"] .cc-label {
+  left: 4%; bottom: 6%; font-size: clamp(26px, 8cqw, 105px);
+  color: #f5deb1; background: #19101f; border-color: #f5deb1;
+}
