@@ -18,3 +18,7 @@ PRT76/77。前園・パッキー各5表情とつむぎの会釈1ポーズは生�
 ## 実行した作業と省略した検証
 
 表示用CG／章キーアートのWebPとmanifestは生成済み。ユーザー「検証飛ばしてマージ」により追加のプレイ検証・回帰テストは実行していない。既存gameplay_polishの会釈参照は新シーン用に更新したが未実行。動作確認済みとは記載しない。GitHubの自動CI／Pages公開の状態はマージ後の結果を別に報告する。
+
+## マージ・公開
+
+PR #221を2026-10-08 08:04 UTCにマージ（`5a24cf4aacc14254b1f3f7e83b7a3c23d40a1b5c`）。GitHub dialogue lint成功。Pages run `37747464163` は08:05 UTCに成功。公開URLは https://haseatsu114514-dot.github.io/shisha-game/remake/ 。11ファイル（transitions/ui/engine/pull/timer/title、ch1_main/ch1_minto、manifest、チェキWebP、章WebP）は公開側とバイト一致。これは配信確認であり、プレイ検証の実行ではない。3組の新しい立ち絵は引き続き採用回答待ち。
