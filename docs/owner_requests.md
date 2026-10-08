@@ -1,3 +1,13 @@
+## 2026-10-09 ホース・マウスピースの構造と使用例
+
+| ID | 状態 | オーナー要望 |
+|---|---|---|
+| CI69 | 📚 参考資料・調査 | 追加した写真6枚から使い捨てマウスピース、首掛けマイマウスピース、ハンドルとホース、持ち方と煙の描き分けを整理する。外部資料も調査して、AIが間違えがちな部品接続を防ぐ。ハガル内部の調査がmainに保存済みか確認する。 |
+
+[新しい6枚の縮小一覧と使用・接続ルール](../asset_sources/shisha-hardware-reference/hose-and-mouthpieces-20261009.md)、[ホースの自作構造模式図](../asset_sources/shisha-hardware-reference/hose-mouthpiece-connections-20261009.svg)。ハガル内部・穴あけ・炭配置の[既存調査](../asset_sources/shisha-hardware-reference/bowl-interiors-foil-coal-placement-20261009.md)はmainに反映済み。外部画像は転載せずリンクと要点だけ記載。ゲームコードは変更しない。
+
+---
+
 ## 2026-10-09 構造図3点とハガル内部・炭配置の外部リサーチ
 
 | ID | 状態 | オーナー要望 |
