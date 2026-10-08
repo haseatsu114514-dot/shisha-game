@@ -1,5 +1,7 @@
 # 画像生成プロンプト集（codex用）— シーシャ作りパート＋立ち絵
 
+> 2026-10-08 CI57: 最新の検討案は[紫系のシンプルで抽象的な3案](../asset_sources/transitions/concepts-v5-minimal-purple-20261008/README.md)と[保存済みプロンプト](../asset_sources/transitions/concepts-v5-minimal-purple-20261008/prompt.txt)。紫と淡いラベンダーを中心に少数の曲線・面・余白へ絞り、一筆の煙／丸い波／余白が開くを比較。網点や細かな装飾の多い前案は履歴。今回は静止モックアップのみ。
+
 > 2026-10-08 CI55／56: 最新の煙トランジション案は[紫系の3パターン](../asset_sources/transitions/concepts-v4-purple-smoke-20261008/README.md)と[保存済みプロンプト](../asset_sources/transitions/concepts-v4-purple-smoke-20261008/prompt.txt)。紫・ラベンダー・少量のピンクを統一配色にし、巻き込む渦／もくもく流れ／交差する煙リボンを比較。前の水色・コーラル案は履歴。今回も比較用の静止画像のみ。
 
 > 2026-10-08 CI54: 最新の追加案は[抽象的な煙のポップな生成モックアップ](../asset_sources/transitions/concepts-v3-abstract-smoke-20261008/README.md)と[保存済みプロンプト](../asset_sources/transitions/concepts-v3-abstract-smoke-20261008/prompt.txt)。リアルな煙ではなく、水色・コーラル・クリームの大きな渦、太い輪郭、網点で動きを表す6コマ。今回は静止した比較用のみ。

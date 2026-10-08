@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-08",
+  "status": "mockup-for-comparison",
+  "authorization": "トランジションはもっとシンプルで抽象的なのでもおしゃれでいいかも",
+  "source_file": "source.png",
+  "generated_original": "/workspace/generated_images/exec-9b7fd6b3-851e-42ce-932f-0d1ba27fbc04.png",
+  "sha256": "5a4987c40aebd72a76557d030999ba11dcec613de35f24a048c30fc1884fe05c",
+  "size": [
+    1672,
+    941
+  ],
+  "prompt": "prompt.txt",
+  "source_branch": "codex/abstract-smoke-transition-mockup-20261008",
+  "source_pr": 229,
+  "base": "21f368161aa00805237b49cd1b6f059acacbc2bf",
+  "references": [
+    {
+      "path": "assets/backgrounds/bg_eden_shop.png",
+      "sha256": "9545b7ac3ad2930c8ea023230bf3f6cf6fa0f04d05ed0ba5fbacfa04e578da86",
+      "role": "before/after scenery only"
+    },
+    {
+      "path": "assets/backgrounds/bg_osu_map_night.png",
+      "sha256": "0c673d28ce0270d674eb59d33e77b80fcece98bb01aa9df3bfe8f5d9c15d371f",
+      "role": "before/after scenery only"
+    }
+  ],
+  "storyboard_layout": "3 rows x 4 panels, each row reads left to right",
+  "concept_rows": [
+    "one smoke stroke",
+    "round wave",
+    "breathing negative space"
+  ],
+  "palette_direction": [
+    "purple",
+    "light lavender"
+  ],
+  "runtime_installed": false,
+  "notes": [
+    "Latest direction simplifies the v4 purple-pop ideas to few broad curves and negative space.",
+    "No halftone, outlines, particle decoration or repeated cloud details in the generated concept.",
+    "Subtle tonal variation is part of the generated original; this is not a quantitatively two-color runtime asset.",
+    "Third panel of each row hides scene; fourth reveals destination.",
+    "Static storyboard comparison, not actual animation; original saved byte-identically without editing.",
+    "All earlier comparisons retained."
+  ]
+}
