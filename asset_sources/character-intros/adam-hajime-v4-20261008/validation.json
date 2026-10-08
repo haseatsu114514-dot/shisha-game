@@ -16,7 +16,10 @@
     "2 generated WebP files",
     "hajime intro title",
     "regenerated intro font",
-    "manifest generated timestamp"
+    "manifest generated timestamp",
+    "title logo entrance CSS (opacity and position only)"
   ],
-  "other_portraits_and_dialogue": "unchanged"
+  "other_portraits_and_dialogue": "unchanged",
+  "title_logo": "PASS: removed logo blur keyframe; actual decoded logo never blurred at animation 0/160/300/800/1599ms; 844x390 mobile screenshot reviewed",
+  "mobile_intros": "PASS: both revised WebP bytes match browser-loaded images; new title and all captions fit; font loaded; no HTTP/browser errors"
 }

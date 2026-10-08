@@ -9,3 +9,7 @@
 各人物フォルダの `source.png` が生成原画で、`assets/ui/character_intros/<id>.png` とバイト一致。`previous-background.png` と `previous-cutin.png` に修正前の背景と実画面を保存した。過去のPR226比較原稿はそのまま保持している。
 
 [アダムの生成指示](adam/prompt.txt)／[はじめの生成指示](hajime/prompt.txt)。入力・出力SHAと実参照は [generation.json](generation.json)。表示用WebPは通常の画像ビルドで生成する。本編に重ねた最新の画面は `review/`、確認結果は `validation.json` に保存する。
+
+## タイトルロゴの追加修正（UX17）
+
+同じ作業中の指示により、タイトルロゴの登場キーフレームから文字をぼかすフィルターを除いた。透明度・移動とロゴ原画は保持。`review/title_early_mobile.png` は登場300msの実画面。開始から1599msまでの確認と、2人のスマートフォン画面は `review/smoke-validation.json`／`review/*_mobile.png` に保存している。
