@@ -189,6 +189,8 @@ export const SE = {
   reelLever: () => { noise({ dur: 0.05, vol: 0.18, filter: 1800 }); tone({ freq: 220, to: 120, type: "square", dur: 0.06, vol: 0.06 }); },
   reelStop: () => { tone({ freq: 520, to: 300, type: "square", dur: 0.04, vol: 0.07 }); noise({ dur: 0.03, vol: 0.1, filter: 2600 }); },
   reelWin: () => { tone({ freq: 1175, type: "triangle", dur: 0.08, vol: 0.12 }); tone({ freq: 1568, type: "triangle", dur: 0.12, vol: 0.1, delay: 0.07 }); },
+  // 能力ボーナスの通知に合わせた短い上昇音。通常の通知音より控えめにする。
+  slotBonus: () => [784, 1175, 1568].forEach((freq, i) => tone({ freq, type: "triangle", dur: i === 2 ? 0.18 : 0.1, vol: 0.08, delay: i * 0.07 })),
   puka: () => { tone({ freq: 880, to: 1760, type: "sine", dur: 0.16, vol: 0.2 }); tone({ freq: 1760, type: "sine", dur: 0.28, vol: 0.12, delay: 0.14 }); },
   pugo: () => { tone({ freq: 140, to: 70, type: "sine", dur: 0.22, vol: 0.3 }); noise({ dur: 0.08, vol: 0.12, filter: 500 }); },
   glitch: () => { for (let i = 0; i < 8; i++) tone({ freq: 200 + Math.random() * 2400, type: "square", dur: 0.03, vol: 0.05, delay: i * 0.05 }); },
