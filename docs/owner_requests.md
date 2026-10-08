@@ -1,3 +1,13 @@
+## 2026-10-09 構造図3点とハガル内部・炭配置の外部リサーチ
+
+| ID | 状態 | オーナー要望 |
+|---|---|---|
+| CI68 | 📚 資料・リサーチ | シーシャの構造図3点を追加し、未充足のハガル内部、部品/空気の通路、アルミ穴と炭の置き方、HMD/チムニーのバリエーションについて信頼できる参照先を調査・保存。モデルごとの多様性を尊重し、Claude/Codexに正しい構造を描かせる。 |
+
+[ユーザー提供3構造図の整理](../asset_sources/shisha-hardware-reference/anatomy-diagrams-20261009.md)、[ボウル内部・アルミ・炭配置の文献付き調査](../asset_sources/shisha-hardware-reference/bowl-interiors-foil-coal-placement-20261009.md)、[新規の説明用模式図](../asset_sources/shisha-hardware-reference/bowl-interiors-types-20261009.svg)を保存。外部写真・文章は複製せず参照URLを記録。既存の制作工程・穴あけテンプレ・採点・ゲーム実装は変更しない。
+
+---
+
 ## 2026-10-09 アルミの貼り方・構図・機材の誤描写を防ぐ資料
 
 | ID | 状態 | オーナー要望 |
