@@ -6,7 +6,7 @@ HTML/JS 製シーシャ屋アドベンチャー＆シミュレーションゲー
 
 ## シーシャ台の画像生成リファレンス
 
-シーシャ台が写る背景・CG・ゲーム素材を新規生成・修正するときは、オーナー提供の9種類の実物参考をまとめた [`asset_sources/shisha-hardware-reference/README.md`](asset_sources/shisha-hardware-reference/README.md) を最初に読む。**使用中の人物・ホース・煙・HMDや炭が写る素材**は追加の [`asset_sources/shisha-hardware-reference/smoking-and-heat-management-20261009.md`](asset_sources/shisha-hardware-reference/smoking-and-heat-management-20261009.md) も参照する。実物の構造・素材感を参照し、機種・色・形状・装飾は自由に創作。特定の製品・ロゴの完コピは禁止。シーシャ台を描かない指定を優先する。ボウル未装着の制作画面は従来の小さな凸型金属ポストを維持。
+シーシャ台が写る背景・CG・ゲーム素材を新規生成・修正するときは、オーナー提供の9種類の実物参考をまとめた [`asset_sources/shisha-hardware-reference/README.md`](asset_sources/shisha-hardware-reference/README.md) を最初に読む。**使用中の人物・ホース・煙・HMDや炭が写る素材**は追加の [`asset_sources/shisha-hardware-reference/smoking-and-heat-management-20261009.md`](asset_sources/shisha-hardware-reference/smoking-and-heat-management-20261009.md) も参照する。**ボウル・ホイル・炭・HMDの近接画**は [`asset_sources/shisha-hardware-reference/heat-management-closeups-20261009.md`](asset_sources/shisha-hardware-reference/heat-management-closeups-20261009.md) でアルミ直置きとHMDを区別して参照する。実物の構造・素材感を参照し、機種・色・形状・装飾は自由に創作。特定の製品・ロゴの完コピは禁止。シーシャ台を描かない指定を優先する。ボウル未装着の制作画面は従来の小さな凸型金属ポストを維持。
 
 ---
 
