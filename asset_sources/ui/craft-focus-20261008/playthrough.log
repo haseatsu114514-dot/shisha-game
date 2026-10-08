@@ -1,0 +1,32 @@
+[remake] title OK
+[remake] DAY 1 (opening) money=30000 stamina=100
+[remake] tutorial/forced growth remains zero
+[remake] DAY 2 (daily) money=33950 stamina=74
+[remake] つづきから OK {"day":2,"slot":0,"money":33950}
+[remake] ロード（スロット1）OK {"day":2,"slot":0,"money":33950}
+[remake] DAY 3 (daily) money=39450 stamina=40
+[remake] DAY 4 (daily) money=36450 stamina=34
+[remake] DAY 5 (daily) money=36450 stamina=93
+[remake] DAY 6 (daily) money=42450 stamina=67
+[remake] DAY 7 (daily) money=39450 stamina=100
+[remake] DAY 8 (daily) money=48150 stamina=94
+[remake] DAY 9 (daily) money=59650 stamina=74
+[remake] DAY 10 (daily) money=56650 stamina=62
+[remake] DAY 11 (daily) money=65150 stamina=64
+[remake] DAY 12 (daily) money=73650 stamina=100
+[remake] DAY 13 (daily) money=66650 stamina=90
+[remake] DAY 14 (daily) money=74600 stamina=66
+[remake] 大会当日（DAY 14）── 1回目は下手に挑む
+[remake] GAME OVER（1回目の挑戦・4位）→ 上手に切り替えて再挑戦
+[remake] 第1章クリア！ {"money":104600,"stats":{"technique":33,"sense":44,"guts":13,"charm":18,"insight":22}}
+[remake] attempts=2 lastRank=1 total=100
+[remake] slot: spins=23 note={"miss":15,"bell":1,"replay":3,"cherry":3,"reg":1} pending=0
+[remake] day1 errands: guided=2 errandBlocked=true scout=true mint=true
+[remake] sumi baito invites: _sumi_baito_inv_d3,_sumi_baito_inv_d8 lastBaitoDay=13
+[remake] lime: coach=1 opened=7 inbox=15 read=15 accepted=3
+[remake] screen leaks during VN=0 resultUnderPhone=false
+[remake] rain maps=11 / slot load=true / fortune day=3 met=true
+[remake] broadcast: feel=true nico=true resultFeel=true
+[remake] stock: before={"double_apple":50,"mint":50,"lemon":50} after={"double_apple":41,"mint":50,"lemon":50}
+[remake] notes: 7
+[remake] PASS

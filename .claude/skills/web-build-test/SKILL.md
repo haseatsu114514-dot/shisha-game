@@ -23,6 +23,7 @@ Playwrightが必要。`BASE_URL`でURL、`CHROME_EXECUTABLE_PATH`でChromeを指
 | 第1章の台詞・大会・進行 | `playthrough.mjs`（敗北→再挑戦→優勝も含む） |
 | 穴あけ・吸い出しのバランス | `foil_holes.mjs`・`stamina_condition.mjs`・`playthrough.mjs` |
 | 任意練習・回復・弾幕操作 | `gameplay_polish.mjs` |
+| 制作UI・見守る人物・キッチンタイマー・蒸らし温度・集中による吸い出し難易度 | `craft_focus.mjs`・`steam_refresh.mjs`・`stamina_condition.mjs`・`playthrough.mjs` |
 | HUD・通知・体力 | `ui_skin.mjs`・`stat_rewards.mjs`・`stamina_condition.mjs` |
 | 選択肢の文字 | `choice_oneline.mjs` |
 | キャラの初登場 | `intro_cutin.mjs` |

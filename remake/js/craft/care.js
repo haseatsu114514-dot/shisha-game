@@ -2,7 +2,7 @@
 // 審査員が吸っている間も炭は生きている。温度の流れを読んで、炭を外す／回す／寄せる／見守る。
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, tickerSay } from "./session.js";
+import { stepPanel, tickerSay, reactAudience } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, popStamp } from "./common.js";
 import { IDEAL } from "./pull.js";
 import { heatDelta } from "./conditions.js";
@@ -63,6 +63,7 @@ export async function runCare(cs) {
     if (choice.steady) T = clamp(T + heatDelta(cs, (CENTER - T) * 0.35), 0, 1); // 位置を回すと熱がならされる
     history.push((before + T) / 2, T);
     const ok = T >= IDEAL[0] && T <= IDEAL[1];
+    reactAudience(cs, ok ? "good" : "bad", { force: true });
     if (ok) good++;
     popStamp(panel, ok ? "HEAT STABLE" : T > IDEAL[1] ? "熱すぎ！" : "冷めてきた…", ok ? "good" : "bad", "50%", "30%");
     ok ? SE.good() : SE.miss();

@@ -8,6 +8,7 @@ import { SE, stopBgm } from "../core/audio.js";
 import { autoSkill } from "./common.js";
 import { mixColor } from "./art.js";
 import { NAGUMO_BAR } from "./score.js";
+import { evaluationOf } from "./feedback.js";
 
 export const CONTESTANTS = ["naru", "adam", "minto", "hajime"];
 const RIVAL_COLOR = { naru: "#f0d8a0", adam: "#c9463a", minto: "#7fe0c2" };
@@ -222,12 +223,15 @@ export function resultTable(cs, rank) {
       el("span.rt-rank", { text: `${i + 1}位` }), faceOf(id, ".rt-face"), el("span.rt-name", { text: nameOf(id) }),
       el("i.rt-bar", [el("b", { style: { width: `${(t[id] / 20) * 100}%` } })]), el("span.rt-pt", { text: `${t[id]} pt` }),
     ]));
-    const grade = (s) => (s >= 90 ? "S" : s >= 80 ? "A" : s >= 65 ? "B" : s >= 50 ? "C" : "D");
+    const evaluation = (score) => {
+      const review = evaluationOf(score || 0);
+      return el(`b.craft-evaluation.${review.tone}`, { text: review.mark, "aria-label": review.label });
+    };
     const detail = el("div.rt-detail", [
       el("h4", { text: "あなたの一台" }),
       ...[["穴あけ", P.holes], ["炭焼き", P.heat], ["完成品", P.shisha], ["FLAVOR TRIAL", P.trial]].map(([k, v]) =>
-        el("div.rt-part", [el("span", { text: k }), el(`b.g-${grade(v || 0)}`, { text: grade(v || 0) })])),
-      el("div.rt-part.total", [el("span", { text: "総合" }), el(`b.g-${cs.rank}`, { text: cs.rank })]),
+        el("div.rt-part", [el("span", { text: k }), evaluation(v)])),
+      el("div.rt-part.total", [el("span", { text: "総合" }), evaluation(cs.total)]),
       cs.feel ? el("div.rt-part.feel", [el("span", { text: "観客の体感スコア" }), el("b", { text: `${cs.feel} P` })]) : null,
       cs.bonusNotes?.length ? el("small", { text: `効いたもの: ${cs.bonusNotes.join("・")}` }) : null,
       el("small.rt-bar-note", { text: rank === 1 ? "技術点も個性点も、4人の中では下位だった。" : "南雲審査員長の持ち点は、動かなかった。" }),

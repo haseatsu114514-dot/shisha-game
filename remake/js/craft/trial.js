@@ -7,7 +7,7 @@ import { flash, shake } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { tier01 } from "../core/stats.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, tickerSay } from "./session.js";
+import { stepPanel, tickerSay, reactAudience } from "./session.js";
 import { gradeOf, autoSkill, resultCard, popStamp } from "./common.js";
 import { buildAppeals, CONCEPT_NEED, computeShisha } from "./score.js";
 import { CONCEPTS } from "./steps.js";
@@ -61,6 +61,7 @@ export async function runTrial(cs) {
 
   for (let r = 0; r < doubts.length; r++) {
     const d = doubts[r];
+    reactAudience(cs, "watch", { judge: d.judge, force: true, text: d.text });
     doubtBox.dataset.need = d.cat;
     const face = faceIconUrl(d.judge);
     doubtBox.replaceChildren(
@@ -86,6 +87,7 @@ export async function runTrial(cs) {
     hand.replaceChildren();
     if (pick) used.add(pick.label);
     if (pick && pick.cat === d.cat) {
+      reactAudience(cs, "good", { judge: d.judge, force: true });
       success++;
       setGauge(gauge + 22 + Math.round(8 * tier01("charm")));
       SE.just();
@@ -94,6 +96,7 @@ export async function runTrial(cs) {
       await splitCut(split, SPLITS[d.cat] || SPLITS.aroma);
       tickerSay("パッキー「確かに言ってる通りだーッ！」");
     } else if (pick) {
+      reactAudience(cs, "bad", { judge: d.judge, force: true });
       mismatch++;
       setGauge(gauge - 14);
       SE.parin();
@@ -101,6 +104,7 @@ export async function runTrial(cs) {
       popStamp(panel, d.cat === "aroma" ? "香ってない！" : "ズレてる！", "bad", "50%", "36%");
       tickerSay("パッキー「あら〜！ 意図と味がズレちゃってる〜♪」");
     } else {
+      reactAudience(cs, "watch", { judge: d.judge, force: true });
       concede++;
       setGauge(gauge - 6);
       SE.cancel();
