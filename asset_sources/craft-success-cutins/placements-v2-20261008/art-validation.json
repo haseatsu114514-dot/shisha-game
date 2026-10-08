@@ -48,5 +48,41 @@
     "source": "/workspace/generated_images/exec-109de762-7218-4a40-8a60-3e408c904385.png",
     "matchesGeneratorBytes": true,
     "stove": "flat coil, central vertical peg removed"
+  },
+  {
+    "file": "references/stove-on-135-superseded.png",
+    "dimensions": [
+      1402,
+      1122
+    ],
+    "mode": "RGBA",
+    "alphaRange": [
+      0,
+      255
+    ],
+    "transparentPixels": 786281,
+    "sha256": "673774dc2c7556bcb08ed253e01102921595c0e67b19b8fdb8043a600dd206bd",
+    "source": "/workspace/generated_images/exec-39b20124-7ada-4a58-be23-04eecfa9b99f.png",
+    "matchesGeneratorBytes": true,
+    "dial": "ON: single yellow marker at 4:30 (clockwise 135 degrees from upright)",
+    "superseded": true
+  },
+  {
+    "file": "stove-on.png",
+    "adopted": "assets/ui/making/stove_coil.png",
+    "dimensions": [
+      1402,
+      1122
+    ],
+    "mode": "RGBA",
+    "alphaRange": [
+      0,
+      255
+    ],
+    "transparentPixels": 785157,
+    "sha256": "4c59a3a60d27f871f872dd0d76df997ea3b72251e30ec6716ddcbb993c710546",
+    "source": "/workspace/generated_images/exec-5b8f2f6b-0c07-4405-8398-bd88548532bc.png",
+    "matchesGeneratorBytes": true,
+    "dial": "180 degrees from original upright marker: straight down, original knob body and perspective"
   }
 ]

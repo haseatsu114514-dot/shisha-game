@@ -31,6 +31,17 @@
 .craft-cutin-preview[data-variant="window"] .cc-label {
   left: 13%; bottom: 6%; font-size: clamp(16px, 6cqw, 34px);
 }
+.craft-cutin-preview[data-variant="center"] {
+  background: radial-gradient(ellipse at center, #342144b8, #17102038 75%);
+  pointer-events: auto;
+}
+.craft-cutin-preview[data-variant="center"] .cc-visual {
+  width: 104%; height: 100%; left: -2%; top: 0;
+}
+.craft-cutin-preview[data-variant="center"] .cc-label {
+  left: 7%; bottom: 16%; font-size: clamp(20px, 7cqw, 44px);
+  color: #f5deb1; background: #19101f; border-color: #f5deb1;
+}
 .craft-cutin-preview[data-variant="full"] {
   background: #09060e9c; pointer-events: auto;
 }

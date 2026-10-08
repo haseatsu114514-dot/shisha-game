@@ -16,12 +16,12 @@
   .note{margin:12px 0 0;color:#ccc1d2;font-size:13px}.note b{color:#eccea0}
 </style>
 <main>
-  <h1>全画面の漫画カットイン＋時間停止</h1>
-  <p>画面いっぱいの演出を本命にした試作。制作画面を操作しながら、演出と停止からの再開を試せます。</p>
+  <h1>漫画カットイン：全画面／主人公エリア中央</h1>
+  <p>画面いっぱいの迫力と、左側の中央へ収める出し方を比較。制作画面を操作しながら、演出と時間停止からの再開を試せます。</p>
   <div class="controls">
     <label>工程<select id="step"><option value="heat">炭焼き</option><option value="holes">穴あけ</option><option value="steam">蒸らし</option><option value="pull">吸い出し</option></select></label>
     <label>場面<select id="mode"><option value="drill">自主練</option><option value="tutorial">スミさんの練習</option><option value="tournament">大会</option></select></label>
-    <label>出し方<select id="variant"><option value="full" selected>D：全画面＋時間停止</option><option value="pair">A：左枠の下に2コマ</option><option value="peek">B：左端から顔だけ</option><option value="window">C：左枠を漫画に切替</option></select></label>
+    <label>出し方<select id="variant"><option value="full" selected>D：全画面＋時間停止</option><option value="center">E：主人公エリア中央＋時間停止</option><option value="pair">A：左枠の下に2コマ</option><option value="peek">B：左端から顔だけ</option><option value="window">C：左枠を漫画に切替（時間継続）</option></select></label>
     <button class="primary" id="play" disabled>カットインを再生</button>
     <button id="hold" disabled>静止で比較</button>
     <button id="restart">工程をやり直す</button>
