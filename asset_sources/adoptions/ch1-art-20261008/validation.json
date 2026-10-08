@@ -1,0 +1,22 @@
+{
+  "checks": {
+    "source_sha_matches": 43,
+    "previous_byte_matches": 32,
+    "lossless_portraits": 26,
+    "lossless_maps": 2,
+    "icons_160px_256_rgb_colors_with_smooth_alpha": 5
+  },
+  "intro_background_count": 14,
+  "dialogue_text_unchanged": true,
+  "other_character_settings_unchanged": true,
+  "browser_checks": {
+    "intro_cutin": "PASS: 26 introductions, names and text fit; non-skippable; disclosure preserved",
+    "intro_art": "PASS: DAY4 unknown Ageha, separate seen keys and save/load, professional normal, reduced motion and small screen, 26 faces, all day/night pins",
+    "playthrough": "PASS: save/load, defeat rank 4 then retry rank 1 total 100, VN screen leaks 0, browser errors 0"
+  },
+  "dialogue_lint": {
+    "files": 41,
+    "errors": 0,
+    "inherited_warnings": 207
+  }
+}

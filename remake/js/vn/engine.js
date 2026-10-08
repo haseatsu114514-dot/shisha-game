@@ -10,7 +10,7 @@ import { SE, playSe, playBgm, currentBgm } from "../core/audio.js";
 import { paginate, formatHtml, sliceHtml, visibleLength, stripTags } from "./text.js";
 import { glossaryPanel } from "./glossary.js";
 import { rememberRelationship, relationshipReflectionLines } from "../core/relationships.js";
-import { needsIntro, playIntro, markIntroSeen } from "./intro.js";
+import { needsIntro, playIntro, markIntroSeen, introSeenKey } from "./intro.js";
 import { buyKeepsake } from "../core/keepsakes.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
@@ -293,10 +293,11 @@ function next() {
     }
     if (type === "intro") {
       const id = line.char_id;
-      if (state.flags[`_intro_${id}`]) continue;
-      if (vnTest.turbo) { markIntroSeen(id); continue; }
+      const variant = line.variant || "";
+      if (state.flags[introSeenKey(id, variant)]) continue;
+      if (vnTest.turbo) { markIntroSeen(id, variant); continue; }
       r.ready = false;
-      playIntro(id, { override: line.intro || {} }).then(() => { if (running === r) { r.ready = true; next(); } });
+      playIntro(id, { variant, override: line.intro || {} }).then(() => { if (running === r) { r.ready = true; next(); } });
       return;
     }
     if (type === "hide_portrait") {

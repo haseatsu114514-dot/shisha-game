@@ -2,8 +2,8 @@
   "date": "2026-10-07",
   "character": "naru",
   "version": "v1",
-  "status": "pending",
-  "scope": "review-only generation; no runtime adoption",
+  "status": "approved",
+  "scope": "adopted into runtime on 2026-10-08; originals retained",
   "requestIds": [
     "PRT53"
   ],

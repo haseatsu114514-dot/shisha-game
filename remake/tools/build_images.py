@@ -26,6 +26,7 @@ def targets(m):
     rel += [f"cgs/{c}" for c in m["cgs"]]
     rel += [f"ui/making/{x}" for x in m["making"]]
     rel += [f"ui/scene_props/{x}" for x in m.get("sceneProps", [])]
+    rel += [art["background"] for art in m.get("introArt", {}).values()]
     for ch, p in m["portraits"].items():
         rel += [f"sprites/characters/{ch}/chr_{ch}_{f}.png" for f in p["faces"]]
     rel += ["ui/title_arts/title_art_keyvisual_01.png", "ui/ui_title_logo.png", "ui/ui_title_logo_rich.png"]
@@ -52,6 +53,11 @@ def encode(src: Path, rel: str) -> bytes:
             or rel.startswith("sprites/characters/nagumo/")
             or rel.startswith("sprites/characters/maezono/")
             or rel.startswith("sprites/characters/pakki/")
+            or rel.startswith("sprites/characters/hajime/")
+            or rel.startswith("sprites/characters/adam/")
+            or rel.startswith("sprites/characters/naru/")
+            or rel.startswith("sprites/characters/dr_kemuri/")
+            or rel in ("backgrounds/bg_osu_map_day.png", "backgrounds/bg_osu_map_night.png")
             or rel == "cgs/cg_minto_first_cheki.png"):
         b = io.BytesIO()
         im.save(b, "WEBP", lossless=True, quality=100, method=6, exact=True)

@@ -19,7 +19,13 @@
     "visual_concepts": [
       "22s japanese young man, ordinary and friendly face, short messy black hair, wearing a simple white t-shirt and a tonari logo apron, relaxed posture, casual cafe staff aesthetic",
       "young japanese male cafe worker, plain looking but empathetic eyes, dark hair, wearing a casual apron with a shisha mouthpiece hanging from his neck, warm and welcoming atmosphere"
-    ]
+    ],
+    "intro_cutin": {
+      "title": "tonariの新人",
+      "line": "いつか自分の店を持ちたい",
+      "face": "normal",
+      "color": "#eee0bd"
+    }
   },
   {
     "id": "sumi",
