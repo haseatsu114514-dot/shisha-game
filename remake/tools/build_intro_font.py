@@ -44,6 +44,8 @@ def main():
         font.flavor = "woff2"
         font.save(DEST / "NotoSansJP-Intro.woff2")
     urlretrieve(SOURCE + "OFL.txt", DEST / "OFL-NotoSansJP.txt")
+    license_path = DEST / "OFL-NotoSansJP.txt"
+    license_path.write_text("\n".join(line.rstrip() for line in license_path.read_text().splitlines()) + "\n")
     print("wrote remake/fonts/NotoSansJP-Intro.woff2 and its OFL license")
 
 
