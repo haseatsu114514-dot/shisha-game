@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-08",
+  "status": "mockup-for-comparison",
+  "authorization": "トランジションの作り直しはモックアップとして画像生成でイメージ見せて欲しい",
+  "source_file": "source.png",
+  "generated_original": "/workspace/generated_images/exec-0cfa2bb9-c234-447f-9ccb-c0b984e29cca.png",
+  "sha256": "7effe84ced85546a9a033fbf76a5041421be11254d7650eeeb1653bd5ce584ac",
+  "size": [
+    1672,
+    941
+  ],
+  "prompt": "prompt.txt",
+  "references": [
+    {
+      "path": "assets/backgrounds/bg_eden_shop.png",
+      "sha256": "9545b7ac3ad2930c8ea023230bf3f6cf6fa0f04d05ed0ba5fbacfa04e578da86"
+    },
+    {
+      "path": "assets/backgrounds/bg_osu_map_night.png",
+      "sha256": "0c673d28ce0270d674eb59d33e77b80fcece98bb01aa9df3bfe8f5d9c15d371f"
+    }
+  ],
+  "concept_rows": [
+    "smoke current",
+    "amber slash",
+    "ember breath"
+  ],
+  "runtime_installed": false,
+  "notes": [
+    "Three rows with four sequential panels per concept; static imagery illustrates motion.",
+    "Original saved byte-identically; no cropping, repainting, alpha filtering or resizing.",
+    "Do not use this contact sheet as a game overlay. Individual 16:9 layers/masks would be needed after a choice."
+  ]
+}

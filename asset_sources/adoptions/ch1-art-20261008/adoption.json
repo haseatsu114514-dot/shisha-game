@@ -1,0 +1,297 @@
+{
+  "date": "2026-10-08",
+  "authorization": "新登場カットの接続頼む　あと新立ち絵や背景は一旦採用",
+  "base": "f55dd82460491de8a66be1bacbfb055d62d283bf",
+  "files": [
+    {
+      "source": "asset_sources/portraits/hajime-remaster-v1/normal-preview.png",
+      "runtime": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+      "sha256": "6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/hajime/chr_hajime_normal.png"
+    },
+    {
+      "source": "asset_sources/portraits/hajime-remaster-v1/smile-preview.png",
+      "runtime": "assets/sprites/characters/hajime/chr_hajime_smile.png",
+      "sha256": "bb2ab71d8c9f2b9292eeae5a2c2848398a9ce081853a20b4536678b31169d03a",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/hajime/chr_hajime_smile.png"
+    },
+    {
+      "source": "asset_sources/portraits/hajime-remaster-v1/serious-preview.png",
+      "runtime": "assets/sprites/characters/hajime/chr_hajime_serious.png",
+      "sha256": "3a3cd8319e064ccd451a01cab0eac0d5248ce8b1f45e50cb9afff6a47e8884d7",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/hajime/chr_hajime_serious.png"
+    },
+    {
+      "source": "asset_sources/portraits/hajime-remaster-v1/surprise-preview.png",
+      "runtime": "assets/sprites/characters/hajime/chr_hajime_surprise.png",
+      "sha256": "a7863be067099f788c3e4ae34ab52c795bc70b623d4872959a42c16c56cf212c",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/hajime/chr_hajime_surprise.png"
+    },
+    {
+      "source": "asset_sources/portraits/hajime-remaster-v1/sad-preview.png",
+      "runtime": "assets/sprites/characters/hajime/chr_hajime_sad.png",
+      "sha256": "12f33b1faa8073af567a380c8d7d3fc11ead9d0a6f886bc8d79ba1901388e758",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/hajime/chr_hajime_sad.png"
+    },
+    {
+      "source": "asset_sources/portraits/adam-remaster-v1/normal-preview.png",
+      "runtime": "assets/sprites/characters/adam/chr_adam_normal.png",
+      "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/adam/chr_adam_normal.png"
+    },
+    {
+      "source": "asset_sources/portraits/adam-remaster-v1/smile-preview.png",
+      "runtime": "assets/sprites/characters/adam/chr_adam_smile.png",
+      "sha256": "a66fef386a04e8d61938c90924a13b6e70265b608ff1c0e03b5b185484aec27f",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/adam/chr_adam_smile.png"
+    },
+    {
+      "source": "asset_sources/portraits/adam-remaster-v1/serious-preview.png",
+      "runtime": "assets/sprites/characters/adam/chr_adam_serious.png",
+      "sha256": "8123f694c34837e2c605a1d119aadd62afa262f5b7dee1f32b0fa18abb14d1fd",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/adam/chr_adam_serious.png"
+    },
+    {
+      "source": "asset_sources/portraits/adam-remaster-v1/surprise-preview.png",
+      "runtime": "assets/sprites/characters/adam/chr_adam_surprise.png",
+      "sha256": "338341ad64a9b9d2561d3bb82ff1730139afedd8a12e3e15fbd37013c3240577",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/adam/chr_adam_surprise.png"
+    },
+    {
+      "source": "asset_sources/portraits/adam-remaster-v1/intense-preview.png",
+      "runtime": "assets/sprites/characters/adam/chr_adam_intense.png",
+      "sha256": "ece87271c106a0eadc419e37fedbce03b1c9036daf7a9012e5e3d89aa52f8cdc",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/adam/chr_adam_intense.png"
+    },
+    {
+      "source": "asset_sources/portraits/naru-remaster-v1/normal-preview.png",
+      "runtime": "assets/sprites/characters/naru/chr_naru_normal.png",
+      "sha256": "60fbb3008e2ca60f78ca414620857e13ae368ff32c4f771b0f24cf18ab67e577",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/naru/chr_naru_normal.png"
+    },
+    {
+      "source": "asset_sources/portraits/naru-remaster-v1/smile-preview.png",
+      "runtime": "assets/sprites/characters/naru/chr_naru_smile.png",
+      "sha256": "a4ba1b117f50291a1d4fd7cecf8c1519a87dad5d70da8b0f1eea44fad7f1cc23",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/naru/chr_naru_smile.png"
+    },
+    {
+      "source": "asset_sources/portraits/naru-remaster-v1/serious-preview.png",
+      "runtime": "assets/sprites/characters/naru/chr_naru_serious.png",
+      "sha256": "3fcc7a55a64c4e2959f1db92adf142ce32df2960e62e8767fe6d4da568c20135",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/naru/chr_naru_serious.png"
+    },
+    {
+      "source": "asset_sources/portraits/naru-remaster-v1/surprise-preview.png",
+      "runtime": "assets/sprites/characters/naru/chr_naru_surprise.png",
+      "sha256": "3f84e7fbce2ea148bf3ceab51e4d4f410fdfdb23c21b2e2fc964858d0ef1c70a",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/naru/chr_naru_surprise.png"
+    },
+    {
+      "source": "asset_sources/portraits/naru-remaster-v1/sad-preview.png",
+      "runtime": "assets/sprites/characters/naru/chr_naru_sad.png",
+      "sha256": "0423da55f6aef27866a5929a7abdf6b487fa4035bcd34b38387594eb537e506c",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/naru/chr_naru_sad.png"
+    },
+    {
+      "source": "asset_sources/portraits/dr_kemuri-remaster-v1/normal-preview.png",
+      "runtime": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_normal.png",
+      "sha256": "ae7627d22c4461657afdbacab04e39c0d49e9e98e5b53c424bfc18f182f15e38",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/dr_kemuri/chr_dr_kemuri_normal.png"
+    },
+    {
+      "source": "asset_sources/portraits/dr_kemuri-remaster-v1/smile-preview.png",
+      "runtime": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_smile.png",
+      "sha256": "df71fa86213f88328e0b5808fc666ea9cd84284ab2ac2e624188b9ae6b484518",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/dr_kemuri/chr_dr_kemuri_smile.png"
+    },
+    {
+      "source": "asset_sources/portraits/dr_kemuri-remaster-v1/serious-preview.png",
+      "runtime": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_serious.png",
+      "sha256": "b5f808c647d9d13b4addfad8125da5f60a29314eab05baf002500abbbf095bf3",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/dr_kemuri/chr_dr_kemuri_serious.png"
+    },
+    {
+      "source": "asset_sources/portraits/dr_kemuri-remaster-v1/surprise-preview.png",
+      "runtime": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_surprise.png",
+      "sha256": "f078b051bf041431503dcc81f1e416f071ef9f639e4795ecdd10cf1838a9fc5f",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/dr_kemuri/chr_dr_kemuri_surprise.png"
+    },
+    {
+      "source": "asset_sources/portraits/dr_kemuri-remaster-v1/evil-preview.png",
+      "runtime": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_evil.png",
+      "sha256": "da763c17f531a3bd65c28d97f1f03138a4180cdea89e4af35ac07ed3bf175ca0",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/dr_kemuri/chr_dr_kemuri_evil.png"
+    },
+    {
+      "source": "asset_sources/portraits/kafuka-approved-blue-inner-v1/game-ready/chr_kafuka_excited.png",
+      "runtime": "assets/sprites/characters/kafuka/chr_kafuka_excited.png",
+      "sha256": "bae030e12a6301ad7c42d7bdf36381a6f7949776b69004d9c60d7517a4a50f2e",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/kafuka/chr_kafuka_excited.png"
+    },
+    {
+      "source": "asset_sources/portraits/kafuka-approved-blue-inner-v1/game-ready/chr_kafuka_normal.png",
+      "runtime": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+      "sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/kafuka/chr_kafuka_normal.png"
+    },
+    {
+      "source": "asset_sources/portraits/kafuka-approved-blue-inner-v1/game-ready/chr_kafuka_serious.png",
+      "runtime": "assets/sprites/characters/kafuka/chr_kafuka_serious.png",
+      "sha256": "e08c8f2f12698ce897c52282463a63b3891cd9edad024d74de8f993c1761097d",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/kafuka/chr_kafuka_serious.png"
+    },
+    {
+      "source": "asset_sources/portraits/kafuka-approved-blue-inner-v1/game-ready/chr_kafuka_smile.png",
+      "runtime": "assets/sprites/characters/kafuka/chr_kafuka_smile.png",
+      "sha256": "d764d478d5ab2fa89b769853d9a66c1c2b57528d39faea277d4e17aa180827da",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/kafuka/chr_kafuka_smile.png"
+    },
+    {
+      "source": "asset_sources/portraits/kafuka-approved-blue-inner-v1/game-ready/chr_kafuka_surprise.png",
+      "runtime": "assets/sprites/characters/kafuka/chr_kafuka_surprise.png",
+      "sha256": "915c1b810117697e560a9546ba444e466a61a3eb31cc91f5ecd7eb30e0dcc1f2",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/sprites/characters/kafuka/chr_kafuka_surprise.png"
+    },
+    {
+      "source": "asset_sources/portraits/kafuka-approved-blue-inner-v1/game-ready/chr_kafuka_ventriloquism.png",
+      "runtime": "assets/sprites/characters/kafuka/chr_kafuka_ventriloquism.png",
+      "sha256": "dd8a6312ff5636c9e670b4cc79b5bd0e800ed0f9131ad4064511787745036f4c",
+      "previous": null
+    },
+    {
+      "source": "asset_sources/portraits/kafuka-approved-blue-inner-v1/game-ready/face_kafuka.png",
+      "runtime": "assets/ui/face_icons/face_kafuka.png",
+      "sha256": "8037b24ed5f9c51be9bc47b13b91bda1b9872bbdd622a47bbc86a794b74a92d9",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/ui/face_icons/face_kafuka.png"
+    },
+    {
+      "source": "asset_sources/backgrounds/osu-sakae-map-remaster-v1/game-ready/bg_osu_map_day.png",
+      "runtime": "assets/backgrounds/bg_osu_map_day.png",
+      "sha256": "cebc00f8d51018bac821e3e15cffca73b7bf8372ea15cc01ffde0b92a35baaea",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/backgrounds/bg_osu_map_day.png"
+    },
+    {
+      "source": "asset_sources/backgrounds/osu-sakae-map-remaster-v1/game-ready/bg_osu_map_night.png",
+      "runtime": "assets/backgrounds/bg_osu_map_night.png",
+      "sha256": "0c673d28ce0270d674eb59d33e77b80fcece98bb01aa9df3bfe8f5d9c15d371f",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/backgrounds/bg_osu_map_night.png"
+    },
+    {
+      "source": "asset_sources/character-intros/ch1-v3/backgrounds/adam/source.png",
+      "runtime": "assets/ui/character_intros/adam.png",
+      "sha256": "95501842a6a4e424501dd6c4d4f826f9ad51e5412e650e58b8bdac3ccee69868",
+      "previous": null
+    },
+    {
+      "source": "asset_sources/character-intros/ch1-v3/backgrounds/ageha/source.png",
+      "runtime": "assets/ui/character_intros/ageha.png",
+      "sha256": "96cc87c98884e12cc1cc81aa8272e47b8f0bb52cd6693f7d62097715b3c89046",
+      "previous": null
+    },
+    {
+      "source": "asset_sources/character-intros/ch1-v3/backgrounds/dr_kemuri/source.png",
+      "runtime": "assets/ui/character_intros/dr_kemuri.png",
+      "sha256": "9f1508e98a1d98c977c29637601536f8fc5dd2badaea54f6f379294817298d92",
+      "previous": null
+    },
+    {
+      "source": "asset_sources/character-intros/ch1-v3/backgrounds/hajime/source.png",
+      "runtime": "assets/ui/character_intros/hajime.png",
+      "sha256": "1955eab26f6f2ecd06e942f86acd7af2c17b853d31649890290b918c5a6ed743",
+      "previous": null
+    },
+    {
+      "source": "asset_sources/character-intros/ch1-v3/backgrounds/kafuka/source.png",
+      "runtime": "assets/ui/character_intros/kafuka.png",
+      "sha256": "f5c5872656a2eb7d344333a6dc66745a1372e979492230248490b9901c26b2c6",
+      "previous": null
+    },
+    {
+      "source": "asset_sources/character-intros/ch1-v3/backgrounds/maezono/source.png",
+      "runtime": "assets/ui/character_intros/maezono.png",
+      "sha256": "5a4c253221c3a055675391ab6b06b04ad2eb0576ee4e9f94abb5a94975241fd9",
+      "previous": null
+    },
+    {
+      "source": "asset_sources/character-intros/ch1-v3/backgrounds/minto/source.png",
+      "runtime": "assets/ui/character_intros/minto.png",
+      "sha256": "2e854bcd76e578de532989a2957cae7716908adedacf46f18fcbe4d8c2c621f8",
+      "previous": null
+    },
+    {
+      "source": "asset_sources/character-intros/ch1-v3/backgrounds/nagumo/source.png",
+      "runtime": "assets/ui/character_intros/nagumo.png",
+      "sha256": "22c89669098b46a28deb591730d34369764c42e7235ee9cc0c09d543d26f2988",
+      "previous": null
+    },
+    {
+      "source": "asset_sources/character-intros/ch1-v3/backgrounds/naru/source.png",
+      "runtime": "assets/ui/character_intros/naru.png",
+      "sha256": "d2f8991eff9ef9b95d20aeb1422aa6cbec7c620b4f95b2f77f389c3132ba61c1",
+      "previous": null
+    },
+    {
+      "source": "asset_sources/character-intros/ch1-v3/backgrounds/oneesan/source.png",
+      "runtime": "assets/ui/character_intros/oneesan.png",
+      "sha256": "14565d73125cd03a617f616dbebff9f145907cdc46c2687245bba8c776644833",
+      "previous": null
+    },
+    {
+      "source": "asset_sources/character-intros/ch1-v3/backgrounds/pakki/source.png",
+      "runtime": "assets/ui/character_intros/pakki.png",
+      "sha256": "0e79f68ac4e3fcbda484f4de78e24107ffa697efabb4415539cdba2d0dc75b19",
+      "previous": null
+    },
+    {
+      "source": "asset_sources/character-intros/ch1-v3/backgrounds/rin/source.png",
+      "runtime": "assets/ui/character_intros/rin.png",
+      "sha256": "fcb3b6ad38c868e00ff2c87d3de52a863dab90c7ec570ea128bf03f6d8c50528",
+      "previous": null
+    },
+    {
+      "source": "asset_sources/character-intros/ch1-v3/backgrounds/sumi/source.png",
+      "runtime": "assets/ui/character_intros/sumi.png",
+      "sha256": "c0e717fd26c4003230e02de8b143d551077d12c83fd62ff0b97803c5a4d8e8f0",
+      "previous": null
+    },
+    {
+      "source": "asset_sources/character-intros/ch1-v3/backgrounds/tsumugi/source.png",
+      "runtime": "assets/ui/character_intros/tsumugi.png",
+      "sha256": "cab5063c24b404e295bd03b25286de8b8692543689b6c16d1d394bdb04089247",
+      "previous": null
+    },
+    {
+      "source": null,
+      "runtime": "assets/ui/face_icons/face_hajime.png",
+      "sha256": "d7ed2c2554bbf1373fe38c2a1e5d898311cd44943f60a40e7caa6741b90d56db",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/ui/face_icons/face_hajime.png",
+      "derived_from": "assets/sprites/characters/hajime/chr_hajime_normal.png",
+      "build_command": "python3 tools/make_face_icons.py hajime"
+    },
+    {
+      "source": null,
+      "runtime": "assets/ui/face_icons/face_adam.png",
+      "sha256": "f562a7359d36096877933d6ad403667e43cacb88e8f2143c25d4c7340e55e664",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/ui/face_icons/face_adam.png",
+      "derived_from": "assets/sprites/characters/adam/chr_adam_normal.png",
+      "build_command": "python3 tools/make_face_icons.py adam"
+    },
+    {
+      "source": null,
+      "runtime": "assets/ui/face_icons/face_naru.png",
+      "sha256": "85b239a12cc31e0eda53afd9ba1fa91af49bbe2ac093ba7c9f3acf62eded0727",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/ui/face_icons/face_naru.png",
+      "derived_from": "assets/sprites/characters/naru/chr_naru_normal.png",
+      "build_command": "python3 tools/make_face_icons.py naru"
+    },
+    {
+      "source": null,
+      "runtime": "assets/ui/face_icons/face_dr_kemuri.png",
+      "sha256": "00520679046c61597d0113897d03c3dd4a820cf773fc4c6ab2f8a96164d4d4f7",
+      "previous": "asset_sources/adoptions/ch1-art-20261008/previous/assets/ui/face_icons/face_dr_kemuri.png",
+      "derived_from": "assets/sprites/characters/dr_kemuri/chr_dr_kemuri_normal.png",
+      "build_command": "python3 tools/make_face_icons.py dr_kemuri"
+    }
+  ]
+}

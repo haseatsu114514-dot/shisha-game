@@ -640,8 +640,8 @@
     {
       "id": "hajime-remaster-v1",
       "title": "はじめ 基本5表情の確認用 v1",
-      "status": "pending",
-      "role": "確認用の生成元と5表情。本人のデザイン参照・採用未確定",
+      "status": "approved",
+      "role": "採用済みの本人原画と5表情。2026-10-08に本編へ反映、生成元・比較は保持",
       "sourceBranch": "codex/hajime-adam-portrait-remaster-20261007",
       "images": [
         {
@@ -680,13 +680,14 @@
           "sha256": "12f33b1faa8073af567a380c8d7d3fc11ead9d0a6f886bc8d79ba1901388e758"
         }
       ],
-      "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/201"
+      "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/201",
+      "adoption": "2026-10-08: 新立ち絵や背景は一旦採用; runtime installed with originals retained"
     },
     {
       "id": "adam-remaster-v1",
       "title": "アダム 基本5表情の確認用 v1",
-      "status": "pending",
-      "role": "確認用生成元と5表情。本人のデザイン参照・採用未確定",
+      "status": "approved",
+      "role": "採用済みの本人原画と5表情。2026-10-08に本編へ反映、生成元・比較は保持",
       "sourceBranch": "codex/hajime-adam-portrait-remaster-20261007",
       "images": [
         {
@@ -725,13 +726,14 @@
           "sha256": "ece87271c106a0eadc419e37fedbce03b1c9036daf7a9012e5e3d89aa52f8cdc"
         }
       ],
-      "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/201"
+      "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/201",
+      "adoption": "2026-10-08: 新立ち絵や背景は一旦採用; runtime installed with originals retained"
     },
     {
       "id": "naru-remaster-v1",
       "title": "なる 基本5表情の確認用 v1",
-      "status": "pending",
-      "role": "確認用生成元と5表情。本人のデザイン参照・採用未確定",
+      "status": "approved",
+      "role": "採用済みの本人原画と5表情。2026-10-08に本編へ反映、生成元・比較は保持",
       "sourceBranch": "codex/hajime-adam-portrait-remaster-20261007",
       "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/201",
       "requestIds": [
@@ -773,13 +775,14 @@
           "path": "../../../../asset_sources/portraits/naru-remaster-v1/sad-preview.png",
           "sha256": "0423da55f6aef27866a5929a7abdf6b487fa4035bcd34b38387594eb537e506c"
         }
-      ]
+      ],
+      "adoption": "2026-10-08: 新立ち絵や背景は一旦採用; runtime installed with originals retained"
     },
     {
       "id": "dr_kemuri-remaster-v1",
       "title": "チャコール博士 基本5表情の確認用 v1",
-      "status": "pending",
-      "role": "確認用生成元と5表情。本人のデザイン参照・採用未確定",
+      "status": "approved",
+      "role": "採用済みの本人原画と5表情。2026-10-08に本編へ反映、生成元・比較は保持",
       "sourceBranch": "codex/hajime-adam-portrait-remaster-20261007",
       "sourcePR": "https://github.com/haseatsu114514-dot/shisha-game/pull/201",
       "requestIds": [
@@ -821,7 +824,8 @@
           "path": "../../../../asset_sources/portraits/dr_kemuri-remaster-v1/evil-preview.png",
           "sha256": "da763c17f531a3bd65c28d97f1f03138a4180cdea89e4af35ac07ed3bf175ca0"
         }
-      ]
+      ],
+      "adoption": "2026-10-08: 新立ち絵や背景は一旦採用; runtime installed with originals retained"
     },
     {
       "id": "kafuka-gothic-shark-deep-sea-v1",
@@ -1064,8 +1068,8 @@
     {
       "id": "kafuka-approved-blue-inner-parts-v1",
       "title": "サメちゃん・採用黒髪＋青インナー 6ポーズのパーツ",
-      "status": "pending",
-      "role": "黒髪＋濃い青グラデのデザインはオーナー採用済み。通常・腹話術はPR #208原画の再利用、追加4表情と素材一式は確認用。未採用の表情を全キャラの画風基準へ転用しない",
+      "status": "approved",
+      "role": "採用済みの黒髪＋濃い青インナー6ポーズ。2026-10-08に本編へ反映。通常・腹話術はPR #208原画を再利用し、追加4表情も採用",
       "sourceCommit": "working-branch:codex/kafuka-parts-and-nagoya-map-20261007",
       "images": [
         {
@@ -1140,7 +1144,8 @@
           "path": "../../../../asset_sources/portraits/kafuka-approved-blue-inner-v1/ventriloquism/preview.png",
           "sha256": "dd8a6312ff5636c9e670b4cc79b5bd0e800ed0f9131ad4064511787745036f4c"
         }
-      ]
+      ],
+      "adoption": "2026-10-08: 新立ち絵や背景は一旦採用; runtime installed with originals retained"
     },
     {
       "id": "nagumo-remaster-v1",

@@ -81,6 +81,11 @@
           "text": "でも、笑い方がすごく自然で──なんだか、眩しかった。"
         },
         {
+          "type": "intro",
+          "char_id": "ageha",
+          "variant": "unknown"
+        },
+        {
           "speaker": "ageha",
           "face": "normal",
           "text": "気をつけてねー♡ 袋もう一個あった方がいいかも！ じゃね〜"

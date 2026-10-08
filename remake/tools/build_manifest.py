@@ -16,6 +16,7 @@ import datetime
 import json
 import re
 import sys
+import hashlib
 from pathlib import Path
 
 try:
@@ -127,6 +128,53 @@ def listing(sub: str, pattern: str = "*.png"):
     return sorted(p.name for p in d.glob(pattern) if p.stat().st_size > 0) if d.exists() else []
 
 
+def intro_art():
+    """採用した登場背景の配色と、現行人物PNGの配置だけを目録化する。
+
+    文言・表情・名前はゲームで正本データから読む。レビューの台詞を複製しない。
+    """
+    source = ROOT / "asset_sources/character-intros/ch1-v3/characters.json"
+    records = json.loads(source.read_text())
+    out = {}
+    for record in records:
+        cid = record["id"].removesuffix("_unknown")
+        background = ASSETS / f"ui/character_intros/{cid}.png"
+        if not background.exists():
+            continue
+        art = out.setdefault(cid, {
+            "color": record["color"], "secondary": record["secondary"],
+            "shadow": record["shadow"], "background": f"ui/character_intros/{cid}.png",
+            "frames": {},
+        })
+        folder = "minto" if cid == "oneesan" else cid
+        for png in (ASSETS / f"sprites/characters/{folder}").glob(f"chr_{folder}_*.png"):
+            face = png.stem.removeprefix(f"chr_{folder}_")
+            if cid == "oneesan" and not face.startswith("ura_"):
+                continue
+            if face in art["frames"]:
+                continue
+            im = Image.open(png).convert("RGBA")
+            alpha = np.asarray(im)[..., 3]
+            ys, xs = np.where(alpha >= 20)
+            if not len(xs):
+                continue
+            x0, x1, y0, y1 = int(xs.min()), int(xs.max()) + 1, int(ys.min()), int(ys.max()) + 1
+            scale = (560 if cid == "pakki" else 1140) / (y1 - y0)
+            weights = alpha[y0:y0 + max(1, int((y1 - y0) * .2))].astype(float)
+            head_x = float((weights.sum(axis=0) * np.arange(im.width)).sum() / weights.sum())
+            art["frames"][face] = {
+                "width": round(im.width * scale, 3),
+                "left": round(304 - head_x * scale - (36 if cid in ("hajime", "sumi", "tsumugi") else 0), 3),
+                "top": round((100 if cid == "pakki" else 38) - y0 * scale, 3),
+            }
+        # 採用時の構図が現在の同じ人物PNGに対応している場合はそのまま使う。
+        face = record["expression"]
+        png = ASSETS / f"sprites/characters/{folder}/chr_{folder}_{face}.png"
+        if png.exists() and hashlib.sha256(png.read_bytes()).hexdigest() == record["portrait_sha256"]:
+            art["frames"][face] = record["frame"]
+    return out
+
+
 def is_placeholder(path: Path) -> bool:
     """文字だけの仮置き画像（無地の背景に説明文）を見分ける。ほぼ1色で埋まっていれば仮置きとみなす"""
     im = Image.open(path).convert("RGB").resize((160, 90))
@@ -146,6 +194,7 @@ def main():
         "faceIcons": listing("ui/face_icons"),
         "making": listing("ui/making"),
         "sceneProps": listing("ui/scene_props"),
+        "introArt": intro_art(),
         "makingBox": making_boxes(),
         "bgm": listing("audio/bgm", "*.mp3"),
     }

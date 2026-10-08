@@ -3,27 +3,29 @@
 //   { title: 二つ名, line: 一言, face: 立ち絵の表情, color: 差し色, name: "alias"=フルネームを伏せる（ネタバレになる相手） }
 // 名前の出し方（オーナー指定・2026-10-08）: 会話の名前欄と同じ呼び名だけを表示する。
 // 括弧付きの本名は全員で廃止。本名はストーリーの名乗りで扱う
-// 見たかどうかはセーブの flags._intro_<id>（会話の途中で出す・同じセーブでは二度と出さない）
+// 既読は flags._intro_<id>。明示的な未知版は _intro_<id>_<variant> へ分ける。
 import { el, sleep } from "../core/util.js";
-import { DB, displayName, portraitInfo } from "../core/data.js";
+import { DB, displayName, portraitInfo, img } from "../core/data.js";
 import { state } from "../core/state.js";
 import { layers, imageReady } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 
 import { motifs } from "./intro-motifs.js";
+import { illustratedIntro, layoutIntro, animateIntro } from "./intro-art.js";
 
-const seenKey = (id) => `_intro_${id}`;
-const introOf = (id) => DB.characters[id]?.intro_cutin || null;
+export const introSeenKey = (id, variant = "") => `_intro_${id}${variant ? `_${variant}` : ""}`;
+const introOf = (id, variant = "") => DB.characters[id]?.[variant ? `intro_cutin_${variant}` : "intro_cutin"] || null;
 
 /** このキャラのカットインを今出すべきか（データがあり・未見で・名前が「？？？」でない） */
 export function needsIntro(id) {
-  if (!id || !introOf(id) || state.flags[seenKey(id)]) return false;
+  // 主人公は通常会話に立ち絵を出さず、冒頭の指定した一箇所だけで紹介する。
+  if (!id || id === "hajime" || !introOf(id) || state.flags[introSeenKey(id)]) return false;
   return displayName(id, state) !== "？？？";
 }
 
 /** 出さずに「見た」ことにする（テストの高速送り用） */
-export function markIntroSeen(id) {
-  if (introOf(id)) state.flags[seenKey(id)] = true;
+export function markIntroSeen(id, variant = "") {
+  if (introOf(id, variant)) state.flags[introSeenKey(id, variant)] = true;
 }
 
 /**
@@ -65,12 +67,29 @@ function framePortrait(img, p) {
  * 初登場は最後まで見せる。クリック・Enter・SKIPでも表示時間を短くしない。
  * @param opts.onAppear 画像が出た時の場面処理（本人の登場に合わせるBGMなど）
  */
-export async function playIntro(id, { onAppear = null, override = {} } = {}) {
-  const intro = { ...introOf(id), ...override };
-  if (!introOf(id)) return;
-  markIntroSeen(id);
-  const main = override.display_name || introName(id).main;
+export async function playIntro(id, { onAppear = null, override = {}, variant = "" } = {}) {
+  const intro = { ...introOf(id, variant), ...override };
+  if (!introOf(id, variant)) return;
+  markIntroSeen(id, variant);
+  const main = intro.display_name || introName(id).main;
   const p = portraitInfo(id, intro.face || "normal");
+  const art = DB.manifest.introArt?.[id];
+  if (art && p) {
+    const background = img(art.background);
+    await Promise.all([
+      imageReady(p.src, 15000), imageReady(background, 15000),
+      document.fonts.load('900 150px "Intro Gothic"', main).catch(() => []),
+      document.fonts.load('700 38px "Intro Gothic"', `${intro.title}${intro.line}`).catch(() => []),
+    ]);
+    const host = illustratedIntro(id, variant, intro, main, p, art, background);
+    layers.fx.append(host);
+    layoutIntro(host, id, variant, intro);
+    const animations = animateIntro(host, id);
+    onAppear?.();
+    SE.select();
+    await holdIntro(host, animations);
+    return;
+  }
   const portrait = p ? el("img.ci-portrait", { src: p.src, alt: "", draggable: "false" }) : el("div.ci-portrait.none", { text: [...main][0] || "？" });
   if (p) {
     framePortrait(portrait, p);
@@ -97,6 +116,10 @@ export async function playIntro(id, { onAppear = null, override = {} } = {}) {
   layers.fx.append(host);
   onAppear?.();
   SE.select();
+  await holdIntro(host);
+}
+
+async function holdIntro(host, animations = []) {
   await sleep(30);
   host.classList.add("in");
   const onTap = (e) => { e.preventDefault(); e.stopPropagation(); };
@@ -112,6 +135,7 @@ export async function playIntro(id, { onAppear = null, override = {} } = {}) {
     await sleep(280);
   } finally {
     window.removeEventListener("keydown", onKey, true);
+    animations.forEach((animation) => animation.cancel());
     host.remove();
   }
 }

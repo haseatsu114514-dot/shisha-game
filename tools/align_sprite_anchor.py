@@ -6,7 +6,7 @@ AI生成の表情差分は、同じポーズでもキャンバス内で体が丸
 engine.js は足元アンカー ax をキャラ単位で共通化してキャンバスを固定する
 ため、絵の中身がずれていると立ち絵が表情切替でジャンプして見える。
 
-このツールは各表情の足元重心(ax)と下端余白(b)を build_data.py と同じ
+このツールは各表情の足元重心(ax)と下端余白(b)を現行目録生成と同じ
 方法で計測し、基準表情（normal）と一致するように**画像の中身を平行移動**
 して保存する。ポーズ違い（腕の上げ下げ等）はそのまま残る＝足だけ揃う。
 
@@ -35,9 +35,9 @@ CHARS_DIR = REPO_ROOT / "assets" / "sprites" / "characters"
 MIN_SHIFT_PX = 3
 
 
-def load_build_data_module():
+def load_measure_module():
     spec = importlib.util.spec_from_file_location(
-        "bd", REPO_ROOT / "web" / "build_data.py"
+        "portrait_measure", REPO_ROOT / "remake" / "tools" / "build_manifest.py"
     )
     bd = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(bd)
@@ -59,7 +59,7 @@ def align_character(bd, char_dir: Path, dry_run: bool) -> int:
     for gname, files in groups.items():
         trims = {}
         for p in files:
-            t = bd.portrait_trim(p)
+            t = bd.measure(p)
             if t and isinstance(t.get("ax"), (int, float)):
                 trims[p] = t
         if len(trims) < 2:
@@ -74,14 +74,11 @@ def align_character(bd, char_dir: Path, dry_run: bool) -> int:
             with Image.open(p) as im:
                 W, H = im.size
                 dx = round((rt["ax"] - t["ax"]) * W)
-                dy = round((t["b"] - rt["b"]) * H)  # +で下へ（下端余白を基準に合わせる）
+                dy = round((rt["bottom"] - t["bottom"]) * H)  # +で下へ
                 if abs(dx) < MIN_SHIFT_PX and abs(dy) < MIN_SHIFT_PX:
                     continue
                 # コンテンツ（計測bbox）がキャンバス外へ出ない範囲に丸める
-                left = t["l"] * W
-                right = (t["l"] + t["w"]) * W
-                top = (1 - t["b"] - t["h"]) * H
-                bottom = (1 - t["b"]) * H
+                left, top, right, bottom = im.getbbox()
                 dx_c = max(-left, min(W - right, dx))
                 dy_c = max(-top, min(H - bottom, dy))
                 clip_note = "" if (dx_c, dy_c) == (dx, dy) else f"（クリップ回避で {dx},{dy}→{dx_c},{dy_c}）"
@@ -103,9 +100,9 @@ def main():
     ap.add_argument("--dry-run", "-n", action="store_true", help="解析のみ")
     args = ap.parse_args()
 
-    bd = load_build_data_module()
-    if getattr(bd, "label", None) is None and not hasattr(bd, "portrait_trim"):
-        print("build_data.py から portrait_trim を読み込めませんでした", file=sys.stderr)
+    bd = load_measure_module()
+    if not hasattr(bd, "measure"):
+        print("現行の build_manifest.py から measure を読み込めませんでした", file=sys.stderr)
         return 1
 
     total = 0
