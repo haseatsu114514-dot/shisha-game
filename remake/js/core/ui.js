@@ -23,7 +23,7 @@ export function initLayers() {
   on("stat-gain", ({ key, total, name, starUp, star }) => {
     // ★が上がったら、何が楽になったかを一言添える（旧版の★UP効果トースト）
     const fx = starUp ? DB.statusTexts?.statTierFx?.[key]?.[star - 1] : "";
-    gainCard({ kind: "stat", stat: key, points: total, badge: STAT_BADGE[key], top: starUp ? "LEVEL UP" : "", main: name,
+    gainCard({ kind: "stat", stat: key, points: total, badge: STAT_BADGE[key], top: starUp ? "LEVEL UP" : "STATUS UP", main: name,
       evolution: starUp ? `レベル${star}に進化！` : "", fx });
   });
   on("affinity-gain", ({ id, level, levelUp, prevPts, pts, bond }) => {
@@ -293,12 +293,16 @@ function pumpBanners() {
     bannerBusy++;
     const hearts = o.hearts ? heartRow(o.hearts.from, { bond: !!o.bond, label: o.bond ? "恋人との絆" : "好感度" }) : null;
     const meter = o.meter ? el("div.gc-meter", { "aria-label": "体力が回復" }, [el("span.gauge-track", [el("i", { style: { width: `${Math.round(o.meter.from * 100)}%` } })])]) : null;
-    const b = el(`div.gain-card.${o.kind}${o.bond ? ".bond" : ""}${o.stat ? `.st-${o.stat}` : ""}`, [
+    const heading = o.top || (o.kind === "stat" ? "STATUS UP" : "");
+    const b = el(`div.gain-card.${o.kind}${o.bond ? ".bond" : ""}${o.stat ? `.st-${o.stat}` : ""}${o.evolution ? ".evolved" : ""}`, [
       o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : o.stat ? statBadge(o.stat) : el("div.gc-badge", { text: o.badge || "+" }),
       el("div.gc-meta", [
-        o.top ? el("span.gc-top", { text: o.top }) : null,
+        heading ? el("span.gc-top", { text: heading, "aria-hidden": o.top ? "false" : "true" }) : null,
         el("div.gc-title", [el("span.gc-main", { text: o.main }),
-          o.points > 0 ? el("span.gc-points", { text: `+${o.points}P` }) : null]),
+          o.points > 0 ? el("span.gc-points", o.kind === "stat" ? [
+            el("span.gc-count", { text: `+${o.points}` }), el("small.gc-unit", { text: "P" }),
+          ] : [el("span", { text: `+${o.points}P` })]) : null,
+          o.kind === "stat" && o.points > 0 && !o.evolution ? el("span.gc-change", { text: "上がった" }) : null]),
         o.evolution ? el("strong.gc-evolution", { text: o.evolution }) : null,
         o.kind !== "stat" && o.sub ? el("span.gc-sub", { text: o.sub }) : null,
         o.fx ? el("span.gc-fx", { text: o.fx }) : null,

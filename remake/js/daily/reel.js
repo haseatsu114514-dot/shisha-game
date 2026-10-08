@@ -1,6 +1,6 @@
 // MOKUMOKUパッキー — 謎のマスコット「パッキー」のスロット（日常リール）。
 // 仕様の正典は docs/pakki_slot_spec.md。役・確率・天井・裏確変は旧版と同一。
-// リメイクの報酬は通常1Pの育成に合わせ、REG10/BIG16/フリーズ24P（2026-10-08 PF24）。
+// リメイクの報酬は通常1Pの育成に合わせ、REG16/BIG24/フリーズ36P（2026-10-08 PF24）。
 //
 // Aタイプ＋天井。「1行動=1回転」でマップ隅のミニ筐体が回り、パッキーの顔が光ったら大当たり（完全告知）。
 // ・抽選は決定論RNG（シード＋総回転数）— ロードしても結果が変わらない＝リセマラ不可
@@ -55,10 +55,10 @@ const EFFECTS = {
   replay: { exp: 1, quiet: true },
   cherry: { exp: 2 },
   bell: { exp: 3 },
-  rare: { exp: 16, zone: true },
-  reg: { exp: 10 },
-  big: { exp: 16, zone: true },
-  freeze: { exp: 24, zone: true },
+  rare: { exp: 24, zone: true },
+  reg: { exp: 16 },
+  big: { exp: 24, zone: true },
+  freeze: { exp: 36, zone: true },
 };
 
 function pickWeighted(rng, entries) {
