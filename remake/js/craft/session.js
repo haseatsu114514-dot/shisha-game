@@ -17,6 +17,7 @@ import { runHoles } from "./holes.js";
 import { runHeat } from "./heat.js";
 import { runSteamDodge } from "./steam.js";
 import { runPull } from "./pull.js";
+import { applyCraftSkin, craftSkinUrls } from "./skin.js";
 
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
@@ -68,7 +69,7 @@ let bench = null;
  */
 export function openBench(cs, { steps = [] } = {}) {
   // 会話のあとに作業台へ戻るときも、作業台の背景（暗めの会場／店）に戻す
-  const bg = () => (cs.mode === "tournament" ? setBg(bgUrl("bg_tournament_stage"), { tint: "dim", fast: true }) : setBg(bgUrl("bg_tonari_inside", timeOfDay()), { tint: "dim", fast: true }));
+  const bg = () => setBg(bgUrl(cs.mode === "tournament" ? "bg_tournament_stage" : "bg_tonari_inside", timeOfDay()), { tint: "dim", fast: true, ready: craftSkinUrls() });
   if (bench && bench.cs === cs && bench.root.isConnected) { bg(); return bench; }
   const worker = buildWorkerScene(cs);
   const audience = buildAudience(cs);
@@ -92,6 +93,7 @@ export function openBench(cs, { steps = [] } = {}) {
     el("div.bench-right", [el("div.bench-head", [el("div.bench-heading", [title, hint]), guide.root]), panel]),
     ticker,
   ]);
+  applyCraftSkin(root);
   bg();
   showScreen("bench", root);
   bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, ticker };
