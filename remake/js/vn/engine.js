@@ -409,6 +409,7 @@ async function showCg(id) {
   const url = cgUrl(id);
   if (!url) return; // 素材待ちのCGは黙って飛ばす
   await imageReady(url, 15000);
+  dom.cg.dataset.cg = id;
   dom.cg.style.backgroundImage = `url("${url}")`;
   dom.cg.classList.add("show");
   if (hooks.onCg) hooks.onCg(id);

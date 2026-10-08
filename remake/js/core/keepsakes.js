@@ -4,7 +4,7 @@ import { addMoney } from "./stats.js";
 import { toast } from "./ui.js";
 
 export const KEEPSAKES = {
-  minto_first_cheki: { name: "みんととの初来店チェキ", cost: 1000, cg: "cg_minto_first_cheki", description: "PEPPERMINTで撮った、初めましての一枚。" },
+  minto_first_cheki: { name: "みんとの初来店チェキ", cost: 1000, cg: "cg_minto_first_cheki", description: "PEPPERMINTで撮った、みんとの落書き付きチェキ。" },
 };
 
 export function buyKeepsake(id) {

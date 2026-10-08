@@ -24,7 +24,7 @@ export function openGallery() {
     const got = seen();
     const viewer = el("div.gal-viewer", { onclick: () => { viewer.classList.remove("show"); SE.cancel(); } });
     const grid = el("div.gal-grid", ids.map((id) => got.has(id)
-      ? el("button.gal-cell", { dataset: { test: `gal-${id}` }, onclick: () => { viewer.style.backgroundImage = `url("${cgUrl(id)}")`; viewer.classList.add("show"); SE.select(); } }, [
+      ? el("button.gal-cell", { dataset: { test: `gal-${id}`, cg: id }, onclick: () => { viewer.style.backgroundImage = `url("${cgUrl(id)}")`; viewer.classList.add("show"); SE.select(); } }, [
         el("img", { src: cgUrl(id), alt: "", loading: "lazy" }),
       ])
       : el("div.gal-cell.locked", [el("span", { text: "？？？" })])));

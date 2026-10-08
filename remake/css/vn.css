@@ -13,6 +13,12 @@
   z-index: 3;
 }
 .vn-cg.show { opacity: 1; }
+/* 縦型チェキの余白・落書きも、下の台詞ボックスに隠さず一枚全体を見せる。 */
+.vn-cg[data-cg="cg_minto_first_cheki"] {
+  background-color: var(--ink);
+  background-size: auto calc(100% - 230px);
+  background-position: center 18px;
+}
 
 /* metadata.effect="smoke": 画面の下からうっすら煙がたなびく */
 .vn-effect { position: absolute; inset: 0; pointer-events: none; z-index: 1; }

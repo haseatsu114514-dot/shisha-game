@@ -1032,7 +1032,7 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 @media(prefers-reduced-motion:reduce) {.sleep-recovery,.sleep-gauge b {transition:none; transform:none;}}
 .keepsake-list { display: flex; gap: 16px; margin-bottom: 20px; }
 .keepsake-card { display: flex; align-items: center; gap: 15px; background: #100b1b; border: 1px solid #e8c27a55; border-radius: 10px; padding: 10px; text-align: left; cursor: pointer; }
-.keepsake-card img { width: 140px; border-radius: 4px; }
+.keepsake-card img { width: 140px; max-height: 160px; object-fit: contain; border-radius: 4px; }
 .keepsake-card span { display: flex; flex-direction: column; gap: 8px; }
 .keepsake-card small { color: var(--text-dim); }
 .keepsake-viewer { position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; border: 0; background: #080611f5; cursor: pointer; }
