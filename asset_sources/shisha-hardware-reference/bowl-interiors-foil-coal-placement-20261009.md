@@ -15,7 +15,7 @@
 - [Hookah-Shisha：Traditional / Vortex / Phunnel](https://help.hookah-shisha.com/portal/en/kb/articles/what-is-the-difference-between-traditional-vortex-and-phunnel-hookah-bowls)
 - [Hookah Vault：各ボウルの構造と種類](https://www.hookahvault.com/pages/hookah-bowls)
 - [Hookah.org：Shisha Bowls Guide（特殊ボウルも含む）](https://www.hookah.org/hookah-bowls-guide/)
-- [Hookah.com：Phunnel Bowl Tips（内側と穴あけの写真がある）](https://blog.hookah.com/phunnel-hookah-bowl-tips-for-best-performance)
+- [Hookah.org：ファンネルのアルミ穴あけの工程写真（Tangiersの一方式）](https://www.hookah.org/tangiers-hookah-hole-pattern/)
 
 **絵の下地として記憶すること**：中央がへこんだ器か、中央柱が突き出す器か。中央柱はボウル**内側**の構造で、ボウルの上に乗る金属HMDや煙突型器具ではない。陶器の色や外側の彫刻だけから内部の穴の方式を確定しない。
 
@@ -29,7 +29,7 @@
 - ゲームで既定の初期穴パターンは**外周24／外周12＋中周12（総24）**。外部の写真や別の方法で上書きしない。既存の「内周0」も維持。
 
 **出典**：
-- [Hookah.com：Phunnel Bowlの穴あけ・中央スパイアの説明と写真](https://blog.hookah.com/phunnel-hookah-bowl-tips-for-best-performance)
+- [Hookah.org：Tangiersファンネルのホイル穴あけ例（流儀の一例）](https://www.hookah.org/tangiers-hookah-hole-pattern/)
 - [Hookah.org：Tangiers方式（特殊な例。標準扱いしない）](https://www.hookah.org/tangiers-hookah-hole-pattern/)
 - [Kaloud：Foil方式とHMDの構造の違い](https://kaloud.com/blogs/how-to/how-to-set-up-a-hookah-with-foil-and-where-it-falls-short)
 
