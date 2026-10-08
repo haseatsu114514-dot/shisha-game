@@ -7,7 +7,7 @@ import { emit } from "./bus.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 8; // 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり
+export const SCHEMA = 9; // 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
 
 export const STAT_KEYS = ["technique", "sense", "guts", "charm", "insight"];
 export const STAT_JA = { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" };
@@ -89,6 +89,16 @@ export function newState() {
 /** 旧スキーマのセーブを現行の形にそろえる（互換処理はここに集約） */
 function migrate(s) {
   const oldSchema = Number(s.schema) || 0;
+  if (oldSchema < 9) {
+    // 以前の経験値は★帯のコストを割って、次の1Pまでの進捗率として引き継ぐ。
+    // 能力の現在値は減らさず、ロードだけで増やさない。旧端数が通常1Pを膨らませない。
+    const oldCosts = [1, 1.5, 2, 3, 4];
+    s.statXp = Object.fromEntries(STAT_KEYS.map((key) => {
+      const cost = oldCosts[Math.max(0, Math.min(4, Math.ceil((s.stats?.[key] || 0) / 20) - 1))];
+      const xp = Number(s.statXp?.[key]) || 0;
+      return [key, Math.max(0, Math.min(1 - Number.EPSILON, xp / cost))];
+    }));
+  }
   s.flags ||= {};
   s.loveCarry = Object.fromEntries(Object.entries(s.loveCarry && typeof s.loveCarry === "object" ? s.loveCarry : {})
     .filter(([, v]) => Number.isFinite(v) && v >= 0 && v < 1));

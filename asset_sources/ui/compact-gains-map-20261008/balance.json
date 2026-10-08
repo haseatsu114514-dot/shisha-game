@@ -1,0 +1,50 @@
+[
+  {
+    "mode": "training",
+    "seeds": 10000,
+    "paidActionsPerChapter": 20,
+    "nonGrowingSlotsPerChapter": 6,
+    "chapterEndMedian": [
+      31.2,
+      53.4,
+      74.6,
+      90,
+      100
+    ],
+    "completion": 0.9876,
+    "chapter5Day": {
+      "p10": 8,
+      "p50": 10,
+      "p90": 12
+    },
+    "chapter5PaidActions": {
+      "p10": 12,
+      "p50": 14,
+      "p90": 17
+    }
+  },
+  {
+    "mode": "mixed",
+    "seeds": 10000,
+    "paidActionsPerChapter": 20,
+    "nonGrowingSlotsPerChapter": 6,
+    "chapterEndMedian": [
+      29.2,
+      50,
+      70.6,
+      88,
+      100
+    ],
+    "completion": 0.7334,
+    "chapter5Day": {
+      "p10": 10,
+      "p50": 11,
+      "p90": 13
+    },
+    "chapter5PaidActions": {
+      "p10": 14,
+      "p50": 16,
+      "p90": 20
+    }
+  }
+]

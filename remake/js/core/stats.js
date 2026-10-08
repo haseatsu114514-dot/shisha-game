@@ -1,4 +1,4 @@
-// ステータス・好感度・体力・所持金。成長量は通知にptで出し、現在の強さは★で表す。
+// ステータス・好感度・体力・所持金。成長量は通知にPで出し、現在の強さは★で表す。
 import { MAX_MONEY } from "./rules.js";
 import { state, STAT_KEYS, STAT_JA } from "./state.js";
 import { emit } from "./bus.js";
@@ -9,7 +9,7 @@ import { conditionForRatio } from "./condition.js";
 
 /** 章ごとのソフトキャップ（ch1で上限に張り付かない・ch5で全100を狙える） */
 export function statCap() {
-  return { 1: 48, 2: 66, 3: 82, 4: 96, 5: 100 }[state?.chapter || 1] || 100;
+  return { 1: 48, 2: 66, 3: 82, 4: 90, 5: 100 }[state?.chapter || 1] || 100;
 }
 
 /** ★1〜5（内部値 0〜100 を 20 刻み） */
@@ -24,10 +24,6 @@ export function starText(key) {
   const s = star(key);
   return "★".repeat(s) + "☆".repeat(5 - s);
 }
-
-// ★帯が上がるほど +1 に必要な経験値が重くなる（★1帯=1 … ★5帯=4）
-const TIER_COST = [1, 1.5, 2, 3, 4];
-const costAt = (v) => TIER_COST[clamp(Math.ceil(v / 20) - 1, 0, 4)];
 
 export const RANK_LABELS = {
   technique: ["見習い", "様になってきた", "一人前", "職人肌", "神業"],
@@ -49,22 +45,24 @@ export function gainWord(total) {
 }
 
 /**
- * ステを伸ばす（経験値として足し、★段階ごとの伸びにくさと章の上限を通す）。戻り値=実際に伸びたポイント
+ * 通常は実増加1P。スロットなどは明示したボーナスポイントを足す。
+ * ★帯による減衰は廃止。章の上限と振替、旧セーブの進捗の端数は維持する。
+ * 戻り値=実際に伸びたポイント。
  * @param opts.silent 通知カードを出さない（スロットのように自前で見せるとき）
  */
-export function gainStat(key, amount, { silent = false } = {}) {
+export function gainStat(key, amount = 1, { silent = false, excludedKeys = [] } = {}) {
   if (!STAT_KEYS.includes(key) || !(amount > 0)) return 0;
   const cap = statCap();
   // 上限に届いた項目は、まだ伸びる項目へ振り替える（伸びている実感を保つ）
-  if (state.stats[key] >= cap) {
-    const open = STAT_KEYS.filter((k) => state.stats[k] < cap);
+  if (state.stats[key] >= cap || excludedKeys.includes(key)) {
+    const open = STAT_KEYS.filter((k) => state.stats[k] < cap && !excludedKeys.includes(k));
     if (!open.length) return 0;
     key = open[Math.floor(Math.random() * open.length)];
   }
   const before = state.stats[key];
   let xp = (state.statXp[key] || 0) + amount;
   let v = before;
-  while (v < cap && xp + 1e-9 >= costAt(v)) { xp = Math.max(0, xp - costAt(v)); v += 1; }
+  while (v < cap && xp >= 1) { xp -= 1; v += 1; }
   state.statXp[key] = v >= cap ? 0 : xp;
   state.stats[key] = v;
   const got = v - before;
@@ -91,15 +89,16 @@ function flushBatch() {
 }
 
 // 台本の報酬は、自由行動の終了まで預かる。先に報酬・後に消耗する誘いも同じ扱い。
-// 強制イベント、レッスン、LIME、休憩など、行動の外では経験値も加算しない。
-export const ACTION_GROWTH_BUDGET = 6;
+// 強制イベント、レッスン、LIME、休憩など、行動の外では能力を増やさない。
+export const ACTION_GROWTH_BUDGET = 2;
 export const DRILL_GROWTH_BUDGET = 2;
 let earningAction = null;
 
 /** 台本・訪問・制作の成長候補。確定済み報酬用の gainStat と分ける。 */
-export function earnStat(key, amount) {
+export function earnStat(key, amount = 1) {
   if (!earningAction || earningAction.owner !== state || !STAT_KEYS.includes(key) || !(amount > 0)) return;
-  earningAction.gains[key] = (earningAction.gains[key] || 0) + amount;
+  // 数字は育成候補の優先度に使う。台本・訪問終了の同じ能力を重複加算しない。
+  earningAction.gains[key] = Math.max(earningAction.gains[key] || 0, amount);
 }
 
 /** 自分で選んだ行動だけを包む。追加の自主練は独立した小さな成長枠。 */
@@ -113,22 +112,19 @@ export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET } = {}) {
   if (action.owner !== state) return { value, spent: 0 };
   if (parent?.owner === state) parent.spent += action.spent;
   if (action.spent > 0) {
-    const entries = Object.entries(action.gains);
-    const total = entries.reduce((sum, [, n]) => sum + n, 0);
-    // 小さい・失敗した報酬を底上げせず、重複分だけを同じ比率で抑える。
-    // 百分の一単位で配分し、丸め誤差で上限を超えない。端数は statXp に持ち越す。
-    const limit = Math.min(total, Math.max(0, budget));
-    const portions = entries.map(([key, n]) => ({ key, raw: total ? n * limit * 100 / total : 0 }));
-    let remaining = Math.round(limit * 100);
-    for (const p of portions) { p.units = Math.floor(p.raw); remaining -= p.units; }
-    portions.sort((a, b) => (b.raw - b.units) - (a.raw - a.units));
-    for (let i = 0; i < remaining; i++) portions[i % portions.length].units++;
-    for (const { key, units } of portions) gainStat(key, units / 100);
+    // 通常は1能力につき1P、最大2能力。成功した自主練は別枠で2能力、失敗は1能力。
+    const entries = Object.entries(action.gains).sort((a, b) => b[1] - a[1]).slice(0, Math.max(0, Math.floor(budget)));
+    const rewarded = [];
+    for (const [key] of entries) {
+      const before = { ...state.stats };
+      gainStat(key, 1, { excludedKeys: rewarded });
+      for (const k of STAT_KEYS) if (state.stats[k] > before[k]) rewarded.push(k);
+    }
   }
   return { value, spent: action.spent };
 }
 
-/** 報酬オブジェクト {technique:2, ...} をまとめて適用 */
+/** 正の項目は通常1Pの候補。旧版向けの報酬量は正本JSONに残す。 */
 export function applyStats(obj = {}) {
   for (const [k, v] of Object.entries(obj)) earnStat(k, v);
 }

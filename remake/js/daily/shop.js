@@ -7,6 +7,7 @@ import { state } from "../core/state.js";
 import { addMoney, addStamina } from "../core/stats.js";
 import { SE, playBgm } from "../core/audio.js";
 import { visitChar } from "./spots.js";
+import { RIN_AWAY_DAY } from "../core/rules.js";
 import { kujiRows, goodsSellRows } from "./kuji.js";
 
 // 店頭に並ぶフレーバー（ch1）。定番＋レシピ帳のヒントで出てくる組み合わせの材料
@@ -17,7 +18,7 @@ export const SHOP_FLAVORS = [
 const SHOP_EQUIP_TYPES = ["bowl", "hms", "charcoal"];
 const CAT_LABEL = { cooling: "清涼", sweet: "スイート", fruit: "フルーツ", spice: "スパイス", floral: "フローラル" };
 const TYPE_LABEL = { bowl: "ボウル", hms: "ヒートマネジメント", charcoal: "炭" };
-export const RIN_AWAY_DAY = 2; // day % 7 === 2 は凛が出張で不在
+export { RIN_AWAY_DAY };
 
 // フレーバーは1箱50g（旧版 N3）。買う＝在庫+50g、大会で詰んだ分だけ減る（課題フレーバーは主催支給＝減らない）
 export const FLAVOR_BOX_GRAMS = 50;

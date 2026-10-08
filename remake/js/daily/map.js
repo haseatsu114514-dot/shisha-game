@@ -7,7 +7,7 @@ import { renderSceneArt } from "../core/scene-art.js";
 import { state, timeOfDay } from "../core/state.js";
 import { SE } from "../core/audio.js";
 import { STAMINA_LOW } from "../core/stats.js";
-import { allSpots, SPOT_PREVIEW, isClosed, isTemporaryClosed, visitedToday, isUnlocked, hasNewStory } from "./spots.js";
+import { allSpots, SPOT_PREVIEW, isClosed, isTemporaryClosed, visitedToday, isUnlocked, hasNewEvent } from "./spots.js";
 import { updateHud } from "./hud.js";
 import { mountReel } from "./reel.js";
 import { isRainy } from "./weather.js";
@@ -20,6 +20,25 @@ function spotFace(s) {
   return faceIconUrl(s.face);
 }
 const knowsOwner = (s) => !s.charId || !!state.met[s.charId];
+
+// 施設は大きな記号、その下に名前。顔のある店は同じ場所に店主の顔を置く。
+const PIN_SYMBOLS = {
+  store: '<path d="M3 10v11h18V10M2 10l3-7h14l3 7M2 10h20M9 21v-7h6v7"/>',
+  cafe: '<path d="M4 9h12v7a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V9ZM16 10h2a3 3 0 0 1 0 6h-2M3 22h16M7 5V2M12 5V2"/>',
+  kannon: '<path d="M3 4h18M4 8h16M7 4v17M17 4v17M5 21h4M15 21h4"/>',
+  choizap: '<path d="M7 12h10M3 8H1v8h2M21 8h2v8h-2"/><rect x="3" y="5" width="4" height="14" rx="1"/><rect x="17" y="5" width="4" height="14" rx="1"/>',
+  c_station: '<path d="M3 20v-9c4-4 14-4 18 0v9H3ZM3 15c4-3 14-3 18 0M12 3v5M12 3h6l-2 3h-4M8 16v4M16 16v4"/>',
+  rest: '<path d="m2 11 10-8 10 8M5 9v12h14V9M9 21v-7h6v7"/>',
+  fortune: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2H3v16h2m7-10 1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3Z"/>',
+};
+function pinSymbol(s) {
+  return el("span.pin-symbol", { html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PIN_SYMBOLS[s.id] || PIN_SYMBOLS.store}</svg>` });
+}
+function pinCaption(s, locked) {
+  if (locked) return "？？？";
+  if (!knowsOwner(s) && s.unknownLabel) return s.unknownLabel;
+  return ["tonari", "rival", "shop", "kafuka"].includes(s.kind) ? `${s.label}へ行く` : s.label;
+}
 
 let interrupt = null;
 /** 表示中のマップを外から閉じる（LIME で誘いに乗ったときなど）。マップが無ければ何もしない */
@@ -110,7 +129,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
         el("div.mi-tags", [
           s.cost ? el("span.tag", { text: yen(s.cost) }) : el("span.tag.free", { text: s.kind === "shop" ? "買い物は時間を使わない" : s.kind === "fortune" ? "時間を使わない" : "無料" }),
           staminaNote ? el(`span.tag${warn ? ".warn" : ""}`, { text: warn ? "体力が心配" : staminaNote }) : null,
-          s.charId && known && hasNewStory(s.charId) ? el("span.tag.new", { text: "新しい話がありそう" }) : null,
+          known && hasNewEvent(s) ? el("span.tag.new", { text: "新しいイベント" }) : null,
         ]),
         av.ok
           ? el("button.mi-go", { dataset: { test: "map-go" }, onclick: () => go(s) }, [el("span", { text: s.kind === "rest" ? "家に帰る" : "ここへ行く" })])
@@ -141,21 +160,23 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
       const face = locked ? null : spotFace(s);
       const badge = locked ? null
         : eventPin === s.id || guide?.pin === s.id ? el("i.evt-badge", { text: "!" })
-        : s.charId && known && av.ok && hasNewStory(s.charId) ? el("i.evt-badge.story", { text: "話" })
+        : known && av.ok && hasNewEvent(s) ? el("i.evt-badge.story", { text: "!", "aria-label": "新しいイベント" })
         : null;
-      const sub = locked ? null : av.tag || (known ? s.sub : s.unknownSub || s.sub);
+      const caption = pinCaption(s, locked);
       const guideCls = guide ? (guide.pin === s.id ? ".guide" : ".guided-off") : "";
       const btn = el(`button.spot-pin.pin-${locked ? "locked" : s.theme}${av.ok || av.guided ? "" : ".off"}${guideCls}`, {
         style: { left: `${s.x}%`, top: `${s.y}%` },
         dataset: { test: `pin-${s.id}`, spot: s.id },
+        "aria-label": `${caption}${av.tag ? `（${av.tag}）` : ""}${badge ? "・新しいイベント" : ""}`,
         onclick: () => (selected === s && av.ok ? go(s) : select(s, btn)),
       }, [
         el("div.shield", [
           badge,
-          el("div.ico", [face ? el("img.pin-face", { src: face, alt: "" }) : el("span", { text: locked ? "？" : known ? s.glyph : s.unknownGlyph || s.glyph })]),
-          el("div.label", [el("span", { text: locked ? "？？？" : known ? s.label : s.unknownLabel || s.label }), locked ? el("em.lock", { text: "LOCK" }) : null]),
+          el("div.ico", [face ? el("img.pin-face", { src: face, alt: "" }) : locked || !known && s.unknownLabel
+            ? el("span", { text: "？" }) : pinSymbol(s)]),
         ]),
-        sub ? el(`div.sub-label${av.tag ? ".closed-tag" : ""}`, { text: sub }) : null,
+        el("div.sub-label", { text: caption }),
+        av.tag ? el("small.pin-status", { text: av.tag }) : null,
       ]);
       pins.append(btn);
     }

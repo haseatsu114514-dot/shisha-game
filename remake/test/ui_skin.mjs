@@ -161,7 +161,7 @@ try {
   console.log("[ui skin] PASS: real session captures HUD condition at both capacities, recovery cannot change the current craft, lessons remain neutral");
   const colors = await page.evaluate(() => {
     const stats = [["technique", "技", "技術"], ["sense", "感", "センス"], ["guts", "根", "根性"], ["charm", "魅", "魅力"], ["insight", "察", "洞察"]];
-    T.ui.gainCard({ kind: "stat", stat: "technique", points: 3, badge: "技", top: "STATUS UP", main: "技術", sub: "上がった" });
+    T.ui.gainCard({ kind: "stat", stat: "technique", points: 1, badge: "技", top: "STATUS UP", main: "技術" });
     const template = document.querySelector(".gain-card.st-technique");
     template.style.visibility = "hidden";
     const preview = document.createElement("div");
@@ -176,16 +176,16 @@ try {
       card.querySelector(".gc-main").textContent = name;
       preview.append(card);
       const skin = getComputedStyle(card, "::after");
-      out.push({ key, color: getComputedStyle(card).getPropertyValue("--gc").trim(), art: skin.content, mask: skin.maskImage,
+      out.push({ key, color: getComputedStyle(card).getPropertyValue("--gc").trim(), art: skin.backgroundImage, mask: skin.maskImage,
         badge: getComputedStyle(card.querySelector(".gc-badge")).borderImageSource });
     }
     return out;
   });
   assert.deepEqual(colors.map((c) => c.color), ["#f2c34c", "#6cc6e8", "#ef7a5e", "#b49aef", "#65c9bb"]);
-  assert(colors.every((c) => c.art === "none" && c.badge === "none"), "Compact status notifications still have large generated decoration");
+  assert(colors.every((c) => c.art.includes("reward-clean.webp") && c.mask.includes("reward-clean.webp") && c.badge.includes("panel.webp")), "Original smoke-free frame or badge were missing");
   if (shots) await page.screenshot({ path: `${shots}/stat-colors.png` });
   assert.deepEqual(errors, []);
-  console.log("[ui skin] PASS: all five status colors remain, with compact decoration");
+  console.log("[ui skin] PASS: all five status colors and the original smoke-free frame remain");
 } finally {
   await browser.close();
 }
