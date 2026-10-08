@@ -41,7 +41,7 @@ def encode(src: Path, rel: str) -> bytes:
         if rel.startswith(prefix) and max(im.size) > edge:
             k = edge / max(im.size)
             im = im.resize((round(im.width * k), round(im.height * k)), Image.LANCZOS)
-    # 清書版の細かなドット・輪郭・アルファは、再ビルド時も可逆で保つ。
+    # 清書版の細かな輪郭・アルファと、チェキの手書き文字は再ビルド時も可逆で保つ。
     if (rel.startswith("sprites/characters/kafuka/")
             or rel.startswith("sprites/characters/ageha/")
             or rel.startswith("sprites/characters/minto/")
@@ -51,7 +51,8 @@ def encode(src: Path, rel: str) -> bytes:
             or rel.startswith("sprites/characters/mashiro/")
             or rel.startswith("sprites/characters/nagumo/")
             or rel.startswith("sprites/characters/maezono/")
-            or rel.startswith("sprites/characters/pakki/")):
+            or rel.startswith("sprites/characters/pakki/")
+            or rel == "cgs/cg_minto_first_cheki.png"):
         b = io.BytesIO()
         im.save(b, "WEBP", lossless=True, quality=100, method=6, exact=True)
         return b.getvalue()

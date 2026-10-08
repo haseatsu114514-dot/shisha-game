@@ -1,0 +1,39 @@
+{
+  "generated": "2026-10-08",
+  "tool": "image_gen.imagegen",
+  "mode": "builtin edit",
+  "runtime_asset": "assets/cgs/cg_minto_first_cheki.png",
+  "size": [
+    993,
+    1584
+  ],
+  "original_sha256": "25eb68293d777767e9b3feff251c52be589184e48636e22a73cbb00396de41be",
+  "steps": [
+    {
+      "purpose": "vertical solo print with handwritten doodles",
+      "references": [
+        {
+          "path": "asset_sources/minto-first-cheki/original.png",
+          "sha256": "385546f266bed145b7c30964171137a460891bfa7c12e41d4afd06bbe1d14900"
+        }
+      ]
+    },
+    {
+      "purpose": "actual cafe background with dark flash exposure",
+      "references": [
+        {
+          "path": "asset_sources/minto-first-cheki-v2/portrait-before-background-edit.png",
+          "sha256": "fe7c95108ee68bb87900f8007f6c450a238f41961f97fd999e351ac5b44c53b7"
+        },
+        {
+          "path": "assets/backgrounds/peppermint.png",
+          "sha256": "84f3eb27e98b1fd737ae1d7f7327f11328afeab508b273cecaf9dab7aff8fd91"
+        },
+        {
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+Edit the supplied current game CG into the player's requested replacement. Use case: identity-preserve illustration-story collectible.
+The reference is the old landscape two-person CG. Preserve ONLY the identity, outfit and polished anime illustration of the woman on the left, Minto. Remove the man completely and redesign the physical instant photo as the familiar VERTICAL mini instant-camera print, not a landscape photo.
+
+Output: one finished flat portrait instant print, aspect ratio approximately 54:86, straight-on, centered, all four corners visible, occupying most of a portrait canvas. White photographic paper frame with narrow top and side borders and a noticeably thicker bottom writing margin. The entire outside of the paper is genuinely transparent. The paper itself and the photo are opaque. No tabletop, no scene outside the paper, no additional nested frames.
+
+Photo content: Minto ALONE in her PEPPERMINT lounge, a charming close portrait from head to waist, smiling and winking, giving a single relaxed peace sign beside her face. Preserve the same long black hair and straight fringe, green eye, tiny black devil horns and bat-wing hair accessories, black off-shoulder maid outfit with mint-green bows and green heart pendant choker as the reference. Keep her face clearly recognizable, adult character proportions, crisp delicate anime linework and rich warm softly lit green lounge bokeh. She is the only person anywhere in the image. No male character, no visitor, no silhouettes, no hands holding the print, no reflections of other people.
+
+Doodles: make this feel like an actual cafe employee-decorated cheki, using loose playful hand-drawn marker ink on the white bottom margin and lightly on the side borders. Draw pink and mint-green hearts, small stars, and a tiny mint leaf. Include carefully legible handwritten Japanese, exactly:
+「はじめくん」
+「また来てね♡」
+and the small signature 「みんと」.
+Lay out the two main handwritten lines cleanly across the thick lower white margin, with the signature and doodles beside them. Avoid any additional words or logos. The doodles should be personal and cute, not a digital UI. Do not cover her face with text. Retain the detailed production quality of the original art.
+
+--- BACKGROUND CORRECTION ---
+
+Edit target: image 1, the vertical Minto-only handwritten cheki. Supporting background reference: image 2, assets/backgrounds/peppermint.png, the actual PEPPERMINT cafe interior currently used in the game. Supporting identity reference: image 3, the approved Minto normal portrait.
+
+The user requests TWO precise corrections: use the game's existing PEPPERMINT interior behind Minto, and make that background very dark in the distinctive way an instant-camera flash photo looks. Keep the vertical white instant print, Minto alone, her pose, expression, framing, costume, facial identity, paper borders, Japanese handwriting and mint/pink doodles unchanged.
+
+Replace the invented green lounge and golden bokeh background INSIDE the photograph with the actual interior from image 2. Reuse its recognizable pastel mint panelled counter and door, soft pink round stools, pale pink/cream pendant lights, wall arches and sofa/cushions. Do not redesign the cafe. Perspective/crop may adapt to this close portrait, but retain the source interior's layout and defining shapes behind the same Minto in the same pose.
+
+Instant flash lighting: Minto in the near foreground is clearly illuminated by a direct camera flash; the distant interior is severely underexposed, approximately 2.5–3 stops darker than a normal cafe scene. Background is mostly near-dark with the faint mint door/counter and pink stools still identifiable in shadows, a couple of very dim warm practical lights, restrained instant-film texture and mild dark-corner falloff. No large bright bokeh, no luminous green plants, no neon. Keep her face clear, clothing and green bow readable, bright white paper margin and vibrant handwriting. Preserve refined anime game illustration style and natural skin highlights without overexposure.
+
+Exact existing handwritten text to retain: 「はじめくん」「また来てね♡」 and small signature 「みんと」. Do not redraw, rename or change these doodles. One person only. No man, no silhouettes, no human hand holding the paper. All four white paper corners remain visible with clean rectangular physical edges. Everything outside the paper remains truly transparent; paper and its photo remain opaque. Deliver a single finished portrait mini instant-camera print on a transparent portrait canvas.
