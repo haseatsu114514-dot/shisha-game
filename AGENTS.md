@@ -3,6 +3,15 @@
 このリポジトリのルールの正本は `CLAUDE.md`。作業前に必ず読むこと。
 ここには、過去に事故が起きた点だけを短くまとめる。
 
+シーシャ台を新たに画像生成する場合は、実物写真の一覧と創作上の自由度をまとめた [`asset_sources/shisha-hardware-reference/README.md`](asset_sources/shisha-hardware-reference/README.md) を必ず参照（写真の完コピではない）。喫煙シーンやヒートマネジメントを描く場合は同ディレクトリの [`smoking-and-heat-management-20261009.md`](asset_sources/shisha-hardware-reference/smoking-and-heat-management-20261009.md) を追加参照する。アルミ・ボウル・HMD・炭の近接表現は [`heat-management-closeups-20261009.md`](asset_sources/shisha-hardware-reference/heat-management-closeups-20261009.md) も確認。さらに[全37写真横断の誤描写防止ガイド](asset_sources/shisha-hardware-reference/ai-generation-structural-pitfalls.md)で、ハガル／HMD／ホース／構図の取り違えをチェックする。ホース・マウスピースの新規画像生成では[追加の6写真と接続ガイド](asset_sources/shisha-hardware-reference/hose-and-mouthpieces-20261009.md)と[追加7写真の区別・素材表現](asset_sources/shisha-hardware-reference/mouthpiece-handle-skins-20261009.md)も読み、首掛けチップと実際のホースを混同しない。2026-10-09追加の[構造図3点](asset_sources/shisha-hardware-reference/anatomy-diagrams-20261009.md)と[ハガル内部・炭配置の調査](asset_sources/shisha-hardware-reference/bowl-interiors-foil-coal-placement-20261009.md)もシーシャ機材の生成前に確認する。
+
+## シーシャCGの出力後必須QA（2つの実例ミス）
+
+- [マイマウスピースがチェーンだけになる／ホースが未接続になる失敗例と検品リスト](asset_sources/shisha-hardware-reference/visual-qa-necklace-hose-20261009.md)を参照。
+- 首掛けタイプは**鎖と実体のある吸い口パーツ**。マイチップ使用時は**硬いハンドル先端に装着**。首掛け携帯中のときとは別状態。
+- ホースは**本体側の正しいポート→柔らかいホース→硬いハンドル**の経路を出力後に実際に目視で追う。途中で消える／接続されない／パージへ挿さる画像は不採用（合理的な遮蔽・見切れは例外）。
+- 指定されたゲームヒロイン本人の正規立ち絵・設定を優先し、**汎用の別人**なら修正・再生成。目視未確認で「確認済み」と書かない。
+
 ## Godot版は削除済み
 
 - Godot版は 2026-06-15 に削除済み。`project.godot` は**存在しないのが正しい**。
