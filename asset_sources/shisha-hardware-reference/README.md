@@ -43,3 +43,9 @@
 
 - [アルミ・煙突型・台の設置場所・人物との構図の写真9点](usage-and-installation-20261009.md)
 - [これまでの37写真を横断した、ハガル／アルミ／HMD／接続・構図の誤描写防止ガイド](ai-generation-structural-pitfalls.md)
+
+## 追加の構造図・外部リサーチ（2026-10-09）
+
+- [オーナー提供の実物構造図3点：部品名／接続／パージ／空気の通路](anatomy-diagrams-20261009.md)（縮小一覧と写真番号）
+- [ハガル内部の穴、アルミ穴あけ、炭の配置、HMDの種類：外部出典の調査](bowl-interiors-foil-coal-placement-20261009.md)
+- [内部吸気穴の位置を説明する自作SVG模式図](bowl-interiors-types-20261009.svg)（伝統型／ファンネル／ボルテックス）
