@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-08",
+  "status": "mockup-for-comparison",
+  "authorization": [
+    "トランジションの作り直しはモックアップとして画像生成でイメージ見せて欲しい",
+    "煙や金とか黒にこだわらなくていい　トランジションは",
+    "ペルソナ4や5みたいなセンスの良いトランジションを考えて欲しい"
+  ],
+  "source_file": "source.png",
+  "generated_original": "/workspace/generated_images/exec-f652af99-87f4-4b16-af9c-4e1feadc78d1.png",
+  "sha256": "563abfd0e5e0da1389ef4d34aa43a7a52134159fa4b75e8fe53903c7be062145",
+  "size": [
+    1672,
+    941
+  ],
+  "prompt": "prompt.txt",
+  "references": [
+    {
+      "path": "assets/backgrounds/bg_eden_shop.png",
+      "sha256": "9545b7ac3ad2930c8ea023230bf3f6cf6fa0f04d05ed0ba5fbacfa04e578da86",
+      "role": "before/after scenery only; does not constrain mask palette"
+    },
+    {
+      "path": "assets/backgrounds/bg_osu_map_night.png",
+      "sha256": "0c673d28ce0270d674eb59d33e77b80fcece98bb01aa9df3bfe8f5d9c15d371f",
+      "role": "before/after scenery only; does not constrain mask palette"
+    }
+  ],
+  "concept_rows": [
+    "yellow sunshine-pop",
+    "vermilion-cut",
+    "cyan-magenta city pulse"
+  ],
+  "runtime_installed": false,
+  "notes": [
+    "Static 3x4 storyboard showing the visual direction, not an actual animation.",
+    "Original saved byte-identically; no crop, repaint or resizing.",
+    "Original game motion-graphics inspiration, no existing game logo or characters.",
+    "The previous smoke/gold concept remains comparison history, not a palette requirement."
+  ]
+}

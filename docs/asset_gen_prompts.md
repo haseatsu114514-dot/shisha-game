@@ -1,5 +1,7 @@
 # 画像生成プロンプト集（codex用）— シーシャ作りパート＋立ち絵
 
+> 2026-10-08 CI52／53: 最新トランジションは[大胆なグラフィック3案の生成モックアップ](../asset_sources/transitions/concepts-v2-persona-inspired-20261008/README.md)と[保存済みプロンプト](../asset_sources/transitions/concepts-v2-persona-inspired-20261008/prompt.txt)。オーナー指定で煙・黒・金への固定を撤回し、P4/P5のような大きな形・強い配色・斜めの構成を参考にする。黄ポップ／赤シャープ／青×ピンク。今回は比較ボードのみ。
+
 > 2026-10-08 CI51: トランジション再制作の[生成モックアップ3案](../asset_sources/transitions/concepts-v1-20261008/README.md)と[保存済みプロンプト](../asset_sources/transitions/concepts-v1-20261008/prompt.txt)。煙の流れ／黒と金の斜め帯／炭の光と煙の輪。今回は比較ボードのみで、runtime素材ではない。個別の本番レイヤーは選択後に制作する。
 
 > 2026-10-08 GP41: 現行remake/の温度計・操作ボタン・リフレッシュ・共通パネルは[4枚の生成指示](../asset_sources/ui/craft-luxury-20261008/prompts.json)と[素材・配線契約](../asset_sources/ui/craft-luxury-20261008/README.md)を参照。黒ガラス・真鍮・煙の刻印の静的素材。温度、最適温、予測、文字、使用回数はコードが表示する。
