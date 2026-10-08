@@ -15,7 +15,7 @@
   "files": [
     {
       "path": "README.md",
-      "sha256": "11d8cf12a7c7103d862100f7ac75362590d4a4ee151ca76cf83c3263cd0afb9c"
+      "sha256": "f74599b1ae6eff066d4e5c8d1d928e06975842dcd9b7f9168ee1058f6bff646f"
     },
     {
       "path": "balance.json",
@@ -44,6 +44,10 @@
     {
       "path": "map-844.png",
       "sha256": "1749be1a8ba049e1e727d594f49514c5f0ad99d8a9b1787b12b8b54bdb86512a"
+    },
+    {
+      "path": "playthrough.log",
+      "sha256": "2da8d4dcad70e5da18bba73f5665527f2204d68ebbe10256231bde8f0c5aee10"
     },
     {
       "path": "stat-colors.png",
