@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-08",
+  "status": "mockup-for-comparison",
+  "authorization": "煙モチーフトランジションは何パターンかアイデア欲しい　あと色はやはり紫系とかポップな感じとかゲームに合わせて欲しい",
+  "source_file": "source.png",
+  "generated_original": "/workspace/generated_images/exec-54d1c163-2c25-4f44-ad33-b82e9b3f128f.png",
+  "sha256": "5f233b78df1a1539754ebb63fc19fba98c685ef9b569c1878810bf5b17fad5ba",
+  "size": [
+    1672,
+    940
+  ],
+  "prompt": "prompt.txt",
+  "source_branch": "codex/abstract-smoke-transition-mockup-20261008",
+  "source_pr": 229,
+  "base": "21f368161aa00805237b49cd1b6f059acacbc2bf",
+  "references": [
+    {
+      "path": "assets/backgrounds/bg_eden_shop.png",
+      "sha256": "9545b7ac3ad2930c8ea023230bf3f6cf6fa0f04d05ed0ba5fbacfa04e578da86",
+      "role": "before/after scenery only"
+    },
+    {
+      "path": "assets/backgrounds/bg_osu_map_night.png",
+      "sha256": "0c673d28ce0270d674eb59d33e77b80fcece98bb01aa9df3bfe8f5d9c15d371f",
+      "role": "before/after scenery only"
+    }
+  ],
+  "storyboard_layout": "3 rows x 4 panels, each row reads left to right",
+  "concept_rows": [
+    "rolling spiral",
+    "puff parade",
+    "crossing smoke ribbons"
+  ],
+  "palette": [
+    "grape violet",
+    "lively violet",
+    "pale lavender",
+    "pink accent",
+    "warm ivory"
+  ],
+  "runtime_installed": false,
+  "notes": [
+    "Latest purple palette instruction supersedes the aqua/coral choice in v3.",
+    "Same purple-based palette across three visibly different shape/motion ideas.",
+    "Third panel of each row fully covers the previous scene; fourth reveals night map.",
+    "Static storyboard comparison, not a finished animation.",
+    "Original saved byte-identically without image editing; previous mockups retained."
+  ]
+}
