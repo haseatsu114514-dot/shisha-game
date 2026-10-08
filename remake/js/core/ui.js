@@ -246,6 +246,7 @@ export function banner(title, sub = null) {
 /**
  * 報酬カード。kind: stat | affinity | info
  * @param o.badge 丸バッジの一字 / o.face 顔ドット絵（あればバッジの代わり）/ o.hearts {from:[%×5], to:[%×5]}
+ * @param o.source "slot" の場合だけ当たりの枠の光と専用音。通知位置・報酬の適用は変えない。
  */
 export function gainCard(o) {
   bannerQueue.push({ ...o, owner: state });
@@ -269,7 +270,7 @@ function pumpBanners() {
     bannerBusy++;
     const hearts = o.hearts ? heartRow(o.hearts.from, { bond: !!o.bond, label: o.bond ? "恋人との絆" : "好感度" }) : null;
     const heading = o.top || (o.kind === "stat" ? "STATUS UP" : "");
-    const b = el(`div.gain-card.${o.kind}${o.bond ? ".bond" : ""}${o.stat ? `.st-${o.stat}` : ""}${o.evolution ? ".evolved" : ""}`, [
+    const b = el(`div.gain-card.${o.kind}${o.bond ? ".bond" : ""}${o.stat ? `.st-${o.stat}` : ""}${o.evolution ? ".evolved" : ""}${o.source === "slot" ? ".slot-bonus" : ""}`, [
       o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : o.stat ? statBadge(o.stat) : el("div.gc-badge", { text: o.badge || "+" }),
       el("div.gc-meta", [
         heading ? el("span.gc-top", { text: heading, "aria-hidden": o.top ? "false" : "true" }) : null,
@@ -288,7 +289,10 @@ function pumpBanners() {
     if (o.kind === "stat" && o.points > 0) setTimeout(() => {
       if (b.isConnected && owner === state) flyStatGain(b, o);
     }, 650);
-    if (o.kind === "stat") SE.select();
+    if (o.kind === "stat") {
+      if (o.source === "slot") SE.slotBonus();
+      else SE.select();
+    }
     requestAnimationFrame(() => {
       b.classList.add("show");
       // 1拍おいてから今の値へ → ハートの中身が「ぐいーん」と伸びる

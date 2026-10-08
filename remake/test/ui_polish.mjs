@@ -133,7 +133,7 @@ try {
   assert.equal(reward.starTo, 2);
   await page.waitForSelector(".gain-card .gc-evolution", { timeout: 15000 });
   assert.equal(await page.locator(".gc-evolution").textContent(), "レベル2に進化！");
-  assert.equal(await page.locator(".gain-card.stat .gc-top").textContent(), "PAKKI SLOT");
+  assert.equal(await page.locator(".gain-card.stat .gc-top").textContent(), "SLOT BONUS");
   assert.equal(await page.locator(".gain-card.stat .gc-sub").count(), 0);
   assert((await page.locator(".gc-fx").textContent()).length > 0);
   if (shots) await page.screenshot({ path: `${shots}/level-slot.png` });
