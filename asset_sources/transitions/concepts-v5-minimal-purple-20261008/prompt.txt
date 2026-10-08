@@ -1,0 +1,22 @@
+Create a polished MINIMAL, SIMPLE, ABSTRACT scene-transition storyboard comparison for the Japanese illustrated adventure game 水煙前線 -EN:CODE-.
+
+Latest owner feedback: the smoke-inspired transitions can be MUCH SIMPLER and MORE ABSTRACT, and still stylish. Retain the PURPLE-BASED game-aligned direction, but reduce everything to a very small number of beautiful large shapes. The visual quality comes from elegant proportions, asymmetry, negative space and decisive motion, not decorative detail. Think refined contemporary 2D motion-design identity. A smoke gesture can be only one curling S-curve or a smooth soft-edge shape, with no literal smoke illustration.
+
+HARD SIMPLICITY RULES:
+Only TWO FLAT GRAPHIC COLORS throughout all three rows: one rich medium purple (#7350aa) and one very light lavender (#e8dff4). Purple may cover the entire scene. Each frame uses at most ONE or TWO large mask shapes. Clean smooth vector-like edges. No stroke outlines, no shading, no texture, no grain, no halftone, no pattern, no curls within curls, no tiny cloud puffs, no particles, no decorative objects, no gradients, no transparency simulation, no glow. Spacious, airy, confident and modern. Smoke is abstracted into a spare flowing curve, not painted as vapor.
+
+The attached images are only BEFORE scenery (lounge) and AFTER scenery (night city). Visible scene areas retain their actual colors. They are NOT graphic decoration for the transition, and NOT a palette reference for the masks. No gameplay UI or people.
+
+LAYOUT: one wide landscape comparison board with THREE ROWS of FOUR equal storyboard panels, twelve frames total. Thin neutral-white gutters. No captions or labels. Each row shows a distinct mask-motion idea from left to right: a shape starts to enter over the lounge; most lounge is obscured; FULL OPAQUE COVER with zero scenic image at the midpoint; the graphic exits to reveal at least 70% of the night city. Same coherent shape family progresses across each row, not four unrelated images. Third panels must be extremely simple flat designs, not filled with illustration.
+
+TOP ROW / ONE SMOKE STROKE:
+A SINGLE broad clean S-shaped purple stroke rises diagonally from lower-left to upper-right, like a minimal abstract trail of smoke. The stroke grows in breadth until it becomes a solid purple field. At full cover, only one broad pale-lavender S-shaped negative-space curve is visible against the purple. Then the shape thins and slides up-right to reveal the city. Use one stretched flowing S, not a complicated spiral or many coils. The curve remains thick, generous and off-center.
+
+MIDDLE ROW / ONE ROUND WAVE:
+A SINGLE solid purple field with a smooth, gently bulging, softly scalloped leading edge rolls from left to right. At most two large rounded bulges along its edge, not a cloud-cluster pattern. Full cover is a purple panel with only one simple pale-lavender round edge cropped into the left border, leaving about 80% of the midpoint completely empty. The broad round edge continues off the right as the city appears from the left. Very simple shape and a satisfying steady sideways flow.
+
+BOTTOM ROW / BREATHING NEGATIVE SPACE:
+The lounge initially appears through ONE large off-center organic oval-like opening in a purple field. This opening has one subtle taper at its top-right, gently suggesting a curl of smoke. It narrows smoothly to close. The full-cover frame is solid purple with ONE narrow curved pale-lavender slash near the edge. Then a similarly shaped asymmetric opening expands to reveal the city. No ring outline, no portal, no repeated arcs, no 3D depth. Flat, minimal, quiet but fashionable.
+
+Make the three ideas meaningfully different: an S-stroke, a horizontally rolling round edge, an opening/closing negative-space shape. Decisive large composition, restrained beautiful curves and deliberate unoccupied areas. Do not add detail to make the center frames feel busy. The simplicity is the point. No typography, words, numbers, letters, logos, watermarks, UI, title graphics, hookah objects, smoke illustrations, gold, sparks or cartoon faces. This is a STATIC approval mockup showing stages of an intended motion, not an animation or a usable sprite sheet. Opaque overall image background.
+保存先の希望: asset_sources/transitions/concepts-v5-minimal-purple-20261008/source.png。生成原画は無加工保存し、前案と比較できるよう保持する。
