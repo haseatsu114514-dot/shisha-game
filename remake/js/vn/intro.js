@@ -69,16 +69,16 @@ function framePortrait(img, p) {
  * 初登場は最後まで見せる。クリック・Enter・SKIPでも表示時間を短くしない。
  * @param opts.onAppear 画像が出た時の場面処理（本人の登場に合わせるBGMなど）
  */
-export async function playIntro(id, { onAppear = null } = {}) {
-  const intro = introOf(id);
-  if (!intro) return;
+export async function playIntro(id, { onAppear = null, override = {} } = {}) {
+  const intro = { ...introOf(id), ...override };
+  if (!introOf(id)) return;
   markIntroSeen(id);
-  const { main, full } = introName(id);
+  const { main, full } = override.display_name ? { main: override.display_name, full: "" } : introName(id);
   const p = portraitInfo(id, intro.face || "normal");
   const portrait = p ? el("img.ci-portrait", { src: p.src, alt: "", draggable: "false" }) : el("div.ci-portrait.none", { text: [...main][0] || "？" });
   if (p) {
     framePortrait(portrait, p);
-    await imageReady(p.src, 1200);
+    await imageReady(p.src, 15000);
   }
   const motif = { hajime: "smoke", adam: "duality", naru: "stripes", dr_kemuri: "science", kafuka: "shark", nagumo: "stripes", maezono: "duality", pakki: "duality" }[id] || "smoke";
   const pattern = el("div.ci-motif", { "aria-hidden": "true" });

@@ -6,7 +6,7 @@ import { SE } from "../core/audio.js";
 import { stepPanel, refreshBench, tickerSay, reactAudience } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 
-import { craftConditions, temperatureWave, heatDelta, pullResult, isOptimalTemperature, temperatureAfterSteam, pullFocusFromSteam, IDEAL } from "./conditions.js";
+import { craftConditions, heatDelta, pullResult, isOptimalTemperature, temperatureAfterSteam, pullFocusFromSteam, IDEAL } from "./conditions.js";
 import { buildThermometer } from "./thermometer.js";
 
 export { IDEAL } from "./conditions.js";
@@ -30,13 +30,13 @@ export async function runPull(cs) {
   const concentration = pullFocusFromSteam(cs);
   const slow = skill.slow(cs) * (tutorial ? 1.3 : 1) * concentration.slow;
   const widen = skill.window(cs) * (tutorial ? 1.4 : 1) * concentration.window;
-  let coreTemp = startTemp(cs), thermalSeconds = 0;
+  let coreTemp = startTemp(cs);
   let T = coreTemp;
   const conditions = craftConditions(cs);
   let pulls = 0, justs = 0;
 
   // ---- 画面
-  const thermometer = buildThermometer({ unsteady: !!conditions.sparsity });
+  const thermometer = buildThermometer();
   const thermo = thermometer.root;
   const needle = el("i.pg-needle");
   const gauge = el("div.pull-gauge", [
@@ -54,11 +54,12 @@ export async function runPull(cs) {
 
   const render = () => {
     thermometer.update(T);
+    thermometer.preview(pulls < PULL_MAX ? clamp(coreTemp + heatDelta(cs, actionAt(pos).delta), 0, 1) : null);
     const inZone = T >= IDEAL[0] && T <= IDEAL[1];
     const optimal = isOptimalTemperature(T);
     readout.textContent = optimal ? "最適温。今の煙を届けよう" : inZone ? "適温。中央の細い最適温を狙える" : T > IDEAL[1] ? "熱い。下げ吸いで落ち着かせたい" : "まだぬるい。上げ吸いで熱を入れたい";
     counter.textContent = `吸った回数 ${pulls}${pulls >= PULL_SAFE ? "（これ以上は葉が痩せる）" : ""}`
-      + (conditions.sparsity ? " ／ 少穴：温度の振れが大きい" : "") + (conditions.rainy ? " ／ 雨：熱が入りづらい" : "");
+      + (conditions.sparsity ? " ／ 少穴：吸い方による温度変化が大きい" : "") + (conditions.rainy ? " ／ 雨：熱が入りづらい" : "");
     counter.classList.toggle("warn", pulls >= PULL_SAFE);
     serveBtn.disabled = pulls < PULL_MIN;
     pullBtn.disabled = pulls >= PULL_MAX;
@@ -75,8 +76,6 @@ export async function runPull(cs) {
     if (pos >= 1) { pos = 1; dir = -1; }
     if (pos <= 0) { pos = 0; dir = 1; }
     needle.style.left = `${pos * 100}%`;
-    thermalSeconds += dt;
-    T = clamp(coreTemp + temperatureWave(cs, thermalSeconds), 0, 1);
     render();
     raf = requestAnimationFrame(loop);
   };
@@ -95,7 +94,7 @@ export async function runPull(cs) {
     const { z, isJust, delta } = actionAt(at);
     pulls++;
     coreTemp = clamp(coreTemp + heatDelta(cs, delta), 0, 1);
-    T = clamp(coreTemp + temperatureWave(cs, thermalSeconds), 0, 1);
+    T = coreTemp;
     reactAudience(cs, pulls > PULL_SAFE || Math.abs(T - CENTER) > Math.abs(before - CENTER) ? "bad" : isJust ? "just" : "good");
     if (isJust) { justs++; SE.just(); flash("gold"); popStamp(panel, `ジャスト${z.label}`, "just", "58%", "22%"); }
     else { SE.good(); popStamp(panel, z.label, "good", "58%", "22%"); }

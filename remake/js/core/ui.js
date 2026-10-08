@@ -3,10 +3,11 @@ import { $, el, sleep, nextFrame } from "./util.js";
 import { on } from "./bus.js";
 import { SE, setRainAmbience } from "./audio.js";
 import { state, STAT_KEYS } from "./state.js";
-import { DB, displayName, faceIconUrl, allFaceIconUrls } from "./data.js";
+import { DB, displayName, faceIconUrl, allFaceIconUrls, assetUrl } from "./data.js";
 import { AFFINITY_RANK_PTS } from "./stats.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene } from "../daily/weather.js";
+import { createSceneCurtain } from "./transitions.js";
 
 export const layers = {};
 
@@ -50,6 +51,8 @@ export function initLayers() {
 // ---------------------------------------------------------------- 背景（クロスフェード）
 
 let bgNow = "";
+let bgTask = Promise.resolve();
+let activeCurtain = null;
 let weatherBg = "";
 let weatherKey = "";
 const bgReady = new Map(); // url -> Promise（一度読んだ絵は即座に出す）
@@ -88,7 +91,7 @@ let uiArtDone = false;
 /** UIの絵と顔アイコンをまとめて読む（一度だけ。全部そろうか、遅い回線では15秒で解決） */
 export function warmUiArt() {
   if (!uiArt) {
-    const urls = [...LOUNGE_ART, ...SLOT_ART, ...allFaceIconUrls()];
+    const urls = [...LOUNGE_ART, ...SLOT_ART, "img/ui/chapters/ch1_keyart.webp", ...allFaceIconUrls()];
     uiArt = Promise.all(urls.map((u) => imageReady(u, 15000, { keep: true }))).then(() => { uiArtDone = true; });
   }
   return uiArt;
@@ -104,12 +107,15 @@ export function uiArtReady(ms = 2000) {
  * 背景を差し替える。新しい絵が読み込めてからクロスフェードする（読み込み中に黒や前の絵のまま
  * 新しい場面が始まって見えるのを防ぐ）。戻り値の Promise で「絵が出た」を待てる
  */
-export function setBg(url, { instant = false, tint = null, fast = false } = {}) {
+export function setBg(url, { instant = false, tint = null, fast = false, ready = [] } = {}) {
   const host = layers.bg;
   const key = `${url}|${tint || ""}`;
-  if (key === bgNow) { refreshWeather(); return Promise.resolve(); }
+  if (key === bgNow) { refreshWeather(); return Promise.all([bgTask, ...ready.map((u) => imageReady(u, 15000))]); }
+  const coveredElsewhere = layers.wipe?.classList.contains("black") || layers.wipe?.classList.contains("cover");
+  const curtain = !instant && bgNow && !coveredElsewhere ? createSceneCurtain(layers.fx, { fast: document.body.classList.contains("vn-skip") }) : null;
+  if (curtain) activeCurtain = curtain;
   bgNow = key;
-  return Promise.all(sceneArtUrls(url).map((u) => imageReady(u))).then(() => {
+  bgTask = Promise.all([curtain?.covered, ...[...sceneArtUrls(url), ...ready].map((u) => imageReady(u, 15000))]).then(() => {
     if (bgNow !== key) return; // 待っている間に別の背景が指定された
     const next = el("div.bg-img");
     renderSceneArt(next, url);
@@ -120,14 +126,17 @@ export function setBg(url, { instant = false, tint = null, fast = false } = {}) 
     weatherBg = url || "";
     refreshWeather();
     const olds = [...host.children].slice(0, -1);
-    if (instant) {
+    if (instant || curtain || coveredElsewhere) {
       next.classList.add("show");
       olds.forEach((o) => o.remove());
       return;
     }
     requestAnimationFrame(() => next.classList.add("show"));
     setTimeout(() => olds.forEach((o) => o.remove()), fast ? 260 : 700);
+  }).finally(() => {
+    if (curtain) curtain.release().finally(() => { if (activeCurtain === curtain) activeCurtain = null; });
   });
+  return bgTask;
 }
 
 /** 背景だけに雨を重ねる。窓は1280×720の背景座標に限定する。 */
@@ -162,12 +171,19 @@ function refreshWeather() {
 // ---------------------------------------------------------------- 画面
 
 /** 画面を差し替える。name は CSS の data-screen（見た目の切替）とテスト用 */
+let screenRevision = 0;
 export function showScreen(name, node) {
   const host = layers.screen;
-  host.dataset.screen = name;
-  host.replaceChildren(node || el("div"));
-  document.body.dataset.screen = name;
-  refreshWeather();
+  const revision = ++screenRevision;
+  const commit = () => {
+    if (revision !== screenRevision) return;
+    host.dataset.screen = name;
+    host.replaceChildren(node || el("div"));
+    document.body.dataset.screen = name;
+    refreshWeather();
+  };
+  if (activeCurtain && name !== "none") activeCurtain.covered.then(commit);
+  else commit();
   return node;
 }
 
@@ -421,14 +437,22 @@ export function shake(target = document.getElementById("stage"), ms = 380) {
 
 /** 章タイトル（煙の中から浮かぶ） */
 export async function chapterTitle({ no, name, read, sub }) {
-  const card = el("div.chapter-card", [
-    el("div.cc-no", { text: no }),
-    el("div.cc-name", { text: name }),
-    el("div.cc-read", { text: read }),
-    sub ? el("div.cc-sub", { text: sub }) : null,
+  const rich = no === "第一章";
+  const art = rich ? assetUrl("ui/chapters/ch1_keyart.png") : null;
+  const card = el(`div.chapter-card${rich ? ".rich" : ""}`, [
+    art ? el("img.cc-art", { src: art, alt: "" }) : null,
+    rich ? el("div.cc-frame", { "aria-hidden": "true" }, [el("i"), el("i")]) : null,
+    el("div.cc-copy", [
+      rich ? el("div.cc-kicker", { text: "SUIEN ZENSEN / CHAPTER 01" }) : null,
+      el("div.cc-no", { text: no }),
+      el("div.cc-name", { text: name }),
+      el("div.cc-read", { text: read }),
+      sub ? el("div.cc-sub", { text: sub }) : null,
+    ]),
   ]);
   layers.fx.append(card);
   SE.jingle();
+  if (art) await imageReady(art, 15000);
   await nextFrame();
   card.classList.add("show");
   await sleep(3200);

@@ -1,0 +1,8 @@
+{
+  "generated": "2026-10-08",
+  "tool": "image_gen.imagegen",
+  "runtime_asset": "assets/ui/chapters/ch1_keyart.png",
+  "original_sha256": "79b2508dbda9b0118e145ec320e1899eb9dc6c0b0b5a381fc904206f79458789",
+  "references": [],
+  "purpose": "chapter1 title backdrop; typography rendered in HTML"
+}

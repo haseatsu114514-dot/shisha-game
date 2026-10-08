@@ -843,7 +843,14 @@
     "id": "oneesan",
     "name": "お姉さん",
     "role": "alias",
-    "description": "みんとの私服姿"
+    "description": "みんとの私服姿",
+    "intro_cutin": {
+      "title": "静かな煙を楽しむ常連",
+      "line": "……お任せで、一台",
+      "face": "ura_normal",
+      "color": "#c4b69d",
+      "name": "alias"
+    }
   },
   {
     "id": "customer",

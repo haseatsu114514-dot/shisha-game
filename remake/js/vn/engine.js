@@ -11,6 +11,7 @@ import { paginate, formatHtml, sliceHtml, visibleLength, stripTags } from "./tex
 import { glossaryPanel } from "./glossary.js";
 import { rememberRelationship, relationshipReflectionLines } from "../core/relationships.js";
 import { needsIntro, playIntro, markIntroSeen } from "./intro.js";
+import { buyKeepsake } from "../core/keepsakes.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
 const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man"]);
@@ -82,6 +83,7 @@ function buildDom() {
 function setAuto(v) { autoMode = v; dom?.autoBtn.classList.toggle("on", v); if (v) kickAuto(); }
 function setSkip(v) {
   skipMode = v;
+  document.body.classList.toggle("vn-skip", v);
   dom?.skipBtn.classList.toggle("on", v);
   clearTimeout(autoTimer);
   if (v && running?.typing) completeTyping();
@@ -98,7 +100,7 @@ function kickAuto() {
     if (vnTest.turbo) autoTimer = setTimeout(() => autoChoose(), 10);
     return;
   }
-  const delay = vnTest.turbo ? 5 : skipMode ? 80 : running.typing ? 200 : 1200 + visibleLength(running.fullHtml || "") * 45;
+  const delay = vnTest.turbo ? 5 : skipMode ? 25 : running.typing ? 200 : 1200 + visibleLength(running.fullHtml || "") * 45;
   autoTimer = setTimeout(() => {
     if (!running) return;
     if (running.typing && !vnTest.turbo && !skipMode) return kickAuto();
@@ -151,7 +153,8 @@ export function play(idOrDlg, opts = {}) {
     dom.name.classList.remove("show");
     const meta = dlg.metadata || {};
     const bg = opts.bg || meta.bg;
-    const bgReady = bg ? sceneSetBg(bg) : Promise.resolve();
+    const portraitsReady = firstPortraits(dlg);
+    const bgReady = bg ? sceneSetBg(bg, portraitsReady) : Promise.resolve();
     dom.effect.dataset.effect = meta.effect || "";
     sceneBgm(meta);
     if (hooks.onEnter) hooks.onEnter(dlg.dialogue_id || "", dlg);
@@ -160,8 +163,8 @@ export function play(idOrDlg, opts = {}) {
     document.body.classList.add("vn-open");
     const me = running;
     prefetch(dlg);
-    // 背景と最初に出る立ち絵が読み込めてから始める（遅い回線で「絵が後から出る」のを防ぐ。最大1.5秒）
-    Promise.race([Promise.all([bgReady, ...firstPortraits(dlg).map((u) => imageReady(u))]), sleep(1500)]).then(() => {
+    // 画像の待ち時間は場面転換の幕で覆う。短い固定待ちで読み込みを打ち切らない。
+    Promise.all([bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]).then(() => {
       if (running !== me) return;
       me.ready = true;
       layers.vn.classList.add("active");
@@ -206,9 +209,9 @@ function firstPortraits(dlg) {
 }
 
 /** 会話の背景（昼夜の差分・夜の色調補正つき） */
-function sceneSetBg(ref) {
+function sceneSetBg(ref, ready = []) {
   const { url, tint } = sceneBg(ref, timeOfDay());
-  return url ? setBg(url, { tint }) : Promise.resolve();
+  return url ? setBg(url, { tint, ready }) : Promise.resolve();
 }
 
 function prefetch(dlg) {
@@ -256,7 +259,7 @@ function advance() {
     renderPage();
     return;
   }
-  SE.click();
+  if (!skipMode && !vnTest.turbo) SE.click();
   next();
 }
 
@@ -272,8 +275,8 @@ function next() {
     if (!type) return introThenShow(line);
     if (type === "choice") return showChoices(line);
     if (type === "game_over") return finish();
-    if (type === "condition") { handleCondition(line); continue; }
-    if (type === "jump") { if (line.next_id) jumpTo(line.next_id); continue; }
+    if (type === "condition") { if (handleCondition(line)) return; continue; }
+    if (type === "jump") { if (line.next_id && jumpTo(line.next_id)) return; continue; }
     if (type === "set_flag") {
       state.flags[line.flag] = true;
       const m = /^_met_(.+)$/.exec(line.flag || "");
@@ -283,7 +286,30 @@ function next() {
       }
       continue;
     }
-    if (type === "show_cg") { showCg(line.cg_id); continue; }
+    if (type === "show_cg") {
+      r.ready = false;
+      showCg(line.cg_id).then(() => { if (running === r) { r.ready = true; next(); } });
+      return;
+    }
+    if (type === "intro") {
+      const id = line.char_id;
+      if (state.flags[`_intro_${id}`]) continue;
+      if (vnTest.turbo) { markIntroSeen(id); continue; }
+      r.ready = false;
+      playIntro(id, { override: line.intro || {} }).then(() => { if (running === r) { r.ready = true; next(); } });
+      return;
+    }
+    if (type === "hide_portrait") {
+      dom.portraits.querySelector(`img[data-speaker="${line.char_id}"]`)?.remove();
+      delete r.slots[line.char_id];
+      layoutPortraits();
+      continue;
+    }
+    if (type === "buy_keepsake") {
+      const branch = buyKeepsake(line.item_id) ? line.next_success : line.next_failure;
+      if (branch && r.branches[branch]) r.queue.unshift(...r.branches[branch]);
+      continue;
+    }
     if (type === "hide_cg") { dom.cg.classList.remove("show"); continue; }
     if (type === "apply") { applyLine(line); continue; }
     if (type === "note") { onNote(line); continue; }
@@ -317,9 +343,16 @@ function jumpTo(id) {
     running.slots = {};
   }
   running.visited.push(id);
-  if (target.metadata?.bg) sceneSetBg(target.metadata.bg);
   sceneBgm(target.metadata);
   if (hooks.onEnter) hooks.onEnter(id, target);
+  prefetch(target);
+  if (target.metadata?.bg) {
+    const r = running;
+    r.ready = false;
+    sceneSetBg(target.metadata.bg, firstPortraits(target)).then(() => { if (running === r) { r.ready = true; next(); } });
+    return true;
+  }
+  return false;
 }
 
 function handleCondition(line) {
@@ -328,6 +361,8 @@ function handleCondition(line) {
   if (kind === "stat") {
     const key = STAT_EN[line.stat] || line.stat;
     ok = (state.stats[key] || 0) >= Number(line.threshold || 0);
+  } else if (kind === "money") {
+    ok = state.money >= Number(line.threshold || 0);
   } else if (kind === "flag") {
     ok = !!state.flags[line.flag];
   } else if (kind === "customer_note") {
@@ -339,7 +374,7 @@ function handleCondition(line) {
   }
   const key = String((ok ? line.next_true : line.next_false) || "");
   if (key && running.branches[key]) running.queue.unshift(...running.branches[key]);
-  else if (key && DB.dialogues[key]) jumpTo(key);
+  else if (key && DB.dialogues[key]) return jumpTo(key);
 }
 
 function applyLine(line) {
@@ -370,9 +405,10 @@ function scent(c1, c2) {
   setTimeout(() => puff.remove(), 4200);
 }
 
-function showCg(id) {
+async function showCg(id) {
   const url = cgUrl(id);
   if (!url) return; // 素材待ちのCGは黙って飛ばす
+  await imageReady(url, 15000);
   dom.cg.style.backgroundImage = `url("${url}")`;
   dom.cg.classList.add("show");
   if (hooks.onCg) hooks.onCg(id);
@@ -421,11 +457,6 @@ function showLine(line) {
   // 無言の常連も会釈だけで場面に参加できる。名乗り・好感度の処理は発話と独立。
   if (line.portrait) {
     updatePortraits(line.portrait, line.portrait_face || "normal");
-    if (line.gesture === "bow") {
-      const img = dom.portraits.querySelector(`img[data-speaker="${line.portrait}"]`);
-      img?.classList.remove("bow");
-      if (img) { void img.offsetWidth; img.classList.add("bow"); }
-    }
   }
   speakerBgm(speaker);
   // 行付き演出（"fx":"shake" 等）／自動の軽演出（驚き・叫び）
@@ -613,6 +644,7 @@ function showChoices(line) {
   r.waitingChoice = true;
   const buttons = (line.choices || []).map((c, i) => el("button.vn-choice", {
     html: formatHtml(c.text || "……"),
+    disabled: c.condition_type === "money" && state.money < Number(c.threshold || 0),
     style: { animationDelay: `${i * 80}ms` },
     dataset: { test: `choice-${i}` },
     onclick: (e) => { e.stopPropagation(); pickChoice(line, c); },
@@ -639,11 +671,12 @@ function pickChoice(line, c) {
   dom.choices.classList.remove("show");
   dom.choices.replaceChildren();
   const key = String(c.next || "");
+  let waitForScene = false;
   if (key && r.branches[key]) r.queue.unshift(...r.branches[key]);
-  else if (c.next_id) jumpTo(String(c.next_id));
+  else if (c.next_id) waitForScene = jumpTo(String(c.next_id));
   log.push({ name: "▶", text: stripTags(c.text || "") });
   if (hooks.onChoice) hooks.onChoice(r.id, String(line.id || ""), key, String(c.next_id || ""), c, line);
-  next();
+  if (!waitForScene) next();
 }
 
 // ---------------------------------------------------------------- ログ・用語

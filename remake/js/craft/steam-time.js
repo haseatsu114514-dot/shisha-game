@@ -1,7 +1,7 @@
 // キッチンタイマーの秒数が正本。旧工程・テストの steamMin（分）も読めるようにする。
 import { clamp } from "../core/util.js";
 
-export const MAX_STEAM_SECONDS = 99 * 60 + 50;
+export const MAX_STEAM_SECONDS = 10 * 60;
 export const normalizeSteamSeconds = (seconds) => clamp(Math.round((Number.isFinite(seconds) ? seconds : 300) / 10) * 10, 0, MAX_STEAM_SECONDS);
 
 export function steamSecondsOf(cs) {
@@ -22,7 +22,7 @@ function interpolate(seconds, points) {
 }
 
 // 3/5/8/10分の従来の温まり方と弾幕の長さを保ち、その間を連続的につなぐ。
-export const steamHeatFor = (seconds) => interpolate(seconds, [[0, -0.14], [180, -0.06], [300, 0], [480, 0.12], [600, 0.18], [1200, 0.4], [MAX_STEAM_SECONDS, 0.6]]);
-export const steamPlaySeconds = (seconds) => interpolate(seconds, [[10, 4], [180, 9], [300, 12], [480, 16], [600, 20], [1200, 24], [MAX_STEAM_SECONDS, 32]]);
+export const steamHeatFor = (seconds) => interpolate(seconds, [[0, -0.14], [180, -0.06], [300, 0], [480, 0.12], [600, 0.18]]);
+export const steamPlaySeconds = (seconds) => interpolate(seconds, [[10, 4], [180, 9], [300, 12], [480, 16], [600, 20]]);
 export const steamOpening = (seconds) => clamp((seconds - 300) / 180, 0, 1);
-export const steamBurnRisk = (seconds) => interpolate(seconds, [[0, 0], [480, 0], [600, 9], [1200, 24], [MAX_STEAM_SECONDS, 45]]);
+export const steamBurnRisk = (seconds) => interpolate(seconds, [[0, 0], [480, 0], [600, 9]]);

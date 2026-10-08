@@ -38,10 +38,11 @@ try {
     const ui = await import('./js/core/ui.js'); const stats = await import('./js/core/stats.js');
     const map = await import('./js/daily/map.js'); window.T = { core, vn, hud, ui, stats, map };
     hud.initHud({}); hud.showHud();
-    const cameo = __remake.DB.dialogues.ch1_tutorial_oneesan.lines.find(l => l.portrait === 'tsumugi');
+    const cameo = __remake.DB.dialogues.ch1_tsumugi_departure.lines.find(l => l.portrait_face === 'bow');
     window.cameoRun = vn.play({ dialogue_id: 'cameo-preview', lines: [cameo] });
   });
-  await page.waitForSelector('.portrait[data-speaker="tsumugi"].bow');
+  await page.waitForSelector('.portrait[data-speaker="tsumugi"]');
+  assert.equal(await page.locator('.portrait[data-speaker="tsumugi"].bow').count(), 0);
   const cameo = await page.evaluate(() => ({ met: !!T.core.state.met.tsumugi,
     named: document.querySelector('.vn-name').classList.contains('show'),
     intros: !!T.core.state.flags._intro_tsumugi }));

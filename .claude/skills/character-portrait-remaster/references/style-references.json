@@ -1180,6 +1180,96 @@
         }
       ],
       "approval": "2026-10-08 オーナー「この案を採用する」"
+    },
+    {
+      "id": "maezono-remaster-v1",
+      "title": "前園 確認用 v1",
+      "status": "pending",
+      "role": "確認用・本編未採用",
+      "images": [
+        {
+          "label": "通常",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/maezono-remaster-v1/normal-preview.png",
+          "sha256": "487c0ee519326794d5d74cc52f7c4e3d6db7728304a26907eee1d729ad46fae5"
+        },
+        {
+          "label": "笑顔",
+          "expression": "smile",
+          "path": "../../../../asset_sources/portraits/maezono-remaster-v1/smile-preview.png",
+          "sha256": "3ea917d40520d44e44f0608328800b1b46128d2bb6ad5508055aed4ad1ead1f1"
+        },
+        {
+          "label": "真剣",
+          "expression": "serious",
+          "path": "../../../../asset_sources/portraits/maezono-remaster-v1/serious-preview.png",
+          "sha256": "cec826901633084efb4ebf994d192a97d667795d10186a3704665dd27f6f8ba9"
+        },
+        {
+          "label": "驚き",
+          "expression": "surprise",
+          "path": "../../../../asset_sources/portraits/maezono-remaster-v1/surprise-preview.png",
+          "sha256": "9b7b257f499cd42c5161a5203815d06e659d2eb96e9879d135b4e97dc42bcceb"
+        },
+        {
+          "label": "熱弁",
+          "expression": "excited",
+          "path": "../../../../asset_sources/portraits/maezono-remaster-v1/excited-preview.png",
+          "sha256": "d64c9a86c9ef297200bb0a39bef5f3f15e1e0d0e03219881d99cd40aaeac22ca"
+        }
+      ]
+    },
+    {
+      "id": "pakki-remaster-v1",
+      "title": "パッキー 確認用 v1",
+      "status": "pending",
+      "role": "確認用・本編未採用",
+      "images": [
+        {
+          "label": "通常",
+          "expression": "normal",
+          "path": "../../../../asset_sources/portraits/pakki-remaster-v1/normal-preview.png",
+          "sha256": "55453063da2f9957ebf78b3e64eab4489559b5acd85b4edfe285d57ad7632ede"
+        },
+        {
+          "label": "笑顔",
+          "expression": "smile",
+          "path": "../../../../asset_sources/portraits/pakki-remaster-v1/smile-preview.png",
+          "sha256": "35aaaf42dc2a16e83ac480e23b3d8040908d9f4c81779ebe327df5766f54d8b8"
+        },
+        {
+          "label": "怒り",
+          "expression": "angry",
+          "path": "../../../../asset_sources/portraits/pakki-remaster-v1/angry-preview.png",
+          "sha256": "6695ff4306c5b543549b2d53d7ecc5f52028feafc628889c14cee07f80e44f3f"
+        },
+        {
+          "label": "驚き",
+          "expression": "surprise",
+          "path": "../../../../asset_sources/portraits/pakki-remaster-v1/surprise-preview.png",
+          "sha256": "9d8c093266dc758d64eb015de9587c53a66633bd97678fd7a6d033ddb9c7a567"
+        },
+        {
+          "label": "煙を吐く",
+          "expression": "smoke",
+          "path": "../../../../asset_sources/portraits/pakki-remaster-v1/smoke-preview.png",
+          "sha256": "ff3f8a8839107ffe4b026b972af408a4793af04acdf4553cb309586095449c0c"
+        }
+      ]
+    },
+    {
+      "id": "tsumugi-bow-v1",
+      "title": "つむぎ 確認用 v1",
+      "status": "pending",
+      "role": "確認用・本編未採用",
+      "images": [
+        {
+          "label": "会釈",
+          "expression": "bow",
+          "path": "../../../../asset_sources/portraits/tsumugi-bow-v1/bow-preview.png",
+          "sha256": "4ede1639c07fae8f5e696b5ca9334970cf1a14749bdc04918a9ef567dcbc9f95"
+        }
+      ]
     }
   ]
 }
