@@ -1,4 +1,4 @@
-// 通知色・煙なしの背景・所持金の桁・体力に応じて伸びるHUDを実ブラウザで確認。
+// 簡潔な能力通知と5色・所持金の桁・体力に応じて伸びるHUDを実ブラウザで確認。
 // サーバーを8123で起動後: node remake/test/ui_skin.mjs（SHOTSで確認画像の保存先）
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -176,16 +176,16 @@ try {
       card.querySelector(".gc-main").textContent = name;
       preview.append(card);
       const skin = getComputedStyle(card, "::after");
-      out.push({ key, color: skin.backgroundColor, art: skin.backgroundImage, mask: skin.maskImage,
+      out.push({ key, color: getComputedStyle(card).getPropertyValue("--gc").trim(), art: skin.content, mask: skin.maskImage,
         badge: getComputedStyle(card.querySelector(".gc-badge")).borderImageSource });
     }
     return out;
   });
-  assert.deepEqual(colors.map((c) => c.color), ["rgb(242, 195, 76)", "rgb(108, 198, 232)", "rgb(239, 122, 94)", "rgb(180, 154, 239)", "rgb(101, 201, 187)"]);
-  assert(colors.every((c) => c.art.includes("reward-clean.webp") && c.mask.includes("reward-clean.webp") && c.badge.includes("panel.webp")), "Original notification frame/badge were not restored with the clean image");
+  assert.deepEqual(colors.map((c) => c.color), ["#f2c34c", "#6cc6e8", "#ef7a5e", "#b49aef", "#65c9bb"]);
+  assert(colors.every((c) => c.art === "none" && c.badge === "none"), "Compact status notifications still have large generated decoration");
   if (shots) await page.screenshot({ path: `${shots}/stat-colors.png` });
   assert.deepEqual(errors, []);
-  console.log("[ui skin] PASS: all five status colors remain, without the background smoke mark");
+  console.log("[ui skin] PASS: all five status colors remain, with compact decoration");
 } finally {
   await browser.close();
 }

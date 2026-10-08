@@ -10,7 +10,7 @@ import { el, sleep } from "../core/util.js";
 import { layers, gainCard } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { state, save, STAT_KEYS, STAT_JA } from "../core/state.js";
-import { gainStat, star, rankLabel } from "../core/stats.js";
+import { gainStat, star } from "../core/stats.js";
 import { DB, faceIconUrl } from "../core/data.js";
 import { SE } from "../core/audio.js";
 
@@ -701,8 +701,8 @@ function announce(r) {
   const fx = r.starTo ? DB.statusTexts?.statTierFx?.[r.target]?.[r.starTo - 1] : "";
   gainCard({
     kind: "stat", stat: r.target, points: r.got, badge: { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "察" }[r.target],
-    top: "PAKKI SLOT", main: STAT_JA[r.target], evolution: r.starTo ? `レベル${r.starTo}に進化！` : "",
-    sub: r.starTo ? `「${rankLabel(r.target)}」` : "", fx,
+    main: STAT_JA[r.target], evolution: r.starTo ? `レベル${r.starTo}に進化！` : "",
+    fx,
   });
 }
 
