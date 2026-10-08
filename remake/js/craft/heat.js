@@ -7,26 +7,8 @@ import { SE } from "../core/audio.js";
 import { stepPanel, refreshBench, tickerSay, reactAudience } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, popStamp } from "./common.js";
 import { artImg } from "./art.js";
-
-// 取り上げた瞬間の状態 → 性能（spec の数値例を6段階に拡張）
-export const HEAT_GRADES = {
-  raw: { label: "生焼け", stamp: "CORE BLACK", kind: "bad", score: 15, hp: -35, hs: -20, su: -30, br: -15, ar: 0 },
-  early: { label: "早取り", stamp: "CORE BLACK", kind: "miss", score: 45, hp: -20, hs: -10, su: -20, br: -15, ar: 10 },
-  pre: { label: "適温前", stamp: "赤熱一閃", kind: "good", score: 78, hp: 0, hs: 12, su: -5, br: -8, ar: 14 },
-  just: { label: "ジャスト", stamp: "JUST IGNITION!!", kind: "just", score: 100, hp: 20, hs: 30, su: 15, br: 0, ar: 15 },
-  hot: { label: "攻め焼き", stamp: "HOT!", kind: "good", score: 62, hp: 30, hs: 4, su: 22, br: 18, ar: -8 },
-  over: { label: "焼きすぎ", stamp: "OVER HEAT", kind: "bad", score: 28, hp: 35, hs: -10, su: 25, br: 30, ar: -20 },
-};
-
-/** 経過比 p（1.0 でジャスト開始）と、ジャストの幅 jw から状態を返す */
-function phaseOf(p, jw) {
-  if (p < 0.35) return "raw";
-  if (p < 0.7) return "early";
-  if (p < 1) return "pre";
-  if (p < 1 + jw) return "just";
-  if (p < 1.3 + jw) return "hot";
-  return "over";
-}
+import { HEAT_GRADES, phaseOf, evaluateCoalTiming, formatTimingError, summarizeCoalTimings } from "./heat_logic.js";
+export { HEAT_GRADES } from "./heat_logic.js";
 
 export async function runHeat(cs) {
   const tutorial = cs.mode === "tutorial";
@@ -43,6 +25,7 @@ export async function runHeat(cs) {
     const [cx, cy, k] = SPOTS[i];
     const node = el("button.coal", {
       dataset: { test: `coal-${i}` },
+      "aria-label": `炭${i + 1}を取り出す`,
       style: { left: `${cx * 100}%`, top: `${cy * 100}%`, "--k": String(k), zIndex: String(Math.round(cy * 10)) },
     }, [
       artImg(img("cold"), 118, "c-cold"),
@@ -51,17 +34,23 @@ export async function runHeat(cs) {
       artImg(img("white"), 118, "c-ash"),
       el("i.c-core"),
       el("i.c-burst"),
+      el("span.coal-number", { text: String(i + 1), "aria-hidden": "true" }),
     ]);
     stove.append(node);
     return {
       node,
       tj: rand(4.2, 7.4) * (tutorial ? 1.25 : 1), // ジャストまでの秒数（炭ごとに焼けるスピードが違う）
       picked: null,
+      timing: null,
       p: 0,
     };
   });
+  const timingRows = coals.map((_, i) => el("li", { dataset: { test: `coal-timing-${i}` } }, [
+    el("b", { text: `炭${i + 1}` }), el("span", { text: "焼成中" }),
+  ]));
   const info = el("div.heat-info", [
     el("div.hi-row", [el("span", { text: "黒い芯" }), el("i"), el("span", { text: "赤熱" }), el("i"), el("b", { text: "芯が光る" }), el("i"), el("span", { text: "白熱" }), el("i"), el("span", { text: "灰かぶり" })]),
+    el("ol.heat-picks", { "aria-live": "polite", "aria-label": "各炭のタイミング" }, timingRows),
   ]);
   panel.append(el("div.heat", [stove, info]));
 
@@ -71,15 +60,26 @@ export async function runHeat(cs) {
   let done;
   const finishedP = new Promise((r) => { done = r; });
 
-  const pick = (c) => {
+  const pick = (c, elapsedSeconds = (performance.now() - t0) / 1000, automatic = false) => {
     if (c.picked || finished || !t0) return;
-    const jw = justSec / c.tj;
-    const g = phaseOf(c.p, jw);
+    const timing = evaluateCoalTiming(elapsedSeconds, c.tj, justSec);
+    const g = timing.phase;
+    c.p = elapsedSeconds / c.tj;
     c.picked = g;
+    const index = coals.indexOf(c);
+    c.timing = { ...timing, coal: index + 1, automatic };
     const G = HEAT_GRADES[g];
+    timingRows[index].replaceChildren(
+      el("b", { text: `炭${index + 1} ${timing.rating}（${G.label}）` }),
+      el("span", { text: `${formatTimingError(timing.errorSeconds)}${automatic ? "・自動取り出し" : ""}` }),
+    );
+    timingRows[index].dataset.rating = timing.rating;
     reactAudience(cs, G.kind);
     c.node.classList.add("picked", `g-${g}`);
-    popStamp(panel, G.stamp, G.kind, `${22 + coals.indexOf(c) * 22}%`, "28%");
+    c.node.classList.remove("pikan", "soon");
+    c.node.disabled = true;
+    c.node.dataset.phase = g;
+    popStamp(panel, G.stamp, G.kind, `${22 + index * 22}%`, "28%");
     if (g === "just") { SE.just(); flash("gold"); tickerSay("パッキー「出たーッ！ EXCELLENT！ 芯まで焼けたーッ！」"); }
     else if (g === "pre" || g === "hot") SE.good();
     else SE.miss();
@@ -108,9 +108,9 @@ export async function runHeat(cs) {
       n.classList.toggle("soon", clarity > 0 && ph === "pre" && c.p > 1 - 0.1 * clarity);
       if (ph === "just" && !n.classList.contains("pikan")) { n.classList.add("pikan"); SE.tick(); }
       if (ph !== "just") n.classList.remove("pikan");
-      if (c.p > 1.75) pick(c); // 放っておくと灰になって勝手に落ちる
+      if (c.p > 1.75) pick(c, t, true); // 放っておくと灰になって勝手に落ちる
     }
-    raf = requestAnimationFrame(loop);
+    if (!finished) raf = requestAnimationFrame(loop);
   };
 
   const finish = () => {
@@ -133,10 +133,7 @@ export async function runHeat(cs) {
       for (const c of coals) {
         // 上手=ジャストの真ん中／下手=早取りか焼きすぎ
         const target = auto === "good" ? c.tj * (1 + (justSec / c.tj) / 2) : c.tj * (Math.random() < 0.5 ? 0.55 : 1.55);
-        const shift = target - (performance.now() - t0) / 1000;
-        t0 -= Math.max(0, shift) * 1000;
-        c.p = target / c.tj;
-        pick(c);
+        pick(c, target);
         await sleep(40);
       }
     })();
@@ -144,10 +141,13 @@ export async function runHeat(cs) {
   await finishedP;
 
   const picks = coals.map((c) => c.picked);
+  const timings = coals.map((c) => c.timing);
+  const timingSummary = summarizeCoalTimings(timings);
   const avg = (k) => picks.reduce((s, g) => s + HEAT_GRADES[g][k], 0) / picks.length;
-  const score = Math.round(avg("score"));
+  const score = timingSummary.accuracy;
   const res = {
-    score, grade: gradeOf(score), picks,
+    score, grade: gradeOf(score), picks, timings,
+    timingAccuracy: score, meanAbsoluteError: timingSummary.meanAbsoluteError,
     just: picks.filter((g) => g === "just").length,
     early: picks.filter((g) => g === "raw" || g === "early").length,
     over: picks.filter((g) => g === "over").length,
@@ -163,9 +163,14 @@ export async function runHeat(cs) {
   await sleep(350);
   if (res.heatStability >= 70) popStamp(panel, "HEAT STABLE", "good", "50%", "60%");
   if (res.aromaRetention >= 68) popStamp(panel, "AROMA KEEP", "good", "50%", "70%");
+  info.classList.add("heat-finished");
   await resultCard(panel, {
     title: "炭焼き 結果",
     grade: res.grade,
+    summary: [
+      ...timings.map((timing) => `炭${timing.coal} ${timing.rating}：${formatTimingError(timing.errorSeconds)}（${timing.label}${timing.automatic ? "・自動" : ""}）`),
+      `全体のタイミング精度 ${res.timingAccuracy}% ／ 平均誤差 ${res.meanAbsoluteError.toFixed(2)}秒`,
+    ],
     lines: [
       picks.map((g) => HEAT_GRADES[g].label).join("・"),
       res.just === 3 ? "三つとも芯が光った瞬間に取れた。火が素直だ" : res.just ? "光った瞬間を掴めた炭がある" : "光る瞬間を逃した。火力が読みにくい",

@@ -23,6 +23,12 @@ const open = async (viewport, mobile = false) => {
     const steam = await import('./js/craft/steam.js');
     const pull = await import('./js/craft/pull.js');
     window.T = { core, session, steps, heat, steam, pull };
+    // 現行の場面転換は幕が覆ってから画面を差し替える。前の作業台を読まない。
+    T.openBench = async (cs, options) => {
+      const bench = session.openBench(cs, options);
+      while (!bench.root.isConnected) await new Promise(requestAnimationFrame);
+      return bench;
+    };
     window.steps = [['mix','MIX'], ['heat','HEAT'], ['steam','STEAM'], ['pull','PULL']];
   });
   return page;
@@ -31,8 +37,8 @@ const loaded = page => page.waitForFunction(() => [...document.querySelectorAll(
 const capture = async (page, name) => { if (shots) { await page.waitForTimeout(220); await page.screenshot({ path: `${shots}/${name}.png` }); } };
 try {
   const page = await open({ width: 1280, height: 720 });
-  await page.evaluate(() => {
-    window.cs = T.session.newSession('tutorial'); T.session.openBench(cs, { steps });
+  await page.evaluate(async () => {
+    window.cs = T.session.newSession('tutorial'); await T.openBench(cs, { steps });
     window.timerRun = T.steps.stepSteamTime(cs);
   });
   await page.waitForSelector('[data-test="kitchen-timer"]'); await loaded(page);
@@ -45,9 +51,9 @@ try {
   assert.equal(await page.locator('.timer-display svg g').count(), 4);
   assert(await page.locator('.timer-display .segment.on').count() > 15);
   await capture(page, 'timer-tutorial-desktop');
-  // 秒ボタンは実物の設定同様、50秒の次で秒欄だけを00に戻す。
+  // 現行の秒ボタンは10秒加算し、60秒に達すると分へ繰り上げる（上限10分）。
   for (let i = 0; i < 4; i++) await page.locator('[data-test="timer-second-up"]').click();
-  assert.equal(await page.locator('[data-test="timer-display"]').textContent(), '05:00');
+  assert.equal(await page.locator('[data-test="timer-display"]').textContent(), '06:00');
   await page.locator('[data-test="timer-reset"]').click();
   assert.equal(await page.locator('[data-test="timer-display"]').textContent(), '00:00');
   assert(await page.locator('[data-test="timer-start"]').isDisabled());
@@ -56,7 +62,7 @@ try {
   await page.locator('[data-test="timer-start"]').focus(); await page.keyboard.press('Enter');
   await page.evaluate(() => window.timerRun);
   assert.equal(await page.evaluate(() => cs.steamSeconds), 310);
-  console.log('[craft focus] PASS: physical buttons, seven-segment digits, real press counts, second wrap, reset, zero guard and keyboard start at 5:10');
+  console.log('[craft focus] PASS: physical buttons, seven-segment digits, real press counts, second carry, reset, zero guard and keyboard start at 5:10');
 
   // 表情は実際の炭焼き結果へ反応し、名前や審査点を勝手に開放しない。
   await page.evaluate(() => { __remake.craftTest.auto = 'good'; window.heatRun = T.heat.runHeat(cs); });
@@ -74,15 +80,15 @@ try {
   await loaded(page);
   await capture(page, 'sumi-heat-desktop');
   await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.heatRun);
-  await page.evaluate(() => {
-    window.cs = T.session.newSession('tournament'); T.session.openBench(cs, { steps });
+  await page.evaluate(async () => {
+    window.cs = T.session.newSession('tournament'); await T.openBench(cs, { steps });
     T.session.stepPanel('heat', '炭焼き', 'テスト');
   });
   assert.deepEqual(await page.locator('.audience-person figcaption').allTextContents(), ['？？？']);
   assert.equal(await page.evaluate(() => Object.keys(T.core.state.met).length), 0);
-  await page.evaluate(() => {
+  await page.evaluate(async () => {
     ['nagumo','maezono','dr_kemuri'].forEach(T.core.markMet);
-    window.cs = T.session.newSession('tournament'); T.session.openBench(cs, { steps });
+    window.cs = T.session.newSession('tournament'); await T.openBench(cs, { steps });
     __remake.craftTest.auto = 'good';
     window.heatRun = T.heat.runHeat(cs);
   });
@@ -114,8 +120,8 @@ try {
   // 同じスミさんでも、システム説明はチュートリアル限定。成績記号はまだ出さない。
   const modes=[];
   for (const mode of ['tutorial','rehearsal']) {
-    modes.push(await page.evaluate(mode => {
-      window.cs=T.session.newSession(mode); T.session.openBench(cs);
+    modes.push(await page.evaluate(async mode => {
+      window.cs=T.session.newSession(mode); await T.openBench(cs);
       T.session.stepPanel('pull','吸い出し','吸い方の説明');
       const first=document.querySelector('[data-test="craft-feedback"]').textContent;
       T.session.reactAudience(cs,'bad',{force:true});
@@ -128,8 +134,8 @@ try {
   console.log('[craft focus] PASS: one current speaker, real Sumi/judge success feedback, distinct ◎/○/△ scores and lines, optional result detail, hidden undiscovered names and reserved Nagumo');
 
   for (const [stamina, health] of [[80,'green'],[40,'yellow'],[20,'red']]) {
-    await page.evaluate(stamina => {
-      T.core.state.stamina = stamina; window.cs = T.session.newSession('drill'); T.session.openBench(cs);
+    await page.evaluate(async stamina => {
+      T.core.state.stamina = stamina; window.cs = T.session.newSession('drill'); await T.openBench(cs);
       T.session.stepPanel('pack','パッキング','詰め方の説明');
     }, stamina);
     assert.equal(await page.locator('.bench-condition').getAttribute('data-health'), health);
@@ -142,10 +148,10 @@ try {
   // 同じ温度から、集中できた場合とミスが多い場合の実際の針移動と成功帯を比較する。
   const focus = [];
   for (const score of [100,0]) {
-    await page.evaluate(score => {
+    await page.evaluate(async score => {
       __remake.craftTest.auto = null; T.core.state.stamina = 80;
       window.cs = T.session.newSession('drill'); cs.steam = { score, temp: .31, seconds: 310 }; cs.holes = { total: 24, minimumComplete: true };
-      T.session.openBench(cs); window.pullRun = T.pull.runPull(cs);
+      await T.openBench(cs); window.pullRun = T.pull.runPull(cs);
     }, score);
     const temp = Number(await page.locator('[data-test="pull-temperature"]').getAttribute('aria-valuenow'));
     assert.equal(temp, .31);
@@ -168,10 +174,10 @@ try {
   // 同じ吸い方・回数で、提供温度だけを変える。細い最適温が最高評価となる。
   const temperatures=[];
   for (const temp of [.54,.49]) {
-    await page.evaluate(temp => {
+    await page.evaluate(async temp => {
       __remake.craftTest.auto=null; window.cs=T.session.newSession('tournament');
       cs.steam={score:100,temp,seconds:480}; cs.holes={total:24,minimumComplete:true};
-      T.session.openBench(cs); window.pullRun=T.pull.runPull(cs);
+      await T.openBench(cs); window.pullRun=T.pull.runPull(cs);
     },temp);
     const band=await page.locator('.thermo-optimal').evaluate(n=>n.getBoundingClientRect().height);
     const safe=await page.locator('.thermo-zone').evaluate(n=>n.getBoundingClientRect().height);
@@ -215,9 +221,9 @@ try {
     ['desktop',{width:1280,height:720},false], ['mobile',{width:844,height:390},true], ['portrait',{width:591,height:1280},false],
   ]) {
     const p = await open(viewport, mobile);
-    await p.evaluate(() => {
+    await p.evaluate(async () => {
       T.core.state.stamina = 80; ['nagumo','maezono','dr_kemuri'].forEach(T.core.markMet);
-      window.cs = T.session.newSession('tournament'); T.session.openBench(cs,{steps}); window.timerRun = T.steps.stepSteamTime(cs);
+      window.cs = T.session.newSession('tournament'); await T.openBench(cs,{steps}); window.timerRun = T.steps.stepSteamTime(cs);
     });
     await loaded(p);
     for (let i=0;i<8;i++) await p.locator('[data-test="timer-minute-up"]').click();
