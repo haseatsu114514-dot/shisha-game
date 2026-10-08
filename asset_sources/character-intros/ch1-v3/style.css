@@ -1,0 +1,45 @@
+@font-face{font-family:"Intro Gothic";src:url("fonts/NotoSansJP-Intro.woff2") format("woff2");font-weight:100 900;font-display:block}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0b0f14}
+body{font-family:"Intro Gothic",sans-serif;color:#f8f6ee}
+#stage{--accent:#e6ad43;--secondary:#fff0c4;--portrait-bg:var(--accent);position:absolute;width:1280px;height:720px;overflow:hidden;background:#101820;transform-origin:top left}
+.color-field{position:absolute;inset:0;background:color-mix(in srgb,var(--accent) 8%,#101820)}
+.art-background{position:absolute;inset:0;width:1280px;height:720px;object-fit:cover;user-select:none;pointer-events:none}
+.art-background[hidden]{display:none}
+.art-veil{display:none;position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,color-mix(in srgb,var(--portrait-bg) 28%,#101820) 0%,color-mix(in srgb,var(--portrait-bg) 23%,#101820) 36%,transparent 62%),linear-gradient(0deg,#101820ed 0%,#101820d9 22%,transparent 43%)}
+#stage.has-art-background .art-veil{display:block}
+#stage.has-art-background :is(.left-field,.halftone,.motif,.floor-lines){display:none}
+#stage.has-art-background .title{color:#f8f6ee;background:#101820ed;padding:3px 12px 5px;left:-9px;top:-62px;border-left:3px solid var(--accent)}
+#stage.has-art-background .art-background{opacity:.8}
+.left-field{position:absolute;inset:0;background:var(--accent);clip-path:polygon(0 0,535px 0,438px 720px,0 720px)}
+.halftone{position:absolute;inset:0;background:radial-gradient(circle,#142029 1.5px,transparent 1.9px) 0 0/12px 12px;opacity:.18;clip-path:polygon(0 0,535px 0,438px 720px,0 720px)}
+.motif{position:absolute;inset:0;color:var(--accent);overflow:hidden}
+.motif svg{width:1280px;height:720px;display:block}
+.floor-lines{position:absolute;left:0;right:0;bottom:30px;height:37px;background:linear-gradient(to bottom,var(--accent) 0 4px,transparent 4px 11px,var(--accent) 11px 20px,transparent 20px 27px,var(--accent) 27px 31px,transparent 31px);opacity:.68}
+.ribbon{position:absolute;left:-120px;top:275px;width:1520px;height:190px;background:#f6f3e9;transform:rotate(4deg);transform-origin:70% 50%;z-index:2}
+.accent-line{position:absolute;left:-120px;top:477px;width:1520px;height:10px;background:var(--accent);transform:rotate(4deg);transform-origin:70% 50%;z-index:2}
+.accent-line:after{content:"";position:absolute;top:17px;left:0;right:0;height:3px;background:var(--secondary)}
+.meta{position:absolute;left:744px;top:0;width:606px;height:190px}
+.title{position:absolute;top:-57px;left:3px;white-space:nowrap;font-size:28px;font-weight:700;letter-spacing:-.03em;color:var(--secondary)}
+.name-line{position:absolute;top:18px;left:0;width:606px;height:148px;display:flex;align-items:center}
+.name-group{display:flex;align-items:baseline;gap:12px;flex-shrink:0}
+.name-wrap{display:inline-block;flex-shrink:0}
+.name{display:inline-block;flex-shrink:0;white-space:nowrap;font-weight:900;line-height:1.03;letter-spacing:-.055em;color:#090e15;transform:skewX(-10deg) scaleX(.86);transform-origin:left center}
+.full{color:#29323b;font-size:20px;font-weight:500;letter-spacing:0;line-height:1.3;white-space:nowrap;transform:translateY(-6px)}
+.full:empty{display:none}
+.portrait{position:absolute;width:var(--portrait-width);height:auto;left:var(--portrait-left);top:var(--portrait-top);z-index:4;user-select:none;pointer-events:none}
+.quote-area{position:absolute;left:634px;top:548px;width:580px;z-index:5}
+.quote-rule{width:71px;height:4px;background:var(--accent);margin-bottom:20px}
+.quote{white-space:nowrap;font-size:28px;font-weight:700;letter-spacing:-.02em;line-height:1.45;color:#f8f6ee}
+#stage[data-character="adam"] .left-field{background:linear-gradient(135deg,var(--secondary) 0 46%,var(--accent) 46%)}
+#stage[data-character="minto"] .left-field{background:linear-gradient(145deg,var(--accent) 0 67%,var(--secondary) 67%)}
+#stage[data-character="dr_kemuri"] .halftone{background:linear-gradient(#15252f22 1px,transparent 1px),linear-gradient(90deg,#15252f22 1px,transparent 1px);background-size:26px 26px;opacity:.7}
+#controls{position:absolute;bottom:0;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px 14px;background:#0b0f14;border-top:1px solid #ffffff19}
+.character-buttons,.play-buttons{display:flex;flex-wrap:wrap;gap:5px;justify-content:center}
+button{font:700 13px "Intro Gothic",sans-serif;border:1px solid #44505b;border-radius:4px;background:#19222c;color:#f2f3f5;padding:7px 10px;cursor:pointer}
+button:hover{background:#2d3c4c}button:focus-visible{outline:3px solid #89d0ff;outline-offset:2px}
+button[aria-pressed="true"]{background:#f6f3e9;border-color:#f6f3e9;color:#111820}
+body.video-only #controls{display:none}
+@media(max-width:640px){#controls{padding:8px 6px;gap:7px}button{font-size:11px;padding:6px 8px}}
+
+#stage[data-character="adam"]{--portrait-bg:var(--secondary)}
