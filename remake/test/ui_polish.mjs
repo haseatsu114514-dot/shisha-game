@@ -122,7 +122,7 @@ try {
     Object.assign(T.core.state.reel, { introDone: true, lastChapter: 1 });
     for (let seed = 1; seed < 10000; seed++) {
       const sample = T.reel.core.spinSeries({ ...T.core.state.reel, seed }, { chapterFirst: false });
-      if (sample.length === 1 && sample[0].exp >= 2 && !T.reel.core.PEKA.includes(sample[0].role)) {
+      if (sample.length === 1 && sample[0].exp >= 2 && !sample[0].overlap && !T.reel.core.PEKA.includes(sample[0].role)) {
         T.core.state.reel.seed = seed; break;
       }
     }
