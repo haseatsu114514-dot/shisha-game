@@ -655,6 +655,89 @@
 .result-card.compact.show { transform: none; }
 .result-card.compact .rc-title { font-size: 15px; letter-spacing: 0.04em; }
 .result-card.compact .rc-next { width: 180px; min-height: 48px; margin-left: auto; }
+
+/* GP41：生成した真鍮・黒ガラスの素材を、全制作工程の実際の操作へ重ねる。 */
+.bench[data-art-skin] .bench-top { border-bottom-color: #e8c27a35; background: linear-gradient(180deg, #261c2c88, transparent); }
+.bench[data-art-skin] .bench-head { border-bottom-color: #e8c27a38; }
+.bench[data-art-skin] .bench-title { color: #f5dfb3; text-shadow: 0 2px 4px #0009; }
+.bench[data-art-skin] .bench-guide summary { color: #f1d4a1; border-color: #d7b27077; background: radial-gradient(circle at 40% 25%, #493c33, #19111f 70%); box-shadow: inset 0 1px 2px #ffedbd44, 0 2px 5px #0008; }
+.bench[data-art-skin] .bench-condition summary { border: 1px solid currentColor; box-shadow: inset 0 1px 2px #ffefc522, 0 2px 5px #0007; }
+.bench[data-art-skin] .bench-progress-track span { box-shadow: inset 0 1px 0 #ffebbd33; }
+.bench[data-art-skin] .bench-progress-track span.now { box-shadow: inset 0 1px 0 #fff6, 0 0 7px #e8c27a44; }
+.bench[data-art-skin] :is(.bench-worker, .bench-audience, .opt, .dodge, .pull-gauge, .care-chart, .result-card) {
+  border-image: var(--craft-panel-art) 22% 12% / 12px / 3px stretch;
+  box-shadow: 0 8px 24px #0005, inset 0 0 16px #e8c27a0c;
+}
+.bench[data-art-skin] .bench-audience { background: linear-gradient(130deg, #24192b, #100d17); }
+.bench[data-art-skin] .opt { border-color: #e8c27a6b; background: linear-gradient(150deg, #251b2d, #100c18); }
+.bench[data-art-skin] .opt:hover:not(:disabled), .bench[data-art-skin] .opt.on {
+  background: linear-gradient(150deg, #352535, #1b1422);
+  box-shadow: inset 0 0 24px #e8c27a18, 0 0 12px #e8c27a24;
+}
+.bench[data-art-skin] .btn,
+.bench[data-art-skin] .btn.primary,
+.bench[data-art-skin] .btn.primary:hover:not(:disabled),
+.bench[data-art-skin] .timer-switch {
+  border-image: none;
+  border: 1px solid #d7ac5d66;
+  border-radius: 5px;
+  background-color: #140d1e;
+  background-image: var(--craft-button-art);
+  background-size: var(--craft-button-size);
+  background-position: var(--craft-button-position);
+  background-repeat: no-repeat;
+  color: #efdec0;
+  box-shadow: 0 4px 12px #0006, inset 0 1px 0 #fff2;
+  text-shadow: 0 1px 3px #000;
+}
+.bench[data-art-skin] .btn.primary { color: #ffe7ac; border-color: #efc87da6; }
+.bench[data-art-skin] .btn .btn-desc { color: #d2bfa3; }
+.bench[data-art-skin] .btn:hover:not(:disabled), .bench[data-art-skin] .timer-switch:hover:not(:disabled) {
+  border-color: var(--accent);
+  box-shadow: 0 4px 16px #0006, 0 0 12px color-mix(in srgb, var(--accent) 25%, transparent), inset 0 1px 0 #fff3;
+}
+.bench[data-art-skin] .btn:active:not(:disabled), .bench[data-art-skin] .timer-switch:active:not(:disabled) { transform: translateY(1px); }
+.bench[data-art-skin] .btn:focus-visible, .bench[data-art-skin] .timer-switch:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.bench[data-art-skin] .btn:disabled, .bench[data-art-skin] .timer-switch:disabled { opacity: .38; filter: saturate(.35); }
+.bench[data-art-skin] .dodge-refresh, .bench[data-art-skin] .dodge-refresh:hover:not(:disabled) {
+  background-image: var(--craft-refresh-art);
+  background-size: var(--craft-refresh-size);
+  background-position: var(--craft-refresh-position);
+  color: #e0fff1;
+  border-color: #9cdece77;
+  padding-left: 62px;
+  padding-right: 25px;
+  align-items: center;
+}
+.bench[data-art-skin] .dodge-refresh:enabled { box-shadow: 0 4px 16px #0007, 0 0 12px #8bdcc91c; }
+.bench[data-art-skin] .dodge-pad {
+  border-color: #d0af77;
+  background: radial-gradient(circle at 35% 28%, #5d5140, #201921 42%, #0c0a11 72%);
+  box-shadow: inset 0 0 0 5px #b6915940, inset 0 0 0 8px #08070e, 0 5px 14px #0007;
+}
+.bench[data-art-skin] .dodge-pad > span { color: #b899695c; }
+.bench[data-art-skin] .dodge-knob { border-color: #d7bc84; background: radial-gradient(circle at 35% 28%, #ebdbb2, #8e795b 40%, #443644); box-shadow: inset 0 0 0 3px #d3b77566, 0 4px 8px #0009; }
+.bench[data-art-skin] .dodge-pad.held { border-color: #bbf7e7; box-shadow: inset 0 0 0 5px #c7bb7c44, 0 0 16px #9ee5d855; }
+.bench[data-art-skin] .fr-btn { color: #eed7b1; border-color: #b8925966; background: radial-gradient(circle at 40% 25%, #5d4c3a, #25192b 62%); box-shadow: inset 0 1px 2px #ffedbd44, 0 2px 4px #0008; }
+.bench[data-art-skin] .fr-btn:hover:not(:disabled) { color: #fff0bf; border-color: #e4c180; }
+.bench[data-art-skin] .pull-gauge { background: linear-gradient(180deg, #25202b, #0c0912); }
+.bench[data-art-skin] .pull-gauge::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(90deg, transparent 0 9.5%, #edd7a12b 9.5% 10%); }
+.bench[data-art-skin] .pg-needle { z-index: 2; background: #fff6db; box-shadow: 0 0 12px #ffe2a2; }
+.bench[data-art-skin] .hr-time-bar, .bench[data-art-skin] .tr-gauge i { border: 1px solid #d9b87655; background: linear-gradient(180deg, #120d1b, #2b2133); box-shadow: inset 0 1px 3px #0009; }
+.bench[data-art-skin] .lcd { border-color: #d9b87655; background: linear-gradient(145deg, #131a18, #0b0d14); box-shadow: inset 0 2px 7px #000a; }
+.bench[data-art-skin] .hr-time-bar b, .bench[data-art-skin] .tr-gauge b { box-shadow: inset 0 1px 0 #fff4; }
+
+/* 中央の空洞に実温度・適温・最適温・停止予測を描く。画像には値を入れない。 */
+.thermo-housing { position: relative; flex: none; width: var(--thermo-width); height: 100%; }
+.thermo-housing .thermo-skin { position: absolute; inset: 0; z-index: 2; pointer-events: none; image-rendering: auto; }
+.thermo-housing .thermo-tube { position: absolute; left: 22%; right: 22%; top: 10%; bottom: 10%; width: auto; height: auto; border: 0; border-radius: 5px; background: linear-gradient(90deg, #05040b, #201928, #08060f); }
+.thermo-housing .thermo-tube b { background: linear-gradient(0deg, #437eaa, #6baea3 40%, #deb66d 65%, #df7668); opacity: .9; box-shadow: inset 3px 0 5px #ffffff26; }
+.thermo:has(.thermo-housing) .thermo-labels { padding: 44px 0; color: #d1baa0; }
+.steam-temperature:has(.thermo-housing) .thermo-labels { padding: 30px 0; }
+.thermo:has(.thermo-housing) .thermo-ideal-label { bottom: 59.6%; color: #bfe4c8; }
+.thermo:has(.thermo-housing) .thermo-optimal-label { color: #f1d39b; }
+.thermo:has(.thermo-housing) .thermo-mark { background: #fff4d1; box-shadow: 0 0 8px #f6daa2; }
+.thermo:has(.thermo-housing).optimal .thermo-mark { background: #ffe49e; box-shadow: 0 0 12px #ffe1a4; }
 .rc-details { position: relative; color: #c4bfb6; font-size: 13px; }
 .rc-details summary { cursor: pointer; border-bottom: 1px solid #ffffff33; list-style: none; }
 .rc-details summary::-webkit-details-marker { display: none; }
