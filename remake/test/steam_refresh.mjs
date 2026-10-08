@@ -62,6 +62,7 @@ try {
 
   // 3) 結果カードに使った回数が出る
   const card = page.locator(".result-card .rc-lines");
+  await page.locator('[data-test="step-details"]').click();
   await card.waitFor({ timeout: 15000 });
   assert.match(await card.textContent(), /リフレッシュで2回、雑念を吹き払った/);
   if (process.env.SHOTS) await page.screenshot({ path: `${process.env.SHOTS}/steam_refresh_result.png` });

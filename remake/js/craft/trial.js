@@ -61,7 +61,7 @@ export async function runTrial(cs) {
 
   for (let r = 0; r < doubts.length; r++) {
     const d = doubts[r];
-    reactAudience(cs, "watch", { judge: d.judge, force: true });
+    reactAudience(cs, "watch", { judge: d.judge, force: true, text: d.text });
     doubtBox.dataset.need = d.cat;
     const face = faceIconUrl(d.judge);
     doubtBox.replaceChildren(

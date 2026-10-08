@@ -20,6 +20,7 @@ class Element {
   replaceChildren(...nodes) { this.children = []; this.append(...nodes); }
   addEventListener(type, fn) { (this.listeners[type] ||= []).push(fn); }
   setAttribute(name, value) { this[name] = String(value); }
+  querySelectorAll() { return []; }
   remove() {}
 }
 function el(spec, attrs = {}, children = []) {
@@ -36,9 +37,10 @@ const mocks = {
   "core/ui.js": { countdown: async () => {}, flash() {}, shake() {} },
   "core/audio.js": { SE: new Proxy({}, { get: () => () => {} }) },
   "core/stats.js": { tier01: () => 0, star: () => 1 },
-  "craft/session.js": { craftTest: { auto: null }, stepPanel: () => (panel = el("div.panel")), refreshBench() {}, tickerSay() {}, reactAudience() {} },
+  "craft/session.js": { craftTest: { auto: null }, stepPanel: () => (panel = el("div.panel")), refreshBench() {}, tickerSay() {}, reactAudience() {}, setPlayerMental() {}, presentBenchResult: () => ({ evaluation: { mark: "○", tone: "warm" }, hasAudience: false }) },
   "craft/art.js": { artImg: () => el("img") },
   "craft/digital-clock.js": { buildDigitalClock: () => ({ root: el("output"), update() {} }) },
+  "craft/mental.js": { buildMentalTrace: () => ({ root: el("div"), update: () => "steady", hit: () => "shaken", recoverStep: () => "unsteady" }) },
 };
 const context = vm.createContext({ Math, Promise, console, Set, AbortController, performance: { now: () => now },
   window: { addEventListener() {}, removeEventListener() {} },

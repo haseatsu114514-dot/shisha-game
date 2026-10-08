@@ -2,7 +2,7 @@
 import { el, sleep, clamp } from "../core/util.js";
 import { SE } from "../core/audio.js";
 import { tier01 } from "../core/stats.js";
-import { craftTest } from "./session.js";
+import { craftTest, presentBenchResult } from "./session.js";
 import { craftCondition } from "../core/condition.js";
 
 export const gradeOf = (s) => (s >= 90 ? "S" : s >= 80 ? "A" : s >= 65 ? "B" : s >= 50 ? "C" : "D");
@@ -16,7 +16,10 @@ export const skill = {
 };
 
 /** 工程の結果カード。自動操作中は少し待って勝手に閉じる */
-export function resultCard(panel, { title, grade, lines = [], button = "次へ" }) {
+export function resultCard(panel, { title, lines = [], button = "次へ" }) {
+  const { evaluation, hasAudience } = presentBenchResult(panel, title);
+  // 結果を読むとき、直前の判定文字を重ねない。
+  panel.querySelectorAll(".stamp").forEach((stamp) => stamp.remove());
   return new Promise((resolve) => {
     const btn = el("button.btn.primary.rc-next", {
       dataset: { test: "step-next" },
@@ -28,10 +31,10 @@ export function resultCard(panel, { title, grade, lines = [], button = "次へ" 
         resolve();
       },
     }, [el("span.btn-label", { text: button })]);
-    const card = el("div.result-card", [
+    const card = el("div.result-card.compact", [
+      !hasAudience ? el(`b.rc-evaluation.${evaluation.tone}`, { text: evaluation.mark, "aria-label": evaluation.label }) : null,
       el("div.rc-title", { text: title }),
-      grade ? el(`div.rc-grade.g-${grade}`, { text: grade }) : null,
-      el("ul.rc-lines", lines.filter(Boolean).map((t) => el("li", { text: t }))),
+      el("details.rc-details", [el("summary", { text: "詳しく見る", dataset: { test: "step-details" } }), el("ul.rc-lines", lines.filter(Boolean).map((t) => el("li", { text: t })))]),
       btn,
     ]);
     panel.append(card);

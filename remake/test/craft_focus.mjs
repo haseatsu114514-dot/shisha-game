@@ -60,27 +60,57 @@ try {
 
   // 表情は実際の炭焼き結果へ反応し、名前や審査点を勝手に開放しない。
   await page.evaluate(() => { __remake.craftTest.auto = 'good'; window.heatRun = T.heat.runHeat(cs); });
-  await page.evaluate(() => window.heatRun);
+  assert(!(await page.locator('[data-test="craft-rating"]').isVisible()),'Rating appeared during active charcoal work');
+  await page.waitForFunction(() => cs.heat?.score > 0);
+  await page.evaluate(() => { __remake.craftTest.auto = null; });
+  await page.waitForSelector('.result-card.show');
   assert.equal(await page.locator('.audience-person[data-person="sumi"]').getAttribute('data-mood'), 'nod');
   assert.match(await page.locator('.audience-face img').getAttribute('src'), /smile/);
+  assert.equal(await page.locator('[data-test="craft-rating"]').textContent(), '◎');
+  assert.match(await page.locator('[data-test="craft-feedback"]').textContent(), /いい火/);
+  assert.equal(await page.locator('.rc-grade').count(), 0);
+  assert(!(await page.locator('.rc-lines').isVisible()));
+  await loaded(page);
   await capture(page, 'sumi-heat-desktop');
+  await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.heatRun);
   await page.evaluate(() => {
     window.cs = T.session.newSession('tournament'); T.session.openBench(cs, { steps });
     T.session.stepPanel('heat', '炭焼き', 'テスト');
   });
-  assert.deepEqual(await page.locator('.audience-person figcaption').allTextContents(), ['？？？','？？？','？？？']);
+  assert.deepEqual(await page.locator('.audience-person figcaption').allTextContents(), ['？？？']);
   assert.equal(await page.evaluate(() => Object.keys(T.core.state.met).length), 0);
   await page.evaluate(() => {
     ['nagumo','maezono','dr_kemuri'].forEach(T.core.markMet);
     window.cs = T.session.newSession('tournament'); T.session.openBench(cs, { steps });
+    __remake.craftTest.auto = 'good';
     window.heatRun = T.heat.runHeat(cs);
   });
-  await page.evaluate(() => window.heatRun); await loaded(page);
+  await page.waitForFunction(() => cs.heat?.score > 0);
+  await page.evaluate(() => { __remake.craftTest.auto = null; });
+  await page.waitForSelector('.result-card.show'); await loaded(page);
   const moods = await page.locator('.audience-person').evaluateAll(ns => ns.map(n => [n.dataset.person, n.dataset.mood]));
-  assert.deepEqual(moods, [['nagumo','think'],['maezono','nod'],['dr_kemuri','nod']]);
-  assert.match(await page.locator('[data-person="nagumo"] img').getAttribute('src'), /thinking/);
+  assert.deepEqual(moods, [['dr_kemuri','nod']]);
+  assert.equal(await page.locator('[data-test="craft-rating"]').textContent(), '◎');
   await capture(page, 'judges-heat-desktop');
-  console.log('[craft focus] PASS: Sumi reacts to real success; three actual judges stay visible, undiscovered names stay hidden and Nagumo keeps his reserved expression');
+  const voices=[];
+  for (const [score,mark,tone] of [[95,'◎','bright'],[72,'○','warm'],[35,'△','quiet']]) {
+    await page.evaluate(score => { cs.heat.score=score; T.session.presentBenchResult(document.querySelector('.bench-panel'),'炭焼き 結果'); }, score);
+    assert.equal(await page.locator('[data-test="craft-rating"]').textContent(),mark);
+    assert.equal(await page.locator('.bench-audience').getAttribute('data-tone'),tone);
+    voices.push(await page.locator('[data-test="craft-feedback"]').textContent());
+  }
+  assert.equal(new Set(voices).size,3);
+  await page.locator('[data-test="step-details"]').click(); assert(await page.locator('.rc-lines').isVisible());
+  await page.locator('[data-test="step-details"]').click();
+  await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.heatRun);
+  for (const judge of ['nagumo','maezono','dr_kemuri']) {
+    await page.evaluate(judge => T.session.reactAudience(cs,'just',{judge,force:true}),judge);
+    assert.equal(await page.locator('.audience-person').count(),1);
+    assert.equal(await page.locator('.audience-person').getAttribute('data-person'),judge);
+  }
+  await page.evaluate(() => T.session.reactAudience(cs,'just',{judge:'nagumo',force:true}));
+  assert.match(await page.locator('[data-person="nagumo"] img').getAttribute('src'), /thinking/);
+  console.log('[craft focus] PASS: one current speaker, real Sumi/judge success feedback, distinct ◎/○/△ scores and lines, optional result detail, hidden undiscovered names and reserved Nagumo');
 
   for (const [stamina, health] of [[80,'green'],[40,'yellow'],[20,'red']]) {
     await page.evaluate(stamina => {
@@ -141,6 +171,7 @@ try {
     assert.deepEqual(geometry, { padBelow:true,padClear:true,separated:true,galleryClear:true,thermometerClear:true,fieldClear:true,video:0 }, `${name}: ${JSON.stringify(geometry)}`);
     await p.waitForFunction(() => !document.querySelector('[data-test="timer-stop"]').disabled);
     const initial = Number(await p.locator('[data-test="steam-temperature"]').getAttribute('aria-valuenow'));
+    const calmTrace = await p.locator('.dodge-beat-line').evaluate(n => ({ height:n.getBBox().height, color:getComputedStyle(n).stroke }));
     // 説明ボタンのSpaceでリフレッシュを消費しない。
     await p.locator('.bench-guide summary').focus(); await p.keyboard.press('Space');
     assert(await p.locator('.bench-guide').evaluate(n => n.open));
@@ -159,13 +190,29 @@ try {
     assert(samples.at(-1)>initial, `${name}: temperature failed to rise`);
     assert(samples.every((v,i)=>i===0||v>=samples[i-1]), `${name}: a hit lowered the temperature`);
     await capture(p, `steam-${name}`);
+    await p.waitForFunction(() => document.querySelector('[data-test="mental-trace"]').dataset.level === 'shaken',null,{timeout:8000});
+    const shaken = await p.locator('.dodge-beat-line').evaluate(n => ({ height:n.getBBox().height, color:getComputedStyle(n).stroke }));
+    assert(shaken.height > calmTrace.height * 2, `${name}: heartbeat did not visibly break`);
+    assert.notEqual(shaken.color,calmTrace.color);
+    assert.equal(await p.locator('.bench-worker').getAttribute('data-mental'),'shaken');
+    assert.match(await p.locator('.worker-actor').getAttribute('src'), /surprise/);
+    await capture(p, `mental-${name}`);
+    const missesBefore = await p.locator('.dodge-hits').textContent();
+    const heatBefore = Number(await p.locator('[data-test="steam-temperature"]').getAttribute('aria-valuenow'));
+    await p.locator('.dodge-refresh').click();
+    assert.equal(await p.locator('[data-test="mental-trace"]').getAttribute('data-level'),'shaken','Base refresh must not heal mental state');
+    assert.equal(await p.locator('.bench-worker').getAttribute('data-mental'),'shaken');
+    assert(!(await p.locator('[data-test="craft-rating"]').isVisible()),'A hit/refresh showed a mid-game rating');
+    assert(!/針|ゲージ|ボタン|ミニゲーム|スコア/.test(await p.locator('[data-test="craft-feedback"]').textContent()));
+    assert.equal(await p.locator('.dodge-hits').textContent(),missesBefore);
+    assert(Number(await p.locator('[data-test="steam-temperature"]').getAttribute('aria-valuenow')) >= heatBefore);
     await p.waitForSelector('.result-card.show',{timeout:20000});
     assert((await p.evaluate(()=>cs.steam.hits))>0, `${name}: no collision was exercised`);
     await p.locator('[data-test="step-next"]').click(); await p.evaluate(()=>window.steamRun);
     const continuity=await p.evaluate(()=>({end:cs.steam.temp,next:T.pull.startTemp(cs),seconds:cs.steam.seconds}));
     assert.equal(continuity.next,continuity.end); assert.equal(continuity.seconds,480);
     await p.close();
-    console.log(`[craft focus] PASS: ${name} timer input, seven-segment countdown, pause/resume, rising temperature despite real hits, exact temperature carry and unobstructed gallery/pad/field`);
+    console.log(`[craft focus] PASS: ${name} timer, pause/resume, rising temperature despite hits, same temperature carry, visible heartbeat/face jolt, base refresh without mental healing, natural live commentary and clear layout`);
   }
   assert.deepEqual(errors,[]);
 } finally { await browser.close(); }

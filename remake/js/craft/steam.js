@@ -4,12 +4,13 @@ import { el, sleep, clamp, rand, pick } from "../core/util.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { tier01, star } from "../core/stats.js";
-import { stepPanel, refreshBench, reactAudience } from "./session.js";
+import { stepPanel, refreshBench, reactAudience, setPlayerMental } from "./session.js";
 import { steamSecondsOf, steamPlaySeconds, steamTimeLabel } from "./steam-time.js";
 import { buildDigitalClock } from "./digital-clock.js";
 import { autoSkill, resultCard, keys, popStamp } from "./common.js";
 import { craftConditions, temperatureAfterSteam } from "./conditions.js";
 import { buildThermometer } from "./thermometer.js";
+import { buildMentalTrace } from "./mental.js";
 import { craftCondition } from "../core/condition.js";
 
 export const DODGE_WORDS = [
@@ -23,16 +24,22 @@ const OBJECTS = ["coal", "clock", "spark", "smoke"];
 
 // 根性の成長による回数アップは既存のレベル4・5の恩恵を引き継ぐ。
 export function refreshStock() { return 2 + (star("guts") >= 4 ? 1 : 0) + (star("guts") >= 5 ? 1 : 0); }
+export function refreshEffect() {
+  const level = star("guts");
+  return { radius: [180, 220, 265, 310, Infinity][level - 1], mentalRecovery: level >= 3,
+    label: ["中くらいの範囲", "少し広い範囲", "広い範囲", "かなり広い範囲", "画面全体"][level - 1] };
+}
 
 export async function runSteamDodge(cs) {
   const stock = refreshStock();
+  const effect = refreshEffect();
   const tutorial = cs.mode === "tutorial";
   const seconds = steamSecondsOf(cs), min = seconds / 60;
   const rainy = craftConditions(cs).rainy;
   const panel = stepPanel("steam", `蒸らし ${steamTimeLabel(seconds)}`,
-    `心を動かして雑念を躱す。下のパッド／矢印キーで移動。リフレッシュ（Space／X）で弾を一掃、${stock}回まで`);
+    `心を動かして雑念を躱す。下のパッド／矢印キーで移動。リフレッシュ（Space／X）は${effect.label}の弾を消す。${stock}回まで${effect.mentalRecovery ? "。メンタルも1段階落ち着く" : ""}`);
   const W = 620, H = 300;
-  const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge" } });
+  const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", refreshRadius: String(effect.radius) } });
   const heart = el("div.dodge-heart", { role: "img", "aria-label": "心。中央の光が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("i.dodge-core")]);
   const clock = buildDigitalClock("dodge-timer", { label: "蒸らしの残り時間", test: "steam-clock" });
   const hitsEl = el("div.dodge-hits");
@@ -40,11 +47,12 @@ export async function runSteamDodge(cs) {
   const pauseBtn = el("button.timer-switch", { text: "ストップ", disabled: true, dataset: { test: "timer-stop" }, "aria-label": "タイマーをストップ", "aria-pressed": "false" });
   const knob = el("i.dodge-knob");
   const pad = el("div.dodge-pad", { tabindex: 0, role: "group", "aria-label": "移動パッド。ドラッグまたは矢印キーで移動", dataset: { test: "dodge-pad" } }, [el("span", { text: "✥", "aria-hidden": "true" }), knob]);
-  const refreshBtn = el("button.btn.primary.dodge-refresh", { disabled: true, dataset: { test: "dodge-refresh" } });
+  const refreshBtn = el("button.btn.primary.dodge-refresh", { disabled: true, title: `${effect.label}の弾を消す${effect.mentalRecovery ? "。メンタルも1段階落ち着く" : ""}`, dataset: { test: "dodge-refresh" } });
   const thermometer = buildThermometer({ compact: true });
   const heatJitter = rand(-0.03, 0.03);
+  const mental = buildMentalTrace(W, H);
   thermometer.update(temperatureAfterSteam(cs, 0, heatJitter));
-  box.append(heart);
+  box.append(mental.root, heart);
   panel.append(el("div.steam", [
     el("div.dodge-hud", [clock.root, waveEl, el("div.dodge-status", [hitsEl, pauseBtn])]), el("div.steam-play", [thermometer.root, box]),
     el("div.dodge-controls", [pad, el("div.dodge-actions", [refreshBtn, el("small", { text: "パッドで移動 ／ PCは矢印・WASD" })])]),
@@ -93,7 +101,12 @@ export async function runSteamDodge(cs) {
   for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) listen(pad, type, (e) => { if (e.pointerId === padPointer) resetPad(); });
   listen(window, "blur", () => { keysDown.clear(); resetPad(); });
 
-  const clearBullets = () => { bullets.splice(0).forEach((b) => b.node.remove()); };
+  const clearBullets = (radius = Infinity) => {
+    for (let i = bullets.length - 1; i >= 0; i--) {
+      const b = bullets[i], x = clamp(hx, b.x, b.x + b.w), y = clamp(hy, b.y, b.y + b.h);
+      if (Math.hypot(hx - x, hy - y) <= radius) { b.node.remove(); bullets.splice(i, 1); }
+    }
+  };
   const refreshLabel = () => { refreshBtn.textContent = `リフレッシュ ×${refreshes}`; refreshBtn.disabled = !running || paused || refreshes === 0; };
   listen(pauseBtn, "click", () => {
     if (!running) return;
@@ -106,11 +119,12 @@ export async function runSteamDodge(cs) {
   });
   const refresh = () => {
     if (!running || paused || refreshes === 0) return;
-    refreshes--; clearBullets(); warning = null; inv = 1.6;
+    refreshes--; clearBullets(effect.radius);
+    if (effect.mentalRecovery) setPlayerMental(cs, mental.recoverStep(time, hits));
     reactAudience(cs, "good");
-    nextSpawn = time + 1; nextWave = Math.max(nextWave, time + 1.5);
-    box.classList.remove("warning"); waveEl.textContent = "リフレッシュ！";
-    const fx = el("div.dodge-refresh-fx", { "aria-hidden": "true", style: { "--x": `${hx}px`, "--y": `${hy}px` } }, [
+    if (!warning) waveEl.textContent = "リフレッシュ！";
+    const reach = Number.isFinite(effect.radius) ? effect.radius : Math.hypot(W, H);
+    const fx = el("div.dodge-refresh-fx", { "aria-hidden": "true", style: { "--x": `${hx}px`, "--y": `${hy}px`, "--reach": `${reach}px` } }, [
       el("i.dr-flash"), el("i.dr-ring"), el("i.dr-ring.second"),
       ...Array.from({ length: 8 }, (_, i) => el("i.dr-ray", { style: { "--angle": `${i * 45}deg` } })),
       el("b", { text: "リフレッシュ" }),
@@ -197,6 +211,7 @@ export async function runSteamDodge(cs) {
           const cx = clamp(hx, b.x, b.x + b.w), cy = clamp(hy, b.y, b.y + b.h);
           if (!inv && (hx - cx) ** 2 + (hy - cy) ** 2 < hitR * hitR) {
             hits++; inv = 0.9;
+            setPlayerMental(cs, mental.hit(time, hits));
             reactAudience(cs, "miss");
             heart.classList.remove("hit"); void heart.offsetWidth; heart.classList.add("hit");
             SE.hit(); shake(box, 180);
@@ -205,6 +220,7 @@ export async function runSteamDodge(cs) {
           if (b.x + b.w < -60 || b.x > W + 60 || b.y + b.h < -60 || b.y > H + 60) { b.node.remove(); bullets.splice(i, 1); }
         }
         clock.update(Math.max(0, Math.ceil((dur - time) * seconds / dur)));
+        setPlayerMental(cs, mental.update(time, hits));
         hitsEl.textContent = `ミス ${hits}`;
         if (time >= dur) return resolve();
         raf = requestAnimationFrame(loop);
@@ -214,6 +230,7 @@ export async function runSteamDodge(cs) {
   } finally {
     running = false; pauseBtn.disabled = true; cancelAnimationFrame(raf); unkey(); input.abort(); resetPad(); clearBullets(); refreshLabel();
     heart.classList.remove("shield"); box.classList.remove("warning");
+    setPlayerMental(cs, "steady");
   }
   const score = clamp(100 - hits * 14, 0, 100);
   clock.update(0);

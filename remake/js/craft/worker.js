@@ -13,6 +13,11 @@ export const WORKER_STEPS = {
 
 export function buildWorkerScene(cs) {
   const portrait = portraitInfo("hajime", "serious");
+  const actor = portrait ? el("img.worker-actor", { src: portrait.src, alt: "", draggable: false }) : null;
+  for (const face of ["sad", "surprise"]) {
+    const p = portraitInfo("hajime", face);
+    if (p) { const warm = new Image(); warm.src = p.src; }
+  }
   const baseH = artHeight("hookah_base.png", 90);
   const stemH = artHeight("hookah_stem.png", 16);
   const base = artImg("hookah_base.png", 90, "worker-base");
@@ -28,14 +33,21 @@ export function buildWorkerScene(cs) {
     role: "img", "aria-label": "はじめとシーシャの作業台を描いた静止イメージ",
     style: { backgroundImage: `url("${bgUrl(cs?.mode === "tournament" ? "bg_tournament_stage" : "bg_tonari_inside", timeOfDay())}")` },
   }, [
-    portrait ? el("img.worker-actor", { src: portrait.src, alt: "", draggable: false }) : null,
+    actor,
     el("div.worker-counter", { style: { backgroundImage: `url("${makingUrl("bench_base.png")}")` } }),
     el("div.worker-equipment", { "aria-hidden": "true" }, [stem, base, tray, bowl]),
     el("div.worker-vignette"),
     el("span.worker-scene-tag", { text: cs?.mode === "tournament" ? "SMOKE CROWN CUP" : "TONARI" }),
   ]);
   const footer = el("div.bench-worker-name", [el("b", { text: displayName("hajime", state) }), caption]);
-  return { caption, footer, root: el("div.bench-worker", { dataset: { test: "worker-window", step: "" } }, [
+  const root = el("div.bench-worker", { dataset: { test: "worker-window", step: "" } }, [
     stage, footer,
-  ]) };
+  ]);
+  return { caption, footer, root, setMental(level) {
+    if (root.dataset.mental === level) return;
+    root.dataset.mental = level;
+    const face = level === "shaken" ? "surprise" : level === "unsteady" ? "sad" : "serious";
+    const p = portraitInfo("hajime", face);
+    if (actor && p) actor.src = p.src;
+  } };
 }

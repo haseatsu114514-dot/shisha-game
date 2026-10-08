@@ -1,86 +1,78 @@
-// 制作を見守る人。表情は操作結果に反応するだけで、審査票・能力・好感度は変えない。
+// 複数の審査員がいても、いま話す一人だけを左下に表示する。
 import { el } from "../core/util.js";
 import { displayName, portraitInfo, faceIconUrl } from "../core/data.js";
 import { state } from "../core/state.js";
+import { evaluationOf, feedbackLine, commentaryLine } from "./feedback.js";
 
 export function audienceFor(mode, chapter) {
   if (mode === "tournament") return chapter === 1 ? ["nagumo", "maezono", "dr_kemuri"] : [];
   return mode === "tutorial" || mode === "rehearsal" ? ["sumi"] : [];
 }
 
-const MOODS = {
-  watch: { label: "手元を見守る", mark: "·" },
-  nod: { label: "小さくうなずく", mark: "✓" },
-  concern: { label: "手元を気にかける", mark: "!" },
-  think: { label: "静かに考える", mark: "…" },
-};
-
-function faceFor(id, mood, kind) {
-  // 南雲は最後まで票を温存する。制作中に勝利を示す笑顔は出さない。
-  if (id === "nagumo") return mood === "think" ? "thinking" : "serious";
-  if (mood === "nod") return id === "maezono" && (kind === "perfect" || kind === "just") ? "excited" : id === "dr_kemuri" ? "normal" : "smile";
-  return mood === "concern" || mood === "think" ? "serious" : "normal";
-}
+const STEP_JUDGE = { setup: "dr_kemuri", concept: "nagumo", mix: "maezono", pack: "dr_kemuri", holes: "dr_kemuri", heat: "dr_kemuri", place: "dr_kemuri", steam: "maezono", pull: "maezono", care: "dr_kemuri", trial: "nagumo" };
+const MOODS = { watch: "手元を見守る", nod: "小さくうなずく", concern: "手元を気にかける", think: "静かに考える" };
+const faceFor = (id, mood, kind) => id === "nagumo" ? mood === "think" ? "thinking" : "serious"
+  : mood === "nod" ? id === "maezono" && ["perfect", "just"].includes(kind) ? "excited" : id === "dr_kemuri" ? "normal" : "smile"
+    : mood === "concern" || mood === "think" ? "serious" : "normal";
 
 export function buildAudience(cs) {
   const ids = cs.audienceIds || audienceFor(cs.mode, state.chapter);
   if (!ids.length) return null;
-  const note = el("p.audience-note", { text: "手元を見守っている" });
-  const people = ids.map((id) => {
-    const name = displayName(id, state);
-    const image = el("img", { alt: "", draggable: false, decoding: "async" });
-    const mark = el("i.audience-mood", { "aria-hidden": "true" });
-    const root = el("figure.audience-person", { dataset: { person: id }, role: "img" }, [
-      el("div.audience-face", [image, mark]), el("figcaption", { text: name }),
-    ]);
-    let current = "", changedAt = -Infinity;
-    const setMood = (mood, kind = "", force = false) => {
-      if (!force && (mood === current || performance.now() - changedAt < 350)) return;
-      current = mood; changedAt = performance.now();
-      const portrait = portraitInfo(id, faceFor(id, mood, kind));
-      if (portrait) {
-        image.src = portrait.src;
-        // 共通キャンバスの本体上端とアンカーで頭部を揃える。元画像は変更しない。
-        image.style.width = "270px";
-        image.style.left = `calc(50% - ${portrait.ax * 270}px)`;
-        image.style.top = `${8 - (1 - portrait.h - portrait.b) * 270 / portrait.aspect}px`;
-      } else {
-        const fallback = faceIconUrl(id, state);
-        image.hidden = !fallback;
-        if (fallback) image.src = fallback;
-        image.classList.add("audience-icon");
-      }
-      const info = MOODS[mood];
-      root.dataset.mood = mood;
-      root.title = `${name}：${info.label}`;
-      root.setAttribute("aria-label", root.title);
-      mark.textContent = info.mark;
-    };
-    setMood("watch", "", true);
-    // 表情が切り替わる前に、実際に使う差分だけ読み込んでおく。
-    for (const mood of ["nod", "concern", "think"]) {
-      const p = portraitInfo(id, faceFor(id, mood, "perfect"));
-      if (p) { const warm = new Image(); warm.src = p.src; }
-    }
-    return { id, root, setMood };
-  });
-  const root = el(`aside.bench-audience${ids.length === 1 ? ".audience-single" : ""}`, { "aria-label": cs.mode === "tournament" ? "見守る審査員" : "見守る人", dataset: { test: "craft-audience" } }, [
-    el("div.audience-people", people.map((p) => p.root)), ids.length === 1 ? note : null,
+  const image = el("img", { alt: "", draggable: false, decoding: "async" });
+  const name = el("figcaption");
+  const person = el("figure.audience-person", { role: "img" }, [el("div.audience-face", [image]), name]);
+  const mark = el("b.audience-rating", { hidden: true, dataset: { test: "craft-rating" } });
+  const caption = el("span.audience-caption");
+  const note = el("p.audience-note", { text: "手元を見守っている", dataset: { test: "craft-feedback" } });
+  const root = el("aside.bench-audience.audience-single", { "aria-label": cs.mode === "tournament" ? "話している審査員" : "見守る人", dataset: { test: "craft-audience" } }, [
+    el("div.audience-people", [person]), el("div.audience-speech", { "aria-live": "polite" }, [el("div.audience-heading", [mark, caption]), note]),
   ]);
+  let active = ids[0], step = "", current = "", changedAt = -Infinity;
+  const showPerson = (id, mood, kind = "") => {
+    active = id; current = mood; changedAt = performance.now();
+    const label = displayName(id, state), portrait = portraitInfo(id, faceFor(id, mood, kind));
+    name.textContent = label; person.dataset.person = id; person.dataset.mood = mood; root.dataset.speaker = id;
+    person.title = `${label}：${MOODS[mood]}`; person.setAttribute("aria-label", person.title);
+    if (portrait) {
+      image.hidden = false; image.classList.remove("audience-icon"); image.src = portrait.src;
+      image.style.width = "300px";
+      image.style.left = `calc(50% - ${portrait.ax * 300}px)`;
+      image.style.top = `${8 - (1 - portrait.h - portrait.b) * 300 / portrait.aspect}px`;
+    } else {
+      const fallback = faceIconUrl(id, state); image.hidden = !fallback;
+      if (fallback) image.src = fallback;
+      image.classList.add("audience-icon");
+    }
+  };
+  for (const id of ids) for (const mood of ["watch", "nod", "concern", "think"]) {
+    const p = portraitInfo(id, faceFor(id, mood, "just"));
+    if (p) { const warm = new Image(); warm.src = p.src; }
+  }
+  showPerson(active, "watch");
   return {
     root,
-    setStep(hint) {
-      people.forEach((p) => p.setMood("watch", "", true));
+    setStep(hint, id) {
+      step = id;
+      showPerson(ids.includes(STEP_JUDGE[id]) ? STEP_JUDGE[id] : ids[0], "watch");
+      mark.hidden = true; caption.textContent = ""; delete root.dataset.tone;
       note.textContent = cs.mode === "tutorial" && hint.startsWith("スミ「") ? hint.slice(3, -1) : "手元を見守っている";
     },
-    react(kind, { judge = null, force = false } = {}) {
-      const positive = ["just", "perfect", "great", "good"].includes(kind);
-      const negative = ["bad", "miss", "close"].includes(kind);
+    react(kind, { judge = null, force = false, score = null, text = "", title = "", final = false } = {}) {
+      const id = ids.includes(judge) ? judge : active;
+      const positive = ["just", "perfect", "great", "good"].includes(kind), negative = ["bad", "miss", "close"].includes(kind);
       if (!positive && !negative && kind !== "watch") return;
-      for (const p of people) {
-        if (judge && p.id !== judge) continue;
-        const mood = p.id === "nagumo" ? positive ? "think" : "watch" : positive ? "nod" : negative ? "concern" : "watch";
-        p.setMood(mood, kind, force);
+      const mood = id === "nagumo" ? positive ? "think" : "watch" : positive ? "nod" : negative ? "concern" : "watch";
+      if (!force && id === active && (mood === current || performance.now() - changedAt < 350)) return;
+      showPerson(id, mood, kind);
+      if (!final) {
+        mark.hidden = true; caption.textContent = ""; delete root.dataset.tone;
+        note.textContent = text || (kind === "watch" ? "手元を見守っている" : commentaryLine(id, step, positive));
+      } else {
+        const evaluation = evaluationOf(score ?? (kind === "just" || kind === "perfect" ? 100 : positive ? 75 : 40));
+        mark.hidden = false; mark.textContent = evaluation.mark;
+        mark.setAttribute("aria-label", evaluation.label); root.dataset.tone = evaluation.tone;
+        caption.textContent = title ? title.replace(/\s*結果$/, "") : "";
+        note.textContent = text || feedbackLine(id, step, evaluation);
       }
     },
   };

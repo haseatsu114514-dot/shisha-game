@@ -66,13 +66,13 @@ export function buildAppeals(cs) {
   const list = [];
   const add = (label, cat, ok) => { if (ok) list.push({ label, cat }); };
   add("外周の穴が均等", "stability", (h.outerEven || 0) >= 0.75);
-  add(`穴あけ評価 ${h.grade}`, "craft", ["S", "A"].includes(h.grade));
+  add("穴の仕上がりが揃っている", "craft", (h.score || 0) >= 80);
   add("内周は控えめ", "relax", (h.inner || 0) <= 4 && (h.innerExcess || 0) === 0);
   add("ジャスト炭", "aroma", (c.just || 0) >= 2);
   add("炭のピカンを掴んだ", "stability", !!c.flash);
-  add(`火力安定 ${gradeOf(s.heatStability)}`, "stability", s.heatStability >= 70);
-  add(`ミントの香り ${gradeOf(s.aroma)}`, "aroma", s.aroma >= 70 && (cs.mix?.mint || 0) >= 2);
-  add(`煙量 ${gradeOf(s.smoke)}`, "smoke", s.smoke >= 65);
+  add("火力が安定している", "stability", s.heatStability >= 70);
+  add("ミントの香りが残っている", "aroma", s.aroma >= 70 && (cs.mix?.mint || 0) >= 2);
+  add("煙量が豊か", "smoke", s.smoke >= 65);
   add("焦げリスク低め", "relax", s.burnRisk <= 30);
   add("手際よく提供", "speed", (h.timeRatio || 0) >= 0.3 && (cs.pull?.pulls || 9) <= 3);
   add("味の輪郭が濃い", "taste", s.taste >= 62);

@@ -1,6 +1,6 @@
 // 蒸らしと吸い出しで同じ温度の目盛り・適温帯を使う。
 import { el } from "../core/util.js";
-import { IDEAL, EDGE_WIDTH, isTemperatureEdge } from "./conditions.js";
+import { IDEAL, OPTIMAL, isOptimalTemperature } from "./conditions.js";
 
 export function buildThermometer({ compact = false, unsteady = false } = {}) {
   const fill = el("b"), mark = el("i.thermo-mark");
@@ -9,17 +9,17 @@ export function buildThermometer({ compact = false, unsteady = false } = {}) {
   }, [
     el("div.thermo-tube", [
       el("div.thermo-zone", { style: { bottom: `${IDEAL[0] * 100}%`, height: `${(IDEAL[1] - IDEAL[0]) * 100}%` } }),
-      ...[IDEAL[0], IDEAL[1] - EDGE_WIDTH].map((from) => el("div.thermo-edge", { style: { bottom: `${from * 100}%`, height: `${EDGE_WIDTH * 100}%` }, dataset: { test: compact ? "steam-edge" : "pull-edge" } })),
+      el("div.thermo-optimal", { style: { bottom: `${OPTIMAL[0] * 100}%`, height: `${(OPTIMAL[1] - OPTIMAL[0]) * 100}%` }, dataset: { test: compact ? "steam-optimal" : "pull-optimal" } }),
       fill, mark,
     ]),
-    el("div.thermo-labels", [el("span", { text: "熱い" }), el("span", { text: "適温" }), el("span", { text: "ぬるい" })]),
+    el("div.thermo-labels", [el("span", { text: "熱い" }), el("span.thermo-ideal-label", { text: "適温" }), el("span.thermo-optimal-label", { text: "最適温" }), el("span", { text: "ぬるい" })]),
   ]);
   return { root, update(temp) {
     fill.style.height = `${temp * 100}%`;
     mark.style.bottom = `${temp * 100}%`;
     root.classList.toggle("ok", temp >= IDEAL[0] && temp <= IDEAL[1]);
-    root.classList.toggle("edge", isTemperatureEdge(temp, IDEAL));
+    root.classList.toggle("optimal", isOptimalTemperature(temp));
     root.setAttribute("aria-valuenow", temp.toFixed(4));
-    root.setAttribute("aria-valuetext", temp > IDEAL[1] ? "熱い" : temp >= IDEAL[0] ? "適温" : "ぬるい");
+    root.setAttribute("aria-valuetext", isOptimalTemperature(temp) ? "最適温" : temp > IDEAL[1] ? "熱い" : temp >= IDEAL[0] ? "適温" : "ぬるい");
   } };
 }

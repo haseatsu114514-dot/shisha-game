@@ -3,6 +3,8 @@ import { clamp } from "../core/util.js";
 import { steamSecondsOf, steamHeatFor } from "./steam-time.js";
 
 export const IDEAL = [0.46, 0.62];
+export const OPTIMAL = [0.532, 0.548];
+export const isOptimalTemperature = (temp) => temp >= OPTIMAL[0] && temp <= OPTIMAL[1];
 
 /** 温まり方は経過時間で決まる。雑念のミスはこの温度へ入れない。 */
 export function temperatureAfterSteam(cs, seconds, jitter = 0) {
@@ -50,20 +52,15 @@ export function heatDelta(cs, delta) {
   return delta * (1 + sparsity * 0.25) * (rainy && delta > 0 ? 0.9 : 1);
 }
 
-export const EDGE_WIDTH = 0.012;
-export function isTemperatureEdge(temp, ideal) {
-  return temp >= ideal[0] && temp <= ideal[1]
-    && (temp <= ideal[0] + EDGE_WIDTH + 1e-9 || temp >= ideal[1] - EDGE_WIDTH - 1e-9);
-}
-
-/** 中央の安全な提供もSに届く。細い端は同条件ならさらに2〜6点高い。 */
-export function pullResult(temp, pulls, justs, ideal) {
+/** 吸い方の判定数ではなく、提供した温度が最適温にどれだけ近いかを評価する。 */
+export function pullResult(temp, pulls, _justs, ideal = IDEAL) {
   const center = (ideal[0] + ideal[1]) / 2;
   const inZone = temp >= ideal[0] && temp <= ideal[1];
-  const edge = isTemperatureEdge(temp, ideal);
+  const optimal = isOptimalTemperature(temp);
+  const distance = Math.abs(temp - center), narrow = (OPTIMAL[1] - OPTIMAL[0]) / 2;
+  const safe = (ideal[1] - ideal[0]) / 2;
   const leafPenalty = Math.max(0, pulls - 3) * 8;
-  let score = inZone
-    ? (edge ? 96 + Math.min(4, justs * 3) : Math.min(94, 100 - Math.abs(temp - center) * 260 + justs * 3)) - leafPenalty
-    : 100 - Math.abs(temp - center) * 260 + justs * 3 - leafPenalty - 10;
-  return { score: Math.round(clamp(score, 0, 100)), inZone, edge };
+  const thermal = optimal ? 96 + 4 * (1 - distance / narrow)
+    : inZone ? 65 + 24 * (1 - (distance - narrow) / (safe - narrow)) : 65 - (distance - safe) * 360;
+  return { score: Math.round(clamp(thermal - leafPenalty, 0, 100)), inZone, optimal };
 }

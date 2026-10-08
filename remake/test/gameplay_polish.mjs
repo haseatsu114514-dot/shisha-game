@@ -141,7 +141,7 @@ try {
   await phone.waitForSelector('.dodge-object');
   await phone.locator('.dodge-refresh').tap();
   await phone.waitForSelector('.dodge-refresh-fx');
-  assert.equal(await phone.locator('.dodge-word, .dodge-object').count(), 0);
+  assert.equal(await phone.locator('.dodge').getAttribute('data-refresh-radius'),'180');
   assert.match(await phone.locator('.dodge-refresh').textContent(), /×1/);
   if (shots) await phone.screenshot({ path: `${shots}/mobile-refresh.png` });
   await phone.keyboard.down('Space'); await phone.waitForTimeout(100);

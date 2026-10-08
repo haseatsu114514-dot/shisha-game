@@ -11,6 +11,7 @@ import { craftCondition } from "../core/condition.js";
 import { buildWorkerScene, WORKER_STEPS } from "./worker.js";
 import { buildAudience, audienceFor } from "./audience.js";
 import { conditionBadge, buildGuide, STEP_BRIEFS } from "./bench-ui.js";
+import { evaluationOf } from "./feedback.js";
 import { isRainy } from "../daily/weather.js";
 import { runHoles } from "./holes.js";
 import { runHeat } from "./heat.js";
@@ -116,10 +117,11 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
       b.progress.setAttribute("aria-label", `制作の進み具合：${i + 1} / ${steps.length}工程`);
     } else s.removeAttribute("aria-current");
   });
-  b.audience?.setStep(hintText);
+  b.audience?.setStep(hintText, id);
   b.panel.replaceChildren();
   b.panel.dataset.step = id;
   b.worker.root.dataset.step = id; // 今後の工程別アニメーションの接続先
+  b.worker.setMental("steady");
   b.worker.caption.textContent = WORKER_STEPS[id] || titleText;
   return b.panel;
 }
@@ -128,13 +130,24 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
 export function refreshBench() {
   if (!bench) return;
   bench.worker.root.dataset.ready = String(!!bench.cs.pullDone);
-  const result = bench.cs[bench.panel.dataset.step];
-  if (result && Number.isFinite(result.score)) reactAudience(bench.cs, result.score >= 90 ? "perfect" : result.score >= 65 ? "good" : "bad", { force: true });
+}
+
+/** 結果は左下の人物へ。審査点・好感度は変えず、実際の工程スコアを読む。 */
+export function presentBenchResult(panel, title) {
+  const score = bench?.panel === panel ? bench.cs[panel.dataset.step]?.score ?? 0 : 0;
+  const evaluation = evaluationOf(score);
+  if (bench?.panel === panel) reactAudience(bench.cs, evaluation.kind, { force: true, score, title, final: true });
+  return { evaluation, hasAudience: !!(bench?.panel === panel && bench.audience) };
 }
 
 /** その一台を見ている人だけが反応する。古い工程の非同期処理から次の画面へ漏らさない。 */
 export function reactAudience(cs, kind, options) {
   if (bench?.cs === cs && bench.root.isConnected && !bench.root.classList.contains("done")) bench.audience?.react(kind, options);
+}
+
+/** 被弾や深呼吸の表情は、その一台の作業風景だけへ返す。 */
+export function setPlayerMental(cs, level) {
+  if (bench?.cs === cs && bench.root.isConnected && bench.panel.dataset.step === "steam") bench.worker.setMental(level);
 }
 
 /** 大会中だけ流れる実況テロップ（パッキー） */
