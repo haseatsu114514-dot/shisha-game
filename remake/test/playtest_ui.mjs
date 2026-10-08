@@ -21,19 +21,17 @@ try {
   });
   const levels = () => page.evaluate(() => ({
     hud: document.querySelector(".hud-bar b").style.width,
-    recovery: document.querySelector(".gain-card.stamina .gc-meter i")?.style.width,
     hudHealth: document.querySelector(".hud-stamina").dataset.health,
-    recoveryHealth: document.querySelector(".gain-card.stamina")?.dataset.health,
     cards: document.querySelectorAll(".gain-card.stamina").length,
   }));
   await page.evaluate(() => { T.core.state.stamina = 30; T.stats.addStamina(40); });
   await page.waitForTimeout(350);
-  let value = await levels(); assert.equal(value.hud, "70%"); assert.equal(value.recovery, value.hud);
+  let value = await levels(); assert.equal(value.hud, "70%"); assert.equal(value.cards, 0);
   await page.evaluate(() => { T.stats.addStamina(-60); T.stats.addStamina(20); });
-  value = await levels(); assert.equal(value.hud, "30%"); assert.equal(value.recovery, value.hud);
-  assert.equal(value.cards, 1); assert.equal(value.recoveryHealth, value.hudHealth);
+  value = await levels(); assert.equal(value.hud, "30%"); assert.equal(value.cards, 0);
+  assert.equal(value.cards, 0); assert.equal(value.hudHealth, "yellow");
   await page.evaluate(() => { T.core.state.stats.guts = 20; T.stats.gainStat("guts", 1); });
-  value = await levels(); assert.equal(value.hud, "27%"); assert.equal(value.recovery, value.hud);
+  value = await levels(); assert.equal(value.hud, "27%"); assert.equal(value.cards, 0);
   await page.evaluate(() => { T.core.save(); T.core.newGame(); });
   assert.equal((await levels()).cards, 0, "New game kept the old recovery notice");
   await page.evaluate(() => T.core.load());
@@ -44,11 +42,11 @@ try {
     for (let i = 0; i < 3; i++) T.ui.banner(`通知 ${i}`);
     T.stats.addStamina(50); T.stats.addStamina(-40);
   });
-  await page.waitForSelector(".gain-card.stamina"); await page.waitForTimeout(350);
-  value = await levels(); assert.equal(value.hud, "20%"); assert.equal(value.recovery, value.hud);
-  assert.equal(value.recoveryHealth, "red", "Queued recovery notice used an old condition");
+  await page.waitForTimeout(350);
+  value = await levels(); assert.equal(value.hud, "20%"); assert.equal(value.cards, 0);
+  assert.equal(value.hudHealth, "red", "HUD used an old condition after queued notices");
   await page.evaluate(() => T.ui.bannersIdle());
-  console.log("[playtest UI] PASS: recovery stays aligned through drain, capacity change, queue and save reload");
+  console.log("[playtest UI] PASS: HUD stays aligned without recovery notices through drain, capacity change, queue and save reload");
 
   await page.evaluate(() => {
     T.core.state.day = 2; T.core.state.slot = 0;

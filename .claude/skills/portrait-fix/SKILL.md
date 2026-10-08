@@ -9,20 +9,20 @@ description: 立ち絵（キャラのスプライト）の表示バグ対応。�
 
 ```
 assets/sprites/characters/<id>/<face>.png   ← 原画（表情ごとに1枚）
-        ↓ python3 web/build_data.py（ビルド時に毎回計測）
-portrait_trim(): 透過余白＋足元アンカー ax を numpy/scipy で計測
+        ↓ python3 remake/tools/build_manifest.py（ビルド時に毎回計測）
+measure(): 透過余白＋足元アンカー ax を numpy/scipy で計測
         → 同一キャラ内で bottom と ax を共通化（表情差分の描かれ方の違いを吸収）
         ↓
-web/js/data.js の portrait_trims / portrait_scales（生成物）
+remake/data/manifest.json の portrait / characters（生成物）
         ↓
-web/js/engine.js applyPortraitTrim() が描画位置・スケールを決定
+remake/js/vn/engine.js の frame() が描画位置・スケールを決定
 ```
 
 重要な帰結:
-- **位置はビルド時計測**。画像を1pxでも触ったら `python3 web/build_data.py` を再実行
+- **位置はビルド時計測**。画像を1pxでも触ったら `python3 remake/tools/build_manifest.py` を再実行
   しないと直らない/ズレたままになる。
 - **scipy が無い環境でビルドすると ax が計測されず横位置がズレる**（黙って劣化する）。
-  ビルド前に `pip install Pillow numpy scipy` を確認。CIにも入っている前提。
+  ビルド前に `pip install Pillow numpy scipy` を確認。目録生成はローカルで行い、Pagesは生成済みの目録を配信する。
 - ax・bottom はキャラ単位で共通化済みなので、「表情でジャンプする」場合は
   共通化が効かないほど**原画側の描かれ方がバラバラ**なのが原因。
 - `data/characters.json` の `spriteAnchor: "head"` を持つ凛は、通常の本体上端20%の横重心を全表情共通の表示アンカーにする。画像の足元整列は従来どおり足元で行う。両ビルドが同じ指定を読み、未指定の他キャラは足元基準のまま。
@@ -30,14 +30,14 @@ web/js/engine.js applyPortraitTrim() が描画位置・スケールを決定
 ## 症状別の診断フロー
 
 ### A. 表情を切り替えると左右にずれる・ジャンプする
-1. まず `python3 web/build_data.py` の出力に scipy 警告（ax計測不可）が出ていないか確認。
+1. まず `python3 remake/tools/build_manifest.py` の出力に scipy 警告（ax計測不可）が出ていないか確認。
    出ていたら scipy を入れて再ビルドで解決。
 2. 次に **原画が「絵ごと平行移動」して描かれていないか**を疑う（2026-07-04 に全キャラで
    最大115pxのドリフトを確認・これが再発報告の正体だった）。ax はキャラ単位で共通化＝
    キャンバス固定なので、中身がずれているとそのままジャンプになる。
    → `python3 tools/align_sprite_anchor.py --dry-run` で移動量を確認し、そのまま実行
    （足元重心と下端余白を normal に整列。ura_* 私服セットは別グループとして整列）。
-   実行後は `python3 web/build_data.py` で再計測。
+   実行後は `python3 remake/tools/build_manifest.py` で再計測。
 3. それでも残る場合は原画の体の描かれ方が表情間で違う（腕の出し方・立ち位置）。
    → `python3 tools/sprite_face_swap.py --character <id> --dry-run` で差分解析し、
    問題なければ `--backup` 付きで実行（normalの体に顔だけ合成＝体を完全統一）。
@@ -59,13 +59,13 @@ web/js/engine.js applyPortraitTrim() が描画位置・スケールを決定
 ### D. キャラ同士の身長バランスがおかしい
 - 正本は `data/characters.json` の `spriteScale`（出典: brand/character_profiles.md の身長、
   基準172cm・±6%クランプ）。画像側で拡縮して調整しない。
-- 回帰テスト `node web/test/portraits.mjs` が大小関係（sumi>naru>rin>minto>tsumugi）を検証する。
+- キャラ同士の大小関係は実画面で比較する。`node remake/test/rin_portraits.mjs` は凛の5表情の頭部アンカーと見切れを検証する。
 
 ### E. 立ち絵の追加・差し替え
 1. ファイル名は `assets/sprites/characters/<id>/<face>.png`。face は9種のみ
    （normal/smile/surprise/sad/serious/smug/wink/evil/excited）。
 2. 追加したら同キャラの既存表情と合わせて B の正規化を通す（新画像だけ座標系が違うのを防ぐ）。
-3. `python3 web/build_data.py && python3 web/build_standalone.py` で trim を再計測。
+3. `python3 remake/tools/build_manifest.py` で trim を再計測。
 
 ## 直した後の確認（必須）
 
@@ -74,8 +74,8 @@ web/js/engine.js applyPortraitTrim() が描画位置・スケールを決定
 凛v11では頭部が足元重心より約100px左にあり、足元を中央へ置くと顔が左へ寄った。PNG全体を左右へ動かすだけでは、ビルドが足元を再計測するので解消しない。オーナー指示に沿って不自然な腰・脚の姿勢を画像生成で直し、凛だけ `spriteAnchor: "head"` を採用した。通常の頭部基準を全表情で共通化し、実会話のPC／スマホで見た目の中央と切り替え時の配置枠を確認する。[凛の最新引き継ぎ](../../../docs/rin_portrait_handoff.md)を参照。
 
 ```bash
-python3 web/build_data.py && python3 web/build_standalone.py
-node web/test/portraits.mjs        # 身長比・データ経路の回帰（速い）
+python3 remake/tools/build_manifest.py
+node remake/test/rin_portraits.mjs        # 凛の5表情・中央配置をPC／スマホで確認
 ```
 
 - 仕上げに**該当キャラの表情が実際に切り替わる場面を目視**する（ズレは自動テストで

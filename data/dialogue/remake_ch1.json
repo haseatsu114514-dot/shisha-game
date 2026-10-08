@@ -2,6 +2,63 @@
   "_comment": "リメイク版（remake/）の進行で使う場面。スキーマは他の dialogue と同じ。旧版 web/ はこのファイルを読まない。",
   "dialogues": [
     {
+      "dialogue_id": "remake_tutorial_offer",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "はじめ、時間があるなら一台、練習してくか？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "俺が横で見てる。手順を確かめたいなら付き合うぞ"
+        },
+        {
+          "type": "choice",
+          "id": "tutorial_offer",
+          "choices": [
+            {
+              "text": "練習していく",
+              "next": "practice"
+            },
+            {
+              "text": "今は練習しない",
+              "next": "skip"
+            }
+          ]
+        }
+      ],
+      "branches": {
+        "practice": [
+          {
+            "type": "set_flag",
+            "flag": "_tutorial_requested"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "お願いします。最初から確認させてください"
+          }
+        ],
+        "skip": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "今日はこのまま、お客さんの方をやります"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "おう。練習したくなったら、店の作業台を使え"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "remake_repeat_sumi_0",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside.png"

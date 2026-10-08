@@ -1,61 +1,34 @@
 ---
 name: web-build-test
-description: web/ または data/ を変更した後のビルドとヘッドレステストの実行手順。変更内容ごとに走らせるべきテストの対応表、重いテストの直列実行ルール、テストフックを壊さないための注意。Use after changing any file under web/ or data/, or when asked to run/verify the browser game tests.
+description: 現行 remake/ と共有 data/ の変更後の検証手順。2026-10-07に旧web版を削除し、対象を現行版へ更新。
 ---
 
-# ビルド＆ヘッドレステスト手順
+# 現行ブラウザ版の検証
 
-## ビルド（data/ か web/ を変えたら必ず両方）
-
-```bash
-pip install Pillow numpy scipy    # 初回のみ。scipy欠落だと立ち絵の横位置(ax)が黙ってズレる
-python3 web/build_data.py         # data/*.json → web/js/data.js
-python3 web/build_standalone.py   # → web/dist/shisha_ch1.html（1ファイル配布版）
-```
-
-- `web/js/data.js`・`web/dist/*.html` は**生成物**。直接編集禁止・レビュー対象外。
-- ビルドを忘れると「直したのに変わらない」が起きる。コミット前に生成物の差分があるか確認。
-
-## テスト実行
+`remake/` はESモジュールでJSONを直接読むため、旧版のバンドル生成・単一HTMLビルドは不要。
+台詞を触ったら `python3 tools/lint_dialogue.py`（ERROR=0）と `python3 tools/tidy_dialogue_text.py --dry-run`。
+画像を追加・差し替えた場合のみ `python3 remake/tools/build_manifest.py`（Pillow・numpy・scipy）。
 
 ```bash
-python3 -m http.server 8123 &     # リポジトリルートで起動して放置（全テストの前提）
-node web/test/<name>.mjs
+python3 remake/tools/serve_preview.py --port 8123
+node remake/test/<name>.mjs
 ```
 
-- **重い3本（playthrough / ch2 / screenshots）は絶対に同時に走らせない**。
-  CPU枯渇でタイムアウトして偽の失敗になる。1本ずつ直列で。playthrough は約6分かかる。
-- playwright 依存（`/opt/node22/lib/node_modules/playwright` にある。`playwright install` 不要）。
-- 基準は**全緑**。`web/test/` に新しいテストが増えていることがあるので `ls web/test/` で確認する。
+Playwrightが必要。`BASE_URL`でURL、`CHROME_EXECUTABLE_PATH`でChromeを指定できるテストがある。
+通しテストは `CHROME_BIN`。VMテストは `node --experimental-vm-modules` を付ける。
+重いブラウザテストは直列で実行する。環境要因と本物の失敗を分け、失敗したまま完了扱いにしない。
 
-## 変更内容 → 実行テスト対応表
-
-| 変更したもの | 最低限走らせるテスト |
+| 変更 | 検証 |
 |---|---|
-| ch1 の台詞・イベント・大会 | `playthrough.mjs`（優勝ルート通し） |
-| ch2 の台詞・イベント・大会 | `ch2.mjs` |
-| 敗北・リトライ・GAME OVER 周り | `screenshots.mjs` |
-| スロット（確率・天井・文言） | `reel.mjs`（純ロジック・速い） |
-| くじ | `kuji.mjs` |
-| 経済・バイト報酬・体力バランス | `balance.mjs` |
-| マップ・スポットUI | `map_hover.mjs` |
-| 立ち絵・spriteScale・画像処理 | `portraits.mjs`（身長比の回帰。速い） |
-| フレーバー所持・ショップ | `flavor_ownership.mjs` / `fookah.mjs` |
-| ゲーム全体に波及するリファクタ | 速い純ロジック系を全部 → 重い3本を1本ずつ |
+| 第1章の台詞・大会・進行 | `playthrough.mjs`（敗北→再挑戦→優勝も含む） |
+| 穴あけ・吸い出しのバランス | `foil_holes.mjs`・`stamina_condition.mjs`・`playthrough.mjs` |
+| 任意練習・回復・弾幕操作 | `gameplay_polish.mjs` |
+| HUD・通知・体力 | `ui_skin.mjs`・`stat_rewards.mjs`・`stamina_condition.mjs` |
+| 選択肢の文字 | `choice_oneline.mjs` |
+| キャラの初登場 | `intro_cutin.mjs` |
+| 交流の記憶・絆 | `relationship_memories.mjs`・`bonds.mjs` |
+| スロットの表示 | `reel_lifecycle.mjs`・`reel_visuals.mjs` |
+| データ通信 | `data_loading.mjs` |
 
-## 壊してはいけないテストフック（変更前に必ず確認）
-
-`web/js/game.js` を触るとき、以下はテストが依存している。リネーム・削除・挙動変更しない:
-
-- `__pullDebug` / `__heatDebug` / `__steamDebug().end()`（蒸らし弾幕の即終了）
-- 調整(R2)の「このままでいく」選択肢
-- 審査の `.trial-appeal[data-backed][data-cat]` ＋ `#trial-doubt[data-need]`
-- 結果カウントの `pointer-events:none`
-- タイミング系ミニゲームの `miniCountdown()`（3・2・1）
-
-## テストが落ちたとき
-
-1. まず**同時実行・サーバ未起動・playwright 経路**の環境要因を疑う（偽の失敗が多い）。
-2. 本物の失敗なら、テストを緩めて通すのではなく**仕様（CLAUDE.md・master_spec）側に照らして**
-   コードを直す。テストの期待値を変えるのはオーナー指定の仕様変更があった場合のみ。
-3. 落ちたまま「たぶん大丈夫」でコミットしない。落ちた事実と原因を報告する。
+テスト用 `window.__remake`（vnTest / craftTest / dev）と `data-test` 属性を維持する。
+タイミングゲームは共通 `countdown()` で3・2・1を挟む。

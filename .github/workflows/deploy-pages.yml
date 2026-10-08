@@ -1,14 +1,5 @@
-# ソースから web ビルドを生成し、GitHub Pages に公開する。
-# main への push のたびに https://haseatsu114514-dot.github.io/shisha-game/ が更新される。
-# 作業ブランチ（claude/** 等）では動かさない（毎回失敗する実行が積もり、2026-10-04 にアカウントが
-# 自動の不正検知で一時停止された一因になった）。1ファイル配布版はここでビルドして置く＝リポジトリには入れない。
-#
-# 配備レイアウト（2026-07-02 改定・起動高速化）:
-#   /            … /remake/ へ即リダイレクト（既存ブックマークを生かす）
-#   /web/        … 従来の分割ファイル版（保存用）
-#   /shisha_ch1.html … 1ファイル配布版（約65MB・ダウンロードして持ち歩く用。デプロイ時にビルド）
-#   /tools/flavor_stats_editor.html … フレーバー調整ツール
-#   /remake/     … リメイク版（remake/。data/ と assets/ を実行時に直接読む＝ビルド不要）
+# 現行の remake/ と共有データ・素材を GitHub Pages に公開する（ビルド不要）。
+# 旧ブラウザ版・単一HTML配布は2026-10-07のオーナー指示で廃止。
 name: Deploy web build to GitHub Pages
 
 on:
@@ -17,13 +8,8 @@ on:
     paths:
       - "assets/**"
       - "data/**"
-      - "web/css/**"
-      - "web/js/**"
-      - "web/index.html"
-      - "web/tools/**"
-      - "web/build_data.py"
-      - "web/build_standalone.py"
       - "remake/**"
+      - "tools/browser/flavor_stats_editor.html"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -44,24 +30,9 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: Install build dependencies
-        # numpy/scipy が無いと立ち絵の足元アンカー(ax)が計測されず、
-        # Pages版だけ立ち絵の横位置がズレる（2026-07-02 発見）
-        run: python3 -m pip install --upgrade pip Pillow numpy scipy
-      - name: Build web bundle
-        run: |
-          python3 web/build_data.py
-          python3 web/build_standalone.py
       - name: Prepare site
         run: |
-          mkdir -p _site/web _site/tools
-          # 分割ファイル版（本線）: HTML+CSS+JSだけ先に読み、画像・音はスクリーンごとに遅延取得
-          cp web/index.html _site/web/index.html
-          cp -r web/css _site/web/css
-          cp -r web/js _site/web/js
+          mkdir -p _site/tools
           cp -r assets _site/assets
           # ルートはユーザー指定のメインであるリメイク版へ転送
           cat > _site/index.html <<'HTML'
@@ -78,10 +49,8 @@ jobs:
           </body>
           </html>
           HTML
-          # 1ファイル配布版はダウンロード用に残す
-          cp web/dist/shisha_ch1.html _site/shisha_ch1.html
-          cp web/tools/flavor_stats_editor.html _site/tools/flavor_stats_editor.html
-          # リメイク版: remake/ はビルド不要。../data/ と ../assets/ を相対で読むので data も置く
+          cp tools/browser/flavor_stats_editor.html _site/tools/flavor_stats_editor.html
+          # 現行版は共有JSONを直接読む
           cp -r remake _site/remake
           cp -r data _site/data
       - uses: actions/configure-pages@v5

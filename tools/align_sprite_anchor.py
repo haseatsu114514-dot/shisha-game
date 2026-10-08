@@ -13,7 +13,7 @@ engine.js は足元アンカー ax をキャラ単位で共通化してキャン
 - みんとのように私服差分（chr_<id>_ura_*）を持つキャラは、通常セットと
   ura セットを別グループとして各グループの normal に整列する。
 - 移動でコンテンツがキャンバス外に出る場合は出ない範囲までに抑えて警告。
-- 実行後は必ず `python3 web/build_data.py` で trim を再計測すること。
+- 実行後は必ず `python3 remake/tools/build_manifest.py` で trim を再計測すること。
 
 使い方:
     python3 tools/align_sprite_anchor.py --dry-run   # 計測と移動量の表示のみ
@@ -117,7 +117,7 @@ def main():
         total += align_character(bd, d, args.dry_run)
     print(f"{'[DRY RUN] ' if args.dry_run else ''}整列した差分: {total} 枚")
     if total and not args.dry_run:
-        print("→ python3 web/build_data.py で trim を再計測してください")
+        print("→ python3 remake/tools/build_manifest.py で trim を再計測してください")
     return 0
 
 

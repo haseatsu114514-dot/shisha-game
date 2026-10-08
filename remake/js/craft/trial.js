@@ -48,7 +48,7 @@ export async function runTrial(cs) {
   const used = new Set();
   let success = 0, mismatch = 0, concede = 0;
 
-  const panel = stepPanel("trial", "審査 ── FLAVOR TRIAL", "審査員のザワザワに、アピールポイントをぶつけて納得させる");
+  const panel = stepPanel("trial", "審査", "審査員のザワザワに、アピールポイントをぶつけて納得させる");
   const bar = el("b");
   const gaugeEl = el("div.tr-gauge", [el("span", { text: "納得ゲージ" }), el("i", [bar])]);
   const conceptEl = el("div.tr-concept", { text: `コンセプト: ${cs.concepts.map((id) => CONCEPTS.find((c) => c.id === id).label).join(" × ")}` });

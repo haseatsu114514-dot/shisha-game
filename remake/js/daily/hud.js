@@ -14,13 +14,45 @@ export const daysLeft = () => Math.max(0, TOURNAMENT_DAY - (state?.day || 1));
 let dom = null;
 let handlers = { phone: null, status: null, menu: null };
 let recoveryTimer = null;
+let pendingRecovery = null;
+let recoveryFrame = 0;
 function showRecovery({ before, after }) {
   if (!dom || after <= before) return;
-  clearTimeout(recoveryTimer);
-  dom.stamina.classList.add("recovering");
-  recoveryTimer = setTimeout(() => dom?.stamina.classList.remove("recovering"), 1600);
+  pendingRecovery = { before: Math.min(pendingRecovery?.owner === state ? pendingRecovery.before : before, before), owner: state };
+  scheduleRecovery();
 }
 on("stamina-change", showRecovery);
+
+// 就寝・会話の裏で増えた分は、街へ戻って本来のゲージが見えてから伸ばす。
+function scheduleRecovery() {
+  if (recoveryFrame || !pendingRecovery) return;
+  recoveryFrame = requestAnimationFrame(() => {
+    recoveryFrame = 0;
+    if (pendingRecovery && pendingRecovery.owner !== state) pendingRecovery = null;
+    if (!dom || !pendingRecovery || !layers.hud.classList.contains("show") ||
+      document.body.dataset.screen !== "map" || document.body.classList.contains("vn-open") ||
+      document.body.classList.contains("in-vn") || layers.modal.classList.contains("show") ||
+      layers.wipe.classList.contains("black") || layers.wipe.classList.contains("cover") ||
+      layers.fx.querySelector(".day-card")) return;
+    const recovery = pendingRecovery;
+    pendingRecovery = null;
+    const fill = dom.stamina.querySelector("b");
+    const target = `${Math.round(staminaRatio() * 100)}%`;
+    if (state.stamina <= recovery.before) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { fill.style.width = target; return; }
+    fill.style.transition = "none";
+    fill.style.width = `${Math.round(Math.min(recovery.before, state.stamina) / maxStamina() * 100)}%`;
+    void fill.offsetWidth;
+    fill.style.transition = "";
+    fill.style.width = target;
+    clearTimeout(recoveryTimer);
+    dom.stamina.classList.remove("recovering");
+    void dom.stamina.offsetWidth;
+    dom.stamina.classList.add("recovering");
+    const holder = dom.stamina;
+    recoveryTimer = setTimeout(() => holder.classList.remove("recovering"), 1600);
+  });
+}
 
 const SVG = "http://www.w3.org/2000/svg";
 const svgEl = (tag, attrs = {}) => {
@@ -41,6 +73,8 @@ function miniRadar() {
 }
 
 export function initHud(h) {
+  clearTimeout(recoveryTimer);
+  pendingRecovery = null;
   handlers = { ...handlers, ...h };
   dom = {
     area: el("div.dc-area", { text: "SAKAE" }),
@@ -65,6 +99,9 @@ export function initHud(h) {
   ]);
   dom.moneyRow = moneyRow;
   layers.hud.replaceChildren(root);
+  recoveryObserver?.disconnect();
+  recoveryObserver = new MutationObserver(scheduleRecovery);
+  recoveryObserver.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "data-screen"] });
   on("hud", updateHud);
   on("money", ({ delta }) => {
     if (!delta || !dom) return;
@@ -94,11 +131,14 @@ export function updateHud() {
   dom.stamina.title = `体力：${condition.label}。${condition.hint}`;
   dom.stamina.querySelector(".hud-bar").setAttribute("aria-label", dom.stamina.title);
   dom.stamina.querySelector("b").style.width = `${Math.round(r * 100)}%`;
+  scheduleRecovery();
   dom.stamina.classList.toggle("low", condition.health === "red");
   // 根性★で体力の器が増えると、バー自体が伸びる
   dom.stamina.querySelector(".hud-bar").style.width = `${Math.round(92 * (maxStamina() / 100))}px`;
   dom.radar.querySelector(".hr-fill").setAttribute("points", STAT_KEYS.map((k, i) => pt(i, 4 + 3.2 * star(k))).join(" "));
 }
+
+let recoveryObserver = null;
 
 /** 未読の赤丸（数字は出さない・通知バッジ風） */
 export function setPhoneBadge(unread) {

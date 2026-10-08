@@ -1,0 +1,39 @@
+// 軽量な静止モックアップ。人物と台を一つの場面に収め、後から工程別動画へ差し替える。
+import { el } from "../core/util.js";
+import { bgUrl, makingUrl, portraitInfo } from "../core/data.js";
+import { artImg, artHeight } from "./art.js";
+
+export const WORKER_STEPS = {
+  setup: "道具を選ぶ", concept: "今日の一台を考える", mix: "香りを合わせる",
+  pack: "葉を詰める", holes: "アルミに穴を開ける", heat: "炭の芯を確かめる",
+  place: "炭を置く", steam: "熱が入るのを待つ", pull: "煙の温度を合わせる",
+  care: "最後の一口まで整える", trial: "香りを届ける",
+};
+
+export function buildWorkerScene() {
+  const portrait = portraitInfo("hajime", "serious");
+  const baseH = artHeight("hookah_base.png", 90);
+  const stemH = artHeight("hookah_stem.png", 16);
+  const base = artImg("hookah_base.png", 90, "worker-base");
+  const stem = artImg("hookah_stem.png", 16, "worker-stem", { cropTop: Math.max(0, stemH - 110) });
+  const tray = artImg("hookah_tray.png", 78, "worker-tray");
+  const bowl = artImg("bowl_empty_silicone.png", 50, "worker-bowl");
+  base.style.bottom = "0px";
+  stem.style.bottom = `${baseH - 18}px`;
+  tray.style.bottom = `${baseH + 73}px`;
+  bowl.style.bottom = `${baseH + 85}px`;
+  const caption = el("span.bench-worker-caption", { text: "一台を仕上げる" });
+  const stage = el("div.bench-worker-stage", {
+    role: "img", "aria-label": "はじめとシーシャの作業台を描いた静止イメージ",
+    style: { backgroundImage: `url("${bgUrl("bg_tonari_inside")}")` },
+  }, [
+    portrait ? el("img.worker-actor", { src: portrait.src, alt: "", draggable: false }) : null,
+    el("div.worker-counter", { style: { backgroundImage: `url("${makingUrl("bench_base.png")}")` } }),
+    el("div.worker-equipment", { "aria-hidden": "true" }, [stem, base, tray, bowl]),
+    el("div.worker-vignette"),
+    el("span.worker-scene-tag", { text: "TONARI" }),
+  ]);
+  return { caption, root: el("div.bench-worker", { dataset: { test: "worker-window", step: "" } }, [
+    stage, el("div.bench-worker-name", [el("b", { text: "はじめ" }), caption]),
+  ]) };
+}

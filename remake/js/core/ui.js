@@ -4,7 +4,7 @@ import { on } from "./bus.js";
 import { SE, setRainAmbience } from "./audio.js";
 import { state, STAT_KEYS } from "./state.js";
 import { DB, displayName, faceIconUrl, allFaceIconUrls } from "./data.js";
-import { AFFINITY_RANK_PTS, staminaRatio, currentCondition } from "./stats.js";
+import { AFFINITY_RANK_PTS } from "./stats.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene } from "../daily/weather.js";
 
@@ -41,12 +41,6 @@ export function initLayers() {
       hearts: { from: heartState(prevPts), to: heartState(pts) },
     });
   });
-  on("stamina-change", ({ before, after, maximum }) => {
-    if (after <= before) return;
-    gainCard({ kind: "stamina", badge: "体", top: "RECOVERY", main: after >= maximum ? "元気が戻った" : "体力が回復した",
-      meter: { from: before / maximum, to: after / maximum } });
-  });
-  on("hud", refreshStaminaMeters);
   on("notice", ({ text }) => toast(text, { ms: 3000 }));
   on("lovers", ({ id }) => {
     gainCard({ kind: "affinity", bond: true, face: faceIconUrl(id, state, { context: "private" }), badge: "♥", top: "NEW RELATIONSHIP", main: displayName(id, state, { context: "private" }), sub: "恋人になった" });
@@ -244,7 +238,6 @@ function heartState(pts = 0) {
 }
 
 const bannerQueue = [];
-const staminaMeters = new Map();
 let bannerBusy = 0;
 /** 汎用の短い通知（見出し＋補足） */
 export function banner(title, sub = null) {
@@ -255,25 +248,8 @@ export function banner(title, sub = null) {
  * @param o.badge 丸バッジの一字 / o.face 顔ドット絵（あればバッジの代わり）/ o.hearts {from:[%×5], to:[%×5]}
  */
 export function gainCard(o) {
-  // 回復が続いても古い残量のカードを何枚も積まない。表示中・待機中の一枚がHUDと同期する。
-  if (o.kind === "stamina" && (bannerQueue.some((b) => b.kind === "stamina" && b.owner === state)
-    || [...staminaMeters.values()].some((m) => m.owner === state))) return;
   bannerQueue.push({ ...o, owner: state });
   pumpBanners();
-}
-
-function refreshStaminaMeters() {
-  for (const [card, m] of staminaMeters) {
-    if (m.owner !== state) { card.remove(); staminaMeters.delete(card); continue; }
-    const ratio = Math.round(staminaRatio() * 100);
-    // 初回の伸びる演出だけ残す。消耗・最大体力の変化はその場で最新の残量へ合わせる。
-    if (ratio !== m.ratio) {
-      m.ratio = ratio;
-      m.fill.style.width = `${ratio}%`;
-    }
-    card.dataset.health = currentCondition().health;
-    m.meter.setAttribute("aria-label", `体力：${currentCondition().label}`);
-  }
 }
 
 /** 同じ生成ハートを報酬通知と交友一覧で使う。中身の進み具合だけをDOMで変える。 */
@@ -307,15 +283,9 @@ function pumpBanners() {
         o.kind !== "stat" && o.sub ? el("span.gc-sub", { text: o.sub }) : null,
         o.fx ? el("span.gc-fx", { text: o.fx }) : null,
         hearts,
-        meter,
       ]),
     ]);
     layers.banners.append(b);
-    if (meter) {
-      const fill = meter.querySelector("i");
-      staminaMeters.set(b, { owner: state, meter, fill, ratio: Math.round(o.meter.to * 100) });
-      refreshStaminaMeters();
-    }
     const owner = state;
     if (o.kind === "stat" && o.points > 0) setTimeout(() => {
       if (b.isConnected && owner === state) flyStatGain(b, o);
@@ -325,17 +295,12 @@ function pumpBanners() {
       b.classList.add("show");
       // 1拍おいてから今の値へ → ハートの中身が「ぐいーん」と伸びる
       if (hearts) setTimeout(() => hearts.querySelectorAll("i").forEach((h, i) => h.style.setProperty("--fill", `${o.hearts.to[i]}%`)), 260);
-      if (meter) setTimeout(() => {
-        if (!b.isConnected || o.owner !== state) return;
-        meter.querySelector("i").style.width = `${Math.round(staminaRatio() * 100)}%`;
-        refreshStaminaMeters();
-      }, 260);
     });
     const hold = o.evolution ? 4200 : o.fx ? 3200 : o.hearts && o.hearts.to.join() !== o.hearts.from.join() ? 2600 : 2200;
     setTimeout(() => {
       b.classList.remove("show");
       b.classList.add("out");
-      setTimeout(() => { b.remove(); staminaMeters.delete(b); bannerBusy--; pumpBanners(); }, 420);
+      setTimeout(() => { b.remove(); bannerBusy--; pumpBanners(); }, 420);
     }, hold);
   }
 }

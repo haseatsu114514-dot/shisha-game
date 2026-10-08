@@ -10,9 +10,8 @@ description: ストーリー矛盾・設定齟齬・旧名/旧設定の残存・
 必ず `docs/review_scope.md` の範囲に従う。要点:
 
 - **読む**: `data/dialogue/**`・`data/*.json`・`brand/story_and_structure.md`・
-  `brand/character_profiles.md`・（必要時のみ）`web/js/game.js`・`docs/master_spec.md`
-- **読まない**: `web/js/data.js`（生成物）・`web/dist/**`（ビルド成果物）・
-  `web/lib/**`（外部ライブラリ）・`assets/**`
+  `brand/character_profiles.md`・（必要時のみ）`remake/js/`・`docs/master_spec.md`
+- **読まない**: `remake/data/manifest.json`（生成物）・外部ライブラリ・`assets/**`
 - ⚠️ 正本に見えて**旧設定の残骸**であるファイルは根拠にしない。brand/docs 内に
   旧タイトル「煙の向こう側」等が残存することがある。**矛盾したら CLAUDE.md が正**。
 

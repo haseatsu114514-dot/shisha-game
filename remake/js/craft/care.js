@@ -17,7 +17,7 @@ const ROUNDS = 3;
 const CENTER = (IDEAL[0] + IDEAL[1]) / 2;
 
 export async function runCare(cs) {
-  const panel = stepPanel("care", "熱管理 ── 最後の一口まで", "審査員が吸っている間も熱は動く。流れを読んで、一手ずつ打つ");
+  const panel = stepPanel("care", "熱管理", "審査員が吸っている間も熱は動く。流れを読んで、一手ずつ打つ");
   let T = cs.pull?.temp ?? CENTER;
   const history = [T];
   const clarity = skill.clarity(cs);

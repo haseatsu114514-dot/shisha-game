@@ -55,8 +55,8 @@ export async function showStandings(round, mine) {
   rows.push({ id: "hajime", v: Math.min(mine * 0.9, 80) });
   rows.sort((a, b) => b.v - a.v);
   const feed = round === 1
-    ? ["前園、なるに3点投入！", "南雲審査員長 ── まだ動かず"]
-    : ["チャコール博士、アダムに4点投入！", "南雲審査員長 ── 10点まるまる温存"];
+    ? ["前園、なるに3点投入！", "南雲審査員長、まだ動かず"]
+    : ["チャコール博士、アダムに4点投入！", "南雲審査員長、10点まるまる温存"];
   const board = el("div.standings", [
     el("div.sd-title", { text: `ROUND ${round} 暫定順位` }),
     el("div.sd-rows", rows.map((r, i) => el(`div.sd-row${r.id === "hajime" ? ".me" : ""}`, { style: { "--i": String(i) } }, [
@@ -173,7 +173,7 @@ export async function nagumoCutin(rank) {
     el("i.nc-bar", [el("b", { style: { width: `${(before[id] / maxV) * 100}%` } })]),
     el("span.nc-pt", { text: `${before[id]}` }),
   ])));
-  const cut = el("div.nc-cut", [faceOf("nagumo", ".nc-cut-face"), el("div", [el("small", { text: "審査員長" }), el("b", { text: "南雲修二" }), el("div.nc-cut-pt", { text: "持ち点 10 ── 一括投入" })])]);
+  const cut = el("div.nc-cut", [faceOf("nagumo", ".nc-cut-face"), el("div", [el("small", { text: "審査員長" }), el("b", { text: "南雲修二" }), el("div.nc-cut-pt", { text: "持ち点10、一括投入" })])]);
   const ov = el("div.nagumo-cut", [el("div.nc-title", { text: "持ち点 投入状況" }), bars, cut]);
   layers.fx.append(ov);
   const fast = !!autoSkill();
@@ -233,9 +233,9 @@ export function resultTable(cs, rank) {
       el("small.rt-bar-note", { text: rank === 1 ? "技術点も個性点も、4人の中では下位だった。" : "南雲審査員長の持ち点は、動かなかった。" }),
     ]);
     const btn = el("button.btn.primary", { dataset: { test: "result-next" }, onclick: () => { SE.select(); retireScreen(); resolve(); } }, [
-      el("span.btn-label", { text: rank === 1 ? "──表彰のあとへ" : "……結果を受け止める" }),
+      el("span.btn-label", { text: rank === 1 ? "表彰のあとへ" : "……結果を受け止める" }),
     ]);
-    showScreen("result", el("div.result-table", [el("div.rt-title", { text: "SMOKE CROWN CUP ── FINAL RESULT" }), el("div.rt-rows", rows), detail, btn]));
+    showScreen("result", el("div.result-table", [el("div.rt-title", { text: "SMOKE CROWN CUP  FINAL RESULT" }), el("div.rt-rows", rows), detail, btn]));
     if (rank === 1) SE.fanfare();
     if (autoSkill()) setTimeout(() => btn.click(), 150);
   });

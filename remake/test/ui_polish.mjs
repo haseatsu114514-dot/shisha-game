@@ -91,8 +91,8 @@ try {
   await page.waitForSelector(".gain-card.st-guts .gc-evolution");
   assert.equal(await page.locator(".gc-evolution").textContent(), "レベル4に進化！");
   assert.doesNotMatch(await page.locator(".gain-card").textContent(), /少し上がった|かなり上がった|大きく上がった/);
-  assert.match(await page.locator(".gc-fx").textContent(), /深呼吸が2回/);
-  assert.equal(await page.evaluate(() => T.steam.bombStock()), 2);
+  assert.match(await page.locator(".gc-fx").textContent(), /リフレッシュが3回/);
+  assert.equal(await page.evaluate(() => T.steam.refreshStock()), 3);
   await page.evaluate(() => T.ui.bannersIdle());
   const reward = await page.evaluate(() => {
     T.core.state.phase = "tournament"; T.reel.onAction({ spent: 10 });
@@ -121,5 +121,5 @@ try {
   await page.evaluate(() => T.title.showTitle());
   assert.equal(await page.locator(".title-logo-smoke i").first().evaluate(e => getComputedStyle(e).animationName), "none");
   assert.deepEqual(errors, []);
-  console.log("[UI polish] PASS: title/continue, three viewport sizes, centered dialogs, choices, event and real slot evolution, bomb benefit, no false level-up, reduced motion");
+  console.log("[UI polish] PASS: title/continue, three viewport sizes, centered dialogs, choices, event and real slot evolution, refresh benefit, no false level-up, reduced motion");
 } finally { await browser.close(); }

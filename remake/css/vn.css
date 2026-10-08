@@ -56,6 +56,9 @@ body.in-vn #bg { transition: filter 0.4s; }
 .portrait[data-pos="left"] { left: 30%; }
 .portrait[data-pos="right"] { left: 70%; }
 .portrait.enter { opacity: 0; translate: 0 24px; }
+.portrait.bow { transform-origin: 50% 65%; animation: portrait-bow 0.9s ease-in-out; }
+@keyframes portrait-bow { 45% { transform: translateX(var(--ax, -50%)) rotate(3deg) scaleY(0.96); translate: 0 12px; } }
+@media (prefers-reduced-motion: reduce) { .portrait.bow { animation: none; } }
 
 .vn-scent {
   position: absolute;

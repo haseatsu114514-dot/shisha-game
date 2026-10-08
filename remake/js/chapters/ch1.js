@@ -78,7 +78,9 @@ export async function startNewGame() {
   playBgm("tonari");
   await play("ch1_opening", { bg: TONARI });
   save();
-  await tutorial();
+  await play("remake_tutorial_offer", { bg: TONARI });
+  if (flag("_tutorial_requested")) await tutorial();
+  else setFlag("_tutorial_skipped");
   await play("ch1_tutorial_oneesan", { bg: TONARI });
   state.phase = "daily";
   state.statsAtChapterStart = { ...state.stats };
@@ -114,6 +116,7 @@ async function tutorial() {
   await runSteamDodge(cs);
   await runPull(cs);
   state.flags._tutorial_done = true;
+  delete state.flags._tutorial_skipped;
   await play("remake_tutorial_result", { bg: TONARI });
   retire(layers.screen.querySelector(":scope > .bench")); // 次の会話（お姉さん）の後ろに作業台を残さない
 }

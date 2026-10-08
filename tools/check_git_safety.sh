@@ -38,7 +38,7 @@ fi
 
 [ -d "data" ] || fail "git root is missing data/"
 [ -d "assets" ] || fail "git root is missing assets/"
-[ -d "remake" ] || [ -d "web" ] || fail "git root is missing remake/ (and web/)"
+[ -d "remake" ] || fail "git root is missing remake/"
 
 origin_url="$(git remote get-url origin 2>/dev/null || true)"
 
