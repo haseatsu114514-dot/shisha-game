@@ -9,6 +9,7 @@ on:
       - "assets/**"
       - "data/**"
       - "remake/**"
+      - "icon.svg"
       - "tools/browser/flavor_stats_editor.html"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
@@ -34,6 +35,7 @@ jobs:
         run: |
           mkdir -p _site/tools
           cp -r assets _site/assets
+          cp icon.svg _site/icon.svg
           # ルートはユーザー指定のメインであるリメイク版へ転送
           cat > _site/index.html <<'HTML'
           <!DOCTYPE html>
