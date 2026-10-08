@@ -21,6 +21,16 @@ try {
     for (const id of ["naru", "minto", "adam", "tsumugi", "rin"]) core.state.met[id] = true;
     hud.initHud({}); hud.showHud(); await ui.warmUiArt();
     T.openMap = async () => { map.interruptMap(null); ui.dropRetired(); T.mapPromise = map.chooseSpot(); };
+    T.inkOffset = n => {
+      const style=getComputedStyle(n), box=n.getBoundingClientRect(), range=document.createRange();
+      range.selectNodeContents(n); const r=range.getBoundingClientRect(), scale=box.width/n.offsetWidth;
+      const ctx=document.createElement("canvas").getContext("2d");
+      ctx.font=`${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+      const m=ctx.measureText(n.textContent);
+      return { x:(r.left-box.left)/scale+(m.actualBoundingBoxRight-m.actualBoundingBoxLeft)/2-n.offsetWidth/2,
+        y:(r.top-box.top)/scale+m.fontBoundingBoxAscent+(m.actualBoundingBoxDescent-m.actualBoundingBoxAscent)/2-n.offsetHeight/2 };
+    };
+    await document.fonts.ready;
     await T.openMap();
   });
   const sizes = [{ width: 1331, height: 760 }, { width: 844, height: 390 }, { width: 591, height: 1280 }];
@@ -38,7 +48,7 @@ try {
           const p = document.querySelector(`[data-test="pin-${k}"]`), symbol = p.querySelector(".pin-symbol"), name = p.querySelector(".sub-label");
           return { k, vector: !!symbol?.querySelector("svg"), below: rect(name).y > rect(symbol).y, oldGlyph: !!p.querySelector(".label") };
         }),
-        badges: [...document.querySelectorAll(".evt-badge.story")].map(n => ({ text: n.textContent, radius: getComputedStyle(n).borderRadius, width:n.clientWidth,height:n.clientHeight })),
+        badges: [...document.querySelectorAll(".evt-badge.story")].map(n => ({ text: n.textContent, radius: getComputedStyle(n).borderRadius, width:n.clientWidth,height:n.clientHeight, ink:T.inkOffset(n) })),
         collisions: pins.flatMap((a,i) => pins.slice(i+1).filter(b => overlap(rect(a),rect(b))).map(b => [a.dataset.spot,b.dataset.spot])),
         gym: document.querySelector('[data-test="pin-choizap"] svg').innerHTML,
         leakedShark: !!document.querySelector('[data-test="pin-shishark"], [data-test="pin-kafuka"]') };
@@ -47,6 +57,7 @@ try {
     assert(map.faces.every(f => f.width === 52 && f.loaded), JSON.stringify(map.faces));
     assert(map.icons.every(i => i.vector && i.below && !i.oldGlyph));
     assert(map.badges.length >= 5 && map.badges.every(b => b.text === "!" && b.radius === "50%" && b.width === b.height));
+    assert(map.badges.every(b => Math.abs(b.ink.x)<.75 && Math.abs(b.ink.y)<.75), JSON.stringify(map.badges));
     assert.match(map.gym, /rect/); assert.deepEqual(map.collisions, []); assert(!map.leakedShark);
     if (shots) await page.screenshot({ path: `${shots}/map-${size.width}.png` });
 
@@ -68,12 +79,15 @@ try {
         noOverflow:n.scrollWidth <= n.clientWidth + 1 && n.scrollHeight <= n.clientHeight + 1,
         noSub:!n.querySelector(".gc-sub"), actual:T.core.state.stats.sense,
         pointGap:points.getBoundingClientRect().left-name.getBoundingClientRect().right,
+        smaller:parseFloat(getComputedStyle(n.querySelector(".gc-count")).fontSize)<parseFloat(getComputedStyle(name).fontSize),
+        badgeInk:T.inkOffset(n.querySelector(".gc-badge")),
         sameSize:getComputedStyle(n.querySelector(".gc-count")).fontSize === getComputedStyle(n.querySelector(".gc-unit")).fontSize };
     });
     assert.deepEqual([card.heading,card.name,card.points,card.word,card.actual], ["STATUS UP","センス","+1P","",11]);
     assert.equal(card.height,68); assert.equal(card.badge,44);
     assert(card.frame.includes("reward-clean.webp") && card.mask.includes("reward-clean.webp") && card.badgeFrame.includes("panel.webp") && card.enabled);
-    assert(card.inside && card.noOverflow && card.noSub && card.sameSize && card.pointGap < 8,JSON.stringify(card));
+    assert(card.inside && card.noOverflow && card.noSub && card.sameSize && card.smaller && card.pointGap < 8,JSON.stringify(card));
+    assert(Math.abs(card.badgeInk.x)<.75 && Math.abs(card.badgeInk.y)<.75,JSON.stringify(card));
     if (shots) await page.screenshot({ path: `${shots}/gain-${size.width}.png` });
     await page.evaluate(() => T.ui.bannersIdle());
   }

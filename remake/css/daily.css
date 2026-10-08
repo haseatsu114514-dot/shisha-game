@@ -361,6 +361,10 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
   font-style: normal;
   font-weight: 900;
   font-size: 14px;
+  line-height: 1;
+  letter-spacing: 0;
+  text-align: center;
+  padding-bottom: 2px; /* 一文字の行高と字間を固定し、字面を丸の中央に置く */
   color: #2a1a00;
   background: #ffd35e;
   border: 2px solid #fff2cc;
