@@ -2,6 +2,8 @@
 
 2026-10-08。「一章キャラ全員分」「名前のフォントと余白」「二つ名の上の英語を除去」「キャラごとの模様」「セリフは残す」の依頼に対応。
 
+保存先：確認用 [PR #226](https://github.com/haseatsu114514-dot/shisha-game/pull/226)。最終の主案は全14枠のイラスト版。
+
 - [全14カットの一覧](comparison.png)
 - [作り直した6人の幾何学版](geometric-six.png)・[読みやすさを改善したイラスト版](illustrated-six.png)
 - [全14枠の幾何学版／イラスト版の比較](styles-comparison.png)：左が幾何学版、右が主案のイラスト版。
