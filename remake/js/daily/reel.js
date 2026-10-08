@@ -701,8 +701,8 @@ function announce(r) {
   if (!(r.got > 0) || r.quiet || !r.target) return;
   const fx = r.starTo ? DB.statusTexts?.statTierFx?.[r.target]?.[r.starTo - 1] : "";
   gainCard({
-    kind: "stat", stat: r.target, points: r.got, badge: { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "察" }[r.target],
-    top: "PAKKI SLOT", main: STAT_JA[r.target], evolution: r.starTo ? `レベル${r.starTo}に進化！` : "",
+    kind: "stat", source: "slot", stat: r.target, points: r.got, badge: { technique: "技", sense: "感", guts: "根", charm: "魅", insight: "察" }[r.target],
+    top: "SLOT BONUS", main: STAT_JA[r.target], evolution: r.starTo ? `レベル${r.starTo}に進化！` : "",
     fx,
   });
 }

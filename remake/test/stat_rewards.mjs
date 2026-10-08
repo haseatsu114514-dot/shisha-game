@@ -1,4 +1,4 @@
-// 実際の成長量と通知、イベント/スロットの差、上限時の振替、HUDへ飛ぶ光を確認。
+// 実際の成長量と通知、スロットボーナスの区別と位置、上限時の振替、HUDへ飛ぶ光を確認。
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 const { chromium } = createRequire(import.meta.url)("playwright");
@@ -15,10 +15,13 @@ try {
     const core = await import("./js/core/state.js"), stats = await import("./js/core/stats.js");
     const ui = await import("./js/core/ui.js"), hud = await import("./js/daily/hud.js");
     const reel = await import("./js/daily/reel.js"), { on } = await import("./js/core/bus.js");
+    const { SE } = await import("./js/core/audio.js");
     core.newGame(); core.state.phase = "daily";
     ui.showScreen("map", document.createElement("div"));
     hud.initHud({}); hud.showHud();
-    window.T = { core, stats, ui, hud, reel, events: [], flights: [], impacts: 0 };
+    window.T = { core, stats, ui, hud, reel, events: [], flights: [], impacts: 0, bonusSounds: 0 };
+    const slotBonus = SE.slotBonus;
+    SE.slotBonus = () => { T.bonusSounds++; slotBonus(); };
     on("stat-gain", e => T.events.push(e));
     new MutationObserver(records => {
       for (const record of records) for (const node of record.addedNodes) {
@@ -34,6 +37,11 @@ try {
   assert.equal(await page.locator(".gc-top").textContent(), "STATUS UP");
   assert.equal(await page.locator(".gc-sub").count(), 0);
   assert.equal(await page.locator(".gain-card.stat").evaluate(e => e.clientHeight), 68);
+  const regularPosition = await page.locator(".gain-card.stat").evaluate(e => ({
+    parent: e.parentElement.id, left: e.offsetLeft, top: e.offsetTop, width: e.offsetWidth, height: e.offsetHeight,
+  }));
+  assert.equal(await page.locator(".gain-card.slot-bonus").count(), 0);
+  assert.equal(await page.evaluate(() => T.bonusSounds), 0, "通常の能力アップでスロット専用音が鳴った");
   await page.waitForFunction(() => T.impacts > 0);
   assert.deepEqual(await page.evaluate(() => ({ points: T.core.state.stats.technique, total: T.events[0].total,
     count: T.events.length, flown: [...new Set(T.flights)] })), { points: 13, total: 3, count: 1, flown: ["technique"] });
@@ -77,14 +85,32 @@ try {
   assert.equal(reward.got, reward.actual);
   await page.waitForSelector(".gain-card .gc-points", { timeout: 15000 });
   assert.equal(await page.locator(".gc-points").textContent(), `+${reward.got}P`);
-  assert.equal(await page.locator(".gc-top").textContent(), "PAKKI SLOT");
+  assert.equal(await page.locator(".gc-top").textContent(), "SLOT BONUS");
+  const slotCard = page.locator(".gain-card.stat.slot-bonus");
+  assert.equal(await slotCard.count(), 1);
+  assert.deepEqual(await slotCard.evaluate(e => ({
+    parent: e.parentElement.id, left: e.offsetLeft, top: e.offsetTop, width: e.offsetWidth, height: e.offsetHeight,
+  })), regularPosition, "スロットの通知位置またはサイズが通常の通知と違う");
+  const glow = await slotCard.evaluate(e => {
+    const s = getComputedStyle(e, "::after");
+    return { animated: s.animationName !== "none", count: s.animationIterationCount, seconds: parseFloat(s.animationDuration) };
+  });
+  assert(glow.animated && glow.count === "1" && glow.seconds <= 1, "枠の光が短い一度の演出になっていない");
+  assert.equal(await page.evaluate(() => T.bonusSounds), 1);
   await page.evaluate(() => window.presenting);
   assert.deepEqual(await page.evaluate(() => ({ ...T.core.state.stats })), reward.after);
   await page.evaluate(() => T.ui.bannersIdle());
+  await page.evaluate(() => T.reel.presentNow());
+  assert.equal(await page.locator(".gain-card.slot-bonus").count(), 0);
+  assert.equal(await page.evaluate(() => T.bonusSounds), 1, "演出済みのボーナス音が再び鳴った");
 
   // 前のセーブの合算待ちは捨てる。縮小画面と動きを減らす設定でもポイントを読める。
   await page.setViewportSize({ width: 844, height: 390 });
   await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.evaluate(() => T.ui.gainCard({ kind: "stat", source: "slot", stat: "sense", top: "SLOT BONUS", main: "センス", points: 2 }));
+  await page.waitForSelector(".gain-card.slot-bonus.show");
+  assert.equal(await page.locator(".gain-card.slot-bonus").evaluate(e => getComputedStyle(e, "::after").animationName), "none");
+  await page.evaluate(() => T.ui.bannersIdle());
   await page.evaluate(() => {
     T.stats.gainStat("technique", 3);
     T.core.newGame(); T.core.state.phase = "daily"; T.events = []; T.flights = [];
@@ -96,5 +122,5 @@ try {
   await page.waitForTimeout(900);
   assert.deepEqual(await page.evaluate(() => T.flights), []);
   assert.deepEqual(errors, []);
-  console.log("[stat rewards] PASS: actual/batched points, redirected cap, real slot reward, flight/impact, state change, small screen, reduced motion");
+  console.log("[stat rewards] PASS: actual/batched points, redirected cap, real SLOT BONUS, unchanged position/size, single glow/sound, no repeated bonus, flight/impact, state change, small screen, reduced motion");
 } finally { await browser.close(); }

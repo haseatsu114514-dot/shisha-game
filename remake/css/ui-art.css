@@ -220,6 +220,15 @@
 .gain-card.stat :is(.gc-count, .gc-unit) { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
 .gain-card.stat.evolved { width: auto; min-width: 320px; max-width: 480px; }
 .gain-card.stat .gc-evolution { font-size: 18px; line-height: 1.4; }
+/* スロットの当たりだけ、元の金属枠を一度明るくする。サイズ・出現位置は共通。 */
+.gain-card.stat.slot-bonus.show::after { animation: slot-bonus-glow 0.85s ease-out 0.45s; }
+@keyframes slot-bonus-glow {
+  0%, 100% { filter: brightness(1); }
+  35% { filter: brightness(1.65); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gain-card.stat.slot-bonus::before, .gain-card.stat.slot-bonus.show::after { animation: none; }
+}
 .stat-flight {
   position: absolute;
   left: -7px;

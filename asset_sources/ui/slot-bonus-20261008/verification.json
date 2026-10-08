@@ -1,0 +1,101 @@
+{
+  "date": "2026-10-08",
+  "sourceCommit": "4fb38def788671b9437bb62f7bead9fe74bb317e",
+  "fixture": "Real spinSeries -> onAction({spent:10}) -> presentNow in isolated test states",
+  "cases": [
+    {
+      "role": "cherry",
+      "viewport": {
+        "width": 1331,
+        "height": 760
+      },
+      "stat": "sense",
+      "actualGain": 2,
+      "screenshot": "slot-cherry-1331.png"
+    },
+    {
+      "role": "bell",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "stat": "technique",
+      "actualGain": 3,
+      "screenshot": "slot-bell-844.png"
+    },
+    {
+      "role": "cherry",
+      "viewport": {
+        "width": 591,
+        "height": 1280
+      },
+      "stat": "guts",
+      "actualGain": 2,
+      "screenshot": "slot-cherry-591.png"
+    },
+    {
+      "role": "reg",
+      "viewport": {
+        "width": 1331,
+        "height": 760
+      },
+      "stat": "charm",
+      "actualGain": 16,
+      "screenshot": "slot-reg-1331.png"
+    },
+    {
+      "role": "big",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "stat": "insight",
+      "actualGain": 24,
+      "screenshot": "slot-big-844.png"
+    },
+    {
+      "role": "freeze",
+      "viewport": {
+        "width": 591,
+        "height": 1280
+      },
+      "stat": "sense",
+      "actualGain": 36,
+      "screenshot": "slot-freeze-591.png"
+    }
+  ],
+  "passedForEveryCase": [
+    "SLOT BONUS heading",
+    "displayed actual committed gain",
+    "card and text inside stage",
+    "original smoke-free reward-clean frame",
+    "points 19px and name 21px",
+    "visible single frame glow",
+    "stats and spin count unchanged by presentation"
+  ],
+  "reelVisuals": {
+    "result": "PASS: BIG/REGの先告知・後告知、右リールの回転/減速、再マウント、通常回転、画像、通知色",
+    "samples": [
+      "[reel-visuals] PASS big/before: 342 frames, right-only 90, slow 77",
+      "[reel-visuals] PASS big/after: 341 frames, right-only 90, slow 77",
+      "[reel-visuals] PASS reg/before: 342 frames, right-only 90, slow 77",
+      "[reel-visuals] PASS reg/after: 340 frames, right-only 89, slow 77, remount"
+    ],
+    "errors": []
+  },
+  "browserErrors": [],
+  "runtimeSha256": {
+    "remake/js/core/ui.js": "cd46ad3f7308bb1918a6e0c1c1bec20772fa2dbb1bc87b8b595e8c03381ad1da",
+    "remake/js/core/audio.js": "62d61f6ce359631b818b6a88198a959dedcd89ec4246815ff294217b0e4d35ca",
+    "remake/js/daily/reel.js": "a2c2419a47b27e7f04c8cb660e48af188aff7d228859e21409284dd0e60bf8e4",
+    "remake/css/ui-art.css": "7e89821f43fa5150d70d78edc366b6fccf4c2c188e1ab8e5a2648ae91602b630"
+  },
+  "screenshotSha256": {
+    "slot-cherry-1331.png": "62021bd3f176338350fc1883843cace82bf3198e4cf21cf782cd0bcc7a4e4641",
+    "slot-bell-844.png": "8993106365bee56b13e02daa8f6e87369cbaa7cfa06ef6107bb342305baeb2c2",
+    "slot-cherry-591.png": "dadd314afe781761087e2b0fe40dfaff5634702ced4f277e200696baf2bd36f4",
+    "slot-reg-1331.png": "34172dd6018dcb6a268f73c9325b6a6f66ce0fd25f8893c6ba34c6dca807d260",
+    "slot-big-844.png": "2d49ee7657eb5498766c3621283c0dbc12a3e3741a0b1ca715babd83c7287bc9",
+    "slot-freeze-591.png": "46d4223ddee94384f82785b11f43142ed7c3e29a78d5b6b15c98452773effaa4"
+  }
+}
