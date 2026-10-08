@@ -1,0 +1,24 @@
+{
+  "id": "mashiro-02-tea-break",
+  "path": "/workspace/generated_images/exec-beffd700-f8b8-44bc-b6d5-c44b6a4a5c09.png",
+  "source": "mashiro/02-tea-break.png",
+  "prompt": "mashiro/02-tea-break.prompt.txt",
+  "references": [
+    "../heroine-concepts-v1-20261008/references/mashiro-adopted-normal.png",
+    "../heroine-concepts-v1-20261008/references/title-style.png"
+  ],
+  "source_sha256": "0790aeaa1f231457b4f32ca67a5dc7a6a5ee630043ab55600fc6e821977fa658",
+  "prompt_sha256": "a5b2fab791c627f8afe8eee84febe411dbcc3ceee8f306e3d713506cd5e35bc7",
+  "reference_sha256": {
+    "../heroine-concepts-v1-20261008/references/mashiro-adopted-normal.png": "d9a9ae63c2b0bfaae9f88fc139bf3ca7deb22fd719b9286f5c383668cf495f8d",
+    "../heroine-concepts-v1-20261008/references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}

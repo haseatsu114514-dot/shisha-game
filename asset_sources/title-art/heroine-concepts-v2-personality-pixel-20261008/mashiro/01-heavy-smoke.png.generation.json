@@ -1,18 +1,16 @@
 {
   "id": "mashiro-01-heavy-smoke",
-  "path": "/workspace/generated_images/exec-15328fb7-9f0a-4f3a-93a9-4d0e4ddc410b.png",
+  "path": "/workspace/generated_images/exec-b17f7960-fe6c-4d0f-bbf9-a5f3da8a4b02.png",
   "source": "mashiro/01-heavy-smoke.png",
-  "prompt": "mashiro/01-heavy-smoke.prompt.txt",
+  "prompt": "mashiro/01-heavy-smoke.revision-1.prompt.txt",
   "references": [
-    "../heroine-concepts-v1-20261008/references/mashiro-adopted-normal.png",
-    "../heroine-concepts-v1-20261008/references/title-style.png",
+    "mashiro/01-heavy-smoke-first.png",
     "references/km-turkey-brass.png"
   ],
-  "source_sha256": "f633c63452b5882566f8f42a6b142f8f4c47c8e9d6c3abda7fdb8e1feb525d72",
-  "prompt_sha256": "0250e2f71f86bd81c57c6eb9b44f776d381c4aeed67543b632c5a6aefb7ede36",
+  "source_sha256": "8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559",
+  "prompt_sha256": "a0d360ad550c7296c0eb2f44410ccebeada716b26ccb3005a40477a300e66dc2",
   "reference_sha256": {
-    "../heroine-concepts-v1-20261008/references/mashiro-adopted-normal.png": "d9a9ae63c2b0bfaae9f88fc139bf3ca7deb22fd719b9286f5c383668cf495f8d",
-    "../heroine-concepts-v1-20261008/references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+    "mashiro/01-heavy-smoke-first.png": "f633c63452b5882566f8f42a6b142f8f4c47c8e9d6c3abda7fdb8e1feb525d72",
     "references/km-turkey-brass.png": "810e4bdb41f155746ee444cd4f52bcf6ab6d6723b8ec37cd37bac818aa916d81"
   },
   "size": [

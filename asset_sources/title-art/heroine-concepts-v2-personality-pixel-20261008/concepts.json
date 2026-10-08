@@ -21,12 +21,20 @@
         "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
       ],
       "runtime_installed": false,
-      "status": "equipment-detail-review",
+      "status": "reviewed",
       "original_output": "/workspace/generated_images/exec-365326ab-eae3-4f3c-bedc-befc46565fe2.png",
       "source_sha256": "5d8f7ab864bff38b7def9098a3fff42780bb9a67774ade0cbe4bb1f9c0f444ad",
       "size": [
         1024,
         1536
+      ],
+      "latest_prompt": "tsumugi/01-smoke-colors.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/tsumugi-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png",
+        "references/wookah-complete.jpg",
+        "references/lerook-blue-black.png",
+        "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
       ]
     },
     {
@@ -42,7 +50,18 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "reviewed",
+      "original_output": "/workspace/generated_images/exec-08b6e65b-abc1-40ee-8ef3-ac22004ee666.png",
+      "source_sha256": "336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "tsumugi/02-tablet-cat.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/tsumugi-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ]
     },
     {
       "id": "tsumugi-03-twilight-sketch",
@@ -73,12 +92,17 @@
         "references/km-turkey-brass.png"
       ],
       "runtime_installed": false,
-      "status": "equipment-detail-review",
-      "original_output": "/workspace/generated_images/exec-15328fb7-9f0a-4f3a-93a9-4d0e4ddc410b.png",
-      "source_sha256": "f633c63452b5882566f8f42a6b142f8f4c47c8e9d6c3abda7fdb8e1feb525d72",
+      "status": "reviewed",
+      "original_output": "/workspace/generated_images/exec-b17f7960-fe6c-4d0f-bbf9-a5f3da8a4b02.png",
+      "source_sha256": "8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559",
       "size": [
         1024,
         1536
+      ],
+      "latest_prompt": "mashiro/01-heavy-smoke.revision-1.prompt.txt",
+      "latest_references": [
+        "mashiro/01-heavy-smoke-first.png",
+        "references/km-turkey-brass.png"
       ]
     },
     {
@@ -94,7 +118,18 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "reviewed",
+      "original_output": "/workspace/generated_images/exec-beffd700-f8b8-44bc-b6d5-c44b6a4a5c09.png",
+      "source_sha256": "0790aeaa1f231457b4f32ca67a5dc7a6a5ee630043ab55600fc6e821977fa658",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "mashiro/02-tea-break.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/mashiro-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ]
     },
     {
       "id": "mashiro-03-after-rain",
@@ -126,12 +161,19 @@
         "../heroine-concepts-v1-20261008/references/hmd-real-assembled.jpg"
       ],
       "runtime_installed": false,
-      "status": "equipment-detail-review",
+      "status": "reviewed",
       "original_output": "/workspace/generated_images/exec-e929a461-8a3f-4996-8975-9f1cf9221232.png",
       "source_sha256": "927d5e13340e2f5c9c29542215301e6d79dcc532e1c89e2293bf5ab233a1915a",
       "size": [
         1024,
         1536
+      ],
+      "latest_prompt": "minto/01-cafe-welcome.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/minto-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png",
+        "../heroine-concepts-v1-20261008/references/hookah-real-body.jpg",
+        "../heroine-concepts-v1-20261008/references/hmd-real-assembled.jpg"
       ]
     },
     {
@@ -179,7 +221,19 @@
         "../heroine-concepts-v1-20261008/references/minto-private.png"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "reviewed",
+      "original_output": "/workspace/generated_images/exec-85e377e0-1bf4-48ca-a54e-0ced793a481f.png",
+      "source_sha256": "7324deb26600496f18caf19c8bcb316f317a144f0366c11fe1f2c796dd94cf53",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "minto/04-after-hours.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/minto-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png",
+        "../heroine-concepts-v1-20261008/references/minto-private.png"
+      ]
     },
     {
       "id": "ageha-01-professional-taste",
@@ -203,6 +257,14 @@
       "size": [
         1024,
         1536
+      ],
+      "latest_prompt": "ageha/01-professional-taste.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/ageha-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png",
+        "references/amy-diamond-pink.jpg",
+        "references/lerook-blue-black.png",
+        "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
       ]
     },
     {
@@ -252,11 +314,16 @@
       ],
       "runtime_installed": false,
       "status": "equipment-detail-review",
-      "original_output": "/workspace/generated_images/exec-82ef3d2d-cfdd-41dd-abdd-347d3ff69585.png",
-      "source_sha256": "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
+      "original_output": "/workspace/generated_images/exec-d280300b-432e-4bcb-a958-1595465c31a3.png",
+      "source_sha256": "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4",
       "size": [
         1024,
         1536
+      ],
+      "latest_prompt": "rin/01-night-tasting.revision-1.prompt.txt",
+      "latest_references": [
+        "rin/01-night-tasting-first.png",
+        "references/steamulation-black.jpg"
       ]
     },
     {
@@ -306,11 +373,16 @@
       ],
       "runtime_installed": false,
       "status": "equipment-detail-review",
-      "original_output": "/workspace/generated_images/exec-df7a085b-7816-44aa-a9d8-3deb9895d19a.png",
-      "source_sha256": "02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea",
+      "original_output": "/workspace/generated_images/exec-b240f119-4cba-4260-8592-5f1771a9a1d6.png",
+      "source_sha256": "77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f",
       "size": [
         1024,
         1536
+      ],
+      "latest_prompt": "kafuka/01-shishark-test-run.revision-1.prompt.txt",
+      "latest_references": [
+        "kafuka/01-shishark-test-run-first.png",
+        "references/cloud-micro-blue.jpg"
       ]
     },
     {

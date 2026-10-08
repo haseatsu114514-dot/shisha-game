@@ -1,23 +1,17 @@
 {
   "id": "rin-01-night-tasting",
-  "path": "/workspace/generated_images/exec-82ef3d2d-cfdd-41dd-abdd-347d3ff69585.png",
+  "path": "/workspace/generated_images/exec-d280300b-432e-4bcb-a958-1595465c31a3.png",
   "source": "rin/01-night-tasting.png",
-  "prompt": "rin/01-night-tasting.prompt.txt",
+  "prompt": "rin/01-night-tasting.revision-1.prompt.txt",
   "references": [
-    "../heroine-concepts-v1-20261008/references/rin-adopted-normal.png",
-    "../heroine-concepts-v1-20261008/references/title-style.png",
-    "references/steamulation-black.jpg",
-    "references/lapis-black-white.jpg",
-    "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
+    "rin/01-night-tasting-first.png",
+    "references/steamulation-black.jpg"
   ],
-  "source_sha256": "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
-  "prompt_sha256": "5de0aa1f0b781f48e36393830d83a46bd7b7fc6d5e850b0b8848f5af36ebcb37",
+  "source_sha256": "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4",
+  "prompt_sha256": "f6ee7d279998631b3fcdc3634a5e8b0c4af009169b0717f0ecacad607e7d3d60",
   "reference_sha256": {
-    "../heroine-concepts-v1-20261008/references/rin-adopted-normal.png": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09",
-    "../heroine-concepts-v1-20261008/references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
-    "references/steamulation-black.jpg": "2a9be1e829d824ff1d570b43bdc569bee050e921ccc60d3e4af3cc0cddcd0158",
-    "references/lapis-black-white.jpg": "6940b066e63ab6e0137c0f69b47dd58fbe3a386cf794869e29fe322b3d5245d2",
-    "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg": "a46cd683eb02c239513b22bfc937dffde5f3920f958a33ba00a1553fbe183cbc"
+    "rin/01-night-tasting-first.png": "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
+    "references/steamulation-black.jpg": "2a9be1e829d824ff1d570b43bdc569bee050e921ccc60d3e4af3cc0cddcd0158"
   },
   "size": [
     1024,
