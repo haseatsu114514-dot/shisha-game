@@ -1,0 +1,24 @@
+{
+  "id": "rin-02-flavor-samples",
+  "path": "/workspace/generated_images/exec-73b65107-52fc-4592-978d-5723ad6b602f.png",
+  "source": "rin/02-flavor-samples.png",
+  "prompt": "rin/02-flavor-samples.prompt.txt",
+  "references": [
+    "../heroine-concepts-v1-20261008/references/rin-adopted-normal.png",
+    "../heroine-concepts-v1-20261008/references/title-style.png"
+  ],
+  "source_sha256": "abaa15b9ffbe0cba763862d49b8e3023408a4d7b4f84420c79844496d248ea82",
+  "prompt_sha256": "af4b10fa20456cfe9fe10c20660a962003f5019e0bacc5954c232d5a8e671439",
+  "reference_sha256": {
+    "../heroine-concepts-v1-20261008/references/rin-adopted-normal.png": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09",
+    "../heroine-concepts-v1-20261008/references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}

@@ -1,0 +1,24 @@
+{
+  "id": "rin-03-late-coffee",
+  "path": "/workspace/generated_images/exec-6bc7f80e-c266-46da-a220-c7dea8ef579a.png",
+  "source": "rin/03-late-coffee.png",
+  "prompt": "rin/03-late-coffee.prompt.txt",
+  "references": [
+    "references/rin-adopted-normal.png",
+    "references/title-style.png"
+  ],
+  "source_sha256": "a4a542ac461374247f54df7a71f8772b17b820cef8a7516df14124a65d03b553",
+  "prompt_sha256": "d51a3acf2088a7a70e4f58c73cda64da739cf04cc1750edd377eb46a6043f751",
+  "reference_sha256": {
+    "references/rin-adopted-normal.png": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09",
+    "references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}

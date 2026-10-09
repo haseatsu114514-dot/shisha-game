@@ -1,0 +1,24 @@
+{
+  "id": "ageha-03-model-moment",
+  "path": "/workspace/generated_images/exec-7b349640-9b8d-426f-90cd-2bf92197a86f.png",
+  "source": "ageha/03-model-moment.png",
+  "prompt": "ageha/03-model-moment.prompt.txt",
+  "references": [
+    "references/ageha-adopted-normal.png",
+    "references/title-style.png"
+  ],
+  "source_sha256": "7b9bcc163fb0213c9ba57f6176e0d19e1740aa33baf1a6efbca2ceeaf33fbfde",
+  "prompt_sha256": "69a1a272594e79b2183b242bbdb7ab57f0febeead581c1af2467b5a9ce1ff737",
+  "reference_sha256": {
+    "references/ageha-adopted-normal.png": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+    "references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}

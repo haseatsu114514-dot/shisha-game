@@ -1,0 +1,23 @@
+{
+  "id": "rin-01-night-tasting",
+  "path": "/workspace/generated_images/exec-948c738c-b3de-4de6-b5ac-e7bb8fde8d5f.png",
+  "source": "rin/01-night-tasting.png",
+  "prompt": "rin/01-night-tasting.revision-2.prompt.txt",
+  "references": [
+    "rin/01-night-tasting-revision-1.png"
+  ],
+  "source_sha256": "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
+  "prompt_sha256": "eb69ea24c82e87721b3638dee4c3ed51964e0653948313fec815880af3a30c44",
+  "reference_sha256": {
+    "rin/01-night-tasting-revision-1.png": "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false,
+  "preserved_source": "rin/01-night-tasting-revision-2.png"
+}

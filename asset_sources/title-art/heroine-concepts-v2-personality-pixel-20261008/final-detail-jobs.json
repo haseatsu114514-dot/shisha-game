@@ -1,0 +1,23 @@
+[
+  {
+    "id": "kafuka-01-shishark-test-run",
+    "character": "kafuka",
+    "label": "器具の仕上げ・kafuka",
+    "source": "kafuka/01-shishark-test-run.png",
+    "prompt": "kafuka/01-shishark-test-run.revision-2.prompt.txt",
+    "references": [
+      "kafuka/01-shishark-test-run-revision-1.png",
+      "references/cloud-micro-blue.jpg"
+    ]
+  },
+  {
+    "id": "rin-01-night-tasting",
+    "character": "rin",
+    "label": "器具の仕上げ・rin",
+    "source": "rin/01-night-tasting.png",
+    "prompt": "rin/01-night-tasting.revision-2.prompt.txt",
+    "references": [
+      "rin/01-night-tasting-revision-1.png"
+    ]
+  }
+]

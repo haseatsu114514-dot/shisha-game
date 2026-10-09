@@ -1,0 +1,90 @@
+[
+  {
+    "file": "references/wookah-body.jpg",
+    "source_url": "https://store.wookah.pl/3164-large_default/wookah-body-walnut.jpg",
+    "source_page": "https://store.wookah.pl/en/50-wookah-body-walnut.html",
+    "sha256": "7ee45733539c9028cb6b192f476b24c84c56206a02e747ca7aee253714a86cdc",
+    "use": "manufacturer product geometry research; no brand marks copied into original artwork",
+    "bytes": 36216
+  },
+  {
+    "file": "references/wookah-vase.jpg",
+    "source_url": "https://store.wookah.pl/2248-large_default/wookah-vase-walnut.jpg",
+    "source_page": "https://store.wookah.pl/en/50-wookah-body-walnut.html",
+    "sha256": "b055be0ba996751a0ae4b17a08875f3cb29826a3d16239c01939fd98779c7706",
+    "use": "manufacturer product geometry research; no brand marks copied into original artwork",
+    "bytes": 73661
+  },
+  {
+    "file": "references/km-turkey-brass.png",
+    "source_url": "https://cdn.shopify.com/s/files/1/0895/5042/files/1_09e9edb4-ad0e-4d54-96f6-f8fb0212fa35.png?v=1765959404",
+    "source_page": "https://khalilmamoon.com/products/turkey-1-level",
+    "sha256": "810e4bdb41f155746ee444cd4f52bcf6ab6d6723b8ec37cd37bac818aa916d81",
+    "use": "manufacturer product geometry research; no brand marks copied into original artwork",
+    "bytes": 524271
+  },
+  {
+    "file": "references/amy-diamond-pink.jpg",
+    "source_url": "https://www.amydeluxe.de/media/30/40/2f/1702931161/001_diamond_pk_shopware.jpg?ts=1739263674",
+    "source_page": "https://www.amydeluxe.de/en/Diamond/AMY001C-PK",
+    "sha256": "03c802681606e5b2a103916abd0ce93be2ac103a795d48ff6eac05bb6a9dcafd",
+    "use": "manufacturer product geometry research; no brand marks copied into original artwork",
+    "bytes": 160185
+  },
+  {
+    "file": "references/steamulation-black.jpg",
+    "source_url": "https://shisha-steamulation.de/wp-content/uploads/2021/11/steamulation-pro-x-mini-black-matt-w-1.jpg",
+    "source_page": "https://shisha-steamulation.de/en/pro-x-mini/",
+    "sha256": "2a9be1e829d824ff1d570b43bdc569bee050e921ccc60d3e4af3cc0cddcd0158",
+    "use": "manufacturer product geometry research; no brand marks copied into original artwork",
+    "bytes": 83799
+  },
+  {
+    "file": "references/wookah-complete.jpg",
+    "source_url": "https://store.wookah.pl/2254-large_default/wookah-classic-walnut.jpg",
+    "source_page": "https://store.wookah.pl/en/859-wookah-classic-walnut.html",
+    "sha256": "6c405d25a2ab50064f7bf30245c753416788dbde9ee6fbd828a22ffc458087d1",
+    "use": "actual product geometry research; no brand marks copied into artwork"
+  },
+  {
+    "file": "references/cloud-micro-blue.jpg",
+    "source_url": "https://www.shishabucks.com/wp-content/uploads/2019/10/cloud-micro-blue-2.jpg",
+    "source_page": "https://www.shishabucks.com/hookahs/cloudmicro-hookah/",
+    "sha256": "1d9c88a847a32474af8f41969f95b65ede9b538961757d82716b950c956c0fee",
+    "use": "actual product geometry research; no brand marks copied into artwork"
+  },
+  {
+    "file": "references/kafuka-adopted-normal.png",
+    "original": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+    "sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b",
+    "role": "adopted adult character identity, black hair with deep-blue inner layers, street sister outfit, Koro plush"
+  },
+  {
+    "file": "references/lerook-blue-black.png",
+    "source_url": "https://cdn.shopify.com/s/files/1/0411/3737/3350/products/lerook_blue_black.png?v=1601496199",
+    "source_page": "https://alpacabowls.com/collections/lerook/products/alpaca-lerook-bowl-8",
+    "sha256": "a12acde3d55e923be8a0baf6ba95bb2a7e6e837acaaa377769a6dacb4916eaae",
+    "use": "real HMD-compatible bowl/heat-management geometry; no logos copied"
+  },
+  {
+    "file": "references/lapis-black-white.jpg",
+    "source_url": "https://cdn.shopify.com/s/files/1/1082/3418/products/Lapis_Black_White_Solo_8bc87192-df30-4a42-ac6e-18535a0a689c_ccexpress.jpg?v=1772795983",
+    "source_page": "https://kaloud.com/products/samsaris-lapis-i-ceramic",
+    "sha256": "6940b066e63ab6e0137c0f69b47dd58fbe3a386cf794869e29fe322b3d5245d2",
+    "use": "real HMD-compatible bowl/heat-management geometry; no logos copied"
+  },
+  {
+    "file": "references/stratus-hmd.jpg",
+    "source_url": "https://www.shishabucks.com/wp-content/uploads/2019/10/premium-stratus-shishabucks-main.jpg",
+    "source_page": "https://www.shishabucks.com/hookahs/stratus-heat-management-device/",
+    "sha256": "81706a057e4d195b2f4e81e7bc08c24376bf976966f08b7a96d5780b2f9b084d",
+    "use": "real HMD-compatible bowl/heat-management geometry; no logos copied"
+  },
+  {
+    "file": "references/sky-bowl.jpg",
+    "source_url": "https://www.shishabucks.com/wp-content/uploads/2019/10/premium-shisha-bowl-black-gold-red-grey-green-blue-rosegold-silver-comparison.jpeg",
+    "source_page": "https://www.shishabucks.com/hookahs/sky-bowl/",
+    "sha256": "10945b199b7f0f3656f3938f5e61aadcd3a0a439bca96baba7fd7631cdbf1d65",
+    "role": "official Sky Bowl color/shape comparison; use one blue aluminum phunnel bowl only"
+  }
+]

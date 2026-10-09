@@ -1,0 +1,22 @@
+{
+  "id": "minto-01-cafe-welcome",
+  "path": "/workspace/generated_images/exec-9a96aa22-0fe6-4132-be16-1fcabcfe2e49.png",
+  "source": "minto/01-cafe-welcome.png",
+  "prompt": "minto/01-cafe-welcome.revision1.prompt.txt",
+  "references": [
+    "minto/01-cafe-welcome-first.png"
+  ],
+  "source_sha256": "0100d7dd7f82930472906a4cfa1233a8e1f446b739ba363909b2f6f21de7162d",
+  "prompt_sha256": "a2642780fddd9792b6282c4b4a1d24f4cc8281d5ca02c220d1cb0ec597c1c607",
+  "reference_sha256": {
+    "minto/01-cafe-welcome-first.png": "f015b29230012a40839f8d8b423eee6f0534005b70e3fc18dfe17227abe5b3f8"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}

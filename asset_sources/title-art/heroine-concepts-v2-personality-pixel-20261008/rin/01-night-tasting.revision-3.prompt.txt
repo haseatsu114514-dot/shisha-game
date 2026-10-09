@@ -1,0 +1,7 @@
+画風参考: bg_eden_shop.png を第一基準にする。温かい照明の2Dドット絵〜ピクセルペインター調で、輪郭・影・質感に細かいドット感を残す。リアル写真調や滑らかすぎる3D調にしない。シーシャ台の先端は小さい凸型の金属ポストにし、凹んだカップ型・ボウル一体型・大きな先端パーツにしない。
+
+Edit reference 1. Reference 1 is this same artwork. Keep exact adult Rin, pose, face, blue/cool white industrial palette, plain BLACK bowl with no emblem, black glossy chopped dark-leaf sample and continuously connected hose. Correct ONLY the black HMD lid: the protruding upright metal cylinder at its CENTER was invented by cleanup; REMOVE it. Reference 2 shows real low BLACK CLOSED Lotus I+ lid with rounded top VENT slots and short horizontal SIDE handle. Render that actual low black closed vented heat-control chamber seated flush on her black bowl, with a few clearly visible vent openings and short side handle, NO central tower/post/cylinder or extra knob. All charcoal fully INSIDE below closed lid, none on bare bowl/lid. Keep metal highlights and pixel texture, equipment position/size, everything else unchanged. No logos, emblems or words.
+
+Opaque PNG 1024x1536, portrait 2:3, preserve detailed pixel/dot render. Proposed preserved source: asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting.png
+
+The shared style instruction about a small convex metal post means the STEM mounting post UNDER the bowl; it NEVER means an extra post on the HMD lid.

@@ -1,0 +1,30 @@
+{
+  "id": "rin-01-night-tasting",
+  "path": "/workspace/generated_images/exec-a4097131-de94-4f0e-8a89-9558c87942fc.png",
+  "source": "rin/01-night-tasting.png",
+  "prompt": "rin/01-night-tasting.prompt.txt",
+  "references": [
+    "references/rin-adopted-normal.png",
+    "references/title-style.png",
+    "references/hookah-real-body.jpg",
+    "references/hmd-real-assembled.jpg",
+    "references/hmd-real-side.jpg"
+  ],
+  "source_sha256": "9953652335cb661fceb0863e95871fde01777185d395d68d454b440844c8f0c0",
+  "prompt_sha256": "09c147cf0afbe711058d121751108d033a7f13690821e48782d9699936cc7334",
+  "reference_sha256": {
+    "references/rin-adopted-normal.png": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09",
+    "references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+    "references/hookah-real-body.jpg": "2bdbb38c8ae19a6d21aadabe3be9bdec3af57754709ebdf89035d39d02702d8d",
+    "references/hmd-real-assembled.jpg": "c562580773c147f77f8ba8b86cb76fc43f8d71f9237d38fe2f4b0f717a292069",
+    "references/hmd-real-side.jpg": "a46cd683eb02c239513b22bfc937dffde5f3920f958a33ba00a1553fbe183cbc"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}
