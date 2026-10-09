@@ -1,6 +1,6 @@
 // 実温度の引継ぎ、吸い方・炭による上下、一時停止、描画・スマホ・低減モード。
-// 低温は薄く、適温は陽炎と煙（緑にしない）、過熱は赤→青→紫の炎（TH02・TH05・TH07〜09）。温度計の一番上で爆発して焦げる（TH06）。
-// ボウルは燃やさない（TH04）。既定は「炭火」案。3案（炭火・虹・炎の強さ）はどれも7段階を描き分ける。
+// 低温は薄く、適温は陽炎と煙（緑にしない）、超えると黄色→赤の炎（青・紫は使わない TH07〜09・TH12）。温度計の一番上で爆発して焦げる（TH06）。
+// ボウルは燃やさない（TH04）。既定は「炭火」案。3案（炭火・虹・炎の強さ）はどれも6段階を描き分ける。
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
@@ -40,7 +40,7 @@ try {
   const shot = async name => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
   // 温度計と同じ適温端点。上限／不正値でも描画可能。
   assert.deepEqual(await page.evaluate(() => [0,.30,.46,.62,.6201,.76,.84,.90,.92,1,NaN].map(T.thermal.thermalBand).map(b=>b.id)),
-    ['cold','warming','ready','ready','hot','fire','blue','blue','inferno','inferno','cold']);
+    ['cold','warming','ready','ready','hot','fire','fire','inferno','inferno','inferno','cold']);
   // 爆発は温度計の一番上だけ。
   assert.deepEqual(await page.evaluate(() => [.98, .999, 1].map(T.conditions.isBurnt)), [false, false, true]);
   await page.evaluate(() => T.session.stepPanel('heat','炭焼き'));
@@ -89,7 +89,7 @@ try {
   await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.run);
   const images=[], colors={}, glows=[], hazes={};
   assert.equal(await page.evaluate(() => T.thermal.thermalStyle()), 'ember');
-  for (const [temp, expected] of [[.2,'cold'],[.4,'warming'],[.54,'ready'],[.70,'hot'],[.80,'fire'],[.88,'blue'],[.96,'inferno']]) {
+  for (const [temp, expected] of [[.2,'cold'],[.4,'warming'],[.54,'ready'],[.70,'hot'],[.83,'fire'],[.96,'inferno']]) {
     await page.evaluate(t=>{T.session.stepPanel('trial','温度のイメージ');T.session.setBenchTemperature(cs,t);},temp);
     assert.equal(await band(),expected); images.push(await pixels());
     colors[expected] = await mean();
@@ -97,25 +97,26 @@ try {
     glows.push(Number(await page.locator('.bench').evaluate(e => getComputedStyle(e).getPropertyValue('--thermal-glow-strength'))));
     await shot(`temperature-${expected}`);
   }
-  assert.equal(new Set(images).size,7,'temperature pictures are identical');
-  const [cr, cg, cb] = colors.cold, [gr, gg, gb] = colors.ready, [fr, fg, fb] = colors.fire, [br, bg, bb] = colors.blue, [ir, ig, ib] = colors.inferno;
+  assert.equal(new Set(images).size,6,'temperature pictures are identical');
+  const [cr, cg, cb] = colors.cold, [gr, gg, gb] = colors.ready, [hr, hg, hb] = colors.hot, [fr, fg, fb] = colors.fire, [ir, ig, ib] = colors.inferno;
   assert(Math.min(cr, cg, cb) > 180 && Math.max(cr, cg, cb) - Math.min(cr, cg, cb) < 40, `cold is not pale: ${colors.cold}`);
   assert(gr > gg && gg >= gb - 6 && gr + gg + gb < cr + cg + cb - 150, `ideal is not a warm coal glow: ${colors.ready}`);
   assert(fr > fg + 60 && fr > fb + 80, `overheat is not red: ${colors.fire}`);
-  assert(bb > br + 60 && bb > bg + 20, `blue flame stage is not blue: ${colors.blue}`);
-  assert(ib > ig + 40 && ir > ig + 30, `inferno is not purple: ${colors.inferno}`);
+  assert(hr > hb + 80 && hg > hb + 20, `hot stage is not yellow-orange: ${colors.hot}`);
+  assert(ir > ig + 40 && ir > ib + 60, `inferno is not red-hot: ${colors.inferno}`);
+  for (const [name, [r, g, b]] of Object.entries(colors)) assert(!(b > r + 30 && b > g), `${name} uses a blue or purple stage: ${[r, g, b]}`);
   // 適温あたりから作業風景がゆらぐ。低温ではゆらさない。
   assert.equal(hazes.cold[0], '0'); assert.equal(hazes.cold[1], '');
   assert.equal(hazes.ready[0], '4'); assert.match(hazes.ready[1], /url\("?#thermal-haze-\d+"?\)/);
-  // 3案とも7段階を描き分け、案を切り替えても温度帯は変わらない。
+  // 3案とも6段階を描き分け、案を切り替えても温度帯は変わらない。
   for (const style of ['rainbow', 'steady', 'ember']) {
     const shots = [];
-    for (const t of [.2, .4, .54, .7, .8, .88, .96]) {
+    for (const t of [.2, .4, .54, .7, .83, .96]) {
       await page.evaluate(([id, v]) => { T.thermal.setThermalStyle(id); T.session.setBenchTemperature(cs, v); }, [style, t]);
       shots.push(await pixels());
     }
     assert.equal(await page.locator('.bench').getAttribute('data-thermal-style'), style);
-    assert.equal(new Set(shots).size, 7, `${style}: temperature pictures are identical`);
+    assert.equal(new Set(shots).size, 6, `${style}: temperature pictures are identical`);
   }
   assert.deepEqual([...glows].sort((a, b) => a - b), glows, `scene glow does not grow with heat: ${glows}`);
   // 炭を外すと実際の熱量も背景も下がる。
@@ -168,5 +169,5 @@ try {
   await page.evaluate(()=>T.session.stepPanel('holes','穴あけ'));
   assert(!(await page.locator('.thermal-backdrop').isVisible()));
   assert.deepEqual(errors,[]);
-  console.log('PASS: pale→warm coal glow with heat haze→red→blue→purple flames, three styles × seven stages, bowl not burning, burst on pull and heat care, readable header, steam reset, steam pause/resume and handoff, stable waiting temperature, coal cooling, reduced motion, mobile bounds and reset; page errors 0');
+  console.log('PASS: pale→warm coal glow with heat haze→yellow→red flames (no blue/purple), three styles × six stages, bowl not burning, burst on pull and heat care, readable header, steam reset, steam pause/resume and handoff, stable waiting temperature, coal cooling, reduced motion, mobile bounds and reset; page errors 0');
 } finally { await browser.close(); }

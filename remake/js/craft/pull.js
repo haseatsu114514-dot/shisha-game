@@ -58,7 +58,7 @@ export async function runPull(cs) {
     thermometer.preview(pulls < PULL_MAX ? clamp(coreTemp + heatDelta(cs, actionAt(pos).delta), 0, 1) : null);
     const inZone = T >= IDEAL[0] && T <= IDEAL[1];
     const optimal = isOptimalTemperature(T);
-    readout.textContent = optimal ? "最適温。今の煙を届けよう" : inZone ? "適温。中央の細い最適温を狙える" : T >= .92 ? "焦げる寸前。下げ吸いで熱を逃がしたい"
+    readout.textContent = optimal ? "最適温。今の煙を届けよう" : inZone ? "適温。中央の細い最適温を狙える" : T >= .90 ? "焦げる寸前。下げ吸いで熱を逃がしたい"
       : T > IDEAL[1] ? "熱い。下げ吸いで落ち着かせたい" : "まだぬるい。上げ吸いで熱を入れたい";
     counter.textContent = `吸った回数 ${pulls}${pulls >= PULL_SAFE ? "（これ以上は葉が痩せる）" : ""}`
       + (conditions.sparsity ? " ／ 少穴：吸い方による温度変化が大きい" : "") + (conditions.rainy ? " ／ 雨：熱が入りづらい" : "");

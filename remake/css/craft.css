@@ -771,14 +771,14 @@
 .rc-evaluation.bright, .craft-evaluation.bright { color: #efcf8a; }
 .rc-evaluation.warm, .craft-evaluation.warm { color: #b7d2bc; }
 
-/* 熱のイメージ。参照動画の斜めの四角と炎を、薄い霧→緑→赤→青→紫で画面の後ろに描く（TH01〜TH05）。
+/* 熱のイメージ。低温は薄く、適温は陽炎と煙、超えると黄色→赤の炎を画面の後ろに描く（TH01〜TH12）。
    作業台の素材スキン（data-art-skin）より後に置き、操作欄・見出しの暗幕を確実に効かせる。 */
 .thermal-backdrop { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; display: none; }
 .bench.thermal-active .thermal-backdrop { display: block; }
 .bench.thermal-active { --accent: #ffe3a1; }
 .bench.thermal-active .bench-right { padding: 16px 20px; margin: -16px -20px; border-radius: 16px; background: #100b1ce8; box-shadow: 0 6px 32px #18091555; }
 /* 炎が立つ段階は操作欄を少しだけ透かし、後ろで燃えているのが見えるようにする。 */
-.bench.thermal-active:is([data-thermal-band="fire"], [data-thermal-band="blue"], [data-thermal-band="inferno"]) .bench-right { background: #0e0919d4; }
+.bench.thermal-active:is([data-thermal-band="fire"], [data-thermal-band="inferno"]) .bench-right { background: #0e0919d4; }
 .bench.thermal-active .bench-top { background: linear-gradient(180deg, #120b21e0, #120b21a8); border-bottom-color: #ffe3a133; }
 .bench.thermal-active .bench-worker { box-shadow: 0 12px 32px #0006, 0 0 0 1px #0004; }
 .thermal-label { margin-left: auto; font-size: 12px; color: var(--thermal-ink); white-space: nowrap; }

@@ -1,5 +1,5 @@
 // 温度のイメージ。実際の温度だけを読み、採点・雑念・機材には干渉しない。
-// 低温は薄く、適温は気持ちいい陽炎と煙、超えると炎（橙→赤→青→紫）、温度計の一番上で爆発して焦げる。
+// 低温は薄く、適温は気持ちいい陽炎と煙、超えると黄色→赤の炎が燃え盛り、温度計の一番上で爆発して焦げる（TH12）。
 // 炎はイメージなので台やボウルには付けない（TH04）。色と適温の見せ方は3案を切り替えて比べる（TH07〜TH09）。
 import { el, clamp } from "../core/util.js";
 import { IDEAL } from "./conditions.js";
@@ -10,8 +10,7 @@ const BANDS = [
   { id: "warming", label: "熱が入っていく", until: IDEAL[0] },
   { id: "ready", label: "適温", until: IDEAL[1] },
   { id: "hot", label: "熱が強い", until: .76 },
-  { id: "fire", label: "過熱", until: .84 },
-  { id: "blue", label: "超高温", until: .92 },
+  { id: "fire", label: "過熱", until: .90 },
   { id: "inferno", label: "灼熱・焦げる寸前", until: Infinity },
 ];
 export function thermalBand(temp) {
@@ -19,24 +18,23 @@ export function thermalBand(temp) {
   return BANDS.find(b => t < b.until || (b.id === "ready" && t === IDEAL[1]));
 }
 
-// 適温を超えてからの炎は全案共通。flame=外炎・中炎・芯、reach=届く高さ（画面比）、calm=1で揃った穏やかな炎。
+// 適温を超えてからの炎は全案共通で、黄色と赤だけ（青・紫はやめる TH12）。どの炎も画面の下から立ち、
+// 高いものは画面の上まで届く（TH11）。flame=外炎・中炎・芯、reach=届く高さ（画面比）、calm=1で揃った穏やかな炎。
 const FLAMES = {
-  hot: { flame: ["#ff6a00", "#ffb300", "#fff2a6"], reach: .3, speed: .9, calm: .35, smoke: "#4a2414" },
-  fire: { flame: ["#ff4d00", "#ffa800", "#fff2a0"], reach: .66, speed: 1, calm: 0, smoke: "#3a1722" },
-  blue: { flame: ["#1c5cff", "#45c3ff", "#e8fbff"], reach: .82, speed: 1.3, calm: 0, smoke: "#08102e" },
-  inferno: { flame: ["#a51cff", "#ff45d6", "#ffe6fa"], reach: 1, speed: 1.65, calm: 0, smoke: "#14061f" },
+  hot: { flame: ["#ff9a00", "#ffd21a", "#fff6c0"], reach: .5, speed: .95, calm: .3, smoke: "#4a2414" },
+  fire: { flame: ["#e81e00", "#ff7a00", "#ffe066"], reach: .92, speed: 1.15, calm: 0, smoke: "#3a1722" },
+  inferno: { flame: ["#d00000", "#ff5200", "#fff1a0"], reach: 1.25, speed: 1.5, calm: 0, smoke: "#1e0806" },
 };
 const SHARED_HOT = {
-  fire: { colors: ["#e3200a", "#850011"], ink: "#ffcf3a", glow: ["#ff2a00", .58], sparks: 30, fire: FLAMES.fire, heat: 1 },
-  blue: { colors: ["#1d4fd8", "#050f45"], ink: "#9eeaff", glow: ["#2f7dff", .62], sparks: 38, fire: FLAMES.blue, heat: 1 },
-  inferno: { colors: ["#7b0cb3", "#22003a"], ink: "#ff6af2", glow: ["#b42bff", .7], sparks: 48, fire: FLAMES.inferno, heat: 1 },
+  fire: { colors: ["#e3200a", "#850011"], ink: "#ffcf3a", glow: ["#ff2a00", .58], sparks: 34, fire: FLAMES.fire, heat: 1 },
+  inferno: { colors: ["#8e0800", "#240000"], ink: "#ffd23a", glow: ["#ff1a00", .7], sparks: 48, fire: FLAMES.inferno, heat: 1 },
 };
 // 台の上の煙と陽炎（作業風景のゆらぎ、px）は全案共通。適温は白くやわらかい煙で、熱が入っている感じだけを出す。
 const AIR = {
   cold: { smoke: ["#ffffff", .15], haze: 0 }, warming: { smoke: ["#fffaf2", .3], haze: 1.5 },
   ready: { smoke: ["#fff3e6", .6], haze: 4 }, hot: { smoke: ["#ffe2c8", .65], haze: 5 },
-  fire: { smoke: ["#ffd6b8", .7], haze: 6 }, blue: { smoke: ["#e6f4ff", .7], haze: 7 },
-  inferno: { smoke: ["#ffe2fb", .7], haze: 8 }, burnt: { smoke: ["#1c1210", .92], haze: 0 },
+  fire: { smoke: ["#ffd6b8", .7], haze: 6 }, inferno: { smoke: ["#ffe0c8", .72], haze: 8 },
+  burnt: { smoke: ["#1c1210", .92], haze: 0 },
 };
 
 /** 3案。motif: coal=シーシャの炭の角が赤→白く熾る／squares=参照動画の四角模様／rainbow=適温で虹色に揺らめく。 */
@@ -90,11 +88,10 @@ export function setThermalStyle(id) {
 // 炎の舌・ちぎれた炎・火の粉・煙・炭は、間隔も高さもまばらに一度だけ決める。描画は時刻だけで決まり、停止中は止まる。
 let seed = 20261009;
 const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-const TONGUES = Array.from({ length: 30 }, (_, i) => ({
-  x: (i + rnd() * 1.1 - .55) / 29, width: 16 + rnd() * 50, tall: .2 + rnd() ** 1.7 * .8,
-  phase: rnd() * 6.283, speed: .65 + rnd() * .9, lift: rnd() < .3 ? rnd() * .16 : 0,
+const TONGUES = Array.from({ length: 32 }, (_, i) => ({
+  x: (i + rnd() * 1.1 - .55) / 31, width: 18 + rnd() * 52, tall: .22 + rnd() ** 1.5 * .78,
+  phase: rnd() * 6.283, speed: .65 + rnd() * .9,
 }));
-const LICKS = Array.from({ length: 26 }, () => ({ x: rnd(), phase: rnd(), size: 7 + rnd() * 24, speed: .3 + rnd() * .55, drift: rnd() * 6.283 }));
 const SPARKS = Array.from({ length: 48 }, () => ({ x: rnd(), phase: rnd(), speed: .45 + rnd() * .9, wobble: rnd() * 6.283, size: 2 + rnd() * 3.5 }));
 const PUFFS = Array.from({ length: 16 }, () => ({ x: rnd(), phase: rnd(), size: 28 + rnd() * 56, speed: .1 + rnd() * .14 }));
 const DEBRIS = Array.from({ length: 42 }, () => ({ angle: rnd() * 6.283, speed: .35 + rnd() * .9, size: 3 + rnd() * 9, spin: rnd() * 6.283 }));
@@ -218,7 +215,7 @@ export function buildThermalAtmosphere(host, worker) {
     }
     ctx.globalAlpha = 1;
   }
-  /** 画面の後ろで燃える。calmが高いほど高さの揃った穏やかな炎、低いほどまばらに燃え盛る。 */
+  /** 画面の後ろで燃える。どの舌も画面の下から立つ。calmが高いほど高さの揃った穏やかな炎、低いほどまばらに燃え盛る。 */
   function fire(look, t, w, h) {
     const { flame: [outer, mid, core], reach, speed, calm = 0 } = look.fire;
     if (calm < .5) smoke(darkPuff, t, w, h, .1 + reach * .22);
@@ -229,17 +226,8 @@ export function buildThermalAtmosphere(host, worker) {
         const tall = g.tall + (.62 - g.tall) * calm, jitter = 1 - calm * .75;
         const flicker = .78 + (.2 * Math.sin(t * 3.2 * g.speed * speed + g.phase) + .12 * Math.sin(t * 7.7 * g.speed * speed + g.phase * 2)) * jitter;
         const height = h * reach * tall * flicker * hScale;
-        const x = calm ? g.x + ((Math.round(g.x * 29) / 29) - g.x) * calm : g.x;
-        tongue(x * w, h + 12 - g.lift * h * jitter, height, (g.width + (34 - g.width) * calm) * wScale, t, g.phase, g.speed * speed, calm);
-      }
-    }
-    // 根元から離れた炎のかけらが、揺れながら上へ消えていく（燃え盛るときだけ）。
-    if (calm < .5) {
-      ctx.globalCompositeOperation = "screen"; ctx.fillStyle = mid;
-      for (const l of LICKS.slice(0, Math.round(LICKS.length * (1 - calm)))) {
-        const p = (t * l.speed * .32 * speed + l.phase) % 1, size = l.size * (1 - p * .8);
-        ctx.globalAlpha = (1 - p) * .9;
-        tongue(l.x * w + Math.sin(t * 1.6 + l.drift + p * 5) * 34, h * (1 - reach * .25) - p * h * reach * .85, size * 2.6, size * .65, t, l.drift, speed);
+        const x = calm ? g.x + ((Math.round(g.x * 31) / 31) - g.x) * calm : g.x;
+        tongue(x * w, h + 14, height, (g.width + (34 - g.width) * calm) * wScale, t, g.phase, g.speed * speed, calm);
       }
     }
     ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1;
