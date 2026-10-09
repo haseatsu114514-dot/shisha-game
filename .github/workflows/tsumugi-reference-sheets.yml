@@ -40,5 +40,7 @@ jobs:
             echo "No sheet changes"
           else
             git commit -m "Add rendered Tsumugi character reference sheets"
+            git fetch origin codex/tsumugi-reference-20261009
+            git rebase origin/codex/tsumugi-reference-20261009
             git push origin HEAD:refs/heads/codex/tsumugi-reference-20261009
           fi
