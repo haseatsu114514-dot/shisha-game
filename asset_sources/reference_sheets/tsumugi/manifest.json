@@ -1,23 +1,24 @@
 {
   "character": "つむぎ",
-  "production": "existing approved game source assets; no identity-redrawing",
+  "production": "approved high-resolution character portraits only; no walking sprites or identity redraw",
   "files": [
-    "01-5-directions.png",
-    "02-expressions.png",
-    "03-face-hair-parts.png",
-    "04-outfit-palette.png"
+    "01-expressions.png",
+    "02-face-hair-parts.png",
+    "03-outfit-palette.png"
   ],
   "sources": {
     "sprites": "assets/sprites/characters/tsumugi/chr_tsumugi_*.png",
-    "walk": "assets/proto_walk/tsumugi_walk_72.png",
-    "walk_metadata": "assets/proto_walk/tsumugi_walk_72.json",
     "canon_prompt": ".claude/skills/character-portrait-remaster/references/tsumugi-v1-prompt.txt"
   },
+  "excluded_sources": [
+    "assets/proto_walk/",
+    "asset_sources/images/proto_walk/"
+  ],
   "notes": [
-    "5方向のもとは低解像度歩行スプライト。高精細三面図に偽装しない。",
-    "喜びの専用表情は未制作、会釈イラストを参考として表示。",
-    "高精細真横・背面・斜め前後、後ろ身頃の刺繍位置や素材感は補完デザイン／今後新規生成が必要。",
-    "元画像から確定できない身長は追記しない。"
+    "歩行用ドット絵を使わず、すべて正規の高精細立ち絵から切り出した。",
+    "高精細の真横・背面・斜め前後の全身、および高精細の横顔・斜め45度は補完デザイン（未制作）。",
+    "独立した喜び表情は未制作。会釈の笑顔を参考として表示。",
+    "画像から確定できない身長や背面の装飾は勝手に追加しない。"
   ],
   "sampled_palette": [
     {
@@ -61,4 +62,4 @@
       "hex": "#2B2D33"
     }
   ]
-}
+}\n
