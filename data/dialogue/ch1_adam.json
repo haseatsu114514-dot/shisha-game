@@ -4,9 +4,11 @@
       "dialogue_id": "ch1_adam_first",
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "「Eden（エデン）」。スミさんに教えられた店だ。"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_delivery_adam",
+          "next_true": "dl_open",
+          "next_false": "self_open"
         },
         {
           "speaker": "",
@@ -62,14 +64,11 @@
           "text": "（自称アダム……？ どう接すればいいんだこれ）"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "あ、俺、tonariの蒸野と言います。勉強のために――"
-        },
-        {
-          "speaker": "adam",
-          "face": "serious",
-          "text": "しっ。言葉は要らぬ。ここにあるのは、唯一無二の真理（リンゴ）だけ……"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_delivery_adam",
+          "next_true": "dl_can",
+          "next_false": "self_study"
         },
         {
           "speaker": "",
@@ -122,6 +121,13 @@
           "text": "（ヤバい人だけど、シーシャ職人としての腕は本物だ……）"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_delivery_adam",
+          "next_true": "dl_thanks",
+          "next_false": ""
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "（店の匂いも、この人の声も、一服と一緒に覚えてしまった）"
@@ -130,7 +136,84 @@
           "type": "remember",
           "memory_id": "adam_origin"
         }
-      ]
+      ],
+      "branches": {
+        "dl_open": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「Eden（エデン）」。下町の路地にある、スミさんの届け先だ。"
+          }
+        ],
+        "self_open": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「Eden（エデン）」。下町の路地にある、ダブルアップルの店だ。"
+          }
+        ],
+        "self_study": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あ、俺、tonariの蒸野と言います。勉強のために――"
+          },
+          {
+            "speaker": "adam",
+            "face": "serious",
+            "text": "しっ。言葉は要らぬ。ここにあるのは、唯一無二の真理（リンゴ）だけ……"
+          }
+        ],
+        "dl_can": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あ、俺、tonariの蒸野です。スミさんから、届け物を――"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "紙袋から缶を出して置くと、芝居がかった顔が、すっと消えた。"
+          },
+          {
+            "speaker": "adam",
+            "face": "serious",
+            "text": "……この缶、どこで"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "tonariの棚の奥にあったんです。こっちで探してる人がいるって"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "アダムは缶を両手で持ち上げ、くすんだラベルを灯りにかざした。"
+          },
+          {
+            "speaker": "adam",
+            "face": "serious",
+            "text": "……もう、どこにも残っていないと思っていた。失われた果実だ"
+          },
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "届けてくれた礼だ。座れ。言葉は要らぬ"
+          }
+        ],
+        "dl_thanks": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "tonariの主に伝えろ。この借りは、いずれ果実で返す"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。必ず伝えます"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_adam_second",

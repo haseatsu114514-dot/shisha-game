@@ -4,32 +4,11 @@
       "dialogue_id": "ch1_minto_first",
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "PEPPERMINTのドアを開けると、明るい声が飛んできた。"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "おかえりなさーいっ♡ はじめまして、みんとです！"
-        },
-        {
-          "type": "set_flag",
-          "flag": "known_name_minto"
-        },
-        {
-          "type": "set_flag",
-          "flag": "_met_minto"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "蒸野始です。tonariでバイトをしていて……"
-        },
-        {
-          "speaker": "minto",
-          "face": "smile",
-          "text": "同業さんなんだねっ♡ どうぞ、こっちへ！"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_delivery_minto",
+          "next_true": "dl_door",
+          "next_false": "self_door"
         },
         {
           "type": "bg",
@@ -464,6 +443,106 @@
             "speaker": "minto",
             "face": "smile",
             "text": "大丈夫っ♡ 今日は煙を楽しんでもらえたら、それで！"
+          }
+        ],
+        "self_door": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "PEPPERMINTのドアを開けると、明るい声が飛んできた。"
+          },
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "おかえりなさーいっ♡ はじめまして、みんとです！"
+          },
+          {
+            "type": "set_flag",
+            "flag": "known_name_minto"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_met_minto"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "蒸野始です。tonariでバイトをしていて……"
+          },
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "同業さんなんだねっ♡ どうぞ、こっちへ！"
+          }
+        ],
+        "dl_door": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ミントの大袋を三つ抱えて、PEPPERMINTへ。"
+          },
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "おかえりなさーいっ♡ ……あっ、その袋。tonariさんの配達？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。tonariでバイトをしている蒸野始です。まとめ買いのミントを届けに"
+          },
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "わぁ、ありがとっ♡ はじめまして、みんとです！"
+          },
+          {
+            "type": "set_flag",
+            "flag": "known_name_minto"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_met_minto"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "業務用の袋が三つも……。こんなに使うんですか？"
+          },
+          {
+            "speaker": "minto",
+            "face": "wink",
+            "text": "ミントは、いくらあっても足りないの♡"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（冗談みたいな声だった。でも、袋を抱える手は大事そうだった）"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "伝票にサインを頼むと、受け取り欄に丸い字で『みんと♡』と書かれた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "あの、受け取りのサインなので……"
+          },
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "だいじょーぶ♡ この辺なら、これで通じるから"
+          },
+          {
+            "speaker": "minto",
+            "face": "smile",
+            "text": "せっかくだし、一服してって！ どうぞ、こっちへ♡"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "じゃあ、お言葉に甘えて。スミさんにも、一服してこいって言われてて"
           }
         ]
       },

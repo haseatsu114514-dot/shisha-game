@@ -1426,6 +1426,182 @@
       ]
     },
     {
+      "dialogue_id": "remake_delivery_eden",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "はじめ。今日の昼は、届け物を頼む"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんが棚の奥から、古い缶をひとつ下ろした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "練習用にもらったダブルアップルと同じ、深い紅色のラベル。ただ、色が少しくすんでいる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ダブルアップル……ですよね。ずいぶん古い缶みたいですけど"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "昔のロットだ。今はもう、この配合じゃ作られてない"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "下町のEDENに、こいつを探してる奴がいる。届けてやれ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_delivery_network_told",
+          "next_true": "",
+          "next_false": "dl_network"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "そこのダブルアップル職人も、今度の大会に出る"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……まあ、会えば分かる"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "届けたら一服していけ。配達の手当は、バイト代につけとく"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "了解です。……落とさないように、行ってきます"
+        }
+      ],
+      "branches": {
+        "dl_network": [
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "スミさん、よその店とも付き合いがあるんですね"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "この辺の小さい店は、炭や葉を融通し合ってる。足りない時はお互い様だ"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "うちは古株だからな。まとめ買いの窓口も、いつの間にかうちになった"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_delivery_network_told"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "remake_delivery_minto",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの横に、業務用のミントの大袋が三つ積まれていた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "はじめ。今日の昼は、届け物を頼む。まとめ買いのミントが届いた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "これ全部ですか？ 三袋もありますけど"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "三つとも、繁華街のPEPPERMINTの分だ。注文どおりだよ"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_delivery_network_told",
+          "next_true": "",
+          "next_false": "dl_network"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（大会の課題もミントだけど……一軒でこの量は、さすがに多いような）"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "コンカフェ風の店だ。お前、ああいう店は初めてだろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。……ちょっと緊張しますね"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "届けたら一服してこい。代金は店持ちだ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "あそこは客の入り方が違う。煙だけじゃなく、店ごと見てこい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "分かりました。店ごと、見てきます"
+        }
+      ],
+      "branches": {
+        "dl_network": [
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "スミさん、よその店とも付き合いがあるんですね"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "この辺の小さい店は、炭や葉を融通し合ってる。足りない時はお互い様だ"
+          },
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "うちは古株だからな。まとめ買いの窓口も、いつの間にかうちになった"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_delivery_network_told"
+          }
+        ]
+      }
+    },
+    {
       "dialogue_id": "remake_sumi_call_thanks",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside.png"

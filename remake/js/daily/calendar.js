@@ -13,7 +13,7 @@ import { initHud, showHud, updateHud, daysLeft, setPhoneBadge, presentSleepRecov
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chooseSpot, interruptMap } from "./map.js";
 import { isRainy } from "./weather.js";
-import { spotById, visitRival, visitSpot, restAtHome, isClosed, CHAR_STAT } from "./spots.js";
+import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, storyCount, CHAR_STAT } from "./spots.js";
 import { doFortune } from "./fortune.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
@@ -54,6 +54,11 @@ export async function runDaily(def) {
     }
     if (state.day === 1 && state.slot === 0 && !state.flags._errand_scout_done) {
       await day1Errands();
+      save();
+    }
+    const delivery = dueDelivery();
+    if (delivery) {
+      await deliver(delivery);
       save();
     }
     while (state.slot < 2) {
@@ -173,6 +178,54 @@ async function day1Errands() {
   f._errand_scout_done = true;
   state.slot++;
   await afterAction({ exerted: true });
+}
+
+// ---------------------------------------------------------------- tonari の配達
+
+/**
+ * 第1章は、スミさんの届け物でEDEN・PEPPERMINTの初来店を必ず通す（DL01）。決まった日の昼に頼まれ、
+ * 自分で先に行った店は飛ばす。定休日・臨時休業・昼の約束と重なった日は、翌日以降の昼へ回す。
+ * 一服の代金はかからず、手当をバイト代に上乗せする。強制の行動なので能力とスロットは伸びない
+ */
+const DELIVERIES = [
+  { charId: "adam", day: 2, scene: "remake_delivery_eden", text: "古いダブルアップルの缶を EDEN へ。EDEN をタップ！" },
+  { charId: "minto", day: 4, scene: "remake_delivery_minto", text: "まとめ買いのミントを PEPPERMINT へ。PEPPERMINT をタップ！" },
+];
+const DELIVERY_PAY = 2000;
+const DELIVERY_STAMINA = -10;
+
+function dueDelivery() {
+  if (state.chapter !== 1 || state.slot !== 0) return null;
+  const inv = state.pendingInvite;
+  if (inv && (inv.day ?? state.day) === state.day && inv.slot === 0) return null; // 先にした約束を守る
+  for (const d of DELIVERIES) {
+    const done = `_delivery_${d.charId}_done`;
+    if (state.flags[done] || state.day < d.day) continue;
+    if (storyCount(d.charId) > 0) { state.flags[done] = true; continue; } // もう自分で行った店
+    const spot = spotById(d.charId);
+    if (spot && !isClosed(spot)) return d;
+  }
+  return null;
+}
+
+async function deliver({ charId, scene, text }) {
+  const f = state.flags;
+  if (!f[`_delivery_${charId}_told`]) {
+    await play(scene, { bg: TONARI_BG });
+    f[`_delivery_${charId}_told`] = true;
+    save();
+  }
+  await chooseSpot({ guide: { pin: charId, text, free: "配達（代金なし）" } });
+  f[`_delivery_${charId}`] = true; // 初来店の入りを配達の場面にする
+  addStamina(DELIVERY_STAMINA);
+  playBgm("tonari");
+  await visitChar(charId);
+  addMoney(DELIVERY_PAY);
+  toast(`配達の手当 +${DELIVERY_PAY.toLocaleString()}円（バイト代に上乗せ）`, { kind: "good" });
+  state.visitedDay[charId] = state.day;
+  f[`_delivery_${charId}_done`] = true;
+  state.slot++;
+  await afterAction();
 }
 
 // ---------------------------------------------------------------- 行動

@@ -51,7 +51,8 @@ export function interruptMap(value) {
 /**
  * @param opts.notice   上部に出す一言（「今夜は約束がある」など）
  * @param opts.eventPin 今夜イベントがある場所のピン id（! バッジ）
- * @param opts.guide    { pin, title, text } 1日目の案内用。その1か所だけ選べるようにして光らせる
+ * @param opts.guide    { pin, title, text, free } 1日目の案内・配達用。その1か所だけ選べるようにして光らせる。
+ *                      free（表示する一言）があれば、その行き先は代金がかからない
  * @param opts.onShown  マップを出し終えたとき（LIME の初回案内など）
  * 戻り値: スポットID。interruptMap(v) で外から閉じたときは v
  */
@@ -72,6 +73,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
     const pins = el("div.map-pins");
     let selected = null;
 
+    const freeGuide = (s) => !!guide?.free && guide.pin === s.id;
     const availability = (s) => {
       if (!isUnlocked(s)) return { ok: false, why: "locked" };
       if (s.unavailable) return { ok: false, why: s.unavailable, tag: s.unavailableTag || s.unavailable };
@@ -82,7 +84,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
         return { ok: false, why: tag, tag };
       }
       if (s.kind !== "shop" && s.kind !== "rest" && s.kind !== "tonari" && visitedToday(s.id)) return { ok: false, why: "今日はもう行った", tag: "今日はもう行った" };
-      if (s.cost && state.money < s.cost) return { ok: false, why: `お金が足りない（${yen(s.cost)}）`, tag: "お金が足りない" };
+      if (s.cost && !freeGuide(s) && state.money < s.cost) return { ok: false, why: `お金が足りない（${yen(s.cost)}）`, tag: "お金が足りない" };
       return { ok: true };
     };
 
@@ -127,7 +129,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
         el("div.mi-area", { text: s.area + (charName ? ` ・ ${charName}` : s.charId ? " ・ ？？？" : "") }),
         el("p.mi-desc", { text: known ? s.desc : s.unknownDesc || s.desc }),
         el("div.mi-tags", [
-          s.cost ? el("span.tag", { text: yen(s.cost) }) : el("span.tag.free", { text: s.kind === "shop" ? "買い物は時間を使わない" : s.kind === "fortune" ? "時間を使わない" : "無料" }),
+          s.cost && !freeGuide(s) ? el("span.tag", { text: yen(s.cost) }) : el("span.tag.free", { text: freeGuide(s) ? guide.free : s.kind === "shop" ? "買い物は時間を使わない" : s.kind === "fortune" ? "時間を使わない" : "無料" }),
           staminaNote ? el(`span.tag${warn ? ".warn" : ""}`, { text: warn ? "体力が心配" : staminaNote }) : null,
           known && hasNewEvent(s) ? el("span.tag.new", { text: "新しいイベント" }) : null,
         ]),
