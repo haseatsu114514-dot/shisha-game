@@ -6,9 +6,9 @@
   "defaultPreviewModeBefore": "drill",
   "defaultPreviewModeAfter": "tournament",
   "modeVisibility": {
-    "tournament": "審査員1人とコメント",
+    "tournament": "審査員またはパッキー1人とコメント。フッターは撤去",
     "tutorial": "スミさんとコメント",
-    "drill": "見守る人なし"
+    "drill": "はじめの心の声。4工程の作業中と3段階の結果"
   },
   "runtimeArt": "assets/ui/making/stove_coil.png",
   "runtimeWebp": "remake/img/ui/making/stove_coil.webp",
@@ -31,12 +31,17 @@
   "commentaryBehaviorMatchedPublishedBeforeSizeEdit": true,
   "audienceSize": {
     "heightBefore": 140,
-    "heightAfter": 112,
+    "heightIntermediate": 112,
+    "heightAfter": 88,
     "portraitWidthBefore": 300,
-    "portraitWidthAfter": 240,
+    "portraitWidthAfter": 200,
     "faceHeightBefore": 100,
-    "faceHeightAfter": 76,
+    "faceHeightAfter": 56,
     "commentFontBefore": 16,
-    "commentFontAfter": 14
-  }
+    "commentFontAfter": 13
+  },
+  "footerRemoved": true,
+  "mcSpeaker": "pakki",
+  "innerVoiceSource": "data/dialogue/craft_inner_voice.json",
+  "scoringChanged": false
 }

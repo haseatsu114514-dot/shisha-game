@@ -36,6 +36,7 @@ const DIALOGUE_FILES = [
   "remake_ch1", // リメイク版の進行で使う短い場面（旧版 web/ は読まない）
   "ch1_bonds", // 交友の締めくくり（好感度MAX）と途中の恋愛／友情の質問（daily/bonds.js）
   "kafuka", // 帰り道の出会いと、章2からのシーシャーク
+  "craft_inner_voice", // 自主練の作業中・工程終了後のはじめの内心
 ];
 const BAITO_CATEGORIES = new Set(["beginner", "mob", "atmosphere", "regular", "rush", "trouble"]);
 const JSON_TIMEOUT_MS = 15000;

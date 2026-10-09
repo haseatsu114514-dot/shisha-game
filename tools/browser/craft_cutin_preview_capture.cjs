@@ -34,6 +34,12 @@ async function main() {
     const duration = (Date.now() - started) / 1000 - trim;
     const video = page.video(); await context.close(); const raw = await video.path();
     execFileSync('ffmpeg',['-loglevel','error','-y','-ss',String(trim),'-i',raw,'-t',String(duration),'-c:v','libx264','-preset','fast','-crf','22','-pix_fmt','yuv420p','-movflags','+faststart',path.join(out,'center-and-full-pause.mp4')]);
+    if (process.env.VIDEO_ONLY) {
+      if (errors.length) throw new Error(errors.join('\n'));
+      fs.writeFileSync(path.join(out,'capture-validation.json'),JSON.stringify({url,video:'center-and-full-pause.mp4',videoDurationSeconds:duration,variants:['center','full'],staticShotsFrom:'craft_cutin_preview_verify.cjs',browserErrors:errors},null,2)+'\n');
+      console.log(`Saved ${duration.toFixed(1)}s pause/restart video`);
+      return;
+    }
     const shots = await browser.newPage({viewport:{width:1324,height:980}}); shots.on('pageerror',e => errors.push(e.message));
     for (const size of [{name:'desktop',width:1280,height:720},{name:'mobile-landscape',width:844,height:390},{name:'mobile-portrait',width:390,height:844}]) {
       await shots.setViewportSize({width:size.width+44,height:size.height+340});

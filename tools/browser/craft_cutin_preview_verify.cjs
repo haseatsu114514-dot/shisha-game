@@ -104,6 +104,12 @@ async function main() {
       if (step === 'heat') await frame.waitForFunction(() => document.querySelector('[data-test="coal-0"]')?.dataset.phase === 'early');
       assert(await frame.locator('[data-test="craft-feedback"]').isVisible(), `${step}: missing commentator`);
       assert((await frame.locator('[data-test="craft-feedback"]').textContent()).length > 0);
+      if (step === 'heat') report.audienceUi = await frame.evaluate(() => ({
+        cardHeight: getComputedStyle(document.querySelector('.bench-audience')).height,
+        faceHeight: getComputedStyle(document.querySelector('.audience-face')).height,
+        portraitWidth: document.querySelector('.audience-face img').style.width,
+        commentFont: getComputedStyle(document.querySelector('.audience-note')).fontSize,
+      }));
       for (const variant of ['full','center']) await pauseCase(page, frame, step, variant);
       // 演出が閉じた後、同じ実ボタンで入力が再び届く。
       const before = await snapshot(frame);
@@ -177,7 +183,10 @@ async function main() {
     for (const mode of ['tutorial','drill']) {
       frame = await boot(page,'heat',mode);
       const count = await frame.locator('[data-test="craft-audience"]').count();
-      assert.equal(count, mode === 'tutorial' ? 1 : 0);
+      assert.equal(count, 1);
+      assert.equal(await frame.locator('.bench-audience').getAttribute('data-speaker'), mode === 'tutorial' ? 'sumi' : 'hajime');
+      assert(await frame.locator('[data-test="craft-feedback"]').textContent());
+      assert.equal(await frame.locator('.bench-ticker').count(), 0);
       report.cases.push({mode,audienceCount:count,comment: count ? await frame.locator('[data-test="craft-feedback"]').textContent() : null});
     }
     assert.equal(await page.evaluate(() => localStorage.getItem('suien_remake_save')), 'cutin-existing-save-sentinel');

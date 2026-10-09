@@ -85,6 +85,20 @@ try {
     T.session.stepPanel('heat', '炭焼き', 'テスト');
   });
   assert.deepEqual(await page.locator('.audience-person figcaption').allTextContents(), ['？？？']);
+  const mc = await page.evaluate(() => {
+    const text = __remake.DB.broadcast.mc.coalfire;
+    T.session.tickerSay(`パッキー「${text}」`);
+    return text;
+  });
+  assert.equal(await page.locator('.bench-ticker').count(), 0);
+  assert.equal(await page.locator('.bench-audience').getAttribute('data-speaker'), 'pakki');
+  assert.equal(await page.locator('.audience-person figcaption').textContent(), 'パッキー');
+  assert.equal(await page.locator('[data-test="craft-feedback"]').textContent(), mc);
+  assert(!(await page.locator('[data-test="craft-rating"]').isVisible()));
+  await loaded(page); await capture(page, 'pakki-heat-desktop');
+  await page.evaluate(() => T.session.reactAudience(cs,'good',{force:true}));
+  assert.equal(await page.locator('.bench-audience').getAttribute('data-speaker'), 'dr_kemuri');
+  assert.equal(await page.locator('.audience-person figcaption').textContent(), '？？？');
   assert.equal(await page.evaluate(() => Object.keys(T.core.state.met).length), 0);
   await page.evaluate(async () => {
     ['nagumo','maezono','dr_kemuri'].forEach(T.core.markMet);
@@ -132,6 +146,31 @@ try {
   assert(!/針|ゲージ|ボタン|キープ左/.test(modes[1].first+modes[1].live));
   assert(modes.every(m=>m.rating));
   console.log('[craft focus] PASS: one current speaker, real Sumi/judge success feedback, distinct ◎/○/△ scores and lines, optional result detail, hidden undiscovered names and reserved Nagumo');
+
+  // 自主練4工程は、途中の感触も3段階の結果もはじめ本人の内心。
+  for (const step of ['holes','heat','steam','pull']) {
+    const voice = await page.evaluate(async step => {
+      window.cs=T.session.newSession('drill'); await T.openBench(cs);
+      T.session.stepPanel(step,step,'説明');
+      const note=()=>document.querySelector('[data-test="craft-feedback"]').textContent;
+      const initial=note(), live=[];
+      for(const kind of ['good','bad']) {T.session.reactAudience(cs,kind,{force:true});live.push(note());}
+      const results=[];
+      for(const score of [95,72,35]) {
+        cs[step]={score}; T.session.presentBenchResult(document.querySelector('.bench-panel'),'結果');
+        results.push({text:note(),mark:document.querySelector('[data-test="craft-rating"]').textContent});
+      }
+      T.session.tickerSay('パッキー「自主練には出ない」');
+      return {initial,live,results,speaker:document.querySelector('.bench-audience').dataset.speaker,voice:document.querySelector('.bench-audience').dataset.voice};
+    }, step);
+    assert.equal(voice.speaker,'hajime'); assert.equal(voice.voice,'inner');
+    assert(voice.initial && voice.live.every(Boolean));
+    assert.equal(new Set(voice.live).size,2); assert.equal(new Set(voice.results.map(r=>r.text)).size,3);
+    assert.deepEqual(voice.results.map(r=>r.mark),['◎','○','△']);
+    assert(!/スミ|針|ゲージ|ボタン|ミニゲーム|スコア/.test([voice.initial,...voice.live,...voice.results.map(r=>r.text)].join('')));
+    await loaded(page); await capture(page,`inner-${step}-desktop`);
+  }
+  console.log('[craft focus] PASS: Pakki shares the left comment card, real MC text and avatar, next judge attribution, no name unlock, no footer, and Hajime inner voice across four practice stages and all result grades');
 
   for (const [stamina, health] of [[80,'green'],[40,'yellow'],[20,'red']]) {
     await page.evaluate(async stamina => {
@@ -232,10 +271,10 @@ try {
     await p.evaluate(() => { window.steamRun = T.steam.runSteamDodge(cs); });
     const geometry = await p.evaluate(() => {
       const rect=s=>document.querySelector(s).getBoundingClientRect();
-      const box=rect('.dodge'), pad=rect('.dodge-pad'), ticker=rect('.bench-ticker'), worker=rect('.bench-worker'), panel=rect('.bench-right'), gallery=rect('.bench-audience'), thermo=rect('.steam-temperature');
-      return { padBelow:pad.top>box.bottom, padClear:pad.bottom<ticker.top-2, separated:worker.right<panel.left, galleryClear:gallery.bottom<ticker.top, thermometerClear:thermo.right<box.left, fieldClear:box.right<=panel.right, video:document.querySelectorAll('.bench video').length };
+      const box=rect('.dodge'), pad=rect('.dodge-pad'), scene=rect('.bench'), worker=rect('.bench-worker'), panel=rect('.bench-right'), gallery=rect('.bench-audience'), thermo=rect('.steam-temperature');
+      return { padBelow:pad.top>box.bottom, padClear:pad.bottom<scene.bottom-2, separated:worker.right<panel.left, galleryClear:gallery.bottom<scene.bottom, thermometerClear:thermo.right<box.left, fieldClear:box.right<=panel.right, video:document.querySelectorAll('.bench video').length, ticker:document.querySelectorAll('.bench-ticker').length };
     });
-    assert.deepEqual(geometry, { padBelow:true,padClear:true,separated:true,galleryClear:true,thermometerClear:true,fieldClear:true,video:0 }, `${name}: ${JSON.stringify(geometry)}`);
+    assert.deepEqual(geometry, { padBelow:true,padClear:true,separated:true,galleryClear:true,thermometerClear:true,fieldClear:true,video:0,ticker:0 }, `${name}: ${JSON.stringify(geometry)}`);
     await p.waitForFunction(() => !document.querySelector('[data-test="timer-stop"]').disabled);
     const initial = Number(await p.locator('[data-test="steam-temperature"]').getAttribute('aria-valuenow'));
     const calmTrace = await p.locator('.dodge-beat-line').evaluate(n => ({ height:n.getBBox().height, color:getComputedStyle(n).stroke }));
