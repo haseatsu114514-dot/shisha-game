@@ -45,17 +45,21 @@ const mocks = {
 const context = vm.createContext({ Math, Promise, console, Set, AbortController, performance: { now: () => now },
   window: { addEventListener() {}, removeEventListener() {} },
   requestAnimationFrame: (fn) => { const id = ++frameId; frames.set(id, fn); return id; }, cancelAnimationFrame: (id) => frames.delete(id), setTimeout() {} });
-const mods = new Map();
-async function load(url) {
-  if (mods.has(url.href)) return mods.get(url.href);
-  const path = url.href.slice(jsRoot.href.length), values = mocks[path];
-  const mod = values ? new vm.SyntheticModule(Object.keys(values), function () { for (const [key, value] of Object.entries(values)) this.setExport(key, value); }, { context, identifier: url.href })
-    : new vm.SourceTextModule(await fs.readFile(url, "utf8"), { context, identifier: url.href });
-  mods.set(url.href, mod); await mod.link((specifier) => load(new URL(specifier, url))); return mod;
+const mods = new Map(), pending = new Map();
+function load(url) {
+  if (!pending.has(url.href)) pending.set(url.href, (async () => {
+    const path = url.href.slice(jsRoot.href.length), values = mocks[path];
+    const mod = values ? new vm.SyntheticModule(Object.keys(values), function () { for (const [key, value] of Object.entries(values)) this.setExport(key, value); }, { context, identifier: url.href })
+      : new vm.SourceTextModule(await fs.readFile(url, "utf8"), { context, identifier: url.href });
+    mods.set(url.href, mod); return mod;
+  })());
+  return pending.get(url.href);
 }
-const heatModule = await load(new URL("craft/heat.js", jsRoot)); await heatModule.evaluate();
+// Node自身に依存グラフをリンクさせる。共有依存を途中で重複リンクしない。
+const link = (specifier, ref) => load(new URL(specifier, ref.identifier));
+const heatModule = await load(new URL("craft/heat.js", jsRoot)); await heatModule.link(link); await heatModule.evaluate();
 const heatLogic = mods.get(new URL("craft/heat_logic.js", jsRoot).href).namespace;
-const steamModule = await load(new URL("craft/steam.js", jsRoot)); await steamModule.evaluate();
+const steamModule = await load(new URL("craft/steam.js", jsRoot)); await steamModule.link(link); await steamModule.evaluate();
 const { conditionForRatio } = mods.get(new URL("core/condition.js", jsRoot).href).namespace;
 for (const [ratio, health] of [[1, "green"], [.5001, "green"], [.5, "yellow"], [.2501, "yellow"], [.25, "red"], [0, "red"]]) {
   assert.equal(conditionForRatio(ratio).health, health);

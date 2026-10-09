@@ -1,0 +1,14 @@
+スタイル: 薄暗いシーシャラウンジの空気。`assets/backgrounds/bg_eden_shop.png` 程度の2Dドット絵〜ピクセルペインター調で、輪郭・影・質感に細かいドット感を残す。リアル写真調や滑らかすぎる3D調は避ける。シーシャ台の先端は小さい凸型の金属ポストにし、凹んだカップ型・ボウル一体型・大きな先端パーツにしない。手・腕は細身で中性的、明るいピーチ系の同一肌色に統一する。
+配色: 黒〜濃紫の闇に、琥珀／金（#f4d27a系）の暖色ネオンが差す。煙のかすみ。
+視点: 作りパートは一人称（プレイヤーの手元を上から見下ろす角度）。
+出力: PNG・透過指定のものは背景完全透過。@2x（実寸の2倍）で。指定なき限り 1280×720 基準。
+NG: 文字/ロゴ/UI/数字の焼き込み（数値はゲーム側UIで出すので画像に入れない）、watermark。
+
+Reference 1 is the actual tabletop electric charcoal heater PNG from the game. Make one MINIMAL faithful edit to this exact asset. This heater is powered on and the spiral coil is glowing hot. Its front lower-right POWER DIAL currently has the yellow index mark pointing straight up at 12 o'clock, which looks like the OFF position. This is the error.
+
+Rotate the dial to the ON/high-heat position: turn the dial's visible yellow/amber index mark CLOCKWISE BY ABOUT 135 DEGREES to point toward 4:30 (down and right). Rotate the visible grip/ridge orientation of the knob to match that setting. Keep the circular dial on the same lower-right part of the body, with the same size, viewing perspective and lighting. The mark must plainly sit on the LOWER-RIGHT QUADRANT of the dial and point outward down-right. Do not leave any yellow/amber index mark at 12 o'clock. Do not just add a second marker: replace the upright marker with the single clockwise-turned marker. Do not add text or numerical settings.
+
+Everything else in the image must remain identical: the same small black tabletop heater body, same shape/size/framing, glowing flat spiral coil, coil supports, power indicator light, feet, fine pixel-painter texture, and original alpha transparency. Do NOT add any center peg or upright rod to the flat heating coil. Do NOT redesign or smooth the existing pixel art. Do NOT add hands, charcoal, a logo, UI or a background. Transparent PNG, preserve the original canvas aspect and object framing. Prefer exactly the same original pixel dimensions.
+
+保存先: asset_sources/craft-success-cutins/placements-v2-20261008/stove-on.png
+本番の採用先: assets/ui/making/stove_coil.png

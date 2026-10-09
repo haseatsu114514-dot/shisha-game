@@ -1,0 +1,13 @@
+スタイル: 薄暗いシーシャラウンジの空気。`assets/backgrounds/bg_eden_shop.png` 程度の2Dドット絵〜ピクセルペインター調で、輪郭・影・質感に細かいドット感を残す。リアル写真調や滑らかすぎる3D調は避ける。シーシャ台の先端は小さい凸型の金属ポストにし、凹んだカップ型・ボウル一体型・大きな先端パーツにしない。手・腕は細身で中性的、明るいピーチ系の同一肌色に統一する。
+配色: 黒〜濃紫の闇に、琥珀／金（#f4d27a系）の暖色ネオンが差す。煙のかすみ。
+視点: 作りパートは一人称（プレイヤーの手元を上から見下ろす角度）。
+出力: PNG・透過指定のものは背景完全透過。@2x（実寸の2倍）で。指定なき限り 1280×720 基準。
+NG: 文字/ロゴ/UI/数字の焼き込み（数値はゲーム側UIで出すので画像に入れない）、watermark。
+
+TARGET: Reference 1 is the current transparent two-panel cut-in PNG. Reference 2 is the actual flat electric stove used by the game. Make a precise correction to Reference 1. Keep its complete two-panel composition, smiling Hajime face, cap, hair, hoodie, hand, tongs, lifted charcoal cube, panel borders, purple/cream ink accents, transparent outside background and the exact composition.
+
+The single error to fix is the SHORT VERTICAL CYLINDRICAL METAL PEG sticking out of the stove beneath the floating charcoal. It is located near the lower-middle of the left action panel, around 54% of total canvas width and 81% of canvas height. DELETE THIS PEG COMPLETELY. Replace it with the continuous FLAT spiral heating coil surface. There must be NO post, NO nipple, NO vertical center stud, NO protruding metal cylinder, NO upright rod and NO raised center cap on the stove. It is a flat tabletop electric charcoal heater, not a hookah bowl connector. The visible coil should follow the proper flat spiral heater in reference 2, with the glowing wire on a planar surface and a flat dark center. Keep the perspective of reference 1; no need to show the whole stove, just correct the small visible stove section at the bottom of the hand panel.
+
+Preserve the charcoal held by the tongs and its position above the stove. The charcoal itself is NOT the item to remove. Preserve the hand and the character's face exactly. Maintain TRUE TRANSPARENT alpha outside the panels, no opaque black backing, no checkerboard. Keep all the outer ink strokes and panel edges intact. Do not add text, UI, watermarks or new objects. Output one corrected RGBA PNG at the same aspect ratio as Reference 1 (1706×922).
+
+保存先: asset_sources/craft-success-cutins/placements-v2-20261008/comic-pair.png

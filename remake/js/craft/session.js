@@ -84,7 +84,6 @@ export function openBench(cs, { steps = [] } = {}) {
   ]);
   const guide = buildGuide();
   const panel = el("div.bench-panel");
-  const ticker = el("div.bench-ticker");
   const condition = craftCondition(cs);
   if (cs.mode !== "tutorial") worker.footer.append(conditionBadge(condition));
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
@@ -94,12 +93,11 @@ export function openBench(cs, { steps = [] } = {}) {
       audience?.root,
     ]),
     el("div.bench-right", [el("div.bench-head", [el("div.bench-heading", [title, hint]), guide.root]), panel]),
-    ticker,
   ]);
   applyCraftSkin(root);
   bg();
   showScreen("bench", root);
-  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, ticker };
+  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount };
   return bench;
 }
 
@@ -155,12 +153,9 @@ export function setPlayerMental(cs, level) {
   if (bench?.cs === cs && bench.root.isConnected && bench.panel.dataset.step === "steam") bench.worker.setMental(level);
 }
 
-/** 大会中だけ流れる実況テロップ（パッキー） */
+/** 大会実況は、審査員と同じ左下の欄でパッキーが話す。 */
 export function tickerSay(text) {
-  if (!bench || bench.cs.mode !== "tournament") return;
-  const t = el("div.tick", { text });
-  bench.ticker.replaceChildren(t);
-  requestAnimationFrame(() => t.classList.add("show"));
+  if (bench?.cs.mode === "tournament" && bench.root.isConnected && !bench.root.classList.contains("done")) bench.audience?.say(text);
 }
 
 // ---------------------------------------------------------------- 自主練
