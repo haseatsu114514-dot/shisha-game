@@ -1,10 +1,18 @@
 // 台詞の組版: 全角24字と実際の表示幅を上限に折り、最大2行で改ページする。
 // データの改行と装飾を保ち、ブラウザの再折り返しで行数が増えないようにする。
+import { model as PHRASE_MODEL_DATA } from "./budoux_ja.js";
+
 export const WRAP_LIMIT = 24;
 export const MAX_PAGE_LINES = 2;
-const BREAK_AFTER = "、。，．！？…‥」』）】〉》";
+// 句読点が無い行は、語の途中で折るより手前の文節の頭で早めに折る。ただし行がこれより短くなるなら上限で折る
+const PHRASE_MIN = 0.4;
+const BREAK_AFTER = "、。，．！？…‥」』）】〉》♡♪☆★─―—";
 const NO_LINE_START = "、。，．！？…‥ー〜ぁぃぅぇぉっゃゅょんゎ々ァィゥェォッャュョ」』）】〉》・";
 const OPENERS = "「『（【〈《";
+const CLOSERS = "」』）】〉》";
+const DASHES = "─―—";
+const SPACES = " 　"; // 行頭に来た区切りの空白は表示しない
+const HIRAGANA = /^[\u3041-\u309f]$/;
 const TAG_PATTERN = /^\[\/?(imp|warn|hint|red|blue|sub)\]/;
 const graphemes = typeof Intl?.Segmenter === "function"
   ? new Intl.Segmenter("ja", { granularity: "grapheme" }) : null;
@@ -27,56 +35,128 @@ function previousVisible(tokens, end) {
   return -1;
 }
 function nextVisible(tokens, start) {
-  while (start < tokens.length && tokens[start].tag) start++;
+  while (start < tokens.length && (tokens[start].tag || SPACES.includes(tokens[start].value))) start++;
   return start;
 }
+/** 開き括弧の直後・行頭禁則の直前・「──」の間では折らない。 */
 function safeBoundary(tokens, end) {
-  const previous = previousVisible(tokens, end), next = nextVisible(tokens, end);
-  return !OPENERS.includes(tokens[previous]?.value || "\0") &&
-    !NO_LINE_START.includes(tokens[next]?.value || "\0");
+  const before = tokens[previousVisible(tokens, end)]?.value || "\0";
+  const after = tokens[nextVisible(tokens, end)]?.value || "\0";
+  return !OPENERS.includes(before) && !NO_LINE_START.includes(after) &&
+    !(DASHES.includes(before) && DASHES.includes(after));
 }
 
-/** 文末優先・禁則は上限の内側で処理する。句読点まで先読みして行を延ばさない。 */
-export function autoWrap(raw, limit = WRAP_LIMIT, layout = {}) {
-  return String(raw).split("\n").map((segment) => {
-    const tokens = tokensOf(segment), lines = [];
-    let start = 0;
-    while (start < tokens.length) {
-      let end = start, units = 0, text = "";
-      while (end < tokens.length) {
-        const token = tokens[end];
-        const nextText = text + (token.tag ? "" : token.value);
-        const tooWide = layout.measure && layout.maxWidth > 0 && layout.measure(nextText) > layout.maxWidth;
-        if (!token.tag && units > 0 && (units + token.width > limit || tooWide)) break;
-        units += token.width;
-        text = nextText;
-        end++;
-      }
-      let cut = end;
-      if (end < tokens.length) {
-        let preferred = -1;
-        for (const punctuation of ["。！？", BREAK_AFTER]) {
-          for (let k = end - 1; k >= start; k--) {
-            if (tokens[k].tag || !punctuation.includes(tokens[k].value) || !safeBoundary(tokens, k + 1)) continue;
-            if (tokens.slice(start, k + 1).reduce((n, t) => n + t.width, 0) >= limit * 0.3) {
-              preferred = k + 1; break;
-            }
-          }
-          if (preferred >= 0) break;
-        }
-        if (preferred >= 0) cut = preferred;
-        else {
-          while (!safeBoundary(tokens, cut)) {
-            const earlier = previousVisible(tokens, cut);
-            if (earlier <= start || !tokens.slice(start, earlier).some((t) => !t.tag)) break;
-            cut = earlier;
-          }
-        }
-      }
-      lines.push(tokens.slice(start, cut).map((t) => t.value).join(""));
-      start = cut;
+// 文節の頭の推定は BudouX（Apache-2.0）の Parser.parseBoundaries と同じ計算。
+const PHRASE_MODEL = new Map(Object.entries(PHRASE_MODEL_DATA).map(([k, v]) => [k, new Map(Object.entries(v))]));
+const PHRASE_BASE = -0.5 * [...PHRASE_MODEL.values()]
+  .flatMap((group) => [...group.values()]).reduce((sum, score) => sum + score, 0);
+const PHRASE_FEATURES = [["UW1", -3, -2], ["UW2", -2, -1], ["UW3", -1, 0], ["UW4", 0, 1], ["UW5", 1, 2],
+  ["UW6", 2, 3], ["BW1", -2, 0], ["BW2", -1, 1], ["BW3", 0, 2], ["TW1", -3, 0], ["TW2", -2, 1],
+  ["TW3", -1, 2], ["TW4", 0, 3]];
+// ひらがな同士の間は「えへ｜へ」「ほぐ｜して」のような誤りが多いので、強い区切りだけを使う
+const HIRAGANA_PAIR_MIN_SCORE = 500;
+const KANJI = /^[\u3400-\u4dbf\u4e00-\u9fff々〆]$/;
+const ASCII_WORD = /^[0-9A-Za-z]$/;
+const words = typeof Intl?.Segmenter === "function"
+  ? new Intl.Segmenter("ja", { granularity: "word" }) : null;
+function phraseScore(plain, i) {
+  let score = PHRASE_BASE;
+  for (const [key, from, to] of PHRASE_FEATURES) {
+    score += PHRASE_MODEL.get(key)?.get(plain.substring(i + from, i + to)) || 0;
+  }
+  return score;
+}
+/**
+ * 装飾タグを除いた本文で文節の頭を求め、その直前で改行できるトークン位置を返す。
+ * strong は普段使う区切り、weak は他に折れる所が無いときだけ使う弱い区切り（漢字同士の間を含む）。
+ */
+function phraseStarts(tokens) {
+  const offsets = [], strong = new Set(), weak = new Set();
+  let plain = "";
+  for (const token of tokens) {
+    offsets.push(plain.length);
+    if (!token.tag) plain += token.value;
+  }
+  // 辞書で一語とみなされる「ありがたい」「一人ひとり」などの内側では折らない
+  const wordStarts = words ? new Set([...words.segment(plain)].map((s) => s.index)) : null;
+  tokens.forEach((token, k) => {
+    const at = offsets[k];
+    if (token.tag || at === 0 || SPACES.includes(token.value)) return;
+    if (SPACES.includes(tokens[k - 1]?.value || "")) weak.add(k); // 英文の単語の切れ目
+    if (wordStarts && !wordStarts.has(at)) return;
+    const before = tokens[previousVisible(tokens, k)]?.value || "", after = token.value;
+    if (before === after || (ASCII_WORD.test(before) && ASCII_WORD.test(after))) return;
+    const score = phraseScore(plain, at);
+    if (score <= 0) return;
+    weak.add(k);
+    if (KANJI.test(before) && KANJI.test(after)) return;
+    if (score > (HIRAGANA.test(before) && HIRAGANA.test(after) ? HIRAGANA_PAIR_MIN_SCORE : 0)) strong.add(k);
+  });
+  return { strong, weak };
+}
+
+/**
+ * 1つの段落を折る。禁則は上限の内側で処理し、句読点まで先読みして行を延ばさない。
+ * sentenceFirst なら手前の文末（。！？）を優先し、そうでなければ読点などの直後か文節の頭のうち
+ * 一番後ろで折る。どちらも語の途中は避けて少しだけ早める。
+ */
+function wrapSegment(segment, limit, layout, sentenceFirst) {
+  const tokens = tokensOf(segment), lines = [];
+  const phrases = phraseStarts(tokens);
+  let start = 0;
+  while (start < tokens.length) {
+    let end = start, units = 0, text = "";
+    while (end < tokens.length) {
+      const token = tokens[end];
+      const nextText = text + (token.tag ? "" : token.value);
+      const tooWide = layout.measure && layout.maxWidth > 0 && layout.measure(nextText) > layout.maxWidth;
+      if (!token.tag && units > 0 && (units + token.width > limit || tooWide)) break;
+      units += token.width;
+      text = nextText;
+      end++;
     }
-    return lines.join("\n");
+    let cut = end;
+    if (end < tokens.length) {
+      const widthTo = (k) => tokens.slice(start, k).reduce((n, t) => n + t.width, 0);
+      const after = (k, set) => !tokens[k - 1].tag && set.includes(tokens[k - 1].value);
+      let preferred = -1;
+      for (let k = end; sentenceFirst && k > start && preferred < 0; k--) {
+        if (after(k, "。！？") && safeBoundary(tokens, k) && widthTo(k) >= limit * 0.3) preferred = k;
+      }
+      for (let k = end; k > start && preferred < 0; k--) {
+        if (!safeBoundary(tokens, k)) continue;
+        // 「』が」「」と」のように助詞が続く閉じ括弧は文節の途中なので折らない
+        const closerWithParticle = after(k, CLOSERS) && HIRAGANA.test(tokens[nextVisible(tokens, k)]?.value || "");
+        if (after(k, BREAK_AFTER) && !closerWithParticle && widthTo(k) >= limit * 0.3) preferred = k;
+        else if (phrases.strong.has(k) && widthTo(k) >= limit * PHRASE_MIN) preferred = k;
+      }
+      for (let k = end; k > start && preferred < 0; k--) {
+        if (phrases.weak.has(k) && safeBoundary(tokens, k) && widthTo(k) >= limit * PHRASE_MIN) preferred = k;
+      }
+      if (preferred >= 0) cut = preferred;
+      else {
+        while (!safeBoundary(tokens, cut)) {
+          const earlier = previousVisible(tokens, cut);
+          if (earlier <= start || !tokens.slice(start, earlier).some((t) => !t.tag)) break;
+          cut = earlier;
+        }
+      }
+    }
+    lines.push(tokens.slice(start, cut).map((t) => t.value).join(""));
+    start = cut;
+    while (start < tokens.length && SPACES.includes(tokens[start].value)) start++;
+  }
+  return lines;
+}
+
+/** 文末優先で折る。それで改ページが増えるときだけ、一番後ろの区切りで折って文の途中の改ページを避ける。 */
+export function autoWrap(raw, limit = WRAP_LIMIT, layout = {}) {
+  const pagesOf = (lines) => Math.ceil(lines.length / MAX_PAGE_LINES);
+  return String(raw).split("\n").map((segment) => {
+    const sentenceFirst = wrapSegment(segment, limit, layout, true);
+    if (sentenceFirst.length <= MAX_PAGE_LINES) return sentenceFirst.join("\n");
+    const latest = wrapSegment(segment, limit, layout, false);
+    return (pagesOf(latest) < pagesOf(sentenceFirst) ? latest : sentenceFirst).join("\n");
   }).join("\n");
 }
 
