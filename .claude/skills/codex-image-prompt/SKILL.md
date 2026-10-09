@@ -15,7 +15,7 @@ description: 画像（立ち絵・背景・CG・UIパーツ）の新規生成や
 |---|---|
 | 背景 | `tools/bg_prompts.txt` — 英語プロンプト・1280x720・no people・painterly。画風基準は `bg_eden_shop.png` |
 | 立ち絵・表情差分 | `docs/image_generation_guide.md` — マゼンタ(#FF00FF)背景・表情は1枚のシートで一括生成・pixelize前提 |
-| 作りパートUI・小物 | `docs/asset_gen_prompts.md` — 共通スタイル指針＋配線コントラクト（ファイル名→CSSボックス・@2x・透過有無） |
+| 作りパートUI・小物 | `docs/asset_gen_prompts.md` — 共通スタイル指針＋分業表＋現行の作業台素材表（ファイル名→使う場所） |
 | CG（一枚絵） | `docs/cg_production_plan.md` ＋ 背景の書式を流用 |
 
 - キャラの容姿・雰囲気は `brand/character_profiles.md` と `data/characters.json` から写す。

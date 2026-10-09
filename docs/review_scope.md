@@ -16,7 +16,7 @@ AI（Claude / GLM 等）や人間がこのリポジトリを「矛盾点・改�
 |---|---|---|---|
 | **コア（最小）** | `data/dialogue/**` ＋ `brand/story_and_structure.md` ＋ `brand/character_profiles.md` | ~230k | 台詞・ストーリー構成・キャラ設定の「正」 |
 | 標準（実物） | ＋ `data/*.json`（characters / flavors / equipment / glossary 等）＋ `remake/js/` | ~375k | 実際にプレイされるブラウザ版の挙動・データ |
-| 仕様照合（必要時のみ） | ＋ `docs/master_spec.md` ＋ `docs/web_version_plan.md` ＋ `docs/owner_requests.md` | +数十k | 仕様・要望台帳と突き合わせるとき |
+| 仕様照合（必要時のみ） | ＋ `docs/master_spec.md` ＋ `docs/owner_requests.md` | +数十k | 仕様・要望台帳と突き合わせるとき |
 
 ヒント:
 - 純粋な「セリフの改行・字数（吹き出し溢れ）」は `data/dialogue/**` だけ見ればよい。

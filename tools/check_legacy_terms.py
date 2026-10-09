@@ -75,10 +75,7 @@ DOC_FILES = {
     "check_speakers.py",
     "review_scope.md",
     "story_review_prompt.md",
-    "web_version_plan.md",
-    "build_setting_reference.py",
     "story_and_structure.md",
-    "story_review_report_20260616.md",
     "owner_requests.md",
 }
 

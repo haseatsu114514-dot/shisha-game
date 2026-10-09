@@ -46,8 +46,8 @@
 python3 tools/pixelize.py master.png --char kumicho
 python3 tools/pixelize.py sheet.png --char kumicho --slice 3x2 \
     --names normal,smile,serious,surprise,sad
-python3 web/build_data.py && python3 web/build_standalone.py
-node web/test/portraits.mjs
+python3 remake/tools/build_manifest.py
+node remake/test/rin_portraits.mjs  # 立ち絵の表示確認の例。対象キャラに合わせて変更画面を確認
 ```
 
 ---
@@ -468,8 +468,8 @@ python3 tools/pixelize.py sheet.png --char rira --slice 3x2 \
 python3 tools/pixelize.py master.png --char uranaishi
 python3 tools/pixelize.py sheet.png --char uranaishi --slice 3x2 \
     --names normal,smile,sad,serious,surprise
-python3 web/build_data.py && python3 web/build_standalone.py
-node web/test/portraits.mjs
+python3 remake/tools/build_manifest.py
+node remake/test/rin_portraits.mjs  # 立ち絵の表示確認の例。対象キャラに合わせて変更画面を確認
 ```
 
 ---
