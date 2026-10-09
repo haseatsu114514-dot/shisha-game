@@ -1,11 +1,11 @@
 # Codex 依頼: 通りの試作「ハリボテ背景版」の画像（画像だけ・8枚）
 
 > ✅ **2026-10-03 納品・組み込み済み**: Codex が cc0ab49 で8枚（＋比較用 `_try`）を納品 → Claude が `?stage=set` に組み込んだ。
-> 結果と既知の問題は `web/proto/street/README.md` の「ハリボテ背景版」の節。
+> 結果と既知の問題は `experiments/proto/street/README.md` の「ハリボテ背景版」の節。
 
 作成: 2026-10-03（Claude）／ 対象ブランチ: `claude/admiring-goodall-m9bdg3`
 台帳: `docs/owner_requests.md` の AA11
-これまでの依頼: `docs/codex_handoff_street_images.md`（納品済み）／`docs/codex_handoff_street_hd_images.md`（**取り下げ・この依頼に統合**）
+これまでの依頼: 街並み・キャラ7枚（納品済み）／高解像度2.5D版の遠景・電柱（**取り下げ・この依頼に統合**）
 
 ## これは何か
 
@@ -28,7 +28,7 @@
 
 1. 作業場所は正規のチェックアウト（`shisha.canonicalRoot` に設定されている shisha-game）。
 2. `git status` が clean か確認する。未コミットの変更があれば何もせず止まって報告する（別の作業の途中の可能性がある）。
-3. 安全確認は `web/`・`data/`・`assets/` があり `./tools/check_git_safety.sh` が通ればよい（`project.godot` の確認は古いルール）。
+3. 安全確認は `remake/`・`data/`・`assets/` があり `./tools/check_git_safety.sh` が通ればよい（`project.godot` の確認は古いルール）。
    repo root・hooksPath・canonicalRoot の確認は通常どおり行う。
 4. `git fetch origin claude/admiring-goodall-m9bdg3` → `git checkout claude/admiring-goodall-m9bdg3` → `git pull`
 5. 画像を生成して保存 → 追加した PNG だけを `git add` してコミット → このブランチへ push
@@ -133,4 +133,4 @@
 - パネル3枚を高さ360に縮めて横につなぎ（左右の端の隙間で重ねてなじませる）、ドット化・減色 → 幅およそ1900の通り1本
 - 建物の足元の線・ドアの位置・歩ける帯・看板の位置を測ってステージJSONに書く。小物は y ソートで前後に回り込めるように置く
 - 夜は昼のパネルと差し替え（夜のパネルが無ければ今の夜の重ね塗りで代用）
-- 前回の `codex_handoff_street_hd_images.md`（遠景・電柱）は取り下げ。遠景はパネルの中に含まれ、電柱は 8/8 に移した
+- 前回の高解像度2.5D版の依頼（遠景・電柱）は取り下げ。遠景はパネルの中に含まれ、電柱は 8/8 に移した

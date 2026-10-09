@@ -1,6 +1,6 @@
 # 画像生成ガイド（コピペ用の指示例つき）
 
-> 2026-10-07: この資料は旧ブラウザ版向け制作手順の履歴。旧 `web/` は削除済み。現行版の画像取り込み・制作手順は `CLAUDE.md`、`.claude/skills/` の該当スキル、`remake/README.md` を参照する。
+> 2026-10-07: 旧 `web/` は削除済み（2026-10-09に取り込みコマンドを現行の `build_manifest.py` へ更新）。現行版の画像取り込み・制作手順は `CLAUDE.md`、`.claude/skills/` の該当スキル、`remake/README.md` を参照する。
 
 ChatGPT等で画像を作る → `tools/pixelize.py` に通す → ゲームに入る、までの手順書。
 
@@ -88,5 +88,5 @@ python3 tools/pixelize.py bg.png --key none --grid 360 \
 - 背景: `assets/backgrounds/bg_{場所}_{時間帯}.png`（例: `bg_tonari_inside.png`）
 - CG: `assets/cgs/cg_ch1_{イベント名}.png`
 
-取り込み後は `python3 web/build_data.py && python3 web/build_standalone.py` で反映
+取り込み後は `python3 remake/tools/build_manifest.py` で反映
 （立ち絵の余白計測・表示正規化も自動で行われる）。

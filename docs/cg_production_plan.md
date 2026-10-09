@@ -11,7 +11,7 @@
 - スタイル統一は既存方針どおり「プロンプトで頑張らず後処理で揃える」。
   ドット絵調にするなら `tools/pixelize.py`（未作成）パス、そのままイラスト調でも可
 - キャラの同一性: 立ち絵を参照画像にして image-to-image で生成
-- 生成後: `python3 web/build_data.py && python3 web/build_standalone.py`
+- 生成後: `python3 remake/tools/build_manifest.py`
 
 ## 一覧（優先度順）
 

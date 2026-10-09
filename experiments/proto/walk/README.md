@@ -7,7 +7,7 @@
 - 歩行グラフィックの絵の質（生成AIのドット絵がどこまで使えるか）
 
 主人公の代わりに、仮でつむぎを歩かせている。2026-10-02 に Codex の生成画像へ差し替え済み（`assets/proto_walk/`）。
-同じ歩行の仕組みで「通りを歩く」試作も作った → `experiments/proto/street/README.md`本編（`web/index.html` / `web/js/*`）には一切つながっていない。
+同じ歩行の仕組みで「通りを歩く」試作も作った → `experiments/proto/street/README.md`本編（`remake/`）には一切つながっていない。
 ヘッドレステストの一覧にも含めない。
 
 ## 起動

@@ -75,7 +75,7 @@ Codex側は修正版5表情・表示用WebP・計測ビルド・比較資料を�
 1. 指定ブランチの最新コミットと最新mainを確認し、別チャット側の変更を保って取り込む。Codex側ではmainへのマージを行わない。
 2. `python3 tools/make_face_icons.py rin` で凛の丸アイコンをv11へ更新。現在の `TUNE` はv7の顔に合わせてあるので、他キャラと並べて拡大率・目線・顎の収まりを再確認する。他キャラのアイコンを再生成しない。
 3. 凛の全台詞の `face` 指定を上の意味と照合する。mainのPRT18の振り分けを基準に、必要な箇所だけ調整し、外見の地の文も確認する。Codex側では台詞・表情指定を変更していない。
-4. `python3 tools/build_setting_reference.py` で設定資料集を最新版の絵へ更新。Codex側では `docs/setting_reference.html` を変更していない。
+4. （当時）`python3 tools/build_setting_reference.py` で設定資料集を最新版の絵へ更新（設定資料集は2026-10-09に削除）。Codex側では `docs/setting_reference.html` を変更していない。
 5. 丸アイコンのLIME・マップ等の表示、5表情の会話、PNG/WebPとmanifestを確認し、必要な検証を終えてPRからmainへマージする。PRT25/PRT30へClaude側の完了を記録する。
 
 以前の「後日のタイミング」保留（旧PRT19/20、番号整理後PRT34/35）は、この明示指示で立ち絵制作・指定ブランチへの差し替えを再開した。以前の「全て完了したらマージ」より、今回の「mainへのマージはClaude側」という担当分担を優先する。
