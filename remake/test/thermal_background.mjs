@@ -1,6 +1,6 @@
 // 実温度の引継ぎ、吸い方・炭による上下、一時停止、描画・スマホ・低減モード。
 // 冷たい色から始まり、適温は虹と陽炎・煙、超えるとだんだん火事のように黄色→赤の炎（青・紫の炎は使わない TH09・TH12・TH13）。
-// 温度計の一番上で爆発して焦げる（TH06）。ボウルは燃やさない（TH04）。熱管理は吸い出しと同じ針のゲーム＋先に炭交換（TH14）。
+// 温度計の一番上で爆発して焦げる（TH06）。ボウルは燃やさない（TH04）。熱管理は「炭を焼きますか？」→吸い出しと同じ針（TH14・TH21）。冷え切り・フレーバー切れもダメになる（TH19・TH20）。
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
@@ -126,25 +126,70 @@ try {
   assert.equal(await band(), 'fire'); assert.equal(new Set(within).size, 3, 'the fire band does not change gradually');
   assert.deepEqual([...glows].sort((a, b) => a - b), glows, `scene glow does not grow with heat: ${glows}`);
 
-  // 熱管理: 吸い出しと同じ針のゲーム。炭は燃え進んで熱が落ち、炭交換は最初の吸い出しの前だけ。最低1回吸って整え終える。
+  // 熱管理: 「そろそろ調整の準備をしよう」→「炭を焼きますか？」で個数。温度計はこの時点で出る。替えた炭で少し温度が上がり、
+  // 針のゲームが始まると炭が燃え進んで温度が動き続ける。最低1回吸って整え終える。
   const backdropTemp = async () => Number(await page.locator('.thermal-backdrop').getAttribute('data-temperature'));
-  await page.evaluate(() => { cs.pull.temp = .50; window.run = T.care.runCare(cs); });
-  await page.waitForSelector('.pull-care .pg-needle');
-  await page.locator('[data-test="care-exchange"]:not([disabled])').waitFor();
+  // 針が指定の範囲（%）に来た瞬間に吸う。
+  const pullAt = (lo, hi) => page.evaluate(async ([a, b]) => {
+    const needle = document.querySelector('.pg-needle'), at = () => parseFloat(needle.style.left);
+    while (!needle.style.left) await new Promise(requestAnimationFrame);
+    while (!(at() >= a && at() <= b)) await new Promise(requestAnimationFrame);
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }));
+  }, [lo, hi]);
+  await page.evaluate(() => { cs.pull.temp = .46; cs.leaf = null; window.run = T.care.runCare(cs); });
+  await page.waitForSelector('[data-test="care-coals"]');
+  assert.equal(await page.locator('.pull-read').textContent(), 'そろそろ調整の準備をしよう');
+  assert.match(await page.locator('.care-coals-ask').textContent(), /炭を焼きますか？/);
+  assert(await page.locator('.pull-care [data-test="pull-temperature"]').isVisible(), 'thermometer must show while choosing coals');
+  assert.equal(await page.locator('.pull-care [data-test="thermo-cold"]').count(), 1);
+  assert(!(await page.locator('.pull-play').isVisible()), 'the needle game shows before choosing coals');
+  const chosen = await backdropTemp();
+  await page.locator('[data-test="care-coal-2"]').click();
+  await page.waitForFunction(() => document.querySelector('.pg-needle').style.left);
+  const swapped = await backdropTemp();
+  assert(swapped > chosen + .05, `coal swap did not raise the temperature: ${chosen} -> ${swapped}`);
   assert.match(await page.locator('.pull-read').textContent(), /↓ 炭が燃え進んで熱が落ちていく/);
   assert(await page.locator('[data-test="pull-serve"]').isDisabled(), 'can finish heat care without pulling');
-  const moving = await backdropTemp(); await page.waitForTimeout(400);
-  assert.notEqual(await backdropTemp(), moving, 'heat care temperature does not move');
-  await page.keyboard.press('Space');
-  assert(await page.locator('[data-test="care-exchange"]').isDisabled(), 'coal exchange still possible after the first pull');
+  await page.waitForTimeout(500);
+  assert.notEqual(await backdropTemp(), swapped, 'heat care temperature does not move');
+  await pullAt(45, 55);
   assert(!(await page.locator('[data-test="pull-serve"]').isDisabled()), 'one pull should be enough to finish');
   await page.keyboard.press('Enter');
   await page.waitForSelector('.result-card.show');
   assert.equal(await page.locator('.result-card.show .rc-title').textContent(), '熱管理 結果');
-  assert.deepEqual(await page.evaluate(() => [cs.care.pulls, cs.care.exchanged]), [1, false]);
+  assert.deepEqual(await page.evaluate(() => [cs.care.pulls, cs.care.coals, cs.leaf.hp]), [1, 2, 4]);
   assert(Math.abs(await backdropTemp() - await page.evaluate(() => cs.care.temp)) < .0001);
   await shot('care-pulled');
   await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.run);
+
+  // 熱管理の3回目からフレーバーが傷み、ダメージの演出が出る。体力が尽きるとその一台はダメになる。
+  await page.evaluate(() => { cs.pull.temp = .54; cs.leaf = { hp: 2, max: 4 }; window.run = T.care.runCare(cs); });
+  await page.locator('[data-test="care-coal-0"]').click();
+  await page.waitForFunction(() => document.querySelector('.pg-needle').style.left);
+  await pullAt(45, 55); await pullAt(45, 55);
+  assert.equal(await page.locator('[data-test="leaf-hp"]').getAttribute('data-hp'), '2', 'the first two pulls must not hurt the flavor');
+  await pullAt(45, 55);
+  assert.equal(await page.locator('[data-test="leaf-hp"]').getAttribute('data-hp'), '1');
+  assert.equal(await page.locator('.leaf-hp.hit').count(), 1, 'no damage effect');
+  assert.equal(await page.locator('.leaf-pip.lost').count(), 3);
+  await shot('leaf-damage');
+  await pullAt(45, 55);
+  await page.waitForSelector('.result-card.show');
+  assert.equal(await page.locator('.result-card.show .rc-title').textContent(), 'フレーバーがダメになってしまった');
+  assert.deepEqual(await page.evaluate(() => [cs.failed, cs.care.failed, cs.leaf.hp]), ['leaf', 'leaf', 0]);
+  assert.equal(await band(), 'leaf-out');
+  await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.run);
+
+  // 提供後に炭を替えずに放っておくと冷え切って、その一台はダメになる。
+  await page.evaluate(() => { cs.failed = null; cs.pull.temp = .2; cs.leaf = null; Math.random = () => .99; window.run = T.care.runCare(cs); });
+  await page.locator('[data-test="care-coal-0"]').click();
+  await page.waitForSelector('.result-card.show', { timeout: 20000 });
+  assert.equal(await page.locator('.result-card.show .rc-title').textContent(), 'シーシャが冷え切ってしまった');
+  assert.deepEqual(await page.evaluate(() => [cs.failed, cs.care.failed]), ['cold', 'cold']);
+  assert.equal(await band(), 'cold-out');
+  await shot('cold-out');
+  await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.run);
+  await page.evaluate(() => { cs.failed = null; });
 
   // 吸い出しで温度計の一番上まで上げると爆発し、焦げた背景と「焦げてしまった」の結果になる。
   await page.evaluate(() => { cs.steam = { ...cs.steam, temp: .995 }; cs.pull = null; window.run = T.pull.runPull(cs); });
@@ -158,23 +203,23 @@ try {
   await page.waitForSelector('.bench.thermal-burnt[data-thermal-band="burnt"]');
   await page.waitForSelector('.result-card.show');
   assert.equal(await page.locator('.result-card.show .rc-title').textContent(), 'シーシャが焦げてしまった');
-  assert.deepEqual(await page.evaluate(() => [cs.burnt, cs.pull.burnt, cs.pull.score]), [true, true, 0]);
+  assert.deepEqual(await page.evaluate(() => [cs.burnt, cs.pull.failed, cs.pull.score]), [true, 'burnt', 0]);
+  assert.equal(await page.locator('[data-test="screen-blast"]').count(), 0, 'the full-screen blast must clean up');
   assert(Math.max(...await page.locator('.thermal-backdrop').evaluate(c => [...c.getContext('2d').getImageData(4, 4, 1, 1).data].slice(0, 3))) < 110, 'burnt background is not charred');
   await shot('burnt-pull');
   await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.run);
-  // 熱管理: 炭交換の熱は少しずつ入り、吸わなくても一番上へ届けば焦げる。工程が変われば焦げた背景は残らない。
-  await page.evaluate(() => { cs.burnt = false; cs.pull = { ...cs.pull, temp: .9, burnt: false }; window.run = T.care.runCare(cs); });
-  await page.locator('[data-test="care-exchange"]:not([disabled])').click();
-  const swapped = await backdropTemp();
-  assert(swapped < .96, `coal heat arrived at once: ${swapped}`);
-  assert.match(await page.locator('.pull-read').textContent(), /↑ 熱が上がってきている/);
+  // 熱管理: 焦げる寸前で炭を3個も替えると、吸わなくても一番上へ届いて画面全体が爆発する。
+  await page.evaluate(() => { cs.burnt = false; cs.failed = null; cs.leaf = null; cs.pull = { ...cs.pull, temp: .93 }; window.run = T.care.runCare(cs); });
+  await page.locator('[data-test="care-coal-3"]').click();
+  await page.waitForSelector('[data-test="screen-blast"]', { timeout: 5000 });
+  await shot('screen-blast');
   await page.waitForSelector('.result-card.show', { timeout: 15000 });
   assert.equal(await page.locator('.result-card.show .rc-title').textContent(), 'シーシャが焦げてしまった');
-  assert.deepEqual(await page.evaluate(() => [cs.burnt, cs.care.burnt, cs.care.score]), [true, true, 0]);
+  assert.deepEqual(await page.evaluate(() => [cs.burnt, cs.care.failed, cs.care.score]), [true, 'burnt', 0]);
   await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.run);
   await page.evaluate(() => { T.session.stepPanel('trial', '温度のイメージ'); T.session.setBenchTemperature(cs, .54); });
   assert.equal(await band(), 'ready');
-  assert.equal(await page.locator('.bench.thermal-burnt').count(), 0);
+  assert.equal(await page.locator('.bench.thermal-burnt, .bench.thermal-ruined').count(), 0);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.evaluate(()=>{T.session.stepPanel('trial','温度のイメージ');T.session.setBenchTemperature(cs,.96);});
   await page.waitForTimeout(120); const still=await pixels();
@@ -186,5 +231,5 @@ try {
   await page.evaluate(()=>T.session.stepPanel('holes','穴あけ'));
   assert(!(await page.locator('.thermal-backdrop').isVisible()));
   assert.deepEqual(errors,[]);
-  console.log('PASS: cold→rainbow with heat haze→gradual yellow→red fire (no blue/purple), heat care as the pull game with coal exchange, bowl not burning, burst on pull and heat care, readable header, steam reset, steam pause/resume and handoff, stable waiting temperature, coal cooling, reduced motion, mobile bounds and reset; page errors 0');
+  console.log('PASS: cold→rainbow with heat haze→gradual yellow→red fire (no blue/purple), heat care with coal choice then the pull game, flavor damage from the 3rd care pull, cold-out, flavor-out, full-screen blast, bowl not burning, burst on pull and heat care, readable header, steam reset, steam pause/resume and handoff, stable waiting temperature, coal cooling, reduced motion, mobile bounds and reset; page errors 0');
 } finally { await browser.close(); }

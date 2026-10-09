@@ -3,19 +3,26 @@
 // 温度計の一番上で爆発して焦げる（TH06・TH12・TH13）。炎はイメージなので台やボウルには付けない（TH04）。
 // 見た目は温度に沿って連続的に移り、温度帯は呼び名・陽炎・照らしの段階にだけ使う。
 import { el, clamp } from "../core/util.js";
-import { IDEAL, isOptimalTemperature } from "./conditions.js";
+import { IDEAL, DANGER_TEMP, isOptimalTemperature } from "./conditions.js";
 
 // 温度帯の区切りと呼び名。適温の端点は温度計と同じ。
 // glow=作業風景を照らす色と強さ、haze=作業風景のゆらぎ(px)、smoke=台の上の煙の色と濃さ。
 const BANDS = [
-  { id: "cold", label: "まだぬるい", until: .30, ink: "#bfe6ff", glow: ["#8fd0ff", .1], haze: 0, smoke: ["#f2fbff", .15] },
-  { id: "warming", label: "熱が入っていく", until: IDEAL[0], ink: "#e3d6ff", glow: ["#c8b8ff", .12], haze: 1.5, smoke: ["#fbf8ff", .3] },
-  { id: "ready", label: "適温", until: IDEAL[1], ink: "#ffe9ff", glow: ["#d79bff", .26], haze: 4, smoke: ["#fff8ff", .6] },
-  { id: "hot", label: "熱が強い", until: .76, ink: "#ffd27a", glow: ["#ff8a00", .42], haze: 5, smoke: ["#ffe6cc", .65] },
-  { id: "fire", label: "過熱", until: .90, ink: "#ffcf3a", glow: ["#ff2a00", .58], haze: 6, smoke: ["#ffd6b8", .7] },
-  { id: "inferno", label: "灼熱・焦げる寸前", until: Infinity, ink: "#ffd23a", glow: ["#ff1a00", .7], haze: 8, smoke: ["#ffe0c8", .72] },
+  { id: "cold", label: "まだぬるい", until: .30, ink: "#bfe6ff", glow: ["#8fd0ff", .1], haze: 0, smoke: ["#ffffff", 0] },
+  { id: "warming", label: "熱が入っていく", until: IDEAL[0], ink: "#e3d6ff", glow: ["#c8b8ff", .12], haze: 1.5, smoke: ["#ffffff", 0] },
+  { id: "ready", label: "適温", until: IDEAL[1], ink: "#ffe9ff", glow: ["#d79bff", .26], haze: 4, smoke: ["#ffffff", 0] },
+  { id: "hot", label: "熱が強い", until: .76, ink: "#ffd27a", glow: ["#ff8a00", .42], haze: 5, smoke: ["#ffffff", 0] },
+  { id: "fire", label: "過熱", until: DANGER_TEMP, ink: "#ffcf3a", glow: ["#ff2a00", .58], haze: 6, smoke: ["#ddd7d0", .26] },
+  { id: "inferno", label: "灼熱・焦げる寸前", until: Infinity, ink: "#ffd23a", glow: ["#ff1a00", .7], haze: 8, smoke: ["#cfc8c0", .42] },
 ];
-const BURNT = { id: "burnt", label: "シーシャが焦げてしまった", ink: "#ff7a2a", glow: ["#ff3c00", .3], haze: 0, smoke: ["#1c1210", .92] };
+// その一台がダメになったときの背景（焦げた／冷え切った／フレーバーが抜けた）。
+const RUINED = {
+  burnt: { id: "burnt", label: "シーシャが焦げてしまった", ink: "#ff7a2a", glow: ["#ff3c00", .3], haze: 0, smoke: ["#1c1210", .92] },
+  cold: { id: "cold-out", label: "シーシャが冷え切ってしまった", ink: "#cfe6ff", glow: ["#9cc8ff", .16], haze: 0, smoke: ["#ffffff", 0] },
+  leaf: { id: "leaf-out", label: "フレーバーがダメになってしまった", ink: "#c9b48a", glow: ["#8a7350", .14], haze: 0, smoke: ["#9a8f80", .3] },
+};
+const BURNT = RUINED.burnt;
+const RUINED_BG = { burnt: ["#3a1d10", "#0b0503"], cold: ["#5d7487", "#18232e"], leaf: ["#4a3f31", "#161109"] };
 export function thermalBand(temp) {
   const t = clamp(Number.isFinite(temp) ? temp : 0, 0, 1);
   return BANDS.find(b => t < b.until || (b.id === "ready" && t === IDEAL[1]));
@@ -129,7 +136,7 @@ export function buildThermalAtmosphere(host, worker) {
   equipment?.before(glow);
   equipment?.after(boom);
   worker.footer.append(label);
-  let active = false, paused = false, temp = 0, phase = "", raf = 0, last = 0, time = 0, burstAt = -1;
+  let active = false, paused = false, temp = 0, phase = "", raf = 0, last = 0, time = 0, burstAt = -1, ruined = null;
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   /** 根元から先端へ揺れながら細くなる炎の舌。calm=1で揺れの小さい穏やかな炎。 */
@@ -277,6 +284,21 @@ export function buildThermalAtmosphere(host, worker) {
     }
     ctx.globalAlpha = 1;
   }
+  /** 冷え切った（霜が降りたような青灰色で、きらめきだけがゆっくり瞬く）／フレーバーが抜けた（くすんだ茶灰色に灰が落ちる）。 */
+  function spoiled(kind, t, w, h) {
+    ctx.save(); ctx.translate(w / 2, h / 2); ctx.rotate(-.2); ctx.lineWidth = 3;
+    ctx.strokeStyle = kind === "cold" ? "#cfe6ff" : "#8a7a60"; ctx.globalAlpha = .12;
+    for (let iy = -5; iy < 5; iy++) for (let ix = -7; ix < 8; ix++) ctx.strokeRect(ix * 90, iy * 90, 56, 56);
+    ctx.restore(); ctx.globalAlpha = 1;
+    if (kind === "cold") { aurora({ rainbow: 0, frost: 1 }, t, w, h, false); return; }
+    ctx.fillStyle = "#b8ab96";
+    for (const s of SPARKS) {
+      const p = (t * s.speed * .12 + s.phase) % 1;
+      ctx.globalAlpha = .35 * (1 - p);
+      ctx.fillRect(s.x * w + Math.sin(t + s.wobble + p * 6) * 20, p * h, s.size, s.size);
+    }
+    ctx.globalAlpha = 1;
+  }
   /** 背景の陽炎: 横の帯ごとに少しずらし、熱い空気越しに見ているようにゆらす。 */
   function shimmer(amount, t, w, h) {
     if (!warpCtx || amount <= 0) return;
@@ -289,12 +311,13 @@ export function buildThermalAtmosphere(host, worker) {
   function draw() {
     if (!ctx) return;
     sprites();
-    const burnt = burstAt >= 0, w = canvas.width, h = canvas.height, t = reduced.matches ? 0 : time;
-    const env = burnt ? { bg: ["#3a1d10", "#0b0503"] } : envAt(temp), band = burnt ? BURNT : thermalBand(temp);
+    const burnt = ruined === "burnt", w = canvas.width, h = canvas.height, t = reduced.matches ? 0 : time;
+    const env = ruined ? { bg: RUINED_BG[ruined] } : envAt(temp), band = ruined ? RUINED[ruined] : thermalBand(temp);
     const gradient = ctx.createLinearGradient(0, 0, w * .4, h);
     env.bg.forEach((color, i) => gradient.addColorStop(i, color));
     ctx.fillStyle = gradient; ctx.fillRect(0, 0, w, h);
     if (burnt) { explosion(t, w, h); return; }
+    if (ruined) { spoiled(ruined, t, w, h); return; }
     squares(env, band.ink, t, w, h);
     aurora(env, t, w, h, isOptimalTemperature(temp));
     if (env.soft > .01) smoke(softPuff, t, w, h, env.soft);
@@ -331,11 +354,11 @@ export function buildThermalAtmosphere(host, worker) {
     setHaze(band.haze);
     draw();
   }
-  reduced.addEventListener?.("change", () => { if (active && host.isConnected) paint(burstAt >= 0 ? BURNT : thermalBand(temp)); });
+  reduced.addEventListener?.("change", () => { if (active && host.isConnected) paint(ruined ? RUINED[ruined] : thermalBand(temp)); });
   return {
     setStep(step) {
       active = ["steam", "pull", "care", "trial"].includes(step);
-      paused = false; burstAt = -1; host.classList.remove("thermal-burnt");
+      paused = false; burstAt = -1; ruined = null; host.classList.remove("thermal-burnt", "thermal-ruined");
       host.classList.toggle("thermal-active", active);
       host.dataset.thermalPaused = "false"; label.hidden = !active;
       hazeSvg?.unpauseAnimations?.();
@@ -345,7 +368,7 @@ export function buildThermalAtmosphere(host, worker) {
     update(value) {
       temp = clamp(Number.isFinite(value) ? value : 0, 0, 1);
       canvas.dataset.temperature = temp.toFixed(4);
-      if (!active || burstAt >= 0) return;
+      if (!active || ruined) return;
       const band = thermalBand(temp);
       if (phase !== band.id) paint(band);
       else if (paused) draw(); // 止まっている間も温度の変化だけは絵に返す
@@ -356,13 +379,17 @@ export function buildThermalAtmosphere(host, worker) {
       paused = value; host.dataset.thermalPaused = String(value); last = performance.now();
       value ? hazeSvg?.pauseAnimations?.() : hazeSvg?.unpauseAnimations?.();
     },
-    /** 温度計の一番上で爆発する。背景は焦げたまま、工程が変わるまで煙と残り火が続く。 */
-    explode() {
-      if (!active) return;
-      paused = false; burstAt = time;
-      host.classList.add("thermal-burnt");
-      boom.classList.remove("go"); void boom.offsetWidth; boom.classList.add("go");
-      paint(BURNT); start();
+    /** その一台がダメになった背景へ切り替える。焦げたら爆発のあと煙と残り火、冷え切り・フレーバー切れはくすんだ色。工程が変わるまで続く。 */
+    fail(kind) {
+      if (!active || !RUINED[kind]) return;
+      paused = false; ruined = kind;
+      if (kind === "burnt") {
+        burstAt = time;
+        host.classList.add("thermal-burnt");
+        boom.classList.remove("go"); void boom.offsetWidth; boom.classList.add("go");
+      } else host.classList.add("thermal-ruined");
+      paint(RUINED[kind]); start();
     },
+    explode() { this.fail("burnt"); },
   };
 }

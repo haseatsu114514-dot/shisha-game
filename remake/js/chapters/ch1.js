@@ -119,9 +119,9 @@ async function tutorial() {
   await runSteamDodge(cs);
   await runPull(cs);
   // 焦がしたら、スミさんが葉を詰め直して吸い出しからやり直す（TH06。レッスンはGAME OVERにしない）。
-  while (cs.burnt) {
+  while (cs.failed) {
     await play("remake_tutorial_burnt", { bg: TONARI });
-    Object.assign(cs, { burnt: false, pull: null, pullDone: false });
+    Object.assign(cs, { failed: null, burnt: false, pull: null, pullDone: false, leaf: null });
     openBench(cs, { steps: STEPS_R1.filter(([id]) => id !== "setup" && id !== "concept") });
     await runPull(cs);
   }
@@ -172,7 +172,7 @@ async function rehearsal() {
   await runSteamDodge(cs);
   await runPull(cs);
   // 焦がした通しは手応えなし。スミさんの一言で終わり、本番の加点もない（TH06）。
-  if (cs.burnt) {
+  if (cs.failed) {
     state.rehearsal = "rough";
     await play("remake_rehearsal_burnt", { bg: TONARI_N });
     return;
@@ -267,7 +267,7 @@ async function tournamentDay() {
   openBench(cs, { steps: STEPS_ALL });
   bc.block(cs, "pull");
   await runPull(cs);
-  if (cs.burnt) return burntOut();
+  if (cs.failed) return failedOut(cs.failed);
   bc.judge(cs, bc.judgeOf(cs.pull.score), "提供");
   bc.burst(cs, "serve", 1);
   await sleep(900);
@@ -281,7 +281,7 @@ async function tournamentDay() {
   openBench(cs, { steps: STEPS_ALL });
   bc.block(cs, "adjust");
   await runCare(cs);
-  if (cs.burnt) return burntOut();
+  if (cs.failed) return failedOut(cs.failed);
   bc.judge(cs, bc.judgeOf(cs.care.score), "熱管理");
   await sleep(900);
   bc.clearComments();
@@ -316,7 +316,7 @@ async function tournamentDay() {
     await resultTable(cs, out.rank);
     await play("ch1_tournament_defeat", { bg: STAGE });
     await play("remake_defeat_follow", { bg: TONARI_N });
-    await showDefeat(out.rank);
+    await showGameOver({ rank: out.rank });
   }
 }
 
@@ -404,24 +404,41 @@ export async function showClear() {
 }
 
 /** 一台を焦がした大会は、審査を待たずにその場でGAME OVER（TH06）。再挑戦は通常の敗北と同じ。 */
-async function burntOut() {
+/** 一台がダメになった大会は、審査を待たずにその場でGAME OVER（TH06・TH18〜TH20）。 */
+async function failedOut(reason) {
   bc.clearComments();
   save();
-  await smokeWipe(() => showDefeat(0, { burnt: true }), { color: "dark" });
+  await smokeWipe(() => showGameOver({ reason }), { color: "dark" });
 }
 
-async function showDefeat(rank, { burnt = false } = {}) {
+// GAME OVERの理由。順位で敗れたとき、焦げた・冷え切った・フレーバーがダメになったとき。
+const GAME_OVER_REASON = {
+  burnt: "シーシャが焦げてしまった。焦げた一台は、審査に出せない。",
+  cold: "シーシャが冷え切ってしまった。冷めた一台は、もう審査に出せない。",
+  leaf: "吸いすぎて、フレーバーがダメになってしまった。",
+};
+
+/**
+ * 大会のGAME OVER（TH18）。理由を出して「再挑戦しますか？」と聞き、はいなら大会の頭（大会直前のデータ）から。
+ * オーナー制作のGAME OVER画面ができたら、背景 bg_game_over を置けば自動で後ろに敷く。
+ */
+async function showGameOver({ rank = 0, reason = "rank" } = {}) {
   showHud(false);
   stopBgm();
-  const root = el("div.end-screen.gameover", [
+  SE.miss();
+  const art = bgUrl("bg_game_over");
+  const root = el(`div.end-screen.gameover${art ? ".with-art" : ""}`, {
+    dataset: { test: "game-over", reason },
+    style: art ? { backgroundImage: `linear-gradient(#06040a99, #06040acc), url("${art}")` } : {},
+  }, [
     el("div.end-title", { text: "GAME OVER" }),
-    el("div.end-sub", { text: burnt ? "シーシャが焦げてしまった。焦げた一台は、審査に出せない。ここで、終わってしまった。"
-      : `結果は${rank}位。優勝だけが次への切符だった。ここで、終わってしまった。` }),
+    el("div.end-sub", { text: `${GAME_OVER_REASON[reason] || `結果は${rank}位。優勝だけが次への切符だった。`}ここで、終わってしまった。` }),
     el("div.end-body", [el("div.end-radar", [radar(state.stats, state.statsAtChapterStart, 280)]),
       el("div.end-notes", [el("p", { text: "大会の頭から、もう一度挑戦できる（大会直前のデータから再開）。" })])]),
+    el("p.end-question", { text: "再挑戦しますか？" }),
     el("div.end-actions", [
-      el("button.btn.primary", { text: "もう一度挑戦する", dataset: { test: "retry" }, onclick: () => { SE.select(); retire(root); smokeWipe(() => { tournamentDay(); }, { color: "dark" }); } }),
-      el("button.btn", { text: "タイトルへ", onclick: () => location.reload() }),
+      el("button.btn.primary", { text: "再挑戦する", dataset: { test: "retry" }, onclick: () => { SE.select(); retire(root); smokeWipe(() => { tournamentDay(); }, { color: "dark" }); } }),
+      el("button.btn", { text: "タイトルへ戻る", dataset: { test: "game-over-title" }, onclick: () => location.reload() }),
     ]),
   ]);
   showScreen("end", root);

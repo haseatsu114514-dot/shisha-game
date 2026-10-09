@@ -426,8 +426,6 @@
 /* ---------------------------------------------------------------- 熱管理 */
 /* 熱管理は吸い出しと同じ針のゲーム。最初の吸い出しの前だけ、炭交換のボタンが並ぶ（TH14）。 */
 .pull-care .pull-btns .btn { padding: 14px 10px; font-size: 17px; }
-.pull-care .care-exchange { flex: .8; }
-.pull-care .care-exchange .btn-desc { font-size: 12px; }
 
 /* ---------------------------------------------------------------- FLAVOR TRIAL */
 .trial { display: flex; flex-direction: column; gap: 14px; }
@@ -786,7 +784,8 @@
   animation: thermal-glow 1.7s ease-in-out infinite alternate; }
 .thermal-active .thermal-glow { display: block; }
 /* 台の上は白くやわらかい煙だけ。炎は背景のイメージで、ボウルは燃やさない（TH04・TH09）。 */
-.thermal-picture { display: none; position: absolute; bottom: 237px; width: 120px; height: 150px; color: var(--thermal-smoke, #fff); pointer-events: none; filter: blur(1.4px) drop-shadow(0 0 6px currentColor); }
+/* ボウルの煙は普段は出さず、過熱からだけ自然な灰白色の煙を少し（TH15）。焦げたら黒煙。 */
+.thermal-picture { display: none; position: absolute; bottom: 237px; width: 120px; height: 150px; color: var(--thermal-smoke, #fff); pointer-events: none; filter: blur(3px); }
 .thermal-haze-defs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
 .thermal-picture svg { width: 100%; height: 100%; overflow: visible; }
 .thermal-active .thermal-picture { display: block; }
@@ -805,3 +804,61 @@
 @keyframes thermal-rainbow { to { background-position: 200% 0; } }
 @keyframes thermal-boom { 0% { transform: scale(.3); opacity: 1; } 35% { opacity: 1; } 100% { transform: scale(16); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .thermal-picture *, .thermal-glow, .thermal-label, .thermal-boom.go { animation: none; } }
+
+/* 温度計（TH23）: 黒く抜かず全体に色を置き、今の温度より上だけ少し暗くする。適温は虹、超えると管の中で炎が立ち、
+   焦げる寸前（危険帯）と熱管理の冷え切り帯は縞で示し、入ると点滅する。白い細い柱が今の温度。 */
+.thermo-tube, .thermo-housing .thermo-tube { background: #3f86d6; }
+.thermo-scale { position: absolute; inset: 0; background: linear-gradient(0deg, #3f86d6 0%, #9db8ee 30%, #b48cff 46%, #6fd6a8 54%, #ffd36b 62%, #ff7a1e 76%, #e0220a 90%, #7a0000 100%); }
+.thermo-dim { position: absolute; left: 0; right: 0; top: 0; z-index: 2; background: linear-gradient(0deg, rgba(10, 8, 22, .38), rgba(10, 8, 22, .56)); transition: bottom .4s var(--ease-out); }
+.thermo-tube b, .thermo-housing .thermo-tube b { left: 38%; right: 38%; z-index: 2; border-radius: 3px; background: linear-gradient(0deg, #ffffffcc, #ffffff66); opacity: .55; box-shadow: 0 0 6px #ffffffaa; }
+.thermo-zone { z-index: 1; background: linear-gradient(0deg, #ff6b6b, #ffb86b, #ffe66b, #7dff9a, #6bd6ff, #a78bff); opacity: .85; border-top: 2px solid #ffffffcc; border-bottom: 2px solid #ffffffcc; }
+.thermo-heat { position: absolute; left: 0; right: 0; top: 0; z-index: 1; pointer-events: none; mix-blend-mode: screen; opacity: .9;
+  background: radial-gradient(ellipse 45% 70% at 28% 100%, #ffd25a 0, transparent 72%) 0 0 / 100% 26px, radial-gradient(ellipse 45% 70% at 74% 100%, #ff6a1e 0, transparent 72%) 0 13px / 100% 26px;
+  -webkit-mask-image: linear-gradient(0deg, transparent, #000 55%); mask-image: linear-gradient(0deg, transparent, #000 55%);
+  animation: thermo-flame .8s linear infinite; }
+.thermo-danger { position: absolute; left: 0; right: 0; top: 0; z-index: 3; background: repeating-linear-gradient(-45deg, #ff2a00d9 0 5px, #1a0000d9 5px 10px); border-bottom: 2px solid #fff8; box-shadow: inset 0 0 8px #ff3a00; }
+.thermo-cold { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; background: repeating-linear-gradient(-45deg, #a8ddffd9 0 5px, #0b2a4ad9 5px 10px); border-top: 2px solid #fff8; }
+.thermo.danger .thermo-danger, .thermo.freezing .thermo-cold { animation: thermo-alarm .45s ease-in-out infinite alternate; }
+.thermo.danger .thermo-tube { box-shadow: 0 0 26px #ff2a00cc; }
+.thermo-labels { min-width: 4.2em; }
+.thermo-labels > span { position: absolute; left: 0; white-space: nowrap; }
+.thermo-danger-label { color: #ff7a5a; font-weight: 800; }
+.thermo-cold-label { color: #a8ddff; font-weight: 800; }
+.thermo-cool-label { color: #9fc4ee; }
+.thermo:has(.thermo-housing) .thermo-ideal-label { color: #f4e6ff; }
+.thermo.danger .thermo-danger-label, .thermo.freezing .thermo-cold-label { animation: thermal-warn .45s ease-in-out infinite alternate; }
+@keyframes thermo-flame { to { background-position: 0 -26px, 0 -13px; } }
+@keyframes thermo-alarm { from { filter: brightness(1); } to { filter: brightness(1.7); } }
+@media (prefers-reduced-motion: reduce) { .thermo-heat, .thermo.danger .thermo-danger, .thermo.freezing .thermo-cold, .thermo-labels > span { animation: none; } }
+
+/* フレーバー（葉）の体力（TH20・TH22）。吸いすぎで1つずつ割れ、ダメージを食らったように揺れて赤く光る。 */
+.leaf-hp { position: relative; display: flex; align-items: center; gap: 10px; font-size: 14px; color: #d8cdbb; }
+.leaf-label { letter-spacing: .08em; }
+.leaf-pips { display: flex; gap: 6px; }
+.leaf-pip { width: 22px; height: 16px; border-radius: 0 70% 0 70%; background: linear-gradient(135deg, #b8f29a, #3f9a4e); box-shadow: 0 0 6px #7fe08a88, inset 0 1px 0 #fff8; transition: filter .3s, opacity .3s; }
+.leaf-pip.lost { background: linear-gradient(135deg, #5a4a3c, #2a211a); box-shadow: none; opacity: .7; }
+.leaf-pip.break { animation: leaf-break .6s ease-out; }
+.leaf-state { font-size: 13px; color: #c9bba3; }
+.leaf-hp[data-hp="1"] .leaf-state, .leaf-hp[data-hp="0"] .leaf-state { color: #ff8a6a; font-weight: 700; }
+.leaf-hp.hit { animation: leaf-hit .5s ease-out; }
+.leaf-damage { position: absolute; left: 150px; top: -6px; font-size: 26px; font-weight: 900; color: #ff4a3a; text-shadow: 0 0 10px #ff2a00, 0 2px 0 #000; pointer-events: none; animation: leaf-damage .9s ease-out forwards; }
+.stamp.damage { color: #ff5a4a; text-shadow: 0 0 22px rgba(255, 40, 20, .9); font-size: 40px; }
+@keyframes leaf-hit { 0%, 100% { transform: none; filter: none; } 15% { transform: translateX(-8px); filter: drop-shadow(0 0 10px #ff2a00); } 35% { transform: translateX(7px); } 55% { transform: translateX(-4px); } 75% { transform: translateX(2px); } }
+@keyframes leaf-break { 0% { transform: scale(1.5) rotate(-12deg); filter: brightness(2.2) sepia(1) hue-rotate(-30deg); } 100% { transform: none; filter: none; } }
+@keyframes leaf-damage { from { opacity: 1; transform: translateY(0) scale(1.3); } to { opacity: 0; transform: translateY(-34px) scale(1); } }
+/* 熱管理の準備:「炭を焼きますか？」で個数を選ぶ（TH21）。 */
+.pull-play[hidden] { display: none; }
+.pull-play { display: flex; flex-direction: column; gap: 14px; }
+.care-coals { display: flex; flex-direction: column; gap: 14px; }
+.care-coals-ask { margin: 0; font-size: 26px; font-weight: 800; color: #ffe3a1; letter-spacing: .06em; }
+.care-coal-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.care-coal { min-width: 0; padding: 14px 8px; font-size: 19px; }
+.care-coal .btn-desc { font-size: 12px; }
+.care-coals-note { margin: 0; font-size: 14px; line-height: 1.6; color: #cdbfa8; }
+/* 画面全体の大爆発（TH17）。ステージ全体を覆う。 */
+.screen-blast { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.screen-blast.still { background: #fff4d0; animation: blast-still .45s ease-out forwards; }
+@keyframes blast-still { to { opacity: 0; } }
+/* 冷え切り・フレーバー切れの後は、台も色が抜ける。 */
+.thermal-ruined .worker-equipment .art { filter: grayscale(.85) brightness(.6); transition: filter .6s; }
+@media (prefers-reduced-motion: reduce) { .leaf-hp.hit, .leaf-pip.break, .leaf-damage { animation: none; } }

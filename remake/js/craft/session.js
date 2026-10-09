@@ -22,6 +22,7 @@ import { runPull } from "./pull.js";
 import { applyCraftSkin, craftSkinUrls } from "./skin.js";
 import { buildThermalAtmosphere } from "./thermal.js";
 import { temperatureAfterSteam } from "./conditions.js";
+import { screenBlast } from "./blast.js";
 
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
@@ -144,15 +145,34 @@ export function setBenchTemperature(cs, temp) {
 export function pauseBenchTemperature(cs, paused) {
   if (bench?.cs === cs) bench.thermal.pause(paused);
 }
-/** 温度計の一番上に届いた一台が爆発する。閃光・揺れ・音のあと、焦げた背景のまま結果へ進む（TH06）。 */
-export async function burstBench(cs) {
-  if (bench?.cs !== cs || !bench.root.isConnected) return;
-  bench.thermal.explode();
-  SE.burst();
-  flash("white", 420);
-  shake(undefined, 600);
-  await sleep(matchMedia("(prefers-reduced-motion: reduce)").matches ? 400 : 1500);
+/** ステージ座標（1280×720）でのボウルの位置。爆発の爆心にする。 */
+function bowlOrigin() {
+  const stage = document.getElementById("stage")?.getBoundingClientRect();
+  const bowl = bench?.root.querySelector(".worker-bowl")?.getBoundingClientRect();
+  if (!stage?.width || !bowl?.width) return { x: 385, y: 240 };
+  const scale = stage.width / 1280;
+  return { x: (bowl.left + bowl.width / 2 - stage.left) / scale, y: (bowl.top + bowl.height * .3 - stage.top) / scale };
 }
+
+/**
+ * その一台がダメになった演出（TH06・TH17・TH19・TH20）。burnt=画面全体の大爆発と焦げた背景、
+ * cold=煙が消えて冷え切った色、leaf=フレーバーが抜けてくすんだ色。終わると結果へ進む。
+ */
+export async function failBench(cs, kind) {
+  if (bench?.cs !== cs || !bench.root.isConnected) return;
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  bench.thermal.fail(kind);
+  if (kind === "burnt") {
+    SE.burst();
+    shake(undefined, 700);
+    await Promise.all([screenBlast(bowlOrigin(), { reduced }), sleep(reduced ? 400 : 1900)]);
+    return;
+  }
+  if (kind === "cold") SE.miss(); else { SE.crack(); shake(undefined, 380); }
+  flash(kind === "cold" ? "white" : "red", 300);
+  await sleep(reduced ? 300 : 1200);
+}
+export const burstBench = (cs) => failBench(cs, "burnt");
 
 /** 左側の工程キャプションを更新。今後の作業アニメーションもここで同期する。 */
 export function refreshBench() {

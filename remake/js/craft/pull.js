@@ -1,26 +1,37 @@
 // 吸い出し（CLAUDE.md: 最低2回・3回までは無傷・それ以上は葉が痩せる。やめ時は自分で選ぶ）
 // 左右に振れる針を止めた位置で、上げ吸い／キープ／下げ吸い。中央の細い帯が「ジャスト」。
-// 熱管理（大会のR3）も同じ針のゲーム。先に炭交換ができ、温度は動き続け、その後に最低1回吸う（TH14）。
+// 熱管理（大会のR3・調整）も同じ針のゲーム。「炭を焼きますか？」で個数を選び、替えた炭で少し温度が上がってから、
+// 温度が動き続ける中で最低1回吸って整える。3回目の吸い出しからフレーバーが傷む（TH14・TH21・TH22）。
+// 温度計の一番上で焦げ、熱管理で冷え切り、フレーバーの体力が尽きると、その一台はダメになる（TH06・TH19・TH20）。
 import { el, sleep, clamp, rand } from "../core/util.js";
-import { countdown, flash } from "../core/ui.js";
+import { countdown, flash, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, burstBench } from "./session.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, failBench } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 
-import { craftConditions, heatDelta, pullResult, isOptimalTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, IDEAL } from "./conditions.js";
+import { craftConditions, heatDelta, pullResult, isOptimalTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT, IDEAL } from "./conditions.js";
 import { buildThermometer } from "./thermometer.js";
 
 export { IDEAL } from "./conditions.js";
 const CENTER = 0.54;
-const PULL_SAFE = 3, PULL_MAX = 5;
+const PULL_MAX = 5;
 // 針の位置の帯（0〜1）。上げ吸い=左、キープ=中、下げ吸い=右。ジャストはそれぞれの芯
 const ZONES = [
   { id: "up", from: 0, to: 0.34, just: [0.14, 0.205], label: "上げ吸い", delta: 0.1, justDelta: 0.16 },
   { id: "keep", from: 0.34, to: 0.66, just: [0.468, 0.532], label: "キープ", delta: 0, justDelta: 0 },
   { id: "down", from: 0.66, to: 1, just: [0.795, 0.86], label: "下げ吸い", delta: -0.1, justDelta: -0.16 },
 ];
-// 炭交換: 新しい炭の熱は数秒かけて少しずつ入り、燃え進む速さも落ちる。
-const EXCHANGE_HEAT = 0.19, EXCHANGE_RATE = 0.065;
+// 焼いて替える炭の個数ごとの、入ってくる熱と、その後の燃え進む速さ（0個は古い炭が尽きかけて早く冷える）。
+const COAL_HEAT = [0, 0.06, 0.11, 0.16];
+const COAL_COOL = [1.6, 0.75, 0.5, 0.35];
+// フレーバー（葉）の体力。吸いすぎで1つずつ減り、尽きるとその一台はダメになる。吸い出しから熱管理へ引き継ぐ。
+export const LEAF_MAX = 4;
+
+const FAIL_TEXT = {
+  burnt: { title: "シーシャが焦げてしまった", line: "温度計の一番上まで熱が上がり、葉が焦げた", ticker: "パッキー「ば、爆発ーッ！？ シーシャが焦げてしまったーッ！」" },
+  cold: { title: "シーシャが冷え切ってしまった", line: "炭の熱が尽きて、煙が立たなくなった", ticker: "パッキー「あ、あれ〜？ 煙が……止まってしまったーッ！」" },
+  leaf: { title: "フレーバーがダメになってしまった", line: "吸いすぎて、葉の香りが抜け切った", ticker: "パッキー「吸いすぎだーッ！ フレーバーが限界を迎えたーッ！」" },
+};
 
 /** 炭・熱・蒸らし・穴・詰めから、吸い出し開始時の温度を決める */
 export function startTemp(cs) {
@@ -29,19 +40,44 @@ export function startTemp(cs) {
 
 const MODES = {
   pull: {
-    store: "pull", title: "吸い出し", min: 2, drift: false, serveLabel: "提供する",
-    hint: "針を止めた位置で吸い方が変わる。適温の中央にある細い最適温を狙って「提供する」。キープ中央は維持、左で微増・右で微減。吸いすぎると葉が痩せる。蒸らしで集中できたほど成功帯が広がり、針もゆっくり動く",
+    store: "pull", title: "吸い出し", min: 2, safe: 3, drift: false, serveLabel: "提供する",
+    hint: "針を止めた位置で吸い方が変わる。適温の中央にある細い最適温を狙って「提供する」。キープ中央は維持、左で微増・右で微減。4回目からフレーバーが傷む。蒸らしで集中できたほど成功帯が広がり、針もゆっくり動く",
     start: startTemp, focus: pullFocusFromSteam,
   },
   care: {
-    store: "care", title: "熱管理", min: 1, drift: true, serveLabel: "整え終える",
-    hint: "審査員が吸っている間も炭は燃え進み、温度は動き続ける。最初の吸い出しの前なら「炭を交換」できる。新しい炭の熱は少しずつ入ってくる。針のゲームは吸い出しと同じで、最低1回吸ってから「整え終える」。洞察が高いほど熱の流れが読みやすい",
+    store: "care", title: "熱管理", min: 1, safe: 2, drift: true, serveLabel: "整え終える",
+    hint: "審査員が吸っている間も炭は燃え進み、温度は動き続ける。まず焼いて替える炭の数を決める。替えた炭の分だけ少し温度が上がる。針は吸い出しと同じで、キープなら温度を保てる。3回目からフレーバーが傷む。冷え切っても、焦げても、その一台はダメになる",
     start: (cs) => cs.pull?.temp ?? CENTER, focus: () => ({ slow: 1, window: 1 }),
   },
 };
 
 export function runPull(cs) { return pullGame(cs, MODES.pull); }
 export function runCare(cs) { return pullGame(cs, MODES.care); }
+
+/** フレーバーの体力の表示。傷むたびに一つ割れ、ダメージを食らったように揺れる。 */
+function buildLeafGauge(leaf) {
+  const pips = Array.from({ length: leaf.max }, () => el("i.leaf-pip"));
+  const state = el("span.leaf-state");
+  const root = el("div.leaf-hp", { dataset: { test: "leaf-hp" }, role: "meter", "aria-label": "フレーバーの状態", "aria-valuemin": "0", "aria-valuemax": String(leaf.max) }, [
+    el("span.leaf-label", { text: "フレーバー" }), el("span.leaf-pips", pips), state,
+  ]);
+  const render = () => {
+    pips.forEach((p, i) => p.classList.toggle("lost", i >= leaf.hp));
+    root.setAttribute("aria-valuenow", String(leaf.hp));
+    root.dataset.hp = String(leaf.hp);
+    state.textContent = leaf.hp >= leaf.max ? "無傷" : leaf.hp > 1 ? "傷んできた" : leaf.hp === 1 ? "限界寸前" : "ダメになった";
+  };
+  render();
+  return { root, render, hit() {
+    render();
+    const broken = pips[leaf.hp];
+    broken?.classList.remove("break"); void broken?.offsetWidth; broken?.classList.add("break");
+    root.classList.remove("hit"); void root.offsetWidth; root.classList.add("hit");
+    const dmg = el("b.leaf-damage", { text: "-1" });
+    root.append(dmg);
+    setTimeout(() => dmg.remove(), 900);
+  } };
+}
 
 async function pullGame(cs, mode) {
   const tutorial = cs.mode === "tutorial";
@@ -52,17 +88,17 @@ async function pullGame(cs, mode) {
   let coreTemp = mode.start(cs);
   let T = coreTemp;
   const conditions = craftConditions(cs);
-  let pulls = 0, justs = 0, burnt = false;
-  // 熱管理だけ: 炭が燃え進んで熱が落ちる速さ、交換した炭からこれから入る熱、洞察で小さくなる揺らぎ
+  cs.leaf ??= { hp: LEAF_MAX, max: LEAF_MAX };
+  let pulls = 0, justs = 0, failed = null, coals = null;
+  // 熱管理だけ: 炭が燃え進んで熱が落ちる速さと、洞察で小さくなる揺らぎ
   const clarity = mode.drift ? skill.clarity(cs) : 1;
-  let coolRate = mode.drift ? rand(0.006, 0.013) : 0, pendingHeat = 0, exchanged = false, elapsed = 0;
+  const baseCool = mode.drift ? rand(0.006, 0.013) : 0;
+  let coolRate = 0, elapsed = 0;
   const wobblePhase = rand(0, 6.28);
   const wobble = () => (mode.drift ? conditions.sparsity * 0.05 * Math.sin(elapsed * Math.PI * 2 / 2.6) + 0.014 * (1 - 0.7 * clarity) * Math.sin(elapsed * 1.7 + wobblePhase) : 0);
-  const trend = () => (pendingHeat > 0.005 ? Math.min(EXCHANGE_RATE, pendingHeat) : 0) - coolRate;
 
   // ---- 画面
-  const thermometer = buildThermometer();
-  const thermo = thermometer.root;
+  const thermometer = buildThermometer({ coldLimit: mode.drift ? COLD_OUT : null });
   const needle = el("i.pg-needle");
   const gauge = el("div.pull-gauge", [
     ...ZONES.map((z) => el(`div.pg-zone.z-${z.id}`, { style: { left: `${z.from * 100}%`, width: `${(z.to - z.from) * 100}%` } }, [
@@ -73,41 +109,41 @@ async function pullGame(cs, mode) {
   ]);
   const counter = el("div.pull-count");
   const readout = el("div.pull-read");
+  const leafGauge = buildLeafGauge(cs.leaf);
   const pullBtn = el("button.btn.primary", { dataset: { test: "pull-stop" } }, [el("span.btn-label", { text: "吸う（針を止める）" })]);
   const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [el("span.btn-label", { text: mode.serveLabel })]);
-  const exchangeBtn = mode.drift ? el("button.btn.care-exchange", { dataset: { test: "care-exchange" }, disabled: true }, [
-    el("span.btn-label", { text: "炭を交換" }), el("small.btn-desc", { text: "熱が少しずつ入る" }),
-  ]) : null;
-  panel.append(el(`div.pull${mode.drift ? ".pull-care" : ""}`, [thermo, el("div.pull-main", [readout, gauge, counter, el("div.pull-btns", [exchangeBtn, pullBtn, serveBtn])])]));
+  const play = el("div.pull-play", [gauge, counter, leafGauge.root, el("div.pull-btns", [pullBtn, serveBtn])]);
+  const main = el("div.pull-main", [readout, play]);
+  panel.append(el(`div.pull${mode.drift ? ".pull-care" : ""}`, [thermometer.root, main]));
 
   const render = () => {
     thermometer.update(T);
     setBenchTemperature(cs, T);
-    thermometer.preview(pulls < PULL_MAX ? clamp(T + heatDelta(cs, actionAt(pos).delta), 0, 1) : null);
+    thermometer.preview(running && pulls < PULL_MAX ? clamp(T + heatDelta(cs, actionAt(pos).delta), 0, 1) : null);
+    if (choosing) return;
     const inZone = T >= IDEAL[0] && T <= IDEAL[1];
     const optimal = isOptimalTemperature(T);
-    const state = optimal ? "最適温。今の煙を届けよう" : inZone ? "適温。中央の細い最適温を狙える" : T >= .90 ? "焦げる寸前。下げ吸いで熱を逃がしたい"
-      : T > IDEAL[1] ? "熱い。下げ吸いで落ち着かせたい" : "まだぬるい。上げ吸いで熱を入れたい";
-    const flow = trend();
-    readout.textContent = mode.drift ? `${flow > 0.004 ? "↑ 熱が上がってきている" : flow < -0.004 ? "↓ 炭が燃え進んで熱が落ちていく" : "→ 熱は落ち着いている"}　${state}` : state;
-    counter.textContent = `吸った回数 ${pulls}${pulls >= PULL_SAFE ? "（これ以上は葉が痩せる）" : ""}`
-      + (exchanged ? " ／ 炭を交換した" : "")
+    const state = optimal ? "最適温。今の煙を届けよう" : inZone ? "適温。キープなら温度を保てる" : T >= DANGER_TEMP ? "焦げる寸前。下げ吸いで熱を逃がしたい"
+      : T > IDEAL[1] ? "熱い。下げ吸いで落ち着かせたい" : mode.drift && T <= COLD_OUT + 0.08 ? "冷え切りそう。上げ吸いで熱を入れたい" : "まだぬるい。上げ吸いで熱を入れたい";
+    readout.textContent = mode.drift && running ? `↓ 炭が燃え進んで熱が落ちていく　${state}` : state;
+    counter.textContent = `吸った回数 ${pulls}（${mode.safe + 1}回目からフレーバーが傷む）`
+      + (coals ? ` ／ 炭を${coals}個替えた` : "")
       + (conditions.sparsity ? " ／ 少穴：吸い方による温度変化が大きい" : "") + (conditions.rainy ? " ／ 雨：熱が入りづらい" : "");
-    counter.classList.toggle("warn", pulls >= PULL_SAFE);
-    serveBtn.disabled = pulls < mode.min || burnt;
-    pullBtn.disabled = pulls >= PULL_MAX || burnt;
-    if (exchangeBtn) exchangeBtn.disabled = !running || exchanged || pulls > 0 || burnt;
+    counter.classList.toggle("warn", pulls >= mode.safe);
+    serveBtn.disabled = pulls < mode.min || !!failed;
+    pullBtn.disabled = pulls >= PULL_MAX || !!failed;
   };
 
-  // 温度計の一番上に届いたら、その場で爆発して焦げる（TH06）。
-  const checkBurn = () => {
-    if (burnt || !isBurnt(T)) return false;
-    burnt = true; running = false; render(); serve();
+  // その一台がダメになったら、すぐに止めて結果へ進む。
+  const fail = (kind) => {
+    if (failed) return true;
+    failed = kind; running = false; render(); serve();
     return true;
   };
+  const checkTemperature = () => (isBurnt(T) ? fail("burnt") : mode.drift && isColdOut(T) ? fail("cold") : false);
 
   // 針（左→右→左の往復）。熱管理では同じ時間で炭の熱も動く。
-  let pos = 0, dir = 1, raf = 0, last = 0, running = false;
+  let pos = 0, dir = 1, raf = 0, last = 0, running = false, choosing = false;
   const period = 1.5 * slow;
   const loop = (now) => {
     if (!running) return;
@@ -119,11 +155,9 @@ async function pullGame(cs, mode) {
     needle.style.left = `${pos * 100}%`;
     if (mode.drift) {
       elapsed += dt;
-      const add = Math.min(pendingHeat, EXCHANGE_RATE * dt);
-      pendingHeat -= add;
-      coreTemp = clamp(coreTemp - coolRate * dt + add, 0, 1);
+      coreTemp = clamp(coreTemp - coolRate * dt, 0, 1);
       T = clamp(coreTemp + wobble(), 0, 1);
-      if (checkBurn()) return;
+      if (checkTemperature()) return;
     }
     render();
     raf = requestAnimationFrame(loop);
@@ -137,54 +171,103 @@ async function pullGame(cs, mode) {
     const delta = z.id === "keep" ? (.5 - at) * .18 : (isJust ? z.justDelta : z.delta) + .015;
     return { z, isJust, delta };
   };
+  // 吸いすぎでフレーバーが傷む。ダメージを食らったように揺れ、体力が尽きればその一台はダメになる。
+  const damageLeaf = () => {
+    cs.leaf.hp = Math.max(0, cs.leaf.hp - 1);
+    leafGauge.hit();
+    SE.hit(); flash("red"); shake(undefined, 380);
+    popStamp(panel, "フレーバーにダメージ！", "damage", "58%", "34%");
+    reactAudience(cs, "bad", { force: true });
+    if (cs.leaf.hp <= 0) fail("leaf");
+  };
   const doPull = (at = pos) => {
-    if (pulls >= PULL_MAX || burnt || !running) return;
+    if (pulls >= PULL_MAX || failed || !running) return;
     const before = T;
     const { z, isJust, delta } = actionAt(at);
     pulls++;
     coreTemp = clamp(coreTemp + heatDelta(cs, delta), 0, 1);
     T = clamp(coreTemp + wobble(), 0, 1);
-    if (checkBurn()) return;
-    reactAudience(cs, pulls > PULL_SAFE || Math.abs(T - CENTER) > Math.abs(before - CENTER) ? "bad" : isJust ? "just" : "good");
-    if (isJust) { justs++; SE.just(); flash("gold"); popStamp(panel, `ジャスト${z.label}`, "just", "58%", "22%"); }
-    else { SE.good(); popStamp(panel, z.label, "good", "58%", "22%"); }
+    if (checkTemperature()) return;
+    if (isJust) justs++;
+    // 傷む一回は、うまく吸えてもダメージの演出だけを見せる。
+    if (pulls > mode.safe) { damageLeaf(); if (failed) return; }
+    else {
+      reactAudience(cs, Math.abs(T - CENTER) > Math.abs(before - CENTER) ? "bad" : isJust ? "just" : "good");
+      if (isJust) { SE.just(); flash("gold"); popStamp(panel, `ジャスト${z.label}`, "just", "58%", "22%"); }
+      else { SE.good(); popStamp(panel, z.label, "good", "58%", "22%"); }
+    }
     SE.bubbling();
-    if (pulls > PULL_SAFE) popStamp(panel, "葉が痩せる……", "bad", "58%", "34%");
-    render();
-  };
-  // 炭交換は最初の吸い出しの前に一度だけ。交換したあとも温度は動き続ける。
-  const exchange = () => {
-    if (!mode.drift || !running || exchanged || pulls > 0 || burnt) return;
-    exchanged = true;
-    pendingHeat = heatDelta(cs, EXCHANGE_HEAT);
-    coolRate *= 0.35;
-    SE.coalSnip(); SE.crackle();
-    popStamp(panel, "炭交換", "", "50%", "22%");
     render();
   };
 
+  /** 熱管理の準備: 「炭を焼きますか？」で個数を選ぶ。替えた炭の熱が少しずつ入り、温度計が上がる。 */
+  const prepareCoals = async () => {
+    choosing = true;
+    play.hidden = true;
+    readout.textContent = "そろそろ調整の準備をしよう";
+    const choice = el("div.care-coals", { dataset: { test: "care-coals" } }, [
+      el("p.care-coals-ask", { text: "炭を焼きますか？" }),
+      el("div.care-coal-btns", [0, 1, 2, 3].map((n) => el("button.btn.care-coal", { dataset: { test: `care-coal-${n}` }, onclick: () => pick(n) }, [
+        el("span.btn-label", { text: n ? `${n}個` : "焼かない" }), el("small.btn-desc", { text: n ? `熱が${["", "少し", "そこそこ", "しっかり"][n]}入る` : "今の炭のまま" }),
+      ]))),
+      el("p.care-coals-note", { text: "今の炭は燃え進んで、熱が落ちていく。焼いた炭に替えると、少しずつ温度が上がる" }),
+    ]);
+    main.append(choice);
+    render();
+    let pick;
+    const picked = new Promise((r) => { pick = r; });
+    const auto = autoSkill();
+    if (auto) {
+      const best = [0, 1, 2, 3].sort((a, b) => Math.abs(T + heatDelta(cs, COAL_HEAT[a]) - CENTER - 0.02) - Math.abs(T + heatDelta(cs, COAL_HEAT[b]) - CENTER - 0.02))[0];
+      setTimeout(() => pick(auto === "good" ? best : auto === "burn" ? 3 : 0), 60);
+    }
+    coals = await picked;
+    choice.querySelectorAll("button").forEach((b) => { b.disabled = true; });
+    SE.select();
+    coolRate = baseCool * COAL_COOL[coals];
+    if (coals) {
+      readout.textContent = `炭を${coals}個焼いて替えた。熱が入ってくる`;
+      SE.coalSnip(); SE.crackle();
+      popStamp(panel, `炭替え ${coals}個`, "", "58%", "22%");
+      const from = coreTemp, add = heatDelta(cs, COAL_HEAT[coals]), started = performance.now(), dur = autoSkill() ? 200 : 1400;
+      for (;;) {
+        const k = Math.min(1, (performance.now() - started) / dur);
+        coreTemp = clamp(from + add * (1 - (1 - k) ** 2), 0, 1); T = coreTemp;
+        render();
+        if (isBurnt(T)) { failed = "burnt"; break; }
+        if (k >= 1) break;
+        await new Promise(requestAnimationFrame);
+      }
+    } else {
+      readout.textContent = "今の炭のまま整える。熱は落ちていく";
+      await sleep(autoSkill() ? 60 : 700);
+    }
+    choice.remove();
+    choosing = false;
+    play.hidden = false;
+  };
+
   pullBtn.addEventListener("pointerdown", (e) => { e.preventDefault(); doPull(); });
-  exchangeBtn?.addEventListener("click", exchange);
   let serve;
   const served = new Promise((r) => { serve = r; });
   serveBtn.addEventListener("click", () => { if (pulls >= mode.min) serve(); });
   const unkey = keys({ " ": () => doPull(), Space: () => doPull(), Enter: () => pulls >= mode.min && serve() });
 
   render();
-  await countdown();
-  running = true;
-  last = performance.now();
-  raf = requestAnimationFrame(loop);
-  render();
+  if (mode.drift) await prepareCoals();
+  if (!failed) {
+    render();
+    await countdown();
+    running = true;
+    last = performance.now();
+    raf = requestAnimationFrame(loop);
+    render();
+  } else serve();
 
   const auto = autoSkill();
-  if (auto) {
+  if (auto && !failed) {
     (async () => {
       await sleep(60);
-      if (mode.drift && (auto === "burn" || (auto === "good" && T < CENTER - 0.04))) {
-        exchange();
-        while (running && pendingHeat > 0.005) await sleep(30);
-      }
       const times = auto === "good" ? (mode.drift ? 2 : 3) : auto === "burn" ? 5 : mode.drift ? 1 : 5;
       for (let i = 0; i < times && running; i++) {
         let at;
@@ -203,7 +286,6 @@ async function pullGame(cs, mode) {
         doPull(at);
         await sleep(40);
       }
-      while (auto === "burn" && running) await sleep(30); // 交換した炭の熱で一番上まで届くのを待つ
       serve();
     })();
   }
@@ -211,20 +293,22 @@ async function pullGame(cs, mode) {
   running = false;
   cancelAnimationFrame(raf);
   unkey();
-  if (exchangeBtn) exchangeBtn.disabled = true;
-  if (burnt) {
-    readout.textContent = "温度が上がりすぎた……！";
-    await burstBench(cs);
-    cs[mode.store] = { score: 0, grade: gradeOf(0), temp: T, pulls, justs, exchanged, inZone: false, optimal: false, over: true, under: false, burnt: true };
-    cs.burnt = true;
+  if (failed) {
+    const text = FAIL_TEXT[failed];
+    readout.textContent = `${text.title}……！`;
+    await failBench(cs, failed);
+    cs[mode.store] = { score: 0, grade: gradeOf(0), temp: T, pulls, justs, coals, inZone: false, optimal: false, over: failed === "burnt", under: failed === "cold", failed };
+    cs.failed = failed;
+    if (failed === "burnt") cs.burnt = true;
     if (mode.store === "pull") { cs.pullDone = true; refreshBench(); }
-    tickerSay("パッキー「ば、爆発ーッ！？ シーシャが焦げてしまったーッ！」");
-    await resultCard(panel, { title: "シーシャが焦げてしまった", lines: ["温度計の一番上まで熱が上がり、葉が焦げた", `${pulls}回吸った`] });
+    tickerSay(text.ticker);
+    await resultCard(panel, { title: text.title, lines: [text.line, `${pulls}回吸った`] });
     return;
   }
 
-  const { score, inZone, optimal } = pullResult(T, pulls, justs, IDEAL);
-  cs[mode.store] = { score, grade: gradeOf(score), temp: T, pulls, justs, exchanged, inZone, optimal, over: T > IDEAL[1], under: T < IDEAL[0] };
+  const { score, inZone, optimal } = pullResult(T, pulls, justs, IDEAL, mode.safe);
+  cs[mode.store] = { score, grade: gradeOf(score), temp: T, pulls, justs, coals, inZone, optimal, over: T > IDEAL[1], under: T < IDEAL[0] };
+  const hurt = Math.max(0, pulls - mode.safe);
   if (mode.store === "pull") {
     cs.pullDone = true;
     refreshBench();
@@ -234,7 +318,7 @@ async function pullGame(cs, mode) {
       lines: [
         optimal ? "細い最適温に合わせて提供できた" : inZone ? "適温で提供できた。最適温まであと少し" : T > IDEAL[1] ? "少し熱いまま出してしまった" : "まだぬるいまま出してしまった",
         `${pulls}回吸った${justs ? `（ジャスト ${justs}回）` : ""}`,
-        pulls > PULL_SAFE ? "吸いすぎた分、葉が痩せた" : "",
+        hurt ? "吸いすぎた分、フレーバーが傷んだ" : "",
       ],
     });
     return;
@@ -244,9 +328,9 @@ async function pullGame(cs, mode) {
     title: "熱管理 結果",
     lines: [
       optimal ? "細い最適温で、最後の一口まで守り切った" : inZone ? "適温で最後の一口まで守り切った" : T > IDEAL[1] ? "熱いまま審査員に任せてしまった" : "冷めたまま審査員に任せてしまった",
-      exchanged ? "炭を交換して熱を足した" : "炭は替えずに整えた",
+      coals ? `炭を${coals}個焼いて替えた` : "炭は替えずに整えた",
       `${pulls}回吸った${justs ? `（ジャスト ${justs}回）` : ""}`,
-      pulls > PULL_SAFE ? "吸いすぎた分、葉が痩せた" : "",
+      hurt ? "吸いすぎた分、フレーバーが傷んだ" : "",
     ],
   });
 }

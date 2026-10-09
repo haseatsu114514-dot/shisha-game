@@ -32,6 +32,8 @@ try {
   await page.waitForSelector('.bench[data-thermal-band="burnt"]', { timeout: 240000 });
   await page.waitForSelector('.end-screen.gameover', { timeout: 60000 });
   assert.match(await page.locator('.end-screen.gameover .end-sub').textContent(), /シーシャが焦げてしまった/);
+  assert.equal(await page.locator('.end-screen.gameover .end-question').textContent(), '再挑戦しますか？');
+  assert.equal(await page.locator('[data-test="game-over"]').getAttribute('data-reason'), 'burnt');
   const seen = await page.evaluate(() => window.__seen);
   assert(!seen.includes('remake_trial_intro') && !seen.includes('ch1_tournament_defeat'), `burnt run reached judging: ${seen.join(',')}`);
   assert.equal(await page.evaluate(() => window.__remake.state.tournament.lastRank), null);

@@ -1016,6 +1016,9 @@ button.lime-push:focus-visible { outline: 3px solid var(--lime); outline-offset:
 .next-teaser small { color: var(--neon-pink); letter-spacing: 0.3em; }
 .next-teaser b { font-size: 22px; color: #fff; }
 .end-actions { display: flex; gap: 14px; }
+/* 大会のGAME OVER（TH18）:「再挑戦しますか？」。オーナー制作の背景 bg_game_over があれば後ろに敷く。 */
+.end-question { margin: 6px 0 2px; font-size: 26px; font-weight: 800; letter-spacing: .12em; color: #fff4dd; }
+.end-screen.with-art { background-size: cover; background-position: center; }
 .map-info.leaving { opacity: 0.4; transition: opacity 0.3s; }
 
 /* 雨は共通の背景レイヤーで描き、従来のマップ雨と二重にしない。 */
