@@ -42,7 +42,7 @@
 | サイト | 用途 | ライセンス目安・注意 |
 |---|---|---|
 | [Game-icons.net](https://game-icons.net/) | 状態異常、ステータス、道具、評価記号 | 多くは CC BY 3.0。**作者名を含むクレジットが必要**。一部 Public Domain。[公式](https://game-icons.net/about.html) |
-| [Lucide](https://lucide.dev/icons/) | シンプルな線画SVGアイコン、設定・メニュー | ライセンスは利用するパッケージの原文を確認。ゲーム独自アイコンとの線幅統一に注意。 |
+| [Lucide](https://lucide.dev/icons/) | シンプルな線画SVGアイコン、設定・メニュー | 原則ISC、Feather由来アイコンにはMITの条件も記載。著作権・許諾表示の保持条件を確認。[規約](https://lucide.dev/license) |
 | [Material Symbols](https://fonts.google.com/icons) | ボタン/音量/戻る/設定などのWeb UI | Googleの公式アイコンは Apache-2.0。使用パッケージの条件に従う。[原文案内](https://github.com/google/material-design-icons) |
 | [Google Fonts](https://fonts.google.com/) | UI・見出し・日本語フォント | フォントごとのライセンス・再配布/同梱条件・文字の表示品質を確認。 |
 
@@ -52,7 +52,7 @@
 |---|---|---|
 | [Sonniss — GameAudioGDC](https://sonniss.com/gameaudiogdc/) | 実録・映画品質の環境音、ドア、金属、機械、衣擦れ | GDC無料バンドルはゲーム内の商用利用可・クレジット不要を明示。素材単独再配布とAI/ML学習は禁止。[ライセンス](https://sonniss.com/gdc-bundle-license/) |
 | [Pixabay — Sound Effects](https://pixabay.com/sound-effects/) | 生活音・UI音・環境音 | Pixabay規約と音源個別の扱いを取得時に確認。音楽・効果音のコンテンツ認識/権利申立てにも注意。 |
-| [Mixkit — Sound Effects](https://mixkit.co/free-sound-effects/) | UI、生活、シネマティックな短い効果音 | サイトのFree Licenseと対象作品の条件を確認。 |
+| [Mixkit — Sound Effects](https://mixkit.co/free-sound-effects/) | UI、生活、シネマティックな短い効果音 | **効果音のFree Licenseはゲーム利用可**。素材単独の再配布は禁止。[SEの規約](https://mixkit.co/license/modal/sfxFree/) ※同サイトの**Stock Music Free Licenseはゲーム利用不可**。[音楽の規約](https://mixkit.co/license/modal/musicFree/) |
 | [Kenney — Audio](https://kenney.nl/assets/category:Audio) | UIクリック、ゲームらしいフィードバック音 | 先にパックを選んで、その配布ページに記されたライセンスを保存。 |
 | [イワシロ音楽素材](https://iwashiro-sounds.work/) | 8bit・チップチューン系BGM/SE | サイト案内は商用可・クレジット任意。採用する曲ごとに利用条件を再確認。 |
 | [sfxr](https://www.drpetter.se/project_sfxr.html) | レトロゲーム風の決定・失敗・抽選音を自作 | 「素材サイト」ではなく音の生成ツール。生成音声の権利・配布条件を利用前に確認。 |
