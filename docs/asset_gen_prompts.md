@@ -1,5 +1,23 @@
 # 画像生成プロンプト集（codex用）— シーシャ作りパート＋立ち絵
 
+> 2026-10-09 CI71: [首掛けマイマウスピースがチェーンだけ／ホースが実機につながらない生成ミスの出力後QA](../asset_sources/shisha-hardware-reference/visual-qa-necklace-hose-20261009.md)。キャラは正規立ち絵優先。**チェーン＋立体吸い口本体**と**ホースポートからハンドルまでの連続性**を検品し、NGなら再生成（構図上の遮蔽・見切れは自然なら可）。
+
+> 2026-10-09 CI70: [追加マウスピース3点＋ハンドル4点の実物写真とルール](../asset_sources/shisha-hardware-reference/mouthpiece-handle-skins-20261009.md)。先端チップ（消耗品/マイチップ）・硬いハンドル・柔らかいホースを分ける。色・素材・装飾は自由、首のチェーンはホースではない。スキンは構想のみ、実装変更なし。トングは実物資料待ち。
+
+> 2026-10-09 CI69: [ホースとマウスピースの実物6写真・外部調査・誤描写防止](../asset_sources/shisha-hardware-reference/hose-and-mouthpieces-20261009.md)。[自作のホース接続図](../asset_sources/shisha-hardware-reference/hose-mouthpiece-connections-20261009.svg)も見る。横のポート→1本のホース→硬い持ち手→着脱式衛生チップ→人物の口元。使い捨てチップ／首掛けマイチップは別の選択肢で、首の紐をホースにしない。
+
+> 2026-10-09 CI68: [構造図3点と部品/空気の通り道](../asset_sources/shisha-hardware-reference/anatomy-diagrams-20261009.md)、[ハガルの伝統型・ファンネル型・ボルテックス型、アルミ穴、炭配置、HMD比較調査](../asset_sources/shisha-hardware-reference/bowl-interiors-foil-coal-placement-20261009.md)。[自作の内部模式図](../asset_sources/shisha-hardware-reference/bowl-interiors-types-20261009.svg)も参照。実際のパーツ配置と既存ゲーム工程を優先し、唯一の炭/穴の正解と決めない。
+
+> 2026-10-09 CI67: [アルミ・煙突・シーシャの構図9写真](../asset_sources/shisha-hardware-reference/usage-and-installation-20261009.md)と[これまでの37写真を横断したAI誤描写防止ガイド](../asset_sources/shisha-hardware-reference/ai-generation-structural-pitfalls.md)。ボウル内部の穴の型式、アルミ小穴、HMD・チムニー・トレー、人物・ホース・複数台の接続を区別。既存ゲーム工程・設定は維持。
+
+> 2026-10-09 CI66: [アルミ・HMD・炭の近接写真9点](../asset_sources/shisha-hardware-reference/heat-management-closeups-20261009.md)。アルミに炭を置く方式と別体HMDを区別し、炭の灰と赤熱の描写、器具のスリットと取っ手、陶器の大きさと接続を参考にする。既存の穴あけ・機材を変更しない。
+
+> 2026-10-09 CI65: [実際の喫煙シーンとヒートマネジメントの参考10点](../asset_sources/shisha-hardware-reference/smoking-and-heat-management-20261009.md)。人物の使い方・比率・ホース・煙の描写、ボウルとHMDの違い、炭をトングで扱う位置関係を参考にする。写真の人物・製品は完コピしない。
+
+> 2026-10-09 CI64: シーシャ台を描く際は[実物写真9種の縮小一覧と生成ルール](../asset_sources/shisha-hardware-reference/README.md)を必ず参照。形と材質の理解が目的で、メーカー商品の模写は禁止。色・装飾・比率の創作は自由。描かない指定は優先。
+
+> 2026-10-08 CI62／63: 制作成功カットインの[目元／漫画コマの2案](../asset_sources/craft-success-cutins/concepts-v1-20261008/README.md)。同じ炭焼き画面とはじめを参照した比較モックアップ。[目元の生成指示](../asset_sources/craft-success-cutins/concepts-v1-20261008/eyes-prompt.txt)は工程共通の斜め帯、[漫画コマの生成指示](../asset_sources/craft-success-cutins/concepts-v1-20261008/comic-prompt.txt)は成功した手元と笑顔。本編接続・演出頻度・採用案は未決定。
+
 > 2026-10-08 TA08〜12: [新版19案](../asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/README.md)。サメちゃんを加えた6人×3案＋みんとの公私の中間1案。メーカーの異なる木／真鍮／ガラス／ピンクのカット形／黒い金属／青いキューブ型の台を個別参照し、場所と色も分ける。現行ましろタイトル絵はドットの画風だけを参照。[生成指示の記録](../asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/make-prompts.py)と各 `.prompt.txt` を保存。最初の15案は比較履歴。
 
 > 2026-10-08 TA01〜07: [ヒロイン5人×3種類のタイトル用アート比較](../asset_sources/title-art/heroine-concepts-v1-20261008/README.md)と各 `.prompt.txt`。採用済み立ち絵を第一参照、現在のタイトル絵を画風のみの参照とする。シーシャ案はメーカー実物写真を併用し、ハガルの上に閉じたHMD・その内側に炭、台の側面から手元へ1本のホースを描く。残りは本人らしい日常や趣味。15枚を独立した縦2:3の原画で保存し、タイトルへの採用は別途扱う。
