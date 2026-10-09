@@ -14,6 +14,8 @@
 
 顔の大きさの比較図は [face-size-ingame.png](../../reference-sheets/face-size-ingame.png)（`python3 tools/make_reference_sheet.py facesize` で作り直せる）。
 
+> **Claude Code・Codex のチャットでは「立ち絵そろえ」と言えば、下のナビの順に生成→保存→確認→組み込みまで進む**（[portrait-unify スキル](../../../.claude/skills/portrait-unify/SKILL.md)、進捗は [progress.md](progress.md)）。以下は手で投げる場合の手順。
+
 ## 進め方ナビ（この順に投げる）
 
 番号は下のブロック番号（`### 1. つむぎ・normal` など）。
