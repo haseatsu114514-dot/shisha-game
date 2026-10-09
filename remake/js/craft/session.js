@@ -2,8 +2,9 @@
 // 工程の中身は steps.js（選ぶ工程）と各ミニゲーム（holes/heat/steam/pull/care）。
 // 大会では章の台本（chapters/ch1.js）が工程の間に実況や会話を挟むので、
 // ここは「工程を1つずつ呼べる部品」を提供するだけにしている。
-import { el } from "../core/util.js";
-import { showScreen, setBg, retire, layers } from "../core/ui.js";
+import { el, sleep } from "../core/util.js";
+import { showScreen, setBg, retire, layers, flash, shake } from "../core/ui.js";
+import { SE } from "../core/audio.js";
 import { bgUrl } from "../core/data.js";
 import { state, timeOfDay } from "../core/state.js";
 import { currentCondition } from "../core/stats.js";
@@ -26,7 +27,7 @@ import { temperatureAfterSteam } from "./conditions.js";
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
  * その腕前相当の結果を出して進む（UIの流れ自体は通常どおり通る）。
  */
-export const craftTest = { auto: null };
+export const craftTest = { auto: null }; // "good" / "bad" / "burn"（温度を上げ続けて焦がす）
 
 export const MODE_LABEL = { tutorial: "LESSON", drill: "PRACTICE", rehearsal: "REHEARSAL", tournament: "SMOKE CROWN CUP" };
 
@@ -142,6 +143,15 @@ export function setBenchTemperature(cs, temp) {
 }
 export function pauseBenchTemperature(cs, paused) {
   if (bench?.cs === cs) bench.thermal.pause(paused);
+}
+/** 温度計の一番上に届いた一台が爆発する。閃光・揺れ・音のあと、焦げた背景のまま結果へ進む（TH06）。 */
+export async function burstBench(cs) {
+  if (bench?.cs !== cs || !bench.root.isConnected) return;
+  bench.thermal.explode();
+  SE.burst();
+  flash("white", 420);
+  shake(undefined, 600);
+  await sleep(matchMedia("(prefers-reduced-motion: reduce)").matches ? 400 : 1500);
 }
 
 /** 左側の工程キャプションを更新。今後の作業アニメーションもここで同期する。 */

@@ -118,6 +118,13 @@ async function tutorial() {
   await stepSteamTime(cs);
   await runSteamDodge(cs);
   await runPull(cs);
+  // 焦がしたら、スミさんが葉を詰め直して吸い出しからやり直す（TH06。レッスンはGAME OVERにしない）。
+  while (cs.burnt) {
+    await play("remake_tutorial_burnt", { bg: TONARI });
+    Object.assign(cs, { burnt: false, pull: null, pullDone: false });
+    openBench(cs, { steps: STEPS_R1.filter(([id]) => id !== "setup" && id !== "concept") });
+    await runPull(cs);
+  }
   state.flags._tutorial_done = true;
   delete state.flags._tutorial_skipped;
   await play("remake_tutorial_result", { bg: TONARI });
@@ -164,6 +171,12 @@ async function rehearsal() {
   await stepSteamTime(cs);
   await runSteamDodge(cs);
   await runPull(cs);
+  // 焦がした通しは手応えなし。スミさんの一言で終わり、本番の加点もない（TH06）。
+  if (cs.burnt) {
+    state.rehearsal = "rough";
+    await play("remake_rehearsal_burnt", { bg: TONARI_N });
+    return;
+  }
   const s = computeShisha(cs);
   const score = (cs.holes.score + cs.heat.score + s.craftQuality) / 3;
   state.rehearsal = score >= 85 ? "great" : score >= 68 ? "good" : "rough";
@@ -254,6 +267,7 @@ async function tournamentDay() {
   openBench(cs, { steps: STEPS_ALL });
   bc.block(cs, "pull");
   await runPull(cs);
+  if (cs.burnt) return burntOut();
   bc.judge(cs, bc.judgeOf(cs.pull.score), "提供");
   bc.burst(cs, "serve", 1);
   await sleep(900);
@@ -267,6 +281,7 @@ async function tournamentDay() {
   openBench(cs, { steps: STEPS_ALL });
   bc.block(cs, "adjust");
   await runCare(cs);
+  if (cs.burnt) return burntOut();
   bc.judge(cs, bc.judgeOf(cs.care.score), "熱管理");
   await sleep(900);
   bc.clearComments();
@@ -388,12 +403,20 @@ export async function showClear() {
   showScreen("end", root);
 }
 
-async function showDefeat(rank) {
+/** 一台を焦がした大会は、審査を待たずにその場でGAME OVER（TH06）。再挑戦は通常の敗北と同じ。 */
+async function burntOut() {
+  bc.clearComments();
+  save();
+  await smokeWipe(() => showDefeat(0, { burnt: true }), { color: "dark" });
+}
+
+async function showDefeat(rank, { burnt = false } = {}) {
   showHud(false);
   stopBgm();
   const root = el("div.end-screen.gameover", [
     el("div.end-title", { text: "GAME OVER" }),
-    el("div.end-sub", { text: `結果は${rank}位。優勝だけが次への切符だった。ここで、終わってしまった。` }),
+    el("div.end-sub", { text: burnt ? "シーシャが焦げてしまった。焦げた一台は、審査に出せない。ここで、終わってしまった。"
+      : `結果は${rank}位。優勝だけが次への切符だった。ここで、終わってしまった。` }),
     el("div.end-body", [el("div.end-radar", [radar(state.stats, state.statsAtChapterStart, 280)]),
       el("div.end-notes", [el("p", { text: "大会の頭から、もう一度挑戦できる（大会直前のデータから再開）。" })])]),
     el("div.end-actions", [

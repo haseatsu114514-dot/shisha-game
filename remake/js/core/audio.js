@@ -194,6 +194,8 @@ export const SE = {
   puka: () => { tone({ freq: 880, to: 1760, type: "sine", dur: 0.16, vol: 0.2 }); tone({ freq: 1760, type: "sine", dur: 0.28, vol: 0.12, delay: 0.14 }); },
   pugo: () => { tone({ freq: 140, to: 70, type: "sine", dur: 0.22, vol: 0.3 }); noise({ dur: 0.08, vol: 0.12, filter: 500 }); },
   glitch: () => { for (let i = 0; i < 8; i++) tone({ freq: 200 + Math.random() * 2400, type: "square", dur: 0.03, vol: 0.05, delay: i * 0.05 }); },
+  // 温度計の一番上で一台が爆発して焦げる（TH06）。低い破裂と崩れる火の粉。
+  burst: () => { tone({ freq: 90, to: 26, type: "sine", dur: 1.1, vol: 0.45 }); noise({ dur: 1, vol: 0.3, filter: 1800, sweepTo: 220 }); noise({ dur: 0.22, vol: 0.2, filter: 6000, type: "highpass" }); for (let i = 0; i < 6; i++) noise({ dur: 0.04, vol: 0.12, filter: 2000 + Math.random() * 3000, delay: 0.25 + Math.random() * 0.6, q: 2 }); },
   freezeBoom: () => { tone({ freq: 60, to: 30, type: "sine", dur: 0.6, vol: 0.4 }); noise({ dur: 0.5, vol: 0.2, filter: 700, sweepTo: 3000 }); },
 };
 

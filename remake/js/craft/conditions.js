@@ -6,6 +6,9 @@ import { foilHeatProfile } from "./holes_logic.js";
 export const IDEAL = [0.46, 0.62];
 export const OPTIMAL = [0.532, 0.548];
 export const isOptimalTemperature = (temp) => temp >= OPTIMAL[0] && temp <= OPTIMAL[1];
+/** 温度計の一番上に届くと爆発して焦げる（2026-10-09 オーナー指定 TH06）。蒸らしは0.88で頭打ちのため届かない。 */
+export const BURST_TEMP = 1;
+export const isBurnt = (temp) => temp >= BURST_TEMP - 1e-6;
 
 /** 温まり方は経過時間で決まる。雑念のミスはこの温度へ入れない。 */
 export function temperatureAfterSteam(cs, seconds, jitter = 0) {

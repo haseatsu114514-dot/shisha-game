@@ -3,10 +3,10 @@
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown, flash } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature } from "./session.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, burstBench } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 
-import { craftConditions, heatDelta, pullResult, isOptimalTemperature, temperatureAfterSteam, pullFocusFromSteam, IDEAL } from "./conditions.js";
+import { craftConditions, heatDelta, pullResult, isOptimalTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, IDEAL } from "./conditions.js";
 import { buildThermometer } from "./thermometer.js";
 
 export { IDEAL } from "./conditions.js";
@@ -33,7 +33,7 @@ export async function runPull(cs) {
   let coreTemp = startTemp(cs);
   let T = coreTemp;
   const conditions = craftConditions(cs);
-  let pulls = 0, justs = 0;
+  let pulls = 0, justs = 0, burnt = false;
 
   // ---- 画面
   const thermometer = buildThermometer();
@@ -58,7 +58,8 @@ export async function runPull(cs) {
     thermometer.preview(pulls < PULL_MAX ? clamp(coreTemp + heatDelta(cs, actionAt(pos).delta), 0, 1) : null);
     const inZone = T >= IDEAL[0] && T <= IDEAL[1];
     const optimal = isOptimalTemperature(T);
-    readout.textContent = optimal ? "最適温。今の煙を届けよう" : inZone ? "適温。中央の細い最適温を狙える" : T > IDEAL[1] ? "熱い。下げ吸いで落ち着かせたい" : "まだぬるい。上げ吸いで熱を入れたい";
+    readout.textContent = optimal ? "最適温。今の煙を届けよう" : inZone ? "適温。中央の細い最適温を狙える" : T >= .92 ? "焦げる寸前。下げ吸いで熱を逃がしたい"
+      : T > IDEAL[1] ? "熱い。下げ吸いで落ち着かせたい" : "まだぬるい。上げ吸いで熱を入れたい";
     counter.textContent = `吸った回数 ${pulls}${pulls >= PULL_SAFE ? "（これ以上は葉が痩せる）" : ""}`
       + (conditions.sparsity ? " ／ 少穴：吸い方による温度変化が大きい" : "") + (conditions.rainy ? " ／ 雨：熱が入りづらい" : "");
     counter.classList.toggle("warn", pulls >= PULL_SAFE);
@@ -90,12 +91,14 @@ export async function runPull(cs) {
     return { z, isJust, delta };
   };
   const doPull = (at = pos) => {
-    if (pulls >= PULL_MAX) return;
+    if (pulls >= PULL_MAX || burnt) return;
     const before = T;
     const { z, isJust, delta } = actionAt(at);
     pulls++;
     coreTemp = clamp(coreTemp + heatDelta(cs, delta), 0, 1);
     T = coreTemp;
+    // 温度計の一番上に届いたら、その場で爆発して焦げる（TH06）。
+    if (isBurnt(T)) { burnt = true; running = false; render(); pullBtn.disabled = serveBtn.disabled = true; serve(); return; }
     reactAudience(cs, pulls > PULL_SAFE || Math.abs(T - CENTER) > Math.abs(before - CENTER) ? "bad" : isJust ? "just" : "good");
     if (isJust) { justs++; SE.just(); flash("gold"); popStamp(panel, `ジャスト${z.label}`, "just", "58%", "22%"); }
     else { SE.good(); popStamp(panel, z.label, "good", "58%", "22%"); }
@@ -127,8 +130,12 @@ export async function runPull(cs) {
           const keep = clamp(.5 - diff / response, .341, .659);
           const candidates = [.141, .3, keep, .75, .796];
           at = candidates.sort((a, b) => Math.abs(T + heatDelta(cs, actionAt(a).delta) - CENTER) - Math.abs(T + heatDelta(cs, actionAt(b).delta) - CENTER))[0];
+        } else if (auto === "burn") {
+          at = .17; // テスト用: ジャスト上げ吸いを重ねて温度計の一番上まで上げる
         } else {
           at = rand(0, 1) < 0.5 ? 0.3 : 0.25;
+          // 雑な吸い方の自動操作でも、焦がす一手は打たない（大会の敗北テストを安定させる）。
+          if (isBurnt(T + heatDelta(cs, actionAt(at).delta))) break;
         }
         doPull(at);
         await sleep(40);
@@ -140,6 +147,17 @@ export async function runPull(cs) {
   running = false;
   cancelAnimationFrame(raf);
   unkey();
+  if (burnt) {
+    readout.textContent = "温度が上がりすぎた……！";
+    await burstBench(cs);
+    cs.pull = { score: 0, grade: gradeOf(0), temp: T, pulls, justs, inZone: false, optimal: false, over: true, under: false, burnt: true };
+    cs.burnt = true;
+    cs.pullDone = true;
+    refreshBench();
+    tickerSay("パッキー「ば、爆発ーッ！？ シーシャが焦げてしまったーッ！」");
+    await resultCard(panel, { title: "シーシャが焦げてしまった", lines: ["温度計の一番上まで熱が上がり、葉が焦げた", `${pulls}回吸った`] });
+    return;
+  }
 
   const { score, inZone, optimal } = pullResult(T, pulls, justs, IDEAL);
   cs.pull = { score, grade: gradeOf(score), temp: T, pulls, justs, inZone, optimal, over: T > IDEAL[1], under: T < IDEAL[0] };

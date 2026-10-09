@@ -2,10 +2,10 @@
 // 審査員が吸っている間も炭は生きている。温度の流れを読んで、炭を外す／回す／寄せる／見守る。
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, tickerSay, reactAudience, setBenchTemperature } from "./session.js";
+import { stepPanel, tickerSay, reactAudience, setBenchTemperature, burstBench } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, popStamp } from "./common.js";
 import { IDEAL } from "./pull.js";
-import { heatDelta } from "./conditions.js";
+import { heatDelta, isBurnt } from "./conditions.js";
 
 const ACTIONS = [
   { id: "remove", label: "炭をひとつ外す", effect: -0.12, desc: "熱を落とす" },
@@ -21,7 +21,7 @@ export async function runCare(cs) {
   let T = cs.pull?.temp ?? CENTER;
   const history = [T];
   const clarity = skill.clarity(cs);
-  let good = 0;
+  let good = 0, burnt = false;
 
   const chart = el("div.care-chart");
   const reading = el("div.care-read");
@@ -54,7 +54,8 @@ export async function runCare(cs) {
       const auto = autoSkill();
       if (auto) {
         const next = T + drift;
-        const want = auto === "bad" ? ACTIONS[3] : next > IDEAL[1] - 0.02 ? ACTIONS[0] : next < IDEAL[0] + 0.02 ? ACTIONS[2] : ACTIONS[1];
+        // 雑な自動操作でも焦がす手は打たない（大会の敗北テストを安定させる）。
+        const want = auto === "burn" ? ACTIONS[2] : auto === "bad" ? (isBurnt(next) ? ACTIONS[0] : ACTIONS[3]) : next > IDEAL[1] - 0.02 ? ACTIONS[0] : next < IDEAL[0] + 0.02 ? ACTIONS[2] : ACTIONS[1];
         setTimeout(() => resolve(want), 60);
       }
     });
@@ -63,6 +64,8 @@ export async function runCare(cs) {
     T = clamp(T + drift + heatDelta(cs, choice.effect), 0, 1);
     if (choice.steady) T = clamp(T + heatDelta(cs, (CENTER - T) * 0.35), 0, 1); // 位置を回すと熱がならされる
     history.push((before + T) / 2, T);
+    // 温度計の一番上に届いたら、その場で爆発して焦げる（TH06）。
+    if (isBurnt(T)) { burnt = true; drawChart(); break; }
     const ok = T >= IDEAL[0] && T <= IDEAL[1];
     reactAudience(cs, ok ? "good" : "bad", { force: true });
     if (ok) good++;
@@ -71,6 +74,15 @@ export async function runCare(cs) {
     if (ok && r === ROUNDS - 1) tickerSay("パッキー「最後の一口まで崩れない！ 守り切ったーッ！」");
     drawChart();
     await sleep(500);
+  }
+  if (burnt) {
+    reading.textContent = "熱が暴走した……！";
+    await burstBench(cs);
+    cs.care = { score: 0, grade: gradeOf(0), good, temp: T, burnt: true };
+    cs.burnt = true;
+    tickerSay("パッキー「ば、爆発ーッ！？ シーシャが焦げてしまったーッ！」");
+    await resultCard(panel, { title: "シーシャが焦げてしまった", lines: ["熱が上がり続け、温度計の一番上で葉が焦げた"] });
+    return;
   }
   const score = Math.round(clamp((good / ROUNDS) * 85 + (1 - Math.min(1, Math.abs(T - CENTER) / 0.2)) * 15, 0, 100));
   cs.care = { score, grade: gradeOf(score), good, temp: T };
