@@ -68,8 +68,7 @@
     "superseded": true
   },
   {
-    "file": "stove-on.png",
-    "adopted": "assets/ui/making/stove_coil.png",
+    "file": "references/stove-on-long-marker-superseded.png",
     "dimensions": [
       1402,
       1122
@@ -83,6 +82,62 @@
     "sha256": "4c59a3a60d27f871f872dd0d76df997ea3b72251e30ec6716ddcbb993c710546",
     "source": "/workspace/generated_images/exec-5b8f2f6b-0c07-4405-8398-bd88548532bc.png",
     "matchesGeneratorBytes": true,
-    "dial": "180 degrees from original upright marker: straight down, original knob body and perspective"
+    "dial": "180 degrees from original upright marker: straight down, original knob body and perspective",
+    "superseded": true
+  },
+  {
+    "file": "references/stove-on-marker27-superseded.png",
+    "dimensions": [
+      1402,
+      1122
+    ],
+    "mode": "RGBA",
+    "alphaRange": [
+      0,
+      255
+    ],
+    "transparentPixels": 789329,
+    "sha256": "d3b97562416502cfd4d695e055256a40077f69963ac13b5c152237dd017c6dab",
+    "source": "/workspace/generated_images/exec-b7af7c16-5541-4e9f-999f-ae6f8510f3c3.png",
+    "matchesGeneratorBytes": true,
+    "markerBounds": [
+      1047,
+      940,
+      1055,
+      967
+    ],
+    "markerSize": [
+      8,
+      27
+    ],
+    "superseded": true
+  },
+  {
+    "file": "stove-on.png",
+    "dimensions": [
+      1402,
+      1122
+    ],
+    "mode": "RGBA",
+    "alphaRange": [
+      0,
+      255
+    ],
+    "transparentPixels": 773663,
+    "sha256": "cee2f0ce5d0a479f8506e2eb0345131da85fddf93a29e203da547661fd4f205c",
+    "source": "/workspace/generated_images/exec-36d2e4d0-b18b-4b3a-bdda-f31b8ff21a0d.png",
+    "matchesGeneratorBytes": true,
+    "markerBounds": [
+      1048,
+      940,
+      1054,
+      964
+    ],
+    "markerSize": [
+      6,
+      24
+    ],
+    "adopted": "assets/ui/making/stove_coil.png",
+    "dial": "short bottom-facing mark; long central stripe removed; vertical body ribs and camera angle retained"
   }
 ]
