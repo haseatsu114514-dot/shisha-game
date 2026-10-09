@@ -300,6 +300,23 @@ def auto_crops(cid, tune, whole):
     return box(tune.get("face_f", 0.25), -0.005), box(tune.get("head_f", 0.36), -0.015)
 
 
+def head_axis_body(im, whole=False, dx=0.0):
+    """全身を、頭の中心軸が枠の中央に来るように切り出す。
+    不透明範囲の中心で揃えると、白衣の裾・ぬいぐるみ・ヒレなど片側に広がる部分で
+    顔の位置が中央からずれるため、顔アップと同じ頭の重心を軸に左右対称の余白で切る。"""
+    a = im.getchannel("A")
+    x0, y0, x1, y1 = a.getbbox()
+    ch = y1 - y0
+    if whole:
+        cx = (x0 + x1) / 2
+    else:
+        sl = a.crop((x0, y0, x1, y0 + int(ch * 0.14)))
+        xs = [x for x in range(sl.width) for y in range(0, sl.height, 3) if sl.getpixel((x, y)) > 128]
+        cx = x0 + (sum(xs) / len(xs) if xs else (x1 - x0) / 2) + dx * ch
+    half = max(cx - x0, x1 - cx)
+    return im.crop((round(cx - half), y0, round(cx + half), y1))
+
+
 def make_cfg(cid, chars):
     if cid == "minto":
         return MINTO
@@ -356,7 +373,8 @@ def build(cid, chars, body_h=1000):
     bodies = []
     for o in outfits:
         im = Image.open(SPRITE / cid / f"{o['prefix']}normal.png").convert("RGBA")
-        bodies.append(im.crop(im.getchannel("A").getbbox()))
+        spec = CHARS.get(cid, {})
+        bodies.append(head_axis_body(im, spec.get("whole", False), spec.get("tune", {}).get("dx", 0.0)))
 
     expr_cell, expr_label_h = 400, 40
     sheet = Image.new("RGB", (W, 6000), BG)
