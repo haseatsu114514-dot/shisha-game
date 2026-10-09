@@ -272,8 +272,9 @@ export function makingUrl(name) {
 }
 
 export function bgmUrl(key) {
-  const file = `${key}.mp3`;
-  return (DB.manifest.bgm || []).includes(file) ? `${ROOT}assets/audio/bgm/${file}` : null;
+  const files = DB.manifest.bgm || [];
+  const file = [`${key}.bgm`, `${key}.mp3`].find((name) => files.includes(name));
+  return file ? `${ROOT}assets/audio/bgm/${file}` : null;
 }
 
 export function assetUrl(rel) {

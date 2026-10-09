@@ -5,7 +5,7 @@
 画像の「どれが存在するか」と「立ち絵の透過余白」はブラウザから安く
 調べられないため、ここで計測して1ファイルにまとめる。
 
-立ち絵・背景・CGを追加/差し替えたときだけ実行すればよい:
+立ち絵・背景・CG・BGMを追加/差し替えたときに実行する:
     python3 remake/tools/build_manifest.py
 
 依存: Pillow（必須）、numpy + scipy（推奨。無いと足元アンカー ax が
@@ -13,6 +13,7 @@ bbox 中心で代用され、表情差分で立ち絵が左右にずれやすく
 """
 
 import datetime
+import argparse
 import json
 import re
 import sys
@@ -184,9 +185,20 @@ def is_placeholder(path: Path) -> bool:
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--audio-only", action="store_true", help="既存の画像目録を保ち、BGM一覧だけ更新")
+    args = parser.parse_args()
+    generated = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    bgm = sorted(listing("audio/bgm", "*.mp3") + listing("audio/bgm", "*.bgm"))
+    if args.audio_only:
+        manifest = json.loads(OUT.read_text(encoding="utf-8"))
+        manifest.update(generated=generated, bgm=bgm)
+        OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print(f"wrote {OUT.relative_to(ROOT)}: {len(bgm)} BGM files (images unchanged)")
+        return
     manifest = {
         "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
-        "generated": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
+        "generated": generated,
         "portraits": portraits(),
         "backgrounds": listing("backgrounds"),
         # 仮置きCG（文字だけの画像）は載せない＝場面では飛ばし、ギャラリーにも出さない
@@ -196,7 +208,7 @@ def main():
         "sceneProps": listing("ui/scene_props"),
         "introArt": intro_art(),
         "makingBox": making_boxes(),
-        "bgm": listing("audio/bgm", "*.mp3"),
+        "bgm": bgm,
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
