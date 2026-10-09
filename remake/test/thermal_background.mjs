@@ -1,4 +1,5 @@
 // 実温度の引継ぎ、吸い方・炭による上下、一時停止、描画・スマホ・低減モード。
+// 色は低温の薄い霧→適温の緑→過熱の赤→灼熱の紫（2026-10-09 オーナー指定）。
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
@@ -34,6 +35,18 @@ try {
     ['cold','warming','ready','ready','hot','fire','inferno','inferno','cold']);
   await page.evaluate(() => T.session.stepPanel('heat','炭焼き'));
   assert(!(await page.locator('.thermal-backdrop').isVisible()));
+  // 前回の一台の灼熱を蒸らしへ持ち越さず、炭を置いた直後の温度から始める。
+  await page.evaluate(() => { T.session.stepPanel('trial','x'); T.session.setBenchTemperature(cs,.96); T.session.stepPanel('steam','蒸らし時間'); });
+  assert.equal(await band(), 'cold');
+  // 見出しは素材スキンより後の暗幕で読める。炎と煙は台の後ろからボウルを包む。
+  assert.match(await page.locator('.bench-top').evaluate(e=>getComputedStyle(e).backgroundImage), /rgba\(18, 11, 33/);
+  const layout = await page.evaluate(() => {
+    const eq = document.querySelector('.worker-equipment'), pic = eq.querySelector('.thermal-picture').getBoundingClientRect(), bowl = eq.querySelector('.worker-bowl').getBoundingClientRect();
+    return { first: eq.firstElementChild.classList.contains('thermal-picture'), base: pic.bottom, bowlTop: bowl.top, bowlBottom: bowl.bottom, top: pic.top, stage: document.querySelector('.bench-worker-stage').getBoundingClientRect().top };
+  });
+  assert(layout.first, 'flame picture must be behind the shisha parts');
+  assert(layout.base > layout.bowlTop && layout.base < layout.bowlBottom, `flame base ${layout.base} is not inside the bowl ${layout.bowlTop}-${layout.bowlBottom}`);
+  assert(layout.top >= layout.stage, 'flame picture leaves the stage');
   await page.evaluate(() => { cs.steamSeconds=300; window.run=T.steam.runSteamDodge(cs); });
   await page.locator('[data-test="timer-stop"]:not([disabled])').waitFor();
   await page.waitForTimeout(600);
@@ -60,14 +73,24 @@ try {
   // 通常の入力で工程を終えてから、同じベンチの背景を比較する。
   await page.keyboard.press('Space'); await page.keyboard.press('Space'); await page.keyboard.press('Enter');
   await page.waitForSelector('.result-card.show');
+  // 吸った後は、吸い方で上下した提供温度と背景が一致する。
+  assert(Math.abs(Number(await page.locator('.thermal-backdrop').getAttribute('data-temperature'))-await page.evaluate(()=>cs.pull.temp))<.0001);
   await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.run);
-  const images=[];
+  const images=[], colors={}, glows=[];
   for (const [temp, expected] of [[.2,'cold'],[.4,'warming'],[.54,'ready'],[.70,'hot'],[.83,'fire'],[.96,'inferno']]) {
     await page.evaluate(t=>{T.session.stepPanel('trial','温度のイメージ');T.session.setBenchTemperature(cs,t);},temp);
     assert.equal(await band(),expected); images.push(await pixels());
+    colors[expected] = await page.locator('.thermal-backdrop').evaluate(c => [...c.getContext('2d').getImageData(4, 4, 1, 1).data].slice(0, 3));
+    glows.push(Number(await page.locator('.bench').evaluate(e => getComputedStyle(e).getPropertyValue('--thermal-glow-strength'))));
     await shot(`temperature-${expected}`);
   }
   assert.equal(new Set(images).size,6,'temperature pictures are identical');
+  const [cr, cg, cb] = colors.cold, [gr, gg, gb] = colors.ready, [fr, fg, fb] = colors.fire, [ir, ig, ib] = colors.inferno;
+  assert(Math.min(cr, cg, cb) > 190 && Math.max(cr, cg, cb) - Math.min(cr, cg, cb) < 50, `cold is not pale: ${colors.cold}`);
+  assert(gg > gr + 60 && gg > gb + 60, `ideal is not green: ${colors.ready}`);
+  assert(fr > fg + 120 && fr > fb + 120, `overheat is not red: ${colors.fire}`);
+  assert(ib > ig + 60 && ir > ig + 40, `inferno is not purple: ${colors.inferno}`);
+  assert.deepEqual([...glows].sort((a, b) => a - b), glows, `scene glow does not grow with heat: ${glows}`);
   // 炭を外すと実際の熱量も背景も下がる。
   await page.evaluate(() => { cs.pull.temp=.94; Math.random=()=>.5; window.run=T.care.runCare(cs); });
   assert.equal(await band(),'inferno');
@@ -90,5 +113,5 @@ try {
   await page.evaluate(()=>T.session.stepPanel('holes','穴あけ'));
   assert(!(await page.locator('.thermal-backdrop').isVisible()));
   assert.deepEqual(errors,[]);
-  console.log('PASS: six distinct pictures, steam pause/resume and handoff, stable waiting temperature, coal cooling, reduced motion, mobile bounds and reset; page errors 0');
+  console.log('PASS: pale→green→red→purple, flame behind the bowl, readable header, steam reset, six distinct pictures, steam pause/resume and handoff, stable waiting temperature, coal cooling, reduced motion, mobile bounds and reset; page errors 0');
 } finally { await browser.close(); }

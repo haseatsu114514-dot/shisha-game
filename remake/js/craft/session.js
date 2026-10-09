@@ -20,6 +20,7 @@ import { runSteamDodge } from "./steam.js";
 import { runPull } from "./pull.js";
 import { applyCraftSkin, craftSkinUrls } from "./skin.js";
 import { buildThermalAtmosphere } from "./thermal.js";
+import { temperatureAfterSteam } from "./conditions.js";
 
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
@@ -129,6 +130,8 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.worker.setMental("steady");
   b.worker.caption.textContent = WORKER_STEPS[id] || titleText;
   b.thermal.setStep(id);
+  // 蒸らしのやり直しでも前回の温度を残さず、炭を置いた直後の温度から始める。
+  if (id === "steam") b.thermal.update(temperatureAfterSteam(b.cs, 0));
   if (["pull", "care", "trial"].includes(id)) b.thermal.update(b.cs.care?.temp ?? b.cs.pull?.temp ?? b.cs.steam?.temp ?? 0);
   return b.panel;
 }
