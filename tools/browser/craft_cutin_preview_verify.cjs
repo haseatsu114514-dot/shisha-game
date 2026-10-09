@@ -52,6 +52,7 @@ const hold = (page, variant) => page.evaluate(variant => cutinDemo.effect.show(v
 const hide = page => page.evaluate(() => cutinDemo.effect.hide());
 
 async function pauseCase(page, frame, step, variant) {
+  await frame.locator('.bench-worker-name > b').click();
   assert(await hold(page, variant));
   await settle(frame);
   const before = await snapshot(frame), t0 = await time(page);
@@ -59,7 +60,8 @@ async function pauseCase(page, frame, step, variant) {
   await page.waitForTimeout(270);
   const box = await frame.locator(selector[step]).boundingBox();
   await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
-  await frame.evaluate(() => window.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', code: 'Space', bubbles: true, cancelable: true })));
+  assert.deepEqual(await snapshot(frame), before, `${step}/${variant}: pointer reached game during pause`);
+  await page.keyboard.press('Space');
   await settle(frame);
   assert.deepEqual(await snapshot(frame), before, `${step}/${variant}: model or input progressed during pause`);
   const stopped = await time(page);
@@ -99,6 +101,7 @@ async function main() {
     await page.evaluate(() => localStorage.setItem('suien_remake_save', 'cutin-existing-save-sentinel'));
     for (const step of ['heat','holes','steam','pull']) {
       const frame = await boot(page, step);
+      if (step === 'heat') await frame.waitForFunction(() => document.querySelector('[data-test="coal-0"]')?.dataset.phase === 'early');
       assert(await frame.locator('[data-test="craft-feedback"]').isVisible(), `${step}: missing commentator`);
       assert((await frame.locator('[data-test="craft-feedback"]').textContent()).length > 0);
       for (const variant of ['full','center']) await pauseCase(page, frame, step, variant);
@@ -156,11 +159,12 @@ async function main() {
       frame = await boot(page);
       await page.locator('main').evaluate(n => n.style.maxWidth = 'none');
       await page.locator('.frame').evaluate((n, size) => Object.assign(n.style,{width:`${size.width}px`,height:`${size.height}px`,aspectRatio:'auto'}),size);
-      await frame.waitForFunction(() => document.querySelector('[data-test="coal-0"]')?.dataset.phase === 'just', { timeout:15000 });
+      await frame.waitForFunction(() => document.querySelector('[data-test="coal-0"]')?.dataset.phase === 'just', null, { timeout:15000 });
       // 実成功を撮影。採点を変えず、PERFECTが表示された直後の画面を保存する。
       await page.evaluate(() => cutinDemo.clock.pause());
       await frame.locator('[data-test="coal-0"]').click();
       assert.equal(await frame.locator('[data-test="coal-timing-0"]').getAttribute('data-rating'), 'PERFECT');
+      await page.waitForTimeout(500); // 成功時の金色フラッシュを終えてから配置を公平に比較する。
       const details = { size, variants:{} };
       for (const variant of ['center','full',...(size.name === 'desktop' ? ['pair','peek','window'] : [])]) {
         await page.evaluate(() => cutinDemo.clock.pause());

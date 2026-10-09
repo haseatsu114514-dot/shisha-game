@@ -35,9 +35,10 @@ export function buildAudience(cs) {
     person.title = `${label}：${MOODS[mood]}`; person.setAttribute("aria-label", person.title);
     if (portrait) {
       image.hidden = false; image.classList.remove("audience-icon"); image.src = portrait.src;
-      image.style.width = "300px";
-      image.style.left = `calc(50% - ${portrait.ax * 300}px)`;
-      image.style.top = `${8 - (1 - portrait.h - portrait.b) * 300 / portrait.aspect}px`;
+      const width = 240;
+      image.style.width = `${width}px`;
+      image.style.left = `calc(50% - ${portrait.ax * width}px)`;
+      image.style.top = `${6 - (1 - portrait.h - portrait.b) * width / portrait.aspect}px`;
     } else {
       const fallback = faceIconUrl(id, state); image.hidden = !fallback;
       if (fallback) image.src = fallback;
