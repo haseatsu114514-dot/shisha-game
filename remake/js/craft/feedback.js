@@ -1,4 +1,11 @@
 // 工程の成績を、記号と見守る人物の短い一言で伝える。
+import { DB } from "../core/data.js";
+
+/** 自主練の内心も、他の台詞と同じ正本JSONから読む。 */
+export function innerVoiceLine(step, kind) {
+  return (DB.dialogues[`craft_inner_${step}_${kind}`] || DB.dialogues[`craft_inner_default_${kind}`])?.lines[0]?.text || "";
+}
+
 export function evaluationOf(score) {
   return score >= 90 ? { mark: "◎", tone: "bright", index: 0, kind: "just", label: "とても良い" }
     : score >= 65 ? { mark: "○", tone: "warm", index: 1, kind: "good", label: "良い" }
@@ -35,6 +42,7 @@ const COMMENTS = {
 };
 
 export function feedbackLine(id, step, evaluation) {
+  if (id === "hajime") return innerVoiceLine(step, ["excellent", "good_result", "retry"][evaluation.index]);
   const voice = COMMENTS[id] || COMMENTS.sumi;
   return (voice[step] || voice.default)[evaluation.index];
 }
@@ -85,6 +93,7 @@ const TUTORIAL_LIVE = {
 export const tutorialGuide = step => TUTORIAL_GUIDES[step] || "";
 
 export function commentaryLine(id, step, positive, { tutorial = false } = {}) {
+  if (id === "hajime") return innerVoiceLine(step, positive ? "good" : "bad");
   if (tutorial && id === "sumi" && TUTORIAL_LIVE[step]) return TUTORIAL_LIVE[step][positive ? 0 : 1];
   const voice = LIVE[id] || LIVE.sumi;
   return (voice[step] || voice.default)[positive ? 0 : 1];

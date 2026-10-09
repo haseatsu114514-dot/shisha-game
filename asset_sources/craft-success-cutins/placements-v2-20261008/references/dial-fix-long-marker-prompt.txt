@@ -1,0 +1,12 @@
+スタイル: 薄暗いシーシャラウンジの空気。`assets/backgrounds/bg_eden_shop.png` 程度の2Dドット絵〜ピクセルペインター調で、輪郭・影・質感に細かいドット感を残す。リアル写真調や滑らかすぎる3D調は避ける。シーシャ台の先端は小さい凸型の金属ポストにし、凹んだカップ型・ボウル一体型・大きな先端パーツにしない。手・腕は細身で中性的、明るいピーチ系の同一肌色に統一する。
+配色: 黒〜濃紫の闇に、琥珀／金（#f4d27a系）の暖色ネオンが差す。煙のかすみ。
+視点: 作りパートは一人称（プレイヤーの手元を上から見下ろす角度）。
+出力: PNG・透過指定のものは背景完全透過。@2x（実寸の2倍）で。指定なき限り 1280×720 基準。
+NG: 文字/ロゴ/UI/数字の焼き込み（数値はゲーム側UIで出すので画像に入れない）、watermark。
+
+Reference 1 is the ORIGINAL game tabletop electric heater PNG with its yellow dial index pointing straight up. Make ONLY a faithful minimal correction to that original. The heater is powered on and the flat spiral coil is glowing. Rotate ONLY the existing front circular power knob's indicator exactly 180 DEGREES from the original 12 O'CLOCK to 6 O'CLOCK (STRAIGHT DOWN). Preserve the ORIGINAL KNOB BODY AND CAMERA PERSPECTIVE. Do NOT tilt, slant, angle, skew, reshape or change the viewing angle of the knob. Its circular face, cylindrical body, shading, size, location and projection must match the reference. Just turn the original straight upright yellow line upside down to a single straight DOWNWARD yellow line at the BOTTOM CENTER of the circular dial face. The yellow line is VERTICAL on the screen, as was the original top marker. No diagonal yellow line. No lower-right position. No second marker. Remove the old upright marker completely. Do not add a new rotated grip/ridge or stylize the knob. Keep the vertical ribbed body exactly as in the original.
+
+Everything else must remain the same reference image: same small black tabletop heater, same hot flat spiral coil and support brackets, indicator light, feet, body, canvas aspect, texture, original framing and alpha transparency. Do not redesign any area. Do not add a central upright peg or rod. No hands, charcoal, text, setting numbers, logo or UI. Transparent PNG, preserve exactly 1402 by 1122 pixel dimensions if possible.
+
+保存先: asset_sources/craft-success-cutins/placements-v2-20261008/stove-on.png
+本番の採用先: assets/ui/making/stove_coil.png

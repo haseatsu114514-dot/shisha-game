@@ -1,0 +1,125 @@
+{
+  "_comment": "自主練の左下に表示するはじめの心の声。途中は作業の感触、終了後は既存の工程評価に対応する3段階。",
+  "dialogues": [
+    {
+      "dialogue_id": "craft_inner_holes_watch",
+      "lines": [{ "speaker": "hajime", "face": "normal", "text": "間隔をそろえて、熱が回る道を作ろう" }]
+    },
+    {
+      "dialogue_id": "craft_inner_holes_good",
+      "lines": [{ "speaker": "hajime", "face": "smile", "text": "よし、狙ったところに開けられた" }]
+    },
+    {
+      "dialogue_id": "craft_inner_holes_bad",
+      "lines": [{ "speaker": "hajime", "face": "serious", "text": "ずれてしまった。力を抜いて、次の位置を見よう" }]
+    },
+    {
+      "dialogue_id": "craft_inner_holes_excellent",
+      "lines": [{ "speaker": "hajime", "face": "smile", "text": "きれいにそろった。熱もむらなく回ってくれそうだ" }]
+    },
+    {
+      "dialogue_id": "craft_inner_holes_good_result",
+      "lines": [{ "speaker": "hajime", "face": "normal", "text": "だいたいそろった。この間隔を覚えておこう" }]
+    },
+    {
+      "dialogue_id": "craft_inner_holes_retry",
+      "lines": [{ "speaker": "hajime", "face": "serious", "text": "少しばらついた。次は間隔をもっとそろえたい" }]
+    },
+    {
+      "dialogue_id": "craft_inner_heat_watch",
+      "lines": [{ "speaker": "hajime", "face": "normal", "text": "芯まで熱が入るのを、もう少し見ていよう" }]
+    },
+    {
+      "dialogue_id": "craft_inner_heat_good",
+      "lines": [{ "speaker": "hajime", "face": "smile", "text": "取れた。この赤さを覚えておこう" }]
+    },
+    {
+      "dialogue_id": "craft_inner_heat_bad",
+      "lines": [{ "speaker": "hajime", "face": "serious", "text": "色の変わるところを、もう少し丁寧に見よう" }]
+    },
+    {
+      "dialogue_id": "craft_inner_heat_excellent",
+      "lines": [{ "speaker": "hajime", "face": "smile", "text": "芯まで焼けた。いいタイミングで取れたと思う" }]
+    },
+    {
+      "dialogue_id": "craft_inner_heat_good_result",
+      "lines": [{ "speaker": "hajime", "face": "normal", "text": "悪くない焼け方だ。もう少し色を見極めたい" }]
+    },
+    {
+      "dialogue_id": "craft_inner_heat_retry",
+      "lines": [{ "speaker": "hajime", "face": "serious", "text": "取りどころがそろわなかった。色の変化を覚えておこう" }]
+    },
+    {
+      "dialogue_id": "craft_inner_steam_watch",
+      "lines": [{ "speaker": "hajime", "face": "normal", "text": "慌てずに、熱が入るのを待とう" }]
+    },
+    {
+      "dialogue_id": "craft_inner_steam_good",
+      "lines": [{ "speaker": "hajime", "face": "smile", "text": "呼吸が落ち着いてきた。このまま待とう" }]
+    },
+    {
+      "dialogue_id": "craft_inner_steam_bad",
+      "lines": [{ "speaker": "hajime", "face": "serious", "text": "気が散った。ひと呼吸置いて、手元に戻ろう" }]
+    },
+    {
+      "dialogue_id": "craft_inner_steam_excellent",
+      "lines": [{ "speaker": "hajime", "face": "smile", "text": "落ち着いて待てた。熱も入ってきている" }]
+    },
+    {
+      "dialogue_id": "craft_inner_steam_good_result",
+      "lines": [{ "speaker": "hajime", "face": "normal", "text": "少し気が散ったけど、最後まで待てた" }]
+    },
+    {
+      "dialogue_id": "craft_inner_steam_retry",
+      "lines": [{ "speaker": "hajime", "face": "serious", "text": "雑念が多かった。次はひと息ついてから始めよう" }]
+    },
+    {
+      "dialogue_id": "craft_inner_pull_watch",
+      "lines": [{ "speaker": "hajime", "face": "normal", "text": "煙の温度を見ながら、少しずつ整えよう" }]
+    },
+    {
+      "dialogue_id": "craft_inner_pull_good",
+      "lines": [{ "speaker": "hajime", "face": "smile", "text": "うん、煙がまとまってきた感じがする" }]
+    },
+    {
+      "dialogue_id": "craft_inner_pull_bad",
+      "lines": [{ "speaker": "hajime", "face": "serious", "text": "熱の入り方を、もう一度確かめよう" }]
+    },
+    {
+      "dialogue_id": "craft_inner_pull_excellent",
+      "lines": [{ "speaker": "hajime", "face": "smile", "text": "この温度なら、気持ちよく吸ってもらえそうだ" }]
+    },
+    {
+      "dialogue_id": "craft_inner_pull_good_result",
+      "lines": [{ "speaker": "hajime", "face": "normal", "text": "ちゃんとまとまった。もう少し温度を合わせられそうだ" }]
+    },
+    {
+      "dialogue_id": "craft_inner_pull_retry",
+      "lines": [{ "speaker": "hajime", "face": "serious", "text": "温度を合わせきれなかった。もう一度、手元を確かめよう" }]
+    },
+    {
+      "dialogue_id": "craft_inner_default_watch",
+      "lines": [{ "speaker": "hajime", "face": "normal", "text": "手元を確かめながら、一つずつ進めよう" }]
+    },
+    {
+      "dialogue_id": "craft_inner_default_good",
+      "lines": [{ "speaker": "hajime", "face": "smile", "text": "よし、落ち着いて続けよう" }]
+    },
+    {
+      "dialogue_id": "craft_inner_default_bad",
+      "lines": [{ "speaker": "hajime", "face": "serious", "text": "ひと息ついて、手元を確かめよう" }]
+    },
+    {
+      "dialogue_id": "craft_inner_default_excellent",
+      "lines": [{ "speaker": "hajime", "face": "smile", "text": "うまくできた。この手つきを覚えておこう" }]
+    },
+    {
+      "dialogue_id": "craft_inner_default_good_result",
+      "lines": [{ "speaker": "hajime", "face": "normal", "text": "ちゃんと形になった。もう少し丁寧にできそうだ" }]
+    },
+    {
+      "dialogue_id": "craft_inner_default_retry",
+      "lines": [{ "speaker": "hajime", "face": "serious", "text": "慌ててしまった。次は一つずつ確かめたい" }]
+    }
+  ]
+}
