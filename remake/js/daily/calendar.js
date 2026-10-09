@@ -1,6 +1,6 @@
 // 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の行動 → 夜の固定イベント → 帰宅 → 翌朝。
 import { el, sleep, yen } from "../core/util.js";
-import { layers, dayCard, modal, toast, fadeBlack, bannersIdle, setBg } from "../core/ui.js";
+import { layers, dayCard, dayTurn, modal, toast, fadeBlack, bannersIdle, setBg } from "../core/ui.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { addMoney, addStamina, gainAffinity, paidAction, staminaAfter, staminaRatio, maxStamina } from "../core/stats.js";
@@ -31,6 +31,7 @@ const SLEEP_RECOVERY = 14;
 let chapterDef = null;
 let onQuit = null;
 let queuedLimeSender = null;
+let dawnShownDay = null; // 夜明けの幕でDAYカードを見せた日（同じ日の朝のDAYカードを重ねない）
 
 /**
  * 日常パートを DAY1〜13 まで回す。DAY14の大会当日の朝の手前で返る。
@@ -68,7 +69,9 @@ export async function runDaily(def) {
 
 async function morning() {
   playBgm("kansetsu_shomei_to_black_coffee");
-  await dayCard(`DAY ${state.day}`, `SMOKE CROWN CUP まで あと${daysLeft()}日${isRainy() ? "　☂ 雨" : ""}`);
+  // 就寝から続けて来た朝は、夜明けの幕でDAYを見せ終えている（見せた印はここで使い切る）
+  if (dawnShownDay === state.day) dawnShownDay = null;
+  else await dayCard(`DAY ${state.day}`, `SMOKE CROWN CUP まで あと${daysLeft()}日${isRainy() ? "　☂ 雨" : ""}`);
   // LIME は通知だけ（中身は好きなときにアプリを開いて読む）
   const n = deliverMorning({ fixedNight: (d) => !!chapterDef.nightEvents[d] });
   if (n) pushNotice(n, { onOpen: (sender) => {
@@ -380,14 +383,24 @@ async function advanceDay() {
   delete state.flags._cold_pending;
   delete state.flags._overwork; // 旧セーブの固定発病カウンターは使わない。
   const sleepBefore = state.stamina;
-  await fadeBlack(async () => {
+  const fromDay = state.day;
+  const fromLeft = daysLeft();
+  const wake = () => {
     // 大会の朝に発病しても大会日を飛ばさない。その夜は回復せず、不調の残量で本番へ。
     addStamina(exhausted && state.day + 1 >= TOURNAMENT_DAY ? 0 : SLEEP_RECOVERY);
     state.day += 1;
     state.slot = 0;
     updateHud();
     setBg(bgUrl("bg_home", "day"), { instant: true }); // 朝は家で目を覚ます（前の夜の場面の絵を持ち越さない）
-  }, 500);
+  };
+  if (state.day + 1 < TOURNAMENT_DAY) {
+    // 夜の紫が降りて、DAYと残り日数がめくれ、地平線が昇って朝になる（大会当日は当日の演出に任せる）
+    await dayTurn(async () => {
+      wake();
+      return { fromDay, day: state.day, fromLeft, left: daysLeft(), rain: isRainy(), sick: exhausted };
+    });
+    dawnShownDay = state.day;
+  } else await fadeBlack(wake, 500);
   await presentSleepRecovery({ before: sleepBefore, after: state.stamina });
   if (!exhausted) return;
   if (state.day >= TOURNAMENT_DAY) {
@@ -399,7 +412,7 @@ async function advanceDay() {
   const first = !state.flags._sick_once;
   state.flags._sick_once = true;
   state.flags[`_morning_${state.day}`] = true;
-  await dayCard(`DAY ${state.day}`, "……熱っぽい");
+  if (dawnShownDay !== state.day) await dayCard(`DAY ${state.day}`, "……熱っぽい");
   if (first) {
     await play("remake_sick_half");
     addStamina(Math.max(0, 60 - state.stamina));

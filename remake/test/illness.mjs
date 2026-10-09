@@ -21,29 +21,29 @@ const context = vm.createContext({ Math: math, Set, Map, Promise, console, setTi
 const noop = () => {}, elem = () => ({ classList: { add: noop, remove: noop, contains: () => false }, remove: noop });
 const db = { dialogues: {}, statusTexts: {} };
 const values = {
-  "util.js": { el: elem, sleep: async () => {}, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) },
+  "util.js": { el: elem, sleep: async () => {}, yen: (n) => `${n}円`, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) },
   "state.js": { state, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending }),
     STAT_KEYS: ["technique", "sense", "guts", "charm", "insight"], STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" },
     markMet: (id) => state.met[id] = true, loadFromSlot: () => false, requestResumeOnBoot: noop },
   "ui.js": { layers: { fx: { append: noop }, modal: elem() }, dayCard: async () => {}, modal: async () => { guards.push(state.stamina); return decisions.shift() ?? true; },
-    toast: noop, fadeBlack: async (mid) => mid?.(), bannersIdle: async () => {}, setBg: noop },
+    toast: noop, fadeBlack: async (mid) => mid?.(), dayTurn: async (mid) => { await mid?.(); }, bannersIdle: async () => {}, setBg: noop },
   "data.js": { DB: db, bgUrl: (ref) => ref }, "saves.js": { saveFlow: async () => {}, loadFlow: async () => {} },
   "audio.js": { SE: { select: noop, cancel: noop }, playBgm: noop },
   "engine.js": { play: async (id) => played.push(id) }, "glossary.js": { glossaryPanel: () => "" },
-  "hud.js": { initHud: noop, showHud: noop, updateHud: noop, daysLeft: () => 14 - state.day, setPhoneBadge: noop },
+  "hud.js": { initHud: noop, showHud: noop, updateHud: noop, daysLeft: () => 14 - state.day, setPhoneBadge: noop, presentSleepRecovery: async () => {} },
   "map.js": { chooseSpot: async () => route.shift() || "rest", interruptMap: noop },
   "weather.js": { isRainy: () => false, RAIN_SPOT_TEXTS: {} },
   "tonari.js": { tonariMenu: async () => "baito", tonariCustomer: async () => {}, doBaito: async () => { shifts++; stats.addStamina(-24); } },
   "shop.js": { openShop: async () => null, visitRin: async () => {}, ownsFlavor: () => true },
   "fortune.js": { doFortune: async () => {} },
   "phone.js": { deliverMorning: () => 0, pushNotice: noop, hasUnread: () => false, openLime: async () => {}, limeCoach: noop, expireInvitations: noop },
-  "status.js": { openStatus: async () => {} }, "reel.js": { onAction: noop, presentNow: async () => {} },
+  "status.js": { openStatus: async () => {} }, "reel.js": { onAction: noop, presentNow: async () => {}, installReel: noop },
   "romance.js": { maybeConfession: async () => false, playDate: async () => {} },
   "bonds.js": { afterStory: async () => {}, isFinaleEvent: () => false, playFinale: async () => {}, isFriendEvent: () => false, playFriendHangout: async () => {},
     questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false },
   "kafuka.js": { syncKafukaKnowledge: noop, maybeKafukaEncounter: async () => false, visitKafuka: async () => false, kafukaSpot: () => null },
 };
-const files = { "stats.js": "core", "rules.js": "core", "condition.js": "core", "illness.js": "core", "bus.js": "core", "story-knowledge.js": "core", "spots.js": "daily", "calendar.js": "daily" };
+const files = { "stats.js": "core", "rules.js": "core", "condition.js": "core", "illness.js": "core", "bus.js": "core", "story-knowledge.js": "core", "spots.js": "daily", "calendar.js": "daily", "invitations.js": "daily" };
 const modules = new Map();
 async function load(name) {
   if (modules.has(name)) return modules.get(name);
