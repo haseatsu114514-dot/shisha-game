@@ -26,5 +26,47 @@
       "tip": "Short translucent tip on rigid handle, ordinary jewelry not mouthpiece.",
       "smoke": "From lips, handle held away from lips."
     }
+  },
+  {
+    "id": "minto_mint_smoke",
+    "source": "/workspace/generated_images/exec-53f7ff70-b044-4af9-8140-22b8e82945db.png",
+    "output": "assets/ui/title_arts/title_art_minto_mint_smoke.png",
+    "revision": 2,
+    "qa": {
+      "character": "Canonical long black hair, green eyes, black/mint frilled costume, horn/bat accessories; rounder original face prioritized.",
+      "background": "Bright cream/mint cafe counter with dessert dishes, daylight.",
+      "heat": "Separate vented lidded silver HMD above ceramic bowl; no direct-foil coals.",
+      "hose": "Mint hose side port → loop below counter edge → rigid black handle base, consistent color/width at occlusion.",
+      "tip": "Small green hygienic tip at handle top; heart necklace remains ordinary jewelry.",
+      "smoke": "Origin at lips; no smoke from HMD or hose."
+    }
+  },
+  {
+    "id": "ageha_gummy_smoke",
+    "source": "/workspace/generated_images/exec-b4ac15c6-1f5a-4a06-b54a-0c28e898ed13.png",
+    "output": "assets/ui/title_arts/title_art_ageha_gummy_smoke.png",
+    "revision": 2,
+    "qa": {
+      "character": "Honey-gold twin ponytails, pink/white bear clips, gold eyes, leopard jacket/pink top; cheerful original face.",
+      "background": "Pink/leopard ParaPara lounge and illuminated photo-booth edge at dusk.",
+      "heat": "Separate low metal vented charcoal chamber on ceramic bowl; coals visible at chamber opening, not on foil.",
+      "hose": "One uninterrupted coral hose loop visibly runs side port → rigid amber handle base.",
+      "tip": "Small translucent tip on handle; ordinary gold heart pendant stays jewelry.",
+      "smoke": "Origin at lips; no smoke from HMD or hose."
+    }
+  },
+  {
+    "id": "rin_sample_smoke",
+    "source": "/workspace/generated_images/exec-072a180d-5503-48b2-944f-99a9929b8483.png",
+    "output": "assets/ui/title_arts/title_art_rin_sample_smoke.png",
+    "revision": 2,
+    "qa": {
+      "character": "Canonical long layered dark wolf-cut, blue-gray half-lidded eyes, rolled white shirt, black slacks, silver hoops; original adult face.",
+      "background": "Steel shelving with sample tins and delivery boxes; cool blue showroom at night.",
+      "heat": "Separate vented lidded silver HMD on ceramic bowl; no exposed direct-foil coals.",
+      "hose": "One continuous dark hose loop from proper square-base body side port to blue-grip rigid handle base.",
+      "tip": "Small pale mouth tip at the rigid handle end, proportionate to mouth.",
+      "smoke": "Origin at lips; no smoke from HMD or hose."
+    }
   }
 ]
