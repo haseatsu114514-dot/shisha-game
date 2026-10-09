@@ -274,11 +274,13 @@ jq '[.dialogues[].dialogue_id]' data/dialogue/ch1_main.json
 1. Git Safetyを確認し、最新 `origin/main` から作業ブランチを切る
 2. 台詞は `data/dialogue/*.json`、画面・進行は `remake/` を編集
 3. 台詞を触ったら `python3 tools/lint_dialogue.py`（ERROR=0）、`python3 tools/tidy_dialogue_text.py --dry-run`
-4. テストの対応表は `.claude/skills/web-build-test/SKILL.md`（名称は従来どおり、対象は現行版）
+4. **検証は変更した該当箇所を基本にする**（2026-10-09 オーナー指示・TEST01）。BGMなら再生・切替・音量、表示なら変更画面、ミニゲームなら変更工程だけを確認する。テストの候補は `.claude/skills/web-build-test/SKILL.md`。表にある全テストや通しテストを毎回実行しない
 5. commit・作業ブランチへのpush・PR。mainへの直push・forceは禁止
 
 ローカル確認: `python3 remake/tools/serve_preview.py --port 8123` → `http://127.0.0.1:8123/remake/`。
 重いブラウザテストは直列で実行。PlaywrightのChrome指定はテスト冒頭または `remake/README.md` 参照。
+
+通しテストは、全体の進行・セーブ互換への広い影響、局所確認では切り分けられない不具合、またはオーナーの明示依頼があるときだけ選ぶ。実行するなら必要な理由を短く伝える。同じ変更で確認済みなら、追加変更・失敗・未解決の懸念がない限り繰り返さない。複数チャットでの重複実行も避ける。
 
 - 登場カットの名前は会話欄と同じ呼び名のみ。括弧付きの本名は全員で廃止し、本名はストーリーの名乗りで扱う（2026-10-08 CI48）。旧案の比較画像は修正前の状態で保存してよい。
 - テスト用フックは `window.__remake`（`vnTest`・`craftTest`・`dev`）。維持する
