@@ -1,15 +1,1 @@
-[
-  {
-    "id": "tsumugi_lavender_smoke",
-    "source": "/workspace/generated_images/exec-e74824f4-fd12-4717-adf2-711ff7b53cff.png",
-    "output": "assets/ui/title_arts/title_art_tsumugi_lavender_smoke.png",
-    "qa": {
-      "character": true,
-      "texture": true,
-      "hose": "Side port → continuous plum hose → rigid handle base visible.",
-      "bowl": "Foil covering ceramic bowl above separate tray; three small resting cube coals.",
-      "tip": "Short pink hygienic tip at handle top. No necklace mouthpiece.",
-      "smoke": "Exhaled from lips, handle separated from mouth."
-    }
-  }
-]
+[]

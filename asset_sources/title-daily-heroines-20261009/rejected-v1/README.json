@@ -1,0 +1,32 @@
+[
+  {
+    "id": "tsumugi_lavender_smoke",
+    "source": "/workspace/generated_images/exec-e74824f4-fd12-4717-adf2-711ff7b53cff.png",
+    "archive": "asset_sources/title-daily-heroines-20261009/rejected-v1/tsumugi_lavender_smoke.png",
+    "reason": "Owner feedback: face/age differs from canonical sprite, repeated bookshelf backgrounds, and direct foil charcoal. Do not use in the title slideshow."
+  },
+  {
+    "id": "mashiro_heavy_smoke",
+    "source": "/workspace/generated_images/exec-a0c66637-d999-4d50-9843-f1eb688f5efc.png",
+    "archive": "asset_sources/title-daily-heroines-20261009/rejected-v1/mashiro_heavy_smoke.png",
+    "reason": "Owner feedback: face/age differs from canonical sprite, repeated bookshelf backgrounds, and direct foil charcoal. Do not use in the title slideshow."
+  },
+  {
+    "id": "minto_mint_smoke",
+    "source": "/workspace/generated_images/exec-0a396692-1766-4fe8-a5c7-6b77e95c51ba.png",
+    "archive": "asset_sources/title-daily-heroines-20261009/rejected-v1/minto_mint_smoke.png",
+    "reason": "Owner feedback: face/age differs from canonical sprite, repeated bookshelf backgrounds, and direct foil charcoal. Do not use in the title slideshow."
+  },
+  {
+    "id": "ageha_gummy_smoke",
+    "source": "/workspace/generated_images/exec-febcd701-cd48-4401-8f54-fd4fa96f4257.png",
+    "archive": "asset_sources/title-daily-heroines-20261009/rejected-v1/ageha_gummy_smoke.png",
+    "reason": "Owner feedback: face/age differs from canonical sprite, repeated bookshelf backgrounds, and direct foil charcoal. Do not use in the title slideshow."
+  },
+  {
+    "id": "rin_sample_smoke",
+    "source": "/workspace/generated_images/exec-5b00c242-f3e8-4e84-bdbb-a13713968f22.png",
+    "archive": "asset_sources/title-daily-heroines-20261009/rejected-v1/rin_sample_smoke.png",
+    "reason": "Owner feedback: face/age differs from canonical sprite, repeated bookshelf backgrounds, and direct foil charcoal. Do not use in the title slideshow."
+  }
+]
