@@ -1,0 +1,14 @@
+[
+  {
+    "id": "minto_bowl_preparation",
+    "source": "/workspace/generated_images/exec-3d140166-98a2-4d13-af4d-cd666e12b24c.png",
+    "output": "asset_sources/title-daily-heroines-20261009/rejected-v2/minto_bowl_preparation.png",
+    "reason": "HMD lid/base connection resembles a spindle and counter bowl scale is too large."
+  },
+  {
+    "id": "ageha_gummy_smoke",
+    "source": "/workspace/generated_images/exec-b4ac15c6-1f5a-4a06-b54a-0c28e898ed13.png",
+    "output": "asset_sources/title-daily-heroines-20261009/rejected-v2/ageha_gummy_smoke.png",
+    "reason": "Revise ambiguous exposed top charcoal into a closed HMD lid."
+  }
+]

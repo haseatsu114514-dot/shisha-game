@@ -68,5 +68,33 @@
       "tip": "Small pale mouth tip at the rigid handle end, proportionate to mouth.",
       "smoke": "Origin at lips; no smoke from HMD or hose."
     }
+  },
+  {
+    "id": "mashiro_dark_leaf_packing",
+    "source": "/workspace/generated_images/exec-4e6557ef-eca9-47ad-a4ad-2ef3b9ee69e2.png",
+    "output": "assets/ui/title_arts/title_art_mashiro_dark_leaf_packing.png",
+    "revision": 2,
+    "qa": {
+      "character": "Checked ash-blonde braids, sleepy gold eyes, beige cardigan/white ribbon/sage skirt against canonical sprite.",
+      "background": "Wooden preparation counter and warm work lamp.",
+      "stage": "Unheated separate phunnel bowl: raised central spire with one top opening and moist leaf around it. Bowl off pipe; background post empty above separate tray.",
+      "hose": "No hose in use; not a smoking scene.",
+      "heat": "No lit coals/HMD/foil during leaf packing.",
+      "hands": "Fork in one hand; other supports foot of bowl."
+    }
+  },
+  {
+    "id": "ageha_hmd_setup",
+    "source": "/workspace/generated_images/exec-34863e9c-e846-481e-8322-6f02fa01f042.png",
+    "output": "assets/ui/title_arts/title_art_ageha_hmd_setup.png",
+    "revision": 2,
+    "qa": {
+      "character": "Checked gold twin ponytails, pink/white bear clips, gold eyes and exact leopard/pink costume.",
+      "background": "Dusk blue window, pink wall and leopard sofa.",
+      "stage": "Small unheated metal HMD with lid held separately from pink ceramic bowl on counter.",
+      "hose": "No hose in use; background pipe remains in preparation stage.",
+      "heat": "No lit coals, smoke or direct charcoal.",
+      "hands": "Upper hand holds lid's black handle; lower palm supports metal chamber."
+    }
   }
 ]
