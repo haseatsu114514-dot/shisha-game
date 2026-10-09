@@ -1,0 +1,24 @@
+{
+  "id": "minto-01-cafe-welcome",
+  "path": "/workspace/generated_images/exec-b2baefb1-9c86-4e24-85b7-e1c60448d0fa.png",
+  "source": "minto/01-cafe-welcome.png",
+  "prompt": "minto/01-cafe-welcome.revision-1.prompt.txt",
+  "references": [
+    "minto/01-cafe-welcome-first.png",
+    "../heroine-concepts-v1-20261008/references/hmd-real-assembled.jpg"
+  ],
+  "source_sha256": "b1e10bd7fb7edcc3585967e95c3477dd368ee58fe941a21e09e85ca7479a005a",
+  "prompt_sha256": "562563ec1e621746264907fc7015a553c395b91e2e31599275a3a84beb63c656",
+  "reference_sha256": {
+    "minto/01-cafe-welcome-first.png": "927d5e13340e2f5c9c29542215301e6d79dcc532e1c89e2293bf5ab233a1915a",
+    "../heroine-concepts-v1-20261008/references/hmd-real-assembled.jpg": "c562580773c147f77f8ba8b86cb76fc43f8d71f9237d38fe2f4b0f717a292069"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}

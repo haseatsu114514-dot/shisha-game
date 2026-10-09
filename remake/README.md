@@ -253,7 +253,9 @@ node remake/test/minto_progression.mjs      # 初対面・仕事後の約束・�
 node remake/test/temporary_closures.mjs     # 定休日以外の外出・臨時休業の通知とマップ・保存・翌日の営業
 node remake/test/playtest_ui.mjs            # 回復とHUDの一致・通知からLIME・バイトSKIP・サメちゃんの声とBGM
 node remake/test/illness.mjs                # 風邪の確率・残量0・休養・大会当日の発病
-node remake/test/bgm_gain.mjs               # テーマの音量・設定変更・フェード
+node --experimental-vm-modules remake/test/bgm_gain.mjs # テーマの音量・設定変更・フェード
+node --experimental-vm-modules remake/test/bgm_packaged.mjs # 大会音源の復元・非同期切替・曲別音量
+node remake/test/bgm_browser.mjs            # 実音声のデコード・ループ・ミュート・既存MP3
 node --experimental-vm-modules remake/test/data_loading.mjs # 接続数・通信失敗・タイムアウト
 ```
 

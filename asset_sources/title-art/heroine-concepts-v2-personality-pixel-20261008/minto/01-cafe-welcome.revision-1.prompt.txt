@@ -1,0 +1,5 @@
+画風参考: bg_eden_shop.png を第一基準にする。温かい照明の2Dドット絵〜ピクセルペインター調で、輪郭・影・質感に細かいドット感を残す。リアル写真調や滑らかすぎる3D調にしない。シーシャ台の先端は小さい凸型の金属ポストにし、凹んだカップ型・ボウル一体型・大きな先端パーツにしない。
+
+Edit reference 1, the already generated artwork. Tiny equipment surface cleanup only. Preserve this exact adult Minto, face, twin-tails, decorative bat clips, green costume, pose, mint/coral cafe, compact Oduman glass body, white hose continuously connected from mouthpiece across lap into glass-body side fitting, complete readable bowl/HMD. Remove the small white outlined flower/company emblems on the BRONZE closed HMD and BLACK bowl. Those surfaces are PLAIN unmarked metal/silicone with the same highlights and vents, no words or symbols. Preserve all other pixels, identity, background, color and rendering; do not add any props.
+
+Opaque PNG 1024x1536, same portrait 2:3 framing. Reference 2 is actual equipment geometry only; keep illustration style. Proposed preserved source: asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/01-cafe-welcome.png

@@ -36,6 +36,22 @@ const PLAN = [
 
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_BIN ? { executablePath: process.env.CHROME_BIN } : {}) });
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+await page.addInitScript(() => {
+  window.addEventListener("DOMContentLoaded", async () => {
+    const audio = await import("./js/core/audio.js");
+    const { hooks } = await import("./js/vn/engine.js");
+    window.__tournamentBgmCues = {};
+    const previous = hooks.onLine;
+    hooks.onLine = (id, line) => {
+      previous?.(id, line);
+      if (["ch1_tournament_opening", "remake_round1_intro", "ch1_tournament_r1_end",
+        "ch1_tournament_r2_end", "ch1_tournament_r3_end", "remake_trial_intro"].includes(id)) {
+        const attempt = window.__remake.state.tournament.attempts;
+        window.__tournamentBgmCues[`${attempt}:${id}`] = audio.currentBgm();
+      }
+    };
+  });
+});
 const errors = [];
 page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
 page.on("console", (m) => {
@@ -306,6 +322,20 @@ if (!s.flags._ev_rehearsal || !s.flags._ev_last_night) throw new Error("DAY13 re
 log(`attempts=${s.tournament.attempts} lastRank=${s.tournament.lastRank} total=${s.tournament.lastTotal}`);
 if (s.phase !== "cleared") throw new Error(`expected cleared, got ${s.phase}`);
 if (s.tournament.attempts < 2) throw new Error("expected a defeat before the win");
+const bgmCues = await page.evaluate(() => window.__tournamentBgmCues);
+for (let attempt = 1; attempt <= s.tournament.attempts; attempt++) {
+  for (const [id, expected] of [
+    ["ch1_tournament_opening", "bgm_tournament_edm"],
+    ["remake_round1_intro", "bgm_tournament_craft"],
+    ["ch1_tournament_r1_end", "bgm_tournament_craft"],
+    ["ch1_tournament_r2_end", "bgm_tournament_craft"],
+    ["ch1_tournament_r3_end", "bgm_tournament_craft"],
+    ["remake_trial_intro", "bgm_tournament_wait"],
+  ]) {
+    if (bgmCues[`${attempt}:${id}`] !== expected) throw new Error(`Wrong BGM at attempt ${attempt} ${id}: ${bgmCues[`${attempt}:${id}`]}`);
+  }
+}
+log("tournament BGM: opening → crafting ROUND 1–3 → judging, including retry: PASS");
 // スロット: 日常の行動ごとに1回転（リプレイの追加回転を含む）。結果は全部演出まで消化されている
 log(`slot: spins=${s.reel.count} note=${JSON.stringify(s.reel.note)} pending=${s.reel.pending.length}`);
 if (s.reel.count < 20) throw new Error(`slot should spin once per action (count=${s.reel.count})`);

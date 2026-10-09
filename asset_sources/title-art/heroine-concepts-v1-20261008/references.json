@@ -1,0 +1,68 @@
+[
+  {
+    "file": "references/tsumugi-adopted-normal.png",
+    "original": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+    "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6",
+    "role": "adopted character identity; overrides older prose appearance descriptions"
+  },
+  {
+    "file": "references/mashiro-adopted-normal.png",
+    "original": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+    "sha256": "d9a9ae63c2b0bfaae9f88fc139bf3ca7deb22fd719b9286f5c383668cf495f8d",
+    "role": "adopted character identity; overrides older prose appearance descriptions"
+  },
+  {
+    "file": "references/minto-adopted-normal.png",
+    "original": "assets/sprites/characters/minto/chr_minto_normal.png",
+    "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+    "role": "adopted character identity; overrides older prose appearance descriptions"
+  },
+  {
+    "file": "references/ageha-adopted-normal.png",
+    "original": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+    "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+    "role": "adopted character identity; overrides older prose appearance descriptions"
+  },
+  {
+    "file": "references/rin-adopted-normal.png",
+    "original": "assets/sprites/characters/rin/chr_rin_normal.png",
+    "sha256": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09",
+    "role": "adopted character identity; overrides older prose appearance descriptions"
+  },
+  {
+    "file": "references/title-style.png",
+    "original": "assets/ui/title_arts/title_art_keyvisual_01.png",
+    "sha256": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+    "role": "illustration mood/style ONLY; original hookah structure must not be copied"
+  },
+  {
+    "file": "references/minto-private.png",
+    "original": "assets/sprites/characters/minto/chr_minto_ura_normal.png",
+    "sha256": "c9a603a9c9c9b0438781573180d8c6e0ecac6c425a17c116623b0ba4b6d48bf2",
+    "role": "adopted private outfit and hairstyle"
+  },
+  {
+    "file": "references/hookah-real-body.jpg",
+    "source_url": "https://odumanjapan.com/wp/wp-content/uploads/2024/08/Oduman-N2-Travel-Hookah-k1.jpg",
+    "source_page": "https://odumanjapan.com/product/oduman-atomic",
+    "sha256": "2bdbb38c8ae19a6d21aadabe3be9bdec3af57754709ebdf89035d39d02702d8d",
+    "role": "Oduman Japan product photo; only left-side real glass hookah, stem, tray and connected hose geometry; ignore right-side carrying bag",
+    "use": "geometry research only; no logos copied; not a runtime game image"
+  },
+  {
+    "file": "references/hmd-real-assembled.jpg",
+    "source_url": "https://cdn.shopify.com/s/files/1/1082/3418/products/LotusI_Cyris_SamsarisIII.jpg?v=1764038786",
+    "source_page": "https://kaloud.com/products/kaloud-lotus-i-1",
+    "sha256": "c562580773c147f77f8ba8b86cb76fc43f8d71f9237d38fe2f4b0f717a292069",
+    "role": "Kaloud official photo; Lotus I+ HMD seated on a compatible Samsaris bowl",
+    "use": "geometry research only; no logos copied; not a runtime game image"
+  },
+  {
+    "file": "references/hmd-real-side.jpg",
+    "source_url": "https://cdn.shopify.com/s/files/1/1082/3418/products/LotusI_Niris-side.jpg?v=1721683690",
+    "source_page": "https://kaloud.com/products/kaloud-lotus-i-1",
+    "sha256": "a46cd683eb02c239513b22bfc937dffde5f3920f958a33ba00a1553fbe183cbc",
+    "role": "Kaloud official photo; vented lid, raised metal walls, charcoal chamber geometry",
+    "use": "geometry research only; no logos copied; not a runtime game image"
+  }
+]

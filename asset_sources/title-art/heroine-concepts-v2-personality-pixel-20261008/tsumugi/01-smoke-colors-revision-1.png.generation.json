@@ -1,0 +1,25 @@
+{
+  "id": "tsumugi-01-smoke-colors",
+  "path": "/workspace/generated_images/exec-e1d9590f-7468-4568-a059-53a693450644.png",
+  "source": "tsumugi/01-smoke-colors.png",
+  "prompt": "tsumugi/01-smoke-colors.revision-1.prompt.txt",
+  "references": [
+    "tsumugi/01-smoke-colors-first.png",
+    "references/wookah-complete.jpg"
+  ],
+  "source_sha256": "6505b7d4c89b45dcfd89559c5f10da2373949cb4bab7353fbde2449cae84eaf7",
+  "prompt_sha256": "82b9afe6c4fa2674a135011be3cd84a8388ebd4b741c25413cc80815606fb426",
+  "reference_sha256": {
+    "tsumugi/01-smoke-colors-first.png": "5d8f7ab864bff38b7def9098a3fff42780bb9a67774ade0cbe4bb1f9c0f444ad",
+    "references/wookah-complete.jpg": "6c405d25a2ab50064f7bf30245c753416788dbde9ee6fbd828a22ffc458087d1"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false,
+  "preserved_source": "tsumugi/01-smoke-colors-revision-1.png"
+}

@@ -7,3 +7,8 @@
 | `kansetsu_shomei_to_black_coffee.mp3` | 間接照明とブラックコーヒー | フリーBGM（配布元・作曲者は未記入） | 日常パート（`assets/audio/bgm/kansetsu_shomei_to_black_coffee.mp3`） |
 | `sweets_or_sweets.ogg` | おいしいお菓子を捧げよ！ | M-ART（http://mart.kitunebi.com）・作曲 Napi | サメちゃんのテーマ（mp3へ変換して `assets/audio/bgm/sweets_or_sweets.mp3`） |
 | `morning_cafe.mp3` | morning cafe（ファイル名より） | 未記入 | 保留（使い道が決まるまで未使用） |
+| `assets/audio/bgm/bgm_tournament_edm.bgm` | Overture! | H/MIX GALLERY・作曲 秋山裕和 | 大会開幕の挨拶〜選手入場 |
+| `assets/audio/bgm/bgm_tournament_craft.bgm` | Mind Duel | OpenTracks（旧DOVA-SYNDROME）・作曲 shimtone | 大会のシーシャ制作（ROUND 1〜3） |
+
+大会の2曲は公式配布元から取得し、単体音源を公開しないゲーム専用形式で保存。
+[出典・利用条件・音量測定・再変換手順](confirmed-tournament-bgm-20261009.md)を参照。

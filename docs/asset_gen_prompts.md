@@ -1,5 +1,7 @@
 # 画像生成プロンプト集（codex用）— シーシャ作りパート＋立ち絵
 
+> 2026-10-09 TA13: 制作済みのヒロイン原画は[共通の採用候補一覧](../asset_sources/title-daily-heroines-20261009/README.md)から選ぶ。今回の19案と旧15案を保存し、ゲームの差し替え・自動採用は行わない。原画・生成指示・実参照SHA・目視メモを候補集に残す。
+
 > 2026-10-09 CI72〜82: [漫画カットインの全画面／主人公エリア中央・動く比較](../asset_sources/craft-success-cutins/placements-v2-20261008/README.md)。[漫画コマ](../asset_sources/craft-success-cutins/placements-v2-20261008/pair-prompt.txt)・[中央突起の除去](../asset_sources/craft-success-cutins/placements-v2-20261008/stove-fix-prompt.txt)・[コンロの短い目印を真下へ](../asset_sources/craft-success-cutins/placements-v2-20261008/dial-fix-prompt.txt)の指示を保存。目印を斜め・長い中央線にした案は不採用。カットインは比較用で、本編の成功条件へは未接続。コンロPNG／WebPの描画修正は本編素材にも反映。
 
 > 2026-10-09 CI71: [首掛けマイマウスピースがチェーンだけ／ホースが実機につながらない生成ミスの出力後QA](../asset_sources/shisha-hardware-reference/visual-qa-necklace-hose-20261009.md)。キャラは正規立ち絵優先。**チェーン＋立体吸い口本体**と**ホースポートからハンドルまでの連続性**を検品し、NGなら再生成（構図上の遮蔽・見切れは自然なら可）。
@@ -20,6 +22,9 @@
 
 > 2026-10-08 CI62／63: 制作成功カットインの[目元／漫画コマの2案](../asset_sources/craft-success-cutins/concepts-v1-20261008/README.md)。同じ炭焼き画面とはじめを参照した比較モックアップ。[目元の生成指示](../asset_sources/craft-success-cutins/concepts-v1-20261008/eyes-prompt.txt)は工程共通の斜め帯、[漫画コマの生成指示](../asset_sources/craft-success-cutins/concepts-v1-20261008/comic-prompt.txt)は成功した手元と笑顔。本編接続・演出頻度・採用案は未決定。
 
+> 2026-10-08 TA08〜12: [新版19案](../asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/README.md)。サメちゃんを加えた6人×3案＋みんとの公私の中間1案。メーカーの異なる木／真鍮／ガラス／ピンクのカット形／黒い金属／青いキューブ型の台を個別参照し、場所と色も分ける。現行ましろタイトル絵はドットの画風だけを参照。[生成指示の記録](../asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/make-prompts.py)と各 `.prompt.txt` を保存。最初の15案は比較履歴。
+
+> 2026-10-08 TA01〜07: [ヒロイン5人×3種類のタイトル用アート比較](../asset_sources/title-art/heroine-concepts-v1-20261008/README.md)と各 `.prompt.txt`。採用済み立ち絵を第一参照、現在のタイトル絵を画風のみの参照とする。シーシャ案はメーカー実物写真を併用し、ハガルの上に閉じたHMD・その内側に炭、台の側面から手元へ1本のホースを描く。残りは本人らしい日常や趣味。15枚を独立した縦2:3の原画で保存し、タイトルへの採用は別途扱う。
 
 > 2026-10-08 CI58〜61: 採用登場背景の修正は[アダム・はじめの修正版](../asset_sources/character-intros/adam-hajime-v4-20261008/README.md)を参照。[アダム](../asset_sources/character-intros/adam-hajime-v4-20261008/adam/prompt.txt)は葉・花を除いて二つのリンゴと蛇・古い書物風の装飾、[はじめ](../asset_sources/character-intros/adam-hajime-v4-20261008/hajime/prompt.txt)はシーシャ本体・ホース・マウスピースを除く。人物は再生成せず、文言は正本データを使う。
 

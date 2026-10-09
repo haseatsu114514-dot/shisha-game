@@ -1,0 +1,24 @@
+{
+  "id": "kafuka-02-shark-movie",
+  "path": "/workspace/generated_images/exec-41357227-bdb1-4e33-a776-f315f02b3a62.png",
+  "source": "kafuka/02-shark-movie.png",
+  "prompt": "kafuka/02-shark-movie.prompt.txt",
+  "references": [
+    "references/kafuka-adopted-normal.png",
+    "../heroine-concepts-v1-20261008/references/title-style.png"
+  ],
+  "source_sha256": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
+  "prompt_sha256": "b59c4dae5e56803096240b5cb6c7a209bf143fefb48c442bc7b291f44bf098f8",
+  "reference_sha256": {
+    "references/kafuka-adopted-normal.png": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b",
+    "../heroine-concepts-v1-20261008/references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}
