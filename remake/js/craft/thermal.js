@@ -9,7 +9,7 @@ import { IDEAL, DANGER_TEMP, isOptimalTemperature } from "./conditions.js";
 // glow=作業風景を照らす色と強さ、haze=作業風景のゆらぎ(px)、smoke=台の上の煙の色と濃さ。
 const BANDS = [
   { id: "cold", label: "まだぬるい", until: .30, ink: "#bfe6ff", glow: ["#8fd0ff", .1], haze: 0, smoke: ["#ffffff", 0] },
-  { id: "warming", label: "熱が入っていく", until: IDEAL[0], ink: "#e3d6ff", glow: ["#c8b8ff", .12], haze: 1.5, smoke: ["#ffffff", 0] },
+  { id: "warming", label: "熱が入っていく", until: IDEAL[0], ink: "#e3d6ff", glow: ["#c8b8ff", .12], haze: 0, smoke: ["#ffffff", 0] },
   { id: "ready", label: "適温", until: IDEAL[1], ink: "#ffe9ff", glow: ["#d79bff", .26], haze: 4, smoke: ["#ffffff", 0] },
   { id: "hot", label: "熱が強い", until: .76, ink: "#ffd27a", glow: ["#ff8a00", .42], haze: 5, smoke: ["#ffffff", 0] },
   { id: "fire", label: "過熱", until: DANGER_TEMP, ink: "#ffcf3a", glow: ["#ff2a00", .58], haze: 6, smoke: ["#ddd7d0", .26] },

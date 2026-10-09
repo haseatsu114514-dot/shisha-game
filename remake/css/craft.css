@@ -812,24 +812,27 @@
 .thermo-dim { position: absolute; left: 0; right: 0; top: 0; z-index: 2; background: linear-gradient(0deg, rgba(10, 8, 22, .38), rgba(10, 8, 22, .56)); transition: bottom .4s var(--ease-out); }
 .thermo-tube b, .thermo-housing .thermo-tube b { left: 38%; right: 38%; z-index: 2; border-radius: 3px; background: linear-gradient(0deg, #ffffffcc, #ffffff66); opacity: .55; box-shadow: 0 0 6px #ffffffaa; }
 .thermo-zone { z-index: 1; background: linear-gradient(0deg, #ff6b6b, #ffb86b, #ffe66b, #7dff9a, #6bd6ff, #a78bff); opacity: .85; border-top: 2px solid #ffffffcc; border-bottom: 2px solid #ffffffcc; }
-.thermo-heat { position: absolute; left: 0; right: 0; top: 0; z-index: 1; pointer-events: none; mix-blend-mode: screen; opacity: .9;
-  background: radial-gradient(ellipse 45% 70% at 28% 100%, #ffd25a 0, transparent 72%) 0 0 / 100% 26px, radial-gradient(ellipse 45% 70% at 74% 100%, #ff6a1e 0, transparent 72%) 0 13px / 100% 26px;
-  -webkit-mask-image: linear-gradient(0deg, transparent, #000 55%); mask-image: linear-gradient(0deg, transparent, #000 55%);
+.thermo-heat { position: absolute; left: 0; right: 0; top: 0; z-index: 1; pointer-events: none; overflow: hidden; opacity: .75;
+  -webkit-mask-image: linear-gradient(0deg, transparent, #000 55%); mask-image: linear-gradient(0deg, transparent, #000 55%); }
+/* 炎の模様は動かす層だけを上へ流す（再描画させず、合成だけで動かす）。 */
+.thermo-heat::before { content: ""; position: absolute; left: 0; right: 0; top: 0; bottom: -26px; will-change: transform;
+  background: radial-gradient(ellipse 45% 70% at 28% 100%, #ffe07a 0, transparent 72%) 0 0 / 100% 26px, radial-gradient(ellipse 45% 70% at 74% 100%, #ff8a3a 0, transparent 72%) 0 13px / 100% 26px;
   animation: thermo-flame .8s linear infinite; }
 .thermo-danger { position: absolute; left: 0; right: 0; top: 0; z-index: 3; background: repeating-linear-gradient(-45deg, #ff2a00d9 0 5px, #1a0000d9 5px 10px); border-bottom: 2px solid #fff8; box-shadow: inset 0 0 8px #ff3a00; }
 .thermo-cold { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; background: repeating-linear-gradient(-45deg, #a8ddffd9 0 5px, #0b2a4ad9 5px 10px); border-top: 2px solid #fff8; }
 .thermo.danger .thermo-danger, .thermo.freezing .thermo-cold { animation: thermo-alarm .45s ease-in-out infinite alternate; }
 .thermo.danger .thermo-tube { box-shadow: 0 0 26px #ff2a00cc; }
 .thermo-labels { min-width: 4.2em; }
+.steam-temperature .thermo-labels { min-width: 3em; }
 .thermo-labels > span { position: absolute; left: 0; white-space: nowrap; }
 .thermo-danger-label { color: #ff7a5a; font-weight: 800; }
 .thermo-cold-label { color: #a8ddff; font-weight: 800; }
 .thermo-cool-label { color: #9fc4ee; }
 .thermo:has(.thermo-housing) .thermo-ideal-label { color: #f4e6ff; }
 .thermo.danger .thermo-danger-label, .thermo.freezing .thermo-cold-label { animation: thermal-warn .45s ease-in-out infinite alternate; }
-@keyframes thermo-flame { to { background-position: 0 -26px, 0 -13px; } }
+@keyframes thermo-flame { from { transform: translateY(0); } to { transform: translateY(-26px); } }
 @keyframes thermo-alarm { from { filter: brightness(1); } to { filter: brightness(1.7); } }
-@media (prefers-reduced-motion: reduce) { .thermo-heat, .thermo.danger .thermo-danger, .thermo.freezing .thermo-cold, .thermo-labels > span { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .thermo-heat::before, .thermo.danger .thermo-danger, .thermo.freezing .thermo-cold, .thermo-labels > span { animation: none; } }
 
 /* フレーバー（葉）の体力（TH20・TH22）。吸いすぎで1つずつ割れ、ダメージを食らったように揺れて赤く光る。 */
 .leaf-hp { position: relative; display: flex; align-items: center; gap: 10px; font-size: 14px; color: #d8cdbb; }
