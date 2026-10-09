@@ -505,6 +505,27 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 @media (prefers-reduced-motion: reduce) { .cc-art, .rich .cc-name { transition: none; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .smoke .st-lines { animation: none; } .st-orbit, .st-sign { transform: none; } }
 
+/* 場面の意味ごとの型（core/transitions.js・CI102）。紫と淡いラベンダーの図形だけで描く */
+.tr-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
+.tr-scale { transform-box: fill-box; transform-origin: center; }
+.tr-dawn, .tr-cross { position: absolute; inset: 0; overflow: hidden; z-index: 100; pointer-events: auto; }
+.tr-dawn-veil { position: absolute; inset: 0; background: #34246a; }
+.tr-dawn.sick .tr-dawn-veil { background: linear-gradient(#34246a, #4a2346); }
+.tr-dawn-card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; font-family: var(--font); color: #fff; }
+.tr-dawn-day { display: flex; align-items: baseline; gap: 20px; font-size: 112px; font-weight: 900; line-height: 1; letter-spacing: 0.06em; }
+.tr-dawn-day small { font-size: 46px; letter-spacing: 0.3em; color: #dcd1f4; }
+.tr-dawn-sub { display: flex; align-items: baseline; gap: 0.1em; font-size: 24px; font-weight: 700; letter-spacing: 0.2em; color: #dcd1f4; }
+.tr-flip { display: inline-grid; perspective: 480px; }
+.tr-flip > i { grid-area: 1 / 1; font-style: normal; backface-visibility: hidden; transform-origin: 50% 55%; }
+.tr-dawn-rain { position: absolute; inset: 0; }
+.tr-dawn-rain i { position: absolute; top: -30%; width: 1.5px; background: linear-gradient(transparent, #dcd1f4aa); transform: rotate(18deg); }
+.tr-dawn-horizon { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: #dcd1f4; box-shadow: 0 0 18px 6px #dcd1f488; }
+.tr-dawn-glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 110%, #fff3d6cc, transparent 60%); pointer-events: none; }
+.tr-cross-title { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; font-family: var(--font); pointer-events: none; }
+.tr-cross-title b { font-size: 112px; font-weight: 900; line-height: 1; letter-spacing: 0.14em; padding-left: 0.14em; color: #fff; }
+.tr-cross.full .tr-cross-title b { font-size: 84px; letter-spacing: 0.1em; }
+.tr-cross-title small { font-size: 26px; font-weight: 700; letter-spacing: 0.4em; padding-left: 0.4em; color: #dcd1f4; text-shadow: 0 2px 0 #1d1236, 0 0 8px #1d1236; }
+
 .day-card {
   position: absolute;
   left: 0;
@@ -524,27 +545,6 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .day-card.out { opacity: 0; transform: translateX(30%); }
 .dc-title { font-family: var(--font); font-size: 76px; font-weight: 800; letter-spacing: 0.12em; color: #fff; }
 .dc-sub { font-size: 20px; color: var(--gold); letter-spacing: 0.2em; margin-top: 4px; }
-
-.round-cut {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 290px;
-  height: 140px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.92) 20%, rgba(0, 0, 0, 0.92) 80%, transparent);
-  border-top: 2px solid var(--neon-pink);
-  border-bottom: 2px solid var(--neon-cyan);
-  transform: scaleY(0);
-  transition: transform 0.35s var(--ease-snap), opacity 0.4s;
-}
-.round-cut.show { transform: scaleY(1); }
-.round-cut.out { opacity: 0; }
-.round-cut b { font-family: var(--font); font-size: 64px; font-weight: 700; letter-spacing: 0.2em; color: #fff; text-shadow: 0 0 20px var(--neon-pink); }
-.round-cut small { font-size: 18px; letter-spacing: 0.3em; color: var(--neon-cyan); }
 
 /* ---------------------------------------------------------------- 起動 */
 #boot {

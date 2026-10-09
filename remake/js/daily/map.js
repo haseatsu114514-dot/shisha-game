@@ -3,6 +3,7 @@
 import { el, yen } from "../core/util.js";
 import { bgUrl, sceneBg, faceIconUrl, displayName } from "../core/data.js";
 import { showScreen, setBg, retire, uiArtReady } from "../core/ui.js";
+import { cueTransition } from "../core/transitions.js";
 import { renderSceneArt } from "../core/scene-art.js";
 import { state, timeOfDay } from "../core/state.js";
 import { SE } from "../core/audio.js";
@@ -61,6 +62,16 @@ export async function chooseSpot(opts = {}) {
   const wait = uiArtReady();
   if (wait) await wait;
   return openMap(opts);
+}
+
+/** 行き先の場面を、押したピンの位置から広がる幕で開く（core/transitions.js の pin） */
+function cuePinOpening(shield) {
+  const stage = document.getElementById("stage");
+  if (!shield || !stage) return;
+  const s = stage.getBoundingClientRect();
+  const p = shield.getBoundingClientRect();
+  if (!s.width || !s.height) return;
+  cueTransition("pin", { x: (p.left + p.width / 2 - s.left) * (1280 / s.width), y: (p.top + p.height / 2 - s.top) * (720 / s.height) });
 }
 
 function openMap({ notice = "", eventPin = null, guide = null, onShown = null }) {
@@ -148,6 +159,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
 
     const go = (s) => {
       SE.select();
+      cuePinOpening(pins.querySelector(`[data-spot="${s.id}"] .shield`));
       retire(root);
       info.classList.add("leaving");
       interrupt = null;
