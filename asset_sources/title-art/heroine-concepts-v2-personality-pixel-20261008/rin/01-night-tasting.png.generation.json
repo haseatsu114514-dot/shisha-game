@@ -1,22 +1,25 @@
 {
   "id": "rin-01-night-tasting",
-  "path": "/workspace/generated_images/exec-948c738c-b3de-4de6-b5ac-e7bb8fde8d5f.png",
+  "path": "/workspace/generated_images/exec-12320b27-a17b-4215-8c1a-0cf9cc3a51d0.png",
   "source": "rin/01-night-tasting.png",
-  "prompt": "rin/01-night-tasting.revision-2.prompt.txt",
+  "prompt": "rin/01-night-tasting.revision-3.prompt.txt",
   "references": [
-    "rin/01-night-tasting-revision-1.png"
+    "rin/01-night-tasting-revision-2.png",
+    "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
   ],
-  "source_sha256": "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
-  "prompt_sha256": "eb69ea24c82e87721b3638dee4c3ed51964e0653948313fec815880af3a30c44",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false,
+  "recovered_after_tool_cell_interruption": true,
+  "source_sha256": "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19",
+  "prompt_sha256": "41abc2bd9f5fceb68663382b0e87b2770fa58fecb6efe43d39a870e019e81eec",
   "reference_sha256": {
-    "rin/01-night-tasting-revision-1.png": "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4"
+    "rin/01-night-tasting-revision-2.png": "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
+    "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg": "a46cd683eb02c239513b22bfc937dffde5f3920f958a33ba00a1553fbe183cbc"
   },
   "size": [
     1024,
     1536
   ],
-  "mode": "RGB",
-  "tool": "image_gen.imagegen",
-  "transparent_background": false,
-  "runtime_installed": false
+  "mode": "RGB"
 }

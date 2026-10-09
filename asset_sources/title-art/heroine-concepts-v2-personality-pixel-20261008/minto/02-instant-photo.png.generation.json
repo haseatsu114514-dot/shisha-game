@@ -1,0 +1,24 @@
+{
+  "id": "minto-02-instant-photo",
+  "path": "/workspace/generated_images/exec-3c24fcfd-4914-4cf6-9996-4a48ea89887b.png",
+  "source": "minto/02-instant-photo.png",
+  "prompt": "minto/02-instant-photo.prompt.txt",
+  "references": [
+    "../heroine-concepts-v1-20261008/references/minto-adopted-normal.png",
+    "../heroine-concepts-v1-20261008/references/title-style.png"
+  ],
+  "source_sha256": "689e2c6f5dcd74a672300dc9f0cdd9dadabaf947c13bf6ce0dffc5e21d6e3f5b",
+  "prompt_sha256": "1793912a74e3955d5d401c839707669f99db6f779ac4c0094c7744f24b9b96cf",
+  "reference_sha256": {
+    "../heroine-concepts-v1-20261008/references/minto-adopted-normal.png": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+    "../heroine-concepts-v1-20261008/references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}

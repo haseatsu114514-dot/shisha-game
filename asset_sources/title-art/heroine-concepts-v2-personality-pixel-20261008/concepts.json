@@ -21,18 +21,19 @@
         "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
       ],
       "runtime_installed": false,
-      "status": "equipment-detail-review",
-      "original_output": "/workspace/generated_images/exec-e1d9590f-7468-4568-a059-53a693450644.png",
-      "source_sha256": "6505b7d4c89b45dcfd89559c5f10da2373949cb4bab7353fbde2449cae84eaf7",
+      "status": "visual-review-pending",
+      "original_output": "/workspace/generated_images/exec-19bdc47c-083b-4735-b35a-8fdaa5a4796a.png",
+      "source_sha256": "d603aac37922f3c75879f7b7f8dcb22f3c919b784290ffc24ede7703f613cbb4",
       "size": [
         1024,
         1536
       ],
-      "latest_prompt": "tsumugi/01-smoke-colors.revision-1.prompt.txt",
+      "latest_prompt": "tsumugi/01-smoke-colors.revision-2.prompt.txt",
       "latest_references": [
-        "tsumugi/01-smoke-colors-first.png",
-        "references/wookah-complete.jpg"
-      ]
+        "tsumugi/01-smoke-colors-revision-1.png",
+        "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
+      ],
+      "adoption_status": "owner-selection-pending"
     },
     {
       "id": "tsumugi-02-tablet-cat",
@@ -47,7 +48,7 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "reviewed",
+      "status": "visual-review-pending",
       "original_output": "/workspace/generated_images/exec-08b6e65b-abc1-40ee-8ef3-ac22004ee666.png",
       "source_sha256": "336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489",
       "size": [
@@ -58,7 +59,8 @@
       "latest_references": [
         "../heroine-concepts-v1-20261008/references/tsumugi-adopted-normal.png",
         "../heroine-concepts-v1-20261008/references/title-style.png"
-      ]
+      ],
+      "adoption_status": "owner-selection-pending"
     },
     {
       "id": "tsumugi-03-twilight-sketch",
@@ -73,7 +75,7 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "reviewed",
+      "status": "visual-review-pending",
       "original_output": "/workspace/generated_images/exec-c0ed2c3f-6861-4938-aca2-a4274840d0b7.png",
       "source_sha256": "eeb75f3963e1991db208dc2767f7823654ac0675198a0bb393be703cb0dfa2c1",
       "size": [
@@ -84,7 +86,8 @@
       "latest_references": [
         "../heroine-concepts-v1-20261008/references/tsumugi-adopted-normal.png",
         "../heroine-concepts-v1-20261008/references/title-style.png"
-      ]
+      ],
+      "adoption_status": "owner-selection-pending"
     },
     {
       "id": "mashiro-01-heavy-smoke",
@@ -100,7 +103,7 @@
         "references/km-turkey-brass.png"
       ],
       "runtime_installed": false,
-      "status": "reviewed",
+      "status": "visual-review-pending",
       "original_output": "/workspace/generated_images/exec-b17f7960-fe6c-4d0f-bbf9-a5f3da8a4b02.png",
       "source_sha256": "8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559",
       "size": [
@@ -111,7 +114,8 @@
       "latest_references": [
         "mashiro/01-heavy-smoke-first.png",
         "references/km-turkey-brass.png"
-      ]
+      ],
+      "adoption_status": "owner-selection-pending"
     },
     {
       "id": "mashiro-02-tea-break",
@@ -126,7 +130,7 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "reviewed",
+      "status": "visual-review-pending",
       "original_output": "/workspace/generated_images/exec-beffd700-f8b8-44bc-b6d5-c44b6a4a5c09.png",
       "source_sha256": "0790aeaa1f231457b4f32ca67a5dc7a6a5ee630043ab55600fc6e821977fa658",
       "size": [
@@ -137,7 +141,8 @@
       "latest_references": [
         "../heroine-concepts-v1-20261008/references/mashiro-adopted-normal.png",
         "../heroine-concepts-v1-20261008/references/title-style.png"
-      ]
+      ],
+      "adoption_status": "owner-selection-pending"
     },
     {
       "id": "mashiro-03-after-rain",
@@ -152,7 +157,7 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "reviewed",
+      "status": "visual-review-pending",
       "original_output": "/workspace/generated_images/exec-ebbce175-fb2f-4b77-83bf-a76deb2aadae.png",
       "source_sha256": "1ebb9b79beff36e13a73efc6700d8f7b9dc5de438f7c22959f200150cf9799e9",
       "size": [
@@ -163,7 +168,8 @@
       "latest_references": [
         "../heroine-concepts-v1-20261008/references/mashiro-adopted-normal.png",
         "../heroine-concepts-v1-20261008/references/title-style.png"
-      ]
+      ],
+      "adoption_status": "owner-selection-pending"
     },
     {
       "id": "minto-01-cafe-welcome",
@@ -180,7 +186,7 @@
         "../heroine-concepts-v1-20261008/references/hmd-real-assembled.jpg"
       ],
       "runtime_installed": false,
-      "status": "reviewed",
+      "status": "visual-review-pending",
       "original_output": "/workspace/generated_images/exec-b2baefb1-9c86-4e24-85b7-e1c60448d0fa.png",
       "source_sha256": "b1e10bd7fb7edcc3585967e95c3477dd368ee58fe941a21e09e85ca7479a005a",
       "size": [
@@ -191,7 +197,8 @@
       "latest_references": [
         "minto/01-cafe-welcome-first.png",
         "../heroine-concepts-v1-20261008/references/hmd-real-assembled.jpg"
-      ]
+      ],
+      "adoption_status": "owner-selection-pending"
     },
     {
       "id": "minto-02-instant-photo",
@@ -206,7 +213,19 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "visual-review-pending",
+      "original_output": "/workspace/generated_images/exec-3c24fcfd-4914-4cf6-9996-4a48ea89887b.png",
+      "source_sha256": "689e2c6f5dcd74a672300dc9f0cdd9dadabaf947c13bf6ce0dffc5e21d6e3f5b",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "minto/02-instant-photo.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/minto-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "adoption_status": "owner-selection-pending"
     },
     {
       "id": "minto-03-private-window",
@@ -222,7 +241,20 @@
         "../heroine-concepts-v1-20261008/references/minto-private.png"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "visual-review-pending",
+      "original_output": "/workspace/generated_images/exec-81f9e151-e9f4-47f5-8c2a-45f17382c413.png",
+      "source_sha256": "10c1200ce8a499f232c666c0bded84693a50474074fb74fb047dff5b6f941b96",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "minto/03-private-window.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/minto-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png",
+        "../heroine-concepts-v1-20261008/references/minto-private.png"
+      ],
+      "adoption_status": "owner-selection-pending"
     },
     {
       "id": "minto-04-after-hours",
@@ -238,7 +270,7 @@
         "../heroine-concepts-v1-20261008/references/minto-private.png"
       ],
       "runtime_installed": false,
-      "status": "reviewed",
+      "status": "visual-review-pending",
       "original_output": "/workspace/generated_images/exec-85e377e0-1bf4-48ca-a54e-0ced793a481f.png",
       "source_sha256": "7324deb26600496f18caf19c8bcb316f317a144f0366c11fe1f2c796dd94cf53",
       "size": [
@@ -250,7 +282,8 @@
         "../heroine-concepts-v1-20261008/references/minto-adopted-normal.png",
         "../heroine-concepts-v1-20261008/references/title-style.png",
         "../heroine-concepts-v1-20261008/references/minto-private.png"
-      ]
+      ],
+      "adoption_status": "owner-selection-pending"
     },
     {
       "id": "ageha-01-professional-taste",
@@ -268,7 +301,7 @@
         "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
       ],
       "runtime_installed": false,
-      "status": "reviewed",
+      "status": "visual-review-pending",
       "original_output": "/workspace/generated_images/exec-563b83ed-d278-4e05-b16f-95ac1baf24c8.png",
       "source_sha256": "de5857d27aae1cb456e142720673f096075de3dcf06386779b617e55e25f2bde",
       "size": [
@@ -282,7 +315,8 @@
         "references/amy-diamond-pink.jpg",
         "references/lerook-blue-black.png",
         "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
-      ]
+      ],
+      "adoption_status": "owner-selection-pending"
     },
     {
       "id": "ageha-02-grocery-smile",
@@ -297,7 +331,7 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "reviewed",
+      "status": "visual-review-pending",
       "original_output": "/workspace/generated_images/exec-7a56a215-7b85-4904-b788-a8a6d4c35ac4.png",
       "source_sha256": "af594618812268d47d4e391cd17b505165aad837e82d879888a0267094968158",
       "size": [
@@ -308,7 +342,8 @@
       "latest_references": [
         "../heroine-concepts-v1-20261008/references/ageha-adopted-normal.png",
         "../heroine-concepts-v1-20261008/references/title-style.png"
-      ]
+      ],
+      "adoption_status": "owner-selection-pending"
     },
     {
       "id": "ageha-03-model-moment",
@@ -323,7 +358,7 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "reviewed",
+      "status": "visual-review-pending",
       "original_output": "/workspace/generated_images/exec-1ed963ca-35b4-4d4a-b986-9731f9156900.png",
       "source_sha256": "eb91bbf84a7b641ca4c3e32071448f856f211344c7313e81caf91ac355102b06",
       "size": [
@@ -334,7 +369,8 @@
       "latest_references": [
         "../heroine-concepts-v1-20261008/references/ageha-adopted-normal.png",
         "../heroine-concepts-v1-20261008/references/title-style.png"
-      ]
+      ],
+      "adoption_status": "owner-selection-pending"
     },
     {
       "id": "rin-01-night-tasting",
@@ -352,17 +388,19 @@
         "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
       ],
       "runtime_installed": false,
-      "status": "equipment-detail-review",
-      "original_output": "/workspace/generated_images/exec-948c738c-b3de-4de6-b5ac-e7bb8fde8d5f.png",
-      "source_sha256": "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
+      "status": "visual-review-pending",
+      "original_output": "/workspace/generated_images/exec-12320b27-a17b-4215-8c1a-0cf9cc3a51d0.png",
+      "source_sha256": "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19",
       "size": [
         1024,
         1536
       ],
-      "latest_prompt": "rin/01-night-tasting.revision-2.prompt.txt",
+      "latest_prompt": "rin/01-night-tasting.revision-3.prompt.txt",
       "latest_references": [
-        "rin/01-night-tasting-revision-1.png"
-      ]
+        "rin/01-night-tasting-revision-2.png",
+        "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
+      ],
+      "adoption_status": "owner-selection-pending"
     },
     {
       "id": "rin-02-flavor-samples",
@@ -377,7 +415,7 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "reviewed",
+      "status": "visual-review-pending",
       "original_output": "/workspace/generated_images/exec-73b65107-52fc-4592-978d-5723ad6b602f.png",
       "source_sha256": "abaa15b9ffbe0cba763862d49b8e3023408a4d7b4f84420c79844496d248ea82",
       "size": [
@@ -388,7 +426,8 @@
       "latest_references": [
         "../heroine-concepts-v1-20261008/references/rin-adopted-normal.png",
         "../heroine-concepts-v1-20261008/references/title-style.png"
-      ]
+      ],
+      "adoption_status": "owner-selection-pending"
     },
     {
       "id": "rin-03-late-coffee",
@@ -403,7 +442,7 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "reviewed",
+      "status": "visual-review-pending",
       "original_output": "/workspace/generated_images/exec-595fe51f-b728-4318-8e19-97108f690790.png",
       "source_sha256": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
       "size": [
@@ -414,7 +453,8 @@
       "latest_references": [
         "../heroine-concepts-v1-20261008/references/rin-adopted-normal.png",
         "../heroine-concepts-v1-20261008/references/title-style.png"
-      ]
+      ],
+      "adoption_status": "owner-selection-pending"
     },
     {
       "id": "kafuka-01-shishark-test-run",
@@ -432,18 +472,20 @@
         "references/stratus-hmd.jpg"
       ],
       "runtime_installed": false,
-      "status": "equipment-detail-review",
-      "original_output": "/workspace/generated_images/exec-07ac3740-cc37-4088-ab6a-c269dfa9eb76.png",
-      "source_sha256": "1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102",
+      "status": "visual-review-pending",
+      "original_output": "/workspace/generated_images/exec-b885da74-faf7-49ce-aaea-e2a5d9593da7.png",
+      "source_sha256": "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257",
       "size": [
         1024,
         1536
       ],
-      "latest_prompt": "kafuka/01-shishark-test-run.revision-2.prompt.txt",
+      "latest_prompt": "kafuka/01-shishark-test-run.revision-3.prompt.txt",
       "latest_references": [
+        "kafuka/01-shishark-test-run-revision-2.png",
         "kafuka/01-shishark-test-run-revision-1.png",
-        "references/cloud-micro-blue.jpg"
-      ]
+        "references/stratus-hmd.jpg"
+      ],
+      "adoption_status": "owner-selection-pending"
     },
     {
       "id": "kafuka-02-shark-movie",
@@ -458,7 +500,19 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "visual-review-pending",
+      "original_output": "/workspace/generated_images/exec-41357227-bdb1-4e33-a776-f315f02b3a62.png",
+      "source_sha256": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "kafuka/02-shark-movie.prompt.txt",
+      "latest_references": [
+        "references/kafuka-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "adoption_status": "owner-selection-pending"
     },
     {
       "id": "kafuka-03-aquarium",
@@ -473,7 +527,19 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "planned"
+      "status": "visual-review-pending",
+      "original_output": "/workspace/generated_images/exec-e149ec45-5532-41e1-95ff-b9c9d6eff57c.png",
+      "source_sha256": "cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "kafuka/03-aquarium.prompt.txt",
+      "latest_references": [
+        "references/kafuka-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "adoption_status": "owner-selection-pending"
     }
   ]
 }
