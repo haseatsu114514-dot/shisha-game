@@ -432,3 +432,13 @@ export function devTournament() {
   setupHooks();
   return tournamentDay();
 }
+
+/** テスト用: レッスン（スミさんの手本つきの通し）と前日リハーサルを単体で始める */
+export function devTutorial() {
+  setupHooks();
+  return tutorial();
+}
+export function devRehearsal() {
+  setupHooks();
+  return rehearsal();
+}
