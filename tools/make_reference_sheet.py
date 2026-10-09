@@ -19,7 +19,6 @@ FONT_PATHS = [
     "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf",
 ]
 SPRITE = ROOT / "assets/sprites/characters"
-FACES = ROOT / "assets/ui/face_icons"  # 現行の丸アイコン(160px)
 
 BG = (24, 27, 33)
 PANEL = (36, 40, 48)
@@ -38,6 +37,7 @@ CONFIGS = {
                 "label": "営業姿（ぺぱーみんと）",
                 "prefix": "chr_minto_",
                 "faces": ["normal", "smile", "wink", "surprise", "sad"],
+                "face": (385, 238, 635, 488),
                 "head": (335, 225, 685, 575),
                 "palette": [
                     ("髪", "#211F23"), ("瞳", "#62A35F"), ("肌", "#EDBB9B"),
@@ -48,6 +48,7 @@ CONFIGS = {
                 "label": "私服・素の姿（栞 / お姉さん）",
                 "prefix": "chr_minto_ura_",
                 "faces": ["normal", "smile", "smug", "surprise", "sad"],
+                "face": (395, 228, 645, 478),
                 "head": (345, 215, 695, 565),
                 "palette": [
                     ("髪", "#252427"), ("瞳", "#88B96A"), ("肌", "#E4AD92"),
@@ -55,7 +56,6 @@ CONFIGS = {
                 ],
             },
         ],
-        "face_icons": [("営業姿", "face_minto.png"), ("私服", "face_minto_private.png")],
         "profile": [
             ("年齢", "自称20歳（公式の隠し設定では29歳）"),
             ("所属", "コンカフェ「ぺぱーみんと」オーナー兼唯一のキャスト"),
@@ -172,17 +172,21 @@ def build(cid, body_h=1000):
     cx, cy = rx + 24, ry + 16
 
     # 顔アイコン
-    d.text((cx, cy), "顔アイコン（ゲーム内 160×160）", font=f_h, fill=accent)
+    d.text((cx, cy), "顔アップ（現行立ち絵・通常）", font=f_h, fill=accent)
     cy += 46
+    # 顔アップは160pxの丸アイコンを使わず、現行の通常立ち絵から原寸で切り出す
     fx = cx
-    for lbl, fname in cfg["face_icons"]:
-        face = Image.open(FACES / fname).convert("RGBA")
-        sheet.paste(face, (fx, cy), face)
-        d.text((fx, cy + 166), lbl, font=f_s, fill=SUB)
-        fx += 160 + 24
+    for o in outfits:
+        spr = Image.open(SPRITE / cid / f"{o['prefix']}normal.png").convert("RGBA").crop(o["face"])
+        spr = spr.resize((300, 300), Image.LANCZOS)
+        sheet.paste(checker((300, 300)), (fx, cy))
+        sheet.paste(spr, (fx, cy), spr)
+        d.text((fx, cy + 306), o["label"].split("（")[0], font=f_s, fill=SUB)
+        fx += 300 + 24
+    d.text((fx, cy + 8), "ゲーム内の160pxアイコンは\n立ち絵から自動で縮小したもの。\nこのシートでは立ち絵から\n原寸で顔を切り出している", font=f_s, fill=SUB)
 
     # パレット（営業・私服）: 立ち絵から実測した代表色
-    py = cy + 160 + 56
+    py = cy + 300 + 56
     d.text((cx, py), "基調色（立ち絵から実測した代表色）", font=f_h, fill=accent)
     py += 46
     for o in outfits:
@@ -259,8 +263,8 @@ def build(cid, body_h=1000):
     y += 20
     d.text(
         (margin, y),
-        "出典: assets/sprites/characters/%s/*.png ・ assets/ui/face_icons/face_%s*.png ・ data/characters.json（自動生成。新規画像の生成なし）"
-        % (cid, cid),
+        "出典: assets/sprites/characters/%s/*.png ・ data/characters.json（自動生成。新規画像の生成なし）"
+        % (cid,),
         font=f_s,
         fill=SUB,
     )
