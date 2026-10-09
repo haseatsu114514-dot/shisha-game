@@ -5,14 +5,33 @@
 
 | キャラ | いまの顔の大きさ（中央値比） | 直し方 | 画風の直し | 表情数 |
 |---|---|---|---|---|
-| つむぎ | +18% | 頭を約15%小さく | 基準に合わせる | 7 |
+| つむぎ | +18% | 頭を約10%小さく（丸さは残す。仕上がり目安+6%） | 基準に合わせる | 7 |
 | 前園 | +17% | 頭を約14%小さく | 平たい塗り・太い線を基準へ | 5 |
 | スミさん | +15% | 頭（帽子込み）を約13%小さく | 基準に合わせる | 5 |
-| ましろ | +13% | 頭を約12%小さく | 基準に合わせる | 6 |
+| ましろ | +13% | 頭を約8%小さく（丸さは残す。仕上がり目安+4%） | 基準に合わせる | 6 |
 | 南雲 | −13% | 頭を約15%大きく | 基準に合わせる | 5 |
 | サメちゃん | −10% | 頭（フード込み）を約11%大きく | つやの強い今風の塗り・大きめの目を基準へ | 6 |
 
 顔の大きさの比較図は [face-size-ingame.png](../../reference-sheets/face-size-ingame.png)（`python3 tools/make_reference_sheet.py facesize` で作り直せる）。
+
+## 進め方ナビ（この順に投げる）
+
+番号は下のブロック番号（`### 1. つむぎ・normal` など）。
+
+**ステップ1：試しの3枚で方向を確かめる**（ここで合格してから量産する）
+1. **#1 つむぎ・normal** … 頭を小さくしても丸さ・可愛さが残るか
+2. **#29 サメちゃん・normal** … 塗りを寄せても本人に見えるか（採用したばかりのデザイン）
+3. **#8 前園・normal** … 線が細くなり、塗りがみんと・アゲハに近づくか
+
+→ 3枚を Claude に見せて確認。直す点があればここでプロンプトを調整する。
+
+**ステップ2：残りの3人の通常**
+4. **#13 スミさん・normal** → 5. **#18 ましろ・normal** → 6. **#24 南雲・normal**
+
+**ステップ3：各キャラの残りの表情**（キャラごとにまとめて）
+- **②（同じキャラの通常）には、ステップ1・2で合格した「新しい通常」を添付する。** 表情どうしの顔と頭の大きさがそろいやすい。
+- 順番：つむぎ #2〜7 → ましろ #19〜23 → サメちゃん #30〜34 → 前園 #9〜12 → スミさん #14〜17 → 南雲 #25〜28
+- 1キャラの全表情がそろったら並べて確認し、`asset_sources/portraits/<id>-remaster-v2/` に置いて commit。キャラ単位で組み込みを頼んでよい。
 
 ## チャットで頼むときの手順（ChatGPT・Codexのどちらでも）
 
@@ -30,7 +49,7 @@
 
 - [ ] 人物の高さが1300px以上。背景が透明で、手足の間も抜けている
 - [ ] ①と並べて、顔立ち・表情・手と肩の位置・衣装・小物が変わっていない（同じ人物）
-- [ ] 頭の大きさが③に近い。頭だけ変えて、全身の高さ・立ち方は①のまま
+- [ ] 頭の大きさが③に近い（つむぎ・ましろは③より少し大きく丸いまま）。頭だけ変えて、全身の高さ・立ち方は①のまま
 - [ ] 画風が④に近い：細くくっきりした線、控えめな段階の陰影。ぼやけ・のっぺり・つやつや・粗いドットがない
 - [ ] 若返り・老け・別人化していない
 - [ ] 文字・枠・影・床が入っていない
@@ -49,10 +68,10 @@ Reference roles in order: (1) the current sprite of this exact expression: highe
 Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
 Expression and pose to keep exactly as image 1 (normal): calm closed mouth, hugging the tablet against her chest with both arms
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 15% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 10% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
 Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
 
-STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older.
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
@@ -69,10 +88,10 @@ Reference roles in order: (1) the current sprite of this exact expression: highe
 Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
 Expression and pose to keep exactly as image 1 (smile): gentle smile, holding a stylus near her cheek with the tablet in the other arm
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 15% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 10% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
 Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
 
-STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older.
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
@@ -89,10 +108,10 @@ Reference roles in order: (1) the current sprite of this exact expression: highe
 Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
 Expression and pose to keep exactly as image 1 (serious): focused gaze down at the tablet, drawing on it with the stylus
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 15% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 10% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
 Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
 
-STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older.
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
@@ -109,10 +128,10 @@ Reference roles in order: (1) the current sprite of this exact expression: highe
 Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
 Expression and pose to keep exactly as image 1 (surprise): round eyes and a small open mouth, one hand raised beside her face, the tablet in the other arm
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 15% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 10% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
 Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
 
-STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older.
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
@@ -129,10 +148,10 @@ Reference roles in order: (1) the current sprite of this exact expression: highe
 Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
 Expression and pose to keep exactly as image 1 (sad): downcast eyes and a small sad mouth, hugging the tablet
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 15% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 10% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
 Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
 
-STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older.
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
@@ -149,10 +168,10 @@ Reference roles in order: (1) the current sprite of this exact expression: highe
 Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
 Expression and pose to keep exactly as image 1 (evil): yami-kawaii blank stare: empty eyes without highlights, soft lavender-gray shadow over the eyes, tiny flat mouth, hugging the cracked tablet, cute and comical, never menacing
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 15% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 10% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
 Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
 
-STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older.
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
@@ -169,10 +188,10 @@ Reference roles in order: (1) the current sprite of this exact expression: highe
 Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
 Expression and pose to keep exactly as image 1 (bow): polite bow with closed eyes, head and upper body bowed slightly, both hands in front
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 15% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 10% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
 Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
 
-STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older.
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
@@ -395,10 +414,10 @@ Reference roles in order: (1) the current sprite of this exact expression: highe
 Character: Mashiro, sleepy gentle 22-year-old adult Japanese woman, petite adult build, pale ash-blonde hair with a faint olive cast, straight bangs, two long loose braids in front of the shoulders, droopy half-lidded golden-amber eyes, soft round cheeks, oversized beige cable-knit cardigan with long sleeves, white blouse with a small ribbon, long sage-green skirt, brown loafers.
 Expression and pose to keep exactly as image 1 (normal): calm sleepy half-lidded eyes, small closed mouth, arms relaxed down
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 12% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 8% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
 Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
 
-STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her sleepy gentle face and golden eyes; do not make her look older or sharper.
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her sleepy gentle face and golden eyes; do not make her look older or sharper. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
@@ -415,10 +434,10 @@ Reference roles in order: (1) the current sprite of this exact expression: highe
 Character: Mashiro, sleepy gentle 22-year-old adult Japanese woman, petite adult build, pale ash-blonde hair with a faint olive cast, straight bangs, two long loose braids in front of the shoulders, droopy half-lidded golden-amber eyes, soft round cheeks, oversized beige cable-knit cardigan with long sleeves, white blouse with a small ribbon, long sage-green skirt, brown loafers.
 Expression and pose to keep exactly as image 1 (smile): soft gentle smile, one sleeve-covered hand raised near her chest
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 12% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 8% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
 Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
 
-STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her sleepy gentle face and golden eyes; do not make her look older or sharper.
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her sleepy gentle face and golden eyes; do not make her look older or sharper. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
@@ -435,10 +454,10 @@ Reference roles in order: (1) the current sprite of this exact expression: highe
 Character: Mashiro, sleepy gentle 22-year-old adult Japanese woman, petite adult build, pale ash-blonde hair with a faint olive cast, straight bangs, two long loose braids in front of the shoulders, droopy half-lidded golden-amber eyes, soft round cheeks, oversized beige cable-knit cardigan with long sleeves, white blouse with a small ribbon, long sage-green skirt, brown loafers.
 Expression and pose to keep exactly as image 1 (serious): slightly serious sleepy gaze, small closed mouth, one hand extended a little to the side palm up
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 12% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 8% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
 Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
 
-STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her sleepy gentle face and golden eyes; do not make her look older or sharper.
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her sleepy gentle face and golden eyes; do not make her look older or sharper. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
@@ -455,10 +474,10 @@ Reference roles in order: (1) the current sprite of this exact expression: highe
 Character: Mashiro, sleepy gentle 22-year-old adult Japanese woman, petite adult build, pale ash-blonde hair with a faint olive cast, straight bangs, two long loose braids in front of the shoulders, droopy half-lidded golden-amber eyes, soft round cheeks, oversized beige cable-knit cardigan with long sleeves, white blouse with a small ribbon, long sage-green skirt, brown loafers.
 Expression and pose to keep exactly as image 1 (surprise): eyes opened rounder with a small 'o' mouth, one hand near her chest
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 12% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 8% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
 Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
 
-STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her sleepy gentle face and golden eyes; do not make her look older or sharper.
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her sleepy gentle face and golden eyes; do not make her look older or sharper. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
@@ -475,10 +494,10 @@ Reference roles in order: (1) the current sprite of this exact expression: highe
 Character: Mashiro, sleepy gentle 22-year-old adult Japanese woman, petite adult build, pale ash-blonde hair with a faint olive cast, straight bangs, two long loose braids in front of the shoulders, droopy half-lidded golden-amber eyes, soft round cheeks, oversized beige cable-knit cardigan with long sleeves, white blouse with a small ribbon, long sage-green skirt, brown loafers.
 Expression and pose to keep exactly as image 1 (sad): big sleepy yawn with eyes closed, a sleeve-covered hand covering the open mouth, a small 'Z' sleep mark beside her head as in image 1
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 12% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 8% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
 Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
 
-STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her sleepy gentle face and golden eyes; do not make her look older or sharper.
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her sleepy gentle face and golden eyes; do not make her look older or sharper. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
@@ -495,10 +514,10 @@ Reference roles in order: (1) the current sprite of this exact expression: highe
 Character: Mashiro, sleepy gentle 22-year-old adult Japanese woman, petite adult build, pale ash-blonde hair with a faint olive cast, straight bangs, two long loose braids in front of the shoulders, droopy half-lidded golden-amber eyes, soft round cheeks, oversized beige cable-knit cardigan with long sleeves, white blouse with a small ribbon, long sage-green skirt, brown loafers.
 Expression and pose to keep exactly as image 1 (sleep): asleep while standing, both eyes closed, head gently tilted, small peaceful mouth, arms hanging loosely, small 'z' sleep marks beside her head as in image 1
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 12% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 8% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
 Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
 
-STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her sleepy gentle face and golden eyes; do not make her look older or sharper.
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her sleepy gentle face and golden eyes; do not make her look older or sharper. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
