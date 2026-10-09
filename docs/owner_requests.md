@@ -6,9 +6,13 @@
 | CL02 | ✅ 削除済み | 洗い出しのうち確定分（assets直下の構想画像、旧立ち絵バックアップ類、旧UI素材、旧作業台の未使用素材、旧マップ背景）を全部削除。 |
 | CL03 | ✅ 街歩きは残す | 街歩き・歩行の試作は今使っているので削除しない（experiments・proto素材・tools/proto_*）。 |
 | CL04 | ✅ 削除済み | 旧セリフエディタ（tools/dialogue_editor.py）、tonari外観の背景3枚、未採用アイコン案（stat-icons.png）は不要。 |
-| CL05 | 🔧 洗い出し済み・統合は判断待ち | 資料の矛盾を洗い出す。使っていない資料は統合する。 |
+| CL05 | ✅ 洗い出し・修正 | 資料の矛盾を洗い出す。使っていない資料は統合する。 |
+| CL06 | ✅ 削除・統合 | （追加指示）古くて使われていなさそうな資料は消してよい。設定資料集は誰にも渡していない。 |
 
 削除後は `ui_skin.mjs`・`craft_focus.mjs`・`data_loading.mjs` PASS。起動・タイトル・はじめからでの読み込み失敗なし。
+
+CL05・06: 設定資料集（setting_book・setting_reference.html・生成ツール）、実装済み記録・提案止まりのレポート、旧web版の資料（web_version_plan・mixrecipe等）、旧スプライトプロンプト、assets_index と旧ダミー生成ツール、取り下げ・納品済みの街歩き発注書2本を削除。
+矛盾の修正: ヒロイン6人（サメちゃん）を story_and_structure・character_profiles へ反映、CLAUDE.md のch4課題の重複行を統合、master_spec の#16・17・19・20を「済」へ、旧web版のビルド手順を現行（build_manifest・JSON直接読み）へ更新、asset_gen_prompts の旧部品表を現行の作業台素材表へ置き換え。
 
 ---
 

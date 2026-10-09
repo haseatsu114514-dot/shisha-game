@@ -1,9 +1,9 @@
 # Codex 引き継ぎ: 「横長の通りを歩く」日常マップの試作（街並み・キャラのドット絵・実装）
 
-> ✅ **2026-10-03**: Claude が実装済み（`web/proto/street/`・6141ee6・3bfebb6）。結果・所感・本編組み込みの見積もりは
-> `web/proto/street/README.md`。以下は設計メモとして残す（実装は README と `stage_hankagai.json` が正）。
+> ✅ **2026-10-03**: Claude が実装済み（`experiments/proto/street/`・6141ee6・3bfebb6）。結果・所感・本編組み込みの見積もりは
+> `experiments/proto/street/README.md`。以下は設計メモとして残す（実装は README と `stage_hankagai.json` が正）。
 >
-> ⚠️ **2026-10-02 分担変更**: Codex の担当は**画像生成だけ**になった（→ `docs/codex_handoff_street_images.md`）。
+> ⚠️ **2026-10-02 分担変更**: Codex の担当は**画像生成だけ**になった（納品済み。現行の発注書の型は `docs/codex_handoff_street_set_images.md`）。
 > 変換・実装・組み込みは Claude が行う。本書の実装仕様（§4）・変換（§5「変換」）・完了条件（§6）は
 > Claude 側の設計メモとして残す。Codex はこのファイルの手順で作業しないこと。
 
@@ -19,11 +19,11 @@
 形にする案が出ている。本編に入れるかを決める前の**試作**として、繁華街の通り1本を作る。
 
 すでにあるもの（Claude作成・このブランチ）:
-- `web/proto/walk/index.html` … 8方向歩行の実験ページ（移動・タップ移動・2コマ歩行・左右反転・足元yソート・
+- `experiments/proto/walk/index.html` … 8方向歩行の実験ページ（移動・タップ移動・2コマ歩行・左右反転・足元yソート・
   設定パネル・8方向一覧）。画像が無いあいだはコード描画の仮スプライトで動く
 - `tools/proto_walk_sheet.py` … 生成AIの歩行シート（マゼンタ背景・5×2）→ 足元を揃えたゲーム用シートへ変換
 - `asset_sources/images/proto_walk/pose_reference_sheet.png` … 歩行シート生成時に渡す「向きの並び・足の位置」の参照
-- 使い方の詳細は `web/proto/walk/README.md`
+- 使い方の詳細は `experiments/proto/walk/README.md`
 
 **あなたの担当**: 街並み（建物・小物）とキャラのドット絵の生成、そして通りの試作ページの実装。
 歩くキャラは**仮でつむぎ**（最終的には主人公はじめに差し替える想定。今回ははじめを描かない）。
@@ -33,7 +33,7 @@
 ## 1. 最初に読むもの
 
 1. `CLAUDE.md` の「Git Safety」節（書かれた確認を実行する）
-2. `web/proto/walk/README.md` と `web/proto/walk/index.html`（移動・描画・シート形式の実装をここから流用する）
+2. `experiments/proto/walk/README.md` と `experiments/proto/walk/index.html`（移動・描画・シート形式の実装をここから流用する）
 3. このファイル
 
 ## 2. ブランチとルール
@@ -43,8 +43,8 @@
 - **本編のファイルは変更しない**: `web/js/*`, `web/index.html`, `web/css/*`, `data/*`, `web/build_*.py`,
   `web/test/*`, `web/dist/*`, `assets/` の既存ファイル, `brand/*`, `docs/` の正本。
 - 作ってよい・変えてよい場所:
-  - `web/proto/**`（通りのページは `web/proto/street/`。歩行ロジックを `web/proto/shared/` などへ共通化してもよいが、
-    **`web/proto/walk/index.html` が今までどおり動くこと**）
+  - `web/proto/**`（通りのページは `experiments/proto/street/`。歩行ロジックを `web/proto/shared/` などへ共通化してもよいが、
+    **`experiments/proto/walk/index.html` が今までどおり動くこと**）
   - `tools/proto_*.py`（`tools/pixelize.py` 自体は変えない。importして再利用する）
   - `assets/proto_walk/`, `assets/proto_street/`, `asset_sources/images/proto_walk/`, `asset_sources/images/proto_street/`
   - `docs/owner_requests.md`（AA3・AA4 の状態更新のみ）
@@ -61,10 +61,10 @@
 
 ---
 
-## 4. 実装仕様（`web/proto/street/`）
+## 4. 実装仕様（`experiments/proto/street/`）
 
 ### 体験の流れ
-1. `web/proto/street/index.html` を開くと**エリアマップ**。背景は既存の `assets/backgrounds/bg_osu_map_day.png`。
+1. `experiments/proto/street/index.html` を開くと**エリアマップ**。背景は既存の `assets/backgrounds/bg_osu_map_day.png`。
    「繁華街」のピンだけ押せて、他のエリアは「準備中」でグレー。
 2. 繁華街を押すと、横長の通りの左端につむぎが降り立つ。
 3. 斜め見下ろし（3/4ビュー）で、通りを**8方向**に歩ける。上に店の建物が並び、下が歩道（歩ける帯）。
@@ -78,7 +78,7 @@
 
 ### 技術
 - 素のJS＋Canvas 2D。移動・向きの量子化・2コマ歩行・左右反転・足元yソート・タップ移動は
-  `web/proto/walk/index.html` の実装を流用する（挙動を揃える）。
+  `experiments/proto/walk/index.html` の実装を流用する（挙動を揃える）。
 - 見え方は内部解像度 320×180 を4倍（1280×720）が基準。整数倍・`image-rendering: pixelated`・
   `imageSmoothingEnabled=false`。ウィンドウに16:9でフィットさせる。
 - **キャラは32px版**（`assets/proto_walk/tsumugi_walk_32.png`、セル24×36）を使う。
@@ -102,7 +102,7 @@
 - `?night=1` で夜（全体に濃紺の乗算＋窓の灯り）。余力があれば。
 - デバッグ用に `window.__street = { warp(doorId), state() }` を公開する。
 
-### ステージデータ（`web/proto/street/stage_hankagai.json`）
+### ステージデータ（`experiments/proto/street/stage_hankagai.json`）
 次の形を基本にする（座標は目安。生成画像の実寸に合わせて調整してよい）:
 
 ```json
@@ -239,7 +239,7 @@ PEPPERMINT → `assets/backgrounds/peppermint.png`／KEMURIKUSA → `assets/back
       --name mob_student --out-dir assets/proto_street --sizes 32
   ```
   - 確認用の `asset_sources/images/proto_walk/preview_walk.png` を見て、コマごとに大きさがバラバラなら `--per-frame-fit`。
-  - 歩行実験ページ（`web/proto/walk/`）を開けば、つむぎが生成画像に切り替わったかと8方向の一覧を確認できる。
+  - 歩行実験ページ（`experiments/proto/walk/`）を開けば、つむぎが生成画像に切り替わったかと8方向の一覧を確認できる。
 - **建物・小物（5〜6）**: `tools/proto_street_assets.py` を新規に作る（`tools/pixelize.py` の chroma_key などを import）。
   - クロマキー → 透過後の**連結成分（塊）ごと**に切り出す（グリッドからはみ出しても切れるように）→ 位置で並び順を決める
   - 建物は**6棟共通の縮小率**で縮める（ドアを同じ大きさで描かせているので、共通倍率ならドアも揃う）。
@@ -254,7 +254,7 @@ PEPPERMINT → `assets/backgrounds/peppermint.png`／KEMURIKUSA → `assets/back
 
 ## 6. 完了条件
 
-`python3 -m http.server 8123`（リポジトリルート）→ `http://localhost:8123/web/proto/street/index.html` で:
+`python3 -m http.server 8123`（リポジトリルート）→ `http://localhost:8123/experiments/proto/street/index.html` で:
 
 1. エリアマップ → 繁華街 → 通りに入れる。左端からエリアマップへ戻れる
 2. キーボード8方向とタップ移動で歩ける。歩ける帯から出られない。ベンチや街灯の奥/手前に正しく回り込める
@@ -262,16 +262,16 @@ PEPPERMINT → `assets/backgrounds/peppermint.png`／KEMURIKUSA → `assets/back
 4. しらべる5か所と通行人2人が反応する（話しかけると振り向く）
 5. ファストトラベルは訪問済みの店だけ選べる。`?reset=1` で記録が消える
 6. 画像を一時的にリネームしても、プレースホルダで最後まで動く
-7. `web/proto/walk/index.html` が引き続き動く。本編（`web/index.html`）は何も変わっていない
+7. `experiments/proto/walk/index.html` が引き続き動く。本編（`web/index.html`）は何も変わっていない
 8. `git diff --stat origin/main` に許可範囲外の変更が無い
 
-playwright が使える環境なら `web/proto/street/smoke.mjs` で、
+playwright が使える環境なら `experiments/proto/street/smoke.mjs` で、
 ページを開く→繁華街→右キー2秒でカメラが動く→`__street.warp("kemurikusa")`→決定で店内に入れる、を検証する
 （本編のテスト一覧には加えない。スクリーンショットはコミットしない）。
 
 ## 7. 報告
 
-- `web/proto/street/README.md` に書く:
+- `experiments/proto/street/README.md` に書く:
   - 起動方法・操作・ファイル構成
   - 画像生成の結果（何回で使えるものが出たか、ダメだった点、ドット化の粒度の所感）
   - 歩いた所感（速度・通りの長さ・ドアとキャラの大きさの比率・退屈にならないか）
@@ -280,4 +280,4 @@ playwright が使える環境なら `web/proto/street/smoke.mjs` で、
   - 既知の問題
 - `docs/owner_requests.md` の AA3（歩行シート）・AA4（通りの試作）を、結果に合わせて ✅＋コミットSHA か ⏸＋理由 に更新
 - 最後に push したブランチ名と、raw.githack の確認URL
-  （`https://raw.githack.com/haseatsu114514-dot/shisha-game/<ブランチ名>/web/proto/street/index.html`）を報告する
+  （`https://raw.githack.com/haseatsu114514-dot/shisha-game/<ブランチ名>/experiments/proto/street/index.html`）を報告する
