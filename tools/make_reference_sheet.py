@@ -19,7 +19,7 @@ FONT_PATHS = [
     "/usr/share/fonts/truetype/fonts-japanese-gothic.ttf",
 ]
 SPRITE = ROOT / "assets/sprites/characters"
-FACES = ROOT / "assets/sprites/faces"
+FACES = ROOT / "assets/ui/face_icons"  # 現行の丸アイコン(160px)
 
 BG = (24, 27, 33)
 PANEL = (36, 40, 48)
@@ -55,6 +55,7 @@ CONFIGS = {
                 ],
             },
         ],
+        "face_icons": [("営業姿", "face_minto.png"), ("私服", "face_minto_private.png")],
         "profile": [
             ("年齢", "自称20歳（公式の隠し設定では29歳）"),
             ("所属", "コンカフェ「ぺぱーみんと」オーナー兼唯一のキャスト"),
@@ -171,17 +172,17 @@ def build(cid, body_h=1000):
     cx, cy = rx + 24, ry + 16
 
     # 顔アイコン
-    d.text((cx, cy), "顔アイコン（ゲーム内 64×64）", font=f_h, fill=accent)
+    d.text((cx, cy), "顔アイコン（ゲーム内 160×160）", font=f_h, fill=accent)
     cy += 46
-    face = Image.open(FACES / f"face_{cid}.png").convert("RGBA")
-    big = face.resize((192, 192), Image.NEAREST)
-    sheet.paste(big, (cx, cy))
-    small_x = cx + 192 + 24
-    sheet.paste(face, (small_x, cy))
-    d.text((small_x, cy + 72), "等倍", font=f_s, fill=SUB)
+    fx = cx
+    for lbl, fname in cfg["face_icons"]:
+        face = Image.open(FACES / fname).convert("RGBA")
+        sheet.paste(face, (fx, cy), face)
+        d.text((fx, cy + 166), lbl, font=f_s, fill=SUB)
+        fx += 160 + 24
 
     # パレット（営業・私服）: 立ち絵から実測した代表色
-    py = cy + 192 + 28
+    py = cy + 160 + 56
     d.text((cx, py), "基調色（立ち絵から実測した代表色）", font=f_h, fill=accent)
     py += 46
     for o in outfits:
@@ -258,7 +259,7 @@ def build(cid, body_h=1000):
     y += 20
     d.text(
         (margin, y),
-        "出典: assets/sprites/characters/%s/*.png ・ assets/sprites/faces/face_%s.png ・ data/characters.json（自動生成。新規画像の生成なし）"
+        "出典: assets/sprites/characters/%s/*.png ・ assets/ui/face_icons/face_%s*.png ・ data/characters.json（自動生成。新規画像の生成なし）"
         % (cid, cid),
         font=f_s,
         fill=SUB,
