@@ -788,20 +788,18 @@
   background: radial-gradient(circle at 80% 30%, var(--thermal-glow) 0, transparent 30%), linear-gradient(0deg, var(--thermal-glow), transparent 42%);
   animation: thermal-glow 1.7s ease-in-out infinite alternate; }
 .thermal-active .thermal-glow { display: block; }
-/* 台の上は煙だけ。炎は背景のイメージで、ボウルは燃やさない（TH04）。 */
-.thermal-picture { display: none; position: absolute; bottom: 237px; width: 120px; height: 150px; color: var(--thermal-ink); pointer-events: none; filter: drop-shadow(0 0 7px currentColor); }
+/* 台の上は白くやわらかい煙だけ。炎は背景のイメージで、ボウルは燃やさない（TH04・TH09）。 */
+.thermal-picture { display: none; position: absolute; bottom: 237px; width: 120px; height: 150px; color: var(--thermal-smoke, #fff); pointer-events: none; filter: blur(1.4px) drop-shadow(0 0 6px currentColor); }
+.thermal-haze-defs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
 .thermal-picture svg { width: 100%; height: 100%; overflow: visible; }
 .thermal-active .thermal-picture { display: block; }
-.thermal-wisps { opacity: .4; animation: thermal-breath 3.8s ease-in-out infinite alternate; transform-origin: 50% 100%; }
-.thermal-active[data-thermal-band="cold"] .thermal-wisps { opacity: .15; }
-.thermal-active:is([data-thermal-band="hot"], [data-thermal-band="fire"], [data-thermal-band="blue"], [data-thermal-band="inferno"]) .thermal-wisps { opacity: .7; }
+.thermal-wisps { opacity: var(--thermal-smoke-alpha, .4); animation: thermal-breath 3.8s ease-in-out infinite alternate; transform-origin: 50% 100%; }
 /* 爆発: ボウルの位置から閃光が広がり、台は焦げて黒煙が昇る（TH06）。 */
 .thermal-boom { position: absolute; right: 70px; bottom: calc(15% + 241px); width: 40px; height: 40px; border-radius: 50%; opacity: 0; pointer-events: none; z-index: 3;
   background: radial-gradient(circle, #fffbe6, #ffd25a 30%, #ff5a14 58%, transparent 72%); mix-blend-mode: screen; }
 .thermal-boom.go { animation: thermal-boom 1.1s ease-out forwards; }
 .thermal-burnt .worker-equipment .art { filter: brightness(.36) sepia(.75) saturate(.7); transition: filter .5s .25s; }
-.thermal-burnt .thermal-picture { color: #1c1210; filter: none; }
-.thermal-burnt .thermal-wisps { opacity: .92; }
+.thermal-burnt .thermal-picture { filter: none; }
 .thermal-burnt .thermal-label { font-weight: 700; }
 .bench[data-thermal-paused="true"] :is(.thermal-picture *, .thermal-glow) { animation-play-state: paused; }
 @keyframes thermal-breath { from { transform: translateY(3px) scale(.9, .92); } to { transform: translateY(-10px) scale(1.04, 1.06); } }

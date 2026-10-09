@@ -86,6 +86,10 @@ window.__remake = {
       window.__remake.state.day = TOURNAMENT_DAY;
       return ch1.devTournament();
     },
+    // 温度による背景の案を切り替える（"ember" 炭火 / "rainbow" 虹 / "steady" 炎の強さ）。URLの ?thermal= と同じ
+    async thermalStyle(id) {
+      return (await import("./craft/thermal.js")).setThermalStyle(id);
+    },
     async drill(kind = "heat") {
       const { newGame } = await import("./core/state.js");
       const { runDrill } = await import("./craft/session.js");
