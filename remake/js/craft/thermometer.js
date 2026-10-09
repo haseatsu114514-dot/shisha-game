@@ -10,6 +10,8 @@ const pct = (f) => `${f * 100}%`;
 
 export function buildThermometer({ compact = false, unsteady = false, coldLimit = null } = {}) {
   const fill = el("b"), mark = el("i.thermo-mark"), dim = el("i.thermo-dim");
+  // 管の外から今の温度を指す、目立つ矢印（TH30）。
+  const pointer = el("i.thermo-pointer", { "aria-hidden": "true", dataset: { test: "thermo-pointer" } });
   const projected = el("i.thermo-projected", { hidden: true, "aria-hidden": "true" });
   const projectedLabel = el("span.thermo-projected-label", { hidden: true, text: "点線：止めたらここ", dataset: { test: "pull-projection" } });
   const tube = el("div.thermo-tube", [
@@ -29,9 +31,10 @@ export function buildThermometer({ compact = false, unsteady = false, coldLimit 
   const at = (f) => ({ bottom: `calc(var(--thermo-inset) + ${f} * (100% - 2 * var(--thermo-inset)))` });
   const root = el(`div.thermo${compact ? ".steam-temperature" : ""}${unsteady ? ".unsteady" : ""}`, {
     role: "meter", "aria-label": "煙の温度", "aria-valuemin": "0", "aria-valuemax": "1", dataset: { test: compact ? "steam-temperature" : "pull-temperature" },
-    style: { "--thermo-inset": framed ? "10%" : "0%" },
+    style: { "--thermo-inset": framed ? "10%" : "0%", "--thermo-span": framed ? (compact ? "54px" : "76px") : "44px" },
   }, [
     housing,
+    pointer,
     projectedLabel,
     el("div.thermo-labels", [
       el("span.thermo-danger-label", { text: "焦げる", style: at(DANGER_TEMP + 0.02) }),
@@ -44,6 +47,7 @@ export function buildThermometer({ compact = false, unsteady = false, coldLimit 
     fill.style.height = pct(temp);
     mark.style.bottom = pct(temp);
     dim.style.bottom = pct(temp);
+    pointer.style.bottom = `calc(var(--thermo-inset) + ${temp} * (100% - 2 * var(--thermo-inset)) - 11px)`;
     root.classList.toggle("ok", temp >= IDEAL[0] && temp <= IDEAL[1]);
     root.classList.toggle("optimal", isOptimalTemperature(temp));
     root.classList.toggle("danger", temp >= DANGER_TEMP);

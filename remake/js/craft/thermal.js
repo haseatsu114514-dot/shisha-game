@@ -1,5 +1,6 @@
 // 温度のイメージ。実際の温度だけを読み、採点・雑念・機材には干渉しない。
-// 冷たい色から始まり、適温は虹（心地よい程度の虹色の炎・陽炎・煙）、超えるとだんだん火事のように黄色→赤の炎と黒煙が増え、
+// 序盤は色のない灰色から、ぬるいうちに暖かい色へなめらかに移り、適温は虹（心地よい程度の虹色の炎・陽炎）（TH24）。
+// 超えるとだんだん火事のように黄色→赤の炎と黒煙が増え、
 // 温度計の一番上で爆発して焦げる（TH06・TH12・TH13）。炎はイメージなので台やボウルには付けない（TH04）。
 // 見た目は温度に沿って連続的に移り、温度帯は呼び名・陽炎・照らしの段階にだけ使う。
 import { el, clamp } from "../core/util.js";
@@ -8,9 +9,9 @@ import { IDEAL, DANGER_TEMP, isOptimalTemperature } from "./conditions.js";
 // 温度帯の区切りと呼び名。適温の端点は温度計と同じ。
 // glow=作業風景を照らす色と強さ、haze=作業風景のゆらぎ(px)、smoke=台の上の煙の色と濃さ。
 const BANDS = [
-  { id: "cold", label: "まだぬるい", until: .30, ink: "#bfe6ff", glow: ["#8fd0ff", .1], haze: 0, smoke: ["#ffffff", 0] },
-  { id: "warming", label: "熱が入っていく", until: IDEAL[0], ink: "#e3d6ff", glow: ["#c8b8ff", .12], haze: 0, smoke: ["#ffffff", 0] },
-  { id: "ready", label: "適温", until: IDEAL[1], ink: "#ffe9ff", glow: ["#d79bff", .26], haze: 4, smoke: ["#ffffff", 0] },
+  { id: "cold", label: "まだぬるい", until: .30, ink: "#e8e8e8", glow: ["#ffffff", 0], haze: 0, smoke: ["#ffffff", 0] },
+  { id: "warming", label: "熱が入っていく", until: IDEAL[0], ink: "#ffd9b0", glow: ["#ffb070", .12], haze: 0, smoke: ["#ffffff", 0] },
+  { id: "ready", label: "適温", until: IDEAL[1], ink: "#ffe9ff", glow: ["#ffd27a", .24], haze: 4, smoke: ["#ffffff", 0] },
   { id: "hot", label: "熱が強い", until: .76, ink: "#ffd27a", glow: ["#ff8a00", .42], haze: 5, smoke: ["#ffffff", 0] },
   { id: "fire", label: "過熱", until: DANGER_TEMP, ink: "#ffcf3a", glow: ["#ff2a00", .58], haze: 6, smoke: ["#ddd7d0", .26] },
   { id: "inferno", label: "灼熱・焦げる寸前", until: Infinity, ink: "#ffd23a", glow: ["#ff1a00", .7], haze: 8, smoke: ["#cfc8c0", .42] },
@@ -28,18 +29,18 @@ export function thermalBand(temp) {
   return BANDS.find(b => t < b.until || (b.id === "ready" && t === IDEAL[1]));
 }
 
-// 温度ごとの見た目の目印。間は線形に混ぜる。frost=冷気のきらめき、pastel=淡い色づき、rainbow=虹、
+// 温度ごとの見た目の目印。間は線形に混ぜる。frost=冷気のきらめき（失敗時のみ）、warmth=暖かい色づき、rainbow=虹、
 // halo=虹色の穏やかな炎の高さ、fire=黄色→赤の炎の濃さ、reach=その炎の届く高さ（画面比）、dark=黒煙、soft=白い煙、sparks=火の粉。
 const STOPS = [
-  { at: 0, bg: ["#e3f3fd", "#9cc9ea"], frost: 1, pastel: 0, rainbow: 0, halo: 0, fire: 0, reach: 0, dark: 0, soft: 0, sparks: 0 },
-  { at: .30, bg: ["#d6e6f9", "#a8b8e8"], frost: .5, pastel: .35, rainbow: 0, halo: 0, fire: 0, reach: 0, dark: 0, soft: .04, sparks: 0 },
-  { at: .42, bg: ["#8e86c9", "#4a4690"], frost: 0, pastel: .8, rainbow: .4, halo: .06, fire: 0, reach: 0, dark: 0, soft: .08, sparks: 0 },
-  { at: IDEAL[0], bg: ["#2c2366", "#120d33"], frost: 0, pastel: 0, rainbow: 1, halo: .17, fire: 0, reach: 0, dark: 0, soft: .1, sparks: 0 },
-  { at: IDEAL[1], bg: ["#2e2162", "#140b2d"], frost: 0, pastel: 0, rainbow: 1, halo: .22, fire: 0, reach: 0, dark: 0, soft: .1, sparks: 0 },
-  { at: .69, bg: ["#6a2a3a", "#2a0c18"], frost: 0, pastel: 0, rainbow: .35, halo: .18, fire: .65, reach: .36, dark: .1, soft: .05, sparks: 12 },
-  { at: .76, bg: ["#c4300c", "#5e0a0c"], frost: 0, pastel: 0, rainbow: 0, halo: 0, fire: 1, reach: .56, dark: .25, soft: 0, sparks: 24 },
-  { at: .90, bg: ["#a40e00", "#260000"], frost: 0, pastel: 0, rainbow: 0, halo: 0, fire: 1, reach: .96, dark: .5, soft: 0, sparks: 40 },
-  { at: 1, bg: ["#6a0500", "#100000"], frost: 0, pastel: 0, rainbow: 0, halo: 0, fire: 1, reach: 1.3, dark: .78, soft: 0, sparks: 48 },
+  { at: 0, bg: ["#cdcdcd", "#8e8e8e"], frost: 0, warmth: 0, rainbow: 0, halo: 0, fire: 0, reach: 0, dark: 0, soft: 0, sparks: 0 },
+  { at: .30, bg: ["#d6ccc2", "#9c8d80"], frost: 0, warmth: .3, rainbow: 0, halo: 0, fire: 0, reach: 0, dark: 0, soft: .03, sparks: 0 },
+  { at: .42, bg: ["#f2c79a", "#c98557"], frost: 0, warmth: .9, rainbow: .3, halo: .05, fire: 0, reach: 0, dark: 0, soft: .07, sparks: 0 },
+  { at: IDEAL[0], bg: ["#4a2a3e", "#1a0d1a"], frost: 0, warmth: 0, rainbow: 1, halo: .17, fire: 0, reach: 0, dark: 0, soft: .1, sparks: 0 },
+  { at: IDEAL[1], bg: ["#4c2a3a", "#1c0d16"], frost: 0, warmth: 0, rainbow: 1, halo: .22, fire: 0, reach: 0, dark: 0, soft: .1, sparks: 0 },
+  { at: .69, bg: ["#6a2a2a", "#2a0c10"], frost: 0, warmth: 0, rainbow: .35, halo: .18, fire: .65, reach: .36, dark: .1, soft: .05, sparks: 12 },
+  { at: .76, bg: ["#c4300c", "#5e0a0c"], frost: 0, warmth: 0, rainbow: 0, halo: 0, fire: 1, reach: .56, dark: .25, soft: 0, sparks: 24 },
+  { at: .90, bg: ["#a40e00", "#260000"], frost: 0, warmth: 0, rainbow: 0, halo: 0, fire: 1, reach: .96, dark: .5, soft: 0, sparks: 40 },
+  { at: 1, bg: ["#6a0500", "#100000"], frost: 0, warmth: 0, rainbow: 0, halo: 0, fire: 1, reach: 1.3, dark: .78, soft: 0, sparks: 48 },
 ];
 // 黄色→赤の炎（外炎・中炎・芯）。青・紫は使わない（TH12）。
 const FLAME_STOPS = [
@@ -59,7 +60,7 @@ function between(stops, temp) {
 function envAt(temp) {
   const [a, b, k] = between(STOPS, temp), [fa, fb, fk] = between(FLAME_STOPS, temp);
   const env = { bg: a.bg.map((c, i) => mixColor(c, b.bg[i], k)), flame: fa.flame.map((c, i) => mixColor(c, fb.flame[i], fk)) };
-  for (const key of ["frost", "pastel", "rainbow", "halo", "fire", "reach", "dark", "soft", "sparks"]) env[key] = a[key] + (b[key] - a[key]) * k;
+  for (const key of ["frost", "warmth", "rainbow", "halo", "fire", "reach", "dark", "soft", "sparks"]) env[key] = a[key] + (b[key] - a[key]) * k;
   return env;
 }
 
@@ -210,7 +211,7 @@ export function buildThermalAtmosphere(host, worker) {
     }
     ctx.globalCompositeOperation = "source-over"; ctx.globalAlpha = 1;
   }
-  /** 参照動画の大小の四角が斜めへ流れる。冷たいうちは白、温まると淡く色づき、適温で虹色に巡る。 */
+  /** 参照動画の大小の四角が斜めへ流れる。序盤は色のない白、ぬるいうちに暖かく色づき、適温で虹色に巡る。 */
   function squares(env, ink, t, w, h) {
     const travelRaw = t * (12 + temp * 25), k = Math.floor(travelRaw / 90), travel = travelRaw - k * 90;
     ctx.save(); ctx.translate(w / 2, h / 2); ctx.rotate(-.2); ctx.lineWidth = 4;
@@ -218,7 +219,7 @@ export function buildThermalAtmosphere(host, worker) {
       const x = ix * 90 + travel, y = iy * 90 + travel, hue = (ix - k) * 26 + (iy - k) * 44 + t * (20 + env.rainbow * 40);
       let color = ink, a = .13, b = .32;
       if (env.rainbow > .02) { color = `hsl(${hue}, 95%, ${66 + (1 - env.rainbow) * 18}%)`; a = .13 + .42 * env.rainbow; b = .32 + .48 * env.rainbow; }
-      else if (env.pastel > .02) { color = `hsl(${hue}, ${40 + env.pastel * 30}%, 88%)`; a = .13 + .37 * env.pastel; b = .32 + .28 * env.pastel; }
+      else if (env.warmth > .02) { color = `hsl(${28 + ((ix + iy) & 3) * 4}, ${40 + env.warmth * 45}%, ${86 - env.warmth * 8}%)`; a = .13 + .3 * env.warmth; b = .32 + .25 * env.warmth; }
       ctx.globalAlpha = a; ctx.strokeStyle = color; ctx.strokeRect(x, y, 56, 56);
       ctx.globalAlpha = b; ctx.fillStyle = color; ctx.fillRect(x + 66, y + 60, 13, 13);
     }

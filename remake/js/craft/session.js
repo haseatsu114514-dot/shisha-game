@@ -7,7 +7,7 @@ import { showScreen, setBg, retire, layers, flash, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { bgUrl } from "../core/data.js";
 import { state, timeOfDay } from "../core/state.js";
-import { currentCondition } from "../core/stats.js";
+import { currentCondition, addStamina } from "../core/stats.js";
 import { craftCondition } from "../core/condition.js";
 import { buildWorkerScene, WORKER_STEPS } from "./worker.js";
 import { buildAudience, audienceFor } from "./audience.js";
@@ -89,7 +89,11 @@ export function openBench(cs, { steps = [] } = {}) {
   const guide = buildGuide();
   const panel = el("div.bench-panel");
   const condition = craftCondition(cs);
-  if (cs.mode !== "tutorial") worker.footer.append(conditionBadge(condition));
+  const badge = cs.mode !== "tutorial" ? conditionBadge(condition) : null;
+  // 体調の顔の横に、フレーバーの葉（吸い出しから）と、吸いすぎ・熱すぎの疲れ（TH28・TH29）。
+  const leaf = buildLeafIcon();
+  const strain = el("span.bench-strain", { hidden: true, dataset: { test: "craft-strain" }, title: "吸いすぎ・熱すぎで体力が削れた。針が速く、成功帯が狭くなる" });
+  worker.footer.append(...[badge, leaf.root, strain].filter(Boolean));
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
     el("div.bench-top", [el("span.bench-mode", { text: MODE_LABEL[cs.mode] || "" }), progress]),
     el("div.bench-left", [
@@ -102,7 +106,8 @@ export function openBench(cs, { steps = [] } = {}) {
   const thermal = buildThermalAtmosphere(root, worker);
   bg();
   showScreen("bench", root);
-  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, thermal };
+  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, thermal, badge, leaf, strain };
+  renderStrain();
   return bench;
 }
 
@@ -132,6 +137,8 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.worker.setMental("steady");
   b.worker.caption.textContent = WORKER_STEPS[id] || titleText;
   b.thermal.setStep(id);
+  b.leaf.root.hidden = !["pull", "care", "trial"].includes(id);
+  b.leaf.render(b.cs.leaf);
   // 蒸らしのやり直しでも前回の温度を残さず、炭を置いた直後の温度から始める。
   if (id === "steam") b.thermal.update(temperatureAfterSteam(b.cs, 0));
   if (["pull", "care", "trial"].includes(id)) b.thermal.update(b.cs.care?.temp ?? b.cs.pull?.temp ?? b.cs.steam?.temp ?? 0);
@@ -145,6 +152,65 @@ export function setBenchTemperature(cs, temp) {
 export function pauseBenchTemperature(cs, paused) {
   if (bench?.cs === cs) bench.thermal.pause(paused);
 }
+/**
+ * フレーバーの体力を一枚の葉で見せる（TH28）。4=つややか、3=斑点、2=縁が欠ける、1=穴だらけで茶色、0=枯れて崩れる。
+ * 傷むと葉だけが震える。文字は出さない（TH27）。
+ */
+const LEAF_STATE = ["枯れて崩れた", "穴だらけ", "縁が欠けてきた", "斑点が出てきた", "つややか"];
+function buildLeafIcon() {
+  const root = el("span.leaf-icon", { hidden: true, role: "img", dataset: { test: "leaf-icon", hp: "4" }, html: `<svg viewBox="0 0 32 32" aria-hidden="true">
+    <defs><mask id="leaf-bites-${++leafIcons}" maskUnits="userSpaceOnUse"><rect width="32" height="32" fill="#fff"/>
+      <g class="leaf-bite-2" fill="#000"><circle cx="25" cy="9" r="3.4"/><circle cx="8" cy="22" r="2.6"/></g>
+      <g class="leaf-bite-1" fill="#000"><circle cx="17" cy="13" r="2.2"/><circle cx="12" cy="18" r="1.8"/><circle cx="21" cy="19" r="2.4"/><circle cx="27" cy="16" r="2.6"/></g>
+    </mask></defs>
+    <g mask="url(#leaf-bites-${leafIcons})">
+      <path class="leaf-body" d="M4 28C3 15 12 4 28 3c1 14-8 25-24 25Z"/>
+      <path class="leaf-vein" d="M5 27 26 6M11 21l-1-6M16 16l-1-6M21 11l-1-4M11 21l6 1M16 16l6 1" fill="none"/>
+      <g class="leaf-spots"><circle cx="14" cy="11" r="1.6"/><circle cx="20" cy="15" r="1.3"/><circle cx="10" cy="19" r="1.2"/></g>
+    </g>
+    <g class="leaf-crumbs"><path d="M6 30l2-1 1 2zM12 30l2-2 1 2zM19 31l1-2 2 1z"/></g>
+  </svg>` });
+  return { root, render(leaf, { hit = false } = {}) {
+    const hp = leaf?.hp ?? 4;
+    root.dataset.hp = String(hp);
+    root.setAttribute("aria-label", `フレーバー：${LEAF_STATE[hp] ?? LEAF_STATE[4]}`);
+    root.title = `フレーバー：${LEAF_STATE[hp] ?? LEAF_STATE[4]}`;
+    if (hit) { root.classList.remove("hit"); void root.offsetWidth; root.classList.add("hit"); }
+  } };
+}
+let leafIcons = 0;
+
+/** フレーバーが傷んだら葉を更新する。音と揺れは呼び出し側で鳴らす。 */
+export function setBenchLeaf(cs, hit = false) {
+  if (bench?.cs === cs) bench.leaf.render(cs.leaf, { hit });
+}
+
+/** 疲れの表示と、体調の顔（体力が境界を割れば顔も変わる）。 */
+function renderStrain() {
+  if (!bench) return;
+  const n = bench.cs.strain || 0;
+  bench.strain.hidden = !n;
+  bench.strain.textContent = `疲れ${n > 1 ? `×${Math.min(3, n)}` : ""}`;
+  bench.strain.setAttribute("aria-label", `疲れ ${n}。針が速く、成功帯が狭くなる`);
+}
+/**
+ * 吸いすぎ・熱すぎで、はじめの体力が削れてデバフが付く（TH29）。レッスンでは起きない。
+ * 体力が体調の境界を割れば、その一台の残りは悪い方の体調で作る。
+ */
+export function strainBench(cs, stamina = 4) {
+  if (cs.mode === "tutorial") return false;
+  cs.strain = (cs.strain || 0) + 1;
+  addStamina(-stamina);
+  const now = currentCondition(), order = ["green", "yellow", "red"];
+  if (order.indexOf(now.health) > order.indexOf(cs.condition?.health ?? "yellow")) cs.condition = now;
+  if (bench?.cs === cs) {
+    if (bench.badge) { const next = conditionBadge(cs.condition); bench.badge.replaceWith(next); bench.badge = next; }
+    renderStrain();
+    bench.strain.classList.remove("hit"); void bench.strain.offsetWidth; bench.strain.classList.add("hit");
+  }
+  return true;
+}
+
 /** ステージ座標（1280×720）でのボウルの位置。爆発の爆心にする。 */
 function bowlOrigin() {
   const stage = document.getElementById("stage")?.getBoundingClientRect();

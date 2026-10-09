@@ -807,11 +807,13 @@
 
 /* 温度計（TH23）: 黒く抜かず全体に色を置き、今の温度より上だけ少し暗くする。適温は虹、超えると管の中で炎が立ち、
    焦げる寸前（危険帯）と熱管理の冷え切り帯は縞で示し、入ると点滅する。白い細い柱が今の温度。 */
-.thermo-tube, .thermo-housing .thermo-tube { background: #3f86d6; }
-.thermo-scale { position: absolute; inset: 0; background: linear-gradient(0deg, #3f86d6 0%, #9db8ee 30%, #b48cff 46%, #6fd6a8 54%, #ffd36b 62%, #ff7a1e 76%, #e0220a 90%, #7a0000 100%); }
+.thermo-tube, .thermo-housing .thermo-tube { background: #8c8c8c; }
+.thermo-scale { position: absolute; inset: 0; background: linear-gradient(0deg, #8c8c8c 0%, #b0a497 24%, #e3b98d 40%, #f2c27a 52%, #ffb347 62%, #ff7a1e 76%, #e0220a 94%, #7a0000 100%); }
 .thermo-dim { position: absolute; left: 0; right: 0; top: 0; z-index: 2; background: linear-gradient(0deg, rgba(10, 8, 22, .38), rgba(10, 8, 22, .56)); transition: bottom .4s var(--ease-out); }
 .thermo-tube b, .thermo-housing .thermo-tube b { left: 38%; right: 38%; z-index: 2; border-radius: 3px; background: linear-gradient(0deg, #ffffffcc, #ffffff66); opacity: .55; box-shadow: 0 0 6px #ffffffaa; }
-.thermo-zone { z-index: 1; background: linear-gradient(0deg, #ff6b6b, #ffb86b, #ffe66b, #7dff9a, #6bd6ff, #a78bff); opacity: .85; border-top: 2px solid #ffffffcc; border-bottom: 2px solid #ffffffcc; }
+/* 適温はゲージでは一色で分かりやすく（虹は背景だけ TH25）。真ん中に細い金の最適温（TH26）。 */
+.thermo-zone { z-index: 1; background: #36c98a; opacity: .9; border-top: 2px solid #ffffffdd; border-bottom: 2px solid #ffffffdd; }
+.thermo-optimal, .thermo-housing .thermo-optimal { z-index: 2; min-height: 4px; background: #ffd84a; box-shadow: 0 0 8px #ffd84a, 0 0 0 1px #5a4300; }
 .thermo-heat { position: absolute; left: 0; right: 0; top: 0; z-index: 1; pointer-events: none; overflow: hidden; opacity: .75;
   -webkit-mask-image: linear-gradient(0deg, transparent, #000 55%); mask-image: linear-gradient(0deg, transparent, #000 55%); }
 /* 炎の模様は動かす層だけを上へ流す（再描画させず、合成だけで動かす）。 */
@@ -825,30 +827,17 @@
 .thermo-labels { min-width: 4.2em; }
 .steam-temperature .thermo-labels { min-width: 3em; }
 .thermo-labels > span { position: absolute; left: 0; white-space: nowrap; }
+.thermo:not(.steam-temperature) .thermo-labels { min-width: 5em; }
+.thermo:not(.steam-temperature) .thermo-labels > span { left: 12px; }
 .thermo-danger-label { color: #ff7a5a; font-weight: 800; }
 .thermo-cold-label { color: #a8ddff; font-weight: 800; }
 .thermo-cool-label { color: #9fc4ee; }
-.thermo:has(.thermo-housing) .thermo-ideal-label { color: #f4e6ff; }
+.thermo:has(.thermo-housing) .thermo-ideal-label { color: #9ff0c8; }
 .thermo.danger .thermo-danger-label, .thermo.freezing .thermo-cold-label { animation: thermal-warn .45s ease-in-out infinite alternate; }
 @keyframes thermo-flame { from { transform: translateY(0); } to { transform: translateY(-26px); } }
 @keyframes thermo-alarm { from { filter: brightness(1); } to { filter: brightness(1.7); } }
 @media (prefers-reduced-motion: reduce) { .thermo-heat::before, .thermo.danger .thermo-danger, .thermo.freezing .thermo-cold, .thermo-labels > span { animation: none; } }
 
-/* フレーバー（葉）の体力（TH20・TH22）。吸いすぎで1つずつ割れ、ダメージを食らったように揺れて赤く光る。 */
-.leaf-hp { position: relative; display: flex; align-items: center; gap: 10px; font-size: 14px; color: #d8cdbb; }
-.leaf-label { letter-spacing: .08em; }
-.leaf-pips { display: flex; gap: 6px; }
-.leaf-pip { width: 22px; height: 16px; border-radius: 0 70% 0 70%; background: linear-gradient(135deg, #b8f29a, #3f9a4e); box-shadow: 0 0 6px #7fe08a88, inset 0 1px 0 #fff8; transition: filter .3s, opacity .3s; }
-.leaf-pip.lost { background: linear-gradient(135deg, #5a4a3c, #2a211a); box-shadow: none; opacity: .7; }
-.leaf-pip.break { animation: leaf-break .6s ease-out; }
-.leaf-state { font-size: 13px; color: #c9bba3; }
-.leaf-hp[data-hp="1"] .leaf-state, .leaf-hp[data-hp="0"] .leaf-state { color: #ff8a6a; font-weight: 700; }
-.leaf-hp.hit { animation: leaf-hit .5s ease-out; }
-.leaf-damage { position: absolute; left: 150px; top: -6px; font-size: 26px; font-weight: 900; color: #ff4a3a; text-shadow: 0 0 10px #ff2a00, 0 2px 0 #000; pointer-events: none; animation: leaf-damage .9s ease-out forwards; }
-.stamp.damage { color: #ff5a4a; text-shadow: 0 0 22px rgba(255, 40, 20, .9); font-size: 40px; }
-@keyframes leaf-hit { 0%, 100% { transform: none; filter: none; } 15% { transform: translateX(-8px); filter: drop-shadow(0 0 10px #ff2a00); } 35% { transform: translateX(7px); } 55% { transform: translateX(-4px); } 75% { transform: translateX(2px); } }
-@keyframes leaf-break { 0% { transform: scale(1.5) rotate(-12deg); filter: brightness(2.2) sepia(1) hue-rotate(-30deg); } 100% { transform: none; filter: none; } }
-@keyframes leaf-damage { from { opacity: 1; transform: translateY(0) scale(1.3); } to { opacity: 0; transform: translateY(-34px) scale(1); } }
 /* 熱管理の準備:「炭を焼きますか？」で個数を選ぶ（TH21）。 */
 .pull-play[hidden] { display: none; }
 .pull-play { display: flex; flex-direction: column; gap: 14px; }
@@ -864,4 +853,43 @@
 @keyframes blast-still { to { opacity: 0; } }
 /* 冷え切り・フレーバー切れの後は、台も色が抜ける。 */
 .thermal-ruined .worker-equipment .art { filter: grayscale(.85) brightness(.6); transition: filter .6s; }
-@media (prefers-reduced-motion: reduce) { .leaf-hp.hit, .leaf-pip.break, .leaf-damage { animation: none; } }
+
+/* 現在地の針を目立たせる（TH30）。温度計は管の外から光る矢印、吸い出しは上下にはみ出す太い針。 */
+.thermo-mark, .thermo:has(.thermo-housing) .thermo-mark { left: -2px; right: -2px; height: 5px; margin-bottom: -2.5px; background: #fff; box-shadow: 0 0 0 1px #000a, 0 0 10px #fff; }
+.thermo-pointer { position: absolute; left: calc(var(--thermo-span) - 6px); width: 20px; height: 22px; z-index: 5; pointer-events: none;
+  background: linear-gradient(90deg, #fffbe6, #ffd25a); clip-path: polygon(0 50%, 100% 0, 78% 50%, 100% 100%);
+  filter: drop-shadow(0 0 5px #ffd25a) drop-shadow(0 0 1px #000); transition: bottom .4s var(--ease-out); animation: pointer-pulse 1.1s ease-in-out infinite alternate; }
+.thermo.danger .thermo-pointer { background: linear-gradient(90deg, #fff, #ff5a3a); filter: drop-shadow(0 0 7px #ff3a00) drop-shadow(0 0 1px #000); }
+.thermo.optimal .thermo-pointer { background: linear-gradient(90deg, #fff, #ffe066); }
+.pull-gauge-wrap { position: relative; }
+.pull-gauge-wrap .pg-needle, .bench[data-art-skin] .pull-gauge-wrap .pg-needle { position: absolute; top: -12px; bottom: -12px; width: 6px; margin-left: -3px; z-index: 3; border-radius: 3px;
+  background: #fffdf2; box-shadow: 0 0 0 1.5px #1a1020, 0 0 14px #fff2b0, 0 0 26px #ffd25a88; pointer-events: none; }
+.pull-gauge-wrap .pg-needle::before, .pull-gauge-wrap .pg-needle::after { content: ""; position: absolute; left: 50%; width: 18px; height: 11px; margin-left: -9px; background: #ffd25a; filter: drop-shadow(0 0 3px #000); }
+.pull-gauge-wrap .pg-needle::before { top: -9px; clip-path: polygon(0 0, 100% 0, 50% 100%); }
+.pull-gauge-wrap .pg-needle::after { bottom: -9px; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+@keyframes pointer-pulse { from { transform: translateX(0); } to { transform: translateX(4px); } }
+/* フレーバーの葉（TH28）: 体調の顔の横。傷むほど斑点→欠け→穴→枯れて崩れる。傷むと葉だけ震える。 */
+.leaf-icon { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #ffffff0d; }
+.leaf-icon[hidden] { display: none; }
+.leaf-icon svg { width: 28px; height: 28px; overflow: visible; }
+.leaf-body { fill: #5cc05a; stroke: #1f4a22; stroke-width: 1; transition: fill .4s; }
+.leaf-vein { stroke: #d8ffd0aa; stroke-width: 1.1; stroke-linecap: round; }
+.leaf-spots, .leaf-crumbs, .leaf-bite-1, .leaf-bite-2 { display: none; }
+.leaf-spots { fill: #6b4a1f; }
+.leaf-crumbs { fill: #5a3a20; }
+.leaf-icon[data-hp="3"] .leaf-body { fill: #8db84a; }
+.leaf-icon:is([data-hp="3"], [data-hp="2"], [data-hp="1"]) .leaf-spots { display: inline; }
+.leaf-icon[data-hp="2"] .leaf-body { fill: #b8a83c; }
+.leaf-icon:is([data-hp="2"], [data-hp="1"], [data-hp="0"]) .leaf-bite-2 { display: inline; }
+.leaf-icon[data-hp="1"] .leaf-body { fill: #a8742c; }
+.leaf-icon:is([data-hp="1"], [data-hp="0"]) .leaf-bite-1 { display: inline; }
+.leaf-icon[data-hp="0"] .leaf-body { fill: #5a3a20; stroke: #2a1a10; }
+.leaf-icon[data-hp="0"] .leaf-vein { stroke: #3a2414; }
+.leaf-icon[data-hp="0"] .leaf-crumbs { display: inline; }
+.leaf-icon.hit svg { animation: leaf-shiver .5s ease-out; }
+@keyframes leaf-shiver { 0%, 100% { transform: none; } 20% { transform: translateX(-4px) rotate(-12deg); } 45% { transform: translateX(3px) rotate(9deg); } 70% { transform: translateX(-2px) rotate(-4deg); } }
+/* 疲れ（TH29）: 体調の顔の横の小さな札。付いた瞬間に一度だけ震える。 */
+.bench-strain { padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 700; color: #ffd0b8; background: #6a1e1e; border: 1px solid #ff8a6a66; white-space: nowrap; }
+.bench-strain[hidden] { display: none; }
+.bench-strain.hit { animation: leaf-shiver .5s ease-out; }
+@media (prefers-reduced-motion: reduce) { .thermo-pointer, .leaf-icon.hit svg, .bench-strain.hit { animation: none; } }

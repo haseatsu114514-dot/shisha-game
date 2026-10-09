@@ -10,9 +10,9 @@ export const isOptimalTemperature = (temp) => temp >= OPTIMAL[0] && temp <= OPTI
 export const BURST_TEMP = 1;
 export const isBurnt = (temp) => temp >= BURST_TEMP - 1e-6;
 /** ここから上は「焦げる寸前」。温度計に危険帯として描き、背景も灼熱になる。 */
-export const DANGER_TEMP = 0.9;
+export const DANGER_TEMP = 0.94;
 /** 提供後（熱管理）にここまで冷えると、シーシャがダメになる（TH19）。 */
-export const COLD_OUT = 0.12;
+export const COLD_OUT = 0.06;
 export const isColdOut = (temp) => temp <= COLD_OUT + 1e-6;
 
 /** 温まり方は経過時間で決まる。雑念のミスはこの温度へ入れない。 */

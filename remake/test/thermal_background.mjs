@@ -1,5 +1,5 @@
 // 実温度の引継ぎ、吸い方・炭による上下、一時停止、描画・スマホ・低減モード。
-// 冷たい色から始まり、適温は虹と陽炎・煙、超えるとだんだん火事のように黄色→赤の炎（青・紫の炎は使わない TH09・TH12・TH13）。
+// 序盤は色のない灰色→ぬるいうちに暖かい色→適温は虹と陽炎、超えるとだんだん火事のように黄色→赤の炎（TH09・TH12・TH13・TH24）。
 // 温度計の一番上で爆発して焦げる（TH06）。ボウルは燃やさない（TH04）。熱管理は「炭を焼きますか？」→吸い出しと同じ針（TH14・TH21）。冷え切り・フレーバー切れもダメになる（TH19・TH20）。
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -50,8 +50,8 @@ try {
   const haze = async () => [await page.locator('.bench').getAttribute('data-thermal-haze'), await page.locator('.bench-worker-stage').evaluate(e => e.style.filter)];
   const shot = async name => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
   // 温度計と同じ適温端点。上限／不正値でも描画可能。
-  assert.deepEqual(await page.evaluate(() => [0,.30,.46,.62,.6201,.76,.84,.90,.92,1,NaN].map(T.thermal.thermalBand).map(b=>b.id)),
-    ['cold','warming','ready','ready','hot','fire','fire','inferno','inferno','inferno','cold']);
+  assert.deepEqual(await page.evaluate(() => [0,.30,.46,.62,.6201,.76,.84,.90,.93,.94,NaN].map(T.thermal.thermalBand).map(b=>b.id)),
+    ['cold','warming','ready','ready','hot','fire','fire','fire','fire','inferno','cold']);
   // 爆発は温度計の一番上だけ。
   assert.deepEqual(await page.evaluate(() => [.98, .999, 1].map(T.conditions.isBurnt)), [false, false, true]);
   await page.evaluate(() => T.session.stepPanel('heat','炭焼き'));
@@ -110,7 +110,9 @@ try {
   }
   assert.equal(new Set(images).size,6,'temperature pictures are identical');
   const [cr, cg, cb] = colors.cold, [gr, gg, gb] = colors.ready, [hr, hg, hb] = colors.hot, [fr, fg, fb] = colors.fire, [ir, ig, ib] = colors.inferno;
-  assert(cb > cr + 25 && cr + cg + cb > 3 * 170, `cold is not a pale cold color: ${colors.cold}`);
+  assert(Math.max(cr, cg, cb) - Math.min(cr, cg, cb) < 22 && cr + cg + cb > 3 * 150, `the start is not colorless: ${colors.cold}`);
+  const [wr, wg, wb] = colors.warming;
+  assert(wr > wb + 25, `lukewarm is not turning warm: ${colors.warming}`);
   assert(rainbow.ready >= 5, `ideal is not a rainbow: ${rainbow.ready} hues`);
   assert(rainbow.cold <= 2, `cold already shows many colors: ${rainbow.cold}`);
   assert(fr > fg + 60 && fr > fb + 80, `overheat is not red: ${colors.fire}`);
@@ -122,7 +124,7 @@ try {
   assert.equal(hazes.ready[0], '4'); assert.match(hazes.ready[1], /url\("?#thermal-haze-\d+"?\)/);
   // 同じ温度帯の中でも、温度に沿って絵が少しずつ移る（だんだん火事になる）。
   const within = [];
-  for (const t of [.78, .84, .89]) { await page.evaluate(v => T.session.setBenchTemperature(cs, v), t); within.push(await pixels()); }
+  for (const t of [.78, .84, .89]) { await page.evaluate(v => T.session.setBenchTemperature(cs, v), t); await page.waitForTimeout(120); within.push(await pixels()); }
   assert.equal(await band(), 'fire'); assert.equal(new Set(within).size, 3, 'the fire band does not change gradually');
   assert.deepEqual([...glows].sort((a, b) => a - b), glows, `scene glow does not grow with heat: ${glows}`);
 
@@ -142,6 +144,15 @@ try {
   assert.match(await page.locator('.care-coals-ask').textContent(), /炭を焼きますか？/);
   assert(await page.locator('.pull-care [data-test="pull-temperature"]').isVisible(), 'thermometer must show while choosing coals');
   assert.equal(await page.locator('.pull-care [data-test="thermo-cold"]').count(), 1);
+  // ゲージの適温は一色（虹は背景だけ）、真ん中に細い最適温。焦げると冷え切りの帯は狭い。現在地は管の外の矢印でも示す。
+  const gaugeLook = await page.evaluate(() => {
+    const q = (sel) => document.querySelector(`.pull-care ${sel}`), h = (sel) => q(sel).getBoundingClientRect().height, tube = h('.thermo-tube');
+    return { zone: getComputedStyle(q('.thermo-zone')).backgroundImage, optimalInside: q('.thermo-optimal').getBoundingClientRect().top > q('.thermo-zone').getBoundingClientRect().top,
+      danger: h('.thermo-danger') / tube, cold: h('.thermo-cold') / tube, pointer: !!q('[data-test="thermo-pointer"]') };
+  });
+  assert.equal(gaugeLook.zone, 'none', 'the gauge ideal band must be one clear color');
+  assert(gaugeLook.optimalInside && gaugeLook.pointer, JSON.stringify(gaugeLook));
+  assert(gaugeLook.danger < .07 && gaugeLook.cold < .07, `danger zones are too wide: ${JSON.stringify(gaugeLook)}`);
   assert(!(await page.locator('.pull-play').isVisible()), 'the needle game shows before choosing coals');
   const chosen = await backdropTemp();
   await page.locator('[data-test="care-coal-2"]').click();
@@ -166,12 +177,18 @@ try {
   await page.evaluate(() => { cs.pull.temp = .54; cs.leaf = { hp: 2, max: 4 }; window.run = T.care.runCare(cs); });
   await page.locator('[data-test="care-coal-0"]').click();
   await page.waitForFunction(() => document.querySelector('.pg-needle').style.left);
+  assert(await page.locator('[data-test="leaf-icon"]').isVisible(), 'the flavor leaf must sit beside the condition face');
   await pullAt(45, 55); await pullAt(45, 55);
-  assert.equal(await page.locator('[data-test="leaf-hp"]').getAttribute('data-hp'), '2', 'the first two pulls must not hurt the flavor');
+  assert.equal(await page.locator('[data-test="leaf-icon"]').getAttribute('data-hp'), '2', 'the first two pulls must not hurt the flavor');
+  assert(!(await page.locator('[data-test="craft-strain"]').isVisible()), 'calm pulls must not tire Hajime');
+  const staminaBefore = await page.evaluate(() => T.core.state.stamina);
   await pullAt(45, 55);
-  assert.equal(await page.locator('[data-test="leaf-hp"]').getAttribute('data-hp'), '1');
-  assert.equal(await page.locator('.leaf-hp.hit').count(), 1, 'no damage effect');
-  assert.equal(await page.locator('.leaf-pip.lost').count(), 3);
+  assert.equal(await page.locator('[data-test="leaf-icon"]').getAttribute('data-hp'), '1');
+  assert.equal(await page.locator('.leaf-icon.hit').count(), 1, 'the leaf must tremble when damaged');
+  assert.equal(await page.locator('.stamp', { hasText: 'ダメージ' }).count(), 0, 'damage must not show text');
+  // 吸いすぎで、はじめの体力も削れて疲れが付く。
+  assert(await page.locator('[data-test="craft-strain"]').isVisible(), 'over-pulling must tire Hajime');
+  assert(await page.evaluate(() => T.core.state.stamina) < staminaBefore, 'over-pulling must cost stamina');
   await shot('leaf-damage');
   await pullAt(45, 55);
   await page.waitForSelector('.result-card.show');
@@ -231,5 +248,5 @@ try {
   await page.evaluate(()=>T.session.stepPanel('holes','穴あけ'));
   assert(!(await page.locator('.thermal-backdrop').isVisible()));
   assert.deepEqual(errors,[]);
-  console.log('PASS: cold→rainbow with heat haze→gradual yellow→red fire (no blue/purple), heat care with coal choice then the pull game, flavor damage from the 3rd care pull, cold-out, flavor-out, full-screen blast, bowl not burning, burst on pull and heat care, readable header, steam reset, steam pause/resume and handoff, stable waiting temperature, coal cooling, reduced motion, mobile bounds and reset; page errors 0');
+  console.log('PASS: colorless→warm→rainbow with heat haze→gradual yellow→red fire, clear gauge with narrow danger zones and pointer, quiet flavor damage on a tattering leaf, stamina strain, heat care with coal choice then the pull game, flavor damage from the 3rd care pull, cold-out, flavor-out, full-screen blast, bowl not burning, burst on pull and heat care, readable header, steam reset, steam pause/resume and handoff, stable waiting temperature, coal cooling, reduced motion, mobile bounds and reset; page errors 0');
 } finally { await browser.close(); }

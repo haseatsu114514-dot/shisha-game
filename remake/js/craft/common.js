@@ -8,10 +8,14 @@ import { craftCondition } from "../core/condition.js";
 export const gradeOf = (s) => (s >= 90 ? "S" : s >= 80 ? "A" : s >= 65 ? "B" : s >= 50 ? "C" : "D");
 export const autoSkill = () => craftTest.auto; // "good" | "bad" | null
 
-/** 腕前（★）に、その一台を作り始めたときの体力コンディションを重ねる。 */
+/** 吸いすぎ・熱すぎで溜まった疲れ（TH29）。針が速く、成功帯が狭くなる。3回分で頭打ち。 */
+export const strainSlow = (cs) => 0.9 ** Math.min(3, cs?.strain || 0);
+export const strainWindow = (cs) => 0.88 ** Math.min(3, cs?.strain || 0);
+
+/** 腕前（★）に、その一台を作り始めたときの体力コンディションと、途中で溜まった疲れを重ねる。 */
 export const skill = {
-  slow: (cs) => (1 + 0.18 * tier01("technique")) * craftCondition(cs).slow,
-  window: (cs) => (1 + 0.45 * tier01("sense")) * craftCondition(cs).window,
+  slow: (cs) => (1 + 0.18 * tier01("technique")) * craftCondition(cs).slow * strainSlow(cs),
+  window: (cs) => (1 + 0.45 * tier01("sense")) * craftCondition(cs).window * strainWindow(cs),
   clarity: (cs) => clamp(tier01("insight") + craftCondition(cs).focus - 1, 0, 1),
 };
 

@@ -3,10 +3,11 @@
 // 熱管理（大会のR3・調整）も同じ針のゲーム。「炭を焼きますか？」で個数を選び、替えた炭で少し温度が上がってから、
 // 温度が動き続ける中で最低1回吸って整える。3回目の吸い出しからフレーバーが傷む（TH14・TH21・TH22）。
 // 温度計の一番上で焦げ、熱管理で冷え切り、フレーバーの体力が尽きると、その一台はダメになる（TH06・TH19・TH20）。
+// 吸いすぎ・過熱での吸い出しは、はじめの体力も削って疲れ（針が速く、成功帯が狭い）が付く（TH29）。
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown, flash, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, failBench } from "./session.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, failBench, setBenchLeaf, strainBench } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 
 import { craftConditions, heatDelta, pullResult, isOptimalTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT, IDEAL } from "./conditions.js";
@@ -15,6 +16,8 @@ import { buildThermometer } from "./thermometer.js";
 export { IDEAL } from "./conditions.js";
 const CENTER = 0.54;
 const PULL_MAX = 5;
+// ここより熱い煙を吸うと、はじめがむせて疲れる（TH29）。
+const HARSH_TEMP = 0.76;
 // 針の位置の帯（0〜1）。上げ吸い=左、キープ=中、下げ吸い=右。ジャストはそれぞれの芯
 const ZONES = [
   { id: "up", from: 0, to: 0.34, just: [0.14, 0.205], label: "上げ吸い", delta: 0.1, justDelta: 0.16 },
@@ -54,41 +57,19 @@ const MODES = {
 export function runPull(cs) { return pullGame(cs, MODES.pull); }
 export function runCare(cs) { return pullGame(cs, MODES.care); }
 
-/** フレーバーの体力の表示。傷むたびに一つ割れ、ダメージを食らったように揺れる。 */
-function buildLeafGauge(leaf) {
-  const pips = Array.from({ length: leaf.max }, () => el("i.leaf-pip"));
-  const state = el("span.leaf-state");
-  const root = el("div.leaf-hp", { dataset: { test: "leaf-hp" }, role: "meter", "aria-label": "フレーバーの状態", "aria-valuemin": "0", "aria-valuemax": String(leaf.max) }, [
-    el("span.leaf-label", { text: "フレーバー" }), el("span.leaf-pips", pips), state,
-  ]);
-  const render = () => {
-    pips.forEach((p, i) => p.classList.toggle("lost", i >= leaf.hp));
-    root.setAttribute("aria-valuenow", String(leaf.hp));
-    root.dataset.hp = String(leaf.hp);
-    state.textContent = leaf.hp >= leaf.max ? "無傷" : leaf.hp > 1 ? "傷んできた" : leaf.hp === 1 ? "限界寸前" : "ダメになった";
-  };
-  render();
-  return { root, render, hit() {
-    render();
-    const broken = pips[leaf.hp];
-    broken?.classList.remove("break"); void broken?.offsetWidth; broken?.classList.add("break");
-    root.classList.remove("hit"); void root.offsetWidth; root.classList.add("hit");
-    const dmg = el("b.leaf-damage", { text: "-1" });
-    root.append(dmg);
-    setTimeout(() => dmg.remove(), 900);
-  } };
-}
-
 async function pullGame(cs, mode) {
   const tutorial = cs.mode === "tutorial";
   const panel = stepPanel(mode.store, mode.title, mode.hint);
   const concentration = mode.focus(cs);
-  const slow = skill.slow(cs) * (tutorial ? 1.3 : 1) * concentration.slow;
-  const widen = skill.window(cs) * (tutorial ? 1.4 : 1) * concentration.window;
+  // 疲れが付くと途中から針が速く、成功帯が狭くなるので、毎回計算し直す。
+  const slowNow = () => skill.slow(cs) * (tutorial ? 1.3 : 1) * concentration.slow;
+  const widenNow = () => skill.window(cs) * (tutorial ? 1.4 : 1) * concentration.window;
+  let widen = widenNow();
   let coreTemp = mode.start(cs);
   let T = coreTemp;
   const conditions = craftConditions(cs);
   cs.leaf ??= { hp: LEAF_MAX, max: LEAF_MAX };
+  setBenchLeaf(cs);
   let pulls = 0, justs = 0, failed = null, coals = null;
   // 熱管理だけ: 炭が燃え進んで熱が落ちる速さと、洞察で小さくなる揺らぎ
   const clarity = mode.drift ? skill.clarity(cs) : 1;
@@ -99,20 +80,21 @@ async function pullGame(cs, mode) {
 
   // ---- 画面
   const thermometer = buildThermometer({ coldLimit: mode.drift ? COLD_OUT : null });
-  const needle = el("i.pg-needle");
-  const gauge = el("div.pull-gauge", [
-    ...ZONES.map((z) => el(`div.pg-zone.z-${z.id}`, { style: { left: `${z.from * 100}%`, width: `${(z.to - z.from) * 100}%` } }, [
-      el("span", { text: z.label }),
-      el("i.pg-just", { style: { left: `${((z.just[0] - z.from) / (z.to - z.from)) * 100}%`, width: `${((z.just[1] - z.just[0]) * widen / (z.to - z.from)) * 100}%` } }),
-    ])),
-    needle,
-  ]);
+  // 針はゲージの外側の枠に置き、上下にはみ出す目立つ形にする（TH30）。
+  const needle = el("i.pg-needle", { dataset: { test: "pull-needle" } });
+  const justs$ = ZONES.map((z) => el("i.pg-just"));
+  const placeJusts = () => ZONES.forEach((z, i) => Object.assign(justs$[i].style, {
+    left: `${((z.just[0] - z.from) / (z.to - z.from)) * 100}%`, width: `${((z.just[1] - z.just[0]) * widen / (z.to - z.from)) * 100}%`,
+  }));
+  placeJusts();
+  const gauge = el("div.pull-gauge-wrap", [el("div.pull-gauge", ZONES.map((z, i) => el(`div.pg-zone.z-${z.id}`, { style: { left: `${z.from * 100}%`, width: `${(z.to - z.from) * 100}%` } }, [
+    el("span", { text: z.label }), justs$[i],
+  ]))), needle]);
   const counter = el("div.pull-count");
   const readout = el("div.pull-read");
-  const leafGauge = buildLeafGauge(cs.leaf);
   const pullBtn = el("button.btn.primary", { dataset: { test: "pull-stop" } }, [el("span.btn-label", { text: "吸う（針を止める）" })]);
   const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [el("span.btn-label", { text: mode.serveLabel })]);
-  const play = el("div.pull-play", [gauge, counter, leafGauge.root, el("div.pull-btns", [pullBtn, serveBtn])]);
+  const play = el("div.pull-play", [gauge, counter, el("div.pull-btns", [pullBtn, serveBtn])]);
   const main = el("div.pull-main", [readout, play]);
   panel.append(el(`div.pull${mode.drift ? ".pull-care" : ""}`, [thermometer.root, main]));
 
@@ -144,7 +126,7 @@ async function pullGame(cs, mode) {
 
   // 針（左→右→左の往復）。熱管理では同じ時間で炭の熱も動く。
   let pos = 0, dir = 1, raf = 0, last = 0, running = false, choosing = false;
-  const period = 1.5 * slow;
+  let period = 1.5 * slowNow();
   const loop = (now) => {
     if (!running) return;
     const dt = Math.min(0.05, (now - last) / 1000);
@@ -171,14 +153,18 @@ async function pullGame(cs, mode) {
     const delta = z.id === "keep" ? (.5 - at) * .18 : (isJust ? z.justDelta : z.delta) + .015;
     return { z, isJust, delta };
   };
-  // 吸いすぎでフレーバーが傷む。ダメージを食らったように揺れ、体力が尽きればその一台はダメになる。
+  // 吸いすぎでフレーバーが傷む。文字は出さず、ダメージの音と揺れ、葉の傷みで伝える（TH27・TH28）。
   const damageLeaf = () => {
     cs.leaf.hp = Math.max(0, cs.leaf.hp - 1);
-    leafGauge.hit();
-    SE.hit(); flash("red"); shake(undefined, 380);
-    popStamp(panel, "フレーバーにダメージ！", "damage", "58%", "34%");
-    reactAudience(cs, "bad", { force: true });
+    setBenchLeaf(cs, true);
+    SE.hit(); shake(undefined, 380);
     if (cs.leaf.hp <= 0) fail("leaf");
+  };
+  // 吸いすぎ・過熱の吸い出しで、はじめが疲れる。針と成功帯にすぐ反映する（TH29）。
+  const strain = () => {
+    if (!strainBench(cs)) return;
+    period = 1.5 * slowNow(); widen = widenNow(); placeJusts();
+    SE.miss();
   };
   const doPull = (at = pos) => {
     if (pulls >= PULL_MAX || failed || !running) return;
@@ -189,14 +175,13 @@ async function pullGame(cs, mode) {
     T = clamp(coreTemp + wobble(), 0, 1);
     if (checkTemperature()) return;
     if (isJust) justs++;
-    // 傷む一回は、うまく吸えてもダメージの演出だけを見せる。
-    if (pulls > mode.safe) { damageLeaf(); if (failed) return; }
-    else {
-      reactAudience(cs, Math.abs(T - CENTER) > Math.abs(before - CENTER) ? "bad" : isJust ? "just" : "good");
-      if (isJust) { SE.just(); flash("gold"); popStamp(panel, `ジャスト${z.label}`, "just", "58%", "22%"); }
-      else { SE.good(); popStamp(panel, z.label, "good", "58%", "22%"); }
-    }
+    const overdone = pulls > mode.safe;
+    reactAudience(cs, overdone || Math.abs(T - CENTER) > Math.abs(before - CENTER) ? "bad" : isJust ? "just" : "good");
+    if (isJust) { SE.just(); flash("gold"); popStamp(panel, `ジャスト${z.label}`, "just", "58%", "22%"); }
+    else { SE.good(); popStamp(panel, z.label, "good", "58%", "22%"); }
     SE.bubbling();
+    if (overdone || T >= HARSH_TEMP) strain();
+    if (overdone) { damageLeaf(); if (failed) return; }
     render();
   };
 
