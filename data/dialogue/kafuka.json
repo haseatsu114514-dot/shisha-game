@@ -13,7 +13,7 @@
     "background_secret": "サメ映画の話を始めると長くなる。スピルバーグを尊敬している。グロい場面は目をそらして怖がるが、平気だと強がる。実は泳ぎが苦手。泳ぎの話と本名の紹介は後の私的会話で扱い、初回の説明には並べない。",
     "favorite_flavor": null,
     "specialty_flavor": null,
-    "spriteScale": 1,
+    "spriteScale": 0.91,
     "growth_stats": {
       "primary": "洞察",
       "secondary": "センス",
