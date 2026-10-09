@@ -30,7 +30,8 @@ const REPEAT_POOL = {
   rin: ["ch1_rin_repeat", "ch1_rin_repeat_b", "ch1_rin_repeat_c"],
 };
 // 固有会話をいくつ見たら LIME を交換済みとみなすか（交換シーンは固有会話の中にある）
-const LIME_EXCHANGE = { naru: 2, adam: 3, minto: 1, tsumugi: 2, sumi: 1, rin: 2 };
+// アダムは総督回を挟むので、交換の場面（ch1_adam_third）は4本目
+const LIME_EXCHANGE = { naru: 2, adam: 4, minto: 1, tsumugi: 2, sumi: 1, rin: 2 };
 
 // 背景（訪問先）
 export const VISIT_BG = {
@@ -90,6 +91,14 @@ export const spotById = (id) => allSpots().find((s) => s.id === id);
 // ---------------------------------------------------------------- 状態の読み取り
 
 export const storyCount = (id) => state.story[id] || 0;
+/** 固有会話をもう読んだか。並び順と消化数で決まるので、フラグの無い旧セーブでも同じに分かる */
+export function storySeen(dialogueId) {
+  for (const [charId, seq] of Object.entries(VISIT_SEQ)) {
+    const at = seq.indexOf(dialogueId);
+    if (at >= 0) return storyCount(charId) > at;
+  }
+  return false;
+}
 
 const NIGHT_STORIES = new Set([
   "ch1_sumi_training", "ch1_sumi_secret", "ch1_sumi_closing", "ch1_sumi_final",

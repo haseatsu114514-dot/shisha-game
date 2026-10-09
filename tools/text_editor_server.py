@@ -46,8 +46,17 @@ def current_branch() -> str:
 
 
 def wrap_js() -> str:
-    """現行の組版モジュールの実物を編集画面に配信。グローバル関数として利用。"""
-    src = (ROOT / "remake" / "js" / "vn" / "text.js").read_text()
+    """現行の組版モジュールの実物を編集画面に配信。グローバル関数として利用。
+    同じフォルダからの import（文節モデル）は中身を展開し、別名を付けて差し込む。"""
+    vn = ROOT / "remake" / "js" / "vn"
+
+    def inline(m: re.Match) -> str:
+        dep = (vn / m.group(3)).read_text(encoding="utf-8")
+        dep = re.sub(r"^export const " + m.group(1) + r" =", f"const {m.group(2)} =", dep, flags=re.MULTILINE)
+        return dep
+
+    src = (vn / "text.js").read_text(encoding="utf-8")
+    src = re.sub(r'^import \{ (\w+) as (\w+) \} from "\./([\w.]+)";$', inline, src, flags=re.MULTILINE)
     return re.sub(r"^export ", "", src, flags=re.MULTILINE)
 
 
