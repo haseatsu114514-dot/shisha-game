@@ -1,0 +1,59 @@
+{
+  "runtimeSourceCommit": "9544f59c61bbd2ec82f79d3e5db82ee3b12588aa",
+  "tests": {
+    "craft_focus.mjs": "PASS",
+    "steam_refresh.mjs": "PASS",
+    "stamina_condition.mjs": "PASS",
+    "data_loading.mjs": "PASS",
+    "playthrough.mjs": "PASS",
+    "craft_cutin_preview_verify.cjs": "PASS",
+    "craft_cutin_preview_capture.cjs": "PASS"
+  },
+  "playthrough": {
+    "command": "playthrough.mjs",
+    "exitCode": 0,
+    "started": "2026-10-09T05:25:44.956922+00:00",
+    "finished": "2026-10-09T05:33:03.320017+00:00"
+  },
+  "dialogueLint": {
+    "allErrors": 0,
+    "existingWarnings": 207,
+    "newInnerVoiceErrors": 0,
+    "newInnerVoiceWarnings": 0
+  },
+  "craftViewports": [
+    {
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "width": 844,
+      "height": 390
+    },
+    {
+      "width": 591,
+      "height": 1280
+    }
+  ],
+  "commentary": {
+    "height": 88,
+    "footerRemoved": true,
+    "mcSpeaker": "pakki",
+    "nextReactionReturnsToJudge": true,
+    "undiscoveredNamesRemainHidden": true,
+    "practiceInnerVoiceSteps": [
+      "holes",
+      "heat",
+      "steam",
+      "pull"
+    ],
+    "resultMarks": [
+      "◎",
+      "○",
+      "△"
+    ]
+  },
+  "cutinReport": "browser-validation.json",
+  "captureReport": "capture-validation.json",
+  "note": "カットインは比較ツールの手動再生。本編の成功条件への自動接続は含まない。"
+}

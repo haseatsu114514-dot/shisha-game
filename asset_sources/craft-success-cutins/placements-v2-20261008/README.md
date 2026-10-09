@@ -70,6 +70,9 @@ python3 remake/tools/serve_preview.py --port 8125
 
 制作UIの `craft_focus.mjs` で、パッキーの本文・話者・審査員への復帰、未紹介名の保持、
 自主練4工程の途中の内心・3段階の結果、PC／スマートフォンのレイアウトを確認する。
+`steam_refresh.mjs`／`stamina_condition.mjs`／`data_loading.mjs`／`playthrough.mjs`も通過。
+第1章の新規開始・セーブ／ロード・日常・大会の敗北→再挑戦→クリアを確認。
+最終確認記録は `review/test-validation.json`、通しログは `review/playthrough.log`。
 
 確認結果：4工程×2停止案で、約0.3秒の実時間が経過してもゲーム時刻と状態の変化は0。
 解除後の時刻の飛びは0.6〜1.0ms。1.1秒の自動演出は1100.9msを除外し、自動で再開した。
