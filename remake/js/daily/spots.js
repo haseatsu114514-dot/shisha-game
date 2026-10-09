@@ -30,7 +30,8 @@ const REPEAT_POOL = {
   rin: ["ch1_rin_repeat", "ch1_rin_repeat_b", "ch1_rin_repeat_c"],
 };
 // 固有会話をいくつ見たら LIME を交換済みとみなすか（交換シーンは固有会話の中にある）
-const LIME_EXCHANGE = { naru: 2, adam: 3, minto: 1, tsumugi: 2, sumi: 1, rin: 2 };
+// アダムは総督回を挟むので、交換の場面（ch1_adam_third）は4本目
+const LIME_EXCHANGE = { naru: 2, adam: 4, minto: 1, tsumugi: 2, sumi: 1, rin: 2 };
 
 // 背景（訪問先）
 export const VISIT_BG = {
@@ -50,7 +51,7 @@ export const SPOTS = [
   { id: "tonari", kind: "tonari", label: "tonari", area: "バイト先", x: 86, y: 36, theme: "baito", glyph: "店", face: "sumi",
     desc: "バイト先のシーシャラウンジ。客として一服するか、シフトに入るか。" },
   { id: "naru", kind: "rival", charId: "naru", label: "KEMURIKUSA", area: "商店街の外れ", x: 70, y: 24, theme: "rival", glyph: "煙", face: "naru", cost: VISIT_COST, closedOn: 3,
-    desc: "焼き菓子みたいな甘い匂いの人気店。若い店主が一人で回しているらしい。", stamina: -16 },
+    desc: "焼き菓子みたいな甘い匂いの人気店。腕のいい若い店員がいると評判らしい。", stamina: -16 },
   { id: "adam", kind: "rival", charId: "adam", label: "EDEN", area: "下町", x: 46, y: 48, theme: "rival", glyph: "煙", face: "adam", cost: VISIT_COST, closedOn: 5,
     desc: "焼き林檎みたいな匂いが漏れてくる店。注文はなぜかいつも一種類。", stamina: -16 },
   { id: "minto", kind: "rival", charId: "minto", label: "PEPPERMINT", area: "繁華街", x: 28, y: 62, theme: "rival", glyph: "煙", face: "minto", cost: VISIT_COST, closedOn: 6,
@@ -90,6 +91,14 @@ export const spotById = (id) => allSpots().find((s) => s.id === id);
 // ---------------------------------------------------------------- 状態の読み取り
 
 export const storyCount = (id) => state.story[id] || 0;
+/** 固有会話をもう読んだか。並び順と消化数で決まるので、フラグの無い旧セーブでも同じに分かる */
+export function storySeen(dialogueId) {
+  for (const [charId, seq] of Object.entries(VISIT_SEQ)) {
+    const at = seq.indexOf(dialogueId);
+    if (at >= 0) return storyCount(charId) > at;
+  }
+  return false;
+}
 
 const NIGHT_STORIES = new Set([
   "ch1_sumi_training", "ch1_sumi_secret", "ch1_sumi_closing", "ch1_sumi_final",

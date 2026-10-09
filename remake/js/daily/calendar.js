@@ -1,6 +1,6 @@
 // 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の行動 → 夜の固定イベント → 帰宅 → 翌朝。
 import { el, sleep, yen } from "../core/util.js";
-import { layers, dayCard, modal, toast, fadeBlack, bannersIdle, setBg } from "../core/ui.js";
+import { layers, dayCard, dayTurn, modal, toast, fadeBlack, bannersIdle, setBg } from "../core/ui.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { addMoney, addStamina, gainAffinity, paidAction, staminaAfter, staminaRatio, maxStamina } from "../core/stats.js";
@@ -13,7 +13,7 @@ import { initHud, showHud, updateHud, daysLeft, setPhoneBadge, presentSleepRecov
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chooseSpot, interruptMap } from "./map.js";
 import { isRainy } from "./weather.js";
-import { spotById, visitRival, visitSpot, restAtHome, isClosed, CHAR_STAT } from "./spots.js";
+import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, storyCount, CHAR_STAT } from "./spots.js";
 import { doFortune } from "./fortune.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
@@ -31,6 +31,7 @@ const SLEEP_RECOVERY = 14;
 let chapterDef = null;
 let onQuit = null;
 let queuedLimeSender = null;
+let dawnShownDay = null; // 夜明けの幕でDAYカードを見せた日（同じ日の朝のDAYカードを重ねない）
 
 /**
  * 日常パートを DAY1〜13 まで回す。DAY14の大会当日の朝の手前で返る。
@@ -57,7 +58,9 @@ export async function runDaily(def) {
       save();
     }
     while (state.slot < 2) {
-      await takeAction();
+      const delivery = dueDelivery();
+      if (delivery) await deliver(delivery);
+      else await takeAction();
       updateHud();
       save();
     }
@@ -68,7 +71,9 @@ export async function runDaily(def) {
 
 async function morning() {
   playBgm("kansetsu_shomei_to_black_coffee");
-  await dayCard(`DAY ${state.day}`, `SMOKE CROWN CUP まで あと${daysLeft()}日${isRainy() ? "　☂ 雨" : ""}`);
+  // 就寝から続けて来た朝は、夜明けの幕でDAYを見せ終えている（見せた印はここで使い切る）
+  if (dawnShownDay === state.day) dawnShownDay = null;
+  else await dayCard(`DAY ${state.day}`, `SMOKE CROWN CUP まで あと${daysLeft()}日${isRainy() ? "　☂ 雨" : ""}`);
   // LIME は通知だけ（中身は好きなときにアプリを開いて読む）
   const n = deliverMorning({ fixedNight: (d) => !!chapterDef.nightEvents[d] });
   if (n) pushNotice(n, { onOpen: (sender) => {
@@ -132,7 +137,7 @@ const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
 /**
  * 1日目だけ、自由行動の前にスミさんのおつかいを2つ実地でやる（旧版 N18/N19）。
  * ① Dr.fookah でミントを仕入れる（買い物は時間を使わない）→ ② KEMURIKUSA を客として偵察（行動1回＋交通費）。
- * マップは行き先の1か所だけ選べる案内つき。DAY1 の夜からが本当の自由行動
+ * マップは行き先の1か所だけ選べる案内つき。続く配達（DAY1 夜・DAY2 昼）が済んでからが本当の自由行動
  */
 async function day1Errands() {
   const f = state.flags;
@@ -173,6 +178,56 @@ async function day1Errands() {
   f._errand_scout_done = true;
   state.slot++;
   await afterAction({ exerted: true });
+}
+
+// ---------------------------------------------------------------- tonari の配達
+
+/**
+ * 第1章は、スミさんの届け物でEDEN・PEPPERMINTの初来店を必ず通す（DL01）。DAY1 のおつかいに続けて
+ * DAY1 夜に EDEN、DAY2 昼に PEPPERMINT。配達が全部済むまでマップは届け先だけを選べる（DL02）。
+ * 一服の代金はかからず、手当をバイト代に上乗せする。強制の行動なので能力とスロットは伸びない。
+ * 自分で先に行った旧セーブの店は飛ばし、DAY2 を過ぎた旧セーブには割り込まない
+ */
+const DELIVERIES = [
+  { charId: "adam", day: 1, slot: 1, scene: "remake_delivery_eden", text: "古いダブルアップルの缶を EDEN へ。EDEN をタップ！" },
+  { charId: "minto", day: 2, slot: 0, scene: "remake_delivery_minto", text: "まとめ買いのミントを PEPPERMINT へ。PEPPERMINT をタップ！" },
+];
+const DELIVERY_LAST_DAY = 2;
+const DELIVERY_PAY = 2000;
+const DELIVERY_STAMINA = -10;
+
+function dueDelivery() {
+  if (state.chapter !== 1 || state.day > DELIVERY_LAST_DAY || !state.flags._errand_scout_done) return null;
+  const inv = state.pendingInvite;
+  if (inv && (inv.day ?? state.day) === state.day && inv.slot === state.slot) return null; // 先にした約束を守る
+  for (const d of DELIVERIES) {
+    const done = `_delivery_${d.charId}_done`;
+    if (state.flags[done] || state.day * 2 + state.slot < d.day * 2 + d.slot) continue;
+    if (storyCount(d.charId) > 0) { state.flags[done] = true; continue; } // もう自分で行った店
+    const spot = spotById(d.charId);
+    if (spot && !isClosed(spot)) return d;
+  }
+  return null;
+}
+
+async function deliver({ charId, scene, text }) {
+  const f = state.flags;
+  if (!f[`_delivery_${charId}_told`]) {
+    await play(scene, { bg: TONARI_BG });
+    f[`_delivery_${charId}_told`] = true;
+    save();
+  }
+  await chooseSpot({ guide: { pin: charId, text, free: "配達（代金なし）" } });
+  f[`_delivery_${charId}`] = true; // 初来店の入りを配達の場面にする
+  addStamina(DELIVERY_STAMINA);
+  playBgm("tonari");
+  await visitChar(charId);
+  addMoney(DELIVERY_PAY);
+  toast(`配達の手当 +${DELIVERY_PAY.toLocaleString()}円（バイト代に上乗せ）`, { kind: "good" });
+  state.visitedDay[charId] = state.day;
+  f[`_delivery_${charId}_done`] = true;
+  state.slot++;
+  await afterAction();
 }
 
 // ---------------------------------------------------------------- 行動
@@ -380,14 +435,24 @@ async function advanceDay() {
   delete state.flags._cold_pending;
   delete state.flags._overwork; // 旧セーブの固定発病カウンターは使わない。
   const sleepBefore = state.stamina;
-  await fadeBlack(async () => {
+  const fromDay = state.day;
+  const fromLeft = daysLeft();
+  const wake = () => {
     // 大会の朝に発病しても大会日を飛ばさない。その夜は回復せず、不調の残量で本番へ。
     addStamina(exhausted && state.day + 1 >= TOURNAMENT_DAY ? 0 : SLEEP_RECOVERY);
     state.day += 1;
     state.slot = 0;
     updateHud();
     setBg(bgUrl("bg_home", "day"), { instant: true }); // 朝は家で目を覚ます（前の夜の場面の絵を持ち越さない）
-  }, 500);
+  };
+  if (state.day + 1 < TOURNAMENT_DAY) {
+    // 夜の紫が降りて、DAYと残り日数がめくれ、地平線が昇って朝になる（大会当日は当日の演出に任せる）
+    await dayTurn(async () => {
+      wake();
+      return { fromDay, day: state.day, fromLeft, left: daysLeft(), rain: isRainy(), sick: exhausted };
+    });
+    dawnShownDay = state.day;
+  } else await fadeBlack(wake, 500);
   await presentSleepRecovery({ before: sleepBefore, after: state.stamina });
   if (!exhausted) return;
   if (state.day >= TOURNAMENT_DAY) {
@@ -399,7 +464,7 @@ async function advanceDay() {
   const first = !state.flags._sick_once;
   state.flags._sick_once = true;
   state.flags[`_morning_${state.day}`] = true;
-  await dayCard(`DAY ${state.day}`, "……熱っぽい");
+  if (dawnShownDay !== state.day) await dayCard(`DAY ${state.day}`, "……熱っぽい");
   if (first) {
     await play("remake_sick_half");
     addStamina(Math.max(0, 60 - state.stamina));

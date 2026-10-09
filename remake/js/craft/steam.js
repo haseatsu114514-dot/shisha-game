@@ -4,7 +4,7 @@ import { el, sleep, clamp, rand, pick } from "../core/util.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { tier01, star } from "../core/stats.js";
-import { stepPanel, refreshBench, reactAudience, setPlayerMental } from "./session.js";
+import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, pauseBenchTemperature } from "./session.js";
 import { steamSecondsOf, steamPlaySeconds, steamTimeLabel } from "./steam-time.js";
 import { buildDigitalClock } from "./digital-clock.js";
 import { autoSkill, resultCard, keys, popStamp } from "./common.js";
@@ -51,7 +51,8 @@ export async function runSteamDodge(cs) {
   const thermometer = buildThermometer({ compact: true });
   const heatJitter = rand(-0.03, 0.03);
   const mental = buildMentalTrace(W, H);
-  thermometer.update(temperatureAfterSteam(cs, 0, heatJitter));
+  const renderTemperature = (temp) => { thermometer.update(temp); setBenchTemperature(cs, temp); };
+  renderTemperature(temperatureAfterSteam(cs, 0, heatJitter));
   box.append(mental.root, heart);
   panel.append(el("div.steam", [
     el("div.dodge-hud", [clock.root, waveEl, el("div.dodge-status", [hitsEl, pauseBtn])]), el("div.steam-play", [thermometer.root, box]),
@@ -112,6 +113,7 @@ export async function runSteamDodge(cs) {
     if (!running) return;
     paused = !paused; keysDown.clear(); resetPad();
     box.dataset.paused = String(paused);
+    pauseBenchTemperature(cs, paused);
     pauseBtn.textContent = paused ? "スタート" : "ストップ";
     pauseBtn.setAttribute("aria-label", paused ? "タイマーをスタート" : "タイマーをストップ");
     pauseBtn.setAttribute("aria-pressed", String(paused));
@@ -191,7 +193,7 @@ export async function runSteamDodge(cs) {
         const dt = Math.min(0.05, (now - last) / 1000); last = now;
         if (paused) { raf = requestAnimationFrame(loop); return; }
         time += dt;
-        thermometer.update(temperatureAfterSteam(cs, Math.min(1, time / dur) * seconds, heatJitter));
+        renderTemperature(temperatureAfterSteam(cs, Math.min(1, time / dur) * seconds, heatJitter));
         let x = axisX + (keysDown.has("r") ? 1 : 0) - (keysDown.has("l") ? 1 : 0);
         let y = axisY + (keysDown.has("d") ? 1 : 0) - (keysDown.has("u") ? 1 : 0);
         const length = Math.max(1, Math.hypot(x, y));
@@ -231,11 +233,12 @@ export async function runSteamDodge(cs) {
     running = false; pauseBtn.disabled = true; cancelAnimationFrame(raf); unkey(); input.abort(); resetPad(); clearBullets(); refreshLabel();
     heart.classList.remove("shield"); box.classList.remove("warning");
     setPlayerMental(cs, "steady");
+    pauseBenchTemperature(cs, false);
   }
   const score = clamp(100 - hits * 14, 0, 100);
   clock.update(0);
   const temp = temperatureAfterSteam(cs, seconds, heatJitter);
-  thermometer.update(temp);
+  renderTemperature(temp);
   cs.steam = { min, seconds, temp, hits, score, refreshesUsed: stock - refreshes, warmingFactor: rainy ? 0.85 : 1 };
   refreshBench();
   popStamp(panel, hits === 0 ? "無心" : hits <= 2 ? "持ちこたえた" : "雑念まみれ", hits === 0 ? "just" : hits <= 2 ? "good" : "bad", "50%", "40%");

@@ -770,3 +770,35 @@
 .rc-evaluation, .craft-evaluation { font-size: 26px; color: #c4ada6; }
 .rc-evaluation.bright, .craft-evaluation.bright { color: #efcf8a; }
 .rc-evaluation.warm, .craft-evaluation.warm { color: #b7d2bc; }
+
+/* 熱のイメージ。参照動画の斜めの四角、赤い炎、紫と黄緑の灼熱。
+   作業台の素材スキン（data-art-skin）より後に置き、操作欄・見出しの暗幕を確実に効かせる。 */
+.thermal-backdrop { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; display: none; }
+.bench.thermal-active .thermal-backdrop { display: block; }
+.bench.thermal-active { --accent: #ffe3a1; }
+.bench.thermal-active .bench-right { padding: 16px 20px; margin: -16px -20px; border-radius: 16px; background: #100b1ce8; box-shadow: 0 6px 32px #18091555; }
+.bench.thermal-active .bench-top { background: linear-gradient(180deg, #120b21e0, #120b21a8); border-bottom-color: #ffe3a133; }
+.bench.thermal-active .bench-worker { box-shadow: 0 12px 32px #0006, 0 0 0 1px #0004; }
+.thermal-label { margin-left: auto; font-size: 12px; color: var(--thermal-ink); white-space: nowrap; }
+.thermal-label[hidden] { display: none; }
+.thermal-glow { display: none; position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen; opacity: var(--thermal-glow-strength, 0);
+  background: radial-gradient(circle at 80% 30%, var(--thermal-glow) 0, transparent 30%), linear-gradient(0deg, var(--thermal-glow), transparent 42%);
+  animation: thermal-glow 1.7s ease-in-out infinite alternate; }
+.thermal-active .thermal-glow { display: block; }
+.thermal-picture { display: none; position: absolute; bottom: 237px; width: 120px; height: 150px; color: var(--thermal-ink); pointer-events: none; filter: drop-shadow(0 0 7px currentColor); }
+.thermal-picture svg { width: 100%; height: 100%; overflow: visible; }
+.thermal-active .thermal-picture { display: block; }
+.thermal-wisps { opacity: .4; animation: thermal-breath 3.8s ease-in-out infinite alternate; transform-origin: 50% 100%; }
+.thermal-flame { display: none; transform-origin: 50% 100%; animation: thermal-flicker .65s ease-in-out infinite alternate; }
+.thermal-flame .flame-outer { fill: var(--thermal-flame-outer, #ff6a00); }
+.thermal-flame .flame-mid { fill: var(--thermal-flame-mid, #ffc417); }
+.thermal-flame .flame-core { fill: var(--thermal-flame-core, #fff5a0); }
+.thermal-active[data-thermal-band="cold"] .thermal-wisps { opacity: .15; }
+.thermal-active[data-thermal-band="hot"] .thermal-wisps { opacity: .8; }
+.thermal-active:is([data-thermal-band="fire"], [data-thermal-band="inferno"]) .thermal-wisps { stroke: #302333; opacity: .8; }
+.thermal-active:is([data-thermal-band="fire"], [data-thermal-band="inferno"]) .thermal-flame { display: block; }
+.bench[data-thermal-paused="true"] :is(.thermal-picture *, .thermal-glow) { animation-play-state: paused; }
+@keyframes thermal-breath { from { transform: translateY(3px) scale(.9, .92); } to { transform: translateY(-10px) scale(1.04, 1.06); } }
+@keyframes thermal-flicker { from { transform: scale(.91, .85) skewX(-5deg); } to { transform: scale(1.04, 1.08) skewX(4deg); } }
+@keyframes thermal-glow { from { opacity: calc(var(--thermal-glow-strength, 0) * .72); } to { opacity: var(--thermal-glow-strength, 0); } }
+@media (prefers-reduced-motion: reduce) { .thermal-picture *, .thermal-glow { animation: none; } }

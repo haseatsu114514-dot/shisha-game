@@ -146,7 +146,10 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
 1. タイトル → コールドオープン（`ch1_cold_open`・`scenes/coldopen.js`: 背景レイヤーにスポットライトの中の一台と一筋の煙・客席のシルエット。台詞に合わせて煙が満ち「1年前」で暗転）→ 章タイトル → `ch1_opening`
 2. スミさんの練習の誘い（任意）: 練習するなら手本つきで一台を通しで作る。どちらの選択でも → `ch1_tutorial_oneesan`
 3. DAY1 の昼はスミさんのおつかい（案内つき・旧版 N18/N19）: Dr.fookah でミントを仕入れる（買うまで店を出られない・時間は使わない）
-   → KEMURIKUSA を客として偵察（行動1回＋交通費）。案内中のマップは行き先の1か所だけが光って選べる。DAY1 の夜から自由行動
+   → KEMURIKUSA を客として偵察（行動1回＋交通費）。案内中のマップは行き先の1か所だけが光って選べる
+   続けて DAY1 の夜は EDEN、DAY2 の昼は PEPPERMINT へ tonari の配達（スミさんの頼み・`remake_delivery_*`・DL01/DL02）。古いロットのダブルアップル缶／まとめ買いのミントを届け、
+   そのまま初来店の一服になる（代金なし・手当 2,000円・強制なので能力とスロットは伸びない）。初来店の入りは配達の場面（`_delivery_adam`／`_delivery_minto`）。
+   配達が全部済むまでマップは届け先だけを選べ、DAY2 の夜から自由行動。自分で先に行っていた旧セーブの店は飛ばし、DAY3 以降の旧セーブには割り込まない
 4. 日常 DAY1〜14（1日2行動・昼/夜）
    - tonari（お客さんとして＝つむぎ／バイト＝接客イベント＋給料／スミさんと話す／自主練）。
      DAY3・DAY8 と、4日以上シフトに入っていない朝はスミさんから「昼のシフト入れるか？」の LIME（乗るとそのままバイト・給料に上乗せ）
@@ -250,7 +253,9 @@ node remake/test/minto_progression.mjs      # 初対面・仕事後の約束・�
 node remake/test/temporary_closures.mjs     # 定休日以外の外出・臨時休業の通知とマップ・保存・翌日の営業
 node remake/test/playtest_ui.mjs            # 回復とHUDの一致・通知からLIME・バイトSKIP・サメちゃんの声とBGM
 node remake/test/illness.mjs                # 風邪の確率・残量0・休養・大会当日の発病
-node remake/test/bgm_gain.mjs               # テーマの音量・設定変更・フェード
+node --experimental-vm-modules remake/test/bgm_gain.mjs # テーマの音量・設定変更・フェード
+node --experimental-vm-modules remake/test/bgm_packaged.mjs # 大会音源の復元・非同期切替・曲別音量
+node remake/test/bgm_browser.mjs            # 実音声のデコード・ループ・ミュート・既存MP3
 node --experimental-vm-modules remake/test/data_loading.mjs # 接続数・通信失敗・タイムアウト
 ```
 

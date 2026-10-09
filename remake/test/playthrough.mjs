@@ -15,9 +15,9 @@ const SHOTS = process.env.SHOTS || "";
 const log = (...a) => console.log("[remake]", ...a);
 
 // 行動計画（上から順に消費）。shop:* は時間を使わない買い物、after:* はバイト後の過ごし方
-// DAY1 の昼は案内つきのおつかい（Dr.fookah でミント→KEMURIKUSA 偵察）で埋まる
+// DAY1 の昼は案内つきのおつかい（Dr.fookah でミント→KEMURIKUSA 偵察）、DAY1 の夜・DAY2 の昼はスミさんの配達（EDEN・PEPPERMINT）で埋まる
+// （配達の2枠は計画を消費しない。DAY2 の夜から下の計画どおりで、定休日との並びは配達前と同じ）
 const PLAN = [
-  "baito:sumi", "naru",
   "baito:holes",
   "adam", "customer",
   "minto", "baito:sumi",
@@ -36,6 +36,22 @@ const PLAN = [
 
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_BIN ? { executablePath: process.env.CHROME_BIN } : {}) });
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+await page.addInitScript(() => {
+  window.addEventListener("DOMContentLoaded", async () => {
+    const audio = await import("./js/core/audio.js");
+    const { hooks } = await import("./js/vn/engine.js");
+    window.__tournamentBgmCues = {};
+    const previous = hooks.onLine;
+    hooks.onLine = (id, line) => {
+      previous?.(id, line);
+      if (["ch1_tournament_opening", "remake_round1_intro", "ch1_tournament_r1_end",
+        "ch1_tournament_r2_end", "ch1_tournament_r3_end", "remake_trial_intro"].includes(id)) {
+        const attempt = window.__remake.state.tournament.attempts;
+        window.__tournamentBgmCues[`${attempt}:${id}`] = audio.currentBgm();
+      }
+    };
+  });
+});
 const errors = [];
 page.on("pageerror", (e) => errors.push(`pageerror: ${e.message}`));
 page.on("console", (m) => {
@@ -62,6 +78,7 @@ let lastKey = "";
 let lastDay = null;
 let resumed = false;
 let guided = 0;
+let deliveryGuided = 0;
 let rainMaps = 0;
 let screenLeaks = 0;
 let resultUnderPhone = false;
@@ -95,6 +112,8 @@ for (;;) {
       phone: !!document.querySelector(".phone-overlay"),
       modal: document.querySelector("#modal")?.classList.contains("show"),
       day: s?.day, slot: s?.slot, phase: s?.phase, stamina: s?.stamina, money: s?.money,
+      errandDone: !!s?.flags?._errand_scout_done,
+      deliveriesDone: !!(s?.flags?._delivery_adam_done && s?.flags?._delivery_minto_done),
       stats: s?.stats,
       lastRank: s?.tournament?.lastRank,
       endTitle: document.querySelector(".end-title")?.textContent || "",
@@ -222,12 +241,14 @@ for (;;) {
     continue;
   }
 
-  // 1日目の案内: 光っている1か所だけ選べる。計画は進めない
+  // 1日目の案内・スミさんの配達: 光っている1か所だけ選べる。計画は進めない
   if (snap.screen === "map" && (await page.$('[data-test="map-guide"]'))) {
-    guided++;
+    if (!snap.errandDone) guided++; else deliveryGuided++;
     await click(".spot-pin.guide"); await click('[data-test="map-go"]');
     continue;
   }
+  // 配達が全部済むまでは、届け先だけを選べる案内のマップしか出ない
+  if (snap.screen === "map" && !snap.deliveriesDone) throw new Error(`free map before deliveries (DAY ${snap.day} slot ${snap.slot})`);
   // LIME: 朝は通知だけ。はじめて届いた日はアイコンが照らされる（案内）→ 以後は赤丸があれば自分で開く
   if (snap.screen === "map" && (await click('[data-test="coach-lime"]'))) { limeCoach++; continue; }
   if (snap.screen === "map" && snap.rain) rainMaps++;
@@ -301,6 +322,20 @@ if (!s.flags._ev_rehearsal || !s.flags._ev_last_night) throw new Error("DAY13 re
 log(`attempts=${s.tournament.attempts} lastRank=${s.tournament.lastRank} total=${s.tournament.lastTotal}`);
 if (s.phase !== "cleared") throw new Error(`expected cleared, got ${s.phase}`);
 if (s.tournament.attempts < 2) throw new Error("expected a defeat before the win");
+const bgmCues = await page.evaluate(() => window.__tournamentBgmCues);
+for (let attempt = 1; attempt <= s.tournament.attempts; attempt++) {
+  for (const [id, expected] of [
+    ["ch1_tournament_opening", "bgm_tournament_edm"],
+    ["remake_round1_intro", "bgm_tournament_craft"],
+    ["ch1_tournament_r1_end", "bgm_tournament_craft"],
+    ["ch1_tournament_r2_end", "bgm_tournament_craft"],
+    ["ch1_tournament_r3_end", "bgm_tournament_craft"],
+    ["remake_trial_intro", "bgm_tournament_wait"],
+  ]) {
+    if (bgmCues[`${attempt}:${id}`] !== expected) throw new Error(`Wrong BGM at attempt ${attempt} ${id}: ${bgmCues[`${attempt}:${id}`]}`);
+  }
+}
+log("tournament BGM: opening → crafting ROUND 1–3 → judging, including retry: PASS");
 // スロット: 日常の行動ごとに1回転（リプレイの追加回転を含む）。結果は全部演出まで消化されている
 log(`slot: spins=${s.reel.count} note=${JSON.stringify(s.reel.note)} pending=${s.reel.pending.length}`);
 if (s.reel.count < 20) throw new Error(`slot should spin once per action (count=${s.reel.count})`);
@@ -310,6 +345,10 @@ if (s.reel.pending.length) throw new Error(`slot spins left unshown: ${s.reel.pe
 // 1日目の案内: 仕入れ→偵察の2回、案内マップを通った／ミントを買う前は店を出られない
 log(`day1 errands: guided=${guided} errandBlocked=${errandBlocked} scout=${!!s.flags._errand_scout_done} mint=${s.flavors.includes("mint")}`);
 if (guided !== 3 || !errandBlocked || !s.flags._errand_scout_done || !s.flavors.includes("mint")) throw new Error("day1 errands not completed as guided");
+// スミさんの配達（DAY1 夜 EDEN・DAY2 昼 PEPPERMINT）: 初来店を配達の場面で通す
+log(`deliveries: guided=${deliveryGuided} adam=${s.flags._delivery_adam_done}@${s.flags._delivery_adam} minto=${s.flags._delivery_minto_done}@${s.flags._delivery_minto}`);
+if (deliveryGuided !== 2 || !s.flags._delivery_adam || !s.flags._delivery_minto || !s.flags._delivery_adam_done || !s.flags._delivery_minto_done)
+  throw new Error("EDEN/PEPPERMINT deliveries not completed as guided");
 // スミさんのバイト誘い（DAY3/8 は固定で届く。テストは誘いに乗る）
 log(`sumi baito invites: ${s.limeRead.filter((id) => id.startsWith("_sumi_baito_inv_")).join(",")} lastBaitoDay=${s.lastBaitoDay}`);
 if (!s.limeRead.includes("_sumi_baito_inv_d3")) throw new Error("sumi baito invite (DAY3) not delivered");
