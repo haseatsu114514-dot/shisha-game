@@ -16,8 +16,8 @@ const log = (...a) => console.log("[remake]", ...a);
 
 // 行動計画（上から順に消費）。shop:* は時間を使わない買い物、after:* はバイト後の過ごし方
 // DAY1 の昼は案内つきのおつかい（Dr.fookah でミント→KEMURIKUSA 偵察）、DAY1 の夜・DAY2 の昼はスミさんの配達（EDEN・PEPPERMINT）で埋まる
+// （配達の2枠は計画を消費しない。DAY2 の夜から下の計画どおりで、定休日との並びは配達前と同じ）
 const PLAN = [
-  "baito:sumi", "naru",
   "baito:holes",
   "adam", "customer",
   "minto", "baito:sumi",
