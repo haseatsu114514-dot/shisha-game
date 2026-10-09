@@ -8,7 +8,7 @@
   アイコンは TUNE で全キャラの顔の大きさを揃えてあるので、シートでも顔の大きさが揃う。
   ただし160pxへの縮小・減色はせず、立ち絵から原寸で切り出して拡大表示する。
 - 全身は不透明部分の重心で左右中央に置く（白衣の裾・ぬいぐるみ等で片寄って見えないように）。
-- 全身の大きさは全シート共通の縮尺（ゲーム内の spriteScale 込み）。並べれば身長を比べられる。
+- 全身の高さは身長の設定（cm）に比例させた全シート共通の縮尺。設定の無いキャラはゲーム内の spriteScale で換算。
 
 使い方:
     python3 tools/make_reference_sheet.py            # 全キャラ
@@ -525,10 +525,35 @@ BODY_W_ONE, BODY_W_TWO = 760, 500
 _body_k = None
 
 
+PAKKI_RATIO = 0.94 / 1.36  # remake/js/vn/engine.js の FRAMING（pakkiTarget / target）
+
+
+# 身長の設定（cm）。正本は brand/character_profiles.md（サメちゃんは data/dialogue/kafuka.json の height_cm）。
+# 設定の無いキャラは None（ゲーム内の spriteScale から換算する）。
+HEIGHT_CM = {
+    "hajime": 172, "sumi": 182, "naru": 176, "adam": 178, "minto": 156, "ageha": 160,
+    "nagumo": 178, "dr_kemuri": 175, "mashiro": 155, "kafuka": 156,
+    "tsumugi": None, "rin": None, "maezono": None, "pakki": None,
+}
+BASE_CM = 172  # spriteScale 1.0 ＝ はじめの身長
+
+
+def game_height(o, cid):
+    """ゲーム内の見かけの全身の高さ（はじめ＝1.0）。会話エンジンは絵の余白や原寸に関係なく、
+    不透明部分の高さを spriteScale に比例させて表示する（engine.js の frame()）。"""
+    return o["sprite_scale"] * (PAKKI_RATIO if cid == "pakki" else 1.0)
+
+
+def sheet_height(o, cid):
+    """シートで描く全身の高さ（はじめ＝1.0）。身長の設定があればそれに合わせ、無ければゲーム内の値。"""
+    cm = HEIGHT_CM.get(cid)
+    return cm / BASE_CM if cm else game_height(o, cid)
+
+
 def body_scale(chars):
-    """全シート共通の全身の縮尺。ゲーム内の表示倍率（spriteScale）を掛けた大きさで比べ、
-    いちばん横幅・背丈のある立ち絵が枠に収まる値にする。1枚ずつ枠に合わせると、
-    横に広い立ち絵（凛）が小さく、細い立ち絵が大きく写り、身長の比較ができなくなるため。"""
+    """全シート共通の全身の縮尺 REF（ゲーム内の高さ1.0を何pxで描くか）。
+    1枚ずつ枠に合わせると、横に広い立ち絵（凛）が小さく写り、身長の比較ができなくなるため、
+    ゲームと同じく spriteScale に比例した高さで描き、いちばん大きい立ち絵が枠に収まる値にする。"""
     global _body_k
     if _body_k is None:
         ks = []
@@ -537,25 +562,25 @@ def body_scale(chars):
             avail_w = (BODY_W_TWO if len(cfg["outfits"]) > 1 else BODY_W_ONE) - BODY_PAD_W
             for o in cfg["outfits"]:
                 b = body_crop(o["normal"])
-                ks.append(min(avail_w / (b.width * o["sprite_scale"]),
-                              (MIN_ROW_H - BODY_PAD_H) / (b.height * o["sprite_scale"])))
+                gh = sheet_height(o, cid)
+                ks.append(min((MIN_ROW_H - BODY_PAD_H) / gh, avail_w * b.height / (b.width * gh)))
         _body_k = min(ks)
     return _body_k
 
 
-def draw_body(sheet, d, bx, top, bottom, w, o, label, accent, k):
+def draw_body(sheet, d, bx, top, bottom, w, o, label, accent, k, cid):
     ph = bottom - top
     tile = stage((w, ph), accent)
     floor = ph - 40
-    # 全シート共通の目安線（ゲーム内の大きさで100pxごと）
+    # 全シート共通の目安線（ゲーム内の高さ1.0＝はじめの身長の1/10ごと）
     gd = ImageDraw.Draw(tile)
-    step = 100 * k
+    step = k / 10
     yy = floor - step
     while yy > 70:
         gd.line([(14, round(yy)), (w - 14, round(yy))], fill=mix(PANEL, TEXT, 0.07), width=1)
         yy -= step
     src = body_crop(o["normal"])
-    s = k * o["sprite_scale"]
+    s = k * sheet_height(o, cid) / src.height
     body = src.resize((max(1, round(src.width * s)), max(1, round(src.height * s))), Image.LANCZOS)
     fx = (w - body.width) // 2
     fy = floor - body.height
@@ -625,7 +650,7 @@ def build(cid, chars):
     row_bottom = max(mid_bottom, right_bottom, top + MIN_ROW_H)
     for i, o in enumerate(outfits):
         draw_body(sheet, d, M + i * (body_w + GAP), top, row_bottom, body_w, o,
-                  o["label_long"] if two else o["label"], accent, body_scale(chars))
+                  o["label_long"] if two else o["label"], accent, body_scale(chars), cid)
 
     y = row_bottom + 56
     for o in outfits:
@@ -650,7 +675,69 @@ def build(cid, chars):
     return out
 
 
+def build_lineup(chars, ref=760):
+    """全員を同じ床・同じ縮尺（身長の設定どおり）に並べた背比べ図。"""
+    items = []
+    for cid in ["minto", *CHARS]:
+        cfg = make_cfg(cid, chars, light=True)
+        name = cfg.get("title") or cid
+        if cid != "minto":
+            entry = chars[cid]
+            name = (entry.get("display_name") or entry["name"]).split(" / ", 1)[0].split("（")[0]
+        for o in cfg["outfits"]:
+            lab = name + (f"（{o['label']}）" if len(cfg["outfits"]) > 1 else "")
+            items.append((cid, lab, o))
+    items.sort(key=lambda t: -sheet_height(t[2], t[0]))
+
+    px_cm = ref / BASE_CM
+    gap, left, top_pad, foot = 28, 150, 150, 230
+    bodies = []
+    for cid, lab, o in items:
+        src = body_crop(o["normal"])
+        sc = ref * sheet_height(o, cid) / src.height
+        bodies.append(src.resize((max(1, round(src.width * sc)), max(1, round(src.height * sc))), Image.LANCZOS))
+    width = left + sum(b.width for b in bodies) + gap * (len(bodies) - 1) + 60
+    tallest = max(b.height for b in bodies)
+    floor = top_pad + tallest + 20
+    sheet = Image.new("RGB", (width, floor + foot), BG)
+    d = ImageDraw.Draw(sheet)
+    d.text((M, 40), "背比べ（身長の設定どおりの縮尺）", font=font("black", 56), fill=TEXT)
+    d.text((M, 108), "設定の無いキャラはゲーム内の表示倍率で換算。頭の上の帽子・角・フード、厚底靴も含めた高さで並べている",
+           font=font("medium", 24), fill=SUB)
+    for cm in range(100, 200, 10):
+        y = round(floor - cm * px_cm)
+        if y < top_pad - 10:
+            break
+        d.line([(left - 10, y), (width - 30, y)], fill=mix(BG, TEXT, 0.12 if cm % 50 else 0.22), width=1)
+        d.text((left - 20, y - 14), f"{cm}cm", font=font("medium", 20), fill=MUTED, anchor="ra")
+    d.line([(left - 10, floor), (width - 30, floor)], fill=mix(BG, TEXT, 0.4), width=2)
+    x = left
+    for (cid, lab, o), b in zip(items, bodies):
+        sheet.paste(b, (x, floor - b.height), b)
+        cx = x + b.width // 2
+        cm = HEIGHT_CM.get(cid)
+        game_cm = BASE_CM * game_height(o, cid)
+        d.text((cx, floor + 24), lab, font=font("bold", 24), fill=TEXT, anchor="ma")
+        d.text((cx, floor + 62), f"設定 {cm}cm" if cm else "設定なし", font=font("medium", 20), fill=SUB, anchor="ma")
+        d.text((cx, floor + 90), f"ゲーム内 約{game_cm:.0f}cm", font=font("medium", 20), fill=SUB, anchor="ma")
+        if cm and abs(game_cm - cm) >= 3:
+            # ゲーム内の高さが設定とずれている場合は、ゲーム内の頭の位置を赤い点線で示す
+            y = round(floor - game_cm * px_cm)
+            for xx in range(x, x + b.width, 14):
+                d.line([(xx, y), (xx + 7, y)], fill=(230, 80, 70), width=3)
+            d.text((cx, floor + 118), "ゲーム内と設定がずれている", font=font("bold", 18), fill=(230, 80, 70), anchor="ma")
+        x += b.width + gap
+    out = OUT_ROOT / "height-lineup.png"
+    sheet.save(out, optimize=True)
+    print(out.relative_to(ROOT), sheet.size)
+    return out
+
+
 if __name__ == "__main__":
     chars = load_characters()
-    for t in sys.argv[1:] or ["minto", *CHARS]:
-        build(t, chars)
+    targets = sys.argv[1:] or ["minto", *CHARS, "lineup"]
+    for t in targets:
+        if t == "lineup":
+            build_lineup(chars)
+        else:
+            build(t, chars)

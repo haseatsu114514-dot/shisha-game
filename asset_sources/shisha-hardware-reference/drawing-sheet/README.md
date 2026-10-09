@@ -1,20 +1,22 @@
 # シーシャ描写リファレンス（早見表と、プロンプトに貼るルール）
 
 シーシャ台・ホース・炭が写る画像を生成する前に、まずこの1枚を見る。
+
+> **これは仕組みを理解し、生成後に検品するための資料。図や早見表を生成ツールに添付しない**（平板な図解の見た目が絵に移るため）。生成するときは、下の「添付する画像」のとおり実物の写真を見て、写真を添付する。
 このフォルダの親にある13の資料と37写真・構造図・NG実例の**要点だけ**をまとめた早見表。
 細かい根拠・出典・例外は各資料が正本（末尾の一覧）。食い違ったら正本とオーナーの最新指示を優先する。
 
 | ファイル | 用途 |
 |---|---|
 | [shisha-drawing-reference.png](shisha-drawing-reference.png) | 人が読む早見表（構造・縮尺・場面・ホース・吸い口・穴・NG実例・チェックリスト・写真索引） |
-| [shisha-structure-for-ai.png](shisha-structure-for-ai.png) | **生成ツールに添付する構造図**（部品の積み順・ホース経路・比率）。文字は少なめ |
+| [shisha-structure-diagram.png](shisha-structure-diagram.png) | 構造図だけを切り出した資料（部品の積み順・ホース経路・比率）。検品のときに見比べる。**生成ツールには添付しない** |
 | [shisha-drawing-reference.html](shisha-drawing-reference.html) | 上2枚の元データ。直したら下のコマンドで書き出し直す |
 
 ```bash
 node tools/render_html_png.mjs \
   asset_sources/shisha-hardware-reference/drawing-sheet/shisha-drawing-reference.html \
   asset_sources/shisha-hardware-reference/drawing-sheet/shisha-drawing-reference.png \
-  --select "#anatomy" asset_sources/shisha-hardware-reference/drawing-sheet/shisha-structure-for-ai.png
+  --select "#anatomy" asset_sources/shisha-hardware-reference/drawing-sheet/shisha-structure-diagram.png
 ```
 
 ---
@@ -34,8 +36,14 @@ HMD       : 完成・喫煙なら必須。具体的な1モデル（例：ONMO型
 構図      : カメラ距離・人物と台の奥行き（手持ちなら同じ奥行き）・場所と時間帯
 ```
 
-添付する画像は **役割を分けて** プロンプトに書く：
-「本人＝正規立ち絵」「質感＝`assets/ui/title_arts/title_art_keyvisual_01.png`」「機材の構造＝`shisha-structure-for-ai.png`」。
+### 添付する画像（写真を見る）
+
+役割を分けてプロンプトに書く。**図解（このフォルダの画像）は添付しない。**
+
+- **本人**：正規立ち絵 `assets/sprites/characters/<id>/chr_<id>_normal.png`
+- **質感**：`assets/ui/title_arts/title_art_keyvisual_01.png`
+- **機材**：実物の写真。オーナー提供の元写真（[台9種](../README.md)・[喫煙と熱管理](../smoking-and-heat-management-20261009.md)・[アルミ・HMD・炭の近接](../heat-management-closeups-20261009.md)・[ホースとチップ](../hose-and-mouthpieces-20261009.md) 等の各資料に番号つきで記録）と、選んだHMDモデルを**ボウルに装着した実写**、手で持つ場面なら**掌・指が写る実写**（出典は[装着時と手持ちの縮尺](../installed-and-handheld-scale-20261009.md)）
+- リポジトリにある写真の一覧画像は縮小版。生成に使うときは元の写真か出典から取り直す
 
 ## 2. プロンプトに貼る文
 
