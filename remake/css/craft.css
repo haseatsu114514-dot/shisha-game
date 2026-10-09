@@ -424,14 +424,10 @@
 .pull-btns .btn { flex: 1; align-items: center; padding: 16px; font-size: 20px; }
 
 /* ---------------------------------------------------------------- 熱管理 */
-.care { display: flex; flex-direction: column; gap: 14px; }
-.care-round { font-size: 18px; color: var(--accent); letter-spacing: 0.1em; }
-.care-chart { position: relative; height: 200px; border-radius: 8px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.15); overflow: hidden; }
-.cc-zone { position: absolute; left: 0; right: 0; background: rgba(142, 230, 168, 0.18); border-top: 1px dashed var(--good); border-bottom: 1px dashed var(--good); }
-.cc-pt { position: absolute; width: 12px; height: 12px; margin: 0 0 -6px -6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); }
-.care-read { font-size: 19px; color: #fff; min-height: 30px; }
-.care-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.care-btn { min-width: 0; }
+/* 熱管理は吸い出しと同じ針のゲーム。最初の吸い出しの前だけ、炭交換のボタンが並ぶ（TH14）。 */
+.pull-care .pull-btns .btn { padding: 14px 10px; font-size: 17px; }
+.pull-care .care-exchange { flex: .8; }
+.pull-care .care-exchange .btn-desc { font-size: 12px; }
 
 /* ---------------------------------------------------------------- FLAVOR TRIAL */
 .trial { display: flex; flex-direction: column; gap: 14px; }
@@ -688,7 +684,7 @@
 .bench[data-art-skin] .bench-condition summary { border: 1px solid currentColor; box-shadow: inset 0 1px 2px #ffefc522, 0 2px 5px #0007; }
 .bench[data-art-skin] .bench-progress-track span { box-shadow: inset 0 1px 0 #ffebbd33; }
 .bench[data-art-skin] .bench-progress-track span.now { box-shadow: inset 0 1px 0 #fff6, 0 0 7px #e8c27a44; }
-.bench[data-art-skin] :is(.bench-worker, .bench-audience, .opt, .dodge, .pull-gauge, .care-chart, .result-card) {
+.bench[data-art-skin] :is(.bench-worker, .bench-audience, .opt, .dodge, .pull-gauge, .result-card) {
   border-image: var(--craft-panel-art) 22% 12% / 12px / 3px stretch;
   box-shadow: 0 8px 24px #0005, inset 0 0 16px #e8c27a0c;
 }
@@ -771,7 +767,7 @@
 .rc-evaluation.bright, .craft-evaluation.bright { color: #efcf8a; }
 .rc-evaluation.warm, .craft-evaluation.warm { color: #b7d2bc; }
 
-/* 熱のイメージ。低温は薄く、適温は陽炎と煙、超えると黄色→赤の炎を画面の後ろに描く（TH01〜TH12）。
+/* 熱のイメージ。冷たい色から始まり、適温は虹と陽炎・煙、超えるとだんだん火事のように黄色→赤の炎を画面の後ろに描く（TH01〜TH13）。
    作業台の素材スキン（data-art-skin）より後に置き、操作欄・見出しの暗幕を確実に効かせる。 */
 .thermal-backdrop { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; display: none; }
 .bench.thermal-active .thermal-backdrop { display: block; }
@@ -784,6 +780,7 @@
 .thermal-label { margin-left: auto; font-size: 12px; color: var(--thermal-ink); white-space: nowrap; }
 .thermal-label[hidden] { display: none; }
 .bench[data-thermal-band="inferno"] .thermal-label { font-weight: 700; animation: thermal-warn .7s ease-in-out infinite alternate; }
+.bench[data-thermal-band="ready"] .thermal-label { font-weight: 700; color: transparent; background: linear-gradient(90deg, #ff7b7b, #ffc46b, #ffeb6b, #8dff9e, #6bd6ff, #a98bff, #ff7ae0, #ff7b7b) 0 0 / 200% 100%; -webkit-background-clip: text; background-clip: text; animation: thermal-rainbow 4s linear infinite; }
 .thermal-glow { display: none; position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen; opacity: var(--thermal-glow-strength, 0);
   background: radial-gradient(circle at 80% 30%, var(--thermal-glow) 0, transparent 30%), linear-gradient(0deg, var(--thermal-glow), transparent 42%);
   animation: thermal-glow 1.7s ease-in-out infinite alternate; }
@@ -805,5 +802,6 @@
 @keyframes thermal-breath { from { transform: translateY(3px) scale(.9, .92); } to { transform: translateY(-10px) scale(1.04, 1.06); } }
 @keyframes thermal-glow { from { opacity: calc(var(--thermal-glow-strength, 0) * .72); } to { opacity: var(--thermal-glow-strength, 0); } }
 @keyframes thermal-warn { from { opacity: 1; } to { opacity: .45; } }
+@keyframes thermal-rainbow { to { background-position: 200% 0; } }
 @keyframes thermal-boom { 0% { transform: scale(.3); opacity: 1; } 35% { opacity: 1; } 100% { transform: scale(16); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .thermal-picture *, .thermal-glow, .thermal-label, .thermal-boom.go { animation: none; } }
