@@ -1,0 +1,24 @@
+{
+  "id": "rin-02-flavor-samples",
+  "path": "/workspace/generated_images/exec-eb205d08-84a3-480a-b294-88ab713bd21d.png",
+  "source": "rin/02-flavor-samples.png",
+  "prompt": "rin/02-flavor-samples.prompt.txt",
+  "references": [
+    "references/rin-adopted-normal.png",
+    "references/title-style.png"
+  ],
+  "source_sha256": "0a21badd6f874ab8aeb3f7fb98c433ce7a466ecc54b0954d7e5ac07406de39db",
+  "prompt_sha256": "33aeb869bb05c892cdc261adbe59a93828b620b8fc661af6139bf8df45c7177a",
+  "reference_sha256": {
+    "references/rin-adopted-normal.png": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09",
+    "references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}

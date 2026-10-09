@@ -1,0 +1,5 @@
+画風参考: bg_eden_shop.png を第一基準にする。温かい照明の2Dドット絵〜ピクセルペインター調で、輪郭・影・質感に細かいドット感を残す。リアル写真調や滑らかすぎる3D調にしない。シーシャ台の先端は小さい凸型の金属ポストにし、凹んだカップ型・ボウル一体型・大きな先端パーツにしない。
+
+Edit reference 1, the already generated artwork. Small targeted cleanup only. Preserve this same adult Tsumugi, bob, face, purple floral hoodie, pose, cracked tablet, gentle lavender smoke, creative plant-filled room, wooden Wookah silhouette, whole wood vase and one continuous dark-teal connected hose. Remove the tiny WOOKAH word on the silver band and the round manufacturer medallion on the wooden stem. Replace those markings with plain clean metal band/wood grain respectively, keeping realistic fittings and proportions. Remove any remaining brand emblem on bowl/HMD. No words or icon-like logos on apparatus. Preserve exact moderate pixel texture, light, setting and scene; no other changes.
+
+Opaque PNG 1024x1536, same portrait 2:3 framing. Reference 2 is actual equipment geometry only; keep illustration style. Proposed preserved source: asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/01-smoke-colors.png

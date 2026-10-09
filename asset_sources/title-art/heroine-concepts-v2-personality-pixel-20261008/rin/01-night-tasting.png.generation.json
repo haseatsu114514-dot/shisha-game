@@ -1,0 +1,25 @@
+{
+  "id": "rin-01-night-tasting",
+  "path": "/workspace/generated_images/exec-12320b27-a17b-4215-8c1a-0cf9cc3a51d0.png",
+  "source": "rin/01-night-tasting.png",
+  "prompt": "rin/01-night-tasting.revision-3.prompt.txt",
+  "references": [
+    "rin/01-night-tasting-revision-2.png",
+    "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
+  ],
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false,
+  "recovered_after_tool_cell_interruption": true,
+  "source_sha256": "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19",
+  "prompt_sha256": "41abc2bd9f5fceb68663382b0e87b2770fa58fecb6efe43d39a870e019e81eec",
+  "reference_sha256": {
+    "rin/01-night-tasting-revision-2.png": "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
+    "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg": "a46cd683eb02c239513b22bfc937dffde5f3920f958a33ba00a1553fbe183cbc"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB"
+}

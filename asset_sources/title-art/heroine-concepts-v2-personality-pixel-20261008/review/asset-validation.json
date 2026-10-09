@@ -1,0 +1,467 @@
+{
+  "original_artwork_modified": false,
+  "runtime_changed": false,
+  "collections": [
+    {
+      "folder": "asset_sources/title-art/heroine-concepts-v1-20261008",
+      "originals": 15,
+      "counts": {
+        "tsumugi": 3,
+        "mashiro": 3,
+        "minto": 3,
+        "ageha": 3,
+        "rin": 3
+      },
+      "size": [
+        1024,
+        1536
+      ],
+      "opaque": true
+    },
+    {
+      "folder": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008",
+      "originals": 19,
+      "counts": {
+        "tsumugi": 3,
+        "mashiro": 3,
+        "minto": 4,
+        "ageha": 3,
+        "rin": 3,
+        "kafuka": 3
+      },
+      "size": [
+        1024,
+        1536
+      ],
+      "opaque": true
+    }
+  ],
+  "generation_records": [
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v1-20261008/ageha/01-professional-taste.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v1-20261008/ageha/01-professional-taste.png",
+      "sha256": "da3f718474bd03f9846793b031f21b395804614f62fbf225f11d918e33c36dda",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v1-20261008/ageha/02-grocery-smile.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v1-20261008/ageha/02-grocery-smile.png",
+      "sha256": "96a2696d7ebea0894d85287759886742cf7363b921a08b6e9ad2d7cb468f035e",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v1-20261008/ageha/03-model-moment.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v1-20261008/ageha/03-model-moment.png",
+      "sha256": "7b9bcc163fb0213c9ba57f6176e0d19e1740aa33baf1a6efbca2ceeaf33fbfde",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v1-20261008/mashiro/01-heavy-smoke.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v1-20261008/mashiro/01-heavy-smoke.png",
+      "sha256": "8552ce5b9edb0d50b62436c5e1fcd0f3ddc58d8140a5c2d37c52ed20786904cd",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v1-20261008/mashiro/02-tea-break.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v1-20261008/mashiro/02-tea-break.png",
+      "sha256": "397733b03aeb2c63118c2d3d3c4d5795939a9471143e29f42e244e09f0ff4ff5",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v1-20261008/mashiro/03-after-rain.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v1-20261008/mashiro/03-after-rain.png",
+      "sha256": "f36451c7b33218abcbe5413a862396183b3b11b00141621ded5243ff4370c4b7",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v1-20261008/minto/01-cafe-welcome.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v1-20261008/minto/01-cafe-welcome.png",
+      "sha256": "0100d7dd7f82930472906a4cfa1233a8e1f446b739ba363909b2f6f21de7162d",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v1-20261008/minto/02-instant-photo.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v1-20261008/minto/02-instant-photo.png",
+      "sha256": "dd6643b0283371caf988a7b1f35684fc08eea78d755a0d3409ad70884d0a67c9",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v1-20261008/minto/03-private-window.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v1-20261008/minto/03-private-window.png",
+      "sha256": "5aaaa75a10f97c1bb715552902f7f254a300b2f37c9c9aaec59a01f27fa2ed5a",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v1-20261008/rin/01-night-tasting.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v1-20261008/rin/01-night-tasting.png",
+      "sha256": "9953652335cb661fceb0863e95871fde01777185d395d68d454b440844c8f0c0",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v1-20261008/rin/02-flavor-samples.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v1-20261008/rin/02-flavor-samples.png",
+      "sha256": "0a21badd6f874ab8aeb3f7fb98c433ce7a466ecc54b0954d7e5ac07406de39db",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v1-20261008/rin/03-late-coffee.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v1-20261008/rin/03-late-coffee.png",
+      "sha256": "a4a542ac461374247f54df7a71f8772b17b820cef8a7516df14124a65d03b553",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v1-20261008/tsumugi/01-smoke-colors.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v1-20261008/tsumugi/01-smoke-colors.png",
+      "sha256": "a1da06a12de052f15c1a93ede43ff785925155b2562d050861437a0bf90e3e41",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v1-20261008/tsumugi/02-tablet-cat.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v1-20261008/tsumugi/02-tablet-cat.png",
+      "sha256": "4d1504f404e6ef250eb08cf2b7c8f35e3f5e5d4ef57f2bafd1588445c0c92e90",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v1-20261008/tsumugi/03-twilight-sketch.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v1-20261008/tsumugi/03-twilight-sketch.png",
+      "sha256": "7ee0cc7147bd7b49a32a49f38db8d2da5d69088e9e0804f04ffe409393f2feed",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/ageha/01-professional-taste.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/ageha/01-professional-taste.png",
+      "sha256": "de5857d27aae1cb456e142720673f096075de3dcf06386779b617e55e25f2bde",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/ageha/02-grocery-smile.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/ageha/02-grocery-smile.png",
+      "sha256": "af594618812268d47d4e391cd17b505165aad837e82d879888a0267094968158",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/ageha/03-model-moment.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/ageha/03-model-moment.png",
+      "sha256": "eb91bbf84a7b641ca4c3e32071448f856f211344c7313e81caf91ac355102b06",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run-first.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run-first.png",
+      "sha256": "02f90c16a3df1be6665cc4ef3ed59d9f83c77181eafbbd6c8a4fe263dd8f87ea",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run-revision-1.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run-revision-1.png",
+      "sha256": "77e2d1e182c543d86d35f91412406295604c6f5423f4672e5e551378b8b6590f",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run-revision-2.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run-revision-2.png",
+      "sha256": "1162dc5809ef3bb5b514aa269f659232b7e3813f1781470cab12573d872e0102",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/01-shishark-test-run.png",
+      "sha256": "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/02-shark-movie.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/02-shark-movie.png",
+      "sha256": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/03-aquarium.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/kafuka/03-aquarium.png",
+      "sha256": "cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/mashiro/01-heavy-smoke-first.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/mashiro/01-heavy-smoke-first.png",
+      "sha256": "f633c63452b5882566f8f42a6b142f8f4c47c8e9d6c3abda7fdb8e1feb525d72",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/mashiro/01-heavy-smoke.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/mashiro/01-heavy-smoke.png",
+      "sha256": "8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/mashiro/02-tea-break.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/mashiro/02-tea-break.png",
+      "sha256": "0790aeaa1f231457b4f32ca67a5dc7a6a5ee630043ab55600fc6e821977fa658",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/mashiro/03-after-rain.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/mashiro/03-after-rain.png",
+      "sha256": "1ebb9b79beff36e13a73efc6700d8f7b9dc5de438f7c22959f200150cf9799e9",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/01-cafe-welcome-first.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/01-cafe-welcome-first.png",
+      "sha256": "927d5e13340e2f5c9c29542215301e6d79dcc532e1c89e2293bf5ab233a1915a",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/01-cafe-welcome.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/01-cafe-welcome.png",
+      "sha256": "b1e10bd7fb7edcc3585967e95c3477dd368ee58fe941a21e09e85ca7479a005a",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/02-instant-photo.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/02-instant-photo.png",
+      "sha256": "689e2c6f5dcd74a672300dc9f0cdd9dadabaf947c13bf6ce0dffc5e21d6e3f5b",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/03-private-window.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/03-private-window.png",
+      "sha256": "10c1200ce8a499f232c666c0bded84693a50474074fb74fb047dff5b6f941b96",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/04-after-hours.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/minto/04-after-hours.png",
+      "sha256": "7324deb26600496f18caf19c8bcb316f317a144f0366c11fe1f2c796dd94cf53",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-first.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-first.png",
+      "sha256": "7a22d97a7cbdafb2863da9b923972d0a86711edab80c7d8cf796aea5f1047360",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-revision-1.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-revision-1.png",
+      "sha256": "519b134ee0ce780fe623319de70eff49aa26fce67025f8c705bf44463c474ba4",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-revision-2.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting-revision-2.png",
+      "sha256": "7ae01ddb1c19d0316ecbd6ed190226b2de63277a1afb5e7c2ed726fb19bd6c20",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/01-night-tasting.png",
+      "sha256": "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/02-flavor-samples.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/02-flavor-samples.png",
+      "sha256": "abaa15b9ffbe0cba763862d49b8e3023408a4d7b4f84420c79844496d248ea82",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/03-late-coffee.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/rin/03-late-coffee.png",
+      "sha256": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/01-smoke-colors-first.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/01-smoke-colors-first.png",
+      "sha256": "5d8f7ab864bff38b7def9098a3fff42780bb9a67774ade0cbe4bb1f9c0f444ad",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/01-smoke-colors-revision-1.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/01-smoke-colors-revision-1.png",
+      "sha256": "6505b7d4c89b45dcfd89559c5f10da2373949cb4bab7353fbde2449cae84eaf7",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/01-smoke-colors.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/01-smoke-colors.png",
+      "sha256": "d603aac37922f3c75879f7b7f8dcb22f3c919b784290ffc24ede7703f613cbb4",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/02-tablet-cat.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/02-tablet-cat.png",
+      "sha256": "336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    },
+    {
+      "record": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/03-twilight-sketch.png.generation.json",
+      "source": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/03-twilight-sketch.png",
+      "sha256": "eeb75f3963e1991db208dc2767f7823654ac0675198a0bb393be703cb0dfa2c1",
+      "byte_identical_to_original": true,
+      "prompt_and_actual_reference_hashes_match": true
+    }
+  ],
+  "references": [
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v1-20261008/references/tsumugi-adopted-normal.png",
+      "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v1-20261008/references/mashiro-adopted-normal.png",
+      "sha256": "d9a9ae63c2b0bfaae9f88fc139bf3ca7deb22fd719b9286f5c383668cf495f8d",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v1-20261008/references/minto-adopted-normal.png",
+      "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v1-20261008/references/ageha-adopted-normal.png",
+      "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v1-20261008/references/rin-adopted-normal.png",
+      "sha256": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v1-20261008/references/title-style.png",
+      "sha256": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v1-20261008/references/minto-private.png",
+      "sha256": "c9a603a9c9c9b0438781573180d8c6e0ecac6c425a17c116623b0ba4b6d48bf2",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v1-20261008/references/hookah-real-body.jpg",
+      "sha256": "2bdbb38c8ae19a6d21aadabe3be9bdec3af57754709ebdf89035d39d02702d8d",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v1-20261008/references/hmd-real-assembled.jpg",
+      "sha256": "c562580773c147f77f8ba8b86cb76fc43f8d71f9237d38fe2f4b0f717a292069",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v1-20261008/references/hmd-real-side.jpg",
+      "sha256": "a46cd683eb02c239513b22bfc937dffde5f3920f958a33ba00a1553fbe183cbc",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/references/wookah-body.jpg",
+      "sha256": "7ee45733539c9028cb6b192f476b24c84c56206a02e747ca7aee253714a86cdc",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/references/wookah-vase.jpg",
+      "sha256": "b055be0ba996751a0ae4b17a08875f3cb29826a3d16239c01939fd98779c7706",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/references/km-turkey-brass.png",
+      "sha256": "810e4bdb41f155746ee444cd4f52bcf6ab6d6723b8ec37cd37bac818aa916d81",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/references/amy-diamond-pink.jpg",
+      "sha256": "03c802681606e5b2a103916abd0ce93be2ac103a795d48ff6eac05bb6a9dcafd",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/references/steamulation-black.jpg",
+      "sha256": "2a9be1e829d824ff1d570b43bdc569bee050e921ccc60d3e4af3cc0cddcd0158",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/references/wookah-complete.jpg",
+      "sha256": "6c405d25a2ab50064f7bf30245c753416788dbde9ee6fbd828a22ffc458087d1",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/references/cloud-micro-blue.jpg",
+      "sha256": "1d9c88a847a32474af8f41969f95b65ede9b538961757d82716b950c956c0fee",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/references/kafuka-adopted-normal.png",
+      "sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/references/lerook-blue-black.png",
+      "sha256": "a12acde3d55e923be8a0baf6ba95bb2a7e6e837acaaa377769a6dacb4916eaae",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/references/lapis-black-white.jpg",
+      "sha256": "6940b066e63ab6e0137c0f69b47dd58fbe3a386cf794869e29fe322b3d5245d2",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/references/stratus-hmd.jpg",
+      "sha256": "81706a057e4d195b2f4e81e7bc08c24376bf976966f08b7a96d5780b2f9b084d",
+      "matches_record": true
+    },
+    {
+      "file": "asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/references/sky-bowl.jpg",
+      "sha256": "10945b199b7f0f3656f3938f5e61aadcd3a0a439bca96baba7fd7631cdbf1d65",
+      "matches_record": true
+    }
+  ],
+  "current_model_count": 6,
+  "adoption_status": "owner-selection-pending",
+  "refinement_candidates": [
+    "rin-02-flavor-samples"
+  ],
+  "repository_base": "b0577fed34eb23222b26070ccf70404fb0f02fe3"
+}

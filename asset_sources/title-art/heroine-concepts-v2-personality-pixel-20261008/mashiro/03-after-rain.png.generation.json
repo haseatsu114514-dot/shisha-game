@@ -1,0 +1,24 @@
+{
+  "id": "mashiro-03-after-rain",
+  "path": "/workspace/generated_images/exec-ebbce175-fb2f-4b77-83bf-a76deb2aadae.png",
+  "source": "mashiro/03-after-rain.png",
+  "prompt": "mashiro/03-after-rain.prompt.txt",
+  "references": [
+    "../heroine-concepts-v1-20261008/references/mashiro-adopted-normal.png",
+    "../heroine-concepts-v1-20261008/references/title-style.png"
+  ],
+  "source_sha256": "1ebb9b79beff36e13a73efc6700d8f7b9dc5de438f7c22959f200150cf9799e9",
+  "prompt_sha256": "5c0678ead89a826532a7f41bb8f8575aa694f137020e7b46d934e58d5e6a57a6",
+  "reference_sha256": {
+    "../heroine-concepts-v1-20261008/references/mashiro-adopted-normal.png": "d9a9ae63c2b0bfaae9f88fc139bf3ca7deb22fd719b9286f5c383668cf495f8d",
+    "../heroine-concepts-v1-20261008/references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}

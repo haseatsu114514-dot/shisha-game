@@ -1,0 +1,25 @@
+{
+  "id": "tsumugi-01-smoke-colors",
+  "path": "/workspace/generated_images/exec-19bdc47c-083b-4735-b35a-8fdaa5a4796a.png",
+  "source": "tsumugi/01-smoke-colors.png",
+  "prompt": "tsumugi/01-smoke-colors.revision-2.prompt.txt",
+  "references": [
+    "tsumugi/01-smoke-colors-revision-1.png",
+    "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
+  ],
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false,
+  "recovered_after_tool_cell_interruption": true,
+  "source_sha256": "d603aac37922f3c75879f7b7f8dcb22f3c919b784290ffc24ede7703f613cbb4",
+  "prompt_sha256": "3159a36a406f47d50d1d4e0512e2afcafac02d8353714562dc6ebfdcd525580c",
+  "reference_sha256": {
+    "tsumugi/01-smoke-colors-revision-1.png": "6505b7d4c89b45dcfd89559c5f10da2373949cb4bab7353fbde2449cae84eaf7",
+    "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg": "a46cd683eb02c239513b22bfc937dffde5f3920f958a33ba00a1553fbe183cbc"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB"
+}

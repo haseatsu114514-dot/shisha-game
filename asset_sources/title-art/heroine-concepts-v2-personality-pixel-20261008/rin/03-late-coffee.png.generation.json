@@ -1,0 +1,24 @@
+{
+  "id": "rin-03-late-coffee",
+  "path": "/workspace/generated_images/exec-595fe51f-b728-4318-8e19-97108f690790.png",
+  "source": "rin/03-late-coffee.png",
+  "prompt": "rin/03-late-coffee.prompt.txt",
+  "references": [
+    "../heroine-concepts-v1-20261008/references/rin-adopted-normal.png",
+    "../heroine-concepts-v1-20261008/references/title-style.png"
+  ],
+  "source_sha256": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
+  "prompt_sha256": "0ae6d4bc225796430d7c222c0cf128ee256ddb0636850631c9e0358e34ffc908",
+  "reference_sha256": {
+    "../heroine-concepts-v1-20261008/references/rin-adopted-normal.png": "0617e527df8ef704088c0c4558440ee6ff3c484635061f8b4eaf807c21f97c09",
+    "../heroine-concepts-v1-20261008/references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}

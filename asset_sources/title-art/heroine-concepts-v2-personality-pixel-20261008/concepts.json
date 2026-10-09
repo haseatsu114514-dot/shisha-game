@@ -1,0 +1,546 @@
+{
+  "tool": "image_gen.imagegen",
+  "base_sha": "fa3d7fd1f7c2e3e6be2815a9a7f9220390109b05",
+  "purpose": "TA01–12: 6 heroines x3 plus Minto intermediate =19; varied real equipment/backgrounds and adopted-title pixel texture",
+  "previous_comparison_folder": "../heroine-concepts-v1-20261008",
+  "transparent_background": false,
+  "concepts": [
+    {
+      "id": "tsumugi-01-smoke-colors",
+      "character": "tsumugi",
+      "label": "煙の色と木のぬくもり",
+      "shisha": true,
+      "hardware_reference_model": "WOOKAH Classic Walnut",
+      "source": "tsumugi/01-smoke-colors.png",
+      "prompt": "tsumugi/01-smoke-colors.prompt.txt",
+      "references": [
+        "../heroine-concepts-v1-20261008/references/tsumugi-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png",
+        "references/wookah-complete.jpg",
+        "references/lerook-blue-black.png",
+        "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed-candidate",
+      "original_output": "/workspace/generated_images/exec-19bdc47c-083b-4735-b35a-8fdaa5a4796a.png",
+      "source_sha256": "d603aac37922f3c75879f7b7f8dcb22f3c919b784290ffc24ede7703f613cbb4",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "tsumugi/01-smoke-colors.revision-2.prompt.txt",
+      "latest_references": [
+        "tsumugi/01-smoke-colors-revision-1.png",
+        "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
+      ],
+      "adoption_status": "owner-selection-pending"
+    },
+    {
+      "id": "tsumugi-02-tablet-cat",
+      "character": "tsumugi",
+      "label": "タブレットの猫",
+      "shisha": false,
+      "hardware_reference_model": null,
+      "source": "tsumugi/02-tablet-cat.png",
+      "prompt": "tsumugi/02-tablet-cat.prompt.txt",
+      "references": [
+        "../heroine-concepts-v1-20261008/references/tsumugi-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed-candidate",
+      "original_output": "/workspace/generated_images/exec-08b6e65b-abc1-40ee-8ef3-ac22004ee666.png",
+      "source_sha256": "336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "tsumugi/02-tablet-cat.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/tsumugi-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "adoption_status": "owner-selection-pending"
+    },
+    {
+      "id": "tsumugi-03-twilight-sketch",
+      "character": "tsumugi",
+      "label": "川辺のスケッチ",
+      "shisha": false,
+      "hardware_reference_model": null,
+      "source": "tsumugi/03-twilight-sketch.png",
+      "prompt": "tsumugi/03-twilight-sketch.prompt.txt",
+      "references": [
+        "../heroine-concepts-v1-20261008/references/tsumugi-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed-candidate",
+      "original_output": "/workspace/generated_images/exec-c0ed2c3f-6861-4938-aca2-a4274840d0b7.png",
+      "source_sha256": "eeb75f3963e1991db208dc2767f7823654ac0675198a0bb393be703cb0dfa2c1",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "tsumugi/03-twilight-sketch.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/tsumugi-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "adoption_status": "owner-selection-pending"
+    },
+    {
+      "id": "mashiro-01-heavy-smoke",
+      "character": "mashiro",
+      "label": "レトロ喫茶の一服",
+      "shisha": true,
+      "hardware_reference_model": "Khalil Mamoon Turkey brass + foil",
+      "source": "mashiro/01-heavy-smoke.png",
+      "prompt": "mashiro/01-heavy-smoke.prompt.txt",
+      "references": [
+        "../heroine-concepts-v1-20261008/references/mashiro-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png",
+        "references/km-turkey-brass.png"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed-candidate",
+      "original_output": "/workspace/generated_images/exec-b17f7960-fe6c-4d0f-bbf9-a5f3da8a4b02.png",
+      "source_sha256": "8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "mashiro/01-heavy-smoke.revision-1.prompt.txt",
+      "latest_references": [
+        "mashiro/01-heavy-smoke-first.png",
+        "references/km-turkey-brass.png"
+      ],
+      "adoption_status": "owner-selection-pending"
+    },
+    {
+      "id": "mashiro-02-tea-break",
+      "character": "mashiro",
+      "label": "小さな台所でお茶",
+      "shisha": false,
+      "hardware_reference_model": null,
+      "source": "mashiro/02-tea-break.png",
+      "prompt": "mashiro/02-tea-break.prompt.txt",
+      "references": [
+        "../heroine-concepts-v1-20261008/references/mashiro-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed-candidate",
+      "original_output": "/workspace/generated_images/exec-beffd700-f8b8-44bc-b6d5-c44b6a4a5c09.png",
+      "source_sha256": "0790aeaa1f231457b4f32ca67a5dc7a6a5ee630043ab55600fc6e821977fa658",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "mashiro/02-tea-break.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/mashiro-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "adoption_status": "owner-selection-pending"
+    },
+    {
+      "id": "mashiro-03-after-rain",
+      "character": "mashiro",
+      "label": "雨の駅で待ち合わせ",
+      "shisha": false,
+      "hardware_reference_model": null,
+      "source": "mashiro/03-after-rain.png",
+      "prompt": "mashiro/03-after-rain.prompt.txt",
+      "references": [
+        "../heroine-concepts-v1-20261008/references/mashiro-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed-candidate",
+      "original_output": "/workspace/generated_images/exec-ebbce175-fb2f-4b77-83bf-a76deb2aadae.png",
+      "source_sha256": "1ebb9b79beff36e13a73efc6700d8f7b9dc5de438f7c22959f200150cf9799e9",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "mashiro/03-after-rain.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/mashiro-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "adoption_status": "owner-selection-pending"
+    },
+    {
+      "id": "minto-01-cafe-welcome",
+      "character": "minto",
+      "label": "ミント色のお出迎え",
+      "shisha": true,
+      "hardware_reference_model": "Oduman N2 Travel",
+      "source": "minto/01-cafe-welcome.png",
+      "prompt": "minto/01-cafe-welcome.prompt.txt",
+      "references": [
+        "../heroine-concepts-v1-20261008/references/minto-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png",
+        "../heroine-concepts-v1-20261008/references/hookah-real-body.jpg",
+        "../heroine-concepts-v1-20261008/references/hmd-real-assembled.jpg"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed-candidate",
+      "original_output": "/workspace/generated_images/exec-b2baefb1-9c86-4e24-85b7-e1c60448d0fa.png",
+      "source_sha256": "b1e10bd7fb7edcc3585967e95c3477dd368ee58fe941a21e09e85ca7479a005a",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "minto/01-cafe-welcome.revision-1.prompt.txt",
+      "latest_references": [
+        "minto/01-cafe-welcome-first.png",
+        "../heroine-concepts-v1-20261008/references/hmd-real-assembled.jpg"
+      ],
+      "adoption_status": "owner-selection-pending"
+    },
+    {
+      "id": "minto-02-instant-photo",
+      "character": "minto",
+      "label": "チェキ撮影コーナー",
+      "shisha": false,
+      "hardware_reference_model": null,
+      "source": "minto/02-instant-photo.png",
+      "prompt": "minto/02-instant-photo.prompt.txt",
+      "references": [
+        "../heroine-concepts-v1-20261008/references/minto-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed-candidate",
+      "original_output": "/workspace/generated_images/exec-3c24fcfd-4914-4cf6-9996-4a48ea89887b.png",
+      "source_sha256": "689e2c6f5dcd74a672300dc9f0cdd9dadabaf947c13bf6ce0dffc5e21d6e3f5b",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "minto/02-instant-photo.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/minto-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "adoption_status": "owner-selection-pending"
+    },
+    {
+      "id": "minto-03-private-window",
+      "character": "minto",
+      "label": "休日の窓辺",
+      "shisha": false,
+      "hardware_reference_model": null,
+      "source": "minto/03-private-window.png",
+      "prompt": "minto/03-private-window.prompt.txt",
+      "references": [
+        "../heroine-concepts-v1-20261008/references/minto-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png",
+        "../heroine-concepts-v1-20261008/references/minto-private.png"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed-candidate",
+      "original_output": "/workspace/generated_images/exec-81f9e151-e9f4-47f5-8c2a-45f17382c413.png",
+      "source_sha256": "10c1200ce8a499f232c666c0bded84693a50474074fb74fb047dff5b6f941b96",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "minto/03-private-window.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/minto-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png",
+        "../heroine-concepts-v1-20261008/references/minto-private.png"
+      ],
+      "adoption_status": "owner-selection-pending"
+    },
+    {
+      "id": "minto-04-after-hours",
+      "character": "minto",
+      "label": "閉店後の素顔",
+      "shisha": false,
+      "hardware_reference_model": null,
+      "source": "minto/04-after-hours.png",
+      "prompt": "minto/04-after-hours.prompt.txt",
+      "references": [
+        "../heroine-concepts-v1-20261008/references/minto-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png",
+        "../heroine-concepts-v1-20261008/references/minto-private.png"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed-candidate",
+      "original_output": "/workspace/generated_images/exec-85e377e0-1bf4-48ca-a54e-0ced793a481f.png",
+      "source_sha256": "7324deb26600496f18caf19c8bcb316f317a144f0366c11fe1f2c796dd94cf53",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "minto/04-after-hours.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/minto-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png",
+        "../heroine-concepts-v1-20261008/references/minto-private.png"
+      ],
+      "adoption_status": "owner-selection-pending"
+    },
+    {
+      "id": "ageha-01-professional-taste",
+      "character": "ageha",
+      "label": "ピンクの試香席",
+      "shisha": true,
+      "hardware_reference_model": "AMY Diamond pink",
+      "source": "ageha/01-professional-taste.png",
+      "prompt": "ageha/01-professional-taste.prompt.txt",
+      "references": [
+        "../heroine-concepts-v1-20261008/references/ageha-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png",
+        "references/amy-diamond-pink.jpg",
+        "references/lerook-blue-black.png",
+        "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed-candidate",
+      "original_output": "/workspace/generated_images/exec-563b83ed-d278-4e05-b16f-95ac1baf24c8.png",
+      "source_sha256": "de5857d27aae1cb456e142720673f096075de3dcf06386779b617e55e25f2bde",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "ageha/01-professional-taste.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/ageha-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png",
+        "references/amy-diamond-pink.jpg",
+        "references/lerook-blue-black.png",
+        "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
+      ],
+      "adoption_status": "owner-selection-pending"
+    },
+    {
+      "id": "ageha-02-grocery-smile",
+      "character": "ageha",
+      "label": "昼の商店街で",
+      "shisha": false,
+      "hardware_reference_model": null,
+      "source": "ageha/02-grocery-smile.png",
+      "prompt": "ageha/02-grocery-smile.prompt.txt",
+      "references": [
+        "../heroine-concepts-v1-20261008/references/ageha-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed-candidate",
+      "original_output": "/workspace/generated_images/exec-7a56a215-7b85-4904-b788-a8a6d4c35ac4.png",
+      "source_sha256": "af594618812268d47d4e391cd17b505165aad837e82d879888a0267094968158",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "ageha/02-grocery-smile.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/ageha-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "adoption_status": "owner-selection-pending"
+    },
+    {
+      "id": "ageha-03-model-moment",
+      "character": "ageha",
+      "label": "撮影スタジオの一瞬",
+      "shisha": false,
+      "hardware_reference_model": null,
+      "source": "ageha/03-model-moment.png",
+      "prompt": "ageha/03-model-moment.prompt.txt",
+      "references": [
+        "../heroine-concepts-v1-20261008/references/ageha-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed-candidate",
+      "original_output": "/workspace/generated_images/exec-1ed963ca-35b4-4d4a-b986-9731f9156900.png",
+      "source_sha256": "eb91bbf84a7b641ca4c3e32071448f856f211344c7313e81caf91ac355102b06",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "ageha/03-model-moment.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/ageha-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "adoption_status": "owner-selection-pending"
+    },
+    {
+      "id": "rin-01-night-tasting",
+      "character": "rin",
+      "label": "黒い試香室",
+      "shisha": true,
+      "hardware_reference_model": "Steamulation Pro X Mini black",
+      "source": "rin/01-night-tasting.png",
+      "prompt": "rin/01-night-tasting.prompt.txt",
+      "references": [
+        "../heroine-concepts-v1-20261008/references/rin-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png",
+        "references/steamulation-black.jpg",
+        "references/lapis-black-white.jpg",
+        "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed-candidate",
+      "original_output": "/workspace/generated_images/exec-12320b27-a17b-4215-8c1a-0cf9cc3a51d0.png",
+      "source_sha256": "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "rin/01-night-tasting.revision-3.prompt.txt",
+      "latest_references": [
+        "rin/01-night-tasting-revision-2.png",
+        "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
+      ],
+      "adoption_status": "owner-selection-pending"
+    },
+    {
+      "id": "rin-02-flavor-samples",
+      "character": "rin",
+      "label": "輸入サンプルを選ぶ",
+      "shisha": false,
+      "hardware_reference_model": null,
+      "source": "rin/02-flavor-samples.png",
+      "prompt": "rin/02-flavor-samples.prompt.txt",
+      "references": [
+        "../heroine-concepts-v1-20261008/references/rin-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed-requires-dark-leaf-refinement",
+      "original_output": "/workspace/generated_images/exec-73b65107-52fc-4592-978d-5723ad6b602f.png",
+      "source_sha256": "abaa15b9ffbe0cba763862d49b8e3023408a4d7b4f84420c79844496d248ea82",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "rin/02-flavor-samples.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/rin-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "adoption_status": "owner-selection-pending",
+      "adoption_refinement": "葉が茶色寄りに見える。採用前に黒く湿ったダークリーフへ修正する。"
+    },
+    {
+      "id": "rin-03-late-coffee",
+      "character": "rin",
+      "label": "深夜の窓辺",
+      "shisha": false,
+      "hardware_reference_model": null,
+      "source": "rin/03-late-coffee.png",
+      "prompt": "rin/03-late-coffee.prompt.txt",
+      "references": [
+        "../heroine-concepts-v1-20261008/references/rin-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed-candidate",
+      "original_output": "/workspace/generated_images/exec-595fe51f-b728-4318-8e19-97108f690790.png",
+      "source_sha256": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "rin/03-late-coffee.prompt.txt",
+      "latest_references": [
+        "../heroine-concepts-v1-20261008/references/rin-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "adoption_status": "owner-selection-pending"
+    },
+    {
+      "id": "kafuka-01-shishark-test-run",
+      "character": "kafuka",
+      "label": "シーシャークの試運転",
+      "shisha": true,
+      "hardware_reference_model": "Shishabucks Cloud Micro blue",
+      "source": "kafuka/01-shishark-test-run.png",
+      "prompt": "kafuka/01-shishark-test-run.prompt.txt",
+      "references": [
+        "references/kafuka-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png",
+        "references/cloud-micro-blue.jpg",
+        "references/sky-bowl.jpg",
+        "references/stratus-hmd.jpg"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed-candidate",
+      "original_output": "/workspace/generated_images/exec-b885da74-faf7-49ce-aaea-e2a5d9593da7.png",
+      "source_sha256": "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "kafuka/01-shishark-test-run.revision-3.prompt.txt",
+      "latest_references": [
+        "kafuka/01-shishark-test-run-revision-2.png",
+        "kafuka/01-shishark-test-run-revision-1.png",
+        "references/stratus-hmd.jpg"
+      ],
+      "adoption_status": "owner-selection-pending"
+    },
+    {
+      "id": "kafuka-02-shark-movie",
+      "character": "kafuka",
+      "label": "コロちゃんとサメ映画",
+      "shisha": false,
+      "hardware_reference_model": null,
+      "source": "kafuka/02-shark-movie.png",
+      "prompt": "kafuka/02-shark-movie.prompt.txt",
+      "references": [
+        "references/kafuka-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed-candidate",
+      "original_output": "/workspace/generated_images/exec-41357227-bdb1-4e33-a776-f315f02b3a62.png",
+      "source_sha256": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "kafuka/02-shark-movie.prompt.txt",
+      "latest_references": [
+        "references/kafuka-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "adoption_status": "owner-selection-pending"
+    },
+    {
+      "id": "kafuka-03-aquarium",
+      "character": "kafuka",
+      "label": "水族館でコロちゃんと",
+      "shisha": false,
+      "hardware_reference_model": null,
+      "source": "kafuka/03-aquarium.png",
+      "prompt": "kafuka/03-aquarium.prompt.txt",
+      "references": [
+        "references/kafuka-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "runtime_installed": false,
+      "status": "reviewed-candidate",
+      "original_output": "/workspace/generated_images/exec-e149ec45-5532-41e1-95ff-b9c9d6eff57c.png",
+      "source_sha256": "cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334",
+      "size": [
+        1024,
+        1536
+      ],
+      "latest_prompt": "kafuka/03-aquarium.prompt.txt",
+      "latest_references": [
+        "references/kafuka-adopted-normal.png",
+        "../heroine-concepts-v1-20261008/references/title-style.png"
+      ],
+      "adoption_status": "owner-selection-pending"
+    }
+  ]
+}

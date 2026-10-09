@@ -1,0 +1,221 @@
+{
+  "scope": "19案の比較原画。採用承認ではない。旧案・失敗した修正前の絵は履歴として保持。",
+  "reference_guide": "../../shisha-hardware-reference/visual-qa-necklace-hose-20261009.md",
+  "mouth_tip_state": "首掛けマイチップはこの候補集では指定しない。首の飾りは採用衣装の装飾。手元の硬いハンドルを通常使用する。",
+  "personality_notes": {
+    "minto04": "仕事着＋白カーディガン、髪を下ろし、飾りはカウンター。1人の公私の中間。",
+    "ageha02": "初回の優しさを出す閉じた笑顔。ほか2案は目を開いたプロの顔。",
+    "kafuka": "3案すべて青いインナーと王冠のコロちゃん。映画は架空のサメ影、水族館では本人はガラスの外。"
+  },
+  "candidates": [
+    {
+      "id": "tsumugi-01-smoke-colors",
+      "source": "tsumugi/01-smoke-colors.png",
+      "source_sha256": "d603aac37922f3c75879f7b7f8dcb22f3c919b784290ffc24ede7703f613cbb4",
+      "checked_visually": true,
+      "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
+      "pixel_texture": "細かな色のかたまりと網点の質感を目視",
+      "equipment": "短い茶髪と紫の花刺繍、木製の台。黒い蓋付きHMD。深緑ホースは木のハンドルから膝前を下り、木製本体上の斜めポートへ戻る。メーカー文字を除いた。",
+      "adoption_status": "owner-selection-pending",
+      "refinement": null
+    },
+    {
+      "id": "tsumugi-02-tablet-cat",
+      "source": "tsumugi/02-tablet-cat.png",
+      "source_sha256": "336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489",
+      "checked_visually": true,
+      "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
+      "pixel_texture": "細かな色のかたまりと網点の質感を目視",
+      "equipment": "シーシャを描かない日常場面",
+      "adoption_status": "owner-selection-pending",
+      "refinement": null
+    },
+    {
+      "id": "tsumugi-03-twilight-sketch",
+      "source": "tsumugi/03-twilight-sketch.png",
+      "source_sha256": "eeb75f3963e1991db208dc2767f7823654ac0675198a0bb393be703cb0dfa2c1",
+      "checked_visually": true,
+      "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
+      "pixel_texture": "細かな色のかたまりと網点の質感を目視",
+      "equipment": "シーシャを描かない日常場面",
+      "adoption_status": "owner-selection-pending",
+      "refinement": null
+    },
+    {
+      "id": "mashiro-01-heavy-smoke",
+      "source": "mashiro/01-heavy-smoke.png",
+      "source_sha256": "8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559",
+      "checked_visually": true,
+      "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
+      "pixel_texture": "細かな色のかたまりと網点の質感を目視",
+      "equipment": "二本の三つ編みと眠そうな金色の目。真鍮の台、ハガルの口全体に銀色アルミ、その上に炭2個。1本の赤茶ホースを手元から膝前のU、ガラス上の左ポートまで追跡。右は閉じたパージ弁。ガラス底まで見える。",
+      "adoption_status": "owner-selection-pending",
+      "refinement": null
+    },
+    {
+      "id": "mashiro-02-tea-break",
+      "source": "mashiro/02-tea-break.png",
+      "source_sha256": "0790aeaa1f231457b4f32ca67a5dc7a6a5ee630043ab55600fc6e821977fa658",
+      "checked_visually": true,
+      "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
+      "pixel_texture": "細かな色のかたまりと網点の質感を目視",
+      "equipment": "シーシャを描かない日常場面",
+      "adoption_status": "owner-selection-pending",
+      "refinement": null
+    },
+    {
+      "id": "mashiro-03-after-rain",
+      "source": "mashiro/03-after-rain.png",
+      "source_sha256": "1ebb9b79beff36e13a73efc6700d8f7b9dc5de438f7c22959f200150cf9799e9",
+      "checked_visually": true,
+      "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
+      "pixel_texture": "細かな色のかたまりと網点の質感を目視",
+      "equipment": "シーシャを描かない日常場面",
+      "adoption_status": "owner-selection-pending",
+      "refinement": null
+    },
+    {
+      "id": "minto-01-cafe-welcome",
+      "source": "minto/01-cafe-welcome.png",
+      "source_sha256": "b1e10bd7fb7edcc3585967e95c3477dd368ee58fe941a21e09e85ca7479a005a",
+      "checked_visually": true,
+      "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
+      "pixel_texture": "細かな色のかたまりと網点の質感を目視",
+      "equipment": "採用した黒髪ツインテール、緑の目と飾り。透明小型台、黒いハガルと銅色の蓋付きHMD。白いホースは手元から膝前のUを経て本体の側面ポートへ接続。",
+      "adoption_status": "owner-selection-pending",
+      "refinement": null
+    },
+    {
+      "id": "minto-02-instant-photo",
+      "source": "minto/02-instant-photo.png",
+      "source_sha256": "689e2c6f5dcd74a672300dc9f0cdd9dadabaf947c13bf6ce0dffc5e21d6e3f5b",
+      "checked_visually": true,
+      "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
+      "pixel_texture": "細かな色のかたまりと網点の質感を目視",
+      "equipment": "シーシャを描かない日常場面",
+      "adoption_status": "owner-selection-pending",
+      "refinement": null
+    },
+    {
+      "id": "minto-03-private-window",
+      "source": "minto/03-private-window.png",
+      "source_sha256": "10c1200ce8a499f232c666c0bded84693a50474074fb74fb047dff5b6f941b96",
+      "checked_visually": true,
+      "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
+      "pixel_texture": "細かな色のかたまりと網点の質感を目視",
+      "equipment": "シーシャを描かない日常場面",
+      "adoption_status": "owner-selection-pending",
+      "refinement": null
+    },
+    {
+      "id": "minto-04-after-hours",
+      "source": "minto/04-after-hours.png",
+      "source_sha256": "7324deb26600496f18caf19c8bcb316f317a144f0366c11fe1f2c796dd94cf53",
+      "checked_visually": true,
+      "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
+      "pixel_texture": "細かな色のかたまりと網点の質感を目視",
+      "equipment": "シーシャを描かない日常場面",
+      "adoption_status": "owner-selection-pending",
+      "refinement": null
+    },
+    {
+      "id": "ageha-01-professional-taste",
+      "source": "ageha/01-professional-taste.png",
+      "source_sha256": "de5857d27aae1cb456e142720673f096075de3dcf06386779b617e55e25f2bde",
+      "checked_visually": true,
+      "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
+      "pixel_texture": "細かな色のかたまりと網点の質感を目視",
+      "equipment": "目を開いたプロの表情、ピンク／白のクマ髪飾り、ヒョウ柄。ピンクのカット形の台、陶器のハガル、銀の閉じたHMD。ピンクの1本のホースを本体上のポートから手元まで追跡。",
+      "adoption_status": "owner-selection-pending",
+      "refinement": null
+    },
+    {
+      "id": "ageha-02-grocery-smile",
+      "source": "ageha/02-grocery-smile.png",
+      "source_sha256": "af594618812268d47d4e391cd17b505165aad837e82d879888a0267094968158",
+      "checked_visually": true,
+      "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
+      "pixel_texture": "細かな色のかたまりと網点の質感を目視",
+      "equipment": "シーシャを描かない日常場面",
+      "adoption_status": "owner-selection-pending",
+      "refinement": null
+    },
+    {
+      "id": "ageha-03-model-moment",
+      "source": "ageha/03-model-moment.png",
+      "source_sha256": "eb91bbf84a7b641ca4c3e32071448f856f211344c7313e81caf91ac355102b06",
+      "checked_visually": true,
+      "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
+      "pixel_texture": "細かな色のかたまりと網点の質感を目視",
+      "equipment": "シーシャを描かない日常場面",
+      "adoption_status": "owner-selection-pending",
+      "refinement": null
+    },
+    {
+      "id": "rin-01-night-tasting",
+      "source": "rin/01-night-tasting.png",
+      "source_sha256": "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19",
+      "checked_visually": true,
+      "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
+      "pixel_texture": "細かな色のかたまりと網点の質感を目視",
+      "equipment": "長い暗色ウルフカット、白シャツ、黒いパンツ。黒い台、別体のハガルと閉じた通気口つきHMD。黒いホースは金属ポートから膝前を下り、下方がテーブル／脚で自然に隠れ、同色同径の手元側へ続く構図。卓上の葉は黒く湿った色。",
+      "adoption_status": "owner-selection-pending",
+      "refinement": null
+    },
+    {
+      "id": "rin-02-flavor-samples",
+      "source": "rin/02-flavor-samples.png",
+      "source_sha256": "abaa15b9ffbe0cba763862d49b8e3023408a4d7b4f84420c79844496d248ea82",
+      "checked_visually": true,
+      "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
+      "pixel_texture": "細かな色のかたまりと網点の質感を目視",
+      "equipment": "シーシャを描かない日常場面",
+      "adoption_status": "owner-selection-pending",
+      "refinement": "葉が茶色寄りに見える。採用前に黒く湿ったダークリーフへ修正する。"
+    },
+    {
+      "id": "rin-03-late-coffee",
+      "source": "rin/03-late-coffee.png",
+      "source_sha256": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
+      "checked_visually": true,
+      "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
+      "pixel_texture": "細かな色のかたまりと網点の質感を目視",
+      "equipment": "シーシャを描かない日常場面",
+      "adoption_status": "owner-selection-pending",
+      "refinement": null
+    },
+    {
+      "id": "kafuka-01-shishark-test-run",
+      "source": "kafuka/01-shishark-test-run.png",
+      "source_sha256": "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257",
+      "checked_visually": true,
+      "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
+      "pixel_texture": "細かな色のかたまりと網点の質感を目視",
+      "equipment": "採用済み黒髪と濃い青のインナー、青い目、ストリートシスター、王冠のコロちゃん。透明キューブの蓋左にハガル、右にホースポート。青いハガルに銀の閉じたHMD。黒いホースが青い手元ハンドルから右の青い接続ブロックまで1本で続く。余分なループを除いた。",
+      "adoption_status": "owner-selection-pending",
+      "refinement": null
+    },
+    {
+      "id": "kafuka-02-shark-movie",
+      "source": "kafuka/02-shark-movie.png",
+      "source_sha256": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
+      "checked_visually": true,
+      "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
+      "pixel_texture": "細かな色のかたまりと網点の質感を目視",
+      "equipment": "シーシャを描かない日常場面",
+      "adoption_status": "owner-selection-pending",
+      "refinement": null
+    },
+    {
+      "id": "kafuka-03-aquarium",
+      "source": "kafuka/03-aquarium.png",
+      "source_sha256": "cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334",
+      "checked_visually": true,
+      "identity": "採用立ち絵の髪・目・衣装を第一参照で確認",
+      "pixel_texture": "細かな色のかたまりと網点の質感を目視",
+      "equipment": "シーシャを描かない日常場面",
+      "adoption_status": "owner-selection-pending",
+      "refinement": null
+    }
+  ]
+}
