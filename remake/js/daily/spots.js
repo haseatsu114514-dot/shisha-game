@@ -51,7 +51,7 @@ export const SPOTS = [
   { id: "tonari", kind: "tonari", label: "tonari", area: "バイト先", x: 86, y: 36, theme: "baito", glyph: "店", face: "sumi",
     desc: "バイト先のシーシャラウンジ。客として一服するか、シフトに入るか。" },
   { id: "naru", kind: "rival", charId: "naru", label: "KEMURIKUSA", area: "商店街の外れ", x: 70, y: 24, theme: "rival", glyph: "煙", face: "naru", cost: VISIT_COST, closedOn: 3,
-    desc: "焼き菓子みたいな甘い匂いの人気店。若い店主が一人で回しているらしい。", stamina: -16 },
+    desc: "焼き菓子みたいな甘い匂いの人気店。腕のいい若い店員がいると評判らしい。", stamina: -16 },
   { id: "adam", kind: "rival", charId: "adam", label: "EDEN", area: "下町", x: 46, y: 48, theme: "rival", glyph: "煙", face: "adam", cost: VISIT_COST, closedOn: 5,
     desc: "焼き林檎みたいな匂いが漏れてくる店。注文はなぜかいつも一種類。", stamina: -16 },
   { id: "minto", kind: "rival", charId: "minto", label: "PEPPERMINT", area: "繁華街", x: 28, y: 62, theme: "rival", glyph: "煙", face: "minto", cost: VISIT_COST, closedOn: 6,
