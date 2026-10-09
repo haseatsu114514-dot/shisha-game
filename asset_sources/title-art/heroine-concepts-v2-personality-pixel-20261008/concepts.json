@@ -21,7 +21,7 @@
         "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
       ],
       "runtime_installed": false,
-      "status": "visual-review-pending",
+      "status": "reviewed-candidate",
       "original_output": "/workspace/generated_images/exec-19bdc47c-083b-4735-b35a-8fdaa5a4796a.png",
       "source_sha256": "d603aac37922f3c75879f7b7f8dcb22f3c919b784290ffc24ede7703f613cbb4",
       "size": [
@@ -48,7 +48,7 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "visual-review-pending",
+      "status": "reviewed-candidate",
       "original_output": "/workspace/generated_images/exec-08b6e65b-abc1-40ee-8ef3-ac22004ee666.png",
       "source_sha256": "336187dea12bb7ea3d1eba275f3644cc24ef938b46edaa4fec680f332ec70489",
       "size": [
@@ -75,7 +75,7 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "visual-review-pending",
+      "status": "reviewed-candidate",
       "original_output": "/workspace/generated_images/exec-c0ed2c3f-6861-4938-aca2-a4274840d0b7.png",
       "source_sha256": "eeb75f3963e1991db208dc2767f7823654ac0675198a0bb393be703cb0dfa2c1",
       "size": [
@@ -103,7 +103,7 @@
         "references/km-turkey-brass.png"
       ],
       "runtime_installed": false,
-      "status": "visual-review-pending",
+      "status": "reviewed-candidate",
       "original_output": "/workspace/generated_images/exec-b17f7960-fe6c-4d0f-bbf9-a5f3da8a4b02.png",
       "source_sha256": "8a0b9afb5f60d54988ae33217e545e14b153c0ac196625d08c5ed0a718f7c559",
       "size": [
@@ -130,7 +130,7 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "visual-review-pending",
+      "status": "reviewed-candidate",
       "original_output": "/workspace/generated_images/exec-beffd700-f8b8-44bc-b6d5-c44b6a4a5c09.png",
       "source_sha256": "0790aeaa1f231457b4f32ca67a5dc7a6a5ee630043ab55600fc6e821977fa658",
       "size": [
@@ -157,7 +157,7 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "visual-review-pending",
+      "status": "reviewed-candidate",
       "original_output": "/workspace/generated_images/exec-ebbce175-fb2f-4b77-83bf-a76deb2aadae.png",
       "source_sha256": "1ebb9b79beff36e13a73efc6700d8f7b9dc5de438f7c22959f200150cf9799e9",
       "size": [
@@ -186,7 +186,7 @@
         "../heroine-concepts-v1-20261008/references/hmd-real-assembled.jpg"
       ],
       "runtime_installed": false,
-      "status": "visual-review-pending",
+      "status": "reviewed-candidate",
       "original_output": "/workspace/generated_images/exec-b2baefb1-9c86-4e24-85b7-e1c60448d0fa.png",
       "source_sha256": "b1e10bd7fb7edcc3585967e95c3477dd368ee58fe941a21e09e85ca7479a005a",
       "size": [
@@ -213,7 +213,7 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "visual-review-pending",
+      "status": "reviewed-candidate",
       "original_output": "/workspace/generated_images/exec-3c24fcfd-4914-4cf6-9996-4a48ea89887b.png",
       "source_sha256": "689e2c6f5dcd74a672300dc9f0cdd9dadabaf947c13bf6ce0dffc5e21d6e3f5b",
       "size": [
@@ -241,7 +241,7 @@
         "../heroine-concepts-v1-20261008/references/minto-private.png"
       ],
       "runtime_installed": false,
-      "status": "visual-review-pending",
+      "status": "reviewed-candidate",
       "original_output": "/workspace/generated_images/exec-81f9e151-e9f4-47f5-8c2a-45f17382c413.png",
       "source_sha256": "10c1200ce8a499f232c666c0bded84693a50474074fb74fb047dff5b6f941b96",
       "size": [
@@ -270,7 +270,7 @@
         "../heroine-concepts-v1-20261008/references/minto-private.png"
       ],
       "runtime_installed": false,
-      "status": "visual-review-pending",
+      "status": "reviewed-candidate",
       "original_output": "/workspace/generated_images/exec-85e377e0-1bf4-48ca-a54e-0ced793a481f.png",
       "source_sha256": "7324deb26600496f18caf19c8bcb316f317a144f0366c11fe1f2c796dd94cf53",
       "size": [
@@ -301,7 +301,7 @@
         "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
       ],
       "runtime_installed": false,
-      "status": "visual-review-pending",
+      "status": "reviewed-candidate",
       "original_output": "/workspace/generated_images/exec-563b83ed-d278-4e05-b16f-95ac1baf24c8.png",
       "source_sha256": "de5857d27aae1cb456e142720673f096075de3dcf06386779b617e55e25f2bde",
       "size": [
@@ -331,7 +331,7 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "visual-review-pending",
+      "status": "reviewed-candidate",
       "original_output": "/workspace/generated_images/exec-7a56a215-7b85-4904-b788-a8a6d4c35ac4.png",
       "source_sha256": "af594618812268d47d4e391cd17b505165aad837e82d879888a0267094968158",
       "size": [
@@ -358,7 +358,7 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "visual-review-pending",
+      "status": "reviewed-candidate",
       "original_output": "/workspace/generated_images/exec-1ed963ca-35b4-4d4a-b986-9731f9156900.png",
       "source_sha256": "eb91bbf84a7b641ca4c3e32071448f856f211344c7313e81caf91ac355102b06",
       "size": [
@@ -388,7 +388,7 @@
         "../heroine-concepts-v1-20261008/references/hmd-real-side.jpg"
       ],
       "runtime_installed": false,
-      "status": "visual-review-pending",
+      "status": "reviewed-candidate",
       "original_output": "/workspace/generated_images/exec-12320b27-a17b-4215-8c1a-0cf9cc3a51d0.png",
       "source_sha256": "bf7a613ba6104521a250681274bed61fece084a33f33dc8f96d6d806d9fcef19",
       "size": [
@@ -415,7 +415,7 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "visual-review-pending",
+      "status": "reviewed-requires-dark-leaf-refinement",
       "original_output": "/workspace/generated_images/exec-73b65107-52fc-4592-978d-5723ad6b602f.png",
       "source_sha256": "abaa15b9ffbe0cba763862d49b8e3023408a4d7b4f84420c79844496d248ea82",
       "size": [
@@ -427,7 +427,8 @@
         "../heroine-concepts-v1-20261008/references/rin-adopted-normal.png",
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
-      "adoption_status": "owner-selection-pending"
+      "adoption_status": "owner-selection-pending",
+      "adoption_refinement": "葉が茶色寄りに見える。採用前に黒く湿ったダークリーフへ修正する。"
     },
     {
       "id": "rin-03-late-coffee",
@@ -442,7 +443,7 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "visual-review-pending",
+      "status": "reviewed-candidate",
       "original_output": "/workspace/generated_images/exec-595fe51f-b728-4318-8e19-97108f690790.png",
       "source_sha256": "905d05bdb148e5e2f10e4b44191188540293e57f2f0cd60562a7854378e772ea",
       "size": [
@@ -472,7 +473,7 @@
         "references/stratus-hmd.jpg"
       ],
       "runtime_installed": false,
-      "status": "visual-review-pending",
+      "status": "reviewed-candidate",
       "original_output": "/workspace/generated_images/exec-b885da74-faf7-49ce-aaea-e2a5d9593da7.png",
       "source_sha256": "f4f659e7058cb3a2edb6473c81b36c4026213d1d3cc6712edf1be0ad68f5d257",
       "size": [
@@ -500,7 +501,7 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "visual-review-pending",
+      "status": "reviewed-candidate",
       "original_output": "/workspace/generated_images/exec-41357227-bdb1-4e33-a776-f315f02b3a62.png",
       "source_sha256": "bb31c7b24a10b7168609288d026871a06c9833cc488d64dc3f8b038e80f4136d",
       "size": [
@@ -527,7 +528,7 @@
         "../heroine-concepts-v1-20261008/references/title-style.png"
       ],
       "runtime_installed": false,
-      "status": "visual-review-pending",
+      "status": "reviewed-candidate",
       "original_output": "/workspace/generated_images/exec-e149ec45-5532-41e1-95ff-b9c9d6eff57c.png",
       "source_sha256": "cfee6608ede948059207c6f249539b3b1ac8b0e22f11f1f2507c6e3ed4408334",
       "size": [

@@ -1,0 +1,27 @@
+{
+  "tool": "Playwright browser screenshots",
+  "original_artwork_modified": false,
+  "screenshots": [
+    "tsumugi.png",
+    "mashiro.png",
+    "minto.png",
+    "ageha.png",
+    "rin.png",
+    "kafuka.png",
+    "overview.png",
+    "tsumugi-title.png",
+    "mashiro-title.png",
+    "minto-title.png",
+    "ageha-title.png",
+    "rin-title.png",
+    "kafuka-title.png",
+    "title-overview.png",
+    "previous-title-comparison.png",
+    "minto-previous-comparison.png",
+    "kafuka-mobile.png"
+  ],
+  "original_count": 19,
+  "previous_count": 15,
+  "browser_errors": [],
+  "mobile_width": 390
+}

@@ -2,8 +2,8 @@
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { dirname, resolve, relative } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const folder = dirname(fileURLToPath(import.meta.url));
 const root = resolve(folder, '../../..');
@@ -17,8 +17,11 @@ try {
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
   page.on('requestfailed', r => errors.push(r.url() + ': ' + r.failure()?.errorText));
-  await page.goto(pathToFileURL(folder + '/comparison.html').href, { waitUntil: 'load' });
+  const url = process.env.GALLERY_URL || 'http://127.0.0.1:8137/' + relative(root, folder) + '/comparison.html';
+  await page.goto(url, { waitUntil: 'load' });
   await page.waitForFunction(() => Array.from(document.images).every(img => img.complete && img.naturalWidth > 0));
+  // Keep the comparison controls above the art in full-page screenshots.
+  await page.addStyleTag({ content: 'nav{position:static!important}' });
   assert.equal(await page.locator('.grid > figure').count(), 19);
   assert.equal(await page.locator('section').count(), 6);
   const ids = ['tsumugi', 'mashiro', 'minto', 'ageha', 'rin', 'kafuka'];
