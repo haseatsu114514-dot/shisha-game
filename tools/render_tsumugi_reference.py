@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""つむぎの正規ゲームPNGから画像生成用リファレンスシート4枚を機械的に作る。
+"""つむぎの正規高精細立ち絵だけで画像生成用の横長リファレンスシート3枚を作る。
 
-新規の人物画は描かず、5方向は既存の歩行素材、表情は現行の正規立ち絵を使用。
-方向別の低解像度は「方向確認用」と明示し、未制作の高精細側面・背面を偽装しない。
+歩行用ドット絵を参照・掲載しない。高精細の横顔・背面を別人として捏造しない。
 """
 from __future__ import annotations
 import json
@@ -13,8 +12,6 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "asset_sources/reference_sheets/tsumugi"
 OUT.mkdir(parents=True, exist_ok=True)
 SPR = ROOT / "assets/sprites/characters/tsumugi"
-WALK = ROOT / "assets/proto_walk/tsumugi_walk_72.png"
-META = ROOT / "assets/proto_walk/tsumugi_walk_72.json"
 CREAM = "#FAF8F5"
 PANEL = "#FFFFFF"
 INK = "#302B36"
@@ -91,16 +88,6 @@ def detail_crop(im, rel):
     h=head_crop(im)
     return h.crop((int(h.width*rel[0]),int(h.height*rel[1]),
                    int(h.width*rel[2]),int(h.height*rel[3])))
-def walkers():
-    data=json.loads(META.read_text(encoding="utf-8"))
-    sheet=Image.open(WALK).convert("RGBA")
-    cw,ch=data["cell"]
-    if data["cols"]!=5 or data["dirs"]!=["down","down_right","right","up_right","up"]:
-        raise ValueError("歩行シートの並びが変わったため確認が必要")
-    if sheet.size != (cw*5,ch*2):
-        raise ValueError(f"歩行シート寸法不一致: {sheet.size}")
-    return {name:sheet.crop((i*cw,0,(i+1)*cw,ch)) for i,name in enumerate(data["dirs"])},data
-
 NORMAL=load_pose("normal")
 EXPRESSIONS = [
     ("通常","normal","正規立ち絵"),
@@ -111,36 +98,9 @@ EXPRESSIONS = [
     ("困り顔","sad","正規立ち絵：悲しみの表情を参考"),
 ]
 
-def sheet_directions():
-    art,meta=walkers()
-    im,d=new(6000,3380)
-    header(d,"つむぎ｜全身・5方向","現行の歩行スプライトを同一縮尺で表示｜正規高精細立ち絵と用途が異なります","01 / 04")
-    names=[
-        ("正面","down"),
-        ("真横","right"),
-        ("背面","up"),
-        ("斜め前","down_right"),
-        ("斜め後ろ","up_right"),
-    ]
-    for i,(label,k) in enumerate(names):
-        x=92+i*1178
-        panel(d,(x,317,x+1139,3105))
-        tx(d,(x+52,365),label,74)
-        tx(d,(x+52,462),"ゲーム内歩行画・Aコマ",40,DIM)
-        # 各セル54x76を共通19倍で拡大。靴の底の位置を統一。
-        walk=art[k]
-        scaled=walk.resize((walk.width*19,walk.height*19),Image.Resampling.NEAREST)
-        im.paste(scaled,(x+(1139-scaled.width)//2,2050-scaled.height),scaled)
-        line(d,(x+60,2082),(x+1079,2082),EDGE,3)
-        close=walk.crop((8,0,46,37))
-        fit_paste(im,close,(x+140,2185,x+1000,2770),resample=Image.Resampling.NEAREST,crop=False)
-        tx(d,(x+570,2905),"頭部拡大（低解像度）",39,DIM,"mm")
-    footer(d,im.height,"全方向は既存素材そのもの。高精細の横顔・背面立ち絵は未制作／補完デザインの捏造なし。")
-    save(im,"01-5-directions.png")
-
 def sheet_expressions():
     im,d=new(6000,3680)
-    header(d,"つむぎ｜全身と表情","公式PNG 6点を同じ倍率・同じ基準位置で並べた参照集","02 / 04")
+    header(d,"つむぎ｜全身と表情","現行正規立ち絵PNG 6点のみ使用｜歩行用ドット絵は一切使わない","01 / 03")
     for i,(label,key,note) in enumerate(EXPRESSIONS):
         c=i%3; r=i//3
         x=90+c*1974; y=315+r*1555
@@ -156,21 +116,20 @@ def sheet_expressions():
         tx(d,(x+1430,y+1192),"顔の拡大",44,DIM,"mm")
         tx(d,(x+1430,y+1340),key,40,LAV,"mm")
     footer(d,im.height,"※「喜び」専用立ち絵は未確認。会釈の笑顔を参考表示／別の表情が存在すると誤記しない。")
-    save(im,"02-expressions.png")
+    save(im,"01-expressions.png")
 
 def sheet_faces():
-    walks,_=walkers()
     im,d=new(6000,3300)
-    header(d,"つむぎ｜顔・髪・パーツ","正面顔は正規立ち絵／横・45度はゲーム内歩行素材の頭部（低解像度）","03 / 04")
-    specs=[("顔：正面",head_crop(NORMAL),"立ち絵から直接切り出し",False),
-           ("顔：真横",walks["right"].crop((5,0,49,42)),"歩行スプライト由来",True),
-           ("顔：斜め45°",walks["down_right"].crop((5,0,49,42)),"歩行スプライト由来",True)]
+    header(d,"つむぎ｜顔・髪・パーツ","正規の高精細立ち絵から直接切り出し｜横顔・斜め45°の高精細画像は未制作","02 / 03")
+    specs=[("正面：通常",head_crop(NORMAL),"正規立ち絵から切り出し",False),
+           ("正面：微笑み",head_crop(load_pose("smile")),"正規立ち絵から切り出し",False),
+           ("正面：真剣",head_crop(load_pose("serious")),"正規立ち絵から切り出し",False)]
     for i,(title,face,note,nearest) in enumerate(specs):
         x=92+i*1974
         panel(d,(x,313,x+1915,1810))
         tx(d,(x+62,366),title,72)
         tx(d,(x+62,460),note,42,DIM)
-        fit_paste(im,face,(x+150,562,x+1765,1660),resample=Image.Resampling.NEAREST if nearest else Image.Resampling.LANCZOS)
+        fit_paste(im,face,(x+150,562,x+1765,1660),resample=Image.Resampling.LANCZOS)
     part=[("目","瞳・まぶた・ハイライト",(.07,.37,.93,.68)),
           ("眉","角度・太さ",(.08,.26,.93,.52)),
           ("鼻","陰影・位置",(.33,.56,.71,.81)),
@@ -183,8 +142,8 @@ def sheet_faces():
         art=detail_crop(NORMAL,crop)
         fit_paste(im,art,(x+66,2140,x+1352,2825))
         tx(d,(x+712,2898),"正面立ち絵の拡大（無修正）",34,DIM,"mm")
-    footer(d,im.height,"髪：丸い短め茶色ボブ／自然に分かれた前髪／頬沿いの横髪／髪飾りなし。後髪の詳しい形は方向素材を参照。")
-    save(im,"03-face-hair-parts.png")
+    footer(d,im.height,"髪：丸い短め茶色ボブ／柔らかな前髪／頬沿いの横髪／髪飾りなし。横顔・背面は補完デザイン（未制作）。")
+    save(im,"02-face-hair-parts.png")
 
 def colors_from_original():
     # 色名は公式外見定義に沿う。色値は原画の全ピクセルからターゲットに近い不透明色を抽出する。
@@ -211,7 +170,7 @@ def colors_from_original():
 
 def sheet_clothes():
     im,d=new(6000,3780)
-    header(d,"つむぎ｜衣装・持ち物・カラー","正規立ち絵の切り出し・実ピクセルから近似スポイト／衣装変更を禁止","04 / 04")
+    header(d,"つむぎ｜衣装・持ち物・カラー","正規の高精細立ち絵から切り出し／元PNGの近似色｜歩行絵なし","03 / 03")
     panel(d,(89,323,1910,3510))
     tx(d,(148,385),"全身・基準図",75)
     fit_paste(im,NORMAL,(152,520,1835,3310),crop=False)
@@ -237,34 +196,35 @@ def sheet_clothes():
         tx(d,(x+140,y+7),label,46)
         tx(d,(x+140,y+61),color,40,LAV)
     footer(d,im.height,"タブレットに微細なヒビ／花刺繍／ひざ下ソックス／紐靴。見えない箇所の素材・背面は補完デザイン対象。")
-    save(im,"04-outfit-palette.png")
+    save(im,"03-outfit-palette.png")
     return palette
 
 def main():
-    missing=[str(p) for p in [WALK,META]+[SPR/f"chr_tsumugi_{k}.png" for _,k,_ in EXPRESSIONS] if not p.exists()]
-    if missing: raise FileNotFoundError("Missing official assets:\n"+"\n".join(missing))
-    sheet_directions()
+    missing=[str(SPR/f"chr_tsumugi_{k}.png") for _,k,_ in EXPRESSIONS if not (SPR/f"chr_tsumugi_{k}.png").exists()]
+    if missing: raise FileNotFoundError("Missing official sprites: " + ", ".join(missing))
+    # Retire previously exported sheets containing walking sprites or old numbering.
+    for old in ("01-5-directions.png","02-expressions.png","03-face-hair-parts.png","04-outfit-palette.png"):
+        (OUT/old).unlink(missing_ok=True)
     sheet_expressions()
     sheet_faces()
     palette=sheet_clothes()
     manifest={
         "character":"つむぎ",
-        "production":"existing approved game source assets; no identity-redrawing",
-        "files":[f"{i:02d}-{name}.png" for i,name in [(1,"5-directions"),(2,"expressions"),(3,"face-hair-parts"),(4,"outfit-palette")]],
+        "production":"approved high-resolution character portraits only; no walking sprites or identity redraw",
+        "files":["01-expressions.png","02-face-hair-parts.png","03-outfit-palette.png"],
         "sources":{
             "sprites":"assets/sprites/characters/tsumugi/chr_tsumugi_*.png",
-            "walk":"assets/proto_walk/tsumugi_walk_72.png",
-            "walk_metadata":"assets/proto_walk/tsumugi_walk_72.json",
             "canon_prompt":".claude/skills/character-portrait-remaster/references/tsumugi-v1-prompt.txt"},
+        "excluded_sources":["assets/proto_walk/","asset_sources/images/proto_walk/"],
         "notes":[
-            "5方向のもとは低解像度歩行スプライト。高精細三面図に偽装しない。",
-            "喜びの専用表情は未制作、会釈イラストを参考として表示。",
-            "高精細真横・背面・斜め前後、後ろ身頃の刺繍位置や素材感は補完デザイン／今後新規生成が必要。",
-            "元画像から確定できない身長は追記しない。"
+            "歩行用ドット絵を使わず、すべて正規の高精細立ち絵から切り出した。",
+            "高精細の真横・背面・斜め前後の全身、および高精細の横顔・斜め45度は補完デザイン（未制作）。",
+            "独立した喜び表情は未制作。会釈の笑顔を参考として表示。",
+            "画像から確定できない身長や背面の装飾は勝手に追加しない。"
         ],
         "sampled_palette":[{"part":p,"description":d,"hex":h} for p,d,h in palette]
     }
-    (OUT/"manifest.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
-    print("SUCCESS 4 sheets + manifest",flush=True)
+    (OUT/"manifest.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+    print("SUCCESS 3 official-portrait-only sheets + manifest",flush=True)
 
 if __name__=="__main__":main()
