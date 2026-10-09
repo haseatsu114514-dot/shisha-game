@@ -26,6 +26,7 @@ Playwrightが必要。`BASE_URL`でURL、`CHROME_EXECUTABLE_PATH`でChromeを指
 | 制作UI・見守る人物・キッチンタイマー・蒸らし温度・集中による吸い出し難易度 | `craft_focus.mjs`・`steam_refresh.mjs`・`stamina_condition.mjs`・`playthrough.mjs` |
 | HUD・通知・体力 | `ui_skin.mjs`・`stat_rewards.mjs`・`stamina_condition.mjs` |
 | 選択肢の文字 | `choice_oneline.mjs` |
+| 台詞の組版（改行・改ページ）・`vn/text.js` | `text_wrap.mjs`（ブラウザ不要・全台詞を検査） |
 | キャラの初登場 | `intro_cutin.mjs` |
 | 交流の記憶・絆 | `relationship_memories.mjs`・`bonds.mjs` |
 | スロットの表示 | `reel_lifecycle.mjs`・`reel_visuals.mjs` |
