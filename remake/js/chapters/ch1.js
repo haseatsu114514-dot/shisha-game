@@ -459,3 +459,8 @@ export function devRehearsal() {
   setupHooks();
   return rehearsal();
 }
+/** テスト・確認用: 大会のGAME OVER画面だけを出す（reason: rank / burnt / cold / leaf） */
+export function devGameOver(reason = "burnt", rank = 2) {
+  setupHooks();
+  return showGameOver({ reason, rank });
+}
