@@ -8,6 +8,7 @@
   アイコンは TUNE で全キャラの顔の大きさを揃えてあるので、シートでも顔の大きさが揃う。
   ただし160pxへの縮小・減色はせず、立ち絵から原寸で切り出して拡大表示する。
 - 全身は不透明部分の重心で左右中央に置く（白衣の裾・ぬいぐるみ等で片寄って見えないように）。
+- 全身の大きさは全シート共通の縮尺（ゲーム内の spriteScale 込み）。並べれば身長を比べられる。
 
 使い方:
     python3 tools/make_reference_sheet.py            # 全キャラ
@@ -352,7 +353,7 @@ def load_characters():
 
 # ---------------------------------------------------------------- 設定の組み立て
 
-def make_cfg(cid, chars):
+def make_cfg(cid, chars, light=False):
     entry = chars[cid]
     cut = entry.get("intro_cutin") or {}
     accent = hex_rgb(cut.get("color", "#9bb0d0"))
@@ -395,6 +396,9 @@ def make_cfg(cid, chars):
     cfg["tagline"] = tagline
     for o in cfg["outfits"]:
         o["normal"] = Image.open(SPRITE / cid / f"{o['prefix']}normal.png").convert("RGBA")
+        o["sprite_scale"] = entry.get("spriteScale") or 1.0
+        if light:
+            continue
         o["box"] = face_box(o["icon_key"], o["normal"])  # (x0, y0, side) 顔アイコンと同じ枠
         if not o.get("palette"):
             o["palette"] = auto_palette(o["normal"])
@@ -435,21 +439,22 @@ def draw_mid(sheet, d, x, y, w, cfg):
     accent = cfg["accent"]
     two = len(cfg["outfits"]) > 1
     y = heading(d, (x, y), "顔アップ", accent)
+    fw = 330 if two else w  # 二衣装は縦に2枚並ぶので小さめ
     for o in cfg["outfits"]:
         x0, y0, side = o["box"]
         pad = side * (FACEUP_PAD - 1) / 2
         face = o["normal"].crop((round(x0 - pad), round(y0 - pad), round(x0 + side + pad), round(y0 + side + pad)))
-        face = face.resize((w, w), Image.LANCZOS)
-        tile = stage((w, w), accent)
+        face = face.resize((fw, fw), Image.LANCZOS)
+        tile = stage((fw, fw), accent)
         tile.paste(face, (0, 0), face)
         paste_round(sheet, tile, (x, y), 20)
-        d.rounded_rectangle([x, y, x + w - 1, y + w - 1], 20, outline=mix(LINE, accent, 0.35), width=2)
+        d.rounded_rectangle([x, y, x + fw - 1, y + fw - 1], 20, outline=mix(LINE, accent, 0.35), width=2)
         if two:
             f = font("bold", 22)
             tw = d.textlength(o["label"], font=f)
             d.rounded_rectangle([x + 12, y + 12, x + 12 + tw + 24, y + 48], 18, fill=(0, 0, 0))
             d.text((x + 24, y + 17), o["label"], font=f, fill=TEXT)
-        y += w + 18
+        y += fw + 18
     y += 22
     y = heading(d, (x, y), "基調色" + ("（自動抽出・目安）" if cfg.get("auto_palette") else ""), accent)
     cols, gap = 3, 14
@@ -515,12 +520,45 @@ def draw_right(d, x, y, w, cfg):
     return y
 
 
-def draw_body(sheet, d, bx, top, bottom, w, o, label, accent):
+BODY_PAD_W, BODY_PAD_H, MIN_ROW_H = 60, 110, 1270
+BODY_W_ONE, BODY_W_TWO = 760, 500
+_body_k = None
+
+
+def body_scale(chars):
+    """全シート共通の全身の縮尺。ゲーム内の表示倍率（spriteScale）を掛けた大きさで比べ、
+    いちばん横幅・背丈のある立ち絵が枠に収まる値にする。1枚ずつ枠に合わせると、
+    横に広い立ち絵（凛）が小さく、細い立ち絵が大きく写り、身長の比較ができなくなるため。"""
+    global _body_k
+    if _body_k is None:
+        ks = []
+        for cid in ["minto", *CHARS]:
+            cfg = make_cfg(cid, chars, light=True)
+            avail_w = (BODY_W_TWO if len(cfg["outfits"]) > 1 else BODY_W_ONE) - BODY_PAD_W
+            for o in cfg["outfits"]:
+                b = body_crop(o["normal"])
+                ks.append(min(avail_w / (b.width * o["sprite_scale"]),
+                              (MIN_ROW_H - BODY_PAD_H) / (b.height * o["sprite_scale"])))
+        _body_k = min(ks)
+    return _body_k
+
+
+def draw_body(sheet, d, bx, top, bottom, w, o, label, accent, k):
     ph = bottom - top
     tile = stage((w, ph), accent)
-    body = fit(body_crop(o["normal"]), w - 60, ph - 110)
+    floor = ph - 40
+    # 全シート共通の目安線（ゲーム内の大きさで100pxごと）
+    gd = ImageDraw.Draw(tile)
+    step = 100 * k
+    yy = floor - step
+    while yy > 70:
+        gd.line([(14, round(yy)), (w - 14, round(yy))], fill=mix(PANEL, TEXT, 0.07), width=1)
+        yy -= step
+    src = body_crop(o["normal"])
+    s = k * o["sprite_scale"]
+    body = src.resize((max(1, round(src.width * s)), max(1, round(src.height * s))), Image.LANCZOS)
     fx = (w - body.width) // 2
-    fy = ph - 40 - body.height
+    fy = floor - body.height
     sh = Image.new("L", (body.width + 80, 46), 0)
     ImageDraw.Draw(sh).ellipse([0, 0, sh.width - 1, sh.height - 1], fill=90)
     tile.paste((10, 11, 14), (fx - 40, ph - 40 - 24), sh)
@@ -574,7 +612,7 @@ def build(cid, chars):
     top = draw_header(d, cid, cfg)
 
     inner = W - 2 * M
-    body_w = 500 if two else 660
+    body_w = BODY_W_TWO if two else BODY_W_ONE
     bodies_w = body_w * len(outfits) + GAP * (len(outfits) - 1)
     mid_w = 440 if two else 500
     right_w = inner - bodies_w - mid_w - 2 * GAP
@@ -584,10 +622,10 @@ def build(cid, chars):
     # 情報列を先に描いて行の高さを決め、全身パネルをその高さに合わせる
     mid_bottom = draw_mid(sheet, d, mid_x, top, mid_w, cfg)
     right_bottom = draw_right(d, right_x, top, right_w, cfg)
-    row_bottom = max(mid_bottom, right_bottom, top + 1160)
+    row_bottom = max(mid_bottom, right_bottom, top + MIN_ROW_H)
     for i, o in enumerate(outfits):
         draw_body(sheet, d, M + i * (body_w + GAP), top, row_bottom, body_w, o,
-                  o["label_long"] if two else o["label"], accent)
+                  o["label_long"] if two else o["label"], accent, body_scale(chars))
 
     y = row_bottom + 56
     for o in outfits:
