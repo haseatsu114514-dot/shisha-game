@@ -1,0 +1,23 @@
+{
+  "id": "tsumugi_02_v2",
+  "status": "candidate_owner_selection_pending",
+  "tool": "image_gen.imagegen",
+  "generated_original": "/workspace/generated_images/exec-f0de4f61-9e4d-41b5-9c26-fd000781a40f.png",
+  "reference_paths": [
+    "/workspace/shisha-game/asset_sources/heroine-title-candidates-20261009/rejected-scale-v1/title_art_tsumugi_02_bowl_prep.png",
+    "/workspace/shisha-game/assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+    "/workspace/scratch/installed-hardware/moze-phunnel-in-hand.jpg",
+    "/workspace/scratch/installed-hardware/moze-onmo-install-in-hand.jpg",
+    "/workspace/scratch/hmd-model-refs/lotus-i-plus-silver-25.jpg"
+  ],
+  "revision": "v2",
+  "qa": {
+    "reviewed": true,
+    "identity": "正規の顔・髪・衣装を維持",
+    "scale": "ボウルを縮小。細い脚へ指が回り、掌の幅と近い口径。つむぎはHMDも縮小してボウルと近い奥行きへ。",
+    "hose": "対象外：詰める工程でホースなし",
+    "heat": "準備中で炭なし。つむぎの冷たいHMDはLotus I+。",
+    "texture": "細かなピクセルと材質感を維持",
+    "limitations": "寸法どおりのCAD再現を保証するものではない。採用はオーナーの選定後。"
+  }
+}

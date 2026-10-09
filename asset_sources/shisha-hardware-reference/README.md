@@ -65,3 +65,4 @@
 - [ヒロインのシーシャ画像で実際に生じた「チェーンだけのマイチップ」「接続されていないホース」を防ぐ具体的なQAと再生成条件](visual-qa-necklace-hose-20261009.md)
 - [日常・タイトルCG：正規の顔、具体的HMDモデル、装着時・手持ちの縮尺、背景の変化](heroine-title-cg-rules-20261009.md)
 - [不採用NG原画：みんとのホースがY字に分岐する例](ng-examples/README.md)
+- [装着状態・手持ちのハガル／HMDの縮尺を調べた実写の出典](installed-and-handheld-scale-20261009.md)
