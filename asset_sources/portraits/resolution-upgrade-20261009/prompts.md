@@ -1,7 +1,7 @@
 # 立ち絵の作り直し：コピペ用プロンプト（画質・顔の大きさ・画風を1回で）
 
 [調査と方針](README.md)。2026-10-09 オーナー決定：**顔の大きさが中央値から±10%を超える6人だけ直す**／**画風はみんと・アゲハに合わせる**。
-1回の生成で1人・1表情。各ブロックを、指定の画像4枚を添付して1回ずつ貼る。全34表情。
+1回の生成で1人・1表情。各ブロックの英文と、ブロックに書いたリポジトリの参照画像4枚で1回ずつ生成する。全34表情。参照画像は**エージェントがリポジトリから直接読み込む**（オーナーが保存・添付する必要はない）。
 
 | キャラ | いまの顔の大きさ（中央値比） | 直し方 | 画風の直し | 表情数 |
 |---|---|---|---|---|
@@ -13,6 +13,8 @@
 | サメちゃん | −10% | 頭（フード込み）を約11%大きく | つやの強い今風の塗り・大きめの目を基準へ | 6 |
 
 顔の大きさの比較図は [face-size-ingame.png](../../reference-sheets/face-size-ingame.png)（`python3 tools/make_reference_sheet.py facesize` で作り直せる）。
+
+> **Claude Code・Codex のチャットでは「立ち絵そろえ」と言えば、下のナビの順に生成→保存→確認→組み込みまで進む**（[portrait-unify スキル](../../../.claude/skills/portrait-unify/SKILL.md)、進捗は [progress.md](progress.md)）。以下は手で投げる場合の手順。
 
 ## 進め方ナビ（この順に投げる）
 
@@ -33,7 +35,9 @@
 - 順番：つむぎ #2〜7 → ましろ #19〜23 → サメちゃん #30〜34 → 前園 #9〜12 → スミさん #14〜17 → 南雲 #25〜28
 - 1キャラの全表情がそろったら並べて確認し、`asset_sources/portraits/<id>-remaster-v2/` に置いて commit。キャラ単位で組み込みを頼んでよい。
 
-## チャットで頼むときの手順（ChatGPT・Codexのどちらでも）
+## リポジトリに触れないチャット（ChatGPTなど）で手作業で頼むときの手順
+
+Codex・Claude Code では「立ち絵そろえ」で済むので、この節は使わない。
 
 1. 添付する4枚をGitHubから保存する（ファイルを開いて `Raw` から保存）。
    - ① いま作り直す表情の現行PNG（各ブロックに書いたパス）
@@ -58,7 +62,7 @@
 
 ### 1. つむぎ・normal
 
-添付：① `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -78,7 +82,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 2. つむぎ・smile
 
-添付：① `assets/sprites/characters/tsumugi/chr_tsumugi_smile.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_smile.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -98,7 +102,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 3. つむぎ・serious
 
-添付：① `assets/sprites/characters/tsumugi/chr_tsumugi_serious.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_serious.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -118,7 +122,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 4. つむぎ・surprise
 
-添付：① `assets/sprites/characters/tsumugi/chr_tsumugi_surprise.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_surprise.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -138,7 +142,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 5. つむぎ・sad
 
-添付：① `assets/sprites/characters/tsumugi/chr_tsumugi_sad.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_sad.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -158,7 +162,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 6. つむぎ・evil
 
-添付：① `assets/sprites/characters/tsumugi/chr_tsumugi_evil.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_evil.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -178,7 +182,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 7. つむぎ・bow
 
-添付：① `assets/sprites/characters/tsumugi/chr_tsumugi_bow.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_bow.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -200,7 +204,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 8. 前園・normal
 
-添付：① `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -220,7 +224,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 9. 前園・smile
 
-添付：① `assets/sprites/characters/maezono/chr_maezono_smile.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/maezono/chr_maezono_smile.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -240,7 +244,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 10. 前園・serious
 
-添付：① `assets/sprites/characters/maezono/chr_maezono_serious.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/maezono/chr_maezono_serious.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -260,7 +264,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 11. 前園・surprise
 
-添付：① `assets/sprites/characters/maezono/chr_maezono_surprise.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/maezono/chr_maezono_surprise.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -280,7 +284,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 12. 前園・excited
 
-添付：① `assets/sprites/characters/maezono/chr_maezono_excited.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/maezono/chr_maezono_excited.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -302,7 +306,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 13. スミさん・normal
 
-添付：① `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -322,7 +326,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 14. スミさん・smile
 
-添付：① `assets/sprites/characters/sumi/chr_sumi_smile.png` ／ ② `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/sumi/chr_sumi_smile.png` ／ ② `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -342,7 +346,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 15. スミさん・serious
 
-添付：① `assets/sprites/characters/sumi/chr_sumi_serious.png` ／ ② `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/sumi/chr_sumi_serious.png` ／ ② `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -362,7 +366,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 16. スミさん・surprise
 
-添付：① `assets/sprites/characters/sumi/chr_sumi_surprise.png` ／ ② `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/sumi/chr_sumi_surprise.png` ／ ② `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -382,7 +386,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 17. スミさん・thinking
 
-添付：① `assets/sprites/characters/sumi/chr_sumi_thinking.png` ／ ② `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/sumi/chr_sumi_thinking.png` ／ ② `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -404,7 +408,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 18. ましろ・normal
 
-添付：① `assets/sprites/characters/mashiro/chr_mashiro_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/mashiro/chr_mashiro_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -424,7 +428,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 19. ましろ・smile
 
-添付：① `assets/sprites/characters/mashiro/chr_mashiro_smile.png` ／ ② `assets/sprites/characters/mashiro/chr_mashiro_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/mashiro/chr_mashiro_smile.png` ／ ② `assets/sprites/characters/mashiro/chr_mashiro_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -444,7 +448,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 20. ましろ・serious
 
-添付：① `assets/sprites/characters/mashiro/chr_mashiro_serious.png` ／ ② `assets/sprites/characters/mashiro/chr_mashiro_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/mashiro/chr_mashiro_serious.png` ／ ② `assets/sprites/characters/mashiro/chr_mashiro_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -464,7 +468,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 21. ましろ・surprise
 
-添付：① `assets/sprites/characters/mashiro/chr_mashiro_surprise.png` ／ ② `assets/sprites/characters/mashiro/chr_mashiro_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/mashiro/chr_mashiro_surprise.png` ／ ② `assets/sprites/characters/mashiro/chr_mashiro_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -484,7 +488,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 22. ましろ・sad
 
-添付：① `assets/sprites/characters/mashiro/chr_mashiro_sad.png` ／ ② `assets/sprites/characters/mashiro/chr_mashiro_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/mashiro/chr_mashiro_sad.png` ／ ② `assets/sprites/characters/mashiro/chr_mashiro_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -504,7 +508,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 23. ましろ・sleep
 
-添付：① `assets/sprites/characters/mashiro/chr_mashiro_sleep.png` ／ ② `assets/sprites/characters/mashiro/chr_mashiro_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/mashiro/chr_mashiro_sleep.png` ／ ② `assets/sprites/characters/mashiro/chr_mashiro_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -526,7 +530,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 24. 南雲・normal
 
-添付：① `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -546,7 +550,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 25. 南雲・smile
 
-添付：① `assets/sprites/characters/nagumo/chr_nagumo_smile.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_smile.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -566,7 +570,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 26. 南雲・serious
 
-添付：① `assets/sprites/characters/nagumo/chr_nagumo_serious.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_serious.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -586,7 +590,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 27. 南雲・surprise
 
-添付：① `assets/sprites/characters/nagumo/chr_nagumo_surprise.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_surprise.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -606,7 +610,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 28. 南雲・thinking
 
-添付：① `assets/sprites/characters/nagumo/chr_nagumo_thinking.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/nagumo/chr_nagumo_thinking.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ `assets/sprites/characters/adam/chr_adam_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/minto/chr_minto_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -628,7 +632,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 29. サメちゃん・normal
 
-添付：① `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -648,7 +652,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 30. サメちゃん・smile
 
-添付：① `assets/sprites/characters/kafuka/chr_kafuka_smile.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/kafuka/chr_kafuka_smile.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -668,7 +672,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 31. サメちゃん・serious
 
-添付：① `assets/sprites/characters/kafuka/chr_kafuka_serious.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/kafuka/chr_kafuka_serious.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -688,7 +692,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 32. サメちゃん・surprise
 
-添付：① `assets/sprites/characters/kafuka/chr_kafuka_surprise.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/kafuka/chr_kafuka_surprise.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -708,7 +712,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 33. サメちゃん・excited
 
-添付：① `assets/sprites/characters/kafuka/chr_kafuka_excited.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/kafuka/chr_kafuka_excited.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
@@ -728,7 +732,7 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 
 ### 34. サメちゃん・ventriloquism
 
-添付：① `assets/sprites/characters/kafuka/chr_kafuka_ventriloquism.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/kafuka/chr_kafuka_ventriloquism.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
 Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
