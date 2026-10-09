@@ -16,6 +16,28 @@
   --accent-2: var(--neon-pink);
   --bench-bg: radial-gradient(ellipse at 30% 20%, rgba(56, 240, 255, 0.08), transparent 50%), radial-gradient(ellipse at 80% 90%, rgba(255, 63, 164, 0.08), transparent 50%), rgba(4, 4, 8, 0.9);
 }
+/* 熱のイメージ。参照動画の斜めの四角、赤い炎、紫と黄緑の灼熱。 */
+.thermal-backdrop { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; display: none; }
+.bench.thermal-active .thermal-backdrop { display: block; }
+.bench.thermal-active { --accent: #ffe3a1; }
+.bench.thermal-active .bench-right { padding: 16px 20px; margin: -16px -20px; border-radius: 16px; background: #100b1ce8; box-shadow: 0 6px 32px #18091555; }
+.bench.thermal-active .bench-top { background: #120b21e8; }
+.bench.thermal-active .bench-worker-stage::before { background: linear-gradient(180deg, #17101b55, #110c1577), linear-gradient(0deg, color-mix(in srgb, var(--thermal-ink) 35%, transparent), transparent 75%); }
+.thermal-label { margin-left: auto; font-size: 12px; color: var(--thermal-ink); white-space: nowrap; }
+.thermal-label[hidden] { display: none; }
+.thermal-picture { display: none; position: absolute; left: 50%; bottom: 166px; width: 150px; height: 190px; transform: translateX(-50%); color: var(--thermal-ink); pointer-events: none; filter: drop-shadow(0 0 7px currentColor); }
+.thermal-picture svg { width: 100%; height: 100%; overflow: visible; }
+.thermal-active .thermal-picture { display: block; }
+.thermal-wisps { opacity: .4; animation: thermal-breath 3.8s ease-in-out infinite alternate; transform-origin: 50% 100%; }
+.thermal-flame { display: none; transform-origin: 50% 100%; animation: thermal-flicker .65s ease-in-out infinite alternate; }
+.thermal-active[data-thermal-band="hot"] .thermal-wisps { opacity: .8; }
+.thermal-active:is([data-thermal-band="fire"], [data-thermal-band="inferno"]) .thermal-wisps { stroke: #302333; opacity: .8; }
+.thermal-active:is([data-thermal-band="fire"], [data-thermal-band="inferno"]) .thermal-flame { display: block; }
+.thermal-active[data-thermal-band="cold"] .thermal-wisps { opacity: .15; }
+.bench[data-thermal-paused="true"] .thermal-picture * { animation-play-state: paused; }
+@keyframes thermal-breath { from { transform: translateY(3px) scale(.9, .92); } to { transform: translateY(-10px) scale(1.04, 1.06); } }
+@keyframes thermal-flicker { from { transform: scale(.91, .85) skewX(-5deg); } to { transform: scale(1.04, 1.08) skewX(4deg); } }
+@media (prefers-reduced-motion: reduce) { .thermal-picture * { animation: none; } }
 .bench-top { position: absolute; left: 0; right: 0; top: 0; height: 56px; display: flex; align-items: center; gap: 28px; padding: 0 28px; border-bottom: 1px solid #ffffff0d; }
 .bench-mode { width: 448px; font-family: var(--font); font-weight: 700; font-size: 12px; letter-spacing: 0.22em; color: var(--accent); flex: none; }
 .bench-condition { position: relative; color: #e6c984; margin-left: auto; z-index: 7; }

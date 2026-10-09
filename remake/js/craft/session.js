@@ -19,6 +19,7 @@ import { runHeat } from "./heat.js";
 import { runSteamDodge } from "./steam.js";
 import { runPull } from "./pull.js";
 import { applyCraftSkin, craftSkinUrls } from "./skin.js";
+import { buildThermalAtmosphere } from "./thermal.js";
 
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
@@ -95,9 +96,10 @@ export function openBench(cs, { steps = [] } = {}) {
     el("div.bench-right", [el("div.bench-head", [el("div.bench-heading", [title, hint]), guide.root]), panel]),
   ]);
   applyCraftSkin(root);
+  const thermal = buildThermalAtmosphere(root, worker);
   bg();
   showScreen("bench", root);
-  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount };
+  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, thermal };
   return bench;
 }
 
@@ -126,7 +128,17 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.worker.root.dataset.step = id; // 今後の工程別アニメーションの接続先
   b.worker.setMental("steady");
   b.worker.caption.textContent = WORKER_STEPS[id] || titleText;
+  b.thermal.setStep(id);
+  if (["pull", "care", "trial"].includes(id)) b.thermal.update(b.cs.care?.temp ?? b.cs.pull?.temp ?? b.cs.steam?.temp ?? 0);
   return b.panel;
+}
+
+/** 同じ一台の実温度を、蒸らし以降の背景と煙の絵へ返す。 */
+export function setBenchTemperature(cs, temp) {
+  if (bench?.cs === cs && !bench.root.classList.contains("done")) bench.thermal.update(temp);
+}
+export function pauseBenchTemperature(cs, paused) {
+  if (bench?.cs === cs) bench.thermal.pause(paused);
 }
 
 /** 左側の工程キャプションを更新。今後の作業アニメーションもここで同期する。 */

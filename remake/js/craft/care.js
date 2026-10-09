@@ -2,7 +2,7 @@
 // 審査員が吸っている間も炭は生きている。温度の流れを読んで、炭を外す／回す／寄せる／見守る。
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, tickerSay, reactAudience } from "./session.js";
+import { stepPanel, tickerSay, reactAudience, setBenchTemperature } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, popStamp } from "./common.js";
 import { IDEAL } from "./pull.js";
 import { heatDelta } from "./conditions.js";
@@ -30,6 +30,7 @@ export async function runCare(cs) {
   panel.append(el("div.care", [roundEl, chart, reading, btns]));
 
   const drawChart = () => {
+    setBenchTemperature(cs, T);
     chart.replaceChildren(
       el("div.cc-zone", { style: { bottom: `${IDEAL[0] * 100}%`, height: `${(IDEAL[1] - IDEAL[0]) * 100}%` } }),
       ...history.map((v, i) => el("i.cc-pt", { style: { left: `${(i / (ROUNDS * 2)) * 100}%`, bottom: `${clamp(v, 0, 1) * 100}%` } })),

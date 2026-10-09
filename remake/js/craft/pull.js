@@ -3,7 +3,7 @@
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown, flash } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay, reactAudience } from "./session.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 
 import { craftConditions, heatDelta, pullResult, isOptimalTemperature, temperatureAfterSteam, pullFocusFromSteam, IDEAL } from "./conditions.js";
@@ -54,6 +54,7 @@ export async function runPull(cs) {
 
   const render = () => {
     thermometer.update(T);
+    setBenchTemperature(cs, T);
     thermometer.preview(pulls < PULL_MAX ? clamp(coreTemp + heatDelta(cs, actionAt(pos).delta), 0, 1) : null);
     const inZone = T >= IDEAL[0] && T <= IDEAL[1];
     const optimal = isOptimalTemperature(T);
