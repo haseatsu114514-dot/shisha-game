@@ -49,7 +49,9 @@
 
 3・4の顔・髪・体型・衣装は写さない。
 
-## Codexに貼る文（表情ごとに `<…>` を差し替えて1回ずつ）
+> **そのまま貼れる完成版（前園・南雲・スミさんの15表情）とチャットでの手順は [prompts.md](prompts.md)。** 以下はB以降を追加するときのひな形。
+
+## ひな形（表情ごとに `<…>` を差し替えて1回ずつ）
 
 ```
 Upscale-remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the exact same person, face, expression, pose, hand and shoulder positions, clothing, accessories, colors and head-to-body proportions as image 1. Only the rendering resolution and crispness should improve.
