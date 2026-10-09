@@ -1434,7 +1434,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "はじめ。今日の昼は、届け物を頼む"
+          "text": "おう、戻ったか。……悪いが、もうひとつ届け物を頼む"
         },
         {
           "speaker": "",
@@ -1525,9 +1525,11 @@
           "text": "カウンターの横に、業務用のミントの大袋が三つ積まれていた。"
         },
         {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "はじめ。今日の昼は、届け物を頼む。まとめ買いのミントが届いた"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_delivery_adam",
+          "next_true": "dl_again",
+          "next_false": "dl_first"
         },
         {
           "speaker": "hajime",
@@ -1597,6 +1599,20 @@
           {
             "type": "set_flag",
             "flag": "_delivery_network_told"
+          }
+        ],
+        "dl_again": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "はじめ。今日も届け物だ。まとめ買いのミントが届いた"
+          }
+        ],
+        "dl_first": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "はじめ。届け物を頼む。まとめ買いのミントが届いた"
           }
         ]
       }
