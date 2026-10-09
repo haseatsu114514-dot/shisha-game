@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>シーシャ描写リファレンス</title>
+<!--
+  シーシャを描く画像生成の前に見る1枚。正本はこのディレクトリの親にある各資料（README.md ほか）。
+  再出力: node tools/render_html_png.mjs（使い方は同ディレクトリの README.md）
+-->
+<style>
+@font-face { font-family: "ZK"; font-weight: 500; src: url("../../../remake/fonts/ZenKakuGothicNew-Medium.woff2") format("woff2"); }
+@font-face { font-family: "ZK"; font-weight: 700; src: url("../../../remake/fonts/ZenKakuGothicNew-Bold.woff2") format("woff2"); }
+@font-face { font-family: "ZK"; font-weight: 900; src: url("../../../remake/fonts/ZenKakuGothicNew-Black.woff2") format("woff2"); }
+:root {
+  --paper: #f4f1ea; --card: #fffdf8; --ink: #22252b; --sub: #5d6270; --muted: #8a8f99;
+  --line: #d9d2c3; --teal: #17756a; --teal-soft: #dcefeb; --ng: #c63d2f; --ng-soft: #f9e1dc;
+  --ok: #2a7f45; --ok-soft: #e0f1e4; --gold: #b7862c; --glass: #cfe3ea; --water: #9cc7d6;
+  --metal: #9aa3ad; --metal-dk: #5f6872; --wood: #8a5a33; --coal: #3b3a3a; --ember: #e2552b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { width: 2400px; background: var(--paper); color: var(--ink); font-family: "ZK", sans-serif; font-weight: 500; font-size: 24px; line-height: 1.55; }
+.page { padding: 56px 56px 40px; }
+header { display: grid; grid-template-columns: 1fr 760px; gap: 40px; align-items: end; border-bottom: 3px solid var(--ink); padding-bottom: 26px; margin-bottom: 34px; }
+h1 { font-weight: 900; font-size: 82px; line-height: 1.05; letter-spacing: .02em; }
+.lede { color: var(--sub); font-size: 26px; margin-top: 14px; }
+.top3 { background: var(--ink); color: #fff; border-radius: 18px; padding: 22px 28px; }
+.top3 b { color: #ffd98a; }
+.top3 h2 { font-size: 24px; font-weight: 700; color: #cfd3da; margin-bottom: 8px; letter-spacing: .05em; }
+.top3 ol { margin-left: 1.3em; font-size: 26px; line-height: 1.6; }
+.grid { display: grid; gap: 28px; margin-bottom: 28px; }
+.g3 { grid-template-columns: 820px 1fr 1fr; }
+.g2 { grid-template-columns: 1fr 1fr; }
+.g-ng { grid-template-columns: 1fr 640px; }
+.card { background: var(--card); border: 2px solid var(--line); border-radius: 22px; padding: 26px 30px 28px; }
+.card h2 { font-weight: 900; font-size: 34px; display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.card h2 .n { display: inline-grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; background: var(--teal); color: #fff; font-size: 26px; flex: none; }
+.card h3 { font-weight: 700; font-size: 25px; margin: 18px 0 8px; }
+.note { color: var(--sub); font-size: 21px; }
+ul.rules { list-style: none; }
+ul.rules li { position: relative; padding-left: 30px; margin: 7px 0; }
+ul.rules li::before { content: ""; position: absolute; left: 6px; top: 14px; width: 11px; height: 11px; border-radius: 50%; background: var(--teal); }
+ul.rules li.ng::before { background: var(--ng); border-radius: 2px; transform: rotate(45deg); }
+.tag { display: inline-block; font-size: 19px; font-weight: 700; padding: 1px 12px; border-radius: 99px; margin-right: 6px; vertical-align: 2px; }
+.tag.ok { background: var(--ok-soft); color: var(--ok); }
+.tag.ng { background: var(--ng-soft); color: var(--ng); }
+.tag.t { background: var(--teal-soft); color: var(--teal); }
+table.scene { width: 100%; border-collapse: collapse; font-size: 22px; }
+table.scene th { text-align: left; width: 250px; padding: 12px 14px; vertical-align: top; font-weight: 700; background: #f1ece1; border-bottom: 2px solid var(--paper); border-radius: 10px 0 0 10px; }
+table.scene td { padding: 12px 16px; border-bottom: 2px solid var(--paper); background: #faf7f0; border-radius: 0 10px 10px 0; }
+svg { display: block; }
+svg text { font-family: "ZK", sans-serif; }
+.ng-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.ng-item figure { position: relative; border-radius: 14px; overflow: hidden; border: 4px solid var(--ng); background: #000; }
+.ng-item img { display: block; width: 100%; }
+.ng-item .stamp { position: absolute; top: 14px; left: 14px; background: var(--ng); color: #fff; font-weight: 900; font-size: 26px; padding: 4px 16px; border-radius: 10px; }
+.ng-item .ring { position: absolute; border: 6px solid #ff3b2b; border-radius: 50%; box-shadow: 0 0 0 3px rgba(255,255,255,.85); }
+.ng-item .ring.box { border-radius: 18px; }
+.ng-item .label { position: absolute; background: rgba(198,61,47,.95); color: #fff; font-weight: 700; font-size: 21px; padding: 2px 12px; border-radius: 8px; white-space: nowrap; }
+.ng-item p { font-size: 21px; margin-top: 12px; }
+.ng-item p b { color: var(--ng); }
+ol.check { counter-reset: c; list-style: none; font-size: 22px; }
+ol.check li { counter-increment: c; position: relative; padding: 9px 0 9px 50px; border-bottom: 1px dashed var(--line); }
+ol.check li::before { content: "□"; position: absolute; left: 6px; top: 4px; font-size: 30px; color: var(--teal); }
+.photos { display: grid; grid-template-columns: repeat(9, 1fr); gap: 16px; align-items: start; }
+.photos figure { background: #fff; border: 2px solid var(--line); border-radius: 12px; padding: 8px; }
+.photos img { width: 100%; height: 170px; object-fit: contain; display: block; background: #fff; }
+.photos figcaption { font-size: 18px; line-height: 1.35; margin-top: 6px; color: var(--sub); }
+.links { columns: 2; column-gap: 40px; font-size: 20px; color: var(--sub); }
+.links li { margin: 3px 0 3px 1.1em; }
+.links code, code { font-family: "ZK", monospace; font-size: .92em; background: #efe9dc; padding: 0 6px; border-radius: 5px; color: var(--ink); }
+footer { margin-top: 10px; color: var(--muted); font-size: 19px; display: flex; justify-content: space-between; }
+.free { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 10px; }
+.free div { background: #f3efe5; border-radius: 12px; padding: 10px 12px; font-size: 20px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div>
+    <h1>シーシャ描写リファレンス</h1>
+    <p class="lede">画像生成の前に見る1枚（仕組みの理解と検品用の資料。<b>生成ツールには添付せず、実物写真を見て添付する</b>）。オーナー提供の実物写真37点・構造図3点・不採用の生成例3点と、各ルール資料の要点をまとめた早見表。<br>形・色・装飾は自由。<b>部品の積み順・ホースのつながり・縮尺</b>だけは崩さない。</p>
+  </div>
+  <div class="top3">
+    <h2>まず守る3つ</h2>
+    <ol>
+      <li><b>積み順</b>：炭→HMD→ハガル→受け皿→ステム→ベース</li>
+      <li><b>ホースは1本</b>：側面ポート→ホース→硬いハンドル→口</li>
+      <li><b>完成・喫煙のCGはHMD</b>：アルミへの直炭はNG</li>
+    </ol>
+  </div>
+</header>
+
+<!-- ============ 1段目：構造・縮尺・場面 ============ -->
+<div class="grid g3">
+
+<section class="card" id="anatomy">
+  <h2><span class="n">1</span>構造と積み順（側面）</h2>
+  <svg viewBox="0 0 760 1080" width="760" height="1080" aria-label="シーシャの構造図">
+    <defs>
+      <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#17756a"/></marker>
+      <linearGradient id="glass" x1="0" x2="1"><stop offset="0" stop-color="#d9ebf0"/><stop offset=".45" stop-color="#f4fbfd"/><stop offset="1" stop-color="#bcd7df"/></linearGradient>
+      <linearGradient id="metal" x1="0" x2="1"><stop offset="0" stop-color="#7d8792"/><stop offset=".45" stop-color="#d7dde3"/><stop offset="1" stop-color="#6c7580"/></linearGradient>
+      <linearGradient id="ceramic" x1="0" x2="1"><stop offset="0" stop-color="#b9714c"/><stop offset=".45" stop-color="#e2a27b"/><stop offset="1" stop-color="#a5603f"/></linearGradient>
+    </defs>
+    <!-- 炭（HMD内に2個） -->
+    <g>
+      <rect x="296" y="118" width="30" height="30" rx="4" fill="#4a4746" stroke="#222" stroke-width="2"/>
+      <rect x="296" y="140" width="30" height="8" fill="#e2552b"/>
+      <rect x="336" y="118" width="30" height="30" rx="4" fill="#4a4746" stroke="#222" stroke-width="2"/>
+      <rect x="336" y="140" width="30" height="8" fill="#e2552b"/>
+      <path d="M300 122 h22 M340 122 h22" stroke="#bdb8b2" stroke-width="4"/>
+    </g>
+    <!-- HMD -->
+    <rect x="282" y="146" width="98" height="34" rx="6" fill="url(#metal)" stroke="#4d555e" stroke-width="2.5"/>
+    <path d="M380 160 h46" stroke="#2f3238" stroke-width="9" stroke-linecap="round"/>
+    <path d="M292 156 h14 M318 156 h14 M344 156 h14" stroke="#4d555e" stroke-width="3"/>
+    <!-- ハガル（器＋細い脚） -->
+    <path d="M286 182 L376 182 L360 246 L302 246 Z" fill="url(#ceramic)" stroke="#6e3c24" stroke-width="2.5"/>
+    <rect x="318" y="246" width="26" height="66" fill="url(#ceramic)" stroke="#6e3c24" stroke-width="2.5"/>
+    <!-- 受け皿 -->
+    <ellipse cx="331" cy="322" rx="122" ry="16" fill="url(#metal)" stroke="#4d555e" stroke-width="2.5"/>
+    <!-- ステム -->
+    <rect x="316" y="330" width="30" height="330" fill="url(#metal)" stroke="#4d555e" stroke-width="2.5"/>
+    <rect x="306" y="400" width="50" height="16" rx="6" fill="#b7862c" stroke="#7a5a1d" stroke-width="2"/>
+    <rect x="306" y="500" width="50" height="16" rx="6" fill="#b7862c" stroke="#7a5a1d" stroke-width="2"/>
+    <!-- ホースポート（右）とパージ（左） -->
+    <path d="M346 592 L398 566" stroke="#5f6872" stroke-width="18" stroke-linecap="round"/>
+    <rect x="390" y="550" width="34" height="28" rx="6" transform="rotate(-26 407 564)" fill="#2f3238"/>
+    <path d="M316 610 L282 594" stroke="#5f6872" stroke-width="14" stroke-linecap="round"/>
+    <circle cx="276" cy="591" r="11" fill="#d7dde3" stroke="#4d555e" stroke-width="2.5"/>
+    <!-- ベース -->
+    <path d="M300 660 L362 660 L362 700 C470 735 478 900 430 940 L232 940 C184 900 192 735 300 700 Z" fill="url(#glass)" stroke="#6f97a5" stroke-width="3"/>
+    <path d="M218 840 C260 832 400 832 446 840 C454 880 446 915 430 940 L232 940 C214 915 208 880 218 840 Z" fill="#9cc7d6" opacity=".75"/>
+    <!-- ダウンステム -->
+    <rect x="322" y="660" width="18" height="236" fill="#8a939d" opacity=".9"/>
+    <circle cx="331" cy="900" r="10" fill="#8a939d"/>
+    <g fill="#fff" stroke="#6f97a5" stroke-width="1.5"><circle cx="350" cy="880" r="6"/><circle cx="312" cy="868" r="5"/><circle cx="356" cy="856" r="4"/><circle cx="322" cy="848" r="3.5"/></g>
+    <!-- ホース→ハンドル→チップ -->
+    <path d="M412 560 C470 540 480 690 520 840 C548 950 640 960 650 830 C658 720 640 640 662 560" fill="none" stroke="#2f3238" stroke-width="20" stroke-linecap="round"/>
+    <path d="M412 560 C470 540 480 690 520 840 C548 950 640 960 650 830 C658 720 640 640 662 560" fill="none" stroke="#5e636d" stroke-width="2" stroke-dasharray="6 10"/>
+    <rect x="652" y="552" width="22" height="22" rx="3" fill="#7a5a1d"/>
+    <path d="M663 556 L690 330" stroke="#b7862c" stroke-width="17" stroke-linecap="round"/>
+    <path d="M690 330 L694 296" stroke="#5aa8e6" stroke-width="11" stroke-linecap="round"/>
+    <!-- 煙の流れ -->
+    <g stroke="#17756a" stroke-width="3.5" fill="none" stroke-dasharray="8 7" marker-end="url(#arr)">
+      <path d="M262 92 C262 120 282 150 300 186"/>
+      <path d="M300 236 L300 300"/>
+    </g>
+    <text x="196" y="80" font-size="19" fill="#17756a" font-weight="700">空気→炭→葉→ステム→水→ホース</text>
+
+    <!-- ラベル（左） -->
+    <g font-size="21" font-weight="700" fill="#22252b">
+      <g><line x1="230" y1="134" x2="296" y2="134" stroke="#22252b" stroke-width="1.5"/><text x="20" y="128">❶ 炭（小さな角炭）</text><text x="20" y="152" font-size="17" font-weight="500" fill="#5d6270">灰色＋一部が赤熱</text><text x="20" y="172" font-size="17" font-weight="500" fill="#5d6270">炎の塊にしない</text></g>
+      <g><line x1="230" y1="214" x2="296" y2="214" stroke="#22252b" stroke-width="1.5"/><text x="20" y="208">❸ ハガル（ボウル）</text><text x="20" y="232" font-size="17" font-weight="500" fill="#5d6270">葉を詰める器＋細い脚</text><text x="20" y="252" font-size="17" font-weight="500" fill="#5d6270">皿と融合させない</text></g>
+      <g><line x1="150" y1="322" x2="206" y2="322" stroke="#22252b" stroke-width="1.5"/><text x="20" y="316">❹ 受け皿</text><text x="20" y="340" font-size="17" font-weight="500" fill="#5d6270">灰を受ける</text><text x="20" y="360" font-size="17" font-weight="500" fill="#5d6270">葉は入れない</text></g>
+      <g><line x1="230" y1="470" x2="316" y2="470" stroke="#22252b" stroke-width="1.5"/><text x="20" y="464">❺ ステム</text><text x="20" y="488" font-size="17" font-weight="500" fill="#5d6270">縦の軸。水槽にしない</text></g>
+      <g><line x1="200" y1="590" x2="264" y2="590" stroke="#22252b" stroke-width="1.5"/><text x="20" y="584">❼ パージ（排気弁）</text><text x="20" y="608" font-size="17" font-weight="500" fill="#5d6270">ホースは付けない</text></g>
+      <g><line x1="200" y1="760" x2="236" y2="760" stroke="#22252b" stroke-width="1.5"/><text x="20" y="754">❽ ベース（水入り）</text><text x="20" y="778" font-size="17" font-weight="500" fill="#5d6270">水面は下の方</text></g>
+      <g><line x1="200" y1="890" x2="322" y2="890" stroke="#22252b" stroke-width="1.5"/><text x="20" y="884">❾ ダウンステム</text><text x="20" y="908" font-size="17" font-weight="500" fill="#5d6270">水中で泡が出る</text></g>
+    </g>
+    <!-- ラベル（右） -->
+    <g font-size="21" font-weight="700" fill="#22252b">
+      <g><line x1="430" y1="164" x2="470" y2="164" stroke="#22252b" stroke-width="1.5"/><text x="476" y="158">❷ HMD（熱管理器具）</text><text x="476" y="182" font-size="17" font-weight="500" fill="#5d6270">ボウルの口に載る別部品</text></g>
+      <g><line x1="430" y1="560" x2="470" y2="520" stroke="#22252b" stroke-width="1.5"/><text x="440" y="506">❻ ホースポート</text></g>
+      <g><text x="470" y="985">❿ ホース</text><text x="470" y="1007" font-size="17" font-weight="500" fill="#5d6270">しなって重力でたわむ</text></g>
+      <g><line x1="676" y1="430" x2="700" y2="430" stroke="#22252b" stroke-width="1.5"/><text x="560" y="384">⓫ ハンドル</text><text x="560" y="408" font-size="17" font-weight="500" fill="#5d6270">硬い持ち手</text></g>
+      <g><text x="560" y="276">⓬ チップ</text><text x="560" y="300" font-size="17" font-weight="500" fill="#5d6270">任意・小さい</text></g>
+    </g>
+    <text x="20" y="1046" font-size="17" fill="#8a8f99">※模式図。HMDの型・アルミの有無・パージの位置・台の形は機種で変わる。</text><text x="20" y="1068" font-size="17" fill="#8a8f99">　図の比率は一般的な目安（全高およそ80cm）。</text>
+  </svg>
+</section>
+
+<section class="card" id="scale">
+  <h2><span class="n">2</span>縮尺の目安（同じ奥行きのとき）</h2>
+  <div style="background:var(--teal-soft);border-radius:14px;padding:16px 22px;font-size:22px;line-height:1.6">
+    <b style="color:var(--teal)">ハガルの口 ≒ HMD ≒ 掌の幅。炭は指先ほど</b><br>
+    ・片手で持てる大きさ。両手で抱える食器・マグにしない<br>
+    ・受け皿はHMDの2.5倍前後。皿が小さいと上だけ巨大に見える<br>
+    ・小さくする修正で脚まで潰さない（器の深さ・脚・口径は別々に）<br>
+    ・台全体は卓上で60〜80cm前後が多い。床置き・低重心型もある
+  </div>
+  <svg viewBox="0 0 700 420" width="100%" aria-label="縮尺比較（同じ縮尺：1cm＝12px）" style="margin-top:14px">
+    <line x1="10" y1="300" x2="690" y2="300" stroke="#22252b" stroke-width="2"/>
+    <!-- 角炭 2.5cm -->
+    <g transform="translate(14,270)"><rect width="30" height="30" rx="3" fill="#4a4746"/><rect y="22" width="30" height="8" fill="#e2552b"/></g>
+    <!-- HMD 7.5 x 3.5 -->
+    <g transform="translate(70,258)"><rect width="90" height="42" rx="6" fill="#c0c7ce" stroke="#4d555e" stroke-width="2"/></g>
+    <!-- ハガル 口径7.5 / 器5 / 脚5 -->
+    <g transform="translate(186,180)"><path d="M0 0 L90 0 L76 60 L14 60 Z" fill="#e2a27b" stroke="#6e3c24" stroke-width="2"/><rect x="32" y="60" width="26" height="60" fill="#e2a27b" stroke="#6e3c24" stroke-width="2"/></g>
+    <!-- 手 掌8.5 / 全長18 -->
+    <g transform="translate(306,84)">
+      <rect x="0" y="96" width="102" height="120" rx="30" fill="#f2c9a8" stroke="#b07a55" stroke-width="2"/>
+      <rect x="2" y="14" width="22" height="100" rx="11" fill="#f2c9a8" stroke="#b07a55" stroke-width="2"/>
+      <rect x="27" y="0" width="23" height="112" rx="11" fill="#f2c9a8" stroke="#b07a55" stroke-width="2"/>
+      <rect x="53" y="6" width="23" height="108" rx="11" fill="#f2c9a8" stroke="#b07a55" stroke-width="2"/>
+      <rect x="79" y="26" width="21" height="90" rx="10" fill="#f2c9a8" stroke="#b07a55" stroke-width="2"/>
+    </g>
+    <!-- 受け皿 20cm -->
+    <g transform="translate(436,280)"><ellipse cx="120" cy="10" rx="120" ry="12" fill="#c0c7ce" stroke="#4d555e" stroke-width="2"/></g>
+    <g font-size="19" font-weight="700">
+      <text x="10" y="334">角炭</text><text x="70" y="334">HMD</text><text x="186" y="334">ハガル</text><text x="306" y="334">大人の手</text><text x="436" y="334">受け皿</text>
+    </g>
+    <g font-size="16" fill="#5d6270">
+      <text x="10" y="358">2.5cm</text>
+      <text x="70" y="358">径7.5cm</text><text x="70" y="378">高さ3〜4</text>
+      <text x="186" y="358">口径7〜8</text><text x="186" y="378">全高約10</text>
+      <text x="306" y="358">掌の幅</text><text x="306" y="378">約8〜9cm</text>
+      <text x="436" y="358">径20cm前後</text>
+    </g>
+    <g transform="translate(560,40)"><line x1="0" y1="0" x2="120" y2="0" stroke="#22252b" stroke-width="3"/><line x1="0" y1="-8" x2="0" y2="8" stroke="#22252b" stroke-width="3"/><line x1="120" y1="-8" x2="120" y2="8" stroke="#22252b" stroke-width="3"/><text x="38" y="30" font-size="18" font-weight="700">10cm</text></g>
+    <text x="10" y="414" font-size="16" fill="#8a8f99">すべて同じ縮尺（1cm＝12px）で並べた比較</text>
+  </svg>
+  <p class="note">数値は代表例（ONMO／Kaloud Lotus I+ 等の公表寸法）。実際は選んだモデルの寸法と、装着状態・手持ちの実写を優先する。</p>
+</section>
+
+<section class="card" id="scene">
+  <h2><span class="n">3</span>場面ごとに描く部品</h2>
+  <table class="scene">
+    <tr><th>ボウル未装着の台<br><span class="tag t">制作画面</span></th><td>台の先端は<b>小さな凸型の金属ポスト</b>。大きなボウル一体型にしない</td></tr>
+    <tr><th>詰める・アルミ・穴あけ</th><td>ハガル＋（アルミ）。<b>炭・HMDはまだ載せない</b>。アルミは口に平らに張り、縁で折り込む</td></tr>
+    <tr><th>炭を焼く・置く</th><td>トングで小さな角炭を扱う。ゲームの基本は<b>外周の三角に3個</b>（写真の2個・4個で置き換えない）</td></tr>
+    <tr><th>完成・喫煙・吸い出し<br><span class="tag t">日常・タイトルCG</span></th><td><b>HMDを必ず使う。直炭（アルミに直接炭）はNG</b>。HMDは1枚につき<b>1モデル</b>に決め、別モデルの蓋・煙突・取手を混ぜない</td></tr>
+    <tr><th>吐く煙</th><td>煙は<b>人物の口元</b>から。HMD・ホース根元・チェーンから常に出さない</td></tr>
+    <tr><th>マイチップを携帯</th><td>首掛け＝<b>チェーン＋留め具＋吸い口本体</b>。ホースとは別</td></tr>
+    <tr><th>台を描かない指定</th><td>無理に台を足さない</td></tr>
+  </table>
+  <h3>形は自由。構造だけ守る</h3>
+  <div class="free"><div>伝統の金属・彫金</div><div>木製ステム</div><div>角型モダン</div><div>透明・低重心</div></div>
+  <p class="note" style="margin-top:12px">色・素材・装飾は場面に合わせて創作してよい。写真の完コピ・ロゴ・文字は描かない。画風はゲームのピクセルペインター調を優先。</p>
+</section>
+</div>
+
+<!-- ============ 2段目：ホース・吸い口・穴と熱 ============ -->
+<div class="grid g3" style="grid-template-columns: 1fr 1fr 1fr;">
+
+<section class="card" id="hose">
+  <h2><span class="n">4</span>ホースは1本の経路</h2>
+  <svg viewBox="0 0 700 340" width="100%">
+    <rect x="40" y="40" width="40" height="230" rx="10" fill="#c0c7ce" stroke="#4d555e" stroke-width="2"/>
+    <path d="M80 120 L118 106" stroke="#5f6872" stroke-width="16" stroke-linecap="round"/>
+    <rect x="112" y="92" width="30" height="26" rx="6" fill="#2f3238"/>
+    <path d="M140 104 C220 100 210 270 330 262 C440 255 430 140 500 120" fill="none" stroke="#2f3238" stroke-width="16" stroke-linecap="round"/>
+    <rect x="494" y="108" width="20" height="22" rx="3" fill="#7a5a1d"/>
+    <path d="M512 118 L630 64" stroke="#b7862c" stroke-width="14" stroke-linecap="round"/>
+    <path d="M630 64 L658 52" stroke="#5aa8e6" stroke-width="9" stroke-linecap="round"/>
+    <g font-size="18" font-weight="700">
+      <text x="20" y="30">本体の側面ポート</text>
+      <text x="150" y="80">根元の金具</text>
+      <text x="270" y="300">しなるホース</text>
+      <text x="520" y="150">硬いハンドル</text>
+      <text x="580" y="36">口元へ</text>
+    </g>
+    <text x="20" y="334" font-size="18" fill="#2a7f45" font-weight="700">✓ ポート→手元、手元→ポートの両方向に指でなぞって1本につながる</text>
+  </svg>
+  <svg viewBox="0 0 700 220" width="100%" style="margin-top:10px">
+    <g font-size="17" font-weight="700" fill="#c63d2f">
+      <!-- Y字 -->
+      <g transform="translate(0,0)"><rect width="128" height="160" rx="12" fill="#f9e1dc"/><path d="M20 30 C60 40 60 90 64 100 M64 100 C70 60 100 40 112 30 M64 100 L64 150" stroke="#2f3238" stroke-width="9" fill="none" stroke-linecap="round"/><text x="10" y="190">Y字に分岐</text></g>
+      <!-- 途切れ -->
+      <g transform="translate(143,0)"><rect width="128" height="160" rx="12" fill="#f9e1dc"/><path d="M20 120 C40 60 60 60 66 80" stroke="#2f3238" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M84 96 C96 120 104 60 112 34" stroke="#2f3238" stroke-width="9" fill="none" stroke-linecap="round"/><text x="0" y="190">途切れ・浮く</text></g>
+      <!-- 生える場所 -->
+      <g transform="translate(286,0)"><rect width="128" height="160" rx="12" fill="#f9e1dc"/><rect x="50" y="20" width="26" height="22" fill="#e2a27b"/><ellipse cx="63" cy="48" rx="40" ry="6" fill="#c0c7ce"/><rect x="56" y="50" width="14" height="90" fill="#c0c7ce"/><path d="M76 34 C110 40 112 90 116 140" stroke="#2f3238" stroke-width="9" fill="none" stroke-linecap="round"/><text x="4" y="190">生える場所違い</text></g>
+      <!-- 大ループ -->
+      <g transform="translate(429,0)"><rect width="128" height="160" rx="12" fill="#f9e1dc"/><circle cx="64" cy="70" r="16" fill="#8a8f99"/><rect x="50" y="88" width="28" height="40" rx="8" fill="#8a8f99"/><path d="M14 40 C0 170 128 170 116 40" stroke="#2f3238" stroke-width="9" fill="none" stroke-linecap="round"/><text x="0" y="190">人物を囲む輪</text></g>
+      <!-- 2本 -->
+      <g transform="translate(572,0)"><rect width="128" height="160" rx="12" fill="#f9e1dc"/><rect x="18" y="30" width="20" height="110" fill="#c0c7ce"/><path d="M38 70 C80 70 80 130 116 120 M38 92 C70 100 90 40 116 40" stroke="#2f3238" stroke-width="9" fill="none" stroke-linecap="round"/><text x="2" y="190">2本に見える</text></g>
+    </g>
+  </svg>
+  <ul class="rules" style="margin-top:6px">
+    <li>交差させるなら、手前の管が奥を隠す<b>前後関係</b>を描く。輪郭をつなげない</li>
+    <li>画面外への見切れ・家具や手で隠れるのはOK。隠れる前後で<b>色・太さ・向き</b>をそろえる</li>
+  </ul>
+</section>
+
+<section class="card" id="mouthpiece">
+  <h2><span class="n">5</span>吸い口（マウスピース）</h2>
+  <svg viewBox="0 0 700 330" width="100%">
+    <g font-size="18" font-weight="700">
+      <!-- ハンドルのみ -->
+      <g transform="translate(10,20)"><rect width="200" height="230" rx="14" fill="#e0f1e4"/><path d="M40 200 L150 50" stroke="#b7862c" stroke-width="16" stroke-linecap="round"/><text x="14" y="262" fill="#2a7f45">ハンドルで吸う</text><text x="14" y="288" font-size="15" font-weight="500" fill="#5d6270">チップは必須ではない</text></g>
+      <!-- 使い捨てチップ -->
+      <g transform="translate(240,20)"><rect width="200" height="230" rx="14" fill="#e0f1e4"/><path d="M40 200 L140 64" stroke="#b7862c" stroke-width="16" stroke-linecap="round"/><path d="M140 64 L156 42" stroke="#5aa8e6" stroke-width="11" stroke-linecap="round"/><text x="14" y="262" fill="#2a7f45">使い捨てチップ</text><text x="14" y="288" font-size="15" font-weight="500" fill="#5d6270">先端に差す・被せる。小さい</text></g>
+      <!-- 首掛けマイチップ -->
+      <g transform="translate(470,20)"><rect width="220" height="230" rx="14" fill="#e0f1e4"/>
+        <path d="M40 30 C40 140 180 140 180 30" fill="none" stroke="#b7862c" stroke-width="3" stroke-dasharray="3 4"/>
+        <circle cx="110" cy="132" r="8" fill="none" stroke="#7a5a1d" stroke-width="3"/>
+        <rect x="102" y="140" width="16" height="56" rx="7" fill="#5aa8e6" stroke="#2c6b98" stroke-width="2"/>
+        <ellipse cx="110" cy="196" rx="5" ry="3" fill="#2c6b98"/>
+        <text x="132" y="160" font-size="14" font-weight="500" fill="#5d6270">留め具</text>
+        <text x="124" y="190" font-size="14" font-weight="500" fill="#5d6270">吸い口本体</text>
+        <text x="14" y="262" fill="#2a7f45">首掛けマイチップ</text><text x="14" y="288" font-size="15" font-weight="500" fill="#5d6270">携帯中。ホースとは別</text></g>
+    </g>
+  </svg>
+  <ul class="rules">
+    <li>マイチップを<b>使うとき</b>は首から外して<b>ハンドルの先に付ける</b></li>
+    <li class="ng"><span class="tag ng">NG</span>チェーンだけ・棒飾りだけ（吸い口本体が無い）</li>
+    <li class="ng"><span class="tag ng">NG</span>首にもハンドルにも同じチップ（二重化）／口より大きいチップ</li>
+    <li class="ng"><span class="tag ng">NG</span>チェーンがホースに化ける・首から口へ浮いてつながる</li>
+  </ul>
+</section>
+
+<section class="card" id="holes">
+  <h2><span class="n">6</span>穴・熱・煙を混ぜない</h2>
+  <svg viewBox="0 0 700 230" width="100%">
+    <g font-size="17" font-weight="700">
+      <g transform="translate(10,10)"><path d="M0 20 L200 20 L170 150 L30 150 Z" fill="#f3d8c4" stroke="#6e3c24" stroke-width="2.5"/><g fill="#22252b"><circle cx="80" cy="140" r="5"/><circle cx="100" cy="142" r="5"/><circle cx="120" cy="140" r="5"/></g><text x="10" y="186">伝統型</text><text x="10" y="210" font-size="15" font-weight="500" fill="#5d6270">底に複数の穴</text></g>
+      <g transform="translate(245,10)"><path d="M0 20 L200 20 L170 150 L30 150 Z" fill="#f3d8c4" stroke="#6e3c24" stroke-width="2.5"/><rect x="88" y="50" width="24" height="100" fill="#e2a27b" stroke="#6e3c24" stroke-width="2"/><circle cx="100" cy="52" r="6" fill="#22252b"/><text x="10" y="186">ファンネル</text><text x="10" y="210" font-size="15" font-weight="500" fill="#5d6270">中央柱の頂上に1つ</text></g>
+      <g transform="translate(480,10)"><path d="M0 20 L200 20 L170 150 L30 150 Z" fill="#f3d8c4" stroke="#6e3c24" stroke-width="2.5"/><rect x="88" y="50" width="24" height="100" fill="#e2a27b" stroke="#6e3c24" stroke-width="2"/><g fill="#22252b"><circle cx="88" cy="72" r="4.5"/><circle cx="112" cy="72" r="4.5"/><circle cx="88" cy="96" r="4.5"/><circle cx="112" cy="96" r="4.5"/></g><text x="10" y="186">ボルテックス</text><text x="10" y="210" font-size="15" font-weight="500" fill="#5d6270">柱の側面に複数</text></g>
+    </g>
+  </svg>
+  <ul class="rules">
+    <li><b>ボウル内の穴・アルミの針穴・HMDのスリット・煙突の穴</b>は別の部品の別の穴。1つの部品にまとめない</li>
+    <li>中央柱はボウルの<b>内側</b>の構造。上に載るHMDや煙突ではない</li>
+    <li>炭は灰色の表面と小さな赤熱。<b>巨大な赤い岩・炎・煙を吹く炭</b>はNG</li>
+    <li>外した蓋・HMDが皿の上に置いてあっても<b>「二重のボウル」</b>にしない</li>
+    <li>アルミはHMDの下に挟む構成も、無い構成もある。どちらかに決めつけない</li>
+  </ul>
+</section>
+</div>
+
+<!-- ============ 3段目：NG実例＋チェック ============ -->
+<div class="grid g-ng">
+<section class="card" id="ng">
+  <h2><span class="n">7</span>実際に不採用になった生成例</h2>
+  <div class="ng-row">
+    <div class="ng-item">
+      <figure>
+        <img src="../ng-examples/minto-hose-fork-20261009.png" alt="みんとNG">
+        <span class="stamp">NG-HOSE-01</span>
+        <span class="ring" style="left:18%; top:58%; width:30%; height:18%;"></span>
+        <span class="label" style="left:2%; top:78%;">ホースがY字に分岐</span>
+      </figure>
+      <p><b>ホースが3方向に枝分かれ</b>。ポートとハンドルは正しくても、途中の管が合流・分岐していれば不採用。</p>
+    </div>
+    <div class="ng-item">
+      <figure>
+        <img src="../ng-examples/rin-short-bowl-20261009.png" alt="凛NG">
+        <span class="stamp">NG-BOWL-01</span>
+        <span class="ring box" style="left:13%; top:42%; width:24%; height:16%;"></span>
+        <span class="label" style="left:3%; top:60%;">ハガルが短すぎる</span>
+      </figure>
+      <p><b>小さくした修正で脚まで潰れた</b>。器・脚・口径を実物の脚付きボウルと別々に照合する。</p>
+    </div>
+    <div class="ng-item">
+      <figure>
+        <img src="../ng-examples/tsumugi-short-bowl-hose-route-20261009.png" alt="つむぎNG">
+        <span class="stamp">NG-HOSE-02</span>
+        <span class="ring box" style="left:71%; top:51%; width:24%; height:14%;"></span>
+        <span class="ring" style="left:12%; top:62%; width:62%; height:36%;"></span>
+        <span class="label" style="left:60%; top:44%;">ハガルが短い</span>
+        <span class="label" style="left:24%; top:90%;">足元を囲む大回り</span>
+      </figure>
+      <p><b>ハガルが短く、ホースが人物を囲む輪</b>になり、画面外から台の裏へ戻るように見える。</p>
+    </div>
+  </div>
+</section>
+
+<section class="card" id="check">
+  <h2><span class="n">8</span>生成後チェック</h2><p class="note" style="margin:-6px 0 6px">原寸で見て、1つでもNGなら直すか再生成する</p>
+  <ol class="check">
+    <li>人物は<b>正規の立ち絵と同一人物</b>（顔・髪・衣装・年齢感）</li>
+    <li>積み順が成立：ベース→ステム→受け皿→ハガル→HMD→炭</li>
+    <li>完成・喫煙の台は<b>HMD付き</b>。直炭になっていない</li>
+    <li>HMDの蓋・取手・通気口が<b>同じ1モデル</b>の組</li>
+    <li>ハガル・HMD・炭・手・受け皿の<b>縮尺</b>が自然。脚が潰れていない</li>
+    <li>ホースを<b>両方向</b>になぞって1本。分岐・3つ目の端・途切れなし</li>
+    <li>ホースは側面ポートから。パージ・ボウル・皿・ベース底から生えない</li>
+    <li>人物を囲む輪・不自然な大回りがない</li>
+    <li>マイチップ：<b>吸い口本体</b>がある／使用中はハンドル先端</li>
+    <li>煙は口元から。HMD・ホース根元・チェーンから出ていない</li>
+    <li>文字・ロゴ・透かし・UIが焼き込まれていない</li>
+  </ol>
+</section>
+</div>
+
+<!-- ============ 4段目：写真の索引 ============ -->
+<section class="card" id="photos" style="margin-bottom:28px">
+  <h2><span class="n">9</span>実物写真の索引（縮小一覧。詳しくは各資料）</h2>
+  <div class="photos">
+    <figure><img src="../shisha-hardware-reference-20261009.webp"><figcaption>台の型9種<br><code>README.md</code></figcaption></figure>
+    <figure><img src="../uploaded-anatomy-diagrams-20261009.webp"><figcaption>構造図3点<br><code>anatomy-diagrams</code></figcaption></figure>
+    <figure><img src="../smoking-scenes-reference-20261009.webp"><figcaption>喫煙シーン7点<br><code>smoking-and-heat…</code></figcaption></figure>
+    <figure><img src="../heat-management-reference-20261009.webp"><figcaption>HMD3点<br><code>smoking-and-heat…</code></figcaption></figure>
+    <figure><img src="../heat-management-closeups-20261009.webp"><figcaption>アルミ・HMD・炭9点<br><code>heat-management-closeups</code></figcaption></figure>
+    <figure><img src="../reference-new-scenes-20261009.webp"><figcaption>設置・構図9点<br><code>usage-and-installation</code></figcaption></figure>
+    <figure><img src="../hose-mouthpiece-reference-20261009.webp"><figcaption>ホース・チップ6点<br><code>hose-and-mouthpieces</code></figcaption></figure>
+    <figure><img src="../mouthpieces-extra-20261009.webp"><figcaption>マウスピース3点<br><code>mouthpiece-handle-skins</code></figcaption></figure>
+    <figure><img src="../handles-extra-20261009.webp"><figcaption>ハンドル4点<br><code>mouthpiece-handle-skins</code></figcaption></figure>
+  </div>
+</section>
+
+<footer>
+  <span>詳しい正本：<code>asset_sources/shisha-hardware-reference/</code> の README.md・ai-generation-structural-pitfalls.md・heroine-title-cg-rules-20261009.md・visual-qa-necklace-hose-20261009.md・ng-examples/README.md</span>
+  <span>2026-10-09 版</span>
+</footer>
+</div>
+</body>
+</html>

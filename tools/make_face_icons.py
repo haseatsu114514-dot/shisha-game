@@ -34,7 +34,7 @@ COLORS = 256       # パレット色数（32色では瞳の色・肌の階調が
 # 背景込み一枚絵のキャラは abs 指定（画像全体に対する顔中心 cx/cy と辺 side の比）。
 DEFAULT = {"f": 0.20, "dx": 0.0, "dy": 0.0}
 TUNE = {
-    "pakki":   {"f": 0.98, "dy": 0.02},  # マスコットは全身がほぼ顔（フォルダ改名 packii→pakki に追随）
+    "pakki":   {"f": 0.58, "dx": -0.03, "dy": 0.36},  # マスコット。2026-10-09 オーナー「顔アイコンも同じようなサイズ感に 拡大を」で全身から目・口・蝶ネクタイまでの寄りへ
     # 2026-10-04 顔の大きさを全キャラで揃える（オーナー「顔のサイズ近くなるように」）。
     # 目の下の頬の幅がアイコン幅の約0.50になるよう、目線の位置（横0.5・縦0.55）を固定して拡大縮小した値。
     # 立ち絵を差し替えたら、頬の幅を測り直して f を比例で直す（f_new = f_old × 測った幅 / 0.50）
@@ -62,8 +62,9 @@ HEAD_SLICE = 0.14
 HEADROOM = 0.08
 
 
-def make_icon(char_id: str, src: Path) -> Image.Image | None:
-    im = Image.open(src).convert("RGBA")
+def face_box(char_id: str, im: Image.Image) -> tuple[int, int, int] | None:
+    """顔アイコンの切り抜き枠 (x0, y0, side) を返す。TUNE で顔の大きさを全キャラ揃えてある。
+    tools/make_reference_sheet.py も同じ枠を使い、シートの顔アップの大きさをアイコンと揃える。"""
     bbox = im.getbbox()
     if not bbox:
         return None
@@ -94,6 +95,16 @@ def make_icon(char_id: str, src: Path) -> Image.Image | None:
         cx = left + hx + side * p["dx"]
         x0 = int(cx - side / 2)
         y0 = int(top - side * (HEADROOM - p["dy"]))
+    return x0, y0, side
+
+
+def make_icon(char_id: str, src: Path) -> Image.Image | None:
+    im = Image.open(src).convert("RGBA")
+    box = face_box(char_id, im)
+    if box is None:
+        return None
+    x0, y0, side = box
+    p = {**DEFAULT, **TUNE.get(char_id, {})}
     crop = im.crop((x0, y0, x0 + side, y0 + side))
     # 縮小 → 減色（αは別管理: quantizeで半透明が荒れるのを防ぐ。輪郭は二値化せず滑らかに残す）
     size = p.get("size", SIZE)
