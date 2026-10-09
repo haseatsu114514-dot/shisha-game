@@ -61,7 +61,6 @@ Godot 4 製シーシャ屋アドベンチャー＆シミュレーションゲー
 - データ駆動: JSON でキャラ・会話・イベントを管理
 
 ## よく使うコマンド
-- python3 tools/dialogue_editor.py — 会話データ編集
 ```
 
 > **効果**: 毎回 `brand/story_and_structure.md` (892行) を丸ごと読ませなくても、CLAUDE.md の 20〜30行でプロジェクトの全体像を伝えられる。

@@ -38,7 +38,7 @@ BACKGROUNDS = {
     "bg_tonari": "backgrounds/bg_tonari_inside_night.png",
     "bg_stage": "backgrounds/bg_tournament_stage.png",
     "bg_cstation": "backgrounds/bg_c_station_day.png",
-    "bg_map": "backgrounds/bg_map_local_night.png",
+    "bg_map": "backgrounds/bg_osu_map_night.png",
 }
 
 CGS = {
