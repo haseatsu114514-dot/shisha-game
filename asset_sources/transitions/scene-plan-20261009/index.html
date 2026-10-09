@@ -1,0 +1,1104 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>水煙前線 トランジション案</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap">
+<style>
+/* Layout: 夜の藍紫の一枚。上に前提と7つの型、下に場面ごとの「16:9の再生モック＋説明」を縦に並べる */
+:root {
+  color-scheme: dark;
+  --night: #110c1d;
+  --panel: #191228;
+  --panel-2: #221a37;
+  --line: #392b5a;
+  --ink: #f1ebfb;
+  --muted: #a99dc9;
+  --purple: #6b4fb0;
+  --purple-deep: #34246a;
+  --lav: #dcd1f4;
+  --pink: #f06aae;
+  --cyan: #3fe6f2;
+  --gold: #e8c27a;
+  --font: "Zen Kaku Gothic New", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", system-ui, sans-serif;
+  --ease: cubic-bezier(.7,0,.2,1);
+}
+* { box-sizing: border-box; }
+body { background: var(--night); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.75; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 80px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; line-height: 1.35; }
+p { margin: 0; }
+
+/* ---------- 上部バー ---------- */
+.bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--night) 88%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.bar-in { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 10px; display: flex; gap: 12px 20px; align-items: center; flex-wrap: wrap; }
+.bar b { font-weight: 900; letter-spacing: .08em; font-size: 14px; }
+.bar nav { display: flex; gap: 6px; flex-wrap: wrap; }
+.bar nav a { color: var(--muted); text-decoration: none; font-size: 13px; padding: 2px 10px; border: 1px solid var(--line); border-radius: 99px; }
+.bar nav a:hover, .bar nav a:focus-visible { color: var(--ink); border-color: var(--lav); }
+.speed { margin-left: auto; display: flex; gap: 4px; align-items: center; font-size: 13px; color: var(--muted); }
+.speed button { font: inherit; color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 2px 10px; cursor: pointer; }
+.speed button[aria-pressed="true"] { color: var(--night); background: var(--lav); border-color: var(--lav); font-weight: 700; }
+
+/* ---------- 前提 ---------- */
+.hero { display: grid; gap: 18px; padding-block: 18px 34px; border-bottom: 1px solid var(--line); }
+.kicker { font-size: 12px; letter-spacing: .28em; color: var(--lav); font-weight: 700; }
+.hero h1 { font-size: clamp(26px, 4.2vw, 40px); font-weight: 900; letter-spacing: .02em; }
+.hero h1 em { font-style: normal; color: var(--lav); }
+.lead { max-width: 68ch; color: var(--ink); }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.fact { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; min-width: 0; }
+.fact small { display: block; font-size: 11px; letter-spacing: .2em; color: var(--muted); font-weight: 700; margin-bottom: 4px; }
+.fact p { font-size: 14px; }
+
+/* ---------- 7つの型 ---------- */
+section { padding-block: 40px 8px; }
+.sec-head { display: grid; gap: 6px; margin-bottom: 20px; }
+.sec-head h2 { font-size: 24px; font-weight: 900; }
+.sec-head p { color: var(--muted); max-width: 70ch; }
+.types { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.type { border: 1px solid var(--line); border-radius: 10px; padding: 12px; background: var(--panel); display: grid; gap: 6px; align-content: start; min-width: 0; }
+.type svg { width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 6px; background: var(--purple-deep); display: block; }
+.type b { font-size: 16px; font-weight: 900; }
+.type span { font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+
+/* ---------- 場面カード ---------- */
+.scene-card { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 18px 28px; padding-block: 26px; border-top: 1px solid var(--line); }
+.scene-card:first-of-type { border-top: 0; }
+@media (max-width: 820px) { .scene-card { grid-template-columns: minmax(0, 1fr); } }
+.demo { display: grid; gap: 10px; min-width: 0; }
+.stage { position: relative; aspect-ratio: 16 / 9; max-width: 100%; overflow: hidden; border-radius: 10px; background: #000; container-type: inline-size; cursor: pointer; isolation: isolate; }
+.stage .scene { position: absolute; inset: 0; background: var(--img) center / cover no-repeat; }
+.stage .scene.b { opacity: 0; }
+.stage .fx { position: absolute; inset: 0; pointer-events: none; }
+.fx-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.fx-svg .sc { transform-box: fill-box; transform-origin: center; }
+.controls { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.controls button { font: inherit; font-size: 13px; color: var(--ink); background: var(--panel-2); border: 1px solid var(--line); border-radius: 99px; padding: 4px 14px; cursor: pointer; }
+.controls button.play { background: var(--lav); color: var(--night); border-color: var(--lav); font-weight: 700; }
+.controls button[aria-pressed="true"] { border-color: var(--lav); color: var(--lav); }
+.controls button:disabled { opacity: .45; cursor: default; }
+.controls button:focus-visible, .speed button:focus-visible { outline: 2px solid var(--pink); outline-offset: 2px; }
+.cap { font-size: 12px; color: var(--muted); }
+
+.copy { display: grid; gap: 12px; align-content: start; min-width: 0; }
+.copy h3 { font-size: 20px; font-weight: 900; }
+.copy .where { font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+.copy dl { margin: 0; display: grid; grid-template-columns: 4.2em minmax(0, 1fr); gap: 6px 10px; font-size: 14px; }
+.copy dt { color: var(--muted); font-size: 12px; padding-top: 3px; font-weight: 700; letter-spacing: .08em; }
+.copy dd { margin: 0; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { font-size: 12px; padding: 1px 10px; border-radius: 99px; border: 1px solid var(--line); color: var(--muted); white-space: nowrap; }
+.chip.t { color: var(--lav); border-color: color-mix(in srgb, var(--lav) 45%, transparent); }
+.chip.p1 { color: var(--night); background: var(--pink); border-color: var(--pink); font-weight: 700; }
+
+/* ---------- 表 ---------- */
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; color: var(--muted); font-weight: 700; letter-spacing: .1em; background: var(--panel); }
+tr:last-child td { border-bottom: 0; }
+td.k { white-space: nowrap; font-weight: 700; }
+td .chip { display: inline-block; }
+
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.box { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; min-width: 0; }
+.box h3 { font-size: 16px; font-weight: 900; margin-bottom: 8px; }
+.box ul, .box ol { margin: 0; padding-left: 1.3em; display: grid; gap: 6px; font-size: 14px; }
+.box li::marker { color: var(--lav); }
+.order li b { color: var(--lav); }
+
+/* ---------- ステージ内の文字（16:9の幅に比例） ---------- */
+.st-text { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; pointer-events: none; }
+.beat-line { font-size: 3.4cqw; font-weight: 700; letter-spacing: .12em; color: var(--lav); }
+.day-card { display: grid; gap: .6cqw; justify-items: center; }
+.day-card .d { font-size: 9cqw; font-weight: 900; letter-spacing: .06em; line-height: 1; color: #fff; display: flex; gap: 1.6cqw; align-items: baseline; }
+.day-card .d small { font-size: 4cqw; letter-spacing: .3em; color: var(--lav); }
+.flip { display: inline-grid; perspective: 40cqw; }
+.flip > i { grid-area: 1 / 1; font-style: normal; backface-visibility: hidden; transform-origin: 50% 55%; }
+.day-card .sub { font-size: 2.2cqw; letter-spacing: .2em; color: var(--lav); display: flex; gap: .4em; align-items: baseline; }
+.round { display: grid; gap: .4cqw; justify-items: center; }
+.round b { font-size: 9.5cqw; font-weight: 900; letter-spacing: .14em; line-height: 1; color: #fff; }
+.round small { font-size: 2.4cqw; letter-spacing: .4em; color: var(--lav); font-weight: 700; }
+.big-word { font-size: 7.5cqw; font-weight: 900; letter-spacing: .2em; color: #fff; }
+.pin { position: absolute; transform: translate(-50%, -100%); display: grid; justify-items: center; pointer-events: none; }
+.pin span { font-size: 1.9cqw; font-weight: 900; color: #1d1530; background: #e9e4f3; border: .35cqw solid #fff; border-radius: 1cqw; padding: .2cqw 1.4cqw; box-shadow: 0 .6cqw 1.6cqw #0008; }
+.pin i { width: 0; height: 0; border-left: 1cqw solid transparent; border-right: 1cqw solid transparent; border-top: 1.4cqw solid #fff; }
+.phone { position: absolute; right: 9%; top: 9%; width: 34%; height: 82%; background: #f4f6f2; border-radius: 2.4cqw; border: .7cqw solid #1a1a1f; overflow: hidden; display: grid; grid-template-rows: auto 1fr; box-shadow: 0 2cqw 4cqw #000a; }
+.phone header { background: #3bb54a; color: #fff; font-weight: 900; font-size: 1.9cqw; padding: 1.2cqw 1.6cqw; }
+.phone .msgs { padding: 1.6cqw; display: grid; gap: 1cqw; align-content: start; }
+.phone .msg { background: #fff; color: #222; font-size: 1.55cqw; line-height: 1.5; padding: .9cqw 1.2cqw; border-radius: 1.2cqw; border-top-left-radius: .2cqw; box-shadow: 0 .2cqw .6cqw #0002; max-width: 92%; }
+.phone.unknown header { background: #2d2f36; }
+.bench-panel { position: absolute; right: 0; top: 0; bottom: 0; width: 40%; background: #150f24; border-left: .3cqw solid #2c2147; overflow: hidden; display: grid; align-content: start; gap: 1.6cqw; padding: 3cqw 2.4cqw; }
+.bench-panel .track { display: grid; grid-template-columns: repeat(7, 1fr); gap: .5cqw; position: relative; }
+.bench-panel .track span { height: .9cqw; border-radius: 1cqw; background: #2f2650; }
+.bench-panel .track span.done { background: var(--purple); }
+.bench-panel .track span.now { background: var(--lav); }
+.bench-panel .no { font-size: 1.5cqw; letter-spacing: .3em; color: var(--muted); font-weight: 700; }
+.bench-panel .ttl { font-size: 3.4cqw; font-weight: 900; color: #fff; line-height: 1.3; }
+.bench-panel .ui { height: 14cqw; border-radius: 1.2cqw; border: .25cqw dashed #3a2d5c; display: grid; place-items: center; color: #5e5085; font-size: 1.5cqw; }
+.bench-caption { position: absolute; left: 2cqw; bottom: 2cqw; font-size: 1.7cqw; font-weight: 700; color: #fff; background: #0009; padding: .4cqw 1.2cqw; border-radius: .6cqw; }
+.end-word { font-size: 7cqw; font-weight: 900; letter-spacing: .16em; }
+.end-sub { font-size: 2cqw; letter-spacing: .3em; color: var(--lav); }
+
+footer { margin-top: 40px; color: var(--muted); font-size: 12.5px; border-top: 1px solid var(--line); padding-top: 16px; }
+
+@media (max-width: 560px) {
+  .speed { margin-left: 0; }
+  .copy dl { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .copy dd { margin-bottom: 6px; }
+}
+</style>
+
+<div class="bar">
+  <div class="bar-in">
+    <b>トランジション案</b>
+    <nav aria-label="セクション">
+      <a href="#types">7つの型</a>
+      <a href="#daily">日常</a>
+      <a href="#story">物語</a>
+      <a href="#tournament">大会</a>
+      <a href="#others">その他</a>
+      <a href="#next">進め方</a>
+    </nav>
+    <div class="speed" role="group" aria-label="再生速度">
+      再生
+      <button type="button" id="speed-1" aria-pressed="true" data-speed="1">実際の速さ</button>
+      <button type="button" id="speed-3" aria-pressed="false" data-speed="3">ゆっくり ×3</button>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <header class="hero">
+    <div class="kicker">水煙前線 -EN:CODE- ／ 場面転換プラン 2026-10-09</div>
+    <h1>場面の<em>意味</em>で、動きを選ぶ。</h1>
+    <p class="lead">いまは背景が変わるたびに「斜め・煙・円」の3種類の幕を順番に出しています。どの場面でも同じ幕なので、移動・時間の経過・人と会う・勝負の区別がつきません。この案では動きを7つの型に絞り、場面ごとに使い分けます。下の各場面は、ゲームの背景を使った動くモックです。押すと再生します。</p>
+    <div class="facts">
+      <div class="fact"><small>色</small><p>紫と淡いラベンダーが軸。ピンクは少しだけ。10/8の最新指定（CI56・57）に合わせました。大会だけネオンの水色を足します。</p></div>
+      <div class="fact"><small>形</small><p>v5の「一筆の煙・丸い波・余白が開く」の大きな面と曲線が基本です。網点や細かい煙の絵は使いません。</p></div>
+      <div class="fact"><small>長さ</small><p>よく見る場面は0.5秒前後、日の区切りは1.5秒まで、物語の要所は2.5秒までにします。</p></div>
+    </div>
+  </header>
+
+  <section id="types">
+    <div class="sec-head">
+      <h2>7つの型</h2>
+      <p>シーシャの道具と煙から取った動きです。型ごとに意味を決め、同じ意味の場面には同じ型を使います。</p>
+    </div>
+    <div class="types">
+      <div class="type">
+        <svg viewBox="0 0 160 90" aria-hidden="true"><path d="M-10 95 C40 95 60 45 80 45 S120 -5 170 -5" fill="none" stroke="#6b4fb0" stroke-width="46"/><path d="M-10 95 C40 95 60 45 80 45 S120 -5 170 -5" fill="none" stroke="#dcd1f4" stroke-width="5"/></svg>
+        <b>一筆</b><span>S字の帯が斜めに抜ける。<br>標準の背景切り替え</span>
+      </div>
+      <div class="type">
+        <svg viewBox="0 0 160 90" aria-hidden="true"><path d="M-5 -5 H70 C100 -5 100 25 70 25 C100 25 100 55 70 55 C100 55 100 95 70 95 H-5 Z" fill="#6b4fb0"/><path d="M70 -5 C100 -5 100 25 70 25 C100 25 100 55 70 55 C100 55 100 95 70 95" fill="none" stroke="#f3b9d6" stroke-width="5"/></svg>
+        <b>波</b><span>丸い波が横へ流れる。<br>時間が過ぎる</span>
+      </div>
+      <div class="type">
+        <svg viewBox="0 0 160 90" aria-hidden="true"><rect width="160" height="90" fill="#6b4fb0"/><path d="M28 50 C58 12 110 12 134 38 C108 72 58 80 28 50 Z" fill="#110c1d" stroke="#dcd1f4" stroke-width="3"/></svg>
+        <b>開口</b><span>葉の形の窓が閉じて開く。<br>人に会う・一点に寄る</span>
+      </div>
+      <div class="type">
+        <svg viewBox="0 0 160 90" aria-hidden="true"><g transform="rotate(-16 80 45)"><rect x="-20" y="30" width="200" height="26" fill="#6b4fb0"/><rect x="-20" y="50" width="200" height="4" fill="#dcd1f4"/></g><g transform="rotate(16 80 45)"><rect x="-20" y="32" width="200" height="24" fill="#f06aae"/></g></svg>
+        <b>交差</b><span>2本のリボンが交わる。<br>大会・勝負</span>
+      </div>
+      <div class="type">
+        <svg viewBox="0 0 160 90" aria-hidden="true"><g fill="#dcd1f4" fill-opacity=".22" stroke="#dcd1f4" stroke-width="2"><circle cx="40" cy="62" r="18"/><circle cx="82" cy="40" r="24"/><circle cx="122" cy="66" r="14"/><circle cx="110" cy="22" r="8"/><circle cx="58" cy="24" r="6"/></g></svg>
+        <b>泡</b><span>ボトルの泡が満ちて弾ける。<br>夢・回想</span>
+      </div>
+      <div class="type">
+        <svg viewBox="0 0 160 90" aria-hidden="true"><rect width="160" height="90" fill="#1a1626"/><g fill="#dcd1f4"><rect x="10" y="18" width="90" height="4" opacity=".7"/><rect x="40" y="34" width="110" height="2" opacity=".4"/><rect x="0" y="52" width="70" height="6" fill="#3fe6f2" opacity=".55"/><rect x="60" y="70" width="80" height="3" opacity=".6"/></g></svg>
+        <b>走査</b><span>横線のノイズとずれ。<br>正体不明・データ</span>
+      </div>
+      <div class="type">
+        <svg viewBox="0 0 160 90" aria-hidden="true"><g fill="none" stroke="#dcd1f4"><ellipse cx="80" cy="48" rx="16" ry="9" stroke-width="5"/><ellipse cx="80" cy="44" rx="36" ry="20" stroke-width="4" opacity=".6"/><ellipse cx="80" cy="40" rx="62" ry="34" stroke-width="3" opacity=".3"/></g></svg>
+        <b>輪</b><span>煙の輪が中心から抜ける。<br>達成・勝利</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="daily">
+    <div class="sec-head">
+      <h2>日常のつなぎ</h2>
+      <p>1章で最も多く見る場面です。回数が多いものほど短く、軽くします。</p>
+    </div>
+
+    <article class="scene-card" data-demo="stroke">
+      <div class="demo">
+        <div class="stage" role="button" tabindex="0" aria-label="一筆の再生">
+          <div class="scene a" style="--img:url(../../../remake/img/backgrounds/bg_tonari_inside_night.webp)"></div>
+          <div class="scene b" style="--img:url(../../../remake/img/backgrounds/bg_tonari_outside_night.webp)"></div>
+          <div class="fx"></div>
+        </div>
+        <div class="controls"><button type="button" class="play" id="play-stroke">▶ 再生</button></div>
+        <div class="cap">tonari 店内 → 店の外（夜）</div>
+      </div>
+      <div class="copy">
+        <div class="where">会話中の背景切り替え・タイトルから開始・指定のない切り替え</div>
+        <h3>標準の切り替えは「一筆」1種類に</h3>
+        <dl>
+          <dt>いま</dt><dd>斜め・煙・円の幕が順番に出て、中央に金の「水煙前線」ロゴが出る。</dd>
+          <dt>提案</dt><dd>S字の紫の帯が右下から左上へ一息で抜ける。吐いた煙の一筋のイメージ。ロゴは出さず、帯の中のラベンダーの線だけ残す。</dd>
+        </dl>
+        <div class="chips"><span class="chip t">型: 一筆</span><span class="chip">約0.75秒</span><span class="chip">指定のない切り替えすべて</span></div>
+      </div>
+    </article>
+
+    <article class="scene-card" data-demo="pin">
+      <div class="demo">
+        <div class="stage" role="button" tabindex="0" aria-label="マップから店への再生">
+          <div class="scene a" style="--img:url(../../../remake/img/backgrounds/bg_osu_map_night.webp)"></div>
+          <div class="scene b" style="--img:url(../../../remake/img/backgrounds/bg_tonari_inside_night.webp)"></div>
+          <div class="fx"></div>
+        </div>
+        <div class="controls"><button type="button" class="play" id="play-pin">▶ 再生</button></div>
+        <div class="cap">大須マップ（夜）でピンを押す → tonari 店内</div>
+      </div>
+      <div class="copy">
+        <div class="where">マップ → 店・場所（昼夜の行動）</div>
+        <h3>押したピンから広がって、着いた場所が開く</h3>
+        <dl>
+          <dt>いま</dt><dd>どのピンを押しても同じ幕。マップのどこから来たかが分からない。</dd>
+          <dt>提案</dt><dd>押したピンの位置から紫が丸く広がって画面を覆い、中央の葉の形の窓が開いて場所が出る。帰りは逆に、中央で閉じてマップのピンの位置で開く。</dd>
+        </dl>
+        <div class="chips"><span class="chip p1">最初に作る候補</span><span class="chip t">型: 開口</span><span class="chip">約0.6秒</span><span class="chip">1章で約20〜26回</span></div>
+      </div>
+    </article>
+
+    <article class="scene-card" data-demo="wave">
+      <div class="demo">
+        <div class="stage" role="button" tabindex="0" aria-label="昼から夜への再生">
+          <div class="scene a" style="--img:url(../../../remake/img/backgrounds/bg_osu_map_day.webp)"></div>
+          <div class="scene b" style="--img:url(../../../remake/img/backgrounds/bg_tonari_outside_night.webp)"></div>
+          <div class="fx"></div>
+        </div>
+        <div class="controls">
+          <button type="button" class="play" id="play-wave">▶ 再生</button>
+          <button type="button" id="wave-beat" data-variant="beat" aria-pressed="true">夜のつなぎ</button>
+          <button type="button" id="wave-shift" data-variant="shift" aria-pressed="false">バイトの時間経過</button>
+        </div>
+        <div class="cap">昼のマップ → 夜の tonari（「夜、tonariに顔を出す──」）</div>
+      </div>
+      <div class="copy">
+        <div class="where">昼→夜のつなぎの一行（DAY2・5・10など）／バイトの開始→終業</div>
+        <h3>時間が流れる場面は、波が横切る</h3>
+        <dl>
+          <dt>いま</dt><dd>暗転して一行が出る。バイトは開始と終業の会話が同じ背景のまま続く。</dd>
+          <dt>提案</dt><dd>夕方のピンクを先頭にした丸い波が左から流れ、波の上につなぎの一行が乗る。バイトでは波を速くして時計の針を早回しにし、シフトの時間が過ぎたことを1秒で伝える。</dd>
+        </dl>
+        <div class="chips"><span class="chip t">型: 波</span><span class="chip">1.5〜2秒（文字を読む時間込み）</span></div>
+      </div>
+    </article>
+
+    <article class="scene-card" data-demo="dawn">
+      <div class="demo">
+        <div class="stage" role="button" tabindex="0" aria-label="翌朝への再生">
+          <div class="scene a" style="--img:url(../../../remake/img/backgrounds/bg_home_night.webp)"></div>
+          <div class="scene b" style="--img:url(../../../remake/img/backgrounds/bg_home_day.webp)"></div>
+          <div class="fx"></div>
+        </div>
+        <div class="controls">
+          <button type="button" class="play" id="play-dawn">▶ 再生</button>
+          <button type="button" id="dawn-normal" data-variant="normal" aria-pressed="true">通常の朝</button>
+          <button type="button" id="dawn-rain" data-variant="rain" aria-pressed="false">雨の朝</button>
+          <button type="button" id="dawn-sick" data-variant="sick" aria-pressed="false">熱っぽい朝</button>
+        </div>
+        <div class="cap">家（夜）→ DAYカード → 家（朝）</div>
+      </div>
+      <div class="copy">
+        <div class="where">就寝 → 翌朝のDAYカード</div>
+        <h3>数字がめくれて、下から朝が昇る</h3>
+        <dl>
+          <dt>いま</dt><dd>黒い暗転のあと、DAYカードが横から出て消える。</dd>
+          <dt>提案</dt><dd>夜の紫が上から降りて眠りにつく。DAYの数字と「あと◯日」がパタッと1つめくれる。ラベンダーの地平線が下から昇って紫が晴れ、朝の家が出る。雨の日は斜めの雨筋、熱っぽい朝はカードが陽炎のように揺れる。</dd>
+        </dl>
+        <div class="chips"><span class="chip p1">最初に作る候補</span><span class="chip t">型: 波＋めくり</span><span class="chip">約2秒</span><span class="chip">1章で13回</span></div>
+      </div>
+    </article>
+
+    <article class="scene-card" data-demo="date">
+      <div class="demo">
+        <div class="stage" role="button" tabindex="0" aria-label="約束の場所への再生">
+          <div class="scene a" style="--img:url(../../../remake/img/backgrounds/bg_tonari_inside_night.webp)"></div>
+          <div class="scene b" style="--img:url(../../../remake/img/backgrounds/bg_tonari_outside_night.webp)"></div>
+          <div class="fx"></div>
+        </div>
+        <div class="controls">
+          <button type="button" class="play" id="play-date">▶ 再生</button>
+          <button type="button" id="date-tsumugi" data-variant="tsumugi" aria-pressed="true">つむぎ</button>
+          <button type="button" id="date-minto" data-variant="minto" aria-pressed="false">みんと</button>
+          <button type="button" id="date-rin" data-variant="rin" aria-pressed="false">凛</button>
+          <button type="button" id="date-ageha" data-variant="ageha" aria-pressed="false">アゲハ</button>
+        </div>
+        <div class="cap">閉店後の tonari →「——店の営業が終わってから、約束の場所へ。」</div>
+      </div>
+      <div class="copy">
+        <div class="where">約束・デートの夜／告白の前のつなぎ</div>
+        <h3>窓がゆっくり閉じて、相手の色で開く</h3>
+        <dl>
+          <dt>いま</dt><dd>0.3秒の暗転＋一行。誰と会う夜でも同じ。</dd>
+          <dt>提案</dt><dd>葉の形の窓がゆっくり閉じ、つなぎの一行を読ませてから開く。窓の縁と開いた直後の淡い光に、登場カットインと同じ相手の色を使う。告白の夜はさらにゆっくりにする。</dd>
+        </dl>
+        <div class="chips"><span class="chip t">型: 開口（ゆっくり）</span><span class="chip">約2.2秒</span><span class="chip">色は登場カットインの配色を流用</span></div>
+      </div>
+    </article>
+  </section>
+
+  <section id="story">
+    <div class="sec-head">
+      <h2>物語の要所</h2>
+      <p>一度しか見ない場面には、少し長くて印象に残る動きを置きます。</p>
+    </div>
+
+    <article class="scene-card" data-demo="rewind">
+      <div class="demo">
+        <div class="stage" role="button" tabindex="0" aria-label="1年前への再生">
+          <div class="scene a" style="--img:url(../../../remake/img/backgrounds/bg_tournament_stage.webp)"></div>
+          <div class="scene b" style="--img:url(../../../remake/img/backgrounds/bg_tonari_inside_day.webp)"></div>
+          <div class="fx"></div>
+        </div>
+        <div class="controls"><button type="button" class="play" id="play-rewind">▶ 再生</button></div>
+        <div class="cap">コールドオープンの会場 →「1年前」→ tonari 店内</div>
+      </div>
+      <div class="copy">
+        <div class="where">コールドオープンの「1年前」</div>
+        <h3>煙が逆に流れて、時間が戻る</h3>
+        <dl>
+          <dt>いま</dt><dd>台詞の「1年前」に合わせて暗転する。</dd>
+          <dt>提案</dt><dd>上へ昇るはずの煙の筋が上から下へ逆に流れ、会場が中央へ吸い込まれて「1年前」の文字だけが残る。そこから tonari の昼が開いて本編に入る。</dd>
+        </dl>
+        <div class="chips"><span class="chip t">型: 一筆の逆再生</span><span class="chip">約2.5秒</span><span class="chip">1回だけ</span></div>
+      </div>
+    </article>
+
+    <article class="scene-card" data-demo="glitch">
+      <div class="demo">
+        <div class="stage" role="button" tabindex="0" aria-label="未知の送信者の再生">
+          <div class="scene a" style="--img:url(../../../remake/img/backgrounds/bg_home_night.webp)"></div>
+          <div class="scene b" style="--img:url(../../../remake/img/backgrounds/bg_home_night.webp)"></div>
+          <div class="fx"></div>
+        </div>
+        <div class="controls"><button type="button" class="play" id="play-glitch">▶ 再生</button></div>
+        <div class="cap">優勝の夜のLIME：スミさん → 未知の送信者「???」</div>
+      </div>
+      <div class="copy">
+        <div class="where">優勝の夜、PM 11:47 のLIME</div>
+        <h3>「???」だけ、ノイズで割り込む</h3>
+        <dl>
+          <dt>いま</dt><dd>スミさんの採点表のあと、同じ見た目で「???」のメッセージが続く。</dd>
+          <dt>提案</dt><dd>画面に横線のノイズが一瞬走り、ヘッダーが灰色の「???」に変わってから文面が出る。試合データを記録した何者かの不気味さを、説明なしで残す。第5章の伏線にもつながる。</dd>
+        </dl>
+        <div class="chips"><span class="chip t">型: 走査</span><span class="chip">約0.5秒</span><span class="chip">1回だけ</span></div>
+      </div>
+    </article>
+
+    <article class="scene-card" data-demo="bubbles">
+      <div class="demo">
+        <div class="stage" role="button" tabindex="0" aria-label="夢への再生">
+          <div class="scene a" style="--img:url(../../../remake/img/backgrounds/bg_home_night.webp)"></div>
+          <div class="scene b" style="--img:url(../../../remake/img/backgrounds/bg_tonari_inside_day.webp)"></div>
+          <div class="fx"></div>
+        </div>
+        <div class="controls"><button type="button" class="play" id="play-bubbles">▶ 再生</button></div>
+        <div class="cap">夜の家 → 夢の中の tonari</div>
+      </div>
+      <div class="copy">
+        <div class="where">夢（dreams.json）・回想。第2章以降で接続</div>
+        <h3>ボトルの泡が満ちて、弾けると夢の中</h3>
+        <dl>
+          <dt>いま</dt><dd>夢の会話（霧・ゆがみ等の効果つき）はリメイク版にまだ接続されていない。</dd>
+          <dt>提案</dt><dd>シーシャのボトルの中のように、下から泡が湧いて画面を満たす。泡が弾けると、少し色の抜けた夢の場面が出る。目覚めるときは泡が上へ抜けて現実に戻る。</dd>
+        </dl>
+        <div class="chips"><span class="chip t">型: 泡</span><span class="chip">約1.8秒</span><span class="chip">第2章以降</span></div>
+      </div>
+    </article>
+  </section>
+
+  <section id="tournament">
+    <div class="sec-head">
+      <h2>大会</h2>
+      <p>SMOKE CROWN CUP の当日です。日常と区別するため、大会の中だけ交差の型とネオンの差し色を使います。</p>
+    </div>
+
+    <article class="scene-card" data-demo="cross">
+      <div class="demo">
+        <div class="stage" role="button" tabindex="0" aria-label="会場入りとROUNDの再生">
+          <div class="scene a" style="--img:url(../../../remake/img/backgrounds/bg_tonari_inside_day.webp)"></div>
+          <div class="scene b" style="--img:url(../../../remake/img/backgrounds/bg_tournament_stage.webp)"></div>
+          <div class="fx"></div>
+        </div>
+        <div class="controls">
+          <button type="button" class="play" id="play-cross">▶ 再生</button>
+          <button type="button" id="cross-entry" data-variant="entry" aria-pressed="true">会場入り</button>
+          <button type="button" id="cross-r1" data-variant="r1" aria-pressed="false">ROUND 1</button>
+          <button type="button" id="cross-r2" data-variant="r2" aria-pressed="false">ROUND 2</button>
+          <button type="button" id="cross-r3" data-variant="r3" aria-pressed="false">ROUND 3</button>
+        </div>
+        <div class="cap">tonari（朝）→ 会場／ROUNDの見出し</div>
+      </div>
+      <div class="copy">
+        <div class="where">会場入り・ROUND 1〜3の見出し</div>
+        <h3>2本のリボンが交わって、勝負が始まる</h3>
+        <dl>
+          <dt>いま</dt><dd>会場入りは暗い煙ワイプ。ROUNDは中央の横帯が縦に開く。</dd>
+          <dt>提案</dt><dd>左右から逆向きの斜めのリボンが滑り込んで交差し、交点にROUNDの数字が打ち込まれる。工程名はリボンに沿って滑る。ラウンドごとにリボンの色を変える（1＝紫、2＝ピンク、3＝水色）。会場入りでは画面を完全に覆い、ここから大会の色に切り替わる合図にする。</dd>
+        </dl>
+        <div class="chips"><span class="chip p1">最初に作る候補</span><span class="chip t">型: 交差</span><span class="chip">約1.8秒</span><span class="chip">1大会で4回</span></div>
+      </div>
+    </article>
+
+    <article class="scene-card" data-demo="step">
+      <div class="demo">
+        <div class="stage" role="button" tabindex="0" aria-label="工程の切り替えの再生">
+          <div class="scene a" style="--img:url(../../../remake/img/backgrounds/bg_tournament_stage.webp)"></div>
+          <div class="scene b" style="--img:url(../../../remake/img/backgrounds/bg_tournament_stage.webp)"></div>
+          <div class="fx"></div>
+        </div>
+        <div class="controls"><button type="button" class="play" id="play-step">▶ 次の工程へ</button></div>
+        <div class="cap">制作画面（左の作業風景は仮の背景）</div>
+      </div>
+      <div class="copy">
+        <div class="where">制作中の工程の切り替え（練習・リハーサル・大会）</div>
+        <h3>右の操作欄だけを、細い一筆が横切る</h3>
+        <dl>
+          <dt>いま</dt><dd>工程の内容がその場で入れ替わる。</dd>
+          <dt>提案</dt><dd>全画面は覆わない。右の操作欄だけを細いラベンダーの帯が横切り、そのあいだに工程名が入れ替わる。上の進み具合のバーには、次の工程へ光が走る。3・2・1のカウントダウンより前に終わらせて重ねない。</dd>
+        </dl>
+        <div class="chips"><span class="chip t">型: 一筆（小）</span><span class="chip">約0.35秒</span><span class="chip">1回の制作で6〜8回</span></div>
+      </div>
+    </article>
+
+    <article class="scene-card" data-demo="finale">
+      <div class="demo">
+        <div class="stage" role="button" tabindex="0" aria-label="勝敗の再生">
+          <div class="scene a" style="--img:url(../../../remake/img/backgrounds/bg_tournament_stage.webp)"></div>
+          <div class="scene b" style="--img:url(../../../remake/img/backgrounds/bg_tournament_stage.webp)"></div>
+          <div class="fx"></div>
+        </div>
+        <div class="controls">
+          <button type="button" class="play" id="play-finale">▶ 再生</button>
+          <button type="button" id="finale-win" data-variant="win" aria-pressed="true">優勝</button>
+          <button type="button" id="finale-lose" data-variant="lose" aria-pressed="false">敗北</button>
+          <button type="button" id="finale-retry" data-variant="retry" aria-pressed="false">もう一度挑戦</button>
+        </div>
+        <div class="cap">結果発表のあと</div>
+      </div>
+      <div class="copy">
+        <div class="where">南雲の一括投入のあと／GAME OVER／大会の頭からやり直し</div>
+        <h3>勝てば煙の輪、負ければ一筋が途切れる</h3>
+        <dl>
+          <dt>優勝</dt><dd>煙の輪が中心から3つ続けて抜ける。シーシャの技の「輪」で勝利を祝う。今の紙吹雪の前に入れる。</dd>
+          <dt>敗北</dt><dd>中心から色が抜けて灰色になり、立ちのぼっていた一筋の煙が細くなって途切れる。そのあとGAME OVER。</dd>
+          <dt>再挑戦</dt><dd>一筆を逆向きに流して色が戻る。大会の頭まで巻き戻すことを動きで見せる。</dd>
+        </dl>
+        <div class="chips"><span class="chip t">型: 輪／一筆の途切れ・逆向き</span><span class="chip">各1.5〜2秒</span></div>
+      </div>
+    </article>
+  </section>
+
+  <section id="others">
+    <div class="sec-head">
+      <h2>その他の場面（デモなし）</h2>
+      <p>上の型を当てはめるだけで作れる場面です。</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>場面</th><th>型</th><th>提案</th></tr></thead>
+        <tbody>
+          <tr><td class="k">タイトル → はじめから／つづきから</td><td><span class="chip t">一筆</span></td><td>今の白い煙ワイプを、紫の一筆に揃える。</td></tr>
+          <tr><td class="k">章タイトルの入り</td><td><span class="chip t">一筆</span></td><td>キーアートはそのまま。入りだけ帯が一筆で描かれ、帯の中から章名が出る。</td></tr>
+          <tr><td class="k">夜の帰宅（帰り道の一言）</td><td><span class="chip t">波</span></td><td>夜のつなぎと同じ波を、ゆっくり・ピンクなしで。</td></tr>
+          <tr><td class="k">LIMEの着信</td><td>小さな動き</td><td>画面の縁が緑に1回だけ脈打ってから端末がせり上がる。場面転換ではないので覆わない。</td></tr>
+          <tr><td class="k">メニュー・ステータスを開く</td><td><span class="chip t">開口（小）</span></td><td>MENUボタンの位置から窓が開く。マップのピンと同じ考え方。</td></tr>
+          <tr><td class="k">暫定順位の表示</td><td><span class="chip t">交差（1本）</span></td><td>リボンが1本だけ横切って順位表を置いていく。</td></tr>
+          <tr><td class="k">FLAVOR TRIAL の開始</td><td><span class="chip t">交差</span></td><td>左から「コンセプト」、右から「アピールポイント」の帯が来て中央でぶつかる。「ぶつける」審査の始まりを見せる。</td></tr>
+          <tr><td class="k">夜道でサメちゃんと出会う</td><td><span class="chip t">泡（少なめ）</span></td><td>泡を数個だけ。水とサメのモチーフにも合う。</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="next">
+    <div class="cols">
+      <div class="box">
+        <h3>今のままにするもの</h3>
+        <ul>
+          <li>登場カットイン（PR226の絵と動き、表示3.6秒）</li>
+          <li>STATUS UP・LEVEL UP・SLOT BONUS の通知</li>
+          <li>タイミング系の前の3・2・1</li>
+          <li>RESULTの10カウント → プチュン／パリン、南雲の持ち点投入</li>
+          <li>スロットの演出</li>
+        </ul>
+      </div>
+      <div class="box">
+        <h3>作るときの約束</h3>
+        <ul>
+          <li>型は1か所にまとめ、場面の側から「この型で」と指定する。指定がなければ一筆。</li>
+          <li>覆っているあいだはクリックとEnterを受け付けない（今の幕と同じ）。SKIP中は短くする。</li>
+          <li>動きを減らす設定ではフェードだけにする。</li>
+          <li>能力アップの通知は幕が出る前に流し切る（以前の光が飛ぶ不具合の再発防止）。</li>
+          <li>画像を使わず図形で描く。軽く、あとから色を変えやすい。</li>
+        </ul>
+      </div>
+      <div class="box order">
+        <h3>おすすめの進め方</h3>
+        <ol>
+          <li><b>マップ → 場所</b>（開口）。一番回数が多く、違いが分かりやすい。</li>
+          <li><b>就寝 → 翌朝</b>（波＋めくり）。毎日見る場面で、残り日数を動きで感じられる。</li>
+          <li><b>会場入り・ROUND</b>（交差）。大会の盛り上がり。</li>
+        </ol>
+        <p style="font-size:13px;color:var(--muted);margin-top:10px">この3つを本編に入れて触ってもらい、気に入った型を他の場面へ広げます。仕様書の「まず主要な遷移3か所」と同じ進め方です。</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>背景はゲームの素材を縮小して使用。動きはこのページ用の試作で、本編の実装ではありません。色・長さ・形は本編に入れるときに調整します。</footer>
+</main>
+
+<script>
+(() => {
+  "use strict";
+  const NS = "http://www.w3.org/2000/svg";
+  const C = { purple: "#6b4fb0", deep: "#34246a", lav: "#dcd1f4", pink: "#f06aae", dusk: "#f3b9d6", cyan: "#3fe6f2", night: "#110c1d" };
+  let SPEED = 1;
+  let uid = 0;
+  const T = (ms) => ms * SPEED;
+  const wait = (ms) => new Promise((r) => setTimeout(r, T(ms)));
+  const EASE = { snap: "cubic-bezier(.7,0,.2,1)", out: "cubic-bezier(.16,1,.3,1)", in: "cubic-bezier(.55,0,.85,.35)", lin: "linear" };
+  const an = (node, kf, ms, opt = {}) => node.animate(kf, { duration: T(ms), easing: EASE.snap, fill: "both", ...opt }).finished;
+  const rand = (a, b) => a + Math.random() * (b - a);
+
+  function s(tag, attrs = {}, kids = []) {
+    const n = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+    for (const k of kids) n.append(k);
+    return n;
+  }
+  function h(tag, attrs = {}, kids = []) {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (k === "text") n.textContent = v;
+      else if (k === "style") Object.assign(n.style, v);
+      else n.setAttribute(k, v);
+    }
+    for (const k of kids) n.append(k);
+    return n;
+  }
+  const fullSvg = () => s("svg", { viewBox: "0 0 1600 900", preserveAspectRatio: "xMidYMid slice", class: "fx-svg" });
+
+  function reset(st) {
+    st.root.getAnimations({ subtree: true }).forEach((a) => a.cancel());
+    st.fx.replaceChildren();
+    for (const l of [st.a, st.b]) { l.style.filter = ""; l.style.transform = ""; }
+    st.a.style.opacity = 1;
+    st.b.style.opacity = 0;
+  }
+  const swap = (st) => { st.a.style.opacity = 0; st.b.style.opacity = 1; };
+
+  // S字の縁を2本持つ帯（ローカル座標: x方向に波打ち、y方向に進む）
+  function sBand(y0, y1, amp = 170, w = 1500) {
+    return `M ${-w} ${y0} C ${-w / 2} ${y0 - amp}, ${-w / 5} ${y0 - amp}, 0 ${y0} S ${w / 2} ${y0 + amp}, ${w} ${y0} ` +
+      `L ${w} ${y1} C ${w / 2} ${y1 + amp}, ${w / 5} ${y1 + amp}, 0 ${y1} S ${-w / 2} ${y1 - amp}, ${-w} ${y1} Z`;
+  }
+
+  // ---------------- 一筆 ----------------
+  async function strokeWipe(st, { reverse = false, angle = -32, mid = null } = {}) {
+    const svg = fullSvg();
+    const mov = s("g");
+    mov.append(
+      s("path", { d: sBand(0, 70), fill: C.lav }),
+      s("path", { d: sBand(70, 2400), fill: C.purple }),
+      s("path", { d: sBand(1150, 1200), fill: C.lav, "fill-opacity": ".9" }),
+      s("path", { d: sBand(2400, 2440), fill: C.lav }),
+    );
+    svg.append(s("g", { transform: `translate(800 450) rotate(${angle})` }, [mov]));
+    st.fx.append(svg);
+    const from = reverse ? -3650 : 1100;
+    const to = reverse ? 1100 : -3650;
+    await an(mov, [{ transform: `translateY(${from}px)` }, { transform: "translateY(-1100px)" }], 360, { easing: EASE.in });
+    if (mid) await mid(); else swap(st);
+    await wait(60);
+    await an(mov, [{ transform: "translateY(-1100px)" }, { transform: `translateY(${to}px)` }], 420, { easing: EASE.out, fill: "forwards" });
+    svg.remove();
+  }
+
+  // ---------------- 開口（ピンから） ----------------
+  function leafPath() { return "M -450 450 C 300 -330, 1300 -330, 2050 450 C 1300 1230, 300 1230, -450 450 Z"; }
+  function openingLayer(color, ringColor) {
+    const id = `m${++uid}`;
+    const svg = fullSvg();
+    const hole = s("path", { d: leafPath(), fill: "#000", class: "sc" });
+    const mask = s("mask", { id, maskUnits: "userSpaceOnUse", x: "-200", y: "-200", width: "2000", height: "1300" }, [
+      s("rect", { x: "-200", y: "-200", width: "2000", height: "1300", fill: "#fff" }),
+      s("g", { transform: "rotate(-18 800 450)" }, [hole]),
+    ]);
+    const ring = s("path", { d: leafPath(), fill: "none", stroke: ringColor, "stroke-width": "6", "vector-effect": "non-scaling-stroke", class: "sc" });
+    svg.append(s("defs", {}, [mask]), s("rect", { x: "-200", y: "-200", width: "2000", height: "1300", fill: color, mask: `url(#${id})` }), s("g", { transform: "rotate(-18 800 450)" }, [ring]));
+    return { svg, hole, ring };
+  }
+
+  async function pinDemo(st) {
+    const px = 64, py = 56;
+    const pin = h("div", { class: "pin", style: { left: `${px}%`, top: `${py}%` } }, [h("span", { text: "tonari" }), h("i")]);
+    st.fx.append(pin);
+    await wait(250);
+    await an(pin, [{ transform: "translate(-50%,-100%) scale(1)" }, { transform: "translate(-50%,-100%) scale(1.22)" }, { transform: "translate(-50%,-100%) scale(1)" }], 220, { easing: EASE.out });
+    const svg = fullSvg();
+    const cx = 1600 * px / 100, cy = 900 * py / 100 - 20;
+    const lav = s("circle", { cx, cy, r: "1900", fill: C.lav, class: "sc" });
+    const pur = s("circle", { cx, cy, r: "1900", fill: C.purple, class: "sc" });
+    svg.append(lav, pur);
+    st.fx.append(svg);
+    const grow = [{ transform: "scale(0)" }, { transform: "scale(1)" }];
+    an(lav, grow, 320, { easing: EASE.in });
+    await an(pur, grow, 340, { easing: EASE.in, delay: T(50) });
+    pin.remove();
+    swap(st);
+    const op = openingLayer(C.purple, C.lav);
+    st.fx.append(op.svg);
+    svg.remove();
+    await wait(40);
+    const open = [{ transform: "scale(0)" }, { transform: "scale(1.45)" }];
+    an(op.ring, [{ transform: "scale(0)", opacity: 1 }, { transform: "scale(1.45)", opacity: 0 }], 380, { easing: EASE.out });
+    await an(op.hole, open, 360, { easing: EASE.out });
+    op.svg.remove();
+  }
+
+  // ---------------- 波 ----------------
+  function bumpBand(W = 2600, bulge = 230) {
+    const n = 3, step = 1000 / n;
+    let d = `M ${-W} -50 L 0 -50 `;
+    for (let i = 0; i < n; i++) {
+      const y = -50 + i * step;
+      d += `C ${bulge} ${y}, ${bulge} ${y + step}, 0 ${y + step} `;
+    }
+    d += `L ${-W} 950 `;
+    for (let i = n - 1; i >= 0; i--) {
+      const y = -50 + i * step;
+      d += `C ${-W + bulge} ${y + step}, ${-W + bulge} ${y}, ${-W} ${y} `;
+    }
+    return d + "Z";
+  }
+  async function waveDemo(st, variant) {
+    const shift = variant === "shift";
+    const svg = fullSvg();
+    const mov = s("g");
+    mov.append(s("g", { transform: "translate(110 0)" }, [s("path", { d: bumpBand(), fill: shift ? C.lav : C.dusk })]), s("path", { d: bumpBand(), fill: shift ? C.deep : C.purple }));
+    svg.append(mov);
+    st.fx.append(svg);
+    const k = shift ? 0.7 : 1;
+    await an(mov, [{ transform: "translateX(-360px)" }, { transform: "translateX(1650px)" }], 480 * k, { easing: EASE.in });
+    swap(st);
+    let label;
+    if (shift) {
+      const hand = s("line", { x1: "800", y1: "450", x2: "800", y2: "345", stroke: C.lav, "stroke-width": "10", "stroke-linecap": "round", class: "hand" });
+      const clock = s("g", {}, [
+        s("circle", { cx: "800", cy: "450", r: "140", fill: "none", stroke: C.lav, "stroke-width": "8" }),
+        s("line", { x1: "800", y1: "450", x2: "870", y2: "450", stroke: C.lav, "stroke-width": "10", "stroke-linecap": "round" }),
+        hand,
+        s("circle", { cx: "800", cy: "450", r: "12", fill: C.lav }),
+      ]);
+      hand.style.transformOrigin = "800px 450px";
+      svg.append(clock);
+      label = h("div", { class: "st-text" }, [h("div", { class: "beat-line", text: "閉店まで", style: { marginTop: "26cqw" } })]);
+      st.fx.append(label);
+      an(label, [{ opacity: 0 }, { opacity: 1 }], 200);
+      await an(hand, [{ transform: "rotate(0deg)" }, { transform: "rotate(1080deg)" }], 900, { easing: "cubic-bezier(.5,0,.5,1)" });
+      await an(clock, [{ opacity: 1 }, { opacity: 0 }], 160);
+    } else {
+      label = h("div", { class: "st-text" }, [h("div", { class: "beat-line", text: "夜、tonariに顔を出す──" })]);
+      st.fx.append(label);
+      await an(label, [{ opacity: 0, transform: "translateX(-24px)" }, { opacity: 1, transform: "translateX(0)" }], 380, { easing: EASE.out });
+      await wait(900);
+    }
+    an(label, [{ opacity: 1, transform: "translateX(0)" }, { opacity: 0, transform: "translateX(40px)" }], 260, { easing: EASE.in });
+    await an(mov, [{ transform: "translateX(1650px)" }, { transform: "translateX(4300px)" }], 560 * k, { easing: EASE.out, fill: "forwards" });
+    svg.remove();
+    label.remove();
+  }
+
+  // ---------------- 翌朝 ----------------
+  function flipNum(from, to) {
+    const wrap = h("span", { class: "flip" }, [h("i", { text: String(from) }), h("i", { text: String(to), style: { transform: "rotateX(-90deg)" } })]);
+    return wrap;
+  }
+  async function doFlip(wrap) {
+    const [o, n] = wrap.children;
+    await an(o, [{ transform: "rotateX(0)", opacity: 1 }, { transform: "rotateX(90deg)", opacity: 0 }], 170, { easing: EASE.in });
+    await an(n, [{ transform: "rotateX(-90deg)", opacity: 0 }, { transform: "rotateX(0)", opacity: 1 }], 220, { easing: EASE.out });
+  }
+  async function dawnDemo(st, variant) {
+    // 夜の紫が上から降りる（下端が丸く波打つ）
+    const svg = fullSvg();
+    let d = "M -50 -1300 L -50 0 ";
+    for (let i = 0; i < 5; i++) { const x = -50 + i * 340; d += `C ${x} 170, ${x + 340} 170, ${x + 340} 0 `; }
+    d += "L 1650 -1300 Z";
+    const down = s("g", {}, [s("path", { d, fill: C.lav, transform: "translate(0 40)" }), s("path", { d, fill: C.deep })]);
+    svg.append(down);
+    st.fx.append(svg);
+    await an(down, [{ transform: "translateY(0)" }, { transform: "translateY(1180px)" }], 520, { easing: EASE.in });
+    const veil = h("div", { style: { position: "absolute", inset: "0", background: C.deep } });
+    st.fx.append(veil);
+    svg.remove();
+    swap(st);
+    if (variant === "rain") st.b.style.filter = "brightness(.82) saturate(.75)";
+    // DAYカード
+    const sick = variant === "sick";
+    const dayFlip = flipNum(4, 5);
+    const leftFlip = flipNum(10, 9);
+    const sub = sick
+      ? h("div", { class: "sub" }, [h("span", { text: "……熱っぽい" })])
+      : h("div", { class: "sub" }, [h("span", { text: "SMOKE CROWN CUP まで あと" }), leftFlip, h("span", { text: `日${variant === "rain" ? "　☂ 雨" : ""}` })]);
+    const card = h("div", { class: "day-card" }, [h("div", { class: "d" }, [h("small", { text: "DAY" }), dayFlip]), sub]);
+    const text = h("div", { class: "st-text" }, [card]);
+    st.fx.append(text);
+    let rain = null;
+    if (variant === "rain") {
+      rain = h("div", { style: { position: "absolute", inset: "0", overflow: "hidden" } });
+      for (let i = 0; i < 34; i++) {
+        const l = h("i", { style: { position: "absolute", left: `${rand(-10, 105)}%`, top: "-30%", width: "1.5px", height: `${rand(14, 26)}%`, background: "linear-gradient(transparent, #dcd1f4aa)", transform: "rotate(18deg)" } });
+        rain.append(l);
+        l.animate([{ translate: "0 0" }, { translate: `${-0.12 * st.root.clientWidth}px ${1.6 * st.root.clientHeight}px` }], { duration: T(rand(520, 760)), delay: T(rand(0, 600)), iterations: Infinity, easing: "linear" });
+      }
+      st.fx.insertBefore(rain, text);
+    }
+    await an(card, [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], 320, { easing: EASE.out });
+    let wobble = null;
+    if (sick) {
+      wobble = card.animate([
+        { transform: "skewX(0deg) scale(1)", filter: "blur(0)" },
+        { transform: "skewX(3deg) scale(1.02)", filter: "blur(1.2px)" },
+        { transform: "skewX(-2deg) scale(.99)", filter: "blur(.4px)" },
+        { transform: "skewX(0deg) scale(1)", filter: "blur(0)" },
+      ], { duration: T(900), iterations: Infinity, easing: "ease-in-out" });
+      veil.animate([{ background: C.deep }, { background: "#4a2346" }], { duration: T(600), fill: "forwards" });
+    }
+    await wait(260);
+    await Promise.all([doFlip(dayFlip), sick ? Promise.resolve() : wait(90).then(() => doFlip(leftFlip))]);
+    await wait(sick ? 1100 : 700);
+    // 地平線が昇って晴れる
+    const horizon = h("div", { style: { position: "absolute", left: "0", right: "0", bottom: "0", height: "3px", background: C.lav, boxShadow: `0 0 18px 6px ${C.lav}88` } });
+    st.fx.append(horizon);
+    const up = 760;
+    an(text, [{ opacity: 1 }, { opacity: 0, transform: "translateY(-18px)" }], 300, { easing: EASE.in });
+    if (rain) an(rain, [{ opacity: 1 }, { opacity: .35 }], up);
+    an(horizon, [{ bottom: "0%", opacity: 1 }, { bottom: "100%", opacity: .6 }], up, { easing: EASE.snap });
+    await an(veil, [{ clipPath: "inset(0 0 0% 0)" }, { clipPath: "inset(0 0 100% 0)" }], up, { easing: EASE.snap });
+    const glow = h("div", { style: { position: "absolute", inset: "0", background: "radial-gradient(circle at 50% 110%, #fff3d6cc, transparent 60%)" } });
+    st.fx.append(glow);
+    await an(glow, [{ opacity: 1 }, { opacity: 0 }], 700, { easing: EASE.out });
+    horizon.remove(); glow.remove(); veil.remove(); text.remove();
+    if (wobble) wobble.cancel();
+  }
+
+  // ---------------- 開口（相手の色） ----------------
+  const HEROINE = { tsumugi: ["#bd95d4", "#eaddf4"], minto: ["#36c59c", "#ffdbeb"], rin: ["#5a60b6", "#cfd5ff"], ageha: ["#e956a5", "#ffd7eb"] };
+  async function dateDemo(st, who) {
+    const [col, sec] = HEROINE[who] || HEROINE.tsumugi;
+    const op = openingLayer(C.deep, col);
+    st.fx.append(op.svg);
+    const closeK = [{ transform: "scale(1.45)" }, { transform: "scale(0)" }];
+    an(op.ring, closeK, 900, { easing: EASE.snap });
+    await an(op.hole, closeK, 900, { easing: EASE.snap });
+    swap(st);
+    const line = h("div", { class: "st-text" }, [h("div", { class: "beat-line", text: "——店の営業が終わってから、約束の場所へ。", style: { color: sec, fontSize: "2.8cqw" } })]);
+    st.fx.append(line);
+    await an(line, [{ opacity: 0 }, { opacity: 1 }], 380, { easing: EASE.out });
+    await wait(1000);
+    await an(line, [{ opacity: 1 }, { opacity: 0 }], 260);
+    line.remove();
+    const tint = h("div", { style: { position: "absolute", inset: "0", background: `radial-gradient(ellipse at 50% 50%, transparent 35%, ${col}aa 100%)`, mixBlendMode: "screen" } });
+    st.fx.prepend(tint);
+    const openK = [{ transform: "scale(0)" }, { transform: "scale(1.45)" }];
+    an(op.ring, [{ transform: "scale(0)", opacity: 1 }, { transform: "scale(1.45)", opacity: 0 }], 1000, { easing: EASE.out });
+    await an(op.hole, openK, 1000, { easing: EASE.out });
+    op.svg.remove();
+    await an(tint, [{ opacity: 1 }, { opacity: 0 }], 900, { easing: EASE.out });
+    tint.remove();
+  }
+
+  // ---------------- 逆再生「1年前」 ----------------
+  async function rewindDemo(st) {
+    const streaks = h("div", { style: { position: "absolute", inset: "0", overflow: "hidden" } });
+    for (let i = 0; i < 14; i++) {
+      const w = rand(.4, 1.6);
+      const l = h("i", { style: { position: "absolute", left: `${rand(4, 96)}%`, top: "-60%", width: `${w}%`, height: `${rand(40, 70)}%`, borderRadius: "99px", background: `linear-gradient(${C.lav}00, ${C.lav}cc, ${C.lav}00)`, filter: "blur(2px)" } });
+      streaks.append(l);
+      l.animate([{ translate: "0 0", opacity: 0 }, { opacity: 1, offset: .3 }, { translate: `0 ${1.9 * st.root.clientHeight}px`, opacity: 0 }], { duration: T(rand(700, 1000)), delay: T(rand(0, 400)), easing: "cubic-bezier(.5,0,.8,.6)", fill: "both" });
+    }
+    st.fx.append(streaks);
+    await wait(250);
+    await an(st.a, [{ transform: "scale(1)", filter: "blur(0)", opacity: 1 }, { transform: "scale(.12)", filter: "blur(10px)", opacity: 0 }], 900, { easing: EASE.in });
+    const word = h("div", { class: "st-text" }, [h("div", { class: "big-word", text: "1年前" })]);
+    st.fx.append(word);
+    await an(word.firstChild, [{ opacity: 0, letterSpacing: ".7em", filter: "blur(6px)" }, { opacity: 1, letterSpacing: ".2em", filter: "blur(0)" }], 700, { easing: EASE.out });
+    streaks.remove();
+    await wait(900);
+    await an(word, [{ opacity: 1 }, { opacity: 0 }], 360);
+    word.remove();
+    await an(st.b, [{ opacity: 0, filter: "brightness(1.6) blur(4px)" }, { opacity: 1, filter: "none" }], 800, { easing: EASE.out });
+  }
+
+  // ---------------- 走査 ----------------
+  async function glitchDemo(st) {
+    const phone = h("div", { class: "phone" }, [
+      h("header", { text: "スミさん" }),
+      h("div", { class: "msgs" }, [h("div", { class: "msg", text: "おう。優勝、見事だった" }), h("div", { class: "msg", text: "あの一票が何だったのか。次の舞台までに、自分で答えを出せ" })]),
+    ]);
+    st.fx.append(phone);
+    await wait(900);
+    const slices = h("div", { style: { position: "absolute", inset: "0" } });
+    for (let i = 0; i < 9; i++) {
+      const top = rand(0, 92), hgt = rand(2, 9);
+      const sl = h("div", { style: { position: "absolute", inset: "0", background: getComputedStyle(st.a).backgroundImage + " center / cover", clipPath: `inset(${top}% 0 ${100 - top - hgt}% 0)`, filter: i % 3 === 0 ? "hue-rotate(160deg) saturate(2)" : "none", mixBlendMode: i % 2 ? "screen" : "normal" } });
+      slices.append(sl);
+      sl.animate([{ transform: "translateX(0)" }, { transform: `translateX(${rand(-6, 6)}%)` }, { transform: `translateX(${rand(-3, 3)}%)` }, { transform: "translateX(0)" }], { duration: T(360), easing: "steps(4)", fill: "both" });
+    }
+    const scan = h("div", { style: { position: "absolute", inset: "0", background: "repeating-linear-gradient(0deg, #0000 0 3px, #dcd1f41f 3px 4px)", mixBlendMode: "screen" } });
+    const bar = h("div", { style: { position: "absolute", left: "0", right: "0", height: "10%", background: `linear-gradient(transparent, ${C.cyan}55, transparent)` } });
+    st.fx.insertBefore(slices, phone);
+    st.fx.append(scan, bar);
+    phone.animate([{ transform: "translateX(0)", filter: "none" }, { transform: "translateX(-1.5%)", filter: `drop-shadow(4px 0 0 ${C.pink}) drop-shadow(-4px 0 0 ${C.cyan})` }, { transform: "translateX(1%)" }, { transform: "translateX(0)", filter: "none" }], { duration: T(360), easing: "steps(4)" });
+    an(bar, [{ top: "-10%" }, { top: "100%" }], 360, { easing: EASE.lin });
+    await wait(180);
+    phone.classList.add("unknown");
+    phone.querySelector("header").textContent = "???";
+    phone.querySelector(".msgs").replaceChildren(h("div", { class: "msg", text: "本日のあなたの試合データは、すべて記録させていただきました。" }));
+    await wait(200);
+    slices.remove(); bar.remove();
+    await an(scan, [{ opacity: 1 }, { opacity: 0 }], 600);
+    scan.remove();
+    await wait(500);
+    phone.animate([{ transform: "translateX(0)" }, { transform: "translateX(1.2%)", filter: `drop-shadow(3px 0 0 ${C.pink})` }, { transform: "translateX(0)" }], { duration: T(140), easing: "steps(3)" });
+  }
+
+  // ---------------- 泡 ----------------
+  async function bubblesDemo(st) {
+    const W = st.root.clientWidth, H = st.root.clientHeight;
+    const fill = h("div", { style: { position: "absolute", inset: "0", background: `linear-gradient(${C.purple}, ${C.deep})`, clipPath: "inset(100% 0 0 0)" } });
+    const layer = h("div", { style: { position: "absolute", inset: "0", overflow: "hidden" } });
+    st.fx.append(fill, layer);
+    const bubs = [];
+    for (let i = 0; i < 38; i++) {
+      const size = rand(.04, .2) * W;
+      const b = h("i", { style: { position: "absolute", left: `${rand(-5, 98)}%`, top: `${H + 10}px`, width: `${size}px`, height: `${size}px`, borderRadius: "50%", border: `2px solid ${C.lav}`, background: `radial-gradient(circle at 32% 30%, #ffffffcc 0 8%, ${C.lav}33 9%, ${C.lav}14 70%)` } });
+      layer.append(b);
+      bubs.push(b);
+      b.animate([{ transform: "translateY(0) scale(.6)" }, { transform: `translateY(${-rand(.5, 1.25) * H - size}px) scale(1.15)` }], { duration: T(rand(900, 1400)), delay: T(rand(0, 450)), easing: "cubic-bezier(.3,.1,.5,1)", fill: "both" });
+    }
+    await wait(500);
+    await an(fill, [{ clipPath: "inset(100% 0 0 0)" }, { clipPath: "inset(0% 0 0 0)" }], 650, { easing: EASE.snap });
+    swap(st);
+    st.b.style.filter = "saturate(.6) hue-rotate(-20deg) brightness(1.08) blur(.6px)";
+    const vign = h("div", { style: { position: "absolute", inset: "0", background: `radial-gradient(ellipse at 50% 50%, transparent 45%, ${C.lav}88 100%)` } });
+    st.fx.prepend(vign);
+    for (const b of bubs) {
+      b.getAnimations().forEach((a) => a.pause());
+      b.animate([{ opacity: 1, scale: "1" }, { opacity: 0, scale: "1.9" }], { duration: T(rand(260, 520)), delay: T(rand(0, 260)), easing: EASE.out, fill: "forwards" });
+    }
+    await an(fill, [{ opacity: 1 }, { opacity: 0 }], 600, { easing: EASE.out, fill: "forwards" });
+    await wait(300);
+    layer.remove(); fill.remove();
+  }
+
+  // ---------------- 交差 ----------------
+  const CROSS = {
+    entry: { c1: C.purple, c2: C.pink, edge: C.lav, title: "SMOKE CROWN CUP", sub: "DAY 14 ／ 会場入り", full: true },
+    r1: { c1: C.purple, c2: C.lav, edge: C.lav, title: "ROUND 1", sub: "組み立て", full: false },
+    r2: { c1: C.pink, c2: C.lav, edge: "#ffd7eb", title: "ROUND 2", sub: "吸い出し・提供", full: false },
+    r3: { c1: "#1fb7c4", c2: C.purple, edge: C.cyan, title: "ROUND 3", sub: "熱管理", full: false },
+  };
+  async function crossDemo(st, variant) {
+    const v = CROSS[variant] || CROSS.entry;
+    const svg = fullSvg();
+    const back = s("rect", { x: "-100", y: "-100", width: "1800", height: "1100", fill: "#0b0814", opacity: "0" });
+    const r1 = s("g", {}, [s("rect", { x: "-300", y: "250", width: "2200", height: "250", fill: v.c1 }), s("rect", { x: "-300", y: "462", width: "2200", height: "14", fill: v.edge })]);
+    const r2 = s("g", {}, [s("rect", { x: "-300", y: "420", width: "2200", height: "230", fill: v.c2 }), s("rect", { x: "-300", y: "420", width: "2200", height: "8", fill: "#ffffff", opacity: ".7" })]);
+    r1.style.filter = `drop-shadow(0 0 18px ${v.c1})`;
+    r2.style.filter = `drop-shadow(0 0 18px ${v.c2})`;
+    svg.append(back, s("g", { transform: "rotate(-13 800 450)" }, [r1]), s("g", { transform: "rotate(13 800 450)" }, [r2]));
+    st.fx.append(svg);
+    an(back, [{ opacity: 0 }, { opacity: v.full ? 1 : .82 }], 340, { easing: EASE.out });
+    an(r1, [{ transform: "translateX(-2400px)" }, { transform: "translateX(0)" }], 360, { easing: EASE.out });
+    await an(r2, [{ transform: "translateX(2400px)" }, { transform: "translateX(0)" }], 360, { easing: EASE.out, delay: T(70) });
+    if (v.full) swap(st);
+    const big = h("b", { text: v.title, style: v.full ? { fontSize: "6.4cqw", letterSpacing: ".1em" } : {} });
+    const small = h("small", { text: v.sub });
+    const t = h("div", { class: "st-text" }, [h("div", { class: "round" }, [big, small])]);
+    big.style.textShadow = `0 0 2.4cqw ${v.edge}`;
+    st.fx.append(t);
+    an(big, [{ opacity: 0, transform: "scale(1.9)" }, { opacity: 1, transform: "scale(1)" }], 220, { easing: EASE.in });
+    an(small, [{ opacity: 0, transform: "translateX(-6cqw)" }, { opacity: 1, transform: "none" }], 380, { easing: EASE.out, delay: T(160) });
+    await wait(210);
+    st.root.animate([{ transform: "translate(0,0)" }, { transform: "translate(-6px,3px)" }, { transform: "translate(5px,-2px)" }, { transform: "translate(0,0)" }], { duration: T(160), easing: "steps(3)" });
+    await wait(1000);
+    an(t, [{ opacity: 1 }, { opacity: 0 }], 220);
+    an(r1, [{ transform: "translateX(0)" }, { transform: "translateX(2400px)" }], 420, { easing: EASE.in, fill: "forwards" });
+    an(r2, [{ transform: "translateX(0)" }, { transform: "translateX(-2400px)" }], 420, { easing: EASE.in, fill: "forwards", delay: T(50) });
+    await an(back, [{ opacity: v.full ? 1 : .82 }, { opacity: 0 }], 520, { easing: EASE.in, delay: T(140), fill: "forwards" });
+    svg.remove(); t.remove();
+  }
+
+  // ---------------- 工程の切り替え ----------------
+  const STEPS = [["配合", "香りを合わせる"], ["パッキング", "葉を詰める"], ["アルミ穴あけ", "アルミに穴を開ける"], ["炭焼き", "炭の芯を確かめる"], ["炭の配置", "炭を置く"], ["蒸らし", "熱が入るのを待つ"], ["吸い出し", "煙の温度を合わせる"]];
+  function benchUi(st, i) {
+    st.a.style.filter = "brightness(.75)";
+    st.b.style.filter = "brightness(.75)";
+    const cap = h("div", { class: "bench-caption", text: STEPS[i][1] });
+    const track = h("div", { class: "track" }, STEPS.map((_, k) => h("span", { class: k < i ? "done" : k === i ? "now" : "" })));
+    const panel = h("div", { class: "bench-panel" }, [track, h("div", { class: "no", text: `STEP ${i + 1} / ${STEPS.length}` }), h("div", { class: "ttl", text: STEPS[i][0] }), h("div", { class: "ui", text: "操作欄" })]);
+    st.fx.append(cap, panel);
+    return { cap, panel, track };
+  }
+  async function stepDemo(st, card) {
+    const i = Number(card.dataset.idx || 0);
+    const n = (i + 1) % STEPS.length;
+    const ui = { cap: st.fx.querySelector(".bench-caption"), panel: st.fx.querySelector(".bench-panel"), track: st.fx.querySelector(".track") };
+    await wait(380);
+    const sweep = h("div", { style: { position: "absolute", top: "-10%", bottom: "-10%", width: "38%", left: "0", background: `linear-gradient(90deg, ${C.lav}00, ${C.lav} 30%, ${C.purple} 60%, ${C.purple}00)`, transform: "skewX(-18deg)" } });
+    ui.panel.append(sweep);
+    const sweepRun = an(sweep, [{ translate: "-140% 0" }, { translate: "330% 0" }], 380, { easing: EASE.snap });
+    await wait(170);
+    const ttl = ui.panel.querySelector(".ttl");
+    const no = ui.panel.querySelector(".no");
+    ttl.textContent = STEPS[n][0];
+    no.textContent = `STEP ${n + 1} / ${STEPS.length}`;
+    an(ttl, [{ opacity: 0, transform: "translateX(10px)" }, { opacity: 1, transform: "none" }], 220, { easing: EASE.out });
+    an(ui.cap, [{ opacity: 1 }, { opacity: 0 }], 120).then(() => { ui.cap.textContent = STEPS[n][1]; an(ui.cap, [{ opacity: 0 }, { opacity: 1 }], 200); });
+    const segs = [...ui.track.children];
+    segs.forEach((sg, k) => { sg.className = n === 0 ? (k === 0 ? "now" : "") : k < n ? "done" : k === n ? "now" : ""; });
+    if (segs[n]) an(segs[n], [{ boxShadow: `0 0 0 0 ${C.lav}` }, { boxShadow: `0 0 14px 4px ${C.lav}` }, { boxShadow: `0 0 0 0 ${C.lav}00` }], 520, { easing: EASE.out });
+    await sweepRun;
+    sweep.remove();
+    card.dataset.idx = String(n);
+  }
+
+  // ---------------- 勝敗 ----------------
+  async function finaleDemo(st, variant) {
+    if (variant === "win") {
+      const svg = fullSvg();
+      const defs = s("defs", {}, [s("filter", { id: "ringblur", x: "-50%", y: "-50%", width: "200%", height: "200%" }, [s("feGaussianBlur", { stdDeviation: "5" })])]);
+      svg.append(defs);
+      st.fx.append(svg);
+      const rings = [];
+      for (let i = 0; i < 3; i++) {
+        const g = s("g", { class: "sc" }, [
+          s("ellipse", { cx: "800", cy: "470", rx: "150", ry: "80", fill: "none", stroke: C.lav, "stroke-width": "34", filter: "url(#ringblur)", opacity: ".85" }),
+          s("ellipse", { cx: "800", cy: "470", rx: "150", ry: "80", fill: "none", stroke: "#ffffff", "stroke-width": "4", opacity: ".8" }),
+        ]);
+        svg.append(g);
+        rings.push(g);
+      }
+      const flashL = h("div", { style: { position: "absolute", inset: "0", background: `radial-gradient(circle, ${C.gold}66, transparent 60%)` } });
+      st.fx.prepend(flashL);
+      an(flashL, [{ opacity: 0 }, { opacity: 1 }, { opacity: 0 }], 900);
+      const runs = rings.map((g, i) => an(g, [{ transform: "translateY(0) scale(.25)", opacity: 0 }, { opacity: 1, offset: .2 }, { transform: "translateY(-120px) scale(3.4)", opacity: 0 }], 1300, { easing: EASE.out, delay: T(i * 280) }));
+      const word = h("div", { class: "st-text" }, [h("div", {}, [h("div", { class: "end-sub", text: "SMOKE CROWN CUP" }), h("div", { class: "end-word", text: "優勝", style: { color: "#fff" } })])]);
+      st.fx.append(word);
+      an(word, [{ opacity: 0, transform: "scale(.94)" }, { opacity: 1, transform: "none" }], 500, { easing: EASE.out, delay: T(700) });
+      await Promise.all(runs);
+      svg.remove();
+      return;
+    }
+    if (variant === "lose") { await loseSeq(st); return; }
+    // 再挑戦: 灰色の結果画面から、逆向きの一筆で色を戻す
+    st.a.style.filter = "grayscale(1) brightness(.6)";
+    const over = h("div", { class: "st-text" }, [h("div", { class: "end-word", text: "GAME OVER", style: { color: "#c9c4d3" } })]);
+    st.fx.append(over);
+    await wait(500);
+    await strokeWipe(st, { reverse: true, angle: -32, mid: async () => { over.remove(); swap(st); } });
+  }
+  async function loseSeq(st) {
+    const gray = h("div", { style: { position: "absolute", inset: "0", backdropFilter: "grayscale(1) brightness(.62)", WebkitBackdropFilter: "grayscale(1) brightness(.62)", clipPath: "circle(0% at 50% 55%)" } });
+    st.fx.append(gray);
+    const svg = fullSvg();
+    const path = s("path", { d: "M 800 900 C 760 800, 850 720, 800 620 S 760 470, 810 380", fill: "none", stroke: C.lav, "stroke-width": "9", "stroke-linecap": "round", "stroke-dasharray": "600", "stroke-dashoffset": "600" });
+    svg.append(path);
+    st.fx.append(svg);
+    await an(path, [{ strokeDashoffset: 600 }, { strokeDashoffset: 0 }], 600, { easing: EASE.out });
+    an(gray, [{ clipPath: "circle(0% at 50% 55%)" }, { clipPath: "circle(80% at 50% 55%)" }], 1000, { easing: EASE.snap });
+    await wait(300);
+    await an(path, [{ strokeWidth: 9, opacity: 1, strokeDasharray: "600 0" }, { strokeWidth: 3, opacity: .8, strokeDasharray: "260 50 120 400" }, { strokeWidth: 1, opacity: 0, strokeDasharray: "140 120 40 400" }], 1000, { easing: "ease-in", fill: "forwards" });
+    svg.remove();
+    const over = h("div", { class: "st-text" }, [h("div", { class: "end-word", text: "GAME OVER", style: { color: "#c9c4d3" } })]);
+    st.fx.append(over);
+    await an(over, [{ opacity: 0, letterSpacing: ".3em" }, { opacity: 1, letterSpacing: ".16em" }], 600, { easing: EASE.out });
+  }
+
+  // ---------------- 配線 ----------------
+  const DEMOS = {
+    stroke: (st) => strokeWipe(st),
+    pin: (st) => pinDemo(st),
+    wave: (st, v) => waveDemo(st, v),
+    dawn: (st, v) => dawnDemo(st, v),
+    date: (st, v) => dateDemo(st, v),
+    rewind: (st) => rewindDemo(st),
+    glitch: (st) => glitchDemo(st),
+    bubbles: (st) => bubblesDemo(st),
+    cross: (st, v) => crossDemo(st, v),
+    step: (st, v, card) => stepDemo(st, card),
+    finale: (st, v) => finaleDemo(st, v),
+  };
+  const WAVE_CAP = { beat: "昼のマップ → 夜の tonari（「夜、tonariに顔を出す──」）", shift: "バイト開始 → 閉店（時計の早回し）" };
+  const WAVE_IMG = { beat: ["bg_osu_map_day", "bg_tonari_outside_night"], shift: ["bg_tonari_inside_day", "bg_tonari_inside_night"] };
+
+  for (const card of document.querySelectorAll(".scene-card")) {
+    const kind = card.dataset.demo;
+    const root = card.querySelector(".stage");
+    const st = { root, a: root.querySelector(".scene.a"), b: root.querySelector(".scene.b"), fx: root.querySelector(".fx") };
+    const aImg = st.a.style.getPropertyValue("--img");
+    const play = card.querySelector(".play");
+    const varBtns = [...card.querySelectorAll("[data-variant]")];
+    let variant = varBtns.find((b) => b.getAttribute("aria-pressed") === "true")?.dataset.variant || null;
+    let busy = false;
+    const prime = () => {
+      reset(st);
+      st.a.style.setProperty("--img", aImg);
+      if (kind === "wave") {
+        const [a, b] = WAVE_IMG[variant];
+        st.a.style.setProperty("--img", `url(../../../remake/img/backgrounds/${a}.webp)`);
+        st.b.style.setProperty("--img", `url(../../../remake/img/backgrounds/${b}.webp)`);
+        card.querySelector(".cap").textContent = WAVE_CAP[variant];
+      }
+      if (kind === "cross") card.querySelector(".cap").textContent = variant === "entry" ? "tonari（朝）→ 会場" : "会場（ROUNDの見出し）";
+      if (kind === "cross" && variant !== "entry") st.a.style.setProperty("--img", "url(../../../remake/img/backgrounds/bg_tournament_stage.webp)");
+      if (kind === "step") benchUi(st, Number(card.dataset.idx || 0));
+    };
+    const run = async () => {
+      if (busy) return;
+      busy = true;
+      play.disabled = true;
+      varBtns.forEach((b) => (b.disabled = true));
+      prime();
+      try { await DEMOS[kind](st, variant, card); } catch (e) { console.error(e); }
+      busy = false;
+      play.disabled = false;
+      varBtns.forEach((b) => (b.disabled = false));
+    };
+    play.addEventListener("click", run);
+    root.addEventListener("click", run);
+    root.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); run(); } });
+    for (const b of varBtns) {
+      b.addEventListener("click", () => {
+        if (busy) return;
+        variant = b.dataset.variant;
+        varBtns.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+        prime();
+        run();
+      });
+    }
+    prime();
+  }
+
+  for (const b of document.querySelectorAll(".speed button")) {
+    b.addEventListener("click", () => {
+      SPEED = Number(b.dataset.speed);
+      document.querySelectorAll(".speed button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    });
+  }
+})();
+</script>
