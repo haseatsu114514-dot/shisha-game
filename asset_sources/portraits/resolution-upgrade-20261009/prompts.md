@@ -1,255 +1,728 @@
-# 立ち絵の画質そろえ：コピペ用プロンプト（前園・南雲・スミさん）
+# 立ち絵の作り直し：コピペ用プロンプト（画質・顔の大きさ・画風を1回で）
 
-[調査と方針](README.md) の対象A。**1回の生成で1人・1表情**。下の各ブロックを、指定の画像4枚を添付して1回ずつ貼る。
-デザイン・表情・ポーズ・身長は変えず、描き込みの細かさだけを上げる依頼。
+[調査と方針](README.md)。2026-10-09 オーナー決定：**顔の大きさが中央値から±10%を超える6人だけ直す**／**画風はみんと・アゲハに合わせる**。
+1回の生成で1人・1表情。各ブロックを、指定の画像4枚を添付して1回ずつ貼る。全34表情。
+
+| キャラ | いまの顔の大きさ（中央値比） | 直し方 | 画風の直し | 表情数 |
+|---|---|---|---|---|
+| つむぎ | +18% | 頭を約15%小さく | 基準に合わせる | 7 |
+| 前園 | +17% | 頭を約14%小さく | 平たい塗り・太い線を基準へ | 5 |
+| スミさん | +15% | 頭（帽子込み）を約13%小さく | 基準に合わせる | 5 |
+| ましろ | +13% | 頭を約12%小さく | 基準に合わせる | 6 |
+| 南雲 | −13% | 頭を約15%大きく | 基準に合わせる | 5 |
+| サメちゃん | −10% | 頭（フード込み）を約11%大きく | つやの強い今風の塗り・大きめの目を基準へ | 6 |
+
+顔の大きさの比較図は [face-size-ingame.png](../../reference-sheets/face-size-ingame.png)（`python3 tools/make_reference_sheet.py facesize` で作り直せる）。
 
 ## チャットで頼むときの手順（ChatGPT・Codexのどちらでも）
 
-1. 添付する4枚をGitHubから保存する（`Raw` で開いて保存）。
+1. 添付する4枚をGitHubから保存する（ファイルを開いて `Raw` から保存）。
    - ① いま作り直す表情の現行PNG（各ブロックに書いたパス）
    - ② 同じキャラの `chr_<id>_normal.png`（①が通常のときは省略してよい）
-   - ③ 凛 `assets/sprites/characters/rin/chr_rin_normal.png`（画質だけの参照）
-   - ④ みんと `assets/sprites/characters/minto/chr_minto_normal.png`（画質だけの参照）
+   - ③ 頭身の目標：女性は みんと、男性は アダム の normal
+   - ④ 画風の目標：女性は アゲハ、男性は みんと の normal
 2. 新しいチャットで、①→②→③→④の順に添付し、そのキャラ・表情のブロックをそのまま貼って送る。
-3. できた画像を原寸で見て、下のチェックを確認する。ダメなら同じチャットで「顔を画像1にもっと近づけて」「手の位置を画像1と同じに」など、**直す点だけ**を伝えて作り直す。
-4. 1キャラ5表情がそろったら、並べて同じ人物に見えるか確認する。
-5. 合格した原画をリポジトリの `asset_sources/portraits/<id>-resolution-v1/` に置いて commit（PCに置いたままにしない）。組み込みはClaude/Codexに「resolution-upgrade の受け取り手順で組み込んで」と頼む。
+3. できた画像を原寸で見て、下のチェックを確認する。ダメなら同じチャットで、直す点だけを伝えて作り直す（例：「顔を画像1にもっと近づけて」「頭をもう少し小さく」「手の位置を画像1と同じに」）。
+4. 1キャラの全表情がそろったら並べて、同じ人物・同じ頭の大きさに見えるか確かめる。
+5. 合格した原画を `asset_sources/portraits/<id>-remaster-v2/` に置いて commit（PCに置いたままにしない）。組み込みは Claude／Codex に「resolution-upgrade の受け取り手順で組み込んで」と頼む。
 
 ### 生成後チェック（1枚ごと）
 
-- [ ] 人物の高さが1300px以上（画像の情報で確認）。背景が透明で、手足の間も抜けている
-- [ ] ①と並べて、顔・表情・手と肩の位置・衣装・小物・頭身が変わっていない
-- [ ] 線が細くくっきり。ぼやけ・のっぺり・粗いドット・つやつやのCG感がない（③④と原寸で比べる）
-- [ ] 若返り・痩せ・美形化していない
+- [ ] 人物の高さが1300px以上。背景が透明で、手足の間も抜けている
+- [ ] ①と並べて、顔立ち・表情・手と肩の位置・衣装・小物が変わっていない（同じ人物）
+- [ ] 頭の大きさが③に近い。頭だけ変えて、全身の高さ・立ち方は①のまま
+- [ ] 画風が④に近い：細くくっきりした線、控えめな段階の陰影。ぼやけ・のっぺり・つやつや・粗いドットがない
+- [ ] 若返り・老け・別人化していない
 - [ ] 文字・枠・影・床が入っていない
+
+## つむぎ（tsumugi）
+
+### 1. つむぎ・normal
+
+添付：① `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
+Expression and pose to keep exactly as image 1 (normal): calm closed mouth, hugging the tablet against her chest with both arms
+
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 15% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 2. つむぎ・smile
+
+添付：① `assets/sprites/characters/tsumugi/chr_tsumugi_smile.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
+Expression and pose to keep exactly as image 1 (smile): gentle smile, holding a stylus near her cheek with the tablet in the other arm
+
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 15% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 3. つむぎ・serious
+
+添付：① `assets/sprites/characters/tsumugi/chr_tsumugi_serious.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
+Expression and pose to keep exactly as image 1 (serious): focused gaze down at the tablet, drawing on it with the stylus
+
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 15% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 4. つむぎ・surprise
+
+添付：① `assets/sprites/characters/tsumugi/chr_tsumugi_surprise.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
+Expression and pose to keep exactly as image 1 (surprise): round eyes and a small open mouth, one hand raised beside her face, the tablet in the other arm
+
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 15% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 5. つむぎ・sad
+
+添付：① `assets/sprites/characters/tsumugi/chr_tsumugi_sad.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
+Expression and pose to keep exactly as image 1 (sad): downcast eyes and a small sad mouth, hugging the tablet
+
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 15% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 6. つむぎ・evil
+
+添付：① `assets/sprites/characters/tsumugi/chr_tsumugi_evil.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
+Expression and pose to keep exactly as image 1 (evil): yami-kawaii blank stare: empty eyes without highlights, soft lavender-gray shadow over the eyes, tiny flat mouth, hugging the cracked tablet, cute and comical, never menacing
+
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 15% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 7. つむぎ・bow
+
+添付：① `assets/sprites/characters/tsumugi/chr_tsumugi_bow.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
+Expression and pose to keep exactly as image 1 (bow): polite bow with closed eyes, head and upper body bowed slightly, both hands in front
+
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 15% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
 
 ## 前園（maezono）
 
-### 1. 前園・normal
+### 8. 前園・normal
 
-添付：① `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ 凛 normal ／ ④ みんと normal
+添付：① `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
 
 ```
-Upscale-remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the exact same person, face, expression, pose, hand and shoulder positions, clothing, accessories, colors and head-to-body proportions as image 1. Only the rendering resolution and crispness should improve.
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and proportions. (2) the same character's normal sprite: face identity check only. (3) approved Rin sprite and (4) approved Minto sprite: ONLY the target rendering quality - fine high-resolution pixel-like game-art texture, thin crisp ink lines, restrained matte multi-step shading. Never copy their faces, hair, bodies or outfits.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
 Character: Maezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.
 Expression and pose to keep exactly as image 1 (normal): gentle small closed-mouth smile, SCREEN-LEFT hand lifted in a friendly greeting wave, SCREEN-RIGHT hand in the trouser pocket
 
-Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels. Do not make the man younger, slimmer or more handsome than image 1.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 14% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. His current rendering is flat with thick lines: give him the same finer line work, stepped shading and fabric detail as Minto and Ageha, while keeping his round warm friendly face.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
 
-### 2. 前園・smile
+### 9. 前園・smile
 
-添付：① `assets/sprites/characters/maezono/chr_maezono_smile.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ 凛 normal ／ ④ みんと normal
+添付：① `assets/sprites/characters/maezono/chr_maezono_smile.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
 
 ```
-Upscale-remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the exact same person, face, expression, pose, hand and shoulder positions, clothing, accessories, colors and head-to-body proportions as image 1. Only the rendering resolution and crispness should improve.
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and proportions. (2) the same character's normal sprite: face identity check only. (3) approved Rin sprite and (4) approved Minto sprite: ONLY the target rendering quality - fine high-resolution pixel-like game-art texture, thin crisp ink lines, restrained matte multi-step shading. Never copy their faces, hair, bodies or outfits.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
 Character: Maezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.
 Expression and pose to keep exactly as image 1 (smile): both eyes closed, joyful open-mouth smile, the same SCREEN-LEFT greeting hand, SCREEN-RIGHT hand in the pocket
 
-Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels. Do not make the man younger, slimmer or more handsome than image 1.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 14% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. His current rendering is flat with thick lines: give him the same finer line work, stepped shading and fabric detail as Minto and Ageha, while keeping his round warm friendly face.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
 
-### 3. 前園・serious
+### 10. 前園・serious
 
-添付：① `assets/sprites/characters/maezono/chr_maezono_serious.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ 凛 normal ／ ④ みんと normal
+添付：① `assets/sprites/characters/maezono/chr_maezono_serious.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
 
 ```
-Upscale-remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the exact same person, face, expression, pose, hand and shoulder positions, clothing, accessories, colors and head-to-body proportions as image 1. Only the rendering resolution and crispness should improve.
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and proportions. (2) the same character's normal sprite: face identity check only. (3) approved Rin sprite and (4) approved Minto sprite: ONLY the target rendering quality - fine high-resolution pixel-like game-art texture, thin crisp ink lines, restrained matte multi-step shading. Never copy their faces, hair, bodies or outfits.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
 Character: Maezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.
 Expression and pose to keep exactly as image 1 (serious): thoughtful brows, closed mouth, SCREEN-LEFT hand against the chin, SCREEN-RIGHT hand in the pocket
 
-Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels. Do not make the man younger, slimmer or more handsome than image 1.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 14% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. His current rendering is flat with thick lines: give him the same finer line work, stepped shading and fabric detail as Minto and Ageha, while keeping his round warm friendly face.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
 
-### 4. 前園・surprise
+### 11. 前園・surprise
 
-添付：① `assets/sprites/characters/maezono/chr_maezono_surprise.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ 凛 normal ／ ④ みんと normal
+添付：① `assets/sprites/characters/maezono/chr_maezono_surprise.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
 
 ```
-Upscale-remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the exact same person, face, expression, pose, hand and shoulder positions, clothing, accessories, colors and head-to-body proportions as image 1. Only the rendering resolution and crispness should improve.
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and proportions. (2) the same character's normal sprite: face identity check only. (3) approved Rin sprite and (4) approved Minto sprite: ONLY the target rendering quality - fine high-resolution pixel-like game-art texture, thin crisp ink lines, restrained matte multi-step shading. Never copy their faces, hair, bodies or outfits.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
 Character: Maezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.
 Expression and pose to keep exactly as image 1 (surprise): round open eyes and a small O-shaped mouth, SCREEN-LEFT palm raised, SCREEN-RIGHT hand in the pocket
 
-Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels. Do not make the man younger, slimmer or more handsome than image 1.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 14% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. His current rendering is flat with thick lines: give him the same finer line work, stepped shading and fabric detail as Minto and Ageha, while keeping his round warm friendly face.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
 
-### 5. 前園・excited
+### 12. 前園・excited
 
-添付：① `assets/sprites/characters/maezono/chr_maezono_excited.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ 凛 normal ／ ④ みんと normal
+添付：① `assets/sprites/characters/maezono/chr_maezono_excited.png` ／ ② `assets/sprites/characters/maezono/chr_maezono_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
 
 ```
-Upscale-remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the exact same person, face, expression, pose, hand and shoulder positions, clothing, accessories, colors and head-to-body proportions as image 1. Only the rendering resolution and crispness should improve.
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and proportions. (2) the same character's normal sprite: face identity check only. (3) approved Rin sprite and (4) approved Minto sprite: ONLY the target rendering quality - fine high-resolution pixel-like game-art texture, thin crisp ink lines, restrained matte multi-step shading. Never copy their faces, hair, bodies or outfits.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
 Character: Maezono, 39-year-old friendly Japanese man, slightly plump adult build, round warm cheeks, short tousled dark brown hair, thin ROUND dark-rim spectacles, clean-shaven, navy blazer with brass buttons, pale blue open-collar shirt without necktie, tan/beige chinos, brown leather belt and brown loafers, small spiral notepad and gold pen in the SCREEN-RIGHT breast pocket.
 Expression and pose to keep exactly as image 1 (excited): both eyes open, big delighted open-mouth grin, SCREEN-LEFT fist near the shoulder, SCREEN-RIGHT fist near the waist, leaning forward slightly
 
-Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels. Do not make the man younger, slimmer or more handsome than image 1.
-```
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 14% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
 
-## 南雲（nagumo）
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. His current rendering is flat with thick lines: give him the same finer line work, stepped shading and fabric detail as Minto and Ageha, while keeping his round warm friendly face.
 
-### 6. 南雲・normal
-
-添付：① `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ 凛 normal ／ ④ みんと normal
-
-```
-Upscale-remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the exact same person, face, expression, pose, hand and shoulder positions, clothing, accessories, colors and head-to-body proportions as image 1. Only the rendering resolution and crispness should improve.
-
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and proportions. (2) the same character's normal sprite: face identity check only. (3) approved Rin sprite and (4) approved Minto sprite: ONLY the target rendering quality - fine high-resolution pixel-like game-art texture, thin crisp ink lines, restrained matte multi-step shading. Never copy their faces, hair, bodies or outfits.
-
-Character: Nagumo, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
-Expression and pose to keep exactly as image 1 (normal): authoritative neutral face, both hands down
-
-Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels. Do not make the man younger, slimmer or more handsome than image 1.
-```
-
-### 7. 南雲・smile
-
-添付：① `assets/sprites/characters/nagumo/chr_nagumo_smile.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ 凛 normal ／ ④ みんと normal
-
-```
-Upscale-remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the exact same person, face, expression, pose, hand and shoulder positions, clothing, accessories, colors and head-to-body proportions as image 1. Only the rendering resolution and crispness should improve.
-
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and proportions. (2) the same character's normal sprite: face identity check only. (3) approved Rin sprite and (4) approved Minto sprite: ONLY the target rendering quality - fine high-resolution pixel-like game-art texture, thin crisp ink lines, restrained matte multi-step shading. Never copy their faces, hair, bodies or outfits.
-
-Character: Nagumo, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
-Expression and pose to keep exactly as image 1 (smile): subtle closed-mouth approving smirk with both eyes open, SCREEN-LEFT hand slightly open in welcome
-
-Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels. Do not make the man younger, slimmer or more handsome than image 1.
-```
-
-### 8. 南雲・serious
-
-添付：① `assets/sprites/characters/nagumo/chr_nagumo_serious.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ 凛 normal ／ ④ みんと normal
-
-```
-Upscale-remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the exact same person, face, expression, pose, hand and shoulder positions, clothing, accessories, colors and head-to-body proportions as image 1. Only the rendering resolution and crispness should improve.
-
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and proportions. (2) the same character's normal sprite: face identity check only. (3) approved Rin sprite and (4) approved Minto sprite: ONLY the target rendering quality - fine high-resolution pixel-like game-art texture, thin crisp ink lines, restrained matte multi-step shading. Never copy their faces, hair, bodies or outfits.
-
-Character: Nagumo, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
-Expression and pose to keep exactly as image 1 (serious): furrowed brows and a focused intimidating gaze, small SCREEN-LEFT hand explanatory gesture at the waist
-
-Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels. Do not make the man younger, slimmer or more handsome than image 1.
-```
-
-### 9. 南雲・surprise
-
-添付：① `assets/sprites/characters/nagumo/chr_nagumo_surprise.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ 凛 normal ／ ④ みんと normal
-
-```
-Upscale-remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the exact same person, face, expression, pose, hand and shoulder positions, clothing, accessories, colors and head-to-body proportions as image 1. Only the rendering resolution and crispness should improve.
-
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and proportions. (2) the same character's normal sprite: face identity check only. (3) approved Rin sprite and (4) approved Minto sprite: ONLY the target rendering quality - fine high-resolution pixel-like game-art texture, thin crisp ink lines, restrained matte multi-step shading. Never copy their faces, hair, bodies or outfits.
-
-Character: Nagumo, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
-Expression and pose to keep exactly as image 1 (surprise): eyes wider, mouth slightly open, SCREEN-RIGHT hand lifted slightly to the chest, no comic symbols
-
-Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels. Do not make the man younger, slimmer or more handsome than image 1.
-```
-
-### 10. 南雲・thinking
-
-添付：① `assets/sprites/characters/nagumo/chr_nagumo_thinking.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ 凛 normal ／ ④ みんと normal
-
-```
-Upscale-remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the exact same person, face, expression, pose, hand and shoulder positions, clothing, accessories, colors and head-to-body proportions as image 1. Only the rendering resolution and crispness should improve.
-
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and proportions. (2) the same character's normal sprite: face identity check only. (3) approved Rin sprite and (4) approved Minto sprite: ONLY the target rendering quality - fine high-resolution pixel-like game-art texture, thin crisp ink lines, restrained matte multi-step shading. Never copy their faces, hair, bodies or outfits.
-
-Character: Nagumo, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
-Expression and pose to keep exactly as image 1 (thinking): SCREEN-LEFT hand under the chin, SCREEN-RIGHT hand in the trouser pocket, slight sideways gaze
-
-Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels. Do not make the man younger, slimmer or more handsome than image 1.
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
 
 ## スミさん（sumi）
 
-### 11. スミさん・normal
+### 13. スミさん・normal
 
-添付：① `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ 凛 normal ／ ④ みんと normal
+添付：① `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
 
 ```
-Upscale-remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the exact same person, face, expression, pose, hand and shoulder positions, clothing, accessories, colors and head-to-body proportions as image 1. Only the rendering resolution and crispness should improve.
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and proportions. (2) the same character's normal sprite: face identity check only. (3) approved Rin sprite and (4) approved Minto sprite: ONLY the target rendering quality - fine high-resolution pixel-like game-art texture, thin crisp ink lines, restrained matte multi-step shading. Never copy their faces, hair, bodies or outfits.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
 Character: Sumi (Sumida Joichiro), seasoned 46-year-old Japanese male shisha shop owner, 182 cm, tall adult masculine build, warm tan skin, angular mature jaw, thick black eyebrows, calm dark brown eyes behind black RECTANGULAR glasses with clear lenses, short black tousled hair under a BLACK soft flat/newsboy cap, black moustache and short full beard around the mouth, chin and jaw, charcoal-black collared shirt with open top button and sleeves rolled below the elbows, long tobacco-brown waist apron without bib, straight black trousers and black leather ankle shoes.
 Expression and pose to keep exactly as image 1 (normal): calm approachable faint closed-mouth smile, both hands casually tucked into the pockets
 
-Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels. Do not make the man younger, slimmer or more handsome than image 1.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 13% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair and cap) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep his seasoned mature masculine face.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head (including any hood or cap) to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
 
-### 12. スミさん・smile
+### 14. スミさん・smile
 
-添付：① `assets/sprites/characters/sumi/chr_sumi_smile.png` ／ ② `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ 凛 normal ／ ④ みんと normal
+添付：① `assets/sprites/characters/sumi/chr_sumi_smile.png` ／ ② `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
 
 ```
-Upscale-remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the exact same person, face, expression, pose, hand and shoulder positions, clothing, accessories, colors and head-to-body proportions as image 1. Only the rendering resolution and crispness should improve.
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and proportions. (2) the same character's normal sprite: face identity check only. (3) approved Rin sprite and (4) approved Minto sprite: ONLY the target rendering quality - fine high-resolution pixel-like game-art texture, thin crisp ink lines, restrained matte multi-step shading. Never copy their faces, hair, bodies or outfits.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
 Character: Sumi (Sumida Joichiro), seasoned 46-year-old Japanese male shisha shop owner, 182 cm, tall adult masculine build, warm tan skin, angular mature jaw, thick black eyebrows, calm dark brown eyes behind black RECTANGULAR glasses with clear lenses, short black tousled hair under a BLACK soft flat/newsboy cap, black moustache and short full beard around the mouth, chin and jaw, charcoal-black collared shirt with open top button and sleeves rolled below the elbows, long tobacco-brown waist apron without bib, straight black trousers and black leather ankle shoes.
 Expression and pose to keep exactly as image 1 (smile): warmer friendly smile with slightly parted lips and both eyes gently open, SCREEN-LEFT hand in a small open-palm welcoming gesture just above the waist, the other hand in the pocket
 
-Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels. Do not make the man younger, slimmer or more handsome than image 1.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 13% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair and cap) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep his seasoned mature masculine face.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head (including any hood or cap) to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
 
-### 13. スミさん・serious
+### 15. スミさん・serious
 
-添付：① `assets/sprites/characters/sumi/chr_sumi_serious.png` ／ ② `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ 凛 normal ／ ④ みんと normal
+添付：① `assets/sprites/characters/sumi/chr_sumi_serious.png` ／ ② `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
 
 ```
-Upscale-remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the exact same person, face, expression, pose, hand and shoulder positions, clothing, accessories, colors and head-to-body proportions as image 1. Only the rendering resolution and crispness should improve.
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and proportions. (2) the same character's normal sprite: face identity check only. (3) approved Rin sprite and (4) approved Minto sprite: ONLY the target rendering quality - fine high-resolution pixel-like game-art texture, thin crisp ink lines, restrained matte multi-step shading. Never copy their faces, hair, bodies or outfits.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
 Character: Sumi (Sumida Joichiro), seasoned 46-year-old Japanese male shisha shop owner, 182 cm, tall adult masculine build, warm tan skin, angular mature jaw, thick black eyebrows, calm dark brown eyes behind black RECTANGULAR glasses with clear lenses, short black tousled hair under a BLACK soft flat/newsboy cap, black moustache and short full beard around the mouth, chin and jaw, charcoal-black collared shirt with open top button and sleeves rolled below the elbows, long tobacco-brown waist apron without bib, straight black trousers and black leather ankle shoes.
 Expression and pose to keep exactly as image 1 (serious): focused eyes, knitted eyebrows and a firm closed mouth, SCREEN-LEFT hand near the lower chest with one index finger up in a small explanatory gesture, SCREEN-RIGHT hand at the apron-side pocket
 
-Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels. Do not make the man younger, slimmer or more handsome than image 1.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 13% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair and cap) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep his seasoned mature masculine face.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head (including any hood or cap) to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
 
-### 14. スミさん・surprise
+### 16. スミさん・surprise
 
-添付：① `assets/sprites/characters/sumi/chr_sumi_surprise.png` ／ ② `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ 凛 normal ／ ④ みんと normal
+添付：① `assets/sprites/characters/sumi/chr_sumi_surprise.png` ／ ② `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
 
 ```
-Upscale-remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the exact same person, face, expression, pose, hand and shoulder positions, clothing, accessories, colors and head-to-body proportions as image 1. Only the rendering resolution and crispness should improve.
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and proportions. (2) the same character's normal sprite: face identity check only. (3) approved Rin sprite and (4) approved Minto sprite: ONLY the target rendering quality - fine high-resolution pixel-like game-art texture, thin crisp ink lines, restrained matte multi-step shading. Never copy their faces, hair, bodies or outfits.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
 Character: Sumi (Sumida Joichiro), seasoned 46-year-old Japanese male shisha shop owner, 182 cm, tall adult masculine build, warm tan skin, angular mature jaw, thick black eyebrows, calm dark brown eyes behind black RECTANGULAR glasses with clear lenses, short black tousled hair under a BLACK soft flat/newsboy cap, black moustache and short full beard around the mouth, chin and jaw, charcoal-black collared shirt with open top button and sleeves rolled below the elbows, long tobacco-brown waist apron without bib, straight black trousers and black leather ankle shoes.
 Expression and pose to keep exactly as image 1 (surprise): raised brows, open attentive eyes behind the glasses and a small open 'oh' mouth, SCREEN-LEFT hand drawn slightly up toward the chest with the palm partly open, shoulders slightly raised
 
-Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels. Do not make the man younger, slimmer or more handsome than image 1.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 13% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair and cap) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep his seasoned mature masculine face.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head (including any hood or cap) to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
 
-### 15. スミさん・thinking
+### 17. スミさん・thinking
 
-添付：① `assets/sprites/characters/sumi/chr_sumi_thinking.png` ／ ② `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ 凛 normal ／ ④ みんと normal
+添付：① `assets/sprites/characters/sumi/chr_sumi_thinking.png` ／ ② `assets/sprites/characters/sumi/chr_sumi_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
 
 ```
-Upscale-remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the exact same person, face, expression, pose, hand and shoulder positions, clothing, accessories, colors and head-to-body proportions as image 1. Only the rendering resolution and crispness should improve.
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose, outfit and proportions. (2) the same character's normal sprite: face identity check only. (3) approved Rin sprite and (4) approved Minto sprite: ONLY the target rendering quality - fine high-resolution pixel-like game-art texture, thin crisp ink lines, restrained matte multi-step shading. Never copy their faces, hair, bodies or outfits.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
 Character: Sumi (Sumida Joichiro), seasoned 46-year-old Japanese male shisha shop owner, 182 cm, tall adult masculine build, warm tan skin, angular mature jaw, thick black eyebrows, calm dark brown eyes behind black RECTANGULAR glasses with clear lenses, short black tousled hair under a BLACK soft flat/newsboy cap, black moustache and short full beard around the mouth, chin and jaw, charcoal-black collared shirt with open top button and sleeves rolled below the elbows, long tobacco-brown waist apron without bib, straight black trousers and black leather ankle shoes.
 Expression and pose to keep exactly as image 1 (thinking): SCREEN-LEFT hand gently at the beard and chin, SCREEN-RIGHT forearm folded across the torso supporting that elbow, slightly narrowed eyes, contemplative closed mouth, head inclined slightly
 
-Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels. Do not make the man younger, slimmer or more handsome than image 1.
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 13% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair and cap) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep his seasoned mature masculine face.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head (including any hood or cap) to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+## ましろ（mashiro）
+
+### 18. ましろ・normal
+
+添付：① `assets/sprites/characters/mashiro/chr_mashiro_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Mashiro, sleepy gentle 22-year-old adult Japanese woman, petite adult build, pale ash-blonde hair with a faint olive cast, straight bangs, two long loose braids in front of the shoulders, droopy half-lidded golden-amber eyes, soft round cheeks, oversized beige cable-knit cardigan with long sleeves, white blouse with a small ribbon, long sage-green skirt, brown loafers.
+Expression and pose to keep exactly as image 1 (normal): calm sleepy half-lidded eyes, small closed mouth, arms relaxed down
+
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 12% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her sleepy gentle face and golden eyes; do not make her look older or sharper.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 19. ましろ・smile
+
+添付：① `assets/sprites/characters/mashiro/chr_mashiro_smile.png` ／ ② `assets/sprites/characters/mashiro/chr_mashiro_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Mashiro, sleepy gentle 22-year-old adult Japanese woman, petite adult build, pale ash-blonde hair with a faint olive cast, straight bangs, two long loose braids in front of the shoulders, droopy half-lidded golden-amber eyes, soft round cheeks, oversized beige cable-knit cardigan with long sleeves, white blouse with a small ribbon, long sage-green skirt, brown loafers.
+Expression and pose to keep exactly as image 1 (smile): soft gentle smile, one sleeve-covered hand raised near her chest
+
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 12% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her sleepy gentle face and golden eyes; do not make her look older or sharper.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 20. ましろ・serious
+
+添付：① `assets/sprites/characters/mashiro/chr_mashiro_serious.png` ／ ② `assets/sprites/characters/mashiro/chr_mashiro_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Mashiro, sleepy gentle 22-year-old adult Japanese woman, petite adult build, pale ash-blonde hair with a faint olive cast, straight bangs, two long loose braids in front of the shoulders, droopy half-lidded golden-amber eyes, soft round cheeks, oversized beige cable-knit cardigan with long sleeves, white blouse with a small ribbon, long sage-green skirt, brown loafers.
+Expression and pose to keep exactly as image 1 (serious): slightly serious sleepy gaze, small closed mouth, one hand extended a little to the side palm up
+
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 12% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her sleepy gentle face and golden eyes; do not make her look older or sharper.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 21. ましろ・surprise
+
+添付：① `assets/sprites/characters/mashiro/chr_mashiro_surprise.png` ／ ② `assets/sprites/characters/mashiro/chr_mashiro_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Mashiro, sleepy gentle 22-year-old adult Japanese woman, petite adult build, pale ash-blonde hair with a faint olive cast, straight bangs, two long loose braids in front of the shoulders, droopy half-lidded golden-amber eyes, soft round cheeks, oversized beige cable-knit cardigan with long sleeves, white blouse with a small ribbon, long sage-green skirt, brown loafers.
+Expression and pose to keep exactly as image 1 (surprise): eyes opened rounder with a small 'o' mouth, one hand near her chest
+
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 12% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her sleepy gentle face and golden eyes; do not make her look older or sharper.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 22. ましろ・sad
+
+添付：① `assets/sprites/characters/mashiro/chr_mashiro_sad.png` ／ ② `assets/sprites/characters/mashiro/chr_mashiro_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Mashiro, sleepy gentle 22-year-old adult Japanese woman, petite adult build, pale ash-blonde hair with a faint olive cast, straight bangs, two long loose braids in front of the shoulders, droopy half-lidded golden-amber eyes, soft round cheeks, oversized beige cable-knit cardigan with long sleeves, white blouse with a small ribbon, long sage-green skirt, brown loafers.
+Expression and pose to keep exactly as image 1 (sad): big sleepy yawn with eyes closed, a sleeve-covered hand covering the open mouth, a small 'Z' sleep mark beside her head as in image 1
+
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 12% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her sleepy gentle face and golden eyes; do not make her look older or sharper.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 23. ましろ・sleep
+
+添付：① `assets/sprites/characters/mashiro/chr_mashiro_sleep.png` ／ ② `assets/sprites/characters/mashiro/chr_mashiro_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Mashiro, sleepy gentle 22-year-old adult Japanese woman, petite adult build, pale ash-blonde hair with a faint olive cast, straight bangs, two long loose braids in front of the shoulders, droopy half-lidded golden-amber eyes, soft round cheeks, oversized beige cable-knit cardigan with long sleeves, white blouse with a small ribbon, long sage-green skirt, brown loafers.
+Expression and pose to keep exactly as image 1 (sleep): asleep while standing, both eyes closed, head gently tilted, small peaceful mouth, arms hanging loosely, small 'z' sleep marks beside her head as in image 1
+
+HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 12% SMALLER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her sleepy gentle face and golden eyes; do not make her look older or sharper.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+## 南雲（nagumo）
+
+### 24. 南雲・normal
+
+添付：① `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Nagumo, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
+Expression and pose to keep exactly as image 1 (normal): authoritative neutral face, both hands down
+
+HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 15% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep his stern mature executive face.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 25. 南雲・smile
+
+添付：① `assets/sprites/characters/nagumo/chr_nagumo_smile.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Nagumo, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
+Expression and pose to keep exactly as image 1 (smile): subtle closed-mouth approving smirk with both eyes open, SCREEN-LEFT hand slightly open in welcome
+
+HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 15% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep his stern mature executive face.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 26. 南雲・serious
+
+添付：① `assets/sprites/characters/nagumo/chr_nagumo_serious.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Nagumo, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
+Expression and pose to keep exactly as image 1 (serious): furrowed brows and a focused intimidating gaze, small SCREEN-LEFT hand explanatory gesture at the waist
+
+HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 15% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep his stern mature executive face.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 27. 南雲・surprise
+
+添付：① `assets/sprites/characters/nagumo/chr_nagumo_surprise.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Nagumo, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
+Expression and pose to keep exactly as image 1 (surprise): eyes wider, mouth slightly open, SCREEN-RIGHT hand lifted slightly to the chest, no comic symbols
+
+HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 15% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep his stern mature executive face.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 28. 南雲・thinking
+
+添付：① `assets/sprites/characters/nagumo/chr_nagumo_thinking.png` ／ ② `assets/sprites/characters/nagumo/chr_nagumo_normal.png` ／ ③ アダム normal（頭身の目標）／ ④ みんと normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Adam normal sprite (assets/sprites/characters/adam/chr_adam_normal.png): the TARGET head-to-body proportion only. (4) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Nagumo, 45-year-old stern Japanese male executive and contest head judge, tall lean broad-shouldered adult build, angular mature face, strong dark eyebrows, narrow sharp eyes, subtle brow and cheek wrinkles, clean-shaven, swept-back short black hair with a grey patch over the SCREEN-RIGHT temple, dark charcoal three-piece suit with buttoned waistcoat, white shirt, dark patterned tie, white pocket square, black belt with silver buckle, silver wristwatch, polished black lace-up shoes.
+Expression and pose to keep exactly as image 1 (thinking): SCREEN-LEFT hand under the chin, SCREEN-RIGHT hand in the trouser pocket, slight sideways gaze
+
+HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 15% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep his stern mature executive face.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+## サメちゃん（kafuka）
+
+### 29. サメちゃん・normal
+
+添付：① `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Kafuka (Same-chan), petite 20-year-old adult Japanese woman, black hair with deep blue inner color, blue eyes, small pointed shark teeth when smiling, black-and-light-blue shark-hood jacket with fin and buckles, cream top, black skirt with garter, black tights, chunky sneakers, holding her crowned blue shark plush 'Koro-chan'.
+Expression and pose to keep exactly as image 1 (normal): relaxed half-lidded blue eyes and a small toothy smile, hugging the shark plush in one arm, other hand raised in a little wave
+
+HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 11% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair and the shark hood) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Her current rendering is glossier, more modern-gacha than the rest of the cast, with larger sparkling eyes: tone it down to the same matte restrained shading and natural highlights as Minto and Ageha, and keep her eye size relative to her face similar to Minto's, while keeping her blue eyes, cute shark-tooth grin and identity.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head (including any hood or cap) to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 30. サメちゃん・smile
+
+添付：① `assets/sprites/characters/kafuka/chr_kafuka_smile.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Kafuka (Same-chan), petite 20-year-old adult Japanese woman, black hair with deep blue inner color, blue eyes, small pointed shark teeth when smiling, black-and-light-blue shark-hood jacket with fin and buckles, cream top, black skirt with garter, black tights, chunky sneakers, holding her crowned blue shark plush 'Koro-chan'.
+Expression and pose to keep exactly as image 1 (smile): both eyes closed with joyful curved lids and a small open toothy smile, same plush and wave
+
+HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 11% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair and the shark hood) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Her current rendering is glossier, more modern-gacha than the rest of the cast, with larger sparkling eyes: tone it down to the same matte restrained shading and natural highlights as Minto and Ageha, and keep her eye size relative to her face similar to Minto's, while keeping her blue eyes, cute shark-tooth grin and identity.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head (including any hood or cap) to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 31. サメちゃん・serious
+
+添付：① `assets/sprites/characters/kafuka/chr_kafuka_serious.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Kafuka (Same-chan), petite 20-year-old adult Japanese woman, black hair with deep blue inner color, blue eyes, small pointed shark teeth when smiling, black-and-light-blue shark-hood jacket with fin and buckles, cream top, black skirt with garter, black tights, chunky sneakers, holding her crowned blue shark plush 'Koro-chan'.
+Expression and pose to keep exactly as image 1 (serious): softly half-lidded intent eyes, small closed pout, index finger raised in a small explanation, plush in the other arm
+
+HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 11% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair and the shark hood) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Her current rendering is glossier, more modern-gacha than the rest of the cast, with larger sparkling eyes: tone it down to the same matte restrained shading and natural highlights as Minto and Ageha, and keep her eye size relative to her face similar to Minto's, while keeping her blue eyes, cute shark-tooth grin and identity.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head (including any hood or cap) to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 32. サメちゃん・surprise
+
+添付：① `assets/sprites/characters/kafuka/chr_kafuka_surprise.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Kafuka (Same-chan), petite 20-year-old adult Japanese woman, black hair with deep blue inner color, blue eyes, small pointed shark teeth when smiling, black-and-light-blue shark-hood jacket with fin and buckles, cream top, black skirt with garter, black tights, chunky sneakers, holding her crowned blue shark plush 'Koro-chan'.
+Expression and pose to keep exactly as image 1 (surprise): round wide blue eyes and a small startled open mouth, free hand slightly open
+
+HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 11% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair and the shark hood) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Her current rendering is glossier, more modern-gacha than the rest of the cast, with larger sparkling eyes: tone it down to the same matte restrained shading and natural highlights as Minto and Ageha, and keep her eye size relative to her face similar to Minto's, while keeping her blue eyes, cute shark-tooth grin and identity.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head (including any hood or cap) to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 33. サメちゃん・excited
+
+添付：① `assets/sprites/characters/kafuka/chr_kafuka_excited.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Kafuka (Same-chan), petite 20-year-old adult Japanese woman, black hair with deep blue inner color, blue eyes, small pointed shark teeth when smiling, black-and-light-blue shark-hood jacket with fin and buckles, cream top, black skirt with garter, black tights, chunky sneakers, holding her crowned blue shark plush 'Koro-chan'.
+Expression and pose to keep exactly as image 1 (excited): breathless excited talking face, eyes a little more open, small open panting mouth with one or two shark teeth, a tiny sweat bead, index finger raised
+
+HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 11% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair and the shark hood) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Her current rendering is glossier, more modern-gacha than the rest of the cast, with larger sparkling eyes: tone it down to the same matte restrained shading and natural highlights as Minto and Ageha, and keep her eye size relative to her face similar to Minto's, while keeping her blue eyes, cute shark-tooth grin and identity.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head (including any hood or cap) to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+```
+
+### 34. サメちゃん・ventriloquism
+
+添付：① `assets/sprites/characters/kafuka/chr_kafuka_ventriloquism.png` ／ ② `assets/sprites/characters/kafuka/chr_kafuka_normal.png` ／ ③ みんと normal（頭身の目標）／ ④ アゲハ normal（画風の目標）
+
+```
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+
+Character: Kafuka (Same-chan), petite 20-year-old adult Japanese woman, black hair with deep blue inner color, blue eyes, small pointed shark teeth when smiling, black-and-light-blue shark-hood jacket with fin and buckles, cream top, black skirt with garter, black tights, chunky sneakers, holding her crowned blue shark plush 'Koro-chan'.
+Expression and pose to keep exactly as image 1 (ventriloquism): holding the shark plush up in front of her face with both hands so the plush covers her whole face, ventriloquist pose
+
+HEAD SIZE CORRECTION: in image 1 the head is too small for the body. Make the whole head about 11% LARGER relative to the body, so that the head-to-body ratio matches image 3. The character must still look like the same person of the same age.
+Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair and the shark hood) changes scale relative to the body, and the neck and shoulders stay natural.
+
+STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Her current rendering is glossier, more modern-gacha than the rest of the cast, with larger sparkling eyes: tone it down to the same matte restrained shading and natural highlights as Minto and Ageha, and keep her eye size relative to her face similar to Minto's, while keeping her blue eyes, cute shark-tooth grin and identity.
+
+Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head (including any hood or cap) to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 ```
