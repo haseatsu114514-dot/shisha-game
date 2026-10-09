@@ -1,0 +1,44 @@
+name: Build Tsumugi reference sheets
+
+on:
+  push:
+    branches:
+      - "codex/tsumugi-reference-20261009"
+    paths:
+      - "tools/render_tsumugi_reference.py"
+      - ".github/workflows/tsumugi-reference-sheets.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  reference_sheets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Japanese fonts and image library
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-noto-cjk
+          python -m pip install --disable-pip-version-check Pillow
+      - name: Render sheets from current official game PNGs
+        run: python tools/render_tsumugi_reference.py
+      - name: Commit rendered PNG sheets to this review branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add asset_sources/reference_sheets/tsumugi/
+          if git diff --cached --quiet; then
+            echo "No sheet changes"
+          else
+            git commit -m "Add rendered Tsumugi character reference sheets"
+            git push origin HEAD:refs/heads/codex/tsumugi-reference-20261009
+          fi
