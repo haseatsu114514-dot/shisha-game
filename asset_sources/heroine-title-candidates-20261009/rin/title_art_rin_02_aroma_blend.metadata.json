@@ -1,0 +1,22 @@
+{
+  "id": "rin_02",
+  "status": "candidate_owner_selection_pending",
+  "tool": "image_gen.imagegen",
+  "generated_original": "/workspace/generated_images/exec-f3b3f264-d668-45f3-aa44-13b2d664026c.png",
+  "reference_paths": [
+    "/workspace/shisha-game/assets/sprites/characters/rin/chr_rin_normal.png",
+    "/workspace/shisha-game/assets/ui/title_arts/title_art_keyvisual_01.png",
+    "/workspace/scratch/installed-hardware/moze-phunnel-in-hand.jpg"
+  ],
+  "hardware_reference": "../../shisha-hardware-reference/installed-and-handheld-scale-20261009.md",
+  "qa": {
+    "reviewed": true,
+    "identity": "長い暗色ウルフカット、青灰色の半眼、白シャツ・黒パンツ・銀フープ。",
+    "scale": "小型試作ボウルの口が直近の作業する手より狭い。缶は指で保持できる。",
+    "action": "缶の香りを確かめながら試作ブレンド、熱源前なのでHMD・炭なし。",
+    "hose": "対象外：完成台なし",
+    "heat": "対象外：ブレンド試作段階",
+    "texture": "既存タイトルの細かなピクセル・布／金属の描き分けを参照",
+    "text": "ロゴ・広告・UIの焼き込みなし"
+  }
+}

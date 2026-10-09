@@ -1,0 +1,23 @@
+{
+  "id": "ageha_02",
+  "status": "candidate_owner_selection_pending",
+  "tool": "image_gen.imagegen",
+  "generated_original": "/workspace/generated_images/exec-34cef8ed-e573-492a-ad65-0eb9fa2f7ca1.png",
+  "reference_paths": [
+    "/workspace/shisha-game/assets/sprites/characters/ageha/chr_ageha_normal.png",
+    "/workspace/shisha-game/assets/ui/title_arts/title_art_keyvisual_01.png",
+    "/workspace/scratch/installed-hardware/moze-phunnel-in-hand.jpg",
+    "/workspace/scratch/installed-hardware/moze-onmo-install-in-hand.jpg"
+  ],
+  "hardware_reference": "../../shisha-hardware-reference/installed-and-handheld-scale-20261009.md",
+  "qa": {
+    "reviewed": true,
+    "identity": "蜂蜜色ツインテール、ピンクとクリームの熊2個、豹柄・ピンクの服を確認。",
+    "scale": "ボウルの口が支える手の幅より小さく、細い脚へ指が回る。背後のONMOも近い大きさ。",
+    "action": "使用後の洗浄・ブラシ清掃。残った水が器からシンクへ落ちる。",
+    "hose": "対象外：完成台なし",
+    "heat": "ONMO従来アルミの冷たい単体。蓋・取手・他モデルの部品なし。",
+    "texture": "既存タイトルの細かなピクセル・布／金属の描き分けを参照",
+    "text": "ロゴ・広告・UIの焼き込みなし"
+  }
+}

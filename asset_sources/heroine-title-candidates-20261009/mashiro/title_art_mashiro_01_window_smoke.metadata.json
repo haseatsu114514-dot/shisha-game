@@ -1,0 +1,23 @@
+{
+  "id": "mashiro_01_v2",
+  "status": "candidate_owner_selection_pending",
+  "tool": "image_gen.imagegen",
+  "generated_original": "/workspace/generated_images/exec-ff3ec795-bb6c-4c96-b1fc-25c5e18ec333.png",
+  "reference_paths": [
+    "/workspace/shisha-game/asset_sources/heroine-title-candidates-20261009/rejected-scale-v1/title_art_mashiro_01_window_smoke.png",
+    "/workspace/shisha-game/assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+    "/workspace/scratch/hmd-model-refs/provost-ii.png",
+    "/workspace/scratch/installed-hardware/full-provost-minirook.jpg",
+    "/workspace/scratch/installed-hardware/provost-chicha-installed.jpg"
+  ],
+  "qa": {
+    "reviewed": true,
+    "identity": "修正前と同じ正規の顔・髪・衣装を維持",
+    "scale": "上部を縮小し、ボウルとHMDを受け皿・ベースより小さくした。",
+    "hose": "茶色の一本。両端は接続。膝・カーディガンの陰に自然に隠れる区間があり、向きと色・太さを照合。",
+    "heat": "Provost IIの上下2部品・葉型グリップ、フォイルをボウルの口へ巻き、その上に下トレーを載せる。",
+    "plants": "室内の観葉植物・蔦を除去",
+    "texture": "細かなピクセルと材質を維持",
+    "text": "機材のロゴや読めない刻印を除去。UIなし。"
+  }
+}

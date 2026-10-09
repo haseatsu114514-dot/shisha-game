@@ -1,0 +1,21 @@
+{
+  "id": "mashiro_02_v2",
+  "status": "candidate_owner_selection_pending",
+  "tool": "image_gen.imagegen",
+  "generated_original": "/workspace/generated_images/exec-6241ef69-b06e-4a38-851e-025704989dc5.png",
+  "reference_paths": [
+    "/workspace/shisha-game/asset_sources/heroine-title-candidates-20261009/rejected-scale-v1/title_art_mashiro_02_dark_leaf_prep.png",
+    "/workspace/shisha-game/assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+    "/workspace/scratch/installed-hardware/moze-phunnel-in-hand.jpg"
+  ],
+  "revision": "v2",
+  "qa": {
+    "reviewed": true,
+    "identity": "正規の顔・髪・衣装を維持",
+    "scale": "ボウルを縮小。細い脚へ指が回り、掌の幅と近い口径。つむぎはHMDも縮小してボウルと近い奥行きへ。",
+    "hose": "対象外：詰める工程でホースなし",
+    "heat": "準備中で炭なし。つむぎの冷たいHMDはLotus I+。",
+    "texture": "細かなピクセルと材質感を維持",
+    "limitations": "寸法どおりのCAD再現を保証するものではない。採用はオーナーの選定後。"
+  }
+}

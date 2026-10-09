@@ -1,0 +1,23 @@
+{
+  "id": "minto_01_v2",
+  "status": "candidate_owner_selection_pending",
+  "tool": "image_gen.imagegen",
+  "generated_original": "/workspace/generated_images/exec-ddf50b99-b8f3-4836-b2f5-2d08fc75c9da.png",
+  "reference_paths": [
+    "/workspace/shisha-game/asset_sources/shisha-hardware-reference/ng-examples/minto-hose-fork-20261009.png",
+    "/workspace/shisha-game/assets/sprites/characters/minto/chr_minto_normal.png",
+    "/workspace/scratch/hmd-model-refs/onmo-aluminium.jpg",
+    "/workspace/scratch/installed-hardware/full-onmo-flashbang.jpg",
+    "/workspace/scratch/installed-hardware/moze-onmo-install-in-hand.jpg"
+  ],
+  "revision": "v2",
+  "qa": {
+    "reviewed": true,
+    "identity": "正規の顔・髪・衣装を維持",
+    "scale": "HMD径約100px／受け皿約267px。口径を小さくした。掌写真・装着全体写真と照合。",
+    "hose": "一本のU字経路。側面ポート→柔軟な緑ホース→硬いハンドル。Y字分岐・足前の第三の経路を除去。",
+    "heat": "ONMOアルミ従来モデル、蓋なし、角炭2個を内部へ配置。直炭なし。",
+    "texture": "細かなピクセルと材質感を維持",
+    "limitations": "寸法どおりのCAD再現を保証するものではない。採用はオーナーの選定後。"
+  }
+}

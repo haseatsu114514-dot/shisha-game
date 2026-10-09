@@ -1,0 +1,26 @@
+{
+  "title_art_mashiro_01_window_smoke": {
+    "status": "rejected",
+    "reason": "手持ち／装着時のハガル・HMDの縮尺を実写で再確認して修正する。"
+  },
+  "title_art_mashiro_02_dark_leaf_prep": {
+    "status": "rejected",
+    "reason": "手持ち／装着時のハガル・HMDの縮尺を実写で再確認して修正する。"
+  },
+  "title_art_rin_01_showroom_smoke": {
+    "status": "rejected",
+    "reason": "手持ち／装着時のハガル・HMDの縮尺を実写で再確認して修正する。"
+  },
+  "title_art_tsumugi_01_window_smoke": {
+    "status": "rejected",
+    "reason": "手持ち／装着時のハガル・HMDの縮尺を実写で再確認して修正する。"
+  },
+  "title_art_tsumugi_02_bowl_prep": {
+    "status": "rejected",
+    "reason": "手持ち／装着時のハガル・HMDの縮尺を実写で再確認して修正する。"
+  },
+  "minto_01_afterhours_smoke": {
+    "status": "rejected",
+    "reason": "オーナー指摘：ホースがY字分岐し第三の経路が足元へ延びる。不採用。原画は shisha-hardware-reference/ng-examples/ に保存。"
+  }
+}

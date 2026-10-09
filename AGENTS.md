@@ -15,11 +15,14 @@
 
 シーシャ台を新たに画像生成する場合は、実物写真の一覧と創作上の自由度をまとめた [`asset_sources/shisha-hardware-reference/README.md`](asset_sources/shisha-hardware-reference/README.md) を必ず参照（写真の完コピではない）。喫煙シーンやヒートマネジメントを描く場合は同ディレクトリの [`smoking-and-heat-management-20261009.md`](asset_sources/shisha-hardware-reference/smoking-and-heat-management-20261009.md) を追加参照する。アルミ・ボウル・HMD・炭の近接表現は [`heat-management-closeups-20261009.md`](asset_sources/shisha-hardware-reference/heat-management-closeups-20261009.md) も確認。さらに[全37写真横断の誤描写防止ガイド](asset_sources/shisha-hardware-reference/ai-generation-structural-pitfalls.md)で、ハガル／HMD／ホース／構図の取り違えをチェックする。ホース・マウスピースの新規画像生成では[追加の6写真と接続ガイド](asset_sources/shisha-hardware-reference/hose-and-mouthpieces-20261009.md)と[追加7写真の区別・素材表現](asset_sources/shisha-hardware-reference/mouthpiece-handle-skins-20261009.md)も読み、首掛けチップと実際のホースを混同しない。2026-10-09追加の[構造図3点](asset_sources/shisha-hardware-reference/anatomy-diagrams-20261009.md)と[ハガル内部・炭配置の調査](asset_sources/shisha-hardware-reference/bowl-interiors-foil-coal-placement-20261009.md)もシーシャ機材の生成前に確認する。
 
+ヒロインの日常・タイトル用CGでは[追加の画像生成ルール](asset_sources/shisha-hardware-reference/heroine-title-cg-rules-20261009.md)を必読とする。本人と年齢感は正規立ち絵、質感は既存タイトル絵を基準に分ける。完成・喫煙状態はHMD必須・直炭禁止。画像ごとに具体的HMDモデルを一つ選び、部品を混ぜず縮尺を検品する。候補間で台・背景・時間帯・行動を変え、植物を必須にしない。既存のゲーム工程や実物資料の一般方式は変更しない。
+
 ## シーシャCGの出力後必須QA（2つの実例ミス）
 
 - [マイマウスピースがチェーンだけになる／ホースが未接続になる失敗例と検品リスト](asset_sources/shisha-hardware-reference/visual-qa-necklace-hose-20261009.md)を参照。
 - 首掛けタイプは**鎖と実体のある吸い口パーツ**。マイチップ使用時は**硬いハンドル先端に装着**。首掛け携帯中のときとは別状態。
 - ホースは**本体側の正しいポート→柔らかいホース→硬いハンドル**の経路を出力後に実際に目視で追う。途中で消える／接続されない／パージへ挿さる画像は不採用（合理的な遮蔽・見切れは例外）。
+- [みんとのホース分岐NG原画](asset_sources/shisha-hardware-reference/ng-examples/README.md)も確認。接続点だけで合格にせず、経路を両方向に追い、Y字分岐・第三の端・前後関係のない交差を除外する。
 - 指定されたゲームヒロイン本人の正規立ち絵・設定を優先し、**汎用の別人**なら修正・再生成。目視未確認で「確認済み」と書かない。
 
 ## Godot版は削除済み

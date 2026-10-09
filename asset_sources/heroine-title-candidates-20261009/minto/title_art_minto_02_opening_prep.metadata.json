@@ -1,0 +1,23 @@
+{
+  "id": "minto_02",
+  "status": "candidate_owner_selection_pending",
+  "tool": "image_gen.imagegen",
+  "generated_original": "/workspace/generated_images/exec-f008aa18-9312-4750-92f5-c26f3e803dd4.png",
+  "reference_paths": [
+    "/workspace/shisha-game/assets/sprites/characters/minto/chr_minto_normal.png",
+    "/workspace/shisha-game/assets/ui/title_arts/title_art_keyvisual_01.png",
+    "/workspace/scratch/installed-hardware/moze-phunnel-in-hand.jpg",
+    "/workspace/scratch/installed-hardware/moze-onmo-install-in-hand.jpg"
+  ],
+  "hardware_reference": "../../shisha-hardware-reference/installed-and-handheld-scale-20261009.md",
+  "qa": {
+    "reviewed": true,
+    "identity": "黒い長髪、角・蝙蝠、緑と黒の営業服、正規の可愛い目元を確認。",
+    "scale": "手で細い脚を握る小型ボウル。冷たいONMOはボウルに近い奥行きで掌と比較。",
+    "action": "詰めた後の縁を拭う、HMD未装着・炭なし。",
+    "hose": "対象外：完成台なし",
+    "heat": "ONMO従来アルミの冷たい単体。蓋・取手・他モデルの部品なし。",
+    "texture": "既存タイトルの細かなピクセル・布／金属の描き分けを参照",
+    "text": "ロゴ・広告・UIの焼き込みなし"
+  }
+}
