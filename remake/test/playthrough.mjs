@@ -15,9 +15,9 @@ const SHOTS = process.env.SHOTS || "";
 const log = (...a) => console.log("[remake]", ...a);
 
 // 行動計画（上から順に消費）。shop:* は時間を使わない買い物、after:* はバイト後の過ごし方
-// DAY1 の昼は案内つきのおつかい（Dr.fookah でミント→KEMURIKUSA 偵察）で埋まる
+// DAY1 の昼は案内つきのおつかい（Dr.fookah でミント→KEMURIKUSA 偵察）、DAY1 の夜・DAY2 の昼はスミさんの配達（EDEN・PEPPERMINT）で埋まる
+// （配達の2枠は計画を消費しない。DAY2 の夜から下の計画どおりで、定休日との並びは配達前と同じ）
 const PLAN = [
-  "baito:sumi", "naru",
   "baito:holes",
   "adam", "customer",
   "minto", "baito:sumi",
@@ -78,6 +78,7 @@ let lastKey = "";
 let lastDay = null;
 let resumed = false;
 let guided = 0;
+let deliveryGuided = 0;
 let rainMaps = 0;
 let screenLeaks = 0;
 let resultUnderPhone = false;
@@ -111,6 +112,8 @@ for (;;) {
       phone: !!document.querySelector(".phone-overlay"),
       modal: document.querySelector("#modal")?.classList.contains("show"),
       day: s?.day, slot: s?.slot, phase: s?.phase, stamina: s?.stamina, money: s?.money,
+      errandDone: !!s?.flags?._errand_scout_done,
+      deliveriesDone: !!(s?.flags?._delivery_adam_done && s?.flags?._delivery_minto_done),
       stats: s?.stats,
       lastRank: s?.tournament?.lastRank,
       endTitle: document.querySelector(".end-title")?.textContent || "",
@@ -238,12 +241,14 @@ for (;;) {
     continue;
   }
 
-  // 1日目の案内: 光っている1か所だけ選べる。計画は進めない
+  // 1日目の案内・スミさんの配達: 光っている1か所だけ選べる。計画は進めない
   if (snap.screen === "map" && (await page.$('[data-test="map-guide"]'))) {
-    guided++;
+    if (!snap.errandDone) guided++; else deliveryGuided++;
     await click(".spot-pin.guide"); await click('[data-test="map-go"]');
     continue;
   }
+  // 配達が全部済むまでは、届け先だけを選べる案内のマップしか出ない
+  if (snap.screen === "map" && !snap.deliveriesDone) throw new Error(`free map before deliveries (DAY ${snap.day} slot ${snap.slot})`);
   // LIME: 朝は通知だけ。はじめて届いた日はアイコンが照らされる（案内）→ 以後は赤丸があれば自分で開く
   if (snap.screen === "map" && (await click('[data-test="coach-lime"]'))) { limeCoach++; continue; }
   if (snap.screen === "map" && snap.rain) rainMaps++;
@@ -340,6 +345,10 @@ if (s.reel.pending.length) throw new Error(`slot spins left unshown: ${s.reel.pe
 // 1日目の案内: 仕入れ→偵察の2回、案内マップを通った／ミントを買う前は店を出られない
 log(`day1 errands: guided=${guided} errandBlocked=${errandBlocked} scout=${!!s.flags._errand_scout_done} mint=${s.flavors.includes("mint")}`);
 if (guided !== 3 || !errandBlocked || !s.flags._errand_scout_done || !s.flavors.includes("mint")) throw new Error("day1 errands not completed as guided");
+// スミさんの配達（DAY1 夜 EDEN・DAY2 昼 PEPPERMINT）: 初来店を配達の場面で通す
+log(`deliveries: guided=${deliveryGuided} adam=${s.flags._delivery_adam_done}@${s.flags._delivery_adam} minto=${s.flags._delivery_minto_done}@${s.flags._delivery_minto}`);
+if (deliveryGuided !== 2 || !s.flags._delivery_adam || !s.flags._delivery_minto || !s.flags._delivery_adam_done || !s.flags._delivery_minto_done)
+  throw new Error("EDEN/PEPPERMINT deliveries not completed as guided");
 // スミさんのバイト誘い（DAY3/8 は固定で届く。テストは誘いに乗る）
 log(`sumi baito invites: ${s.limeRead.filter((id) => id.startsWith("_sumi_baito_inv_")).join(",")} lastBaitoDay=${s.lastBaitoDay}`);
 if (!s.limeRead.includes("_sumi_baito_inv_d3")) throw new Error("sumi baito invite (DAY3) not delivered");

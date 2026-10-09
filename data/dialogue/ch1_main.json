@@ -40,12 +40,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（バイト歴3ヶ月。常連さんの好みも、ちょっとずつ頭に入ってきた"
+          "text": "（バイト歴3ヶ月。常連さんの好みも、ちょっとずつ頭に入ってきた）"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……うん、悪くないんじゃないかな、俺）"
+          "text": "（……うん、悪くないんじゃないかな、俺）"
         },
         {
           "type": "sfx",
@@ -98,7 +98,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "（『良かった』、いただきました、……ふふ）"
+          "text": "（『良かった』いただきました、……ふふ）"
         },
         {
           "speaker": "hajime",
@@ -117,7 +117,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "──夕方の落ち着いた時間。片付けたテーブルが、少し広く見える。換気扇の音が、ぼんやりと鳴り続けている。"
+          "text": "──夕方の落ち着いた時間。片付けたテーブルが、少し広く見える。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "換気扇の音が、ぼんやりと鳴り続けている。"
         },
         {
           "speaker": "sumi",
@@ -452,7 +457,12 @@
           {
             "speaker": "",
             "face": "",
-            "text": "言葉の意味はまだわからない。でもカウンターに戻ってからも、なぜか引っかかっていた。大会まであと{daysLeft}日。"
+            "text": "言葉の意味は、まだわからない。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "カウンターに戻ってからも、なぜか引っかかっていた。大会まであと{daysLeft}日。"
           }
         ],
         "hz_show": [
@@ -553,7 +563,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ゴボゴボ、と水面が揺れる。白い煙が口から吐き出されて、オレンジ色の照明の中で静かに崩れていく。"
+          "text": "ゴボゴボ、と水面が揺れる。吐き出された白い煙が、オレンジ色の照明の中で崩れていく。"
         },
         {
           "speaker": "",
@@ -932,12 +942,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "アダムは、一つのフレーバーに人生を賭けてる。あんな揺るぎなさは、たぶん俺にはない"
+          "text": "アダムさんは、一つのフレーバーに人生を賭けてる。あんな揺るぎなさは、たぶん俺にはない"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "みんとのミントは、甘くて完璧だって聞く。きっと、見えないところで必死に積み上げてきたものだ"
+          "text": "みんとの煙は、甘くて完璧だって評判だ。きっと、見えないところで積み上げてきたものだ"
         },
         {
           "speaker": "hajime",
@@ -976,7 +986,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "閉店後のtonari。照明を半分だけ残して、はじめは一人で練習を始めた。"
+            "text": "もう一度tonariへ戻った。閉店後の店に照明を半分だけ残して、一人で練習を始めた。"
           },
           {
             "speaker": "",
@@ -1043,7 +1053,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "閉店後。片付けをしながら、スミさんの背中に話しかけた。"
+            "text": "もう一度、tonariに顔を出した。片付けをするスミさんの背中に話しかける。"
           },
           {
             "speaker": "",
@@ -1364,12 +1374,17 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "ありがとうございます。お姉さんにお出しするのは初めてだったので……気に入ってもらえて、うれしいです"
+          "text": "ありがとうございます。お姉さんに出すのは初めてだったので……うれしいです"
         },
         {
           "speaker": "oneesan",
           "face": "ura_smile",
-          "text": "ふふ……。じゃあ、もう少しゆっくり吸っていくね。……がんばってね、新人くん"
+          "text": "ふふ……。じゃあ、もう少しゆっくり吸っていくね"
+        },
+        {
+          "speaker": "oneesan",
+          "face": "ura_smile",
+          "text": "……がんばってね、新人くん"
         },
         {
           "speaker": "hajime",
@@ -1393,7 +1408,7 @@
           "id": "oneesan_praise_feel",
           "choices": [
             {
-              "text": "（初めての一台でこの反応。やっぱ俺、才能あるかも）",
+              "text": "（あのお姉さんにこの反応。やっぱ俺、才能あるかも）",
               "next": "op_talent"
             },
             {
@@ -1606,7 +1621,7 @@
           {
             "speaker": "minto",
             "face": "wink",
-            "text": "あ、はじめ君だ♪ ふふ、ここからは正式にライバルってことで、よろしくね？"
+            "text": "あ、はじめくんだ♪ ふふ、ここからは正式にライバルってことで、よろしくね？"
           }
         ]
       }
@@ -1666,9 +1681,11 @@
       },
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "閉店間際のtonari。奥の席で、つむぎがスケッチブックを広げていた。"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_tsumugi",
+          "next_true": "sk_named",
+          "next_false": "sk_unnamed"
         },
         {
           "speaker": "tsumugi",
@@ -1696,29 +1713,18 @@
           "text": "ページの隅では、葉の耳と煙の尾を持つ猫が、窓辺で寝ていた。"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "この猫、耳は葉っぱで、尾が煙なんだね"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_tsumugi",
+          "next_true": "sk_cat_seen",
+          "next_false": "sk_cat_new"
         },
         {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……はい。こういう子です"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "猫なのか、煙なのか、って決めなくていいのか"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……今、寝てるので。それでいいと思います"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "（煙に、色……？）"
+          "type": "condition",
+          "condition_type": "story_seen",
+          "dialogue": "ch1_tsumugi_smoke_color",
+          "next_true": "sk_color_known",
+          "next_false": "sk_color_new"
         },
         {
           "speaker": "tsumugi",
@@ -1735,7 +1741,71 @@
           "face": "",
           "text": "……【センス】が少し上がった。"
         }
-      ]
+      ],
+      "branches": {
+        "sk_named": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "閉店間際のtonari。奥の席で、つむぎがスケッチブックを広げていた。"
+          }
+        ],
+        "sk_unnamed": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "閉店間際のtonari。窓際の席で、いつもの女の子がスケッチブックを広げていた。"
+          }
+        ],
+        "sk_cat_new": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "この猫、耳は葉っぱで、尾が煙なんだね"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……はい。こういう子です"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "猫なのか、煙なのか、って決めなくていいのか"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……今、寝てるので。それでいいと思います"
+          }
+        ],
+        "sk_cat_seen": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "あの猫、ここにもいるんだね"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……はい。今日も、窓辺で寝てます"
+          }
+        ],
+        "sk_color_new": [
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（煙に、色……？）"
+          }
+        ],
+        "sk_color_known": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（今日の煙も、彼女には色で見えてるんだ）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_tsumugi_departure",

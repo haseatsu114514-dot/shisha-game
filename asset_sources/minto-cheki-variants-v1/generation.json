@@ -1,0 +1,38 @@
+{
+  "generated": "2026-10-09",
+  "tool": "image_gen.imagegen",
+  "request": "ミントのチェキをあと何枚か作って 別バージョンを 週のリミットが1%になったらやめ",
+  "runtime_adopted": false,
+  "reference": "asset_sources/minto-first-cheki-v2/original.png",
+  "reference_sha256": "25eb68293d777767e9b3feff251c52be589184e48636e22a73cbb00396de41be",
+  "weekly_remaining_at_last_check": 2,
+  "images": [
+    {
+      "file": "minto-cheki-heart.png",
+      "size": [
+        993,
+        1584
+      ],
+      "mode": "RGBA",
+      "sha256": "77968de478719c8cc4aa2c5b10b00d621f0d2448569addbdf90074e3b25ef880"
+    },
+    {
+      "file": "minto-cheki-cheek.png",
+      "size": [
+        993,
+        1584
+      ],
+      "mode": "RGBA",
+      "sha256": "b2344acb2695cb150a598d896c98f3908bc24189c8bdf6170b9c91f724c79fff"
+    },
+    {
+      "file": "minto-cheki-wave.png",
+      "size": [
+        993,
+        1584
+      ],
+      "mode": "RGBA",
+      "sha256": "559138b32b30e1ecb396220333afd3af1ac66d40fc316a49dd347266c89d9d17"
+    }
+  ]
+}

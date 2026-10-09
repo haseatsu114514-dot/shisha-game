@@ -78,7 +78,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "※チョイザップ会員登録済み。今後は無料で利用できます。"
+            "text": "※チョイザップ会員登録済み。今月は追加料金なしで利用できます。"
           }
         ],
         "decline": [
@@ -346,17 +346,17 @@
         {
           "speaker": "nagumo",
           "face": "normal",
-          "text": "その子が何を背負って、"
+          "text": "その子が何を背負って、誰のために煙を作っているのか"
         },
         {
           "speaker": "nagumo",
           "face": "normal",
-          "text": "誰のためにその煙を作っているのか——『作り手の物語』が煙ににじみ出ているかどうか、それだけだよ"
+          "text": "『作り手の物語』が煙ににじみ出ているかどうか。それだけだよ"
         },
         {
           "speaker": "dr_kemuri",
           "face": "normal",
-          "text": "届く、ですか。それは数値化が難しい"
+          "text": "物語、ですか。それは数値化が難しい"
         },
         {
           "speaker": "nagumo",
@@ -371,12 +371,12 @@
         {
           "speaker": "nagumo",
           "face": "normal",
-          "text": "あとね、審査員を前にして緊張しちゃうのは仕方ないけど——その人間がどんな人生を歩んできて、"
+          "text": "どんな人生を歩んできて、何に心を揺さぶられて、なぜシーシャを作るのか"
         },
         {
           "speaker": "nagumo",
           "face": "normal",
-          "text": "何に心を揺さぶられて、なぜシーシャを作るのか。全部、煙に出てるんだよ。本人が無自覚でもね"
+          "text": "全部、煙に出るんだよ。本人が無自覚でもね"
         },
         {
           "speaker": "nagumo",
@@ -401,7 +401,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "蒸野はじめです。今日は、なるさんに教えてもらって"
+          "text": "蒸野始です。今日は、なるさんに教えてもらって"
         },
         {
           "speaker": "nagumo",
@@ -628,7 +628,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ただ静かに煙を味わっている。審査員というより、ただの「煙が好きなおじさん」だ。"
+          "text": "審査員というより、ただの「煙が好きなおじさん」だ。"
         },
         {
           "speaker": "hajime",
@@ -1261,7 +1261,7 @@
           "condition_type": "flag",
           "flag": "_minto_name_known",
           "next_true": "known",
-          "next_false": "unknown"
+          "next_false": "check_revealed"
         },
         {
           "speaker": "",
@@ -1338,6 +1338,42 @@
             "face": "normal",
             "text": "（軽やかさは才能じゃなくて、積み重ねなんだ……）"
           }
+        ],
+        "check_revealed": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_minto_identity_revealed",
+            "next_true": "unknown",
+            "next_false": "stranger"
+          }
+        ],
+        "stranger": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "チョイザップのランニングマシンに、見覚えのある姿があった。tonariのお姉さんだ。"
+          },
+          {
+            "speaker": "oneesan",
+            "face": "ura_surprise",
+            "text": "……あ、こんにちは。……走ってるところ、見られちゃった"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "こんにちは。ここ、通ってるんですね"
+          },
+          {
+            "speaker": "oneesan",
+            "face": "ura_smile",
+            "text": "……うん。立ち仕事だと、体力がいるから"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（静かな人だと思ってたけど、こういう所で鍛えてるんだ）"
+          }
         ]
       }
     },
@@ -1347,7 +1383,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "C.STATIONの窓際に、見覚えのある男性。審査員の前園壮一郎さんだ。"
+          "text": "C.STATIONの窓際に、大会ポスターで見た顔があった。審査員の前園壮一郎さんだ。"
         },
         {
           "speaker": "",

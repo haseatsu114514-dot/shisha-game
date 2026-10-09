@@ -9,11 +9,13 @@ data/dialogue/*.json を走査し、以下を検査:
     - speaker が data/characters.json の id にもモブ話者ホワイトリストにも無い
     - 旧名・旧設定・旧タイトルの混入（にしお / ましろさん / シーシャ・ステーション /
       地方予選 / ドクター・ケムリ / 煙の向こう側 / 技術力 / 洞察力 など）
+    - 略記「DA」（ダブルアップルは略さない）
     - 選択肢が全角26字を超える（選択肢は1行・GUI22。バイトの対応 data/baito_events.json と
       恋人の会話 remake/data/lover.json の選択肢も同じ枠に出るので一緒に見る）
 
   WARN（exit は 0 のまま。気付きのため列挙）:
     - 手動改行 \\n（改行はコード側 autoWrap に一本化したい）
+    - 1台詞の中で「」『』（）が閉じていない＝一文が吹き出しをまたいでいる
     - 1台詞が全角48文字（24×2行）を超過＝自動改ページで途中で割れやすい
     - 報酬キュー（「上がった」＋ステ名）の検出。誤発火・規定フレーズ外を発見しやすく
 
@@ -53,6 +55,23 @@ MAX_PAGE_FULLWIDTH = 48  # 24×2行。これを超えると改ページで割れ
 # 1字24.96px なので26字（649px）まで。CSS を変えたら remake/test/choice_oneline.mjs で測り直す
 CHOICE_LIMIT = 26
 EXTRA_CHOICE_FILES = [REPO / "data" / "baito_events.json", REPO / "remake" / "data" / "lover.json"]
+
+
+DA_RE = re.compile(r"(?<![A-Za-z])DA(?![A-Za-z])")
+BRACKETS = {"「": "」", "『": "』", "（": "）"}
+
+
+def bracket_problem(text: str) -> str:
+    """1台詞の中で「」『』（）が閉じていなければ理由を返す。心の声の色は「（」で始まる行だけに付く。"""
+    stack = []
+    for ch in text:
+        if ch in BRACKETS:
+            stack.append(ch)
+        elif ch in BRACKETS.values():
+            if not stack or BRACKETS[stack[-1]] != ch:
+                return f"閉じ括弧「{ch}」に対応する開き括弧がない"
+            stack.pop()
+    return f"「{''.join(stack)}」が閉じていない" if stack else ""
 
 
 def fullwidth_len(s: str) -> float:
@@ -144,6 +163,10 @@ def main() -> int:
                 for bad in BANNED_ERROR:
                     if bad in text:
                         errors.append(f"{where}: 旧名/旧設定 '{bad}' が混入")
+                if DA_RE.search(text):
+                    errors.append(f"{where}: 略記「DA」は禁止（必ず「ダブルアップル」と書く）")
+                if (b := bracket_problem(text)):
+                    warns.append(f"{where}: {b}。一文が吹き出しをまたいでいる（心の声は各行を（）で閉じる）")
                 for bad in BANNED_WARN:
                     if bad in text:
                         warns.append(f"{where}: 要確認語 '{bad}'（ステ名として使っていないか）")

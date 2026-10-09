@@ -1,10 +1,10 @@
 // 第1章「一吸目（ファーストドロー）」── SMOKE CROWN CUP 編 の台本。
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
-import { DB, bgUrl, faceIconUrl, realName, displayName } from "../core/data.js";
+import { DB, bgUrl, sceneBg, faceIconUrl, realName, displayName } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
-import { layers, showScreen, clearScreen, setBg, smokeWipe, chapterTitle, dayCard, roundCut, toast, bannersIdle, retire, retireScreen } from "../core/ui.js";
-import { state, save, markMet, setFlag, flag } from "../core/state.js";
+import { layers, showScreen, clearScreen, setBg, smokeWipe, crossWipe, chapterTitle, dayCard, roundCut, toast, bannersIdle, retire, retireScreen } from "../core/ui.js";
+import { state, save, markMet, setFlag, flag, timeOfDay } from "../core/state.js";
 import { addMoney, maxStamina, addStamina } from "../core/stats.js";
 import { playBgm, preloadBgm, stopBgm, SE } from "../core/audio.js";
 import { play, hooks } from "../vn/engine.js";
@@ -16,6 +16,7 @@ import { ownsFlavor, flavorStock, addFlavorStock, SHOP_FLAVORS } from "../daily/
 import { radar } from "../daily/status.js";
 import { onDialogueEnter, maybeShuraba } from "../daily/romance.js";
 import { recordRomanceChoice, bondCondition } from "../daily/bonds.js";
+import { storySeen } from "../daily/spots.js";
 import { recordCg } from "../scenes/gallery.js";
 import { newSession, openBench, tickerSay } from "../craft/session.js";
 import * as bc from "../craft/broadcast.js";
@@ -43,7 +44,8 @@ export function setupHooks() {
   hooks.interpolate = (t) => t.replace(/\{daysLeft\}/g, String(daysLeft())).replace(/\{day\}/g, String(state.day))
     .replace(/\{tsumugiFollowers\}/g, typeof DB.characters.tsumugi?.art_sns?.followers === "number" ? `${DB.characters.tsumugi.art_sns.followers / 10000}万` : "たくさん")
     .replace(/\{fortuneName\}/g, state.fortune ? displayName(state.fortune.char, state) : "その人"); // 占い師の結果
-  hooks.evalCondition = bondCondition; // 交友の締めくくり: lover / romance_open
+  // 交友の締めくくり: lover / romance_open。story_seen は固有会話を読んだか（約束・既知の話の分岐）
+  hooks.evalCondition = (line) => line.condition_type === "story_seen" ? storySeen(line.dialogue) : bondCondition(line);
   hooks.onChoice = (dialogueId, choiceId, branch, nextId, choice, line) => {
     // 途中の質問・締めくくりの最後の質問（choice.romance＝隠し恋愛値。選択肢 id ごとに一度だけ）
     recordRomanceChoice(line, choice);
@@ -201,7 +203,12 @@ async function tournamentDay() {
   for (const id of ["naru", "adam", "minto", "nagumo", "maezono", "dr_kemuri"]) markMet(id);
   void preloadBgm("bgm_tournament_edm");
   void preloadBgm("bgm_tournament_craft");
-  await smokeWipe(() => playBgm("bgm_tournament_wait"), { color: "dark" });
+  // 会場入り: 交差するリボンで覆い、その間にロビーの絵と待機BGMへ替える
+  await crossWipe(async () => {
+    playBgm("bgm_tournament_wait");
+    const lobby = sceneBg(BG("bg_c_station_lobby"), timeOfDay());
+    if (lobby.url) await setBg(lobby.url, { tint: lobby.tint });
+  }, { title: "SMOKE CROWN CUP", sub: `DAY ${TOURNAMENT_DAY}　会場入り` });
   await play("ch1_tournament_arrival");
   await maybeShuraba(); // 恋人が2人以上いたら、ロビーで鉢合わせる
   playBgm("bgm_tournament_edm");
