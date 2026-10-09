@@ -23,8 +23,8 @@ export function buildAudience(cs) {
   const name = el("figcaption");
   const person = el("figure.audience-person", { role: "img" }, [el("div.audience-face", [image]), name]);
   const mark = el("b.audience-rating", { hidden: true, dataset: { test: "craft-rating" } });
-  const caption = el("span.audience-caption");
-  const note = el("p.audience-note", { text: "手元を見守っている", dataset: { test: "craft-feedback" } });
+  const caption = el("span.audience-caption", { text: ids[0] === "hajime" ? "心の声" : "" });
+  const note = el("p.audience-note", { text: ids[0] === "hajime" ? innerVoiceLine("default", "watch") : "手元を見守っている", dataset: { test: "craft-feedback" } });
   const root = el("aside.bench-audience.audience-single", { "aria-label": cs.mode === "drill" ? "はじめの心の声" : cs.mode === "tournament" ? "審査員と大会実況" : "見守る人", dataset: { test: "craft-audience" } }, [
     el("div.audience-people", [person]), el("div.audience-speech", { "aria-live": "polite" }, [el("div.audience-heading", [mark, caption]), note]),
   ]);
