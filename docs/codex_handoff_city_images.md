@@ -1,6 +1,6 @@
 # Codex 発注書: 街歩き（栄・大須風の街）の画像
 
-作成: 2026-10-09（Claude）／ 設計: [`docs/street_city_design.md`](street_city_design.md) ／ 台帳: `docs/owner_requests.md` の AA14〜AA19
+作成: 2026-10-09（Claude）／ 設計: [`docs/street_city_design.md`](street_city_design.md) ／ 台帳: `docs/owner_requests.md` の AA14〜AA24
 
 オーナーがCodexへそのまま貼れるように、発注ごとに1つのコードブロックにまとめた。各ブロックには、Gitの手順、共通ルール、画像の指示、報告事項を全部入れてある。
 
@@ -9,6 +9,8 @@
 | **A** | 主人公はじめのマスター＋歩行シート（つむぎの2枚が土台） | 2 | いつでも（街の発注と独立） |
 | **B** | Phase 1 観音商店街（大須観音・アーケード・招き猫）＝必須 | 10 | 最初に |
 | **C** | Phase 2 東の商店街（tonari・KEMURIKUSA）＝必須 | 8 | Bと同時でもよい。Bの結果で直す点があればClaudeが直してから |
+| **D** | 北のアーケード（奥行きの通り・テスト）。まっすぐな屋根付きアーケードを奥へ進む3区画 | 6＋1 | 奥行きのテストをするとき（先に `bg_street_day.png` で歩き心地を試すのがよい） |
+| **E** | 地図の「ファストトラベル｜探索」切り替えボタンの素材（押すたびに入れ替わる1つのボタンのアイコン2つと入れ替えの印） | 3 | いつでも（地図のモード切り替えを実装する前） |
 
 Phase 3（栄）とPhase 4（問屋街・下町・川沿い）の発注書は、大須の2本を組み込んでから作る（構図は設計書の§4）。
 
@@ -22,6 +24,8 @@ Phase 3（栄）とPhase 4（問屋街・下町・川沿い）の発注書は、
   - ドア・看板・つながる口の矩形を測って、`stage_<通りID>.json` に書く。
 - **小物・招き猫・前景・鳩・猫**: マゼンタを抜き、キャラ72ドットに対する比率で縮める。
 - 同じ回に、ハリボテ以外の版（標準・高解像度2.5D・画質の切り替え）を撤去する（AA18）。
+- **奥行きの通り（D）**: 区画ごとにガイドの線（消失点・床の端・歩ける範囲）と絵がずれていないかを測る。ずれは区画ごとの値でステージに書き、絵は直さない。
+- **切り替えボタン（E）**: `asset_sources/ui/map-mode-toggle-20261009/README.md` の配線の約束どおりに切り抜いて `assets/ui/lounge/` に置き、`remake/tools/build_ui_skin.py` でWebPにする。ボタンの枠は既存の `panel.webp` を使う。
 
 ---
 
@@ -400,4 +404,175 @@ Phase 3（栄）とPhase 4（問屋街・下町・川沿い）の発注書は、
   - ドアの大きさのそろい方
   - 夜の明るさ
   - キャラとのドットの細かさの差
+```
+
+---
+
+## 発注D: 北のアーケード（奥行きの通り・6枚＋1）
+
+```text
+# 発注D: 奥行きの通り「北のアーケード」（画像6枚＋余力で1枚・画像だけ）
+
+名古屋の大須をモデルにした架空の街の、まっすぐな屋根付きアーケード商店街を、奥へ向かって歩いていくマップ。
+1区画＝ゲーム画面1枚分の一点透視の絵で、キャラ（手前で身長約72ドット）が奥へ進むと小さくなる。
+奥の端まで歩くと次の区画の絵に切り替わる。3区画で、招き猫の十字路から北口まで進む。
+**3区画とも同じ視点・同じ消失点・同じ床と屋根の線**で描く（切り替えても線が動かないように）。
+
+あなたの担当は「画像を生成して、元画像をリポジトリに上げる」ところまで。
+変換・組み込みはClaudeが行う。コードや既存ファイルは一切変更しない。
+
+## Git
+1. shisha-game の正規のチェックアウトで作業する。CLAUDE.md の「Git Safety」の確認を実行し、通らなければ何もせず止まって報告する。
+2. `git status` に未コミットの変更があれば、何もせず止まって報告する。
+3. `git fetch origin` のあと、構図ガイド `asset_sources/images/proto_city/layout/kita_arcade_d1.png` が入っているブランチから切る。origin/main にあれば origin/main、まだ無ければ origin/claude/ecstatic-euler-jhzor6。発注B（Phase 1）の画像が push 済みなら、`origin/codex/city-images-phase1` から切って、アーケードの屋根の造りを参照できるようにする:
+   `git switch -c codex/city-images-depth <上で選んだブランチ>`
+4. 生成して保存 → 下に指定した PNG（と作り直しの `_try2`・`_try3`）だけを `git add` → コミット → `git push -u origin codex/city-images-depth`
+5. main への push・マージ・`--force` は禁止。PRは作らなくてよい。push できないときは、PCに残したまま終わらず、止まって報告する。
+
+## 画像の共通ルール
+- 画風参考: bg_eden_shop.png を第一基準にする。温かい照明の2Dドット絵〜ピクセルペインター調で、輪郭・影・質感に細かいドット感を残す。リアル写真調や滑らかすぎる3D調にしない。シーシャ台の先端は小さい凸型の金属ポストにし、凹んだカップ型・ボウル一体型・大きな先端パーツにしない。
+- この発注ではシーシャ台を描かない（店の中にも描かない）。
+- 一点透視の通りの描き方は、ゲーム内の既存背景 `assets/backgrounds/bg_street_day.png` を参考にする（ドット感・色味・描き込みの量）。ただし視点と消失点は下の「区画の決まり」に従う。
+- **キャラと同じドットの細かさ**にする。`asset_sources/images/proto_walk/tsumugi_walk_sheet.png` を毎回参照画像に付ける。手前の端に立つキャラの身長が画像の高さの約0.20になる縮尺で、背景だけが細かすぎたり粗すぎたりしないようにする。
+- アーケードの屋根の造り（半透明の屋根材、鉄骨の骨、吊り下げの照明、無地の吊り旗）は、横から見た観音商店街の絵 `asset_sources/images/proto_city/kannon_arcade/panel_2_day.png`（あれば）と同じにする。
+- できるだけ大きく生成して、拡大はしない。強いノイズ除去・ソフト系のアップスケーラは使わない。
+- **人物・動物を描かない。歩く床の上に物を置かない**（ゲーム側でキャラ・小物を置く）。
+- 文字・ロゴ・数字・看板の文字・透かし・フレーム・区切り線を入れない。看板・のれん・吊り旗・吊り看板は無地にする。
+- 実在の商店街・店の写しにしない。名前・ロゴ・マスコットは描かない。
+- 夜の画像に暗さを焼き込まない。平均輝度は 80〜110/255 が目安で、影の中も形が読めること。
+- 各画像は最大3回まで作り直してよい。作り直した回は `_try2`・`_try3` のように残し、一番良いものを指定のファイル名で保存する。
+
+## 区画の決まり（1〜6枚目に共通・全区画で同じにする）
+横長16:9（2048×1152 推奨。無理なら 1920×1080 や 1672×941）。位置は画像の幅 W・高さ H に対する割合。
+
+| 部分 | 位置・大きさ |
+|---|---|
+| 消失点 | 横は中央（0.50W）、高さ 0.35H。カメラは通りの奥をまっすぐ向き、傾けない（建物の縦の線は垂直） |
+| 視点の高さ | 人の背の約3倍（少し上から見下ろす）。床が広く見え、屋根の裏側も見える |
+| 床の端（左右の店の足元の線） | 画像の下端で左から 0.10W と 0.90W を通り、消失点へ向かう直線 |
+| 手前の歩ける端 | 0.92H。ここに立つキャラの身長は約 0.20H |
+| 区画の切れ目（奥の歩ける端） | 床の高さ 0.60H。ここに立つキャラの身長は約 0.09H。ここに区切りになる造り（横道・梁・出口）を置き、その向こうは次の区画として奥へ続いて見える |
+| 店の正面 | その奥行きのキャラの約3.4人分の高さまで（1階の入口と、2階の窓・無地の看板） |
+| 入口のドア | その奥行きのキャラの約1.2倍の高さ。左右の壁の上に、斜めに見える |
+| 屋根 | その奥行きのキャラの約4.7人分の高さ。半透明の屋根材と、鉄骨のアーチの骨が一定の間隔で奥へ並ぶ。吊り下げの照明 |
+| 床 | アーケードの床（明るい大判タイル）。中央に模様の帯が奥へまっすぐ続く。何も置かない |
+
+- 2枚目は1枚目を、3枚目は2枚目を参照画像に付ける。「前の区画の切れ目を越えて、少し歩いたところから見た眺め」として、屋根・床・照明・色味がそのまま続くようにする。
+- 店の並びは左右とも、手前から奥へ2軒ずつ（手前の店は画面の端で切れてよい）。その先は次の区画の店が小さく続く。
+
+## 構図ガイドの読み方
+各区画には構図ガイド（`asset_sources/images/proto_city/layout/kita_arcade_d1〜d3.png`）を付ける。色の塊と線で配置を示した図なので、**配置・線・大きさだけを参照し、平らな色・箱の形・カプセルは描き写さない**。
+- 赤い十字: 消失点
+- 薄い黄色と弧の線: 屋根の裏側とアーチの骨
+- 肌色の面: 左右の店の正面 ／ 白っぽい帯: 2階の無地の看板
+- こげ茶の面（黄色の縁）: 入れる入口 ／ 灰色がかった茶色の面: 入れない店の戸
+- 水色の線: 歩ける範囲の手前の端と奥の端（区画の切れ目）
+- ベージュの台形: 歩く床 ／ 奥の灰色の三角: 次の区画の床
+- 黒いカプセル: キャラの大きさの目安（手前・中ほど・奥。描かない）
+
+## 生成する画像（1〜3を先に、4〜6は昼の3枚がそろってから）
+
+--- 1/7: asset_sources/images/proto_city/kita_arcade/section_1_day.png ---
+（参照画像: 構図 `asset_sources/images/proto_city/layout/kita_arcade_d1.png` ／ 一点透視の描き方 `assets/backgrounds/bg_street_day.png` ／ 縮尺・ドット `tsumugi_walk_sheet.png` ／ あれば屋根の造り `kannon_arcade/panel_2_day.png`）
+屋根付きのアーケード商店街を、奥へまっすぐ見通した眺め。昼。招き猫の十字路から北へ入ったところ。
+- 左の手前: 古着屋（ガラス越しにハンガーラックの服とマネキン）。左の奥: 仏具・線香の老舗（木の格子、線香の箱の棚）。
+- 右の手前: ケバブとトルコアイスの小さな店。カウンター、色ガラスのモザイクのランプが吊られ、肉を焼く縦型のグリル。この店の入口がゲームの入口。右の奥: 雑貨・アクセサリーの店。
+- 区画の切れ目（床の高さ 0.60H）: 左右へ抜ける細い横道。屋根が一度途切れて、横道の上に空の光が細く落ちる。吊り旗が並ぶ。
+- その奥: 次の区画の店の並びと屋根が、消失点へ向かって小さく続く。
+- 光は天窓からの柔らかい拡散光と、店の灯り。
+
+--- 2/7: asset_sources/images/proto_city/kita_arcade/section_2_day.png ---
+（参照画像: 構図 `layout/kita_arcade_d2.png` ／ つながり 1/7 ／ 縮尺・ドット `tsumugi_walk_sheet.png`）
+1/7 の横道を越えて、少し歩いたところから見た続き。昼。アーケードの中ほど。
+- 左の手前: 和菓子屋（店先の蒸し器から湯気、ガラスケースにまんじゅう、無地ののれん）。この店の入口がゲームの入口。左の奥: 中古ゲームとレコードの店（棚に箱が並ぶ）。
+- 右の手前: 手芸・コスプレ衣装の店（ガラス越しに布の反物と衣装）。右の奥: 喫茶（店先に食品サンプルのガラスケース）。
+- 区画の切れ目: 屋根の継ぎ目の太い梁。梁に照明の帯と、大きな無地の吊り看板。
+- その奥: 次の区画の店の並びと屋根が続き、いちばん奥に北口の明るい出口が小さく見える。
+
+--- 3/7: asset_sources/images/proto_city/kita_arcade/section_3_day.png ---
+（参照画像: 構図 `layout/kita_arcade_d3.png` ／ つながり 2/7 ／ 縮尺・ドット `tsumugi_walk_sheet.png`）
+2/7 の梁を越えて、少し歩いたところから見た続き。昼。アーケードの北口。
+- 左の手前: 電気部品の小さな店（棚に部品の箱とケーブル）。左の奥: たこ焼き屋（鉄板とカウンター）。
+- 右の手前: 和雑貨・扇子の店（ガラスケースに扇子と小物）。この店の入口がゲームの入口。右の奥: 閉じた古い店（シャッター）。
+- 区画の切れ目: アーケードの屋根がアーチの形で終わる北口。
+- その先（屋外）: 明るい昼の空、広い大通りと、その上を横切る高架の道路。さらに奥に大きな街のビル群と、鉄骨の格子の電波塔（テレビ塔）が見える。車と人は描かない。
+
+--- 4/7 〜 6/7: asset_sources/images/proto_city/kita_arcade/section_{1,2,3}_night.png ---
+（参照画像: それぞれ同じ番号の昼の画像〔構図〕）
+1〜3枚目と**同じ構図・同じ店の夜**。
+- 屋根の下は吊り灯の暖色の光だまり。天窓は暗い紺。
+- 多くの店はシャッターを下ろす。開いているのは、ケバブの店（モザイクのランプが灯る）、たこ焼き屋、喫茶。
+- 3枚目の北口の外は夜の大通りで、高架の道路の照明と、ライトアップされたテレビ塔、ビルの窓明かりが見える。
+- 真っ暗にしない（平均輝度 80〜110/255・店の形が読めること）。人物・車・動物・文字は描かない。
+
+--- 7/7（余力があれば）: asset_sources/images/proto_city/common/fg_arcade_banner.png ---
+（参照画像: 1/7〔画風〕）
+アーケードの梁から下がる、細長い吊り旗を1枚（無地。淡い朱と白の2色の帯）。上に小さな吊り金具。真正面から見た姿で、縦長 1:4。
+ゲームでは、奥へ歩くとこの旗が近づいて大きくなり、頭上を通り過ぎる演出に使う（大きさとぼかしはゲーム側）。
+【条件】文字なし。影を背景に落とさない。背景は完全な単色マゼンタ(#FF00FF)。
+
+## 報告
+- push したブランチ名とコミット
+- 各画像が何回目で採用になったか
+- 気になった点:
+  - 区画どうしで消失点・床の端・屋根の線がそろっているか
+  - 手前と奥でのキャラとの縮尺の合い方
+  - 入口のドアの大きさ
+  - 区画の切れ目の造り
+  - 夜の明るさ
+```
+
+---
+
+## 発注E: 地図の「ファストトラベル｜探索」切り替えボタン（3枚）
+
+既存のラウンジUI（`docs/ui_lounge_prompts.md`）と同じ書式。オーナー指定（AA25・AA26）で、**押すたびに入れ替わる1つの小さなボタン**にした。ボタンの枠は今のHUDのパネル素材を使うので、発注するのはアイコン2つと入れ替えの印だけ。配置と配線の約束は `asset_sources/ui/map-mode-toggle-20261009/README.md`。
+
+```text
+# 発注E: 地図のモード切り替えボタンのアイコン（画像3枚・画像だけ）
+
+ゲームの地図画面の右上（HUDの列、体力の札の左）に置く、約48×48ピクセルの正方形ボタン1つ。
+押すたびに「ファストトラベル」と「探索」が入れ替わり、ボタンには今のモードのアイコンを出す。
+右下には「押すと入れ替わる」小さな印を重ねる。ボタンの枠は既存のパネル素材を使うので描かない。
+アイコンはゲーム内で約26ピクセル、印は約16ピクセルになる。文字は画像に入れない。
+あなたの担当は「画像を生成して、元画像をリポジトリに上げる」ところまで。切り抜き・組み込みはClaudeが行う。コードや既存ファイルは一切変更しない。
+
+## Git
+1. shisha-game の正規のチェックアウトで作業する。CLAUDE.md の「Git Safety」の確認を実行し、通らなければ何もせず止まって報告する。
+2. `git status` に未コミットの変更があれば、何もせず止まって報告する。
+3. `git fetch origin` のあと、配置モック `asset_sources/ui/map-mode-toggle-20261009/placement_fast.png` が入っているブランチから切る。origin/main にあれば origin/main、まだ無ければ origin/claude/ecstatic-euler-jhzor6:
+   `git switch -c codex/map-mode-toggle-ui <上で選んだブランチ>`
+4. 生成して `asset_sources/ui/map-mode-toggle-20261009/` に保存 → その PNG（と作り直しの `_try2`・`_try3`）だけを `git add` → コミット → `git push -u origin codex/map-mode-toggle-ui`
+5. main への push・マージ・`--force` は禁止。PRは作らなくてよい。push できないときは、PCに残したまま終わらず、止まって報告する。
+
+## 参照画像
+- 置き場所と大きさ: `asset_sources/ui/map-mode-toggle-20261009/placement_fast.png`・`placement_explore.png`（仮の見た目。アイコンの意味と大きさだけ参考にし、形・色はまねしない）
+- 並ぶHUD: `asset_sources/ui/compact-gains-map-20261008/map-1331.png` の右上（体力の札・五角形のボタン・LIME・MENU）
+- 質感の基準: `assets/ui/lounge/panel.png`（このボタンの枠になる黒漆と真鍮の素材）
+
+## 共通スタイル（各プロンプトの先頭に付ける）
+スタイル: 薄暗いシーシャラウンジの空気。`assets/backgrounds/bg_eden_shop.png` 程度の2Dドット絵〜ピクセルペインター調で、輪郭・影・質感に細かいドット感を残す。リアル写真調や滑らかすぎる3D調は避ける。シーシャ台の先端は小さい凸型の金属ポストにし、凹んだカップ型・ボウル一体型・大きな先端パーツにしない。手・腕は細身で中性的、明るいピーチ系の同一肌色に統一する。
+配色: 黒〜濃紫の闇に、琥珀／金（#f4d27a系）の暖色ネオンが差す。煙のかすみ。
+視点: 作りパートは一人称（プレイヤーの手元を上から見下ろす角度）。
+出力: PNG・透過指定のものは背景完全透過。@2x（実寸の2倍）で。指定なき限り 1280×720 基準。
+NG: 文字/ロゴ/UI/数字の焼き込み（数値はゲーム側UIで出すので画像に入れない）、watermark。
+
+## 生成する画像（3枚。1と2は同じ色・同じ線の太さ・同じ大きさにそろえる）
+
+--- 1/3: asset_sources/ui/map-mode-toggle-20261009/ui_mode_icon_fast.png ---
+Create ONE production-ready small game UI ICON meaning "fast travel" on a fully transparent background. A bold map PIN (teardrop with a round hole) leaning slightly forward to the right, with THREE short horizontal SPEED LINES trailing on its left, as if the pin is dashing. Single color: warm ivory-gold (#f4d27a family) with a tiny painterly highlight and a thin dark outline so it reads on a dark plum button. Very bold, simple shapes that stay instantly recognizable at 26x26 pixels; no thin details. Target PNG 512x512, icon occupies about 80% of the canvas, centered. No text, letters, digits, frame, background plate, drop shadow, glow outside the shape, watermark.
+
+--- 2/3: asset_sources/ui/map-mode-toggle-20261009/ui_mode_icon_explore.png ---
+Create ONE production-ready small game UI ICON meaning "explore on foot" on a fully transparent background. Two simple SNEAKER FOOTPRINTS walking diagonally upward to the right, one slightly ahead of the other; each footprint is a rounded sole plus a separate heel shape. Same single warm ivory-gold color, same stroke weight, same thin dark outline and same visual size as the fast-travel icon so the two read as a matching pair. Instantly recognizable at 26x26 pixels and clearly different from the map pin. Target PNG 512x512, icon about 80% of the canvas, centered. No text, letters, digits, frame, background plate, drop shadow, glow outside the shape, watermark.
+
+--- 3/3: asset_sources/ui/map-mode-toggle-20261009/ui_mode_swap_badge.png ---
+Create ONE production-ready tiny round BADGE meaning "tap to switch", on a fully transparent background. A small dark plum lacquer disc with a thin champagne-gold rim, and inside it TWO curved arrows chasing each other in a circle (a cycle / swap symbol) in the same warm ivory-gold. It is overlaid on the bottom-right corner of a square HUD button and shown at about 16x16 pixels, so use very bold arrows and minimal detail. Target PNG 256x256, disc about 90% of the canvas, centered. No text, letters, digits, drop shadow, glow outside the shape, watermark.
+
+## 報告
+- push したブランチ名とコミット
+- 各画像が何回目で採用になったか
+- 気になった点:
+  - 2つのアイコンが26ピクセルでも見分けられるか
+  - 入れ替えの印が16ピクセルで読めるか
+  - 透過がきれいか
 ```
