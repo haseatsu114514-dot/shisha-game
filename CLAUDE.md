@@ -10,7 +10,11 @@ HTML/JS 製シーシャ屋アドベンチャー＆シミュレーションゲー
 
 ---
 
+ヒロインの日常・タイトル用CGは[2026-10-09追加の生成ルール](asset_sources/shisha-hardware-reference/heroine-title-cg-rules-20261009.md)を必読とする。顔・年齢感・衣装は正規立ち絵、既存タイトル絵は質感の参照にする。完成・喫煙状態はHMDを使い直炭にしない。一枚ごとに具体モデルを選び、少量の色・仕上げ変更に留めて他モデルの部品を混ぜない。ハガル・HMD・炭・手の縮尺とホース接続を生成後に目視検品し、違反は修正・再生成。台・背景・場所・時間帯・行動は候補間で変え、背景植物を必須にしない。一般の実物資料や既存ゲーム工程・採点仕様への変更ではない。
+
 ## Git Safety
+
+ホースは[みんとのY字分岐NG原画と検品メモ](asset_sources/shisha-hardware-reference/ng-examples/README.md)も参照する。単一ホースの両端だけでなく経路を両方向に追い、分岐・第三の端・前後関係のない交差を除外する。ハガル／HMDの縮尺は単体の商品写真と寸法だけで済ませず、実際の装着状態と、手持ちの場合は掌・指が写る実写を別途参照する。
 
 If this machine uses a canonical checkout path, store it in local Git
 config with:

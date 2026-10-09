@@ -1,0 +1,37 @@
+{
+  "id": "ageha_c_backstage_selfie",
+  "status": "candidate_not_adopted",
+  "generator": "image_gen.imagegen",
+  "generated_source": "/workspace/generated_images/exec-89529126-fd87-4b92-8d11-40ad66a1d2be.png",
+  "file": "ageha_c_backstage_selfie.png",
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "transparent_background": false,
+  "references": [
+    {
+      "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+      "purpose": "canonical identity, youthful 22-year-old face, honey-gold twin ponytails, bear clips, orange leopard jacket, pink heart top, black pleated skirt"
+    },
+    {
+      "path": "assets/ui/title_arts/title_art_keyvisual_01.png",
+      "purpose": "fine dense pixel/dither painterly rendering only"
+    }
+  ],
+  "scene": "Sunset model backstage dressing room selfie",
+  "qa": {
+    "viewed": true,
+    "identity": "pass: honey twin ponytails, both bear clips, amber eyes, sprite outfit and friendly gyaru face preserved",
+    "age_feel": "pass: sprite-aligned youthful adult face, no mature smokey makeup",
+    "style": "pass: uniform fine pixel/dither grit and warm shadow palette across character/background",
+    "hands": "pass: coherent phone grip and V sign",
+    "phone_charm": "pass: cream bear attached to phone case chain",
+    "background_variation": "pass: sunset vanity/clothes rail/stool; no library-lounge duplication",
+    "plants": "none",
+    "shisha_equipment": "none by request",
+    "text_logo_watermark": "none",
+    "limitation": "Final owner choice still pending; no runtime adoption"
+  }
+}
