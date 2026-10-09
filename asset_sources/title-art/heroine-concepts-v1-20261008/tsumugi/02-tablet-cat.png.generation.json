@@ -1,0 +1,24 @@
+{
+  "id": "tsumugi-02-tablet-cat",
+  "path": "/workspace/generated_images/exec-ba97fc1c-9130-42b6-a95e-b76e302c25b1.png",
+  "source": "tsumugi/02-tablet-cat.png",
+  "prompt": "tsumugi/02-tablet-cat.prompt.txt",
+  "references": [
+    "references/tsumugi-adopted-normal.png",
+    "references/title-style.png"
+  ],
+  "source_sha256": "4d1504f404e6ef250eb08cf2b7c8f35e3f5e5d4ef57f2bafd1588445c0c92e90",
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false,
+  "prompt_sha256": "38eb1df267ad3e8a00e10ac564fa9bc0c56d0320d1317d5fc194e42db3125c4c",
+  "reference_sha256": {
+    "references/tsumugi-adopted-normal.png": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6",
+    "references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f"
+  }
+}

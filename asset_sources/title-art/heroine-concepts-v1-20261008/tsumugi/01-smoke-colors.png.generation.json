@@ -1,0 +1,28 @@
+{
+  "id": "tsumugi-01-smoke-colors",
+  "path": "/workspace/generated_images/exec-3e0818ed-d388-4819-8b15-6b4a4f8a8278.png",
+  "source": "tsumugi/01-smoke-colors.png",
+  "prompt": "tsumugi/01-smoke-colors.revision2.prompt.txt",
+  "references": [
+    "tsumugi/01-smoke-colors-revision1.png",
+    "mashiro/01-heavy-smoke.png"
+  ],
+  "source_sha256": "a1da06a12de052f15c1a93ede43ff785925155b2562d050861437a0bf90e3e41",
+  "prompt_sha256": "be069d05b06374d755515e671d8cf826ab8a4757d32124f5d5f69f4495b07df6",
+  "reference_sha256": {
+    "tsumugi/01-smoke-colors-revision1.png": "830eb0f6052e446c7e2b9834637e019d84b79944c2d3e3775eac3f7947302b60",
+    "mashiro/01-heavy-smoke.png": "c90a5e5c3e0a128d24d8e1d63d87536f0b7f3828d674af25c8cc9ef17b4f9bd7"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false,
+  "reference_snapshots": {
+    "mashiro/01-heavy-smoke.png": "mashiro/01-heavy-smoke-first.png"
+  },
+  "reference_note": "The original tool input path for the hose-geometry example was revised later. The unchanged byte-identical input is preserved at reference_snapshots."
+}

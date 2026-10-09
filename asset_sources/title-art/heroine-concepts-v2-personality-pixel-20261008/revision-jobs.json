@@ -1,0 +1,57 @@
+[
+  {
+    "id": "mashiro-01-heavy-smoke",
+    "character": "mashiro",
+    "label": "器具の細部修正・mashiro",
+    "source": "mashiro/01-heavy-smoke.png",
+    "prompt": "mashiro/01-heavy-smoke.revision-1.prompt.txt",
+    "references": [
+      "mashiro/01-heavy-smoke-first.png",
+      "references/km-turkey-brass.png"
+    ]
+  },
+  {
+    "id": "kafuka-01-shishark-test-run",
+    "character": "kafuka",
+    "label": "器具の細部修正・kafuka",
+    "source": "kafuka/01-shishark-test-run.png",
+    "prompt": "kafuka/01-shishark-test-run.revision-1.prompt.txt",
+    "references": [
+      "kafuka/01-shishark-test-run-first.png",
+      "references/cloud-micro-blue.jpg"
+    ]
+  },
+  {
+    "id": "rin-01-night-tasting",
+    "character": "rin",
+    "label": "器具の細部修正・rin",
+    "source": "rin/01-night-tasting.png",
+    "prompt": "rin/01-night-tasting.revision-1.prompt.txt",
+    "references": [
+      "rin/01-night-tasting-first.png",
+      "references/steamulation-black.jpg"
+    ]
+  },
+  {
+    "id": "tsumugi-01-smoke-colors",
+    "character": "tsumugi",
+    "label": "器具の細部修正・tsumugi",
+    "source": "tsumugi/01-smoke-colors.png",
+    "prompt": "tsumugi/01-smoke-colors.revision-1.prompt.txt",
+    "references": [
+      "tsumugi/01-smoke-colors-first.png",
+      "references/wookah-complete.jpg"
+    ]
+  },
+  {
+    "id": "minto-01-cafe-welcome",
+    "character": "minto",
+    "label": "器具の細部修正・minto",
+    "source": "minto/01-cafe-welcome.png",
+    "prompt": "minto/01-cafe-welcome.revision-1.prompt.txt",
+    "references": [
+      "minto/01-cafe-welcome-first.png",
+      "../heroine-concepts-v1-20261008/references/hmd-real-assembled.jpg"
+    ]
+  }
+]

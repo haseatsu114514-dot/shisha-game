@@ -1,0 +1,14 @@
+画風参考: bg_eden_shop.png を第一基準にする。温かい照明の2Dドット絵〜ピクセルペインター調で、輪郭・影・質感に細かいドット感を残す。リアル写真調や滑らかすぎる3D調にしない。シーシャ台の先端は小さい凸型の金属ポストにし、凹んだカップ型・ボウル一体型・大きな先端パーツにしない。
+
+Create ONE original heroine scene illustration for a Japanese visual novel title screen. Not a portrait sprite, not a collage, not a comparison board. Reference 1 defines the adopted adult character identity, face, hair and outfit; reference 2 gives the existing title illustration mood ONLY. The old title artwork has inaccurate hookah hardware: NEVER imitate its bowl or coals. Use a detailed 2D anime / pixel-painterly illustration with fine controlled edge texture, warm readable lighting, clear faces and hands. No photographic look, plastic 3D, blur, global halftone dot grid, checkerboard mosaic or large blocky pixel overlay.
+Output: one opaque PNG, portrait 2:3 aspect, preferably 1024x1536. Complete background, no transparency. This will be compared as right-side title art. Place the heroine face around 50–65% width and 20–35% height. Keep her head and important hands inside comfortable margins; leftmost 20% may be faded later by CSS. Keep focal props inside the middle/right 80% and above 85% height. Do NOT bake in game title, captions, words, logos, lettering, numerals, UI, brand labels or watermark. Shelf book spines and packaging are unlettered. Only this heroine is visible; no protagonist face. Preserve her adult age and recognizable adopted appearance while drawing a NEW pose and scene. Exactly two arms and natural hands; no floating objects or merged limbs. Make the character the emotionally appealing focal point rather than the equipment.
+
+IDENTITY: Rin, adult woman age 27. Very dark long wolf-cut hair with subdued slate-blue undertone, layered ends below bust but above waist, blue-grey eyes, silver hoop earrings, white button blouse with sleeves rolled up, black trousers and black belt. Mature confident teasing calm; an importer and shisha professional, not a medical scientist, fantasy witch or teenager.
+
+SCENE: Her working importer side. Seated at a wooden desk under a warm amber task lamp, she consults an unlettered clipboard and a neat row of small unlabeled sample tins. One small open sample jar contains BLACK glossy sticky finely chopped DARK-LEAF tobacco, tiny folded and uneven shredded pieces, no green whole leaves and no red/blonde leaf mass. She looks toward the viewer with a focused mature knowing expression; one hand holds a small sample tin, other steadies the clipboard. White rolled-up blouse, hoop earrings and long dark wolf cut. Blue-violet shadows, black-filmed windows. No hookah device or hose.
+
+No hookah equipment may appear in this non-shisha variant.
+
+Proposed preserved original destination: asset_sources/title-art/heroine-concepts-v1-20261008/rin/02-flavor-samples.png
+
+Plain unmarked bowl and metal HMD: absolutely no embossed flower symbols or brand marks. No green or whole leaves in any tobacco sample.

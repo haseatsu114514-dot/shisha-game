@@ -5,6 +5,7 @@ import { createRequire } from "node:module";
 const { chromium } = createRequire(import.meta.url)("playwright");
 const base = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
 const browser = await chromium.launch({ headless: true,
+  ...(process.env.BROWSER_PROXY ? { proxy: { server: process.env.BROWSER_PROXY, bypass: "localhost,127.0.0.1" } } : {}),
   ...(process.env.CHROME_BIN ? { executablePath: process.env.CHROME_BIN } : {}) });
 try {
   const page = await browser.newPage();

@@ -1,0 +1,7 @@
+画風参考: bg_eden_shop.png を第一基準にする。温かい照明の2Dドット絵〜ピクセルペインター調で、輪郭・影・質感に細かいドット感を残す。リアル写真調や滑らかすぎる3D調にしない。シーシャ台の先端は小さい凸型の金属ポストにし、凹んだカップ型・ボウル一体型・大きな先端パーツにしない。
+
+Edit reference 1. Reference 1 is this exact artwork. The tiny upright cylinder on top of the black HMD lid was invented by the last cleanup and must be REMOVED. Reference 2 shows the real closed black Lotus I+ lid: low domed/flat top with vent apertures and its short horizontal side handle, NOT an upright hookah-post or tower. Correct ONLY the HMD on the blue ceramic bowl: restore that realistic CLOSED BLACK vented lid/coal chamber with a few clearly visible rounded top vent slots, and small SIDE handle, no central upright metal cylinder. Coals fully inside beneath lid, none on bowl/lid. Retain the bowl, its sealed neck, tray, wooden body, plain unmarked band/wood with NO logo, correct connected hose, Tsumugi face/pose and whole pixel painting exactly. No other changes.
+
+Opaque PNG 1024x1536, portrait 2:3, preserve detailed pixel/dot render. Proposed preserved source: asset_sources/title-art/heroine-concepts-v2-personality-pixel-20261008/tsumugi/01-smoke-colors.png
+
+The shared style instruction about a small convex metal post means the STEM mounting post UNDER the bowl; it NEVER means an extra post on the HMD lid.

@@ -1,0 +1,22 @@
+{
+  "id": "ageha-01-professional-taste",
+  "path": "/workspace/generated_images/exec-8ac56b23-2e89-43e0-8aef-93a45681015c.png",
+  "source": "ageha/01-professional-taste.png",
+  "prompt": "ageha/01-professional-taste.revision1.prompt.txt",
+  "references": [
+    "ageha/01-professional-taste-first.png"
+  ],
+  "source_sha256": "da3f718474bd03f9846793b031f21b395804614f62fbf225f11d918e33c36dda",
+  "prompt_sha256": "263795e5997b24919c31d2a6c4e4acdef46ec3bc6847e8db878705fa1bc281d7",
+  "reference_sha256": {
+    "ageha/01-professional-taste-first.png": "036dd05adbea8dd07b871dba7e64b1ef0f7e9ada3c6938d39beb56a571c64001"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}

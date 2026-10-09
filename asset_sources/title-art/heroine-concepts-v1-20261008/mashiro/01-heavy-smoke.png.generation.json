@@ -1,0 +1,22 @@
+{
+  "id": "mashiro-01-heavy-smoke",
+  "path": "/workspace/generated_images/exec-57a8a899-05dc-40e2-b6e2-852920c3f309.png",
+  "source": "mashiro/01-heavy-smoke.png",
+  "prompt": "mashiro/01-heavy-smoke.revision1.prompt.txt",
+  "references": [
+    "mashiro/01-heavy-smoke-first.png"
+  ],
+  "source_sha256": "8552ce5b9edb0d50b62436c5e1fcd0f3ddc58d8140a5c2d37c52ed20786904cd",
+  "prompt_sha256": "e7abf8b9ca693aae4bc02e7c1e4880a4d89bf1c04e32f6feac898a993c627192",
+  "reference_sha256": {
+    "mashiro/01-heavy-smoke-first.png": "c90a5e5c3e0a128d24d8e1d63d87536f0b7f3828d674af25c8cc9ef17b4f9bd7"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}

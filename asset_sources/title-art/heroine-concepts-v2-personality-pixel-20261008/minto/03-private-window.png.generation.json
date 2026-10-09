@@ -1,0 +1,26 @@
+{
+  "id": "minto-03-private-window",
+  "path": "/workspace/generated_images/exec-81f9e151-e9f4-47f5-8c2a-45f17382c413.png",
+  "source": "minto/03-private-window.png",
+  "prompt": "minto/03-private-window.prompt.txt",
+  "references": [
+    "../heroine-concepts-v1-20261008/references/minto-adopted-normal.png",
+    "../heroine-concepts-v1-20261008/references/title-style.png",
+    "../heroine-concepts-v1-20261008/references/minto-private.png"
+  ],
+  "source_sha256": "10c1200ce8a499f232c666c0bded84693a50474074fb74fb047dff5b6f941b96",
+  "prompt_sha256": "657c0a6adc9a02e3950e4f8d58ae220102f782e65c9237fbe191f9e9b67f8c3e",
+  "reference_sha256": {
+    "../heroine-concepts-v1-20261008/references/minto-adopted-normal.png": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7",
+    "../heroine-concepts-v1-20261008/references/title-style.png": "27b6d78df3b2464529ca3d4ae9175e1c8bbabe2504e1d951aa37edf31737db0f",
+    "../heroine-concepts-v1-20261008/references/minto-private.png": "c9a603a9c9c9b0438781573180d8c6e0ecac6c425a17c116623b0ba4b6d48bf2"
+  },
+  "size": [
+    1024,
+    1536
+  ],
+  "mode": "RGB",
+  "tool": "image_gen.imagegen",
+  "transparent_background": false,
+  "runtime_installed": false
+}

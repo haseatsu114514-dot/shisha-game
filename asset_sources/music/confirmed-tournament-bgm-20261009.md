@@ -65,3 +65,19 @@ FFmpeg `loudnorm`で全曲の入力Integrated LUFSとTrue Peakを測定。
 
 補正後値は入力値に `20 × log10(倍率)` を加えた値。初期設定BGM音量0.5では、各値からさらに約6.02 dB下がる。
 設定変更・フェード中でも同じ倍率を使う。前曲のフェードインを取り消してからフェードアウトし、短時間の切替で前曲の音量が戻ることを防ぐ。
+
+## 検証（2026-10-09）
+
+音量テスト、実音源の復元とSHA-256一致・再試行・キャッシュ・非同期切替競合、34ファイルのデータローダテストが通過。
+Chromiumで両曲のデコード・音声サンプル出力・曲末から曲頭へのループ・設定変更・ミュート・既存MP3への切替を確認。
+検証は客観測定とブラウザの再生状態・音声サンプルに基づく。
+第1章通しテストも新規開始→日常→セーブ／ロード→大会敗北（4位）→再挑戦→優勝で通過。
+開幕／ROUND 1開始／ROUND 1〜3終了／審査開始の6場面×2挑戦で、想定BGMキーと一致。ブラウザエラー0。
+
+```bash
+node --experimental-vm-modules remake/test/bgm_gain.mjs
+node --experimental-vm-modules remake/test/bgm_packaged.mjs
+node --experimental-vm-modules remake/test/data_loading.mjs
+CHROME_BIN=/usr/bin/chromium node remake/test/bgm_browser.mjs
+CHROME_BIN=/usr/bin/chromium node remake/test/playthrough.mjs
+```

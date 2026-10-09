@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ヒロインアート15案・比較</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#171320;color:#f5effc;font:16px/1.6 system-ui,sans-serif}main{max-width:1060px;margin:auto;padding:24px}h1{font-size:24px;margin:0 0 8px}p{margin:0 0 16px;color:#cfc3db}nav{display:flex;gap:8px;flex-wrap:wrap;position:sticky;top:0;background:#171320eb;padding:12px 0;z-index:3;backdrop-filter:blur(8px)}button{cursor:pointer;font:inherit;border:1px solid #756287;background:#30273e;color:#eee4fa;border-radius:20px;padding:6px 16px}button[aria-pressed="true"]{background:#cfb2ed;color:#24162f}section{margin:20px 0 34px}h2{font-size:21px;margin:0 0 10px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}figure{margin:0;border:1px solid #453650;border-radius:10px;overflow:hidden;background:#251e31}a{color:inherit;text-decoration:none}.art{display:block;width:100%;aspect-ratio:2/3;object-fit:contain;background:#130e1c}figcaption{padding:9px 12px;font-size:14px}.number{color:#bca2d3;margin-right:7px}.frame{display:none;position:relative;aspect-ratio:16/9;background:radial-gradient(ellipse at 70% 45%,#48345188,transparent 60%),linear-gradient(140deg,#241832,#130f20);overflow:hidden}.frame-art{position:absolute;right:-3.125%;top:0;width:43.75%;height:100%;background:center 20%/cover no-repeat;opacity:.95;mask-image:linear-gradient(to right,transparent,#000 34%);-webkit-mask-image:linear-gradient(to right,transparent,#000 34%)}.logo{position:absolute;width:41%;left:4%;top:11%;filter:drop-shadow(0 2px 3px #000)}.menu{position:absolute;top:48%;left:5%;font-size:clamp(7px,.9vw,12px);letter-spacing:1.8px;line-height:2;color:#fff}.menu span{display:block}.menu .muted{opacity:.4}body.title-mode .art{display:none}body.title-mode .frame{display:block}.note{font-size:13px;margin-top:14px;color:#b9a8c8}.hidden{display:none}@media(max-width:650px){main{padding:16px}h1{font-size:21px}.grid{grid-template-columns:1fr}figure{max-width:420px;width:100%;margin:auto}.menu{font-size:10px}figcaption{font-size:14px}nav{position:static}.frame{aspect-ratio:16/9}}@media print{nav{display:none}body{background:#171320;print-color-adjust:exact}}
+</style>
+<main>
+<h1>ヒロインのタイトル用アート・15案</h1>
+<p>5人 × 3場面。画像を押すと原画を開けます。タイトル表示は配置の比較用です。</p>
+<nav aria-label="比較表示">
+<button data-mode="original" aria-pressed="true">原画</button>
+<button data-mode="title" aria-pressed="false">タイトル右側で比較</button>
+<button data-filter="all" aria-pressed="true">全員</button>
+<button data-filter="tsumugi" aria-pressed="false">つむぎ</button>
+<button data-filter="mashiro" aria-pressed="false">ましろ</button>
+<button data-filter="minto" aria-pressed="false">みんと</button>
+<button data-filter="ageha" aria-pressed="false">アゲハ</button>
+<button data-filter="rin" aria-pressed="false">凛</button>
+</nav>
+<div id="gallery"></div>
+<p class="note">原画は加工なしで保存。シーシャ案は実物写真を参照した台・ハガル・蓋付きHMD。みんとの私服は比較案として掲載しています。</p>
+</main>
+<script>
+const characters=[
+ ['tsumugi','つむぎ', [['01-smoke-colors','煙の色を眺めて'],['02-tablet-cat','タブレットの猫'],['03-twilight-sketch','夕暮れのスケッチ']]],
+ ['mashiro','ましろ', [['01-heavy-smoke','重い一服'],['02-tea-break','お茶とひと息'],['03-after-rain','雨上がりの帰り道']]],
+ ['minto','みんと', [['01-cafe-welcome','ぺぱーみんとのお出迎え'],['02-instant-photo','チェキの瞬間'],['03-private-window','私服の窓辺']]],
+ ['ageha','アゲハ', [['01-professional-taste','プロの顔'],['02-grocery-smile','買い出しの笑顔'],['03-model-moment','モデルのひとコマ']]],
+ ['rin','凛', [['01-night-tasting','試香のひととき'],['02-flavor-samples','サンプルを選ぶ'],['03-late-coffee','夜更けのコーヒー']]]
+];
+const gallery=document.querySelector('#gallery');
+for(const[id,name,scenes]of characters){
+ const section=document.createElement('section');section.dataset.character=id;
+ const h=document.createElement('h2');h.textContent=name;section.append(h);
+ const grid=document.createElement('div');grid.className='grid';section.append(grid);
+ scenes.forEach(([variant,label],index)=>{
+  const src=`${id}/${variant}.png`,figure=document.createElement('figure');
+  const link=document.createElement('a');link.href=src;link.target='_blank';link.rel='noopener';link.setAttribute('aria-label',`${name} ${label}の原画を開く`);
+  const img=document.createElement('img');img.className='art';img.src=src;img.alt=`${name} — ${label}`;link.append(img);
+  const frame=document.createElement('div');frame.className='frame';
+  const art=document.createElement('div');art.className='frame-art';art.style.backgroundImage=`url("${src}")`;frame.append(art);
+  const logo=document.createElement('img');logo.className='logo';logo.src='../../../assets/ui/ui_title_logo_rich.png';logo.alt='水煙前線 -EN:CODE-';frame.append(logo);
+  const menu=document.createElement('div');menu.className='menu';for(const text of ['NEW GAME','LOAD','GALLERY','CONFIG']){const row=document.createElement('span');row.textContent=text;if(text==='LOAD')row.className='muted';menu.append(row)}frame.append(menu);link.append(frame);figure.append(link);
+  const caption=document.createElement('figcaption'),number=document.createElement('span');number.className='number';number.textContent=String(index+1).padStart(2,'0');caption.append(number,document.createTextNode(label));figure.append(caption);grid.append(figure);
+ });gallery.append(section);
+}
+document.querySelectorAll('[data-mode]').forEach(button=>button.addEventListener('click',()=>{document.body.classList.toggle('title-mode',button.dataset.mode==='title');document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)))}));
+document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('section').forEach(s=>s.classList.toggle('hidden',button.dataset.filter!=='all'&&s.dataset.character!==button.dataset.filter));document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b===button)))}));
+</script>
+</html>
