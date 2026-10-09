@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "id": "tsumugi_lavender_smoke",
+    "source": "/workspace/generated_images/exec-cbf9c8c8-ad50-408a-a6fa-a499b8c74971.png",
+    "output": "assets/ui/title_arts/title_art_tsumugi_lavender_smoke.png",
+    "revision": 2,
+    "qa": {
+      "character": "Checked bob/floral hoodie/red-brown eyes for Tsumugi; braids/gold sleepy eyes/cardigan/sage skirt for Mashiro against canonical sprite. Revised face prioritizes original design.",
+      "background": "Golden daytime window/plants/cream wall.",
+      "heat": "Distinct vented silver/graphite lidded metal HMD on ceramic bowl; no exposed direct-foil coals.",
+      "hose": "Continuous purple loop from side port to silver rigid handle base; all joins visible.",
+      "tip": "Short translucent tip on rigid handle, ordinary jewelry not mouthpiece.",
+      "smoke": "From lips, handle held away from lips."
+    }
+  },
+  {
+    "id": "mashiro_heavy_smoke",
+    "source": "/workspace/generated_images/exec-6db0f974-151e-4132-97a5-57a54b8ea110.png",
+    "output": "assets/ui/title_arts/title_art_mashiro_heavy_smoke.png",
+    "revision": 2,
+    "qa": {
+      "character": "Checked bob/floral hoodie/red-brown eyes for Tsumugi; braids/gold sleepy eyes/cardigan/sage skirt for Mashiro against canonical sprite. Revised face prioritizes original design.",
+      "background": "Nighttime brick wall, burgundy sofa, rainy window.",
+      "heat": "Distinct vented silver/graphite lidded metal HMD on ceramic bowl; no exposed direct-foil coals.",
+      "hose": "Continuous dark hose from handle and side port; lower curve naturally hidden by foreground table/lantern.",
+      "tip": "Short translucent tip on rigid handle, ordinary jewelry not mouthpiece.",
+      "smoke": "From lips, handle held away from lips."
+    }
+  }
+]

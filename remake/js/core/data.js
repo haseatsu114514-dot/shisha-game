@@ -26,7 +26,7 @@ export const DB = {
   friends: { friends: {} }, // 友人になった相手からの、たまのLIME・一服の場面（remake/data/friends.json）
   statusTexts: { statPurpose: {}, statTierFx: {}, customerNotes: [] }, // ステの説明・★効果・常連ノート
   broadcast: { nico: {}, step: {}, mc: {}, rivalFeed: [], ticker: {} }, // 大会の実況コメント（remake/data/broadcast.json）
-  manifest: { portraits: {}, backgrounds: [], cgs: [], faceIcons: [], making: [], bgm: [] },
+  manifest: { portraits: {}, backgrounds: [], cgs: [], faceIcons: [], making: [], titleArts: [], bgm: [] },
 };
 
 const DIALOGUE_FILES = [

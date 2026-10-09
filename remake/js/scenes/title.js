@@ -1,12 +1,13 @@
 // タイトル画面。用語集は会話画面・ゲーム中のメニューから開く。
 import { el } from "../core/util.js";
-import { bgUrl, assetUrl } from "../core/data.js";
+import { bgUrl } from "../core/data.js";
 import { showScreen, setBg, smokeWipe, modal } from "../core/ui.js";
 import { peekSave, newGame, wipeSave, config, saveConfig, anySlotSaved, loadFromSlot } from "../core/state.js";
 import { playBgm, SE, applyVolumes } from "../core/audio.js";
 import { startNewGame, resumeGame } from "../chapters/ch1.js";
 import { openGallery } from "./gallery.js";
 import { loadFlow } from "./saves.js";
+import { createTitleArt } from "./title-art.js";
 
 export function showTitle() {
   setBg(bgUrl("bg_title"), { instant: true });
@@ -40,7 +41,7 @@ export function showTitle() {
   );
 
   const root = el("div.title", [
-    el("div.title-art", { style: { backgroundImage: `url("${assetUrl("assets/ui/title_arts/title_art_keyvisual_01.png")}")` } }),
+    createTitleArt(),
     el("div.title-smoke", [el("i"), el("i"), el("i")]),
     el("div.title-left", [
       el("div.title-brand", [

@@ -10,13 +10,16 @@
   top: 0;
   width: 560px;
   height: 100%;
-  background: center 20% / cover no-repeat;
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
   mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
   opacity: 0;
   animation: title-art-in 2.2s 0.3s var(--ease-out) forwards;
   image-rendering: pixelated;
+  pointer-events: none;
 }
+.title-art-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 20%; opacity: 0; transition: opacity 1.8s ease-in-out; image-rendering: pixelated; }
+.title-art-image.visible { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .title-art-image { transition: none; } }
 @keyframes title-art-in { from { opacity: 0; transform: translateX(40px); } to { opacity: 0.95; transform: none; } }
 .title-smoke i {
   position: absolute;

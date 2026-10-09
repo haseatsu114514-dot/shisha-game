@@ -8,6 +8,7 @@ import { unlockAudio } from "./core/audio.js";
 import { vnTest } from "./vn/engine.js";
 import { craftTest } from "./craft/session.js";
 import { showTitle } from "./scenes/title.js";
+import { initialTitleArtUrl } from "./scenes/title-art.js";
 import { resumeGame } from "./chapters/ch1.js";
 
 function fitStage() {
@@ -37,7 +38,7 @@ export async function boot() {
   await Promise.all([loadAll((p) => { bar.style.width = `${Math.round(p * 100)}%`; }), fonts]);
   // タイトルの絵とロゴ、窓・会話の枠とボタンが読めてから幕を開ける（最大3秒）
   await Promise.race([Promise.all([
-    ...TITLE_IMAGES.map((r) => imageReady(r.startsWith("assets/") ? assetUrl(r) : r, 3000)),
+    ...[initialTitleArtUrl(), "img/ui/ui_title_logo_rich.webp"].map((r) => imageReady(r, 3000)),
     ...FRAME_ART.map((u) => imageReady(u, 3000, { keep: true })),
   ]), sleep(3000)]);
   // ゲーム中にロードした直後は、タイトルを飛ばしてそのデータから再開する
@@ -48,8 +49,6 @@ export async function boot() {
   setTimeout(() => $("#boot")?.remove(), 700);
   warmUp();
 }
-
-const TITLE_IMAGES = ["assets/ui/title_arts/title_art_keyvisual_01.png", "img/ui/ui_title_logo_rich.webp"];
 
 /** タイトルを見ている間に、日常でよく出る絵を裏で読んでおく（初めて出る場面で絵が遅れないように） */
 async function warmUp() {

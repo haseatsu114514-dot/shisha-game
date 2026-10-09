@@ -194,6 +194,7 @@ def main():
         "faceIcons": listing("ui/face_icons"),
         "making": listing("ui/making"),
         "sceneProps": listing("ui/scene_props"),
+        "titleArts": listing("ui/title_arts"),
         "introArt": intro_art(),
         "makingBox": making_boxes(),
         "bgm": listing("audio/bgm", "*.mp3"),

@@ -29,9 +29,10 @@ def targets(m):
     rel += [art["background"] for art in m.get("introArt", {}).values()]
     for ch, p in m["portraits"].items():
         rel += [f"sprites/characters/{ch}/chr_{ch}_{f}.png" for f in p["faces"]]
+    rel += [f"ui/title_arts/{name}" for name in m.get("titleArts", [])]
     rel += ["ui/title_arts/title_art_keyvisual_01.png", "ui/ui_title_logo.png", "ui/ui_title_logo_rich.png"]
     rel += ["ui/chapters/ch1_keyart.png"]
-    return [r for r in rel if (ASSETS / r).exists()]
+    return [r for r in dict.fromkeys(rel) if (ASSETS / r).exists()]
 
 
 def encode(src: Path, rel: str) -> bytes:
