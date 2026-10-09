@@ -13,6 +13,8 @@
 使い方:
     python3 tools/make_reference_sheet.py            # 全キャラ
     python3 tools/make_reference_sheet.py minto rin  # 指定キャラ
+    python3 tools/make_reference_sheet.py lineup     # 背比べ図
+    python3 tools/make_reference_sheet.py facesize   # ゲーム画面での顔の大きさの比較図
 出力: asset_sources/reference-sheets/<id>/<id>-reference-sheet.png
 """
 import json
@@ -733,11 +735,54 @@ def build_lineup(chars, ref=760):
     return out
 
 
+def build_face_size(chars, k=2.0):
+    """ゲーム画面での顔の大きさの比較図。全員を同じ倍率（1280x720画面のk倍）で、目の高さをそろえて並べる。
+    顔の幅は顔アイコンの調整値（頬の幅＝枠の0.5）から求めた目安。"""
+    ids = ["hajime", "sumi", "naru", "adam", "nagumo", "dr_kemuri", "maezono",
+           "minto", "ageha", "mashiro", "kafuka", "tsumugi", "rin"]
+    data = []
+    for cid in ids:
+        cfg = make_cfg(cid, chars, light=True)
+        o = cfg["outfits"][0]
+        im = o["normal"]
+        x0, y0, x1, y1 = im.getchannel("A").getbbox()
+        disp = 1.36 * o["sprite_scale"] * 720 * k / (y1 - y0)
+        fx, fy, side = face_box(o["icon_key"], im)
+        name = cfg.get("title") if cid == "minto" else \
+            (chars[cid].get("display_name") or chars[cid]["name"]).split(" / ", 1)[0].split("（")[0]
+        data.append((name, im, disp, fx, fy, side, 0.5 * side * disp / k))
+    med = sorted(t[6] for t in data)[len(data) // 2]
+    tw, th = 300, 330
+    sheet = Image.new("RGB", (40 + len(ids) * (tw + 14), th + 260), BG)
+    d = ImageDraw.Draw(sheet)
+    d.text((40, 24), "ゲーム画面での顔の大きさ（全員同じ倍率・目の高さをそろえて配置）", font=font("black", 40), fill=TEXT)
+    d.text((40, 80), f"数値は1280×720画面での頬の幅の目安。中央値 {med:.0f}px からの差。±10%を超えると赤",
+           font=font("medium", 24), fill=SUB)
+    for i, (name, im, disp, fx, fy, side, w) in enumerate(data):
+        big = im.resize((round(im.width * disp), round(im.height * disp)), Image.LANCZOS)
+        cx, ey = (fx + side / 2) * disp, (fy + side * 0.55) * disp
+        crop = big.crop((round(cx - tw / 2), round(ey - th * 0.45), round(cx + tw / 2), round(ey + th * 0.55)))
+        x, y = 40 + i * (tw + 14), 130
+        tile = Image.new("RGB", (tw, th), PANEL)
+        tile.paste(crop, (0, 0), crop)
+        sheet.paste(tile, (x, y))
+        dev = (w / med - 1) * 100
+        col = (240, 110, 100) if abs(dev) > 10 else ((240, 200, 110) if abs(dev) >= 5 else TEXT)
+        d.text((x + tw // 2, y + th + 16), name, font=font("bold", 28), fill=TEXT, anchor="ma")
+        d.text((x + tw // 2, y + th + 56), f"{w:.0f}px（{dev:+.0f}%）", font=font("medium", 24), fill=col, anchor="ma")
+    out = OUT_ROOT / "face-size-ingame.png"
+    sheet.save(out, optimize=True)
+    print(out.relative_to(ROOT), sheet.size)
+    return out
+
+
 if __name__ == "__main__":
     chars = load_characters()
-    targets = sys.argv[1:] or ["minto", *CHARS, "lineup"]
+    targets = sys.argv[1:] or ["minto", *CHARS, "lineup", "facesize"]
     for t in targets:
         if t == "lineup":
             build_lineup(chars)
+        elif t == "facesize":
+            build_face_size(chars)
         else:
             build(t, chars)
