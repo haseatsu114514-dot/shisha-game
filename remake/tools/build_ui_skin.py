@@ -26,7 +26,6 @@ SPRITES = {
     "button": {"source_size": (2172, 724), "crop": (48, 166, 2122, 544), "width": 960},
     "map-pin": {"source_size": (1448, 1086), "crop": (19, 165, 1430, 904), "width": 400},
     "heart": {"source_size": (1254, 1254), "crop": (48, 137, 1206, 1188), "width": 96},
-    "reward": {"source_size": (2172, 724), "crop": (5, 86, 2168, 633), "width": 800},
     "reward-clean": {"source_size": (2172, 724), "crop": (5, 86, 2168, 633), "width": 800},
     "gauge-frame": {"source": "gauge", "source_size": (1774, 887), "crop": (43, 263, 1733, 373), "width": 440},
     "gauge-fill": {"source": "gauge", "source_size": (1774, 887), "crop": (43, 565, 1733, 638), "width": 440},

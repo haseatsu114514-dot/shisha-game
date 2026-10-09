@@ -4,15 +4,7 @@
 すべて **Instrumental（歌なし）** 指定。ループ端のフェードはコード側（sfx.js）が
 処理するので、曲側にフェードアウトを入れないこと。
 
-受け取り後の組み込み（Claude側の仕事）:
-1. `assets/audio/bgm/<キー名>.mp3` に上書き配置（キー名は変えない）
-2. 1ファイル配布版に載せる曲だけ `web/build_standalone.py` の `BGM_FILES` に追加
-   （埋め込みは先頭約75秒で切ってループ＋起動時間が延びるので厳選。
-   推奨: **bgm_map のみ埋め込み**、大会系3曲とrival_shopは分割版専用でよい）
-3. 未配線の2曲は配置後に鳴らす場所を配線する:
-   - `bgm_map` → `showMap()` の `SFX.bgm("kansetsu_shomei_to_black_coffee")` を差し替え
-   - `bgm_rival_shop` → `doVisit()` のライバル店（naru/adam/minto/ch2勢）で `SFX.bgm`
-4. `python3 web/build_standalone.py` → ブラウザで切替・ループ継ぎ目・音量（BGM_BASE=0.35）を耳で確認
+受け取り後の組み込みは `.claude/skills/suno-bgm-prompt/SKILL.md` の Step 3（配置 → `python3 remake/tools/build_manifest.py` → 鳴らす場所の確認）に従う。
 
 ---
 
