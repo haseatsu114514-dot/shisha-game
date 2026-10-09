@@ -5,7 +5,7 @@
     "output": "assets/ui/title_arts/title_art_tsumugi_lavender_smoke.png",
     "revision": 2,
     "qa": {
-      "character": "Checked bob/floral hoodie/red-brown eyes for Tsumugi; braids/gold sleepy eyes/cardigan/sage skirt for Mashiro against canonical sprite. Revised face prioritizes original design.",
+      "character": "Canonical chestnut bob, red-brown eyes, purple floral hoodie and reserved original face.",
       "background": "Golden daytime window/plants/cream wall.",
       "heat": "Distinct vented silver/graphite lidded metal HMD on ceramic bowl; no exposed direct-foil coals.",
       "hose": "Continuous purple loop from side port to silver rigid handle base; all joins visible.",
@@ -14,59 +14,41 @@
     }
   },
   {
+    "id": "tsumugi_leaf_cat_drawing",
+    "source": "/workspace/generated_images/exec-bbef5846-49e7-43c1-852a-04b27239c399.png",
+    "output": "assets/ui/title_arts/title_art_tsumugi_leaf_cat_drawing.png",
+    "revision": 2,
+    "qa": {
+      "character": "Canonical short chestnut bob, red-brown eyes, purple floral hoodie; quiet original face and cracked tablet.",
+      "background": "Sunset city window and drawing desk; distinct from the daytime smoking corner.",
+      "activity": "Stylus drawing a leaf-eared cat with curled smoky tail on her cracked tablet.",
+      "hardware": "No smoking or heat-management hardware in use."
+    }
+  },
+  {
+    "id": "tsumugi_plants_stall",
+    "source": "/workspace/generated_images/exec-6bb99802-2b9a-46d6-b9fd-1ffcf2ba520a.png",
+    "output": "assets/ui/title_arts/title_art_tsumugi_plants_stall.png",
+    "revision": 2,
+    "qa": {
+      "character": "Canonical chestnut bob, purple floral hoodie, black pleated skirt and knee socks; tablet carried in bag.",
+      "background": "Outdoor florist with blue-and-cream awning, flower buckets and bright daylight.",
+      "activity": "Both hands support a small pot of lavender; calm reserved expression.",
+      "hardware": "No smoking or heat-management hardware."
+    }
+  },
+  {
     "id": "mashiro_heavy_smoke",
     "source": "/workspace/generated_images/exec-6db0f974-151e-4132-97a5-57a54b8ea110.png",
     "output": "assets/ui/title_arts/title_art_mashiro_heavy_smoke.png",
     "revision": 2,
     "qa": {
-      "character": "Checked bob/floral hoodie/red-brown eyes for Tsumugi; braids/gold sleepy eyes/cardigan/sage skirt for Mashiro against canonical sprite. Revised face prioritizes original design.",
+      "character": "Canonical ash-blonde braids, sleepy gold eyes, beige cardigan and sage skirt; original young adult face.",
       "background": "Nighttime brick wall, burgundy sofa, rainy window.",
       "heat": "Distinct vented silver/graphite lidded metal HMD on ceramic bowl; no exposed direct-foil coals.",
       "hose": "Continuous dark hose from handle and side port; lower curve naturally hidden by foreground table/lantern.",
       "tip": "Short translucent tip on rigid handle, ordinary jewelry not mouthpiece.",
       "smoke": "From lips, handle held away from lips."
-    }
-  },
-  {
-    "id": "minto_mint_smoke",
-    "source": "/workspace/generated_images/exec-53f7ff70-b044-4af9-8140-22b8e82945db.png",
-    "output": "assets/ui/title_arts/title_art_minto_mint_smoke.png",
-    "revision": 2,
-    "qa": {
-      "character": "Canonical long black hair, green eyes, black/mint frilled costume, horn/bat accessories; rounder original face prioritized.",
-      "background": "Bright cream/mint cafe counter with dessert dishes, daylight.",
-      "heat": "Separate vented lidded silver HMD above ceramic bowl; no direct-foil coals.",
-      "hose": "Mint hose side port → loop below counter edge → rigid black handle base, consistent color/width at occlusion.",
-      "tip": "Small green hygienic tip at handle top; heart necklace remains ordinary jewelry.",
-      "smoke": "Origin at lips; no smoke from HMD or hose."
-    }
-  },
-  {
-    "id": "ageha_gummy_smoke",
-    "source": "/workspace/generated_images/exec-b4ac15c6-1f5a-4a06-b54a-0c28e898ed13.png",
-    "output": "assets/ui/title_arts/title_art_ageha_gummy_smoke.png",
-    "revision": 2,
-    "qa": {
-      "character": "Honey-gold twin ponytails, pink/white bear clips, gold eyes, leopard jacket/pink top; cheerful original face.",
-      "background": "Pink/leopard ParaPara lounge and illuminated photo-booth edge at dusk.",
-      "heat": "Separate low metal vented charcoal chamber on ceramic bowl; coals visible at chamber opening, not on foil.",
-      "hose": "One uninterrupted coral hose loop visibly runs side port → rigid amber handle base.",
-      "tip": "Small translucent tip on handle; ordinary gold heart pendant stays jewelry.",
-      "smoke": "Origin at lips; no smoke from HMD or hose."
-    }
-  },
-  {
-    "id": "rin_sample_smoke",
-    "source": "/workspace/generated_images/exec-072a180d-5503-48b2-944f-99a9929b8483.png",
-    "output": "assets/ui/title_arts/title_art_rin_sample_smoke.png",
-    "revision": 2,
-    "qa": {
-      "character": "Canonical long layered dark wolf-cut, blue-gray half-lidded eyes, rolled white shirt, black slacks, silver hoops; original adult face.",
-      "background": "Steel shelving with sample tins and delivery boxes; cool blue showroom at night.",
-      "heat": "Separate vented lidded silver HMD on ceramic bowl; no exposed direct-foil coals.",
-      "hose": "One continuous dark hose loop from proper square-base body side port to blue-grip rigid handle base.",
-      "tip": "Small pale mouth tip at the rigid handle end, proportionate to mouth.",
-      "smoke": "Origin at lips; no smoke from HMD or hose."
     }
   },
   {
@@ -84,6 +66,72 @@
     }
   },
   {
+    "id": "mashiro_quiet_tea",
+    "source": "/workspace/generated_images/exec-2bc923bd-9260-43ca-aab3-704b4b1b7ce4.png",
+    "output": "assets/ui/title_arts/title_art_mashiro_quiet_tea.png",
+    "revision": 2,
+    "qa": {
+      "character": "Ash-blonde twin braids, sleepy gold eyes, beige cardigan and white ribbon blouse with sage skirt.",
+      "background": "Golden afternoon tea counter with ceramics and a large sunlit window.",
+      "activity": "One hand holds teapot handle; the other secures the lid while pouring into a cup.",
+      "hardware": "No smoking or heat-management hardware in use."
+    }
+  },
+  {
+    "id": "minto_mint_smoke",
+    "source": "/workspace/generated_images/exec-53f7ff70-b044-4af9-8140-22b8e82945db.png",
+    "output": "assets/ui/title_arts/title_art_minto_mint_smoke.png",
+    "revision": 2,
+    "qa": {
+      "character": "Canonical long black hair, green eyes, black/mint frilled costume, horn/bat accessories; rounder original face prioritized.",
+      "background": "Bright cream/mint cafe counter with dessert dishes, daylight.",
+      "heat": "Separate vented lidded silver HMD above ceramic bowl; no direct-foil coals.",
+      "hose": "Mint hose side port → loop below counter edge → rigid black handle base, consistent color/width at occlusion.",
+      "tip": "Small green hygienic tip at handle top; heart necklace remains ordinary jewelry.",
+      "smoke": "Origin at lips; no smoke from HMD or hose."
+    }
+  },
+  {
+    "id": "minto_bowl_preparation",
+    "source": "/workspace/generated_images/exec-759e2be7-bab5-49ef-b824-101aa632ad1a.png",
+    "output": "assets/ui/title_arts/title_art_minto_bowl_preparation.png",
+    "revision": 3,
+    "qa": {
+      "character": "Preserves canonical green eyes, black hair, horn/bat accessories and original face achieved in revision 2.",
+      "background": "Bright cream-and-mint cafe preparation counter.",
+      "stage": "Separate palm-size cylindrical metal HMD chamber and vented lid with black side handle; no invented axle or ceramic pedestal.",
+      "bowl": "Small footed green ceramic phunnel with one raised central air hole and moist leaf in the surrounding ring.",
+      "heat": "Unheated empty HMD, no charcoal, foil or smoke.",
+      "hands": "Upper hand holds separate lid by handle; lower palm supports chamber."
+    }
+  },
+  {
+    "id": "minto_chocomint_parfait",
+    "source": "/workspace/generated_images/exec-5c00d79c-20f2-4f73-aec3-ade75a1b8ed5.png",
+    "output": "assets/ui/title_arts/title_art_minto_chocomint_parfait.png",
+    "revision": 2,
+    "qa": {
+      "character": "Canonical black hair, green eyes, horn/bat accessories, black-and-mint costume and ordinary heart pendant.",
+      "background": "Warm dessert counter with cafe ceramics and ingredient jars.",
+      "activity": "Finishes a layered chocomint parfait with a small chocolate wafer; glass steadied by the other hand.",
+      "hardware": "No smoking or heat-management hardware in use."
+    }
+  },
+  {
+    "id": "ageha_gummy_smoke",
+    "source": "/workspace/generated_images/exec-12830207-ef3d-4b2e-b008-eb70ba6b9415.png",
+    "output": "assets/ui/title_arts/title_art_ageha_gummy_smoke.png",
+    "revision": 3,
+    "qa": {
+      "character": "Preserves canonical youthful gold-eyed face, twin ponytails, bear clips and leopard/pink outfit.",
+      "background": "Pink/leopard lounge and illuminated photo-booth edge at dusk.",
+      "heat": "Compact separate silver HMD with closed lid and visible side slots above distinct ceramic bowl and tray. Charcoal concealed inside; no foil or exposed top coals.",
+      "hose": "Continuous pink hose from proper body side port through a single loop to rigid amber handle base.",
+      "tip": "Small translucent tip at handle top; gold heart pendant remains ordinary jewelry.",
+      "smoke": "Origin at lips while handle is held away; no smoke from device."
+    }
+  },
+  {
     "id": "ageha_hmd_setup",
     "source": "/workspace/generated_images/exec-34863e9c-e846-481e-8322-6f02fa01f042.png",
     "output": "assets/ui/title_arts/title_art_ageha_hmd_setup.png",
@@ -95,6 +143,56 @@
       "hose": "No hose in use; background pipe remains in preparation stage.",
       "heat": "No lit coals, smoke or direct charcoal.",
       "hands": "Upper hand holds lid's black handle; lower palm supports metal chamber."
+    }
+  },
+  {
+    "id": "ageha_photo_booth",
+    "source": "/workspace/generated_images/exec-42698176-caf1-433a-b4f3-e87ece681cf9.png",
+    "output": "assets/ui/title_arts/title_art_ageha_photo_booth.png",
+    "revision": 2,
+    "qa": {
+      "character": "Gold twin ponytails, pink/white bear clips, gold eyes, leopard jacket and pink heart top; cheerful original face.",
+      "background": "Pink illuminated photo booth and city arcade doorway at sunset.",
+      "activity": "Decorated phone in one hand, V-sign with the other.",
+      "hardware": "No smoking or heat-management hardware."
+    }
+  },
+  {
+    "id": "rin_sample_smoke",
+    "source": "/workspace/generated_images/exec-072a180d-5503-48b2-944f-99a9929b8483.png",
+    "output": "assets/ui/title_arts/title_art_rin_sample_smoke.png",
+    "revision": 2,
+    "qa": {
+      "character": "Canonical long layered dark wolf-cut, blue-gray half-lidded eyes, rolled white shirt, black slacks, silver hoops; original adult face.",
+      "background": "Steel shelving with sample tins and delivery boxes; cool blue showroom at night.",
+      "heat": "Separate vented lidded silver HMD on ceramic bowl; no exposed direct-foil coals.",
+      "hose": "One continuous dark hose loop from proper square-base body side port to blue-grip rigid handle base.",
+      "tip": "Small pale mouth tip at the rigid handle end, proportionate to mouth.",
+      "smoke": "Origin at lips; no smoke from HMD or hose."
+    }
+  },
+  {
+    "id": "rin_aroma_tin",
+    "source": "/workspace/generated_images/exec-41e3f512-8f60-46f0-9b3d-dc74822c41ef.png",
+    "output": "assets/ui/title_arts/title_art_rin_aroma_tin.png",
+    "revision": 2,
+    "qa": {
+      "character": "Dark layered wolf-cut, narrow blue-gray eyes, white rolled shirt, black slacks and silver hoops/pendant; original adult impression.",
+      "background": "Evening sample counter, metal tins and amber task lamp.",
+      "activity": "Smells an open leaf sample tin while writing on an inventory clipboard.",
+      "hardware": "Unheated sample leaf only; no burning charcoal or smoking device."
+    }
+  },
+  {
+    "id": "rin_coffee_inventory",
+    "source": "/workspace/generated_images/exec-eda68b79-2ea8-4ff2-8e04-ea65695a1bdb.png",
+    "output": "assets/ui/title_arts/title_art_rin_coffee_inventory.png",
+    "revision": 2,
+    "qa": {
+      "character": "Canonical dark layered hair, blue-gray eyes, rolled white shirt, black slacks and silver accessories.",
+      "background": "Early-morning industrial stockroom with pale blue window, delivery boxes and metal shelves.",
+      "activity": "Coffee break with clipboard of stock records; natural seated work posture.",
+      "hardware": "No smoking or heat-management hardware in use."
     }
   }
 ]
