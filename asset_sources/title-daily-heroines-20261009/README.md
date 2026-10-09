@@ -6,7 +6,10 @@
 |---|---|---|
 | 個別背景・ドット感の19案 | 6人×3場面＋みんとの仕事と私生活の中間の1場面。キャラごとに違う台・背景・色 | [19案の画像一覧](../title-art/heroine-concepts-v2-personality-pixel-20261008/README.md) |
 | 最初の15案 | 5人×3場面。新しい案と比較するため保持 | [旧案の画像一覧](../title-art/heroine-concepts-v1-20261008/README.md) |
-| 別チャットのタイトル・日常・制作カット | このフォルダを使用して制作中。原画と検品記録は同じ候補一覧へ追加できる | [別チャットの作業ブランチ](https://github.com/haseatsu114514-dot/shisha-game/tree/codex/heroine-title-daily-art-20261009/asset_sources/title-daily-heroines-20261009) |
+| 別チャットの日常・タイトル候補 | 日常5案を保存済み。シーシャ案は縮尺・ホース接続を修正中 | [別チャットの候補一覧（制作中）](https://github.com/haseatsu114514-dot/shisha-game/blob/codex/heroine-title-candidates-20261009/asset_sources/heroine-title-candidates-20261009/README.md) |
+| 別チャットの初期制作記録 | このフォルダを使用していた制作履歴。原画と検品記録を保持 | [初期の作業ブランチ](https://github.com/haseatsu114514-dot/shisha-game/tree/codex/heroine-title-daily-art-20261009/asset_sources/title-daily-heroines-20261009) |
+
+別チャットの制作中の原画は作業ブランチへのリンクで見られます。この入口から両方の候補集を開けるようにし、原画と履歴はそれぞれの保存先を維持します。
 
 ## 19案をキャラ別に見る
 

@@ -1,0 +1,47 @@
+{
+  "main": "b0577fe",
+  "source": "PR #240までのmainをマージして比較",
+  "audienceJsMatchesPublished": false,
+  "productionAudienceJsChanged": true,
+  "defaultPreviewModeBefore": "drill",
+  "defaultPreviewModeAfter": "tournament",
+  "modeVisibility": {
+    "tournament": "審査員またはパッキー1人とコメント。フッターは撤去",
+    "tutorial": "スミさんとコメント",
+    "drill": "はじめの心の声。4工程の作業中と3段階の結果"
+  },
+  "runtimeArt": "assets/ui/making/stove_coil.png",
+  "runtimeWebp": "remake/img/ui/making/stove_coil.webp",
+  "runtimeArtSha256": "cee2f0ce5d0a479f8506e2eb0345131da85fddf93a29e203da547661fd4f205c",
+  "runtimeEqualsGenerator": true,
+  "dialMarkerOriginal": [
+    9,
+    21
+  ],
+  "dialMarkerFinal": [
+    6,
+    24
+  ],
+  "dialMarkerRejectedLongVersion": [
+    6,
+    38
+  ],
+  "note": "目印は下側の短い矩形。元寸法の完全なピクセル複製ではなく生成修正版。つまみの視点と垂直の溝を保持。",
+  "comicCentralPeg": "removed",
+  "commentaryBehaviorMatchedPublishedBeforeSizeEdit": true,
+  "audienceSize": {
+    "heightBefore": 140,
+    "heightIntermediate": 112,
+    "heightAfter": 88,
+    "portraitWidthBefore": 300,
+    "portraitWidthAfter": 200,
+    "faceHeightBefore": 100,
+    "faceHeightAfter": 56,
+    "commentFontBefore": 16,
+    "commentFontAfter": 13
+  },
+  "footerRemoved": true,
+  "mcSpeaker": "pakki",
+  "innerVoiceSource": "data/dialogue/craft_inner_voice.json",
+  "scoringChanged": false
+}

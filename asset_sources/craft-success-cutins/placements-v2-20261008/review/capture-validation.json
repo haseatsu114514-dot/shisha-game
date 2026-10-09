@@ -1,0 +1,11 @@
+{
+  "url": "http://127.0.0.1:8125/craft-cutin-placement/tools/browser/craft_cutin_preview.html",
+  "video": "center-and-full-pause.mp4",
+  "videoDurationSeconds": 8.408,
+  "variants": [
+    "center",
+    "full"
+  ],
+  "staticShotsFrom": "craft_cutin_preview_verify.cjs",
+  "browserErrors": []
+}

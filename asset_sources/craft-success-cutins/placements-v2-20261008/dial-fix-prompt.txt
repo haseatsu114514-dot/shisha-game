@@ -1,0 +1,14 @@
+スタイル: 薄暗いシーシャラウンジの空気。`assets/backgrounds/bg_eden_shop.png` 程度の2Dドット絵〜ピクセルペインター調で、輪郭・影・質感に細かいドット感を残す。リアル写真調や滑らかすぎる3D調は避ける。シーシャ台の先端は小さい凸型の金属ポストにし、凹んだカップ型・ボウル一体型・大きな先端パーツにしない。手・腕は細身で中性的、明るいピーチ系の同一肌色に統一する。
+配色: 黒〜濃紫の闇に、琥珀／金（#f4d27a系）の暖色ネオンが差す。煙のかすみ。
+視点: 作りパートは一人称（プレイヤーの手元を上から見下ろす角度）。
+出力: PNG・透過指定のものは背景完全透過。@2x（実寸の2倍）で。指定なき限り 1280×720 基準。
+NG: 文字/ロゴ/UI/数字の焼き込み（数値はゲーム側UIで出すので画像に入れない）、watermark。
+
+Reference 1 is the current corrected heater image, but the orange index tick on the front dial is STILL TOO LONG (27 pixels long). Reference 2 is the ORIGINAL with a SHORT 21-pixel orange tick; use it to match the SHORT mark length and thickness exactly.
+
+Make an ultra-minimal edit of Reference 1: SHORTEN the orange tick FROM ITS TOP END by 6 pixels. Erase just the upper 6 pixels of orange, filling those 6 pixels with the same dark dial face color. LEAVE THE LOWER END where it is. Result: the single orange mark should be a SHORT 21-pixel-long rectangular tick in the LOWER HALF of the dial face, pointing straight DOWN at 6 o'clock. It should be about 9 pixels thick, the SAME short length and thickness as the top tick in Reference 2. Coordinates on the full 1402x1122 canvas: small orange tick approximately x1046..1055, y946..967. Do not start the mark at y940; that is too high and makes it too long. There must be NO orange in the center or upper half of the face. No long center-to-rim stripe. Do not lengthen it. Do not add a second tick.
+
+Everything except those upper 6 pixels of orange should be preserved from Reference 1. In particular preserve the ORIGINAL dial body as in Reference 2: same round face, vertical body ribs, camera perspective, size, shading, no slant. Same heater, spiral coil, rim supports, feet, all original texture and transparency. No new peg. No text, numbers, UI or logo. Transparent PNG, same 1402x1122 canvas.
+
+保存先: asset_sources/craft-success-cutins/placements-v2-20261008/stove-on.png
+本番の採用先: assets/ui/making/stove_coil.png
