@@ -11,7 +11,7 @@ description: オーナーが「立ち絵そろえ」と言ったら使う（「�
 | 何を見るか | ファイル |
 |---|---|
 | 進捗（どこまで済んだか・次は何か） | [progress.md](../../../asset_sources/portraits/resolution-upgrade-20261009/progress.md) |
-| 1表情ずつの完成プロンプト・添付画像・生成後チェック | [prompts.md](../../../asset_sources/portraits/resolution-upgrade-20261009/prompts.md) |
+| 1表情ずつの完成プロンプト・参照画像のパス・生成後チェック | [prompts.md](../../../asset_sources/portraits/resolution-upgrade-20261009/prompts.md) |
 | 調査結果と方針（なぜ直すか・何を変えないか） | [README.md](../../../asset_sources/portraits/resolution-upgrade-20261009/README.md) |
 | 原画をゲーム用896x1200へ合わせる | `tools/fit_portrait.py` |
 
@@ -47,9 +47,9 @@ description: オーナーが「立ち絵そろえ」と言ったら使う（「�
 ### 2. 生成（1表情ずつ）
 
 1. `prompts.md` の該当ブロックの**英文をそのまま**使う（言い換え・要約しない）。オーナーが直す点を言った場合だけ、末尾に英語で1〜2文足す。
-2. 添付画像はブロックの「添付」のとおり、①→②→③→④の順で役割を書き添える。
+2. 参照画像は、ブロックの「参照画像」に書いた**リポジトリのファイルを自分で読み込んで**画像生成ツールに渡す（①→②→③→④の順で、プロンプトにそれぞれの役割を書く）。**オーナーに画像の保存や添付を頼まない。** 作業場所にファイルが無いときは GitHub の `origin/main` から取得する。
    **段階3では、②に合格済みの新しい通常の原画 `asset_sources/portraits/<id>-remaster-v2/normal-source.png` を使う。**
-3. 画像生成ツールで生成する。**このチャットに画像生成ツールが無いとき**は、生成をせず、オーナーに「このブロックと添付4枚をChatGPT等に投げてください。できた画像をこのチャットに貼るか、`asset_sources/portraits/<id>-remaster-v2/<face>-source.png` に置いてください」と伝えて止まる（受け取った後は 2-4 から続ける）。
+3. 画像生成ツールで生成する。**このチャットに画像生成ツールが無いとき**は生成できない旨と、画像生成が使える環境（Codex など）で「立ち絵そろえ」を送り直してほしいことを伝えて止まる。オーナーに手作業の保存・添付をさせない。
 4. 原画を `asset_sources/portraits/<id>-remaster-v2/<face>-source.png` に**無加工で**保存。使ったプロンプトを `<face>-prompt.txt`、添付した画像のパスとSHA-256・生成日・ツール名を `generation.json` に追記する。
 5. `python3 tools/fit_portrait.py asset_sources/portraits/<id>-remaster-v2/<face>-source.png <id> <face>` を実行（ゲームの素材は触らない）。`<face>-preview.png` と比較画像 `<face>-compare.png` ができる。WARN（原画が小さい・透過なし・端で切れる）が出たら作り直す。
 6. 比較画像と原画を**原寸で実際に見て** `prompts.md` の生成後チェックを確かめる。不合格なら直す点を英語で1文足して作り直す（2回まで。直らなければその旨を記録して確認に回す）。見ていない画像に「確認済み」と書かない。
