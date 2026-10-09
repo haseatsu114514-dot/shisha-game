@@ -212,6 +212,7 @@ let pendingBgm = null;
 // 実ファイルが無い曲の代用: key → 合成パターン
 const SYNTH_FALLBACK = {
   bgm_tournament_edm: "battle",
+  bgm_tournament_craft: "battle",
   bgm_tournament_wait: "tension",
   bgm_result_emotional: "calm",
   bgm_map: "calm",
@@ -221,9 +222,45 @@ const SYNTH_FALLBACK = {
 /** 今鳴っている曲のキー（自動再生待ちの間は null） */
 export const currentBgm = () => currentKey;
 
-// 同じ設定音量でも突出していたサメちゃんの曲だけを整える（設定を変えても倍率を保つ）。
-const BGM_GAIN = { sweets_or_sweets: 0.55 };
+// 新規大会曲は約 -14 LUFS にそろえる。設定変更・フェード中も曲ごとの倍率を保つ。
+const BGM_GAIN = { sweets_or_sweets: 0.55, bgm_tournament_edm: 0.51, bgm_tournament_craft: 0.67 };
 const bgmLevel = (key) => config.bgmVolume * (BGM_GAIN[key] ?? 1);
+
+// 単体MP3の再配布を避けるゲーム専用形式（pack_bgm.py と対応）。HTTPS/localhostで復元する。
+const PACKED_MAGIC = "SUIENBGM1";
+const PACKED_KEY = "ac0152dff6217d519198cfba347e25d5dc5d853aaee8252f72da0bbdc626b8f2";
+const packedSources = new Map();
+let packedCryptoKey = null;
+
+function bgmSource(url) {
+  if (!url.endsWith(".bgm")) return Promise.resolve(url);
+  if (!packedSources.has(url)) {
+    const source = (async () => {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`BGM HTTP ${response.status}`);
+      const bytes = new Uint8Array(await response.arrayBuffer());
+      const header = bytes.subarray(0, PACKED_MAGIC.length);
+      if (bytes.length < PACKED_MAGIC.length + 12 + 16 || new TextDecoder().decode(header) !== PACKED_MAGIC) {
+        throw new Error("Invalid game BGM format");
+      }
+      packedCryptoKey ??= crypto.subtle.importKey("raw",
+        Uint8Array.from(PACKED_KEY.match(/../g), (hex) => parseInt(hex, 16)), "AES-GCM", false, ["decrypt"]);
+      const audio = await crypto.subtle.decrypt({ name: "AES-GCM",
+        iv: bytes.subarray(PACKED_MAGIC.length, PACKED_MAGIC.length + 12), additionalData: header },
+      await packedCryptoKey, bytes.subarray(PACKED_MAGIC.length + 12));
+      return URL.createObjectURL(new Blob([audio], { type: "audio/mpeg" }));
+    })();
+    packedSources.set(url, source);
+    source.catch(() => { packedSources.delete(url); }); // 一時的な取得失敗は次回に再試行できる。
+  }
+  return packedSources.get(url);
+}
+
+/** 大会到着中に先読み。失敗しても進行を止めず、再生時に再試行する。 */
+export function preloadBgm(key) {
+  const url = bgmUrl(key);
+  return url ? bgmSource(url).then(() => true, () => false) : Promise.resolve(false);
+}
 
 export function playBgm(key) {
   if (key === currentKey) return;
@@ -234,12 +271,31 @@ export function playBgm(key) {
   if (!c || c.state === "suspended") { pendingBgm = key; currentKey = null; return; }
   const url = bgmUrl(key);
   if (url) {
-    const a = new Audio(url);
+    const packed = url.endsWith(".bgm");
+    const a = packed ? new Audio() : new Audio(url);
     a.loop = true;
     a.volume = 0;
-    a.play().catch(() => { pendingBgm = key; currentKey = null; });
     currentEl = a;
-    fadeEl(a, () => bgmLevel(key), 1200);
+    const start = () => {
+      if (currentEl !== a) return; // 読み込み中に別曲へ移った場合、古い曲を鳴らさない。
+      a.play().catch(() => {
+        if (currentEl === a) { pendingBgm = key; currentKey = null; }
+      });
+      fadeEl(a, () => bgmLevel(key), 1200);
+    };
+    if (packed) {
+      bgmSource(url).then((source) => {
+        if (currentEl !== a) return;
+        a.src = source;
+        start();
+      }, (error) => {
+        if (currentEl !== a) return;
+        currentEl = null;
+        a.pause();
+        if (SYNTH_FALLBACK[key]) synthStop = startSynth(SYNTH_FALLBACK[key]);
+        console.warn("[BGM] Could not load game audio", key, error);
+      });
+    } else start();
   } else if (SYNTH_FALLBACK[key]) {
     synthStop = startSynth(SYNTH_FALLBACK[key]);
   }
@@ -247,23 +303,32 @@ export function playBgm(key) {
 
 export function stopBgm(fadeSec = 0.8) {
   currentKey = null;
+  pendingBgm = null;
   if (currentEl) {
     const a = currentEl;
     currentEl = null;
-    fadeEl(a, 0, fadeSec * 1000).then(() => a.pause());
+    fadeEl(a, 0, fadeSec * 1000).then((finished) => { if (finished) a.pause(); });
   }
   if (synthStop) { synthStop(fadeSec); synthStop = null; }
 }
 
+const elFades = new WeakMap();
 function fadeEl(a, to, ms) {
   return new Promise((res) => {
+    elFades.get(a)?.(false); // 前のフェードを止め、切替途中の音量の再上昇を防ぐ。
+    const finish = (completed) => {
+      if (elFades.get(a) === finish) elFades.delete(a);
+      res(completed);
+    };
+    elFades.set(a, finish);
     const from = a.volume;
     const t0 = performance.now();
     const step = () => {
-      const k = Math.min(1, (performance.now() - t0) / ms);
+      if (elFades.get(a) !== finish) return;
+      const k = ms <= 0 ? 1 : Math.min(1, (performance.now() - t0) / ms);
       const target = typeof to === "function" ? to() : to;
       a.volume = Math.max(0, Math.min(1, from + (target - from) * k));
-      if (k < 1) requestAnimationFrame(step); else res();
+      if (k < 1) requestAnimationFrame(step); else finish(true);
     };
     step();
   });
