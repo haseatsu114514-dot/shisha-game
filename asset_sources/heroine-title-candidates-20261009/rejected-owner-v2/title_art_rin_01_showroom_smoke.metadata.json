@@ -1,0 +1,25 @@
+{
+  "id": "rin_01_v2",
+  "status": "rejected_by_owner",
+  "tool": "image_gen.imagegen",
+  "generated_original": "/workspace/generated_images/exec-5beaff5a-4ded-4d16-8840-ed769088587f.png",
+  "reference_paths": [
+    "/workspace/shisha-game/asset_sources/heroine-title-candidates-20261009/rejected-scale-v1/title_art_rin_01_showroom_smoke.png",
+    "/workspace/shisha-game/assets/sprites/characters/rin/chr_rin_normal.png",
+    "/workspace/scratch/hmd-model-refs/lotus-i-plus-silver-25.jpg",
+    "/workspace/scratch/installed-hardware/kaloud-lotus-installed-2021.png",
+    "/workspace/scratch/installed-hardware/full-lotus-vesper.jpg"
+  ],
+  "qa": {
+    "reviewed": true,
+    "identity": "修正前と同じ正規の顔・髪・衣装を維持",
+    "scale": "上部を縮小、長いステムと独立した受け皿を追加。HMD約95px／受け皿約260px／全高約650px。",
+    "hose": "側面ポート→一本のU字ホース→硬いハンドル。分岐・第三の端なし。",
+    "heat": "Lotus I+の低い三方向の蓋と一本の黒い取手。角炭2個を内部に収め、直炭なし。",
+    "plants": "室内の観葉植物・蔦を除去",
+    "texture": "細かなピクセルと材質を維持",
+    "text": "機材のロゴや読めない刻印を除去。UIなし。",
+    "superseded_review": "以前の縮尺／ホース合格扱いを撤回。口径だけで合格にせず、高さと脚の比率・自然な経路を再確認する。"
+  },
+  "owner_ng": "オーナー指摘：ハガルの脚と全高が短すぎる。縮小で口径だけに検品が偏った。"
+}
