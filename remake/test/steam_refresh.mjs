@@ -1,4 +1,4 @@
-// 実際の弾に対する範囲消去、初期の回復なし、成長による範囲・1段階回復・回数。
+// 一台につき一回の範囲消去、初期の回復なし、成長による範囲・1段階回復。
 // サーバー8123: node remake/test/steam_refresh.mjs （SHOTS=<フォルダ>）
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -32,19 +32,19 @@ try {
     };
     window.consume=key=>{
       const radius=T.steam.refreshEffect().radius,before=enemies();
-      const mental=document.querySelector('[data-test="mental-trace"]'),hits=document.querySelector('.dodge-hits'),thermo=document.querySelector('[data-test="steam-temperature"]');
-      const level=mental.dataset.level,misses=hits.textContent,temp=thermo.getAttribute('aria-valuenow'),shieldBefore=document.querySelector('.dodge-heart').classList.contains('shield');
+      const mental=document.querySelector('[data-test="mental-trace"]'),thermo=document.querySelector('[data-test="steam-temperature"]');
+      const level=mental.dataset.level,misses=mental.dataset.hits,temp=thermo.getAttribute('aria-valuenow'),shieldBefore=document.querySelector('.dodge-heart').classList.contains('shield');
       window.dispatchEvent(new KeyboardEvent('keydown',{key,bubbles:true}));
       return {radius,near:before.filter(b=>b.distance<=radius).length,far:before.filter(b=>b.distance>radius).length,
         correctlyRemoved:before.every(b=>b.node.isConnected===(b.distance>radius)),
-        remaining:enemies().length,shieldBefore,levelBefore:level,levelAfter:mental.dataset.level,missesUnchanged:misses===hits.textContent,tempUnchanged:temp===thermo.getAttribute('aria-valuenow')};
+        remaining:enemies().length,shieldBefore,levelBefore:level,levelAfter:mental.dataset.level,missesUnchanged:misses===mental.dataset.hits,tempUnchanged:temp===thermo.getAttribute('aria-valuenow')};
     };
   });
   const perks=await page.evaluate(()=>[10,21,41,61,81].map(guts=>{
     T.core.state.stats.guts=guts;const effect=T.steam.refreshEffect();
     return {radius:Number.isFinite(effect.radius)?effect.radius:'all',recovery:effect.mentalRecovery,stock:T.steam.refreshStock()};
   }));
-  assert.deepEqual(perks,[{radius:180,recovery:false,stock:2},{radius:220,recovery:false,stock:2},{radius:265,recovery:true,stock:2},{radius:310,recovery:true,stock:3},{radius:'all',recovery:true,stock:4}]);
+  assert.deepEqual(perks,[{radius:180,recovery:false,stock:1},{radius:220,recovery:false,stock:1},{radius:265,recovery:true,stock:1},{radius:310,recovery:true,stock:1},{radius:'all',recovery:true,stock:1}]);
   const finish=async()=>{
     await page.waitForSelector('.result-card.show',{timeout:20000});
     await page.locator('[data-test="step-details"]').click();
@@ -58,8 +58,10 @@ try {
 
   await page.evaluate(()=>startSteam(10));
   const button=page.locator('[data-test="dodge-refresh"]');await button.waitFor();
-  assert(await button.isDisabled());assert.match(await button.textContent(),/×2/);
+  assert(await button.isDisabled());assert.equal(await button.getAttribute('data-remaining'),'1');
   await page.waitForFunction(()=>!document.querySelector('[data-test="dodge-refresh"]').disabled);
+  await page.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'x',repeat:true,bubbles:true})));
+  assert.equal(await button.getAttribute('data-remaining'),'1','Repeated key spent the only refresh');
   await page.waitForFunction(()=>{
     const b=enemies();return !document.querySelector('.dodge-heart').classList.contains('shield')&&b.some(b=>b.distance<175)&&b.some(b=>b.distance>185);
   },null,{timeout:8000});
@@ -76,26 +78,25 @@ try {
   assert(medium.near>0&&medium.far>0,JSON.stringify(medium));assert(medium.correctlyRemoved);
   assert.equal(medium.levelAfter,medium.levelBefore,'Base refresh healed mental state');
   assert(medium.missesUnchanged&&medium.tempUnchanged);
-  assert.match(await button.textContent(),/×1/);assert.equal(await page.locator('.dodge-refresh-fx').count(),1);
+  assert.equal(await button.getAttribute('data-remaining'),'0');assert(await button.isDisabled());assert.equal(await page.locator('.dodge-refresh-fx').count(),1);
   const shield=await page.evaluate(async()=>{
-    const hit=document.querySelector('.dodge-hits').textContent;
+    const mental=document.querySelector('[data-test="mental-trace"]'),hit=mental.dataset.hits;
     await new Promise(requestAnimationFrame);
-    return {same:hit===document.querySelector('.dodge-hits').textContent,shield:document.querySelector('.dodge-heart').classList.contains('shield')};
+    return {same:hit===mental.dataset.hits,shield:document.querySelector('.dodge-heart').classList.contains('shield')};
   });
   if(shield.same&&!medium.shieldBefore) assert(!shield.shield,'Base refresh granted invulnerability');
   if(shots) await page.screenshot({path:`${shots}/refresh-medium-after.png`});
   await page.waitForFunction(()=>spawnTimes.next,null,{timeout:1500});
   assert(await page.evaluate(()=>spawnTimes.next-spawnTimes.at)<800,'Refresh postponed the spawning schedule');
   await page.evaluate(()=>window.dispatchEvent(new KeyboardEvent('keydown',{key:'x',repeat:true,bubbles:true})));
-  assert.match(await button.textContent(),/×1/);
-  await page.keyboard.press('Space');assert.match(await button.textContent(),/×0/);assert(await button.isDisabled());
+  await page.keyboard.press('Space');assert.equal(await button.getAttribute('data-remaining'),'0');assert(await button.isDisabled());
   await page.waitForSelector('.dodge-word,.dodge-object');
   const empty=await page.evaluate(()=>{
     const before=enemies().map(b=>b.node);window.dispatchEvent(new KeyboardEvent('keydown',{key:'x',bubbles:true}));
     return before.every(n=>n.isConnected);
   });assert(empty,'Empty stock still cleared bullets');
-  const baseResult=await finish();assert.equal(baseResult.stats.refreshesUsed,2);
-  assert.match(baseResult.result,/リフレッシュで2回/);
+  const baseResult=await finish();assert.equal(baseResult.stats.refreshesUsed,1);
+  assert.match(baseResult.result,/リフレッシュで1回/);
   console.log('[refresh] PASS: medium range removes nearby real bullets and preserves distant bullets, no healing/invulnerability/spawn delay, repeat/empty guards, pure hit-based score');
 
   await page.evaluate(()=>startSteam(41));
@@ -110,7 +111,7 @@ try {
   await page.waitForFunction(()=>enemies().length>=3);
   const full=await page.evaluate(()=>consume('x'));
   assert(full.near>=3&&full.correctlyRemoved);assert.equal(full.remaining,0);
-  assert.match(await button.textContent(),/×3/);await finish();
+  assert.equal(await button.getAttribute('data-remaining'),'0');assert(await button.isDisabled());await finish();
   assert.deepEqual(errors,[]);
-  console.log('[refresh] PASS: growth expands range, adds one-step mental recovery, and unlocks full-field clearing and extra stocks');
+  console.log('[refresh] PASS: exactly one refresh at every level; growth expands range, adds one-step mental recovery, and unlocks full-field clearing');
 } finally {await browser.close();}

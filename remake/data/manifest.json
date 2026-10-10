@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-10 15:56 UTC",
+ "generated": "2026-10-10 16:18 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -272,11 +272,13 @@
   "coal_red.png",
   "coal_white.png",
   "foil_surface.png",
+  "hajime_steam_wait.png",
   "hookah_base.png",
   "hookah_stem.png",
   "hookah_tray.png",
   "kitchen_timer.png",
   "smoke_thick.png",
+  "steam_mind_world.png",
   "stove_coil.png",
   "ui_craft_button.png",
   "ui_craft_panel.png",
@@ -1166,6 +1168,13 @@
    0.8164,
    1.5
   ],
+  "hajime_steam_wait.png": [
+   0.3875,
+   0.1323,
+   0.7685,
+   0.9807,
+   0.7471
+  ],
   "hookah_base.png": [
    0.1898,
    0.0441,
@@ -1200,6 +1209,13 @@
    0.7937,
    1.0,
    1.7768
+  ],
+  "steam_mind_world.png": [
+   0.0,
+   0.0,
+   1.0,
+   1.0,
+   2.3039
   ],
   "stove_coil.png": [
    0.1262,
@@ -1413,11 +1429,13 @@
   "ui/making/coal_red.png",
   "ui/making/coal_white.png",
   "ui/making/foil_surface.png",
+  "ui/making/hajime_steam_wait.png",
   "ui/making/hookah_base.png",
   "ui/making/hookah_stem.png",
   "ui/making/hookah_tray.png",
   "ui/making/kitchen_timer.png",
   "ui/making/smoke_thick.png",
+  "ui/making/steam_mind_world.png",
   "ui/making/stove_coil.png",
   "ui/making/ui_craft_button.png",
   "ui/making/ui_craft_panel.png",

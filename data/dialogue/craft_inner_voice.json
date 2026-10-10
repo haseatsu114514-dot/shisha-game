@@ -51,15 +51,15 @@
     },
     {
       "dialogue_id": "craft_inner_steam_watch",
-      "lines": [{ "speaker": "hajime", "face": "normal", "text": "慌てずに、熱が入るのを待とう" }]
+      "lines": [{ "speaker": "hajime", "face": "normal", "text": "……" }]
     },
     {
       "dialogue_id": "craft_inner_steam_good",
-      "lines": [{ "speaker": "hajime", "face": "smile", "text": "呼吸が落ち着いてきた。このまま待とう" }]
+      "lines": [{ "speaker": "hajime", "face": "smile", "text": "……" }]
     },
     {
       "dialogue_id": "craft_inner_steam_bad",
-      "lines": [{ "speaker": "hajime", "face": "serious", "text": "気が散った。ひと呼吸置いて、手元に戻ろう" }]
+      "lines": [{ "speaker": "hajime", "face": "serious", "text": "……っ" }]
     },
     {
       "dialogue_id": "craft_inner_steam_excellent",

@@ -27,7 +27,7 @@ export function buildMentalTrace(width, height) {
       const phase = (x + motionTime * (85 + stress * 90)) % 128;
       const pulse = -26 * Math.exp(-(((phase - 46) / 4) ** 2)) + 13 * Math.exp(-(((phase - 52) / 5) ** 2)) - 5 * Math.exp(-(((phase - 34) / 7) ** 2));
       const noise = stress * 7 * Math.sin(x * .17 + motionTime * 21) * Math.sin(x * .06 - motionTime * 13);
-      const y = height * .62 + pulse * (.45 + stress * 1.55) + noise;
+      const y = height * .5 + pulse * (.45 + stress * 1.55) + noise;
       d += `${x ? "L" : "M"}${x},${y.toFixed(1)}`;
     }
     path.setAttribute("d", d);

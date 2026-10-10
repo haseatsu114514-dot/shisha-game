@@ -195,8 +195,10 @@ try {
     await page.waitForFunction(() => parseFloat(document.querySelector('.pg-needle').dataset.pos) > 0);
     const speed = await page.evaluate(async () => {
       const needle = document.querySelector('.pg-needle');
-      const x = parseFloat(needle.dataset.pos); await new Promise(r => setTimeout(r,120));
-      return parseFloat(needle.dataset.pos) - x;
+      const began = await new Promise(requestAnimationFrame), x = parseFloat(needle.dataset.pos);
+      let ended;
+      for (let i = 0; i < 10; i++) ended = await new Promise(requestAnimationFrame);
+      return (parseFloat(needle.dataset.pos) - x) / (ended - began);
     });
     focus.push({ width, speed });
     await page.evaluate(() => { __remake.craftTest.auto = 'good'; });
@@ -277,22 +279,13 @@ try {
       return { padBelow:pad.top>box.bottom, padClear:pad.bottom<scene.bottom-2, separated:worker.right<panel.left, galleryClear:gallery.bottom<scene.bottom, thermometerClear:thermo.right<box.left, fieldClear:box.right<=panel.right, video:document.querySelectorAll('.bench video').length, ticker:document.querySelectorAll('.bench-ticker').length };
     });
     assert.deepEqual(geometry, { padBelow:true,padClear:true,separated:true,galleryClear:true,thermometerClear:true,fieldClear:true,video:0,ticker:0 }, `${name}: ${JSON.stringify(geometry)}`);
-    await p.waitForFunction(() => !document.querySelector('[data-test="timer-stop"]').disabled);
+    await p.waitForFunction(() => !document.querySelector('[data-test="dodge-refresh"]').disabled);
     const initial = Number(await p.locator('[data-test="steam-temperature"]').getAttribute('aria-valuenow'));
     const calmTrace = await p.locator('.dodge-beat-line').evaluate(n => ({ height:n.getBBox().height, color:getComputedStyle(n).stroke }));
-    // 説明ボタンのSpaceでリフレッシュを消費しない。
-    await p.locator('.bench-guide summary').focus(); await p.keyboard.press('Space');
-    assert(await p.locator('.bench-guide').evaluate(n => n.open));
-    assert.match(await p.locator('.dodge-refresh').textContent(), /×2/);
-    await p.locator('.bench-guide summary').click();
+    assert(await p.locator('.bench-guide').isHidden(), 'Steam guide was not removed');
+    assert.equal(await p.locator('.dodge-refresh').getAttribute('data-remaining'), '1');
+    assert.equal(await p.locator('.bench-title').textContent(), '蒸らし');
     await p.waitForTimeout(1000);
-    await p.locator('[data-test="timer-stop"]').click();
-    const paused=await p.evaluate(()=>({clock:document.querySelector('[data-test="steam-clock"]').textContent,temp:document.querySelector('[data-test="steam-temperature"]').getAttribute('aria-valuenow'),bullet:document.querySelector('.dodge-object, .dodge-word')?.style.transform}));
-    await p.waitForTimeout(350);
-    assert.deepEqual(await p.evaluate(()=>({clock:document.querySelector('[data-test="steam-clock"]').textContent,temp:document.querySelector('[data-test="steam-temperature"]').getAttribute('aria-valuenow'),bullet:document.querySelector('.dodge-object, .dodge-word')?.style.transform})), paused);
-    assert(await p.locator('.dodge-refresh').isDisabled());
-    await capture(p, `steam-paused-${name}`);
-    await p.locator('[data-test="timer-stop"]').click();
     const samples=[];
     for (let i=0;i<6;i++) { await p.waitForTimeout(450); samples.push(Number(await p.locator('[data-test="steam-temperature"]').getAttribute('aria-valuenow'))); }
     assert(samples.at(-1)>initial, `${name}: temperature failed to rise`);
@@ -307,10 +300,10 @@ try {
     await capture(p, `mental-${name}`);
     // 無敵を付けないので操作前後の別フレームでは被弾し得る。同じ入力イベント内で比較する。
     const refreshed=await p.evaluate(()=>{
-      const trace=document.querySelector('[data-test="mental-trace"]'),hits=document.querySelector('.dodge-hits'),heat=document.querySelector('[data-test="steam-temperature"]');
-      const before={level:trace.dataset.level,misses:hits.textContent,heat:heat.getAttribute('aria-valuenow')};
+      const trace=document.querySelector('[data-test="mental-trace"]'),heat=document.querySelector('[data-test="steam-temperature"]');
+      const before={level:trace.dataset.level,misses:trace.dataset.hits,heat:heat.getAttribute('aria-valuenow')};
       document.querySelector('.dodge-refresh').click();
-      return {before,after:{level:trace.dataset.level,misses:hits.textContent,heat:heat.getAttribute('aria-valuenow')}};
+      return {before,after:{level:trace.dataset.level,misses:trace.dataset.hits,heat:heat.getAttribute('aria-valuenow')}};
     });
     assert.deepEqual(refreshed.after,refreshed.before,'Base refresh must not heal or rewind hits/temperature');
     assert(!(await p.locator('[data-test="craft-rating"]').isVisible()),'A hit/refresh showed a mid-game rating');
@@ -321,7 +314,7 @@ try {
     const continuity=await p.evaluate(()=>({end:cs.steam.temp,next:T.pull.startTemp(cs),seconds:cs.steam.seconds}));
     assert.equal(continuity.next,continuity.end); assert.equal(continuity.seconds,480);
     await p.close();
-    console.log(`[craft focus] PASS: ${name} timer, pause/resume, rising temperature despite hits, same temperature carry, visible heartbeat/face jolt, base refresh without mental healing, natural live commentary and clear layout`);
+    console.log(`[craft focus] PASS: ${name} timer, rising temperature despite hits, same temperature carry, visible heartbeat/face jolt, base refresh without mental healing, natural live commentary and clear layout`);
   }
   assert.deepEqual(errors,[]);
 } finally { await browser.close(); }

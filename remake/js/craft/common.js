@@ -54,7 +54,7 @@ export function keys(map) {
   const h = (e) => {
     // 説明・体調を開く操作を、ミニゲームのSpace/Enterに流さない。
     if (e.target?.closest?.(".bench-guide, .bench-condition")) return;
-    if ((e.key === " " || e.key === "Enter") && e.target?.closest?.(".timer-switch, .timer-button, .dodge-refresh")) return;
+    if ((e.key === " " || e.key === "Enter") && e.target?.closest?.(".timer-button, .dodge-refresh")) return;
     const fn = map[e.key] || map[e.code];
     if (fn) { e.preventDefault(); fn(e); }
   };
