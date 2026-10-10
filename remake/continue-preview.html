@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CONTINUE演出 プレビュー — 水煙前線 -EN:CODE-</title>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/daily.css">
+<style>
+#preview-tools { position:fixed; top:8px; left:50%; transform:translateX(-50%); z-index:200;
+ display:flex; align-items:center; flex-wrap:wrap; justify-content:center; gap:8px; padding:10px 14px;
+ background:#0c1021ef; border:1px solid #f2b86688; border-radius:10px; font:700 14px var(--font);
+ box-shadow:0 8px 26px #000a; }
+#preview-tools select,#preview-tools button { border:1px solid #e2b97f99; border-radius:6px; padding:6px 10px;
+ background:#1b1e31; color:#fff; cursor:pointer; }
+#preview-tools button { background:#b88325; color:#080910; font-weight:900; }
+#preview-tools small { color:#b7c4d7; }
+#preview-error { position:fixed; inset:auto 10% 20px; z-index:201; color:#ffd0ca; text-align:center; font-size:16px; }
+</style>
+</head>
+<body>
+<div id="preview-tools">
+ <label for="character">演出プレビュー</label>
+ <select id="character" aria-label="出演キャラクター">
+ <option value="0">スミさん① 共同責任</option>
+ <option value="1">スミさん② 世界の終わり</option>
+ <option value="2">スミさん③ 反対多数</option>
+ <option value="premium:tsumugi">つむぎ（プレミア）</option>
+ <option value="premium:minto">栞／みんと（第2章以降）</option>
+ <option value="premium:rin">凛（プレミア）</option>
+ <option value="premium:ageha">アゲハ（プレミア）</option>
+ <option value="premium:mashiro">ましろ（プレミア）</option>
+ <option value="premium:kafuka" selected>サメちゃん（プレミア）</option>
+ </select>
+ <button type="button" id="preview-play">▶ 再生する</button>
+ <small>声なし・約20秒・BGMはBGMer「EMGコール」</small>
+</div>
+<div id="viewport"><div id="stage"><div id="bg"></div><div id="screen"></div></div></div>
+<div id="preview-error" role="status"></div>
+<script type="module">
+import { loadAll } from "./js/core/data.js";
+import { buildGameOver } from "./js/chapters/gameover.js";
+import { unlockAudio } from "./js/core/audio.js";
+const stage = document.getElementById("stage"), screen = document.getElementById("screen"),
+  msg = document.getElementById("preview-error"), btn = document.getElementById("preview-play"),
+  selector = document.getElementById("character");
+function fit() { stage.style.setProperty("--k", String(Math.min(innerWidth/1280,(innerHeight-64)/720))); }
+addEventListener("resize", fit); fit();
+let ready = false, root = null;
+btn.textContent = "読み込み中…"; btn.disabled = true;
+try { await loadAll(); ready = true; btn.textContent = "▶ 再生する"; btn.disabled = false; }
+catch (e) { msg.textContent = "ゲーム素材を読み込めません: " + e.message; btn.textContent = "素材エラー"; }
+function show() {
+ if (!ready) return;
+ unlockAudio();
+ root?.cleanupContinue?.();
+ const val = selector.value;
+ root = buildGameOver({
+   reason:"rank", rank:2, variant:val.startsWith("premium:")?val:Number(val),
+   onRetry:()=>show(), onTitle:()=>{ root?.cleanupContinue?.();screen.replaceChildren();btn.focus(); }
+ });
+ screen.replaceChildren(root);
+}
+btn.addEventListener("click", show);
+selector.addEventListener("change", show);
+msg.textContent="キャラクターを選び、再生ボタンを押してください。";
+</script>
+</body>
+</html>

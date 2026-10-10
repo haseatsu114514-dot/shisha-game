@@ -38,7 +38,8 @@ try {
   assert.equal(await page.locator('.end-screen.gameover .end-question').textContent(), '俺たち、もう一度やれるよな？');
   assert.equal(await page.locator('.end-screen.gameover .go-sumi-img').count(), 1, 'Sumi uses the canon portrait');
   assert.equal(await page.locator('[data-test="continue-skip"]').count(), 1);
-  assert.equal(await page.locator('[data-test="continue-voice"]').count(), 1);
+  assert.equal(await page.locator('[data-test="continue-next"]').count(), 1);
+  assert.equal(await page.locator('[data-test="continue-voice"]').count(), 0, 'speech must be disabled by default');
   assert.equal(await page.locator('[data-test="game-over"]').getAttribute('data-reason'), 'burnt');
   const seen = await page.evaluate(() => window.__seen);
   assert(!seen.includes('remake_trial_intro') && !seen.includes('ch1_tournament_defeat'), `burnt run reached judging: ${seen.join(',')}`);

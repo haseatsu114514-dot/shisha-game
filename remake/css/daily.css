@@ -1123,3 +1123,23 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 }
 .gameover[data-premium="true"] .go-title { text-shadow:4px 5px 0 #80345b,0 0 24px #ff75b75e; }
 .gameover[data-premium="true"] .go-character small { color:#ffd7e9; }
+
+/* CONTINUE: 音声を使わず表情と文字の飛び込みで演出する。 */
+.gameover[data-text-only="true"] .go-speech-text { min-height: 2.8em; text-wrap: balance; }
+.gameover .go-cue-pop { animation: go-ink-impact .32s cubic-bezier(.1,.7,.2,1) both; }
+.gameover .go-sumi-img.go-beat { animation: go-portrait-beat .56s cubic-bezier(.2,.75,.2,1) both; }
+.gameover[data-speaker="kafuka"] { --go-accent: #8ae6ef; --go-hot: #267cbe; }
+.gameover[data-speaker="kafuka"] .go-veil { background:
+  radial-gradient(ellipse at 25% 72%, #19578388,transparent 48%),
+  repeating-linear-gradient(127deg,#ffffff04 0 2px, transparent 2px 21px),
+  linear-gradient(118deg,#0c172a 0%, #071320 61%, #0e3850 100%); }
+.gameover[data-speaker="kafuka"] .go-flag { letter-spacing:.23em; }
+.gameover[data-speaker="tsumugi"][data-cue="4"] .go-dialogue {
+  border-color:#e98cba; box-shadow:0 0 30px #eb82bb70,0 14px 38px #0009; }
+.gameover[data-speaker="tsumugi"][data-cue="4"] .go-sumi-img {
+  filter:drop-shadow(0 0 22px #fe9acc88); }
+@keyframes go-ink-impact { from { opacity:0; transform:translateX(20px) scale(1.05); filter:blur(2px); } to {opacity:1; transform:none; filter:none} }
+@keyframes go-portrait-beat { 0% {transform:translateY(16px) scale(.97);} 55% {transform:translateY(-6px) scale(1.015);} 100% {transform:none;} }
+@media (prefers-reduced-motion:reduce) {
+  .gameover .go-cue-pop,.gameover .go-sumi-img.go-beat { animation:none !important; }
+}

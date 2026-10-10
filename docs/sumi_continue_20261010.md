@@ -47,3 +47,6 @@
 
 ## 追補: 指定BGM・VOICEVOX自動合成・恋人プレミア
 2026-10-10に追加された仕様と実装・素材の許諾状況・Claude Code引継ぎ手順は [continue_voice_music_premium_20261010.md](continue_voice_music_premium_20261010.md) を参照。旧フリーBGM候補よりもオーナー指定のYouTube参考曲を優先検討する。ただし利用許諾を確認できるまでは指定音源を実装しない。
+
+## 第3期の確定仕様（2026-10-10）
+従来の「OS標準音声で仮読み上げ」方針を**撤回**。現在のコンティニューは声なし・立ち絵＋文字アニメーション＋BGMer「EMGコール」BGMで完成する。恋人プレミアは20%、同じ恋人連続出演は禁止。サメちゃんを追加。詳細は [continue_voice_music_premium_20261010.md](continue_voice_music_premium_20261010.md)。
