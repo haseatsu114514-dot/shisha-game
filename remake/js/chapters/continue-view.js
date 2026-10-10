@@ -28,7 +28,7 @@ export function createContinueView({ script, speaker, character, premium, onType
   const count = el("span.go-count", { text: "20" });
   const next = el("button.go-next", { type: "button", text: "›", "aria-label": "台詞を送る", dataset: { test: "continue-next" } });
   const proceed = el("button.go-proceed", { type: "button", text: "進む →", hidden: true, dataset: { test: "continue-proceed" } });
-  // 2択は枠の画像を使わず、文字だけを押す（オーナー指定のA案）。
+  // セリフと区別できる2択ボタン。見た目はCSS、文言は実テキストで表示する。
   const retry = el("button.go-choice.go-retry", { type: "button", "aria-label": "大会に戻る", dataset: { test: "retry" } },
     [el("span.go-choice-label", { text: "大会に戻る" })]);
   const quit = el("button.go-choice.go-quit", { type: "button", dataset: { test: "game-over-title" } },
@@ -39,16 +39,15 @@ export function createContinueView({ script, speaker, character, premium, onType
   const finalImage = el("img.go-title-art", { src: art("game_over_title"), alt: "", "aria-hidden": "true", hidden: true, draggable: "false" });
   const title = el("h1.go-title", { "aria-label": "コンティニュー？" }, [titleLabel, finalImage]);
   const root = el("div.end-screen.gameover", { role: "region", "aria-label": "大会のコンティニュー",
-    dataset: { test: "game-over", variant: script.id, speaker, premium: String(premium), textOnly: "true", phase: "speaking" } }, [
+    dataset: { test: "game-over", variant: script.id, speaker, premium: String(premium), phase: "speaking" } }, [
     el("div.go-veil", { "aria-hidden": "true" }),
-    el("header.go-heading", [title]),
+    el("header.go-heading", [title, el("span.go-clock", { "aria-hidden": "true" }, [count])]),
     el("div.go-left", [el("div.go-portrait", [image])]),
     el("div.go-right", [
       dialogue, live,
       el("div.go-playback", [el("div.go-caption-controls", [next, proceed])]),
       el("div.end-actions", [retry, quit]),
     ]),
-    el("div.go-clock", { "aria-hidden": "true" }, [count]),
     el("div.go-effect", { "aria-hidden": "true" }, [effectWord,
       el("img.go-approval", { src: art("approval_stamp"), alt: "可決", draggable: "false" }), el("i.go-pencil"), el("i.go-scan"),
       el("i.go-wave"), el("i.go-stars", { text: "✧　·　✦" })]),
