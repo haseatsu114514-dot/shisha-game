@@ -101,7 +101,8 @@ try {
     if (!image.naturalWidth) throw new Error('button skin did not load');
   });
   assert.equal(layout.button.bottom - layout.button.top, 96, 'mockup button height');
-  assert(layout.button.top > 560 && layout.button.top < 580, 'mockup button placement');
+  assert(layout.button.top > 585 && layout.button.top < 600, 'bottom controls must use the tightened spacing');
+  assert(layout.right.bottom - layout.button.bottom >= 10 && layout.right.bottom - layout.button.bottom <= 16, 'bottom button must keep a small inset inside the window');
   assert.equal(layout.summary.bottom - layout.summary.top, 64, 'mockup flavor information height');
   assert.equal(await page.locator('.pull-life-leaves > *').count(), 4, 'flavor leaves must show the actual four remaining units');
   console.log(`Layout: ${JSON.stringify(layout)}`);

@@ -1,5 +1,7 @@
 # フレーバーの持ちの葉（TH64）
 
+初回の緑の葉の制作記録。現在はTH67・68の指示で赤へ変更し、消耗は黒い焦げで示す。[赤い葉への編集記録](red-leaf-prompt.md)。
+
 生成: Codex image generation / 2026-10-10。参照: [オーナー提示モックアップのゲーム部分](reference-game.png)。
 採用PNG: `assets/ui/making/ui_mockup_flavor_leaf.png`。表示用: `remake/img/ui/making/ui_mockup_flavor_leaf.webp`。
 透過の葉を4枠へ繰り返し表示する。残量は既存のフレーバーHP（最大4）を使い、消耗した枠は暗くする。

@@ -162,33 +162,23 @@ export function pauseBenchTemperature(cs, paused) {
   if (bench?.cs === cs) bench.thermal.pause(paused);
 }
 /**
- * フレーバーの体力を一枚の葉で見せる（TH28・TH37）。ボロボロ具合と色だけで分かるようにする。
- * 4=つややかな緑、3=黄緑に斑点、2=黄土色で縁が欠ける、1=茶色く穴だらけで反る、0=黒ずんで崩れる。傷むと葉だけが震える。文字は出さない（TH27）。
+ * フレーバーの体力を赤い葉の焼け具合で見せる（TH67・TH68）。
+ * 4=鮮やかな赤から、焼けるほど暗くなり、0=黒い焦げ。傷むと葉だけが震える。文字は出さない（TH27）。
  */
-const LEAF_STATE = ["枯れて崩れた", "穴だらけ", "縁が欠けてきた", "斑点が出てきた", "つややか"];
+const LEAF_STATE = ["黒く焦げ切った", "黒く焦げてきた", "焦げが広がってきた", "少し焼けてきた", "鮮やかな赤"];
 function buildLeafIcon() {
-  const root = el("span.leaf-icon", { hidden: true, role: "img", dataset: { test: "leaf-icon", hp: "4" }, html: `<svg viewBox="0 0 32 32" aria-hidden="true">
-    <defs><mask id="leaf-bites-${++leafIcons}" maskUnits="userSpaceOnUse"><rect width="32" height="32" fill="#fff"/>
-      <g class="leaf-bite-2" fill="#000"><circle cx="25" cy="9" r="3.4"/><circle cx="8" cy="22" r="2.6"/></g>
-      <g class="leaf-bite-1" fill="#000"><circle cx="17" cy="13" r="2.2"/><circle cx="12" cy="18" r="1.8"/><circle cx="21" cy="19" r="2.4"/><circle cx="27" cy="16" r="2.6"/></g>
-    </mask></defs>
-    <g mask="url(#leaf-bites-${leafIcons})">
-      <path class="leaf-body" d="M4 28C3 15 12 4 28 3c1 14-8 25-24 25Z"/>
-      <path class="leaf-gloss" d="M8.5 21.5C10 14 15 8.6 23.5 6.4" fill="none"/>
-      <path class="leaf-vein" d="M5 27 26 6M11 21l-1-6M16 16l-1-6M21 11l-1-4M11 21l6 1M16 16l6 1" fill="none"/>
-      <g class="leaf-spots"><circle cx="14" cy="11" r="1.6"/><circle cx="20" cy="15" r="1.3"/><circle cx="10" cy="19" r="1.2"/></g>
-    </g>
-    <g class="leaf-crumbs"><path d="M6 30l2-1 1 2zM12 30l2-2 1 2zM19 31l1-2 2 1z"/></g>
-  </svg>` });
+  const root = el("span.leaf-icon", { hidden: true, role: "img", dataset: { test: "leaf-icon", hp: "4" } }, [
+    artImg("ui_mockup_flavor_leaf.png", 34, "leaf-skin", { h: 34 }),
+  ]);
   return { root, render(leaf, { hit = false } = {}) {
     const hp = leaf?.hp ?? 4;
     root.dataset.hp = String(hp);
-    root.setAttribute("aria-label", `フレーバー：${LEAF_STATE[hp] ?? LEAF_STATE[4]}`);
-    root.title = `フレーバー：${LEAF_STATE[hp] ?? LEAF_STATE[4]}`;
+    const description = `フレーバー：${LEAF_STATE[hp] ?? LEAF_STATE[4]}（残り${hp}/${leaf?.max ?? 4}）`;
+    root.setAttribute("aria-label", description);
+    root.title = description;
     if (hit) { root.classList.remove("hit"); void root.offsetWidth; root.classList.add("hit"); }
   } };
 }
-let leafIcons = 0;
 
 /** フレーバーが傷んだら葉を更新する。音と揺れは呼び出し側で鳴らす。 */
 export function setBenchLeaf(cs, hit = false) {
@@ -198,7 +188,6 @@ export function setBenchLeaf(cs, hit = false) {
 export function dockBenchLeaf(cs, host) {
   if (bench?.cs !== cs) return;
   const root = bench.leaf.root;
-  if (!root.querySelector(".leaf-skin")) root.append(artImg("ui_mockup_flavor_leaf.png", 34, "leaf-skin", { h: 34 }));
   host.prepend(root);
 }
 

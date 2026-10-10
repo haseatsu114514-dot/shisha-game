@@ -12,6 +12,13 @@ export function audienceFor(mode, chapter) {
 
 const STEP_JUDGE = { setup: "dr_kemuri", concept: "nagumo", mix: "maezono", pack: "dr_kemuri", holes: "dr_kemuri", heat: "dr_kemuri", place: "dr_kemuri", steam: "maezono", pull: "maezono", care: "dr_kemuri", trial: "nagumo" };
 const MOODS = { watch: "手元を見守る", nod: "小さくうなずく", concern: "手元を気にかける", think: "静かに考える" };
+// 採用済みの顔アイコンと同じ頭部の切り取り（tools/make_face_icons.py の face_box）。
+// 通常絵の x / y / 辺を画像幅で正規化。胴体の中心へ寄せず、表情差分の原画をこの枠へ表示する。
+const FACE_CROPS = {
+  hajime: [.48661, .17746, .21205], sumi: [.37835, .09933, .21763],
+  nagumo: [.35379, .06362, .20871], maezono: [.32589, .02679, .26674],
+  dr_kemuri: [.33259, .07589, .21094], pakki: [.23549, .40848, .62388],
+};
 const faceFor = (id, mood, kind) => id === "nagumo" ? mood === "think" ? "thinking" : "serious"
   : mood === "nod" ? id === "maezono" && ["perfect", "just"].includes(kind) ? "excited" : id === "dr_kemuri" ? "normal" : "smile"
     : mood === "concern" || mood === "think" ? "serious" : "normal";
@@ -38,10 +45,11 @@ export function buildAudience(cs) {
     person.title = `${label}：${MOODS[mood]}`; person.setAttribute("aria-label", person.title);
     if (portrait) {
       image.hidden = false; image.classList.remove("audience-icon"); image.src = portrait.src;
-      const width = 340;
+      const crop = FACE_CROPS[portrait.folder];
+      const width = crop ? 80 / crop[2] : 380;
       image.style.width = `${width}px`;
-      image.style.left = `calc(50% - ${portrait.ax * width}px)`;
-      image.style.top = `${-4 - (1 - portrait.h - portrait.b) * width / portrait.aspect}px`;
+      image.style.left = crop ? `${-crop[0] * width}px` : `calc(50% - ${portrait.ax * width}px)`;
+      image.style.top = crop ? `${-crop[1] * width}px` : `${6 - (1 - portrait.h - portrait.b) * width / portrait.aspect}px`;
     } else {
       const fallback = faceIconUrl(id, state); image.hidden = !fallback;
       if (fallback) image.src = fallback;

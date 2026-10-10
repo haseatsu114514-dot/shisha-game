@@ -64,12 +64,12 @@ export function startTemp(cs) {
 const MODES = {
   pull: {
     store: "pull", title: "吸い出し", min: 2, safe: 3, drift: false, serveLabel: "提供する",
-    hint: "針を止めた位置で吸い方が変わる。右の上げ吸いは温度を上げ、左の下げ吸いは温度を下げる。光る芯ほど変化が大きく、中央のキープは温度を保つ（左寄りで微減・右寄りで微増）。吸い終えて温度が変わってから、次の針を止められる。温度計の緑が適温、虹色が最適温。4回目からフレーバーの葉が傷む。蒸らしで集中できたほど芯が広がり、針がゆっくり動く",
+    hint: "針を止めた位置で吸い方が変わる。右の上げ吸いは温度を上げ、左の下げ吸いは温度を下げる。光る芯ほど変化が大きく、中央のキープは温度を保つ（左寄りで微減・右寄りで微増）。吸い終えて温度が変わってから、次の針を止められる。温度計の緑が適温、虹色が最適温。蒸らしで集中できたほど芯が広がり、針がゆっくり動く",
     start: startTemp, focus: pullFocusFromSteam,
   },
   care: {
     store: "care", title: "熱管理", min: 1, safe: 2, drift: true, serveLabel: "整え終える",
-    hint: "立ち上げから吸われ続けた炭は消耗して、温度が下がっていく。まず交換する炭の数を決め、その炭を焼いてから替える。焼け具合が良いほど温度がしっかり戻り、長く持つ。ダイヤルは吸い出しと同じで、キープなら温度を保てる。3回目からフレーバー（下の葉）が傷む。炎の印まで上がって焦げても、雪の印まで冷え切っても、その一台はダメになる",
+    hint: "立ち上げから吸われ続けた炭は消耗して、温度が下がっていく。まず交換する炭の数を決め、その炭を焼いてから替える。焼け具合が良いほど温度がしっかり戻り、長く持つ。ダイヤルは吸い出しと同じで、キープなら温度を保てる。炎の印まで上がって焦げても、雪の印まで冷え切っても、その一台はダメになる",
     start: (cs) => cs.pull?.temp ?? CENTER, focus: () => ({ slow: 1, window: 1 }),
   },
 };
@@ -99,7 +99,7 @@ async function pullGame(cs, mode) {
   const wobble = () => (mode.drift ? conditions.sparsity * 0.05 * Math.sin(elapsed * Math.PI * 2 / 2.6) + 0.014 * (1 - 0.7 * clarity) * Math.sin(elapsed * 1.7 + wobblePhase) : 0);
 
   // ---- 画面
-  const thermometer = buildThermometer({ coldLimit: mode.drift ? COLD_OUT : null, height: 352 });
+  const thermometer = buildThermometer({ coldLimit: mode.drift ? COLD_OUT : null, height: 360, width: 64 });
   // SVGの縦横比を保ち、針・リングを同じ中心で回す。
   const id = ++dials;
   const dial = el("div.pull-dial", { html: `<svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
@@ -147,17 +147,16 @@ async function pullGame(cs, mode) {
   const tags = el("span.pull-tags");
   const counter = el("div.pull-count", [pipRow, tags]);
   const readout = el("div.pull-read");
-  const drawStatus = el("span.pull-draw-status", { role: "status", dataset: { test: "pull-draw-status" }, text: "吸いすぎると葉が傷み、香りが弱くなります。" });
-  const inhale = el("span.pull-btn-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10 25c-6-4-1-8 3-12l7-8m-4 20c-4 3-8-1-5-5l5-6m5 9c-1 6 4 4 7-1"/></svg>' });
+  const drawStatus = el("span.pull-draw-status", { role: "status", dataset: { test: "pull-draw-status" } });
+  const inhale = el("span.pull-btn-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m22 28-4-3L31 7l5 4Z"/><path d="m31 7 2-3 5 4-2 3M20 27l-5 7c-3 4-8 5-11 1s-1-8 2-12l5-7M21 22l4 3"/></svg>' });
   const pullLabel = el("span.btn-label", { text: "吸う（針を止める）" });
   const pullBtn = el("button.btn.primary", { dataset: { test: "pull-stop" }, disabled: true }, [inhale, pullLabel]);
-  const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [el("span.pull-serve-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 40 32" fill="currentColor"><path d="m6 21 5-7 8 1 9-5 3 3-10 6h-7l8 4 10-3 3 3-13 6-18-3Z"/><path d="m24 11 8-9 2 2-8 10Z"/></svg>' }), el("span.btn-label", { text: mode.serveLabel })]);
+  const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [el("span.pull-serve-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 48 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="23" width="8" height="14" rx="1.5"/><path d="m11 26 7-6c1-1 3-1 4-1h6c2 0 3 1 3 3s-1 3-3 3h-7M11 34h16c2 0 4-1 6-2l10-7c2-1 3-4 1-6s-3-1-5 0l-8 6"/></svg>' }), el("span.btn-label", { text: mode.serveLabel })]);
   const leafArt = (size) => artImg("ui_mockup_flavor_leaf.png", size, "leaf-skin", { h: size });
   const extraLeaves = Array.from({ length: LEAF_MAX - 1 }, (_, i) => el("i.pull-life-leaf", { "aria-hidden": "true", dataset: { slot: i + 1 } }, [leafArt(34)]));
   const lifeLeaves = el("span.pull-life-leaves", extraLeaves);
   const summary = el("div.pull-summary", [
-    el("div.pull-life", [el("span.pull-life-label", { text: "フレーバーの持ち" }), lifeLeaves]),
-    el("div.pull-life-note", [el("i.pull-note-leaf", { "aria-hidden": "true" }, [leafArt(23)]), el("div.pull-life-copy", [drawStatus, counter])]),
+    el("div.pull-life", [el("span.pull-life-label", { text: "フレーバーの持ち" }), lifeLeaves, counter, drawStatus]),
   ]);
   const play = el("div.pull-play", [dialRow, summary, el("div.pull-btns", [pullBtn, serveBtn])]);
   play.setAttribute("aria-label", "左の下げ吸いで温度を下げ、中央でキープ、右の上げ吸いで温度を上げる");
@@ -179,6 +178,7 @@ async function pullGame(cs, mode) {
     readout.dataset.tone = tone;
     readout.replaceChildren(el("b.pull-state", { text: state }), mode.drift && running && !drawing ? el("span.pull-drift", { text: "↓", title: "炭が燃え進んで、熱が落ちていく" }) : "");
     pips.forEach((p, i) => p.classList.toggle("on", i < pulls));
+    lifeLeaves.dataset.hp = String(cs.leaf.hp);
     extraLeaves.forEach((leaf, i) => leaf.classList.toggle("on", i + 1 < cs.leaf.hp));
     pipRow.setAttribute("aria-label", `吸った回数 ${pulls}`);
     tags.replaceChildren(...[
@@ -286,7 +286,7 @@ async function pullGame(cs, mode) {
       drawing = false;
       delete play.dataset.draw;
       pullLabel.textContent = "吸う（針を止める）";
-      drawStatus.textContent = pulls >= PULL_MAX ? "吸い終えたら、温度を見て提供しよう" : "吸いすぎると葉が傷み、香りが弱くなります。";
+      drawStatus.textContent = "";
       if (!failed && !finished && !abandoned && play.isConnected) {
         render();
         last = performance.now();

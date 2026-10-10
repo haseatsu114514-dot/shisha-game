@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-10 10:21 UTC",
+ "generated": "2026-10-10 10:47 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -981,16 +981,16 @@
    2.0
   ],
   "ui_mockup_flavor_leaf.png": [
-   0.1922,
-   0.1132,
-   0.8876,
-   0.8955,
+   0.1818,
+   0.1029,
+   0.8995,
+   0.9027,
    1.0
   ],
   "ui_mockup_inhale_button.png": [
-   0.0069,
-   0.2307,
-   0.9936,
+   0.0074,
+   0.2251,
+   0.9931,
    0.75,
    3.0
   ],
