@@ -37,10 +37,12 @@
 @keyframes worker-wait-settle { 0%, 100% { transform: translateY(0); } 45% { transform: translateY(-2px) scale(1.004); } }
 
 /* 奥の霧・細い軌道・反射面は淡く、動く雑念と心の芯はくっきり。 */
-.steam { height: 100%; justify-content: space-between; gap: 12px; padding-top: 10px; }
+.steam { height: 100%; justify-content: space-between; gap: 12px; padding-top: 0; }
 .steam .dodge-controls { align-self: center; margin-right: 0; }
 .steam-play, .dodge-controls { width: 752px; }
-.steam-play { flex: 1; display: grid; place-items: center; }
+.steam-play { flex: 1; display: grid; justify-items: center; align-items: start; }
+/* 上の余白を詰め、操作欄の上に指を置ける空間を残す。 */
+.steam-play > .dodge { top: -16px; }
 /* 残り時間は視線を弾幕から離さず読める、奥の薄い7セグ。 */
 .dodge .dodge-timer { position: absolute; left: 50%; top: 50%; width: 448px; height: 158px; transform: translate(-50%, -50%); color: #e3d6c9; opacity: .16; z-index: 1; pointer-events: none; user-select: none; }
 .bench[data-art-skin] .dodge { border-image: none; border: 1px solid #c5ae815c; border-radius: 10px; background: #131123; box-shadow: inset 0 0 0 3px #a9946614, 0 4px 16px #0007; }
