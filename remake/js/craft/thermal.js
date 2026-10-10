@@ -20,9 +20,10 @@ const BANDS = [
 const RUINED = {
   burnt: { id: "burnt", label: "シーシャが焦げてしまった", ink: "#ff7a2a", glow: ["#ff3c00", .3], haze: 0, smoke: ["#1c1210", .92] },
   cold: { id: "cold-out", label: "シーシャが冷え切ってしまった", ink: "#cfe6ff", glow: ["#9cc8ff", .16], haze: 0, smoke: ["#ffffff", 0] },
+  leaf: { id: "leaf-out", label: "フレーバーがダメになってしまった", ink: "#c9b48a", glow: ["#8a7350", .14], haze: 0, smoke: ["#9a8f80", .3] },
 };
 const BURNT = RUINED.burnt;
-const RUINED_BG = { burnt: ["#3a1d10", "#0b0503"], cold: ["#5d7487", "#18232e"] };
+const RUINED_BG = { burnt: ["#3a1d10", "#0b0503"], cold: ["#5d7487", "#18232e"], leaf: ["#4a3f31", "#161109"] };
 export function thermalBand(temp) {
   const t = clamp(Number.isFinite(temp) ? temp : 0, 0, 1);
   return BANDS.find(b => t < b.until || (b.id === "ready" && t === IDEAL[1]));
@@ -379,7 +380,7 @@ export function buildThermalAtmosphere(host, worker) {
       paused = value; host.dataset.thermalPaused = String(value); last = performance.now();
       value ? hazeSvg?.pauseAnimations?.() : hazeSvg?.unpauseAnimations?.();
     },
-    /** その一台がダメになった背景へ切り替える。焦げたら爆発のあと煙と残り火、冷え切りはくすんだ色。工程が変わるまで続く。 */
+    /** その一台がダメになった背景へ切り替える。焦げたら爆発のあと煙と残り火、冷え切り・フレーバー切れはくすんだ色。工程が変わるまで続く。 */
     fail(kind) {
       if (!active || !RUINED[kind]) return;
       paused = false; ruined = kind;

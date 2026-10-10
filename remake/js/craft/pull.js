@@ -2,7 +2,7 @@
 // 左右に振れる針を止めた位置で、上げ吸い／キープ／下げ吸い。中央の細い帯が「ジャスト」。
 // 熱管理（大会のR3・調整）も同じ針のゲーム。「炭を交換しますか？」で個数を選び、交換した炭で温度が戻ってから、
 // 温度が動き続ける中で最低1回吸って整える。3回目の吸い出しからフレーバーが傷む（TH14・TH21・TH22・TH39）。
-// 温度計の一番上で焦げ、熱管理で冷え切ると、その一台はダメになる。吸えるのは5回まで（TH94）。
+// 温度計の一番上で焦げ、熱管理で冷え切り、赤い葉が0枚になると、その一台はダメになる（TH82）。一度に吸えるのは5回まで（TH94）。
 // 吸いすぎ・過熱での吸い出しは、はじめの体力も削って疲れ（針が速く、成功帯が狭い）が付く（TH29）。
 // 人によって狙いが違うので、EXCELLENT・GOOD の判定は出さない。吸うと温度計の横に上下の印だけが出る（TH36）。
 // 左の作業風景に温度計、右に半円ダイヤル。左の下げ吸い=寒色→キープ→右の上げ吸い=暖色。
@@ -12,13 +12,14 @@
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE, startBubbling } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, setBenchDraw, failBench, strainBench, scoreStep } from "./session.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, setBenchDraw, failBench, setBenchLeaf, dockBenchLeaf, strainBench, scoreStep } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys } from "./common.js";
 import { burnCoals, HEAT_GRADES } from "./heat.js";
 
 import { craftConditions, heatDelta, pullResult, isOptimalTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT, IDEAL } from "./conditions.js";
 import { buildThermometer } from "./thermometer.js";
 import { DRAW_MS, animateDraw } from "./pull-draw.js";
+import { ensureFlavorLife, burnFlavorLeaf } from "./flavor-life.js";
 
 export { IDEAL } from "./conditions.js";
 const HOSE_PATH = "M25.5 21.5C18 25 9 26 7.5 33s8 9.5 15 7 9-1 9.5 2.5";
@@ -56,12 +57,14 @@ const dialPoint = (p, r) => {
 const dialSector = (p0, p1, r0 = DIAL.r0, r1 = DIAL.r1) =>
   `M${dialPoint(p0, r1)}A${r1} ${r1} 0 0 1 ${dialPoint(p1, r1)}L${dialPoint(p1, r0)}A${r0} ${r0} 0 0 0 ${dialPoint(p0, r0)}Z`;
 let dials = 0;
-/** TH94: 吸い出し・熱管理とも一度に吸えるのは5回まで。回数は情報欄の5つの点で見せる（赤い葉の持ちは廃止）。 */
+export { LEAF_MAX } from "./flavor-life.js";
+/** TH94・TH95: 吸い出し・熱管理とも一度に吸えるのは5回まで。左の赤い葉の持ちの右に、回数を5つの点で並べる。 */
 export const MAX_PULLS = 5;
 
 const FAIL_TEXT = {
   burnt: { title: "シーシャが焦げてしまった", line: "温度計の一番上まで熱が上がり、葉が焦げた", ticker: "パッキー「ば、爆発ーッ！？ シーシャが焦げてしまったーッ！」" },
   cold: { title: "シーシャが冷え切ってしまった", line: "炭の熱が尽きて、煙が立たなくなった", ticker: "パッキー「あ、あれ〜？ 煙が……止まってしまったーッ！」" },
+  leaf: { title: "フレーバーがダメになってしまった", line: "吸いすぎて、葉の香りが抜け切った", ticker: "パッキー「吸いすぎだーッ！ フレーバーが限界を迎えたーッ！」" },
 };
 
 /** 炭・熱・蒸らし・穴・詰めから、吸い出し開始時の温度を決める */
@@ -96,6 +99,8 @@ async function pullGame(cs, mode) {
   let coreTemp = mode.start(cs);
   let T = coreTemp;
   const conditions = craftConditions(cs);
+  ensureFlavorLife(cs);
+  setBenchLeaf(cs);
   let pulls = 0, justs = 0, failed = null, coals = null;
   // 熱管理だけ: 炭が燃え進んで熱が落ちる速さと、洞察で小さくなる揺らぎ
   const clarity = mode.drift ? skill.clarity(cs) : 1;
@@ -160,14 +165,17 @@ async function pullGame(cs, mode) {
   const pips = Array.from({ length: MAX_PULLS }, (_, i) => el(`i.pull-pip${i >= mode.safe ? ".over" : ""}`, { "aria-hidden": "true" }));
   const pullCount = el("b.pull-count-num");
   const counter = el("span.pull-count", { role: "img", dataset: { test: "pull-count" } }, [el("span.pull-pips", pips), pullCount]);
+  const lifeLeaves = el("span.pull-life-leaves");
   const summary = el("div.pull-summary", [
-    el("div.pull-life", [el("span.pull-life-label", { text: mode.drift ? "吸った回数" : "吸い出し回数" }), counter, tags, drawStatus]),
+    el("div.pull-life", [el("span.pull-life-label", { text: "フレーバーの持ち" }), lifeLeaves, tags, drawStatus]),
+    el("div.pull-life.pull-count-box", [el("span.pull-life-label", { text: mode.drift ? "吸った回数" : "吸い出し回数" }), counter]),
   ]);
   const play = el("div.pull-play", [dialRow, summary, el("div.pull-btns", [pullBtn, serveBtn])]);
   play.setAttribute("aria-label", "左の下げ吸いで温度を下げ、中央でキープ、右の上げ吸いで温度を上げる");
   const main = el("div.pull-main", [play]);
   panel.append(el(`div.pull${mode.drift ? ".pull-care" : ""}`, [thermometer.root, main]));
   thermometer.root.append(readout);
+  dockBenchLeaf(cs, lifeLeaves);
 
   const render = () => {
     thermometer.update(T);
@@ -233,8 +241,13 @@ async function pullGame(cs, mode) {
     const delta = z.id === "keep" ? (at - .5) * .18 : (isJust ? z.justDelta : z.delta) + .015;
     return { z, isJust, delta };
   };
-  // 吸いすぎは文字を出さず、ダメージの音と揺れで伝える（TH27・TH28）。採点の減点は pullResult。
-  const overdraw = () => { SE.hit(); shake(undefined, 380); };
+  // 吸いすぎでフレーバーが傷む。文字は出さず、ダメージの音と揺れ、葉の傷みで伝える（TH27・TH28）。
+  const damageLeaf = () => {
+    burnFlavorLeaf(cs.leaf);
+    setBenchLeaf(cs, true);
+    SE.hit(); shake(undefined, 380);
+    if (cs.leaf.hp <= 0) fail("leaf");
+  };
   // 吸いすぎ・過熱の吸い出しで、はじめが疲れる。針と成功帯にすぐ反映する（TH29）。
   const strain = () => {
     if (!strainBench(cs)) return;
@@ -278,7 +291,7 @@ async function pullGame(cs, mode) {
       reactAudience(cs, overdone || Math.abs(T - CENTER) > Math.abs(before - CENTER) ? "bad" : "good");
       thermometer.pop(z.id === "keep" ? z.mark : isJust ? z.mark.repeat(2) : z.mark, z.id);
       if (overdone || T >= HARSH_TEMP) strain();
-      if (overdone) overdraw();
+      if (overdone) { damageLeaf(); if (failed) return; }
     } finally {
       stopBubbles();
       setBenchDraw(cs, null);

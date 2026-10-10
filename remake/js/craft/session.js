@@ -23,6 +23,8 @@ import { buildThermalAtmosphere } from "./thermal.js";
 import { buildPanelSmoke } from "./smoke-art.js";
 import { temperatureAfterSteam } from "./conditions.js";
 import { screenBlast } from "./blast.js";
+import { artImg } from "./art.js";
+import { LEAF_MAX, flavorLeafStages } from "./flavor-life.js";
 
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
@@ -91,6 +93,8 @@ export function openBench(cs, { steps = [] } = {}) {
   const guide = buildGuide();
   const panel = el("div.bench-panel");
   // TH62: 顔のバッジは廃止。疲れは作業中のはじめの表情と汗で見せる。
+  const leaf = buildLeafIcon();
+  worker.footer.append(leaf.root);
   // アーケードのような総合スコア（TH42）。工程の結果が出るたびに数字が回って増える。
   const score = buildScoreBoard(cs);
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
@@ -106,7 +110,7 @@ export function openBench(cs, { steps = [] } = {}) {
   const thermal = buildThermalAtmosphere(root, worker);
   bg();
   showScreen("bench", root);
-  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, thermal, score };
+  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, thermal, leaf, score };
   renderFatigue();
   return bench;
 }
@@ -130,6 +134,8 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
     } else s.removeAttribute("aria-current");
   });
   b.audience?.setStep(hintText, id);
+  // 吸い出しの情報欄へ移した葉を、工程を消す前に作業風景へ戻す。
+  b.worker.footer.append(b.leaf.root);
   b.panel.replaceChildren();
   b.panel.dataset.step = id;
   b.root.dataset.step = id;
@@ -139,6 +145,8 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   renderFatigue();
   b.worker.caption.textContent = WORKER_STEPS[id] || titleText;
   b.thermal.setStep(id);
+  b.leaf.root.hidden = !["pull", "care", "trial"].includes(id);
+  b.leaf.render(b.cs.leaf);
   // 蒸らしのやり直しでも前回の温度を残さず、炭を置いた直後の温度から始める。
   if (id === "steam") b.thermal.update(temperatureAfterSteam(b.cs, 0));
   if (["pull", "care", "trial"].includes(id)) b.thermal.update(b.cs.care?.temp ?? b.cs.pull?.temp ?? b.cs.steam?.temp ?? 0);
@@ -156,6 +164,37 @@ export function setBenchDraw(cs, kind, duration = 0) {
 export function pauseBenchTemperature(cs, paused) {
   if (bench?.cs === cs) bench.thermal.pause(paused);
 }
+/**
+ * 赤い葉5枚のうち使用中の1枚だけが茶→黒→消える。次の赤い葉は変色しない（TH77〜82）。
+ */
+function buildLeafIcon() {
+  const leaves = Array.from({ length: LEAF_MAX }, (_, i) => el("span.flavor-leaf", { "aria-hidden": "true", dataset: { slot: i, stage: "red" } }, [
+    artImg("ui_mockup_flavor_leaf.png", 34, "leaf-skin", { h: 34 }),
+  ]));
+  const root = el("span.leaf-icon", { hidden: true, role: "img", dataset: { test: "leaf-icon", hp: String(LEAF_MAX) } }, leaves);
+  return { root, render(leaf, { hit = false } = {}) {
+    const hp = leaf?.hp ?? LEAF_MAX, burn = leaf?.burn ?? 0;
+    root.dataset.hp = String(hp);
+    root.dataset.burn = String(burn);
+    flavorLeafStages(leaf).forEach((stage, i) => { leaves[i].dataset.stage = stage; });
+    const description = `フレーバー：赤い葉が残り${hp}/${LEAF_MAX}枚${burn ? `、使用中の葉は${burn === 1 ? "茶色" : "黒い焦げ"}` : ""}`;
+    root.setAttribute("aria-label", description);
+    root.title = description;
+    if (hit) { root.classList.remove("hit"); void root.offsetWidth; root.classList.add("hit"); }
+  } };
+}
+
+/** フレーバーが傷んだら葉を更新する。音と揺れは呼び出し側で鳴らす。 */
+export function setBenchLeaf(cs, hit = false) {
+  if (bench?.cs === cs) bench.leaf.render(cs.leaf, { hit });
+}
+/** 吸い出し・熱管理では、同じ葉の状態をモックアップの情報欄へ置く。 */
+export function dockBenchLeaf(cs, host) {
+  if (bench?.cs !== cs) return;
+  const root = bench.leaf.root;
+  host.prepend(root);
+}
+
 /**
  * はじめの疲れ（TH29・TH43）。札や文字は出さず、作業中のはじめの表情と汗で見せる。
  * 0=元気（真剣な顔）、1=少し疲れ（汗がにじむ）、2=ばてている（沈んだ顔・汗と荒い息）。体調の黄・赤と、吸いすぎ・熱すぎの疲れの重い方。
@@ -240,7 +279,7 @@ function bowlOrigin() {
 
 /**
  * その一台がダメになった演出（TH06・TH17・TH19・TH20）。burnt=画面全体の大爆発と焦げた背景、
- * cold=煙が消えて冷え切った色。終わると結果へ進む。
+ * cold=煙が消えて冷え切った色、leaf=フレーバーが抜けてくすんだ色。終わると結果へ進む。
  */
 export async function failBench(cs, kind) {
   if (bench?.cs !== cs || !bench.root.isConnected) return;
