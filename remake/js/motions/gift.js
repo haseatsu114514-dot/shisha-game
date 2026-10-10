@@ -99,7 +99,8 @@ async function finish(iris, hero, fx, cx, cy, P) {
   await sleep(410); // ハガルが点になる瞬間に合わせる
   SE.select();
   ring(fx, cx, cy, { r: 120, color: P.white, width: 6, dur: 420 });
-  [[-70, -40], [80, -24], [-20, 60], [52, 52]].forEach(([dx, dy], i) => twinkle(fx, cx + dx, cy + dy, { color: P.light, size: 12, delay: i * 40, dur: 500 }));
+  // 最後の遅延分も丸い幕の520msに収める。
+  [[-70, -40], [80, -24], [-20, 60], [52, 52]].forEach(([dx, dy], i) => twinkle(fx, cx + dx, cy + dy, { color: P.light, size: 12, delay: i * 40, dur: 400 }));
   await move(iris, [{ "--mo-hole": "0%" }, { "--mo-hole": "100%" }], 520, { easing: IN_SOFT });
 }
 
