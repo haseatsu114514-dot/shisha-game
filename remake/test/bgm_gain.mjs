@@ -7,6 +7,7 @@ let now = 0;
 class Audio {
   constructor(url) { this.src = url; this.volume = 0; elements.push(this); }
   play() { return Promise.resolve(); } pause() { this.paused = true; }
+  addEventListener() {}
 }
 class AudioContext {
   state = "running"; destination = {};
