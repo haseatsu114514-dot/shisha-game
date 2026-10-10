@@ -20,3 +20,7 @@
 .mo-tb-card { position: absolute; left: -118px; top: -190px; width: 236px; height: 380px; transform-style: preserve-3d; transform: translate3d(0, -2000px, 0); }
 .mo-tb-face { position: absolute; inset: 0; border-radius: 16px; border: 6px solid; backface-visibility: hidden; -webkit-backface-visibility: hidden; overflow: hidden; box-shadow: 0 8px 20px #0007; }
 .mo-tb-face.front { transform: rotateY(180deg); }
+/* a: 表は光だけ。裏返った瞬間の白い光と十字の光 */
+.mo-tarot-front.glow { box-shadow: 0 0 36px 8px #fff6; }
+.mo-tarot-flash { position: absolute; inset: -10%; opacity: 0; pointer-events: none; mix-blend-mode: screen; }
+.mo-tarot-flare { position: absolute; left: 50%; top: 330px; width: 1400px; height: 6px; border-radius: 3px; opacity: 0; transform: translate(-50%, -50%) rotate(var(--r)) scaleX(0); pointer-events: none; }

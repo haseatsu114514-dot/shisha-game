@@ -1,21 +1,16 @@
 // 路上占いの結果（remake_fortune_result の {"type":"motion","id":"tarot"}）。charId は占った相手（state.fortune.char）。
-// 相手の名前は直後の会話で出すので、絵には顔も名前も出さない（札の絵柄と札の名前だけ）。
+// 相手の名前は直後の会話で出すので、絵には顔も名前も出さない。札も何の札かは見せず、表は光だけ（CI122）。
 // a／b の2パターン（?movar=b）。配色は紫1色／場面ごとの色（?mopal=free・core/mg-kit.js の pick）。SKIPと動きを減らす設定は core/scene-motions.js で省く。
 import { el, sleep } from "../core/util.js";
 import { SE } from "../core/audio.js";
 import { W, svg, stageSvg, move } from "../core/transition-kit.js";
-import { MG_EASE as E, pick, burst, ring, twinkle, kinetic, playKinetic } from "../core/mg-kit.js";
+import { MG_EASE as E, pick, burst, ring, twinkle } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
 
 // ---------------------------------------------------------------- 札の絵（表は 224x368 の枠の中に描く）
 
 const CW = 224, CH = 368;
-const smooth = (x) => { const t = Math.min(1, Math.max(0, x)); return t * t * (3 - 2 * t); };
 
-/** 4つの尖りのきらめき（札の飾り・動かさない） */
-function spark(x, y, s, fill) {
-  return svg("path", { d: `M ${x} ${y - s} L ${x + s * 0.3} ${y - s * 0.3} L ${x + s} ${y} L ${x + s * 0.3} ${y + s * 0.3} L ${x} ${y + s} L ${x - s * 0.3} ${y + s * 0.3} L ${x - s} ${y} L ${x - s * 0.3} ${y - s * 0.3} Z`, fill, class: "tr-scale" });
-}
 /** n 本の尖りの星形 */
 function starPath(x, y, ro, ri, n = 8, turn = -Math.PI / 2) {
   const pts = [...Array(n * 2)].map((_, i) => {
@@ -26,80 +21,9 @@ function starPath(x, y, ro, ri, n = 8, turn = -Math.PI / 2) {
 }
 const trim = (attrs) => ({ pathLength: 1, "stroke-dasharray": 1, "stroke-dashoffset": 1, fill: "none", "stroke-linecap": "round", ...attrs });
 
-/** 札の表の枠・番号・名前。art は絵の窓（x20〜204, y52〜274）に入れる絵 */
-function cardFace(P, { num, en, ja }, art) {
-  const dia = (x) => svg("path", { d: `M ${x} 29 l 4 5 l -4 5 l -4 -5 Z`, fill: P.mid });
-  return svg("svg", { viewBox: `0 0 ${CW} ${CH}`, class: "mo-tarot-art" }, [
-    svg("rect", { x: 8, y: 8, width: CW - 16, height: CH - 16, rx: 8, fill: "none", stroke: P.main, "stroke-width": 2 }),
-    svg("rect", { x: 13, y: 13, width: CW - 26, height: CH - 26, rx: 6, fill: "none", stroke: P.main, "stroke-width": 0.8, opacity: 0.5 }),
-    dia(CW / 2 - 30), dia(CW / 2 + 30),
-    svg("text", { x: CW / 2, y: 41, "text-anchor": "middle", "font-size": 19, "font-weight": 900, fill: P.main, "letter-spacing": 1 }, [num]),
-    svg("rect", { x: 20, y: 52, width: 184, height: 222, rx: 5, fill: P.deep }),
-    svg("circle", { cx: CW / 2, cy: 150, r: 88, fill: P.main, opacity: 0.55 }),
-    art,
-    svg("rect", { x: 20, y: 52, width: 184, height: 222, rx: 5, fill: "none", stroke: P.main, "stroke-width": 2 }),
-    svg("text", { x: CW / 2 + 1, y: 300, "text-anchor": "middle", "font-size": 12.5, "font-weight": 700, fill: P.main, "letter-spacing": 2.4 }, [en]),
-    svg("line", { x1: CW / 2 - 46, y1: 311, x2: CW / 2 + 46, y2: 311, stroke: P.mid, "stroke-width": 1.5 }),
-    svg("text", { x: CW / 2 + 2, y: 343, "text-anchor": "middle", "font-size": 27, "font-weight": 900, fill: P.deep, "letter-spacing": 4 }, [ja]),
-  ]);
-}
 
-/** X 運命の輪: 輪と、両端で分かれて真ん中で撚り合わさる2本の糸（縁が撚りどき） */
-function wheelArt(P) {
-  const cx = CW / 2, cy = 146;
-  const wheel = svg("g", { class: "tr-scale" }, [
-    svg("circle", { cx, cy, r: 64, fill: "none", stroke: P.light, "stroke-width": 5 }),
-    svg("circle", { cx, cy, r: 53, fill: "none", stroke: P.light, "stroke-width": 1.5 }),
-    ...[...Array(8)].map((_, i) => {
-      const a = (i / 8) * Math.PI * 2;
-      return svg("line", { x1: cx + Math.cos(a) * 10, y1: cy + Math.sin(a) * 10, x2: cx + Math.cos(a) * 53, y2: cy + Math.sin(a) * 53, stroke: P.light, "stroke-width": 3, "stroke-linecap": "round" });
-    }),
-    ...[...Array(8)].map((_, i) => {
-      const a = ((i + 0.5) / 8) * Math.PI * 2;
-      return svg("circle", { cx: cx + Math.cos(a) * 58.5, cy: cy + Math.sin(a) * 58.5, r: 2.2, fill: P.light });
-    }),
-    svg("circle", { cx, cy, r: 11, fill: P.light }),
-    svg("circle", { cx, cy, r: 4, fill: P.deep }),
-  ]);
-  // 撚り糸: 交差ごとに前後を入れ替える（後ろの糸→前の糸の縁取り→前の糸）
-  const x0 = 30, x1 = 194, y = 242, turns = 7;
-  const at = (t, s) => {
-    const env = 5.5 + 10 * (1 - smooth(t / 0.22)) + 10 * smooth((t - 0.78) / 0.22);
-    return [x0 + (x1 - x0) * t, y + s * env * Math.sin(Math.PI / 2 + turns * Math.PI * t)];
-  };
-  const bounds = [0, ...[...Array(turns)].map((_, m) => (m + 0.5) / turns), 1];
-  const cord = [];
-  for (let j = 0; j < bounds.length - 1; j++) {
-    const [t0, t1] = [bounds[j], bounds[j + 1]];
-    const d = (s) => "M " + [...Array(13)].map((_, k) => at(t0 + ((t1 - t0) * k) / 12, s).map((v) => v.toFixed(1)).join(" ")).join(" L ");
-    const front = j % 2 ? -1 : 1;
-    const seg = { t0, t1, paths: [
-      svg("path", trim({ d: d(-front), stroke: front > 0 ? P.thread : P.light, "stroke-width": 5 })),
-      svg("path", trim({ d: d(front), stroke: P.deep, "stroke-width": 10 })),
-      svg("path", trim({ d: d(front), stroke: front > 0 ? P.light : P.thread, "stroke-width": 5 })),
-    ] };
-    cord.push(seg);
-  }
-  const stars = [[44, 74, 6], [182, 80, 4.5], [40, 196, 3.5], [186, 192, 5], [150, 66, 3]].map(([x, yy, s]) => spark(x, yy, s, P.white));
-  const g = svg("g", {}, [...stars, wheel, ...cord.flatMap((s) => s.paths)]);
-  return { g, wheel, cord, stars };
-}
-
-/** XVII 星: 大きな八芒星と小さな星、地平線と水面に映る光 */
-function starArt(P) {
-  const cx = CW / 2, cy = 124;
-  const big = svg("g", { class: "tr-scale" }, [
-    svg("path", { d: starPath(cx, cy, 46, 11), fill: P.light }),
-    svg("path", { d: starPath(cx, cy, 24, 8, 8, -Math.PI / 2 + Math.PI / 8), fill: P.white }),
-  ]);
-  const small = [[46, 78, 7], [180, 84, 6], [54, 148, 5], [172, 156, 6], [82, 194, 3.5], [146, 192, 4], [112, 60, 3]].map(([x, y, s]) => spark(x, y, s, P.white));
-  const horizon = svg("line", trim({ x1: 30, y1: 214, x2: 194, y2: 214, stroke: P.mid, "stroke-width": 2 }));
-  const wave = (x0, y, n) => `M ${x0} ${y} q 12 -5 24 0` + " t 24 0".repeat(n - 1);
-  const waves = [[34, 230, 7], [46, 244, 6], [58, 258, 5]].map(([x0, y, n]) => svg("path", trim({ d: wave(x0, y, n), stroke: P.mid, "stroke-width": 2.5, opacity: 0.75 })));
-  const glints = [[222, 30], [232, 20], [243, 26], [254, 14], [264, 8]].map(([y, w]) => svg("line", trim({ x1: cx - w / 2, y1: y, x2: cx + w / 2, y2: y, stroke: P.light, "stroke-width": 3 })));
-  const g = svg("g", {}, [...small, big, horizon, ...waves, ...glints]);
-  return { g, big, small, lines: [horizon, ...waves, ...glints] };
-}
+// ---------------------------------------------------------------- a: 占い: 星図の輪が描かれ、3枚の札が飛んできて、真ん中が裏返る。
+// 何の札かは見せず、表は光だけ。裏返った瞬間に画面ごと「ピカーン」と光る（札の名前や絵柄で占いの中身を決めつけない）
 
 /** b の札の裏: 菱形と、光の輪を持つ星の紋 */
 function backArt(P) {
@@ -118,15 +42,8 @@ function backArt(P) {
   ]);
 }
 
-/** 撚り糸を左から右へ、1本の線のようにつないで描く */
-function drawCord(cord, ms, delay = 0) {
-  cord.forEach(({ t0, t1, paths }) => paths.forEach((p) => move(p, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], Math.max(1, (t1 - t0) * ms), { easing: "linear", delay: delay + t0 * ms })));
-}
 
-// ---------------------------------------------------------------- a: 占い: 星図の輪が描かれ、3枚の札が飛んできて、真ん中が裏返る（X 運命の輪）
-
-const TAROT = { bg: "#101a3a", deep: "#080e22", main: "#24356e", mid: "#4a5fb4", light: "#f2c14e", white: "#fff6dc", thread: "#9cc4ff" };
-const MONO_THREAD = "#9a82d8"; // 紫1色の2本目の糸（輪より濃い紫）
+const TAROT = { bg: "#101a3a", deep: "#080e22", main: "#24356e", mid: "#4a5fb4", light: "#f2c14e", white: "#fff6dc" };
 
 function tarotCard(P, i) {
   return el("div.mo-tarot-card", { style: { "--i": String(i) } }, [el("div.mo-tarot-flip", [
@@ -136,7 +53,7 @@ function tarotCard(P, i) {
 
 /** 占った相手（charId）は直後の会話で名前を出すので、ここでは使わない */
 export async function a() {
-  const P = pick(TAROT, { thread: MONO_THREAD });
+  const P = pick(TAROT);
   await stagePlay("tarot", async (node) => {
     const back = backdrop(P.bg);
     const art = stageSvg();
@@ -150,18 +67,15 @@ export async function a() {
       const a = (i / 12) * Math.PI * 2;
       return svg("line", { x1: cx + Math.cos(a) * 258, y1: cy + Math.sin(a) * 258, x2: cx + Math.cos(a) * 280, y2: cy + Math.sin(a) * 280, stroke: P.light, "stroke-width": 3, "stroke-linecap": "round", opacity: 0 });
     }));
-    const rule = [-1, 1].map((s) => svg("line", { x1: cx + s * 18, y1: 664, x2: cx + s * 190, y2: 664, stroke: P.light, "stroke-width": 2, pathLength: 1, "stroke-dasharray": 1, "stroke-dashoffset": 1 }));
-    art.append(...dial, ticks, ...rule);
+    art.append(...dial, ticks);
     const cards = [0, 1, 2].map((i) => tarotCard(P, i));
-    const wheel = wheelArt(P);
     const gloss = el("i.mo-gloss");
-    cards[1].firstChild.append(el("div.mo-tarot-front", { style: { background: P.white, borderColor: P.light } }, [
-      cardFace(P, { num: "X", en: "WHEEL OF FORTUNE", ja: "運命の輪" }, wheel.g),
-      gloss,
-    ]));
-    const title = kinetic("運命の輪　正位置", "mo-tarot-title");
-    title.style.color = P.white;
-    node.append(back, art, ...cards, title);
+    // 表は光だけ（中心が白く、縁へ金色）。札の種類は分からない
+    const front = el("div.mo-tarot-front.glow", { style: { background: `radial-gradient(circle at 50% 46%, #ffffff 0 22%, ${P.white} 40%, ${P.light} 100%)`, borderColor: P.light } }, [gloss]);
+    cards[1].firstChild.append(front);
+    const flash = el("div.mo-tarot-flash", { style: { background: `radial-gradient(circle at 50% 46%, #ffffff 0 18%, ${P.white} 38%, transparent 72%)` } });
+    const flare = [0, 90].map((deg) => el("i.mo-tarot-flare", { style: { background: `linear-gradient(90deg, transparent, #ffffff, transparent)`, "--r": `${deg}deg` } }));
+    node.append(back, art, ...cards, ...flare, flash);
     // 1. 星図の輪が描かれる
     move(back, [{ opacity: 0 }, { opacity: 1 }], 240);
     move(dial[0], [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 700, { easing: E.out });
@@ -180,28 +94,28 @@ export async function a() {
     move(cards[0], [{ transform: "translate(calc(-50% - 230px), 0) rotate(-10deg)", opacity: 1 }, { transform: "translate(calc(-50% - 620px), 40px) rotate(-30deg)", opacity: 0 }], 360, { easing: E.in });
     move(cards[2], [{ transform: "translate(calc(-50% + 230px), 0) rotate(10deg)", opacity: 1 }, { transform: "translate(calc(-50% + 620px), 40px) rotate(30deg)", opacity: 0 }], 360, { easing: E.in });
     await move(cards[1], [{ transform: "translate(-50%, 0) scale(1)" }, { transform: "translate(-50%, -16px) scale(1.16)" }], 300, { easing: E.out });
-    // 4. くるっと裏返り、光が走る。表が見えたところで輪が回り、2本の糸が撚り合わさりながら描かれる
-    const flip = move(cards[1].firstChild, [{ transform: "rotateY(0deg)" }, { transform: "rotateY(180deg)" }], 520, { easing: E.inOut });
-    move(wheel.wheel, [{ transform: "rotate(-140deg)" }, { transform: "rotate(0deg)" }], 1100, { easing: E.out, delay: 240 });
-    drawCord(wheel.cord, 620, 300);
-    wheel.stars.forEach((s, i) => move(s, [{ transform: "scale(0) rotate(-90deg)" }, { transform: "scale(1) rotate(0deg)" }], 420, { easing: E.back, delay: 420 + i * 70 }));
-    await flip;
+    // 4. くるっと裏返った瞬間、ピカーン。画面が白く光り、十字の光と長い放射線が伸びて、札が脈打つ
+    await move(cards[1].firstChild, [{ transform: "rotateY(0deg)" }, { transform: "rotateY(180deg)" }], 520, { easing: E.inOut });
     SE.just();
-    ring(art, cx, cy, { r: 260, color: P.light, width: 8 });
-    burst(art, cx, cy, { n: 14, r0: 230, r1: 330, color: P.light, width: 5 });
-    move(gloss, [{ transform: "translateX(-140%) skewX(-20deg)" }, { transform: "translateX(240%) skewX(-20deg)" }], 520, { easing: E.inOut });
-    rule.forEach((r) => move(r, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 520, { easing: E.out, delay: 160 }));
-    await playKinetic(title, { delay: 120, step: 40 });
-    await sleep(820);
+    move(flash, [{ opacity: 0, transform: "scale(0.4)" }, { opacity: 1, transform: "scale(1.15)", offset: 0.18 }, { opacity: 0, transform: "scale(1.6)" }], 900, { easing: E.out });
+    flare.forEach((f, i) => move(f, [{ transform: `translate(-50%, -50%) rotate(var(--r)) scaleX(0)`, opacity: 1 }, { transform: `translate(-50%, -50%) rotate(var(--r)) scaleX(1)`, opacity: 1, offset: 0.35 }, { transform: `translate(-50%, -50%) rotate(var(--r)) scaleX(1.3)`, opacity: 0 }], 900, { easing: E.out, delay: i * 40 }));
+    ring(art, cx, cy, { r: 260, color: P.white, width: 10 });
+    ring(art, cx, cy, { r: 380, color: P.light, width: 6, delay: 120 });
+    burst(art, cx, cy, { n: 18, r0: 220, r1: 420, color: P.light, width: 5, dur: 620 });
+    burst(art, cx, cy, { n: 18, r0: 260, r1: 360, color: P.white, width: 3, dur: 520, delay: 90, turn: Math.PI / 18 });
+    move(front, [{ boxShadow: `0 0 0 0 ${P.light}` }, { boxShadow: `0 0 80px 30px ${P.light}`, offset: 0.3 }, { boxShadow: `0 0 36px 8px ${P.light}` }], 900, { easing: E.out });
+    move(gloss, [{ transform: "translateX(-140%) skewX(-20deg)" }, { transform: "translateX(240%) skewX(-20deg)" }], 520, { easing: E.inOut, delay: 200 });
+    for (let i = 0; i < 6; i++) twinkle(art, cx + Math.cos(i) * (160 + i * 18), cy + Math.sin(i * 1.7) * 150, { color: P.white, size: 14 + (i % 3) * 6, delay: 160 + i * 70 });
+    await sleep(1200);
     // 5. 退場
-    move(title, [{ opacity: 1 }, { opacity: 0 }], 240);
     move(art, [{ opacity: 1 }, { opacity: 0 }], 360);
     move(back, [{ opacity: 1 }, { opacity: 0 }], 420, { delay: 160 });
     await move(cards[1], [{ transform: "translate(-50%, -16px) scale(1.16) rotate(0deg)", opacity: 1 }, { transform: "translate(-50%, -40px) scale(0.6) rotate(12deg)", opacity: 0 }], 420, { easing: E.in });
   });
 }
 
-// ---------------------------------------------------------------- b: 占い: 布の魔法陣に山札が置かれ、切って3枚を配り、真ん中の1枚が起き上がって裏返る（XVII 星）
+// ---------------------------------------------------------------- b: 占い: 布の魔法陣に山札が置かれ、切って3枚を配り、真ん中の1枚が起き上がって裏返る。
+// a と同じく何の札かは見せず、表は光だけ。裏返った瞬間に「ピカーン」
 
 const TAROT_B = { bg: "#3a1420", deep: "#200a12", main: "#6e2236", mid: "#b5475f", light: "#efc77e", white: "#fbf4e2" };
 
@@ -254,16 +168,16 @@ export async function b() {
     const scene = el("div.mo-tb-scene", [table]);
     const { cloth, lines, dots } = clothArt(P);
     const trails = svg("svg", { viewBox: "-420 -420 840 840", class: "mo-tb-cloth" });
-    const star = starArt(P);
     const gloss = el("i.mo-gloss");
-    const deck = [...Array(8)].map((_, i) => tableCard(P, i === 3 ? [cardFace(P, { num: "XVII", en: "THE STAR", ja: "星" }, star.g), gloss] : null));
+    const deck = [...Array(8)].map((_, i) => tableCard(P, i === 3 ? [gloss] : null));
+    const glowFace = deck[3].querySelector(".mo-tb-face.front");
+    glowFace.classList.add("glow");
+    glowFace.style.background = `radial-gradient(circle at 50% 46%, #ffffff 0 22%, ${P.white} 40%, ${P.light} 100%)`;
     table.append(cloth, trails, ...deck);
     const fx = stageSvg();
-    const rule = [-1, 1].map((s) => svg("line", { x1: W / 2 + s * 18, y1: 664, x2: W / 2 + s * 160, y2: 664, stroke: P.light, "stroke-width": 2, pathLength: 1, "stroke-dasharray": 1, "stroke-dashoffset": 1 }));
-    fx.append(...rule);
-    const title = kinetic("星　正位置", "mo-tarot-title");
-    title.style.color = P.white;
-    node.append(back, halo, scene, fx, title);
+    const flash = el("div.mo-tarot-flash", { style: { background: `radial-gradient(circle at 50% 46%, #ffffff 0 18%, ${P.white} 38%, transparent 72%)` } });
+    const flare = [0, 90].map((deg) => el("i.mo-tarot-flare", { style: { background: "linear-gradient(90deg, transparent, #ffffff, transparent)", "--r": `${deg}deg` } }));
+    node.append(back, halo, scene, fx, ...flare, flash);
     const faces = (c) => [...c.children];
     // 1. 布が広がり、魔法陣が線で描かれる
     move(back, [{ opacity: 0 }, { opacity: 1 }], 160);
@@ -319,23 +233,21 @@ export async function b() {
     move(cloth, [{ opacity: 1, transform: "rotate(0deg)" }, { opacity: 0, transform: "rotate(24deg)" }], 620, { easing: E.in, delay: 80 });
     move(halo, [{ transform: "translate(-50%, -50%) scale(0.96)", opacity: 0.5 }, { transform: "translate(-50%, -50%) scale(1)", opacity: 0.9 }], 900, { easing: E.out });
     move(pick1, [pose(0, 40, 0, 0), { ...pose(0, 34, 70, 0, -22, 30, 0.72), offset: 0.35 }, pose(0, -6, 124, 0, -TILT, 180, 1.04)], 760, { easing: E.inOut });
-    // 表の絵: 大きな星が弾んで開き、小さな星と水面の線が後を追う
-    move(star.big, [{ transform: "scale(0.2) rotate(-90deg)" }, { transform: "scale(1) rotate(0deg)" }], 620, { easing: E.back, delay: 460 });
-    star.small.forEach((s, i) => move(s, [{ transform: "scale(0) rotate(-90deg)" }, { transform: "scale(1) rotate(0deg)" }], 380, { easing: E.back, delay: 560 + i * 55 }));
-    star.lines.forEach((l, i) => move(l, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 420, { easing: E.out, delay: 520 + i * 50 }));
     await sleep(760);
+    // 表が向いた瞬間、ピカーン。画面が白く光り、十字の光と長い放射線
     SE.just();
     const cy = 330;
-    ring(fx, W / 2, cy, { r: 300, color: P.light, width: 8 });
-    ring(fx, W / 2, cy, { r: 220, color: P.white, width: 4, delay: 90 });
-    burst(fx, W / 2, cy, { n: 16, r0: 250, r1: 340, color: P.light, width: 5 });
-    [[430, 170], [860, 200], [400, 470], [880, 480]].forEach(([x, y], i) => twinkle(fx, x, y, { color: P.light, size: 12 + (i % 2) * 6, delay: 80 + i * 70, dur: 760 }));
-    move(gloss, [{ transform: "translateX(-140%) skewX(-20deg)" }, { transform: "translateX(240%) skewX(-20deg)" }], 560, { easing: E.inOut });
-    rule.forEach((r) => move(r, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 520, { easing: E.out, delay: 160 }));
-    playKinetic(title, { delay: 80, step: 44 });
-    await sleep(840);
+    move(flash, [{ opacity: 0, transform: "scale(0.4)" }, { opacity: 1, transform: "scale(1.15)", offset: 0.18 }, { opacity: 0, transform: "scale(1.6)" }], 900, { easing: E.out });
+    flare.forEach((f, i) => move(f, [{ transform: "translate(-50%, -50%) rotate(var(--r)) scaleX(0)", opacity: 1 }, { transform: "translate(-50%, -50%) rotate(var(--r)) scaleX(1)", opacity: 1, offset: 0.35 }, { transform: "translate(-50%, -50%) rotate(var(--r)) scaleX(1.3)", opacity: 0 }], 900, { easing: E.out, delay: i * 40 }));
+    ring(fx, W / 2, cy, { r: 300, color: P.white, width: 10 });
+    ring(fx, W / 2, cy, { r: 400, color: P.light, width: 6, delay: 120 });
+    burst(fx, W / 2, cy, { n: 18, r0: 230, r1: 430, color: P.light, width: 5, dur: 620 });
+    burst(fx, W / 2, cy, { n: 18, r0: 270, r1: 370, color: P.white, width: 3, dur: 520, delay: 90, turn: Math.PI / 18 });
+    move(glowFace, [{ boxShadow: `0 0 0 0 ${P.light}` }, { boxShadow: `0 0 80px 30px ${P.light}`, offset: 0.3 }, { boxShadow: `0 0 36px 8px ${P.light}` }], 900, { easing: E.out });
+    [[430, 170], [860, 200], [400, 470], [880, 480]].forEach(([x, y], i) => twinkle(fx, x, y, { color: P.white, size: 12 + (i % 2) * 6, delay: 120 + i * 70, dur: 760 }));
+    move(gloss, [{ transform: "translateX(-140%) skewX(-20deg)" }, { transform: "translateX(240%) skewX(-20deg)" }], 560, { easing: E.inOut, delay: 200 });
+    await sleep(1100);
     // 7. 札の中心へ、丸く窓が閉じて会話へ戻る
-    move(title, [{ opacity: 1 }, { opacity: 0 }], 200);
     await move(node, [{ clipPath: `circle(820px at ${W / 2}px ${cy}px)` }, { clipPath: `circle(0px at ${W / 2}px ${cy}px)` }], 480, { easing: E.in });
   });
 }
