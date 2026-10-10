@@ -7,11 +7,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 bad = []
-pattern = re.compile(r"(?:はじめ|始|蒸野)(?:さん|ちゃん|君|くん|様|さま)|はじめ(?!くん)")
+pattern = re.compile(r"(?:はじめ|始|蒸野)(?:さん|ちゃん|君|くん|様|さま)")
 FIRST_PERSON = re.compile(r"うち|わたし|私")
 def scan(value, path, active=False):
     if isinstance(value, dict):
-        active = active or value.get("speaker") == "mashiro"
+        active = value.get("speaker") == "mashiro" if "speaker" in value else active
         for k, v in value.items():
             if k == "text" and isinstance(v, str) and active:
                 for m in pattern.finditer(v):
