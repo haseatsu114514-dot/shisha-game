@@ -1,0 +1,26 @@
+{
+  "presentation": {
+    "background": "rgba(0, 0, 0, 0)",
+    "border": "0px",
+    "boxShadow": "none",
+    "rotate": "none",
+    "count": "17",
+    "portrait": {
+      "x": 170,
+      "y": 94,
+      "width": 940,
+      "height": 502,
+      "top": 94,
+      "right": 1110,
+      "bottom": 596,
+      "left": 170
+    }
+  },
+  "page_errors": [],
+  "screenshots": [
+    "sumi.png",
+    "urgent.png",
+    "game-over.png",
+    "phone-ageha.png"
+  ]
+}

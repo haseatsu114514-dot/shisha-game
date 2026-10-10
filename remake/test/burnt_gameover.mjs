@@ -26,18 +26,30 @@ async function open() {
   return page;
 }
 try {
-  // 大会: 焦がした時点で審査へ進まずGAME OVER。再挑戦で大会の頭に戻る。
+  // 実画面も20秒でGAME OVERを表示し、location.reload後にタイトルへ戻る。
   let page = await open();
+  await page.clock.install();
+  await page.evaluate(() => window.__remake.dev.gameOver('rank', 0));
+  await page.clock.runFor(1000);
+  assert.equal(await page.locator('.go-title').textContent(), 'コンティニュー？');
+  await page.clock.runFor(19050);
+  assert.equal(await page.locator('.gameover').getAttribute('data-phase'), 'gameover');
+  assert.equal(await page.locator('.go-title').textContent(), 'GAME OVER');
+  assert.equal(await page.locator('.go-count').textContent(), '0');
+  await page.clock.runFor(1900);
+  await page.waitForSelector('[data-test="title-new"]');
+  console.log('PASS: real continue screen → 20 seconds → GAME OVER → title');
+  await page.close();
+
+  // 大会: 焦がした時点で審査へ進まずGAME OVER。再挑戦で大会の頭に戻る。
+  page = await open();
   await page.evaluate(() => { window.__remake.craftTest.auto = 'burn'; window.__run = window.__remake.dev.tournament(); });
   await page.waitForSelector('.bench[data-thermal-band="burnt"]', { timeout: 240000 });
   await page.waitForSelector('.end-screen.gameover', { timeout: 60000 });
-  assert.match(await page.locator('.end-screen.gameover .go-reason-title').textContent(), /シーシャが焦げてしまった/);
-  assert.equal(await page.locator('.end-screen.gameover .go-emblem.burnt').textContent(), '炎', 'the continue screen must show the burn mark');
-  assert.equal(await page.locator('.end-screen.gameover .go-title').getAttribute('aria-label'), 'GAME OVER');
+  assert.equal(await page.locator('.end-screen.gameover .go-title').textContent(), 'コンティニュー？');
   assert.equal(await page.locator('.end-screen.gameover img[src*="bg_game_over"]').count(), 0, 'GAME OVER is drawn without an image');
-  assert.equal(await page.locator('.end-screen.gameover .end-question').textContent(), '俺たち、もう一度やれるよな？');
   assert.equal(await page.locator('.end-screen.gameover .go-sumi-img').count(), 1, 'Sumi uses the canon portrait');
-  assert.equal(await page.locator('[data-test="continue-skip"]').count(), 1);
+  assert.equal(await page.locator('[data-test="continue-caption"]').count(), 1);
   assert.equal(await page.locator('[data-test="continue-next"]').count(), 1);
   assert.equal(await page.locator('[data-test="continue-voice"]').count(), 0, 'speech must be disabled by default');
   assert.equal(await page.locator('[data-test="game-over"]').getAttribute('data-reason'), 'burnt');
@@ -46,6 +58,9 @@ try {
   assert.equal(await page.evaluate(() => window.__remake.state.tournament.lastRank), null);
   await page.evaluate(() => { window.__remake.craftTest.auto = 'good'; });
   await page.locator('[data-test="retry"]').click();
+  assert.equal(await page.locator('[data-test="game-over"]').getAttribute('data-phase'), 'reaction');
+  assert.equal(await page.evaluate(() => window.__remake.state.tournament.attempts), 1, 'reaction plays before rewinding the tournament');
+  assert.match(await page.locator('.go-a11y').textContent(), /最後まで付き合う|絶滅回避|全会一致/);
   await page.waitForFunction(() => window.__remake.state.tournament.attempts === 2, null, { timeout: 30000 });
   console.log('PASS: tournament burn → immediate GAME OVER (no judging) → retry from the tournament start');
   await page.close();
