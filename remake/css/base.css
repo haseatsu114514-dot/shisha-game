@@ -531,21 +531,21 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .tr-move-label.at-door { left: auto; right: 0; width: 470px; top: 56px; align-items: center; text-align: center; }
 .tr-move-label.at-door b { font-size: 44px; }
 .tr-foot { filter: drop-shadow(0 0 2px #150f26) drop-shadow(0 0 6px #6b4fb0); }
-.tr-door-frame { position: absolute; inset: 0; overflow: hidden; }
-.tr-door-leaf { position: absolute; top: 0; bottom: 0; width: 50%; background: linear-gradient(90deg, #2a1d57, #3d2a78 55%, #2f2163); box-shadow: inset 0 0 0 10px #241845; }
-.tr-door-leaf.left { left: 0; transform-origin: left center; }
-.tr-door-leaf.right { right: 0; transform-origin: right center; }
-.tr-door-panel { position: absolute; left: 70px; right: 70px; border: 3px solid #dcd1f466; border-radius: 10px; box-shadow: inset 0 0 0 10px #6b4fb033; }
-.tr-door-panel:nth-child(1) { top: 70px; height: 300px; }
-.tr-door-panel:nth-child(2) { top: 400px; bottom: 70px; }
-.tr-door-handle { position: absolute; top: 300px; width: 14px; height: 130px; border-radius: 8px; background: linear-gradient(#efe6ff, #a993dd); box-shadow: 0 0 10px #dcd1f480; }
-.tr-door-leaf.left .tr-door-handle { right: 28px; }
-.tr-door-leaf.right .tr-door-handle { left: 28px; }
-.tr-door-seam { position: absolute; left: 50%; top: 0; bottom: 0; width: 14px; margin-left: -7px; background: linear-gradient(90deg, transparent, #fff1d2, transparent); box-shadow: 0 0 40px 18px #fff1d2aa; opacity: 0; }
-.tr-door-plate { position: absolute; left: 50%; top: 150px; transform: translateX(-50%); min-width: 300px; padding: 14px 34px 16px; display: flex; flex-direction: column; align-items: center; gap: 2px; background: #150f26; border: 3px solid #dcd1f4; border-radius: 10px; box-shadow: 0 10px 30px #0008; font-family: var(--font); }
-.tr-door-plate small { font-size: 15px; font-weight: 700; letter-spacing: 0.3em; color: #a993dd; }
-.tr-door-plate b { font-size: 44px; font-weight: 900; letter-spacing: 0.08em; color: #fff; white-space: nowrap; }
-.tr-door-glow { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, #fff1d2ee, #fff1d244 45%, transparent 75%); pointer-events: none; }
+.tr-room { position: absolute; inset: 0; }
+.tr-wall { position: absolute; background: linear-gradient(90deg, #2b2420, #3a302a 50%, #2b2420); }
+.tr-wall:nth-child(1) { box-shadow: inset 0 -30px 40px -30px #0008; }
+.tr-casing { position: absolute; border: 18px solid #5a3d27; border-bottom: 0; border-radius: 6px 6px 0 0; box-shadow: 0 0 0 3px #2a1c12, inset 0 0 0 2px #7a5636; pointer-events: none; }
+.tr-doorway { position: absolute; perspective: 1300px; }
+.tr-wood-leaf { position: absolute; top: 0; bottom: 0; left: 0; width: 100%; background: linear-gradient(90deg, #6e4628, #8b5b35 45%, #6a4326); box-shadow: inset 0 0 0 4px #4a2e1a; backface-visibility: hidden; }
+.tr-wood-leaf.left { transform-origin: left center; }
+.tr-wood-leaf.half { width: 50%; }
+.tr-wood-leaf.right { left: auto; right: 0; transform-origin: right center; }
+.tr-wood-panel { position: absolute; left: 14%; right: 14%; border: 4px solid #4f311c; border-radius: 4px; box-shadow: inset 0 0 0 3px #a07048, inset 0 0 18px #3c2414; }
+.tr-wood-panel:nth-child(1) { top: 7%; height: 38%; }
+.tr-wood-panel:nth-child(2) { top: 53%; bottom: 7%; }
+.tr-wood-knob { position: absolute; top: 50%; width: 20px; height: 20px; margin-top: -10px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #fff2c4, #d4a94f 45%, #8a6424); box-shadow: 0 2px 4px #0007; }
+.tr-wood-leaf.left .tr-wood-knob { right: 9%; }
+.tr-wood-leaf.right .tr-wood-knob { left: 9%; }
 .tr-noren-back { position: absolute; inset: 0; background: #150f26; }
 .tr-noren-panel { position: absolute; top: -2%; width: calc(25% - 6px); margin-left: 3px; height: 104%; background: linear-gradient(#2a1d57, #3d2a78); border-bottom: 10px solid #6b4fb0; transform-origin: top center; box-shadow: inset 0 18px 0 #241845; }
 .tr-noren-crest { position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 12px; font-family: var(--font); pointer-events: none; }

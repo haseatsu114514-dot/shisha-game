@@ -4,7 +4,7 @@ import { el, nextFrame, sleep } from "./util.js";
 import { SE } from "./audio.js";
 import { W, H, COLOR, EASE, svg, stageSvg, move, holdKeys, openLeaf, stepIntoBg, walker, everyFrame } from "./transition-kit.js";
 
-export const MOVE_STYLES = ["pin", "steps", "walk", "door", "noren", "walkdoor"];
+export const MOVE_STYLES = ["pin", "steps", "walk", "door", "door2", "noren", "walkdoor"];
 const STORE_KEY = "suien_move_style";
 
 export function moveStyle() {
@@ -37,7 +37,7 @@ function curtain(host, style, cover, reveal) {
 }
 
 export function moveCurtain(host, style, opts = {}) {
-  const make = { pin: pinMove, steps: stepsMove, walk: walkMove, door: doorMove, noren: norenMove, walkdoor: walkDoorMove }[style] || pinMove;
+  const make = { pin: pinMove, steps: stepsMove, walk: walkMove, door: (h) => doorMove(h, false), door2: (h) => doorMove(h, true), noren: norenMove, walkdoor: walkDoorMove }[style] || pinMove;
   return make(host, opts);
 }
 
@@ -164,38 +164,48 @@ function walkMove(host, opts = {}) {
   });
 }
 
-// ---------------------------------------------------------------- door: 両開きの扉が閉じ、行き先の札のあと光の中へ開く
+// ---------------------------------------------------------------- door: 壁の木の扉が開き、戸口をくぐると次の場面（CI106）
 
-function doorLeaf(side) {
-  const leaf = el(`div.tr-door-leaf.${side}`, [el("i.tr-door-panel"), el("i.tr-door-panel"), el("b.tr-door-handle")]);
-  return leaf;
+/** 木の扉の一枚。side は蝶番の側（left / right） */
+function woodLeaf(side) {
+  return el(`div.tr-wood-leaf.${side}`, [el("i.tr-wood-panel"), el("i.tr-wood-panel"), el("b.tr-wood-knob")]);
 }
 
-function doorMove(host, opts = {}) {
-  let left, right, plate, seam;
-  return curtain(host, "door", async (node) => {
-    left = doorLeaf("left");
-    right = doorLeaf("right");
-    seam = el("div.tr-door-seam");
-    plate = el("div.tr-door-plate", [el("small", { text: opts.area || "" }), el("b", { text: opts.label || "" })]);
-    node.append(el("div.tr-door-frame", [left, right, seam, plate]));
-    move(left, [{ transform: "translateX(-100%)" }, { transform: "translateX(0)" }], 320, { easing: EASE.in });
-    await move(right, [{ transform: "translateX(100%)" }, { transform: "translateX(0)" }], 320, { easing: EASE.in });
-    node.firstChild.animate([{ transform: "translateX(0)" }, { transform: "translateX(-3px)" }, { transform: "translateX(2px)" }, { transform: "none" }], { duration: 140, easing: "steps(3)" });
-    await move(plate, [{ opacity: 0, transform: "translate(-50%, -18px)" }, { opacity: 1, transform: "translate(-50%, 0)" }], 220, { easing: EASE.out });
+/** 壁と戸口と扉。戸口は壁の穴なので、扉が開くと後ろの新しい背景が見える */
+function doorRoom(double) {
+  const dw = double ? 560 : 340, dh = 600;
+  const x = (W - dw) / 2, y = 96;
+  const room = el("div.tr-room", { style: { transformOrigin: `${x + dw / 2}px ${y + dh / 2}px` } }, [
+    el("i.tr-wall", { style: { left: "0", top: "0", width: `${W}px`, height: `${y}px` } }),
+    el("i.tr-wall", { style: { left: "0", top: `${y + dh}px`, width: `${W}px`, height: `${H - y - dh}px` } }),
+    el("i.tr-wall", { style: { left: "0", top: `${y}px`, width: `${x}px`, height: `${dh}px` } }),
+    el("i.tr-wall", { style: { left: `${x + dw}px`, top: `${y}px`, width: `${W - x - dw}px`, height: `${dh}px` } }),
+    el("i.tr-casing", { style: { left: `${x - 18}px`, top: `${y - 18}px`, width: `${dw + 36}px`, height: `${dh + 18}px` } }),
+  ]);
+  const doorway = el("div.tr-doorway", { style: { left: `${x}px`, top: `${y}px`, width: `${dw}px`, height: `${dh}px` } });
+  const leaves = double ? [woodLeaf("left"), woodLeaf("right")] : [woodLeaf("left")];
+  if (double) leaves.forEach((l) => l.classList.add("half"));
+  doorway.append(...leaves);
+  room.append(doorway);
+  return { room, leaves, scale: Math.max(W / dw, H / dh) * 1.15 };
+}
+
+function doorMove(host, double = false) {
+  let parts;
+  return curtain(host, double ? "door2" : "door", async (node) => {
+    parts = doorRoom(double);
+    node.append(parts.room);
+    await move(parts.room, [{ opacity: 0, transform: "scale(1.06)" }, { opacity: 1, transform: "scale(1)" }], 220, { easing: EASE.out });
   }, async () => {
-    await sleep(320);
-    move(plate, [{ opacity: 1 }, { opacity: 0 }], 160);
-    await move(seam, [{ opacity: 0, transform: "scaleX(0.2)" }, { opacity: 1, transform: "scaleX(1)" }], 160, { easing: EASE.out });
+    await sleep(140);
     SE.doorbell();
-    stepIntoBg(760);
-    const glow = el("div.tr-door-glow");
-    left.parentNode.append(glow);
-    move(glow, [{ opacity: 1 }, { opacity: 0 }], 620, { easing: EASE.out });
-    move(seam, [{ opacity: 1 }, { opacity: 0 }], 260);
-    move(left, [{ transform: "perspective(1400px) rotateY(0deg)" }, { transform: "perspective(1400px) rotateY(-96deg)" }], 520, { easing: EASE.snap });
-    await move(right, [{ transform: "perspective(1400px) rotateY(0deg)" }, { transform: "perspective(1400px) rotateY(96deg)" }], 520, { easing: EASE.snap });
-    await sleep(120);
+    const open = parts.leaves.map((leaf) => {
+      const dir = leaf.classList.contains("right") ? -1 : 1; // 店の中へ押して開ける（奥へ回る）
+      return move(leaf, [{ transform: "rotateY(0deg)" }, { transform: `rotateY(${dir * 105}deg)` }], 460, { easing: EASE.snap });
+    });
+    await sleep(220);
+    parts.leaves.forEach((leaf) => move(leaf, [{ opacity: 1 }, { opacity: 0 }], 240, { delay: 160 }));
+    await Promise.all([...open, move(parts.room, [{ transform: "scale(1)" }, { transform: `scale(${parts.scale})` }], 420, { easing: EASE.in })]);
   });
 }
 
