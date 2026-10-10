@@ -4,6 +4,10 @@
 
 > 2026-10-10 SF22〜27: 精神世界はシンプルで抽象的な宇宙へ。[採用背景の生成指示](../asset_sources/steam-focus-20261010/world-prompt.txt)・[原画SHA](../asset_sources/steam-focus-20261010/world-generation.json)。暗い紫に薄い星雲と小さな星粒だけを描き、言葉・心拍・動く弾・リフレッシュの波はコードが描く。店内が残る前案は[不採用の記録](../asset_sources/steam-focus-20261010/rejected-lounge-generation.json)として保存し、ゲームへ接続しない。
 
+> 2026-10-10 CV20: CONTINUE背景は紫の煙を採用。[原画](../asset_sources/ui/continue-v4-20261010/generated/backdrop-purple.png)・[画像編集の実行指示と参照SHA256](../asset_sources/ui/continue-v4-20261010/generated/backdrop-purple.json)・[日本語見出しと数字だけのカウントを含む実画面](../asset_sources/ui/continue-v4-20261010/README.md)を保存。煙の構図・質感を保ち、人物画像は加工しない。
+
+> 2026-10-10 CV08〜11: CONTINUEの[原画・表示確認・ボタン3案](../asset_sources/ui/continue-v4-20261010/README.md)。ロゴ2種・可決の朱印・背景・ボタンの[完全な生成指示](../asset_sources/ui/continue-v4-20261010/generated/prompts.json)、暗いボタンを朱赤／オフホワイトへ変えた[修正指示](../asset_sources/ui/continue-v4-20261010/generated/buttons-revision.json)を保存。ユーザー指定のロゴとスタンプのみ文字入り。ボタンの文言・カウントはゲーム側で表示し、正規人物画像は加工しない。CV12〜13でボタン画像は不使用（文字だけ）、背景とロゴの赤は `remake/tools/build_continue_art.py` で藍〜青へ色替え（原画は保持）。
+
 > 2026-10-09 TA13: 制作済みのヒロイン原画は[共通の採用候補一覧](../asset_sources/title-daily-heroines-20261009/README.md)から選ぶ。今回の19案と旧15案を保存し、ゲームの差し替え・自動採用は行わない。原画・生成指示・実参照SHA・目視メモを候補集に残す。
 
 > 2026-10-09 CI72〜82: [漫画カットインの全画面／主人公エリア中央・動く比較](../asset_sources/craft-success-cutins/placements-v2-20261008/README.md)。[漫画コマ](../asset_sources/craft-success-cutins/placements-v2-20261008/pair-prompt.txt)・[中央突起の除去](../asset_sources/craft-success-cutins/placements-v2-20261008/stove-fix-prompt.txt)・[コンロの短い目印を真下へ](../asset_sources/craft-success-cutins/placements-v2-20261008/dial-fix-prompt.txt)の指示を保存。目印を斜め・長い中央線にした案は不採用。カットインは比較用で、本編の成功条件へは未接続。コンロPNG／WebPの描画修正は本編素材にも反映。

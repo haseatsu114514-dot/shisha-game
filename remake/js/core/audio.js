@@ -11,6 +11,8 @@ let audioUnlocked = false;
 let rainMode = null;
 let rainLoop = null;
 let rainBuffer = null;
+let bgmDuck = 1;
+let bgmPaused = false;
 
 function ensureCtx() {
   if (ctx) return ctx;
@@ -20,10 +22,10 @@ function ensureCtx() {
   master = ctx.createGain();
   master.connect(ctx.destination);
   seBus = ctx.createGain();
-  seBus.gain.value = config.seVolume;
+  seBus.gain.value = config.mute || config.muted ? 0 : config.seVolume;
   seBus.connect(master);
   bgmBus = ctx.createGain();
-  bgmBus.gain.value = config.bgmVolume;
+  bgmBus.gain.value = config.mute || config.muted || bgmPaused ? 0 : config.bgmVolume * bgmDuck;
   bgmBus.connect(master);
   return ctx;
 }
@@ -38,8 +40,10 @@ export function unlockAudio() {
 }
 
 export function applyVolumes() {
-  if (seBus) seBus.gain.value = config.seVolume;
-  if (bgmBus) bgmBus.gain.value = config.bgmVolume;
+  const muted = config.mute || config.muted;
+  if (seBus) seBus.gain.value = muted ? 0 : config.seVolume;
+  bgmBus?.gain.cancelScheduledValues?.(ctx.currentTime);
+  if (bgmBus) bgmBus.gain.value = muted || bgmPaused ? 0 : config.bgmVolume * bgmDuck;
   if (currentEl) currentEl.volume = bgmLevel(currentKey);
   syncRain();
 }
@@ -155,6 +159,7 @@ export function startBubbling({ strength = 1 } = {}) {
 const BLIP = {
   sumi: 250, naru: 420, adam: 330, minto: 1350, oneesan: 980, tsumugi: 1100, rin: 760,
   pakki: 900, nagumo: 280, maezono: 380, dr_kemuri: 520, salaryman: 360, ageha: 1200,
+  mashiro: 880, kafuka: 1250,
 };
 
 export const SE = {
@@ -219,6 +224,116 @@ export function playSe(id, ...args) {
   (SE[key] || SE[id] || (() => {}))(...args);
 }
 
+/** CONTINUE専用SE。既存AudioContext/設定を共有し、離脱時は予約済みの音も止める。 */
+export function createContinueAudio({ enabled = true } = {}) {
+  let alive = true, output = null, restore = 0, holdMix = 1;
+  const voices = new Set();
+  const ownsMusic = () => currentKey === "bgm_continue_urgent" || pendingBgm === "bgm_continue_urgent";
+  function instrument() {
+    const c = ensureCtx();
+    if (!alive || !enabled || !c || c.state !== "running" || document.hidden
+      || config.mute || config.muted || !(config.seVolume > 0)) return null;
+    if (!output) { output = c.createGain(); output.connect(seBus); }
+    return c;
+  }
+  function track(source, gain, filter = null) {
+    voices.add(source);
+    source.onended = () => { voices.delete(source); source.disconnect(); gain.disconnect(); filter?.disconnect(); };
+  }
+  function note(freq, { to = freq, dur = .09, vol = .15, delay = 0, type = "sine" } = {}) {
+    const c = instrument();
+    if (!c) return;
+    const t = c.currentTime + delay, source = c.createOscillator(), gain = c.createGain();
+    source.type = type;
+    source.frequency.setValueAtTime(freq, t);
+    source.frequency.exponentialRampToValueAtTime(Math.max(20, to), t + dur);
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(vol, t + .006);
+    gain.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    source.connect(gain).connect(output); track(source, gain);
+    source.start(t); source.stop(t + dur + .015);
+  }
+  function air(dur = .2, vol = .05, frequency = 800) {
+    const c = instrument();
+    if (!c) return;
+    const source = c.createBufferSource(), gain = c.createGain(), filter = c.createBiquadFilter();
+    const buffer = c.createBuffer(1, Math.floor(c.sampleRate * dur), c.sampleRate);
+    const samples = buffer.getChannelData(0);
+    for (let i = 0; i < samples.length; i++) samples[i] = Math.random() * 2 - 1;
+    source.buffer = buffer; filter.type = "bandpass"; filter.frequency.value = frequency;
+    gain.gain.setValueAtTime(vol, c.currentTime);
+    gain.gain.exponentialRampToValueAtTime(.0001, c.currentTime + dur);
+    source.connect(filter).connect(gain).connect(output); track(source, gain, filter);
+    source.start(); source.stop(c.currentTime + dur);
+  }
+  function mix(level, ms = 80) {
+    if (!alive || !ownsMusic()) return;
+    bgmDuck = level;
+    if (currentEl) fadeEl(currentEl, () => bgmLevel("bgm_continue_urgent"), ms);
+    if (bgmBus) {
+      bgmBus.gain.cancelScheduledValues?.(ctx.currentTime);
+      const target = config.mute || config.muted || bgmPaused ? 0 : config.bgmVolume * level;
+      if (bgmBus.gain.setTargetAtTime) bgmBus.gain.setTargetAtTime(target, ctx.currentTime, Math.max(.01, ms / 3000));
+      else bgmBus.gain.value = target;
+    }
+  }
+  function pulse(fn) {
+    if (!alive || !enabled || document.hidden || config.mute || config.muted || !(config.seVolume > 0)) return;
+    if (!instrument()) return;
+    fn(); mix(.8);
+    clearTimeout(restore);
+    restore = window.setTimeout(() => mix(holdMix, 140), 210);
+  }
+  function silence() {
+    for (const source of voices) { try { source.stop(); } catch { /* 終了済み */ } }
+    voices.clear();
+  }
+  return {
+    start() { if (!alive) return; playBgm("bgm_continue_urgent"); pulse(() => { note(85, { to: 32, dur: .28, vol: .32 }); air(.26, .06, 650); }); },
+    title() { pulse(() => { note(830, { to: 380, dur: .12, type: "triangle", vol: .09 }); note(1220, { dur: .07, vol: .035 }); }); },
+    beat() { pulse(() => note(105, { to: 65, dur: .08, vol: .15 })); },
+    // 日常の会話と同じ文字送りの声。BGMは下げず、離脱時は他のSEと一緒に止める。
+    voice(speaker) {
+      if (!instrument()) return;
+      if (!config.voiceBlip) return note(1800, { dur: .02, vol: .03 });
+      const f = (BLIP[speaker] || 600) * (.95 + Math.random() * .1);
+      note(f, { dur: .045, vol: .06, type: "triangle" });
+    },
+    count(remaining) {
+      pulse(() => remaining === 0 ? note(70, { to: 45, dur: .2, vol: .22 })
+        : note([990, 870, 780, 700, 620][remaining - 1], { dur: .07, vol: .13, type: "triangle" }));
+    },
+    choose(choice, effect) {
+      holdMix = .5;
+      clearTimeout(restore); silence(); mix(holdMix, 120);
+      if (choice === "retry") [523, 659, 784, 1047].forEach((f, i) => note(f, { dur: .15, delay: i * .075, type: "triangle", vol: .1 }));
+      else { note(440, { dur: .15, vol: .08, type: "triangle" }); note(330, { dur: .2, delay: .13, vol: .07, type: "triangle" }); }
+      if (effect === "pencil" || effect === "canvas") air(.18, .025, 2600);
+      if (effect === "scan") note(choice === "retry" ? 600 : 800, { to: choice === "retry" ? 1500 : 250, dur: .3, vol: .025 });
+      if (effect === "shark") note(220, { to: 440, dur: .12, vol: .045, delay: .2 });
+    },
+    expire() { holdMix = .1; clearTimeout(restore); mix(holdMix, 350); },
+    setEnabled(value) { enabled = !!value; if (!enabled) { silence(); clearTimeout(restore); mix(holdMix); } },
+    pause() {
+      if (!alive || !ownsMusic()) return;
+      silence(); clearTimeout(restore);
+      bgmPaused = true; currentEl?.pause(); mix(holdMix);
+    },
+    resume() {
+      if (!alive || !ownsMusic()) return;
+      bgmPaused = false;
+      if (currentEl) currentEl.play().catch(() => {});
+      mix(holdMix);
+    },
+    cleanup() {
+      if (!alive) return;
+      clearTimeout(restore); silence(); output?.disconnect();
+      if (ownsMusic()) stopBgm(.2);
+      alive = false;
+    },
+  };
+}
+
 // ---------------------------------------------------------------- BGM
 
 let currentKey = null;
@@ -242,7 +357,8 @@ export const currentBgm = () => currentKey;
 
 // 新規大会曲は約 -14 LUFS にそろえる。設定変更・フェード中も曲ごとの倍率を保つ。
 const BGM_GAIN = { sweets_or_sweets: 0.55, bgm_tournament_edm: 0.51, bgm_tournament_craft: 0.67, bgm_continue_urgent: 0.68 };
-const bgmLevel = (key) => config.bgmVolume * (BGM_GAIN[key] ?? 1);
+const bgmLevel = (key) => config.mute || config.muted || bgmPaused ? 0
+  : config.bgmVolume * (BGM_GAIN[key] ?? 1) * bgmDuck;
 
 // 単体MP3の再配布を避けるゲーム専用形式（pack_bgm.py と対応）。HTTPS/localhostで復元する。
 const PACKED_MAGIC = "SUIENBGM1";
@@ -342,6 +458,10 @@ export function stopBgm(fadeSec = 0.8) {
     fadeEl(a, 0, fadeSec * 1000).then((finished) => { if (finished) a.pause(); });
   }
   if (synthStop) { synthStop(fadeSec); synthStop = null; }
+  bgmDuck = 1;
+  bgmPaused = false;
+  bgmBus?.gain.cancelScheduledValues?.(ctx.currentTime);
+  if (bgmBus) bgmBus.gain.value = config.mute || config.muted ? 0 : config.bgmVolume;
 }
 
 const elFades = new WeakMap();
@@ -424,6 +544,7 @@ function startSynth(kind) {
 
   const schedule = () => {
     if (!alive) return;
+    if (bgmPaused) { next = c.currentTime + .05; setTimeout(schedule, 60); return; }
     while (next < c.currentTime + 0.25) {
       const s = step % 16;
       if (kind === "battle") {

@@ -1,0 +1,17 @@
+{
+  "request": "CV20: あと背景は紫のを採用",
+  "created_utc": "2026-10-10T15:57:18.397742+00:00",
+  "tool": "image_gen.imagegen",
+  "reference": {
+    "repository_path": "assets/ui/continue/backdrop.png",
+    "commit": "07b31eaa1028fce13520be4614565771ee148545",
+    "sha256": "5ab90533d44df6713d223b6bf7c7d64ed8e1c273fe089d3e03f74a4eb38ab382"
+  },
+  "output": "backdrop-purple.png",
+  "sha256": "303abfcab650f4bae9daa4b4ba4a8f2e7a0c2c76d50f94818dfeb2cab5211223",
+  "size": [
+    1672,
+    941
+  ],
+  "prompt": "Edit only the colors of this existing opaque 16:9 game background. Preserve the exact composition, layout, matte pixel-painter / dither texture, subtle grain, softness, and smoke shapes. The reference has a large quiet dark empty center and right, with layered smoke along the left edge and lower-left. Turn the navy-blue background and blue/cyan smoke into a distinctly PURPLE palette: deep plum / dark aubergine for the quiet field, muted violet and lavender smoke with restrained pale lilac highlights. No navy-blue or cyan cast, no wine-red or black/red mood, no pink or pastel wash. Keep the same overall darkness and contrast so a large character and white Japanese subtitles remain clear. Keep the right side and upper center nearly uniform and empty. Do not add anything. No people, objects, equipment, furniture, text, numerals, logo, UI, border, watermark, or extra particles. This is a color-only change to the reference background, not a new design. Preserve the original wide aspect ratio and opaque background."
+}

@@ -134,6 +134,25 @@ def listing(sub: str, pattern: str = "*.png"):
     return sorted(p.name for p in d.glob(pattern) if p.stat().st_size > 0) if d.exists() else []
 
 
+def continue_portraits():
+    """正規立ち絵の顔を中央に寄せる。顔アイコンと同じ測定値を元画像の比で記録。"""
+    sys.path.insert(0, str(ROOT / "tools"))
+    from make_face_icons import face_box
+    out = {}
+    for character in ("sumi", "tsumugi", "minto", "rin", "ageha", "mashiro", "kafuka"):
+        faces = {}
+        for path in sorted((ASSETS / "sprites/characters" / character).glob(f"chr_{character}_*.png")):
+            image = Image.open(path).convert("RGBA")
+            box = face_box(character, image)
+            if box:
+                x, y, side = box
+                face = path.stem.removeprefix(f"chr_{character}_")
+                faces[face] = {"cx": round((x + side / 2) / image.width, 5),
+                               "top": round(y / image.height, 5), "size": round(side / image.height, 5)}
+        out[character] = faces
+    return out
+
+
 def intro_art():
     """採用した登場背景の配色と、現行人物PNGの配置だけを目録化する。
 
@@ -235,6 +254,8 @@ def main():
         "faceIcons": listing("ui/face_icons"),
         "making": listing("ui/making"),
         "sceneProps": listing("ui/scene_props"),
+        "continueUI": listing("ui/continue"),
+        "continuePortraits": continue_portraits(),
         "introArt": intro_art(),
         "makingBox": making_boxes(),
         "bgm": bgm,
