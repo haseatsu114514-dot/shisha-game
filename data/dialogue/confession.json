@@ -875,6 +875,7 @@
     {
       "dialogue_id": "confession_rin_accept",
       "metadata": {
+        "set_romance": "rin",
         "bg": "res://assets/backgrounds/bg_street_night.png"
       },
       "lines": [
