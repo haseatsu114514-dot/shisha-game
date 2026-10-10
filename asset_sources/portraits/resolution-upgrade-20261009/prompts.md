@@ -5,12 +5,14 @@
 
 > 2026-10-10 追記（要望台帳 PU02）：主目的は画風と解像度をそろえること。つむぎはやや頭が大きい方が可愛いという指定を優先し、頭の縮小率より丸さ・可愛さを保つ。つむぎの7ブロック末尾の追記が、以前の10%縮小指定に優先する。
 
+> 同日追記（PU03・PU04）：繰り返し生成で色が薄くならないよう、全34ブロックで元画像の色・彩度・明暗を維持する。ましろも少し大きめの丸い顔の方が可愛いという指定を優先し、6ブロック末尾の追記は以前の8%縮小指定に優先する。途中確認の委任により、残りは検品しながら続けて制作する。
+
 | キャラ | いまの顔の大きさ（中央値比） | 直し方 | 画風の直し | 表情数 |
 |---|---|---|---|---|
 | つむぎ | +18% | やや大きめの頭と丸さ・可愛さを優先。10%縮小は強制しない（2026-10-10追記） | 基準に合わせる | 7 |
 | 前園 | +17% | 頭を約14%小さく | 平たい塗り・太い線を基準へ | 5 |
 | スミさん | +15% | 頭（帽子込み）を約13%小さく | 基準に合わせる | 5 |
-| ましろ | +13% | 頭を約8%小さく（丸さは残す。仕上がり目安+4%） | 基準に合わせる | 6 |
+| ましろ | +13% | やや大きめの丸い顔と頬の可愛さを優先。8%縮小は強制しない（2026-10-10追記） | 基準に合わせる | 6 |
 | 南雲 | −13% | 頭を約15%大きく | 基準に合わせる | 5 |
 | サメちゃん | −10% | 頭（フード込み）を約11%大きく | つやの強い今風の塗り・大きめの目を基準へ | 6 |
 
@@ -252,6 +254,8 @@ STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolu
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
+
+Owner update 2026-10-10: Mashiro may retain a slightly oversized, soft round face and head close to image 1 because it looks cuter; prioritize her full cheeks and gentle sleepy expression, and do not force the earlier 8% head reduction.
 ```
 
 ### 9. 前園・smile
@@ -274,6 +278,8 @@ STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolu
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
+
+Owner update 2026-10-10: Mashiro may retain a slightly oversized, soft round face and head close to image 1 because it looks cuter; prioritize her full cheeks and gentle sleepy expression, and do not force the earlier 8% head reduction.
 ```
 
 ### 10. 前園・serious
@@ -296,6 +302,8 @@ STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolu
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
+
+Owner update 2026-10-10: Mashiro may retain a slightly oversized, soft round face and head close to image 1 because it looks cuter; prioritize her full cheeks and gentle sleepy expression, and do not force the earlier 8% head reduction.
 ```
 
 ### 11. 前園・surprise
@@ -318,6 +326,8 @@ STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolu
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
+
+Owner update 2026-10-10: Mashiro may retain a slightly oversized, soft round face and head close to image 1 because it looks cuter; prioritize her full cheeks and gentle sleepy expression, and do not force the earlier 8% head reduction.
 ```
 
 ### 12. 前園・excited
@@ -340,6 +350,8 @@ STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolu
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
+
+Owner update 2026-10-10: Mashiro may retain a slightly oversized, soft round face and head close to image 1 because it looks cuter; prioritize her full cheeks and gentle sleepy expression, and do not force the earlier 8% head reduction.
 ```
 
 ## スミさん（sumi）
@@ -476,6 +488,8 @@ STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolu
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
 
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
+
+Owner update 2026-10-10: Mashiro may retain a slightly oversized, soft round face and head close to image 1 because it looks cuter; prioritize her full cheeks and gentle sleepy expression, and do not force the earlier 8% head reduction.
 ```
 
 ### 19. ましろ・smile
