@@ -129,7 +129,8 @@ try {
     }
     const chain = s.cues.map((_, i) => `[v${i}]`).join("");
     parts.push(`${chain}concat=n=${s.cues.length}:v=0:a=1[out]`);
-    const output = path.join(outDir, s.id + ".mp3");
+    const basename = s.id.startsWith("premium_") ? s.id : "sumi_" + s.id;
+    const output = path.join(outDir, basename + ".mp3");
     command("ffmpeg", ["-y", "-loglevel", "error", ...inputs, "-filter_complex", parts.join(";"), "-map", "[out]", "-c:a", "libmp3lame", "-b:a", "160k", output]);
     console.log(`完成: ${path.relative(repo, output)} (${duration(output).toFixed(2)}s)`);
   }
