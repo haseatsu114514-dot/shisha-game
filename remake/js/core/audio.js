@@ -216,6 +216,7 @@ const SYNTH_FALLBACK = {
   bgm_tournament_edm: "battle",
   bgm_tournament_craft: "battle",
   bgm_tournament_wait: "tension",
+  bgm_continue_urgent: "panic", // スミさんのコンティニュー: 原曲差替えまでは専用緊迫ループ
   bgm_result_emotional: "calm",
   bgm_map: "calm",
   bgm_rival_shop: "calm",
@@ -344,7 +345,7 @@ function startSynth(kind) {
   out.gain.value = 0;
   out.gain.linearRampToValueAtTime(1, c.currentTime + 1.2);
   out.connect(bgmBus);
-  const bpm = kind === "battle" ? 124 : kind === "tension" ? 80 : 68;
+  const bpm = kind === "panic" ? 156 : kind === "battle" ? 124 : kind === "tension" ? 80 : 68;
   const stepDur = 60 / bpm / 4;
   const bass = kind === "battle" ? [45, 45, 57, 45, 48, 48, 60, 48, 43, 43, 55, 43, 41, 41, 53, 52] : [45, 0, 0, 0, 43, 0, 0, 0, 41, 0, 0, 0, 40, 0, 0, 0];
   const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
@@ -402,6 +403,14 @@ function startSynth(kind) {
         const n = bass[s];
         if (n) voice(mtof(n), next, stepDur * 0.9, "sawtooth", 0.07);
         if (s === 0 && step % 64 === 0) [69, 72, 76].forEach((m) => voice(mtof(m), next, stepDur * 14, "triangle", 0.03));
+      } else if (kind === "panic") {
+        // 同期的な鼓動と追い立てる低音。短い台詞の可聴域を空けた軽い合成ループ。
+        if (s === 0 || s === 7 || s === 10) kick(next, s === 0 ? 0.44 : 0.24);
+        if (s % 2 === 1) hat(next, 0.035);
+        if (s === 3 || s === 11) hat(next, 0.08);
+        const n = [40,0,40,0,43,0,40,0,38,0,38,0,35,0,38,0][s];
+        if (n) voice(mtof(n), next, stepDur * 1.6, "triangle", 0.042);
+        if (s === 0 && step % 32 === 0) voice(mtof(52), next, stepDur * 26, "sine", 0.023);
       } else if (kind === "tension") {
         if (s === 0 || s === 3) kick(next, s === 0 ? 0.35 : 0.22);
         if (s === 0 && step % 32 === 0) [57, 60, 64].forEach((m) => voice(mtof(m), next, stepDur * 30, "sine", 0.025));
