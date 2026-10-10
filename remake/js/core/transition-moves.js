@@ -3,6 +3,7 @@
 import { el, nextFrame, sleep } from "./util.js";
 import { SE } from "./audio.js";
 import { W, H, COLOR, EASE, svg, stageSvg, move, holdKeys, openLeaf, stepIntoBg, walker, everyFrame } from "./transition-kit.js";
+import { MG_EASE as MG, pick, burst, ring } from "./mg-kit.js";
 
 export const MOVE_STYLES = ["pin", "steps", "walk", "door", "noren", "walkdoor"];
 const STORE_KEY = "suien_move_style";
@@ -164,64 +165,73 @@ function walkMove(host, opts = {}) {
   });
 }
 
-// ---------------------------------------------------------------- door: 平らな色面のアーチの扉が弾んで現れ、開いた戸口が画面いっぱいに広がる（CI107）
+// ---------------------------------------------------------------- door: シンプルな四角い扉のモーショングラフィックス（CI108）
+// ピンから輪が弾けて2色の円が重なって広がり、床と枠が線で描かれ、扉の板が下から立ち上がる。
+// 開くと光と放射線が出て、戸口が画面いっぱいに広がる。配色は紫1色か場面ごとの色（mg-kit の pick）
 
-const DOOR = { ink: "#1c1530", cream: "#fff1d2", panel: "#f2a65a", shade: "#d9873f" };
-const archPath = (x, y, w, h) => `M ${x} ${y + h} L ${x} ${y + w / 2} A ${w / 2} ${w / 2} 0 0 1 ${x + w} ${y + w / 2} L ${x + w} ${y + h} Z`;
+const DOOR = { bg: "#14213d", deep: "#0b1426", main: "#ff6b5a", mid: "#ffb4a2", light: "#ffd166", white: "#fff8ec" };
 
 function doorMove(host, { x = W / 2, y = H / 2 } = {}) {
-  const dw = 320, dh = 520, dx = (W - dw) / 2, dy = 110;
+  const P = pick(DOOR);
+  const dw = 280, dh = 470, dx = (W - dw) / 2, dy = 125;
   let p;
   return curtain(host, "door", async (node) => {
-    await circleCover(node, x, y, DOOR.cream, DOOR.ink);
-    const id = `tr-door-${Math.random().toString(36).slice(2, 8)}`;
+    // 1. ピンから輪が弾け、2色の円が少しずれて広がる
+    const r = Math.hypot(Math.max(x, W - x), Math.max(y, H - y)) + 30;
+    const c1 = svg("circle", { cx: x, cy: y, r, fill: P.mid, class: "tr-scale" });
+    const c2 = svg("circle", { cx: x, cy: y, r, fill: P.bg, class: "tr-scale" });
+    c1.style.transform = c2.style.transform = "scale(0)";
+    const intro = stageSvg([c1, c2]);
+    node.append(intro);
+    ring(intro, x, y, { r: 110, color: P.light, width: 8, dur: 420 });
+    const grow = [{ transform: "scale(0)" }, { transform: "scale(1)" }];
+    move(c1, grow, 320, { easing: MG.in });
+    await move(c2, grow, 330, { easing: MG.in, delay: 80 });
+    // 2. 床と枠が線で描かれ、扉の板が下から立ち上がる
+    const id = `tr-door-${++doorSerial}`;
     const box = { x: -300, y: -300, width: W + 600, height: H + 600 };
-    const hole = svg("path", { d: archPath(dx, dy, dw, dh), fill: "#000", class: "tr-scale" });
-    const light = svg("path", { d: archPath(dx, dy, dw, dh), fill: DOOR.cream, class: "tr-scale" });
-    const outline = svg("path", { d: archPath(dx - 14, dy - 14, dw + 28, dh + 14), fill: "none", stroke: DOOR.cream, "stroke-width": 8, "stroke-linejoin": "round", pathLength: 1, "stroke-dasharray": 1, "stroke-dashoffset": 1, class: "tr-scale" });
-    const door = svg("g", { class: "tr-scale" }, [
-      svg("path", { d: archPath(dx, dy, dw, dh), fill: DOOR.panel }),
-      svg("path", { d: archPath(dx + 34, dy + 40, dw - 68, dh - 80), fill: "none", stroke: DOOR.shade, "stroke-width": 10 }),
-      svg("circle", { cx: dx + dw - 40, cy: dy + dh * 0.58, r: 13, fill: DOOR.cream }),
+    const hole = svg("rect", { x: dx, y: dy, width: dw, height: dh, fill: "#000", class: "tr-scale" });
+    const light = svg("rect", { x: dx, y: dy, width: dw, height: dh, fill: P.white, class: "tr-scale" });
+    const frame = svg("rect", { x: dx - 14, y: dy - 14, width: dw + 28, height: dh + 28, fill: "none", stroke: P.light, "stroke-width": 7, "stroke-linejoin": "round", pathLength: 1, "stroke-dasharray": 1, "stroke-dashoffset": 1, class: "tr-scale" });
+    const floor = svg("line", { x1: 0, y1: dy + dh + 14, x2: W, y2: dy + dh + 14, stroke: P.mid, "stroke-width": 4, pathLength: 1, "stroke-dasharray": 1, "stroke-dashoffset": 1 });
+    const panel = svg("g", { class: "tr-scale" }, [
+      svg("rect", { x: dx, y: dy, width: dw, height: dh, fill: P.main }),
+      svg("rect", { x: dx + dw - 46, y: dy + dh * 0.44, width: 10, height: 74, rx: 5, fill: P.white }),
     ]);
-    const flicks = svg("g", { class: "tr-scale", stroke: DOOR.cream, "stroke-width": 7, "stroke-linecap": "round" }, [
-      [-60, 210, -110, 190], [-64, 270, -124, 270], [-60, 330, -110, 350], [dw + 60, 210, dw + 110, 190], [dw + 64, 270, dw + 124, 270], [dw + 60, 330, dw + 110, 350],
-    ].map(([x1, y1, x2, y2]) => svg("line", { x1: dx + x1, y1: dy + y1, x2: dx + x2, y2: dy + y2 })));
-    flicks.style.opacity = "0";
+    panel.style.transform = "scaleY(0)";
+    panel.style.transformOrigin = "center bottom";
+    const fx = svg("g");
     const art = stageSvg([
       svg("defs", {}, [svg("mask", { id, maskUnits: "userSpaceOnUse", ...box }, [svg("rect", { ...box, fill: "#fff" }), hole])]),
-      svg("rect", { ...box, fill: DOOR.ink, mask: `url(#${id})` }),
-      light, outline, door, flicks,
+      svg("rect", { ...box, fill: P.bg, mask: `url(#${id})` }),
+      floor, light, frame, panel, fx,
     ]);
-    door.style.transform = "scale(0)";
     node.replaceChildren(art);
-    p = { hole, light, outline, door, flicks };
-    move(outline, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 320, { easing: EASE.out });
-    await move(door, [{ transform: "scale(0.3)" }, { transform: "scale(1)" }], 380, { easing: "cubic-bezier(.34,1.56,.64,1)" });
-    move(flicks, [{ opacity: 0, transform: "scale(0.8)" }, { opacity: 1, transform: "scale(1.05)", offset: 0.4 }, { opacity: 0, transform: "scale(1.15)" }], 420, { easing: EASE.out });
-  }, async (node) => {
-    await sleep(140);
+    p = { hole, light, frame, floor, panel, fx };
+    move(floor, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 300, { easing: MG.out });
+    move(frame, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 380, { easing: MG.out, delay: 60 });
+    await move(panel, [{ transform: "scaleY(0)" }, { transform: "scaleY(1.04)", offset: 0.7 }, { transform: "scaleY(1)" }], 400, { easing: MG.out, delay: 140 });
+    burst(fx, dx - 14, dy - 14, { n: 3, r0: 18, r1: 56, color: P.light, width: 5, turn: Math.PI * 1.1 });
+    burst(fx, dx + dw + 14, dy - 14, { n: 3, r0: 18, r1: 56, color: P.light, width: 5, turn: -Math.PI * 0.43 });
+  }, async () => {
+    await sleep(120);
     SE.doorbell();
-    // 扉が蝶番側へたたまれて開き、向こうの光が出る
-    p.door.style.transformOrigin = "left center";
-    move(p.door, [{ transform: "scaleX(1) skewY(0deg)" }, { transform: "scaleX(0) skewY(-10deg)" }], 300, { easing: EASE.in });
-    await sleep(160);
-    const burst = svg("g", { stroke: DOOR.cream, "stroke-width": 8, "stroke-linecap": "round" },
-      [...Array(10)].map((_, i) => {
-        const a = (i / 10) * Math.PI * 2, cx = W / 2, cy = dy + dh * 0.45;
-        return svg("line", { x1: cx + Math.cos(a) * 250, y1: cy + Math.sin(a) * 250, x2: cx + Math.cos(a) * 320, y2: cy + Math.sin(a) * 320 });
-      }));
-    burst.style.transformOrigin = `${W / 2}px ${dy + dh * 0.45}px`;
-    node.firstChild.append(burst);
-    move(burst, [{ opacity: 1, transform: "scale(0.8)" }, { opacity: 0, transform: "scale(1.5)" }], 380, { easing: EASE.out });
-    await sleep(140);
-    // 戸口が画面いっぱいに広がり、光が晴れて次の場面
-    const grow = [{ transform: "scale(1)" }, { transform: "scale(7)" }];
-    move(p.light, [{ opacity: 1 }, { opacity: 0 }], 300, { easing: EASE.out, delay: 60 });
-    move(p.outline, grow, 440, { easing: EASE.in });
-    await move(p.hole, grow, 440, { easing: EASE.in });
+    // 3. 扉が蝶番側へたたまれて開き、光と放射線が出る
+    move(p.floor, [{ opacity: 1 }, { opacity: 0 }], 200);
+    p.panel.style.transformOrigin = "left center";
+    move(p.panel, [{ transform: "scaleX(1) skewY(0deg)" }, { transform: "scaleX(0) skewY(-14deg)" }], 300, { easing: MG.in });
+    await sleep(170);
+    burst(p.fx, W / 2, dy + dh / 2, { n: 12, r0: 260, r1: 360, color: P.light, width: 6 });
+    ring(p.fx, W / 2, dy + dh / 2, { r: 330, color: P.white, width: 8 });
+    await sleep(120);
+    // 4. 戸口が画面いっぱいに広がり、光が晴れて次の場面
+    const grow = [{ transform: "scale(1)" }, { transform: "scale(6.5)" }];
+    move(p.light, [{ opacity: 1 }, { opacity: 0 }], 280, { easing: MG.out, delay: 80 });
+    move(p.frame, grow, 440, { easing: MG.in });
+    await move(p.hole, grow, 440, { easing: MG.in });
   });
 }
+let doorSerial = 0;
 
 // ---------------------------------------------------------------- noren: 暖簾が下りてきて、手でよけるように左右へ割れる
 

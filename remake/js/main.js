@@ -84,6 +84,12 @@ window.__remake = {
       if (style) moves.setMoveStyle(style);
       return moves.moveStyle();
     },
+    // 扉・場面の演出の配色（mono＝紫1色／free＝場面ごとの色）。URLの ?mopal=free でも切り替わる
+    async motionPalette(name) {
+      const kit = await import("./core/mg-kit.js");
+      if (name) kit.setMotionPalette(name);
+      return kit.motionPalette();
+    },
     // 場面ごとのモーショングラフィックスを本来の背景・会話つきで見る（cheki / tarot / gift / shift / shark / sketch）。※今のセーブを上書きする
     async motion(name = "cheki") {
       const core = await import("./core/state.js");
