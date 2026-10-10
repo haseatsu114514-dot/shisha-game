@@ -4,7 +4,7 @@ import { el, sleep, clamp, rand, pick } from "../core/util.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { tier01, star } from "../core/stats.js";
-import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, pauseBenchTemperature, scoreStep } from "./session.js";
+import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, scoreStep } from "./session.js";
 import { steamSecondsOf, steamPlaySeconds, steamTimeLabel } from "./steam-time.js";
 import { buildDigitalClock } from "./digital-clock.js";
 import { autoSkill, resultCard, keys, popStamp } from "./common.js";
@@ -43,8 +43,6 @@ export async function runSteamDodge(cs) {
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", refreshRadius: String(effect.radius) } });
   const heart = el("div.dodge-heart", { role: "img", "aria-label": "心。中央の光が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("span", { html: HEART_ART }), el("i.dodge-core")]);
   const clock = buildDigitalClock("dodge-timer", { label: "蒸らしの残り時間", test: "steam-clock" });
-  const hitsEl = el("div.dodge-hits");
-  const pauseBtn = el("button.timer-switch", { text: "ストップ", disabled: true, dataset: { test: "timer-stop" }, "aria-label": "タイマーをストップ", "aria-pressed": "false" });
   const knob = el("i.dodge-knob");
   const pad = el("div.dodge-pad", { tabindex: 0, role: "group", "aria-label": "移動スティック。ドラッグまたは矢印キーで移動", dataset: { test: "dodge-pad" } }, [el("span", { html: PAD_ART, "aria-hidden": "true" }), knob]);
   const refreshBtn = el("button.btn.primary.dodge-refresh", { disabled: true, dataset: { test: "dodge-refresh" } });
@@ -56,9 +54,8 @@ export async function runSteamDodge(cs) {
   const world = buildSteamWorld(W, H);
   const renderTemperature = (temp) => { thermometer.update(temp); setBenchTemperature(cs, temp); };
   renderTemperature(temperatureAfterSteam(cs, 0, heatJitter));
-  box.append(world.root, el("span.dodge-world-title", { text: "心の中", "aria-hidden": "true" }), mental.root, heart);
+  box.append(world.root, clock.root, el("span.dodge-world-title", { text: "心の中", "aria-hidden": "true" }), mental.root, heart);
   const steamRoot = el("div.steam", [
-    el("div.dodge-hud", [clock.root, el("div.dodge-status", [hitsEl, pauseBtn])]),
     el("div.steam-play", [box]),
     el("div.dodge-controls", [pad, refreshBtn]),
     thermometer.root,
@@ -70,7 +67,7 @@ export async function runSteamDodge(cs) {
   const hitR = 8 * (1 - 0.2 * tier01("guts")) / focus;
   const spawnEvery = (tutorial ? 0.85 : 0.46) * (1 + 0.25 * tier01("insight")) * focus;
   let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = stock;
-  let running = false, paused = false, time = 0, nextSpawn = 0.8, nextWave = tutorial ? 4 : 2.8;
+  let running = false, time = 0, nextSpawn = 0.8, nextWave = tutorial ? 4 : 2.8;
   let warning = null, spawnCount = 0, raf = 0;
   const bullets = [], keysDown = new Set();
   const transients = [];
@@ -85,10 +82,10 @@ export async function runSteamDodge(cs) {
     return [(e.clientX - r.left) * W / r.width, (e.clientY - r.top) * H / r.height];
   };
   listen(box, "pointerdown", (e) => {
-    if (!running || paused) return;
+    if (!running) return;
     e.preventDefault(); box.setPointerCapture(e.pointerId); moveTo(...toLocal(e));
   });
-  listen(box, "pointermove", (e) => { if (running && !paused && (e.buttons || e.pointerType === "mouse")) moveTo(...toLocal(e)); });
+  listen(box, "pointermove", (e) => { if (running && (e.buttons || e.pointerType === "mouse")) moveTo(...toLocal(e)); });
 
   const movePad = (e) => {
     const r = pad.getBoundingClientRect(), radius = r.width * 0.34;
@@ -102,7 +99,7 @@ export async function runSteamDodge(cs) {
   };
   const resetPad = () => { padPointer = null; axisX = axisY = 0; knob.style.transform = ""; pad.classList.remove("held"); };
   listen(pad, "pointerdown", (e) => {
-    if (!running || paused || padPointer !== null) return;
+    if (!running || padPointer !== null) return;
     e.preventDefault(); padPointer = e.pointerId; pad.setPointerCapture(e.pointerId); pad.classList.add("held"); movePad(e);
   });
   listen(pad, "pointermove", (e) => { if (e.pointerId === padPointer) movePad(e); });
@@ -120,21 +117,10 @@ export async function runSteamDodge(cs) {
   const refreshLabel = () => {
     refreshBtn.dataset.remaining = String(refreshes);
     refreshBtn.setAttribute("aria-label", `リフレッシュ。残り${refreshes}回。${effect.label}の雑念を消す`);
-    refreshBtn.disabled = !running || paused || refreshes === 0;
+    refreshBtn.disabled = !running || refreshes === 0;
   };
-  listen(pauseBtn, "click", () => {
-    if (!running) return;
-    paused = !paused; keysDown.clear(); resetPad();
-    box.dataset.paused = String(paused);
-    steamRoot.dataset.paused = String(paused);
-    pauseBenchTemperature(cs, paused);
-    pauseBtn.textContent = paused ? "スタート" : "ストップ";
-    pauseBtn.setAttribute("aria-label", paused ? "タイマーをスタート" : "タイマーをストップ");
-    pauseBtn.setAttribute("aria-pressed", String(paused));
-    refreshLabel(); SE.click();
-  });
   const refresh = () => {
-    if (!running || paused || refreshes === 0) return;
+    if (!running || refreshes === 0) return;
     refreshes--; world.dissolve(time, clearBullets(effect.radius));
     if (effect.mentalRecovery) setPlayerMental(cs, mental.recoverStep(time, hits));
     reactAudience(cs, "good");
@@ -192,10 +178,9 @@ export async function runSteamDodge(cs) {
   };
 
   clock.update(seconds);
-  if (rainy) hitsEl.title = "雨の日は熱が入りづらい";
-  hitsEl.textContent = "ミス 0"; refreshLabel();
+  refreshLabel();
   await countdown();
-  running = true; pauseBtn.disabled = false; refreshLabel();
+  running = true; refreshLabel();
   const auto = autoSkill();
   try {
     if (auto) { await sleep(200); hits = auto === "good" ? 0 : 4; }
@@ -203,7 +188,6 @@ export async function runSteamDodge(cs) {
       let last = performance.now();
       const loop = (now) => {
         const dt = Math.min(0.05, (now - last) / 1000); last = now;
-        if (paused) { raf = requestAnimationFrame(loop); return; }
         time += dt;
         renderTemperature(temperatureAfterSteam(cs, Math.min(1, time / dur) * seconds, heatJitter));
         let x = axisX + (keysDown.has("r") ? 1 : 0) - (keysDown.has("l") ? 1 : 0);
@@ -240,19 +224,17 @@ export async function runSteamDodge(cs) {
         for (let i = transients.length - 1; i >= 0; i--) {
           if (time >= transients[i].until) { transients[i].node.remove(); transients.splice(i, 1); }
         }
-        hitsEl.textContent = `ミス ${hits}`;
         if (time >= dur) return resolve();
         raf = requestAnimationFrame(loop);
       };
       raf = requestAnimationFrame(loop);
     });
   } finally {
-    running = false; pauseBtn.disabled = true; cancelAnimationFrame(raf); unkey(); input.abort(); resetPad(); clearBullets(); refreshLabel();
+    running = false; cancelAnimationFrame(raf); unkey(); input.abort(); resetPad(); clearBullets(); refreshLabel();
     transients.forEach(({ node }) => node.remove());
     world.draw(time + 1, hx, hy);
     heart.classList.remove("shield"); box.classList.remove("warning");
     setPlayerMental(cs, "steady");
-    pauseBenchTemperature(cs, false);
   }
   const score = clamp(100 - hits * 14, 0, 100);
   clock.update(0);

@@ -32,12 +32,12 @@ try {
     };
     window.consume=key=>{
       const radius=T.steam.refreshEffect().radius,before=enemies();
-      const mental=document.querySelector('[data-test="mental-trace"]'),hits=document.querySelector('.dodge-hits'),thermo=document.querySelector('[data-test="steam-temperature"]');
-      const level=mental.dataset.level,misses=hits.textContent,temp=thermo.getAttribute('aria-valuenow'),shieldBefore=document.querySelector('.dodge-heart').classList.contains('shield');
+      const mental=document.querySelector('[data-test="mental-trace"]'),thermo=document.querySelector('[data-test="steam-temperature"]');
+      const level=mental.dataset.level,misses=mental.dataset.hits,temp=thermo.getAttribute('aria-valuenow'),shieldBefore=document.querySelector('.dodge-heart').classList.contains('shield');
       window.dispatchEvent(new KeyboardEvent('keydown',{key,bubbles:true}));
       return {radius,near:before.filter(b=>b.distance<=radius).length,far:before.filter(b=>b.distance>radius).length,
         correctlyRemoved:before.every(b=>b.node.isConnected===(b.distance>radius)),
-        remaining:enemies().length,shieldBefore,levelBefore:level,levelAfter:mental.dataset.level,missesUnchanged:misses===hits.textContent,tempUnchanged:temp===thermo.getAttribute('aria-valuenow')};
+        remaining:enemies().length,shieldBefore,levelBefore:level,levelAfter:mental.dataset.level,missesUnchanged:misses===mental.dataset.hits,tempUnchanged:temp===thermo.getAttribute('aria-valuenow')};
     };
   });
   const perks=await page.evaluate(()=>[10,21,41,61,81].map(guts=>{
@@ -80,9 +80,9 @@ try {
   assert(medium.missesUnchanged&&medium.tempUnchanged);
   assert.equal(await button.getAttribute('data-remaining'),'0');assert(await button.isDisabled());assert.equal(await page.locator('.dodge-refresh-fx').count(),1);
   const shield=await page.evaluate(async()=>{
-    const hit=document.querySelector('.dodge-hits').textContent;
+    const mental=document.querySelector('[data-test="mental-trace"]'),hit=mental.dataset.hits;
     await new Promise(requestAnimationFrame);
-    return {same:hit===document.querySelector('.dodge-hits').textContent,shield:document.querySelector('.dodge-heart').classList.contains('shield')};
+    return {same:hit===mental.dataset.hits,shield:document.querySelector('.dodge-heart').classList.contains('shield')};
   });
   if(shield.same&&!medium.shieldBefore) assert(!shield.shield,'Base refresh granted invulnerability');
   if(shots) await page.screenshot({path:`${shots}/refresh-medium-after.png`});

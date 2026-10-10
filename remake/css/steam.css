@@ -38,14 +38,11 @@
 
 /* 奥の霧・細い軌道・反射面は淡く、動く雑念と心の芯はくっきり。 */
 .steam { height: 100%; justify-content: space-between; gap: 12px; padding-top: 10px; }
-.steam .dodge-hud, .steam .dodge-controls { align-self: center; margin-right: 0; }
-.steam-play, .dodge-hud, .dodge-controls { width: 752px; }
-.steam-play { display: block; }
-.dodge-hud { grid-template-columns: 1fr auto; gap: 16px; min-height: 40px; }
-.dodge-timer { width: 112px; height: 37px; color: #f1dbb4; }
-.dodge-status { gap: 12px; }
-.dodge-status .dodge-hits { color: #b9aebc; font-size: 12px; }
-.bench[data-art-skin] .dodge-status .timer-switch { height: 32px; border: 1px solid #a8957859; border-radius: 5px; background: linear-gradient(150deg, #332737, #1a1425); font-size: 11px; box-shadow: inset 0 1px 0 #ead2ae12; }
+.steam .dodge-controls { align-self: center; margin-right: 0; }
+.steam-play, .dodge-controls { width: 752px; }
+.steam-play { flex: 1; display: grid; place-items: center; }
+/* 残り時間は視線を弾幕から離さず読める、奥の薄い7セグ。 */
+.dodge .dodge-timer { position: absolute; left: 50%; top: 50%; width: 448px; height: 158px; transform: translate(-50%, -50%); color: #e3d6c9; opacity: .16; z-index: 1; pointer-events: none; user-select: none; }
 .bench[data-art-skin] .dodge { border-image: none; border: 1px solid #c5ae815c; border-radius: 10px; background: #131123; box-shadow: inset 0 0 0 3px #a9946614, 0 4px 16px #0007; }
 .dodge::before { content: ""; position: absolute; inset: 4px; border: 1px solid #d3b98116; border-radius: 6px; z-index: 3; pointer-events: none; }
 .dodge-world-layers { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
@@ -105,8 +102,6 @@
 .dr-ring { border-width: 1px; border-color: #e0edcb; box-shadow: 0 0 8px #c7ddb57a, inset 0 0 15px #b8ceb32b; }
 .dr-ring.second { border-color: #dbc7a199; box-shadow: none; }
 .dr-ray { width: 32px; height: 1px; background: linear-gradient(90deg, transparent, #fff3d7, transparent); }
-.dodge[data-paused="true"]::after { background: #100e24ba; backdrop-filter: blur(3px); font-family: "Craft Mincho", var(--font); color: #e3d3b6; font-size: 24px; letter-spacing: .14em; }
-.steam[data-paused="true"] *, .bench[data-thermal-paused="true"] .worker-actor { animation-play-state: paused !important; }
 @media (prefers-reduced-motion: reduce) {
   .dodge-mist, .bench-worker[data-waiting="true"] .worker-actor { animation: none; }
   .dodge-mist { opacity: .12; }

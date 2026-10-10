@@ -1,4 +1,4 @@
-// 実際のタイマー操作で天候・予測を読み、全工程の温度計の位置と停止中の描画を確かめる。
+// 実際のタイマー操作で天候・予測を読み、全工程の温度計位置と弾幕背後の時計を確かめる。
 // CHROME_EXECUTABLE_PATH=/usr/bin/chromium SHOTS=<任意> node remake/test/steam_forecast.mjs
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -104,27 +104,33 @@ try {
     assert.equal(buttonLook.direction, 'row');
     const traceY = await page.locator('.dodge-beat-line').evaluate(n => Number(n.getAttribute('d').match(/M0,([\d.]+)/)[1]));
     assert(Math.abs(traceY - 163) < 2, 'Heartbeat was not centered');
-    await page.waitForFunction(() => !document.querySelector('[data-test="timer-stop"]').disabled);
+    assert.equal(await page.locator('.dodge-hud, .dodge-hits, [data-test="timer-stop"]').count(), 0);
+    assert.equal(await page.locator('[data-test="steam-clock"]').count(), 1, 'Remaining time was duplicated');
+    const clockLook = await page.locator('[data-test="steam-clock"]').evaluate(n => {
+      const r = n.getBoundingClientRect(), field = n.closest('.dodge')?.getBoundingClientRect(), css = getComputedStyle(n);
+      return { inField: !!field, centered: field && Math.abs(r.x + r.width / 2 - field.x - field.width / 2) < 1 && Math.abs(r.y + r.height / 2 - field.y - field.height / 2) < 1,
+        contained: field && r.left > field.left && r.right < field.right && r.top > field.top && r.bottom < field.bottom,
+        wide: field && r.width > field.width / 2, opacity: Number(css.opacity), pointer: css.pointerEvents,
+        behind: Number(css.zIndex) < Number(getComputedStyle(document.querySelector('.dodge-heart')).zIndex) };
+    });
+    assert(clockLook.inField && clockLook.centered && clockLook.contained && clockLook.wide && clockLook.behind, JSON.stringify(clockLook));
+    assert(clockLook.opacity > 0 && clockLook.opacity <= .2, 'Background timer is too prominent');
+    assert.equal(clockLook.pointer, 'none', 'Background timer blocked movement');
+    await page.waitForFunction(() => !document.querySelector('[data-test="dodge-refresh"]').disabled);
+    const remaining = await page.locator('[data-test="steam-clock"] .clock-value').textContent();
     await page.waitForSelector('.dodge-object');
     await page.waitForTimeout(1200);
+    assert.notEqual(await page.locator('[data-test="steam-clock"] .clock-value').textContent(), remaining, 'Background clock stopped counting down');
     await screenshot(page, `steam-live-${name}`);
     await page.locator('[data-test="dodge-refresh"]').click();
     await page.waitForTimeout(120);
     assert(!/呼吸|息を整|パッド|ボタン|キー/.test(await page.locator('[data-test="craft-feedback"]').textContent()));
     await screenshot(page, `refresh-${name}`);
-    await page.locator('[data-test="timer-stop"]').click();
-    const snapshot = () => page.evaluate(() => ({
-      frame: document.querySelector('[data-test="steam-world"]').dataset.frame,
-      stock: document.querySelector('.dodge-refresh').dataset.remaining,
-      effect: document.querySelector('.dodge-refresh-fx')?.outerHTML,
-      mist: getComputedStyle(document.querySelector('.dodge-mist')).animationPlayState,
-      worker: getComputedStyle(document.querySelector('.worker-actor')).animationPlayState,
-    }));
-    const paused = await snapshot();
-    assert.equal(paused.mist, 'paused'); assert.equal(paused.worker, 'paused');
-    await page.waitForTimeout(300); assert.deepEqual(await snapshot(), paused, 'Pause advanced the world or refresh effect');
-    await page.locator('[data-test="timer-stop"]').click();
+    const frame = Number(await page.locator('[data-test="steam-world"]').getAttribute('data-frame'));
     await page.waitForFunction(() => !document.querySelector('.dodge-thought-echo, .dodge-refresh-fx'));
+    assert(Number(await page.locator('[data-test="steam-world"]').getAttribute('data-frame')) > frame, 'World stopped after refreshing');
+    assert.equal(await page.locator('.dodge-refresh').getAttribute('data-remaining'), '0');
+    assert(await page.locator('.dodge-refresh').isDisabled());
     await page.close();
     if (name === 'desktop') {
       const skilled = await open(viewport, mobile, 81);
@@ -136,7 +142,7 @@ try {
       assert.equal(await skilled.evaluate(() => cs.steamPrediction.precision), 1);
       await screenshot(skilled, 'timer-insight-five'); await skilled.close();
     }
-    console.log(`[steam forecast] PASS: ${name} real timer/reset, repeatable rainy estimate, Hajime waiting, same thermometer in four stages, tight window spacing and paused visuals`);
+    console.log(`[steam forecast] PASS: ${name} timer/reset, rainy estimate, Hajime waiting, same thermometer in four stages, centered faint background clock, no stop/miss HUD and one-use refresh`);
   }
   assert.deepEqual(errors, []);
 } finally { await browser.close(); }
