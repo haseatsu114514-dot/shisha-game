@@ -1,0 +1,17 @@
+/* スケッチ（remake/js/motions/sketch.js）。a／b の2パターンの見た目。色は js の配色から変数で渡す */
+.mo-sheet { position: absolute; inset: 0; transform-origin: 50% 100%;
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, transparent calc(var(--mo-hole) - 6%), #000 var(--mo-hole));
+  mask-image: radial-gradient(circle at 50% 50%, transparent calc(var(--mo-hole) - 6%), #000 var(--mo-hole)); }
+.mo-paper { position: absolute; inset: 0; background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 40px 40px; }
+.mo-sketch-lines { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; }
+/* b: スケッチブック（ページ・めくれる表紙・リング・ペン）。ページは画面と同じ大きさで、寄ると画面いっぱいになる */
+.mo-book { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 50% 50%; perspective: 2600px; perspective-origin: 50% 0; }
+.mo-book-page { box-shadow: 0 30px 70px #0009; }
+.mo-cover { position: absolute; inset: 0; transform-origin: 50% 0; transform-style: preserve-3d; }
+.mo-cover-front, .mo-cover-back { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.mo-cover-front { box-shadow: inset 0 0 0 14px #0000001a; }
+.mo-cover-back { transform: rotateX(180deg); box-shadow: inset 0 0 0 14px #00000026; }
+.mo-cover-label { position: absolute; right: 120px; bottom: 120px; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding: 30px 44px 26px; border-radius: 12px; }
+.mo-cover-label b { font-size: 60px; font-weight: 900; letter-spacing: 0.14em; line-height: 1; }
+.mo-cover-label i { width: 120px; height: 6px; border-radius: 3px; background: currentColor; }
+.mo-cover-label small { font-size: 26px; font-weight: 700; letter-spacing: 0.2em; }

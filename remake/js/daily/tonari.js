@@ -9,6 +9,7 @@ import { play, dialogueSequence } from "../vn/engine.js";
 import { visitChar, hasNewStory } from "./spots.js";
 import { runDrill, DRILLS } from "../craft/session.js";
 import { isRainy, RAIN_BAITO, RAIN_BAITO_BONUS } from "./weather.js";
+import { shiftClose } from "../core/scene-motions.js";
 
 const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
 
@@ -82,6 +83,7 @@ async function baitoShift({ called }) {
   const extra = called ? CALLED_BONUS : 0;
   const rainPay = rainy ? RAIN_BAITO_BONUS : 0; // 雨の日は長居客の追加注文ぶん
   const pay = 8000 + bonus + extra + rainPay + condition.shiftBonus;
+  await shiftClose();
   await play("remake_baito_end", { bg: TONARI_BG });
   if (called) await play("remake_sumi_call_thanks", { bg: TONARI_BG });
   addMoney(pay);

@@ -1,0 +1,4 @@
+/* サメちゃん（remake/js/motions/shark.js）。a／b の2パターンの見た目。色は js の配色から変数で渡す */
+/* a: がぶっ！の文字（上あごの上に出る） */
+.mo-gabu { position: absolute; left: 50%; top: 128px; transform: translateX(-50%) rotate(-6deg); display: flex; gap: 0.02em; font-size: 108px; font-weight: 900; line-height: 1; white-space: nowrap; text-shadow: 0 8px 0 var(--o); }
+.mo-gabu-ch { display: inline-block; transform: scale(0); }

@@ -401,12 +401,9 @@
             "text": "カメラを受け取り、ピースをするみんとにレンズを向けた。"
           },
           {
-            "type": "fx",
-            "id": "flash"
-          },
-          {
             "type": "show_cg",
-            "cg_id": "cg_minto_first_cheki"
+            "cg_id": "cg_minto_first_cheki",
+            "effect": "cheki"
           },
           {
             "speaker": "",
