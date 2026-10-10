@@ -415,15 +415,15 @@ async function failedOut(reason) {
 }
 
 /**
- * 大会のGAME OVER（TH18・TH45）。理由を出して「再挑戦しますか？」と聞き、はいなら大会の頭（大会直前のデータ）から。
- * 画面は画像を使わず gameover.js で描く。理由は rank（順位で敗退）/ burnt / cold / leaf。
+ * 大会コンティニュー。スミさんの直訴（3パターン）で説得し、はいなら大会の頭から。
+ * 立ち絵／仮音声／専用BGMは gameover.js へまとめ、将来は生成音声・口パクへ差し替える。
  */
-async function showGameOver({ rank = 0, reason = "rank" } = {}) {
+async function showGameOver({ rank = 0, reason = "rank", variant = null } = {}) {
   showHud(false);
   stopBgm();
   SE.miss();
   const root = buildGameOver({
-    reason, rank,
+    reason, rank, variant,
     onRetry: () => { SE.select(); retire(root); smokeWipe(() => { tournamentDay(); }, { color: "dark" }); },
     onTitle: () => location.reload(),
   });
@@ -446,7 +446,7 @@ export function devRehearsal() {
   return rehearsal();
 }
 /** テスト・確認用: 大会のGAME OVER画面だけを出す（reason: rank / burnt / cold / leaf） */
-export function devGameOver(reason = "burnt", rank = 2) {
+export function devGameOver(reason = "burnt", rank = 2, variant = null) {
   setupHooks();
-  return showGameOver({ reason, rank });
+  return showGameOver({ reason, rank, variant });
 }

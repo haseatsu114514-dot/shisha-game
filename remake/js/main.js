@@ -164,6 +164,11 @@ window.__remake = {
       window.__remake.state.day = TOURNAMENT_DAY;
       return ch1.devTournament();
     },
+    // リザルトを待たずに3種類のコンティニュー演出を確認（0〜2を指定）。
+    async gameOver(reason = "rank", variant = 0) {
+      const { devGameOver } = await import("./chapters/ch1.js");
+      return devGameOver(reason, reason === "rank" ? 2 : 0, variant);
+    },
     async drill(kind = "heat") {
       const { newGame } = await import("./core/state.js");
       const { runDrill } = await import("./craft/session.js");

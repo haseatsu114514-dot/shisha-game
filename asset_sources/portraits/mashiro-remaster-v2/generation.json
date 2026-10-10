@@ -1,0 +1,626 @@
+{
+  "schema_version": 1,
+  "character": "mashiro",
+  "generations": [
+    {
+      "face": "normal",
+      "prompt_number": 18,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:31:37.606888+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/mashiro-remaster-v2/attempts/normal-attempt-01-source.png",
+      "source_sha256": "3bd067c6243d996ff1ba59f413b15ecffe247daf6fe8c9b816db2a6cb0254f05",
+      "original_tool_file": "exec-773438bf-8862-41ff-ae46-0eae03b64037.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/mashiro-remaster-v2/attempts/normal-attempt-01-prompt.txt",
+      "prompt_sha256": "6fc119a7983c373bfbb88f7be6b488380a5c76a67e16c3592149ac98048d98f4",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+          "sha256": "d9a9ae63c2b0bfaae9f88fc139bf3ca7deb22fd719b9286f5c383668cf495f8d"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+          "sha256": "d9a9ae63c2b0bfaae9f88fc139bf3ca7deb22fd719b9286f5c383668cf495f8d"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ],
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        326,
+        119,
+        769,
+        1376
+      ],
+      "figure_height_px": 1257,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "needs_revision",
+        "note": "原寸・比較を確認。眠そうな目・衣装・元の色は維持。ただし元絵より頭が小さく見え、人物1257pxで必要な1300pxにも届かない。元絵以上の丸い頭身を保ち、全身を大きく配置して再生成。"
+      }
+    },
+    {
+      "face": "normal",
+      "prompt_number": 18,
+      "attempt": 2,
+      "generated_at_utc": "2026-10-10T05:34:29.758831+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/mashiro-remaster-v2/attempts/normal-attempt-02-source.png",
+      "source_sha256": "5399804b2dfc07ec80297e2a7a9d1b7154b4e702c74d198cef71955be714ba64",
+      "original_tool_file": "exec-bf0e5daa-d563-41e4-b6a9-45870e6c0e17.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/mashiro-remaster-v2/attempts/normal-attempt-02-prompt.txt",
+      "prompt_sha256": "2d3390804d1f542d7998e430a31b38309e0560add648c5cf7bc70cd1ad56cf3e",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+          "sha256": "d9a9ae63c2b0bfaae9f88fc139bf3ca7deb22fd719b9286f5c383668cf495f8d",
+          "archived_original_path": "asset_sources/portraits/mashiro-remaster-v2/previous-runtime/chr_mashiro_normal.png"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+          "sha256": "d9a9ae63c2b0bfaae9f88fc139bf3ca7deb22fd719b9286f5c383668cf495f8d",
+          "archived_original_path": "asset_sources/portraits/mashiro-remaster-v2/previous-runtime/chr_mashiro_normal.png"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ],
+      "canvas_px": [
+        1084,
+        1451
+      ],
+      "alpha_bbox_threshold_16_px": [
+        317,
+        71,
+        799,
+        1408
+      ],
+      "figure_height_px": 1337,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:36:41.298653+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原寸・元絵比較を確認。丸い頬と眠そうな金色の目、少し大きめで柔らかい頭身を優先。原画の人物1337px、元のベージュ・セージグリーンを保持。",
+        "preview_bbox_threshold_16_px": [
+          292,
+          297,
+          609,
+          1176
+        ],
+        "original_bbox_threshold_16_px": [
+          290,
+          297,
+          605,
+          1176
+        ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+        "runtime_png_sha256": "9c6915ec1d5cf21c400065b4c76262f1c5f538df68681409b36a22f753bccf46",
+        "runtime_webp": "remake/img/sprites/characters/mashiro/chr_mashiro_normal.webp",
+        "runtime_webp_sha256": "4bf0784dba366e4f23c6246bf278c581aa38e97a4d4e7c8862a32e1ee1627567",
+        "previous_runtime": "asset_sources/portraits/mashiro-remaster-v2/previous-runtime/chr_mashiro_normal.png",
+        "previous_runtime_sha256": "d9a9ae63c2b0bfaae9f88fc139bf3ca7deb22fd719b9286f5c383668cf495f8d",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
+      }
+    },
+    {
+      "face": "serious",
+      "prompt_number": 20,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:39:07.987707+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/mashiro-remaster-v2/attempts/serious-attempt-01-source.png",
+      "source_sha256": "053665059688e59cc17d27fb8a161589884783bec36a09f3daa2f00c2b38d2a0",
+      "original_tool_file": "exec-40397544-e6e3-48f2-b65b-2fd6e61bb10d.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/mashiro-remaster-v2/attempts/serious-attempt-01-prompt.txt",
+      "prompt_sha256": "33b92bb093681499dea9ed960add5a46f515db782b7e8b794a6714f68be2fd5f",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/mashiro/chr_mashiro_serious.png",
+          "sha256": "0ffccdded08add0754e7927f54d77bce6afa51a0ac7aecf24f49612c6c54c52d",
+          "archived_original_path": "asset_sources/portraits/mashiro-remaster-v2/previous-runtime/chr_mashiro_serious.png"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "asset_sources/portraits/mashiro-remaster-v2/normal-source.png",
+          "sha256": "5399804b2dfc07ec80297e2a7a9d1b7154b4e702c74d198cef71955be714ba64"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ],
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        310,
+        59,
+        789,
+        1408
+      ],
+      "figure_height_px": 1349,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:47:05.536163+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原寸・元絵比較を確認。真剣な半目と掌／驚いた金色の目・小さく開く口と胸元の手を保持。丸い頬・基準女性より大きめの頭身・三つ編み・ベージュと緑の色・全身・足元・透過を検品。",
+        "preview_bbox_threshold_16_px": [
+          293,
+          298,
+          605,
+          1176
+        ],
+        "original_bbox_threshold_16_px": [
+          289,
+          298,
+          604,
+          1176
+        ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/mashiro/chr_mashiro_serious.png",
+        "runtime_png_sha256": "149e332046957609b037e5d64c12f88adc6079e16eeea81706726f5b87245092",
+        "runtime_webp": "remake/img/sprites/characters/mashiro/chr_mashiro_serious.webp",
+        "runtime_webp_sha256": "2f5ca6ec4d7139b1f337a898dfb4f4c2cf784addd3980e297eddd208b1dd9ed1",
+        "previous_runtime": "asset_sources/portraits/mashiro-remaster-v2/previous-runtime/chr_mashiro_serious.png",
+        "previous_runtime_sha256": "0ffccdded08add0754e7927f54d77bce6afa51a0ac7aecf24f49612c6c54c52d",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
+      }
+    },
+    {
+      "face": "smile",
+      "prompt_number": 19,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:39:44.914793+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/mashiro-remaster-v2/attempts/smile-attempt-01-source.png",
+      "source_sha256": "b6eb689bf090e3ecccaa04fcd192085343636843426f58d1ff62e1e67ef85083",
+      "original_tool_file": "exec-e43ae17c-e496-4e49-9122-b46174f503c3.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/mashiro-remaster-v2/attempts/smile-attempt-01-prompt.txt",
+      "prompt_sha256": "9976b7981e412374126131b995749900237cfd5ff46056935c0ffb08ecde54ff",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/mashiro/chr_mashiro_smile.png",
+          "sha256": "7cdf2c8408b8dde27f05502cb8b6c501243cada676784be30fd0989abf8bdad2",
+          "archived_original_path": "asset_sources/portraits/mashiro-remaster-v2/previous-runtime/chr_mashiro_smile.png"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "asset_sources/portraits/mashiro-remaster-v2/normal-source.png",
+          "sha256": "5399804b2dfc07ec80297e2a7a9d1b7154b4e702c74d198cef71955be714ba64"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ],
+      "canvas_px": [
+        1084,
+        1451
+      ],
+      "alpha_bbox_threshold_16_px": [
+        329,
+        76,
+        800,
+        1419
+      ],
+      "figure_height_px": 1343,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:46:38.367902+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原寸・元絵比較を確認。半目の金色の瞳・丸い頬・胸元へ上げた袖付きの手・2本の三つ編みを保持。基準女性より丸く大きめの頭身を保ち、ベージュとセージグリーンの濃さ・両靴・透過・足元を検品。",
+        "preview_bbox_threshold_16_px": [
+          296,
+          298,
+          604,
+          1176
+        ],
+        "original_bbox_threshold_16_px": [
+          307,
+          298,
+          605,
+          1176
+        ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/mashiro/chr_mashiro_smile.png",
+        "runtime_png_sha256": "6e6b9466fc9ba72ed33d585923db44f71adf11ff7ac4c7c25d2ca481222e1fed",
+        "runtime_webp": "remake/img/sprites/characters/mashiro/chr_mashiro_smile.webp",
+        "runtime_webp_sha256": "819ff66bdf52952480a04b560ea4a4bab0bf436294159e8ec38b9f221844745a",
+        "previous_runtime": "asset_sources/portraits/mashiro-remaster-v2/previous-runtime/chr_mashiro_smile.png",
+        "previous_runtime_sha256": "7cdf2c8408b8dde27f05502cb8b6c501243cada676784be30fd0989abf8bdad2",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
+      }
+    },
+    {
+      "face": "surprise",
+      "prompt_number": 21,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:43:55.475208+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/mashiro-remaster-v2/attempts/surprise-attempt-01-source.png",
+      "source_sha256": "adc322e0ac770391a517c4971098ca592b184f6daca070490b3102ebbf916c72",
+      "original_tool_file": "exec-15e4628a-46d4-479a-8b98-3b8a10c3988c.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/mashiro-remaster-v2/attempts/surprise-attempt-01-prompt.txt",
+      "prompt_sha256": "6f323b08c1646600c8bf733b753ed6c6d1c39e5c8572e8cd5340dbd694619f95",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/mashiro/chr_mashiro_surprise.png",
+          "sha256": "a2d2c4d73fee779f1dbb804779b9cc99fb729283650e82cc221a0c4d4bd24ab7",
+          "archived_original_path": "asset_sources/portraits/mashiro-remaster-v2/previous-runtime/chr_mashiro_surprise.png"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "asset_sources/portraits/mashiro-remaster-v2/normal-source.png",
+          "sha256": "5399804b2dfc07ec80297e2a7a9d1b7154b4e702c74d198cef71955be714ba64"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ],
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        317,
+        75,
+        801,
+        1424
+      ],
+      "figure_height_px": 1349,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:47:05.930047+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原寸・元絵比較を確認。真剣な半目と掌／驚いた金色の目・小さく開く口と胸元の手を保持。丸い頬・基準女性より大きめの頭身・三つ編み・ベージュと緑の色・全身・足元・透過を検品。",
+        "preview_bbox_threshold_16_px": [
+          293,
+          297,
+          608,
+          1176
+        ],
+        "original_bbox_threshold_16_px": [
+          306,
+          297,
+          602,
+          1176
+        ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/mashiro/chr_mashiro_surprise.png",
+        "runtime_png_sha256": "ddf6be2cad76f9f12959a70ac723c5e9cc1ca55c2c6ef6cf86839ea87c85b101",
+        "runtime_webp": "remake/img/sprites/characters/mashiro/chr_mashiro_surprise.webp",
+        "runtime_webp_sha256": "447db675c92efb3fa31df97bf7ca5d8162343ae9bb7a35e0c0f37fcd4c790905",
+        "previous_runtime": "asset_sources/portraits/mashiro-remaster-v2/previous-runtime/chr_mashiro_surprise.png",
+        "previous_runtime_sha256": "a2d2c4d73fee779f1dbb804779b9cc99fb729283650e82cc221a0c4d4bd24ab7",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
+      }
+    },
+    {
+      "face": "sleep",
+      "prompt_number": 23,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:43:55.826211+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/mashiro-remaster-v2/attempts/sleep-attempt-01-source.png",
+      "source_sha256": "5db671d5bb8128bc80dcab345ed70ca5d8de8f43dce7615cd588b39a2e55aa0b",
+      "original_tool_file": "exec-05ebd3ab-5e6d-499c-beda-5883733a4de0.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/mashiro-remaster-v2/attempts/sleep-attempt-01-prompt.txt",
+      "prompt_sha256": "cc6c286e3d409eeee27fc4882f5c6cb30dcd4f7a3a35b5271034daa27b20b43a",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/mashiro/chr_mashiro_sleep.png",
+          "sha256": "352cc2f09a3719659fb872735ea44a6c95feb5ad1b4bf8961633acb8b73d89d2",
+          "archived_original_path": "asset_sources/portraits/mashiro-remaster-v2/previous-runtime/chr_mashiro_sleep.png"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "asset_sources/portraits/mashiro-remaster-v2/normal-source.png",
+          "sha256": "5399804b2dfc07ec80297e2a7a9d1b7154b4e702c74d198cef71955be714ba64"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ],
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        303,
+        13,
+        808,
+        1415
+      ],
+      "figure_height_px": 1402,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:47:28.295008+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原寸・元絵比較を確認。sad は元絵通り口に手を添えるあくび、sleep は首を傾けた眠りと下げた両腕。閉じ目・丸い頬・眠り記号・三つ編み・ベージュと緑・両靴・透過余白を保持。",
+        "preview_bbox_threshold_16_px": [
+          295,
+          297,
+          612,
+          1176
+        ],
+        "original_bbox_threshold_16_px": [
+          301,
+          297,
+          600,
+          1176
+        ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/mashiro/chr_mashiro_sleep.png",
+        "runtime_png_sha256": "27355edad6b51652ee2b10187b5eaad5d2780ceeeb101c3b06c3895e26dc9158",
+        "runtime_webp": "remake/img/sprites/characters/mashiro/chr_mashiro_sleep.webp",
+        "runtime_webp_sha256": "cb7f09e52035ed70f86fde42284b8ed1016f65d75d0c976154dcca34a5bf67d7",
+        "previous_runtime": "asset_sources/portraits/mashiro-remaster-v2/previous-runtime/chr_mashiro_sleep.png",
+        "previous_runtime_sha256": "352cc2f09a3719659fb872735ea44a6c95feb5ad1b4bf8961633acb8b73d89d2",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
+      }
+    },
+    {
+      "face": "sad",
+      "prompt_number": 22,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:43:56.315091+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/mashiro-remaster-v2/attempts/sad-attempt-01-source.png",
+      "source_sha256": "4ec6ff9b003ed229515bc4d02bf0ac8d9ce9c0d743173291621bdaba22ba80ba",
+      "original_tool_file": "exec-d9ae7a9d-bc06-4624-86d7-4d1e5ed5001d.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/mashiro-remaster-v2/attempts/sad-attempt-01-prompt.txt",
+      "prompt_sha256": "7ca5ce6b3cd4321000e5e0351a305bcab0e165206fcc1e51ce6a1e58a4a63258",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/mashiro/chr_mashiro_sad.png",
+          "sha256": "9c8870e96e7d73fd7c9b9aca89d9d6b07c0072e7517a7b09322e622848889e10",
+          "archived_original_path": "asset_sources/portraits/mashiro-remaster-v2/previous-runtime/chr_mashiro_sad.png"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "asset_sources/portraits/mashiro-remaster-v2/normal-source.png",
+          "sha256": "5399804b2dfc07ec80297e2a7a9d1b7154b4e702c74d198cef71955be714ba64"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ],
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        347,
+        84,
+        813,
+        1416
+      ],
+      "figure_height_px": 1332,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:47:27.923062+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原寸・元絵比較を確認。sad は元絵通り口に手を添えるあくび、sleep は首を傾けた眠りと下げた両腕。閉じ目・丸い頬・眠り記号・三つ編み・ベージュと緑・両靴・透過余白を保持。",
+        "preview_bbox_threshold_16_px": [
+          297,
+          299,
+          604,
+          1176
+        ],
+        "original_bbox_threshold_16_px": [
+          307,
+          299,
+          595,
+          1176
+        ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/mashiro/chr_mashiro_sad.png",
+        "runtime_png_sha256": "d13826a7ce4e51fa040f262d5ba9482c8b52f53d067243b2cc391d8b4a848daf",
+        "runtime_webp": "remake/img/sprites/characters/mashiro/chr_mashiro_sad.webp",
+        "runtime_webp_sha256": "b23c81e7353a0d92caff982534d356ba5caf98f1734709314a13f714c22fab32",
+        "previous_runtime": "asset_sources/portraits/mashiro-remaster-v2/previous-runtime/chr_mashiro_sad.png",
+        "previous_runtime_sha256": "9c8870e96e7d73fd7c9b9aca89d9d6b07c0072e7517a7b09322e622848889e10",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
+      }
+    }
+  ],
+  "selected_attempts": {
+    "normal": 2,
+    "serious": 1,
+    "smile": 1,
+    "surprise": 1,
+    "sleep": 1,
+    "sad": 1
+  },
+  "selected_attempt": 2,
+  "approval_policy": {
+    "mode": "delegated_production_qa",
+    "owner_instruction": "いいと思います。ただ作り直すたびに色薄くなってる気がするのは気のせい？ 一旦確認もそこまでいらないからガンガン進めて",
+    "received_on": "2026-10-10"
+  },
+  "integration_status": {
+    "status": "complete",
+    "checked_at_utc": "2026-10-10T06:26:32.952954+00:00",
+    "expressions": 6,
+    "browser_viewports": [
+      "1280x720",
+      "591x1280"
+    ],
+    "production_qa": "asset_sources/portraits/resolution-upgrade-20261009/production-qa.json"
+  }
+}
