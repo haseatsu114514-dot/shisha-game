@@ -11,7 +11,7 @@ import { autoSkill, resultCard, keys, popStamp } from "./common.js";
 import { craftConditions, temperatureAfterSteam } from "./conditions.js";
 import { buildSteamTemperature } from "./steam-forecast.js";
 import { steamClimate } from "./steam-climate.js";
-import { buildSteamWorld, HEART_ART, REFRESH_ART, PAD_ART, BULLET_ART } from "./steam-art.js";
+import { buildSteamWorld, HEART_ART, REFRESH_ART, PRECISION_ART, PAD_ART, BULLET_ART } from "./steam-art.js";
 import { buildMentalTrace } from "./mental.js";
 import { craftCondition } from "../core/condition.js";
 
@@ -45,9 +45,13 @@ export async function runSteamDodge(cs) {
   const clock = buildDigitalClock("dodge-timer", { label: "蒸らしの残り時間", test: "steam-clock" });
   const knob = el("i.dodge-knob");
   const pad = el("div.dodge-pad", { tabindex: 0, role: "group", "aria-label": "移動スティック。ドラッグまたは矢印キーで移動", dataset: { test: "dodge-pad" } }, [el("span", { html: PAD_ART, "aria-hidden": "true" }), knob]);
-  const refreshBtn = el("button.btn.primary.dodge-refresh", { disabled: true, dataset: { test: "dodge-refresh" } });
+  const refreshBtn = el("button.btn.primary.dodge-action.dodge-refresh", { disabled: true, dataset: { test: "dodge-refresh" } });
   refreshBtn.append(el("span.refresh-emblem", { html: REFRESH_ART, "aria-hidden": "true" }),
     el("span.refresh-copy", { text: "リフレッシュ" }));
+  const precisionBtn = el("button.btn.dodge-action.dodge-precision", { disabled: true, "aria-pressed": "false", dataset: { test: "dodge-precision" } }, [
+    el("span.refresh-emblem", { html: PRECISION_ART, "aria-hidden": "true" }),
+    el("span.refresh-copy", { text: "精密モード" }),
+  ]);
   const thermometer = buildSteamTemperature();
   const heatJitter = cs.steamVariation ?? { offset: rand(-.065, .065), transfer: rand(.9, 1.1) };
   const mental = buildMentalTrace(W, H);
@@ -57,7 +61,7 @@ export async function runSteamDodge(cs) {
   box.append(world.root, clock.root, el("span.dodge-world-title", { text: "心の中", "aria-hidden": "true" }), mental.root, heart);
   const steamRoot = el("div.steam", [
     el("div.steam-play", [box]),
-    el("div.dodge-controls", [pad, refreshBtn]),
+    el("div.dodge-controls", [pad, refreshBtn, precisionBtn]),
     thermometer.root,
   ]);
   panel.append(steamRoot);
@@ -67,7 +71,7 @@ export async function runSteamDodge(cs) {
   const hitR = 8 * (1 - 0.2 * tier01("guts")) / focus;
   const spawnEvery = (tutorial ? 0.85 : 0.46) * (1 + 0.25 * tier01("insight")) * focus;
   let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = stock;
-  let running = false, time = 0, nextSpawn = 0.8, nextWave = tutorial ? 4 : 2.8;
+  let running = false, precise = false, time = 0, nextSpawn = 0.8, nextWave = tutorial ? 4 : 2.8;
   let warning = null, spawnCount = 0, raf = 0;
   const bullets = [], keysDown = new Set();
   const transients = [];
@@ -105,6 +109,12 @@ export async function runSteamDodge(cs) {
   listen(pad, "pointermove", (e) => { if (e.pointerId === padPointer) movePad(e); });
   for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) listen(pad, type, (e) => { if (e.pointerId === padPointer) resetPad(); });
   listen(window, "blur", () => { keysDown.clear(); resetPad(); });
+  listen(precisionBtn, "click", () => {
+    if (!running) return;
+    precise = !precise;
+    precisionBtn.setAttribute("aria-pressed", String(precise));
+    SE.click();
+  });
 
   const clearBullets = (radius = Infinity) => {
     const cleared = [];
@@ -180,7 +190,7 @@ export async function runSteamDodge(cs) {
   clock.update(seconds);
   refreshLabel();
   await countdown();
-  running = true; refreshLabel();
+  running = true; precisionBtn.disabled = false; refreshLabel();
   const auto = autoSkill();
   try {
     if (auto) { await sleep(200); hits = auto === "good" ? 0 : 4; }
@@ -194,7 +204,8 @@ export async function runSteamDodge(cs) {
         let y = axisY + (keysDown.has("d") ? 1 : 0) - (keysDown.has("u") ? 1 : 0);
         const length = Math.max(1, Math.hypot(x, y));
         if (padPointer === null) knob.style.transform = x || y ? `translate(${x / length * 26}px, ${y / length * 26}px)` : "";
-        moveTo(hx + x / length * 290 * dt, hy + y / length * 290 * dt);
+        const speed = precise ? 120 : 290;
+        moveTo(hx + x / length * speed * dt, hy + y / length * speed * dt);
         if (time >= nextSpawn && time < dur - 0.8) { spawn(); nextSpawn = time + spawnEvery * rand(0.8, 1.15) * (1 - 0.2 * time / dur); }
         if (time >= nextWave && time < dur - 2) {
           warning = { side: Math.round(rand(0, 1)), gap: Math.floor(rand(2, 7)), due: time + 0.75 };
@@ -230,7 +241,7 @@ export async function runSteamDodge(cs) {
       raf = requestAnimationFrame(loop);
     });
   } finally {
-    running = false; cancelAnimationFrame(raf); unkey(); input.abort(); resetPad(); clearBullets(); refreshLabel();
+    running = false; precisionBtn.disabled = true; cancelAnimationFrame(raf); unkey(); input.abort(); resetPad(); clearBullets(); refreshLabel();
     transients.forEach(({ node }) => node.remove());
     world.draw(time + 1, hx, hy);
     heart.classList.remove("shield"); box.classList.remove("warning");
