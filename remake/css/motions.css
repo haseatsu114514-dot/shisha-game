@@ -1,0 +1,92 @@
+/* ============================================================
+   場面ごとの一度きりのモーショングラフィックス（core/scene-motions.js・CI107）
+   平らな色面・太い線・少し行きすぎて戻る動き。#fx の上に重ねる
+   ============================================================ */
+.mo { position: absolute; inset: 0; overflow: hidden; z-index: 100; pointer-events: auto; font-family: var(--font); }
+.mo-defs { position: absolute; width: 0; height: 0; }
+.mo-dim { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, #2a1f45e6, #0d0918f2 70%); }
+.mo-dim.warm { background: radial-gradient(ellipse at 50% 50%, #4a2a3ae0, #120b18f2 72%); }
+.mo-dim.evening { background: linear-gradient(#1b1430d0, #2b1d3ad8); }
+.mo-spark { position: absolute; width: 18px; height: 18px; clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); pointer-events: none; }
+.mo-rays { position: absolute; left: 50%; top: 47%; width: 900px; height: 900px; transform: translate(-50%, -50%); opacity: 0;
+  background: repeating-conic-gradient(from 0deg, #fff2c440 0deg 8deg, transparent 8deg 22deg);
+  -webkit-mask-image: radial-gradient(circle, #000 18%, transparent 62%); mask-image: radial-gradient(circle, #000 18%, transparent 62%); }
+
+/* チェキ */
+.mo-cheki-back { position: absolute; inset: 0; background: var(--ink); opacity: 0; }
+.mo-finder { position: absolute; left: 50%; top: 40px; width: 460px; height: 470px; margin-left: -230px; }
+.mo-finder i { position: absolute; width: 64px; height: 64px; border: 0 solid #fff; filter: drop-shadow(0 0 4px #0009); }
+.mo-finder i:nth-child(1) { left: 0; top: 0; border-left-width: 7px; border-top-width: 7px; }
+.mo-finder i:nth-child(2) { right: 0; top: 0; border-right-width: 7px; border-top-width: 7px; }
+.mo-finder i:nth-child(3) { left: 0; bottom: 0; border-left-width: 7px; border-bottom-width: 7px; }
+.mo-finder i:nth-child(4) { right: 0; bottom: 0; border-right-width: 7px; border-bottom-width: 7px; }
+.mo-finder-focus { position: absolute; left: 50%; top: 42%; width: 56px; height: 40px; margin: -20px 0 0 -28px; border: 3px solid #f6e27a; animation: mo-blink 0.32s steps(2) infinite; }
+@keyframes mo-blink { 50% { opacity: 0.2; } }
+.mo-iris { z-index: 2; }
+.mo-iris .mo-blade { transform: translate(0, 0); }
+.mo-flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 3; }
+.mo-film { position: absolute; object-fit: contain; z-index: 2; box-shadow: 0 14px 40px #000a; }
+
+/* 占い */
+.mo-tarot-card { position: absolute; left: 50%; top: 150px; width: 236px; height: 380px; perspective: 1100px; }
+.mo-tarot-flip { position: absolute; inset: 0; transform-style: preserve-3d; }
+.mo-tarot-back, .mo-tarot-front { position: absolute; inset: 0; border-radius: 16px; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.mo-tarot-back { background: radial-gradient(circle at 50% 42%, #3d2a78, #1c1438 70%); border: 6px solid #e8c27a; box-shadow: inset 0 0 0 6px #1c1438, inset 0 0 0 8px #e8c27a88, 0 18px 40px #0009; }
+.mo-tarot-moon { position: absolute; left: 50%; top: 40%; width: 92px; height: 92px; margin: -46px 0 0 -46px; border-radius: 50%; box-shadow: inset -22px -6px 0 0 #e8c27a; transform: rotate(-20deg); }
+.mo-tarot-star { position: absolute; left: 28%; top: 70%; width: 18px; height: 18px; background: #e8c27a; clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); }
+.mo-tarot-star.s2 { left: 66%; top: 22%; width: 12px; height: 12px; }
+.mo-tarot-star.s3 { left: 70%; top: 74%; width: 10px; height: 10px; }
+.mo-tarot-front { transform: rotateY(180deg); background: #fff7e6; border: 6px solid #e8c27a; box-shadow: inset 0 0 0 6px #fff7e6, inset 0 0 0 9px #c99a4a, 0 18px 40px #0009;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: #3a2a1c; }
+.mo-tarot-front small { font-size: 12px; font-weight: 700; letter-spacing: 0.3em; color: #a07a3c; }
+.mo-tarot-front small:last-child { font-size: 26px; letter-spacing: 0; color: #c0503e; }
+.mo-tarot-face { width: 116px; height: 116px; border-radius: 50%; overflow: hidden; border: 5px solid #e8c27a; background: #2a1f45; display: grid; place-items: center; }
+.mo-tarot-face img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+.mo-tarot-face b { color: #fff; font-size: 48px; }
+.mo-tarot-name { font-size: 26px; font-weight: 900; letter-spacing: 0.08em; }
+
+/* 贈り物 */
+.mo-gift-pack { position: absolute; left: 50%; top: 330px; width: 260px; height: 220px; transform: translateX(-50%); }
+.mo-gift-pack .mo-rays { top: 20%; }
+.mo-gift-box { position: absolute; left: 10px; right: 10px; bottom: 0; height: 170px; border-radius: 10px; background: linear-gradient(#fff7ef, #f3e3d6); box-shadow: inset 0 -14px 0 #0000000f, 0 16px 30px #0008; overflow: hidden; }
+.mo-gift-lid { position: absolute; left: -2px; right: -2px; bottom: 160px; height: 50px; border-radius: 10px; background: #fffaf4; box-shadow: 0 6px 0 #0000001a; overflow: hidden; }
+.mo-gift-band { position: absolute; left: 50%; top: 0; bottom: 0; width: 34px; margin-left: -17px; background: var(--c); transform-origin: top center; }
+.mo-gift-loop { position: absolute; bottom: 196px; width: 74px; height: 50px; border: 14px solid var(--c); border-radius: 50%; }
+.mo-gift-loop.l { left: 54px; transform: rotate(-30deg); }
+.mo-gift-loop.r { right: 54px; transform: rotate(30deg); }
+.mo-gift-item { position: absolute; left: 50%; bottom: 40px; width: 180px; height: auto; transform: translate(-50%, 40px) scale(0.3); opacity: 0; filter: drop-shadow(0 10px 14px #0008); }
+.mo-gift-name { position: absolute; left: 50%; top: 580px; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; color: #fff; text-shadow: 0 3px 0 #1d1236; white-space: nowrap; opacity: 0; }
+.mo-gift-name small { font-size: 18px; font-weight: 700; letter-spacing: 0.2em; color: #ffe2ef; }
+.mo-gift-name b { font-size: 34px; font-weight: 900; letter-spacing: 0.04em; }
+
+/* バイトの終わり */
+.mo-clock { position: absolute; left: 230px; top: 210px; width: 240px; height: 240px; border-radius: 50%; background: #fff7e6; border: 10px solid #3a2a1c; box-shadow: 0 16px 30px #0008; }
+.mo-clock-tick { position: absolute; left: 50%; top: 6px; width: 6px; height: 18px; margin-left: -3px; background: #3a2a1c; transform-origin: 3px 104px; }
+.mo-clock-hand { position: absolute; left: 50%; bottom: 50%; background: #3a2a1c; border-radius: 6px; transform-origin: 50% 100%; }
+.mo-clock-hand.m { width: 8px; height: 92px; margin-left: -4px; }
+.mo-clock-hand.h { width: 12px; height: 62px; margin-left: -6px; background: #c0503e; }
+.mo-clock-pin { position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%; background: #3a2a1c; }
+.mo-sign { position: absolute; left: 62%; top: 120px; width: 380px; height: 320px; transform: translateX(-50%); transform-origin: 50% 0; perspective: 1000px; }
+.mo-sign::before { content: ""; position: absolute; left: 50%; top: -8px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: #e8dcc8; z-index: 1; }
+.mo-sign-string { position: absolute; left: 50%; top: 0; width: 0; height: 0; }
+.mo-sign-string::before, .mo-sign-string::after { content: ""; position: absolute; left: -2px; top: 0; width: 4px; height: 180px; background: #e8dcc8; transform-origin: 2px 0; }
+.mo-sign-string::before { transform: rotate(56deg); }
+.mo-sign-string::after { transform: rotate(-56deg); }
+.mo-sign-card { position: absolute; left: 0; right: 0; top: 100px; height: 200px; transform-style: preserve-3d; }
+.mo-sign-face { position: absolute; inset: 0; border-radius: 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 16px 30px #0008; }
+.mo-sign-face small { font-size: 22px; font-weight: 700; letter-spacing: 0.3em; padding-left: 0.3em; }
+.mo-sign-face b { font-size: 84px; font-weight: 900; letter-spacing: 0.08em; line-height: 1; }
+.mo-sign-face.open { background: #fff7e6; color: #2f7d4f; border: 8px solid #2f7d4f; }
+.mo-sign-face.closed { background: #c0503e; color: #fff7e6; border: 8px solid #fff7e6; transform: rotateY(180deg); }
+
+/* サメちゃん */
+.mo-sea-rays { position: absolute; inset: 0; opacity: 0; pointer-events: none;
+  background: repeating-linear-gradient(105deg, #ffffff14 0 40px, transparent 40px 120px); mix-blend-mode: screen; }
+
+/* スケッチ */
+.mo-paper { position: absolute; inset: 0; background: #f6f1e7; background-image: linear-gradient(#e7dfcf 1px, transparent 1px), linear-gradient(90deg, #e7dfcf 1px, transparent 1px); background-size: 40px 40px; }
+.mo-sketch-lines { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; }
+.mo-pencil { position: absolute; left: 0; top: 0; width: 220px; height: 26px; margin: -13px 0 0 0; transform-origin: 0 50%; display: flex; filter: drop-shadow(0 6px 6px #0004); }
+.mo-pencil-tip { width: 40px; height: 26px; background: linear-gradient(90deg, #2b2b2b 0 30%, #e9c99a 30%); clip-path: polygon(0 50%, 100% 0, 100% 100%); }
+.mo-pencil-body { flex: 1; height: 26px; background: linear-gradient(#ffd25a, #f2b544 50%, #d9952a); }
+.mo-pencil-end { width: 30px; height: 26px; background: linear-gradient(90deg, #b9b9c4 0 40%, #f29aa8 40%); border-radius: 0 6px 6px 0; }

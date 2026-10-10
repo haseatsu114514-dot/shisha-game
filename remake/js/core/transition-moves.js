@@ -4,7 +4,7 @@ import { el, nextFrame, sleep } from "./util.js";
 import { SE } from "./audio.js";
 import { W, H, COLOR, EASE, svg, stageSvg, move, holdKeys, openLeaf, stepIntoBg, walker, everyFrame } from "./transition-kit.js";
 
-export const MOVE_STYLES = ["pin", "steps", "walk", "door", "door2", "noren", "walkdoor"];
+export const MOVE_STYLES = ["pin", "steps", "walk", "door", "noren", "walkdoor"];
 const STORE_KEY = "suien_move_style";
 
 export function moveStyle() {
@@ -37,16 +37,16 @@ function curtain(host, style, cover, reveal) {
 }
 
 export function moveCurtain(host, style, opts = {}) {
-  const make = { pin: pinMove, steps: stepsMove, walk: walkMove, door: (h) => doorMove(h, false), door2: (h) => doorMove(h, true), noren: norenMove, walkdoor: walkDoorMove }[style] || pinMove;
+  const make = { pin: pinMove, steps: stepsMove, walk: walkMove, door: doorMove, noren: norenMove, walkdoor: walkDoorMove }[style] || pinMove;
   return make(host, opts);
 }
 
 // ---------------------------------------------------------------- pin: 押したピンから円が広がり、中央の窓が開く
 
-function circleCover(node, x, y) {
+function circleCover(node, x, y, edgeColor = COLOR.lav, fillColor = COLOR.purple) {
   const r = Math.hypot(Math.max(x, W - x), Math.max(y, H - y)) + 30;
-  const edge = svg("circle", { cx: x, cy: y, r, fill: COLOR.lav, class: "tr-scale" });
-  const fill = svg("circle", { cx: x, cy: y, r, fill: COLOR.purple, class: "tr-scale" });
+  const edge = svg("circle", { cx: x, cy: y, r, fill: edgeColor, class: "tr-scale" });
+  const fill = svg("circle", { cx: x, cy: y, r, fill: fillColor, class: "tr-scale" });
   edge.style.transform = fill.style.transform = "scale(0)";
   node.append(stageSvg([edge, fill]));
   const grow = [{ transform: "scale(0)" }, { transform: "scale(1)" }];
@@ -164,48 +164,62 @@ function walkMove(host, opts = {}) {
   });
 }
 
-// ---------------------------------------------------------------- door: 壁の木の扉が開き、戸口をくぐると次の場面（CI106）
+// ---------------------------------------------------------------- door: 平らな色面のアーチの扉が弾んで現れ、開いた戸口が画面いっぱいに広がる（CI107）
 
-/** 木の扉の一枚。side は蝶番の側（left / right） */
-function woodLeaf(side) {
-  return el(`div.tr-wood-leaf.${side}`, [el("i.tr-wood-panel"), el("i.tr-wood-panel"), el("b.tr-wood-knob")]);
-}
+const DOOR = { ink: "#1c1530", cream: "#fff1d2", panel: "#f2a65a", shade: "#d9873f" };
+const archPath = (x, y, w, h) => `M ${x} ${y + h} L ${x} ${y + w / 2} A ${w / 2} ${w / 2} 0 0 1 ${x + w} ${y + w / 2} L ${x + w} ${y + h} Z`;
 
-/** 壁と戸口と扉。戸口は壁の穴なので、扉が開くと後ろの新しい背景が見える */
-function doorRoom(double) {
-  const dw = double ? 560 : 340, dh = 600;
-  const x = (W - dw) / 2, y = 96;
-  const room = el("div.tr-room", { style: { transformOrigin: `${x + dw / 2}px ${y + dh / 2}px` } }, [
-    el("i.tr-wall", { style: { left: "0", top: "0", width: `${W}px`, height: `${y}px` } }),
-    el("i.tr-wall", { style: { left: "0", top: `${y + dh}px`, width: `${W}px`, height: `${H - y - dh}px` } }),
-    el("i.tr-wall", { style: { left: "0", top: `${y}px`, width: `${x}px`, height: `${dh}px` } }),
-    el("i.tr-wall", { style: { left: `${x + dw}px`, top: `${y}px`, width: `${W - x - dw}px`, height: `${dh}px` } }),
-    el("i.tr-casing", { style: { left: `${x - 18}px`, top: `${y - 18}px`, width: `${dw + 36}px`, height: `${dh + 18}px` } }),
-  ]);
-  const doorway = el("div.tr-doorway", { style: { left: `${x}px`, top: `${y}px`, width: `${dw}px`, height: `${dh}px` } });
-  const leaves = double ? [woodLeaf("left"), woodLeaf("right")] : [woodLeaf("left")];
-  if (double) leaves.forEach((l) => l.classList.add("half"));
-  doorway.append(...leaves);
-  room.append(doorway);
-  return { room, leaves, scale: Math.max(W / dw, H / dh) * 1.15 };
-}
-
-function doorMove(host, double = false) {
-  let parts;
-  return curtain(host, double ? "door2" : "door", async (node) => {
-    parts = doorRoom(double);
-    node.append(parts.room);
-    await move(parts.room, [{ opacity: 0, transform: "scale(1.06)" }, { opacity: 1, transform: "scale(1)" }], 220, { easing: EASE.out });
-  }, async () => {
+function doorMove(host, { x = W / 2, y = H / 2 } = {}) {
+  const dw = 320, dh = 520, dx = (W - dw) / 2, dy = 110;
+  let p;
+  return curtain(host, "door", async (node) => {
+    await circleCover(node, x, y, DOOR.cream, DOOR.ink);
+    const id = `tr-door-${Math.random().toString(36).slice(2, 8)}`;
+    const box = { x: -300, y: -300, width: W + 600, height: H + 600 };
+    const hole = svg("path", { d: archPath(dx, dy, dw, dh), fill: "#000", class: "tr-scale" });
+    const light = svg("path", { d: archPath(dx, dy, dw, dh), fill: DOOR.cream, class: "tr-scale" });
+    const outline = svg("path", { d: archPath(dx - 14, dy - 14, dw + 28, dh + 14), fill: "none", stroke: DOOR.cream, "stroke-width": 8, "stroke-linejoin": "round", pathLength: 1, "stroke-dasharray": 1, "stroke-dashoffset": 1, class: "tr-scale" });
+    const door = svg("g", { class: "tr-scale" }, [
+      svg("path", { d: archPath(dx, dy, dw, dh), fill: DOOR.panel }),
+      svg("path", { d: archPath(dx + 34, dy + 40, dw - 68, dh - 80), fill: "none", stroke: DOOR.shade, "stroke-width": 10 }),
+      svg("circle", { cx: dx + dw - 40, cy: dy + dh * 0.58, r: 13, fill: DOOR.cream }),
+    ]);
+    const flicks = svg("g", { class: "tr-scale", stroke: DOOR.cream, "stroke-width": 7, "stroke-linecap": "round" }, [
+      [-60, 210, -110, 190], [-64, 270, -124, 270], [-60, 330, -110, 350], [dw + 60, 210, dw + 110, 190], [dw + 64, 270, dw + 124, 270], [dw + 60, 330, dw + 110, 350],
+    ].map(([x1, y1, x2, y2]) => svg("line", { x1: dx + x1, y1: dy + y1, x2: dx + x2, y2: dy + y2 })));
+    flicks.style.opacity = "0";
+    const art = stageSvg([
+      svg("defs", {}, [svg("mask", { id, maskUnits: "userSpaceOnUse", ...box }, [svg("rect", { ...box, fill: "#fff" }), hole])]),
+      svg("rect", { ...box, fill: DOOR.ink, mask: `url(#${id})` }),
+      light, outline, door, flicks,
+    ]);
+    door.style.transform = "scale(0)";
+    node.replaceChildren(art);
+    p = { hole, light, outline, door, flicks };
+    move(outline, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 320, { easing: EASE.out });
+    await move(door, [{ transform: "scale(0.3)" }, { transform: "scale(1)" }], 380, { easing: "cubic-bezier(.34,1.56,.64,1)" });
+    move(flicks, [{ opacity: 0, transform: "scale(0.8)" }, { opacity: 1, transform: "scale(1.05)", offset: 0.4 }, { opacity: 0, transform: "scale(1.15)" }], 420, { easing: EASE.out });
+  }, async (node) => {
     await sleep(140);
     SE.doorbell();
-    const open = parts.leaves.map((leaf) => {
-      const dir = leaf.classList.contains("right") ? -1 : 1; // 店の中へ押して開ける（奥へ回る）
-      return move(leaf, [{ transform: "rotateY(0deg)" }, { transform: `rotateY(${dir * 105}deg)` }], 460, { easing: EASE.snap });
-    });
-    await sleep(220);
-    parts.leaves.forEach((leaf) => move(leaf, [{ opacity: 1 }, { opacity: 0 }], 240, { delay: 160 }));
-    await Promise.all([...open, move(parts.room, [{ transform: "scale(1)" }, { transform: `scale(${parts.scale})` }], 420, { easing: EASE.in })]);
+    // 扉が蝶番側へたたまれて開き、向こうの光が出る
+    p.door.style.transformOrigin = "left center";
+    move(p.door, [{ transform: "scaleX(1) skewY(0deg)" }, { transform: "scaleX(0) skewY(-10deg)" }], 300, { easing: EASE.in });
+    await sleep(160);
+    const burst = svg("g", { stroke: DOOR.cream, "stroke-width": 8, "stroke-linecap": "round" },
+      [...Array(10)].map((_, i) => {
+        const a = (i / 10) * Math.PI * 2, cx = W / 2, cy = dy + dh * 0.45;
+        return svg("line", { x1: cx + Math.cos(a) * 250, y1: cy + Math.sin(a) * 250, x2: cx + Math.cos(a) * 320, y2: cy + Math.sin(a) * 320 });
+      }));
+    burst.style.transformOrigin = `${W / 2}px ${dy + dh * 0.45}px`;
+    node.firstChild.append(burst);
+    move(burst, [{ opacity: 1, transform: "scale(0.8)" }, { opacity: 0, transform: "scale(1.5)" }], 380, { easing: EASE.out });
+    await sleep(140);
+    // 戸口が画面いっぱいに広がり、光が晴れて次の場面
+    const grow = [{ transform: "scale(1)" }, { transform: "scale(7)" }];
+    move(p.light, [{ opacity: 1 }, { opacity: 0 }], 300, { easing: EASE.out, delay: 60 });
+    move(p.outline, grow, 440, { easing: EASE.in });
+    await move(p.hole, grow, 440, { easing: EASE.in });
   });
 }
 

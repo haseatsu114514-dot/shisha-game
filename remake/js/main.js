@@ -78,11 +78,55 @@ window.__remake = {
   },
   // 開発用ジャンプ（コンソールから: __remake.dev.tournament() など）。※今のセーブを上書きする
   dev: {
-    // マップ→場所の移動トランジションの比較用（pin / steps / walk / door / door2 / noren / walkdoor）。URLの ?move=door でも切り替わる
+    // マップ→場所の移動トランジションの比較用（pin / steps / walk / door / noren / walkdoor）。URLの ?move=door でも切り替わる
     async moveStyle(style) {
       const moves = await import("./core/transition-moves.js");
       if (style) moves.setMoveStyle(style);
       return moves.moveStyle();
+    },
+    // 場面ごとのモーショングラフィックスを本来の背景・会話つきで見る（cheki / tarot / gift / shift / shark / sketch）。※今のセーブを上書きする
+    async motion(name = "cheki") {
+      const core = await import("./core/state.js");
+      const { play } = await import("./vn/engine.js");
+      const { setBg } = await import("./core/ui.js");
+      const { sceneBg, bgUrl } = await import("./core/data.js");
+      const { bgRef } = await import("./daily/spots.js");
+      const motions = await import("./core/scene-motions.js");
+      core.newGame();
+      const state = core.state; // newGame() で作り直した状態
+      Object.assign(state, { phase: "daily", day: 12, slot: 1 });
+      for (const id of ["sumi", "tsumugi", "naru", "minto", "adam", "rin"]) state.met[id] = true;
+      document.getElementById("screen").replaceChildren();
+      const tonariNight = "res://assets/backgrounds/bg_tonari_inside_night.png";
+      if (name === "cheki") {
+        const scene = DB.dialogues.ch1_minto_first;
+        return play({ dialogue_id: "dev_cheki", metadata: {}, lines: scene.branches.cheki_taken }, { bg: bgRef("peppermint") });
+      }
+      if (name === "tarot") {
+        state.fortune = { char: "tsumugi" };
+        return play("remake_fortune_result", { bg: bgRef("bg_street") });
+      }
+      if (name === "gift") {
+        await setBg(bgUrl("bg_tonari_inside", "night"));
+        return motions.giftOpen("suyaki_tsumugi");
+      }
+      if (name === "shift") {
+        Object.assign(state, { slot: 0 });
+        await play("remake_baito_start", { bg: "res://assets/backgrounds/bg_tonari_inside.png" });
+        await motions.shiftClose();
+        return play("remake_baito_end", { bg: "res://assets/backgrounds/bg_tonari_inside.png" });
+      }
+      if (name === "shark") {
+        await setBg(bgUrl("bg_street", "night"));
+        return (await import("./daily/kafuka.js")).playKafukaEncounter();
+      }
+      if (name === "sketch") {
+        const art = sceneBg(tonariNight, "night");
+        await setBg(null);
+        await motions.sketchIn(async () => { await setBg(art.url, { tint: art.tint }); }, art.url);
+        return play("ch1_tsumugi_sketch", { bg: tonariNight });
+      }
+      return null;
     },
     async tournament() {
       const { newGame } = await import("./core/state.js");

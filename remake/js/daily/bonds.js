@@ -18,6 +18,7 @@ import { state, save } from "../core/state.js";
 import { affinityLevel } from "../core/stats.js";
 import { emit } from "../core/bus.js";
 import { play } from "../vn/engine.js";
+import { giftOpen } from "../core/scene-motions.js";
 import { isLover, romanceRouteOpen } from "./romance.js";
 import { VISIT_SEQ, storyCount, hasContact } from "./spots.js";
 
@@ -144,6 +145,7 @@ export async function playFinale(id, { bg = null } = {}) {
   const route = isLover(id) ? "lover" : romanceChosen(id) ? "romance" : "friend";
   state.finales ||= {};
   state.finales[id] = { day: state.day, chapter: state.chapter, route };
+  if (!state.owned.includes(def.gift)) await giftOpen(def.gift); // 箱がほどけて専用ハガルが出てくる（受け取りの通知はこの後）
   grantGift(def.gift);
   // 恋愛ルート: 告白を予約（一日の終わりに、再生前にもう一度ルートを確かめる）
   if (route === "romance" && romanceRouteOpen(id) && !state.flags._confession_due) state.flags._confession_due = id;

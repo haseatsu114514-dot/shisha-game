@@ -1,6 +1,8 @@
 // シーシャークの出会い・第2章からの店。競技のライバル枠とは分ける。
-import { DB } from "../core/data.js";
-import { state, save, markMet } from "../core/state.js";
+import { DB, sceneBg } from "../core/data.js";
+import { state, save, markMet, timeOfDay } from "../core/state.js";
+import { setBg } from "../core/ui.js";
+import { sharkSwim } from "../core/scene-motions.js";
 import { gainAffinity, earnStat, addMoney, addStamina } from "../core/stats.js";
 import { play } from "../vn/engine.js";
 
@@ -28,6 +30,14 @@ export function kafukaEncounterDue({ hasNightEvent = false, hasAppointment = fal
 
 export async function maybeKafukaEncounter(context = {}) {
   if (!kafukaEncounterDue(context) || !DB.dialogues.kafuka_first_encounter) return false;
+  await playKafukaEncounter();
+  return true;
+}
+
+/** 出会いの場面。水が満ちてサメが横切る間に店先の絵へ替え、泡がはじけて会話へ */
+export async function playKafukaEncounter() {
+  const front = sceneBg(DB.dialogues.kafuka_first_encounter.metadata?.bg, timeOfDay());
+  await sharkSwim(async () => { if (front.url) await setBg(front.url, { tint: front.tint }); });
   await play("kafuka_first_encounter");
   state.flags._kafuka_first_encounter = true;
   state.flags._lime_contact_kafuka = true;

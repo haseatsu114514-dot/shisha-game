@@ -18,8 +18,8 @@ function find(node, id) { if (node.dataset?.test === id) return node; return nod
 const values = {
   "util.js": { el, pick: (pool) => { selectedPools.push(pool.map((e) => e.id)); return pool[0]; } },
   "data.js": { DB: db, bgUrl: () => "bg" },
-  "ui.js": { showScreen: (_, node) => { menus.push(node); Promise.resolve().then(() => find(node, "after-none")?.onclick()); return node; }, setBg() {}, toast() {}, retire() {} },
-  "state.js": { state, timeOfDay: () => state.slot === 0 ? "day" : "night", markMet() {} },
+  "ui.js": { showScreen: (_, node) => { menus.push(node); Promise.resolve().then(() => find(node, "after-none")?.onclick()); return node; }, setBg() {}, toast() {}, retire() {}, modal: async () => true },
+  "state.js": { state, timeOfDay: () => state.slot === 0 ? "day" : "night", markMet() {}, STAT_JA: { technique: "技術", sense: "センス", guts: "根性", charm: "魅力", insight: "洞察" } },
   "stats.js": { addMoney: (value) => money.push(value), addStamina: (value) => { state.stamina = Math.max(0, state.stamina + value); }, applyStats() {}, paidAction: async (run) => ({ value: await run() }), DRILL_GROWTH_BUDGET: 2, star: () => charmStar,
     currentCondition: () => conditionForRatio(state.stamina / 100), gainAffinity() {}, earnStat() {}, affinityLevel: () => 0 },
   "audio.js": { SE: { select() {}, cancel() {} }, playBgm() {} },
@@ -28,6 +28,9 @@ const values = {
   "session.js": { runDrill: async () => 0, DRILLS: {} },
   "kafuka.js": { kafukaSpot: () => null },
   "bonds.js": { afterStory: async () => {}, questionVisitDue: () => false, playQuestionVisit: async () => {}, finaleAtVisit: () => false, playFinale: async () => false },
+  "scene-motions.js": { shiftClose: async () => {} },
+  "bus.js": { emit() {}, on() {} },
+  "reel.js": { installReel() {} },
   "weather.js": { isRainy: () => rainy, RAIN_BAITO: ["baito_rainy_day", "baito_tsumugi_rain"], RAIN_BAITO_BONUS: 500, RAIN_SPOT_TEXTS: {} },
 };
 const context = vm.createContext({ Math, Set, Promise, console }); const mods = new Map();

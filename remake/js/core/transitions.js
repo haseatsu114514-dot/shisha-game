@@ -12,7 +12,7 @@ const STYLES = ["diagonal", "smoke", "iris"];
 // 全面を覆う型の数。覆っている間の背景切り替えは、別の幕を出さずに差し替える（ui.setBg）
 let covering = 0;
 export const isCovering = () => covering > 0;
-function holdCover() {
+export function holdCover() {
   covering++;
   const release = holdKeys();
   let done = false;

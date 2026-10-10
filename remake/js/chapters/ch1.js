@@ -1,10 +1,11 @@
 // 第1章「一吸目（ファーストドロー）」── SMOKE CROWN CUP 編 の台本。
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
-import { DB, bgUrl, faceIconUrl, realName, displayName } from "../core/data.js";
+import { DB, bgUrl, sceneBg, faceIconUrl, realName, displayName } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
 import { layers, showScreen, clearScreen, setBg, smokeWipe, chapterTitle, dayCard, roundCut, toast, bannersIdle, retire, retireScreen } from "../core/ui.js";
-import { state, save, markMet, setFlag, flag } from "../core/state.js";
+import { state, save, markMet, setFlag, flag, timeOfDay } from "../core/state.js";
+import { sketchIn } from "../core/scene-motions.js";
 import { addMoney, maxStamina, addStamina } from "../core/stats.js";
 import { playBgm, preloadBgm, stopBgm, SE } from "../core/audio.js";
 import { play, hooks } from "../vn/engine.js";
@@ -128,6 +129,12 @@ async function tutorial() {
 // pin=マップの「!」印／teaser=前日の就寝時の予感／beat=イベント前のつなぎ一行
 
 const nightScene = (id, bg) => () => play(id, bg ? { bg } : {});
+// つむぎのスケッチ: 紙の上に鉛筆の線で店が描かれ、色が乗ってから会話へ
+const sketchScene = (id, bg) => async () => {
+  const art = sceneBg(bg, timeOfDay());
+  await sketchIn(async () => { if (art.url) await setBg(art.url, { tint: art.tint }); }, art.url);
+  await play(id, { bg });
+};
 const once = (key, fn) => ({ run: async () => { setFlag(key); await fn(); }, done: () => flag(key) });
 
 const NIGHT_EVENTS = {
@@ -137,7 +144,7 @@ const NIGHT_EVENTS = {
   7: { pin: "tonari", teaser: "tonari", beat: "大会まで、ちょうど折り返し──", ...once("_ev_midcheck", nightScene("remake_midcheck")) },
   9: { pin: "c_station", teaser: "C.STATION", beat: "夜。C.STATIONで出場者説明会──", ...once("_ev_meet_rivals", nightScene("ch1_meet_rivals", BG("bg_c_station_night"))) },
   10: { pin: "tonari", teaser: "tonari", beat: "帰り道、tonariに寄っていく──", ...once("_ev_salaryman_change", nightScene("ch1_salaryman_change", TONARI_N)) },
-  12: { pin: "tonari", teaser: "tonari", beat: "閉店間際のtonari──", ...once("_ev_tsumugi_sketch", nightScene("ch1_tsumugi_sketch", TONARI_N)) },
+  12: { pin: "tonari", teaser: "tonari", beat: "閉店間際のtonari──", ...once("_ev_tsumugi_sketch", sketchScene("ch1_tsumugi_sketch", TONARI_N)) },
   [TOURNAMENT_DAY - 1]: { pin: "tonari", teaser: "tonari", beat: "夜。店の作業台で、前日リハーサル──",
     done: () => flag("_ev_rehearsal") && flag("_ev_last_night"),
     run: async () => {
