@@ -45,6 +45,7 @@ try {
     if (mode === 'care') await page.locator('[data-test="care-coal-0"]').click();
     await page.locator('[data-test="pull-stop"]:not([disabled])').waitFor();
     await page.waitForFunction(() => [...document.querySelectorAll('.bench img')].every(i => i.complete && i.naturalWidth));
+    await page.evaluate(() => document.fonts.ready);
   };
   const at = async (lo, hi) => page.evaluate(async ({ lo, hi }) => {
     const button = document.querySelector('[data-test="pull-stop"]'), needle = document.querySelector('.pg-needle');
@@ -80,13 +81,20 @@ try {
     const box = s => { const r = document.querySelector(s).getBoundingClientRect(); return { left:r.left, right:r.right, top:r.top, bottom:r.bottom, width:r.width }; };
     const white = getComputedStyle(document.querySelector('.thermo-optimal'), '::before');
     const body = document.querySelector('.needle-body').getBBox();
-    return { left:box('.bench-left'), right:box('.bench-right'), worker:box('.bench-worker-stage'), thermo:box('.thermo'), white:white.backgroundColor, line:white.height, needle:body.height };
+    const note = document.querySelector('.audience-note');
+    return { left:box('.bench-left'), right:box('.bench-right'), worker:box('.bench-worker-stage'), thermo:box('.thermo'), button:box('[data-test="pull-stop"]'), buttonArt:getComputedStyle(document.querySelector('[data-test="pull-stop"]')).backgroundImage, summary:box('.pull-summary'), note:{bounds:box('.audience-note'), font:getComputedStyle(note).fontSize, white:getComputedStyle(note).whiteSpace}, white:white.backgroundColor, line:white.height, needle:body.height };
   });
   assert(Math.abs(layout.left.top - layout.right.top) < 1 && Math.abs(layout.left.bottom - layout.right.bottom) < 1, JSON.stringify(layout));
   assert(layout.left.width / layout.right.width > .50 && layout.left.width / layout.right.width < .56, 'window ratio differs from mockup');
   assert(layout.thermo.left >= layout.worker.left && layout.thermo.right <= layout.left.right && layout.thermo.bottom <= layout.worker.bottom, 'temperature gauge must fit the left scene');
   assert.equal(layout.white, 'rgb(255, 255, 255)'); assert.equal(layout.line, '1px');
-  assert(layout.needle > 190, 'needle must reach the semicircle from its center');
+  assert.equal(layout.needle, 86, 'needle must retain the original short shape across the semicircle band');
+  assert(layout.buttonArt.includes('ui_mockup_inhale_button'), 'generated button art is not connected');
+  assert.equal(layout.button.bottom - layout.button.top, 96, 'mockup button height');
+  assert(layout.button.top > 560 && layout.button.top < 580, 'mockup button placement');
+  assert.equal(layout.summary.bottom - layout.summary.top, 64, 'mockup flavor information height');
+  assert.equal(await page.locator('.pull-life-leaves > *').count(), 4, 'flavor leaves must show the actual four remaining units');
+  console.log(`Layout: ${JSON.stringify(layout)}`);
   await shot('01-pull-desktop');
 
   // 上げ吸い: 直後には温度が飛ばず、針・提供・二重入力を止めて短い一口を吸う。
@@ -94,15 +102,14 @@ try {
   assert.equal(up.immediately, up.before);
   assert.equal(await page.locator('.bench-worker').getAttribute('data-draw'), 'up');
   await page.waitForTimeout(450);
-  assert(await temperature() > up.before + .01);
-  assert.equal(await page.locator('.pg-needle').getAttribute('transform'), up.transform);
-  assert(await page.locator('[data-test="pull-stop"]').isDisabled());
-  assert(await page.locator('[data-test="pull-serve"]').isDisabled());
-  await page.keyboard.press('Space'); await page.keyboard.press('Enter');
-  await page.locator('[data-test="pull-stop"]').dispatchEvent('pointerdown');
-  assert.equal(await page.locator('.pull-pip.on').count(), 1);
-  assert.equal(await page.locator('.result-card').count(), 0);
-  assert(await page.evaluate(() => Number(getComputedStyle(document.querySelector('.worker-water')).opacity) > .9));
+  const mid = await page.evaluate(() => {
+    window.dispatchEvent(new KeyboardEvent('keydown', { key:' ' }));
+    window.dispatchEvent(new KeyboardEvent('keydown', { key:'Enter' }));
+    document.querySelector('[data-test="pull-stop"]').dispatchEvent(new PointerEvent('pointerdown', { bubbles:true }));
+    return { temp:Number(document.querySelector('[data-test="pull-temperature"]').getAttribute('aria-valuenow')), needle:document.querySelector('.pg-needle').getAttribute('transform'), locked:[...document.querySelectorAll('.pull-btns button')].every(n=>n.disabled), pips:document.querySelectorAll('.pull-pip.on').length, results:document.querySelectorAll('.result-card').length, bubbles:Number(getComputedStyle(document.querySelector('.worker-water')).opacity) };
+  });
+  assert(mid.temp > up.before + .01); assert.equal(mid.needle, up.transform);
+  assert(mid.locked); assert.equal(mid.pips, 1); assert.equal(mid.results, 0); assert(mid.bubbles > .9);
   await shot('02-up-drawing');
   await settled();
   const upMs = await page.evaluate(() => lastDraw.ended - lastDraw.began);
@@ -163,5 +170,5 @@ try {
   assert.equal(await page.locator('.bench-worker').getAttribute('data-draw'), null);
   assert.equal(await page.evaluate(() => cs.pull), null);
   assert.deepEqual(errors, []);
-  console.log(`PASS: mockup windows, long needle, optimal white line, gradual heat, input lock, bubbling lifecycle, up ${Math.round(upMs)}ms / down ${Math.round(downMs)}ms, care, reduced motion, mobile and scene exit`);
+  console.log(`PASS: mockup windows and button art, original short needle, optimal white line, gradual heat, input lock, bubbling lifecycle, up ${Math.round(upMs)}ms / down ${Math.round(downMs)}ms, care, reduced motion, mobile and scene exit`);
 } finally { await browser.close(); }

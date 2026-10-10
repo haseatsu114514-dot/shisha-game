@@ -6,13 +6,13 @@
 // 吸いすぎ・過熱での吸い出しは、はじめの体力も削って疲れ（針が速く、成功帯が狭い）が付く（TH29）。
 // 人によって狙いが違うので、EXCELLENT・GOOD の判定は出さない。吸うと温度計の横に上下の印だけが出る（TH36）。
 // 左の作業風景に温度計、右に半円ダイヤル。左の下げ吸い=寒色→キープ→右の上げ吸い=暖色。
-// 止めたら一口を吸い終えて温度が変わるまで針を固定する。下げは長く、上げは短く強く吸う（TH47〜51）。
+// 針は帯をまたぐ短い形（TH59）。止めたら一口を吸い終えて温度が変わるまで固定する。
 // 各帯に吸い方と時間を添える。今の温度と吸った回数は、針と重ならないダイヤルの下の欄に出す。
 // 熱管理では、立ち上げから吸われて消耗した炭を交換する。交換する炭はもう一度炭焼きで焼き、焼け具合で戻る熱と持ちが変わる（TH39）。
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE, startBubbling } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, setBenchDraw, failBench, setBenchLeaf, strainBench, scoreStep } from "./session.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, setBenchDraw, failBench, setBenchLeaf, dockBenchLeaf, strainBench, scoreStep } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys } from "./common.js";
 import { burnCoals, HEAT_GRADES } from "./heat.js";
 
@@ -98,28 +98,32 @@ async function pullGame(cs, mode) {
   const wobble = () => (mode.drift ? conditions.sparsity * 0.05 * Math.sin(elapsed * Math.PI * 2 / 2.6) + 0.014 * (1 - 0.7 * clarity) * Math.sin(elapsed * 1.7 + wobblePhase) : 0);
 
   // ---- 画面
-  const thermometer = buildThermometer({ coldLimit: mode.drift ? COLD_OUT : null, height: 408 });
-  // 半円に届く長い針と、その先端がなぞる光。支点は半円の中心に固定する。
+  const thermometer = buildThermometer({ coldLimit: mode.drift ? COLD_OUT : null, height: 352 });
+  // 採用済みの短い針が半円の帯に沿って動く。回転の中心は半円の中心。
   const id = ++dials;
-  const dial = el("div.pull-dial", { html: `<svg viewBox="0 0 480 270" aria-hidden="true">
+  const dial = el("div.pull-dial", { html: `<svg viewBox="0 0 480 270" preserveAspectRatio="none" aria-hidden="true">
     <defs><linearGradient id="dial-grad-${id}" x1="0" x2="1" y1="0" y2="0">
-      <stop offset="0" stop-color="#238cf3"/><stop offset=".2" stop-color="#2b78c2"/><stop offset=".38" stop-color="#656279"/>
-      <stop offset=".5" stop-color="#a3927d"/><stop offset=".62" stop-color="#8b645b"/><stop offset=".8" stop-color="#e77930"/><stop offset="1" stop-color="#ff481c"/>
-    </linearGradient></defs>
+      <stop offset="0" stop-color="#149cfc"/><stop offset=".2" stop-color="#206bb9"/><stop offset=".38" stop-color="#454a69"/>
+      <stop offset=".5" stop-color="#887c70"/><stop offset=".62" stop-color="#714341"/><stop offset=".8" stop-color="#ff7525"/><stop offset="1" stop-color="#ff431b"/>
+    </linearGradient><radialGradient id="dial-shade-${id}" cx=".5" cy="1" r=".72">
+      <stop offset=".35" stop-color="#000" stop-opacity=".34"/><stop offset=".72" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".26"/>
+    </radialGradient></defs>
     <path class="dial-recess" d="${dialSector(0, 1, 118, 212)}"/>
     <path class="dial-ring" d="${dialSector(0, 1)}" fill="url(#dial-grad-${id})"/>
+    <path class="dial-shade" d="${dialSector(0, 1)}" fill="url(#dial-shade-${id})"/>
     <path class="dial-gloss" d="${dialSector(0, 1, DIAL.r1 - 18, DIAL.r1)}"/>
     ${ZONES.map((z) => `<g class="pg-zone z-${z.id}"><path class="pg-just"/></g>`).join("")}
     <path class="dial-rim" d="${dialSector(0, 1)}"/>
-    ${ZONES.map((z) => {
-      const x = z.id === "keep" ? 240 : z.id === "down" ? 0 : 480, y = z.id === "keep" ? 20 : 106;
-      const desc = z.id === "keep" ? "この温度を保つ" : z.id === "down" ? "長く・強く吸う" : "短く・強く吸う";
-      return `<text class="dial-label l-${z.id}" x="${x}" y="${y}">${z.id === "keep" ? z.label : `${z.mark} ${z.label}`}</text><text class="dial-desc l-${z.id}" x="${x}" y="${y + 20}">${desc}</text>`;
-    }).join("")}
-    <g class="pg-needle" data-test="pull-needle"><path class="needle-body" d="M${DIAL.cx - 4} ${DIAL.cy}L${DIAL.cx - 2} ${DIAL.cy - DIAL.r1}h4L${DIAL.cx + 4} ${DIAL.cy}Z"/>
-      <path class="needle-cap" d="M${DIAL.cx} ${DIAL.cy - DIAL.r1 - 8}l-6 13h12Z"/></g>
-    <circle class="dial-pivot-rim" cx="${DIAL.cx}" cy="${DIAL.cy}" r="12"/><circle class="dial-pivot" cx="${DIAL.cx}" cy="${DIAL.cy}" r="7"/>
+    <g class="pg-needle" data-test="pull-needle"><path class="needle-body" d="M${DIAL.cx - 4} ${DIAL.cy - DIAL.r0 + 12}h8v-${DIAL.r1 - DIAL.r0 + 24}h-8Z"/>
+      <path class="needle-cap" d="M${DIAL.cx - 11} ${DIAL.cy - DIAL.r1 - 22}h22l-11 13Z"/><path class="needle-cap" d="M${DIAL.cx - 11} ${DIAL.cy - DIAL.r0 + 22}h22l-11 -13Z"/></g>
+    <path class="dial-hub" d="M219 268a26 26 0 0 1 42 0"/>
   </svg>` });
+  const labels = el("div.pull-dial-labels", ZONES.map(z => el(`div.pull-zone-label.l-${z.id}`, [
+    el("b", { text: z.id === "keep" ? z.label : `${z.mark} ${z.label}` }),
+    el("span", { text: z.id === "keep" ? "この温度を維持" : z.id === "down" ? "長く・強く吸う" : "短く・強く吸う" }),
+    z.id !== "keep" && el("span", { text: z.id === "down" ? "温度を下げる" : "温度を上げる" }),
+  ].filter(Boolean))));
+  const dialRow = el("div.pull-dial-row", [dial, labels]);
   const needle = dial.querySelector(".pg-needle");
   const justs$ = [...dial.querySelectorAll(".pg-just")];
   const placeJusts = () => ZONES.forEach((z, i) => {
@@ -139,16 +143,24 @@ async function pullGame(cs, mode) {
   const tags = el("span.pull-tags");
   const counter = el("div.pull-count", [pipRow, tags]);
   const readout = el("div.pull-read");
-  const drawStatus = el("span.pull-draw-status", { role: "status", dataset: { test: "pull-draw-status" }, text: "針を止めて、一口ずつ" });
+  const drawStatus = el("span.pull-draw-status", { role: "status", dataset: { test: "pull-draw-status" }, text: "吸いすぎると葉が傷み、香りが弱くなります。" });
   const inhale = el("span.pull-btn-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M10 25c-6-4-1-8 3-12l7-8m-4 20c-4 3-8-1-5-5l5-6m5 9c-1 6 4 4 7-1"/></svg>' });
   const pullLabel = el("span.btn-label", { text: "吸う（針を止める）" });
   const pullBtn = el("button.btn.primary", { dataset: { test: "pull-stop" }, disabled: true }, [inhale, pullLabel]);
-  const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [el("span.pull-serve-icon", { text: "↗", "aria-hidden": "true" }), el("span.btn-label", { text: mode.serveLabel })]);
-  const summary = el("div.pull-summary", [counter, readout]);
-  const play = el("div.pull-play", [dial, summary, drawStatus, el("div.pull-btns", [pullBtn, serveBtn])]);
+  const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [el("span.pull-serve-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 40 32" fill="currentColor"><path d="m6 21 5-7 8 1 9-5 3 3-10 6h-7l8 4 10-3 3 3-13 6-18-3Z"/><path d="m24 11 8-9 2 2-8 10Z"/></svg>' }), el("span.btn-label", { text: mode.serveLabel })]);
+  const leafShape = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 28C3 15 12 4 28 3c1 14-8 25-24 25Z"/><path d="M5 27 26 6M11 21l-1-6M16 16l-1-6M11 21l6 1M16 16l6 1" fill="none"/></svg>';
+  const extraLeaves = Array.from({ length: LEAF_MAX - 1 }, (_, i) => el("i.pull-life-leaf", { "aria-hidden": "true", dataset: { slot: i + 1 }, html: leafShape }));
+  const lifeLeaves = el("span.pull-life-leaves", extraLeaves);
+  const summary = el("div.pull-summary", [
+    el("div.pull-life", [el("span.pull-life-label", { text: "フレーバーの持ち" }), lifeLeaves]),
+    el("div.pull-life-note", [el("i.pull-note-leaf", { "aria-hidden": "true", html: leafShape }), el("div.pull-life-copy", [drawStatus, counter])]),
+  ]);
+  const play = el("div.pull-play", [dialRow, summary, el("div.pull-btns", [pullBtn, serveBtn])]);
   play.setAttribute("aria-label", "左の下げ吸いは長く強く、中央はキープ、右の上げ吸いは短く強く吸う");
   const main = el("div.pull-main", [play]);
   panel.append(el(`div.pull${mode.drift ? ".pull-care" : ""}`, [thermometer.root, main]));
+  thermometer.root.append(readout);
+  dockBenchLeaf(cs, lifeLeaves);
 
   const render = () => {
     thermometer.update(T);
@@ -163,6 +175,7 @@ async function pullGame(cs, mode) {
     readout.dataset.tone = tone;
     readout.replaceChildren(el("b.pull-state", { text: state }), mode.drift && running && !drawing ? el("span.pull-drift", { text: "↓", title: "炭が燃え進んで、熱が落ちていく" }) : "");
     pips.forEach((p, i) => p.classList.toggle("on", i < pulls));
+    extraLeaves.forEach((leaf, i) => leaf.classList.toggle("on", i + 1 < cs.leaf.hp));
     pipRow.setAttribute("aria-label", `吸った回数 ${pulls}`);
     tags.replaceChildren(...[
       coals != null && el("span.pull-tag", { text: coals ? `炭×${coals}` : "炭そのまま", title: coals ? `消耗した炭を${coals}個交換した` : "炭は交換していない" }),
@@ -269,7 +282,7 @@ async function pullGame(cs, mode) {
       drawing = false;
       delete play.dataset.draw;
       pullLabel.textContent = "吸う（針を止める）";
-      drawStatus.textContent = pulls >= PULL_MAX ? "吸い終えたら、温度を見て提供しよう" : "針を止めて、一口ずつ";
+      drawStatus.textContent = pulls >= PULL_MAX ? "吸い終えたら、温度を見て提供しよう" : "吸いすぎると葉が傷み、香りが弱くなります。";
       if (!failed && !finished && !abandoned && play.isConnected) {
         render();
         last = performance.now();

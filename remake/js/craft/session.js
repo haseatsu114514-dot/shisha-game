@@ -31,6 +31,7 @@ import { screenBlast } from "./blast.js";
 export const craftTest = { auto: null }; // "good" / "bad" / "burn"（温度を上げ続けて焦がす）
 
 export const MODE_LABEL = { tutorial: "LESSON", drill: "PRACTICE", rehearsal: "REHEARSAL", tournament: "SMOKE CROWN CUP" };
+const MODE_NOTE = { tutorial: "レッスン", drill: "練習モード", rehearsal: "前日リハーサル", tournament: "大会" };
 
 // 自主練のメニュー（本番のミニゲームを単体で回す）
 export const DRILLS = {
@@ -97,7 +98,7 @@ export function openBench(cs, { steps = [] } = {}) {
   // アーケードのような総合スコア（TH42）。工程の結果が出るたびに数字が回って増える。
   const score = buildScoreBoard(cs);
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
-    el("div.bench-top", [el("span.bench-mode", { text: MODE_LABEL[cs.mode] || "" }), progress, score.root]),
+    el("div.bench-top", [el("span.bench-mode", [MODE_LABEL[cs.mode] || "", el("small", { text: MODE_NOTE[cs.mode] || "" })]), progress, score.root]),
     el("div.bench-left", [
       worker.root,
       audience?.root,
@@ -133,6 +134,8 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
     } else s.removeAttribute("aria-current");
   });
   b.audience?.setStep(hintText, id);
+  // 吸い出しの情報欄へ移した葉を、工程を消す前に作業風景へ戻す。
+  b.worker.footer.append(b.leaf.root);
   b.panel.replaceChildren();
   b.panel.dataset.step = id;
   b.root.dataset.step = id;
@@ -193,6 +196,10 @@ let leafIcons = 0;
 /** フレーバーが傷んだら葉を更新する。音と揺れは呼び出し側で鳴らす。 */
 export function setBenchLeaf(cs, hit = false) {
   if (bench?.cs === cs) bench.leaf.render(cs.leaf, { hit });
+}
+/** 吸い出し・熱管理では、同じ葉の状態をモックアップの情報欄へ置く。 */
+export function dockBenchLeaf(cs, host) {
+  if (bench?.cs === cs) host.prepend(bench.leaf.root);
 }
 
 /**

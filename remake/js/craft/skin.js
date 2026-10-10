@@ -1,7 +1,7 @@
 // 生成素材は静かな枠と質感。文字・回数・温度・針は実際のDOMで動かす。
 import { DB, makingUrl } from "../core/data.js";
 
-const SKINS = { button: "ui_craft_button.png", refresh: "ui_refresh_button.png", panel: "ui_craft_panel.png" };
+const SKINS = { button: "ui_craft_button.png", refresh: "ui_refresh_button.png", panel: "ui_craft_panel.png", inhale: "ui_mockup_inhale_button.png" };
 export const craftSkinUrls = () => [...Object.values(SKINS), "ui_temperature_frame.png"].map(makingUrl).filter(Boolean);
 
 export function applyCraftSkin(root) {
