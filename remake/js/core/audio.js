@@ -345,12 +345,13 @@ function startSynth(kind) {
   out.gain.value = 0;
   out.gain.linearRampToValueAtTime(1, c.currentTime + 1.2);
   out.connect(bgmBus);
-  const bpm = kind === "panic" ? 156 : kind === "battle" ? 124 : kind === "tension" ? 80 : 68;
+  const bpm = kind === "panic" ? 168 : kind === "battle" ? 124 : kind === "tension" ? 80 : 68;
   const stepDur = 60 / bpm / 4;
   const bass = kind === "battle" ? [45, 45, 57, 45, 48, 48, 60, 48, 43, 43, 55, 43, 41, 41, 53, 52] : [45, 0, 0, 0, 43, 0, 0, 0, 41, 0, 0, 0, 40, 0, 0, 0];
   const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
   let step = 0;
   let next = c.currentTime + 0.05;
+  const startAt = next;
   let alive = true;
 
   const voice = (freq, t, dur, type, vol) => {
@@ -418,7 +419,9 @@ function startSynth(kind) {
       } else {
         if (s === 0 && step % 32 === 0) [bass[(step / 16) % 16] || 45, 57, 64, 67].forEach((m) => voice(mtof(m + 12), next, stepDur * 30, "sine", 0.02));
       }
-      next += stepDur;
+      // コンティニュー専用: 前半168 BPM → 20秒後196 BPM。諦めさせない圧迫感。
+      const panicBpm = 168 + Math.min(28, Math.max(0, next - startAt) * 1.4);
+      next += kind === "panic" ? 60 / panicBpm / 4 : stepDur;
       step++;
     }
     setTimeout(schedule, 60);
