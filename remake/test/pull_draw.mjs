@@ -103,9 +103,9 @@ try {
   assert.equal(layout.button.bottom - layout.button.top, 96, 'mockup button height');
   assert(layout.button.top > 585 && layout.button.top < 600, 'bottom controls must use the tightened spacing');
   assert(layout.right.bottom - layout.button.bottom >= 10 && layout.right.bottom - layout.button.bottom <= 16, 'bottom button must keep a small inset inside the window');
-  assert.equal(layout.summary.bottom - layout.summary.top, 64, 'mockup flavor information height');
-  assert.equal(await page.locator('.flavor-leaf[data-stage="red"]').count(), 5, 'flavor must start with five red leaves');
-  assert.equal(await page.locator('.pull-pip').count(), 0, 'pull count dots are removed');
+  assert.equal(layout.summary.bottom - layout.summary.top, 64, 'mockup information height');
+  assert.equal(await page.locator('.pull-pip').count(), 5, 'the information box counts up to five pulls');
+  assert.equal(await page.locator('.flavor-leaf').count(), 0, 'flavor leaves are retired');
   console.log(`Layout: ${JSON.stringify(layout)}`);
   await shot('01-pull-desktop');
 
@@ -152,7 +152,7 @@ try {
   await settled();
   const downMs = await page.evaluate(() => lastDraw.ended - lastDraw.began);
   assert(downMs >= 3100 && downMs > upMs + 1000, `${upMs} vs ${downMs}`);
-  assert.equal(await page.locator('[data-test="leaf-icon"]').getAttribute('data-hp'), '5');
+  assert.equal(await page.locator('[data-test="pull-count"]').getAttribute('data-pulls'), '3');
   await finish(); assert.equal(await page.evaluate(() => cs.pull.pulls), 3);
 
   // 熱管理でも同じ流れを使う。動きを減らす設定でも吸い終わる前に提供できない。

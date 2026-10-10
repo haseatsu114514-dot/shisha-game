@@ -822,17 +822,16 @@
 .thermo.danger .thermo-pointer { background: linear-gradient(90deg, #fff, #ff5a3a); filter: drop-shadow(0 0 7px #ff3a00) drop-shadow(0 0 1px #000); }
 .thermo.optimal .thermo-pointer { background: linear-gradient(90deg, #fff, #ffe066); }
 @keyframes pointer-pulse { from { transform: translateX(0); } to { transform: translateX(4px); } }
-/* TH77〜82: 5枚のうち1枚ずつ赤→茶→黒→消える。残りの赤い葉は変色させない。 */
-.leaf-icon { display: inline-flex; align-items: center; gap: 12px; flex: none; }
-.leaf-icon[hidden] { display: none; }
-.flavor-leaf { display: block; width: 34px; height: 34px; flex: none; transition: opacity .45s, transform .45s var(--ease-out); }
-.leaf-skin { transition: filter .5s var(--ease-out); image-rendering: auto; }
-.flavor-leaf[data-stage="brown"] > .leaf-skin { filter: grayscale(1) sepia(1) saturate(2.5) hue-rotate(-20deg) brightness(.85); }
-.flavor-leaf:is([data-stage="black"], [data-stage="gone"]) > .leaf-skin { filter: grayscale(1) brightness(.22); }
-.flavor-leaf[data-stage="gone"] { opacity: 0; transform: scale(.55); }
-.leaf-icon.hit .flavor-leaf:is([data-stage="brown"], [data-stage="black"]) { animation: leaf-shiver .5s ease-out; }
-@keyframes leaf-shiver { 0%, 100% { transform: none; } 20% { transform: translateX(-4px) rotate(-12deg); } 45% { transform: translateX(3px) rotate(9deg); } 70% { transform: translateX(-2px) rotate(-4deg); } }
-@media (prefers-reduced-motion: reduce) { .thermo-pointer, .leaf-icon.hit .flavor-leaf { animation: none; } .flavor-leaf, .leaf-skin { transition: none; } }
+/* TH94: 吸った回数の5つの点。無傷の回数を超える点は橙の枠、吸った点は灯る。 */
+.pull-count { display: inline-flex; align-items: center; gap: 14px; flex: none; }
+.pull-pips { display: flex; gap: 10px; }
+.pull-pip { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #d9bd85; background: #0c0812; box-shadow: inset 0 1px 3px #000c; transition: background .25s, box-shadow .25s; }
+.pull-pip.over { border-color: #ff8a3d; }
+.pull-pip.on { background: radial-gradient(circle at 40% 35%, #fff6d8, #f2c25e 55%, #b0782a); box-shadow: 0 0 9px #f4c46a99; }
+.pull-pip.over.on { background: radial-gradient(circle at 40% 35%, #ffe2c2, #ff8a3d 55%, #c2410c); box-shadow: 0 0 10px #ff6a1aaa; }
+.pull-count-num { min-width: 2.6em; font-family: "Craft Mincho", var(--font); font-size: 20px; letter-spacing: .06em; color: #f4e4c4; font-variant-numeric: tabular-nums; }
+.pull-count[data-pulls="5"] .pull-count-num { color: #ff9a52; }
+@media (prefers-reduced-motion: reduce) { .thermo-pointer { animation: none; } .pull-pip { transition: none; } }
 
 /* TH47〜51: モックアップの広い半円、中心から弧に届く針。左=下げ、右=上げ。 */
 .pull-dial { position: relative; width: min(100%, 590px); margin: 0 auto; aspect-ratio: 480 / 270; }
@@ -1021,7 +1020,6 @@
 .pull-summary { display: block; justify-self: start; width: max-content; max-width: 100%; padding: 0; border: 0; background: none; }
 .pull-life { position: relative; min-width: 0; min-height: 0; height: 100%; display: flex; align-items: center; gap: 24px; padding: 8px 16px; border: 1px solid #a18a665c; border-radius: 9px; background: #100b18bb; box-shadow: inset 0 1px 2px #fff2; }
 .pull-life-label { font-size: 13px; color: #c8bcc0; white-space: nowrap; letter-spacing: .05em; }
-.pull-life-leaves { display: flex; align-items: center; flex: none; }
 .pull-tags:empty { display: none; }
 .pull-serve-icon svg { display: block; width: 100%; height: 100%; }
 /* 状態の読み上げだけ残す。注意書きや別ウインドウは表示しない（TH71）。 */
@@ -1047,7 +1045,7 @@
 .pull-btns { display: grid; grid-template-columns: 1.75fr 1fr; gap: 14px; }
 .pull-zone-label { top: 112px; }
 .pull-life .pull-tag { font-size: 10px; padding: 1px 5px; }
-.bench-audience[data-voice="inner"] .audience-note { font-size: 16px; max-width: 232px; word-break: normal; text-wrap: balance; }
+.bench-audience[data-voice="inner"] .audience-note { font-size: 16px; max-width: 232px; word-break: normal; }
 
 /* TH83〜90（2026-10-10）: 温度計の現在地の矢印・白線・危険帯、状態の文字色、右ウインドウの煙。 */
 .thermo .thermo-pointer, .thermo.danger .thermo-pointer, .thermo.optimal .thermo-pointer {
@@ -1089,7 +1087,11 @@
 .panel-smoke { display: none; position: absolute; inset: 0; z-index: -1; overflow: hidden; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 1.2s; }
 .bench:is([data-step="pull"], [data-step="care"]) .bench-right { isolation: isolate; }
 .bench:is([data-step="pull"], [data-step="care"]) .panel-smoke { display: block; }
-.panel-smoke.ready { opacity: 1; }
+/* TH93: 煙は温度が危なくなってきた時だけ。過熱で薄く、焦げる寸前・焦げで濃く速く。適温以下では出さない。 */
+.bench[data-thermal-band="fire"] .panel-smoke.ready { opacity: .6; }
+.bench:is([data-thermal-band="inferno"], [data-thermal-band="burnt"]) .panel-smoke.ready { opacity: 1; }
+.bench:is([data-thermal-band="inferno"], [data-thermal-band="burnt"]) .panel-smoke-wisp::before,
+.bench:is([data-thermal-band="inferno"], [data-thermal-band="burnt"]) .panel-smoke-wisp::after { animation-duration: 9s; }
 .panel-smoke-wisp { position: absolute; }
 .panel-smoke-wisp::before, .panel-smoke-wisp::after { content: ""; position: absolute; inset: 0; background: var(--smoke) center / 100% 100% no-repeat; opacity: 0; animation: panel-smoke-rise 16s linear infinite; }
 .panel-smoke-wisp::after { transform: scaleX(-1); animation-name: panel-smoke-rise-flip; animation-delay: -8s; }
@@ -1102,7 +1104,9 @@
 @keyframes panel-smoke-rise-flip { 0% { opacity: 0; transform: translateY(40px) scaleX(-1) scale(.94); } 30% { opacity: .5; } 70% { opacity: .42; } 100% { opacity: 0; transform: translateY(-50px) scaleX(-1) scale(1.1); } }
 /* 見出し横の煙も、細い線から本物の煙の一筋へ。 */
 .bench:is([data-step="pull"], [data-step="care"]) .bench-title::after { left: calc(100% + 2px); top: -22px; width: 76px; height: 100px; opacity: .9; filter: none;
-  background: var(--smoke-title, none) center / contain no-repeat; animation: title-smoke 6s ease-in-out infinite alternate; transform-origin: 50% 100%; }
+  background: var(--smoke-title, none) center / contain no-repeat; animation: title-smoke 6s ease-in-out infinite alternate; transform-origin: 50% 100%;
+  visibility: hidden; }
+.bench:is([data-step="pull"], [data-step="care"]):is([data-thermal-band="fire"], [data-thermal-band="inferno"], [data-thermal-band="burnt"]) .bench-title::after { visibility: visible; }
 @keyframes title-smoke { from { transform: translateY(2px) scaleY(.96); opacity: .75; } to { transform: translateY(-4px) scaleY(1.04) skewX(-4deg); opacity: .95; } }
 .pull-btn-icon .hose-core { stroke: #2b1a26; }
 @media (prefers-reduced-motion: reduce) {

@@ -11,8 +11,8 @@ export const isOptimalTemperature = (temp) => temp >= OPTIMAL[0] && temp <= OPTI
 /** 温度計の一番上に届くと爆発して焦げる（2026-10-09 オーナー指定 TH06）。蒸らしは0.88で頭打ちのため届かない。 */
 export const BURST_TEMP = 1;
 export const isBurnt = (temp) => temp >= BURST_TEMP - 1e-6;
-/** ここから上は「焦げる寸前」。温度計に危険帯として描き、背景も灼熱になる。 */
-export const DANGER_TEMP = 0.94;
+/** ここから上は「焦げる寸前」。温度計に危険帯として描き、背景も灼熱になる。TH92で0.94→0.86へ広げた（爆発は1のまま）。 */
+export const DANGER_TEMP = 0.86;
 /** 提供後（熱管理）にここまで冷えると、シーシャがダメになる（TH19）。 */
 export const COLD_OUT = 0.06;
 export const isColdOut = (temp) => temp <= COLD_OUT + 1e-6;
