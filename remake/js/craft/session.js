@@ -8,10 +8,9 @@ import { SE } from "../core/audio.js";
 import { bgUrl } from "../core/data.js";
 import { state, timeOfDay } from "../core/state.js";
 import { currentCondition, addStamina } from "../core/stats.js";
-import { craftCondition } from "../core/condition.js";
 import { buildWorkerScene, WORKER_STEPS } from "./worker.js";
 import { buildAudience, audienceFor } from "./audience.js";
-import { conditionBadge, buildGuide, STEP_BRIEFS } from "./bench-ui.js";
+import { buildGuide, STEP_BRIEFS } from "./bench-ui.js";
 import { evaluationOf } from "./feedback.js";
 import { isRainy } from "../daily/weather.js";
 import { runHoles } from "./holes.js";
@@ -21,8 +20,11 @@ import { runSteamDodge } from "./steam.js";
 import { runPull } from "./pull.js";
 import { applyCraftSkin, craftSkinUrls } from "./skin.js";
 import { buildThermalAtmosphere } from "./thermal.js";
+import { buildPanelSmoke } from "./smoke-art.js";
 import { temperatureAfterSteam } from "./conditions.js";
 import { screenBlast } from "./blast.js";
+import { artImg } from "./art.js";
+import { LEAF_MAX, flavorLeafStages } from "./flavor-life.js";
 
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
@@ -31,6 +33,7 @@ import { screenBlast } from "./blast.js";
 export const craftTest = { auto: null }; // "good" / "bad" / "burn"（温度を上げ続けて焦がす）
 
 export const MODE_LABEL = { tutorial: "LESSON", drill: "PRACTICE", rehearsal: "REHEARSAL", tournament: "SMOKE CROWN CUP" };
+const MODE_NOTE = { tutorial: "レッスン", drill: "練習モード", rehearsal: "前日リハーサル", tournament: "大会" };
 
 // 自主練のメニュー（本番のミニゲームを単体で回す）
 export const DRILLS = {
@@ -89,26 +92,25 @@ export function openBench(cs, { steps = [] } = {}) {
   ]);
   const guide = buildGuide();
   const panel = el("div.bench-panel");
-  const condition = craftCondition(cs);
-  const badge = cs.mode !== "tutorial" ? conditionBadge(condition) : null;
-  // 体調の顔の横に、フレーバーの葉（吸い出しから TH28）。疲れは作業中のはじめの表情と汗で見せる（TH29・TH43）。
+  // TH62: 顔のバッジは廃止。疲れは作業中のはじめの表情と汗で見せる。
   const leaf = buildLeafIcon();
-  worker.footer.append(...[badge, leaf.root].filter(Boolean));
+  worker.footer.append(leaf.root);
   // アーケードのような総合スコア（TH42）。工程の結果が出るたびに数字が回って増える。
   const score = buildScoreBoard(cs);
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
-    el("div.bench-top", [el("span.bench-mode", { text: MODE_LABEL[cs.mode] || "" }), progress, score.root]),
+    el("div.bench-top", [el("span.bench-mode", [MODE_LABEL[cs.mode] || "", el("small", { text: MODE_NOTE[cs.mode] || "" })]), progress, score.root]),
     el("div.bench-left", [
       worker.root,
       audience?.root,
     ]),
     el("div.bench-right", [el("div.bench-head", [el("div.bench-heading", [title, hint]), guide.root]), panel]),
   ]);
+  root.querySelector(".bench-right").prepend(buildPanelSmoke(root));
   applyCraftSkin(root);
   const thermal = buildThermalAtmosphere(root, worker);
   bg();
   showScreen("bench", root);
-  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, thermal, badge, leaf, score };
+  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, thermal, leaf, score };
   renderFatigue();
   return bench;
 }
@@ -121,7 +123,6 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.guide.root.open = false;
   b.guide.root.hidden = !hintText;
   b.guide.note.textContent = hintText;
-  b.root.querySelectorAll(".bench-condition").forEach((d) => { d.open = false; });
   const steps = [...b.progress.querySelectorAll("[data-step]")];
   steps.forEach((s, i) => {
     s.classList.toggle("now", s.dataset.step === id);
@@ -133,9 +134,13 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
     } else s.removeAttribute("aria-current");
   });
   b.audience?.setStep(hintText, id);
+  // 吸い出しの情報欄へ移した葉を、工程を消す前に作業風景へ戻す。
+  b.worker.footer.append(b.leaf.root);
   b.panel.replaceChildren();
   b.panel.dataset.step = id;
+  b.root.dataset.step = id;
   b.worker.root.dataset.step = id; // 今後の工程別アニメーションの接続先
+  b.worker.setDraw(null);
   b.worker.setMental("steady");
   renderFatigue();
   b.worker.caption.textContent = WORKER_STEPS[id] || titleText;
@@ -152,41 +157,42 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
 export function setBenchTemperature(cs, temp) {
   if (bench?.cs === cs && !bench.root.classList.contains("done")) bench.thermal.update(temp);
 }
+/** 吸い出し・熱管理の一口を左の作業風景へつなぐ。今後の吸引動画もこの状態を読む。 */
+export function setBenchDraw(cs, kind, duration = 0) {
+  if (bench?.cs === cs) bench.worker.setDraw(kind, duration);
+}
 export function pauseBenchTemperature(cs, paused) {
   if (bench?.cs === cs) bench.thermal.pause(paused);
 }
 /**
- * フレーバーの体力を一枚の葉で見せる（TH28・TH37）。ボロボロ具合と色だけで分かるようにする。
- * 4=つややかな緑、3=黄緑に斑点、2=黄土色で縁が欠ける、1=茶色く穴だらけで反る、0=黒ずんで崩れる。傷むと葉だけが震える。文字は出さない（TH27）。
+ * 赤い葉5枚のうち使用中の1枚だけが茶→黒→消える。次の赤い葉は変色しない（TH77〜82）。
  */
-const LEAF_STATE = ["枯れて崩れた", "穴だらけ", "縁が欠けてきた", "斑点が出てきた", "つややか"];
 function buildLeafIcon() {
-  const root = el("span.leaf-icon", { hidden: true, role: "img", dataset: { test: "leaf-icon", hp: "4" }, html: `<svg viewBox="0 0 32 32" aria-hidden="true">
-    <defs><mask id="leaf-bites-${++leafIcons}" maskUnits="userSpaceOnUse"><rect width="32" height="32" fill="#fff"/>
-      <g class="leaf-bite-2" fill="#000"><circle cx="25" cy="9" r="3.4"/><circle cx="8" cy="22" r="2.6"/></g>
-      <g class="leaf-bite-1" fill="#000"><circle cx="17" cy="13" r="2.2"/><circle cx="12" cy="18" r="1.8"/><circle cx="21" cy="19" r="2.4"/><circle cx="27" cy="16" r="2.6"/></g>
-    </mask></defs>
-    <g mask="url(#leaf-bites-${leafIcons})">
-      <path class="leaf-body" d="M4 28C3 15 12 4 28 3c1 14-8 25-24 25Z"/>
-      <path class="leaf-gloss" d="M8.5 21.5C10 14 15 8.6 23.5 6.4" fill="none"/>
-      <path class="leaf-vein" d="M5 27 26 6M11 21l-1-6M16 16l-1-6M21 11l-1-4M11 21l6 1M16 16l6 1" fill="none"/>
-      <g class="leaf-spots"><circle cx="14" cy="11" r="1.6"/><circle cx="20" cy="15" r="1.3"/><circle cx="10" cy="19" r="1.2"/></g>
-    </g>
-    <g class="leaf-crumbs"><path d="M6 30l2-1 1 2zM12 30l2-2 1 2zM19 31l1-2 2 1z"/></g>
-  </svg>` });
+  const leaves = Array.from({ length: LEAF_MAX }, (_, i) => el("span.flavor-leaf", { "aria-hidden": "true", dataset: { slot: i, stage: "red" } }, [
+    artImg("ui_mockup_flavor_leaf.png", 34, "leaf-skin", { h: 34 }),
+  ]));
+  const root = el("span.leaf-icon", { hidden: true, role: "img", dataset: { test: "leaf-icon", hp: String(LEAF_MAX) } }, leaves);
   return { root, render(leaf, { hit = false } = {}) {
-    const hp = leaf?.hp ?? 4;
+    const hp = leaf?.hp ?? LEAF_MAX, burn = leaf?.burn ?? 0;
     root.dataset.hp = String(hp);
-    root.setAttribute("aria-label", `フレーバー：${LEAF_STATE[hp] ?? LEAF_STATE[4]}`);
-    root.title = `フレーバー：${LEAF_STATE[hp] ?? LEAF_STATE[4]}`;
+    root.dataset.burn = String(burn);
+    flavorLeafStages(leaf).forEach((stage, i) => { leaves[i].dataset.stage = stage; });
+    const description = `フレーバー：赤い葉が残り${hp}/${LEAF_MAX}枚${burn ? `、使用中の葉は${burn === 1 ? "茶色" : "黒い焦げ"}` : ""}`;
+    root.setAttribute("aria-label", description);
+    root.title = description;
     if (hit) { root.classList.remove("hit"); void root.offsetWidth; root.classList.add("hit"); }
   } };
 }
-let leafIcons = 0;
 
 /** フレーバーが傷んだら葉を更新する。音と揺れは呼び出し側で鳴らす。 */
 export function setBenchLeaf(cs, hit = false) {
   if (bench?.cs === cs) bench.leaf.render(cs.leaf, { hit });
+}
+/** 吸い出し・熱管理では、同じ葉の状態をモックアップの情報欄へ置く。 */
+export function dockBenchLeaf(cs, host) {
+  if (bench?.cs !== cs) return;
+  const root = bench.leaf.root;
+  host.prepend(root);
 }
 
 /**
@@ -211,7 +217,6 @@ export function strainBench(cs, stamina = 4) {
   const now = currentCondition(), order = ["green", "yellow", "red"];
   if (order.indexOf(now.health) > order.indexOf(cs.condition?.health ?? "yellow")) cs.condition = now;
   if (bench?.cs === cs) {
-    if (bench.badge) { const next = conditionBadge(cs.condition); bench.badge.replaceWith(next); bench.badge = next; }
     renderFatigue();
     bench.worker.flinch();
   }

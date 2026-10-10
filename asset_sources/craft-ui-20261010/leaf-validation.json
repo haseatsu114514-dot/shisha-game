@@ -1,0 +1,276 @@
+{
+  "lifeWindow": {
+    "x": 481,
+    "y": 515,
+    "width": 385.203125,
+    "height": 64
+  },
+  "stages": [
+    {
+      "label": "initial",
+      "hp": 5,
+      "burn": 0,
+      "slots": [
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        }
+      ],
+      "description": "フレーバー：赤い葉が残り5/5枚"
+    },
+    {
+      "label": "three safe pulls",
+      "hp": 5,
+      "burn": 0,
+      "slots": [
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        }
+      ],
+      "description": "フレーバー：赤い葉が残り5/5枚"
+    },
+    {
+      "label": "one leaf turns brown",
+      "hp": 4,
+      "burn": 1,
+      "slots": [
+        {
+          "stage": "brown",
+          "filter": "grayscale(1) sepia(1) saturate(2.5) hue-rotate(-20deg) brightness(0.85)",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        }
+      ],
+      "description": "フレーバー：赤い葉が残り4/5枚、使用中の葉は茶色"
+    },
+    {
+      "label": "same leaf turns black",
+      "hp": 4,
+      "burn": 2,
+      "slots": [
+        {
+          "stage": "black",
+          "filter": "grayscale(1) brightness(0.22)",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        }
+      ],
+      "description": "フレーバー：赤い葉が残り4/5枚、使用中の葉は黒い焦げ"
+    },
+    {
+      "label": "carry unfinished black leaf into care",
+      "hp": 4,
+      "burn": 2,
+      "slots": [
+        {
+          "stage": "black",
+          "filter": "grayscale(1) brightness(0.22)",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        }
+      ],
+      "description": "フレーバー：赤い葉が残り4/5枚、使用中の葉は黒い焦げ"
+    },
+    {
+      "label": "two safe care pulls retain all stages",
+      "hp": 4,
+      "burn": 2,
+      "slots": [
+        {
+          "stage": "black",
+          "filter": "grayscale(1) brightness(0.22)",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        }
+      ],
+      "description": "フレーバー：赤い葉が残り4/5枚、使用中の葉は黒い焦げ"
+    },
+    {
+      "label": "black disappears; next red stays fresh",
+      "hp": 4,
+      "burn": 0,
+      "slots": [
+        {
+          "stage": "gone",
+          "filter": "grayscale(1) brightness(0.22)",
+          "opacity": "0"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        }
+      ],
+      "description": "フレーバー：赤い葉が残り4/5枚"
+    },
+    {
+      "label": "next leaf turns brown",
+      "hp": 3,
+      "burn": 1,
+      "slots": [
+        {
+          "stage": "gone",
+          "filter": "grayscale(1) brightness(0.22)",
+          "opacity": "0"
+        },
+        {
+          "stage": "brown",
+          "filter": "grayscale(1) sepia(1) saturate(2.5) hue-rotate(-20deg) brightness(0.85)",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        },
+        {
+          "stage": "red",
+          "filter": "none",
+          "opacity": "1"
+        }
+      ],
+      "description": "フレーバー：赤い葉が残り3/5枚、使用中の葉は茶色"
+    }
+  ],
+  "errors": [],
+  "failures": []
+}

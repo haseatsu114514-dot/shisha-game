@@ -2,7 +2,8 @@
    水煙前線 リメイク版 — 土台（トークン・ステージ・共通UI）
    論理解像度 1280×720 の固定ステージを画面に合わせて拡縮する。
    ============================================================ */
-/* 文字は1書体に統一（オーナー指定・2026-09-28）: Zen Kaku Gothic New（SIL OFL・remake/fonts/ に同梱）。
+/* 本文・通常UIは1書体に統一（オーナー指定・2026-09-28）: Zen Kaku Gothic New（SIL OFL・remake/fonts/ に同梱）。
+   2026-10-10 TH57・65のモックアップ再現では、吸い出し・熱管理の見出しと操作ボタンに明朝体を使用。
    端末やネットワークで見た目が変わらないよう、外部フォントは読まない。太さは 500 / 700 / 900 の3段 */
 @font-face { font-family: "Suien Gothic"; src: url("../fonts/ZenKakuGothicNew-Medium.woff2") format("woff2"); font-weight: 100 599; font-display: block; }
 @font-face { font-family: "Suien Gothic"; src: url("../fonts/ZenKakuGothicNew-Bold.woff2") format("woff2"); font-weight: 600 799; font-display: block; }
