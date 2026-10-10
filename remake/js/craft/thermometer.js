@@ -11,7 +11,7 @@ const FLAME = `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8.2 1c.6 2.
 const SNOW = `<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5v13M2.4 4.75l11.2 6.5M2.4 11.25l11.2-6.5M6.3 2.6 8 4.2l1.7-1.6M6.3 13.4 8 11.8l1.7 1.6" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const pct = (f) => `${f * 100}%`;
 
-export function buildThermometer({ compact = false, unsteady = false, coldLimit = null } = {}) {
+export function buildThermometer({ compact = false, unsteady = false, coldLimit = null, height = 440 } = {}) {
   const mark = el("i.thermo-mark"), dim = el("i.thermo-dim");
   // 管の外から今の温度を指す、目立つ矢印（TH30）。
   const pointer = el("i.thermo-pointer", { "aria-hidden": "true", dataset: { test: "thermo-pointer" } });
@@ -29,7 +29,7 @@ export function buildThermometer({ compact = false, unsteady = false, coldLimit 
   ]);
   const framed = !!makingUrl("ui_temperature_frame.png");
   const housing = framed ? el("div.thermo-housing", { style: { "--thermo-width": compact ? "54px" : "76px" } }, [
-    tube, artImg("ui_temperature_frame.png", compact ? 54 : 76, "thermo-skin", { h: compact ? 300 : 440 }),
+    tube, artImg("ui_temperature_frame.png", compact ? 54 : 76, "thermo-skin", { h: compact ? 300 : height }),
   ]) : tube;
   const root = el(`div.thermo${compact ? ".steam-temperature" : ""}${unsteady ? ".unsteady" : ""}`, {
     role: "meter", "aria-label": "煙の温度", "aria-valuemin": "0", "aria-valuemax": "1", dataset: { test: compact ? "steam-temperature" : "pull-temperature" },

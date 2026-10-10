@@ -93,7 +93,12 @@ try {
   await page.waitForTimeout(3200);
   assert(Math.abs(Number(await page.locator('.thermal-backdrop').getAttribute('data-temperature'))-end)<.0001);
   // 通常の入力で工程を終えてから、同じベンチの背景を比較する。
-  await page.keyboard.press('Space'); await page.keyboard.press('Space'); await page.keyboard.press('Enter');
+  for (let i = 0; i < 2; i++) {
+    await page.locator('[data-test="pull-stop"]:not([disabled])').waitFor();
+    await page.keyboard.press('Space');
+    await page.locator('.pull-play[data-draw]').waitFor({ state: 'hidden' });
+  }
+  await page.keyboard.press('Enter');
   await page.waitForSelector('.result-card.show');
   // 吸った後は、吸い方で上下した提供温度と背景が一致する。
   assert(Math.abs(Number(await page.locator('.thermal-backdrop').getAttribute('data-temperature'))-await page.evaluate(()=>cs.pull.temp))<.0001);
@@ -134,9 +139,11 @@ try {
   // 針が指定の範囲（%）に来た瞬間に吸う。
   const pullAt = (lo, hi) => page.evaluate(async ([a, b]) => {
     const needle = document.querySelector('.pg-needle'), at = () => parseFloat(needle.dataset.pos);
-    while (!(at() > 0)) await new Promise(requestAnimationFrame);
+    const button = document.querySelector('[data-test="pull-stop"]');
+    while (button.disabled) await new Promise(requestAnimationFrame);
     while (!(at() >= a && at() <= b)) await new Promise(requestAnimationFrame);
     window.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }));
+    while (document.querySelector('.pull-play').dataset.draw) await new Promise(requestAnimationFrame);
   }, [lo, hi]);
   await page.evaluate(() => { cs.pull.temp = .46; cs.leaf = null; window.run = T.care.runCare(cs); });
   await page.waitForSelector('[data-test="care-coals"]');
@@ -228,8 +235,8 @@ try {
   await page.waitForSelector('.pg-needle');
   await page.evaluate(async () => {
     const needle = document.querySelector('.pg-needle'), at = () => parseFloat(needle.dataset.pos);
-    while (!(at() > 0)) await new Promise(requestAnimationFrame);
-    while (at() > 40) await new Promise(requestAnimationFrame);
+    while (document.querySelector('[data-test="pull-stop"]').disabled) await new Promise(requestAnimationFrame);
+    while (at() < 75) await new Promise(requestAnimationFrame);
     window.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }));
   });
   await page.waitForSelector('.bench.thermal-burnt[data-thermal-band="burnt"]');

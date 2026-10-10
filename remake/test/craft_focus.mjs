@@ -203,7 +203,10 @@ try {
     });
     focus.push({ width, speed });
     await page.evaluate(() => { __remake.craftTest.auto = 'good'; });
-    await page.locator('[data-test="pull-stop"]').click(); await page.locator('[data-test="pull-stop"]').click();
+    for (let i = 0; i < 2; i++) {
+      await page.locator('[data-test="pull-stop"]').click();
+      await page.locator('.pull-play[data-draw]').waitFor({ state: 'hidden' });
+    }
     await page.locator('[data-test="pull-serve"]').click(); await page.evaluate(() => window.pullRun);
   }
   assert(focus[0].width > focus[1].width * 1.35, JSON.stringify(focus));
@@ -227,6 +230,7 @@ try {
     await page.evaluate(async()=>{
       const needle=document.querySelector('.pg-needle'), button=document.querySelector('[data-test="pull-stop"]');
       for(let i=0;i<2;i++) {
+        while (button.disabled) await new Promise(requestAnimationFrame);
         await new Promise(resolve=>{
           const tick=()=>{
             if(Math.abs(parseFloat(needle.dataset.pos)-50)<1) {button.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));resolve();}
@@ -237,6 +241,7 @@ try {
           const leave=()=>Math.abs(parseFloat(needle.dataset.pos)-50)>5?resolve():requestAnimationFrame(leave);leave();
         });
       }
+      while (document.querySelector('.pull-play').dataset.draw) await new Promise(requestAnimationFrame);
     });
     await page.locator('[data-test="pull-serve"]').click();
     await page.waitForSelector('.result-card.show');

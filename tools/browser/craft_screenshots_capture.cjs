@@ -53,9 +53,9 @@ async function pointer(page, selector) {
 }
 async function pullTwice(page) {
   for(let i=0;i<2;i++) {
-    await page.waitForFunction(()=>Math.abs(parseFloat(document.querySelector('.pg-needle').style.left)-50)<1.5);
+    await page.waitForFunction(()=>!document.querySelector('[data-test="pull-stop"]').disabled && Math.abs(parseFloat(document.querySelector('.pg-needle').dataset.pos)-50)<1.5);
     await pointer(page,'[data-test="pull-stop"]');
-    await page.waitForFunction(()=>Math.abs(parseFloat(document.querySelector('.pg-needle').style.left)-50)>6);
+    await page.waitForFunction(()=>!document.querySelector('.pull-play').dataset.draw && Math.abs(parseFloat(document.querySelector('.pg-needle').dataset.pos)-50)>6);
   }
   await page.waitForTimeout(1200);
 }
@@ -110,7 +110,7 @@ async function main() {
     await page.waitForSelector('[data-test="timer-stop"]:not([disabled])'); await page.waitForTimeout(4300);
     await shot(page,'11-steam-game.png','11 蒸らし・雑念弾幕','温度計・タイマー・心拍線・移動パッド・リフレッシュ'); await page.close();
     page=await scene(browser,'pull');
-    await page.waitForFunction(()=>!!document.querySelector('.pg-needle')?.style.left); await pullTwice(page);
+    await page.waitForSelector('[data-test="pull-stop"]:not([disabled])'); await pullTwice(page);
     await shot(page,'12-pull-game.png','12 吸い出し','温度計・最適温・上げ吸い／キープ／下げ吸いのゲージ');
     await page.click('[data-test="pull-serve"]'); await page.waitForSelector('.result-card.show');
     await shot(page,'13-pull-result.png','13 吸い出し結果','提供後の工程評価とコメント'); await page.close();
@@ -121,7 +121,7 @@ async function main() {
     page=await scene(browser,'trial');
     await shot(page,'15-flavor-trial.png','15 審査・FLAVOR TRIAL','納得ゲージ・審査員の問い・アピールポイント'); await page.close();
     page=await scene(browser,'pull','drill');
-    await page.waitForFunction(()=>!!document.querySelector('.pg-needle')?.style.left); await pullTwice(page);
+    await page.waitForSelector('[data-test="pull-stop"]:not([disabled])'); await pullTwice(page);
     await shot(page,'16-practice-pull.png','16 自主練の吸い出し','同じゲージに、左下ははじめの心の声'); await page.close();
     if(errors.length) throw new Error(errors.join('\n'));
     await gallery(browser);

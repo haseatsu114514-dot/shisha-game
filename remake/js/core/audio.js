@@ -136,6 +136,21 @@ function noise({ dur = 0.3, vol = 0.2, delay = 0, filter = 1200, q = 0.8, type =
   src.start(t);
 }
 
+/** 吸っている間だけ、水の低いぼこぼこ音を鳴らす。戻り値で次の泡を止める。 */
+export function startBubbling({ strength = 1 } = {}) {
+  let stopped = false;
+  const bubble = () => {
+    if (stopped || !audioUnlocked || !ctx || ctx.state !== "running" || document.hidden || !(Number(config.seVolume) > 0)) return;
+    const force = Math.max(.3, Math.min(1, strength));
+    const freq = 95 + Math.random() * 95;
+    tone({ freq, to: Math.max(35, freq * .42), dur: .075 + Math.random() * .045, vol: .09 * force });
+    noise({ dur: .055, filter: 350 + Math.random() * 300, q: 1.4, vol: .025 * force });
+  };
+  bubble();
+  const timer = setInterval(bubble, 85);
+  return () => { if (stopped) return; stopped = true; clearInterval(timer); };
+}
+
 // キャラ別の文字送りボイス（低い=スミさん、高い=みんと 等）
 const BLIP = {
   sumi: 250, naru: 420, adam: 330, minto: 1350, oneesan: 980, tsumugi: 1100, rin: 760,

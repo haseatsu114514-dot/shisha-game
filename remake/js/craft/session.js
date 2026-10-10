@@ -135,7 +135,9 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.audience?.setStep(hintText, id);
   b.panel.replaceChildren();
   b.panel.dataset.step = id;
+  b.root.dataset.step = id;
   b.worker.root.dataset.step = id; // 今後の工程別アニメーションの接続先
+  b.worker.setDraw(null);
   b.worker.setMental("steady");
   renderFatigue();
   b.worker.caption.textContent = WORKER_STEPS[id] || titleText;
@@ -151,6 +153,10 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
 /** 同じ一台の実温度を、蒸らし以降の背景と煙の絵へ返す。 */
 export function setBenchTemperature(cs, temp) {
   if (bench?.cs === cs && !bench.root.classList.contains("done")) bench.thermal.update(temp);
+}
+/** 吸い出し・熱管理の一口を左の作業風景へつなぐ。今後の吸引動画もこの状態を読む。 */
+export function setBenchDraw(cs, kind, duration = 0) {
+  if (bench?.cs === cs) bench.worker.setDraw(kind, duration);
 }
 export function pauseBenchTemperature(cs, paused) {
   if (bench?.cs === cs) bench.thermal.pause(paused);
