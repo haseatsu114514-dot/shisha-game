@@ -508,7 +508,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 /* 場面の意味ごとの型（core/transitions.js・CI102）。紫と淡いラベンダーの図形だけで描く */
 .tr-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
 .tr-scale { transform-box: fill-box; transform-origin: center; }
-.tr-dawn, .tr-cross { position: absolute; inset: 0; overflow: hidden; z-index: 100; pointer-events: auto; }
+.tr-dawn { position: absolute; inset: 0; overflow: hidden; z-index: 100; pointer-events: auto; }
 .tr-dawn-veil { position: absolute; inset: 0; background: #34246a; }
 .tr-dawn.sick .tr-dawn-veil { background: linear-gradient(#34246a, #4a2346); }
 .tr-dawn-card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; font-family: var(--font); color: #fff; }
@@ -521,10 +521,38 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .tr-dawn-rain i { position: absolute; top: -30%; width: 1.5px; background: linear-gradient(transparent, #dcd1f4aa); transform: rotate(18deg); }
 .tr-dawn-horizon { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: #dcd1f4; box-shadow: 0 0 18px 6px #dcd1f488; }
 .tr-dawn-glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 110%, #fff3d6cc, transparent 60%); pointer-events: none; }
-.tr-cross-title { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; font-family: var(--font); pointer-events: none; }
-.tr-cross-title b { font-size: 112px; font-weight: 900; line-height: 1; letter-spacing: 0.14em; padding-left: 0.14em; color: #fff; }
-.tr-cross.full .tr-cross-title b { font-size: 84px; letter-spacing: 0.1em; }
-.tr-cross-title small { font-size: 26px; font-weight: 700; letter-spacing: 0.4em; padding-left: 0.4em; color: #dcd1f4; text-shadow: 0 2px 0 #1d1236, 0 0 8px #1d1236; }
+
+/* マップ→場所の「移動」の型（core/transition-moves.js・CI103） */
+.scene-curtain.move { background: transparent; }
+.tr-move-field { position: absolute; inset: 0; }
+.tr-move-label { position: absolute; left: 72px; top: 64px; display: flex; flex-direction: column; gap: 2px; font-family: var(--font); color: #fff; text-shadow: 0 3px 0 #150f26; }
+.tr-move-label small { font-size: 18px; font-weight: 700; letter-spacing: 0.3em; color: #dcd1f4; }
+.tr-move-label b { font-size: 64px; font-weight: 900; letter-spacing: 0.06em; line-height: 1.1; }
+.tr-move-label.at-door { left: auto; right: 0; width: 470px; top: 56px; align-items: center; text-align: center; }
+.tr-move-label.at-door b { font-size: 44px; }
+.tr-foot { filter: drop-shadow(0 0 2px #150f26) drop-shadow(0 0 6px #6b4fb0); }
+.tr-door-frame { position: absolute; inset: 0; overflow: hidden; }
+.tr-door-leaf { position: absolute; top: 0; bottom: 0; width: 50%; background: linear-gradient(90deg, #2a1d57, #3d2a78 55%, #2f2163); box-shadow: inset 0 0 0 10px #241845; }
+.tr-door-leaf.left { left: 0; transform-origin: left center; }
+.tr-door-leaf.right { right: 0; transform-origin: right center; }
+.tr-door-panel { position: absolute; left: 70px; right: 70px; border: 3px solid #dcd1f466; border-radius: 10px; box-shadow: inset 0 0 0 10px #6b4fb033; }
+.tr-door-panel:nth-child(1) { top: 70px; height: 300px; }
+.tr-door-panel:nth-child(2) { top: 400px; bottom: 70px; }
+.tr-door-handle { position: absolute; top: 300px; width: 14px; height: 130px; border-radius: 8px; background: linear-gradient(#efe6ff, #a993dd); box-shadow: 0 0 10px #dcd1f480; }
+.tr-door-leaf.left .tr-door-handle { right: 28px; }
+.tr-door-leaf.right .tr-door-handle { left: 28px; }
+.tr-door-seam { position: absolute; left: 50%; top: 0; bottom: 0; width: 14px; margin-left: -7px; background: linear-gradient(90deg, transparent, #fff1d2, transparent); box-shadow: 0 0 40px 18px #fff1d2aa; opacity: 0; }
+.tr-door-plate { position: absolute; left: 50%; top: 150px; transform: translateX(-50%); min-width: 300px; padding: 14px 34px 16px; display: flex; flex-direction: column; align-items: center; gap: 2px; background: #150f26; border: 3px solid #dcd1f4; border-radius: 10px; box-shadow: 0 10px 30px #0008; font-family: var(--font); }
+.tr-door-plate small { font-size: 15px; font-weight: 700; letter-spacing: 0.3em; color: #a993dd; }
+.tr-door-plate b { font-size: 44px; font-weight: 900; letter-spacing: 0.08em; color: #fff; white-space: nowrap; }
+.tr-door-glow { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 50%, #fff1d2ee, #fff1d244 45%, transparent 75%); pointer-events: none; }
+.tr-noren-back { position: absolute; inset: 0; background: #150f26; }
+.tr-noren-panel { position: absolute; top: -2%; width: calc(25% - 6px); margin-left: 3px; height: 104%; background: linear-gradient(#2a1d57, #3d2a78); border-bottom: 10px solid #6b4fb0; transform-origin: top center; box-shadow: inset 0 18px 0 #241845; }
+.tr-noren-crest { position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 12px; font-family: var(--font); pointer-events: none; }
+.tr-noren-crest b { width: 190px; height: 190px; border-radius: 50%; border: 8px solid #dcd1f4; display: flex; align-items: center; justify-content: center; font-size: 104px; font-weight: 900; color: #dcd1f4; }
+.tr-noren-crest small { font-size: 30px; font-weight: 900; letter-spacing: 0.2em; padding-left: 0.2em; color: #dcd1f4; }
+.tr-walkdoor-leaf { transform-box: fill-box; transform-origin: left center; }
+.tr-walkdoor-flood { position: absolute; inset: 0; background: radial-gradient(circle, #fffaf0, #fff1d2 60%, #f3d9a8); }
 
 .day-card {
   position: absolute;
@@ -545,6 +573,27 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .day-card.out { opacity: 0; transform: translateX(30%); }
 .dc-title { font-family: var(--font); font-size: 76px; font-weight: 800; letter-spacing: 0.12em; color: #fff; }
 .dc-sub { font-size: 20px; color: var(--gold); letter-spacing: 0.2em; margin-top: 4px; }
+
+.round-cut {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 290px;
+  height: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.92) 20%, rgba(0, 0, 0, 0.92) 80%, transparent);
+  border-top: 2px solid var(--neon-pink);
+  border-bottom: 2px solid var(--neon-cyan);
+  transform: scaleY(0);
+  transition: transform 0.35s var(--ease-snap), opacity 0.4s;
+}
+.round-cut.show { transform: scaleY(1); }
+.round-cut.out { opacity: 0; }
+.round-cut b { font-family: var(--font); font-size: 64px; font-weight: 700; letter-spacing: 0.2em; color: #fff; text-shadow: 0 0 20px var(--neon-pink); }
+.round-cut small { font-size: 18px; letter-spacing: 0.3em; color: var(--neon-cyan); }
 
 /* ---------------------------------------------------------------- 起動 */
 #boot {

@@ -7,7 +7,7 @@ import { DB, displayName, faceIconUrl, allFaceIconUrls, assetUrl } from "./data.
 import { AFFINITY_RANK_PTS } from "./stats.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene } from "../daily/weather.js";
-import { createSceneCurtain, crossCut, nightToMorning, isCovering } from "./transitions.js";
+import { createSceneCurtain, nightToMorning, isCovering } from "./transitions.js";
 
 export const layers = {};
 
@@ -473,15 +473,17 @@ export async function dayCard(title, sub, { ms = 1900 } = {}) {
   card.remove();
 }
 
-/** 中央の見出し（「ROUND 2」など）。逆向きのリボンが交差し、交点に数字を打ち込む。ラウンドごとに色を変える */
+/** 中央の見出し帯（「ROUND 2」など） */
 export async function roundCut(text, sub = "") {
-  const no = Number(/\d+/.exec(text)?.[0]) || "venue";
-  await crossCut(layers.fx, { title: text, sub, palette: no });
-}
-
-/** 画面を交差のリボンで完全に覆い、覆っている間に mid()（背景・BGMの差し替え）を実行する。会場入りに使う */
-export async function crossWipe(mid, { title, sub = "" } = {}) {
-  await crossCut(layers.fx, { title, sub, palette: "venue", full: true, mid });
+  const c = el("div.round-cut", [el("b", { text }), sub ? el("small", { text: sub }) : null]);
+  layers.fx.append(c);
+  SE.whoosh();
+  await nextFrame();
+  c.classList.add("show");
+  await sleep(1300);
+  c.classList.add("out");
+  await sleep(450);
+  c.remove();
 }
 
 /** 就寝→翌朝。mid() で日付を進め、DAYと残り日数をめくって見せる（transitions.nightToMorning） */

@@ -1,10 +1,10 @@
 // 第1章「一吸目（ファーストドロー）」── SMOKE CROWN CUP 編 の台本。
 // 章の流れはこのファイルを上から読めば追えるようにしてある（正史: brand/story_and_structure.md 第1章）。
 import { el, sleep } from "../core/util.js";
-import { DB, bgUrl, sceneBg, faceIconUrl, realName, displayName } from "../core/data.js";
+import { DB, bgUrl, faceIconUrl, realName, displayName } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
-import { layers, showScreen, clearScreen, setBg, smokeWipe, crossWipe, chapterTitle, dayCard, roundCut, toast, bannersIdle, retire, retireScreen } from "../core/ui.js";
-import { state, save, markMet, setFlag, flag, timeOfDay } from "../core/state.js";
+import { layers, showScreen, clearScreen, setBg, smokeWipe, chapterTitle, dayCard, roundCut, toast, bannersIdle, retire, retireScreen } from "../core/ui.js";
+import { state, save, markMet, setFlag, flag } from "../core/state.js";
 import { addMoney, maxStamina, addStamina } from "../core/stats.js";
 import { playBgm, preloadBgm, stopBgm, SE } from "../core/audio.js";
 import { play, hooks } from "../vn/engine.js";
@@ -203,12 +203,7 @@ async function tournamentDay() {
   for (const id of ["naru", "adam", "minto", "nagumo", "maezono", "dr_kemuri"]) markMet(id);
   void preloadBgm("bgm_tournament_edm");
   void preloadBgm("bgm_tournament_craft");
-  // 会場入り: 交差するリボンで覆い、その間にロビーの絵と待機BGMへ替える
-  await crossWipe(async () => {
-    playBgm("bgm_tournament_wait");
-    const lobby = sceneBg(BG("bg_c_station_lobby"), timeOfDay());
-    if (lobby.url) await setBg(lobby.url, { tint: lobby.tint });
-  }, { title: "SMOKE CROWN CUP", sub: `DAY ${TOURNAMENT_DAY}　会場入り` });
+  await smokeWipe(() => playBgm("bgm_tournament_wait"), { color: "dark" });
   await play("ch1_tournament_arrival");
   await maybeShuraba(); // 恋人が2人以上いたら、ロビーで鉢合わせる
   playBgm("bgm_tournament_edm");

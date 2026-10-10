@@ -64,14 +64,21 @@ export async function chooseSpot(opts = {}) {
   return openMap(opts);
 }
 
-/** 行き先の場面を、押したピンの位置から広がる幕で開く（core/transitions.js の pin） */
-function cuePinOpening(shield) {
+/** 行き先の場面を「移動」の幕で開く。押したピンの位置と、看板に出ている行き先の名前を渡す（core/transition-moves.js） */
+function cueMove(shield, spot) {
   const stage = document.getElementById("stage");
   if (!shield || !stage) return;
   const s = stage.getBoundingClientRect();
   const p = shield.getBoundingClientRect();
   if (!s.width || !s.height) return;
-  cueTransition("pin", { x: (p.left + p.width / 2 - s.left) * (1280 / s.width), y: (p.top + p.height / 2 - s.top) * (720 / s.height) });
+  const known = knowsOwner(spot);
+  cueTransition("place", {
+    x: (p.left + p.width / 2 - s.left) * (1280 / s.width),
+    y: (p.top + p.height / 2 - s.top) * (720 / s.height),
+    label: known ? spot.label : spot.unknownLabel || spot.label,
+    area: spot.area || "",
+    glyph: known ? spot.glyph || "" : "？",
+  });
 }
 
 function openMap({ notice = "", eventPin = null, guide = null, onShown = null }) {
@@ -159,7 +166,7 @@ function openMap({ notice = "", eventPin = null, guide = null, onShown = null })
 
     const go = (s) => {
       SE.select();
-      cuePinOpening(pins.querySelector(`[data-spot="${s.id}"] .shield`));
+      cueMove(pins.querySelector(`[data-spot="${s.id}"] .shield`), s);
       retire(root);
       info.classList.add("leaving");
       interrupt = null;

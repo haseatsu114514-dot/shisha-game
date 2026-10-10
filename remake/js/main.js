@@ -78,6 +78,12 @@ window.__remake = {
   },
   // 開発用ジャンプ（コンソールから: __remake.dev.tournament() など）。※今のセーブを上書きする
   dev: {
+    // マップ→場所の移動トランジションの比較用（pin / steps / walk / door / noren / walkdoor）。URLの ?move=door でも切り替わる
+    async moveStyle(style) {
+      const moves = await import("./core/transition-moves.js");
+      if (style) moves.setMoveStyle(style);
+      return moves.moveStyle();
+    },
     async tournament() {
       const { newGame } = await import("./core/state.js");
       const ch1 = await import("./chapters/ch1.js");
