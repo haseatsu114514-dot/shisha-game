@@ -62,9 +62,9 @@ function wheelArt(P) {
     svg("circle", { cx, cy, r: 4, fill: P.deep }),
   ]);
   // 撚り糸: 交差ごとに前後を入れ替える（後ろの糸→前の糸の縁取り→前の糸）
-  const x0 = 32, x1 = 192, y = 240, turns = 7;
+  const x0 = 30, x1 = 194, y = 242, turns = 7;
   const at = (t, s) => {
-    const env = 4.5 + 10 * (1 - smooth(t / 0.24)) + 10 * smooth((t - 0.76) / 0.24);
+    const env = 5.5 + 10 * (1 - smooth(t / 0.22)) + 10 * smooth((t - 0.78) / 0.22);
     return [x0 + (x1 - x0) * t, y + s * env * Math.sin(Math.PI / 2 + turns * Math.PI * t)];
   };
   const bounds = [0, ...[...Array(turns)].map((_, m) => (m + 0.5) / turns), 1];
@@ -74,9 +74,9 @@ function wheelArt(P) {
     const d = (s) => "M " + [...Array(13)].map((_, k) => at(t0 + ((t1 - t0) * k) / 12, s).map((v) => v.toFixed(1)).join(" ")).join(" L ");
     const front = j % 2 ? -1 : 1;
     const seg = { t0, t1, paths: [
-      svg("path", trim({ d: d(-front), stroke: front > 0 ? P.thread : P.light, "stroke-width": 4 })),
-      svg("path", trim({ d: d(front), stroke: P.deep, "stroke-width": 8.5 })),
-      svg("path", trim({ d: d(front), stroke: front > 0 ? P.light : P.thread, "stroke-width": 4 })),
+      svg("path", trim({ d: d(-front), stroke: front > 0 ? P.thread : P.light, "stroke-width": 5 })),
+      svg("path", trim({ d: d(front), stroke: P.deep, "stroke-width": 10 })),
+      svg("path", trim({ d: d(front), stroke: front > 0 ? P.light : P.thread, "stroke-width": 5 })),
     ] };
     cord.push(seg);
   }
@@ -150,7 +150,7 @@ export async function a() {
       const a = (i / 12) * Math.PI * 2;
       return svg("line", { x1: cx + Math.cos(a) * 258, y1: cy + Math.sin(a) * 258, x2: cx + Math.cos(a) * 280, y2: cy + Math.sin(a) * 280, stroke: P.light, "stroke-width": 3, "stroke-linecap": "round", opacity: 0 });
     }));
-    const rule = [-1, 1].map((s) => svg("line", { x1: cx + s * 18, y1: 656, x2: cx + s * 190, y2: 656, stroke: P.light, "stroke-width": 2, pathLength: 1, "stroke-dasharray": 1, "stroke-dashoffset": 1 }));
+    const rule = [-1, 1].map((s) => svg("line", { x1: cx + s * 18, y1: 664, x2: cx + s * 190, y2: 664, stroke: P.light, "stroke-width": 2, pathLength: 1, "stroke-dasharray": 1, "stroke-dashoffset": 1 }));
     art.append(...dial, ticks, ...rule);
     const cards = [0, 1, 2].map((i) => tarotCard(P, i));
     const wheel = wheelArt(P);
@@ -259,43 +259,43 @@ export async function b() {
     const deck = [...Array(8)].map((_, i) => tableCard(P, i === 3 ? [cardFace(P, { num: "XVII", en: "THE STAR", ja: "星" }, star.g), gloss] : null));
     table.append(cloth, trails, ...deck);
     const fx = stageSvg();
-    const rule = [-1, 1].map((s) => svg("line", { x1: W / 2 + s * 18, y1: 656, x2: W / 2 + s * 160, y2: 656, stroke: P.light, "stroke-width": 2, pathLength: 1, "stroke-dasharray": 1, "stroke-dashoffset": 1 }));
+    const rule = [-1, 1].map((s) => svg("line", { x1: W / 2 + s * 18, y1: 664, x2: W / 2 + s * 160, y2: 664, stroke: P.light, "stroke-width": 2, pathLength: 1, "stroke-dasharray": 1, "stroke-dashoffset": 1 }));
     fx.append(...rule);
     const title = kinetic("星　正位置", "mo-tarot-title");
     title.style.color = P.white;
     node.append(back, halo, scene, fx, title);
     const faces = (c) => [...c.children];
     // 1. 布が広がり、魔法陣が線で描かれる
-    move(back, [{ opacity: 0 }, { opacity: 1 }], 220);
-    move(halo, [{ transform: "translate(-50%, -50%) scale(0.2)", opacity: 0 }, { transform: "translate(-50%, -50%) scale(1)", opacity: 0.5 }], 900, { easing: E.out });
-    move(table, [{ transform: `translateY(150px) rotateX(${TILT + 14}deg) scale(0.7)` }, { transform: `translateY(90px) rotateX(${TILT}deg) scale(1)` }], 900, { easing: E.out });
-    move(cloth, [{ transform: "rotate(-30deg)" }, { transform: "rotate(0deg)" }], 1600, { easing: E.out });
-    lines.forEach((l, i) => move(l, [{ strokeDashoffset: i % 2 ? -1 : 1 }, { strokeDashoffset: 0 }], 760, { easing: E.out, delay: 80 + i * 70 }));
-    move(dots, [{ opacity: 0 }, { opacity: 1 }], 300, { delay: 520 });
+    move(back, [{ opacity: 0 }, { opacity: 1 }], 160);
+    move(halo, [{ transform: "translate(-50%, -50%) scale(0.2)", opacity: 0 }, { transform: "translate(-50%, -50%) scale(0.96)", opacity: 0.5 }], 900, { easing: E.out });
+    move(table, [{ transform: `translateY(150px) rotateX(${TILT + 14}deg) scale(0.7)` }, { transform: `translateY(90px) rotateX(${TILT}deg) scale(1)` }], 900, { easing: E.out, delay: 100 });
+    move(cloth, [{ transform: "rotate(-30deg)", opacity: 0 }, { opacity: 1, offset: 0.16 }, { transform: "rotate(0deg)", opacity: 1 }], 1600, { easing: E.out, delay: 100 });
+    lines.forEach((l, i) => move(l, [{ strokeDashoffset: i % 2 ? -1 : 1 }, { strokeDashoffset: 0 }], 760, { easing: E.out, delay: 160 + i * 70 }));
+    move(dots, [{ opacity: 0 }, { opacity: 1 }], 300, { delay: 600 });
     // 2. 上から山札が落ちてきて、布の奥に重なる
     const zOf = (k) => k * 1.6;
-    await Promise.all(deck.map((c, i) => move(c, [pose(0, DECK_Y - 80, 620 + i * 30, -40 + i * 3), pose(0, DECK_Y, zOf(i), (i % 3) - 1)], 520, { easing: E.out, delay: 160 + i * 28 })));
+    await Promise.all(deck.map((c, i) => move(c, [pose(0, DECK_Y - 80, 620 + i * 30, -40 + i * 3), pose(0, DECK_Y, zOf(i), (i % 3) - 1)], 460, { easing: E.out, delay: 140 + i * 22 })));
     SE.tick();
     // 3. 左右に割って、交互に落として切り混ぜる（リフル）
     const half = (i) => (i < 4 ? -1 : 1);
-    await Promise.all(deck.map((c, i) => move(c, [pose(0, DECK_Y, zOf(i), (i % 3) - 1), pose(half(i) * 150, DECK_Y + 16, zOf(i % 4), half(i) * 14)], 260, { easing: E.out })));
+    await Promise.all(deck.map((c, i) => move(c, [pose(0, DECK_Y, zOf(i), (i % 3) - 1), pose(half(i) * 150, DECK_Y + 16, zOf(i % 4), half(i) * 14)], 220, { easing: E.out })));
     SE.crackle();
     const order = [0, 4, 1, 5, 2, 6, 3, 7]; // 切ったあと下から何番目か
     await Promise.all(order.map((ci, k) => move(deck[ci], [
       pose(half(ci) * 150, DECK_Y + 16, zOf(ci % 4), half(ci) * 14),
       { ...pose(half(ci) * 40, DECK_Y - 10, 46 + k * 2, half(ci) * 6), offset: 0.55 },
-      pose(0, DECK_Y, zOf(k), 0)], 300, { easing: E.inOut, delay: k * 34 })));
+      pose(0, DECK_Y, zOf(k), 0)], 250, { easing: E.inOut, delay: k * 24 })));
     // 4. 上から3枚を、左・真ん中・右へ滑らせて配る（布に軌跡の線が走る）
     const xs = [-236, 0, 236], rzs = [-5, 0, 5];
     const dealt = [order[7], order[6], order[5]];
     dealt.forEach((ci, n) => {
       const path = svg("line", { x1: 0, y1: DECK_Y, x2: xs[n], y2: 40, stroke: P.light, "stroke-width": 5, "stroke-linecap": "round", pathLength: 1, "stroke-dasharray": "1 1", "stroke-dashoffset": 1, opacity: 0.8 });
       trails.append(path);
-      move(path, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0, offset: 0.5 }, { strokeDashoffset: -1 }], 520, { easing: E.out, delay: n * 150 });
-      setTimeout(() => SE.tick(), n * 150 + 200);
-      move(deck[ci], [pose(0, DECK_Y, zOf(7 - n), 0), { ...pose(xs[n] * 0.7, 0, 18, rzs[n] * 6 + (n - 1) * 20), offset: 0.55 }, pose(xs[n], 40, 0, rzs[n])], 460, { easing: E.out, delay: n * 150 });
+      move(path, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0, offset: 0.5 }, { strokeDashoffset: -1 }], 480, { easing: E.out, delay: n * 120 });
+      setTimeout(() => SE.tick(), n * 120 + 180);
+      move(deck[ci], [pose(0, DECK_Y, zOf(7 - n), 0), { ...pose(xs[n] * 0.7, 0, 18, rzs[n] * 6 + (n - 1) * 20), offset: 0.55 }, pose(xs[n], 40, 0, rzs[n])], 420, { easing: E.out, delay: n * 120 });
     });
-    await sleep(2 * 150 + 400);
+    await sleep(2 * 120 + 300);
     // 残りの山札は奥へ下げる
     deck.forEach((c, i) => {
       if (dealt.includes(i)) return;
@@ -305,10 +305,10 @@ export async function b() {
     });
     // 5. 長い沈黙: 3枚が左から順に小さく浮いて沈む
     for (let n = 0; n < 3; n++) {
-      move(deck[dealt[n]], [pose(xs[n], 40, 0, rzs[n]), { ...pose(xs[n], 40, 22, rzs[n]), offset: 0.4 }, pose(xs[n], 40, 0, rzs[n])], 300, { easing: E.inOut, delay: n * 120 });
-      setTimeout(() => SE.tick(), n * 120);
+      move(deck[dealt[n]], [pose(xs[n], 40, 0, rzs[n]), { ...pose(xs[n], 40, 22, rzs[n]), offset: 0.4 }, pose(xs[n], 40, 0, rzs[n])], 260, { easing: E.inOut, delay: n * 90 });
+      setTimeout(() => SE.tick(), n * 90);
     }
-    await sleep(2 * 120 + 380);
+    await sleep(2 * 90 + 200);
     // 6. 真ん中の札が起き上がり、こちらを向きながら裏返る。ほかは布ごと引いていく
     SE.whoosh();
     const pick1 = deck[dealt[1]];
@@ -317,13 +317,13 @@ export async function b() {
       faces(deck[dealt[n]]).forEach((f) => move(f, [{ opacity: 1 }, { opacity: 0 }], 300, { delay: 120 }));
     });
     move(cloth, [{ opacity: 1, transform: "rotate(0deg)" }, { opacity: 0, transform: "rotate(24deg)" }], 620, { easing: E.in, delay: 80 });
-    move(halo, [{ transform: "translate(-50%, -50%) scale(1)", opacity: 0.5 }, { transform: "translate(-50%, -50%) scale(1.25)", opacity: 0.85 }], 900, { easing: E.out });
-    move(pick1, [pose(0, 40, 0, 0), { ...pose(0, 34, 70, 0, -22, 30, 0.72), offset: 0.35 }, pose(0, -6, 124, 0, -TILT, 180, 0.94)], 860, { easing: E.inOut });
+    move(halo, [{ transform: "translate(-50%, -50%) scale(0.96)", opacity: 0.5 }, { transform: "translate(-50%, -50%) scale(1)", opacity: 0.9 }], 900, { easing: E.out });
+    move(pick1, [pose(0, 40, 0, 0), { ...pose(0, 34, 70, 0, -22, 30, 0.72), offset: 0.35 }, pose(0, -6, 124, 0, -TILT, 180, 1.04)], 760, { easing: E.inOut });
     // 表の絵: 大きな星が弾んで開き、小さな星と水面の線が後を追う
-    move(star.big, [{ transform: "scale(0.2) rotate(-90deg)" }, { transform: "scale(1) rotate(0deg)" }], 620, { easing: E.back, delay: 520 });
-    star.small.forEach((s, i) => move(s, [{ transform: "scale(0) rotate(-90deg)" }, { transform: "scale(1) rotate(0deg)" }], 380, { easing: E.back, delay: 640 + i * 60 }));
-    star.lines.forEach((l, i) => move(l, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 420, { easing: E.out, delay: 600 + i * 50 }));
-    await sleep(860);
+    move(star.big, [{ transform: "scale(0.2) rotate(-90deg)" }, { transform: "scale(1) rotate(0deg)" }], 620, { easing: E.back, delay: 460 });
+    star.small.forEach((s, i) => move(s, [{ transform: "scale(0) rotate(-90deg)" }, { transform: "scale(1) rotate(0deg)" }], 380, { easing: E.back, delay: 560 + i * 55 }));
+    star.lines.forEach((l, i) => move(l, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 420, { easing: E.out, delay: 520 + i * 50 }));
+    await sleep(760);
     SE.just();
     const cy = 330;
     ring(fx, W / 2, cy, { r: 300, color: P.light, width: 8 });
@@ -332,10 +332,10 @@ export async function b() {
     [[430, 170], [860, 200], [400, 470], [880, 480]].forEach(([x, y], i) => twinkle(fx, x, y, { color: P.light, size: 12 + (i % 2) * 6, delay: 80 + i * 70, dur: 760 }));
     move(gloss, [{ transform: "translateX(-140%) skewX(-20deg)" }, { transform: "translateX(240%) skewX(-20deg)" }], 560, { easing: E.inOut });
     rule.forEach((r) => move(r, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 520, { easing: E.out, delay: 160 }));
-    await playKinetic(title, { delay: 120, step: 44 });
-    await sleep(760);
+    playKinetic(title, { delay: 80, step: 44 });
+    await sleep(840);
     // 7. 札の中心へ、丸く窓が閉じて会話へ戻る
     move(title, [{ opacity: 1 }, { opacity: 0 }], 200);
-    await move(node, [{ clipPath: `circle(820px at ${W / 2}px ${cy}px)` }, { clipPath: `circle(0px at ${W / 2}px ${cy}px)` }], 520, { easing: E.in });
+    await move(node, [{ clipPath: `circle(820px at ${W / 2}px ${cy}px)` }, { clipPath: `circle(0px at ${W / 2}px ${cy}px)` }], 480, { easing: E.in });
   });
 }
