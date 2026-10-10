@@ -9,6 +9,7 @@ on:
       - 'remake/test/data_loading.mjs'
       - 'tools/check_active_json.py'
       - 'tools/audit_dialogue_art.py'
+      - 'tools/check_dialogue_links.py'
       - 'remake/data/manifest.json'
       - 'remake/test/lover_dates.mjs'
       - 'data/**'
@@ -43,6 +44,8 @@ jobs:
           node-version: '22'
       - name: Validate active JSON syntax
         run: python3 tools/check_active_json.py
+      - name: Validate dialogue choice destinations
+        run: python3 tools/check_dialogue_links.py
       - name: Audit dialogue art references (advisory)
         run: python3 tools/audit_dialogue_art.py
       - name: Validate production data loader
