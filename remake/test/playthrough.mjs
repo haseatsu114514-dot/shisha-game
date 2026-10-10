@@ -116,7 +116,7 @@ for (;;) {
       deliveriesDone: !!(s?.flags?._delivery_adam_done && s?.flags?._delivery_minto_done),
       stats: s?.stats,
       lastRank: s?.tournament?.lastRank,
-      endTitle: document.querySelector(".end-title")?.textContent || "",
+      endTitle: document.querySelector(".end-screen.gameover") ? "GAME OVER" : document.querySelector(".end-title")?.textContent || "",
       rain: document.querySelector("#screen .map:not(.done)")?.dataset.rain === "true",
       feel: /[1-9]/.test(document.querySelector('[data-test="arcade-score"] .arcade-num')?.textContent || ""),
       nico: !!document.querySelector(".nico"),
