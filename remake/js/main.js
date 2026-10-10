@@ -78,7 +78,7 @@ window.__remake = {
   },
   // 開発用ジャンプ（コンソールから: __remake.dev.tournament() など）。※今のセーブを上書きする
   dev: {
-    // マップ→場所の移動トランジションの比較用（pin / steps / walk / door / noren / walkdoor）。URLの ?move=door でも切り替わる
+    // マップ→場所の移動トランジションの比較用（pin / steps / walk / door / noren / walkdoor。本編の既定は door）。URLの ?move=pin でも切り替わる
     async moveStyle(style) {
       const moves = await import("./core/transition-moves.js");
       if (style) moves.setMoveStyle(style);
@@ -90,11 +90,11 @@ window.__remake = {
       if (name) kit.setMotionPalette(name);
       return kit.motionPalette();
     },
-    // 場面ごとの動きのパターン（a／b）。URLの ?movar=b でも切り替わる
+    // 場面ごとの動きのパターン（a／b）。本編は採用（mg-kit.js の ADOPTED_VARIANT）。"auto" で採用に戻す。URLの ?movar=b でも切り替わる
     async motionVariant(name) {
       const kit = await import("./core/mg-kit.js");
       if (name) kit.setMotionVariant(name);
-      return kit.motionVariant();
+      return Object.fromEntries(Object.keys(kit.ADOPTED_VARIANT).map((k) => [k, kit.motionVariant(k)]));
     },
     // 場面ごとのモーショングラフィックスを本来の背景・会話つきで見る（cheki / tarot / gift / shift / shark / sketch）。
     // 夜明けの天気は dawn-sun / dawn-cloud / dawn-rain / dawn-sick（DAY3→4）。※今のセーブを上書きする

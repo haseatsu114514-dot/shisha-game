@@ -1,5 +1,5 @@
 // マップで行き先を選んだあとの「移動」の型（CI103）。比較のため複数パターンを持ち、
-// 既定は従来の pin。?move=walk などのURL、または __remake.dev.moveStyle("walk") で切り替える。
+// 本編の既定は door（オーナー採用・CI123）。?move=pin など、または __remake.dev.moveStyle("pin") で切り替える。
 import { el, sleep } from "./util.js";
 import { SE } from "./audio.js";
 import { W, H, COLOR, EASE, svg, stageSvg, move, curtain, openLeaf, stepIntoBg, walker, everyFrame } from "./transition-kit.js";
@@ -15,7 +15,7 @@ export function moveStyle() {
     const saved = localStorage.getItem(STORE_KEY);
     if (MOVE_STYLES.includes(saved)) return saved;
   } catch { /* 保存できない環境では既定 */ }
-  return "pin";
+  return "door"; // 採用（CI123）。ほかの型は ?move=pin など
 }
 export function setMoveStyle(style) {
   try { localStorage.setItem(STORE_KEY, style); } catch { /* 保存できない環境 */ }
@@ -24,7 +24,7 @@ export function setMoveStyle(style) {
 /** 扉は motions/door.js を使うときに読む（a／b は ?movar）。読み込みを待つ間も covered／release の約束は同じ */
 function doorMove(host, opts) {
   const made = import("../motions/door.js")
-    .then((m) => (motionVariant() === "b" ? m.b : m.a)(host, opts))
+    .then((m) => (motionVariant("door") === "b" ? m.b : m.a)(host, opts))
     .catch((e) => { console.error(e); return pinMove(host, opts); });
   return { covered: made.then((c) => c.covered), release: () => made.then((c) => c.release()) };
 }

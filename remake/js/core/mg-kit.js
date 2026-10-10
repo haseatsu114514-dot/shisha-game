@@ -27,20 +27,25 @@ export function setMotionPalette(name) {
   try { localStorage.setItem(STORE_KEY, name); } catch { /* 保存できない環境 */ }
 }
 
-// 同じ場面の別パターン（a／b）。?movar=b か __remake.dev.motionVariant("b") で切り替える（CI109）
+// 同じ場面の別パターン（a／b）。本編で使うのは場面ごとの採用（オーナー選択・CI121〜CI123）。
+// 比べるときは ?movar=a|b（全場面をそろえる）か __remake.dev.motionVariant("b")。"auto" で採用に戻す
 export const MOTION_VARIANTS = ["a", "b"];
+export const ADOPTED_VARIANT = { door: "a", cheki: "b", tarot: "a", gift: "a", shift: "b", shark: "b", sketch: "b" };
 const VARIANT_KEY = "suien_motion_variant";
-export function motionVariant() {
+export function motionVariant(scene) {
   const q = new URLSearchParams(location.search).get("movar");
   if (MOTION_VARIANTS.includes(q)) return q;
   try {
     const saved = localStorage.getItem(VARIANT_KEY);
     if (MOTION_VARIANTS.includes(saved)) return saved;
-  } catch { /* 保存できない環境では既定 */ }
-  return "a";
+  } catch { /* 保存できない環境では採用の既定 */ }
+  return ADOPTED_VARIANT[scene] || "a";
 }
 export function setMotionVariant(name) {
-  try { localStorage.setItem(VARIANT_KEY, name); } catch { /* 保存できない環境 */ }
+  try {
+    if (MOTION_VARIANTS.includes(name)) localStorage.setItem(VARIANT_KEY, name);
+    else localStorage.removeItem(VARIANT_KEY);
+  } catch { /* 保存できない環境 */ }
 }
 
 /** 紫1色。濃淡だけで描く（どの場面でも共通） */
