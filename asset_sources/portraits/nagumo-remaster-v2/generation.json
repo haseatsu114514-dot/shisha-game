@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "character": "nagumo",
+  "generations": [
+    {
+      "face": "normal",
+      "prompt_number": 24,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:30:40.559411+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/nagumo-remaster-v2/attempts/normal-attempt-01-source.png",
+      "source_sha256": "a552d01398b6fd4546372824352136830ebd07735c892886bf32b308ca334742",
+      "original_tool_file": "exec-91c846ae-449e-48b7-953a-f0d0edee4907.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/nagumo-remaster-v2/attempts/normal-attempt-01-prompt.txt",
+      "prompt_sha256": "bcff228c84660567d01c41860bc24707fe4f6aff67cf12b6e53d586c15ef0a1f",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
+          "sha256": "acc536926a7fe897c26d5f9d2846d87fa2068b501be3046a470887dff06c2fad"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
+          "sha256": "acc536926a7fe897c26d5f9d2846d87fa2068b501be3046a470887dff06c2fad"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        299,
+        23,
+        784,
+        1450
+      ],
+      "figure_height_px": 1427,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "needs_revision",
+        "note": "原寸と比較を確認。色・顔・ポーズは保持しているが、原画の右足の靴底がキャンバス下端に接している。透明余白を確保して再生成。"
+      }
+    },
+    {
+      "face": "normal",
+      "prompt_number": 24,
+      "attempt": 2,
+      "generated_at_utc": "2026-10-10T05:35:05.378379+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/nagumo-remaster-v2/attempts/normal-attempt-02-source.png",
+      "source_sha256": "c2816ddd14989f8c25c95129cdfff240f69da1b314db96c0e577cfd5bd02e8c5",
+      "original_tool_file": "exec-ce44a939-3631-4ebc-a1e3-c92273d27ba1.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/nagumo-remaster-v2/attempts/normal-attempt-02-prompt.txt",
+      "prompt_sha256": "4bbe9703fb03f94b2f4f0b990b2a47cb3028c8fd1b255385d394347ac5923c7c",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
+          "sha256": "acc536926a7fe897c26d5f9d2846d87fa2068b501be3046a470887dff06c2fad"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
+          "sha256": "acc536926a7fe897c26d5f9d2846d87fa2068b501be3046a470887dff06c2fad"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        288,
+        27,
+        778,
+        1445
+      ],
+      "figure_height_px": 1418,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:36:41.713055+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原寸・元絵比較を確認。両方の靴底に透明余白を確保。成熟した顔・白い髪の筋・黒スーツ・腕時計・元の濃い陰影を保持。",
+        "preview_bbox_threshold_16_px": [
+          241,
+          60,
+          625,
+          1172
+        ],
+        "original_bbox_threshold_16_px": [
+          251,
+          60,
+          609,
+          1172
+        ]
+      }
+    }
+  ],
+  "selected_attempts": {
+    "normal": 2
+  },
+  "selected_attempt": 2,
+  "approval_policy": {
+    "mode": "delegated_production_qa",
+    "owner_instruction": "いいと思います。ただ作り直すたびに色薄くなってる気がするのは気のせい？ 一旦確認もそこまでいらないからガンガン進めて",
+    "received_on": "2026-10-10"
+  }
+}

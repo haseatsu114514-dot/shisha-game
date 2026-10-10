@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "character": "sumi",
+  "generations": [
+    {
+      "face": "normal",
+      "prompt_number": 13,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:25:56.099049+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/sumi-remaster-v2/attempts/normal-attempt-01-source.png",
+      "source_sha256": "350bbe04fb06f7ecb356506248b6076cd7d6be0bce718a8a3b1758cfc28c2d7e",
+      "original_tool_file": "exec-02473a2e-fe9f-4638-9d2b-b7158a1534ec.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/sumi-remaster-v2/attempts/normal-attempt-01-prompt.txt",
+      "prompt_sha256": "5b15b87edb09f1b891f4aa069ba1c13c81ee62719a884e53af0f35aa604f69e0",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/sumi/chr_sumi_normal.png",
+          "sha256": "35cb31996f3275213b7e659d968d09fec62136d519324a93bb90f1afcf31627c"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/sumi/chr_sumi_normal.png",
+          "sha256": "35cb31996f3275213b7e659d968d09fec62136d519324a93bb90f1afcf31627c"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "canvas_px": [
+        1084,
+        1451
+      ],
+      "alpha_bbox_threshold_16_px": [
+        334,
+        28,
+        791,
+        1416
+      ],
+      "figure_height_px": 1388,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:31:52.442744+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原寸・元絵比較を確認。帽子・眼鏡・ひげ・ポケットに入れた両手・成熟した男性の顔・黒シャツと茶エプロンの濃さを維持。",
+        "preview_bbox_threshold_16_px": [
+          290,
+          103,
+          643,
+          1175
+        ],
+        "original_bbox_threshold_16_px": [
+          283,
+          103,
+          643,
+          1175
+        ]
+      }
+    }
+  ],
+  "selected_attempts": {
+    "normal": 1
+  },
+  "selected_attempt": 1,
+  "approval_policy": {
+    "mode": "delegated_production_qa",
+    "owner_instruction": "いいと思います。ただ作り直すたびに色薄くなってる気がするのは気のせい？ 一旦確認もそこまでいらないからガンガン進めて",
+    "received_on": "2026-10-10"
+  }
+}
