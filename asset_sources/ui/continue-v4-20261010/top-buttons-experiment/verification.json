@@ -1162,6 +1162,7 @@
     "continue_premium.mjs": "PASS: lover-only 20%, chapter restriction, no repeats",
     "lint_dialogue.py": "PASS: ERROR 0, existing WARN 345",
     "tidy_dialogue_text.py --dry-run": "PASS: 0 lines",
-    "manifest": "PASS: every previous field/asset retained; only generated timestamp and new continueUI/WebP entry added"
+    "manifest": "PASS: every previous field/asset retained; only generated timestamp and new continueUI/WebP entry added",
+    "burnt_gameover.mjs": "PASS: real timeout to title; tournament burn to reaction/retry; tutorial repack; rehearsal failure; page errors 0"
   }
 }

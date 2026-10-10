@@ -23,6 +23,9 @@ GAME OVER時の数字非表示は全版へ反映し、今回の煙と金の透�
 
 `continue-preview.html?layout=back-count&background=stage` で新比較版を選んだ状態から再生できる。
 
+検証PASS: `continue_screen`（全18分岐、上段2版×9台本のPC／横持ち、期限・拡大・タブ停止・軽減・セーブ保持）、`continue_audio`・`continue_premium`・`burnt_gameover`（大会の焦げ→反応→再挑戦、レッスン、前日リハーサル）。ページエラー・素材欠け0、台詞lint ERROR 0／既存WARN 345、整形dry-run 0行。画像目録は既存の全項目を保持した。写真取得の再実行はサーバー起動後 `node asset_sources/ui/continue-v4-20261010/top-buttons-experiment/capture.mjs`。
+[CIのパス条件と既存mainのPages権限エラー](top-buttons-experiment/ci-review.json)も確認。UIの変更は現在のPR用CIの対象外。同等の台詞lintはローカルで実行している。
+
 ## CV22〜26 ボタン・下端までの人物・見出し横カウント
 
 「コンティニュー？ 15」の横並びを中央配置し、セリフを36px上へ移動。
