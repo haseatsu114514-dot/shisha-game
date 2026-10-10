@@ -169,7 +169,11 @@ async function maybeMilestone(id, beforeLv) {
 
 /** デート（LIMEの誘いを受けた時間帯に呼ぶ）。行き先はデート回数でローテーション */
 export async function playDate(id) {
-  const sc = (L().dates || {})[id] || (L().dates || {}).tsumugi;
+  const sc = (L().dates || {})[id];
+  if (!sc) {
+    console.error(`[romance] Missing date scene for ${id}`);
+    return;
+  }
   const exclude = { minto: "pepermint", rin: "drfookah" }[id]; // 自分の店は除外
   const venues = (L().venues || []).filter((v) => v.id !== exclude);
   const venue = venues[((state.loveLevel[id] || 1) + (state.lastDate[id] || 0)) % venues.length];
