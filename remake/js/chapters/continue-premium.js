@@ -1,6 +1,6 @@
-// 恋人限定の低確率コンティニュー。好感度や知り合いフラグから恋人だと推測しない。
+// 恋人限定・通常抽選20%のプレミアコンティニュー。好感度や知り合いフラグから恋人だと推測しない。
 // プレミアが出なかった場合は従来のスミさんの台詞に戻る。
-export const PREMIUM_CONTINUE_RATE = 0.05;
+export const PREMIUM_CONTINUE_RATE = 0.20;
 
 export const PREMIUM_CONTINUE_SCRIPTS = {
   tsumugi: {
@@ -51,6 +51,17 @@ export const PREMIUM_CONTINUE_SCRIPTS = {
       { at: 17, face: "excited", text: "ほら、コンティニュー！ いっけえええ！" },
     ],
   },
+  kafuka: {
+    id: "premium_kafuka", title: "サメの王からの緊急命令", name: "サメちゃん",
+    bio: "恋人 / SHISHARK", speaker: "kafuka", duration: 20, audio: null,
+    cues: [
+      { at: 0, face: "surprise", text: "おっ、お主ぃ！？ 何をしておる！ その指の先は……『諦める』ではないか！？" },
+      { at: 3.8, face: "serious", text: "サメは泳ぐのをやめると大変なのじゃ！ ……いや、種類によるが……今はそれどころではない！" },
+      { at: 8.0, face: "ventriloquism", text: "『王命じゃ！ 大会へ戻るボタンを押すのじゃ！』……コ、コロちゃん！ 勝手に命令するでない！" },
+      { at: 12.3, face: "normal", text: "……わしは勝ち負けには疎いが、お主の煙は好きじゃ。まだ、もう一度見たいのじゃぞ……。" },
+      { at: 16.8, face: "smile", text: "……一緒に、戻ろう。今度はわしも……うんと応援するからの！" },
+    ],
+  },
   mashiro: {
     id: "premium_mashiro", title: "まだ味見してない", name: "ましろ",
     bio: "恋人 / ましろ", speaker: "mashiro", duration: 20,
@@ -70,9 +81,12 @@ export const PREMIUM_CONTINUE_SCRIPTS = {
  * 第1章のミントは大会の対戦相手なので、恋人であっても登場させない。
  * 抽選は GAME OVER の発生時に1回だけ行い、セーブや画面切替で再抽選しない。
  */
-export function choosePremiumContinue(lovers = [], chapter = 1, rng = Math.random) {
-  const eligible = [...new Set(lovers)].filter((id) => Boolean(PREMIUM_CONTINUE_SCRIPTS[id]))
-    .filter(id => id !== "minto" || chapter > 1);
+export function choosePremiumContinue(lovers = [], chapter = 1, rng = Math.random, previousSpeaker = null) {
+  // 同じヒロインの連続出演は不可。候補がその1人しかいなければ通常スミさん版へ戻す。
+  // （次がスミさんならさらに次の回で同じ恋人が再び選ばれる可能性はある）
+  const eligible = [...new Set(lovers)].filter(id => Boolean(PREMIUM_CONTINUE_SCRIPTS[id]))
+    .filter(id => id !== "minto" || chapter > 1)
+    .filter(id => id !== previousSpeaker);
   if (!eligible.length || rng() >= PREMIUM_CONTINUE_RATE) return null;
   return PREMIUM_CONTINUE_SCRIPTS[eligible[Math.floor(rng() * eligible.length)]];
 }
