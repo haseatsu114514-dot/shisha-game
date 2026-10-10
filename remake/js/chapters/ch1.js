@@ -26,6 +26,7 @@ import { runHeat } from "../craft/heat.js";
 import { runSteamDodge } from "../craft/steam.js";
 import { runPull } from "../craft/pull.js";
 import { runCare } from "../craft/care.js";
+import { buildGameOver } from "./gameover.js";
 import { runTrial } from "../craft/trial.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { outcomeOf, showStandings, resultCountdown, nagumoCutin, resultTable } from "../craft/result.js";
@@ -235,7 +236,7 @@ async function tournamentDay() {
   await play("remake_round1_intro", { bg: STAGE });
   openBench(cs, { steps: STEPS_ALL });
   tickerSay("パッキー「さあ4人一斉にスタート！ 制限時間は60分ッ！」");
-  // 工程の頭でパッキーが前振り、出来に応じて観客のコメントと体感スコアが流れる（生放送レイヤー）
+  // 工程の頭でパッキーが前振り、出来に応じて観客のコメントが流れる（生放送レイヤー）。点数は作業台の SCORE に入る
   await stepSetup(cs);
   bc.block(cs, "theme");
   await stepConcept(cs);
@@ -411,36 +412,19 @@ async function failedOut(reason) {
   await smokeWipe(() => showGameOver({ reason }), { color: "dark" });
 }
 
-// GAME OVERの理由。順位で敗れたとき、焦げた・冷え切った・フレーバーがダメになったとき。
-const GAME_OVER_REASON = {
-  burnt: "シーシャが焦げてしまった。焦げた一台は、審査に出せない。",
-  cold: "シーシャが冷え切ってしまった。冷めた一台は、もう審査に出せない。",
-  leaf: "吸いすぎて、フレーバーがダメになってしまった。",
-};
-
 /**
- * 大会のGAME OVER（TH18）。理由を出して「再挑戦しますか？」と聞き、はいなら大会の頭（大会直前のデータ）から。
- * オーナー制作のGAME OVER画面ができたら、背景 bg_game_over を置けば自動で後ろに敷く。
+ * 大会のGAME OVER（TH18・TH45）。理由を出して「再挑戦しますか？」と聞き、はいなら大会の頭（大会直前のデータ）から。
+ * 画面は画像を使わず gameover.js で描く。理由は rank（順位で敗退）/ burnt / cold / leaf。
  */
 async function showGameOver({ rank = 0, reason = "rank" } = {}) {
   showHud(false);
   stopBgm();
   SE.miss();
-  const art = bgUrl("bg_game_over");
-  const root = el(`div.end-screen.gameover${art ? ".with-art" : ""}`, {
-    dataset: { test: "game-over", reason },
-    style: art ? { backgroundImage: `linear-gradient(#06040a99, #06040acc), url("${art}")` } : {},
-  }, [
-    el("div.end-title", { text: "GAME OVER" }),
-    el("div.end-sub", { text: `${GAME_OVER_REASON[reason] || `結果は${rank}位。優勝だけが次への切符だった。`}ここで、終わってしまった。` }),
-    el("div.end-body", [el("div.end-radar", [radar(state.stats, state.statsAtChapterStart, 280)]),
-      el("div.end-notes", [el("p", { text: "大会の頭から、もう一度挑戦できる（大会直前のデータから再開）。" })])]),
-    el("p.end-question", { text: "再挑戦しますか？" }),
-    el("div.end-actions", [
-      el("button.btn.primary", { text: "再挑戦する", dataset: { test: "retry" }, onclick: () => { SE.select(); retire(root); smokeWipe(() => { tournamentDay(); }, { color: "dark" }); } }),
-      el("button.btn", { text: "タイトルへ戻る", dataset: { test: "game-over-title" }, onclick: () => location.reload() }),
-    ]),
-  ]);
+  const root = buildGameOver({
+    reason, rank,
+    onRetry: () => { SE.select(); retire(root); smokeWipe(() => { tournamentDay(); }, { color: "dark" }); },
+    onTitle: () => location.reload(),
+  });
   showScreen("end", root);
 }
 

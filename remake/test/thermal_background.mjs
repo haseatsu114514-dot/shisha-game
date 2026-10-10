@@ -1,6 +1,6 @@
 // 実温度の引継ぎ、吸い方・炭による上下、一時停止、描画・スマホ・低減モード。
 // 序盤は色のない灰色→ぬるいうちに暖かい色→適温は虹と陽炎、超えるとだんだん火事のように黄色→赤の炎（TH09・TH12・TH13・TH24）。
-// 温度計の一番上で爆発して焦げる（TH06）。ボウルは燃やさない（TH04）。熱管理は「炭を焼きますか？」→吸い出しと同じ針（TH14・TH21）。冷え切り・フレーバー切れもダメになる（TH19・TH20）。
+// 温度計の一番上で爆発して焦げる（TH06）。ボウルは燃やさない（TH04）。熱管理は「炭を交換しますか？」→交換する炭を炭焼き→吸い出しと同じダイヤル（TH14・TH21・TH39）。冷え切り・フレーバー切れもダメになる（TH19・TH20）。
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
@@ -128,38 +128,51 @@ try {
   assert.equal(await band(), 'fire'); assert.equal(new Set(within).size, 3, 'the fire band does not change gradually');
   assert.deepEqual([...glows].sort((a, b) => a - b), glows, `scene glow does not grow with heat: ${glows}`);
 
-  // 熱管理: 「そろそろ調整の準備をしよう」→「炭を焼きますか？」で個数。温度計はこの時点で出る。替えた炭で少し温度が上がり、
-  // 針のゲームが始まると炭が燃え進んで温度が動き続ける。最低1回吸って整え終える。
+  // 熱管理: 「そろそろ調整の準備をしよう」→「炭を交換しますか？」で個数。温度計はこの時点で出る。交換する炭を炭焼きで焼き、
+  // 交換した炭で温度が戻る。ダイヤルのゲームが始まると炭が燃え進んで温度が動き続ける。最低1回吸って整え終える。
   const backdropTemp = async () => Number(await page.locator('.thermal-backdrop').getAttribute('data-temperature'));
   // 針が指定の範囲（%）に来た瞬間に吸う。
   const pullAt = (lo, hi) => page.evaluate(async ([a, b]) => {
-    const needle = document.querySelector('.pg-needle'), at = () => parseFloat(needle.style.left);
-    while (!needle.style.left) await new Promise(requestAnimationFrame);
+    const needle = document.querySelector('.pg-needle'), at = () => parseFloat(needle.dataset.pos);
+    while (!(at() > 0)) await new Promise(requestAnimationFrame);
     while (!(at() >= a && at() <= b)) await new Promise(requestAnimationFrame);
     window.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }));
   }, [lo, hi]);
   await page.evaluate(() => { cs.pull.temp = .46; cs.leaf = null; window.run = T.care.runCare(cs); });
   await page.waitForSelector('[data-test="care-coals"]');
-  assert.equal(await page.locator('.pull-read').textContent(), 'そろそろ調整の準備をしよう');
-  assert.match(await page.locator('.care-coals-ask').textContent(), /炭を焼きますか？/);
+  assert.equal(await page.locator('.care-coals-lead').textContent(), 'そろそろ調整の準備をしよう');
+  assert.match(await page.locator('.care-coals-ask').textContent(), /炭を交換しますか？/);
   assert(await page.locator('.pull-care [data-test="pull-temperature"]').isVisible(), 'thermometer must show while choosing coals');
   assert.equal(await page.locator('.pull-care [data-test="thermo-cold"]').count(), 1);
-  // ゲージの適温は一色（虹は背景だけ）、真ん中に細い最適温。焦げると冷え切りの帯は狭い。現在地は管の外の矢印でも示す。
+  // 温度計は切れ目のないグラデーション。適温は管の色そのもの（別の色の板を重ねない）で、真ん中に虹の最適温を挟む。
+  // 文字の目盛りは置かず、焦げる帯に炎・冷え切り帯に雪の印。焦げると冷え切りの帯は狭い。現在地は管の外の矢印でも示す。
   const gaugeLook = await page.evaluate(() => {
     const q = (sel) => document.querySelector(`.pull-care ${sel}`), h = (sel) => q(sel).getBoundingClientRect().height, tube = h('.thermo-tube');
     return { zone: getComputedStyle(q('.thermo-zone')).backgroundImage, optimalInside: q('.thermo-optimal').getBoundingClientRect().top > q('.thermo-zone').getBoundingClientRect().top,
+      rainbow: getComputedStyle(q('.thermo-optimal')).backgroundImage.split('rgb').length - 1, scale: getComputedStyle(q('.thermo-scale')).backgroundImage.includes('linear-gradient'),
+      marks: !!q('.thermo-danger .thermo-icon.flame') && !!q('.thermo-cold .thermo-icon.snow'), words: document.querySelectorAll('.pull-care .thermo-labels').length,
       danger: h('.thermo-danger') / tube, cold: h('.thermo-cold') / tube, pointer: !!q('[data-test="thermo-pointer"]') };
   });
-  assert.equal(gaugeLook.zone, 'none', 'the gauge ideal band must be one clear color');
+  assert.equal(gaugeLook.zone, 'none', 'the ideal band must be the gauge gradient itself');
+  assert(gaugeLook.rainbow >= 6 && gaugeLook.scale, `the optimal band is not a rainbow on a gradient: ${JSON.stringify(gaugeLook)}`);
+  assert(gaugeLook.marks && gaugeLook.words === 0, `gauge must use marks instead of words: ${JSON.stringify(gaugeLook)}`);
   assert(gaugeLook.optimalInside && gaugeLook.pointer, JSON.stringify(gaugeLook));
   assert(gaugeLook.danger < .07 && gaugeLook.cold < .07, `danger zones are too wide: ${JSON.stringify(gaugeLook)}`);
   assert(!(await page.locator('.pull-play').isVisible()), 'the needle game shows before choosing coals');
+  // 交換する炭は、もう一度炭焼きで焼く（個数ぶんだけ）。取り出し終えると交換して温度が戻る。
+  const burnCoalsNow = async (n) => {
+    await page.waitForSelector('.care-burn [data-test="coal-0"][data-phase]', { timeout: 8000 });
+    assert.equal(await page.locator('.care-burn .coal').count(), n, `must burn ${n} coals for the swap`);
+    for (let i = 0; i < n; i++) await page.locator(`.care-burn [data-test="coal-${i}"]`).dispatchEvent('pointerdown');
+  };
   const chosen = await backdropTemp();
   await page.locator('[data-test="care-coal-2"]').click();
-  await page.waitForFunction(() => document.querySelector('.pg-needle').style.left);
+  await burnCoalsNow(2);
+  await page.waitForFunction(() => parseFloat(document.querySelector('.pg-needle').dataset.pos) > 0, null, { timeout: 15000 });
   const swapped = await backdropTemp();
-  assert(swapped > chosen + .05, `coal swap did not raise the temperature: ${chosen} -> ${swapped}`);
-  assert.match(await page.locator('.pull-read').textContent(), /↓ 炭が燃え進んで熱が落ちていく/);
+  assert(swapped > chosen + .03, `coal swap did not raise the temperature: ${chosen} -> ${swapped}`);
+  assert.equal(await page.locator('.pull-drift').count(), 1, 'heat care must show the falling heat');
+  assert.equal(await page.evaluate(() => cs.heat?.picks?.length ?? 0), 0, 'the swap burn must not overwrite the first coal result');
   assert(await page.locator('[data-test="pull-serve"]').isDisabled(), 'can finish heat care without pulling');
   await page.waitForTimeout(500);
   assert.notEqual(await backdropTemp(), swapped, 'heat care temperature does not move');
@@ -176,18 +189,20 @@ try {
   // 熱管理の3回目からフレーバーが傷み、ダメージの演出が出る。体力が尽きるとその一台はダメになる。
   await page.evaluate(() => { cs.pull.temp = .54; cs.leaf = { hp: 2, max: 4 }; window.run = T.care.runCare(cs); });
   await page.locator('[data-test="care-coal-0"]').click();
-  await page.waitForFunction(() => document.querySelector('.pg-needle').style.left);
+  await page.waitForFunction(() => parseFloat(document.querySelector('.pg-needle').dataset.pos) > 0);
   assert(await page.locator('[data-test="leaf-icon"]').isVisible(), 'the flavor leaf must sit beside the condition face');
   await pullAt(45, 55); await pullAt(45, 55);
   assert.equal(await page.locator('[data-test="leaf-icon"]').getAttribute('data-hp'), '2', 'the first two pulls must not hurt the flavor');
-  assert(!(await page.locator('[data-test="craft-strain"]').isVisible()), 'calm pulls must not tire Hajime');
+  assert.equal(await page.locator('.bench-worker').getAttribute('data-fatigue'), '0', 'calm pulls must not tire Hajime');
   const staminaBefore = await page.evaluate(() => T.core.state.stamina);
   await pullAt(45, 55);
   assert.equal(await page.locator('[data-test="leaf-icon"]').getAttribute('data-hp'), '1');
   assert.equal(await page.locator('.leaf-icon.hit').count(), 1, 'the leaf must tremble when damaged');
   assert.equal(await page.locator('.stamp', { hasText: 'ダメージ' }).count(), 0, 'damage must not show text');
-  // 吸いすぎで、はじめの体力も削れて疲れが付く。
-  assert(await page.locator('[data-test="craft-strain"]').isVisible(), 'over-pulling must tire Hajime');
+  // 吸いすぎで、はじめの体力も削れて疲れが付く。札ではなく、作業中のはじめの表情と汗で見せる。
+  assert.equal(await page.locator('.bench-worker').getAttribute('data-fatigue'), '1', 'over-pulling must tire Hajime');
+  assert.equal(await page.locator('.bench-worker').getAttribute('data-face'), 'normal');
+  await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('.worker-sweat')).opacity) > .5, null, { timeout: 2000 }); // 疲れたはじめは汗をかく
   assert(await page.evaluate(() => T.core.state.stamina) < staminaBefore, 'over-pulling must cost stamina');
   await shot('leaf-damage');
   await pullAt(45, 55);
@@ -212,8 +227,8 @@ try {
   await page.evaluate(() => { cs.steam = { ...cs.steam, temp: .995 }; cs.pull = null; window.run = T.pull.runPull(cs); });
   await page.waitForSelector('.pg-needle');
   await page.evaluate(async () => {
-    const needle = document.querySelector('.pg-needle'), at = () => parseFloat(needle.style.left);
-    while (!needle.style.left) await new Promise(requestAnimationFrame);
+    const needle = document.querySelector('.pg-needle'), at = () => parseFloat(needle.dataset.pos);
+    while (!(at() > 0)) await new Promise(requestAnimationFrame);
     while (at() > 40) await new Promise(requestAnimationFrame);
     window.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }));
   });
@@ -228,7 +243,8 @@ try {
   // 熱管理: 焦げる寸前で炭を3個も替えると、吸わなくても一番上へ届いて画面全体が爆発する。
   await page.evaluate(() => { cs.burnt = false; cs.failed = null; cs.leaf = null; cs.pull = { ...cs.pull, temp: .93 }; window.run = T.care.runCare(cs); });
   await page.locator('[data-test="care-coal-3"]').click();
-  await page.waitForSelector('[data-test="screen-blast"]', { timeout: 5000 });
+  await burnCoalsNow(3);
+  await page.waitForSelector('[data-test="screen-blast"]', { timeout: 8000 });
   await shot('screen-blast');
   await page.waitForSelector('.result-card.show', { timeout: 15000 });
   assert.equal(await page.locator('.result-card.show .rc-title').textContent(), 'シーシャが焦げてしまった');
@@ -243,10 +259,13 @@ try {
   await page.waitForTimeout(200); assert.equal(await pixels(),still);
   assert.equal(await page.locator('.thermal-wisps').evaluate(e=>getComputedStyle(e).animationName),'none');
   assert.deepEqual(await haze(), ['0', ''], 'reduced motion still warps the scene');
-  await page.setViewportSize({width:390,height:844}); await shot('temperature-mobile');
+  await page.setViewportSize({width:390,height:844});
+  // 画面の縮小は resize イベントの後に走るので、収まるのを待ってから測る。
+  await page.waitForFunction(() => document.querySelector('.bench').getBoundingClientRect().width <= 391, null, { timeout: 3000 });
+  await shot('temperature-mobile');
   const bounds=await page.locator('.bench').boundingBox();assert(bounds.width<=391);
   await page.evaluate(()=>T.session.stepPanel('holes','穴あけ'));
   assert(!(await page.locator('.thermal-backdrop').isVisible()));
   assert.deepEqual(errors,[]);
-  console.log('PASS: colorless→warm→rainbow with heat haze→gradual yellow→red fire, clear gauge with narrow danger zones and pointer, quiet flavor damage on a tattering leaf, stamina strain, heat care with coal choice then the pull game, flavor damage from the 3rd care pull, cold-out, flavor-out, full-screen blast, bowl not burning, burst on pull and heat care, readable header, steam reset, steam pause/resume and handoff, stable waiting temperature, coal cooling, reduced motion, mobile bounds and reset; page errors 0');
+  console.log('PASS: colorless→warm→rainbow with heat haze→gradual yellow→red fire, clear gauge with narrow danger zones and pointer, quiet flavor damage on a tattering leaf, stamina strain, heat care with the coal swap, a second coal burn and the dial game, fatigue on Hajime\'s face, flavor damage from the 3rd care pull, cold-out, flavor-out, full-screen blast, bowl not burning, burst on pull and heat care, readable header, steam reset, steam pause/resume and handoff, stable waiting temperature, coal cooling, reduced motion, mobile bounds and reset; page errors 0');
 } finally { await browser.close(); }

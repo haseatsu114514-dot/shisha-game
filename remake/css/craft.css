@@ -406,13 +406,6 @@
 .thermo.optimal .thermo-tube { box-shadow: 0 0 22px #eacf8580; border-color: #edcf8c; }
 .pull-main { flex: 1; display: flex; flex-direction: column; gap: 16px; }
 .pull-read { font-size: 20px; color: #fff; min-height: 30px; }
-.pull-gauge { position: relative; height: 70px; display: flex; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 8px; overflow: hidden; }
-.pg-zone { position: absolute; top: 0; bottom: 0; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; font-size: 14px; color: rgba(255, 255, 255, 0.8); }
-.pg-zone.z-up { background: linear-gradient(90deg, rgba(255, 90, 60, 0.35), rgba(255, 90, 60, 0.15)); }
-.pg-zone.z-keep { background: rgba(142, 230, 168, 0.18); }
-.pg-zone.z-down { background: linear-gradient(90deg, rgba(80, 140, 255, 0.15), rgba(80, 140, 255, 0.35)); }
-.pg-just { position: absolute; top: 0; bottom: 0; background: rgba(255, 220, 120, 0.55); box-shadow: 0 0 12px rgba(255, 210, 110, 0.8); }
-.pg-needle { position: absolute; top: -4px; bottom: -4px; width: 4px; margin-left: -2px; background: #fff; box-shadow: 0 0 12px #fff; }
 .pull-count { font-size: 15px; color: var(--text-dim); }
 .pull-btns { display: flex; gap: 12px; }
 .pull-btns .btn { flex: 1; align-items: center; padding: 16px; font-size: 20px; }
@@ -592,48 +585,6 @@
 .nico.miss { color: #ff9a9a; }
 .nico.rival { color: #aad4ff; }
 @keyframes nico-fly { to { transform: translateX(-100%); } }
-.bc-feel {
-  position: relative;
-  margin-left: auto;
-  display: flex;
-  align-items: baseline;
-  gap: 5px;
-  padding: 4px 10px;
-  flex: none;
-  border-radius: 6px;
-  background: #ffffff06;
-  border: 1px solid #ffffff10;
-  opacity: 0;
-  transform: translateY(-6px);
-  transition: opacity 0.3s, transform 0.3s;
-}
-.bc-feel.show { opacity: 1; transform: none; }
-.bf-label { font-size: 12px; color: #c6c2b8; }
-.bf-num { font-size: 18px; font-weight: 700; line-height: 1; color: var(--accent); }
-.bf-num.bump { animation: bf-bump 0.4s ease-out; }
-@keyframes bf-bump { 40% { transform: scale(1.4); } }
-.bf-p { font-size: 13px; color: #c9b78a; }
-.feel-pop {
-  position: absolute;
-  right: 8px;
-  top: 100%;
-  margin-top: 4px;
-  z-index: 8;
-  font-size: 21px;
-  font-weight: 900;
-  color: #fff36b;
-  white-space: nowrap;
-  pointer-events: none;
-  text-shadow: 0 0 10px rgba(255, 210, 90, 0.95);
-  animation: feel-pop-rise 1.1s ease-out forwards;
-}
-.feel-pop span { font-size: 13px; margin-left: 1px; }
-.feel-pop small { font-size: 13px; color: #d8e0ff; margin-left: 5px; font-weight: 700; }
-@keyframes feel-pop-rise {
-  0% { opacity: 0; transform: translateY(8px) scale(0.8); }
-  25% { opacity: 1; transform: translateY(0) scale(1.12); }
-  100% { opacity: 0; transform: translateY(-18px) scale(1); }
-}
 
 @media (prefers-reduced-motion: reduce) {
   .audience-person[data-mood="nod"] img { animation: none; }
@@ -676,7 +627,7 @@
 .bench[data-art-skin] .bench-condition summary { border: 1px solid currentColor; box-shadow: inset 0 1px 2px #ffefc522, 0 2px 5px #0007; }
 .bench[data-art-skin] .bench-progress-track span { box-shadow: inset 0 1px 0 #ffebbd33; }
 .bench[data-art-skin] .bench-progress-track span.now { box-shadow: inset 0 1px 0 #fff6, 0 0 7px #e8c27a44; }
-.bench[data-art-skin] :is(.bench-worker, .bench-audience, .opt, .dodge, .pull-gauge, .result-card) {
+.bench[data-art-skin] :is(.bench-worker, .bench-audience, .opt, .dodge, .result-card) {
   border-image: var(--craft-panel-art) 22% 12% / 12px / 3px stretch;
   box-shadow: 0 8px 24px #0005, inset 0 0 16px #e8c27a0c;
 }
@@ -732,8 +683,6 @@
 .bench[data-art-skin] .dodge-pad.held { border-color: #bbf7e7; box-shadow: inset 0 0 0 5px #c7bb7c44, 0 0 16px #9ee5d855; }
 .bench[data-art-skin] .fr-btn { color: #eed7b1; border-color: #b8925966; background: radial-gradient(circle at 40% 25%, #5d4c3a, #25192b 62%); box-shadow: inset 0 1px 2px #ffedbd44, 0 2px 4px #0008; }
 .bench[data-art-skin] .fr-btn:hover:not(:disabled) { color: #fff0bf; border-color: #e4c180; }
-.bench[data-art-skin] .pull-gauge { background: linear-gradient(180deg, #25202b, #0c0912); }
-.bench[data-art-skin] .pg-needle { z-index: 2; background: #fff6db; box-shadow: 0 0 12px #ffe2a2; }
 .bench[data-art-skin] .hr-time-bar, .bench[data-art-skin] .tr-gauge i { border: 1px solid #d9b87655; background: linear-gradient(180deg, #120d1b, #2b2133); box-shadow: inset 0 1px 3px #0009; }
 .bench[data-art-skin] .lcd { border-color: #d9b87655; background: linear-gradient(145deg, #131a18, #0b0d14); box-shadow: inset 0 2px 7px #000a; }
 .bench[data-art-skin] .hr-time-bar b, .bench[data-art-skin] .tr-gauge b { box-shadow: inset 0 1px 0 #fff4; }
@@ -793,14 +742,14 @@
 @keyframes thermal-boom { 0% { transform: scale(.3); opacity: 1; } 35% { opacity: 1; } 100% { transform: scale(16); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .thermal-picture *, .thermal-glow, .thermal-label, .thermal-boom.go { animation: none; } }
 
-/* 温度計（TH32〜TH35）: 管は一本の切れ目のないグラデーション。灰（冷たい）→暖色→適温の明るい金→橙→赤→焦げる暗い赤。
+/* 温度計（TH32〜TH35・TH41）: 管は一本の切れ目のないグラデーション。灰（冷たい）→暖色→適温のミントグリーン→橙→赤→焦げる暗い赤。
    文字の目盛りは置かず、管の中の印で示す。適温の両端に白い刻み、真ん中に虹の最適温（適温／最適温／適温のサンド）、
    一番上の焦げる帯に炎、熱管理の冷え切り帯に雪の結晶。今の温度より上は少し暗くし、印はその上に明るいまま残す。 */
 .thermo-tube, .thermo-housing .thermo-tube { background: #45484d; }
 .thermo-scale { position: absolute; inset: 0; background: linear-gradient(0deg,
-  #3f4247 0%, #575a5f 6%, #7d7c7a 17%, #a0978b 29%, #c4a985 38%, #e6bf7c 43.5%,
-  #ffd676 46.5%, #ffe39a 54%, #ffd469 61%,
-  #ffb247 64.5%, #ff8a2a 72%, #ff5f17 81%, #e2300c 89%, #b0140a 94%, #560300 100%); }
+  #3f4247 0%, #575a5f 6%, #7d7c7a 17%, #a0978b 29%, #c4a985 38%, #d8b47e 43%,
+  #4fcf98 47%, #74e0b0 54%, #4fcf98 61%,
+  #ffb247 65%, #ff8a2a 72%, #ff5f17 81%, #e2300c 89%, #b0140a 94%, #560300 100%); }
 .thermo-dim { position: absolute; left: 0; right: 0; top: 0; z-index: 2; background: linear-gradient(0deg, rgba(10, 8, 22, .2), rgba(10, 8, 22, .34)); transition: bottom .4s var(--ease-out); }
 /* 適温を超えた所は、管の中でやわらかい炎のゆらぎが上へ流れる。縞に見えないよう淡く、下は溶け込ませる。 */
 .thermo-heat { position: absolute; left: 0; right: 0; top: 0; z-index: 1; pointer-events: none; overflow: hidden; opacity: .42; mix-blend-mode: screen;
@@ -835,7 +784,7 @@
 .thermo-danger::after { bottom: -1px; }
 .thermo-cold::after { top: -1px; }
 .thermo.danger .thermo-danger .thermo-icon, .thermo.freezing .thermo-cold .thermo-icon { animation: thermo-alarm .45s ease-in-out infinite alternate; }
-.thermo.ok .thermo-tube { box-shadow: 0 0 22px #ffd56a88; }
+.thermo.ok .thermo-tube { box-shadow: 0 0 22px #5fe0a888; }
 .thermo.optimal .thermo-tube { box-shadow: 0 0 16px #ffffffaa, 0 0 30px #ffd56a99; border-color: #fff3c4; }
 .thermo.danger .thermo-tube { box-shadow: 0 0 26px #ff2a00cc; }
 @keyframes thermo-flame { from { transform: translateY(0); } to { transform: translateY(-40px); } }
@@ -849,6 +798,9 @@
 .pull-play { display: flex; flex-direction: column; gap: 14px; }
 .care-coals { display: flex; flex-direction: column; gap: 14px; }
 .care-coals-ask { margin: 0; font-size: 26px; font-weight: 800; color: #ffe3a1; letter-spacing: .06em; }
+.care-coals-lead { margin: 0; font-size: 18px; color: #f4eee4; }
+.care-burn { position: relative; }
+.heat-compact .stove { max-width: 420px; }
 .care-coal-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .care-coal { min-width: 0; padding: 14px 8px; font-size: 19px; }
 .care-coal .btn-desc { font-size: 15px; font-weight: 900; letter-spacing: -.1em; color: #ffb36a; }
@@ -867,12 +819,6 @@
   filter: drop-shadow(0 0 5px #ffd25a) drop-shadow(0 0 1px #000); transition: bottom .4s var(--ease-out); animation: pointer-pulse 1.1s ease-in-out infinite alternate; }
 .thermo.danger .thermo-pointer { background: linear-gradient(90deg, #fff, #ff5a3a); filter: drop-shadow(0 0 7px #ff3a00) drop-shadow(0 0 1px #000); }
 .thermo.optimal .thermo-pointer { background: linear-gradient(90deg, #fff, #ffe066); }
-.pull-gauge-wrap { position: relative; }
-.pull-gauge-wrap .pg-needle, .bench[data-art-skin] .pull-gauge-wrap .pg-needle { position: absolute; top: -12px; bottom: -12px; width: 6px; margin-left: -3px; z-index: 3; border-radius: 3px;
-  background: #fffdf2; box-shadow: 0 0 0 1.5px #1a1020, 0 0 14px #fff2b0, 0 0 26px #ffd25a88; pointer-events: none; }
-.pull-gauge-wrap .pg-needle::before, .pull-gauge-wrap .pg-needle::after { content: ""; position: absolute; left: 50%; width: 18px; height: 11px; margin-left: -9px; background: #ffd25a; filter: drop-shadow(0 0 3px #000); }
-.pull-gauge-wrap .pg-needle::before { top: -9px; clip-path: polygon(0 0, 100% 0, 50% 100%); }
-.pull-gauge-wrap .pg-needle::after { bottom: -9px; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
 @keyframes pointer-pulse { from { transform: translateX(0); } to { transform: translateX(4px); } }
 /* フレーバーの葉（TH28・TH37）: 体調の顔の横。ボロボロ具合と色だけで体力が分かる。傷むほど色が抜け、斑点→欠け→穴→反って崩れる。 */
 .leaf-icon { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle, #ffffff1a, #ffffff08 70%); }
@@ -904,28 +850,32 @@
 .leaf-icon[data-hp="0"] .leaf-crumbs { display: inline; }
 .leaf-icon.hit { animation: leaf-shiver .5s ease-out; }
 @keyframes leaf-shiver { 0%, 100% { transform: none; } 20% { transform: translateX(-4px) rotate(-12deg); } 45% { transform: translateX(3px) rotate(9deg); } 70% { transform: translateX(-2px) rotate(-4deg); } }
-/* 疲れ（TH29）: 体調の顔の横の小さな札。付いた瞬間に一度だけ震える。 */
-.bench-strain { padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 700; color: #ffd0b8; background: #6a1e1e; border: 1px solid #ff8a6a66; white-space: nowrap; }
-.bench-strain[hidden] { display: none; }
-.bench-strain.hit { animation: leaf-shiver .5s ease-out; }
-@media (prefers-reduced-motion: reduce) { .thermo-pointer, .leaf-icon.hit, .bench-strain.hit { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .thermo-pointer, .leaf-icon.hit { animation: none; } }
 
-/* 吸い出し・熱管理の針ゲージ（TH34〜TH36）: 切れ目のないグラデーション（左の上げ吸い=暖色→中央のキープ=落ち着いた色→右の下げ吸い=寒色）。
-   区切りの線や文字は置かず、各帯の芯に ▲ ＝ ▼ の印。芯は少し明るく光る（芯の幅は成功帯の実際の幅）。 */
-.pull-gauge, .bench[data-art-skin] .pull-gauge { height: 64px; border: 2px solid #ffffff40; border-radius: 10px;
-  background: linear-gradient(90deg, #c4481c 0%, #a63d1f 15%, #74352a 29%, #403448 43%, #3a3752 57%, #2f4268 71%, #2c5892 85%, #3069ae 100%); }
-.pull-gauge::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 46%; z-index: 1; pointer-events: none; background: linear-gradient(180deg, #ffffff24, #fff0); }
-.pg-zone, .pg-zone.z-up, .pg-zone.z-keep, .pg-zone.z-down { background: none; padding: 0; }
-.pg-just { top: 0; bottom: 0; z-index: 1; border-radius: 3px; background: linear-gradient(180deg, #fff4d466, #ffe8b030 50%, #fff4d466); box-shadow: inset 0 0 0 1px #fff2c8a0, 0 0 14px #ffd98a66; }
-.pg-mark { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 24px; font-weight: 900; line-height: 1; color: #fff; text-shadow: 0 0 6px #000b, 0 1px 0 #0009; pointer-events: none; }
-.z-up .pg-mark { color: #ffe0c0; }
-.z-down .pg-mark { color: #d8e9ff; }
+/* 吸い方の半円ダイヤル（TH38・TH40）: 縦の温度計の横に置く計器。輪は切れ目のないグラデーション（左の上げ吸い=暖色→キープ→右の下げ吸い=寒色）。
+   各帯の外側に言葉、光る芯は実際の成功帯の幅。針は輪をまたぐ太い印で往復し、内側には今の温度の一語と吸った回数を出す。 */
+.pull-dial { position: relative; width: min(100%, 470px); margin: 0 auto; aspect-ratio: 480 / 270; }
+.pull-dial svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.dial-rim { fill: none; stroke: #ffffff55; stroke-width: 2; }
+.dial-gloss { fill: #ffffff18; }
+.pg-just { fill: #fff2d044; stroke: #fff4d6d0; stroke-width: 1.5; filter: drop-shadow(0 0 6px #ffd98a99); }
+.dial-label { font-size: 17px; font-weight: 800; letter-spacing: .04em; text-anchor: middle; dominant-baseline: middle; paint-order: stroke; stroke: #0d0914; stroke-width: 4px; stroke-linejoin: round; }
+.dial-label.l-up { fill: #ffb27a; }
+.dial-label.l-keep { fill: #f4eee4; }
+.dial-label.l-down { fill: #9fc8ff; }
+.needle-body { fill: #fffdf2; stroke: #1a1020; stroke-width: 1.5; filter: drop-shadow(0 0 6px #fff2b0); }
+.needle-cap { fill: #ffd25a; stroke: #1a1020; stroke-width: 1; }
+.pull-dial-center { position: absolute; left: 50%; bottom: 2%; transform: translateX(-50%); width: 52%; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.pull-dial-center .pull-read { justify-content: center; }
+.pull-dial-center .pull-count { justify-content: center; }
+.pull-main { justify-content: center; }
+.pull-play { gap: 18px; }
 /* 今の温度は短い一語。温度計の印と同じ色（最適温は虹）。熱管理は熱が落ちていく ↓ を添える。 */
 .pull-read { display: flex; align-items: center; gap: 10px; min-height: 38px; }
 .pull-state { font-size: 26px; font-weight: 800; letter-spacing: .08em; line-height: 1.2; }
 .pull-read[data-tone="optimal"] .pull-state { color: transparent; -webkit-background-clip: text; background-clip: text;
   background-image: linear-gradient(90deg, #ff7070, #ffb43a, #ffee55, #66e690, #55d6ff, #8e8aff, #e47eff, #ff7070); background-size: 200% 100%; animation: thermo-rainbow 2.6s linear infinite; }
-.pull-read[data-tone="ok"] .pull-state { color: #ffd876; }
+.pull-read[data-tone="ok"] .pull-state { color: #6fe3b0; }
 .pull-read[data-tone="hot"] .pull-state { color: #ff9a45; }
 .pull-read[data-tone="danger"] .pull-state { color: #ff5a3a; animation: thermal-warn .45s ease-in-out infinite alternate; }
 .pull-read[data-tone="cold"] .pull-state { color: #eef3f6; animation: thermal-warn .45s ease-in-out infinite alternate; }
@@ -948,3 +898,32 @@
 .thermo-pop.down { color: #a9cdff; --pop-dy: 24px; }
 @keyframes thermo-pop { 0% { opacity: 0; transform: translateY(0) scale(.6); } 22% { opacity: 1; transform: translateY(0) scale(1.15); } 100% { opacity: 0; transform: translateY(var(--pop-dy)) scale(1); } }
 @media (prefers-reduced-motion: reduce) { .pull-read .pull-state, .pull-drift, .thermo-pop { animation: none; } }
+
+/* 総合スコア（TH42）: アーケードのように作業台の右上へ。工程の結果が出るたびに数字が回り、＋の点が浮かぶ。 */
+.arcade-score { position: relative; margin-left: auto; flex: none; display: flex; align-items: baseline; gap: 10px; padding: 5px 14px; border-radius: 8px;
+  background: linear-gradient(180deg, #120d1ccc, #07050dcc); border: 1px solid #ffd25a55; box-shadow: inset 0 0 12px #0008, 0 0 14px #ffd25a22; }
+.arcade-label { font-size: 12px; font-weight: 800; letter-spacing: .24em; color: #ffd25a; }
+.arcade-num { font-size: 24px; font-weight: 900; line-height: 1; letter-spacing: .12em; font-variant-numeric: tabular-nums; color: #fff6dc; text-shadow: 0 0 8px #ffcf5a99; }
+.arcade-score.bump .arcade-num { animation: arcade-bump .45s ease-out; }
+.arcade-pop { position: absolute; right: 10px; top: 100%; margin-top: 4px; z-index: 8; white-space: nowrap; pointer-events: none; font-size: 22px; font-weight: 900; color: #fff36b;
+  text-shadow: 0 0 10px #ffd25aee, 0 0 2px #000; animation: arcade-pop 1.3s ease-out forwards; }
+.arcade-pop small { margin-left: 6px; font-size: 13px; color: #e6e0ff; }
+@keyframes arcade-bump { 40% { transform: scale(1.18); color: #fff36b; } }
+@keyframes arcade-pop { 0% { opacity: 0; transform: translateY(8px) scale(.8); } 20% { opacity: 1; transform: translateY(0) scale(1.1); } 100% { opacity: 0; transform: translateY(-14px); } }
+.rt-part.score .arcade-num { font-size: 20px; }
+/* はじめの疲れ（TH43）: 作業中の姿の顔の横に汗、ばてると荒い息。吸いすぎた瞬間は一度びくっとする。 */
+.worker-sweat, .worker-breath { position: absolute; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .4s; }
+.worker-sweat { left: 53%; top: 20%; width: 40px; height: 50px; }
+.worker-sweat i { position: absolute; width: 11px; height: 15px; border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; background: linear-gradient(160deg, #ffffff, #9fd8ff); box-shadow: 0 0 4px #ffffffaa; transform-origin: 50% 0; animation: sweat-drip 1.6s ease-in infinite; }
+.worker-sweat i:first-child { left: 4px; top: 4px; }
+.worker-sweat i:last-child { left: 22px; top: 16px; animation-delay: .8s; display: none; }
+.bench-worker[data-fatigue="1"] .worker-sweat, .bench-worker[data-fatigue="2"] .worker-sweat { opacity: 1; }
+.bench-worker[data-fatigue="2"] .worker-sweat i:last-child { display: block; }
+.worker-breath { left: 43%; top: 31%; width: 34px; height: 22px; }
+.worker-breath::before { content: ""; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle, #ffffffcc, #ffffff00 70%); filter: blur(1px); animation: breath-puff 1.1s ease-out infinite; }
+.bench-worker[data-fatigue="2"] .worker-breath { opacity: .85; }
+.bench-worker.flinch .worker-actor { animation: worker-flinch .45s ease-out; }
+@keyframes sweat-drip { 0% { transform: translateY(0) scale(.6); opacity: 0; } 20% { opacity: 1; transform: translateY(0) scale(1); } 100% { transform: translateY(26px) scale(.9); opacity: 0; } }
+@keyframes breath-puff { 0% { transform: translate(0, 0) scale(.4); opacity: 0; } 30% { opacity: .9; } 100% { transform: translate(-16px, 4px) scale(1.3); opacity: 0; } }
+@keyframes worker-flinch { 0%, 100% { transform: none; } 25% { transform: translateX(-5px) rotate(-1deg); } 60% { transform: translateX(3px); } }
+@media (prefers-reduced-motion: reduce) { .arcade-score.bump .arcade-num, .arcade-pop, .worker-sweat i, .worker-breath::before, .bench-worker.flinch .worker-actor { animation: none; } }

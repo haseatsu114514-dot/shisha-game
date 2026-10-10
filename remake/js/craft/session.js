@@ -64,6 +64,7 @@ export function newSession(mode) {
     stats: null,
     trial: null,
     total: 0,
+    arcade: { total: 0, parts: {} },
     retryUsed: false,
   };
 }
@@ -90,12 +91,13 @@ export function openBench(cs, { steps = [] } = {}) {
   const panel = el("div.bench-panel");
   const condition = craftCondition(cs);
   const badge = cs.mode !== "tutorial" ? conditionBadge(condition) : null;
-  // 体調の顔の横に、フレーバーの葉（吸い出しから）と、吸いすぎ・熱すぎの疲れ（TH28・TH29）。
+  // 体調の顔の横に、フレーバーの葉（吸い出しから TH28）。疲れは作業中のはじめの表情と汗で見せる（TH29・TH43）。
   const leaf = buildLeafIcon();
-  const strain = el("span.bench-strain", { hidden: true, dataset: { test: "craft-strain" }, title: "吸いすぎ・熱すぎで体力が削れた。針が速く、成功帯が狭くなる" });
-  worker.footer.append(...[badge, leaf.root, strain].filter(Boolean));
+  worker.footer.append(...[badge, leaf.root].filter(Boolean));
+  // アーケードのような総合スコア（TH42）。工程の結果が出るたびに数字が回って増える。
+  const score = buildScoreBoard(cs);
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
-    el("div.bench-top", [el("span.bench-mode", { text: MODE_LABEL[cs.mode] || "" }), progress]),
+    el("div.bench-top", [el("span.bench-mode", { text: MODE_LABEL[cs.mode] || "" }), progress, score.root]),
     el("div.bench-left", [
       worker.root,
       audience?.root,
@@ -106,8 +108,8 @@ export function openBench(cs, { steps = [] } = {}) {
   const thermal = buildThermalAtmosphere(root, worker);
   bg();
   showScreen("bench", root);
-  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, thermal, badge, leaf, strain };
-  renderStrain();
+  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, thermal, badge, leaf, score };
+  renderFatigue();
   return bench;
 }
 
@@ -135,6 +137,7 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.panel.dataset.step = id;
   b.worker.root.dataset.step = id; // 今後の工程別アニメーションの接続先
   b.worker.setMental("steady");
+  renderFatigue();
   b.worker.caption.textContent = WORKER_STEPS[id] || titleText;
   b.thermal.setStep(id);
   b.leaf.root.hidden = !["pull", "care", "trial"].includes(id);
@@ -186,13 +189,16 @@ export function setBenchLeaf(cs, hit = false) {
   if (bench?.cs === cs) bench.leaf.render(cs.leaf, { hit });
 }
 
-/** 疲れの表示と、体調の顔（体力が境界を割れば顔も変わる）。 */
-function renderStrain() {
-  if (!bench) return;
-  const n = bench.cs.strain || 0;
-  bench.strain.hidden = !n;
-  bench.strain.textContent = `疲れ${n > 1 ? `×${Math.min(3, n)}` : ""}`;
-  bench.strain.setAttribute("aria-label", `疲れ ${n}。針が速く、成功帯が狭くなる`);
+/**
+ * はじめの疲れ（TH29・TH43）。札や文字は出さず、作業中のはじめの表情と汗で見せる。
+ * 0=元気（真剣な顔）、1=少し疲れ（汗がにじむ）、2=ばてている（沈んだ顔・汗と荒い息）。体調の黄・赤と、吸いすぎ・熱すぎの疲れの重い方。
+ */
+export function fatigueOf(cs) {
+  const health = { green: 0, yellow: 1, red: 2 }[cs.condition?.health] ?? 0;
+  return Math.max(health, Math.min(2, cs.strain || 0));
+}
+function renderFatigue() {
+  if (bench) bench.worker.setFatigue(fatigueOf(bench.cs));
 }
 /**
  * 吸いすぎ・熱すぎで、はじめの体力が削れてデバフが付く（TH29）。レッスンでは起きない。
@@ -206,10 +212,55 @@ export function strainBench(cs, stamina = 4) {
   if (order.indexOf(now.health) > order.indexOf(cs.condition?.health ?? "yellow")) cs.condition = now;
   if (bench?.cs === cs) {
     if (bench.badge) { const next = conditionBadge(cs.condition); bench.badge.replaceWith(next); bench.badge = next; }
-    renderStrain();
-    bench.strain.classList.remove("hit"); void bench.strain.offsetWidth; bench.strain.classList.add("hit");
+    renderFatigue();
+    bench.worker.flinch();
   }
   return true;
+}
+
+// ---------------------------------------------------------------- 総合スコア（TH42）
+
+// 工程の点（0〜100）1点あたりの重み。最終の総合（穴あけ・炭焼き・完成品・FLAVOR TRIAL 各25%）に合わせ、完成品の25%は配合・蒸らし・吸い出し・熱管理で分ける。
+const SCORE_WEIGHT = { mix: 62.5, holes: 250, heat: 250, steam: 62.5, pull: 62.5, care: 62.5, trial: 250 };
+const SCORE_DIGITS = 6;
+function buildScoreBoard(cs) {
+  const num = el("b.arcade-num", { text: "0".repeat(SCORE_DIGITS) });
+  const root = el("div.arcade-score", { dataset: { test: "arcade-score" }, "aria-live": "polite", "aria-label": "スコア 0" }, [el("span.arcade-label", { text: "SCORE" }), num]);
+  let shown = cs.arcade?.total || 0, raf = 0;
+  const paint = (v) => { num.textContent = String(Math.round(v)).padStart(SCORE_DIGITS, "0"); };
+  paint(shown);
+  return { root, roll(target, gain, label) {
+    root.setAttribute("aria-label", `スコア ${target}`);
+    if (gain) {
+      const pop = el("div.arcade-pop", [`${gain > 0 ? "+" : ""}${gain.toLocaleString("en-US")}`, label ? el("small", { text: label }) : null]);
+      root.append(pop);
+      setTimeout(() => pop.remove(), 1300);
+      root.classList.remove("bump"); void root.offsetWidth; root.classList.add("bump");
+    }
+    cancelAnimationFrame(raf);
+    const from = shown, started = performance.now(), dur = matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 700;
+    const step = (now) => {
+      const k = dur ? Math.min(1, (now - started) / dur) : 1;
+      shown = from + (target - from) * (1 - (1 - k) ** 3);
+      paint(shown);
+      if (k < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+  } };
+}
+/**
+ * 工程の点をスコアへ入れる。key は工程名（mix/holes/heat/steam/pull/care/trial）。"heat:1" のような部分点は、
+ * 同じ工程の最終点が入ると置き換わる。やり直した工程は前の点と入れ替える。
+ */
+export function scoreStep(cs, key, score, label = "") {
+  cs.arcade ??= { total: 0, parts: {} };
+  const step = key.split(":")[0];
+  const before = cs.arcade.total;
+  if (!key.includes(":")) for (const k of Object.keys(cs.arcade.parts)) if (k.startsWith(`${step}:`)) delete cs.arcade.parts[k];
+  cs.arcade.parts[key] = Math.round(Math.max(0, score || 0) * (SCORE_WEIGHT[step] ?? 0));
+  cs.arcade.total = Object.values(cs.arcade.parts).reduce((a, b) => a + b, 0);
+  if (bench?.cs === cs) bench.score.roll(cs.arcade.total, cs.arcade.total - before, label);
+  return cs.arcade.total;
 }
 
 /** ステージ座標（1280×720）でのボウルの位置。爆発の爆心にする。 */

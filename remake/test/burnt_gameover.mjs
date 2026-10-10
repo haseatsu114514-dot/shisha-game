@@ -31,7 +31,10 @@ try {
   await page.evaluate(() => { window.__remake.craftTest.auto = 'burn'; window.__run = window.__remake.dev.tournament(); });
   await page.waitForSelector('.bench[data-thermal-band="burnt"]', { timeout: 240000 });
   await page.waitForSelector('.end-screen.gameover', { timeout: 60000 });
-  assert.match(await page.locator('.end-screen.gameover .end-sub').textContent(), /シーシャが焦げてしまった/);
+  assert.match(await page.locator('.end-screen.gameover .go-reason-title').textContent(), /シーシャが焦げてしまった/);
+  assert.equal(await page.locator('.end-screen.gameover .go-emblem.burnt svg').count(), 1, 'the GAME OVER screen must show the burn mark');
+  assert.equal(await page.locator('.end-screen.gameover .go-title').getAttribute('aria-label'), 'GAME OVER');
+  assert.equal(await page.locator('.end-screen.gameover img[src*="bg_game_over"]').count(), 0, 'GAME OVER is drawn without an image');
   assert.equal(await page.locator('.end-screen.gameover .end-question').textContent(), '再挑戦しますか？');
   assert.equal(await page.locator('[data-test="game-over"]').getAttribute('data-reason'), 'burnt');
   const seen = await page.evaluate(() => window.__seen);
