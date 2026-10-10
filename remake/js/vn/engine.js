@@ -12,6 +12,7 @@ import { glossaryPanel } from "./glossary.js";
 import { rememberRelationship, relationshipReflectionLines } from "../core/relationships.js";
 import { needsIntro, playIntro, markIntroSeen, introSeenKey } from "./intro.js";
 import { buyKeepsake } from "../core/keepsakes.js";
+import { chekiShot, tarotFlip } from "../core/scene-motions.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
 const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man"]);
@@ -288,7 +289,16 @@ function next() {
     }
     if (type === "show_cg") {
       r.ready = false;
-      showCg(line.cg_id).then(() => { if (running === r) { r.ready = true; next(); } });
+      showCg(line.cg_id, line.effect).then(() => { if (running === r) { r.ready = true; next(); } });
+      return;
+    }
+    // 一度きりのモーショングラフィックス（core/scene-motions.js）。終わるまで次の行へ進まない
+    if (type === "motion") {
+      if (vnTest.turbo) continue;
+      const run = { tarot: () => tarotFlip() }[line.id];
+      if (!run) continue;
+      r.ready = false;
+      run().then(() => { if (running === r) { r.ready = true; next(); } });
       return;
     }
     if (type === "intro") {
@@ -406,13 +416,20 @@ function scent(c1, c2) {
   setTimeout(() => puff.remove(), 4200);
 }
 
-async function showCg(id) {
+async function showCg(id, effect = "") {
   const url = cgUrl(id);
   if (!url) return; // 素材待ちのCGは黙って飛ばす
   await imageReady(url, 15000);
-  dom.cg.dataset.cg = id;
-  dom.cg.style.backgroundImage = `url("${url}")`;
-  dom.cg.classList.add("show");
+  // effect:"cheki": シャッター→フラッシュ→フィルムが出てきて現像されたところで、同じ位置にCGを置く
+  const place = (instant) => {
+    dom.cg.dataset.cg = id;
+    dom.cg.style.backgroundImage = `url("${url}")`;
+    if (instant) dom.cg.style.transition = "none";
+    dom.cg.classList.add("show");
+    if (instant) { void dom.cg.offsetWidth; dom.cg.style.transition = ""; }
+  };
+  if (effect === "cheki" && !vnTest.turbo) await chekiShot(url, () => place(true));
+  if (!dom.cg.classList.contains("show") || dom.cg.dataset.cg !== id) place(false);
   if (hooks.onCg) hooks.onCg(id);
 }
 
