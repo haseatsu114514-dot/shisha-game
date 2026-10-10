@@ -96,7 +96,7 @@ let nextScript = 0;
 let previousContinueSpeaker = null;
 // 選択は20秒まで。字幕送りはカウントを早めず、期限後はGAME OVERからタイトルへ戻る。
 export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRetry, onTitle,
-  soundEffects = true, reducedMotion = false, layout = "bottom" } = {}) {
+  soundEffects = true, reducedMotion = false, layout = "bottom", background = "purple" } = {}) {
   const standard = SUMI_CONTINUE_SCRIPTS[Number.isInteger(variant) && variant >= 0
     ? variant % SUMI_CONTINUE_SCRIPTS.length : nextScript++ % SUMI_CONTINUE_SCRIPTS.length];
   const forced = typeof variant === "string" && variant.startsWith("premium:")
@@ -107,7 +107,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   if (variant == null) previousContinueSpeaker = speaker;
   const audio = createContinueAudio({ enabled: soundEffects });
   const view = createContinueView({ script, speaker, character: script.name || "スミさん",
-    premium: speaker !== "sumi", layout, onType: () => audio.voice(speaker) });
+    premium: speaker !== "sumi", layout, background, onType: () => audio.voice(speaker) });
   const { root } = view;
   root.dataset.reason = reason;
   const motion = window.matchMedia?.("(prefers-reduced-motion: reduce)");
@@ -145,7 +145,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     view.reveal(currentInstant || reduce || elapsed >= script.duration ? 1
       : Math.min(1, (elapsed - cue.at + .05) / typeTime(cue.text, length)));
     const remaining = Math.max(0, Math.ceil(script.duration - countAt));
-    view.count.textContent = String(remaining);
+    view.setCount(remaining, countAt / script.duration);
     root.classList.toggle("go-urgent", remaining > 0 && remaining <= 5);
     root.classList.toggle("go-done", remaining === 0);
     if (remaining <= 5 && !counted.has(remaining)) {
@@ -170,7 +170,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     root.dataset.timedOut = "true";
     root.classList.remove("go-urgent");
     root.classList.add("go-done");
-    view.count.textContent = "0";
+    view.setCount(0, 1);
     view.gameOver();
     if (!counted.has(0)) { counted.add(0); audio.count(0); }
     audio.expire();

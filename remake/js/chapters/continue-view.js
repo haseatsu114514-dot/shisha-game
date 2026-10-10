@@ -6,8 +6,9 @@ const EMPHASIS = ["俺たち全員", "俺たちはまだやれる", "断固反�
 // 顔の高さ(px)。テロップを1行にした分、人物を大きく映す（2026-10-10）。
 const FACE_PX = 256;
 
-export function createContinueView({ script, speaker, character, premium, layout = "bottom", onType = null }) {
-  const topActions = layout === "top";
+export function createContinueView({ script, speaker, character, premium, layout = "bottom", background = "purple", onType = null }) {
+  const backCount = layout === "back-count";
+  const topActions = layout === "top" || backCount;
   const art = name => img(`ui/continue/${name}.png`);
   const portrait = portraitInfo(speaker, script.cues[0].face);
   const image = portrait
@@ -28,6 +29,8 @@ export function createContinueView({ script, speaker, character, premium, layout
   const dialogue = el("button.go-dialogue", { type: "button", "aria-label": "台詞を送る", dataset: { test: "continue-caption" } }, [caption]);
   const count = el("span.go-count", { text: "20" });
   const clock = el("span.go-clock", { "aria-hidden": "true" }, [count]);
+  const echo = backCount ? el("span.go-count-echo", { text: "20" }) : null;
+  const echoLayer = backCount ? el("div.go-count-back", { "aria-hidden": "true" }, [echo]) : null;
   const next = el("button.go-next", { type: "button", text: "›", "aria-label": "台詞を送る", dataset: { test: "continue-next" } });
   const proceed = el("button.go-proceed", { type: "button", text: "進む →", hidden: true, dataset: { test: "continue-proceed" } });
   // セリフと区別できる2択ボタン。見た目はCSS、文言は実テキストで表示する。
@@ -43,8 +46,10 @@ export function createContinueView({ script, speaker, character, premium, layout
   const title = el("h1.go-title", { "aria-label": "コンティニュー？" }, [titleLabel, finalImage]);
   const root = el("div.end-screen.gameover", { role: "region", "aria-label": "大会のコンティニュー",
     dataset: { test: "game-over", variant: script.id, speaker, premium: String(premium),
-      layout: topActions ? "top" : "bottom", phase: "speaking" } }, [
+      layout: backCount ? "back-count" : topActions ? "top" : "bottom",
+      background: background === "stage" ? "stage" : "purple", phase: "speaking" } }, [
     el("div.go-veil", { "aria-hidden": "true" }),
+    ...(echoLayer ? [echoLayer] : []),
     el("header.go-heading", [title, clock, ...(topActions ? [actions] : [])]),
     el("div.go-left", [el("div.go-portrait", [image])]),
     el("div.go-right", [
@@ -58,7 +63,16 @@ export function createContinueView({ script, speaker, character, premium, layout
     el("div.go-exit", { "aria-hidden": "true" }),
   ]);
   // CSS変数内の相対URLは使用するCSSファイル基準になるため、ページ基準で解決する。
-  root.style.setProperty("--go-backdrop", `url("${new URL(art("backdrop"), document.baseURI).href}")`);
+  root.style.setProperty("--go-backdrop", `url("${new URL(art(background === "stage" ? "backdrop_stage" : "backdrop"), document.baseURI).href}")`);
+  function setCount(remaining, progress = 0) {
+    const text = String(remaining);
+    if (count.textContent !== text) count.textContent = text;
+    if (echo) {
+      if (echo.textContent !== text) echo.textContent = text;
+      // 台詞送りとは独立した実際の残り時間に合わせる。停止中も拡大しない。
+      root.style.setProperty("--go-count-scale", String(.65 + .9 * Math.min(1, Math.max(0, progress))));
+    }
+  }
   let letters = [], shown = -1;
   // テロップは常に1行。折り返さず、出す文字は少し小さい所から大きくなる。
   function setCaption(text, emphasis = null, seconds = 2) {
@@ -114,6 +128,7 @@ export function createContinueView({ script, speaker, character, premium, layout
     title.setAttribute("aria-label", "GAME OVER");
     finalImage.hidden = false;
     clock.hidden = actions.hidden = true;
+    if (echoLayer) echoLayer.hidden = true;
     live.textContent = "GAME OVER";
     [retry, quit, next, dialogue, proceed].forEach(button => { button.disabled = true; });
     proceed.hidden = true;
@@ -121,5 +136,5 @@ export function createContinueView({ script, speaker, character, premium, layout
   // 読み上げ支援には文字ごとでなく、台詞のまとまりを一度だけ通知する。
   const announce = text => { live.textContent = text; };
   return { root, caption, dialogue, count, next, proceed, retry, quit,
-    setCaption, reveal, face, reaction, gameOver, announce, isRevealed: () => shown >= letters.length };
+    setCaption, reveal, face, reaction, gameOver, announce, setCount, isRevealed: () => shown >= letters.length };
 }

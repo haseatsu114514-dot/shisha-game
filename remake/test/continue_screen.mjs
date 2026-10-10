@@ -38,7 +38,7 @@ async function geometry() {
   assert(boxes.count.left >= boxes.label.right + 8 * scale
     && Math.abs((boxes.count.top + boxes.count.bottom - boxes.label.top - boxes.label.bottom) / 2) <= 4 * scale,
     "count must sit beside the heading without overlap");
-  if (boxes.layout === "top") {
+  if (["top", "back-count"].includes(boxes.layout)) {
     assert(boxes.retry.left >= boxes.count.right + 8 * scale && boxes.quit.left >= boxes.retry.right + 8 * scale,
       "heading, count, retry and quit must have separate spaces");
     assert(boxes.retry.bottom <= boxes.face.top && boxes.quit.bottom <= boxes.face.top,
@@ -241,10 +241,10 @@ try {
   }
   console.log("PASS: all 9 scripts in phone landscape, reduced motion, muted controls");
   // 実験版は同じボタン処理を使う。全台本の大きい1行と、上部の2択をPC／横持ちで検証。
-  for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }]) {
+  for (const layout of ["top", "back-count"]) for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }]) {
     await page.setViewportSize(viewport);
     for (const [index, variant] of variants.entries()) {
-      await mount(variant, { layout: "top", soundEffects: false });
+      await mount(variant, { layout, background: layout === "back-count" ? "stage" : "purple", soundEffects: false });
       assert.equal(await page.locator('[data-test="retry"]').textContent(), "する");
       for (let n = 0; n < 40; n++) {
         await page.evaluate(() => {
@@ -261,16 +261,81 @@ try {
       await page.clock.runFor(8000);
       assert.deepEqual(await page.evaluate(() => window.__decisions), [choice]);
     }
-    await mount(0, { layout: "top", soundEffects: false });
+    await mount(0, { layout, soundEffects: false });
     await page.clock.runFor(20100);
     assert(await page.locator(".go-count").isHidden());
     assert(await page.locator('[data-test="retry"]').isHidden());
     assert(await page.locator('[data-test="game-over-title"]').isHidden());
     assert(await page.locator(".go-title-art").isVisible());
+    if (layout === "back-count") assert(await page.locator(".go-count-back").isHidden());
     await page.clock.runFor(2000);
     assert.deepEqual(await page.evaluate(() => window.__decisions), ["quit"]);
   }
-  console.log("PASS: top-button experiment, all 9 scripts on PC / phone; GAME OVER hides count and choices");
+  console.log("PASS: both top-button experiments, all 9 scripts on PC / phone; GAME OVER hides every count and choices");
+  // 拡大は台詞送りから独立し、タブ休止・動き軽減を尊重する。
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await mount(0, { layout: "back-count", background: "stage", soundEffects: false });
+  await page.evaluate(async () => {
+    const url = getComputedStyle(document.querySelector(".gameover")).backgroundImage.match(/url\("?([^"\)]+)"?\)/)?.[1];
+    if (!url?.includes("backdrop_stage")) throw new Error("Stage backdrop missing");
+    const image = new Image(); image.src = url; await image.decode();
+  });
+  const echo = async () => page.locator(".go-count-echo").evaluate(el => ({
+    text: el.textContent, height: el.getBoundingClientRect().height,
+    scale: el.closest(".gameover").style.getPropertyValue("--go-count-scale"),
+    opacity: Number(getComputedStyle(el).opacity), transform: getComputedStyle(el).transform,
+    behind: Number(getComputedStyle(el.parentElement).zIndex) < Number(getComputedStyle(document.querySelector(".go-left")).zIndex),
+    inert: getComputedStyle(el.parentElement).pointerEvents === "none"
+  }));
+  const first = await echo();
+  assert.equal(first.text, "20");
+  assert(first.behind && first.inert && first.opacity > 0 && first.opacity <= .16, "count must be faint and behind the portrait");
+  await page.clock.runFor(5200);
+  const fifteen = await echo();
+  assert.equal(fifteen.text, "15");
+  assert(fifteen.height > first.height + 50, "back count must grow as time passes");
+  const advance = await page.evaluate(() => {
+    const root = document.querySelector(".gameover"), before = performance.now();
+    const scale = Number(root.style.getPropertyValue("--go-count-scale"));
+    for (let n = 0; n < 40; n++) document.querySelector(".go-dialogue").click();
+    return { elapsed: performance.now() - before, scale, after: Number(root.style.getPropertyValue("--go-count-scale")) };
+  });
+  assert(Math.abs(advance.after - advance.scale) <= (advance.elapsed + 70) / 20000 * .9 + .00001,
+    "caption advance must not jump beyond real elapsed time");
+  const pausedScale = await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", { configurable: true, value: true });
+    document.dispatchEvent(new Event("visibilitychange"));
+    return document.querySelector(".gameover").style.getPropertyValue("--go-count-scale");
+  });
+  await page.clock.runFor(5000);
+  assert.equal((await echo()).scale, pausedScale, "hidden tab must pause back-count growth");
+  assert.equal((await echo()).text, "15");
+  await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", { configurable: true, value: false });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await page.clock.runFor(10000);
+  const five = await echo();
+  assert.equal(five.text, "5");
+  assert(five.height > fifteen.height + 100);
+  await page.clock.runFor(4000);
+  const one = await echo();
+  assert.equal(one.text, "1");
+  assert(one.height > five.height + 50);
+  await page.clock.runFor(1100);
+  assert(await page.locator(".go-count-back,.go-clock").evaluateAll(els => els.every(el => el.hidden)));
+  assert(await page.locator(".go-title-art").isVisible());
+  await page.clock.runFor(2000);
+  assert.deepEqual(await page.evaluate(() => window.__decisions), ["quit"]);
+  await mount(0, { layout: "back-count", reducedMotion: true, soundEffects: false });
+  const still = await echo();
+  await page.clock.runFor(5200);
+  assert.equal((await echo()).height, still.height, "reduced motion must keep back-count size fixed");
+  assert.equal((await echo()).transform, "none");
+  assert.equal((await echo()).text, "15");
+  assert.equal(await page.locator(".gameover").getAttribute("data-background"), "purple");
+  console.log("PASS: faint growing back count, stage backdrop, independent captions, hidden-tab pause, reduced motion and zero removal");
   await page.close();
 
   // プレビューは両分岐を見せ、セーブと恋人抽選履歴を変えない。
@@ -302,6 +367,15 @@ try {
   assert.match(await preview.locator("#preview-error").textContent(), /大会の最初/);
   await preview.locator("#preview-layout").selectOption("bottom");
   assert.equal(await preview.locator(".gameover").getAttribute("data-layout"), "bottom");
+  await preview.locator("#preview-layout").selectOption("back-count");
+  await preview.locator("#preview-background").selectOption("stage");
+  assert.equal(await preview.locator(".gameover").getAttribute("data-layout"), "back-count");
+  assert.equal(await preview.locator(".gameover").getAttribute("data-background"), "stage");
+  await preview.locator("#preview-quit").click();
+  await preview.clock.runFor(8000);
+  assert.match(await preview.locator("#preview-error").textContent(), /タイトル/);
+  await preview.locator("#preview-background").selectOption("purple");
+  assert.equal(await preview.locator(".gameover").getAttribute("data-background"), "purple");
   assert.equal(await preview.evaluate(() => localStorage.getItem("suien_remake_save")), "preview-sentinel");
   await preview.close();
   assert.deepEqual(missing, [], "all canon portraits must resolve");

@@ -91,7 +91,7 @@
 .gameover .go-clock { flex: 0 0 auto; height: 78px;
   display: flex; justify-content: center; align-items: center; background: none; color: #fff;
   border: 0; box-shadow: none; }
-.gameover :is(.go-clock,.end-actions)[hidden] { display: none; }
+.gameover :is(.go-clock,.end-actions,.go-count-back)[hidden] { display: none; }
 .gameover .go-count { width: 2ch; font-size: 80px; font-weight: 900; line-height: 1; text-align: left;
   font-variant-numeric: tabular-nums; letter-spacing: -.04em; }
 .gameover.go-urgent .go-clock { color: #ffd36b; }
@@ -100,15 +100,22 @@
 .gameover[data-timed-out="true"] .go-title { height: 200px; }
 .gameover[data-timed-out="true"] :is(.go-left,.go-right,.go-effect) { opacity: 0; pointer-events: none; }
 /* 比較用の実験版。上に2択を集め、下は大きい1行テロップと人物を見せる。 */
-.gameover[data-layout="top"] .end-actions { position: static; flex: 0 0 auto; gap: 12px; }
-.gameover[data-layout="top"] .go-choice { flex: 0 0 auto; min-width: 128px; min-height: 64px;
+.gameover:is([data-layout="top"],[data-layout="back-count"]) .end-actions { position: static; flex: 0 0 auto; gap: 12px; }
+.gameover:is([data-layout="top"],[data-layout="back-count"]) .go-choice { flex: 0 0 auto; min-width: 128px; min-height: 64px;
   padding: 8px 18px; font-size: 28px; }
-.gameover[data-layout="top"] .go-right { left: 36px; right: 36px; top: 612px; }
-.gameover[data-layout="top"] .go-dialogue { height: 68px; }
-.gameover[data-layout="top"] .go-speech-text { font-size: 48px; }
-.gameover[data-layout="top"] .go-playback { top: 74px; }
-.gameover[data-layout="top"] .go-next { display: none; }
-.gameover[data-layout="top"] .go-proceed { min-height: 28px; }
+.gameover:is([data-layout="top"],[data-layout="back-count"]) .go-right { left: 36px; right: 36px; top: 612px; }
+.gameover:is([data-layout="top"],[data-layout="back-count"]) .go-dialogue { height: 68px; }
+.gameover:is([data-layout="top"],[data-layout="back-count"]) .go-speech-text { font-size: 48px; }
+.gameover:is([data-layout="top"],[data-layout="back-count"]) .go-playback { top: 74px; }
+.gameover:is([data-layout="top"],[data-layout="back-count"]) .go-next { display: none; }
+.gameover:is([data-layout="top"],[data-layout="back-count"]) .go-proceed { min-height: 28px; }
+/* 背面カウント比較版。数字は正規人物とテロップの背後で、期限に沿って拡大する。 */
+.gameover .go-count-back { position: absolute; z-index: 1; left: 0; right: 0; top: 100px; height: 480px;
+  display: grid; place-items: center; pointer-events: none; user-select: none; }
+.gameover .go-count-echo { font-family: var(--font); font-size: 520px; font-weight: 900; line-height: 1;
+  font-variant-numeric: tabular-nums; letter-spacing: -.06em; color: #eee5ff; opacity: .12;
+  transform: scale(var(--go-count-scale, .65)); transition: transform .07s linear; }
+.gameover[data-phase="reaction"] .go-count-back { opacity: .35; }
 .gameover[data-speaker="tsumugi"][data-last-cue="true"] .go-sumi-img { filter: drop-shadow(0 0 16px #efa9d540); }
 .gameover[data-speaker="tsumugi"][data-last-cue="true"] .go-veil { background: radial-gradient(ellipse at 50% 32%, #571b422c, transparent 70%); }
 .gameover .go-sumi-img.go-beat { animation: go-portrait-beat .38s var(--ease-out) both; }
@@ -153,7 +160,9 @@
   animation: none !important; transition: none !important;
 }
 .gameover[data-reduced-motion="true"] .go-effect i { display: none; }
+.gameover[data-reduced-motion="true"] .go-count-echo { transform: none; }
 @media (prefers-reduced-motion: reduce) {
   .gameover *, .gameover *::after { animation: none !important; transition: none !important; }
   .gameover .go-effect i { display: none; }
+  .gameover .go-count-echo { transform: none; }
 }

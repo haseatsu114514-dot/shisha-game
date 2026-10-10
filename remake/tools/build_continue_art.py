@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""生成アトラスをUI部品に切り出し、採用した紫の煙背景をコピーする。
+"""生成素材をUI部品に切り出し、紫背景と試用ステージを組み込む。
 
 2026-10-10 オーナー指摘「赤黒は怖い」（優しい色にする必要はない）により、
 英字ロゴの赤い影を青へ色替えする。可決の朱印は印の色なので保持。
 CV20の背景は画像編集で生成した backdrop-purple.png をそのまま採用する。
+CV30のGAME OVERは新規の煙・金の透過原画。CV32のステージは1280×720へ縮小。
 """
 from pathlib import Path
 import shutil
@@ -48,9 +49,11 @@ def part(source, name, row=None, recolor=None):
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     part("titles", "continue_title", 0, blue_shadow)
-    part("titles", "game_over_title", 1, blue_shadow)
+    part("game-over-smoke", "game_over_title")
     part("stamp", "approval_stamp")
     shutil.copyfile(SOURCE / "backdrop-purple.png", OUT / "backdrop.png")
+    stage = Image.open(SOURCE / "backdrop-stage.png").convert("RGB")
+    stage.resize((1280, 720), Image.Resampling.LANCZOS).save(OUT / "backdrop_stage.png", optimize=True)
 
 
 if __name__ == "__main__":

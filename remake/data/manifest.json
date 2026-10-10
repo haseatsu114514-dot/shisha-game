@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-10 16:18 UTC",
+ "generated": "2026-10-10 20:08 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -291,6 +291,7 @@
  "continueUI": [
   "approval_stamp.png",
   "backdrop.png",
+  "backdrop_stage.png",
   "continue_title.png",
   "game_over_title.png"
  ],
@@ -1408,6 +1409,7 @@
   "ui/character_intros/tsumugi.png",
   "ui/continue/approval_stamp.png",
   "ui/continue/backdrop.png",
+  "ui/continue/backdrop_stage.png",
   "ui/continue/continue_title.png",
   "ui/continue/game_over_title.png",
   "ui/making/bench_base.png",

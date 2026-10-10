@@ -1,16 +1,27 @@
 # CONTINUE V4 表示確認（2026-10-10）
 
-## CV27〜29 上にボタンを集める実験版
+## CV27〜32 上部ボタン・背面カウント・暗いステージの比較版
 
 採用中の下段ボタン版と同じ台詞・表情・カウント15で比較。
 実験版は「コンティニュー？ 15 ［する］［諦める］」の横並び。下のボタンを外し、セリフを大きくして人物と台詞を目立たせる。
-本編への採用は未決。プレビューの「配置」で両版を切り替えられる。
+本編への採用は未決。プレビューの「配置」で下段ボタン／上段ボタン／上段ボタン＋背面カウントの3版を切り替えられる。
+背景も「紫の煙（採用中）」／「暗いステージ（試用）」を独立して比較できる。
 
 - PC・スミさん: [採用中](top-buttons-experiment/current-sumi.png) / [上にボタン・実験](top-buttons-experiment/top-sumi.png)
 - スマホ横持ち・アゲハ: [採用中](top-buttons-experiment/current-phone-ageha.png) / [上にボタン・実験](top-buttons-experiment/top-phone-ageha.png)
+- 暗いステージ: [上段ボタン](top-buttons-experiment/stage-top-sumi.png) / [背面カウント15](top-buttons-experiment/back-count-15.png) / [5](top-buttons-experiment/back-count-5.png) / [1](top-buttons-experiment/back-count-1.png)
+- [紫背景＋背面カウント](top-buttons-experiment/back-count-purple.png) / [暗いステージ・スマホ横持ち](top-buttons-experiment/stage-phone-ageha.png)
 - [数字を消したGAME OVER](top-buttons-experiment/game-over.png) / [表示検証記録](top-buttons-experiment/verification.json)
 
-GAME OVER時の数字非表示は両版へ反映。下の過去画像にある0は変更前の制作記録。
+背面の数字は濃さ12%で人物の後ろへ置き、台詞送りと独立した20秒の期限に沿って0.65倍→1.55倍へ連続して拡大する。背景タブでは止まり、動き軽減では一定サイズのままカウントする。
+GAME OVER時の数字非表示は全版へ反映し、今回の煙と金の透過ロゴを中央へ出す。下の過去画像にある0と旧ロゴは変更前の制作記録。
+
+新素材の原画・完全な指示・SHA256:
+
+- [GAME OVER原画](generated/game-over-smoke.png) / [生成指示](generated/game-over-smoke.prompt.txt) / [生成記録](generated/game-over-smoke.json)。PNGはアルファ余白だけを切り出し、色は変更しない。
+- [試用ステージ原画](generated/backdrop-stage.png) / [生成指示](generated/backdrop-stage.prompt.txt) / [生成記録](generated/backdrop-stage.json)。添付2枚を実際の画像参照として生成し、1280×720へLanczos縮小。本編の紫背景は維持する。
+
+`continue-preview.html?layout=back-count&background=stage` で新比較版を選んだ状態から再生できる。
 
 ## CV22〜26 ボタン・下端までの人物・見出し横カウント
 

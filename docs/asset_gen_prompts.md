@@ -1,5 +1,7 @@
 # 画像生成プロンプト集（codex用）— シーシャ作りパート＋立ち絵
 
+> 2026-10-10 CV30・CV32: CONTINUEの比較版に[煙と金のGAME OVERロゴ](../asset_sources/ui/continue-v4-20261010/generated/game-over-smoke.png)と[暗いステージ背景](../asset_sources/ui/continue-v4-20261010/generated/backdrop-stage.png)を新規生成。[ロゴの完全な指示](../asset_sources/ui/continue-v4-20261010/generated/game-over-smoke.prompt.txt)・[背景の完全な指示](../asset_sources/ui/continue-v4-20261010/generated/backdrop-stage.prompt.txt)・[生成記録と実画面](../asset_sources/ui/continue-v4-20261010/README.md)。ロゴだけ指定文字を許可。背景の人物・台詞・数字はコードで表示する。紫背景と通常配置は本編の既定のまま、試用背景・上段ボタン・拡大する背面カウントはプレビューで比較。
+
 > 2026-10-10 SF02: 蒸らし中に目を閉じて息を整えるはじめの[生成指示](../asset_sources/steam-focus-20261010/hajime-wait-prompt.txt)・[実参照と原画SHA](../asset_sources/steam-focus-20261010/generation.json)を保存。採用済みの帽子・パーカー・携帯中のマイチップと画風を維持し、シーシャ台やホースは人物画像へ追加しない。[実装画面・検品記録](../asset_sources/steam-focus-20261010/README.md)。
 
 > 2026-10-10 SF22〜27: 精神世界はシンプルで抽象的な宇宙へ。[採用背景の生成指示](../asset_sources/steam-focus-20261010/world-prompt.txt)・[原画SHA](../asset_sources/steam-focus-20261010/world-generation.json)。暗い紫に薄い星雲と小さな星粒だけを描き、言葉・心拍・動く弾・リフレッシュの波はコードが描く。店内が残る前案は[不採用の記録](../asset_sources/steam-focus-20261010/rejected-lounge-generation.json)として保存し、ゲームへ接続しない。
