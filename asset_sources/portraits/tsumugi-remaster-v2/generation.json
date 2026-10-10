@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "character": "tsumugi",
+  "generations": [
+    {
+      "face": "normal",
+      "prompt_number": 1,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T04:54:34.027161+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/tsumugi-remaster-v2/attempts/normal-attempt-01-source.png",
+      "source_sha256": "b710be45f1892e293549620781fa8e8c06cb2b402b3b1a8a2063b064deaaf6e0",
+      "original_tool_file": "exec-e82058c6-33d3-48ca-a975-1b79064ae019.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/tsumugi-remaster-v2/attempts/normal-attempt-01-prompt.txt",
+      "prompt_sha256": "ade255c43ed99640ad43dc43ce7a56adea7d34d4ae4a6e4dc11fd28faa94fb24",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ],
+      "canvas_px": [
+        1084,
+        1451
+      ],
+      "alpha_bbox_threshold_16_px": [
+        360,
+        20,
+        726,
+        1416
+      ],
+      "figure_height_px": 1396,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "needs_revision",
+        "note": "原寸の原画・比較画像を目視。頭は小さくなったがタブレット上の指先が下へ移動し、胴・スカートの幅も狭くなったため再生成。透過・人物1396px・端の余白はOK。"
+      }
+    }
+  ],
+  "selected_attempt": 1,
+  "owner_approval": "pending"
+}
