@@ -1113,3 +1113,13 @@ body[data-weather="outdoor"] .map-weather { display: none; }
  .gameover .go-veil,.gameover .go-sumi-img,.gameover .end-actions .primary { animation:none !important; }
  .gameover .go-progress-fill {transition:none}
 }
+
+/* 第1章みんとは敵。恋人プレミアに選ばれたときだけ秘密のピンクゴールド演出。 */
+.gameover[data-premium="true"] { --go-accent:#ffb5d6; --go-hot:#ff5b91; }
+.gameover[data-premium="true"] .go-veil {
+  background:radial-gradient(ellipse at 26% 74%,#953b7366,transparent 45%),
+    repeating-linear-gradient(127deg,#ffffff04 0 2px,transparent 2px 21px),
+    linear-gradient(118deg,#171021 0%,#100b16 58%,#271325 100%);
+}
+.gameover[data-premium="true"] .go-title { text-shadow:4px 5px 0 #80345b,0 0 24px #ff75b75e; }
+.gameover[data-premium="true"] .go-character small { color:#ffd7e9; }
