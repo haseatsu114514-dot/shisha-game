@@ -3,9 +3,11 @@
 [調査と方針](README.md)。2026-10-09 オーナー決定：**顔の大きさが中央値から±10%を超える6人だけ直す**／**画風はみんと・アゲハに合わせる**。
 1回の生成で1人・1表情。各ブロックの英文と、ブロックに書いたリポジトリの参照画像4枚で1回ずつ生成する。全34表情。参照画像は**エージェントがリポジトリから直接読み込む**（オーナーが保存・添付する必要はない）。
 
+> 2026-10-10 追記（要望台帳 PU02）：主目的は画風と解像度をそろえること。つむぎはやや頭が大きい方が可愛いという指定を優先し、頭の縮小率より丸さ・可愛さを保つ。つむぎの7ブロック末尾の追記が、以前の10%縮小指定に優先する。
+
 | キャラ | いまの顔の大きさ（中央値比） | 直し方 | 画風の直し | 表情数 |
 |---|---|---|---|---|
-| つむぎ | +18% | 頭を約10%小さく（丸さは残す。仕上がり目安+6%） | 基準に合わせる | 7 |
+| つむぎ | +18% | やや大きめの頭と丸さ・可愛さを優先。10%縮小は強制しない（2026-10-10追記） | 基準に合わせる | 7 |
 | 前園 | +17% | 頭を約14%小さく | 平たい塗り・太い線を基準へ | 5 |
 | スミさん | +15% | 頭（帽子込み）を約13%小さく | 基準に合わせる | 5 |
 | ましろ | +13% | 頭を約8%小さく（丸さは残す。仕上がり目安+4%） | 基準に合わせる | 6 |
@@ -78,6 +80,8 @@ Keep the same total figure height and the same overall silhouette and stance; on
 STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+
+Owner update 2026-10-10: prioritize matching resolution and rendering style; Tsumugi may retain a slightly oversized, soft round head close to image 1 because it looks cuter, so do not force the earlier 10% head reduction.
 ```
 
 ### 2. つむぎ・smile
@@ -98,6 +102,8 @@ Keep the same total figure height and the same overall silhouette and stance; on
 STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+
+Owner update 2026-10-10: prioritize matching resolution and rendering style; Tsumugi may retain a slightly oversized, soft round head close to image 1 because it looks cuter, so do not force the earlier 10% head reduction.
 ```
 
 ### 3. つむぎ・serious
@@ -118,6 +124,8 @@ Keep the same total figure height and the same overall silhouette and stance; on
 STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+
+Owner update 2026-10-10: prioritize matching resolution and rendering style; Tsumugi may retain a slightly oversized, soft round head close to image 1 because it looks cuter, so do not force the earlier 10% head reduction.
 ```
 
 ### 4. つむぎ・surprise
@@ -138,6 +146,8 @@ Keep the same total figure height and the same overall silhouette and stance; on
 STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+
+Owner update 2026-10-10: prioritize matching resolution and rendering style; Tsumugi may retain a slightly oversized, soft round head close to image 1 because it looks cuter, so do not force the earlier 10% head reduction.
 ```
 
 ### 5. つむぎ・sad
@@ -158,6 +168,8 @@ Keep the same total figure height and the same overall silhouette and stance; on
 STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+
+Owner update 2026-10-10: prioritize matching resolution and rendering style; Tsumugi may retain a slightly oversized, soft round head close to image 1 because it looks cuter, so do not force the earlier 10% head reduction.
 ```
 
 ### 6. つむぎ・evil
@@ -178,6 +190,8 @@ Keep the same total figure height and the same overall silhouette and stance; on
 STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+
+Owner update 2026-10-10: prioritize matching resolution and rendering style; Tsumugi may retain a slightly oversized, soft round head close to image 1 because it looks cuter, so do not force the earlier 10% head reduction.
 ```
 
 ### 7. つむぎ・bow
@@ -198,6 +212,8 @@ Keep the same total figure height and the same overall silhouette and stance; on
 STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
 Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figure itself at least 1300 px tall from the top of the head to the bottom of the shoes. Include all hair tips, both hands and both entire shoes, with clean transparent margins on every side. True RGBA transparent background, also between the limbs. No floor, cast shadow, glow, border, text, labels, grid or watermark. Not a glossy 3D render, airbrush, photo, blur, added noise or coarse retro pixels.
+
+Owner update 2026-10-10: prioritize matching resolution and rendering style; Tsumugi may retain a slightly oversized, soft round head close to image 1 because it looks cuter, so do not force the earlier 10% head reduction.
 ```
 
 ## 前園（maezono）

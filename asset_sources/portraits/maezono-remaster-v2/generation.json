@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "character": "maezono",
+  "generations": [
+    {
+      "face": "normal",
+      "prompt_number": 8,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:05:34.130937+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/maezono-remaster-v2/attempts/normal-attempt-01-source.png",
+      "source_sha256": "cde526f50a41e19feae4737a1c037c8fae054c364556f24f937609f7b912c897",
+      "original_tool_file": "exec-83b36b34-0e94-43b8-81c2-5d59ee0db2aa.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/maezono-remaster-v2/attempts/normal-attempt-01-prompt.txt",
+      "prompt_sha256": "262ba981ffa810798bf29c03c78d637c187115583c4fb9168c77a22a18bc2073",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+          "sha256": "487c0ee519326794d5d74cc52f7c4e3d6db7728304a26907eee1d729ad46fae5"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+          "sha256": "487c0ee519326794d5d74cc52f7c4e3d6db7728304a26907eee1d729ad46fae5"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "canvas_px": [
+        1084,
+        1451
+      ],
+      "alpha_bbox_threshold_16_px": [
+        254,
+        26,
+        812,
+        1425
+      ],
+      "figure_height_px": 1399,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "needs_revision",
+        "note": "原画を目視。丸眼鏡・挨拶の手・メモ・衣装を保持。輪郭に元画像の赤黄の色にじみが残るので再生成。"
+      }
+    }
+  ],
+  "selected_attempt": 1,
+  "owner_approval": "pending"
+}

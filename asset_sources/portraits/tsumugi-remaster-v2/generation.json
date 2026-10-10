@@ -60,7 +60,7 @@
       ],
       "qa": {
         "status": "needs_revision",
-        "note": "原寸の原画・比較画像を目視。頭は小さくなったがタブレット上の指先が下へ移動し、胴・スカートの幅も狭くなったため再生成。透過・人物1396px・端の余白はOK。"
+        "note": "初回比較で胸元の花刺繍を指先と誤読（部分拡大で訂正）。本来の2本の腕は保たれていた。頭は小さくなったが胴・スカートの幅が狭く、再生成へ。透過・人物1396px・端の余白はOK。"
       }
     },
     {
@@ -121,10 +121,71 @@
       ],
       "qa": {
         "status": "needs_revision",
-        "note": "原画を目視。上の指先は戻ったが、タブレット左下に余分な手が追加されて合計3か所の手になるため再生成。輪郭に元画像由来の赤黄のにじみも残る。"
+        "note": "初回の誤読に基づく追加指示により、胸元の花刺繍が指先のように描かれたため再生成。元絵の2本の腕と刺繍を保つ指定に訂正。輪郭に元画像由来の赤黄のにじみも残る。"
+      }
+    },
+    {
+      "face": "normal",
+      "prompt_number": 1,
+      "attempt": 3,
+      "generated_at_utc": "2026-10-10T05:05:33.950537+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/tsumugi-remaster-v2/attempts/normal-attempt-03-source.png",
+      "source_sha256": "bc63caaa2fa4fdae7f0bcd5bb733aceef800b97faa7a7398ba43baf5cbe4a828",
+      "original_tool_file": "exec-80a07574-6001-42cf-94c4-eb0fade1321c.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/tsumugi-remaster-v2/attempts/normal-attempt-03-prompt.txt",
+      "prompt_sha256": "3b41c3ef6dbd056751cb763f126ba12bad47d19be0d2113edff0c17b80022318",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ],
+      "canvas_px": [
+        1084,
+        1451
+      ],
+      "alpha_bbox_threshold_16_px": [
+        355,
+        37,
+        730,
+        1401
+      ],
+      "figure_height_px": 1364,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "awaiting_visual_review",
+        "note": "原画を目視。胸元は花刺繍、腕は2本に戻った。旧10%縮小指定での先行案。生成中にPU02の頭やや大きめ指定が届いたため、その指定を反映した別案を用意する。"
       }
     }
   ],
-  "selected_attempt": 2,
+  "selected_attempt": 3,
   "owner_approval": "pending"
 }

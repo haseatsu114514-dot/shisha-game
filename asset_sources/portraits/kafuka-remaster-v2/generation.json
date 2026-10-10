@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "character": "kafuka",
+  "generations": [
+    {
+      "face": "normal",
+      "prompt_number": 29,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:05:34.041744+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/kafuka-remaster-v2/attempts/normal-attempt-01-source.png",
+      "source_sha256": "a09e2b01af93851637231118a69bcb75b8294c1a3a9cce5fb7df64550443b381",
+      "original_tool_file": "exec-232e9915-227d-4e73-9434-f1af8e7e05a4.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/kafuka-remaster-v2/attempts/normal-attempt-01-prompt.txt",
+      "prompt_sha256": "a5e2ab12f728e015d7b91edcf5f1cf6f9da611021177534bd5c82d22fcb66dee",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+          "sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+          "sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ],
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        225,
+        12,
+        883,
+        1439
+      ],
+      "figure_height_px": 1427,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "needs_revision",
+        "note": "原画を目視。髪・フード・ぬいぐるみ・挨拶の手・足は保持。輪郭に元画像の赤・黄・青の色にじみが残るので再生成。"
+      }
+    }
+  ],
+  "selected_attempt": 1,
+  "owner_approval": "pending"
+}
