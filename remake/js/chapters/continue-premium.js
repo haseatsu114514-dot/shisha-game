@@ -7,6 +7,10 @@ export const PREMIUM_CONTINUE_SCRIPTS = {
     id: "premium_tsumugi", title: "ずっと見てますから", name: "つむぎ",
     bio: "恋人 / つむぎ", speaker: "tsumugi", duration: 20,
     audio: null, // 音声生成後 ../assets/audio/voice/continue/premium_tsumugi.mp3 を指定
+    reactions: {
+      retry: { text: "……よかったぁ。……ふふ。まだ、続きが描けますね。……ちゃんと見てます。", faces: ["sad", "smile"], effect: "pencil", word: "続きが描けますね" },
+      quit: { text: "……そっか。今日は休みましょう。……途中の絵、大事に取っておきますね。……ふふ。", faces: ["normal", "smile"], effect: "canvas", word: "今日は休みましょう" },
+    },
     cues: [
       { at: 0, face: "sad", text: "……あ、はじめさん……その……もう、終わりにしちゃうんですか……？ わたし、まだ勝つところ、見てないです……。" },
       { at: 4.1, face: "normal", text: "……帰っちゃうなら、仕方ないですけど……今日の絵、はじめさんの色だけ、途中になっちゃう……。" },
@@ -19,6 +23,10 @@ export const PREMIUM_CONTINUE_SCRIPTS = {
     id: "premium_minto", title: "私もあきらめない", name: "栞",
     bio: "恋人 / 仕事を離れた素の栞", speaker: "minto", duration: 20,
     audio: null,
+    reactions: {
+      retry: { text: "……うん。そうだよね。私、ちゃんと見てる。……帰ってきたら、ぎゅってするから。", faces: ["ura_sad", "ura_smile"], effect: "warm", word: "ぎゅってするから" },
+      quit: { text: "……うん。頑張ったの、知ってるよ。今日は帰って、あったかいもの飲も？", faces: ["ura_normal"], effect: "warm", word: "頑張ったの、知ってるよ" },
+    },
     cues: [
       { at: 0, face: "ura_surprise", text: "……えっ。はじめくん……終わりにするの？ ……あの、まだ、やれるんじゃ……。" },
       { at: 4.1, face: "ura_sad", text: "……私、かっこいいところだけ見たいわけじゃ、ないよ。失敗した日も……一緒にいたいし……。" },
@@ -31,6 +39,10 @@ export const PREMIUM_CONTINUE_SCRIPTS = {
     id: "premium_rin", title: "この先の香り", name: "凛",
     bio: "恋人 / 凛", speaker: "rin", duration: 20,
     audio: null,
+    reactions: {
+      retry: { text: "……いい返事。次の一台、私に見せて。まだサンプルは終わってないから。", faces: ["serious", "smile"], effect: "scan", word: "次の一台、私に見せて" },
+      quit: { text: "……うん。やめどきも判断のうち。次は違う配合、試そっか。", faces: ["normal"], effect: "scan", word: "やめどきも判断のうち" },
+    },
     cues: [
       { at: 0, face: "serious", text: "……待って。諦めるには、まだ早いと思うけど。" },
       { at: 3.7, face: "normal", text: "さっきの一台、悔しさはあった。でも、まだちゃんと、はじめくんの香りが残ってた。" },
@@ -43,17 +55,25 @@ export const PREMIUM_CONTINUE_SCRIPTS = {
     id: "premium_ageha", title: "帰るには早くない？", name: "アゲハ",
     bio: "恋人 / パラパラ", speaker: "ageha", duration: 20,
     audio: null,
+    reactions: {
+      retry: { text: "っしゃあ！ それでこそハジメっち！ アタシの声援、ちゃんと届いた！？", faces: ["excited"], effect: "cheer", word: "っしゃあ！" },
+      quit: { text: "おっけ！ 今日は撤収！ ハジメっちの頑張り、アタシ見てたし！", faces: ["smile"], effect: "farewell", word: "アタシ見てたし！" },
+    },
     cues: [
-      { at: 0, face: "surprise", text: "えっ！ ちょ待ち待ち待ち！ はじめ、ここで帰んの！？ まーじで！？" },
-      { at: 3.8, face: "excited", text: "まだワンチャンどころかツーチャンもスリーチャンもあるっしょ！ あーしの彼氏だぞ！？" },
-      { at: 8.1, face: "serious", text: "やらかした？ いいじゃん！ 次で取り返そ！ 失敗ごと全部ひっくるめて、はじめの煙じゃん！" },
-      { at: 12.6, face: "smile", text: "あーし、勝つとこ見たい！ もう客席でめっちゃ応援してるし！ ここで帰ったら声援どうすんの！" },
+      { at: 0, face: "surprise", text: "えっ！ ちょ待ち待ち待ち！ ハジメっち、ここで帰んの！？ まーじで！？" },
+      { at: 3.8, face: "excited", text: "まだワンチャンどころかツーチャンもスリーチャンもあるっしょ！ アタシの彼氏だぞ！？" },
+      { at: 8.1, face: "serious", text: "やらかした？ いいじゃん！ 次で取り返そ！ 失敗ごと全部ひっくるめて、ハジメっちの煙じゃん！" },
+      { at: 12.6, face: "smile", text: "アタシ、勝つとこ見たい！ もう客席でめっちゃ応援してるし！ ここで帰ったら声援どうすんの！" },
       { at: 17, face: "excited", text: "ほら、コンティニュー！ いっけえええ！" },
     ],
   },
   kafuka: {
     id: "premium_kafuka", title: "サメの王からの緊急命令", name: "サメちゃん",
     bio: "恋人 / SHISHARK", speaker: "kafuka", duration: 20, audio: null,
+    reactions: {
+      retry: { text: "おおっ！ それでこそ、わしの……いや、コロちゃんの勇者じゃ！ いざ、再出航じゃ！", faces: ["surprise", "excited"], effect: "shark", word: "再出航じゃ！" },
+      quit: { text: "……うむ。サメも休むときは休むのじゃ。コロちゃんも『よくやった』と申しておる。", faces: ["normal", "smile"], effect: "shark", word: "よくやった" },
+    },
     cues: [
       { at: 0, face: "surprise", text: "おっ、お主ぃ！？ 何をしておる！ その指の先は……『諦める』ではないか！？" },
       { at: 3.8, face: "serious", text: "サメは泳ぐのをやめると大変なのじゃ！ ……いや、種類によるが……今はそれどころではない！" },
@@ -66,6 +86,10 @@ export const PREMIUM_CONTINUE_SCRIPTS = {
     id: "premium_mashiro", title: "まだ味見してない", name: "ましろ",
     bio: "恋人 / ましろ", speaker: "mashiro", duration: 20,
     audio: null,
+    reactions: {
+      retry: { text: "……うん、もう一台。……今度こそ、おいしいの、ちょうだい……。", faces: ["sleep", "smile"], effect: "stars", word: "もう一台" },
+      quit: { text: "……じゃあ、帰ろっか。……いっぱい頑張ったね。……お布団、直行……。", faces: ["sleep"], effect: "stars", word: "いっぱい頑張ったね" },
+    },
     cues: [
       { at: 0, face: "sleep", text: "……ん。……終わり？ ……まだ、味見してないのに……。" },
       { at: 4.0, face: "normal", text: "……失敗したなら、もう一台、作ったらいいと思う……。……いつも、そうしてるでしょ……。" },

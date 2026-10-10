@@ -1,0 +1,53 @@
+# CONTINUE V4 表示確認（2026-10-10）
+
+本編1280×720とスマホ横持ち844×390の実画面を、Chromiumから撮影したもの。
+オーナーの指定どおり、中央へロゴ→人物→テロップ→2択を縦に並べる。
+顔に加えて肩・胸元まで見せ、右上のカウントは大きい明るいプレートに載せる。
+正規立ち絵・表情・色を保持し、UI用のロゴ・スタンプ・ボタン・背景を画像生成した。
+
+ボタンの比較:
+
+- [A 文字が主役](buttons-a-text.png): 枠を抑え、大きな文字を押す。
+- [B アーケード風](buttons-b-arcade.png): 朱赤とオフホワイトの生成ボタンを斜めに置く。
+- [C CONTINUE表記](buttons-c-continue.png): 生成ボタンをまっすぐ置き、戻る側をCONTINUE表記にする。
+
+- [スミさん・共同責任](sumi.png) / [世界の終わり](sumi-disaster.png) / [反対多数](sumi-meeting.png)
+- [つむぎ](tsumugi.png) / [栞](minto.png) / [凛](rin.png)
+- [アゲハ](ageha.png) / [ましろ](mashiro.png) / [サメちゃん](kafuka.png)
+- [可決スタンプと再挑戦の一言](meeting-retry.png) / [サメちゃんの再出航](kafuka-retry.png)
+- [スマホ横持ち・つむぎ最終キュー・動き軽減](phone-tsumugi.png)
+- [時間切れのGAME OVERと00](game-over.png)
+
+`python3 remake/tools/serve_preview.py --port 8123` でサーバーを起動し、
+`http://127.0.0.1:8123/remake/continue-preview.html` へアクセスすると、9台本と2分岐を再生できる。
+SE/BGM切替、動き軽減、ボタン3案もプレビューで確認可能。セーブは変更しない。
+
+生成素材:
+
+| 素材 | 原画 | 実行時PNG |
+|---|---|---|
+| CONTINUE?／GAME OVER | [titles.png](generated/titles.png) | `assets/ui/continue/{continue_title,game_over_title}.png` |
+| 可決の朱印 | [stamp.png](generated/stamp.png) | `assets/ui/continue/approval_stamp.png` |
+| 朱赤／オフホワイトのボタン | [buttons.png](generated/buttons.png) | `assets/ui/continue/{retry_button,quit_button}.png` |
+| 暗い煙の背景 | [backdrop.png](generated/backdrop.png) | `assets/ui/continue/backdrop.png` |
+
+最初の4生成の全指示は [prompts.json](generated/prompts.json)。ボタンを背景から浮かせる修正は
+[buttons-revision.json](generated/buttons-revision.json)、元の暗い版は [buttons-initial.png](generated/buttons-initial.png)。
+パーツは透過PNG、背景はRGB。アトラスの切り出しだけ行い、色や輪郭を後加工していない。
+ボタンの文言・20→0・演出タイミングはコード側で表示する。
+
+再ビルド:
+
+```sh
+python3 remake/tools/build_continue_art.py
+python3 remake/tools/build_manifest.py
+```
+
+原画はそのまま保存し、切り出した6素材は `assets/ui/continue/`、表示用のWebPは
+`remake/img/ui/continue/`。顔の中心・倍率は既存 `make_face_icons.face_box` の測定から
+`manifest.continuePortraits` へ自動記録し、元の人物画像をCSSで拡大・配置する。
+
+検証の詳細と台詞の正本は [V4仕様](../../../docs/continue_button_reactions_sfx_20261010.md)。
+全18分岐、全45キューの字幕と正規画像、常時カウント、20秒→GAME OVER→タイトル、
+期限直前の再挑戦、連打防止、画面離脱、タブ復帰、横持ち、軽減、ミュートがPASS。
+実ChromiumのWebAudio出力を解析し、SEの音声サンプルがあり、離脱後は無音になることも確認した。
