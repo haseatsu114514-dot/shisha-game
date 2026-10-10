@@ -1,6 +1,6 @@
 {
   "date": "2026-10-10",
-  "requests": "CV27–32",
+  "requests": "CV27–34",
   "experimentalAdoption": "undecided",
   "errors": [],
   "missing": [],
@@ -1140,29 +1140,742 @@
           "left": 0
         }
       }
+    },
+    {
+      "image": "classic-stage-ageha.png",
+      "variant": "premium:ageha",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "phase": "speaking",
+      "layout": "bottom",
+      "background": "stage",
+      "countVisible": true,
+      "backCount": null,
+      "count": "15",
+      "caption": "ツーチャンもスリーチャンもあるっしょ！",
+      "captionFontSize": "42px",
+      "retryLabel": "大会に戻る",
+      "choicesVisible": true,
+      "geometry": {
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "top": 0,
+          "right": 1280,
+          "bottom": 720,
+          "left": 0
+        },
+        "title": {
+          "x": 279.234375,
+          "y": 13,
+          "width": 623.203125,
+          "height": 76,
+          "top": 13,
+          "right": 902.4375,
+          "bottom": 89,
+          "left": 279.234375
+        },
+        "logo": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "count": {
+          "x": 920.4375,
+          "y": 11,
+          "width": 80.3125,
+          "height": 80,
+          "top": 11,
+          "right": 1000.75,
+          "bottom": 91,
+          "left": 920.4375
+        },
+        "portrait": {
+          "x": 170,
+          "y": 94,
+          "width": 940,
+          "height": 626,
+          "top": 94,
+          "right": 1110,
+          "bottom": 720,
+          "left": 170
+        },
+        "caption": {
+          "x": 216.70376586914062,
+          "y": 560.5875244140625,
+          "width": 846.592529296875,
+          "height": 52.40625,
+          "top": 560.5875244140625,
+          "right": 1063.2962951660156,
+          "bottom": 612.9937744140625,
+          "left": 216.70376586914062
+        },
+        "retry": {
+          "x": 250,
+          "y": 632,
+          "width": 378,
+          "height": 64,
+          "top": 632,
+          "right": 628,
+          "bottom": 696,
+          "left": 250
+        },
+        "quit": {
+          "x": 652,
+          "y": 632,
+          "width": 378,
+          "height": 64,
+          "top": 632,
+          "right": 1030,
+          "bottom": 696,
+          "left": 652
+        }
+      }
+    },
+    {
+      "image": "classic-count-15.png",
+      "variant": "premium:ageha",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "phase": "speaking",
+      "layout": "bottom-back-count",
+      "background": "stage",
+      "countVisible": true,
+      "backCount": {
+        "text": "15",
+        "hidden": false,
+        "scale": "1.02195",
+        "opacity": "0.12",
+        "height": 1021.949951171875
+      },
+      "count": "15",
+      "caption": "ツーチャンもスリーチャンもあるっしょ！",
+      "captionFontSize": "42px",
+      "retryLabel": "大会に戻る",
+      "choicesVisible": true,
+      "geometry": {
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "top": 0,
+          "right": 1280,
+          "bottom": 720,
+          "left": 0
+        },
+        "title": {
+          "x": 279.234375,
+          "y": 13,
+          "width": 623.203125,
+          "height": 76,
+          "top": 13,
+          "right": 902.4375,
+          "bottom": 89,
+          "left": 279.234375
+        },
+        "logo": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "count": {
+          "x": 920.4375,
+          "y": 11,
+          "width": 80.3125,
+          "height": 80,
+          "top": 11,
+          "right": 1000.75,
+          "bottom": 91,
+          "left": 920.4375
+        },
+        "portrait": {
+          "x": 170,
+          "y": 94,
+          "width": 940,
+          "height": 626,
+          "top": 94,
+          "right": 1110,
+          "bottom": 720,
+          "left": 170
+        },
+        "caption": {
+          "x": 216.70376586914062,
+          "y": 560.5875244140625,
+          "width": 846.592529296875,
+          "height": 52.40625,
+          "top": 560.5875244140625,
+          "right": 1063.2962951660156,
+          "bottom": 612.9937744140625,
+          "left": 216.70376586914062
+        },
+        "retry": {
+          "x": 250,
+          "y": 632,
+          "width": 378,
+          "height": 64,
+          "top": 632,
+          "right": 628,
+          "bottom": 696,
+          "left": 250
+        },
+        "quit": {
+          "x": 652,
+          "y": 632,
+          "width": 378,
+          "height": 64,
+          "top": 632,
+          "right": 1030,
+          "bottom": 696,
+          "left": 652
+        }
+      }
+    },
+    {
+      "image": "classic-count-5.png",
+      "variant": "premium:ageha",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "phase": "speaking",
+      "layout": "bottom-back-count",
+      "background": "stage",
+      "countVisible": true,
+      "backCount": {
+        "text": "5",
+        "hidden": false,
+        "scale": "1.547475",
+        "opacity": "0.12",
+        "height": 1547.47509765625
+      },
+      "count": "5",
+      "caption": "もう客席でめっちゃ応援してるし！",
+      "captionFontSize": "42px",
+      "retryLabel": "大会に戻る",
+      "choicesVisible": true,
+      "geometry": {
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "top": 0,
+          "right": 1280,
+          "bottom": 720,
+          "left": 0
+        },
+        "title": {
+          "x": 279.234375,
+          "y": 13,
+          "width": 623.203125,
+          "height": 76,
+          "top": 13,
+          "right": 902.4375,
+          "bottom": 89,
+          "left": 279.234375
+        },
+        "logo": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "count": {
+          "x": 920.4375,
+          "y": 11,
+          "width": 80.3125,
+          "height": 80,
+          "top": 11,
+          "right": 1000.75,
+          "bottom": 91,
+          "left": 920.4375
+        },
+        "portrait": {
+          "x": 170,
+          "y": 94,
+          "width": 940,
+          "height": 626,
+          "top": 94,
+          "right": 1110,
+          "bottom": 720,
+          "left": 170
+        },
+        "caption": {
+          "x": 283.5400085449219,
+          "y": 560.5875244140625,
+          "width": 712.919921875,
+          "height": 52.40625,
+          "top": 560.5875244140625,
+          "right": 996.4599304199219,
+          "bottom": 612.9937744140625,
+          "left": 283.5400085449219
+        },
+        "retry": {
+          "x": 250,
+          "y": 632,
+          "width": 378,
+          "height": 64,
+          "top": 632,
+          "right": 628,
+          "bottom": 696,
+          "left": 250
+        },
+        "quit": {
+          "x": 652,
+          "y": 632,
+          "width": 378,
+          "height": 64,
+          "top": 632,
+          "right": 1030,
+          "bottom": 696,
+          "left": 652
+        }
+      }
+    },
+    {
+      "image": "classic-count-1.png",
+      "variant": "premium:ageha",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "phase": "speaking",
+      "layout": "bottom-back-count",
+      "background": "stage",
+      "countVisible": true,
+      "backCount": {
+        "text": "1",
+        "hidden": false,
+        "scale": "1.75695",
+        "opacity": "0.12",
+        "height": 1756.9501953125
+      },
+      "count": "1",
+      "caption": "ほら、コンティニュー！ いっけえええ！",
+      "captionFontSize": "42px",
+      "retryLabel": "大会に戻る",
+      "choicesVisible": true,
+      "geometry": {
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "top": 0,
+          "right": 1280,
+          "bottom": 720,
+          "left": 0
+        },
+        "title": {
+          "x": 279.234375,
+          "y": 13,
+          "width": 623.203125,
+          "height": 76,
+          "top": 13,
+          "right": 902.4375,
+          "bottom": 89,
+          "left": 279.234375
+        },
+        "logo": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "count": {
+          "x": 920.4375,
+          "y": 11,
+          "width": 80.3125,
+          "height": 80,
+          "top": 11,
+          "right": 1000.75,
+          "bottom": 91,
+          "left": 920.4375
+        },
+        "portrait": {
+          "x": 170,
+          "y": 94,
+          "width": 940,
+          "height": 626,
+          "top": 94,
+          "right": 1110,
+          "bottom": 720,
+          "left": 170
+        },
+        "caption": {
+          "x": 211.0328369140625,
+          "y": 556.9027709960938,
+          "width": 857.918701171875,
+          "height": 59.7349853515625,
+          "top": 556.9027709960938,
+          "right": 1068.9515380859375,
+          "bottom": 616.6377563476562,
+          "left": 211.0328369140625
+        },
+        "retry": {
+          "x": 250,
+          "y": 632,
+          "width": 378,
+          "height": 64,
+          "top": 632,
+          "right": 628,
+          "bottom": 696,
+          "left": 250
+        },
+        "quit": {
+          "x": 652,
+          "y": 632,
+          "width": 378,
+          "height": 64,
+          "top": 632,
+          "right": 1030,
+          "bottom": 696,
+          "left": 652
+        }
+      }
+    },
+    {
+      "image": "classic-count-phone-ageha.png",
+      "variant": "premium:ageha",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "phase": "speaking",
+      "layout": "bottom-back-count",
+      "background": "stage",
+      "countVisible": true,
+      "backCount": {
+        "text": "15",
+        "hidden": false,
+        "scale": "1.02195",
+        "opacity": "0.12",
+        "height": 553.5562744140625
+      },
+      "count": "15",
+      "caption": "ツーチャンもスリーチャンもあるっしょ！",
+      "captionFontSize": "42px",
+      "retryLabel": "大会に戻る",
+      "choicesVisible": true,
+      "geometry": {
+        "stage": {
+          "x": 75.33331298828125,
+          "y": 0,
+          "width": 693.3333740234375,
+          "height": 390,
+          "top": 0,
+          "right": 768.6666870117188,
+          "bottom": 390,
+          "left": 75.33331298828125
+        },
+        "title": {
+          "x": 226.58526611328125,
+          "y": 7.0416669845581055,
+          "width": 337.56842041015625,
+          "height": 41.16666793823242,
+          "top": 7.0416669845581055,
+          "right": 564.1536865234375,
+          "bottom": 48.20833492279053,
+          "left": 226.58526611328125
+        },
+        "logo": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "count": {
+          "x": 573.9036865234375,
+          "y": 5.958333492279053,
+          "width": 43.5025634765625,
+          "height": 43.333335876464844,
+          "top": 5.958333492279053,
+          "right": 617.40625,
+          "bottom": 49.2916693687439,
+          "left": 573.9036865234375
+        },
+        "portrait": {
+          "x": 167.41665649414062,
+          "y": 50.91666793823242,
+          "width": 509.1666564941406,
+          "height": 339.0833435058594,
+          "top": 50.91666793823242,
+          "right": 676.5833129882812,
+          "bottom": 390.0000114440918,
+          "left": 167.41665649414062
+        },
+        "caption": {
+          "x": 192.7145233154297,
+          "y": 303.6515808105469,
+          "width": 458.5709228515625,
+          "height": 28.38671875,
+          "top": 303.6515808105469,
+          "right": 651.2854461669922,
+          "bottom": 332.0382995605469,
+          "left": 192.7145233154297
+        },
+        "retry": {
+          "x": 210.74998474121094,
+          "y": 342.3333435058594,
+          "width": 204.75001525878906,
+          "height": 34.666656494140625,
+          "top": 342.3333435058594,
+          "right": 415.5,
+          "bottom": 377,
+          "left": 210.74998474121094
+        },
+        "quit": {
+          "x": 428.5,
+          "y": 342.3333435058594,
+          "width": 204.75,
+          "height": 34.666656494140625,
+          "top": 342.3333435058594,
+          "right": 633.25,
+          "bottom": 377,
+          "left": 428.5
+        }
+      }
+    },
+    {
+      "image": "classic-count-purple.png",
+      "variant": "premium:ageha",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "phase": "speaking",
+      "layout": "bottom-back-count",
+      "background": "purple",
+      "countVisible": true,
+      "backCount": {
+        "text": "15",
+        "hidden": false,
+        "scale": "1.02195",
+        "opacity": "0.12",
+        "height": 1021.949951171875
+      },
+      "count": "15",
+      "caption": "ツーチャンもスリーチャンもあるっしょ！",
+      "captionFontSize": "42px",
+      "retryLabel": "大会に戻る",
+      "choicesVisible": true,
+      "geometry": {
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "top": 0,
+          "right": 1280,
+          "bottom": 720,
+          "left": 0
+        },
+        "title": {
+          "x": 279.234375,
+          "y": 13,
+          "width": 623.203125,
+          "height": 76,
+          "top": 13,
+          "right": 902.4375,
+          "bottom": 89,
+          "left": 279.234375
+        },
+        "logo": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "count": {
+          "x": 920.4375,
+          "y": 11,
+          "width": 80.3125,
+          "height": 80,
+          "top": 11,
+          "right": 1000.75,
+          "bottom": 91,
+          "left": 920.4375
+        },
+        "portrait": {
+          "x": 170,
+          "y": 94,
+          "width": 940,
+          "height": 626,
+          "top": 94,
+          "right": 1110,
+          "bottom": 720,
+          "left": 170
+        },
+        "caption": {
+          "x": 216.70376586914062,
+          "y": 560.5875244140625,
+          "width": 846.592529296875,
+          "height": 52.40625,
+          "top": 560.5875244140625,
+          "right": 1063.2962951660156,
+          "bottom": 612.9937744140625,
+          "left": 216.70376586914062
+        },
+        "retry": {
+          "x": 250,
+          "y": 632,
+          "width": 378,
+          "height": 64,
+          "top": 632,
+          "right": 628,
+          "bottom": 696,
+          "left": 250
+        },
+        "quit": {
+          "x": 652,
+          "y": 632,
+          "width": 378,
+          "height": 64,
+          "top": 632,
+          "right": 1030,
+          "bottom": 696,
+          "left": 652
+        }
+      }
+    },
+    {
+      "image": "classic-count-game-over.png",
+      "variant": "premium:ageha",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "phase": "gameover",
+      "layout": "bottom-back-count",
+      "background": "stage",
+      "countVisible": false,
+      "backCount": {
+        "text": "0",
+        "hidden": true,
+        "scale": "1.8",
+        "opacity": "0.12",
+        "height": 0
+      },
+      "count": "",
+      "caption": "ほら、コンティニュー！ いっけえええ！",
+      "captionFontSize": "42px",
+      "retryLabel": "大会に戻る",
+      "choicesVisible": false,
+      "geometry": {
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "top": 0,
+          "right": 1280,
+          "bottom": 720,
+          "left": 0
+        },
+        "title": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "logo": {
+          "x": 180,
+          "y": 260,
+          "width": 920,
+          "height": 200,
+          "top": 260,
+          "right": 1100,
+          "bottom": 460,
+          "left": 180
+        },
+        "count": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "portrait": {
+          "x": 170,
+          "y": 94,
+          "width": 940,
+          "height": 626,
+          "top": 94,
+          "right": 1110,
+          "bottom": 720,
+          "left": 170
+        },
+        "caption": {
+          "x": 211.0328369140625,
+          "y": 556.9027709960938,
+          "width": 857.918701171875,
+          "height": 59.7349853515625,
+          "top": 556.9027709960938,
+          "right": 1068.9515380859375,
+          "bottom": 616.6377563476562,
+          "left": 211.0328369140625
+        },
+        "retry": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "quit": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      }
     }
-  ],
-  "visualReview": {
-    "reviewed": [
-      "back-count-15.png",
-      "back-count-1.png",
-      "game-over.png",
-      "stage-phone-ageha.png"
-    ],
-    "notes": [
-      "正規人物を顔高256pxで下端まで表示。人物画像の生成・色替えは行わない。",
-      "上部の日本語見出し・数字・2択が離れ、下段のセリフに重ならない。",
-      "背面カウントは人物より薄く、残り時間に沿って拡大。",
-      "終了表示は煙と金のロゴだけ。0・選択肢・人物・セリフは表示されない。"
-    ]
-  },
-  "tests": {
-    "continue_screen.mjs": "PASS: all 18 default branches; 9 scripts in each top layout on PC/phone; real deadline, growing count, pause, reduced motion, zero removal, save-safe preview",
-    "continue_audio.mjs": "PASS: shared context, countdown, duck, settings, pause, mute and cleanup",
-    "continue_premium.mjs": "PASS: lover-only 20%, chapter restriction, no repeats",
-    "lint_dialogue.py": "PASS: ERROR 0, existing WARN 345",
-    "tidy_dialogue_text.py --dry-run": "PASS: 0 lines",
-    "manifest": "PASS: every previous field/asset retained; only generated timestamp and new continueUI/WebP entry added",
-    "burnt_gameover.mjs": "PASS: real timeout to title; tournament burn to reaction/retry; tutorial repack; rehearsal failure; page errors 0"
-  }
+  ]
 }
