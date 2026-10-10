@@ -153,8 +153,8 @@ export function pauseBenchTemperature(cs, paused) {
   if (bench?.cs === cs) bench.thermal.pause(paused);
 }
 /**
- * フレーバーの体力を一枚の葉で見せる（TH28）。4=つややか、3=斑点、2=縁が欠ける、1=穴だらけで茶色、0=枯れて崩れる。
- * 傷むと葉だけが震える。文字は出さない（TH27）。
+ * フレーバーの体力を一枚の葉で見せる（TH28・TH37）。ボロボロ具合と色だけで分かるようにする。
+ * 4=つややかな緑、3=黄緑に斑点、2=黄土色で縁が欠ける、1=茶色く穴だらけで反る、0=黒ずんで崩れる。傷むと葉だけが震える。文字は出さない（TH27）。
  */
 const LEAF_STATE = ["枯れて崩れた", "穴だらけ", "縁が欠けてきた", "斑点が出てきた", "つややか"];
 function buildLeafIcon() {
@@ -165,6 +165,7 @@ function buildLeafIcon() {
     </mask></defs>
     <g mask="url(#leaf-bites-${leafIcons})">
       <path class="leaf-body" d="M4 28C3 15 12 4 28 3c1 14-8 25-24 25Z"/>
+      <path class="leaf-gloss" d="M8.5 21.5C10 14 15 8.6 23.5 6.4" fill="none"/>
       <path class="leaf-vein" d="M5 27 26 6M11 21l-1-6M16 16l-1-6M21 11l-1-4M11 21l6 1M16 16l6 1" fill="none"/>
       <g class="leaf-spots"><circle cx="14" cy="11" r="1.6"/><circle cx="20" cy="15" r="1.3"/><circle cx="10" cy="19" r="1.2"/></g>
     </g>

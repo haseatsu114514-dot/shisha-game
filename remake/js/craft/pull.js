@@ -4,11 +4,13 @@
 // 温度が動き続ける中で最低1回吸って整える。3回目の吸い出しからフレーバーが傷む（TH14・TH21・TH22）。
 // 温度計の一番上で焦げ、熱管理で冷え切り、フレーバーの体力が尽きると、その一台はダメになる（TH06・TH19・TH20）。
 // 吸いすぎ・過熱での吸い出しは、はじめの体力も削って疲れ（針が速く、成功帯が狭い）が付く（TH29）。
+// 人によって狙いが違うので、EXCELLENT・GOOD の判定は出さない。吸うと温度計の横に上下の印だけが出る（TH36）。
+// ゲージは切れ目のないグラデーションに ▲（上げ吸い）＝（キープ）▼（下げ吸い）の印。文字は短くする（TH34・TH35）。
 import { el, sleep, clamp, rand } from "../core/util.js";
-import { countdown, flash, shake } from "../core/ui.js";
+import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, failBench, setBenchLeaf, strainBench } from "./session.js";
-import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
+import { gradeOf, autoSkill, skill, resultCard, keys } from "./common.js";
 
 import { craftConditions, heatDelta, pullResult, isOptimalTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT, IDEAL } from "./conditions.js";
 import { buildThermometer } from "./thermometer.js";
@@ -18,11 +20,11 @@ const CENTER = 0.54;
 const PULL_MAX = 5;
 // ここより熱い煙を吸うと、はじめがむせて疲れる（TH29）。
 const HARSH_TEMP = 0.76;
-// 針の位置の帯（0〜1）。上げ吸い=左、キープ=中、下げ吸い=右。ジャストはそれぞれの芯
+// 針の位置の帯（0〜1）。上げ吸い=左、キープ=中、下げ吸い=右。芯（ジャスト）に止めると上げ下げが強い。
 const ZONES = [
-  { id: "up", from: 0, to: 0.34, just: [0.14, 0.205], label: "上げ吸い", delta: 0.1, justDelta: 0.16 },
-  { id: "keep", from: 0.34, to: 0.66, just: [0.468, 0.532], label: "キープ", delta: 0, justDelta: 0 },
-  { id: "down", from: 0.66, to: 1, just: [0.795, 0.86], label: "下げ吸い", delta: -0.1, justDelta: -0.16 },
+  { id: "up", from: 0, to: 0.34, just: [0.14, 0.205], label: "上げ吸い", mark: "▲", delta: 0.1, justDelta: 0.16 },
+  { id: "keep", from: 0.34, to: 0.66, just: [0.468, 0.532], label: "キープ", mark: "＝", delta: 0, justDelta: 0 },
+  { id: "down", from: 0.66, to: 1, just: [0.795, 0.86], label: "下げ吸い", mark: "▼", delta: -0.1, justDelta: -0.16 },
 ];
 // 焼いて替える炭の個数ごとの、入ってくる熱と、その後の燃え進む速さ（0個は古い炭が尽きかけて早く冷える）。
 const COAL_HEAT = [0, 0.06, 0.11, 0.16];
@@ -44,12 +46,12 @@ export function startTemp(cs) {
 const MODES = {
   pull: {
     store: "pull", title: "吸い出し", min: 2, safe: 3, drift: false, serveLabel: "提供する",
-    hint: "針を止めた位置で吸い方が変わる。適温の中央にある細い最適温を狙って「提供する」。キープ中央は維持、左で微増・右で微減。4回目からフレーバーが傷む。蒸らしで集中できたほど成功帯が広がり、針もゆっくり動く",
+    hint: "針を止めた位置で吸い方が変わる。▲は上げ吸い、＝はキープ、▼は下げ吸い。光る芯ほど強く上げ下げし、キープは中央で維持・左で微増・右で微減。温度計の虹が最適温、白い刻みの間が適温。4回目からフレーバー（体調の横の葉）が傷む。蒸らしで集中できたほど芯が広がり、針もゆっくり動く",
     start: startTemp, focus: pullFocusFromSteam,
   },
   care: {
     store: "care", title: "熱管理", min: 1, safe: 2, drift: true, serveLabel: "整え終える",
-    hint: "審査員が吸っている間も炭は燃え進み、温度は動き続ける。まず焼いて替える炭の数を決める。替えた炭の分だけ少し温度が上がる。針は吸い出しと同じで、キープなら温度を保てる。3回目からフレーバーが傷む。冷え切っても、焦げても、その一台はダメになる",
+    hint: "審査員が吸っている間も炭は燃え進み、温度は下がり続ける。まず焼いて替える炭の数を決める。替えた炭の分だけ少し温度が上がる。針は吸い出しと同じで、＝のキープなら温度を保てる。3回目からフレーバー（体調の横の葉）が傷む。炎の印まで上がって焦げても、雪の印まで冷え切っても、その一台はダメになる",
     start: (cs) => cs.pull?.temp ?? CENTER, focus: () => ({ slow: 1, window: 1 }),
   },
 };
@@ -82,15 +84,19 @@ async function pullGame(cs, mode) {
   const thermometer = buildThermometer({ coldLimit: mode.drift ? COLD_OUT : null });
   // 針はゲージの外側の枠に置き、上下にはみ出す目立つ形にする（TH30）。
   const needle = el("i.pg-needle", { dataset: { test: "pull-needle" } });
-  const justs$ = ZONES.map((z) => el("i.pg-just"));
+  const justs$ = ZONES.map((z) => el("i.pg-just", [el("span.pg-mark", { text: z.mark })]));
   const placeJusts = () => ZONES.forEach((z, i) => Object.assign(justs$[i].style, {
     left: `${((z.just[0] - z.from) / (z.to - z.from)) * 100}%`, width: `${((z.just[1] - z.just[0]) * widen / (z.to - z.from)) * 100}%`,
   }));
   placeJusts();
-  const gauge = el("div.pull-gauge-wrap", [el("div.pull-gauge", ZONES.map((z, i) => el(`div.pg-zone.z-${z.id}`, { style: { left: `${z.from * 100}%`, width: `${(z.to - z.from) * 100}%` } }, [
-    el("span", { text: z.label }), justs$[i],
-  ]))), needle]);
-  const counter = el("div.pull-count");
+  const gauge = el("div.pull-gauge-wrap", [el("div.pull-gauge", ZONES.map((z, i) => el(`div.pg-zone.z-${z.id}`, {
+    title: z.label, "aria-label": z.label, style: { left: `${z.from * 100}%`, width: `${(z.to - z.from) * 100}%` },
+  }, [justs$[i]]))), needle]);
+  // 吸った回数は文字でなく点で。最低回数の点は金の縁。炭・雨・少穴は短い札（TH35）。
+  const pips = Array.from({ length: PULL_MAX }, (_, i) => el(`i.pull-pip${i < mode.min ? ".need" : ""}`));
+  const pipRow = el("span.pull-pips", { title: "吸った回数", dataset: { test: "pull-pips" } }, pips);
+  const tags = el("span.pull-tags");
+  const counter = el("div.pull-count", [pipRow, tags]);
   const readout = el("div.pull-read");
   const pullBtn = el("button.btn.primary", { dataset: { test: "pull-stop" } }, [el("span.btn-label", { text: "吸う（針を止める）" })]);
   const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [el("span.btn-label", { text: mode.serveLabel })]);
@@ -105,13 +111,18 @@ async function pullGame(cs, mode) {
     if (choosing) return;
     const inZone = T >= IDEAL[0] && T <= IDEAL[1];
     const optimal = isOptimalTemperature(T);
-    const state = optimal ? "最適温。今の煙を届けよう" : inZone ? "適温。キープなら温度を保てる" : T >= DANGER_TEMP ? "焦げる寸前。下げ吸いで熱を逃がしたい"
-      : T > IDEAL[1] ? "熱い。下げ吸いで落ち着かせたい" : mode.drift && T <= COLD_OUT + 0.08 ? "冷え切りそう。上げ吸いで熱を入れたい" : "まだぬるい。上げ吸いで熱を入れたい";
-    readout.textContent = mode.drift && running ? `↓ 炭が燃え進んで熱が落ちていく　${state}` : state;
-    counter.textContent = `吸った回数 ${pulls}（${mode.safe + 1}回目からフレーバーが傷む）`
-      + (coals ? ` ／ 炭を${coals}個替えた` : "")
-      + (conditions.sparsity ? " ／ 少穴：吸い方による温度変化が大きい" : "") + (conditions.rainy ? " ／ 雨：熱が入りづらい" : "");
-    counter.classList.toggle("warn", pulls >= mode.safe);
+    // 今の温度を短い一語で。温度計の印と同じ色にする。
+    const [state, tone] = optimal ? ["最適温", "optimal"] : inZone ? ["適温", "ok"] : T >= DANGER_TEMP ? ["焦げる寸前！", "danger"]
+      : T > IDEAL[1] ? ["熱い", "hot"] : mode.drift && T <= COLD_OUT + 0.08 ? ["冷え切りそう！", "cold"] : ["ぬるい", "cool"];
+    readout.dataset.tone = tone;
+    readout.replaceChildren(el("b.pull-state", { text: state }), mode.drift && running ? el("span.pull-drift", { text: "↓", title: "炭が燃え進んで、熱が落ちていく" }) : "");
+    pips.forEach((p, i) => p.classList.toggle("on", i < pulls));
+    pipRow.setAttribute("aria-label", `吸った回数 ${pulls}`);
+    tags.replaceChildren(...[
+      coals != null && el("span.pull-tag", { text: coals ? `炭×${coals}` : "炭そのまま", title: coals ? `炭を${coals}個焼いて替えた` : "炭は替えていない" }),
+      conditions.sparsity && el("span.pull-tag", { text: "少穴", title: "吸い方による温度変化が大きい" }),
+      conditions.rainy && el("span.pull-tag", { text: "雨", title: "熱が入りづらい" }),
+    ].filter(Boolean));
     serveBtn.disabled = pulls < mode.min || !!failed;
     pullBtn.disabled = pulls >= PULL_MAX || !!failed;
   };
@@ -176,9 +187,9 @@ async function pullGame(cs, mode) {
     if (checkTemperature()) return;
     if (isJust) justs++;
     const overdone = pulls > mode.safe;
-    reactAudience(cs, overdone || Math.abs(T - CENTER) > Math.abs(before - CENTER) ? "bad" : isJust ? "just" : "good");
-    if (isJust) { SE.just(); flash("gold"); popStamp(panel, `ジャスト${z.label}`, "just", "58%", "22%"); }
-    else { SE.good(); popStamp(panel, z.label, "good", "58%", "22%"); }
+    reactAudience(cs, overdone || Math.abs(T - CENTER) > Math.abs(before - CENTER) ? "bad" : "good");
+    // 判定の文字は出さず、温度計の横に上下の印だけ（芯の上げ下げは二つ重ね）。
+    thermometer.pop(z.id === "keep" ? z.mark : isJust ? z.mark.repeat(2) : z.mark, z.id);
     SE.bubbling();
     if (overdone || T >= HARSH_TEMP) strain();
     if (overdone) { damageLeaf(); if (failed) return; }
@@ -192,10 +203,12 @@ async function pullGame(cs, mode) {
     readout.textContent = "そろそろ調整の準備をしよう";
     const choice = el("div.care-coals", { dataset: { test: "care-coals" } }, [
       el("p.care-coals-ask", { text: "炭を焼きますか？" }),
-      el("div.care-coal-btns", [0, 1, 2, 3].map((n) => el("button.btn.care-coal", { dataset: { test: `care-coal-${n}` }, onclick: () => pick(n) }, [
-        el("span.btn-label", { text: n ? `${n}個` : "焼かない" }), el("small.btn-desc", { text: n ? `熱が${["", "少し", "そこそこ", "しっかり"][n]}入る` : "今の炭のまま" }),
+      // 説明文の代わりに、温度計と同じ印で熱の入り方を示す（▲が多いほど上がる。焼かないと ↓ 落ちていく）。
+      el("div.care-coal-btns", [0, 1, 2, 3].map((n) => el("button.btn.care-coal", {
+        dataset: { test: `care-coal-${n}` }, title: n ? `熱が${["", "少し", "そこそこ", "しっかり"][n]}入る` : "今の炭のまま。熱は落ちていく", onclick: () => pick(n),
+      }, [
+        el("span.btn-label", { text: n ? `${n}個` : "焼かない" }), el("small.btn-desc", { text: n ? "▲".repeat(n) : "↓" }),
       ]))),
-      el("p.care-coals-note", { text: "今の炭は燃え進んで、熱が落ちていく。焼いた炭に替えると、少しずつ温度が上がる" }),
     ]);
     main.append(choice);
     render();
@@ -213,7 +226,6 @@ async function pullGame(cs, mode) {
     if (coals) {
       readout.textContent = `炭を${coals}個焼いて替えた。熱が入ってくる`;
       SE.coalSnip(); SE.crackle();
-      popStamp(panel, `炭替え ${coals}個`, "", "58%", "22%");
       const from = coreTemp, add = heatDelta(cs, COAL_HEAT[coals]), started = performance.now(), dur = autoSkill() ? 200 : 1400;
       for (;;) {
         const k = Math.min(1, (performance.now() - started) / dur);
@@ -293,7 +305,6 @@ async function pullGame(cs, mode) {
 
   const { score, inZone, optimal } = pullResult(T, pulls, justs, IDEAL, mode.safe);
   cs[mode.store] = { score, grade: gradeOf(score), temp: T, pulls, justs, coals, inZone, optimal, over: T > IDEAL[1], under: T < IDEAL[0] };
-  const hurt = Math.max(0, pulls - mode.safe);
   if (mode.store === "pull") {
     cs.pullDone = true;
     refreshBench();
@@ -302,8 +313,7 @@ async function pullGame(cs, mode) {
       title: "吸い出し 結果",
       lines: [
         optimal ? "細い最適温に合わせて提供できた" : inZone ? "適温で提供できた。最適温まであと少し" : T > IDEAL[1] ? "少し熱いまま出してしまった" : "まだぬるいまま出してしまった",
-        `${pulls}回吸った${justs ? `（ジャスト ${justs}回）` : ""}`,
-        hurt ? "吸いすぎた分、フレーバーが傷んだ" : "",
+        `${pulls}回吸った`,
       ],
     });
     return;
@@ -314,8 +324,7 @@ async function pullGame(cs, mode) {
     lines: [
       optimal ? "細い最適温で、最後の一口まで守り切った" : inZone ? "適温で最後の一口まで守り切った" : T > IDEAL[1] ? "熱いまま審査員に任せてしまった" : "冷めたまま審査員に任せてしまった",
       coals ? `炭を${coals}個焼いて替えた` : "炭は替えずに整えた",
-      `${pulls}回吸った${justs ? `（ジャスト ${justs}回）` : ""}`,
-      hurt ? "吸いすぎた分、フレーバーが傷んだ" : "",
+      `${pulls}回吸った`,
     ],
   });
 }

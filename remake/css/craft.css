@@ -334,7 +334,6 @@
 .steam-play { width: 726px; display: flex; align-items: center; justify-content: space-between; }
 .steam .steam-temperature { height: 300px; flex: none; }
 .steam-temperature .thermo-tube { width: 32px; }
-.steam-temperature .thermo-labels { font-size: 12px; }
 .steam .dodge-hud, .steam .dodge-controls { align-self: flex-end; margin-right: 11px; }
 .dodge-hud { width: 620px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; font-size: 16px; }
 .dodge-timer { width: 94px; height: 34px; color: var(--accent); }
@@ -400,13 +399,9 @@
 .pull { display: flex; gap: 30px; align-items: center; height: 100%; }
 .thermo { position: relative; display: flex; gap: 8px; height: 440px; }
 .thermo-tube { position: relative; width: 44px; height: 100%; border-radius: 22px; background: rgba(255, 255, 255, 0.08); border: 2px solid rgba(255, 255, 255, 0.25); overflow: hidden; }
-.thermo-tube b { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(0deg, #4a7bff, #ffb04a 55%, #ff4a4a); transition: height 0.4s var(--ease-out); opacity: 0.85; }
 .thermo-zone { position: absolute; left: 0; right: 0; background: rgba(142, 230, 168, 0.35); border-top: 2px solid var(--good); border-bottom: 2px solid var(--good); z-index: 1; }
 .thermo-mark { position: absolute; left: -4px; right: -4px; height: 4px; margin-bottom: -2px; background: #fff; box-shadow: 0 0 10px #fff; z-index: 2; transition: bottom 0.4s var(--ease-out); }
 .thermo.ok .thermo-tube { box-shadow: 0 0 24px rgba(142, 230, 168, 0.6); }
-.thermo-labels { position: relative; display: flex; flex-direction: column; justify-content: space-between; font-size: 15px; color: var(--text-dim); min-width: 3em; }
-.thermo-ideal-label { position: absolute; bottom: 62%; color: #b6d4bc; }
-.thermo-optimal-label { position: absolute; bottom: 52%; color: #edcf8c; }
 .thermo-optimal { position: absolute; left: 0; right: 0; min-height: 3px; background: #f0d58b; box-shadow: 0 0 8px #edcf8c55; z-index: 2; }
 .thermo.optimal .thermo-tube { box-shadow: 0 0 22px #eacf8580; border-color: #edcf8c; }
 .pull-main { flex: 1; display: flex; flex-direction: column; gap: 16px; }
@@ -419,7 +414,6 @@
 .pg-just { position: absolute; top: 0; bottom: 0; background: rgba(255, 220, 120, 0.55); box-shadow: 0 0 12px rgba(255, 210, 110, 0.8); }
 .pg-needle { position: absolute; top: -4px; bottom: -4px; width: 4px; margin-left: -2px; background: #fff; box-shadow: 0 0 12px #fff; }
 .pull-count { font-size: 15px; color: var(--text-dim); }
-.pull-count.warn { color: #ffb3b3; }
 .pull-btns { display: flex; gap: 12px; }
 .pull-btns .btn { flex: 1; align-items: center; padding: 16px; font-size: 20px; }
 
@@ -648,7 +642,7 @@
 
 
 /* 温度判定の細い高得点帯。実温度と見える針を同期し、遅れた表示で外れないようにする。 */
-.thermo-tube b, .thermo-mark { transition: none; }
+.thermo-mark { transition: none; }
 .thermo-mark { z-index: 3; }
 .thermo.optimal .thermo-mark { background: #ffdf88; box-shadow: 0 0 12px #ffd06b; }
 .thermo-projected { position: absolute; left: 0; right: 0; height: 8px; margin-bottom: -4px; border: 2px dashed #fff2c5; background: #fff4bd20; z-index: 4; }
@@ -739,7 +733,6 @@
 .bench[data-art-skin] .fr-btn { color: #eed7b1; border-color: #b8925966; background: radial-gradient(circle at 40% 25%, #5d4c3a, #25192b 62%); box-shadow: inset 0 1px 2px #ffedbd44, 0 2px 4px #0008; }
 .bench[data-art-skin] .fr-btn:hover:not(:disabled) { color: #fff0bf; border-color: #e4c180; }
 .bench[data-art-skin] .pull-gauge { background: linear-gradient(180deg, #25202b, #0c0912); }
-.bench[data-art-skin] .pull-gauge::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(90deg, transparent 0 9.5%, #edd7a12b 9.5% 10%); }
 .bench[data-art-skin] .pg-needle { z-index: 2; background: #fff6db; box-shadow: 0 0 12px #ffe2a2; }
 .bench[data-art-skin] .hr-time-bar, .bench[data-art-skin] .tr-gauge i { border: 1px solid #d9b87655; background: linear-gradient(180deg, #120d1b, #2b2133); box-shadow: inset 0 1px 3px #0009; }
 .bench[data-art-skin] .lcd { border-color: #d9b87655; background: linear-gradient(145deg, #131a18, #0b0d14); box-shadow: inset 0 2px 7px #000a; }
@@ -749,11 +742,6 @@
 .thermo-housing { position: relative; flex: none; width: var(--thermo-width); height: 100%; }
 .thermo-housing .thermo-skin { position: absolute; inset: 0; z-index: 2; pointer-events: none; image-rendering: auto; }
 .thermo-housing .thermo-tube { position: absolute; left: 22%; right: 22%; top: 10%; bottom: 10%; width: auto; height: auto; border: 0; border-radius: 5px; background: linear-gradient(90deg, #05040b, #201928, #08060f); }
-.thermo-housing .thermo-tube b { background: linear-gradient(0deg, #437eaa, #6baea3 40%, #deb66d 65%, #df7668); opacity: .9; box-shadow: inset 3px 0 5px #ffffff26; }
-.thermo:has(.thermo-housing) .thermo-labels { padding: 44px 0; color: #d1baa0; }
-.steam-temperature:has(.thermo-housing) .thermo-labels { padding: 30px 0; }
-.thermo:has(.thermo-housing) .thermo-ideal-label { bottom: 59.6%; color: #bfe4c8; }
-.thermo:has(.thermo-housing) .thermo-optimal-label { color: #f1d39b; }
 .thermo:has(.thermo-housing) .thermo-mark { background: #fff4d1; box-shadow: 0 0 8px #f6daa2; }
 .thermo:has(.thermo-housing).optimal .thermo-mark { background: #ffe49e; box-shadow: 0 0 12px #ffe1a4; }
 .rc-details { position: relative; color: #c4bfb6; font-size: 13px; }
@@ -805,38 +793,56 @@
 @keyframes thermal-boom { 0% { transform: scale(.3); opacity: 1; } 35% { opacity: 1; } 100% { transform: scale(16); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .thermal-picture *, .thermal-glow, .thermal-label, .thermal-boom.go { animation: none; } }
 
-/* 温度計（TH23）: 黒く抜かず全体に色を置き、今の温度より上だけ少し暗くする。適温は虹、超えると管の中で炎が立ち、
-   焦げる寸前（危険帯）と熱管理の冷え切り帯は縞で示し、入ると点滅する。白い細い柱が今の温度。 */
-.thermo-tube, .thermo-housing .thermo-tube { background: #8c8c8c; }
-.thermo-scale { position: absolute; inset: 0; background: linear-gradient(0deg, #8c8c8c 0%, #b0a497 24%, #e3b98d 40%, #f2c27a 52%, #ffb347 62%, #ff7a1e 76%, #e0220a 94%, #7a0000 100%); }
-.thermo-dim { position: absolute; left: 0; right: 0; top: 0; z-index: 2; background: linear-gradient(0deg, rgba(10, 8, 22, .38), rgba(10, 8, 22, .56)); transition: bottom .4s var(--ease-out); }
-.thermo-tube b, .thermo-housing .thermo-tube b { left: 38%; right: 38%; z-index: 2; border-radius: 3px; background: linear-gradient(0deg, #ffffffcc, #ffffff66); opacity: .55; box-shadow: 0 0 6px #ffffffaa; }
-/* 適温はゲージでは一色で分かりやすく（虹は背景だけ TH25）。真ん中に細い金の最適温（TH26）。 */
-.thermo-zone { z-index: 1; background: #36c98a; opacity: .9; border-top: 2px solid #ffffffdd; border-bottom: 2px solid #ffffffdd; }
-.thermo-optimal, .thermo-housing .thermo-optimal { z-index: 2; min-height: 4px; background: #ffd84a; box-shadow: 0 0 8px #ffd84a, 0 0 0 1px #5a4300; }
-.thermo-heat { position: absolute; left: 0; right: 0; top: 0; z-index: 1; pointer-events: none; overflow: hidden; opacity: .75;
-  -webkit-mask-image: linear-gradient(0deg, transparent, #000 55%); mask-image: linear-gradient(0deg, transparent, #000 55%); }
+/* 温度計（TH32〜TH35）: 管は一本の切れ目のないグラデーション。灰（冷たい）→暖色→適温の明るい金→橙→赤→焦げる暗い赤。
+   文字の目盛りは置かず、管の中の印で示す。適温の両端に白い刻み、真ん中に虹の最適温（適温／最適温／適温のサンド）、
+   一番上の焦げる帯に炎、熱管理の冷え切り帯に雪の結晶。今の温度より上は少し暗くし、印はその上に明るいまま残す。 */
+.thermo-tube, .thermo-housing .thermo-tube { background: #45484d; }
+.thermo-scale { position: absolute; inset: 0; background: linear-gradient(0deg,
+  #3f4247 0%, #575a5f 6%, #7d7c7a 17%, #a0978b 29%, #c4a985 38%, #e6bf7c 43.5%,
+  #ffd676 46.5%, #ffe39a 54%, #ffd469 61%,
+  #ffb247 64.5%, #ff8a2a 72%, #ff5f17 81%, #e2300c 89%, #b0140a 94%, #560300 100%); }
+.thermo-dim { position: absolute; left: 0; right: 0; top: 0; z-index: 2; background: linear-gradient(0deg, rgba(10, 8, 22, .2), rgba(10, 8, 22, .34)); transition: bottom .4s var(--ease-out); }
+/* 適温を超えた所は、管の中でやわらかい炎のゆらぎが上へ流れる。縞に見えないよう淡く、下は溶け込ませる。 */
+.thermo-heat { position: absolute; left: 0; right: 0; top: 0; z-index: 1; pointer-events: none; overflow: hidden; opacity: .42; mix-blend-mode: screen;
+  -webkit-mask-image: linear-gradient(0deg, transparent, #000 60%); mask-image: linear-gradient(0deg, transparent, #000 60%); }
 /* 炎の模様は動かす層だけを上へ流す（再描画させず、合成だけで動かす）。 */
-.thermo-heat::before { content: ""; position: absolute; left: 0; right: 0; top: 0; bottom: -26px; will-change: transform;
-  background: radial-gradient(ellipse 45% 70% at 28% 100%, #ffe07a 0, transparent 72%) 0 0 / 100% 26px, radial-gradient(ellipse 45% 70% at 74% 100%, #ff8a3a 0, transparent 72%) 0 13px / 100% 26px;
-  animation: thermo-flame .8s linear infinite; }
-.thermo-danger { position: absolute; left: 0; right: 0; top: 0; z-index: 3; background: repeating-linear-gradient(-45deg, #ff2a00d9 0 5px, #1a0000d9 5px 10px); border-bottom: 2px solid #fff8; box-shadow: inset 0 0 8px #ff3a00; }
-.thermo-cold { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; background: repeating-linear-gradient(-45deg, #a8ddffd9 0 5px, #0b2a4ad9 5px 10px); border-top: 2px solid #fff8; }
-.thermo.danger .thermo-danger, .thermo.freezing .thermo-cold { animation: thermo-alarm .45s ease-in-out infinite alternate; }
+.thermo-heat::before { content: ""; position: absolute; left: 0; right: 0; top: 0; bottom: -40px; will-change: transform; filter: blur(2px);
+  background: radial-gradient(ellipse 34% 62% at 30% 100%, #ffe07a 0, transparent 70%) 0 0 / 100% 40px, radial-gradient(ellipse 30% 55% at 72% 100%, #ff9a4a 0, transparent 70%) 0 20px / 100% 40px;
+  animation: thermo-flame 1.1s linear infinite; }
+/* ガラス管のつや。 */
+.thermo-tube::after { content: ""; position: absolute; top: 0; bottom: 0; left: 16%; width: 20%; z-index: 4; pointer-events: none; background: linear-gradient(90deg, #fff0, #ffffff2e, #fff0); }
+/* 適温: 色はグラデーションのまま、両端に白い刻み。 */
+.thermo-zone, .thermo-housing .thermo-zone { position: absolute; left: 0; right: 0; z-index: 3; background: none; border: 0; opacity: 1; pointer-events: auto; }
+.thermo-zone::before, .thermo-zone::after { content: ""; position: absolute; left: 0; right: 0; height: 2px; opacity: .95;
+  background: linear-gradient(90deg, #fff 0 32%, transparent 32% 68%, #fff 68%); filter: drop-shadow(0 0 1px #0008); }
+.thermo-zone::before { top: -1px; }
+.thermo-zone::after { bottom: -1px; }
+/* 最適温: 適温に挟まれた細い虹。光の筋がゆっくり横切る。今の温度の線より手前に置き、最適温に入っても隠れない。 */
+.thermo-optimal, .thermo-housing .thermo-optimal { position: absolute; left: 0; right: 0; z-index: 5; min-height: 5px; overflow: hidden;
+  background: linear-gradient(90deg, #ff4d4d, #ff9f1c, #ffe93a, #3fdc78, #2ec9ff, #6b74ff, #cf5cff);
+  box-shadow: 0 0 0 1px #2a1a0899, 0 0 7px 1px #ffffffc0; }
+.thermo-optimal::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 40%; background: linear-gradient(90deg, #fff0, #ffffffd8, #fff0); transform: translateX(-120%); animation: thermo-sheen 2.4s ease-in-out infinite; }
+.thermo.optimal .thermo-optimal { box-shadow: 0 0 0 1px #2a1a0899, 0 0 10px 3px #fffffff0; }
+.thermo-icon { position: absolute; left: 50%; top: 50%; width: 17px; height: 17px; transform: translate(-50%, -50%); pointer-events: none; }
+.steam-temperature .thermo-icon { width: 12px; height: 12px; }
+.thermo-icon svg { display: block; width: 100%; height: 100%; }
+.thermo-icon.flame svg { fill: #fff6e0; filter: drop-shadow(0 0 2px #ff3a00) drop-shadow(0 0 1px #000); }
+.thermo-icon.snow svg { stroke: #f4f7fa; filter: drop-shadow(0 0 1px #000) drop-shadow(0 0 3px #ffffff80); }
+/* 焦げる帯（一番上）と冷え切り帯（熱管理の一番下）。色はグラデーションのまま、境目に刻みと印。入ると印が明滅する。 */
+.thermo-danger { position: absolute; left: 0; right: 0; top: 0; z-index: 3; }
+.thermo-cold { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; }
+.thermo-danger::after, .thermo-cold::after { content: ""; position: absolute; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, #fff 0 32%, transparent 32% 68%, #fff 68%); filter: drop-shadow(0 0 1px #000a); }
+.thermo-danger::after { bottom: -1px; }
+.thermo-cold::after { top: -1px; }
+.thermo.danger .thermo-danger .thermo-icon, .thermo.freezing .thermo-cold .thermo-icon { animation: thermo-alarm .45s ease-in-out infinite alternate; }
+.thermo.ok .thermo-tube { box-shadow: 0 0 22px #ffd56a88; }
+.thermo.optimal .thermo-tube { box-shadow: 0 0 16px #ffffffaa, 0 0 30px #ffd56a99; border-color: #fff3c4; }
 .thermo.danger .thermo-tube { box-shadow: 0 0 26px #ff2a00cc; }
-.thermo-labels { min-width: 4.2em; }
-.steam-temperature .thermo-labels { min-width: 3em; }
-.thermo-labels > span { position: absolute; left: 0; white-space: nowrap; }
-.thermo:not(.steam-temperature) .thermo-labels { min-width: 5em; }
-.thermo:not(.steam-temperature) .thermo-labels > span { left: 12px; }
-.thermo-danger-label { color: #ff7a5a; font-weight: 800; }
-.thermo-cold-label { color: #a8ddff; font-weight: 800; }
-.thermo-cool-label { color: #9fc4ee; }
-.thermo:has(.thermo-housing) .thermo-ideal-label { color: #9ff0c8; }
-.thermo.danger .thermo-danger-label, .thermo.freezing .thermo-cold-label { animation: thermal-warn .45s ease-in-out infinite alternate; }
-@keyframes thermo-flame { from { transform: translateY(0); } to { transform: translateY(-26px); } }
-@keyframes thermo-alarm { from { filter: brightness(1); } to { filter: brightness(1.7); } }
-@media (prefers-reduced-motion: reduce) { .thermo-heat::before, .thermo.danger .thermo-danger, .thermo.freezing .thermo-cold, .thermo-labels > span { animation: none; } }
+@keyframes thermo-flame { from { transform: translateY(0); } to { transform: translateY(-40px); } }
+@keyframes thermo-alarm { from { transform: translate(-50%, -50%) scale(1); filter: brightness(1); } to { transform: translate(-50%, -50%) scale(1.3); filter: brightness(1.6); } }
+@keyframes thermo-rainbow { to { background-position: -200% 0; } }
+@keyframes thermo-sheen { 0% { transform: translateX(-120%); } 65%, 100% { transform: translateX(260%); } }
+@media (prefers-reduced-motion: reduce) { .thermo-heat::before, .thermo-optimal::after, .thermo.danger .thermo-danger .thermo-icon, .thermo.freezing .thermo-cold .thermo-icon { animation: none; } }
 
 /* 熱管理の準備:「炭を焼きますか？」で個数を選ぶ（TH21）。 */
 .pull-play[hidden] { display: none; }
@@ -845,8 +851,8 @@
 .care-coals-ask { margin: 0; font-size: 26px; font-weight: 800; color: #ffe3a1; letter-spacing: .06em; }
 .care-coal-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 .care-coal { min-width: 0; padding: 14px 8px; font-size: 19px; }
-.care-coal .btn-desc { font-size: 12px; }
-.care-coals-note { margin: 0; font-size: 14px; line-height: 1.6; color: #cdbfa8; }
+.care-coal .btn-desc { font-size: 15px; font-weight: 900; letter-spacing: -.1em; color: #ffb36a; }
+.care-coal[data-test="care-coal-0"] .btn-desc { color: #a9cdff; letter-spacing: 0; }
 /* 画面全体の大爆発（TH17）。ステージ全体を覆う。 */
 .screen-blast { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .screen-blast.still { background: #fff4d0; animation: blast-still .45s ease-out forwards; }
@@ -855,7 +861,7 @@
 .thermal-ruined .worker-equipment .art { filter: grayscale(.85) brightness(.6); transition: filter .6s; }
 
 /* 現在地の針を目立たせる（TH30）。温度計は管の外から光る矢印、吸い出しは上下にはみ出す太い針。 */
-.thermo-mark, .thermo:has(.thermo-housing) .thermo-mark { left: -2px; right: -2px; height: 5px; margin-bottom: -2.5px; background: #fff; box-shadow: 0 0 0 1px #000a, 0 0 10px #fff; }
+.thermo-mark, .thermo:has(.thermo-housing) .thermo-mark { left: -2px; right: -2px; height: 3px; margin-bottom: -1.5px; z-index: 4; background: #fff; box-shadow: 0 0 0 1px #000a, 0 0 8px #fff; }
 .thermo-pointer { position: absolute; left: calc(var(--thermo-span) - 6px); width: 20px; height: 22px; z-index: 5; pointer-events: none;
   background: linear-gradient(90deg, #fffbe6, #ffd25a); clip-path: polygon(0 50%, 100% 0, 78% 50%, 100% 100%);
   filter: drop-shadow(0 0 5px #ffd25a) drop-shadow(0 0 1px #000); transition: bottom .4s var(--ease-out); animation: pointer-pulse 1.1s ease-in-out infinite alternate; }
@@ -868,28 +874,77 @@
 .pull-gauge-wrap .pg-needle::before { top: -9px; clip-path: polygon(0 0, 100% 0, 50% 100%); }
 .pull-gauge-wrap .pg-needle::after { bottom: -9px; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
 @keyframes pointer-pulse { from { transform: translateX(0); } to { transform: translateX(4px); } }
-/* フレーバーの葉（TH28）: 体調の顔の横。傷むほど斑点→欠け→穴→枯れて崩れる。傷むと葉だけ震える。 */
-.leaf-icon { display: inline-grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #ffffff0d; }
+/* フレーバーの葉（TH28・TH37）: 体調の顔の横。ボロボロ具合と色だけで体力が分かる。傷むほど色が抜け、斑点→欠け→穴→反って崩れる。 */
+.leaf-icon { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle, #ffffff1a, #ffffff08 70%); }
 .leaf-icon[hidden] { display: none; }
-.leaf-icon svg { width: 28px; height: 28px; overflow: visible; }
-.leaf-body { fill: #5cc05a; stroke: #1f4a22; stroke-width: 1; transition: fill .4s; }
-.leaf-vein { stroke: #d8ffd0aa; stroke-width: 1.1; stroke-linecap: round; }
+.leaf-icon svg { width: 32px; height: 32px; overflow: visible; transition: transform .45s var(--ease-out), filter .45s; }
+.leaf-body { fill: #4cc35a; stroke: #1c4a20; stroke-width: 1; transition: fill .45s, stroke .45s; }
+.leaf-vein { stroke: #dcffd2b0; stroke-width: 1.1; stroke-linecap: round; transition: stroke .45s; }
+.leaf-gloss { stroke: #ffffffa8; stroke-width: 2; stroke-linecap: round; transition: opacity .45s; }
 .leaf-spots, .leaf-crumbs, .leaf-bite-1, .leaf-bite-2 { display: none; }
 .leaf-spots { fill: #6b4a1f; }
-.leaf-crumbs { fill: #5a3a20; }
-.leaf-icon[data-hp="3"] .leaf-body { fill: #8db84a; }
+.leaf-crumbs { fill: #4a2e1a; }
+.leaf-icon[data-hp="4"] svg { filter: drop-shadow(0 0 4px #6cff7a66); }
+.leaf-icon[data-hp="3"] .leaf-body { fill: #a2c445; stroke: #3d4a18; }
+.leaf-icon[data-hp="3"] .leaf-gloss { opacity: .45; }
+.leaf-icon[data-hp="3"] svg { transform: rotate(-4deg); }
 .leaf-icon:is([data-hp="3"], [data-hp="2"], [data-hp="1"]) .leaf-spots { display: inline; }
-.leaf-icon[data-hp="2"] .leaf-body { fill: #b8a83c; }
+.leaf-icon[data-hp="2"] .leaf-body { fill: #d2ae3a; stroke: #5a4414; }
+.leaf-icon[data-hp="2"] .leaf-vein { stroke: #fff2c090; }
+.leaf-icon:is([data-hp="2"], [data-hp="1"], [data-hp="0"]) .leaf-gloss { opacity: 0; }
+.leaf-icon[data-hp="2"] svg { transform: rotate(-10deg) scale(.96); }
 .leaf-icon:is([data-hp="2"], [data-hp="1"], [data-hp="0"]) .leaf-bite-2 { display: inline; }
-.leaf-icon[data-hp="1"] .leaf-body { fill: #a8742c; }
+.leaf-icon[data-hp="1"] .leaf-body { fill: #a2602a; stroke: #4a2810; }
+.leaf-icon[data-hp="1"] .leaf-vein { stroke: #f2c79a70; }
+.leaf-icon[data-hp="1"] svg { transform: rotate(-18deg) scale(.9, .84); }
 .leaf-icon:is([data-hp="1"], [data-hp="0"]) .leaf-bite-1 { display: inline; }
-.leaf-icon[data-hp="0"] .leaf-body { fill: #5a3a20; stroke: #2a1a10; }
-.leaf-icon[data-hp="0"] .leaf-vein { stroke: #3a2414; }
+.leaf-icon[data-hp="0"] .leaf-body { fill: #4a2e1a; stroke: #24140a; }
+.leaf-icon[data-hp="0"] .leaf-vein { stroke: #2e1a0e; }
+.leaf-icon[data-hp="0"] svg { transform: rotate(-26deg) scale(.84, .72); filter: grayscale(.4); }
 .leaf-icon[data-hp="0"] .leaf-crumbs { display: inline; }
-.leaf-icon.hit svg { animation: leaf-shiver .5s ease-out; }
+.leaf-icon.hit { animation: leaf-shiver .5s ease-out; }
 @keyframes leaf-shiver { 0%, 100% { transform: none; } 20% { transform: translateX(-4px) rotate(-12deg); } 45% { transform: translateX(3px) rotate(9deg); } 70% { transform: translateX(-2px) rotate(-4deg); } }
 /* 疲れ（TH29）: 体調の顔の横の小さな札。付いた瞬間に一度だけ震える。 */
 .bench-strain { padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 700; color: #ffd0b8; background: #6a1e1e; border: 1px solid #ff8a6a66; white-space: nowrap; }
 .bench-strain[hidden] { display: none; }
 .bench-strain.hit { animation: leaf-shiver .5s ease-out; }
-@media (prefers-reduced-motion: reduce) { .thermo-pointer, .leaf-icon.hit svg, .bench-strain.hit { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .thermo-pointer, .leaf-icon.hit, .bench-strain.hit { animation: none; } }
+
+/* 吸い出し・熱管理の針ゲージ（TH34〜TH36）: 切れ目のないグラデーション（左の上げ吸い=暖色→中央のキープ=落ち着いた色→右の下げ吸い=寒色）。
+   区切りの線や文字は置かず、各帯の芯に ▲ ＝ ▼ の印。芯は少し明るく光る（芯の幅は成功帯の実際の幅）。 */
+.pull-gauge, .bench[data-art-skin] .pull-gauge { height: 64px; border: 2px solid #ffffff40; border-radius: 10px;
+  background: linear-gradient(90deg, #c4481c 0%, #a63d1f 15%, #74352a 29%, #403448 43%, #3a3752 57%, #2f4268 71%, #2c5892 85%, #3069ae 100%); }
+.pull-gauge::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 46%; z-index: 1; pointer-events: none; background: linear-gradient(180deg, #ffffff24, #fff0); }
+.pg-zone, .pg-zone.z-up, .pg-zone.z-keep, .pg-zone.z-down { background: none; padding: 0; }
+.pg-just { top: 0; bottom: 0; z-index: 1; border-radius: 3px; background: linear-gradient(180deg, #fff4d466, #ffe8b030 50%, #fff4d466); box-shadow: inset 0 0 0 1px #fff2c8a0, 0 0 14px #ffd98a66; }
+.pg-mark { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 24px; font-weight: 900; line-height: 1; color: #fff; text-shadow: 0 0 6px #000b, 0 1px 0 #0009; pointer-events: none; }
+.z-up .pg-mark { color: #ffe0c0; }
+.z-down .pg-mark { color: #d8e9ff; }
+/* 今の温度は短い一語。温度計の印と同じ色（最適温は虹）。熱管理は熱が落ちていく ↓ を添える。 */
+.pull-read { display: flex; align-items: center; gap: 10px; min-height: 38px; }
+.pull-state { font-size: 26px; font-weight: 800; letter-spacing: .08em; line-height: 1.2; }
+.pull-read[data-tone="optimal"] .pull-state { color: transparent; -webkit-background-clip: text; background-clip: text;
+  background-image: linear-gradient(90deg, #ff7070, #ffb43a, #ffee55, #66e690, #55d6ff, #8e8aff, #e47eff, #ff7070); background-size: 200% 100%; animation: thermo-rainbow 2.6s linear infinite; }
+.pull-read[data-tone="ok"] .pull-state { color: #ffd876; }
+.pull-read[data-tone="hot"] .pull-state { color: #ff9a45; }
+.pull-read[data-tone="danger"] .pull-state { color: #ff5a3a; animation: thermal-warn .45s ease-in-out infinite alternate; }
+.pull-read[data-tone="cold"] .pull-state { color: #eef3f6; animation: thermal-warn .45s ease-in-out infinite alternate; }
+.pull-read[data-tone="cool"] .pull-state { color: #c4bcb2; }
+.pull-drift { font-size: 22px; font-weight: 800; color: #d6e4f2; animation: drift-fall 1.2s ease-in infinite; }
+@keyframes drift-fall { 0% { transform: translateY(-5px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(7px); opacity: 0; } }
+/* 吸った回数は点（最低回数は金の縁）。炭・雨・少穴は短い札。 */
+.pull-count { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; min-height: 22px; }
+.pull-pips { display: inline-flex; gap: 7px; }
+.pull-pip { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #ffffff6a; background: #ffffff10; transition: background .2s, box-shadow .2s; }
+.pull-pip.need { border-color: #ffd25a; }
+.pull-pip.on { background: #fff; border-color: #fff; box-shadow: 0 0 8px #ffffffaa; }
+.pull-tags { display: inline-flex; gap: 6px; }
+.pull-tag { padding: 2px 9px; border-radius: 10px; font-size: 13px; line-height: 1.5; color: #f0e3cc; background: #ffffff14; border: 1px solid #ffffff2a; white-space: nowrap; }
+/* 吸った直後、温度計の針の横に浮かぶ上下の印（判定の文字の代わり）。 */
+.thermo-pop { position: absolute; left: calc(var(--thermo-span) + 18px); z-index: 6; margin-bottom: -14px; font-style: normal; font-size: 22px; font-weight: 900; line-height: 28px; letter-spacing: -.12em;
+  white-space: nowrap; pointer-events: none; text-shadow: 0 0 6px #000, 0 0 2px #000; animation: thermo-pop .9s ease-out forwards; }
+.thermo-pop.up { color: #ffb36a; --pop-dy: -24px; }
+.thermo-pop.keep { color: #fff; --pop-dy: 0px; }
+.thermo-pop.down { color: #a9cdff; --pop-dy: 24px; }
+@keyframes thermo-pop { 0% { opacity: 0; transform: translateY(0) scale(.6); } 22% { opacity: 1; transform: translateY(0) scale(1.15); } 100% { opacity: 0; transform: translateY(var(--pop-dy)) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .pull-read .pull-state, .pull-drift, .thermo-pop { animation: none; } }
