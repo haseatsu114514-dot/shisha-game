@@ -1,0 +1,14 @@
+{
+  "source": "asset_sources/steam-focus-20261010/rejected-lounge.png",
+  "source_sha256": "f1ef8a45f39641d4785e8b27aa8d52d7e5ca275410110ae7ea8bf02ae616b203",
+  "size": [
+    1903,
+    826
+  ],
+  "mode": "RGB",
+  "transparent": false,
+  "tool": "image_gen.imagegen",
+  "prompt": "rejected-lounge-prompt.txt",
+  "references": [],
+  "adopted": false
+}

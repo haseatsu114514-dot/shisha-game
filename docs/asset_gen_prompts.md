@@ -1,5 +1,9 @@
 # 画像生成プロンプト集（codex用）— シーシャ作りパート＋立ち絵
 
+> 2026-10-10 SF02: 蒸らし中に目を閉じて息を整えるはじめの[生成指示](../asset_sources/steam-focus-20261010/hajime-wait-prompt.txt)・[実参照と原画SHA](../asset_sources/steam-focus-20261010/generation.json)を保存。採用済みの帽子・パーカー・携帯中のマイチップと画風を維持し、シーシャ台やホースは人物画像へ追加しない。[実装画面・検品記録](../asset_sources/steam-focus-20261010/README.md)。
+
+> 2026-10-10 SF22〜27: 精神世界はシンプルで抽象的な宇宙へ。[採用背景の生成指示](../asset_sources/steam-focus-20261010/world-prompt.txt)・[原画SHA](../asset_sources/steam-focus-20261010/world-generation.json)。暗い紫に薄い星雲と小さな星粒だけを描き、言葉・心拍・動く弾・リフレッシュの波はコードが描く。店内が残る前案は[不採用の記録](../asset_sources/steam-focus-20261010/rejected-lounge-generation.json)として保存し、ゲームへ接続しない。
+
 > 2026-10-09 TA13: 制作済みのヒロイン原画は[共通の採用候補一覧](../asset_sources/title-daily-heroines-20261009/README.md)から選ぶ。今回の19案と旧15案を保存し、ゲームの差し替え・自動採用は行わない。原画・生成指示・実参照SHA・目視メモを候補集に残す。
 
 > 2026-10-09 CI72〜82: [漫画カットインの全画面／主人公エリア中央・動く比較](../asset_sources/craft-success-cutins/placements-v2-20261008/README.md)。[漫画コマ](../asset_sources/craft-success-cutins/placements-v2-20261008/pair-prompt.txt)・[中央突起の除去](../asset_sources/craft-success-cutins/placements-v2-20261008/stove-fix-prompt.txt)・[コンロの短い目印を真下へ](../asset_sources/craft-success-cutins/placements-v2-20261008/dial-fix-prompt.txt)の指示を保存。目印を斜め・長い中央線にした案は不採用。カットインは比較用で、本編の成功条件へは未接続。コンロPNG／WebPの描画修正は本編素材にも反映。

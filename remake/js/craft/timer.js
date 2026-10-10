@@ -6,20 +6,20 @@ import { autoSkill } from "./common.js";
 import { artImg } from "./art.js";
 import { buildDigitalClock } from "./digital-clock.js";
 import { MAX_STEAM_SECONDS, normalizeSteamSeconds } from "./steam-time.js";
+import { buildSteamTemperature, buildSteamForecast } from "./steam-forecast.js";
 
-export function runSteamTimer(cs, hint) {
-  const panel = stepPanel("steam", "蒸らし時間", hint, { brief: "秒は10秒ずつ。5〜8分が目安" });
+export function runSteamTimer(cs) {
+  const panel = stepPanel("steam", "蒸らし", "", { brief: "" });
   let seconds = normalizeSteamSeconds(cs.steamSeconds ?? 0);
   const clock = buildDigitalClock("timer-display", { live: true, test: "timer-display" });
-  const advice = el("p.timer-advice");
+  const thermometer = buildSteamTemperature();
+  const forecast = buildSteamForecast(cs, thermometer);
   let start;
   const render = () => {
     clock.update(seconds);
+    forecast.update(seconds);
     start.disabled = seconds === 0;
     panel.querySelectorAll("[data-test='timer-minute-up'], [data-test='timer-second-up']").forEach((b) => { b.disabled = seconds >= MAX_STEAM_SECONDS; });
-    advice.textContent = !seconds ? "ボタンで時間を設定しよう" : seconds < 300 ? "短めの蒸らし。吸い出しで熱を入れる"
-      : seconds < 450 ? "香りの輪郭を残す。吸い出しは低めの温度から"
-      : seconds < 600 ? "じっくり熱を入れる。吸い出しに余裕ができる" : "上限10分。特に熱を必要とする機材・フレーバー向け。通常は5〜8分を目安に";
   };
   return new Promise((resolve) => {
     const addMinute = () => { SE.click(); seconds = normalizeSteamSeconds(seconds + 60); render(); };
@@ -41,7 +41,7 @@ export function runSteamTimer(cs, hint) {
         button("分", "timer-minute-up", 1, addMinute),
         button("秒", "timer-second-up", 2, addSecond), start,
         button("リセット", "timer-reset", 4, () => { SE.click(); seconds = 0; render(); }),
-      ]), advice,
+      ]), forecast.root, thermometer.root,
     ]));
     render();
     if (autoSkill()) { seconds = 300; render(); setTimeout(() => start.click(), 40); }

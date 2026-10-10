@@ -741,14 +741,16 @@
 @keyframes thermal-boom { 0% { transform: scale(.3); opacity: 1; } 35% { opacity: 1; } 100% { transform: scale(16); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .thermal-picture *, .thermal-glow, .thermal-label, .thermal-boom.go { animation: none; } }
 
-/* 温度計（TH32〜TH35・TH41）: 管は一本の切れ目のないグラデーション。灰（冷たい）→暖色→適温のミントグリーン→橙→赤→焦げる暗い赤。
+/* 温度計（SF12〜14）: 低温のクリーム→淡い黄→黄、適温のミントを挟み、橙→赤→深紅。
    文字の目盛りは置かず、管の中の印で示す。適温の両端に白い刻み、真ん中に虹の最適温（適温／最適温／適温のサンド）、
    一番上の焦げる帯に炎、熱管理の冷え切り帯に雪の結晶。今の温度より上は少し暗くし、印はその上に明るいまま残す。 */
 .thermo-tube, .thermo-housing .thermo-tube { background: #45484d; }
 .thermo-scale { position: absolute; inset: 0; background: linear-gradient(0deg,
-  #205986 0%, #287dad 13%, #3aa6bd 26%, #79c9bc 37%, #67d2a3 41%,
+  #fff4d2 0%, #ffedb0 13%, #ffe270 26%, #ffd12a 37%, #f6d559 40%, #67d2a3 42%,
   #4fcf98 44%, #74e0b0 54%, #4fcf98 64%,
-  #ffb247 69%, #ff8a2a 75%, #ff5f17 83%, #e2300c 89%, #b0140a 94%, #560300 100%); }
+  #79d9a9 66%, #ffb247 71%, #ff8a2a 76%, #ff3f17 83%, #eb210d 89%, #b0140a 94%, #650609 100%); }
+.thermo-scale::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, #783c191f 0 .5px, #fff3d322 .5px 1px, transparent 1px 1.5%); }
 .thermo-dim { position: absolute; left: 0; right: 0; top: 0; z-index: 2; background: linear-gradient(0deg, rgba(10, 8, 22, .2), rgba(10, 8, 22, .34)); transition: bottom .4s var(--ease-out); }
 /* 適温を超えた所は、管の中でやわらかい炎のゆらぎが上へ流れる。縞に見えないよう淡く、下は溶け込ませる。 */
 .thermo-heat { position: absolute; left: 0; right: 0; top: 0; z-index: 1; pointer-events: none; overflow: hidden; opacity: .42; mix-blend-mode: screen;
@@ -886,7 +888,7 @@
   white-space: nowrap; pointer-events: none; text-shadow: 0 0 6px #000, 0 0 2px #000; animation: thermo-pop .9s ease-out forwards; }
 .thermo-pop.up { color: #ffb36a; --pop-dy: -24px; }
 .thermo-pop.keep { color: #fff; --pop-dy: 0px; }
-.thermo-pop.down { color: #a9cdff; --pop-dy: 24px; }
+.thermo-pop.down { color: #ffedb0; --pop-dy: 24px; }
 @keyframes thermo-pop { 0% { opacity: 0; transform: translateY(0) scale(.6); } 22% { opacity: 1; transform: translateY(0) scale(1.15); } 100% { opacity: 0; transform: translateY(var(--pop-dy)) scale(1); } }
 @media (prefers-reduced-motion: reduce) { .pull-read .pull-state, .pull-drift, .thermo-pop { animation: none; } }
 
@@ -967,11 +969,11 @@
 
 /* TH57: 拡大したモックアップの配置に合わせる。ダイヤル・情報欄・ボタンを下段の固定行に収める。 */
 .bench-top .bench-mode small { margin-left: 12px; padding-left: 12px; border-left: 1px solid #d2bb9260; font-size: 11px; letter-spacing: .12em; color: #c6b8ba; }
-.bench-left, .bench-right { top: 54px; bottom: 30px; border-color: #9b785876; box-shadow: inset 0 0 0 2px #f1c9910b, inset 0 0 18px #05030988, 0 8px 24px #0006; }
-.bench-left { left: 20px; width: 424px; gap: 3px; padding: 10px 5px 11px; }
-.bench-right { left: 458px; right: 20px; padding: 18px 22px 24px; }
+.bench-left, .bench-right { top: 54px; bottom: 12px; border-color: #9b785876; box-shadow: inset 0 0 0 2px #f1c9910b, inset 0 0 18px #05030988, 0 8px 24px #0006; }
+.bench-left { left: 12px; width: 432px; gap: 3px; padding: 10px 5px 11px; }
+.bench-right { left: 450px; right: 12px; padding: 18px 22px 16px; }
 /* TH72: 下の外側30→18px、操作ボタン下24→12px。左右のウインドウの下端をそろえる。 */
-.bench:is([data-step="pull"], [data-step="care"]) :is(.bench-left, .bench-right) { bottom: 18px; }
+.bench:is([data-step="pull"], [data-step="care"]) :is(.bench-left, .bench-right) { bottom: 12px; }
 .bench:is([data-step="pull"], [data-step="care"]) .bench-right { padding-bottom: 12px; background: radial-gradient(ellipse at 100% 100%, #382a3c33, transparent 70%), linear-gradient(145deg, #191121, #100b18); }
 .bench:is([data-step="pull"], [data-step="care"]) :is(.bench-left, .bench-right) { border-color: #a18a666b; box-shadow: inset 0 0 0 2px #ebd3a309, 0 5px 20px #0005; }
 .bench:is([data-step="pull"], [data-step="care"]) .bench-heading { padding-left: 12px; }
@@ -1021,8 +1023,8 @@
 .pull-zone-label.l-keep > b { border: 0; padding: 0; margin: 0; font-size: 20px; }
 .pull-zone-label.l-keep > span { padding: 1px 24px; border: 1px solid #d6bf9b36; border-radius: 5px; background: #15101b70; }
 .pull-zone-label .pull-tag { font-size: 10px; }
-.pull > .thermo { left: -128px; top: -48px; height: 360px; }
-.pull > .thermo::after { content: ""; position: absolute; inset: -34px -12px -60px; z-index: -1; border: 1px solid #ae916843; border-radius: 8px; background: linear-gradient(160deg, #100b15ed, #100b15dd); box-shadow: inset 0 0 0 1px #eec6890e, 0 2px 10px #0006; }
+:is(.pull, .steam, .steam-timer) > .thermo { position: absolute; left: -128px; top: -48px; height: 360px; z-index: 3; }
+:is(.pull, .steam, .steam-timer) > .thermo::after { content: ""; position: absolute; inset: -34px -12px -60px; z-index: -1; border: 1px solid #ae916843; border-radius: 8px; background: linear-gradient(160deg, #100b15ed, #100b15dd); box-shadow: inset 0 0 0 1px #eec6890e, 0 2px 10px #0006; }
 .pull > .thermo .thermo-projected-label { display: none; }
 .pull > .thermo .thermo-projected { height: 1px; margin-bottom: -.5px; border: 0; background: repeating-linear-gradient(90deg, #fff8 0 3px, transparent 3px 6px); box-shadow: none; }
 .pull > .thermo .pull-read { position: absolute; top: calc(100% + 12px); left: -3px; right: -3px; justify-content: center; min-height: 32px; border: 1px solid #c1aa7438; border-radius: 6px; background: #100c17ef; }
@@ -1064,7 +1066,7 @@
   filter: drop-shadow(0 0 5px var(--pointer-glow, #ffffffaa)) drop-shadow(0 2px 2px #000d); }
 .thermo-pointer svg { display: block; width: 100%; height: 100%; fill: var(--pointer-fill, #fff); }
 .thermo { --pointer-fill: #fff; --pointer-glow: #ffffffaa; }
-.thermo.cool { --pointer-fill: #bfe4ff; --pointer-glow: #59b4ffcc; }
+.thermo.cool { --pointer-fill: #fff2c8; --pointer-glow: #ffe2a288; }
 .thermo.ok { --pointer-fill: #9effd6; --pointer-glow: #2fe39ccc; }
 .thermo.optimal { --pointer-fill: #fff; --pointer-glow: #ffe066; }
 .thermo.hot { --pointer-fill: #ffc078; --pointer-glow: #ff7a1acc; }
@@ -1083,13 +1085,13 @@
 .thermo-danger .thermo-icon.flame svg { fill: #ff5a1f; filter: none; }
 .thermo.danger .thermo-danger { animation: hazard-slide .5s linear infinite; }
 @keyframes hazard-slide { to { background-position: 12px 0; } }
-/* 状態の一語も温度帯の色にする（ぬるい＝青、適温＝ミント、熱い＝橙、焦げる寸前＝警戒色）。 */
-.pull-read[data-tone="cool"] .pull-state { color: #96d2ff; text-shadow: 0 0 8px #3a9cff88; }
+/* 状態の一語も温度帯の色にする（ぬるい＝クリーム、適温＝ミント、熱い＝橙、焦げる寸前＝警戒色）。 */
+.pull-read[data-tone="cool"] .pull-state { color: #fff0bd; text-shadow: 0 0 7px #e6bc6444; }
 .pull-read[data-tone="ok"] .pull-state { color: #62f2b4; text-shadow: 0 0 8px #22d08c99; }
 .pull-read[data-tone="hot"] .pull-state { color: #ffa652; text-shadow: 0 0 8px #ff6a0099; }
 .pull-read[data-tone="danger"] .pull-state { color: #ffd21a; text-shadow: 0 0 6px #ff2a00, 0 0 12px #ff2a00aa; }
-.pull-read[data-tone="cold"] .pull-state { color: #d6f1ff; text-shadow: 0 0 8px #7fd0ff; }
-.pull > .thermo .pull-read[data-tone="cool"] { border-color: #6fb6ff55; }
+.pull-read[data-tone="cold"] .pull-state { color: #fff4d2; text-shadow: 0 0 7px #e6bc6444; }
+.pull > .thermo .pull-read[data-tone="cool"] { border-color: #ead39b55; }
 .pull > .thermo .pull-read[data-tone="ok"] { border-color: #4fe3a466; }
 .pull > .thermo .pull-read[data-tone="optimal"] { border-color: #ffe9a477; box-shadow: 0 0 10px #ffd86a33; }
 .pull > .thermo .pull-read[data-tone="hot"] { border-color: #ff9a4a66; }

@@ -195,8 +195,10 @@ try {
     await page.waitForFunction(() => parseFloat(document.querySelector('.pg-needle').dataset.pos) > 0);
     const speed = await page.evaluate(async () => {
       const needle = document.querySelector('.pg-needle');
-      const x = parseFloat(needle.dataset.pos); await new Promise(r => setTimeout(r,120));
-      return parseFloat(needle.dataset.pos) - x;
+      const began = await new Promise(requestAnimationFrame), x = parseFloat(needle.dataset.pos);
+      let ended;
+      for (let i = 0; i < 10; i++) ended = await new Promise(requestAnimationFrame);
+      return (parseFloat(needle.dataset.pos) - x) / (ended - began);
     });
     focus.push({ width, speed });
     await page.evaluate(() => { __remake.craftTest.auto = 'good'; });
@@ -280,11 +282,9 @@ try {
     await p.waitForFunction(() => !document.querySelector('[data-test="timer-stop"]').disabled);
     const initial = Number(await p.locator('[data-test="steam-temperature"]').getAttribute('aria-valuenow'));
     const calmTrace = await p.locator('.dodge-beat-line').evaluate(n => ({ height:n.getBBox().height, color:getComputedStyle(n).stroke }));
-    // 説明ボタンのSpaceでリフレッシュを消費しない。
-    await p.locator('.bench-guide summary').focus(); await p.keyboard.press('Space');
-    assert(await p.locator('.bench-guide').evaluate(n => n.open));
-    assert.match(await p.locator('.dodge-refresh').textContent(), /×2/);
-    await p.locator('.bench-guide summary').click();
+    assert(await p.locator('.bench-guide').isHidden(), 'Steam guide was not removed');
+    assert.equal(await p.locator('.dodge-refresh').getAttribute('data-remaining'), '1');
+    assert.equal(await p.locator('.bench-title').textContent(), '蒸らし');
     await p.waitForTimeout(1000);
     await p.locator('[data-test="timer-stop"]').click();
     const paused=await p.evaluate(()=>({clock:document.querySelector('[data-test="steam-clock"]').textContent,temp:document.querySelector('[data-test="steam-temperature"]').getAttribute('aria-valuenow'),bullet:document.querySelector('.dodge-object, .dodge-word')?.style.transform}));
