@@ -1,0 +1,458 @@
+{
+  "date": "2026-10-10",
+  "requests": "CV22–26",
+  "errors": [],
+  "missing": [],
+  "captures": [
+    {
+      "image": "sumi.png",
+      "variant": 0,
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "phase": "speaking",
+      "count": "15",
+      "caption": "俺も終わらせた覚えはねえぞ！",
+      "portraitSource": "http://127.0.0.1:8123/remake/img/sprites/characters/sumi/chr_sumi_serious.webp",
+      "geometry": {
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "top": 0,
+          "right": 1280,
+          "bottom": 720,
+          "left": 0
+        },
+        "title": {
+          "x": 279.234375,
+          "y": 13,
+          "width": 623.203125,
+          "height": 76,
+          "top": 13,
+          "right": 902.4375,
+          "bottom": 89,
+          "left": 279.234375
+        },
+        "count": {
+          "x": 920.4375,
+          "y": 11,
+          "width": 80.3125,
+          "height": 80,
+          "top": 11,
+          "right": 1000.75,
+          "bottom": 91,
+          "left": 920.4375
+        },
+        "portrait": {
+          "x": 170,
+          "y": 94,
+          "width": 940,
+          "height": 626,
+          "top": 94,
+          "right": 1110,
+          "bottom": 720,
+          "left": 170
+        },
+        "caption": {
+          "x": 328.0975036621094,
+          "y": 560.5875244140625,
+          "width": 623.804931640625,
+          "height": 52.40625,
+          "top": 560.5875244140625,
+          "right": 951.9024353027344,
+          "bottom": 612.9937744140625,
+          "left": 328.0975036621094
+        },
+        "retry": {
+          "x": 250,
+          "y": 632,
+          "width": 378,
+          "height": 64,
+          "top": 632,
+          "right": 628,
+          "bottom": 696,
+          "left": 250
+        },
+        "quit": {
+          "x": 652,
+          "y": 632,
+          "width": 378,
+          "height": 64,
+          "top": 632,
+          "right": 1030,
+          "bottom": 696,
+          "left": 652
+        }
+      },
+      "clockStyle": {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "shadow": "none",
+        "transform": "none"
+      }
+    },
+    {
+      "image": "tsumugi.png",
+      "variant": "premium:tsumugi",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "phase": "speaking",
+      "count": "15",
+      "caption": "……帰っちゃうなら、仕方ないですけど……",
+      "portraitSource": "http://127.0.0.1:8123/remake/img/sprites/characters/tsumugi/chr_tsumugi_normal.webp",
+      "geometry": {
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "top": 0,
+          "right": 1280,
+          "bottom": 720,
+          "left": 0
+        },
+        "title": {
+          "x": 279.234375,
+          "y": 13,
+          "width": 623.203125,
+          "height": 76,
+          "top": 13,
+          "right": 902.4375,
+          "bottom": 89,
+          "left": 279.234375
+        },
+        "count": {
+          "x": 920.4375,
+          "y": 11,
+          "width": 80.3125,
+          "height": 80,
+          "top": 11,
+          "right": 1000.75,
+          "bottom": 91,
+          "left": 920.4375
+        },
+        "portrait": {
+          "x": 170,
+          "y": 94,
+          "width": 940,
+          "height": 626,
+          "top": 94,
+          "right": 1110,
+          "bottom": 720,
+          "left": 170
+        },
+        "caption": {
+          "x": 209.01751708984375,
+          "y": 560.5875244140625,
+          "width": 861.9649047851562,
+          "height": 52.40625,
+          "top": 560.5875244140625,
+          "right": 1070.982421875,
+          "bottom": 612.9937744140625,
+          "left": 209.01751708984375
+        },
+        "retry": {
+          "x": 250,
+          "y": 632,
+          "width": 378,
+          "height": 64,
+          "top": 632,
+          "right": 628,
+          "bottom": 696,
+          "left": 250
+        },
+        "quit": {
+          "x": 652,
+          "y": 632,
+          "width": 378,
+          "height": 64,
+          "top": 632,
+          "right": 1030,
+          "bottom": 696,
+          "left": 652
+        }
+      },
+      "clockStyle": {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "shadow": "none",
+        "transform": "none"
+      }
+    },
+    {
+      "image": "phone-ageha.png",
+      "variant": "premium:ageha",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "phase": "speaking",
+      "count": "15",
+      "caption": "ツーチャンもスリーチャンもあるっしょ！",
+      "portraitSource": "http://127.0.0.1:8123/remake/img/sprites/characters/ageha/chr_ageha_smile.webp",
+      "geometry": {
+        "stage": {
+          "x": 75.33331298828125,
+          "y": 0,
+          "width": 693.3333740234375,
+          "height": 390,
+          "top": 0,
+          "right": 768.6666870117188,
+          "bottom": 390,
+          "left": 75.33331298828125
+        },
+        "title": {
+          "x": 226.58526611328125,
+          "y": 7.0416669845581055,
+          "width": 337.56842041015625,
+          "height": 41.16666793823242,
+          "top": 7.0416669845581055,
+          "right": 564.1536865234375,
+          "bottom": 48.20833492279053,
+          "left": 226.58526611328125
+        },
+        "count": {
+          "x": 573.9036865234375,
+          "y": 5.958333492279053,
+          "width": 43.5025634765625,
+          "height": 43.333335876464844,
+          "top": 5.958333492279053,
+          "right": 617.40625,
+          "bottom": 49.2916693687439,
+          "left": 573.9036865234375
+        },
+        "portrait": {
+          "x": 167.41665649414062,
+          "y": 50.91666793823242,
+          "width": 509.1666564941406,
+          "height": 339.0833435058594,
+          "top": 50.91666793823242,
+          "right": 676.5833129882812,
+          "bottom": 390.0000114440918,
+          "left": 167.41665649414062
+        },
+        "caption": {
+          "x": 192.7145233154297,
+          "y": 303.6515808105469,
+          "width": 458.5709228515625,
+          "height": 28.38671875,
+          "top": 303.6515808105469,
+          "right": 651.2854461669922,
+          "bottom": 332.0382995605469,
+          "left": 192.7145233154297
+        },
+        "retry": {
+          "x": 210.74998474121094,
+          "y": 342.3333435058594,
+          "width": 204.75001525878906,
+          "height": 34.666656494140625,
+          "top": 342.3333435058594,
+          "right": 415.5,
+          "bottom": 377,
+          "left": 210.74998474121094
+        },
+        "quit": {
+          "x": 428.5,
+          "y": 342.3333435058594,
+          "width": 204.75,
+          "height": 34.666656494140625,
+          "top": 342.3333435058594,
+          "right": 633.25,
+          "bottom": 377,
+          "left": 428.5
+        }
+      },
+      "clockStyle": {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "shadow": "none",
+        "transform": "none"
+      }
+    },
+    {
+      "image": "urgent.png",
+      "variant": 0,
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "phase": "speaking",
+      "count": "2",
+      "caption": "俺はまだ、トングを置いてねえぞ。",
+      "portraitSource": "http://127.0.0.1:8123/remake/img/sprites/characters/sumi/chr_sumi_normal.webp",
+      "geometry": {
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "top": 0,
+          "right": 1280,
+          "bottom": 720,
+          "left": 0
+        },
+        "title": {
+          "x": 279.234375,
+          "y": 13,
+          "width": 623.203125,
+          "height": 76,
+          "top": 13,
+          "right": 902.4375,
+          "bottom": 89,
+          "left": 279.234375
+        },
+        "count": {
+          "x": 920.4375,
+          "y": 11,
+          "width": 80.3125,
+          "height": 80,
+          "top": 11,
+          "right": 1000.75,
+          "bottom": 91,
+          "left": 920.4375
+        },
+        "portrait": {
+          "x": 170,
+          "y": 94,
+          "width": 940,
+          "height": 626,
+          "top": 94,
+          "right": 1110,
+          "bottom": 720,
+          "left": 170
+        },
+        "caption": {
+          "x": 283.5400085449219,
+          "y": 560.5875244140625,
+          "width": 712.919921875,
+          "height": 52.40625,
+          "top": 560.5875244140625,
+          "right": 996.4599304199219,
+          "bottom": 612.9937744140625,
+          "left": 283.5400085449219
+        },
+        "retry": {
+          "x": 250,
+          "y": 632,
+          "width": 378,
+          "height": 64,
+          "top": 632,
+          "right": 628,
+          "bottom": 696,
+          "left": 250
+        },
+        "quit": {
+          "x": 652,
+          "y": 632,
+          "width": 378,
+          "height": 64,
+          "top": 632,
+          "right": 1030,
+          "bottom": 696,
+          "left": 652
+        }
+      },
+      "clockStyle": {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "shadow": "none",
+        "transform": "none"
+      }
+    },
+    {
+      "image": "game-over.png",
+      "variant": 0,
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "phase": "gameover",
+      "count": "0",
+      "caption": "俺はまだ、トングを置いてねえぞ。",
+      "portraitSource": "http://127.0.0.1:8123/remake/img/sprites/characters/sumi/chr_sumi_normal.webp",
+      "geometry": {
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "top": 0,
+          "right": 1280,
+          "bottom": 720,
+          "left": 0
+        },
+        "title": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "count": {
+          "x": 1068.84375,
+          "y": 320,
+          "width": 80.3125,
+          "height": 80,
+          "top": 320,
+          "right": 1149.15625,
+          "bottom": 400,
+          "left": 1068.84375
+        },
+        "portrait": {
+          "x": 170,
+          "y": 94,
+          "width": 940,
+          "height": 626,
+          "top": 94,
+          "right": 1110,
+          "bottom": 720,
+          "left": 170
+        },
+        "caption": {
+          "x": 283.5400085449219,
+          "y": 560.5875244140625,
+          "width": 712.919921875,
+          "height": 52.40625,
+          "top": 560.5875244140625,
+          "right": 996.4599304199219,
+          "bottom": 612.9937744140625,
+          "left": 283.5400085449219
+        },
+        "retry": {
+          "x": 250,
+          "y": 632,
+          "width": 378,
+          "height": 64,
+          "top": 632,
+          "right": 628,
+          "bottom": 696,
+          "left": 250
+        },
+        "quit": {
+          "x": 652,
+          "y": 632,
+          "width": 378,
+          "height": 64,
+          "top": 632,
+          "right": 1030,
+          "bottom": 696,
+          "left": 652
+        }
+      },
+      "clockStyle": {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "shadow": "none",
+        "transform": "none"
+      }
+    }
+  ]
+}
