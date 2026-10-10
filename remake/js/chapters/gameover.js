@@ -50,54 +50,9 @@ export const SUMI_CONTINUE_SCRIPTS = [
 ];
 
 let nextScript = 0;
-const VOICE_SPEED = 1.55;
-const VOICE_PITCH = 0.68;
-
-function chooseVoice() {
-  const voices = window.speechSynthesis?.getVoices?.() || [];
-  const japanese = voices.filter(v => /^ja(?:-|_)/i.test(v.lang));
-  return japanese.find(v => /Otoya|男性|male|otoko/i.test(v.name)) || japanese[0] || null;
-}
-
-/**
- * 借り物音声ではなく、端末標準の仮読み上げ。
- * 正式な渋い男性の声は音声生成後に各 script.audio へ設定する。
- */
-function narrate(script, setStatus) {
-  let speech = null, track = null;
-  let stopped = false;
-  const browserVoice = () => {
-    if (stopped || !("speechSynthesis" in window)) {
-      if (!stopped) setStatus("音声なし（字幕のみ）");
-      return;
-    }
-    window.speechSynthesis.cancel();
-    speech = new SpeechSynthesisUtterance(script.cues.map(c => c.text).join(" "));
-    speech.lang = "ja-JP";
-    speech.rate = VOICE_SPEED;
-    speech.pitch = VOICE_PITCH;
-    speech.volume = 1;
-    const v = chooseVoice();
-    if (v) speech.voice = v;
-    speech.onstart = () => { if (!stopped) setStatus("仮音声を再生中"); };
-    speech.onerror = () => { if (!stopped) setStatus("音声なし（字幕のみ）"); };
-    speech.onend = () => { if (!stopped) setStatus("セリフ再生終了"); };
-    try { window.speechSynthesis.speak(speech); }
-    catch { setStatus("音声なし（字幕のみ）"); }
-  };
-  if (script.audio) {
-    track = new Audio(script.audio);
-    track.onplay = () => setStatus("生成音声を再生中");
-    track.onerror = () => { track = null; browserVoice(); };
-    track.play().catch(() => { track = null; browserVoice(); });
-  } else browserVoice();
-  return () => {
-    stopped = true;
-    if (track) { track.pause(); track.currentTime = 0; }
-    if (speech && "speechSynthesis" in window) window.speechSynthesis.cancel();
-  };
-}
-
+let previousContinueSpeaker = null;
+// 吹き替えなしが正規演出。映像・表情・音楽とテキストのキューで成立させる。
+// 後日音声が必要になった際も script.audio と cues の時刻を利用できる。
 export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRetry, onTitle }) {
   const meta = GAME_OVER_TEXT[reason] || GAME_OVER_TEXT.rank;
   const standard = SUMI_CONTINUE_SCRIPTS[
@@ -105,13 +60,15 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
       ? variant % SUMI_CONTINUE_SCRIPTS.length
       : nextScript++ % SUMI_CONTINUE_SCRIPTS.length
   ];
-  // variant="premium:tsumugi" はデバッグ専用。通常プレイは実際の恋人だけ5%抽選。
+  // variant="premium:tsumugi" はデバッグ専用。通常プレイは実際の恋人だけ20%抽選。
   const forcedPremium = typeof variant === "string" && variant.startsWith("premium:")
     ? PREMIUM_CONTINUE_SCRIPTS[variant.slice(8)] : null;
   const script = forcedPremium || (variant == null
-    ? choosePremiumContinue(state?.lovers || [], state?.chapter || 1) : null) || standard;
+    ? choosePremiumContinue(state?.lovers || [], state?.chapter || 1, Math.random, previousContinueSpeaker) : null) || standard;
   const speaker = script.speaker || "sumi";
   const isPremium = speaker !== "sumi";
+  // 開発用の強制表示は通常の連続抽選履歴に影響させない。
+  if (variant == null) previousContinueSpeaker = speaker;
   const character = script.name || "スミさん";
   const characterBio = script.bio || "46 / tonari OWNER";
   const reasonTitle = reason === "rank" ? `結果は${rank}位` : meta.title;
@@ -120,12 +77,12 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     ? el("img.go-sumi-img", { src: portrait.src, alt: character, draggable: "false" })
     : el("div.go-sumi-fallback", { text: character });
   const caption = el("p.go-speech-text", { text: script.cues[0].text, "aria-live": "polite" });
-  const voiceStatus = el("span.go-voice-status", { text: "音声の準備中" });
+  const voiceStatus = el("span.go-voice-status", { text: "VOICE OFF  ・  TEXT DRAMA" });
   const count = el("span.go-count", { text: "20" });
   const progress = el("div.go-progress-fill");
-  const voiceButton = el("button.go-voice-toggle", { type: "button", text: "音声 OFF", dataset: { test: "continue-voice" } });
+  const nextButton = el("button.go-voice-toggle", { type: "button", text: "次のセリフ ▶", dataset: { test: "continue-next" } });
   const skipButton = el("button.go-skip", { type: "button", text: "セリフを飛ばす", dataset: { test: "continue-skip" } });
-  const root = el("div.end-screen.gameover", { dataset: { test: "game-over", reason, variant: script.id, premium: String(isPremium), speaker } }, [
+  const root = el("div.end-screen.gameover", { dataset: { test: "game-over", reason, variant: script.id, premium: String(isPremium), speaker, textOnly: "true" } }, [
     el("div.go-veil"),
     el("div.go-warning", { text: "DON'T GIVE UP!　　DON'T GIVE UP!　　DON'T GIVE UP!" }),
     el("div.go-left", [
@@ -150,7 +107,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
       el("div.go-playback", [
         el("div.go-progress-track", [progress]),
         el("div.go-clock", [count, el("span", { text: "秒 / 再挑戦の決断" })]),
-        voiceStatus, voiceButton, skipButton,
+        voiceStatus, nextButton, skipButton,
       ]),
       el("p.end-question", { text: isPremium ? "もう一度、がんばってみる？" : "俺たち、もう一度やれるよな？" }),
       el("p.go-note", { text: "コンティニューすると大会の頭から。セーブ済みの大会直前の状態に戻る。" }),
@@ -160,18 +117,31 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
       ]),
     ]),
   ]);
-  let active = true, muted = false, stopVoice = () => {}, ticker = 0;
-  let start = 0, fastForward = false, cueIndex = -1;
+  let active = true, ticker = 0, start = 0, fastForward = false, cueIndex = -1;
+  const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
   function sync(at) {
-    const elapsed = Math.min(script.duration, at);
+    const elapsed = Math.min(script.duration, Math.max(0, at));
     const index = Math.max(0, script.cues.findLastIndex(c => c.at <= elapsed));
+    const cue = script.cues[index];
     if (index !== cueIndex) {
       cueIndex = index;
-      const cue = script.cues[index];
-      caption.textContent = cue.text;
       if (portrait) portraitEl.src = portraitInfo(speaker, cue.face)?.src || portrait.src;
       root.dataset.emotion = cue.face;
+      root.dataset.cue = String(index);
+      // 一枚絵でも、場面転換と頭の小さな動きでテンポを作る。
+      if (!reduceMotion) {
+        caption.classList.remove("go-cue-pop");
+        portraitEl.classList.remove("go-beat");
+        void caption.offsetWidth;
+        caption.classList.add("go-cue-pop");
+        portraitEl.classList.add("go-beat");
+      }
     }
+    const cueLength = Math.max(.7, (script.cues[index + 1]?.at ?? script.duration) - cue.at);
+    // ボイスなしで読める速度を優先。序盤で文字が出揃い、残りは読む時間。
+    const chars = reduceMotion || fastForward ? cue.text.length
+      : Math.max(1, Math.ceil(cue.text.length * Math.min(1, (elapsed - cue.at + .14) / Math.min(1.9, cueLength * .58))));
+    caption.textContent = cue.text.slice(0, chars);
     count.textContent = String(Math.ceil(script.duration - elapsed)).padStart(2, "0");
     progress.style.width = `${elapsed / script.duration * 100}%`;
     root.classList.toggle("go-done", elapsed >= script.duration);
@@ -180,31 +150,26 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     if (!active) return;
     active = false;
     clearInterval(ticker);
-    stopVoice();
     stopBgm(0.2);
   }
-  function runVoice() {
-    stopVoice();
-    if (!muted) stopVoice = narrate(script, (status) => { if (active) voiceStatus.textContent = status; });
-    else { stopVoice = () => {}; voiceStatus.textContent = "音声 OFF"; }
-  }
-  voiceButton.addEventListener("click", () => {
-    muted = !muted;
-    voiceButton.textContent = muted ? "音声 ON" : "音声 OFF";
-    runVoice();
+  nextButton.addEventListener("click", () => {
+    if (!active) return;
+    const next = script.cues.find(c => c.at > (performance.now() - start) / 1000 + .1);
+    start = performance.now() - (next?.at ?? script.duration) * 1000;
+    sync(next?.at ?? script.duration);
   });
   skipButton.addEventListener("click", () => {
     fastForward = true;
-    stopVoice();
     voiceStatus.textContent = "セリフをスキップ";
     sync(script.duration);
+    clearInterval(ticker);
+    ticker = 0;
   });
   requestAnimationFrame(() => {
     if (!root.isConnected || !active) return;
     playBgm("bgm_continue_urgent");
-    sync(0);
-    runVoice();
     start = performance.now();
+    sync(0);
     ticker = window.setInterval(() => {
       if (!root.isConnected) return cleanup();
       if (!fastForward) sync((performance.now() - start) / 1000);
