@@ -882,6 +882,29 @@
       ]
     },
     {
+      "dialogue_id": "remake_tutorial_burnt",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──ボウルの奥で、ぱちっと嫌な音がした。焦げた匂いが立ちのぼる。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "……焦がしたな。熱は上げるより、止めるほうが難しい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "葉は詰め直してやる。吸い出しから、もう一回だ"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_midcheck",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
@@ -1079,6 +1102,34 @@
           "stats": {
             "guts": 2
           }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_rehearsal_burnt",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "──通しの最後、ボウルから焦げた匂いが立った。スミさんが黙って炭を外す。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "……焦がしたな。本番じゃなくてよかった"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "熱は上げるより、止めるほうが難しい。明日は温度計から目を離すな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "──今日はもう上がれ。よく食って、よく寝ろ"
         }
       ]
     },

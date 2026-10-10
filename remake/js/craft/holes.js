@@ -4,7 +4,7 @@
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay, reactAudience } from "./session.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 import { craftCondition } from "../core/condition.js";
 
@@ -281,6 +281,7 @@ export async function runHoles(cs) {
   res.templateLabel = template.label;
   res.plannedCounts = { ...template.counts };
   cs.holes = res;
+  scoreStep(cs, "holes", res.score, "穴あけ");
   refreshBench();
   await sleep(300);
   await resultCard(panel, {

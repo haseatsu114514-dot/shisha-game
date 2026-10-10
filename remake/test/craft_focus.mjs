@@ -194,12 +194,12 @@ try {
     }, score);
     const temp = Number(await page.locator('[data-test="pull-temperature"]').getAttribute('aria-valuenow'));
     assert.equal(temp, .31);
-    const width = await page.locator('.z-up .pg-just').evaluate(n => n.getBoundingClientRect().width);
-    await page.waitForFunction(() => document.querySelector('.pg-needle').style.left !== '');
+    const width = Number(await page.locator('.z-up .pg-just').getAttribute('data-span'));
+    await page.waitForFunction(() => parseFloat(document.querySelector('.pg-needle').dataset.pos) > 0);
     const speed = await page.evaluate(async () => {
       const needle = document.querySelector('.pg-needle');
-      const x = parseFloat(needle.style.left); await new Promise(r => setTimeout(r,120));
-      return parseFloat(needle.style.left) - x;
+      const x = parseFloat(needle.dataset.pos); await new Promise(r => setTimeout(r,120));
+      return parseFloat(needle.dataset.pos) - x;
     });
     focus.push({ width, speed });
     await page.evaluate(() => { __remake.craftTest.auto = 'good'; });
@@ -222,19 +222,19 @@ try {
     const safe=await page.locator('.thermo-zone').evaluate(n=>n.getBoundingClientRect().height);
     assert(band < safe * .12,'Optimal temperature band is not sufficiently strict');
     assert(!(await page.locator('[data-test="craft-rating"]').isVisible()));
-    await page.waitForFunction(()=>parseFloat(document.querySelector('.pg-needle').style.left)>0);
+    await page.waitForFunction(()=>parseFloat(document.querySelector('.pg-needle').dataset.pos)>0);
     // 本物の針が中央へ来た瞬間に、通常の吸う操作を2回行う。温度や結果は書き換えない。
     await page.evaluate(async()=>{
       const needle=document.querySelector('.pg-needle'), button=document.querySelector('[data-test="pull-stop"]');
       for(let i=0;i<2;i++) {
         await new Promise(resolve=>{
           const tick=()=>{
-            if(Math.abs(parseFloat(needle.style.left)-50)<1) {button.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));resolve();}
+            if(Math.abs(parseFloat(needle.dataset.pos)-50)<1) {button.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));resolve();}
             else requestAnimationFrame(tick);
           }; tick();
         });
         if(i===0) await new Promise(resolve=>{
-          const leave=()=>Math.abs(parseFloat(needle.style.left)-50)>5?resolve():requestAnimationFrame(leave);leave();
+          const leave=()=>Math.abs(parseFloat(needle.dataset.pos)-50)>5?resolve():requestAnimationFrame(leave);leave();
         });
       }
     });

@@ -5,7 +5,7 @@ import { toast } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { star, earnStat } from "../core/stats.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, reactAudience } from "./session.js";
+import { stepPanel, refreshBench, reactAudience, scoreStep } from "./session.js";
 import { autoSkill } from "./common.js";
 import { flavorColor } from "./art.js";
 import { flavorStock, addFlavorStock, ownedFlavorIds } from "../daily/shop.js";
@@ -241,6 +241,7 @@ export async function stepMix(cs) {
   cs.mix = Object.fromEntries(Object.entries(cs.mix).filter(([, g]) => g > 0));
   if (consumes) for (const [id, g] of Object.entries(cs.mix)) if (!supplied(id)) addFlavorStock(id, -g);
   cs.mixInfo = evaluateMix(cs);
+  scoreStep(cs, "mix", cs.mixInfo.score, "配合");
   reactAudience(cs, cs.mixInfo.score >= 65 ? "good" : "bad", { force: true });
   // レシピ帳への登録（新発見のときだけ）
   const r = cs.mixInfo.recipe;

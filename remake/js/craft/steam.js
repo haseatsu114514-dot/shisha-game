@@ -4,7 +4,7 @@ import { el, sleep, clamp, rand, pick } from "../core/util.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { tier01, star } from "../core/stats.js";
-import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, pauseBenchTemperature } from "./session.js";
+import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemperature, pauseBenchTemperature, scoreStep } from "./session.js";
 import { steamSecondsOf, steamPlaySeconds, steamTimeLabel } from "./steam-time.js";
 import { buildDigitalClock } from "./digital-clock.js";
 import { autoSkill, resultCard, keys, popStamp } from "./common.js";
@@ -240,6 +240,7 @@ export async function runSteamDodge(cs) {
   const temp = temperatureAfterSteam(cs, seconds, heatJitter);
   renderTemperature(temp);
   cs.steam = { min, seconds, temp, hits, score, refreshesUsed: stock - refreshes, warmingFactor: rainy ? 0.85 : 1 };
+  scoreStep(cs, "steam", score, "蒸らし");
   refreshBench();
   popStamp(panel, hits === 0 ? "無心" : hits <= 2 ? "持ちこたえた" : "雑念まみれ", hits === 0 ? "just" : hits <= 2 ? "good" : "bad", "50%", "40%");
   await sleep(400);

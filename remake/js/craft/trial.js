@@ -7,7 +7,7 @@ import { flash, shake } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { tier01 } from "../core/stats.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, tickerSay, reactAudience } from "./session.js";
+import { stepPanel, tickerSay, reactAudience, scoreStep } from "./session.js";
 import { gradeOf, autoSkill, resultCard, popStamp } from "./common.js";
 import { buildAppeals, CONCEPT_NEED, computeShisha } from "./score.js";
 import { CONCEPTS } from "./steps.js";
@@ -124,6 +124,7 @@ export async function runTrial(cs) {
   }
   const score = Math.round(clamp(gauge + sync, 0, 100));
   cs.trial = { score, grade: gradeOf(score), gauge, success, mismatch, concede, sync };
+  scoreStep(cs, "trial", score, "FLAVOR TRIAL");
   if (score >= 90) popStamp(panel, "PERFECT SESSION", "just", "50%", "50%");
   await resultCard(panel, {
     title: "FLAVOR TRIAL 結果",

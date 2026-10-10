@@ -118,9 +118,9 @@ for (;;) {
       lastRank: s?.tournament?.lastRank,
       endTitle: document.querySelector(".end-title")?.textContent || "",
       rain: document.querySelector("#screen .map:not(.done)")?.dataset.rain === "true",
-      feel: !!document.querySelector(".bc-feel.show"),
+      feel: /[1-9]/.test(document.querySelector('[data-test="arcade-score"] .arcade-num')?.textContent || ""),
       nico: !!document.querySelector(".nico"),
-      rtFeel: !!document.querySelector(".rt-part.feel"),
+      rtFeel: !!document.querySelector('[data-test="result-score"]'),
       // 会話中に前の画面（作業台・結果表・マップ等）が後ろに見えていないか
       leak: document.querySelector("#vn")?.classList.contains("active") && !!document.querySelector("#screen > *") && getComputedStyle(document.querySelector("#screen")).visibility !== "hidden",
       // 優勝の夜の LIME の後ろに結果表が残っていないか
@@ -367,7 +367,7 @@ log(`rain maps=${rainMaps} / slot load=${slotLoaded} / fortune day=${s.fortuneDa
 if (!rainMaps) throw new Error("no rainy map shown");
 if (!slotLoaded) throw new Error("manual save/load not verified");
 if (!s.flags._fortune_met || !s.fortuneDay) throw new Error("fortune teller not visited");
-// 実況: 大会中に体感スコアと流れるコメントが出て、結果表に体感スコアが載る
+// 実況: 大会中に総合スコア（SCORE）が増えて流れるコメントが出て、結果表に SCORE が載る
 log(`broadcast: feel=${feelSeen} nico=${nicoSeen} resultFeel=${rtFeelSeen}`);
 if (!feelSeen || !nicoSeen || !rtFeelSeen) throw new Error("tournament broadcast layer missing");
 // グラム在庫: 大会では詰んだ分だけ減る（再挑戦は会場入り前に戻す）。課題のミントは主催支給で減らない
