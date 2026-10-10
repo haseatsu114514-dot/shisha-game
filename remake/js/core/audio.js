@@ -231,6 +231,7 @@ const SYNTH_FALLBACK = {
   bgm_tournament_edm: "battle",
   bgm_tournament_craft: "battle",
   bgm_tournament_wait: "tension",
+  bgm_continue_urgent: "panic", // スミさんのコンティニュー: 原曲差替えまでは専用緊迫ループ
   bgm_result_emotional: "calm",
   bgm_map: "calm",
   bgm_rival_shop: "calm",
@@ -240,7 +241,7 @@ const SYNTH_FALLBACK = {
 export const currentBgm = () => currentKey;
 
 // 新規大会曲は約 -14 LUFS にそろえる。設定変更・フェード中も曲ごとの倍率を保つ。
-const BGM_GAIN = { sweets_or_sweets: 0.55, bgm_tournament_edm: 0.51, bgm_tournament_craft: 0.67 };
+const BGM_GAIN = { sweets_or_sweets: 0.55, bgm_tournament_edm: 0.51, bgm_tournament_craft: 0.67, bgm_continue_urgent: 0.68 };
 const bgmLevel = (key) => config.bgmVolume * (BGM_GAIN[key] ?? 1);
 
 // 単体MP3の再配布を避けるゲーム専用形式（pack_bgm.py と対応）。HTTPS/localhostで復元する。
@@ -292,11 +293,25 @@ export function playBgm(key) {
     const a = packed ? new Audio() : new Audio(url);
     a.loop = true;
     a.volume = 0;
+    if (key === "bgm_continue_urgent") {
+      a.playbackRate = 1.08; // EMGコール(BPM115)を少しだけ高速化
+      a.preservesPitch = true;
+    }
     currentEl = a;
+    const fallBackContinue = () => {
+      if (currentEl !== a || key !== "bgm_continue_urgent") return false;
+      currentEl = null;
+      a.pause();
+      if (SYNTH_FALLBACK[key]) synthStop = startSynth(SYNTH_FALLBACK[key]);
+      return true;
+    };
+    a.addEventListener("error", fallBackContinue, { once: true });
     const start = () => {
       if (currentEl !== a) return; // 読み込み中に別曲へ移った場合、古い曲を鳴らさない。
       a.play().catch(() => {
-        if (currentEl === a) { pendingBgm = key; currentKey = null; }
+        if (!fallBackContinue() && currentEl === a) {
+          pendingBgm = key; currentKey = null;
+        }
       });
       fadeEl(a, () => bgmLevel(key), 1200);
     };
@@ -359,12 +374,13 @@ function startSynth(kind) {
   out.gain.value = 0;
   out.gain.linearRampToValueAtTime(1, c.currentTime + 1.2);
   out.connect(bgmBus);
-  const bpm = kind === "battle" ? 124 : kind === "tension" ? 80 : 68;
+  const bpm = kind === "panic" ? 168 : kind === "battle" ? 124 : kind === "tension" ? 80 : 68;
   const stepDur = 60 / bpm / 4;
   const bass = kind === "battle" ? [45, 45, 57, 45, 48, 48, 60, 48, 43, 43, 55, 43, 41, 41, 53, 52] : [45, 0, 0, 0, 43, 0, 0, 0, 41, 0, 0, 0, 40, 0, 0, 0];
   const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
   let step = 0;
   let next = c.currentTime + 0.05;
+  const startAt = next;
   let alive = true;
 
   const voice = (freq, t, dur, type, vol) => {
@@ -417,6 +433,14 @@ function startSynth(kind) {
         const n = bass[s];
         if (n) voice(mtof(n), next, stepDur * 0.9, "sawtooth", 0.07);
         if (s === 0 && step % 64 === 0) [69, 72, 76].forEach((m) => voice(mtof(m), next, stepDur * 14, "triangle", 0.03));
+      } else if (kind === "panic") {
+        // 同期的な鼓動と追い立てる低音。短い台詞の可聴域を空けた軽い合成ループ。
+        if (s === 0 || s === 7 || s === 10) kick(next, s === 0 ? 0.44 : 0.24);
+        if (s % 2 === 1) hat(next, 0.035);
+        if (s === 3 || s === 11) hat(next, 0.08);
+        const n = [40,0,40,0,43,0,40,0,38,0,38,0,35,0,38,0][s];
+        if (n) voice(mtof(n), next, stepDur * 1.6, "triangle", 0.042);
+        if (s === 0 && step % 32 === 0) voice(mtof(52), next, stepDur * 26, "sine", 0.023);
       } else if (kind === "tension") {
         if (s === 0 || s === 3) kick(next, s === 0 ? 0.35 : 0.22);
         if (s === 0 && step % 32 === 0) [57, 60, 64].forEach((m) => voice(mtof(m), next, stepDur * 30, "sine", 0.025));
@@ -424,7 +448,9 @@ function startSynth(kind) {
       } else {
         if (s === 0 && step % 32 === 0) [bass[(step / 16) % 16] || 45, 57, 64, 67].forEach((m) => voice(mtof(m + 12), next, stepDur * 30, "sine", 0.02));
       }
-      next += stepDur;
+      // コンティニュー専用: 前半168 BPM → 20秒後196 BPM。諦めさせない圧迫感。
+      const panicBpm = 168 + Math.min(28, Math.max(0, next - startAt) * 1.4);
+      next += kind === "panic" ? 60 / panicBpm / 4 : stepDur;
       step++;
     }
     setTimeout(schedule, 60);

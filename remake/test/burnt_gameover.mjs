@@ -32,10 +32,14 @@ try {
   await page.waitForSelector('.bench[data-thermal-band="burnt"]', { timeout: 240000 });
   await page.waitForSelector('.end-screen.gameover', { timeout: 60000 });
   assert.match(await page.locator('.end-screen.gameover .go-reason-title').textContent(), /シーシャが焦げてしまった/);
-  assert.equal(await page.locator('.end-screen.gameover .go-emblem.burnt svg').count(), 1, 'the GAME OVER screen must show the burn mark');
+  assert.equal(await page.locator('.end-screen.gameover .go-emblem.burnt').textContent(), '炎', 'the continue screen must show the burn mark');
   assert.equal(await page.locator('.end-screen.gameover .go-title').getAttribute('aria-label'), 'GAME OVER');
   assert.equal(await page.locator('.end-screen.gameover img[src*="bg_game_over"]').count(), 0, 'GAME OVER is drawn without an image');
-  assert.equal(await page.locator('.end-screen.gameover .end-question').textContent(), '再挑戦しますか？');
+  assert.equal(await page.locator('.end-screen.gameover .end-question').textContent(), '俺たち、もう一度やれるよな？');
+  assert.equal(await page.locator('.end-screen.gameover .go-sumi-img').count(), 1, 'Sumi uses the canon portrait');
+  assert.equal(await page.locator('[data-test="continue-skip"]').count(), 1);
+  assert.equal(await page.locator('[data-test="continue-next"]').count(), 1);
+  assert.equal(await page.locator('[data-test="continue-voice"]').count(), 0, 'speech must be disabled by default');
   assert.equal(await page.locator('[data-test="game-over"]').getAttribute('data-reason'), 'burnt');
   const seen = await page.evaluate(() => window.__seen);
   assert(!seen.includes('remake_trial_intro') && !seen.includes('ch1_tournament_defeat'), `burnt run reached judging: ${seen.join(',')}`);

@@ -1,0 +1,539 @@
+{
+  "schema_version": 1,
+  "character": "nagumo",
+  "generations": [
+    {
+      "face": "normal",
+      "prompt_number": 24,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:30:40.559411+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/nagumo-remaster-v2/attempts/normal-attempt-01-source.png",
+      "source_sha256": "a552d01398b6fd4546372824352136830ebd07735c892886bf32b308ca334742",
+      "original_tool_file": "exec-91c846ae-449e-48b7-953a-f0d0edee4907.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/nagumo-remaster-v2/attempts/normal-attempt-01-prompt.txt",
+      "prompt_sha256": "bcff228c84660567d01c41860bc24707fe4f6aff67cf12b6e53d586c15ef0a1f",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
+          "sha256": "acc536926a7fe897c26d5f9d2846d87fa2068b501be3046a470887dff06c2fad"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
+          "sha256": "acc536926a7fe897c26d5f9d2846d87fa2068b501be3046a470887dff06c2fad"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        299,
+        23,
+        784,
+        1450
+      ],
+      "figure_height_px": 1427,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "needs_revision",
+        "note": "原寸と比較を確認。色・顔・ポーズは保持しているが、原画の右足の靴底がキャンバス下端に接している。透明余白を確保して再生成。"
+      }
+    },
+    {
+      "face": "normal",
+      "prompt_number": 24,
+      "attempt": 2,
+      "generated_at_utc": "2026-10-10T05:35:05.378379+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/nagumo-remaster-v2/attempts/normal-attempt-02-source.png",
+      "source_sha256": "c2816ddd14989f8c25c95129cdfff240f69da1b314db96c0e577cfd5bd02e8c5",
+      "original_tool_file": "exec-ce44a939-3631-4ebc-a1e3-c92273d27ba1.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/nagumo-remaster-v2/attempts/normal-attempt-02-prompt.txt",
+      "prompt_sha256": "4bbe9703fb03f94b2f4f0b990b2a47cb3028c8fd1b255385d394347ac5923c7c",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
+          "sha256": "acc536926a7fe897c26d5f9d2846d87fa2068b501be3046a470887dff06c2fad",
+          "archived_original_path": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_normal.png"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
+          "sha256": "acc536926a7fe897c26d5f9d2846d87fa2068b501be3046a470887dff06c2fad",
+          "archived_original_path": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_normal.png"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        288,
+        27,
+        778,
+        1445
+      ],
+      "figure_height_px": 1418,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:36:41.713055+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原寸・元絵比較を確認。両方の靴底に透明余白を確保。成熟した顔・白い髪の筋・黒スーツ・腕時計・元の濃い陰影を保持。",
+        "preview_bbox_threshold_16_px": [
+          241,
+          60,
+          625,
+          1172
+        ],
+        "original_bbox_threshold_16_px": [
+          251,
+          60,
+          609,
+          1172
+        ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
+        "runtime_png_sha256": "c29ed0b480b049f2dd069ff401abd7e702b0825449ed9652e1d8768772778ba1",
+        "runtime_webp": "remake/img/sprites/characters/nagumo/chr_nagumo_normal.webp",
+        "runtime_webp_sha256": "baae69ad0856f0c677a7451c4094e0e21b6a0576c4dd59a6355d5348c82d64e1",
+        "previous_runtime": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_normal.png",
+        "previous_runtime_sha256": "acc536926a7fe897c26d5f9d2846d87fa2068b501be3046a470887dff06c2fad",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
+      }
+    },
+    {
+      "face": "smile",
+      "prompt_number": 25,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:51:40.794800+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/nagumo-remaster-v2/attempts/smile-attempt-01-source.png",
+      "source_sha256": "301973606051de696f5882ce5d1231741a6f22fdc2441e7bab5c433fd472ee66",
+      "original_tool_file": "exec-f74f2fa4-1285-4204-9a6a-1d48972f330b.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/nagumo-remaster-v2/attempts/smile-attempt-01-prompt.txt",
+      "prompt_sha256": "34e99d226f90f9b9053c2607394da734d21ed13213c80efbdaa9c28774371dda",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/nagumo/chr_nagumo_smile.png",
+          "sha256": "9a9120acd447cba05834ab35af34c8d1ae690eb9a86f54b5736b1bbf20163b5c",
+          "archived_original_path": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_smile.png"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "asset_sources/portraits/nagumo-remaster-v2/normal-source.png",
+          "sha256": "c2816ddd14989f8c25c95129cdfff240f69da1b314db96c0e577cfd5bd02e8c5"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        173,
+        12,
+        795,
+        1439
+      ],
+      "figure_height_px": 1427,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:59:25.587872+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原画と原寸比較を確認。黒い三つ揃い・白シャツ・灰色ネクタイと白髪の元の濃淡を保持。smileの片口角と差し出した掌、seriousの厳しい眉と開いた掌を維持。腕時計・両手・靴底が完結し不透明部分は端に接触しない。",
+        "preview_bbox_threshold_16_px": [
+          136,
+          62,
+          620,
+          1172
+        ],
+        "original_bbox_threshold_16_px": [
+          152,
+          62,
+          603,
+          1172
+        ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/nagumo/chr_nagumo_smile.png",
+        "runtime_png_sha256": "e58f244b5a7695acf591f29a668ae2c412954f9fb405911120657ea8cb5f57ac",
+        "runtime_webp": "remake/img/sprites/characters/nagumo/chr_nagumo_smile.webp",
+        "runtime_webp_sha256": "ac21203384e75e481db4cc81ccf12693506217cb032a6621a8e883337a333893",
+        "previous_runtime": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_smile.png",
+        "previous_runtime_sha256": "9a9120acd447cba05834ab35af34c8d1ae690eb9a86f54b5736b1bbf20163b5c",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
+      }
+    },
+    {
+      "face": "serious",
+      "prompt_number": 26,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:52:25.475078+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/nagumo-remaster-v2/attempts/serious-attempt-01-source.png",
+      "source_sha256": "91083524cd2413a8200edb2356f6677380e7a4b4bb0bf8741efa9aad31f650cc",
+      "original_tool_file": "exec-7da79714-3b09-4d6d-87db-736402a7e453.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/nagumo-remaster-v2/attempts/serious-attempt-01-prompt.txt",
+      "prompt_sha256": "a021662194d47d191ded150bded3fafc54a1b0af76e914b9b83c65e7940a59cf",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/nagumo/chr_nagumo_serious.png",
+          "sha256": "589da38a726d6057f4536684554f9174ae7ea0890b2bd8bc87846088cea3c086",
+          "archived_original_path": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_serious.png"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "asset_sources/portraits/nagumo-remaster-v2/normal-source.png",
+          "sha256": "c2816ddd14989f8c25c95129cdfff240f69da1b314db96c0e577cfd5bd02e8c5"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "preserve_original_proportions": false,
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        282,
+        6,
+        806,
+        1445
+      ],
+      "figure_height_px": 1439,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:59:25.981788+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原画と原寸比較を確認。黒い三つ揃い・白シャツ・灰色ネクタイと白髪の元の濃淡を保持。smileの片口角と差し出した掌、seriousの厳しい眉と開いた掌を維持。腕時計・両手・靴底が完結し不透明部分は端に接触しない。",
+        "preview_bbox_threshold_16_px": [
+          228,
+          62,
+          632,
+          1171
+        ],
+        "original_bbox_threshold_16_px": [
+          245,
+          62,
+          618,
+          1171
+        ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/nagumo/chr_nagumo_serious.png",
+        "runtime_png_sha256": "4781555c7231048915e740c6b545d4e2b8171719b6de1191cec3b418af50e082",
+        "runtime_webp": "remake/img/sprites/characters/nagumo/chr_nagumo_serious.webp",
+        "runtime_webp_sha256": "e39a63f198f33ea63720ba73a0fb50f7ac7ee28bf7e76927384a193b536d294a",
+        "previous_runtime": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_serious.png",
+        "previous_runtime_sha256": "589da38a726d6057f4536684554f9174ae7ea0890b2bd8bc87846088cea3c086",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
+      }
+    },
+    {
+      "face": "surprise",
+      "prompt_number": 27,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:53:13.639966+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/nagumo-remaster-v2/attempts/surprise-attempt-01-source.png",
+      "source_sha256": "af0d33f7f7841643162f2c353e8979b9ea2840c5ecfc6a6d3750b114f2b2ab9a",
+      "original_tool_file": "exec-666867af-532c-43a9-b9a1-dfb16469373b.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/nagumo-remaster-v2/attempts/surprise-attempt-01-prompt.txt",
+      "prompt_sha256": "94576159b93113964874b9ef3ce84c0d59bd6c5074a3c37aa795d87a07f4adbf",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/nagumo/chr_nagumo_surprise.png",
+          "sha256": "2a980880a8426614c48d7137e877e328ff024acd742905fedcb8ca606587f661",
+          "archived_original_path": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_surprise.png"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "asset_sources/portraits/nagumo-remaster-v2/normal-source.png",
+          "sha256": "c2816ddd14989f8c25c95129cdfff240f69da1b314db96c0e577cfd5bd02e8c5"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "preserve_original_proportions": false,
+      "canvas_px": [
+        1084,
+        1451
+      ],
+      "alpha_bbox_threshold_16_px": [
+        273,
+        18,
+        791,
+        1443
+      ],
+      "figure_height_px": 1425,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:59:49.116057+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原画と原寸比較を確認。元の黒い三つ揃い・白シャツ・白髪の濃さを保持。surpriseの大きく開いた目・口とネクタイに添えた手、thinkingの斜め視線・顎の指・反対のポケット手を維持。両足と靴底が完結し余分な手足・背景なし。",
+        "preview_bbox_threshold_16_px": [
+          223,
+          61,
+          627,
+          1172
+        ],
+        "original_bbox_threshold_16_px": [
+          240,
+          61,
+          613,
+          1172
+        ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/nagumo/chr_nagumo_surprise.png",
+        "runtime_png_sha256": "002c17ca5dbc062b350ea62901f35dc3e92b70b6d4ff68b9abdef8aeedf01a5b",
+        "runtime_webp": "remake/img/sprites/characters/nagumo/chr_nagumo_surprise.webp",
+        "runtime_webp_sha256": "73ea5c62a7a5384ee782817d77b1148661dab98aaf14ec01844b2036d319c542",
+        "previous_runtime": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_surprise.png",
+        "previous_runtime_sha256": "2a980880a8426614c48d7137e877e328ff024acd742905fedcb8ca606587f661",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
+      }
+    },
+    {
+      "face": "thinking",
+      "prompt_number": 28,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:57:15.426628+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/nagumo-remaster-v2/attempts/thinking-attempt-01-source.png",
+      "source_sha256": "f171b7958d23e4dcd46ee7d6c4c05f8af6dae774e6555baf9fa992d31cc4817f",
+      "original_tool_file": "exec-1df4b080-dc8c-4651-8e0e-ceae5f11b705.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/nagumo-remaster-v2/attempts/thinking-attempt-01-prompt.txt",
+      "prompt_sha256": "27c0463d8c6cc5739a654b6141a28a3a778947c67964636fd2c7081bc04ab15d",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/nagumo/chr_nagumo_thinking.png",
+          "sha256": "eca148ad51b3d14c081eb84475e23abc9ab6d5073bdc79094086e78aba11aca4",
+          "archived_original_path": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_thinking.png"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "asset_sources/portraits/nagumo-remaster-v2/normal-source.png",
+          "sha256": "c2816ddd14989f8c25c95129cdfff240f69da1b314db96c0e577cfd5bd02e8c5"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "preserve_original_proportions": false,
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        273,
+        4,
+        792,
+        1448
+      ],
+      "figure_height_px": 1444,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:59:49.509005+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原画と原寸比較を確認。元の黒い三つ揃い・白シャツ・白髪の濃さを保持。surpriseの大きく開いた目・口とネクタイに添えた手、thinkingの斜め視線・顎の指・反対のポケット手を維持。両足と靴底が完結し余分な手足・背景なし。",
+        "preview_bbox_threshold_16_px": [
+          233,
+          61,
+          632,
+          1170
+        ],
+        "original_bbox_threshold_16_px": [
+          247,
+          61,
+          620,
+          1170
+        ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/nagumo/chr_nagumo_thinking.png",
+        "runtime_png_sha256": "6d61f7990269ac94d2e417f2af890a9dff7b2ada58924c336584496b0e7cdb64",
+        "runtime_webp": "remake/img/sprites/characters/nagumo/chr_nagumo_thinking.webp",
+        "runtime_webp_sha256": "5720ee7c3586198e530d13669da30e45a83af6649b6f89862f29c08712eb5cc7",
+        "previous_runtime": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_thinking.png",
+        "previous_runtime_sha256": "eca148ad51b3d14c081eb84475e23abc9ab6d5073bdc79094086e78aba11aca4",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
+      }
+    }
+  ],
+  "selected_attempts": {
+    "normal": 2,
+    "smile": 1,
+    "serious": 1,
+    "surprise": 1,
+    "thinking": 1
+  },
+  "selected_attempt": 2,
+  "approval_policy": {
+    "mode": "delegated_production_qa",
+    "owner_instruction": "いいと思います。ただ作り直すたびに色薄くなってる気がするのは気のせい？ 一旦確認もそこまでいらないからガンガン進めて",
+    "received_on": "2026-10-10"
+  },
+  "integration_status": {
+    "status": "complete",
+    "checked_at_utc": "2026-10-10T06:26:32.953521+00:00",
+    "expressions": 5,
+    "browser_viewports": [
+      "1280x720",
+      "591x1280"
+    ],
+    "production_qa": "asset_sources/portraits/resolution-upgrade-20261009/production-qa.json"
+  }
+}
