@@ -25,14 +25,23 @@ async function mount(variant = 0, options = {}) {
 async function geometry() {
   const boxes = await page.evaluate(() => {
     const rect = selector => document.querySelector(selector).getBoundingClientRect().toJSON();
-    return { stage: rect("#stage"), title: rect(".go-heading"), face: rect(".go-left"), caption: rect(".go-speech-text"), playback: rect(".go-playback"),
+    return { stage: rect("#stage"), title: rect(".go-heading"), label: rect(".go-title-label"), face: rect(".go-left"), caption: rect(".go-speech-text"), playback: rect(".go-playback"),
       retry: rect('[data-test="retry"]'), quit: rect('[data-test="game-over-title"]'), count: rect(".go-count") };
   });
   assert(boxes.caption.bottom <= boxes.playback.top + 1, `caption overlaps controls: ${JSON.stringify(boxes)}`);
   // テロップは1行が限界（2026-10-10 オーナー指定）。
   assert(boxes.caption.height / boxes.stage.height * 720 < 72, `caption must stay on one line: ${JSON.stringify(boxes.caption)}`);
-  assert(boxes.title.bottom <= boxes.face.top + 1 && boxes.face.bottom <= boxes.caption.top + 1
-    && boxes.caption.bottom <= boxes.retry.top + 1, "title → face → caption → choices must remain in separate rows");
+  const scale = boxes.stage.height / 720;
+  assert(boxes.title.bottom <= boxes.face.top + 1 && boxes.face.bottom <= boxes.stage.bottom + 1,
+    "portrait must fit below the heading and extend to the bottom");
+  assert(boxes.count.left >= boxes.label.right + 8 * scale
+    && Math.abs((boxes.count.top + boxes.count.bottom - boxes.label.top - boxes.label.bottom) / 2) <= 4 * scale,
+    "count must sit beside the heading without overlap");
+  for (const key of ["retry", "quit"]) {
+    assert(boxes.caption.bottom + 8 * scale <= boxes[key].top,
+      `caption overlaps or crowds ${key}: ${JSON.stringify(boxes)}`);
+    assert(boxes.stage.bottom - boxes[key].bottom >= 20 * scale, `${key} needs bottom breathing room`);
+  }
   for (const key of ["face", "caption"]) {
     assert(Math.abs((boxes[key].left + boxes[key].right) / 2 - (boxes.stage.left + boxes.stage.right) / 2) <= 1,
       `${key} must be centered`);
@@ -62,8 +71,10 @@ try {
   });
   assert.deepEqual(tooLong, []);
   await mount(2);
-  assert.equal(await page.locator(".go-choice").evaluateAll(buttons =>
-    buttons.filter(b => getComputedStyle(b).backgroundImage !== "none").length), 0, "choices are text only");
+  assert(await page.locator(".go-choice").evaluateAll(buttons => buttons.every(button => {
+    const style = getComputedStyle(button);
+    return style.backgroundColor !== "rgba(0, 0, 0, 0)" && parseFloat(style.borderTopWidth) > 0;
+  })), "choices must have visible button surfaces");
   const art = await page.locator(".go-title-art,.go-approval").evaluateAll(async images => {
     await Promise.all(images.map(image => image.decode()));
     return images.map(image => ({ width: image.naturalWidth, src: image.src }));
