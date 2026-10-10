@@ -3,14 +3,16 @@ import { clamp } from "../core/util.js";
 import { steamSecondsOf, steamHeatFor } from "./steam-time.js";
 import { foilHeatProfile } from "./holes_logic.js";
 
-export const IDEAL = [0.46, 0.62];
-export const OPTIMAL = [0.532, 0.548];
+// TH83: 適温（緑）を約1.5倍の0.42〜0.66へ広げる。中心0.54は維持。
+export const IDEAL = [0.42, 0.66];
+// TH66・TH84: 狙いたくなる広い虹色（約1.7倍）。見た目と最適温の判定に同じ範囲を使う。
+export const OPTIMAL = [0.49, 0.59];
 export const isOptimalTemperature = (temp) => temp >= OPTIMAL[0] && temp <= OPTIMAL[1];
 /** 温度計の一番上に届くと爆発して焦げる（2026-10-09 オーナー指定 TH06）。蒸らしは0.88で頭打ちのため届かない。 */
 export const BURST_TEMP = 1;
 export const isBurnt = (temp) => temp >= BURST_TEMP - 1e-6;
-/** ここから上は「焦げる寸前」。温度計に危険帯として描き、背景も灼熱になる。 */
-export const DANGER_TEMP = 0.94;
+/** ここから上は「焦げる寸前」。温度計に危険帯として描き、背景も灼熱になる。TH92・TH96で0.94→0.90へ広げた（温度計の約10%。爆発は1のまま、蒸らしの頭打ち0.88より上）。 */
+export const DANGER_TEMP = 0.90;
 /** 提供後（熱管理）にここまで冷えると、シーシャがダメになる（TH19）。 */
 export const COLD_OUT = 0.06;
 export const isColdOut = (temp) => temp <= COLD_OUT + 1e-6;

@@ -8,6 +8,9 @@
 立ち絵・背景・CG・BGMを追加/差し替えたときに実行する:
     python3 remake/tools/build_manifest.py
 
+制作UIのパーツだけを追加するとき（他の採用済み画像目録を維持する）:
+    python3 remake/tools/build_manifest.py --making-only ui_mockup_inhale_button.png ui_mockup_flavor_leaf.png
+
 依存: Pillow（必須）、numpy + scipy（推奨。無いと足元アンカー ax が
 bbox 中心で代用され、表情差分で立ち絵が左右にずれやすくなる）
 """
@@ -110,11 +113,13 @@ def portraits():
     return out
 
 
-def making_boxes():
+def making_boxes(names=None):
     """作業台パーツ（assets/ui/making）の実コンテンツ bbox（画像比 l,t,r,b）。
     キャンバスの余白が素材ごとにバラバラでも、CSS 側で絵そのものを正確に置けるようにする。"""
     out = {}
-    for png in sorted((ASSETS / "ui" / "making").glob("*.png")):
+    folder = ASSETS / "ui" / "making"
+    paths = [folder / name for name in names] if names else folder.glob("*.png")
+    for png in sorted(paths):
         im = Image.open(png).convert("RGBA")
         box = im.getchannel("A").point(lambda a: 255 if a >= 24 else 0).getbbox()
         if box:
@@ -186,9 +191,33 @@ def is_placeholder(path: Path) -> bool:
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--audio-only", action="store_true", help="既存の画像目録を保ち、BGM一覧だけ更新")
+    scope = parser.add_mutually_exclusive_group()
+    scope.add_argument("--audio-only", action="store_true", help="既存の画像目録を保ち、BGM一覧だけ更新")
+    scope.add_argument("--making-only", nargs="+", metavar="PNG", help="指定した制作UIパーツの目録・WebPだけ更新")
     args = parser.parse_args()
     generated = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    if args.making_only:
+        import build_images
+        names = sorted(set(args.making_only))
+        for name in names:
+            if Path(name).name != name or not name.endswith(".png") or not (ASSETS / "ui/making" / name).is_file():
+                parser.error(f"制作UIのPNGがありません: {name}")
+        manifest = json.loads(OUT.read_text(encoding="utf-8"))
+        manifest["generated"] = generated
+        manifest["making"] = sorted(set(manifest["making"]) | set(names))
+        manifest["makingBox"].update(making_boxes(names))
+        manifest["makingBox"] = dict(sorted(manifest["makingBox"].items()))
+        webp = set(manifest.get("webp", []))
+        for name in names:
+            rel = f"ui/making/{name}"
+            dst = build_images.OUT / Path(rel).with_suffix(".webp")
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.write_bytes(build_images.encode(ASSETS / rel, rel))
+            webp.add(rel)
+        manifest["webp"] = sorted(webp)
+        OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print(f"wrote {OUT.relative_to(ROOT)}: {len(names)} making parts and WebP files (other images unchanged)")
+        return
     bgm = sorted(listing("audio/bgm", "*.mp3") + listing("audio/bgm", "*.bgm"))
     if args.audio_only:
         manifest = json.loads(OUT.read_text(encoding="utf-8"))

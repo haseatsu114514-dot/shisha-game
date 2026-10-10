@@ -1,4 +1,4 @@
-// 軽量な静止モックアップ。人物と台を一つの場面に収め、後から工程別動画へ差し替える。
+// 人物と台を一つの場面に収める。吸引中は水泡を動かし、後から工程別動画へ差し替える。
 import { el } from "../core/util.js";
 import { bgUrl, makingUrl, portraitInfo } from "../core/data.js";
 import { timeOfDay } from "../core/state.js";
@@ -34,20 +34,26 @@ export function buildWorkerScene(cs) {
     if (p) { const warm = new Image(); warm.src = p.src; }
   }
   const caption = el("span.bench-worker-caption", { text: "一台を仕上げる" });
+  const equipment = buildHookahRig("worker-equipment");
+  const baseH = artHeight("hookah_base.png", 90);
+  const water = el("div.worker-water", { "aria-hidden": "true", dataset: { test: "worker-bubbles" },
+    style: { bottom: `${baseH * .18}px`, height: `${baseH * .36}px` },
+  }, Array.from({ length: 9 }, (_, i) => el("i", { style: { "--bubble-x": `${24 + (i * 19 % 53)}%`, "--bubble-delay": `${i * -.11}s` } })));
+  equipment.append(water);
   const stage = el("div.bench-worker-stage", {
     role: "img", "aria-label": "はじめとシーシャの作業台を描いた静止イメージ",
     style: { backgroundImage: `url("${bgUrl(cs?.mode === "tournament" ? "bg_tournament_stage" : "bg_tonari_inside", timeOfDay())}")` },
   }, [
     actor,
     el("div.worker-counter", { style: { backgroundImage: `url("${makingUrl("bench_base.png")}")` } }),
-    buildHookahRig("worker-equipment"),
+    equipment,
     el("div.worker-vignette"),
     // 疲れたときの汗と荒い息（TH43）。顔の横に出す。
     el("i.worker-sweat", { "aria-hidden": "true" }, [el("i"), el("i")]),
     el("i.worker-breath", { "aria-hidden": "true" }),
     el("span.worker-scene-tag", { text: cs?.mode === "tournament" ? "SMOKE CROWN CUP" : "TONARI" }),
   ]);
-  // 名前は出さない（自分のことなので分かる TH44）。体調の顔・フレーバーの葉・熱のイメージだけを置く。
+  // 名前と体調バッジは出さない。疲れは人物の表情と汗、吸引は水泡で伝える。
   const footer = el("div.bench-worker-name", [caption]);
   const root = el("div.bench-worker", { dataset: { test: "worker-window", step: "" } }, [
     stage, footer,
@@ -69,5 +75,16 @@ export function buildWorkerScene(cs) {
     applyFace();
   }, flinch() {
     root.classList.remove("flinch"); void root.offsetWidth; root.classList.add("flinch");
+  }, setDraw(kind, duration = 0) {
+    if (kind) {
+      root.dataset.draw = kind;
+      root.style.setProperty("--draw-duration", `${duration}ms`);
+      caption.textContent = kind === "up" ? "上げ吸い…" : kind === "down" ? "下げ吸い…" : "温度を保ちながら吸う…";
+      stage.setAttribute("aria-label", `はじめの作業風景：${caption.textContent}。ベースの水が泡立っている`);
+    } else {
+      delete root.dataset.draw;
+      caption.textContent = WORKER_STEPS[root.dataset.step] || "一台を仕上げる";
+      stage.setAttribute("aria-label", "はじめとシーシャの作業台を描いた静止イメージ");
+    }
   } };
 }

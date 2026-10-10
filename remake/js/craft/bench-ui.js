@@ -10,21 +10,10 @@ export const STEP_BRIEFS = {
   heat: "芯が光った炭をタップして取る",
   place: "炭を置いて、熱を均等に届ける",
   steam: "雑念をよける。困ったらリフレッシュ",
-  pull: "針を止めて吸い、細い最適温を狙う",
+  pull: "針を止めて吸い、虹色の最適温を狙う",
   care: "消耗した炭を交換して、吸って整える",
   trial: "香りと合うアピールポイントを選ぶ",
 };
-
-export function conditionBadge(condition) {
-  const mouth = { green: 'M7 14c1.5 4 8.5 4 10 0', yellow: 'M8 16h8', red: 'M8 17c2-2.5 6-2.5 8 0' }[condition.health];
-  const eyes = condition.health === "red" ? '<path d="m7 9 2 1m6 0 2-1"/>' : '<path d="M8 9v1m8-1v1"/>';
-  return el("details.bench-condition", { dataset: { health: condition.health, test: "craft-condition" } }, [
-    el("summary", { "aria-label": `体調：${condition.label}。詳しく見る`, title: `体調：${condition.label}` }, [
-      el("span", { "aria-hidden": "true", html: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="10"/>${eyes}<path d="${mouth}"/></svg>` }),
-    ]),
-    el("div.bench-condition-tip", [el("b", { text: `体調：${condition.label}` }), el("p", { text: condition.hint })]),
-  ]);
-}
 
 export function buildGuide() {
   const note = el("p");

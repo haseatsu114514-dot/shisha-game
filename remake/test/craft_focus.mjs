@@ -177,11 +177,8 @@ try {
       T.core.state.stamina = stamina; window.cs = T.session.newSession('drill'); await T.openBench(cs);
       T.session.stepPanel('pack','パッキング','詰め方の説明');
     }, stamina);
-    assert.equal(await page.locator('.bench-condition').getAttribute('data-health'), health);
-    assert.equal(await page.locator('.bench-condition svg').count(), 1);
-    assert(!(await page.locator('.bench-condition-tip').isVisible()));
-    await page.locator('.bench-condition summary').click();
-    assert(await page.locator('.bench-condition-tip').isVisible());
+    assert.equal(await page.evaluate(()=>cs.condition.health), health);
+    assert.equal(await page.locator('.bench-condition').count(), 0, 'mockup removes the face badge while retaining actual condition');
   }
 
   // 同じ温度から、集中できた場合とミスが多い場合の実際の針移動と成功帯を比較する。
@@ -203,16 +200,19 @@ try {
     });
     focus.push({ width, speed });
     await page.evaluate(() => { __remake.craftTest.auto = 'good'; });
-    await page.locator('[data-test="pull-stop"]').click(); await page.locator('[data-test="pull-stop"]').click();
+    for (let i = 0; i < 2; i++) {
+      await page.locator('[data-test="pull-stop"]').click();
+      await page.locator('.pull-play[data-draw]').waitFor({ state: 'hidden' });
+    }
     await page.locator('[data-test="pull-serve"]').click(); await page.evaluate(() => window.pullRun);
   }
   assert(focus[0].width > focus[1].width * 1.35, JSON.stringify(focus));
   assert(focus[0].speed < focus[1].speed * .85, JSON.stringify(focus));
   console.log('[craft focus] PASS: equal carried-over temperature, calmer steam widens the real success band and slows the actual moving needle');
 
-  // 同じ吸い方・回数で、提供温度だけを変える。細い最適温が最高評価となる。
+  // 同じ吸い方・回数で、提供温度だけを変える。広くした虹色と最適温の判定を一致させる。
   const temperatures=[];
-  for (const temp of [.54,.49]) {
+  for (const temp of [.54,.45]) {
     await page.evaluate(async temp => {
       __remake.craftTest.auto=null; window.cs=T.session.newSession('tournament');
       cs.steam={score:100,temp,seconds:480}; cs.holes={total:24,minimumComplete:true};
@@ -220,13 +220,14 @@ try {
     },temp);
     const band=await page.locator('.thermo-optimal').evaluate(n=>n.getBoundingClientRect().height);
     const safe=await page.locator('.thermo-zone').evaluate(n=>n.getBoundingClientRect().height);
-    assert(band < safe * .12,'Optimal temperature band is not sufficiently strict');
+    assert(band > safe * .39 && band < safe * .45,'Optimal temperature band must cover the expanded aim zone');
     assert(!(await page.locator('[data-test="craft-rating"]').isVisible()));
     await page.waitForFunction(()=>parseFloat(document.querySelector('.pg-needle').dataset.pos)>0);
     // 本物の針が中央へ来た瞬間に、通常の吸う操作を2回行う。温度や結果は書き換えない。
     await page.evaluate(async()=>{
       const needle=document.querySelector('.pg-needle'), button=document.querySelector('[data-test="pull-stop"]');
       for(let i=0;i<2;i++) {
+        while (button.disabled) await new Promise(requestAnimationFrame);
         await new Promise(resolve=>{
           const tick=()=>{
             if(Math.abs(parseFloat(needle.dataset.pos)-50)<1) {button.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));resolve();}
@@ -237,6 +238,7 @@ try {
           const leave=()=>Math.abs(parseFloat(needle.dataset.pos)-50)>5?resolve():requestAnimationFrame(leave);leave();
         });
       }
+      while (document.querySelector('.pull-play').dataset.draw) await new Promise(requestAnimationFrame);
     });
     await page.locator('[data-test="pull-serve"]').click();
     await page.waitForSelector('.result-card.show');
@@ -248,13 +250,13 @@ try {
   assert(!temperatures[1].optimal);assert.equal(temperatures[1].mark,'○');
   assert(temperatures[0].score>temperatures[1].score,JSON.stringify(temperatures));
   const scoring=await page.evaluate(async()=>{
-    const {pullResult}=await import('./js/craft/conditions.js');
-    return {atCenter:pullResult(.54,2,0).score,atOptimalEdge:pullResult(.532,2,0).score,atIdealEdge:pullResult(.46,2,3).score,cold:pullResult(.4,2,3).score,
+    const {pullResult,OPTIMAL}=await import('./js/craft/conditions.js');
+    return {atCenter:pullResult(.54,2,0).score,atOptimalEdge:pullResult(OPTIMAL[0],2,0).score,atIdealEdge:pullResult(.43,2,3).score,cold:pullResult(.4,2,3).score,
       same:pullResult(.51,2,0).score===pullResult(.51,2,3).score,over:pullResult(.54,5,3).score};
   });
   assert(scoring.atCenter>scoring.atOptimalEdge&&scoring.atOptimalEdge>scoring.atIdealEdge&&scoring.atIdealEdge>scoring.cold);
   assert(scoring.same);assert(scoring.over<scoring.atCenter);
-  console.log('[craft focus] PASS: strict central optimal band, real keep controls retain temperature, final ◎ versus ○ follows offered temperature, timing stamps add no score, and tutorial-only Sumi system explanations');
+  console.log('[craft focus] PASS: expanded optimal band, real keep controls retain temperature, final ◎ versus ○ follows offered temperature, timing stamps add no score, and tutorial-only Sumi system explanations');
 
   for (const [name, viewport, mobile] of [
     ['desktop',{width:1280,height:720},false], ['mobile',{width:844,height:390},true], ['portrait',{width:591,height:1280},false],

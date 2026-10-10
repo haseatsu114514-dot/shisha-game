@@ -3,6 +3,7 @@
    大会中（data-mode="tournament"）は黒×ネオンの「スタイリッシュ職人バトル」。
    それ以外（練習・リハーサル・レッスン）は閉店後のtonariの暖色。
    ============================================================ */
+@font-face { font-family: "Craft Mincho"; src: url("../fonts/ZenOldMincho-Craft.ttf") format("truetype"); font-weight: 700; font-display: swap; }
 .bench {
   position: absolute;
   inset: 0;
@@ -16,8 +17,8 @@
   --accent-2: var(--neon-pink);
   --bench-bg: radial-gradient(ellipse at 30% 20%, rgba(56, 240, 255, 0.08), transparent 50%), radial-gradient(ellipse at 80% 90%, rgba(255, 63, 164, 0.08), transparent 50%), rgba(4, 4, 8, 0.9);
 }
-.bench-top { position: absolute; left: 0; right: 0; top: 0; height: 56px; display: flex; align-items: center; gap: 28px; padding: 0 28px; border-bottom: 1px solid #ffffff0d; }
-.bench-mode { width: 448px; font-family: var(--font); font-weight: 700; font-size: 12px; letter-spacing: 0.22em; color: var(--accent); flex: none; }
+.bench-top { position: absolute; left: 0; right: 0; top: 0; height: 48px; display: flex; align-items: center; gap: 16px; padding: 0 22px; border-bottom: 1px solid #ffffff0d; }
+.bench-mode { width: 420px; font-family: var(--font); font-weight: 700; font-size: 12px; letter-spacing: 0.22em; color: var(--accent); flex: none; }
 .bench-condition { position: relative; color: #e6c984; margin-left: auto; z-index: 7; }
 .bench-condition[data-health="green"] { color: #95dbae; }
 .bench-condition[data-health="red"] { color: #ef9e98; }
@@ -37,13 +38,13 @@
 .bench-progress-track span { height: 3px; flex: 1; border-radius: 4px; background: #ffffff19; }
 .bench-progress-track span.seen { background: color-mix(in srgb, var(--accent) 45%, transparent); }
 .bench-progress-track span.now { height: 5px; background: var(--accent); }
-.bench-left { position: absolute; left: 28px; top: 80px; bottom: 28px; width: 448px; display: flex; flex-direction: column; gap: 12px; }
+.bench-left { position: absolute; left: 22px; top: 60px; bottom: 22px; width: 420px; display: flex; flex-direction: column; gap: 8px; padding: 7px; border: 1px solid #ba99645c; border-radius: 12px; background: #170e21d9; box-shadow: inset 0 0 0 3px #e7c98e09, 0 8px 26px #0006; }
 .bench-worker { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #ffffff1a; border-radius: 14px; background: #0c0a0e; box-shadow: 0 12px 32px #0004; }
 .bench-worker-stage { flex: 1; min-height: 0; position: relative; overflow: hidden; isolation: isolate; background-size: cover; background-position: 35% center; }
 .bench-worker-stage::before { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, #17101b55, #110c15bb); }
 .worker-actor { position: absolute; height: calc(100% + 250px); width: auto; max-width: none; left: -110px; bottom: -205px; pointer-events: none; }
 .worker-counter { position: absolute; inset: 64% 0 0; background-size: cover; background-position: center 70%; box-shadow: 0 -8px 18px #0004; }
-.worker-equipment { position: absolute; right: 30px; bottom: 15%; width: 120px; height: 260px; pointer-events: none; }
+.worker-equipment { position: absolute; right: 92px; bottom: 7%; width: 120px; height: 260px; pointer-events: none; }
 .worker-equipment > * { position: absolute; left: 50%; transform: translateX(-50%); }
 .worker-vignette { position: absolute; inset: 0; background: linear-gradient(180deg, #05030b33, transparent 30%, transparent 65%, #08060ed9), linear-gradient(90deg, #100c1222, transparent 60%, #100c1255); pointer-events: none; }
 .worker-scene-tag { position: absolute; left: 20px; top: 18px; font-size: 11px; letter-spacing: 0.3em; color: #d8cbbb; }
@@ -74,10 +75,10 @@
 .bench-audience[data-tone="warm"] .audience-rating { color: #b7d2bc; }
 .bench-audience[data-tone="quiet"] .audience-note, .bench-audience[data-tone="quiet"] .audience-rating { color: #c4ada6; }
 @keyframes audience-nod { 45% { transform: translateY(3px); } }
-.bench-right { position: absolute; left: 504px; right: 28px; top: 80px; bottom: 28px; display: flex; flex-direction: column; }
+.bench-right { position: absolute; left: 458px; right: 22px; top: 60px; bottom: 22px; display: flex; flex-direction: column; padding: 16px 22px; border: 1px solid #ba99645c; border-radius: 12px; background: #120c1dea; box-shadow: inset 0 0 0 3px #e7c98e09, 0 8px 26px #0006; }
 .bench-head { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #ffffff10; }
 .bench-heading { min-width: 0; }
-.bench-title { font-family: var(--font); font-weight: 700; font-size: 28px; line-height: 1.2; letter-spacing: 0.06em; color: #f4eee4; }
+.bench-title { font-family: var(--font); font-weight: 700; font-size: 34px; line-height: 1.2; letter-spacing: 0.08em; color: #f4eee4; }
 .bench-hint { margin-top: 4px; font-size: 14px; color: #c0b8aa; font-style: normal; line-height: 20px; min-height: 20px; }
 .bench-guide { position: relative; flex: none; z-index: 8; }
 .bench-guide[hidden] { display: none; }
@@ -406,7 +407,6 @@
 .thermo.optimal .thermo-tube { box-shadow: 0 0 22px #eacf8580; border-color: #edcf8c; }
 .pull-main { flex: 1; display: flex; flex-direction: column; gap: 16px; }
 .pull-read { font-size: 20px; color: #fff; min-height: 30px; }
-.pull-count { font-size: 15px; color: var(--text-dim); }
 .pull-btns { display: flex; gap: 12px; }
 .pull-btns .btn { flex: 1; align-items: center; padding: 16px; font-size: 20px; }
 
@@ -605,7 +605,6 @@
 .hr-score { line-height: 1.4; overflow-wrap: anywhere; }
 .hr-row .btn { min-width: 0; min-height: 44px; line-height: 1.4; white-space: normal; text-align: center; align-items: center; }
 .pull-read { line-height: 1.45; overflow-wrap: anywhere; }
-.pull-count { line-height: 1.5; min-height: 3em; overflow-wrap: anywhere; }
 .pull-btns .btn { min-width: 0; }
 .result-card { width: min(760px, calc(100% - 24px)); min-width: 0; max-height: calc(100% - 24px); overflow: auto; }
 /* 共通名 rc-title の大会カウント用 absolute 指定を工程カード内だけ解除する。 */
@@ -707,7 +706,7 @@
 .thermal-backdrop { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; display: none; }
 .bench.thermal-active .thermal-backdrop { display: block; }
 .bench.thermal-active { --accent: #ffe3a1; }
-.bench.thermal-active .bench-right { padding: 16px 20px; margin: -16px -20px; border-radius: 16px; background: #100b1ce8; box-shadow: 0 6px 32px #18091555; }
+.bench.thermal-active .bench-right { background: #100b1cf2; box-shadow: inset 0 0 0 3px #e7c98e09, 0 6px 32px #18091555; }
 /* 炎が立つ段階は操作欄を少しだけ透かし、後ろで燃えているのが見えるようにする。 */
 .bench.thermal-active:is([data-thermal-band="fire"], [data-thermal-band="inferno"]) .bench-right { background: #0e0919d4; }
 .bench.thermal-active .bench-top { background: linear-gradient(180deg, #120b21e0, #120b21a8); border-bottom-color: #ffe3a133; }
@@ -747,9 +746,9 @@
    一番上の焦げる帯に炎、熱管理の冷え切り帯に雪の結晶。今の温度より上は少し暗くし、印はその上に明るいまま残す。 */
 .thermo-tube, .thermo-housing .thermo-tube { background: #45484d; }
 .thermo-scale { position: absolute; inset: 0; background: linear-gradient(0deg,
-  #3f4247 0%, #575a5f 6%, #7d7c7a 17%, #a0978b 29%, #c4a985 38%, #d8b47e 43%,
-  #4fcf98 47%, #74e0b0 54%, #4fcf98 61%,
-  #ffb247 65%, #ff8a2a 72%, #ff5f17 81%, #e2300c 89%, #b0140a 94%, #560300 100%); }
+  #205986 0%, #287dad 13%, #3aa6bd 26%, #79c9bc 37%, #67d2a3 41%,
+  #4fcf98 44%, #74e0b0 54%, #4fcf98 64%,
+  #ffb247 69%, #ff8a2a 75%, #ff5f17 83%, #e2300c 89%, #b0140a 94%, #560300 100%); }
 .thermo-dim { position: absolute; left: 0; right: 0; top: 0; z-index: 2; background: linear-gradient(0deg, rgba(10, 8, 22, .2), rgba(10, 8, 22, .34)); transition: bottom .4s var(--ease-out); }
 /* 適温を超えた所は、管の中でやわらかい炎のゆらぎが上へ流れる。縞に見えないよう淡く、下は溶け込ませる。 */
 .thermo-heat { position: absolute; left: 0; right: 0; top: 0; z-index: 1; pointer-events: none; overflow: hidden; opacity: .42; mix-blend-mode: screen;
@@ -766,12 +765,15 @@
   background: linear-gradient(90deg, #fff 0 32%, transparent 32% 68%, #fff 68%); filter: drop-shadow(0 0 1px #0008); }
 .thermo-zone::before { top: -1px; }
 .thermo-zone::after { bottom: -1px; }
-/* 最適温: 適温に挟まれた細い虹。光の筋がゆっくり横切る。今の温度の線より手前に置き、最適温に入っても隠れない。 */
+/* TH66: 広い虹を前後のミントへ溶かす。狙う場所の中央は白線で示す。 */
 .thermo-optimal, .thermo-housing .thermo-optimal { position: absolute; left: 0; right: 0; z-index: 5; min-height: 5px; overflow: hidden;
-  background: linear-gradient(90deg, #ff4d4d, #ff9f1c, #ffe93a, #3fdc78, #2ec9ff, #6b74ff, #cf5cff);
-  box-shadow: 0 0 0 1px #2a1a0899, 0 0 7px 1px #ffffffc0; }
-.thermo-optimal::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 40%; background: linear-gradient(90deg, #fff0, #ffffffd8, #fff0); transform: translateX(-120%); animation: thermo-sheen 2.4s ease-in-out infinite; }
-.thermo.optimal .thermo-optimal { box-shadow: 0 0 0 1px #2a1a0899, 0 0 10px 3px #fffffff0; }
+  background: linear-gradient(90deg, #ff6c85, #ffb554, #ffef72, #71ffc6, #69dfff, #a59bff, #e89bf4);
+  -webkit-mask-image: linear-gradient(0deg, transparent, #000 15% 85%, transparent);
+  mask-image: linear-gradient(0deg, transparent, #000 15% 85%, transparent);
+  filter: brightness(1.07); }
+.thermo-optimal::after { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 40%; background: linear-gradient(90deg, #fff0, #ffffff60, #fff0); transform: translateX(-120%); animation: thermo-sheen 4s ease-in-out infinite; }
+.thermo-optimal::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; z-index: 1; background: #fff; box-shadow: 0 0 2px #fff; transform: translateY(-50%); pointer-events: none; }
+.thermo.optimal .thermo-optimal { filter: brightness(1.2); }
 .thermo-icon { position: absolute; left: 50%; top: 50%; width: 17px; height: 17px; transform: translate(-50%, -50%); pointer-events: none; }
 .steam-temperature .thermo-icon { width: 12px; height: 12px; }
 .thermo-icon svg { display: block; width: 100%; height: 100%; }
@@ -820,56 +822,50 @@
 .thermo.danger .thermo-pointer { background: linear-gradient(90deg, #fff, #ff5a3a); filter: drop-shadow(0 0 7px #ff3a00) drop-shadow(0 0 1px #000); }
 .thermo.optimal .thermo-pointer { background: linear-gradient(90deg, #fff, #ffe066); }
 @keyframes pointer-pulse { from { transform: translateX(0); } to { transform: translateX(4px); } }
-/* フレーバーの葉（TH28・TH37）: 体調の顔の横。ボロボロ具合と色だけで体力が分かる。傷むほど色が抜け、斑点→欠け→穴→反って崩れる。 */
-.leaf-icon { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle, #ffffff1a, #ffffff08 70%); }
+/* TH77〜82: 5枚のうち1枚ずつ赤→茶→黒→消える。残りの赤い葉は変色させない。 */
+.leaf-icon { display: inline-flex; align-items: center; gap: 12px; flex: none; }
 .leaf-icon[hidden] { display: none; }
-.leaf-icon svg { width: 32px; height: 32px; overflow: visible; transition: transform .45s var(--ease-out), filter .45s; }
-.leaf-body { fill: #4cc35a; stroke: #1c4a20; stroke-width: 1; transition: fill .45s, stroke .45s; }
-.leaf-vein { stroke: #dcffd2b0; stroke-width: 1.1; stroke-linecap: round; transition: stroke .45s; }
-.leaf-gloss { stroke: #ffffffa8; stroke-width: 2; stroke-linecap: round; transition: opacity .45s; }
-.leaf-spots, .leaf-crumbs, .leaf-bite-1, .leaf-bite-2 { display: none; }
-.leaf-spots { fill: #6b4a1f; }
-.leaf-crumbs { fill: #4a2e1a; }
-.leaf-icon[data-hp="4"] svg { filter: drop-shadow(0 0 4px #6cff7a66); }
-.leaf-icon[data-hp="3"] .leaf-body { fill: #a2c445; stroke: #3d4a18; }
-.leaf-icon[data-hp="3"] .leaf-gloss { opacity: .45; }
-.leaf-icon[data-hp="3"] svg { transform: rotate(-4deg); }
-.leaf-icon:is([data-hp="3"], [data-hp="2"], [data-hp="1"]) .leaf-spots { display: inline; }
-.leaf-icon[data-hp="2"] .leaf-body { fill: #d2ae3a; stroke: #5a4414; }
-.leaf-icon[data-hp="2"] .leaf-vein { stroke: #fff2c090; }
-.leaf-icon:is([data-hp="2"], [data-hp="1"], [data-hp="0"]) .leaf-gloss { opacity: 0; }
-.leaf-icon[data-hp="2"] svg { transform: rotate(-10deg) scale(.96); }
-.leaf-icon:is([data-hp="2"], [data-hp="1"], [data-hp="0"]) .leaf-bite-2 { display: inline; }
-.leaf-icon[data-hp="1"] .leaf-body { fill: #a2602a; stroke: #4a2810; }
-.leaf-icon[data-hp="1"] .leaf-vein { stroke: #f2c79a70; }
-.leaf-icon[data-hp="1"] svg { transform: rotate(-18deg) scale(.9, .84); }
-.leaf-icon:is([data-hp="1"], [data-hp="0"]) .leaf-bite-1 { display: inline; }
-.leaf-icon[data-hp="0"] .leaf-body { fill: #4a2e1a; stroke: #24140a; }
-.leaf-icon[data-hp="0"] .leaf-vein { stroke: #2e1a0e; }
-.leaf-icon[data-hp="0"] svg { transform: rotate(-26deg) scale(.84, .72); filter: grayscale(.4); }
-.leaf-icon[data-hp="0"] .leaf-crumbs { display: inline; }
-.leaf-icon.hit { animation: leaf-shiver .5s ease-out; }
+.flavor-leaf { display: block; width: 34px; height: 34px; flex: none; transition: opacity .45s, transform .45s var(--ease-out); }
+.leaf-skin { transition: filter .5s var(--ease-out); image-rendering: auto; }
+.flavor-leaf[data-stage="brown"] > .leaf-skin { filter: grayscale(1) sepia(1) saturate(2.5) hue-rotate(-20deg) brightness(.85); }
+.flavor-leaf:is([data-stage="black"], [data-stage="gone"]) > .leaf-skin { filter: grayscale(1) brightness(.22); }
+.flavor-leaf[data-stage="gone"] { opacity: 0; transform: scale(.55); }
+.leaf-icon.hit .flavor-leaf:is([data-stage="brown"], [data-stage="black"]) { animation: leaf-shiver .5s ease-out; }
 @keyframes leaf-shiver { 0%, 100% { transform: none; } 20% { transform: translateX(-4px) rotate(-12deg); } 45% { transform: translateX(3px) rotate(9deg); } 70% { transform: translateX(-2px) rotate(-4deg); } }
-@media (prefers-reduced-motion: reduce) { .thermo-pointer, .leaf-icon.hit { animation: none; } }
+/* TH94: 吸った回数の5つの点。無傷の回数を超える点は橙の枠、吸った点は灯る。 */
+.pull-count { display: inline-flex; align-items: center; gap: 14px; flex: none; }
+.pull-pips { display: flex; gap: 10px; }
+.pull-pip { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #d9bd85; background: #0c0812; box-shadow: inset 0 1px 3px #000c; transition: background .25s, box-shadow .25s; }
+.pull-pip.over { border-color: #ff8a3d; }
+.pull-pip.on { background: radial-gradient(circle at 40% 35%, #fff6d8, #f2c25e 55%, #b0782a); box-shadow: 0 0 9px #f4c46a99; }
+.pull-pip.over.on { background: radial-gradient(circle at 40% 35%, #ffe2c2, #ff8a3d 55%, #c2410c); box-shadow: 0 0 10px #ff6a1aaa; }
+.pull-count-num { min-width: 2.6em; font-family: "Craft Mincho", var(--font); font-size: 20px; letter-spacing: .06em; color: #f4e4c4; font-variant-numeric: tabular-nums; }
+.pull-count[data-pulls="5"] .pull-count-num { color: #ff9a52; }
+@media (prefers-reduced-motion: reduce) { .thermo-pointer, .leaf-icon.hit .flavor-leaf { animation: none; } .flavor-leaf, .leaf-skin, .pull-pip { transition: none; } }
 
-/* 吸い方の半円ダイヤル（TH38・TH40）: 縦の温度計の横に置く計器。輪は切れ目のないグラデーション（左の上げ吸い=暖色→キープ→右の下げ吸い=寒色）。
-   各帯の外側に言葉、光る芯は実際の成功帯の幅。針は輪をまたぐ太い印で往復し、内側には今の温度の一語と吸った回数を出す。 */
-.pull-dial { position: relative; width: min(100%, 470px); margin: 0 auto; aspect-ratio: 480 / 270; }
+/* TH47〜51: モックアップの広い半円、中心から弧に届く針。左=下げ、右=上げ。 */
+.pull-dial { position: relative; width: min(100%, 590px); margin: 0 auto; aspect-ratio: 480 / 270; }
 .pull-dial svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.dial-rim { fill: none; stroke: #ffffff55; stroke-width: 2; }
-.dial-gloss { fill: #ffffff18; }
-.pg-just { fill: #fff2d044; stroke: #fff4d6d0; stroke-width: 1.5; filter: drop-shadow(0 0 6px #ffd98a99); }
+.dial-recess { fill: #100c1a; stroke: #bea57538; stroke-width: 1; }
+.dial-ring { filter: drop-shadow(0 0 10px #c8a36335); }
+.dial-rim { fill: none; stroke: #ffe4b778; stroke-width: 1.5; }
+.dial-gloss { fill: #fff8e529; }
+.pg-just { fill: #fffcdfaa; stroke: #fff8e6; stroke-width: 1.5; filter: drop-shadow(0 0 6px #fff0bcb0); }
 .dial-label { font-size: 17px; font-weight: 800; letter-spacing: .04em; text-anchor: middle; dominant-baseline: middle; paint-order: stroke; stroke: #0d0914; stroke-width: 4px; stroke-linejoin: round; }
 .dial-label.l-up { fill: #ffb27a; }
 .dial-label.l-keep { fill: #f4eee4; }
 .dial-label.l-down { fill: #9fc8ff; }
-.needle-body { fill: #fffdf2; stroke: #1a1020; stroke-width: 1.5; filter: drop-shadow(0 0 6px #fff2b0); }
-.needle-cap { fill: #ffd25a; stroke: #1a1020; stroke-width: 1; }
-.pull-dial-center { position: absolute; left: 50%; bottom: 2%; transform: translateX(-50%); width: 52%; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
-.pull-dial-center .pull-read { justify-content: center; }
-.pull-dial-center .pull-count { justify-content: center; }
-.pull-main { justify-content: center; }
-.pull-play { gap: 18px; }
+.dial-label.l-down, .dial-desc.l-down { text-anchor: start; }
+.dial-label.l-up, .dial-desc.l-up { text-anchor: end; }
+.dial-desc { font-size: 11px; text-anchor: middle; fill: #d3c4ae; paint-order: stroke; stroke: #100b1c; stroke-width: 3px; }
+.dial-desc.l-down { fill: #aecded; }
+.dial-desc.l-up { fill: #efb591; }
+.needle-body { fill: #ffe7a3; stroke: #9d7127; stroke-width: .8; filter: drop-shadow(0 0 4px #ffd65bb0); }
+.needle-cap { fill: #ffe091; stroke: #ac7830; stroke-width: .6; filter: drop-shadow(0 0 4px #ffcb5f); }
+.dial-pivot-rim { fill: #3c2a28; stroke: #b18a47; stroke-width: 1.5; }
+.dial-pivot { fill: #ffe8a0; stroke: #d6ae58; stroke-width: 2; filter: drop-shadow(0 0 6px #ffca66); }
+.pull-main { justify-content: center; min-width: 0; height: 100%; }
+.pull-play { gap: 10px; }
 /* 今の温度は短い一語。温度計の印と同じ色（最適温は虹）。熱管理は熱が落ちていく ↓ を添える。 */
 .pull-read { display: flex; align-items: center; gap: 10px; min-height: 38px; }
 .pull-state { font-size: 26px; font-weight: 800; letter-spacing: .08em; line-height: 1.2; }
@@ -882,12 +878,7 @@
 .pull-read[data-tone="cool"] .pull-state { color: #c4bcb2; }
 .pull-drift { font-size: 22px; font-weight: 800; color: #d6e4f2; animation: drift-fall 1.2s ease-in infinite; }
 @keyframes drift-fall { 0% { transform: translateY(-5px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(7px); opacity: 0; } }
-/* 吸った回数は点（最低回数は金の縁）。炭・雨・少穴は短い札。 */
-.pull-count { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; min-height: 22px; }
-.pull-pips { display: inline-flex; gap: 7px; }
-.pull-pip { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #ffffff6a; background: #ffffff10; transition: background .2s, box-shadow .2s; }
-.pull-pip.need { border-color: #ffd25a; }
-.pull-pip.on { background: #fff; border-color: #fff; box-shadow: 0 0 8px #ffffffaa; }
+/* 回数の点は廃止（TH80）。炭・雨・少穴は短い札。 */
 .pull-tags { display: inline-flex; gap: 6px; }
 .pull-tag { padding: 2px 9px; border-radius: 10px; font-size: 13px; line-height: 1.5; color: #f0e3cc; background: #ffffff14; border: 1px solid #ffffff2a; white-space: nowrap; }
 /* 吸った直後、温度計の針の横に浮かぶ上下の印（判定の文字の代わり）。 */
@@ -927,3 +918,216 @@
 @keyframes breath-puff { 0% { transform: translate(0, 0) scale(.4); opacity: 0; } 30% { opacity: .9; } 100% { transform: translate(-16px, 4px) scale(1.3); opacity: 0; } }
 @keyframes worker-flinch { 0%, 100% { transform: none; } 25% { transform: translateX(-5px) rotate(-1deg); } 60% { transform: translateX(3px); } }
 @media (prefers-reduced-motion: reduce) { .arcade-score.bump .arcade-num, .arcade-pop, .worker-sweat i, .worker-breath::before, .bench-worker.flinch .worker-actor { animation: none; } }
+
+/* 制作ウインドウの比率と吸引中の接続（TH47〜51）。背景アニメーションは既存の層を使う。 */
+.bench-left .bench-worker { border-radius: 6px; }
+.bench-left .bench-audience { border-radius: 6px; }
+.bench:is([data-step="pull"], [data-step="care"]) .worker-equipment { right: 100px; }
+.bench:is([data-step="pull"], [data-step="care"]) .worker-actor { left: -140px; }
+.bench:is([data-step="pull"], [data-step="care"]) .worker-scene-tag { color: #eddbb5; }
+.bench:is([data-step="pull"], [data-step="care"]) .bench-worker-name { padding-left: 12px; padding-right: 12px; }
+.bench:is([data-step="pull"], [data-step="care"]) .thermal-label { display: none; }
+.pull { gap: 0; align-items: center; }
+/* 同じ温度計DOMを左の作業風景の右端へ重ねる。炭交換の準備中も見える。 */
+.pull > .thermo { position: absolute; left: -128px; top: -44px; height: 408px; z-index: 3; }
+.pull > .thermo .thermo-projected-label { left: -7px; bottom: -18px; padding: 3px 5px; font-size: 9px; }
+.pull > .thermo .thermo-pop { left: -28px; }
+.pull > .thermo::before { content: "温度"; position: absolute; left: 0; right: 0; top: -19px; font-size: 11px; letter-spacing: .2em; text-align: center; color: #ead7b5; }
+.pull-summary { display: flex; align-items: center; justify-content: space-between; padding: 7px 14px; min-height: 40px; border: 1px solid #e7c98e30; border-radius: 6px; background: #08061070; }
+.pull-summary .pull-state { font-size: 18px; }
+.pull-summary .pull-read { min-height: 24px; }
+.pull-draw-status { min-height: 20px; text-align: center; font-size: 13px; color: #cab79e; letter-spacing: .08em; }
+.bench[data-art-skin] .pull-btns .btn { flex-direction: row; gap: 12px; min-height: 72px; padding: 12px; border-radius: 9px; font-size: 22px; }
+.bench[data-art-skin] .pull-btns .btn.primary { position: relative; flex: 1.65; border-color: #e7ba67; background: radial-gradient(ellipse at 50% 0%, #97653338, transparent 75%), linear-gradient(135deg, #422b31, #211526 65%, #392231); box-shadow: inset 0 0 0 2px #f0d3911a, inset 0 0 22px #e5a64b15, 0 0 15px #eac27526; }
+.bench[data-art-skin] .pull-btns .btn.primary::before, .bench[data-art-skin] .pull-btns .btn.primary::after { position: absolute; top: 50%; transform: translateY(-50%); font-size: 18px; color: #efc58180; pointer-events: none; }
+.bench[data-art-skin] .pull-btns .btn.primary::before { content: "»"; left: 15px; }
+.bench[data-art-skin] .pull-btns .btn.primary::after { content: "«"; right: 15px; }
+.bench[data-art-skin] .pull-btns .btn.primary:hover:not(:disabled) { border-color: #ffe3a0; box-shadow: inset 0 0 0 2px #f0d39130, 0 0 20px #eac27540; }
+.pull-btn-icon { width: 33px; height: 33px; flex: none; color: #ffe1a2; filter: drop-shadow(0 0 4px #e7ad5970); }
+.pull-btn-icon svg { width: 100%; height: 100%; display: block; }
+.pull-serve-icon { font-size: 27px; line-height: 1; }
+.bench[data-art-skin] .pull-play[data-draw] .btn.primary { opacity: .85; filter: none; border-color: #e4c589a0; }
+.pull-play[data-draw] .pull-draw-status { color: #ffe2a8; }
+.pull-play[data-draw] .pull-summary { position: relative; overflow: hidden; }
+.pull-play[data-draw] .pull-summary::after { content: ""; position: absolute; left: 0; bottom: 0; width: calc(var(--draw-progress, 0) * 100%); height: 2px; background: #e4c786; box-shadow: 0 0 8px #f1c975; }
+.worker-water { width: 62px; border-radius: 48%; overflow: hidden; opacity: 0; background: radial-gradient(ellipse, #b2b9dd18, #9794c30a 60%, transparent 70%); transition: opacity .15s; }
+.worker-water i { position: absolute; left: var(--bubble-x); bottom: 0; width: 5px; height: 6px; border-radius: 50%; border: 1px solid #e3ebffa6; background: #dbe9ff30; box-shadow: 0 0 4px #9abfff55; }
+.bench-worker[data-draw] .worker-water { opacity: 1; }
+.bench-worker[data-draw] .worker-water i { animation: worker-bubble .64s linear infinite; animation-delay: var(--bubble-delay); }
+.bench-worker[data-draw="keep"] .worker-water i { animation-duration: .85s; }
+.bench-worker[data-draw] .bench-worker-caption { display: inline; flex: 1; color: #f2d7a9; font-size: 12px; }
+.bench-worker[data-draw] .worker-counter { box-shadow: 0 -5px 20px #e9be5c26; }
+.bench-worker[data-draw] .worker-actor { animation: worker-inhale var(--draw-duration) ease-in-out; transform-origin: 50% 40%; }
+@keyframes worker-bubble { 0% { opacity: 0; transform: translateY(0) scale(.7); } 15% { opacity: .8; } 80% { opacity: .9; } 100% { opacity: 0; transform: translateY(-48px) scale(1.25); } }
+@keyframes worker-inhale { 0%, 100% { transform: none; } 40%, 70% { transform: translateY(-2px) scale(1.006); } }
+@media (prefers-reduced-motion: reduce) {
+  .bench-worker[data-draw] .worker-actor, .bench-worker[data-draw] .worker-water i { animation: none; }
+  .bench-worker[data-draw] .worker-water i { opacity: .7; bottom: 35%; }
+}
+
+/* TH57: 拡大したモックアップの配置に合わせる。ダイヤル・情報欄・ボタンを下段の固定行に収める。 */
+.bench-top .bench-mode small { margin-left: 12px; padding-left: 12px; border-left: 1px solid #d2bb9260; font-size: 11px; letter-spacing: .12em; color: #c6b8ba; }
+.bench-left, .bench-right { top: 54px; bottom: 30px; border-color: #9b785876; box-shadow: inset 0 0 0 2px #f1c9910b, inset 0 0 18px #05030988, 0 8px 24px #0006; }
+.bench-left { left: 20px; width: 424px; gap: 3px; padding: 10px 5px 11px; }
+.bench-right { left: 458px; right: 20px; padding: 18px 22px 24px; }
+/* TH72: 下の外側30→18px、操作ボタン下24→12px。左右のウインドウの下端をそろえる。 */
+.bench:is([data-step="pull"], [data-step="care"]) :is(.bench-left, .bench-right) { bottom: 18px; }
+.bench:is([data-step="pull"], [data-step="care"]) .bench-right { padding-bottom: 12px; background: radial-gradient(ellipse at 100% 100%, #382a3c33, transparent 70%), linear-gradient(145deg, #191121, #100b18); }
+.bench:is([data-step="pull"], [data-step="care"]) :is(.bench-left, .bench-right) { border-color: #a18a666b; box-shadow: inset 0 0 0 2px #ebd3a309, 0 5px 20px #0005; }
+.bench:is([data-step="pull"], [data-step="care"]) .bench-heading { padding-left: 12px; }
+.bench:is([data-step="pull"], [data-step="care"]) .bench-title { position: relative; width: fit-content; font-family: "Craft Mincho", var(--font); font-size: 40px; letter-spacing: .10em; color: #f6e4c8; text-shadow: 0 0 6px #eb9b6233, 0 1px 2px #8f4927; }
+.bench:is([data-step="pull"], [data-step="care"]) .bench-title::after { content: ""; position: absolute; left: calc(100% + 12px); top: -4px; width: 42px; height: 56px; opacity: .45; filter: blur(1px); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 42 56'%3E%3Cpath d='M23 2C3 17 4 22 23 26s21 10-7 22' fill='none' stroke='%23c8b5c9' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat; }
+.bench:is([data-step="pull"], [data-step="care"]) .bench-hint { font-size: 15px; margin-top: 14px; color: #c9bca8; }
+.bench:is([data-step="pull"], [data-step="care"]) .bench-head { position: relative; margin-bottom: 0; padding-bottom: 7px; border-bottom: 0; }
+.bench:is([data-step="pull"], [data-step="care"]) .bench-head::after { content: ""; position: absolute; left: 12px; right: 0; top: 56px; height: 1px; background: linear-gradient(90deg, #c8b39238, #c8b3920d); }
+.bench:is([data-step="pull"], [data-step="care"]) .bench-guide { align-self: flex-start; margin-top: 10px; }
+.bench:is([data-step="pull"], [data-step="care"]) .bench-worker { position: relative; }
+.bench:is([data-step="pull"], [data-step="care"]) .bench-worker-name { position: absolute; left: 0; right: 0; bottom: 0; min-height: 38px; padding: 3px 12px; border: 0; background: linear-gradient(0deg, #110b1ad0, transparent); }
+.bench:is([data-step="pull"], [data-step="care"]) .bench-worker-name .bench-condition { display: none; }
+.bench:is([data-step="pull"], [data-step="care"]) .worker-equipment { right: 92px; bottom: 7%; }
+.bench:is([data-step="pull"], [data-step="care"]) .worker-actor { height: calc(100% + 150px); left: -114px; bottom: -135px; }
+.bench:is([data-step="pull"], [data-step="care"]) .worker-counter { top: 68%; }
+.bench-left .bench-audience { position: relative; height: 112px; margin: 5px 6px 0; border: 1px solid #a98d654a; border-radius: 8px; background: linear-gradient(145deg, #1b1522, #100c18); box-shadow: inset 0 0 0 3px #090710b0, inset 0 0 0 4px #9b806317; }
+.bench[data-art-skin] :is(.bench-worker, .bench-audience) { border-image: none; border: 1px solid #a98d654a; box-shadow: inset 0 0 0 2px #08060e99, inset 0 0 0 3px #8c725319, 0 3px 12px #0004; }
+.audience-single { gap: 18px; padding: 12px; }
+.audience-single .audience-people { width: 82px; display: flex; align-items: center; justify-content: center; padding: 0; }
+.audience-single .audience-person { width: 82px; }
+.audience-single .audience-face { height: 82px; border-radius: 5px; border: 1px solid #93816e26; background: #0e0b14; }
+.audience-face img.audience-icon { width: 82px !important; height: 82px; left: 0 !important; top: 0 !important; }
+.audience-person figcaption { display: none; }
+.audience-single .audience-heading { display: flex; margin-bottom: 5px; }
+.audience-name { font-size: 12px; letter-spacing: .10em; font-weight: 700; color: #bfb0b6; }
+.audience-caption { color: #aa9baf; }
+.bench-audience[data-voice="inner"] .audience-caption { display: none; }
+.audience-note { font-size: 16px; line-height: 1.55; color: #e0d5cc; }
+.pull-main { gap: 0; justify-content: stretch; }
+.pull-play { display: grid; grid-template-rows: minmax(0, 1fr) 64px 96px; gap: 14px; height: 100%; }
+.pull-dial-row { position: relative; min-height: 0; }
+.pull-dial { position: absolute; left: calc(50% - 10px); bottom: -2px; width: min(100%, 600px); height: auto; aspect-ratio: 2; transform: translateX(-50%); }
+.pull-dial svg { left: 0; top: 0; }
+.dial-ring { filter: drop-shadow(0 0 13px #efb07458); }
+.dial-gloss { fill: #fff7d413; }
+.dial-rim { stroke: #eddfbd55; stroke-width: 1; filter: none; }
+.pg-just { fill: #fff8e8bc; stroke: #fffced; stroke-width: 1.6; filter: drop-shadow(0 0 8px #ffe7bac4); }
+.needle-body { fill: #ffe592; stroke: #c49838; stroke-width: .8; filter: drop-shadow(0 0 4px #ffd869); }
+.needle-light { fill: none; stroke: #fff8cf; stroke-width: 1.2; }
+.needle-cap { fill: #fff0b6; stroke: #e3b755; filter: drop-shadow(0 0 5px #ffd270); }
+.pull-dial-labels { position: absolute; inset: 0; pointer-events: none; }
+.pull-zone-label { position: absolute; top: 106px; display: flex; flex-direction: column; font-size: 16px; line-height: 1.5; color: #dda577; }
+.pull-zone-label > b { font-size: 24px; letter-spacing: .06em; line-height: 1.4; padding-bottom: 5px; margin-bottom: 6px; border-bottom: 1px solid currentColor; text-shadow: 0 0 10px #a342382e; }
+.pull-zone-label.l-down { left: 24px; color: #a6d8ff; }
+.pull-zone-label.l-up { right: 24px; color: #ffb48b; }
+.pull-zone-label.l-keep { top: 8px; left: calc(50% - 10px); transform: translateX(-50%); align-items: center; color: #efe7dd; font-size: 14px; }
+.pull-zone-label.l-keep > b { border: 0; padding: 0; margin: 0; font-size: 20px; }
+.pull-zone-label.l-keep > span { padding: 1px 24px; border: 1px solid #d6bf9b36; border-radius: 5px; background: #15101b70; }
+.pull-zone-label .pull-tag { font-size: 10px; }
+.pull > .thermo { left: -128px; top: -48px; height: 360px; }
+.pull > .thermo::after { content: ""; position: absolute; inset: -34px -12px -60px; z-index: -1; border: 1px solid #ae916843; border-radius: 8px; background: linear-gradient(160deg, #100b15ed, #100b15dd); box-shadow: inset 0 0 0 1px #eec6890e, 0 2px 10px #0006; }
+.pull > .thermo .thermo-projected-label { display: none; }
+.pull > .thermo .thermo-projected { height: 1px; margin-bottom: -.5px; border: 0; background: repeating-linear-gradient(90deg, #fff8 0 3px, transparent 3px 6px); box-shadow: none; }
+.pull > .thermo .pull-read { position: absolute; top: calc(100% + 12px); left: -3px; right: -3px; justify-content: center; min-height: 32px; border: 1px solid #c1aa7438; border-radius: 6px; background: #100c17ef; }
+.pull > .thermo .pull-state { font-size: 14px; white-space: nowrap; letter-spacing: .02em; }
+.pull-summary { display: block; justify-self: start; width: max-content; max-width: 100%; padding: 0; border: 0; background: none; }
+.pull-life { position: relative; min-width: 0; min-height: 0; height: 100%; display: flex; align-items: center; gap: 24px; padding: 8px 16px; border: 1px solid #a18a665c; border-radius: 9px; background: #100b18bb; box-shadow: inset 0 1px 2px #fff2; }
+.pull-life-label { font-size: 13px; color: #c8bcc0; white-space: nowrap; letter-spacing: .05em; }
+.pull-life-leaves { display: flex; align-items: center; flex: none; }
+.pull-tags:empty { display: none; }
+.pull-serve-icon svg { display: block; width: 100%; height: 100%; }
+/* 状態の読み上げだけ残す。注意書きや別ウインドウは表示しない（TH71）。 */
+.pull-draw-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.bench[data-art-skin] .pull-btns .btn { height: 96px; padding: 14px 20px; border-radius: 14px; font-size: 27px; font-weight: 700; border-width: 2px; }
+.pull-btns .btn-label { font-family: "Craft Mincho", var(--font); font-weight: 700; letter-spacing: .035em; }
+.bench[data-art-skin] .pull-btns .btn.primary { flex: 1.75; border-color: #eaca88; color: #ffe9c4; background: radial-gradient(ellipse at 50% 0%, #cd8f4930, transparent 75%), linear-gradient(135deg, #3f2b31, #211528 70%, #382132); box-shadow: inset 0 0 0 2px #e3bd6666, inset 0 0 0 5px #62402152, inset 0 0 30px #e5a64b1c, 0 0 8px #f2c57280, 0 0 24px #d9955024; text-shadow: 0 0 9px #ffce8099, 0 1px 2px #573821; }
+.bench[data-art-skin] .pull-btns .btn.primary:hover:not(:disabled) { background: radial-gradient(ellipse at 50% 0%, #e1a14b50, transparent 75%), linear-gradient(135deg, #513638, #2d1b30 70%, #482b36); }
+.bench[data-art-skin] .pull-btns .btn:disabled { opacity: .65; }
+.pull-btn-icon { width: 48px; height: 48px; color: #fff0cd; filter: drop-shadow(0 0 5px #ffd29188); }
+.pull-serve-icon { width: 48px; height: 40px; flex: none; }
+.arcade-score { padding: 4px 12px; }
+.arcade-num { font-size: 30px; letter-spacing: .17em; }
+.bench[data-art-skin] .pull-btns .btn.primary,
+.bench[data-art-skin] .pull-btns .btn.primary:hover:not(:disabled) {
+  border: 0; background-color: #241622; background-image: var(--craft-inhale-art);
+  background-size: var(--craft-inhale-size); background-position: var(--craft-inhale-position); background-repeat: no-repeat;
+  box-shadow: 0 0 18px #c48a3730; border-radius: 14px;
+}
+.bench[data-art-skin] .pull-btns .btn.primary:hover:not(:disabled) { filter: brightness(1.1); }
+.bench[data-art-skin] .pull-btns .btn:not(.primary) { background: linear-gradient(145deg, #302432, #1c1523); border-color: #a598a782; box-shadow: inset 0 1px 2px #fff2; }
+.bench[data-art-skin] .pull-btns .btn:not(.primary):disabled { opacity: .42; }
+.pull-btns { display: grid; grid-template-columns: 1.75fr 1fr; gap: 14px; }
+.pull-zone-label { top: 112px; }
+.pull-life .pull-tag { font-size: 10px; padding: 1px 5px; }
+.bench-audience[data-voice="inner"] .audience-note { font-size: 16px; max-width: 232px; word-break: normal; }
+
+/* TH83〜90（2026-10-10）: 温度計の現在地の矢印・白線・危険帯、状態の文字色、右ウインドウの煙。 */
+.thermo .thermo-pointer, .thermo.danger .thermo-pointer, .thermo.optimal .thermo-pointer {
+  left: calc(var(--thermo-span) - 9px); width: 30px; height: 30px; background: none; clip-path: none;
+  filter: drop-shadow(0 0 5px var(--pointer-glow, #ffffffaa)) drop-shadow(0 2px 2px #000d); }
+.thermo-pointer svg { display: block; width: 100%; height: 100%; fill: var(--pointer-fill, #fff); }
+.thermo { --pointer-fill: #fff; --pointer-glow: #ffffffaa; }
+.thermo.cool { --pointer-fill: #bfe4ff; --pointer-glow: #59b4ffcc; }
+.thermo.ok { --pointer-fill: #9effd6; --pointer-glow: #2fe39ccc; }
+.thermo.optimal { --pointer-fill: #fff; --pointer-glow: #ffe066; }
+.thermo.hot { --pointer-fill: #ffc078; --pointer-glow: #ff7a1acc; }
+.thermo.danger { --pointer-fill: #ffd21a; --pointer-glow: #ff2a00; }
+/* 現在地の白線と、虹の中央の最適温の白線。黒い縁で背景のどの色の上でも読める。 */
+.thermo-mark, .thermo:has(.thermo-housing) .thermo-mark, .thermo:has(.thermo-housing).optimal .thermo-mark {
+  left: 0; right: 0; height: 4px; margin-bottom: -2px; z-index: 6; background: #fff; box-shadow: 0 0 0 1.5px #0b0610, 0 0 9px #ffffffcc; }
+.thermo-optimal::before { height: 3px; z-index: 2; box-shadow: 0 0 0 1px #0b061099, 0 0 6px #fff; }
+.thermo-zone::before, .thermo-zone::after { opacity: 1; }
+/* 焦げる帯は黄と黒の警戒ストライプ。越えたら明らかに危ないと分かるよう、境目も赤く太くする。 */
+.thermo-danger { overflow: hidden;
+  background: linear-gradient(-45deg, #ffcf1a 25%, #17100c 25% 50%, #ffcf1a 50% 75%, #17100c 75%) 0 0 / 12px 12px;
+  box-shadow: inset 0 0 7px #ff2a00, inset 0 0 0 1px #ff3a1a99; }
+.thermo-danger::after { bottom: 0; height: 3px; background: #ff3418; filter: none; box-shadow: 0 0 6px #ff2a00, 0 0 2px #000; }
+.thermo-danger .thermo-icon.flame { width: 15px; height: 15px; padding: 1px; border-radius: 50%; background: #1a0b06; box-shadow: 0 0 0 1px #ffcf1a, 0 0 6px #ff2a00; }
+.thermo-danger .thermo-icon.flame svg { fill: #ff5a1f; filter: none; }
+.thermo.danger .thermo-danger { animation: hazard-slide .5s linear infinite; }
+@keyframes hazard-slide { to { background-position: 12px 0; } }
+/* 状態の一語も温度帯の色にする（ぬるい＝青、適温＝ミント、熱い＝橙、焦げる寸前＝警戒色）。 */
+.pull-read[data-tone="cool"] .pull-state { color: #96d2ff; text-shadow: 0 0 8px #3a9cff88; }
+.pull-read[data-tone="ok"] .pull-state { color: #62f2b4; text-shadow: 0 0 8px #22d08c99; }
+.pull-read[data-tone="hot"] .pull-state { color: #ffa652; text-shadow: 0 0 8px #ff6a0099; }
+.pull-read[data-tone="danger"] .pull-state { color: #ffd21a; text-shadow: 0 0 6px #ff2a00, 0 0 12px #ff2a00aa; }
+.pull-read[data-tone="cold"] .pull-state { color: #d6f1ff; text-shadow: 0 0 8px #7fd0ff; }
+.pull > .thermo .pull-read[data-tone="cool"] { border-color: #6fb6ff55; }
+.pull > .thermo .pull-read[data-tone="ok"] { border-color: #4fe3a466; }
+.pull > .thermo .pull-read[data-tone="optimal"] { border-color: #ffe9a477; box-shadow: 0 0 10px #ffd86a33; }
+.pull > .thermo .pull-read[data-tone="hot"] { border-color: #ff9a4a66; }
+.pull > .thermo .pull-read:is([data-tone="danger"], [data-tone="cold"]) { border-color: #ff4a2a99; }
+/* 右ウインドウの奥に漂う煙。立ちのぼって薄れる2枚を半周期ずらし、途切れずに流れて見せる。 */
+.panel-smoke { display: none; position: absolute; inset: 0; z-index: -1; overflow: hidden; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 1.2s; }
+.bench:is([data-step="pull"], [data-step="care"]) .bench-right { isolation: isolate; }
+.bench:is([data-step="pull"], [data-step="care"]) .panel-smoke { display: block; }
+/* TH93: 煙は温度が危なくなってきた時だけ。過熱で薄く、焦げる寸前・焦げで濃く速く。適温以下では出さない。 */
+.bench[data-thermal-band="fire"] .panel-smoke.ready { opacity: .6; }
+.bench:is([data-thermal-band="inferno"], [data-thermal-band="burnt"]) .panel-smoke.ready { opacity: 1; }
+.bench:is([data-thermal-band="inferno"], [data-thermal-band="burnt"]) .panel-smoke-wisp::before,
+.bench:is([data-thermal-band="inferno"], [data-thermal-band="burnt"]) .panel-smoke-wisp::after { animation-duration: 9s; }
+.panel-smoke-wisp { position: absolute; }
+.panel-smoke-wisp::before, .panel-smoke-wisp::after { content: ""; position: absolute; inset: 0; background: var(--smoke) center / 100% 100% no-repeat; opacity: 0; animation: panel-smoke-rise 16s linear infinite; }
+.panel-smoke-wisp::after { transform: scaleX(-1); animation-name: panel-smoke-rise-flip; animation-delay: -8s; }
+.panel-smoke-wisp.w-corner { right: -10px; top: -90px; width: 280px; height: 340px; }
+.panel-smoke-wisp.w-left { left: -90px; bottom: 40px; width: 300px; height: 360px; }
+.panel-smoke-wisp.w-right { right: -70px; bottom: 90px; width: 260px; height: 320px; }
+.panel-smoke-wisp.w-left::before { animation-delay: -5s; }
+.panel-smoke-wisp.w-right::before { animation-delay: -11s; }
+@keyframes panel-smoke-rise { 0% { opacity: 0; transform: translateY(40px) scale(.94); } 30% { opacity: .62; } 70% { opacity: .5; } 100% { opacity: 0; transform: translateY(-50px) scale(1.1); } }
+@keyframes panel-smoke-rise-flip { 0% { opacity: 0; transform: translateY(40px) scaleX(-1) scale(.94); } 30% { opacity: .5; } 70% { opacity: .42; } 100% { opacity: 0; transform: translateY(-50px) scaleX(-1) scale(1.1); } }
+/* 見出し横の煙も、細い線から本物の煙の一筋へ。 */
+.bench:is([data-step="pull"], [data-step="care"]) .bench-title::after { left: calc(100% + 2px); top: -22px; width: 76px; height: 100px; opacity: .9; filter: none;
+  background: var(--smoke-title, none) center / contain no-repeat; animation: title-smoke 6s ease-in-out infinite alternate; transform-origin: 50% 100%;
+  visibility: hidden; }
+.bench:is([data-step="pull"], [data-step="care"]):is([data-thermal-band="fire"], [data-thermal-band="inferno"], [data-thermal-band="burnt"]) .bench-title::after { visibility: visible; }
+@keyframes title-smoke { from { transform: translateY(2px) scaleY(.96); opacity: .75; } to { transform: translateY(-4px) scaleY(1.04) skewX(-4deg); opacity: .95; } }
+.pull-btn-icon .hose-core { stroke: #2b1a26; }
+@media (prefers-reduced-motion: reduce) {
+  .thermo.danger .thermo-danger, .bench .bench-title::after { animation: none; }
+  .panel-smoke-wisp::before { animation: none; opacity: .5; }
+  .panel-smoke-wisp::after { display: none; }
+}
+/* TH95: 情報欄は左にフレーバーの持ち、右に吸い出し回数を並べる。 */
+.pull-summary { display: flex; gap: 14px; width: auto; justify-self: stretch; }
+.pull-summary > .pull-life { flex: none; }
+.pull-summary > .pull-count-box { flex: 1; min-width: 0; gap: 18px; }
+.pull-count-box .pull-pips { gap: 8px; }
+.pull-count-box .pull-pip { width: 18px; height: 18px; }
