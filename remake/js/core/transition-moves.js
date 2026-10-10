@@ -4,7 +4,6 @@ import { el, sleep } from "./util.js";
 import { SE } from "./audio.js";
 import { W, H, COLOR, EASE, svg, stageSvg, move, curtain, openLeaf, stepIntoBg, walker, everyFrame } from "./transition-kit.js";
 import { motionVariant } from "./mg-kit.js";
-import * as door from "../motions/door.js";
 
 export const MOVE_STYLES = ["pin", "steps", "walk", "door", "noren", "walkdoor"];
 const STORE_KEY = "suien_move_style";
@@ -22,8 +21,16 @@ export function setMoveStyle(style) {
   try { localStorage.setItem(STORE_KEY, style); } catch { /* 保存できない環境 */ }
 }
 
+/** 扉は motions/door.js を使うときに読む（a／b は ?movar）。読み込みを待つ間も covered／release の約束は同じ */
+function doorMove(host, opts) {
+  const made = import("../motions/door.js")
+    .then((m) => (motionVariant() === "b" ? m.b : m.a)(host, opts))
+    .catch((e) => { console.error(e); return pinMove(host, opts); });
+  return { covered: made.then((c) => c.covered), release: () => made.then((c) => c.release()) };
+}
+
 export function moveCurtain(host, style, opts = {}) {
-  const make = { pin: pinMove, steps: stepsMove, walk: walkMove, door: (h, o) => (motionVariant() === "b" ? door.b : door.a)(h, o), noren: norenMove, walkdoor: walkDoorMove }[style] || pinMove;
+  const make = { pin: pinMove, steps: stepsMove, walk: walkMove, door: doorMove, noren: norenMove, walkdoor: walkDoorMove }[style] || pinMove;
   return make(host, opts);
 }
 

@@ -5,7 +5,6 @@ import { el, sleep, nextFrame } from "./util.js";
 import { SE } from "./audio.js";
 import { W, H, COLOR, EASE, reducedMotion, svg, move, holdKeys } from "./transition-kit.js";
 import { moveCurtain, moveStyle } from "./transition-moves.js";
-import { dawnWeather } from "../motions/dawn-weather.js";
 
 let serial = 0;
 const STYLES = ["diagonal", "smoke", "iris"];
@@ -119,7 +118,11 @@ export async function nightToMorning(host, mid) {
     const card = el("div.tr-dawn-card", { dataset: { test: "dawn-card" } }, [el("div.tr-dawn-day", [el("small", { text: "DAY" }), dayFlip]), sub]);
     if (info.sick) node.classList.add("sick");
     // その日の天気（晴れ・くもり・雨。motions/dawn-weather.js）。熱っぽい朝は出さない
-    wx = info.sick ? null : dawnWeather(node, info.weather ?? (info.rain ? "rain" : null), { reduced });
+    const weather = info.sick ? null : info.weather ?? (info.rain ? "rain" : null);
+    if (weather) {
+      const { dawnWeather } = await import("../motions/dawn-weather.js").catch(() => ({}));
+      wx = dawnWeather?.(node, weather, { reduced }) || null;
+    }
     if (wx?.badge) card.append(wx.badge);
     node.append(card);
     if (reduced) {

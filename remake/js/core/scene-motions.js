@@ -6,46 +6,54 @@ import { state } from "./state.js";
 import { DB } from "./data.js";
 import { reducedMotion } from "./transition-kit.js";
 import { motionVariant } from "./mg-kit.js";
-import * as cheki from "../motions/cheki.js";
-import * as tarot from "../motions/tarot.js";
-import * as gift from "../motions/gift.js";
-import * as shift from "../motions/shift.js";
-import * as shark from "../motions/shark.js";
-import * as sketch from "../motions/sketch.js";
+
+// 場面のファイルは使うときに読む（一つの場面の不具合がほかの場面やゲームの起動を止めないように）
+const cheki = () => import("../motions/cheki.js");
+const tarot = () => import("../motions/tarot.js");
+const gift = () => import("../motions/gift.js");
+const shift = () => import("../motions/shift.js");
+const shark = () => import("../motions/shark.js");
+const sketch = () => import("../motions/sketch.js");
 
 const skipMotion = () => reducedMotion() || document.body.classList.contains("vn-skip");
-const variant = (mod) => (motionVariant() === "b" ? mod.b : mod.a);
+/** 今のパターンの関数。読めなかったときは null（演出を省いて先へ進む） */
+const variant = async (load) => {
+  const mod = await load().catch((e) => { console.error(e); return null; });
+  return mod && (motionVariant() === "b" ? mod.b : mod.a);
+};
 
 /** placeCg(): 写真が仕上がった瞬間に会話のCGを同じ位置へ置く（省いたときは会話側がふつうに置く） */
 export async function chekiShot(url, placeCg = null) {
-  if (skipMotion() || !url) return;
-  await variant(cheki)(url, placeCg);
+  const run = skipMotion() || !url ? null : await variant(cheki);
+  if (run) await run(url, placeCg);
 }
 
 export async function tarotFlip(charId = state?.fortune?.char) {
-  if (skipMotion()) return;
-  await variant(tarot)(charId);
+  const run = skipMotion() ? null : await variant(tarot);
+  if (run) await run(charId);
 }
 
 export async function giftOpen(giftId) {
   const gear = DB.equipById?.[giftId];
-  if (skipMotion() || !gear) return;
-  await variant(gift)(gear);
+  const run = skipMotion() || !gear ? null : await variant(gift);
+  if (run) await run(gear);
 }
 
 export async function shiftClose() {
-  if (skipMotion()) return;
-  await variant(shift)();
+  const run = skipMotion() ? null : await variant(shift);
+  if (run) await run();
 }
 
 /** mid(): 覆っている間に次の背景へ替える */
 export async function sharkSwim(mid) {
-  if (skipMotion()) { await mid?.(); return; }
-  await variant(shark)(mid);
+  const run = skipMotion() ? null : await variant(shark);
+  if (run) await run(mid);
+  else await mid?.();
 }
 
 /** mid(): 覆っている間に背景を替える。bgUrl はその背景の絵（線画の元） */
 export async function sketchIn(mid, bgUrl) {
-  if (skipMotion() || !bgUrl) { await mid?.(); return; }
-  await variant(sketch)(mid, bgUrl);
+  const run = skipMotion() || !bgUrl ? null : await variant(sketch);
+  if (run) await run(mid, bgUrl);
+  else await mid?.();
 }
