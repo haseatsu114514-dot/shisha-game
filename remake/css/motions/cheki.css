@@ -23,3 +23,4 @@
 .mo-cheki .mo-ck-backsheet { position: absolute; border-radius: 2px; }
 .mo-cheki .mo-ck-backline { position: absolute; border-radius: 99px; background: #d9d6d2; }
 .mo-cheki .mo-ck-loupe { position: absolute; border-radius: 50%; overflow: hidden; box-shadow: 0 18px 40px #0005; }
+.mo-cheki .mo-ck-loupe > .mo-ck-film { will-change: transform; }

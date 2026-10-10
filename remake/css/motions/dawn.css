@@ -1,2 +1,8 @@
-/* 就寝→翌朝の天気（DAYカード）（remake/js/core/transitions.js の nightToMorning・motions/dawn-weather.js）。a は SVG だけで描くので、ここは b と天気で使う */
-.tr-dawn-weather { margin-top: 6px; padding: 4px 18px; border: 2px solid #dcd1f4; border-radius: 999px; font-size: 22px; font-weight: 700; letter-spacing: 0.3em; color: #dcd1f4; }
+/* 就寝→翌朝の天気（remake/js/core/transitions.js の nightToMorning・motions/dawn-weather.js）。晴れ・くもり・雨 */
+.tr-dawn-fx { position: absolute; inset: 0; pointer-events: none; }
+.tr-dawn-weather { display: flex; align-items: center; gap: 8px; margin-top: 10px; padding: 5px 16px 5px 12px; border: 2px solid #dcd1f4; border-radius: 999px; background: #34246ad9; font-size: 22px; font-weight: 700; letter-spacing: 0.3em; color: #dcd1f4; }
+.tr-dawn-weather span { margin-right: -0.3em; padding-right: 4px; }
+.tr-dawn-icon { display: block; width: 34px; height: 34px; overflow: visible; flex: none; }
+/* 朝のDAYカード（ui.dayCard）の天気。文字の色に合わせた1色のアイコン */
+.dc-weather { display: inline-flex; align-items: center; gap: 6px; margin-left: 1.2em; vertical-align: -5px; }
+.dc-weather .tr-dawn-icon { width: 26px; height: 26px; }

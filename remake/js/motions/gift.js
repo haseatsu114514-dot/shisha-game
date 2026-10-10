@@ -36,15 +36,24 @@ function bowlArt(w = BOWL_W) {
   return { node, sheen, w, h };
 }
 
+/** 絵を先に読んでおく（出てくる瞬間に欠けないように）。読めなくても長くは待たない */
+async function loadBowl() {
+  const url = makingUrl(BOWL);
+  if (!url) return;
+  const img = new Image();
+  img.src = url;
+  await Promise.race([img.decode().catch(() => {}), sleep(1500)]);
+}
+
 /** 光の帯がハガルの上を斜めに一度走る */
 const glint = (sheen, delay = 0) => move(sheen, [{ transform: "translateX(-160%) skewX(-20deg)" }, { transform: "translateX(420%) skewX(-20deg)" }], 820, { easing: E.inOut, delay });
 
 /** 香りの煙: 口から細い線が揺れながら上り、根元から消える（トリムパス） */
-function aroma(root, x, y, color, { n = 3, delay = 0, spread = 150 } = {}) {
+function aroma(root, x, y, color, { n = 3, delay = 0, spread = 150, h = 1 } = {}) {
   for (let i = 0; i < n; i++) {
     const sx = x + (i - (n - 1) / 2) * (spread / Math.max(1, n - 1)) + (Math.random() - 0.5) * 20;
     const s = i % 2 ? 1 : -1;
-    const d = `M ${sx} ${y} c ${18 * s} -40, ${-28 * s} -62, ${-4 * s} -104 s ${30 * s} -58, ${4 * s} -112 s ${-22 * s} -40, ${-6 * s} -70`;
+    const d = `M ${sx} ${y} c ${18 * s} ${-40 * h}, ${-28 * s} ${-62 * h}, ${-4 * s} ${-104 * h} s ${30 * s} ${-58 * h}, ${4 * s} ${-112 * h} s ${-22 * s} ${-40 * h}, ${-6 * s} ${-70 * h}`;
     const wisp = svg("path", { d, fill: "none", stroke: color, "stroke-width": 6, "stroke-linecap": "round", pathLength: 1, "stroke-dasharray": "0.42 1", "stroke-dashoffset": 0.42, opacity: 0.9 });
     root.append(wisp);
     move(wisp, [
@@ -67,7 +76,7 @@ function caption(gear, cls, sub, main) {
     await sleep(delay);
     move(giver, [{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "none" }], 360, { easing: E.out });
     lines.forEach((l, i) => move(l, [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], 420, { easing: E.out, delay: 80 + i * 40 }));
-    await playKinetic(title, { delay: 120, step: 24 });
+    await playKinetic(title, { delay: 100, step: 18 });
   }
   /** 文字が上へ抜けて消える */
   function hide() {
@@ -97,6 +106,7 @@ export async function a(gear) {
   const ribbon = giverColor(gear.gift?.from) || P.main;
   const smoke = pick({ c: flavorColor(gear.gift?.flavor) }, { c: P.light }).c;
   const cx = W / 2, cy = 300; // ハガルの中心
+  await loadBowl();
   await stagePlay("gift", async (node) => {
     // 背景・光・箱・ハガル・前面のはじけ・文字の順に重ねる
     const back = backdrop(P.bg);
@@ -132,7 +142,7 @@ export async function a(gear) {
     move(knot, [{ scale: "1" }, { scale: "0" }], 200, { easing: E.in });
     pack.querySelectorAll(".mo-gift-band.v").forEach((b) => move(b, [{ transform: "scaleY(1)" }, { transform: "scaleY(0)" }], 260, { easing: E.in, delay: 100 }));
     pack.querySelectorAll(".mo-gift-band.h").forEach((b) => move(b, [{ transform: "scaleX(1)" }, { transform: "scaleX(0)" }], 260, { easing: E.in, delay: 140 }));
-    await sleep(300);
+    await sleep(200);
     // 3. ふたが跳ね、光の柱が立ち、ハガルが上がる。箱は下へ抜けて、ハガルに重ならない
     SE.puka();
     move(lid, [{ transform: "translate(0,0) rotate(0deg)", opacity: 1 }, { transform: "translate(210px,-330px) rotate(38deg)", opacity: 0 }], 560, { easing: E.out });
@@ -150,10 +160,11 @@ export async function a(gear) {
     aroma(smokeArt, cx, cy - 90, smoke, { n: 3, delay: 80, spread: 170 });
     aroma(smokeArt, cx + 20, cy - 96, smoke, { n: 2, delay: 900, spread: 120 });
     [[-268, -70, 18], [262, -96, 14], [-170, -170, 12], [210, 30, 12]].forEach(([dx, dy, s], i) => twinkle(fx, cx + dx, cy + dy, { color: P.light, size: s, delay: 200 + i * 160 }));
-    await cap.show(60);
-    await sleep(1050);
+    await cap.show(0);
+    await sleep(720);
     // 5. 退場: 文字が抜け、光がしぼみ、ハガルが点になって背景が開く
     cap.hide();
+    move(smokeArt, [{ opacity: 1 }, { opacity: 0 }], 300);
     move(cone, [{ opacity: 1 }, { opacity: 0 }], 240);
     move(rays, [{ opacity: 1, transform: "translate(-50%,-50%) scale(1) rotate(44deg)" }, { opacity: 0, transform: "translate(-50%,-50%) scale(0.5) rotate(60deg)" }], 420, { easing: E.in });
     await finish(iris, hero, fx, cx, cy, P);
@@ -199,6 +210,7 @@ export async function b(gear) {
   const smoke = pick({ c: flavorColor(gear.gift?.flavor) }, { c: P.light }).c;
   const dark = motionIsLight(P) ? P.ink : P.white;
   const cx = W / 2, cy = 320; // ハガルの中心
+  await loadBowl();
   const inner = `radial-gradient(circle, ${shade(P.cloth, 0.62)} 22%, transparent 24%) 0 0 / 26px 26px, ${shade(P.cloth, 0.42)}`;
   const outer = `radial-gradient(circle, ${shade(P.cloth, 0.3)} 20%, transparent 22%) 0 0 / 26px 26px, radial-gradient(circle, ${shade(P.cloth, 0.3)} 20%, transparent 22%) 13px 13px / 26px 26px, ${P.cloth}`;
   await stagePlay("gift", async (node) => {
@@ -222,7 +234,7 @@ export async function b(gear) {
     node.append(iris, scene, hero, smokeArt, fx, cap.box);
     move(back, [{ opacity: 0 }, { opacity: 1 }], 260);
     // 1. 包みが回りながら飛び込んで止まる
-    await move(tilt, [{ transform: "translateY(60px) scale(0.2) rotate(-140deg)" }, { transform: "translateY(0) scale(1) rotate(0deg)" }], 560, { easing: E.back });
+    await move(tilt, [{ transform: "translateY(60px) scale(0.2) rotate(-140deg)" }, { transform: "translateY(0) scale(1) rotate(0deg)" }], 480, { easing: E.back });
     SE.pugo();
     ring(fx, cx, 360, { r: 260, color: P.light, width: 6, dur: 520 });
     // 2. 結び目の耳が引っぱられて左右へ抜け、結び目がはじける
@@ -231,10 +243,10 @@ export async function b(gear) {
     ears.forEach((e, i) => move(e, [{ translate: "0 0", rotate: "0deg", opacity: 1 }, { translate: `${i ? 220 : -220}px -120px`, rotate: `${i ? 200 : -200}deg`, opacity: 0, scale: "0.5" }], 460, { easing: E.out }));
     move(knot.querySelector(".mo-fu-tie"), [{ scale: "1" }, { scale: "1.4", offset: 0.3 }, { scale: "0" }], 280, { easing: E.in });
     burst(fx, cx, 360, { n: 8, r0: 40, r1: 110, color: P.light, width: 5, delay: 60 });
-    await sleep(160);
+    await sleep(110);
     // 3. 四隅が一枚ずつ手前へめくれて開く（2.5D）
     SE.whoosh();
-    await Promise.all(flaps.map((f, i) => move(f.node, [{ transform: f.shut }, { transform: f.half, offset: 0.45 }, { transform: f.open }], 520, { easing: "cubic-bezier(.3,.1,.3,1)", delay: i * 90 })));
+    await Promise.all(flaps.map((f, i) => move(f.node, [{ transform: f.shut }, { transform: f.half, offset: 0.45 }, { transform: f.open }], 460, { easing: "cubic-bezier(.3,.1,.3,1)", delay: i * 70 })));
     // 4. 布が奥へ倒れて床になり、真ん中からハガルが立ち上がる
     move(tilt, [{ transform: "translateY(0) rotateX(0deg) scale(1)" }, { transform: "translateY(178px) rotateX(64deg) scale(1.16)" }], 640, { easing: E.inOut });
     await sleep(300);
@@ -243,16 +255,19 @@ export async function b(gear) {
     ring(fx, cx, cy, { r: 320, color: dark, width: 6, delay: 60 });
     move(rays, [{ opacity: 0, transform: "translate(-50%,-50%) scale(0.3) rotate(0deg)" }, { opacity: 1, transform: "translate(-50%,-50%) scale(1) rotate(12deg)", offset: 0.25 }, { opacity: 1, transform: "translate(-50%,-50%) scale(1) rotate(40deg)" }], 3000, { easing: "cubic-bezier(.2,.6,.4,1)" });
     move(shadow, [{ opacity: 0, transform: "scale(0.2)" }, { opacity: 1, transform: "scale(1)" }], 500, { easing: E.out, delay: 120 });
-    await move(hero, [{ transform: "translate(0,200px) scale(0) rotate(-8deg)", opacity: 1 }, { transform: "translate(0,0) scale(1) rotate(0deg)", opacity: 1 }], 620, { easing: E.back });
-    // 5. 見せ場: 光の帯・香りの煙・きらめき・文字（上に置いて、ハガルに重ねない）
+    const rise = move(hero, [{ transform: "translate(0,200px) scale(0) rotate(-8deg)", opacity: 1 }, { transform: "translate(0,0) scale(1) rotate(0deg)", opacity: 1 }], 620, { easing: E.back });
+    const named = cap.show(320); // 文字はハガルが立ちきる前から出し始める
+    await rise;
+    // 5. 見せ場: 光の帯・香りの煙（上の文字に届かない低さ）・きらめき・文字（上に置いて、ハガルに重ねない）
     glint(bowl.sheen, 60);
-    aroma(smokeArt, cx, cy - 86, smoke, { n: 3, delay: 0, spread: 150 });
-    aroma(smokeArt, cx - 16, cy - 92, smoke, { n: 2, delay: 820, spread: 110 });
+    aroma(smokeArt, cx, cy - 86, smoke, { n: 3, delay: 0, spread: 150, h: 0.5 });
+    aroma(smokeArt, cx - 16, cy - 92, smoke, { n: 2, delay: 820, spread: 110, h: 0.5 });
     [[-250, -60, 16], [236, -90, 13], [-150, -150, 11], [190, 40, 12]].forEach(([dx, dy, s], i) => twinkle(fx, cx + dx, cy + dy, { color: P.light, size: s, delay: 140 + i * 150 }));
-    await cap.show(0);
-    await sleep(1000);
+    await named;
+    await sleep(700);
     // 6. 退場: 文字が抜け、布が奥へ倒れきり、ハガルが点になって背景が開く
     cap.hide();
+    move(smokeArt, [{ opacity: 1 }, { opacity: 0 }], 300);
     move(tilt, [{ transform: "translateY(178px) rotateX(64deg) scale(1.16)", opacity: 1 }, { transform: "translateY(240px) rotateX(90deg) scale(1.16)", opacity: 0 }], 420, { easing: E.in });
     move(rays, [{ opacity: 1, transform: "translate(-50%,-50%) scale(1) rotate(40deg)" }, { opacity: 0, transform: "translate(-50%,-50%) scale(0.5) rotate(56deg)" }], 420, { easing: E.in });
     await finish(iris, hero, fx, cx, cy, { ...P, white: dark });

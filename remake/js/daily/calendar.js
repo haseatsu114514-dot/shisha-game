@@ -73,7 +73,7 @@ async function morning() {
   playBgm("kansetsu_shomei_to_black_coffee");
   // 就寝から続けて来た朝は、夜明けの幕でDAYを見せ終えている（見せた印はここで使い切る）
   if (dawnShownDay === state.day) dawnShownDay = null;
-  else await dayCard(`DAY ${state.day}`, `SMOKE CROWN CUP まで あと${daysLeft()}日${isRainy() ? "　☂ 雨" : ""}`);
+  else await dayCard(`DAY ${state.day}`, `SMOKE CROWN CUP まで あと${daysLeft()}日`, { weather: weatherOf() });
   // LIME は通知だけ（中身は好きなときにアプリを開いて読む）
   const n = deliverMorning({ fixedNight: (d) => !!chapterDef.nightEvents[d] });
   if (n) pushNotice(n, { onOpen: (sender) => {

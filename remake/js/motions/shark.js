@@ -1,85 +1,243 @@
 // サメちゃんとの夜道の出会い（kafuka.js の playKafukaEncounter）。覆っている間に mid() で SHISHARK の店先へ替える。
 // a／b の2パターン（?movar=b）。配色は紫1色／場面ごとの色（?mopal=free・core/mg-kit.js の pick）。SKIPと動きを減らす設定は core/scene-motions.js で省く。
-import { el } from "../core/util.js";
+import { el, sleep } from "../core/util.js";
 import { SE } from "../core/audio.js";
 import { W, H, svg, stageSvg, move } from "../core/transition-kit.js";
-import { MG_EASE as E, pick, ring, confetti } from "../core/mg-kit.js";
+import { MG_EASE as E, pick, burst, ring, twinkle } from "../core/mg-kit.js";
 import { stagePlay } from "./stage.js";
 
-// ---------------------------------------------------------------- a: サメちゃん: 3枚の波が重なって満ち、サメが横切り、波が引いて次の場面
+/** サメちゃんの色（SHISHARK の看板の青・歯ぐきの桃色）。紫1色は濃淡だけで同じ役割を描く */
+const SHARK = { skin: "#3d82e6", shade: "#2457ad", belly: "#eaf6ff", bellyShade: "#bcdcf7", gum: "#ff8fb0", tooth: "#ffffff", throat: "#5c1d47", line: "#d6f3ff" };
+const MONO_SHARK = { skin: "#6b4fb0", shade: "#4f3596", belly: "#ded3f7", bellyShade: "#b9a8e6", gum: "#9a82d8", tooth: "#f7f3ff", throat: "#150e30", line: "#ded3f7" };
 
-const SHARK = { bg: "#0b3c5d", deep: "#062437", main: "#22b8cf", mid: "#7fe3f0", light: "#e8fbff", white: "#ffffff", fish: "#0a2233" };
+/** 丸みのある三角の歯（根元が y=0、先が +y へ len） */
+const tooth = (hw, len, color) => svg("path", {
+  d: `M ${-hw} 0 Q ${-hw * 0.82} ${len * 0.55} 0 ${len} Q ${hw * 0.82} ${len * 0.55} ${hw} 0 Z`,
+  fill: color, stroke: color, "stroke-width": 6, "stroke-linejoin": "round",
+});
 
-function sharkShape(color) {
-  const tail = svg("path", { d: "M -150 0 L -230 -62 Q -214 0 -230 62 Z", fill: color });
-  const body = svg("path", { d: "M 170 6 C 120 -46, 10 -62, -90 -34 C -130 -22, -150 -8, -158 0 C -150 8, -128 22, -90 30 C 10 52, 120 44, 170 6 Z", fill: color });
-  const fin = svg("path", { d: "M -10 -52 L 34 -120 L 46 -46 Z", fill: color });
-  const flip = svg("path", { d: "M 30 30 L 0 82 L 70 34 Z", fill: color });
-  const eye = svg("circle", { cx: 128, cy: -6, r: 5, fill: "#ffffff" });
-  return { g: svg("g", {}, [tail, flip, body, fin, eye]), tail };
+// ---------------------------------------------------------------- a: がぶり: 上下のあごがのぞき、ひと呼吸開いてから閉じる。もぐもぐの間に店先へ替え、大きく開いて去る
+
+const GAP = 152; // 歯の間隔
+
+/** 上あご（歯ぐきの縁が y=0、上へ画面の外まで）。lower は下あご用: 白いおなかの色で、歯を半分ずらす（上下は呼び出し側で返す） */
+function jaw(P, lower) {
+  const xs = [];
+  for (let x = -GAP + (lower ? GAP / 2 : 0); x < W + GAP; x += GAP) xs.push(x);
+  const teeth = xs.map((x) => svg("g", { transform: `translate(${x} -14)` }, [tooth(48, 96, P.tooth)]));
+  const [skin, shade] = lower ? [P.belly, P.bellyShade] : [P.skin, P.shade];
+  // 歯ぐき: 歯の上で丸くふくらむ縁
+  let gum = `M ${xs[0] - GAP / 2} -46 L ${xs[0] - GAP / 2} -4`;
+  for (const x of xs) gum += ` Q ${x} 26 ${x + GAP / 2} -4`;
+  gum += ` L ${xs[xs.length - 1] + GAP / 2} -46 Z`;
+  return svg("g", {}, [
+    svg("rect", { x: -GAP * 2, y: -H - 200, width: W + GAP * 4, height: H + 160, fill: skin }),
+    svg("rect", { x: -GAP * 2, y: -62, width: W + GAP * 4, height: 22, fill: shade }),
+    ...teeth,
+    svg("path", { d: gum, fill: P.gum }),
+    svg("line", { x1: -GAP * 2, y1: -76, x2: W + GAP * 2, y2: -76, stroke: lower ? shade : P.line, "stroke-width": 4, "stroke-dasharray": "2 18", "stroke-linecap": "round", opacity: 0.6 }),
+  ]);
 }
 
-/** mid(): 画面を覆っている間に次の背景（SHISHARK の店先）へ替える */
 export async function a(mid) {
-  const P = pick(SHARK, { fish: "#120a2a" });
+  const P = pick(SHARK, MONO_SHARK);
   await stagePlay("shark", async (node) => {
-    const wave = (amp) => {
-      let d = `M -80 0 `;
-      for (let x = -80; x < W + 160; x += 160) d += `q 40 ${-amp} 80 0 t 80 0 `;
-      return d + `L ${W + 160} ${H + 1000} L -80 ${H + 1000} Z`;
-    };
-    const layers = [[P.mid, 26], [P.main, 20], [P.bg, 16]].map(([fill, amp]) => {
-      const g = svg("g", {}, [svg("path", { d: wave(amp), fill })]);
-      g.style.transform = `translateY(${H + 60}px)`;
-      return g;
-    });
-    const bubbles = svg("g");
+    const cy = H / 2, shut = 34; // 閉じたときの歯ぐきの縁（中心から上下に）
+    // 閉じている間だけ、歯のすき間を口の中の色でふさぐ
+    const seal = svg("rect", { x: -80, y: cy - 70, width: W + 160, height: 140, fill: P.throat, opacity: 0 });
+    const top = svg("g", {}, [jaw(P, false)]);
+    const bottom = svg("g", {}, [svg("g", { transform: "scale(1 -1)" }, [jaw(P, true)])]);
     const fx = svg("g");
-    const { g: shark, tail } = sharkShape(P.fish);
-    const sharkPos = svg("g", { transform: `translate(-320 ${H / 2})` }, [shark]);
-    const trail = svg("g", { stroke: P.light, "stroke-width": 4, "stroke-linecap": "round", opacity: 0.8 });
-    const art = stageSvg([...layers, bubbles, trail, sharkPos, fx]);
-    const caustics = el("div.mo-caustics", { style: { "--c": P.light } });
-    node.append(art, caustics);
-    const sway = layers.map((g, i) => g.firstChild.animate([{ transform: "translateX(0)" }, { transform: "translateX(-160px)" }], { duration: 800 + i * 260, iterations: Infinity }));
-    // 1. 3枚の波が少しずつずれて満ちる
-    SE.bubbling();
-    await Promise.all(layers.map((g, i) => move(g, [{ transform: `translateY(${H + 60}px)` }, { transform: "translateY(-40px)" }], 560, { easing: E.in, delay: i * 90 })));
-    move(caustics, [{ opacity: 0 }, { opacity: 1 }], 300);
-    if (mid) await mid();
-    for (let i = 0; i < 24; i++) {
-      const r = 4 + Math.random() * 13;
-      const b = svg("circle", { cx: Math.random() * W, cy: H + 20, r, fill: "none", stroke: P.light, "stroke-width": 2.5, opacity: 0.85 });
-      bubbles.append(b);
-      b.animate([{ transform: "translate(0,0)" }, { transform: `translate(${(Math.random() - 0.5) * 60}px, ${-(H * (0.7 + Math.random() * 0.6))}px)` }], { duration: 1200 + Math.random() * 600, delay: Math.random() * 500, easing: "ease-out", fill: "both" });
-    }
-    // 2. サメが尾を振って横切る（後ろに流れる線）
-    tail.style.transformBox = "fill-box";
-    tail.style.transformOrigin = "right center";
-    const wag = tail.animate([{ transform: "rotate(-15deg)" }, { transform: "rotate(15deg)" }], { duration: 200, iterations: Infinity, direction: "alternate" });
-    const swim = move(sharkPos, [{ transform: `translate(-320px, ${H / 2 + 24}px)` }, { transform: `translate(${W / 2}px, ${H / 2 - 12}px)`, offset: 0.55 }, { transform: `translate(${W + 340}px, ${H / 2 + 10}px)` }], 1150, { easing: "cubic-bezier(.3,.1,.6,1)" });
-    for (let i = 0; i < 4; i++) {
-      setTimeout(() => {
-        const x = 200 + i * 260, y = H / 2 - 30 + (i % 2) * 60;
-        const line = svg("line", { x1: x, y1: y, x2: x - 180, y2: y, pathLength: 1, "stroke-dasharray": "1 1", "stroke-dashoffset": 1 });
-        trail.append(line);
-        move(line, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0, offset: 0.4 }, { strokeDashoffset: -1 }], 420, { easing: E.out }).then(() => line.remove());
-      }, 120 + i * 200);
-    }
-    setTimeout(() => ring(fx, W / 2 + 120, H / 2 - 10, { r: 120, color: P.light, width: 6 }), 640);
-    await swim;
-    wag.cancel();
-    // 3. 波が手前から順に引き、しぶきが上がる
-    SE.bubbling();
-    move(caustics, [{ opacity: 1 }, { opacity: 0 }], 260);
-    [180, 520, 860, 1120].forEach((x) => confetti(fx, x, 40, { n: 5, colors: [P.light, P.mid], spread: 140 }));
-    await Promise.all([...layers].reverse().map((g, i) => move(g, [{ transform: "translateY(-40px)" }, { transform: `translateY(${H + 80}px)` }], 520, { easing: E.in, delay: i * 90 })));
-    sway.forEach((a) => a.cancel());
+    const art = stageSvg([seal, top, bottom, fx]);
+    const chars = [..."がぶっ！"].map((ch) => el("span.mo-gabu-ch", { text: ch }));
+    const word = el("div.mo-gabu", { style: { color: P.tooth, "--o": P.shade } }, chars);
+    node.append(art, word);
+    // 上下のあごの縁の位置を記録しながら動かす
+    const pos = { up: -150, low: H + 150 };
+    const place = (y) => ({ transform: `translateY(${y}px)` });
+    top.style.transform = `translateY(${pos.up}px)`;
+    bottom.style.transform = `translateY(${pos.low}px)`;
+    const bite = (up, low, ms, easing) => {
+      const from = { ...pos };
+      Object.assign(pos, { up, low });
+      return Promise.all([
+        move(top, [place(from.up), place(up)], ms, { easing }),
+        move(bottom, [place(from.low), place(low)], ms, { easing }),
+      ]);
+    };
+    // 1. 上下からあごがのぞく
+    SE.whoosh();
+    await bite(150, H - 150, 420, E.out);
+    // 2. ひと呼吸、もう少し大きく開く（ため）
+    await bite(96, H - 96, 260, "cubic-bezier(.25,.1,.25,1)");
+    // 3. がぶっと閉じる。揺れ・放射線・文字
+    await bite(cy - shut, cy + shut, 150, E.in);
+    seal.setAttribute("opacity", 1);
+    SE.hit();
+    SE.punch();
+    move(art, [{ transform: "translate(0,0)" }, { transform: "translate(12px,-8px)" }, { transform: "translate(-9px,6px)" }, { transform: "translate(6px,-3px)" }, { transform: "translate(-3px,2px)" }, { transform: "translate(0,0)" }], 340, { easing: "linear" });
+    burst(fx, W / 2, cy, { n: 12, r0: 110, r1: 230, color: P.line, width: 7, dur: 520 });
+    ring(fx, W / 2, cy, { r: 260, color: P.line, width: 8 });
+    chars.forEach((c, i) => move(c, [
+      { transform: "translateY(50px) scale(0) rotate(-24deg)" },
+      { transform: `translateY(-6px) scale(1.18) rotate(${i % 2 ? 8 : -8}deg)`, offset: 0.6 },
+      { transform: "translateY(0) scale(1) rotate(0deg)" },
+    ], 380, { easing: E.out, delay: 40 + i * 55 }));
+    await bite(cy - shut + 8, cy + shut - 8, 80, E.out);
+    await bite(cy - shut, cy + shut, 120, E.out);
+    // 4. 覆っている間: もぐもぐしながら店先へ替える
+    const chew = async () => {
+      await sleep(260);
+      for (let i = 0; i < 2; i++) {
+        await bite(cy - shut - 22, cy + shut + 22, 150, E.out);
+        await bite(cy - shut, cy + shut, 120, E.in);
+      }
+    };
+    await Promise.all([mid?.(), chew()]);
+    // 5. 大きく開いて新しい場面を見せ（行きすぎて戻る）、上下へ去る
+    move(word, [{ opacity: 1, transform: "translateX(-50%) rotate(-6deg) scale(1)" }, { opacity: 0, transform: "translateX(-50%) rotate(-6deg) scale(0.6)" }], 200, { easing: E.in });
+    seal.setAttribute("opacity", 0);
+    SE.whoosh();
+    ring(fx, W / 2, cy, { r: 360, color: P.line, width: 6, dur: 700 });
+    await bite(70, H - 70, 560, E.back);
+    twinkle(fx, 300, 210, { size: 22, color: P.line, dur: 560 });
+    twinkle(fx, 990, 520, { size: 18, color: P.line, delay: 60, dur: 540 });
+    await sleep(240);
+    await bite(-160, H + 160, 380, E.in);
   }, { cover: true });
 }
 
-// ---------------------------------------------------------------- b: （CI109 で作る別パターン。できるまでは a と同じ）
+// ---------------------------------------------------------------- b: 逆に開く: 背びれが横切って画面を塗り、サメちゃんの顔に。口が細い線から大きく開いて店先が見える
+
+let serial = 0;
+const MW = 440, HU = 120, HL = 230; // 口の半分の幅・上唇と下唇のふくらみ（開ききったとき）
+const ZOOM = 7; // 口の中へ寄りきるときの倍率
+
+/** 2次ベジェ上の点と向き（度） */
+function onCurve(t, p0, c, p2) {
+  const u = 1 - t;
+  const x = u * u * p0[0] + 2 * t * u * c[0] + t * t * p2[0];
+  const y = u * u * p0[1] + 2 * t * u * c[1] + t * t * p2[1];
+  const dx = 2 * u * (c[0] - p0[0]) + 2 * t * (p2[0] - c[0]);
+  const dy = 2 * u * (c[1] - p0[1]) + 2 * t * (p2[1] - c[1]);
+  return [x, y, (Math.atan2(dy, dx) * 180) / Math.PI];
+}
+/** ms の間、毎フレーム f(イージングした進み) を呼ぶ */
+function tween(ms, ease, f) {
+  return new Promise((done) => {
+    const t0 = performance.now();
+    const tick = (now) => {
+      const p = Math.min(1, (now - t0) / ms);
+      f(ease(p));
+      if (p < 1) requestAnimationFrame(tick);
+      else done();
+    };
+    requestAnimationFrame(tick);
+  });
+}
+const backOut = (p) => 1 + 2.4 * (p - 1) ** 3 + 1.4 * (p - 1) ** 2;
 
 export async function b(mid) {
-  return a(mid);
+  const P = pick(SHARK, MONO_SHARK);
+  await stagePlay("shark", async (node) => {
+    const id = `mo-shark-${++serial}`;
+    const cy = H / 2;
+    // 1. 背びれが横切り、その後ろの楔形の面が画面を塗る（真ん中に切り込みの線）
+    const reach = 560;
+    const wake = svg("path", { d: `M ${-W - reach - 240} -80 L ${-reach} -80 L 0 ${cy} L ${-reach} ${H + 80} L ${-W - reach - 240} ${H + 80} Z`, fill: P.skin });
+    const cut = svg("line", { x1: -W - reach - 240, y1: cy, x2: -40, y2: cy, stroke: P.throat, "stroke-width": 12, "stroke-linecap": "round" });
+    const fin = svg("path", { d: "M 96 2 C 64 -96, -8 -172, -100 -210 C -74 -136, -92 -58, -166 2 Z", fill: P.line });
+    const sweep = svg("g", {}, [wake, cut, svg("g", { transform: `translate(0 ${cy})` }, [fin])]);
+    sweep.style.transform = "translateX(-90px)";
+    const streaks = svg("g", { stroke: P.line, "stroke-width": 5, "stroke-linecap": "round", opacity: 0.85 });
+    // 顔（口の中心が原点。寄るときの軸は口の中ほど）
+    const box = { x: -1000, y: -700, width: 2000, height: 1400 };
+    const hole = svg("path", { d: "", fill: "#000" });
+    const field = svg("rect", { ...box, fill: P.skin, mask: `url(#${id})` });
+    const teethU = Array.from({ length: 6 }, () => svg("g", {}, [tooth(26, 58, P.tooth)]));
+    const teethL = Array.from({ length: 7 }, () => svg("g", {}, [tooth(24, 54, P.tooth)]));
+    const gum = svg("path", { d: "", fill: "none", stroke: P.gum, "stroke-width": 26, "stroke-linejoin": "round", opacity: 0 });
+    const slit = svg("line", { x1: -MW, y1: 0, x2: MW, y2: 0, stroke: P.throat, "stroke-width": 12, "stroke-linecap": "round", class: "tr-scale" });
+    const eye = (x) => {
+      const dot = svg("g", {}, [svg("circle", { r: 36, fill: P.throat }), svg("circle", { cx: 12, cy: -13, r: 12, fill: P.tooth })]);
+      const smile = svg("path", { d: "M -34 10 Q 0 -34 34 10", fill: "none", stroke: P.throat, "stroke-width": 11, "stroke-linecap": "round", opacity: 0 });
+      const g = svg("g", { class: "tr-scale" }, [dot, smile]);
+      g.style.transform = "scale(0)";
+      return { g, dot, smile, wrap: svg("g", { transform: `translate(${x} -215)` }, [g]) };
+    };
+    const eyes = [eye(-210), eye(210)];
+    const blush = [-330, 330].map((x) => {
+      const c = svg("ellipse", { cx: x, cy: -104, rx: 36, ry: 15, fill: P.gum, class: "tr-scale" });
+      c.style.transform = "scale(0)";
+      return c;
+    });
+    const face = svg("g", { transform: `translate(${W / 2} ${cy + 55}) scale(1) translate(0 -55)`, opacity: 0 }, [
+      svg("defs", {}, [svg("mask", { id, maskUnits: "userSpaceOnUse", ...box }, [svg("rect", { ...box, fill: "#fff" }), hole])]),
+      field, ...teethU, ...teethL, gum, slit, ...eyes.map((e) => e.wrap), ...blush,
+    ]);
+    const fx = svg("g");
+    node.append(stageSvg([face, sweep, streaks, fx]));
+    /** 口の開き o（0＝細い線、1＝開ききり）と、寄りの倍率 s で描き直す */
+    const draw = (o, s = 1) => {
+      const hu = HU * o, hl = HL * o;
+      const d = `M ${-MW} 0 Q 0 ${-2 * hu} ${MW} 0 Q 0 ${2 * hl} ${-MW} 0 Z`;
+      hole.setAttribute("d", d);
+      gum.setAttribute("d", d);
+      const k = Math.max(0, Math.min(1, o * 1.6)); // 歯は口が開くにつれて生える
+      teethU.forEach((t, i) => {
+        const [x, y, r] = onCurve(0.1 + (0.8 * (i + 0.5)) / teethU.length, [-MW, 0], [0, -2 * hu], [MW, 0]);
+        t.setAttribute("transform", `translate(${x} ${y}) rotate(${r}) scale(${k})`);
+      });
+      teethL.forEach((t, i) => {
+        const [x, y, r] = onCurve(0.08 + (0.84 * (i + 0.5)) / teethL.length, [MW, 0], [0, 2 * hl], [-MW, 0]);
+        t.setAttribute("transform", `translate(${x} ${y}) rotate(${r}) scale(${k})`);
+      });
+      face.setAttribute("transform", `translate(${W / 2} ${cy + 55}) scale(${s}) translate(0 -55)`);
+    };
+    draw(0);
+    SE.whoosh();
+    [[cy - 120, 180], [cy + 110, 300], [cy - 60, 430], [cy + 170, 520]].forEach(([y, at]) => setTimeout(() => {
+      const x = 160 + at * 1.5;
+      const line = svg("line", { x1: x, y1: y, x2: x - 220, y2: y, pathLength: 1, "stroke-dasharray": "1 1", "stroke-dashoffset": 1 });
+      streaks.append(line);
+      move(line, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0, offset: 0.4 }, { strokeDashoffset: -1 }], 380, { easing: E.out }).then(() => line.remove());
+    }, at));
+    move(fin, [{ transform: "rotate(0deg)" }, { transform: "rotate(-8deg)", offset: 0.5 }, { transform: "rotate(0deg)" }], 760, { easing: "ease-in-out" });
+    await move(sweep, [{ transform: "translateX(-90px)" }, { transform: `translateX(${W + reach + 90}px)` }], 760, { easing: "cubic-bezier(.5,0,.25,1)" });
+    // 2. 覆った。切り込みの線が縮んで口になり、目とほっぺが出てまばたき（この間に店先へ替える）
+    face.setAttribute("opacity", 1);
+    sweep.remove();
+    const greet = async () => {
+      move(slit, [{ transform: "scaleX(1.6)" }, { transform: "scaleX(1)" }], 420, { easing: E.out });
+      eyes.forEach((e, i) => move(e.g, [{ transform: "scale(0)" }, { transform: "scale(1)" }], 380, { easing: E.back, delay: 140 + i * 70 }));
+      blush.forEach((c, i) => move(c, [{ transform: "scale(0)" }, { transform: "scale(1)" }], 360, { easing: E.back, delay: 260 + i * 70 }));
+      await sleep(760);
+      SE.tick();
+      await Promise.all(eyes.map((e) => move(e.g, [{ transform: "scale(1, 1)" }, { transform: "scale(1.1, 0.12)" }, { transform: "scale(1, 1)" }], 200, { easing: "ease-in-out" })));
+      await sleep(120);
+    };
+    await Promise.all([mid?.(), greet()]);
+    // 3. 口がきゅっと締まってから（ため）、細い線から大きく開く。目はにっこり
+    await move(slit, [{ transform: "scaleX(1)" }, { transform: "scaleX(0.86)" }], 140, { easing: E.out });
+    slit.remove();
+    gum.setAttribute("opacity", 1);
+    SE.punch();
+    SE.select();
+    eyes.forEach((e) => {
+      e.dot.setAttribute("opacity", 0);
+      e.smile.setAttribute("opacity", 1);
+      move(e.g, [{ transform: "scale(1.3)" }, { transform: "scale(1)" }], 320, { easing: E.back });
+    });
+    burst(fx, W / 2, cy - 160, { n: 10, r0: 300, r1: 380, color: P.line, width: 6, dur: 520 });
+    await tween(560, backOut, (o) => draw(o));
+    twinkle(fx, 270, 150, { size: 22, color: P.line });
+    twinkle(fx, 1010, 140, { size: 18, color: P.line, delay: 100 });
+    await sleep(300);
+    // 4. 口の中へ一気に寄って、顔が画面の外へ抜ける（倍率は掛け算で加速）
+    SE.whoosh();
+    await tween(560, (p) => p ** 3, (k) => draw(1, ZOOM ** k));
+    face.remove();
+    ring(fx, W / 2, cy, { r: 420, color: P.line, width: 8, dur: 520 });
+    await sleep(540);
+  }, { cover: true });
 }

@@ -1,4 +1,4 @@
 /* サメちゃん（remake/js/motions/shark.js）。a／b の2パターンの見た目。色は js の配色から変数で渡す */
-.mo-caustics { position: absolute; inset: 0; opacity: 0; pointer-events: none; mix-blend-mode: screen;
-  background: repeating-linear-gradient(105deg, color-mix(in srgb, var(--c) 12%, transparent) 0 40px, transparent 40px 120px); animation: mo-caustics 3s linear infinite; }
-@keyframes mo-caustics { to { background-position: 240px 0; } }
+/* a: がぶっ！の文字（上あごの上に出る） */
+.mo-gabu { position: absolute; left: 50%; top: 128px; transform: translateX(-50%) rotate(-6deg); display: flex; gap: 0.02em; font-size: 108px; font-weight: 900; line-height: 1; white-space: nowrap; text-shadow: 0 8px 0 var(--o); }
+.mo-gabu-ch { display: inline-block; transform: scale(0); }
