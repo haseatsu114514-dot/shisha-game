@@ -83,13 +83,15 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
-          "sha256": "acc536926a7fe897c26d5f9d2846d87fa2068b501be3046a470887dff06c2fad"
+          "sha256": "acc536926a7fe897c26d5f9d2846d87fa2068b501be3046a470887dff06c2fad",
+          "archived_original_path": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_normal.png"
         },
         {
           "image": 2,
           "role": "normal_identity_check",
           "path": "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
-          "sha256": "acc536926a7fe897c26d5f9d2846d87fa2068b501be3046a470887dff06c2fad"
+          "sha256": "acc536926a7fe897c26d5f9d2846d87fa2068b501be3046a470887dff06c2fad",
+          "archived_original_path": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_normal.png"
         },
         {
           "image": 3,
@@ -136,6 +138,19 @@
           609,
           1172
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
+        "runtime_png_sha256": "c29ed0b480b049f2dd069ff401abd7e702b0825449ed9652e1d8768772778ba1",
+        "runtime_webp": "remake/img/sprites/characters/nagumo/chr_nagumo_normal.webp",
+        "runtime_webp_sha256": "baae69ad0856f0c677a7451c4094e0e21b6a0576c4dd59a6355d5348c82d64e1",
+        "previous_runtime": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_normal.png",
+        "previous_runtime_sha256": "acc536926a7fe897c26d5f9d2846d87fa2068b501be3046a470887dff06c2fad",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -158,7 +173,8 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/nagumo/chr_nagumo_smile.png",
-          "sha256": "9a9120acd447cba05834ab35af34c8d1ae690eb9a86f54b5736b1bbf20163b5c"
+          "sha256": "9a9120acd447cba05834ab35af34c8d1ae690eb9a86f54b5736b1bbf20163b5c",
+          "archived_original_path": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_smile.png"
         },
         {
           "image": 2,
@@ -211,6 +227,19 @@
           603,
           1172
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/nagumo/chr_nagumo_smile.png",
+        "runtime_png_sha256": "e58f244b5a7695acf591f29a668ae2c412954f9fb405911120657ea8cb5f57ac",
+        "runtime_webp": "remake/img/sprites/characters/nagumo/chr_nagumo_smile.webp",
+        "runtime_webp_sha256": "ac21203384e75e481db4cc81ccf12693506217cb032a6621a8e883337a333893",
+        "previous_runtime": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_smile.png",
+        "previous_runtime_sha256": "9a9120acd447cba05834ab35af34c8d1ae690eb9a86f54b5736b1bbf20163b5c",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -233,7 +262,8 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/nagumo/chr_nagumo_serious.png",
-          "sha256": "589da38a726d6057f4536684554f9174ae7ea0890b2bd8bc87846088cea3c086"
+          "sha256": "589da38a726d6057f4536684554f9174ae7ea0890b2bd8bc87846088cea3c086",
+          "archived_original_path": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_serious.png"
         },
         {
           "image": 2,
@@ -287,6 +317,19 @@
           618,
           1171
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/nagumo/chr_nagumo_serious.png",
+        "runtime_png_sha256": "4781555c7231048915e740c6b545d4e2b8171719b6de1191cec3b418af50e082",
+        "runtime_webp": "remake/img/sprites/characters/nagumo/chr_nagumo_serious.webp",
+        "runtime_webp_sha256": "e39a63f198f33ea63720ba73a0fb50f7ac7ee28bf7e76927384a193b536d294a",
+        "previous_runtime": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_serious.png",
+        "previous_runtime_sha256": "589da38a726d6057f4536684554f9174ae7ea0890b2bd8bc87846088cea3c086",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -309,7 +352,8 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/nagumo/chr_nagumo_surprise.png",
-          "sha256": "2a980880a8426614c48d7137e877e328ff024acd742905fedcb8ca606587f661"
+          "sha256": "2a980880a8426614c48d7137e877e328ff024acd742905fedcb8ca606587f661",
+          "archived_original_path": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_surprise.png"
         },
         {
           "image": 2,
@@ -363,6 +407,19 @@
           613,
           1172
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/nagumo/chr_nagumo_surprise.png",
+        "runtime_png_sha256": "002c17ca5dbc062b350ea62901f35dc3e92b70b6d4ff68b9abdef8aeedf01a5b",
+        "runtime_webp": "remake/img/sprites/characters/nagumo/chr_nagumo_surprise.webp",
+        "runtime_webp_sha256": "73ea5c62a7a5384ee782817d77b1148661dab98aaf14ec01844b2036d319c542",
+        "previous_runtime": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_surprise.png",
+        "previous_runtime_sha256": "2a980880a8426614c48d7137e877e328ff024acd742905fedcb8ca606587f661",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -385,7 +442,8 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/nagumo/chr_nagumo_thinking.png",
-          "sha256": "eca148ad51b3d14c081eb84475e23abc9ab6d5073bdc79094086e78aba11aca4"
+          "sha256": "eca148ad51b3d14c081eb84475e23abc9ab6d5073bdc79094086e78aba11aca4",
+          "archived_original_path": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_thinking.png"
         },
         {
           "image": 2,
@@ -439,6 +497,19 @@
           620,
           1170
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/nagumo/chr_nagumo_thinking.png",
+        "runtime_png_sha256": "6d61f7990269ac94d2e417f2af890a9dff7b2ada58924c336584496b0e7cdb64",
+        "runtime_webp": "remake/img/sprites/characters/nagumo/chr_nagumo_thinking.webp",
+        "runtime_webp_sha256": "5720ee7c3586198e530d13669da30e45a83af6649b6f89862f29c08712eb5cc7",
+        "previous_runtime": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_thinking.png",
+        "previous_runtime_sha256": "eca148ad51b3d14c081eb84475e23abc9ab6d5073bdc79094086e78aba11aca4",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     }
   ],
@@ -454,5 +525,15 @@
     "mode": "delegated_production_qa",
     "owner_instruction": "いいと思います。ただ作り直すたびに色薄くなってる気がするのは気のせい？ 一旦確認もそこまでいらないからガンガン進めて",
     "received_on": "2026-10-10"
+  },
+  "integration_status": {
+    "status": "complete",
+    "checked_at_utc": "2026-10-10T06:26:32.953521+00:00",
+    "expressions": 5,
+    "browser_viewports": [
+      "1280x720",
+      "591x1280"
+    ],
+    "production_qa": "asset_sources/portraits/resolution-upgrade-20261009/production-qa.json"
   }
 }

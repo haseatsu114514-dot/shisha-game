@@ -2,7 +2,29 @@
 
 オーナー指示「画質がみんな同じでかつ身長矛盾しないようにしたい」「必要であれば後々差し替える」「生成のし直しが必要ならコーデックス用に依頼を作っておいて」。
 **デザイン・表情・ポーズ・身長は変えず、描き込みの細かさ（解像度）だけを、くっきりしているキャラにそろえる**ための依頼。
-2026-10-10に「立ち絵そろえ」を実行。最初の通常3枚への「いいと思います」と、続く「一旦確認もそこまでいらないからガンガン進めて」により、残りの検品・組み込みまで委任を受けて進めている。進捗は [progress.md](progress.md)、実行英文は各 `<id>-remaster-v2/<face>-prompt.txt`、生成原画・参照4枚のSHA256・試行履歴・原寸検品は各 `generation.json` に記録する。
+2026-10-10に「立ち絵そろえ」を実行。最初の通常3枚への「いいと思います」と、続く「一旦確認もそこまでいらないからガンガン進めて」により、残りの検品・組み込みまで委任を受け、6人34表情の制作・組み込み・PC／スマホ確認を完了した。進捗は [progress.md](progress.md)、実行英文は各 `<id>-remaster-v2/<face>-prompt.txt`、生成原画・参照4枚のSHA256・試行履歴・原寸検品は各 `generation.json` に記録した。
+
+## 制作結果と確認画像
+
+- 全34枚の無加工原画はRGBAで、人物高1325〜1444px。ゲーム用896×1200へ縮小し、元の人物高・足元に合わせて配置した。身長設定と `spriteScale` は変更していない。
+- つむぎ7表情はPU05に従って元の小柄な頭身へ再制作。ましろ6表情はPU04の少し大きめの丸い顔・頬を保持した。採用前の候補も `attempts/` に保存し、採用した試行番号を `generation.json` に記録した。
+- 色の基準は各表情の元絵。原画への彩度・明度加工は行っていない。全34枚で表示用WebPとゲーム用PNGのRGBA画素が完全一致することを検証した。
+- 表情切り替え時の位置ずれは9枚だけ画像全体を横へ3〜7px移動して補正。顔アイコン6枚、設定用シート6枚、顔サイズ比較・背比べ図も更新した。
+- 実際の会話画面で34表情×PC（1280×720）／スマホ（591×1280）の計68表示を検証。読み込み失敗・ページエラー・画像端の欠け・頭の見切れは0。表情切り替え時の配置枠も固定された。
+
+[PC・全34表情](qa/game-all34-1280.jpg) ／ [スマホ・全34表情](qa/game-all34-591.jpg) ／ [顔アイコン一覧](qa/face-icons-sheet.png)
+
+スマホ一覧はゲームの16:9表示部分を切り出して比較している。通常絵は6人とも加工していない画面全体のスクリーンショットも保存した：
+[つむぎ・PC](qa/tsumugi-1280-normal.png) ／ [つむぎ・スマホ](qa/tsumugi-591-normal.png) ／ [ましろ・PC](qa/mashiro-1280-normal.png) ／ [ましろ・スマホ](qa/mashiro-591-normal.png)。
+
+[つむぎ7表情の設定用シート](../../reference-sheets/tsumugi/tsumugi-reference-sheet.png) ／ [ましろ6表情の設定用シート](../../reference-sheets/mashiro/mashiro-reference-sheet.png)
+
+全原画と生成ツール出力のSHA256、参照・プロンプト、元絵のバックアップ、縮小後の画素と横移動、PNG／WebPの画素一致を検証した結果は [production-qa.json](production-qa.json)。会話画面の実測値は [browser-measurements.json](qa/browser-measurements.json)。再確認コマンド：
+
+```bash
+python3 remake/tools/serve_preview.py --port 8123
+CHROME_BIN=/usr/bin/chromium SHOTS=/tmp/portrait-qa node remake/test/portrait_unify.mjs
+```
 
 ## 2026-10-10の実制作で優先する指定
 

@@ -786,13 +786,15 @@
           "image": 1,
           "role": "identity_expression_pose_outfit_original_proportions",
           "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
-          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6",
+          "archived_original_path": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_normal.png"
         },
         {
           "image": 2,
           "role": "normal_identity_check",
           "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
-          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6",
+          "archived_original_path": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_normal.png"
         },
         {
           "image": 3,
@@ -841,7 +843,20 @@
           1174
         ]
       },
-      "provenance_note": "実行英文はPU05更新後のnormal-prompt.txt。保存時の旧プロンプトコピーを実行した英文へ訂正。原画は無加工。"
+      "provenance_note": "実行英文はPU05更新後のnormal-prompt.txt。保存時の旧プロンプトコピーを実行した英文へ訂正。原画は無加工。",
+      "integration": {
+        "runtime_png": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+        "runtime_png_sha256": "8e7045f660812aa5b1671259c76fd94915ae1355db666dc9319b2ce733db4af4",
+        "runtime_webp": "remake/img/sprites/characters/tsumugi/chr_tsumugi_normal.webp",
+        "runtime_webp_sha256": "d8b5dde0e40ba46959a88ffd1c81f33e54d71da8ba9846397981aecd58fca32e",
+        "previous_runtime": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_normal.png",
+        "previous_runtime_sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
+      }
     },
     {
       "face": "smile",
@@ -863,13 +878,15 @@
           "image": 1,
           "role": "identity_expression_pose_outfit_original_proportions",
           "path": "assets/sprites/characters/tsumugi/chr_tsumugi_smile.png",
-          "sha256": "952ba0b09909936641b6c9a138c312852c8990ae5b82c879866bee64bf49203f"
+          "sha256": "952ba0b09909936641b6c9a138c312852c8990ae5b82c879866bee64bf49203f",
+          "archived_original_path": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_smile.png"
         },
         {
           "image": 2,
           "role": "normal_identity_check",
           "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
-          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6",
+          "archived_original_path": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_normal.png"
         },
         {
           "image": 3,
@@ -917,6 +934,19 @@
           545,
           1174
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/tsumugi/chr_tsumugi_smile.png",
+        "runtime_png_sha256": "b760da539db6d7e5939c36b2ab2510628a3065704c4ae06c46c0617869bd6f18",
+        "runtime_webp": "remake/img/sprites/characters/tsumugi/chr_tsumugi_smile.webp",
+        "runtime_webp_sha256": "10d20b7837e6aa873536d3d006388caa8419886d373ef3888fcfa4a63ef37450",
+        "previous_runtime": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_smile.png",
+        "previous_runtime_sha256": "952ba0b09909936641b6c9a138c312852c8990ae5b82c879866bee64bf49203f",
+        "alignment_translation_px": [
+          4,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -939,13 +969,15 @@
           "image": 1,
           "role": "identity_expression_pose_outfit_original_proportions",
           "path": "assets/sprites/characters/tsumugi/chr_tsumugi_serious.png",
-          "sha256": "6b9daaf0ee59aae1b56c625e8c12b1b539738c8533e6af5205a4d600f8dd0d75"
+          "sha256": "6b9daaf0ee59aae1b56c625e8c12b1b539738c8533e6af5205a4d600f8dd0d75",
+          "archived_original_path": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_serious.png"
         },
         {
           "image": 2,
           "role": "normal_identity_check",
           "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
-          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6",
+          "archived_original_path": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_normal.png"
         },
         {
           "image": 3,
@@ -993,6 +1025,19 @@
           587,
           1174
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/tsumugi/chr_tsumugi_serious.png",
+        "runtime_png_sha256": "4e7784af8f7507d69b027b156ce56d5ee7a6be079284f5d985f8194cce2651b8",
+        "runtime_webp": "remake/img/sprites/characters/tsumugi/chr_tsumugi_serious.webp",
+        "runtime_webp_sha256": "1b92e2a16a8c91db30ef218e4d42ae7ad3d4a3fc77f62be0451bc3a2c89adfee",
+        "previous_runtime": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_serious.png",
+        "previous_runtime_sha256": "6b9daaf0ee59aae1b56c625e8c12b1b539738c8533e6af5205a4d600f8dd0d75",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -1015,13 +1060,15 @@
           "image": 1,
           "role": "identity_expression_pose_outfit_original_proportions",
           "path": "assets/sprites/characters/tsumugi/chr_tsumugi_surprise.png",
-          "sha256": "4945c68cd9b6f465ddbbd7e1a6f92b9d9d81b4723db0a8a82ab6efe6dc562f6a"
+          "sha256": "4945c68cd9b6f465ddbbd7e1a6f92b9d9d81b4723db0a8a82ab6efe6dc562f6a",
+          "archived_original_path": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_surprise.png"
         },
         {
           "image": 2,
           "role": "normal_identity_check",
           "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
-          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6",
+          "archived_original_path": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_normal.png"
         },
         {
           "image": 3,
@@ -1069,6 +1116,19 @@
           576,
           1174
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/tsumugi/chr_tsumugi_surprise.png",
+        "runtime_png_sha256": "c5c3914164832012583422f6f76bf68b2f2894551c3e361b6b2834151306a403",
+        "runtime_webp": "remake/img/sprites/characters/tsumugi/chr_tsumugi_surprise.webp",
+        "runtime_webp_sha256": "85cab11c10fa04f426a761595de95b4a7341dc04cbde41255e5c3144612f5696",
+        "previous_runtime": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_surprise.png",
+        "previous_runtime_sha256": "4945c68cd9b6f465ddbbd7e1a6f92b9d9d81b4723db0a8a82ab6efe6dc562f6a",
+        "alignment_translation_px": [
+          -3,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -1091,13 +1151,15 @@
           "image": 1,
           "role": "identity_expression_pose_outfit_original_proportions",
           "path": "assets/sprites/characters/tsumugi/chr_tsumugi_sad.png",
-          "sha256": "ca93874e7e114a1a52194b227033cd8821ebd93c421d62a5bbe0e9ed1a051087"
+          "sha256": "ca93874e7e114a1a52194b227033cd8821ebd93c421d62a5bbe0e9ed1a051087",
+          "archived_original_path": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_sad.png"
         },
         {
           "image": 2,
           "role": "normal_identity_check",
           "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
-          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6",
+          "archived_original_path": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_normal.png"
         },
         {
           "image": 3,
@@ -1145,6 +1207,19 @@
           555,
           1175
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/tsumugi/chr_tsumugi_sad.png",
+        "runtime_png_sha256": "0535f86374bc5bcfd1d9bdcafa833df5cc6e5d40707cd48286d3192b11516358",
+        "runtime_webp": "remake/img/sprites/characters/tsumugi/chr_tsumugi_sad.webp",
+        "runtime_webp_sha256": "2b28492b1ff2364e5931b665b53ed24f6c1eae0ab69047e1d7b66faff939d8bf",
+        "previous_runtime": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_sad.png",
+        "previous_runtime_sha256": "ca93874e7e114a1a52194b227033cd8821ebd93c421d62a5bbe0e9ed1a051087",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -1167,13 +1242,15 @@
           "image": 1,
           "role": "identity_expression_pose_outfit_original_proportions",
           "path": "assets/sprites/characters/tsumugi/chr_tsumugi_bow.png",
-          "sha256": "3f35f98c76dc8032e311f2c8a8dc9e9567b2f89b783813c1419e5185778d69b0"
+          "sha256": "3f35f98c76dc8032e311f2c8a8dc9e9567b2f89b783813c1419e5185778d69b0",
+          "archived_original_path": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_bow.png"
         },
         {
           "image": 2,
           "role": "normal_identity_check",
           "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
-          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6",
+          "archived_original_path": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_normal.png"
         },
         {
           "image": 3,
@@ -1221,6 +1298,19 @@
           556,
           1174
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/tsumugi/chr_tsumugi_bow.png",
+        "runtime_png_sha256": "7a0f4ef1043965e11e93260ad76e395488494da3ebfdd8c3104bc421df11286d",
+        "runtime_webp": "remake/img/sprites/characters/tsumugi/chr_tsumugi_bow.webp",
+        "runtime_webp_sha256": "b79924e3b136c16915f7a8cec1ea7baf131d7b73f65ce07ac599bc63d1178ee4",
+        "previous_runtime": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_bow.png",
+        "previous_runtime_sha256": "3f35f98c76dc8032e311f2c8a8dc9e9567b2f89b783813c1419e5185778d69b0",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -1243,13 +1333,15 @@
           "image": 1,
           "role": "identity_expression_pose_outfit_original_proportions",
           "path": "assets/sprites/characters/tsumugi/chr_tsumugi_evil.png",
-          "sha256": "ec97dc3373eccff61088f0760d54404fa79596c8b404d5d5d089fefd388840e8"
+          "sha256": "ec97dc3373eccff61088f0760d54404fa79596c8b404d5d5d089fefd388840e8",
+          "archived_original_path": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_evil.png"
         },
         {
           "image": 2,
           "role": "normal_identity_check",
           "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
-          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6",
+          "archived_original_path": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_normal.png"
         },
         {
           "image": 3,
@@ -1297,6 +1389,19 @@
           556,
           1174
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/tsumugi/chr_tsumugi_evil.png",
+        "runtime_png_sha256": "6bbbb1a54e2e3a852921d72aa6bbc2da738e7c4739e55e3dc0a4cf3c192d4353",
+        "runtime_webp": "remake/img/sprites/characters/tsumugi/chr_tsumugi_evil.webp",
+        "runtime_webp_sha256": "25fc59e769f0247a89715c6230146a7826635fe85c30a2181fa350096b1803ce",
+        "previous_runtime": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_evil.png",
+        "previous_runtime_sha256": "ec97dc3373eccff61088f0760d54404fa79596c8b404d5d5d089fefd388840e8",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     }
   ],
@@ -1305,7 +1410,10 @@
     "normal": {
       "status": "accepted",
       "date": "2026-10-10",
-      "instruction": "いいと思います"
+      "instruction": "いいと思います",
+      "attempt": 4,
+      "superseded_by_owner_request": "PU05",
+      "scope_note": "旧試作への承認履歴。現在のnormal試行5は確認委任に基づく検品通過。"
     }
   },
   "selected_attempts": {
@@ -1321,5 +1429,15 @@
     "mode": "delegated_production_qa",
     "owner_instruction": "いいと思います。ただ作り直すたびに色薄くなってる気がするのは気のせい？ 一旦確認もそこまでいらないからガンガン進めて",
     "received_on": "2026-10-10"
+  },
+  "integration_status": {
+    "status": "complete",
+    "checked_at_utc": "2026-10-10T06:26:32.950056+00:00",
+    "expressions": 7,
+    "browser_viewports": [
+      "1280x720",
+      "591x1280"
+    ],
+    "production_qa": "asset_sources/portraits/resolution-upgrade-20261009/production-qa.json"
   }
 }

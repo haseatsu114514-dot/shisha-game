@@ -83,13 +83,15 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
-          "sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b"
+          "sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b",
+          "archived_original_path": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_normal.png"
         },
         {
           "image": 2,
           "role": "normal_identity_check",
           "path": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
-          "sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b"
+          "sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b",
+          "archived_original_path": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_normal.png"
         },
         {
           "image": 3,
@@ -124,6 +126,19 @@
         "checked_at_utc": "2026-10-10T05:20:24.010895+00:00",
         "method": "native-size source and original-versus-fitted comparison inspection",
         "note": "オーナーが試作3枚を承認。全身・手足・衣装・ポーズ・透過と896x1200への位置合わせを確認。つむぎは丸く少し大きめの頭を優先。"
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+        "runtime_png_sha256": "602b983ba598473c5a2225039014e4609e302e5df0e49450395e783c14505bb3",
+        "runtime_webp": "remake/img/sprites/characters/kafuka/chr_kafuka_normal.webp",
+        "runtime_webp_sha256": "a728a27dda3aed98bf1146de43364d419764d6e7090332019cc95d7dcfd7b219",
+        "previous_runtime": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_normal.png",
+        "previous_runtime_sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -146,7 +161,8 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/kafuka/chr_kafuka_smile.png",
-          "sha256": "d764d478d5ab2fa89b769853d9a66c1c2b57528d39faea277d4e17aa180827da"
+          "sha256": "d764d478d5ab2fa89b769853d9a66c1c2b57528d39faea277d4e17aa180827da",
+          "archived_original_path": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_smile.png"
         },
         {
           "image": 2,
@@ -199,6 +215,19 @@
           680,
           1174
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/kafuka/chr_kafuka_smile.png",
+        "runtime_png_sha256": "7b3056bd141a4d0c4b8d48f33d880befe039496d9a5111384379c9c83793ff48",
+        "runtime_webp": "remake/img/sprites/characters/kafuka/chr_kafuka_smile.webp",
+        "runtime_webp_sha256": "3af941fb783522cc430401a2e6f5aef93586079ec78bbef60016aa562b1de072",
+        "previous_runtime": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_smile.png",
+        "previous_runtime_sha256": "d764d478d5ab2fa89b769853d9a66c1c2b57528d39faea277d4e17aa180827da",
+        "alignment_translation_px": [
+          -4,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -221,7 +250,8 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/kafuka/chr_kafuka_serious.png",
-          "sha256": "e08c8f2f12698ce897c52282463a63b3891cd9edad024d74de8f993c1761097d"
+          "sha256": "e08c8f2f12698ce897c52282463a63b3891cd9edad024d74de8f993c1761097d",
+          "archived_original_path": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_serious.png"
         },
         {
           "image": 2,
@@ -274,6 +304,19 @@
           676,
           1174
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/kafuka/chr_kafuka_serious.png",
+        "runtime_png_sha256": "c132304c7f44762ecb29b07ecfb1a693e3599fc1e71d90f3ca3c337e002982ab",
+        "runtime_webp": "remake/img/sprites/characters/kafuka/chr_kafuka_serious.webp",
+        "runtime_webp_sha256": "d0ddb21226b4d7f559ec11f187a07772c46af782bd6e7128b33734feb7d5a05c",
+        "previous_runtime": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_serious.png",
+        "previous_runtime_sha256": "e08c8f2f12698ce897c52282463a63b3891cd9edad024d74de8f993c1761097d",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -296,7 +339,8 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/kafuka/chr_kafuka_surprise.png",
-          "sha256": "915c1b810117697e560a9546ba444e466a61a3eb31cc91f5ecd7eb30e0dcc1f2"
+          "sha256": "915c1b810117697e560a9546ba444e466a61a3eb31cc91f5ecd7eb30e0dcc1f2",
+          "archived_original_path": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_surprise.png"
         },
         {
           "image": 2,
@@ -349,6 +393,19 @@
           675,
           1174
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/kafuka/chr_kafuka_surprise.png",
+        "runtime_png_sha256": "1f265cea25d0f156b5af491469946cbede3d8edfc153e755596056d83974037a",
+        "runtime_webp": "remake/img/sprites/characters/kafuka/chr_kafuka_surprise.webp",
+        "runtime_webp_sha256": "5c6220a3ab34085d450dfca6c8e3db12f3c833181e4421e1347d87a5d95ea023",
+        "previous_runtime": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_surprise.png",
+        "previous_runtime_sha256": "915c1b810117697e560a9546ba444e466a61a3eb31cc91f5ecd7eb30e0dcc1f2",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -371,7 +428,8 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/kafuka/chr_kafuka_excited.png",
-          "sha256": "bae030e12a6301ad7c42d7bdf36381a6f7949776b69004d9c60d7517a4a50f2e"
+          "sha256": "bae030e12a6301ad7c42d7bdf36381a6f7949776b69004d9c60d7517a4a50f2e",
+          "archived_original_path": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_excited.png"
         },
         {
           "image": 2,
@@ -424,6 +482,19 @@
           678,
           1174
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/kafuka/chr_kafuka_excited.png",
+        "runtime_png_sha256": "76107557e2e2270f90b7ce337c15d31986a7e507c671cb1ad069f643666dc3e9",
+        "runtime_webp": "remake/img/sprites/characters/kafuka/chr_kafuka_excited.webp",
+        "runtime_webp_sha256": "c458e41bc1877a03e00c5980b15d6d900419ca6a29081b66488406a980707269",
+        "previous_runtime": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_excited.png",
+        "previous_runtime_sha256": "bae030e12a6301ad7c42d7bdf36381a6f7949776b69004d9c60d7517a4a50f2e",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -446,7 +517,8 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/kafuka/chr_kafuka_ventriloquism.png",
-          "sha256": "dd8a6312ff5636c9e670b4cc79b5bd0e800ed0f9131ad4064511787745036f4c"
+          "sha256": "dd8a6312ff5636c9e670b4cc79b5bd0e800ed0f9131ad4064511787745036f4c",
+          "archived_original_path": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_ventriloquism.png"
         },
         {
           "image": 2,
@@ -499,6 +571,19 @@
           648,
           1174
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/kafuka/chr_kafuka_ventriloquism.png",
+        "runtime_png_sha256": "120fd34342c41ce0a73079f5b9eb31d3afc690e53f98fee2426dc1f2abac6144",
+        "runtime_webp": "remake/img/sprites/characters/kafuka/chr_kafuka_ventriloquism.webp",
+        "runtime_webp_sha256": "05b619beabc10c41a8b75ea2e33270bd1149fb8caf7220a888f16d756c835e58",
+        "previous_runtime": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_ventriloquism.png",
+        "previous_runtime_sha256": "dd8a6312ff5636c9e670b4cc79b5bd0e800ed0f9131ad4064511787745036f4c",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     }
   ],
@@ -507,7 +592,8 @@
     "normal": {
       "status": "accepted",
       "date": "2026-10-10",
-      "instruction": "いいと思います"
+      "instruction": "いいと思います",
+      "attempt": 2
     }
   },
   "selected_attempts": {
@@ -522,5 +608,15 @@
     "mode": "delegated_production_qa",
     "owner_instruction": "いいと思います。ただ作り直すたびに色薄くなってる気がするのは気のせい？ 一旦確認もそこまでいらないからガンガン進めて",
     "received_on": "2026-10-10"
+  },
+  "integration_status": {
+    "status": "complete",
+    "checked_at_utc": "2026-10-10T06:26:32.951343+00:00",
+    "expressions": 6,
+    "browser_viewports": [
+      "1280x720",
+      "591x1280"
+    ],
+    "production_qa": "asset_sources/portraits/resolution-upgrade-20261009/production-qa.json"
   }
 }

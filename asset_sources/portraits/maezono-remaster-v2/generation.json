@@ -83,13 +83,15 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/maezono/chr_maezono_normal.png",
-          "sha256": "487c0ee519326794d5d74cc52f7c4e3d6db7728304a26907eee1d729ad46fae5"
+          "sha256": "487c0ee519326794d5d74cc52f7c4e3d6db7728304a26907eee1d729ad46fae5",
+          "archived_original_path": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_normal.png"
         },
         {
           "image": 2,
           "role": "normal_identity_check",
           "path": "assets/sprites/characters/maezono/chr_maezono_normal.png",
-          "sha256": "487c0ee519326794d5d74cc52f7c4e3d6db7728304a26907eee1d729ad46fae5"
+          "sha256": "487c0ee519326794d5d74cc52f7c4e3d6db7728304a26907eee1d729ad46fae5",
+          "archived_original_path": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_normal.png"
         },
         {
           "image": 3,
@@ -124,6 +126,19 @@
         "checked_at_utc": "2026-10-10T05:20:24.012443+00:00",
         "method": "native-size source and original-versus-fitted comparison inspection",
         "note": "オーナーが試作3枚を承認。全身・手足・衣装・ポーズ・透過と896x1200への位置合わせを確認。つむぎは丸く少し大きめの頭を優先。"
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+        "runtime_png_sha256": "a8bce133e3a390519149237cc1c934ee02e9822f549b33aecbac4c8ae776c21b",
+        "runtime_webp": "remake/img/sprites/characters/maezono/chr_maezono_normal.webp",
+        "runtime_webp_sha256": "40fe19b6f9252b91757aef6f8eec17b0322c8ddb861a21dc7a03fee701b3160e",
+        "previous_runtime": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_normal.png",
+        "previous_runtime_sha256": "487c0ee519326794d5d74cc52f7c4e3d6db7728304a26907eee1d729ad46fae5",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -146,7 +161,8 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/maezono/chr_maezono_smile.png",
-          "sha256": "3ea917d40520d44e44f0608328800b1b46128d2bb6ad5508055aed4ad1ead1f1"
+          "sha256": "3ea917d40520d44e44f0608328800b1b46128d2bb6ad5508055aed4ad1ead1f1",
+          "archived_original_path": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_smile.png"
         },
         {
           "image": 2,
@@ -199,6 +215,19 @@
           657,
           1174
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/maezono/chr_maezono_smile.png",
+        "runtime_png_sha256": "de726fbcaafbb86b061d4d723c361a15a707a6d80f3b1cbc0720efd3be555875",
+        "runtime_webp": "remake/img/sprites/characters/maezono/chr_maezono_smile.webp",
+        "runtime_webp_sha256": "e31e224872f8c88e6f1b99ef1d20abd66f7ccdc3e4d65b419484c1654f7e3ef1",
+        "previous_runtime": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_smile.png",
+        "previous_runtime_sha256": "3ea917d40520d44e44f0608328800b1b46128d2bb6ad5508055aed4ad1ead1f1",
+        "alignment_translation_px": [
+          -6,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -221,7 +250,8 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/maezono/chr_maezono_serious.png",
-          "sha256": "cec826901633084efb4ebf994d192a97d667795d10186a3704665dd27f6f8ba9"
+          "sha256": "cec826901633084efb4ebf994d192a97d667795d10186a3704665dd27f6f8ba9",
+          "archived_original_path": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_serious.png"
         },
         {
           "image": 2,
@@ -274,6 +304,19 @@
           639,
           1174
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/maezono/chr_maezono_serious.png",
+        "runtime_png_sha256": "1875c0d9337d59b3bb21913450859105e8078a244ca75d783044aa4152fad96a",
+        "runtime_webp": "remake/img/sprites/characters/maezono/chr_maezono_serious.webp",
+        "runtime_webp_sha256": "f9cbfdceb401714e4bf520b43ef7509248c5b7a55d44e65568283d86a9098f92",
+        "previous_runtime": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_serious.png",
+        "previous_runtime_sha256": "cec826901633084efb4ebf994d192a97d667795d10186a3704665dd27f6f8ba9",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -296,7 +339,8 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/maezono/chr_maezono_surprise.png",
-          "sha256": "9b7b257f499cd42c5161a5203815d06e659d2eb96e9879d135b4e97dc42bcceb"
+          "sha256": "9b7b257f499cd42c5161a5203815d06e659d2eb96e9879d135b4e97dc42bcceb",
+          "archived_original_path": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_surprise.png"
         },
         {
           "image": 2,
@@ -349,6 +393,19 @@
           654,
           1174
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/maezono/chr_maezono_surprise.png",
+        "runtime_png_sha256": "ad0a3fbf3e90a9d72ae9bc0f21eddb426634f147ff9ed9b86f4f8c40c2151d8c",
+        "runtime_webp": "remake/img/sprites/characters/maezono/chr_maezono_surprise.webp",
+        "runtime_webp_sha256": "c336710ca44180ba25ed3a09b3a54555e0a9777c93eb8c22fb405dc8948199fe",
+        "previous_runtime": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_surprise.png",
+        "previous_runtime_sha256": "9b7b257f499cd42c5161a5203815d06e659d2eb96e9879d135b4e97dc42bcceb",
+        "alignment_translation_px": [
+          -7,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -371,7 +428,8 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/maezono/chr_maezono_excited.png",
-          "sha256": "d64c9a86c9ef297200bb0a39bef5f3f15e1e0d0e03219881d99cd40aaeac22ca"
+          "sha256": "d64c9a86c9ef297200bb0a39bef5f3f15e1e0d0e03219881d99cd40aaeac22ca",
+          "archived_original_path": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_excited.png"
         },
         {
           "image": 2,
@@ -424,6 +482,19 @@
           641,
           1174
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/maezono/chr_maezono_excited.png",
+        "runtime_png_sha256": "5849ed0f70cc8a0f6b1312d239cc29116a9b5ddee0d7291ec8be8ed1e148aa1c",
+        "runtime_webp": "remake/img/sprites/characters/maezono/chr_maezono_excited.webp",
+        "runtime_webp_sha256": "891e1bbaeda226229e5dd2091d861b88158f7fb80b8954da1944dcc85d3a39a1",
+        "previous_runtime": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_excited.png",
+        "previous_runtime_sha256": "d64c9a86c9ef297200bb0a39bef5f3f15e1e0d0e03219881d99cd40aaeac22ca",
+        "alignment_translation_px": [
+          6,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     }
   ],
@@ -432,7 +503,8 @@
     "normal": {
       "status": "accepted",
       "date": "2026-10-10",
-      "instruction": "いいと思います"
+      "instruction": "いいと思います",
+      "attempt": 2
     }
   },
   "selected_attempts": {
@@ -446,5 +518,15 @@
     "mode": "delegated_production_qa",
     "owner_instruction": "いいと思います。ただ作り直すたびに色薄くなってる気がするのは気のせい？ 一旦確認もそこまでいらないからガンガン進めて",
     "received_on": "2026-10-10"
+  },
+  "integration_status": {
+    "status": "complete",
+    "checked_at_utc": "2026-10-10T06:26:32.951940+00:00",
+    "expressions": 5,
+    "browser_viewports": [
+      "1280x720",
+      "591x1280"
+    ],
+    "production_qa": "asset_sources/portraits/resolution-upgrade-20261009/production-qa.json"
   }
 }

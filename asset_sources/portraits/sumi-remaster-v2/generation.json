@@ -22,13 +22,15 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/sumi/chr_sumi_normal.png",
-          "sha256": "35cb31996f3275213b7e659d968d09fec62136d519324a93bb90f1afcf31627c"
+          "sha256": "35cb31996f3275213b7e659d968d09fec62136d519324a93bb90f1afcf31627c",
+          "archived_original_path": "asset_sources/portraits/sumi-remaster-v2/previous-runtime/chr_sumi_normal.png"
         },
         {
           "image": 2,
           "role": "normal_identity_check",
           "path": "assets/sprites/characters/sumi/chr_sumi_normal.png",
-          "sha256": "35cb31996f3275213b7e659d968d09fec62136d519324a93bb90f1afcf31627c"
+          "sha256": "35cb31996f3275213b7e659d968d09fec62136d519324a93bb90f1afcf31627c",
+          "archived_original_path": "asset_sources/portraits/sumi-remaster-v2/previous-runtime/chr_sumi_normal.png"
         },
         {
           "image": 3,
@@ -75,6 +77,19 @@
           643,
           1175
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/sumi/chr_sumi_normal.png",
+        "runtime_png_sha256": "7a2e5a5d073ebb40ed32f7a9f1a47a98ef5055eb97b3d11dad5df81d768734a5",
+        "runtime_webp": "remake/img/sprites/characters/sumi/chr_sumi_normal.webp",
+        "runtime_webp_sha256": "1db42d36afb00ec939676651c305db6c11b31c9e9d4ef386df63771ba3782aa3",
+        "previous_runtime": "asset_sources/portraits/sumi-remaster-v2/previous-runtime/chr_sumi_normal.png",
+        "previous_runtime_sha256": "35cb31996f3275213b7e659d968d09fec62136d519324a93bb90f1afcf31627c",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -97,7 +112,8 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/sumi/chr_sumi_serious.png",
-          "sha256": "cedcfb6ec6e3357f10665fa384781c0079a509fd9b541d4ca3c507d465341416"
+          "sha256": "cedcfb6ec6e3357f10665fa384781c0079a509fd9b541d4ca3c507d465341416",
+          "archived_original_path": "asset_sources/portraits/sumi-remaster-v2/previous-runtime/chr_sumi_serious.png"
         },
         {
           "image": 2,
@@ -150,6 +166,19 @@
           631,
           1175
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/sumi/chr_sumi_serious.png",
+        "runtime_png_sha256": "680dbed6808b2cc7f1374306a78c302135bee869f7ee7519a4251cc54f71271f",
+        "runtime_webp": "remake/img/sprites/characters/sumi/chr_sumi_serious.webp",
+        "runtime_webp_sha256": "c036ac180338d363c1273e13ed7233d050ee3e5e7d349b054cf7ea3d43a63483",
+        "previous_runtime": "asset_sources/portraits/sumi-remaster-v2/previous-runtime/chr_sumi_serious.png",
+        "previous_runtime_sha256": "cedcfb6ec6e3357f10665fa384781c0079a509fd9b541d4ca3c507d465341416",
+        "alignment_translation_px": [
+          5,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -172,7 +201,8 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/sumi/chr_sumi_smile.png",
-          "sha256": "4fa7011b45471cc14f84146de14a83e4e5e582cbfdef903b9fcf563ee63508c6"
+          "sha256": "4fa7011b45471cc14f84146de14a83e4e5e582cbfdef903b9fcf563ee63508c6",
+          "archived_original_path": "asset_sources/portraits/sumi-remaster-v2/previous-runtime/chr_sumi_smile.png"
         },
         {
           "image": 2,
@@ -225,6 +255,19 @@
           644,
           1175
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/sumi/chr_sumi_smile.png",
+        "runtime_png_sha256": "5a1658d3d97ea291e1025c9ec8503cf67636fcdd6ae12537bf2a43f525ef41fa",
+        "runtime_webp": "remake/img/sprites/characters/sumi/chr_sumi_smile.webp",
+        "runtime_webp_sha256": "ab51c74885b598f419e4d624232292a369444f05e61e5427bb24b154a87e0b60",
+        "previous_runtime": "asset_sources/portraits/sumi-remaster-v2/previous-runtime/chr_sumi_smile.png",
+        "previous_runtime_sha256": "4fa7011b45471cc14f84146de14a83e4e5e582cbfdef903b9fcf563ee63508c6",
+        "alignment_translation_px": [
+          5,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -247,7 +290,8 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/sumi/chr_sumi_thinking.png",
-          "sha256": "bbf7156176dc421db91fecc2b9fc4e4195e2fc926e10188de0ea38a269681da1"
+          "sha256": "bbf7156176dc421db91fecc2b9fc4e4195e2fc926e10188de0ea38a269681da1",
+          "archived_original_path": "asset_sources/portraits/sumi-remaster-v2/previous-runtime/chr_sumi_thinking.png"
         },
         {
           "image": 2,
@@ -300,6 +344,19 @@
           611,
           1175
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/sumi/chr_sumi_thinking.png",
+        "runtime_png_sha256": "f9e2886318d5718084e5889221cc315d53fda098d93b4fb257260cd526de4d91",
+        "runtime_webp": "remake/img/sprites/characters/sumi/chr_sumi_thinking.webp",
+        "runtime_webp_sha256": "a5d6348a182e2257a9c8591ffa01ed73c579623368be6b6fbc2816c5e557955b",
+        "previous_runtime": "asset_sources/portraits/sumi-remaster-v2/previous-runtime/chr_sumi_thinking.png",
+        "previous_runtime_sha256": "bbf7156176dc421db91fecc2b9fc4e4195e2fc926e10188de0ea38a269681da1",
+        "alignment_translation_px": [
+          5,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     },
     {
@@ -322,7 +379,8 @@
           "image": 1,
           "role": "identity_expression_pose_outfit",
           "path": "assets/sprites/characters/sumi/chr_sumi_surprise.png",
-          "sha256": "295353319a1759361636cbb50c797ed019fa774806483cae0a3609e0d24a3733"
+          "sha256": "295353319a1759361636cbb50c797ed019fa774806483cae0a3609e0d24a3733",
+          "archived_original_path": "asset_sources/portraits/sumi-remaster-v2/previous-runtime/chr_sumi_surprise.png"
         },
         {
           "image": 2,
@@ -375,6 +433,19 @@
           641,
           1175
         ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/sumi/chr_sumi_surprise.png",
+        "runtime_png_sha256": "7d0ee95d2c0c16789acfb33a0ccdf694e48ae435974bbbaed9ba97d329ce63d5",
+        "runtime_webp": "remake/img/sprites/characters/sumi/chr_sumi_surprise.webp",
+        "runtime_webp_sha256": "31e409e76b892246f9addb1d87ccc5cd6c5d287bcd4ab47b569d3d0f7a6115df",
+        "previous_runtime": "asset_sources/portraits/sumi-remaster-v2/previous-runtime/chr_sumi_surprise.png",
+        "previous_runtime_sha256": "295353319a1759361636cbb50c797ed019fa774806483cae0a3609e0d24a3733",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
       }
     }
   ],
@@ -390,5 +461,15 @@
     "mode": "delegated_production_qa",
     "owner_instruction": "いいと思います。ただ作り直すたびに色薄くなってる気がするのは気のせい？ 一旦確認もそこまでいらないからガンガン進めて",
     "received_on": "2026-10-10"
+  },
+  "integration_status": {
+    "status": "complete",
+    "checked_at_utc": "2026-10-10T06:26:32.952444+00:00",
+    "expressions": 5,
+    "browser_viewports": [
+      "1280x720",
+      "591x1280"
+    ],
+    "production_qa": "asset_sources/portraits/resolution-upgrade-20261009/production-qa.json"
   }
 }

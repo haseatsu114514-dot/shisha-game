@@ -32,7 +32,9 @@ try {
       await page.evaluate(async ({ character, faces }) => {
         const state = await import(new URL("js/core/state.js", location.href));
         const vn = await import(new URL("js/vn/engine.js", location.href));
-        state.newGame(); state.state.met[character] = true; vn.vnTest.turbo = false;
+        state.newGame(); state.state.met[character] = true;
+        state.state.flags["_intro_" + character] = true;
+        vn.vnTest.turbo = false;
         window.__portraitUnifyTest = vn.play({
           dialogue_id: "__portrait_unify_test",
           metadata: { bg: "bg_tonari_inside" },
