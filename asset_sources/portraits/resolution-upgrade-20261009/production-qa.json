@@ -1,0 +1,1516 @@
+{
+  "schema_version": 1,
+  "checked_at_utc": "2026-10-10T06:23:06.119384+00:00",
+  "status": "passed",
+  "characters": 6,
+  "expressions": 34,
+  "raw_generation_archives_verified": 49,
+  "native_size_visual_qa": "source and original-versus-fitted comparison checked for each selected image; details in per-character generation.json",
+  "source_figure_height_range_px": [
+    1325,
+    1444
+  ],
+  "owner_proportion_overrides": {
+    "tsumugi": "PU05: original petite head-to-body ratio for all 7 expressions",
+    "mashiro": "PU04: retain slightly large round face and full cheeks for all 6 expressions"
+  },
+  "color_handling": "original expression is the generation color reference; no post-generation saturation or brightness correction; PNG/WebP decoded RGBA pixels match exactly",
+  "runtime_resize": "downscale and place on 896x1200 RGBA; preserve original figure height and bottom; existing spriteScale unchanged",
+  "browser_check": {
+    "command": "CHROME_BIN=/usr/bin/chromium SHOTS=/tmp/shisha-portrait-game-qa node remake/test/portrait_unify.mjs",
+    "scenes_checked": 68,
+    "viewports": [
+      {
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "width": 591,
+        "height": 1280
+      }
+    ],
+    "page_errors": 0,
+    "http_errors": 0,
+    "missing_images": 0,
+    "image_edge_opaque_pixels": 0,
+    "portrait_frame_stable_for_all_expression_switches": true,
+    "heads_inside_stage": true,
+    "measurements": "qa/browser-measurements.json",
+    "pc_contact_sheet": "qa/game-all34-1280.jpg",
+    "phone_contact_sheet": "qa/game-all34-591.jpg",
+    "phone_contact_sheet_crop": "16:9 game stage only; unmodified full-viewport normal screenshots are stored separately",
+    "visual_inspection": "Both PC and phone all-34 contact sheets, and Tsumugi normal full-viewport screenshots inspected after the browser checks; expression, identity, visibility and palette consistent."
+  },
+  "selected": [
+    {
+      "character": "tsumugi",
+      "face": "normal",
+      "attempt": 5,
+      "source": "asset_sources/portraits/tsumugi-remaster-v2/normal-source.png",
+      "source_sha256": "2500d08f5624b338d00e22c952b5c4dd024a41cc87f71d921d28ac4767bac0d3",
+      "source_canvas_px": [
+        1084,
+        1451
+      ],
+      "source_figure_height_px": 1427,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "3d7225618ac8ea6e5f2aacc549dcd1818073a1be9ab5499f7c71dbb43e7b7981",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+      "runtime_png_sha256": "8e7045f660812aa5b1671259c76fd94915ae1355db666dc9319b2ce733db4af4",
+      "runtime_webp": "remake/img/sprites/characters/tsumugi/chr_tsumugi_normal.webp",
+      "runtime_webp_sha256": "d8b5dde0e40ba46959a88ffd1c81f33e54d71da8ba9846397981aecd58fca32e",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_normal.png",
+      "previous_runtime_sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "tsumugi",
+      "face": "smile",
+      "attempt": 2,
+      "source": "asset_sources/portraits/tsumugi-remaster-v2/smile-source.png",
+      "source_sha256": "d3f72464b666905216da0c3cb72da7120d5de205170fc03d81b7adf9fb2c1f1f",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1428,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "ff0ff9b037844885da4c8361fe3d5534ab1803ed9889029b807fc7ace4361fea",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/tsumugi/chr_tsumugi_smile.png",
+      "runtime_png_sha256": "b760da539db6d7e5939c36b2ab2510628a3065704c4ae06c46c0617869bd6f18",
+      "runtime_webp": "remake/img/sprites/characters/tsumugi/chr_tsumugi_smile.webp",
+      "runtime_webp_sha256": "10d20b7837e6aa873536d3d006388caa8419886d373ef3888fcfa4a63ef37450",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        4,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_smile.png",
+      "previous_runtime_sha256": "952ba0b09909936641b6c9a138c312852c8990ae5b82c879866bee64bf49203f",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "tsumugi",
+      "face": "sad",
+      "attempt": 2,
+      "source": "asset_sources/portraits/tsumugi-remaster-v2/sad-source.png",
+      "source_sha256": "80b20087aea0b38478cb352e959b81a9f3a0b8f8ae3116e5e13c0d975be0456b",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1409,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "508afafb863a4920aa5c5b1b5dbd785533cd2935d25e0d92e12439c390c2e920",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/tsumugi/chr_tsumugi_sad.png",
+      "runtime_png_sha256": "0535f86374bc5bcfd1d9bdcafa833df5cc6e5d40707cd48286d3192b11516358",
+      "runtime_webp": "remake/img/sprites/characters/tsumugi/chr_tsumugi_sad.webp",
+      "runtime_webp_sha256": "2b28492b1ff2364e5931b665b53ed24f6c1eae0ab69047e1d7b66faff939d8bf",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_sad.png",
+      "previous_runtime_sha256": "ca93874e7e114a1a52194b227033cd8821ebd93c421d62a5bbe0e9ed1a051087",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "tsumugi",
+      "face": "serious",
+      "attempt": 2,
+      "source": "asset_sources/portraits/tsumugi-remaster-v2/serious-source.png",
+      "source_sha256": "314c5c876a9c3ada7a0a76c22a8c7d79474baa4a8fcd9283d724f16bbe55309c",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1431,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "a51fb6d41a0060fda6dd1d1a630ce8b0eb672bcfaf488072385160f6aa86b7bb",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/tsumugi/chr_tsumugi_serious.png",
+      "runtime_png_sha256": "4e7784af8f7507d69b027b156ce56d5ee7a6be079284f5d985f8194cce2651b8",
+      "runtime_webp": "remake/img/sprites/characters/tsumugi/chr_tsumugi_serious.webp",
+      "runtime_webp_sha256": "1b92e2a16a8c91db30ef218e4d42ae7ad3d4a3fc77f62be0451bc3a2c89adfee",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_serious.png",
+      "previous_runtime_sha256": "6b9daaf0ee59aae1b56c625e8c12b1b539738c8533e6af5205a4d600f8dd0d75",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "tsumugi",
+      "face": "surprise",
+      "attempt": 3,
+      "source": "asset_sources/portraits/tsumugi-remaster-v2/surprise-source.png",
+      "source_sha256": "68f4e9b5f593eb9d3d07a5083b1c8a371573a6fc1c40459aa70229463dd1953b",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1417,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "214cc5a9a9676f6897e3df0cbdac077469fcf6a1bf028a16d681e574d64b2512",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/tsumugi/chr_tsumugi_surprise.png",
+      "runtime_png_sha256": "c5c3914164832012583422f6f76bf68b2f2894551c3e361b6b2834151306a403",
+      "runtime_webp": "remake/img/sprites/characters/tsumugi/chr_tsumugi_surprise.webp",
+      "runtime_webp_sha256": "85cab11c10fa04f426a761595de95b4a7341dc04cbde41255e5c3144612f5696",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        -3,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_surprise.png",
+      "previous_runtime_sha256": "4945c68cd9b6f465ddbbd7e1a6f92b9d9d81b4723db0a8a82ab6efe6dc562f6a",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "tsumugi",
+      "face": "bow",
+      "attempt": 2,
+      "source": "asset_sources/portraits/tsumugi-remaster-v2/bow-source.png",
+      "source_sha256": "8b104b1ca5ce57d725e78bb27693b9eb588773dc42370dd48110c0676fa3b50a",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1409,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "fccc36042d65cfa7e0c86bb1f8d1669c3b7565769afaaf6de46bf354843e598d",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/tsumugi/chr_tsumugi_bow.png",
+      "runtime_png_sha256": "7a0f4ef1043965e11e93260ad76e395488494da3ebfdd8c3104bc421df11286d",
+      "runtime_webp": "remake/img/sprites/characters/tsumugi/chr_tsumugi_bow.webp",
+      "runtime_webp_sha256": "b79924e3b136c16915f7a8cec1ea7baf131d7b73f65ce07ac599bc63d1178ee4",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_bow.png",
+      "previous_runtime_sha256": "3f35f98c76dc8032e311f2c8a8dc9e9567b2f89b783813c1419e5185778d69b0",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "tsumugi",
+      "face": "evil",
+      "attempt": 2,
+      "source": "asset_sources/portraits/tsumugi-remaster-v2/evil-source.png",
+      "source_sha256": "ba0c1a0690c2e2953e11ab7cac9beaacb1d39d3289bdbfaa986153f9b4701eff",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1420,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "a4b2f10d08878864fd8ac6f8011068b773fbd998938390ddca2e6c6881fcf6b9",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/tsumugi/chr_tsumugi_evil.png",
+      "runtime_png_sha256": "6bbbb1a54e2e3a852921d72aa6bbc2da738e7c4739e55e3dc0a4cf3c192d4353",
+      "runtime_webp": "remake/img/sprites/characters/tsumugi/chr_tsumugi_evil.webp",
+      "runtime_webp_sha256": "25fc59e769f0247a89715c6230146a7826635fe85c30a2181fa350096b1803ce",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/tsumugi-remaster-v2/previous-runtime/chr_tsumugi_evil.png",
+      "previous_runtime_sha256": "ec97dc3373eccff61088f0760d54404fa79596c8b404d5d5d089fefd388840e8",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "kafuka",
+      "face": "normal",
+      "attempt": 2,
+      "source": "asset_sources/portraits/kafuka-remaster-v2/normal-source.png",
+      "source_sha256": "c5ff1d4e69c0b2dba41f1128cd421ce9adea0078a81d27e908d5ed266f91115f",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1414,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "099125830696dbce5c051a40dd250ec3802727ba439bd25d4ab9868ffefa640b",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+      "runtime_png_sha256": "602b983ba598473c5a2225039014e4609e302e5df0e49450395e783c14505bb3",
+      "runtime_webp": "remake/img/sprites/characters/kafuka/chr_kafuka_normal.webp",
+      "runtime_webp_sha256": "a728a27dda3aed98bf1146de43364d419764d6e7090332019cc95d7dcfd7b219",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_normal.png",
+      "previous_runtime_sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "kafuka",
+      "face": "smile",
+      "attempt": 1,
+      "source": "asset_sources/portraits/kafuka-remaster-v2/smile-source.png",
+      "source_sha256": "57491d971cb4f68b19ae0dc9612f39a4b5c4e9483bcff425370c210c5a650f11",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1398,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "d2673bf39b68adee12f3c66ab9fdd7ea50099bc4856865e5027fa4313a21b5ff",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/kafuka/chr_kafuka_smile.png",
+      "runtime_png_sha256": "7b3056bd141a4d0c4b8d48f33d880befe039496d9a5111384379c9c83793ff48",
+      "runtime_webp": "remake/img/sprites/characters/kafuka/chr_kafuka_smile.webp",
+      "runtime_webp_sha256": "3af941fb783522cc430401a2e6f5aef93586079ec78bbef60016aa562b1de072",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        -4,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_smile.png",
+      "previous_runtime_sha256": "d764d478d5ab2fa89b769853d9a66c1c2b57528d39faea277d4e17aa180827da",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "kafuka",
+      "face": "serious",
+      "attempt": 1,
+      "source": "asset_sources/portraits/kafuka-remaster-v2/serious-source.png",
+      "source_sha256": "abb464b17770a16c1668abbe08c0714e62674df8a8646642ffbb54e579edb907",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1419,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "afa2bbd90649180f3346bd838524b553f5f41cf746d356d278eacbc24fec4797",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/kafuka/chr_kafuka_serious.png",
+      "runtime_png_sha256": "c132304c7f44762ecb29b07ecfb1a693e3599fc1e71d90f3ca3c337e002982ab",
+      "runtime_webp": "remake/img/sprites/characters/kafuka/chr_kafuka_serious.webp",
+      "runtime_webp_sha256": "d0ddb21226b4d7f559ec11f187a07772c46af782bd6e7128b33734feb7d5a05c",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_serious.png",
+      "previous_runtime_sha256": "e08c8f2f12698ce897c52282463a63b3891cd9edad024d74de8f993c1761097d",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "kafuka",
+      "face": "surprise",
+      "attempt": 1,
+      "source": "asset_sources/portraits/kafuka-remaster-v2/surprise-source.png",
+      "source_sha256": "f323be79c2adc7e5c15b8785aee3959ed71f35119dc1ea8f23612c05d15aaf35",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1426,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "33b72ad89cd81a11906e8c21558749c1e287976387f550daa458baaf8854cd24",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/kafuka/chr_kafuka_surprise.png",
+      "runtime_png_sha256": "1f265cea25d0f156b5af491469946cbede3d8edfc153e755596056d83974037a",
+      "runtime_webp": "remake/img/sprites/characters/kafuka/chr_kafuka_surprise.webp",
+      "runtime_webp_sha256": "5c6220a3ab34085d450dfca6c8e3db12f3c833181e4421e1347d87a5d95ea023",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_surprise.png",
+      "previous_runtime_sha256": "915c1b810117697e560a9546ba444e466a61a3eb31cc91f5ecd7eb30e0dcc1f2",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "kafuka",
+      "face": "excited",
+      "attempt": 1,
+      "source": "asset_sources/portraits/kafuka-remaster-v2/excited-source.png",
+      "source_sha256": "fe4206ef1784268ee394cfee22bba8ec6491dc46d0f77451c3c7a1b245b35f0e",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1425,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "4c833be248fc07dab7c03fbf81dfb4dc9fb9a727a3a611bd0855830e30d0a1b6",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/kafuka/chr_kafuka_excited.png",
+      "runtime_png_sha256": "76107557e2e2270f90b7ce337c15d31986a7e507c671cb1ad069f643666dc3e9",
+      "runtime_webp": "remake/img/sprites/characters/kafuka/chr_kafuka_excited.webp",
+      "runtime_webp_sha256": "c458e41bc1877a03e00c5980b15d6d900419ca6a29081b66488406a980707269",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_excited.png",
+      "previous_runtime_sha256": "bae030e12a6301ad7c42d7bdf36381a6f7949776b69004d9c60d7517a4a50f2e",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "kafuka",
+      "face": "ventriloquism",
+      "attempt": 1,
+      "source": "asset_sources/portraits/kafuka-remaster-v2/ventriloquism-source.png",
+      "source_sha256": "dce587a57ff7c649e0e881d6a221ae4e4c61d03b8a66c2fd3c08b1135c4c231e",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1382,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "dcaca11698c4f3c24fb75d1dd5df8e2587999e96f091458d122c463150e1699d",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/kafuka/chr_kafuka_ventriloquism.png",
+      "runtime_png_sha256": "120fd34342c41ce0a73079f5b9eb31d3afc690e53f98fee2426dc1f2abac6144",
+      "runtime_webp": "remake/img/sprites/characters/kafuka/chr_kafuka_ventriloquism.webp",
+      "runtime_webp_sha256": "05b619beabc10c41a8b75ea2e33270bd1149fb8caf7220a888f16d756c835e58",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/kafuka-remaster-v2/previous-runtime/chr_kafuka_ventriloquism.png",
+      "previous_runtime_sha256": "dd8a6312ff5636c9e670b4cc79b5bd0e800ed0f9131ad4064511787745036f4c",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "maezono",
+      "face": "normal",
+      "attempt": 2,
+      "source": "asset_sources/portraits/maezono-remaster-v2/normal-source.png",
+      "source_sha256": "6c8e648183850b64951ea93927f585ae7d29b7f9df01d284e3b93592c0777e0e",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1377,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "65f91f858b28b28ac91a833db0c8820c8b79fed73ccc0a65fd197ba40b9ae1bb",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+      "runtime_png_sha256": "a8bce133e3a390519149237cc1c934ee02e9822f549b33aecbac4c8ae776c21b",
+      "runtime_webp": "remake/img/sprites/characters/maezono/chr_maezono_normal.webp",
+      "runtime_webp_sha256": "40fe19b6f9252b91757aef6f8eec17b0322c8ddb861a21dc7a03fee701b3160e",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_normal.png",
+      "previous_runtime_sha256": "487c0ee519326794d5d74cc52f7c4e3d6db7728304a26907eee1d729ad46fae5",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "maezono",
+      "face": "smile",
+      "attempt": 1,
+      "source": "asset_sources/portraits/maezono-remaster-v2/smile-source.png",
+      "source_sha256": "ae769beb12c45ea538d8f4aa47767b4a3d31c6d0add2b025a7208883f45effde",
+      "source_canvas_px": [
+        1084,
+        1451
+      ],
+      "source_figure_height_px": 1367,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "0eda3739bacb1303f2789fd876d5948936842109fd026e3b35f4aaea53b2b9d6",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/maezono/chr_maezono_smile.png",
+      "runtime_png_sha256": "de726fbcaafbb86b061d4d723c361a15a707a6d80f3b1cbc0720efd3be555875",
+      "runtime_webp": "remake/img/sprites/characters/maezono/chr_maezono_smile.webp",
+      "runtime_webp_sha256": "e31e224872f8c88e6f1b99ef1d20abd66f7ccdc3e4d65b419484c1654f7e3ef1",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        -6,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_smile.png",
+      "previous_runtime_sha256": "3ea917d40520d44e44f0608328800b1b46128d2bb6ad5508055aed4ad1ead1f1",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "maezono",
+      "face": "serious",
+      "attempt": 1,
+      "source": "asset_sources/portraits/maezono-remaster-v2/serious-source.png",
+      "source_sha256": "9bb99bed0b1a52153dd1ddc12c08d5b19163d2aa12b02280931c6ce150cf4d0e",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1340,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "03863d9932b9be7e4328eb05cd21b672076080607284300649e3c38037ddddec",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/maezono/chr_maezono_serious.png",
+      "runtime_png_sha256": "1875c0d9337d59b3bb21913450859105e8078a244ca75d783044aa4152fad96a",
+      "runtime_webp": "remake/img/sprites/characters/maezono/chr_maezono_serious.webp",
+      "runtime_webp_sha256": "f9cbfdceb401714e4bf520b43ef7509248c5b7a55d44e65568283d86a9098f92",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_serious.png",
+      "previous_runtime_sha256": "cec826901633084efb4ebf994d192a97d667795d10186a3704665dd27f6f8ba9",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "maezono",
+      "face": "surprise",
+      "attempt": 1,
+      "source": "asset_sources/portraits/maezono-remaster-v2/surprise-source.png",
+      "source_sha256": "a4883ab4e7a3d750e45229d5339024ddeac97c1db068e6ac4fc996434416c303",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1360,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "ab0db8b12903c417235e67e0d4d2a52c04496fa83d670009fb77fccd0b58d2de",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/maezono/chr_maezono_surprise.png",
+      "runtime_png_sha256": "ad0a3fbf3e90a9d72ae9bc0f21eddb426634f147ff9ed9b86f4f8c40c2151d8c",
+      "runtime_webp": "remake/img/sprites/characters/maezono/chr_maezono_surprise.webp",
+      "runtime_webp_sha256": "c336710ca44180ba25ed3a09b3a54555e0a9777c93eb8c22fb405dc8948199fe",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        -7,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_surprise.png",
+      "previous_runtime_sha256": "9b7b257f499cd42c5161a5203815d06e659d2eb96e9879d135b4e97dc42bcceb",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "maezono",
+      "face": "excited",
+      "attempt": 1,
+      "source": "asset_sources/portraits/maezono-remaster-v2/excited-source.png",
+      "source_sha256": "7e7b96cb1c6787c0623bfd6819dc0f29d955cc4e1f9885e3d856d5216f7825ad",
+      "source_canvas_px": [
+        1084,
+        1451
+      ],
+      "source_figure_height_px": 1358,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "eed316a4cce5a94297bc3c45622d4a16f2a4b417e31fea0a64d5a8ea1eb3ee1b",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/maezono/chr_maezono_excited.png",
+      "runtime_png_sha256": "5849ed0f70cc8a0f6b1312d239cc29116a9b5ddee0d7291ec8be8ed1e148aa1c",
+      "runtime_webp": "remake/img/sprites/characters/maezono/chr_maezono_excited.webp",
+      "runtime_webp_sha256": "891e1bbaeda226229e5dd2091d861b88158f7fb80b8954da1944dcc85d3a39a1",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        6,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_excited.png",
+      "previous_runtime_sha256": "d64c9a86c9ef297200bb0a39bef5f3f15e1e0d0e03219881d99cd40aaeac22ca",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "sumi",
+      "face": "normal",
+      "attempt": 1,
+      "source": "asset_sources/portraits/sumi-remaster-v2/normal-source.png",
+      "source_sha256": "350bbe04fb06f7ecb356506248b6076cd7d6be0bce718a8a3b1758cfc28c2d7e",
+      "source_canvas_px": [
+        1084,
+        1451
+      ],
+      "source_figure_height_px": 1388,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "5b15b87edb09f1b891f4aa069ba1c13c81ee62719a884e53af0f35aa604f69e0",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/sumi/chr_sumi_normal.png",
+      "runtime_png_sha256": "7a2e5a5d073ebb40ed32f7a9f1a47a98ef5055eb97b3d11dad5df81d768734a5",
+      "runtime_webp": "remake/img/sprites/characters/sumi/chr_sumi_normal.webp",
+      "runtime_webp_sha256": "1db42d36afb00ec939676651c305db6c11b31c9e9d4ef386df63771ba3782aa3",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/sumi-remaster-v2/previous-runtime/chr_sumi_normal.png",
+      "previous_runtime_sha256": "35cb31996f3275213b7e659d968d09fec62136d519324a93bb90f1afcf31627c",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "sumi",
+      "face": "serious",
+      "attempt": 1,
+      "source": "asset_sources/portraits/sumi-remaster-v2/serious-source.png",
+      "source_sha256": "818ea7f9c5035cae46eede402151335f80a83c7fe697e4cbe55899ee37ad33ba",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1325,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "820783689482a477be1602224c339bdd75aafdb89252c52087240193a4de0a7a",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/sumi/chr_sumi_serious.png",
+      "runtime_png_sha256": "680dbed6808b2cc7f1374306a78c302135bee869f7ee7519a4251cc54f71271f",
+      "runtime_webp": "remake/img/sprites/characters/sumi/chr_sumi_serious.webp",
+      "runtime_webp_sha256": "c036ac180338d363c1273e13ed7233d050ee3e5e7d349b054cf7ea3d43a63483",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        5,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/sumi-remaster-v2/previous-runtime/chr_sumi_serious.png",
+      "previous_runtime_sha256": "cedcfb6ec6e3357f10665fa384781c0079a509fd9b541d4ca3c507d465341416",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "sumi",
+      "face": "smile",
+      "attempt": 1,
+      "source": "asset_sources/portraits/sumi-remaster-v2/smile-source.png",
+      "source_sha256": "28e2fc9e57560e54e85e5bf62b9fbe4c1509202df73cd2e1b82d219a6b454e38",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1350,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "aaa1618e6e9d5830964673b5dbc9537a99e7b97e8f40fedd211e42b079f33f42",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/sumi/chr_sumi_smile.png",
+      "runtime_png_sha256": "5a1658d3d97ea291e1025c9ec8503cf67636fcdd6ae12537bf2a43f525ef41fa",
+      "runtime_webp": "remake/img/sprites/characters/sumi/chr_sumi_smile.webp",
+      "runtime_webp_sha256": "ab51c74885b598f419e4d624232292a369444f05e61e5427bb24b154a87e0b60",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        5,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/sumi-remaster-v2/previous-runtime/chr_sumi_smile.png",
+      "previous_runtime_sha256": "4fa7011b45471cc14f84146de14a83e4e5e582cbfdef903b9fcf563ee63508c6",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "sumi",
+      "face": "thinking",
+      "attempt": 1,
+      "source": "asset_sources/portraits/sumi-remaster-v2/thinking-source.png",
+      "source_sha256": "55367a86303b8fc9914b31e2e0d0f1cdda401081e713c20cbd421f460733caf4",
+      "source_canvas_px": [
+        1084,
+        1451
+      ],
+      "source_figure_height_px": 1326,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "d3dd67f098e2e50069c45b358af7dfd3f636301e28aded2e689d4c17f9019b5a",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/sumi/chr_sumi_thinking.png",
+      "runtime_png_sha256": "f9e2886318d5718084e5889221cc315d53fda098d93b4fb257260cd526de4d91",
+      "runtime_webp": "remake/img/sprites/characters/sumi/chr_sumi_thinking.webp",
+      "runtime_webp_sha256": "a5d6348a182e2257a9c8591ffa01ed73c579623368be6b6fbc2816c5e557955b",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        5,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/sumi-remaster-v2/previous-runtime/chr_sumi_thinking.png",
+      "previous_runtime_sha256": "bbf7156176dc421db91fecc2b9fc4e4195e2fc926e10188de0ea38a269681da1",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "sumi",
+      "face": "surprise",
+      "attempt": 1,
+      "source": "asset_sources/portraits/sumi-remaster-v2/surprise-source.png",
+      "source_sha256": "f5d22eae06ab900799558c8d65053c3c709a7a30a093d9cf572711f54367db1c",
+      "source_canvas_px": [
+        1084,
+        1451
+      ],
+      "source_figure_height_px": 1363,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "c2b740019ba53ab855dd1ec1d2ce789783db9e551685e19868eaefb8fa845193",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/sumi/chr_sumi_surprise.png",
+      "runtime_png_sha256": "7d0ee95d2c0c16789acfb33a0ccdf694e48ae435974bbbaed9ba97d329ce63d5",
+      "runtime_webp": "remake/img/sprites/characters/sumi/chr_sumi_surprise.webp",
+      "runtime_webp_sha256": "31e409e76b892246f9addb1d87ccc5cd6c5d287bcd4ab47b569d3d0f7a6115df",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/sumi-remaster-v2/previous-runtime/chr_sumi_surprise.png",
+      "previous_runtime_sha256": "295353319a1759361636cbb50c797ed019fa774806483cae0a3609e0d24a3733",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "mashiro",
+      "face": "normal",
+      "attempt": 2,
+      "source": "asset_sources/portraits/mashiro-remaster-v2/normal-source.png",
+      "source_sha256": "5399804b2dfc07ec80297e2a7a9d1b7154b4e702c74d198cef71955be714ba64",
+      "source_canvas_px": [
+        1084,
+        1451
+      ],
+      "source_figure_height_px": 1337,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "2d3390804d1f542d7998e430a31b38309e0560add648c5cf7bc70cd1ad56cf3e",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/mashiro/chr_mashiro_normal.png",
+      "runtime_png_sha256": "9c6915ec1d5cf21c400065b4c76262f1c5f538df68681409b36a22f753bccf46",
+      "runtime_webp": "remake/img/sprites/characters/mashiro/chr_mashiro_normal.webp",
+      "runtime_webp_sha256": "4bf0784dba366e4f23c6246bf278c581aa38e97a4d4e7c8862a32e1ee1627567",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/mashiro-remaster-v2/previous-runtime/chr_mashiro_normal.png",
+      "previous_runtime_sha256": "d9a9ae63c2b0bfaae9f88fc139bf3ca7deb22fd719b9286f5c383668cf495f8d",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "mashiro",
+      "face": "serious",
+      "attempt": 1,
+      "source": "asset_sources/portraits/mashiro-remaster-v2/serious-source.png",
+      "source_sha256": "053665059688e59cc17d27fb8a161589884783bec36a09f3daa2f00c2b38d2a0",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1349,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "33b92bb093681499dea9ed960add5a46f515db782b7e8b794a6714f68be2fd5f",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/mashiro/chr_mashiro_serious.png",
+      "runtime_png_sha256": "149e332046957609b037e5d64c12f88adc6079e16eeea81706726f5b87245092",
+      "runtime_webp": "remake/img/sprites/characters/mashiro/chr_mashiro_serious.webp",
+      "runtime_webp_sha256": "2f5ca6ec4d7139b1f337a898dfb4f4c2cf784addd3980e297eddd208b1dd9ed1",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/mashiro-remaster-v2/previous-runtime/chr_mashiro_serious.png",
+      "previous_runtime_sha256": "0ffccdded08add0754e7927f54d77bce6afa51a0ac7aecf24f49612c6c54c52d",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "mashiro",
+      "face": "smile",
+      "attempt": 1,
+      "source": "asset_sources/portraits/mashiro-remaster-v2/smile-source.png",
+      "source_sha256": "b6eb689bf090e3ecccaa04fcd192085343636843426f58d1ff62e1e67ef85083",
+      "source_canvas_px": [
+        1084,
+        1451
+      ],
+      "source_figure_height_px": 1343,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "9976b7981e412374126131b995749900237cfd5ff46056935c0ffb08ecde54ff",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/mashiro/chr_mashiro_smile.png",
+      "runtime_png_sha256": "6e6b9466fc9ba72ed33d585923db44f71adf11ff7ac4c7c25d2ca481222e1fed",
+      "runtime_webp": "remake/img/sprites/characters/mashiro/chr_mashiro_smile.webp",
+      "runtime_webp_sha256": "819ff66bdf52952480a04b560ea4a4bab0bf436294159e8ec38b9f221844745a",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/mashiro-remaster-v2/previous-runtime/chr_mashiro_smile.png",
+      "previous_runtime_sha256": "7cdf2c8408b8dde27f05502cb8b6c501243cada676784be30fd0989abf8bdad2",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "mashiro",
+      "face": "surprise",
+      "attempt": 1,
+      "source": "asset_sources/portraits/mashiro-remaster-v2/surprise-source.png",
+      "source_sha256": "adc322e0ac770391a517c4971098ca592b184f6daca070490b3102ebbf916c72",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1349,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "6f323b08c1646600c8bf733b753ed6c6d1c39e5c8572e8cd5340dbd694619f95",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/mashiro/chr_mashiro_surprise.png",
+      "runtime_png_sha256": "ddf6be2cad76f9f12959a70ac723c5e9cc1ca55c2c6ef6cf86839ea87c85b101",
+      "runtime_webp": "remake/img/sprites/characters/mashiro/chr_mashiro_surprise.webp",
+      "runtime_webp_sha256": "447db675c92efb3fa31df97bf7ca5d8162343ae9bb7a35e0c0f37fcd4c790905",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/mashiro-remaster-v2/previous-runtime/chr_mashiro_surprise.png",
+      "previous_runtime_sha256": "a2d2c4d73fee779f1dbb804779b9cc99fb729283650e82cc221a0c4d4bd24ab7",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "mashiro",
+      "face": "sleep",
+      "attempt": 1,
+      "source": "asset_sources/portraits/mashiro-remaster-v2/sleep-source.png",
+      "source_sha256": "5db671d5bb8128bc80dcab345ed70ca5d8de8f43dce7615cd588b39a2e55aa0b",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1402,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "cc6c286e3d409eeee27fc4882f5c6cb30dcd4f7a3a35b5271034daa27b20b43a",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/mashiro/chr_mashiro_sleep.png",
+      "runtime_png_sha256": "27355edad6b51652ee2b10187b5eaad5d2780ceeeb101c3b06c3895e26dc9158",
+      "runtime_webp": "remake/img/sprites/characters/mashiro/chr_mashiro_sleep.webp",
+      "runtime_webp_sha256": "cb7f09e52035ed70f86fde42284b8ed1016f65d75d0c976154dcca34a5bf67d7",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/mashiro-remaster-v2/previous-runtime/chr_mashiro_sleep.png",
+      "previous_runtime_sha256": "352cc2f09a3719659fb872735ea44a6c95feb5ad1b4bf8961633acb8b73d89d2",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "mashiro",
+      "face": "sad",
+      "attempt": 1,
+      "source": "asset_sources/portraits/mashiro-remaster-v2/sad-source.png",
+      "source_sha256": "4ec6ff9b003ed229515bc4d02bf0ac8d9ce9c0d743173291621bdaba22ba80ba",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1332,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "7ca5ce6b3cd4321000e5e0351a305bcab0e165206fcc1e51ce6a1e58a4a63258",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/mashiro/chr_mashiro_sad.png",
+      "runtime_png_sha256": "d13826a7ce4e51fa040f262d5ba9482c8b52f53d067243b2cc391d8b4a848daf",
+      "runtime_webp": "remake/img/sprites/characters/mashiro/chr_mashiro_sad.webp",
+      "runtime_webp_sha256": "b23c81e7353a0d92caff982534d356ba5caf98f1734709314a13f714c22fab32",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/mashiro-remaster-v2/previous-runtime/chr_mashiro_sad.png",
+      "previous_runtime_sha256": "9c8870e96e7d73fd7c9b9aca89d9d6b07c0072e7517a7b09322e622848889e10",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "nagumo",
+      "face": "normal",
+      "attempt": 2,
+      "source": "asset_sources/portraits/nagumo-remaster-v2/normal-source.png",
+      "source_sha256": "c2816ddd14989f8c25c95129cdfff240f69da1b314db96c0e577cfd5bd02e8c5",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1418,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "4bbe9703fb03f94b2f4f0b990b2a47cb3028c8fd1b255385d394347ac5923c7c",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/nagumo/chr_nagumo_normal.png",
+      "runtime_png_sha256": "c29ed0b480b049f2dd069ff401abd7e702b0825449ed9652e1d8768772778ba1",
+      "runtime_webp": "remake/img/sprites/characters/nagumo/chr_nagumo_normal.webp",
+      "runtime_webp_sha256": "baae69ad0856f0c677a7451c4094e0e21b6a0576c4dd59a6355d5348c82d64e1",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_normal.png",
+      "previous_runtime_sha256": "acc536926a7fe897c26d5f9d2846d87fa2068b501be3046a470887dff06c2fad",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "nagumo",
+      "face": "smile",
+      "attempt": 1,
+      "source": "asset_sources/portraits/nagumo-remaster-v2/smile-source.png",
+      "source_sha256": "301973606051de696f5882ce5d1231741a6f22fdc2441e7bab5c433fd472ee66",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1427,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "34e99d226f90f9b9053c2607394da734d21ed13213c80efbdaa9c28774371dda",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/nagumo/chr_nagumo_smile.png",
+      "runtime_png_sha256": "e58f244b5a7695acf591f29a668ae2c412954f9fb405911120657ea8cb5f57ac",
+      "runtime_webp": "remake/img/sprites/characters/nagumo/chr_nagumo_smile.webp",
+      "runtime_webp_sha256": "ac21203384e75e481db4cc81ccf12693506217cb032a6621a8e883337a333893",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_smile.png",
+      "previous_runtime_sha256": "9a9120acd447cba05834ab35af34c8d1ae690eb9a86f54b5736b1bbf20163b5c",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "nagumo",
+      "face": "serious",
+      "attempt": 1,
+      "source": "asset_sources/portraits/nagumo-remaster-v2/serious-source.png",
+      "source_sha256": "91083524cd2413a8200edb2356f6677380e7a4b4bb0bf8741efa9aad31f650cc",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1439,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "a021662194d47d191ded150bded3fafc54a1b0af76e914b9b83c65e7940a59cf",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/nagumo/chr_nagumo_serious.png",
+      "runtime_png_sha256": "4781555c7231048915e740c6b545d4e2b8171719b6de1191cec3b418af50e082",
+      "runtime_webp": "remake/img/sprites/characters/nagumo/chr_nagumo_serious.webp",
+      "runtime_webp_sha256": "e39a63f198f33ea63720ba73a0fb50f7ac7ee28bf7e76927384a193b536d294a",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_serious.png",
+      "previous_runtime_sha256": "589da38a726d6057f4536684554f9174ae7ea0890b2bd8bc87846088cea3c086",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "nagumo",
+      "face": "surprise",
+      "attempt": 1,
+      "source": "asset_sources/portraits/nagumo-remaster-v2/surprise-source.png",
+      "source_sha256": "af0d33f7f7841643162f2c353e8979b9ea2840c5ecfc6a6d3750b114f2b2ab9a",
+      "source_canvas_px": [
+        1084,
+        1451
+      ],
+      "source_figure_height_px": 1425,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "94576159b93113964874b9ef3ce84c0d59bd6c5074a3c37aa795d87a07f4adbf",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/nagumo/chr_nagumo_surprise.png",
+      "runtime_png_sha256": "002c17ca5dbc062b350ea62901f35dc3e92b70b6d4ff68b9abdef8aeedf01a5b",
+      "runtime_webp": "remake/img/sprites/characters/nagumo/chr_nagumo_surprise.webp",
+      "runtime_webp_sha256": "73ea5c62a7a5384ee782817d77b1148661dab98aaf14ec01844b2036d319c542",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_surprise.png",
+      "previous_runtime_sha256": "2a980880a8426614c48d7137e877e328ff024acd742905fedcb8ca606587f661",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    },
+    {
+      "character": "nagumo",
+      "face": "thinking",
+      "attempt": 1,
+      "source": "asset_sources/portraits/nagumo-remaster-v2/thinking-source.png",
+      "source_sha256": "f171b7958d23e4dcd46ee7d6c4c05f8af6dae774e6555baf9fa992d31cc4817f",
+      "source_canvas_px": [
+        1085,
+        1450
+      ],
+      "source_figure_height_px": 1444,
+      "source_matches_original_tool_output": true,
+      "prompt_sha256": "27c0463d8c6cc5739a654b6141a28a3a778947c67964636fd2c7081bc04ab15d",
+      "four_reference_hashes_verified": true,
+      "runtime_canvas_px": [
+        896,
+        1200
+      ],
+      "runtime_png": "assets/sprites/characters/nagumo/chr_nagumo_thinking.png",
+      "runtime_png_sha256": "6d61f7990269ac94d2e417f2af890a9dff7b2ada58924c336584496b0e7cdb64",
+      "runtime_webp": "remake/img/sprites/characters/nagumo/chr_nagumo_thinking.webp",
+      "runtime_webp_sha256": "5720ee7c3586198e530d13669da30e45a83af6649b6f89862f29c08712eb5cc7",
+      "webp_rgba_pixels_equal_png": true,
+      "whole_image_alignment_translation_px": [
+        0,
+        0
+      ],
+      "runtime_matches_fitted_preview_with_translation_only": true,
+      "figure_height_difference_from_original_px": 0,
+      "bottom_difference_from_original_px": 0,
+      "previous_runtime": "asset_sources/portraits/nagumo-remaster-v2/previous-runtime/chr_nagumo_thinking.png",
+      "previous_runtime_sha256": "eca148ad51b3d14c081eb84475e23abc9ab6d5073bdc79094086e78aba11aca4",
+      "browser_viewports_passed": [
+        {
+          "width": 1280,
+          "height": 720
+        },
+        {
+          "width": 591,
+          "height": 1280
+        }
+      ]
+    }
+  ],
+  "alignment_final_dry_run": {
+    "tsumugi": 0,
+    "kafuka": 0,
+    "maezono": 0,
+    "sumi": 0,
+    "mashiro": 0,
+    "nagumo": 0
+  }
+}

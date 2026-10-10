@@ -1,0 +1,532 @@
+{
+  "schema_version": 1,
+  "character": "maezono",
+  "generations": [
+    {
+      "face": "normal",
+      "prompt_number": 8,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:05:34.130937+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/maezono-remaster-v2/attempts/normal-attempt-01-source.png",
+      "source_sha256": "cde526f50a41e19feae4737a1c037c8fae054c364556f24f937609f7b912c897",
+      "original_tool_file": "exec-83b36b34-0e94-43b8-81c2-5d59ee0db2aa.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/maezono-remaster-v2/attempts/normal-attempt-01-prompt.txt",
+      "prompt_sha256": "262ba981ffa810798bf29c03c78d637c187115583c4fb9168c77a22a18bc2073",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+          "sha256": "487c0ee519326794d5d74cc52f7c4e3d6db7728304a26907eee1d729ad46fae5"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+          "sha256": "487c0ee519326794d5d74cc52f7c4e3d6db7728304a26907eee1d729ad46fae5"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "canvas_px": [
+        1084,
+        1451
+      ],
+      "alpha_bbox_threshold_16_px": [
+        254,
+        26,
+        812,
+        1425
+      ],
+      "figure_height_px": 1399,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "needs_revision",
+        "note": "原画を目視。丸眼鏡・挨拶の手・メモ・衣装を保持。輪郭に元画像の赤黄の色にじみが残るので再生成。"
+      }
+    },
+    {
+      "face": "normal",
+      "prompt_number": 8,
+      "attempt": 2,
+      "generated_at_utc": "2026-10-10T05:12:14.803075+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/maezono-remaster-v2/attempts/normal-attempt-02-source.png",
+      "source_sha256": "6c8e648183850b64951ea93927f585ae7d29b7f9df01d284e3b93592c0777e0e",
+      "original_tool_file": "exec-6ef6540d-3fee-4726-9328-f5f454124416.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/maezono-remaster-v2/attempts/normal-attempt-02-prompt.txt",
+      "prompt_sha256": "65f91f858b28b28ac91a833db0c8820c8b79fed73ccc0a65fd197ba40b9ae1bb",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+          "sha256": "487c0ee519326794d5d74cc52f7c4e3d6db7728304a26907eee1d729ad46fae5",
+          "archived_original_path": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_normal.png"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+          "sha256": "487c0ee519326794d5d74cc52f7c4e3d6db7728304a26907eee1d729ad46fae5",
+          "archived_original_path": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_normal.png"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        244,
+        47,
+        823,
+        1424
+      ],
+      "figure_height_px": 1377,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:20:24.012443+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection",
+        "note": "オーナーが試作3枚を承認。全身・手足・衣装・ポーズ・透過と896x1200への位置合わせを確認。つむぎは丸く少し大きめの頭を優先。"
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+        "runtime_png_sha256": "a8bce133e3a390519149237cc1c934ee02e9822f549b33aecbac4c8ae776c21b",
+        "runtime_webp": "remake/img/sprites/characters/maezono/chr_maezono_normal.webp",
+        "runtime_webp_sha256": "40fe19b6f9252b91757aef6f8eec17b0322c8ddb861a21dc7a03fee701b3160e",
+        "previous_runtime": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_normal.png",
+        "previous_runtime_sha256": "487c0ee519326794d5d74cc52f7c4e3d6db7728304a26907eee1d729ad46fae5",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
+      }
+    },
+    {
+      "face": "smile",
+      "prompt_number": 9,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:45:49.580184+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/maezono-remaster-v2/attempts/smile-attempt-01-source.png",
+      "source_sha256": "ae769beb12c45ea538d8f4aa47767b4a3d31c6d0add2b025a7208883f45effde",
+      "original_tool_file": "exec-1baeb422-4167-462c-8d5e-f53448c6f323.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/maezono-remaster-v2/attempts/smile-attempt-01-prompt.txt",
+      "prompt_sha256": "0eda3739bacb1303f2789fd876d5948936842109fd026e3b35f4aaea53b2b9d6",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/maezono/chr_maezono_smile.png",
+          "sha256": "3ea917d40520d44e44f0608328800b1b46128d2bb6ad5508055aed4ad1ead1f1",
+          "archived_original_path": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_smile.png"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "asset_sources/portraits/maezono-remaster-v2/normal-source.png",
+          "sha256": "6c8e648183850b64951ea93927f585ae7d29b7f9df01d284e3b93592c0777e0e"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "canvas_px": [
+        1084,
+        1451
+      ],
+      "alpha_bbox_threshold_16_px": [
+        245,
+        45,
+        822,
+        1412
+      ],
+      "figure_height_px": 1367,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:53:26.486925+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原寸・元絵比較を確認。笑顔の閉じ目と挨拶の5本指／真剣な眉と顎の手、丸眼鏡・胸ポケットのメモとペンを保持。39歳の顔・ふくよかな体格・紺と水色とベージュ・全身と両靴・透過を検品。",
+        "preview_bbox_threshold_16_px": [
+          187,
+          54,
+          660,
+          1174
+        ],
+        "original_bbox_threshold_16_px": [
+          201,
+          54,
+          657,
+          1174
+        ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/maezono/chr_maezono_smile.png",
+        "runtime_png_sha256": "de726fbcaafbb86b061d4d723c361a15a707a6d80f3b1cbc0720efd3be555875",
+        "runtime_webp": "remake/img/sprites/characters/maezono/chr_maezono_smile.webp",
+        "runtime_webp_sha256": "e31e224872f8c88e6f1b99ef1d20abd66f7ccdc3e4d65b419484c1654f7e3ef1",
+        "previous_runtime": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_smile.png",
+        "previous_runtime_sha256": "3ea917d40520d44e44f0608328800b1b46128d2bb6ad5508055aed4ad1ead1f1",
+        "alignment_translation_px": [
+          -6,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
+      }
+    },
+    {
+      "face": "serious",
+      "prompt_number": 10,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:48:07.706137+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/maezono-remaster-v2/attempts/serious-attempt-01-source.png",
+      "source_sha256": "9bb99bed0b1a52153dd1ddc12c08d5b19163d2aa12b02280931c6ce150cf4d0e",
+      "original_tool_file": "exec-6940b68b-d3c3-4cf1-81c8-e9bc6b16ec2d.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/maezono-remaster-v2/attempts/serious-attempt-01-prompt.txt",
+      "prompt_sha256": "03863d9932b9be7e4328eb05cd21b672076080607284300649e3c38037ddddec",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/maezono/chr_maezono_serious.png",
+          "sha256": "cec826901633084efb4ebf994d192a97d667795d10186a3704665dd27f6f8ba9",
+          "archived_original_path": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_serious.png"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "asset_sources/portraits/maezono-remaster-v2/normal-source.png",
+          "sha256": "6c8e648183850b64951ea93927f585ae7d29b7f9df01d284e3b93592c0777e0e"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        302,
+        62,
+        799,
+        1402
+      ],
+      "figure_height_px": 1340,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:53:26.869480+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原寸・元絵比較を確認。笑顔の閉じ目と挨拶の5本指／真剣な眉と顎の手、丸眼鏡・胸ポケットのメモとペンを保持。39歳の顔・ふくよかな体格・紺と水色とベージュ・全身と両靴・透過を検品。",
+        "preview_bbox_threshold_16_px": [
+          229,
+          63,
+          641,
+          1174
+        ],
+        "original_bbox_threshold_16_px": [
+          229,
+          63,
+          639,
+          1174
+        ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/maezono/chr_maezono_serious.png",
+        "runtime_png_sha256": "1875c0d9337d59b3bb21913450859105e8078a244ca75d783044aa4152fad96a",
+        "runtime_webp": "remake/img/sprites/characters/maezono/chr_maezono_serious.webp",
+        "runtime_webp_sha256": "f9cbfdceb401714e4bf520b43ef7509248c5b7a55d44e65568283d86a9098f92",
+        "previous_runtime": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_serious.png",
+        "previous_runtime_sha256": "cec826901633084efb4ebf994d192a97d667795d10186a3704665dd27f6f8ba9",
+        "alignment_translation_px": [
+          0,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
+      }
+    },
+    {
+      "face": "surprise",
+      "prompt_number": 11,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:48:47.732813+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/maezono-remaster-v2/attempts/surprise-attempt-01-source.png",
+      "source_sha256": "a4883ab4e7a3d750e45229d5339024ddeac97c1db068e6ac4fc996434416c303",
+      "original_tool_file": "exec-7612777c-fd3a-42e5-8b6e-adb0bce22851.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/maezono-remaster-v2/attempts/surprise-attempt-01-prompt.txt",
+      "prompt_sha256": "ab0db8b12903c417235e67e0d4d2a52c04496fa83d670009fb77fccd0b58d2de",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/maezono/chr_maezono_surprise.png",
+          "sha256": "9b7b257f499cd42c5161a5203815d06e659d2eb96e9879d135b4e97dc42bcceb",
+          "archived_original_path": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_surprise.png"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "asset_sources/portraits/maezono-remaster-v2/normal-source.png",
+          "sha256": "6c8e648183850b64951ea93927f585ae7d29b7f9df01d284e3b93592c0777e0e"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        254,
+        48,
+        815,
+        1408
+      ],
+      "figure_height_px": 1360,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:58:36.556502+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原画と原寸比較を確認。丸眼鏡と柔らかな頬、元の紺・水色・ベージュ・茶色を保持。surpriseの開いた5本指と驚き顔、excitedの両拳と笑顔を維持。手足・靴底の欠け、背景の残り、余分な手はない。",
+        "preview_bbox_threshold_16_px": [
+          197,
+          64,
+          655,
+          1174
+        ],
+        "original_bbox_threshold_16_px": [
+          199,
+          64,
+          654,
+          1174
+        ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/maezono/chr_maezono_surprise.png",
+        "runtime_png_sha256": "ad0a3fbf3e90a9d72ae9bc0f21eddb426634f147ff9ed9b86f4f8c40c2151d8c",
+        "runtime_webp": "remake/img/sprites/characters/maezono/chr_maezono_surprise.webp",
+        "runtime_webp_sha256": "c336710ca44180ba25ed3a09b3a54555e0a9777c93eb8c22fb405dc8948199fe",
+        "previous_runtime": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_surprise.png",
+        "previous_runtime_sha256": "9b7b257f499cd42c5161a5203815d06e659d2eb96e9879d135b4e97dc42bcceb",
+        "alignment_translation_px": [
+          -7,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
+      }
+    },
+    {
+      "face": "excited",
+      "prompt_number": 12,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:49:31.857097+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/maezono-remaster-v2/attempts/excited-attempt-01-source.png",
+      "source_sha256": "7e7b96cb1c6787c0623bfd6819dc0f29d955cc4e1f9885e3d856d5216f7825ad",
+      "original_tool_file": "exec-6e741c69-bce3-434f-81b1-7e3c66a1f6a5.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/maezono-remaster-v2/attempts/excited-attempt-01-prompt.txt",
+      "prompt_sha256": "eed316a4cce5a94297bc3c45622d4a16f2a4b417e31fea0a64d5a8ea1eb3ee1b",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/maezono/chr_maezono_excited.png",
+          "sha256": "d64c9a86c9ef297200bb0a39bef5f3f15e1e0d0e03219881d99cd40aaeac22ca",
+          "archived_original_path": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_excited.png"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "asset_sources/portraits/maezono-remaster-v2/normal-source.png",
+          "sha256": "6c8e648183850b64951ea93927f585ae7d29b7f9df01d284e3b93592c0777e0e"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "canvas_px": [
+        1084,
+        1451
+      ],
+      "alpha_bbox_threshold_16_px": [
+        280,
+        56,
+        851,
+        1414
+      ],
+      "figure_height_px": 1358,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:58:36.959461+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原画と原寸比較を確認。丸眼鏡と柔らかな頬、元の紺・水色・ベージュ・茶色を保持。surpriseの開いた5本指と驚き顔、excitedの両拳と笑顔を維持。手足・靴底の欠け、背景の残り、余分な手はない。",
+        "preview_bbox_threshold_16_px": [
+          188,
+          78,
+          649,
+          1174
+        ],
+        "original_bbox_threshold_16_px": [
+          194,
+          78,
+          641,
+          1174
+        ]
+      },
+      "integration": {
+        "runtime_png": "assets/sprites/characters/maezono/chr_maezono_excited.png",
+        "runtime_png_sha256": "5849ed0f70cc8a0f6b1312d239cc29116a9b5ddee0d7291ec8be8ed1e148aa1c",
+        "runtime_webp": "remake/img/sprites/characters/maezono/chr_maezono_excited.webp",
+        "runtime_webp_sha256": "891e1bbaeda226229e5dd2091d861b88158f7fb80b8954da1944dcc85d3a39a1",
+        "previous_runtime": "asset_sources/portraits/maezono-remaster-v2/previous-runtime/chr_maezono_excited.png",
+        "previous_runtime_sha256": "d64c9a86c9ef297200bb0a39bef5f3f15e1e0d0e03219881d99cd40aaeac22ca",
+        "alignment_translation_px": [
+          6,
+          0
+        ],
+        "webp_rgba_pixels_equal_png": true
+      }
+    }
+  ],
+  "selected_attempt": 2,
+  "owner_approval": {
+    "normal": {
+      "status": "accepted",
+      "date": "2026-10-10",
+      "instruction": "いいと思います",
+      "attempt": 2
+    }
+  },
+  "selected_attempts": {
+    "normal": 2,
+    "smile": 1,
+    "serious": 1,
+    "surprise": 1,
+    "excited": 1
+  },
+  "approval_policy": {
+    "mode": "delegated_production_qa",
+    "owner_instruction": "いいと思います。ただ作り直すたびに色薄くなってる気がするのは気のせい？ 一旦確認もそこまでいらないからガンガン進めて",
+    "received_on": "2026-10-10"
+  },
+  "integration_status": {
+    "status": "complete",
+    "checked_at_utc": "2026-10-10T06:26:32.951940+00:00",
+    "expressions": 5,
+    "browser_viewports": [
+      "1280x720",
+      "591x1280"
+    ],
+    "production_qa": "asset_sources/portraits/resolution-upgrade-20261009/production-qa.json"
+  }
+}

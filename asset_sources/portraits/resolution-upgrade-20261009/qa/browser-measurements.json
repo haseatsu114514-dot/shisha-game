@@ -1,0 +1,1702 @@
+[
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "tsumugi",
+    "face": "normal",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 196.92031860351562,
+      "y": -154.828125,
+      "width": 884.390625,
+      "height": 1184.453125,
+      "top": -154.828125,
+      "right": 1081.3109436035156,
+      "bottom": 1029.625,
+      "left": 196.92031860351562
+    },
+    "edges": 0,
+    "headTop": 146.22037760416669,
+    "stageTop": 0,
+    "figureHeight": 869
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "tsumugi",
+    "face": "smile",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 196.92031860351562,
+      "y": -154.828125,
+      "width": 884.390625,
+      "height": 1184.453125,
+      "top": -154.828125,
+      "right": 1081.3109436035156,
+      "bottom": 1029.625,
+      "left": 196.92031860351562
+    },
+    "edges": 0,
+    "headTop": 143.25924479166667,
+    "stageTop": 0,
+    "figureHeight": 872
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "tsumugi",
+    "face": "serious",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 196.92031860351562,
+      "y": -154.828125,
+      "width": 884.390625,
+      "height": 1184.453125,
+      "top": -154.828125,
+      "right": 1081.3109436035156,
+      "bottom": 1029.625,
+      "left": 196.92031860351562
+    },
+    "edges": 0,
+    "headTop": 151.15559895833331,
+    "stageTop": 0,
+    "figureHeight": 864
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "tsumugi",
+    "face": "surprise",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 196.92031860351562,
+      "y": -154.828125,
+      "width": 884.390625,
+      "height": 1184.453125,
+      "top": -154.828125,
+      "right": 1081.3109436035156,
+      "bottom": 1029.625,
+      "left": 196.92031860351562
+    },
+    "edges": 0,
+    "headTop": 148.19446614583336,
+    "stageTop": 0,
+    "figureHeight": 867
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "tsumugi",
+    "face": "sad",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 196.92031860351562,
+      "y": -154.828125,
+      "width": 884.390625,
+      "height": 1184.453125,
+      "top": -154.828125,
+      "right": 1081.3109436035156,
+      "bottom": 1029.625,
+      "left": 196.92031860351562
+    },
+    "edges": 0,
+    "headTop": 157.07786458333334,
+    "stageTop": 0,
+    "figureHeight": 859
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "tsumugi",
+    "face": "evil",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 196.92031860351562,
+      "y": -154.828125,
+      "width": 884.390625,
+      "height": 1184.453125,
+      "top": -154.828125,
+      "right": 1081.3109436035156,
+      "bottom": 1029.625,
+      "left": 196.92031860351562
+    },
+    "edges": 0,
+    "headTop": 146.22037760416669,
+    "stageTop": 0,
+    "figureHeight": 869
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "tsumugi",
+    "face": "bow",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 196.92031860351562,
+      "y": -154.828125,
+      "width": 884.390625,
+      "height": 1184.453125,
+      "top": -154.828125,
+      "right": 1081.3109436035156,
+      "bottom": 1029.625,
+      "left": 196.92031860351562
+    },
+    "edges": 0,
+    "headTop": 146.22037760416669,
+    "stageTop": 0,
+    "figureHeight": 869
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "kafuka",
+    "face": "normal",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 203.9039306640625,
+      "y": -135.71875,
+      "width": 870.625,
+      "height": 1166.015625,
+      "top": -135.71875,
+      "right": 1074.5289306640625,
+      "bottom": 1030.296875,
+      "left": 203.9039306640625
+    },
+    "edges": 0,
+    "headTop": 122.748046875,
+    "stageTop": 0,
+    "figureHeight": 908
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "kafuka",
+    "face": "smile",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 203.9039306640625,
+      "y": -135.71875,
+      "width": 870.625,
+      "height": 1166.015625,
+      "top": -135.71875,
+      "right": 1074.5289306640625,
+      "bottom": 1030.296875,
+      "left": 203.9039306640625
+    },
+    "edges": 0,
+    "headTop": 121.7763671875,
+    "stageTop": 0,
+    "figureHeight": 909
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "kafuka",
+    "face": "serious",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 203.9039306640625,
+      "y": -135.71875,
+      "width": 870.625,
+      "height": 1166.015625,
+      "top": -135.71875,
+      "right": 1074.5289306640625,
+      "bottom": 1030.296875,
+      "left": 203.9039306640625
+    },
+    "edges": 0,
+    "headTop": 121.7763671875,
+    "stageTop": 0,
+    "figureHeight": 909
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "kafuka",
+    "face": "surprise",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 203.9039306640625,
+      "y": -135.71875,
+      "width": 870.625,
+      "height": 1166.015625,
+      "top": -135.71875,
+      "right": 1074.5289306640625,
+      "bottom": 1030.296875,
+      "left": 203.9039306640625
+    },
+    "edges": 0,
+    "headTop": 120.8046875,
+    "stageTop": 0,
+    "figureHeight": 910
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "kafuka",
+    "face": "excited",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 203.9039306640625,
+      "y": -135.71875,
+      "width": 870.625,
+      "height": 1166.015625,
+      "top": -135.71875,
+      "right": 1074.5289306640625,
+      "bottom": 1030.296875,
+      "left": 203.9039306640625
+    },
+    "edges": 0,
+    "headTop": 114.0029296875,
+    "stageTop": 0,
+    "figureHeight": 917
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "kafuka",
+    "face": "ventriloquism",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 203.9039306640625,
+      "y": -135.71875,
+      "width": 870.625,
+      "height": 1166.015625,
+      "top": -135.71875,
+      "right": 1074.5289306640625,
+      "bottom": 1030.296875,
+      "left": 203.9039306640625
+    },
+    "edges": 0,
+    "headTop": 120.8046875,
+    "stageTop": 0,
+    "figureHeight": 910
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "maezono",
+    "face": "normal",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 250.92803955078125,
+      "y": -0.890625,
+      "width": 767.703125,
+      "height": 1028.1875,
+      "top": -0.890625,
+      "right": 1018.6311645507812,
+      "bottom": 1027.296875,
+      "left": 250.92803955078125
+    },
+    "edges": 0,
+    "headTop": 48.805104166666666,
+    "stageTop": 0,
+    "figureHeight": 1116
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "maezono",
+    "face": "smile",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 250.92803955078125,
+      "y": -0.890625,
+      "width": 767.703125,
+      "height": 1028.1875,
+      "top": -0.890625,
+      "right": 1018.6311645507812,
+      "bottom": 1027.296875,
+      "left": 250.92803955078125
+    },
+    "edges": 0,
+    "headTop": 45.3778125,
+    "stageTop": 0,
+    "figureHeight": 1120
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "maezono",
+    "face": "serious",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 250.92803955078125,
+      "y": -0.890625,
+      "width": 767.703125,
+      "height": 1028.1875,
+      "top": -0.890625,
+      "right": 1018.6311645507812,
+      "bottom": 1027.296875,
+      "left": 250.92803955078125
+    },
+    "edges": 0,
+    "headTop": 53.08921875,
+    "stageTop": 0,
+    "figureHeight": 1111
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "maezono",
+    "face": "surprise",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 250.92803955078125,
+      "y": -0.890625,
+      "width": 767.703125,
+      "height": 1028.1875,
+      "top": -0.890625,
+      "right": 1018.6311645507812,
+      "bottom": 1027.296875,
+      "left": 250.92803955078125
+    },
+    "edges": 0,
+    "headTop": 53.946041666666666,
+    "stageTop": 0,
+    "figureHeight": 1110
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "maezono",
+    "face": "excited",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 250.92803955078125,
+      "y": -0.890625,
+      "width": 767.703125,
+      "height": 1028.1875,
+      "top": -0.890625,
+      "right": 1018.6311645507812,
+      "bottom": 1027.296875,
+      "left": 250.92803955078125
+    },
+    "edges": 0,
+    "headTop": 65.9415625,
+    "stageTop": 0,
+    "figureHeight": 1096
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "sumi",
+    "face": "normal",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 182.99081420898438,
+      "y": -78.140625,
+      "width": 857.75,
+      "height": 1148.78125,
+      "top": -78.140625,
+      "right": 1040.7408142089844,
+      "bottom": 1070.640625,
+      "left": 182.99081420898438
+    },
+    "edges": 0,
+    "headTop": 20.463098958333333,
+    "stageTop": 0,
+    "figureHeight": 1072
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "sumi",
+    "face": "smile",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 182.99081420898438,
+      "y": -78.140625,
+      "width": 857.75,
+      "height": 1148.78125,
+      "top": -78.140625,
+      "right": 1040.7408142089844,
+      "bottom": 1070.640625,
+      "left": 182.99081420898438
+    },
+    "edges": 0,
+    "headTop": 20.463098958333333,
+    "stageTop": 0,
+    "figureHeight": 1072
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "sumi",
+    "face": "serious",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 182.99081420898438,
+      "y": -78.140625,
+      "width": 857.75,
+      "height": 1148.78125,
+      "top": -78.140625,
+      "right": 1040.7408142089844,
+      "bottom": 1070.640625,
+      "left": 182.99081420898438
+    },
+    "edges": 0,
+    "headTop": 18.548463541666663,
+    "stageTop": 0,
+    "figureHeight": 1074
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "sumi",
+    "face": "surprise",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 182.99081420898438,
+      "y": -78.140625,
+      "width": 857.75,
+      "height": 1148.78125,
+      "top": -78.140625,
+      "right": 1040.7408142089844,
+      "bottom": 1070.640625,
+      "left": 182.99081420898438
+    },
+    "edges": 0,
+    "headTop": 20.463098958333333,
+    "stageTop": 0,
+    "figureHeight": 1072
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "sumi",
+    "face": "thinking",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 182.99081420898438,
+      "y": -78.140625,
+      "width": 857.75,
+      "height": 1148.78125,
+      "top": -78.140625,
+      "right": 1040.7408142089844,
+      "bottom": 1070.640625,
+      "left": 182.99081420898438
+    },
+    "edges": 0,
+    "headTop": 20.463098958333333,
+    "stageTop": 0,
+    "figureHeight": 1072
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "mashiro",
+    "face": "normal",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 189.136962890625,
+      "y": -174.0625,
+      "width": 898.3125,
+      "height": 1203.109375,
+      "top": -174.0625,
+      "right": 1087.449462890625,
+      "bottom": 1029.046875,
+      "left": 189.136962890625
+    },
+    "edges": 0,
+    "headTop": 123.70707031249998,
+    "stageTop": 0,
+    "figureHeight": 879
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "mashiro",
+    "face": "smile",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 189.136962890625,
+      "y": -174.0625,
+      "width": 898.3125,
+      "height": 1203.109375,
+      "top": -174.0625,
+      "right": 1087.449462890625,
+      "bottom": 1029.046875,
+      "left": 189.136962890625
+    },
+    "edges": 0,
+    "headTop": 124.70966145833336,
+    "stageTop": 0,
+    "figureHeight": 878
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "mashiro",
+    "face": "serious",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 189.136962890625,
+      "y": -174.0625,
+      "width": 898.3125,
+      "height": 1203.109375,
+      "top": -174.0625,
+      "right": 1087.449462890625,
+      "bottom": 1029.046875,
+      "left": 189.136962890625
+    },
+    "edges": 0,
+    "headTop": 124.70966145833336,
+    "stageTop": 0,
+    "figureHeight": 878
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "mashiro",
+    "face": "surprise",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 189.136962890625,
+      "y": -174.0625,
+      "width": 898.3125,
+      "height": 1203.109375,
+      "top": -174.0625,
+      "right": 1087.449462890625,
+      "bottom": 1029.046875,
+      "left": 189.136962890625
+    },
+    "edges": 0,
+    "headTop": 123.70707031249998,
+    "stageTop": 0,
+    "figureHeight": 879
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "mashiro",
+    "face": "sad",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 189.136962890625,
+      "y": -174.0625,
+      "width": 898.3125,
+      "height": 1203.109375,
+      "top": -174.0625,
+      "right": 1087.449462890625,
+      "bottom": 1029.046875,
+      "left": 189.136962890625
+    },
+    "edges": 0,
+    "headTop": 126.71484375,
+    "stageTop": 0,
+    "figureHeight": 876
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "mashiro",
+    "face": "sleep",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 189.136962890625,
+      "y": -174.0625,
+      "width": 898.3125,
+      "height": 1203.109375,
+      "top": -174.0625,
+      "right": 1087.449462890625,
+      "bottom": 1029.046875,
+      "left": 189.136962890625
+    },
+    "edges": 0,
+    "headTop": 123.70707031249998,
+    "stageTop": 0,
+    "figureHeight": 879
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "nagumo",
+    "face": "normal",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 228.40542602539062,
+      "y": -35.8125,
+      "width": 812.625,
+      "height": 1088.34375,
+      "top": -35.8125,
+      "right": 1041.0304260253906,
+      "bottom": 1052.53125,
+      "left": 228.40542602539062
+    },
+    "edges": 0,
+    "headTop": 18.604687499999997,
+    "stageTop": 0,
+    "figureHeight": 1112
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "nagumo",
+    "face": "smile",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 228.40542602539062,
+      "y": -35.8125,
+      "width": 812.625,
+      "height": 1088.34375,
+      "top": -35.8125,
+      "right": 1041.0304260253906,
+      "bottom": 1052.53125,
+      "left": 228.40542602539062
+    },
+    "edges": 0,
+    "headTop": 20.41859375,
+    "stageTop": 0,
+    "figureHeight": 1110
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "nagumo",
+    "face": "serious",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 228.40542602539062,
+      "y": -35.8125,
+      "width": 812.625,
+      "height": 1088.34375,
+      "top": -35.8125,
+      "right": 1041.0304260253906,
+      "bottom": 1052.53125,
+      "left": 228.40542602539062
+    },
+    "edges": 0,
+    "headTop": 20.41859375,
+    "stageTop": 0,
+    "figureHeight": 1109
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "nagumo",
+    "face": "surprise",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 228.40542602539062,
+      "y": -35.8125,
+      "width": 812.625,
+      "height": 1088.34375,
+      "top": -35.8125,
+      "right": 1041.0304260253906,
+      "bottom": 1052.53125,
+      "left": 228.40542602539062
+    },
+    "edges": 0,
+    "headTop": 19.511640625,
+    "stageTop": 0,
+    "figureHeight": 1111
+  },
+  {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "character": "nagumo",
+    "face": "thinking",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 228.40542602539062,
+      "y": -35.8125,
+      "width": 812.625,
+      "height": 1088.34375,
+      "top": -35.8125,
+      "right": 1041.0304260253906,
+      "bottom": 1052.53125,
+      "left": 228.40542602539062
+    },
+    "edges": 0,
+    "headTop": 22.2325,
+    "stageTop": 0,
+    "figureHeight": 1106
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "tsumugi",
+    "face": "normal",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 90.92179870605469,
+      "y": 402.294189453125,
+      "width": 408.3397216796875,
+      "height": 546.8842163085938,
+      "top": 402.294189453125,
+      "right": 499.2615203857422,
+      "bottom": 949.1784057617188,
+      "left": 90.92179870605469
+    },
+    "edges": 0,
+    "headTop": 541.2939277648926,
+    "stageTop": 473.78125,
+    "figureHeight": 869
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "tsumugi",
+    "face": "smile",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 90.92179870605469,
+      "y": 402.294189453125,
+      "width": 408.3397216796875,
+      "height": 546.8842163085938,
+      "top": 402.294189453125,
+      "right": 499.2615203857422,
+      "bottom": 949.1784057617188,
+      "left": 90.92179870605469
+    },
+    "edges": 0,
+    "headTop": 539.9267172241211,
+    "stageTop": 473.78125,
+    "figureHeight": 872
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "tsumugi",
+    "face": "serious",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 90.92179870605469,
+      "y": 402.294189453125,
+      "width": 408.3397216796875,
+      "height": 546.8842163085938,
+      "top": 402.294189453125,
+      "right": 499.2615203857422,
+      "bottom": 949.1784057617188,
+      "left": 90.92179870605469
+    },
+    "edges": 0,
+    "headTop": 543.5726119995118,
+    "stageTop": 473.78125,
+    "figureHeight": 864
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "tsumugi",
+    "face": "surprise",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 90.92179870605469,
+      "y": 402.294189453125,
+      "width": 408.3397216796875,
+      "height": 546.8842163085938,
+      "top": 402.294189453125,
+      "right": 499.2615203857422,
+      "bottom": 949.1784057617188,
+      "left": 90.92179870605469
+    },
+    "edges": 0,
+    "headTop": 542.2054014587402,
+    "stageTop": 473.78125,
+    "figureHeight": 867
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "tsumugi",
+    "face": "sad",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 90.92179870605469,
+      "y": 402.294189453125,
+      "width": 408.3397216796875,
+      "height": 546.8842163085938,
+      "top": 402.294189453125,
+      "right": 499.2615203857422,
+      "bottom": 949.1784057617188,
+      "left": 90.92179870605469
+    },
+    "edges": 0,
+    "headTop": 546.3070330810547,
+    "stageTop": 473.78125,
+    "figureHeight": 859
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "tsumugi",
+    "face": "evil",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 90.92179870605469,
+      "y": 402.294189453125,
+      "width": 408.3397216796875,
+      "height": 546.8842163085938,
+      "top": 402.294189453125,
+      "right": 499.2615203857422,
+      "bottom": 949.1784057617188,
+      "left": 90.92179870605469
+    },
+    "edges": 0,
+    "headTop": 541.2939277648926,
+    "stageTop": 473.78125,
+    "figureHeight": 869
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "tsumugi",
+    "face": "bow",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 90.92179870605469,
+      "y": 402.294189453125,
+      "width": 408.3397216796875,
+      "height": 546.8842163085938,
+      "top": 402.294189453125,
+      "right": 499.2615203857422,
+      "bottom": 949.1784057617188,
+      "left": 90.92179870605469
+    },
+    "edges": 0,
+    "headTop": 541.2939277648926,
+    "stageTop": 473.78125,
+    "figureHeight": 869
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "kafuka",
+    "face": "normal",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 94.1462631225586,
+      "y": 411.11737060546875,
+      "width": 401.9838562011719,
+      "height": 538.3712768554688,
+      "top": 411.11737060546875,
+      "right": 496.13011932373047,
+      "bottom": 949.4886474609375,
+      "left": 94.1462631225586
+    },
+    "edges": 0,
+    "headTop": 530.4563369750977,
+    "stageTop": 473.78125,
+    "figureHeight": 908
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "kafuka",
+    "face": "smile",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 94.1462631225586,
+      "y": 411.11737060546875,
+      "width": 401.9838562011719,
+      "height": 538.3712768554688,
+      "top": 411.11737060546875,
+      "right": 496.13011932373047,
+      "bottom": 949.4886474609375,
+      "left": 94.1462631225586
+    },
+    "edges": 0,
+    "headTop": 530.0076942443848,
+    "stageTop": 473.78125,
+    "figureHeight": 909
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "kafuka",
+    "face": "serious",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 94.1462631225586,
+      "y": 411.11737060546875,
+      "width": 401.9838562011719,
+      "height": 538.3712768554688,
+      "top": 411.11737060546875,
+      "right": 496.13011932373047,
+      "bottom": 949.4886474609375,
+      "left": 94.1462631225586
+    },
+    "edges": 0,
+    "headTop": 530.0076942443848,
+    "stageTop": 473.78125,
+    "figureHeight": 909
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "kafuka",
+    "face": "surprise",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 94.1462631225586,
+      "y": 411.11737060546875,
+      "width": 401.9838562011719,
+      "height": 538.3712768554688,
+      "top": 411.11737060546875,
+      "right": 496.13011932373047,
+      "bottom": 949.4886474609375,
+      "left": 94.1462631225586
+    },
+    "edges": 0,
+    "headTop": 529.5590515136719,
+    "stageTop": 473.78125,
+    "figureHeight": 910
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "kafuka",
+    "face": "excited",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 94.1462631225586,
+      "y": 411.11737060546875,
+      "width": 401.9838562011719,
+      "height": 538.3712768554688,
+      "top": 411.11737060546875,
+      "right": 496.13011932373047,
+      "bottom": 949.4886474609375,
+      "left": 94.1462631225586
+    },
+    "edges": 0,
+    "headTop": 526.4185523986816,
+    "stageTop": 473.78125,
+    "figureHeight": 917
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "kafuka",
+    "face": "ventriloquism",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 94.1462631225586,
+      "y": 411.11737060546875,
+      "width": 401.9838562011719,
+      "height": 538.3712768554688,
+      "top": 411.11737060546875,
+      "right": 496.13011932373047,
+      "bottom": 949.4886474609375,
+      "left": 94.1462631225586
+    },
+    "edges": 0,
+    "headTop": 529.5590515136719,
+    "stageTop": 473.78125,
+    "figureHeight": 910
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "maezono",
+    "face": "normal",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 115.8581771850586,
+      "y": 473.3700256347656,
+      "width": 354.4629211425781,
+      "height": 474.7334289550781,
+      "top": 473.3700256347656,
+      "right": 470.3210983276367,
+      "bottom": 948.1034545898438,
+      "left": 115.8581771850586
+    },
+    "edges": 0,
+    "headTop": 496.3154747009277,
+    "stageTop": 473.78125,
+    "figureHeight": 1116
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "maezono",
+    "face": "smile",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 115.8581771850586,
+      "y": 473.3700256347656,
+      "width": 354.4629211425781,
+      "height": 474.7334289550781,
+      "top": 473.3700256347656,
+      "right": 470.3210983276367,
+      "bottom": 948.1034545898438,
+      "left": 115.8581771850586
+    },
+    "edges": 0,
+    "headTop": 494.73302993774416,
+    "stageTop": 473.78125,
+    "figureHeight": 1120
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "maezono",
+    "face": "serious",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 115.8581771850586,
+      "y": 473.3700256347656,
+      "width": 354.4629211425781,
+      "height": 474.7334289550781,
+      "top": 473.3700256347656,
+      "right": 470.3210983276367,
+      "bottom": 948.1034545898438,
+      "left": 115.8581771850586
+    },
+    "edges": 0,
+    "headTop": 498.2935306549072,
+    "stageTop": 473.78125,
+    "figureHeight": 1111
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "maezono",
+    "face": "surprise",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 115.8581771850586,
+      "y": 473.3700256347656,
+      "width": 354.4629211425781,
+      "height": 474.7334289550781,
+      "top": 473.3700256347656,
+      "right": 470.3210983276367,
+      "bottom": 948.1034545898438,
+      "left": 115.8581771850586
+    },
+    "edges": 0,
+    "headTop": 498.68914184570315,
+    "stageTop": 473.78125,
+    "figureHeight": 1110
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "maezono",
+    "face": "excited",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 115.8581771850586,
+      "y": 473.3700256347656,
+      "width": 354.4629211425781,
+      "height": 474.7334289550781,
+      "top": 473.3700256347656,
+      "right": 470.3210983276367,
+      "bottom": 948.1034545898438,
+      "left": 115.8581771850586
+    },
+    "edges": 0,
+    "headTop": 504.2276985168457,
+    "stageTop": 473.78125,
+    "figureHeight": 1096
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "sumi",
+    "face": "normal",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 84.49028778076172,
+      "y": 437.7022705078125,
+      "width": 396.03924560546875,
+      "height": 530.413818359375,
+      "top": 437.7022705078125,
+      "right": 480.52953338623047,
+      "bottom": 968.1160888671875,
+      "left": 84.49028778076172
+    },
+    "edges": 0,
+    "headTop": 483.2294565836589,
+    "stageTop": 473.78125,
+    "figureHeight": 1072
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "sumi",
+    "face": "smile",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 84.49028778076172,
+      "y": 437.7022705078125,
+      "width": 396.03924560546875,
+      "height": 530.413818359375,
+      "top": 437.7022705078125,
+      "right": 480.52953338623047,
+      "bottom": 968.1160888671875,
+      "left": 84.49028778076172
+    },
+    "edges": 0,
+    "headTop": 483.2294565836589,
+    "stageTop": 473.78125,
+    "figureHeight": 1072
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "sumi",
+    "face": "serious",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 84.49028778076172,
+      "y": 437.7022705078125,
+      "width": 396.03924560546875,
+      "height": 530.413818359375,
+      "top": 437.7022705078125,
+      "right": 480.52953338623047,
+      "bottom": 968.1160888671875,
+      "left": 84.49028778076172
+    },
+    "edges": 0,
+    "headTop": 482.3454335530599,
+    "stageTop": 473.78125,
+    "figureHeight": 1074
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "sumi",
+    "face": "surprise",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 84.49028778076172,
+      "y": 437.7022705078125,
+      "width": 396.03924560546875,
+      "height": 530.413818359375,
+      "top": 437.7022705078125,
+      "right": 480.52953338623047,
+      "bottom": 968.1160888671875,
+      "left": 84.49028778076172
+    },
+    "edges": 0,
+    "headTop": 483.2294565836589,
+    "stageTop": 473.78125,
+    "figureHeight": 1072
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "sumi",
+    "face": "thinking",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 84.49028778076172,
+      "y": 437.7022705078125,
+      "width": 396.03924560546875,
+      "height": 530.413818359375,
+      "top": 437.7022705078125,
+      "right": 480.52953338623047,
+      "bottom": 968.1160888671875,
+      "left": 84.49028778076172
+    },
+    "edges": 0,
+    "headTop": 483.2294565836589,
+    "stageTop": 473.78125,
+    "figureHeight": 1072
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "mashiro",
+    "face": "normal",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 87.32807922363281,
+      "y": 393.413330078125,
+      "width": 414.7677001953125,
+      "height": 555.4981689453125,
+      "top": 393.413330078125,
+      "right": 502.0957794189453,
+      "bottom": 948.9114990234375,
+      "left": 87.32807922363281
+    },
+    "edges": 0,
+    "headTop": 530.8991268920898,
+    "stageTop": 473.78125,
+    "figureHeight": 879
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "mashiro",
+    "face": "smile",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 87.32807922363281,
+      "y": 393.413330078125,
+      "width": 414.7677001953125,
+      "height": 555.4981689453125,
+      "top": 393.413330078125,
+      "right": 502.0957794189453,
+      "bottom": 948.9114990234375,
+      "left": 87.32807922363281
+    },
+    "edges": 0,
+    "headTop": 531.3620420328776,
+    "stageTop": 473.78125,
+    "figureHeight": 878
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "mashiro",
+    "face": "serious",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 87.32807922363281,
+      "y": 393.413330078125,
+      "width": 414.7677001953125,
+      "height": 555.4981689453125,
+      "top": 393.413330078125,
+      "right": 502.0957794189453,
+      "bottom": 948.9114990234375,
+      "left": 87.32807922363281
+    },
+    "edges": 0,
+    "headTop": 531.3620420328776,
+    "stageTop": 473.78125,
+    "figureHeight": 878
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "mashiro",
+    "face": "surprise",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 87.32807922363281,
+      "y": 393.413330078125,
+      "width": 414.7677001953125,
+      "height": 555.4981689453125,
+      "top": 393.413330078125,
+      "right": 502.0957794189453,
+      "bottom": 948.9114990234375,
+      "left": 87.32807922363281
+    },
+    "edges": 0,
+    "headTop": 530.8991268920898,
+    "stageTop": 473.78125,
+    "figureHeight": 879
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "mashiro",
+    "face": "sad",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 87.32807922363281,
+      "y": 393.413330078125,
+      "width": 414.7677001953125,
+      "height": 555.4981689453125,
+      "top": 393.413330078125,
+      "right": 502.0957794189453,
+      "bottom": 948.9114990234375,
+      "left": 87.32807922363281
+    },
+    "edges": 0,
+    "headTop": 532.2878723144531,
+    "stageTop": 473.78125,
+    "figureHeight": 876
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "mashiro",
+    "face": "sleep",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 87.32807922363281,
+      "y": 393.413330078125,
+      "width": 414.7677001953125,
+      "height": 555.4981689453125,
+      "top": 393.413330078125,
+      "right": 502.0957794189453,
+      "bottom": 948.9114990234375,
+      "left": 87.32807922363281
+    },
+    "edges": 0,
+    "headTop": 530.8991268920898,
+    "stageTop": 473.78125,
+    "figureHeight": 879
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "nagumo",
+    "face": "normal",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 105.45906829833984,
+      "y": 457.2459411621094,
+      "width": 375.20416259765625,
+      "height": 502.5086975097656,
+      "top": 457.2459411621094,
+      "right": 480.6632308959961,
+      "bottom": 959.754638671875,
+      "left": 105.45906829833984
+    },
+    "edges": 0,
+    "headTop": 482.37137603759766,
+    "stageTop": 473.78125,
+    "figureHeight": 1112
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "nagumo",
+    "face": "smile",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 105.45906829833984,
+      "y": 457.2459411621094,
+      "width": 375.20416259765625,
+      "height": 502.5086975097656,
+      "top": 457.2459411621094,
+      "right": 480.6632308959961,
+      "bottom": 959.754638671875,
+      "left": 105.45906829833984
+    },
+    "edges": 0,
+    "headTop": 483.2088905334473,
+    "stageTop": 473.78125,
+    "figureHeight": 1110
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "nagumo",
+    "face": "serious",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 105.45906829833984,
+      "y": 457.2459411621094,
+      "width": 375.20416259765625,
+      "height": 502.5086975097656,
+      "top": 457.2459411621094,
+      "right": 480.6632308959961,
+      "bottom": 959.754638671875,
+      "left": 105.45906829833984
+    },
+    "edges": 0,
+    "headTop": 483.2088905334473,
+    "stageTop": 473.78125,
+    "figureHeight": 1109
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "nagumo",
+    "face": "surprise",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 105.45906829833984,
+      "y": 457.2459411621094,
+      "width": 375.20416259765625,
+      "height": 502.5086975097656,
+      "top": 457.2459411621094,
+      "right": 480.6632308959961,
+      "bottom": 959.754638671875,
+      "left": 105.45906829833984
+    },
+    "edges": 0,
+    "headTop": 482.7901332855225,
+    "stageTop": 473.78125,
+    "figureHeight": 1111
+  },
+  {
+    "viewport": {
+      "width": 591,
+      "height": 1280
+    },
+    "character": "nagumo",
+    "face": "thinking",
+    "width": 896,
+    "height": 1200,
+    "position": "center",
+    "frame": {
+      "x": 105.45906829833984,
+      "y": 457.2459411621094,
+      "width": 375.20416259765625,
+      "height": 502.5086975097656,
+      "top": 457.2459411621094,
+      "right": 480.6632308959961,
+      "bottom": 959.754638671875,
+      "left": 105.45906829833984
+    },
+    "edges": 0,
+    "headTop": 484.04640502929686,
+    "stageTop": 473.78125,
+    "figureHeight": 1106
+  }
+]
