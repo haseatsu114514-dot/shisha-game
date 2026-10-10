@@ -407,7 +407,6 @@
 .thermo.optimal .thermo-tube { box-shadow: 0 0 22px #eacf8580; border-color: #edcf8c; }
 .pull-main { flex: 1; display: flex; flex-direction: column; gap: 16px; }
 .pull-read { font-size: 20px; color: #fff; min-height: 30px; }
-.pull-count { font-size: 15px; color: var(--text-dim); }
 .pull-btns { display: flex; gap: 12px; }
 .pull-btns .btn { flex: 1; align-items: center; padding: 16px; font-size: 20px; }
 
@@ -606,7 +605,6 @@
 .hr-score { line-height: 1.4; overflow-wrap: anywhere; }
 .hr-row .btn { min-width: 0; min-height: 44px; line-height: 1.4; white-space: normal; text-align: center; align-items: center; }
 .pull-read { line-height: 1.45; overflow-wrap: anywhere; }
-.pull-count { line-height: 1.5; min-height: 3em; overflow-wrap: anywhere; }
 .pull-btns .btn { min-width: 0; }
 .result-card { width: min(760px, calc(100% - 24px)); min-width: 0; max-height: calc(100% - 24px); overflow: auto; }
 /* 共通名 rc-title の大会カウント用 absolute 指定を工程カード内だけ解除する。 */
@@ -824,18 +822,17 @@
 .thermo.danger .thermo-pointer { background: linear-gradient(90deg, #fff, #ff5a3a); filter: drop-shadow(0 0 7px #ff3a00) drop-shadow(0 0 1px #000); }
 .thermo.optimal .thermo-pointer { background: linear-gradient(90deg, #fff, #ffe066); }
 @keyframes pointer-pulse { from { transform: translateX(0); } to { transform: translateX(4px); } }
-/* TH67・68: 赤い葉が焼けるにつれて黒くなる。焦げた葉も形を残し、薄く消さない。 */
-.leaf-icon { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: radial-gradient(circle, #ffffff1a, #ffffff08 70%); }
+/* TH77〜82: 5枚のうち1枚ずつ赤→茶→黒→消える。残りの赤い葉は変色させない。 */
+.leaf-icon { display: inline-flex; align-items: center; gap: 12px; flex: none; }
 .leaf-icon[hidden] { display: none; }
-.leaf-icon, .pull-life-leaves { --leaf-tone: drop-shadow(0 0 3px #ff462944); }
-.leaf-icon[data-hp="3"], .pull-life-leaves[data-hp="3"] { --leaf-tone: saturate(.86) brightness(.72) drop-shadow(0 0 2px #a4262226); }
-.leaf-icon[data-hp="2"], .pull-life-leaves[data-hp="2"] { --leaf-tone: saturate(.55) brightness(.46); }
-.leaf-icon[data-hp="1"], .pull-life-leaves[data-hp="1"] { --leaf-tone: grayscale(.8) brightness(.29); }
-.leaf-icon[data-hp="0"], .pull-life-leaves[data-hp="0"] { --leaf-tone: grayscale(1) brightness(.16) drop-shadow(0 0 1px #b8adb51f); }
-.leaf-skin { filter: var(--leaf-tone); transition: filter .5s var(--ease-out); image-rendering: auto; }
-.leaf-icon.hit { animation: leaf-shiver .5s ease-out; }
+.flavor-leaf { display: block; width: 34px; height: 34px; flex: none; transition: opacity .45s, transform .45s var(--ease-out); }
+.leaf-skin { transition: filter .5s var(--ease-out); image-rendering: auto; }
+.flavor-leaf[data-stage="brown"] > .leaf-skin { filter: grayscale(1) sepia(1) saturate(2.5) hue-rotate(-20deg) brightness(.85); }
+.flavor-leaf:is([data-stage="black"], [data-stage="gone"]) > .leaf-skin { filter: grayscale(1) brightness(.22); }
+.flavor-leaf[data-stage="gone"] { opacity: 0; transform: scale(.55); }
+.leaf-icon.hit .flavor-leaf:is([data-stage="brown"], [data-stage="black"]) { animation: leaf-shiver .5s ease-out; }
 @keyframes leaf-shiver { 0%, 100% { transform: none; } 20% { transform: translateX(-4px) rotate(-12deg); } 45% { transform: translateX(3px) rotate(9deg); } 70% { transform: translateX(-2px) rotate(-4deg); } }
-@media (prefers-reduced-motion: reduce) { .thermo-pointer, .leaf-icon.hit { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .thermo-pointer, .leaf-icon.hit .flavor-leaf { animation: none; } .flavor-leaf, .leaf-skin { transition: none; } }
 
 /* TH47〜51: モックアップの広い半円、中心から弧に届く針。左=下げ、右=上げ。 */
 .pull-dial { position: relative; width: min(100%, 590px); margin: 0 auto; aspect-ratio: 480 / 270; }
@@ -872,12 +869,7 @@
 .pull-read[data-tone="cool"] .pull-state { color: #c4bcb2; }
 .pull-drift { font-size: 22px; font-weight: 800; color: #d6e4f2; animation: drift-fall 1.2s ease-in infinite; }
 @keyframes drift-fall { 0% { transform: translateY(-5px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(7px); opacity: 0; } }
-/* 吸った回数は点（最低回数は金の縁）。炭・雨・少穴は短い札。 */
-.pull-count { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; min-height: 22px; }
-.pull-pips { display: inline-flex; gap: 7px; }
-.pull-pip { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #ffffff6a; background: #ffffff10; transition: background .2s, box-shadow .2s; }
-.pull-pip.need { border-color: #ffd25a; }
-.pull-pip.on { background: #fff; border-color: #fff; box-shadow: 0 0 8px #ffffffaa; }
+/* 回数の点は廃止（TH80）。炭・雨・少穴は短い札。 */
 .pull-tags { display: inline-flex; gap: 6px; }
 .pull-tag { padding: 2px 9px; border-radius: 10px; font-size: 13px; line-height: 1.5; color: #f0e3cc; background: #ffffff14; border: 1px solid #ffffff2a; white-space: nowrap; }
 /* 吸った直後、温度計の針の横に浮かぶ上下の印（判定の文字の代わり）。 */
@@ -935,8 +927,6 @@
 .pull-summary { display: flex; align-items: center; justify-content: space-between; padding: 7px 14px; min-height: 40px; border: 1px solid #e7c98e30; border-radius: 6px; background: #08061070; }
 .pull-summary .pull-state { font-size: 18px; }
 .pull-summary .pull-read { min-height: 24px; }
-.pull-summary .pull-pip { width: 11px; height: 11px; }
-.pull-summary .pull-count { gap: 8px; }
 .pull-draw-status { min-height: 20px; text-align: center; font-size: 13px; color: #cab79e; letter-spacing: .08em; }
 .bench[data-art-skin] .pull-btns .btn { flex-direction: row; gap: 12px; min-height: 72px; padding: 12px; border-radius: 9px; font-size: 22px; }
 .bench[data-art-skin] .pull-btns .btn.primary { position: relative; flex: 1.65; border-color: #e7ba67; background: radial-gradient(ellipse at 50% 0%, #97653338, transparent 75%), linear-gradient(135deg, #422b31, #211526 65%, #392231); box-shadow: inset 0 0 0 2px #f0d3911a, inset 0 0 22px #e5a64b15, 0 0 15px #eac27526; }
@@ -1021,21 +1011,18 @@
 .pull-zone-label.l-keep { top: 8px; left: calc(50% - 10px); transform: translateX(-50%); align-items: center; color: #efe7dd; font-size: 14px; }
 .pull-zone-label.l-keep > b { border: 0; padding: 0; margin: 0; font-size: 20px; }
 .pull-zone-label.l-keep > span { padding: 1px 24px; border: 1px solid #d6bf9b36; border-radius: 5px; background: #15101b70; }
-.pull-zone-label .pull-count { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 16px; margin-top: 6px; }
-.pull-zone-label .pull-pip { width: 6px; height: 6px; }
 .pull-zone-label .pull-tag { font-size: 10px; }
 .pull > .thermo { left: -128px; top: -48px; height: 360px; }
 .pull > .thermo::after { content: ""; position: absolute; inset: -34px -12px -60px; z-index: -1; border: 1px solid #ae916843; border-radius: 8px; background: linear-gradient(160deg, #100b15ed, #100b15dd); box-shadow: inset 0 0 0 1px #eec6890e, 0 2px 10px #0006; }
 .pull > .thermo .thermo-projected-label { display: none; }
+.pull > .thermo .thermo-projected { height: 1px; margin-bottom: -.5px; border: 0; background: repeating-linear-gradient(90deg, #fff8 0 3px, transparent 3px 6px); box-shadow: none; }
 .pull > .thermo .pull-read { position: absolute; top: calc(100% + 12px); left: -3px; right: -3px; justify-content: center; min-height: 32px; border: 1px solid #c1aa7438; border-radius: 6px; background: #100c17ef; }
 .pull > .thermo .pull-state { font-size: 14px; white-space: nowrap; letter-spacing: .02em; }
-.pull-summary { display: block; padding: 0; border: 0; background: none; }
-.pull-life { position: relative; min-width: 0; min-height: 0; height: 100%; display: flex; align-items: center; gap: 42px; padding: 8px 16px; border: 1px solid #a18a665c; border-radius: 9px; background: #100b18bb; box-shadow: inset 0 1px 2px #fff2; }
+.pull-summary { display: block; justify-self: start; width: max-content; max-width: 100%; padding: 0; border: 0; background: none; }
+.pull-life { position: relative; min-width: 0; min-height: 0; height: 100%; display: flex; align-items: center; gap: 24px; padding: 8px 16px; border: 1px solid #a18a665c; border-radius: 9px; background: #100b18bb; box-shadow: inset 0 1px 2px #fff2; }
 .pull-life-label { font-size: 13px; color: #c8bcc0; white-space: nowrap; letter-spacing: .05em; }
-.pull-life-leaves { display: flex; align-items: center; gap: 12px; flex: none; }
-.pull-life-leaves .leaf-icon { width: 34px; height: 34px; border: 0; border-radius: 0; background: none; box-shadow: none; }
-.pull-life-leaf { display: block; width: 34px; height: 34px; flex: none; }
-.pull-life-leaf:not(.on) > .leaf-skin { filter: grayscale(1) brightness(.16) drop-shadow(0 0 1px #b8adb51f); }
+.pull-life-leaves { display: flex; align-items: center; flex: none; }
+.pull-tags:empty { display: none; }
 .pull-serve-icon svg { display: block; width: 100%; height: 100%; }
 /* 状態の読み上げだけ残す。注意書きや別ウインドウは表示しない（TH71）。 */
 .pull-draw-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -1059,7 +1046,5 @@
 .bench[data-art-skin] .pull-btns .btn:not(.primary):disabled { opacity: .42; }
 .pull-btns { display: grid; grid-template-columns: 1.75fr 1fr; gap: 14px; }
 .pull-zone-label { top: 112px; }
-.pull-life .pull-count { margin-left: auto; gap: 8px; min-height: 18px; }
-.pull-life .pull-pip { width: 8px; height: 8px; }
 .pull-life .pull-tag { font-size: 10px; padding: 1px 5px; }
-.bench-audience[data-voice="inner"] .audience-note { font-size: 16px; max-width: 232px; word-break: normal; }
+.bench-audience[data-voice="inner"] .audience-note { font-size: 16px; max-width: 232px; word-break: normal; text-wrap: balance; }

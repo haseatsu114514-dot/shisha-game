@@ -104,7 +104,8 @@ try {
   assert(layout.button.top > 585 && layout.button.top < 600, 'bottom controls must use the tightened spacing');
   assert(layout.right.bottom - layout.button.bottom >= 10 && layout.right.bottom - layout.button.bottom <= 16, 'bottom button must keep a small inset inside the window');
   assert.equal(layout.summary.bottom - layout.summary.top, 64, 'mockup flavor information height');
-  assert.equal(await page.locator('.pull-life-leaves > *').count(), 4, 'flavor leaves must show the actual four remaining units');
+  assert.equal(await page.locator('.flavor-leaf[data-stage="red"]').count(), 5, 'flavor must start with five red leaves');
+  assert.equal(await page.locator('.pull-pip').count(), 0, 'pull count dots are removed');
   console.log(`Layout: ${JSON.stringify(layout)}`);
   await shot('01-pull-desktop');
 
@@ -117,10 +118,10 @@ try {
     window.dispatchEvent(new KeyboardEvent('keydown', { key:' ' }));
     window.dispatchEvent(new KeyboardEvent('keydown', { key:'Enter' }));
     document.querySelector('[data-test="pull-stop"]').dispatchEvent(new PointerEvent('pointerdown', { bubbles:true }));
-    return { temp:Number(document.querySelector('[data-test="pull-temperature"]').getAttribute('aria-valuenow')), needle:document.querySelector('.pg-needle').getAttribute('transform'), locked:[...document.querySelectorAll('.pull-btns button')].every(n=>n.disabled), pips:document.querySelectorAll('.pull-pip.on').length, results:document.querySelectorAll('.result-card').length, bubbles:Number(getComputedStyle(document.querySelector('.worker-water')).opacity) };
+    return { temp:Number(document.querySelector('[data-test="pull-temperature"]').getAttribute('aria-valuenow')), needle:document.querySelector('.pg-needle').getAttribute('transform'), locked:[...document.querySelectorAll('.pull-btns button')].every(n=>n.disabled), results:document.querySelectorAll('.result-card').length, bubbles:Number(getComputedStyle(document.querySelector('.worker-water')).opacity) };
   });
   assert(mid.temp > up.before + .01); assert.equal(mid.needle, up.transform);
-  assert(mid.locked); assert.equal(mid.pips, 1); assert.equal(mid.results, 0); assert(mid.bubbles > .9);
+  assert(mid.locked); assert.equal(mid.results, 0); assert(mid.bubbles > .9);
   await shot('02-up-drawing');
   await settled();
   const upMs = await page.evaluate(() => lastDraw.ended - lastDraw.began);
@@ -139,7 +140,6 @@ try {
   await page.keyboard.press('Enter');
   assert(await page.locator('[data-test="pull-serve"]').isDisabled());
   await settled(); await page.keyboard.up('Space');
-  assert.equal(await page.locator('.pull-pip.on').count(), 2);
   assert(!(await page.locator('[data-test="pull-serve"]').isDisabled()));
 
   // 下げ吸いは長く強い一口。2秒経っても固定し、最後まで下がってから再開。
@@ -152,7 +152,7 @@ try {
   await settled();
   const downMs = await page.evaluate(() => lastDraw.ended - lastDraw.began);
   assert(downMs >= 3100 && downMs > upMs + 1000, `${upMs} vs ${downMs}`);
-  assert.equal(await page.locator('[data-test="leaf-icon"]').getAttribute('data-hp'), '4');
+  assert.equal(await page.locator('[data-test="leaf-icon"]').getAttribute('data-hp'), '5');
   await finish(); assert.equal(await page.evaluate(() => cs.pull.pulls), 3);
 
   // 熱管理でも同じ流れを使う。動きを減らす設定でも吸い終わる前に提供できない。

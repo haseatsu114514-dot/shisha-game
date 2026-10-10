@@ -1,5 +1,7 @@
 # 吸うボタンの生成素材（TH58）
 
+初回の制作記録。現在はTH76の指示で縁を細くし、発光を抑えたパーツへ更新。[金縁の編集記録](refined-button-prompt.md)。
+
 生成: Codex image generation / 2026-10-10。オーナー提示モックアップの下段ボタンを参照。
 採用PNG: `assets/ui/making/ui_mockup_inhale_button.png`。表示用: `remake/img/ui/making/ui_mockup_inhale_button.webp`。
 背景透過、文字・アイコンなし。透明な余白は既存の `makingBox` と `applyCraftSkin` の仕組みで吸収し、実ボタンに合わせる。

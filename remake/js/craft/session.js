@@ -23,6 +23,7 @@ import { buildThermalAtmosphere } from "./thermal.js";
 import { temperatureAfterSteam } from "./conditions.js";
 import { screenBlast } from "./blast.js";
 import { artImg } from "./art.js";
+import { LEAF_MAX, flavorLeafStages } from "./flavor-life.js";
 
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
@@ -162,18 +163,19 @@ export function pauseBenchTemperature(cs, paused) {
   if (bench?.cs === cs) bench.thermal.pause(paused);
 }
 /**
- * フレーバーの体力を赤い葉の焼け具合で見せる（TH67・TH68）。
- * 4=鮮やかな赤から、焼けるほど暗くなり、0=黒い焦げ。傷むと葉だけが震える。文字は出さない（TH27）。
+ * 赤い葉5枚のうち使用中の1枚だけが茶→黒→消える。次の赤い葉は変色しない（TH77〜82）。
  */
-const LEAF_STATE = ["黒く焦げ切った", "黒く焦げてきた", "焦げが広がってきた", "少し焼けてきた", "鮮やかな赤"];
 function buildLeafIcon() {
-  const root = el("span.leaf-icon", { hidden: true, role: "img", dataset: { test: "leaf-icon", hp: "4" } }, [
+  const leaves = Array.from({ length: LEAF_MAX }, (_, i) => el("span.flavor-leaf", { "aria-hidden": "true", dataset: { slot: i, stage: "red" } }, [
     artImg("ui_mockup_flavor_leaf.png", 34, "leaf-skin", { h: 34 }),
-  ]);
+  ]));
+  const root = el("span.leaf-icon", { hidden: true, role: "img", dataset: { test: "leaf-icon", hp: String(LEAF_MAX) } }, leaves);
   return { root, render(leaf, { hit = false } = {}) {
-    const hp = leaf?.hp ?? 4;
+    const hp = leaf?.hp ?? LEAF_MAX, burn = leaf?.burn ?? 0;
     root.dataset.hp = String(hp);
-    const description = `フレーバー：${LEAF_STATE[hp] ?? LEAF_STATE[4]}（残り${hp}/${leaf?.max ?? 4}）`;
+    root.dataset.burn = String(burn);
+    flavorLeafStages(leaf).forEach((stage, i) => { leaves[i].dataset.stage = stage; });
+    const description = `フレーバー：赤い葉が残り${hp}/${LEAF_MAX}枚${burn ? `、使用中の葉は${burn === 1 ? "茶色" : "黒い焦げ"}` : ""}`;
     root.setAttribute("aria-label", description);
     root.title = description;
     if (hit) { root.classList.remove("hit"); void root.offsetWidth; root.classList.add("hit"); }

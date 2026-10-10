@@ -4,7 +4,7 @@
 
 生成: Codex image generation / 2026-10-10。参照: [オーナー提示モックアップのゲーム部分](reference-game.png)。
 採用PNG: `assets/ui/making/ui_mockup_flavor_leaf.png`。表示用: `remake/img/ui/making/ui_mockup_flavor_leaf.webp`。
-透過の葉を4枠へ繰り返し表示する。残量は既存のフレーバーHP（最大4）を使い、消耗した枠は暗くする。
+初回は透過の葉を4枠へ繰り返し表示した（旧フレーバーHP最大4）。現在はTH77〜82で[自然な赤い葉](natural-red-leaf-prompt.md)5枚へ更新し、1枚ずつ赤→茶色→黒→消えると進む。
 原画へ後から彩度・明度の加工は加えていない。WebPは既存の `build_images.encode`、余白は `build_manifest.making_boxes` で処理する。
 
 実行プロンプト:

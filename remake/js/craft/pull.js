@@ -2,7 +2,7 @@
 // 左右に振れる針を止めた位置で、上げ吸い／キープ／下げ吸い。中央の細い帯が「ジャスト」。
 // 熱管理（大会のR3・調整）も同じ針のゲーム。「炭を交換しますか？」で個数を選び、交換した炭で温度が戻ってから、
 // 温度が動き続ける中で最低1回吸って整える。3回目の吸い出しからフレーバーが傷む（TH14・TH21・TH22・TH39）。
-// 温度計の一番上で焦げ、熱管理で冷え切り、フレーバーの体力が尽きると、その一台はダメになる（TH06・TH19・TH20）。
+// 温度計の一番上で焦げ、熱管理で冷え切り、赤い葉が0枚になると、その一台はダメになる（TH82）。
 // 吸いすぎ・過熱での吸い出しは、はじめの体力も削って疲れ（針が速く、成功帯が狭い）が付く（TH29）。
 // 人によって狙いが違うので、EXCELLENT・GOOD の判定は出さない。吸うと温度計の横に上下の印だけが出る（TH36）。
 // 左の作業風景に温度計、右に半円ダイヤル。左の下げ吸い=寒色→キープ→右の上げ吸い=暖色。
@@ -18,12 +18,11 @@ import { burnCoals, HEAT_GRADES } from "./heat.js";
 
 import { craftConditions, heatDelta, pullResult, isOptimalTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT, IDEAL } from "./conditions.js";
 import { buildThermometer } from "./thermometer.js";
-import { artImg } from "./art.js";
 import { DRAW_MS, animateDraw } from "./pull-draw.js";
+import { ensureFlavorLife, burnFlavorLeaf } from "./flavor-life.js";
 
 export { IDEAL } from "./conditions.js";
 const CENTER = 0.54;
-const PULL_MAX = 5;
 // ここより熱い煙を吸うと、はじめがむせて疲れる（TH29）。
 const HARSH_TEMP = 0.76;
 // 針の位置の帯（0〜1）。下げ吸い=左、キープ=中、上げ吸い=右。芯に止めると上げ下げが強い。
@@ -47,8 +46,7 @@ const dialPoint = (p, r) => {
 const dialSector = (p0, p1, r0 = DIAL.r0, r1 = DIAL.r1) =>
   `M${dialPoint(p0, r1)}A${r1} ${r1} 0 0 1 ${dialPoint(p1, r1)}L${dialPoint(p1, r0)}A${r0} ${r0} 0 0 0 ${dialPoint(p0, r0)}Z`;
 let dials = 0;
-// フレーバー（葉）の体力。吸いすぎで1つずつ減り、尽きるとその一台はダメになる。吸い出しから熱管理へ引き継ぐ。
-export const LEAF_MAX = 4;
+export { LEAF_MAX } from "./flavor-life.js";
 
 const FAIL_TEXT = {
   burnt: { title: "シーシャが焦げてしまった", line: "温度計の一番上まで熱が上がり、葉が焦げた", ticker: "パッキー「ば、爆発ーッ！？ シーシャが焦げてしまったーッ！」" },
@@ -88,7 +86,7 @@ async function pullGame(cs, mode) {
   let coreTemp = mode.start(cs);
   let T = coreTemp;
   const conditions = craftConditions(cs);
-  cs.leaf ??= { hp: LEAF_MAX, max: LEAF_MAX };
+  ensureFlavorLife(cs);
   setBenchLeaf(cs);
   let pulls = 0, justs = 0, failed = null, coals = null;
   // 熱管理だけ: 炭が燃え進んで熱が落ちる速さと、洞察で小さくなる揺らぎ
@@ -141,22 +139,17 @@ async function pullGame(cs, mode) {
     needle.dataset.pos = (at * 100).toFixed(2);
   };
   moveNeedle(0);
-  // 吸った回数は文字でなく点で。最低回数の点は金の縁。炭・雨・少穴は短い札（TH35）。
-  const pips = Array.from({ length: PULL_MAX }, (_, i) => el(`i.pull-pip${i < mode.min ? ".need" : ""}`));
-  const pipRow = el("span.pull-pips", { title: "吸った回数", dataset: { test: "pull-pips" } }, pips);
+  // 回数の点は表示しない（TH80）。炭・雨・少穴だけ短い札に残す。
   const tags = el("span.pull-tags");
-  const counter = el("div.pull-count", [pipRow, tags]);
   const readout = el("div.pull-read");
   const drawStatus = el("span.pull-draw-status", { role: "status", dataset: { test: "pull-draw-status" } });
   const inhale = el("span.pull-btn-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m22 28-4-3L31 7l5 4Z"/><path d="m31 7 2-3 5 4-2 3M20 27l-5 7c-3 4-8 5-11 1s-1-8 2-12l5-7M21 22l4 3"/></svg>' });
   const pullLabel = el("span.btn-label", { text: "吸う（針を止める）" });
   const pullBtn = el("button.btn.primary", { dataset: { test: "pull-stop" }, disabled: true }, [inhale, pullLabel]);
   const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [el("span.pull-serve-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 48 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="23" width="8" height="14" rx="1.5"/><path d="m11 26 7-6c1-1 3-1 4-1h6c2 0 3 1 3 3s-1 3-3 3h-7M11 34h16c2 0 4-1 6-2l10-7c2-1 3-4 1-6s-3-1-5 0l-8 6"/></svg>' }), el("span.btn-label", { text: mode.serveLabel })]);
-  const leafArt = (size) => artImg("ui_mockup_flavor_leaf.png", size, "leaf-skin", { h: size });
-  const extraLeaves = Array.from({ length: LEAF_MAX - 1 }, (_, i) => el("i.pull-life-leaf", { "aria-hidden": "true", dataset: { slot: i + 1 } }, [leafArt(34)]));
-  const lifeLeaves = el("span.pull-life-leaves", extraLeaves);
+  const lifeLeaves = el("span.pull-life-leaves");
   const summary = el("div.pull-summary", [
-    el("div.pull-life", [el("span.pull-life-label", { text: "フレーバーの持ち" }), lifeLeaves, counter, drawStatus]),
+    el("div.pull-life", [el("span.pull-life-label", { text: "フレーバーの持ち" }), lifeLeaves, tags, drawStatus]),
   ]);
   const play = el("div.pull-play", [dialRow, summary, el("div.pull-btns", [pullBtn, serveBtn])]);
   play.setAttribute("aria-label", "左の下げ吸いで温度を下げ、中央でキープ、右の上げ吸いで温度を上げる");
@@ -168,7 +161,7 @@ async function pullGame(cs, mode) {
   const render = () => {
     thermometer.update(T);
     setBenchTemperature(cs, T);
-    thermometer.preview(running && !drawing && !finished && pulls < PULL_MAX ? clamp(T + heatDelta(cs, actionAt(pos).delta), 0, 1) : null);
+    thermometer.preview(running && !drawing && !finished ? clamp(T + heatDelta(cs, actionAt(pos).delta), 0, 1) : null);
     if (choosing) return;
     const inZone = T >= IDEAL[0] && T <= IDEAL[1];
     const optimal = isOptimalTemperature(T);
@@ -177,17 +170,13 @@ async function pullGame(cs, mode) {
       : T > IDEAL[1] ? ["熱い", "hot"] : mode.drift && T <= COLD_OUT + 0.08 ? ["冷え切りそう！", "cold"] : ["ぬるい", "cool"];
     readout.dataset.tone = tone;
     readout.replaceChildren(el("b.pull-state", { text: state }), mode.drift && running && !drawing ? el("span.pull-drift", { text: "↓", title: "炭が燃え進んで、熱が落ちていく" }) : "");
-    pips.forEach((p, i) => p.classList.toggle("on", i < pulls));
-    lifeLeaves.dataset.hp = String(cs.leaf.hp);
-    extraLeaves.forEach((leaf, i) => leaf.classList.toggle("on", i + 1 < cs.leaf.hp));
-    pipRow.setAttribute("aria-label", `吸った回数 ${pulls}`);
     tags.replaceChildren(...[
       coals != null && el("span.pull-tag", { text: coals ? `炭×${coals}` : "炭そのまま", title: coals ? `消耗した炭を${coals}個交換した` : "炭は交換していない" }),
       conditions.sparsity && el("span.pull-tag", { text: "少穴", title: "吸い方による温度変化が大きい" }),
       conditions.rainy && el("span.pull-tag", { text: "雨", title: "熱が入りづらい" }),
     ].filter(Boolean));
     serveBtn.disabled = !running || drawing || finished || pulls < mode.min || !!failed;
-    pullBtn.disabled = !running || drawing || finished || pulls >= PULL_MAX || !!failed;
+    pullBtn.disabled = !running || drawing || finished || !!failed;
   };
 
   // その一台がダメになったら、すぐに止めて結果へ進む。
@@ -231,7 +220,7 @@ async function pullGame(cs, mode) {
   };
   // 吸いすぎでフレーバーが傷む。文字は出さず、ダメージの音と揺れ、葉の傷みで伝える（TH27・TH28）。
   const damageLeaf = () => {
-    cs.leaf.hp = Math.max(0, cs.leaf.hp - 1);
+    burnFlavorLeaf(cs.leaf);
     setBenchLeaf(cs, true);
     SE.hit(); shake(undefined, 380);
     if (cs.leaf.hp <= 0) fail("leaf");
@@ -243,7 +232,7 @@ async function pullGame(cs, mode) {
     SE.miss();
   };
   const doPull = async (at = pos) => {
-    if (pulls >= PULL_MAX || failed || !running || drawing || finished) return;
+    if (failed || !running || drawing || finished) return;
     const before = T;
     const { z, isJust, delta } = actionAt(at);
     drawing = true;

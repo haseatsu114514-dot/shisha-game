@@ -188,16 +188,16 @@ try {
   await page.keyboard.press('Enter');
   await page.waitForSelector('.result-card.show');
   assert.equal(await page.locator('.result-card.show .rc-title').textContent(), '熱管理 結果');
-  assert.deepEqual(await page.evaluate(() => [cs.care.pulls, cs.care.coals, cs.leaf.hp]), [1, 2, 4]);
+  assert.deepEqual(await page.evaluate(() => [cs.care.pulls, cs.care.coals, cs.leaf.hp]), [1, 2, 5]);
   assert(Math.abs(await backdropTemp() - await page.evaluate(() => cs.care.temp)) < .0001);
   await shot('care-pulled');
   await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.run);
 
-  // 熱管理の3回目からフレーバーが傷み、ダメージの演出が出る。体力が尽きるとその一台はダメになる。
-  await page.evaluate(() => { cs.pull.temp = .54; cs.leaf = { hp: 2, max: 4 }; window.run = T.care.runCare(cs); });
+  // 熱管理の3回目から1枚ずつ茶→黒→消えると進み、次の赤が0枚になると失敗する。
+  await page.evaluate(() => { cs.pull.temp = .54; cs.leaf = { hp: 2, max: 5, burn: 0 }; window.run = T.care.runCare(cs); });
   await page.locator('[data-test="care-coal-0"]').click();
   await page.waitForFunction(() => parseFloat(document.querySelector('.pg-needle').dataset.pos) > 0);
-  assert(await page.locator('[data-test="leaf-icon"]').isVisible(), 'the flavor leaf must sit beside the condition face');
+  assert(await page.locator('[data-test="leaf-icon"]').isVisible(), 'the five-leaf life indicator must be visible');
   await pullAt(45, 55); await pullAt(45, 55);
   assert.equal(await page.locator('[data-test="leaf-icon"]').getAttribute('data-hp'), '2', 'the first two pulls must not hurt the flavor');
   assert.equal(await page.locator('.bench-worker').getAttribute('data-fatigue'), '0', 'calm pulls must not tire Hajime');
@@ -212,6 +212,12 @@ try {
   await page.waitForFunction(() => Number(getComputedStyle(document.querySelector('.worker-sweat')).opacity) > .5, null, { timeout: 2000 }); // 疲れたはじめは汗をかく
   assert(await page.evaluate(() => T.core.state.stamina) < staminaBefore, 'over-pulling must cost stamina');
   await shot('leaf-damage');
+  await pullAt(45, 55);
+  assert.deepEqual(await page.locator('.flavor-leaf').evaluateAll(ns => ns.map(n => n.dataset.stage)), ['gone', 'gone', 'gone', 'black', 'red']);
+  assert.equal(await page.evaluate(() => cs.leaf.hp), 1, 'the next red leaf must stay fresh while the current leaf is black');
+  await pullAt(45, 55);
+  assert.deepEqual(await page.locator('.flavor-leaf').evaluateAll(ns => ns.map(n => n.dataset.stage)), ['gone', 'gone', 'gone', 'gone', 'red']);
+  assert(!(await page.locator('[data-test="pull-stop"]').isDisabled()), 'the old five-pull cap must not block the remaining leaf');
   await pullAt(45, 55);
   await page.waitForSelector('.result-card.show');
   assert.equal(await page.locator('.result-card.show .rc-title').textContent(), 'フレーバーがダメになってしまった');
@@ -274,5 +280,5 @@ try {
   await page.evaluate(()=>T.session.stepPanel('holes','穴あけ'));
   assert(!(await page.locator('.thermal-backdrop').isVisible()));
   assert.deepEqual(errors,[]);
-  console.log('PASS: colorless→warm→rainbow with heat haze→gradual yellow→red fire, clear gauge with narrow danger zones and pointer, quiet flavor damage on a tattering leaf, stamina strain, heat care with the coal swap, a second coal burn and the dial game, fatigue on Hajime\'s face, flavor damage from the 3rd care pull, cold-out, flavor-out, full-screen blast, bowl not burning, burst on pull and heat care, readable header, steam reset, steam pause/resume and handoff, stable waiting temperature, coal cooling, reduced motion, mobile bounds and reset; page errors 0');
+  console.log('PASS: colorless→warm→rainbow with heat haze→gradual yellow→red fire, clear gauge with narrow danger zones and pointer, one leaf at a time turning brown→black→gone with fresh red reserves, stamina strain, heat care with the coal swap, a second coal burn and the dial game, fatigue on Hajime\'s face, flavor damage from the 3rd care pull, cold-out, failure when the last red turns brown, no five-pull cap, full-screen blast, bowl not burning, burst on pull and heat care, readable header, steam reset, steam pause/resume and handoff, stable waiting temperature, coal cooling, reduced motion, mobile bounds and reset; page errors 0');
 } finally { await browser.close(); }
