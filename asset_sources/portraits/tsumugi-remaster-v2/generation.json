@@ -246,7 +246,8 @@
         "checked_at_utc": "2026-10-10T05:20:24.008798+00:00",
         "method": "native-size source and original-versus-fitted comparison inspection",
         "note": "オーナーが試作3枚を承認。全身・手足・衣装・ポーズ・透過と896x1200への位置合わせを確認。つむぎは丸く少し大きめの頭を優先。"
-      }
+      },
+      "superseded_by_owner_request": "PU05: つむぎの頭身・小柄な体格を元絵へ戻す"
     },
     {
       "face": "smile",
@@ -321,7 +322,8 @@
           545,
           1174
         ]
-      }
+      },
+      "superseded_by_owner_request": "PU05: つむぎの頭身・小柄な体格を元絵へ戻す"
     },
     {
       "face": "sad",
@@ -396,7 +398,8 @@
           555,
           1175
         ]
-      }
+      },
+      "superseded_by_owner_request": "PU05: つむぎの頭身・小柄な体格を元絵へ戻す"
     },
     {
       "face": "serious",
@@ -471,7 +474,8 @@
           587,
           1174
         ]
-      }
+      },
+      "superseded_by_owner_request": "PU05: つむぎの頭身・小柄な体格を元絵へ戻す"
     },
     {
       "face": "surprise",
@@ -607,7 +611,8 @@
           556,
           1174
         ]
-      }
+      },
+      "superseded_by_owner_request": "PU05: つむぎの頭身・小柄な体格を元絵へ戻す"
     },
     {
       "face": "evil",
@@ -682,7 +687,8 @@
           556,
           1174
         ]
-      }
+      },
+      "superseded_by_owner_request": "PU05: つむぎの頭身・小柄な体格を元絵へ戻す"
     },
     {
       "face": "surprise",
@@ -757,10 +763,544 @@
           576,
           1174
         ]
+      },
+      "superseded_by_owner_request": "PU05: つむぎの頭身・小柄な体格を元絵へ戻す"
+    },
+    {
+      "face": "normal",
+      "prompt_number": 1,
+      "attempt": 5,
+      "generated_at_utc": "2026-10-10T05:58:56.372189+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/tsumugi-remaster-v2/attempts/normal-attempt-05-source.png",
+      "source_sha256": "2500d08f5624b338d00e22c952b5c4dd024a41cc87f71d921d28ac4767bac0d3",
+      "original_tool_file": "exec-b1813bec-6ab7-4a6e-9f6d-e639429a880a.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/tsumugi-remaster-v2/attempts/normal-attempt-05-prompt.txt",
+      "prompt_sha256": "3d7225618ac8ea6e5f2aacc549dcd1818073a1be9ab5499f7c71dbb43e7b7981",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit_original_proportions",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        },
+        {
+          "image": 3,
+          "role": "rendering_quality_only_owner_proportions_override",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ],
+      "preserve_original_proportions": true,
+      "canvas_px": [
+        1084,
+        1451
+      ],
+      "alpha_bbox_threshold_16_px": [
+        333,
+        14,
+        748,
+        1441
+      ],
+      "figure_height_px": 1427,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T06:01:05.293823+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "PU05原画・原寸比較確認。元絵に近い大きな丸い頭、小柄な体格、短い胴と脚を回復。肩・パーカー裾・膝・靴の位置も元絵に近く、モデル体型への変化を撤回。濃い紫・茶髪・赤茶の瞳と2本の腕・2つの手を保持。靴底と透過余白は完結。",
+        "preview_bbox_threshold_16_px": [
+          313,
+          305,
+          566,
+          1174
+        ],
+        "original_bbox_threshold_16_px": [
+          319,
+          305,
+          559,
+          1174
+        ]
+      },
+      "provenance_note": "実行英文はPU05更新後のnormal-prompt.txt。保存時の旧プロンプトコピーを実行した英文へ訂正。原画は無加工。"
+    },
+    {
+      "face": "smile",
+      "prompt_number": 2,
+      "attempt": 2,
+      "generated_at_utc": "2026-10-10T05:59:41.027896+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/tsumugi-remaster-v2/attempts/smile-attempt-02-source.png",
+      "source_sha256": "d3f72464b666905216da0c3cb72da7120d5de205170fc03d81b7adf9fb2c1f1f",
+      "original_tool_file": "exec-8c11787b-ecc0-48f1-b287-993e7ea1ac23.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/tsumugi-remaster-v2/attempts/smile-attempt-02-prompt.txt",
+      "prompt_sha256": "ff0ff9b037844885da4c8361fe3d5534ab1803ed9889029b807fc7ace4361fea",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit_original_proportions",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_smile.png",
+          "sha256": "952ba0b09909936641b6c9a138c312852c8990ae5b82c879866bee64bf49203f"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        },
+        {
+          "image": 3,
+          "role": "rendering_quality_only_owner_proportions_override",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ],
+      "preserve_original_proportions": true,
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        340,
+        6,
+        754,
+        1434
+      ],
+      "figure_height_px": 1428,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T06:01:39.621629+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "PU05原画・原寸比較確認。元絵の丸い頭と小柄な体格、短めの脚とゆったりしたパーカーへ戻った。赤茶の目・頬と控えめな笑顔、顎のペンと抱えるタブレットのポーズを維持。濃い紫を保ち、靴と手の欠け・背景残りなし。",
+        "preview_bbox_threshold_16_px": [
+          298,
+          302,
+          551,
+          1174
+        ],
+        "original_bbox_threshold_16_px": [
+          301,
+          302,
+          545,
+          1174
+        ]
+      }
+    },
+    {
+      "face": "serious",
+      "prompt_number": 3,
+      "attempt": 2,
+      "generated_at_utc": "2026-10-10T06:00:30.232923+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/tsumugi-remaster-v2/attempts/serious-attempt-02-source.png",
+      "source_sha256": "314c5c876a9c3ada7a0a76c22a8c7d79474baa4a8fcd9283d724f16bbe55309c",
+      "original_tool_file": "exec-e79dbbfb-49a0-4193-8815-53b845dc021b.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/tsumugi-remaster-v2/attempts/serious-attempt-02-prompt.txt",
+      "prompt_sha256": "a51fb6d41a0060fda6dd1d1a630ce8b0eb672bcfaf488072385160f6aa86b7bb",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit_original_proportions",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_serious.png",
+          "sha256": "6b9daaf0ee59aae1b56c625e8c12b1b539738c8533e6af5205a4d600f8dd0d75"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        },
+        {
+          "image": 3,
+          "role": "rendering_quality_only_owner_proportions_override",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ],
+      "preserve_original_proportions": true,
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        317,
+        12,
+        806,
+        1443
+      ],
+      "figure_height_px": 1431,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T06:03:55.506651+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "PU05原画・原寸比較確認。元絵に近い丸い頭と小柄な頭身、短い胴・脚へ戻した。濃い紫と茶髪・赤茶の瞳を保持。seriousの描画するペンと両手、surpriseの開いた5本指・目・口と抱えるタブレットを維持。靴底完結、余白あり、背景残りなし。",
+        "preview_bbox_threshold_16_px": [
+          299,
+          310,
+          594,
+          1174
+        ],
+        "original_bbox_threshold_16_px": [
+          303,
+          310,
+          587,
+          1174
+        ]
+      }
+    },
+    {
+      "face": "surprise",
+      "prompt_number": 4,
+      "attempt": 3,
+      "generated_at_utc": "2026-10-10T06:01:20.260366+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/tsumugi-remaster-v2/attempts/surprise-attempt-03-source.png",
+      "source_sha256": "68f4e9b5f593eb9d3d07a5083b1c8a371573a6fc1c40459aa70229463dd1953b",
+      "original_tool_file": "exec-981256a2-ffd7-4cfa-ad72-a0350515075e.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/tsumugi-remaster-v2/attempts/surprise-attempt-03-prompt.txt",
+      "prompt_sha256": "214cc5a9a9676f6897e3df0cbdac077469fcf6a1bf028a16d681e574d64b2512",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit_original_proportions",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_surprise.png",
+          "sha256": "4945c68cd9b6f465ddbbd7e1a6f92b9d9d81b4723db0a8a82ab6efe6dc562f6a"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        },
+        {
+          "image": 3,
+          "role": "rendering_quality_only_owner_proportions_override",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ],
+      "preserve_original_proportions": true,
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        328,
+        10,
+        748,
+        1427
+      ],
+      "figure_height_px": 1417,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T06:03:55.877498+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "PU05原画・原寸比較確認。元絵に近い丸い頭と小柄な頭身、短い胴・脚へ戻した。濃い紫と茶髪・赤茶の瞳を保持。seriousの描画するペンと両手、surpriseの開いた5本指・目・口と抱えるタブレットを維持。靴底完結、余白あり、背景残りなし。",
+        "preview_bbox_threshold_16_px": [
+          321,
+          307,
+          578,
+          1174
+        ],
+        "original_bbox_threshold_16_px": [
+          323,
+          307,
+          576,
+          1174
+        ]
+      }
+    },
+    {
+      "face": "sad",
+      "prompt_number": 5,
+      "attempt": 2,
+      "generated_at_utc": "2026-10-10T06:02:06.648931+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/tsumugi-remaster-v2/attempts/sad-attempt-02-source.png",
+      "source_sha256": "80b20087aea0b38478cb352e959b81a9f3a0b8f8ae3116e5e13c0d975be0456b",
+      "original_tool_file": "exec-f37bacff-c5aa-400e-902d-eaa6ab35319f.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/tsumugi-remaster-v2/attempts/sad-attempt-02-prompt.txt",
+      "prompt_sha256": "508afafb863a4920aa5c5b1b5dbd785533cd2935d25e0d92e12439c390c2e920",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit_original_proportions",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_sad.png",
+          "sha256": "ca93874e7e114a1a52194b227033cd8821ebd93c421d62a5bbe0e9ed1a051087"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        },
+        {
+          "image": 3,
+          "role": "rendering_quality_only_owner_proportions_override",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ],
+      "preserve_original_proportions": true,
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        334,
+        15,
+        737,
+        1424
+      ],
+      "figure_height_px": 1409,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T06:04:37.076915+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "PU05原画・原寸比較確認。元絵の俯いた丸い頭と小柄な胴・脚の比率を回復。悲しげな目・口、タブレットを抱える2つの手と花の刺繍を保持。元の濃い紫・茶髪・肌の明暗を維持し、靴底完結・透明余白あり。",
+        "preview_bbox_threshold_16_px": [
+          316,
+          316,
+          562,
+          1175
+        ],
+        "original_bbox_threshold_16_px": [
+          318,
+          316,
+          555,
+          1175
+        ]
+      }
+    },
+    {
+      "face": "bow",
+      "prompt_number": 7,
+      "attempt": 2,
+      "generated_at_utc": "2026-10-10T06:02:55.923921+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/tsumugi-remaster-v2/attempts/bow-attempt-02-source.png",
+      "source_sha256": "8b104b1ca5ce57d725e78bb27693b9eb588773dc42370dd48110c0676fa3b50a",
+      "original_tool_file": "exec-6f25b65a-cd6c-4c09-9591-2e6653c9f0f6.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/tsumugi-remaster-v2/attempts/bow-attempt-02-prompt.txt",
+      "prompt_sha256": "fccc36042d65cfa7e0c86bb1f8d1669c3b7565769afaaf6de46bf354843e598d",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit_original_proportions",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_bow.png",
+          "sha256": "3f35f98c76dc8032e311f2c8a8dc9e9567b2f89b783813c1419e5185778d69b0"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        },
+        {
+          "image": 3,
+          "role": "rendering_quality_only_owner_proportions_override",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ],
+      "preserve_original_proportions": true,
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        363,
+        21,
+        734,
+        1430
+      ],
+      "figure_height_px": 1409,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T06:05:57.671814+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "PU05生成原画と原寸比較を確認。元絵の丸い頭、小柄な肩・胴・短い脚を回復。evilの目元の影と抱えたタブレット、bowの閉じた目・お辞儀と前で揃えた両手・ペンを維持。元の紫・茶髪の濃淡を保持し、靴底・透過余白が完結。",
+        "preview_bbox_threshold_16_px": [
+          332,
+          305,
+          561,
+          1174
+        ],
+        "original_bbox_threshold_16_px": [
+          337,
+          305,
+          556,
+          1174
+        ]
+      }
+    },
+    {
+      "face": "evil",
+      "prompt_number": 6,
+      "attempt": 2,
+      "generated_at_utc": "2026-10-10T06:03:48.781322+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/tsumugi-remaster-v2/attempts/evil-attempt-02-source.png",
+      "source_sha256": "ba0c1a0690c2e2953e11ab7cac9beaacb1d39d3289bdbfaa986153f9b4701eff",
+      "original_tool_file": "exec-15b953bc-4f2b-49e7-9eb2-c73372bcd95f.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/tsumugi-remaster-v2/attempts/evil-attempt-02-prompt.txt",
+      "prompt_sha256": "a4b2f10d08878864fd8ac6f8011068b773fbd998938390ddca2e6c6881fcf6b9",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit_original_proportions",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_evil.png",
+          "sha256": "ec97dc3373eccff61088f0760d54404fa79596c8b404d5d5d089fefd388840e8"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        },
+        {
+          "image": 3,
+          "role": "rendering_quality_only_owner_proportions_override",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ],
+      "preserve_original_proportions": true,
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        347,
+        17,
+        762,
+        1437
+      ],
+      "figure_height_px": 1420,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T06:05:57.283833+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "PU05生成原画と原寸比較を確認。元絵の丸い頭、小柄な肩・胴・短い脚を回復。evilの目元の影と抱えたタブレット、bowの閉じた目・お辞儀と前で揃えた両手・ペンを維持。元の紫・茶髪の濃淡を保持し、靴底・透過余白が完結。",
+        "preview_bbox_threshold_16_px": [
+          308,
+          305,
+          562,
+          1174
+        ],
+        "original_bbox_threshold_16_px": [
+          311,
+          305,
+          556,
+          1174
+        ]
       }
     }
   ],
-  "selected_attempt": 4,
+  "selected_attempt": 5,
   "owner_approval": {
     "normal": {
       "status": "accepted",
@@ -769,13 +1309,13 @@
     }
   },
   "selected_attempts": {
-    "normal": 4,
-    "smile": 1,
-    "sad": 1,
-    "serious": 1,
-    "surprise": 2,
-    "bow": 1,
-    "evil": 1
+    "normal": 5,
+    "smile": 2,
+    "sad": 2,
+    "serious": 2,
+    "surprise": 3,
+    "bow": 2,
+    "evil": 2
   },
   "approval_policy": {
     "mode": "delegated_production_qa",

@@ -76,10 +76,314 @@
           1175
         ]
       }
+    },
+    {
+      "face": "serious",
+      "prompt_number": 15,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:46:36.450125+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/sumi-remaster-v2/attempts/serious-attempt-01-source.png",
+      "source_sha256": "818ea7f9c5035cae46eede402151335f80a83c7fe697e4cbe55899ee37ad33ba",
+      "original_tool_file": "exec-f4078cb8-3ce2-4e8a-97c6-43ecdd572814.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/sumi-remaster-v2/attempts/serious-attempt-01-prompt.txt",
+      "prompt_sha256": "820783689482a477be1602224c339bdd75aafdb89252c52087240193a4de0a7a",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/sumi/chr_sumi_serious.png",
+          "sha256": "cedcfb6ec6e3357f10665fa384781c0079a509fd9b541d4ca3c507d465341416"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "asset_sources/portraits/sumi-remaster-v2/normal-source.png",
+          "sha256": "350bbe04fb06f7ecb356506248b6076cd7d6be0bce718a8a3b1758cfc28c2d7e"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        318,
+        71,
+        784,
+        1396
+      ],
+      "figure_height_px": 1325,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:58:51.579150+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原画と原寸比較を確認。黒い帽子・眼鏡・髭・シャツ、茶色のエプロンの元の色を保持。smileの歯を見せた笑顔と差し出す掌、seriousの眉と口・立てた人差し指を維持。左右の手と靴底が完結し透過余白あり。",
+        "preview_bbox_threshold_16_px": [
+          258,
+          101,
+          636,
+          1175
+        ],
+        "original_bbox_threshold_16_px": [
+          262,
+          101,
+          631,
+          1175
+        ]
+      }
+    },
+    {
+      "face": "smile",
+      "prompt_number": 14,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:47:20.810329+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/sumi-remaster-v2/attempts/smile-attempt-01-source.png",
+      "source_sha256": "28e2fc9e57560e54e85e5bf62b9fbe4c1509202df73cd2e1b82d219a6b454e38",
+      "original_tool_file": "exec-07b4f38e-5fc6-4a2a-8179-c40a77cc728d.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/sumi-remaster-v2/attempts/smile-attempt-01-prompt.txt",
+      "prompt_sha256": "aaa1618e6e9d5830964673b5dbc9537a99e7b97e8f40fedd211e42b079f33f42",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/sumi/chr_sumi_smile.png",
+          "sha256": "4fa7011b45471cc14f84146de14a83e4e5e582cbfdef903b9fcf563ee63508c6"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "asset_sources/portraits/sumi-remaster-v2/normal-source.png",
+          "sha256": "350bbe04fb06f7ecb356506248b6076cd7d6be0bce718a8a3b1758cfc28c2d7e"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        227,
+        52,
+        804,
+        1402
+      ],
+      "figure_height_px": 1350,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:58:51.194159+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原画と原寸比較を確認。黒い帽子・眼鏡・髭・シャツ、茶色のエプロンの元の色を保持。smileの歯を見せた笑顔と差し出す掌、seriousの眉と口・立てた人差し指を維持。左右の手と靴底が完結し透過余白あり。",
+        "preview_bbox_threshold_16_px": [
+          188,
+          103,
+          646,
+          1175
+        ],
+        "original_bbox_threshold_16_px": [
+          200,
+          103,
+          644,
+          1175
+        ]
+      }
+    },
+    {
+      "face": "thinking",
+      "prompt_number": 17,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:50:15.589842+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/sumi-remaster-v2/attempts/thinking-attempt-01-source.png",
+      "source_sha256": "55367a86303b8fc9914b31e2e0d0f1cdda401081e713c20cbd421f460733caf4",
+      "original_tool_file": "exec-24a191b5-e47c-48ee-8abd-a9f0a84dab2d.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/sumi-remaster-v2/attempts/thinking-attempt-01-prompt.txt",
+      "prompt_sha256": "d3dd67f098e2e50069c45b358af7dfd3f636301e28aded2e689d4c17f9019b5a",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/sumi/chr_sumi_thinking.png",
+          "sha256": "bbf7156176dc421db91fecc2b9fc4e4195e2fc926e10188de0ea38a269681da1"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "asset_sources/portraits/sumi-remaster-v2/normal-source.png",
+          "sha256": "350bbe04fb06f7ecb356506248b6076cd7d6be0bce718a8a3b1758cfc28c2d7e"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "canvas_px": [
+        1084,
+        1451
+      ],
+      "alpha_bbox_threshold_16_px": [
+        342,
+        66,
+        762,
+        1392
+      ],
+      "figure_height_px": 1326,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:59:07.748957+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原画と原寸比較を確認。元の黒・茶系の色を保持。surpriseの開いた目と口、胸前の5本指と反対のポケット手、thinkingの顎に添えた指と組んだ腕を維持。余分な手足や背景、靴底の欠けなし。",
+        "preview_bbox_threshold_16_px": [
+          283,
+          103,
+          623,
+          1175
+        ],
+        "original_bbox_threshold_16_px": [
+          282,
+          103,
+          611,
+          1175
+        ]
+      }
+    },
+    {
+      "face": "surprise",
+      "prompt_number": 16,
+      "attempt": 1,
+      "generated_at_utc": "2026-10-10T05:51:01.776207+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/sumi-remaster-v2/attempts/surprise-attempt-01-source.png",
+      "source_sha256": "f5d22eae06ab900799558c8d65053c3c709a7a30a093d9cf572711f54367db1c",
+      "original_tool_file": "exec-05c00f68-8690-4030-afd1-b3bda91ded62.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/sumi-remaster-v2/attempts/surprise-attempt-01-prompt.txt",
+      "prompt_sha256": "c2b740019ba53ab855dd1ec1d2ce789783db9e551685e19868eaefb8fa845193",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/sumi/chr_sumi_surprise.png",
+          "sha256": "295353319a1759361636cbb50c797ed019fa774806483cae0a3609e0d24a3733"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "asset_sources/portraits/sumi-remaster-v2/normal-source.png",
+          "sha256": "350bbe04fb06f7ecb356506248b6076cd7d6be0bce718a8a3b1758cfc28c2d7e"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "canvas_px": [
+        1084,
+        1451
+      ],
+      "alpha_bbox_threshold_16_px": [
+        331,
+        43,
+        785,
+        1406
+      ],
+      "figure_height_px": 1363,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:59:07.370039+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection; resolution, alpha and original height/bottom validation",
+        "note": "原画と原寸比較を確認。元の黒・茶系の色を保持。surpriseの開いた目と口、胸前の5本指と反対のポケット手、thinkingの顎に添えた指と組んだ腕を維持。余分な手足や背景、靴底の欠けなし。",
+        "preview_bbox_threshold_16_px": [
+          283,
+          103,
+          640,
+          1175
+        ],
+        "original_bbox_threshold_16_px": [
+          283,
+          103,
+          641,
+          1175
+        ]
+      }
     }
   ],
   "selected_attempts": {
-    "normal": 1
+    "normal": 1,
+    "serious": 1,
+    "smile": 1,
+    "thinking": 1,
+    "surprise": 1
   },
   "selected_attempt": 1,
   "approval_policy": {

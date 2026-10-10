@@ -3,13 +3,13 @@
 [調査と方針](README.md)。2026-10-09 オーナー決定：**顔の大きさが中央値から±10%を超える6人だけ直す**／**画風はみんと・アゲハに合わせる**。
 1回の生成で1人・1表情。各ブロックの英文と、ブロックに書いたリポジトリの参照画像4枚で1回ずつ生成する。全34表情。参照画像は**エージェントがリポジトリから直接読み込む**（オーナーが保存・添付する必要はない）。
 
-> 2026-10-10 追記（要望台帳 PU02）：主目的は画風と解像度をそろえること。つむぎはやや頭が大きい方が可愛いという指定を優先し、頭の縮小率より丸さ・可愛さを保つ。つむぎの7ブロック末尾の追記が、以前の10%縮小指定に優先する。
+> 2026-10-10 最終更新（要望台帳 PU02・PU05）：主目的は画風と解像度をそろえること。つむぎは頭身の変更で印象が変わったため、元絵の頭・胴・脚の比率と小柄な体格へ戻す。7ブロックの10%縮小指定は撤回し、参照②も元の通常絵を使う。みんとからは描画品質だけを参照する。
 
 > 同日追記（PU03・PU04）：繰り返し生成で色が薄くならないよう、全34ブロックで元画像の色・彩度・明暗を維持する。ましろも少し大きめの丸い顔の方が可愛いという指定を優先し、6ブロック末尾の追記は以前の8%縮小指定に優先する。途中確認の委任により、残りは検品しながら続けて制作する。
 
 | キャラ | いまの顔の大きさ（中央値比） | 直し方 | 画風の直し | 表情数 |
 |---|---|---|---|---|
-| つむぎ | +18% | やや大きめの頭と丸さ・可愛さを優先。10%縮小は強制しない（2026-10-10追記） | 基準に合わせる | 7 |
+| つむぎ | +18% | 元絵の頭身・胴と脚の長さ・小柄な体格へ戻す。頭の縮小を撤回し、解像度と画風のみ統一（2026-10-10 PU05） | 基準に合わせる | 7 |
 | 前園 | +17% | 頭を約14%小さく | 平たい塗り・太い線を基準へ | 5 |
 | スミさん | +15% | 頭（帽子込み）を約13%小さく | 基準に合わせる | 5 |
 | ましろ | +13% | やや大きめの丸い顔と頬の可愛さを優先。8%縮小は強制しない（2026-10-10追記） | 基準に合わせる | 6 |
@@ -25,7 +25,7 @@
 番号は下のブロック番号（`### 1. つむぎ・normal` など）。
 
 **ステップ1：試しの3枚で方向を確かめる**（ここで合格してから量産する）
-1. **#1 つむぎ・normal** … 頭を小さくしても丸さ・可愛さが残るか
+1. **#1 つむぎ・normal** … 元絵の頭身・小柄な丸さを保ち、解像度と画風だけを揃える（PU05）
 2. **#29 サメちゃん・normal** … 塗りを寄せても本人に見えるか（採用したばかりのデザイン）
 3. **#8 前園・normal** … 線が細くなり、塗りがみんと・アゲハに近づくか
 
@@ -35,7 +35,7 @@
 4. **#13 スミさん・normal** → 5. **#18 ましろ・normal** → 6. **#24 南雲・normal**
 
 **ステップ3：各キャラの残りの表情**（キャラごとにまとめて）
-- **②（同じキャラの通常）には、ステップ1・2で合格した「新しい通常」を添付する。** 表情どうしの顔と頭の大きさがそろいやすい。
+- **②（同じキャラの通常）には、ステップ1・2で合格した「新しい通常」を添付する。** 表情どうしの顔と頭の大きさがそろいやすい。ただし、つむぎはPU05により、体格を変えた候補を引き継がず「元の通常」を添付する。
 - 順番：つむぎ #2〜7 → ましろ #19〜23 → サメちゃん #30〜34 → 前園 #9〜12 → スミさん #14〜17 → 南雲 #25〜28
 - 1キャラの全表情がそろったら並べて確認し、`asset_sources/portraits/<id>-remaster-v2/` に置いて commit。キャラ単位で組み込みを頼んでよい。
 
@@ -46,7 +46,7 @@ Codex・Claude Code では「立ち絵そろえ」で済むので、この節は
 1. 添付する4枚をGitHubから保存する（ファイルを開いて `Raw` から保存）。
    - ① いま作り直す表情の現行PNG（各ブロックに書いたパス）
    - ② 同じキャラの `chr_<id>_normal.png`（①が通常のときは省略してよい）
-   - ③ 頭身の目標：女性は みんと、男性は アダム の normal
+   - ③ 頭身の目標：女性は みんと、男性は アダム の normal。ただし、つむぎは①の元の頭身を保ち、③は描画品質だけの参照
    - ④ 画風の目標：女性は アゲハ、男性は みんと の normal
 2. 新しいチャットで、①→②→③→④の順に添付し、そのキャラ・表情のブロックをそのまま貼って送る。
 3. できた画像を原寸で見て、下のチェックを確認する。ダメなら同じチャットで、直す点だけを伝えて作り直す（例：「顔を画像1にもっと近づけて」「頭をもう少し小さく」「手の位置を画像1と同じに」）。
@@ -57,7 +57,7 @@ Codex・Claude Code では「立ち絵そろえ」で済むので、この節は
 
 - [ ] 人物の高さが1300px以上。背景が透明で、手足の間も抜けている
 - [ ] ①と並べて、顔立ち・表情・手と肩の位置・衣装・小物が変わっていない（同じ人物）
-- [ ] 頭の大きさが③に近い（つむぎ・ましろは③より少し大きく丸いまま）。頭だけ変えて、全身の高さ・立ち方は①のまま
+- [ ] 頭の大きさが③に近い（ましろは③より少し大きく丸いまま）。つむぎはPU05により①の頭身・胴と脚の長さ・小柄な体格をそのまま維持する。全身の高さ・立ち方は①のまま
 - [ ] 画風が④に近い：細くくっきりした線、控えめな段階の陰影。ぼやけ・のっぺり・つやつや・粗いドットがない
 - [ ] 若返り・老け・別人化していない
 - [ ] 文字・枠・影・床が入っていない
@@ -66,18 +66,17 @@ Codex・Claude Code では「立ち絵そろえ」で済むので、この節は
 
 ### 1. つむぎ・normal
 
-参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（描画品質のみ。頭身は①を維持）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
-Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY two things: the rendering resolution and crispness, and the rendering style unification below. Keep image 1's original head-to-body ratio and complete body proportions exactly.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): rendering quality only; image 1 remains the sole body-proportion reference. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
 Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
 Expression and pose to keep exactly as image 1 (normal): calm closed mouth, hugging the tablet against her chest with both arms
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 10% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
-Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+ORIGINAL PROPORTIONS: preserve image 1's exact original head-to-body ratio, large soft rounded head and cheeks, short compact torso and legs, gentle narrow shoulders, original waist and knee positions, petite body mass and stance. Enlarge the whole original figure uniformly to reach the requested source resolution; do not change any body part's relative scale, length, width or position.
 
 STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
@@ -86,22 +85,23 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: prioritize matching resolution and rendering style; Tsumugi may retain a slightly oversized, soft round head close to image 1 because it looks cuter, so do not force the earlier 10% head reduction.
 
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
+
+Owner update 2026-10-10, superseding all earlier proportion instructions: the entire HEAD SIZE CORRECTION paragraph and the Minto proportion target are cancelled for Tsumugi; match image 1's original head-to-body ratio and body proportions exactly, restoring her compact petite silhouette, original short legs and torso, soft large rounded head and cheeks, narrow gentle shoulders, and original shoulder, waist, knee and shoe positions. Improve only resolution, line crispness and restrained matte rendering style while keeping image 1's figure proportions, expression, pose, outfit and original color strength unchanged; image 2 is the ORIGINAL normal sprite for identity, and must not introduce a taller, slimmer or fashion-model body.
 ```
 
 ### 2. つむぎ・smile
 
-参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_smile.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_smile.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（描画品質のみ。頭身は①を維持）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
-Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY two things: the rendering resolution and crispness, and the rendering style unification below. Keep image 1's original head-to-body ratio and complete body proportions exactly.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): rendering quality only; image 1 remains the sole body-proportion reference. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
 Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
 Expression and pose to keep exactly as image 1 (smile): gentle smile, holding a stylus near her cheek with the tablet in the other arm
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 10% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
-Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+ORIGINAL PROPORTIONS: preserve image 1's exact original head-to-body ratio, large soft rounded head and cheeks, short compact torso and legs, gentle narrow shoulders, original waist and knee positions, petite body mass and stance. Enlarge the whole original figure uniformly to reach the requested source resolution; do not change any body part's relative scale, length, width or position.
 
 STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
@@ -110,22 +110,23 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: prioritize matching resolution and rendering style; Tsumugi may retain a slightly oversized, soft round head close to image 1 because it looks cuter, so do not force the earlier 10% head reduction.
 
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
+
+Owner update 2026-10-10, superseding all earlier proportion instructions: the entire HEAD SIZE CORRECTION paragraph and the Minto proportion target are cancelled for Tsumugi; match image 1's original head-to-body ratio and body proportions exactly, restoring her compact petite silhouette, original short legs and torso, soft large rounded head and cheeks, narrow gentle shoulders, and original shoulder, waist, knee and shoe positions. Improve only resolution, line crispness and restrained matte rendering style while keeping image 1's figure proportions, expression, pose, outfit and original color strength unchanged; image 2 is the ORIGINAL normal sprite for identity, and must not introduce a taller, slimmer or fashion-model body.
 ```
 
 ### 3. つむぎ・serious
 
-参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_serious.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_serious.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（描画品質のみ。頭身は①を維持）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
-Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY two things: the rendering resolution and crispness, and the rendering style unification below. Keep image 1's original head-to-body ratio and complete body proportions exactly.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): rendering quality only; image 1 remains the sole body-proportion reference. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
 Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
 Expression and pose to keep exactly as image 1 (serious): focused gaze down at the tablet, drawing on it with the stylus
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 10% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
-Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+ORIGINAL PROPORTIONS: preserve image 1's exact original head-to-body ratio, large soft rounded head and cheeks, short compact torso and legs, gentle narrow shoulders, original waist and knee positions, petite body mass and stance. Enlarge the whole original figure uniformly to reach the requested source resolution; do not change any body part's relative scale, length, width or position.
 
 STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
@@ -134,22 +135,23 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: prioritize matching resolution and rendering style; Tsumugi may retain a slightly oversized, soft round head close to image 1 because it looks cuter, so do not force the earlier 10% head reduction.
 
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
+
+Owner update 2026-10-10, superseding all earlier proportion instructions: the entire HEAD SIZE CORRECTION paragraph and the Minto proportion target are cancelled for Tsumugi; match image 1's original head-to-body ratio and body proportions exactly, restoring her compact petite silhouette, original short legs and torso, soft large rounded head and cheeks, narrow gentle shoulders, and original shoulder, waist, knee and shoe positions. Improve only resolution, line crispness and restrained matte rendering style while keeping image 1's figure proportions, expression, pose, outfit and original color strength unchanged; image 2 is the ORIGINAL normal sprite for identity, and must not introduce a taller, slimmer or fashion-model body.
 ```
 
 ### 4. つむぎ・surprise
 
-参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_surprise.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_surprise.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（描画品質のみ。頭身は①を維持）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
-Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY two things: the rendering resolution and crispness, and the rendering style unification below. Keep image 1's original head-to-body ratio and complete body proportions exactly.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): rendering quality only; image 1 remains the sole body-proportion reference. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
 Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
 Expression and pose to keep exactly as image 1 (surprise): round eyes and a small open mouth, one hand raised beside her face, the tablet in the other arm
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 10% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
-Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+ORIGINAL PROPORTIONS: preserve image 1's exact original head-to-body ratio, large soft rounded head and cheeks, short compact torso and legs, gentle narrow shoulders, original waist and knee positions, petite body mass and stance. Enlarge the whole original figure uniformly to reach the requested source resolution; do not change any body part's relative scale, length, width or position.
 
 STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
@@ -158,22 +160,23 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: prioritize matching resolution and rendering style; Tsumugi may retain a slightly oversized, soft round head close to image 1 because it looks cuter, so do not force the earlier 10% head reduction.
 
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
+
+Owner update 2026-10-10, superseding all earlier proportion instructions: the entire HEAD SIZE CORRECTION paragraph and the Minto proportion target are cancelled for Tsumugi; match image 1's original head-to-body ratio and body proportions exactly, restoring her compact petite silhouette, original short legs and torso, soft large rounded head and cheeks, narrow gentle shoulders, and original shoulder, waist, knee and shoe positions. Improve only resolution, line crispness and restrained matte rendering style while keeping image 1's figure proportions, expression, pose, outfit and original color strength unchanged; image 2 is the ORIGINAL normal sprite for identity, and must not introduce a taller, slimmer or fashion-model body.
 ```
 
 ### 5. つむぎ・sad
 
-参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_sad.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_sad.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（描画品質のみ。頭身は①を維持）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
-Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY two things: the rendering resolution and crispness, and the rendering style unification below. Keep image 1's original head-to-body ratio and complete body proportions exactly.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): rendering quality only; image 1 remains the sole body-proportion reference. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
 Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
 Expression and pose to keep exactly as image 1 (sad): downcast eyes and a small sad mouth, hugging the tablet
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 10% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
-Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+ORIGINAL PROPORTIONS: preserve image 1's exact original head-to-body ratio, large soft rounded head and cheeks, short compact torso and legs, gentle narrow shoulders, original waist and knee positions, petite body mass and stance. Enlarge the whole original figure uniformly to reach the requested source resolution; do not change any body part's relative scale, length, width or position.
 
 STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
@@ -182,22 +185,23 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: prioritize matching resolution and rendering style; Tsumugi may retain a slightly oversized, soft round head close to image 1 because it looks cuter, so do not force the earlier 10% head reduction.
 
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
+
+Owner update 2026-10-10, superseding all earlier proportion instructions: the entire HEAD SIZE CORRECTION paragraph and the Minto proportion target are cancelled for Tsumugi; match image 1's original head-to-body ratio and body proportions exactly, restoring her compact petite silhouette, original short legs and torso, soft large rounded head and cheeks, narrow gentle shoulders, and original shoulder, waist, knee and shoe positions. Improve only resolution, line crispness and restrained matte rendering style while keeping image 1's figure proportions, expression, pose, outfit and original color strength unchanged; image 2 is the ORIGINAL normal sprite for identity, and must not introduce a taller, slimmer or fashion-model body.
 ```
 
 ### 6. つむぎ・evil
 
-参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_evil.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_evil.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（描画品質のみ。頭身は①を維持）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
-Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY two things: the rendering resolution and crispness, and the rendering style unification below. Keep image 1's original head-to-body ratio and complete body proportions exactly.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): rendering quality only; image 1 remains the sole body-proportion reference. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
 Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
 Expression and pose to keep exactly as image 1 (evil): yami-kawaii blank stare: empty eyes without highlights, soft lavender-gray shadow over the eyes, tiny flat mouth, hugging the cracked tablet, cute and comical, never menacing
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 10% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
-Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+ORIGINAL PROPORTIONS: preserve image 1's exact original head-to-body ratio, large soft rounded head and cheeks, short compact torso and legs, gentle narrow shoulders, original waist and knee positions, petite body mass and stance. Enlarge the whole original figure uniformly to reach the requested source resolution; do not change any body part's relative scale, length, width or position.
 
 STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
@@ -206,22 +210,23 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: prioritize matching resolution and rendering style; Tsumugi may retain a slightly oversized, soft round head close to image 1 because it looks cuter, so do not force the earlier 10% head reduction.
 
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
+
+Owner update 2026-10-10, superseding all earlier proportion instructions: the entire HEAD SIZE CORRECTION paragraph and the Minto proportion target are cancelled for Tsumugi; match image 1's original head-to-body ratio and body proportions exactly, restoring her compact petite silhouette, original short legs and torso, soft large rounded head and cheeks, narrow gentle shoulders, and original shoulder, waist, knee and shoe positions. Improve only resolution, line crispness and restrained matte rendering style while keeping image 1's figure proportions, expression, pose, outfit and original color strength unchanged; image 2 is the ORIGINAL normal sprite for identity, and must not introduce a taller, slimmer or fashion-model body.
 ```
 
 ### 7. つむぎ・bow
 
-参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_bow.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（頭身の目標）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
+参照画像（リポジトリのパス。エージェントが読み込む）：① `assets/sprites/characters/tsumugi/chr_tsumugi_bow.png` ／ ② `assets/sprites/characters/tsumugi/chr_tsumugi_normal.png` ／ ③ `assets/sprites/characters/minto/chr_minto_normal.png`（描画品質のみ。頭身は①を維持）／ ④ `assets/sprites/characters/ageha/chr_ageha_normal.png`（画風の目標）
 
 ```
-Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY three things: the rendering resolution and crispness, the head size correction below, and the rendering style unification below.
+Remaster the attached CURRENT game sprite (image 1) into ONE higher-resolution full-body character sprite with a transparent background. This is NOT a redesign: keep the same person, face design, expression, pose, hand and shoulder positions, clothing, accessories and colors as image 1. Change ONLY two things: the rendering resolution and crispness, and the rendering style unification below. Keep image 1's original head-to-body ratio and complete body proportions exactly.
 
-Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): the TARGET head-to-body proportion only. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
+Reference roles in order: (1) the current sprite of this exact expression: highest priority for identity, expression, pose and outfit. (2) the same character's normal sprite: face identity check only. (3) approved Minto normal sprite (assets/sprites/characters/minto/chr_minto_normal.png): rendering quality only; image 1 remains the sole body-proportion reference. (4) approved Ageha normal sprite (assets/sprites/characters/ageha/chr_ageha_normal.png): the TARGET rendering style only. Never copy the faces, hair, bodies or outfits of images 3 and 4.
 
 Character: Tsumugi, quiet 21-year-old adult Japanese illustrator, petite adult build, warm dark-brown softly rounded chin-length bob with straight bangs, warm reddish-brown eyes, small ear stud, loose deep plum zip hoodie with cream drawstrings and dusty-pink/lavender flower and ochre leaf embroidery on the sleeves and chest, short black pleated skirt, dark charcoal knee socks, black chunky lace-up shoes, black drawing tablet.
 Expression and pose to keep exactly as image 1 (bow): polite bow with closed eyes, head and upper body bowed slightly, both hands in front
 
-HEAD SIZE CORRECTION: in image 1 the head is too large for the body. Make the whole head about 10% SMALLER relative to the body, moving toward the head-to-body ratio of image 3 but stopping a little short of it. The character must still look like the same person of the same age.
-Keep the same total figure height and the same overall silhouette and stance; only the head (face, hair) changes scale relative to the body, and the neck and shoulders stay natural.
+ORIGINAL PROPORTIONS: preserve image 1's exact original head-to-body ratio, large soft rounded head and cheeks, short compact torso and legs, gentle narrow shoulders, original waist and knee positions, petite body mass and stance. Enlarge the whole original figure uniformly to reach the requested source resolution; do not change any body part's relative scale, length, width or position.
 
 STYLE UNIFICATION: match the approved Minto and Ageha sprites - fine high-resolution pixel-like game-art texture, thin crisp dark ink lines, restrained matte multi-step shading, small hand-drawn grain, natural non-glossy highlights. Keep her soft quiet charm and warm brown eyes; do not make her look older. Keep a slightly round, soft face with full cheeks and her cute roundness: her head should still read a little larger and softer than Minto's.
 
@@ -230,6 +235,8 @@ Output: ONE complete full-body figure on a tall canvas about 1085x1450, the figu
 Owner update 2026-10-10: prioritize matching resolution and rendering style; Tsumugi may retain a slightly oversized, soft round head close to image 1 because it looks cuter, so do not force the earlier 10% head reduction.
 
 Owner update 2026-10-10: preserve image 1's original local color palette, perceived saturation and light-dark range; resolution and style unification must not lighten, desaturate or pastelize the hair, clothing, skin or accessories, and every expression must anchor its colors to its original runtime reference rather than to earlier generated images.
+
+Owner update 2026-10-10, superseding all earlier proportion instructions: the entire HEAD SIZE CORRECTION paragraph and the Minto proportion target are cancelled for Tsumugi; match image 1's original head-to-body ratio and body proportions exactly, restoring her compact petite silhouette, original short legs and torso, soft large rounded head and cheeks, narrow gentle shoulders, and original shoulder, waist, knee and shoe positions. Improve only resolution, line crispness and restrained matte rendering style while keeping image 1's figure proportions, expression, pose, outfit and original color strength unchanged; image 2 is the ORIGINAL normal sprite for identity, and must not introduce a taller, slimmer or fashion-model body.
 ```
 
 ## 前園（maezono）
