@@ -1,0 +1,50 @@
+name: Remake fast smoke tests
+
+# Browser-free checks for the current remake. Avoid touching story/romance files.
+on:
+  pull_request:
+    paths:
+      - 'remake/js/core/data.js'
+      - 'remake/data/**'
+      - 'remake/test/data_loading.mjs'
+      - 'remake/test/lover_dates.mjs'
+      - 'data/**'
+      - '.github/workflows/remake-smoke.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'remake/js/core/data.js'
+      - 'remake/data/**'
+      - 'remake/test/data_loading.mjs'
+      - 'remake/test/lover_dates.mjs'
+      - 'data/**'
+      - '.github/workflows/remake-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: remake-smoke-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: Data loading smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate production data loader
+        run: node --experimental-vm-modules remake/test/data_loading.mjs
+      - name: Validate romance date data when test is present
+        shell: bash
+        run: |
+          if [[ -f remake/test/lover_dates.mjs ]]; then
+            node remake/test/lover_dates.mjs
+          else
+            echo 'Romance date test not present on this branch; skipping.'
+          fi
