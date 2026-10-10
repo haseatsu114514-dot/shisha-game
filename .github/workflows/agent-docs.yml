@@ -6,6 +6,9 @@ on:
       - 'CLAUDE.md'
       - 'docs/**'
       - 'tools/check_agent_docs.py'
+      - 'tools/check_mashiro_address.py'
+      - 'data/dialogue/**'
+      - 'brand/character_profiles.md'
       - '.github/workflows/agent-docs.yml'
   push:
     branches: [main]
@@ -24,4 +27,6 @@ jobs:
         with:
           python-version: '3.12'
       - name: Validate AI documentation
-        run: python3 tools/check_agent_docs.py
+        run: |
+          python3 tools/check_agent_docs.py
+          python3 tools/check_mashiro_address.py
