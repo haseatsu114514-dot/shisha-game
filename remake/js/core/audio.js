@@ -226,7 +226,7 @@ const SYNTH_FALLBACK = {
 export const currentBgm = () => currentKey;
 
 // 新規大会曲は約 -14 LUFS にそろえる。設定変更・フェード中も曲ごとの倍率を保つ。
-const BGM_GAIN = { sweets_or_sweets: 0.55, bgm_tournament_edm: 0.51, bgm_tournament_craft: 0.67 };
+const BGM_GAIN = { sweets_or_sweets: 0.55, bgm_tournament_edm: 0.51, bgm_tournament_craft: 0.67, bgm_continue_urgent: 0.68 };
 const bgmLevel = (key) => config.bgmVolume * (BGM_GAIN[key] ?? 1);
 
 // 単体MP3の再配布を避けるゲーム専用形式（pack_bgm.py と対応）。HTTPS/localhostで復元する。
@@ -278,11 +278,25 @@ export function playBgm(key) {
     const a = packed ? new Audio() : new Audio(url);
     a.loop = true;
     a.volume = 0;
+    if (key === "bgm_continue_urgent") {
+      a.playbackRate = 1.08; // EMGコール(BPM115)を少しだけ高速化
+      a.preservesPitch = true;
+    }
     currentEl = a;
+    const fallBackContinue = () => {
+      if (currentEl !== a || key !== "bgm_continue_urgent") return false;
+      currentEl = null;
+      a.pause();
+      if (SYNTH_FALLBACK[key]) synthStop = startSynth(SYNTH_FALLBACK[key]);
+      return true;
+    };
+    a.addEventListener("error", fallBackContinue, { once: true });
     const start = () => {
       if (currentEl !== a) return; // 読み込み中に別曲へ移った場合、古い曲を鳴らさない。
       a.play().catch(() => {
-        if (currentEl === a) { pendingBgm = key; currentKey = null; }
+        if (!fallBackContinue() && currentEl === a) {
+          pendingBgm = key; currentKey = null;
+        }
       });
       fadeEl(a, () => bgmLevel(key), 1200);
     };
