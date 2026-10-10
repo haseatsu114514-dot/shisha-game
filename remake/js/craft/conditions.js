@@ -6,6 +6,14 @@ import { foilHeatProfile } from "./holes_logic.js";
 export const IDEAL = [0.46, 0.62];
 export const OPTIMAL = [0.532, 0.548];
 export const isOptimalTemperature = (temp) => temp >= OPTIMAL[0] && temp <= OPTIMAL[1];
+/** 温度計の一番上に届くと爆発して焦げる（2026-10-09 オーナー指定 TH06）。蒸らしは0.88で頭打ちのため届かない。 */
+export const BURST_TEMP = 1;
+export const isBurnt = (temp) => temp >= BURST_TEMP - 1e-6;
+/** ここから上は「焦げる寸前」。温度計に危険帯として描き、背景も灼熱になる。 */
+export const DANGER_TEMP = 0.94;
+/** 提供後（熱管理）にここまで冷えると、シーシャがダメになる（TH19）。 */
+export const COLD_OUT = 0.06;
+export const isColdOut = (temp) => temp <= COLD_OUT + 1e-6;
 
 /** 温まり方は経過時間で決まる。雑念のミスはこの温度へ入れない。 */
 export function temperatureAfterSteam(cs, seconds, jitter = 0) {
@@ -54,13 +62,13 @@ export function heatDelta(cs, delta) {
 }
 
 /** 吸い方の判定数ではなく、提供した温度が最適温にどれだけ近いかを評価する。 */
-export function pullResult(temp, pulls, _justs, ideal = IDEAL) {
+export function pullResult(temp, pulls, _justs, ideal = IDEAL, safePulls = 3) {
   const center = (ideal[0] + ideal[1]) / 2;
   const inZone = temp >= ideal[0] && temp <= ideal[1];
   const optimal = isOptimalTemperature(temp);
   const distance = Math.abs(temp - center), narrow = (OPTIMAL[1] - OPTIMAL[0]) / 2;
   const safe = (ideal[1] - ideal[0]) / 2;
-  const leafPenalty = Math.max(0, pulls - 3) * 8;
+  const leafPenalty = Math.max(0, pulls - safePulls) * 8;
   const thermal = optimal ? 96 + 4 * (1 - distance / narrow)
     : inZone ? 65 + 24 * (1 - (distance - narrow) / (safe - narrow)) : 65 - (distance - safe) * 360;
   return { score: Math.round(clamp(thermal - leafPenalty, 0, 100)), inZone, optimal };

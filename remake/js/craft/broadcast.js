@@ -1,6 +1,6 @@
 // 大会の生放送レイヤー（旧版 #24/#20/#26・N4）。本番（tournament）のときだけ出る。
 // ・ニコ動風コメント: 工程の出来に観客が反応して右から左へ流れる
-// ・体感スコア: 審査員の持ち点とは別系統の「観客ウケ」。判定のたびに「+N P」がポップする
+// ・点数は作業台の上の SCORE（総合スコア TH42）に一本化した。以前の「体感スコア」の札は出さない
 // ・MC の前振り＋ライバルの進行実況: 工程の頭でパッキーが煽り、ライバルの動きも順に流す
 // 文面は remake/data/broadcast.json。
 import { el, pick } from "../core/util.js";
@@ -8,35 +8,29 @@ import { DB } from "../core/data.js";
 import { layers } from "../core/ui.js";
 import { tickerSay } from "./session.js";
 
-const FEEL_PTS = { perfect: 12, great: 10, good: 6, miss: 0 };
 const ROWS = 7;
 let nextRow = 0; // 行は順番に回して、同時に流れるコメントが重ならないようにする
 
 const live = (cs) => cs?.mode === "tournament";
 const bench = () => layers.screen.querySelector(":scope > .bench:not(.done)");
 
-/** 流れるコメントの帯と体感スコアの札を、作業台の上に用意する（作業台が作り直されても付け直す） */
-function ensure(cs) {
+/** 流れるコメントの帯を、作業台の上に用意する（作業台が作り直されても付け直す） */
+function ensure() {
   const b = bench();
   if (!b) return null;
   let lane = b.querySelector(".bc-lane");
   if (!lane) b.append((lane = el("div.bc-lane")));
-  let feel = b.querySelector(".bc-feel");
-  if (!feel) {
-    feel = el("div.bc-feel", [el("span.bf-label", { text: "体感スコア" }), el("b.bf-num", { text: String(cs.feel || 0) }), el("span.bf-p", { text: "P" })]);
-    (b.querySelector(".bench-top") || b).append(feel);
-  }
-  return { lane, feel };
+  return { lane };
 }
 
 /** コメントを1本流す（右→左） */
 export function comment(cs, text, { cls = "", row = null } = {}) {
   if (!live(cs)) return;
-  const b = ensure(cs);
+  const b = ensure();
   if (!b) return;
   const r = row != null ? row % ROWS : (nextRow++ % ROWS);
   const dur = 4.2 + Math.random() * 1.8;
-  // 右上の体感スコア札の下（14%〜）から流す
+  // 右上の SCORE の下（14%〜）から流す
   const c = el(`div.nico${cls ? "." + cls : ""}`, { text, style: { top: `${14 + r * 9}%`, animationDuration: `${dur}s` } });
   b.lane.append(c);
   setTimeout(() => c.remove(), dur * 1000 + 250);
@@ -51,30 +45,12 @@ export function burst(cs, kind, n = null) {
   for (let i = 0; i < n; i++) setTimeout(() => comment(cs, pick(pool), { cls }), i * 170);
 }
 
-/** 体感スコアを足して「+N P」をポップ */
-function feelPop(cs, pts, label) {
-  const b = ensure(cs);
-  if (!b || !(pts > 0)) return;
-  cs.feel = (cs.feel || 0) + pts;
-  const num = b.feel.querySelector(".bf-num");
-  num.textContent = String(cs.feel);
-  num.classList.remove("bump");
-  void num.offsetWidth;
-  num.classList.add("bump");
-  b.feel.classList.add("show");
-  const pop = el("div.feel-pop", [`+${pts}`, el("span", { text: "P" }), label ? el("small", { text: label }) : null]);
-  b.feel.append(pop);
-  setTimeout(() => pop.remove(), 1150);
-}
-
 /** 点数（0〜100）→ 観客の反応の段階 */
 export const judgeOf = (score) => (score >= 88 ? "perfect" : score >= 74 ? "great" : score >= 55 ? "good" : "miss");
 
-/** 工程の出来を、体感スコア・コメント・パッキーの実況へまとめて反映 */
-export function judge(cs, result, label = "") {
+/** 工程の出来を、観客のコメント・パッキーの実況へまとめて反映（点数は SCORE が工程ごとに入れる） */
+export function judge(cs, result) {
   if (!live(cs)) return;
-  const pts = FEEL_PTS[result] ?? 6;
-  if (pts > 0) feelPop(cs, pts, label);
   burst(cs, result === "great" ? "perfect" : result);
   const lines = DB.broadcast?.ticker?.[result === "great" ? "perfect" : result];
   if (lines?.length) tickerSay(`パッキー「${pick(lines)}」`);
@@ -96,7 +72,7 @@ export function block(cs, step) {
   }
 }
 
-/** 結果発表の前に、流れているコメントを片付ける（体感スコアは cs.feel に残る） */
+/** 結果発表の前に、流れているコメントを片付ける */
 export function clearComments() {
   layers.screen.querySelectorAll(".bc-lane").forEach((l) => l.replaceChildren());
 }

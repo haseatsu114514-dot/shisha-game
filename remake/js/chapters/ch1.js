@@ -26,6 +26,7 @@ import { runHeat } from "../craft/heat.js";
 import { runSteamDodge } from "../craft/steam.js";
 import { runPull } from "../craft/pull.js";
 import { runCare } from "../craft/care.js";
+import { buildGameOver } from "./gameover.js";
 import { runTrial } from "../craft/trial.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { outcomeOf, showStandings, resultCountdown, nagumoCutin, resultTable } from "../craft/result.js";
@@ -118,6 +119,13 @@ async function tutorial() {
   await stepSteamTime(cs);
   await runSteamDodge(cs);
   await runPull(cs);
+  // 焦がしたら、スミさんが葉を詰め直して吸い出しからやり直す（TH06。レッスンはGAME OVERにしない）。
+  while (cs.failed) {
+    await play("remake_tutorial_burnt", { bg: TONARI });
+    Object.assign(cs, { failed: null, burnt: false, pull: null, pullDone: false, leaf: null });
+    openBench(cs, { steps: STEPS_R1.filter(([id]) => id !== "setup" && id !== "concept") });
+    await runPull(cs);
+  }
   state.flags._tutorial_done = true;
   delete state.flags._tutorial_skipped;
   await play("remake_tutorial_result", { bg: TONARI });
@@ -164,6 +172,12 @@ async function rehearsal() {
   await stepSteamTime(cs);
   await runSteamDodge(cs);
   await runPull(cs);
+  // 焦がした通しは手応えなし。スミさんの一言で終わり、本番の加点もない（TH06）。
+  if (cs.failed) {
+    state.rehearsal = "rough";
+    await play("remake_rehearsal_burnt", { bg: TONARI_N });
+    return;
+  }
   const s = computeShisha(cs);
   const score = (cs.holes.score + cs.heat.score + s.craftQuality) / 3;
   state.rehearsal = score >= 85 ? "great" : score >= 68 ? "good" : "rough";
@@ -222,7 +236,7 @@ async function tournamentDay() {
   await play("remake_round1_intro", { bg: STAGE });
   openBench(cs, { steps: STEPS_ALL });
   tickerSay("パッキー「さあ4人一斉にスタート！ 制限時間は60分ッ！」");
-  // 工程の頭でパッキーが前振り、出来に応じて観客のコメントと体感スコアが流れる（生放送レイヤー）
+  // 工程の頭でパッキーが前振り、出来に応じて観客のコメントが流れる（生放送レイヤー）。点数は作業台の SCORE に入る
   await stepSetup(cs);
   bc.block(cs, "theme");
   await stepConcept(cs);
@@ -254,6 +268,7 @@ async function tournamentDay() {
   openBench(cs, { steps: STEPS_ALL });
   bc.block(cs, "pull");
   await runPull(cs);
+  if (cs.failed) return failedOut(cs.failed);
   bc.judge(cs, bc.judgeOf(cs.pull.score), "提供");
   bc.burst(cs, "serve", 1);
   await sleep(900);
@@ -267,6 +282,7 @@ async function tournamentDay() {
   openBench(cs, { steps: STEPS_ALL });
   bc.block(cs, "adjust");
   await runCare(cs);
+  if (cs.failed) return failedOut(cs.failed);
   bc.judge(cs, bc.judgeOf(cs.care.score), "熱管理");
   await sleep(900);
   bc.clearComments();
@@ -301,7 +317,7 @@ async function tournamentDay() {
     await resultTable(cs, out.rank);
     await play("ch1_tournament_defeat", { bg: STAGE });
     await play("remake_defeat_follow", { bg: TONARI_N });
-    await showDefeat(out.rank);
+    await showGameOver({ rank: out.rank });
   }
 }
 
@@ -388,19 +404,27 @@ export async function showClear() {
   showScreen("end", root);
 }
 
-async function showDefeat(rank) {
+/** 一台を焦がした大会は、審査を待たずにその場でGAME OVER（TH06）。再挑戦は通常の敗北と同じ。 */
+/** 一台がダメになった大会は、審査を待たずにその場でGAME OVER（TH06・TH18〜TH20）。 */
+async function failedOut(reason) {
+  bc.clearComments();
+  save();
+  await smokeWipe(() => showGameOver({ reason }), { color: "dark" });
+}
+
+/**
+ * 大会のGAME OVER（TH18・TH45）。理由を出して「再挑戦しますか？」と聞き、はいなら大会の頭（大会直前のデータ）から。
+ * 画面は画像を使わず gameover.js で描く。理由は rank（順位で敗退）/ burnt / cold / leaf。
+ */
+async function showGameOver({ rank = 0, reason = "rank" } = {}) {
   showHud(false);
   stopBgm();
-  const root = el("div.end-screen.gameover", [
-    el("div.end-title", { text: "GAME OVER" }),
-    el("div.end-sub", { text: `結果は${rank}位。優勝だけが次への切符だった。ここで、終わってしまった。` }),
-    el("div.end-body", [el("div.end-radar", [radar(state.stats, state.statsAtChapterStart, 280)]),
-      el("div.end-notes", [el("p", { text: "大会の頭から、もう一度挑戦できる（大会直前のデータから再開）。" })])]),
-    el("div.end-actions", [
-      el("button.btn.primary", { text: "もう一度挑戦する", dataset: { test: "retry" }, onclick: () => { SE.select(); retire(root); smokeWipe(() => { tournamentDay(); }, { color: "dark" }); } }),
-      el("button.btn", { text: "タイトルへ", onclick: () => location.reload() }),
-    ]),
-  ]);
+  SE.miss();
+  const root = buildGameOver({
+    reason, rank,
+    onRetry: () => { SE.select(); retire(root); smokeWipe(() => { tournamentDay(); }, { color: "dark" }); },
+    onTitle: () => location.reload(),
+  });
   showScreen("end", root);
 }
 
@@ -408,4 +432,19 @@ async function showDefeat(rank) {
 export function devTournament() {
   setupHooks();
   return tournamentDay();
+}
+
+/** テスト用: レッスン（スミさんの手本つきの通し）と前日リハーサルを単体で始める */
+export function devTutorial() {
+  setupHooks();
+  return tutorial();
+}
+export function devRehearsal() {
+  setupHooks();
+  return rehearsal();
+}
+/** テスト・確認用: 大会のGAME OVER画面だけを出す（reason: rank / burnt / cold / leaf） */
+export function devGameOver(reason = "burnt", rank = 2) {
+  setupHooks();
+  return showGameOver({ reason, rank });
 }

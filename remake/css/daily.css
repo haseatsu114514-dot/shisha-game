@@ -1016,6 +1016,8 @@ button.lime-push:focus-visible { outline: 3px solid var(--lime); outline-offset:
 .next-teaser small { color: var(--neon-pink); letter-spacing: 0.3em; }
 .next-teaser b { font-size: 22px; color: #fff; }
 .end-actions { display: flex; gap: 14px; }
+/* 大会のGAME OVER（TH18）:「再挑戦しますか？」。オーナー制作の背景 bg_game_over があれば後ろに敷く。 */
+.end-question { margin: 6px 0 2px; font-size: 26px; font-weight: 800; letter-spacing: .12em; color: #fff4dd; }
 .map-info.leaving { opacity: 0.4; transition: opacity 0.3s; }
 
 /* 雨は共通の背景レイヤーで描き、従来のマップ雨と二重にしない。 */
@@ -1038,3 +1040,42 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .keepsake-viewer { position: absolute; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; border: 0; background: #080611f5; cursor: pointer; }
 .keepsake-viewer img { width: 90%; max-height: 610px; object-fit: contain; }
 .keepsake-viewer span { color: var(--gold); }
+
+/* 大会の GAME OVER（TH45）: 画像は使わずに描く。後ろの場面は色が抜けて沈み、右に影絵のシーシャ台と煙、斜めの帯に大きな文字。 */
+.end-screen.gameover { display: block; overflow: hidden; background: none; --go-band: #3a0b08; --go-edge: #ff6a2a; --go-glow: #ff5a1a; --go-ink: #ffe6cf; }
+.end-screen.gameover[data-reason="cold"] { --go-band: #1c2229; --go-edge: #b8c6d4; --go-glow: #9fb4c8; --go-ink: #eef3f7; }
+.end-screen.gameover[data-reason="leaf"] { --go-band: #262011; --go-edge: #c9a24a; --go-glow: #a8742c; --go-ink: #f4ead2; }
+.end-screen.gameover[data-reason="rank"] { --go-band: #1a1430; --go-edge: #ffd25a; --go-glow: #c9a24a; --go-ink: #fff2d6; }
+.go-veil { position: absolute; inset: 0; -webkit-backdrop-filter: grayscale(1) brightness(.34) contrast(1.1); backdrop-filter: grayscale(1) brightness(.34) contrast(1.1);
+  background: radial-gradient(ellipse 80% 70% at 70% 60%, #0000, #000c 100%), linear-gradient(0deg, #000a, #0000 45%); animation: go-fade 1.2s ease-out both; }
+.go-smoke { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+.go-hookah { position: absolute; right: 170px; bottom: 24px; width: 120px; height: 260px; transform: scale(1.3); transform-origin: 50% 100%; z-index: 1; animation: go-fade 1.4s .2s ease-out both; }
+.go-rig { position: absolute; inset: 0; }
+.go-rig > * { position: absolute; left: 50%; transform: translateX(-50%); }
+.go-rig .art { filter: brightness(.1) contrast(1.3) drop-shadow(0 0 1px var(--go-edge)) drop-shadow(0 0 9px var(--go-glow)); }
+.gameover[data-reason="burnt"] .go-rig .worker-bowl .art { filter: brightness(.1) drop-shadow(0 0 2px #ffb04a) drop-shadow(0 -4px 14px #ff5a1a) drop-shadow(0 0 24px #ff3a00aa); }
+.go-band { position: absolute; left: -6%; right: -6%; top: 168px; height: 156px; z-index: 2; display: grid; place-items: center; transform: rotate(-4deg);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--go-band) 70%, transparent), var(--go-band) 30% 70%, color-mix(in srgb, var(--go-band) 70%, transparent));
+  border-top: 3px solid var(--go-edge); border-bottom: 3px solid var(--go-edge); box-shadow: 0 0 40px #000c, inset 0 0 50px #000a; animation: go-band .55s .25s cubic-bezier(.2, .8, .2, 1) both; }
+.go-band::before, .go-band::after { content: ""; position: absolute; left: 0; right: 0; height: 1px; background: color-mix(in srgb, var(--go-edge) 60%, transparent); }
+.go-band::before { top: 9px; }
+.go-band::after { bottom: 9px; }
+.end-screen.gameover .go-title { display: flex; gap: .04em; font-size: 128px; font-weight: 900; line-height: 1; letter-spacing: .06em; color: var(--go-ink); text-shadow: 0 0 2px #000, 0 6px 0 #0008, 0 0 30px var(--go-glow); animation: none; }
+.go-title span { display: inline-block; min-width: .3em; animation: go-letter .5s calc(.45s + var(--i) * .06s) cubic-bezier(.2, .9, .3, 1.2) both; }
+.go-info { position: absolute; left: 90px; top: 372px; z-index: 3; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; animation: go-rise .6s 1.1s ease-out both; }
+.go-reason { display: flex; align-items: center; gap: 16px; }
+.go-emblem { flex: none; display: grid; place-items: center; width: 64px; height: 64px; border-radius: 50%; color: var(--go-edge); background: radial-gradient(circle, #ffffff14, #0008 72%); border: 2px solid color-mix(in srgb, var(--go-edge) 70%, transparent); box-shadow: 0 0 18px color-mix(in srgb, var(--go-glow) 60%, transparent); }
+.go-emblem svg { width: 36px; height: 36px; filter: drop-shadow(0 0 6px var(--go-glow)); }
+.go-emblem.rank { color: var(--go-ink); }
+.go-emblem.rank b { font-size: 30px; font-weight: 900; line-height: 1; }
+.go-emblem.rank small { font-size: 13px; margin-top: -10px; }
+.go-reason-title { margin: 0; font-size: 28px; font-weight: 800; letter-spacing: .06em; color: var(--go-ink); text-shadow: 0 2px 8px #000; }
+.end-screen.gameover .go-reason-sub { margin: 4px 0 0; font-size: 17px; letter-spacing: .06em; color: #d9d2c8; }
+.end-screen.gameover .end-question { margin: 18px 0 0; font-size: 30px; }
+.go-note { margin: 0; font-size: 14px; color: #b9b2a8; }
+.end-screen.gameover .end-actions { display: flex; gap: 14px; margin-top: 6px; }
+@keyframes go-fade { from { opacity: 0; } }
+@keyframes go-band { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes go-letter { from { opacity: 0; transform: translateY(-40px) scale(1.3); filter: blur(8px); } }
+@keyframes go-rise { from { opacity: 0; transform: translateY(16px); } }
+@media (prefers-reduced-motion: reduce) { .go-veil, .go-hookah, .go-band, .go-title span, .go-info { animation: none; } }
