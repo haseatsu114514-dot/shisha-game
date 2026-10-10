@@ -62,8 +62,85 @@
         "status": "needs_revision",
         "note": "原画を目視。髪・フード・ぬいぐるみ・挨拶の手・足は保持。輪郭に元画像の赤・黄・青の色にじみが残るので再生成。"
       }
+    },
+    {
+      "face": "normal",
+      "prompt_number": 29,
+      "attempt": 2,
+      "generated_at_utc": "2026-10-10T05:16:19.036763+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/kafuka-remaster-v2/attempts/normal-attempt-02-source.png",
+      "source_sha256": "c5ff1d4e69c0b2dba41f1128cd421ce9adea0078a81d27e908d5ed266f91115f",
+      "original_tool_file": "exec-8411cadd-4617-4500-bb72-9aebe182decf.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/kafuka-remaster-v2/attempts/normal-attempt-02-prompt.txt",
+      "prompt_sha256": "099125830696dbce5c051a40dd250ec3802727ba439bd25d4ab9868ffefa640b",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+          "sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/kafuka/chr_kafuka_normal.png",
+          "sha256": "4319a3a2144a4a647baa1f9a20e44e995a496c6fa9dc5f8dbf8779c57f8a7b2b"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ],
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        227,
+        27,
+        893,
+        1441
+      ],
+      "figure_height_px": 1414,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:20:24.010895+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection",
+        "note": "オーナーが試作3枚を承認。全身・手足・衣装・ポーズ・透過と896x1200への位置合わせを確認。つむぎは丸く少し大きめの頭を優先。"
+      }
     }
   ],
-  "selected_attempt": 1,
-  "owner_approval": "pending"
+  "selected_attempt": 2,
+  "owner_approval": {
+    "normal": {
+      "status": "accepted",
+      "date": "2026-10-10",
+      "instruction": "いいと思います"
+    }
+  },
+  "selected_attempts": {
+    "normal": 2
+  },
+  "approval_policy": {
+    "mode": "delegated_production_qa",
+    "owner_instruction": "一旦確認もそこまでいらないからガンガン進めて",
+    "received_on": "2026-10-10"
+  }
 }

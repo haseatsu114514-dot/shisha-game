@@ -184,8 +184,85 @@
         "status": "awaiting_visual_review",
         "note": "原画を目視。胸元は花刺繍、腕は2本に戻った。旧10%縮小指定での先行案。生成中にPU02の頭やや大きめ指定が届いたため、その指定を反映した別案を用意する。"
       }
+    },
+    {
+      "face": "normal",
+      "prompt_number": 1,
+      "attempt": 4,
+      "generated_at_utc": "2026-10-10T05:10:41.385216+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/tsumugi-remaster-v2/attempts/normal-attempt-04-source.png",
+      "source_sha256": "d31f9efd15091cb493d31cd45cca26ec8e7e88319cd2e0bdd8442d8ee5724353",
+      "original_tool_file": "exec-f49fcae5-83dd-4531-9548-ac20692b41a2.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/tsumugi-remaster-v2/attempts/normal-attempt-04-prompt.txt",
+      "prompt_sha256": "26fe2cb4eeef3568ee4838b745a37b8c1e25b77cd9928270868e77e49082e975",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/tsumugi/chr_tsumugi_normal.png",
+          "sha256": "2c1e7dd9522aefd29920ae823cbe0032de0b44806100ce2aee9860f2813289b6"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/ageha/chr_ageha_normal.png",
+          "sha256": "ff52ea525e217ef63863db4739fc703ff8cee9ba1f46b05036937ccc463e6675"
+        }
+      ],
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        342,
+        25,
+        737,
+        1421
+      ],
+      "figure_height_px": 1396,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:20:24.008798+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection",
+        "note": "オーナーが試作3枚を承認。全身・手足・衣装・ポーズ・透過と896x1200への位置合わせを確認。つむぎは丸く少し大きめの頭を優先。"
+      }
     }
   ],
-  "selected_attempt": 3,
-  "owner_approval": "pending"
+  "selected_attempt": 4,
+  "owner_approval": {
+    "normal": {
+      "status": "accepted",
+      "date": "2026-10-10",
+      "instruction": "いいと思います"
+    }
+  },
+  "selected_attempts": {
+    "normal": 4
+  },
+  "approval_policy": {
+    "mode": "delegated_production_qa",
+    "owner_instruction": "一旦確認もそこまでいらないからガンガン進めて",
+    "received_on": "2026-10-10"
+  }
 }

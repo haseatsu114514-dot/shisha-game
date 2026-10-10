@@ -62,8 +62,85 @@
         "status": "needs_revision",
         "note": "原画を目視。丸眼鏡・挨拶の手・メモ・衣装を保持。輪郭に元画像の赤黄の色にじみが残るので再生成。"
       }
+    },
+    {
+      "face": "normal",
+      "prompt_number": 8,
+      "attempt": 2,
+      "generated_at_utc": "2026-10-10T05:12:14.803075+00:00",
+      "tool": "image_gen.imagegen",
+      "transparent_background": true,
+      "source": "asset_sources/portraits/maezono-remaster-v2/attempts/normal-attempt-02-source.png",
+      "source_sha256": "6c8e648183850b64951ea93927f585ae7d29b7f9df01d284e3b93592c0777e0e",
+      "original_tool_file": "exec-6ef6540d-3fee-4726-9328-f5f454124416.png",
+      "source_saved_without_modification": true,
+      "prompt": "asset_sources/portraits/maezono-remaster-v2/attempts/normal-attempt-02-prompt.txt",
+      "prompt_sha256": "65f91f858b28b28ac91a833db0c8820c8b79fed73ccc0a65fd197ba40b9ae1bb",
+      "base_prompt": "asset_sources/portraits/resolution-upgrade-20261009/prompts.md",
+      "reference_commit": "5c6d20dd3ad514e51b6b9c643dafd5ea893e4879",
+      "references": [
+        {
+          "image": 1,
+          "role": "identity_expression_pose_outfit",
+          "path": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+          "sha256": "487c0ee519326794d5d74cc52f7c4e3d6db7728304a26907eee1d729ad46fae5"
+        },
+        {
+          "image": 2,
+          "role": "normal_identity_check",
+          "path": "assets/sprites/characters/maezono/chr_maezono_normal.png",
+          "sha256": "487c0ee519326794d5d74cc52f7c4e3d6db7728304a26907eee1d729ad46fae5"
+        },
+        {
+          "image": 3,
+          "role": "target_head_body_proportion",
+          "path": "assets/sprites/characters/adam/chr_adam_normal.png",
+          "sha256": "d3bb5939eeff02f1e3b59ad0a3793e06401cabb1aef1875069de5848b93d833b"
+        },
+        {
+          "image": 4,
+          "role": "target_rendering_style",
+          "path": "assets/sprites/characters/minto/chr_minto_normal.png",
+          "sha256": "7d6c479d63415486687b4d3f9c5e42c247daf21bf85f7210305381cb48feccb7"
+        }
+      ],
+      "canvas_px": [
+        1085,
+        1450
+      ],
+      "alpha_bbox_threshold_16_px": [
+        244,
+        47,
+        823,
+        1424
+      ],
+      "figure_height_px": 1377,
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "qa": {
+        "status": "passed",
+        "checked_at_utc": "2026-10-10T05:20:24.012443+00:00",
+        "method": "native-size source and original-versus-fitted comparison inspection",
+        "note": "オーナーが試作3枚を承認。全身・手足・衣装・ポーズ・透過と896x1200への位置合わせを確認。つむぎは丸く少し大きめの頭を優先。"
+      }
     }
   ],
-  "selected_attempt": 1,
-  "owner_approval": "pending"
+  "selected_attempt": 2,
+  "owner_approval": {
+    "normal": {
+      "status": "accepted",
+      "date": "2026-10-10",
+      "instruction": "いいと思います"
+    }
+  },
+  "selected_attempts": {
+    "normal": 2
+  },
+  "approval_policy": {
+    "mode": "delegated_production_qa",
+    "owner_instruction": "一旦確認もそこまでいらないからガンガン進めて",
+    "received_on": "2026-10-10"
+  }
 }
