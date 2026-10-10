@@ -74,116 +74,65 @@ export function a(host, { x = W / 2, y = H / 2 } = {}) {
   });
 }
 
-// ---------------------------------------------------------------- b: 引き戸。平らな2枚の戸が両脇から滑ってきて閉まり、光のすき間から左右へ開く
-// ピンから角の丸い四角が2色で広がり、柱・鴨居・敷居が線で描かれる。戸は戸口の中だけに見え、脇の壁の裏へ出入りする。
-// 開くと床に光が差し、カメラが戸口へ寄って（枠が壁より速く近づく）次の場面
+// ---------------------------------------------------------------- b: 抽象。扉の絵は描かず、図形だけで「開く」を見せる
+// ピンで四角が回り、3色の角丸の面が少しずつずれて画面を覆う。真ん中に縦の線が引かれ、
+// 線が左右に割れて縦長の窓になり（縁の色の帯が外へはじける）、窓が画面いっぱいに広がって次の場面
 
-const SLIDE = { bg: "#1e3a34", deep: "#0f211d", main: "#e0a458", mid: "#5fb3a1", light: "#f4d58d", white: "#fffaf0", edge: "#c4863d" };
-const MONO_EDGE = "#55409a"; // 紫1色の戸の内枠（戸より少し濃い紫）
+const SHAPE = { bg: "#22203f", deep: "#14122a", main: "#f2a33a", mid: "#f27a9c", light: "#ffe08a", white: "#fff8ec" };
 
 export function b(host, { x = W / 2, y = H / 2 } = {}) {
-  const P = pick(SLIDE, { edge: MONO_EDGE });
-  const dw = 360, dh = 470, dx = (W - dw) / 2, dy = 118, cx = W / 2, cy = dy + dh / 2;
-  const half = dw / 2;
+  const P = pick(SHAPE);
+  const cx = W / 2, cy = H / 2, ww = 300, wh = 440, wy = cy - wh / 2;
   let p;
   return curtain(host, "door", async (node) => {
-    // 1. ピンで菱形が回って四角になり、2色の角丸の四角が少しずれて画面いっぱいに広がる
+    // 1. ピンで四角が回り、3色の面がずれて広がる
     const rw = 2 * Math.max(x, W - x) + 80, rh = 2 * Math.max(y, H - y) + 80;
-    const plate = (fill) => svg("rect", { x: x - rw / 2, y: y - rh / 2, width: rw, height: rh, rx: 60, fill, class: "tr-scale" });
-    const c1 = plate(P.mid), c2 = plate(P.bg);
-    const seed = svg("rect", { x: x - 22, y: y - 22, width: 44, height: 44, rx: 8, fill: "none", stroke: P.light, "stroke-width": 6, class: "tr-scale" });
-    c1.style.transform = c2.style.transform = "scale(0)";
-    const intro = stageSvg([c1, c2, seed]);
+    const plate = (fill) => svg("rect", { x: x - rw / 2, y: y - rh / 2, width: rw, height: rh, rx: 70, fill, class: "tr-scale" });
+    const plates = [plate(P.mid), plate(P.main), plate(P.bg)];
+    const seed = svg("rect", { x: x - 20, y: y - 20, width: 40, height: 40, rx: 6, fill: "none", stroke: P.light, "stroke-width": 6, class: "tr-scale" });
+    plates.forEach((c) => { c.style.transform = "scale(0)"; });
+    const intro = stageSvg([...plates, seed]);
     node.append(intro);
-    move(seed, [{ transform: "rotate(45deg) scale(0.3)", opacity: 1 }, { transform: "rotate(0deg) scale(1.4)", opacity: 1, offset: 0.6 }, { transform: "rotate(0deg) scale(2.2)", opacity: 0 }], 420, { easing: MG.out });
+    move(seed, [{ transform: "rotate(45deg) scale(0.3)", opacity: 1 }, { transform: "rotate(-45deg) scale(1.5)", opacity: 1, offset: 0.6 }, { transform: "rotate(-90deg) scale(2.4)", opacity: 0 }], 440, { easing: MG.out });
     const grow = [{ transform: "scale(0)" }, { transform: "scale(1)" }];
-    move(c1, grow, 320, { easing: MG.in });
-    await move(c2, grow, 330, { easing: MG.in, delay: 70 });
-    // 2. 壁と戸口。柱・鴨居・敷居が中心から外へ線で描かれ、戸が両脇から滑ってきて真ん中で閉まる
+    await Promise.all(plates.map((c, i) => move(c, grow, 300, { easing: MG.in, delay: i * 60 })));
+    // 2. 真ん中に縦の線が上から引かれ、両端に点が付く
     const id = `tr-door-${++doorSerial}`;
     const box = { x: -300, y: -300, width: W + 600, height: H + 600 };
-    const hole = svg("rect", { x: dx, y: dy, width: dw, height: dh, fill: "#000" });
-    const room = svg("rect", { x: dx, y: dy, width: dw, height: dh, fill: P.deep });
-    const light = svg("rect", { x: dx, y: dy, width: dw, height: dh, fill: P.white, opacity: 0 });
-    const spill = svg("path", { d: `M ${dx} ${dy + dh} H ${dx + dw} L ${dx + dw + 150} ${H} H ${dx - 150} Z`, fill: `url(#${id}-g)`, opacity: 0 });
-    spill.style.transformOrigin = `${cx}px ${dy + dh}px`;
-    const trim = (d, w, color) => svg("path", { d, fill: "none", stroke: color, "stroke-width": w, "stroke-linecap": "round", pathLength: 1, "stroke-dasharray": 1, "stroke-dashoffset": 1 });
-    const rails = [
-      trim(`M ${cx} ${dy - 8} H ${dx - 40}`, 14, P.light), trim(`M ${cx} ${dy - 8} H ${dx + dw + 40}`, 14, P.light), // 鴨居
-      trim(`M ${cx} ${dy + dh + 6} H -20`, 6, P.mid), trim(`M ${cx} ${dy + dh + 6} H ${W + 20}`, 6, P.mid), // 敷居から床の線
-      trim(`M ${dx - 10} ${dy + dh} V ${dy - 8}`, 10, P.light), trim(`M ${dx + dw + 10} ${dy + dh} V ${dy - 8}`, 10, P.light), // 柱
-    ];
-    // 戸1枚: 平らな板・上の明かり窓・合わせ目側の引手。戸口の形で切り抜くので、脇の壁の裏から出入りして見える
-    const leaf = (side) => {
-      const lx = side < 0 ? dx : cx;
-      const px = side < 0 ? lx + 18 : lx + 44, pw = half - 62, ph = 250;
-      const hx = side < 0 ? lx + half - 28 : lx + 18;
-      // 明かり窓は障子のような組子（縦2本・横3本）、引手は丸く彫り込んだ形にして洋風の両開きに見せない
-      const kumiko = [1, 2].map((k) => svg("line", { x1: px + (pw * k) / 3, y1: dy + 22, x2: px + (pw * k) / 3, y2: dy + 22 + ph, stroke: P.edge, "stroke-width": 3 }))
-        .concat([1, 2, 3].map((k) => svg("line", { x1: px, y1: dy + 22 + (ph * k) / 4, x2: px + pw, y2: dy + 22 + (ph * k) / 4, stroke: P.edge, "stroke-width": 3 })));
-      const g = svg("g", {}, [
-        svg("rect", { x: lx, y: dy, width: half, height: dh, fill: P.main }),
-        svg("rect", { x: px, y: dy + 22, width: pw, height: ph, fill: P.light, "fill-opacity": 0.42, stroke: P.edge, "stroke-width": 4 }),
-        ...kumiko,
-        svg("line", { x1: px, y1: dy + ph + 60, x2: px + pw, y2: dy + ph + 60, stroke: P.edge, "stroke-width": 4 }),
-        svg("circle", { cx: hx + 5, cy, r: 11, fill: "none", stroke: P.deep, "stroke-width": 4 }),
-        svg("circle", { cx: hx + 5, cy, r: 6, fill: P.deep, "fill-opacity": 0.55 }),
-      ]);
-      g.style.transform = `translateX(${side * (half + 8)}px)`;
-      return g;
-    };
-    const leaves = [leaf(-1), leaf(1)];
-    const seam = svg("line", { x1: cx, y1: dy, x2: cx, y2: dy + dh, stroke: P.white, "stroke-width": 4, "stroke-linecap": "round", class: "tr-scale" });
-    seam.style.transform = "scaleY(0)";
-    const wall = svg("g", {}, [
-      svg("rect", { ...box, fill: P.bg, mask: `url(#${id}-m)` }),
-      room, light,
-      svg("g", { "clip-path": `url(#${id}-c)` }, leaves),
-      seam,
-    ]);
-    const frame = svg("g", {}, rails);
-    const fx = svg("g");
-    for (const g of [wall, frame]) g.style.transformOrigin = `${cx}px ${cy}px`;
-    const art = stageSvg([
-      svg("defs", {}, [
-        svg("mask", { id: `${id}-m`, maskUnits: "userSpaceOnUse", ...box }, [svg("rect", { ...box, fill: "#fff" }), hole]),
-        svg("clipPath", { id: `${id}-c` }, [svg("rect", { x: dx, y: dy, width: dw, height: dh })]),
-        svg("linearGradient", { id: `${id}-g`, x1: 0, y1: 0, x2: 0, y2: 1 }, [svg("stop", { offset: 0, "stop-color": P.white, "stop-opacity": 0.9 }), svg("stop", { offset: 1, "stop-color": P.white, "stop-opacity": 0 })]),
-      ]),
-      wall, spill, frame, fx,
-    ]);
-    node.replaceChildren(art);
-    p = { wall, frame, room, light, spill, leaves, seam, fx };
-    rails.forEach((r, i) => move(r, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 300, { easing: MG.out, delay: [0, 0, 40, 40, 90, 90][i] }));
-    SE.whoosh();
-    await Promise.all(leaves.map((g, i) => {
-      const s = i ? 1 : -1;
-      return move(g, [{ transform: `translateX(${s * (half + 8)}px)` }, { transform: `translateX(${-s * 5}px)`, offset: 0.72 }, { transform: "translateX(0px)" }], 400, { easing: MG.out, delay: 60 + i * 30 });
-    }));
-    // 閉まった音の代わりに、合わせ目の上下で小さくはじける
-    burst(fx, cx, dy + 4, { n: 5, r0: 14, r1: 44, color: P.light, width: 5, turn: -Math.PI * 0.9, dur: 380 });
-    burst(fx, cx, dy + dh - 4, { n: 5, r0: 14, r1: 44, color: P.light, width: 5, turn: Math.PI * 0.1, dur: 380 });
-  }, async () => {
-    await sleep(110);
-    SE.doorbell();
-    // 3. 合わせ目に光の線が走り、戸が少しためてから左右の壁の裏へ滑って開く。床に光が差す
-    p.room.remove();
-    p.light.setAttribute("opacity", 1);
-    await move(p.seam, [{ transform: "scaleY(0)", opacity: 1 }, { transform: "scaleY(1)", opacity: 1 }], 160, { easing: MG.out });
-    p.leaves.forEach((g, i) => {
-      const s = i ? 1 : -1;
-      move(g, [{ transform: "translateX(0px)" }, { transform: `translateX(${-s * 4}px)`, offset: 0.18 }, { transform: `translateX(${s * (half + 8)}px)` }], 420, { easing: MG.inOut });
+    const hole = svg("rect", { x: cx - ww / 2, y: wy, width: ww, height: wh, rx: 4, fill: "#000", class: "tr-scale" });
+    hole.style.transform = "scaleX(0)";
+    const glow = svg("rect", { x: cx - ww / 2, y: wy, width: ww, height: wh, rx: 4, fill: P.white, opacity: 0, class: "tr-scale" });
+    glow.style.transform = "scaleX(0)";
+    const line = svg("line", { x1: cx, y1: wy, x2: cx, y2: wy + wh, stroke: P.light, "stroke-width": 6, "stroke-linecap": "round", pathLength: 1, "stroke-dasharray": 1, "stroke-dashoffset": 1 });
+    const dots = [wy, wy + wh].map((dy) => {
+      const d = svg("circle", { cx, cy: dy, r: 9, fill: P.light, class: "tr-scale" });
+      d.style.transform = "scale(0)";
+      return d;
     });
-    move(p.seam, [{ opacity: 1, strokeWidth: 4 }, { opacity: 0, strokeWidth: 40 }], 300, { easing: MG.out, delay: 120 });
-    move(p.spill, [{ transform: "scaleY(0)", opacity: 0 }, { transform: "scaleY(1)", opacity: 0.5 }], 360, { easing: MG.out, delay: 200 });
-    await sleep(300);
-    burst(p.fx, cx, cy, { n: 12, r0: 250, r1: 350, color: P.light, width: 6, turn: Math.PI / 12 });
-    ring(p.fx, cx, cy, { r: 320, color: P.white, width: 7 });
-    await sleep(140);
-    // 4. 戸口へ寄る。手前の枠は壁より速く大きくなり、光が晴れて次の場面
-    move(p.spill, [{ opacity: 0.5 }, { opacity: 0 }], 200);
-    move(p.light, [{ opacity: 1 }, { opacity: 0 }], 300, { easing: MG.out, delay: 100 });
-    move(p.frame, [{ transform: "scale(1)" }, { transform: "scale(9)" }], 420, { easing: MG.in });
-    await move(p.wall, [{ transform: "scale(1)" }, { transform: "scale(6.5)" }], 460, { easing: MG.in });
+    const edges = [-1, 1].map(() => svg("rect", { x: cx - 7, y: wy, width: 14, height: wh, rx: 7, fill: P.main, opacity: 0 }));
+    const field = svg("g", { class: "tr-scale" }, [svg("rect", { ...box, fill: P.bg, mask: `url(#${id})` })]);
+    const fx = svg("g");
+    node.replaceChildren(stageSvg([
+      svg("defs", {}, [svg("mask", { id, maskUnits: "userSpaceOnUse", ...box }, [svg("rect", { ...box, fill: "#fff" }), hole])]),
+      field, glow, ...edges, line, ...dots, fx,
+    ]));
+    p = { hole, glow, line, dots, edges, field, fx };
+    await move(line, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 260, { easing: MG.out });
+    dots.forEach((d, i) => move(d, [{ transform: "scale(0)" }, { transform: "scale(1)" }], 260, { easing: MG.back, delay: i * 50 }));
+  }, async () => {
+    await sleep(120);
+    SE.doorbell();
+    // 3. 線が左右に割れて縦長の窓が開き、縁の帯が外へはじける
+    const open = [{ transform: "scaleX(0)" }, { transform: "scaleX(1.06)", offset: 0.75 }, { transform: "scaleX(1)" }];
+    move(p.line, [{ opacity: 1 }, { opacity: 0 }], 120);
+    p.dots.forEach((d) => move(d, [{ transform: "scale(1)" }, { transform: "scale(0)" }], 160, { easing: MG.in }));
+    p.edges.forEach((e, i) => move(e, [{ transform: "translateX(0)", opacity: 1 }, { transform: `translateX(${(i ? 1 : -1) * (ww / 2 + 22)}px)`, opacity: 1, offset: 0.6 }, { transform: `translateX(${(i ? 1 : -1) * (ww / 2 + 60)}px)`, opacity: 0 }], 420, { easing: MG.out }));
+    move(p.glow, [{ transform: "scaleX(0)", opacity: 1 }, { transform: "scaleX(1)", opacity: 1, offset: 0.7 }, { transform: "scaleX(1)", opacity: 0 }], 520, { easing: MG.out });
+    await move(p.hole, open, 340, { easing: MG.out });
+    burst(p.fx, cx, cy, { n: 12, r0: 250, r1: 340, color: P.light, width: 6, turn: Math.PI / 12 });
+    ring(p.fx, cx, cy, { r: 300, color: P.white, width: 7 });
+    await sleep(160);
+    // 4. 窓が画面いっぱいに広がって次の場面
+    await move(p.hole, [{ transform: "scale(1)" }, { transform: "scale(5.5)" }], 420, { easing: MG.in });
   });
 }

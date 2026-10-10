@@ -188,7 +188,7 @@ export async function a(mid, bgUrl) {
 
 // ---------------------------------------------------------------- b: スケッチブック: 表紙がめくれ、ペンが店を線画で描き、寄ると水彩がにじんで本当の色になる
 
-const BOOK = { bg: "#2a3a48", deep: "#2b2d36", main: "#e06a52", mid: "#2f8f8a", light: "#f7f2e8", white: "#ffffff", ring: "#c9c7d3", pig: ["#f2b544", "#e06a52", "#5fb3a1", "#7aa6e0", "#f2b544", "#e9a0b4", "#5fb3a1"] };
+const BOOK = { bg: "#2a3a48", deep: "#2b2d36", main: "#e06a52", mid: "#4f6fae", light: "#f7f2e8", white: "#ffffff", ring: "#c9c7d3", pig: ["#f2b544", "#e06a52", "#5fb3a1", "#7aa6e0", "#f2b544", "#e9a0b4", "#5fb3a1"] };
 const BOOK_MONO = { bg: "#241a4a", deep: "#3d2a78", main: "#6b4fb0", mid: "#8f74d1", light: "#efe9fb", white: "#f7f3ff", ring: "#c9bdf0", pig: ["#9a82d8", "#6b4fb0", "#b9a5ea", "#8f74d1", "#9a82d8", "#b9a5ea", "#6b4fb0"] };
 const LINER = {
   free: { lead: "#2b2d36", metal: "#c9c7d3", metalHi: "#f0eff4", metalLo: "#8e8b9c", grip: "#2b2d36", gripHi: "#4a4d5a", body: "#2f8f8a", bodyHi: "#5fb3a1", bodyLo: "#1f6b67", shadow: "#101820" },

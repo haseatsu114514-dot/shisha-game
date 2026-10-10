@@ -98,7 +98,7 @@ async function finish(iris, hero, fx, cx, cy, P) {
 
 // ---------------------------------------------------------------- a: 箱: 落ちて弾み、リボンがほどけ、光の柱からハガルが上がる。箱は下へ抜ける
 
-const GIFT = { bg: "#12393e", deep: "#0a2427", main: "#f08a4b", mid: "#2f7f78", light: "#ffd27a", white: "#fff8ec" };
+const GIFT = { bg: "#1b2440", deep: "#0e1428", main: "#f08a4b", mid: "#5a6fb8", light: "#ffd27a", white: "#fff8ec" };
 
 /** gear: data/equipment.json の贈り物の1件（gift.from が贈り主） */
 export async function a(gear) {

@@ -203,7 +203,7 @@ export async function a() {
 
 // ---------------------------------------------------------------- b: 占い: 布の魔法陣に山札が置かれ、切って3枚を配り、真ん中の1枚が起き上がって裏返る（XVII 星）
 
-const TAROT_B = { bg: "#0d2a2b", deep: "#061819", main: "#17524e", mid: "#3a9a8e", light: "#efc77e", white: "#fbf4e2" };
+const TAROT_B = { bg: "#3a1420", deep: "#200a12", main: "#6e2236", mid: "#b5475f", light: "#efc77e", white: "#fbf4e2" };
 
 const TILT = 58; // 布の傾き（度）
 const DECK_Y = -236; // 山札の位置（布の奥）

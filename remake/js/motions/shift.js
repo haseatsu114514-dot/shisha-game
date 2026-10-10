@@ -8,7 +8,7 @@ import { stagePlay, backdrop } from "./stage.js";
 
 // ---------------------------------------------------------------- a: バイトの終わり: 吊り札が下りて揺れ、くるっと回って CLOSED
 
-const SHIFT = { bg: "#173326", deep: "#0c1c14", main: "#2f9e6b", mid: "#e5484d", light: "#fff3d6", white: "#ffffff" };
+const SHIFT = { bg: "#18243f", deep: "#0d1528", main: "#e0702a", mid: "#e5484d", light: "#fff3d6", white: "#ffffff" };
 const MONO_CLOSED = "#4f3596"; // 紫1色の CLOSED の面（OPEN より濃い紫）
 
 export async function a() {

@@ -9,7 +9,7 @@ import { stagePlay, backdrop } from "./stage.js";
 
 // ---------------------------------------------------------------- 共通: 印画紙・落書きの書き順・マーカー
 
-const CHEKI = { bg: "#2a2238", deep: "#17111f", main: "#ff7aa8", mid: "#6ee7c8", light: "#fff6e5", white: "#ffffff" };
+const CHEKI = { bg: "#2a2238", deep: "#17111f", main: "#ff7aa8", mid: "#ffc0d3", light: "#fff6e5", white: "#ffffff" };
 const CW = 993, CH = 1584; // 元画像の大きさ（落書きの座標はこの画素で持つ）
 const PHOTO = "inset(8.08% 10.47% 22.22% 10.57%)"; // 写真の範囲（元画像の実測）
 const INK_COLOR = { p: "#fc5dac", g: "#3ac26f" }; // 落書きのインクの色（ピンク・緑）
@@ -381,7 +381,7 @@ export async function a(url, placeCg = null) {
 
 // ---------------------------------------------------------------- b: チェキ: カメラ本体 → 絞りとフラッシュ → 裏向きで出てきて、くるっと返って飛んでくる → あおいで乾かす → ルーペの拡大でマーカーを追う → 戻して仕上げ
 
-const CHEKI_B = { bg: "#c8f2e4", deep: "#21413b", main: "#ff7aa8", mid: "#86dfc4", light: "#fff6e8", white: "#ffffff" };
+const CHEKI_B = { bg: "#ffe3ec", deep: "#3b2433", main: "#ff7aa8", mid: "#ffc0d3", light: "#fff6e8", white: "#ffffff" };
 const CHEKI_B_MONO = { bg: "#ded3f7", deep: "#241a4a", main: "#6b4fb0", mid: "#9a82d8", light: "#f7f3ff", white: "#ffffff" };
 
 /** 平らなインスタントカメラ（中心が原点。幅360・高さ250）。iris(k) で絞りを 0=開く〜1=閉じる */
