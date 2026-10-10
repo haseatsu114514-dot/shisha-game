@@ -212,7 +212,7 @@ try {
 
   // 同じ吸い方・回数で、提供温度だけを変える。広くした虹色と最適温の判定を一致させる。
   const temperatures=[];
-  for (const temp of [.54,.49]) {
+  for (const temp of [.54,.45]) {
     await page.evaluate(async temp => {
       __remake.craftTest.auto=null; window.cs=T.session.newSession('tournament');
       cs.steam={score:100,temp,seconds:480}; cs.holes={total:24,minimumComplete:true};
@@ -220,7 +220,7 @@ try {
     },temp);
     const band=await page.locator('.thermo-optimal').evaluate(n=>n.getBoundingClientRect().height);
     const safe=await page.locator('.thermo-zone').evaluate(n=>n.getBoundingClientRect().height);
-    assert(band > safe * .35 && band < safe * .40,'Optimal temperature band must cover the expanded aim zone');
+    assert(band > safe * .39 && band < safe * .45,'Optimal temperature band must cover the expanded aim zone');
     assert(!(await page.locator('[data-test="craft-rating"]').isVisible()));
     await page.waitForFunction(()=>parseFloat(document.querySelector('.pg-needle').dataset.pos)>0);
     // 本物の針が中央へ来た瞬間に、通常の吸う操作を2回行う。温度や結果は書き換えない。
@@ -251,7 +251,7 @@ try {
   assert(temperatures[0].score>temperatures[1].score,JSON.stringify(temperatures));
   const scoring=await page.evaluate(async()=>{
     const {pullResult,OPTIMAL}=await import('./js/craft/conditions.js');
-    return {atCenter:pullResult(.54,2,0).score,atOptimalEdge:pullResult(OPTIMAL[0],2,0).score,atIdealEdge:pullResult(.46,2,3).score,cold:pullResult(.4,2,3).score,
+    return {atCenter:pullResult(.54,2,0).score,atOptimalEdge:pullResult(OPTIMAL[0],2,0).score,atIdealEdge:pullResult(.43,2,3).score,cold:pullResult(.4,2,3).score,
       same:pullResult(.51,2,0).score===pullResult(.51,2,3).score,over:pullResult(.54,5,3).score};
   });
   assert(scoring.atCenter>scoring.atOptimalEdge&&scoring.atOptimalEdge>scoring.atIdealEdge&&scoring.atIdealEdge>scoring.cold);

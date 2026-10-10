@@ -20,6 +20,7 @@ import { runSteamDodge } from "./steam.js";
 import { runPull } from "./pull.js";
 import { applyCraftSkin, craftSkinUrls } from "./skin.js";
 import { buildThermalAtmosphere } from "./thermal.js";
+import { buildPanelSmoke } from "./smoke-art.js";
 import { temperatureAfterSteam } from "./conditions.js";
 import { screenBlast } from "./blast.js";
 import { artImg } from "./art.js";
@@ -104,6 +105,7 @@ export function openBench(cs, { steps = [] } = {}) {
     ]),
     el("div.bench-right", [el("div.bench-head", [el("div.bench-heading", [title, hint]), guide.root]), panel]),
   ]);
+  root.querySelector(".bench-right").prepend(buildPanelSmoke(root));
   applyCraftSkin(root);
   const thermal = buildThermalAtmosphere(root, worker);
   bg();

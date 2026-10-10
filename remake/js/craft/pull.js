@@ -22,6 +22,17 @@ import { DRAW_MS, animateDraw } from "./pull-draw.js";
 import { ensureFlavorLife, burnFlavorLeaf } from "./flavor-life.js";
 
 export { IDEAL } from "./conditions.js";
+const HOSE_PATH = "M25.5 21.5C18 25 9 26 7.5 33s8 9.5 15 7 9-1 9.5 2.5";
+const HOSE_ICON = `<svg viewBox="0 0 48 48" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path d="${HOSE_PATH}" stroke="currentColor" stroke-width="6.4"/>
+  <path class="hose-core" d="${HOSE_PATH}" stroke-width="3.2"/>
+  <path d="${HOSE_PATH}" stroke="currentColor" stroke-width="6.4" stroke-dasharray=".9 2.2" stroke-linecap="butt"/>
+  <path d="M27.4 20.2 38.6 8.2" stroke="currentColor" stroke-width="5.6"/>
+  <path class="hose-core" d="M29.4 18 37 9.9" stroke-width="1.6"/>
+  <path d="m24.8 23 4.6-4.9" stroke="currentColor" stroke-width="8.6" stroke-linecap="butt"/>
+  <path d="m31.6 15.8 1.8-1.9" stroke="currentColor" stroke-width="7.4" stroke-linecap="butt"/>
+  <path d="m38.8 7.8 3.4-3.6" stroke="currentColor" stroke-width="3.2"/>
+</svg>`;
 const CENTER = 0.54;
 // ここより熱い煙を吸うと、はじめがむせて疲れる（TH29）。
 const HARSH_TEMP = 0.76;
@@ -143,7 +154,8 @@ async function pullGame(cs, mode) {
   const tags = el("span.pull-tags");
   const readout = el("div.pull-read");
   const drawStatus = el("span.pull-draw-status", { role: "status", dataset: { test: "pull-draw-status" } });
-  const inhale = el("span.pull-btn-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="m22 28-4-3L31 7l5 4Z"/><path d="m31 7 2-3 5 4-2 3M20 27l-5 7c-3 4-8 5-11 1s-1-8 2-12l5-7M21 22l4 3"/></svg>' });
+  // TH89: 蛇腹のホースと硬い持ち手・吸い口。ペンに見えないよう、筒の太さと曲がりで描く。
+  const inhale = el("span.pull-btn-icon", { "aria-hidden": "true", html: HOSE_ICON });
   const pullLabel = el("span.btn-label", { text: "吸う（針を止める）" });
   const pullBtn = el("button.btn.primary", { dataset: { test: "pull-stop" }, disabled: true }, [inhale, pullLabel]);
   const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [el("span.pull-serve-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 48 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="23" width="8" height="14" rx="1.5"/><path d="m11 26 7-6c1-1 3-1 4-1h6c2 0 3 1 3 3s-1 3-3 3h-7M11 34h16c2 0 4-1 6-2l10-7c2-1 3-4 1-6s-3-1-5 0l-8 6"/></svg>' }), el("span.btn-label", { text: mode.serveLabel })]);

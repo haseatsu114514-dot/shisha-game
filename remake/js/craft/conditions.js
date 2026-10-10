@@ -3,9 +3,10 @@ import { clamp } from "../core/util.js";
 import { steamSecondsOf, steamHeatFor } from "./steam-time.js";
 import { foilHeatProfile } from "./holes_logic.js";
 
-export const IDEAL = [0.46, 0.62];
-// TH66: 狙いたくなる広い虹色。見た目と最適温の判定に同じ範囲を使う。
-export const OPTIMAL = [0.51, 0.57];
+// TH83: 適温（緑）を約1.5倍の0.42〜0.66へ広げる。中心0.54は維持。
+export const IDEAL = [0.42, 0.66];
+// TH66・TH84: 狙いたくなる広い虹色（約1.7倍）。見た目と最適温の判定に同じ範囲を使う。
+export const OPTIMAL = [0.49, 0.59];
 export const isOptimalTemperature = (temp) => temp >= OPTIMAL[0] && temp <= OPTIMAL[1];
 /** 温度計の一番上に届くと爆発して焦げる（2026-10-09 オーナー指定 TH06）。蒸らしは0.88で頭打ちのため届かない。 */
 export const BURST_TEMP = 1;

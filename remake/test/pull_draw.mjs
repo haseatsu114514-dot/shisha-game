@@ -87,7 +87,7 @@ try {
   assert(Math.abs(layout.left.top - layout.right.top) < 1 && Math.abs(layout.left.bottom - layout.right.bottom) < 1, JSON.stringify(layout));
   assert(layout.left.width / layout.right.width > .50 && layout.left.width / layout.right.width < .56, 'window ratio differs from mockup');
   assert(layout.thermo.left >= layout.worker.left && layout.thermo.right <= layout.left.right && layout.thermo.bottom <= layout.worker.bottom, 'temperature gauge must fit the left scene');
-  assert.equal(layout.white, 'rgb(255, 255, 255)'); assert.equal(layout.line, '1px');
+  assert.equal(layout.white, 'rgb(255, 255, 255)'); assert.equal(layout.line, '3px');
   assert.equal(layout.needle, 197, 'central wiper must reach the ring without extending beyond it');
   assert(Math.abs(layout.ring.width / (layout.ring.bottom-layout.ring.top) - 2) < .005, 'protractor arch must be a true circular semicircle');
   assert(layout.optimal.bottom-layout.optimal.top > 14, 'rainbow target must be wider and conspicuous');

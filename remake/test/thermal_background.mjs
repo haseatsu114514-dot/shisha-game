@@ -50,7 +50,7 @@ try {
   const haze = async () => [await page.locator('.bench').getAttribute('data-thermal-haze'), await page.locator('.bench-worker-stage').evaluate(e => e.style.filter)];
   const shot = async name => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
   // 温度計と同じ適温端点。上限／不正値でも描画可能。
-  assert.deepEqual(await page.evaluate(() => [0,.30,.46,.62,.6201,.76,.84,.90,.93,.94,NaN].map(T.thermal.thermalBand).map(b=>b.id)),
+  assert.deepEqual(await page.evaluate(() => [0,.30,.42,.66,.6601,.76,.84,.90,.93,.94,NaN].map(T.thermal.thermalBand).map(b=>b.id)),
     ['cold','warming','ready','ready','hot','fire','fire','fire','fire','inferno','cold']);
   // 爆発は温度計の一番上だけ。
   assert.deepEqual(await page.evaluate(() => [.98, .999, 1].map(T.conditions.isBurnt)), [false, false, true]);

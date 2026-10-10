@@ -34,7 +34,7 @@ export function thermalBand(temp) {
 const STOPS = [
   { at: 0, bg: ["#cdcdcd", "#8e8e8e"], frost: 0, warmth: 0, rainbow: 0, halo: 0, fire: 0, reach: 0, dark: 0, soft: 0, sparks: 0 },
   { at: .30, bg: ["#d6ccc2", "#9c8d80"], frost: 0, warmth: .3, rainbow: 0, halo: 0, fire: 0, reach: 0, dark: 0, soft: .03, sparks: 0 },
-  { at: .42, bg: ["#f2c79a", "#c98557"], frost: 0, warmth: .9, rainbow: .3, halo: .05, fire: 0, reach: 0, dark: 0, soft: .07, sparks: 0 },
+  { at: .36, bg: ["#f2c79a", "#c98557"], frost: 0, warmth: .9, rainbow: .3, halo: .05, fire: 0, reach: 0, dark: 0, soft: .07, sparks: 0 },
   { at: IDEAL[0], bg: ["#4a2a3e", "#1a0d1a"], frost: 0, warmth: 0, rainbow: 1, halo: .17, fire: 0, reach: 0, dark: 0, soft: .1, sparks: 0 },
   { at: IDEAL[1], bg: ["#4c2a3a", "#1c0d16"], frost: 0, warmth: 0, rainbow: 1, halo: .22, fire: 0, reach: 0, dark: 0, soft: .1, sparks: 0 },
   { at: .69, bg: ["#6a2a2a", "#2a0c10"], frost: 0, warmth: 0, rainbow: .35, halo: .18, fire: .65, reach: .36, dark: .1, soft: .05, sparks: 12 },

@@ -746,9 +746,9 @@
    一番上の焦げる帯に炎、熱管理の冷え切り帯に雪の結晶。今の温度より上は少し暗くし、印はその上に明るいまま残す。 */
 .thermo-tube, .thermo-housing .thermo-tube { background: #45484d; }
 .thermo-scale { position: absolute; inset: 0; background: linear-gradient(0deg,
-  #205986 0%, #287dad 14%, #3aa6bd 29%, #79c9bc 40%, #67d2a3 44%,
-  #4fcf98 47%, #74e0b0 54%, #4fcf98 61%,
-  #ffb247 65%, #ff8a2a 72%, #ff5f17 81%, #e2300c 89%, #b0140a 94%, #560300 100%); }
+  #205986 0%, #287dad 13%, #3aa6bd 26%, #79c9bc 37%, #67d2a3 41%,
+  #4fcf98 44%, #74e0b0 54%, #4fcf98 64%,
+  #ffb247 69%, #ff8a2a 75%, #ff5f17 83%, #e2300c 89%, #b0140a 94%, #560300 100%); }
 .thermo-dim { position: absolute; left: 0; right: 0; top: 0; z-index: 2; background: linear-gradient(0deg, rgba(10, 8, 22, .2), rgba(10, 8, 22, .34)); transition: bottom .4s var(--ease-out); }
 /* 適温を超えた所は、管の中でやわらかい炎のゆらぎが上へ流れる。縞に見えないよう淡く、下は溶け込ませる。 */
 .thermo-heat { position: absolute; left: 0; right: 0; top: 0; z-index: 1; pointer-events: none; overflow: hidden; opacity: .42; mix-blend-mode: screen;
@@ -1048,3 +1048,65 @@
 .pull-zone-label { top: 112px; }
 .pull-life .pull-tag { font-size: 10px; padding: 1px 5px; }
 .bench-audience[data-voice="inner"] .audience-note { font-size: 16px; max-width: 232px; word-break: normal; text-wrap: balance; }
+
+/* TH83〜90（2026-10-10）: 温度計の現在地の矢印・白線・危険帯、状態の文字色、右ウインドウの煙。 */
+.thermo .thermo-pointer, .thermo.danger .thermo-pointer, .thermo.optimal .thermo-pointer {
+  left: calc(var(--thermo-span) - 9px); width: 30px; height: 30px; background: none; clip-path: none;
+  filter: drop-shadow(0 0 5px var(--pointer-glow, #ffffffaa)) drop-shadow(0 2px 2px #000d); }
+.thermo-pointer svg { display: block; width: 100%; height: 100%; fill: var(--pointer-fill, #fff); }
+.thermo { --pointer-fill: #fff; --pointer-glow: #ffffffaa; }
+.thermo.cool { --pointer-fill: #bfe4ff; --pointer-glow: #59b4ffcc; }
+.thermo.ok { --pointer-fill: #9effd6; --pointer-glow: #2fe39ccc; }
+.thermo.optimal { --pointer-fill: #fff; --pointer-glow: #ffe066; }
+.thermo.hot { --pointer-fill: #ffc078; --pointer-glow: #ff7a1acc; }
+.thermo.danger { --pointer-fill: #ffd21a; --pointer-glow: #ff2a00; }
+/* 現在地の白線と、虹の中央の最適温の白線。黒い縁で背景のどの色の上でも読める。 */
+.thermo-mark, .thermo:has(.thermo-housing) .thermo-mark, .thermo:has(.thermo-housing).optimal .thermo-mark {
+  left: 0; right: 0; height: 4px; margin-bottom: -2px; z-index: 6; background: #fff; box-shadow: 0 0 0 1.5px #0b0610, 0 0 9px #ffffffcc; }
+.thermo-optimal::before { height: 3px; z-index: 2; box-shadow: 0 0 0 1px #0b061099, 0 0 6px #fff; }
+.thermo-zone::before, .thermo-zone::after { opacity: 1; }
+/* 焦げる帯は黄と黒の警戒ストライプ。越えたら明らかに危ないと分かるよう、境目も赤く太くする。 */
+.thermo-danger { overflow: hidden;
+  background: linear-gradient(-45deg, #ffcf1a 25%, #17100c 25% 50%, #ffcf1a 50% 75%, #17100c 75%) 0 0 / 12px 12px;
+  box-shadow: inset 0 0 7px #ff2a00, inset 0 0 0 1px #ff3a1a99; }
+.thermo-danger::after { bottom: 0; height: 3px; background: #ff3418; filter: none; box-shadow: 0 0 6px #ff2a00, 0 0 2px #000; }
+.thermo-danger .thermo-icon.flame { width: 15px; height: 15px; padding: 1px; border-radius: 50%; background: #1a0b06; box-shadow: 0 0 0 1px #ffcf1a, 0 0 6px #ff2a00; }
+.thermo-danger .thermo-icon.flame svg { fill: #ff5a1f; filter: none; }
+.thermo.danger .thermo-danger { animation: hazard-slide .5s linear infinite; }
+@keyframes hazard-slide { to { background-position: 12px 0; } }
+/* 状態の一語も温度帯の色にする（ぬるい＝青、適温＝ミント、熱い＝橙、焦げる寸前＝警戒色）。 */
+.pull-read[data-tone="cool"] .pull-state { color: #96d2ff; text-shadow: 0 0 8px #3a9cff88; }
+.pull-read[data-tone="ok"] .pull-state { color: #62f2b4; text-shadow: 0 0 8px #22d08c99; }
+.pull-read[data-tone="hot"] .pull-state { color: #ffa652; text-shadow: 0 0 8px #ff6a0099; }
+.pull-read[data-tone="danger"] .pull-state { color: #ffd21a; text-shadow: 0 0 6px #ff2a00, 0 0 12px #ff2a00aa; }
+.pull-read[data-tone="cold"] .pull-state { color: #d6f1ff; text-shadow: 0 0 8px #7fd0ff; }
+.pull > .thermo .pull-read[data-tone="cool"] { border-color: #6fb6ff55; }
+.pull > .thermo .pull-read[data-tone="ok"] { border-color: #4fe3a466; }
+.pull > .thermo .pull-read[data-tone="optimal"] { border-color: #ffe9a477; box-shadow: 0 0 10px #ffd86a33; }
+.pull > .thermo .pull-read[data-tone="hot"] { border-color: #ff9a4a66; }
+.pull > .thermo .pull-read:is([data-tone="danger"], [data-tone="cold"]) { border-color: #ff4a2a99; }
+/* 右ウインドウの奥に漂う煙。立ちのぼって薄れる2枚を半周期ずらし、途切れずに流れて見せる。 */
+.panel-smoke { display: none; position: absolute; inset: 0; z-index: -1; overflow: hidden; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity 1.2s; }
+.bench:is([data-step="pull"], [data-step="care"]) .bench-right { isolation: isolate; }
+.bench:is([data-step="pull"], [data-step="care"]) .panel-smoke { display: block; }
+.panel-smoke.ready { opacity: 1; }
+.panel-smoke-wisp { position: absolute; }
+.panel-smoke-wisp::before, .panel-smoke-wisp::after { content: ""; position: absolute; inset: 0; background: var(--smoke) center / 100% 100% no-repeat; opacity: 0; animation: panel-smoke-rise 16s linear infinite; }
+.panel-smoke-wisp::after { transform: scaleX(-1); animation-name: panel-smoke-rise-flip; animation-delay: -8s; }
+.panel-smoke-wisp.w-corner { right: -10px; top: -90px; width: 280px; height: 340px; }
+.panel-smoke-wisp.w-left { left: -90px; bottom: 40px; width: 300px; height: 360px; }
+.panel-smoke-wisp.w-right { right: -70px; bottom: 90px; width: 260px; height: 320px; }
+.panel-smoke-wisp.w-left::before { animation-delay: -5s; }
+.panel-smoke-wisp.w-right::before { animation-delay: -11s; }
+@keyframes panel-smoke-rise { 0% { opacity: 0; transform: translateY(40px) scale(.94); } 30% { opacity: .62; } 70% { opacity: .5; } 100% { opacity: 0; transform: translateY(-50px) scale(1.1); } }
+@keyframes panel-smoke-rise-flip { 0% { opacity: 0; transform: translateY(40px) scaleX(-1) scale(.94); } 30% { opacity: .5; } 70% { opacity: .42; } 100% { opacity: 0; transform: translateY(-50px) scaleX(-1) scale(1.1); } }
+/* 見出し横の煙も、細い線から本物の煙の一筋へ。 */
+.bench:is([data-step="pull"], [data-step="care"]) .bench-title::after { left: calc(100% + 2px); top: -22px; width: 76px; height: 100px; opacity: .9; filter: none;
+  background: var(--smoke-title, none) center / contain no-repeat; animation: title-smoke 6s ease-in-out infinite alternate; transform-origin: 50% 100%; }
+@keyframes title-smoke { from { transform: translateY(2px) scaleY(.96); opacity: .75; } to { transform: translateY(-4px) scaleY(1.04) skewX(-4deg); opacity: .95; } }
+.pull-btn-icon .hose-core { stroke: #2b1a26; }
+@media (prefers-reduced-motion: reduce) {
+  .thermo.danger .thermo-danger, .bench .bench-title::after { animation: none; }
+  .panel-smoke-wisp::before { animation: none; opacity: .5; }
+  .panel-smoke-wisp::after { display: none; }
+}
