@@ -1,0 +1,12 @@
+/* ============================================================
+   場面ごとの一度きりのモーショングラフィックス（core/scene-motions.js・CI107〜CI109）の共通部分。
+   場面ごとの見た目は css/motions/<場面>.css
+   平らな色面・線を描いて引っ込める放射線・広がる輪。色は scene-motions.js の配色（紫1色／場面ごとの色）から渡す
+   ============================================================ */
+@property --mo-hole { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
+
+.mo { position: absolute; inset: 0; overflow: hidden; z-index: 100; pointer-events: auto; font-family: var(--font); }
+.mo-defs { position: absolute; width: 0; height: 0; }
+.mo-back { position: absolute; inset: 0; }
+.mg-kinetic { display: inline-flex; overflow: hidden; padding-block: 0.08em; }
+.mg-char { display: inline-block; transform: translateY(110%); opacity: 0; }
