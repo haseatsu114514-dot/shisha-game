@@ -11,9 +11,11 @@ export function applyCraftSkin(root) {
     const [l, t, r, b] = box;
     const w = r - l, h = b - t;
     if (w <= 0 || h <= 0) continue;
-    root.style.setProperty(`--craft-${id}-art`, `url("${url}")`);
+    // CSS変数の相対URLはCSSファイル基準になる。公開先のサブディレクトリにも対応する。
+    root.style.setProperty(`--craft-${id}-art`, `url("${new URL(url, document.baseURI).href}")`);
     // 元PNGの透明な余白だけを表示時に吸収し、絵そのものをボタンに合わせる。
-    root.style.setProperty(`--craft-${id}-size`, `${100 / w}% ${100 / h}%`);
+    // 吸うボタンのbboxには外光も含むため、枠本体が操作領域の高さに届くよう少し広げる。
+    root.style.setProperty(`--craft-${id}-size`, `${100 / w}% ${(id === "inhale" ? 108 : 100) / h}%`);
     root.style.setProperty(`--craft-${id}-position`, `${w < 1 ? l / (1 - w) * 100 : 50}% ${h < 1 ? t / (1 - h) * 100 : 50}%`);
   }
   root.dataset.artSkin = "true";

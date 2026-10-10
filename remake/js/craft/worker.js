@@ -53,7 +53,7 @@ export function buildWorkerScene(cs) {
     el("i.worker-breath", { "aria-hidden": "true" }),
     el("span.worker-scene-tag", { text: cs?.mode === "tournament" ? "SMOKE CROWN CUP" : "TONARI" }),
   ]);
-  // 名前は出さない（自分のことなので分かる TH44）。体調の顔・フレーバーの葉・熱のイメージだけを置く。
+  // 名前と体調バッジは出さない。疲れは人物の表情と汗、吸引は水泡で伝える。
   const footer = el("div.bench-worker-name", [caption]);
   const root = el("div.bench-worker", { dataset: { test: "worker-window", step: "" } }, [
     stage, footer,
@@ -79,7 +79,7 @@ export function buildWorkerScene(cs) {
     if (kind) {
       root.dataset.draw = kind;
       root.style.setProperty("--draw-duration", `${duration}ms`);
-      caption.textContent = kind === "up" ? "短く、強く吸う" : kind === "down" ? "長く、強く吸う" : "温度を保ちながら吸う";
+      caption.textContent = kind === "up" ? "上げ吸い…" : kind === "down" ? "下げ吸い…" : "温度を保ちながら吸う…";
       stage.setAttribute("aria-label", `はじめの作業風景：${caption.textContent}。ベースの水が泡立っている`);
     } else {
       delete root.dataset.draw;

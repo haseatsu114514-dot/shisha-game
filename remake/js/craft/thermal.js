@@ -129,7 +129,7 @@ export function buildThermalAtmosphere(host, worker) {
   const bowlBottom = parseFloat(equipment?.querySelector(".worker-bowl")?.style.bottom);
   if (Number.isFinite(bowlBottom)) {
     picture.style.bottom = `${bowlBottom + 36}px`;
-    boom.style.bottom = `calc(15% + ${bowlBottom + 40}px)`;
+    boom.style.bottom = `calc(7% + ${bowlBottom + 40}px)`;
   }
   host.prepend(canvas);
   host.append(haze);

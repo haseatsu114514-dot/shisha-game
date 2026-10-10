@@ -21,26 +21,27 @@ export function buildAudience(cs) {
   if (!ids.length) return null;
   const image = el("img", { alt: "", draggable: false, decoding: "async" });
   const name = el("figcaption");
+  const speaker = el("b.audience-name");
   const person = el("figure.audience-person", { role: "img" }, [el("div.audience-face", [image]), name]);
   const mark = el("b.audience-rating", { hidden: true, dataset: { test: "craft-rating" } });
   const caption = el("span.audience-caption", { text: ids[0] === "hajime" ? "心の声" : "" });
   const note = el("p.audience-note", { text: ids[0] === "hajime" ? innerVoiceLine("default", "watch") : "手元を見守っている", dataset: { test: "craft-feedback" } });
   const root = el("aside.bench-audience.audience-single", { "aria-label": cs.mode === "drill" ? "はじめの心の声" : cs.mode === "tournament" ? "審査員と大会実況" : "見守る人", dataset: { test: "craft-audience" } }, [
-    el("div.audience-people", [person]), el("div.audience-speech", { "aria-live": "polite" }, [el("div.audience-heading", [mark, caption]), note]),
+    el("div.audience-people", [person]), el("div.audience-speech", { "aria-live": "polite" }, [el("div.audience-heading", [mark, speaker, caption]), note]),
   ]);
   let primary = ids[0], active = primary, step = "", current = "", changedAt = -Infinity;
   const showPerson = (id, mood, kind = "") => {
     active = id; current = mood; changedAt = performance.now();
     const label = displayName(id, state), portrait = portraitInfo(id, faceFor(id, mood, kind));
-    name.textContent = label; person.dataset.person = id; person.dataset.mood = mood; root.dataset.speaker = id;
+    name.textContent = speaker.textContent = label; person.dataset.person = id; person.dataset.mood = mood; root.dataset.speaker = id;
     root.dataset.voice = id === "hajime" ? "inner" : id === "pakki" ? "mc" : "audience";
     person.title = `${label}：${MOODS[mood]}`; person.setAttribute("aria-label", person.title);
     if (portrait) {
       image.hidden = false; image.classList.remove("audience-icon"); image.src = portrait.src;
-      const width = 200;
+      const width = 340;
       image.style.width = `${width}px`;
       image.style.left = `calc(50% - ${portrait.ax * width}px)`;
-      image.style.top = `${5 - (1 - portrait.h - portrait.b) * width / portrait.aspect}px`;
+      image.style.top = `${-4 - (1 - portrait.h - portrait.b) * width / portrait.aspect}px`;
     } else {
       const fallback = faceIconUrl(id, state); image.hidden = !fallback;
       if (fallback) image.src = fallback;

@@ -8,10 +8,9 @@ import { SE } from "../core/audio.js";
 import { bgUrl } from "../core/data.js";
 import { state, timeOfDay } from "../core/state.js";
 import { currentCondition, addStamina } from "../core/stats.js";
-import { craftCondition } from "../core/condition.js";
 import { buildWorkerScene, WORKER_STEPS } from "./worker.js";
 import { buildAudience, audienceFor } from "./audience.js";
-import { conditionBadge, buildGuide, STEP_BRIEFS } from "./bench-ui.js";
+import { buildGuide, STEP_BRIEFS } from "./bench-ui.js";
 import { evaluationOf } from "./feedback.js";
 import { isRainy } from "../daily/weather.js";
 import { runHoles } from "./holes.js";
@@ -23,6 +22,7 @@ import { applyCraftSkin, craftSkinUrls } from "./skin.js";
 import { buildThermalAtmosphere } from "./thermal.js";
 import { temperatureAfterSteam } from "./conditions.js";
 import { screenBlast } from "./blast.js";
+import { artImg } from "./art.js";
 
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
@@ -90,11 +90,9 @@ export function openBench(cs, { steps = [] } = {}) {
   ]);
   const guide = buildGuide();
   const panel = el("div.bench-panel");
-  const condition = craftCondition(cs);
-  const badge = cs.mode !== "tutorial" ? conditionBadge(condition) : null;
-  // 体調の顔の横に、フレーバーの葉（吸い出しから TH28）。疲れは作業中のはじめの表情と汗で見せる（TH29・TH43）。
+  // TH62: 顔のバッジは廃止。疲れは作業中のはじめの表情と汗で見せる。
   const leaf = buildLeafIcon();
-  worker.footer.append(...[badge, leaf.root].filter(Boolean));
+  worker.footer.append(leaf.root);
   // アーケードのような総合スコア（TH42）。工程の結果が出るたびに数字が回って増える。
   const score = buildScoreBoard(cs);
   const root = el("div.bench", { dataset: { mode: cs.mode } }, [
@@ -109,7 +107,7 @@ export function openBench(cs, { steps = [] } = {}) {
   const thermal = buildThermalAtmosphere(root, worker);
   bg();
   showScreen("bench", root);
-  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, thermal, badge, leaf, score };
+  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, thermal, leaf, score };
   renderFatigue();
   return bench;
 }
@@ -122,7 +120,6 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.guide.root.open = false;
   b.guide.root.hidden = !hintText;
   b.guide.note.textContent = hintText;
-  b.root.querySelectorAll(".bench-condition").forEach((d) => { d.open = false; });
   const steps = [...b.progress.querySelectorAll("[data-step]")];
   steps.forEach((s, i) => {
     s.classList.toggle("now", s.dataset.step === id);
@@ -199,7 +196,10 @@ export function setBenchLeaf(cs, hit = false) {
 }
 /** 吸い出し・熱管理では、同じ葉の状態をモックアップの情報欄へ置く。 */
 export function dockBenchLeaf(cs, host) {
-  if (bench?.cs === cs) host.prepend(bench.leaf.root);
+  if (bench?.cs !== cs) return;
+  const root = bench.leaf.root;
+  if (!root.querySelector(".leaf-skin")) root.append(artImg("ui_mockup_flavor_leaf.png", 34, "leaf-skin", { h: 34 }));
+  host.prepend(root);
 }
 
 /**
@@ -224,7 +224,6 @@ export function strainBench(cs, stamina = 4) {
   const now = currentCondition(), order = ["green", "yellow", "red"];
   if (order.indexOf(now.health) > order.indexOf(cs.condition?.health ?? "yellow")) cs.condition = now;
   if (bench?.cs === cs) {
-    if (bench.badge) { const next = conditionBadge(cs.condition); bench.badge.replaceWith(next); bench.badge = next; }
     renderFatigue();
     bench.worker.flinch();
   }

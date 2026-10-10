@@ -6,8 +6,8 @@
 // 吸いすぎ・過熱での吸い出しは、はじめの体力も削って疲れ（針が速く、成功帯が狭い）が付く（TH29）。
 // 人によって狙いが違うので、EXCELLENT・GOOD の判定は出さない。吸うと温度計の横に上下の印だけが出る（TH36）。
 // 左の作業風景に温度計、右に半円ダイヤル。左の下げ吸い=寒色→キープ→右の上げ吸い=暖色。
-// 針は帯をまたぐ短い形（TH59）。止めたら一口を吸い終えて温度が変わるまで固定する。
-// 各帯に吸い方と時間を添える。今の温度と吸った回数は、針と重ならないダイヤルの下の欄に出す。
+// TH61: 真円の半円と中央から振れる細い針。止めたら一口を吸い終えるまで固定する。
+// 各帯には温度が上下することだけを添える。時間・強さは画面に書かない（TH60）。
 // 熱管理では、立ち上げから吸われて消耗した炭を交換する。交換する炭はもう一度炭焼きで焼き、焼け具合で戻る熱と持ちが変わる（TH39）。
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown, shake } from "../core/ui.js";
@@ -18,6 +18,7 @@ import { burnCoals, HEAT_GRADES } from "./heat.js";
 
 import { craftConditions, heatDelta, pullResult, isOptimalTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT, IDEAL } from "./conditions.js";
 import { buildThermometer } from "./thermometer.js";
+import { artImg } from "./art.js";
 import { DRAW_MS, animateDraw } from "./pull-draw.js";
 
 export { IDEAL } from "./conditions.js";
@@ -38,7 +39,7 @@ const COAL_COOL = [1.6, 0.75, 0.5, 0.35];
 const coalHeatFactor = (picks) => picks.reduce((s, g) => s + 1 + HEAT_GRADES[g].hp / 100, 0) / picks.length;
 const coalLifeFactor = (picks) => picks.reduce((s, g) => s + 1 - HEAT_GRADES[g].hs / 100, 0) / picks.length;
 // 半円ダイヤルの形（SVG座標）。p=0が左端、p=1が右端。
-const DIAL = { cx: 240, cy: 252, r0: 140, r1: 202 };
+const DIAL = { cx: 240, cy: 232, r0: 140, r1: 202 };
 const dialPoint = (p, r) => {
   const a = Math.PI * (1 - p);
   return `${(DIAL.cx + r * Math.cos(a)).toFixed(2)} ${(DIAL.cy - r * Math.sin(a)).toFixed(2)}`;
@@ -63,12 +64,12 @@ export function startTemp(cs) {
 const MODES = {
   pull: {
     store: "pull", title: "吸い出し", min: 2, safe: 3, drift: false, serveLabel: "提供する",
-    hint: "針を止めた位置で吸い方が変わる。右の上げ吸いは短く強く吸って温度を上げ、左の下げ吸いは長く強く吸って温度を下げる。光る芯ほど変化が大きく、中央のキープは温度を保つ（左寄りで微減・右寄りで微増）。吸い終えて温度が変わってから、次の針を止められる。温度計の緑が適温、細い虹が最適温。4回目からフレーバーの葉が傷む。蒸らしで集中できたほど芯が広がり、針がゆっくり動く",
+    hint: "針を止めた位置で吸い方が変わる。右の上げ吸いは温度を上げ、左の下げ吸いは温度を下げる。光る芯ほど変化が大きく、中央のキープは温度を保つ（左寄りで微減・右寄りで微増）。吸い終えて温度が変わってから、次の針を止められる。温度計の緑が適温、虹色が最適温。4回目からフレーバーの葉が傷む。蒸らしで集中できたほど芯が広がり、針がゆっくり動く",
     start: startTemp, focus: pullFocusFromSteam,
   },
   care: {
     store: "care", title: "熱管理", min: 1, safe: 2, drift: true, serveLabel: "整え終える",
-    hint: "立ち上げから吸われ続けた炭は消耗して、温度が下がっていく。まず交換する炭の数を決め、その炭を焼いてから替える。焼け具合が良いほど温度がしっかり戻り、長く持つ。ダイヤルは吸い出しと同じで、キープなら温度を保てる。3回目からフレーバー（体調の横の葉）が傷む。炎の印まで上がって焦げても、雪の印まで冷え切っても、その一台はダメになる",
+    hint: "立ち上げから吸われ続けた炭は消耗して、温度が下がっていく。まず交換する炭の数を決め、その炭を焼いてから替える。焼け具合が良いほど温度がしっかり戻り、長く持つ。ダイヤルは吸い出しと同じで、キープなら温度を保てる。3回目からフレーバー（下の葉）が傷む。炎の印まで上がって焦げても、雪の印まで冷え切っても、その一台はダメになる",
     start: (cs) => cs.pull?.temp ?? CENTER, focus: () => ({ slow: 1, window: 1 }),
   },
 };
@@ -99,9 +100,9 @@ async function pullGame(cs, mode) {
 
   // ---- 画面
   const thermometer = buildThermometer({ coldLimit: mode.drift ? COLD_OUT : null, height: 352 });
-  // 採用済みの短い針が半円の帯に沿って動く。回転の中心は半円の中心。
+  // SVGの縦横比を保ち、針・リングを同じ中心で回す。
   const id = ++dials;
-  const dial = el("div.pull-dial", { html: `<svg viewBox="0 0 480 270" preserveAspectRatio="none" aria-hidden="true">
+  const dial = el("div.pull-dial", { html: `<svg viewBox="0 0 480 240" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
     <defs><linearGradient id="dial-grad-${id}" x1="0" x2="1" y1="0" y2="0">
       <stop offset="0" stop-color="#149cfc"/><stop offset=".2" stop-color="#206bb9"/><stop offset=".38" stop-color="#454a69"/>
       <stop offset=".5" stop-color="#887c70"/><stop offset=".62" stop-color="#714341"/><stop offset=".8" stop-color="#ff7525"/><stop offset="1" stop-color="#ff431b"/>
@@ -114,14 +115,17 @@ async function pullGame(cs, mode) {
     <path class="dial-gloss" d="${dialSector(0, 1, DIAL.r1 - 18, DIAL.r1)}"/>
     ${ZONES.map((z) => `<g class="pg-zone z-${z.id}"><path class="pg-just"/></g>`).join("")}
     <path class="dial-rim" d="${dialSector(0, 1)}"/>
-    <g class="pg-needle" data-test="pull-needle"><path class="needle-body" d="M${DIAL.cx - 4} ${DIAL.cy - DIAL.r0 + 12}h8v-${DIAL.r1 - DIAL.r0 + 24}h-8Z"/>
-      <path class="needle-cap" d="M${DIAL.cx - 11} ${DIAL.cy - DIAL.r1 - 22}h22l-11 13Z"/><path class="needle-cap" d="M${DIAL.cx - 11} ${DIAL.cy - DIAL.r0 + 22}h22l-11 -13Z"/></g>
-    <path class="dial-hub" d="M219 268a26 26 0 0 1 42 0"/>
+    <g class="pg-needle" data-test="pull-needle">
+      <path class="needle-body" d="M${DIAL.cx - 3} ${DIAL.cy}L${DIAL.cx - 1.5} ${DIAL.cy - DIAL.r1 + 5}L${DIAL.cx + 1.5} ${DIAL.cy - DIAL.r1 + 5}L${DIAL.cx + 3} ${DIAL.cy}Z"/>
+      <path class="needle-light" d="M${DIAL.cx} ${DIAL.cy - 9}V${DIAL.cy - DIAL.r1 + 7}"/>
+      <path class="needle-cap" d="M${DIAL.cx} ${DIAL.cy - DIAL.r1 - 8}l-5 11h10Z"/>
+    </g>
+    <circle class="dial-pivot-rim" cx="${DIAL.cx}" cy="${DIAL.cy}" r="9"/>
+    <circle class="dial-pivot" cx="${DIAL.cx}" cy="${DIAL.cy}" r="5"/>
   </svg>` });
   const labels = el("div.pull-dial-labels", ZONES.map(z => el(`div.pull-zone-label.l-${z.id}`, [
     el("b", { text: z.id === "keep" ? z.label : `${z.mark} ${z.label}` }),
-    el("span", { text: z.id === "keep" ? "この温度を維持" : z.id === "down" ? "長く・強く吸う" : "短く・強く吸う" }),
-    z.id !== "keep" && el("span", { text: z.id === "down" ? "温度を下げる" : "温度を上げる" }),
+    el("span", { text: z.id === "keep" ? "この温度を維持" : z.id === "down" ? "温度を下げる" : "温度を上げる" }),
   ].filter(Boolean))));
   const dialRow = el("div.pull-dial-row", [dial, labels]);
   const needle = dial.querySelector(".pg-needle");
@@ -148,15 +152,15 @@ async function pullGame(cs, mode) {
   const pullLabel = el("span.btn-label", { text: "吸う（針を止める）" });
   const pullBtn = el("button.btn.primary", { dataset: { test: "pull-stop" }, disabled: true }, [inhale, pullLabel]);
   const serveBtn = el("button.btn", { dataset: { test: "pull-serve" }, disabled: true }, [el("span.pull-serve-icon", { "aria-hidden": "true", html: '<svg viewBox="0 0 40 32" fill="currentColor"><path d="m6 21 5-7 8 1 9-5 3 3-10 6h-7l8 4 10-3 3 3-13 6-18-3Z"/><path d="m24 11 8-9 2 2-8 10Z"/></svg>' }), el("span.btn-label", { text: mode.serveLabel })]);
-  const leafShape = '<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 28C3 15 12 4 28 3c1 14-8 25-24 25Z"/><path d="M5 27 26 6M11 21l-1-6M16 16l-1-6M11 21l6 1M16 16l6 1" fill="none"/></svg>';
-  const extraLeaves = Array.from({ length: LEAF_MAX - 1 }, (_, i) => el("i.pull-life-leaf", { "aria-hidden": "true", dataset: { slot: i + 1 }, html: leafShape }));
+  const leafArt = (size) => artImg("ui_mockup_flavor_leaf.png", size, "leaf-skin", { h: size });
+  const extraLeaves = Array.from({ length: LEAF_MAX - 1 }, (_, i) => el("i.pull-life-leaf", { "aria-hidden": "true", dataset: { slot: i + 1 } }, [leafArt(34)]));
   const lifeLeaves = el("span.pull-life-leaves", extraLeaves);
   const summary = el("div.pull-summary", [
     el("div.pull-life", [el("span.pull-life-label", { text: "フレーバーの持ち" }), lifeLeaves]),
-    el("div.pull-life-note", [el("i.pull-note-leaf", { "aria-hidden": "true", html: leafShape }), el("div.pull-life-copy", [drawStatus, counter])]),
+    el("div.pull-life-note", [el("i.pull-note-leaf", { "aria-hidden": "true" }, [leafArt(23)]), el("div.pull-life-copy", [drawStatus, counter])]),
   ]);
   const play = el("div.pull-play", [dialRow, summary, el("div.pull-btns", [pullBtn, serveBtn])]);
-  play.setAttribute("aria-label", "左の下げ吸いは長く強く、中央はキープ、右の上げ吸いは短く強く吸う");
+  play.setAttribute("aria-label", "左の下げ吸いで温度を下げ、中央でキープ、右の上げ吸いで温度を上げる");
   const main = el("div.pull-main", [play]);
   panel.append(el(`div.pull${mode.drift ? ".pull-care" : ""}`, [thermometer.root, main]));
   thermometer.root.append(readout);
@@ -251,7 +255,7 @@ async function pullGame(cs, mode) {
     play.dataset.draw = z.id;
     play.style.setProperty("--draw-duration", `${duration}ms`);
     pullLabel.textContent = "吸っている…";
-    drawStatus.textContent = z.id === "up" ? "短く、強く吸っている…" : z.id === "down" ? "長く、強く吸っている…" : "温度を保つように吸っている…";
+    drawStatus.textContent = `${z.label}で吸っている…`;
     setBenchDraw(cs, z.id, duration);
     stopBubbles = startBubbling({ strength: z.id === "keep" ? .65 : 1 });
     render();
@@ -432,7 +436,7 @@ async function pullGame(cs, mode) {
     await resultCard(panel, {
       title: "吸い出し 結果",
       lines: [
-        optimal ? "細い最適温に合わせて提供できた" : inZone ? "適温で提供できた。最適温まであと少し" : T > IDEAL[1] ? "少し熱いまま出してしまった" : "まだぬるいまま出してしまった",
+        optimal ? "最適温に合わせて提供できた" : inZone ? "適温で提供できた。最適温まであと少し" : T > IDEAL[1] ? "少し熱いまま出してしまった" : "まだぬるいまま出してしまった",
         `${pulls}回吸った`,
       ],
     });
@@ -442,7 +446,7 @@ async function pullGame(cs, mode) {
   await resultCard(panel, {
     title: "熱管理 結果",
     lines: [
-      optimal ? "細い最適温で、最後の一口まで守り切った" : inZone ? "適温で最後の一口まで守り切った" : T > IDEAL[1] ? "熱いまま審査員に任せてしまった" : "冷めたまま審査員に任せてしまった",
+      optimal ? "最適温で、最後の一口まで守り切った" : inZone ? "適温で最後の一口まで守り切った" : T > IDEAL[1] ? "熱いまま審査員に任せてしまった" : "冷めたまま審査員に任せてしまった",
       coals ? `消耗した炭を${coals}個交換した` : "炭は交換せずに整えた",
       `${pulls}回吸った`,
     ],

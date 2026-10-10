@@ -4,7 +4,8 @@ import { steamSecondsOf, steamHeatFor } from "./steam-time.js";
 import { foilHeatProfile } from "./holes_logic.js";
 
 export const IDEAL = [0.46, 0.62];
-export const OPTIMAL = [0.532, 0.548];
+// TH66: 狙いたくなる広い虹色。見た目と最適温の判定に同じ範囲を使う。
+export const OPTIMAL = [0.51, 0.57];
 export const isOptimalTemperature = (temp) => temp >= OPTIMAL[0] && temp <= OPTIMAL[1];
 /** 温度計の一番上に届くと爆発して焦げる（2026-10-09 オーナー指定 TH06）。蒸らしは0.88で頭打ちのため届かない。 */
 export const BURST_TEMP = 1;

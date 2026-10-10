@@ -1,4 +1,4 @@
-"""モックアップの制作見出し用に、Zen Old Minchoを必要な8字へ絞る。"""
+"""モックアップの制作見出し・操作ボタン用に、Zen Old Minchoを必要な字へ絞る。"""
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from urllib.request import urlretrieve
@@ -19,7 +19,7 @@ def main():
         options = subset.Options()
         options.name_IDs = ["*"]
         sub = subset.Subsetter(options=options)
-        sub.populate(text="吸い出し熱管理")
+        sub.populate(text="吸い出し熱管理吸う（針を止める）提供する整え終える吸っている…")
         sub.subset(font)
         names = {1: "Craft Mincho", 3: "CraftMincho-Bold-1.0", 4: "Craft Mincho Bold",
                  6: "CraftMincho-Bold", 16: "Craft Mincho"}

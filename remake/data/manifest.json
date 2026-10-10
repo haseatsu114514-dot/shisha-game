@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-10 06:21 UTC",
+ "generated": "2026-10-10 10:04 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -280,6 +280,7 @@
   "stove_coil.png",
   "ui_craft_button.png",
   "ui_craft_panel.png",
+  "ui_mockup_flavor_leaf.png",
   "ui_mockup_inhale_button.png",
   "ui_refresh_button.png",
   "ui_temperature_frame.png"
@@ -979,6 +980,13 @@
    0.9267,
    2.0
   ],
+  "ui_mockup_flavor_leaf.png": [
+   0.1922,
+   0.1132,
+   0.8876,
+   0.8955,
+   1.0
+  ],
   "ui_mockup_inhale_button.png": [
    0.0069,
    0.2307,
@@ -1167,6 +1175,7 @@
   "ui/making/stove_coil.png",
   "ui/making/ui_craft_button.png",
   "ui/making/ui_craft_panel.png",
+  "ui/making/ui_mockup_flavor_leaf.png",
   "ui/making/ui_mockup_inhale_button.png",
   "ui/making/ui_refresh_button.png",
   "ui/making/ui_temperature_frame.png",
