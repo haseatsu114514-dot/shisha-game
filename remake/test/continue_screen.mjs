@@ -25,7 +25,8 @@ async function mount(variant = 0, options = {}) {
 async function geometry() {
   const boxes = await page.evaluate(() => {
     const rect = selector => document.querySelector(selector).getBoundingClientRect().toJSON();
-    return { stage: rect("#stage"), title: rect(".go-heading"), label: rect(".go-title-label"), face: rect(".go-left"), caption: rect(".go-speech-text"), playback: rect(".go-playback"),
+    return { layout: document.querySelector(".gameover").dataset.layout,
+      stage: rect("#stage"), title: rect(".go-heading"), label: rect(".go-title-label"), face: rect(".go-left"), caption: rect(".go-speech-text"), playback: rect(".go-playback"),
       retry: rect('[data-test="retry"]'), quit: rect('[data-test="game-over-title"]'), count: rect(".go-count") };
   });
   assert(boxes.caption.bottom <= boxes.playback.top + 1, `caption overlaps controls: ${JSON.stringify(boxes)}`);
@@ -37,11 +38,16 @@ async function geometry() {
   assert(boxes.count.left >= boxes.label.right + 8 * scale
     && Math.abs((boxes.count.top + boxes.count.bottom - boxes.label.top - boxes.label.bottom) / 2) <= 4 * scale,
     "count must sit beside the heading without overlap");
-  for (const key of ["retry", "quit"]) {
-    assert(boxes.caption.bottom + 8 * scale <= boxes[key].top,
-      `caption overlaps or crowds ${key}: ${JSON.stringify(boxes)}`);
-    assert(boxes.stage.bottom - boxes[key].bottom >= 20 * scale, `${key} needs bottom breathing room`);
-  }
+  if (boxes.layout === "top") {
+    assert(boxes.retry.left >= boxes.count.right + 8 * scale && boxes.quit.left >= boxes.retry.right + 8 * scale,
+      "heading, count, retry and quit must have separate spaces");
+    assert(boxes.retry.bottom <= boxes.face.top && boxes.quit.bottom <= boxes.face.top,
+      "experimental choices must stay above the portrait and leave the footer to captions");
+  } else for (const key of ["retry", "quit"]) {
+      assert(boxes.caption.bottom + 8 * scale <= boxes[key].top,
+        `caption overlaps or crowds ${key}: ${JSON.stringify(boxes)}`);
+      assert(boxes.stage.bottom - boxes[key].bottom >= 20 * scale, `${key} needs bottom breathing room`);
+    }
   for (const key of ["face", "caption"]) {
     assert(Math.abs((boxes[key].left + boxes[key].right) / 2 - (boxes.stage.left + boxes.stage.right) / 2) <= 1,
       `${key} must be centered`);
@@ -162,7 +168,8 @@ try {
   assert.deepEqual(await page.evaluate(() => window.__decisions), []);
   assert(await page.locator('[data-test="retry"]').isDisabled());
   assert(await page.locator('[data-test="game-over-title"]').isDisabled());
-  assert(await page.locator(".go-count").isVisible(), "zero remains visible");
+  assert(await page.locator(".go-count").isHidden(), "GAME OVER must hide the count");
+  assert(await page.locator(".go-title-art").isVisible(), "GAME OVER logo remains visible");
   await page.evaluate(() => {
     document.querySelector('[data-test="retry"]').click();
     document.querySelector('[data-test="game-over-title"]').click();
@@ -233,6 +240,37 @@ try {
     await geometry();
   }
   console.log("PASS: all 9 scripts in phone landscape, reduced motion, muted controls");
+  // 実験版は同じボタン処理を使う。全台本の大きい1行と、上部の2択をPC／横持ちで検証。
+  for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }]) {
+    await page.setViewportSize(viewport);
+    for (const [index, variant] of variants.entries()) {
+      await mount(variant, { layout: "top", soundEffects: false });
+      assert.equal(await page.locator('[data-test="retry"]').textContent(), "する");
+      for (let n = 0; n < 40; n++) {
+        await page.evaluate(() => {
+          if (document.querySelector(".go-letter:not(.go-on)")) document.querySelector(".go-dialogue").click();
+        });
+        await geometry();
+        if (await page.locator('[data-test="continue-next"]').isDisabled()) break;
+        await page.locator(".go-dialogue").click();
+      }
+      assert.equal(await page.locator(".gameover").getAttribute("data-last-cue"), "true");
+      const choice = index % 2 ? "quit" : "retry";
+      await page.locator(`[data-test="${choice === "retry" ? "retry" : "game-over-title"}"]`).click();
+      await geometry();
+      await page.clock.runFor(8000);
+      assert.deepEqual(await page.evaluate(() => window.__decisions), [choice]);
+    }
+    await mount(0, { layout: "top", soundEffects: false });
+    await page.clock.runFor(20100);
+    assert(await page.locator(".go-count").isHidden());
+    assert(await page.locator('[data-test="retry"]').isHidden());
+    assert(await page.locator('[data-test="game-over-title"]').isHidden());
+    assert(await page.locator(".go-title-art").isVisible());
+    await page.clock.runFor(2000);
+    assert.deepEqual(await page.evaluate(() => window.__decisions), ["quit"]);
+  }
+  console.log("PASS: top-button experiment, all 9 scripts on PC / phone; GAME OVER hides count and choices");
   await page.close();
 
   // プレビューは両分岐を見せ、セーブと恋人抽選履歴を変えない。
@@ -257,6 +295,13 @@ try {
   await preview.locator("#preview-play").click();
   await preview.clock.runFor(22000);
   assert.match(await preview.locator("#preview-error").textContent(), /20秒でGAME OVER/);
+  await preview.locator("#preview-layout").selectOption("top");
+  assert.equal(await preview.locator(".gameover").getAttribute("data-layout"), "top");
+  await preview.locator("#preview-retry").click();
+  await preview.clock.runFor(8000);
+  assert.match(await preview.locator("#preview-error").textContent(), /大会の最初/);
+  await preview.locator("#preview-layout").selectOption("bottom");
+  assert.equal(await preview.locator(".gameover").getAttribute("data-layout"), "bottom");
   assert.equal(await preview.evaluate(() => localStorage.getItem("suien_remake_save")), "preview-sentinel");
   await preview.close();
   assert.deepEqual(missing, [], "all canon portraits must resolve");

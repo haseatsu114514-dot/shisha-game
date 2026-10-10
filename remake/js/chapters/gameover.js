@@ -96,7 +96,7 @@ let nextScript = 0;
 let previousContinueSpeaker = null;
 // 選択は20秒まで。字幕送りはカウントを早めず、期限後はGAME OVERからタイトルへ戻る。
 export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRetry, onTitle,
-  soundEffects = true, reducedMotion = false } = {}) {
+  soundEffects = true, reducedMotion = false, layout = "bottom" } = {}) {
   const standard = SUMI_CONTINUE_SCRIPTS[Number.isInteger(variant) && variant >= 0
     ? variant % SUMI_CONTINUE_SCRIPTS.length : nextScript++ % SUMI_CONTINUE_SCRIPTS.length];
   const forced = typeof variant === "string" && variant.startsWith("premium:")
@@ -107,7 +107,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   if (variant == null) previousContinueSpeaker = speaker;
   const audio = createContinueAudio({ enabled: soundEffects });
   const view = createContinueView({ script, speaker, character: script.name || "スミさん",
-    premium: speaker !== "sumi", onType: () => audio.voice(speaker) });
+    premium: speaker !== "sumi", layout, onType: () => audio.voice(speaker) });
   const { root } = view;
   root.dataset.reason = reason;
   const motion = window.matchMedia?.("(prefers-reduced-motion: reduce)");

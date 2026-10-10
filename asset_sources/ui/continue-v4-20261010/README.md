@@ -1,5 +1,17 @@
 # CONTINUE V4 表示確認（2026-10-10）
 
+## CV27〜29 上にボタンを集める実験版
+
+採用中の下段ボタン版と同じ台詞・表情・カウント15で比較。
+実験版は「コンティニュー？ 15 ［する］［諦める］」の横並び。下のボタンを外し、セリフを大きくして人物と台詞を目立たせる。
+本編への採用は未決。プレビューの「配置」で両版を切り替えられる。
+
+- PC・スミさん: [採用中](top-buttons-experiment/current-sumi.png) / [上にボタン・実験](top-buttons-experiment/top-sumi.png)
+- スマホ横持ち・アゲハ: [採用中](top-buttons-experiment/current-phone-ageha.png) / [上にボタン・実験](top-buttons-experiment/top-phone-ageha.png)
+- [数字を消したGAME OVER](top-buttons-experiment/game-over.png) / [表示検証記録](top-buttons-experiment/verification.json)
+
+GAME OVER時の数字非表示は両版へ反映。下の過去画像にある0は変更前の制作記録。
+
 ## CV22〜26 ボタン・下端までの人物・見出し横カウント
 
 「コンティニュー？ 15」の横並びを中央配置し、セリフを36px上へ移動。
