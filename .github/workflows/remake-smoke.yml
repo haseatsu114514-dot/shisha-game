@@ -7,6 +7,7 @@ on:
       - 'remake/js/core/data.js'
       - 'remake/data/**'
       - 'remake/test/data_loading.mjs'
+      - 'tools/check_active_json.py'
       - 'remake/test/lover_dates.mjs'
       - 'data/**'
       - '.github/workflows/remake-smoke.yml'
@@ -38,6 +39,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Validate active JSON syntax
+        run: python3 tools/check_active_json.py
       - name: Validate production data loader
         run: node --experimental-vm-modules remake/test/data_loading.mjs
       - name: Validate romance date data when test is present
