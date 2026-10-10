@@ -54,4 +54,4 @@ python3 remake/tools/build_craft_font.py
 CHROME_EXECUTABLE_PATH=/usr/bin/chromium SHOTS=asset_sources/craft-ui-20261010 node remake/test/pull_draw.mjs
 ```
 
-モックアップと吸引の実装は `b7c2563`・`fcbc5b1`・`2d8c622`、赤い葉・操作・余白と顔の整理は `9f3d6a1` 以降。完成状態と各要望は [要望台帳](../../docs/owner_requests.md) のTH47〜82を参照。
+モックアップと吸引の実装は `b7c2563`・`fcbc5b1`・`2d8c622`、操作・余白と顔の整理は `9f3d6a1`、自然な赤い葉5枚と1枚ずつの消耗・枠の最終調整は `ee5c120`。完成状態と各要望は [要望台帳](../../docs/owner_requests.md) のTH47〜82を参照。
