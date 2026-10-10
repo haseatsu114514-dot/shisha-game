@@ -167,13 +167,16 @@ function tween(ms, f) {
 const CAM = "cubic-bezier(.6,0,.2,1)"; // カメラの寄り引き（速すぎて飛ばないように少し柔らかく）
 const easeIO = (k) => (k < 0.5 ? 4 * k * k * k : 1 - (-2 * k + 2) ** 3 / 2);
 const easeOut = (k) => 1 - (1 - k) ** 3;
+const easeIn = (k) => k * k * k;
+// b: 区間ごとのイージング（全体は linear）。弾み・揺れの途中のキーフレームで曲線が歪まないようにする
+const Q_OUT = "cubic-bezier(.25,1,.5,1)", Q_OUT2 = "cubic-bezier(.33,1,.68,1)", SINE = "cubic-bezier(.37,0,.63,1)", C_IN = "cubic-bezier(.32,0,.67,0)";
 
 /** ペンを宙に浮かせて動かす（spin で軸をくるっと回す。半分回ったところで onHalf） */
-function penHop(pen, to, ms, { lift = 26, spin = 0, ang = pen.at.ang, onHalf = null } = {}) {
+function penHop(pen, to, ms, { lift = 26, spin = 0, ang = pen.at.ang, onHalf = null, ease = easeIO } = {}) {
   const from = { ...pen.at };
   let half = false;
   return tween(ms, (k) => {
-    const e = easeIO(k);
+    const e = ease(k);
     if (!half && k >= 0.5) { half = true; onHalf?.(); }
     pen.place(from.x + (to[0] - from.x) * e, from.y + (to[1] - from.y) * e, from.lift + (lift - from.lift) * Math.sin(Math.PI * Math.min(1, k * 1.15)), from.ang + (ang - from.ang) * e + spin * e);
   }).then(() => pen.place(pen.at.x, pen.at.y, pen.at.lift, ang));
@@ -226,14 +229,16 @@ function writeInk(pen, list, { speed = 5.2, base = 24, hop = 9, onFrame = null }
 }
 
 /** キャップを外す: ペン先の方へ抜けて、回りながら飛んでいく */
-function capOff(pen, root, x, y, color) {
+function capOff(pen, root, x, y, color, tuned = false) {
   SE.tick();
   burst(root, x, y, { n: 7, r0: 56, r1: 150, color, width: 12, dur: 400 });
+  // tuned: 抜ける→飛ぶを区間ごとに（飛ぶ側だけ減速。全体の曲線だと抜けた直後に飛び切ってしまう）
+  const e1 = tuned ? { easing: SINE } : {}, e2 = tuned ? { easing: Q_OUT } : {};
   return move(pen.cap, [
-    { transform: "translate(0px, 0px) rotate(0deg)", opacity: 1 },
-    { transform: "translate(0px, 46px) rotate(0deg)", opacity: 1, offset: 0.25 },
+    { transform: "translate(0px, 0px) rotate(0deg)", opacity: 1, ...e1 },
+    { transform: "translate(0px, 46px) rotate(0deg)", opacity: 1, offset: 0.25, ...e2 },
     { transform: "translate(150px, 260px) rotate(160deg)", opacity: 0 },
-  ], 420, { easing: E.out });
+  ], 420, { easing: tuned ? "linear" : E.out });
 }
 
 // ---------------------------------------------------------------- a: チェキ: ファインダー → シャッター → 下から出てくる → 振って乾かす → 寄ってマーカーで書く → 引いて仕上げ
@@ -491,17 +496,17 @@ export async function b(url, placeCg = null) {
     move(band, [{ clipPath: wipe(-40) }, { clipPath: wipe(W + 460) }], 520, { easing: E.inOut });
     move(scene, [{ clipPath: fill(-40) }, { clipPath: fill(W + 440) }], 520, { easing: E.inOut, delay: 60 });
     move(camArt, [{ clipPath: fill(-40) }, { clipPath: fill(W + 440) }], 520, { easing: E.inOut, delay: 60 }); // カメラも帯の後ろから
-    move(dots, [{ transform: "translate(0px, 0px)" }, { transform: "translate(-56px, -28px)" }], 6000, { easing: "linear" });
-    await sleep(120);
+    move(dots, [{ transform: "translate(0px, 0px)" }, { transform: "translate(-65px, -33px)" }], 7000, { easing: "linear" }); // 最後まで流れ続ける（途中で止まらない）
+    await sleep(200); // 帯が中央を通り過ぎてから出す（隠れたまま弾み終わらない）
     SE.whoosh();
     await move(cam.inner, [
-      { transform: "translateY(420px) scale(0.86, 1.2)" },
-      { transform: "translateY(-26px) scale(1.04, 0.95)", offset: 0.6 },
-      { transform: "translateY(6px) scale(0.98, 1.03)", offset: 0.82 },
+      { transform: "translateY(420px) scale(0.86, 1.2)", easing: Q_OUT2 },
+      { transform: "translateY(-26px) scale(1.04, 0.95)", offset: 0.6, easing: SINE },
+      { transform: "translateY(6px) scale(0.98, 1.03)", offset: 0.82, easing: SINE },
       { transform: "translateY(0px) scale(1, 1)" },
-    ], 460, { easing: E.out });
+    ], 460, { easing: "linear" });
     // 2. ため → ボタンを押す → 絞りが閉じて開き、フラッシュ
-    move(cam.button, [{ transform: "translateY(0px)" }, { transform: "translateY(9px)", offset: 0.5 }, { transform: "translateY(0px)" }], 260, { easing: E.out });
+    move(cam.button, [{ transform: "translateY(0px)", easing: Q_OUT2 }, { transform: "translateY(9px)", offset: 0.5, easing: Q_OUT2 }, { transform: "translateY(0px)" }], 260, { easing: "linear" });
     await move(cam.inner, [{ transform: "scale(1, 1)" }, { transform: "scale(1.05, 0.93)" }], 120, { easing: E.out });
     SE.punch();
     tween(220, (k) => cam.iris(Math.sin(Math.PI * k)));
@@ -510,58 +515,60 @@ export async function b(url, placeCg = null) {
     ring(fxArt, ...cam.flash, { r: 220, color: P.white, width: 14, dur: 520 });
     burst(fxArt, ...cam.flash, { n: 10, r0: 70, r1: 190, color: P.white, width: 7, dur: 460 });
     await move(cam.inner, [
-      { transform: "translateY(0px) rotate(0deg) scale(1.05, 0.93)" },
-      { transform: "translateY(-18px) rotate(-5deg) scale(0.97, 1.05)", offset: 0.4 },
+      { transform: "translateY(0px) rotate(0deg) scale(1.05, 0.93)", easing: Q_OUT2 },
+      { transform: "translateY(-18px) rotate(-5deg) scale(0.97, 1.05)", offset: 0.4, easing: SINE },
       { transform: "translateY(0px) rotate(0deg) scale(1, 1)" },
-    ], 320, { easing: E.out });
+    ], 320, { easing: "linear" });
     cam.flashGlass.setAttribute("fill", P.light);
     // 3. 上の取り出し口から、裏向きのフィルムがせり出す
     SE.pour();
     const cy0 = box.top + box.height / 2, s0 = 0.42;
     const at0 = (y, extra = "") => `translate(0px, ${y - cy0}px) scale(${s0}) ${extra}`;
     fly.style.visibility = "";
-    await move(fly, [{ transform: at0(452 - 112 + (box.height * s0) / 2 + 6) }, { transform: at0(452 - 112 - (box.height * s0) * 0.12) }], 380, { easing: E.out });
+    await move(fly, [{ transform: at0(452 - 112 + (box.height * s0) / 2 + 6) }, { transform: at0(452 - 112 - (box.height * s0) * 0.12) }], 380, { easing: Q_OUT });
     await sleep(40);
     // 4. 抜けて飛び出し、くるっと表に返りながら真ん中へ。カメラは下へ落ちていく
     SE.whoosh();
-    move(cam.inner, [{ transform: "translateY(0px) rotate(0deg)" }, { transform: "translateY(560px) rotate(14deg)" }], 460, { easing: E.in });
+    move(cam.inner, [{ transform: "translateY(0px) rotate(0deg)" }, { transform: "translateY(560px) rotate(14deg)" }], 460, { easing: C_IN }); // 落ちるのは重力: 立方の加速
     const yUp = 452 - 112 - (box.height * s0) * 0.12;
+    // 区間ごとに: 静止から加速して抜ける → 速さを保ったまま減速して少し行き過ぎ → 戻って静止（全体の曲線だと途中の点が一瞬で過ぎる）
     move(fly, [
-      { transform: at0(yUp, "rotate(0deg)") },
-      { transform: `translate(0px, ${yUp - 120 - cy0}px) scale(0.7) rotate(-14deg)`, offset: 0.35 },
-      { transform: "translate(0px, -10px) scale(1.04) rotate(3deg)", offset: 0.78 },
+      { transform: at0(yUp, "rotate(0deg)"), easing: "cubic-bezier(.4,0,.8,.7)" },
+      { transform: `translate(0px, ${yUp - 120 - cy0}px) scale(0.7) rotate(-14deg)`, offset: 0.35, easing: "cubic-bezier(.2,.5,.3,1)" },
+      { transform: "translate(0px, -10px) scale(1.04) rotate(3deg)", offset: 0.78, easing: SINE },
       { transform: "translate(0px, 0px) scale(1) rotate(0deg)" },
-    ], 560, { easing: "cubic-bezier(.3,.6,.3,1)" });
+    ], 560, { easing: "linear" });
     for (let i = 0; i < 5; i++) {
       const x = W / 2 + (i - 2) * 46, len = 90 + (i % 2) * 50;
       const line = svg("line", { x1: x, y1: 330 + len, x2: x, y2: 330, stroke: mono ? P.white : P.deep, "stroke-width": 5, "stroke-linecap": "round", pathLength: 1, "stroke-dasharray": "1 1", "stroke-dashoffset": 1, opacity: 0.55 });
       fxArt.append(line);
-      move(line, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0, offset: 0.4 }, { strokeDashoffset: -1 }], 360, { easing: E.out, delay: 40 + i * 25 }).then(() => line.remove());
+      move(line, [{ strokeDashoffset: 1, easing: Q_OUT }, { strokeDashoffset: 0, offset: 0.4, easing: SINE }, { strokeDashoffset: -1 }], 360, { easing: "linear", delay: 40 + i * 25 }).then(() => line.remove());
     }
-    await move(flip, [{ transform: "perspective(1100px) rotateY(0deg)" }, { transform: "perspective(1100px) rotateY(90deg)" }], 220, { easing: E.in });
+    await move(flip, [{ transform: "perspective(1100px) rotateY(0deg)" }, { transform: "perspective(1100px) rotateY(90deg)" }], 220, { easing: C_IN }); // 前半は加速、後半は減速。どちらも立方で、横向きの瞬間がいちばん速い
     rear.style.visibility = "hidden";
     print.film.style.visibility = "";
     // 5. 表に返った時から乾き始める。あおいで乾かす（上下に煽る2.5Dの揺れと風の線）。乳白 → 少し暗く → 色が乗る
     const dev = develop(print, 1050);
-    await move(flip, [{ transform: "perspective(1100px) rotateY(-90deg)" }, { transform: "perspective(1100px) rotateY(0deg)" }], 320, { easing: E.out });
+    await move(flip, [{ transform: "perspective(1100px) rotateY(-90deg)" }, { transform: "perspective(1100px) rotateY(0deg)" }], 320, { easing: Q_OUT2 });
     const fan = (dir, delay) => {
       for (let i = 0; i < 3; i++) {
         const y = dir < 0 ? box.top - 6 - i * 16 : box.top + box.height + 10 + i * 16;
         const x0 = box.left - 40 + i * 30, x1 = box.left + box.width + 40 - i * 30;
         const line = svg("line", { x1: dir < 0 ? x1 : x0, y1: y, x2: dir < 0 ? x0 : x1, y2: y, stroke: mono ? P.main : P.deep, "stroke-width": 5 - i, "stroke-linecap": "round", pathLength: 1, "stroke-dasharray": "1 1", "stroke-dashoffset": 1, opacity: 0.6 });
         fxArt.append(line);
-        move(line, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0, offset: 0.4 }, { strokeDashoffset: -1 }], 300, { easing: E.out, delay: delay + i * 35 }).then(() => line.remove());
+        move(line, [{ strokeDashoffset: 1, easing: Q_OUT }, { strokeDashoffset: 0, offset: 0.4, easing: SINE }, { strokeDashoffset: -1 }], 300, { easing: "linear", delay: delay + i * 35 }).then(() => line.remove());
       }
     };
     fan(-1, 20); fan(1, 220); fan(-1, 420);
+    // 減衰する揺れ: 振れの端ごとに止まって折り返す（区間ごとに正弦、全体は linear）
     move(flip, [
+      { transform: "perspective(900px) rotateX(0deg)", easing: SINE },
+      { transform: "perspective(900px) rotateX(22deg)", offset: 0.16, easing: SINE },
+      { transform: "perspective(900px) rotateX(-18deg)", offset: 0.36, easing: SINE },
+      { transform: "perspective(900px) rotateX(13deg)", offset: 0.56, easing: SINE },
+      { transform: "perspective(900px) rotateX(-4deg)", offset: 0.78, easing: SINE },
       { transform: "perspective(900px) rotateX(0deg)" },
-      { transform: "perspective(900px) rotateX(22deg)", offset: 0.16 },
-      { transform: "perspective(900px) rotateX(-18deg)", offset: 0.36 },
-      { transform: "perspective(900px) rotateX(13deg)", offset: 0.56 },
-      { transform: "perspective(900px) rotateX(-4deg)", offset: 0.78 },
-      { transform: "perspective(900px) rotateX(0deg)" },
-    ], 840, { easing: "cubic-bezier(.45,0,.4,1)" });
+    ], 840, { easing: "linear" });
     [[-30, 70], [box.width + 26, 180], [-24, 320]].forEach(([dx, dy], i) => twinkle(fxArt, box.left + dx, box.top + dy, { color: mono ? P.main : P.white, size: 14, delay: 560 + i * 110 }));
     await dev;
     // 6. 写真を左へ寄せ、右にルーペが開く。ペン先の位置を印と線で結ぶ
@@ -589,9 +596,10 @@ export async function b(url, placeCg = null) {
     await sleep(150);
     SE.select();
     loupe.style.display = loupeRing.style.opacity = "";
-    move(loupe, [{ transform: "scale(0)" }, { transform: "scale(1.06)", offset: 0.7 }, { transform: "scale(1)" }], 420, { easing: E.out });
-    move(loupeRing, [{ transform: "scale(0)" }, { transform: "scale(1.06)", offset: 0.7 }, { transform: "scale(1)" }], 420, { easing: E.out });
-    move(ringOut, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 520, { easing: E.out, delay: 80 });
+    const pop = [{ transform: "scale(0)", easing: Q_OUT2 }, { transform: "scale(1.05)", offset: 0.7, easing: SINE }, { transform: "scale(1)" }]; // 大きい円なので行き過ぎは5%
+    move(loupe, pop, 420, { easing: "linear" });
+    move(loupeRing, pop, 420, { easing: "linear" });
+    move(ringOut, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 520, { easing: Q_OUT, delay: 80 });
     reticle.style.opacity = callout.style.opacity = "1";
     move(reticle, [{ opacity: 0 }, { opacity: 1 }], 200);
     move(callout, [{ opacity: 0 }, { opacity: 1 }], 200, { delay: 120 });
@@ -599,18 +607,18 @@ export async function b(url, placeCg = null) {
     const pp = pens.p;
     pp.place(tip.x + 420, tip.y + 520, 70, 46);
     pp.g.style.opacity = "1";
-    await penHop(pp, [tip.x + 24, tip.y - 34], 260, { lift: 30, ang: 30 });
-    capOff(pp, zoom.top, tip.x + 24, tip.y - 34, INK_COLOR.p);
+    await penHop(pp, [tip.x + 24, tip.y - 34], 260, { lift: 30, ang: 30, ease: easeOut }); // 外から入るので減速して止まる
+    capOff(pp, zoom.top, tip.x + 24, tip.y - 34, INK_COLOR.p, true);
     await sleep(80);
     await penHop(pp, [tip.x, tip.y], 70, { lift: 0 });
     // 7. ピンク → 緑 → ピンクと持ち替えて書く（使い終えたペンは右下へ抜け、次のペンが入る）
     const handoff = async (from, to, next) => {
-      penHop(from, [from.at.x + 360, from.at.y + 520], 220, { lift: 30, ang: 50 });
+      penHop(from, [from.at.x + 360, from.at.y + 520], 220, { lift: 30, ang: 50, ease: easeIn }); // 抜けるときは加速
       move(from.g, [{ opacity: 1 }, { opacity: 0 }], 160, { delay: 60 }).then(() => { from.g.style.opacity = "0"; from.g.getAnimations().forEach((x) => x.cancel()); });
       to.place(next[0] + 420, next[1] + 520, 60, 50);
       to.g.style.opacity = "1";
       SE.tick();
-      await penHop(to, next, 250, { lift: 30, ang: 30 });
+      await penHop(to, next, 250, { lift: 30, ang: 30, ease: easeOut });
     };
     const track = { onFrame: (x, y) => follow(x, y) };
     await writeInk(pp, ink.line1, { speed: 5.5, base: 14, hop: 13, ...track });
@@ -623,12 +631,12 @@ export async function b(url, placeCg = null) {
     await handoff(pens.g, pp, ink.sign[0].pts[0]);
     await writeInk(pp, ink.sign, { speed: 6, base: 13, hop: 16, ...track });
     // 8. ルーペがペン先の印へ吸い込まれて閉じ、写真が真ん中へ戻る。残りの落書きが次々に描かれる
-    penHop(pp, [pp.at.x + 360, pp.at.y + 520], 240, { lift: 30, ang: 50 });
+    penHop(pp, [pp.at.x + 360, pp.at.y + 520], 240, { lift: 30, ang: 50, ease: easeIn });
     await sleep(50);
     const { x: rx, y: ry } = mark;
     const shut = [{ transform: "translate(0px, 0px) scale(1)" }, { transform: `translate(${rx - lcx}px, ${ry - lcy}px) scale(0)` }];
-    move(loupe, shut, 280, { easing: E.in });
-    move(loupeRing, shut, 280, { easing: E.in });
+    move(loupe, shut, 280, { easing: C_IN }); // 吸い込まれる動きは立方の加速（指数だと最初の半分が止まって見える）
+    move(loupeRing, shut, 280, { easing: C_IN });
     move(ringOut, [{ opacity: 1 }, { opacity: 0 }], 140);
     move(callout, [{ opacity: 1 }, { opacity: 0 }], 180);
     await sleep(260);
@@ -637,9 +645,9 @@ export async function b(url, placeCg = null) {
     SE.whoosh();
     move(fly, [{ transform: `translate(${sx}px, ${sy}px)` }, { transform: "translate(0px, 0px)" }], 460, { easing: CAM });
     move(disc, [{ transform: `translate(${sx * 0.6}px, ${sy * 0.6}px)` }, { transform: "translate(0px, 0px)" }], 460, { easing: CAM });
-    ink.leaf.forEach((s, i) => inkSelf(s, 220, 30 + i * 32));
-    ink.deco.forEach((s, i) => inkSelf(s, 200, 100 + i * 50));
-    ink.side.forEach((s, i) => inkSelf(s, 190, 160 + i * 32));
+    ink.leaf.forEach((s, i) => inkSelf(s, 220, 30 + i * 32, Q_OUT));
+    ink.deco.forEach((s, i) => inkSelf(s, 200, 100 + i * 50, Q_OUT));
+    ink.side.forEach((s, i) => inkSelf(s, 190, 160 + i * 32, Q_OUT));
     await sleep(440);
     // 9. 仕上げ: 光が横切り、ぽんと弾む。暗い幕が斜めに横切って会話のCGと同じ黒にし、同じ位置にCGを置く
     print.full.style.opacity = "1";
@@ -648,7 +656,7 @@ export async function b(url, placeCg = null) {
     twinkle(fxArt, box.left + box.width - 16, box.top + box.height - 96, { color: P.main, size: 22 });
     twinkle(fxArt, box.left + 14, box.top + box.height - 28, { color: mono ? P.main : P.deep, size: 16, delay: 80 });
     twinkle(fxArt, box.left + box.width + 10, box.top + 36, { color: mono ? P.mid : P.white, size: 15, delay: 150 });
-    move(fly, [{ transform: "scale(1)" }, { transform: "scale(1.04)", offset: 0.35 }, { transform: "scale(1)" }], 400, { easing: E.out });
+    move(fly, [{ transform: "scale(1)", easing: Q_OUT2 }, { transform: "scale(1.04)", offset: 0.35, easing: SINE }, { transform: "scale(1)" }], 400, { easing: "linear" });
     await sleep(80);
     move(print.shadow, [{ opacity: 1 }, { opacity: 0 }], 340);
     await move(dark, [{ clipPath: fill(-40) }, { clipPath: fill(W + 440) }], 380, { easing: E.inOut });
