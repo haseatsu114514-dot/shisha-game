@@ -1,0 +1,4 @@
+/* サメちゃん（remake/js/motions/shark.js）。a／b の2パターンの見た目。色は js の配色から変数で渡す */
+.mo-caustics { position: absolute; inset: 0; opacity: 0; pointer-events: none; mix-blend-mode: screen;
+  background: repeating-linear-gradient(105deg, color-mix(in srgb, var(--c) 12%, transparent) 0 40px, transparent 40px 120px); animation: mo-caustics 3s linear infinite; }
+@keyframes mo-caustics { to { background-position: 240px 0; } }

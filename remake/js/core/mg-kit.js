@@ -1,6 +1,7 @@
 // モーショングラフィックスの部品（CI108）。アフターエフェクツのシェイプレイヤーのように、
 // 線を描いて引っ込める放射線・広がる輪・図形の紙吹雪・1文字ずつ出る文字・強い緩急をまとめる。
 // 配色は「紫1色（mono）」と「場面ごとの色（free）」の2系統。?mopal=free か __remake.dev.motionPalette("free") で切り替える。
+// 動きは場面ごとに a／b の2パターン（?movar=b）。
 import { el } from "./util.js";
 import { svg, move } from "./transition-kit.js";
 
@@ -24,6 +25,22 @@ export function motionPalette() {
 }
 export function setMotionPalette(name) {
   try { localStorage.setItem(STORE_KEY, name); } catch { /* 保存できない環境 */ }
+}
+
+// 同じ場面の別パターン（a／b）。?movar=b か __remake.dev.motionVariant("b") で切り替える（CI109）
+export const MOTION_VARIANTS = ["a", "b"];
+const VARIANT_KEY = "suien_motion_variant";
+export function motionVariant() {
+  const q = new URLSearchParams(location.search).get("movar");
+  if (MOTION_VARIANTS.includes(q)) return q;
+  try {
+    const saved = localStorage.getItem(VARIANT_KEY);
+    if (MOTION_VARIANTS.includes(saved)) return saved;
+  } catch { /* 保存できない環境では既定 */ }
+  return "a";
+}
+export function setMotionVariant(name) {
+  try { localStorage.setItem(VARIANT_KEY, name); } catch { /* 保存できない環境 */ }
 }
 
 /** 紫1色。濃淡だけで描く（どの場面でも共通） */

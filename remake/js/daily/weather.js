@@ -9,6 +9,19 @@ export function isRainy(day = state?.day) {
   return h % 100 < 30;
 }
 
+/**
+ * DAYカードに出す天気（CI109）。雨は isRainy のまま。雨でない日の約3割を「くもり」として見せるだけで、
+ * くもりは遊びの内容（背景・会話・給料・制作）を何も変えない。DAY1 は晴れ。大会中は null。
+ */
+export function weatherOf(day = state?.day) {
+  if (!state || !day || state.phase === "tournament") return null;
+  if (isRainy(day)) return "rain";
+  if (day < 2) return "sun";
+  const h = Math.imul(state.weatherSeed + day * 104729, 2246822519) >>> 0;
+  return h % 100 < 30 ? "cloud" : "sun";
+}
+export const WEATHER_LABEL = { sun: "晴れ", cloud: "くもり", rain: "雨" };
+
 /** 雨の日だけ出す回（晴れの日はローテーションに出さない＝天気と文が食い違わない） */
 export const RAIN_SPOT_TEXTS = { kannon: "kannon_rain", cafe: "cafe_window_rain" };
 export const RAIN_BAITO = ["baito_rainy_day", "baito_tsumugi_rain"];

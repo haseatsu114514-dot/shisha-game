@@ -1,0 +1,8 @@
+/* チェキ（remake/js/motions/cheki.js）。a／b の2パターンの見た目。色は js の配色から変数で渡す */
+.mo-stripes { position: absolute; inset: -40px; opacity: 0; background: repeating-linear-gradient(-45deg, color-mix(in srgb, var(--c) 16%, transparent) 0 22px, transparent 22px 64px); animation: mo-stripes 2.4s linear infinite; }
+@keyframes mo-stripes { to { transform: translateX(90px); } }
+.mo-flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 3; }
+.mo-film { position: absolute; z-index: 2; transform-origin: 50% 100%; filter: drop-shadow(0 16px 30px #0009); }
+.mo-film-card { position: absolute; inset: 0; background: #f6f5f4; -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+.mo-film-layer { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: fill; }
+.mo-pen { position: absolute; left: 7%; top: 16%; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; opacity: 0; box-shadow: 0 0 0 3px #fff; }

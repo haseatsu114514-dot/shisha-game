@@ -1,0 +1,18 @@
+/* 占い（remake/js/motions/tarot.js）。a／b の2パターンの見た目。色は js の配色から変数で渡す */
+.mo-tarot-card { position: absolute; left: 50%; top: 150px; width: 236px; height: 380px; perspective: 1100px; }
+.mo-tarot-flip { position: absolute; inset: 0; transform-style: preserve-3d; }
+.mo-tarot-back, .mo-tarot-front { position: absolute; inset: 0; border-radius: 16px; border: 6px solid; backface-visibility: hidden; -webkit-backface-visibility: hidden; overflow: hidden; box-shadow: 0 18px 40px #0009; }
+.mo-tarot-back::after { content: ""; position: absolute; inset: 8px; border: 2px solid var(--l); border-radius: 10px; opacity: 0.55; }
+.mo-tarot-moon { position: absolute; left: 50%; top: 40%; width: 92px; height: 92px; margin: -46px 0 0 -46px; border-radius: 50%; box-shadow: inset -22px -6px 0 0 var(--l); transform: rotate(-20deg); }
+.mo-tarot-star { position: absolute; left: 28%; top: 70%; width: 18px; height: 18px; background: var(--l); clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); }
+.mo-tarot-star.s2 { left: 66%; top: 22%; width: 12px; height: 12px; }
+.mo-tarot-star.s3 { left: 70%; top: 74%; width: 10px; height: 10px; }
+.mo-tarot-front { transform: rotateY(180deg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+.mo-tarot-front small { font-size: 12px; font-weight: 700; letter-spacing: 0.3em; }
+.mo-tarot-front small.en { font-size: 30px; letter-spacing: 0; font-weight: 900; }
+.mo-tarot-face { width: 116px; height: 116px; border-radius: 50%; overflow: hidden; border: 5px solid; display: grid; place-items: center; }
+.mo-tarot-face img { width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated; }
+.mo-tarot-face b { color: #fff; font-size: 48px; }
+.mo-tarot-name { font-size: 26px; font-weight: 900; letter-spacing: 0.08em; }
+.mo-gloss { position: absolute; top: -20%; bottom: -20%; left: 0; width: 34%; background: linear-gradient(90deg, transparent, #ffffffb0, transparent); transform: translateX(-140%) skewX(-20deg); pointer-events: none; }
+.mo-tarot-title { position: absolute; left: 50%; top: 600px; transform: translateX(-50%); font-size: 40px; font-weight: 900; letter-spacing: 0.12em; white-space: nowrap; text-shadow: 0 3px 0 #0006; }

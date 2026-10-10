@@ -1,5 +1,6 @@
 // トランジションの共通部品（座標・色・SVG・アニメーション・入力の抑止）。
 // 型そのものは transitions.js（夜明け・標準の幕）と transition-moves.js（マップ→場所）。
+import { el, nextFrame } from "./util.js";
 
 export const W = 1280;
 export const H = 720;
@@ -27,6 +28,22 @@ const blockKey = (e) => {
 export function holdKeys() {
   window.addEventListener("keydown", blockKey, true);
   return () => window.removeEventListener("keydown", blockKey, true);
+}
+
+/** 幕の器。ui.setBg の covered／release 約束に合わせ、覆う・開くの2段で書く */
+export function curtain(host, style, cover, reveal) {
+  const node = el("div.scene-curtain.move", { "aria-hidden": "true", dataset: { transition: `move-${style}` } });
+  const unhold = holdKeys();
+  host.append(node);
+  const covered = (async () => { await nextFrame(); await cover(node); })();
+  let released = false;
+  return { covered, async release() {
+    if (released) return;
+    released = true;
+    await covered;
+    await nextFrame(); await nextFrame();
+    try { await reveal(node); } finally { node.remove(); unhold(); }
+  } };
 }
 
 let maskSerial = 0;

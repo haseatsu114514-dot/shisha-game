@@ -1,0 +1,2 @@
+/* 就寝→翌朝の天気（DAYカード）（remake/js/core/transitions.js の nightToMorning・motions/dawn-weather.js）。a は SVG だけで描くので、ここは b と天気で使う */
+.tr-dawn-weather { margin-top: 6px; padding: 4px 18px; border: 2px solid #dcd1f4; border-radius: 999px; font-size: 22px; font-weight: 700; letter-spacing: 0.3em; color: #dcd1f4; }

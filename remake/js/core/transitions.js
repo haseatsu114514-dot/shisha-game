@@ -5,6 +5,7 @@ import { el, sleep, nextFrame } from "./util.js";
 import { SE } from "./audio.js";
 import { W, H, COLOR, EASE, reducedMotion, svg, move, holdKeys } from "./transition-kit.js";
 import { moveCurtain, moveStyle } from "./transition-moves.js";
+import { dawnWeather } from "../motions/dawn-weather.js";
 
 let serial = 0;
 const STYLES = ["diagonal", "smoke", "iris"];
@@ -86,13 +87,14 @@ function nightPath() {
 
 /**
  * 夜の紫が上から降りて眠りにつき、DAYと残り日数が1つめくれ、ラベンダーの地平線が下から昇って朝が出る。
- * mid() は覆っている間に日付を進め、{ fromDay, day, fromLeft, left, rain, sick } を返す。
+ * mid() は覆っている間に日付を進め、{ fromDay, day, fromLeft, left, rain, weather, sick } を返す。
  */
 export async function nightToMorning(host, mid) {
   const reduced = reducedMotion();
   const unhold = holdCover();
   const node = el("div.tr-dawn", { "aria-hidden": "true", dataset: { transition: "dawn" } });
   host.append(node);
+  let wx = null;
   try {
     const veil = el("div.tr-dawn-veil");
     if (reduced) {
@@ -113,18 +115,12 @@ export async function nightToMorning(host, mid) {
     const leftFlip = flipNumber(info.fromLeft, info.left);
     const sub = info.sick
       ? el("div.tr-dawn-sub", [el("span", { text: "……熱っぽい" })])
-      : el("div.tr-dawn-sub", [el("span", { text: "SMOKE CROWN CUP まで あと" }), leftFlip, el("span", { text: `日${info.rain ? "　☂ 雨" : ""}` })]);
+      : el("div.tr-dawn-sub", [el("span", { text: "SMOKE CROWN CUP まで あと" }), leftFlip, el("span", { text: "日" })]);
     const card = el("div.tr-dawn-card", { dataset: { test: "dawn-card" } }, [el("div.tr-dawn-day", [el("small", { text: "DAY" }), dayFlip]), sub]);
     if (info.sick) node.classList.add("sick");
-    if (info.rain && !reduced) {
-      const rain = el("div.tr-dawn-rain");
-      for (let i = 0; i < 26; i++) {
-        const drop = el("i", { style: { left: `${Math.random() * 115 - 10}%`, height: `${14 + Math.random() * 12}%` } });
-        rain.append(drop);
-        drop.animate([{ translate: "0 0" }, { translate: "-150px 1150px" }], { duration: 560 + Math.random() * 240, delay: Math.random() * 600, iterations: Infinity, easing: "linear" });
-      }
-      node.append(rain);
-    }
+    // その日の天気（晴れ・くもり・雨。motions/dawn-weather.js）。熱っぽい朝は出さない
+    wx = info.sick ? null : dawnWeather(node, info.weather ?? (info.rain ? "rain" : null), { reduced });
+    if (wx?.badge) card.append(wx.badge);
     node.append(card);
     if (reduced) {
       [dayFlip, leftFlip].forEach((s) => { s.firstChild.remove(); s.firstChild.style.transform = ""; s.firstChild.style.opacity = ""; });
@@ -150,8 +146,7 @@ export async function nightToMorning(host, mid) {
     node.append(horizon);
     const up = 760;
     move(card, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-18px)" }], 300, { easing: EASE.in });
-    const rain = node.querySelector(".tr-dawn-rain");
-    if (rain) move(rain, [{ opacity: 1 }, { opacity: 0.4 }], up);
+    wx?.fadeOut(up);
     move(horizon, [{ bottom: "0%", opacity: 1 }, { bottom: "100%", opacity: 0.5 }], up);
     await move(veil, [{ clipPath: "inset(0 0 0% 0)" }, { clipPath: "inset(0 0 100% 0)" }], up);
     const glow = el("div.tr-dawn-glow");
@@ -159,6 +154,7 @@ export async function nightToMorning(host, mid) {
     node.style.pointerEvents = "none";
     await move(glow, [{ opacity: 1 }, { opacity: 0 }], 560, { easing: EASE.out });
   } finally {
+    wx?.stop();
     node.remove();
     unhold();
   }

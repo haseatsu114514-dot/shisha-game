@@ -12,7 +12,7 @@ import { glossaryPanel } from "../vn/glossary.js";
 import { initHud, showHud, updateHud, daysLeft, setPhoneBadge, presentSleepRecovery } from "./hud.js";
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chooseSpot, interruptMap } from "./map.js";
-import { isRainy } from "./weather.js";
+import { isRainy, weatherOf } from "./weather.js";
 import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, storyCount, CHAR_STAT } from "./spots.js";
 import { doFortune } from "./fortune.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
@@ -449,7 +449,7 @@ async function advanceDay() {
     // 夜の紫が降りて、DAYと残り日数がめくれ、地平線が昇って朝になる（大会当日は当日の演出に任せる）
     await dayTurn(async () => {
       wake();
-      return { fromDay, day: state.day, fromLeft, left: daysLeft(), rain: isRainy(), sick: exhausted };
+      return { fromDay, day: state.day, fromLeft, left: daysLeft(), rain: isRainy(), weather: weatherOf(), sick: exhausted };
     });
     dawnShownDay = state.day;
   } else await fadeBlack(wake, 500);

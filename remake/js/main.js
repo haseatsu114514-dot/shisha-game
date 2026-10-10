@@ -90,7 +90,14 @@ window.__remake = {
       if (name) kit.setMotionPalette(name);
       return kit.motionPalette();
     },
-    // 場面ごとのモーショングラフィックスを本来の背景・会話つきで見る（cheki / tarot / gift / shift / shark / sketch）。※今のセーブを上書きする
+    // 場面ごとの動きのパターン（a／b）。URLの ?movar=b でも切り替わる
+    async motionVariant(name) {
+      const kit = await import("./core/mg-kit.js");
+      if (name) kit.setMotionVariant(name);
+      return kit.motionVariant();
+    },
+    // 場面ごとのモーショングラフィックスを本来の背景・会話つきで見る（cheki / tarot / gift / shift / shark / sketch）。
+    // 夜明けの天気は dawn-sun / dawn-cloud / dawn-rain / dawn-sick（DAY3→4）。※今のセーブを上書きする
     async motion(name = "cheki") {
       const core = await import("./core/state.js");
       const { play } = await import("./vn/engine.js");
@@ -125,6 +132,21 @@ window.__remake = {
       if (name === "shark") {
         await setBg(bgUrl("bg_street", "night"));
         return (await import("./daily/kafuka.js")).playKafukaEncounter();
+      }
+      if (name.startsWith("dawn")) {
+        const kind = name.split("-")[1] || "sun";
+        const { dayTurn } = await import("./core/ui.js");
+        state.weatherSeed = { rain: 1, sun: 2, cloud: 10, sick: 2 }[kind] ?? 2; // DAY4 がその天気になる種
+        Object.assign(state, { day: 3, slot: 2 });
+        await setBg(bgUrl("bg_home", "night"));
+        await sleep(700);
+        return dayTurn(async () => {
+          state.day = 4;
+          state.slot = 0;
+          await setBg(bgUrl("bg_home", "day"), { instant: true });
+          const weather = (await import("./daily/weather.js")).weatherOf();
+          return { fromDay: 3, day: 4, fromLeft: TOURNAMENT_DAY - 3, left: TOURNAMENT_DAY - 4, rain: weather === "rain", weather, sick: kind === "sick" };
+        });
       }
       if (name === "sketch") {
         const art = sceneBg(tonariNight, "night");

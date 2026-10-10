@@ -1,0 +1,13 @@
+/* バイトの終わり（remake/js/motions/shift.js）。a／b の2パターンの見た目。色は js の配色から変数で渡す */
+.mo-sign { position: absolute; left: 50%; top: 120px; width: 380px; height: 320px; transform: translateX(-50%); transform-origin: 50% 0; }
+.mo-sign::before { content: ""; position: absolute; left: 50%; top: -8px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: var(--s); z-index: 1; }
+.mo-sign-string { position: absolute; left: 50%; top: 0; width: 0; height: 0; }
+.mo-sign-string::before, .mo-sign-string::after { content: ""; position: absolute; left: -2px; top: 0; width: 4px; height: 180px; background: var(--s); transform-origin: 2px 0; }
+.mo-sign-string::before { transform: rotate(56deg); }
+.mo-sign-string::after { transform: rotate(-56deg); }
+.mo-sign-pop { position: absolute; left: 0; right: 0; top: 100px; height: 200px; perspective: 1000px; }
+.mo-sign-flip { position: absolute; inset: 0; transform-style: preserve-3d; }
+.mo-sign-face { position: absolute; inset: 0; border-radius: 22px; border: 8px solid; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 16px 30px #0008; }
+.mo-sign-face small { font-size: 22px; font-weight: 700; letter-spacing: 0.3em; padding-left: 0.3em; }
+.mo-sign-face b { font-size: 84px; font-weight: 900; letter-spacing: 0.08em; line-height: 1; }
+.mo-sign-face.closed { transform: rotateY(180deg); }

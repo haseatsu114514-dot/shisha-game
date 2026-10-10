@@ -31,7 +31,7 @@ const values = {
   "scene-motions.js": { shiftClose: async () => {} },
   "bus.js": { emit() {}, on() {} },
   "reel.js": { installReel() {} },
-  "weather.js": { isRainy: () => rainy, RAIN_BAITO: ["baito_rainy_day", "baito_tsumugi_rain"], RAIN_BAITO_BONUS: 500, RAIN_SPOT_TEXTS: {} },
+  "weather.js": { isRainy: () => rainy, weatherOf: () => (rainy ? "rain" : "sun"), RAIN_BAITO: ["baito_rainy_day", "baito_tsumugi_rain"], RAIN_BAITO_BONUS: 500, RAIN_SPOT_TEXTS: {} },
 };
 const context = vm.createContext({ Math, Set, Promise, console }); const mods = new Map();
 async function load(name) { if (mods.has(name)) return mods.get(name); const mod = values[name]
