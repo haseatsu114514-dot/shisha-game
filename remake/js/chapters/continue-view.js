@@ -1,12 +1,12 @@
-// CONTINUEの描画。台本・抽選・遷移から独立させ、字幕の全文を確保してから文字を出す。
+// CONTINUEの描画。台本・抽選・遷移から独立させ、1行のテロップを文字ごとに出す。
 import { el } from "../core/util.js";
 import { DB, img, portraitInfo } from "../core/data.js";
-import { autoWrap } from "../vn/text.js";
 
 const EMPHASIS = ["俺たち全員", "俺たちはまだやれる", "断固反対", "カルダモンが絶滅", "まだ終わってねえ", "お前と勝ちてえ", "勝手に", "ちょっと待て", "ずっと、見てますから", "何枚も何枚も", "もう一回だけ", "ぎゅってする", "次の香り", "ワンチャン", "コンティニュー", "王命じゃ", "もう一度見たい", "もう一台", "はじめのシーシャ", "諦める"];
-export const DEFAULT_CONTINUE_BUTTON_STYLE = "arcade";
+// 顔の高さ(px)。テロップを1行にした分、人物を大きく映す（2026-10-10）。
+const FACE_PX = 236;
 
-export function createContinueView({ script, speaker, character, premium, buttonStyle = DEFAULT_CONTINUE_BUTTON_STYLE }) {
+export function createContinueView({ script, speaker, character, premium, onType = null }) {
   const art = name => img(`ui/continue/${name}.png`);
   const portrait = portraitInfo(speaker, script.cues[0].face);
   const image = portrait
@@ -16,7 +16,7 @@ export function createContinueView({ script, speaker, character, premium, button
     if (!info) return;
     // 正規画像の顔の範囲を計測し、画像全体を拡大・配置する。画像や色は加工しない。
     const framing = DB.manifest.continuePortraits?.[info.folder]?.[info.face];
-    const height = 170 / (framing?.size || info.h * .2), width = height * info.aspect;
+    const height = FACE_PX / (framing?.size || info.h * .2), width = height * info.aspect;
     const top = framing?.top ?? 1 - info.h - info.b;
     Object.assign(image.style, { height: `${height}px`, width: `${width}px`,
       left: `calc(50% + ${(0.5 - (framing?.cx ?? .5)) * width}px)`, top: `${-top * height}px` });
@@ -28,9 +28,9 @@ export function createContinueView({ script, speaker, character, premium, button
   const count = el("span.go-count", { text: "20" });
   const next = el("button.go-next", { type: "button", text: "›", "aria-label": "台詞を送る", dataset: { test: "continue-next" } });
   const proceed = el("button.go-proceed", { type: "button", text: "進む →", hidden: true, dataset: { test: "continue-proceed" } });
-  const style = ["text", "arcade", "continue"].includes(buttonStyle) ? buttonStyle : "arcade";
+  // 2択は枠の画像を使わず、文字だけを押す（オーナー指定のA案）。
   const retry = el("button.go-choice.go-retry", { type: "button", "aria-label": "大会に戻る", dataset: { test: "retry" } },
-    [el("span.go-choice-label", { text: style === "continue" ? "CONTINUE" : "大会に戻る" })]);
+    [el("span.go-choice-label", { text: "大会に戻る" })]);
   const quit = el("button.go-choice.go-quit", { type: "button", dataset: { test: "game-over-title" } },
     [el("span.go-choice-label", { text: "諦める" })]);
   const effectWord = el("span.go-effect-word", { "aria-hidden": "true" });
@@ -40,7 +40,7 @@ export function createContinueView({ script, speaker, character, premium, button
   const finalImage = el("img.go-title-art", { src: art("game_over_title"), alt: "", "aria-hidden": "true", hidden: true, draggable: "false" });
   const title = el("h1.go-title", [titleLabel, titleImage, finalImage]);
   const root = el("div.end-screen.gameover", { role: "region", "aria-label": "大会のコンティニュー",
-    dataset: { test: "game-over", variant: script.id, speaker, premium: String(premium), textOnly: "true", phase: "speaking", buttonStyle: style } }, [
+    dataset: { test: "game-over", variant: script.id, speaker, premium: String(premium), textOnly: "true", phase: "speaking" } }, [
     el("div.go-veil", { "aria-hidden": "true" }),
     el("header.go-heading", [title]),
     el("div.go-left", [el("div.go-portrait", [image])]),
@@ -55,31 +55,34 @@ export function createContinueView({ script, speaker, character, premium, button
       el("i.go-wave"), el("i.go-stars", { text: "✧　·　✦" })]),
     el("div.go-exit", { "aria-hidden": "true" }),
   ]);
-  for (const [key, name] of [["backdrop", "backdrop"], ["retry-art", "retry_button"], ["quit-art", "quit_button"]]) {
-    // CSS変数内の相対URLは使用するCSSファイル基準になるため、ページ基準で解決する。
-    root.style.setProperty(`--go-${key}`, `url("${new URL(art(name), document.baseURI).href}")`);
-  }
+  // CSS変数内の相対URLは使用するCSSファイル基準になるため、ページ基準で解決する。
+  root.style.setProperty("--go-backdrop", `url("${new URL(art("backdrop"), document.baseURI).href}")`);
   let letters = [], shown = -1;
-  function setCaption(text, emphasis = null) {
-    const word = emphasis || EMPHASIS.find(w => text.includes(w));
-    const wrapped = autoWrap(text, 28);
-    const flat = wrapped.replace(/\n/g, "");
-    const start = word ? flat.indexOf(word) : -1;
+  // テロップは常に1行。折り返さず、出す文字は少し小さい所から大きくなる。
+  function setCaption(text, emphasis = null, seconds = 2) {
+    const word = [emphasis, ...EMPHASIS].find(w => w && text.includes(w));
+    const start = word ? text.indexOf(word) : -1;
     let offset = 0;
-    letters = Array.from(wrapped, char => {
-      const strong = char !== "\n" && start >= 0 && offset >= start && offset < start + word.length;
-      if (char !== "\n") offset += char.length;
+    letters = Array.from(text, char => {
+      const strong = start >= 0 && offset >= start && offset < start + word.length;
+      offset += char.length;
       return el(strong ? "mark.go-letter" : "span.go-letter", { text: char });
     });
     caption.replaceChildren(...letters);
-    live.textContent = text; // 読み上げ支援には文字ごとでなくキューの全文を一度だけ通知。
+    caption.style.setProperty("--go-line-time", `${Math.max(.8, seconds).toFixed(2)}s`);
+    caption.classList.remove("go-line-grow");
+    void caption.offsetWidth;
+    caption.classList.add("go-line-grow");
     shown = -1;
     reveal(0);
   }
   function reveal(fraction = 1) {
     const n = Math.ceil(letters.length * fraction);
     if (n === shown) return;
-    letters.forEach((letter, i) => { letter.style.visibility = i < n ? "visible" : "hidden"; });
+    const typed = shown >= 0 && n > shown && n - shown <= 4;
+    letters.forEach((letter, i) => { letter.classList.toggle("go-on", i < n); });
+    // 日常の会話と同じく、文字が出るたびに話者の声を鳴らす。一括表示では鳴らさない。
+    if (typed && Math.floor(n / 2) > Math.floor(shown / 2)) onType?.();
     shown = n;
   }
   function face(name, beat = true) {
@@ -88,17 +91,13 @@ export function createContinueView({ script, speaker, character, premium, button
     root.dataset.emotion = name;
     if (beat) {
       image.classList.remove("go-beat");
-      caption.classList.remove("go-cue-pop");
       void root.offsetWidth;
       image.classList.add("go-beat");
-      caption.classList.add("go-cue-pop");
     }
   }
   function reaction(data, choice) {
     root.dataset.choice = choice;
     root.dataset.effect = data.effect;
-    setCaption(data.text, data.word);
-    reveal();
     face(data.faces[0]);
     effectWord.textContent = choice === "retry"
       ? ({ cheer: "っしゃあ！", shark: "ジャバーン！", scan: "再計測" }[data.effect] || "") : "";
@@ -115,6 +114,8 @@ export function createContinueView({ script, speaker, character, premium, button
     [retry, quit, next, dialogue, proceed].forEach(button => { button.disabled = true; });
     proceed.hidden = true;
   }
+  // 読み上げ支援には文字ごとでなく、台詞のまとまりを一度だけ通知する。
+  const announce = text => { live.textContent = text; };
   return { root, caption, dialogue, count, next, proceed, retry, quit,
-    setCaption, reveal, face, reaction, gameOver, isRevealed: () => shown >= letters.length };
+    setCaption, reveal, face, reaction, gameOver, announce, isRevealed: () => shown >= letters.length };
 }

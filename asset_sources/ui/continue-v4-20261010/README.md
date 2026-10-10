@@ -1,5 +1,18 @@
 # CONTINUE V4 表示確認（2026-10-10）
 
+## CV12〜16 夜の藍色・1行テロップ
+
+オーナー指摘「一枚目が好き　ボタンは無くして」「赤黒は怖い」「テロップは一行が限界」「その分キャラを大きく映す」を反映した最新の実画面。
+
+- [スミさん](night-1line/sumi.png) / [文字が弾んで出る途中](night-1line/sumi-typing.png) / [つむぎ最終行・残り5秒](night-1line/tsumugi.png)
+- [可決と反応の1行目](night-1line/meeting-retry.png) / [残り4秒](night-1line/urgent.png) / [GAME OVER](night-1line/game-over.png)
+- [恋人5人とスミさんの一覧](night-1line/heroines-grid.png) / [スマホ横持ち](night-1line/phone-ageha.png)
+
+背景とロゴは下の生成原画を `build_continue_art.py` で色替えしたもの（赤い煙→藍〜青緑、ロゴの赤い影→青）。
+ボタン画像は使わない（下のA／B／C比較は経緯として保存）。
+
+## CV01〜11 時点
+
 本編1280×720とスマホ横持ち844×390の実画面を、Chromiumから撮影したもの。
 オーナーの指定どおり、中央へロゴ→人物→テロップ→2択を縦に並べる。
 顔に加えて肩・胸元まで見せ、右上のカウントは大きい明るいプレートに載せる。
@@ -20,7 +33,7 @@
 
 `python3 remake/tools/serve_preview.py --port 8123` でサーバーを起動し、
 `http://127.0.0.1:8123/remake/continue-preview.html` へアクセスすると、9台本と2分岐を再生できる。
-SE/BGM切替、動き軽減、ボタン3案もプレビューで確認可能。セーブは変更しない。
+SE/BGM切替、動き軽減もプレビューで確認可能。セーブは変更しない。
 
 生成素材:
 
@@ -28,12 +41,12 @@ SE/BGM切替、動き軽減、ボタン3案もプレビューで確認可能。�
 |---|---|---|
 | CONTINUE?／GAME OVER | [titles.png](generated/titles.png) | `assets/ui/continue/{continue_title,game_over_title}.png` |
 | 可決の朱印 | [stamp.png](generated/stamp.png) | `assets/ui/continue/approval_stamp.png` |
-| 朱赤／オフホワイトのボタン | [buttons.png](generated/buttons.png) | `assets/ui/continue/{retry_button,quit_button}.png` |
-| 暗い煙の背景 | [backdrop.png](generated/backdrop.png) | `assets/ui/continue/backdrop.png` |
+| 朱赤／オフホワイトのボタン | [buttons.png](generated/buttons.png) | CV12で不使用（原画のみ保存） |
+| 暗い煙の背景 | [backdrop.png](generated/backdrop.png) | `assets/ui/continue/backdrop.png`（藍色へ色替え） |
 
 最初の4生成の全指示は [prompts.json](generated/prompts.json)。ボタンを背景から浮かせる修正は
 [buttons-revision.json](generated/buttons-revision.json)、元の暗い版は [buttons-initial.png](generated/buttons-initial.png)。
-パーツは透過PNG、背景はRGB。アトラスの切り出しだけ行い、色や輪郭を後加工していない。
+パーツは透過PNG、背景はRGB。CV13以降、背景とロゴの赤だけを藍〜青へ色替えする（輪郭・アルファは保持）。
 ボタンの文言・20→0・演出タイミングはコード側で表示する。
 
 再ビルド:
@@ -43,7 +56,7 @@ python3 remake/tools/build_continue_art.py
 python3 remake/tools/build_manifest.py
 ```
 
-原画はそのまま保存し、切り出した6素材は `assets/ui/continue/`、表示用のWebPは
+原画はそのまま保存し、切り出した素材は `assets/ui/continue/`、表示用のWebPは
 `remake/img/ui/continue/`。顔の中心・倍率は既存 `make_face_icons.face_box` の測定から
 `manifest.continuePortraits` へ自動記録し、元の人物画像をCSSで拡大・配置する。
 

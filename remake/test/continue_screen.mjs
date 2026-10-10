@@ -1,4 +1,4 @@
-// CONTINUE V4: 全18分岐、20秒の期限、連打・画面離脱・復帰・横持ち。
+// CONTINUE V4: 全18分岐、1行テロップ、20秒の期限、連打・画面離脱・復帰・横持ち。
 // CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/continue_screen.mjs
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
@@ -29,6 +29,8 @@ async function geometry() {
       retry: rect('[data-test="retry"]'), quit: rect('[data-test="game-over-title"]'), count: rect(".go-count") };
   });
   assert(boxes.caption.bottom <= boxes.playback.top + 1, `caption overlaps controls: ${JSON.stringify(boxes)}`);
+  // テロップは1行が限界（2026-10-10 オーナー指定）。
+  assert(boxes.caption.height / boxes.stage.height * 720 < 72, `caption must stay on one line: ${JSON.stringify(boxes.caption)}`);
   assert(boxes.title.bottom <= boxes.face.top + 1 && boxes.face.bottom <= boxes.caption.top + 1
     && boxes.caption.bottom <= boxes.retry.top + 1, "title → face → caption → choices must remain in separate rows");
   for (const key of ["face", "caption"]) {
@@ -50,14 +52,25 @@ try {
     (await import("./js/core/audio.js")).applyVolumes();
   });
   await page.clock.install();
-  await mount(2, { buttonStyle: "arcade" });
+  // 全台本・全反応の1行が、全角22字以内に収まる。
+  const tooLong = await page.evaluate(async () => {
+    const { SUMI_CONTINUE_SCRIPTS } = await import("./js/chapters/gameover.js");
+    const { PREMIUM_CONTINUE_SCRIPTS } = await import("./js/chapters/continue-premium.js");
+    const width = t => [...t].reduce((n, c) => n + (/[\x20-\x7e]/.test(c) ? .5 : 1), 0);
+    return [...SUMI_CONTINUE_SCRIPTS, ...Object.values(PREMIUM_CONTINUE_SCRIPTS)].flatMap(s =>
+      [...s.cues.map(c => c.text), ...s.reactions.retry.text, ...s.reactions.quit.text]).filter(t => width(t) > 22);
+  });
+  assert.deepEqual(tooLong, []);
+  await mount(2);
+  assert.equal(await page.locator(".go-choice").evaluateAll(buttons =>
+    buttons.filter(b => getComputedStyle(b).backgroundImage !== "none").length), 0, "choices are text only");
   const art = await page.locator(".go-title-art,.go-approval").evaluateAll(async images => {
     await Promise.all(images.map(image => image.decode()));
     return images.map(image => ({ width: image.naturalWidth, src: image.src }));
   });
   assert(art.every(image => image.width > 0 && image.src.includes("/ui/continue/")), "generated art must load");
   const panels = await page.evaluate(async () => {
-    const urls = [".gameover", ".go-retry", ".go-quit"].map(selector =>
+    const urls = [".gameover"].map(selector =>
       getComputedStyle(document.querySelector(selector)).backgroundImage.match(/url\("?([^"\)]+)"?\)/)?.[1]);
     await Promise.all(urls.map(async url => {
       if (!url) throw new Error("Generated background missing");
@@ -65,7 +78,7 @@ try {
     }));
     return urls;
   });
-  assert(panels.every(url => url.includes("/ui/continue/")), "generated backdrop and buttons must resolve from both pages");
+  assert(panels.every(url => url.includes("/ui/continue/")), "generated backdrop must resolve from both pages");
   await page.locator('[data-test="retry"]').click();
   assert(await page.locator(".go-approval").isVisible(), "generated approval stamp appears on meeting retry");
   console.log("PASS: generated title / GAME OVER / approval assets load; stamp appears");
@@ -73,16 +86,26 @@ try {
   for (const variant of variants) {
     for (const choice of ["retry", "quit"]) {
       await mount(variant);
-      // 全5キューの全文に十分な場所を確保し、正規画像が読み込める。
-      await page.locator('[data-test="continue-caption"]').click();
-      for (let i = 0; i < 5; i++) {
+      // 最後のキューまで1行に収まり、正規画像が読み込める。時計は実時間でも進むため回数でなく終端まで送る。
+      const seen = new Set();
+      for (let i = 0; i < 40; i++) {
+        await page.evaluate(() => {
+          const caption = document.querySelector('[data-test="continue-caption"]');
+          if (!caption.disabled && document.querySelector(".go-letter:not(.go-on)")) caption.click();
+        });
+        seen.add(await page.locator(".gameover").getAttribute("data-cue"));
         await geometry();
         const info = await page.locator(".go-sumi-img").evaluate(async image => {
-          await image.decode(); return { complete: image.complete, width: image.naturalWidth, src: image.src };
+          // 表情の切替で decode 中に src が変わることがあるため、読み込み完了も待つ。
+          for (let n = 0; n < 3; n++) { try { await image.decode(); break; } catch { await new Promise(r => setTimeout(r, 30)); } }
+          return { complete: image.complete, width: image.naturalWidth, src: image.src };
         });
         assert(info.complete && info.width > 0, info.src);
-        if (i < 4) { await page.locator('[data-test="continue-next"]').click(); await page.locator('[data-test="continue-caption"]').click(); }
+        if (await page.locator('[data-test="continue-next"]').isDisabled()) break;
+        await page.evaluate(() => document.querySelector('[data-test="continue-next"]').click());
       }
+      assert.equal(await page.locator(".gameover").getAttribute("data-last-cue"), "true", "reached the final cue");
+      assert(seen.size >= 8, `most one-line cues were displayed: ${[...seen]}`);
       await page.locator(`[data-test="${choice === "retry" ? "retry" : "game-over-title"}"]`).click();
       assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "reaction");
       const expected = await page.evaluate(async ({ variant, choice }) => {
@@ -91,7 +114,8 @@ try {
         const script = typeof variant === "number" ? SUMI_CONTINUE_SCRIPTS[variant] : PREMIUM_CONTINUE_SCRIPTS[variant.slice(8)];
         return script.reactions[choice];
       }, { variant, choice });
-      assert.equal(await page.locator(".go-a11y").textContent(), expected.text);
+      assert.equal(await page.locator(".go-a11y").textContent(), expected.text.join(""));
+      assert.equal(await page.locator(".go-speech-text").textContent(), expected.text[0], "reaction starts with its first line");
       assert.deepEqual(await page.evaluate(() => window.__decisions), [], "reaction must precede navigation");
       await geometry();
       await page.evaluate(() => { for (let i = 0; i < 15; i++) {
@@ -100,7 +124,11 @@ try {
         document.querySelector('[data-test="continue-proceed"]').click();
       } });
       assert.deepEqual(await page.evaluate(() => window.__decisions), [], "instant repeated taps must not erase reaction");
-      await page.clock.runFor(3100);
+      if (expected.text.length > 1) {
+        await page.clock.runFor(2200);
+        assert.equal(await page.locator(".go-speech-text").textContent(), expected.text[1], "reaction lines advance one at a time");
+      }
+      await page.clock.runFor(8000);
       assert.deepEqual(await page.evaluate(() => window.__decisions), [choice]);
       await page.clock.runFor(500);
       assert.deepEqual(await page.evaluate(() => window.__decisions), [choice], "only one callback");
@@ -113,10 +141,10 @@ try {
     for (let i = 0; i < 10; i++) document.querySelector('[data-test="continue-caption"]').click();
   });
   assert.equal(await page.locator(".go-count").textContent(), "20");
-  await page.clock.runFor(19000);
+  await page.clock.runFor(19100); // 表示は70ms刻みで更新されるため、境目から少し離して読む。
   assert.equal(await page.locator(".go-count").textContent(), "01");
   assert(await page.locator('[data-test="retry"]').isEnabled());
-  await page.clock.runFor(1000);
+  await page.clock.runFor(900);
   assert.equal(await page.locator(".go-count").textContent(), "00");
   assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "gameover");
   assert.equal(await page.locator(".go-title").textContent(), "GAME OVER");
@@ -140,14 +168,16 @@ try {
   await page.clock.runFor(200);
   assert.equal(await page.locator(".gameover").getAttribute("data-phase"), "reaction");
   assert.equal(await page.locator(".gameover").getAttribute("data-timed-out"), null);
-  await page.clock.runFor(3000);
+  await page.clock.runFor(8000);
   assert.deepEqual(await page.evaluate(() => window.__decisions), ["retry"]);
   console.log("PASS: continue just before zero cancels the deadline and returns to tournament");
 
   await mount(0);
   await page.locator('[data-test="game-over-title"]').click();
-  await page.clock.runFor(600);
-  await page.locator('[data-test="continue-proceed"]').click();
+  for (let i = 0; i < 7; i++) {
+    await page.clock.runFor(500);
+    await page.evaluate(() => document.querySelector('[data-test="continue-proceed"]').click());
+  }
   await page.clock.runFor(300);
   assert.deepEqual(await page.evaluate(() => window.__decisions), ["quit"]);
   console.log("PASS: voluntary quit reaction can be advanced");
@@ -166,7 +196,7 @@ try {
   assert.deepEqual(await page.evaluate(() => window.__decisions), [], "removed GAME OVER cancels title callback");
 
   await mount(0);
-  await page.clock.runFor(2000);
+  await page.clock.runFor(2500); // 秒の境目を避けて読む。
   const before = await page.locator(".go-count").textContent();
   await page.evaluate(() => { Object.defineProperty(document, "hidden", { configurable: true, value: true }); document.dispatchEvent(new Event("visibilitychange")); });
   await page.clock.runFor(25000);
@@ -182,7 +212,10 @@ try {
   for (const variant of variants) {
     await mount(variant, { soundEffects: false });
     assert.equal(await page.locator(".gameover").getAttribute("data-reduced-motion"), "true");
-    for (let i = 0; i < 5; i++) { await geometry(); if (i < 4) await page.locator('[data-test="continue-next"]').click(); }
+    for (let i = 0; i < 20 && await page.locator('[data-test="continue-next"]').isEnabled(); i++) {
+      await geometry(); await page.locator('[data-test="continue-next"]').click();
+    }
+    await geometry();
     const animated = await page.locator(".gameover").evaluate(root => root.getAnimations({ subtree: true }).length);
     assert.equal(animated, 0);
     await page.locator('[data-test="game-over-title"]').click();
@@ -203,12 +236,12 @@ try {
   await preview.locator("#preview-play").click();
   await preview.clock.install();
   await preview.locator("#preview-retry").click();
-  await preview.clock.runFor(3100);
+  await preview.clock.runFor(8000);
   assert.equal(await preview.locator(".gameover").getAttribute("data-phase"), "preview-ended");
   assert.match(await preview.locator("#preview-error").textContent(), /大会の最初/);
   await preview.locator("#preview-play").click();
   await preview.locator("#preview-quit").click();
-  await preview.clock.runFor(3100);
+  await preview.clock.runFor(8000);
   assert.match(await preview.locator("#preview-error").textContent(), /タイトル/);
   await preview.locator("#preview-play").click();
   await preview.clock.runFor(22000);

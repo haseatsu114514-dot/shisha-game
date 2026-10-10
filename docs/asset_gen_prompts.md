@@ -1,6 +1,6 @@
 # 画像生成プロンプト集（codex用）— シーシャ作りパート＋立ち絵
 
-> 2026-10-10 CV08〜11: CONTINUEの[原画・表示確認・ボタン3案](../asset_sources/ui/continue-v4-20261010/README.md)。ロゴ2種・可決の朱印・背景・ボタンの[完全な生成指示](../asset_sources/ui/continue-v4-20261010/generated/prompts.json)、暗いボタンを朱赤／オフホワイトへ変えた[修正指示](../asset_sources/ui/continue-v4-20261010/generated/buttons-revision.json)を保存。ユーザー指定のロゴとスタンプのみ文字入り。ボタンの文言・カウントはゲーム側で表示し、正規人物画像は加工しない。
+> 2026-10-10 CV08〜11: CONTINUEの[原画・表示確認・ボタン3案](../asset_sources/ui/continue-v4-20261010/README.md)。ロゴ2種・可決の朱印・背景・ボタンの[完全な生成指示](../asset_sources/ui/continue-v4-20261010/generated/prompts.json)、暗いボタンを朱赤／オフホワイトへ変えた[修正指示](../asset_sources/ui/continue-v4-20261010/generated/buttons-revision.json)を保存。ユーザー指定のロゴとスタンプのみ文字入り。ボタンの文言・カウントはゲーム側で表示し、正規人物画像は加工しない。CV12〜13でボタン画像は不使用（文字だけ）、背景とロゴの赤は `remake/tools/build_continue_art.py` で藍〜青へ色替え（原画は保持）。
 
 > 2026-10-09 TA13: 制作済みのヒロイン原画は[共通の採用候補一覧](../asset_sources/title-daily-heroines-20261009/README.md)から選ぶ。今回の19案と旧15案を保存し、ゲームの差し替え・自動採用は行わない。原画・生成指示・実参照SHA・目視メモを候補集に残す。
 

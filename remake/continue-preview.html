@@ -35,11 +35,6 @@
  <option value="premium:mashiro">ましろ（プレミア）</option>
  <option value="premium:kafuka">サメちゃん（プレミア）</option>
  </select>
- <label>ボタン<select id="preview-design" aria-label="ボタンのデザイン">
- <option value="text">A 文字が主役</option>
- <option value="arcade" selected>B アーケード風</option>
- <option value="continue">C CONTINUE表記</option>
- </select></label>
  <button type="button" id="preview-play">▶ 再生する</button>
  <button type="button" id="preview-retry" disabled>戻る反応</button>
  <button type="button" id="preview-quit" disabled>諦める反応</button>
@@ -57,7 +52,6 @@ import { config, loadConfig } from "./js/core/state.js";
 const stage = document.getElementById("stage"), screen = document.getElementById("screen"),
   msg = document.getElementById("preview-error"), btn = document.getElementById("preview-play"),
   selector = document.getElementById("character"), tools = document.getElementById("preview-tools"),
-  design = document.getElementById("preview-design"),
   se = document.getElementById("preview-se"), bgm = document.getElementById("preview-bgm"),
   motion = document.getElementById("preview-motion"), retry = document.getElementById("preview-retry"),
   quit = document.getElementById("preview-quit");
@@ -83,7 +77,7 @@ function show() {
  retry.disabled = quit.disabled = false;
  root = buildGameOver({
    reason:"rank", rank:2, variant:val.startsWith("premium:")?val:Number(val),
-   soundEffects:se.checked, reducedMotion:motion.checked, buttonStyle:design.value,
+   soundEffects:se.checked, reducedMotion:motion.checked,
    onRetry:()=>complete("retry"), onTitle:()=>complete("quit")
  });
  screen.replaceChildren(root);
@@ -98,7 +92,6 @@ function complete(choice) {
 }
 btn.addEventListener("click", show);
 selector.addEventListener("change", show);
-design.addEventListener("change", show);
 retry.addEventListener("click", ()=>root?.querySelector('[data-test="retry"]')?.click());
 quit.addEventListener("click", ()=>root?.querySelector('[data-test="game-over-title"]')?.click());
 se.addEventListener("change", ()=>root?.setContinueSoundEffects?.(se.checked));

@@ -1,11 +1,13 @@
-/* 大会CONTINUE V4。1280×720の本編・プレビューで同じ画面を使う。 */
+/* 大会CONTINUE V4。1280×720の本編・プレビューで同じ画面を使う。
+   2026-10-10: 赤黒をやめ夜の藍色へ。テロップは1行、2択は文字だけ、人物を大きく。 */
 .end-screen.gameover {
-  --go-accent: #ff4a4f;
-  --go-glow: #ff4a4f30;
+  --go-accent: #ffd36b;
+  --go-glow: #6fa8ff2a;
+  --go-ink: #0d1330;
   display: block;
   isolation: isolate;
   overflow: hidden;
-  background: #080809 var(--go-backdrop) center / cover no-repeat;
+  background: #10152e var(--go-backdrop) center / cover no-repeat;
   color: #fff;
 }
 .gameover[data-speaker="tsumugi"] { --go-accent: #efa9d5; --go-glow: #ef73ba25; }
@@ -18,89 +20,85 @@
   position: absolute; inset: 0; pointer-events: none;
   background: radial-gradient(ellipse at 50% 37%, var(--go-glow), transparent 55%);
 }
-.gameover .go-heading { position: absolute; z-index: 4; top: 20px; left: 0; right: 0; text-align: center; }
+.gameover .go-heading { position: absolute; z-index: 4; top: 12px; left: 0; right: 0; text-align: center; }
 .gameover .go-title {
-  margin: 0; height: 126px;
+  margin: 0; height: 104px;
   animation: go-title-enter .42s cubic-bezier(.1,.8,.2,1) both;
 }
 .gameover .go-title-art { display: block; width: 920px; height: 100%; object-fit: contain; margin: auto; }
 .gameover .go-title-art[hidden] { display: none; }
-.gameover .go-left { position: absolute; left: 290px; top: 146px; width: 700px; height: 282px; z-index: 2; }
+.gameover .go-left { position: absolute; left: 190px; top: 120px; width: 900px; height: 432px; z-index: 2; }
 .gameover .go-portrait { position: absolute; inset: 0; overflow: hidden;
-  mask-image: linear-gradient(#000 0%, #000 86%, transparent 100%); }
+  mask-image: linear-gradient(#000 0%, #000 84%, transparent 100%); }
 .gameover .go-sumi-img {
   position: absolute; left: 50%; translate: -50% 0; object-fit: contain;
-  filter: drop-shadow(4px 3px 0 #0009); animation: go-portrait-enter .55s .25s var(--ease-out) both;
+  filter: drop-shadow(5px 4px 0 #050a1f99); animation: go-portrait-enter .55s .25s var(--ease-out) both;
 }
 .gameover .go-sumi-fallback { margin: 70px 40px; font-size: 50px; text-align: center; }
-.gameover .go-right { position: absolute; left: 80px; right: 80px; top: 438px; bottom: 0; z-index: 3; }
-.gameover .go-dialogue { position: absolute; left: 0; right: 0; top: 0; height: 162px;
+.gameover .go-right { position: absolute; left: 80px; right: 80px; top: 552px; bottom: 0; z-index: 3; }
+.gameover .go-dialogue { position: absolute; left: 0; right: 0; top: 0; height: 68px;
   display: flex; justify-content: center; align-items: center;
   padding: 0; border: 0; background: none; color: #fff; text-align: center; cursor: pointer; }
+/* テロップは1行が限界（オーナー指定）。折り返さず、ゆっくり大きくなる。 */
 .gameover .go-speech-text {
-  margin: 0; font-size: 40px; font-weight: 900; line-height: 1.32; letter-spacing: 0;
-  white-space: pre-line; overflow-wrap: normal; word-break: normal;
-  text-shadow: 0 2px 14px #000;
+  margin: 0; font-size: 42px; font-weight: 900; line-height: 1.2; letter-spacing: .02em;
+  white-space: nowrap; transform-origin: 50% 60%;
+  text-shadow: 0 3px 0 var(--go-ink), 0 0 18px #050a1fcc;
 }
-.gameover mark.go-letter { background: none; color: var(--go-accent); }
+.gameover .go-speech-text.go-line-grow { animation: go-line-grow var(--go-line-time, 2s) cubic-bezier(.2,.7,.3,1) both; }
+.gameover .go-letter { display: inline-block; visibility: hidden; white-space: pre; }
+.gameover .go-letter.go-on { visibility: visible; animation: go-letter-grow .24s cubic-bezier(.2,.9,.3,1.3) both; }
+.gameover mark.go-letter { background: none; color: var(--go-accent); font-size: 1.14em; }
 .gameover :is(.go-a11y,.go-title-label) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.gameover .go-playback { position: absolute; top: 164px; left: 0; right: 0; }
+.gameover .go-playback { position: absolute; top: 70px; right: 0; }
 .gameover .go-caption-controls { display: flex; justify-content: flex-end; }
 .gameover :is(.go-next,.go-proceed) {
-  padding: 4px 12px; min-height: 42px; border: 0; background: transparent;
-  color: #c9c5c5; cursor: pointer; font-size: 28px; font-weight: 700;
+  padding: 2px 12px; min-height: 38px; border: 0; background: transparent;
+  color: #b9c3e0; cursor: pointer; font-size: 28px; font-weight: 700;
 }
 .gameover :is(.go-next,.go-proceed):hover { color: #fff; }
 .gameover .go-next:disabled { opacity: 0; cursor: default; }
 .gameover :is(.go-next,.go-proceed)[hidden] { display: none; }
 .gameover .go-proceed { color: var(--go-accent); padding-inline: 20px; font-size: 17px; }
-.gameover .end-actions { position: absolute; top: 176px; left: 200px; right: 200px; display: flex; gap: 22px; }
+.gameover .end-actions { position: absolute; top: 80px; left: 220px; right: 220px; display: flex; gap: 22px; }
 .gameover .go-choice {
   display: flex; justify-content: center; align-items: center;
-  position: relative; min-height: 88px; border: 0; border-radius: 0;
-  padding: 14px 22px; color: #fff; background: transparent center / 100% 100% no-repeat; cursor: pointer;
-  font-size: 34px; font-weight: 900; text-shadow: 0 2px 5px #000;
-  white-space: nowrap; transform: skewX(var(--go-button-skew, 0deg));
-  transition: filter .15s, transform .15s;
+  position: relative; flex: 1; min-height: 70px; border: 0; border-radius: 0;
+  padding: 8px 22px; color: #fff; background: none; cursor: pointer;
+  font-size: 42px; font-weight: 900; text-shadow: 3px 3px 0 var(--go-ink);
+  white-space: nowrap; transition: filter .15s, transform .15s;
 }
-.gameover .go-retry { flex: 1.45; background-image: var(--go-retry-art); }
-.gameover .go-quit { flex: 1; background-image: var(--go-quit-art); }
-.gameover .go-choice:not(:disabled):hover { filter: brightness(1.15); transform: skewX(var(--go-button-skew, 0deg)) translateY(-2px); }
-.gameover .go-choice:not(:disabled):active { transform: skewX(var(--go-button-skew, 0deg)) translateY(1px); }
-.gameover .go-quit { color: #1b1414; text-shadow: none; }
-.gameover[data-button-style="arcade"] { --go-button-skew: -8deg; }
-.gameover[data-button-style="arcade"] .go-choice-label { transform: skewX(8deg); }
-.gameover[data-button-style="continue"] .go-retry .go-choice-label { font-size: 44px; font-style: italic; }
-.gameover[data-button-style="text"] .go-choice { background: none; text-shadow: 3px 3px 0 #080809; font-size: 42px; color: #fff; }
-.gameover[data-button-style="text"] .go-retry .go-choice-label { border-bottom: 4px solid #ff695b; text-shadow: 4px 4px 0 #9c2926; }
+/* 2択は枠の画像を使わず文字だけ（オーナー指定のA案）。戻る側だけ下線を引く。 */
+.gameover .go-retry .go-choice-label { border-bottom: 4px solid var(--go-accent); padding-bottom: 2px; text-shadow: 4px 4px 0 #1d3570; }
+.gameover .go-choice:not(:disabled):hover { filter: brightness(1.15); transform: translateY(-2px); }
+.gameover .go-choice:not(:disabled):active { transform: translateY(1px); }
 .gameover button:focus-visible { outline: 3px solid #fff; outline-offset: 5px; }
 .gameover .go-choice:disabled { cursor: default; }
 .gameover[data-phase="reaction"] .go-choice { opacity: .32; }
 .gameover[data-phase="reaction"][data-choice="retry"] .go-retry,
 .gameover[data-phase="reaction"][data-choice="quit"] .go-quit { opacity: 1; }
 .gameover .go-clock { position: absolute; z-index: 5; right: 42px; top: 34px; width: 140px; height: 112px;
-  display: flex; justify-content: center; align-items: center; background: #eee7d6; color: #100d0d;
-  border: 3px solid #fff8ed; box-shadow: 6px 6px 0 #d93630; rotate: 3deg; }
+  display: flex; justify-content: center; align-items: center; background: #f1ecdf; color: var(--go-ink);
+  border: 3px solid #fffaf0; box-shadow: 6px 6px 0 #2f7fe0; rotate: 3deg; }
 .gameover .go-count { font-size: 98px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -.06em; }
-.gameover.go-urgent .go-clock { background: #df3838; border-color: #ffb8ad; color: #fff; box-shadow: 6px 6px 0 #701718; }
+.gameover.go-urgent .go-clock { background: #ffc94a; border-color: #fff1c4; color: var(--go-ink); box-shadow: 6px 6px 0 #ff7a3c; }
 .gameover[data-phase="reaction"] .go-clock { opacity: .3; }
 .gameover[data-timed-out="true"] .go-heading { top: 260px; }
 .gameover[data-timed-out="true"] .go-title { height: 200px; }
 .gameover[data-timed-out="true"] :is(.go-left,.go-right,.go-effect) { opacity: 0; pointer-events: none; }
 .gameover[data-timed-out="true"] .go-title { animation: go-title-enter .4s var(--ease-out) both; }
-.gameover[data-speaker="tsumugi"][data-cue="4"] .go-sumi-img { filter: drop-shadow(0 0 16px #efa9d540); }
-.gameover[data-speaker="tsumugi"][data-cue="4"] .go-veil { background: radial-gradient(ellipse at 50% 32%, #571b422c, transparent 70%); }
-.gameover .go-cue-pop { animation: go-caption-enter .28s var(--ease-out) both; }
+.gameover[data-speaker="tsumugi"][data-last-cue="true"] .go-sumi-img { filter: drop-shadow(0 0 16px #efa9d540); }
+.gameover[data-speaker="tsumugi"][data-last-cue="true"] .go-veil { background: radial-gradient(ellipse at 50% 32%, #571b422c, transparent 70%); }
 .gameover .go-sumi-img.go-beat { animation: go-portrait-beat .38s var(--ease-out) both; }
-.gameover .go-effect { position: absolute; z-index: 4; inset: 154px 0 318px; pointer-events: none; }
+.gameover .go-effect { position: absolute; z-index: 4; inset: 150px 0 200px; pointer-events: none; }
 .gameover .go-effect > * { display: none; }
-.gameover .go-effect-word { position: absolute; left: 795px; top: 166px; color: var(--go-accent); font-size: 40px; font-weight: 900; text-shadow: 3px 3px 0 #080809; }
+.gameover .go-effect-word { position: absolute; left: 850px; top: 250px; color: var(--go-accent); font-size: 44px; font-weight: 900; text-shadow: 3px 3px 0 var(--go-ink); }
 .gameover[data-choice="retry"]:is([data-effect="cheer"],[data-effect="shark"],[data-effect="scan"]) .go-effect-word { display: block; animation: go-stamp .4s var(--ease-out) both; }
 .gameover[data-effect="vote"][data-choice="retry"] .go-approval {
-  display: block; position: absolute; left: 790px; top: 130px; width: 245px; height: auto;
+  display: block; position: absolute; left: 860px; top: 200px; width: 260px; height: auto;
   rotate: -12deg; animation: go-stamp .4s var(--ease-out) both;
 }
-.gameover[data-effect="scan"] .go-effect-word { left: 805px; top: 175px; font-size: 26px; }
+.gameover[data-effect="scan"] .go-effect-word { left: 860px; top: 260px; font-size: 28px; }
 .gameover[data-effect="pencil"] .go-pencil { display: block; position: absolute; left: 445px; top: 24px; width: 390px; height: 205px; border: 2px solid var(--go-accent); border-radius: 42% 58% 55% 45%; rotate: -12deg; animation: go-pencil .8s var(--ease-out) both; }
 .gameover[data-effect="canvas"] .go-pencil { display: block; position: absolute; left: 480px; top: 25px; width: 320px; height: 200px; border: 1px solid var(--go-accent); animation: go-canvas-close 1s var(--ease-out) both; }
 .gameover[data-effect="scan"] .go-scan { display: block; position: absolute; left: 480px; top: 20px; width: 320px; height: 200px; border: 1px solid #a9d7fd30; overflow: hidden; }
@@ -110,14 +108,15 @@
 .gameover[data-effect="shark"] .go-sumi-img { animation: go-plush-nod .6s .4s ease-out both; }
 .gameover[data-effect="warm"] .go-veil { background: radial-gradient(ellipse at 50% 32%, #f5a16a30, transparent 65%); }
 .gameover[data-effect="stars"] .go-stars { display: block; position: absolute; left: 795px; top: 165px; color: var(--go-accent); font-size: 48px; animation: go-stars 1.5s ease-out both; }
-.gameover .go-exit { position: absolute; inset: 0; z-index: 7; background: #000; pointer-events: none; opacity: 0; transition: opacity .24s; }
+.gameover .go-exit { position: absolute; inset: 0; z-index: 7; background: #070b1c; pointer-events: none; opacity: 0; transition: opacity .24s; }
 .gameover.go-leaving .go-exit { opacity: 1; }
-.gameover.go-leaving[data-choice="retry"] .go-exit { background: #dedad6; opacity: .7; }
-.gameover[data-reduced-motion="true"] .go-exit { background: #000; }
+.gameover.go-leaving[data-choice="retry"] .go-exit { background: #e4ecf7; opacity: .7; }
+.gameover[data-reduced-motion="true"] .go-exit { background: #070b1c; }
 
 @keyframes go-title-enter { from { opacity: 0; transform: scale(1.18) translateY(-12px); } }
 @keyframes go-portrait-enter { from { opacity: 0; transform: scale(.94) translateY(10px); } }
-@keyframes go-caption-enter { from { opacity: 0; transform: scale(.97); } }
+@keyframes go-line-grow { from { transform: scale(.9); } to { transform: scale(1.04); } }
+@keyframes go-letter-grow { from { opacity: 0; transform: scale(.35) translateY(6px); } 70% { transform: scale(1.18); } to { opacity: 1; transform: none; } }
 @keyframes go-portrait-beat { 0% { transform: translateY(10px); } 45% { transform: translateY(-3px); } 100% { transform: none; } }
 @keyframes go-stamp { from { opacity: 0; scale: 1.7; } }
 @keyframes go-pencil { from { opacity: 0; clip-path: inset(0 100% 0 0); } to { opacity: .55; clip-path: inset(0); } }

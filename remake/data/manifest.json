@@ -288,9 +288,7 @@
   "approval_stamp.png",
   "backdrop.png",
   "continue_title.png",
-  "game_over_title.png",
-  "quit_button.png",
-  "retry_button.png"
+  "game_over_title.png"
  ],
  "continuePortraits": {
   "sumi": {
@@ -1380,8 +1378,6 @@
   "ui/continue/backdrop.png",
   "ui/continue/continue_title.png",
   "ui/continue/game_over_title.png",
-  "ui/continue/quit_button.png",
-  "ui/continue/retry_button.png",
   "ui/making/bench_base.png",
   "ui/making/bowl_empty_clay.png",
   "ui/making/bowl_empty_phunnel.png",

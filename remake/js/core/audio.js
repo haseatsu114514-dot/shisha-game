@@ -144,6 +144,7 @@ function noise({ dur = 0.3, vol = 0.2, delay = 0, filter = 1200, q = 0.8, type =
 const BLIP = {
   sumi: 250, naru: 420, adam: 330, minto: 1350, oneesan: 980, tsumugi: 1100, rin: 760,
   pakki: 900, nagumo: 280, maezono: 380, dr_kemuri: 520, salaryman: 360, ageha: 1200,
+  mashiro: 880, kafuka: 1250,
 };
 
 export const SE = {
@@ -276,6 +277,13 @@ export function createContinueAudio({ enabled = true } = {}) {
     start() { if (!alive) return; playBgm("bgm_continue_urgent"); pulse(() => { note(85, { to: 32, dur: .28, vol: .32 }); air(.26, .06, 650); }); },
     title() { pulse(() => { note(830, { to: 380, dur: .12, type: "triangle", vol: .09 }); note(1220, { dur: .07, vol: .035 }); }); },
     beat() { pulse(() => note(105, { to: 65, dur: .08, vol: .15 })); },
+    // 日常の会話と同じ文字送りの声。BGMは下げず、離脱時は他のSEと一緒に止める。
+    voice(speaker) {
+      if (!instrument()) return;
+      if (!config.voiceBlip) return note(1800, { dur: .02, vol: .03 });
+      const f = (BLIP[speaker] || 600) * (.95 + Math.random() * .1);
+      note(f, { dur: .045, vol: .06, type: "triangle" });
+    },
     count(remaining) {
       pulse(() => remaining === 0 ? note(70, { to: 45, dur: .2, vol: .22 })
         : note([990, 870, 780, 700, 620][remaining - 1], { dur: .07, vol: .13, type: "triangle" }));
