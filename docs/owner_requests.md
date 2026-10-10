@@ -8,7 +8,7 @@
 | PU04 | ✅ 組み込み・確認済み（PRレビュー待ち） | 「続けて　ましろもやや顔大きいほうが可愛い」。ましろ6表情は8%縮小を強制せず、少し大きめの丸い顔・ふっくらした頬・眠そうな可愛さを保持。顔アイコンと設定用シートも更新。 |
 | PU05 | ✅ 再制作・組み込み・確認済み（PRレビュー待ち） | 「つむぎはなんかスタイル良くなると印象違うかも解像度とかは守りつつイメージは戻して　等身戻していいから」。つむぎ7表情を再制作し、元絵の大きめの頭・短い胴と脚・小柄な体格へ戻した。頭縮小の指示を撤回し、参照②も元の通常絵へ戻した。解像度・画風・元の色を維持。7枚の人物高は1409〜1431px。 |
 
-制作結果・PC／スマホ確認画像・画素一致の記録は [制作記録](../asset_sources/portraits/resolution-upgrade-20261009/README.md) と [production-qa.json](../asset_sources/portraits/resolution-upgrade-20261009/production-qa.json)。全34表情を同じ896×1200へ縮小・配置し、既存の身長設定／`spriteScale` は変更していない。9枚の小さな位置ずれのみ、画像全体を横へ3〜7px移動して補正した。
+[PR #259](https://github.com/haseatsu114514-dot/shisha-game/pull/259) にまとめた。制作結果・PC／スマホ確認画像・画素一致の記録は [制作記録](../asset_sources/portraits/resolution-upgrade-20261009/README.md) と [production-qa.json](../asset_sources/portraits/resolution-upgrade-20261009/production-qa.json)。全34表情を同じ896×1200へ縮小・配置し、既存の身長設定／`spriteScale` は変更していない。9枚の小さな位置ずれのみ、画像全体を横へ3〜7px移動して補正した。
 
 ---
 
