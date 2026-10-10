@@ -47,9 +47,10 @@ python3 remake/tools/serve_preview.py --port 8123
 20秒でGAME OVERを表示してタイトルへ戻り、期限内の「大会に戻る」は反応後に大会冒頭へ戻る。字幕送りは期限に影響しない。
 プレビューはセーブに書き込まない。[V4仕様と検証](../docs/continue_button_reactions_sfx_20261010.md)。
 
-プレビューの「配置」では、採用中の下段ボタン版／上にボタン（実験）／上ボタン＋背面カウント（実験）の3版を比較できる。
+プレビューの「配置」では、王道・下にボタン（採用中）／王道＋迫る背面カウント（実験）／上にボタン（実験）／上ボタン＋背面カウント（実験）の4版を比較できる。
 実験版は「コンティニュー？ 15 ［する］［諦める］」を上部へ集め、下のセリフを大きくする。背面カウント版は人物の後ろの薄い数字が残り時間に沿って拡大する。動き軽減ではサイズを固定。「背景」で紫の煙と、添付画像を参考に生成した暗いステージを切り替えられる。
 `continue-preview.html?layout=top` で上段版、`continue-preview.html?layout=back-count&background=stage` で新比較版を選んだ状態から確認できる。本編の配置・背景への採用は未決。GAME OVERの新しい煙と金の透過ロゴ・数字非表示は本編にも反映する。
+添付の王道構図に合わせた下段2択のまま、かなり大きい数字が迫る版は `continue-preview.html?layout=bottom-back-count&background=stage`。背面の数字は750→1800pxに拡大する。王道そのままの `?layout=bottom&background=stage` と比較できる。
 
 `data/` と `assets/` を相対パス（`../data/`・`../assets/`）で直接読むので、
 **ビルド不要**。file:// では fetch が通らないため、必ずローカルサーバー越しに開く。

@@ -115,6 +115,10 @@
 .gameover .go-count-echo { font-family: var(--font); font-size: 520px; font-weight: 900; line-height: 1;
   font-variant-numeric: tabular-nums; letter-spacing: -.06em; color: #eee5ff; opacity: .12;
   transform: scale(var(--go-count-scale, .65)); transition: transform .07s linear; }
+/* 王道の下段2択を保ち、数字は全画面の背後から迫ってくる。 */
+.gameover[data-layout="bottom-back-count"] .go-count-back { inset: 0; height: auto;
+  grid-template-rows: minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); }
+.gameover[data-layout="bottom-back-count"] .go-count-echo { font-size: 1000px; }
 .gameover[data-phase="reaction"] .go-count-back { opacity: .35; }
 .gameover[data-speaker="tsumugi"][data-last-cue="true"] .go-sumi-img { filter: drop-shadow(0 0 16px #efa9d540); }
 .gameover[data-speaker="tsumugi"][data-last-cue="true"] .go-veil { background: radial-gradient(ellipse at 50% 32%, #571b422c, transparent 70%); }

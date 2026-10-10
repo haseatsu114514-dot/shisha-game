@@ -90,7 +90,18 @@ try {
   const growing = captures.filter(c => ["back-count-15.png", "back-count-5.png", "back-count-1.png"].includes(c.image));
   assert(growing[0].backCount.height < growing[1].backCount.height && growing[1].backCount.height < growing[2].backCount.height);
   assert(captures.find(c => c.image === "game-over.png").backCount.hidden);
+  await capture("classic-stage-ageha", "bottom", "premium:ageha", false, 5250, "stage");
+  await capture("classic-count-15", "bottom-back-count", "premium:ageha", false, 5250, "stage");
+  await capture("classic-count-5", "bottom-back-count", "premium:ageha", false, 15250, "stage");
+  await capture("classic-count-1", "bottom-back-count", "premium:ageha", false, 19250, "stage");
+  await capture("classic-count-phone-ageha", "bottom-back-count", "premium:ageha", true, 5250, "stage");
+  await capture("classic-count-purple", "bottom-back-count", "premium:ageha");
+  await capture("classic-count-game-over", "bottom-back-count", "premium:ageha", false, 20250, "stage");
+  const classicGrowth = captures.filter(c => ["classic-count-15.png", "classic-count-5.png", "classic-count-1.png"].includes(c.image));
+  assert(classicGrowth[0].backCount.height < classicGrowth[1].backCount.height && classicGrowth[1].backCount.height < classicGrowth[2].backCount.height);
+  assert(classicGrowth[0].backCount.height > captures.find(c => c.image === "back-count-15.png").backCount.height * 1.8);
+  assert(captures.find(c => c.image === "classic-count-game-over.png").backCount.hidden);
   assert.deepEqual(errors, []);
   assert.deepEqual(missing, []);
-  await fs.writeFile(`${dir}/verification.json`, JSON.stringify({ date: "2026-10-10", requests: "CV27–32", experimentalAdoption: "undecided", errors, missing, captures }, null, 2) + "\n");
+  await fs.writeFile(`${dir}/verification.json`, JSON.stringify({ date: "2026-10-10", requests: "CV27–34", experimentalAdoption: "undecided", errors, missing, captures }, null, 2) + "\n");
 } finally { await browser.close(); }

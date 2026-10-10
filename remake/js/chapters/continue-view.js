@@ -7,8 +7,9 @@ const EMPHASIS = ["俺たち全員", "俺たちはまだやれる", "断固反�
 const FACE_PX = 256;
 
 export function createContinueView({ script, speaker, character, premium, layout = "bottom", background = "purple", onType = null }) {
-  const backCount = layout === "back-count";
-  const topActions = layout === "top" || backCount;
+  const classicBack = layout === "bottom-back-count";
+  const backCount = layout === "back-count" || classicBack;
+  const topActions = layout === "top" || layout === "back-count";
   const art = name => img(`ui/continue/${name}.png`);
   const portrait = portraitInfo(speaker, script.cues[0].face);
   const image = portrait
@@ -46,7 +47,7 @@ export function createContinueView({ script, speaker, character, premium, layout
   const title = el("h1.go-title", { "aria-label": "コンティニュー？" }, [titleLabel, finalImage]);
   const root = el("div.end-screen.gameover", { role: "region", "aria-label": "大会のコンティニュー",
     dataset: { test: "game-over", variant: script.id, speaker, premium: String(premium),
-      layout: backCount ? "back-count" : topActions ? "top" : "bottom",
+      layout: classicBack ? "bottom-back-count" : backCount ? "back-count" : topActions ? "top" : "bottom",
       background: background === "stage" ? "stage" : "purple", phase: "speaking" } }, [
     el("div.go-veil", { "aria-hidden": "true" }),
     ...(echoLayer ? [echoLayer] : []),
@@ -70,7 +71,8 @@ export function createContinueView({ script, speaker, character, premium, layout
     if (echo) {
       if (echo.textContent !== text) echo.textContent = text;
       // 台詞送りとは独立した実際の残り時間に合わせる。停止中も拡大しない。
-      root.style.setProperty("--go-count-scale", String(.65 + .9 * Math.min(1, Math.max(0, progress))));
+      const elapsed = Math.min(1, Math.max(0, progress));
+      root.style.setProperty("--go-count-scale", String(classicBack ? .75 + 1.05 * elapsed : .65 + .9 * elapsed));
     }
   }
   let letters = [], shown = -1;

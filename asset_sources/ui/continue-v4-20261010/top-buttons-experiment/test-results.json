@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-10",
+  "tests": {
+    "continue_screen.mjs": "PASS: all 18 default branches; 9 scripts in each top layout on PC/phone; real deadline, growing count, pause, reduced motion, zero removal, save-safe preview",
+    "continue_audio.mjs": "PASS: shared context, countdown, duck, settings, pause, mute and cleanup",
+    "continue_premium.mjs": "PASS: lover-only 20%, chapter restriction, no repeats",
+    "lint_dialogue.py": "PASS: ERROR 0, existing WARN 345",
+    "tidy_dialogue_text.py --dry-run": "PASS: 0 lines",
+    "manifest": "PASS: every previous field/asset retained; only generated timestamp and new continueUI/WebP entry added",
+    "burnt_gameover.mjs": "PASS: real timeout to title; tournament burn to reaction/retry; tutorial repack; rehearsal failure; page errors 0",
+    "continue_classic_count.mjs": "PASS: classic composition, all 9 portraits/reactions on PC/phone; much larger 20→15→5→1 count; tab pause; hidden zero; preview query and save safety"
+  },
+  "previousVisualReview": {
+    "reviewed": [
+      "back-count-15.png",
+      "back-count-1.png",
+      "game-over.png",
+      "stage-phone-ageha.png"
+    ],
+    "notes": [
+      "正規人物を顔高256pxで下端まで表示。人物画像の生成・色替えは行わない。",
+      "上部の日本語見出し・数字・2択が離れ、下段のセリフに重ならない。",
+      "背面カウントは人物より薄く、残り時間に沿って拡大。",
+      "終了表示は煙と金のロゴだけ。0・選択肢・人物・セリフは表示されない。"
+    ]
+  },
+  "scope": "Existing CONTINUE suite verified before CV33–34; new classic layout and preserved defaults/top layouts checked by the focused classic suite. Controller deadline and image files unchanged by CV33–34."
+}
