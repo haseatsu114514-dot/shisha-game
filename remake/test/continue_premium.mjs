@@ -21,7 +21,8 @@ for (const [id, s] of Object.entries(PREMIUM_CONTINUE_SCRIPTS)) {
   assert.equal(s.speaker, id);
   assert.equal(s.duration, 20);
   assert.equal(s.cues[0].at, 0);
-  assert(s.cues.length >= 4 && s.cues.length <= 6);
+  assert(s.cues.length >= 10 && s.cues.length <= 18, "telops are split into one-line cues");
+  assert(["retry", "quit"].every(k => Array.isArray(s.reactions[k].text) && s.reactions[k].text.length >= 2));
   assert(s.cues.every((c,i) => c.text && c.face && (i === 0 || c.at > s.cues[i-1].at)));
 }
 assert.equal(PREMIUM_CONTINUE_SCRIPTS.tsumugi.cues.at(-1).face, "smile", "Tsumugi's dark last beat should smile");

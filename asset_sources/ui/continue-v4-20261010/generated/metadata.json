@@ -1,0 +1,58 @@
+{
+  "backdrop.png": {
+    "size": [
+      1672,
+      941
+    ],
+    "mode": "RGB",
+    "sha256": "5411a56abc5db2341331bf2c7b0c64ba8752f003a96ede5e64d1b07eaee7f747"
+  },
+  "buttons-initial.png": {
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "sha256": "0709f71a2b8e443ea8c97f9617eb2ffd5696b5629412fb05cad3823217251a35",
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  "buttons.png": {
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "sha256": "421283d83cc3db57dfc4d4837ebaf3b5da9a91d1d5338f926422e25ed265844a",
+    "alpha": [
+      0,
+      254
+    ]
+  },
+  "stamp.png": {
+    "size": [
+      1672,
+      941
+    ],
+    "mode": "RGBA",
+    "sha256": "4999d53d845a785db14ee47db1827a71a29286d6061021d5ee39e74d7fad12b4",
+    "alpha": [
+      0,
+      255
+    ]
+  },
+  "titles.png": {
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "sha256": "39013e3ddc4e4bf96f0d80b4520b483c131da19824ab32e0b05f9ee3c1ea76fa",
+    "alpha": [
+      0,
+      254
+    ]
+  }
+}

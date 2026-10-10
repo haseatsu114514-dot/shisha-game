@@ -415,8 +415,8 @@ async function failedOut(reason) {
 }
 
 /**
- * 大会コンティニュー。スミさんの直訴（3パターン）で説得し、はいなら大会の頭から。
- * 立ち絵／仮音声／専用BGMは gameover.js へまとめ、将来は生成音声・口パクへ差し替える。
+ * 大会コンティニュー。スミさん3台本／交際中の恋人が語りかけ、選択後の一言を見せる。
+ * 声なしの立ち絵・字幕・SE・BGMを gameover.js から制御し、再挑戦なら大会の頭へ。
  */
 async function showGameOver({ rank = 0, reason = "rank", variant = null } = {}) {
   showHud(false);
@@ -424,7 +424,7 @@ async function showGameOver({ rank = 0, reason = "rank", variant = null } = {}) 
   SE.miss();
   const root = buildGameOver({
     reason, rank, variant,
-    onRetry: () => { SE.select(); retire(root); smokeWipe(() => { tournamentDay(); }, { color: "dark" }); },
+    onRetry: () => { retire(root); smokeWipe(() => { tournamentDay(); }, { color: "dark" }); },
     onTitle: () => location.reload(),
   });
   showScreen("end", root);
