@@ -8,6 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 bad = []
 pattern = re.compile(r"(?:はじめ|始|蒸野)(?:さん|ちゃん|君|くん|様|さま)|はじめ(?!くん)")
+FIRST_PERSON = re.compile(r"うち|わたし|私")
 def scan(value, path, active=False):
     if isinstance(value, dict):
         active = active or value.get("speaker") == "mashiro"
@@ -16,6 +17,8 @@ def scan(value, path, active=False):
                 for m in pattern.finditer(v):
                     if m.group(0) != "はじめくん":
                         bad.append((path, m.group(0), v[:75]))
+                for m in FIRST_PERSON.finditer(v):
+                    bad.append((path, "一人称 " + m.group(0), v[:75]))
             elif isinstance(v, (dict, list)):
                 scan(v, path, active if k not in ("events", "steps", "dialogues") else False)
     elif isinstance(value, list):
