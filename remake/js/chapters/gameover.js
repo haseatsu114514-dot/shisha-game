@@ -2,6 +2,8 @@
 // タイムラインと音声を分離し、後から録音音声・口パク素材に差し替えられる。
 import { el, clamp } from "../core/util.js";
 import { portraitInfo } from "../core/data.js";
+import { state } from "../core/state.js";
+import { choosePremiumContinue, PREMIUM_CONTINUE_SCRIPTS } from "./continue-premium.js";
 import { playBgm, stopBgm } from "../core/audio.js";
 
 export const GAME_OVER_TEXT = {
@@ -98,32 +100,41 @@ function narrate(script, setStatus) {
 
 export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRetry, onTitle }) {
   const meta = GAME_OVER_TEXT[reason] || GAME_OVER_TEXT.rank;
-  const script = SUMI_CONTINUE_SCRIPTS[
+  const standard = SUMI_CONTINUE_SCRIPTS[
     Number.isInteger(variant) && variant >= 0
       ? variant % SUMI_CONTINUE_SCRIPTS.length
       : nextScript++ % SUMI_CONTINUE_SCRIPTS.length
   ];
+  // variant="premium:tsumugi" はデバッグ専用。通常プレイは実際の恋人だけ5%抽選。
+  const forcedPremium = typeof variant === "string" && variant.startsWith("premium:")
+    ? PREMIUM_CONTINUE_SCRIPTS[variant.slice(8)] : null;
+  const script = forcedPremium || (variant == null
+    ? choosePremiumContinue(state?.lovers || [], state?.chapter || 1) : null) || standard;
+  const speaker = script.speaker || "sumi";
+  const isPremium = speaker !== "sumi";
+  const character = script.name || "スミさん";
+  const characterBio = script.bio || "46 / tonari OWNER";
   const reasonTitle = reason === "rank" ? `結果は${rank}位` : meta.title;
-  const portrait = portraitInfo("sumi", script.cues[0].face);
+  const portrait = portraitInfo(speaker, script.cues[0].face);
   const portraitEl = portrait
-    ? el("img.go-sumi-img", { src: portrait.src, alt: "スミさん", draggable: "false" })
-    : el("div.go-sumi-fallback", { text: "スミさん" });
+    ? el("img.go-sumi-img", { src: portrait.src, alt: character, draggable: "false" })
+    : el("div.go-sumi-fallback", { text: character });
   const caption = el("p.go-speech-text", { text: script.cues[0].text, "aria-live": "polite" });
   const voiceStatus = el("span.go-voice-status", { text: "音声の準備中" });
   const count = el("span.go-count", { text: "20" });
   const progress = el("div.go-progress-fill");
   const voiceButton = el("button.go-voice-toggle", { type: "button", text: "音声 OFF", dataset: { test: "continue-voice" } });
   const skipButton = el("button.go-skip", { type: "button", text: "セリフを飛ばす", dataset: { test: "continue-skip" } });
-  const root = el("div.end-screen.gameover", { dataset: { test: "game-over", reason, variant: script.id } }, [
+  const root = el("div.end-screen.gameover", { dataset: { test: "game-over", reason, variant: script.id, premium: String(isPremium), speaker } }, [
     el("div.go-veil"),
     el("div.go-warning", { text: "DON'T GIVE UP!　　DON'T GIVE UP!　　DON'T GIVE UP!" }),
     el("div.go-left", [
-      el("p.go-small-label", { text: "TONARI // EMERGENCY CALL" }),
+      el("p.go-small-label", { text: isPremium ? "SECRET // LOVE CALL" : "TONARI // EMERGENCY CALL" }),
       el("div.go-portrait", [portraitEl]),
-      el("div.go-character", [el("span", { text: "スミさん" }), el("small", { text: "46 / tonari OWNER" })]),
+      el("div.go-character", [el("span", { text: character }), el("small", { text: characterBio })]),
     ]),
     el("div.go-right", [
-      el("div.go-flag", { text: "まだ、ここで終わるな。" }),
+      el("div.go-flag", { text: isPremium ? "SECRET CONTINUE  ♡" : "まだ、ここで終わるな。" }),
       el("div.go-title", { "aria-label": "GAME OVER", text: "CONTINUE?" }),
       el("div.go-reason", [
         el("span.go-emblem", { class: reason, text: reason === "rank" ? `${rank}位` : ({ burnt: "炎", cold: "冷", leaf: "葉" }[reason] || "！") }),
@@ -133,7 +144,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
         ]),
       ]),
       el("div.go-dialogue", [
-        el("div.go-speaker", [el("strong", { text: "墨田丈一郎" }), el("span", { text: `\u25cf ${script.title}` })]),
+        el("div.go-speaker", [el("strong", { text: isPremium ? character : "墨田丈一郎" }), el("span", { text: `\u25cf ${script.title}` })]),
         caption,
       ]),
       el("div.go-playback", [
@@ -141,7 +152,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
         el("div.go-clock", [count, el("span", { text: "秒 / 再挑戦の決断" })]),
         voiceStatus, voiceButton, skipButton,
       ]),
-      el("p.end-question", { text: "俺たち、もう一度やれるよな？" }),
+      el("p.end-question", { text: isPremium ? "もう一度、がんばってみる？" : "俺たち、もう一度やれるよな？" }),
       el("p.go-note", { text: "コンティニューすると大会の頭から。セーブ済みの大会直前の状態に戻る。" }),
       el("div.end-actions", [
         el("button.btn.primary", { text: "大会に戻る", dataset: { test: "retry" }, onclick: () => { cleanup(); onRetry?.(); } }),
@@ -158,7 +169,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
       cueIndex = index;
       const cue = script.cues[index];
       caption.textContent = cue.text;
-      if (portrait) portraitEl.src = portraitInfo("sumi", cue.face)?.src || portrait.src;
+      if (portrait) portraitEl.src = portraitInfo(speaker, cue.face)?.src || portrait.src;
       root.dataset.emotion = cue.face;
     }
     count.textContent = String(Math.ceil(script.duration - elapsed)).padStart(2, "0");
