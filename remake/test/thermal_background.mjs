@@ -1,4 +1,4 @@
-// 実温度の引継ぎ、吸い方・炭による上下、一時停止、描画・スマホ・低減モード。
+// 実温度の引継ぎ、吸い方・炭による上下、描画・スマホ・低減モード。
 // 序盤は色のない灰色→ぬるいうちに暖かい色→適温は虹と陽炎、超えるとだんだん火事のように黄色→赤の炎（TH09・TH12・TH13・TH24）。
 // 温度計の一番上で爆発して焦げる（TH06）。ボウルは燃やさない（TH04）。熱管理は「炭を交換しますか？」→交換する炭を炭焼き→吸い出しと同じダイヤル（TH14・TH21・TH39）。冷え切り・フレーバー切れもダメになる（TH19・TH20）。
 import assert from 'node:assert/strict';
@@ -70,16 +70,13 @@ try {
   assert(layout.top >= layout.stage, 'smoke picture leaves the stage');
   assert.equal(await page.locator('.thermal-flame').count(), 0, 'the bowl must not burn');
   await page.evaluate(() => { cs.steamSeconds=300; window.run=T.steam.runSteamDodge(cs); });
-  await page.locator('[data-test="timer-stop"]:not([disabled])').waitFor();
+  await page.locator('[data-test="dodge-refresh"]:not([disabled])').waitFor();
   await page.waitForTimeout(600);
-  await page.locator('[data-test="timer-stop"]').click();
   const before = Number(await page.locator('.thermal-backdrop').getAttribute('data-temperature'));
-  const frozen = await pixels();
+  const beforePixels = await pixels();
   await page.waitForTimeout(250);
-  assert.equal(await pixels(), frozen, 'paused background still moves');
-  assert.equal(Number(await page.locator('.thermal-backdrop').getAttribute('data-temperature')), before);
-  await page.locator('[data-test="timer-stop"]').click();
-  await page.waitForTimeout(250); assert.notEqual(await pixels(), frozen);
+  assert.notEqual(await pixels(), beforePixels, 'Steam background stopped moving');
+  assert(Number(await page.locator('.thermal-backdrop').getAttribute('data-temperature')) > before, 'Steam heat stopped rising');
   await page.waitForSelector('.result-card.show', { timeout: 35000 });
   const end = await page.evaluate(() => cs.steam.temp);
   assert(Math.abs(Number(await page.locator('.thermal-backdrop').getAttribute('data-temperature'))-end)<.0001);

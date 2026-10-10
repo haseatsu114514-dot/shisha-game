@@ -7,7 +7,7 @@ import { artImg, artHeight } from "./art.js";
 export const WORKER_STEPS = {
   setup: "道具を選ぶ", concept: "今日の一台を考える", mix: "香りを合わせる",
   pack: "葉を詰める", holes: "アルミに穴を開ける", heat: "炭の芯を確かめる",
-  place: "炭を置く", steam: "熱が入るのを待つ", pull: "煙の温度を合わせる",
+  place: "炭を置く", steam: "蒸らしを待つ", pull: "煙の温度を合わせる",
   care: "最後の一口まで整える", trial: "香りを届ける",
 };
 
@@ -61,10 +61,18 @@ export function buildWorkerScene(cs) {
   // 表情: 蒸らしの雑念（揺れ）を優先し、落ち着いているときは疲れ具合で変える（TH43）。
   let mental = "steady", fatigue = 0;
   const applyFace = () => {
+    const waiting = root.dataset.step === "steam";
     const face = mental === "shaken" ? "surprise" : mental === "unsteady" ? "sad" : ["serious", "normal", "sad"][fatigue] || "serious";
     const p = portraitInfo("hajime", face);
-    if (actor && p && actor.getAttribute("src") !== p.src) actor.src = p.src;
+    const calm = waiting && mental === "steady" && fatigue < 2 && makingUrl("hajime_steam_wait.png");
+    const src = calm || p?.src;
+    if (actor && src && actor.getAttribute("src") !== src) actor.src = src;
     root.dataset.face = face;
+    root.dataset.waiting = String(!!calm);
+    if (waiting) {
+      caption.textContent = WORKER_STEPS.steam;
+      stage.setAttribute("aria-label", calm ? "はじめが目を閉じて蒸らしを待つ" : "蒸らしを待つはじめの表情に動揺が出ている");
+    }
   };
   return { caption, footer, root, setMental(level) {
     if (mental === level && root.dataset.mental === level) return;

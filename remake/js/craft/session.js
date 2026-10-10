@@ -2,12 +2,12 @@
 // 工程の中身は steps.js（選ぶ工程）と各ミニゲーム（holes/heat/steam/pull/care）。
 // 大会では章の台本（chapters/ch1.js）が工程の間に実況や会話を挟むので、
 // ここは「工程を1つずつ呼べる部品」を提供するだけにしている。
-import { el, sleep } from "../core/util.js";
+import { el, sleep, rand } from "../core/util.js";
 import { showScreen, setBg, retire, layers, flash, shake } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { bgUrl } from "../core/data.js";
 import { state, timeOfDay } from "../core/state.js";
-import { currentCondition, addStamina } from "../core/stats.js";
+import { currentCondition, addStamina, tier01 } from "../core/stats.js";
 import { buildWorkerScene, WORKER_STEPS } from "./worker.js";
 import { buildAudience, audienceFor } from "./audience.js";
 import { buildGuide, STEP_BRIEFS } from "./bench-ui.js";
@@ -22,6 +22,7 @@ import { applyCraftSkin, craftSkinUrls } from "./skin.js";
 import { buildThermalAtmosphere } from "./thermal.js";
 import { buildPanelSmoke } from "./smoke-art.js";
 import { temperatureAfterSteam } from "./conditions.js";
+import { steamEnvironment, steamForecastProfile } from "./steam-climate.js";
 import { screenBlast } from "./blast.js";
 import { artImg } from "./art.js";
 import { LEAF_MAX, flavorLeafStages } from "./flavor-life.js";
@@ -44,11 +45,14 @@ export const DRILLS = {
 };
 
 export function newSession(mode) {
+  const steamVariation = { offset: rand(-.065, .065), transfer: rand(.9, 1.1) };
   return {
     mode,
     audienceIds: audienceFor(mode, state.chapter),
     condition: currentCondition(), // 作り始めの体力を一台の全工程で使う
-    environment: { rainy: isRainy(), day: state.day },
+    environment: steamEnvironment(isRainy(), state.day, state.weatherSeed ?? 0, timeOfDay()),
+    steamVariation,
+    steamPrediction: steamForecastProfile(tier01("insight"), steamVariation),
     equip: { ...state.equip },
     concepts: [],
     mix: {},

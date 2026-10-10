@@ -1,0 +1,14 @@
+{
+  "source": "assets/ui/making/steam_mind_world.png",
+  "source_sha256": "920d48bd36df002c1a8b94252fc719768e4163d01b35b98e2e3e5403e516e38d",
+  "size": [
+    1903,
+    826
+  ],
+  "mode": "RGB",
+  "transparent": false,
+  "tool": "image_gen.imagegen",
+  "prompt": "world-prompt.txt",
+  "references": [],
+  "adopted": true
+}

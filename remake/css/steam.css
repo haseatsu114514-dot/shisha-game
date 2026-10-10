@@ -1,0 +1,109 @@
+/* 蒸らしも吸い出しと同じ紫・金の面と左の温度計を使う。 */
+.bench[data-step="steam"] :is(.bench-left, .bench-right) { bottom: 12px; }
+.bench[data-step="steam"] .bench-right { padding-bottom: 12px; background: radial-gradient(ellipse at 90% 100%, #45304726, transparent 60%), linear-gradient(145deg, #191121, #100b18); }
+.bench[data-step="steam"] .bench-heading { padding-left: 12px; }
+.bench[data-step="steam"] .bench-title { font-family: "Craft Mincho", var(--font); font-size: 40px; font-weight: 700; letter-spacing: .1em; color: #f6e4c8; text-shadow: 0 1px 2px #8f492744; }
+.bench[data-step="steam"] .bench-hint { margin-top: 14px; font-size: 15px; color: #c9bca8; }
+.bench[data-step="steam"] .bench-head { position: relative; min-height: 89px; margin-bottom: 0; padding-bottom: 7px; border-bottom: 0; }
+.bench[data-step="steam"] .bench-head::after { content: ""; position: absolute; left: 12px; right: 0; top: 56px; height: 1px; background: linear-gradient(90deg, #c8b39238, #c8b3920d); }
+.bench[data-step="steam"] .bench-guide { align-self: flex-start; margin-top: 10px; }
+
+/* タイマー設定・弾幕・吸い出しは同じ位置、同じ64×360pxの温度計。 */
+.bench[data-step="steam"] .steam-temperature { position: absolute; left: -128px; top: -48px; height: 360px; z-index: 3; }
+.steam-temperature::before { content: "温度"; position: absolute; left: 0; right: 0; top: -19px; font-size: 11px; letter-spacing: .2em; text-align: center; color: #ead7b5; }
+.steam-temperature-read { position: absolute; top: calc(100% + 12px); left: -3px; right: -3px; display: flex; justify-content: center; min-height: 32px; border: 1px solid #c1aa7438; border-radius: 6px; background: #100c17ef; }
+.steam-temperature-read .pull-state { font-size: 14px; white-space: nowrap; letter-spacing: .02em; }
+.thermo-range { position: absolute; left: 0; right: 0; z-index: 7; border: 1px dashed #fff1c8; background: repeating-linear-gradient(-45deg, #fff1c824 0 3px, transparent 3px 7px); box-shadow: inset 0 0 8px #fff1c82b; }
+.thermo-range-note { position: absolute; left: -33px; width: 32px; padding: 2px 0; font-size: 10px; text-align: center; color: #f4deb2; border-bottom: 1px dashed #edc99799; background: #100b15df; border-radius: 3px; }
+.thermo-range[hidden], .thermo-range-note[hidden] { display: none; }
+.thermo[data-forecast] .thermo-mark { z-index: 9; }
+.steam-timer { gap: 22px; padding-bottom: 0; }
+.steam-forecast { width: 520px; display: flex; flex-direction: column; gap: 6px; padding: 11px 16px; border: 1px solid #b59d7152; border-radius: 8px; background: linear-gradient(145deg, #261c2b, #171221); box-shadow: inset 0 1px 0 #f4d9a90c; }
+.steam-forecast-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; color: #c6b8b0; }
+.steam-forecast-value { font-family: "Craft Mincho", var(--font); color: #f0d9ad; font-size: 16px; font-weight: 700; letter-spacing: .04em; }
+.steam-weather { display: flex; gap: 13px; align-items: center; color: #b3b4c4; font-size: 12px; font-variant-numeric: tabular-nums; }
+.steam-weather i { width: 18px; height: 18px; margin-right: -6px; color: #d2c3a9; }
+.steam-weather svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
+.steam-forecast-note { color: #a99eae; font-size: 11px; }
+
+/* 左は店内で待つはじめ。息に合わせて、肩がごくわずかに上下する。 */
+.bench[data-step="steam"] .bench-worker { position: relative; }
+.bench[data-step="steam"] .worker-equipment { right: 92px; bottom: 7%; }
+.bench[data-step="steam"] .worker-actor { height: calc(100% + 150px); left: -114px; bottom: -135px; }
+.bench[data-step="steam"] .worker-counter { top: 68%; }
+.bench[data-step="steam"] .thermal-label { display: none; }
+.bench[data-step="steam"] .bench-worker-name { display: none; }
+.bench-worker[data-waiting="true"] .worker-actor { animation: worker-wait-settle 5.2s ease-in-out infinite; transform-origin: 55% 40%; }
+@keyframes worker-wait-settle { 0%, 100% { transform: translateY(0); } 45% { transform: translateY(-2px) scale(1.004); } }
+
+/* 奥の霧・細い軌道・反射面は淡く、動く雑念と心の芯はくっきり。 */
+.steam { height: 100%; justify-content: space-between; gap: 12px; padding-top: 10px; }
+.steam .dodge-controls { align-self: center; margin-right: 0; }
+.steam-play, .dodge-controls { width: 752px; }
+.steam-play { flex: 1; display: grid; place-items: center; }
+/* 残り時間は視線を弾幕から離さず読める、奥の薄い7セグ。 */
+.dodge .dodge-timer { position: absolute; left: 50%; top: 50%; width: 448px; height: 158px; transform: translate(-50%, -50%); color: #e3d6c9; opacity: .16; z-index: 1; pointer-events: none; user-select: none; }
+.bench[data-art-skin] .dodge { border-image: none; border: 1px solid #c5ae815c; border-radius: 10px; background: #131123; box-shadow: inset 0 0 0 3px #a9946614, 0 4px 16px #0007; }
+.dodge::before { content: ""; position: absolute; inset: 4px; border: 1px solid #d3b98116; border-radius: 6px; z-index: 3; pointer-events: none; }
+.dodge-world-layers { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+.dodge-world-art { position: absolute; inset: 0; background: center / cover no-repeat; opacity: .92; }
+.dodge-world { position: absolute; inset: 0; width: 100%; height: 100%; }
+.dodge-mist { position: absolute; width: 500px; height: 330px; opacity: .22; background: var(--mist) center / 100% 100% no-repeat; transform-origin: 50% 50%; pointer-events: none; }
+.dodge-mist.left { left: -180px; bottom: -120px; transform: rotate(65deg); animation: dodge-mist-left 16s ease-in-out infinite alternate; }
+.dodge-mist.right { right: -180px; top: -120px; transform: rotate(-110deg); animation: dodge-mist-right 18s ease-in-out infinite alternate; }
+@keyframes dodge-mist-left { to { transform: translate(40px, -12px) rotate(73deg) scale(1.08); } }
+@keyframes dodge-mist-right { to { transform: translate(-45px, 12px) rotate(-100deg) scale(1.1); } }
+.dodge-world-title { position: absolute; left: 16px; top: 12px; font-family: "Craft Mincho", var(--font); font-size: 15px; letter-spacing: .14em; color: #cdbca480; z-index: 1; pointer-events: none; }
+.dodge-mental { z-index: 1; }
+.dodge-beat-line { opacity: .18; stroke-width: 1.3; }
+.dodge-mental-caption { display: none; }
+.dodge-mental[data-level="shaken"] .dodge-beat-line { opacity: .28; stroke-width: 2; }
+.dodge[data-mental="shaken"] { border-color: #d48a915c; }
+.bench[data-art-skin] .dodge.warning[data-side="left"] { border-left-color: #e3c788; box-shadow: inset 28px 0 30px -22px #e3c78899, 0 4px 16px #0007; }
+.bench[data-art-skin] .dodge.warning[data-side="right"] { border-right-color: #e3c788; box-shadow: inset -28px 0 30px -22px #e3c78899, 0 4px 16px #0007; }
+.dodge-word, .dodge-thought-echo { padding: 5px 12px; color: #f5e8ee; background: linear-gradient(90deg, #20182d00, #302039aa 16% 84%, #20182d00); border: 0; border-radius: 0; font-family: "Craft Mincho", var(--font); font-size: 15px; letter-spacing: .07em; box-shadow: none; text-shadow: 0 0 7px #d7a6d25c, 0 2px 2px #000; white-space: nowrap; }
+.dodge-word { z-index: 2; }
+.dodge-word::after { content: ""; position: absolute; left: 10%; right: 10%; bottom: 2px; height: 1px; background: linear-gradient(90deg, transparent, #d6b8dc66, transparent); }
+.dodge-thought-echo { position: absolute; z-index: 2; pointer-events: none; animation: thought-dissolve .85s ease-out forwards; }
+@keyframes thought-dissolve { from { opacity: .7; filter: blur(0); } to { opacity: 0; filter: blur(5px); transform: translateY(-15px) scale(1.08); } }
+.dodge-object { z-index: 2; }
+.dodge-object svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.dodge-object.coal, .dodge-object.clock, .dodge-object.spark, .dodge-object.smoke, .dodge-object.orb { border: 0; border-radius: 0; background: none; box-shadow: none; clip-path: none; opacity: 1; }
+.dodge-object.orb { width: 16px; height: 16px; filter: drop-shadow(0 0 5px #d3c2ff88); }
+.dodge-object.coal { filter: drop-shadow(0 0 4px #ed904450); }
+.dodge-object.clock { filter: drop-shadow(0 0 3px #acbdd044); }
+.dodge-object.clock::after { content: none; }
+.dodge-object.spark { filter: drop-shadow(0 0 4px #f6ce8555); }
+.dodge-object.smoke { filter: drop-shadow(0 0 5px #bc9feb44); }
+.bench[data-step="steam"] .dodge-heart { background: none; text-shadow: none; filter: drop-shadow(0 0 6px #c0e0c577); }
+.dodge-heart > span, .dodge-heart svg { display: block; width: 28px; height: 28px; }
+.dodge-core { width: 4px; height: 4px; left: 12px; top: 12px; box-shadow: 0 0 4px #fff; }
+.dodge-core::after { content: ""; position: absolute; inset: -5px; border: 1px solid #ffffe870; border-radius: 50%; }
+.dodge-heart.shield::after { border-width: 1px; box-shadow: 0 0 8px #c7dfbb55; }
+
+/* スティックと一回だけのリフレッシュ。 */
+.dodge-controls { gap: 16px; }
+.bench[data-art-skin] .dodge-pad { width: 104px; height: 104px; border: 1px solid #c4ab796b; background: radial-gradient(ellipse at 36% 22%, #50414c, #26202f 45%, #100d1c 72%); box-shadow: inset 0 0 0 3px #c7aa7136, inset 0 0 0 6px #110c1c, 0 5px 12px #0007; }
+.bench[data-art-skin] .dodge-pad > span { display: block; color: #d7c5a85c; }
+.dodge-pad > span svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: .8; }
+.bench[data-art-skin] .dodge-knob { left: 31px; top: 31px; width: 40px; height: 40px; border: 1px solid #e6cda297; background: radial-gradient(ellipse at 32% 20%, #f3e1bb, #ad987b 32%, #5c4956 66%, #241c31); box-shadow: inset 0 1px 2px #fff7, inset 0 0 0 3px #f1dcb23b, 0 6px 7px #0009; }
+.dodge-knob::after { content: ""; position: absolute; inset: 7px; border: 1px solid #efd8af4d; border-radius: 50%; background: radial-gradient(circle at 32% 27%, #fff6d933, transparent 70%); }
+.bench[data-art-skin] .dodge-pad.held { border-color: #ead8ad; box-shadow: inset 0 0 0 3px #c7aa7166, inset 0 0 0 6px #110c1c, 0 0 12px #c1d4b426; }
+.dodge-pad:focus-visible { outline: 2px solid #d6c49a; outline-offset: 4px; }
+.bench[data-art-skin] .btn.dodge-refresh, .bench[data-art-skin] .btn.dodge-refresh:hover:not(:disabled) { display: flex; flex-direction: row; justify-content: center; gap: 15px; align-items: center; width: 300px; min-width: 0; height: 80px; min-height: 80px; padding: 16px 24px; border: 1px solid #c8b18a66; border-radius: 9px; background: linear-gradient(150deg, #302631, #191422); color: #eee3c9; box-shadow: inset 0 1px 0 #fff1cf0d, 0 4px 12px #0004; }
+.bench[data-art-skin] .dodge-refresh:hover:not(:disabled) { filter: brightness(1.12); }
+.refresh-emblem { width: 32px; height: 32px; color: #d4dfc6; }
+.refresh-emblem svg { width: 100%; height: 100%; }
+.refresh-copy { font-family: "Craft Mincho", var(--font); font-weight: 700; font-size: 21px; white-space: nowrap; letter-spacing: .06em; }
+.bench[data-art-skin] .dodge-refresh:disabled { opacity: .4; filter: saturate(.5); }
+
+/* 波は実際の消去範囲で止まり、消した弾だけが粒になる。 */
+.dr-flash { background: radial-gradient(circle at var(--x) var(--y), #edffe43d, #b5debc20 35%, transparent 72%); }
+.dr-ring { border-width: 1px; border-color: #e0edcb; box-shadow: 0 0 8px #c7ddb57a, inset 0 0 15px #b8ceb32b; }
+.dr-ring.second { border-color: #dbc7a199; box-shadow: none; }
+.dr-ray { width: 32px; height: 1px; background: linear-gradient(90deg, transparent, #fff3d7, transparent); }
+@media (prefers-reduced-motion: reduce) {
+  .dodge-mist, .bench-worker[data-waiting="true"] .worker-actor { animation: none; }
+  .dodge-mist { opacity: .12; }
+  .dodge-thought-echo { animation: none; opacity: .2; }
+}

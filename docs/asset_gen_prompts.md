@@ -1,5 +1,9 @@
 # 画像生成プロンプト集（codex用）— シーシャ作りパート＋立ち絵
 
+> 2026-10-10 SF02: 蒸らし中に目を閉じて息を整えるはじめの[生成指示](../asset_sources/steam-focus-20261010/hajime-wait-prompt.txt)・[実参照と原画SHA](../asset_sources/steam-focus-20261010/generation.json)を保存。採用済みの帽子・パーカー・携帯中のマイチップと画風を維持し、シーシャ台やホースは人物画像へ追加しない。[実装画面・検品記録](../asset_sources/steam-focus-20261010/README.md)。
+
+> 2026-10-10 SF22〜27: 精神世界はシンプルで抽象的な宇宙へ。[採用背景の生成指示](../asset_sources/steam-focus-20261010/world-prompt.txt)・[原画SHA](../asset_sources/steam-focus-20261010/world-generation.json)。暗い紫に薄い星雲と小さな星粒だけを描き、言葉・心拍・動く弾・リフレッシュの波はコードが描く。店内が残る前案は[不採用の記録](../asset_sources/steam-focus-20261010/rejected-lounge-generation.json)として保存し、ゲームへ接続しない。
+
 > 2026-10-10 CV20: CONTINUE背景は紫の煙を採用。[原画](../asset_sources/ui/continue-v4-20261010/generated/backdrop-purple.png)・[画像編集の実行指示と参照SHA256](../asset_sources/ui/continue-v4-20261010/generated/backdrop-purple.json)・[日本語見出しと数字だけのカウントを含む実画面](../asset_sources/ui/continue-v4-20261010/README.md)を保存。煙の構図・質感を保ち、人物画像は加工しない。
 
 > 2026-10-10 CV08〜11: CONTINUEの[原画・表示確認・ボタン3案](../asset_sources/ui/continue-v4-20261010/README.md)。ロゴ2種・可決の朱印・背景・ボタンの[完全な生成指示](../asset_sources/ui/continue-v4-20261010/generated/prompts.json)、暗いボタンを朱赤／オフホワイトへ変えた[修正指示](../asset_sources/ui/continue-v4-20261010/generated/buttons-revision.json)を保存。ユーザー指定のロゴとスタンプのみ文字入り。ボタンの文言・カウントはゲーム側で表示し、正規人物画像は加工しない。CV12〜13でボタン画像は不使用（文字だけ）、背景とロゴの赤は `remake/tools/build_continue_art.py` で藍〜青へ色替え（原画は保持）。

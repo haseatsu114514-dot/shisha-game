@@ -277,5 +277,5 @@ export async function stepPlace(cs) {
 }
 
 export async function stepSteamTime(cs) {
-  await runSteamTimer(cs, lessonHint(cs, "steam", "炭を置いたら、吸える温度になるまで待つ。10秒単位で設定できる。長いほど香りは開くが、焦げも近づく"));
+  await runSteamTimer(cs);
 }

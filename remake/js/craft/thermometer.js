@@ -1,5 +1,5 @@
 // 蒸らし・吸い出し・熱管理で同じ温度の目盛り・適温帯を使う。
-// 管は一本の切れ目のないグラデーション（青→水色→適温のミントグリーン→橙→赤）。今の温度より上だけを少し暗くする。
+// 管は一本のグラデーション（クリーム→黄→適温のミント→橙→赤→深紅）。薄い横目盛りを重ね、現在地より上だけ少し暗くする。
 // 文字の目盛りは置かず、管の中の印で示す: 適温の両端に刻み、真ん中に虹の最適温（適温／最適温／適温のサンド）、
 // 一番上の焦げる帯に炎、熱管理の冷え切り帯に雪の結晶（TH32〜TH35）。
 import { el } from "../core/util.js";
@@ -17,6 +17,8 @@ export function buildThermometer({ compact = false, unsteady = false, coldLimit 
   // 管の外から今の温度を指す、目立つ矢印（TH30）。黒い縁取りで金枠・背景に埋もれさせない（TH85）。
   const pointer = el("i.thermo-pointer", { "aria-hidden": "true", dataset: { test: "thermo-pointer" }, html: POINTER });
   const projected = el("i.thermo-projected", { hidden: true, "aria-hidden": "true" });
+  const range = el("i.thermo-range", { hidden: true, "aria-hidden": "true", dataset: { test: "steam-forecast-range" } });
+  const rangeNote = el("span.thermo-range-note", { hidden: true, text: "目安", "aria-hidden": "true" });
   const projectedLabel = el("span.thermo-projected-label", { hidden: true, text: "点線：止めたらここ", dataset: { test: "pull-projection" } });
   const tube = el("div.thermo-tube", [
     el("div.thermo-scale"),
@@ -26,12 +28,12 @@ export function buildThermometer({ compact = false, unsteady = false, coldLimit 
     coldLimit ? el("div.thermo-cold", { style: { height: pct(coldLimit) }, title: "冷え切り", dataset: { test: "thermo-cold" } }, [el("i.thermo-icon.snow", { html: SNOW })]) : null,
     el("div.thermo-zone", { style: { bottom: pct(IDEAL[0]), height: pct(IDEAL[1] - IDEAL[0]) }, title: "適温" }),
     el("div.thermo-optimal", { style: { bottom: pct(OPTIMAL[0]), height: pct(OPTIMAL[1] - OPTIMAL[0]) }, title: "最適温", dataset: { test: compact ? "steam-optimal" : "pull-optimal" } }),
-    projected, mark,
+    projected, range, mark,
   ]);
   const framed = !!makingUrl("ui_temperature_frame.png");
-  const frameWidth = compact ? 54 : width;
+  const frameWidth = width;
   const housing = framed ? el("div.thermo-housing", { style: { "--thermo-width": `${frameWidth}px` } }, [
-    tube, artImg("ui_temperature_frame.png", frameWidth, "thermo-skin", { h: compact ? 300 : height }),
+    tube, artImg("ui_temperature_frame.png", frameWidth, "thermo-skin", { h: height }),
   ]) : tube;
   const root = el(`div.thermo${compact ? ".steam-temperature" : ""}${unsteady ? ".unsteady" : ""}`, {
     role: "meter", "aria-label": "煙の温度", "aria-valuemin": "0", "aria-valuemax": "1", dataset: { test: compact ? "steam-temperature" : "pull-temperature" },
@@ -40,6 +42,7 @@ export function buildThermometer({ compact = false, unsteady = false, coldLimit 
     housing,
     pointer,
     projectedLabel,
+    rangeNote,
   ]);
   let last = 0;
   return { root, update(temp) {
@@ -61,6 +64,14 @@ export function buildThermometer({ compact = false, unsteady = false, coldLimit 
     const p = el(`i.thermo-pop.${dir}`, { text, "aria-hidden": "true", style: { bottom: `calc(var(--thermo-inset) + ${last} * (100% - 2 * var(--thermo-inset)))` } });
     root.append(p);
     setTimeout(() => p.remove(), 900);
+  }, range(bounds) {
+    range.hidden = rangeNote.hidden = !bounds;
+    if (!bounds) { delete root.dataset.forecast; return; }
+    root.dataset.forecast = "true";
+    range.dataset.low = String(bounds.low); range.dataset.high = String(bounds.high);
+    range.style.bottom = pct(bounds.low);
+    range.style.height = pct(bounds.high - bounds.low);
+    rangeNote.style.bottom = `calc(var(--thermo-inset) + ${(bounds.low + bounds.high) / 2} * (100% - 2 * var(--thermo-inset)) - 9px)`;
   }, preview(temp, label = "点線：止めたらここ") {
     projected.hidden = projectedLabel.hidden = compact || temp == null;
     if (temp == null) return;

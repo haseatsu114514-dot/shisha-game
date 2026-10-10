@@ -1,0 +1,14 @@
+{
+  "source": "assets/ui/making/hajime_steam_wait.png",
+  "reference": "remake/img/sprites/characters/hajime/chr_hajime_serious.webp",
+  "reference_sha256": "8693c398b8ae4f2badc50f97ae52660f78ad665e934d8c67ba4f1957f17ab8e6",
+  "source_sha256": "d1847c32ed621be19dbb0085078d4ae1f14a1a51a4d66a5999511443af53c569",
+  "size": [
+    1084,
+    1451
+  ],
+  "mode": "RGBA",
+  "transparent": true,
+  "tool": "image_gen.imagegen",
+  "prompt": "hajime-wait-prompt.txt"
+}
