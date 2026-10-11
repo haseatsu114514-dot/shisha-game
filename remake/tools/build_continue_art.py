@@ -58,7 +58,7 @@ def main():
     atlas_path = SOURCE.parent / "neon-reference-20261011/neon-atlas-original.png"
     if atlas_path.exists():
         atlas = Image.open(atlas_path).convert("RGBA")
-        for name, y0, y1 in [("neon_title", 0, 340), ("neon_game_over", 340, 611),
+        for name, y0, y1 in [("neon_title", 0, 340), ("neon_game_over", 350, 611),
                              ("neon_retry_frame", 611, 847), ("neon_quit_frame", 847, 1086)]:
             row = atlas.crop((0, y0, atlas.width, y1))
             box = row.getchannel("A").point(lambda a: 255 if a >= 24 else 0).getbbox()

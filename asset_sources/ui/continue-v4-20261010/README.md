@@ -1,4 +1,18 @@
-# CONTINUE V4 表示確認（2026-10-10）
+# CONTINUE 表示確認（最新: 2026-10-11）
+
+## CV35〜46 参考画像の筆文字・円形HUD・鋭角ボタンを本編採用
+
+最新の添付参考を完成形として再構築。斜めの「コンティニューする？」、右上の実時計HUD、暗いスモークステージ、中央の正規人物、迫る巨大数字、線付きの1行セリフ、金と紫の鋭角ボタン。GAME OVERは同じ筆文字と青紫の発光でシンプルに中央表示。カウントとボタン文字はライブUIで、素材へ焼き込んでいない。
+
+- [完成・アゲハ1080p](neon-reference-20261011/neon-ageha-1080.png) / [スミさん720p](neon-reference-20261011/neon-sumi-720.png) / [スマホ横持ち](neon-reference-20261011/neon-ageha-phone.png)
+- [残り5秒](neon-reference-20261011/neon-ageha-5.png) / [迫る残り1秒](neon-reference-20261011/neon-ageha-1.png) / [シンプルなGAME OVER](neon-reference-20261011/neon-game-over.png)
+- [初回実画面](neon-reference-20261011/iteration-1.png)から、タイトルを右へ58px・幅824→752px、セリフ34→32px、ボタンとの間隔を修正。長い強調行でも8px以上、ボタン下21px以上を確認。終了ロゴに前行の微小な光が混じらないよう切出し境界も調整。
+- [透過アトラス原画](neon-reference-20261011/neon-atlas-original.png) / [完全な生成指示](neon-reference-20261011/neon-atlas.prompt.txt) / [実参照・SHA256・変換記録](neon-reference-20261011/generation.json)
+- [実画面の座標・素材読込記録](neon-reference-20261011/verification.json)。再取得は `node asset_sources/ui/continue-v4-20261010/neon-reference-20261011/capture.mjs`。
+
+生成原画は正しい日本語見出し・GAME OVER・文字なしの2色フレームのみ。`build_continue_art.py`で行単位に機械的に切り出し、色や筆跡を変えずにPNG／WebPへ保存。暗いステージは以前の[生成原画](generated/backdrop-stage.png)を採用。煙・スポット光・粒・HUD・斜線・ボタンの選択発光はコードで動かす。1920×1080の構図を既存ステージへ縮尺して他画面を維持する。
+
+既定のプレビューは `continue-preview.html?layout=neon&background=stage`。以下の画像・紫背景・旧ロゴ・比較版は制作時点の記録として保持し、本編の既定を上書きしない。
 
 ## CV27〜34 王道配置・上部ボタン・背面カウント・暗いステージの比較版
 

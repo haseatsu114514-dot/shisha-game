@@ -71,7 +71,8 @@ try {
     config.bgmVolume = config.seVolume = 0;
     (await import("./js/core/audio.js")).applyVolumes();
   });
-  await page.clock.install();
+  await page.clock.install({ time: new Date("2026-10-11T09:00:00Z") });
+  await page.clock.pauseAt(new Date("2026-10-11T09:00:01Z"));
   // 全台本・全反応の1行が、全角22字以内に収まる。
   const tooLong = await page.evaluate(async () => {
     const { SUMI_CONTINUE_SCRIPTS } = await import("./js/chapters/gameover.js");
@@ -336,7 +337,7 @@ try {
   assert(await page.locator(".go-title-art").isVisible());
   await page.clock.runFor(2000);
   assert.deepEqual(await page.evaluate(() => window.__decisions), ["quit"]);
-  await mount(0, { layout: "back-count", reducedMotion: true, soundEffects: false });
+  await mount(0, { layout: "back-count", background: "purple", reducedMotion: true, soundEffects: false });
   const still = await echo();
   await page.clock.runFor(5200);
   assert.equal((await echo()).height, still.height, "reduced motion must keep back-count size fixed");
