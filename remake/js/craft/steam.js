@@ -44,7 +44,7 @@ export async function runSteamDodge(cs) {
   const tutorial = cs.mode === "tutorial";
   const seconds = steamSecondsOf(cs), min = seconds / 60;
   const rainy = craftConditions(cs).rainy;
-  const panel = stepPanel("steam", "蒸らし", "", { brief: "" });
+  const panel = stepPanel("steam", "蒸らし", "アタックはZ／ボタン。方向入力なしは前方、方向キー／スティックで向きを変える。言葉を3個・6個斬ると、段階灯と刃が水色→紫→金に変わり、範囲が広がって再使用も早くなる。小さな物体弾も斬れる。強化は空振り・被弾・リフレッシュで減らず、次の蒸らしで戻る。", { brief: "" });
   const W = 784, H = 414;
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", mental: "steady", refreshRadius: String(effect.radius) } });
   const heart = el("div.dodge-heart", { role: "img", "aria-label": "心。中央の白丸が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("span", { html: HEART_ART }), el("i.dodge-core")]);
@@ -57,8 +57,9 @@ export async function runSteamDodge(cs) {
   refreshBtn.append(el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_refresh_simple.png"), el("i.recharge-ring"), refreshCharge]),
     el("span.refresh-copy", { text: "リフレッシュ" }));
   const slashCharge = el("span.action-recharge");
-  const slashState = el("span.slash-state", { text: "準備中" });
-  const slashGrowth = el("span.slash-growth");
+  const slashState = el("span.slash-state", { text: "↑" });
+  const slashCount = el("span.slash-count", { text: "×0" });
+  const slashGrowth = el("span.slash-growth", [slashCount, el("span.slash-level", [el("i"), el("i"), el("i")])]);
   const slashFeedback = el("span.slash-feedback", { role: "status", "aria-live": "polite", "aria-atomic": "true", dataset: { test: "slash-feedback" } });
   const slashBtn = el("button.btn.dodge-action.dodge-slash", { disabled: true, "aria-keyshortcuts": "Z", title: "方向キー＋Zで上下左右へアタック。方向入力なしは前方", dataset: { test: "dodge-slash", uses: "0" } }, [
     el("span.refresh-emblem", { "aria-hidden": "true" }, [el("span", { html: SLASH_ART }), el("i.recharge-ring"), slashCharge, slashState, slashGrowth]),
@@ -176,8 +177,9 @@ export async function runSteamDodge(cs) {
     slashBtn.dataset.recharge = String(profile.recharge);
     slashBtn.dataset.tier = String(profile.tier);
     slashBtn.dataset.aim = aim;
-    slashState.textContent = !running ? (slashesUsed ? "終了" : "準備中") : remaining > 0 ? "リチャージ" : `${facing} 使用可能`;
-    slashGrowth.textContent = profile.next === null ? `斬った言葉 ${wordsCut}・最大強化` : `斬った言葉 ${wordsCut}・あと${profile.next - wordsCut}で強化`;
+    slashState.textContent = facing;
+    slashCount.textContent = `×${wordsCut}`;
+    slashCharge.textContent = running && remaining > 0 ? (Math.ceil(remaining * 10) / 10).toFixed(1) : "";
   };
   const refresh = () => {
     if (!running || refreshes === 0) return;
@@ -210,7 +212,7 @@ export async function runSteamDodge(cs) {
     slashFeedback.dataset.hit = String(cleared.length > 0);
     slashFeedback.textContent = cleared.length ? `${cleared.length}個斬った${after.tier > before.tier ? "・強化！" : ""}` : "空振り";
     world.dissolve(time, cleared);
-    const fx = buildSlashFx(hx, hy, angle, before.reach, cleared.length > 0);
+    const fx = buildSlashFx(hx, hy, angle, before.reach, cleared.length > 0, after.tier);
     box.append(fx); transients.push({ node: fx, until: time + .32 });
     for (const b of cleared) {
       const spark = el("i.dodge-slash-impact", { "aria-hidden": "true", style: { left: `${clamp(b.x + b.w / 2, 0, W)}px`, top: `${clamp(b.y + b.h / 2, 0, H)}px` } });

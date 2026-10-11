@@ -53,13 +53,15 @@ export function slashTouchesBullet(b, hx, hy, angle, reach = SLASH_REACH) {
   return false;
 }
 
-export const SLASH_ART = '<svg viewBox="0 0 152 152" aria-hidden="true"><circle cx="76" cy="76" r="61" fill="#201927" fill-opacity=".5" stroke="#b6a5cf" stroke-width="2"/><path d="M35 101Q76 20 123 64Q83 39 35 101Z" fill="#edc3f1"/><path d="M35 101Q76 20 123 64" fill="none" stroke="#b9edff" stroke-width="3"/><path d="m56 102 44-48 8-3-2 9-44 48Z" fill="#f2f2fa" stroke="#a2b9d0" stroke-width="1.5"/><path d="m49 94 21 19m-14-7-10 11m-3-2 6 6" fill="none" stroke="#d6bc8c" stroke-width="5" stroke-linecap="round"/></svg>';
+export const SLASH_ART = '<svg viewBox="0 0 152 152" aria-hidden="true"><circle cx="76" cy="76" r="61" fill="#201927" fill-opacity=".5" stroke="#b6a5cf" stroke-width="2"/><path d="M35 101Q76 20 123 64Q83 39 35 101Z" fill="#edc3f1"/><path d="M35 101Q76 20 123 64" fill="none" stroke="#b9edff" stroke-width="3"/><g transform="translate(0 -10)"><path d="m56 102 44-48 8-3-2 9-44 48Z" fill="#f2f2fa" stroke="#a2b9d0" stroke-width="1.5"/><path d="m49 94 21 19m-14-7-10 11m-3-2 6 6" fill="none" stroke="#d6bc8c" stroke-width="5" stroke-linecap="round"/></g></svg>';
 let fxId = 0;
-export function buildSlashFx(x, y, angle, reach = SLASH_REACH, hit = false) {
+export function buildSlashFx(x, y, angle, reach = SLASH_REACH, hit = false, tier = 0) {
   const r = reach;
   const id = `steam-slash-${++fxId}`;
-  return el("div.dodge-slash-fx", { "aria-hidden": "true", dataset: { test: "dodge-slash-fx", hit: String(hit) },
+  const ink = ["#b8e9ff", "#d5abff", "#ffe0a3"][tier];
+  const flecks = tier > 0 ? `<path d="M26 -43L38 -51L33 -39ZM69 38L77 30L72 45Z" fill="${ink}"/>` : "";
+  return el("div.dodge-slash-fx", { "aria-hidden": "true", dataset: { test: "dodge-slash-fx", hit: String(hit), tier: String(tier) },
     style: { left: `${x}px`, top: `${y}px`, "--angle": `${angle}rad`, width: `${r * 2}px`, height: `${r * 2}px` },
-    // 同心円状の扇をやめ、先端が細くなる一筆の刃と短い軌跡にする。
-    html: `<svg viewBox="-100 -100 200 200"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b8c7ff" stop-opacity=".15"/><stop offset=".55" stop-color="#eaffff"/><stop offset="1" stop-color="#fff0c3"/></linearGradient></defs><path d="M26 -48L36 -55L94 25L68 12Z" fill="url(#${id})"/><path d="M36 -55L94 25" fill="none" stroke="#fff" stroke-width="2.5"/><path d="M12 -28L72 20L43 5Z" fill="#c4efff" fill-opacity=".4"/></svg>` });
+    // 弧は残す。半円状の一筆を厚い根元から細い先端へ流し、左右対称の扇を避ける。
+    html: `<svg viewBox="-100 -100 200 200"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${ink}" stop-opacity=".15"/><stop offset=".55" stop-color="#f4ffff"/><stop offset="1" stop-color="${ink}"/></linearGradient></defs><path d="M32 -26C48 -60 87 -55 97 -12C102 21 86 45 64 53C74 30 77 6 67 -12C60 -24 47 -31 32 -26Z" fill="url(#${id})"/><path d="M32 -26C48 -60 87 -55 97 -12C102 21 86 45 64 53" fill="none" stroke="#fff" stroke-width="${tier === 2 ? 3 : 2}"/><path d="M22 -12L49 -31L43 -16Z" fill="${ink}" fill-opacity=".4"/>${flecks}</svg>` });
 }

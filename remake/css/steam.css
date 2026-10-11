@@ -121,13 +121,23 @@
 .dodge-slash-fx[data-hit="false"] svg { opacity: .5; }
 .slash-control { position: relative; width: 176px; height: 180px; flex: none; }
 .slash-state, .slash-growth { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; font-family: var(--font); font-weight: 700; line-height: 1.4; }
-.slash-state { top: 15px; padding: 1px 8px; border: 1px solid #adcfe366; border-radius: 4px; background: #161222ed; color: #d7f6ff; font-size: 13px; }
-.slash-growth { bottom: 9px; color: #e1d4ba; font-size: 11px; }
-.dodge-slash[data-cooling="true"] .slash-state { color: #c4bdd2; border-color: #9283ad55; }
+.slash-state { top: 11px; color: #d7f6ff; font-size: 18px; }
+.slash-growth { bottom: 9px; display: flex; align-items: center; gap: 9px; color: #e1d4ba; font-size: 16px; font-variant-numeric: tabular-nums; }
+.slash-level { display: flex; gap: 3px; }
+.slash-level i { width: 7px; height: 7px; background: #343045; transform: rotate(45deg); border: 1px solid #9386a166; }
+.slash-level i:first-child { background: #b8e9ff; }
+.dodge-slash[data-tier="1"] .slash-level i:nth-child(-n+2) { background: #d5abff; }
+.dodge-slash[data-tier="2"] .slash-level i { background: #ffe0a3; }
+.dodge-slash[data-cooling="true"] .slash-state { color: #9386a1; }
 .dodge-slash[data-tier="1"] .refresh-emblem { color: #d8d7ff; }
-.dodge-slash[data-tier="2"] .slash-state { border-color: #e4c379aa; color: #ffe9b3; }
-.slash-feedback { position: absolute; left: 0; right: 0; top: 98px; text-align: center; pointer-events: none; font-size: 13px; line-height: 1.3; font-weight: 700; color: #c5bdcf; text-shadow: 0 1px 3px #080512, 0 0 6px #080512; }
-.slash-feedback[data-hit="true"] { color: #fff0bf; }
+.dodge-slash[data-tier="2"] .slash-state { color: #ffe9b3; }
+.dodge-slash:enabled .recharge-ring { display: block; opacity: .65; }
+.dodge-slash[data-tier="1"] .recharge-ring { background: conic-gradient(#d5abff calc(var(--recharge) * 1turn), #77728a44 0); }
+.dodge-slash[data-tier="2"] .recharge-ring { background: conic-gradient(#ffe0a3 calc(var(--recharge) * 1turn), #77728a44 0); }
+/* 結果の文章は読み上げ専用。画面は刃・火花・数字・段階灯で伝える。 */
+.slash-feedback { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.dodge-slash-fx[data-tier="1"] { filter: drop-shadow(0 0 6px #d5abff); }
+.dodge-slash-fx[data-tier="2"] { filter: drop-shadow(0 0 7px #ffd58a); }
 .dodge-slash.striking .refresh-emblem > span:first-child { animation: slash-press .2s ease-out; }
 .dodge-slash-impact { position: absolute; width: 26px; height: 26px; transform: translate(-50%, -50%); z-index: 4; pointer-events: none; background: #fff0b9; clip-path: polygon(48% 0, 56% 38%, 100% 46%, 63% 55%, 53% 100%, 43% 64%, 0 54%, 36% 43%); animation: slash-impact .32s ease-out forwards; }
 @keyframes slash-press { 50% { transform: scale(.93); } }
@@ -150,7 +160,7 @@
 .dr-ray { width: 32px; height: 1px; background: linear-gradient(90deg, transparent, #fff3d7, transparent); }
 @media (prefers-reduced-motion: reduce) {
   .dodge-slash.striking .refresh-emblem > span:first-child, .dodge-slash-impact { animation: none; }
-  .dodge-slash-fx { animation: none; opacity: .8; filter: none; }
+  .dodge-slash-fx, .dodge-slash-fx[data-tier] { animation: none; opacity: .8; filter: none; }
   .dodge-refresh:enabled .refresh-emblem::after { animation: none; }
   .dodge-mist, .bench-worker[data-waiting="true"] .worker-actor { animation: none; }
   .dodge-mist { opacity: .12; }

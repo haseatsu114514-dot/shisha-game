@@ -23,6 +23,8 @@ https://github.com/haseatsu114514-dot/shisha-game/issues/356#issuecomment-611428
 
 ## 表示と検証
 
-命中は「N個斬った」、段階到達時は「強化！」、命中しない場合は「空振り」。使用可能時は方向矢印、待ち時間は0.1秒単位の切り上げと進捗リングを表示。長い状態説明は操作ボタンの読み上げラベルに含め、操作結果だけをlive regionで通知する。
+画面は矢印、待ち時間の数字と進捗リング、「×N」の言葉カウント、3段階の灯だけに絞る。説明文は「?」ヘルプと読み上げ側へ置く。ボタンの剣は中央に合わせ、斬撃は半円状の弧を残した太い根元／細い先端の非対称な刃にする。刃と段階灯は水色→紫→金へ変化。小さな物体弾も既存の実矩形判定で斬れるが、言葉の強化数には加算しない。
+
+命中は火花と輝く刃、空振りは淡い刃で区別する。「N個斬った」「強化！」「空振り」の文章は画面に重ねず、操作結果だけをlive regionで読み上げる。
 
 検証は `node remake/test/steam_attack_growth.mjs`（承認値・可変射程・実弾での成長とリセット）、既存 `steam_slash.mjs`（四方向・PC／二本指・リチャージ）、`steam_refresh.mjs`、`steam_forecast.mjs`、`steam_heart.mjs`、`browser/save_load.mjs`。ブラウザテストでは `NODE_PATH=remake/test/browser/node_modules` と環境に応じた `CHROME_EXECUTABLE_PATH` を設定する。実施結果・未確認事項と画像はPRに記録し、全項目の成功をこの文書だけで宣言しない。

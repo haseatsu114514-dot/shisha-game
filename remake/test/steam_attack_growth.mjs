@@ -73,9 +73,10 @@ try {
       assert(result.removed);assert.equal(result.after,result.before+result.words);
       if(result.words===0){objectOnly=true;assert.equal(result.after,result.before);}
       total=result.after;
-      const p=slashProfile(total);tiers.add(p.tier);
+      const p=slashProfile(total),newTier=!tiers.has(p.tier);tiers.add(p.tier);
       assert.equal(result.reach,p.reach);assert(result.recharge>=p.recharge && result.recharge<=p.recharge+.1+1e-9);
       assert.match(result.feedback,/個斬った/);
+      if(shots&&newTier)await page.screenshot({path:`${shots}/tier-${p.tier}-${mobile?'mobile-reduced':'desktop'}.png`});
     }
     assert(total>=6);assert(tiers.has(1)&&tiers.has(2),'Both approved growth thresholds must be exercised');
     await page.evaluate(()=>document.fonts.ready);
@@ -95,6 +96,31 @@ try {
       return {before,after:button().dataset.cutWords,hitsBefore:hits,hitsAfter:Number(document.querySelector('[data-test="mental-trace"]').dataset.hits)};
     });
     assert(damage.hitsAfter>damage.hitsBefore);assert.equal(damage.after,damage.before);
+    // Find a real small object and a firing position that excludes every word.
+    const smallPosition=await page.evaluate(()=>{
+      for(let frame=0;frame<200;frame++) {
+        advance();if(button().disabled)continue;
+        const all=enemies(),reach=Number(button().dataset.reach);
+        for(const target of all.filter(b=>!b.word&&b.w<=40&&b.h<=40)) {
+          for(const [dx,dy] of [[0,25],[30,40],[-30,40],[55,55],[-55,55],[0,70]]) {
+            const hx=target.x+target.w/2+dx,hy=target.y+target.h/2+dy;
+            if(hx<16||hx>768||hy<16||hy>398)continue;
+            const near=all.filter(b=>geometry.slashTouchesBullet(b,hx,hy,-Math.PI/2,reach));
+            if(!near.includes(target)||near.some(b=>b.word))continue;
+            const box=document.querySelector('.dodge'),r=box.getBoundingClientRect();
+            window.smallTarget=target.node;
+            return {x:r.left+hx*r.width/784,y:r.top+hy*r.height/414};
+          }
+        }
+      }
+      return null;
+    });
+    assert(smallPosition,'No isolated real small-object shot found');
+    if(mobile)await page.touchscreen.tap(smallPosition.x,smallPosition.y);else await page.mouse.click(smallPosition.x,smallPosition.y);
+    const small=await page.evaluate(()=>{const r=strike();return {...r,removed:!smallTarget.isConnected};});
+    assert(small.removed&&small.near>0);assert.equal(small.after,small.before);objectOnly=true;
+    await page.evaluate(()=>{for(let i=0;i<65;i++)advance();});
+    assert.equal(await page.locator('[data-test="dodge-slash"]').isEnabled(),true);
     await page.evaluate(()=>document.fonts.ready);
     if(shots)await page.screenshot({path:`${shots}/growth-${mobile?'mobile-reduced':'desktop'}.png`});
     await page.evaluate(()=>{for(let i=0;i<1800 && frames.size;i++)advance();restoreFrames();});
