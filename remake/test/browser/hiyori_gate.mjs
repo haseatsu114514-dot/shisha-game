@@ -66,6 +66,13 @@ await suite('hiyori-gate', async check => {
       }
       assert.deepEqual(results.guarantee, { points: 33, guaranteed: 15, again: 15 });
       assert.equal(results.lover, 5); assert.equal(results.minto, 8);
+      await page.evaluate(async () => {
+        H.fresh(); H.ui.clearScreen();
+        const status = await import('./js/daily/status.js'); H.statusFlow = status.openStatus();
+      });
+      await page.locator('[data-tab="people"]').click();
+      await page.getByText('スミさんとの再会待ち', { exact: true }).waitFor();
+      await assertFits(page, '.pp-row, .pp-hearts, .pp-relation');
     }, options);
     await check(`${label}-lime-paid-visit`, async page => {
       await setup(page);
@@ -100,11 +107,12 @@ await suite('hiyori-gate', async check => {
       await page.waitForFunction(() => H.core.state.day === 10 && document.querySelector('#screen .map:not(.done)'));
       const after = await page.evaluate(() => {
         H.core.save(); H.core.load(); const s = H.core.state;
-        s.day = 12; const cooldown = H.phone.morningMessages().some(m => m.accept_event === '__hiyori_shop__'); s.day = 10;
+        s.day = 12; const cooldown = H.phone.morningMessages().some(m => m.accept_event === '__hiyori_shop__');
+        s.day = 13; const future = H.phone.morningMessages().some(m => m.accept_event === '__hiyori_shop__'); s.day = 10;
         return { money: s.money, pts: s.affinity.hiyori, count: s.flags._hiyori_repeat_count,
-          visit: s.visitedDay.minto, pending: s.pendingInvite, cooldown };
+          visit: s.visitedDay.minto, pending: s.pendingInvite, cooldown, future };
       });
-      assert.deepEqual(after, { money: 27000, pts: 41, count: 1, visit: 9, pending: null, cooldown: false });
+      assert.deepEqual(after, { money: 27000, pts: 41, count: 1, visit: 9, pending: null, cooldown: false, future: true });
     }, options);
   }
 });
