@@ -12,6 +12,8 @@
 
 生成原画は正しい日本語見出し・GAME OVER・文字なしの2色フレームのみ。`build_continue_art.py`で行単位に機械的に切り出し、色や筆跡を変えずにPNG／WebPへ保存。暗いステージは以前の[生成原画](generated/backdrop-stage.png)を採用。煙・スポット光・粒・HUD・斜線・ボタンの選択発光はコードで動かす。1920×1080の構図を既存ステージへ縮尺して他画面を維持する。
 
+[関連6テスト・実大会への影響・CI・画面検品の記録](neon-reference-20261011/test-results.json)。全てPASS、素材欠け・ページエラー0。
+
 既定のプレビューは `continue-preview.html?layout=neon&background=stage`。以下の画像・紫背景・旧ロゴ・比較版は制作時点の記録として保持し、本編の既定を上書きしない。
 
 ## CV27〜34 王道配置・上部ボタン・背面カウント・暗いステージの比較版
