@@ -1,8 +1,8 @@
-// #368: みんとの当日来店誘いだけ、PEPPERMINTへ移動する直前に思い出す。
+// #368: 来店先と一致する有効な未対応LIMEだけ、移動の直前に思い出す。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
-await suite("minto-invite-reminder", async (check) => {
+await suite("venue-invite-reminder", async (check) => {
   for (const [label, options, read] of [
     ["pc-unread", {}, false],
     ["touch-waiting", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true],
@@ -42,10 +42,10 @@ await suite("minto-invite-reminder", async (check) => {
 
     await page.locator('[data-test="pin-minto"]').waitFor();
     assert.equal(await page.locator(".hud-lime .badge").textContent(), read ? "" : "1");
-    assert.equal(await page.evaluate(() => QA.lime.mintoStoreInviteNeedingReply()?.msg?.sender), "minto");
+    assert.equal(await page.evaluate(() => QA.lime.venueInviteNeedingReply("minto")?.msg?.sender), "minto");
     await page.locator('[data-test="pin-minto"]').click();
     await page.locator('[data-test="map-go"]').click();
-    await page.locator('[data-test="minto-invite-check"]').waitFor();
+    await page.locator('[data-test="venue-invite-check"]').waitFor();
     const before = await page.evaluate(() => ({
       slot: QA.core.state.slot,
       money: QA.core.state.money,
@@ -53,12 +53,12 @@ await suite("minto-invite-reminder", async (check) => {
       done: QA.core.state.inbox[0].done,
     }));
     assert.deepEqual(before, { slot: 0, money: 30000, read, done: false });
-    await page.locator('[data-test="minto-invite-check"]').click();
+    await page.locator('[data-test="venue-invite-check"]').click();
     await page.locator('[data-test="lime-chat-minto"]').waitFor();
     assert.equal(await page.evaluate(() => QA.core.state.slot), 0, "Opening LIME must not spend an action");
     await page.locator('[data-test="phone-close"]').click();
     await page.locator('[data-test="map-go"]').click();
-    assert.equal(await page.locator('[data-test="minto-invite-check"]').count(), 0, "The same invite must not nag twice");
+    assert.equal(await page.locator('[data-test="venue-invite-check"]').count(), 0, "The same invite must not nag twice");
   }, options);
 
   await check("other-store-no-reminder", async (page) => {
@@ -70,12 +70,65 @@ await suite("minto-invite-reminder", async (check) => {
       const m = data.DB.lime.find((entry) => entry.id === "lime_minto_day4");
       s.inbox.push({ id: m.id, day: 4, msg: structuredClone(m), read: false, done: false, replyState: "waiting" });
       const lime = await import("./js/daily/phone.js");
-      const active = lime.mintoStoreInviteNeedingReply();
+      const active = lime.venueInviteNeedingReply("minto");
       const expired = s.inbox[0];
       expired.done = true;
-      const cleared = lime.mintoStoreInviteNeedingReply();
+      const cleared = lime.venueInviteNeedingReply("minto");
       window.QAReminder = { active: !!active, cleared: !!cleared, unread: lime.unreadCount() };
     });
     assert.deepEqual(await page.evaluate(() => window.QAReminder), { active: true, cleared: false, unread: 1 });
+  });
+
+  for (const [label, source, spot, expectedSender] of [
+    ["sumi-work-at-tonari", "sumi-work", "tonari", "sumi"],
+    ["hiyori-visit-at-tonari", "hiyori-tonari", "tonari", "sumi"],
+    ["hiyori-date-at-peppermint", "hiyori-shop", "minto", "hiyori"],
+  ]) await check(label, async (page) => {
+    await page.evaluate(async ({ source, spot }) => {
+      const core = await import("./js/core/state.js");
+      const data = await import("./js/core/data.js");
+      const phone = await import("./js/daily/phone.js");
+      const { state, newGame } = core;
+      const s = newGame();
+      Object.assign(s, { chapter: 1, phase: "daily", day: 4,
+        slot: source === "hiyori-shop" ? 1 : 0, money: 30000, stamina: 100 });
+      const base = source === "sumi-work"
+        ? { id: "_sumi_baito_inv_d4", sender: "sumi", type: "invitation",
+            time_slot: "noon", accept_event: "__sumi_baito__" }
+        : source === "hiyori-tonari"
+        ? structuredClone(data.DB.lime.find((m) => m.id === "hiyori_sumi_tonari_report"))
+        : { id: "_hiyori_shop_test", sender: "hiyori", type: "invitation",
+            time_slot: "night", accept_event: "__hiyori_shop__", visit_spot: "minto" };
+      s.inbox.push({ id: base.id, day: s.day, msg: base,
+        read: false, done: false, replyState: "waiting", log: [] });
+      s.met.minto = true; s.contacts.push("minto");
+      const valid = phone.venueInviteNeedingReply(spot);
+      const unrelated = phone.venueInviteNeedingReply(spot === "tonari" ? "minto" : "naru");
+      const read = s.inbox[0]; read.read = true;
+      const waiting = phone.venueInviteNeedingReply(spot);
+      read.done = true; read.result = "accepted";
+      const accepted = phone.venueInviteNeedingReply(spot);
+      read.done = false; delete read.result;
+      read.read = false; s.slot = 1;
+      const evening = phone.venueInviteNeedingReply(spot);
+      window.QAInviteCases = { valid: valid?.msg?.sender, unrelated: !!unrelated,
+        waiting: waiting?.msg?.sender, accepted: !!accepted, evening: !!evening };
+    }, { source, spot });
+    assert.deepEqual(await page.evaluate(() => window.QAInviteCases), {
+      valid: expectedSender, unrelated: false, waiting: expectedSender,
+      accepted: false, evening: source === "hiyori-shop",
+    });
+  });
+
+  await check("non-venue-and-after-close-invites-ignored", async (page) => {
+    await page.evaluate(async () => {
+      const { visitReminderSpot } = await import("./js/daily/invitations.js");
+      const data = await import("./js/core/data.js");
+      const naru = data.DB.lime.find(m => m.id === "lime_naru_day3");
+      const outing = data.DB.lime.find(m => m.id === "lime_outing_minto_1");
+      const chat = { sender: "minto", type: "message", visit_spot: "minto" };
+      window.QANonVenue = [visitReminderSpot(naru), visitReminderSpot(outing), visitReminderSpot(chat)];
+    });
+    assert.deepEqual(await page.evaluate(() => window.QANonVenue), [null, null, null]);
   });
 });
