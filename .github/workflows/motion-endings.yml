@@ -12,6 +12,11 @@ on:
       - "remake/css/motions*.css"
       - "remake/css/motions/**"
       - "remake/css/vn.css"
+      - "remake/js/vn/engine.js"
+      - "remake/js/vn/text.js"
+      - "remake/test/notifications_layout.mjs"
+      - "remake/test/stat_rewards.mjs"
+      - "remake/test/text_wrap.mjs"
       - "remake/test/motion_endings.mjs"
       - "remake/test/navigation_transitions.mjs"
       - "remake/test/load_recorder.mjs"
@@ -58,3 +63,10 @@ jobs:
           node remake/test/load_recorder.mjs
           node remake/test/motion_endings.mjs
           node remake/test/navigation_transitions.mjs
+      - name: Check notification layers, rewards and fixed dialogue layout
+        env:
+          NODE_PATH: ${{ runner.temp }}/motion-test/node_modules
+        run: |
+          node remake/test/text_wrap.mjs
+          node remake/test/notifications_layout.mjs
+          node remake/test/stat_rewards.mjs

@@ -67,7 +67,7 @@ try {
     T.core.state.stats.technique = 47;
     T.core.state.statXp = {};
     T.core.state.reel = T.core.newState().reel;
-    Object.assign(T.core.state.reel, { introDone: true, lastChapter: 1 });
+    Object.assign(T.core.state.reel, { installed: true, introDone: true, lastChapter: 1 });
     for (let seed = 1; seed < 10000; seed++) {
       const sample = T.reel.core.spinSeries({ ...T.core.state.reel, seed }, { chapterFirst: false });
       if (sample.length === 1 && sample[0].exp >= 2 && !sample[0].overlap && !T.reel.core.PEKA.includes(sample[0].role)) {

@@ -25,7 +25,7 @@ export function initLayers() {
     // ★が上がったら、何が楽になったかを一言添える（旧版の★UP効果トースト）
     const fx = starUp ? DB.statusTexts?.statTierFx?.[key]?.[star - 1] : "";
     gainCard({ kind: "stat", stat: key, points: total, badge: STAT_BADGE[key], top: starUp ? "LEVEL UP" : "STATUS UP", main: name,
-      evolution: starUp ? `レベル${star}に進化！` : "", fx });
+      evolution: starUp ? `Lv.${star}に到達` : "", fx });
   });
   on("affinity-gain", ({ id, level, levelUp, prevPts, pts, bond }) => {
     if (!id || id === "???" || !state?.met?.[id]) return;
@@ -301,6 +301,7 @@ function pumpBanners() {
       el("div.gc-meta", [
         heading ? el("span.gc-top", { text: heading, "aria-hidden": o.top ? "false" : "true" }) : null,
         el("div.gc-title", [el("span.gc-main", { text: o.main }),
+          o.kind === "stat" && o.points > 0 ? el("small.gc-earned", { text: "今回" }) : null,
           o.points > 0 ? el("span.gc-points", o.kind === "stat" ? [
             el("span.gc-count", { text: `+${o.points}` }), el("small.gc-unit", { text: "P" }),
           ] : [el("span", { text: `+${o.points}P` })]) : null]),

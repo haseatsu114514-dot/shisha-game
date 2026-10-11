@@ -538,7 +538,7 @@ async function showLine(line) {
   log.push({ name, text: stripTags(text), ...(inner ? { inner: stripTags(inner) } : {}) });
   if (log.length > 300) log.shift();
   dom.box.classList.toggle("has-inner", !!inner);
-  r.pages = paginateForBox(text).map((value) => ({ text: value, inner: "" }));
+  r.pages = paginateForBox(text, dom.text, paginate, inner ? 1 : 2).map((value) => ({ text: value, inner: "" }));
   if (inner) {
     // 本心は最後の発言ページの下に出す。長い本心の続きでは発言を残し、打ち直さない。
     dom.inner.hidden = false; // 本心の書体・実幅を計測する間だけ表示状態にする
@@ -553,14 +553,15 @@ async function showLine(line) {
 
 // 文字数だけでなく、読み込み済み書体と本文の内幅でも折り返しを決める。
 let measurementContext = null;
-function paginateForBox(text, target = dom.text, split = paginate) {
+function paginateForBox(text, target = dom.text, split = paginate, maxLines = 2) {
   measurementContext ||= document.createElement("canvas").getContext("2d");
-  if (!measurementContext || !target.clientWidth) return split(text);
+  if (!measurementContext || !target.clientWidth) return split(text, { maxLines });
   const style = getComputedStyle(target);
   const normal = `${style.fontStyle} ${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
   const emphasis = `${style.fontStyle} 700 ${style.fontSize} ${style.fontFamily}`;
   const tracking = parseFloat(style.letterSpacing) || 0;
   return split(text, {
+    maxLines,
     maxWidth: target.clientWidth - 4,
     measure(value) {
       measurementContext.font = normal;

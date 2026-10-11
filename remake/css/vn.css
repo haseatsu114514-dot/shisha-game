@@ -148,10 +148,10 @@ body.in-vn #bg { transition: filter 0.4s; }
   font-feature-settings: "palt" 0;
   min-height: 96px;
 }
-/* 同じ発言の下に置く、プレイヤーだけに見えるひよりの本心。通常の会話枠はそのまま。 */
-.vn-box.has-inner { height: 248px; }
+/* 枠の高さは固定。本心がある発言は1行ずつ送り、本心の2行分を空ける。 */
+.vn-box.has-inner .vn-text { min-height: 48px; }
 .vn-inner {
-  margin-top: 10px;
+  margin-top: 8px;
   font-size: 24px;
   font-weight: 500;
   line-height: 1.45;
@@ -161,9 +161,6 @@ body.in-vn #bg { transition: filter 0.4s; }
   text-shadow: 0 1px 2px #000;
 }
 .vn-inner[hidden] { display: none; }
-#vn:has(.vn-box.has-inner) .vn-controls { bottom: 276px; }
-#vn:has(.vn-box.has-inner) .vn-choices { bottom: 332px; }
-#vn:has(.vn-box.has-inner) .vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: 376px; }
 .tx-imp { color: var(--gold-hi); font-weight: 700; text-shadow: 0 0 16px rgba(255, 210, 120, 0.6); }
 .tx-warn { color: #ff8f8f; font-weight: 700; }
 .tx-hint { color: #9fe3ff; }

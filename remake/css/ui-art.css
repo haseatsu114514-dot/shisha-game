@@ -217,6 +217,7 @@
 .gain-card.stat .gc-main { font-size: 21px; line-height: 1.4; letter-spacing: 0.06em; }
 .gain-card.stat .gc-top { font-size: 10px; line-height: 1.2; letter-spacing: 0.24em; opacity: 0.9; }
 .gain-card.stat .gc-points { display: flex; align-items: baseline; gap: 1px; line-height: 1; }
+.gain-card.stat .gc-earned { font-size: 11px; white-space: nowrap; color: var(--text-dim); }
 .gain-card.stat :is(.gc-count, .gc-unit) { font-size: 19px; font-weight: 800; letter-spacing: -0.02em; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
 .gain-card.stat.evolved { width: auto; min-width: 320px; max-width: 480px; }
 .gain-card.stat .gc-evolution { font-size: 18px; line-height: 1.4; }
