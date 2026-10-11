@@ -85,6 +85,7 @@ jobs:
           node remake/test/hiyori_encounters.mjs
           node remake/test/hiyori_intro.mjs
           node remake/test/kafuka_portrait.mjs
+          node remake/test/browser/affinity_gates.mjs
       - name: Title art rotation and SKIP visual readiness
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules

@@ -3,7 +3,7 @@ import { el, yen } from "../core/util.js";
 import { DB, displayName, faceIconUrl, cgUrl } from "../core/data.js";
 import { modal, heartRow, statBadge, layers } from "../core/ui.js";
 import { state, STAT_KEYS, STAT_JA } from "../core/state.js";
-import { star, starText, rankLabel, affinityLevel, currentCondition } from "../core/stats.js";
+import { star, starText, rankLabel, affinityLevel, affinityGateWaiting, currentCondition } from "../core/stats.js";
 import { flavorStock, ownedFlavorIds } from "./shop.js";
 import { BOND_FINALES } from "./bonds.js";
 import { KEEPSAKES } from "../core/keepsakes.js";
@@ -120,8 +120,8 @@ function peopleTab() {
       el("span.pp-hearts", [
         lover ? el("span.pp-relation", { text: "恋人　絆" }) : null,
         hearts,
-        !lover && id === "hiyori" && lv >= 3 && !state.flags._hiyori_tonari_return_done
-          ? el("span.pp-relation", { text: "スミさんとの再会待ち" }) : null,
+        !lover && lv >= 3 && affinityGateWaiting(id)
+          ? el("span.pp-relation", { text: id === "hiyori" ? "スミさんとの再会待ち" : "関係を考える会話待ち" }) : null,
         !lover && friendClosed(id) ? el("span.pp-relation", { text: "友達" }) : null,
       ]),
       state.contacts.includes(id) ? el("span.pp-lime", { text: "LIME" }) : null,

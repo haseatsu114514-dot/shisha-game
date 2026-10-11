@@ -179,14 +179,15 @@ export async function visitChar(charId) {
     // 正体がつながる日の照れた接客を最後まで見せ、通常回は次の来店へ残す。
     await play("ch1_minto_identity_reveal");
     gainAffinity(charId, 10);
+  } else if (questionVisitDue(charId)) {
+    // 節目を先に読んだ旧セーブ・♥3未満で外出した場合も、次の実対面で分岐を受け取る。
+    await playQuestionVisit(charId, { bg });
+    gainAffinity(charId, 5);
   } else if (idx < seq.length && DB.dialogues[seq[idx]] && storyAvailable(seq[idx])) {
     state.story[charId] = idx + 1;
     await play(seq[idx], DB.dialogues[seq[idx]].metadata?.bg ? {} : { bg });
     gainAffinity(charId, 10);
     await afterStory(seq[idx], { bg });
-  } else if (questionVisitDue(charId)) {
-    await playQuestionVisit(charId, { bg });
-    gainAffinity(charId, 5);
   } else if (finaleAtVisit(charId)) {
     await playFinale(charId, { bg });
     gainAffinity(charId, 10);
