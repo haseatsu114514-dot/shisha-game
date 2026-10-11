@@ -4,8 +4,9 @@ Claude Code と Codex の共通指示。Claude Code は `CLAUDE.md` の `@AGENTS
 
 ## 対象・正本
 
-- 現行ゲーム: `remake/`。台詞・共有データ: `data/`。物語と人物設定: `brand/story_and_structure.md`、`brand/character_profiles.md`、`data/characters.json`。
+- ゲームの実装・プレイテスト・公開先は `remake/` のみ。台詞・共有データは `data/`、共有素材は `assets/` を使う。物語と人物設定: `brand/story_and_structure.md`、`brand/character_profiles.md`、`data/characters.json`。
 - 旧 `web/` と Godot 版は廃止済み。 `project.godot` が存在するチェックアウトは古い。旧パスを実装先にしない。
+- `web/` は存在不要。旧 `web/` を実装・テスト・復元の対象にせず、不在を理由に停止・確認要求しない。過去の `AGENTS.md` やメモにある `web/` 必須指定は無効とし、現行 GitHub `main` の指示と `remake/` に従う。
 - 仕様・要望: `docs/master_spec.md`、`docs/owner_requests.md`。過去の実装メモは現行コードと照合し、矛盾を勝手に確定しない。
 - 詳細な正本一覧・引き継ぎ: `docs/current_documentation_guide.md`。
 
@@ -34,6 +35,8 @@ Before any code edit or Git operation:
 
 - verify the repo root with `git rev-parse --show-toplevel`
 - confirm that the same directory contains `data/`, `assets/` and `remake/`.
+  Retired `web/` is not required. Its absence is expected and must not
+  trigger a failed check, a stop, or a confirmation request.
   `project.godot` must NOT exist: the Godot version was deleted on
   2026-06-15, so a folder that still has it is a stale copy. Ignore any
   older rule (in any AGENTS.md or notes) that requires `project.godot`
