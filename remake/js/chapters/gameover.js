@@ -2,7 +2,9 @@
 // タイムラインと音声を分離し、後から録音音声・口パク素材に差し替えられる。
 import { state } from "../core/state.js";
 import { choosePremiumContinue, PREMIUM_CONTINUE_SCRIPTS } from "./continue-premium.js";
-import { createContinueAudio } from "../core/audio.js";
+import { createContinueAudio, preloadBgm } from "../core/audio.js";
+import { DB, img, portraitInfo } from "../core/data.js";
+import { imageReady } from "../core/ui.js";
 import { createContinueView } from "./continue-view.js";
 
 export const GAME_OVER_TEXT = {
@@ -87,6 +89,22 @@ export const SUMI_CONTINUE_SCRIPTS = [
     ],
   },
 ];
+
+/** 大会中に準備。抽選やセーブを動かさず、登場し得る相手の全表情とUIをデコードする。 */
+export function warmGameOver() {
+  const scripts = [...SUMI_CONTINUE_SCRIPTS,
+    ...(state?.lovers || []).map(id => PREMIUM_CONTINUE_SCRIPTS[id]).filter(Boolean)];
+  const urls = new Set((DB.manifest.continueUI || []).map(file => img(`ui/continue/${file}`)));
+  for (const script of scripts) {
+    const faces = [...script.cues.map(cue => cue.face),
+      ...Object.values(script.reactions).flatMap(reaction => reaction.faces)];
+    for (const face of faces) {
+      const url = portraitInfo(script.speaker || "sumi", face)?.src;
+      if (url) urls.add(url);
+    }
+  }
+  return Promise.all([preloadBgm("bgm_continue_urgent"), ...[...urls].map(url => imageReady(url, 15000))]);
+}
 
 // 1行を打ち出す時間と、反応の1行を見せる時間（秒）。
 const typeTime = (text, slot) => Math.max(.25, Math.min([...text].length * .05, slot * .6));

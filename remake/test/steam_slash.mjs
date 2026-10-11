@@ -116,8 +116,12 @@ try {
       }
       await touch.detach();
     }
-    await page.waitForFunction(()=>document.querySelector('.dodge-heart.shield'));
-    assert.equal(await page.locator('.dodge-heart').evaluate(n=>getComputedStyle(n).color),'rgb(239, 135, 149)');
+    // 無敵が終わるまでに別のブラウザ往復を挟まず、被弾フレームの色を保存する。
+    const hitColor = await page.waitForFunction(() => {
+      const heart = document.querySelector('.dodge-heart.shield');
+      return heart ? getComputedStyle(heart).color : false;
+    });
+    assert.equal(await hitColor.jsonValue(),'rgb(239, 135, 149)');
     await shot(page,`heart-hit-${name}`);
     await page.waitForSelector('.result-card.show',{timeout:25000});
     assert.equal(await page.locator('.dodge-slash-fx,.dodge-refresh-fx,.dodge-thought-echo,.dodge-word,.dodge-object').count(),0);

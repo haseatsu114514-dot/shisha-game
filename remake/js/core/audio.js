@@ -390,9 +390,37 @@ function bgmSource(url) {
   return packedSources.get(url);
 }
 
-/** 大会到着中に先読み。失敗しても進行を止めず、再生時に再試行する。 */
+// 外部MP3のCONTINUE曲も、URLの解決だけでなく再生可能なところまで準備する。
+// 演出開始時はこの要素を受け取り、遅い回線では専用の合成曲へ切り替える。
+let preparedContinue = null;
+function prepareContinueBgm(url) {
+  if (preparedContinue?.url === url) return preparedContinue.ready;
+  const audio = new Audio(url);
+  audio.preload = "auto";
+  const prepared = { url, audio, ready: null };
+  prepared.ready = new Promise(resolve => {
+    let timer;
+    const finish = loaded => {
+      clearTimeout(timer);
+      audio.removeEventListener("canplay", loadedTrack);
+      audio.removeEventListener("error", failedTrack);
+      resolve(loaded);
+    };
+    const loadedTrack = () => finish(true), failedTrack = () => finish(false);
+    audio.addEventListener("canplay", loadedTrack, { once: true });
+    audio.addEventListener("error", failedTrack, { once: true });
+    timer = setTimeout(failedTrack, 2000);
+    audio.load();
+    if (audio.readyState >= 3) loadedTrack();
+  });
+  preparedContinue = prepared;
+  return prepared.ready;
+}
+
+/** 大会到着中に先読み。取得失敗で進行を止めない。 */
 export function preloadBgm(key) {
   const url = bgmUrl(key);
+  if (key === "bgm_continue_urgent" && url && !url.endsWith(".bgm")) return prepareContinueBgm(url);
   return url ? bgmSource(url).then(() => true, () => false) : Promise.resolve(false);
 }
 
@@ -406,7 +434,14 @@ export function playBgm(key) {
   const url = bgmUrl(key);
   if (url) {
     const packed = url.endsWith(".bgm");
-    const a = packed ? new Audio() : new Audio(url);
+    const prepared = key === "bgm_continue_urgent" && preparedContinue?.url === url ? preparedContinue : null;
+    if (prepared) preparedContinue = null;
+    if (prepared && prepared.audio.readyState < 3) {
+      prepared.audio.removeAttribute("src"); prepared.audio.load();
+      synthStop = startSynth(SYNTH_FALLBACK[key]);
+      return; // 外部曲を待っている間に、20秒のカウントだけ進ませない。
+    }
+    const a = prepared?.audio || (packed ? new Audio() : new Audio(url));
     a.loop = true;
     a.volume = 0;
     if (key === "bgm_continue_urgent") {
@@ -429,7 +464,7 @@ export function playBgm(key) {
           pendingBgm = key; currentKey = null;
         }
       });
-      fadeEl(a, () => bgmLevel(key), 1200);
+      fadeEl(a, () => bgmLevel(key), key === "bgm_continue_urgent" ? 160 : 1200);
     };
     if (packed) {
       bgmSource(url).then((source) => {
