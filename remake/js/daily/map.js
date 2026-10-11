@@ -73,6 +73,7 @@ function cueMove(shield, spot) {
   if (!s.width || !s.height) return;
   const known = knowsOwner(spot);
   cueTransition("place", {
+    spotId: spot.id,
     x: (p.left + p.width / 2 - s.left) * (1280 / s.width),
     y: (p.top + p.height / 2 - s.top) * (720 / s.height),
     label: known ? spot.label : spot.unknownLabel || spot.label,

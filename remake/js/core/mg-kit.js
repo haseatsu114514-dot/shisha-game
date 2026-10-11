@@ -61,7 +61,8 @@ export function burst(root, cx, cy, { n = 8, r0 = 60, r1 = 150, color = "#fff", 
     const a = (i / n) * Math.PI * 2 + turn;
     const line = svg("line", { x1: cx + Math.cos(a) * r0, y1: cy + Math.sin(a) * r0, x2: cx + Math.cos(a) * r1, y2: cy + Math.sin(a) * r1, pathLength: 1, "stroke-dasharray": "1 1", "stroke-dashoffset": 1 });
     g.append(line);
-    move(line, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0, offset: 0.45 }, { strokeDashoffset: -1 }], dur, { easing: MG_EASE.out, delay });
+    // 描く・引っ込める区間を分ける。全体の強い減速で中間点を一瞬で通り過ぎないようにする。
+    move(line, [{ strokeDashoffset: 1, easing: "cubic-bezier(.25,1,.5,1)" }, { strokeDashoffset: 0, offset: 0.45, easing: "cubic-bezier(.5,0,.75,0)" }, { strokeDashoffset: -1 }], dur, { easing: "linear", delay });
   }
   root.append(g);
   setTimeout(() => g.remove(), delay + dur + 50);
@@ -73,7 +74,7 @@ export function ring(root, cx, cy, { r = 160, color = "#fff", width = 10, delay 
   const c = svg("circle", { cx, cy, r, fill: "none", stroke: color, "stroke-width": width, class: "tr-scale" });
   c.style.transform = "scale(0)";
   root.append(c);
-  move(c, [{ transform: "scale(0.15)", strokeWidth: width, opacity: 1 }, { transform: "scale(1)", strokeWidth: 0.5, opacity: 0.2 }], dur, { easing: MG_EASE.out, delay }).then(() => c.remove());
+  move(c, [{ transform: "scale(0.15)", strokeWidth: width, opacity: 1 }, { transform: "scale(1)", strokeWidth: 0, opacity: 0 }], dur, { easing: MG_EASE.out, delay }).then(() => c.remove());
   return c;
 }
 
@@ -95,10 +96,10 @@ export function confetti(root, cx, cy, { n = 18, colors = ["#fff"], spread = 300
     root.append(piece);
     const spin = (Math.random() - 0.5) * 720;
     move(inner, [
-      { transform: "translate(0px,0px) rotate(0deg) scale(0.4)", opacity: 1 },
-      { transform: `translate(${tx}px,${ty}px) rotate(${spin * 0.6}deg) scale(1)`, opacity: 1, offset: 0.55 },
+      { transform: "translate(0px,0px) rotate(0deg) scale(0.4)", opacity: 1, easing: "cubic-bezier(.2,.7,.4,1)" },
+      { transform: `translate(${tx}px,${ty}px) rotate(${spin * 0.6}deg) scale(1)`, opacity: 1, offset: 0.55, easing: "cubic-bezier(.55,.085,.68,.53)" },
       { transform: `translate(${tx * 1.1}px,${ty + 120}px) rotate(${spin}deg) scale(0.8)`, opacity: 0 },
-    ], 1100 + Math.random() * 400, { easing: "cubic-bezier(.2,.7,.4,1)", delay: delay + Math.random() * 80 }).then(() => piece.remove());
+    ], 1100 + Math.random() * 400, { easing: "linear", delay: delay + Math.random() * 80 }).then(() => piece.remove());
   }
 }
 
@@ -107,7 +108,7 @@ export function twinkle(root, x, y, { size = 16, color = "#fff", delay = 0, dur 
   const s = svg("path", { d: `M ${x} ${y - size} L ${x + size * 0.28} ${y - size * 0.28} L ${x + size} ${y} L ${x + size * 0.28} ${y + size * 0.28} L ${x} ${y + size} L ${x - size * 0.28} ${y + size * 0.28} L ${x - size} ${y} L ${x - size * 0.28} ${y - size * 0.28} Z`, fill: color, class: "tr-scale" });
   s.style.transform = "scale(0)";
   root.append(s);
-  move(s, [{ transform: "scale(0) rotate(0deg)" }, { transform: "scale(1) rotate(45deg)", offset: 0.4 }, { transform: "scale(0) rotate(90deg)" }], dur, { easing: MG_EASE.out, delay }).then(() => s.remove());
+  move(s, [{ transform: "scale(0) rotate(0deg)", easing: "cubic-bezier(.22,1,.36,1)" }, { transform: "scale(1) rotate(45deg)", offset: 0.4, easing: "cubic-bezier(.37,0,.63,1)" }, { transform: "scale(0) rotate(90deg)" }], dur, { easing: "linear", delay }).then(() => s.remove());
 }
 
 /** 1文字ずつ下から出てくる文字（行ごとにはみ出しを隠す） */
