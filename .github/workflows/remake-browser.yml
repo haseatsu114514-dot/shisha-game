@@ -75,6 +75,15 @@ jobs:
       # Keep browser suites sequential; they share the preview server and runner.
       - name: Save/load, legacy migration and PC/mobile controls
         run: node remake/test/browser/save_load.mjs
+      - name: Steam slash, recharge and PC/mobile controls
+        env:
+          NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
+          SHOTS: .codex/artifacts/remake-browser/steam
+        run: |
+          export CHROME_EXECUTABLE_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
+          node remake/test/steam_slash.mjs
+          node remake/test/steam_refresh.mjs
+          node remake/test/steam_forecast.mjs
       - name: Validate developer tools available on this branch
         run: |
           selected=()

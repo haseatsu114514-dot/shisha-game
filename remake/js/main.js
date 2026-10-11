@@ -6,6 +6,9 @@ import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
 import { loadConfig, state, load, consumeResumeOnBoot } from "./core/state.js";
 import { unlockAudio } from "./core/audio.js";
 import { vnTest } from "./vn/engine.js";
+import { createDevInspector } from "./core/dev-inspector.js";
+import { createEventPreview } from "./core/dev-event-preview.js";
+import { createIsolatedEventPlayer } from "./core/dev-isolated-player.js";
 import { craftTest } from "./craft/session.js";
 import { showTitle } from "./scenes/title.js";
 import { resumeGame } from "./chapters/ch1.js";
@@ -71,6 +74,10 @@ window.__remake = {
   DB,
   vnTest,
   craftTest,
+  // Read-only inspection: __remake.inspect.snapshot(), .events('ch1'), .eventInfo(id)
+  inspect: createDevInspector(() => state, () => DB.dialogues),
+  preview: createEventPreview(() => DB.dialogues, document),
+  rehearsal: createIsolatedEventPlayer(() => DB.dialogues, document),
   // MOKUMOKUパッキー: 分布確認 __remake.reel.simulate(100000) ／演出だけ見る __remake.reel.force("big", "before"|"after")
   reel: {
     async simulate(n = 100000) { return (await import("./daily/reel.js")).simulate(n); },
