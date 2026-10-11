@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-10",
+  "requests": "CV32",
+  "generator": "image_gen.imagegen",
+  "promptFile": "backdrop-stage.prompt.txt",
+  "sha256": "0d57c18d40b8945419e4a500dc6c2b0de3253561e4b435f22594093da176f251",
+  "size": [
+    1672,
+    941
+  ],
+  "mode": "RGB",
+  "transparent": false,
+  "references": [
+    {
+      "origin": "user attachment in this chat",
+      "order": 1,
+      "size": [
+        1280,
+        720
+      ],
+      "description": "Overhead spotlight, smoky stage, subtle particles"
+    },
+    {
+      "origin": "user attachment in this chat",
+      "order": 2,
+      "size": [
+        1280,
+        720
+      ],
+      "description": "Quieter diffused light, gray-violet stage and floor"
+    }
+  ],
+  "runtimeAdaptation": "Lanczos downsample to 1280x720; no composition or color edits; experimental backdrop selector only"
+}

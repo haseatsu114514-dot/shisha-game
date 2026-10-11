@@ -43,6 +43,12 @@ function backArt(P) {
 }
 
 
+// a の動きの曲線。長めの動きは指数カーブだと最初に済んで尻すぼみになるので、やわらかい曲線にする
+const SOFT = "cubic-bezier(.22,1,.36,1)"; // 描く・出る（quint-out）
+const LAND = "cubic-bezier(.28,1.4,.5,1)"; // 札の着地。行き過ぎは5%ほど
+const LEAVE = "cubic-bezier(.5,0,.75,0)"; // 抜ける・退場（quart-in）
+const TURN = "cubic-bezier(.65,0,.35,1)"; // 札の裏返し・光の走り（左右対称のなだらか）
+
 const TAROT = { bg: "#101a3a", deep: "#080e22", main: "#24356e", mid: "#4a5fb4", light: "#f2c14e", white: "#fff6dc" };
 
 function tarotCard(P, i) {
@@ -78,39 +84,45 @@ export async function a() {
     node.append(back, art, ...cards, ...flare, flash);
     // 1. 星図の輪が描かれる
     move(back, [{ opacity: 0 }, { opacity: 1 }], 240);
-    move(dial[0], [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 700, { easing: E.out });
-    move(dial[2], [{ strokeDashoffset: -1 }, { strokeDashoffset: 0 }], 700, { easing: E.out, delay: 80 });
-    dial[1].animate([{ transform: "rotate(0deg) scale(0.8)", opacity: 0 }, { transform: "rotate(40deg) scale(1)", opacity: 0.7 }], { duration: 2600, easing: E.out, fill: "both" });
+    move(dial[0], [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 700, { easing: SOFT });
+    move(dial[2], [{ strokeDashoffset: -1 }, { strokeDashoffset: 0 }], 700, { easing: SOFT, delay: 80 });
+    // 点線の輪: 現れるのは最初だけ、回転はずっと一定の速さ（以前は最初の0.5秒で回りきって止まっていた）
+    move(dial[1], [{ transform: "scale(0.8)", opacity: 0 }, { transform: "scale(1)", opacity: 0.7 }], 800, { easing: SOFT });
+    dial[1].animate([{ transform: "rotate(0deg)" }, { transform: "rotate(40deg)" }], { duration: 3600, easing: "linear", fill: "both", composite: "add" });
     [...ticks.children].forEach((t, i) => move(t, [{ opacity: 0 }, { opacity: 1 }], 160, { delay: 200 + i * 30 }));
     for (let i = 0; i < 7; i++) twinkle(art, 160 + Math.random() * 960, 60 + Math.random() * 560, { color: P.light, size: 8 + Math.random() * 10, delay: 200 + i * 180, dur: 900 });
     // 2. 3枚が回りながら飛んできて扇に並ぶ
     const xs = [-230, 0, 230], rot = [-10, 0, 10];
     await Promise.all(cards.map((c, i) => move(c, [
       { transform: `translate(-50%, 520px) rotate(${rot[i] * 5}deg) scale(0.8, 1.2)` },
-      { transform: `translate(calc(-50% + ${xs[i]}px), 0) rotate(${rot[i]}deg) scale(1)` }], 520, { easing: E.back, delay: 120 + i * 90 })));
+      { transform: `translate(calc(-50% + ${xs[i]}px), 0) rotate(${rot[i]}deg) scale(1)` }], 520, { easing: LAND, delay: 120 + i * 90 })));
     SE.tick();
     await sleep(380);
     // 3. 両端が抜けて、真ん中が持ち上がる
-    move(cards[0], [{ transform: "translate(calc(-50% - 230px), 0) rotate(-10deg)", opacity: 1 }, { transform: "translate(calc(-50% - 620px), 40px) rotate(-30deg)", opacity: 0 }], 360, { easing: E.in });
-    move(cards[2], [{ transform: "translate(calc(-50% + 230px), 0) rotate(10deg)", opacity: 1 }, { transform: "translate(calc(-50% + 620px), 40px) rotate(30deg)", opacity: 0 }], 360, { easing: E.in });
+    move(cards[0], [{ transform: "translate(calc(-50% - 230px), 0) rotate(-10deg)", opacity: 1 }, { transform: "translate(calc(-50% - 620px), 40px) rotate(-30deg)", opacity: 0 }], 360, { easing: LEAVE });
+    move(cards[2], [{ transform: "translate(calc(-50% + 230px), 0) rotate(10deg)", opacity: 1 }, { transform: "translate(calc(-50% + 620px), 40px) rotate(30deg)", opacity: 0 }], 360, { easing: LEAVE });
     await move(cards[1], [{ transform: "translate(-50%, 0) scale(1)" }, { transform: "translate(-50%, -16px) scale(1.16)" }], 300, { easing: E.out });
     // 4. くるっと裏返った瞬間、ピカーン。画面が白く光り、十字の光と長い放射線が伸びて、札が脈打つ
-    await move(cards[1].firstChild, [{ transform: "rotateY(0deg)" }, { transform: "rotateY(180deg)" }], 520, { easing: E.inOut });
+    // 表が向いた（90°を少し越えた）瞬間に光る。裏返しが止まるのを待つと、表が見えてから光るまで間が空く
+    const turn = move(cards[1].firstChild, [{ transform: "rotateY(0deg)" }, { transform: "rotateY(180deg)" }], 520, { easing: TURN });
+    await sleep(280);
     SE.just();
-    move(flash, [{ opacity: 0, transform: "scale(0.4)" }, { opacity: 1, transform: "scale(1.15)", offset: 0.18 }, { opacity: 0, transform: "scale(1.6)" }], 900, { easing: E.out });
-    flare.forEach((f, i) => move(f, [{ transform: `translate(-50%, -50%) rotate(var(--r)) scaleX(0)`, opacity: 1 }, { transform: `translate(-50%, -50%) rotate(var(--r)) scaleX(1)`, opacity: 1, offset: 0.35 }, { transform: `translate(-50%, -50%) rotate(var(--r)) scaleX(1.3)`, opacity: 0 }], 900, { easing: E.out, delay: i * 40 }));
+    // 光は一瞬で立ち上がり、そこから尾を引いて消える（キーフレームごとに曲線を指定）
+    move(flash, [{ opacity: 0, transform: "scale(0.4)", easing: E.out }, { opacity: 1, transform: "scale(1.15)", offset: 0.1, easing: SOFT }, { opacity: 0, transform: "scale(1.6)" }], 900, { easing: "linear" });
+    flare.forEach((f, i) => move(f, [{ transform: `translate(-50%, -50%) rotate(var(--r)) scaleX(0)`, opacity: 1, easing: E.out }, { transform: `translate(-50%, -50%) rotate(var(--r)) scaleX(1)`, opacity: 1, offset: 0.1, easing: SOFT }, { transform: `translate(-50%, -50%) rotate(var(--r)) scaleX(1.3)`, opacity: 0 }], 900, { easing: "linear", delay: i * 40 }));
     ring(art, cx, cy, { r: 260, color: P.white, width: 10 });
     ring(art, cx, cy, { r: 380, color: P.light, width: 6, delay: 120 });
     burst(art, cx, cy, { n: 18, r0: 220, r1: 420, color: P.light, width: 5, dur: 620 });
     burst(art, cx, cy, { n: 18, r0: 260, r1: 360, color: P.white, width: 3, dur: 520, delay: 90, turn: Math.PI / 18 });
-    move(front, [{ boxShadow: `0 0 0 0 ${P.light}` }, { boxShadow: `0 0 80px 30px ${P.light}`, offset: 0.3 }, { boxShadow: `0 0 36px 8px ${P.light}` }], 900, { easing: E.out });
-    move(gloss, [{ transform: "translateX(-140%) skewX(-20deg)" }, { transform: "translateX(240%) skewX(-20deg)" }], 520, { easing: E.inOut, delay: 200 });
+    move(front, [{ boxShadow: `0 0 0 0 ${P.light}`, easing: E.out }, { boxShadow: `0 0 80px 30px ${P.light}`, offset: 0.12, easing: SOFT }, { boxShadow: `0 0 36px 8px ${P.light}` }], 900, { easing: "linear" });
+    move(gloss, [{ transform: "translateX(-140%) skewX(-20deg)" }, { transform: "translateX(240%) skewX(-20deg)" }], 520, { easing: TURN, delay: 200 });
     for (let i = 0; i < 6; i++) twinkle(art, cx + Math.cos(i) * (160 + i * 18), cy + Math.sin(i * 1.7) * 150, { color: P.white, size: 14 + (i % 3) * 6, delay: 160 + i * 70 });
-    await sleep(1200);
+    await turn;
+    await sleep(960); // 光ってからの余韻は従来どおり約1.2秒
     // 5. 退場
     move(art, [{ opacity: 1 }, { opacity: 0 }], 360);
-    move(back, [{ opacity: 1 }, { opacity: 0 }], 420, { delay: 160 });
-    await move(cards[1], [{ transform: "translate(-50%, -16px) scale(1.16) rotate(0deg)", opacity: 1 }, { transform: "translate(-50%, -40px) scale(0.6) rotate(12deg)", opacity: 0 }], 420, { easing: E.in });
+    move(back, [{ opacity: 1 }, { opacity: 0 }], 380, { delay: 40 }); // 札が消えるのと同時に背景も消え切る（後から残って急に消えない）
+    await move(cards[1], [{ transform: "translate(-50%, -16px) scale(1.16) rotate(0deg)", opacity: 1 }, { transform: "translate(-50%, -40px) scale(0.6) rotate(12deg)", opacity: 0 }], 420, { easing: LEAVE });
   });
 }
 

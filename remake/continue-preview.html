@@ -35,6 +35,19 @@
  <option value="premium:mashiro">ましろ（プレミア）</option>
  <option value="premium:kafuka">サメちゃん（プレミア）</option>
  </select>
+ <label for="preview-layout">配置</label>
+ <select id="preview-layout" aria-label="コンティニューの配置">
+ <option value="neon" selected>筆文字・円形HUD（採用中）</option>
+ <option value="bottom">王道・下にボタン（比較）</option>
+ <option value="bottom-back-count">王道＋迫る背面カウント（実験）</option>
+ <option value="top">上にボタン（実験）</option>
+ <option value="back-count">上ボタン＋背面カウント（実験）</option>
+ </select>
+ <label for="preview-background">背景</label>
+ <select id="preview-background" aria-label="コンティニューの背景">
+ <option value="stage" selected>暗いステージ（採用中）</option>
+ <option value="purple">紫の煙（比較）</option>
+ </select>
  <button type="button" id="preview-play">▶ 再生する</button>
  <button type="button" id="preview-retry" disabled>戻る反応</button>
  <button type="button" id="preview-quit" disabled>諦める反応</button>
@@ -51,10 +64,15 @@ import { unlockAudio, applyVolumes } from "./js/core/audio.js";
 import { config, loadConfig } from "./js/core/state.js";
 const stage = document.getElementById("stage"), screen = document.getElementById("screen"),
   msg = document.getElementById("preview-error"), btn = document.getElementById("preview-play"),
-  selector = document.getElementById("character"), tools = document.getElementById("preview-tools"),
+  selector = document.getElementById("character"), layout = document.getElementById("preview-layout"),
+  background = document.getElementById("preview-background"),
+  tools = document.getElementById("preview-tools"),
   se = document.getElementById("preview-se"), bgm = document.getElementById("preview-bgm"),
   motion = document.getElementById("preview-motion"), retry = document.getElementById("preview-retry"),
   quit = document.getElementById("preview-quit");
+const params = new URLSearchParams(location.search);
+if (["neon", "bottom", "top", "back-count", "bottom-back-count"].includes(params.get("layout"))) layout.value = params.get("layout");
+if (["purple", "stage"].includes(params.get("background"))) background.value = params.get("background");
 function fit() {
  const top = tools.offsetHeight + 22;
  document.getElementById("viewport").style.top = top + "px";
@@ -77,7 +95,7 @@ function show() {
  retry.disabled = quit.disabled = false;
  root = buildGameOver({
    reason:"rank", rank:2, variant:val.startsWith("premium:")?val:Number(val),
-   soundEffects:se.checked, reducedMotion:motion.checked,
+   soundEffects:se.checked, reducedMotion:motion.checked, layout:layout.value, background:background.value,
    onRetry:()=>complete("retry"), onTitle:()=>complete("quit")
  });
  screen.replaceChildren(root);
@@ -92,6 +110,8 @@ function complete(choice) {
 }
 btn.addEventListener("click", show);
 selector.addEventListener("change", show);
+layout.addEventListener("change", show);
+background.addEventListener("change", show);
 retry.addEventListener("click", ()=>root?.querySelector('[data-test="retry"]')?.click());
 quit.addEventListener("click", ()=>root?.querySelector('[data-test="game-over-title"]')?.click());
 se.addEventListener("change", ()=>root?.setContinueSoundEffects?.(se.checked));

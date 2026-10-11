@@ -102,7 +102,7 @@ function meTab() {
   ]);
 }
 
-const PEOPLE = ["sumi", "tsumugi", "naru", "adam", "minto", "rin"];
+const PEOPLE = ["sumi", "tsumugi", "naru", "adam", "minto", "rin", "hiyori"];
 // 「友達」: 告白で友達のままを選んだか、恋愛対象と友情の締めくくりを迎えた
 const friendClosed = (id) => !!state.flags[`_friend_${id}`] || (!!BOND_FINALES[id]?.question && state.finales?.[id]?.route === "friend");
 function peopleTab() {

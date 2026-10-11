@@ -1,16 +1,20 @@
 {
   "profile": {
     "id": "kafuka",
-    "name": "波多野かふか",
-    "full_name": "波多野かふか",
+    "name": "波多野なぎさ",
+    "full_name": "波多野なぎさ",
     "display_name": "サメちゃん",
+    "speech_style": {
+      "kafuka": "一人称は「わし」、はじめへの呼びかけは「お主」。親しみのある「〜じゃ」「〜のじゃ」「〜じゃぞ」で話し、照れたり慌てたりすると言いよどむ。",
+      "korochan": "一人称は「余」。はじめは「勇者はじめ」、サメちゃんは「側近」と呼ぶ。王らしく短く断定する「〜である」「〜だ」、命令する「〜せよ」「〜しろ」の調子。本人の「じゃ」「のう」「おる」を使わず、落ち着いて本心をばらす。"
+    },
     "role": "heroine_candidate",
     "adult": true,
     "nationality": "Japan",
     "affiliation": "SHISHARK",
     "romance_available": false,
     "description": "シーシャークの開店を準備している成人女性。普通の成人女性の身長で、サメのフードを被り、笑うとギザ歯が見える。古風な「じゃ」「じゃぞ」の口調。サメのぬいぐるみコロンブレ（コロちゃん）をサメの王として扱い、腹話術で自分にツッコミを入れる。店作りには真面目で、通路や居心地を細かく確かめる。大会には興味がなく、はじめを競争相手として扱わない。手伝ってもらってから、少しずつはじめに懐く。",
-    "background_secret": "サメ映画の話を始めると長くなる。スピルバーグを尊敬している。グロい場面は目をそらして怖がるが、平気だと強がる。実は泳ぎが苦手。泳ぎの話と本名の紹介は後の私的会話で扱い、初回の説明には並べない。",
+    "background_secret": "サメ映画の話を始めると長くなる。スピルバーグを尊敬している。グロい場面は目をそらして怖がるが、平気だと強がる。実は泳ぎが苦手。泳ぎの話と本名の紹介は後の私的会話で扱い、初回の説明には並べない。 本名を聞かれると「知ってどうする」と強がるが、はじめに名前で呼ばれると照れて嬉しい。",
     "favorite_flavor": null,
     "specialty_flavor": null,
     "spriteScale": 0.91,
@@ -57,7 +61,7 @@
       "dialogue_id": "kafuka_first_encounter",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_shishark_preparing_night.png",
-        "setting": "仕事や外出を終えた帰り道。交換したアカウントで通称を知り、本名は後の名乗りまで伏せる。",
+        "setting": "仕事や外出を終えた帰り道。本人から通称を聞いて連絡先を交換し、本名は後の私的な名乗りまで伏せる。",
         "bgm": "sweets_or_sweets",
         "bgm_on_speaker": "kafuka"
       },
@@ -118,7 +122,7 @@
         {
           "speaker": "kafuka",
           "face": "normal",
-          "text": "王の玉座にふさわしい店を作るがよい",
+          "text": "余の玉座にふさわしい店を築け",
           "voice": "korochan"
         },
         {
@@ -162,6 +166,30 @@
           "text": "はじめ。覚えたのじゃ。わしは大会には興味がないが、お主の一杯はちょっと気になるのう"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そういえば、お名前は？"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "serious",
+          "text": "名など重要ではないのじゃ"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "normal",
+          "text": "強いていうなら、サメちゃんと呼ばれておる"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_kafuka_nickname_known"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "サメちゃん、ですね。よろしくお願いします"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "奥で工具が、かたん、と鳴る。彼女の肩が跳ねた。"
@@ -194,7 +222,7 @@
         {
           "speaker": "kafuka",
           "face": "smile",
-          "text": "はじめの席も用意しておこう",
+          "text": "勇者はじめよ、席を用意して待つ",
           "voice": "korochan"
         },
         {
@@ -213,16 +241,12 @@
         },
         {
           "type": "set_flag",
-          "flag": "_kafuka_nickname_known"
-        },
-        {
-          "type": "set_flag",
           "flag": "_met_kafuka"
         },
         {
           "speaker": "kafuka",
           "face": "smile",
-          "text": "サメちゃんでよいぞ。みんな、そう呼んでおる"
+          "text": "開店したら、また顔を見せるのじゃぞ"
         },
         {
           "speaker": "hajime",
@@ -240,7 +264,7 @@
           {
             "speaker": "kafuka",
             "face": "normal",
-            "text": "店が開く前に夜が明けるぞ、主よ",
+            "text": "側近よ、話が長い。開店前に夜が明けるぞ",
             "voice": "korochan"
           },
           {
@@ -258,7 +282,7 @@
           {
             "speaker": "kafuka",
             "face": "surprise",
-            "text": "怖い場面で顔を伏せておるのは誰じゃ？",
+            "text": "側近よ、怖い場面で顔を伏せたのは誰だ？",
             "voice": "korochan"
           },
           {
@@ -316,7 +340,7 @@
           {
             "speaker": "kafuka",
             "face": "smile",
-            "text": "はじめの席は空いておるぞ",
+            "text": "勇者はじめよ、席は確保してある",
             "voice": "korochan"
           },
           {
@@ -343,7 +367,22 @@
           {
             "speaker": "kafuka",
             "face": "smile",
-            "text": "ようこそ、SHISHARKへ。サメちゃんと呼んでよいぞ"
+            "text": "ようこそ、SHISHARKへ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "店主さんですか？ お名前は？"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "serious",
+            "text": "名など重要ではないのじゃ"
+          },
+          {
+            "speaker": "kafuka",
+            "face": "normal",
+            "text": "強いていうなら、サメちゃんと呼ばれておる"
           },
           {
             "type": "set_flag",
@@ -401,7 +440,7 @@
         {
           "speaker": "kafuka",
           "face": "serious",
-          "text": "苦しゅうない、はじめ",
+          "text": "よかろう。はじめの来訪を歓迎する",
           "voice": "korochan"
         },
         {
@@ -485,14 +524,29 @@
       },
       "lines": [
         {
-          "speaker": "kafuka",
-          "face": "serious",
-          "text": "そういえば、ちゃんと名乗っておらんかったな。波多野かふかじゃ"
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "サメちゃん、本当のお名前って聞いてもいいですか？"
         },
         {
           "speaker": "kafuka",
           "face": "serious",
-          "text": "サメちゃんでも、かふかでも、好きに呼んでよい"
+          "text": "知ってどうするのじゃ。サメちゃんで十分じゃろう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いつも会ってるのに、知らないままなのも寂しいなって"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "surprise",
+          "text": "……そんなことを言うでない"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "normal",
+          "text": "波多野なぎさじゃ、……一度しか言わんぞ"
         },
         {
           "type": "set_flag",
@@ -500,13 +554,39 @@
         },
         {
           "speaker": "hajime",
+          "face": "smile",
+          "text": "なぎささん。教えてくれて、ありがとうございます"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "surprise",
+          "text": "……いきなり呼ぶでない。心の準備というものがあるじゃろ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "サメのフードを引き下げたが、隠しきれない頬は赤い。"
+        },
+        {
+          "speaker": "kafuka",
           "face": "normal",
-          "text": "かふかさん。教えてくれて、ありがとうございます"
+          "text": "側近は、もう一度呼ばれることを望んでいる",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "kafuka",
+          "face": "surprise",
+          "text": "コロちゃん！ 余計なことを言うでない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……なぎささん"
         },
         {
           "speaker": "kafuka",
           "face": "smile",
-          "text": "……うむ。そっちで呼ばれると、少し照れるのじゃ"
+          "text": "……うむ。お主が呼ぶなら、それでよい"
         }
       ]
     }
@@ -599,7 +679,7 @@
         },
         {
           "text": "コロちゃんにもお祝いを伝えてください",
-          "response": "「苦しゅうない。主も喜んでおる」……こ、コロちゃん！",
+          "response": "「余は祝福を受け取った。側近も喜んでいる」……こ、コロちゃん！",
           "affinity": 1
         }
       ]

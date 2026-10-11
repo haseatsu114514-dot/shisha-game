@@ -5,6 +5,7 @@
 // 使い方: リポジトリのルートで `python3 -m http.server 8123` を起動してから
 //         node remake/test/playthrough.mjs
 import { createRequire } from "module";
+import { recordLoad } from "../tools/load-recorder.mjs";
 const require = createRequire(import.meta.url);
 const { chromium } = (() => {
   try { return require("playwright"); } catch { return require("/opt/node22/lib/node_modules/playwright"); }
@@ -36,6 +37,7 @@ const PLAN = [
 
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_BIN ? { executablePath: process.env.CHROME_BIN } : {}) });
 const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+const loadReport = process.env.LOAD_REPORT ? await recordLoad(page, BASE) : null;
 await page.addInitScript(() => {
   window.addEventListener("DOMContentLoaded", async () => {
     const audio = await import("./js/core/audio.js");
@@ -61,6 +63,7 @@ page.on("console", (m) => {
 
 await page.goto(BASE, { waitUntil: "load" });
 await page.waitForSelector('[data-test="title-new"]', { timeout: 20000 });
+if (loadReport) { await loadReport.settle(); loadReport.snapshot("title-with-prefetch"); }
 await page.evaluate(() => { localStorage.clear(); window.__remake.vnTest.turbo = true; window.__remake.craftTest.auto = "good"; });
 log("title OK");
 if (SHOTS) await page.screenshot({ path: `${SHOTS}/title.png` });
@@ -141,7 +144,7 @@ for (;;) {
     checkedTutorialGrowth = true;
     log("tutorial/forced growth remains zero");
   }
-  if (snap.day !== lastDay) { lastDay = snap.day; log(`DAY ${snap.day} (${snap.phase}) money=${snap.money} stamina=${snap.stamina}`); }
+  if (snap.day !== lastDay) { loadReport?.snapshot(`day-${snap.day}`); lastDay = snap.day; log(`DAY ${snap.day} (${snap.phase}) money=${snap.money} stamina=${snap.stamina}`); }
   if (key !== lastKey) { lastKey = key; lastProgress = Date.now(); }
   if (Date.now() - lastProgress > 30000) {
     if (SHOTS) await page.screenshot({ path: `${SHOTS}/stuck.png` });
@@ -383,4 +386,9 @@ if (!(s.kuji.g500 && s.kuji.g500.drawn === 1)) throw new Error(`kuji not drawn: 
 for (const [k, v] of Object.entries(s.stats)) if (v > 48) throw new Error(`stat ${k}=${v} exceeds ch1 soft cap`);
 if (errors.length) { console.error(errors.join("\n")); throw new Error(`${errors.length} page errors`); }
 log("PASS");
+if (loadReport) {
+  await loadReport.settle();
+  loadReport.snapshot("chapter-1-cleared-with-retry");
+  loadReport.write(process.env.LOAD_REPORT, { browser: browser.version(), scope: "existing chapter-1 playthrough PLAN, turbo dialogue, automatic minigames, defeat then retry and win, save/load included; cumulative snapshots; branch-dependent routes are not all traversed." });
+}
 await browser.close();

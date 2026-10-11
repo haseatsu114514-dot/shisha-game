@@ -14,6 +14,8 @@ export async function stagePlay(name, run, { cover = false } = {}) {
     await nextFrame();
     await run(node);
   } finally {
+    // ドットなどのループとfill付きの動きもここで止め、次の場面へ持ち越さない。
+    node.getAnimations({ subtree: true }).forEach((animation) => animation.cancel());
     node.remove();
     release();
   }

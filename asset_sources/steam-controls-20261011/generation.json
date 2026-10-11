@@ -1,0 +1,49 @@
+{
+  "tool": "image_gen.imagegen",
+  "transparent_background": true,
+  "prompts": "prompts.json",
+  "assets": [
+    {
+      "asset": "assets/ui/making/steam_refresh_button.png",
+      "generatedSource": "exec-f2a61bce-a2d7-44ea-a916-ae4cd55b9370.png",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        254
+      ],
+      "transparentPixels": 388232,
+      "sha256": "27b74dce5ee1950537527b7cbd390477f4e9e566f6491a7094b5a7e78f90d323",
+      "visualReview": "Accepted: independent circular control, no text or scenery, transparent background."
+    },
+    {
+      "asset": "assets/ui/making/steam_precision_button.png",
+      "generatedSource": "exec-e8c6f9dc-b011-491b-b8c1-aa3dcebc3855.png",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentPixels": 603566,
+      "sha256": "16ba19aaad6a8728cb7cb3f0b136d10bda313ba76b4652c7256a0a053d5cd8e7",
+      "visualReview": "Accepted: independent circular control, no text or scenery, transparent background."
+    },
+    {
+      "asset": "assets/ui/making/steam_stick_base.png",
+      "generatedSource": "exec-6d6350eb-9db8-4e3d-9ca0-e4d6203833f7.png",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "alphaRange": [
+        0,
+        255
+      ],
+      "transparentPixels": 532441,
+      "sha256": "bfe1c27418e3fce3cb9ae5c14ac3fcbcdc3ed864ad8b1497bba6dd2bb03eade8",
+      "visualReview": "Accepted: independent circular control, no text or scenery, transparent background."
+    }
+  ]
+}

@@ -3,6 +3,14 @@
 本リポジトリの現行版。ESモジュールで工程ごとに実装し、共有JSONを直接読む。
 旧ブラウザ版 `web/`・単一HTML配布版は2026-10-07のオーナー指示で削除済み。現行セーブのキーは引き続き `suien_remake_save`。
 
+2026-10-11の蒸らし操作（過去の日付の回数制限を更新）:
+
+- ハート中央の白丸が実際の当たり判定。通常の水色と被弾時のピンク赤を区別する。
+- 下段はリフレッシュ／アタック／精密／スティック。間隔12px、銀色ノブの上面は10px上へ。
+- アタックはZまたはボタン。方向キーとの同時押しで上下左右へ、入力なしは上側の前方。スマホはスティック方向に撃てる。
+- アタックは前方80px・80度の小範囲で、1.8秒で再使用可能。リフレッシュ（Space／X／ボタン）は8秒でリチャージ。待ち秒数と充填の輪を各ボタンへ表示する。
+- 検証は `steam_slash.mjs`（四方向・実弾消去・PC／スマホ同時操作・白丸・ノブ）、`steam_refresh.mjs`（実時間でのリチャージ・成長効果）、`steam_forecast.mjs`（配置・精密・温度計）。
+
 2026-10-07のプレイ感調整:
 
 - 冒頭のシーシャ作りはスミさんの誘いで「練習していく／今は練習しない」を選ぶ。接客場面はどちらでも進む
@@ -41,11 +49,16 @@ python3 remake/tools/serve_preview.py --port 8123
 
 大会のコンティニューだけを確認する場合は `http://127.0.0.1:8123/remake/continue-preview.html`。
 スミさん3パターンと恋人6人の20秒演出・戻る／諦めるの反応を、本編と同じ立ち絵・描画で確認できる。
-画面上部に「コンティニュー？ 15」のように見出しと数字を横並びで中央配置。人物は顔の大きさを保って画面下端まで映し、1行テロップを少し上へ、その下に「大会に戻る」「諦める」の2択ボタンを置く。ボタン下には24pxの余白。背景は紫の煙。可決スタンプと時間切れのGAME OVERには生成画像を使用。
+2026-10-11の参考画像を本編へ採用。暗いスモークステージとスポット光、斜めの筆文字「コンティニューする？」、右上の円形HUDを配置。人物を中央から画面下端まで映し、背後の薄い巨大数字が750→1800pxへ迫る。下部の1行テロップに細いライン、金／紫の鋭角ボタンを合わせる。数字とボタン文字は動的な実テキスト。
 テロップは1行ずつ文字が弾んで出て、出るたびに日常会話と同じ話者の声が鳴る。押下後の反応も1行ずつ。
-台詞をタップすると全文表示、もう一度タップすると次へ。カウントは見出しのすぐ右に背景・枠・傾きなしの数字だけで20→0を常時表示する。
+台詞をタップすると全文表示、もう一度タップすると次へ。円形HUDの数字とリングは20秒の期限に連動。残り5秒はピンクの光を強め、GAME OVER時はHUD・背面数字・2択を消して青紫の筆文字ロゴだけを中央へ表示する。
 20秒でGAME OVERを表示してタイトルへ戻り、期限内の「大会に戻る」は反応後に大会冒頭へ戻る。字幕送りは期限に影響しない。
 プレビューはセーブに書き込まない。[V4仕様と検証](../docs/continue_button_reactions_sfx_20261010.md)。
+
+プレビューの既定は「筆文字・円形HUD（採用中）」と「暗いステージ（採用中）」。過去の王道／王道＋迫る数字／上段ボタン／上段ボタン＋背面カウントも比較用に保持する。
+実験版は「コンティニュー？ 15 ［する］［諦める］」を上部へ集め、下のセリフを大きくする。背面カウント版は人物の後ろの薄い数字が残り時間に沿って拡大する。動き軽減ではサイズを固定。「背景」で紫の煙と、添付画像を参考に生成した暗いステージを切り替えられる。
+`continue-preview.html?layout=neon&background=stage` で本編と同じ版、`?layout=top&background=purple` で上段比較版、`?layout=back-count&background=stage` で上段背面カウント版を選べる。紫背景も比較用に残す。背景タブでは時計・煙・光を停止し、動き軽減では数字の拡大と装飾アニメーションを止める。
+添付の王道構図に合わせた下段2択のまま、かなり大きい数字が迫る版は `continue-preview.html?layout=bottom-back-count&background=stage`。背面の数字は750→1800pxに拡大する。王道そのままの `?layout=bottom&background=stage` と比較できる。
 
 `data/` と `assets/` を相対パス（`../data/`・`../assets/`）で直接読むので、
 **ビルド不要**。file:// では fetch が通らないため、必ずローカルサーバー越しに開く。
@@ -85,7 +98,7 @@ python3 remake/tools/serve_preview.py --port 8123
 - **書体**: すべて `var(--font)`（Zen Kaku Gothic New・太さ 500/700/900）。別の書体を足さない。
   収録文字は JIS 第2水準まで＋データ中の全文字。見慣れない字が豆腐になったら `python3 remake/tools/build_font.py <元TTFのフォルダ>` で作り直す
 
-正史・仕様の正本は変わらない（`CLAUDE.md` / `docs/master_spec.md` / `brand/story_and_structure.md` / `data/*.json`）。
+正史・仕様の正本は変わらない（`docs/gameplay_agent_reference.md` / `docs/master_spec.md` / `brand/story_and_structure.md` / `data/*.json`）。
 リメイク版はそれを読むだけで、既存の台詞や設定を書き換えない。
 リメイク版の進行だけで使う短い場面（チュートリアルの前後・リハーサル・通い訪問の小会話など）は
 `data/dialogue/remake_ch1.json` に置いてある（他の台詞と同じスキーマ・同じリンタで検査される。旧版は読まない）。
@@ -134,7 +147,7 @@ remake/
 1枚ずつ可逆と非可逆q90の小さいほう・作業台素材は長辺1280pxまで）。ゲームは一覧にある画像だけ WebP を読み、無ければ assets/ の PNG を読む。
 変換済みで元より新しい画像は作り直さないので、2回目以降は数秒で終わる。
 
-**トランジション・場面の演出**（2026-10-09〜10）: 就寝→翌朝は夜の紫が降りてDAYと残り日数がめくれる（`core/transitions.js`）。マップ→場所の移動は6つの型を `core/transition-moves.js` に持ち、既定は pin。`?move=door` や `__remake.dev.moveStyle("door")` で切り替える。チェキ・占い・贈り物・バイトの終わり・サメちゃんとの出会い・つむぎのスケッチは `core/scene-motions.js` が窓口で、中身は場面ごとの `js/motions/<場面>.js`・`css/motions/<場面>.css`（扉の型も `motions/door.js`）。各場面に a／b の2パターンがあり、本編はオーナーが選んだ採用（`core/mg-kit.js` の `ADOPTED_VARIANT`: 扉a・チェキb・占いa・贈り物a・バイトb・サメb・スケッチb。マップ→場所の移動の既定は door。2026-10-10 CI123）。比べるときは `?movar=a|b`（全場面をそろえる）・`?move=pin`・`__remake.dev.motionVariant("b")`（`"auto"` で採用に戻す）。配色は紫1色（既定）／場面ごとの色（`?mopal=free`・`__remake.dev.motionPalette("free")`）。`__remake.dev.motion("cheki")` などで再生、夜明けの天気は `dawn-sun`／`dawn-cloud`／`dawn-rain`／`dawn-sick`。DAYカードの天気（晴れ・くもり・雨）は `daily/weather.js` の `weatherOf()` で、くもりは見た目だけ。会話の中では `show_cg` の `"effect": "cheki"` と `{"type": "motion", "id": "tarot"}` で呼ぶ。SKIP中と動きを減らす設定では省く。録画は `asset_sources/transitions/`。
+**トランジション・場面の演出**（2026-10-09〜10）: 就寝→翌朝は夜の紫が降りてDAYと残り日数がめくれる（`core/transitions.js`）。マップ→場所の移動は6つの型を `core/transition-moves.js` に持ち、既定は帰宅だけ door、ほかは pin。`?move=door` や `__remake.dev.moveStyle("door")` で切り替える。チェキ・占い・贈り物・バイトの終わり・サメちゃんとの出会い・つむぎのスケッチは `core/scene-motions.js` が窓口で、中身は場面ごとの `js/motions/<場面>.js`・`css/motions/<場面>.css`（扉の型も `motions/door.js`）。各場面に a／b の2パターンがあり、本編はオーナーが選んだ採用（`core/mg-kit.js` の `ADOPTED_VARIANT`: 扉a・チェキb・占いa・贈り物a・バイトb・サメb・スケッチb。帰宅だけ短くしたdoor、ほかはpin。2026-10-11 CI125〜127）。比べるときは `?movar=a|b`（全場面をそろえる）・`?move=pin`・`__remake.dev.motionVariant("b")`（`"auto"` で採用に戻す）。配色は紫1色（既定）／場面ごとの色（`?mopal=free`・`__remake.dev.motionPalette("free")`）。`__remake.dev.motion("cheki")` などで再生、夜明けの天気は `dawn-sun`／`dawn-cloud`／`dawn-rain`／`dawn-sick`。DAYカードの天気（晴れ・くもり・雨）は `daily/weather.js` の `weatherOf()` で、くもりは見た目だけ。会話の中では `show_cg` の `"effect": "cheki"` と `{"type": "motion", "id": "tarot"}` で呼ぶ。SKIP中と動きを減らす設定では省く。録画は `asset_sources/transitions/`。
 
 **初登場カットイン**（`vn/intro.js`）: キャラが名乗った直後（または名前を知っていて初めて喋る台詞の前）に一度だけ、
 呼び名・二つ名・一言を全画面で出す。名前は会話の名前欄と同じ呼び名のみ。本名の括弧表記は廃止し、物語の名乗りに残す。
@@ -321,3 +334,10 @@ node remake/test/playthrough.mjs
 現行の正規演出は**音声なし**。字幕を時間表示・文字送りし、立ち絵の表情を変えて動きで伝える。BGMはBGMer「EMGコール」の公式配布元を再生（1.08倍）。商用・ゲーム・編集利用の許諾：https://bgmer.net/terms / 音楽クレジット（任意）：音楽 BGMer https://bgmer.net/ 。外部配信が不可なら合成BGMへ戻る。ローカル音源 `assets/audio/bgm/bgm_continue_urgent.mp3` を正式に置いてマニフェストを再生成すれば内蔵曲が優先される。
 
 恋人プレミアは**20%**、同一恋人の連続出演は避ける。第1章のみんとは大会の敵なので除外。サメちゃんはプレミア台本を持つが、現時点では恋愛ルート自体が本編に未接続で、恋人成立後にのみ抽選対象となる。
+
+演出の終端・帰宅の会話待機の確認は [演出の修正と検証](../docs/motion_endings_20261011.md)、起動時・第1章でプレイヤーが読む容量は [ロード容量の実測](../docs/player_load_capacity_20261010.md)。
+
+### 恋人デートのデータ検査
+
+`node remake/test/lover_dates.mjs` で6人分（つむぎ／みんと／凛／アゲハ／ひより／ましろ）のデート会話、選択肢、ましろの口調を検査する。
+デートは恋人からのLIME招待を受けたときに発生する。対応する `dates.<id>` がない場合は、別キャラの台詞に置き換えずエラーを記録して中断する。
