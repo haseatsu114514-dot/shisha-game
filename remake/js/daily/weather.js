@@ -1,6 +1,9 @@
 // 天気（旧版 A8/W4）。日ごとに晴れ/雨を、セーブ固有の種から決める（約3割・DAY1 は晴れ固定）。
 // 雨の日: マップに雨、観音堂・カフェは雨の回、つむぎは長居、バイトは長居客の追加注文ぶん給料に上乗せ。
 import { state } from "../core/state.js";
+import { setBackgroundWeatherSource } from "../core/data.js";
+
+setBackgroundWeatherSource(weatherOf);
 
 export function isRainy(day = state?.day) {
   if (!state || !day || day < 2 || state.phase === "tournament") return false;
