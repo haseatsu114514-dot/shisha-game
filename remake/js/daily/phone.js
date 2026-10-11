@@ -18,7 +18,7 @@ import { bondInvites, friendMessages } from "./bonds.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
 import { hiyoriEventStatus } from "../core/hiyori-route.js";
 
-import { invitationCost, storeInvitationSpot } from "./invitations.js";
+import { invitationCost, storeInvitationSpot, visitReminderSpot } from "./invitations.js";
 
 const HEROINES_ENCOURAGE = ["tsumugi", "minto", "rin"];
 // 目上の相手への返信は敬語（旧版 F6）。友達口調は同世代の相手だけ
@@ -373,17 +373,21 @@ function inviteState(item, opts = {}) {
   return "open";
 }
 
-/** みんとの店頭試飲に誘う、まだ対応していない当日有効なLIMEだけを返す。 */
-export function mintoStoreInviteNeedingReply(opts = {}) {
+/** 通常の店訪問と場所が一致する、有効で返事待ちの誘いのみ対象。 */
+export function venueInviteNeedingReply(spotId, opts = {}) {
+  if (!spotId) return null;
   return (state.inbox || []).find((item) =>
-    item?.msg?.sender === "minto" &&
-    item.msg.type === "invitation" &&
-    storeInvitationSpot(item.msg) === "minto" &&
+    item?.msg?.type === "invitation" &&
+    visitReminderSpot(item.msg) === spotId &&
     !item.done &&
+    !item.result &&
     (!item.read || !item.replyState || item.replyState === "waiting") &&
     inviteState(item, opts) === "open"
   ) || null;
 }
+
+// 旧テスト/呼び出しとの互換性を維持する。
+export const mintoStoreInviteNeedingReply = (opts = {}) => venueInviteNeedingReply("minto", opts);
 
 const thread = (account) => state.inbox.filter((i) => accountOf(i) === account);
 const plain = (raw) => String(hooks.interpolate ? hooks.interpolate(String(raw)) : raw).replace(/\[\/?[a-z]+[^\]]*\]/gi, "").replace(/<[^>]+>/g, "");
