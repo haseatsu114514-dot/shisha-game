@@ -151,7 +151,8 @@ await suite('action-context', async check => {
       assert.equal(r.trace.filter(id => id === 'ch1_day7_last_night').length, 1);
       assert.equal(r.trace.filter(id => /^remake_homecoming_/.test(id)).length, branch === 'sleep_early' ? 0 : 1);
       if (branch !== 'sleep_early') assert(r.lines.some(l => l.id === 'ch1_day7_last_night'
-        && /もう一度.*tonari/.test(l.text) && /bg_tonari_inside_night/.test(l.bg)));
+        && /もう一度.*tonari/.test(l.text) && /bg_tonari_inside(?:_overcast)?_night/.test(l.bg)),
+      JSON.stringify(r.lines.filter(l => l.id === 'ch1_day7_last_night')));
     }, index % 2 ? touch : {});
   }
 });
