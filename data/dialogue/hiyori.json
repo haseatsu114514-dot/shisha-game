@@ -165,6 +165,21 @@
         "relationship": "lover"
       },
       {
+        "id": "tonari_afterwork",
+        "dialogue": "hiyori_tonari_afterwork",
+        "chapters": [
+          1,
+          2
+        ],
+        "flag": "_hiyori_tonari_afterwork_done",
+        "requires": [
+          "_hiyori_tonari_followup_done"
+        ],
+        "met": true,
+        "minAffinity": 3,
+        "affinity": 5
+      },
+      {
         "id": "tonari_return",
         "dialogue": "hiyori_tonari_return",
         "chapters": [
@@ -1105,6 +1120,73 @@
         {
           "speaker": "hajime",
           "text": "あります。のんびり吸ってから、行きましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_tonari_afterwork",
+      "metadata": {
+        "private_scene": true,
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "いつものカウンター。ひよりはバッグから小さな手帳を出して、すぐに閉じた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……置いてきたはずなのに、仕事って鞄の底までついてくるんだね",
+          "inner": "来週の引き継ぎ表、頭の中ではもう三周した"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "仕事のこと考えに来たんじゃないだろ。今日は客なんだから座っとけ"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "……はい。そう、ですね"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ひよりさん、総務の仕事って、どんなことをするんですか？"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "採用の準備とか、備品の管理とか。誰も困らないように先回りしておく仕事、かな"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……終わったことより、まだ来ていないことばかり考えちゃうの"
+        },
+        {
+          "speaker": "hajime",
+          "text": "それだけ、ちゃんと周りを見てるんですね。でも今は休んでもいいと思います"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "炭もずっと火を当て続けりゃいいってもんじゃない。しばらく置く時間もいる"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……ふたりとも、煙に例えるの、ずるいな",
+          "inner": "こういう時間があるから、また明日もちゃんとやれる"
+        },
+        {
+          "speaker": "",
+          "text": "ひよりは手帳を鞄の奥へ戻して、今度はゆっくりメニューを開いた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "今日はピーチティーの気分。……ちゃんと、お客さんでいさせて"
         }
       ]
     }
