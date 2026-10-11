@@ -2,7 +2,7 @@
 import { el } from "../core/util.js";
 
 const PHASES = [
-  ["pack", "パッキング", ["setup", "concept", "mix", "pack", "holes"], '<path d="M5 17h24l-3 11H8Zm5-4 4 4m13-13L17 17M7 30h20"/>'],
+  ["pack", "パッキング", ["setup", "concept", "mix", "pack", "holes"], '<ellipse cx="18" cy="8" rx="12" ry="3"/><path d="m6 8 3 10c1 3 5 3 6 6v8h6v-8c1-3 5-3 6-6l3-10M15 27h6"/>'],
   ["heat", "炭焼き", ["heat", "place"], '<path d="m17 3 13 7v15l-13 7-13-7V10Zm0 14L4 10m13 7 13-7M17 17v15"/>'],
   ["steam", "蒸らし", ["steam"], '<path d="M18 3c3 9-4 8-2 15 4-1 6-4 6-8 8 9 7 21-5 22C3 30 5 19 10 13c-1 5 3 7 4 8-1-8 7-10 4-18Z"/>'],
   ["pull", "吸い出し", ["pull", "care"], '<path d="M3 12h19c10 0 10-10 4-10-4 0-5 3-4 5M3 19h25c8 0 8 12 1 12-4 0-5-3-4-5M3 25h14"/>'],
