@@ -41,8 +41,8 @@
 .steam .dodge-controls { align-self: center; margin-right: 0; }
 .steam-play, .dodge-controls { width: 752px; }
 .steam-play { flex: 1; display: grid; justify-items: center; align-items: start; }
-/* 上の余白を詰め、操作欄の上に指を置ける空間を残す。 */
-.steam-play > .dodge { top: 0; }
+/* 上に少し余裕を取り、操作欄との間隔も残す。 */
+.steam-play > .dodge { top: 16px; }
 /* 残り時間は視線を弾幕から離さず読める、奥の薄い7セグ。 */
 .dodge .dodge-timer { position: absolute; left: 50%; top: 50%; width: 448px; height: 158px; transform: translate(-50%, -50%); color: var(--mental-ink); opacity: .16; z-index: 1; pointer-events: none; user-select: none; transition: color .25s ease; }
 .dodge { --mental-ink: #86d6c5; }
