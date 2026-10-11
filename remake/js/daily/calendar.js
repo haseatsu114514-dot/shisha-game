@@ -17,7 +17,7 @@ import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, story
 import { doFortune } from "./fortune.js";
 import { tonariMenu, tonariCustomer, tonariPractice, doBaito } from "./tonari.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
-import { deliverMorning, pushNotice, hasUnread, openLime, limeCoach, expireInvitations } from "./phone.js";
+import { deliverMorning, pushNotice, unreadCount, mintoStoreInviteNeedingReply, openLime, limeCoach, expireInvitations } from "./phone.js";
 import { openStatus } from "./status.js";
 import { onAction as spinReel, presentNow as showReelNow } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
@@ -47,7 +47,7 @@ export async function runDaily(def) {
   expireInvitations({ fixedNight: (d) => !!chapterDef.nightEvents[d] });
   initHud({ phone: phoneButton, status: openStatus, menu: openMenu });
   showHud(true);
-  setPhoneBadge(hasUnread()); // つづきから再開したときも未読の赤丸を出す
+  setPhoneBadge(unreadCount()); // つづきから再開したときも未読の赤丸を出す
   while (state.day < TOURNAMENT_DAY) {
     if (!state.flags[`_morning_${state.day}`]) {
       state.flags[`_morning_${state.day}`] = true;
@@ -81,7 +81,7 @@ async function morning() {
     if (document.querySelector("#screen .map:not(.done)") && !layers.modal.classList.contains("show")) phoneButton({ sender });
     else queuedLimeSender = sender;
   } });
-  setPhoneBadge(hasUnread());
+  setPhoneBadge(unreadCount());
 }
 
 /** HUD の LIME。街に出ているとき（マップ）だけ開ける。誘いに乗ったらマップを閉じてそのまま向かう */
@@ -98,7 +98,7 @@ async function phoneButton({ sender = null } = {}) {
   const before = state.pendingInvite;
   await openLime({ tutorial: first, sender, fixedNight: (d) => !!chapterDef.nightEvents[d] });
   syncKafukaKnowledge();
-  setPhoneBadge(hasUnread());
+  setPhoneBadge(unreadCount());
   save();
   // 乗った誘い: 今の時間帯ならすぐ向かう／今夜の約束ならマップを出し直して「約束がある」を見せる
   if (state.pendingInvite && state.pendingInvite !== before) interruptMap("__lime__");
@@ -286,6 +286,27 @@ async function takeAction() {
       if (queuedLimeSender) { const sender = queuedLimeSender; queuedLimeSender = null; phoneButton({ sender }); }
       else limeCoach(phoneButton);
     }, // 通知を先にタップした場合は、マップが開いたところで目的のトークへ
+    onBeforeGo: async (destination) => {
+      if (destination?.id !== "minto") return true;
+      const pending = mintoStoreInviteNeedingReply({ fixedNight: (day) => !!chapterDef.nightEvents[day] });
+      if (!pending) return true;
+      const reminderId = `${state.chapter}:${state.day}:${pending.id}`;
+      if (state.flags._minto_store_lime_reminder === reminderId) return true;
+      state.flags._minto_store_lime_reminder = reminderId;
+      const choice = await modal({
+        title: "LIMEのお誘い",
+        body: "そういえば、みんとからLIMEが来てたな……",
+        options: [
+          { label: "LIMEを確認する", value: "lime", primary: true, test: "minto-invite-check" },
+          { label: "そのまま向かう", value: "go", test: "minto-invite-go" },
+        ],
+      });
+      if (choice === "lime") {
+        await phoneButton({ sender: "minto" });
+        return false;
+      }
+      return true;
+    },
   });
   if (spotId === "__lime__") return; // LIME で誘いに乗った → 次の takeAction で約束へ
   const spot = spotById(spotId);
