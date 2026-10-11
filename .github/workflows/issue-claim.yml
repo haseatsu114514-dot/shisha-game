@@ -116,7 +116,12 @@ jobs:
                 const active = await status(item.number);
                 if (active.state === 'claimed' && active.owner === worker) throw Error('Worker already owns #' + item.number + '; release it before claiming another.');
               }
+              // Recheck immediately before writing the reservation. All successful workflow runs
+              // share a concurrency group; a canceled pending run must be retried by its caller.
+              const latest = await status(selected);
+              if (latest.state === 'claimed') throw Error('Issue claimed during selection; retry with a new run.');
               await comment(selected,'claimed');
               core.summary.addRaw('Reserved #' + selected + ' for ' + worker).write();
               core.notice('CLAIMED_ISSUE=' + selected + ' OWNER=' + worker);
+              await core.summary.addRaw('Claim confirmed: #' + selected + ' by ' + worker).write();
             }
