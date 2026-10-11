@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-11",
+  "requests": "CV35–46",
+  "validated_code_commit": "441245adf466c29f544d1960c2399707226ab0e3",
+  "main_baseline": "cba13fc",
+  "tests": {
+    "continue_neon": "PASS: 1080p / 720p / phone, generated art and live text, no brush ink on the face, real clock HUD and giant count, captions independent from deadline, tab pause, final five seconds, simple GAME OVER to title once, option / OS reduced motion and keyboard retry",
+    "continue_screen": "PASS: all 18 branches, all 9 scripts on PC / phone, canonical expressions, single callbacks, 20 seconds independent from captions, retry immediately before deadline, removed-screen cleanup, tab pause, retained top experiments, growing counts, save-safe preview",
+    "continue_classic_count": "PASS: retained classic composition and both countdown experiments, all 9 portraits on PC / phone, unchanged reactions, huge 20→15→5→1 growth, pause and hidden zero",
+    "continue_audio": "PASS: shared context, countdown and talking blips, pitch / duck / volume, GAME OVER mix, tab pause / mute, scheduled-SE cleanup and no leaked gain",
+    "continue_premium": "PASS: 20% girlfriend-only selection, no consecutive speaker repeats, shark cameo, no chapter-one Minto and valid character beats",
+    "burnt_gameover": "PASS: real 20-second CONTINUE to GAME OVER / title reload, tournament burn skips judging and retries from tournament start, lesson repack / pull again, rehearsal short scene / rough result; page errors 0",
+    "dialogue_lint": "PASS: 42 files, ERROR 0 / pre-existing WARN 345",
+    "dialogue_tidy": "PASS: dry-run 0 lines",
+    "manifest": "PASS: rebuilt PNG / WebP and preserved every existing field, continue asset and WebP mapping from latest main",
+    "syntax_and_whitespace": "PASS: changed JS / Python and git diff --check"
+  },
+  "visual_review": {
+    "iterations": 2,
+    "viewed_images": ["iteration-1.png", "neon-ageha-1080.png", "neon-ageha-phone.png", "neon-sumi-720.png", "neon-ageha-1.png", "neon-game-over.png"],
+    "corrections": "Title moved right and resized to reference; caption 34→32px; spacing increased for emphasized longest lines; adjacent title glow excluded from GAME OVER crop.",
+    "minimum_captured_caption_button_gap": "11.41 logical pixels",
+    "button_bottom_space": "21 logical pixels",
+    "missing_assets": 0,
+    "page_errors": 0,
+    "neon_webp_total_bytes": 543478
+  },
+  "ci": {
+    "pull_request": 284,
+    "verified_code_commit": "441245adf466c29f544d1960c2399707226ab0e3",
+    "workflow": "Remake browser regressions",
+    "run": 38103910448,
+    "job": 114365282539,
+    "conclusion": "success",
+    "url": "https://github.com/haseatsu114514-dot/shisha-game/actions/runs/38103910448",
+    "note": "Final PR head checks are also verified before merging. Existing main's Pages configure-pages permission failure is outside this UI change."
+  }
+}

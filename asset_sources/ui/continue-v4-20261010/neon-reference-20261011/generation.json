@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-11",
+  "requests": "CV38–46",
+  "source": "neon-atlas-original.png",
+  "source_sha256": "9bc1a8678850308b27c94d0acb1192f3378d219b43b90a5fa93c9c7786e61601",
+  "tool": "image_gen.imagegen",
+  "prompt": "neon-atlas.prompt.txt",
+  "references": "2 recent images: owner's completed CONTINUE reference and the previously generated empty spotlight stage",
+  "original_size": [1448, 1086],
+  "alpha": [0, 255],
+  "runtime_processing": "Only row crops and alpha-bounds trimming; no recoloring or retouching. WebP conversion via build_manifest.py.",
+  "static_text": ["コンティニューする？", "GAME OVER"],
+  "dynamic_content": "Counter digits, ring progress, button labels, dialogue, canonical portraits and their expressions remain live game layers."
+}

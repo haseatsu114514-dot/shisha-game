@@ -297,8 +297,13 @@
  "continueUI": [
   "approval_stamp.png",
   "backdrop.png",
+  "backdrop_stage.png",
   "continue_title.png",
-  "game_over_title.png"
+  "game_over_title.png",
+  "neon_game_over.png",
+  "neon_quit_frame.png",
+  "neon_retry_frame.png",
+  "neon_title.png"
  ],
  "continuePortraits": {
   "sumi": {
@@ -1456,8 +1461,13 @@
   "ui/character_intros/tsumugi.png",
   "ui/continue/approval_stamp.png",
   "ui/continue/backdrop.png",
+  "ui/continue/backdrop_stage.png",
   "ui/continue/continue_title.png",
   "ui/continue/game_over_title.png",
+  "ui/continue/neon_game_over.png",
+  "ui/continue/neon_quit_frame.png",
+  "ui/continue/neon_retry_frame.png",
+  "ui/continue/neon_title.png",
   "ui/making/bench_base.png",
   "ui/making/bowl_empty_clay.png",
   "ui/making/bowl_empty_phunnel.png",
