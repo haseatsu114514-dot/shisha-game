@@ -1848,20 +1848,11 @@
       "dialogue_id": "ch1_tsumugi_departure",
       "lines": [
         {
-          "speaker": "",
-          "text": "窓際の女の子が、描いていたiPadをしまって席を立った。",
-          "portrait": "tsumugi",
-          "portrait_face": "normal"
-        },
-        {
-          "type": "intro",
-          "char_id": "tsumugi",
-          "intro": {
-            "display_name": "窓際の女の子",
-            "title": "tonariで煙を描く常連",
-            "line": "……",
-            "face": "normal"
-          }
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_tsumugi",
+          "next_true": "departure_known",
+          "next_false": "departure_new"
         },
         {
           "speaker": "",
@@ -1887,7 +1878,35 @@
           "face": "smile",
           "text": "ありがとうございました！"
         }
-      ]
+      ],
+      "branches": {
+        "departure_known": [
+          {
+            "speaker": "",
+            "text": "取材の相談を終えたつむぎが、iPadをしまって席を立った。",
+            "portrait": "tsumugi",
+            "portrait_face": "normal"
+          }
+        ],
+        "departure_new": [
+          {
+            "speaker": "",
+            "text": "窓際の女の子が、描いていたiPadをしまって席を立った。",
+            "portrait": "tsumugi",
+            "portrait_face": "normal"
+          },
+          {
+            "type": "intro",
+            "char_id": "tsumugi",
+            "intro": {
+              "display_name": "窓際の女の子",
+              "title": "tonariで煙を描く常連",
+              "line": "……",
+              "face": "normal"
+            }
+          }
+        ]
+      }
     }
   ]
 }

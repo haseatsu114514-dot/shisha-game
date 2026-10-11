@@ -1413,7 +1413,7 @@
     {
       "dialogue_id": "ch1_tsumugi_research",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
       },
       "lines": [
         {
@@ -1549,7 +1549,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "閉店前。奥の席の女の子が、iPadを抱えてカウンターに来た。"
+            "text": "バイトの合間、奥の席の女の子がiPadを抱えてカウンターに来た。"
           },
           {
             "speaker": "tsumugi",
@@ -1579,7 +1579,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "閉店前。つむぎが、iPadを抱えてカウンターに来た。"
+            "text": "バイトの合間、つむぎがiPadを抱えてカウンターに来た。"
           },
           {
             "speaker": "hajime",
@@ -1661,7 +1661,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんとの確認を終えると、つむぎがカウンターの端に来た。"
+          "text": "片づけの合間、つむぎがカウンターの端に来た。"
         },
         {
           "speaker": "tsumugi",

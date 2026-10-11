@@ -5,8 +5,8 @@ import { play } from "../vn/engine.js";
 import { hasContact } from "../daily/spots.js";
 
 export const TSUMUGI_STORY = [
-  { day: 3, dialogue: "ch1_tsumugi_research", flag: "_tsumugi_contest_research", level: 1 },
-  { day: 7, dialogue: "ch1_tsumugi_work_in_progress", flag: "_tsumugi_contest_progress" },
+  { day: 1, dialogue: "ch1_tsumugi_research", flag: "_tsumugi_contest_research", level: 1 },
+  { day: 3, dialogue: "ch1_tsumugi_work_in_progress", flag: "_tsumugi_contest_progress" },
   { day: 12, dialogue: "ch1_tsumugi_sketch", flag: "_tsumugi_contest_submitted", level: 2 },
   { day: 13, dialogue: "ch1_tsumugi_eve", flag: "_tsumugi_contest_eve" },
 ];

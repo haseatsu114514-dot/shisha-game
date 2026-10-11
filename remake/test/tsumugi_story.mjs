@@ -47,7 +47,7 @@ try {
       s.stats.charm = 90; s.fortune = { char: "tsumugi" };
       const before = T.resources();
       const levels = [];
-      for (const day of [3, 7, 12, 13]) {
+      for (const day of [1, 3, 12, 13]) {
         s.day = day; await T.story.playTsumugiStory(day);
         levels.push(T.stats.affinityLevel("tsumugi"));
       }
@@ -112,7 +112,7 @@ try {
     const s = T.fresh(); s.day = 2;
     await T.spots.visitChar("tsumugi"); await T.spots.visitChar("tsumugi");
     const first = T.lines(); T.vn.backlog().length = 0;
-    await T.story.playTsumugiStory(3);
+    await T.story.playTsumugiStory(1);
     return { first, later: T.lines(), stories: s.story.tsumugi, hasContact: T.spots.hasContact("tsumugi") };
   });
   assert(early.first.some(t => t.includes("イラストのコンテスト")));
@@ -145,8 +145,25 @@ try {
   }
   console.log("[tsumugi story] PASS: early exchange once, all optional scenes, friendship and dating still available");
 
+  // ゲーム開始から取材・♥1へ。配達やみんとの登場より先に読める。
+  const opening = await open();
+  await opening.evaluate(() => {
+    T.core.newGame(); T.vn.backlog().length = 0;
+    T.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex(l => l.includes("今は練習しない")));
+    T.ch1.startNewGame().catch(e => { window.calendarError = e.message; });
+  });
+  await opening.waitForFunction(() => T.core.state.affinity.tsumugi === 9, null, { timeout: 30000 });
+  const intro = await opening.evaluate(() => ({ day: T.core.state.day, stories: T.core.state.story.tsumugi || 0,
+    met: T.core.state.met.tsumugi, contact: T.spots.hasContact("tsumugi"), lines: T.lines(), error: window.calendarError }));
+  assert.equal(intro.error, undefined); assert.equal(intro.day, 1); assert.equal(intro.stories, 0);
+  assert(intro.met); assert(intro.contact);
+  assert(intro.lines.includes("うちの店の宣伝になるなら、交換しとけ"));
+  assert(!intro.lines.some(t => /みんと|コンカフェ|ケムリクサへ偵察/.test(t)));
+  await opening.close();
+  console.log("[tsumugi story] PASS: first-day introduction and contact before other errands/characters");
+
   // 本番カレンダーの夜枠で必須イベントが発火し、翌日のマップへ戻る。全章通しは不要。
-  for (const day of [3, 7, 12, 13]) {
+  for (const day of [3, 12, 13]) {
     const calendar = await open();
     await calendar.evaluate(async day => {
       const s = T.fresh(); s.day = day;
@@ -169,7 +186,7 @@ try {
       flags: T.core.state.flags, stories: T.core.state.story.tsumugi || 0, lines: T.lines(), error: window.calendarError }));
     assert.equal(end.error, undefined); assert.equal(end.stories, 0);
     assert.equal(end.pts, day < 12 ? 9 : 20);
-    const expected = { 3: "_tsumugi_contest_research", 7: "_tsumugi_contest_progress",
+    const expected = { 3: "_tsumugi_contest_progress",
       12: "_tsumugi_contest_submitted", 13: "_tsumugi_contest_eve" }[day];
     assert(end.flags[expected], `DAY${day} missed its mandatory Tsumugi scene`);
     assert(end.lines.some(t => /コンテスト|下描き|応募|はじめさんの番/.test(t)));
@@ -177,5 +194,5 @@ try {
     console.log(`[tsumugi story] PASS: DAY${day} fixed event → next morning`);
   }
   assert.deepEqual(errors, []);
-  console.log("[tsumugi story] PASS: DAY3/7/12/13 calendar events, including the old completed-eve save");
+  console.log("[tsumugi story] PASS: first day and DAY3/12/13 calendar events, including the old completed-eve save");
 } finally { await browser.close(); }
