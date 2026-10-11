@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
-import { slashTouchesBullet, slashDirection, slashAngle } from '../js/craft/steam-slash.js';
+import { slashTouchesBullet, slashDirection, slashAngle, SLASH_RECHARGE_SECONDS } from '../js/craft/steam-slash.js';
 const { chromium } = createRequire(import.meta.url)('playwright');
 
 const b=(x,y,w=8,h=8)=>({x,y,w,h});
@@ -85,7 +85,8 @@ try {
     assert.equal(await page.locator('.dodge-refresh').getAttribute('data-remaining'),'1');
     await shot(page,`slash-${name}`);
     assert(await button.isDisabled());const firstCooldown = Number(await button.getAttribute('data-cooldown'));
-    assert(firstCooldown > 0 && firstCooldown <= 1.8, `Cooldown should still be active after screenshot: ${firstCooldown}`);
+    // 表示は0.1秒単位の切り上げ。浮動小数の境界も含めて1目盛りまでを許す。
+    assert(firstCooldown > 0 && firstCooldown <= SLASH_RECHARGE_SECONDS + .1 + 1e-9, `Cooldown should still be active after screenshot: ${firstCooldown}`);
     await page.evaluate(()=>{
       window.dispatchEvent(new KeyboardEvent('keydown',{key:'z',repeat:true,bubbles:true}));
       document.querySelector('[data-test="dodge-slash"]').dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));
@@ -116,8 +117,12 @@ try {
       }
       await touch.detach();
     }
-    await page.waitForFunction(()=>document.querySelector('.dodge-heart.shield'));
-    assert.equal(await page.locator('.dodge-heart').evaluate(n=>getComputedStyle(n).color),'rgb(239, 135, 149)');
+    // 無敵が終わるまでに別のブラウザ往復を挟まず、被弾フレームの色を保存する。
+    const hitColor = await page.waitForFunction(() => {
+      const heart = document.querySelector('.dodge-heart.shield');
+      return heart ? getComputedStyle(heart).color : false;
+    });
+    assert.equal(await hitColor.jsonValue(),'rgb(239, 135, 149)');
     await shot(page,`heart-hit-${name}`);
     await page.waitForSelector('.result-card.show',{timeout:25000});
     assert.equal(await page.locator('.dodge-slash-fx,.dodge-refresh-fx,.dodge-thought-echo,.dodge-word,.dodge-object').count(),0);

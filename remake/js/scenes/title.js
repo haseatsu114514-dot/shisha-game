@@ -1,14 +1,15 @@
 // タイトル画面。用語集は会話画面・ゲーム中のメニューから開く。
 import { el } from "../core/util.js";
-import { bgUrl, assetUrl } from "../core/data.js";
+import { bgUrl } from "../core/data.js";
 import { showScreen, setBg, smokeWipe, modal } from "../core/ui.js";
 import { peekSave, newGame, wipeSave, config, saveConfig, anySlotSaved, loadFromSlot } from "../core/state.js";
 import { playBgm, SE, applyVolumes } from "../core/audio.js";
 import { startNewGame, resumeGame } from "../chapters/ch1.js";
 import { openGallery } from "./gallery.js";
 import { loadFlow } from "./saves.js";
+import { pickTitleArt, prepareTitleArt } from "./title-art.js";
 
-export function showTitle() {
+export function showTitle(preparedArt = null) {
   setBg(bgUrl("bg_title"), { instant: true });
   playBgm("title");
   const saved = peekSave();
@@ -39,8 +40,10 @@ export function showTitle() {
     item("CONFIG", "設定", openConfig, "title-config"),
   );
 
+  const art = preparedArt || pickTitleArt();
+  const artNode = el("div.title-art", { "aria-hidden": "true", dataset: { character: art.character } });
   const root = el("div.title", [
-    el("div.title-art", { style: { backgroundImage: `url("${assetUrl("assets/ui/title_arts/title_art_keyvisual_01.png")}")` } }),
+    artNode,
     el("div.title-smoke", [el("i"), el("i"), el("i")]),
     el("div.title-left", [
       el("div.title-brand", [
@@ -52,6 +55,15 @@ export function showTitle() {
     el("div.title-foot", { text: "TAP / CLICK / ENTER ── CH.01 SMOKE CROWN CUP" }),
   ]);
   showScreen("title", root);
+  const place = (loaded) => {
+    // 幕の終了待ちでrootが未接続のときも、そのrootへ絵を準備する。
+    artNode.dataset.character = loaded.character;
+    artNode.dataset.art = loaded.file;
+    artNode.style.backgroundImage = `url("${loaded.url}")`;
+    artNode.classList.add("ready");
+  };
+  if (art.ready) place(art);
+  else prepareTitleArt(art).then(place);
 }
 
 function openConfig() {

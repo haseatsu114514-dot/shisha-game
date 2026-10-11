@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-11 11:54 UTC",
+ "generated": "2026-10-11 11:59 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -1098,6 +1098,80 @@
    }
   }
  },
+ "titleArts": [
+  {
+   "character": "ageha",
+   "file": "title_art_ageha_01_professional_taste.png"
+  },
+  {
+   "character": "ageha",
+   "file": "title_art_ageha_02_grocery_smile.png"
+  },
+  {
+   "character": "ageha",
+   "file": "title_art_ageha_03_model_moment.png"
+  },
+  {
+   "character": "kafuka",
+   "file": "title_art_kafuka_01_shishark_test_run.png"
+  },
+  {
+   "character": "kafuka",
+   "file": "title_art_kafuka_02_shark_movie.png"
+  },
+  {
+   "character": "kafuka",
+   "file": "title_art_kafuka_03_aquarium.png"
+  },
+  {
+   "character": "mashiro",
+   "file": "title_art_mashiro_01_heavy_smoke.png"
+  },
+  {
+   "character": "mashiro",
+   "file": "title_art_mashiro_02_tea_break.png"
+  },
+  {
+   "character": "mashiro",
+   "file": "title_art_mashiro_03_after_rain.png"
+  },
+  {
+   "character": "minto",
+   "file": "title_art_minto_01_cafe_welcome.png"
+  },
+  {
+   "character": "minto",
+   "file": "title_art_minto_02_instant_photo.png"
+  },
+  {
+   "character": "minto",
+   "file": "title_art_minto_03_private_window.png"
+  },
+  {
+   "character": "minto",
+   "file": "title_art_minto_04_after_hours.png"
+  },
+  {
+   "character": "rin",
+   "file": "title_art_rin_01_night_tasting.png"
+  },
+  {
+   "character": "rin",
+   "file": "title_art_rin_03_late_coffee.png"
+  },
+  {
+   "character": "tsumugi",
+   "file": "title_art_tsumugi_01_smoke_colors.png"
+  },
+  {
+   "character": "tsumugi",
+   "file": "title_art_tsumugi_02_tablet_cat.png"
+  },
+  {
+   "character": "tsumugi",
+   "file": "title_art_tsumugi_03_twilight_sketch.png"
+  }
+ ],
  "makingBox": {
   "bench_base.png": [
    0.0,
@@ -1567,6 +1641,24 @@
   "ui/making/ui_mockup_inhale_button.png",
   "ui/making/ui_refresh_button.png",
   "ui/making/ui_temperature_frame.png",
-  "ui/title_arts/title_art_keyvisual_01.png"
+  "ui/title_arts/title_art_ageha_01_professional_taste.png",
+  "ui/title_arts/title_art_ageha_02_grocery_smile.png",
+  "ui/title_arts/title_art_ageha_03_model_moment.png",
+  "ui/title_arts/title_art_kafuka_01_shishark_test_run.png",
+  "ui/title_arts/title_art_kafuka_02_shark_movie.png",
+  "ui/title_arts/title_art_kafuka_03_aquarium.png",
+  "ui/title_arts/title_art_keyvisual_01.png",
+  "ui/title_arts/title_art_mashiro_01_heavy_smoke.png",
+  "ui/title_arts/title_art_mashiro_02_tea_break.png",
+  "ui/title_arts/title_art_mashiro_03_after_rain.png",
+  "ui/title_arts/title_art_minto_01_cafe_welcome.png",
+  "ui/title_arts/title_art_minto_02_instant_photo.png",
+  "ui/title_arts/title_art_minto_03_private_window.png",
+  "ui/title_arts/title_art_minto_04_after_hours.png",
+  "ui/title_arts/title_art_rin_01_night_tasting.png",
+  "ui/title_arts/title_art_rin_03_late_coffee.png",
+  "ui/title_arts/title_art_tsumugi_01_smoke_colors.png",
+  "ui/title_arts/title_art_tsumugi_02_tablet_cat.png",
+  "ui/title_arts/title_art_tsumugi_03_twilight_sketch.png"
  ]
 }

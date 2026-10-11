@@ -30,6 +30,7 @@ def targets(m):
     for ch, p in m["portraits"].items():
         rel += [f"sprites/characters/{ch}/chr_{ch}_{f}.png" for f in p["faces"]]
     rel += ["ui/title_arts/title_art_keyvisual_01.png", "ui/ui_title_logo.png", "ui/ui_title_logo_rich.png"]
+    rel += [f"ui/title_arts/{art['file']}" for art in m.get("titleArts", [])]
     rel += ["ui/chapters/ch1_keyart.png"]
     rel += [f"ui/continue/{name}" for name in m.get("continueUI", [])]
     return [r for r in rel if (ASSETS / r).exists()]

@@ -134,6 +134,16 @@ def listing(sub: str, pattern: str = "*.png"):
     return sorted(p.name for p in d.glob(pattern) if p.stat().st_size > 0) if d.exists() else []
 
 
+def title_arts():
+    """採用済みPNGだけをキャラ別に登録。修正待ちの候補はassetsへコピーしない。"""
+    out = []
+    for name in listing("ui/title_arts"):
+        match = re.fullmatch(r"title_art_([a-z]+)_\d{2}_.+\.png", name)
+        if match:
+            out.append({"character": match[1], "file": name})
+    return out
+
+
 def continue_portraits():
     """正規立ち絵の顔を中央に寄せる。顔アイコンと同じ測定値を元画像の比で記録。"""
     sys.path.insert(0, str(ROOT / "tools"))
@@ -212,9 +222,25 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     scope = parser.add_mutually_exclusive_group()
     scope.add_argument("--audio-only", action="store_true", help="既存の画像目録を保ち、BGM一覧だけ更新")
+    scope.add_argument("--title-only", action="store_true", help="採用済みタイトル絵の目録・WebPだけ更新")
     scope.add_argument("--making-only", nargs="+", metavar="PNG", help="指定した制作UIパーツの目録・WebPだけ更新")
     args = parser.parse_args()
     generated = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+    if args.title_only:
+        import build_images
+        manifest = json.loads(OUT.read_text(encoding="utf-8"))
+        manifest.update(generated=generated, titleArts=title_arts())
+        webp = set(manifest.get("webp", []))
+        for art in manifest["titleArts"]:
+            rel = f"ui/title_arts/{art['file']}"
+            dst = build_images.OUT / Path(rel).with_suffix(".webp")
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            dst.write_bytes(build_images.encode(ASSETS / rel, rel))
+            webp.add(rel)
+        manifest["webp"] = sorted(webp)
+        OUT.write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print(f"wrote {len(manifest['titleArts'])} title arts and WebP files (other images unchanged)")
+        return
     if args.making_only:
         import build_images
         names = sorted(set(args.making_only))
@@ -257,6 +283,7 @@ def main():
         "continueUI": listing("ui/continue"),
         "continuePortraits": continue_portraits(),
         "introArt": intro_art(),
+        "titleArts": title_arts(),
         "makingBox": making_boxes(),
         "bgm": bgm,
     }

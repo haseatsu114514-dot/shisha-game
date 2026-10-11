@@ -121,7 +121,7 @@ export function createContinueView({ script, speaker, character, premium, layout
   }
   function face(name, beat = true) {
     const info = portraitInfo(speaker, name);
-    if (info && portrait) { image.src = info.src; framePortrait(info); }
+    if (info && portrait && image.getAttribute("src") !== info.src) { image.src = info.src; framePortrait(info); }
     root.dataset.emotion = name;
     if (beat) {
       image.classList.remove("go-beat");
