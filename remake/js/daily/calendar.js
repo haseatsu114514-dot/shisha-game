@@ -13,7 +13,7 @@ import { initHud, showHud, updateHud, daysLeft, setPhoneBadge, presentSleepRecov
 import { TOURNAMENT_DAY } from "../core/rules.js";
 import { chooseSpot, interruptMap } from "./map.js";
 import { isRainy, weatherOf } from "./weather.js";
-import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, storyCount, CHAR_STAT } from "./spots.js";
+import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, storyCount, CHAR_STAT, bgRef, VISIT_BG } from "./spots.js";
 import { doFortune } from "./fortune.js";
 import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
@@ -25,6 +25,7 @@ import { afterStory, isFinaleEvent, playFinale, isFriendEvent, playFriendHangout
 import { syncKafukaKnowledge, maybeKafukaEncounter, visitKafuka } from "./kafuka.js";
 
 import { invitationCost, invitationGrowth } from "./invitations.js";
+import { visitHiyoriAtShop, playHiyoriEvent } from "./hiyori.js";
 
 const SLEEP_RECOVERY = 14;
 
@@ -325,6 +326,7 @@ async function performSpotAction(spot) {
     save();
     return { used: false, exerted };
   }
+  if (used) await visitHiyoriAtShop(spot, { bg: bgRef(spot.bg || VISIT_BG[spot.charId] || (spot.kind === "shop" ? "bg_fookah_showroom" : "bg_tonari_inside")) });
   return { used, exerted };
 }
 
@@ -342,6 +344,10 @@ async function meetInvitation(inv) {
     state.visitedDay.tonari_baito = state.day;
     state.visitedDay.tonari = state.day;
     await doBaito({ called: true });
+  } else if (inv.event === "hiyori_tonari_return") {
+    await playHiyoriEvent("tonari_return");
+    state.visitedDay.tonari = state.day;
+    addStamina(-10);
   } else if (/^date_/.test(inv.event)) {
     await playDate(inv.sender); // 恋人とのデート（絆・ステ・体力はデート側で）
   } else if (isFriendEvent(inv.event)) {

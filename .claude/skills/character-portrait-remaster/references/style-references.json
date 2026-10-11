@@ -1278,6 +1278,51 @@
         }
       ],
       "approval": "2026-10-08 オーナー「完成したらマージで」。直前に採用待ちとして提示した前園・パッキー・つむぎ会釈3組へのゲーム組み込み・マージ指示として受領。"
+    },
+    {
+      "id": "hiyori-lace-v1",
+      "title": "ひより・選択済みレース衣装と学生時代",
+      "status": "approved",
+      "role": "ひより本人の顔・髪・衣装。画質は初期のみんと／あげは基準も併用",
+      "sourceCommit": "codex/hiyori-encounters-20261011",
+      "images": [
+        {
+          "label": "normal",
+          "expression": "normal",
+          "path": "../../../../assets/sprites/characters/hiyori/chr_hiyori_normal.png",
+          "sha256": "ca6f915c994dba66417fab7ca83142d842c009005cfe9b99fa271f3136b60aea"
+        },
+        {
+          "label": "sad",
+          "expression": "sad",
+          "path": "../../../../assets/sprites/characters/hiyori/chr_hiyori_sad.png",
+          "sha256": "18f17c05c93e8250c08d827e0aa39bc1cf34006e5a837897358d466239c4a32b"
+        },
+        {
+          "label": "smile",
+          "expression": "smile",
+          "path": "../../../../assets/sprites/characters/hiyori/chr_hiyori_smile.png",
+          "sha256": "88c9c8ead7a19168aaddc61fd3cb081aec335733088df43c4b4fba76da4014aa"
+        },
+        {
+          "label": "surprise",
+          "expression": "surprise",
+          "path": "../../../../assets/sprites/characters/hiyori/chr_hiyori_surprise.png",
+          "sha256": "75818897b6fe9b3adcf386972b823fa07395af2a275b05b2ef68451a4e3a95b9"
+        },
+        {
+          "label": "tears",
+          "expression": "tears",
+          "path": "../../../../assets/sprites/characters/hiyori/chr_hiyori_tears.png",
+          "sha256": "3db9c8f8643e84327c3444900039891be843c5986c669f12bba6ffa3b236a155"
+        },
+        {
+          "label": "student_smile",
+          "expression": "student_smile",
+          "path": "../../../../assets/sprites/characters/hiyori/chr_hiyori_student_smile.png",
+          "sha256": "9c9620b66790db2bd8f5730258de1831cd17a88d6c7c9cdc9f13f88ad72d3823"
+        }
+      ]
     }
   ]
 }

@@ -75,6 +75,13 @@ jobs:
       # Keep browser suites sequential; they share the preview server and runner.
       - name: Save/load, legacy migration and PC/mobile controls
         run: node remake/test/browser/save_load.mjs
+      - name: Hiyori encounters, LIME, saves and PC/mobile portraits
+        env:
+          NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
+          ARTIFACT_DIR: .codex/artifacts/remake-browser/hiyori
+        run: |
+          node remake/test/hiyori.mjs
+          node remake/test/hiyori_encounters.mjs
       - name: Steam slash, recharge and PC/mobile controls
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules

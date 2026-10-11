@@ -52,10 +52,11 @@ assert(progress.every((p, i) => p > (progress[i - 1] || 0)));
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
 assert.equal(all.DB.characters.hiyori.name, "泡沢ひより");
 assert.equal(all.DB.characters.hiyori.age, 25);
-assert.equal(all.DB.hiyori.route.enabled, false);
+assert.equal(all.DB.hiyori.route.enabled, true);
 assert(all.DB.dialogues.hiyori_preview_gap.lines[0].inner);
 assert(all.DB.lover.dates.hiyori && all.DB.friends.friends.hiyori);
-assert.equal(all.portraitInfo("hiyori", "normal"), null); // 素材待ちでも壊れた参照や別人を出さない
+assert(all.portraitInfo("hiyori", "normal"));
+assert(all.faceIconUrl("hiyori"));
 assert.equal(all.DB.relationshipMemories.tsumugi_creature.char_id, "tsumugi");
 assert(all.DB.dialogues.ch1_tsumugi_third);
 assert(all.DB.dialogues.remake_midcheck);

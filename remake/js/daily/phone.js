@@ -16,6 +16,7 @@ import { hasContact } from "./spots.js";
 import { loverMessages, isLover, dateSchedule } from "./romance.js";
 import { bondInvites, friendMessages } from "./bonds.js";
 import { syncMintoKnowledge } from "../core/story-knowledge.js";
+import { hiyoriEventStatus } from "../core/hiyori-route.js";
 
 import { invitationCost } from "./invitations.js";
 
@@ -26,7 +27,7 @@ const originId = (item) => item.originId || item.msg?.origin_id || item.id;
 const importantInvite = (m) => m.type === "invitation" && !!m.important;
 const needsResend = (id) => (state.inbox || []).some((item) => originId(item) === id && item.needsResend);
 const canRetry = (item) => item.result === "expired"
-  || item.result === "conflict_declined" && item.needsResend && item.day < state.day;
+  || ["conflict_declined", "declined"].includes(item.result) && item.needsResend && item.day < state.day;
 
 /** 営業中の私的な約束や、固定イベントとの重複を避ける。時刻を持たない誘いは従来どおり */
 function invitationAvailable(m, { fixedNight = () => false } = {}) {
@@ -124,6 +125,7 @@ function eligible(m, { tournamentDay = false } = {}) {
   if (!hasContact(m.sender)) return false;
   if (m.type === "invitation" && state.flags[`_invited_${m.id}`]) return false;
   if (m.exclude_flag && state.flags[m.exclude_flag]) return false;
+  if (cond === "hiyori_tonari") return hiyoriEventStatus("tonari_return") === "ready";
   if (cond === "story_count") return (state.story[m.sender] || 0) >= (m.trigger_value || 1);
   if (cond === "lime_exchanged") return needsResend(m.id) || m.trigger_day <= state.day && state.day - m.trigger_day <= 1;
   if (cond === "affinity_level") return affinityLevel(m.sender) >= (m.trigger_value || 3) && !state.flags[`_invited_${m.id}`];
@@ -162,7 +164,9 @@ export function morningMessages(opts = {}) {
     senders.add(m.sender);
   }
   // スミさんのバイト誘い（旧版 N13）。他の相手の誘いと並べ、返事で予定を選べる
-  const sumi = sumiBaitoInvite(opts);
+  const sumiStory = DB.lime.some((m) => m.sender === "sumi" && m.priority > 0 && eligible(m, opts)
+    && invitationAvailable(m, opts));
+  const sumi = sumiStory ? null : sumiBaitoInvite(opts);
   if (sumi && out.length < 3 && !senders.has("sumi") && !delivered.has(sumi.id)) {
     out.push(sumi);
     senders.add("sumi");
@@ -523,6 +527,10 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
       ui.note(t);
     } else {
       item.result = "declined";
+      if (m.retry_on_decline) {
+        item.needsResend = true;
+        delete state.flags[`_invited_${originId(item)}`];
+      }
       if (m.decline_response) await theirs(m.decline_response.text);
       gainAffinity(m.sender, 1);
     }

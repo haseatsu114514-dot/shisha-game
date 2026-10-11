@@ -1,0 +1,15 @@
+{
+  "name": "hiyori-encounters",
+  "baseURL": "http://127.0.0.1:8137/remake/",
+  "ref": null,
+  "results": [
+    {
+      "label": "desktop-lace-and-student",
+      "status": "passed"
+    },
+    {
+      "label": "mobile-lace-and-student",
+      "status": "passed"
+    }
+  ]
+}
