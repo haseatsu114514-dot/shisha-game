@@ -13,7 +13,7 @@ import { evaluationOf } from "./feedback.js";
 export const CONTESTANTS = ["naru", "adam", "minto", "hajime"];
 const RIVAL_COLOR = { naru: "#f0d8a0", adam: "#c9463a", minto: "#7fe0c2" };
 const JUDGES = [
-  { id: "maezono", label: "前園" },
+  { id: "maezono" },
   { id: "dr_kemuri", label: "チャコール博士" },
   { id: "nagumo", label: "南雲" },
 ];
@@ -56,7 +56,7 @@ export async function showStandings(round, mine) {
   rows.push({ id: "hajime", v: Math.min(mine * 0.9, 80) });
   rows.sort((a, b) => b.v - a.v);
   const feed = round === 1
-    ? ["前園、なるに3点投入！", "南雲審査員長、まだ動かず"]
+    ? [`${displayName("maezono", state)}、なるに3点投入！`, "南雲審査員長、まだ動かず"]
     : ["チャコール博士、アダムに4点投入！", "南雲審査員長、10点まるまる温存"];
   const board = el("div.standings", [
     el("div.sd-title", { text: `ROUND ${round} 暫定順位` }),

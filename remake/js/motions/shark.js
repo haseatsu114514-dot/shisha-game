@@ -135,7 +135,8 @@ function tween(ms, ease, f) {
     requestAnimationFrame(tick);
   });
 }
-const backOut = (p) => 1 + 2.4 * (p - 1) ** 3 + 1.4 * (p - 1) ** 2;
+// 口が大きいので行きすぎは約4.5%まで（旧7%）
+const backOut = (p) => 1 + 2.1 * (p - 1) ** 3 + 1.1 * (p - 1) ** 2;
 
 export async function b(mid) {
   const P = pick(SHARK, MONO_SHARK);
@@ -187,9 +188,11 @@ export async function b(mid) {
       const x = 160 + at * 1.5;
       const line = svg("line", { x1: x, y1: y, x2: x - 220, y2: y, pathLength: 1, "stroke-dasharray": "1 1", "stroke-dashoffset": 1 });
       streaks.append(line);
-      move(line, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0, offset: 0.4 }, { strokeDashoffset: -1 }], 380, { easing: E.out }).then(() => line.remove());
+      // 描く区間は減速、消える区間は加速（全体に強いカーブを掛けると描く部分が一瞬で終わる）
+      move(line, [{ strokeDashoffset: 1, easing: "cubic-bezier(.25,1,.5,1)" }, { strokeDashoffset: 0, offset: 0.4, easing: "cubic-bezier(.5,0,.75,0)" }, { strokeDashoffset: -1 }], 380, { easing: "linear" }).then(() => line.remove());
     }, at));
-    move(fin, [{ transform: "rotate(0deg)" }, { transform: "rotate(-8deg)", offset: 0.5 }, { transform: "rotate(0deg)" }], 760, { easing: "ease-in-out" });
+    // 傾きの頂点でなめらかに折り返す（各区間をゆるい入り抜きにする）
+    move(fin, [{ transform: "rotate(0deg)", easing: "cubic-bezier(.37,0,.63,1)" }, { transform: "rotate(-8deg)", offset: 0.5, easing: "cubic-bezier(.37,0,.63,1)" }, { transform: "rotate(0deg)" }], 760, { easing: "linear" });
     await move(sweep, [{ transform: "translateX(-90px)" }, { transform: `translateX(${W + reach + 90}px)` }], 760, { easing: "cubic-bezier(.5,0,.25,1)" });
     // 2. 覆った。切り込みの線が脈打って口の形に縮む（この間に店先へ替える）
     face.setAttribute("opacity", 1);
@@ -201,7 +204,7 @@ export async function b(mid) {
     };
     await Promise.all([mid?.(), greet()]);
     // 3. 口がきゅっと締まってから（ため）、細い線から大きく開く
-    await move(slit, [{ transform: "scaleX(1)" }, { transform: "scaleX(0.86)" }], 140, { easing: E.out });
+    await move(slit, [{ transform: "scaleX(1)" }, { transform: "scaleX(0.86)" }], 160, { easing: "cubic-bezier(.33,1,.68,1)" });
     slit.remove();
     gum.setAttribute("opacity", 1);
     SE.punch();
@@ -213,7 +216,8 @@ export async function b(mid) {
     await sleep(300);
     // 4. 口の中へ一気に寄って、口が画面の外へ抜ける（倍率は掛け算で加速）
     SE.whoosh();
-    await tween(560, (p) => p ** 3, (k) => draw(1, ZOOM ** k));
+    // 倍率は指数で伸びるので、イージングは2乗で十分（3乗だと前半が止まって見え、口が抜ける直前に急に走る）
+    await tween(560, (p) => p ** 2, (k) => draw(1, ZOOM ** k));
     face.remove();
     ring(fx, W / 2, cy, { r: 420, color: P.line, width: 8, dur: 520 });
     await sleep(540);

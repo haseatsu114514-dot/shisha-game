@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>泡沢ひより・会話表示の試写</title>
+<link rel="icon" href="../icon.svg">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/vn.css">
+<link rel="stylesheet" href="css/intro.css">
+<link rel="stylesheet" href="css/daily.css">
+<link rel="stylesheet" href="css/extras.css">
+<link rel="stylesheet" href="css/ui-art.css">
+<link rel="stylesheet" href="css/ui-inner.css">
+<style>
+.hiyori-preview-menu { position: absolute; inset: 140px 240px 90px; display: flex; flex-direction: column; gap: 16px; }
+.hiyori-preview-note { position: absolute; top: 28px; left: 60px; font-size: 20px; color: #ffb6cc; }
+.hiyori-preview-menu h1 { margin: 0; font-size: 28px; }
+.hiyori-preview-menu p { margin: 0 0 4px; font-size: 18px; color: var(--text-dim); }
+.hiyori-preview-menu .btn { font-size: 22px; }
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+  <div id="bg"></div><div id="screen"></div><div id="vn"></div>
+  <div id="hud"><div class="hiyori-preview-note">泡沢ひより／会話表示の試写・立ち絵は素材待ち</div></div>
+  <div id="fx"></div><div id="toasts"></div><div id="banners"></div>
+  <div id="wipe"><i></i><i></i><i></i><i></i><i></i></div><div id="modal"></div>
+</div></div>
+<script type="module" src="js/hiyori-preview.js"></script>
+</body>
+</html>

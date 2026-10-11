@@ -82,7 +82,7 @@ description: shisha-gameの既存キャラの立ち絵・表情差分を、元�
 
 ## 1. 元画像を実際に見る
 
-1. `CLAUDE.md` の Git Safety を実行し、正本のリポジトリを確認する。
+1. `AGENTS.md` の Git Safety を実行し、正本のリポジトリを確認する。
 2. `assets/sprites/characters/<id>/chr_<id>_*.png` を列挙する。
    `data/characters.json` は配列。キャラIDで該当要素を検索し、年齢・身長・`spriteScale`・性格を確認する。
    配列にいないキャラは個別プロフィールも確認する。サメちゃんは `kafuka`、プロフィールは

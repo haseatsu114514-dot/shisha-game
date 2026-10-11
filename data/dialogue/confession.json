@@ -614,7 +614,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "ちょっとだけ、考え事してた。……はじめくんって、うちのことどう思ってるのかなーって"
+          "text": "ちょっとだけ、考え事してた。……はじめくんって、僕のことどう思ってるのかなーって"
         },
         {
           "speaker": "hajime",
@@ -875,6 +875,7 @@
     {
       "dialogue_id": "confession_rin_accept",
       "metadata": {
+        "set_romance": "rin",
         "bg": "res://assets/backgrounds/bg_street_night.png"
       },
       "lines": [

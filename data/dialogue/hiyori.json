@@ -1,0 +1,77 @@
+{
+  "_comment": "キャラの正本はdata/characters.json。routeは接続用の基盤で、登場方法・正式台本・贈り物は未決。preview_onlyの台本は表示確認用で本編へ自動挿入しない。innerはプレイヤーだけに見え、はじめには聞こえない。",
+  "route": {
+    "enabled": false,
+    "storyEvents": ["meeting", "cracks", "axe_reveal", "work_talk"],
+    "question": { "dialogue": "hiyori_bond_question", "choice": "bond_q1_hiyori", "host": "hiyori_work_talk" },
+    "finale": { "dialogue": "hiyori_bond_finale", "question": "bond_q2_hiyori", "gift": null },
+    "events": [
+      { "id": "meeting", "dialogue": "hiyori_meeting", "chapters": [1, 2], "flag": "_hiyori_meeting_done", "requires": [], "affinity": 10 },
+      { "id": "cracks", "dialogue": "hiyori_cracks", "chapters": [1, 2], "flag": "_hiyori_cracks_done", "requires": ["_hiyori_meeting_done"], "met": true, "minAffinity": 1, "affinity": 10 },
+      { "id": "axe_reveal", "dialogue": "hiyori_axe_reveal", "chapters": [1, 2], "flag": "_hiyori_real_self_known", "requires": ["_hiyori_cracks_done"], "met": true, "affinity": 10 },
+      { "id": "work_talk", "dialogue": "hiyori_work_talk", "chapters": [1, 2], "flag": "_hiyori_work_talk_done", "requires": ["_hiyori_real_self_known"], "met": true, "minAffinity": 2, "affinity": 10 },
+      { "id": "tokyo_contact", "dialogue": "hiyori_tokyo_contact", "chapters": [3], "flag": "_hiyori_tokyo_contact_seen", "requires": ["_hiyori_work_talk_done"], "contact": true },
+      { "id": "feelings_spoken", "dialogue": "hiyori_feelings_spoken", "chapters": [1, 2, 3], "flag": "_hiyori_feelings_spoken", "requires": ["_hiyori_work_talk_done"], "relationship": "lover", "minLoveLevel": 2 },
+      { "id": "dubai_support", "dialogue": "hiyori_dubai_support", "chapters": [4], "flag": "_hiyori_dubai_support_seen", "requires": ["_hiyori_work_talk_done"], "contact": true },
+      { "id": "chapter5_friend", "dialogue": "hiyori_ch5_friend", "chapters": [5], "flag": "_hiyori_ch5_friend_seen", "requires": ["_hiyori_work_talk_done"], "relationship": "friend" },
+      { "id": "chapter5_lover", "dialogue": "hiyori_ch5_lover", "chapters": [5], "flag": "_hiyori_ch5_lover_seen", "requires": ["_hiyori_work_talk_done"], "relationship": "lover" }
+    ]
+  },
+  "dialogues": [
+    {
+      "dialogue_id": "hiyori_preview_gap",
+      "metadata": { "preview_only": true, "bg": "res://assets/backgrounds/bg_tonari_inside_night.png", "effect": "smoke" },
+      "lines": [
+        { "speaker": "hiyori", "face": "sad", "text": "私、今日は少し静かにしていたくて……", "inner": "社内チャット二百件。私の総務窓口は閉店です" },
+        { "speaker": "hajime", "text": "ここなら、ゆっくりできますね" },
+        { "speaker": "hiyori", "face": "smile", "text": "この紅茶の香り、落ち着くね……", "inner": "ピーチ足した人に賞与出したい。そんな権限はない" },
+        { "speaker": "hajime", "text": "気に入ってもらえて、よかったです" }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_preview_axe",
+      "metadata": { "preview_only": true, "clear_portraits": true },
+      "lines": [
+        { "speaker": "", "text": "斧投げシーシャバー。隣のレーンで、見覚えのある人が跳ねた。" },
+        { "speaker": "hiyori", "face": "excited", "text": "よっしゃ、ど真ん中！見た！？" },
+        { "speaker": "hajime", "text": "……ひよりさん？" },
+        { "speaker": "", "text": "目が合った。上がった両手だけが、ゆっくり下がる。" },
+        { "speaker": "hiyori", "face": "surprise", "text": "……風に、少し運ばれて……", "inner": "その言い訳で斧の速度は説明できねえ" },
+        { "speaker": "hajime", "text": "投げたのは見えました" },
+        { "speaker": "hiyori", "face": "normal", "text": "……今の、もう一回刺さるかな" }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_preview_work",
+      "metadata": { "preview_only": true, "bg": "res://assets/backgrounds/bg_tonari_inside_night.png" },
+      "lines": [
+        { "speaker": "hiyori", "face": "sad", "text": "明日のことは、煙に預けて……", "inner": "交通費の申請二十件。煙では承認できない" },
+        { "speaker": "", "text": "ひよりは社員証をバッグにしまい、スマホの通知を切った。" },
+        { "speaker": "hiyori", "face": "normal", "text": "明日はちゃんとやるよ。今は、好きな雰囲気でいたいだけ" },
+        { "speaker": "hajime", "text": "じゃあ、今は煙を楽しみましょう" },
+        { "speaker": "hiyori", "face": "smile", "text": "うん。……桃、もう少し足せる？" }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_preview_romance",
+      "metadata": { "preview_only": true, "private_scene": true, "bg": "res://assets/backgrounds/bg_street_night.png" },
+      "lines": [
+        { "speaker": "hiyori", "face": "sad", "text": "君といると、帰り道が遠く感じるね……", "inner": "駅まで二百メートルしかねえ。帰りたくないだけ" },
+        { "speaker": "hajime", "text": "もう少し歩きます？" },
+        { "speaker": "hiyori", "face": "normal", "text": "……帰りたくない。もう少し、一緒にいたい" },
+        { "speaker": "hajime", "text": "俺も、まだ一緒にいたいです" },
+        { "speaker": "hiyori", "face": "smile", "text": "……うん。今のは、ちゃんと口に出せた" }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_preview_lover",
+      "metadata": { "preview_only": true, "private_scene": true, "bg": "res://assets/backgrounds/bg_tonari_inside_night.png" },
+      "lines": [
+        { "speaker": "hiyori", "face": "sad", "text": "儚い私を、今夜も見つけてくれたのね……", "inner": "昨日から約束してたけどな。今日は付き合ってもらお" },
+        { "speaker": "hajime", "text": "今日はそういう雰囲気ですか" },
+        { "speaker": "hiyori", "face": "excited", "text": "そう！三分だけ。ラーメン来るまで！" },
+        { "speaker": "hiyori", "face": "smile", "text": "……会いたかったよ。これは、ごっこじゃない" }
+      ]
+    }
+  ]
+}

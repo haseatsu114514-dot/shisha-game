@@ -4,7 +4,7 @@
 
 ```js
 __remake.inspect.snapshot()             // 章・日付・ステータス・フラグなどのコピー
-__remake.inspect.events("mashiro")      // イベントIDを検索（最大100件）
+__remake.inspect.events("mashiro")      // イベントIDを検索（既定100件・最大500件）
 __remake.inspect.events("ch1", 200)     // 件数指定
 __remake.inspect.eventInfo("ch1_start") // イベントの概要。存在しないIDはnull
 __remake.inspect.exportSnapshot()       // 状態のJSON文字列（セーブ本体ではない）

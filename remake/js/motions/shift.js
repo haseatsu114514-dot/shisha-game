@@ -53,6 +53,10 @@ function coinFace(cls, label, bg, fg, size) {
     svg("path", { d: "M -27 60 q 6.75 -8 13.5 0 t 13.5 0 t 13.5 0 t 13.5 0", fill: "none", stroke: fg, "stroke-width": 4, "stroke-linecap": "round" }),
   ])]);
 }
+// b の動きの曲線。複数キーフレームの動きは、全体に強い曲線を掛けず、キーフレームごとに指定する
+const SOFT = "cubic-bezier(.22,1,.36,1)"; // 描く・出る（quint-out。長めの動きでも尻すぼみにならない）
+const SETTLE = "cubic-bezier(.37,0,.63,1)"; // 行き過ぎからの落ち着き（なだらかな往復）
+const ROLL_IN = "cubic-bezier(.32,0,.67,0)"; // 去る（cubic-in。指数カーブだと最初の4割がほぼ止まって見える）
 /** コインの姿勢（関数の並びを揃えて補間させる） */
 const at = (x, y, r, sx, sy = sx) => ({ transform: `translate(${x}px, ${y}px) rotate(${r}deg) scale(${sx}, ${sy})` });
 
@@ -96,16 +100,17 @@ export async function b() {
       const k = 1 - Math.abs(dx) / 140;
       const line = svg("line", { x1: cx + dx, y1: y0, x2: cx + dx, y2: y0 + (y1 - y0) * k, stroke: P.light, "stroke-width": 5, "stroke-linecap": "round", pathLength: 1, "stroke-dasharray": "1 1", "stroke-dashoffset": 1, opacity: 0.8 });
       trail.append(line);
-      move(line, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0, offset: 0.4 }, { strokeDashoffset: -1 }], 420, { easing: E.out, delay: delay + i * 18 });
+      move(line, [{ strokeDashoffset: 1, easing: E.out }, { strokeDashoffset: 0, offset: 0.35, easing: SETTLE }, { strokeDashoffset: -1 }], 420, { easing: "linear", delay: delay + i * 18 });
     });
     // 1. 円盤が広がり、輪が描かれ、文字の輪が回りながら現れる
     move(back, [{ opacity: 0 }, { opacity: 1 }], 220);
-    move(disc, [{ transform: "scale(0)" }, { transform: "scale(1)" }], 640, { easing: E.out });
-    move(rim, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 700, { easing: E.out, delay: 100 });
-    move(wipe, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 820, { easing: E.out, delay: 160 });
+    move(disc, [{ transform: "scale(0)" }, { transform: "scale(1)" }], 640, { easing: SOFT });
+    move(rim, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 700, { easing: SOFT, delay: 100 });
+    move(wipe, [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 820, { easing: SOFT, delay: 160 });
     words.animate([{ transform: "rotate(-30deg)" }, { transform: "rotate(50deg)" }], { duration: 3400, easing: "cubic-bezier(.2,.6,.5,1)", fill: "both" });
     // 2. OPEN の札が弾んで出てくる
-    await move(coin, [at(0, 0, -30, 0), at(0, 0, 4, 1.08), at(0, 0, 0, 1)], 520, { easing: E.out, delay: 120 });
+    // 出て（大きめに行き過ぎ）→ 落ち着く。全体に指数カーブを掛けると途中のキーフレームが一瞬で過ぎてしまう
+    await move(coin, [{ ...at(0, 0, -30, 0), easing: E.out }, { ...at(0, 0, 3, 1.05), offset: 0.55, easing: SETTLE }, at(0, 0, 0, 1)], 520, { easing: "linear", delay: 120 });
     // 3. 指で弾く前に沈む（ため）
     await move(coin, [at(0, 0, 0, 1), at(0, 20, 0, 1.08, 0.88)], 200, { easing: E.out });
     // 4. 弾かれて縦にくるくる回りながら上がり、落ちてくる
@@ -113,20 +118,21 @@ export async function b() {
     move(coin, [{ ...at(0, 20, 0, 1.08, 0.88), easing: "cubic-bezier(.2,.7,.4,1)" }, { ...at(0, -120, 0, 1.04, 1.04), offset: 0.48, easing: "cubic-bezier(.6,0,.85,.4)" }, at(0, 0, 0, 1, 1)], 820, { easing: "linear" });
     streaks(cy + 70, cy + 250, 40);
     streaks(cy - 300, cy - 150, 470);
-    await move(spin, [{ transform: "rotateX(0deg)" }, { transform: "rotateX(900deg)" }], 820, { easing: "cubic-bezier(.3,.55,.45,1)" });
+    await move(spin, [{ transform: "rotateX(0deg)" }, { transform: "rotateX(900deg)" }], 820, { easing: "cubic-bezier(.3,.5,.6,1)" }); // 落ちる速さに合わせ、着地の直前まで回り続けてから止まる
     // 5. CLOSED で着地: つぶれて伸びて止まり、衝撃の輪
     SE.stamp();
     ring(fx, cx, cy, { r: 250, color: P.light, width: 8 });
     burst(fx, cx, cy, { n: 12, r0: 214, r1: 300, color: P.light, width: 6 });
     move(rim, [{ strokeWidth: 9 }, { strokeWidth: 3 }], 420, { easing: E.out });
-    await move(coin, [at(0, 0, 0, 1.16, 0.84), at(0, -10, 0, 0.95, 1.06), at(0, 0, 0, 1, 1)], 380, { easing: E.out });
+    // つぶれた瞬間が衝撃のコマ。そこから跳ね返って伸び、落ち着く
+    await move(coin, [{ ...at(0, 0, 0, 1.16, 0.84), easing: "cubic-bezier(.2,.7,.4,1)" }, { ...at(0, -10, 0, 0.95, 1.06), offset: 0.4, easing: SETTLE }, at(0, 0, 0, 1, 1)], 380, { easing: "linear" });
     // 6. 「おつかれさま」
     await playKinetic(word, { step: 42 });
     await sleep(380);
     // 7. 右へ転がって去り、背景はそのあとを追って拭き取られる
     move(word, [{ opacity: 1 }, { opacity: 0 }], 220);
-    move(plate, [{ clipPath: "inset(0 0 0 0px)" }, { clipPath: "inset(0 0 0 1440px)" }], 640, { easing: E.in });
-    move(bar, [{ transform: "translateX(-8px)" }, { transform: "translateX(1440px)" }], 640, { easing: E.in });
-    await move(coin, [at(0, 0, 0, 1), at(1000, 0, 382, 1)], 640, { easing: E.in });
+    move(plate, [{ clipPath: "inset(0 0 0 0px)" }, { clipPath: "inset(0 0 0 1440px)" }], 640, { easing: ROLL_IN });
+    move(bar, [{ transform: "translateX(-8px)" }, { transform: "translateX(1440px)" }], 640, { easing: ROLL_IN });
+    await move(coin, [at(0, 0, 0, 1), at(1000, 0, 382, 1)], 640, { easing: ROLL_IN });
   });
 }

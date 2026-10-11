@@ -602,6 +602,57 @@
           ]
         }
       ]
+    },
+    "hiyori": {
+      "stat": "sense",
+      "call": "ひよりさん",
+      "place": "tonari",
+      "bg": "bg_tonari_inside_night.png",
+      "invite": {
+        "messages": [
+          "{privateContext}、tonariで一服しない？",
+          "桃か紅茶。決めきれないから、一緒に選ぼ"
+        ],
+        "accept_text": "一緒に選ぼう",
+        "decline": "了解！ また都合いいときに"
+      },
+      "chats": [
+        {
+          "m": [
+            "経費精算、全部片づけた！",
+            "儚い余韻に浸る前にラーメン食べます"
+          ],
+          "r": [
+            {
+              "text": "仕事、お疲れさま",
+              "response": "ありがと！ 麺がのびるので続きはまた！",
+              "affinity": 1
+            },
+            {
+              "text": "今日はどんなラーメン？",
+              "response": "今日は味噌。儚い女も替え玉します",
+              "affinity": 1
+            }
+          ]
+        }
+      ],
+      "hangouts": [
+        {
+          "arrive": {
+            "face": "sad",
+            "text": "静かな夜に、会えたね……",
+            "inner": "会社の電話が一回も鳴らない！ 静かって最高！"
+          },
+          "mid": {
+            "face": "smile",
+            "text": "この桃、紅茶にちょっと足すとよさそう。……元バイトの勘"
+          },
+          "close": {
+            "face": "excited",
+            "text": "楽しかった！ 次の一服も、仕事の話は半分までね"
+          }
+        }
+      ]
     }
   }
 }

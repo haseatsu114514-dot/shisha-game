@@ -70,6 +70,7 @@ DOC_CONTEXT_RE = re.compile(
 
 DOC_FILES = {
     "CLAUDE.md",
+    "gameplay_agent_reference.md",
     "lint_dialogue.py",
     "check_legacy_terms.py",
     "check_speakers.py",
