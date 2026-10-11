@@ -131,7 +131,7 @@ export function applyStats(obj = {}) {
 // ---------------------------------------------------------------- 好感度（二層: ポイント→5段階）
 
 export const AFFINITY_RANK_PTS = [0, 9, 20, 33, 48, 66];
-export const ROMANCEABLE = ["tsumugi", "minto", "rin", "ageha"];
+export const ROMANCEABLE = ["tsumugi", "minto", "rin", "ageha", "hiyori"];
 
 export function affinityLevel(id) {
   if ((state.lovers || []).includes(id)) return 5; // 恋人は好感度MAX扱い（段階は絆Lvで別に持つ）
