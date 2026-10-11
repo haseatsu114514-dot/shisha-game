@@ -141,6 +141,22 @@ await suite("hiyori-encounters", async (check) => {
     assert(!final.replay && final.stable && final.done && !final.invite && !final.known);
     await page.evaluate(async () => { await H.spots.visitChar("sumi"); });
     assert(await page.evaluate(() => H.core.state.flags._hiyori_tonari_followup_done));
+    const next = await page.evaluate(async () => {
+      const s = H.core.state;
+      const ready = H.route.hiyoriEventStatus("tonari_afterwork");
+      const initialPoints = s.affinity.hiyori;
+      s.day++; await H.spots.visitChar("sumi");
+      const completed = s.flags._hiyori_tonari_afterwork_done;
+      const stillHidden = !s.flags._hiyori_real_self_known && !s.flags._hiyori_work_talk_done;
+      const seen = H.route.hiyoriEventStatus("tonari_afterwork");
+      const afterPoints = s.affinity.hiyori;
+      const repeat = await H.daily.playHiyoriEvent("tonari_afterwork");
+      return { ready, completed, stillHidden, seen, repeat, initialPoints, afterPoints,
+        stable: s.affinity.hiyori === afterPoints };
+    });
+    assert.equal(next.ready, "ready");
+    assert(next.completed && next.stillHidden && next.seen === "seen" && !next.repeat && next.stable);
+    assert(next.afterPoints > next.initialPoints);
   });
 
   await check("unread-expiry-and-no-affinity-inference", async (page) => {

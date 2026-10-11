@@ -74,5 +74,6 @@ export async function visitHiyoriAtShop(spot, { bg } = {}) {
 export async function meetHiyoriAtTonari() {
   if (hiyoriEventStatus("sumi_message") === "ready") return playHiyoriEvent("sumi_message");
   if (hiyoriEventStatus("tonari_followup") === "ready") return playHiyoriEvent("tonari_followup");
+  if (hiyoriEventStatus("tonari_afterwork") === "ready") return playHiyoriEvent("tonari_afterwork");
   return false;
 }
