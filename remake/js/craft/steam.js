@@ -16,6 +16,7 @@ import { makingUrl } from "../core/data.js";
 import { buildMentalTrace } from "./mental.js";
 import { craftCondition } from "../core/condition.js";
 import { SLASH_ART, SLASH_RECHARGE_SECONDS, slashDirection, slashAngle, slashTouchesBullet, buildSlashFx } from "./steam-slash.js";
+import { HEART_SIZE, heartHitRadius, heartTouchesBullet } from "./steam-heart.js";
 
 // 雑念ははじめ自身の内心。自主練でも、その場に他の人物がいる前提にしない。
 export const DODGE_WORDS = [
@@ -81,7 +82,8 @@ export async function runSteamDodge(cs) {
 
   const dur = steamPlaySeconds(seconds) * (tutorial ? 0.7 : 1);
   const focus = craftCondition(cs).focus;
-  const hitR = 9 * (1 - 0.2 * tier01("guts")) / focus;
+  const hitR = heartHitRadius(tier01("guts"), focus);
+  heart.style.setProperty("--heart-size", `${HEART_SIZE}px`);
   heart.style.setProperty("--hit-diameter", `${hitR * 2}px`);
   const spawnEvery = (tutorial ? 0.85 : 0.46) * (1 + 0.25 * tier01("insight")) * focus;
   let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = stock;
@@ -266,8 +268,7 @@ export async function runSteamDodge(cs) {
         for (let i = bullets.length - 1; i >= 0; i--) {
           const b = bullets[i]; b.x += b.vx * dt; b.y += b.vy * dt;
           b.node.style.transform = `translate(${b.x}px, ${b.y}px)`;
-          const cx = clamp(hx, b.x, b.x + b.w), cy = clamp(hy, b.y, b.y + b.h);
-          if (!inv && (hx - cx) ** 2 + (hy - cy) ** 2 < hitR * hitR) {
+          if (!inv && heartTouchesBullet(b, hx, hy, hitR)) {
             hits++; inv = 0.9;
             setPlayerMental(cs, mental.hit(time, hits));
             reactAudience(cs, "miss");
