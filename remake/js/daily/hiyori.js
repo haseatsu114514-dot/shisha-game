@@ -2,7 +2,7 @@
 import { DB } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { seeded } from "../core/util.js";
-import { gainAffinity, affinityLevel } from "../core/stats.js";
+import { gainAffinity, affinityLevel, releaseHiyoriAffinity } from "../core/stats.js";
 import { hiyoriRoute, hiyoriEventStatus, hiyoriHasContact } from "../core/hiyori-route.js";
 import { play, isPlaying } from "../vn/engine.js";
 import { afterStory } from "./bonds.js";
@@ -19,6 +19,7 @@ export async function playHiyoriEvent(id, options = {}) {
     await play(event.dialogue, options);
     if (state !== owner) return false;
     state.flags[event.flag] = true;
+    if (id === "tonari_return") releaseHiyoriAffinity();
     if (hiyoriHasContact() && !state.contacts.includes("hiyori")) state.contacts.push("hiyori");
     if (hiyoriRoute().storyEvents.includes(id)) state.story.hiyori = (state.story.hiyori || 0) + 1;
     if (event.affinity) gainAffinity("hiyori", event.affinity);
@@ -47,6 +48,7 @@ function encounterRoll(spot) {
 export async function visitHiyoriAtShop(spot, { bg } = {}) {
   if (!hiyoriShopEligible(spot) || !hiyoriRoute().enabled || ![1, 2].includes(state.chapter)) return false;
   const stamp = `${state.chapter}:${state.day}`;
+  if (state.pendingInvite?.event === "__hiyori_shop__" && state.pendingInvite.day === state.day) return false;
   if (state.flags._hiyori_encounter_day === stamp) return false;
   const options = { bg };
   if (hiyoriEventStatus("meeting") === "ready") {
@@ -78,6 +80,26 @@ export async function visitHiyoriAtShop(spot, { bg } = {}) {
   if (affinityLevel("hiyori") >= 3 && state.flags._hiyori_cracks_done) state.flags._hiyori_tonari_ready = true;
   save();
   return true;
+}
+
+/** 返信で予約した店で既存の短い交流を読む。予約なしの確定出現は増やさない。 */
+export async function playHiyoriHangout(options = {}) {
+  const stamp = `${state.chapter}:${state.day}`;
+  if (active || isPlaying() || state.flags._hiyori_encounter_day === stamp) return false;
+  const n = Number(state.flags._hiyori_repeat_count || 0);
+  const id = `hiyori_shop_repeat_${n % 4}`;
+  if (!DB.dialogues[id]?.lines?.length) return false;
+  const owner = state;
+  active = true;
+  try {
+    await play(id, options);
+    if (state !== owner) return false;
+    state.flags._hiyori_repeat_count = n + 1;
+    state.flags._hiyori_encounter_day = stamp;
+    gainAffinity("hiyori", 10);
+    save();
+    return true;
+  } finally { active = false; }
 }
 
 /** バイト・客席・スミさんとの会話、いずれも次の実際の対面で一度だけ進める。 */

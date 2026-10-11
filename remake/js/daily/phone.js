@@ -32,6 +32,8 @@ const canRetry = (item) => item.result === "expired"
 /** 営業中の私的な約束や、固定イベントとの重複を避ける。時刻を持たない誘いは従来どおり */
 function invitationAvailable(m, { fixedNight = () => false } = {}) {
   const store = storeInvitationSpot(m);
+  if (m.accept_event === "__hiyori_shop__" && (!spotById(m.visit_spot) || isClosed(spotById(m.visit_spot))
+    || state.flags._hiyori_encounter_day === `${state.chapter}:${state.day}`)) return false;
   if (store && isClosed(spotById(store))) return false;
   if (m.closed_on != null && state.day % 7 !== m.closed_on) return false;
   if (m.exclude_closed_on != null && state.day % 7 === m.exclude_closed_on) return false;
@@ -206,10 +208,16 @@ export function morningMessages(opts = {}) {
   // スミさんの急なバイトの誘いは仕事の連絡なので、重なってもよい（オーナー指定。どちらを受けるかはプレイヤーが選ぶ）
   const meetInvite = (m) => m?.type === "invitation" && m.accept_event !== "__sumi_baito__";
   const otherInvite = out.some(meetInvite) || inbox.some((i) => !i.done && meetInvite(i.msg));
+  const hiyori = hiyoriInvite(opts);
+  if (hiyori && out.length < 3 && !otherInvite && !state.pendingInvite && !senders.has("hiyori")
+    && !delivered.has(hiyori.id) && invitationAvailable(hiyori, opts)) {
+    out.push(hiyori);
+    senders.add("hiyori");
+  }
   for (const template of friendMessages(opts)) {
     if (out.length >= 3) break;
     if (senders.has(template.sender) || delivered.has(template.id)) continue;
-    if (template.type === "invitation" && otherInvite) continue;
+    if (template.type === "invitation" && (otherInvite || out.some(meetInvite))) continue;
     const m = scheduledInvitation(template, opts); // お誘いは休日の午後か仕事後。合わない日は同じ相手の雑談へ
     if (!m || !invitationAvailable(m, opts)) continue;
     out.push(m);
@@ -217,6 +225,21 @@ export function morningMessages(opts = {}) {
     break;
   }
   return out;
+}
+
+// 再会後のたまの誘い。受信した日を保存するため、読了・辞退・ロードで連投しない。
+function hiyoriInvite({ tournamentDay = false, fixedNight = () => false } = {}) {
+  if (tournamentDay || fixedNight(state.day) || ![1, 2].includes(state.chapter) || !hasContact("hiyori")
+    || !state.flags._hiyori_tonari_return_done || (state.lovers || []).includes("hiyori")) return null;
+  const recent = (state.inbox || []).filter(i => i.msg?.accept_event === "__hiyori_shop__" && i.chapter === state.chapter);
+  if (recent.some(i => state.day - i.day < 3) || (state.seed + state.day) % 4 !== 0) return null;
+  const open = ["naru", "adam", "minto"].map(spotById).filter(s => s && state.met[s.charId] && !isClosed(s));
+  if (!open.length) return null;
+  const spot = open[Math.floor(state.day / 4) % open.length];
+  return { id: `_hiyori_shop_c${state.chapter}_d${state.day}`, sender: "hiyori", type: "invitation",
+    time_slot: "night", accept_event: "__hiyori_shop__", visit_spot: spot.id,
+    messages: [`……今夜、${spot.label}で一緒に一服しない？`], accept_text: "今夜、一緒に一服しよう",
+    decline_response: { text: "……うん。また都合のいい日に" } };
 }
 
 /**
@@ -303,7 +326,7 @@ export function deliverMorning(opts = {}) {
   for (const m of msgs) {
     if (m.temporary_closed) state.flags[`_temporary_closed_${m.sender}`] = `${state.chapter || 1}:${state.day}`;
     const msg = { ...m, messages: (m.messages || []).map((x) => (typeof x === "string" ? freeze(x) : { ...x, text: freeze(x.text) })) };
-    state.inbox.push(stampAccount({ id: m.id, originId: m.origin_id || m.id, day: state.day, msg,
+    state.inbox.push(stampAccount({ id: m.id, originId: m.origin_id || m.id, day: state.day, chapter: state.chapter, msg,
       read: false, done: false, replyState: m.type === "invitation" || m.replies?.length ? "waiting" : "none", log: [] }));
   }
   return msgs.length;
@@ -527,6 +550,7 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
       item.result = "accepted";
       const inv = { event: m.accept_event, sender: m.sender, slot: night ? 1 : 0,
         day: state.day, originId: originId(item), afterClose: !!m.after_close, temporaryClosed: !!m.temporary_closed };
+      if (m.visit_spot) inv.visitSpot = m.visit_spot;
       accepted.push(inv);
       if (!forced) {
         state.pendingInvite = inv;

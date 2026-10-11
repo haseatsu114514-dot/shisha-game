@@ -5,6 +5,9 @@ on:
       - 'remake/js/daily/phone.js'
       - 'remake/js/daily/calendar.js'
       - 'remake/js/daily/invitations.js'
+      - 'remake/js/core/stats.js'
+      - 'remake/js/daily/hiyori.js'
+      - 'remake/test/browser/hiyori_gate.mjs'
       - 'remake/test/lime_consistency.mjs'
       - 'remake/test/browser/lime_evening.mjs'
       - '.github/workflows/lime-invitations.yml'
@@ -14,6 +17,9 @@ on:
       - 'remake/js/daily/phone.js'
       - 'remake/js/daily/calendar.js'
       - 'remake/js/daily/invitations.js'
+      - 'remake/js/core/stats.js'
+      - 'remake/js/daily/hiyori.js'
+      - 'remake/test/browser/hiyori_gate.mjs'
       - 'remake/test/lime_consistency.mjs'
       - 'remake/test/browser/lime_evening.mjs'
       - '.github/workflows/lime-invitations.yml'
@@ -58,9 +64,15 @@ jobs:
             sleep 1
           done
           node remake/test/browser/lime_evening.mjs
+          node remake/test/browser/hiyori_gate.mjs
+          node --experimental-vm-modules remake/test/hiyori_frequency.mjs
+          node --experimental-vm-modules remake/test/daily_consistency.mjs
+          node --experimental-vm-modules remake/test/illness.mjs
       - uses: actions/upload-artifact@v7.0.2
         if: always()
         with:
           name: lime-invitation-results
-          path: .codex/artifacts/remake-browser/lime-evening*
+          path: |
+            .codex/artifacts/remake-browser/lime-evening*
+            .codex/artifacts/remake-browser/hiyori-gate*
           retention-days: 7
