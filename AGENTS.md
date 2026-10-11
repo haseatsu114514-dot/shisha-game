@@ -104,3 +104,9 @@ Mac 上で作業する Codex / Claude Code は、開始時・タスクの区切�
 - マージ不可のPRを延々と修正しない。保護ルール・レビュー・必須チェック・Git Safetyは省略せず、危険なら保留してIssue化する。
 - 終了報告は短く **MERGED: #番号 / PENDING: #番号(理由) / ISSUES: #番号 / BRANCH: 名前 / NEXT: 次の1手** の形にする。リンクまたは番号を残し、次のChatGPT/Codex/Claude Codeが会話履歴なしでも再開できるようにする。
 - Mac専用スクリプトやフックはスマホ・クラウドで動かない場合がある。GitHub上のPR/Issue/作業ブランチを引き継ぎの正本とする。
+
+## 複数CodexチャットのIssue予約（必須）
+
+- 複数のクラウド/ローカルCodex・Claude Codeセッションは同じアカウントでも独立した作業者。Issueを選ぶ前に `docs/issue_claim_protocol.md` に従い、GitHub Actions `issue-claim.yml` で予約を取得する。
+- ワークフロー実行の**成功を確認するまで**実装しない。予約済みIssueは別セッションで作業しない。
+- 利用枠切れ時はpushと引き継ぎを優先し、予約を勝手に解除しない。PRの安全確認・マージは従来のGit Safetyを維持する。
