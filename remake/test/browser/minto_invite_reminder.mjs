@@ -26,7 +26,7 @@ await suite("minto-invite-reminder", async (check) => {
       s.met.minto = true;
       s.contacts.push("minto");
       const m = data.DB.lime.find((entry) => entry.id === "lime_minto_day4");
-      assert(m, "The scheduled PEPPERMINT invite must exist");
+      if (!m) throw new Error("The scheduled PEPPERMINT invite must exist");
       s.inbox.push({
         id: m.id, originId: m.id, day: 4, msg: structuredClone(m),
         read, done: false, replyState: "waiting", log: [],
