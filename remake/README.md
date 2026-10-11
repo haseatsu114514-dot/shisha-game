@@ -260,6 +260,13 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
 
 ## テスト
 
+2026-10-11: タイトルは6人18枚をランダム表示（直前と同じキャラを避ける）。起動時は選んだ1枚だけデコード。SKIPの台詞送り25msは維持し、途中の表情とCGのフェードを待つ。SKIPの背景幕は片道140ms。
+
+```bash
+node remake/test/title_arts.mjs              # 全18枚・初回1枚だけ・PC/スマホ・セーブ不変
+node remake/test/vn_visual_readiness.mjs     # 遅い表情・CG表示/退場・SKIPの幕・選択で停止
+```
+
 ```bash
 python3 remake/tools/serve_preview.py --port 8123 &
 node remake/test/playthrough.mjs            # 優勝ルート＋敗北ルート

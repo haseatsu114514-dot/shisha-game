@@ -14,9 +14,9 @@
   -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
   mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
   opacity: 0;
-  animation: title-art-in 2.2s 0.3s var(--ease-out) forwards;
   image-rendering: pixelated;
 }
+.title-art.ready { animation: title-art-in 2.2s 0.3s var(--ease-out) forwards; }
 @keyframes title-art-in { from { opacity: 0; transform: translateX(40px); } to { opacity: 0.95; transform: none; } }
 .title-smoke i {
   position: absolute;

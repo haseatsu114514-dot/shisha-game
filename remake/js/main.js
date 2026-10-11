@@ -1,7 +1,7 @@
 // 起動: ステージの拡縮 → データ読込 → タイトル。
 import { TOURNAMENT_DAY } from "./core/rules.js";
 import { $, sleep } from "./core/util.js";
-import { loadAll, DB, assetUrl, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
+import { loadAll, DB, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
 import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
 import { loadConfig, state, load, consumeResumeOnBoot } from "./core/state.js";
 import { unlockAudio } from "./core/audio.js";
@@ -11,6 +11,7 @@ import { createEventPreview } from "./core/dev-event-preview.js";
 import { createIsolatedEventPlayer } from "./core/dev-isolated-player.js";
 import { craftTest } from "./craft/session.js";
 import { showTitle } from "./scenes/title.js";
+import { prepareTitleArt } from "./scenes/title-art.js";
 import { resumeGame } from "./chapters/ch1.js";
 
 function fitStage() {
@@ -38,21 +39,19 @@ export async function boot() {
     new Promise((r) => setTimeout(r, 4000)),
   ]).catch(() => {});
   await Promise.all([loadAll((p) => { bar.style.width = `${Math.round(p * 100)}%`; }), fonts]);
-  // タイトルの絵とロゴ、窓・会話の枠とボタンが読めてから幕を開ける（最大3秒）
-  await Promise.race([Promise.all([
-    ...TITLE_IMAGES.map((r) => imageReady(r.startsWith("assets/") ? assetUrl(r) : r, 3000)),
+  // 抽選した1枚だけをデコードしてから幕を開ける。全候補を起動時にダウンロードしない。
+  const [titleArt] = await Promise.all([prepareTitleArt(), Promise.all([
+    imageReady("img/ui/ui_title_logo_rich.webp", 3000),
     ...FRAME_ART.map((u) => imageReady(u, 3000, { keep: true })),
-  ]), sleep(3000)]);
+  ])]);
   // ゲーム中にロードした直後は、タイトルを飛ばしてそのデータから再開する
   if (consumeResumeOnBoot() && load()) resumeGame();
-  else showTitle();
+  else showTitle(titleArt);
   // タイトルを描けたことを確認してから、読み込み画面を閉じる。
   $("#boot").classList.add("done");
   setTimeout(() => $("#boot")?.remove(), 700);
   warmUp();
 }
-
-const TITLE_IMAGES = ["assets/ui/title_arts/title_art_keyvisual_01.png", "img/ui/ui_title_logo_rich.webp"];
 
 /** タイトルを見ている間に、日常でよく出る絵を裏で読んでおく（初めて出る場面で絵が遅れないように） */
 async function warmUp() {

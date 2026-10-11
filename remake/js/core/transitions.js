@@ -34,7 +34,7 @@ export function createSceneCurtain(host, { fast = false } = {}) {
   const reduced = reducedMotion();
   const cued = takeCue();
   if (cued?.kind === "place" && !fast && !reduced) return moveCurtain(host, moveStyle(cued.opts), cued.opts);
-  const ms = fast || reduced ? 45 : 260;
+  const ms = reduced ? 45 : fast ? 140 : 260;
   const variant = STYLES[serial++ % STYLES.length];
   const node = el(`div.scene-curtain.${variant}`, { "aria-hidden": "true", style: { "--st-ms": `${ms}ms` }, dataset: { transition: variant } }, [
     el("div.st-field"),

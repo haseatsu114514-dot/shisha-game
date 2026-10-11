@@ -75,6 +75,12 @@ jobs:
       # Keep browser suites sequential; they share the preview server and runner.
       - name: Save/load, legacy migration and PC/mobile controls
         run: node remake/test/browser/save_load.mjs
+      - name: Title art rotation and SKIP visual readiness
+        env:
+          NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
+        run: |
+          node remake/test/title_arts.mjs
+          node remake/test/vn_visual_readiness.mjs
       - name: Steam slash, recharge and PC/mobile controls
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules

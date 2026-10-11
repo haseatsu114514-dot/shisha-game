@@ -59,21 +59,24 @@ const bgReady = new Map(); // url -> Promise（一度読んだ絵は即座に出
 
 const keptImages = []; // 何度も出るUIの小さな絵は Image を持ち続ける（デコード済みのまま置いておく）
 
-/** 画像を読み込み＋デコードし終えるまで待つ（最大 ms）。失敗しても先へ進む。keep: 読んだ絵を手放さない */
+/** 画像を読み込み＋デコードし終えるまで待つ（最大 ms）。成功時 true、失敗・時間切れは false。 */
 export function imageReady(url, ms = 1500, { keep = false } = {}) {
-  if (!url) return Promise.resolve();
+  if (!url) return Promise.resolve(false);
   let p = bgReady.get(url);
   if (!p) {
     p = new Promise((resolve) => {
       const i = new Image();
       if (keep) keptImages.push(i);
-      i.onload = () => (i.decode ? i.decode().catch(() => {}) : Promise.resolve()).then(resolve);
-      i.onerror = resolve;
+      i.onload = () => (i.decode ? i.decode().catch(() => {}) : Promise.resolve()).then(() => resolve(true));
+      i.onerror = () => { bgReady.delete(url); resolve(false); };
       i.src = url;
     });
     bgReady.set(url, p);
   }
-  return Promise.race([p, sleep(ms)]);
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => resolve(false), ms);
+    p.then((loaded) => { clearTimeout(timer); resolve(loaded); });
+  });
 }
 
 // ---------------------------------------------------------------- UIの絵の先読み
