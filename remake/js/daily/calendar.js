@@ -17,7 +17,7 @@ import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, story
 import { doFortune } from "./fortune.js";
 import { tonariMenu, tonariCustomer, tonariPractice, doBaito } from "./tonari.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
-import { deliverMorning, pushNotice, unreadCount, mintoStoreInviteNeedingReply, openLime, limeCoach, expireInvitations } from "./phone.js";
+import { deliverMorning, pushNotice, unreadCount, venueInviteNeedingReply, openLime, limeCoach, expireInvitations } from "./phone.js";
 import { openStatus } from "./status.js";
 import { onAction as spinReel, presentNow as showReelNow } from "./reel.js";
 import { maybeConfession, playDate } from "./romance.js";
@@ -287,22 +287,28 @@ async function takeAction() {
       else limeCoach(phoneButton);
     }, // 通知を先にタップした場合は、マップが開いたところで目的のトークへ
     onBeforeGo: async (destination) => {
-      if (destination?.id !== "minto") return true;
-      const pending = mintoStoreInviteNeedingReply({ fixedNight: (day) => !!chapterDef.nightEvents[day] });
+      const pending = venueInviteNeedingReply(destination?.id, { fixedNight: (day) => !!chapterDef.nightEvents[day] });
       if (!pending) return true;
       const reminderId = `${state.chapter}:${state.day}:${pending.id}`;
-      if (state.flags._minto_store_lime_reminder === reminderId) return true;
-      state.flags._minto_store_lime_reminder = reminderId;
+      const remembered = state.flags._venue_lime_reminders || [];
+      if (remembered.includes(reminderId)
+        || (destination.id === "minto" && state.flags._minto_store_lime_reminder === reminderId)) return true;
+      // 同じ日・メッセージについて一度だけ。旧セーブに無いフラグでも動く。
+      const dayPrefix = `${state.chapter}:${state.day}:`;
+      state.flags._venue_lime_reminders = [...remembered.filter((id) => id.startsWith(dayPrefix)), reminderId];
+      const sender = pending.msg.sender;
+      const senderName = { minto: "みんと", sumi: "スミさん", hiyori: "ひより", naru: "なる",
+        adam: "アダム", tsumugi: "つむぎ", ageha: "アゲハ", kafuka: "サメちゃん" }[sender] || "誰か";
       const choice = await modal({
         title: "LIMEのお誘い",
-        body: "そういえば、みんとからLIMEが来てたな……",
+        body: `そういえば、${senderName}からLIMEが来てたな……`,
         options: [
-          { label: "LIMEを確認する", value: "lime", primary: true, test: "minto-invite-check" },
-          { label: "そのまま向かう", value: "go", test: "minto-invite-go" },
+          { label: "LIMEを確認する", value: "lime", primary: true, test: "venue-invite-check" },
+          { label: "そのまま向かう", value: "go", test: "venue-invite-go" },
         ],
       });
       if (choice === "lime") {
-        await phoneButton({ sender: "minto" });
+        await phoneButton({ sender });
         return false;
       }
       return true;
