@@ -45,6 +45,8 @@ try {
         cs.holes = { total: 24, minimumComplete: true }; cs.pack = "normal";
         cs.steam = { temp: .54, score: 100, hits: 0, concentration: 1 };
         cs.pull = { temp: .54, pulls: 2, score: 100 };
+        if (compact) cs.heat = { score: 80, grade: "B", picks: ["pre", "just", "pre"],
+          heatPower: 60, heatStability: 70, startup: 55, burnRisk: 25, aromaRetention: 70 };
         QA.before = JSON.stringify(core.state); QA.originalHeat = JSON.stringify(cs.heat);
         session.openBench(cs);
         QA.run = compact ? pull.runCare(cs) : heat.runHeat(cs);
