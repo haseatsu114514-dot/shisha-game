@@ -87,9 +87,18 @@ try {
     await page.waitForFunction(() => document.querySelector('[data-test="coal-0"]')?.dataset.phase === "raw");
     await page.evaluate(() => { window.coalClock = 1000 + (window.coalIdeal - .35) * 1000; });
     await page.locator('[data-test="coal-2"]').click();
+    const heatFeedback = page.locator('[data-test="heat-feedback"]');
+    assert.equal(await heatFeedback.locator(".stamp").count(), 1, "Each rating uses the feedback strip");
+    assert.equal(await page.locator(".bench-panel > .stamp").count(), 0, "Ratings must not float over the stove");
+    assert(await page.evaluate(() => {
+      const stove = document.querySelector(".stove").getBoundingClientRect();
+      const feedback = document.querySelector(".heat-feedback").getBoundingClientRect();
+      return feedback.top >= stove.bottom - 1;
+    }), "The feedback strip must be below the clickable coals");
     assert.match(await page.locator('[data-test="coal-timing-2"]').textContent(), /GOOD.*0\.35秒早い/);
     await page.evaluate(() => { window.coalClock = 1000 + (window.coalIdeal - .08) * 1000; });
     await page.locator('[data-test="coal-0"]').click();
+    assert.equal(await heatFeedback.locator(".stamp").count(), 1, "Consecutive ratings must not stack");
     assert.match(await page.locator('[data-test="coal-timing-0"]').textContent(), /PERFECT.*0\.08秒早い/);
     const first = await page.locator('[data-test="coal-timing-0"]').textContent();
     await insidePanel(page, [".heat-picks"]); await capture(page, `coal-live-${name}`);
