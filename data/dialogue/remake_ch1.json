@@ -1365,7 +1365,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "──シフト終了。片付けを済ませて、スミさんから今日の給料を受け取った。"
+          "text": "──シフト終了。片付けを済ませると、スミさんが今日のバイト代を封筒で手渡してくれた。"
         }
       ]
     },
@@ -2359,6 +2359,74 @@
           "speaker": "adam",
           "face": "serious",
           "text": "……お前も最後まで、丁寧に作り続けた。俺はそれを見ていた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_delivery_minto_handoff",
+      "metadata": {
+        "private_scene": true,
+        "bg": "res://assets/backgrounds/bg_street_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "繁華街のPEPPERMINTに到着した。店の看板を確かめ、入口のドアをそっとノックする。"
+        },
+        {
+          "speaker": "",
+          "text": "扉が開き、ミント色のリボンをつけた店員が顔を出した。"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "はーいっ♡ ……あっ、その大きな袋。tonariさんからのお届け物？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。tonariでバイトしている蒸野始です。ご注文のミントを届けに来ました"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "ありがとっ♡ はじめまして、みんとです！"
+        },
+        {
+          "type": "set_flag",
+          "flag": "known_name_minto"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_minto"
+        },
+        {
+          "speaker": "",
+          "text": "三袋を入口脇の台車へ置くと、みんとは伝票に丸い字で「みんと♡」とサインした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あの、受け取りのサインなので……"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "だいじょーぶ♡ この辺なら、これで通じるから"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "配達ありがとう！ この後よかったら、お客さんとして遊びに来てね♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとうございます。仕事が片付いたら、寄ってみます"
+        },
+        {
+          "speaker": "",
+          "text": "配達はこれで完了だ。店に入って一服するかどうかは、自分で決めよう。"
         }
       ]
     }
