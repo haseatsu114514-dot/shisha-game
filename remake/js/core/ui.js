@@ -56,6 +56,7 @@ let activeCurtain = null;
 let weatherBg = "";
 let weatherKey = "";
 const bgReady = new Map(); // url -> Promise（一度読んだ絵は即座に出す）
+const expiredImageWaits = new WeakMap(); // 同じ通信に対し、使い切った待ち時間を繰り返さない
 
 const keptImages = []; // 何度も出るUIの小さな絵は Image を持ち続ける（デコード済みのまま置いておく）
 
@@ -73,9 +74,14 @@ export function imageReady(url, ms = 1500, { keep = false } = {}) {
     });
     bgReady.set(url, p);
   }
+  if (expiredImageWaits.has(p) && expiredImageWaits.get(p) >= ms) return Promise.resolve(false);
   return new Promise((resolve) => {
-    const timer = setTimeout(() => resolve(false), ms);
-    p.then((loaded) => { clearTimeout(timer); resolve(loaded); });
+    const timer = setTimeout(() => {
+      expiredImageWaits.set(p, Math.max(ms, expiredImageWaits.get(p) || 0));
+      resolve(false);
+    }, ms);
+    // 通信は継続する。遅れて届いた画像は通常のキャッシュへ戻し、通信失敗後の再試行も妨げない。
+    p.then((loaded) => { expiredImageWaits.delete(p); clearTimeout(timer); resolve(loaded); });
   });
 }
 

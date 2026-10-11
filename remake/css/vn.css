@@ -4,6 +4,14 @@
 #vn { opacity: 0; transition: opacity 0.25s ease; }
 #vn.active { opacity: 1; }
 
+.vn-loading { position: absolute; left: 50%; top: 42%; transform: translate(-50%, -50%); z-index: 101;
+  display: flex; align-items: center; gap: 14px; padding: 16px 24px; border: 1px solid #b59d7166; border-radius: 8px;
+  background: #171221f2; color: #e4d4b4; font-size: 18px; pointer-events: none; }
+.vn-loading::before { content: ""; width: 22px; height: 22px; border: 2px solid #a58b5233; border-top-color: #dfc58e;
+  border-radius: 50%; animation: vn-loading-turn 1s linear infinite; }
+@keyframes vn-loading-turn { to { transform: rotate(1turn); } }
+@media (prefers-reduced-motion: reduce) { .vn-loading::before { animation: none; } }
+
 .vn-cg {
   position: absolute;
   inset: 0;

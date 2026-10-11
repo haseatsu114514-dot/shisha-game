@@ -115,6 +115,18 @@ function kickAuto() {
 
 // ---------------------------------------------------------------- 再生
 
+/** 同じ背景へ続く会話でも、長い素材待ちには案内を出す。既存のreadyガードで操作を保護する。 */
+function waitSceneAssets(task, owner = running) {
+  let notice = null;
+  const timer = setTimeout(() => {
+    if (running !== owner) return;
+    notice = el("div.vn-loading", { role: "status", "aria-live": "polite",
+      text: "場面を準備しています…", dataset: { test: "vn-loading" } });
+    layers.fx.append(notice);
+  }, 500);
+  return Promise.resolve(task).finally(() => { clearTimeout(timer); notice?.remove(); });
+}
+
 /**
  * 会話を再生する。
  * @param idOrDlg dialogue_id か dialogue オブジェクト
@@ -128,6 +140,7 @@ export function play(idOrDlg, opts = {}) {
     return Promise.resolve();
   }
   return new Promise((resolve) => {
+    layers.fx.querySelector(".vn-loading")?.remove();
     running = {
       id: dlg.dialogue_id || "",
       dlg,
@@ -172,7 +185,7 @@ export function play(idOrDlg, opts = {}) {
     const me = running;
     prefetch(dlg);
     // 画像の待ち時間は場面転換の幕で覆う。短い固定待ちで読み込みを打ち切らない。
-    Promise.all([bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]).then(() => {
+    waitSceneAssets(Promise.all([bgReady, ...portraitsReady.map((u) => imageReady(u, 15000))]), me).then(() => {
       if (running !== me) return;
       me.ready = true;
       layers.vn.classList.add("active");
@@ -341,7 +354,7 @@ function next() {
     if (type === "bg") {
       if (!line.bg) continue;
       r.ready = false;
-      sceneSetBg(line.bg).then(() => {
+      waitSceneAssets(sceneSetBg(line.bg), r).then(() => {
         if (running !== r) return;
         r.ready = true;
         next();
@@ -372,7 +385,7 @@ function jumpTo(id) {
   if (target.metadata?.bg) {
     const r = running;
     r.ready = false;
-    sceneSetBg(target.metadata.bg, firstPortraits(target)).then(() => { if (running === r) { r.ready = true; next(); } });
+    waitSceneAssets(sceneSetBg(target.metadata.bg, firstPortraits(target)), r).then(() => { if (running === r) { r.ready = true; next(); } });
     return true;
   }
   return false;
@@ -432,7 +445,7 @@ async function showCg(id, effect = "") {
   const r = running;
   const url = cgUrl(id);
   if (!url) return; // 素材待ちのCGは黙って飛ばす
-  await imageReady(url, 15000);
+  await waitSceneAssets(imageReady(url, 15000), r);
   if (running !== r) return;
   // effect:"cheki": シャッター→フラッシュ→フィルムが出てきて現像されたところで、同じ位置にCGを置く
   const place = (instant) => {
@@ -488,7 +501,7 @@ async function showLine(line) {
     line.portrait ? portraitInfo(line.portrait, line.portrait_face || "normal")?.src : null,
   ].filter(Boolean);
   // 最初の2枚や先読み16枚の外にある表情も、実際に使う行でデコードを待つ。
-  await Promise.all(images.map((url) => imageReady(url, 15000)));
+  await waitSceneAssets(Promise.all(images.map((url) => imageReady(url, 15000))), r);
   if (running !== r) return;
   if (hooks.onLine) hooks.onLine(r.id, line);
   const speaker = String(line.speaker || "");
