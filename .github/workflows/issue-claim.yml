@@ -1,0 +1,57 @@
+name: Issue claim coordinator
+on:
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: Issue number
+        required: true
+        type: string
+      operation:
+        description: claim or release
+        required: true
+        type: choice
+        options: [claim, release]
+      owner:
+        description: Unique session identifier (e.g. codex-20261011-a)
+        required: true
+        type: string
+permissions:
+  issues: write
+  contents: read
+concurrency:
+  group: issue-claim-coordinator
+  cancel-in-progress: false
+jobs:
+  coordinate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate and update claim
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          ISSUE: ${{ inputs.issue }}
+          OPERATION: ${{ inputs.operation }}
+          OWNER: ${{ inputs.owner }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$ISSUE" =~ ^[1-9][0-9]*$ ]] || { echo "::error::Invalid issue"; exit 1; }
+          [[ "$OWNER" =~ ^[a-zA-Z0-9][a-zA-Z0-9._-]{2,79}$ ]] || { echo "::error::Invalid owner"; exit 1; }
+          state=$(gh api "repos/$GH_REPO/issues/$ISSUE" --jq '.state')
+          [[ "$state" == open ]] || { echo "::error::Issue not open"; exit 1; }
+          # Issue comments are the authoritative ledger. This workflow serializes writes.
+          comments=$(gh api --paginate "repos/$GH_REPO/issues/$ISSUE/comments?per_page=100" --jq '.[].body')
+          current=$(printf '%s\n' "$comments" | grep '^<!-- issue-claim:v1 ' | tail -1 || true)
+          current_owner=$(printf '%s' "$current" | sed -n 's/.*owner=\([^ ]*\).*/\1/p')
+          current_state=$(printf '%s' "$current" | sed -n 's/.*state=\([^ ]*\).*/\1/p')
+          if [[ "$OPERATION" == claim ]]; then
+            if [[ "$current_state" == claimed && "$current_owner" != "$OWNER" ]]; then
+              echo "::error::Already claimed by $current_owner"
+              exit 1
+            fi
+            # A claim succeeds only when this workflow run is green.
+            gh issue comment "$ISSUE" --body "<!-- issue-claim:v1 state=claimed owner=$OWNER -->\nReserved by $OWNER. Do not start work until this workflow succeeds."
+          else
+            [[ "$current_state" == claimed && "$current_owner" == "$OWNER" ]] || { echo "::error::Only current owner may release"; exit 1; }
+            gh issue comment "$ISSUE" --body "<!-- issue-claim:v1 state=released owner=$OWNER -->\nReleased by $OWNER."
+          fi
