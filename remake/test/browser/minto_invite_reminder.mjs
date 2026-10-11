@@ -126,6 +126,99 @@ await suite("venue-invite-reminder", async (check) => {
     });
   });
 
+  // 「店舗への訪問」ではなく「今日の返事の締切」が迫るなる・アダムの約束を守る。
+  for (const [label, messageId, sender, options] of [
+    ["naru-after-close-night", "lime_naru_day3", "naru", {}],
+    ["adam-arcade-night-touch", "lime_adam_arcade_after_close", "adam",
+      { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+  ]) await check(label, async (page) => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async ({ messageId, sender }) => {
+      const core = await import("./js/core/state.js");
+      const data = await import("./js/core/data.js");
+      const vn = await import("./js/vn/engine.js");
+      const daily = await import("./js/daily/calendar.js");
+      const ui = await import("./js/core/ui.js");
+      const phone = await import("./js/daily/phone.js");
+      const ch1 = await import("./js/chapters/ch1.js");
+      window.QA = { core, phone };
+      const s = core.newGame();
+      Object.assign(s, { phase: "daily", day: 4, slot: 1, money: 30000, stamina: 100 });
+      Object.assign(s.flags, { _morning_4: true, _errand_scout_done: true,
+        _delivery_adam_done: true, _delivery_minto_done: true, _lime_tut: 1,
+        _lime_opened: true, _intro_minto: true });
+      s.met[sender] = true;
+      s.contacts.push(sender);
+      const m = data.DB.lime.find((entry) => entry.id === messageId);
+      s.inbox.push({ id: m.id, day: 4, msg: structuredClone(m), read: false,
+        done: false, replyState: "waiting", log: [] });
+      ch1.setupHooks(); vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
+      ui.clearScreen();
+      QA.run = daily.runDaily({ nightEvents: {} });
+    }, { messageId, sender });
+    await page.locator('[data-test="pin-rest"]').waitFor();
+    // 別の場所へ向かう際、夜の最終行動でだけ期限を知らせる。
+    assert.deepEqual(await page.evaluate(() => ({
+      venue: QA.phone.venueInviteNeedingReply("rest"),
+      deadline: QA.phone.actionInviteNeedingReply("rest")?.kind,
+    })), { venue: null, deadline: "deadline" });
+    await page.locator('[data-test="pin-rest"]').click();
+    await page.locator('[data-test="map-go"]').click();
+    await page.locator('[data-test="venue-invite-check"]').waitFor();
+    assert.match(await page.locator(".modal-body").innerText(), /今日のお誘い/);
+    assert.equal(await page.evaluate(() => QA.core.state.slot), 1);
+    assert.equal(await page.evaluate(() => QA.core.state.money), 30000);
+    await page.locator('[data-test="venue-invite-check"]').click();
+    await page.locator('[data-test="reply-2"]').waitFor();
+    assert.equal(await page.evaluate(() => QA.core.state.inbox[0].read), true);
+    await page.locator('[data-test="reply-2"]').click();
+    await page.locator('[data-test="phone-close"]').click();
+    await page.locator('[data-test="map-go"]').click();
+    assert.equal(await page.locator('[data-test="venue-invite-check"]').count(), 0);
+  }, options);
+
+  await check("deadline-and-unrelated-cases", async (page) => {
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const data = await import("./js/core/data.js");
+      const phone = await import("./js/daily/phone.js");
+      const s = core.newGame();
+      Object.assign(s, { phase: "daily", day: 4, slot: 0 });
+      const naru = data.DB.lime.find(m => m.id === "lime_naru_day3");
+      const adam = data.DB.lime.find(m => m.id === "lime_adam_arcade_after_close");
+      const outing = data.DB.lime.find(m => m.id === "lime_outing_naru_1");
+      const put = (m, read = false) => {
+        const item = { id: m.id, day: 4, msg: structuredClone(m), read,
+          done: false, replyState: "waiting", log: [] };
+        s.inbox = [item];
+        return item;
+      };
+      put(naru);
+      const naruNoon = phone.actionInviteNeedingReply("rest")?.kind ?? null;
+      s.slot = 1;
+      const naruNight = phone.actionInviteNeedingReply("rest")?.kind ?? null;
+      s.slot = 0;
+      put(adam);
+      const adamNoon = phone.actionInviteNeedingReply("rest")?.kind ?? null;
+      s.slot = 1;
+      const adamNight = phone.actionInviteNeedingReply("rest")?.kind ?? null;
+      s.slot = 0;
+      const busy = put(outing, true);
+      const naruOutingNoon = phone.actionInviteNeedingReply("rest")?.kind ?? null;
+      busy.done = true; busy.result = "accepted";
+      const accepted = phone.actionInviteNeedingReply("rest");
+      busy.done = false; delete busy.result;
+      s.day = 5;
+      const expired = phone.actionInviteNeedingReply("rest");
+      window.QADeadlines = { naruNoon, naruNight, adamNoon, adamNight,
+        naruOutingNoon, accepted: !!accepted, expired: !!expired };
+    });
+    assert.deepEqual(await page.evaluate(() => window.QADeadlines), {
+      naruNoon: null, naruNight: "deadline", adamNoon: null,
+      adamNight: "deadline", naruOutingNoon: "deadline", accepted: false, expired: false,
+    });
+  });
+
   await check("non-venue-and-after-close-invites-ignored", async (page) => {
     await page.evaluate(async () => {
       const { visitReminderSpot } = await import("./js/daily/invitations.js");
