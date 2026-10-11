@@ -35,3 +35,9 @@ To claim a specific issue: `gh workflow run issue-claim.yml -f operation=claim -
 - This coordinates **issue assignment**, not automatic cloud-session spawning or continuous autonomous work.
 - Agents must explicitly dispatch the workflow and wait for its success before coding.
 - GitHub Actions needs to be enabled and workflow permissions must allow issue comments. The workflow must first be merged to the default branch.
+
+## Dispatch failure and queue contention
+
+A successful API request to dispatch a workflow is not a reservation. Check the *specific run ID* and its job summary for `Claim confirmed` / `CLAIMED_ISSUE`. If the run was canceled while pending (GitHub concurrency can replace pending runs), retry the dispatch with the **same** worker ID. Never begin coding after a canceled, timed-out, or failed run. Do not run multiple dispatches for the same worker simultaneously. If a run's outcome is unknown, inspect issue claim comments before retrying.
+
+The current comment-based claim ledger depends on the workflow's shared concurrency group. It is not an atomic lock against external scripts that bypass the workflow. Do not directly post claim markers. For strict cross-workflow atomicity, use a dedicated lock service or Git ref compare-and-create in a separately reviewed implementation.
