@@ -4,6 +4,12 @@ import { el } from "../core/util.js";
 export const SLASH_REACH = 80;
 export const SLASH_HALF_ANGLE = Math.PI * 2 / 9;
 export const SLASH_RECHARGE_SECONDS = 1.8;
+// #356: オーナー承認済み案A。同じ蒸らし中に斬った言葉だけを数える。
+export function slashProfile(wordsCut = 0) {
+  if (wordsCut >= 6) return { tier: 2, reach: 100, recharge: 1.2, next: null };
+  if (wordsCut >= 3) return { tier: 1, reach: 90, recharge: 1.5, next: 6 };
+  return { tier: 0, reach: SLASH_REACH, recharge: SLASH_RECHARGE_SECONDS, next: 3 };
+}
 const ANGLES = { u: -Math.PI / 2, r: 0, d: Math.PI / 2, l: Math.PI };
 
 export function slashDirection(held, x = 0, y = 0) {
@@ -15,9 +21,9 @@ export function slashDirection(held, x = 0, y = 0) {
 export const slashAngle = direction => ANGLES[direction];
 
 // 扇形と弾の実寸矩形の交差。長い言葉も、触れた端だけで切れる。
-export function slashTouchesBullet(b, hx, hy, angle) {
+export function slashTouchesBullet(b, hx, hy, angle, reach = SLASH_REACH) {
   const left = b.x - hx, right = left + b.w, top = b.y - hy, bottom = top + b.h;
-  const reach = SLASH_REACH, dx = Math.cos(angle), dy = Math.sin(angle), edge = Math.cos(SLASH_HALF_ANGLE);
+  const dx = Math.cos(angle), dy = Math.sin(angle), edge = Math.cos(SLASH_HALF_ANGLE);
   const inside = (x, y) => {
     const distance = Math.hypot(x, y);
     return distance <= reach + 1e-7 && x * dx + y * dy >= distance * edge - 1e-7;
@@ -49,10 +55,11 @@ export function slashTouchesBullet(b, hx, hy, angle) {
 
 export const SLASH_ART = '<svg viewBox="0 0 152 152" aria-hidden="true"><circle cx="76" cy="76" r="61" fill="#201927" fill-opacity=".5" stroke="#b6a5cf" stroke-width="2"/><path d="M35 101Q76 20 123 64Q83 39 35 101Z" fill="#edc3f1"/><path d="M35 101Q76 20 123 64" fill="none" stroke="#b9edff" stroke-width="3"/><path d="m56 102 44-48 8-3-2 9-44 48Z" fill="#f2f2fa" stroke="#a2b9d0" stroke-width="1.5"/><path d="m49 94 21 19m-14-7-10 11m-3-2 6 6" fill="none" stroke="#d6bc8c" stroke-width="5" stroke-linecap="round"/></svg>';
 let fxId = 0;
-export function buildSlashFx(x, y, angle) {
-  const r = SLASH_REACH, ex = r * Math.cos(SLASH_HALF_ANGLE), ey = r * Math.sin(SLASH_HALF_ANGLE);
+export function buildSlashFx(x, y, angle, reach = SLASH_REACH, hit = false) {
+  const r = reach;
   const id = `steam-slash-${++fxId}`;
-  return el("div.dodge-slash-fx", { "aria-hidden": "true", dataset: { test: "dodge-slash-fx" },
+  return el("div.dodge-slash-fx", { "aria-hidden": "true", dataset: { test: "dodge-slash-fx", hit: String(hit) },
     style: { left: `${x}px`, top: `${y}px`, "--angle": `${angle}rad`, width: `${r * 2}px`, height: `${r * 2}px` },
-    html: `<svg viewBox="${-r} ${-r} ${r * 2} ${r * 2}"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#80dcff"/><stop offset=".5" stop-color="#fff"/><stop offset="1" stop-color="#f2a4e8"/></linearGradient></defs><path d="M0 0L${ex} ${-ey}A${r} ${r} 0 0 1 ${ex} ${ey}Z" fill="#bdefff" fill-opacity=".07"/><path d="M${ex} ${-ey}A${r} ${r} 0 0 1 ${ex} ${ey}Q${r + 10} 0 ${ex} ${-ey}Z" fill="url(#${id})"/><path d="M${ex} ${-ey}A${r} ${r} 0 0 1 ${ex} ${ey}" fill="none" stroke="#fff" stroke-width="2"/></svg>` });
+    // 同心円状の扇をやめ、先端が細くなる一筆の刃と短い軌跡にする。
+    html: `<svg viewBox="-100 -100 200 200"><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b8c7ff" stop-opacity=".15"/><stop offset=".55" stop-color="#eaffff"/><stop offset="1" stop-color="#fff0c3"/></linearGradient></defs><path d="M26 -48L36 -55L94 25L68 12Z" fill="url(#${id})"/><path d="M36 -55L94 25" fill="none" stroke="#fff" stroke-width="2.5"/><path d="M12 -28L72 20L43 5Z" fill="#c4efff" fill-opacity=".4"/></svg>` });
 }
