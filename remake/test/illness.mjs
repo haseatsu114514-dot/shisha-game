@@ -37,7 +37,7 @@ const values = {
   "tonari.js": { tonariMenu: async () => "baito", tonariCustomer: async () => {}, tonariPractice: async () => {}, doBaito: async () => { shifts++; stats.addStamina(-24); } },
   "shop.js": { openShop: async () => null, visitRin: async () => {}, ownsFlavor: () => true },
   "fortune.js": { doFortune: async () => {} },
-  "phone.js": { deliverMorning: () => 0, pushNotice: noop, hasUnread: () => false, unreadCount: () => 0, mintoStoreInviteNeedingReply: () => null, openLime: async () => {}, limeCoach: noop, expireInvitations: noop },
+  "phone.js": { deliverMorning: () => 0, pushNotice: noop, hasUnread: () => false, unreadCount: () => 0, mintoStoreInviteNeedingReply: () => null, venueInviteNeedingReply: () => null, openLime: async () => {}, limeCoach: noop, expireInvitations: noop },
   "status.js": { openStatus: async () => {} }, "reel.js": { onAction: noop, presentNow: async () => {}, installReel: noop },
   "romance.js": { maybeConfession: async () => false, playDate: async () => {} },
   "bonds.js": { afterStory: async () => {}, isFinaleEvent: () => false, playFinale: async () => {}, isFriendEvent: () => false, playFriendHangout: async () => {},
