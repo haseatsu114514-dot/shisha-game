@@ -59,6 +59,8 @@
 
 ## 第1章の大会準備を進行に組み込む
 
+2026-10-11 TP09で実装：DAY3はつむぎの途中の絵を先に見てから基礎の一台、DAY7は初期以外の葉の仕入れと2回調整までの練習、DAY13は通しリハーサル。練習在庫は減らさず、金欠時は仕入れを一度だけ経費で補助する。日常のtonariにも一台通しを追加。詳細と現行フローは `owner_requests.md` のTP01〜09と `../remake/README.md` を参照。以下は当初の設計メモを履歴として保持する。
+
 オーナーのプレイ感想:
 
 > 大会以外でシーシャを作ることが少ないまま進められるため、大会が難しく感じる。フレーバーも初期のものだけで挑みがち。大会までにうまく準備させたい。
@@ -84,4 +86,4 @@
 
 無料の強制制作を能力・金銭・スロットの稼ぎにしない。十分に準備した人へ同じ課題を何度も繰り返させず、足りない経験・在庫に絞った案内を検討する。
 
-実装入口は `remake/js/chapters/ch1.js`（初回制作・前日リハーサル・当日の救済）、`remake/js/daily/calendar.js`（DAY1仕入れ・固定イベント）、`remake/js/daily/tonari.js`（仕事・練習）、`remake/js/daily/shop.js`（購入）、`remake/js/craft/steps.js`（支給／持ち込み・工程）。今回は変更しない。
+実装入口は `remake/js/chapters/ch1.js`（初回制作・前日リハーサル・当日の救済）、`remake/js/daily/calendar.js`（DAY1仕入れ・固定イベント）、`remake/js/daily/tonari.js`（仕事・練習）、`remake/js/daily/shop.js`（購入）、`remake/js/craft/steps.js`（支給／持ち込み・工程）。本メモ作成時は未実装。現在の大会準備はTP09で接続済み。

@@ -47,7 +47,7 @@ await page.addInitScript(() => {
     hooks.onLine = (id, line) => {
       previous?.(id, line);
       if (["ch1_tournament_opening", "remake_round1_intro", "ch1_tournament_r1_end",
-        "ch1_tournament_r2_end", "ch1_tournament_r3_end", "remake_trial_intro"].includes(id)) {
+        "ch1_tournament_r2_end", "ch1_tournament_r3_end", "remake_round4_end", "remake_judging_intro"].includes(id)) {
         const attempt = window.__remake.state.tournament.attempts;
         window.__tournamentBgmCues[`${attempt}:${id}`] = audio.currentBgm();
       }
@@ -285,11 +285,13 @@ for (;;) {
     }
     continue;
   }
+  if (snap.screen === "preparation") { await click('[data-test="prep-flavor-blueberry"]'); continue; }
   if (snap.screen === "shop") {
     // スミさんの頼み（ミント）を買うまでは店を出られない
     if (await page.$(".shop-errand:not(.done)")) {
       if (await click('[data-test="shop-leave"]')) { await page.waitForTimeout(200); errandBlocked ||= !!(await page.$(".shop-errand:not(.done)")); }
-      await click('[data-test="buy-mint"]');
+      const errand = await page.locator('.shop-row.errand [data-test^="buy-"]').first().getAttribute('data-test');
+      await click(`[data-test="${errand}"]`);
     }
     if (pendingShopBuy && pendingShopBuy !== "__upstairs") await click(`[data-test="buy-${pendingShopBuy}"]`);
     // くじを1回だけ引く（箱の並びが保存され、景品が手元に入ること）
@@ -321,7 +323,8 @@ for (;;) {
 
 const s = await page.evaluate(() => window.__remake.state);
 if (s.day !== 14) throw new Error(`Tournament/clear day must remain DAY14, got DAY${s.day}`);
-if (!s.flags._ev_rehearsal || !s.flags._ev_last_night) throw new Error("DAY13 rehearsal or last-night conversation was lost");
+if (!s.flags._ev_first_practice || !s.flags._ev_midcheck || !s.flags._ev_rehearsal || !s.flags._ev_last_night) throw new Error("DAY13 rehearsal or last-night conversation was lost");
+if ((s.flags._craft_practice_runs || []).length < 3 || !s.flavors.includes("blueberry")) throw new Error("Missing early practice, midchapter shopping or rehearsal");
 log(`attempts=${s.tournament.attempts} lastRank=${s.tournament.lastRank} total=${s.tournament.lastTotal}`);
 if (s.phase !== "cleared") throw new Error(`expected cleared, got ${s.phase}`);
 if (s.tournament.attempts < 2) throw new Error("expected a defeat before the win");
@@ -333,12 +336,13 @@ for (let attempt = 1; attempt <= s.tournament.attempts; attempt++) {
     ["ch1_tournament_r1_end", "bgm_tournament_craft"],
     ["ch1_tournament_r2_end", "bgm_tournament_craft"],
     ["ch1_tournament_r3_end", "bgm_tournament_craft"],
-    ["remake_trial_intro", "bgm_tournament_wait"],
+    ["remake_round4_end", "bgm_tournament_craft"],
+    ["remake_judging_intro", "bgm_tournament_wait"],
   ]) {
     if (bgmCues[`${attempt}:${id}`] !== expected) throw new Error(`Wrong BGM at attempt ${attempt} ${id}: ${bgmCues[`${attempt}:${id}`]}`);
   }
 }
-log("tournament BGM: opening → crafting ROUND 1–3 → judging, including retry: PASS");
+log("tournament BGM: opening → crafting ROUND 1–4 → judging, including retry: PASS");
 // スロット: 日常の行動ごとに1回転（リプレイの追加回転を含む）。結果は全部演出まで消化されている
 log(`slot: spins=${s.reel.count} note=${JSON.stringify(s.reel.note)} pending=${s.reel.pending.length}`);
 if (s.reel.count < 20) throw new Error(`slot should spin once per action (count=${s.reel.count})`);

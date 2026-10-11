@@ -1,5 +1,5 @@
 // 温度のイメージ。実際の温度だけを読み、採点・雑念・機材には干渉しない。
-// 序盤は色のない灰色から、ぬるいうちに暖かい色へなめらかに移り、適温は虹（心地よい程度の虹色の炎・陽炎）（TH24）。
+// 序盤は灰色→暖かい色、適温は穏やかな緑、最適温だけに静かな虹を描く。
 // 超えるとだんだん火事のように黄色→赤の炎と黒煙が増え、
 // 温度計の一番上で爆発して焦げる（TH06・TH12・TH13）。炎はイメージなので台やボウルには付けない（TH04）。
 // 見た目は温度に沿って連続的に移り、温度帯は呼び名・陽炎・照らしの段階にだけ使う。
@@ -11,7 +11,7 @@ import { IDEAL, DANGER_TEMP, isOptimalTemperature } from "./conditions.js";
 const BANDS = [
   { id: "cold", label: "まだぬるい", until: .30, ink: "#e8e8e8", glow: ["#ffffff", 0], haze: 0, smoke: ["#ffffff", 0] },
   { id: "warming", label: "熱が入っていく", until: IDEAL[0], ink: "#ffd9b0", glow: ["#ffb070", .12], haze: 0, smoke: ["#ffffff", 0] },
-  { id: "ready", label: "適温", until: IDEAL[1], ink: "#ffe9ff", glow: ["#ffd27a", .24], haze: 4, smoke: ["#ffffff", 0] },
+  { id: "ready", label: "適温", until: IDEAL[1], ink: "#a8eed3", glow: ["#7fe0c2", .15], haze: 0, smoke: ["#ffffff", 0] },
   { id: "hot", label: "熱が強い", until: .76, ink: "#ffd27a", glow: ["#ff8a00", .42], haze: 5, smoke: ["#ffffff", 0] },
   { id: "fire", label: "過熱", until: DANGER_TEMP, ink: "#ffcf3a", glow: ["#ff2a00", .58], haze: 6, smoke: ["#ddd7d0", .26] },
   { id: "inferno", label: "灼熱・焦げる寸前", until: Infinity, ink: "#ffd23a", glow: ["#ff1a00", .7], haze: 8, smoke: ["#cfc8c0", .42] },
@@ -26,6 +26,7 @@ const BURNT = RUINED.burnt;
 const RUINED_BG = { burnt: ["#3a1d10", "#0b0503"], cold: ["#5d7487", "#18232e"], leaf: ["#4a3f31", "#161109"] };
 export function thermalBand(temp) {
   const t = clamp(Number.isFinite(temp) ? temp : 0, 0, 1);
+  if (isOptimalTemperature(t)) return { id: "optimal", label: "最適温", ink: "#ffe9ff", glow: ["#d3b9ff", .2], haze: 0, smoke: ["#ffffff", 0] };
   return BANDS.find(b => t < b.until || (b.id === "ready" && t === IDEAL[1]));
 }
 
@@ -34,10 +35,12 @@ export function thermalBand(temp) {
 const STOPS = [
   { at: 0, bg: ["#cdcdcd", "#8e8e8e"], frost: 0, warmth: 0, rainbow: 0, halo: 0, fire: 0, reach: 0, dark: 0, soft: 0, sparks: 0 },
   { at: .30, bg: ["#d6ccc2", "#9c8d80"], frost: 0, warmth: .3, rainbow: 0, halo: 0, fire: 0, reach: 0, dark: 0, soft: .03, sparks: 0 },
-  { at: .36, bg: ["#f2c79a", "#c98557"], frost: 0, warmth: .9, rainbow: .3, halo: .05, fire: 0, reach: 0, dark: 0, soft: .07, sparks: 0 },
-  { at: IDEAL[0], bg: ["#4a2a3e", "#1a0d1a"], frost: 0, warmth: 0, rainbow: 1, halo: .17, fire: 0, reach: 0, dark: 0, soft: .1, sparks: 0 },
-  { at: IDEAL[1], bg: ["#4c2a3a", "#1c0d16"], frost: 0, warmth: 0, rainbow: 1, halo: .22, fire: 0, reach: 0, dark: 0, soft: .1, sparks: 0 },
-  { at: .69, bg: ["#6a2a2a", "#2a0c10"], frost: 0, warmth: 0, rainbow: .35, halo: .18, fire: .65, reach: .36, dark: .1, soft: .05, sparks: 12 },
+  { at: .36, bg: ["#756451", "#29222a"], frost: 0, warmth: .9, rainbow: 0, halo: 0, fire: 0, reach: 0, dark: 0, soft: .07, sparks: 0 },
+  { at: .415, bg: ["#b88653", "#5c3821"], frost: 0, warmth: .8, rainbow: 0, halo: 0, fire: 0, reach: 0, dark: 0, soft: .08, sparks: 0 },
+  { at: IDEAL[0], bg: ["#21443e", "#101e24"], frost: 0, warmth: 0, rainbow: 0, halo: 0, fire: 0, reach: 0, dark: 0, soft: .1, sparks: 0 },
+  { at: .54, bg: ["#34304d", "#141525"], frost: 0, warmth: 0, rainbow: 1, halo: .12, fire: 0, reach: 0, dark: 0, soft: .1, sparks: 0 },
+  { at: IDEAL[1], bg: ["#21443e", "#101e24"], frost: 0, warmth: 0, rainbow: 0, halo: 0, fire: 0, reach: 0, dark: 0, soft: .1, sparks: 0 },
+  { at: .69, bg: ["#6a2a2a", "#2a0c10"], frost: 0, warmth: 0, rainbow: 0, halo: 0, fire: .65, reach: .36, dark: .1, soft: .05, sparks: 12 },
   { at: .76, bg: ["#c4300c", "#5e0a0c"], frost: 0, warmth: 0, rainbow: 0, halo: 0, fire: 1, reach: .56, dark: .25, soft: 0, sparks: 24 },
   { at: .90, bg: ["#a40e00", "#260000"], frost: 0, warmth: 0, rainbow: 0, halo: 0, fire: 1, reach: .96, dark: .5, soft: 0, sparks: 40 },
   { at: 1, bg: ["#6a0500", "#100000"], frost: 0, warmth: 0, rainbow: 0, halo: 0, fire: 1, reach: 1.3, dark: .78, soft: 0, sparks: 48 },
@@ -57,10 +60,13 @@ function between(stops, temp) {
   const a = stops[i - 1], b = stops[i] ?? a, k = b.at > a.at ? clamp((t - a.at) / (b.at - a.at), 0, 1) : 1;
   return [a, b, k];
 }
-function envAt(temp) {
+export function envAt(temp) {
   const [a, b, k] = between(STOPS, temp), [fa, fb, fk] = between(FLAME_STOPS, temp);
   const env = { bg: a.bg.map((c, i) => mixColor(c, b.bg[i], k)), flame: fa.flame.map((c, i) => mixColor(c, fb.flame[i], fk)) };
   for (const key of ["frost", "warmth", "rainbow", "halo", "fire", "reach", "dark", "soft", "sparks"]) env[key] = a[key] + (b[key] - a[key]) * k;
+  // 虹は温度計の虹と同じ範囲だけ。緑の適温帯には炎・陽炎を出さない。
+  if (!isOptimalTemperature(temp)) { env.rainbow = 0; env.halo = 0; }
+  if (temp >= IDEAL[0] && temp <= IDEAL[1]) { env.fire = 0; env.sparks = 0; }
   return env;
 }
 
@@ -358,7 +364,7 @@ export function buildThermalAtmosphere(host, worker) {
   reduced.addEventListener?.("change", () => { if (active && host.isConnected) paint(ruined ? RUINED[ruined] : thermalBand(temp)); });
   return {
     setStep(step) {
-      active = ["steam", "pull", "care", "trial"].includes(step);
+      active = ["steam", "pull", "care"].includes(step);
       paused = false; burstAt = -1; ruined = null; host.classList.remove("thermal-burnt", "thermal-ruined");
       host.classList.toggle("thermal-active", active);
       host.dataset.thermalPaused = "false"; label.hidden = !active;

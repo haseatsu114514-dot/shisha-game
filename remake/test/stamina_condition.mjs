@@ -20,7 +20,9 @@ class Element {
   replaceChildren(...nodes) { this.children = []; this.append(...nodes); }
   addEventListener(type, fn) { (this.listeners[type] ||= []).push(fn); }
   setAttribute(name, value) { this[name] = String(value); }
+  getAttribute(name) { return this[name] ?? null; }
   querySelectorAll() { return []; }
+  getContext() { return null; }
   remove() {}
 }
 function el(spec, attrs = {}, children = []) {
@@ -37,10 +39,11 @@ const mocks = {
   "core/ui.js": { countdown: async () => {}, flash() {}, shake() {} },
   "core/audio.js": { SE: new Proxy({}, { get: () => () => {} }) },
   "core/stats.js": { tier01: () => 0, star: () => 1 },
-  "craft/session.js": { craftTest: { auto: null }, stepPanel: () => (panel = el("div.panel")), refreshBench() {}, tickerSay() {}, reactAudience() {}, setPlayerMental() {}, presentBenchResult: () => ({ evaluation: { mark: "○", tone: "warm" }, hasAudience: false }) },
+  "craft/session.js": { waitBenchReady: async () => {}, scoreStep() {}, setBenchTemperature() {}, pauseBenchTemperature() {}, craftTest: { auto: null }, stepPanel: () => (panel = el("div.panel")), refreshBench() {}, tickerSay() {}, reactAudience() {}, setPlayerMental() {}, presentBenchResult: () => ({ evaluation: { mark: "○", tone: "warm" }, hasAudience: false }) },
   "craft/art.js": { artImg: () => el("img") },
   "craft/digital-clock.js": { buildDigitalClock: () => ({ root: el("output"), update() {} }) },
   "craft/mental.js": { buildMentalTrace: () => ({ root: el("div"), update: () => "steady", hit: () => "shaken", recoverStep: () => "unsteady" }) },
+  "craft/smoke-art.js": { smokeUrl: () => "" },
 };
 const context = vm.createContext({ Math, Promise, console, Set, AbortController, performance: { now: () => now },
   window: { addEventListener() {}, removeEventListener() {} },
@@ -129,9 +132,11 @@ console.log("[coal timing] PASS: unchanged thresholds, ideal window center, live
 async function steam(ratio) {
   now = 1000; frames.clear(); spawned = 0;
   const cs = { mode: "tournament", condition: conditionForRatio(ratio), steamMin: 3 };
-  const running = steamModule.namespace.runSteamDodge(cs); await settle();
+  let error;
+  const running = steamModule.namespace.runSteamDodge(cs); running.catch(e => { error = e; }); await settle();
   for (let t = 1050; t <= 10100; t += 50) await frame(t);
-  await settle(); const count = spawned; nextButton().onclick(); await running;
+  await settle(); if (error) throw error;
+  const count = spawned; nextButton().onclick(); await running;
   return { count, hits: cs.steam.hits, score: cs.steam.score };
 }
 const steamGreen = await steam(.51), steamYellow = await steam(.5), steamRed = await steam(.25);
