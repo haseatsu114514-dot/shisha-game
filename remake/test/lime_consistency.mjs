@@ -36,7 +36,8 @@ const values = {
   "audio.js": { SE: { phone: noop, select: noop, click: noop, cancel: noop } },
   "engine.js": { hooks: { interpolate: (t) => t.replace("{daysLeft}", String(14 - state.day)) }, play: async (...a) => { plays.push(a); await playHook(...a); } },
   "rules.js": { TOURNAMENT_DAY: 14 },
-  "text.js": { formatHtml: (t) => t }, "spots.js": { hasContact: (id) => state.contacts.includes(id) }, "bus.js": { emit: noop },
+  "text.js": { formatHtml: (t) => t }, "spots.js": { hasContact: (id) => state.contacts.includes(id), spotById: (id) => ({ charId: id, closedOn: 6 }),
+    isClosed: (spot) => state.day % 7 === spot.closedOn || state.flags[`_temporary_closed_${spot.charId}`] === `${state.chapter}:${state.day}` }, "bus.js": { emit: noop },
   "bonds.js": { bondInvites: () => [], friendMessages: () => [] }, // 締めくくりの誘い・友人のLIMEは remake/test/bonds.mjs
   "story-knowledge.js": { syncMintoKnowledge: () => {} },
 };
@@ -138,6 +139,34 @@ for (const event of ["outing_minto", "date_minto"]) {
 reset({ slot: 2 }); const notQueued = invitation("notQueued", "minto", { after_close: true }); db.lime = [notQueued];
 state.inbox.push(item(notQueued, { read: true, done: true, result: "accepted" })); state.pendingInvite = { day: 6, originId: "notQueued", event: notQueued.accept_event, sender: "minto", slot: 1, afterClose: true };
 phone.expireInvitations(); assert.equal(state.pendingInvite, null);
+
+// #326: 未読・既読保留・旧版失効・保存済み予約の店LIMEは同日夜も可。日付/休日/私的外出は守る。
+const shopMsg = allMessages.find(m => m.id === "lime_minto_day4");
+for (const read of [false, true]) {
+  reset({ day: 4, slot: 0 }); const late = item(clone(shopMsg), { read }); state.inbox.push(late);
+  if (read) state.limeRead.push(shopMsg.id);
+  state.slot = 1; phone.expireInvitations({ fixedNight: () => true });
+  assert(!late.done); session = phone.openLime({ sender: "minto", fixedNight: () => true });
+  await click("reply-0"); await closeThread(session);
+  assert.equal(state.pendingInvite.slot, 1); assert.equal(state.pendingInvite.day, 4);
+  const reserved = clone(state.pendingInvite); phone.expireInvitations({ fixedNight: () => true });
+  assert.deepEqual(clone(state.pendingInvite), reserved); assert.equal(late.result, "accepted");
+  const count = gains.length; session = phone.openLime({ sender: "minto" }); await closeThread(session);
+  assert.equal(gains.length, count); assert.deepEqual(clone(state.pendingInvite), reserved);
+  state.slot = 2; phone.expireInvitations(); assert.equal(state.pendingInvite, null);
+}
+reset({ day: 4, slot: 1 }); const oldExpired = item(clone(shopMsg), { read: true, done: true, result: "expired" });
+state.inbox.push(oldExpired); phone.expireInvitations(); assert(!oldExpired.done); assert.equal(oldExpired.replyState, "waiting");
+reset({ day: 4, slot: 1 }); const oldBooking = item(clone(shopMsg), { read: true, done: true, result: "accepted" });
+state.inbox.push(oldBooking); state.pendingInvite = { day: 4, slot: 0, originId: shopMsg.id, sender: "minto", event: shopMsg.accept_event };
+phone.expireInvitations({ fixedNight: () => true }); assert.equal(state.pendingInvite.slot, 1); assert.equal(oldBooking.result, "accepted");
+for (const scenario of [{ day: 5, slot: 1, itemDay: 4 }, { day: 6, slot: 0, itemDay: 6 }, { day: 4, slot: 2, itemDay: 4 },
+  { day: 4, slot: 1, itemDay: 4, flags: { _temporary_closed_minto: "1:4" } }]) {
+  reset(scenario); const unavailable = item(clone(shopMsg), { day: scenario.itemDay }); state.inbox.push(unavailable);
+  phone.expireInvitations(); assert.equal(unavailable.result, "expired"); assert.equal(state.pendingInvite, undefined);
+}
+reset({ day: 4, slot: 1 }); const lunchOnly = item(invitation("day_outing", "tsumugi", { time_slot: "noon", accept_event: "outing_tsumugi_1" }));
+state.inbox.push(lunchOnly); phone.expireInvitations(); assert.equal(lunchOnly.result, "expired");
 
 // 雑談の返事は小さな加点。0点を尊重し、読むだけでは返信報酬を付けない。
 for (const pts of [0, 1, 2]) {

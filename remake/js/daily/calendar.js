@@ -24,7 +24,7 @@ import { maybeConfession, playDate } from "./romance.js";
 import { afterStory, isFinaleEvent, playFinale, isFriendEvent, playFriendHangout } from "./bonds.js";
 import { syncKafukaKnowledge, maybeKafukaEncounter, visitKafuka } from "./kafuka.js";
 
-import { invitationCost, invitationGrowth } from "./invitations.js";
+import { invitationCost, invitationGrowth, storeInvitationSpot, storeInvitationDialogue } from "./invitations.js";
 import { visitHiyoriAtShop, playHiyoriEvent } from "./hiyori.js";
 
 const SLEEP_RECOVERY = 14;
@@ -96,7 +96,7 @@ async function phoneButton({ sender = null } = {}) {
   state.flags._lime_opened = true;
   state.flags._lime_tut = 1; // 自分で開けたなら案内はいらない
   const before = state.pendingInvite;
-  await openLime({ tutorial: first, sender });
+  await openLime({ tutorial: first, sender, fixedNight: (d) => !!chapterDef.nightEvents[d] });
   syncKafukaKnowledge();
   setPhoneBadge(hasUnread());
   save();
@@ -371,7 +371,8 @@ async function meetInvitation(inv) {
     gainAffinity(inv.sender, 10);
     addStamina(-10);
   } else {
-    await play(inv.event);
+    await play(storeInvitationSpot({ accept_event: inv.event })
+      ? storeInvitationDialogue(DB.dialogues[inv.event], state.slot) : inv.event);
     if (inv.event === `outing_${inv.sender}_1`) state.flags[`_outing_done_${inv.sender}`] = true;
     if (inv.event === "ch1_minto_fifth") state.flags._minto_fifth_done = true;
     if (inv.event === "ch1_adam_outing_dagurikura") state.flags._adam_arcade_done = true;
