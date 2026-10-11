@@ -144,7 +144,8 @@ export function affinityGateWaiting(id) {
   if (!hasAffinityGate(id) || (state.lovers || []).includes(id)) return false;
   if (id === "hiyori") return !state.flags._hiyori_tonari_return_done;
   // 完了済みの旧関係は維持。未回答の選択肢を埋めることはしない。
-  return !state.finales?.[id] && !state.romanceChoices?.[AFFINITY_GATE_CHOICES[id]];
+  return !state.flags[`_friend_${id}`] && !state.finales?.[id]
+    && !state.romanceChoices?.[AFFINITY_GATE_CHOICES[id]];
 }
 
 export function affinityLevel(id) {

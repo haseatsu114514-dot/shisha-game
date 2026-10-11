@@ -131,7 +131,11 @@ await suite("affinity-gates", async check => {
           const rescued = G.stats.releaseAffinity(id);
           legacy.push({ id, points, unchanged, carry, held, rescued, after: s.affinity[id], level: G.stats.affinityLevel(id) });
         }
-        const s = G.fresh(); G.stats.ensureAffinityLevel("minto", 5);
+        let s = G.fresh(); s.affinity.rin = 66; s.flags._friend_rin = true;
+        G.stats.gainAffinity("rin", 10); G.core.save(); G.core.load();
+        const oldFriend = { points: G.core.state.affinity.rin, friend: G.core.state.flags._friend_rin,
+          waiting: G.stats.affinityGateWaiting("rin"), answer: G.core.state.romanceChoices.bond_q1_rin ?? null };
+        s = G.fresh(); G.stats.ensureAffinityLevel("minto", 5);
         const guarantee = s.flags._minto_affinity_waiting_pts;
         G.stats.ensureAffinityLevel("minto", 5);
         const guaranteed = { points: s.affinity.minto, guarantee, second: s.flags._minto_affinity_waiting_pts };
@@ -147,7 +151,7 @@ await suite("affinity-gates", async check => {
         const saved = structuredClone(G.core.state);
         G.core.state.day = 11; G.vn.vnTest.choose = () => 0;
         const confessed = await G.romance.maybeConfession(async () => {});
-        return { legacy, guaranteed, publicBond, skipped, saved, confessed,
+        return { legacy, oldFriend, guaranteed, publicBond, skipped, saved, confessed,
           accepted: G.core.state.lovers, pending: G.core.state.flags._confession_due ?? null };
       });
       for (const r of result.legacy) {
@@ -156,6 +160,7 @@ await suite("affinity-gates", async check => {
         assert.equal(r.after, r.points + r.rescued);
       }
       assert.deepEqual(result.guaranteed, { points: 33, guarantee: 33, second: 33 });
+      assert.deepEqual(result.oldFriend, { points: 74, friend: true, waiting: false, answer: null });
       assert.equal(result.publicBond, 9); assert.equal(result.saved.lovePts.tsumugi, 14);
       assert.deepEqual(result.saved.lovers, ["tsumugi", "rin"]); assert.equal(result.saved.lovePts.rin, 20);
       assert.equal(result.saved.flags._confession_due, "minto"); assert.equal(result.saved.flags._confession_wait, 11);

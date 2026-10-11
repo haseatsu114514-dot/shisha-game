@@ -123,7 +123,7 @@ const hostSeen = (id) => {
   return at >= 0 && storyCount(id) > at;
 };
 
-/** 次の訪問で質問の場面を出すか（host の後の最初の訪問。固有会話が残っていればそちらが先） */
+/** 節目の読了と♥3が揃った次の実対面。先に節目を読んだ旧進行も未回答の質問を受け取る。 */
 export const questionVisitDue = (id) => (BOND_QUESTIONS[id]?.when === "visit" || !!AFFINITY_GATE_CHOICES[id])
   && questionOpen(id) && hostSeen(id);
 
