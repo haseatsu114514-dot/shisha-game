@@ -59,10 +59,10 @@ try {
   });
   await page.clock.install({ time: new Date("2026-10-10T20:00:00Z") });
   await page.clock.pauseAt(new Date("2026-10-10T20:00:01Z"));
-  await mount();
+  await mount(0, { layout: "bottom", background: "purple" });
   assert.equal(await page.locator(".gameover").getAttribute("data-layout"), "bottom");
   assert.equal(await page.locator(".gameover").getAttribute("data-background"), "purple");
-  assert.equal(await page.locator(".go-count-echo").count(), 0, "adopted classic must stay free of back count");
+  assert.equal(await page.locator(".go-count-echo").count(), 0, "original classic remains available for comparison");
   for (const layout of ["top", "back-count"]) {
     await mount(0, { layout });
     assert.equal(await page.locator(".gameover").getAttribute("data-layout"), layout);

@@ -37,15 +37,16 @@
  </select>
  <label for="preview-layout">配置</label>
  <select id="preview-layout" aria-label="コンティニューの配置">
- <option value="bottom" selected>王道・下にボタン（採用中）</option>
+ <option value="neon" selected>筆文字・円形HUD（採用中）</option>
+ <option value="bottom">王道・下にボタン（比較）</option>
  <option value="bottom-back-count">王道＋迫る背面カウント（実験）</option>
  <option value="top">上にボタン（実験）</option>
  <option value="back-count">上ボタン＋背面カウント（実験）</option>
  </select>
  <label for="preview-background">背景</label>
  <select id="preview-background" aria-label="コンティニューの背景">
- <option value="purple" selected>紫の煙（採用中）</option>
- <option value="stage">暗いステージ（試用）</option>
+ <option value="stage" selected>暗いステージ（採用中）</option>
+ <option value="purple">紫の煙（比較）</option>
  </select>
  <button type="button" id="preview-play">▶ 再生する</button>
  <button type="button" id="preview-retry" disabled>戻る反応</button>
@@ -70,8 +71,8 @@ const stage = document.getElementById("stage"), screen = document.getElementById
   motion = document.getElementById("preview-motion"), retry = document.getElementById("preview-retry"),
   quit = document.getElementById("preview-quit");
 const params = new URLSearchParams(location.search);
-if (["top", "back-count", "bottom-back-count"].includes(params.get("layout"))) layout.value = params.get("layout");
-if (params.get("background") === "stage") background.value = "stage";
+if (["neon", "bottom", "top", "back-count", "bottom-back-count"].includes(params.get("layout"))) layout.value = params.get("layout");
+if (["purple", "stage"].includes(params.get("background"))) background.value = params.get("background");
 function fit() {
  const top = tools.offsetHeight + 22;
  document.getElementById("viewport").style.top = top + "px";

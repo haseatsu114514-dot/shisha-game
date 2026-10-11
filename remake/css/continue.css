@@ -1,3 +1,4 @@
+@import url("./continue-neon.css");
 /* 大会CONTINUE V4。1280×720の本編・プレビューで同じ画面を使う。
    2026-10-10: 紫の煙、見出し横の数字、下端までの人物。1行テロップと2択ボタンに間隔を取る。 */
 .end-screen.gameover {

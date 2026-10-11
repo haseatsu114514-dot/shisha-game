@@ -54,6 +54,20 @@ def main():
     shutil.copyfile(SOURCE / "backdrop-purple.png", OUT / "backdrop.png")
     stage = Image.open(SOURCE / "backdrop-stage.png").convert("RGB")
     stage.resize((1280, 720), Image.Resampling.LANCZOS).save(OUT / "backdrop_stage.png", optimize=True)
+    # CV38〜46: 参照デザイン用の透過アトラス。機械的な切出しのみ、色や筆跡は加工しない。
+    atlas_path = SOURCE.parent / "neon-reference-20261011/neon-atlas-original.png"
+    if atlas_path.exists():
+        atlas = Image.open(atlas_path).convert("RGBA")
+        for name, y0, y1 in [("neon_title", 0, 340), ("neon_game_over", 340, 611),
+                             ("neon_retry_frame", 611, 847), ("neon_quit_frame", 847, 1086)]:
+            row = atlas.crop((0, y0, atlas.width, y1))
+            box = row.getchannel("A").point(lambda a: 255 if a >= 24 else 0).getbbox()
+            if not box:
+                raise ValueError(f"Empty neon component: {name}")
+            x0, top, x1, bottom = box
+            row.crop((max(0, x0 - 8), max(0, top - 8), min(row.width, x1 + 8),
+                      min(row.height, bottom + 8))).save(OUT / f"{name}.png", optimize=True)
+            print(f"{name}: source row {y0}..{y1}")
 
 
 if __name__ == "__main__":

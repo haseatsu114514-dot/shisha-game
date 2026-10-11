@@ -26,18 +26,23 @@ async function geometry() {
   const boxes = await page.evaluate(() => {
     const rect = selector => document.querySelector(selector).getBoundingClientRect().toJSON();
     return { layout: document.querySelector(".gameover").dataset.layout,
-      stage: rect("#stage"), title: rect(".go-heading"), label: rect(".go-title-label"), face: rect(".go-left"), caption: rect(".go-speech-text"), playback: rect(".go-playback"),
+      stage: rect("#stage"), title: rect(".go-heading"), label: rect(document.querySelector('.gameover').dataset.layout === 'neon' ? '.go-neon-title' : '.go-title-label'), face: rect(".go-left"), caption: rect(".go-speech-text"), playback: rect(".go-playback"),
       retry: rect('[data-test="retry"]'), quit: rect('[data-test="game-over-title"]'), count: rect(".go-count") };
   });
   assert(boxes.caption.bottom <= boxes.playback.top + 1, `caption overlaps controls: ${JSON.stringify(boxes)}`);
   // テロップは1行が限界（2026-10-10 オーナー指定）。
   assert(boxes.caption.height / boxes.stage.height * 720 < 72, `caption must stay on one line: ${JSON.stringify(boxes.caption)}`);
   const scale = boxes.stage.height / 720;
-  assert(boxes.title.bottom <= boxes.face.top + 1 && boxes.face.bottom <= boxes.stage.bottom + 1,
-    "portrait must fit below the heading and extend to the bottom");
-  assert(boxes.count.left >= boxes.label.right + 8 * scale
-    && Math.abs((boxes.count.top + boxes.count.bottom - boxes.label.top - boxes.label.bottom) / 2) <= 4 * scale,
-    "count must sit beside the heading without overlap");
+  assert(boxes.face.bottom <= boxes.stage.bottom + 1, "portrait must extend to the bottom");
+  if (boxes.layout === "neon") {
+    assert(boxes.count.left >= boxes.label.right - 2 * scale, "neon title and HUD need separate spaces");
+    assert(boxes.count.left > boxes.face.left + boxes.face.width * .7, "HUD must stay to the right of the face");
+  } else {
+    assert(boxes.title.bottom <= boxes.face.top + 1, "legacy portrait fits below heading");
+    assert(boxes.count.left >= boxes.label.right + 8 * scale
+      && Math.abs((boxes.count.top + boxes.count.bottom - boxes.label.top - boxes.label.bottom) / 2) <= 4 * scale,
+      "legacy count must sit beside the heading without overlap");
+  }
   if (["top", "back-count"].includes(boxes.layout)) {
     assert(boxes.retry.left >= boxes.count.right + 8 * scale && boxes.quit.left >= boxes.retry.right + 8 * scale,
       "heading, count, retry and quit must have separate spaces");
@@ -77,11 +82,14 @@ try {
   });
   assert.deepEqual(tooLong, []);
   await mount(2);
+  await page.locator(".go-choice-frame").evaluateAll(images => Promise.all(images.map(image => image.decode())));
   assert(await page.locator(".go-choice").evaluateAll(buttons => buttons.every(button => {
+    const frame = button.querySelector(".go-choice-frame");
+    if (frame) return frame.complete && frame.naturalWidth > 0 && !!button.querySelector(".go-choice-label").textContent;
     const style = getComputedStyle(button);
     return style.backgroundColor !== "rgba(0, 0, 0, 0)" && parseFloat(style.borderTopWidth) > 0;
   })), "choices must have visible button surfaces");
-  const art = await page.locator(".go-title-art,.go-approval").evaluateAll(async images => {
+  const art = await page.locator(".go-title-art,.go-neon-title,.go-approval").evaluateAll(async images => {
     await Promise.all(images.map(image => image.decode()));
     return images.map(image => ({ width: image.naturalWidth, src: image.src }));
   });

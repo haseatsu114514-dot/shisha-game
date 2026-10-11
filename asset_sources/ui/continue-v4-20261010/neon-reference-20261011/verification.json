@@ -1,0 +1,608 @@
+{
+  "date": "2026-10-11",
+  "requests": "CV35–46",
+  "errors": [],
+  "missing": [],
+  "captures": [
+    {
+      "image": "neon-ageha-1080.png",
+      "variant": "premium:ageha",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "layout": "neon",
+      "background": "stage",
+      "phase": "speaking",
+      "title": "コンティニューする？",
+      "count": "15",
+      "clockHidden": false,
+      "choicesHidden": false,
+      "echoHidden": false,
+      "echoScale": "1.02195",
+      "caption": "ツーチャンもスリーチャンもあるっしょ！",
+      "geometry": {
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "top": 0,
+          "right": 1920,
+          "bottom": 1080,
+          "left": 0
+        },
+        "title": {
+          "x": 289.6844787597656,
+          "y": 10.398008346557617,
+          "width": 1136.631103515625,
+          "height": 306.2039794921875,
+          "top": 10.398008346557617,
+          "right": 1426.3155822753906,
+          "bottom": 316.6019878387451,
+          "left": 289.6844787597656
+        },
+        "clock": {
+          "x": 1449,
+          "y": -3,
+          "width": 327,
+          "height": 327,
+          "top": -3,
+          "right": 1776,
+          "bottom": 324,
+          "left": 1449
+        },
+        "portrait": {
+          "x": 255,
+          "y": 168,
+          "width": 1410,
+          "height": 912,
+          "top": 168,
+          "right": 1665,
+          "bottom": 1080,
+          "left": 255
+        },
+        "caption": {
+          "x": 469.0875244140625,
+          "y": 808.313232421875,
+          "width": 981.8250732421875,
+          "height": 59.889404296875,
+          "top": 808.313232421875,
+          "right": 1450.91259765625,
+          "bottom": 868.20263671875,
+          "left": 469.0875244140625
+        },
+        "retry": {
+          "x": 291,
+          "y": 889.5,
+          "width": 648,
+          "height": 159,
+          "top": 889.5,
+          "right": 939,
+          "bottom": 1048.5,
+          "left": 291
+        },
+        "quit": {
+          "x": 981,
+          "y": 889.5,
+          "width": 648,
+          "height": 159,
+          "top": 889.5,
+          "right": 1629,
+          "bottom": 1048.5,
+          "left": 981
+        },
+        "logo": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      }
+    },
+    {
+      "image": "neon-sumi-720.png",
+      "variant": 0,
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "layout": "neon",
+      "background": "stage",
+      "phase": "speaking",
+      "title": "コンティニューする？",
+      "count": "15",
+      "clockHidden": false,
+      "choicesHidden": false,
+      "echoHidden": false,
+      "echoScale": "1.02195",
+      "caption": "俺も終わらせた覚えはねえぞ！",
+      "geometry": {
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 720,
+          "top": 0,
+          "right": 1280,
+          "bottom": 720,
+          "left": 0
+        },
+        "title": {
+          "x": 193.12298583984375,
+          "y": 6.932005405426025,
+          "width": 757.7540283203125,
+          "height": 204.135986328125,
+          "top": 6.932005405426025,
+          "right": 950.8770141601562,
+          "bottom": 211.06799173355103,
+          "left": 193.12298583984375
+        },
+        "clock": {
+          "x": 966,
+          "y": -2,
+          "width": 218,
+          "height": 218,
+          "top": -2,
+          "right": 1184,
+          "bottom": 216,
+          "left": 966
+        },
+        "portrait": {
+          "x": 170,
+          "y": 112,
+          "width": 940,
+          "height": 608,
+          "top": 112,
+          "right": 1110,
+          "bottom": 720,
+          "left": 170
+        },
+        "caption": {
+          "x": 398.8500061035156,
+          "y": 538.87548828125,
+          "width": 482.3000183105469,
+          "height": 39.92626953125,
+          "top": 538.87548828125,
+          "right": 881.1500244140625,
+          "bottom": 578.8017578125,
+          "left": 398.8500061035156
+        },
+        "retry": {
+          "x": 194,
+          "y": 593,
+          "width": 432,
+          "height": 106,
+          "top": 593,
+          "right": 626,
+          "bottom": 699,
+          "left": 194
+        },
+        "quit": {
+          "x": 654,
+          "y": 593,
+          "width": 432,
+          "height": 106,
+          "top": 593,
+          "right": 1086,
+          "bottom": 699,
+          "left": 654
+        },
+        "logo": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      }
+    },
+    {
+      "image": "neon-ageha-phone.png",
+      "variant": "premium:ageha",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "layout": "neon",
+      "background": "stage",
+      "phase": "speaking",
+      "title": "コンティニューする？",
+      "count": "15",
+      "clockHidden": false,
+      "choicesHidden": false,
+      "echoHidden": false,
+      "echoScale": "1.02195",
+      "caption": "ツーチャンもスリーチャンもあるっしょ！",
+      "geometry": {
+        "stage": {
+          "x": 75.33331298828125,
+          "y": 0,
+          "width": 693.3333740234375,
+          "height": 390,
+          "top": 0,
+          "right": 768.6666870117188,
+          "bottom": 390,
+          "left": 75.33331298828125
+        },
+        "title": {
+          "x": 179.9416046142578,
+          "y": 3.754836320877075,
+          "width": 410.45013427734375,
+          "height": 110.57366180419922,
+          "top": 3.754836320877075,
+          "right": 590.3917388916016,
+          "bottom": 114.3284981250763,
+          "left": 179.9416046142578
+        },
+        "clock": {
+          "x": 598.5833129882812,
+          "y": -1.0833333730697632,
+          "width": 118.0833740234375,
+          "height": 118.08334350585938,
+          "top": -1.0833333730697632,
+          "right": 716.6666870117188,
+          "bottom": 117.00001013278961,
+          "left": 598.5833129882812
+        },
+        "portrait": {
+          "x": 167.41665649414062,
+          "y": 60.66666793823242,
+          "width": 509.1666564941406,
+          "height": 329.3333435058594,
+          "top": 60.66666793823242,
+          "right": 676.5833129882812,
+          "bottom": 390.0000114440918,
+          "left": 167.41665649414062
+        },
+        "caption": {
+          "x": 244.7260284423828,
+          "y": 291.8908996582031,
+          "width": 354.5479736328125,
+          "height": 21.626739501953125,
+          "top": 291.8908996582031,
+          "right": 599.2740020751953,
+          "bottom": 313.51763916015625,
+          "left": 244.7260284423828
+        },
+        "retry": {
+          "x": 180.41665649414062,
+          "y": 321.2083435058594,
+          "width": 234,
+          "height": 57.416656494140625,
+          "top": 321.2083435058594,
+          "right": 414.4166564941406,
+          "bottom": 378.625,
+          "left": 180.41665649414062
+        },
+        "quit": {
+          "x": 429.58331298828125,
+          "y": 321.2083435058594,
+          "width": 234,
+          "height": 57.416656494140625,
+          "top": 321.2083435058594,
+          "right": 663.5833129882812,
+          "bottom": 378.625,
+          "left": 429.58331298828125
+        },
+        "logo": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      }
+    },
+    {
+      "image": "neon-ageha-5.png",
+      "variant": "premium:ageha",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "layout": "neon",
+      "background": "stage",
+      "phase": "speaking",
+      "title": "コンティニューする？",
+      "count": "5",
+      "clockHidden": false,
+      "choicesHidden": false,
+      "echoHidden": false,
+      "echoScale": "1.547475",
+      "caption": "もう客席でめっちゃ応援してるし！",
+      "geometry": {
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "top": 0,
+          "right": 1920,
+          "bottom": 1080,
+          "left": 0
+        },
+        "title": {
+          "x": 289.6844787597656,
+          "y": 10.398008346557617,
+          "width": 1136.631103515625,
+          "height": 306.2039794921875,
+          "top": 10.398008346557617,
+          "right": 1426.3155822753906,
+          "bottom": 316.6019878387451,
+          "left": 289.6844787597656
+        },
+        "clock": {
+          "x": 1449,
+          "y": -3,
+          "width": 327,
+          "height": 327,
+          "top": -3,
+          "right": 1776,
+          "bottom": 324,
+          "left": 1449
+        },
+        "portrait": {
+          "x": 255,
+          "y": 168,
+          "width": 1410,
+          "height": 912,
+          "top": 168,
+          "right": 1665,
+          "bottom": 1080,
+          "left": 255
+        },
+        "caption": {
+          "x": 546.6000366210938,
+          "y": 808.313232421875,
+          "width": 826.7998657226562,
+          "height": 59.889404296875,
+          "top": 808.313232421875,
+          "right": 1373.39990234375,
+          "bottom": 868.20263671875,
+          "left": 546.6000366210938
+        },
+        "retry": {
+          "x": 291,
+          "y": 889.5,
+          "width": 648,
+          "height": 159,
+          "top": 889.5,
+          "right": 939,
+          "bottom": 1048.5,
+          "left": 291
+        },
+        "quit": {
+          "x": 981,
+          "y": 889.5,
+          "width": 648,
+          "height": 159,
+          "top": 889.5,
+          "right": 1629,
+          "bottom": 1048.5,
+          "left": 981
+        },
+        "logo": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      }
+    },
+    {
+      "image": "neon-ageha-1.png",
+      "variant": "premium:ageha",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "layout": "neon",
+      "background": "stage",
+      "phase": "speaking",
+      "title": "コンティニューする？",
+      "count": "1",
+      "clockHidden": false,
+      "choicesHidden": false,
+      "echoHidden": false,
+      "echoScale": "1.75695",
+      "caption": "ほら、コンティニュー！ いっけえええ！",
+      "geometry": {
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "top": 0,
+          "right": 1920,
+          "bottom": 1080,
+          "left": 0
+        },
+        "title": {
+          "x": 289.6844787597656,
+          "y": 10.398008346557617,
+          "width": 1136.631103515625,
+          "height": 306.2039794921875,
+          "top": 10.398008346557617,
+          "right": 1426.3155822753906,
+          "bottom": 316.6019878387451,
+          "left": 289.6844787597656
+        },
+        "clock": {
+          "x": 1449,
+          "y": -3,
+          "width": 327,
+          "height": 327,
+          "top": -3,
+          "right": 1776,
+          "bottom": 324,
+          "left": 1449
+        },
+        "portrait": {
+          "x": 255,
+          "y": 168,
+          "width": 1410,
+          "height": 912,
+          "top": 168,
+          "right": 1665,
+          "bottom": 1080,
+          "left": 255
+        },
+        "caption": {
+          "x": 462.6524963378906,
+          "y": 804.0880126953125,
+          "width": 994.695068359375,
+          "height": 68.2987060546875,
+          "top": 804.0880126953125,
+          "right": 1457.3475646972656,
+          "bottom": 872.38671875,
+          "left": 462.6524963378906
+        },
+        "retry": {
+          "x": 291,
+          "y": 889.5,
+          "width": 648,
+          "height": 159,
+          "top": 889.5,
+          "right": 939,
+          "bottom": 1048.5,
+          "left": 291
+        },
+        "quit": {
+          "x": 981,
+          "y": 889.5,
+          "width": 648,
+          "height": 159,
+          "top": 889.5,
+          "right": 1629,
+          "bottom": 1048.5,
+          "left": 981
+        },
+        "logo": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      }
+    },
+    {
+      "image": "neon-game-over.png",
+      "variant": "premium:ageha",
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "layout": "neon",
+      "background": "stage",
+      "phase": "gameover",
+      "title": "GAME OVER",
+      "count": "0",
+      "clockHidden": true,
+      "choicesHidden": true,
+      "echoHidden": true,
+      "echoScale": "1.8",
+      "caption": "ほら、コンティニュー！ いっけえええ！",
+      "geometry": {
+        "stage": {
+          "x": 0,
+          "y": 0,
+          "width": 1920,
+          "height": 1080,
+          "top": 0,
+          "right": 1920,
+          "bottom": 1080,
+          "left": 0
+        },
+        "title": {
+          "x": 477,
+          "y": 375,
+          "width": 1140,
+          "height": 330,
+          "top": 375,
+          "right": 1617,
+          "bottom": 705,
+          "left": 477
+        },
+        "clock": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "portrait": {
+          "x": 255,
+          "y": 168,
+          "width": 1410,
+          "height": 912,
+          "top": 168,
+          "right": 1665,
+          "bottom": 1080,
+          "left": 255
+        },
+        "caption": {
+          "x": 462.6524963378906,
+          "y": 804.0880126953125,
+          "width": 994.695068359375,
+          "height": 68.2987060546875,
+          "top": 804.0880126953125,
+          "right": 1457.3475646972656,
+          "bottom": 872.38671875,
+          "left": 462.6524963378906
+        },
+        "retry": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "quit": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        },
+        "logo": {
+          "x": 477,
+          "y": 375,
+          "width": 1140,
+          "height": 330,
+          "top": 375,
+          "right": 1617,
+          "bottom": 705,
+          "left": 477
+        }
+      }
+    }
+  ]
+}
