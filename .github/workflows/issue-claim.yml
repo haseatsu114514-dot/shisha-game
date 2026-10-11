@@ -108,6 +108,13 @@ jobs:
                 } catch(e) { if(op === 'claim') throw e; core.info('Skip #' + number + ': ' + e.message); }
               }
               if (!selected) throw Error('No available issue; inspect reservations or add eligible work.');
+              // Enforce one active claim per worker ID across all open issues.
+              const allOpen = await github.paginate(github.rest.issues.listForRepo,{owner:repoOwner,repo,state:'open',per_page:100});
+              for (const item of allOpen) {
+                if (item.pull_request || item.number === selected) continue;
+                const active = await status(item.number);
+                if (active.state === 'claimed' && active.owner === worker) throw Error('Worker already owns #' + item.number + '; release it before claiming another.');
+              }
               await comment(selected,'claimed');
               core.summary.addRaw('Reserved #' + selected + ' for ' + worker).write();
               core.notice('CLAIMED_ISSUE=' + selected + ' OWNER=' + worker);
