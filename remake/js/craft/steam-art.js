@@ -3,7 +3,7 @@ import { el, clamp } from "../core/util.js";
 import { smokeUrl } from "./smoke-art.js";
 import { makingUrl } from "../core/data.js";
 
-export const HEART_ART = '<svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 24C9 20 2.5 15.5 2.5 9.5a6 6 0 0 1 11.5-2 6 6 0 0 1 11.5 2C25.5 15.5 19 20 14 24Z" fill="#f18bad" fill-opacity=".95" stroke="#fff2f6" stroke-width="1.6"/><path d="M6 8a3 3 0 0 1 5-1" fill="none" stroke="#fff" stroke-width="1.2" stroke-linecap="round"/></svg>';
+export const HEART_ART = '<svg viewBox="0 0 28 28" aria-hidden="true"><path d="M14 24C9 20 2.5 15.5 2.5 9.5a6 6 0 0 1 11.5-2 6 6 0 0 1 11.5 2C25.5 15.5 19 20 14 24Z" fill="currentColor" stroke="#eefaff" stroke-width="1.6"/></svg>';
 export const REFRESH_ART = '<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 5a19 19 0 1 0 17 11M34 7l8 9-11 1" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 26c7-12 9 8 17-6s8 1 13-2M11 32c8-8 10 6 17-2s6 0 9-2" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="24" cy="24" r="13" fill="none" stroke="currentColor" stroke-opacity=".2" stroke-dasharray="1 5"/></svg>';
 export const PRECISION_ART = '<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="15" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M24 5v11m0 16v11M5 24h11m16 0h11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="24" cy="24" r="3" fill="currentColor"/></svg>';
 export const PAD_ART = '<svg viewBox="0 0 136 136" aria-hidden="true"><circle cx="68" cy="68" r="48" stroke="currentColor" stroke-opacity=".18"/><circle cx="68" cy="68" r="43" fill="#080712" fill-opacity=".8" stroke="#736870"/><path d="M68 26V11m-6 6 6-6 6 6M110 68h15m-6-6 6 6-6 6M68 110v15m-6-6 6 6 6-6M26 68H11m6-6-6 6 6 6" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -76,9 +76,6 @@ export function buildSteamWorld(width, height) {
       ctx.strokeStyle = "#b5e9de55"; ctx.lineWidth = 1; ctx.setLineDash([3, 7]);
       ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.moveTo(0, y + h); ctx.lineTo(width, y + h); ctx.stroke(); ctx.setLineDash([]);
     }
-    const breath = 18 + Math.sin(t * 1.35) * 4;
-    ctx.strokeStyle = level === "shaken" ? "#e890a244" : "#b1dacc30";
-    ctx.beginPath(); ctx.arc(hx, hy, breath, 0, Math.PI * 2); ctx.stroke();
     if (burst) {
       const p = clamp((time - burst.time) / .85, 0, 1);
       for (const particle of burst.particles) {
@@ -93,6 +90,7 @@ export function buildSteamWorld(width, height) {
   };
   draw(0, width / 2, height / 2);
   return { root, draw, dissolve(time, cleared) {
+    burst?.echoes.forEach(n => n.remove());
     const echoes = cleared.filter(b => b.word).map(b => el("span.dodge-thought-echo", {
       text: b.node.textContent, style: { left: `${b.x}px`, top: `${b.y}px`, width: `${b.w}px`, height: `${b.h}px` },
     }));
