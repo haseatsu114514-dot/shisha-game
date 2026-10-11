@@ -72,4 +72,12 @@ for (const { file, id, text } of texts) {
 }
 assert.deepEqual(problems, [], problems.slice(0, 20).join("\n"));
 
+// 本心と同じ固定枠に収める発言は1行ずつ送る。装飾・全文を失わない。
+const singleLineText = "[imp]今日は、会社からの通知を切って、ゆっくり煙の香りだけを楽しみたい。[/imp]";
+const singleLinePages = paginate(singleLineText, { maxLines: 1 });
+assert(singleLinePages.length > 1);
+assert(singleLinePages.every(page => !page.includes("\n")));
+assert.equal(singleLinePages.map(strip).join(""), strip(singleLineText));
+assert(singleLinePages.every(page => page.startsWith("[imp]") && page.endsWith("[/imp]")));
+
 console.log(`text_wrap OK: ${texts.length} texts`);

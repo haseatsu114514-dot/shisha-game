@@ -90,7 +90,7 @@ body.vn-open #screen { visibility: hidden; } /* 会話中は前の画面を後�
 #hud { z-index: 30; pointer-events: none; }
 #fx { z-index: 40; pointer-events: none; }
 #toasts { z-index: 50; pointer-events: none; }
-#banners { z-index: 55; pointer-events: none; }
+#banners { z-index: 95; pointer-events: none; }
 #wipe { z-index: 80; pointer-events: none; }
 #modal { z-index: 90; display: none; }
 #modal.show { display: block; }
