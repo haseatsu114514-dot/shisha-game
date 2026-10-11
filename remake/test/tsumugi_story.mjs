@@ -233,6 +233,7 @@ try {
     const s = T.fresh(); Object.assign(s, { day: 11, slot: 0 });
     await T.story.playTsumugiStory(10);
     s.flags._morning_11 = true;
+    s.flags._lime_tut = 1; // DAY11まで遊んだ状態。初回LIME案内の操作は別の検証で扱う。
     s.flavors.push("blueberry"); s.flavorStock.blueberry = 50;
     const { craftTest } = await import("./js/craft/session.js"); craftTest.auto = "good";
     T.vn.backlog().length = 0;
