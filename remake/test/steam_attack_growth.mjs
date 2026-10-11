@@ -31,8 +31,12 @@ try {
       __remake.craftTest.auto=null;Math.random=()=>.5;
       // Only the steam RAF is controlled. Real browser input, spawn and collision run unchanged.
       let id=0; window.frames=new Map();window.now=performance.now();
-      window.requestAnimationFrame=fn=>{frames.set(++id,fn);return id;};
-      window.cancelAnimationFrame=id=>frames.delete(id);
+      const nativeRAF=window.requestAnimationFrame.bind(window),nativeCancel=window.cancelAnimationFrame.bind(window);
+      window.controlFrames=()=>{
+        window.requestAnimationFrame=fn=>{frames.set(++id,fn);return id;};
+        window.cancelAnimationFrame=id=>frames.delete(id);
+      };
+      window.restoreFrames=()=>{window.requestAnimationFrame=nativeRAF;window.cancelAnimationFrame=nativeCancel;};
       window.advance=()=>{now=Math.max(now,performance.now())+20;const pending=[...frames.values()];frames.clear();pending.forEach(fn=>fn(now));};
       window.start=mode=>{window.cs=session.newSession(mode);cs.steamSeconds=600;session.openBench(cs);window.run=steam.runSteamDodge(cs);};
       window.button=()=>document.querySelector('[data-test="dodge-slash"]');
@@ -50,6 +54,8 @@ try {
       start('drill');
     });
     await page.waitForFunction(()=>window.button && button() && !button().disabled);
+    await page.evaluate(()=>controlFrames());
+    await page.waitForFunction(()=>frames.size>0,null,{polling:50});
     assert.equal(await page.locator('[data-test="dodge-slash"]').getAttribute('data-cut-words'),'0');
     // Empty shot starts cooldown but gives no growth. A repeated pointer can't attack again.
     const empty=await page.evaluate(()=>{const r=strike();strike();return {...r,uses:button().dataset.uses};});
@@ -72,6 +78,8 @@ try {
       assert.match(result.feedback,/個斬った/);
     }
     assert(total>=6);assert(tiers.has(1)&&tiers.has(2),'Both approved growth thresholds must be exercised');
+    await page.evaluate(()=>document.fonts.ready);
+    if(shots)await page.screenshot({path:`${shots}/strike-${mobile?'mobile-reduced':'desktop'}.png`});
     assert.equal(await page.locator('[data-test="dodge-refresh"]').getAttribute('data-remaining'),'1');
     const refresh=await page.evaluate(()=>{
       const before=button().dataset.cutWords;
@@ -89,12 +97,12 @@ try {
     assert(damage.hitsAfter>damage.hitsBefore);assert.equal(damage.after,damage.before);
     await page.evaluate(()=>document.fonts.ready);
     if(shots)await page.screenshot({path:`${shots}/growth-${mobile?'mobile-reduced':'desktop'}.png`});
-    await page.evaluate(()=>{for(let i=0;i<1800 && frames.size;i++)advance();});
+    await page.evaluate(()=>{for(let i=0;i<1800 && frames.size;i++)advance();restoreFrames();});
     await page.waitForSelector('.result-card.show');
     assert.equal(await page.locator('.dodge-slash-fx,.dodge-slash-impact,.dodge-refresh-fx').count(),0);
     assert.equal(await page.evaluate(()=>cs.steam.wordsCut),total);
     // The next (initial practice) session resets growth and needs no new unlock flags.
-    await page.evaluate(()=>start('tutorial'));
+    await page.evaluate(()=>{restoreFrames();start('tutorial');});
     await page.waitForFunction(()=>!button().disabled);
     assert.equal(await page.locator('[data-test="dodge-slash"]').getAttribute('data-cut-words'),'0');
     assert.equal(await page.locator('[data-test="dodge-slash"]').getAttribute('data-reach'),'80');

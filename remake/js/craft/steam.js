@@ -158,7 +158,7 @@ export async function runSteamDodge(cs) {
     button.dataset.cooling = String(running && remaining > 0);
     button.style.setProperty("--recharge", String(1 - remaining / duration));
     caption.textContent = running && rounded > 0 ? `${rounded.toFixed(1)}秒` : "";
-    button.setAttribute("aria-label", `${label}。${remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
+    button.setAttribute("aria-label", `${label}。${!running ? "操作停止中" : remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
     button.disabled = !running || remaining > 0;
   };
   const refreshLabel = () => {
