@@ -87,7 +87,7 @@ jobs:
                 const ranks = {S:0,A:1,B:2,C:3,D:4};
                 candidates = all.filter(i => !i.pull_request).map(i => {
                   const labels = i.labels.map(l => typeof l === 'string' ? l : l.name);
-                  const d = labels.find(l => /^difficulty:[S-D]$/.test(l));
+                  const d = labels.find(l => /^difficulty:[SABCD]$/.test(l));
                   const priority = /^\[P([0-2])\]/.exec(i.title)?.[1];
                   return {number:i.number, difficulty:d ? ranks[d.split(':')[1]] : 99, priority:priority===undefined?3:Number(priority), title:i.title, labels};
                 }).filter(i => i.difficulty !== 99)
