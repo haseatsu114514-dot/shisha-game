@@ -58,7 +58,7 @@ export async function runSteamDodge(cs) {
   const world = buildSteamWorld(W, H);
   const renderTemperature = (temp) => { thermometer.update(temp); setBenchTemperature(cs, temp); };
   renderTemperature(temperatureAfterSteam(cs, 0, heatJitter));
-  box.append(world.root, clock.root, el("span.dodge-world-title", { text: "心の中", "aria-hidden": "true" }), mental.root, heart);
+  box.append(world.root, clock.root, mental.root, heart);
   const steamRoot = el("div.steam", [
     el("div.steam-play", [box]),
     el("div.dodge-controls", [pad, refreshBtn, precisionBtn]),
