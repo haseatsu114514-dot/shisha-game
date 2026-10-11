@@ -166,7 +166,7 @@ export function dawnWeather(node, weather, { reduced = false } = {}) {
   return {
     badge,
     // 地平線に合わせて下から拭き取る（幕の紫と同じ速さ）
-    fadeOut: (ms) => move(fx, [{ clipPath: "inset(0 0 0% 0)", opacity: 1 }, { clipPath: "inset(0 0 100% 0)", opacity: 0.5 }], ms),
+    fadeOut: (ms) => move(fx, [{ clipPath: "inset(0 0 0% 0)", opacity: 1 }, { clipPath: "inset(0 0 100% 0)", opacity: 0 }], Math.min(ms, 420)),
     stop() {
       anims.forEach((a) => a.cancel());
       fx.remove();
