@@ -39,10 +39,10 @@ def level(remaining):
 
 def describe(provider):
     d = snapshot(provider)
-    numbers = [d.get(k) for k in ("five_hour_remaining", "weekly_remaining")]
+    # Never act on stale observations; quota may reset or be consumed elsewhere.\n    try:\n        observed = dt.datetime.fromisoformat(d["updated_at"].replace("Z", "+00:00"))\n        fresh = observed.tzinfo is not None and (dt.datetime.now(dt.timezone.utc) - observed).total_seconds() < 900 and (dt.datetime.now(dt.timezone.utc) - observed).total_seconds() >= -60\n    except (KeyError, ValueError, TypeError):\n        fresh = False\n    numbers = [d.get(k) for k in ("five_hour_remaining", "weekly_remaining")] if fresh else []
     valid = [v for v in numbers if type(v) in (int, float) and 0 <= v <= 100]
     remaining = min(valid) if valid else None
-    status = level(remaining)
+    status = level(remaining)\n    if not fresh: print(f"{provider}: observation missing or older than 15 minutes; refresh from official usage display")
     print(f"{provider}: {status}; 5h={d.get('five_hour_remaining', '?')}%; weekly={d.get('weekly_remaining', '?')}%; reset={d.get('resets_at', '?')}")
     if status == "handoff":
         print("ACTION: Stop new work. Save/push safe work, test and merge only completed PRs; record unfinished tasks in GitHub Issues.")
