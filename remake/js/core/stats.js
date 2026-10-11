@@ -141,6 +141,18 @@ export function affinityLevel(id) {
   return lv;
 }
 
+/** 読み終えた物語の節目で最低限の親しさを保証する。既存の好感度・端数・恋人の絆は減らさない。 */
+export function ensureAffinityLevel(id, level) {
+  const target = Number.isInteger(level) ? AFFINITY_RANK_PTS[level] : undefined;
+  if (!id || !(target > 0) || (state.lovers || []).includes(id)) return 0;
+  const before = affinityLevel(id);
+  const prevPts = state.affinity[id] || 0;
+  if (prevPts >= target) return 0;
+  state.affinity[id] = target;
+  queueAffinityGain({ id, level: affinityLevel(id), levelUp: level > before, prevPts, pts: target });
+  return target - prevPts;
+}
+
 const rankOf = (pts) => {
   let lv = 0;
   for (let i = 1; i < AFFINITY_RANK_PTS.length; i++) if (pts >= AFFINITY_RANK_PTS[i]) lv = i;

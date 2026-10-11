@@ -1,0 +1,33 @@
+// つむぎの取材・コンテスト。一章の本筋だけで♥2まで。個別訪問と恋愛の答えは別に残す。
+import { state, save } from "../core/state.js";
+import { ensureAffinityLevel } from "../core/stats.js";
+import { play } from "../vn/engine.js";
+import { hasContact } from "../daily/spots.js";
+
+export const TSUMUGI_STORY = [
+  { day: 3, dialogue: "ch1_tsumugi_research", flag: "_tsumugi_contest_research", level: 1 },
+  { day: 7, dialogue: "ch1_tsumugi_work_in_progress", flag: "_tsumugi_contest_progress" },
+  { day: 12, dialogue: "ch1_tsumugi_sketch", flag: "_tsumugi_contest_submitted", level: 2 },
+  { day: 13, dialogue: "ch1_tsumugi_eve", flag: "_tsumugi_contest_eve" },
+];
+
+/** 途中の旧セーブでも、未読の場面を実際に読んでから進める。訪問回数から既読を作らない。 */
+export async function playTsumugiStory(untilDay, { sketch = null } = {}) {
+  if (state.chapter !== 1) return;
+  // 過去の交換は覚えるが、新しい取材の話をしたことにはしない。
+  if (hasContact("tsumugi")) state.flags._lime_contact_tsumugi = true;
+  if (state.met.tsumugi || (state.story.tsumugi || 0) > 0) state.flags._met_tsumugi = true;
+  for (const step of TSUMUGI_STORY) {
+    if (step.day > untilDay) break;
+    const unread = !state.flags[step.flag];
+    if (unread) {
+      if (step.dialogue === "ch1_tsumugi_sketch" && sketch) await sketch();
+      else await play(step.dialogue);
+      state.flags[step.flag] = true;
+    }
+    const gained = step.level ? ensureAffinityLevel("tsumugi", step.level) : 0;
+    hasContact("tsumugi");
+    // 再開時の補完も、次の行動を選ぶ前に保存する。
+    if (unread || gained) save();
+  }
+}
