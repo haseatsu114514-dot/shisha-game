@@ -103,6 +103,12 @@ reset({ stamina: 24 }); db.baito = []; await tonari.doBaito(); assert.equal(mone
 // 統合spots.jsの夜限定gateをそのまま使い、昼のシフト上がりで夜限定固有会話を案内しない。
 reset({ story: { sumi: 2 } }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(JSON.stringify(menus).includes("落ち着いた一台")); assert(!JSON.stringify(menus).includes("今日は何か教えて"));
 reset({ slot: 1, story: { sumi: 2 } }); db.baito = [byid.baito_regular_01]; await tonari.doBaito(); assert(JSON.stringify(menus).includes("今日は何か教えて"));
+const handoff = scenes.find((s) => s.dialogue_id === "remake_delivery_minto_handoff");
+assert(handoff && /PEPPERMINT/.test(JSON.stringify(handoff)) && /この後よかったら/.test(JSON.stringify(handoff)));
+assert(!/一服してって|どうぞ、こっちへ/.test(JSON.stringify(handoff)), "Delivery must not auto-enter PEPPERMINT");
+const mintoFirst = JSON.parse(await fs.readFile(new URL("data/dialogue/ch1_minto.json", dataRoot), "utf8")).dialogues.find((d) => d.dialogue_id === "ch1_minto_first");
+assert(mintoFirst?.branches?.dl_door?.some((line) => /さっき配達してくれた/.test(line.text || "")));
+assert(!mintoFirst.branches.dl_door.some((line) => /三袋を/.test(line.text || "")), "Delivery should not replay on first voluntary visit");
 const end = scenes.find((s) => s.dialogue_id === "remake_baito_end"); assert(!/レジを締め|閉店/.test(JSON.stringify(end)));
 assert(!JSON.stringify(scenes.find((s) => s.dialogue_id === "remake_repeat_sumi_1")).includes("静かな夜"));
 const closing = sumi.find((s) => s.dialogue_id === "ch1_sumi_closing"); assert(JSON.stringify(closing).includes("閉店後"));
