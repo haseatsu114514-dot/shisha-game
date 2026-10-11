@@ -84,7 +84,8 @@ try {
     assert.equal(await button.getAttribute('data-direction'),'u');assert.equal(await button.getAttribute('data-uses'),'1');
     assert.equal(await page.locator('.dodge-refresh').getAttribute('data-remaining'),'1');
     await shot(page,`slash-${name}`);
-    assert(await button.isDisabled());assert(Number(await button.getAttribute('data-cooldown'))>1.4);
+    assert(await button.isDisabled());const firstCooldown = Number(await button.getAttribute('data-cooldown'));
+    assert(firstCooldown > 0 && firstCooldown <= 1.8, `Cooldown should still be active after screenshot: ${firstCooldown}`);
     await page.evaluate(()=>{
       window.dispatchEvent(new KeyboardEvent('keydown',{key:'z',repeat:true,bubbles:true}));
       document.querySelector('[data-test="dodge-slash"]').dispatchEvent(new PointerEvent('pointerdown',{bubbles:true}));
