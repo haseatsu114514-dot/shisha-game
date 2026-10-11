@@ -1,5 +1,5 @@
 // 初登場カットイン: キャラが名乗って名前が出たあと、最初に一度だけ「名前・二つ名・一言」を全画面で出す。
-// 文言の正本は data/characters.json の intro_cutin（かふかは kafuka.json の profile）。
+// 文言の正本は data/characters.json の intro_cutin（なぎさは kafuka.json の profile）。
 //   { title: 二つ名, line: 一言, face: 立ち絵の表情, color: 差し色, name: "alias"=フルネームを伏せる（ネタバレになる相手） }
 // 名前の出し方（オーナー指定・2026-10-08）: 会話の名前欄と同じ呼び名だけを表示する。
 // 括弧付きの本名は全員で廃止。本名はストーリーの名乗りで扱う
