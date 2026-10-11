@@ -110,3 +110,11 @@ Mac 上で作業する Codex / Claude Code は、開始時・タスクの区切�
 - 複数のクラウド/ローカルCodex・Claude Codeセッションは同じアカウントでも独立した作業者。Issueを選ぶ前に `docs/issue_claim_protocol.md` に従い、GitHub Actions `issue-claim.yml` で予約を取得する。
 - ワークフロー実行の**成功を確認するまで**実装しない。予約済みIssueは別セッションで作業しない。
 - 利用枠切れ時はpushと引き継ぎを優先し、予約を勝手に解除しない。PRの安全確認・マージは従来のGit Safetyを維持する。
+
+### 予約からPRまでのセッション運用（クラウド/複数チャット共通）
+
+- 作業開始時にセッション固有の worker ID を決め、`docs/issue_claim_protocol.md` に従って `next` または `claim` を実行する。予約成功の実行IDとIssue番号を確認できなければ、実装を開始しない。手動でIssueを選んだ場合も同様。
+- **他のチャットの worker ID を使い回さない**。Codexの複数チャットも各々別worker。Issue/PR/作業ブランチの紐付けを記録し、予約中のIssueを別workerが勝手に再開しない。
+- 作業中は小さな単位でcommit/pushし、PRを早めに作成する。利用枠切れ・中断時はIssueに `WORKER / ISSUE / BRANCH / PR / DONE / TODO / TEST / BLOCKERS / NEXT` を残す。未完成ならDraft PRにし、予約は保持する。
+- **作業終了時に自動解除しない**。PRが安全にマージされてIssueが完了した場合、または作業を正式に放棄した場合のみ、同じworker IDで `release` を実行する。別セッションへの引き継ぎは旧worker停止・成果物push・引き継ぎ記録・予約解除・新worker予約成功の順に行う。
+- PRをマージする前に対象ブランチと最新mainの差分、競合、必須CI、レビュー要件、テスト、未完了項目を確認する。未確認・失敗・競合時は**自動マージ禁止**。安全なPRのみ順次マージし、Issueの予約を解放する。
