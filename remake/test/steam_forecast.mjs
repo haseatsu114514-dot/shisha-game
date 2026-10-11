@@ -163,9 +163,10 @@ try {
     const buttonLook = await page.locator('.dodge-refresh').evaluate(n => ({ background: getComputedStyle(n).backgroundImage, direction: getComputedStyle(n).flexDirection }));
     assert(!buttonLook.background.includes('url('), 'Old ornate button art overrode the simple refresh');
     assert.equal(buttonLook.direction, 'column');
-    assert.match(await page.locator('.dodge-refresh img').getAttribute('src'), /steam_refresh_button/);
+    assert.match(await page.locator('.dodge-refresh img').getAttribute('src'), /steam_refresh_simple/);
     const traceY = await page.locator('.dodge-beat-line').evaluate(n => Number(n.getAttribute('d').match(/M0,([\d.]+)/)[1]));
-    assert(Math.abs(traceY - 201) < 2, 'Heartbeat was not centered');
+    const fieldHeight = await page.locator('.dodge').evaluate(n => n.offsetHeight);
+    assert(Math.abs(traceY - fieldHeight / 2) < 2, 'Heartbeat was not centered');
     assert.equal(await page.locator('.dodge-hud, .dodge-hits, [data-test="timer-stop"]').count(), 0);
     assert.equal(await page.locator('[data-test="steam-clock"]').count(), 1, 'Remaining time was duplicated');
     const clockLook = await page.locator('[data-test="steam-clock"]').evaluate(n => {

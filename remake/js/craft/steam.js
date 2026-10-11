@@ -41,19 +41,19 @@ export async function runSteamDodge(cs) {
   const seconds = steamSecondsOf(cs), min = seconds / 60;
   const rainy = craftConditions(cs).rainy;
   const panel = stepPanel("steam", "蒸らし", "", { brief: "" });
-  const W = 752, H = 402;
+  const W = 752, H = 414;
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", mental: "steady", refreshRadius: String(effect.radius) } });
   const heart = el("div.dodge-heart", { role: "img", "aria-label": "心。中央の光が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("span", { html: HEART_ART }), el("i.dodge-core")]);
   const clock = buildDigitalClock("dodge-timer", { label: "蒸らしの残り時間", test: "steam-clock" });
   const knob = el("i.dodge-knob");
   const controlArt = name => el("img", { src: makingUrl(name), alt: "", draggable: false, "aria-hidden": "true" });
-  const pad = el("div.dodge-pad", { tabindex: 0, role: "group", "aria-label": "移動スティック。ドラッグまたは矢印キーで移動", dataset: { test: "dodge-pad" } }, [el("span", { "aria-hidden": "true" }, [controlArt("steam_stick_base.png")]), knob]);
+  const pad = el("div.dodge-pad", { tabindex: 0, role: "group", "aria-label": "移動スティック。ドラッグまたは矢印キーで移動", dataset: { test: "dodge-pad" } }, [el("span", { "aria-hidden": "true" }, [controlArt("steam_stick_simple_base.png")]), knob]);
   const refreshBtn = el("button.btn.primary.dodge-action.dodge-refresh", { disabled: true, dataset: { test: "dodge-refresh" } });
-  refreshBtn.append(el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_refresh_button.png")]),
+  refreshBtn.append(el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_refresh_simple.png")]),
     el("span.refresh-copy", { text: "リフレッシュ" }));
   const precisionState = el("span.precision-state", { text: "OFF", "aria-hidden": "true" });
   const precisionBtn = el("button.btn.dodge-action.dodge-precision", { disabled: true, "aria-pressed": "false", dataset: { test: "dodge-precision" } }, [
-    el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_precision_button.png")]),
+    el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_precision_simple.png")]),
     el("span.refresh-copy", { text: "精密モード" }), precisionState,
   ]);
   const thermometer = buildSteamTemperature();
@@ -72,7 +72,8 @@ export async function runSteamDodge(cs) {
 
   const dur = steamPlaySeconds(seconds) * (tutorial ? 0.7 : 1);
   const focus = craftCondition(cs).focus;
-  const hitR = 8 * (1 - 0.2 * tier01("guts")) / focus;
+  const hitR = 9 * (1 - 0.2 * tier01("guts")) / focus;
+  heart.style.setProperty("--hit-diameter", `${hitR * 2}px`);
   const spawnEvery = (tutorial ? 0.85 : 0.46) * (1 + 0.25 * tier01("insight")) * focus;
   let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = stock;
   let running = false, precise = false, time = 0, nextSpawn = 0.8, nextWave = tutorial ? 4 : 2.8;
@@ -84,7 +85,7 @@ export async function runSteamDodge(cs) {
   let padPointer = null, axisX = 0, axisY = 0;
 
   const renderHeart = () => { heart.style.transform = `translate(${hx - 14}px, ${hy - 14}px)`; };
-  const moveTo = (x, y) => { hx = clamp(x, 14, W - 14); hy = clamp(y, 14, H - 14); renderHeart(); };
+  const moveTo = (x, y) => { hx = clamp(x, 16, W - 16); hy = clamp(y, 16, H - 16); renderHeart(); };
   const toLocal = (e) => {
     const r = box.getBoundingClientRect();
     return [(e.clientX - r.left) * W / r.width, (e.clientY - r.top) * H / r.height];

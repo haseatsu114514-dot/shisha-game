@@ -1,0 +1,83 @@
+{
+  "tool": "image_gen.imagegen",
+  "date": "2026-10-11",
+  "transparent_background": true,
+  "assets": [
+    {
+      "file": "assets/ui/making/steam_refresh_simple.png",
+      "sha256": "8788e7652afb0ea472985062f6fa0358e8454547057fe99dd03da5f0198bbe3a",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corners": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "content_bbox": [
+        0,
+        19,
+        1252,
+        1254
+      ]
+    },
+    {
+      "file": "assets/ui/making/steam_precision_simple.png",
+      "sha256": "baec219f426321d4afbfc857c3ff7a9f2e260582d870311d22f05793c59a3974",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corners": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "content_bbox": [
+        0,
+        8,
+        1244,
+        1254
+      ]
+    },
+    {
+      "file": "assets/ui/making/steam_stick_simple_base.png",
+      "sha256": "7a7f3db7309af17d0f1299204720ef2b0948a1aea80731111ffed111649eab75",
+      "mode": "RGBA",
+      "size": [
+        1254,
+        1254
+      ],
+      "alpha_extrema": [
+        0,
+        255
+      ],
+      "corners": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "content_bbox": [
+        0,
+        55,
+        1226,
+        1254
+      ]
+    }
+  ],
+  "manifest_previous_entries_preserved": true
+}

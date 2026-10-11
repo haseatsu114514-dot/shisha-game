@@ -42,7 +42,7 @@
 .steam-play, .dodge-controls { width: 752px; }
 .steam-play { flex: 1; display: grid; justify-items: center; align-items: start; }
 /* 上に少し余裕を取り、操作欄との間隔も残す。 */
-.steam-play > .dodge { top: 16px; }
+.steam-play > .dodge { top: 4px; }
 /* 残り時間は視線を弾幕から離さず読める、奥の薄い7セグ。 */
 .dodge .dodge-timer { position: absolute; left: 50%; top: 50%; width: 448px; height: 158px; transform: translate(-50%, -50%); color: var(--mental-ink); opacity: .16; z-index: 1; pointer-events: none; user-select: none; transition: color .25s ease; }
 .dodge { --mental-ink: #86d6c5; }
@@ -79,34 +79,35 @@
 .dodge-object.clock::after { content: none; }
 .dodge-object.spark { filter: drop-shadow(0 0 4px #f6ce8555); }
 .dodge-object.smoke { filter: drop-shadow(0 0 5px #bc9feb44); }
-.bench[data-step="steam"] .dodge-heart { background: none; text-shadow: none; filter: drop-shadow(0 0 6px #c0e0c577); }
-.dodge-heart > span, .dodge-heart svg { display: block; width: 28px; height: 28px; }
-.dodge-core { width: 4px; height: 4px; left: 12px; top: 12px; box-shadow: 0 0 4px #fff; }
-.dodge-core::after { content: ""; position: absolute; inset: -5px; border: 1px solid #ffffe870; border-radius: 50%; }
+.bench[data-step="steam"] .dodge-heart { background: none; text-shadow: none; filter: drop-shadow(0 0 5px #ff9ab77a); }
+.dodge-heart > span { position: absolute; left: -4px; top: -4px; }
+.dodge-heart > span, .dodge-heart svg { display: block; width: 36px; height: 36px; }
+.dodge-core { width: 6px; height: 6px; left: 11px; top: 11px; box-shadow: 0 0 4px #fff; }
+.dodge-core::after { content: ""; position: absolute; inset: auto; left: 50%; top: 50%; width: var(--hit-diameter, 18px); height: var(--hit-diameter, 18px); transform: translate(-50%, -50%); border: 1px solid #fff7eceb; border-radius: 50%; background: #27102218; box-shadow: 0 0 3px #fff4dc44; }
 .dodge-heart.shield::after { border-width: 1px; box-shadow: 0 0 8px #c7dfbb55; }
 
 /* 操作を近くにまとめる。精密モードはボタンの灯りで示す。 */
 .dodge-controls { justify-content: flex-end; align-items: flex-start; gap: 20px; height: 180px; flex: none; padding-right: 12px; }
 .bench[data-art-skin] .dodge-pad { width: 176px; height: 176px; border: 0; background: none; box-shadow: none; }
-/* 四方向の矢印と、指のくぼみ・滑り止め・厚みで移動スティックと分かる形に。 */
+/* 太い四方向矢印・灰色の大きな可動ノブで、照準ボタンと区別する。 */
 .bench[data-art-skin] .dodge-pad > span { display: block; color: #ebdbbfc9; pointer-events: none; }
-.dodge-pad > span img { width: 100%; height: 100%; object-fit: contain; }
+.dodge-pad > span img { width: calc(100% + 20px); height: calc(100% + 20px); margin: -10px; object-fit: contain; }
 .dodge-pad > span svg { width: 100%; height: 100%; fill: none; stroke-width: 1; }
-.bench[data-art-skin] .dodge-knob { left: calc(50% - 38px); top: calc(50% - 38px); width: 76px; height: 76px; border: 2px solid #d6cdb9b3; background: linear-gradient(145deg, #686471, #393541 45%, #211d2b); box-shadow: inset 0 1px 2px #fff5, inset 0 0 0 3px #aaa0a22b, 0 6px 0 -1px #554958, 0 8px 0 -1px #100d18, 0 12px 10px #0009; }
-.dodge-knob::before { content: ""; position: absolute; inset: 19px; z-index: 1; border-radius: 50%; background: radial-gradient(circle, #dbd4c88c 1px, transparent 1.6px) center / 7px 7px; }
-.dodge-knob::after { content: ""; position: absolute; inset: 7px; border: 1px solid #c6bfc74d; border-radius: 50%; background: radial-gradient(ellipse at 60% 70%, #45404f, #1a1622 75%); box-shadow: inset 0 2px 4px #0009, 0 1px 0 #f1e2d12b; }
+.bench[data-art-skin] .dodge-knob { left: calc(50% - 44px); top: calc(50% - 44px); width: 88px; height: 88px; border: 2px solid #a6acb7; background: linear-gradient(155deg, #a2a8b2, #59616e 42%, #292e39); box-shadow: inset 0 1px 2px #fff7, inset 0 0 0 3px #171a2544, 0 7px 0 -1px #4c515e, 0 10px 0 -1px #11131e, 0 15px 12px #000a; }
+.dodge-knob::before { content: ""; position: absolute; inset: 17px; z-index: 1; border-radius: 50%; background: repeating-linear-gradient(0deg, transparent 0 7px, #c5ced325 7px 8px); mask-image: radial-gradient(ellipse, #000 35%, transparent 72%); }
+.dodge-knob::after { content: ""; position: absolute; inset: 7px; border: 1px solid #d2dae040; border-radius: 50%; background: radial-gradient(ellipse at 50% 85%, #5b6370, #2b303c 68%); box-shadow: inset 0 3px 5px #0009, 0 1px 0 #d5dfe529; }
 .bench[data-art-skin] .dodge-pad.held { box-shadow: 0 0 16px #e2cf9d35; }
-.bench[data-art-skin] .dodge-pad.held > span { color: #fff0d4; }
-.bench[data-art-skin] .dodge-pad.held .dodge-knob { border-color: #f1e3bf; }
+.bench[data-art-skin] .dodge-pad.held > span { filter: brightness(1.12); }
+.bench[data-art-skin] .dodge-pad.held .dodge-knob { border-color: #edf4fc; }
 .dodge-pad:focus-visible { outline: 2px solid #d6c49a; outline-offset: 4px; }
 .bench[data-art-skin] .btn.dodge-action, .bench[data-art-skin] .btn.dodge-action:hover:not(:disabled) { display: flex; flex-direction: column; justify-content: flex-start; gap: 1px; align-items: center; width: 154px; min-width: 0; height: 180px; min-height: 180px; padding: 0; border: 0; border-image: none; border-radius: 50%; background: none; color: #eee3c9; box-shadow: none; touch-action: none; }
 .bench[data-art-skin] .dodge-action:hover:not(:disabled) { filter: brightness(1.12); }
 .refresh-emblem { position: relative; width: 140px; height: 140px; flex: none; color: #d4dfc6; pointer-events: none; }
-.refresh-emblem img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.refresh-emblem img { position: absolute; left: -12px; top: -12px; display: block; width: 164px; height: 164px; object-fit: contain; }
 .dodge-refresh:enabled .refresh-emblem::after { content: ""; position: absolute; inset: 12px; border: 2px solid transparent; border-top-color: #d2f4ff99; border-bottom-color: #80cfff55; border-radius: 50%; filter: drop-shadow(0 0 3px #70ccff); animation: refresh-energy-orbit 4.5s linear infinite; }
 @keyframes refresh-energy-orbit { to { transform: rotate(360deg); } }
 .refresh-emblem svg { width: 100%; height: 100%; }
-.refresh-copy { font-family: "Craft Mincho", var(--font); font-weight: 700; font-size: 18px; line-height: 1.2; white-space: nowrap; letter-spacing: .03em; padding: 2px 9px; border: 1px solid #c1a77626; border-radius: 13px; background: #100b18d9; }
+.refresh-copy { font-family: "Craft Mincho", var(--font); font-weight: 700; font-size: 18px; line-height: 1.2; white-space: nowrap; letter-spacing: .03em; padding: 3px 0; border: 0; background: none; text-shadow: 0 1px 3px #000; }
 .precision-state { display: grid; place-items: center; width: 43px; height: 18px; border: 1px solid #8b94884d; border-radius: 10px; font-family: var(--font); font-size: 11px; line-height: 1; font-weight: 700; letter-spacing: .06em; color: #b8bab1; background: #171a18; }
 .dodge-precision[aria-pressed="false"] .refresh-emblem { filter: brightness(.72) saturate(.75); }
 .bench[data-art-skin] .dodge-action:disabled { opacity: .4; filter: saturate(.5); }
