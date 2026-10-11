@@ -1,15 +1,16 @@
-// 選ぶ工程: 機材・コンセプト・配合・詰め・炭の配置・蒸らし時間。
+// 選ぶ工程: 機材・配合・詰め・炭の配置・蒸らし時間。
 import { el, sleep, clamp } from "../core/util.js";
 import { DB } from "../core/data.js";
 import { toast } from "../core/ui.js";
 import { state } from "../core/state.js";
 import { star, earnStat } from "../core/stats.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, reactAudience, scoreStep } from "./session.js";
+import { stepPanel, refreshBench, reactAudience, scoreStep, waitBenchReady } from "./session.js";
 import { autoSkill } from "./common.js";
 import { flavorColor } from "./art.js";
 import { flavorStock, addFlavorStock, ownedFlavorIds } from "../daily/shop.js";
 import { runSteamTimer } from "./timer.js";
+import { availableCoalLayouts, coalCount, coalTypes, COAL_UNLOCK } from "./coals.js";
 
 // 章ごとのレギュレーション（CLAUDE.md が正本: ch1 = ミント2g以上）
 export const REGULATION = { 1: { flavor: "mint", min: 2, label: "課題フレーバー「ミント」を2g以上" } };
@@ -49,6 +50,7 @@ const lessonHint = (cs, id, fallback) => (cs.mode === "tutorial" && LESSON[id]) 
 // ---------------------------------------------------------------- 機材
 
 export async function stepSetup(cs) {
+  await waitBenchReady(cs);
   const types = [["bowl", "ボウル"], ["hms", "ヒートマネジメント"], ["charcoal", "炭"]];
   for (const [type, label] of types) {
     const owned = state.owned.map((id) => DB.equipById[id]).filter((e) => e && e.type === type);
@@ -58,54 +60,6 @@ export async function stepSetup(cs) {
   }
   state.equip = { ...cs.equip };
   refreshBench();
-}
-
-// ---------------------------------------------------------------- コンセプト（FLAVOR TRIAL の土台）
-
-export const CONCEPTS = [
-  { id: "aroma", label: "香り重視", desc: "課題フレーバーの香りを芯まで残す" },
-  { id: "smoke", label: "煙多め", desc: "見た目にも満足できる煙量" },
-  { id: "relax", label: "リラックス", desc: "角のない、焦げない、落ち着く一台" },
-  { id: "speed", label: "スピード提供", desc: "手際よく、待たせずに出す" },
-  { id: "taste", label: "味濃いめ", desc: "一口目から主張する濃さ" },
-  { id: "duration", label: "持続力重視", desc: "最後の一口まで味が崩れない" },
-  { id: "original", label: "独創性重視", desc: "自分だけの組み合わせで勝負" },
-];
-
-export async function stepConcept(cs) {
-  const panel = stepPanel("concept", "今日のコンセプト", "作る前に、この一台の方針を2つ掲げる。審査では「言ったこと」と「作ったもの」の一致が問われる");
-  const picked = [];
-  const note = el("div.concept-note", { text: "あと2つ選ぶ" });
-  const grid = el("div.opt-grid.cols-3");
-  const confirm = el("button.btn.primary", { disabled: true, dataset: { test: "concept-ok" } }, [el("span.btn-label", { text: "この方針で作る" })]);
-  const redraw = () => {
-    grid.querySelectorAll(".opt").forEach((b) => {
-      const on = picked.includes(b.dataset.value);
-      b.classList.toggle("on", on);
-      b.setAttribute("aria-pressed", String(on));
-    });
-    note.textContent = picked.length < 2 ? `あと${2 - picked.length}つ選ぶ` : `「${picked.map((id) => CONCEPTS.find((c) => c.id === id).label).join("」×「")}」で行く`;
-    confirm.disabled = picked.length !== 2;
-  };
-  for (const c of CONCEPTS) {
-    grid.append(el("button.opt", { dataset: { value: c.id, test: `concept-${c.id}` }, onclick: () => {
-      SE.click();
-      const i = picked.indexOf(c.id);
-      if (i >= 0) picked.splice(i, 1);
-      else { if (picked.length >= 2) picked.shift(); picked.push(c.id); }
-      redraw();
-    }, "aria-pressed": "false" }, [el("b", { text: c.label }), el("small", { text: c.desc })]));
-  }
-  panel.append(grid, el("div.step-foot", [note, confirm]));
-  await new Promise((resolve) => {
-    confirm.addEventListener("click", () => { SE.select(); resolve(); });
-    if (autoSkill()) {
-      picked.push(...(autoSkill() === "good" ? ["aroma", "relax"] : ["smoke", "taste"]));
-      redraw();
-      setTimeout(() => confirm.click(), 40);
-    }
-  });
-  cs.concepts = picked.slice();
 }
 
 // ---------------------------------------------------------------- 配合
@@ -152,6 +106,7 @@ export function evaluateMix(cs) {
 }
 
 export async function stepMix(cs) {
+  await waitBenchReady(cs);
   const reg = regulationFor(cs);
   const cap = capacity(cs);
   const panel = stepPanel("mix", "フレーバーの配合", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + "が今日の課題。" : ""}合計12g以上で決める`));
@@ -163,7 +118,8 @@ export async function stepMix(cs) {
   if (reg && !ids.includes(reg.flavor)) ids.unshift(reg.flavor);
   if (cs.mode === "tutorial") ids = ["double_apple", "mint"];
   const limit = (id) => (consumes && !supplied(id) ? flavorStock(id) : Infinity);
-  cs.mix = {};
+  const practiceFlavor = cs.mode === "rehearsal" ? state.flags._prep_flavor : null;
+  cs.mix = practiceFlavor && ids.includes(practiceFlavor) ? { [practiceFlavor]: 10, mint: 2 } : {};
   const lcd = el("div.lcd");
   const layers = el("div.bowl-layers");
   const regLine = el("div.reg-line");
@@ -232,7 +188,7 @@ export async function stepMix(cs) {
     okBtn.addEventListener("click", () => { SE.select(); resolve(); });
     if (autoSkill()) {
       // 上手=スミさんの基本形（ダブルアップル＋ミント）／下手=規定ぎりぎりの雑な配合
-      if (autoSkill() === "good" || cs.mode === "tutorial") { cs.mix = { double_apple: 9, mint: 3 }; }
+      if (autoSkill() === "good" || cs.mode === "tutorial") { cs.mix = practiceFlavor && ids.includes(practiceFlavor) ? { [practiceFlavor]: 9, mint: 3 } : { double_apple: 9, mint: 3 }; }
       else { cs.mix = { double_apple: 5, mint: 7 }; }
       redraw();
       setTimeout(() => okBtn.click(), 60);
@@ -256,6 +212,7 @@ export async function stepMix(cs) {
 // ---------------------------------------------------------------- 詰め・配置・蒸らし時間
 
 export async function stepPack(cs) {
+  await waitBenchReady(cs);
   const panel = stepPanel("pack", "パッキング", lessonHint(cs, "pack", "空気の通り道を作る。詰め方で抜けと熱の入り方が変わる"));
   cs.pack = await choose(panel, [
     { value: "fluffy", label: "ふんわり", desc: "抜けが軽く、煙が出やすい。熱は早く回る" },
@@ -267,15 +224,25 @@ export async function stepPack(cs) {
 }
 
 export async function stepPlace(cs) {
-  const panel = stepPanel("place", "炭の配置", lessonHint(cs, "place", "熾した炭をアルミの上に置く。基本はトライアングル"));
-  cs.place = await choose(panel, [
-    { value: "triangle", label: "トライアングル（3個）", desc: "三角に置いて、熱を均等に届ける", auto: true },
-    { value: "four", label: "炭4個", desc: "高火力で煙を増やす。焦げに気をつけたい", disabled: cs.mode === "tutorial" },
-  ]);
-  SE.crackle();
+  await waitBenchReady(cs);
+  const panel = stepPanel("place", "炭の配置", lessonHint(cs, "place", "基本は同じ炭を三角に3個。配置を決めてから炭を焼く"));
+  const layouts = availableCoalLayouts(cs.mode === "tutorial" ? {} : state.flags);
+  cs.place = await choose(panel, layouts.map(value => value === "triangle"
+    ? { value, label: "トライアングル（3個）", desc: "三角に置いて、熱を均等に届ける", auto: true }
+    : { value, label: "4点置き（4個）", desc: "熱が強く入る配置。温度を見て調整する" }));
+  cs.coalTypes = coalTypes({ ...cs, coalTypes: null });
+  if (cs.mode !== "tutorial" && state.flags[COAL_UNLOCK.mixed] && state.owned.includes("flat_charcoal") && state.owned.includes("cube_charcoal")) {
+    const n = coalCount(cs);
+    const combination = await choose(stepPanel("place", "炭の組み合わせ", "フラットとキューブの火力を組み合わせる"), [
+      { value: "same", label: "同じ炭で揃える", desc: `${n}個とも選んだ炭を使う`, auto: true },
+      { value: "mixed", label: "フラット＋キューブ", desc: `キューブ1個とフラット${n - 1}個` },
+    ]);
+    if (combination === "mixed") cs.coalTypes = ["cube_charcoal", ...Array(n - 1).fill("flat_charcoal")];
+  }
   refreshBench();
 }
 
 export async function stepSteamTime(cs) {
+  await waitBenchReady(cs);
   await runSteamTimer(cs);
 }

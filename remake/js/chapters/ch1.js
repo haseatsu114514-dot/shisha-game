@@ -19,16 +19,18 @@ import { onDialogueEnter, maybeShuraba } from "../daily/romance.js";
 import { recordRomanceChoice, bondCondition } from "../daily/bonds.js";
 import { storySeen } from "../daily/spots.js";
 import { recordCg } from "../scenes/gallery.js";
-import { newSession, openBench, tickerSay } from "../craft/session.js";
+import { newSession, openBench, tickerSay, waitBenchReady } from "../craft/session.js";
 import * as bc from "../craft/broadcast.js";
-import { stepSetup, stepConcept, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
+import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "../craft/steps.js";
 import { runHoles } from "../craft/holes.js";
 import { runHeat } from "../craft/heat.js";
 import { runSteamDodge } from "../craft/steam.js";
 import { runPull } from "../craft/pull.js";
 import { runCare } from "../craft/care.js";
 import { buildGameOver } from "./gameover.js";
-import { runTrial } from "../craft/trial.js";
+import { runFullPractice, CRAFT_STEPS, recordPractice } from "../craft/practice.js";
+import { prepareFlavorStock } from "../daily/preparation.js";
+import { warmCraftAssets } from "../craft/readiness.js";
 import { playTsumugiStory } from "./tsumugi-story.js";
 import { meetHiyoriAtTonari } from "../daily/hiyori.js";
 import { computeShisha, finalize } from "../craft/score.js";
@@ -116,12 +118,12 @@ async function dailyPart() {
 async function tutorial() {
   await play("remake_tutorial_intro", { bg: TONARI });
   const cs = newSession("tutorial");
-  openBench(cs, { steps: STEPS_R1.filter(([id]) => id !== "setup" && id !== "concept") });
+  openBench(cs, { steps: STEPS_R1.filter(([id]) => id !== "setup") });
   await stepMix(cs);
   await stepPack(cs);
   await runHoles(cs);
-  await runHeat(cs);
   await stepPlace(cs);
+  await runHeat(cs);
   await stepSteamTime(cs);
   await runSteamDodge(cs);
   await runPull(cs);
@@ -129,9 +131,10 @@ async function tutorial() {
   while (cs.failed) {
     await play("remake_tutorial_burnt", { bg: TONARI });
     Object.assign(cs, { failed: null, burnt: false, pull: null, pullDone: false, leaf: null });
-    openBench(cs, { steps: STEPS_R1.filter(([id]) => id !== "setup" && id !== "concept") });
+    openBench(cs, { steps: STEPS_R1.filter(([id]) => id !== "setup") });
     await runPull(cs);
   }
+  recordPractice(cs, "tutorial");
   state.flags._tutorial_done = true;
   delete state.flags._tutorial_skipped;
   await play("remake_tutorial_result", { bg: TONARI });
@@ -156,11 +159,15 @@ const once = (key, fn) => ({ run: async () => { setFlag(key); await fn(); }, don
 
 const NIGHT_EVENTS = {
   2: { pin: "tonari", teaser: "tonari", beat: "夜、tonariに顔を出す──", ...once("_ev_salaryman", nightScene("ch1_salaryman_regular", TONARI_N)) },
-  3: { pin: "tonari", teaser: "tonari", beat: "閉店前、つむぎが途中の絵を見せに来た──",
-    done: () => flag("_tsumugi_contest_progress"), run: () => playTsumugiStory(3) },
+  3: { pin: "tonari", teaser: "tonari", beat: "つむぎの途中の絵を見て、閉店後は作業台へ──",
+    done: () => flag("_tsumugi_contest_progress") && flag("_ev_first_practice"),
+    run: async () => {
+      await playTsumugiStory(3);
+      if (!flag("_ev_first_practice")) await once("_ev_first_practice", earlyPractice).run();
+    } },
   4: { pin: null, teaser: "帰り道", beat: "買い出しの帰り道──", ...once("_ev_ageha_cameo", nightScene("ch1_ageha_encounter", BG("bg_street_night"))) },
   5: { pin: "tonari", teaser: "tonari", beat: "閉店後の店に、もう少しだけ残る──", ...once("_ev_day5", nightScene("ch1_day5_sumi_story", TONARI_N)) },
-  7: { pin: "tonari", teaser: "tonari", beat: "大会まで、ちょうど折り返し──", ...once("_ev_midcheck", nightScene("remake_midcheck")) },
+  7: { pin: "tonari", teaser: "tonari", beat: "大会まで、ちょうど折り返し──", ...once("_ev_midcheck", midPreparation) },
   9: { pin: "c_station", teaser: "C.STATION", beat: "夜。C.STATIONで出場者説明会──", ...once("_ev_meet_rivals", nightScene("ch1_meet_rivals", BG("bg_c_station_night"))) },
   10: { pin: "tonari", teaser: "tonari", beat: "帰り道、tonariに寄っていく──", ...once("_ev_salaryman_change", nightScene("ch1_salaryman_change", TONARI_N)) },
   12: { pin: "tonari", teaser: "tonari", beat: "閉店間際、つむぎが描き終えた絵を開く──",
@@ -182,41 +189,49 @@ async function lastNight() {
   if (!flag("_ev_last_night")) await once("_ev_last_night", nightScene("ch1_day7_last_night", BG("bg_home_night"))).run();
 }
 
-// 前日リハーサル: 本番と同じ工程を通す（コンセプトと審査は無し）。出来が本番の小ボーナスになる
+async function earlyPractice() {
+  await play("remake_preparation_first", { bg: TONARI_N });
+  await runFullPractice({ coached: true, adjustments: false, kind: "early" });
+  await play("remake_preparation_first_end", { bg: TONARI_N });
+}
+
+async function midPreparation() {
+  await play("remake_midcheck_intro", { bg: TONARI_N });
+  await prepareFlavorStock();
+  const cs = await runFullPractice({ kind: "midcheck" });
+  await play(cs.failed ? "remake_rehearsal_burnt" : "remake_midcheck", { bg: TONARI_N });
+}
+
+// 前日リハーサルは本番と同じ一台＋2回の調整。旧セーブにも仕入れの機会を用意する。
 async function rehearsal() {
+  await prepareFlavorStock();
   await play("remake_rehearsal_intro", { bg: TONARI_N });
-  const cs = newSession("rehearsal");
-  openBench(cs, { steps: STEPS_R1.filter(([id]) => id !== "concept").concat([["pull", "PULL"]]) });
-  await stepSetup(cs);
-  await stepMix(cs);
-  await stepPack(cs);
-  await runHoles(cs);
-  await runHeat(cs);
-  await stepPlace(cs);
-  await stepSteamTime(cs);
-  await runSteamDodge(cs);
-  await runPull(cs);
-  // 焦がした通しは手応えなし。スミさんの一言で終わり、本番の加点もない（TH06）。
+  const cs = await runFullPractice({ kind: "rehearsal" });
   if (cs.failed) {
     state.rehearsal = "rough";
     await play("remake_rehearsal_burnt", { bg: TONARI_N });
     return;
   }
-  const s = computeShisha(cs);
-  const score = (cs.holes.score + cs.heat.score + s.craftQuality) / 3;
+  const shisha = computeShisha(cs);
+  const score = (cs.holes.score + cs.heat.score + shisha.craftQuality + cs.careHistory[0].score + cs.careHistory[1].score) / 5;
   state.rehearsal = score >= 85 ? "great" : score >= 68 ? "good" : "rough";
   await play(`remake_rehearsal_${state.rehearsal}`, { bg: TONARI_N });
 }
 
 // ---------------------------------------------------------------- 大会当日
 
-const STEPS_R1 = [["setup", "SETUP"], ["concept", "CONCEPT"], ["mix", "MIX"], ["pack", "PACK"], ["holes", "FOIL"], ["heat", "HEAT"], ["place", "SET"], ["steam", "STEAM"]];
-const STEPS_ALL = [...STEPS_R1, ["pull", "PULL"], ["care", "CARE"], ["trial", "TRIAL"]];
+const STEPS_R1 = CRAFT_STEPS.filter(([id]) => !["pull", "care1", "care2"].includes(id));
+const STEPS_ALL = CRAFT_STEPS;
 
 async function tournamentDay() {
   await playTsumugiStory(TOURNAMENT_DAY - 1, { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N) });
   // 旧セーブでDAY14の日常から再開しても、前夜の会話を落とさず大会へ進める。
-  if (state.phase !== "tournament") await lastNight();
+  if (state.phase !== "tournament") {
+    await prepareFlavorStock();
+    await lastNight();
+  }
+  // SKIPで会場の会話がすぐ終わっても、操作は素材の準備完了まで始めない。
+  const assetsReady = warmCraftAssets("tournament");
   clearScreen();
   initHud({});
   if (state.phase !== "tournament") {
@@ -247,6 +262,7 @@ async function tournamentDay() {
   await maybeShuraba(); // 恋人が2人以上いたら、ロビーで鉢合わせる
   playBgm("bgm_tournament_edm");
   await play("ch1_tournament_opening", { bg: STAGE });
+  await assetsReady;
   await entrance();
 
   // ROUND 1 ── 組み立て
@@ -255,11 +271,10 @@ async function tournamentDay() {
   await roundCut("ROUND 1", "組み立て");
   await play("remake_round1_intro", { bg: STAGE });
   openBench(cs, { steps: STEPS_ALL });
+  await waitBenchReady(cs);
   tickerSay("パッキー「さあ4人一斉にスタート！ 制限時間は60分ッ！」");
   // 工程の頭でパッキーが前振り、出来に応じて観客のコメントが流れる（生放送レイヤー）。点数は作業台の SCORE に入る
   await stepSetup(cs);
-  bc.block(cs, "theme");
-  await stepConcept(cs);
   bc.block(cs, "mix");
   await stepMix(cs);
   bc.judge(cs, bc.judgeOf(cs.mixInfo.score), "配合");
@@ -269,10 +284,10 @@ async function tournamentDay() {
   bc.block(cs, "foil");
   await runHoles(cs);
   bc.judge(cs, bc.judgeOf(cs.holes.score), "穴あけ");
+  await stepPlace(cs);
   bc.block(cs, "coalfire");
   await runHeat(cs);
   bc.judge(cs, bc.judgeOf(cs.heat.score), "炭");
-  await stepPlace(cs);
   await stepSteamTime(cs);
   bc.block(cs, "steam");
   await runSteamDodge(cs);
@@ -286,6 +301,7 @@ async function tournamentDay() {
   // ROUND 2 ── 吸い出し・提供
   await roundCut("ROUND 2", "吸い出し・提供");
   openBench(cs, { steps: STEPS_ALL });
+  await waitBenchReady(cs);
   bc.block(cs, "pull");
   await runPull(cs);
   if (cs.failed) return failedOut(cs.failed);
@@ -297,23 +313,25 @@ async function tournamentDay() {
   cs.stats = computeShisha(cs);
   await showStandings(2, (cs.holes.score + cs.heat.score + cs.stats.craftQuality) / 3);
 
-  // ROUND 3 ── 熱管理
-  await roundCut("ROUND 3", "熱管理");
-  openBench(cs, { steps: STEPS_ALL });
-  bc.block(cs, "adjust");
-  await runCare(cs);
-  if (cs.failed) return failedOut(cs.failed);
-  bc.judge(cs, bc.judgeOf(cs.care.score), "熱管理");
-  await sleep(900);
-  bc.clearComments();
-  cs.stats = null;
-  await play("ch1_tournament_r3_end", { bg: STAGE });
+  // ROUND 3・4 ── 同じ一台を2回調整する。温度・炭交換・葉の持ちは連続する。
+  for (const round of [1, 2]) {
+    await roundCut(`ROUND ${round + 2}`, `調整 ${round}回目`);
+    openBench(cs, { steps: STEPS_ALL });
+    await waitBenchReady(cs);
+    bc.block(cs, "adjust");
+    await runCare(cs, { round });
+    if (cs.failed) return failedOut(cs.failed);
+    bc.judge(cs, bc.judgeOf(cs.care.score), `調整${round}`);
+    await sleep(900);
+    bc.clearComments();
+    cs.stats = null;
+    await play(round === 1 ? "ch1_tournament_r3_end" : "remake_round4_end", { bg: STAGE });
+    if (round === 1) await showStandings(3, (cs.holes.score + cs.heat.score + computeShisha(cs).craftQuality + cs.care.score) / 4);
+  }
 
-  // 審査 ── FLAVOR TRIAL
-  playBgm("bgm_tournament_wait"); // 審査曲は未確定。制作曲とは分けて従来の代用を使う。
-  await play("remake_trial_intro", { bg: STAGE });
-  openBench(cs, { steps: STEPS_ALL });
-  await runTrial(cs);
+  // 審査は完成品と2回の調整の実績で決まる。
+  playBgm("bgm_tournament_wait");
+  await play("remake_judging_intro", { bg: STAGE });
   finalize(cs);
   const out = outcomeOf(cs.total);
   state.tournament.lastRank = out.rank;

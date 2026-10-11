@@ -12,7 +12,7 @@
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown, shake } from "../core/ui.js";
 import { SE, startBubbling } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, setBenchDraw, failBench, setBenchLeaf, dockBenchLeaf, strainBench, scoreStep } from "./session.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience, setBenchTemperature, setBenchDraw, failBench, setBenchLeaf, dockBenchLeaf, strainBench, scoreStep, waitBenchReady } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys } from "./common.js";
 import { burnCoals, HEAT_GRADES } from "./heat.js";
 
@@ -20,6 +20,7 @@ import { craftConditions, heatDelta, pullResult, isOptimalTemperature, temperatu
 import { buildThermometer } from "./thermometer.js";
 import { DRAW_MS, animateDraw } from "./pull-draw.js";
 import { ensureFlavorLife, burnFlavorLeaf } from "./flavor-life.js";
+import { coalCount } from "./coals.js";
 
 export { IDEAL } from "./conditions.js";
 const HOSE_PATH = "M25.5 21.5C18 25 9 26 7.5 33s8 9.5 15 7 9-1 9.5 2.5";
@@ -43,8 +44,8 @@ const ZONES = [
   { id: "up", from: 0.66, to: 1, just: [0.795, 0.86], label: "上げ吸い", mark: "▲", delta: 0.1, justDelta: 0.16 },
 ];
 // 交換する炭の個数ごとの、戻ってくる熱と、その後の燃え進む速さ（0個は消耗した炭のままで早く冷える）。
-const COAL_HEAT = [0, 0.06, 0.11, 0.16];
-const COAL_COOL = [1.6, 0.75, 0.5, 0.35];
+const COAL_HEAT = [0, 0.06, 0.11, 0.16, .21];
+const COAL_COOL = [1.6, 0.75, 0.5, 0.35, .28];
 // 交換用に焼いた炭の焼け具合。熱の戻り（火力）と持ち（安定）を、最初の炭焼きと同じ判定から決める。
 const coalHeatFactor = (picks) => picks.reduce((s, g) => s + 1 + HEAT_GRADES[g].hp / 100, 0) / picks.length;
 const coalLifeFactor = (picks) => picks.reduce((s, g) => s + 1 - HEAT_GRADES[g].hs / 100, 0) / picks.length;
@@ -81,14 +82,22 @@ const MODES = {
   care: {
     store: "care", title: "熱管理", min: 1, safe: 2, drift: true, serveLabel: "整え終える",
     hint: "立ち上げから吸われ続けた炭は消耗して、温度が下がっていく。まず交換する炭の数を決め、その炭を焼いてから替える。焼け具合が良いほど温度がしっかり戻り、長く持つ。ダイヤルは吸い出しと同じで、キープなら温度を保てる。炎の印まで上がって焦げても、雪の印まで冷え切っても、その一台はダメになる",
-    start: (cs) => cs.pull?.temp ?? CENTER, focus: () => ({ slow: 1, window: 1 }),
+    start: (cs) => cs.careRound ? Math.max(.14, (cs.care?.temp ?? cs.pull?.temp ?? CENTER) - .075) : cs.pull?.temp ?? CENTER, focus: () => ({ slow: 1, window: 1 }),
   },
 };
 
 export function runPull(cs) { return pullGame(cs, MODES.pull); }
-export function runCare(cs) { return pullGame(cs, MODES.care); }
+export async function runCare(cs, { round = 0 } = {}) {
+  cs.careRound = round;
+  await pullGame(cs, { ...MODES.care, title: round ? `調整 ${round}回目` : "熱管理" });
+  if (round && cs.care) {
+    cs.careHistory ??= [];
+    cs.careHistory[round - 1] = { ...cs.care, coalsDetail: cs.careCoals ? { ...cs.careCoals } : null };
+  }
+}
 
 async function pullGame(cs, mode) {
+  await waitBenchReady(cs);
   const tutorial = cs.mode === "tutorial";
   const panel = stepPanel(mode.store, mode.title, mode.hint);
   const concentration = mode.focus(cs);
@@ -97,6 +106,7 @@ async function pullGame(cs, mode) {
   const widenNow = () => skill.window(cs) * (tutorial ? 1.4 : 1) * concentration.window;
   let widen = widenNow();
   let coreTemp = mode.start(cs);
+  const initialTemp = coreTemp;
   let T = coreTemp;
   const conditions = craftConditions(cs);
   ensureFlavorLife(cs);
@@ -245,14 +255,15 @@ async function pullGame(cs, mode) {
   const damageLeaf = () => {
     burnFlavorLeaf(cs.leaf);
     setBenchLeaf(cs, true);
-    SE.hit(); shake(undefined, 380);
+    // 適温を合わせたときは成功の絵を保ち、消耗した葉だけで吸いすぎを示す。
+    if (T < IDEAL[0] || T > IDEAL[1]) { SE.hit(); shake(undefined, 380); }
     if (cs.leaf.hp <= 0) fail("leaf");
   };
   // 吸いすぎ・過熱の吸い出しで、はじめが疲れる。針と成功帯にすぐ反映する（TH29）。
   const strain = () => {
     if (!strainBench(cs)) return;
     period = 1.5 * slowNow(); widen = widenNow(); placeJusts();
-    SE.miss();
+    if (T >= HARSH_TEMP) SE.miss();
   };
   const doPull = async (at = pos) => {
     if (failed || !running || drawing || finished || pulls >= MAX_PULLS) return;
@@ -288,7 +299,7 @@ async function pullGame(cs, mode) {
       }
       if (isJust) justs++;
       const overdone = pulls > mode.safe;
-      reactAudience(cs, overdone || Math.abs(T - CENTER) > Math.abs(before - CENTER) ? "bad" : "good");
+      reactAudience(cs, T >= IDEAL[0] && T <= IDEAL[1] ? "good" : Math.abs(T - CENTER) > Math.abs(before - CENTER) ? "bad" : "good");
       thermometer.pop(z.id === "keep" ? z.mark : isJust ? z.mark.repeat(2) : z.mark, z.id);
       if (overdone || T >= HARSH_TEMP) strain();
       if (overdone) { damageLeaf(); if (failed) return; }
@@ -316,9 +327,10 @@ async function pullGame(cs, mode) {
     play.hidden = true;
     const lead = el("p.care-coals-lead", { text: "そろそろ調整の準備をしよう" });
     // 説明文の代わりに、温度計と同じ印で戻る熱を示す（▲が多いほど戻る。交換しないと ↓ 落ちていく）。
-    const buttons = el("div.care-coal-btns", [0, 1, 2, 3].map((n) => el("button.btn.care-coal", {
+    const options = Array.from({ length: coalCount(cs) + 1 }, (_, i) => i);
+    const buttons = el("div.care-coal-btns", options.map((n) => el("button.btn.care-coal", {
       dataset: { test: `care-coal-${n}` }, onclick: () => pick(n),
-      title: n ? `消耗した炭を${n}個、焼いた炭に交換する。温度が${["", "少し", "そこそこ", "しっかり"][n]}戻る` : "消耗した炭のまま。温度は落ちていく",
+      title: n ? `消耗した炭を${n}個、焼いた炭に交換する。温度が${["", "少し", "そこそこ", "しっかり", "強く"][n]}戻る` : "消耗した炭のまま。温度は落ちていく",
       onpointerenter: () => thermometer.preview(n ? clamp(T + heatDelta(cs, COAL_HEAT[n]), 0, 1) : null, "点線：交換するとここ"),
       onpointerleave: () => thermometer.preview(null),
     }, [
@@ -331,7 +343,7 @@ async function pullGame(cs, mode) {
     const picked = new Promise((r) => { pick = r; });
     const auto = autoSkill();
     if (auto) {
-      const best = [0, 1, 2, 3].sort((a, b) => Math.abs(T + heatDelta(cs, COAL_HEAT[a]) - CENTER - 0.02) - Math.abs(T + heatDelta(cs, COAL_HEAT[b]) - CENTER - 0.02))[0];
+      const best = options.slice().sort((a, b) => Math.abs(T + heatDelta(cs, COAL_HEAT[a]) - CENTER - 0.02) - Math.abs(T + heatDelta(cs, COAL_HEAT[b]) - CENTER - 0.02))[0];
       setTimeout(() => pick(auto === "good" ? best : auto === "burn" ? 3 : 0), 60);
     }
     coals = await picked;
@@ -340,6 +352,7 @@ async function pullGame(cs, mode) {
     SE.select();
     coolRate = baseCool * COAL_COOL[coals];
     if (!coals) {
+      cs.careCoals = { count: 0, picks: [] };
       lead.textContent = "消耗した炭のまま整える。熱は落ちていく";
       await sleep(autoSkill() ? 60 : 700);
       choice.remove();
@@ -428,9 +441,9 @@ async function pullGame(cs, mode) {
     const text = FAIL_TEXT[failed];
     readout.textContent = `${text.title}……！`;
     await failBench(cs, failed);
-    cs[mode.store] = { score: 0, grade: gradeOf(0), temp: T, pulls, justs, coals, inZone: false, optimal: false, over: failed === "burnt", under: failed === "cold", failed };
+    cs[mode.store] = { score: 0, grade: gradeOf(0), temp: T, startTemp: initialTemp, pulls, justs, coals, inZone: false, optimal: false, over: failed === "burnt", under: failed === "cold", failed };
     cs.failed = failed;
-    scoreStep(cs, mode.store, 0);
+    scoreStep(cs, mode.drift && cs.careRound ? `care${cs.careRound}` : mode.store, 0);
     if (failed === "burnt") cs.burnt = true;
     if (mode.store === "pull") { cs.pullDone = true; refreshBench(); }
     tickerSay(text.ticker);
@@ -439,8 +452,8 @@ async function pullGame(cs, mode) {
   }
 
   const { score, inZone, optimal } = pullResult(T, pulls, justs, IDEAL, mode.safe);
-  cs[mode.store] = { score, grade: gradeOf(score), temp: T, pulls, justs, coals, inZone, optimal, over: T > IDEAL[1], under: T < IDEAL[0] };
-  scoreStep(cs, mode.store, score, mode.title);
+  cs[mode.store] = { score, grade: gradeOf(score), temp: T, startTemp: initialTemp, pulls, justs, coals, inZone, optimal, over: T > IDEAL[1], under: T < IDEAL[0] };
+  scoreStep(cs, mode.drift && cs.careRound ? `care${cs.careRound}` : mode.store, score, mode.title);
   if (mode.store === "pull") {
     cs.pullDone = true;
     refreshBench();
@@ -456,7 +469,7 @@ async function pullGame(cs, mode) {
   }
   tickerSay(inZone ? "パッキー「最後の一口まで崩れない！ 守り切ったーッ！」" : "パッキー「おっと、熱がぶれているか〜！？」");
   await resultCard(panel, {
-    title: "熱管理 結果",
+    title: `${mode.title} 結果`,
     lines: [
       optimal ? "最適温で、最後の一口まで守り切った" : inZone ? "適温で最後の一口まで守り切った" : T > IDEAL[1] ? "熱いまま審査員に任せてしまった" : "冷めたまま審査員に任せてしまった",
       coals ? `消耗した炭を${coals}個交換した` : "炭は交換せずに整えた",

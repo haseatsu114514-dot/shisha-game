@@ -27,6 +27,7 @@ import { screenBlast } from "./blast.js";
 import { artImg } from "./art.js";
 import { LEAF_MAX, flavorLeafStages } from "./flavor-life.js";
 import { buildCraftProgress } from "./progress.js";
+import { warmCraftAssets } from "./readiness.js";
 
 /**
  * テスト用フック。auto を "good" / "bad" にすると、各ミニゲームが操作なしで
@@ -55,7 +56,6 @@ export function newSession(mode) {
     steamVariation,
     steamPrediction: steamForecastProfile(tier01("insight"), steamVariation),
     equip: { ...state.equip },
-    concepts: [],
     mix: {},
     mixInfo: null,
     pack: null,
@@ -69,8 +69,8 @@ export function newSession(mode) {
     pull: null,
     pullDone: false,
     care: null,
+    careHistory: [],
     stats: null,
-    trial: null,
     total: 0,
     arcade: { total: 0, parts: {} },
     retryUsed: false,
@@ -86,7 +86,7 @@ let bench = null;
 export function openBench(cs, { steps = [] } = {}) {
   // 会話のあとに作業台へ戻るときも、作業台の背景（暗めの会場／店）に戻す
   const bg = () => setBg(bgUrl(cs.mode === "tournament" ? "bg_tournament_stage" : "bg_tonari_inside", timeOfDay()), { tint: "dim", fast: true, ready: craftSkinUrls() });
-  if (bench && bench.cs === cs && bench.root.isConnected) { bg(); return bench; }
+  if (bench && bench.cs === cs && bench.root.isConnected) { bench.ready = Promise.all([bench.ready, bg()]); return bench; }
   const worker = buildWorkerScene(cs);
   const audience = buildAudience(cs);
   const title = el("div.bench-title");
@@ -111,11 +111,26 @@ export function openBench(cs, { steps = [] } = {}) {
   root.querySelector(".bench-right").prepend(buildPanelSmoke(root));
   applyCraftSkin(root);
   const thermal = buildThermalAtmosphere(root, worker);
-  bg();
   showScreen("bench", root);
-  bench = { cs, root, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf, score };
+  const loading = el("div.craft-loading", { role: "status", dataset: { test: "craft-loading" }, text: "作業台を準備しています…" });
+  root.append(loading);
+  root.inert = true;
+  root.setAttribute("aria-busy", "true");
+  const ready = Promise.all([bg(), warmCraftAssets(cs.mode)]).finally(() => {
+    root.inert = false;
+    root.removeAttribute("aria-busy");
+    loading.remove();
+  });
+  bench = { cs, root, ready, worker, audience, panel, title, hint, guide, progress, progressCount, phaseProgress, thermal, leaf, score };
   renderFatigue();
   return bench;
+}
+
+export async function waitBenchReady(cs) {
+  if (bench?.cs === cs) await bench.ready;
+}
+export function benchRoot(cs) {
+  return bench?.cs === cs && bench.root.isConnected && !bench.root.classList.contains("done") ? bench.root : null;
 }
 
 /** 工程の見出しを切り替え、パネルを空にして返す */
@@ -126,7 +141,7 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   b.guide.root.open = false;
   b.guide.root.hidden = !hintText;
   b.guide.note.textContent = hintText;
-  b.phaseProgress.update(id, titleText);
+  b.phaseProgress.update(id === "care" && b.cs.careRound ? `care${b.cs.careRound}` : id, titleText);
   b.audience?.setStep(hintText, id);
   // 吸い出しの情報欄へ移した葉を、工程を消す前に作業風景へ戻す。
   b.worker.footer.append(b.leaf.root);
@@ -139,11 +154,11 @@ export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id
   renderFatigue();
   b.worker.caption.textContent = WORKER_STEPS[id] || titleText;
   b.thermal.setStep(id);
-  b.leaf.root.hidden = !["pull", "care", "trial"].includes(id);
+  b.leaf.root.hidden = !["pull", "care"].includes(id);
   b.leaf.render(b.cs.leaf);
   // 蒸らしのやり直しでも前回の温度を残さず、炭を置いた直後の温度から始める。
   if (id === "steam") b.thermal.update(temperatureAfterSteam(b.cs, 0));
-  if (["pull", "care", "trial"].includes(id)) b.thermal.update(b.cs.care?.temp ?? b.cs.pull?.temp ?? b.cs.steam?.temp ?? 0);
+  if (["pull", "care"].includes(id)) b.thermal.update(b.cs.care?.temp ?? b.cs.pull?.temp ?? b.cs.steam?.temp ?? 0);
   return b.panel;
 }
 
@@ -219,8 +234,9 @@ export function strainBench(cs, stamina = 4) {
 
 // ---------------------------------------------------------------- 総合スコア（TH42）
 
-// 工程の点（0〜100）1点あたりの重み。最終の総合（穴あけ・炭焼き・完成品・FLAVOR TRIAL 各25%）に合わせ、完成品の25%は配合・蒸らし・吸い出し・熱管理で分ける。
-const SCORE_WEIGHT = { mix: 62.5, holes: 250, heat: 250, steam: 62.5, pull: 62.5, care: 62.5, trial: 250 };
+// 工程の点（0〜100）1点あたりの重み。穴・炭・完成品・調整1・調整2を各20%にする。
+// 完成品の20%は配合・蒸らし・吸い出しで分ける。満点は100,000点。
+const SCORE_WEIGHT = { mix: 50, holes: 200, heat: 200, steam: 50, pull: 100, care1: 200, care2: 200, care: 200 };
 const SCORE_DIGITS = 6;
 function buildScoreBoard(cs) {
   const num = el("b.arcade-num", { text: "0".repeat(SCORE_DIGITS) });
@@ -248,7 +264,7 @@ function buildScoreBoard(cs) {
   } };
 }
 /**
- * 工程の点をスコアへ入れる。key は工程名（mix/holes/heat/steam/pull/care/trial）。"heat:1" のような部分点は、
+ * 工程の点をスコアへ入れる。key は工程名（mix/holes/heat/steam/pull/care1/care2）。"heat:1" のような部分点は、
  * 同じ工程の最終点が入ると置き換わる。やり直した工程は前の点と入れ替える。
  */
 export function scoreStep(cs, key, score, label = "") {
@@ -335,6 +351,7 @@ async function drill(kind) {
   const cs = newSession("drill");
   const labels = { holes: "FOIL", heat: "HEAT", steam: "STEAM", pull: "PULL" };
   openBench(cs, { steps: [[kind, labels[kind]]] });
+  await waitBenchReady(cs);
   if (kind === "holes") { await runHoles(cs); return tier(cs.holes.score); }
   if (kind === "heat") { await runHeat(cs); return tier(cs.heat.score); }
   if (kind === "steam") { cs.steamMin = 5; await runSteamDodge(cs); return cs.steam.hits === 0 ? 2 : cs.steam.hits <= 2 ? 1 : 0; }

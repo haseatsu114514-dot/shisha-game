@@ -168,6 +168,11 @@ try {
     await calendar.evaluate(async day => {
       const s = T.fresh(); s.day = day;
       await T.story.playTsumugiStory(day - 1);
+      if (day === 3) {
+        // DAY3は絵の確認に続いて実際の制作練習まで通す。
+        const { craftTest } = await import("./js/craft/session.js");
+        craftTest.auto = "good";
+      }
       s.flags[`_morning_${day}`] = true;
       if (day === 13) { s.flags._ev_rehearsal = true; s.flags._ev_last_night = true; }
       T.vn.backlog().length = 0;
@@ -178,7 +183,7 @@ try {
     await calendar.locator('[data-test="map-go"]').click();
     if (day < 13) {
       await calendar.waitForFunction(day => window.T.core.state.day === day + 1
-        && document.querySelector('.map:not(.done)'), day, { timeout: 30000 });
+        && document.querySelector('.map:not(.done)'), day, { timeout: day === 3 ? 60000 : 30000 });
     } else {
       await calendar.waitForFunction(() => window.T.core.state.day === 14, null, { timeout: 30000 });
     }
@@ -189,6 +194,11 @@ try {
     const expected = { 3: "_tsumugi_contest_progress",
       12: "_tsumugi_contest_submitted", 13: "_tsumugi_contest_eve" }[day];
     assert(end.flags[expected], `DAY${day} missed its mandatory Tsumugi scene`);
+    if (day === 3) {
+      assert(end.flags._ev_first_practice, "DAY3 missed the following crafting practice");
+      assert.equal(end.flags._craft_practice_runs?.length, 1);
+      assert.equal(end.flags._craft_practice_runs[0].adjustments, 0);
+    }
     assert(end.lines.some(t => /コンテスト|下描き|応募|はじめさんの番/.test(t)));
     await calendar.close();
     console.log(`[tsumugi story] PASS: DAY${day} fixed event → next morning`);

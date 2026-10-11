@@ -3,15 +3,16 @@ import { clamp } from "../core/util.js";
 import { steamSecondsOf, steamHeatFor } from "./steam-time.js";
 import { foilHeatProfile } from "./holes_logic.js";
 import { steamClimate } from "./steam-climate.js";
+import { coalWarmth } from "./coals.js";
 
 // TH83: 適温（緑）を約1.5倍の0.42〜0.66へ広げる。中心0.54は維持。
 export const IDEAL = [0.42, 0.66];
 // TH66・TH84: 狙いたくなる広い虹色（約1.7倍）。見た目と最適温の判定に同じ範囲を使う。
 export const OPTIMAL = [0.49, 0.59];
-// 蒸らしは適温の入口まで。虹へは吸い出しで仕上げる（SF05）。
-export const STEAM_LIMIT = OPTIMAL[0] - .025;
+// 熱い構成・長い蒸らしは過熱する。吸い出しで実温度を見て調整する。
+export const STEAM_LIMIT = .88;
 export const isOptimalTemperature = (temp) => temp >= OPTIMAL[0] && temp <= OPTIMAL[1];
-/** 温度計の一番上に届くと爆発して焦げる。蒸らしだけでは最適温にも届かない。 */
+/** 温度計の一番上に届くと爆発して焦げる。 */
 export const BURST_TEMP = 1;
 export const isBurnt = (temp) => temp >= BURST_TEMP - 1e-6;
 /** ここから上は「焦げる寸前」。温度計の約10%を危険帯にする。爆発は1、蒸らしはSTEAM_LIMITで止まる。 */
@@ -25,24 +26,19 @@ export function temperatureAfterSteam(cs, seconds, variation = 0) {
   const climate = steamClimate(cs.environment);
   const jitter = typeof variation === "number" ? variation : variation.offset ?? 0;
   const transfer = typeof variation === "number" ? 1 : variation.transfer ?? 1;
-  let t = 0.22 + ((cs.heat?.heatPower ?? 50) - 50) / 100 * 0.35;
-  if (cs.place === "four") t += 0.12;
-  t += climate.offset;
-  t += cs.holes?.minimumComplete ? 0.012 : ((cs.holes?.total ?? 22) - 22) * 0.006;
-  if (cs.pack === "fluffy") t += 0.03;
-  if (cs.pack === "firm") t -= 0.04;
   const chosen = steamSecondsOf(cs), elapsed = clamp(seconds ?? chosen, 0, chosen);
   const { warmup } = foilHeatProfile(cs.holes);
-  const warmth = (at) => {
-    const heat = steamHeatFor(at);
-    return heat * (heat > 0 ? warmup * climate.transfer * transfer : 1);
-  };
-  const cold = warmth(0), hot = warmth(chosen);
-  const start = clamp(t + jitter + cold, 0.04, STEAM_LIMIT - .03);
-  const finish = clamp(t + jitter + hot, 0.12, STEAM_LIMIT);
-  // 最終温度のバランスを保ち、下限付近でも蒸らし始めから上昇を見せる。
-  const progress = hot === cold ? 0 : (warmth(elapsed) - cold) / (hot - cold);
-  return start + (finish - start) * progress;
+  const power = coalWarmth(cs).power;
+  const burn = clamp(.7 + (cs.heat?.heatPower ?? 50) / 100 * .6, .65, 1.3);
+  const pack = cs.pack === "firm" ? .85 : cs.pack === "fluffy" ? 1.08 : 1;
+  const grams = cs.mixInfo?.total || Object.values(cs.mix || {}).reduce((a, b) => a + b, 0) || 12;
+  const load = clamp(12 / grams, .65, 1.1);
+  const start = clamp(.055 + climate.offset * .3 + jitter * .25, .04, .12);
+  // タイマーの選択によって途中の曲線を書き換えない。同じ構成の5分時点は10分設定でも同じ。
+  const gain = (steamHeatFor(elapsed) + .14) * 1.6 * power * burn * pack * load * warmup * climate.transfer * transfer;
+  // 上限は漸近的に近づけ、4個や10分でも途中で温度が張り付かない。
+  const available = STEAM_LIMIT - start;
+  return clamp(start + available * (1 - Math.exp(-Math.max(0, gain + jitter * elapsed / 600) / available)), .04, STEAM_LIMIT);
 }
 
 /** 洞察で部分的に読んだ炭の状態から粗い範囲を描く。実温度をこの範囲へ制限しない。 */

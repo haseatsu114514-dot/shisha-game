@@ -15,7 +15,7 @@ import { chooseSpot, interruptMap } from "./map.js";
 import { isRainy, weatherOf } from "./weather.js";
 import { spotById, visitRival, visitSpot, visitChar, restAtHome, isClosed, storyCount, CHAR_STAT, bgRef, VISIT_BG } from "./spots.js";
 import { doFortune } from "./fortune.js";
-import { tonariMenu, tonariCustomer, doBaito } from "./tonari.js";
+import { tonariMenu, tonariCustomer, tonariPractice, doBaito } from "./tonari.js";
 import { openShop, visitRin, ownsFlavor } from "./shop.js";
 import { deliverMorning, pushNotice, hasUnread, openLime, limeCoach, expireInvitations } from "./phone.js";
 import { openStatus } from "./status.js";
@@ -297,10 +297,11 @@ async function performSpotAction(spot) {
       toast(sub === "baito" ? "今日のシフトはもう終わった" : "今日はもう客席で一服した");
       return { used: false, exerted };
     }
-    if (!(await staminaGuard(sub === "baito" ? -24 : -10))) return { used: false, exerted };
+    if (!(await staminaGuard(sub === "baito" ? -24 : sub === "practice" ? -12 : -10))) return { used: false, exerted };
     exerted = true;
     state.visitedDay[`tonari_${sub}`] = state.day;
     if (sub === "baito") await doBaito();
+    else if (sub === "practice") await tonariPractice();
     else await tonariCustomer();
   } else if (spot.kind === "kafuka") {
     if (!(await staminaGuard(spot.stamina))) return { used: false, exerted };
