@@ -110,7 +110,7 @@ jobs:
               }
               if (!selected) throw Error('No available issue; inspect reservations or add eligible work.');
               // Enforce one active claim per worker ID across all open issues.
-              const allOpen = await github.paginate(github.rest.issues.listForRepo,{owner:repoOwner,repo,state:'open',per_page:100});
+              const allOpen = await github.paginate(github.rest.issues.listForRepo,{owner:repoOwner,repo,state:'all',per_page:100});
               for (const item of allOpen) {
                 if (item.pull_request || item.number === selected) continue;
                 const active = await status(item.number);
