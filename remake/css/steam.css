@@ -42,9 +42,12 @@
 .steam-play, .dodge-controls { width: 752px; }
 .steam-play { flex: 1; display: grid; justify-items: center; align-items: start; }
 /* 上の余白を詰め、操作欄の上に指を置ける空間を残す。 */
-.steam-play > .dodge { top: -16px; }
+.steam-play > .dodge { top: 0; }
 /* 残り時間は視線を弾幕から離さず読める、奥の薄い7セグ。 */
-.dodge .dodge-timer { position: absolute; left: 50%; top: 50%; width: 448px; height: 158px; transform: translate(-50%, -50%); color: #e3d6c9; opacity: .16; z-index: 1; pointer-events: none; user-select: none; }
+.dodge .dodge-timer { position: absolute; left: 50%; top: 50%; width: 448px; height: 158px; transform: translate(-50%, -50%); color: var(--mental-ink); opacity: .16; z-index: 1; pointer-events: none; user-select: none; transition: color .25s ease; }
+.dodge { --mental-ink: #86d6c5; }
+.dodge[data-mental="unsteady"] { --mental-ink: #e4bc77; }
+.dodge[data-mental="shaken"] { --mental-ink: #ef8795; }
 .bench[data-art-skin] .dodge { border-image: none; border: 1px solid #c5ae815c; border-radius: 10px; background: #131123; box-shadow: inset 0 0 0 3px #a9946614, 0 4px 16px #0007; }
 .dodge::before { content: ""; position: absolute; inset: 4px; border: 1px solid #d3b98116; border-radius: 6px; z-index: 3; pointer-events: none; }
 .dodge-world-layers { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
@@ -83,25 +86,33 @@
 .dodge-heart.shield::after { border-width: 1px; box-shadow: 0 0 8px #c7dfbb55; }
 
 /* 操作を近くにまとめる。精密モードはボタンの灯りで示す。 */
-.dodge-controls { justify-content: center; gap: 16px; }
-.bench[data-art-skin] .dodge-pad { width: 136px; height: 136px; border: 1px solid #c4ab798c; background: radial-gradient(circle, #080712 0 42%, #28212f 43% 60%, #493b45 73%, #17111f); box-shadow: inset 0 0 0 3px #c7aa7136, inset 0 0 0 6px #110c1c, 0 5px 12px #0007; }
+.dodge-controls { justify-content: flex-end; align-items: flex-start; gap: 20px; height: 180px; flex: none; padding-right: 12px; }
+.bench[data-art-skin] .dodge-pad { width: 176px; height: 176px; border: 0; background: none; box-shadow: none; }
 /* 四方向の矢印と、指のくぼみ・滑り止め・厚みで移動スティックと分かる形に。 */
 .bench[data-art-skin] .dodge-pad > span { display: block; color: #ebdbbfc9; pointer-events: none; }
+.dodge-pad > span img { width: 100%; height: 100%; object-fit: contain; }
 .dodge-pad > span svg { width: 100%; height: 100%; fill: none; stroke-width: 1; }
-.bench[data-art-skin] .dodge-knob { left: calc(50% - 31px); top: calc(50% - 31px); width: 62px; height: 62px; border: 2px solid #d6cdb9b3; background: linear-gradient(145deg, #686471, #393541 45%, #211d2b); box-shadow: inset 0 1px 2px #fff5, inset 0 0 0 3px #aaa0a22b, 0 6px 0 -1px #554958, 0 8px 0 -1px #100d18, 0 12px 10px #0009; }
+.bench[data-art-skin] .dodge-knob { left: calc(50% - 38px); top: calc(50% - 38px); width: 76px; height: 76px; border: 2px solid #d6cdb9b3; background: linear-gradient(145deg, #686471, #393541 45%, #211d2b); box-shadow: inset 0 1px 2px #fff5, inset 0 0 0 3px #aaa0a22b, 0 6px 0 -1px #554958, 0 8px 0 -1px #100d18, 0 12px 10px #0009; }
 .dodge-knob::before { content: ""; position: absolute; inset: 19px; z-index: 1; border-radius: 50%; background: radial-gradient(circle, #dbd4c88c 1px, transparent 1.6px) center / 7px 7px; }
 .dodge-knob::after { content: ""; position: absolute; inset: 7px; border: 1px solid #c6bfc74d; border-radius: 50%; background: radial-gradient(ellipse at 60% 70%, #45404f, #1a1622 75%); box-shadow: inset 0 2px 4px #0009, 0 1px 0 #f1e2d12b; }
-.bench[data-art-skin] .dodge-pad.held { border-color: #ead8ad; box-shadow: inset 0 0 0 3px #c7aa7166, inset 0 0 0 6px #110c1c, 0 0 12px #c1d4b426; }
+.bench[data-art-skin] .dodge-pad.held { box-shadow: 0 0 16px #e2cf9d35; }
 .bench[data-art-skin] .dodge-pad.held > span { color: #fff0d4; }
 .bench[data-art-skin] .dodge-pad.held .dodge-knob { border-color: #f1e3bf; }
 .dodge-pad:focus-visible { outline: 2px solid #d6c49a; outline-offset: 4px; }
-.bench[data-art-skin] .btn.dodge-action, .bench[data-art-skin] .btn.dodge-action:hover:not(:disabled) { display: flex; flex-direction: row; justify-content: center; gap: 15px; align-items: center; width: 280px; min-width: 0; height: 104px; min-height: 104px; padding: 20px 26px; border: 1px solid #c8b18a66; border-radius: 9px; background: linear-gradient(150deg, #302631, #191422); color: #eee3c9; box-shadow: inset 0 1px 0 #fff1cf0d, 0 4px 12px #0004; }
+.bench[data-art-skin] .btn.dodge-action, .bench[data-art-skin] .btn.dodge-action:hover:not(:disabled) { display: flex; flex-direction: column; justify-content: flex-start; gap: 1px; align-items: center; width: 154px; min-width: 0; height: 180px; min-height: 180px; padding: 0; border: 0; border-image: none; border-radius: 50%; background: none; color: #eee3c9; box-shadow: none; touch-action: none; }
 .bench[data-art-skin] .dodge-action:hover:not(:disabled) { filter: brightness(1.12); }
-.refresh-emblem { width: 36px; height: 36px; color: #d4dfc6; }
+.refresh-emblem { position: relative; width: 140px; height: 140px; flex: none; color: #d4dfc6; pointer-events: none; }
+.refresh-emblem img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.dodge-refresh:enabled .refresh-emblem::after { content: ""; position: absolute; inset: 12px; border: 2px solid transparent; border-top-color: #d2f4ff99; border-bottom-color: #80cfff55; border-radius: 50%; filter: drop-shadow(0 0 3px #70ccff); animation: refresh-energy-orbit 4.5s linear infinite; }
+@keyframes refresh-energy-orbit { to { transform: rotate(360deg); } }
 .refresh-emblem svg { width: 100%; height: 100%; }
-.refresh-copy { font-family: "Craft Mincho", var(--font); font-weight: 700; font-size: 24px; white-space: nowrap; letter-spacing: .06em; }
+.refresh-copy { font-family: "Craft Mincho", var(--font); font-weight: 700; font-size: 18px; line-height: 1.2; white-space: nowrap; letter-spacing: .03em; padding: 2px 9px; border: 1px solid #c1a77626; border-radius: 13px; background: #100b18d9; }
+.precision-state { display: grid; place-items: center; width: 43px; height: 18px; border: 1px solid #8b94884d; border-radius: 10px; font-family: var(--font); font-size: 11px; line-height: 1; font-weight: 700; letter-spacing: .06em; color: #b8bab1; background: #171a18; }
+.dodge-precision[aria-pressed="false"] .refresh-emblem { filter: brightness(.72) saturate(.75); }
 .bench[data-art-skin] .dodge-action:disabled { opacity: .4; filter: saturate(.5); }
-.bench[data-art-skin] .btn.dodge-precision[aria-pressed="true"], .bench[data-art-skin] .btn.dodge-precision[aria-pressed="true"]:hover:not(:disabled) { border-color: #b8d4b4; background: linear-gradient(150deg, #344338, #1b2929); color: #edf4df; box-shadow: inset 0 1px 0 #edffdf18, 0 0 15px #bfdeb322, 0 4px 12px #0004; }
+.bench[data-art-skin] .btn.dodge-precision[aria-pressed="true"], .bench[data-art-skin] .btn.dodge-precision[aria-pressed="true"]:hover:not(:disabled) { color: #edf4df; background: none; box-shadow: none; }
+.dodge-precision[aria-pressed="true"] .refresh-emblem { filter: brightness(1.2) drop-shadow(0 0 9px #6ee3a575); }
+.dodge-precision[aria-pressed="true"] .precision-state { color: #e8ffe7; border-color: #a9e7b2; background: #347d51; box-shadow: 0 0 7px #79e29c66; }
 .dodge-precision[aria-pressed="true"] .refresh-emblem { color: #e1f2d0; }
 
 /* 波は実際の消去範囲で止まり、消した弾だけが粒になる。 */
@@ -110,6 +121,7 @@
 .dr-ring.second { border-color: #dbc7a199; box-shadow: none; }
 .dr-ray { width: 32px; height: 1px; background: linear-gradient(90deg, transparent, #fff3d7, transparent); }
 @media (prefers-reduced-motion: reduce) {
+  .dodge-refresh:enabled .refresh-emblem::after { animation: none; }
   .dodge-mist, .bench-worker[data-waiting="true"] .worker-actor { animation: none; }
   .dodge-mist { opacity: .12; }
   .dodge-thought-echo { animation: none; opacity: .2; }

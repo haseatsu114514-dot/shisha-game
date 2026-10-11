@@ -1,5 +1,7 @@
 # 画像生成プロンプト集（codex用）— シーシャ作りパート＋立ち絵
 
+> 2026-10-11 SF39〜44: 蒸らしの[円形操作UIの生成指示・個別原画・SHA・表示検証](../asset_sources/steam-controls-20261011/README.md)。青白い渦のリフレッシュ、金の照準と緑の輪の精密モード、黒紫・金のスティック台座を別々の透過RGBAで制作。名前・ON/OFF・発光の変化・スティックのノブ移動・エネルギー回転はコードで制御する。参考画像の操作以外の要素は移さない。
+
 > 2026-10-10 SF02: 蒸らし中に目を閉じて息を整えるはじめの[生成指示](../asset_sources/steam-focus-20261010/hajime-wait-prompt.txt)・[実参照と原画SHA](../asset_sources/steam-focus-20261010/generation.json)を保存。採用済みの帽子・パーカー・携帯中のマイチップと画風を維持し、シーシャ台やホースは人物画像へ追加しない。[実装画面・検品記録](../asset_sources/steam-focus-20261010/README.md)。
 
 > 2026-10-10 SF22〜27: 精神世界はシンプルで抽象的な宇宙へ。[採用背景の生成指示](../asset_sources/steam-focus-20261010/world-prompt.txt)・[原画SHA](../asset_sources/steam-focus-20261010/world-generation.json)。暗い紫に薄い星雲と小さな星粒だけを描き、言葉・心拍・動く弾・リフレッシュの波はコードが描く。店内が残る前案は[不採用の記録](../asset_sources/steam-focus-20261010/rejected-lounge-generation.json)として保存し、ゲームへ接続しない。

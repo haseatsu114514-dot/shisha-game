@@ -11,7 +11,8 @@ import { autoSkill, resultCard, keys, popStamp } from "./common.js";
 import { craftConditions, temperatureAfterSteam } from "./conditions.js";
 import { buildSteamTemperature } from "./steam-forecast.js";
 import { steamClimate } from "./steam-climate.js";
-import { buildSteamWorld, HEART_ART, REFRESH_ART, PRECISION_ART, PAD_ART, BULLET_ART } from "./steam-art.js";
+import { buildSteamWorld, HEART_ART, BULLET_ART } from "./steam-art.js";
+import { makingUrl } from "../core/data.js";
 import { buildMentalTrace } from "./mental.js";
 import { craftCondition } from "../core/condition.js";
 
@@ -39,18 +40,20 @@ export async function runSteamDodge(cs) {
   const seconds = steamSecondsOf(cs), min = seconds / 60;
   const rainy = craftConditions(cs).rainy;
   const panel = stepPanel("steam", "蒸らし", "", { brief: "" });
-  const W = 752, H = 326;
-  const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", refreshRadius: String(effect.radius) } });
+  const W = 752, H = 402;
+  const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", mental: "steady", refreshRadius: String(effect.radius) } });
   const heart = el("div.dodge-heart", { role: "img", "aria-label": "心。中央の光が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("span", { html: HEART_ART }), el("i.dodge-core")]);
   const clock = buildDigitalClock("dodge-timer", { label: "蒸らしの残り時間", test: "steam-clock" });
   const knob = el("i.dodge-knob");
-  const pad = el("div.dodge-pad", { tabindex: 0, role: "group", "aria-label": "移動スティック。ドラッグまたは矢印キーで移動", dataset: { test: "dodge-pad" } }, [el("span", { html: PAD_ART, "aria-hidden": "true" }), knob]);
+  const controlArt = name => el("img", { src: makingUrl(name), alt: "", draggable: false, "aria-hidden": "true" });
+  const pad = el("div.dodge-pad", { tabindex: 0, role: "group", "aria-label": "移動スティック。ドラッグまたは矢印キーで移動", dataset: { test: "dodge-pad" } }, [el("span", { "aria-hidden": "true" }, [controlArt("steam_stick_base.png")]), knob]);
   const refreshBtn = el("button.btn.primary.dodge-action.dodge-refresh", { disabled: true, dataset: { test: "dodge-refresh" } });
-  refreshBtn.append(el("span.refresh-emblem", { html: REFRESH_ART, "aria-hidden": "true" }),
+  refreshBtn.append(el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_refresh_button.png")]),
     el("span.refresh-copy", { text: "リフレッシュ" }));
+  const precisionState = el("span.precision-state", { text: "OFF", "aria-hidden": "true" });
   const precisionBtn = el("button.btn.dodge-action.dodge-precision", { disabled: true, "aria-pressed": "false", dataset: { test: "dodge-precision" } }, [
-    el("span.refresh-emblem", { html: PRECISION_ART, "aria-hidden": "true" }),
-    el("span.refresh-copy", { text: "精密モード" }),
+    el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_precision_button.png")]),
+    el("span.refresh-copy", { text: "精密モード" }), precisionState,
   ]);
   const thermometer = buildSteamTemperature();
   const heatJitter = cs.steamVariation ?? { offset: rand(-.065, .065), transfer: rand(.9, 1.1) };
@@ -61,7 +64,7 @@ export async function runSteamDodge(cs) {
   box.append(world.root, clock.root, mental.root, heart);
   const steamRoot = el("div.steam", [
     el("div.steam-play", [box]),
-    el("div.dodge-controls", [pad, refreshBtn, precisionBtn]),
+    el("div.dodge-controls", [refreshBtn, precisionBtn, pad]),
     thermometer.root,
   ]);
   panel.append(steamRoot);
@@ -109,12 +112,16 @@ export async function runSteamDodge(cs) {
   listen(pad, "pointermove", (e) => { if (e.pointerId === padPointer) movePad(e); });
   for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) listen(pad, type, (e) => { if (e.pointerId === padPointer) resetPad(); });
   listen(window, "blur", () => { keysDown.clear(); resetPad(); });
-  listen(precisionBtn, "click", () => {
+  const togglePrecision = () => {
     if (!running) return;
     precise = !precise;
     precisionBtn.setAttribute("aria-pressed", String(precise));
+    precisionState.textContent = precise ? "ON" : "OFF";
     SE.click();
-  });
+  };
+  // 2本目の指ではブラウザのclickが出ないことがある。refreshと同じく押した時に処理する。
+  listen(precisionBtn, "pointerdown", e => { e.preventDefault(); togglePrecision(); });
+  listen(precisionBtn, "click", e => { if (e.detail === 0) togglePrecision(); });
 
   const clearBullets = (radius = Infinity) => {
     const cleared = [];
