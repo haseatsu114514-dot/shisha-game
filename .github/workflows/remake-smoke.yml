@@ -50,6 +50,8 @@ jobs:
         run: python3 tools/audit_dialogue_art.py
       - name: Validate production data loader
         run: node --experimental-vm-modules remake/test/data_loading.mjs
+      - name: Validate handoff and daily shift dialogue
+        run: node --experimental-vm-modules remake/test/daily_consistency.mjs
       - name: Validate romance date data when test is present
         shell: bash
         run: |

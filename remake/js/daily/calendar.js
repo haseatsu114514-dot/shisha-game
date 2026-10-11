@@ -1,7 +1,7 @@
 // 日常パートの1日の流れ: 朝（DAYカード・LIME）→ 昼の行動 → 夜の行動 → 夜の固定イベント → 帰宅 → 翌朝。
 import { el, sleep, yen } from "../core/util.js";
 import { layers, dayCard, dayTurn, modal, toast, fadeBlack, bannersIdle, setBg } from "../core/ui.js";
-import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
+import { state, save, loadFromSlot, requestResumeOnBoot, markMet } from "../core/state.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { addMoney, addStamina, gainAffinity, paidAction, staminaAfter, staminaRatio, maxStamina } from "../core/stats.js";
 import { coldRisk, catchesCold } from "../core/illness.js";
@@ -185,8 +185,8 @@ async function day1Errands() {
 
 /**
  * 第1章は、スミさんの届け物でEDEN・PEPPERMINTの初来店を必ず通す（DL01）。DAY1 のおつかいに続けて
- * DAY1 夜に EDEN、DAY2 昼に PEPPERMINT。配達が全部済むまでマップは届け先だけを選べる（DL02）。
- * 一服の代金はかからず、手当をバイト代に上乗せする。強制の行動なので能力とスロットは伸びない。
+ * DAY1 夜に EDEN、DAY2 昼に PEPPERMINT。配達先までは案内し、完了後に自由行動へ戻す（DL02更新）。
+ * EDENは従来の無料体験、PEPPERMINTは店先で荷物だけを渡し一服は任意。手当をバイト代に上乗せする。
  * 自分で先に行った旧セーブの店は飛ばし、DAY2 を過ぎた旧セーブには割り込まない
  */
 const DELIVERIES = [
@@ -219,13 +219,22 @@ async function deliver({ charId, scene, text }) {
     save();
   }
   await chooseSpot({ guide: { pin: charId, text, free: "配達（代金なし）" } });
-  f[`_delivery_${charId}`] = true; // 初来店の入りを配達の場面にする
+  f[`_delivery_${charId}`] = true;
   addStamina(DELIVERY_STAMINA);
   playBgm("tonari");
-  await visitChar(charId);
+  if (charId === "minto") {
+    // 配達は店先まで。勝手に客席へ進まず、店内の初来店は後の自由行動に任せる。
+    await play("remake_delivery_minto_handoff", { bg: "res://assets/backgrounds/bg_street_day.png" });
+    f.known_name_minto = true;
+    f._met_minto = true;
+    markMet("minto");
+  } else {
+    // EDENの初来店は従来どおりスミさんの指定による体験。
+    await visitChar(charId);
+    state.visitedDay[charId] = state.day;
+  }
   addMoney(DELIVERY_PAY);
   toast(`配達の手当 +${DELIVERY_PAY.toLocaleString()}円（バイト代に上乗せ）`, { kind: "good" });
-  state.visitedDay[charId] = state.day;
   f[`_delivery_${charId}_done`] = true;
   state.slot++;
   await afterAction();

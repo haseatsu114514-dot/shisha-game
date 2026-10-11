@@ -473,75 +473,26 @@
           }
         ],
         "dl_door": [
-          {
-            "speaker": "",
-            "face": "",
-            "text": "ミントの大袋を三つ抱えて、PEPPERMINTへ。"
-          },
-          {
-            "speaker": "minto",
-            "face": "smile",
-            "text": "おかえりなさーいっ♡ ……あっ、その袋。tonariさんの配達？"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "はい。tonariでバイトをしている蒸野始です。まとめ買いのミントを届けに"
-          },
-          {
-            "speaker": "minto",
-            "face": "smile",
-            "text": "わぁ、ありがとっ♡ はじめまして、みんとです！"
-          },
-          {
-            "type": "set_flag",
-            "flag": "known_name_minto"
-          },
-          {
-            "type": "set_flag",
-            "flag": "_met_minto"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "業務用の袋が三つも……。こんなに使うんですか？"
-          },
-          {
-            "speaker": "minto",
-            "face": "wink",
-            "text": "ミントは、いくらあっても足りないの♡"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（冗談みたいな声だった。でも、袋を抱える手は大事そうだった）"
-          },
-          {
-            "speaker": "",
-            "face": "",
-            "text": "伝票にサインを頼むと、受け取り欄に丸い字で『みんと♡』と書かれた。"
-          },
-          {
-            "speaker": "hajime",
-            "face": "surprise",
-            "text": "あの、受け取りのサインなので……"
-          },
-          {
-            "speaker": "minto",
-            "face": "smile",
-            "text": "だいじょーぶ♡ この辺なら、これで通じるから"
-          },
-          {
-            "speaker": "minto",
-            "face": "smile",
-            "text": "せっかくだし、一服してって！ どうぞ、こっちへ♡"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "じゃあ、お言葉に甘えて。スミさんにも、一服してこいって言われてて"
-          }
-        ]
+            {
+              "speaker": "",
+              "text": "配達のあと、改めてPEPPERMINTの入口をくぐった。"
+            },
+            {
+              "speaker": "minto",
+              "face": "smile",
+              "text": "あっ！ 配達してくれたはじめくんだ♡ 遊びに来てくれたんだね！"
+            },
+            {
+              "speaker": "hajime",
+              "face": "normal",
+              "text": "ええ。今度はお客さんとして、一服させてもらおうかなと"
+            },
+            {
+              "speaker": "minto",
+              "face": "wink",
+              "text": "もちろんっ♡ どうぞ、こっちへ！"
+            }
+          ]
       },
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street.png"

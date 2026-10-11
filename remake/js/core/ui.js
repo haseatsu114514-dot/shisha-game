@@ -38,7 +38,7 @@ export function initLayers() {
       main: displayName(id, state, { context: bond ? "private" : null }), // 恋人の絆は私的な場面でだけ深まる
       sub: bond
         ? (levelUp ? `恋人との絆が深まった（Lv.${level}）` : "心の距離が少し近づいた")
-        : levelUp ? `好感度が ${level} 段階に上がった！` : "少し打ち解けた気がする",
+        : levelUp ? `仲が深まった（♥${level}）` : "好感度が少し上がった",
       hearts: { from: heartState(prevPts), to: heartState(pts) },
     });
   });
