@@ -35,7 +35,7 @@
 
 ```sh
 python3 remake/tools/build_manifest.py --backgrounds-only bg_home_day.png bg_home_night.png bg_home_overcast_day.png bg_home_overcast_night.png
-REMAKE_URL=http://127.0.0.1:8360/remake/ node remake/test/ch1_visual_quality.mjs
+BASE_URL=http://127.0.0.1:8360/remake/ node remake/test/ch1_visual_quality.mjs
 ```
 
 背景限定ビルドは指定背景とWebP目録だけ更新し、他チャットの立ち絵アンカー・タイトル・音声を保つ。
