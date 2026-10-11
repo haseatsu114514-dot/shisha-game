@@ -1,6 +1,7 @@
 // 他店での相席 → スミさんへの報告 → 交流 → LIMEからtonariへ。
 import { DB } from "../core/data.js";
 import { state, save } from "../core/state.js";
+import { seeded } from "../core/util.js";
 import { gainAffinity, affinityLevel } from "../core/stats.js";
 import { hiyoriRoute, hiyoriEventStatus, hiyoriHasContact } from "../core/hiyori-route.js";
 import { play, isPlaying } from "../vn/engine.js";
@@ -34,6 +35,14 @@ export async function playHiyoriEvent(id, options = {}) {
 export const hiyoriShopEligible = (spot) => !!spot && (spot.kind === "rival" || spot.kind === "kafuka"
   || spot.kind === "shop" || spot.id === "c_station");
 
+// 同じ訪問をロードしても再抽選しない。店主・施設側の来店テーブルはそのまま使う。
+function encounterRoll(spot) {
+  const key = `hiyori:${state.chapter}:${state.day}:${state.slot}:${spot.id}`;
+  let salt = 2166136261;
+  for (const char of key) salt = Math.imul(salt ^ char.charCodeAt(0), 16777619) >>> 0;
+  return seeded(state.seed, salt);
+}
+
 /** 既存の訪問に相席を添える。同じ日の多重遭遇・無料の買い物による好感度稼ぎを防ぐ。 */
 export async function visitHiyoriAtShop(spot, { bg } = {}) {
   if (!hiyoriShopEligible(spot) || !hiyoriRoute().enabled || ![1, 2].includes(state.chapter)) return false;
@@ -46,6 +55,7 @@ export async function visitHiyoriAtShop(spot, { bg } = {}) {
   } else {
     // 次のスミさんとの会話を先に読む。好感度から伝言の既読を推測しない。
     if (!state.flags._hiyori_sumi_message_done || active || isPlaying()) return false;
+    if (encounterRoll(spot) >= 0.2) return false;
     if (hiyoriEventStatus("relay") === "ready") {
       if (!await playHiyoriEvent("relay", options)) return false;
     } else if (hiyoriEventStatus("cracks") === "ready") {
