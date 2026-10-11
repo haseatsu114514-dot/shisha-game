@@ -82,13 +82,17 @@
 
 ## 章別の登場計画と実装の境界
 
+作業中にmainへ入った[第3〜5章の採用方針](post_relationship_gameplay_plan_20261011.md)も照合済み。
+遠距離・東京訪問・帰郷後の連絡、海外同行は恋人1人またはなし、友人と親友の判定統一、決着後は真エンディングへ進む方針は確定している。
+これらの共通基盤は未実装。ひより固有の休暇・渡航台詞・同行差分は未決で、既存6人の参加条件から自動で推測しない。
+
 | 章 | ひよりの計画 | 現行コードでの状態 |
 |---|---|---|
 | 第1章 | tonariで出会い・交流。日付・客としての登場方法は未決 | 第1章のゲーム進行は実装済み。ひよりは入口未接続 |
 | 第2章 | 地元で綻び、斧投げ、仕事の話。第1章からの記録を維持 | 共有台本が先行し、章のゲーム進行は未接続 |
 | 第3章 | 地元からLIME・休日の訪問・デート・応援。恋愛／友人の着地は章末まで | 条件は定義。遠距離の移動・日程・章ランナーは未実装 |
-| 第4章 | 東京での準備と海外。連絡による応援を基本に、現地同行は有休・既存条件を調べて決定 | 第4章の共有台本に既存ヒロインの応援がある。ひよりの同行条件・台本は未決 |
-| 第5章 | 恋人／友人ごとの継続。自然体と儚い女ごっこを両立 | 条件のみ定義。章の進行とひよりの正式台本は未接続 |
+| 第4章 | 東京での準備と海外。連絡による応援と、成立済みの恋人から選ぶ共通同行方針を区別 | 第4章の共有台本に既存ヒロインの応援がある。共通同行機能とひよりの有休・渡航台詞は未実装 |
+| 第5章 | 決着前の自由行動で恋人／友人ごとに継続。自然体と儚い女ごっこを両立し、決着後は関係別エピローグへ | 条件のみ定義。章の進行・終幕とひよりの正式台本は未接続 |
 
 既存のドバイへの例外条件をひよりへ流用しない。海外同行・有休取得・重要な過去の関係は今回確定していない。
 通常デート・友人LIMEは第1章用の場所・日程を使うため、東京・海外から地元へ瞬間移動させない。
@@ -134,7 +138,22 @@ CHROME_EXECUTABLE_PATH=/usr/bin/chromium node remake/test/browser/save_load.mjs
 ```
 
 ESモジュールと正本JSONを直接配信するためバンドルのビルドは不要。画像変更もないため目録を再生成しない。
-検証結果と画像は作業完了時に [`asset_sources/hiyori-foundation-20261011/`](../asset_sources/hiyori-foundation-20261011/) へ記録する。
+検証結果・画面画像・再現手順は [`asset_sources/hiyori-foundation-20261011/README.md`](../asset_sources/hiyori-foundation-20261011/README.md) に保存。
+ひより専用の実ブラウザ9項目、既存セーブ・ロード6項目、データ読込、台詞の組版、日常の整合性がPASS。
+台詞lintはERROR 0／既存WARN 345、整形dry-runは0行。
+既存 `lime_consistency.mjs` は、`phone.js` が使う `yen` をテストの `util.js` モックがexportしていないため起動時に失敗した。
+当該3ファイルはmainと同一で、今回の差分に含めない。この検査をPASSとして扱わない。
+
+## 変更ファイル
+
+| 役割 | ファイル |
+|---|---|
+| キャラ・ルート・短い会話 | `data/characters.json`、`data/dialogue/hiyori.json`、`remake/data/lover.json`、`remake/data/friends.json` |
+| 本心表示・ログ | `remake/js/vn/inner.js`、`remake/js/vn/engine.js`、`remake/css/vn.css` |
+| 読込・進行・関係 | `remake/js/core/data.js`、`core/hiyori-route.js`、`core/stats.js`、`daily/hiyori.js`、`daily/bonds.js`、`daily/romance.js`、`daily/status.js`（JSは`remake/js/`配下） |
+| 独立した試写 | `remake/hiyori-preview.html`、`remake/js/hiyori-preview.js` |
+| 検証 | `tools/lint_dialogue.py`、`remake/test/data_loading.mjs`、`remake/test/hiyori.mjs`、`asset_sources/hiyori-foundation-20261011/` |
+| 正本・引き継ぎ | `CLAUDE.md`、`brand/character_profiles.md`、`docs/owner_requests.md`、この文書 |
 
 ## 残タスク
 
