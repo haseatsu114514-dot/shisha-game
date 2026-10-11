@@ -41,7 +41,7 @@ export async function runSteamDodge(cs) {
   const seconds = steamSecondsOf(cs), min = seconds / 60;
   const rainy = craftConditions(cs).rainy;
   const panel = stepPanel("steam", "蒸らし", "", { brief: "" });
-  const W = 752, H = 414;
+  const W = 784, H = 414;
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", mental: "steady", refreshRadius: String(effect.radius) } });
   const heart = el("div.dodge-heart", { role: "img", "aria-label": "心。中央の光が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("span", { html: HEART_ART }), el("i.dodge-core")]);
   const clock = buildDigitalClock("dodge-timer", { label: "蒸らしの残り時間", test: "steam-clock" });
