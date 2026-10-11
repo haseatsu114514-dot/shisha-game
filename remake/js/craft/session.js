@@ -10,7 +10,7 @@ import { state, timeOfDay } from "../core/state.js";
 import { currentCondition, addStamina, tier01 } from "../core/stats.js";
 import { buildWorkerScene, WORKER_STEPS } from "./worker.js";
 import { buildAudience, audienceFor } from "./audience.js";
-import { buildGuide, STEP_BRIEFS } from "./bench-ui.js";
+import { buildGuide, STEP_BRIEFS, TUTORIAL_STEP_HELP } from "./bench-ui.js";
 import { evaluationOf } from "./feedback.js";
 import { isRainy } from "../daily/weather.js";
 import { runHoles } from "./holes.js";
@@ -136,11 +136,14 @@ export function benchRoot(cs) {
 /** 工程の見出しを切り替え、パネルを空にして返す */
 export function stepPanel(id, titleText, hintText = "", { brief = STEP_BRIEFS[id] || hintText } = {}) {
   const b = bench;
+  const lesson = b.cs.mode === "tutorial" ? TUTORIAL_STEP_HELP[id] : null;
   b.title.textContent = titleText;
-  b.hint.textContent = brief;
+  b.hint.textContent = lesson?.brief || brief;
   b.guide.root.open = false;
-  b.guide.root.hidden = !hintText;
-  b.guide.note.textContent = hintText;
+  b.guide.root.hidden = !hintText && !lesson;
+  b.guide.note.textContent = lesson
+    ? [lesson.detail, hintText].filter(Boolean).join("　操作：")
+    : hintText;
   b.phaseProgress.update(id === "care" && b.cs.careRound ? `care${b.cs.careRound}` : id, titleText);
   b.audience?.setStep(hintText, id);
   // 吸い出しの情報欄へ移した葉を、工程を消す前に作業風景へ戻す。
