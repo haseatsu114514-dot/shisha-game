@@ -774,7 +774,7 @@ body[data-screen="bench"] .hud, body[data-screen="count"] .hud, body[data-screen
 .lime-reply.disabled, .lime-reply:disabled { color: #9aa4b2; border-color: #cfd5dc; background: #f4f6f8; cursor: default; }
 
 /* HUD の LIME: 未読は数字を出さず赤丸だけ（通知バッジ風） */
-.hud-lime .badge { right: -4px; top: -4px; min-width: 0; width: 14px; height: 14px; padding: 0; border-radius: 50%; }
+.hud-lime .badge { right: -6px; top: -6px; min-width: 20px; width: auto; height: 20px; padding: 0 3px; border-radius: 999px; font-size: 11px; line-height: 1; }
 .hud-lime.has .badge { animation: lime-badge 1.8s ease-in-out infinite; }
 @keyframes lime-badge { 50% { box-shadow: 0 0 0 5px rgba(255, 59, 78, 0.25); } }
 
