@@ -15,10 +15,10 @@ To claim a specific issue: `gh workflow run issue-claim.yml -f operation=claim -
 
 ## Selection
 
-- Priority is by existing `difficulty:S` through `difficulty:D`, then P0/P1/P2 and issue number. Parent/management issues and unclassified issues are excluded.
+- Priority is by existing `difficulty:S` through `difficulty:D`, then P0/P1/P2 and issue number. Note: current code sorts by difficulty first; any priority override needs a separately reviewed change. Parent/management issues and unclassified issues are excluded.
 - Claude prioritizes issues with character, dialogue, relationship or event keywords. Codex can select any issue; it is sensible to reserve Codex for systems/UI and Claude for story, but keyword selection is only a heuristic.
-- The coordinator skips issues with existing claim records or open PRs that explicitly close/fix/resolve them. It cannot guarantee detection of all loosely referenced PRs or file-level conflicts. Manually check existing PRs before implementing.
-- Each worker should claim **one issue at a time**. The workflow does not yet enforce per-worker claim quotas.
+- The coordinator skips issues with existing claim records, blocked labels, or open PRs that mention the issue number. It cannot guarantee detection of all loosely referenced PRs or file-level conflicts. Manually check existing PRs before implementing.
+- Each worker should claim **one issue at a time**. The workflow checks existing claims across open and closed issues to enforce one active claim per worker ID; this depends on all agents using unique IDs.
 - Reservations prevent double booking only when every worker follows this protocol. A user manually assigning the same task outside the coordinator can still cause duplication.
 
 ## Pause, resume, merge
