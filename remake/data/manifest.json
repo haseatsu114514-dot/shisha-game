@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-11 11:22 UTC",
+ "generated": "2026-10-11 11:54 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -1058,6 +1058,44 @@
      "top": -205.529
     }
    }
+  },
+  "hiyori": {
+   "color": "#cc8fa7",
+   "secondary": "#f2dce8",
+   "shadow": "#e9dde3",
+   "background": "ui/character_intros/hiyori.png",
+   "frames": {
+    "sad": {
+     "width": 885.13,
+     "left": -175.079,
+     "top": 18.243
+    },
+    "surprise": {
+     "width": 885.13,
+     "left": -173.538,
+     "top": 17.255
+    },
+    "smile": {
+     "width": 886.667,
+     "left": -173.667,
+     "top": 16.229
+    },
+    "student_smile": {
+     "width": 891.309,
+     "left": -136.451,
+     "top": 12.136
+    },
+    "tears": {
+     "width": 885.13,
+     "left": -173.141,
+     "top": 18.243
+    },
+    "normal": {
+     "width": 886.667,
+     "left": -172.358,
+     "top": 17.219
+    }
+   }
   }
  },
  "makingBox": {
@@ -1470,6 +1508,7 @@
   "ui/character_intros/ageha.png",
   "ui/character_intros/dr_kemuri.png",
   "ui/character_intros/hajime.png",
+  "ui/character_intros/hiyori.png",
   "ui/character_intros/kafuka.png",
   "ui/character_intros/maezono.png",
   "ui/character_intros/minto.png",

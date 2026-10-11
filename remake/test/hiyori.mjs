@@ -194,7 +194,7 @@ try {
         data.DB.hiyori.route.enabled = true;
         const missing = route.hiyoriEventStatus("axe_reveal");
         for (const e of route.hiyoriRoute().events) add(e.dialogue,
-          e.id === "meeting" ? [{ speaker: "hiyori", text: "泡沢ひよりです" }, { type: "set_flag", flag: "_met_hiyori" },
+          e.id === "meeting" ? [{ speaker: "hiyori", text: "朝霧ひよりです" }, { type: "set_flag", flag: "_met_hiyori" },
             { type: "set_flag", flag: "_lime_contact_hiyori" }] : [{ speaker: "hiyori", text: "テスト用の正式台本", inner: "表示だけで正体フラグは立てない" }]);
         const workTooEarly = await daily.playHiyoriEvent("work_talk");
         await daily.playHiyoriEvent("meeting");

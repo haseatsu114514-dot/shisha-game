@@ -27,7 +27,7 @@ const samples = [
 ];
 function menu() {
   layers.screen.replaceChildren(el("div.hiyori-preview-menu", [
-    el("h1", { text: "泡沢ひより" }),
+    el("h1", { text: "朝霧ひより" }),
     el("p", { text: "表示確認用の短い台本です。正式な登場方法は未確定。本編のセーブは変更しません。" }),
     ...samples.map(([id, label]) => el("button.btn", { text: label, dataset: { test: `hiyori-preview-${id}` },
       onclick: async () => {

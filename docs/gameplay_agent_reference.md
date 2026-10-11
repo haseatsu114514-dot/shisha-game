@@ -179,7 +179,7 @@ Godot版も2026-06-15に削除済みで、`project.godot` が無いのが正し�
 | `tsumugi` | 白木 つむぎ | ヒロイン ch1 (tonari 常連) |
 | `oneesan` | お姉さん | みんとの私服・素の姿用エイリアス（立ち絵は minto の `ura_*`。PEPPERMINTで2回交流した後、3回目の訪問前に出勤姿を見かけ正体を知る。以後は知っている呼び名、本名は私的な約束で聞いた後だけ） |
 | `rin` | 匂坂 凛 | ヒロイン ch1〜（27歳・年上枠。問屋街『Dr.fookah』2階、海外メーカーNIGHTSIDE日本代理店。はじめを「モルモットくん」と呼ぶ） |
-| `hiyori` | 泡沢ひより | 地元の会社員・tonari元アルバイトの追加ヒロイン。登場方法・正式ルート台本は未決。設定の正本は `data/characters.json`、接続仕様は `docs/hiyori_implementation.md` |
+| `hiyori` | 朝霧ひより | 地元の会社員・tonari元アルバイトの追加ヒロイン。他店の相席からスミさんの伝言とLIMEを経てtonariへ。設定の正本は `data/characters.json`、接続仕様は `docs/hiyori_implementation.md` |
 | `salaryman` | サラリーマン | tonari 常連（ストーリー専用） |
 | `kako` | かこ | tonari 常連ちょい役（FLデザイナー） |
 | `rira` | りら | tonari 常連ちょい役 |

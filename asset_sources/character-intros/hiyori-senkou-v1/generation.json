@@ -1,0 +1,17 @@
+{
+  "character": "hiyori",
+  "name": "朝霧ひより",
+  "tool": "image_gen.imagegen",
+  "source": "/Users/hasegawaatsuki/.codex/generated_images/01a12a8e-6199-7cf0-9711-fb821c6564d8/exec-e0488d8d-62ef-41e2-a0ee-6e558822c0e6.png",
+  "sha256": "1b82afc91d5e70e00c2910e627a23070c7f92e4970ebdc5e997f87cdb4339774",
+  "prompt_file": "prompt.txt",
+  "references": [
+    "exec-182a1615-a0e4-44fe-8087-81cccc25c1b0.png"
+  ],
+  "selection": "オーナー指定の線香花火を残し、暗い案から乳白色・淡い桃色・薄い藤色へ変更。人物と文字はゲームで重ねる。",
+  "size": [
+    1672,
+    941
+  ],
+  "transparent_background": false
+}

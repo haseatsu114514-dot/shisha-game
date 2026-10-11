@@ -82,6 +82,7 @@ jobs:
         run: |
           node remake/test/hiyori.mjs
           node remake/test/hiyori_encounters.mjs
+          node remake/test/hiyori_intro.mjs
       - name: Steam slash, recharge and PC/mobile controls
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules

@@ -50,7 +50,7 @@ assert.equal(progress.length, 35);
 assert.equal(progress.at(-1), 1);
 assert(progress.every((p, i) => p > (progress[i - 1] || 0)));
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
-assert.equal(all.DB.characters.hiyori.name, "泡沢ひより");
+assert.equal(all.DB.characters.hiyori.name, "朝霧ひより");
 assert.equal(all.DB.characters.hiyori.age, 25);
 assert.equal(all.DB.hiyori.route.enabled, true);
 assert(all.DB.dialogues.hiyori_preview_gap.lines[0].inner);

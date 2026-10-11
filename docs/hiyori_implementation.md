@@ -1,4 +1,4 @@
-# 泡沢ひより・本編の登場と接続仕様
+# 朝霧ひより・本編の登場と接続仕様
 
 オーナー指定の「他店で偶然相席→スミさんへの報告と伝言→各店での交流→好感度3でLIMEからtonariへ」を現行の `remake/` に接続した。
 キャラの基本情報・外見・服装は [`data/characters.json`](../data/characters.json) の `hiyori`、台本と条件は [`data/dialogue/hiyori.json`](../data/dialogue/hiyori.json) が正本。
@@ -35,6 +35,9 @@
 現在はオーナーが選択したレースブラウス案。ポニーテール、白〜アイボリーのフレンチスリーブ、黒のパンツ、名札なし。通常・物憂げ・控えめな微笑み・驚き・感動の涙の5表情と、ミディアムヘアで元気な学生時代の1表情を使用する。
 原画と生成指示は [`asset_sources/portraits/hiyori-office-v1/`](../asset_sources/portraits/hiyori-office-v1/README.md)。896×1200の透過PNG、RGBAが一致する可逆WebP、160pxの顔アイコン、manifestを揃えた。背景や別人で素材待ちを埋めない。
 
+正式名は朝霧ひより（あさぎり ひより）。他店で名乗った直後に一度だけ登場カットインを表示し、呼び名「ひより」と「儚げな元スタッフ」、本人の短い台詞を出す。背景は乳白色・淡い桃色・薄い藤色の線香花火。現在の立ち絵をそのまま重ね、柔らかいフェードと小さな火玉の光で儚さを出す。動きを減らす設定では停止し、既読は `_intro_hiyori` で保存する。
+原画・指示・実画面の記録は [`asset_sources/character-intros/hiyori-senkou-v1/`](../asset_sources/character-intros/hiyori-senkou-v1/README.md)。PC・横持ちスマホ・動きを減らす設定の3項目を `remake/test/hiyori_intro.mjs` で実行する。
+
 学生時代を知ったはじめがすぐ演技の全容を見抜く展開にはしない。`_hiyori_real_self_known` は今回の回想・再会で立てない。
 回想後の一部台詞だけに `inner` を付け、発話の後に淡いピンク・括弧付きで出す。プレイヤーにだけ見え、はじめは聞いた台詞と見た行動へ返す。仕事の疲れは本物で、儚い演技も本人の好きなあり方。
 
@@ -42,7 +45,7 @@
 
 ## 検証と今後の範囲
 
-検証コードは `remake/test/hiyori_encounters.mjs`（本編訪問・報告・LIME・セーブ・PC／スマホ）と `remake/test/hiyori.mjs`（本心・ログ・AUTO・SKIP・共通関係API）。CIでも実行する。記録は [`asset_sources/hiyori-encounters-20261011/`](../asset_sources/hiyori-encounters-20261011/README.md)。
+検証コードは `remake/test/hiyori_encounters.mjs`（本編訪問・報告・LIME・セーブ・PC／スマホ）、`remake/test/hiyori.mjs`（本心・ログ・AUTO・SKIP・共通関係API）、`remake/test/hiyori_intro.mjs`（名乗り・紹介・既読保存）。CIでも実行する。記録は [`asset_sources/hiyori-encounters-20261011/`](../asset_sources/hiyori-encounters-20261011/README.md)。
 
 今回の実装は三人の物語の入口まで。斧投げでの正体発覚、深い仕事の相談、恋愛／友情の締めくくり、専用ハガル、海外同行は未制作。第2章以降のゲーム進行自体も未接続で、条件だけを先行定義している。
 `storyEvents` の4本（meeting/cracks/axe_reveal/work_talk）は後半の共通関係システム用のまま保持。スミさんへの報告やtonari再会を既存の4本の代用にして告白を早めない。専用ハガルと正式な後半台本が揃うまで好感度MAXだけでは告白しない。

@@ -913,8 +913,8 @@
   },
   {
     "id": "hiyori",
-    "name": "泡沢ひより",
-    "reading": "あわさわ ひより",
+    "name": "朝霧ひより",
+    "reading": "あさぎり ひより",
     "display_name": "ひより",
     "role": "heroine_local",
     "age": 25,
@@ -972,7 +972,13 @@
     },
     "asset_status": "現在のレース衣装5表情（normal/sad/smile/surprise/tears）と学生時代のstudent_smileを本編で使用。現在はポニーテール、過去はミディアムヘア。原画・プロンプトはasset_sources/portraits/hiyori-office-v1/。その他の衣装・後半イベント用表情は未制作。",
     "height_cm": 157,
-    "spriteScale": 0.94
+    "spriteScale": 0.94,
+    "intro_cutin": {
+      "title": "儚げな元スタッフ",
+      "line": "……煙みたいに、もう遠い昔だけどね",
+      "face": "normal",
+      "color": "#cc8fa7"
+    }
   },
   {
     "id": "mystery_girl",
