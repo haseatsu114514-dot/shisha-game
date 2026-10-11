@@ -89,6 +89,7 @@ jobs:
         run: |
           node remake/test/title_arts.mjs
           node remake/test/vn_visual_readiness.mjs
+          node remake/test/browser/tutorial_transition.mjs
       - name: Continue asset readiness, clock and audio
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
