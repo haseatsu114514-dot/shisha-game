@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-10",
+  "requests": "CV30",
+  "generator": "image_gen.imagegen",
+  "promptFile": "game-over-smoke.prompt.txt",
+  "sha256": "489a74fa1b9d98db34fb05976c6f16757a15c55df139608c1192a92eca0b74e0",
+  "size": [
+    1983,
+    793
+  ],
+  "mode": "RGBA",
+  "transparent": true,
+  "references": [],
+  "alphaExtrema": [
+    0,
+    255
+  ],
+  "contentBoxAlpha24": [
+    19,
+    83,
+    1969,
+    641
+  ],
+  "runtimeAdaptation": "Trim empty alpha margins, retain 8px padding; preserve colors and smoke; build_continue_art.py"
+}
