@@ -15,6 +15,7 @@ import { buildSteamWorld, HEART_ART, BULLET_ART } from "./steam-art.js";
 import { makingUrl } from "../core/data.js";
 import { buildMentalTrace } from "./mental.js";
 import { craftCondition } from "../core/condition.js";
+import { SLASH_ART, SLASH_RECHARGE_SECONDS, slashDirection, slashAngle, slashTouchesBullet, buildSlashFx } from "./steam-slash.js";
 
 // 雑念ははじめ自身の内心。自主練でも、その場に他の人物がいる前提にしない。
 export const DODGE_WORDS = [
@@ -26,7 +27,8 @@ export const DODGE_WORDS = [
 ];
 const OBJECTS = ["coal", "orb", "orb", "smoke"];
 
-// SF18: 一台につき1回。根性は消去範囲と回復に効く。
+// SF63: 一度に1回分を持ち、使用後8秒でリチャージ。根性は範囲と回復に効く。
+export const REFRESH_RECHARGE_SECONDS = 8;
 export function refreshStock() { return 1; }
 export function refreshEffect() {
   const level = star("guts");
@@ -43,14 +45,20 @@ export async function runSteamDodge(cs) {
   const panel = stepPanel("steam", "蒸らし", "", { brief: "" });
   const W = 784, H = 414;
   const box = el("div.dodge", { style: { width: `${W}px`, height: `${H}px` }, dataset: { test: "dodge", mental: "steady", refreshRadius: String(effect.radius) } });
-  const heart = el("div.dodge-heart", { role: "img", "aria-label": "心。中央の光が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("span", { html: HEART_ART }), el("i.dodge-core")]);
+  const heart = el("div.dodge-heart", { role: "img", "aria-label": "心。中央の白丸が当たり判定", style: { transform: `translate(${W / 2 - 14}px, ${H / 2 - 14}px)` } }, [el("span", { html: HEART_ART }), el("i.dodge-core")]);
   const clock = buildDigitalClock("dodge-timer", { label: "蒸らしの残り時間", test: "steam-clock" });
   const knob = el("i.dodge-knob");
   const controlArt = name => el("img", { src: makingUrl(name), alt: "", draggable: false, "aria-hidden": "true" });
   const pad = el("div.dodge-pad", { tabindex: 0, role: "group", "aria-label": "移動スティック。ドラッグまたは矢印キーで移動", dataset: { test: "dodge-pad" } }, [el("span", { "aria-hidden": "true" }, [controlArt("steam_stick_simple_base.png")]), knob]);
   const refreshBtn = el("button.btn.primary.dodge-action.dodge-refresh", { disabled: true, dataset: { test: "dodge-refresh" } });
-  refreshBtn.append(el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_refresh_simple.png")]),
+  const refreshCharge = el("span.action-recharge");
+  refreshBtn.append(el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_refresh_simple.png"), el("i.recharge-ring"), refreshCharge]),
     el("span.refresh-copy", { text: "リフレッシュ" }));
+  const slashCharge = el("span.action-recharge");
+  const slashBtn = el("button.btn.dodge-action.dodge-slash", { disabled: true, "aria-keyshortcuts": "Z", title: "方向キー＋Zで上下左右へ斬撃。方向入力なしは前方", dataset: { test: "dodge-slash", uses: "0" } }, [
+    el("span.refresh-emblem", { "aria-hidden": "true" }, [el("span", { html: SLASH_ART }), el("i.recharge-ring"), slashCharge]),
+    el("span.refresh-copy", { text: "斬撃" }),
+  ]);
   const precisionState = el("span.precision-state", { text: "オフ", "aria-hidden": "true" });
   const precisionBtn = el("button.btn.dodge-action.dodge-precision", { disabled: true, "aria-pressed": "false", dataset: { test: "dodge-precision" } }, [
     el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_precision_simple.png")]),
@@ -65,7 +73,7 @@ export async function runSteamDodge(cs) {
   box.append(world.root, clock.root, mental.root, heart);
   const steamRoot = el("div.steam", [
     el("div.steam-play", [box]),
-    el("div.dodge-controls", [refreshBtn, precisionBtn, pad]),
+    el("div.dodge-controls", [slashBtn, refreshBtn, precisionBtn, pad]),
     thermometer.root,
   ]);
   panel.append(steamRoot);
@@ -76,6 +84,7 @@ export async function runSteamDodge(cs) {
   heart.style.setProperty("--hit-diameter", `${hitR * 2}px`);
   const spawnEvery = (tutorial ? 0.85 : 0.46) * (1 + 0.25 * tier01("insight")) * focus;
   let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = stock;
+  let refreshesUsed = 0, refreshReadyAt = 0, slashesUsed = 0, slashReadyAt = 0;
   let running = false, precise = false, time = 0, nextSpawn = 0.8, nextWave = tutorial ? 4 : 2.8;
   let warning = null, spawnCount = 0, raf = 0;
   const bullets = [], keysDown = new Set();
@@ -99,7 +108,8 @@ export async function runSteamDodge(cs) {
   const movePad = (e) => {
     const r = pad.getBoundingClientRect(), radius = r.width * 0.34;
     let x = (e.clientX - r.left - r.width / 2) / radius;
-    let y = (e.clientY - r.top - r.height / 2) / radius;
+    const lift = parseFloat(getComputedStyle(pad).getPropertyValue("--stick-lift")) || 0;
+    let y = (e.clientY - r.top - r.height / 2 + lift * r.height / pad.offsetHeight) / radius;
     const length = Math.hypot(x, y);
     if (length > 1) { x /= length; y /= length; }
     axisX = Math.abs(x) < 0.12 ? 0 : x;
@@ -125,22 +135,33 @@ export async function runSteamDodge(cs) {
   listen(precisionBtn, "pointerdown", e => { e.preventDefault(); togglePrecision(); });
   listen(precisionBtn, "click", e => { if (e.detail === 0) togglePrecision(); });
 
-  const clearBullets = (radius = Infinity) => {
+  const removeBullets = (touches) => {
     const cleared = [];
     for (let i = bullets.length - 1; i >= 0; i--) {
-      const b = bullets[i], x = clamp(hx, b.x, b.x + b.w), y = clamp(hy, b.y, b.y + b.h);
-      if (Math.hypot(hx - x, hy - y) <= radius) { cleared.push(b); b.node.remove(); bullets.splice(i, 1); }
+      const b = bullets[i];
+      if (touches(b)) { cleared.push(b); b.node.remove(); bullets.splice(i, 1); }
     }
     return cleared;
   };
+  const clearBullets = (radius = Infinity) => removeBullets(b => Math.hypot(hx - clamp(hx, b.x, b.x + b.w), hy - clamp(hy, b.y, b.y + b.h)) <= radius);
+  const rechargeLabel = (button, caption, remaining, duration, label) => {
+    const rounded = Math.ceil(remaining * 10) / 10;
+    button.dataset.cooldown = rounded.toFixed(1);
+    button.dataset.cooling = String(running && remaining > 0);
+    button.style.setProperty("--recharge", String(1 - remaining / duration));
+    caption.textContent = running && rounded > 0 ? `${rounded.toFixed(1)}秒` : "";
+    button.setAttribute("aria-label", `${label}。${remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
+    button.disabled = !running || remaining > 0;
+  };
   const refreshLabel = () => {
     refreshBtn.dataset.remaining = String(refreshes);
-    refreshBtn.setAttribute("aria-label", `リフレッシュ。残り${refreshes}回。${effect.label}の雑念を消す`);
-    refreshBtn.disabled = !running || refreshes === 0;
+    rechargeLabel(refreshBtn, refreshCharge, Math.max(0, refreshReadyAt - time), REFRESH_RECHARGE_SECONDS, `リフレッシュ。${effect.label}の雑念を消す`);
   };
+  const slashLabel = () => rechargeLabel(slashBtn, slashCharge, Math.max(0, slashReadyAt - time), SLASH_RECHARGE_SECONDS, "斬撃。方向入力に合わせて上下左右の雑念を切る。入力なしは前方。Zキーでも使用");
   const refresh = () => {
     if (!running || refreshes === 0) return;
-    refreshes--; world.dissolve(time, clearBullets(effect.radius));
+    refreshes--; refreshesUsed++; refreshReadyAt = time + REFRESH_RECHARGE_SECONDS;
+    world.dissolve(time, clearBullets(effect.radius));
     if (effect.mentalRecovery) setPlayerMental(cs, mental.recoverStep(time, hits));
     reactAudience(cs, "good");
     const reach = Number.isFinite(effect.radius) ? effect.radius : Math.hypot(W, H);
@@ -154,12 +175,27 @@ export async function runSteamDodge(cs) {
   listen(refreshBtn, "pointerdown", (e) => { e.preventDefault(); refresh(); });
   // キーボードや支援技術による click でも使える（pointerdown と重ねて消費しない）。
   listen(refreshBtn, "click", (e) => { if (e.detail === 0) refresh(); });
+  const slash = () => {
+    if (!running || time < slashReadyAt) return;
+    const direction = slashDirection(keysDown, axisX, axisY), angle = slashAngle(direction);
+    const cleared = removeBullets(b => slashTouchesBullet(b, hx, hy, angle));
+    slashesUsed++; slashReadyAt = time + SLASH_RECHARGE_SECONDS;
+    slashBtn.dataset.uses = String(slashesUsed); slashBtn.dataset.direction = direction;
+    world.dissolve(time, cleared);
+    const fx = buildSlashFx(hx, hy, angle);
+    box.append(fx); transients.push({ node: fx, until: time + .32 });
+    SE.whoosh(); slashLabel();
+  };
+  listen(slashBtn, "pointerdown", e => { e.preventDefault(); slash(); });
+  listen(slashBtn, "click", e => { if (e.detail === 0) slash(); });
   const direction = { ArrowLeft: "l", ArrowRight: "r", ArrowUp: "u", ArrowDown: "d", a: "l", d: "r", w: "u", s: "d" };
   const unkey = keys(Object.fromEntries([
     ...Object.entries(direction).map(([key, value]) => [key, () => { if (running) keysDown.add(value); }]),
     [" ", (e) => { if (!e.repeat) refresh(); }],
     ["x", (e) => { if (!e.repeat) refresh(); }],
     ["X", (e) => { if (!e.repeat) refresh(); }],
+    ["z", (e) => { if (!e.repeat) slash(); }],
+    ["Z", (e) => { if (!e.repeat) slash(); }],
   ]));
   listen(window, "keyup", (e) => keysDown.delete(direction[e.key]));
 
@@ -198,8 +234,9 @@ export async function runSteamDodge(cs) {
 
   clock.update(seconds);
   refreshLabel();
+  slashLabel();
   await countdown();
-  running = true; precisionBtn.disabled = false; refreshLabel();
+  running = true; precisionBtn.disabled = false; refreshLabel(); slashLabel();
   const auto = autoSkill();
   try {
     if (auto) { await sleep(200); hits = auto === "good" ? 0 : 4; }
@@ -208,6 +245,8 @@ export async function runSteamDodge(cs) {
       const loop = (now) => {
         const dt = Math.min(0.05, (now - last) / 1000); last = now;
         time += dt;
+        if (!refreshes && time >= refreshReadyAt) refreshes = stock;
+        refreshLabel(); slashLabel();
         renderTemperature(temperatureAfterSteam(cs, Math.min(1, time / dur) * seconds, heatJitter));
         let x = axisX + (keysDown.has("r") ? 1 : 0) - (keysDown.has("l") ? 1 : 0);
         let y = axisY + (keysDown.has("d") ? 1 : 0) - (keysDown.has("u") ? 1 : 0);
@@ -250,7 +289,7 @@ export async function runSteamDodge(cs) {
       raf = requestAnimationFrame(loop);
     });
   } finally {
-    running = false; precisionBtn.disabled = true; cancelAnimationFrame(raf); unkey(); input.abort(); resetPad(); clearBullets(); refreshLabel();
+    running = false; precisionBtn.disabled = true; cancelAnimationFrame(raf); unkey(); input.abort(); resetPad(); clearBullets(); refreshLabel(); slashLabel();
     transients.forEach(({ node }) => node.remove());
     world.draw(time + 1, hx, hy);
     heart.classList.remove("shield"); box.classList.remove("warning");
@@ -260,7 +299,7 @@ export async function runSteamDodge(cs) {
   clock.update(0);
   const temp = temperatureAfterSteam(cs, seconds, heatJitter);
   renderTemperature(temp);
-  cs.steam = { min, seconds, temp, hits, score, refreshesUsed: stock - refreshes, warmingFactor: steamClimate(cs.environment).transfer };
+  cs.steam = { min, seconds, temp, hits, score, refreshesUsed, slashesUsed, warmingFactor: steamClimate(cs.environment).transfer };
   scoreStep(cs, "steam", score, "蒸らし");
   refreshBench();
   popStamp(panel, hits === 0 ? "無心" : hits <= 2 ? "持ちこたえた" : "雑念まみれ", hits === 0 ? "just" : hits <= 2 ? "good" : "bad", "50%", "40%");

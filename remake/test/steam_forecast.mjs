@@ -142,17 +142,17 @@ try {
     assert(await page.locator('.bench-title').isHidden());
     assert.equal(await page.locator('.bench-phase[aria-current="step"]').textContent(), '03蒸らし中');
     assert.equal(await page.locator('.bench-phase[aria-current="step"]').evaluate(n => n.offsetHeight), 49);
-    assert.deepEqual(await page.locator('.dodge-controls .refresh-copy').allTextContents(), ['リフレッシュ', '精密']);
+    assert.deepEqual(await page.locator('.dodge-controls .refresh-copy').allTextContents(), ['斬撃', 'リフレッシュ', '精密']);
     assert.equal(await page.locator('.dodge-world-title').count(), 0);
     const controls = await page.locator('.dodge-controls').evaluate(n => {
-      const r = e => e.getBoundingClientRect(), root = r(n), [refresh, precision, pad] = [...n.children].map(r);
+      const r = e => e.getBoundingClientRect(), root = r(n), [slash, refresh, precision, pad] = [...n.children].map(r);
       const scale = root.width / n.offsetWidth;
       return { gap: (precision.left - refresh.right) / scale, secondGap: (pad.left - precision.right) / scale,
         padSize: pad.width / scale, buttonHeight: refresh.height / scale,
-        inRow: pad.right <= root.right + 1 && refresh.left >= root.left - 1 && Math.abs(refresh.top - precision.top) < 1,
+        inRow: pad.right <= root.right + 1 && slash.left >= root.left - 1 && Math.abs(refresh.top - precision.top) < 1 && Math.abs(slash.top - refresh.top) < 1,
         clear: pad.top > r(document.querySelector('.dodge')).bottom && pad.bottom < r(document.querySelector('.bench')).bottom - 2 };
     });
-    assert(controls.gap > 0 && controls.gap <= 21 && controls.secondGap > 0 && controls.secondGap <= 21, JSON.stringify(controls));
+    assert(Math.abs(controls.gap - 12) < 1 && Math.abs(controls.secondGap - 12) < 1, JSON.stringify(controls));
     assert(controls.padSize >= 170 && controls.buttonHeight >= 175 && controls.inRow && controls.clear, JSON.stringify(controls));
     await page.locator('[data-test="steam-world-art"]').evaluate(async n => {
       const url = getComputedStyle(n).backgroundImage.match(/url\(["']?([^"')]+)/)?.[1];
@@ -232,7 +232,7 @@ try {
       assert.equal(await skilled.evaluate(() => cs.steamPrediction.precision), 1);
       await screenshot(skilled, 'timer-insight-five'); await skilled.close();
     }
-    console.log(`[steam forecast] PASS: ${name} timer/reset, rainy estimate, Hajime waiting, same thermometer in four stages, centered faint background clock, no stop/miss HUD and one-use refresh`);
+    console.log(`[steam forecast] PASS: ${name} timer/reset, rainy estimate, Hajime waiting, same thermometer in four stages, centered faint background clock, four controls and refresh recharge start`);
   }
   assert.deepEqual(errors, []);
 } finally { await browser.close(); }
