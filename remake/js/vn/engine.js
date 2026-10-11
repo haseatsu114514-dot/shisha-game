@@ -1,7 +1,7 @@
 // 会話エンジン。data/dialogue/*.json のスキーマをそのまま解釈する。
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
-import { el, sleep, fitOneLine } from "../core/util.js";
+import { el, sleep, fitOneLine, nextFrame } from "../core/util.js";
 import { DB, displayName, portraitInfo, sceneBg, cgUrl, preload } from "../core/data.js";
 import { state, markMet, STAT_EN, timeOfDay, config } from "../core/state.js";
 import { applyStats, gainAffinity, addMoney, affinityLevel } from "../core/stats.js";
@@ -97,7 +97,7 @@ function setSkip(v) {
 let autoTimer = 0;
 function kickAuto() {
   clearTimeout(autoTimer);
-  if (!running) return;
+  if (!running || !running.ready) return;
   if (dom.log.classList.contains("show")) return;
   const fast = vnTest.turbo || skipMode;
   if (!fast && !autoMode) return;
@@ -328,7 +328,12 @@ function next() {
       if (branch && r.branches[branch]) r.queue.unshift(...r.branches[branch]);
       continue;
     }
-    if (type === "hide_cg") { dom.cg.classList.remove("show"); continue; }
+    if (type === "hide_cg") {
+      r.ready = false;
+      dom.cg.classList.remove("show");
+      visualSettled(dom.cg).then(() => { if (running === r) { r.ready = true; next(); } });
+      return;
+    }
     if (type === "apply") { applyLine(line); continue; }
     if (type === "note") { onNote(line); continue; }
     if (type === "remember") { rememberRelationship(line.memory_id); continue; }
@@ -424,9 +429,11 @@ function scent(c1, c2) {
 }
 
 async function showCg(id, effect = "") {
+  const r = running;
   const url = cgUrl(id);
   if (!url) return; // 素材待ちのCGは黙って飛ばす
   await imageReady(url, 15000);
+  if (running !== r) return;
   // effect:"cheki": シャッター→フラッシュ→フィルムが出てきて現像されたところで、同じ位置にCGを置く
   const place = (instant) => {
     dom.cg.dataset.cg = id;
@@ -436,8 +443,16 @@ async function showCg(id, effect = "") {
     if (instant) { void dom.cg.offsetWidth; dom.cg.style.transition = ""; }
   };
   if (effect === "cheki" && !vnTest.turbo) await chekiShot(url, () => place(true));
+  if (running !== r) return;
   if (!dom.cg.classList.contains("show") || dom.cg.dataset.cg !== id) place(false);
+  if (!vnTest.turbo) await visualSettled(dom.cg);
   if (hooks.onCg) hooks.onCg(id);
+}
+
+/** CSSの表示・退場が終わるまで待つ。SKIPでも途中の透明な絵を次の行で消さない。 */
+async function visualSettled(node) {
+  await nextFrame();
+  await Promise.all(node.getAnimations().map((animation) => animation.finished.catch(() => {})));
 }
 
 // ---------------------------------------------------------------- 台詞行
@@ -463,8 +478,18 @@ function introThenShow(line) {
   })();
 }
 
-function showLine(line) {
+async function showLine(line) {
   const r = running;
+  if (!r) return;
+  r.ready = false;
+  clearTimeout(autoTimer);
+  const images = [
+    !NO_PORTRAIT.has(line.speaker || "") ? portraitInfo(line.speaker, line.face)?.src : null,
+    line.portrait ? portraitInfo(line.portrait, line.portrait_face || "normal")?.src : null,
+  ].filter(Boolean);
+  // 最初の2枚や先読み16枚の外にある表情も、実際に使う行でデコードを待つ。
+  await Promise.all(images.map((url) => imageReady(url, 15000)));
+  if (running !== r) return;
   if (hooks.onLine) hooks.onLine(r.id, line);
   const speaker = String(line.speaker || "");
   const face = String(line.face || "");
@@ -479,11 +504,14 @@ function showLine(line) {
   }
   dom.box.classList.toggle("narration", !speaker);
   dom.box.classList.toggle("thought", speaker === "hajime" && /^（/.test(line.text || ""));
-  updatePortraits(speaker, face);
+  const entrances = [updatePortraits(speaker, face)];
   // 無言の常連も会釈だけで場面に参加できる。名乗り・好感度の処理は発話と独立。
   if (line.portrait) {
-    updatePortraits(line.portrait, line.portrait_face || "normal");
+    entrances.push(updatePortraits(line.portrait, line.portrait_face || "normal"));
   }
+  if (!vnTest.turbo) await Promise.all(entrances);
+  if (running !== r) return;
+  r.ready = true;
   speakerBgm(speaker);
   // 行付き演出（"fx":"shake" 等）／自動の軽演出（驚き・叫び）
   if (line.fx) runFx({ id: line.fx });
@@ -638,6 +666,7 @@ function completeTyping() {
 
 function updatePortraits(speaker, face) {
   const r = running;
+  let entrance = Promise.resolve();
   const info = speaker && !NO_PORTRAIT.has(speaker) ? portraitInfo(speaker, face) : null;
   if (info) {
     let img = dom.portraits.querySelector(`img[data-speaker="${speaker}"]`);
@@ -654,13 +683,19 @@ function updatePortraits(speaker, face) {
       img = el("img.portrait.enter", { alt: "", dataset: { speaker, slot: String(slot) }, draggable: "false" });
       img.onerror = () => { img.remove(); delete r.slots[speaker]; layoutPortraits(); };
       dom.portraits.append(img);
-      requestAnimationFrame(() => requestAnimationFrame(() => img.classList.remove("enter")));
+      entrance = (async () => {
+        await nextFrame(); await nextFrame();
+        if (running !== r || !img.isConnected) return;
+        img.classList.remove("enter");
+        await visualSettled(img);
+      })();
     }
     if (img.getAttribute("src") !== info.src) img.src = info.src;
     frame(img, info);
   }
   for (const img of dom.portraits.querySelectorAll("img")) img.classList.toggle("active", img.dataset.speaker === speaker);
   layoutPortraits();
+  return entrance;
 }
 
 /** 透過余白の差を補正し、本体の高さ・足元位置をキャラ間でそろえる */

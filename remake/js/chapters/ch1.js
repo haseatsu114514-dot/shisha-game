@@ -27,7 +27,7 @@ import { runHeat } from "../craft/heat.js";
 import { runSteamDodge } from "../craft/steam.js";
 import { runPull } from "../craft/pull.js";
 import { runCare } from "../craft/care.js";
-import { buildGameOver } from "./gameover.js";
+import { buildGameOver, warmGameOver } from "./gameover.js";
 import { runFullPractice, CRAFT_STEPS, recordPractice } from "../craft/practice.js";
 import { prepareFlavorStock } from "../daily/preparation.js";
 import { warmCraftAssets } from "../craft/readiness.js";
@@ -252,6 +252,7 @@ async function tournamentDay() {
   for (const id of ["naru", "adam", "minto", "nagumo", "maezono", "dr_kemuri"]) markMet(id);
   void preloadBgm("bgm_tournament_edm");
   void preloadBgm("bgm_tournament_craft");
+  void warmGameOver();
   await smokeWipe(() => playBgm("bgm_tournament_wait"), { color: "dark" });
   await play("ch1_tournament_arrival");
   await maybeShuraba(); // 恋人が2人以上いたら、ロビーで鉢合わせる
@@ -450,6 +451,7 @@ async function failedOut(reason) {
  * 声なしの立ち絵・字幕・SE・BGMを gameover.js から制御し、再挑戦なら大会の頭へ。
  */
 async function showGameOver({ rank = 0, reason = "rank", variant = null } = {}) {
+  await warmGameOver(); // BGM・表情・枠の準備中は選択期限を消費しない。
   showHud(false);
   stopBgm();
   SE.miss();

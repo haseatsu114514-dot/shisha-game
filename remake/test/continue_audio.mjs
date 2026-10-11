@@ -27,7 +27,12 @@ class AudioContext {
 }
 class Audio {
   constructor(url) { this.src = url; this.volume = 0; media.push(this); }
-  addEventListener() {} play() { this.paused = false; return Promise.resolve(); } pause() { this.paused = true; }
+  readyState = 0; listeners = new Map();
+  addEventListener(name, fn) { this.listeners.set(name, fn); }
+  removeEventListener(name) { this.listeners.delete(name); }
+  removeAttribute(name) { delete this[name]; }
+  load() { this.readyState = Audio.fail ? 0 : 3; this.listeners.get(Audio.fail ? "error" : "canplay")?.(); }
+  play() { this.paused = false; return Promise.resolve(); } pause() { this.paused = true; }
 }
 const timeout = (fn, delay) => { const id = ++serial; timers.set(id, { fn, at: now + delay }); return id; };
 const clear = id => timers.delete(id);
@@ -87,4 +92,17 @@ config.bgmVolume = .4;
 audio.playBgm("tonari"); step(1500);
 assert.equal(media[1].volume, .4, "continue duck/pause never leaks to the next scene");
 assert.equal(contexts, 1);
-console.log("PASS: shared AudioContext, countdown, talking blip, pitch/duck/settings, GAME OVER mix, pause, mute, scheduled-SE cleanup, no leaked gain");
+assert.equal(await audio.preloadBgm("bgm_continue_urgent"), true);
+const warmed = media.at(-1), mediaCount = media.length;
+const readySession = audio.createContinueAudio(); readySession.start(); step(200);
+assert.equal(media.length, mediaCount, "prepared music must reuse its playable element");
+assert.equal(warmed.paused, false);
+assert.equal(warmed.volume, .4 * .68, "continue music reaches its volume promptly");
+readySession.cleanup(); step(300);
+Audio.fail = true;
+assert.equal(await audio.preloadBgm("bgm_continue_urgent"), false);
+const failed = media.at(-1);
+const fallbackSession = audio.createContinueAudio(); fallbackSession.start();
+assert.equal(failed.paused, undefined, "unavailable external music must not start late over the countdown");
+fallbackSession.cleanup();
+console.log("PASS: shared AudioContext, countdown, talking blip, pitch/duck/settings, GAME OVER mix, pause, mute, scheduled-SE cleanup, no leaked gain, prepared media reuse and fallback");

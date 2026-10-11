@@ -13,6 +13,7 @@
   z-index: 3;
 }
 .vn-cg.show { opacity: 1; }
+.vn-skip .vn-cg { transition-duration: .14s; }
 /* 縦型チェキの余白・落書きも、下の台詞ボックスに隠さず一枚全体を見せる。 */
 .vn-cg[data-cg="cg_minto_first_cheki"] {
   background-color: var(--ink);
@@ -62,6 +63,7 @@ body.in-vn #bg { transition: filter 0.4s; }
 .portrait[data-pos="left"] { left: 30%; }
 .portrait[data-pos="right"] { left: 70%; }
 .portrait.enter { opacity: 0; translate: 0 24px; }
+.vn-skip .portrait { transition-duration: .12s; }
 
 .vn-scent {
   position: absolute;
