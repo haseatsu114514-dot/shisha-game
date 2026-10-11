@@ -90,7 +90,7 @@ jobs:
                   const priority = /^\[P([0-2])\]/.exec(i.title)?.[1];
                   return {number:i.number, difficulty:d ? ranks[d.split(':')[1]] : 99, priority:priority===undefined?3:Number(priority), title:i.title, labels};
                 }).filter(i => i.difficulty !== 99)
-                  .filter(i => agent !== 'claude' || /恋愛|友情|ひより|みんと|つむぎ|サメ|関係|交際|遠距離|イベント|台詞/.test(i.title))
+                  .filter(i => !i.labels.some(l => l === 'blocked' || l === 'status:blocked'))
                   .sort((a,b) => a.difficulty-b.difficulty || a.priority-b.priority || a.number-b.number)
                   .map(i => i.number);
               }
