@@ -16,6 +16,7 @@ class Element { constructor(spec) { this.spec = spec; this.children = []; this.d
 function el(spec, attrs = {}, children = []) { if (Array.isArray(attrs)) { children = attrs; attrs = {}; } const node = new Element(spec); Object.assign(node, attrs); node.append(children); return node; }
 function find(node, id) { if (node.dataset?.test === id) return node; return node.children?.map((child) => find(child, id)).find(Boolean); }
 const values = {
+  "practice.js": { runFullPractice: async () => {} },
   "hiyori.js": { meetHiyoriAtTonari: async () => false },
   "util.js": { el, pick: (pool) => { selectedPools.push(pool.map((e) => e.id)); return pool[0]; } },
   "data.js": { DB: db, bgUrl: () => "bg" },

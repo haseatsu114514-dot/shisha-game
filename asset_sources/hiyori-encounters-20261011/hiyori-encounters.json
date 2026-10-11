@@ -4,6 +4,26 @@
   "ref": null,
   "results": [
     {
+      "label": "all-shops-and-prerequisites",
+      "status": "passed"
+    },
+    {
+      "label": "paid-map-action",
+      "status": "passed"
+    },
+    {
+      "label": "sumi-at-work-and-customer-seat",
+      "status": "passed"
+    },
+    {
+      "label": "lime-decline-retry-save-and-reunion",
+      "status": "passed"
+    },
+    {
+      "label": "unread-expiry-and-no-affinity-inference",
+      "status": "passed"
+    },
+    {
       "label": "desktop-lace-and-student",
       "status": "passed"
     },
