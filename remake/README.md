@@ -134,7 +134,7 @@ remake/
 1枚ずつ可逆と非可逆q90の小さいほう・作業台素材は長辺1280pxまで）。ゲームは一覧にある画像だけ WebP を読み、無ければ assets/ の PNG を読む。
 変換済みで元より新しい画像は作り直さないので、2回目以降は数秒で終わる。
 
-**トランジション・場面の演出**（2026-10-09〜10）: 就寝→翌朝は夜の紫が降りてDAYと残り日数がめくれる（`core/transitions.js`）。マップ→場所の移動は6つの型を `core/transition-moves.js` に持ち、既定は pin。`?move=door` や `__remake.dev.moveStyle("door")` で切り替える。チェキ・占い・贈り物・バイトの終わり・サメちゃんとの出会い・つむぎのスケッチは `core/scene-motions.js` が窓口で、中身は場面ごとの `js/motions/<場面>.js`・`css/motions/<場面>.css`（扉の型も `motions/door.js`）。各場面に a／b の2パターンがあり、本編はオーナーが選んだ採用（`core/mg-kit.js` の `ADOPTED_VARIANT`: 扉a・チェキb・占いa・贈り物a・バイトb・サメb・スケッチb。マップ→場所の移動の既定は door。2026-10-10 CI123）。比べるときは `?movar=a|b`（全場面をそろえる）・`?move=pin`・`__remake.dev.motionVariant("b")`（`"auto"` で採用に戻す）。配色は紫1色（既定）／場面ごとの色（`?mopal=free`・`__remake.dev.motionPalette("free")`）。`__remake.dev.motion("cheki")` などで再生、夜明けの天気は `dawn-sun`／`dawn-cloud`／`dawn-rain`／`dawn-sick`。DAYカードの天気（晴れ・くもり・雨）は `daily/weather.js` の `weatherOf()` で、くもりは見た目だけ。会話の中では `show_cg` の `"effect": "cheki"` と `{"type": "motion", "id": "tarot"}` で呼ぶ。SKIP中と動きを減らす設定では省く。録画は `asset_sources/transitions/`。
+**トランジション・場面の演出**（2026-10-09〜10）: 就寝→翌朝は夜の紫が降りてDAYと残り日数がめくれる（`core/transitions.js`）。マップ→場所の移動は6つの型を `core/transition-moves.js` に持ち、既定は帰宅だけ door、ほかは pin。`?move=door` や `__remake.dev.moveStyle("door")` で切り替える。チェキ・占い・贈り物・バイトの終わり・サメちゃんとの出会い・つむぎのスケッチは `core/scene-motions.js` が窓口で、中身は場面ごとの `js/motions/<場面>.js`・`css/motions/<場面>.css`（扉の型も `motions/door.js`）。各場面に a／b の2パターンがあり、本編はオーナーが選んだ採用（`core/mg-kit.js` の `ADOPTED_VARIANT`: 扉a・チェキb・占いa・贈り物a・バイトb・サメb・スケッチb。帰宅だけ短くしたdoor、ほかはpin。2026-10-11 CI125〜127）。比べるときは `?movar=a|b`（全場面をそろえる）・`?move=pin`・`__remake.dev.motionVariant("b")`（`"auto"` で採用に戻す）。配色は紫1色（既定）／場面ごとの色（`?mopal=free`・`__remake.dev.motionPalette("free")`）。`__remake.dev.motion("cheki")` などで再生、夜明けの天気は `dawn-sun`／`dawn-cloud`／`dawn-rain`／`dawn-sick`。DAYカードの天気（晴れ・くもり・雨）は `daily/weather.js` の `weatherOf()` で、くもりは見た目だけ。会話の中では `show_cg` の `"effect": "cheki"` と `{"type": "motion", "id": "tarot"}` で呼ぶ。SKIP中と動きを減らす設定では省く。録画は `asset_sources/transitions/`。
 
 **初登場カットイン**（`vn/intro.js`）: キャラが名乗った直後（または名前を知っていて初めて喋る台詞の前）に一度だけ、
 呼び名・二つ名・一言を全画面で出す。名前は会話の名前欄と同じ呼び名のみ。本名の括弧表記は廃止し、物語の名乗りに残す。
@@ -321,3 +321,5 @@ node remake/test/playthrough.mjs
 現行の正規演出は**音声なし**。字幕を時間表示・文字送りし、立ち絵の表情を変えて動きで伝える。BGMはBGMer「EMGコール」の公式配布元を再生（1.08倍）。商用・ゲーム・編集利用の許諾：https://bgmer.net/terms / 音楽クレジット（任意）：音楽 BGMer https://bgmer.net/ 。外部配信が不可なら合成BGMへ戻る。ローカル音源 `assets/audio/bgm/bgm_continue_urgent.mp3` を正式に置いてマニフェストを再生成すれば内蔵曲が優先される。
 
 恋人プレミアは**20%**、同一恋人の連続出演は避ける。第1章のみんとは大会の敵なので除外。サメちゃんはプレミア台本を持つが、現時点では恋愛ルート自体が本編に未接続で、恋人成立後にのみ抽選対象となる。
+
+演出の終端・帰宅の会話待機の確認は [演出の修正と検証](../docs/motion_endings_20261011.md)、起動時・第1章でプレイヤーが読む容量は [ロード容量の実測](../docs/player_load_capacity_20261010.md)。
