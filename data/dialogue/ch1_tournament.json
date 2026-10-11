@@ -1192,6 +1192,13 @@
           "next_false": "ta_tsumugi_unnamed"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_tsumugi_contest_submitted",
+          "next_true": "ta_tsumugi_today",
+          "next_false": "ta_tsumugi_no_draft"
+        },
+        {
           "speaker": "tsumugi",
           "face": "normal",
           "text": "……今日の煙、すごかったです。きれいでした、……でも"
@@ -1435,7 +1442,35 @@
             "face": "smile",
             "text": "ありがとう。……会場まで、来てくれてたんだ"
           }
-        ]
+        ],
+        "ta_tsumugi_today": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……今日も少し、描きました。あとで、見てもらえますか"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "つむぎの指がiPadにかかる。はじめのスマホは、通知で何度も震えていた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "うん、あとで。今、優勝の写真を送ってて"
+          },
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "……はい"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "画面を開きかけた手が、鞄の中に戻った。はじめは、そこまで見ていなかった。"
+          }
+        ],
+        "ta_tsumugi_no_draft": []
       }
     },
     {

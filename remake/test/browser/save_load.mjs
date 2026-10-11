@@ -120,6 +120,9 @@ await suite("save-load", async check => {
       await prepare(page);
       // Use production resume/menu handlers, then click the actual save/load controls.
       await page.evaluate(async () => {
+        // Read any newly added story catch-up before exercising the map's save menu.
+        const { vnTest } = await import("./js/vn/engine.js");
+        vnTest.turbo = true;
         QA.core.save();
         const { showTitle } = await import("./js/scenes/title.js");
         showTitle();

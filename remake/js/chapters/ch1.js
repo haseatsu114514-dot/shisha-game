@@ -31,6 +31,7 @@ import { buildGameOver } from "./gameover.js";
 import { runFullPractice, CRAFT_STEPS, recordPractice } from "../craft/practice.js";
 import { prepareFlavorStock } from "../daily/preparation.js";
 import { warmCraftAssets } from "../craft/readiness.js";
+import { playTsumugiStory } from "./tsumugi-story.js";
 import { computeShisha, finalize } from "../craft/score.js";
 import { outcomeOf, showStandings, resultCountdown, nagumoCutin, resultTable } from "../craft/result.js";
 
@@ -47,6 +48,7 @@ export function setupHooks() {
   hooks.onCg = recordCg;           // 見たCGはギャラリーで見返せる
   hooks.interpolate = (t) => t.replace(/\{daysLeft\}/g, String(daysLeft())).replace(/\{day\}/g, String(state.day))
     .replace(/\{tsumugiFollowers\}/g, typeof DB.characters.tsumugi?.art_sns?.followers === "number" ? `${DB.characters.tsumugi.art_sns.followers / 10000}万` : "たくさん")
+    .replace(/\{tsumugiContestTheme\}/g, DB.characters.tsumugi?.art_contest?.theme || "日常の風景")
     .replace(/\{fortuneName\}/g, state.fortune ? displayName(state.fortune.char, state) : "その人"); // 占い師の結果
   // 交友の締めくくり: lover / romance_open。story_seen は固有会話を読んだか（約束・既知の話の分岐）
   hooks.evalCondition = (line) => line.condition_type === "story_seen" ? storySeen(line.dialogue) : bondCondition(line);
@@ -84,6 +86,7 @@ export async function startNewGame() {
   playBgm("tonari");
   await play("ch1_opening", { bg: TONARI });
   save();
+  await playTsumugiStory(1); // 初日に取材と連絡先交換。配達・他店のイベントより先に関係を作る。
   await play("ch1_tsumugi_departure", { bg: TONARI });
   await play("remake_tutorial_offer", { bg: TONARI });
   if (flag("_tutorial_requested")) await tutorial();
@@ -104,6 +107,7 @@ export async function resumeGame() {
 }
 
 async function dailyPart() {
+  await playTsumugiStory(Math.max(1, state.day - 1), { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N) });
   await runDaily({ nightEvents: NIGHT_EVENTS });
   await tournamentDay();
 }
@@ -150,16 +154,27 @@ const once = (key, fn) => ({ run: async () => { setFlag(key); await fn(); }, don
 
 const NIGHT_EVENTS = {
   2: { pin: "tonari", teaser: "tonari", beat: "夜、tonariに顔を出す──", ...once("_ev_salaryman", nightScene("ch1_salaryman_regular", TONARI_N)) },
-  3: { pin: "tonari", teaser: "tonari", beat: "閉店後、スミさんと一台を通して作る──", ...once("_ev_first_practice", earlyPractice) },
+  3: { pin: "tonari", teaser: "tonari", beat: "つむぎの途中の絵を見て、閉店後は作業台へ──",
+    done: () => flag("_tsumugi_contest_progress") && flag("_ev_first_practice"),
+    run: async () => {
+      await playTsumugiStory(3);
+      if (!flag("_ev_first_practice")) await once("_ev_first_practice", earlyPractice).run();
+    } },
   4: { pin: null, teaser: "帰り道", beat: "買い出しの帰り道──", ...once("_ev_ageha_cameo", nightScene("ch1_ageha_encounter", BG("bg_street_night"))) },
   5: { pin: "tonari", teaser: "tonari", beat: "閉店後の店に、もう少しだけ残る──", ...once("_ev_day5", nightScene("ch1_day5_sumi_story", TONARI_N)) },
   7: { pin: "tonari", teaser: "tonari", beat: "大会まで、ちょうど折り返し──", ...once("_ev_midcheck", midPreparation) },
   9: { pin: "c_station", teaser: "C.STATION", beat: "夜。C.STATIONで出場者説明会──", ...once("_ev_meet_rivals", nightScene("ch1_meet_rivals", BG("bg_c_station_night"))) },
   10: { pin: "tonari", teaser: "tonari", beat: "帰り道、tonariに寄っていく──", ...once("_ev_salaryman_change", nightScene("ch1_salaryman_change", TONARI_N)) },
-  12: { pin: "tonari", teaser: "tonari", beat: "閉店間際のtonari──", ...once("_ev_tsumugi_sketch", sketchScene("ch1_tsumugi_sketch", TONARI_N)) },
-  [TOURNAMENT_DAY - 1]: { pin: "tonari", teaser: "tonari", beat: "夜。店の作業台で、前日リハーサル──",
-    done: () => flag("_ev_rehearsal") && flag("_ev_last_night"),
+  12: { pin: "tonari", teaser: "tonari", beat: "閉店間際、つむぎが描き終えた絵を開く──",
+    done: () => flag("_ev_tsumugi_sketch") && flag("_tsumugi_contest_submitted"),
     run: async () => {
+      await playTsumugiStory(12, { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N) });
+      setFlag("_ev_tsumugi_sketch");
+    } },
+  [TOURNAMENT_DAY - 1]: { pin: "tonari", teaser: "tonari", beat: "夜。店の作業台で、前日リハーサル──",
+    done: () => flag("_ev_rehearsal") && flag("_ev_last_night") && flag("_tsumugi_contest_eve"),
+    run: async () => {
+      await playTsumugiStory(TOURNAMENT_DAY - 1);
       if (!flag("_ev_rehearsal")) await once("_ev_rehearsal", rehearsal).run();
       await lastNight();
     } },
@@ -204,6 +219,7 @@ const STEPS_R1 = CRAFT_STEPS.filter(([id]) => !["pull", "care1", "care2"].includ
 const STEPS_ALL = CRAFT_STEPS;
 
 async function tournamentDay() {
+  await playTsumugiStory(TOURNAMENT_DAY - 1, { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N) });
   // 旧セーブでDAY14の日常から再開しても、前夜の会話を落とさず大会へ進める。
   if (state.phase !== "tournament") {
     await prepareFlavorStock();

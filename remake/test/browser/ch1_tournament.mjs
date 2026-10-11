@@ -76,8 +76,10 @@ await suite("ch1-tournament", async check => {
         const chapter = await import("./js/chapters/ch1.js");
         const vn = await import("./js/vn/engine.js");
         const intro = await import("./js/vn/intro.js");
+        const { TSUMUGI_STORY } = await import("./js/chapters/tsumugi-story.js");
         const { state } = T.core;
         Object.assign(state, { phase: "tournament", day: 14, flavors: ["double_apple", "mint", "blueberry"], flavorStock: { double_apple: 50, mint: 50, blueberry: 50 } });
+        for (const step of TSUMUGI_STORY) state.flags[step.flag] = true;
         // 初登場カットインは3.6秒固定。既読セーブを想定し、会話のSKIPだけを検証する。
         for (const id of ["sumi", "pakki", "nagumo", "maezono", "dr_kemuri", "naru", "adam", "minto"]) intro.markIntroSeen(id);
         vn.vnTest.turbo = false;
