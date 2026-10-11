@@ -1,7 +1,7 @@
 # レビュー対象範囲（矛盾・改行・セリフ点検用）
 
 AI（Claude / GLM 等）や人間がこのリポジトリを「矛盾点・改行・ストーリー・セリフ」で
-見渡すときの**対象範囲と除外リスト**。Godot版は削除済み（CLAUDE.md「Godot版は削除済み」を参照）。
+見渡すときの**対象範囲と除外リスト**。Godot版は削除済み（AGENTS.md「Git Safety」を参照）。
 レビューは **`remake/` ＋ `data/` ＋ `brand/` が唯一の正史** という前提で行う。
 
 目的:
@@ -41,6 +41,6 @@ AI（Claude / GLM 等）や人間がこのリポジトリを「矛盾点・改�
 - **正史は remake/ ＋ data/ ＋ brand/**。矛盾を見つけたら直すのはこの3つ。
 - 台詞は `data/dialogue/*.json` が原本。現行版はそのJSONを直接読む。
 - ツールに範囲を渡すとき:
-  - Claude Code は本ファイルと CLAUDE.md を自動で読む。「`docs/review_scope.md` の範囲でレビューして」と指示すれば足りる。
+  - Claude Code は CLAUDE.md から AGENTS.md を読み、レビュー時には本ファイルを参照する。「`docs/review_scope.md` の範囲でレビューして」と指示すれば足りる。
   - 他エージェント（Cline / Cursor / GLM 等）には「レビュー対象は `data/dialogue/`・`brand/`・`data/*.json`・`remake/js/` のみ。`assets/`・`remake/data/manifest.json` は除外」と渡す。
 - トークン概算は 2026-06-14 時点の実測（コード≈4文字/token、日本語≈1〜1.8文字/token）。目安。

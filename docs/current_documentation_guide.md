@@ -3,7 +3,7 @@
 ## 正本と優先順位
 
 1. 実際に動く現行コード・データ: `remake/`, `data/`, `brand/`。仕様との食い違いは勝手に解決せず報告する。
-2. 開発・Git安全ルール: `CLAUDE.md` が正本。Codexは `AGENTS.md` から参照する。Git事故防止の制約は必ず維持。
+2. 開発・Git安全ルール: `AGENTS.md` が唯一の正本。Claude Code は `CLAUDE.md` から読み込む。Git事故防止の制約は必ず維持。
 3. 現行の起動・テスト: `remake/README.md` と `README.md`。
 4. 仕様・オーナー要望: `docs/master_spec.md` と `docs/owner_requests.md`。履歴が混在するため、実装パス・採用状況は確認する。
 5. レビュー範囲: `docs/review_scope.md`。
@@ -14,6 +14,7 @@
 - 旧 `web/`・Godot版は廃止済み。歴史的な記録や参考実装は現行の編集対象にしない。
 - 過去の資料にある有用なゲーム仕様・キャラクター設定は、旧技術への言及があっても一括削除しない。
 - 旧資料の整理・削除は、参照先と失われる情報を確認した別のPRで行う。
+- 詳細なAI作業用資料: `docs/gameplay_agent_reference.md`（ゲーム・物語）、`docs/asset_ai_guidance.md`（画像・素材）。必要時のみ読む。
 
 ## AI間の引き継ぎ
 
