@@ -8,3 +8,14 @@ export function invitationCost(event) {
   return 0;
 }
 export const invitationGrowth = (event) => event === "__sumi_baito__" ? { points: 1 } : { budget: 1, points: 2 };
+
+// 店内の試飲だけは当日の夜にも向かえる。昼限定の外出・定休日の私的な約束は延長しない。
+export const storeInvitationSpot = (message) => message?.accept_event === "interaction_minto_noon_01"
+  && !message.private_schedule && !message.after_close && !message.temporary_closed ? "minto" : null;
+
+/** 同じ試飲台本の時間描写だけを実際の来店時刻に合わせる。DBの正本は変更しない。 */
+export function storeInvitationDialogue(dialogue, slot) {
+  if (!dialogue || slot !== 1) return dialogue;
+  return { ...dialogue, lines: dialogue.lines.map((line, i) => i === 0
+    ? { ...line, text: line.text.replace("昼下がりのPEPPERMINT", "夜のPEPPERMINT") } : line) };
+}
