@@ -170,10 +170,10 @@ const NIGHT_EVENTS = {
   7: { pin: "tonari", teaser: "tonari", beat: "大会まで、ちょうど折り返し──", ...once("_ev_midcheck", midPreparation) },
   9: { pin: "c_station", teaser: "C.STATION", beat: "夜。C.STATIONで出場者説明会──", ...once("_ev_meet_rivals", nightScene("ch1_meet_rivals", BG("bg_c_station_night"))) },
   10: { pin: "tonari", teaser: "tonari", beat: "帰り道、tonariに寄っていく──", ...once("_ev_salaryman_change", nightScene("ch1_salaryman_change", TONARI_N)) },
-  12: { pin: "tonari", teaser: "tonari", beat: "閉店間際、つむぎが描き終えた絵を開く──",
+  11: { pin: "tonari", teaser: "tonari", beat: "閉店間際、つむぎが描き終えた絵を開く──",
     done: () => flag("_ev_tsumugi_sketch") && flag("_tsumugi_contest_submitted"),
     run: async () => {
-      await playTsumugiStory(12, { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N) });
+      await playTsumugiStory(11, { sketch: sketchScene("ch1_tsumugi_sketch", TONARI_N) });
       setFlag("_ev_tsumugi_sketch");
     } },
   [TOURNAMENT_DAY - 1]: { pin: "tonari", teaser: "tonari", beat: "夜。店の作業台で、前日リハーサル──",

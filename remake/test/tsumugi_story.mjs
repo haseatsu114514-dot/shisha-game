@@ -47,7 +47,7 @@ try {
       s.stats.charm = 90; s.fortune = { char: "tsumugi" };
       const before = T.resources();
       const levels = [];
-      for (const day of [1, 3, 12, 13]) {
+      for (const day of [1, 3, 11, 13]) {
         s.day = day; await T.story.playTsumugiStory(day);
         levels.push(T.stats.affinityLevel("tsumugi"));
       }
@@ -163,7 +163,7 @@ try {
   console.log("[tsumugi story] PASS: first-day introduction and contact before other errands/characters");
 
   // 本番カレンダーの夜枠で必須イベントが発火し、翌日のマップへ戻る。全章通しは不要。
-  for (const day of [3, 12, 13]) {
+  for (const day of [3, 11, 13]) {
     const calendar = await open();
     await calendar.evaluate(async day => {
       const s = T.fresh(); s.day = day;
@@ -190,9 +190,9 @@ try {
     const end = await calendar.evaluate(() => ({ pts: T.core.state.affinity.tsumugi,
       flags: T.core.state.flags, stories: T.core.state.story.tsumugi || 0, lines: T.lines(), error: window.calendarError }));
     assert.equal(end.error, undefined); assert.equal(end.stories, 0);
-    assert.equal(end.pts, day < 12 ? 9 : 20);
+    assert.equal(end.pts, day < 11 ? 9 : 20);
     const expected = { 3: "_tsumugi_contest_progress",
-      12: "_tsumugi_contest_submitted", 13: "_tsumugi_contest_eve" }[day];
+      11: "_tsumugi_contest_submitted", 13: "_tsumugi_contest_eve" }[day];
     assert(end.flags[expected], `DAY${day} missed its mandatory Tsumugi scene`);
     if (day === 3) {
       assert(end.flags._ev_first_practice, "DAY3 missed the following crafting practice");
@@ -203,6 +203,86 @@ try {
     await calendar.close();
     console.log(`[tsumugi story] PASS: DAY${day} fixed event → next morning`);
   }
+  // 旧DAY12/13セーブは、移動済みの応募を補完し、保存後の再読では報酬も会話も重ねない。
+  for (const day of [12, 13]) {
+    for (const submitted of [false, true]) {
+      const old = await page.evaluate(async ({ day, submitted }) => {
+        const s = T.fresh(); s.day = day;
+        await T.story.playTsumugiStory(3);
+        if (submitted) await T.story.playTsumugiStory(11);
+        s.flags._ev_tsumugi_sketch = true;
+        T.core.save(); T.core.load(); T.vn.backlog().length = 0;
+        const before = T.resources();
+        await T.story.playTsumugiStory(day - 1);
+        const first = T.lines();
+        T.core.load(); T.vn.backlog().length = 0;
+        await T.story.playTsumugiStory(day - 1);
+        return { first, repeat: T.lines(), sameResources: before === T.resources(),
+          submitted: T.core.state.flags._tsumugi_contest_submitted, pts: T.core.state.affinity.tsumugi };
+      }, { day, submitted });
+      assert(old.submitted); assert.equal(old.pts, 20); assert(old.sameResources);
+      assert.equal(old.first.some(t => t.includes("応募完了")), !submitted);
+      assert.deepEqual(old.repeat, []);
+    }
+  }
+  console.log("[tsumugi story] PASS: unread/read DAY12/13 legacy submissions, save/load without duplicate reward");
+
+  // DAY11→12→13を同じカレンダーで連続プレイ。自由行動2回を保ち、間の夜は強制回なし。
+  const consecutive = await open();
+  await consecutive.evaluate(async () => {
+    const s = T.fresh(); Object.assign(s, { day: 11, slot: 0 });
+    await T.story.playTsumugiStory(10);
+    s.flags._morning_11 = true;
+    s.flavors.push("blueberry"); s.flavorStock.blueberry = 50;
+    const { craftTest } = await import("./js/craft/session.js"); craftTest.auto = "good";
+    T.vn.backlog().length = 0;
+    T.trace = [];
+    const hook = T.vn.hooks.onLine;
+    T.vn.hooks.onLine = (id, line) => {
+      hook?.(id, line);
+      if (T.trace.at(-1) !== id) T.trace.push(id);
+    };
+    T.vn.vnTest.choose = (_, labels) => Math.max(0, labels.findIndex(l => l.includes("早寝")));
+    T.ch1.resumeGame().catch(e => { window.calendarError = e.message; });
+  });
+  for (const day of [11, 12, 13]) {
+    for (const slot of [0, 1]) {
+      await consecutive.waitForFunction(({ day, slot }) => T.core.state.day === day && T.core.state.slot === slot
+        && document.querySelector('.map:not(.done) [data-spot="rest"]'), { day, slot }, { timeout: 60000 });
+      if (day === 12 && slot === 0) {
+        const before = await consecutive.evaluate(() => {
+          T.core.saveToSlot("suien_remake_slot1"); T.core.loadFromSlot("suien_remake_slot1");
+          return { flags: T.core.state.flags, trace: T.trace };
+        });
+        assert(before.flags._tsumugi_contest_submitted);
+        assert.equal(before.trace.filter(id => id === "ch1_tsumugi_sketch").length, 1);
+      }
+      await consecutive.locator('.map:not(.done) [data-spot="rest"]').click();
+      await consecutive.locator('[data-test="map-go"]').click();
+    }
+    if (day < 13) {
+      await consecutive.waitForFunction(day => T.core.state.day === day + 1
+        && document.querySelector('.map:not(.done)'), day, { timeout: 60000 });
+      if (day === 12) {
+        assert.deepEqual(await consecutive.evaluate(() => T.trace.filter(id =>
+          /tsumugi|preparation|midcheck|rehearsal/.test(id))),
+        ["ch1_tsumugi_sketch"], "DAY12 repeated or added a mandatory training/story scene");
+      }
+    }
+  }
+  await consecutive.waitForFunction(() => T.core.state.day === 14, null, { timeout: 60000 });
+  const final = await consecutive.evaluate(() => ({ trace: T.trace, flags: T.core.state.flags,
+    pts: T.core.state.affinity.tsumugi, error: window.calendarError }));
+  assert.equal(final.error, undefined); assert.equal(final.pts, 20);
+  assert.equal(final.trace.filter(id => id === "ch1_tsumugi_sketch").length, 1);
+  assert.equal(final.trace.filter(id => id === "ch1_tsumugi_eve").length, 1);
+  assert(final.trace.indexOf("ch1_tsumugi_sketch") < final.trace.indexOf("ch1_tsumugi_eve"));
+  assert(final.flags._ev_rehearsal && final.flags._ev_last_night);
+  assert.equal(final.flags._craft_practice_runs.length, 1);
+  assert.equal(final.flags._craft_practice_runs[0].kind, "rehearsal");
+  await consecutive.close();
+  console.log("[tsumugi story] PASS: continuous DAY11→14, two actions/day, quiet DAY12, DAY13 rehearsal/eve exactly once");
+
   assert.deepEqual(errors, []);
-  console.log("[tsumugi story] PASS: first day and DAY3/12/13 calendar events, including the old completed-eve save");
+  console.log("[tsumugi story] PASS: first day and DAY3/11/13 calendar events, including the old completed-eve save");
 } finally { await browser.close(); }
