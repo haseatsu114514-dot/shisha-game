@@ -5,10 +5,10 @@ import { timeOfDay } from "../core/state.js";
 import { artImg, artHeight } from "./art.js";
 
 export const WORKER_STEPS = {
-  setup: "道具を選ぶ", concept: "今日の一台を考える", mix: "香りを合わせる",
+  setup: "道具を選ぶ", mix: "香りを合わせる",
   pack: "葉を詰める", holes: "アルミに穴を開ける", heat: "炭の芯を確かめる",
   place: "炭を置く", steam: "蒸らしを待つ", pull: "煙の温度を合わせる",
-  care: "最後の一口まで整える", trial: "香りを届ける",
+  care: "最後の一口まで整える",
 };
 
 /** 作業台のシーシャ台（本体・ステム・受け皿・ボウル）。GAME OVER の影絵にも同じ組み方を使う。 */

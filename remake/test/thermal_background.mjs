@@ -1,5 +1,5 @@
 // 実温度の引継ぎ、吸い方・炭による上下、描画・スマホ・低減モード。
-// 序盤は色のない灰色→ぬるいうちに暖かい色→適温は虹と陽炎、超えるとだんだん火事のように黄色→赤の炎（TH09・TH12・TH13・TH24）。
+// 序盤は色のない灰色→ぬるいうちに暖かい色→緑は安定・最適温だけ静かな虹、超えるとだんだん火事のように黄色→赤の炎（TH09・TH12・TH13・TH24）。
 // 温度計の一番上で爆発して焦げる（TH06）。ボウルは燃やさない（TH04）。熱管理は「炭を交換しますか？」→交換する炭を炭焼き→吸い出しと同じダイヤル（TH14・TH21・TH39）。冷え切り・フレーバー切れもダメになる（TH19・TH20）。
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -57,7 +57,7 @@ try {
   await page.evaluate(() => T.session.stepPanel('heat','炭焼き'));
   assert(!(await page.locator('.thermal-backdrop').isVisible()));
   // 前回の一台の灼熱を蒸らしへ持ち越さず、炭を置いた直後の温度から始める。
-  await page.evaluate(() => { T.session.stepPanel('trial','x'); T.session.setBenchTemperature(cs,.96); T.session.stepPanel('steam','蒸らし時間'); });
+  await page.evaluate(() => { T.session.stepPanel('pull','x'); T.session.setBenchTemperature(cs,.96); T.session.stepPanel('steam','蒸らし時間'); });
   assert.equal(await band(), 'cold');
   // 見出しは素材スキンより後の暗幕で読める。台の上は煙だけで、ボウルは燃やさない。
   assert.match(await page.locator('.bench-top').evaluate(e=>getComputedStyle(e).backgroundImage), /rgba\(18, 11, 33/);
@@ -101,8 +101,8 @@ try {
   assert(Math.abs(Number(await page.locator('.thermal-backdrop').getAttribute('data-temperature'))-await page.evaluate(()=>cs.pull.temp))<.0001);
   await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.run);
   const images=[], colors={}, glows=[], hazes={}, rainbow={};
-  for (const [temp, expected] of [[.2,'cold'],[.4,'warming'],[.54,'ready'],[.70,'hot'],[.83,'fire'],[.96,'inferno']]) {
-    await page.evaluate(t=>{T.session.stepPanel('trial','温度のイメージ');T.session.setBenchTemperature(cs,t);},temp);
+  for (const [temp, expected] of [[.2,'cold'],[.4,'warming'],[.46,'ready'],[.54,'optimal'],[.70,'hot'],[.83,'fire'],[.96,'inferno']]) {
+    await page.evaluate(t=>{T.session.stepPanel('pull','温度のイメージ');T.session.setBenchTemperature(cs,t);},temp);
     assert.equal(await band(),expected); images.push(await pixels());
     colors[expected] = await mean();
     hazes[expected] = await haze();
@@ -110,20 +110,22 @@ try {
     glows.push(Number(await page.locator('.bench').evaluate(e => getComputedStyle(e).getPropertyValue('--thermal-glow-strength'))));
     await shot(`temperature-${expected}`);
   }
-  assert.equal(new Set(images).size,6,'temperature pictures are identical');
+  assert.equal(new Set(images).size,7,'temperature pictures are identical');
   const [cr, cg, cb] = colors.cold, [gr, gg, gb] = colors.ready, [hr, hg, hb] = colors.hot, [fr, fg, fb] = colors.fire, [ir, ig, ib] = colors.inferno;
   assert(Math.max(cr, cg, cb) - Math.min(cr, cg, cb) < 22 && cr + cg + cb > 3 * 150, `the start is not colorless: ${colors.cold}`);
   const [wr, wg, wb] = colors.warming;
   assert(wr > wb + 25, `lukewarm is not turning warm: ${colors.warming}`);
-  assert(rainbow.ready >= 5, `ideal is not a rainbow: ${rainbow.ready} hues`);
+  assert(rainbow.optimal >= 5, `ideal is not a rainbow: ${rainbow.optimal} hues`);
   assert(rainbow.cold <= 2, `cold already shows many colors: ${rainbow.cold}`);
   assert(fr > fg + 60 && fr > fb + 80, `overheat is not red: ${colors.fire}`);
   assert(hr > hb + 40 && hr > hg + 30, `hot stage is not turning warm: ${colors.hot}`);
   assert(ir > ig + 40 && ir > ib + 60, `inferno is not red-hot: ${colors.inferno}`);
   for (const name of ['hot', 'fire', 'inferno']) { const [r, g, b] = colors[name]; assert(!(b > r + 30 && b > g), `${name} uses blue or purple fire: ${[r, g, b]}`); }
-  // 適温あたりから作業風景がゆらぐ。低温ではゆらさない。
+  // 緑・虹はゆらさず、過熱だけに陽炎を出す。
   assert.equal(hazes.cold[0], '0'); assert.equal(hazes.cold[1], '');
-  assert.equal(hazes.ready[0], '4'); assert.match(hazes.ready[1], /url\("?#thermal-haze-\d+"?\)/);
+  assert.deepEqual(hazes.ready, ['0', '']); assert.deepEqual(hazes.optimal, ['0', '']);
+  assert(rainbow.ready <= 2, 'Green ideal band already shows a rainbow');
+  assert(Number(hazes.hot[0]) > 0, 'Overheat haze disappeared');
   // 同じ温度帯の中でも、温度に沿って絵が少しずつ移る（だんだん火事になる）。
   const within = [];
   for (const t of [.78, .83, .88]) { await page.evaluate(v => T.session.setBenchTemperature(cs, v), t); await page.waitForTimeout(120); within.push(await pixels()); }
@@ -278,11 +280,11 @@ try {
   assert.equal(await page.locator('.result-card.show .rc-title').textContent(), 'シーシャが焦げてしまった');
   assert.deepEqual(await page.evaluate(() => [cs.burnt, cs.care.failed, cs.care.score]), [true, 'burnt', 0]);
   await page.locator('[data-test="step-next"]').click(); await page.evaluate(() => window.run);
-  await page.evaluate(() => { T.session.stepPanel('trial', '温度のイメージ'); T.session.setBenchTemperature(cs, .54); });
-  assert.equal(await band(), 'ready');
+  await page.evaluate(() => { T.session.stepPanel('pull', '温度のイメージ'); T.session.setBenchTemperature(cs, .54); });
+  assert.equal(await band(), 'optimal');
   assert.equal(await page.locator('.bench.thermal-burnt, .bench.thermal-ruined').count(), 0);
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.evaluate(()=>{T.session.stepPanel('trial','温度のイメージ');T.session.setBenchTemperature(cs,.96);});
+  await page.evaluate(()=>{T.session.stepPanel('pull','温度のイメージ');T.session.setBenchTemperature(cs,.96);});
   await page.waitForTimeout(120); const still=await pixels();
   await page.waitForTimeout(200); assert.equal(await pixels(),still);
   assert.equal(await page.locator('.thermal-wisps').evaluate(e=>getComputedStyle(e).animationName),'none');
@@ -295,5 +297,5 @@ try {
   await page.evaluate(()=>T.session.stepPanel('holes','穴あけ'));
   assert(!(await page.locator('.thermal-backdrop').isVisible()));
   assert.deepEqual(errors,[]);
-  console.log('PASS: colorless→warm→rainbow with heat haze→gradual yellow→red fire, clear gauge with a wide hazard band, narrow cold zone and pointer, stamina strain, heat care with the coal swap, a second coal burn and the dial game, fatigue on Hajime\'s face, one leaf at a time turning brown→black→gone beside a five-pull counter and cap, over-pull strain from the 3rd care pull, failure when the last red turns brown, cold-out, full-screen blast, bowl not burning, burst on pull and heat care, readable header, steam reset, steam pause/resume and handoff, stable waiting temperature, coal cooling, reduced motion, mobile bounds and reset; page errors 0');
+  console.log('PASS: colorless→warm→stable green→quiet rainbow only in the optimal band→gradual yellow→red fire, clear gauge with a wide hazard band, narrow cold zone and pointer, stamina strain, heat care with the coal swap, a second coal burn and the dial game, fatigue on Hajime\'s face, one leaf at a time turning brown→black→gone beside a five-pull counter and cap, over-pull strain from the 3rd care pull, failure when the last red turns brown, cold-out, full-screen blast, bowl not burning, burst on pull and heat care, readable header, steam reset, steam pause/resume and handoff, stable waiting temperature, coal cooling, reduced motion, mobile bounds and reset; page errors 0');
 } finally { await browser.close(); }

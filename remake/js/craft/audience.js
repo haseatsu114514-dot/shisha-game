@@ -31,7 +31,7 @@ export function audienceFor(mode, chapter) {
   return mode === "tutorial" || mode === "rehearsal" ? ["sumi"] : [];
 }
 
-const STEP_JUDGE = { setup: "dr_kemuri", concept: "nagumo", mix: "maezono", pack: "dr_kemuri", holes: "dr_kemuri", heat: "dr_kemuri", place: "dr_kemuri", steam: "maezono", pull: "maezono", care: "dr_kemuri", trial: "nagumo" };
+const STEP_JUDGE = { setup: "dr_kemuri", mix: "maezono", pack: "dr_kemuri", holes: "dr_kemuri", heat: "dr_kemuri", place: "dr_kemuri", steam: "maezono", pull: "maezono", care: "dr_kemuri" };
 const MOODS = { watch: "手元を見守る", nod: "小さくうなずく", concern: "手元を気にかける", think: "静かに考える" };
 // 採用済みの顔アイコンと同じ頭部の切り取り（tools/make_face_icons.py の face_box）。
 // 通常絵の x / y / 辺を画像幅で正規化。胴体の中心へ寄せず、表情差分の原画をこの枠へ表示する。

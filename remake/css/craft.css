@@ -178,7 +178,6 @@
 .opt.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); box-shadow: inset 3px 0 var(--accent); }
 .opt.off, .opt:disabled { opacity: 0.35; cursor: not-allowed; }
 .step-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; }
-.concept-note { font-size: 16px; color: var(--accent); }
 
 /* 配合 */
 .mix { display: flex; gap: 18px; height: 100%; }
@@ -405,32 +404,6 @@
 /* 熱管理は吸い出しと同じ針のゲーム。最初の吸い出しの前だけ、炭交換のボタンが並ぶ（TH14）。 */
 .pull-care .pull-btns .btn { padding: 14px 10px; font-size: 17px; }
 
-/* ---------------------------------------------------------------- FLAVOR TRIAL */
-.trial { display: flex; flex-direction: column; gap: 14px; }
-.tr-gauge { display: flex; align-items: center; gap: 12px; font-size: 14px; letter-spacing: 0.1em; }
-.tr-gauge i { flex: 1; height: 14px; border-radius: 7px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
-.tr-gauge b { display: block; height: 100%; background: linear-gradient(90deg, var(--neon-pink), var(--neon-cyan)); transition: width 0.6s var(--ease-out); }
-.tr-gauge.high b { box-shadow: 0 0 16px var(--neon-cyan); }
-.tr-concept { font-size: 15px; color: var(--accent); }
-.tr-doubt { position: relative; padding: 18px 24px; border-radius: 10px; background: rgba(0, 0, 0, 0.55); border: 1px solid rgba(255, 63, 164, 0.5); }
-.tr-doubt.in { animation: doubt-in 0.4s var(--ease-out); }
-@keyframes doubt-in { from { opacity: 0; transform: translateX(-30px) skewX(-6deg); } }
-.td-judge { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--text-dim); }
-.td-judge img { width: 36px; height: 36px; border-radius: 50%; image-rendering: pixelated; background: #000; }
-.td-text { margin-top: 6px; font-size: 24px; font-weight: 700; line-height: 1.5; color: #fff; }
-.td-zawa { position: absolute; right: 18px; top: 12px; font-size: 14px; letter-spacing: 0.3em; color: rgba(255, 255, 255, 0.4); animation: zawa 1.2s ease-in-out infinite; }
-@keyframes zawa { 50% { transform: translateX(4px); opacity: 0.7; } }
-.tr-hand { display: flex; flex-wrap: wrap; gap: 8px; }
-.trial-appeal { padding: 10px 16px; border-radius: 6px; border: 1px solid var(--accent); background: color-mix(in srgb, var(--accent) 12%, rgba(0, 0, 0, 0.5)); color: #fff; font-size: 16px; cursor: pointer; clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%); transition: transform 0.15s, background 0.2s; animation: choice-in 0.3s var(--ease-out) backwards; }
-.trial-appeal:hover { transform: translateY(-3px); background: var(--accent); color: #000; }
-.trial-appeal.concede { border-color: rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.05); color: var(--text-dim); }
-.tr-split { position: absolute; inset: -20px; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; pointer-events: none; opacity: 0; }
-.tr-split.show { opacity: 1; }
-.sp-cell { display: grid; place-items: center; background: #000; border: 2px solid var(--neon-amber); transform: scale(0); }
-.tr-split.show .sp-cell { animation: split-in 0.25s var(--ease-snap) forwards; animation-delay: calc(var(--i) * 0.12s); }
-.sp-cell b { font-size: 44px; color: var(--neon-amber); text-shadow: 0 0 20px rgba(255, 194, 74, 0.9); }
-@keyframes split-in { to { transform: scale(1); } }
-
 /* ---------------------------------------------------------------- 結果カード */
 .result-card {
   position: absolute;
@@ -559,13 +532,14 @@
 
 /* ---------------------------------------------------------------- 大会の生放送レイヤー（ニコ動風コメント・体感スコア） */
 /* 上はヘッダー、下は実況テロップを避けて流す。操作の邪魔をしない */
-.bc-lane { position: absolute; left: 28px; width: 448px; top: 80px; bottom: 224px; z-index: 6; overflow: hidden; border-radius: 14px; pointer-events: none; container-type: inline-size; }
+.bc-lane { position: absolute; left: 0; right: 0; top: 76px; bottom: 145px; z-index: 6; overflow: hidden; pointer-events: none; user-select: none; container-type: inline-size;
+  mask-image: linear-gradient(90deg, #000b 0 36%, #0005 46% 96%, #0008 100%); }
 .nico {
   position: absolute;
   left: 0;
   white-space: nowrap;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 23px;
+  font-weight: 700;
   color: #fff;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 7px rgba(0, 0, 0, 0.6);
   transform: translateX(100cqw);

@@ -8,6 +8,7 @@ import { SE, playBgm } from "../core/audio.js";
 import { play, dialogueSequence } from "../vn/engine.js";
 import { visitChar, hasNewStory } from "./spots.js";
 import { runDrill, DRILLS } from "../craft/session.js";
+import { runFullPractice } from "../craft/practice.js";
 import { isRainy, RAIN_BAITO, RAIN_BAITO_BONUS } from "./weather.js";
 import { shiftClose } from "../core/scene-motions.js";
 
@@ -29,6 +30,7 @@ export function tonariMenu() {
       el("p.sub-lead", { text: "カウンターの奥で、スミさんが炭を切っている。今日はどうする？" }),
       el("div.sub-choices", [
         opt("お客さんとして一服", tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる", "customer", "tonari-customer"),
+        opt("一台を通して練習", "配合から提供・2回の調整まで。材料は店の葉を使う", "practice", "tonari-practice"),
         opt("シフトに入る（バイト）", "接客で稼ぐ。上がったあとはスミさんと話すか、裏で自主練もできる", "baito", "tonari-baito"),
       ]),
       el("button.btn.ghost.small.sub-back", { text: "← マップに戻る", dataset: { test: "sub-back" }, onclick: () => { SE.cancel(); pickIt(null); } }),
@@ -39,6 +41,11 @@ export function tonariMenu() {
 export async function tonariCustomer() {
   addStamina(-10);
   await visitChar("tsumugi");
+}
+
+export async function tonariPractice() {
+  addStamina(-12);
+  await runFullPractice();
 }
 
 // ---------------------------------------------------------------- バイト
@@ -177,6 +184,7 @@ function afterShiftMenu() {
       el("p.sub-lead", { text: "シフトの片付けを終えて、まだ少しだけ時間がある。" }),
       el("div.sub-choices", [
         opt("スミさんと話す", sumiNew ? "今日は何か教えてもらえそうだ" : "落ち着いた一台を分けてもらう", "sumi", "after-sumi"),
+        opt("一台を通して練習", "本番と同じ制作と2回の調整（体力を少し使う）", "full", "after-full"),
         opt("裏の作業台で自主練", "工程をひとつ選んで反復する（体力を少し使う）", "drill", "after-drill"),
         opt("まっすぐ上がる", "今日はここまで", "none", "after-none"),
       ]),
@@ -188,6 +196,9 @@ async function afterShift() {
   const pickAfter = await afterShiftMenu();
   if (pickAfter === "sumi") {
     await visitChar("sumi");
+  } else if (pickAfter === "full") {
+    addStamina(-8);
+    await runFullPractice();
   } else if (pickAfter === "drill") {
     const kind = await chooseDrill();
     addStamina(-8);

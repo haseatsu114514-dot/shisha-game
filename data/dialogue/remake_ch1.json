@@ -911,37 +911,6 @@
       },
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "夜、tonariに顔を出すと、スミさんが作業台を顎で指した。"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "一台作ってみろ。練習でも本番でもない、今日までのお前が作る一台だ"
-        },
-        {
-          "type": "reflection",
-          "context": "midcheck"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "黙って組む。詰めて、熾して、置いて、待つ。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "──完成。ホースを渡す。スミさんは目を閉じて、長い一服。"
-        },
-        {
-          "type": "condition",
-          "stat": "技術",
-          "threshold": 22,
-          "next_true": "mid_good",
-          "next_false": "mid_rough"
-        },
-        {
           "speaker": "sumi",
           "face": "serious",
           "text": "大会まで、ちょうど折り返しだ。どこを磨くかは、お前が決めろ"
@@ -1202,30 +1171,20 @@
       ]
     },
     {
-      "dialogue_id": "remake_trial_intro",
+      "dialogue_id": "remake_judging_intro",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_tournament_stage.png"
       },
       "lines": [
         {
           "speaker": "pakki",
-          "face": "smile",
-          "text": "さあさあ！ ここで恒例、FLAVOR TRIALの時間ですッ！"
-        },
-        {
-          "speaker": "pakki",
           "face": "normal",
-          "text": "作る前に掲げたコンセプトと、出来上がった一台。ちゃんと一致してますか〜？"
+          "text": "2回の調整、終了ッ！ 最後まで味を守った4台を、審査していただきます！"
         },
         {
-          "speaker": "pakki",
-          "face": "smile",
-          "text": "審査員のザワザワに、アピールポイントをぶつけてくださいッ！"
-        },
-        {
-          "speaker": "pakki",
-          "face": "evil",
-          "text": "ズレてたら「香ってない！」って言われちゃいますよ〜♪ ぷぷぷっ！"
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（あとは、吸ってもらうだけだ。今日の一台を、最後まで届けた）"
         }
       ]
     },
@@ -2308,6 +2267,98 @@
           "stats": {
             "insight": 1
           }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_preparation_first",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "大会じゃ、最初から最後まで自分で作る。今日は一台、俺と通してやるぞ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "詰めて、炭を熾して、蒸らして、吸う。迷ったら温度を見ろ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_preparation_first_end",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "一つずつ手を動かして覚えろ。tonariの作業台は、練習にも使っていい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_midcheck_intro",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside_night.png"
+      },
+      "lines": [
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "大会まで折り返しだ。今日は持っていく香りを選んで、一台作ってみろ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "提供して終わりじゃねえ。吸われた後の調整も、2回やるぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_round4_end",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+      },
+      "lines": [
+        {
+          "speaker": "pakki",
+          "face": "normal",
+          "text": "2回目の調整、終了！ 提供から最後の一口まで、味を守り切れたのは誰だ！？"
+        },
+        {
+          "speaker": "pakki",
+          "face": "evil",
+          "text": "さあ最終局面ッ！ 4人とも本当によく頑張りました！ ……でも優勝は1人だけ"
+        },
+        {
+          "speaker": "pakki",
+          "face": "evil",
+          "text": "残りの3人は、今日でおしまい"
+        },
+        {
+          "speaker": "pakki",
+          "face": "evil",
+          "text": "さっきまで隣で笑ってた人が、ですよ〜♪ 諦めなくたって終わる人はいる──それが大会！ ぷぷぷっ！"
+        },
+        {
+          "speaker": "pakki",
+          "face": "evil",
+          "text": "さあ、最後まで！！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "（泣いても笑っても、これで最後だ。やれることは、全部やった……！）"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "……お前も最後まで、丁寧に作り続けた。俺はそれを見ていた"
         }
       ]
     }

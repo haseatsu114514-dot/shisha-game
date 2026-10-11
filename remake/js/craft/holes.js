@@ -4,7 +4,7 @@
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep } from "./session.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, keys, popStamp } from "./common.js";
 import { craftCondition } from "../core/condition.js";
 
@@ -73,6 +73,7 @@ async function chooseTemplate(panel, cs) {
 }
 
 export async function runHoles(cs) {
+  await waitBenchReady(cs);
   const tutorial = cs.mode === "tutorial";
   const panel = stepPanel("holes", "アルミ穴あけ", "配置図を見てテンプレートを選ぶ。開始してから、光が目印に重なった瞬間にタップ（Space）", { brief: "穴の配置を選んでから、穴あけを始める" });
   const template = await chooseTemplate(panel, cs);
