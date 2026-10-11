@@ -13,6 +13,21 @@ export const STEP_BRIEFS = {
   care: "消耗した炭を交換して、吸って整える",
 };
 
+
+/**
+ * 初回レッスンだけ、工程の「理由」を簡潔に見せる。
+ * 抽選・採点・通常練習には影響させず、既存の「?」ガイドを再利用する。
+ */
+export const TUTORIAL_STEP_HELP = Object.freeze({
+  mix: { brief: "香りを組み合わせ、葉の配合を決める", detail: "スミ「二種類の葉で香りを作る。合計12gを目指せ」" },
+  pack: { brief: "葉の間に空気の通り道を作る", detail: "スミ「押し込みすぎるな。熱と空気の抜け道を作れ」" },
+  holes: { brief: "アルミの穴から熱と空気を通す", detail: "スミ「穴が偏ると熱も偏る。目印を見て開けろ」" },
+  place: { brief: "炭を三角に置いて熱を広げる", detail: "スミ「最初は三角が基本だ。熱を均等に回せ」" },
+  heat: { brief: "炭は芯まで焼いてから使う", detail: "スミ「表面だけじゃ足りん。芯まで赤くして使うぞ」" },
+  steam: { brief: "蒸らして葉に熱をなじませる", detail: "スミ「待つ間にも熱は入る。落ち着いて雑念をよけろ」" },
+  pull: { brief: "吸い出して仕上がりの温度を整える", detail: "スミ「針を見て吸え。虹色がちょうどいい温度だ」" },
+});
+
 export function buildGuide() {
   const note = el("p");
   const root = el("details.bench-guide", [
