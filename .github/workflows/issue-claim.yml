@@ -45,7 +45,7 @@ jobs:
             const worker = process.env.OWNER;
             const agent = process.env.AGENT;
             if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{2,79}$/.test(worker)) throw Error('Invalid owner ID');
-            const rawIssue = process.env.ISSUE.trim();
+            const rawIssue = (process.env.ISSUE || '').trim();
             if (op !== 'next' && !/^[1-9][0-9]*$/.test(rawIssue)) throw Error('Specify a valid issue number');
             const marker = /^<!-- issue-claim:v1 state=(claimed|released) owner=([a-zA-Z0-9._-]+) -->/;
             async function status(number) {
@@ -87,7 +87,7 @@ jobs:
                 candidates = all.filter(i => !i.pull_request).map(i => {
                   const labels = i.labels.map(l => typeof l === 'string' ? l : l.name);
                   const d = labels.find(l => /^difficulty:[S-D]$/.test(l));
-                  const priority = /^\\[P([0-2])\\]/.exec(i.title)?.[1];
+                  const priority = /^\[P([0-2])\]/.exec(i.title)?.[1];
                   return {number:i.number, difficulty:d ? ranks[d.split(':')[1]] : 99, priority:priority===undefined?3:Number(priority), title:i.title, labels};
                 }).filter(i => i.difficulty !== 99)
                   .filter(i => agent !== 'claude' || /恋愛|友情|ひより|みんと|つむぎ|サメ|関係|交際|遠距離|イベント|台詞/.test(i.title))
