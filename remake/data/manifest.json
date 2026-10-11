@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-10-11 16:02 UTC",
+ "generated": "2026-10-11 16:53 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -238,6 +238,8 @@
   "bg_tonari_inside.png",
   "bg_tonari_inside_day.png",
   "bg_tonari_inside_night.png",
+  "bg_tonari_inside_overcast_day.png",
+  "bg_tonari_inside_overcast_night.png",
   "bg_tournament_stage.png",
   "eden.png",
   "kemurikusa.png",
@@ -1486,6 +1488,8 @@
   "backgrounds/bg_tonari_inside.png",
   "backgrounds/bg_tonari_inside_day.png",
   "backgrounds/bg_tonari_inside_night.png",
+  "backgrounds/bg_tonari_inside_overcast_day.png",
+  "backgrounds/bg_tonari_inside_overcast_night.png",
   "backgrounds/bg_tournament_stage.png",
   "backgrounds/eden.png",
   "backgrounds/kemurikusa.png",

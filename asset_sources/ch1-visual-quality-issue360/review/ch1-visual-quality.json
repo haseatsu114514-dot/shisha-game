@@ -52,6 +52,58 @@
       "status": "passed"
     },
     {
+      "label": "tonari-desktop-sun-day",
+      "status": "passed"
+    },
+    {
+      "label": "tonari-desktop-sun-night",
+      "status": "passed"
+    },
+    {
+      "label": "tonari-desktop-cloud-day",
+      "status": "passed"
+    },
+    {
+      "label": "tonari-desktop-cloud-night",
+      "status": "passed"
+    },
+    {
+      "label": "tonari-desktop-rain-day",
+      "status": "passed"
+    },
+    {
+      "label": "tonari-desktop-rain-night",
+      "status": "passed"
+    },
+    {
+      "label": "tonari-mobile-sun-day",
+      "status": "passed"
+    },
+    {
+      "label": "tonari-mobile-sun-night",
+      "status": "passed"
+    },
+    {
+      "label": "tonari-mobile-cloud-day",
+      "status": "passed"
+    },
+    {
+      "label": "tonari-mobile-cloud-night",
+      "status": "passed"
+    },
+    {
+      "label": "tonari-mobile-rain-day",
+      "status": "passed"
+    },
+    {
+      "label": "tonari-mobile-rain-night",
+      "status": "passed"
+    },
+    {
+      "label": "unprepared-background-fallbacks",
+      "status": "passed"
+    },
+    {
       "label": "portrait-rotation-guide",
       "status": "passed"
     }
