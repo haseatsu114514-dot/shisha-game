@@ -34,7 +34,9 @@ assert.equal(data.sceneBg('bg_shishark','night').tint,'night');
 let saves=0;
 const deps={
  '../core/data.js':data,
- '../core/state.js':{state,save:()=>saves++,markMet:id=>state.met[id]=true},
+ '../core/state.js':{state,save:()=>saves++,markMet:id=>state.met[id]=true,timeOfDay:()=> 'night'},
+ '../core/ui.js':{setBg:async()=>{}},
+ '../core/scene-motions.js':{sharkSwim:async swap=>{await swap();}},
  '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),earnStat:()=>{},addMoney:()=>{},addStamina:()=>{}},
  '../vn/engine.js':{play:async id=>played.push(id)},
 };
@@ -60,9 +62,19 @@ state.chapter=2;k.syncKafukaKnowledge();const open=k.kafukaSpot();assert.equal(o
 const contacts=state.contacts;state.contacts=[];delete state.flags._lime_contact_kafuka;assert(k.kafukaSpot(),'章2では未交換でも店が開く');state.contacts=contacts;
 await k.visitKafuka(open);assert.equal(played.at(-1),'kafuka_shop_first');assert.equal(state.story.kafuka,1);
 await k.visitKafuka(open);assert.equal(played.at(-1),'kafuka_shop_repeat_0');
-state.flags._kafuka_name_known=true;assert.equal(data.displayName('kafuka',state),'波多野かふか');
+state.flags._kafuka_name_known=true;assert.equal(data.displayName('kafuka',state),'波多野なぎさ');
+// 表示名は台詞の正本を参照し、名乗る前に本名を漏らさない。
+const encounter=story.dialogues.find(d=>d.dialogue_id==='kafuka_first_encounter');
+const aliasAt=encounter.lines.findIndex(l=>l.text==='強いていうなら、サメちゃんと呼ばれておる');
+assert(aliasAt>=0);assert.equal(encounter.lines[aliasAt+1].flag,'_kafuka_nickname_known');
+assert(!JSON.stringify(encounter).includes(story.profile.full_name));
+assert(!encounter.lines.some(l=>l.flag==='_kafuka_name_known'));
+const privateName=story.dialogues.find(d=>d.dialogue_id==='kafuka_future_private_name');
+assert.equal(privateName.metadata.future_only,true);
+assert.equal(privateName.metadata.private_scene,true);
 for(const scene of story.dialogues){
  const rows=[...scene.lines,...Object.values(scene.branches||{}).flat()];
+ for(const row of rows)if(row.voice==='korochan')assert(!/じゃ|のう|おる/.test(row.text),`${scene.dialogue_id}: コロちゃんに本人の語尾が混ざった`);
  for(const row of rows){if(row.speaker==='kafuka')assert(manifest.portraits.kafuka.faces.includes(row.face));
   if(row.type==='choice')for(const choice of row.choices)assert(scene.branches[choice.next]);}
 }

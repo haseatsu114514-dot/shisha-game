@@ -10,6 +10,12 @@ import { MG_EASE as E, pick, burst, ring, confetti, twinkle, kinetic, playKineti
 import { flavorColor } from "../craft/art.js";
 import { stagePlay, backdrop } from "./stage.js";
 
+// イージング。指数の曲線は短い動き用なので、長めの動きは quint／cubic のやわらかい曲線にする
+const OUT_SOFT = "cubic-bezier(.33,1,.68,1)"; // 放り出す・立ち上げる動き（cubic-out）
+const IN_SOFT = "cubic-bezier(.32,0,.67,0)"; // 抜けていく・しぼむ動き（cubic-in）
+const GRAVITY = "cubic-bezier(.55,.085,.68,.53)"; // 落下（quad-in）
+const BACK_SOFT = "cubic-bezier(.34,1.3,.64,1)"; // 大きな物の弾み（行き過ぎは約5%）
+
 // ---------------------------------------------------------------- 共通: ハガルの絵・光の帯・香りの煙・文字
 
 const BOWL = "bowl_empty_clay.png";
@@ -46,7 +52,7 @@ async function loadBowl() {
 }
 
 /** 光の帯がハガルの上を斜めに一度走る */
-const glint = (sheen, delay = 0) => move(sheen, [{ transform: "translateX(-160%) skewX(-20deg)" }, { transform: "translateX(420%) skewX(-20deg)" }], 820, { easing: E.inOut, delay });
+const glint = (sheen, delay = 0) => move(sheen, [{ transform: "translateX(-160%) skewX(-20deg)" }, { transform: "translateX(420%) skewX(-20deg)" }], 820, { easing: "cubic-bezier(.45,0,.25,1)", delay });
 
 /** 香りの煙: 口から細い線が揺れながら上り、根元から消える（トリムパス） */
 function aroma(root, x, y, color, { n = 3, delay = 0, spread = 150, h = 1 } = {}) {
@@ -88,12 +94,14 @@ function caption(gear, cls, sub, main) {
 
 /** 最後: ハガルが一度ふくらんでから点に縮み（持ち物へ）、背景が真ん中から丸く開く */
 async function finish(iris, hero, fx, cx, cy, P) {
-  move(hero, [{ transform: "translate(0,0) scale(1)", opacity: 1 }, { transform: "translate(0,-8px) scale(1.05)", opacity: 1, offset: 0.3 }, { transform: "translate(0,0) scale(0)", opacity: 1 }], 420, { easing: E.in });
-  await sleep(380);
+  // ふくらみとしぼみを別の曲線に（全体に強い加速をかけると、ふくらみが長く居座って最後の一瞬で消える）
+  move(hero, [{ transform: "translate(0,0) scale(1)", opacity: 1, easing: OUT_SOFT }, { transform: "translate(0,-8px) scale(1.05)", opacity: 1, offset: 0.3, easing: IN_SOFT }, { transform: "translate(0,0) scale(0)", opacity: 1 }], 420, { easing: "linear" });
+  await sleep(410); // ハガルが点になる瞬間に合わせる
   SE.select();
   ring(fx, cx, cy, { r: 120, color: P.white, width: 6, dur: 420 });
-  [[-70, -40], [80, -24], [-20, 60], [52, 52]].forEach(([dx, dy], i) => twinkle(fx, cx + dx, cy + dy, { color: P.light, size: 12, delay: i * 40, dur: 500 }));
-  await move(iris, [{ "--mo-hole": "0%" }, { "--mo-hole": "100%" }], 520, { easing: E.in });
+  // 最後の遅延分も丸い幕の520msに収める。
+  [[-70, -40], [80, -24], [-20, 60], [52, 52]].forEach(([dx, dy], i) => twinkle(fx, cx + dx, cy + dy, { color: P.light, size: 12, delay: i * 40, dur: 400 }));
+  await move(iris, [{ "--mo-hole": "0%" }, { "--mo-hole": "100%" }], 520, { easing: IN_SOFT });
 }
 
 // ---------------------------------------------------------------- a: 箱: 落ちて弾み、リボンがほどけ、光の柱からハガルが上がる。箱は下へ抜ける
@@ -129,30 +137,38 @@ export async function a(gear) {
     const cap = caption(gear, "at-a", P.light, P.white);
     node.append(iris, hero, column, pack, smokeArt, fx, cap.box);
     move(back, [{ opacity: 0 }, { opacity: 1 }], 260);
-    move(glow, [{ transform: "translate(-50%,-50%) scale(0.3)", opacity: 0 }, { transform: "translate(-50%,-50%) scale(1)", opacity: 0.55 }], 700, { easing: E.out });
+    move(glow, [{ transform: "translate(-50%,-50%) scale(0.3)", opacity: 0 }, { transform: "translate(-50%,-50%) scale(1)", opacity: 0.55 }], 700, { easing: OUT_SOFT });
     // 1. 箱が伸びながら落ちて、着地でつぶれる
-    await move(pack, [{ transform: "translate(-50%, -720px) scale(0.88, 1.2)" }, { transform: "translate(-50%, 0) scale(1, 1)" }], 440, { easing: E.in });
+    await move(pack, [{ transform: "translate(-50%, -720px) scale(0.88, 1.2)" }, { transform: "translate(-50%, 0) scale(1, 1)" }], 440, { easing: GRAVITY });
     SE.pugo();
     burst(fx, cx - 160, 556, { n: 3, r0: 12, r1: 54, color: P.light, width: 5, turn: Math.PI * 0.8 });
     burst(fx, cx + 160, 556, { n: 3, r0: 12, r1: 54, color: P.light, width: 5, turn: -Math.PI * 0.15 });
-    await move(pack, [{ transform: "translate(-50%, 0) scale(1.16, 0.84)" }, { transform: "translate(-50%, 0) scale(0.95, 1.06)" }, { transform: "translate(-50%, 0) scale(1)" }], 340, { easing: "ease-out" });
+    await move(pack, [{ transform: "translate(-50%, 0) scale(1.16, 0.84)", easing: "ease-out" }, { transform: "translate(-50%, 0) scale(0.95, 1.06)", easing: "ease-in-out" }, { transform: "translate(-50%, 0) scale(1)" }], 340, { easing: "linear" });
     // 2. リボンが揺れて、輪が飛び、帯が縮んでほどける
-    await Promise.all([...loops, knot].map((l, i) => move(l, [{ rotate: "0deg" }, { rotate: `${[-12, 12, 0][i]}deg`, scale: "1.15" }, { rotate: `${[6, -6, 0][i]}deg` }, { rotate: "0deg" }], 240)));
-    loops.forEach((l, i) => move(l, [{ translate: "0 0", rotate: "0deg", opacity: 1 }, { translate: `${i ? 240 : -240}px -170px`, rotate: `${i ? 260 : -260}deg`, scale: "0.4", opacity: 0 }], 480, { easing: E.out }));
-    move(knot, [{ scale: "1" }, { scale: "0" }], 200, { easing: E.in });
-    pack.querySelectorAll(".mo-gift-band.v").forEach((b) => move(b, [{ transform: "scaleY(1)" }, { transform: "scaleY(0)" }], 260, { easing: E.in, delay: 100 }));
-    pack.querySelectorAll(".mo-gift-band.h").forEach((b) => move(b, [{ transform: "scaleX(1)" }, { transform: "scaleX(0)" }], 260, { easing: E.in, delay: 140 }));
+    // 揺れは区間ごとに緩急（全体に強い曲線をかけると中の区間が不揃いになる）
+    await Promise.all([...loops, knot].map((l, i) => move(l, [{ rotate: "0deg", easing: "ease-in-out" }, { rotate: `${[-12, 12, 0][i]}deg`, scale: "1.15", easing: "ease-in-out" }, { rotate: `${[6, -6, 0][i]}deg`, easing: "ease-in-out" }, { rotate: "0deg" }], 280, { easing: "linear" })));
+    loops.forEach((l, i) => {
+      move(l, [{ translate: "0 0", rotate: "0deg", scale: "1" }, { translate: `${i ? 240 : -240}px -170px`, rotate: `${i ? 260 : -260}deg`, scale: "0.4" }], 480, { easing: OUT_SOFT });
+      move(l, [{ opacity: 1 }, { opacity: 1, offset: 0.5 }, { opacity: 0 }], 480, { easing: "linear" }); // 飛んでいる間は見えて、後半で消える
+    });
+    move(knot, [{ scale: "1" }, { scale: "0" }], 200, { easing: IN_SOFT });
+    pack.querySelectorAll(".mo-gift-band.v").forEach((b) => move(b, [{ transform: "scaleY(1)" }, { transform: "scaleY(0)" }], 260, { easing: IN_SOFT, delay: 100 }));
+    pack.querySelectorAll(".mo-gift-band.h").forEach((b) => move(b, [{ transform: "scaleX(1)" }, { transform: "scaleX(0)" }], 260, { easing: IN_SOFT, delay: 140 }));
     await sleep(200);
     // 3. ふたが跳ね、光の柱が立ち、ハガルが上がる。箱は下へ抜けて、ハガルに重ならない
     SE.puka();
-    move(lid, [{ transform: "translate(0,0) rotate(0deg)", opacity: 1 }, { transform: "translate(210px,-330px) rotate(38deg)", opacity: 0 }], 560, { easing: E.out });
-    move(column, [{ transform: "scaleY(0)", opacity: 1 }, { transform: "scaleY(1)", opacity: 1, offset: 0.35 }, { transform: "scaleY(1.1)", opacity: 0 }], 820, { easing: E.out });
+    move(lid, [{ transform: "translate(0,0) rotate(0deg)" }, { transform: "translate(210px,-330px) rotate(38deg)" }], 560, { easing: OUT_SOFT });
+    move(lid, [{ opacity: 1 }, { opacity: 1, offset: 0.55 }, { opacity: 0 }], 560, { easing: "linear" }); // 飛んでいる間は見えて、後半で消える
+    // 柱は立ち上がりと消え方を別の曲線に（全体に強い減速をかけると、一瞬で立って長く薄れるだけになる）
+    move(column, [{ transform: "scaleY(0)", opacity: 1, easing: OUT_SOFT }, { transform: "scaleY(1)", opacity: 1, offset: 0.42, easing: "cubic-bezier(.2,.7,.4,1)" }, { transform: "scaleY(1.1)", opacity: 0 }], 620, { easing: "linear" }); // ハガルが大きくなる頃には薄れて、上に重ならない
     confetti(fx, cx, 390, { n: 20, colors: [ribbon, P.light, P.white, P.main], spread: 340 });
     burst(fx, cx, cy, { n: 14, r0: 290, r1: 380, color: P.light, width: 6, delay: 120 });
     ring(fx, cx, cy, { r: 340, color: P.white, width: 8, delay: 100 });
-    move(rays, [{ opacity: 0, transform: "translate(-50%,-50%) scale(0.3) rotate(0deg)" }, { opacity: 1, transform: "translate(-50%,-50%) scale(1) rotate(10deg)", offset: 0.25 }, { opacity: 1, transform: "translate(-50%,-50%) scale(1) rotate(44deg)" }], 3200, { easing: "cubic-bezier(.2,.6,.4,1)" });
-    move(pack, [{ transform: "translate(-50%, 0) rotate(0deg)" }, { transform: "translate(-50%, -18px) rotate(0deg)", offset: 0.25 }, { transform: "translate(-50%, 460px) rotate(5deg)" }], 520, { easing: E.in, delay: 40 });
-    await move(hero, [{ transform: "translate(0,190px) scale(0.34)", opacity: 1 }, { transform: "translate(0,0) scale(1)", opacity: 1 }], 640, { easing: E.back, delay: 90 });
+    // 光線: 現れる区間は減速、そのあとは一定の速さで回り続ける（退場はその角度から続ける）
+    move(rays, [{ opacity: 0, transform: "translate(-50%,-50%) scale(0.3) rotate(0deg)", easing: OUT_SOFT }, { opacity: 1, transform: "translate(-50%,-50%) scale(1) rotate(6deg)", offset: 0.14, easing: "linear" }, { opacity: 1, transform: "translate(-50%,-50%) scale(1) rotate(46deg)" }], 3200, { easing: "linear" });
+    // 箱: ひと呼吸の持ち上げ（上へ減速）から、下へ落ちて抜ける（加速）。区間ごとに曲線を分ける
+    move(pack, [{ transform: "translate(-50%, 0) rotate(0deg)", easing: OUT_SOFT }, { transform: "translate(-50%, -18px) rotate(0deg)", offset: 0.25, easing: GRAVITY }, { transform: "translate(-50%, 460px) rotate(5deg)" }], 520, { easing: "linear", delay: 40 });
+    await move(hero, [{ transform: "translate(0,190px) scale(0.34)", opacity: 1 }, { transform: "translate(0,0) scale(1)", opacity: 1 }], 640, { easing: BACK_SOFT, delay: 90 });
     // 4. 見せ場: スポットライト・影・光の帯・香りの煙・きらめき・文字
     move(cone, [{ opacity: 0, transform: "translateX(-50%) scaleY(0.6)" }, { opacity: 1, transform: "translateX(-50%) scaleY(1)" }], 520, { easing: E.out });
     move(shadow, [{ opacity: 0, transform: "scale(0.4)" }, { opacity: 1, transform: "scale(1)" }], 360, { easing: E.out });
@@ -166,9 +182,18 @@ export async function a(gear) {
     cap.hide();
     move(smokeArt, [{ opacity: 1 }, { opacity: 0 }], 300);
     move(cone, [{ opacity: 1 }, { opacity: 0 }], 240);
-    move(rays, [{ opacity: 1, transform: "translate(-50%,-50%) scale(1) rotate(44deg)" }, { opacity: 0, transform: "translate(-50%,-50%) scale(0.5) rotate(60deg)" }], 420, { easing: E.in });
+    const turn = raysAngle(rays); // 今の角度から続けて、回転が飛ばないようにする
+    move(rays, [{ opacity: 1, transform: `translate(-50%,-50%) scale(1) rotate(${turn}deg)` }, { opacity: 0, transform: `translate(-50%,-50%) scale(0.5) rotate(${turn + 8}deg)` }], 420, { easing: IN_SOFT });
     await finish(iris, hero, fx, cx, cy, P);
   });
+}
+
+/** 光線の今の回転角（度）。計算後のスタイルから読む */
+function raysAngle(node) {
+  try {
+    const m = new DOMMatrix(getComputedStyle(node).transform);
+    return Math.round(Math.atan2(m.b, m.a) * 1800 / Math.PI) / 10;
+  } catch { return 44; }
 }
 
 // ---------------------------------------------------------------- b: 風呂敷: 結び目がほどけ、四隅が手前へめくれて開き、布が床に寝てハガルが立ち上がる

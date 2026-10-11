@@ -1,0 +1,187 @@
+{
+  "date": "2026-10-11T05:07:00.807Z",
+  "before": {
+    "field": {
+      "left": 483,
+      "top": 87,
+      "right": 1235,
+      "bottom": 501,
+      "width": 752,
+      "height": 414
+    },
+    "margins": {
+      "top": 17,
+      "left": 33,
+      "right": 33
+    },
+    "controls": [
+      {
+        "left": 655,
+        "top": 515,
+        "right": 831,
+        "bottom": 695,
+        "width": 176,
+        "height": 180
+      },
+      {
+        "left": 851,
+        "top": 515,
+        "right": 1027,
+        "bottom": 695,
+        "width": 176,
+        "height": 180
+      },
+      {
+        "left": 1047,
+        "top": 515,
+        "right": 1223,
+        "bottom": 691,
+        "width": 176,
+        "height": 176
+      }
+    ],
+    "thermo": {
+      "left": 345,
+      "top": 114,
+      "right": 409,
+      "bottom": 474,
+      "width": 64,
+      "height": 360
+    }
+  },
+  "screens": [
+    {
+      "name": "desktop",
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "geometry": {
+        "field": {
+          "left": 467,
+          "top": 87,
+          "right": 1251,
+          "bottom": 501,
+          "width": 784,
+          "height": 414
+        },
+        "margins": {
+          "top": 17,
+          "left": 17,
+          "right": 17
+        },
+        "controls": [
+          {
+            "left": 655,
+            "top": 515,
+            "right": 831,
+            "bottom": 695,
+            "width": 176,
+            "height": 180
+          },
+          {
+            "left": 851,
+            "top": 515,
+            "right": 1027,
+            "bottom": 695,
+            "width": 176,
+            "height": 180
+          },
+          {
+            "left": 1047,
+            "top": 515,
+            "right": 1223,
+            "bottom": 691,
+            "width": 176,
+            "height": 176
+          }
+        ],
+        "thermo": {
+          "left": 345,
+          "top": 114,
+          "right": 409,
+          "bottom": 474,
+          "width": 64,
+          "height": 360
+        },
+        "clockCentered": true,
+        "controlsClear": true,
+        "width": 784,
+        "height": 414,
+        "controlsUnchanged": true,
+        "thermoUnchanged": true
+      },
+      "reach": {
+        "left": 16,
+        "right": 768
+      },
+      "precision": "オン"
+    },
+    {
+      "name": "mobile",
+      "viewport": {
+        "width": 844,
+        "height": 390
+      },
+      "geometry": {
+        "field": {
+          "left": 328.2916564941406,
+          "top": 47.125,
+          "right": 752.9583129882812,
+          "bottom": 271.375,
+          "width": 424.6666564941406,
+          "height": 224.25
+        },
+        "margins": {
+          "top": 16.999998059714375,
+          "left": 17.00001918726897,
+          "right": 17.00007552741455
+        },
+        "controls": [
+          {
+            "left": 430.125,
+            "top": 278.9583435058594,
+            "right": 525.4583740234375,
+            "bottom": 376.4583435058594,
+            "width": 95.3333740234375,
+            "height": 97.5
+          },
+          {
+            "left": 536.2916259765625,
+            "top": 278.9583435058594,
+            "right": 631.625,
+            "bottom": 376.4583435058594,
+            "width": 95.3333740234375,
+            "height": 97.5
+          },
+          {
+            "left": 642.4583129882812,
+            "top": 278.9583435058594,
+            "right": 737.7916870117188,
+            "bottom": 374.29168701171875,
+            "width": 95.3333740234375,
+            "height": 95.33334350585938
+          }
+        ],
+        "thermo": {
+          "left": 262.20831298828125,
+          "top": 61.750003814697266,
+          "right": 296.875,
+          "bottom": 256.75000381469727,
+          "width": 34.66668701171875,
+          "height": 195
+        },
+        "clockCentered": true,
+        "controlsClear": true,
+        "width": 784,
+        "height": 414
+      },
+      "reach": {
+        "left": 16,
+        "right": 768
+      },
+      "precision": "オン"
+    }
+  ],
+  "pageErrors": []
+}

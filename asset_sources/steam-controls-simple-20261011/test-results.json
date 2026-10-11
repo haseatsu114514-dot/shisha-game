@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-11",
+  "browser": "/usr/bin/chromium",
+  "tests": [
+    {
+      "test": "steam_forecast.mjs",
+      "status": "PASS",
+      "output": "[precision] PASS: desktop real mouse stick 288 -> 120 -> 290 px/s; Space/Enter toggle independently of refresh\n[steam forecast] PASS: desktop timer/reset, rainy estimate, Hajime waiting, same thermometer in four stages, centered faint background clock, no stop/miss HUD and one-use refresh\n[precision] PASS: mobile real touch stick 289 -> 120 -> 287 px/s; Space/Enter toggle independently of refresh\n[controls] PASS: two real simultaneous touches maintain stick movement while toggling precision and refreshing\n[steam forecast] PASS: mobile timer/reset, rainy estimate, Hajime waiting, same thermometer in four stages, centered faint background clock, no stop/miss HUD and one-use refresh\n"
+    },
+    {
+      "test": "steam_refresh.mjs",
+      "status": "PASS",
+      "output": "[refresh] PASS: medium range removes nearby real bullets and preserves distant bullets, no healing/invulnerability/spawn delay, repeat/empty guards, pure hit-based score\n[refresh] PASS: exactly one refresh at every level; growth expands range, adds one-step mental recovery, and unlocks full-field clearing\n"
+    }
+  ],
+  "final_capture": {
+    "script": "capture.mjs",
+    "status": "PASS",
+    "output": "PASS: desktop/mobile controls separated and contained; portrait retains existing rotation hint; ring diameter accurate; real repeated hits link clock and heartbeat colors; page errors 0\n"
+  }
+}

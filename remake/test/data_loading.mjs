@@ -26,7 +26,7 @@ function realJSON(url) {
 }
 const fixtureFetch = async (url) => ({ ok: true, status: 200, json: async () => realJSON(url) });
 
-// 34ファイルを読み、本文の受信中も同時接続が4本を超えない。
+// 35ファイルを読み、本文の受信中も同時接続が4本を超えない。
 const requests = [];
 let active = 0, maximum = 0;
 const all = await loader(async (url, options) => {
@@ -42,14 +42,20 @@ const all = await loader(async (url, options) => {
 });
 const progress = [];
 await all.loadAll((p) => progress.push(p));
-assert.equal(requests.length, 34);
-assert.equal(new Set(requests).size, 34);
+assert.equal(requests.length, 35);
+assert.equal(new Set(requests).size, 35);
 assert.equal(maximum, 4);
 assert.equal(active, 0);
-assert.equal(progress.length, 34);
+assert.equal(progress.length, 35);
 assert.equal(progress.at(-1), 1);
 assert(progress.every((p, i) => p > (progress[i - 1] || 0)));
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
+assert.equal(all.DB.characters.hiyori.name, "泡沢ひより");
+assert.equal(all.DB.characters.hiyori.age, 25);
+assert.equal(all.DB.hiyori.route.enabled, false);
+assert(all.DB.dialogues.hiyori_preview_gap.lines[0].inner);
+assert(all.DB.lover.dates.hiyori && all.DB.friends.friends.hiyori);
+assert.equal(all.portraitInfo("hiyori", "normal"), null); // 素材待ちでも壊れた参照や別人を出さない
 assert.equal(all.DB.relationshipMemories.tsumugi_creature.char_id, "tsumugi");
 assert(all.DB.dialogues.ch1_tsumugi_third);
 assert(all.DB.dialogues.remake_midcheck);
@@ -111,4 +117,4 @@ for (const phase of ["headers", "body"]) {
   assert.equal(started.length, 4);
 }
 
-console.log("[remake data] 34 JSON files, max 4 requests, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
+console.log("[remake data] 35 JSON files, max 4 requests, hiyori foundation, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
