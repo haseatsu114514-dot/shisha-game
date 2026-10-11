@@ -72,7 +72,8 @@ jobs:
             }
             if (op === 'release') {
               const number = Number(rawIssue);
-              await issue(number);
+              const {data: existing} = await github.rest.issues.get({owner:repoOwner,repo,issue_number:number});
+              if (existing.pull_request) throw Error('Not an issue');
               const claim = await status(number);
               if (claim.state !== 'claimed' || claim.owner !== worker) throw Error('Only the current owner can release #' + number);
               await comment(number,'released');
@@ -99,8 +100,7 @@ jobs:
                   await issue(number);
                   const claim = await status(number);
                   if (claim.state === 'claimed') {
-                    if (op === 'claim') throw Error('Already claimed by ' + claim.owner);
-                    continue;
+                    throw Error('Already claimed by ' + claim.owner);
                   }
                   await ensureNoOpenPR(number);
                   selected = number;
