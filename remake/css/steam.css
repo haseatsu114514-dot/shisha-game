@@ -83,7 +83,7 @@
 .dodge-heart > span { position: absolute; left: -4px; top: -4px; }
 .dodge-heart > span, .dodge-heart svg { display: block; width: 36px; height: 36px; }
 .dodge-core { width: 6px; height: 6px; left: 11px; top: 11px; box-shadow: 0 0 4px #fff; }
-.dodge-core::after { content: ""; position: absolute; inset: auto; left: 50%; top: 50%; width: var(--hit-diameter, 18px); height: var(--hit-diameter, 18px); transform: translate(-50%, -50%); border: 1px solid #fff7eceb; border-radius: 50%; background: #27102218; box-shadow: 0 0 3px #fff4dc44; }
+.dodge-core::after { content: ""; position: absolute; inset: auto; left: 50%; top: 50%; width: var(--hit-diameter, 18px); height: var(--hit-diameter, 18px); box-sizing: border-box; transform: translate(-50%, -50%); border: 1px solid #fff7eceb; border-radius: 50%; background: #27102218; box-shadow: 0 0 3px #fff4dc44; }
 .dodge-heart.shield::after { border-width: 1px; box-shadow: 0 0 8px #c7dfbb55; }
 
 /* 操作を近くにまとめる。精密モードはボタンの灯りで示す。 */
@@ -100,15 +100,16 @@
 .bench[data-art-skin] .dodge-pad.held > span { filter: brightness(1.12); }
 .bench[data-art-skin] .dodge-pad.held .dodge-knob { border-color: #edf4fc; }
 .dodge-pad:focus-visible { outline: 2px solid #d6c49a; outline-offset: 4px; }
-.bench[data-art-skin] .btn.dodge-action, .bench[data-art-skin] .btn.dodge-action:hover:not(:disabled) { display: flex; flex-direction: column; justify-content: flex-start; gap: 1px; align-items: center; width: 154px; min-width: 0; height: 180px; min-height: 180px; padding: 0; border: 0; border-image: none; border-radius: 50%; background: none; color: #eee3c9; box-shadow: none; touch-action: none; }
+.bench[data-art-skin] .btn.dodge-action, .bench[data-art-skin] .btn.dodge-action:hover:not(:disabled) { display: flex; flex-direction: column; justify-content: flex-start; gap: 1px; align-items: center; width: 176px; min-width: 0; height: 180px; min-height: 180px; padding: 0; border: 0; border-image: none; border-radius: 50%; background: none; color: #eee3c9; box-shadow: none; touch-action: none; }
 .bench[data-art-skin] .dodge-action:hover:not(:disabled) { filter: brightness(1.12); }
-.refresh-emblem { position: relative; width: 140px; height: 140px; flex: none; color: #d4dfc6; pointer-events: none; }
-.refresh-emblem img { position: absolute; left: -12px; top: -12px; display: block; width: 164px; height: 164px; object-fit: contain; }
+.refresh-emblem { position: relative; width: 152px; height: 152px; flex: none; color: #d4dfc6; pointer-events: none; }
+.refresh-emblem img { position: absolute; left: -12px; top: -12px; display: block; width: 176px; height: 176px; object-fit: contain; }
 .dodge-refresh:enabled .refresh-emblem::after { content: ""; position: absolute; inset: 12px; border: 2px solid transparent; border-top-color: #d2f4ff99; border-bottom-color: #80cfff55; border-radius: 50%; filter: drop-shadow(0 0 3px #70ccff); animation: refresh-energy-orbit 4.5s linear infinite; }
 @keyframes refresh-energy-orbit { to { transform: rotate(360deg); } }
 .refresh-emblem svg { width: 100%; height: 100%; }
-.refresh-copy { font-family: "Craft Mincho", var(--font); font-weight: 700; font-size: 18px; line-height: 1.2; white-space: nowrap; letter-spacing: .03em; padding: 3px 0; border: 0; background: none; text-shadow: 0 1px 3px #000; }
-.precision-state { display: grid; place-items: center; width: 43px; height: 18px; border: 1px solid #8b94884d; border-radius: 10px; font-family: var(--font); font-size: 11px; line-height: 1; font-weight: 700; letter-spacing: .06em; color: #b8bab1; background: #171a18; }
+.refresh-copy { font-family: "Craft Mincho", var(--font); font-weight: 700; font-size: 18px; line-height: 1.2; white-space: nowrap; letter-spacing: .03em; padding: 2px 0; border: 0; background: none; text-shadow: 0 1px 3px #000; }
+.precision-copy { display: flex; align-items: center; gap: 8px; }
+.precision-state { display: grid; place-items: center; width: 44px; height: 20px; border: 1px solid #8b94884d; border-radius: 10px; font-family: var(--font); font-size: 12px; line-height: 1; font-weight: 700; letter-spacing: .06em; color: #b8bab1; background: #171a18; }
 .dodge-precision[aria-pressed="false"] .refresh-emblem { filter: brightness(.72) saturate(.75); }
 .bench[data-art-skin] .dodge-action:disabled { opacity: .4; filter: saturate(.5); }
 .bench[data-art-skin] .btn.dodge-precision[aria-pressed="true"], .bench[data-art-skin] .btn.dodge-precision[aria-pressed="true"]:hover:not(:disabled) { color: #edf4df; background: none; box-shadow: none; }

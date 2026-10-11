@@ -51,10 +51,10 @@ export async function runSteamDodge(cs) {
   const refreshBtn = el("button.btn.primary.dodge-action.dodge-refresh", { disabled: true, dataset: { test: "dodge-refresh" } });
   refreshBtn.append(el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_refresh_simple.png")]),
     el("span.refresh-copy", { text: "リフレッシュ" }));
-  const precisionState = el("span.precision-state", { text: "OFF", "aria-hidden": "true" });
+  const precisionState = el("span.precision-state", { text: "オフ", "aria-hidden": "true" });
   const precisionBtn = el("button.btn.dodge-action.dodge-precision", { disabled: true, "aria-pressed": "false", dataset: { test: "dodge-precision" } }, [
     el("span.refresh-emblem", { "aria-hidden": "true" }, [controlArt("steam_precision_simple.png")]),
-    el("span.refresh-copy", { text: "精密モード" }), precisionState,
+    el("span.precision-copy", [el("span.refresh-copy", { text: "精密" }), precisionState]),
   ]);
   const thermometer = buildSteamTemperature();
   const heatJitter = cs.steamVariation ?? { offset: rand(-.065, .065), transfer: rand(.9, 1.1) };
@@ -118,7 +118,7 @@ export async function runSteamDodge(cs) {
     if (!running) return;
     precise = !precise;
     precisionBtn.setAttribute("aria-pressed", String(precise));
-    precisionState.textContent = precise ? "ON" : "OFF";
+    precisionState.textContent = precise ? "オン" : "オフ";
     SE.click();
   };
   // 2本目の指ではブラウザのclickが出ないことがある。refreshと同じく押した時に処理する。

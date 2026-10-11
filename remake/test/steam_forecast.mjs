@@ -142,7 +142,7 @@ try {
     assert(await page.locator('.bench-title').isHidden());
     assert.equal(await page.locator('.bench-phase[aria-current="step"]').textContent(), '03蒸らし中');
     assert.equal(await page.locator('.bench-phase[aria-current="step"]').evaluate(n => n.offsetHeight), 49);
-    assert.deepEqual(await page.locator('.dodge-controls .refresh-copy').allTextContents(), ['リフレッシュ', '精密モード']);
+    assert.deepEqual(await page.locator('.dodge-controls .refresh-copy').allTextContents(), ['リフレッシュ', '精密']);
     assert.equal(await page.locator('.dodge-world-title').count(), 0);
     const controls = await page.locator('.dodge-controls').evaluate(n => {
       const r = e => e.getBoundingClientRect(), root = r(n), [refresh, precision, pad] = [...n.children].map(r);
@@ -183,12 +183,12 @@ try {
     const remaining = await page.locator('[data-test="steam-clock"] .clock-value').textContent();
     const precision = page.locator('[data-test="dodge-precision"]');
     assert.equal(await precision.getAttribute('aria-pressed'), 'false');
-    assert.equal(await precision.locator('.precision-state').textContent(), 'OFF');
+    assert.equal(await precision.locator('.precision-state').textContent(), 'オフ');
     const toggle = () => mobile ? precision.tap() : precision.click();
     const normalSpeed = await stickSpeed(page, mobile);
     assert(normalSpeed > 100, 'Normal stick did not move');
     await toggle(); assert.equal(await precision.getAttribute('aria-pressed'), 'true');
-    assert.equal(await precision.locator('.precision-state').textContent(), 'ON');
+    assert.equal(await precision.locator('.precision-state').textContent(), 'オン');
     const slowSpeed = await stickSpeed(page, mobile);
     assert(slowSpeed > normalSpeed * .2 && slowSpeed < normalSpeed * .65, `${name}: precision did not slow the stick (${normalSpeed} -> ${slowSpeed})`);
     await screenshot(page, `steam-precision-${name}`);
