@@ -80,11 +80,14 @@ try {
       Object.defineProperty(performance, "now", { configurable: true, value: () => window.coalClock });
       const nativeRaf = window.requestAnimationFrame.bind(window);
       window.requestAnimationFrame = (callback) => nativeRaf(() => callback(window.coalClock));
-      const originalRandom = Math.random; Math.random = () => .5;
-      window.heatRun = T.heat.runHeat(cs); Math.random = originalRandom;
+      window.originalRandom = Math.random; Math.random = () => .5;
+      // runHeatは素材の準備を待ってから炭ごとの時刻を抽選する。
+      // 抽選が終わるまで固定し、非同期の準備中に元へ戻さない。
+      window.heatRun = T.heat.runHeat(cs);
       window.coalIdeal = 5.8 + (.5 * T.common.skill.window(cs)) / 2;
     });
     await page.waitForFunction(() => document.querySelector('[data-test="coal-0"]')?.dataset.phase === "raw");
+    await page.evaluate(() => { Math.random = window.originalRandom; });
     await page.evaluate(() => { window.coalClock = 1000 + (window.coalIdeal - .35) * 1000; });
     await page.locator('[data-test="coal-2"]').click();
     const heatFeedback = page.locator('[data-test="heat-feedback"]');

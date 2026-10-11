@@ -90,7 +90,7 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
   const info = el("div.heat-info", [
     el("div.hi-row", [el("span", { text: "黒い芯" }), el("i"), el("span", { text: "赤熱" }), el("i"), el("b", { text: "芯が光る" }), el("i"), el("span", { text: "白熱" }), el("i"), el("span", { text: "灰かぶり" })]),
     feedback,
-    el("ol.heat-picks", { "aria-live": "polite", "aria-label": "各炭のタイミング" }, timingRows),
+    el("ol.heat-picks", { "aria-live": "polite", "aria-label": "各炭のタイミング", style: { "--coal-count": String(count) } }, timingRows),
   ]);
   panel.append(el(`div.heat${compact ? ".heat-compact" : ""}`, [stove, info]));
 
