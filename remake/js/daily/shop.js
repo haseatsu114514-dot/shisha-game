@@ -93,7 +93,7 @@ export function openShop({ errand = null, expense = false, minStock = 1, expense
         el("span.shop-cat", { text: CAT_LABEL[f.category] || "", dataset: { cat: f.category } }),
         el("div.shop-main", [el("b", { text: f.short_name || f.name }), el("small", { text: f.description })]),
         el("div.shop-buy", [
-          el(`span.shop-stock${stock ? "" : ".none"}`, { text: stock ? `在庫 ${stock}g` : "在庫なし" }),
+          el(`span.shop-stock${stock ? "" : ".none"}`, { text: `所持 ${stock}g` }),
           el("button.btn.small", {
             text: `${onExpense ? "店の経費" : yen(f.price)}／${FLAVOR_BOX_GRAMS}g`,
             dataset: { test: `buy-${f.id}` },
