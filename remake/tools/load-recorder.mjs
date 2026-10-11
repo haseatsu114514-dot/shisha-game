@@ -39,6 +39,7 @@ export async function recordLoad(page, base) {
       url: cleanUrl(e.request.url), category: category(e.request.url),
       external: new URL(e.request.url).origin !== origin,
       status: null, cached: false, revalidated: false, complete: false,
+      range: e.request.headers?.Range || e.request.headers?.range || null,
       decodedBodyBytes: 0, receivedEncodedBytes: 0, headerBytes: 0,
     });
     lastActivity = Date.now();
@@ -53,6 +54,7 @@ export async function recordLoad(page, base) {
     if (!r) return;
     r.status = e.response.status;
     r.contentLength = Number(e.response.headers["Content-Length"] || e.response.headers["content-length"]) || null;
+    r.contentRange = e.response.headers["Content-Range"] || e.response.headers["content-range"] || null;
     r.compressed = !!(e.response.headers["Content-Encoding"] || e.response.headers["content-encoding"]);
     r.cached ||= !!(e.response.fromDiskCache || e.response.fromPrefetchCache || e.response.fromServiceWorker);
     r.headerBytes = e.response.encodedDataLength || 0;
@@ -96,12 +98,14 @@ export async function recordLoad(page, base) {
         const file = path.resolve(root, r.url.slice(sitePrefix.length) + (r.url.endsWith("/") ? "index.html" : ""));
         if (file.startsWith(root + path.sep) && fs.existsSync(file) && fs.statSync(file).isFile()) sourceBytes = fs.statSync(file).size;
       }
-      return { ...r, sourceBytes,
       // loadingFinishedはHTTPヘッダ込み。本文と区別し、キャッシュ・304の本文を再受信として数えない。
       // 未完の非圧縮音声はencodedDataLengthに未反映の受信分があるのでdecodedも使う（途中時点の下限）。
-      networkBodyBytes: r.cached || r.revalidated ? 0
-        : Math.max(0, totalEncodedBytes == null ? Math.max(receivedEncodedBytes, r.compressed ? 0 : r.decodedBodyBytes) : totalEncodedBytes - headerBytes),
-      };
+      let body = r.cached || r.revalidated ? 0
+        : Math.max(0, totalEncodedBytes == null ? Math.max(receivedEncodedBytes, r.compressed ? 0 : r.decodedBodyBytes) : totalEncodedBytes - headerBytes);
+      // HTTP/2では応答イベントのヘッダ量が0でも、完了量にはプロトコルの分が含まれることがある。
+      // 完了した本文のContent-Lengthが分かるときは、それを上限にする（途中の音声は膨らませない）。
+      if (r.complete && !r.failed && r.contentLength) body = Math.min(body, r.contentLength);
+      return { ...r, sourceBytes, networkBodyBytes: body };
     });
     const categories = {};
     for (const r of resources) {
@@ -123,7 +127,11 @@ export async function recordLoad(page, base) {
       decodedBodyBytes: resources.reduce((s, r) => s + r.decodedBodyBytes, 0),
       cachedRequests: resources.filter((r) => r.cached || r.revalidated).length,
       unfinishedRequests: resources.filter((r) => !r.complete).length,
-      failures: resources.filter((r) => r.failed || r.status >= 400), categories, resources,
+      externalRequests: resources.filter((r) => r.external).length,
+      externalNetworkBodyBytes: resources.filter((r) => r.external).reduce((s, r) => s + r.networkBodyBytes, 0),
+      // BGMの切替で未完の先読みを止めるERR_ABORTEDは、通信障害とは別に残す。
+      abortedAudioRequests: resources.filter((r) => r.category === "audio" && r.failed === "net::ERR_ABORTED").length,
+      failures: resources.filter((r) => (r.failed && !(r.category === "audio" && r.failed === "net::ERR_ABORTED")) || r.status >= 400), categories, resources,
       uniqueSourceFiles: unique.length, uniqueSourceBytes: unique.reduce((s, r) => s + r.sourceBytes, 0), uniqueCategories,
     };
     phases.push(result);
@@ -133,7 +141,7 @@ export async function recordLoad(page, base) {
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, JSON.stringify({
       measuredAt: new Date().toISOString(), base, ...metadata,
-      methodology: "Chromium CDP Network events, excluding HTTP headers; cache/304 bodies count as zero network bytes. Unfinished audio is a lower bound at the snapshot, not a complete download. uniqueSourceBytes sums the full local files actually requested, once per URL, independently of partial media buffering or cache. The bundled preview server has no compression and code/JSON is no-store; production caching/compression may differ.",
+      methodology: "Chromium CDP Network events, subtracting known response headers and capping completed bodies at Content-Length when available; cache/304 bodies count as zero network bytes. Unfinished/canceled audio is a lower bound at the snapshot, not a complete download. uniqueSourceBytes sums the full local files actually requested, once per URL, separately from external transfers and partial media buffering or cache. Interpret transfers with the chosen host's caching/compression/range behavior; local observations are not public hosting measurements.",
       phases,
     }, null, 2) + "\n");
   }
