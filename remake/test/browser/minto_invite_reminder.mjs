@@ -203,7 +203,11 @@ await suite("venue-invite-reminder", async (check) => {
       s.slot = 1;
       const adamNight = phone.actionInviteNeedingReply("rest")?.kind ?? null;
       s.slot = 0;
-      const busy = put(outing, true);
+      // 休日・臨時休暇の外出LIMEは配信時に当日用へ解決される。
+      const outingToday = structuredClone(outing);
+      delete outingToday.closed_on;
+      outingToday.temporary_closed = true;
+      const busy = put(outingToday, true);
       const naruOutingNoon = phone.actionInviteNeedingReply("rest")?.kind ?? null;
       busy.done = true; busy.result = "accepted";
       const accepted = phone.actionInviteNeedingReply("rest");
