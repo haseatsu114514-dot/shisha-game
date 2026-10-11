@@ -53,7 +53,7 @@ export function sellEquipment(id) {
  * Dr.fookah（1階物販）。戻り値: "rin"（2階へ）/ null（店を出た）
  * @param opts.errand 1日目の案内: このフレーバーを買うまで店を出られない（スミさんの頼み）
  */
-export function openShop({ errand = null, expense = false } = {}) {
+export function openShop({ errand = null, expense = false, minStock = 1, expenseFlag = "_errand_mint_expensed" } = {}) {
   return new Promise((resolve) => {
     setBg(bgUrl("bg_shop"), { fast: true });
     playBgm("kansetsu_shomei_to_black_coffee");
@@ -68,7 +68,7 @@ export function openShop({ errand = null, expense = false } = {}) {
     const render = () => {
       money.textContent = `所持金 ${yen(state.money)}`;
       if (errandBox) {
-        const done = ownsFlavor(errand);
+        const done = flavorStock(errand) >= minStock;
         errandBox.classList.toggle("done", done);
         errandBox.textContent = done ? `✓ ${errandName}を仕入れた。店を出てスミさんに報告しよう` : `スミさんの頼み：${errandName}を仕入れる${expense ? "（店の経費・所持金は減りません）" : ""}`;
       }
@@ -88,8 +88,8 @@ export function openShop({ errand = null, expense = false } = {}) {
     const flavorRows = () => SHOP_FLAVORS.map((id) => DB.flavorById[id]).filter(Boolean).map((f) => {
       const owned = ownsFlavor(f.id);
       const stock = flavorStock(f.id);
-      const onExpense = expense && errand === f.id && !owned && !state.flags._errand_mint_expensed;
-      return el(`div.shop-row${errand === f.id && !owned ? ".errand" : ""}`, [
+      const onExpense = expense && errand === f.id && stock < minStock && !state.flags[expenseFlag];
+      return el(`div.shop-row${errand === f.id && stock < minStock ? ".errand" : ""}`, [
         el("span.shop-cat", { text: CAT_LABEL[f.category] || "", dataset: { cat: f.category } }),
         el("div.shop-main", [el("b", { text: f.short_name || f.name }), el("small", { text: f.description })]),
         el("div.shop-buy", [
@@ -98,7 +98,7 @@ export function openShop({ errand = null, expense = false } = {}) {
             text: `${onExpense ? "店の経費" : yen(f.price)}／${FLAVOR_BOX_GRAMS}g`,
             dataset: { test: `buy-${f.id}` },
             onclick: () => buy(`${f.short_name || f.name}（${FLAVOR_BOX_GRAMS}g）`, onExpense ? 0 : f.price, () => {
-              if (onExpense) state.flags._errand_mint_expensed = true;
+              if (onExpense) state.flags[expenseFlag] = true;
               addFlavorStock(f.id, FLAVOR_BOX_GRAMS);
             }),
           }),
@@ -165,7 +165,7 @@ export function openShop({ errand = null, expense = false } = {}) {
           dataset: { test: "shop-leave" },
           onclick: () => {
             // 買い出し中は、頼まれた物を仕入れるまで出られない（詰みにはしない軽い押し戻し）
-            if (errand && !ownsFlavor(errand)) {
+            if (errand && flavorStock(errand) < minStock) {
               SE.error();
               tab = "flavor";
               render();

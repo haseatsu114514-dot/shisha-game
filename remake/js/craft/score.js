@@ -1,6 +1,6 @@
 // 完成品の性能と総合評価。
 //   穴あけ・炭焼き・配合・蒸らし・吸い出し・熱管理 → 完成品ステータス（shishaStats）
-//   総合スコア = 穴あけ25% + 炭焼き25% + 完成品25% + FLAVOR TRIAL 25%（master_spec 第2部 §7）
+//   総合スコア = 穴あけ20% + 炭焼き20% + 完成品20% + 調整1回目20% + 調整2回目20%
 import { clamp } from "../core/util.js";
 import { DB } from "../core/data.js";
 import { state } from "../core/state.js";
@@ -8,7 +8,7 @@ import { gradeOf } from "./common.js";
 import { steamSecondsOf, steamOpening, steamBurnRisk } from "./steam-time.js";
 import { foilHeatProfile } from "./holes_logic.js";
 
-export const WEIGHTS = { holes: 0.25, heat: 0.25, shisha: 0.25, trial: 0.25 };
+export const WEIGHTS = { holes: .2, heat: .2, shisha: .2, care1: .2, care2: .2 };
 /** 南雲が持ち点を動かす基準（これ未満なら南雲票は入らず、普通に負ける） */
 export const NAGUMO_BAR = 72;
 
@@ -31,7 +31,7 @@ export function computeShisha(cs) {
   const m = cs.mixInfo || { score: 60, intensity: 5, total: 12 };
   const p = cs.pull || { score: 60, temp: 0.54, pulls: 3 };
   const st = cs.steam || { min: 5, hits: 2, score: 70 };
-  const care = cs.care || { score: 60 };
+  const care = cs.careHistory?.length ? { score: cs.careHistory.reduce((sum, item) => sum + item.score, 0) / cs.careHistory.length } : cs.care || { score: 60 };
   const grams = m.total || 12;
   const packDraw = { fluffy: 12, normal: 0, firm: -12 }[cs.pack] || 0;
   const four = cs.place === "four";
@@ -56,46 +56,7 @@ export function computeShisha(cs) {
   };
 }
 
-/**
- * アピールポイント（制作結果から自動生成される実績）。cat は審査員のザワザワの「争点」、
- * strong は実績として十分かどうか（弱いものは出さない＝嘘のアピールは作れない）。
- */
-export function buildAppeals(cs) {
-  const s = cs.stats;
-  const h = cs.holes || {};
-  const c = cs.heat || {};
-  const list = [];
-  const add = (label, cat, ok) => { if (ok) list.push({ label, cat }); };
-  add("外周の穴が均等", "stability", (h.outerEven || 0) >= 0.75);
-  add("穴の仕上がりが揃っている", "craft", (h.score || 0) >= 80);
-  add("内周は控えめ", "relax", (h.inner || 0) <= 4 && (h.innerExcess || 0) === 0);
-  add("ジャスト炭", "aroma", (c.just || 0) >= 2);
-  add("炭のピカンを掴んだ", "stability", !!c.flash);
-  add("火力が安定している", "stability", s.heatStability >= 70);
-  add("ミントの香りが残っている", "aroma", s.aroma >= 70 && (cs.mix?.mint || 0) >= 2);
-  add("煙量が豊か", "smoke", s.smoke >= 65);
-  add("焦げリスク低め", "relax", s.burnRisk <= 30);
-  add("手際よく提供", "speed", (h.timeRatio || 0) >= 0.3 && (cs.pull?.pulls || 9) <= 3);
-  add("味の輪郭が濃い", "taste", s.taste >= 62);
-  add("最後の一口まで崩れない", "duration", s.duration >= 65);
-  add(`配合「${cs.mixInfo?.recipe?.name}」`, "original", !!cs.mixInfo?.recipe && cs.mixInfo.recipe.id !== "sumi_basic");
-  add("自分で見つけた組み合わせ", "original", (cs.mixInfo?.count || 0) >= 2 && !cs.mixInfo?.recipe);
-  add("適温で提供", "relax", !!cs.pull?.inZone);
-  return list;
-}
-
-/** コンセプトごとの「証明に必要な争点」と、その実力値 */
-export const CONCEPT_NEED = {
-  aroma: { cat: "aroma", stat: (s) => s.aroma },
-  smoke: { cat: "smoke", stat: (s) => s.smoke },
-  relax: { cat: "relax", stat: (s) => 100 - s.burnRisk },
-  speed: { cat: "speed", stat: (s, cs) => (cs.holes?.timeRatio || 0) * 100 + 40 },
-  taste: { cat: "taste", stat: (s) => s.taste },
-  duration: { cat: "duration", stat: (s) => s.duration },
-  original: { cat: "original", stat: (s, cs) => (cs.mixInfo?.recipe && cs.mixInfo.recipe.id !== "sumi_basic" ? 80 : cs.mixInfo?.count >= 2 ? 65 : 35) },
-};
-
-/** 章のボーナス（前日リハーサル・前夜の過ごし方・練習の自己ベスト・機材・贈られたハガル） */
+/** 章のボーナス（前日リハーサル・前夜の過ごし方・機材・贈られたハガル） */
 export function bonusOf(cs = null) {
   let b = 0;
   const notes = [];
@@ -115,7 +76,8 @@ export function finalize(cs) {
     holes: cs.holes?.score ?? 0,
     heat: cs.heat?.score ?? 0,
     shisha: cs.stats.craftQuality,
-    trial: cs.trial?.score ?? 0,
+    care1: cs.careHistory?.[0]?.score ?? 0,
+    care2: cs.careHistory?.[1]?.score ?? 0,
   };
   const total = clamp(Object.entries(WEIGHTS).reduce((s, [k, w]) => s + parts[k] * w, 0) + bonus, 0, 100);
   cs.total = Math.round(total * 10) / 10;

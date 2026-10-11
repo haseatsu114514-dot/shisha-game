@@ -28,6 +28,8 @@ export function resultCard(panel, { title, lines = [], summary = [], button = "æ
     const btn = el("button.btn.primary.rc-next", {
       dataset: { test: "step-next" },
       onclick: () => {
+        if (btn.disabled) return;
+        btn.disabled = true;
         SE.select();
         card.classList.remove("show");
         card.classList.add("done");

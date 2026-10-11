@@ -3,7 +3,6 @@ import { el } from "../core/util.js";
 
 export const STEP_BRIEFS = {
   setup: "この一台に使う道具を選ぶ",
-  concept: "大切にすることを2つ選ぶ",
   mix: "合計12g以上で配合を決める",
   pack: "葉の詰め方で、空気の通り道を作る",
   holes: "光が目印に重なったら、穴を開ける",
@@ -12,7 +11,6 @@ export const STEP_BRIEFS = {
   steam: "雑念をよける。困ったらリフレッシュ",
   pull: "針を止めて吸い、虹色の最適温を狙う",
   care: "消耗した炭を交換して、吸って整える",
-  trial: "香りと合うアピールポイントを選ぶ",
 };
 
 export function buildGuide() {

@@ -73,7 +73,10 @@ export function imageReady(url, ms = 1500, { keep = false } = {}) {
     });
     bgReady.set(url, p);
   }
-  return Promise.race([p, sleep(ms)]);
+  return new Promise(resolve => {
+    const timer = setTimeout(resolve, ms);
+    p.then(() => { clearTimeout(timer); resolve(); });
+  });
 }
 
 // ---------------------------------------------------------------- UIの絵の先読み

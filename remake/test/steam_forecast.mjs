@@ -42,7 +42,12 @@ const stickSpeed = async (page, mobile) => {
   const start = { x: r.x + r.width / 2, y: r.y + r.height / 2, id: 1 };
   const end = { ...start, x: r.x + r.width * .93 };
   const touch = mobile ? await page.context().newCDPSession(page) : null;
-  const sample = () => page.locator('.dodge-heart').evaluate(n => ({ x: new DOMMatrix(n.style.transform).e, at: performance.now() }));
+  // 操作の速度は弾幕と同じゲーム時刻で比べる。画像デコード中のRAF待ちを
+  // 「精密を解除しても遅い」と誤判定しない（ゲーム側も長いフレームを制限する）。
+  const sample = () => page.locator('.dodge-heart').evaluate(n => ({
+    x: new DOMMatrix(n.style.transform).e,
+    at: Number(document.querySelector('[data-test="steam-world"]').dataset.frame),
+  }));
   try {
     if (touch) {
       await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [start] });
@@ -54,7 +59,8 @@ const stickSpeed = async (page, mobile) => {
     const before = await sample();
     await page.waitForTimeout(260);
     const after = await sample();
-    return (after.x - before.x) / ((after.at - before.at) / 1000);
+    assert(after.at > before.at, 'Game clock stopped while steering');
+    return (after.x - before.x) / (after.at - before.at);
   } finally {
     if (touch) {
       await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });

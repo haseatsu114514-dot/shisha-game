@@ -4,16 +4,18 @@
 import { el, sleep, clamp, rand } from "../core/util.js";
 import { countdown, flash } from "../core/ui.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep } from "./session.js";
+import { stepPanel, refreshBench, tickerSay, reactAudience, scoreStep, waitBenchReady } from "./session.js";
 import { gradeOf, autoSkill, skill, resultCard, popStamp } from "./common.js";
 import { artImg } from "./art.js";
 import { HEAT_GRADES, phaseOf, evaluateCoalTiming, formatTimingError, summarizeCoalTimings } from "./heat_logic.js";
 export { HEAT_GRADES } from "./heat_logic.js";
+import { coalCount, coalTypes } from "./coals.js";
 
 export async function runHeat(cs) {
+  await waitBenchReady(cs);
   const panel = stepPanel("heat", "炭焼き", "炭の色をよく見て。芯が一瞬ピカッと光ったら、その炭をタップして取り上げる");
   // 炭を一つ取るたびに、その炭の分の点がスコアへ入る（TH42）。
-  const { res, timings, picks, info } = await burnCoals(cs, panel, { onPick: (timing, i, count) => scoreStep(cs, `heat:${i}`, timing.score / count) });
+  const { res, timings, picks, info } = await burnCoals(cs, panel, { count: coalCount(cs), onPick: (timing, i, count) => scoreStep(cs, `heat:${i}`, timing.score / count) });
   cs.heat = res;
   scoreStep(cs, "heat", res.score, "炭焼き");
   refreshBench();
@@ -30,23 +32,24 @@ export async function runHeat(cs) {
     ],
     lines: [
       picks.map((g) => HEAT_GRADES[g].label).join("・"),
-      res.just === 3 ? "三つとも芯が光った瞬間に取れた。火が素直だ" : res.just ? "光った瞬間を掴めた炭がある" : "光る瞬間を逃した。火力が読みにくい",
+      res.just === coalCount(cs) ? "全部、芯が光った瞬間に取れた。火が素直だ" : res.just ? "光った瞬間を掴めた炭がある" : "光る瞬間を逃した。火力が読みにくい",
       res.over ? "焼きすぎの炭がある。香りが飛びやすいかもしれない" : res.early ? "早取りの炭がある。立ち上がりが遅れそうだ" : "",
     ],
   });
 }
 
-// 1〜3個の炭を焼く本体。最初の炭焼きと、熱管理で消耗した炭を交換するときの両方で使う（TH39）。
+// 1〜4個の炭を焼く本体。最初の炭焼きと、熱管理で消耗した炭を交換するときの両方で使う（TH39）。
 const SPOT_SETS = {
   1: [[0.5, 0.40, 1]],
   2: [[0.39, 0.42, 1], [0.61, 0.42, 1]],
   // コイルの上に三角に並べる（中心座標はコンロ素材の中身に対する比。奥の炭ほど少し小さい）
   3: [[0.5, 0.30, 0.90], [0.38, 0.45, 1], [0.62, 0.45, 1]],
+  4: [[0.39, 0.29, .90], [0.61, 0.29, .90], [0.35, 0.47, 1], [0.65, 0.47, 1]],
 };
 export async function burnCoals(cs, panel, { count = 3, compact = false, onPick = null } = {}) {
   const tutorial = cs.mode === "tutorial";
-  const cube = cs.equip?.charcoal === "cube_charcoal";
-  const img = (st) => (cube ? `coal_${st}.png` : `coal_flat_${st}.png`);
+  const types = coalTypes(cs, count);
+  const img = (st, i) => (types[i] === "cube_charcoal" ? `coal_${st}.png` : `coal_flat_${st}.png`);
   const justSec = 0.5 * skill.window(cs) * (tutorial ? 1.5 : 1);
   const clarity = skill.clarity(cs);
 
@@ -59,10 +62,10 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
       "aria-label": `炭${i + 1}を取り出す`,
       style: { left: `${cx * 100}%`, top: `${cy * 100}%`, "--k": String(k), zIndex: String(Math.round(cy * 10)) },
     }, [
-      artImg(img("cold"), 118, "c-cold"),
-      artImg(img("red"), 118, "c-red"),
-      artImg(img("just"), 118, "c-hot"),
-      artImg(img("white"), 118, "c-ash"),
+      artImg(img("cold", i), 118, "c-cold"),
+      artImg(img("red", i), 118, "c-red"),
+      artImg(img("just", i), 118, "c-hot"),
+      artImg(img("white", i), 118, "c-ash"),
       el("i.c-core"),
       el("i.c-burst"),
       el("span.coal-number", { text: String(i + 1), "aria-hidden": "true" }),
