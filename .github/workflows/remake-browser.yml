@@ -86,6 +86,12 @@ jobs:
           node remake/test/hiyori_intro.mjs
           node remake/test/kafuka_portrait.mjs
           node remake/test/browser/affinity_gates.mjs
+      - name: Tsumugi fixed events, legacy saves and continuous chapter days
+        env:
+          NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
+        run: |
+          export CHROME_EXECUTABLE_PATH="$(node -p 'require("playwright").chromium.executablePath()')"
+          node remake/test/tsumugi_story.mjs
       - name: Title art rotation and SKIP visual readiness
         env:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
