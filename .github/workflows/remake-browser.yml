@@ -105,6 +105,7 @@ jobs:
           node remake/test/steam_slash.mjs
           node remake/test/steam_refresh.mjs
           node remake/test/steam_forecast.mjs
+          node remake/test/browser/thermometer_alignment.mjs
       - name: Validate developer tools available on this branch
         run: |
           selected=()
