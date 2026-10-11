@@ -19,6 +19,8 @@ ASSETS = ROOT / "assets"
 OUT = ROOT / "remake" / "img"
 MANIFEST = ROOT / "remake" / "data" / "manifest.json"
 MAX_EDGE = {"ui/making": 1280}
+# 再描画した自宅は輪郭を保ちながら、晴れ昼夜の合計を旧WebP容量内に収める。
+WEBP_QUALITY = {"backgrounds/bg_home_": 74}
 
 
 def targets(m):
@@ -65,8 +67,9 @@ def encode(src: Path, rel: str) -> bytes:
         b = io.BytesIO()
         im.save(b, "WEBP", lossless=True, quality=100, method=6, exact=True)
         return b.getvalue()
+    quality = next((value for prefix, value in WEBP_QUALITY.items() if rel.startswith(prefix)), 90)
     best = None
-    for opts in ({"lossless": True, "method": 6}, {"quality": 90, "method": 6}):
+    for opts in ({"lossless": True, "method": 6}, {"quality": quality, "method": 6}):
         b = io.BytesIO()
         im.save(b, "WEBP", **opts)
         if best is None or len(b.getvalue()) < len(best):
