@@ -80,6 +80,7 @@ jobs:
           NODE_PATH: ${{ github.workspace }}/remake/test/browser/node_modules
           ARTIFACT_DIR: .codex/artifacts/remake-browser/hiyori
         run: |
+          node --experimental-vm-modules remake/test/hiyori_frequency.mjs
           node remake/test/hiyori.mjs
           node remake/test/hiyori_encounters.mjs
           node remake/test/hiyori_intro.mjs
