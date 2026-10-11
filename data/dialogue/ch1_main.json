@@ -1671,6 +1671,31 @@
           "speaker": "",
           "face": "",
           "text": "……【洞察】が少し上がった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の席で、つむぎが画面から顔を上げていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今日の人、帰る時に肩が少し下がってましたね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。ここで少し、休めたならいいな"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "顔は描かないけど。座ってた時の手は、残したいです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは、空いた席とテーブルの間に短い線を足した。"
         }
       ]
     },
@@ -1681,128 +1706,140 @@
       },
       "lines": [
         {
-          "type": "condition",
-          "condition_type": "flag",
-          "flag": "_met_tsumugi",
-          "next_true": "sk_named",
-          "next_false": "sk_unnamed"
+          "speaker": "",
+          "face": "",
+          "text": "閉店間際のtonari。つむぎが、カウンターの前でiPadを開いた。"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……あ。おつかれさま、です"
+          "text": "……できました。応募する絵"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_tsumugi_contest_art_seen",
+          "next_true": "submission_known",
+          "next_false": "submission_new"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_ch1_tsumugi_heart_art"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "tonariの照明。棚のボトル。煙の向こうで、客席を向くはじめの後ろ姿。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓辺には、あの猫がいる。店の中のいくつもの手元が、一枚に収まっていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "知らない人にも、ここで座ってる感じが伝わればいいなって"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "何描いてるの？"
+          "text": "うん。俺も、この店に来たくなると思う"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "店の名前も入ってるな。いい宣伝だ"
         },
         {
           "speaker": "tsumugi",
           "face": "serious",
-          "text": "……煙。今日の、お客さんたちの煙"
+          "text": "……はい。でも、賞もちゃんと狙ってます"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ページの中で、何色もの淡い線が立ちのぼっている。同じ店の煙のはずなのに、一本ずつ色が違う。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ページの隅では、葉の耳と煙の尾を持つ猫が、窓辺で寝ていた。"
-        },
-        {
-          "type": "condition",
-          "condition_type": "flag",
-          "flag": "_met_tsumugi",
-          "next_true": "sk_cat_seen",
-          "next_false": "sk_cat_new"
-        },
-        {
-          "type": "condition",
-          "condition_type": "story_seen",
-          "dialogue": "ch1_tsumugi_smoke_color",
-          "next_true": "sk_color_known",
-          "next_false": "sk_color_new"
+          "text": "つむぎは絵を閉じ、応募フォームを開いた。"
         },
         {
           "speaker": "tsumugi",
-          "face": "smile",
-          "text": "はじめさんの煙も、そのうち描かせてください。……大会の日、ちゃんと見てるので"
+          "face": "normal",
+          "text": "送るところまで、ここでやってもいいですか"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……プレッシャーだ。でも、悪くないプレッシャーだ）"
+          "text": "もちろん。見てるよ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "……【センス】が少し上がった。"
+          "text": "送信の上で、指が一度止まる。つむぎは息を吐いて、画面に触れた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「応募完了」。短い文字を、二人で確かめた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_tsumugi_contest_submitted"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_tsumugi_contest_art_seen"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……出せました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "お疲れさま。ずっと描いてたもんね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "結果は、まだ先です。……その前に、はじめさんの大会"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、ちゃんと一台出してくるよ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はい。……今度は、私が見てます"
+        },
+        {
+          "type": "hide_cg"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは応募完了の画面を、LIMEにも送ってきた。"
+        },
+        {
+          "type": "remember",
+          "memory_id": "tsumugi_submission"
         }
       ],
       "branches": {
-        "sk_named": [
-          {
-            "speaker": "",
-            "face": "",
-            "text": "閉店間際のtonari。奥の席で、つむぎがスケッチブックを広げていた。"
-          }
-        ],
-        "sk_unnamed": [
-          {
-            "speaker": "",
-            "face": "",
-            "text": "閉店間際のtonari。窓際の席で、いつもの女の子がスケッチブックを広げていた。"
-          }
-        ],
-        "sk_cat_new": [
+        "submission_known": [
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "この猫、耳は葉っぱで、尾が煙なんだね"
-          },
-          {
-            "speaker": "tsumugi",
-            "face": "normal",
-            "text": "……はい。こういう子です"
-          },
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "猫なのか、煙なのか、って決めなくていいのか"
-          },
-          {
-            "speaker": "tsumugi",
-            "face": "normal",
-            "text": "……今、寝てるので。それでいいと思います"
+            "text": "お守りに送ってくれた絵だ。いよいよ、応募するんだね"
           }
         ],
-        "sk_cat_seen": [
-          {
-            "speaker": "hajime",
-            "face": "smile",
-            "text": "あの猫、ここにもいるんだね"
-          },
-          {
-            "speaker": "tsumugi",
-            "face": "normal",
-            "text": "……はい。今日も、窓辺で寝てます"
-          }
-        ],
-        "sk_color_new": [
-          {
-            "speaker": "hajime",
-            "face": "surprise",
-            "text": "（煙に、色……？）"
-          }
-        ],
-        "sk_color_known": [
+        "submission_new": [
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（今日の煙も、彼女には色で見えてるんだ）"
+            "text": "あの下描きが、こうなったんだ、……俺もいる"
           }
         ]
       }
@@ -1811,20 +1848,11 @@
       "dialogue_id": "ch1_tsumugi_departure",
       "lines": [
         {
-          "speaker": "",
-          "text": "窓際の女の子が、描いていたiPadをしまって席を立った。",
-          "portrait": "tsumugi",
-          "portrait_face": "normal"
-        },
-        {
-          "type": "intro",
-          "char_id": "tsumugi",
-          "intro": {
-            "display_name": "窓際の女の子",
-            "title": "tonariで煙を描く常連",
-            "line": "……",
-            "face": "normal"
-          }
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_met_tsumugi",
+          "next_true": "departure_known",
+          "next_false": "departure_new"
         },
         {
           "speaker": "",
@@ -1850,7 +1878,35 @@
           "face": "smile",
           "text": "ありがとうございました！"
         }
-      ]
+      ],
+      "branches": {
+        "departure_known": [
+          {
+            "speaker": "",
+            "text": "取材の相談を終えたつむぎが、iPadをしまって席を立った。",
+            "portrait": "tsumugi",
+            "portrait_face": "normal"
+          }
+        ],
+        "departure_new": [
+          {
+            "speaker": "",
+            "text": "窓際の女の子が、描いていたiPadをしまって席を立った。",
+            "portrait": "tsumugi",
+            "portrait_face": "normal"
+          },
+          {
+            "type": "intro",
+            "char_id": "tsumugi",
+            "intro": {
+              "display_name": "窓際の女の子",
+              "title": "tonariで煙を描く常連",
+              "line": "……",
+              "face": "normal"
+            }
+          }
+        ]
+      }
     }
   ]
 }

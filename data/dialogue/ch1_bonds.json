@@ -697,6 +697,13 @@
           "text": "描き終わった絵、最初に見てほしくて"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_tsumugi_contest_research",
+          "next_true": "finale_another_art",
+          "next_false": "finale_no_contest"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "傷のある画面に、一枚の絵が開かれた。"
@@ -906,7 +913,15 @@
             "face": "",
             "text": "包みを受け取ると、彼女は小さくお辞儀をした。いつもの席に、いつもの煙が残っていた。"
           }
-        ]
+        ],
+        "finale_another_art": [
+          {
+            "speaker": "tsumugi",
+            "face": "normal",
+            "text": "コンテストの絵とは、別の一枚です。……今日、描きたくなって"
+          }
+        ],
+        "finale_no_contest": []
       }
     },
     {
